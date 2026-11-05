@@ -233,3 +233,8 @@ const HD2D={pitch:40,fov:28,maxHfov:40,zoom:1,follow:85,topSlack:.2,sway:{amp:.7
 // act: the least light a character gets (outdoors at night, in dungeons), added in the ambient's colour; shadow: contact shadow
 // [width as a share of the sprite, depth as a share of the width, core darkness, soft darkness, offset away from the key light px].
 HD2D.spr={sc:2/3,sat:.86,con:.9,spread:9,rim:.75,act:{out:.3,dun:.34},shadow:[.8,.55,.36,.3,1.6]};
+// ===== Beta v0.6.3: Make camp (v063prog.js) =====
+// price: Camp Supplies (Alchemy, from stage fromStage, 0 based: 2 = the third realm, about level 15). heal: share of max HP and MP
+// standing heroes get back (an inn gives everything, a Tent 60%). cool: battles between camps. dur: battles a boon lasts.
+// atk / def: boon stat bonus. first: first turn delay multiplier for Early rise. drop: extra drop chance for Forager's luck.
+const CAMP={price:40,fromStage:2,heal:.25,cool:2,dur:3,atk:.1,def:.1,first:.35,drop:.25};
