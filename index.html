@@ -1321,7 +1321,7 @@ html.rm .menter .panel,html.rm .pc.tg,html.rm .swc.sel{animation:none}
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.5.6";const APP_BUILD="46420588a659";
+(function(){const APP_VER="0.5.7";const APP_BUILD="c686ece421f8";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -1633,13 +1633,15 @@ const HD2D={pitch:40,fov:28,maxHfov:40,zoom:1,follow:85,topSlack:.2,sway:{amp:.7
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.5.6";const APP_BUILD="46420588a659";
+const APP_VER="0.5.7";const APP_BUILD="c686ece421f8";
 
 // =================== VERSION ===================
 // The one public version string. Patch (0.1.x) for fixes and balance, minor (0.x.0) for new systems.
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.5.7',['Fix: heroes, townsfolk and monsters in the HD-2D world no longer look sliced and smeared; they now show with their full detail.']],
+ ['Beta v0.5.6',['The world is now a lit diorama on Medium and High graphics: a tilted camera follows your party over maps where walls, cliffs and houses rise from the ground with gabled roofs and lit windows, props stand upright, water sits low and lava glows. Lamps, torches, windows, braziers and crystals light the ground around them, the sun casts soft shadows, fog gathers in the distance, and bloom, a tilt-shift focus band, light shafts and colour grading follow the time of day and the weather. Anything that stands in front of your hero thins out so you never lose sight of them. Settings > HD-2D world turns it off; Low and devices without WebGL keep the classic view.']],
  ['Beta v0.5.5',['Battles take place on lit, dioramic stages: a perspective floor that is sharp where the fighters stand and softens toward the horizon, a blurred background with glowing highlights, torches, braziers, lava and moonlight that light the ground, soft shadows, a colour grade that follows the time of day and the weather, and boss stages with braziers and a glowing rune circle. Every element has its own spell effect with light (fire tongues, shattering ice, a lightning bolt from the sky, a water geyser, earth spikes, a wind funnel, a beam of light, a shadow vortex), and Limit Breaks get a spotlight. Medium keeps the frame rate of before; High lights the fighters too; Low and devices without WebGL keep the classic stage.']],
  ['Beta v0.5.4',['Heroes, townsfolk and monsters are drawn at twice the detail: smoother outlines, six step shading with light from above, rim light, catchlights in the eyes, sheen on hair and metal, folds in cloth and textured fur, plates and feathers on monsters. Heroes stand a little taller. On the Low graphics setting the world and battle views keep their old resolution so slower phones stay smooth.']],
  ['Beta v0.5.3',['A new look for menus and screens: night blue panels with gold borders and corner ornaments, a gold tab strip for the menu groups, a battle command menu with a lit cursor, framed portraits, glossy bars, a framed title screen and a grander Victory screen. Every button and tab is now at least 40 pixels tall on touch screens, text contrast is checked on every main screen, and reduced motion turns the transitions off.']],
@@ -15727,11 +15729,13 @@ function h2ChunksFree(gl,C){if(!C)return;C.segs.forEach(g=>h2MeshFree(gl,g.ms));
 function H2Atlas(gl,size){this.gl=gl;this.s=size;this.t=h2Tex(gl,gl.NEAREST);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,size,size,0,gl.RGBA,gl.UNSIGNED_BYTE,null);this.reset();}
 H2Atlas.prototype.reset=function(){this.m=new Map();this.x=1;this.y=1;this.sh=0;this.full=0;};
 H2Atlas.prototype.get=function(key,cv){let r=this.m.get(key);if(r)return r;if(!cv||!cv.width||!cv.height)return null;
-  const w=cv.width,h=cv.height,S=this.s;if(w+2>S||h+2>S)return null;
-  if(this.x+w+1>S){this.x=1;this.y+=this.sh+2;this.sh=0;}
-  if(this.y+h+1>S){this.full++;this.reset();return this.get(key,cv);}// full: start over (rare; a frame or two may re-upload)
+  // v0.5.6: HD sprite canvases (sprhd.js) hold a k-times bitmap (_rw x _rh) but report their logical size as width/height.
+  // The upload sends the whole bitmap, so the slot and the UVs use the real size; w/h stay logical for the quad on screen.
+  const w=cv.width,h=cv.height,pw=cv.hd&&cv._rw?cv._rw:w,ph=cv.hd&&cv._rh?cv._rh:h,S=this.s;if(pw+2>S||ph+2>S)return null;
+  if(this.x+pw+1>S){this.x=1;this.y+=this.sh+2;this.sh=0;}
+  if(this.y+ph+1>S){this.full++;this.reset();return this.get(key,cv);}// full: start over (rare; a frame or two may re-upload)
   const gl=this.gl;gl.bindTexture(gl.TEXTURE_2D,this.t);gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL,false);gl.texSubImage2D(gl.TEXTURE_2D,0,this.x,this.y,gl.RGBA,gl.UNSIGNED_BYTE,cv);
-  r={u0:this.x/S,v0:this.y/S,u1:(this.x+w)/S,v1:(this.y+h)/S,w,h};this.m.set(key,r);this.x+=w+2;this.sh=Math.max(this.sh,h);return r;};
+  r={u0:this.x/S,v0:this.y/S,u1:(this.x+pw)/S,v1:(this.y+ph)/S,w,h};this.m.set(key,r);this.x+=pw+2;this.sh=Math.max(this.sh,ph);return r;};
 // ----- a static shelf packer over a 2D canvas (per map atlases: object cards, building pieces) -----
 function H2Pack(w){this.w=w;this.x=0;this.y=0;this.sh=0;this.items=[];}
 H2Pack.prototype.add=function(w,h){if(this.x+w>this.w){this.x=0;this.y+=this.sh+2;this.sh=0;}const r={x:this.x,y:this.y,w,h};this.x+=w+2;this.sh=Math.max(this.sh,h);this.items.push(r);return r;};
@@ -16484,7 +16488,7 @@ Object.assign(window.__A,{temperRank,forgeCost,hasMats,stSym,ST_SYM,pgSpot,pgGri
 ['heroCanvas','monCanvas','walkerCanvas','heroGridView','MART','MON_SIZE','BIG_ART','IMG','URL_CACHE','spriteOf','imgOf','walkFrame','drawSprite','heroPal','SPRITE_HD','SPR','sprHD','paintHD','villagerLook','whiteOf','mountCanvas','petCanvas','halfCanvas'].forEach(k=>{try{Object.defineProperty(window.__A,k,{get:()=>eval(k),configurable:true});}catch(e){}});
 Object.assign(window.__A,{GFX,GFX_Q,GFX_AUTO,GFX_CAM,gfxCfg,gfxTier,gfxApply,gfxAutoDecide,gfxAutoFeed,gfxStill,gfxCamPush,CAM,PARA,g6Ground,g6Sky,g6Bloom,g6Burst,titleDraw:(c,w,h,n)=>titleDraw(c,w,h,n),bgStatic:(a,b,c)=>bgStatic(a,b,c),onFx:(u,t,c)=>onFx(u,t,c),townDecorActors:(a,n,x,y)=>townDecorActors(a,n,x,y),part:o=>part(o),groundPlane:(...a)=>groundPlane(...a)});// v0.5.0 Phase 6
 Object.assign(window.__A,{HB,HD_BATTLE,HD_FLOOR,HD_LOOK,hbInfo,hbWanted,hbQ,hbLook,battleTheme:()=>battleTheme(),battleFrame:n=>battleFrame(n),BV});// v0.5.3 HD-2D battle stage
-Object.assign(window.__A,{HD,HD2D,hdActive,hdWant,hdTierQ,hdCfgOn,hdPick:e=>hdPick(e),mapPoint:e=>mapPoint(e),hdBake:m=>hdBake(m),TR,worldDraw2:n=>worldDraw(n)});
+Object.assign(window.__A,{H2Atlas,HD,HD2D,hdActive,hdWant,hdTierQ,hdCfgOn,hdPick:e=>hdPick(e),mapPoint:e=>mapPoint(e),hdBake:m=>hdBake(m),TR,worldDraw2:n=>worldDraw(n)});
 boot();
 })();
 </script>

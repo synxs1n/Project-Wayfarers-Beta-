@@ -112,11 +112,13 @@ function h2ChunksFree(gl,C){if(!C)return;C.segs.forEach(g=>h2MeshFree(gl,g.ms));
 function H2Atlas(gl,size){this.gl=gl;this.s=size;this.t=h2Tex(gl,gl.NEAREST);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,size,size,0,gl.RGBA,gl.UNSIGNED_BYTE,null);this.reset();}
 H2Atlas.prototype.reset=function(){this.m=new Map();this.x=1;this.y=1;this.sh=0;this.full=0;};
 H2Atlas.prototype.get=function(key,cv){let r=this.m.get(key);if(r)return r;if(!cv||!cv.width||!cv.height)return null;
-  const w=cv.width,h=cv.height,S=this.s;if(w+2>S||h+2>S)return null;
-  if(this.x+w+1>S){this.x=1;this.y+=this.sh+2;this.sh=0;}
-  if(this.y+h+1>S){this.full++;this.reset();return this.get(key,cv);}// full: start over (rare; a frame or two may re-upload)
+  // v0.5.6: HD sprite canvases (sprhd.js) hold a k-times bitmap (_rw x _rh) but report their logical size as width/height.
+  // The upload sends the whole bitmap, so the slot and the UVs use the real size; w/h stay logical for the quad on screen.
+  const w=cv.width,h=cv.height,pw=cv.hd&&cv._rw?cv._rw:w,ph=cv.hd&&cv._rh?cv._rh:h,S=this.s;if(pw+2>S||ph+2>S)return null;
+  if(this.x+pw+1>S){this.x=1;this.y+=this.sh+2;this.sh=0;}
+  if(this.y+ph+1>S){this.full++;this.reset();return this.get(key,cv);}// full: start over (rare; a frame or two may re-upload)
   const gl=this.gl;gl.bindTexture(gl.TEXTURE_2D,this.t);gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL,false);gl.texSubImage2D(gl.TEXTURE_2D,0,this.x,this.y,gl.RGBA,gl.UNSIGNED_BYTE,cv);
-  r={u0:this.x/S,v0:this.y/S,u1:(this.x+w)/S,v1:(this.y+h)/S,w,h};this.m.set(key,r);this.x+=w+2;this.sh=Math.max(this.sh,h);return r;};
+  r={u0:this.x/S,v0:this.y/S,u1:(this.x+pw)/S,v1:(this.y+ph)/S,w,h};this.m.set(key,r);this.x+=pw+2;this.sh=Math.max(this.sh,ph);return r;};
 // ----- a static shelf packer over a 2D canvas (per map atlases: object cards, building pieces) -----
 function H2Pack(w){this.w=w;this.x=0;this.y=0;this.sh=0;this.items=[];}
 H2Pack.prototype.add=function(w,h){if(this.x+w>this.w){this.x=0;this.y+=this.sh+2;this.sh=0;}const r={x:this.x,y:this.y,w,h};this.x+=w+2;this.sh=Math.max(this.sh,h);this.items.push(r);return r;};
