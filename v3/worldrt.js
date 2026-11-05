@@ -274,7 +274,9 @@ function worldSizeCanvas(){
   const cssH=land?clamp(avail,160,900):clamp(avail,170,box.width<720?620:560);
   if(land)sc=cssH>=380?3:2;
   const vw=Math.floor(box.width/sc),vh=Math.floor(cssH/sc);
-  if(vw!==WS.vw||vh!==WS.vh||sc!==WS.scale||cv.width!==vw){WS.vw=vw;WS.vh=vh;WS.scale=sc;cv.width=vw;cv.height=vh;cv.style.width=vw*sc+'px';cv.style.height=vh*sc+'px';WS.dark=null;}
+  // v0.5.1: also compare the canvas's own height and display size. A canvas rebuilt after a battle starts at 300x150 with no CSS size;
+  // on a view exactly 300 pixels wide (a Galaxy Z Fold opened, about 932 CSS px) nothing else differed, so it stayed at 300x150.
+  if(vw!==WS.vw||vh!==WS.vh||sc!==WS.scale||cv.width!==vw||cv.height!==vh||cv.style.width!==vw*sc+'px'||cv.style.height!==vh*sc+'px'){WS.vw=vw;WS.vh=vh;WS.scale=sc;cv.width=vw;cv.height=vh;cv.style.width=vw*sc+'px';cv.style.height=vh*sc+'px';WS.dark=null;}
 }
 // v0.5.1 1.2 follow up: on some phones (foldables, the Android app after a battle) the view was measured while the screen was still
 // settling and no resize event came after it, so it stayed small. The world screen now checks itself twice a second and re-sizes

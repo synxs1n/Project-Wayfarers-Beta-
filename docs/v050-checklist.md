@@ -83,6 +83,7 @@ Details per item: `design-notes-v050.md` and the phase reports (`v050-phase2.md`
 | Town NPCs back on a path after the lane fix | `chrome/v050p1c.js` | v0.5.1 (`29a0870`): fails (one NPC) | passes |
 | Tempering slow with a full pack | `chrome/smithy3.js` | v0.4.6 and v0.5.0: fail (about 0.8 to 1 s) | passes (about 0.5 s) |
 | New skills first on the results, quest ready notice and tags, symbols under names in the Party menu | `chrome/v051c.js` | v0.5.1 (`0275a0d`): fails | passes |
+| v0.5.2: map view stuck at 300x150 after a battle on a Galaxy Z Fold opened | `chrome/v051c.js` (widths 920 to 946) | v0.5.1: fails at 932, 933, 934 | passes |
 | Workflow on Node 24 actions, ubuntu-24.04 | the Build and release run | warnings | green, no annotations |
 
 ## Tests that cannot run here

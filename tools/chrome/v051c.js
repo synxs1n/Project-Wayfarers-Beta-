@@ -7,6 +7,12 @@ for(const [w,h] of [[889,671],[844,390],[390,844]]){
   const H=await open({w,h,mobile:true});const {ev,wait}=H;
   await ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;A.render();});await wait(700);
   const good=await ev(()=>{const r=__A.WS.cv.getBoundingClientRect();return [Math.round(r.width),Math.round(r.height)];});
+  // Galaxy Z Fold 8 open (about 935x705 CSS px): the view is exactly 300 logical pixels wide, the size a new canvas starts at.
+  // A plain battle and back used to leave the rebuilt canvas at its default 300x150 because nothing seemed to change.
+  {await ev(()=>{__A.startBattle({stage:0,kind:'field'});});await wait(500);await ev(()=>{__A.B.en.forEach(e=>e.hp=0);__A.win();});await wait(400);
+   await ev(()=>{const b=document.querySelector('[data-act="resultOk"]');if(b)b.click();});await wait(700);
+   const r=await ev(()=>{const c=__A.WS.cv,b=c.getBoundingClientRect();return [Math.round(b.width),Math.round(b.height),c.width,c.height];});
+   chk(`${w}x${h}: same size after a plain battle (${r})`,r[0]===good[0]&&r[1]===good[1]||JSON.stringify({good,r}));}
   await ev(()=>{__A.startBattle({stage:0,kind:'field'});});await wait(500);
   await ev(()=>{__A.B.en.forEach(e=>e.hp=0);__A.win();});await wait(400);
   // the screen is still settling when the map comes back: the view's box reads a third of its width and the viewport is short
@@ -20,6 +26,15 @@ for(const [w,h] of [[889,671],[844,390],[390,844]]){
   chk(`${w}x${h}: the view was shrunk while the screen settled (${bad} of ${good})`,bad[0]<good[0]||bad[1]<good[1]||'not shrunk, test setup failed');
   chk(`${w}x${h}: it recovers its full size by itself (${after})`,after[0]===good[0]&&after[1]===good[1]||JSON.stringify({good,after}));
   await H.browser.close();}
+// Galaxy Z Fold 8 open: sweep the widths around it (about 935x705 CSS px) through a plain battle and back
+{const bad=[];let hit=0;for(let w=920;w<=946;w++){const H=await open({w,h:705,mobile:true});const {ev,wait}=H;
+  await ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;A.render();});await wait(400);
+  const g=await ev(()=>{const r=__A.WS.cv.getBoundingClientRect();return [Math.round(r.width),Math.round(r.height),__A.WS.cv.width];});if(g[2]===300)hit++;
+  await ev(()=>{__A.startBattle({stage:0,kind:'field'});});await wait(350);await ev(()=>{__A.B.en.forEach(e=>e.hp=0);__A.win();});await wait(300);
+  await ev(()=>{const b=document.querySelector('[data-act="resultOk"]');if(b)b.click();});await wait(500);
+  const r=await ev(()=>{const c=__A.WS.cv,b=c.getBoundingClientRect();return [Math.round(b.width),Math.round(b.height)];});
+  if(r[0]!==g[0]||r[1]!==g[1])bad.push(w+': '+g.slice(0,2)+' -> '+r);await H.browser.close();}
+ chk(`Fold 8 widths 920 to 946 (${hit} of them hit the 300 pixel view): same size after a battle`,bad.length===0&&hit>0||(hit?bad.join(' | '):'no width hit 300'));}
 const H=await open({w:390,h:844,mobile:true});const {ev,wait}=H;
 await ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;A.render();});await wait(500);
 // 2) learned skills first on the result screen

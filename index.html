@@ -999,7 +999,7 @@ html.rm .menter{animation:none}
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.5.1";const APP_BUILD="723b00af6b14";
+(function(){const APP_VER="0.5.2";const APP_BUILD="14564c5fb330";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -1239,13 +1239,14 @@ const GFX_CAM={crit:[1.035,360],react:[1.05,520],brk:[1.06,600],limit:[1.05,760]
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.5.1";const APP_BUILD="723b00af6b14";
+const APP_VER="0.5.2";const APP_BUILD="14564c5fb330";
 
 // =================== VERSION ===================
 // The one public version string. Patch (0.1.x) for fixes and balance, minor (0.x.0) for new systems.
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.5.2',['Fix: on a Galaxy Z Fold opened (and any screen where the map view comes out exactly 300 pixels wide) the map no longer shrinks to a small box after a battle.']],
  ['Beta v0.5.1',['A graphics upgrade: soft light from lamps, windows, torches and spells, shading and depth, water that glints, grass that sways, leaves, dust, birds and critters, a battle camera that pushes in on big hits, richer element effects and victory hops. Settings has a Graphics option (Auto, Low, Medium, High); Auto picks what your device runs smoothly, and reduced motion keeps everything still.',
   'A Quest Board quest or Guild mission that is ready to hand in is announced, and the Menu button and Quests tab show how many are waiting. New skills are listed first on the victory screen. Status symbols sit under the name in the Party menu. Tempering explains close choices and opens faster with a full pack.',
   'The Android app now picks up every update, including fixes that keep the same version number, and never goes back to an older version. The website offers the same.',
@@ -6359,7 +6360,9 @@ function worldSizeCanvas(){
   const cssH=land?clamp(avail,160,900):clamp(avail,170,box.width<720?620:560);
   if(land)sc=cssH>=380?3:2;
   const vw=Math.floor(box.width/sc),vh=Math.floor(cssH/sc);
-  if(vw!==WS.vw||vh!==WS.vh||sc!==WS.scale||cv.width!==vw){WS.vw=vw;WS.vh=vh;WS.scale=sc;cv.width=vw;cv.height=vh;cv.style.width=vw*sc+'px';cv.style.height=vh*sc+'px';WS.dark=null;}
+  // v0.5.1: also compare the canvas's own height and display size. A canvas rebuilt after a battle starts at 300x150 with no CSS size;
+  // on a view exactly 300 pixels wide (a Galaxy Z Fold opened, about 932 CSS px) nothing else differed, so it stayed at 300x150.
+  if(vw!==WS.vw||vh!==WS.vh||sc!==WS.scale||cv.width!==vw||cv.height!==vh||cv.style.width!==vw*sc+'px'||cv.style.height!==vh*sc+'px'){WS.vw=vw;WS.vh=vh;WS.scale=sc;cv.width=vw;cv.height=vh;cv.style.width=vw*sc+'px';cv.style.height=vh*sc+'px';WS.dark=null;}
 }
 // v0.5.1 1.2 follow up: on some phones (foldables, the Android app after a battle) the view was measured while the screen was still
 // settling and no resize event came after it, so it stayed small. The world screen now checks itself twice a second and re-sizes

@@ -3,6 +3,7 @@
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.5.2',['Fix: on a Galaxy Z Fold opened (and any screen where the map view comes out exactly 300 pixels wide) the map no longer shrinks to a small box after a battle.']],
  ['Beta v0.5.1',['A graphics upgrade: soft light from lamps, windows, torches and spells, shading and depth, water that glints, grass that sways, leaves, dust, birds and critters, a battle camera that pushes in on big hits, richer element effects and victory hops. Settings has a Graphics option (Auto, Low, Medium, High); Auto picks what your device runs smoothly, and reduced motion keeps everything still.',
   'A Quest Board quest or Guild mission that is ready to hand in is announced, and the Menu button and Quests tab show how many are waiting. New skills are listed first on the victory screen. Status symbols sit under the name in the Party menu. Tempering explains close choices and opens faster with a full pack.',
   'The Android app now picks up every update, including fixes that keep the same version number, and never goes back to an older version. The website offers the same.',
