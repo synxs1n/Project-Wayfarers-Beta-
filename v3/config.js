@@ -152,3 +152,11 @@ const GFX_AUTO={start:'medium',windowMs:3000,down:45,up:57,gap:250};
 const GFX_PARA={px:4,titleMs:24000};
 // Camera pushes [zoom, ms]: crits, reactions, shield breaks, Limit Breaks.
 const GFX_CAM={crit:[1.035,360],react:[1.05,520],brk:[1.06,600],limit:[1.05,760]};
+
+// ===== Beta v0.5.3: HD sprites (sprhd.js, sprhd2.js) =====
+// SPRITE_HD true: heroes, townsfolk and monsters are painted at twice the detail (SPR.k) with five step light ramps, rim light and coloured
+// line art, heroes stand SPR.addH logical px taller (longer legs and torso, same head), and the world and battle canvases render at SPR.k
+// so that detail shows. Every sprite canvas still reports its logical size (width/height), so nothing that places sprites changes.
+// false: the v0.5.2 sprites and canvases, exactly as before.
+const SPRITE_HD=true;
+const SPR={k:2,addH:6,rimA:.5,outA:.55};
