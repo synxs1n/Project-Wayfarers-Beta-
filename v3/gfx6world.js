@@ -11,6 +11,9 @@ const G6W={amb:{meadow:['#e8a23a','#c8642a','#9ac850'],heights:['#b8d070','#e0c0
   bubbles:['dots','note','bang','heart']};
 function g6WindNow(m){if(!m||m.kind==='dungeon'||m.cave)return .1;const w=G.weather&&G.weather[m.s];return WX_WIND[w]!=null?WX_WIND[w]:.35;}
 function g6Hash(x,y){let h=(x*374761393+y*668265263)|0;h=(h^(h>>>13))*1274126177|0;return ((h^(h>>>16))>>>0)/4294967296;}
+// the weight of a time of day right now (blending while the 5.4 transition runs), and a value mixed across the phases by those weights
+function g6PhW(p,ph){try{if(typeof trPhW==='function'&&typeof trWorldOn==='function'&&trWorldOn())return trPhW(p);}catch(e){}return p===ph?1:0;}
+function g6PhMix(f,ph){let t=0,v=0;for(const p of ['day','dusk','night','dawn']){const w=g6PhW(p,ph);if(w>0){t+=w;v+=w*f(p);}}return t>0?v/t:f(ph);}
 function g6Day(){try{if(typeof phaseProg!=='function'||!G)return 'day';return phaseProg().ph;}catch(e){return 'day';}}
 // ----- 1. ambient occlusion, baked -----
 let G6AO=null;
@@ -94,12 +97,12 @@ const G6FLK={lamp:.06,fire:.14,torch:.14,gold:.05,lava:.08,cyan:.03,violet:.04,d
 const G6B={ctx:null,cx:0,cy:0,vw:0,vh:0,ts:0,base:0,day:false,big:2};
 function g6BloomOne(L){const B6=G6B,k=L[3]||'lamp';if(B6.day&&(k==='lamp'||k==='day'))return;const ctx=B6.ctx,x=L[0]-B6.cx,y=L[1]-B6.cy,fl=G6FLK[k]!=null?G6FLK[k]:.05;
   const w=Math.sin(B6.ts/(70+(L[0]%23))+L[1])+.6*Math.sin(B6.ts/31+L[0]),f=1+fl*w,r=Math.min(L[2]||18,30)*B6.big*f;
-  if(x<-r||y<-r||x>B6.vw+r||y>B6.vh+r)return;ctx.globalAlpha=Math.max(0,Math.min(1,B6.base*(k==='day'?.3:1)*(1+.25*w*(fl>0?1:0))));ctx.drawImage(g6Glow(LIGHTC[k]||LIGHTC.lamp),x-r,y-r,r*2,r*2);}
+  if(x<-r||y<-r||x>B6.vw+r||y>B6.vh+r)return;ctx.globalAlpha=Math.max(0,Math.min(1,B6.base*(k==='day'?.3:1)*((k==='lamp'||k==='day')?B6.lampW:1)*(1+.25*w*(fl>0?1:0))));ctx.drawImage(g6Glow(LIGHTC[k]||LIGHTC.lamp),x-r,y-r,r*2,r*2);}
 function g6Bloom(ctx,m,cx,cy,vw,vh,ts){const ph=m.kind==='dungeon'?'night':g6Day(),T=m.kind==='dungeon'?null:THM(m),dark=m.kind==='dungeon'||m.cave||!!(T&&T.dark);
-  G6B.ctx=ctx;G6B.cx=cx;G6B.cy=cy;G6B.vw=vw;G6B.vh=vh;G6B.ts=ts;G6B.day=!dark&&ph==='day';G6B.base=ph==='night'||dark?.45:ph==='dusk'||ph==='dawn'?.36:.18;G6B.big=GFX.q.bloom>1?2:1.6;
+  G6B.ctx=ctx;G6B.cx=cx;G6B.cy=cy;G6B.vw=vw;G6B.vh=vh;G6B.ts=ts;const bOf=p=>p==='night'?.45:p==='dusk'||p==='dawn'?.36:.18;/* v0.5.1: follow the 5.4 time of day blend (p5trans trPhW) instead of jumping */const mix=g6PhMix(bOf,ph);G6B.lampW=dark?1:1-g6PhW('day',ph);G6B.day=G6B.lampW<=.001;G6B.base=dark?.45:mix;G6B.big=GFX.q.bloom>1?2:1.6;
   ctx.globalCompositeOperation='lighter';
   if(m.lights)m.lights.forEach(g6BloomOne);if(m.tl)m.tl.forEach(g6BloomOne);
   ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';}
 {const wd0=worldDraw;worldDraw=function(now){wd0(now);try{const m=WS.m,ctx=WS.ctx;if(!m||!ctx||!WS.cam||GFX.off)return;const q=GFX.q,still=gfxStill(),ts=still?0:now,cx=Math.round(WS.cam.x),cy=Math.round(WS.cam.y);
   if(q.bloom)g6Bloom(ctx,m,cx,cy,WS.vw,WS.vh,ts);
-  if(q.vignette){const ph=m.kind==='dungeon'?'night':g6Day(),a=m.kind==='dungeon'||m.cave?.5:ph==='night'?.42:ph==='day'?.26:.34;ctx.drawImage(g6Vignette(WS.vw,WS.vh,a),0,0);}}catch(e){}};}
+  if(q.vignette){const ph=m.kind==='dungeon'?'night':g6Day(),a=m.kind==='dungeon'||m.cave?.5:Math.round(g6PhMix(p=>p==='night'?.42:p==='day'?.26:.34,ph)*50)/50;ctx.drawImage(g6Vignette(WS.vw,WS.vh,a),0,0);}}catch(e){}};}

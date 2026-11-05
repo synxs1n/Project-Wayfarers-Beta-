@@ -8,7 +8,7 @@ function qReadyList(){const out=[];if(!G||G.daily)return out;
   return out;}
 const qReadyCount=()=>qReadyList().length;
 let qrLast=0;
-function qReadyCheck(){if(!G||G.daily||B||V.screen!=='world')return;const now=Date.now();if(now-qrLast<400)return;qrLast=now;
+function qReadyCheck(){if(!G||G.daily||B||V.screen!=='world')return;const now=Date.now();if(now-qrLast<400){clearTimeout(qReadyCheck.t);qReadyCheck.t=setTimeout(qReadyCheck,450);return;}qrLast=now;
   const L=qReadyList(),N=G.qNote=G.qNote&&typeof G.qNote==='object'?G.qNote:{},live={};L.forEach(o=>live[o.k]=1);
   Object.keys(N).forEach(k=>{if(!live[k])delete N[k];});
   const fresh=L.filter(o=>!N[o.k]);if(!fresh.length)return;fresh.forEach(o=>N[o.k]=1);
