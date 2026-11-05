@@ -12,9 +12,14 @@
 - Service worker serves `/audio/` cache first; the Android workflow copies `audio/` into `www/`.
 - Test hook: `window.__AU` (end of ambience.js).
 
-## Android live updates (v0.4.6)
+## Android live updates (v0.4.6, build IDs in v0.5.1)
 - `v3/liveboot.js` runs in its own script before the game (v3build.py wraps it with appver.js into the shell's `/*BOOT*/`). Native only.
-- It checks the live `version.json`, downloads a newer `index.html` into Cache Storage (`aur-live-build`), and on the next launch (or Restart now) skips the packed game (`window.__SKIPMAIN`, checked at the top of the main IIFE) and swaps the downloaded page in with DOMParser, re-creating its scripts. Same origin, so saves and sign in stay.
-- localStorage flags: `aur-live-ver`, `aur-live-try`, `aur-live-ok`, `aur-live-bad`. A build that never draws its first screen is marked bad and the packed one runs. A newer APK beats an older download.
+- Build IDs (v0.5.1): `v3build.py` hashes every module except appver.js, plus fonts.css, style.css, shell.html and liveboot.js (SHA-256, first 12 hex characters), before the page is written, so the ID never depends on itself. It writes `const APP_VER="x";const APP_BUILD="id";` into `v3/appver.js` and `{"version":"x","build":"id"}` into `version.json`. The same sources always give the same ID, so the CI builds match the committed site.
+- An update is a live build with a newer version, or the same version with a different build ID. An older version is never downloaded or applied.
+- The background check downloads the live `index.html` into Cache Storage (`aur-live-build`) only if it holds exactly the expected `APP_VER` and `APP_BUILD`, then offers Restart now. On the next launch (or restart) the packed game is skipped (`window.__SKIPMAIN`, checked at the top of the main IIFE) and the cached page is swapped in with DOMParser, re-creating its scripts. Same origin, so saves and sign in stay.
+- Inside a swapped-in build the boot script runs again: it never swaps a second time (`__LIVEBOOTED`, the game never runs twice) but it does run the background check with the build ID rules, on the same cache and keys (`__LIVECHECK` keeps it to one checker per page). APKs from 0.4.6 to 0.5.0 only compare version numbers in their own boot script; once they run a swapped 0.5.1 build, that build's check picks up same version rebuilds, and the old boot script swaps them in because 0.5.1 is newer than what it packs.
+- If the live site matches the APK's own packed build and a different build of that version sits in the cache, the cached one is dropped.
+- localStorage: `aur-live-ver` and `aur-live-build` (what is cached), `aur-live-try`, `aur-live-ok`, `aur-live-bad` (ids `ver#build`; old boot scripts write plain `ver`). A build that never draws its first screen is marked bad and the packed one runs. A newer APK beats an older download.
+- The website (`update.js`) shows its update bar when the live version or build ID differs from the running one.
 - Instruments fall back to the live site when the APK lacks a file (`au2Fetch`).
-- Test: `tools/chrome/liveupdate.js`. APKs older than 0.4.6 need one manual install.
+- Test: `tools/chrome/liveupdate.js` (newer version, same version rebuild, older version refused, a 0.5.0 APK picking up the new build, a 0.4.6 APK on a swapped build picking up a rebuild, the website bar; `liveboot-v046.js` is the old boot script it uses). APKs older than 0.4.6 need one manual install.

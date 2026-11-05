@@ -1,6 +1,6 @@
 # Wayfarers (Beta)
 
-Turn-based pixel art medieval fantasy RPG. Beta v0.5.0.
+Turn-based pixel art medieval fantasy RPG. Beta v0.5.1.
 
 Play in browser (installable as an app from the browser menu): https://synxs1n.github.io/Project-Wayfarers-Beta-/
 
@@ -16,13 +16,13 @@ Build everything with `sh build.sh`. Changing `RELEASE_VERSION` (for example to 
 
 1. Edit files in `v3/`.
 2. Run `sh build.sh` (builds `index.html`, `sw.js`, `version.json`).
-3. Bump `GAME_VERSION` (last digit +1 per game change; middle digit only if the last would pass 9 or it is a big shift). Never touch version numbers for build only changes.
+3. Bump `GAME_VERSION` (last digit +1 per game change; middle digit only if the last would pass 9 or it is a big shift). Never touch version numbers for build only changes. The build ID changes by itself with any code change.
 4. Commit and push to `main`. The push updates the website (GitHub Pages) and the Windows app (it loads the site live), and GitHub Actions rebuilds the Android APK and Windows installer into the single rolling release `latest`.
 5. Report the play link: https://synxs1n.github.io/Project-Wayfarers-Beta-/
 
 Do not delete the `latest` release; the app update links use it.
 
-The Android app updates itself from the live site (`v3/liveboot.js`): it downloads a newer `index.html` into its own cache and swaps it in on the next launch, falling back to the packed build if that version fails to start. Only a change to the native shell (plugins, icons, permissions) needs a new APK. Test: `node tools/chrome/liveupdate.js`.
+The Android app updates itself from the live site (`v3/liveboot.js`): it downloads a newer `index.html` into its own cache and swaps it in on the next launch, falling back to the packed build if that version fails to start. Every build has a build ID (a hash of its code, `APP_BUILD` in `v3/appver.js` and `build` in `version.json`, written by `v3build.py`), so a rebuild of the same version is picked up too; an older version never is. Only a change to the native shell (plugins, icons, permissions) needs a new APK. Test: `node tools/chrome/liveupdate.js`.
 
 ## Audio
 

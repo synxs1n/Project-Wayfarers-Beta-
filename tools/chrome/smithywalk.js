@@ -5,6 +5,9 @@ const pos=await ev(()=>{const m=__A.WS.m,b=m.bld.find(b=>b.k==='smithy');__A.pla
 await page.keyboard.down('ArrowUp');await wait(400);await page.keyboard.up('ArrowUp');await wait(300);
 chk('walking up into the door opens the Smithy',await ev(()=>__A.V.modal&&__A.V.modal.type==='smithy')||'no modal');
 for(const tab of ['weapons','forge','craft','mats','sell']){await ev(t=>{__A.V.modal.tab=t;__A.render();},tab);}
+// v0.5.0 1.5: Esc is the back arrow: from a sub tab it goes to the first tab, then it closes the shop
+await page.keyboard.press('Escape');await wait(300);
+chk('Esc from a sub tab goes back to the first tab',await ev(()=>__A.V.modal&&__A.V.modal.type==='smithy'&&(__A.V.modal.tab||'weapons')==='weapons')||'no');
 await page.keyboard.press('Escape');await wait(300);
 chk('Esc closes it',await ev(()=>!__A.V.modal));
 const s0=await ev(()=>[__A.WS.x,__A.WS.y]);

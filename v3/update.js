@@ -1,4 +1,4 @@
-// Update prompt: when the live site has a newer version than the one running, offer a one tap reload.
+// Update prompt: when the live site has another version or build ID than the one running, offer a one tap reload.
 window.__saveNow=()=>{try{if(G&&!G.daily)saveGame();}catch(e){}};// the Android live update saves before it restarts (liveboot.js)
 (function(){
   const NATIVE=!!window.androidBridge;
@@ -19,7 +19,9 @@ window.__saveNow=()=>{try{if(G&&!G.daily)saveGame();}catch(e){}};// the Android 
     try{
       const r=await fetch((NATIVE?LIVE:'')+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;
       const j=await r.json();
-      if(j&&j.version&&j.version!==APP_VER)show(j.version);
+      // v0.5.1: a same version rebuild (another build ID) is an update too
+      const myB=typeof APP_BUILD==='string'?APP_BUILD:'';
+      if(j&&j.version&&(j.version!==APP_VER||(j.build&&myB&&j.build!==myB)))show(j.version);
     }catch(e){}
   }
   setTimeout(check,4000);

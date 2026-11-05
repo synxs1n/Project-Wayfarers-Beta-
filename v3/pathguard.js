@@ -115,6 +115,8 @@ function guardPaths(m){
       if(c==='K'&&m.key&&m.key[0]===b.x&&m.key[1]===b.y)m.key=[sp[0],sp[1]];
       if(m.tl)m.tl=null;log.push({x:b.x,y:b.y,what:c,to:sp});moved=true;}
     if(!moved)break;}
+  // a defeated mimic leaves nothing behind (healMap checks this too, but it ran before the chest moved here)
+  try{if(G&&G.chests&&typeof isMimic==='function'&&m.chests)m.chests.slice().forEach(([x,y])=>{if(G.chests[m.id+':'+x+','+y]&&isMimic(m,x,y)){dropChest(m,x,y);log.push({x,y,what:'mimic gone'});}});}catch(e){}
   m.guarded=log;return log;
 }
 // a moved chest keeps the mimic roll of the spot it was built on

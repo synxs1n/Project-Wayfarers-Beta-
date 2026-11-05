@@ -1,4 +1,6 @@
-# Wayfarers (Beta): design notes, Beta v0.5.0
+# Wayfarers (Beta): design notes, Beta v0.5.0 and v0.5.1
+
+Versioning: Phases 1 to 5 shipped as Beta v0.5.0. Build IDs, Phase 6, the final Phase 7 pass and the follow up fixes ship as Beta v0.5.1 (one bump for the rest of the pass). After that only the last digit goes up per game change (next: v0.5.2).
 
 Read after `design-notes-v033.md`, `design-notes-v041.md` and `audio-notes-v045.md`. Where they disagree, this file wins.
 The spec for this pass is `v050-prompt.md`; the rollback point is `rollback-v046.md` (commit `2c9f47f`, Beta v0.4.6).
@@ -37,3 +39,10 @@ Full report: `v050-phase3.md`. Code in `p3shop.js` (after `economy.js`). Config:
 Full report: `v050-phase45.md`. Code in `p4xp.js`, `p4party.js`, `p5settings.js`, `p5trans.js`, `p45hook.js`. Config: `PERSONAL_BT` (40), `PERSONAL_REALM`, `XPCU` (+10% per level gap, up to +50%, reserve half), `TRANS` (time of day 11 s, weather 6.5 s), `SAVE_UI`. New optional fields: `META.cfg.master`, `muteMusic`, `muteSfx`.
 - 4.1 personal quests need 40 battles together and the second realm; old started or finished quests and estimated battle counts untouched. 4.2 Factions shown as Guilds (text only; keys and ids unchanged), The Steady Hand Guild, a Guilds tab in the Guild Hall. 4.3 XP catch up replaces the old flat x1.4; result screen row; ending level still 39. 4.4 the lingering energy message after each base boss.
 - 5.1 Master, Music and Sound effect sliders with mutes. 5.2 debounced auto sync plus a push when the page hides; visitors stay local. 5.3 "Wayfarers (Beta)" everywhere a player reads the title (`package.json` productName kept so the Windows save folder does not move). 5.4 blended time of day and weather; instant under reduced motion. 5.5 pinned Save button with slot and time, a corner Saving / Saved note with Retry, the cloud icon beside it.
+
+## Beta v0.5.1
+- **Build IDs.** `v3build.py` hashes the page's code (every module except appver.js, plus fonts.css, style.css, shell.html, liveboot.js) and writes `APP_BUILD` into `v3/appver.js` and `build` into `version.json`. `liveboot.js` treats a newer version, or the same version with a different build, as an update; never an older version. Details in `audio-notes-v045.md` (Android live updates). Test: `chrome/liveupdate.js`.
+- **Fix: defeated mimics after a chest move.** `healMap` clears an opened mimic chest at the position it was built on, but the path guard could move that chest afterwards, so a beaten Mimic came back. `guardPaths` now runs the same cleanup at the end. Test: `chrome/v041p1c.js` (failed on 0.5.0, passes now).
+- **Fix: battle hints over the foe cards.** A 2.7 hint during a battle sat at the bottom of the screen over the foe cards and their shield pips. `hintPlace()` (p2world.js) now puts it in the sky at the top of the battle stage. Test: `chrome/v051a.js` (failed on 0.5.0, passes now), `chrome/v040p1.js` no longer fails at random.
+- `chrome/smithywalk.js` updated for 1.5: Esc from a Smithy sub tab goes back to the first tab, a second Esc closes.
+- Workflow: actions on their Node 24 majors (checkout v7, setup-node v7, setup-java v6, upload-artifact v7, download-artifact v8, action-gh-release v3), Node 24 for the builds, Linux jobs pinned to `ubuntu-24.04`.

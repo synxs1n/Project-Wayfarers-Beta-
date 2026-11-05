@@ -309,8 +309,13 @@ function hintFire(ev){try{if(!hintEligible()||P2.hint||P2.hintT)return;for(const
     P2.hintT=setTimeout(()=>{P2.hintT=null;if(!hintEligible()||hintSeen(h.id))return;hintShow(h.id,txt);},HINT_DELAY);return;}}catch(e){}}
 function hintShow(id,txt){META.hints=META.hints||{};META.hints[id]=txt;saveMeta();P2.hint=id;
   let d=document.getElementById('p2hint');if(!d){d=document.createElement('div');d.id='p2hint';d.setAttribute('role','status');document.body.appendChild(d);}
-  d.innerHTML=`<b>Hint</b><span>${esc(txt)}</span><div class="btnrow"><button class="btn sm gold" data-act="hintOk">Got it</button><button class="btn sm" data-act="hintOff">Turn off hints</button></div>`;d.className='show'+(V.screen==='battle'?' bat':'');
+  d.innerHTML=`<b>Hint</b><span>${esc(txt)}</span><div class="btnrow"><button class="btn sm gold" data-act="hintOk">Got it</button><button class="btn sm" data-act="hintOff">Turn off hints</button></div>`;d.className='show'+(V.screen==='battle'?' bat':'');hintPlace(d);
   clearTimeout(P2.hintHide);P2.hintHide=setTimeout(()=>{if(P2.hint===id)ACT.hintOk();},16000);}
+// v0.5.1: in battle the hint sits in the sky at the top of the stage, never over the cards, shield pips or commands
+function hintPlace(d){d=d||document.getElementById('p2hint');if(!d)return;const w=V.screen==='battle'&&document.getElementById('bwrap');
+  if(!w){d.style.top='';d.style.bottom='';d.style.left='';d.style.maxWidth='';return;}const r=w.getBoundingClientRect();
+  d.style.top=Math.round(r.top+30)+'px';d.style.bottom='auto';d.style.left=Math.round(r.left+r.width/2)+'px';d.style.maxWidth=Math.round(Math.min(420,r.width-16))+'px';}
+window.addEventListener('resize',()=>{try{hintPlace();}catch(e){}});
 ACT.hintOk=function(){P2.hint=null;const d=document.getElementById('p2hint');if(d)d.className='';};
 ACT.hintOff=function(){META.cfg.hints=false;saveMeta();ACT.hintOk();toast('Hints are off. Turn them back on in Settings; past hints stay in Guides > Hints.');if(V.modal)render();};
 ACT.hintsReset=function(){META.hints={};META.cfg.hints=true;saveMeta();toast('Hints will show again in the first realm.');render();};
@@ -335,7 +340,7 @@ try{const css=document.createElement('style');css.textContent=`#p2hint{position:
   @media (prefers-reduced-motion:reduce){#p2hint{transition:none}}`;document.head.appendChild(css);}catch(e){}
 
 // ---------------------------------------------------------------- test hook ----------------------------------------------------------------
-try{window.__P2={P2,bgGroundAt,bgPaintGround,BG_GROUNDS,BG_NATURAL,p2GroundY,p2Flying,nodeFits,laneFix,laneFind,laneMain,laneGates,laneStraight,laneMove,entStyleFor,entCanvas,ENT_STYLES,
+try{window.__P2={P2,hintShow,hintPlace,bgGroundAt,bgPaintGround,BG_GROUNDS,BG_NATURAL,p2GroundY,p2Flying,nodeFits,laneFix,laneFind,laneMain,laneGates,laneStraight,laneMove,entStyleFor,entCanvas,ENT_STYLES,
   p2SingleFoes,p2Dual,p2DualOK,HINTS,hintFire,hintShow,vHints,
   get BG(){return BG},get BG_HAZ(){return BG_HAZ},bgGY,bgStatic,get BL(){return BL},get B(){return B},get G(){return G},get MAPS(){return MAPS},get WS(){return WS},get META(){return META},
   getMap,tileAt,flood,SOLID,ZS,realmOf,unitBox,battleTheme,battleFrame,startBattle,encounterFoes,roamFight,roamSpawn,turnOrder,tvPool,challEligible,cePool,rarePool,ensureSub,genSub,subReq,TPL,MON,ZONES,TOWNGEN,
