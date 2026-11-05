@@ -11,6 +11,7 @@ Read these before a big pass:
 - `v063-progression.md`: Beta v0.6.3 progression goals (Taming log, bond goals, Make camp) and the pacing audit of when each system first appears.
 - `v063-twists.md`: the Daily Trial weekly twist and the optional New Game+ modifiers (`twists.js`, `TWISTS` in config.js).
 - `v063-art.md`: v0.6.3 art pass: capes no longer drawn on heroes (only the weapon and the personal reward change the look) and one code-drawn icon per item (`icons.js`, `icons2.js`), with the before/after audit.
+- `v063-world.md`: the v0.6.3 world pass (fortress gatehouse in HD-2D, ambience in world space, the HD-2D overlay quarter bug, opened chests vanish, the illustrated world map, "Fortress").
 - `audio-notes-v045.md`: the orchestral audio (v0.4.5) and Android live updates (v0.4.6).
 - `v050-prompt.md`: the full spec for the Beta v0.5.0 pass. Rollback point: `rollback-v046.md`.
 

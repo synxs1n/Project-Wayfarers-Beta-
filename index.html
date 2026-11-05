@@ -1346,7 +1346,7 @@ html.rm .menter .panel,html.rm .pc.tg,html.rm .swc.sel{animation:none}
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.6.7";const APP_BUILD="93fd5ac9a72d";
+(function(){const APP_VER="0.6.8";const APP_BUILD="e0f02df91892";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -1633,6 +1633,15 @@ const HD_CAM={big:[1.04,480],limit:[1.07,900]};
 // v0.5.8 units in the battle stage (Medium 'under' and High 'full'): sat and con soften the raw sprite colours before the light and the
 // grade, ao is the light left at the feet (a little darker toward the ground), rim the key light rim strength on Medium (High: HD_BATTLE rim).
 const HD_SPR={sat:.86,con:.9,ao:.74,rim:.7};
+// ===== v0.6.3 world pass (worldfx.js, hd2d.js, map.js) =====
+// WFX: ambience particles live in world space (art px), repeated on a lattice of cells about one view in size and wrapped around the
+// camera, so they stay where they are when the camera moves (in 2D and HD-2D alike). ref: the view area the per view counts are for.
+// hero: no particle is drawn over the hero's box (half width, height above the feet, below the feet; art px). n: counts per ref area.
+// bird: one flock crossing per period (ms) at height h. chestGone: opened chests vanish from the map and can be walked over.
+const WFX={ref:80000,cell:128,margin:96,maxN:120,hero:[10,30,3],n:{spark:14,snow:46,wind:8,fly:4,spray:5,mote:12,dust:10,lantern:7,firefly:12,dew:12},
+  bird:{period:26000,dur:11000,h:64,span:560},chestGone:true,hdZ:[560,180]};
+// WMAP: the illustrated world map (map.js). vig: vignette size in cells.
+const WMAP={cell:[64,150,38],vig:.78,names:84};// cell: px per area (normal min, max, min on short landscape screens); names: written out from this cell size
 // ===== Beta v0.5.3: HD-2D world renderer (hd2d.js, hd2dgl.js) =====
 // Medium and High graphics draw the world maps through WebGL as a lit diorama (Low, no WebGL or Settings > HD-2D world off: the 2D view).
 // pitch: camera tilt in degrees below the horizon; fov: vertical field of view (maxHfov caps the horizontal one on wide views); zoom: 1 =
@@ -1704,13 +1713,14 @@ const TWISTS={on:true,
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.6.7";const APP_BUILD="93fd5ac9a72d";
+const APP_VER="0.6.8";const APP_BUILD="e0f02df91892";
 
 // =================== VERSION ===================
 // The one public version string. Patch (0.1.x) for fixes and balance, minor (0.x.0) for new systems.
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.6.8',['World: fortresses stand up as real gatehouses in the HD-2D view; leaves, butterflies, snow and other drifting effects now stay in the world instead of sliding with the screen; nothing hovers over the hero\'s face any more (fixed the white and pink boxes left over in parts of the screen); opened chests disappear; the world map is now a parchment chart with little pictures of each town, field, dungeon, cave and fortress, roads between them and a pin for your party; side fortresses are just called fortresses.']],
  ['Beta v0.6.7',['Capes no longer show on hero sprites (they keep their stats); only weapons and personal quest rewards change how a hero looks. Every item now has its own icon: each weapon, armor and cape changes shape as its tier rises (gems, gold trim, a glint, a glow), every charm has its own pendant, and materials have icons too. The three legendary signature weapons got their names back.']],
  ['Beta v0.6.6',['Daily Trial weekly twist: each week brings one rule change for the trial (this week: Weak spots hurt more), shown on the entry screen and as a chip in its battles; the trial stays the same for everyone on the same day. New Game+ modifiers: when starting a new cycle you may pick up to two (Foes hit harder, Cold inns, Elites everywhere, Reactions only, Ironman), each trading risk for more XP or gold.']],
  ['Beta v0.6.5',['Taming log: Records > Bestiary shows Tamed X of Y, where seen foes roam, and silhouettes for the ones you have not met. Bond goals: hero sheets and a new Bonds page show how many wins side by side until the next campfire talk or joint tech, with a notice when a talk is ready. Make camp (from the third realm, Camp Supplies at Alchemy): rest in the field for a small heal and pick one boon for the next 3 battles, then listen to ready campfire talks.']],
@@ -7122,17 +7132,11 @@ function worldDraw(now){
   allL.forEach(L=>{const x=L[0]-cx,y=L[1]-cy;if(x<-60||y<-60||x>vw+60||y>vh+60)return;glow(x,y,L[2]*flick,LIGHTC[L[3]]||LIGHTC.lamp);});
   if(m.theme==='cave'||m.theme==='void'||dun)glow(Math.round(WS.px)+8-cx,Math.round(WS.py)-cy,56,dun?'rgba(255,190,120,.16)':m.theme==='cave'?'rgba(255,170,90,.2)':'rgba(170,140,255,.18)');
   ctx.globalCompositeOperation='source-over';
-  // relit fields glow warm and drift with motes of light
-  if(m.kind==='field'&&G.cleared[m.s]){ctx.fillStyle='rgba(255,210,120,.07)';ctx.fillRect(0,0,vw,vh);for(let i=0;i<14;i++){const sx=Math.floor((i*89+now/45)%vw),sy=Math.floor((i*67+Math.sin(now/700+i)*10-now/90)%vh+vh)%vh;ctx.fillStyle=i%3?'#fff2a0':'#ffd04a';ctx.fillRect(sx,sy,1,1);if(Math.floor(now/200+i)%3===0)ctx.fillRect(sx-1,sy,3,1);}}
-  if(!dun){
-    if(m.theme==='snow'){ctx.fillStyle='#ffffff';for(let i=0;i<46;i++){const sx=(i*53+now/40*(1+i%3))%vw,sy=(i*97+now/25*(1+(i%2)))%vh;ctx.fillRect(Math.floor(sx),Math.floor(sy),1+(i%5===0),1);}}
-    if(m.theme==='heights'){ctx.fillStyle='rgba(255,255,255,.5)';for(let i=0;i<8;i++){const sx=(i*97+now/12)%(vw+40)-20,sy=(i*61)%vh;ctx.fillRect(Math.floor(sx),sy,10,1);}}
-    if(m.theme==='meadow'){for(let i=0;i<3;i++){const sx=Math.floor((i*131+now/30)%(vw+20))-10,sy=Math.floor((i*71)%vh+Math.sin(now/300+i)*4);ctx.fillStyle=['#f6e06a','#ffffff','#f08ab0'][i];ctx.fillRect(sx,sy,2,1);if(Math.floor(now/120+i)%2){ctx.fillRect(sx-1,sy-1,1,1);ctx.fillRect(sx+2,sy-1,1,1);}}}
-    if(m.theme==='coast'){ctx.fillStyle='rgba(255,255,255,.35)';for(let i=0;i<5;i++){const sx=Math.floor((i*151+now/22)%(vw+30))-15,sy=(i*43)%vh;ctx.fillRect(sx,sy,6,1);}}
-    if(m.theme==='void'){for(let i=0;i<12;i++){const sx=Math.floor((i*79+now/50)%vw),sy=Math.floor((i*53-now/40)%vh+vh)%vh;ctx.fillStyle=i%2?'#c8a0ff':'#5fc9a0';ctx.fillRect(sx,sy,1,1);}}
-  }else{for(let i=0;i<10;i++){const sx=Math.floor((i*79+now/80)%vw),sy=Math.floor((i*53-now/60)%vh+vh)%vh;ctx.fillStyle=DTHEME[m.theme].acc;ctx.globalAlpha=.5;ctx.fillRect(sx,sy,1,1);}ctx.globalAlpha=1;}
-  if(m.kind==='field'||m.kind==='town')weatherFX(ctx,G.weather[m.s]||'clear',vw,vh,now,false);
-  if(m.amb)themeFX(ctx,m,vw,vh,now);
+  // relit fields glow warm and drift with motes of light. v0.6.3: every drifting particle lives in world space (worldfx.js), so it stays
+  // put while the camera moves; weather and theme layers scroll with the world
+  if(m.kind==='field'&&G.cleared[m.s]){ctx.fillStyle='rgba(255,210,120,.07)';ctx.fillRect(0,0,vw,vh);}
+  wfxDraw2D(ctx,'amb',m,cx,cy,vw,vh,gfxStill()?0:now);
+  {let w=(m.kind==='field'||m.kind==='town')?(G.weather[m.s]||'clear'):null;if(w==='clear'&&!(typeof TR!=='undefined'&&TR.wx&&TR.wx.k<1))w=null;if(w||m.amb)wfxTiled(ctx,vw,vh,cx,cy,c=>{if(w)weatherFX(c,w,vw,vh,now,false);if(m.amb)themeFX(c,m,vw,vh,now);});}
   if(m.kind==='town'&&G.cleared[m.s])festivalFX(ctx,m,cx,cy,vw,vh,now);
   if(dun){const e=m.start;const ex=e[0]*TS+8-cx,ey=(e[1]-1)*TS-cy-6+Math.round(Math.sin(now/200)*2);ctx.fillStyle='#150b17';ctx.fillRect(ex-4,ey-1,9,6);ctx.fillStyle='#ffe08a';ctx.fillRect(ex-3,ey+3,7,1);ctx.fillRect(ex-2,ey+2,5,1);ctx.fillRect(ex-1,ey+1,3,1);ctx.fillRect(ex,ey,1,1);}
   if(WS.flash&&now-WS.flash<460){const p=(now-WS.flash)/460;ctx.fillStyle=`rgba(255,255,255,${Math.floor(p*7)%2?0.85:0})`;ctx.fillRect(0,0,vw,vh);
@@ -7178,7 +7182,7 @@ function festivalFX(ctx,m,cx,cy,vw,vh,now){
   const y=m.road*TS-12-cy,cols=['#e84a4a','#f2c93a','#3fa0e0','#5ad06a','#c86ae0'];
   ctx.fillStyle='rgba(60,40,20,.8)';ctx.fillRect(0,y,vw,1);
   for(let x=(-cx%12+12)%12-12,i=Math.floor(cx/12);x<vw;x+=12,i++){ctx.fillStyle=cols[((i%5)+5)%5];ctx.fillRect(x+2,y+1,5,2);ctx.fillRect(x+3,y+3,3,1);ctx.fillRect(x+4,y+4,1,1);}
-  for(let i=0;i<7;i++){const p=((now/9000+i*.37)%1),lx=Math.floor((i*137+Math.sin(now/1500+i)*8)%vw),ly=Math.floor(vh-(p*(vh+30)));ctx.globalAlpha=Math.min(1,(1-p)*2);ctx.fillStyle='#ffb04a';ctx.fillRect(lx,ly,3,4);ctx.fillStyle='#fff0a0';ctx.fillRect(lx+1,ly+1,1,2);ctx.globalAlpha=1;}
+  // the sky lanterns drifting up are world particles now (worldfx.js, set 'amb')
   ctx.fillStyle='rgba(255,200,120,.06)';ctx.fillRect(0,0,vw,vh);
 }
 // one soft fog puff, drawn once and stamped each frame (was six radial gradients per frame; same picture)
@@ -12212,7 +12216,9 @@ function mapIcoDraw(x,k,cx,cy,size){const R=mapIcoRects(k);if(!R)return false;co
 function drawMarks(x,m,list,sc,ox,oy){x.textAlign='center';x.textBaseline='middle';x.font=`800 ${Math.max(7,Math.round(sc*1.15))}px sans-serif`;
   list.forEach(o=>{const M=MK[o.k]||['#fff','•'],px=ox+(o.x+.5)*sc,py=oy+(o.y+.5)*sc;
     if(o.dir){const v=SIDE_V[o.dir],ar={n:'▲',s:'▼',e:'▶',w:'◀'}[o.dir],d=Math.max(8,sc*1.8);x.fillStyle='rgba(0,0,0,.7)';x.fillText(ar,px-v[0]*d+1,py-v[1]*d+1);x.fillStyle='#ffe08a';x.fillText(ar,px-v[0]*d,py-v[1]*d);}
-    if(mapIcoDraw(x,mapIcoKey(o),px,py,Math.max(10,Math.round(sc*2.4))))return;x.fillStyle='rgba(0,0,0,.6)';x.fillText(M[1],px+1,py+1);x.fillStyle=M[0];x.fillText(M[1],px,py);});}
+    if(mapIcoDraw(x,mapIcoKey(o),px,py,Math.max(10,Math.round(sc*2.4))))return;const dim=MK_DONE[o.k];if(dim)x.globalAlpha=.45;x.fillStyle='rgba(0,0,0,.6)';x.fillText(M[1],px+1,py+1);x.fillStyle=M[0];x.fillText(M[1],px,py);if(dim)x.globalAlpha=1;});}
+// opened chests (the chest itself has vanished from the world): left off the minimap, dimmed on the full map
+const MK_DONE={chestopen:1,vaultopen:1,keyopen:1};
 function drawPlayer(x,sc,px,py){const d=WS.dir||'d';x.save();x.translate(px,py);x.rotate({u:-Math.PI/2,r:0,d:Math.PI/2,l:Math.PI}[d]||0);const s=Math.max(4,sc*.9);
   x.fillStyle='#000';x.beginPath();x.moveTo(s+1,0);x.lineTo(-s*.7,-s*.8);x.lineTo(-s*.7,s*.8);x.closePath();x.fill();x.fillStyle='#ffffff';x.beginPath();x.moveTo(s,0);x.lineTo(-s*.6,-s*.65);x.lineTo(-s*.6,s*.65);x.closePath();x.fill();x.restore();}
 // ----- minimap (HUD) -----
@@ -12221,7 +12227,8 @@ function miniOn(){const c=META.cfg.minimap;if(c===true||c===false)return c;if(!M
 function drawMini(){const cv=document.getElementById('mmap');if(!cv)return;const m=WS.m;if(!m||!G||!miniOn()||m.archive&&false){cv.style.display='none';return;}cv.style.display='block';
   const W=cv.width,H=cv.height,x=cv.getContext('2d'),sc=4,base=mapBase(m);x.imageSmoothingEnabled=false;x.fillStyle='#0a0710';x.fillRect(0,0,W,H);
   const ox=Math.round(W/2-(WS.x+.5)*sc),oy=Math.round(H/2-(WS.y+.5)*sc);x.drawImage(base,ox,oy,m.w*sc,m.h*sc);
-  const vis=mapMarks(m).filter(o=>Math.abs(o.x-WS.x)<W/sc&&Math.abs(o.y-WS.y)<H/sc);drawMarks(x,m,vis,sc,ox,oy);drawPlayer(x,sc,W/2,H/2);}
+  // v0.6.3: opened chests are gone from the world, so the minimap leaves them out (the full map shows them dimmed)
+  const vis=mapMarks(m).filter(o=>!MK_DONE[o.k]&&Math.abs(o.x-WS.x)<W/sc&&Math.abs(o.y-WS.y)<H/sc);drawMarks(x,m,vis,sc,ox,oy);drawPlayer(x,sc,W/2,H/2);}
 // v0.5.0 1.6: the minimap no longer depends on the weather chip drawing cleanly (an unknown sky used to stop it), and every world render makes sure it is there
 function ensureMini(){try{if(V.screen==='world'&&!document.getElementById('mmap')){const wv=document.querySelector('.wview');if(wv){wv.insertAdjacentHTML('beforeend','<canvas id="mmap" class="mmap" width="112" height="84" aria-hidden="true"></canvas>');}}drawMini();}catch(e){}}
 {const wu0=wkwUpdate;wkwUpdate=function(){try{wu0.apply(this,arguments);}catch(e){try{wdLog('wkwUpdate: '+e.message);}catch(_){}}ensureMini();};}
@@ -12300,46 +12307,132 @@ function worldGraph(){
   return {nodes,edges};
 }
 const WG_COL={town:'#ffe8a0',field:'#8ec06a',dungeon:'#c89aff',cave:'#5ad0ff',fort:'#e07a5a'};
+// ----- v0.6.3: the world map as an illustrated, code drawn chart -----
+// A parchment sheet (grain, stains, burnt edge, compass rose); each area drawn as a little vignette in its realm's colours: towns as
+// clusters of roofs, fields as countryside with a road through it, dungeons as dark towers (a gold beacon once relit), caves as rock arches,
+// fortresses as gatehouses. Roads join the gates (dashed and red past a sealed gate), places not yet visited sit under clouds with a "?",
+// a red pin marks the party, a tick marks a looted cave or fortress. Names are written under the places when there is room; tapping a
+// place shows its name (on a phone they are often too small to write out). Everything is drawn in code from cached sprites, once per open,
+// resize or tap (no animation). State: WMS (not saved).
+const WMS={sel:null,hit:[],t:0,pt:null};
+const WM_LAND={meadow:['#b5c98a','#8fae62','#6f9248'],coast:['#e6d6a0','#9cc4c8','#5f9aa8'],snow:['#eef0ee','#c8d6de','#9fb4c0'],heights:['#cdbb8e','#a8956a','#7f6e4c'],cave:['#c49a78','#9a6448','#e0703a'],void:['#b8a8cc','#8d78ac','#5fc9a0']};
+function wmTheme(s){try{return p2BaseTheme(s);}catch(e){return 'meadow';}}
+function wmRng(k){let h=hashS(String(k))>>>0;return ()=>{h=(h*1664525+1013904223)>>>0;return h/4294967296;};}
+const WMC={};// sprite cache: key -> canvas
+function wmSpr(key,w,h,fn){let c=WMC[key];if(c)return c;c=WMC[key]=mkCv(Math.max(1,Math.round(w)),Math.max(1,Math.round(h)));const x=c.getContext('2d');fn(x,c.width,c.height);return c;}
+// the parchment, once per size
+function wmPaper(W,H){return wmSpr('paper:'+W+'x'+H,W,H,(x,w,h)=>{const R=wmRng('paper'+w+'x'+h);
+  const g=x.createRadialGradient(w/2,h/2,Math.min(w,h)*.2,w/2,h/2,Math.hypot(w,h)*.58);g.addColorStop(0,'#f1e2bc');g.addColorStop(.7,'#e2cb98');g.addColorStop(1,'#b8925a');x.fillStyle=g;x.fillRect(0,0,w,h);
+  for(let i=0;i<w*h/90;i++){x.fillStyle=R()<.5?'rgba(120,84,40,.07)':'rgba(255,250,230,.12)';x.fillRect(Math.floor(R()*w),Math.floor(R()*h),1+Math.floor(R()*2),1);}
+  for(let i=0;i<5;i++){const cx=R()*w,cy=R()*h,r=20+R()*Math.min(w,h)*.12,sg=x.createRadialGradient(cx,cy,r*.2,cx,cy,r);sg.addColorStop(0,'rgba(150,108,56,.10)');sg.addColorStop(1,'rgba(150,108,56,0)');x.fillStyle=sg;x.fillRect(cx-r,cy-r,r*2,r*2);}
+  x.strokeStyle='rgba(90,58,26,.55)';x.lineWidth=2;x.strokeRect(6,6,w-12,h-12);x.strokeStyle='rgba(90,58,26,.3)';x.lineWidth=1;x.strokeRect(10,10,w-20,h-20);
+  const e=x.createLinearGradient(0,0,0,h);e.addColorStop(0,'rgba(70,40,14,.35)');e.addColorStop(.04,'rgba(70,40,14,0)');e.addColorStop(.96,'rgba(70,40,14,0)');e.addColorStop(1,'rgba(70,40,14,.35)');x.fillStyle=e;x.fillRect(0,0,w,h);
+  const e2=x.createLinearGradient(0,0,w,0);e2.addColorStop(0,'rgba(70,40,14,.35)');e2.addColorStop(.04,'rgba(70,40,14,0)');e2.addColorStop(.96,'rgba(70,40,14,0)');e2.addColorStop(1,'rgba(70,40,14,.35)');x.fillStyle=e2;x.fillRect(0,0,w,h);});}
+function wmCompass(x,cx,cy,r){x.save();x.translate(cx,cy);x.globalAlpha=.75;x.strokeStyle='#6a4a24';x.lineWidth=1;x.beginPath();x.arc(0,0,r*.72,0,7);x.stroke();
+  for(let i=0;i<4;i++){x.rotate(Math.PI/2);x.fillStyle=i%2?'#8a6236':'#5a3a1a';x.beginPath();x.moveTo(0,-r);x.lineTo(r*.18,0);x.lineTo(-r*.18,0);x.closePath();x.fill();}
+  x.rotate(Math.PI/4);for(let i=0;i<4;i++){x.rotate(Math.PI/2);x.fillStyle='#a8865a';x.beginPath();x.moveTo(0,-r*.55);x.lineTo(r*.1,0);x.lineTo(-r*.1,0);x.closePath();x.fill();}
+  x.restore();x.save();x.globalAlpha=.8;x.fillStyle='#5a3a1a';x.font=`800 ${Math.max(9,Math.round(r*.42))}px Nunito,sans-serif`;x.textAlign='center';x.textBaseline='middle';x.fillText('N',cx,cy-r-Math.max(6,r*.28));x.restore();}
+// one place, drawn in a box of s x s px centred on the sprite
+function wmVignette(kind,th,s,st){const k=`v:${kind}:${th}:${s}:${st||''}`;return wmSpr(k,s,s,(x,w,h)=>{const L=WM_LAND[th]||WM_LAND.meadow,u=w/40,R=wmRng(k),f=(c,a,b,ww,hh)=>{x.fillStyle=c;x.fillRect(Math.round(a*u),Math.round(b*u),Math.max(1,Math.round(ww*u)),Math.max(1,Math.round(hh*u)));};
+  const ell=(c,a,b,rx,ry)=>{x.fillStyle=c;x.beginPath();x.ellipse(a*u,b*u,rx*u,ry*u,0,0,7);x.fill();};
+  const tri=(c,a,b,c2,d,e,g)=>{x.fillStyle=c;x.beginPath();x.moveTo(a*u,b*u);x.lineTo(c2*u,d*u);x.lineTo(e*u,g*u);x.closePath();x.fill();};
+  const ink='#3a2614';
+  // the ground patch under every place (soft edged)
+  {const g=x.createRadialGradient(w/2,h*.58,w*.1,w/2,h*.58,w*.5);g.addColorStop(0,L[0]);g.addColorStop(.55,L[0]+'f0');g.addColorStop(.8,L[0]+'80');g.addColorStop(1,L[0]+'00');x.fillStyle=g;x.fillRect(0,0,w,h);}
+  const tree=(a,b,sz)=>{if(th==='snow'){tri('#5a7a6a',a,b-sz*2.2,a-sz,b,a+sz,b);tri('#ffffff',a,b-sz*2.2,a-sz*.45,b-sz*1.2,a+sz*.45,b-sz*1.2);}
+    else if(th==='coast'){f('#7a5a32',a-.3,b-sz*2,.7,sz*2);ell('#4f8a3a',a-sz*.6,b-sz*2,sz*.8,sz*.3);ell('#4f8a3a',a+sz*.6,b-sz*2,sz*.8,sz*.3);}
+    else if(th==='void'){tri('#8a5ad0',a,b-sz*2,a-sz*.5,b,a+sz*.5,b);tri('#d8c0ff',a,b-sz*2,a-sz*.15,b-sz,a+sz*.2,b-sz);}
+    else if(th==='cave'){tri('#5a4038',a,b-sz*1.6,a-sz,b,a+sz,b);f('#ff8a3a',a-.3,b-sz*.6,.7,.7);}
+    else{f('#6a4424',a-.3,b-sz,.7,sz);ell(L[2],a,b-sz*1.4,sz*.9,sz*.85);ell(L[1],a-sz*.25,b-sz*1.6,sz*.45,sz*.4);}};
+  if(kind==='field'){
+    if(th==='heights'||th==='snow'){tri(L[2],8,20,15,9,22,20);tri(L[1],18,22,26,8,34,22);tri('#ffffff',26,8,24,11.5,28.5,11.5);tri('#ffffff',15,9,13.5,11.5,16.5,11.5);}
+    else if(th==='coast'){ell(L[1],30,30,10,5);ell(L[2],32,31,6,2.5);}
+    else if(th==='cave'){tri('#6a4434',22,22,28,10,34,22);ell('#e0703a',28,11,2,1);}
+    else if(th==='void'){ell('#5fc9a0',30,28,4,2);}
+    x.strokeStyle='#8a6236';x.lineWidth=Math.max(1.5,u*1.6);x.setLineDash([u*2.2,u*1.4]);x.beginPath();x.moveTo(2*u,30*u);x.quadraticCurveTo(18*u,20*u,38*u,27*u);x.stroke();x.setLineDash([]);
+    for(let i=0;i<7;i++){const a=4+R()*32,b=14+R()*22;if(Math.abs(b-(30-(a/38)*4-Math.sin(a/38*Math.PI)*6))<3)continue;tree(a,b,2.2+R()*1.4);}
+    for(let i=0;i<10;i++)f(L[2],3+R()*34,16+R()*20,.8,.8);}
+  else if(kind==='town'){const T=THEME[th]||THEME.meadow,roofs=(T.roof||['#a84a3a','#4a6aa8','#8a5a2a','#4a4a6a']);
+    ell(shade(L[0],.88),20,27,17,9);x.strokeStyle='rgba(90,64,34,.6)';x.lineWidth=Math.max(1,u*.8);x.beginPath();x.ellipse(20*u,27*u,16*u,8.5*u,0,0,7);x.stroke();
+    const H=[[8,22,7],[20,18,9],[30,23,7],[14,30,7],[26,31,8]];
+    H.forEach(([a,b,ww],i)=>{const hh=ww*.62,r=roofs[i%roofs.length];f(ink,a-ww/2-.4,b-hh-.4,ww+.8,hh+.8);f(th==='snow'?'#e8e4dc':'#efe0bc',a-ww/2,b-hh,ww,hh);
+      tri(ink,a-ww/2-1.2,b-hh+.4,a,b-hh-ww*.55-.6,a+ww/2+1.2,b-hh+.4);tri(r,a-ww/2-.6,b-hh,a,b-hh-ww*.5,a+ww/2+.6,b-hh);if(th==='snow')tri('#ffffff',a-ww*.22,b-hh-ww*.26,a,b-hh-ww*.5,a+ww*.22,b-hh-ww*.26);
+      f('#5a3a20',a-.7,b-2.2,1.4,2.2);f('#ffd98a',a-ww/2+1,b-hh+1.2,1.3,1.3);});
+    f('#3a2a1a',20,6,.5,8);f('#c0392b',20.5,6,4,2.4);}
+  else if(kind==='dungeon'){const D=(typeof DTHEME!=='undefined'&&DTHEME[th])||{acc:'#c89aff'},lit=st==='lit';
+    ell('rgba(40,26,14,.25)',20,33,13,3);f(ink,11,13,18,21);f('#5e5868',12,14,16,19);f('#4a4452',12,14,3,19);for(let i=0;i<4;i++)f('#5e5868',12+i*4.4,11,2.6,3.4);
+    f('#0c0810',17,23,6,10);ell('#0c0810',20,23,3,2.6);f('#7a7486',12,20,16,.8);
+    if(lit){const g=x.createRadialGradient(20*u,6*u,1,20*u,6*u,9*u);g.addColorStop(0,'rgba(255,230,120,.95)');g.addColorStop(1,'rgba(255,200,80,0)');x.fillStyle=g;x.fillRect(11*u,-3*u,18*u,18*u);tri('#ffb03a',20,1,17.5,9,22.5,9);tri('#fff0a0',20,4,18.8,9,21.2,9);}
+    else{ell(D.acc,20,27,1.4,1.4);f(D.acc,14,17,1,2);f(D.acc,25,17,1,2);}}
+  else if(kind==='cave'){ell('rgba(40,26,14,.25)',20,33,14,3);ell('#6a6470',20,26,14,10);ell('#8a8494',20,24,11,8);ell('#0a070c',20,29,5.5,6);f('#0a070c',14.5,29,11,4);
+    f('#9ad0ff',17,32,6,.8);tree(6,33,2.4);tree(34,32,2.2);}
+  else if(kind==='fort'){ell('rgba(40,26,14,.25)',20,34,15,3);f(ink,7,13,26,21);f('#7a7a86',8,18,24,15);f('#5a5a66',8,12,7,21);f('#5a5a66',25,12,7,21);
+    for(let i=0;i<3;i++){f('#5a5a66',8+i*2.4,10,1.6,2.4);f('#5a5a66',25+i*2.4,10,1.6,2.4);}f('#c0392b',10,17,3,7);f('#c0392b',27,17,3,7);f('#ffd04a',10.8,18.5,1.4,1.4);f('#ffd04a',27.8,18.5,1.4,1.4);
+    f('#120c10',17,24,6,9);ell('#120c10',20,24,3,2.4);for(let i=0;i<3;i++)f('#3a2a1a',17.8+i*1.8,23,.5,10);}
+  if(st==='done'){ell('#2f7a3a',33,8,4.4,4.4);x.strokeStyle='#ffffff';x.lineWidth=Math.max(1.4,u*1.1);x.beginPath();x.moveTo(30.6*u,8*u);x.lineTo(32.4*u,10*u);x.lineTo(35.6*u,6*u);x.stroke();}});}
+// clouds over a place the party has not been to yet
+function wmFog(s){return wmSpr('fog:'+s,s,s,(x,w,h)=>{const R=wmRng('fog'+s);for(let i=0;i<9;i++){const cx=w*(.2+R()*.6),cy=h*(.3+R()*.45),r=w*(.16+R()*.12);
+  const g=x.createRadialGradient(cx,cy,r*.2,cx,cy,r);g.addColorStop(0,'rgba(250,246,236,.96)');g.addColorStop(.7,'rgba(236,228,210,.85)');g.addColorStop(1,'rgba(236,228,210,0)');x.fillStyle=g;x.beginPath();x.arc(cx,cy,r,0,7);x.fill();}
+  x.strokeStyle='rgba(120,100,80,.35)';x.lineWidth=1;for(let i=0;i<3;i++){const cx=w*(.3+R()*.4),cy=h*(.35+R()*.3);x.beginPath();x.arc(cx,cy,w*.12,Math.PI*1.1,Math.PI*1.9);x.stroke();}});}
+function wmPin(x,cx,cy,r){x.save();x.fillStyle='rgba(40,20,10,.3)';x.beginPath();x.ellipse(cx,cy+1,r*.7,r*.25,0,0,7);x.fill();
+  x.fillStyle='#8a1a1a';x.beginPath();x.moveTo(cx,cy);x.lineTo(cx-r*.55,cy-r*1.3);x.arc(cx,cy-r*1.6,r*.62,Math.PI*.82,Math.PI*.18,false);x.closePath();x.fill();
+  x.fillStyle='#e04a3a';x.beginPath();x.arc(cx,cy-r*1.62,r*.5,0,7);x.fill();x.fillStyle='#fff4d8';x.beginPath();x.arc(cx-r*.15,cy-r*1.75,r*.18,0,7);x.fill();x.restore();}
+function wmLabel(x,txt,cx,cy,fs,col,bold){x.font=`${bold?800:700} ${fs}px Nunito,sans-serif`;x.textAlign='center';x.textBaseline='middle';const w=x.measureText(txt).width+fs*.9,h=fs*1.45;
+  x.fillStyle='rgba(248,238,212,.92)';x.strokeStyle='rgba(90,58,26,.75)';x.lineWidth=1;const rx=cx-w/2,ry=cy-h/2,r=h/2;x.beginPath();x.moveTo(rx+r,ry);x.arcTo(rx+w,ry,rx+w,ry+h,r);x.arcTo(rx+w,ry+h,rx,ry+h,r);x.arcTo(rx,ry+h,rx,ry,r);x.arcTo(rx,ry,rx+w,ry,r);x.closePath();x.fill();x.stroke();
+  x.fillStyle=col||'#3a2614';x.fillText(txt,cx,cy+.5);return w;}
+function wmShown(gr){const byId={};gr.nodes.forEach(n=>byId[n.id]=n);const show={};gr.nodes.forEach(n=>{if(n.seen)show[n.id]=2;});
+  gr.edges.forEach(e=>{if(show[e.a]===2&&!show[e.b]&&byId[e.b].kind!=='dungeon'&&byId[e.b].kind!=='cave'&&byId[e.b].kind!=='fort')show[e.b]=1;});return {byId,show};}
+function wmName(n,full){if(!full)return n.locked?'Sealed: unexplored':'Unexplored';return n.label+(n.kind==='fort'?' (fortress)':n.kind==='cave'?' (cave)':n.kind==='dungeon'?(n.cleared?' (relit)':' (dungeon)'):'');}
 function drawWorldMap(){
   const cv=document.getElementById('wmap');if(!cv||!G)return;
   const gr=worldGraph(),here=WS.m?(WS.m.id[0]==='g'?'f'+WS.m.s:WS.m.id):null;
-  // which nodes show: visited ones, plus the neighbour of a visited node (as "?")
-  const byId={};gr.nodes.forEach(n=>byId[n.id]=n);
-  const show={};gr.nodes.forEach(n=>{if(n.seen)show[n.id]=2;});
-  gr.edges.forEach(e=>{if(show[e.a]===2&&!show[e.b]&&byId[e.b].kind!=='dungeon'&&byId[e.b].kind!=='cave'&&byId[e.b].kind!=='fort')show[e.b]=1;});
-  const nodes=gr.nodes.filter(n=>show[n.id]);if(!nodes.length)return;
+  const {byId,show}=wmShown(gr),nodes=gr.nodes.filter(n=>show[n.id]);if(!nodes.length)return;
   const xs=nodes.map(n=>n.x),ys=nodes.map(n=>n.y),x0=Math.min(...xs),x1=Math.max(...xs),y0=Math.min(...ys),y1=Math.max(...ys);
-  const box=cv.parentElement,maxW=Math.min(900,(box.clientWidth||340)-8),maxH=Math.max(220,(window.innerHeight||600)*.6);
-  const gw=x1-x0+1,gh=y1-y0+1,cell=Math.floor(Math.max(48,Math.min(maxW/gw,maxH/gh,150)));
-  cv.width=Math.round(gw*cell);cv.height=Math.round(gh*cell);cv.style.width=cv.width+'px';cv.style.height=cv.height+'px';
-  const x=cv.getContext('2d');x.imageSmoothingEnabled=false;x.fillStyle='#0a0710';x.fillRect(0,0,cv.width,cv.height);
-  const bw=Math.round(cell*.84),bh=Math.round(cell*.52),ctr=n=>[(n.x-x0+.5)*cell,(n.y-y0+.5)*cell];
-  x.textAlign='center';x.textBaseline='middle';
-  // links first, with an arrowhead and a direction letter at each gate
-  gr.edges.forEach(e=>{if(!show[e.a]||!show[e.b])return;const a=byId[e.a],b=byId[e.b],[ax,ay]=ctr(a),[bx,by]=ctr(b);
-    x.strokeStyle=e.locked?'#7a4a4a':'#b89a6a';x.lineWidth=Math.max(2,cell/22);x.setLineDash(e.locked?[5,4]:[]);x.beginPath();x.moveTo(ax,ay);x.lineTo(bx,by);x.stroke();x.setLineDash([]);
-    [[a,e.sa,ax,ay],[b,e.sb,bx,by]].forEach(([n,sd,px,py])=>{const v=GRID_V[sd]||[0,0],gx=px+v[0]*(bw/2+4),gy=py+v[1]*(bh/2+4);
-      x.fillStyle='#ffe08a';x.font=`800 ${Math.max(9,Math.round(cell/9))}px sans-serif`;x.fillText({n:'▲',s:'▼',e:'▶',w:'◀'}[sd]||'',gx+v[0]*5,gy+v[1]*5);});
-    if(e.locked){const mx=(ax+bx)/2,my=(ay+by)/2;x.fillStyle='#ff9a9a';x.font=`800 ${Math.max(10,Math.round(cell/8))}px sans-serif`;x.fillText('sealed',mx,my);}});
-  nodes.forEach(n=>{const [cx,cy]=ctr(n),full=show[n.id]===2,col=WG_COL[n.kind]||'#fff',isHere=n.id===here;
-    x.fillStyle=full?'#1d1426':'#14101a';x.strokeStyle=full?col:'#4a4252';x.lineWidth=isHere?3:1.5;
-    const rx=cx-bw/2,ry=cy-bh/2,r=7;x.beginPath();x.moveTo(rx+r,ry);x.arcTo(rx+bw,ry,rx+bw,ry+bh,r);x.arcTo(rx+bw,ry+bh,rx,ry+bh,r);x.arcTo(rx,ry+bh,rx,ry,r);x.arcTo(rx,ry,rx+bw,ry,r);x.closePath();x.fill();x.stroke();
-    if(isHere){x.strokeStyle='#fff';x.lineWidth=1;x.stroke();}
-    const fs=Math.max(9,Math.round(cell/8));x.font=`700 ${fs}px sans-serif`;
-    const lbl=full?n.label:(n.locked?'? (locked)':'?'),icon={town:'⌂',field:'≈',dungeon:'▼',cave:'◒',fort:'♜'}[n.kind]||'';
-    const txt=(full?icon+' ':'')+lbl;let f2=fs;x.font=`700 ${f2}px sans-serif`;while(x.measureText(txt).width>bw-8&&f2>7){f2--;x.font=`700 ${f2}px sans-serif`;}
-    x.fillStyle=full?col:'#7a7284';x.fillText(txt,cx,cy-(isHere||n.cleared||n.done?fs*.45:0));
-    if(isHere){x.fillStyle='#fff';x.font=`800 ${Math.max(8,fs-1)}px sans-serif`;x.fillText('YOU ARE HERE',cx,cy+fs*.75);}
-    else if(full&&(n.cleared||n.done)){x.fillStyle='#8fd08f';x.font=`700 ${Math.max(8,fs-2)}px sans-serif`;x.fillText(n.kind==='cave'||n.kind==='fort'?'looted':'relit',cx,cy+fs*.75);}
-  });
-}
+  const box=cv.parentElement,maxW=Math.min(980,(box.clientWidth||340)-8),vh=window.innerHeight||600,maxH=Math.max(200,vh*(vh<500?.72:.62));
+  const pad=.55,gw=x1-x0+1+pad*2,gh=y1-y0+1+pad*2,C=WMAP.cell,lo=vh<500?C[2]:C[0],cell=Math.floor(Math.max(lo,Math.min(maxW/gw,maxH/gh,C[1])));// short (landscape) screens: smaller places, the whole map in view
+  const cw=Math.round(gw*cell),ch=Math.round(gh*cell),dpr=Math.min(2,window.devicePixelRatio||1),W=Math.round(cw*dpr),H=Math.round(ch*dpr);
+  cv.width=W;cv.height=H;cv.style.width=cw+'px';cv.style.height=ch+'px';cv.style.maxWidth='100%';cv.style.height='auto';cv.style.aspectRatio=cw+'/'+ch;cv.style.imageRendering='auto';
+  const x=cv.getContext('2d'),c=cell*dpr,ctr=n=>[(n.x-x0+.5+pad)*c,(n.y-y0+.5+pad)*c];x.imageSmoothingEnabled=true;
+  x.drawImage(wmPaper(W,H),0,0);
+  // soft realm colour washes under each realm's places, then the roads
+  nodes.forEach(n=>{const [cx,cy]=ctr(n),L=WM_LAND[wmTheme(n.stage||0)]||WM_LAND.meadow,g=x.createRadialGradient(cx,cy,c*.1,cx,cy,c*.78);g.addColorStop(0,L[0]+'90');g.addColorStop(1,L[0]+'00');x.fillStyle=g;x.fillRect(cx-c,cy-c,c*2,c*2);});
+  gr.edges.forEach(e=>{if(!show[e.a]||!show[e.b])return;const a=byId[e.a],b=byId[e.b],[ax,ay]=ctr(a),[bx,by]=ctr(b),dx=bx-ax,dy=by-ay,l=Math.hypot(dx,dy)||1,R=wmRng(e.a+e.b),bend=(R()-.5)*.35*l;
+    const mx=(ax+bx)/2-dy/l*bend,my=(ay+by)/2+dx/l*bend,unk=show[e.a]===1||show[e.b]===1;
+    x.lineCap='round';x.strokeStyle='rgba(248,236,206,.85)';x.lineWidth=Math.max(3,c/11);x.setLineDash([]);x.beginPath();x.moveTo(ax,ay);x.quadraticCurveTo(mx,my,bx,by);x.stroke();
+    x.strokeStyle=e.locked?'#9a3a2a':unk?'rgba(110,80,46,.55)':'#7a5228';x.lineWidth=Math.max(1.6,c/26);x.setLineDash(e.locked||unk?[c/14,c/18]:[c/9,c/22]);x.beginPath();x.moveTo(ax,ay);x.quadraticCurveTo(mx,my,bx,by);x.stroke();x.setLineDash([]);
+    if(e.locked){const qx=(ax+2*mx+bx)/4,qy=(ay+2*my+by)/4,r=Math.max(5,c*.09);x.fillStyle='#f4e6c4';x.strokeStyle='#9a3a2a';x.lineWidth=Math.max(1.5,c/40);x.beginPath();x.arc(qx,qy,r,0,7);x.fill();x.stroke();
+      x.beginPath();x.moveTo(qx-r*.5,qy-r*.5);x.lineTo(qx+r*.5,qy+r*.5);x.moveTo(qx+r*.5,qy-r*.5);x.lineTo(qx-r*.5,qy+r*.5);x.stroke();}});
+  // the places
+  const vs=Math.round(c*WMAP.vig),showNames=cell>=WMAP.names,fs=Math.max(9,Math.min(15,Math.round(cell/8.5)))*dpr;WMS.hit=[];
+  nodes.forEach(n=>{const [cx,cy]=ctr(n),full=show[n.id]===2,th=wmTheme(n.stage||0),st=n.kind==='dungeon'&&n.cleared?'lit':(n.kind==='cave'||n.kind==='fort')&&n.done?'done':'';
+    x.drawImage(wmVignette(n.kind,th,vs,st),Math.round(cx-vs/2),Math.round(cy-vs/2));
+    if(!full){const fg=wmFog(vs);x.drawImage(fg,Math.round(cx-vs/2),Math.round(cy-vs/2));x.fillStyle='#6a4a2a';x.font=`800 ${Math.round(vs*.34)}px Nunito,sans-serif`;x.textAlign='center';x.textBaseline='middle';x.fillText('?',cx,cy+vs*.02);}
+    WMS.hit.push({id:n.id,x:cx,y:cy,r:vs*.5,label:wmName(n,full)});
+    if(showNames&&full&&n.id!==WMS.sel)wmLabel(x,n.label,cx,cy+vs*.5+fs*.2,Math.round(fs*.9),'#3a2614',false);});
+  // the party, then the tapped place's name on top
+  const H0=nodes.find(n=>n.id===here);if(H0){const [cx,cy]=ctr(H0);wmPin(x,cx+vs*.22,cy-vs*.08,Math.max(6,vs*.16));{const f2=Math.round(fs*.85);x.font=`800 ${f2}px Nunito,sans-serif`;const tw=x.measureText('You').width+f2*.9;wmLabel(x,'You',cx+vs*.22+Math.max(6,vs*.16)*.7+tw/2,cy-vs*.08-Math.max(6,vs*.16)*1.6,f2,'#8a1a1a',true);}}
+  if(WMS.sel){const h=WMS.hit.find(o=>o.id===WMS.sel);if(h)wmLabel(x,h.label,h.x,h.y+h.r+fs*.3,Math.round(fs*1.05),'#3a2614',true);}
+  wmCompass(x,W-c*.42,H-c*.42,Math.max(10,c*.22));
+  WMS.cell=cell;WMS.dpr=dpr;WMS.n=nodes.length;}
+// legend icons: the same sprites, small
+function wmLegendDraw(){document.querySelectorAll('canvas.wml').forEach(c=>{const x=c.getContext('2d'),k=c.dataset.k,s=c.width;x.clearRect(0,0,s,s);
+  if(k==='you'){wmPin(x,s/2,s*.86,s*.3);return;}if(k==='fog'){x.drawImage(wmVignette('field','meadow',s,''),0,0);x.drawImage(wmFog(s),0,0);x.fillStyle='#6a4a2a';x.font=`800 ${Math.round(s*.4)}px Nunito,sans-serif`;x.textAlign='center';x.textBaseline='middle';x.fillText('?',s/2,s/2);return;}
+  if(k==='sealed'){x.strokeStyle='#9a3a2a';x.lineWidth=2;x.setLineDash([4,3]);x.beginPath();x.moveTo(2,s/2);x.lineTo(s-2,s/2);x.stroke();x.setLineDash([]);x.fillStyle='#f4e6c4';x.beginPath();x.arc(s/2,s/2,s*.2,0,7);x.fill();x.stroke();return;}
+  const [kind,st]=k.split(':');x.drawImage(wmVignette(kind,'meadow',s,st||''),0,0);});}
 function mWorldMap(){
-  setTimeout(drawWorldMap,0);
-  return `<div class="modal mapmodal" data-act="xClose"><div class="panel box mapbox"><div class="mh"><h2>World map</h2></div>
-    <canvas id="wmap" class="fmap" aria-label="World map"></canvas>
-    <div class="maplegend"><span><b style="color:#ffe8a0">⌂</b> Town</span><span><b style="color:#8ec06a">≈</b> Field</span><span><b style="color:#c89aff">▼</b> Dungeon</span><span><b style="color:#5ad0ff">◒</b> Side cave</span><span><b style="color:#ffe08a">▲▼◀▶</b> Gate side</span><span><b style="color:#ff9a9a">- -</b> Sealed gate</span></div>
-    <p class="note">Boxes sit where the road leads, so a gate on the north edge points up the map. Places appear as you find them. Side caves are optional.</p></div></div>`;
+  setTimeout(()=>{drawWorldMap();wmLegendDraw();},0);
+  const L=[['town','Town'],['field','Field'],['dungeon','Dungeon'],['dungeon:lit','Relit dungeon'],['cave','Side cave'],['fort','Fortress'],['cave:done','Looted'],['you','You'],['fog','Not visited yet'],['sealed','Sealed gate']];
+  return `<div class="modal mapmodal" data-act="xClose"><div class="panel box mapbox wmbox"><div class="mh"><h2>World map</h2></div>
+    <canvas id="wmap" class="fmap wmap" data-act="wmTap" aria-label="World map"></canvas>
+    <div class="maplegend wmlegend">${L.map(([k,n])=>`<span><canvas class="wml" data-k="${k}" width="28" height="28"></canvas> ${n}</span>`).join('')}</div>
+    <p class="note">Tap a place to see its name. Roads follow the gates, so a gate on the north edge leads up the map. Places appear as you find them; side caves and fortresses are optional. Tap outside the map to close.</p></div></div>`;
 }
+// a tap on the map shows that place's name (and does not close the map); a tap on empty parchment hides it again
+document.addEventListener('pointerdown',e=>{if(e.target&&e.target.id==='wmap')WMS.pt={x:e.clientX,y:e.clientY,t:Date.now()};},true);
+ACT.wmTap=function(arg,el){const cv=el||document.getElementById('wmap');if(!cv)return;const p=WMS.pt;if(!p)return;const r=cv.getBoundingClientRect();if(!r.width)return;
+  const px=(p.x-r.left)*cv.width/r.width,py=(p.y-r.top)*cv.height/r.height;let best=null,bd=1e9;WMS.hit.forEach(o=>{const d=Math.hypot(o.x-px,o.y-py);if(d<o.r*1.1&&d<bd){bd=d;best=o;}});
+  WMS.sel=best?(WMS.sel===best.id?null:best.id):null;drawWorldMap();if(typeof sfx==='function'&&best)sfx('blip');};
+{const st=document.createElement('style');st.textContent='.wmbox .wmap{border:2px solid #6a4a24;border-radius:4px;background:#e2cb98;box-shadow:0 2px 10px rgba(0,0,0,.45);cursor:pointer;touch-action:manipulation}.wmlegend .wml{width:28px;height:28px;vertical-align:middle}.wmlegend span{display:inline-flex;align-items:center;gap:4px}';document.head.appendChild(st);}
 {const vm1=vModal;vModal=function(md){if(md&&md.type==='worldmap')return mWorldMap(md);return vm1.apply(this,arguments);};}
 function openWorldMap(){const prev=V.modal;V.modal={type:'worldmap',from:prev&&prev.type==='map'?prev:{type:'map'}};render();}
 ACT.worldMap=function(){if(!G||V.screen!=='world')return;openWorldMap();};
@@ -12595,18 +12688,13 @@ function dayFxDraw(ctx,vw,vh,now,cam,ph,p){
     const g=ctx.createRadialGradient(x,y,1,x,y,r);g.addColorStop(0,`rgba(255,190,110,${(.3*lit).toFixed(3)})`);g.addColorStop(1,'rgba(255,190,110,0)');ctx.fillStyle=g;ctx.fillRect(x-r,y-r,r*2,r*2);});
     ctx.globalCompositeOperation='source-over';}
   if(dusk){
-    // 5. fireflies near the ground, more as it gets darker
-    const n=Math.round(DAYFX.motes*(.4+.6*q));
-    for(let i=0;i<n;i++){const sx2=((i*97.3+cam.x*.25)%vw+vw)%vw,x=(sx2+Math.sin(ts/1700+i*1.9)*14+vw)%vw,y=vh*(.5+.45*((i*37%100)/100))+Math.cos(ts/2300+i*2.7)*10;
-      const a=still?.45:Math.max(0,Math.sin(ts/650+i*1.3))*.8;ctx.fillStyle=`rgba(255,236,140,${(a*.35).toFixed(3)})`;ctx.fillRect(Math.round(x)-1,Math.round(y)-1,4,4);ctx.fillStyle=`rgba(255,250,200,${a.toFixed(3)})`;ctx.fillRect(Math.round(x),Math.round(y),2,2);}
-    // 6. a few swallows crossing high up (dark little Vs), early dusk only
-    if(!still&&q<.7){ctx.fillStyle='rgba(30,20,40,.55)';for(let i=0;i<3;i++){const t=(ts/1000*(22+i*5)+i*vw*.37)%(vw+60)-30,y=vh*(.08+.07*i)+Math.sin(ts/400+i)*4,f=Math.sin(ts/90+i*2)>0?1:0;
-      ctx.fillRect(Math.round(t),Math.round(y),2,1);ctx.fillRect(Math.round(t)-2,Math.round(y)-1+f,2,1);ctx.fillRect(Math.round(t)+2,Math.round(y)-1+f,2,1);}}
+    // 5, 6. fireflies near the ground and a few swallows high up: v0.6.3 world particles (worldfx.js), they stay put as the camera moves
+    WFXD.ph=ph;WFXD.pq=q;try{wfxDraw2D(ctx,'day',m,cx,cy,vw,vh,ts);}finally{WFXD.ph=null;}
   }else{
     // dawn: low mist and dew sparkles, both gentle
     for(let i=0;i<DAYFX.mist;i++){const drift=((ts/(60+i*25)+i*vw*.4+cam.x*.3)%(vw*1.6)+vw*1.6)%(vw*1.6)-vw*.3,y=vh*(.55+.17*i),rx=vw*.55,ry=vh*.09;
       ctx.save();ctx.translate(drift,y);ctx.scale(1,ry/rx);const mg=ctx.createRadialGradient(0,0,0,0,0,rx);mg.addColorStop(0,`rgba(215,230,250,${(.1*ramp).toFixed(3)})`);mg.addColorStop(1,'rgba(215,230,250,0)');ctx.fillStyle=mg;ctx.beginPath();ctx.arc(0,0,rx,0,6.283);ctx.fill();ctx.restore();}
-    for(let i=0;i<DAYFX.motes;i++){const x=(i*83.7+cam.x*.15)%vw,y=vh*(.3+.65*(((i*53)%100)/100)),a=still?.35:Math.max(0,Math.sin(ts/900+i*2.1))*.6;ctx.fillStyle=`rgba(255,255,255,${a.toFixed(3)})`;ctx.fillRect(Math.round((x+vw)%vw),Math.round(y),1,1);}
+    WFXD.ph=ph;WFXD.pq=q;try{wfxDraw2D(ctx,'day',m,cx,cy,vw,vh,ts);}finally{WFXD.ph=null;}// dew sparkles in world space (v0.6.3)
   }
   ctx.restore();
 }
@@ -13140,7 +13228,7 @@ function miniFor(m){G.miniPick=G.miniPick||{};let i=G.miniPick[m.id];
   try{if(mi&&how==='win'&&G){G.miniDone=G.miniDone||{};G.miniDone[mi.id]=1;const s=sp.stage,g=econG(300+s*250);G.gold+=g;G.mats.core=(G.mats.core||0)+1;G.mats[ZS(s).mat]=(G.mats[ZS(s).mat]||0)+3;saveGame();
     toast(`${mi.name} falls. Bonus: ${g} gold, a Dread Core and 3 ${MATS[ZS(s).mat]}. The prize chest is yours.`);}}catch(e){}return r;};}
 // map: fortresses get their own marker and name
-if(typeof MAPICO_X!=='undefined'){MAPICO_X.fort=[[0,3,10,7,'#7a7a86'],[0,1,3,9,'#5a5a66'],[7,1,3,9,'#5a5a66'],[1,4,1,3,'#c0392b'],[8,4,1,3,'#c0392b'],[4,6,2,4,'#120c10']];MAPICO_NAME.fort='Side fortress';}
+if(typeof MAPICO_X!=='undefined'){MAPICO_X.fort=[[0,3,10,7,'#7a7a86'],[0,1,3,9,'#5a5a66'],[7,1,3,9,'#5a5a66'],[1,4,1,3,'#c0392b'],[8,4,1,3,'#c0392b'],[4,6,2,4,'#120c10']];MAPICO_NAME.fort='Fortress';}// v0.6.3: player facing text says fortress, not side fortress (ids and save keys unchanged)
 
 // ===== Beta v0.4.3: every wayfarer has their own rival =====
 // Each hero's personal quest now names a rival made for that hero alone: its own name, a base creature, a colour, and elements
@@ -15035,7 +15123,7 @@ function g6Ground(ctx,m,cx,cy,vw,vh,ts){const q=GFX.q,T=m.kind==='dungeon'?null:
         ctx.fillStyle=T.tg[2];ctx.fillRect(px+3+Math.floor(h*3)+s,py+8,1,1);ctx.fillRect(px+10+Math.floor(h*4)+s,py+3,1,1);}}
     ctx.globalAlpha=1;}
   if(q.critters&&m.kind==='field')g6Critters(ctx,m,cx,cy,vw,vh,ts);
-  if(q.birds&&g6BirdsOn(m))g6Birds(ctx,vw,vh,ts,true,wind);}
+  if(q.birds&&g6BirdsOn(m))wfxBirds2D(ctx,m,cx,cy,vw,vh,ts,true);}// v0.6.3: the flock has a world path (worldfx.js)
 // ----- critters: rabbits on grass, crabs on sand; they hop about and duck away when you come close -----
 function g6CritterSpots(m){if(m._g6cr)return m._g6cr;const out=[],R=mulberry(m.w*31+m.h*7+(m.s||0)*101),th=m.theme;
   if(th!=='meadow'&&th!=='heights'&&th!=='coast'){return m._g6cr=out;}
@@ -15056,16 +15144,14 @@ function g6Birds(ctx,vw,vh,ts,shadow,wind){const P=26000,t=ts%P,dur=11000;if(t>d
     const f=Math.sin(ts/110+i*1.7)>0?1:0;ctx.fillStyle='rgba(28,22,36,.85)';ctx.fillRect(bx,by,1,1);ctx.fillRect(bx-2,by-1+f,2,1);ctx.fillRect(bx+1,by-1+f,2,1);}}
 // ----- 2b. sky layer: drifting leaves or dust, birds, townsfolk gestures -----
 function g6Sky(ctx,m,cx,cy,vw,vh,ts,still){const q=GFX.q,wind=g6WindNow(m),dun=m.kind==='dungeon';
-  if(q.amb){const key=dun||m.cave?'dun':m.theme,cols=G6W.amb[key]||G6W.amb.meadow,snow=m.theme==='snow',n=dun||m.cave?Math.ceil(q.amb/2):snow?0:q.amb,t=ts/1000;
-    for(let i=0;i<n;i++){const vx=dun?2+i%3:(6+(i%5)*3)*(.35+wind),vy=dun?-1-(i%3)*.6:4+(i%4)*2+wind*2;
-      const x=Math.floor((((i*97.3+t*vx+Math.sin(t*.8+i)*6)%(vw+20))+vw+20)%(vw+20))-10,y=Math.floor((((i*53.1+t*vy+Math.cos(t*.6+i*1.3)*3)%(vh+10))+vh+10)%(vh+10))-5;
-      ctx.fillStyle=cols[i%3];ctx.globalAlpha=dun?.45:.85;if(dun||key==='coast')ctx.fillRect(x,y,1,1);else{const flip=Math.floor(t*3+i)%2;ctx.fillRect(x,y,flip?2:1,flip?1:2);}}
-    ctx.globalAlpha=1;}
-  if(q.birds&&g6BirdsOn(m))g6Birds(ctx,vw,vh,ts,false,wind);
+  // v0.6.3: leaves and dust drift in world space (worldfx.js), so they stay where they are when the camera moves
+  if(q.amb)wfxDraw2D(ctx,'leaf',m,cx,cy,vw,vh,ts);
+  if(q.birds&&g6BirdsOn(m))wfxBirds2D(ctx,m,cx,cy,vw,vh,ts,false);
   if(q.gest&&!still&&m.kind==='town')g6Gestures(ctx,m,cx,cy,vw,vh,ts);}
 function g6Gestures(ctx,m,cx,cy,vw,vh,ts){for(let i=0;i<m.npcs.length;i++){const n=m.npcs[i];if(n.portal||n.mv)continue;
   const per=8000+(i%5)*1700,c=Math.floor((ts+i*2300)/per),ph=((ts+i*2300)%per)/per;if(ph>.16||(c+i)%3)continue;
   const x=n.x*TS+12-cx,y=n.y*TS-14-cy+(ph<.03?1:0);if(x<-10||y<-10||x>vw+10||y>vh+10)continue;
+  {const hx=Math.round(WS.px)+8-cx,hy=Math.round(WS.py)+16-cy;if(x+10>hx-WFX.hero[0]&&x-1<hx+WFX.hero[0]&&y+8>hy-WFX.hero[1]&&y-1<hy+WFX.hero[2])continue;}// v0.6.3: never over the hero
   ctx.fillStyle='#150b17';ctx.fillRect(x-1,y-1,11,8);ctx.fillStyle='#fff8e8';ctx.fillRect(x,y,9,6);ctx.fillRect(x+1,y+6,2,1);ctx.fillStyle='#150b17';ctx.fillRect(x+1,y+7,1,1);
   const k=G6W.bubbles[(c+i)%4];ctx.fillStyle=k==='heart'?'#e04a6a':k==='bang'?'#e0a020':'#3a2a4a';
   if(k==='dots'){ctx.fillRect(x+2,y+3,1,1);ctx.fillRect(x+4,y+3,1,1);ctx.fillRect(x+6,y+3,1,1);}
@@ -16734,6 +16820,87 @@ function matIcon(id){return `<img class="gico iico mico" alt="" src="${cvURL('mi
 // test hooks (window.__A is built after every module; add getters only for keys it does not have)
 setTimeout(()=>{try{const A=window.__A;if(!A)return;const H={matIcon:()=>matIcon,icDrawGear:()=>icDrawGear,icMatDraw:()=>icMatDraw,drawItemIcon:()=>drawItemIcon,IC_MAT:()=>IC_MAT};Object.keys(H).forEach(k=>{if(!Object.getOwnPropertyDescriptor(A,k))Object.defineProperty(A,k,{get:H[k],configurable:true});});}catch(e){}},0);
 
+// =================== v0.6.3 world pass: ambience in world space, opened chests vanish ===================
+// Until v0.6.2 the drifting ambience of the world (relit field sparkles, snow, wind streaks, butterflies, sea spray, void motes, dungeon
+// dust, Phase 6 leaves, birds, dusk fireflies and dawn dew, festival lanterns) was drawn at screen positions: walking slid the whole lot
+// along with the hero, and on the HD-2D view it sat on the 2D canvas over the GL frame, so a butterfly could park on the hero's face.
+// Now every particle has a world position (x east, z south, h above the ground, art px): a base point on a lattice of cells about one
+// view in size, plus its own motion, wrapped to the copy nearest the camera. The 2D renderer draws it at (x - cam.x, z - h - cam.y);
+// the HD-2D renderer puts the same particles into its GL scene (hd2d.js hdWfx), lit and depth tested. Nothing is drawn over the hero.
+// Weather and the cave and dungeon theme layers stay full screen effects but scroll with the world (wfxTiled).
+// Tunables: config.js WFX. No game state is read or written apart from G.cleared, the weather and the clock (Daily Trial untouched).
+const WFXC={};// css colour -> [r,g,b,a]
+function wfxRgb(c){let v=WFXC[c];if(v)return v;const m=/rgba?\(([^)]+)\)/.exec(c);if(m){const a=m[1].split(',').map(Number);v=[a[0],a[1],a[2],a[3]==null?1:a[3]];}else{const h=hx(c);v=[h[0],h[1],h[2],1];}return WFXC[c]=v;}
+function wfxH(i,k){let h=(i*374761393+k*668265263)|0;h=(h^(h>>>13))*1274126177|0;return ((h^(h>>>16))>>>0)/4294967296;}
+// the copy of a lattice coordinate nearest the centre c (period P)
+function wfxW(v,c,P){return v+P*Math.round((c-v)/P);}
+// lattice period for a view of w x h art px: whole cells, at least the view plus a margin (so wrapping happens off screen)
+function wfxP(w,h,o){const C=WFX.cell,M=WFX.margin;o[0]=Math.ceil((w+M*2)/C)*C;o[1]=Math.ceil((h+M*2)/C)*C;return o;}
+const WFXP=[0,0];
+function wfxWind(m){try{return g6WindNow(m);}catch(e){return .35;}}
+function wfxPhase(){try{return phaseProg().ph;}catch(e){return 'day';}}
+// every particle of a set: emit(x, z, h, w, hh, colour, alpha, glow). Sets: 'amb' (theme ambience), 'leaf' (Phase 6 leaves and dust),
+// 'day' (dusk fireflies, dawn dew). t in ms (0 under reduced motion: a still frame).
+function wfxRun(set,m,ts,cxc,czc,Px,Pz,emit){if(!m||m.archive)return;const t=ts/1000,A=Px*Pz/WFX.ref,dun=m.kind==='dungeon',N=WFX.n,cnt=k=>Math.min(WFX.maxN,Math.round(k*A));
+  const put=(x,z,h,w,hh,c,a,g)=>emit(wfxW(x,cxc,Px),wfxW(z,czc,Pz),h,w,hh,c,a,g);
+  if(set==='amb'){
+    if(m.kind==='field'&&G.cleared&&G.cleared[m.s]){const n=cnt(N.spark);for(let i=0;i<n;i++){const bx=wfxH(i,11)*Px,bz=wfxH(i,12)*Pz,tw=Math.floor(ts/200+i)%3===0;
+      put(bx+t*22,bz-t*11+Math.sin(t/.7+i)*10,6+wfxH(i,13)*22,tw?3:1,1,i%3?'#fff2a0':'#ffd04a',1,1);}}
+    if(!dun){const th=m.theme;
+      if(th==='snow'){const n=cnt(N.snow);for(let i=0;i<n;i++){const H0=64,bx=wfxH(i,21)*Px,bz=wfxH(i,22)*Pz,sp=40*(1+(i%2)),h=H0-((t*sp+wfxH(i,23)*H0)%H0);
+        put(bx+t*25*(1+i%3)*.4+Math.sin(t+i)*3,bz,h,1+(i%5===0?1:0),1,'#ffffff',h<4?h/4:1,0);}}
+      if(th==='heights'){const n=cnt(N.wind);for(let i=0;i<n;i++)put(wfxH(i,31)*Px+t*83,wfxH(i,32)*Pz,18+wfxH(i,33)*30,10,1,'#ffffff',.5,0);}
+      if(th==='meadow'){const n=cnt(N.fly),C=['#f6e06a','#ffffff','#f08ab0'];for(let i=0;i<n;i++){const bx=wfxH(i,41)*Px,bz=wfxH(i,42)*Pz,x=bx+Math.sin(t*.31+i*2.1)*46+Math.sin(t*1.3+i)*4,z=bz+Math.cos(t*.23+i*1.7)*30,h=7+Math.sin(t*1.9+i)*3+wfxH(i,43)*6,c=C[i%3];
+        put(x,z,h,2,1,c,1,0);if(Math.floor(ts/120+i)%2){put(x-1.5,z,h+1,1,1,c,1,0);put(x+1.5,z,h+1,1,1,c,1,0);}}}
+      if(th==='coast'){const n=cnt(N.spray);for(let i=0;i<n;i++)put(wfxH(i,51)*Px+t*45,wfxH(i,52)*Pz,3+wfxH(i,53)*10,6,1,'#ffffff',.35,0);}
+      if(th==='void'){const n=cnt(N.mote);for(let i=0;i<n;i++){const H0=56,h=(t*25+wfxH(i,63)*H0)%H0;put(wfxH(i,61)*Px+t*20,wfxH(i,62)*Pz,h,1,1,i%2?'#c8a0ff':'#5fc9a0',Math.min(1,(H0-h)/10),1);}}}
+    else{const n=cnt(N.dust),c=(DTHEME[m.theme]||DTHEME.meadow).acc;for(let i=0;i<n;i++){const H0=40,h=(t*16+wfxH(i,73)*H0)%H0;put(wfxH(i,71)*Px+t*12,wfxH(i,72)*Pz,h,1,1,c,.5*Math.min(1,(H0-h)/8),1);}}
+    if(m.kind==='town'&&G.cleared&&G.cleared[m.s]){const n=cnt(N.lantern);for(let i=0;i<n;i++){const p=(ts/9000+i*.37)%1,h=p*150;
+      put(wfxH(i,81)*Px+Math.sin(ts/1500+i)*8,wfxH(i,82)*Pz,h,3,4,'#ffb04a',Math.min(1,(1-p)*2),1);put(wfxH(i,81)*Px+Math.sin(ts/1500+i)*8,wfxH(i,82)*Pz-.01,h+1,1,2,'#fff0a0',Math.min(1,(1-p)*2),1);}}
+    return;}
+  if(set==='leaf'){const q=GFX.q;if(!q||!q.amb)return;const wind=wfxWind(m),key=dun||m.cave?'dun':m.theme,cols=G6W.amb[key]||G6W.amb.meadow,snow=m.theme==='snow',n0=dun||m.cave?Math.ceil(q.amb/2):snow?0:q.amb,n=cnt(n0);
+    for(let i=0;i<n;i++){const bx=wfxH(i,91)*Px,bz=wfxH(i,92)*Pz;
+      if(dun||m.cave){const H0=36,h=(t*(1+(i%3)*.6)*4+wfxH(i,93)*H0)%H0;put(bx+t*(2+i%3)+Math.sin(t*.8+i)*4,bz,h,1,1,cols[i%3],.45*Math.min(1,(H0-h)/6),0);continue;}
+      const H0=52,vx=(6+(i%5)*3)*(.35+wind),vy=4+(i%4)*2+wind*2,h=H0-((t*vy+wfxH(i,93)*H0)%H0),flip=Math.floor(t*3+i)%2,coast=key==='coast';
+      put(bx+t*vx+Math.sin(t*.8+i)*6,bz+Math.cos(t*.6+i*1.3)*3,h,coast?1:flip?2:1,coast?1:flip?1:2,cols[i%3],.85*Math.min(1,h/3),0);}return;}
+  if(set==='day'){if(dun||m.cave)return;const ph=WFXD.ph||wfxPhase();
+    if(ph==='dusk'){let q=WFXD.ph?WFXD.pq:0;if(!WFXD.ph)try{q=phaseProg().p;}catch(e){}
+      if(ts&&q<.7)for(let i=0;i<3;i++){const x=wfxH(i,104)*Px+t*(22+i*5),z=wfxH(i,105)*Pz+Math.sin(ts/400+i)*4,h=96+i*10,f=Math.sin(ts/90+i*2)>0?1:0,c='rgba(30,20,40,.55)';
+        put(x,z,h,2,1,c,1,0);put(x-2,z,h+1-f,2,1,c,1,0);put(x+2,z,h+1-f,2,1,c,1,0);}
+      const n=cnt(Math.round(N.firefly*(.4+.6*q)));for(let i=0;i<n;i++){const a=ts===0?.45:Math.max(0,Math.sin(ts/650+i*1.3))*.8;if(a<.02)continue;
+      const x=wfxH(i,101)*Px+Math.sin(ts/1700+i*1.9)*14,z=wfxH(i,102)*Pz+Math.cos(ts/2300+i*2.7)*10,h=3+wfxH(i,103)*9;put(x,z,h,4,4,'#ffec8c',a*.35,1);put(x,z+.01,h+1,2,2,'#fffac8',a,1);}}
+    else if(ph==='dawn'){const n=cnt(N.dew);for(let i=0;i<n;i++){const a=ts===0?.35:Math.max(0,Math.sin(ts/900+i*2.1))*.6;if(a<.02)continue;put(wfxH(i,111)*Px,wfxH(i,112)*Pz,1,1,1,'#ffffff',a,1);}}}}
+// a flock crossing now and then by day: each crossing has a world path (wrapped like the particles); emit(x, z, h, flap, shadowOnly)
+function wfxBirds(m,ts,cxc,czc,Px,Pz,emit){const q=GFX.q;if(!q||!q.birds)return;let on=false;try{on=g6BirdsOn(m);}catch(e){}if(!on)return;
+  const B=WFX.bird,c=Math.floor(ts/B.period),tt=ts-c*B.period;if(tt>B.dur)return;const p=tt/B.dur,wind=wfxWind(m),n=q.birds;
+  const x0=wfxH(c,121)*Px-B.span/2,z0=wfxH(c,122)*Pz,dz=(wfxH(c,123)-.5)*120;
+  for(let i=0;i<n;i++){const x=x0+p*B.span*(1+wind*.15)-(i%2?i*5:i*4),z=z0+p*dz+(i%2?-1:1)*Math.ceil(i/2)*4+Math.sin(ts/700+i)*2,f=Math.sin(ts/110+i*1.7)>0?1:0;
+    emit(wfxW(x,cxc,Px),wfxW(z,czc,Pz),B.h,f);}}
+// is a particle at (x, z, h) on screen over the hero (2D view: screen row z - h)?
+function wfxOnHero(x,z,h){const H=WFX.hero,hx=Math.round(WS.px)+8,hz=Math.round(WS.py)+16,y=z-h;return Math.abs(x-hx)<H[0]&&y>hz-H[1]&&y<hz+H[2];}
+// ----- the 2D view -----
+const WFXD={ctx:null,cx:0,cy:0,vw:0,vh:0,n:0,ph:null,pq:0,sh:false};
+function wfxEmit2D(x,z,h,w,hh,c,a){const D=WFXD,sx=Math.round(x-D.cx-w/2),sy=Math.round(z-h-D.cy-hh);if(sx<-w||sy<-hh||sx>D.vw||sy>D.vh)return;if(wfxOnHero(x,z,h))return;
+  D.ctx.globalAlpha=a;D.ctx.fillStyle=c;D.ctx.fillRect(sx,sy,w,hh);D.n++;}
+function wfxDraw2D(ctx,set,m,cx,cy,vw,vh,ts){const D=WFXD;D.ctx=ctx;D.cx=cx;D.cy=cy;D.vw=vw;D.vh=vh;wfxP(vw,vh,WFXP);
+  try{wfxRun(set,m,ts,cx+vw/2,cy+vh/2,WFXP[0],WFXP[1],wfxEmit2D);}finally{ctx.globalAlpha=1;}}
+function wfxBird2D(x,z,h,f){const D=WFXD,bx=Math.round(x-D.cx),by=Math.round(z-h-D.cy);if(D.sh){const sy=Math.round(z-D.cy);if(bx<-4||sy<-2||bx>D.vw+4||sy>D.vh+2)return;D.ctx.fillStyle='rgba(10,6,24,.14)';D.ctx.fillRect(bx-1,sy,3,1);return;}
+  if(bx<-4||by<-4||bx>D.vw+4||by>D.vh+4||wfxOnHero(x,z,h))return;D.ctx.fillStyle='rgba(28,22,36,.85)';D.ctx.fillRect(bx,by,1,1);D.ctx.fillRect(bx-2,by-1+f,2,1);D.ctx.fillRect(bx+1,by-1+f,2,1);}
+function wfxBirds2D(ctx,m,cx,cy,vw,vh,ts,shadow){const D=WFXD;D.ctx=ctx;D.cx=cx;D.cy=cy;D.vw=vw;D.vh=vh;D.sh=!!shadow;wfxP(vw,vh,WFXP);try{wfxBirds(m,ts,cx+vw/2,cy+vh/2,WFXP[0],WFXP[1],wfxBird2D);}finally{D.sh=false;}}
+// full screen layers that should still scroll with the world (weather, cave drips, embers, spores...): drawn once into a view sized
+// layer, then laid as four tiles offset by the camera (mod the view size). Their particles are already periodic in the view size, so the
+// tiles join up; tints cover every pixel exactly once.
+const WFXT={cv:null};
+function wfxTiled(ctx,vw,vh,ox,oy,fn){let L=WFXT.cv;if(!L||L.width!==vw||L.height!==vh){L=WFXT.cv=mkCv(vw,vh);}const lc=L.getContext('2d');lc.setTransform(1,0,0,1,0,0);lc.globalAlpha=1;lc.globalCompositeOperation='source-over';lc.clearRect(0,0,vw,vh);
+  fn(lc);const dx=-(((Math.round(ox)%vw)+vw)%vw),dy=-(((Math.round(oy)%vh)+vh)%vh);ctx.drawImage(L,dx,dy);if(dx)ctx.drawImage(L,dx+vw,dy);if(dy)ctx.drawImage(L,dx,dy+vh);if(dx&&dy)ctx.drawImage(L,dx+vw,dy+vh);}
+// ----- opened chests vanish (WFX.chestGone): nothing is drawn for an opened chest (the 'c' tile state), and it no longer blocks the way.
+// The save keeps G.chests as before (quests, vaults, keys, chestsLeft read it); the full map shows opened chests dimmed, the minimap not.
+const WFX_NONE=mkCv(1,1);
+{const oc0=objCanvas;objCanvas=function(th,kind){if(kind==='chestOpen'&&WFX.chestGone)return WFX_NONE;return oc0.apply(this,arguments);};}
+{const sa0=solidAt;solidAt=function(m,x,y){if(WFX.chestGone&&m&&m.t&&tileAt(m,x,y)==='c'){const r=m.t[y]&&m.t[y][x];if((r==='C'||r==='K')&&G&&G.chests&&G.chests[m.id+':'+x+','+y])return m.npcs.some(n=>n.x===x&&n.y===y)||dynActors(m).some(a=>a.x===x&&a.y===y);}return sa0.apply(this,arguments);};}
+// the ground under a chest is painted like the ground around it (it showed as an odd pale patch once the opened chest was gone)
+{const dt0=drawTile;drawTile=function(ctx,m,x,y,fr){const r=WFX.chestGone&&m&&m.t&&m.t[y]?m.t[y][x]:null;if((r==='C'||r==='K')&&typeof floorLike==='function'){m.t[y][x]=floorLike(m,x,y);try{return dt0.apply(this,arguments);}finally{m.t[y][x]=r;}}return dt0.apply(this,arguments);};}
+
 // =================== Beta v0.5.1: quests ready to hand in (file: qready.js) ===================
 // When a Quest Board quest or a Guild mission is complete and waiting to be claimed, a toast says so once, the Menu button and the
 // Quests menu chip carry a "ready" count, and the quest rows show a "Ready to hand in" tag with where to claim it.
@@ -17027,7 +17194,9 @@ function hdStructCanvas(m,S){const dun=m.kind==='dungeon',T=dun?THEME[m.theme]||
   return cv;}
 // strips of every prop row: drawObjects (with every wrapper: dungeon props, boards, boats, gates, entrances) onto a row strip; their soft
 // ground shadows land on the ground canvases instead
-function hdBakeCards(m,S,g0,g1){const W=m.w*TS,SH=64,UP=58,CW=8,st=mkCv(W,SH),sc=st.getContext('2d',{willReadFrequently:true});
+function hdBakeCards(m,S,g0,g1){const fa=m.kind==='field'&&m.fortAt&&m.t[m.fortAt[1]]?m.fortAt:null,fc=fa?m.t[fa[1]][fa[0]]:null;// v0.6.3: no cave mouth card on the gatehouse
+  if(fa)m.t[fa[1]][fa[0]]='U';try{return hdBakeCards0(m,S,g0,g1);}finally{if(fa)m.t[fa[1]][fa[0]]=fc;}}
+function hdBakeCards0(m,S,g0,g1){const W=m.w*TS,SH=64,UP=58,CW=8,st=mkCv(W,SH),sc=st.getContext('2d',{willReadFrequently:true});
   const want=c=>H2_OBJ.indexOf(c)>=0||(c==='E'&&m.kind==='field');
   const pk=new H2Pack(2048),items=[];const sh0=shadowAt,c0=g0.getContext('2d'),c1=g1.getContext('2d');
   shadowAt=function(ctx,cx,cy,rx,ry){sh0(c0,cx,cy,rx,ry);sh0(c1,cx,cy,rx,ry);};
@@ -17049,11 +17218,49 @@ function hdBakeCards(m,S,g0,g1){const W=m.w*TS,SH=64,UP=58,CW=8,st=mkCv(W,SH),sc
   items.forEach(it=>{if(it.r.y+it.h>AH)return;ac.drawImage(it.cv,it.r.x,it.r.y);const u0=it.r.x,u1=it.r.x+it.w,v0=it.r.y,v1=it.r.y+it.h;// atlas pixels, scaled when the atlases merge
     const yt=(UP-it.t)*V,yb=(UP-it.t-it.h)*V;H2P.set([it.x0,yt,it.z,it.x0+it.w,yt,it.z,it.x0+it.w,yb,it.z,it.x0,yb,it.z]);bt.at(it.x0+it.w/2,it.z-8).quad(H2P,u0,v0,u1,v1,255,255,255,255,0,.45,.89,2|8);});
   return {cv:at,bt};}
+// v0.6.3: the fortress gatehouse in a field (sites.js) was painted flat into the ground art, with the cave mouth card standing in front
+// of it. In HD-2D it is now built like the buildings: two towers (front, sides, top, merlons) and a recessed curtain wall with the gate
+// arch and portcullis between them, over its 3 x 2 tile footprint (the 'U' tiles and the 'E' gate), textured from a small code drawn
+// sheet. The 2D view keeps its flat painting.
+const H2G={W:96,H:48,tw:14,th:40,ch:28,rec:6};
+function hdGateTex(){return hdSpr('gatehouse',H2G.W,H2G.H,(c)=>{const f=(col,x,y,w,h)=>{c.fillStyle=col;c.fillRect(x,y,w,h);};
+  const brick=(x,y,w,h,base,dk,lt,sd)=>{f(base,x,y,w,h);let r=sd;for(let yy=y+4;yy<y+h;yy+=5){f(dk,x,yy,w,1);const off=((yy-y)/5)%2?0:3;for(let xx=x+off;xx<x+w;xx+=6)f(dk,xx,yy-4,1,4);}
+    for(let i=0;i<w*h/40;i++){r=(r*1103515245+12345)>>>0;f(lt,x+r%w,y+(r>>8)%h,2,1);}};
+  // tower front (0,0 14x40): bricks, an arrow slit, a red banner with a gold mark, dark edges
+  brick(0,0,14,40,'#6e6e7a','#4a4a54','#8a8a96',7);f('#3a3a44',0,0,1,40);f('#3a3a44',13,0,1,40);f('#9a9aa6',0,0,14,1);
+  f('#120c10',6,6,2,7);f('#2a2a34',3,14,8,1);f('#c0392b',4,15,6,14);f('#9a2a20',4,27,2,2);f('#9a2a20',8,27,2,2);f('#ffd04a',6,18,2,3);f('#ffd04a',5,19,4,1);
+  // tower side (14,0 32x40)
+  brick(14,0,32,40,'#5c5c68','#40404a','#74747e',11);f('#9a9aa6',14,0,32,1);f('#120c10',29,8,2,6);
+  // curtain front (46,0 20x28): bricks, the gate arch with its portcullis, a keystone
+  brick(46,0,20,28,'#7a7a86','#55555f','#9a9aa6',5);f('#9a9aa6',46,0,20,1);
+  c.fillStyle='#120c10';c.beginPath();c.ellipse(56,12,6,5,0,Math.PI,0);c.fill();f('#120c10',50,12,12,16);
+  f('#3a2a1a',50,10,12,1);for(let i=0;i<4;i++)f('#3a2a1a',51+i*3,10,1,18);f('#3a2a1a',50,17,12,1);f('#3a2a1a',50,23,12,1);
+  f('#b0b0bc',55,5,2,2);f('#4a4a54',49,9,1,19);f('#4a4a54',62,9,1,19);
+  // merlons: tower (66,0 14x6), curtain (66,8 20x5), tower side (0,42 32x6); transparent gaps (cut out by the depth pass)
+  const mer=(x,y,w,h,base,lt)=>{f(base,x,y+h-2,w,2);for(let xx=x;xx<x+w;xx+=5){f(base,xx,y,Math.min(3,x+w-xx),h);f(lt,xx,y,Math.min(3,x+w-xx),1);}};
+  mer(66,0,14,6,'#6e6e7a','#9a9aa6');mer(66,8,20,5,'#7a7a86','#a8a8b4');mer(0,42,32,6,'#5c5c68','#8a8a96');});}
+function hdGatePart(m){if(!m||m.kind!=='field'||!m.fortAt)return null;const [fx,fy]=m.fortAt;return {b:{x:fx-1,y:fy-1,w:3,h:2,k:'gatehouse',door:[fx,fy]},cv:hdGateTex()};}
+function hdGateGeo(m,S,b,Q,U,Vv,p,V,bt){const G2=H2G,x0=b.x*TS,x1=x0+b.w*TS,zb=b.y*TS,zf=(b.y+b.h)*TS,tw=G2.tw,hT=G2.th*V,hC=G2.ch*V,zc=zf-G2.rec,xl=x0+tw,xr=x1-tw,mt=6*V,mc=5*V;
+  const top=hdRgb('#8a8a94').map(v=>Math.round(v*235)),ctop=hdRgb('#92929c').map(v=>Math.round(v*235)),flat=(a,c)=>{H2P.set(a);bt.quad(H2P,-1,0,-1,0,c[0],c[1],c[2],255,0,1,0,8);};
+  [[x0,xl],[xr,x1]].forEach(([a,e])=>{
+    Q([a,hT,zf,e,hT,zf,e,0,zf,a,0,zf],U(p,0),Vv(p,0),U(p,tw),Vv(p,G2.th),255,[0,0,1],2|8);// front
+    Q([a,hT,zb,a,hT,zf,a,0,zf,a,0,zb],U(p,14),Vv(p,0),U(p,46),Vv(p,G2.th),255,[-1,0,0],8);// west side
+    Q([e,hT,zf,e,hT,zb,e,0,zb,e,0,zf],U(p,14),Vv(p,0),U(p,46),Vv(p,G2.th),255,[1,0,0],8);// east side
+    flat([a,hT,zb,e,hT,zb,e,hT,zf,a,hT,zf],top);
+    Q([a,hT+mt,zf,e,hT+mt,zf,e,hT,zf,a,hT,zf],U(p,66),Vv(p,0),U(p,80),Vv(p,6),255,[0,0,1],2|8);// merlons, front and back
+    Q([a,hT+mt,zb+.5,e,hT+mt,zb+.5,e,hT,zb+.5,a,hT,zb+.5],U(p,66),Vv(p,0),U(p,80),Vv(p,6),255,[0,0,1],8);
+    Q([a+.5,hT+mt,zb,a+.5,hT+mt,zf,a+.5,hT,zf,a+.5,hT,zb],U(p,0),Vv(p,42),U(p,32),Vv(p,48),255,[-1,0,0],8);
+    Q([e-.5,hT+mt,zf,e-.5,hT+mt,zb,e-.5,hT,zb,e-.5,hT,zf],U(p,0),Vv(p,42),U(p,32),Vv(p,48),255,[1,0,0],8);});
+  Q([xl,hC,zc,xr,hC,zc,xr,0,zc,xl,0,zc],U(p,46),Vv(p,0),U(p,66),Vv(p,G2.ch),255,[0,0,1],2|8);// the curtain wall with the gate
+  flat([xl,hC,zb,xr,hC,zb,xr,hC,zc,xl,hC,zc],ctop);
+  Q([xl,hC+mc,zc,xr,hC+mc,zc,xr,hC,zc,xl,hC,zc],U(p,66),Vv(p,8),U(p,86),Vv(p,13),255,[0,0,1],2|8);
+  S.bh.push({b,h:hT});}
 // buildings: roofed houses become boxes with a gabled roof cut from their 2D sprite; keeps a box with battlements; tents, the lighthouse
 // and anything unusual stand up as one card. Signs and landmark props (towngfx) come from the town decor pass as a card on the facade.
-function hdBldKind(m,b){if(b.k==='lighthouse')return 'card';const T=THM(m);let mat=T.mat;if(['guild','keep','chapel','tower','windmill'].includes(b.k))mat=m.theme==='void'?'tent':'stone';
+function hdBldKind(m,b){if(b.k==='gatehouse')return 'gate';if(b.k==='lighthouse')return 'card';const T=THM(m);let mat=T.mat;if(['guild','keep','chapel','tower','windmill'].includes(b.k))mat=m.theme==='void'?'tent':'stone';
   if(mat==='tent'||b.k==='bigtent')return 'card';if(b.k==='keep'||b.k==='tower')return 'keep';return 'roof';}
 function hdBakeBuildings(m,S,bsp,deco){const V=S.V,sin=Math.sin(HD2D.pitch*Math.PI/180),pk=new H2Pack(1024),parts=[];
+  {const g=hdGatePart(m);if(g)bsp=(bsp||[]).concat([g]);}// v0.6.3: the fortress gatehouse stands up as towers and a curtain wall
   (bsp||[]).forEach(q=>{parts.push({q,r:pk.add(q.cv.width,q.cv.height)});});
   const decoParts=[];if(deco){m.bld.forEach(b=>{if(!SVC_LOOK||!SVC_LOOK[b.k])return;const x=b.x*TS-28,y=(b.y+b.h)*TS-50,w=b.w*TS+56,h=56;decoParts.push({b,x,y,w,h,r:pk.add(w,h)});});
     (m._qb||[]).forEach(([qx,qy])=>{const x=qx*TS-12,y=qy*TS+14,w=40,h=16;decoParts.push({board:1,qx,qy,x,y,w,h,r:pk.add(w,h)});});}
@@ -17068,6 +17275,7 @@ function hdBakeBuildings(m,S,bsp,deco){const V=S.V,sin=Math.sin(HD2D.pitch*Math.
     if(p.r.y+cv.height>AH)return;bt=CB.at(x0+w/2,zm);
     if(k==='card'){const yb=-6*V,yt=(cv.height-6)*V,cx0=x0-BSP_X;Q([cx0,yt,zf+.2,cx0+cv.width,yt,zf+.2,cx0+cv.width,yb,zf+.2,cx0,yb,zf+.2],U(p,0),Vv(p,0),U(p,cv.width),Vv(p,cv.height),255,[0,.45,.89],2|8);
       S.bh.push({b,h:cv.height*.55*V});return;}
+    if(k==='gate'){hdGateGeo(m,S,b,Q,U,Vv,p,V,bt);return;}
     const top=BSP_TOP;
     if(k==='keep'){const Hk=Math.max(22,Math.round(h+10-h*sin)),cr=9,yk=Hk*V,yc=(Hk-cr)*V;
       Q([x0,yc,zf,x1,yc,zf,x1,0,zf,x0,0,zf],U(p,BSP_X),Vv(p,top+h-(Hk-cr)),U(p,BSP_X+w),Vv(p,top+h),255,[0,0,1],2|8);
@@ -17152,7 +17360,8 @@ function hdBake(m){const sig=hdSig(m);if(HD.S&&HD.S.m===m&&HD.S.sig===sig&&HD.ma
   HD.maxTex=gl.getParameter(gl.MAX_TEXTURE_SIZE)||4096;
   const save={lights:m.lights,smoke:m.smoke,bsp:m.bsp,torches:m.torches&&m.torches.slice(),mills:m.mills&&m.mills.slice()};
   let g0,g1,cards=null,blds=null,deco=null,sh=null;const d0=drawObjects;
-  try{drawObjects=function(){};try{g0=buildMapCanvas(m,0);g1=buildMapCanvas(m,1);}finally{drawObjects=d0;}
+  const fa=m.fortAt;// v0.6.3: the gatehouse is geometry in HD-2D (hdGateGeo), not paint on the ground
+  try{drawObjects=function(){};try{m.fortAt=null;g0=buildMapCanvas(m,0);g1=buildMapCanvas(m,1);}finally{drawObjects=d0;m.fortAt=fa;}
     m.lights=save.lights;m.smoke=save.smoke;m.bsp=save.bsp;
     const W=m.w,H=m.h,HT=new Float32Array(W*H),KD=new Uint8Array(W*H);S.HT=HT;S.KD=KD;
     const hOf=k=>k===1?HD2D.wall.dungeon*V:k===2?HD2D.wall.cliff*V:k===3?HD2D.wall.town*V:k===4?HD2D.water*V:k===5?HD2D.deep*V:k===6?HD2D.water*V:0;
@@ -17366,10 +17575,30 @@ function hdActors(m,now,ts){const B=HD.dyn,BB=HD.dynB,BA=HD.dynA,V=HD.S.V,still=
   // quest board marker, the dungeon's way out
   if(m.kind==='town'&&m._qb){const stt=typeof boardState==='function'?boardState():null;if(stt)m._qb.forEach(([qx,qy])=>{const bob=still?0:Math.round(Math.sin(ts/220)*2),col=stt==='ready'?'#7aff8a':'#ffd04a';
     hdBill(BA,'glow',hdGlowS(),qx*TS+8,(30+bob)*V-10,(qy+1)*TS+2,false,.8,255,240,160,110,4);hdBill(B,'mk'+col,hdMark(col),qx*TS+8,(30+bob)*V,(qy+1)*TS+2,false,1,255,255,255,255,4);});}
-  if(dun&&m.start){const e=m.start,bob=still?0:Math.round(Math.sin(now/200)*2);hdBill(B,'arrow',hdArrow(),e[0]*TS+8,(18+bob)*V,e[1]*TS+8,false,1,255,255,255,255,4);}
+  if(dun&&m.start&&!(Math.abs(WS.x-m.start[0])<=1&&Math.abs(WS.y-m.start[1])<=1)){const e=m.start,/* v0.6.3: not while the hero stands by it (it floated over his body) */bob=still?0:Math.round(Math.sin(now/200)*2);hdBill(B,'arrow',hdArrow(),e[0]*TS+8,(18+bob)*V,e[1]*TS+8,false,1,255,255,255,255,4);}
   // chimney smoke
   (HD.S.smoke||[]).forEach((s,i)=>{for(let k=0;k<4;k++){const p=still?(k/4+.1):((ts/1600+k/4+i*.37)%1),r=1+Math.floor(p*3),dx=Math.sin(p*6+i)*3+p*6;
     H2P.set([s[0]+dx-r,s[1]+(p*26+r)*V,s[2],s[0]+dx+r,s[1]+(p*26+r)*V,s[2],s[0]+dx+r,s[1]+(p*26-r)*V,s[2],s[0]+dx-r,s[1]+(p*26-r)*V,s[2]]);BB.quad(H2P,-1,0,-1,0,225,225,235,Math.round(120*(1-p)),0,.45,.89,0);}});}
+// ----- v0.6.3: the world's drifting ambience (worldfx.js) as part of the scene -----
+// Relit field sparkles, snow, wind streaks, butterflies, spray, motes, dungeon dust, festival lanterns, Phase 6 leaves, dusk fireflies,
+// dawn dew and the passing flock: the same world positions as the 2D view, placed in the scene as small upright quads (blended, depth
+// tested, so walls and buildings hide them), glowing ones unlit. None is drawn over the hero: a particle whose screen position falls in
+// his box is left out. Until v0.6.2 these were screen space dots on the 2D canvas over the GL frame (they slid along with the camera).
+const HW={hx:0,hz:0,b:new Float32Array(4),p:new Float32Array(4),n:0};
+function hdWfxEmit(x,z,h,w,hh,c,a,g){const R=HD.lmR;if(x<R[0]||x>R[0]+R[2]||z<R[1]||z>R[1]+R[3])return;const V=HD.S.V,y0=h*V,y1=(h+hh)*V;
+  if(Math.abs(x-HW.hx)<26&&z>HW.hz-8&&z<HW.hz+160){const p=HW.p,B=HW.b;h2Proj(p,HD.mats.vp,x,(y0+y1)/2,z);if(p[0]>B[0]&&p[0]<B[2]&&p[1]>B[1]&&p[1]<B[3])return;}
+  const C=wfxRgb(c),al=Math.round(255*a*C[3]);if(al<3)return;const P=H2P,x0=x-w/2,x1=x+w/2;
+  P[0]=x0;P[1]=y1;P[2]=z;P[3]=x1;P[4]=y1;P[5]=z;P[6]=x1;P[7]=y0;P[8]=z;P[9]=x0;P[10]=y0;P[11]=z;HD.dynB.quad(P,-1,0,-1,0,C[0],C[1],C[2],al,0,.45,.89,g?4:0);HW.n++;}
+function hdWfxBird(x,z,h,f){const R=HD.lmR;if(x<R[0]||x>R[0]+R[2]||z<R[1]||z>R[1]+R[3])return;
+  hdDecal(HD.dynB,'blob',hdBlob(),x+6,z,5,2,10,6,24,60);hdWfxEmit(x,z,h,1,1,'#1c1624',.85,0);hdWfxEmit(x-1.5,z,h+1-f,2,1,'#1c1624',.85,0);hdWfxEmit(x+1.5,z,h+1-f,2,1,'#1c1624',.85,0);}
+function hdWfx(m,ts){if(m.archive)return;HW.n=0;HW.hx=Math.round(WS.px)+8;HW.hz=WS.py+12.5;
+  // the hero's box on screen (NDC), padded a little
+  {const p=HW.p,B=HW.b,hw=Math.max(8,(HD.chW||14)*.6),hh=HD.heroH||24;h2Proj(p,HD.mats.vp,HW.hx-hw,0,HW.hz);B[0]=p[0];B[1]=p[1];h2Proj(p,HD.mats.vp,HW.hx+hw,hh*1.08,HW.hz);B[2]=p[0];B[3]=p[1];
+    const px=8/Math.max(64,WS.vw);B[0]-=px;B[2]+=px;B[1]-=px;B[3]+=px;}
+  const R=HD.lmR,C=WFX.cell,Px=Math.ceil(R[2]/C)*C,Pz=Math.ceil((WFX.hdZ[0]+WFX.hdZ[1])/C)*C,cx=HD.cam.x,cz=HD.cam.z-(WFX.hdZ[0]-WFX.hdZ[1])/2;
+  wfxRun('amb',m,ts,cx,cz,Px,Pz,hdWfxEmit);wfxRun('leaf',m,ts,cx,cz,Px,Pz,hdWfxEmit);
+  if(m.kind!=='dungeon'&&!G.daily){const ph=wfxPhase();if(ph==='dusk'||ph==='dawn')wfxRun('day',m,ts,cx,cz,Px,Pz,hdWfxEmit);}
+  wfxBirds(m,ts,cx,cz,Px,Pz,hdWfxBird);}
 // every light near the view becomes a soft disc in the light map (flicker and day/night weight in its colour); no allocation
 function hdLmAdd(x,z,r,cr,cg,cb){if(HD.lmn>=HD2D.lmMax)return;const R=HD.lmR,v=HD.lmv,W=HD.lw,j=HD.lmn*4,o=HD.lmn++*28;W[j]=x;W[j+1]=z;W[j+2]=r;W[j+3]=cr*.3+cg*.59+cb*.11;// v0.5.8: kept in world units too, for the characters' rim side
   const X0=(x-r-R[0])/R[2]*2-1,X1=(x+r-R[0])/R[2]*2-1,Z0=(z-r-R[1])/R[3]*2-1,Z1=(z+r-R[1])/R[3]*2-1;
@@ -17429,7 +17658,7 @@ function hdScene(gl,S,o,now,still,full){const P=HD.P,u=P.scene.u,uc=P.char.u,fr=
 function hdFrame(now){const m=WS.m,gl=HD.gl,q=hdTierQ(),still=gfxStill(),ts=still?0:now;
   if(HD.dirty||HD.map!==m||!HD.S||HD.baseRef!==WS.base[0]){hdBake(m);HD.baseRef=WS.base[0];}
   const sz=hdSize(q);hdCamera(m,now,sz,q);const o=hdLook(m,now),S=HD.S;
-  HD.px=q.px||1;const nl=hdLights(m,ts,q,o);HD.dyn.n=0;HD.dynB.n=0;HD.dynA.n=0;HD.dynC.n=0;HD.dynCB.n=0;hdActors(m,now,ts);HD.dynUp=0;// v0.5.8: lights first, the characters read them
+  HD.px=q.px||1;const nl=hdLights(m,ts,q,o);HD.dyn.n=0;HD.dynB.n=0;HD.dynA.n=0;HD.dynC.n=0;HD.dynCB.n=0;hdActors(m,now,ts);try{hdWfx(m,ts);}catch(e){HD.wfxErr=String(e&&e.message||e);}HD.dynUp=0;// v0.5.8: lights first, the characters read them
   hdDrawLM(gl,nl,o);
   const P=HD.P,sp=P.scene,u=sp.u,RT=HD.rt;
   for(let i=0;i<4;i++)gl.enableVertexAttribArray(i);gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,HD.ib);gl.disable(gl.CULL_FACE);
@@ -17487,28 +17716,31 @@ function hdFrame(now){const m=WS.m,gl=HD.gl,q=hdTierQ(),still=gfxStill(),ts=stil
 // hook below), so what they read back is the whole picture. Frames of the game loop never read the GL canvas back.
 function hdBlit(){const ctx=WS.ctx;ctx.setTransform(1,0,0,1,0,0);ctx.globalAlpha=1;ctx.globalCompositeOperation='copy';ctx.imageSmoothingEnabled=false;ctx.drawImage(HD.cv,0,0,WS.vw,WS.vh);ctx.globalCompositeOperation='source-over';}
 function hdOverlayBusy(m,now,still){const w=(m.kind==='field'||m.kind==='town')?(G.weather[m.s]||'clear'):'clear';
-  const parts=!still&&(m.kind==='dungeon'||'snow heights meadow void'.indexOf(m.theme)>=0||(G.cleared&&G.cleared[m.s]&&m.kind!=='dungeon'));
-  return parts||w!=='clear'||(typeof TR!=='undefined'&&TR.wx&&TR.wx.k<1)||!!m.amb||(WS.flash&&now-WS.flash<460)||(WS.fade&&now-WS.fade<230)||(WS.fadeIn&&now-WS.fadeIn<280);}
-function hdOverlay(now,composed){const ctx=WS.ctx,m=WS.m,vw=WS.vw,vh=WS.vh,still=gfxStill(),ts=still?0:now,dun=m.kind==='dungeon';
+  return w!=='clear'||(typeof TR!=='undefined'&&TR.wx&&TR.wx.k<1)||!!m.amb||(WS.flash&&now-WS.flash<460)||(WS.fade&&now-WS.fade<230)||(WS.fadeIn&&now-WS.fadeIn<280);}
+// v0.6.3: how far the ground at the focus moves on screen per art px of camera travel (x, z), so the full screen weather and theme
+// layers scroll with the world (wfxTiled) instead of sitting still on the glass
+function hdOvOffset(o){const p=HD.pt,M=HD.mats.vp,cx=HD.cam.x,cz=HD.cam.z;h2Proj(p,M,cx,0,cz);const x0=p[0],y0=p[1];h2Proj(p,M,cx+16,0,cz);const kx=(p[0]-x0)/2*WS.vw/16;
+  h2Proj(p,M,cx,0,cz+16);const kz=-(p[1]-y0)/2*WS.vh/16;o[0]=cx*kx;o[1]=cz*kz;return o;}
+const HOV=[0,0];
+// the 2D canvas over the GL frame: only weather, the cave and dungeon theme layers, the battle flash and fades. The drifting ambience
+// particles (sparkles, snow, wind, butterflies, motes, lanterns) are in the GL scene since v0.6.3 (hdWfx), anchored in the world.
+function hdOverlay(now,composed){const ctx=WS.ctx,m=WS.m,vw=WS.vw,vh=WS.vh,still=gfxStill(),ts=still?0:now;
   if(composed){hdBlit();HD.ovClear=null;}
   else{// nothing to show and already clear: leave the 2D canvas alone (no repaint, no recomposite)
     const busy=hdOverlayBusy(m,now,still);if(!busy&&HD.ovClear===WS.cv)return;HD.ovClear=busy?null:WS.cv;
-    ctx.setTransform(1,0,0,1,0,0);ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';ctx.clearRect(0,0,vw,vh);if(!busy)return;}
-  ctx.setTransform(1,0,0,1,0,0);ctx.globalAlpha=1;ctx.imageSmoothingEnabled=false;
-  if(!still){
-    if(m.kind==='field'&&G.cleared[m.s]){for(let i=0;i<14;i++){const sx=Math.floor((i*89+now/45)%vw),sy=Math.floor((i*67+Math.sin(now/700+i)*10-now/90)%vh+vh)%vh;ctx.fillStyle=i%3?'#fff2a0':'#ffd04a';ctx.fillRect(sx,sy,1,1);if(Math.floor(now/200+i)%3===0)ctx.fillRect(sx-1,sy,3,1);}}
-    if(!dun){if(m.theme==='snow'){ctx.fillStyle='#ffffff';for(let i=0;i<46;i++){const sx=(i*53+now/40*(1+i%3))%vw,sy=(i*97+now/25*(1+(i%2)))%vh;ctx.fillRect(Math.floor(sx),Math.floor(sy),1+(i%5===0),1);}}
-      if(m.theme==='heights'){ctx.fillStyle='rgba(255,255,255,.5)';for(let i=0;i<8;i++){const sx=(i*97+now/12)%(vw+40)-20,sy=(i*61)%vh;ctx.fillRect(Math.floor(sx),sy,10,1);}}
-      if(m.theme==='meadow'){for(let i=0;i<3;i++){const sx=Math.floor((i*131+now/30)%(vw+20))-10,sy=Math.floor((i*71)%vh+Math.sin(now/300+i)*4);ctx.fillStyle=['#f6e06a','#ffffff','#f08ab0'][i];ctx.fillRect(sx,sy,2,1);if(Math.floor(now/120+i)%2){ctx.fillRect(sx-1,sy-1,1,1);ctx.fillRect(sx+2,sy-1,1,1);}}}
-      if(m.theme==='void'){for(let i=0;i<12;i++){const sx=Math.floor((i*79+now/50)%vw),sy=Math.floor((i*53-now/40)%vh+vh)%vh;ctx.fillStyle=i%2?'#c8a0ff':'#5fc9a0';ctx.fillRect(sx,sy,1,1);}}}
-    else{ctx.globalAlpha=.55;for(let i=0;i<14;i++){const sx=Math.floor((i*79+now/80)%vw),sy=Math.floor((i*53-now/60)%vh+vh)%vh;ctx.fillStyle=DTHEME[m.theme].acc;ctx.fillRect(sx,sy,1,1);}ctx.globalAlpha=1;}}
-  if(m.kind==='field'||m.kind==='town')weatherFX(ctx,G.weather[m.s]||'clear',vw,vh,ts,false);
-  if(m.amb&&!still)themeFX(ctx,m,vw,vh,now);
-  if(m.kind==='town'&&G.cleared[m.s]&&!still){for(let i=0;i<7;i++){const p=((now/9000+i*.37)%1),lx=Math.floor((i*137+Math.sin(now/1500+i)*8)%vw),ly=Math.floor(vh-(p*(vh+30)));ctx.globalAlpha=Math.min(1,(1-p)*2);ctx.fillStyle='#ffb04a';ctx.fillRect(lx,ly,3,4);ctx.fillStyle='#fff0a0';ctx.fillRect(lx+1,ly+1,1,2);ctx.globalAlpha=1;}}
+    // v0.6.3: clear the whole bitmap. Above Low the world canvas holds a 2x bitmap (sprhd2.js ssCanvas) and this cleared, and drew,
+    // only its top left quarter: anything an earlier 2D frame left in the other three quarters stayed on screen over the GL view
+    ctx.setTransform(1,0,0,1,0,0);ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';ctx.clearRect(0,0,WS.cv._rw||vw,WS.cv._rh||vh);if(!busy){const k0=Math.max(1,(WS.cv._rw||vw)/vw);ctx.setTransform(k0,0,0,k0,0,0);return;}}
+  // frames of the game loop draw the overlay at the canvas's own scale (the whole view); composed frames (tests) at logical size, like hdBlit
+  const k=composed?1:Math.max(1,(WS.cv._rw||vw)/vw);
+  ctx.setTransform(k,0,0,k,0,0);ctx.globalAlpha=1;ctx.imageSmoothingEnabled=false;
+  let w=(m.kind==='field'||m.kind==='town')?(G.weather[m.s]||'clear'):null;const amb=m.amb&&!still;if(w==='clear'&&!(typeof TR!=='undefined'&&TR.wx&&TR.wx.k<1))w=null;
+  if(w||amb){hdOvOffset(HOV);wfxTiled(ctx,vw,vh,HOV[0],HOV[1],c=>{if(w)weatherFX(c,w,vw,vh,ts,false);if(amb)themeFX(c,m,vw,vh,now);});}
   if(WS.flash&&now-WS.flash<460){const p=(now-WS.flash)/460;ctx.fillStyle=`rgba(255,255,255,${Math.floor(p*7)%2?0.85:0})`;ctx.fillRect(0,0,vw,vh);
     ctx.fillStyle='#0a0612';for(let i=0;i<8;i++){const a=i/8*Math.PI*2+p*4;ctx.save();ctx.translate(vw/2,vh/2);ctx.rotate(a);ctx.fillRect(0,-3,Math.max(vw,vh)*p,6);ctx.restore();}}
   if(WS.fade&&now-WS.fade<230){ctx.fillStyle=`rgba(8,4,2,${(now-WS.fade)/230})`;ctx.fillRect(0,0,vw,vh);}
-  else if(WS.fadeIn&&now-WS.fadeIn<280){ctx.fillStyle=`rgba(8,4,2,${1-(now-WS.fadeIn)/280})`;ctx.fillRect(0,0,vw,vh);}}
+  else if(WS.fadeIn&&now-WS.fadeIn<280){ctx.fillStyle=`rgba(8,4,2,${1-(now-WS.fadeIn)/280})`;ctx.fillRect(0,0,vw,vh);}
+  {const k0=Math.max(1,(WS.cv._rw||vw)/vw);ctx.setTransform(k0,0,0,k0,0,0);}}// leave the canvas in its own scale for the 2D renderer
 // ----- taps: through the camera. A tap on a character picks its tile; otherwise a ray walks the height map to the first block or ground -----
 function hdPick(e){const cv=WS.cv;if(!cv||!WS.m||!HD.S)return null;const r=cv.getBoundingClientRect();if(!r.width||!r.height)return null;
   const nx=(e.clientX-r.left)/r.width*2-1,ny=1-(e.clientY-r.top)/r.height*2;
@@ -17719,6 +17951,7 @@ Object.assign(window.__A,{HB,HD_BATTLE,HD_FLOOR,HD_LOOK,hbInfo,hbWanted,hbQ,hbLo
 Object.assign(window.__A,{iconCv,H2Atlas,HD,HD2D,hdActive,hdWant,hdTierQ,hdCfgOn,hdPick:e=>hdPick(e),mapPoint:e=>mapPoint(e),hdBake:m=>hdBake(m),TR,worldDraw2:n=>worldDraw(n)});
 Object.assign(window.__A,{SC58:{hdSmall:(c,s,p)=>hdSmall(c,s,p),hdBlob2:()=>hdBlob2(),H2F,HD_SPR,hbLit:c=>hbLit(c),hbUnitLight:(u,K,n)=>hbUnitLight(u,K,n),get cu(){return HB.cu;}}});// v0.5.8 sprites in the scene (tests)
 try{Object.defineProperty(window.__A,'TW',{get:()=>TW,configurable:true});}catch(e){}// v0.6.3 twists (tests)
+Object.assign(window.__A,{W63:{WFX,WMAP,HW,MK,MKN,MAPICO_NAME,wfxRun:(...a)=>wfxRun(...a),wfxBirds:(...a)=>wfxBirds(...a),hdGatePart:m=>hdGatePart(m),mapMarks:m=>mapMarks(m),drawMini:()=>drawMini(),drawWorldMap:()=>drawWorldMap(),worldGraph:()=>worldGraph(),objCanvas:(a,b,c)=>objCanvas(a,b,c),get WM(){return typeof WMS!=="undefined"?WMS:null;}}});// v0.6.3 world pass (tests)
 boot();
 })();
 </script>

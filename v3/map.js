@@ -64,7 +64,9 @@ function mapIcoDraw(x,k,cx,cy,size){const R=mapIcoRects(k);if(!R)return false;co
 function drawMarks(x,m,list,sc,ox,oy){x.textAlign='center';x.textBaseline='middle';x.font=`800 ${Math.max(7,Math.round(sc*1.15))}px sans-serif`;
   list.forEach(o=>{const M=MK[o.k]||['#fff','•'],px=ox+(o.x+.5)*sc,py=oy+(o.y+.5)*sc;
     if(o.dir){const v=SIDE_V[o.dir],ar={n:'▲',s:'▼',e:'▶',w:'◀'}[o.dir],d=Math.max(8,sc*1.8);x.fillStyle='rgba(0,0,0,.7)';x.fillText(ar,px-v[0]*d+1,py-v[1]*d+1);x.fillStyle='#ffe08a';x.fillText(ar,px-v[0]*d,py-v[1]*d);}
-    if(mapIcoDraw(x,mapIcoKey(o),px,py,Math.max(10,Math.round(sc*2.4))))return;x.fillStyle='rgba(0,0,0,.6)';x.fillText(M[1],px+1,py+1);x.fillStyle=M[0];x.fillText(M[1],px,py);});}
+    if(mapIcoDraw(x,mapIcoKey(o),px,py,Math.max(10,Math.round(sc*2.4))))return;const dim=MK_DONE[o.k];if(dim)x.globalAlpha=.45;x.fillStyle='rgba(0,0,0,.6)';x.fillText(M[1],px+1,py+1);x.fillStyle=M[0];x.fillText(M[1],px,py);if(dim)x.globalAlpha=1;});}
+// opened chests (the chest itself has vanished from the world): left off the minimap, dimmed on the full map
+const MK_DONE={chestopen:1,vaultopen:1,keyopen:1};
 function drawPlayer(x,sc,px,py){const d=WS.dir||'d';x.save();x.translate(px,py);x.rotate({u:-Math.PI/2,r:0,d:Math.PI/2,l:Math.PI}[d]||0);const s=Math.max(4,sc*.9);
   x.fillStyle='#000';x.beginPath();x.moveTo(s+1,0);x.lineTo(-s*.7,-s*.8);x.lineTo(-s*.7,s*.8);x.closePath();x.fill();x.fillStyle='#ffffff';x.beginPath();x.moveTo(s,0);x.lineTo(-s*.6,-s*.65);x.lineTo(-s*.6,s*.65);x.closePath();x.fill();x.restore();}
 // ----- minimap (HUD) -----
@@ -73,7 +75,8 @@ function miniOn(){const c=META.cfg.minimap;if(c===true||c===false)return c;if(!M
 function drawMini(){const cv=document.getElementById('mmap');if(!cv)return;const m=WS.m;if(!m||!G||!miniOn()||m.archive&&false){cv.style.display='none';return;}cv.style.display='block';
   const W=cv.width,H=cv.height,x=cv.getContext('2d'),sc=4,base=mapBase(m);x.imageSmoothingEnabled=false;x.fillStyle='#0a0710';x.fillRect(0,0,W,H);
   const ox=Math.round(W/2-(WS.x+.5)*sc),oy=Math.round(H/2-(WS.y+.5)*sc);x.drawImage(base,ox,oy,m.w*sc,m.h*sc);
-  const vis=mapMarks(m).filter(o=>Math.abs(o.x-WS.x)<W/sc&&Math.abs(o.y-WS.y)<H/sc);drawMarks(x,m,vis,sc,ox,oy);drawPlayer(x,sc,W/2,H/2);}
+  // v0.6.3: opened chests are gone from the world, so the minimap leaves them out (the full map shows them dimmed)
+  const vis=mapMarks(m).filter(o=>!MK_DONE[o.k]&&Math.abs(o.x-WS.x)<W/sc&&Math.abs(o.y-WS.y)<H/sc);drawMarks(x,m,vis,sc,ox,oy);drawPlayer(x,sc,W/2,H/2);}
 // v0.5.0 1.6: the minimap no longer depends on the weather chip drawing cleanly (an unknown sky used to stop it), and every world render makes sure it is there
 function ensureMini(){try{if(V.screen==='world'&&!document.getElementById('mmap')){const wv=document.querySelector('.wview');if(wv){wv.insertAdjacentHTML('beforeend','<canvas id="mmap" class="mmap" width="112" height="84" aria-hidden="true"></canvas>');}}drawMini();}catch(e){}}
 {const wu0=wkwUpdate;wkwUpdate=function(){try{wu0.apply(this,arguments);}catch(e){try{wdLog('wkwUpdate: '+e.message);}catch(_){}}ensureMini();};}
@@ -152,46 +155,132 @@ function worldGraph(){
   return {nodes,edges};
 }
 const WG_COL={town:'#ffe8a0',field:'#8ec06a',dungeon:'#c89aff',cave:'#5ad0ff',fort:'#e07a5a'};
+// ----- v0.6.3: the world map as an illustrated, code drawn chart -----
+// A parchment sheet (grain, stains, burnt edge, compass rose); each area drawn as a little vignette in its realm's colours: towns as
+// clusters of roofs, fields as countryside with a road through it, dungeons as dark towers (a gold beacon once relit), caves as rock arches,
+// fortresses as gatehouses. Roads join the gates (dashed and red past a sealed gate), places not yet visited sit under clouds with a "?",
+// a red pin marks the party, a tick marks a looted cave or fortress. Names are written under the places when there is room; tapping a
+// place shows its name (on a phone they are often too small to write out). Everything is drawn in code from cached sprites, once per open,
+// resize or tap (no animation). State: WMS (not saved).
+const WMS={sel:null,hit:[],t:0,pt:null};
+const WM_LAND={meadow:['#b5c98a','#8fae62','#6f9248'],coast:['#e6d6a0','#9cc4c8','#5f9aa8'],snow:['#eef0ee','#c8d6de','#9fb4c0'],heights:['#cdbb8e','#a8956a','#7f6e4c'],cave:['#c49a78','#9a6448','#e0703a'],void:['#b8a8cc','#8d78ac','#5fc9a0']};
+function wmTheme(s){try{return p2BaseTheme(s);}catch(e){return 'meadow';}}
+function wmRng(k){let h=hashS(String(k))>>>0;return ()=>{h=(h*1664525+1013904223)>>>0;return h/4294967296;};}
+const WMC={};// sprite cache: key -> canvas
+function wmSpr(key,w,h,fn){let c=WMC[key];if(c)return c;c=WMC[key]=mkCv(Math.max(1,Math.round(w)),Math.max(1,Math.round(h)));const x=c.getContext('2d');fn(x,c.width,c.height);return c;}
+// the parchment, once per size
+function wmPaper(W,H){return wmSpr('paper:'+W+'x'+H,W,H,(x,w,h)=>{const R=wmRng('paper'+w+'x'+h);
+  const g=x.createRadialGradient(w/2,h/2,Math.min(w,h)*.2,w/2,h/2,Math.hypot(w,h)*.58);g.addColorStop(0,'#f1e2bc');g.addColorStop(.7,'#e2cb98');g.addColorStop(1,'#b8925a');x.fillStyle=g;x.fillRect(0,0,w,h);
+  for(let i=0;i<w*h/90;i++){x.fillStyle=R()<.5?'rgba(120,84,40,.07)':'rgba(255,250,230,.12)';x.fillRect(Math.floor(R()*w),Math.floor(R()*h),1+Math.floor(R()*2),1);}
+  for(let i=0;i<5;i++){const cx=R()*w,cy=R()*h,r=20+R()*Math.min(w,h)*.12,sg=x.createRadialGradient(cx,cy,r*.2,cx,cy,r);sg.addColorStop(0,'rgba(150,108,56,.10)');sg.addColorStop(1,'rgba(150,108,56,0)');x.fillStyle=sg;x.fillRect(cx-r,cy-r,r*2,r*2);}
+  x.strokeStyle='rgba(90,58,26,.55)';x.lineWidth=2;x.strokeRect(6,6,w-12,h-12);x.strokeStyle='rgba(90,58,26,.3)';x.lineWidth=1;x.strokeRect(10,10,w-20,h-20);
+  const e=x.createLinearGradient(0,0,0,h);e.addColorStop(0,'rgba(70,40,14,.35)');e.addColorStop(.04,'rgba(70,40,14,0)');e.addColorStop(.96,'rgba(70,40,14,0)');e.addColorStop(1,'rgba(70,40,14,.35)');x.fillStyle=e;x.fillRect(0,0,w,h);
+  const e2=x.createLinearGradient(0,0,w,0);e2.addColorStop(0,'rgba(70,40,14,.35)');e2.addColorStop(.04,'rgba(70,40,14,0)');e2.addColorStop(.96,'rgba(70,40,14,0)');e2.addColorStop(1,'rgba(70,40,14,.35)');x.fillStyle=e2;x.fillRect(0,0,w,h);});}
+function wmCompass(x,cx,cy,r){x.save();x.translate(cx,cy);x.globalAlpha=.75;x.strokeStyle='#6a4a24';x.lineWidth=1;x.beginPath();x.arc(0,0,r*.72,0,7);x.stroke();
+  for(let i=0;i<4;i++){x.rotate(Math.PI/2);x.fillStyle=i%2?'#8a6236':'#5a3a1a';x.beginPath();x.moveTo(0,-r);x.lineTo(r*.18,0);x.lineTo(-r*.18,0);x.closePath();x.fill();}
+  x.rotate(Math.PI/4);for(let i=0;i<4;i++){x.rotate(Math.PI/2);x.fillStyle='#a8865a';x.beginPath();x.moveTo(0,-r*.55);x.lineTo(r*.1,0);x.lineTo(-r*.1,0);x.closePath();x.fill();}
+  x.restore();x.save();x.globalAlpha=.8;x.fillStyle='#5a3a1a';x.font=`800 ${Math.max(9,Math.round(r*.42))}px Nunito,sans-serif`;x.textAlign='center';x.textBaseline='middle';x.fillText('N',cx,cy-r-Math.max(6,r*.28));x.restore();}
+// one place, drawn in a box of s x s px centred on the sprite
+function wmVignette(kind,th,s,st){const k=`v:${kind}:${th}:${s}:${st||''}`;return wmSpr(k,s,s,(x,w,h)=>{const L=WM_LAND[th]||WM_LAND.meadow,u=w/40,R=wmRng(k),f=(c,a,b,ww,hh)=>{x.fillStyle=c;x.fillRect(Math.round(a*u),Math.round(b*u),Math.max(1,Math.round(ww*u)),Math.max(1,Math.round(hh*u)));};
+  const ell=(c,a,b,rx,ry)=>{x.fillStyle=c;x.beginPath();x.ellipse(a*u,b*u,rx*u,ry*u,0,0,7);x.fill();};
+  const tri=(c,a,b,c2,d,e,g)=>{x.fillStyle=c;x.beginPath();x.moveTo(a*u,b*u);x.lineTo(c2*u,d*u);x.lineTo(e*u,g*u);x.closePath();x.fill();};
+  const ink='#3a2614';
+  // the ground patch under every place (soft edged)
+  {const g=x.createRadialGradient(w/2,h*.58,w*.1,w/2,h*.58,w*.5);g.addColorStop(0,L[0]);g.addColorStop(.55,L[0]+'f0');g.addColorStop(.8,L[0]+'80');g.addColorStop(1,L[0]+'00');x.fillStyle=g;x.fillRect(0,0,w,h);}
+  const tree=(a,b,sz)=>{if(th==='snow'){tri('#5a7a6a',a,b-sz*2.2,a-sz,b,a+sz,b);tri('#ffffff',a,b-sz*2.2,a-sz*.45,b-sz*1.2,a+sz*.45,b-sz*1.2);}
+    else if(th==='coast'){f('#7a5a32',a-.3,b-sz*2,.7,sz*2);ell('#4f8a3a',a-sz*.6,b-sz*2,sz*.8,sz*.3);ell('#4f8a3a',a+sz*.6,b-sz*2,sz*.8,sz*.3);}
+    else if(th==='void'){tri('#8a5ad0',a,b-sz*2,a-sz*.5,b,a+sz*.5,b);tri('#d8c0ff',a,b-sz*2,a-sz*.15,b-sz,a+sz*.2,b-sz);}
+    else if(th==='cave'){tri('#5a4038',a,b-sz*1.6,a-sz,b,a+sz,b);f('#ff8a3a',a-.3,b-sz*.6,.7,.7);}
+    else{f('#6a4424',a-.3,b-sz,.7,sz);ell(L[2],a,b-sz*1.4,sz*.9,sz*.85);ell(L[1],a-sz*.25,b-sz*1.6,sz*.45,sz*.4);}};
+  if(kind==='field'){
+    if(th==='heights'||th==='snow'){tri(L[2],8,20,15,9,22,20);tri(L[1],18,22,26,8,34,22);tri('#ffffff',26,8,24,11.5,28.5,11.5);tri('#ffffff',15,9,13.5,11.5,16.5,11.5);}
+    else if(th==='coast'){ell(L[1],30,30,10,5);ell(L[2],32,31,6,2.5);}
+    else if(th==='cave'){tri('#6a4434',22,22,28,10,34,22);ell('#e0703a',28,11,2,1);}
+    else if(th==='void'){ell('#5fc9a0',30,28,4,2);}
+    x.strokeStyle='#8a6236';x.lineWidth=Math.max(1.5,u*1.6);x.setLineDash([u*2.2,u*1.4]);x.beginPath();x.moveTo(2*u,30*u);x.quadraticCurveTo(18*u,20*u,38*u,27*u);x.stroke();x.setLineDash([]);
+    for(let i=0;i<7;i++){const a=4+R()*32,b=14+R()*22;if(Math.abs(b-(30-(a/38)*4-Math.sin(a/38*Math.PI)*6))<3)continue;tree(a,b,2.2+R()*1.4);}
+    for(let i=0;i<10;i++)f(L[2],3+R()*34,16+R()*20,.8,.8);}
+  else if(kind==='town'){const T=THEME[th]||THEME.meadow,roofs=(T.roof||['#a84a3a','#4a6aa8','#8a5a2a','#4a4a6a']);
+    ell(shade(L[0],.88),20,27,17,9);x.strokeStyle='rgba(90,64,34,.6)';x.lineWidth=Math.max(1,u*.8);x.beginPath();x.ellipse(20*u,27*u,16*u,8.5*u,0,0,7);x.stroke();
+    const H=[[8,22,7],[20,18,9],[30,23,7],[14,30,7],[26,31,8]];
+    H.forEach(([a,b,ww],i)=>{const hh=ww*.62,r=roofs[i%roofs.length];f(ink,a-ww/2-.4,b-hh-.4,ww+.8,hh+.8);f(th==='snow'?'#e8e4dc':'#efe0bc',a-ww/2,b-hh,ww,hh);
+      tri(ink,a-ww/2-1.2,b-hh+.4,a,b-hh-ww*.55-.6,a+ww/2+1.2,b-hh+.4);tri(r,a-ww/2-.6,b-hh,a,b-hh-ww*.5,a+ww/2+.6,b-hh);if(th==='snow')tri('#ffffff',a-ww*.22,b-hh-ww*.26,a,b-hh-ww*.5,a+ww*.22,b-hh-ww*.26);
+      f('#5a3a20',a-.7,b-2.2,1.4,2.2);f('#ffd98a',a-ww/2+1,b-hh+1.2,1.3,1.3);});
+    f('#3a2a1a',20,6,.5,8);f('#c0392b',20.5,6,4,2.4);}
+  else if(kind==='dungeon'){const D=(typeof DTHEME!=='undefined'&&DTHEME[th])||{acc:'#c89aff'},lit=st==='lit';
+    ell('rgba(40,26,14,.25)',20,33,13,3);f(ink,11,13,18,21);f('#5e5868',12,14,16,19);f('#4a4452',12,14,3,19);for(let i=0;i<4;i++)f('#5e5868',12+i*4.4,11,2.6,3.4);
+    f('#0c0810',17,23,6,10);ell('#0c0810',20,23,3,2.6);f('#7a7486',12,20,16,.8);
+    if(lit){const g=x.createRadialGradient(20*u,6*u,1,20*u,6*u,9*u);g.addColorStop(0,'rgba(255,230,120,.95)');g.addColorStop(1,'rgba(255,200,80,0)');x.fillStyle=g;x.fillRect(11*u,-3*u,18*u,18*u);tri('#ffb03a',20,1,17.5,9,22.5,9);tri('#fff0a0',20,4,18.8,9,21.2,9);}
+    else{ell(D.acc,20,27,1.4,1.4);f(D.acc,14,17,1,2);f(D.acc,25,17,1,2);}}
+  else if(kind==='cave'){ell('rgba(40,26,14,.25)',20,33,14,3);ell('#6a6470',20,26,14,10);ell('#8a8494',20,24,11,8);ell('#0a070c',20,29,5.5,6);f('#0a070c',14.5,29,11,4);
+    f('#9ad0ff',17,32,6,.8);tree(6,33,2.4);tree(34,32,2.2);}
+  else if(kind==='fort'){ell('rgba(40,26,14,.25)',20,34,15,3);f(ink,7,13,26,21);f('#7a7a86',8,18,24,15);f('#5a5a66',8,12,7,21);f('#5a5a66',25,12,7,21);
+    for(let i=0;i<3;i++){f('#5a5a66',8+i*2.4,10,1.6,2.4);f('#5a5a66',25+i*2.4,10,1.6,2.4);}f('#c0392b',10,17,3,7);f('#c0392b',27,17,3,7);f('#ffd04a',10.8,18.5,1.4,1.4);f('#ffd04a',27.8,18.5,1.4,1.4);
+    f('#120c10',17,24,6,9);ell('#120c10',20,24,3,2.4);for(let i=0;i<3;i++)f('#3a2a1a',17.8+i*1.8,23,.5,10);}
+  if(st==='done'){ell('#2f7a3a',33,8,4.4,4.4);x.strokeStyle='#ffffff';x.lineWidth=Math.max(1.4,u*1.1);x.beginPath();x.moveTo(30.6*u,8*u);x.lineTo(32.4*u,10*u);x.lineTo(35.6*u,6*u);x.stroke();}});}
+// clouds over a place the party has not been to yet
+function wmFog(s){return wmSpr('fog:'+s,s,s,(x,w,h)=>{const R=wmRng('fog'+s);for(let i=0;i<9;i++){const cx=w*(.2+R()*.6),cy=h*(.3+R()*.45),r=w*(.16+R()*.12);
+  const g=x.createRadialGradient(cx,cy,r*.2,cx,cy,r);g.addColorStop(0,'rgba(250,246,236,.96)');g.addColorStop(.7,'rgba(236,228,210,.85)');g.addColorStop(1,'rgba(236,228,210,0)');x.fillStyle=g;x.beginPath();x.arc(cx,cy,r,0,7);x.fill();}
+  x.strokeStyle='rgba(120,100,80,.35)';x.lineWidth=1;for(let i=0;i<3;i++){const cx=w*(.3+R()*.4),cy=h*(.35+R()*.3);x.beginPath();x.arc(cx,cy,w*.12,Math.PI*1.1,Math.PI*1.9);x.stroke();}});}
+function wmPin(x,cx,cy,r){x.save();x.fillStyle='rgba(40,20,10,.3)';x.beginPath();x.ellipse(cx,cy+1,r*.7,r*.25,0,0,7);x.fill();
+  x.fillStyle='#8a1a1a';x.beginPath();x.moveTo(cx,cy);x.lineTo(cx-r*.55,cy-r*1.3);x.arc(cx,cy-r*1.6,r*.62,Math.PI*.82,Math.PI*.18,false);x.closePath();x.fill();
+  x.fillStyle='#e04a3a';x.beginPath();x.arc(cx,cy-r*1.62,r*.5,0,7);x.fill();x.fillStyle='#fff4d8';x.beginPath();x.arc(cx-r*.15,cy-r*1.75,r*.18,0,7);x.fill();x.restore();}
+function wmLabel(x,txt,cx,cy,fs,col,bold){x.font=`${bold?800:700} ${fs}px Nunito,sans-serif`;x.textAlign='center';x.textBaseline='middle';const w=x.measureText(txt).width+fs*.9,h=fs*1.45;
+  x.fillStyle='rgba(248,238,212,.92)';x.strokeStyle='rgba(90,58,26,.75)';x.lineWidth=1;const rx=cx-w/2,ry=cy-h/2,r=h/2;x.beginPath();x.moveTo(rx+r,ry);x.arcTo(rx+w,ry,rx+w,ry+h,r);x.arcTo(rx+w,ry+h,rx,ry+h,r);x.arcTo(rx,ry+h,rx,ry,r);x.arcTo(rx,ry,rx+w,ry,r);x.closePath();x.fill();x.stroke();
+  x.fillStyle=col||'#3a2614';x.fillText(txt,cx,cy+.5);return w;}
+function wmShown(gr){const byId={};gr.nodes.forEach(n=>byId[n.id]=n);const show={};gr.nodes.forEach(n=>{if(n.seen)show[n.id]=2;});
+  gr.edges.forEach(e=>{if(show[e.a]===2&&!show[e.b]&&byId[e.b].kind!=='dungeon'&&byId[e.b].kind!=='cave'&&byId[e.b].kind!=='fort')show[e.b]=1;});return {byId,show};}
+function wmName(n,full){if(!full)return n.locked?'Sealed: unexplored':'Unexplored';return n.label+(n.kind==='fort'?' (fortress)':n.kind==='cave'?' (cave)':n.kind==='dungeon'?(n.cleared?' (relit)':' (dungeon)'):'');}
 function drawWorldMap(){
   const cv=document.getElementById('wmap');if(!cv||!G)return;
   const gr=worldGraph(),here=WS.m?(WS.m.id[0]==='g'?'f'+WS.m.s:WS.m.id):null;
-  // which nodes show: visited ones, plus the neighbour of a visited node (as "?")
-  const byId={};gr.nodes.forEach(n=>byId[n.id]=n);
-  const show={};gr.nodes.forEach(n=>{if(n.seen)show[n.id]=2;});
-  gr.edges.forEach(e=>{if(show[e.a]===2&&!show[e.b]&&byId[e.b].kind!=='dungeon'&&byId[e.b].kind!=='cave'&&byId[e.b].kind!=='fort')show[e.b]=1;});
-  const nodes=gr.nodes.filter(n=>show[n.id]);if(!nodes.length)return;
+  const {byId,show}=wmShown(gr),nodes=gr.nodes.filter(n=>show[n.id]);if(!nodes.length)return;
   const xs=nodes.map(n=>n.x),ys=nodes.map(n=>n.y),x0=Math.min(...xs),x1=Math.max(...xs),y0=Math.min(...ys),y1=Math.max(...ys);
-  const box=cv.parentElement,maxW=Math.min(900,(box.clientWidth||340)-8),maxH=Math.max(220,(window.innerHeight||600)*.6);
-  const gw=x1-x0+1,gh=y1-y0+1,cell=Math.floor(Math.max(48,Math.min(maxW/gw,maxH/gh,150)));
-  cv.width=Math.round(gw*cell);cv.height=Math.round(gh*cell);cv.style.width=cv.width+'px';cv.style.height=cv.height+'px';
-  const x=cv.getContext('2d');x.imageSmoothingEnabled=false;x.fillStyle='#0a0710';x.fillRect(0,0,cv.width,cv.height);
-  const bw=Math.round(cell*.84),bh=Math.round(cell*.52),ctr=n=>[(n.x-x0+.5)*cell,(n.y-y0+.5)*cell];
-  x.textAlign='center';x.textBaseline='middle';
-  // links first, with an arrowhead and a direction letter at each gate
-  gr.edges.forEach(e=>{if(!show[e.a]||!show[e.b])return;const a=byId[e.a],b=byId[e.b],[ax,ay]=ctr(a),[bx,by]=ctr(b);
-    x.strokeStyle=e.locked?'#7a4a4a':'#b89a6a';x.lineWidth=Math.max(2,cell/22);x.setLineDash(e.locked?[5,4]:[]);x.beginPath();x.moveTo(ax,ay);x.lineTo(bx,by);x.stroke();x.setLineDash([]);
-    [[a,e.sa,ax,ay],[b,e.sb,bx,by]].forEach(([n,sd,px,py])=>{const v=GRID_V[sd]||[0,0],gx=px+v[0]*(bw/2+4),gy=py+v[1]*(bh/2+4);
-      x.fillStyle='#ffe08a';x.font=`800 ${Math.max(9,Math.round(cell/9))}px sans-serif`;x.fillText({n:'▲',s:'▼',e:'▶',w:'◀'}[sd]||'',gx+v[0]*5,gy+v[1]*5);});
-    if(e.locked){const mx=(ax+bx)/2,my=(ay+by)/2;x.fillStyle='#ff9a9a';x.font=`800 ${Math.max(10,Math.round(cell/8))}px sans-serif`;x.fillText('sealed',mx,my);}});
-  nodes.forEach(n=>{const [cx,cy]=ctr(n),full=show[n.id]===2,col=WG_COL[n.kind]||'#fff',isHere=n.id===here;
-    x.fillStyle=full?'#1d1426':'#14101a';x.strokeStyle=full?col:'#4a4252';x.lineWidth=isHere?3:1.5;
-    const rx=cx-bw/2,ry=cy-bh/2,r=7;x.beginPath();x.moveTo(rx+r,ry);x.arcTo(rx+bw,ry,rx+bw,ry+bh,r);x.arcTo(rx+bw,ry+bh,rx,ry+bh,r);x.arcTo(rx,ry+bh,rx,ry,r);x.arcTo(rx,ry,rx+bw,ry,r);x.closePath();x.fill();x.stroke();
-    if(isHere){x.strokeStyle='#fff';x.lineWidth=1;x.stroke();}
-    const fs=Math.max(9,Math.round(cell/8));x.font=`700 ${fs}px sans-serif`;
-    const lbl=full?n.label:(n.locked?'? (locked)':'?'),icon={town:'⌂',field:'≈',dungeon:'▼',cave:'◒',fort:'♜'}[n.kind]||'';
-    const txt=(full?icon+' ':'')+lbl;let f2=fs;x.font=`700 ${f2}px sans-serif`;while(x.measureText(txt).width>bw-8&&f2>7){f2--;x.font=`700 ${f2}px sans-serif`;}
-    x.fillStyle=full?col:'#7a7284';x.fillText(txt,cx,cy-(isHere||n.cleared||n.done?fs*.45:0));
-    if(isHere){x.fillStyle='#fff';x.font=`800 ${Math.max(8,fs-1)}px sans-serif`;x.fillText('YOU ARE HERE',cx,cy+fs*.75);}
-    else if(full&&(n.cleared||n.done)){x.fillStyle='#8fd08f';x.font=`700 ${Math.max(8,fs-2)}px sans-serif`;x.fillText(n.kind==='cave'||n.kind==='fort'?'looted':'relit',cx,cy+fs*.75);}
-  });
-}
+  const box=cv.parentElement,maxW=Math.min(980,(box.clientWidth||340)-8),vh=window.innerHeight||600,maxH=Math.max(200,vh*(vh<500?.72:.62));
+  const pad=.55,gw=x1-x0+1+pad*2,gh=y1-y0+1+pad*2,C=WMAP.cell,lo=vh<500?C[2]:C[0],cell=Math.floor(Math.max(lo,Math.min(maxW/gw,maxH/gh,C[1])));// short (landscape) screens: smaller places, the whole map in view
+  const cw=Math.round(gw*cell),ch=Math.round(gh*cell),dpr=Math.min(2,window.devicePixelRatio||1),W=Math.round(cw*dpr),H=Math.round(ch*dpr);
+  cv.width=W;cv.height=H;cv.style.width=cw+'px';cv.style.height=ch+'px';cv.style.maxWidth='100%';cv.style.height='auto';cv.style.aspectRatio=cw+'/'+ch;cv.style.imageRendering='auto';
+  const x=cv.getContext('2d'),c=cell*dpr,ctr=n=>[(n.x-x0+.5+pad)*c,(n.y-y0+.5+pad)*c];x.imageSmoothingEnabled=true;
+  x.drawImage(wmPaper(W,H),0,0);
+  // soft realm colour washes under each realm's places, then the roads
+  nodes.forEach(n=>{const [cx,cy]=ctr(n),L=WM_LAND[wmTheme(n.stage||0)]||WM_LAND.meadow,g=x.createRadialGradient(cx,cy,c*.1,cx,cy,c*.78);g.addColorStop(0,L[0]+'90');g.addColorStop(1,L[0]+'00');x.fillStyle=g;x.fillRect(cx-c,cy-c,c*2,c*2);});
+  gr.edges.forEach(e=>{if(!show[e.a]||!show[e.b])return;const a=byId[e.a],b=byId[e.b],[ax,ay]=ctr(a),[bx,by]=ctr(b),dx=bx-ax,dy=by-ay,l=Math.hypot(dx,dy)||1,R=wmRng(e.a+e.b),bend=(R()-.5)*.35*l;
+    const mx=(ax+bx)/2-dy/l*bend,my=(ay+by)/2+dx/l*bend,unk=show[e.a]===1||show[e.b]===1;
+    x.lineCap='round';x.strokeStyle='rgba(248,236,206,.85)';x.lineWidth=Math.max(3,c/11);x.setLineDash([]);x.beginPath();x.moveTo(ax,ay);x.quadraticCurveTo(mx,my,bx,by);x.stroke();
+    x.strokeStyle=e.locked?'#9a3a2a':unk?'rgba(110,80,46,.55)':'#7a5228';x.lineWidth=Math.max(1.6,c/26);x.setLineDash(e.locked||unk?[c/14,c/18]:[c/9,c/22]);x.beginPath();x.moveTo(ax,ay);x.quadraticCurveTo(mx,my,bx,by);x.stroke();x.setLineDash([]);
+    if(e.locked){const qx=(ax+2*mx+bx)/4,qy=(ay+2*my+by)/4,r=Math.max(5,c*.09);x.fillStyle='#f4e6c4';x.strokeStyle='#9a3a2a';x.lineWidth=Math.max(1.5,c/40);x.beginPath();x.arc(qx,qy,r,0,7);x.fill();x.stroke();
+      x.beginPath();x.moveTo(qx-r*.5,qy-r*.5);x.lineTo(qx+r*.5,qy+r*.5);x.moveTo(qx+r*.5,qy-r*.5);x.lineTo(qx-r*.5,qy+r*.5);x.stroke();}});
+  // the places
+  const vs=Math.round(c*WMAP.vig),showNames=cell>=WMAP.names,fs=Math.max(9,Math.min(15,Math.round(cell/8.5)))*dpr;WMS.hit=[];
+  nodes.forEach(n=>{const [cx,cy]=ctr(n),full=show[n.id]===2,th=wmTheme(n.stage||0),st=n.kind==='dungeon'&&n.cleared?'lit':(n.kind==='cave'||n.kind==='fort')&&n.done?'done':'';
+    x.drawImage(wmVignette(n.kind,th,vs,st),Math.round(cx-vs/2),Math.round(cy-vs/2));
+    if(!full){const fg=wmFog(vs);x.drawImage(fg,Math.round(cx-vs/2),Math.round(cy-vs/2));x.fillStyle='#6a4a2a';x.font=`800 ${Math.round(vs*.34)}px Nunito,sans-serif`;x.textAlign='center';x.textBaseline='middle';x.fillText('?',cx,cy+vs*.02);}
+    WMS.hit.push({id:n.id,x:cx,y:cy,r:vs*.5,label:wmName(n,full)});
+    if(showNames&&full&&n.id!==WMS.sel)wmLabel(x,n.label,cx,cy+vs*.5+fs*.2,Math.round(fs*.9),'#3a2614',false);});
+  // the party, then the tapped place's name on top
+  const H0=nodes.find(n=>n.id===here);if(H0){const [cx,cy]=ctr(H0);wmPin(x,cx+vs*.22,cy-vs*.08,Math.max(6,vs*.16));{const f2=Math.round(fs*.85);x.font=`800 ${f2}px Nunito,sans-serif`;const tw=x.measureText('You').width+f2*.9;wmLabel(x,'You',cx+vs*.22+Math.max(6,vs*.16)*.7+tw/2,cy-vs*.08-Math.max(6,vs*.16)*1.6,f2,'#8a1a1a',true);}}
+  if(WMS.sel){const h=WMS.hit.find(o=>o.id===WMS.sel);if(h)wmLabel(x,h.label,h.x,h.y+h.r+fs*.3,Math.round(fs*1.05),'#3a2614',true);}
+  wmCompass(x,W-c*.42,H-c*.42,Math.max(10,c*.22));
+  WMS.cell=cell;WMS.dpr=dpr;WMS.n=nodes.length;}
+// legend icons: the same sprites, small
+function wmLegendDraw(){document.querySelectorAll('canvas.wml').forEach(c=>{const x=c.getContext('2d'),k=c.dataset.k,s=c.width;x.clearRect(0,0,s,s);
+  if(k==='you'){wmPin(x,s/2,s*.86,s*.3);return;}if(k==='fog'){x.drawImage(wmVignette('field','meadow',s,''),0,0);x.drawImage(wmFog(s),0,0);x.fillStyle='#6a4a2a';x.font=`800 ${Math.round(s*.4)}px Nunito,sans-serif`;x.textAlign='center';x.textBaseline='middle';x.fillText('?',s/2,s/2);return;}
+  if(k==='sealed'){x.strokeStyle='#9a3a2a';x.lineWidth=2;x.setLineDash([4,3]);x.beginPath();x.moveTo(2,s/2);x.lineTo(s-2,s/2);x.stroke();x.setLineDash([]);x.fillStyle='#f4e6c4';x.beginPath();x.arc(s/2,s/2,s*.2,0,7);x.fill();x.stroke();return;}
+  const [kind,st]=k.split(':');x.drawImage(wmVignette(kind,'meadow',s,st||''),0,0);});}
 function mWorldMap(){
-  setTimeout(drawWorldMap,0);
-  return `<div class="modal mapmodal" data-act="xClose"><div class="panel box mapbox"><div class="mh"><h2>World map</h2></div>
-    <canvas id="wmap" class="fmap" aria-label="World map"></canvas>
-    <div class="maplegend"><span><b style="color:#ffe8a0">⌂</b> Town</span><span><b style="color:#8ec06a">≈</b> Field</span><span><b style="color:#c89aff">▼</b> Dungeon</span><span><b style="color:#5ad0ff">◒</b> Side cave</span><span><b style="color:#ffe08a">▲▼◀▶</b> Gate side</span><span><b style="color:#ff9a9a">- -</b> Sealed gate</span></div>
-    <p class="note">Boxes sit where the road leads, so a gate on the north edge points up the map. Places appear as you find them. Side caves are optional.</p></div></div>`;
+  setTimeout(()=>{drawWorldMap();wmLegendDraw();},0);
+  const L=[['town','Town'],['field','Field'],['dungeon','Dungeon'],['dungeon:lit','Relit dungeon'],['cave','Side cave'],['fort','Fortress'],['cave:done','Looted'],['you','You'],['fog','Not visited yet'],['sealed','Sealed gate']];
+  return `<div class="modal mapmodal" data-act="xClose"><div class="panel box mapbox wmbox"><div class="mh"><h2>World map</h2></div>
+    <canvas id="wmap" class="fmap wmap" data-act="wmTap" aria-label="World map"></canvas>
+    <div class="maplegend wmlegend">${L.map(([k,n])=>`<span><canvas class="wml" data-k="${k}" width="28" height="28"></canvas> ${n}</span>`).join('')}</div>
+    <p class="note">Tap a place to see its name. Roads follow the gates, so a gate on the north edge leads up the map. Places appear as you find them; side caves and fortresses are optional. Tap outside the map to close.</p></div></div>`;
 }
+// a tap on the map shows that place's name (and does not close the map); a tap on empty parchment hides it again
+document.addEventListener('pointerdown',e=>{if(e.target&&e.target.id==='wmap')WMS.pt={x:e.clientX,y:e.clientY,t:Date.now()};},true);
+ACT.wmTap=function(arg,el){const cv=el||document.getElementById('wmap');if(!cv)return;const p=WMS.pt;if(!p)return;const r=cv.getBoundingClientRect();if(!r.width)return;
+  const px=(p.x-r.left)*cv.width/r.width,py=(p.y-r.top)*cv.height/r.height;let best=null,bd=1e9;WMS.hit.forEach(o=>{const d=Math.hypot(o.x-px,o.y-py);if(d<o.r*1.1&&d<bd){bd=d;best=o;}});
+  WMS.sel=best?(WMS.sel===best.id?null:best.id):null;drawWorldMap();if(typeof sfx==='function'&&best)sfx('blip');};
+{const st=document.createElement('style');st.textContent='.wmbox .wmap{border:2px solid #6a4a24;border-radius:4px;background:#e2cb98;box-shadow:0 2px 10px rgba(0,0,0,.45);cursor:pointer;touch-action:manipulation}.wmlegend .wml{width:28px;height:28px;vertical-align:middle}.wmlegend span{display:inline-flex;align-items:center;gap:4px}';document.head.appendChild(st);}
 {const vm1=vModal;vModal=function(md){if(md&&md.type==='worldmap')return mWorldMap(md);return vm1.apply(this,arguments);};}
 function openWorldMap(){const prev=V.modal;V.modal={type:'worldmap',from:prev&&prev.type==='map'?prev:{type:'map'}};render();}
 ACT.worldMap=function(){if(!G||V.screen!=='world')return;openWorldMap();};

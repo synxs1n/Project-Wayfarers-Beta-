@@ -95,7 +95,9 @@ function hdStructCanvas(m,S){const dun=m.kind==='dungeon',T=dun?THEME[m.theme]||
   return cv;}
 // strips of every prop row: drawObjects (with every wrapper: dungeon props, boards, boats, gates, entrances) onto a row strip; their soft
 // ground shadows land on the ground canvases instead
-function hdBakeCards(m,S,g0,g1){const W=m.w*TS,SH=64,UP=58,CW=8,st=mkCv(W,SH),sc=st.getContext('2d',{willReadFrequently:true});
+function hdBakeCards(m,S,g0,g1){const fa=m.kind==='field'&&m.fortAt&&m.t[m.fortAt[1]]?m.fortAt:null,fc=fa?m.t[fa[1]][fa[0]]:null;// v0.6.3: no cave mouth card on the gatehouse
+  if(fa)m.t[fa[1]][fa[0]]='U';try{return hdBakeCards0(m,S,g0,g1);}finally{if(fa)m.t[fa[1]][fa[0]]=fc;}}
+function hdBakeCards0(m,S,g0,g1){const W=m.w*TS,SH=64,UP=58,CW=8,st=mkCv(W,SH),sc=st.getContext('2d',{willReadFrequently:true});
   const want=c=>H2_OBJ.indexOf(c)>=0||(c==='E'&&m.kind==='field');
   const pk=new H2Pack(2048),items=[];const sh0=shadowAt,c0=g0.getContext('2d'),c1=g1.getContext('2d');
   shadowAt=function(ctx,cx,cy,rx,ry){sh0(c0,cx,cy,rx,ry);sh0(c1,cx,cy,rx,ry);};
@@ -117,11 +119,49 @@ function hdBakeCards(m,S,g0,g1){const W=m.w*TS,SH=64,UP=58,CW=8,st=mkCv(W,SH),sc
   items.forEach(it=>{if(it.r.y+it.h>AH)return;ac.drawImage(it.cv,it.r.x,it.r.y);const u0=it.r.x,u1=it.r.x+it.w,v0=it.r.y,v1=it.r.y+it.h;// atlas pixels, scaled when the atlases merge
     const yt=(UP-it.t)*V,yb=(UP-it.t-it.h)*V;H2P.set([it.x0,yt,it.z,it.x0+it.w,yt,it.z,it.x0+it.w,yb,it.z,it.x0,yb,it.z]);bt.at(it.x0+it.w/2,it.z-8).quad(H2P,u0,v0,u1,v1,255,255,255,255,0,.45,.89,2|8);});
   return {cv:at,bt};}
+// v0.6.3: the fortress gatehouse in a field (sites.js) was painted flat into the ground art, with the cave mouth card standing in front
+// of it. In HD-2D it is now built like the buildings: two towers (front, sides, top, merlons) and a recessed curtain wall with the gate
+// arch and portcullis between them, over its 3 x 2 tile footprint (the 'U' tiles and the 'E' gate), textured from a small code drawn
+// sheet. The 2D view keeps its flat painting.
+const H2G={W:96,H:48,tw:14,th:40,ch:28,rec:6};
+function hdGateTex(){return hdSpr('gatehouse',H2G.W,H2G.H,(c)=>{const f=(col,x,y,w,h)=>{c.fillStyle=col;c.fillRect(x,y,w,h);};
+  const brick=(x,y,w,h,base,dk,lt,sd)=>{f(base,x,y,w,h);let r=sd;for(let yy=y+4;yy<y+h;yy+=5){f(dk,x,yy,w,1);const off=((yy-y)/5)%2?0:3;for(let xx=x+off;xx<x+w;xx+=6)f(dk,xx,yy-4,1,4);}
+    for(let i=0;i<w*h/40;i++){r=(r*1103515245+12345)>>>0;f(lt,x+r%w,y+(r>>8)%h,2,1);}};
+  // tower front (0,0 14x40): bricks, an arrow slit, a red banner with a gold mark, dark edges
+  brick(0,0,14,40,'#6e6e7a','#4a4a54','#8a8a96',7);f('#3a3a44',0,0,1,40);f('#3a3a44',13,0,1,40);f('#9a9aa6',0,0,14,1);
+  f('#120c10',6,6,2,7);f('#2a2a34',3,14,8,1);f('#c0392b',4,15,6,14);f('#9a2a20',4,27,2,2);f('#9a2a20',8,27,2,2);f('#ffd04a',6,18,2,3);f('#ffd04a',5,19,4,1);
+  // tower side (14,0 32x40)
+  brick(14,0,32,40,'#5c5c68','#40404a','#74747e',11);f('#9a9aa6',14,0,32,1);f('#120c10',29,8,2,6);
+  // curtain front (46,0 20x28): bricks, the gate arch with its portcullis, a keystone
+  brick(46,0,20,28,'#7a7a86','#55555f','#9a9aa6',5);f('#9a9aa6',46,0,20,1);
+  c.fillStyle='#120c10';c.beginPath();c.ellipse(56,12,6,5,0,Math.PI,0);c.fill();f('#120c10',50,12,12,16);
+  f('#3a2a1a',50,10,12,1);for(let i=0;i<4;i++)f('#3a2a1a',51+i*3,10,1,18);f('#3a2a1a',50,17,12,1);f('#3a2a1a',50,23,12,1);
+  f('#b0b0bc',55,5,2,2);f('#4a4a54',49,9,1,19);f('#4a4a54',62,9,1,19);
+  // merlons: tower (66,0 14x6), curtain (66,8 20x5), tower side (0,42 32x6); transparent gaps (cut out by the depth pass)
+  const mer=(x,y,w,h,base,lt)=>{f(base,x,y+h-2,w,2);for(let xx=x;xx<x+w;xx+=5){f(base,xx,y,Math.min(3,x+w-xx),h);f(lt,xx,y,Math.min(3,x+w-xx),1);}};
+  mer(66,0,14,6,'#6e6e7a','#9a9aa6');mer(66,8,20,5,'#7a7a86','#a8a8b4');mer(0,42,32,6,'#5c5c68','#8a8a96');});}
+function hdGatePart(m){if(!m||m.kind!=='field'||!m.fortAt)return null;const [fx,fy]=m.fortAt;return {b:{x:fx-1,y:fy-1,w:3,h:2,k:'gatehouse',door:[fx,fy]},cv:hdGateTex()};}
+function hdGateGeo(m,S,b,Q,U,Vv,p,V,bt){const G2=H2G,x0=b.x*TS,x1=x0+b.w*TS,zb=b.y*TS,zf=(b.y+b.h)*TS,tw=G2.tw,hT=G2.th*V,hC=G2.ch*V,zc=zf-G2.rec,xl=x0+tw,xr=x1-tw,mt=6*V,mc=5*V;
+  const top=hdRgb('#8a8a94').map(v=>Math.round(v*235)),ctop=hdRgb('#92929c').map(v=>Math.round(v*235)),flat=(a,c)=>{H2P.set(a);bt.quad(H2P,-1,0,-1,0,c[0],c[1],c[2],255,0,1,0,8);};
+  [[x0,xl],[xr,x1]].forEach(([a,e])=>{
+    Q([a,hT,zf,e,hT,zf,e,0,zf,a,0,zf],U(p,0),Vv(p,0),U(p,tw),Vv(p,G2.th),255,[0,0,1],2|8);// front
+    Q([a,hT,zb,a,hT,zf,a,0,zf,a,0,zb],U(p,14),Vv(p,0),U(p,46),Vv(p,G2.th),255,[-1,0,0],8);// west side
+    Q([e,hT,zf,e,hT,zb,e,0,zb,e,0,zf],U(p,14),Vv(p,0),U(p,46),Vv(p,G2.th),255,[1,0,0],8);// east side
+    flat([a,hT,zb,e,hT,zb,e,hT,zf,a,hT,zf],top);
+    Q([a,hT+mt,zf,e,hT+mt,zf,e,hT,zf,a,hT,zf],U(p,66),Vv(p,0),U(p,80),Vv(p,6),255,[0,0,1],2|8);// merlons, front and back
+    Q([a,hT+mt,zb+.5,e,hT+mt,zb+.5,e,hT,zb+.5,a,hT,zb+.5],U(p,66),Vv(p,0),U(p,80),Vv(p,6),255,[0,0,1],8);
+    Q([a+.5,hT+mt,zb,a+.5,hT+mt,zf,a+.5,hT,zf,a+.5,hT,zb],U(p,0),Vv(p,42),U(p,32),Vv(p,48),255,[-1,0,0],8);
+    Q([e-.5,hT+mt,zf,e-.5,hT+mt,zb,e-.5,hT,zb,e-.5,hT,zf],U(p,0),Vv(p,42),U(p,32),Vv(p,48),255,[1,0,0],8);});
+  Q([xl,hC,zc,xr,hC,zc,xr,0,zc,xl,0,zc],U(p,46),Vv(p,0),U(p,66),Vv(p,G2.ch),255,[0,0,1],2|8);// the curtain wall with the gate
+  flat([xl,hC,zb,xr,hC,zb,xr,hC,zc,xl,hC,zc],ctop);
+  Q([xl,hC+mc,zc,xr,hC+mc,zc,xr,hC,zc,xl,hC,zc],U(p,66),Vv(p,8),U(p,86),Vv(p,13),255,[0,0,1],2|8);
+  S.bh.push({b,h:hT});}
 // buildings: roofed houses become boxes with a gabled roof cut from their 2D sprite; keeps a box with battlements; tents, the lighthouse
 // and anything unusual stand up as one card. Signs and landmark props (towngfx) come from the town decor pass as a card on the facade.
-function hdBldKind(m,b){if(b.k==='lighthouse')return 'card';const T=THM(m);let mat=T.mat;if(['guild','keep','chapel','tower','windmill'].includes(b.k))mat=m.theme==='void'?'tent':'stone';
+function hdBldKind(m,b){if(b.k==='gatehouse')return 'gate';if(b.k==='lighthouse')return 'card';const T=THM(m);let mat=T.mat;if(['guild','keep','chapel','tower','windmill'].includes(b.k))mat=m.theme==='void'?'tent':'stone';
   if(mat==='tent'||b.k==='bigtent')return 'card';if(b.k==='keep'||b.k==='tower')return 'keep';return 'roof';}
 function hdBakeBuildings(m,S,bsp,deco){const V=S.V,sin=Math.sin(HD2D.pitch*Math.PI/180),pk=new H2Pack(1024),parts=[];
+  {const g=hdGatePart(m);if(g)bsp=(bsp||[]).concat([g]);}// v0.6.3: the fortress gatehouse stands up as towers and a curtain wall
   (bsp||[]).forEach(q=>{parts.push({q,r:pk.add(q.cv.width,q.cv.height)});});
   const decoParts=[];if(deco){m.bld.forEach(b=>{if(!SVC_LOOK||!SVC_LOOK[b.k])return;const x=b.x*TS-28,y=(b.y+b.h)*TS-50,w=b.w*TS+56,h=56;decoParts.push({b,x,y,w,h,r:pk.add(w,h)});});
     (m._qb||[]).forEach(([qx,qy])=>{const x=qx*TS-12,y=qy*TS+14,w=40,h=16;decoParts.push({board:1,qx,qy,x,y,w,h,r:pk.add(w,h)});});}
@@ -136,6 +176,7 @@ function hdBakeBuildings(m,S,bsp,deco){const V=S.V,sin=Math.sin(HD2D.pitch*Math.
     if(p.r.y+cv.height>AH)return;bt=CB.at(x0+w/2,zm);
     if(k==='card'){const yb=-6*V,yt=(cv.height-6)*V,cx0=x0-BSP_X;Q([cx0,yt,zf+.2,cx0+cv.width,yt,zf+.2,cx0+cv.width,yb,zf+.2,cx0,yb,zf+.2],U(p,0),Vv(p,0),U(p,cv.width),Vv(p,cv.height),255,[0,.45,.89],2|8);
       S.bh.push({b,h:cv.height*.55*V});return;}
+    if(k==='gate'){hdGateGeo(m,S,b,Q,U,Vv,p,V,bt);return;}
     const top=BSP_TOP;
     if(k==='keep'){const Hk=Math.max(22,Math.round(h+10-h*sin)),cr=9,yk=Hk*V,yc=(Hk-cr)*V;
       Q([x0,yc,zf,x1,yc,zf,x1,0,zf,x0,0,zf],U(p,BSP_X),Vv(p,top+h-(Hk-cr)),U(p,BSP_X+w),Vv(p,top+h),255,[0,0,1],2|8);
@@ -220,7 +261,8 @@ function hdBake(m){const sig=hdSig(m);if(HD.S&&HD.S.m===m&&HD.S.sig===sig&&HD.ma
   HD.maxTex=gl.getParameter(gl.MAX_TEXTURE_SIZE)||4096;
   const save={lights:m.lights,smoke:m.smoke,bsp:m.bsp,torches:m.torches&&m.torches.slice(),mills:m.mills&&m.mills.slice()};
   let g0,g1,cards=null,blds=null,deco=null,sh=null;const d0=drawObjects;
-  try{drawObjects=function(){};try{g0=buildMapCanvas(m,0);g1=buildMapCanvas(m,1);}finally{drawObjects=d0;}
+  const fa=m.fortAt;// v0.6.3: the gatehouse is geometry in HD-2D (hdGateGeo), not paint on the ground
+  try{drawObjects=function(){};try{m.fortAt=null;g0=buildMapCanvas(m,0);g1=buildMapCanvas(m,1);}finally{drawObjects=d0;m.fortAt=fa;}
     m.lights=save.lights;m.smoke=save.smoke;m.bsp=save.bsp;
     const W=m.w,H=m.h,HT=new Float32Array(W*H),KD=new Uint8Array(W*H);S.HT=HT;S.KD=KD;
     const hOf=k=>k===1?HD2D.wall.dungeon*V:k===2?HD2D.wall.cliff*V:k===3?HD2D.wall.town*V:k===4?HD2D.water*V:k===5?HD2D.deep*V:k===6?HD2D.water*V:0;
@@ -434,10 +476,30 @@ function hdActors(m,now,ts){const B=HD.dyn,BB=HD.dynB,BA=HD.dynA,V=HD.S.V,still=
   // quest board marker, the dungeon's way out
   if(m.kind==='town'&&m._qb){const stt=typeof boardState==='function'?boardState():null;if(stt)m._qb.forEach(([qx,qy])=>{const bob=still?0:Math.round(Math.sin(ts/220)*2),col=stt==='ready'?'#7aff8a':'#ffd04a';
     hdBill(BA,'glow',hdGlowS(),qx*TS+8,(30+bob)*V-10,(qy+1)*TS+2,false,.8,255,240,160,110,4);hdBill(B,'mk'+col,hdMark(col),qx*TS+8,(30+bob)*V,(qy+1)*TS+2,false,1,255,255,255,255,4);});}
-  if(dun&&m.start){const e=m.start,bob=still?0:Math.round(Math.sin(now/200)*2);hdBill(B,'arrow',hdArrow(),e[0]*TS+8,(18+bob)*V,e[1]*TS+8,false,1,255,255,255,255,4);}
+  if(dun&&m.start&&!(Math.abs(WS.x-m.start[0])<=1&&Math.abs(WS.y-m.start[1])<=1)){const e=m.start,/* v0.6.3: not while the hero stands by it (it floated over his body) */bob=still?0:Math.round(Math.sin(now/200)*2);hdBill(B,'arrow',hdArrow(),e[0]*TS+8,(18+bob)*V,e[1]*TS+8,false,1,255,255,255,255,4);}
   // chimney smoke
   (HD.S.smoke||[]).forEach((s,i)=>{for(let k=0;k<4;k++){const p=still?(k/4+.1):((ts/1600+k/4+i*.37)%1),r=1+Math.floor(p*3),dx=Math.sin(p*6+i)*3+p*6;
     H2P.set([s[0]+dx-r,s[1]+(p*26+r)*V,s[2],s[0]+dx+r,s[1]+(p*26+r)*V,s[2],s[0]+dx+r,s[1]+(p*26-r)*V,s[2],s[0]+dx-r,s[1]+(p*26-r)*V,s[2]]);BB.quad(H2P,-1,0,-1,0,225,225,235,Math.round(120*(1-p)),0,.45,.89,0);}});}
+// ----- v0.6.3: the world's drifting ambience (worldfx.js) as part of the scene -----
+// Relit field sparkles, snow, wind streaks, butterflies, spray, motes, dungeon dust, festival lanterns, Phase 6 leaves, dusk fireflies,
+// dawn dew and the passing flock: the same world positions as the 2D view, placed in the scene as small upright quads (blended, depth
+// tested, so walls and buildings hide them), glowing ones unlit. None is drawn over the hero: a particle whose screen position falls in
+// his box is left out. Until v0.6.2 these were screen space dots on the 2D canvas over the GL frame (they slid along with the camera).
+const HW={hx:0,hz:0,b:new Float32Array(4),p:new Float32Array(4),n:0};
+function hdWfxEmit(x,z,h,w,hh,c,a,g){const R=HD.lmR;if(x<R[0]||x>R[0]+R[2]||z<R[1]||z>R[1]+R[3])return;const V=HD.S.V,y0=h*V,y1=(h+hh)*V;
+  if(Math.abs(x-HW.hx)<26&&z>HW.hz-8&&z<HW.hz+160){const p=HW.p,B=HW.b;h2Proj(p,HD.mats.vp,x,(y0+y1)/2,z);if(p[0]>B[0]&&p[0]<B[2]&&p[1]>B[1]&&p[1]<B[3])return;}
+  const C=wfxRgb(c),al=Math.round(255*a*C[3]);if(al<3)return;const P=H2P,x0=x-w/2,x1=x+w/2;
+  P[0]=x0;P[1]=y1;P[2]=z;P[3]=x1;P[4]=y1;P[5]=z;P[6]=x1;P[7]=y0;P[8]=z;P[9]=x0;P[10]=y0;P[11]=z;HD.dynB.quad(P,-1,0,-1,0,C[0],C[1],C[2],al,0,.45,.89,g?4:0);HW.n++;}
+function hdWfxBird(x,z,h,f){const R=HD.lmR;if(x<R[0]||x>R[0]+R[2]||z<R[1]||z>R[1]+R[3])return;
+  hdDecal(HD.dynB,'blob',hdBlob(),x+6,z,5,2,10,6,24,60);hdWfxEmit(x,z,h,1,1,'#1c1624',.85,0);hdWfxEmit(x-1.5,z,h+1-f,2,1,'#1c1624',.85,0);hdWfxEmit(x+1.5,z,h+1-f,2,1,'#1c1624',.85,0);}
+function hdWfx(m,ts){if(m.archive)return;HW.n=0;HW.hx=Math.round(WS.px)+8;HW.hz=WS.py+12.5;
+  // the hero's box on screen (NDC), padded a little
+  {const p=HW.p,B=HW.b,hw=Math.max(8,(HD.chW||14)*.6),hh=HD.heroH||24;h2Proj(p,HD.mats.vp,HW.hx-hw,0,HW.hz);B[0]=p[0];B[1]=p[1];h2Proj(p,HD.mats.vp,HW.hx+hw,hh*1.08,HW.hz);B[2]=p[0];B[3]=p[1];
+    const px=8/Math.max(64,WS.vw);B[0]-=px;B[2]+=px;B[1]-=px;B[3]+=px;}
+  const R=HD.lmR,C=WFX.cell,Px=Math.ceil(R[2]/C)*C,Pz=Math.ceil((WFX.hdZ[0]+WFX.hdZ[1])/C)*C,cx=HD.cam.x,cz=HD.cam.z-(WFX.hdZ[0]-WFX.hdZ[1])/2;
+  wfxRun('amb',m,ts,cx,cz,Px,Pz,hdWfxEmit);wfxRun('leaf',m,ts,cx,cz,Px,Pz,hdWfxEmit);
+  if(m.kind!=='dungeon'&&!G.daily){const ph=wfxPhase();if(ph==='dusk'||ph==='dawn')wfxRun('day',m,ts,cx,cz,Px,Pz,hdWfxEmit);}
+  wfxBirds(m,ts,cx,cz,Px,Pz,hdWfxBird);}
 // every light near the view becomes a soft disc in the light map (flicker and day/night weight in its colour); no allocation
 function hdLmAdd(x,z,r,cr,cg,cb){if(HD.lmn>=HD2D.lmMax)return;const R=HD.lmR,v=HD.lmv,W=HD.lw,j=HD.lmn*4,o=HD.lmn++*28;W[j]=x;W[j+1]=z;W[j+2]=r;W[j+3]=cr*.3+cg*.59+cb*.11;// v0.5.8: kept in world units too, for the characters' rim side
   const X0=(x-r-R[0])/R[2]*2-1,X1=(x+r-R[0])/R[2]*2-1,Z0=(z-r-R[1])/R[3]*2-1,Z1=(z+r-R[1])/R[3]*2-1;
@@ -497,7 +559,7 @@ function hdScene(gl,S,o,now,still,full){const P=HD.P,u=P.scene.u,uc=P.char.u,fr=
 function hdFrame(now){const m=WS.m,gl=HD.gl,q=hdTierQ(),still=gfxStill(),ts=still?0:now;
   if(HD.dirty||HD.map!==m||!HD.S||HD.baseRef!==WS.base[0]){hdBake(m);HD.baseRef=WS.base[0];}
   const sz=hdSize(q);hdCamera(m,now,sz,q);const o=hdLook(m,now),S=HD.S;
-  HD.px=q.px||1;const nl=hdLights(m,ts,q,o);HD.dyn.n=0;HD.dynB.n=0;HD.dynA.n=0;HD.dynC.n=0;HD.dynCB.n=0;hdActors(m,now,ts);HD.dynUp=0;// v0.5.8: lights first, the characters read them
+  HD.px=q.px||1;const nl=hdLights(m,ts,q,o);HD.dyn.n=0;HD.dynB.n=0;HD.dynA.n=0;HD.dynC.n=0;HD.dynCB.n=0;hdActors(m,now,ts);try{hdWfx(m,ts);}catch(e){HD.wfxErr=String(e&&e.message||e);}HD.dynUp=0;// v0.5.8: lights first, the characters read them
   hdDrawLM(gl,nl,o);
   const P=HD.P,sp=P.scene,u=sp.u,RT=HD.rt;
   for(let i=0;i<4;i++)gl.enableVertexAttribArray(i);gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,HD.ib);gl.disable(gl.CULL_FACE);
@@ -555,28 +617,31 @@ function hdFrame(now){const m=WS.m,gl=HD.gl,q=hdTierQ(),still=gfxStill(),ts=stil
 // hook below), so what they read back is the whole picture. Frames of the game loop never read the GL canvas back.
 function hdBlit(){const ctx=WS.ctx;ctx.setTransform(1,0,0,1,0,0);ctx.globalAlpha=1;ctx.globalCompositeOperation='copy';ctx.imageSmoothingEnabled=false;ctx.drawImage(HD.cv,0,0,WS.vw,WS.vh);ctx.globalCompositeOperation='source-over';}
 function hdOverlayBusy(m,now,still){const w=(m.kind==='field'||m.kind==='town')?(G.weather[m.s]||'clear'):'clear';
-  const parts=!still&&(m.kind==='dungeon'||'snow heights meadow void'.indexOf(m.theme)>=0||(G.cleared&&G.cleared[m.s]&&m.kind!=='dungeon'));
-  return parts||w!=='clear'||(typeof TR!=='undefined'&&TR.wx&&TR.wx.k<1)||!!m.amb||(WS.flash&&now-WS.flash<460)||(WS.fade&&now-WS.fade<230)||(WS.fadeIn&&now-WS.fadeIn<280);}
-function hdOverlay(now,composed){const ctx=WS.ctx,m=WS.m,vw=WS.vw,vh=WS.vh,still=gfxStill(),ts=still?0:now,dun=m.kind==='dungeon';
+  return w!=='clear'||(typeof TR!=='undefined'&&TR.wx&&TR.wx.k<1)||!!m.amb||(WS.flash&&now-WS.flash<460)||(WS.fade&&now-WS.fade<230)||(WS.fadeIn&&now-WS.fadeIn<280);}
+// v0.6.3: how far the ground at the focus moves on screen per art px of camera travel (x, z), so the full screen weather and theme
+// layers scroll with the world (wfxTiled) instead of sitting still on the glass
+function hdOvOffset(o){const p=HD.pt,M=HD.mats.vp,cx=HD.cam.x,cz=HD.cam.z;h2Proj(p,M,cx,0,cz);const x0=p[0],y0=p[1];h2Proj(p,M,cx+16,0,cz);const kx=(p[0]-x0)/2*WS.vw/16;
+  h2Proj(p,M,cx,0,cz+16);const kz=-(p[1]-y0)/2*WS.vh/16;o[0]=cx*kx;o[1]=cz*kz;return o;}
+const HOV=[0,0];
+// the 2D canvas over the GL frame: only weather, the cave and dungeon theme layers, the battle flash and fades. The drifting ambience
+// particles (sparkles, snow, wind, butterflies, motes, lanterns) are in the GL scene since v0.6.3 (hdWfx), anchored in the world.
+function hdOverlay(now,composed){const ctx=WS.ctx,m=WS.m,vw=WS.vw,vh=WS.vh,still=gfxStill(),ts=still?0:now;
   if(composed){hdBlit();HD.ovClear=null;}
   else{// nothing to show and already clear: leave the 2D canvas alone (no repaint, no recomposite)
     const busy=hdOverlayBusy(m,now,still);if(!busy&&HD.ovClear===WS.cv)return;HD.ovClear=busy?null:WS.cv;
-    ctx.setTransform(1,0,0,1,0,0);ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';ctx.clearRect(0,0,vw,vh);if(!busy)return;}
-  ctx.setTransform(1,0,0,1,0,0);ctx.globalAlpha=1;ctx.imageSmoothingEnabled=false;
-  if(!still){
-    if(m.kind==='field'&&G.cleared[m.s]){for(let i=0;i<14;i++){const sx=Math.floor((i*89+now/45)%vw),sy=Math.floor((i*67+Math.sin(now/700+i)*10-now/90)%vh+vh)%vh;ctx.fillStyle=i%3?'#fff2a0':'#ffd04a';ctx.fillRect(sx,sy,1,1);if(Math.floor(now/200+i)%3===0)ctx.fillRect(sx-1,sy,3,1);}}
-    if(!dun){if(m.theme==='snow'){ctx.fillStyle='#ffffff';for(let i=0;i<46;i++){const sx=(i*53+now/40*(1+i%3))%vw,sy=(i*97+now/25*(1+(i%2)))%vh;ctx.fillRect(Math.floor(sx),Math.floor(sy),1+(i%5===0),1);}}
-      if(m.theme==='heights'){ctx.fillStyle='rgba(255,255,255,.5)';for(let i=0;i<8;i++){const sx=(i*97+now/12)%(vw+40)-20,sy=(i*61)%vh;ctx.fillRect(Math.floor(sx),sy,10,1);}}
-      if(m.theme==='meadow'){for(let i=0;i<3;i++){const sx=Math.floor((i*131+now/30)%(vw+20))-10,sy=Math.floor((i*71)%vh+Math.sin(now/300+i)*4);ctx.fillStyle=['#f6e06a','#ffffff','#f08ab0'][i];ctx.fillRect(sx,sy,2,1);if(Math.floor(now/120+i)%2){ctx.fillRect(sx-1,sy-1,1,1);ctx.fillRect(sx+2,sy-1,1,1);}}}
-      if(m.theme==='void'){for(let i=0;i<12;i++){const sx=Math.floor((i*79+now/50)%vw),sy=Math.floor((i*53-now/40)%vh+vh)%vh;ctx.fillStyle=i%2?'#c8a0ff':'#5fc9a0';ctx.fillRect(sx,sy,1,1);}}}
-    else{ctx.globalAlpha=.55;for(let i=0;i<14;i++){const sx=Math.floor((i*79+now/80)%vw),sy=Math.floor((i*53-now/60)%vh+vh)%vh;ctx.fillStyle=DTHEME[m.theme].acc;ctx.fillRect(sx,sy,1,1);}ctx.globalAlpha=1;}}
-  if(m.kind==='field'||m.kind==='town')weatherFX(ctx,G.weather[m.s]||'clear',vw,vh,ts,false);
-  if(m.amb&&!still)themeFX(ctx,m,vw,vh,now);
-  if(m.kind==='town'&&G.cleared[m.s]&&!still){for(let i=0;i<7;i++){const p=((now/9000+i*.37)%1),lx=Math.floor((i*137+Math.sin(now/1500+i)*8)%vw),ly=Math.floor(vh-(p*(vh+30)));ctx.globalAlpha=Math.min(1,(1-p)*2);ctx.fillStyle='#ffb04a';ctx.fillRect(lx,ly,3,4);ctx.fillStyle='#fff0a0';ctx.fillRect(lx+1,ly+1,1,2);ctx.globalAlpha=1;}}
+    // v0.6.3: clear the whole bitmap. Above Low the world canvas holds a 2x bitmap (sprhd2.js ssCanvas) and this cleared, and drew,
+    // only its top left quarter: anything an earlier 2D frame left in the other three quarters stayed on screen over the GL view
+    ctx.setTransform(1,0,0,1,0,0);ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';ctx.clearRect(0,0,WS.cv._rw||vw,WS.cv._rh||vh);if(!busy){const k0=Math.max(1,(WS.cv._rw||vw)/vw);ctx.setTransform(k0,0,0,k0,0,0);return;}}
+  // frames of the game loop draw the overlay at the canvas's own scale (the whole view); composed frames (tests) at logical size, like hdBlit
+  const k=composed?1:Math.max(1,(WS.cv._rw||vw)/vw);
+  ctx.setTransform(k,0,0,k,0,0);ctx.globalAlpha=1;ctx.imageSmoothingEnabled=false;
+  let w=(m.kind==='field'||m.kind==='town')?(G.weather[m.s]||'clear'):null;const amb=m.amb&&!still;if(w==='clear'&&!(typeof TR!=='undefined'&&TR.wx&&TR.wx.k<1))w=null;
+  if(w||amb){hdOvOffset(HOV);wfxTiled(ctx,vw,vh,HOV[0],HOV[1],c=>{if(w)weatherFX(c,w,vw,vh,ts,false);if(amb)themeFX(c,m,vw,vh,now);});}
   if(WS.flash&&now-WS.flash<460){const p=(now-WS.flash)/460;ctx.fillStyle=`rgba(255,255,255,${Math.floor(p*7)%2?0.85:0})`;ctx.fillRect(0,0,vw,vh);
     ctx.fillStyle='#0a0612';for(let i=0;i<8;i++){const a=i/8*Math.PI*2+p*4;ctx.save();ctx.translate(vw/2,vh/2);ctx.rotate(a);ctx.fillRect(0,-3,Math.max(vw,vh)*p,6);ctx.restore();}}
   if(WS.fade&&now-WS.fade<230){ctx.fillStyle=`rgba(8,4,2,${(now-WS.fade)/230})`;ctx.fillRect(0,0,vw,vh);}
-  else if(WS.fadeIn&&now-WS.fadeIn<280){ctx.fillStyle=`rgba(8,4,2,${1-(now-WS.fadeIn)/280})`;ctx.fillRect(0,0,vw,vh);}}
+  else if(WS.fadeIn&&now-WS.fadeIn<280){ctx.fillStyle=`rgba(8,4,2,${1-(now-WS.fadeIn)/280})`;ctx.fillRect(0,0,vw,vh);}
+  {const k0=Math.max(1,(WS.cv._rw||vw)/vw);ctx.setTransform(k0,0,0,k0,0,0);}}// leave the canvas in its own scale for the 2D renderer
 // ----- taps: through the camera. A tap on a character picks its tile; otherwise a ray walks the height map to the first block or ground -----
 function hdPick(e){const cv=WS.cv;if(!cv||!WS.m||!HD.S)return null;const r=cv.getBoundingClientRect();if(!r.width||!r.height)return null;
   const nx=(e.clientX-r.left)/r.width*2-1,ny=1-(e.clientY-r.top)/r.height*2;

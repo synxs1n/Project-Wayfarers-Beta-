@@ -128,3 +128,6 @@ Details in `v063-twists.md` (`v3/twists.js`, `TWISTS` in config.js, tests `chrom
 
 ## Beta v0.6.7: no capes on sprites, one icon per item
 Details in `v063-art.md` (`v3/icons.js`, `v3/icons2.js`, test `chrome/v063s.js`): 381 icons, 0 duplicates; capes keep stats but draw nothing; Camp Supplies has its own bedroll icon.
+
+## Beta v0.6.8: world fixes and the world map
+Details in `v063-world.md` (`v3/worldfx.js`, `WFX`/`WMAP` in config.js, test `chrome/v063wo.js`). Root cause of the boxes over the hero: the HD-2D overlay cleared only a quarter of the 2x canvas.

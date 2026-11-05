@@ -380,17 +380,11 @@ function worldDraw(now){
   allL.forEach(L=>{const x=L[0]-cx,y=L[1]-cy;if(x<-60||y<-60||x>vw+60||y>vh+60)return;glow(x,y,L[2]*flick,LIGHTC[L[3]]||LIGHTC.lamp);});
   if(m.theme==='cave'||m.theme==='void'||dun)glow(Math.round(WS.px)+8-cx,Math.round(WS.py)-cy,56,dun?'rgba(255,190,120,.16)':m.theme==='cave'?'rgba(255,170,90,.2)':'rgba(170,140,255,.18)');
   ctx.globalCompositeOperation='source-over';
-  // relit fields glow warm and drift with motes of light
-  if(m.kind==='field'&&G.cleared[m.s]){ctx.fillStyle='rgba(255,210,120,.07)';ctx.fillRect(0,0,vw,vh);for(let i=0;i<14;i++){const sx=Math.floor((i*89+now/45)%vw),sy=Math.floor((i*67+Math.sin(now/700+i)*10-now/90)%vh+vh)%vh;ctx.fillStyle=i%3?'#fff2a0':'#ffd04a';ctx.fillRect(sx,sy,1,1);if(Math.floor(now/200+i)%3===0)ctx.fillRect(sx-1,sy,3,1);}}
-  if(!dun){
-    if(m.theme==='snow'){ctx.fillStyle='#ffffff';for(let i=0;i<46;i++){const sx=(i*53+now/40*(1+i%3))%vw,sy=(i*97+now/25*(1+(i%2)))%vh;ctx.fillRect(Math.floor(sx),Math.floor(sy),1+(i%5===0),1);}}
-    if(m.theme==='heights'){ctx.fillStyle='rgba(255,255,255,.5)';for(let i=0;i<8;i++){const sx=(i*97+now/12)%(vw+40)-20,sy=(i*61)%vh;ctx.fillRect(Math.floor(sx),sy,10,1);}}
-    if(m.theme==='meadow'){for(let i=0;i<3;i++){const sx=Math.floor((i*131+now/30)%(vw+20))-10,sy=Math.floor((i*71)%vh+Math.sin(now/300+i)*4);ctx.fillStyle=['#f6e06a','#ffffff','#f08ab0'][i];ctx.fillRect(sx,sy,2,1);if(Math.floor(now/120+i)%2){ctx.fillRect(sx-1,sy-1,1,1);ctx.fillRect(sx+2,sy-1,1,1);}}}
-    if(m.theme==='coast'){ctx.fillStyle='rgba(255,255,255,.35)';for(let i=0;i<5;i++){const sx=Math.floor((i*151+now/22)%(vw+30))-15,sy=(i*43)%vh;ctx.fillRect(sx,sy,6,1);}}
-    if(m.theme==='void'){for(let i=0;i<12;i++){const sx=Math.floor((i*79+now/50)%vw),sy=Math.floor((i*53-now/40)%vh+vh)%vh;ctx.fillStyle=i%2?'#c8a0ff':'#5fc9a0';ctx.fillRect(sx,sy,1,1);}}
-  }else{for(let i=0;i<10;i++){const sx=Math.floor((i*79+now/80)%vw),sy=Math.floor((i*53-now/60)%vh+vh)%vh;ctx.fillStyle=DTHEME[m.theme].acc;ctx.globalAlpha=.5;ctx.fillRect(sx,sy,1,1);}ctx.globalAlpha=1;}
-  if(m.kind==='field'||m.kind==='town')weatherFX(ctx,G.weather[m.s]||'clear',vw,vh,now,false);
-  if(m.amb)themeFX(ctx,m,vw,vh,now);
+  // relit fields glow warm and drift with motes of light. v0.6.3: every drifting particle lives in world space (worldfx.js), so it stays
+  // put while the camera moves; weather and theme layers scroll with the world
+  if(m.kind==='field'&&G.cleared[m.s]){ctx.fillStyle='rgba(255,210,120,.07)';ctx.fillRect(0,0,vw,vh);}
+  wfxDraw2D(ctx,'amb',m,cx,cy,vw,vh,gfxStill()?0:now);
+  {let w=(m.kind==='field'||m.kind==='town')?(G.weather[m.s]||'clear'):null;if(w==='clear'&&!(typeof TR!=='undefined'&&TR.wx&&TR.wx.k<1))w=null;if(w||m.amb)wfxTiled(ctx,vw,vh,cx,cy,c=>{if(w)weatherFX(c,w,vw,vh,now,false);if(m.amb)themeFX(c,m,vw,vh,now);});}
   if(m.kind==='town'&&G.cleared[m.s])festivalFX(ctx,m,cx,cy,vw,vh,now);
   if(dun){const e=m.start;const ex=e[0]*TS+8-cx,ey=(e[1]-1)*TS-cy-6+Math.round(Math.sin(now/200)*2);ctx.fillStyle='#150b17';ctx.fillRect(ex-4,ey-1,9,6);ctx.fillStyle='#ffe08a';ctx.fillRect(ex-3,ey+3,7,1);ctx.fillRect(ex-2,ey+2,5,1);ctx.fillRect(ex-1,ey+1,3,1);ctx.fillRect(ex,ey,1,1);}
   if(WS.flash&&now-WS.flash<460){const p=(now-WS.flash)/460;ctx.fillStyle=`rgba(255,255,255,${Math.floor(p*7)%2?0.85:0})`;ctx.fillRect(0,0,vw,vh);
@@ -436,7 +430,7 @@ function festivalFX(ctx,m,cx,cy,vw,vh,now){
   const y=m.road*TS-12-cy,cols=['#e84a4a','#f2c93a','#3fa0e0','#5ad06a','#c86ae0'];
   ctx.fillStyle='rgba(60,40,20,.8)';ctx.fillRect(0,y,vw,1);
   for(let x=(-cx%12+12)%12-12,i=Math.floor(cx/12);x<vw;x+=12,i++){ctx.fillStyle=cols[((i%5)+5)%5];ctx.fillRect(x+2,y+1,5,2);ctx.fillRect(x+3,y+3,3,1);ctx.fillRect(x+4,y+4,1,1);}
-  for(let i=0;i<7;i++){const p=((now/9000+i*.37)%1),lx=Math.floor((i*137+Math.sin(now/1500+i)*8)%vw),ly=Math.floor(vh-(p*(vh+30)));ctx.globalAlpha=Math.min(1,(1-p)*2);ctx.fillStyle='#ffb04a';ctx.fillRect(lx,ly,3,4);ctx.fillStyle='#fff0a0';ctx.fillRect(lx+1,ly+1,1,2);ctx.globalAlpha=1;}
+  // the sky lanterns drifting up are world particles now (worldfx.js, set 'amb')
   ctx.fillStyle='rgba(255,200,120,.06)';ctx.fillRect(0,0,vw,vh);
 }
 // one soft fog puff, drawn once and stamped each frame (was six radial gradients per frame; same picture)
