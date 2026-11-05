@@ -53,7 +53,11 @@ jobs:
           open(p,'w').write(s)
           PY
       - name: App icons
-        run: npx --yes @capacitor/assets generate --android || true
+        run: |
+          R=android/app/src/main/res
+          rm -f $R/drawable-v24/ic_launcher_foreground.xml $R/drawable/ic_launcher_background.xml
+          rm -f $R/mipmap-*/ic_launcher*.png $R/mipmap-*/ic_launcher*.xml
+          cp -r android-res/* $R/
       - run: npx cap sync android
       - name: Build debug APK
         working-directory: android
