@@ -39,7 +39,7 @@ function g6Ground(ctx,m,cx,cy,vw,vh,ts){const q=GFX.q,T=m.kind==='dungeon'?null:
         ctx.fillStyle=T.tg[2];ctx.fillRect(px+3+Math.floor(h*3)+s,py+8,1,1);ctx.fillRect(px+10+Math.floor(h*4)+s,py+3,1,1);}}
     ctx.globalAlpha=1;}
   if(q.critters&&m.kind==='field')g6Critters(ctx,m,cx,cy,vw,vh,ts);
-  if(q.birds&&g6BirdsOn(m))g6Birds(ctx,vw,vh,ts,true,wind);}
+  if(q.birds&&g6BirdsOn(m))wfxBirds2D(ctx,m,cx,cy,vw,vh,ts,true);}// v0.6.3: the flock has a world path (worldfx.js)
 // ----- critters: rabbits on grass, crabs on sand; they hop about and duck away when you come close -----
 function g6CritterSpots(m){if(m._g6cr)return m._g6cr;const out=[],R=mulberry(m.w*31+m.h*7+(m.s||0)*101),th=m.theme;
   if(th!=='meadow'&&th!=='heights'&&th!=='coast'){return m._g6cr=out;}
@@ -60,16 +60,14 @@ function g6Birds(ctx,vw,vh,ts,shadow,wind){const P=26000,t=ts%P,dur=11000;if(t>d
     const f=Math.sin(ts/110+i*1.7)>0?1:0;ctx.fillStyle='rgba(28,22,36,.85)';ctx.fillRect(bx,by,1,1);ctx.fillRect(bx-2,by-1+f,2,1);ctx.fillRect(bx+1,by-1+f,2,1);}}
 // ----- 2b. sky layer: drifting leaves or dust, birds, townsfolk gestures -----
 function g6Sky(ctx,m,cx,cy,vw,vh,ts,still){const q=GFX.q,wind=g6WindNow(m),dun=m.kind==='dungeon';
-  if(q.amb){const key=dun||m.cave?'dun':m.theme,cols=G6W.amb[key]||G6W.amb.meadow,snow=m.theme==='snow',n=dun||m.cave?Math.ceil(q.amb/2):snow?0:q.amb,t=ts/1000;
-    for(let i=0;i<n;i++){const vx=dun?2+i%3:(6+(i%5)*3)*(.35+wind),vy=dun?-1-(i%3)*.6:4+(i%4)*2+wind*2;
-      const x=Math.floor((((i*97.3+t*vx+Math.sin(t*.8+i)*6)%(vw+20))+vw+20)%(vw+20))-10,y=Math.floor((((i*53.1+t*vy+Math.cos(t*.6+i*1.3)*3)%(vh+10))+vh+10)%(vh+10))-5;
-      ctx.fillStyle=cols[i%3];ctx.globalAlpha=dun?.45:.85;if(dun||key==='coast')ctx.fillRect(x,y,1,1);else{const flip=Math.floor(t*3+i)%2;ctx.fillRect(x,y,flip?2:1,flip?1:2);}}
-    ctx.globalAlpha=1;}
-  if(q.birds&&g6BirdsOn(m))g6Birds(ctx,vw,vh,ts,false,wind);
+  // v0.6.3: leaves and dust drift in world space (worldfx.js), so they stay where they are when the camera moves
+  if(q.amb)wfxDraw2D(ctx,'leaf',m,cx,cy,vw,vh,ts);
+  if(q.birds&&g6BirdsOn(m))wfxBirds2D(ctx,m,cx,cy,vw,vh,ts,false);
   if(q.gest&&!still&&m.kind==='town')g6Gestures(ctx,m,cx,cy,vw,vh,ts);}
 function g6Gestures(ctx,m,cx,cy,vw,vh,ts){for(let i=0;i<m.npcs.length;i++){const n=m.npcs[i];if(n.portal||n.mv)continue;
   const per=8000+(i%5)*1700,c=Math.floor((ts+i*2300)/per),ph=((ts+i*2300)%per)/per;if(ph>.16||(c+i)%3)continue;
   const x=n.x*TS+12-cx,y=n.y*TS-14-cy+(ph<.03?1:0);if(x<-10||y<-10||x>vw+10||y>vh+10)continue;
+  {const hx=Math.round(WS.px)+8-cx,hy=Math.round(WS.py)+16-cy;if(x+10>hx-WFX.hero[0]&&x-1<hx+WFX.hero[0]&&y+8>hy-WFX.hero[1]&&y-1<hy+WFX.hero[2])continue;}// v0.6.3: never over the hero
   ctx.fillStyle='#150b17';ctx.fillRect(x-1,y-1,11,8);ctx.fillStyle='#fff8e8';ctx.fillRect(x,y,9,6);ctx.fillRect(x+1,y+6,2,1);ctx.fillStyle='#150b17';ctx.fillRect(x+1,y+7,1,1);
   const k=G6W.bubbles[(c+i)%4];ctx.fillStyle=k==='heart'?'#e04a6a':k==='bang'?'#e0a020':'#3a2a4a';
   if(k==='dots'){ctx.fillRect(x+2,y+3,1,1);ctx.fillRect(x+4,y+3,1,1);ctx.fillRect(x+6,y+3,1,1);}

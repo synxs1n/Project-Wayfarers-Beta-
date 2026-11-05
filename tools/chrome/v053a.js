@@ -5,7 +5,8 @@
 const {open,chk,done}=require('./pw');
 const META=(t,x)=>`localStorage.clear();localStorage.setItem('aurelis-meta-v1',JSON.stringify({cfg:Object.assign({speed:1,enc:'off',diff:'normal',music:0,sfx:0,autoStats:true,autoEquip:false,gfx:'${t}',rmotion:false,hints:false},${JSON.stringify(x||{})})}));`;
 const start=ev=>ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;A.render();});
-const state=ev=>ev(()=>{const A=__A,HD=A.HD,w=A.WS.cv,c=HD.cv;
+const state=ev=>ev(()=>{const A=__A,HD=A.HD,w=A.WS.cv,c=HD.cv;try{A.worldDraw2(performance.now());}catch(e){}// v0.6.3: a frame first, so the GL canvas has followed a layout change made just before (the first frames after a new journey are slow)
+ 
   return {live:HD.live,broken:HD.broken,why:HD.why,hd:!!document.querySelector('.wview.hd'),gl:!!(c&&c.isConnected&&getComputedStyle(c).display!=='none'),same:!!(c&&w&&c.parentElement===w.parentElement),
     cssGL:c&&c.isConnected?[c.style.width,c.style.height]:null,css2D:w?[w.style.width,w.style.height]:null,cssPx:w?[Math.round(w.getBoundingClientRect().width),Math.round(w.getBoundingClientRect().height)]:null,
     buf:c?[c.width,c.height]:null,v:[A.WS.vw,A.WS.vh,A.WS.scale],px:(()=>{try{A.worldDraw2(performance.now());A.worldDraw2(performance.now());return [...A.WS.ctx.getImageData(Math.floor(A.WS.vw/2),Math.floor(A.WS.vh/2),1,1).data];}catch(e){return null;}})()};});

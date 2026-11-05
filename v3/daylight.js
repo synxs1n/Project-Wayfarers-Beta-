@@ -31,18 +31,13 @@ function dayFxDraw(ctx,vw,vh,now,cam,ph,p){
     const g=ctx.createRadialGradient(x,y,1,x,y,r);g.addColorStop(0,`rgba(255,190,110,${(.3*lit).toFixed(3)})`);g.addColorStop(1,'rgba(255,190,110,0)');ctx.fillStyle=g;ctx.fillRect(x-r,y-r,r*2,r*2);});
     ctx.globalCompositeOperation='source-over';}
   if(dusk){
-    // 5. fireflies near the ground, more as it gets darker
-    const n=Math.round(DAYFX.motes*(.4+.6*q));
-    for(let i=0;i<n;i++){const sx2=((i*97.3+cam.x*.25)%vw+vw)%vw,x=(sx2+Math.sin(ts/1700+i*1.9)*14+vw)%vw,y=vh*(.5+.45*((i*37%100)/100))+Math.cos(ts/2300+i*2.7)*10;
-      const a=still?.45:Math.max(0,Math.sin(ts/650+i*1.3))*.8;ctx.fillStyle=`rgba(255,236,140,${(a*.35).toFixed(3)})`;ctx.fillRect(Math.round(x)-1,Math.round(y)-1,4,4);ctx.fillStyle=`rgba(255,250,200,${a.toFixed(3)})`;ctx.fillRect(Math.round(x),Math.round(y),2,2);}
-    // 6. a few swallows crossing high up (dark little Vs), early dusk only
-    if(!still&&q<.7){ctx.fillStyle='rgba(30,20,40,.55)';for(let i=0;i<3;i++){const t=(ts/1000*(22+i*5)+i*vw*.37)%(vw+60)-30,y=vh*(.08+.07*i)+Math.sin(ts/400+i)*4,f=Math.sin(ts/90+i*2)>0?1:0;
-      ctx.fillRect(Math.round(t),Math.round(y),2,1);ctx.fillRect(Math.round(t)-2,Math.round(y)-1+f,2,1);ctx.fillRect(Math.round(t)+2,Math.round(y)-1+f,2,1);}}
+    // 5, 6. fireflies near the ground and a few swallows high up: v0.6.3 world particles (worldfx.js), they stay put as the camera moves
+    WFXD.ph=ph;WFXD.pq=q;try{wfxDraw2D(ctx,'day',m,cx,cy,vw,vh,ts);}finally{WFXD.ph=null;}
   }else{
     // dawn: low mist and dew sparkles, both gentle
     for(let i=0;i<DAYFX.mist;i++){const drift=((ts/(60+i*25)+i*vw*.4+cam.x*.3)%(vw*1.6)+vw*1.6)%(vw*1.6)-vw*.3,y=vh*(.55+.17*i),rx=vw*.55,ry=vh*.09;
       ctx.save();ctx.translate(drift,y);ctx.scale(1,ry/rx);const mg=ctx.createRadialGradient(0,0,0,0,0,rx);mg.addColorStop(0,`rgba(215,230,250,${(.1*ramp).toFixed(3)})`);mg.addColorStop(1,'rgba(215,230,250,0)');ctx.fillStyle=mg;ctx.beginPath();ctx.arc(0,0,rx,0,6.283);ctx.fill();ctx.restore();}
-    for(let i=0;i<DAYFX.motes;i++){const x=(i*83.7+cam.x*.15)%vw,y=vh*(.3+.65*(((i*53)%100)/100)),a=still?.35:Math.max(0,Math.sin(ts/900+i*2.1))*.6;ctx.fillStyle=`rgba(255,255,255,${a.toFixed(3)})`;ctx.fillRect(Math.round((x+vw)%vw),Math.round(y),1,1);}
+    WFXD.ph=ph;WFXD.pq=q;try{wfxDraw2D(ctx,'day',m,cx,cy,vw,vh,ts);}finally{WFXD.ph=null;}// dew sparkles in world space (v0.6.3)
   }
   ctx.restore();
 }

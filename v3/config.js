@@ -194,6 +194,15 @@ const HD_CAM={big:[1.04,480],limit:[1.07,900]};
 // v0.5.8 units in the battle stage (Medium 'under' and High 'full'): sat and con soften the raw sprite colours before the light and the
 // grade, ao is the light left at the feet (a little darker toward the ground), rim the key light rim strength on Medium (High: HD_BATTLE rim).
 const HD_SPR={sat:.86,con:.9,ao:.74,rim:.7};
+// ===== v0.6.3 world pass (worldfx.js, hd2d.js, map.js) =====
+// WFX: ambience particles live in world space (art px), repeated on a lattice of cells about one view in size and wrapped around the
+// camera, so they stay where they are when the camera moves (in 2D and HD-2D alike). ref: the view area the per view counts are for.
+// hero: no particle is drawn over the hero's box (half width, height above the feet, below the feet; art px). n: counts per ref area.
+// bird: one flock crossing per period (ms) at height h. chestGone: opened chests vanish from the map and can be walked over.
+const WFX={ref:80000,cell:128,margin:96,maxN:120,hero:[10,30,3],n:{spark:14,snow:46,wind:8,fly:4,spray:5,mote:12,dust:10,lantern:7,firefly:12,dew:12},
+  bird:{period:26000,dur:11000,h:64,span:560},chestGone:true,hdZ:[560,180]};
+// WMAP: the illustrated world map (map.js). vig: vignette size in cells.
+const WMAP={cell:[64,150,38],vig:.78,names:84};// cell: px per area (normal min, max, min on short landscape screens); names: written out from this cell size
 // ===== Beta v0.5.3: HD-2D world renderer (hd2d.js, hd2dgl.js) =====
 // Medium and High graphics draw the world maps through WebGL as a lit diorama (Low, no WebGL or Settings > HD-2D world off: the 2D view).
 // pitch: camera tilt in degrees below the horizon; fov: vertical field of view (maxHfov caps the horizontal one on wide views); zoom: 1 =
