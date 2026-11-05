@@ -191,6 +191,9 @@ const HD_LOOK={
       ashfall:{gain:[.86,.8,.78],sat:.8,fog:.2},aurora:{gain:[.92,1,1.04],sat:1.1},starfall:{gain:[.9,.9,1.04],sat:1.05}}};
 // Camera pushes [zoom, ms] for big element hits (weak or crit) and every Limit Break hit, on top of GFX_CAM (GL stage only).
 const HD_CAM={big:[1.04,480],limit:[1.07,900]};
+// v0.5.8 units in the battle stage (Medium 'under' and High 'full'): sat and con soften the raw sprite colours before the light and the
+// grade, ao is the light left at the feet (a little darker toward the ground), rim the key light rim strength on Medium (High: HD_BATTLE rim).
+const HD_SPR={sat:.86,con:.9,ao:.74,rim:.7};
 // ===== Beta v0.5.3: HD-2D world renderer (hd2d.js, hd2dgl.js) =====
 // Medium and High graphics draw the world maps through WebGL as a lit diorama (Low, no WebGL or Settings > HD-2D world off: the 2D view).
 // pitch: camera tilt in degrees below the horizon; fov: vertical field of view (maxHfov caps the horizontal one on wide views); zoom: 1 =
@@ -224,3 +227,9 @@ const HD2D={pitch:40,fov:28,maxHfov:40,zoom:1,follow:85,topSlack:.2,sway:{amp:.7
     gale:{amb:1,sun:.9,shaft:.6},sand:{amb:.95,sun:.7,fog:[.86,.72,.5],fogA:.4,sat:.95,shaft:.5},heat:{amb:1.04,sun:1.15,fog:[1,.82,.62],fogA:.15,warm:1},
     ashfall:{amb:.8,sun:.45,fog:[.45,.38,.36],fogA:.35,sat:.8,shaft:.3},aurora:{amb:.95,sun:.8,fog:[.3,.6,.55],fogA:.12},starfall:{amb:.95,sun:.9,fog:[.3,.3,.5],fogA:.1},
     bloodmoon:{amb:.8,sun:.5,fog:[.5,.1,.12],fogA:.3,warm:1,shaft:0},eclipse:{amb:.6,sun:.1,fog:[.1,.1,.2],fogA:.3,shaft:0},meteor:{amb:.9,sun:.8}}};
+// v0.5.8 sprites in the scene (world): sc = billboard scale (1 = the 2D view's size; 2/3 puts a hero at about 1.5 tiles, one pixel per 3x3 texels of the HD bitmap), drawn from a
+// copy shrunk on the CPU to the GL pixel grid (crisp, one texel per pixel); sat and con soften the raw sprite colours before the grade;
+// spread: how far to each side the light map is read (px), so a lamp on one side lights that side; rim: key light rim strength;
+// act: the least light a character gets (outdoors at night, in dungeons), added in the ambient's colour; shadow: contact shadow
+// [width as a share of the sprite, depth as a share of the width, core darkness, soft darkness, offset away from the key light px].
+HD2D.spr={sc:2/3,sat:.86,con:.9,spread:9,rim:.75,act:{out:.3,dun:.34},shadow:[.8,.55,.36,.3,1.6]};

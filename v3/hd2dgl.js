@@ -5,36 +5,70 @@
 // (bright warm or cyan texels: windows, lamps, crystals), 4 unlit (drawn at full colour: lava, markers, blob shadows), 8 x-ray fade
 // (cards and buildings thin out over the hero when they stand in front of him), 16 a character (kept readable in the dark).
 // Point lights are not looped per pixel: they are drawn as soft discs into a small light map each frame, whose alpha carries the baked
-// sun shadow for the same patch of ground (one texture read per pixel gives both).
+// sun shadow for the same patch of ground (one texture read per pixel gives both). v0.5.8: the map holds half the light (read back x2),
+// so the hero's lantern and a torch next to it no longer clip at 1 and both still count.
 const H2V_STRIDE=28,H2_QMAX=16383;
 const H2SRC={
 scene_v:`attribute vec3 aP;attribute vec2 aT;attribute vec4 aC;attribute vec4 aN;
 uniform mat4 uVP;uniform vec3 uO;uniform vec4 uLR;uniform vec3 uCam;uniform vec3 uFog;
 varying vec2 vT;varying vec4 vC;varying vec3 vN;varying vec3 vW;varying float vF;varying vec4 vX;varying vec2 vL;varying float vFo;
-void main(){vT=aT;vC=aC;vN=aN.xyz*2.0-1.0;vF=floor(aN.w*255.0+0.5);vW=aP-uO;vL=(aP.xz+vN.xz*6.0-uLR.xy)*uLR.zw;
+uniform float uSpZ;
+void main(){vT=aT;vC=aC;vN=aN.xyz*2.0-1.0;vF=floor(aN.w*255.0+0.5);vW=aP-uO;
+  // v0.5.8: characters (flag 16) read the light map at their feet, spread sideways (colour r = 0 left edge, 1 right edge), so a lamp on
+  // one side lights that side; everything else reads it at its own position, nudged along its normal
+  if(vF>15.5)vL=(vec2(aP.x+(aC.r*2.0-1.0)*uSpZ,aP.z+3.0)-uLR.xy)*uLR.zw;else vL=(aP.xz+vN.xz*6.0-uLR.xy)*uLR.zw;
   float fd=length(vW-uCam);vFo=clamp((fd-uFog.x)/(uFog.y-uFog.x),0.0,1.0)*uFog.z;gl_Position=uVP*vec4(aP,1.0);vX=gl_Position;}`,
 scene_f:`precision mediump float;
 uniform sampler2D uTex;uniform sampler2D uLM;
 uniform vec3 uAmb;uniform vec3 uSunC;uniform vec3 uSunD;
-uniform vec3 uFogC;uniform float uEmis;uniform int uMode;uniform vec4 uSil;uniform vec4 uXr;uniform float uXd;uniform float uAct;
+uniform vec3 uFogC;uniform float uEmis;uniform int uMode;uniform vec4 uSil;uniform vec4 uXr;uniform float uXd;
 uniform mat3 uGM;uniform vec3 uGB;
 varying vec2 vT;varying vec4 vC;varying vec3 vN;varying vec3 vW;varying float vF;varying vec4 vX;varying vec2 vL;varying float vFo;
 void main(){
   vec4 t=vT.x<0.0?vec4(1.0):texture2D(uTex,vT);vec4 c=t*vC;
   if(uMode==2){if(c.a<0.01)discard;}else if(c.a<0.5)discard;
   if(uMode==1){gl_FragColor=uSil;return;}
-  float f=floor(vF+0.5),fSh=mod(f,2.0),fEm=mod(floor(f*0.5),2.0),fUn=mod(floor(f*0.25),2.0),fXr=mod(floor(f*0.125),2.0),fAc=floor(f*0.0625);
+  float f=floor(vF+0.5),fSh=mod(f,2.0),fEm=mod(floor(f*0.5),2.0),fUn=mod(floor(f*0.25),2.0),fXr=mod(floor(f*0.125),2.0);
   if(fXr>0.5&&uXr.w>0.0&&vW.z>uXd){vec2 sp=vX.xy/vX.w;vec2 d=(sp-uXr.xy)*vec2(uXr.z,1.0);float r=dot(d,d);
     if(r<uXr.w){float k=r/uXr.w;if(fract((gl_FragCoord.x+gl_FragCoord.y*2.0)*0.25+0.125)>k*1.6-0.3)discard;}}
   vec3 col=c.rgb;
-  if(fUn<0.5){vec4 lm=texture2D(uLM,vL);float sh=fSh>0.5?lm.a:1.0;
+  if(fUn<0.5){vec4 lm=texture2D(uLM,vL);lm.rgb*=2.0;float sh=fSh>0.5?lm.a:1.0;
     vec3 L=uAmb*(0.82+0.18*sh)+uSunC*(max(dot(vN,uSunD),0.0)*sh)+lm.rgb;
-    if(fAc>0.5)L=max(L,vec3(uAct))+uAct*0.12;// characters never sink into the dark
     col=c.rgb*L;
     if(fEm>0.5&&uEmis>0.0){float k=step(0.78,min(t.r,t.g))*step(t.b,0.8)+step(0.82,t.g)*step(0.88,t.b)*step(t.r,0.62);col=mix(col,t.rgb*1.15,clamp(k,0.0,1.0)*uEmis);}}
   col=mix(col,uFogC,vFo);
   // colour grade (exposure, contrast, saturation, lift and gain by time of day and weather), folded into one affine map
   col=uGM*col+uGB;
+  gl_FragColor=vec4(clamp(col,0.0,1.0),uMode==2?c.a:1.0);}`,
+// v0.5.8: characters have their own program (a branch in the scene shader cost every fragment of the scene on software GL).
+// The vertex colour carries the quad's side (r) and height (b) instead of a tint (only its alpha multiplies); the normal bytes carry the
+// rim side (x), rim strength (y) and the flip (z). Lit by the scene like the ground they stand on (ambient, sun or moon in the baked sun
+// shadow at their feet, every lamp, torch and spell in the light map, stronger on the side facing it), a little darker toward the feet,
+// softened before the grade (raw sprite colours are more saturated and contrasty than the graded diorama), a rim light on the silhouette
+// edge facing the key light, and a soft floor so they still read in the dark (in the ambient's hue, not grey). Mode 1 is the hero's
+// silhouette through whatever stands in front of him, cut at the ground (it drew a pale line under his feet).
+char_f:`precision mediump float;
+uniform sampler2D uTex;uniform sampler2D uLM;
+uniform vec3 uAmb;uniform vec3 uSunC;uniform vec3 uSunD;uniform vec3 uFogC;uniform int uMode;uniform vec4 uSil;uniform float uAct;
+uniform mat3 uGM;uniform vec3 uGB;uniform vec4 uSpr;uniform vec3 uRimC;uniform vec3 uAmbN;uniform float uAtl;uniform vec3 uPL;uniform vec3 uPLC;
+varying vec2 vT;varying vec4 vC;varying vec3 vN;varying vec3 vW;varying float vF;varying vec4 vX;varying vec2 vL;varying float vFo;
+void main(){
+  vec4 t=texture2D(uTex,vT);vec4 c=vec4(t.rgb,t.a*vC.a);
+  if(uMode==2){if(c.a<0.01)discard;}else if(c.a<0.5)discard;
+  if(uMode==1){if(vW.y<0.75)discard;gl_FragColor=uSil;return;}
+  vec3 col=c.rgb;
+  float side=vC.r*2.0-1.0,hv=vC.b,l0=dot(col,vec3(.299,.587,.114));col=mix(vec3(l0),col,uSpr.x);col=(col-0.5)*uSpr.y+0.5;
+  vec4 lm=texture2D(uLM,vL);lm.rgb*=2.0;float sh=lm.a;
+  // most of the hero's own lantern is left out on characters (it sits at his feet, so it washed him out at night)
+  {vec2 q=(uPL.xy-vW.xz-vec2(0.0,3.0))/uPL.z;float a=max(1.0-length(q),0.0);lm.rgb=max(lm.rgb-uPLC*(a*a)*0.8,0.0);}
+  vec3 L=uAmb*(0.8+0.2*sh)*(0.94+0.12*hv)+uSunC*(max(dot(vec3(0.0,0.45,0.89),uSunD),0.0)*sh*(1.0-0.4*side*uSunD.x))+lm.rgb*1.1;
+  L*=mix(0.74,1.0,smoothstep(0.0,0.42,hv));
+  float ll=dot(L,vec3(.299,.587,.114));L+=uAmbN*max(uAct-ll,0.0)*0.92;
+  col=max(col,0.0)*L;
+  vec2 ro=vec2(vN.x*vN.z*uAtl,0.0);float rs=vN.y*0.5+0.5;
+  float edge=1.0-step(0.5,texture2D(uTex,vT+ro).a),top=1.0-step(0.5,texture2D(uTex,vT-vec2(0.0,uAtl)).a);
+  col+=(uRimC+lm.rgb*0.8)*(edge*rs*uSpr.w*(0.55+0.45*hv))+uAmb*(top*0.07);
+  col=mix(col,uFogC,vFo);col=uGM*col+uGB;
   gl_FragColor=vec4(clamp(col,0.0,1.0),uMode==2?c.a:1.0);}`,
 // the light map: every point light as a soft disc, added up in a small texture laid over the ground around the camera
 lm_v:`attribute vec2 aP;attribute vec2 aQ;attribute vec3 aC;varying vec2 q;varying vec3 c;void main(){q=aQ;c=aC;gl_Position=vec4(aP,0.0,1.0);}`,
@@ -116,7 +150,7 @@ H2Atlas.prototype.get=function(key,cv){let r=this.m.get(key);if(r)return r;if(!c
   // The upload sends the whole bitmap, so the slot and the UVs use the real size; w/h stay logical for the quad on screen.
   const w=cv.width,h=cv.height,pw=cv.hd&&cv._rw?cv._rw:w,ph=cv.hd&&cv._rh?cv._rh:h,S=this.s;if(pw+2>S||ph+2>S)return null;
   if(this.x+pw+1>S){this.x=1;this.y+=this.sh+2;this.sh=0;}
-  if(this.y+ph+1>S){this.full++;this.reset();return this.get(key,cv);}// full: start over (rare; a frame or two may re-upload)
+  if(this.y+ph+1>S){this.full++;this.reset();const g=this.gl;g.bindTexture(g.TEXTURE_2D,this.t);g.texImage2D(g.TEXTURE_2D,0,g.RGBA,S,S,0,g.RGBA,g.UNSIGNED_BYTE,null);return this.get(key,cv);}// v0.5.8: cleared, so the gaps a rim light reads stay transparent// full: start over (rare; a frame or two may re-upload)
   const gl=this.gl;gl.bindTexture(gl.TEXTURE_2D,this.t);gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL,false);gl.texSubImage2D(gl.TEXTURE_2D,0,this.x,this.y,gl.RGBA,gl.UNSIGNED_BYTE,cv);
   r={u0:this.x/S,v0:this.y/S,u1:(this.x+pw)/S,v1:(this.y+ph)/S,w,h};this.m.set(key,r);this.x+=pw+2;this.sh=Math.max(this.sh,ph);return r;};
 // ----- a static shelf packer over a 2D canvas (per map atlases: object cards, building pieces) -----
