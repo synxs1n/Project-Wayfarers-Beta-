@@ -1,6 +1,6 @@
 # Wayfarers (Beta)
 
-Turn-based pixel art medieval fantasy RPG. Beta v0.4.6.
+Turn-based pixel art medieval fantasy RPG. Beta v0.5.0.
 
 Play in browser (installable as an app from the browser menu): https://synxs1n.github.io/Project-Wayfarers-Beta-/
 
