@@ -7,7 +7,7 @@ await ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.
 await ev(()=>__A.ACT.menu());await wait(200);
 const top=await ev(()=>[...document.querySelectorAll('#modal .mgrp .chip')].map(x=>x.textContent));
 chk('top row is Party Backpack Guides Records Quests Map Settings',JSON.stringify(top)===JSON.stringify(['Party','Backpack','Guides','Records','Quests','Map','Settings'])||JSON.stringify(top));
-const want={Party:['Party','Roster','Loadouts','Companions'],Backpack:['Equipment','Items'],Guides:['What next?','Lore','Foe types','Guilds','Help'],Records:['Journey','Bestiary','Codex','Guilds']};
+const want={Party:['Party','Roster','Loadouts','Companions'],Backpack:['Equipment','Items'],Guides:['What next?','Lore','Foe types','Guilds','Hints','Help'],Records:['Journey','Bestiary','Codex','Guilds','Music Room']};
 for(const g of Object.keys(want)){
   await page.click(`#modal .mgrp .chip:has-text("${g}")`);await wait(150);
   const subs=await ev(()=>[...document.querySelectorAll('#modal .msub .chip')].map(x=>x.textContent));
