@@ -83,6 +83,16 @@ const ECON={gold:.9,xp:.85,gear:1.6,items:1.6,recruit:3,rareRecruit:2.6,inn:{bas
 const econG=n=>(typeof G!=='undefined'&&G&&G.daily)?n:Math.round(n*ECON.gold);
 // 6.6 personal quests: a hero must also have fought this many battles beside you in this journey (per hero, saved as bt)
 const PERSONAL_BT=40;
+// ===== Beta v0.5.0 phases 4 and 5 (p4xp.js, p4party.js, p5settings.js) =====
+// 4.1 personal quests: no level gate any more; PERSONAL_BT battles together and the party in this realm (0 based) or later.
+const PERSONAL_REALM=1;
+// 4.3 XP catch up: +per for each level a hero is below the party's highest, at most +max. Reserve heroes get bench x that bonus.
+const XPCU={per:.10,max:.50,bench:.5};
+// 5.4 transitions, in ms of world screen time: time of day blends over tod, weather over wx (visuals and ambience beds).
+const TRANS={tod:11000,wx:6500,ambTod:10,ambWx:6};
+// 5.5 save indicator: show "Saving..." this long, then "Saved", hold, then fade. minGap = autosaves closer than this share one message.
+// syncDelay: the cloud upload waits this long after the last save (debounced, signed in players with write access only).
+const SAVE_UI={saving:350,hold:2000,fade:450,minGap:2500,syncDelay:6000};
 // ===== Beta v0.4.1 Phase 3 balance knobs (one place, editable) =====
 // 3.2 boss level = max(base, base + frac*(party highest - base)), never more than cap above base
 const BOSS_LV={frac:.5,cap:12};
