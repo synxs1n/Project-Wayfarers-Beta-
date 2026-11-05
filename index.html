@@ -1321,7 +1321,7 @@ html.rm .menter .panel,html.rm .pc.tg,html.rm .swc.sel{animation:none}
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.5.7";const APP_BUILD="c686ece421f8";
+(function(){const APP_VER="0.5.8";const APP_BUILD="cb4175d01510";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -1633,13 +1633,14 @@ const HD2D={pitch:40,fov:28,maxHfov:40,zoom:1,follow:85,topSlack:.2,sway:{amp:.7
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.5.7";const APP_BUILD="c686ece421f8";
+const APP_VER="0.5.8";const APP_BUILD="cb4175d01510";
 
 // =================== VERSION ===================
 // The one public version string. Patch (0.1.x) for fixes and balance, minor (0.x.0) for new systems.
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.5.8',['Fix: on the battle stage, a fighter standing in front no longer covers another fighter\'s element badge or HP bar, and falling rain and snow no longer hide them. Bars, shield pips and element badges now always draw on top.']],
  ['Beta v0.5.7',['Fix: heroes, townsfolk and monsters in the HD-2D world no longer look sliced and smeared; they now show with their full detail.']],
  ['Beta v0.5.6',['The world is now a lit diorama on Medium and High graphics: a tilted camera follows your party over maps where walls, cliffs and houses rise from the ground with gabled roofs and lit windows, props stand upright, water sits low and lava glows. Lamps, torches, windows, braziers and crystals light the ground around them, the sun casts soft shadows, fog gathers in the distance, and bloom, a tilt-shift focus band, light shafts and colour grading follow the time of day and the weather. Anything that stands in front of your hero thins out so you never lose sight of them. Settings > HD-2D world turns it off; Low and devices without WebGL keep the classic view.']],
  ['Beta v0.5.5',['Battles take place on lit, dioramic stages: a perspective floor that is sharp where the fighters stand and softens toward the horizon, a blurred background with glowing highlights, torches, braziers, lava and moonlight that light the ground, soft shadows, a colour grade that follows the time of day and the weather, and boss stages with braziers and a glowing rune circle. Every element has its own spell effect with light (fire tongues, shattering ice, a lightning bolt from the sky, a water geyser, earth spikes, a wind funnel, a beam of light, a shadow vortex), and Limit Breaks get a spotlight. Medium keeps the frame rate of before; High lights the fighters too; Low and devices without WebGL keep the classic stage.']],
@@ -7500,6 +7501,8 @@ function battleFrame(now){
     for(let i=0;i<16;i++){const a=i/16*Math.PI*2+p*1.5,r0=10+p*30,r1=r0+40+p*90;ctx.strokeStyle=i%2?col:'#fff2a0';ctx.lineWidth=i%2?2:1;ctx.beginPath();ctx.moveTo(cx+Math.cos(a)*r0,cy+Math.sin(a)*r0);ctx.lineTo(cx+Math.cos(a)*r1,cy+Math.sin(a)*r1);ctx.stroke();}
     ctx.globalAlpha=(1-p)*.35;ctx.fillStyle='#fff2a0';ctx.beginPath();ctx.arc(cx,cy,8+p*60,0,7);ctx.fill();ctx.restore();if(p<.05)BV.shake={t:now,life:500,amp:4};}}
   if(B.weather&&B.weather!=='clear')weatherFX(ctx,B.weather,W,H,now,true);
+  // v0.5.8: bars, pips and element badges last, over every sprite, spell particle and weather (unitHud)
+  units.forEach(({u,b})=>{try{unitHud(ctx,u,b,now);}catch(e){}});
   ctx.restore();
   if(BV.flash){const p=(now-BV.flash.t)/BV.flash.life;if(p>=0&&p<1){ctx.fillStyle=BV.flash.col;ctx.globalAlpha=1-p;ctx.fillRect(0,0,W,H);ctx.globalAlpha=1;}else if(p>=1)BV.flash=null;}
 }
@@ -7563,7 +7566,12 @@ function drawUnit(ctx,u,b,now,tgMode){
   if(has(u,'regen')&&Math.floor(now/300)%2){ctx.fillStyle='#7aff8a';ctx.fillRect(x-6+Math.floor(now/300)%12,y-10-Math.floor(now/50)%12,1,1);}
   if(has(u,'haste')){ctx.fillStyle='rgba(122,255,208,.6)';for(let i=0;i<3;i++)ctx.fillRect(x-dir*(10+((now/30+i*7)%8)),y-8-i*7,5,1);}
   if(has(u,'slow')){ctx.fillStyle='rgba(122,168,216,.5)';ctx.fillRect(x-b.w*.3,y-2,b.w*.6,1);}
-  // bars, shields and marks
+  // v0.5.8: the HP bar, shield pips, primed mark and element badges draw in a second pass after every sprite (unitHud),
+  // so a unit standing in front can no longer cover another unit's bar or element icon
+  u._hud={x,y};
+}
+// v0.5.8: one unit's HUD (bar, limit bar, shield pips, primed mark); battleui.js adds the element badges by wrapping it
+function unitHud(ctx,u,b,now){const hero=u.side==='p';const x=(u._hud?u._hud.x:b.x),y=(u._hud?u._hud.y:b.y);
   const bw=hero?24:Math.min(40,Math.round(b.w*.66)),bx=Math.round(x-bw/2),by=y+3;
   if(u.hp>0){
     u._dh=u._dh==null?u.hp:u._dh+(u.hp-u._dh)*Math.min(1,.18);if(Math.abs(u._dh-u.hp)<.5)u._dh=u.hp;
@@ -7583,6 +7591,7 @@ function drawUnit(ctx,u,b,now,tgMode){
 }
   }
 }
+
 function drawParts(ctx,now){
   const keep=[];
   BV.P.forEach(p=>{
@@ -12339,8 +12348,8 @@ function elb(el){return `<img class="elb" src="${cvURL('elb:'+el,()=>elShapeCv(e
 function elbs(list){return `<span class="elbs">${(list||[]).map(elb).join('')}</span>`;}
 function elbNamed(list){return (list||[]).map(el=>`<span class="elbn">${elb(el)} ${esc(EL[el]||el)}</span>`).join(' ');}
 // stage: shape badges next to each unit's HP bar, always visible. They sit left of the bar, or right of it when the left edge is too close.
-{const du0=drawUnit;drawUnit=function(ctx,u,b,now,tg){du0.apply(this,arguments);
-  try{if(!u||u.hp<=0||!u.el||!u.el.length)return;const hero=u.side==='p',bw=hero?24:Math.min(40,Math.round(b.w*.66)),x=b.x,y=b.y,bx=Math.round(x-bw/2),by=y+3,n=u.el.length,tw=n*10;
+{const uh0=unitHud;unitHud=function(ctx,u,b,now){uh0.apply(this,arguments);
+  try{const x0=u._hud?u._hud.x:b.x,y0=u._hud?u._hud.y:b.y;if(!u||u.hp<=0||!u.el||!u.el.length)return;const hero=u.side==='p',bw=hero?24:Math.min(40,Math.round(b.w*.66)),x=x0,y=y0,bx=Math.round(x-bw/2),by=y+3,n=u.el.length,tw=n*10;
     let sx=bx-tw-1;if(sx<1)sx=Math.min(BL.W-tw-1,bx+bw+2);
     u.el.forEach((el,i)=>ctx.drawImage(elShapeCv(el),sx+i*10,by-4));}catch(e){}};}
 // ----- cards -----
@@ -16488,7 +16497,7 @@ Object.assign(window.__A,{temperRank,forgeCost,hasMats,stSym,ST_SYM,pgSpot,pgGri
 ['heroCanvas','monCanvas','walkerCanvas','heroGridView','MART','MON_SIZE','BIG_ART','IMG','URL_CACHE','spriteOf','imgOf','walkFrame','drawSprite','heroPal','SPRITE_HD','SPR','sprHD','paintHD','villagerLook','whiteOf','mountCanvas','petCanvas','halfCanvas'].forEach(k=>{try{Object.defineProperty(window.__A,k,{get:()=>eval(k),configurable:true});}catch(e){}});
 Object.assign(window.__A,{GFX,GFX_Q,GFX_AUTO,GFX_CAM,gfxCfg,gfxTier,gfxApply,gfxAutoDecide,gfxAutoFeed,gfxStill,gfxCamPush,CAM,PARA,g6Ground,g6Sky,g6Bloom,g6Burst,titleDraw:(c,w,h,n)=>titleDraw(c,w,h,n),bgStatic:(a,b,c)=>bgStatic(a,b,c),onFx:(u,t,c)=>onFx(u,t,c),townDecorActors:(a,n,x,y)=>townDecorActors(a,n,x,y),part:o=>part(o),groundPlane:(...a)=>groundPlane(...a)});// v0.5.0 Phase 6
 Object.assign(window.__A,{HB,HD_BATTLE,HD_FLOOR,HD_LOOK,hbInfo,hbWanted,hbQ,hbLook,battleTheme:()=>battleTheme(),battleFrame:n=>battleFrame(n),BV});// v0.5.3 HD-2D battle stage
-Object.assign(window.__A,{H2Atlas,HD,HD2D,hdActive,hdWant,hdTierQ,hdCfgOn,hdPick:e=>hdPick(e),mapPoint:e=>mapPoint(e),hdBake:m=>hdBake(m),TR,worldDraw2:n=>worldDraw(n)});
+Object.assign(window.__A,{iconCv,H2Atlas,HD,HD2D,hdActive,hdWant,hdTierQ,hdCfgOn,hdPick:e=>hdPick(e),mapPoint:e=>mapPoint(e),hdBake:m=>hdBake(m),TR,worldDraw2:n=>worldDraw(n)});
 boot();
 })();
 </script>
