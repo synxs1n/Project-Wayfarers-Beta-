@@ -91,3 +91,6 @@ Details per item: `design-notes-v050.md` and the phase reports (`v050-phase2.md`
 - `chrome/v50.js`, `p3.js`, `p4.js`, `p5.js`, `prog.js`, `lever.js`, `v030.js`: need `@sparticuz/chromium` (the old workspace's Chrome), not installed.
 - `chrome/v043.js`: checks for the version string "Beta v0.4.3" (fails on v0.4.6 too).
 - Node `stairs.js`, `propaudit.js`, `dunaudit.js`, `bldaudit.js`, `entdist.js`, `dailycmp.js`: their file lists predate world4.js (`buildDungeon3`, `townGates3`, `buildField3`, `classSkills` not defined) and crash the same way on v0.4.6. `dunsame.js` needs an old `tools/v3_pre_030` snapshot. Their checks are covered by `worldtest.js`, `stairs2.js`, `healtest.js` and the v0.5.0 Chrome tests.
+
+## After the pass
+Beta v0.5.2 to v0.6.0 follow ups (Fold view size, the four graphics overhauls, HD-2D fixes, badges, primed marker, focus band, title and type) are listed with their tests in `design-notes-v050.md`.

@@ -989,3 +989,17 @@ html.rm .menter{animation:none}
 @keyframes pminBob{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,-1.5px)}}
 html.rm .primed.pmin{animation:none}
 @media (prefers-reduced-motion:reduce){.primed.pmin{animation:none}}
+
+/* v0.6.0: no box around targetable foes: the sprite glows and pulses on the canvas; focus is a soft glow, names and hints are small labels */
+.unit.tg{outline:none!important;background:none;border-radius:50%}
+.unit.tg:hover,.unit.tg:focus,.unit.tg:focus-visible{outline:none!important;background:radial-gradient(ellipse 60% 55% at 50% 62%,rgba(255,220,120,.32),rgba(255,220,120,0) 72%)}
+.unit.tg .ename{font:700 4.6px/1.1 var(--fb);text-shadow:0 0 2px #000,.5px .5px 0 #000;letter-spacing:.01em}
+.unit.tg .eff{font:800 4.2px/1.1 var(--fb);padding:.6px 1.6px;border-radius:2px;border-width:.5px}
+/* clean type everywhere: titles, banners and labels no longer use the pixel font */
+:root{--fd:'Nunito',system-ui,-apple-system,'Segoe UI',sans-serif}
+/* title menu */
+.tmenu{display:grid;gap:10px;justify-items:center;margin:8px auto 0;max-width:420px;width:100%}
+.tmain{display:grid;gap:8px;width:100%}.tmain .btn{width:100%}.tmain .tbig{font-size:1.15rem;padding:12px}
+.tmore{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.ttools{width:100%;text-align:center}.ttools summary{cursor:pointer;color:var(--mute,#cdbf9c);font-size:.9rem;padding:6px;list-style:none}.ttools summary::-webkit-details-marker{display:none}.ttools summary::after{content:' \25BE'}.ttools[open] summary::after{content:' \25B4'}
+.unit.tg .eff{top:auto;bottom:calc(100% + 6px)}.unit.tg .eff+.eff{bottom:calc(100% + 12px)}

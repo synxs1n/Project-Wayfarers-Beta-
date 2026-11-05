@@ -101,3 +101,11 @@ Full write-up: `v053-hd2d.md`. `hd2dgl.js` and `hd2d.js` (before `pathguard.js`)
 - **Primed marker.** `primedTag` (ui.js) is a small floating element badge with the turns left (`.primed.pmin`, a gentle bob, still under reduced motion), replacing the "PRIMED ICE 1T" chip. The canvas sphere, ground ring and orbiting sparks in `unitHud` are gone, and the stage status row no longer repeats a primed chip (`stItems(u,{noPrime:true})`); the foe card's "PRIMED: element, turns" line and the tap popup keep the details.
 - **HD-2D focus band.** `HD2D.dof` is now `{shift:.06,band:.24,ramp:.5,max:.7}` (was band .1, ramp .32, max 1), and the post shader blurs the near side (below the hero) at 35% of the far side. On a portrait phone the whole lower half used to smear.
 - Test: `chrome/v059a.js`.
+
+## Beta v0.6.0
+Versioning: the last digit passed 9 after v0.5.9, so the middle digit went up (CLAUDE.md rule); next is v0.6.1.
+- **No update popup.** The `svupdate` export offer after each version change is off (saves.js; the modal code stays for reference). Saves sync to the account; Export remains in the Journey tab. Test: `chrome/v043b.js` updated.
+- **Title menu.** `.tmenu`: `.tmain` (Continue first and gold when any slot has a journey, then New journey, Daily Trial), `.tmore` (Settings, Help / Feedback), and `details.ttools` "Saves and codes" (Import save, Recover saves, Redeem code).
+- **Clean type.** `--fd` (titles, banners, labels) is Nunito instead of Pixelify Sans in style.css and ui3.css; the save message and cloud icon too. The blackletter logo (Jacquard 24) stays. Test: no element in the page computes to the pixel font.
+- **Targeting.** No outline box on targetable foes (`.unit.tg`): the canvas already pulses a glow on them; keyboard focus is a soft radial glow. Name and effectiveness hints stack above the foe.
+- Test: `chrome/v060a.js` (title order and grouping, no popup, no pixel font, no target box; screenshots in `shots-v053/`).

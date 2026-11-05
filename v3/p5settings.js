@@ -62,7 +62,7 @@ ACT.p5Save=function(){if(!G||G.daily){toast('Saving is not available here.');ret
 ACT.p5Retry=function(){ACT.p5Save();};
 // the message box: fixed, pointer events off (only Retry takes taps), never focused, never re-renders the game
 function p5El(){if(P5S.el&&document.body.contains(P5S.el))return P5S.el;const e=document.createElement('div');e.id='p5save';e.setAttribute('role','status');e.setAttribute('aria-live','polite');document.body.appendChild(e);
-  const st=document.createElement('style');st.textContent=`#p5save{position:fixed;left:8px;top:8px;z-index:250;display:flex;gap:6px;align-items:center;font:12px/1 "Pixelify Sans",monospace;color:#f2e6c8;background:rgba(14,10,6,.82);border:2px solid #000;padding:4px 7px;pointer-events:none;opacity:0;transition:opacity .45s;white-space:nowrap;max-width:60vw}
+  const st=document.createElement('style');st.textContent=`#p5save{position:fixed;left:8px;top:8px;z-index:250;display:flex;gap:6px;align-items:center;font:12px/1 "Nunito",monospace;color:#f2e6c8;background:rgba(14,10,6,.82);border:2px solid #000;padding:4px 7px;pointer-events:none;opacity:0;transition:opacity .45s;white-space:nowrap;max-width:60vw}
 #p5save.on{opacity:.95}#p5save.err{color:#ffb070;border-color:#5a1a0a}#p5save.ok{color:#a8ffb8}#p5save button{pointer-events:auto;font:inherit;color:#150b17;background:#ffd04a;border:2px solid #000;padding:2px 6px;cursor:pointer}
 #p5save.rm{transition:none}#svicon{transition:none}
 .savepin{display:inline-flex;align-items:center;gap:6px;margin-left:10px;vertical-align:middle;font-size:.8rem}.savepin small{font:400 .72rem/1.1 var(--fb,sans-serif);opacity:.85;white-space:nowrap}
