@@ -3,10 +3,13 @@ on:
   push:
     tags: ['v*']
     branches: [main]
-    paths: ['RELEASE_VERSION']
+    paths: ['RELEASE_VERSION','GAME_VERSION','index.html','v3/**','electron/**','icons/**','android-res/**','manifest.webmanifest','capacitor.config.json','package.json']
   workflow_dispatch:
 permissions:
   contents: write
+concurrency:
+  group: release-build
+  cancel-in-progress: true
 jobs:
   web:
     runs-on: ubuntu-latest
