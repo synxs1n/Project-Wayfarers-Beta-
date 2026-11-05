@@ -1,0 +1,10 @@
+{
+  "project_info": {"project_number": "481988138726", "project_id": "wayfarers-437c2", "storage_bucket": "wayfarers-437c2.firebasestorage.app"},
+  "client": [{
+    "client_info": {"mobilesdk_app_id": "1:481988138726:android:329e995742b2df963d8d27", "android_client_info": {"package_name": "com.synxs1n.wayfarers"}},
+    "oauth_client": [{"client_id": "481988138726-6rd27c7qa1ur613aafqku5u1hl8lr8fb.apps.googleusercontent.com", "client_type": 3}],
+    "api_key": [{"current_key": "AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM"}],
+    "services": {"appinvite_service": {"other_platform_oauth_client": [{"client_id": "481988138726-6rd27c7qa1ur613aafqku5u1hl8lr8fb.apps.googleusercontent.com", "client_type": 3}]}}
+  }],
+  "configuration_version": "1"
+}

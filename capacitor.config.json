@@ -2,5 +2,13 @@
   "appId": "com.synxs1n.wayfarers",
   "appName": "Wayfarers",
   "webDir": "www",
-  "backgroundColor": "#150b17"
+  "backgroundColor": "#150b17",
+  "plugins": {
+    "FirebaseAuthentication": {
+      "skipNativeAuth": true,
+      "providers": [
+        "google.com"
+      ]
+    }
+  }
 }

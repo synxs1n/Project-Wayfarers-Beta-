@@ -30,6 +30,22 @@ jobs:
           cp index.html manifest.webmanifest sw.js www/
           cp -r icons www/icons
       - run: npx cap add android
+      - name: Google sign in setup (stable signing key, Firebase config, gradle plugin)
+        run: |
+          mkdir -p ~/.android
+          cp android-debug.keystore ~/.android/debug.keystore
+          cp android-google-services.json android/app/google-services.json
+          python3 - <<'PY'
+          import re
+          p='android/build.gradle';s=open(p).read()
+          if 'google-services' not in s:
+              s=re.sub(r"(dependencies\s*\{)",r"\1\n        classpath 'com.google.gms:google-services:4.4.2'",s,count=1)
+              open(p,'w').write(s)
+          p='android/app/build.gradle';s=open(p).read()
+          if 'com.google.gms.google-services' not in s:
+              s+="\napply plugin: 'com.google.gms.google-services'\n"
+              open(p,'w').write(s)
+          PY
       - name: App icons
         run: npx --yes @capacitor/assets generate --android || true
       - run: npx cap sync android
