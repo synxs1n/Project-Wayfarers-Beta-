@@ -11,7 +11,7 @@ const r=await ev(async()=>{const A=__A,B=A.B,o={};const ks=Object.keys(A.STS);
   o.nosym=els.filter(e=>!e.classList.contains('more')&&!e.classList.contains('wx')&&!e.querySelector('svg.stsym')).map(e=>e.outerHTML.slice(0,80));
   o.spill=els.filter(e=>{const b=e.getBoundingClientRect();if(!b.width)return false;return [...e.querySelectorAll('svg')].some(s=>{const q=s.getBoundingClientRect();return q.left<b.left-.5||q.right>b.right+.5||q.top<b.top-.5||q.bottom>b.bottom+.5;})||e.scrollWidth>e.clientWidth+1;}).map(e=>e.getAttribute('aria-label')||e.title);
   // distinct shape per status
-  o.shapes=new Set(ks.map(k=>A.stSym(k).replace(/data-st="[^"]*"/,''))).size;o.nks=ks.length;
+  o.shapes=A.stSym?new Set(ks.map(k=>A.stSym(k).replace(/data-st="[^"]*"/,''))).size:0;o.nks=ks.length;
   // tap still explains
   const b=document.querySelector('.sti[data-act="stInfo"]');if(b){b.click();await new Promise(q=>setTimeout(q,100));o.pop=!!document.querySelector('.stpop')&&document.querySelector('.stpop').innerText.length>10;}
   // roster rows: ailment chips on portraits

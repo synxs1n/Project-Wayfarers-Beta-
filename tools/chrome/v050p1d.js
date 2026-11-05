@@ -4,10 +4,10 @@ const {open,chk,done}=require('./pw');
 const H=await open({w,h,mobile:true});const {ev,wait}=H;
 await ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;A.G.inv.potion=9;A.G.inv.ether=9;A.startBattle({stage:0,kind:'field'});});await wait(900);
 const r=await ev(async()=>{const A=__A,B=()=>A.B,o={};const wt=ms=>new Promise(q=>setTimeout(q,ms));
-  for(let i=0;i<40&&B().mode!=='cmd';i++)await wt(150);
+  for(let i=0;i<140&&B().mode!=='cmd';i++)await wt(150);
   const vis=()=>{const b=document.querySelector('#bcmd [data-act="back"]');if(!b)return 'missing';const r=b.getBoundingClientRect(),c=document.getElementById('bcmd').getBoundingClientRect();
     const onScreen=r.width>0&&r.top>=0&&r.bottom<=innerHeight+1&&r.top>=c.top-1;return onScreen?true:'offscreen '+Math.round(r.top)+'/'+innerHeight;};
-  o.root=vis();o.rootDisabled=document.querySelector('#bcmd [data-act="back"]').disabled;
+  o.root=vis();{const b0=document.querySelector('#bcmd [data-act="back"]');o.rootDisabled=b0?b0.disabled:'missing';}
   A.ACT.cmd('skills');document.getElementById('bcmd').scrollTop=9999;window.scrollTo(0,9999);await wt(50);o.skills=vis();
   const s=A.known(B().cur).find(x=>['one','ally'].includes(x.t)&&B().cur.mp>=x.mp);o.sks=A.known(B().cur).map(x=>x.t).join();if(s){A.ACT.sk(s.id);o.target=vis();A.ACT.back();o.fromTarget=B().menu;}
   A.ACT.back();o.toRoot=B().menu;

@@ -13,7 +13,7 @@ const r=await ev(()=>{const A=__A,G=A.G,o={};
   A.V.modal={type:'smithy',tab:'forge'};A.render();
   const rows=[...document.querySelectorAll('#modal .row.rec')];o.n=rows.length;o.readyFlags=rows.map(e=>e.classList.contains('ready')?1:0);
   // ranks recomputed in list order
-  const list=[];A.partyChars?0:0;G.gear.forEach((id,i)=>{if(A.forgeCost(id))list.push(Object.assign({where:'spare',ref:i,id},A.temperRank({where:'spare',ref:i,id})));});
+  const list=[];A.partyChars?0:0;G.gear.forEach((id,i)=>{if(A.forgeCost(id))list.push(Object.assign({where:'spare',ref:i,id},A.temperRank?A.temperRank({where:'spare',ref:i,id}):{ready:0,gain:0,close:0}));});
   o.rank=list.map(x=>[x.ready,+x.gain.toFixed(2),+x.close.toFixed(2)]);
   return o;});
 chk('Inn bed line says "for your wayfarers"',r.inn===true);

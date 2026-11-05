@@ -23,7 +23,9 @@ return {get G(){return G},set G(v){G=v},get B(){return B},V,get META(){return ME
   innHeal:()=>Object.values(G.roster).forEach(c=>{c.ail={};c.st={};c.S=calcStats(c);c.hp=c.S.mhp;c.mp=c.S.mmp;})};`;
 const LOOP=`
 const Q=window.__Q;
-function run(spec){Q.length=0;try{A.syncPools();}catch(e){}A.setSmart(!window.__AUTO);A.V.auto=true;A.META.best={};if(!A.startBattle(spec))return null;
+function run(spec){Q.length=0;try{A.syncPools();}catch(e){}
+  // the sims stand in for a player who plays every fight: the 'win it manually once first' auto lock on bosses does not apply
+  try{A.G.bossWon=new Proxy({},{get:()=>1});}catch(e){}A.setSmart(!window.__AUTO);A.V.auto=true;A.META.best={};if(!A.startBattle(spec))return null;
   let it=0;while(it++<400000){const m=A.V.modal;if(m&&(m.type==='result'||m.type==='lose'))break;
     if(!Q.length){if(A.B&&A.B.mode==='cmd')(window.__AUTO?A.autoTurn:A.autoTurnSmart)();else if(A.B&&!A.B.over)A.advance();if(!Q.length)break;}
     Q.shift()();}
@@ -35,6 +37,8 @@ const pool=A.RAW.filter(r=>r[6]!=='L'&&r[6]!=='x'&&A.TPL[r[0]]&&!A.TPL[r[0]].mon
 const pick=n=>{const p=[];while(p.length<n){const id=pool[Math.floor(R()*pool.length)];if(!p.includes(id))p.push(id);}return p;};
 `;
 const SIMS={
+dbg:()=>`party(pick(6),40,5);A.G.bossWon=new Proxy({},{get:()=>1});A.G.stage=3;A.G.cleared=[1,1,1,0,0];A.G.run.bosses[3]=A.GPOOL[0];const ok=A.startBattle({stage:3,kind:'boss'});let it=0;const log=[];while(it++<4000){const m=A.V.modal;if(m&&(m.type==='result'||m.type==='lose'))break;if(!Q.length){if(A.B&&A.B.mode==='cmd')A.autoTurnSmart();else if(A.B&&!A.B.over)A.advance();if(!Q.length){log.push('empty q mode='+(A.B&&A.B.mode)+' over='+(A.B&&A.B.over)+' modal='+(m&&m.type));break;}}Q.shift()();}
+  return 'start '+ok+' it '+it+' modal '+(A.V.modal&&A.V.modal.type)+' B '+(A.B&&A.B.mode)+' '+log.join(';')+' en '+(A.B&&A.B.en.map(e=>e.name+':'+e.hp).join(','));`,
 boss:N=>`N=${N||4};const out=[];
   for(const SZ of [6,3])for(const L of [30,35,40,45]){const tier=L>=40?5:L>=35?4:3,row=[];
     for(const [s,kind,label] of [[3,'boss','Scourge 4'],[4,'boss','Calamity'],[3,'storyEcho','Echo 4'],[4,'storyEcho','Echo Calamity']]){
