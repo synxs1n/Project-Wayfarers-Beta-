@@ -32,8 +32,12 @@ function foeKnown(e){return tierOf(bestEntry(e),e.boss)>=2;}
 function hpText(u){return `${Math.max(0,Math.ceil(u.hp))}/${u.S.mhp}`;}
 function uInfoBtn(u){return `<button class="uinfo" data-act="uInfo" data-arg="${unitRef(u)}" aria-label="Details for ${esc(u.name)}" title="Details">i</button>`;}
 // v0.3.5 2.1: the loud primed chip on every foe card, with turns left and a reaction hint while a detonator is being aimed
-function primedChip(e){if(!(e.primed&&e.hp>0&&EL[e.primed.el]))return '';const hit=B.mode==='cmd'&&B.pend&&detHits(B.pend.sk,e);
-  return `<span class="pchip ${hit?'hit':''}" style="--c:${ELC[e.primed.el]}" title="Primed with ${EL[e.primed.el]}. A matching Detonator sets off a reaction.">${ico(e.primed.el)}<b>PRIMED: ${EL[e.primed.el]}</b><i>${e.primed.t} turn${e.primed.t===1?'':'s'}</i>${hit?'<u>✸ REACTS</u>':''}</span>`;}
+// v0.6.3: compact (element, "Primed", turns left); while a detonator is aimed it names the reaction it will set off
+function primedChip(e){if(!(e.primed&&e.hp>0&&EL[e.primed.el]))return '';const sk=B.mode==='cmd'&&B.pend&&B.pend.sk,hit=detHits(sk,e),R=hit?(detTargets(sk).find(o=>o.e===e)||{}).R:null;
+  return `<span class="pchip ${hit?'hit':''}" style="--c:${ELC[e.primed.el]}" title="Primed with ${EL[e.primed.el]} for ${e.primed.t} more turn${e.primed.t===1?'':'s'}. A matching Detonator sets off a reaction.">${ico(e.primed.el)}<b>Primed</b><i>${e.primed.t}t</i>${R?`<u>✸ ${esc(R.n)}</u>`:''}</span>`;}
+// v0.6.3: the elements this foe is known to be weak to (and resists), from the Bestiary
+function foeWeak(e){try{const b=bestEntry(e),kn=Object.keys(b.known||{}).filter(el=>EL[el]),w=kn.filter(el=>effOf(el,e)>1),r=kn.filter(el=>effOf(el,e)<1);
+  return (w.length?`<span class="fwk up" title="Weak to ${esc(w.map(el=>EL[el]).join(', '))}">Weak ${w.map(ico).join('')}</span>`:'')+(r.length?`<span class="fwk dn" title="Resists ${esc(r.map(el=>EL[el]).join(', '))}">Res ${r.map(ico).join('')}</span>`:'');}catch(x){return '';}}
 // v0.4.0 1.3: shield pips get their own row on the foe card (and their own strip on the stage), never shared with status icons
 function shPips(u){if(!u.maxShield||u.hp<=0)return '';let h='';for(let i=0;i<u.maxShield;i++)h+=`<i class="${u.broken?'br':i<u.shield?'on':''}"></i>`;
   return `<span class="spips ${u.broken?'broken':''}" role="img" aria-label="Shield ${u.broken?'broken':u.shield+' of '+u.maxShield}" title="Shield ${u.broken?'broken':u.shield+'/'+u.maxShield}"><b>Shield</b><span class="spp">${h}</span>${u.broken?'<em>BROKEN</em>':''}</span>`;}
@@ -42,10 +46,12 @@ function foeCards(){
   if(!L.length)return '';
   return `<div class="pgroup foes"><h3>Foes</h3><div class="fcs">${L.map(({e,i})=>{const tg=targetable(e),dead=e.hp<=0,kn=foeKnown(e),pct=Math.max(0,Math.ceil(e.hp/e.S.mhp*100));
     const art=e.heroArt?heroURL(e.heroArt):monURL(e.art);
-    return `<div class="pcw fcw"><button class="fc ${tg?'tg':''} ${dead?'ko':''} ${e.primed&&!dead?'isprimed':''} ${tg&&detHits(B.pend&&B.pend.sk,e)?'dethit':''}" style="--pc:${e.primed&&ELC[e.primed.el]||'#fff'}" data-x="1 ${B.mode==='cmd'&&B.menu==='target'&&!tg?'':''}" data-act="tgtE" data-arg="${i}" ${tg?'':'tabindex="-1"'} aria-label="${esc(e.name)}, level ${e.lv}">
+    // v0.6.3: effects the stage already shows in full are not repeated here (b3OnStage); the reaction a detonator sets off always is
+    const tags=dead?'':(b3OnStage(e,'prim')&&!detHits(B.pend&&B.pend.sk,e)?'':primedChip(e))+foeWeak(e)+(b3OnStage(e,'tags')?'':stButtons(e,{max:BL.mode==='tall'?3:5,noWx:true,noPrime:true}))+(BL.mode==='tall'?'':archChips(e));
+    return `<div class="pcw fcw ${tags?'hastags':''}"><button class="fc ${tg?'tg':''} ${dead?'ko':''} ${e.primed&&!dead?'isprimed':''} ${tg&&detHits(B.pend&&B.pend.sk,e)?'dethit':''}" style="--pc:${e.primed&&ELC[e.primed.el]||'#fff'}" data-x="1 ${B.mode==='cmd'&&B.menu==='target'&&!tg?'':''}" data-act="tgtE" data-arg="${i}" ${tg?'':'tabindex="-1"'} aria-label="${esc(e.name)}, level ${e.lv}">
       <img class="fci" src="${art}" alt=""><span class="pm"><span class="uct"><b>${esc(e.name)}${e.elite?' ★':''}</b><span class="ucl">Lv ${e.lv}</span>${elbs(e.el)}</span>
       <span class="ucr"><i>HP</i>${bar(e.hp,e.S.mhp,'#e8504a')}<em class="nums">${dead?'KO':kn?hpText(e):pct+'%'}</em></span>${shPips(e)}</span></button>${uInfoBtn(e)}
-      <div class="ptags">${dead?'':archChips(e)+primedChip(e)+stButtons(e,{max:5,noWx:true})}</div></div>`;}).join('')}</div></div>`;
+      <div class="ptags">${tags}</div></div>`;}).join('')}</div></div>`;
 }
 function pcard0(c,rs,turn,tg,lb){
   const lim=!rs&&limitOpen(c),ko=c.hp<=0;
@@ -59,7 +65,8 @@ function pcard0(c,rs,turn,tg,lb){
 }
 function pcard(c,rs){
   const turn=B.mode==='cmd'&&B.cur===c,tg=allyTargetable(c),lb=c.lb||0;
-  return `<div class="pcw">`+pcard0(c,rs,turn,tg,lb)+uInfoBtn(c)+`<div class="ptags">${c.hp>0?stButtons(c,{max:6,noWx:true}):'<span class="swko">KO</span>'}</div></div>`;
+  const tags=rs?'':c.hp>0?(b3OnStage(c,'tags')?'':stButtons(c,{max:BL.mode==='tall'?3:6,noWx:true})):'<span class="swko">KO</span>';
+  return `<div class="pcw ${tags?'hastags':''}">`+pcard0(c,rs,turn,tg,lb)+uInfoBtn(c)+`<div class="ptags">${tags}</div></div>`;
 }
 // ----- unit detail panel -----
 const DSTATS=[['mhp','HP'],['mmp','MP'],['atk','ATK'],['def','DEF'],['mag','MAG'],['res','RES'],['spd','SPD']];
@@ -108,4 +115,4 @@ function uDetHtml(){
 function bossBarHtml(){if(!B||!B.en)return '';const b=B.en.find(e=>e.boss&&e.hp>0)||B.en.find(e=>e.elite&&e.hp>0&&B.spec&&(B.spec.mini||B.spec.kind==='elite'));if(!b)return '';
   const p=Math.max(0,Math.min(100,b.hp/b.S.mhp*100)),sh=b.maxShield?`<span class="bbsh">${'◆'.repeat(Math.max(0,b.shield||0))}${'◇'.repeat(Math.max(0,b.maxShield-(b.shield||0)))}</span>`:'';
   return `<div class="bbn"><b>${esc(b.name)}</b> <small>Lv ${b.lv}</small>${sh}<span class="nums">${Math.ceil(b.hp)} / ${b.S.mhp}</span></div><div class="bbbar"><i style="width:${p.toFixed(1)}%"></i></div>`;}
-{const rb0=renderBattle;renderBattle=function(){const r=rb0.apply(this,arguments);try{const el=document.getElementById('bbossbar');if(el){const h=bossBarHtml();if(el.innerHTML!==h)el.innerHTML=h;el.style.display=h?'':'none';}}catch(e){}return r;};}
+{const rb0=renderBattle;renderBattle=function(){const r=rb0.apply(this,arguments);try{const el=document.getElementById('bbossbar');if(el){const h=bossBarHtml();if(el.innerHTML!==h)el.innerHTML=h;el.style.display=h?'':'none';const bt=el.closest('.battle');if(bt)bt.classList.toggle('hasboss',!!h);}}catch(e){}return r;};}

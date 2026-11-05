@@ -233,3 +233,20 @@ const HD2D={pitch:40,fov:28,maxHfov:40,zoom:1,follow:85,topSlack:.2,sway:{amp:.7
 // act: the least light a character gets (outdoors at night, in dungeons), added in the ambient's colour; shadow: contact shadow
 // [width as a share of the sprite, depth as a share of the width, core darkness, soft darkness, offset away from the key light px].
 HD2D.spr={sc:2/3,sat:.86,con:.9,spread:9,rim:.75,act:{out:.3,dun:.34},shadow:[.8,.55,.36,.3,1.6]};
+// ===== v0.6.3 battle screen (battle3.js, battle3.css) =====
+// B3: the stage label layout, in logical stage px (the stage is drawn at BL.sc CSS px per px). body: margin kept around each sprite's
+// visible pixels; pad: gap between labels; R: how far a label may move from its spot (step: search grid); barW: HP bar widths;
+// prim: primed badge size; sti/stiH: one status icon; tagF: font of the target tag, tagN: longest name on it, tagR: how far it looks first
+// (it stays close to its unit, shorter without the name if it must); fxRise: how far an effect text drifts up; minSc: the smallest
+// scale of the wide stage (it shrinks toward it so the commands fit under it); sideCol: width kept for the command column on landscape phones;
+// memo: ms the canvas reuses the last layout before checking whether anything changed.
+// slots: where units stand, [x share of the stage, depth 0..1 on the ground band (BATTLE_GROUND top..bot)], for the tall (portrait)
+// and the wide stage; e[n-1] for n foes, boss[n-1] for boss fights, p for the three heroes on the field.
+const B3={body:1,pad:1,R:40,step:2,barW:{hero:24,foe:30},prim:13,sti:12,stiH:10,tagF:5,tagN:13,tagR:28,fxRise:3,minSc:1.5,sideCol:360,memo:40,
+  slots:{
+    tall:{p:[[.72,0],[.89,.42],[.71,.84]],
+      e:[[[.27,.5]],[[.22,.05],[.36,.8]],[[.33,0],[.12,.42],[.4,.84]],[[.34,0],[.1,.28],[.47,.5],[.2,.84]],[[.34,0],[.1,.22],[.52,.36],[.3,.6],[.09,.84]]],
+      boss:[[[.27,.62]],[[.24,.75],[.48,.05]],[[.22,.7],[.47,0],[.5,.84]]]},
+    wide:{p:[[.74,0],[.88,.42],[.71,.84]],
+      e:[[[.27,.5]],[[.2,.08],[.36,.8]],[[.3,0],[.12,.42],[.4,.84]],[[.31,0],[.1,.28],[.46,.5],[.22,.84]],[[.3,0],[.09,.22],[.5,.36],[.28,.6],[.08,.84]]],
+      boss:[[[.25,.62]],[[.22,.75],[.44,.05]],[[.2,.7],[.42,0],[.46,.84]]]}}};

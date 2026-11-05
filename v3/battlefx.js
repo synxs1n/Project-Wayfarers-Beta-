@@ -27,20 +27,8 @@ function stButtons(u,opt){
   if(o.max&&L.length>o.max){const more=L.length-(o.max-1);return L.slice(0,o.max-1).join('')+`<button class="sti more" data-act="stInfo" data-arg="${unitRef(u)}|all" aria-label="${more} more effects">+${more}</button>`;}
   return L.join('');
 }
-// one icon row per unit on the stage, placed so no row is covered by another row, a sprite's body or the stage edge
-function stageTags(){
-  if(!B)return '';const W=BL.W,H=BL.H,IW=15,RH=10,placed=[],out=[];
-  const units=B.en.filter(e=>e.hp>0).concat(B.front.filter(c=>c.hp>0)).map(u=>({u,b:unitBox(u)})).filter(o=>o.b);
-  const bodies=units.map(o=>({x:o.b.x-o.b.w*.3,y:o.b.y-o.b.h*.8,w:o.b.w*.6,h:o.b.h*.75,u:o.u}));
-  const hit=(r,q)=>r.x<q.x+q.w&&r.x+r.w>q.x&&r.y<q.y+q.h&&r.y+r.h>q.y;
-  units.sort((a,b)=>b.b.y-a.b.y).forEach(({u,b})=>{const n=Math.min(4,stItems(u,{noPrime:true}).length);if(!n)return;const w=n*IW+2;
-    const sh=u.maxShield?7:0;/* v0.4.0 1.3: the shield pips own the strip right under the HP bar, tags start below it */const cands=[b.y+7+sh,b.y+17+sh,b.y-b.h-RH+2,b.y-b.h-2*RH+2,b.y-Math.round(b.h/2)];let pos=null;
-    for(const y0 of cands){const y=clamp(y0,1,H-RH-1),x=clamp(Math.round(b.x-w/2),1,W-w-1),r={x,y,w,h:RH};
-      if(!placed.some(q=>hit(r,q))&&!bodies.some(q=>q.u!==u&&hit(r,q))){pos=r;break;}}
-    if(!pos){const y=clamp(b.y+7+sh,1,H-RH-1),x=clamp(Math.round(b.x-w/2),1,W-w-1);pos={x,y,w,h:RH};}
-    placed.push(pos);out.push(`<div class="utags ${u.side}" style="left:${pos.x}px;top:${pos.y}px;width:${pos.w}px">${stButtons(u,{max:4,noPrime:true})}</div>`);});
-  return out.join('');
-}
+// v0.6.3: every stage label (status rows, primed badges, target tags) comes from one layout pass (b3Lay, battle3.js)
+function stageTags(){return B?b3StageHtml():'';}
 function stPopHtml(){
   const P=B&&B.stPop;if(!P)return '';const u=unitOf(P.ref);if(!u){B.stPop=null;return '';}
   let title='',body='',src='',dur='';
