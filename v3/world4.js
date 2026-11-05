@@ -194,7 +194,7 @@ function caveReward(s){
   if(kind==='recruit'){const pool=caveRecruitPool(s);if(!pool.length)kind='charm';else{const h=pool[hashS(G.run.seed+'cv'+s)%pool.length];recruit(h,true);msg=`${TPL[h].n} was waiting at the back of the cave, and asks to join you.`;G.caveWon=G.caveWon||{};G.caveWon[s]='recruit';return msg;}}
   G.caveWon=G.caveWon||{};G.caveWon[s]=kind;
   if(kind==='gear'){const gid=lootBase()+'_'+Math.min(5,s+1)+'+2',g=gearOf(gid);G.gear.push(gid);return `Inside: ${g.n} (${ITEM_TIERS[gTierIdx(g)].n})! It is already forged to +2.`;}
-  if(kind==='item'){G.inv.elixir=Math.min(9,(G.inv.elixir||0)+1);G.inv.plume=Math.min(9,(G.inv.plume||0)+2);return `Inside: 1 x ${ITEMS.elixir.n} and 2 x ${ITEMS.plume.n}.`;}
+  if(kind==='item'){G.inv.elixir=Math.min(invCap(),(G.inv.elixir||0)+1);G.inv.plume=Math.min(invCap(),(G.inv.plume||0)+2);return `Inside: 1 x ${ITEMS.elixir.n} and 2 x ${ITEMS.plume.n}.`;}
   const cid=CAVE_CHARMS[s];G.gear.push(cid);const g=gearOf(cid);return `Inside: the ${g.n} (${ITEM_TIERS[gTierIdx(g)].n}). There is only one of it in the world.`;
 }
 

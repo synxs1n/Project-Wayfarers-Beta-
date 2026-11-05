@@ -90,3 +90,19 @@ const CREEP={per:.05,field:.5};
 
 // 5.5 early game with a short party: regular foes in the first two stages are eased for parties of 1 or 2 (index = heroes - 1)
 const SMALL_PARTY={stages:2,hp:[.55,.85],pow:[.6,.88]};
+
+// ===== Beta v0.5.0 Phase 3: shops, gear and items (p3shop.js) =====
+// 3.8 how many of one item the pack holds (was 9). The Daily Trial keeps its old cap so its runs stay exactly as before.
+const ITEM_MAX=50,ITEM_MAX_DAILY=9;
+const invCap=()=>(typeof G!=='undefined'&&G&&G.daily)?ITEM_MAX_DAILY:ITEM_MAX;
+// 3.1 "Best for party" ordering: two upgrades for the same hero and slot count as close when their gains differ by at most
+// closeAbs (absolute share of the hero's gear score) or closeRel (relative), and then get a short tradeoff line.
+const SHOP_BEST={closeAbs:.02,closeRel:.2,minPct:.005};
+// 3.3 Smithy plan: the smallest gain worth buying or crafting for (share of the hero's gear score)
+const SMITH_PLAN={minPct:.01};
+// 3.4 Best Party: extra weight for answering what the area and its boss are known to be (archetypes, elements) and for delivery spread
+const BP_AWARE={arch:.18,el:.12,boss:1.5,dl:.04};
+// 3.6 boss readiness: how far below the boss the party average may be, and the potions and revives worth carrying
+const READY={lvGap:2,potions:4,revives:2};
+// 3.9 Pork Chop Sandwiches handed over after the first boss victory, and how many it takes to walk back to town from a dungeon
+const PORK={firstBoss:2,toTown:2};

@@ -73,7 +73,7 @@ function fortReward(s){const kinds=['gear','item','recruit','charm'],k0=kinds[ha
   if(kind==='recruit'){const pool=caveRecruitPool(s).filter(h=>!(LEGEND_IDS||[]).includes(h));if(!pool.length)kind='charm';else{const h=pool[hashS(G.run.seed+'fr'+s)%pool.length];recruit(h,true);G.fortWon[s]='recruit';return `${TPL[h].n} was held in the keep's cells, and asks to join you.`;}}
   G.fortWon[s]=kind;
   if(kind==='gear'){const gid=(hashS('fa'+G.run.seed+s)%2?'a_'+ARM_FAM[CLS_ARM[TPL[G.party[0]].cls]||'medium']:lootBase())+'_'+Math.min(5,s+1)+'+2',g=gearOf(gid)||gearOf(lootBase()+'_'+Math.min(5,s+1)+'+2');G.gear.push(g.id||gid);return `Inside: ${g.n} (${ITEM_TIERS[gTierIdx(g)].n})! It is already forged to +2.`;}
-  if(kind==='item'){G.inv.elixir=Math.min(9,(G.inv.elixir||0)+1);G.inv.holywater=Math.min(9,(G.inv.holywater||0)+1);G.inv.plume=Math.min(9,(G.inv.plume||0)+2);return `Inside: ${ITEMS.elixir.n}, ${ITEMS.holywater.n} and 2 x ${ITEMS.plume.n}.`;}
+  if(kind==='item'){G.inv.elixir=Math.min(invCap(),(G.inv.elixir||0)+1);G.inv.holywater=Math.min(invCap(),(G.inv.holywater||0)+1);G.inv.plume=Math.min(invCap(),(G.inv.plume||0)+2);return `Inside: ${ITEMS.elixir.n}, ${ITEMS.holywater.n} and 2 x ${ITEMS.plume.n}.`;}
   const cid=FORT_CHARMS[s];G.gear.push(cid);const g=gearOf(cid);return `Inside: the ${g.n} (${ITEM_TIERS[gTierIdx(g)].n}). There is only one of it in the world.`;}
 // ---------- minibosses ----------
 function siteHasMini(id){return (hashS('mini'+id+((G.run&&G.run.seed)||0))%100)<SITES.mini*100;}

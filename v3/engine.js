@@ -207,7 +207,7 @@ function forge(where,ref){
 function relicKey(k){if(k==='$rel')return ZS(G.stage).mat;if(k==='$r0')return ZS(1).mat;if(k==='$r1')return ZS(2).mat;if(k==='$r2')return ZS(4).mat;return k;}
 function recipeMats(r){const o={};Object.keys(r.m).forEach(k=>{const kk=relicKey(k);o[kk]=(o[kk]||0)+r.m[k];});return o;}
 function recipeOpen(r){return r.t<=matTier(G.stage);}
-function craft(r){const m=recipeMats(r);if(!recipeOpen(r)||G.gold<r.g||!hasMats(m))return false;if(r.item&&(G.inv[r.item]||0)>=9)return false;G.gold-=r.g;payMats(m);if(r.item)G.inv[r.item]=(G.inv[r.item]||0)+1;else G.gear.push(r.id);saveGame();return true;}
+function craft(r){const m=recipeMats(r);if(!recipeOpen(r)||G.gold<r.g||!hasMats(m))return false;if(r.item&&(G.inv[r.item]||0)>=invCap())return false;G.gold-=r.g;payMats(m);if(r.item)G.inv[r.item]=(G.inv[r.item]||0)+1;else G.gear.push(r.id);saveGame();return true;}
 function resolveDrop(k,s){const t=matTier(s);if(k==='ore*')return TIERED.ore[t];if(k==='wood*')return TIERED.wood[t];if(k==='herb*')return TIERED.herb[t];return k;}
 function smithMatStock(){return matStock().filter(id=>MAT_OF[id].k!=='herb');}
 function herbStock(){return matStock().filter(id=>MAT_OF[id].k==='herb');}
@@ -482,7 +482,7 @@ function doSteal(a,t){
   if(t.stolen){log('Nothing left to steal.');return;}
   if(RNG()<.6+(a.S.luk||0)*.01){t.stolen=true;
     const r=RNG();
-    if(r<.3){const it=pick(['potion','potion','ether','remedy']);G.inv[it]=Math.min(9,(G.inv[it]||0)+1);log(`${a.name} steals a ${ITEMS[it].n}!`);}
+    if(r<.3){const it=pick(['potion','potion','ether','remedy']);G.inv[it]=Math.min(invCap(),(G.inv[it]||0)+1);log(`${a.name} steals a ${ITEMS[it].n}!`);}
     else if(r<.55){const mt=ZS(B.stage).mat;B.mats[mt]=(B.mats[mt]||0)+1;log(`${a.name} steals ${MATS[mt]}!`);}
     else{const g=Math.round(t.lv*5+ri(5,20));B.gold+=g;log(`${a.name} snatches ${g} gold!`);}
   }else log(`${a.name} fumbles the grab.`);
@@ -897,7 +897,7 @@ function win(){
   const fr=B.front.filter(c=>c.hp>0);
   for(let i=0;i<fr.length;i++)for(let j=i+1;j<fr.length;j++){const k=bondKey(fr[i].id,fr[j].id);if(!BONDMAP[k])continue;const before=bondLv(fr[i].id,fr[j].id);G.bonds[k]=(G.bonds[k]||0)+1;const after=bondLv(fr[i].id,fr[j].id);
     if(after>before){info.bonds.push({a:fr[i].name,b:fr[j].name,lv:after});if(after===1||after===3)G.talks.push({k,lv:after});}}
-  G.gold+=info.gold;info.drops.forEach(d=>{G.inv[d]=Math.min(9,(G.inv[d]||0)+1);});
+  G.gold+=info.gold;info.drops.forEach(d=>{G.inv[d]=Math.min(invCap(),(G.inv[d]||0)+1);});
   Object.keys(info.mats).forEach(k=>{G.mats[k]=(G.mats[k]||0)+info.mats[k];});
   const spec=B.spec;
   if(spec.kind==='elite'&&spec.bounty.personal){personalDone(spec.bounty,info);}

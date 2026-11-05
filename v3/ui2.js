@@ -181,7 +181,7 @@ function recipeName(r){return r.item?ITEMS[r.item].n:gearOf(r.id).n;}
 function recipeDesc(r){if(r.item)return ITEMS[r.item].d+".";const g=gearOf(r.id);return `${SLOTN[g.slot]}. ${gearDesc(g)}.`;}
 // Shared recipe list for both stations. cats limits the chips to that station's categories.
 // v0.4.0 3.3: what you can make right now comes first, biggest upgrade for your active party first; the rest follow by how close you are.
-function recipeReady(r){return G.gold>=r.g&&hasMats(recipeMats(r))&&!(r.item&&(G.inv[r.item]||0)>=9);}
+function recipeReady(r){return G.gold>=r.g&&hasMats(recipeMats(r))&&!(r.item&&(G.inv[r.item]||0)>=invCap());}
 function recipeGain(r){if(r.item||!r.id)return [0,0];const L=gainersFor(r.id);return [L.length?L[0].g.pct:0,L.reduce((a,o)=>a+o.g.pct,0)];}
 function recipeClose(r){const mm=recipeMats(r),ks=Object.keys(mm);let n=0,t=0;ks.forEach(k=>{t++;n+=Math.min(1,(G.mats[k]||0)/mm[k]);});if(r.g){t++;n+=Math.min(1,G.gold/r.g);}return t?n/t:1;}
 function recipeOrder(list){const A=list.map(r=>({r,ok:recipeReady(r),g:recipeGain(r),c:recipeClose(r)}));
@@ -223,7 +223,7 @@ function mWorkshop(m){
   const tab=m.tab||'shop',cat=ALCH_CATS.includes(m.cat)?m.cat:'potion';
   const T=[['shop','Shop'],['craft','Brew &amp; craft'],['herbs','Herbs'],['sell','Sell'],['pouch','Pouch']];if(G.cleared[townS()])T.splice(1,0,['relit','Festival wares']);let body='';
   if(tab==='shop'){
-    const it=alchStock().slice().sort((a,b)=>iTierIdx(b)-iTierIdx(a)||ITEMS[b].price-ITEMS[a].price).map(id=>{const o=ITEMS[id];return `<div class="row tr" style="${tierVars(iTierIdx(id))}"><div><b>${itemIcon(id)} ${o.n}</b> ${itemChip(id)}<small>${o.d}. Carrying ${G.inv[id]||0}.</small></div><button class="btn sm" data-act="buyItem" data-arg="${id}" ${G.gold>=o.price&&(G.inv[id]||0)<9?'':'disabled'}>${o.price}</button></div>`;}).join('');
+    const it=alchStock().slice().sort((a,b)=>iTierIdx(b)-iTierIdx(a)||ITEMS[b].price-ITEMS[a].price).map(id=>{const o=ITEMS[id];return `<div class="row tr" style="${tierVars(iTierIdx(id))}"><div><b>${itemIcon(id)} ${o.n}</b> ${itemChip(id)}<small>${o.d}. Carrying ${G.inv[id]||0}.</small></div><button class="btn sm" data-act="buyItem" data-arg="${id}" ${G.gold>=o.price&&(G.inv[id]||0)<invCap()?'':'disabled'}>${o.price}</button></div>`;}).join('');
     const ch=shopSortIds(shopStock('charms')).map(id=>{const g=GEAR[id];return `<div class="row shoprow tr" style="${tierVars(gTierIdx(g),g)}">${gearIcon(id)}<div class="grow"><b>${g.n}</b> ${tierChip(g)}<small>${vsParty(id)}</small><small>${gearDesc(g)}. Spares owned: ${G.gear.filter(x=>x===id).length}.</small>${bestTag(id)}${cmpPanel(id)}</div><button class="btn sm" data-act="buyGear" data-arg="${id}" ${G.gold>=g.price?'':'disabled'}>${g.price}</button></div>`;}).join('');
     body=`<h4>Potions, tonics and travel gear</h4><div class="rows">${it}</div><h4>Charms</h4><div class="rows">${ch}</div>`;
   }else if(tab==='craft'){
