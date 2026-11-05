@@ -44,16 +44,19 @@ function afterAuth(){
   uiRefresh();
 }
 // ----- sign in panel -----
-const MSG={'auth/invalid-credential':'That email and password do not match.','auth/wrong-password':'That email and password do not match.','auth/user-not-found':'That email and password do not match.','auth/email-already-in-use':'An account with that email already exists. Try signing in.','auth/weak-password':'Use a password with at least 6 characters.','auth/invalid-email':'That email address does not look right.','auth/network-request-failed':'No connection. Try again when you are online.','auth/too-many-requests':'Too many tries. Wait a minute and try again.'};
+const MSG={'auth/invalid-credential':'That email and password do not match.','auth/wrong-password':'That email and password do not match.','auth/user-not-found':'That email and password do not match.','auth/email-already-in-use':'An account with that email already exists. Try signing in.','auth/weak-password':'Use a password with at least 6 characters.','auth/invalid-email':'That email address does not look right.','auth/network-request-failed':'No connection. Try again when you are online.','auth/popup-closed-by-user':'Google sign in was closed before it finished.','auth/cancelled-popup-request':'Google sign in was cancelled.','auth/popup-blocked':'Your browser blocked the Google window. Allow popups for this site and try again.','auth/operation-not-supported-in-this-environment':'Google sign in does not work in this app. Use email and password.','auth/unauthorized-domain':'Google sign in is not set up for this address.','auth/account-exists-with-different-credential':'That email already has an account with a different sign in method.','auth/too-many-requests':'Too many tries. Wait a minute and try again.'};
+// popups need a real web origin: hidden in the Windows app (file://) and the Android app (Capacitor)
+const GOOGLE_OK=/^https?:$/.test(location.protocol)&&!window.Capacitor&&!/Electron/i.test(navigator.userAgent);
 let panel=null;
 function css(){if(document.getElementById('fbcss'))return;const s=document.createElement('style');s.id='fbcss';s.textContent='#fbpanel{position:fixed;inset:0;z-index:300;background:rgba(8,4,14,.78);display:flex;align-items:center;justify-content:center;padding:16px}#fbpanel .box{width:min(380px,100%);background:#1c1230;border:3px solid var(--gold,#f0b54a);padding:16px;color:var(--text,#f8edd2);box-shadow:0 0 0 3px #000}#fbpanel h3{margin:0 0 8px}#fbpanel input{width:100%;box-sizing:border-box;margin:4px 0 8px;padding:9px;font:inherit;background:#0e0818;color:inherit;border:2px solid #6a4a22}#fbpanel .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}#fbpanel small{display:block;margin-top:8px;color:var(--mute,#d8c8a2)}#fbpanel .err{color:#ffb070;min-height:1.2em}#fbpanel .ok{color:#a8ffb8}';document.head.appendChild(s);}
 function close(){if(panel){panel.remove();panel=null;}}
 function setMsg(t,ok){const m=panel&&panel.querySelector('.msg');if(m){m.textContent=t||'';m.className='msg '+(ok?'ok':'err');}}
 async function act(kind){
-  const em=panel.querySelector('#fbem').value.trim(),pw=panel.querySelector('#fbpw').value;
+  const em=kind==='g'?'':panel.querySelector('#fbem').value.trim(),pw=kind==='g'?'':panel.querySelector('#fbpw').value;
   try{
     setMsg('Working...',true);
     if(kind==='in')await auth.signInWithEmailAndPassword(em,pw);
+    else if(kind==='g'){const pr=new FB.auth.GoogleAuthProvider();pr.setCustomParameters({prompt:'select_account'});await auth.signInWithPopup(pr);}
     else if(kind==='up')await auth.createUserWithEmailAndPassword(em,pw);
     else if(kind==='reset'){if(!em){setMsg('Type your email first.');return;}await auth.sendPasswordResetEmail(em);setMsg('Reset email sent. Check your inbox.',true);return;}
     close();try{toast('Signed in. Your saves now sync to your account.');}catch(e){}
@@ -66,10 +69,10 @@ async function open(){
   const box=document.createElement('div');box.className='box';panel.appendChild(box);
   if(!f){box.innerHTML='<h3>Account</h3><p>Accounts need an internet connection. Your saves still work on this device.</p><div class="row"><button class="btn" id="fbx">Close</button></div>';}
   else if(cur){box.innerHTML='<h3>Account</h3><p>Signed in as <b></b>.<br>Your saves sync to this account, so you can pick up on any device.</p><div class="row"><button class="btn" id="fbso">Sign out</button><button class="btn" id="fbx">Close</button></div><small>Signing out keeps the saves on this device.</small>';box.querySelector('b').textContent=cur.email||'';}
-  else{box.innerHTML='<h3>Account</h3><p>Sign in so your saves follow you to every device.</p><label>Email<input id="fbem" type="email" autocomplete="email"></label><label>Password<input id="fbpw" type="password" autocomplete="current-password"></label><div class="msg err"></div><div class="row"><button class="btn gold" id="fbin">Sign in</button><button class="btn" id="fbup">Create account</button><button class="btn sm" id="fbrs">Forgot password</button><button class="btn sm" id="fbx">Close</button></div><small>You can play without an account. Saves then stay on this device only.</small>';}
+  else{box.innerHTML='<h3>Account</h3><p>Sign in so your saves follow you to every device.</p>'+(GOOGLE_OK?'<div class="row"><button class="btn gold" id="fbg">Continue with Google</button></div><small>or use email</small>':'')+'<label>Email<input id="fbem" type="email" autocomplete="email"></label><label>Password<input id="fbpw" type="password" autocomplete="current-password"></label><div class="msg err"></div><div class="row"><button class="btn gold" id="fbin">Sign in</button><button class="btn" id="fbup">Create account</button><button class="btn sm" id="fbrs">Forgot password</button><button class="btn sm" id="fbx">Close</button></div><small>You can play without an account. Saves then stay on this device only.</small>';}
   document.body.appendChild(panel);
   const on=(id,fn)=>{const b=panel.querySelector('#'+id);if(b)b.onclick=fn;};
-  on('fbx',close);on('fbin',()=>act('in'));on('fbup',()=>act('up'));on('fbrs',()=>act('reset'));on('fbso',async()=>{await auth.signOut();close();});
+  on('fbx',close);on('fbg',()=>act('g'));on('fbin',()=>act('in'));on('fbup',()=>act('up'));on('fbrs',()=>act('reset'));on('fbso',async()=>{await auth.signOut();close();});
   panel.addEventListener('click',e=>{if(e.target===panel)close();});
   const pw=panel.querySelector('#fbpw');if(pw)pw.addEventListener('keydown',e=>{if(e.key==='Enter')act('in');});
 }
