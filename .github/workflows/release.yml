@@ -81,5 +81,6 @@ jobs:
       - uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.ver.outputs.tag }}
+          name: Wayfarers (latest build)
+          make_latest: true
           files: files/*
-          generate_release_notes: true

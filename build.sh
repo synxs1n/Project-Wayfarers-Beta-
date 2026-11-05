@@ -2,7 +2,7 @@
 # Builds the game from v3/ and refreshes the files GitHub Pages serves.
 set -e
 mkdir -p out
-V=$(head -1 RELEASE_VERSION | sed 's/^v//')
+V=$(head -1 GAME_VERSION)
 echo "const APP_VER=\"$V\";" > v3/appver.js
 echo "{\"version\":\"$V\"}" > version.json
 python3 v3build.py
