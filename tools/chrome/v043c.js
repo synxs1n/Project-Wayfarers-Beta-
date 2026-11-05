@@ -21,7 +21,7 @@ const r=await ev(async()=>{const A=__A,G=A.G,o={};
   const st=A.STARTERS,cls={},el={};st.forEach(id=>{const t=A.TPL[id];cls[t.cls]=(cls[t.cls]||0)+1;el[t.el[0]]=(el[t.el[0]]||0)+1;});o.st=st.length;o.cls=Object.values(cls).every(n=>n===3);o.el=Object.values(el).every(n=>n===3);
   const draws=new Set();for(let i=1;i<60;i++)draws.add(A.starterDraw(i*7919).join(','));o.draws=draws.size;
   // town gates connect to the roads
-  o.towns=0;o.linked=0;for(let s=0;s<5;s++){const m=A.getMap('t'+s);Object.values(m.gates||{}).forEach(q=>{if(!q||!q.arrive)return;o.towns++;if('=B'.includes(m.t[q.arrive[1]][q.arrive[0]]))o.linked++;// v0.5.2: a river town's gate lane may be a bridge (2.4)});}
+  o.towns=0;o.linked=0;for(let s=0;s<5;s++){const m=A.getMap('t'+s);Object.values(m.gates||{}).forEach(q=>{if(!q||!q.arrive)return;o.towns++;if('=B'.includes(m.t[q.arrive[1]][q.arrive[0]]))o.linked++;/* v0.5.2: a river town's gate lane may be a bridge (2.4) */});}
   // main menu from settings
   A.V.screen='world';A.V.modal={type:'settings'};A.render();o.mmBtn=!!document.querySelector('[data-act="quitTitle"]');A.ACT.quitTitle();o.title=A.V.screen==='title'&&!A.G;
   return o;});
