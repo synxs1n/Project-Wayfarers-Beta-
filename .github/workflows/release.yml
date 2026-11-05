@@ -31,6 +31,8 @@ jobs:
           cp -r icons www/icons
       - run: npx cap add android
       - name: Google sign in setup (stable signing key, Firebase config, gradle plugin)
+        env:
+          RUN_N: ${{ github.run_number }}
         run: |
           mkdir -p ~/.android
           cp android-debug.keystore ~/.android/debug.keystore
@@ -48,6 +50,9 @@ jobs:
           p='android/app/build.gradle';s=open(p).read()
           if 'com.google.gms.google-services' not in s:
               s+="\napply plugin: 'com.google.gms.google-services'\n"
+          import os
+          s=re.sub(r"versionCode \d+","versionCode "+os.environ['RUN_N'],s)
+          s=re.sub(r'versionName "[^"]*"','versionName "'+open('GAME_VERSION').read().strip()+' build '+os.environ['RUN_N']+'"',s)
           if 'android-debug.keystore' not in s:
               s=s.replace("android {","android {\n    signingConfigs.debug {\n        storeFile file(\"${rootDir}/../android-debug.keystore\")\n        storePassword 'android'\n        keyAlias 'androiddebugkey'\n        keyPassword 'android'\n    }",1)
           open(p,'w').write(s)
