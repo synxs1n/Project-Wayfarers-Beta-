@@ -6,7 +6,7 @@ const elChips=arr=>arr.map(k=>`<span class="el" style="--c:${ELC[k]}">${ico(k)}$
 const bar=(v,m,c)=>`<span class="bar" style="--c:${c}"><i style="width:${m?clamp(v/m*100,0,100):0}%"></i></span>`;
 const coin=()=>`<img class="ico coin" src="${coinURL()}" alt="">`;
 const sellVal=g=>Math.round((g.price0||g.price)*.4);
-const port=(id,cls)=>`<span class="port ${cls||''} ${TPL[id]&&TPL[id].mon?'mon':''}"><img src="${heroURL(id)}" alt="">${typeof ailBadge==='function'?ailBadge(id):''}</span>`;
+const port=(id,cls)=>`<span class="port ${cls||''} ${TPL[id]&&TPL[id].mon?'mon':''}"><img src="${heroURL(id)}" alt="">${typeof ailBadge==='function'&&!/noail/.test(cls||'')?ailBadge(id):''}</span>`;
 // v0.3.5 2.4: legendary stamp = gold seal + LEGENDARY banner, used on the sheet, roster card, codex entry and battle detail panel
 const isLeg=id=>!!(TPL[id]&&(TPL[id].src==='L'||(CLS[TPL[id].cls]||{}).legend));
 const legSeal=(sm)=>`<span class="legseal ${sm?'sm':''}" role="img" aria-label="Legendary"><svg viewBox="0 0 32 32" width="100%" height="100%" shape-rendering="crispEdges"><path d="M16 1l3 3 4-1 2 4 4 1-1 4 3 3-3 3 1 4-4 1-2 4-4-1-3 3-3-3-4 1-2-4-4-1 1-4-3-3 3-3-1-4 4-1 2-4 4 1z" fill="#150b17"/><path d="M16 3l2.5 2.5 3.5-.8 1.7 3.3 3.5.9-.8 3.5 2.6 2.6-2.6 2.6.8 3.5-3.5.9-1.7 3.3-3.5-.8L16 29l-2.5-2.5-3.5.8-1.7-3.3-3.5-.9.8-3.5L2.9 16l2.6-2.6-.8-3.5 3.5-.9 1.7-3.3 3.5.8z" fill="#f0b848"/><circle cx="16" cy="16" r="9" fill="#a8741a"/><circle cx="16" cy="16" r="7.4" fill="#ffd96a"/><path d="M16 9.5l1.9 4.1 4.4.5-3.3 3 .9 4.4-3.9-2.2-3.9 2.2.9-4.4-3.3-3 4.4-.5z" fill="#8a4be0" stroke="#150b17" stroke-width=".6"/></svg></span>`;
@@ -294,6 +294,7 @@ function mBoss(s){
 }
 function mResult(i){
   return `<div class="modal"><div class="panel box"><h2>Victory</h2>
+    ${(i.learn||[]).length?`<div class="learntop"><h4>New skills</h4><div class="rows">${i.learn.map(o=>`<div class="row learnr">${learnLine(o)}</div>`).join('')}</div></div>`:''}
     <div class="rows"><div class="row"><b>Experience</b><span>+${fmt(i.xp)}</span></div><div class="row"><b>Gold</b><span>+${fmt(i.gold)}</span></div>
     ${Object.keys(i.mats).length?`<div class="row"><b>Materials</b><span>${Object.keys(i.mats).map(k=>i.mats[k]+' '+MATS[k]).join(', ')}</span></div>`:''}
     ${i.drops.length?`<div class="row"><b>Found</b><span>${i.drops.map(d=>`<span class="tfr" style="${tierVars(iTierIdx(d))}">${ITEMS[d].n} ${itemChip(d)}</span>`).join(' ')}</span></div>`:''}
@@ -309,7 +310,6 @@ function mResult(i){
     ${i.ups.length?`<h4>Level up</h4><div class="rows">${i.ups.map(u=>`<div class="row"><b>${esc(u.name)} reaches Lv ${u.lv}</b>${u.pts?`<small class="up">${u.pts} stat point${u.pts>1?'s':''} to spend at the Guild</small>`:''}</div>`).join('')}</div>`:''}
     ${(i.notes||[]).map(n=>`<p class="note echonote">${esc(n)}</p>`).join('')}
     ${i.autoCut?`<p class="note autocut">Won mostly on auto: ${Math.round(i.autoCut*100)}% XP and gold. Drops and loot are unchanged.</p>`:''}
-    ${(i.learn||[]).length?`<h4>New skills</h4><div class="rows">${i.learn.map(o=>`<div class="row learnr">${learnLine(o)}</div>`).join('')}</div>`:''}
     ${xpRows()}
     <div class="btnrow stickyb"><button class="btn gold" data-act="resultOk">Continue</button></div></div></div>`;
 }

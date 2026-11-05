@@ -276,6 +276,11 @@ function worldSizeCanvas(){
   const vw=Math.floor(box.width/sc),vh=Math.floor(cssH/sc);
   if(vw!==WS.vw||vh!==WS.vh||sc!==WS.scale||cv.width!==vw){WS.vw=vw;WS.vh=vh;WS.scale=sc;cv.width=vw;cv.height=vh;cv.style.width=vw*sc+'px';cv.style.height=vh*sc+'px';WS.dark=null;}
 }
+// v0.5.1 1.2 follow up: on some phones (foldables, the Android app after a battle) the view was measured while the screen was still
+// settling and no resize event came after it, so it stayed small. The world screen now checks itself twice a second and re-sizes
+// when the box it sits in no longer matches (worldSizeCanvas only touches the canvas when the numbers change).
+setInterval(()=>{try{if(typeof V!=='undefined'&&V.screen==='world'&&!document.hidden&&WS.cv&&WS.cv.isConnected)worldSizeCanvas();}catch(e){}},500);
+try{window.addEventListener('orientationchange',()=>setTimeout(()=>{try{if(V.screen==='world')worldSizeCanvas();}catch(e){}},250));if(screen.orientation&&screen.orientation.addEventListener)screen.orientation.addEventListener('change',()=>setTimeout(()=>{try{if(V.screen==='world')worldSizeCanvas();}catch(e){}},250));}catch(e){}
 function leaderId(){const p=G.party.map(id=>G.roster[id]).filter(Boolean);const a=p.find(c=>c.hp>0)||p[0];return a.id;}
 const IMG={};
 function imgOf(key,fn){if(IMG[key])return IMG[key];return IMG[key]=fn();}
