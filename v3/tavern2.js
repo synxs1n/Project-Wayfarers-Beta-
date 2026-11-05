@@ -1,7 +1,7 @@
 // =================== PER-JOURNEY SUBSET AND TAVERN RULES (file: tavern2.js) (Beta v0.3.5) ===================
 // G.sub  = the wayfarers that exist in this journey (about 28 to 32), drawn once from the journey seed and saved with the run.
 // G.tv   = tavern state { sl: the 4 table slots (id or null once hired), sh: shuffles so far, at: battle count at the last shuffle, ev: a rest or stage clear
-//          happened since, n: {stage: tavern recruits made in that area} }. Old saves have neither field and get safe defaults on first read.
+//          happened since, n: {stage: tavern recruits made in that area, kept for records only} }. Old saves have neither field and get safe defaults on first read.
 const SUB_MIN=28,SUB_SPAN=5;           // target size 28..32
 const POOL_IDS=()=>RAW.filter(r=>r[6]!=='L'&&r[6]!=='x'&&TPL[r[0]]).map(r=>r[0]);
 function subReq(set,must){must=must||[]; // returns the list of unmet guarantees as [label, candidate test]
@@ -46,7 +46,8 @@ const inSub=id=>{const t=TPL[id];if(!t)return false;if(t.src==='L'||t.src==='x'|
 {const rp=rarePool;rarePool=function(){return rp.apply(this,arguments).filter(inSub);};}
 // ----- tavern -----
 function tvInit(){if(!G.tv||typeof G.tv!=='object')G.tv={sl:null,sh:0,at:0,ev:false,n:{}};const t=G.tv;t.n=t.n||{};return t;}
-function tvLeft(){return Math.max(0,TV_CAP-(tvInit().n[G.stage]||0));}
+// v0.5.0: no per area recruit cap. tvLeft stays for old callers and always reports room.
+function tvLeft(){return Infinity;}
 function tvEvent(){tvInit().ev=true;}
 {const ra=restAll;restAll=function(){const r=ra.apply(this,arguments);if(r)try{tvEvent();}catch(e){}return r;};}
 {const fb=finishBattle;finishBattle=function(){const was=G&&G.cleared?G.cleared.filter(Boolean).length:0;const r=fb.apply(this,arguments);try{if(G&&G.cleared&&G.cleared.filter(Boolean).length>was)tvEvent();}catch(e){}return r;};}
@@ -71,8 +72,8 @@ function tvNextText(){const t=tvInit(),c=Math.max(0,TV_CD-tvSince());
   return `Next shuffle: after you rest at an inn or clear a stage, and at least ${TV_CD} battles since the last one${c>0?` (${c} to go)`:''}.`;}
 tavernLater=function(){const mine=tvPool().length;const later=RAW.filter(r=>(r[6][0]==='t')&&inSub(r[0])&&!G.roster[r[0]]&&!challIsPooled(r[0])&&!tavernUnlocked(r[0])).length;return later;};
 {const rc2=recruit;recruit=function(id,free){const was=!G.roster[id],r=rc2.apply(this,arguments);try{if(r&&was&&!free&&TPL[id].src[0]!=='r'){const t=tvInit();t.n[G.stage]=(t.n[G.stage]||0)+1;const i=t.sl?t.sl.indexOf(id):-1;if(i>=0)t.sl[i]=null;}}catch(e){}return r;};}
-// the cap is enforced where gold is spent
-const hireOK=id=>{const rare=TPL[id].src[0]==='r';return rare||tvLeft()>0;};
+// v0.5.0: gold is the only thing that can stop a hire (recruit() checks it)
+const hireOK=id=>!!TPL[id];
 
 // v0.4.3: beating a wayfarer in a duel earns a seat: they wait in the tavern (any town) until you hire them
 {const ts0=tvSlots;tvSlots=function(){ts0.apply(this,arguments);const t=tvInit();try{const b=Object.keys((G.ce&&G.ce.boost)||{}).filter(id=>TPL[id]&&!G.roster[id]);

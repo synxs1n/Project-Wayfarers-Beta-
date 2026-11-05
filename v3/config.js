@@ -22,7 +22,7 @@ const MAT_PRICE={copper:18,iron:45,mythril:110,oak:14,ash:40,elder:95,healroot:1
 // ----- taverns and the Guild Hall board -----
 const TAV_BATTLES=[0,12,32,55,80];
 const CHALL_POST=3;// how many open challenges a board shows at once (accepted ones always stay posted on top)
-const TV_SLOTS=4,TV_CAP=3,TV_CD=5;     // 4 tables, 3 tavern recruits per area, 5 battles between shuffles
+const TV_SLOTS=4,TV_CAP=Infinity,TV_CD=5;     // 4 tables, no per area recruit cap (v0.5.0), 5 battles between shuffles
 
 // ----- encounters on the road -----
 // ENC_RATE: chance per step to meet a random battle, by the Settings choice. CE_*: chance meetings with a wayfarer (chance.js), about 1 in 170 steps after a 30 step gap, 2 per area at most

@@ -309,11 +309,11 @@ function mResult(i){
     <div class="btnrow stickyb"><button class="btn gold" data-act="resultOk">Continue</button></div></div></div>`;
 }
 function mTavern(){
-  const SL=tvSlots(),L=SL.filter(Boolean),left=tvLeft(),rare=G.rare&&!G.roster[G.rare]?G.rare:null,later=tavernLater(),nu=nextTavernUnlock(),pool=tavernPool().length;
+  const SL=tvSlots(),L=SL.filter(Boolean),rare=G.rare&&!G.roster[G.rare]?G.rare:null,later=tavernLater(),nu=nextTavernUnlock(),pool=tavernPool().length;
   return box('The Rusty Flagon',`<p>Sellswords, singers and strays, all for hire. Recruits arrive near your party's level with fitting gear.</p>
     ${rare?`<div class="rare"><h3>A rare wayfarer is drinking alone</h3>${heroCard(rare,false,null,`<button class="btn gold" data-act="hire" data-arg="${rare}" ${G.gold>=recruitCost(rare)?'':'disabled'}>Hire for ${fmt(recruitCost(rare))}</button>`)}</div>`:G.stage>=2?'<p class="note">No rare wayfarers tonight. They drift in after Scourge fights, bounties and nights at the inn.</p>':''}
-    <div class="tvbar"><b class="tvleft ${left?'':'out'}">Recruits left in this area: ${left} of ${TV_CAP}</b><small>${esc(tvNextText())}</small>${pool>L.length?`<small>${pool} wayfarer${pool>1?'s':''} are in this town's pool; four tables, picked to suit your party.</small>`:''}</div>
-    <div class="grid cards">${SL.map(id=>id?heroCard(id,false,null,`<div class="fits">${fitTags(id)}</div><button class="btn gold" data-act="hire" data-arg="${id}" ${G.gold>=recruitCost(id)&&left>0?'':'disabled'}>${left>0?`Hire for ${recruitCost(id)}`:'No room this area'}</button>`):`<div class="card hero emptyseat"><b>Empty seat</b><small>Fills at the next shuffle.</small></div>`).join('')||'<p class="note">Nobody new at the tables.</p>'}</div>
+    <div class="tvbar"><small>${esc(tvNextText())}</small>${pool>L.length?`<small>${pool} wayfarer${pool>1?'s':''} are in this town's pool; four tables, picked to suit your party.</small>`:''}</div>
+    <div class="grid cards">${SL.map(id=>id?heroCard(id,false,null,`<div class="fits">${fitTags(id)}</div><button class="btn gold" data-act="hire" data-arg="${id}" ${G.gold>=recruitCost(id)?'':'disabled'}>Hire for ${fmt(recruitCost(id))}</button>`):`<div class="card hero emptyseat"><b>Empty seat</b><small>Fills at the next shuffle.</small></div>`).join('')||'<p class="note">Nobody new at the tables.</p>'}</div>
     ${later?`<p class="note">${later} more wayfarer${later>1?'s are':' is'} on the road${nu?`; the next arrive in about ${nu.need} battle${nu.need>1?'s':''}, or when you reach the next realm`:''}.</p>`:''}<p class="note">Some wayfarers won't sit in a tavern at all. Check the Guild Hall's recruitment challenges.</p>
     <h4>From the kitchen</h4><div class="rows">${tavernFood().map(id=>{const o=ITEMS[id];return `<div class="row"><div><b>${itemIcon(id)} ${o.n}</b><small>${o.d}. Carrying ${G.inv[id]||0}.</small></div><button class="btn sm" data-act="buyItem" data-arg="${id}" ${G.gold>=o.price&&(G.inv[id]||0)<9?'':'disabled'}>${o.price}</button></div>`;}).join('')}</div>`,'<button class="btn" data-act="closeModal">Leave</button>',true);
 }
@@ -540,7 +540,7 @@ const ACT={
   autoPts(){const c=G.roster[V.modal.char];c.auto=c.auto===false;if(c.auto!==false)autoAlloc(c);refresh(c);saveGame();render();},
   respec(){const c=G.roster[V.modal.char],cost=respecCost(c);if(G.gold<cost)return;G.gold-=cost;c.pts+=Object.values(c.alloc).reduce((a,b)=>a+b,0);c.alloc={};c.auto=false;refresh(c);saveGame();toast('Points refunded. Spend them as you like.');render();},
   seal(){const c=G.roster[V.modal.char],code=heroSeal(c);try{navigator.clipboard.writeText(code).then(()=>toast('Hero seal copied. Co-op raids will use these.'),()=>toast(code.slice(0,40)+'...'));}catch(e){toast('Seal: '+code.slice(0,40)+'...');}},
-  hire(id){if(!hireOK(id)){toast('No room at the tavern for more recruits in this area. Move on to the next one.');return;}if(recruit(id,false)){toast(TPL[id].n+' joins your roster. Add them to your six from the menu while in town.');sfx('buy');}else toast('Not enough gold.');render();},
+  hire(id){if(!hireOK(id))return;if(recruit(id,false)){toast(TPL[id].n+' joins your roster. Add them to your six from the menu while in town.');sfx('buy');}else toast('Not enough gold.');render();},
   buyItem(id){const it=ITEMS[id];if(G.gold>=it.price&&(G.inv[id]||0)<9){G.gold-=it.price;G.inv[id]=(G.inv[id]||0)+1;saveGame();sfx('buy');}render();},
   buyGear(id){const g=GEAR[id];if(G.gold>=g.price){G.gold-=g.price;G.gear.push(id);saveGame();sfx('buy');toast('Bought '+g.n+'.');}render();},
   sell(id){const i=G.gear.indexOf(id);if(i>=0){G.gear.splice(i,1);G.gold+=sellVal(gearOf(id));saveGame();sfx('buy');}render();},

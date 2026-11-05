@@ -16,12 +16,11 @@ const r=await H.ev(()=>{const A=__A;const out={};
  // event but cooldown
  A.tvEvent();const t=A.tvInit();t.at=G.stats.battles;const same2=JSON.stringify(A.tvSlots())===JSON.stringify(sl1);out.noShuffleCooldown=same2;out.nextText=A.tvNextText();
  G.stats.battles+=A.TV_CD;const sl2=A.tvSlots();out.shuffled=JSON.stringify(sl2)!==JSON.stringify(sl1)||true;out.refilled=sl2.filter(Boolean).length>=1&&!sl2.includes(first);out.evCleared=A.tvInit().ev===false;
- // cap
- const ids=sl2.filter(Boolean);ids.slice(0,3).forEach(id=>A.ACT.hire(id));out.n0=A.tvInit().n[0];out.leftAfter=A.tvLeft();
- const extra=A.tvPool().find(id=>!G.roster[id]);const before=Object.keys(G.roster).length;if(extra)A.ACT.hire(extra);out.capBlocks=Object.keys(G.roster).length===before;
- G.stage=1;out.leftNewArea=A.tvLeft();
+ // v0.5.0: no area cap; a 4th recruit in one area is allowed
+ const ids=sl2.filter(Boolean);ids.slice(0,3).forEach(id=>A.ACT.hire(id));out.n0=A.tvInit().n[0];
+ const extra=A.tvPool().find(id=>!G.roster[id]);const before=Object.keys(G.roster).length;if(extra){G.gold=99999;A.ACT.hire(extra);}out.capFree=!extra||Object.keys(G.roster).length===before+1;
  // html
- A.V.modal={type:'tavern'};A.render();const txt=document.querySelector('.panel').innerText;out.html=[/Recruits left in this area/.test(txt),/Next shuffle/.test(txt),/Pork Chop/.test(txt),/Empty seat/.test(txt)];
+ A.V.modal={type:'tavern'};A.render();const txt=document.querySelector('.panel').innerText;out.html=[!/Recruits left in this area/.test(txt),/Next shuffle/.test(txt),/Pork Chop/.test(txt),/Empty seat/.test(txt)];
  // old save: no sub, no tv, many owned
  const g2=JSON.parse(JSON.stringify(A.packG()));delete g2.sub;delete g2.tv;Object.keys(A.TPL).filter(id=>!A.TPL[id].mon&&!['kaevan','nikaris','jaeson','vaelith'].includes(id)).slice(0,45).forEach(id=>{if(!g2.roster[id])g2.roster[id]=JSON.parse(JSON.stringify(g2.roster.mira));});
  const u=A.unpackG(g2);out.oldKeeps=Object.keys(u.roster).every(id=>u.sub.includes(id));out.oldSize=u.sub.length;
@@ -37,8 +36,7 @@ chk('hiring leaves an empty seat (no refill)',r.afterHire[0]===r.slots&&r.afterH
 chk('no shuffle without a rest or stage clear',r.noShuffleNoEvent===true);
 chk('no shuffle during the cooldown',r.noShuffleCooldown===true);
 chk('shuffle after rest + cooldown refills seats',r.refilled&&r.evCleared||JSON.stringify([r.refilled,r.evCleared]));
-chk('area cap of 3 recruits, blocks the 4th',r.n0===3&&r.leftAfter===0&&r.capBlocks===true||JSON.stringify([r.n0,r.leftAfter,r.capBlocks]));
-chk('cap resets in the next area',r.leftNewArea===3||r.leftNewArea);
-chk('tavern screen shows remaining, shuffle timing, pork chop, empty seats',r.html.every(Boolean)||JSON.stringify(r.html));
+chk('no area cap: a 4th recruit in one area is hired',r.capFree===true||JSON.stringify([r.n0,r.capFree]));
+chk('tavern screen shows no cap counter, shuffle timing, pork chop, empty seats',r.html.every(Boolean)||JSON.stringify(r.html));
 chk('old save keeps every owned wayfarer in its subset',r.oldKeeps===true);
 await done(H);})();
