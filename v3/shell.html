@@ -29,6 +29,7 @@ Object.assign(window.__A,{temperRank,forgeCost,hasMats,stSym,ST_SYM,pgSpot,pgGri
 // v0.5.3 sprites: live getters for the sprite builders and caches (tests and the sprite sheet)
 ['heroCanvas','monCanvas','walkerCanvas','heroGridView','MART','MON_SIZE','BIG_ART','IMG','URL_CACHE','spriteOf','imgOf','walkFrame','drawSprite','heroPal','SPRITE_HD','SPR','sprHD','paintHD','villagerLook','whiteOf','mountCanvas','petCanvas','halfCanvas'].forEach(k=>{try{Object.defineProperty(window.__A,k,{get:()=>eval(k),configurable:true});}catch(e){}});
 Object.assign(window.__A,{GFX,GFX_Q,GFX_AUTO,GFX_CAM,gfxCfg,gfxTier,gfxApply,gfxAutoDecide,gfxAutoFeed,gfxStill,gfxCamPush,CAM,PARA,g6Ground,g6Sky,g6Bloom,g6Burst,titleDraw:(c,w,h,n)=>titleDraw(c,w,h,n),bgStatic:(a,b,c)=>bgStatic(a,b,c),onFx:(u,t,c)=>onFx(u,t,c),townDecorActors:(a,n,x,y)=>townDecorActors(a,n,x,y),part:o=>part(o),groundPlane:(...a)=>groundPlane(...a)});// v0.5.0 Phase 6
+Object.assign(window.__A,{HB,HD_BATTLE,HD_FLOOR,HD_LOOK,hbInfo,hbWanted,hbQ,hbLook,battleTheme:()=>battleTheme(),battleFrame:n=>battleFrame(n),BV});// v0.5.3 HD-2D battle stage
 boot();
 })();
 </script>
