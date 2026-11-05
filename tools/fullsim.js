@@ -5,8 +5,10 @@
 //   boss [N]        Scourge 4, Calamity and their Echoes at party levels 30/35/40/45, parties of 6 and 3
 //   stage1 [N]      stage 1 field fights at level 3: careful and auto, how many foes are dual type, surprise starts on roamers
 //   xp [fights]     XP catch up: newcomers below the party's top level, levels gained per hero
-//   journey [runs]  full journey pacing: every stage's required route, real maps, real encounter rate, recruits, bosses; ends with
-//                   the top hero's level and the party's average level
+//   journey [runs]  full journey pacing: every stage's required route on the real maps at the real encounter rate, a recruit per
+//                   realm up to six, and each boss fought until it falls (5 more fights after each loss, like a player who grinds
+//                   until ready); ends with the top hero's level and the party's average level. Quests, chests and side caves are not
+//                   counted, so real players end a little higher
 const fs=require('fs'),path=require('path');const {chromium}=require('playwright');
 const ROOT=process.env.SIMROOT||path.join(__dirname,'..'),V3=path.join(ROOT,'v3');// SIMROOT=<another checkout> runs the same sims on that build (for before/after)
 const BP=fs.readFileSync(path.join(ROOT,'v3build.py'),'utf8'),MODS=JSON.parse((BP.match(/MODS=(\[[^\]]+\])/)||BP.match(/for n in (\[[^\]]+\])/))[1].replace(/'/g,'"'));
@@ -72,7 +74,7 @@ xp:F=>`F=${F||30};const out=[];const ids=['brann','mira','sable','lumen','oren',
       top+=lv(ids[0])-t0;fr+=lv(ids[2])-f0;bk+=lv(ids[5])-b0;}
     out.push('stage '+(s+1)+', party lv '+L+', newcomers '+gap+' behind: levels gained in '+F+' fights: top hero '+(top/RUNS).toFixed(2)+', front newcomer '+(fr/RUNS).toFixed(2)+', reserve newcomer '+(bk/RUNS).toFixed(2)+' (fights with a catch up row: '+cu+')');}
   return out.join('\\n');`,
-journey:RUNS=>`RUNS=${RUNS||3};const out=[];const ER=A.ENC_RATE.normal,GAP=A.ENC_MIN_STEPS,perFight=GAP+1/ER;
+journey:RUNS=>`RUNS=${RUNS||3};window.__DBG=${process.env.DBG?1:0};const out=[];const ER=A.ENC_RATE.normal,GAP=A.ENC_MIN_STEPS,perFight=GAP+1/ER;
   // steps of the required route on the real maps of this journey: town to the field gate, across the field to the dungeon, and the
   // dungeon from its stairs to the boss door (4-way BFS, assets treated as walls). Fights = steps / (min gap + 1/rate) plus the roamers.
   const bfs=(m,a,b)=>{if(!a||!b)return 0;const g=m.t,H=g.length,W=g[0].length,D=g.map(r=>r.map(()=>-1)),q=[a];D[a[1]][a[0]]=0;
@@ -80,7 +82,7 @@ journey:RUNS=>`RUNS=${RUNS||3};const out=[];const ER=A.ENC_RATE.normal,GAP=A.ENC
     for(let i=0;i<q.length;i++){const [x,y]=q[i];if(Math.abs(x-b[0])+Math.abs(y-b[1])<=1)return D[y][x]+1;for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){const nx=x+dx,ny=y+dy;if(ok(nx,ny)&&D[ny][nx]<0){D[ny][nx]=D[y][x]+1;q.push([nx,ny]);}}}return 0;};
   const SOLIDS=A.SOLID;
   for(let r=0;r<RUNS;r++){seed=4242+r*77;const ids=pick(6);A.newGame(ids.slice(0,3));const G=A.G;G.run.seed=9000+r*131;A.resetMaps();
-    let fights=0,lost=0,bossTries=[],steps=[];
+    let fights=0,lost=0,bossTries=[],steps=[],grinds=[];
     for(let s=0;s<5;s++){G.stage=s;G.cleared=[0,1,2,3,4].map(x=>x<s);
       // a recruit joins at each new realm until the party has six (the tavern, near the party's level)
       if(s>0&&G.party.length<6){const id=ids[G.party.length];G.gold=Math.max(G.gold,99999);A.recruit(id,true);}
@@ -92,11 +94,11 @@ journey:RUNS=>`RUNS=${RUNS||3};const out=[];const ER=A.ENC_RATE.normal,GAP=A.ENC
         if(i%4===3)A.innHeal();}// a rest or a potion stop now and then
       // the boss: rest, fight; after a loss, grind 3 more fights and try again (up to 6 tries)
       A.innHeal();const k=G.run;if(s<4)k.bosses[s]=k.bosses[s]||A.GPOOL[s%A.GPOOL.length];else k.final=k.final||A.FPOOL[0];
-      let tries=0,won=false;while(!won&&tries<6){tries++;A.innHeal();const o=run({stage:s,kind:'boss'});won=o&&o.res==='win';
-        if(!won)for(let g=0;g<3;g++){run({stage:s,kind:'field',weather:'clear'});fights++;A.innHeal();}}
-      bossTries.push(tries);G.cleared[s]=true;A.innHeal();}
+      let tries=0,won=false,grind=0;while(!won&&tries<40){tries++;A.innHeal();const o=run({stage:s,kind:'boss'});won=o&&o.res==='win';if(window.__DBG&&r===0)out.push('stage '+s+' try '+tries+' lv '+G.party.map(id=>G.roster[id].lv).join('/')+' -> '+(o?o.res+' t='+o.t+' foes '+(o.en||[]).length:'null'));
+        if(!won)for(let g=0;g<5;g++){run({stage:s,kind:'field',weather:'clear'});fights++;grind++;A.innHeal();}}
+      bossTries.push(tries);grinds.push(grind);G.cleared[s]=true;A.innHeal();}
     const lv=G.party.map(id=>G.roster[id].lv);
-    out.push('run '+(r+1)+': top hero lv '+Math.max(...lv)+', party average '+(lv.reduce((a,b)=>a+b,0)/lv.length).toFixed(1)+' ('+lv.join('/')+') | fights '+fights+' (lost '+lost+') | boss tries '+bossTries.join(',')+' | route steps '+steps.join(','));}
+    out.push('run '+(r+1)+': top hero lv '+Math.max(...lv)+', party average '+(lv.reduce((a,b)=>a+b,0)/lv.length).toFixed(1)+' ('+lv.join('/')+') | fights '+fights+' (lost '+lost+') | boss tries '+bossTries.join(',')+' | extra fights before each boss fell '+grinds.join(',')+' | route steps '+steps.join(','));}
   return out.join('\\n');`
 };
 (async()=>{const which=process.argv[2]||'boss',arg=+process.argv[3]||0;if(!SIMS[which]){console.log('sims: '+Object.keys(SIMS).join(', '));process.exit(1);}
