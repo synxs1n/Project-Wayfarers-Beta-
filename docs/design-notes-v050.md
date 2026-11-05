@@ -118,3 +118,4 @@ Full write-up: `v058-sprites-in-scene.md`. World (`hd2d.js`, `hd2dgl.js`): chara
 
 ## Beta v0.6.3: party tools
 Details in `v063-party.md`. Best Party formations (Balanced, Boss ready / Area answer, Fresh mix, Rotation fallback) and Training team in `v3/party3.js` (tunables `BP6` in config.js); catch up XP gap measured against the roster's top level (`p4xp.js`, XPCU unchanged, journey mean top level 41.6); "Equip best: at camp" for heroes outside the party; Legendary only for LEGEND_IDS, Epic for other rare heroes. Tests `chrome/v063pa.js`, `chrome/v063pb.js`.
+Beta v0.6.4: heroes outside the party are the Reserves and the back three of the party the Rearguard (owner's choice, replaces "At camp").

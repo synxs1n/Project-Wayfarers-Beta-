@@ -1,11 +1,11 @@
 // =================== Beta v0.6.3: PARTY SYSTEMS ===================
 // 1. Best Party suggests several formations instead of one: Balanced, Boss ready (Area answer once the boss is down), Fresh mix and a
 //    Training team. Role balance (tank, healer, damage, support, Primer, Detonator, deliveries, elements, answers to the area and its boss)
-//    outweighs raw level and gear (BP6 in config.js); each pick is explained and placed: the front line fights, the reserve swaps in.
+//    outweighs raw level and gear (BP6 in config.js); each pick is explained and placed: the front line fights, the rearguard swaps in.
 // 2. Training team: under-leveled heroes join behind a strong tank and healer and catch up (XP catch up, p4xp.js, measured against the
 //    top level on the whole roster since v0.6.3).
-// 4. "Equip best: at camp": auto equip for the heroes not in the party, from spare gear only. Never touches the party's gear or companions.
-//    Heroes outside the party are "at camp" (they rest at the campfire while the six travel; Campfire talks already live there).
+// 4. "Equip best: reserves": auto equip for the heroes not in the party, from spare gear only. Never touches the party's gear or companions.
+//    Heroes outside the party are the Reserves; the back three of the party are the Rearguard.
 // 3.4 / 3.5 (p3shop.js) are kept: reasons per pick, the threat line, the team check, "Equip best gear for this party" after Apply.
 // No save fields. Nothing here runs in the Daily Trial.
 
@@ -37,7 +37,7 @@ function p6Search(X,sc,fixed){const all=X.all;let set=(fixed||[]).slice();const 
   for(let pass=0;pass<3;pass++){let imp=false;for(let i=0;i<set.length;i++){if(lock.has(set[i]))continue;let cur=sc(set);
     all.forEach(c=>{if(set.includes(c))return;const t=set.slice();t[i]=c;const v=sc(t);if(v>cur+1e-6){set=t;cur=v;imp=true;}});}if(!imp)break;}
   return set;}
-// placement: the front line is who fights (tank, healer, the best damage dealer for this formation); the reserve swaps in when
+// placement: the front line is who fights (tank, healer, the best damage dealer for this formation); the rearguard swaps in when
 // someone falls or tires, so it holds the backup healer and tank first
 function p6Place(set,X,mode,train){const R=c=>X.R[c.id],by=(a,b)=>X.pw[b.id]-X.pw[a.id],rest=set.slice().sort(by),front=[],take=c=>{if(!c)return;rest.splice(rest.indexOf(c),1);front.push(c);};
   const T=X.T,tr=new Set(train||[]);
@@ -54,7 +54,7 @@ function p6Why(set,X,mode,train){const base=p3Reasons(set,X.T),out={},tr=new Set
     if(r.tank&&seen.tank++&&!L.includes('tank'))L.push(i<3?'second tank':'backup tank for the swap');
     if(r.heal&&seen.heal++&&!L.includes('healer'))L.push(i<3?'second healer':'backup healer for the swap');
     if(!L.length)L.push(r.sup?'support: buffs and wards the front line':r.dmg?'damage dealer':'steady all rounder');
-    if(tr.has(c.id)){const gap=X.top-c.lv,pct=Math.round((xpCatchMul(c.lv,X.top,i<3)-1)*100);L.unshift(`training: Lv ${c.lv}, ${gap} behind your top wayfarer, +${pct}% catch up XP${i<3?'':' (reserve share)'}`);}
+    if(tr.has(c.id)){const gap=X.top-c.lv,pct=Math.round((xpCatchMul(c.lv,X.top,i<3)-1)*100);L.unshift(`training: Lv ${c.lv}, ${gap} behind your top wayfarer, +${pct}% catch up XP${i<3?'':' (rearguard share)'}`);}
     else if(mode==='train'&&(r.tank||r.heal)&&i<3)L.push('keeps the trainees safe');
     out[c.id]=L.slice(0,3);});
   return out;}
@@ -77,7 +77,7 @@ function p6Summary(o,X,first){const T=X.T,nm=c=>esc(c.name);
   if(o.key==='area'){const a=Object.keys(T.arch).filter(k=>T.mons.some(m=>tyOf(MON[m].art).includes(k)));
     return a.length?`Built for ${esc(ZS(T.s).n)}: answers to the ${a.map(k=>ARCH_PL[k]).join(', ')} here and their elements.`:`Built for ${esc(ZS(T.s).n)}. Little is known about its monsters yet: every fight fills the Bestiary and sharpens this pick.`;}
   if(o.key==='mix'){const sh=o.set.filter(c=>first.includes(c.id)).length;return `Different faces in the same roles, so more of your wayfarers see battle and grow. Shares ${sh} of 6 with Balanced.`;}
-  if(o.key==='rot')return 'The same roles again with the heroes the other formations left at camp, so everyone keeps up.';
+  if(o.key==='rot')return 'The same roles again with the heroes the other formations left in reserve, so everyone keeps up.';
   if(o.key==='train')return `${o.trainees.map(c=>`${nm(c)} (Lv ${c.lv})`).join(', ')} ${o.trainees.length>1?'train':'trains'} behind ${o.anchors.map(nm).join(' and ')||'your strongest'}. Catch up XP is measured against your top wayfarer (Lv ${X.top}): the further behind, the more XP, up to +${Math.round(XPCU.max*100)}% in the front line and +${Math.round(XPCU.max*XPCU.bench*100)}% in reserve.`;
   return '';}
 bestParty=function(){const keep=P3C;if(!P3C)P3C={why:{},kit:{}};
@@ -97,7 +97,7 @@ bestParty=function(){const keep=P3C;if(!P3C)P3C={why:{},kit:{}};
   finally{P3C=keep;}};
 function p6Sel(P,j){const o=P.opts[j]||P.opts[0];if(!o)return Object.assign(P,{ids:[],why:{},info:{els:0,heal:0,tank:0,pr:0,de:0,sup:0,dmg:0}});P.pick=P.opts.indexOf(o);P.ids=o.ids;P.why=o.why;P.info=o.info;P.key=o.key;return P;}
 mBestParty=function(m){const P=m.plan,o=P.opts[P.pick]||{},cur=new Set(G.party),same=P.ids.length===G.party.length&&P.ids.every(id=>cur.has(id)),I=P.info,T=P.T||p3Threats(),W=P.why||{};
-  const row=(id,i)=>{const c=G.roster[id];return `<div class="row ${cur.has(id)?'':'upg'}">${port(id,'sm')}<div class="grow"><b>${esc(c.name)}</b> <small>Lv ${c.lv} ${CLS[TPL[id].cls].n}</small><span class="els">${c.el.map(ico).join('')}</span><small class="p3bpwhy">${esc(c.name)}: ${(W[id]||[]).join('; ')}</small></div><small>${cur.has(id)?(G.party.indexOf(id)<3)===(i<3)?'Keeps place':i<3?'<span class="up">To the front</span>':'To reserve':'<span class="up">Joins</span>'}</small></div>`;};
+  const row=(id,i)=>{const c=G.roster[id];return `<div class="row ${cur.has(id)?'':'upg'}">${port(id,'sm')}<div class="grow"><b>${esc(c.name)}</b> <small>Lv ${c.lv} ${CLS[TPL[id].cls].n}</small><span class="els">${c.el.map(ico).join('')}</span><small class="p3bpwhy">${esc(c.name)}: ${(W[id]||[]).join('; ')}</small></div><small>${cur.has(id)?(G.party.indexOf(id)<3)===(i<3)?'Keeps place':i<3?'<span class="up">To the front</span>':'To rearguard':'<span class="up">Joins</span>'}</small></div>`;};
   const chips=`<div class="chips bp6f" role="group" aria-label="Formations">${P.opts.map((x,j)=>`<button class="chip ${j===P.pick?'on':''}" data-act="bpPick" data-arg="${j}" aria-pressed="${j===P.pick}">${x.name}</button>`).join('')}</div>`;
   const out=G.party.filter(id=>!P.ids.includes(id));
   return box('Best party',`<p class="note">Formations built on role balance first (tank, healer, damage, support, Primer, Detonator, every delivery and element) and on what your Bestiary knows about the road ahead. Level and gear count, but only a little. Pick one:</p>${chips}
@@ -105,20 +105,20 @@ mBestParty=function(m){const P=m.plan,o=P.opts[P.pick]||{},cur=new Set(G.party),
     <p class="note bp6sum"><b>${esc(o.name||'')}.</b> ${o.sum||''}${o.also?` <small>(${o.also.join(' and ')} would pick the same six.)</small>`:''}</p>${p3ThreatLine(T)}
     <p class="note nums">Average Lv ${I.lv} · Power ${o.rel||100}% of Balanced · Tanks ${I.tank} · Healers ${I.heal} · Damage ${I.dmg} · Support ${I.sup} · Primers ${I.pr} · Detonators ${I.de} · Elements ${I.els}/8</p>
     <h4>Front line <small>(fights)</small></h4><div class="rows">${P.ids.slice(0,3).map(row).join('')}</div>
-    ${P.ids.length>3?`<h4>Reserve <small>(swaps in when someone falls or tires)</small></h4><div class="rows">${P.ids.slice(3).map((id,i)=>row(id,i+3)).join('')}</div>`:''}
-    ${out.length?`<p class="note">Going to camp: ${out.map(id=>esc(G.roster[id].name)).join(', ')}.</p>`:''}
+    ${P.ids.length>3?`<h4>Rearguard <small>(swaps in when someone falls or tires)</small></h4><div class="rows">${P.ids.slice(3).map((id,i)=>row(id,i+3)).join('')}</div>`:''}
+    ${out.length?`<p class="note">Going to the reserves: ${out.map(id=>esc(G.roster[id].name)).join(', ')}.</p>`:''}
     ${same&&P.ids.every((id,i)=>G.party[i]===id)?'<p class="note">This is already your party, in this order.</p>':''}${!same&&!inTown()?'<p class="note warn">Changing who is in your six happens in town. You can apply it there.</p>':''}${p3GapsHtml(P.ids,T,false)}`,
     `<button class="btn gold" data-act="bpApply" ${!same&&!inTown()?'disabled':''}>Apply ${esc(o.name||'')}</button><button class="btn" data-act="xBack">Cancel</button>`);};
 {const bo0=ACT.bpOpen;ACT.bpOpen=function(){if(!G||G.daily)return;return bo0.apply(this,arguments);};}
 {const sw0=ACT.p3Swap;ACT.p3Swap=function(){const m=V.modal,key=m&&m.type==='bp'&&m.plan?m.plan.key:null;const r=sw0.apply(this,arguments);
   try{const n=V.modal;if(key&&n&&n.type==='bp'&&n.plan&&n.plan.opts){const j=n.plan.opts.findIndex(o=>o.key===key);if(j>=0){p6Sel(n.plan,j);render();}}}catch(e){}return r;};}
 
-// ----- 4. Equip best: at camp (heroes outside the party, spare gear only) -----
-const P6_CAMP='At camp';
+// ----- 4. Equip best: reserves (heroes outside the party, spare gear only) -----
+const P6_CAMP='Reserves';
 function autoCamp(){if(!G||G.daily)return;const party=G.party.slice(),camp=Object.keys(G.roster).filter(id=>!party.includes(id));
-  if(!camp.length){toast('Nobody is at camp: every wayfarer you have is in your party.');return;}
+  if(!camp.length){toast('No reserves: every wayfarer you have is in your party.');return;}
   const snap=snapAuto(),before={};Object.values(G.roster).forEach(c=>{before[c.id]={eq:Object.assign({},c.eq),comp:(compOf(c)||{}).id||null,pw:loadoutScore(c,c.S)};});
-  // gear: the pack plus what the heroes at camp already wear; the party is neither planned for nor taken from
+  // gear: the pack plus what the reserves already wear; the party is neither planned for nor taken from
   applyGear(planGear(camp,[],true));Object.values(G.roster).forEach(refresh);
   // companions: only ones not walking with a party member
   const free=(G.tamed||[]).filter(o=>!o.with||!party.includes(o.with)),pairs=[];
@@ -130,14 +130,14 @@ function autoCamp(){if(!G||G.daily)return;const party=G.party.slice(),camp=Objec
     GSLOTS.forEach(sl=>{if((b.eq[sl]||null)!==(c.eq[sl]||null))ch.push({sl,from:b.eq[sl]||null,to:c.eq[sl]||null});});
     const nc=(compOf(c)||{}).id||null;if(ch.length||nc!==b.comp)rows.push({id:c.id,name:c.name,inParty:party.includes(c.id),ch,comp:nc!==b.comp?{from:b.comp,to:nc}:null,pw0:b.pw,pw1:loadoutScore(c,c.S)});});
   saveGame();sfx('equip');V.modal={type:'autoEq',rows,snap,mode:'camp',from:V.modal};render();}
-{const ma0=mAutoEq;mAutoEq=function(m){let h=ma0.apply(this,arguments);if(typeof h!=='string')return h;h=h.split('<small>(roster)</small>').join('<small>(at camp)</small>');
-  if(m&&m.mode==='camp'){h=h.replace(/<h2>[^<]*<\/h2>/,`<h2>Equip best: ${P6_CAMP.toLowerCase()}</h2><p class="note p6camp">Only spare gear from your pack and what your heroes at camp already wear. Your party's gear and companions were not touched.</p>`);
-    if(!(m.rows||[]).length)h=h.replace(/<p>Everyone already[^<]*<\/p>/,'<p>Everyone at camp already has the best spare gear for their class.</p>');}
+{const ma0=mAutoEq;mAutoEq=function(m){let h=ma0.apply(this,arguments);if(typeof h!=='string')return h;h=h.split('<small>(roster)</small>').join('<small>(reserve)</small>');
+  if(m&&m.mode==='camp'){h=h.replace(/<h2>[^<]*<\/h2>/,`<h2>Equip best: ${P6_CAMP.toLowerCase()}</h2><p class="note p6camp">Only spare gear from your pack and what your reserves already wear. Your party's gear and companions were not touched.</p>`);
+    if(!(m.rows||[]).length)h=h.replace(/<p>Everyone already[^<]*<\/p>/,'<p>Every reserve already has the best spare gear for their class.</p>');}
   return h;};}
 {const ve0=vEquipTab;vEquipTab=function(){let h=ve0.apply(this,arguments);try{if(!G||G.daily||typeof h!=='string')return h;
   h=h.replace('<h4>Roster</h4>',`<h4>${P6_CAMP}</h4>`);
   const camp=Object.keys(G.roster).some(id=>!G.party.includes(id));
-  h=h.replace(/(<button class="btn" data-act="autoEqAll"[^>]*>[^<]*<\/button>)/,`$1<button class="btn" data-act="autoEqCamp" ${camp?'':'disabled'} title="Heroes at camp (not in your party) get the best spare gear from the pack. Never takes anything from your party.">Equip best: at camp</button>`);}catch(e){}return h;};}
+  h=h.replace(/(<button class="btn" data-act="autoEqAll"[^>]*>[^<]*<\/button>)/,`$1<button class="btn" data-act="autoEqCamp" ${camp?'':'disabled'} title="Your reserves (heroes not in your party) get the best spare gear from the pack. Never takes anything from your party.">Equip best: reserves</button>`);}catch(e){}return h;};}
 Object.assign(ACT,{bpPick(j){const m=V.modal;if(!m||m.type!=='bp'||!m.plan||!m.plan.opts)return;p6Sel(m.plan,+j||0);sfx('blip');render();},autoEqCamp(){autoCamp();}});
 
 // ----- styles: the Epic tag (ui.js isEpic/epicTag) and the formation chips -----

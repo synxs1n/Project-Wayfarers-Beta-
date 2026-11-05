@@ -46,7 +46,7 @@ function setSlots(P){G.party=P.filter(Boolean);}
 function swapTown(where){return where==='guild'||inTown();}
 function vSwap(where){
   const town=swapTown(where),sel=V.swapSel,P=partySlots(),openAct=where==='guild'?'openChar':'viewChar';
-  // v0.4.3: in the Menu the party is a 3 + 3 grid (front line on top, reserve below) that fits one screen
+  // v0.4.3: in the Menu the party is a 3 + 3 grid (front line on top, rearguard below) that fits one screen
   const grid=where==='menu';
   V.charList=G.party.slice();
   const name=id=>id&&G.roster[id]?esc(G.roster[id].name):'';
@@ -54,7 +54,7 @@ function vSwap(where){
     :sel.r?`Tap a party slot to put ${name(sel.r)} there.`
     :sel.fill?'Tap a roster hero to fill the empty slot.'
     :`Tap who to swap with ${name(P[sel.i])}.${town?' Or tap a roster hero below to swap them in.':''}`;
-  const card=(id,i)=>{const c=id&&G.roster[id],on=sel&&sel.i===i,lab=(i<3?'Front ':'Reserve ')+(i%3+1);
+  const card=(id,i)=>{const c=id&&G.roster[id],on=sel&&sel.i===i,lab=(i<3?'Front ':'Rearguard ')+(i%3+1);
     if(!c)return `<div class="swc ${grid?'':'row'} empty ${on?'sel':''}"><button class="swm" data-act="swapTap" data-arg="p:${i}" ${town||sel?'':'disabled'}><small>${lab}</small><span>Empty slot</span></button></div>`;
     // Beta v0.3.1: one readable row per hero: portrait, name, level and class, elements, HP and MP with numbers, KO or status marker
     const bad=[...new Set(Object.keys(c.st||{}).filter(k=>STS[k]&&STS[k].bad).concat(typeof ailOf==='function'?ailOf(c):[]))],mark=c.hp<=0?'<em class="swko">KO</em>':bad.length?`<em class="swst" aria-label="${bad.map(k=>STS[k].n).join(', ')}">${bad.map(k=>`<span class="ail" style="--c:${STS[k].c}" title="${STS[k].n}">${stSym(k)}</span>`).join('')}</em>`:'';
@@ -62,9 +62,9 @@ function vSwap(where){
   const bench=Object.values(G.roster).filter(c=>!G.party.includes(c.id)).filter(c=>lmatch('party',c));const benchS=lsort('party',bench,(a,b)=>b.lv-a.lv||a.name.localeCompare(b.name));
   return `${grid?'<div class="swgridwrap">':''}<div class="btnrow ptools"><button class="btn sm" data-act="bpOpen">Best party</button><button class="btn sm" data-act="fsOpen">Field skills</button>${(G.talks||[]).length?`<button class="btn sm gold" data-act="campfire">Campfire talks (${G.talks.length})</button>`:''}</div>${ldStrip()}<p class="note swhint ${sel?'on':''}">${hint}</p>
     <h4>Front line</h4><div class="swlist ${grid?'g3':''}">${[0,1,2].map(i=>card(P[i],i)).join('')}</div>
-    <h4>Reserve</h4><div class="swlist ${grid?'g3':''}">${[3,4,5].map(i=>card(P[i],i)).join('')}</div>
+    <h4>Rearguard</h4><div class="swlist ${grid?'g3':''}">${[3,4,5].map(i=>card(P[i],i)).join('')}</div>
     ${sel&&sel.i!=null&&P[sel.i]?`<div class="btnrow">${town&&G.party.length>1?'<button class="btn sm" data-act="swapOut">Send to roster</button>':''}<button class="btn sm" data-act="swapCancel">Cancel</button></div>`:sel?'<div class="btnrow"><button class="btn sm" data-act="swapCancel">Cancel</button></div>':''}
-    ${town?`<h4>At camp <span class="cnt nums">${bench.length} waiting</span></h4>${filterBar('party')}<div class="grid mini">${benchS.map(c=>`<button class="mini ${sel&&sel.r===c.id?'sel':''} ${c.el.length>1?'dual':''} ${isLeg(c.id)?'leg':isEpic(c.id)?'epic':''}" data-act="swapTap" data-arg="r:${c.id}">${heroTag(c.id)}<img src="${heroURL(c.id)}" alt=""><b>${esc(c.name)}${c.legacy?' ★':''}</b><small>Lv ${c.lv} ${CLS[TPL[c.id].cls].n}</small><span class="els">${c.el.map(ico).join('')}</span></button>`).join('')||'<p class="note">Everyone you have recruited is already in your six.</p>'}</div>`
+    ${town?`<h4>Reserves <span class="cnt nums">${bench.length} waiting</span></h4>${filterBar('party')}<div class="grid mini">${benchS.map(c=>`<button class="mini ${sel&&sel.r===c.id?'sel':''} ${c.el.length>1?'dual':''} ${isLeg(c.id)?'leg':isEpic(c.id)?'epic':''}" data-act="swapTap" data-arg="r:${c.id}">${heroTag(c.id)}<img src="${heroURL(c.id)}" alt=""><b>${esc(c.name)}${c.legacy?' ★':''}</b><small>Lv ${c.lv} ${CLS[TPL[c.id].cls].n}</small><span class="els">${c.el.map(ico).join('')}</span></button>`).join('')||'<p class="note">Everyone you have recruited is already in your six.</p>'}</div>`
       :'<p class="note">Reordering works anywhere. Swapping roster heroes into your six happens in town.</p>'}${grid?'</div>':''}`;
 }
 Object.assign(ACT,{

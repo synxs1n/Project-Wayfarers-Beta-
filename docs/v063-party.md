@@ -1,6 +1,6 @@
 # Beta v0.6.3: party systems (worktree report)
 
-Scope: Best Party formations, the Training team, XP catch up against the whole roster, "Equip best: at camp", and the Legendary / Epic labels.
+Scope: Best Party formations, the Training team, XP catch up against the whole roster, "Equip best: reserves" (renamed in v0.6.4), and the Legendary / Epic labels.
 GAME_VERSION and the changelog are not touched (the lead merges those). Save keys and db schemas are unchanged, and there are no new save fields.
 Best Party and auto equip stay off in the Daily Trial, and the Trial's XP is untouched.
 
@@ -16,7 +16,7 @@ Best Party and auto equip stay off in the Daily Trial, and the Trial's XP is unt
 
 ## Name for heroes outside the party: "At camp"
 They rest at the campfire while the six travel, and "Campfire talks" already live there, so it fits the tone. It is used on the Party tab
-("At camp, N waiting"), the Equipment tab heading, the button "Equip best: at camp", the auto equip summary ("(at camp)") and Best Party
+("At camp, N waiting"), the Equipment tab heading, the button "Equip best: reserves" (renamed in v0.6.4), the auto equip summary ("(at camp)") and Best Party
 ("Going to camp: ..."). The menu's Roster tab is left alone (MENU_GROUPS belongs to the menus pass). "Reserve" was ruled out because the back
 three of the six are already called the Reserve. Alternatives for the owner: "the Rearguard", "Waiting at the inn".
 

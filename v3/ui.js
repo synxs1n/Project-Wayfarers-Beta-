@@ -200,7 +200,7 @@ function renderBattle(stageOnly){
   if(stageOnly)return;
   {const last=B.log[B.log.length-1]||'',el=$('blog');if(el&&el.dataset.l!==String(B.log.length)+last){el.dataset.l=String(B.log.length)+last;el.innerHTML=last&&!B.logOpen?`<p class="last flash">${esc(last)}</p>`:'';}}
   {const ov=$('bover');if(ov)ov.innerHTML=blogPanel()+stPopHtml()+uDetHtml();}
-  $('bparty').innerHTML=foeCards()+`<div class="pgroup">${B.front.map(c=>pcard(c,false)).join('')}</div><div class="pgroup rsv"><h3>Reserve</h3>${B.back.map(c=>pcard(c,true)).join('')||'<span class="note">No reserves.</span>'}</div>`;
+  $('bparty').innerHTML=foeCards()+`<div class="pgroup">${B.front.map(c=>pcard(c,false)).join('')}</div><div class="pgroup rsv"><h3>Rearguard</h3>${B.back.map(c=>pcard(c,true)).join('')||'<span class="note">No rearguard.</span>'}</div>`;
   $('bcmd').innerHTML=cmdHtml();
   fitBattle();
 }
@@ -239,7 +239,7 @@ function cmdHtml(){
       <div class="menu"><button class="mi" data-act="cmd" data-arg="attack">Attack</button><button class="mi" data-act="cmd" data-arg="skills">Skills${bonds.length?' <em class="bondtag">Bond</em>':''}</button>
       <button class="mi" data-act="cmd" data-arg="items">Items</button><button class="mi" data-act="cmd" data-arg="guard">Guard</button>
       <button class="mi" data-act="cmd" data-arg="scan" title="Read a foe's exact stats and hidden quirks. Costs half a turn.">Scan</button><button class="mi" data-act="cmd" data-arg="lore" title="Elements, reactions and statuses. Read only, pauses the fight.">Lore</button>${canSummon(a)?`<button class="mi summon" data-act="summon" title="Your companion fights in this hero's place for a few turns">Summon ${esc(compOf(a).name)}</button>`:''}
-      <button class="mi" data-act="cmd" data-arg="swap" ${sw?'':'disabled'} title="${rooted?'Rooted: cannot switch out':'Swap this hero for a reserve'}">${rooted?'Rooted':'Switch'}</button>
+      <button class="mi" data-act="cmd" data-arg="swap" ${sw?'':'disabled'} title="${rooted?'Rooted: cannot switch out':'Swap this hero for a rearguard hero'}">${rooted?'Rooted':'Switch'}</button>
       <button class="mi" data-act="cmd" data-arg="flee" ${noFlee?'disabled':''}>Flee</button></div><div class="btnrow">${auto}</div>`;
   }else if(B.menu==='skills'){
     body=`<div class="menu list">${ks.map(s=>`<button class="mi ${s.combo?'combo':''} ${s.bond?'bond':''}" data-act="sk" data-arg="${s.id}" ${a.mp<s.mp?'disabled':''}><span class="n">${skEls(s).map(ico).join('')}${esc(s.n)}${s.t==='all'||s.t==='allyAll'?' <em>All</em>':''}${s.combo?' <em class="c">Dual art</em>':''}${s.bond?' <em class="b">Bond</em>':''}${roleTag(s)}</span><span class="m">${s.mp} MP</span><small>${esc(s.d)}</small>${detLive(s)}${perkNote(a,s)}${effChips(s,a)}</button>`).join('')}</div>`;
@@ -374,7 +374,7 @@ function mChar(id,edit){
       <div class="rows">${Object.keys(cnt).map(g=>`<div class="row"><div><b>${gearOf(g).n}</b> x${cnt[g]}<small>${gearDesc(g)}</small><small>${gearDiff(c,g)}</small></div><button class="btn sm" data-act="equip" data-arg="${g}">Equip</button></div>`).join('')||'<p class="note">No spare gear for this slot. Buy some at the smithy or find it in chests.</p>'}</div>`,
       `${c.eq[m.gear]?`<button class="btn sm" data-act="unequip" data-arg="${m.gear}">Unequip</button>`:''}<button class="btn" data-act="gearBack">Done</button>`);
   }
-  const slots=[0,1,2,3,4,5].map(i=>{const oc=G.roster[G.party[i]];return `<button class="btn sm ${G.party[i]===id?'gold':''}" data-act="assign" data-arg="${i}">${i<3?'Front':'Reserve'} ${i%3+1}${oc?': '+esc(oc.name):''}</button>`;}).join('');
+  const slots=[0,1,2,3,4,5].map(i=>{const oc=G.roster[G.party[i]];return `<button class="btn sm ${G.party[i]===id?'gold':''}" data-act="assign" data-arg="${i}">${i<3?'Front':'Rearguard'} ${i%3+1}${oc?': '+esc(oc.name):''}</button>`;}).join('');
   const A=S.attr,attrRows=ATTR.map(k=>`<div class="arow"><button class="stb an" data-act="statInfo" data-arg="${k}" aria-label="What is ${ATTRN[k][0]}?"><b>${k.toUpperCase()}</b> <small>${ATTRN[k][0]}</small></button><b>${Math.round(A[k])}</b>${c.alloc[k]?`<small class="up">+${c.alloc[k]}</small>`:'<small></small>'}${edit?`<button class="btn sm" data-act="addPt" data-arg="${k}" ${c.pts>0?'':'disabled'} aria-label="Add a point to ${ATTRN[k][0]}">+</button>`:''}</div>`).join('');
   const L=LIMIT[t.cls],bonds=BONDS.filter(b=>b.a===id||b.b===id);
   const LST=(m.list||[]).filter(x=>G.roster[x]),li=LST.indexOf(id),nav=LST.length>1&&li>=0?`<div class="cnav"><button class="btn sm" data-act="charNav" data-arg="-1" aria-label="Previous hero">‹ Prev</button><small class="nums">${li+1} / ${LST.length}</small><button class="btn sm" data-act="charNav" data-arg="1" aria-label="Next hero">Next ›</button></div>`:'';

@@ -1346,7 +1346,7 @@ html.rm .menter .panel,html.rm .pc.tg,html.rm .swc.sel{animation:none}
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.6.3";const APP_BUILD="348eb6a2dcd6";
+(function(){const APP_VER="0.6.4";const APP_BUILD="6d61c55bd10e";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -1677,13 +1677,14 @@ HD2D.spr={sc:2/3,sat:.86,con:.9,spread:9,rim:.75,act:{out:.3,dun:.34},shadow:[.8
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.6.3";const APP_BUILD="348eb6a2dcd6";
+const APP_VER="0.6.4";const APP_BUILD="6d61c55bd10e";
 
 // =================== VERSION ===================
 // The one public version string. Patch (0.1.x) for fixes and balance, minor (0.x.0) for new systems.
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.6.4',['Names: heroes outside your party are now your Reserves, and the back three of the party are the Rearguard. The button is now Equip best: reserves.']],
  ['Beta v0.6.3',['Best Party now offers several formations (Balanced, Boss ready, Fresh mix) chosen for role balance over raw level and gear, plus a Training team that brings lagging heroes along with a strong tank and healer. Catch up XP now measures against the highest level hero on your whole roster. New Equip best: at camp fills out heroes outside the party from spare gear without touching the party. Legendary tags are now only for heroes with legend quests (Kaevan, Nikaris, Jaeson); other rare heroes show Epic.']],
  ['Beta v0.6.2',['Characters now belong to the HD-2D world and battle scenes: they take the light around them (sunlight, moonlight, a torch at their side, lava glow, spells), the scene\'s colour grade, fog in the distance and a soft rim light, and stand on a soft shadow instead of a hard dark bar. In the world they are drawn at a size that fits the rooms and streets. Fixed a pale line under the hero and tinted boxes around glows and shadows.']],
  ['Beta v0.6.1',['A clearer victory screen. A beaten foe you can tame now comes first, and pressing Continue without deciding asks whether to tame it or leave it behind. Gold, experience, materials and finds sit in a compact grid, and every hero in the fight shows the experience they gained, their catch up bonus, and any level up with points to spend. Wayfarers met on the road or won in a duel are no longer labelled Legendary; that label is kept for the legendary heroes. The save note no longer sits on the logo while a window is open.']],
@@ -1711,7 +1712,7 @@ const CHANGELOG=[
  ['Beta v0.4.3',['Capes: a fourth equipment slot for every class, sold at the Smithy beside armor and shown on your hero. Boss fights were re-tuned around them.','Before you play on a new version, the game offers to export your saves as a backup.','Fallen heroes earn no XP. Wins mostly on auto pay 66% XP and gold, and auto deals 85% damage. Random battles are a little rarer at every setting and never come within 8 steps of the last one.','After a boss you stay in the dungeon; its Echo appears once you have left and come back. A big boss HP bar runs along the top of boss and miniboss fights. Echoes pay a little more.','Every wayfarer has a rival of their own. Twenty new minibosses, dealt out so a journey rarely meets the same one twice. Travel packs from traders roll their contents.','Tempering lists only what can still be tempered, rarest first. Detonator skills say which primes they set off. The Tamer\'s Stick measures against the Bestiary as listed.','Much easier early game: regular foes are softer in every realm and much softer in the first two, there are no pack tactics in the first two realms, heroes recover more HP after each win early on, the world grows tougher only half as fast in the field, and the first two Scourges hit less hard. You begin with 400 gold, gold drops are up and shop prices down. Auto now deals 85% damage and pays 66%.','Twenty-four starters (three per class, three per element) for many more starting draws. Beat a wayfarer in a duel and they wait for you at the tavern. Accept all and Claim all buttons on the Quest Board, bounties and faction missions. Back to the main menu from Settings. The Inn closes after you rest. Town gates always meet a road with nothing in the way.','Fixes: Space at the Inn no longer puts you straight to bed, and the fortress gatehouse no longer covers your hero. Personal rewards, fortress charms and The Steady Hand charm re-tuned.']],
  ['Beta v0.4.1',['Fix and rebalance pass. Fixes: challenge fights no longer freeze, mimics and props never block paths, shield pips and draw order fixed, indoor maps ignore weather, dungeon entrances and levers placed properly, fewer east exits, map back button, latest input wins, auto settings saved, Records opens on Journey.','Rules: fallen heroes stay down until revived; Poison, Curse and boss Wounds last past the fight; weapon types rebalanced against beast and armored foes; Auto is banned in elite, miniboss and challenge fights and plays simpler; parties can be smaller than six; Lore in the battle menu; weather and time tags always visible; weather now falls in towns too.','Balance: tougher packs, bosses scale toward your party level and grow with every boss defeated, echo levels follow your party, small parties face softer foes, gold and XP trimmed and prices raised.','World: sixteen realms (twelve standard, four Calamity realms), each with its own look, monsters, weather, townsfolk and quests. A living Scourge or Calamity changes its realm until it falls. Visible foes roam the dungeons, side fortresses join the side caves, and most caves and fortresses end in a miniboss. Dusk and dawn look new.','Also: wayfarer challenge wording, start with one to three wayfarers, Gear menu is now Backpack, shop and craft lists sort by rarity with filters, Craft only tag, a dynamic title screen, NPCs with more to say, a sixth faction (The Steady Hand), personal quest rewards in three slots, and new item sprites.']],
  ['Beta v0.4.0',['Bug fixes: tapping or clicking a foe now targets it (touch, mouse, keys, pad), field skills that need a target work, shield pips have their own spot, the party stops walking the moment a battle starts, dungeon stairs never block the route, and Auto reads Start auto or Stop auto.',
-  'Battle: tap a reserve hero to switch, Auto settings live in the menu as well as in battle, Undead take damage from healing, and foes have archetypes (Flying, Armored, Jelly, Swarm, Beast and more) that skills and weapons answer by delivery (Slash, Blunt, Piercing, Ranged, Magic, Heal).',
+  'Battle: tap a rearguard hero to switch, Auto settings live in the menu as well as in battle, Undead take damage from healing, and foes have archetypes (Flying, Armored, Jelly, Swarm, Beast and more) that skills and weapons answer by delivery (Slash, Blunt, Piercing, Ranged, Magic, Heal).',
   'Menus: seven top groups with sub tabs, Forge is the new name for making gear, recipes you can make now come first, purchase animations, Pork Chop Sandwich leads back to the last town, longer dusk and dawn with their own look, starter sheets, Legacy heroes count toward the three starters, and item strength borders with tier pips.',
   'Wayfarers: 64 single type wayfarers (every class in every element), a signature skill for every wayfarer, and a new starter draw of 8 options from a pool of 16.',
   'World: one long winding field between towns, gates facing north, south, east and west with matching landings, a world map screen, and optional side caves with a special reward (a +2 piece of gear, a rare item, a challenge wayfarer or a unique charm). Old journeys keep their old maps.',
@@ -8462,7 +8463,7 @@ function renderBattle(stageOnly){
   if(stageOnly)return;
   {const last=B.log[B.log.length-1]||'',el=$('blog');if(el&&el.dataset.l!==String(B.log.length)+last){el.dataset.l=String(B.log.length)+last;el.innerHTML=last&&!B.logOpen?`<p class="last flash">${esc(last)}</p>`:'';}}
   {const ov=$('bover');if(ov)ov.innerHTML=blogPanel()+stPopHtml()+uDetHtml();}
-  $('bparty').innerHTML=foeCards()+`<div class="pgroup">${B.front.map(c=>pcard(c,false)).join('')}</div><div class="pgroup rsv"><h3>Reserve</h3>${B.back.map(c=>pcard(c,true)).join('')||'<span class="note">No reserves.</span>'}</div>`;
+  $('bparty').innerHTML=foeCards()+`<div class="pgroup">${B.front.map(c=>pcard(c,false)).join('')}</div><div class="pgroup rsv"><h3>Rearguard</h3>${B.back.map(c=>pcard(c,true)).join('')||'<span class="note">No rearguard.</span>'}</div>`;
   $('bcmd').innerHTML=cmdHtml();
   fitBattle();
 }
@@ -8501,7 +8502,7 @@ function cmdHtml(){
       <div class="menu"><button class="mi" data-act="cmd" data-arg="attack">Attack</button><button class="mi" data-act="cmd" data-arg="skills">Skills${bonds.length?' <em class="bondtag">Bond</em>':''}</button>
       <button class="mi" data-act="cmd" data-arg="items">Items</button><button class="mi" data-act="cmd" data-arg="guard">Guard</button>
       <button class="mi" data-act="cmd" data-arg="scan" title="Read a foe's exact stats and hidden quirks. Costs half a turn.">Scan</button><button class="mi" data-act="cmd" data-arg="lore" title="Elements, reactions and statuses. Read only, pauses the fight.">Lore</button>${canSummon(a)?`<button class="mi summon" data-act="summon" title="Your companion fights in this hero's place for a few turns">Summon ${esc(compOf(a).name)}</button>`:''}
-      <button class="mi" data-act="cmd" data-arg="swap" ${sw?'':'disabled'} title="${rooted?'Rooted: cannot switch out':'Swap this hero for a reserve'}">${rooted?'Rooted':'Switch'}</button>
+      <button class="mi" data-act="cmd" data-arg="swap" ${sw?'':'disabled'} title="${rooted?'Rooted: cannot switch out':'Swap this hero for a rearguard hero'}">${rooted?'Rooted':'Switch'}</button>
       <button class="mi" data-act="cmd" data-arg="flee" ${noFlee?'disabled':''}>Flee</button></div><div class="btnrow">${auto}</div>`;
   }else if(B.menu==='skills'){
     body=`<div class="menu list">${ks.map(s=>`<button class="mi ${s.combo?'combo':''} ${s.bond?'bond':''}" data-act="sk" data-arg="${s.id}" ${a.mp<s.mp?'disabled':''}><span class="n">${skEls(s).map(ico).join('')}${esc(s.n)}${s.t==='all'||s.t==='allyAll'?' <em>All</em>':''}${s.combo?' <em class="c">Dual art</em>':''}${s.bond?' <em class="b">Bond</em>':''}${roleTag(s)}</span><span class="m">${s.mp} MP</span><small>${esc(s.d)}</small>${detLive(s)}${perkNote(a,s)}${effChips(s,a)}</button>`).join('')}</div>`;
@@ -8636,7 +8637,7 @@ function mChar(id,edit){
       <div class="rows">${Object.keys(cnt).map(g=>`<div class="row"><div><b>${gearOf(g).n}</b> x${cnt[g]}<small>${gearDesc(g)}</small><small>${gearDiff(c,g)}</small></div><button class="btn sm" data-act="equip" data-arg="${g}">Equip</button></div>`).join('')||'<p class="note">No spare gear for this slot. Buy some at the smithy or find it in chests.</p>'}</div>`,
       `${c.eq[m.gear]?`<button class="btn sm" data-act="unequip" data-arg="${m.gear}">Unequip</button>`:''}<button class="btn" data-act="gearBack">Done</button>`);
   }
-  const slots=[0,1,2,3,4,5].map(i=>{const oc=G.roster[G.party[i]];return `<button class="btn sm ${G.party[i]===id?'gold':''}" data-act="assign" data-arg="${i}">${i<3?'Front':'Reserve'} ${i%3+1}${oc?': '+esc(oc.name):''}</button>`;}).join('');
+  const slots=[0,1,2,3,4,5].map(i=>{const oc=G.roster[G.party[i]];return `<button class="btn sm ${G.party[i]===id?'gold':''}" data-act="assign" data-arg="${i}">${i<3?'Front':'Rearguard'} ${i%3+1}${oc?': '+esc(oc.name):''}</button>`;}).join('');
   const A=S.attr,attrRows=ATTR.map(k=>`<div class="arow"><button class="stb an" data-act="statInfo" data-arg="${k}" aria-label="What is ${ATTRN[k][0]}?"><b>${k.toUpperCase()}</b> <small>${ATTRN[k][0]}</small></button><b>${Math.round(A[k])}</b>${c.alloc[k]?`<small class="up">+${c.alloc[k]}</small>`:'<small></small>'}${edit?`<button class="btn sm" data-act="addPt" data-arg="${k}" ${c.pts>0?'':'disabled'} aria-label="Add a point to ${ATTRN[k][0]}">+</button>`:''}</div>`).join('');
   const L=LIMIT[t.cls],bonds=BONDS.filter(b=>b.a===id||b.b===id);
   const LST=(m.list||[]).filter(x=>G.roster[x]),li=LST.indexOf(id),nav=LST.length>1&&li>=0?`<div class="cnav"><button class="btn sm" data-act="charNav" data-arg="-1" aria-label="Previous hero">‹ Prev</button><small class="nums">${li+1} / ${LST.length}</small><button class="btn sm" data-act="charNav" data-arg="1" aria-label="Next hero">Next ›</button></div>`:'';
@@ -9229,7 +9230,7 @@ function fbContext(){
   if(G){
     const st=V.screen==='battle'&&B?B.stage:WS.m?WS.m.s:G.stage;
     Object.assign(ctx,{stage:G.stage+1,realm:ZS(Math.min(4,st||0)).n,location:V.screen==='world'&&WS.m?locName(WS.m):null,ngCycle:G.run.cycle||0,daily:!!G.daily,cleared:G.cleared.filter(Boolean).length,
-      party:partyChars().map((c,i)=>({name:c.name,lv:c.lv,cls:CLS[TPL[c.id].cls].n,row:i<3?'front':'reserve'})),roster:Object.keys(G.roster).length});
+      party:partyChars().map((c,i)=>({name:c.name,lv:c.lv,cls:CLS[TPL[c.id].cls].n,row:i<3?'front':'rearguard'})),roster:Object.keys(G.roster).length});
     ctx.weather=V.screen==='battle'&&B?B.weather:WS.m&&WS.m.kind==='field'?(G.weather[WS.m.s]||'clear'):'indoors';
   }
   ctx.battleLog=((B&&B.log)||FB.lastLog||[]).slice(-10);
@@ -10212,7 +10213,7 @@ function setSlots(P){G.party=P.filter(Boolean);}
 function swapTown(where){return where==='guild'||inTown();}
 function vSwap(where){
   const town=swapTown(where),sel=V.swapSel,P=partySlots(),openAct=where==='guild'?'openChar':'viewChar';
-  // v0.4.3: in the Menu the party is a 3 + 3 grid (front line on top, reserve below) that fits one screen
+  // v0.4.3: in the Menu the party is a 3 + 3 grid (front line on top, rearguard below) that fits one screen
   const grid=where==='menu';
   V.charList=G.party.slice();
   const name=id=>id&&G.roster[id]?esc(G.roster[id].name):'';
@@ -10220,7 +10221,7 @@ function vSwap(where){
     :sel.r?`Tap a party slot to put ${name(sel.r)} there.`
     :sel.fill?'Tap a roster hero to fill the empty slot.'
     :`Tap who to swap with ${name(P[sel.i])}.${town?' Or tap a roster hero below to swap them in.':''}`;
-  const card=(id,i)=>{const c=id&&G.roster[id],on=sel&&sel.i===i,lab=(i<3?'Front ':'Reserve ')+(i%3+1);
+  const card=(id,i)=>{const c=id&&G.roster[id],on=sel&&sel.i===i,lab=(i<3?'Front ':'Rearguard ')+(i%3+1);
     if(!c)return `<div class="swc ${grid?'':'row'} empty ${on?'sel':''}"><button class="swm" data-act="swapTap" data-arg="p:${i}" ${town||sel?'':'disabled'}><small>${lab}</small><span>Empty slot</span></button></div>`;
     // Beta v0.3.1: one readable row per hero: portrait, name, level and class, elements, HP and MP with numbers, KO or status marker
     const bad=[...new Set(Object.keys(c.st||{}).filter(k=>STS[k]&&STS[k].bad).concat(typeof ailOf==='function'?ailOf(c):[]))],mark=c.hp<=0?'<em class="swko">KO</em>':bad.length?`<em class="swst" aria-label="${bad.map(k=>STS[k].n).join(', ')}">${bad.map(k=>`<span class="ail" style="--c:${STS[k].c}" title="${STS[k].n}">${stSym(k)}</span>`).join('')}</em>`:'';
@@ -10228,9 +10229,9 @@ function vSwap(where){
   const bench=Object.values(G.roster).filter(c=>!G.party.includes(c.id)).filter(c=>lmatch('party',c));const benchS=lsort('party',bench,(a,b)=>b.lv-a.lv||a.name.localeCompare(b.name));
   return `${grid?'<div class="swgridwrap">':''}<div class="btnrow ptools"><button class="btn sm" data-act="bpOpen">Best party</button><button class="btn sm" data-act="fsOpen">Field skills</button>${(G.talks||[]).length?`<button class="btn sm gold" data-act="campfire">Campfire talks (${G.talks.length})</button>`:''}</div>${ldStrip()}<p class="note swhint ${sel?'on':''}">${hint}</p>
     <h4>Front line</h4><div class="swlist ${grid?'g3':''}">${[0,1,2].map(i=>card(P[i],i)).join('')}</div>
-    <h4>Reserve</h4><div class="swlist ${grid?'g3':''}">${[3,4,5].map(i=>card(P[i],i)).join('')}</div>
+    <h4>Rearguard</h4><div class="swlist ${grid?'g3':''}">${[3,4,5].map(i=>card(P[i],i)).join('')}</div>
     ${sel&&sel.i!=null&&P[sel.i]?`<div class="btnrow">${town&&G.party.length>1?'<button class="btn sm" data-act="swapOut">Send to roster</button>':''}<button class="btn sm" data-act="swapCancel">Cancel</button></div>`:sel?'<div class="btnrow"><button class="btn sm" data-act="swapCancel">Cancel</button></div>':''}
-    ${town?`<h4>At camp <span class="cnt nums">${bench.length} waiting</span></h4>${filterBar('party')}<div class="grid mini">${benchS.map(c=>`<button class="mini ${sel&&sel.r===c.id?'sel':''} ${c.el.length>1?'dual':''} ${isLeg(c.id)?'leg':isEpic(c.id)?'epic':''}" data-act="swapTap" data-arg="r:${c.id}">${heroTag(c.id)}<img src="${heroURL(c.id)}" alt=""><b>${esc(c.name)}${c.legacy?' ★':''}</b><small>Lv ${c.lv} ${CLS[TPL[c.id].cls].n}</small><span class="els">${c.el.map(ico).join('')}</span></button>`).join('')||'<p class="note">Everyone you have recruited is already in your six.</p>'}</div>`
+    ${town?`<h4>Reserves <span class="cnt nums">${bench.length} waiting</span></h4>${filterBar('party')}<div class="grid mini">${benchS.map(c=>`<button class="mini ${sel&&sel.r===c.id?'sel':''} ${c.el.length>1?'dual':''} ${isLeg(c.id)?'leg':isEpic(c.id)?'epic':''}" data-act="swapTap" data-arg="r:${c.id}">${heroTag(c.id)}<img src="${heroURL(c.id)}" alt=""><b>${esc(c.name)}${c.legacy?' ★':''}</b><small>Lv ${c.lv} ${CLS[TPL[c.id].cls].n}</small><span class="els">${c.el.map(ico).join('')}</span></button>`).join('')||'<p class="note">Everyone you have recruited is already in your six.</p>'}</div>`
       :'<p class="note">Reordering works anywhere. Swapping roster heroes into your six happens in town.</p>'}${grid?'</div>':''}`;
 }
 Object.assign(ACT,{
@@ -14281,7 +14282,7 @@ window.__AU={get AU(){return AU;},get AU2(){return AU2;},get SFXC(){return SFXC;
   au2Jingle:a=>au2Jingle(a),au2SetStyle:a=>au2SetStyle(a),au2Want:()=>au2Want(),sfx:k=>sfx(k),render:()=>render()};
 
 // =================== Beta v0.5.0 4.3: XP CATCH UP ===================
-// A hero below the highest level on the whole roster (v0.6.3: party AND heroes at camp, so a wayfarer who sat out a realm catches up
+// A hero below the highest level on the whole roster (v0.6.3: party AND reserves, so a wayfarer who sat out a realm catches up
 // to your top hero, not only to the six in this fight) gets XPCU.per more battle XP per level of gap, at most XPCU.max (config.js). A front row hero
 // gets the whole bonus, a reserve (benched) hero XPCU.bench of it, the fallen still get nothing, and heroes at the top level get no bonus.
 // It replaces the old flat x1.4 for heroes four or more levels behind (the share line in win(), engine.js): that factor is divided back
@@ -14568,9 +14569,9 @@ function rsGrid(i){const cell=(k,v,cls)=>`<div class="rs-cell ${cls||''}"><small
 function rsParty(i){const cu={};(i.catchup||[]).forEach(r=>{cu[r.id]=r;});const ups={};(i.ups||[]).forEach(u=>{ups[u.name]=u;});
   const L=i.xpBy&&i.xpBy.length?i.xpBy:G.party.map(id=>G.roster[id]).filter(Boolean).map(c=>({id:c.id,name:c.name,gain:null,lv0:c.lv,lv:c.lv,alive:c.hp>0}));
   const top=(i.catchup||[]).reduce((a,r)=>Math.max(a,r.top||0),0);
-  return `<h4>Your party</h4>${top?`<p class="note rs-cunote"><small>Catch up: heroes below your top wayfarer (Lv ${top}, counting heroes at camp) earn more XP.</small></p>`:''}<div class="rs-party">${L.map(o=>{const c=G.roster[o.id];if(!c)return '';const up=ups[c.name],k=cu[o.id];
+  return `<h4>Your party</h4>${top?`<p class="note rs-cunote"><small>Catch up: heroes below your top wayfarer (Lv ${top}, counting your reserves) earn more XP.</small></p>`:''}<div class="rs-party">${L.map(o=>{const c=G.roster[o.id];if(!c)return '';const up=ups[c.name],k=cu[o.id];
     const gain=o.gain==null?'':!o.alive?'<em class="rs-none">Fallen: no XP</em>':`<em class="rs-gain">+${fmt(o.gain)} XP</em>`;
-    return `<div class="rs-hero ${up?'up':''} ${o.alive?'':'ko'}">${port(c.id,'sm')}<div class="grow"><div class="rs-top"><b>${esc(c.name)}</b>${gain}${k?`<span class="rs-cu" title="Catch up: ${k.gap?k.gap+' level'+(k.gap===1?'':'s')+' below':'below'} your top wayfarer${k.top?' (Lv '+k.top+')':''}, counting heroes at camp. The further behind, the more XP">+${k.pct}% catch up</span>`:''}</div>
+    return `<div class="rs-hero ${up?'up':''} ${o.alive?'':'ko'}">${port(c.id,'sm')}<div class="grow"><div class="rs-top"><b>${esc(c.name)}</b>${gain}${k?`<span class="rs-cu" title="Catch up: ${k.gap?k.gap+' level'+(k.gap===1?'':'s')+' below':'below'} your top wayfarer${k.top?' (Lv '+k.top+')':''}, counting your reserves. The further behind, the more XP">+${k.pct}% catch up</span>`:''}</div>
       ${up?`<div class="rs-lv">Level up! <b>Lv ${up.lv}</b>${up.pts?` <span class="up">${up.pts} stat point${up.pts>1?'s':''} to spend</span>`:''}</div>`:`<small>Lv ${c.lv}</small>`}${xpLine(c)}</div></div>`;}).join('')}</div>`;}
 function rsNotes(i){const rows=[];(i.quests||[]).forEach(q=>rows.push(`<div class="row"><b>Quest ready</b><span>${esc(q)}</span></div>`));
   (i.bonds||[]).forEach(b=>rows.push(`<div class="row bondr"><b>Bond grows</b><span>${esc(b.a)} and ${esc(b.b)}: level ${b.lv}${b.lv===2?' (joint tech unlocked)':b.lv===1||b.lv===3?' (new campfire talk on their sheets)':''}</span></div>`));
@@ -15785,11 +15786,11 @@ function hbsDraw(ctx,p,now){const t=now-p.t0;if(t<0)return;const q=t/p.life;if(q
 // =================== Beta v0.6.3: PARTY SYSTEMS ===================
 // 1. Best Party suggests several formations instead of one: Balanced, Boss ready (Area answer once the boss is down), Fresh mix and a
 //    Training team. Role balance (tank, healer, damage, support, Primer, Detonator, deliveries, elements, answers to the area and its boss)
-//    outweighs raw level and gear (BP6 in config.js); each pick is explained and placed: the front line fights, the reserve swaps in.
+//    outweighs raw level and gear (BP6 in config.js); each pick is explained and placed: the front line fights, the rearguard swaps in.
 // 2. Training team: under-leveled heroes join behind a strong tank and healer and catch up (XP catch up, p4xp.js, measured against the
 //    top level on the whole roster since v0.6.3).
-// 4. "Equip best: at camp": auto equip for the heroes not in the party, from spare gear only. Never touches the party's gear or companions.
-//    Heroes outside the party are "at camp" (they rest at the campfire while the six travel; Campfire talks already live there).
+// 4. "Equip best: reserves": auto equip for the heroes not in the party, from spare gear only. Never touches the party's gear or companions.
+//    Heroes outside the party are the Reserves; the back three of the party are the Rearguard.
 // 3.4 / 3.5 (p3shop.js) are kept: reasons per pick, the threat line, the team check, "Equip best gear for this party" after Apply.
 // No save fields. Nothing here runs in the Daily Trial.
 
@@ -15821,7 +15822,7 @@ function p6Search(X,sc,fixed){const all=X.all;let set=(fixed||[]).slice();const 
   for(let pass=0;pass<3;pass++){let imp=false;for(let i=0;i<set.length;i++){if(lock.has(set[i]))continue;let cur=sc(set);
     all.forEach(c=>{if(set.includes(c))return;const t=set.slice();t[i]=c;const v=sc(t);if(v>cur+1e-6){set=t;cur=v;imp=true;}});}if(!imp)break;}
   return set;}
-// placement: the front line is who fights (tank, healer, the best damage dealer for this formation); the reserve swaps in when
+// placement: the front line is who fights (tank, healer, the best damage dealer for this formation); the rearguard swaps in when
 // someone falls or tires, so it holds the backup healer and tank first
 function p6Place(set,X,mode,train){const R=c=>X.R[c.id],by=(a,b)=>X.pw[b.id]-X.pw[a.id],rest=set.slice().sort(by),front=[],take=c=>{if(!c)return;rest.splice(rest.indexOf(c),1);front.push(c);};
   const T=X.T,tr=new Set(train||[]);
@@ -15838,7 +15839,7 @@ function p6Why(set,X,mode,train){const base=p3Reasons(set,X.T),out={},tr=new Set
     if(r.tank&&seen.tank++&&!L.includes('tank'))L.push(i<3?'second tank':'backup tank for the swap');
     if(r.heal&&seen.heal++&&!L.includes('healer'))L.push(i<3?'second healer':'backup healer for the swap');
     if(!L.length)L.push(r.sup?'support: buffs and wards the front line':r.dmg?'damage dealer':'steady all rounder');
-    if(tr.has(c.id)){const gap=X.top-c.lv,pct=Math.round((xpCatchMul(c.lv,X.top,i<3)-1)*100);L.unshift(`training: Lv ${c.lv}, ${gap} behind your top wayfarer, +${pct}% catch up XP${i<3?'':' (reserve share)'}`);}
+    if(tr.has(c.id)){const gap=X.top-c.lv,pct=Math.round((xpCatchMul(c.lv,X.top,i<3)-1)*100);L.unshift(`training: Lv ${c.lv}, ${gap} behind your top wayfarer, +${pct}% catch up XP${i<3?'':' (rearguard share)'}`);}
     else if(mode==='train'&&(r.tank||r.heal)&&i<3)L.push('keeps the trainees safe');
     out[c.id]=L.slice(0,3);});
   return out;}
@@ -15861,7 +15862,7 @@ function p6Summary(o,X,first){const T=X.T,nm=c=>esc(c.name);
   if(o.key==='area'){const a=Object.keys(T.arch).filter(k=>T.mons.some(m=>tyOf(MON[m].art).includes(k)));
     return a.length?`Built for ${esc(ZS(T.s).n)}: answers to the ${a.map(k=>ARCH_PL[k]).join(', ')} here and their elements.`:`Built for ${esc(ZS(T.s).n)}. Little is known about its monsters yet: every fight fills the Bestiary and sharpens this pick.`;}
   if(o.key==='mix'){const sh=o.set.filter(c=>first.includes(c.id)).length;return `Different faces in the same roles, so more of your wayfarers see battle and grow. Shares ${sh} of 6 with Balanced.`;}
-  if(o.key==='rot')return 'The same roles again with the heroes the other formations left at camp, so everyone keeps up.';
+  if(o.key==='rot')return 'The same roles again with the heroes the other formations left in reserve, so everyone keeps up.';
   if(o.key==='train')return `${o.trainees.map(c=>`${nm(c)} (Lv ${c.lv})`).join(', ')} ${o.trainees.length>1?'train':'trains'} behind ${o.anchors.map(nm).join(' and ')||'your strongest'}. Catch up XP is measured against your top wayfarer (Lv ${X.top}): the further behind, the more XP, up to +${Math.round(XPCU.max*100)}% in the front line and +${Math.round(XPCU.max*XPCU.bench*100)}% in reserve.`;
   return '';}
 bestParty=function(){const keep=P3C;if(!P3C)P3C={why:{},kit:{}};
@@ -15881,7 +15882,7 @@ bestParty=function(){const keep=P3C;if(!P3C)P3C={why:{},kit:{}};
   finally{P3C=keep;}};
 function p6Sel(P,j){const o=P.opts[j]||P.opts[0];if(!o)return Object.assign(P,{ids:[],why:{},info:{els:0,heal:0,tank:0,pr:0,de:0,sup:0,dmg:0}});P.pick=P.opts.indexOf(o);P.ids=o.ids;P.why=o.why;P.info=o.info;P.key=o.key;return P;}
 mBestParty=function(m){const P=m.plan,o=P.opts[P.pick]||{},cur=new Set(G.party),same=P.ids.length===G.party.length&&P.ids.every(id=>cur.has(id)),I=P.info,T=P.T||p3Threats(),W=P.why||{};
-  const row=(id,i)=>{const c=G.roster[id];return `<div class="row ${cur.has(id)?'':'upg'}">${port(id,'sm')}<div class="grow"><b>${esc(c.name)}</b> <small>Lv ${c.lv} ${CLS[TPL[id].cls].n}</small><span class="els">${c.el.map(ico).join('')}</span><small class="p3bpwhy">${esc(c.name)}: ${(W[id]||[]).join('; ')}</small></div><small>${cur.has(id)?(G.party.indexOf(id)<3)===(i<3)?'Keeps place':i<3?'<span class="up">To the front</span>':'To reserve':'<span class="up">Joins</span>'}</small></div>`;};
+  const row=(id,i)=>{const c=G.roster[id];return `<div class="row ${cur.has(id)?'':'upg'}">${port(id,'sm')}<div class="grow"><b>${esc(c.name)}</b> <small>Lv ${c.lv} ${CLS[TPL[id].cls].n}</small><span class="els">${c.el.map(ico).join('')}</span><small class="p3bpwhy">${esc(c.name)}: ${(W[id]||[]).join('; ')}</small></div><small>${cur.has(id)?(G.party.indexOf(id)<3)===(i<3)?'Keeps place':i<3?'<span class="up">To the front</span>':'To rearguard':'<span class="up">Joins</span>'}</small></div>`;};
   const chips=`<div class="chips bp6f" role="group" aria-label="Formations">${P.opts.map((x,j)=>`<button class="chip ${j===P.pick?'on':''}" data-act="bpPick" data-arg="${j}" aria-pressed="${j===P.pick}">${x.name}</button>`).join('')}</div>`;
   const out=G.party.filter(id=>!P.ids.includes(id));
   return box('Best party',`<p class="note">Formations built on role balance first (tank, healer, damage, support, Primer, Detonator, every delivery and element) and on what your Bestiary knows about the road ahead. Level and gear count, but only a little. Pick one:</p>${chips}
@@ -15889,20 +15890,20 @@ mBestParty=function(m){const P=m.plan,o=P.opts[P.pick]||{},cur=new Set(G.party),
     <p class="note bp6sum"><b>${esc(o.name||'')}.</b> ${o.sum||''}${o.also?` <small>(${o.also.join(' and ')} would pick the same six.)</small>`:''}</p>${p3ThreatLine(T)}
     <p class="note nums">Average Lv ${I.lv} · Power ${o.rel||100}% of Balanced · Tanks ${I.tank} · Healers ${I.heal} · Damage ${I.dmg} · Support ${I.sup} · Primers ${I.pr} · Detonators ${I.de} · Elements ${I.els}/8</p>
     <h4>Front line <small>(fights)</small></h4><div class="rows">${P.ids.slice(0,3).map(row).join('')}</div>
-    ${P.ids.length>3?`<h4>Reserve <small>(swaps in when someone falls or tires)</small></h4><div class="rows">${P.ids.slice(3).map((id,i)=>row(id,i+3)).join('')}</div>`:''}
-    ${out.length?`<p class="note">Going to camp: ${out.map(id=>esc(G.roster[id].name)).join(', ')}.</p>`:''}
+    ${P.ids.length>3?`<h4>Rearguard <small>(swaps in when someone falls or tires)</small></h4><div class="rows">${P.ids.slice(3).map((id,i)=>row(id,i+3)).join('')}</div>`:''}
+    ${out.length?`<p class="note">Going to the reserves: ${out.map(id=>esc(G.roster[id].name)).join(', ')}.</p>`:''}
     ${same&&P.ids.every((id,i)=>G.party[i]===id)?'<p class="note">This is already your party, in this order.</p>':''}${!same&&!inTown()?'<p class="note warn">Changing who is in your six happens in town. You can apply it there.</p>':''}${p3GapsHtml(P.ids,T,false)}`,
     `<button class="btn gold" data-act="bpApply" ${!same&&!inTown()?'disabled':''}>Apply ${esc(o.name||'')}</button><button class="btn" data-act="xBack">Cancel</button>`);};
 {const bo0=ACT.bpOpen;ACT.bpOpen=function(){if(!G||G.daily)return;return bo0.apply(this,arguments);};}
 {const sw0=ACT.p3Swap;ACT.p3Swap=function(){const m=V.modal,key=m&&m.type==='bp'&&m.plan?m.plan.key:null;const r=sw0.apply(this,arguments);
   try{const n=V.modal;if(key&&n&&n.type==='bp'&&n.plan&&n.plan.opts){const j=n.plan.opts.findIndex(o=>o.key===key);if(j>=0){p6Sel(n.plan,j);render();}}}catch(e){}return r;};}
 
-// ----- 4. Equip best: at camp (heroes outside the party, spare gear only) -----
-const P6_CAMP='At camp';
+// ----- 4. Equip best: reserves (heroes outside the party, spare gear only) -----
+const P6_CAMP='Reserves';
 function autoCamp(){if(!G||G.daily)return;const party=G.party.slice(),camp=Object.keys(G.roster).filter(id=>!party.includes(id));
-  if(!camp.length){toast('Nobody is at camp: every wayfarer you have is in your party.');return;}
+  if(!camp.length){toast('No reserves: every wayfarer you have is in your party.');return;}
   const snap=snapAuto(),before={};Object.values(G.roster).forEach(c=>{before[c.id]={eq:Object.assign({},c.eq),comp:(compOf(c)||{}).id||null,pw:loadoutScore(c,c.S)};});
-  // gear: the pack plus what the heroes at camp already wear; the party is neither planned for nor taken from
+  // gear: the pack plus what the reserves already wear; the party is neither planned for nor taken from
   applyGear(planGear(camp,[],true));Object.values(G.roster).forEach(refresh);
   // companions: only ones not walking with a party member
   const free=(G.tamed||[]).filter(o=>!o.with||!party.includes(o.with)),pairs=[];
@@ -15914,14 +15915,14 @@ function autoCamp(){if(!G||G.daily)return;const party=G.party.slice(),camp=Objec
     GSLOTS.forEach(sl=>{if((b.eq[sl]||null)!==(c.eq[sl]||null))ch.push({sl,from:b.eq[sl]||null,to:c.eq[sl]||null});});
     const nc=(compOf(c)||{}).id||null;if(ch.length||nc!==b.comp)rows.push({id:c.id,name:c.name,inParty:party.includes(c.id),ch,comp:nc!==b.comp?{from:b.comp,to:nc}:null,pw0:b.pw,pw1:loadoutScore(c,c.S)});});
   saveGame();sfx('equip');V.modal={type:'autoEq',rows,snap,mode:'camp',from:V.modal};render();}
-{const ma0=mAutoEq;mAutoEq=function(m){let h=ma0.apply(this,arguments);if(typeof h!=='string')return h;h=h.split('<small>(roster)</small>').join('<small>(at camp)</small>');
-  if(m&&m.mode==='camp'){h=h.replace(/<h2>[^<]*<\/h2>/,`<h2>Equip best: ${P6_CAMP.toLowerCase()}</h2><p class="note p6camp">Only spare gear from your pack and what your heroes at camp already wear. Your party's gear and companions were not touched.</p>`);
-    if(!(m.rows||[]).length)h=h.replace(/<p>Everyone already[^<]*<\/p>/,'<p>Everyone at camp already has the best spare gear for their class.</p>');}
+{const ma0=mAutoEq;mAutoEq=function(m){let h=ma0.apply(this,arguments);if(typeof h!=='string')return h;h=h.split('<small>(roster)</small>').join('<small>(reserve)</small>');
+  if(m&&m.mode==='camp'){h=h.replace(/<h2>[^<]*<\/h2>/,`<h2>Equip best: ${P6_CAMP.toLowerCase()}</h2><p class="note p6camp">Only spare gear from your pack and what your reserves already wear. Your party's gear and companions were not touched.</p>`);
+    if(!(m.rows||[]).length)h=h.replace(/<p>Everyone already[^<]*<\/p>/,'<p>Every reserve already has the best spare gear for their class.</p>');}
   return h;};}
 {const ve0=vEquipTab;vEquipTab=function(){let h=ve0.apply(this,arguments);try{if(!G||G.daily||typeof h!=='string')return h;
   h=h.replace('<h4>Roster</h4>',`<h4>${P6_CAMP}</h4>`);
   const camp=Object.keys(G.roster).some(id=>!G.party.includes(id));
-  h=h.replace(/(<button class="btn" data-act="autoEqAll"[^>]*>[^<]*<\/button>)/,`$1<button class="btn" data-act="autoEqCamp" ${camp?'':'disabled'} title="Heroes at camp (not in your party) get the best spare gear from the pack. Never takes anything from your party.">Equip best: at camp</button>`);}catch(e){}return h;};}
+  h=h.replace(/(<button class="btn" data-act="autoEqAll"[^>]*>[^<]*<\/button>)/,`$1<button class="btn" data-act="autoEqCamp" ${camp?'':'disabled'} title="Your reserves (heroes not in your party) get the best spare gear from the pack. Never takes anything from your party.">Equip best: reserves</button>`);}catch(e){}return h;};}
 Object.assign(ACT,{bpPick(j){const m=V.modal;if(!m||m.type!=='bp'||!m.plan||!m.plan.opts)return;p6Sel(m.plan,+j||0);sfx('blip');render();},autoEqCamp(){autoCamp();}});
 
 // ----- styles: the Epic tag (ui.js isEpic/epicTag) and the formation chips -----

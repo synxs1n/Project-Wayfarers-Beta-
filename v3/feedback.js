@@ -34,7 +34,7 @@ function fbContext(){
   if(G){
     const st=V.screen==='battle'&&B?B.stage:WS.m?WS.m.s:G.stage;
     Object.assign(ctx,{stage:G.stage+1,realm:ZS(Math.min(4,st||0)).n,location:V.screen==='world'&&WS.m?locName(WS.m):null,ngCycle:G.run.cycle||0,daily:!!G.daily,cleared:G.cleared.filter(Boolean).length,
-      party:partyChars().map((c,i)=>({name:c.name,lv:c.lv,cls:CLS[TPL[c.id].cls].n,row:i<3?'front':'reserve'})),roster:Object.keys(G.roster).length});
+      party:partyChars().map((c,i)=>({name:c.name,lv:c.lv,cls:CLS[TPL[c.id].cls].n,row:i<3?'front':'rearguard'})),roster:Object.keys(G.roster).length});
     ctx.weather=V.screen==='battle'&&B?B.weather:WS.m&&WS.m.kind==='field'?(G.weather[WS.m.s]||'clear'):'indoors';
   }
   ctx.battleLog=((B&&B.log)||FB.lastLog||[]).slice(-10);

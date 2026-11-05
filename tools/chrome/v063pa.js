@@ -53,10 +53,10 @@ const ui=await ev(([fn])=>{const A=__A,set=eval(fn);set({oren:25,lumen:25,mira:2
   A.ACT.bpOpen();A.render();const m=()=>document.querySelector('#modal');const chips=[...m().querySelectorAll('[data-act="bpPick"]')].map(b=>b.textContent);
   const t0=m().textContent;const j=A.V.modal.plan.opts.findIndex(o=>o.key==='train');A.ACT.bpPick(j);A.render();const t1=m().textContent;const ids=A.V.modal.plan.ids.slice();
   A.ACT.bpApply();A.render();const party=A.G.party.slice();const eqb=!!document.querySelector('#modal [data-act="autoEqParty"]');A.V.modal=null;
-  return {chips,front:/Front line/.test(t0)&&/Reserve/.test(t0),known:/Known in /.test(t0)||true,t1:/Training team/.test(t1)&&/training: Lv/.test(t1),same:JSON.stringify(ids)===JSON.stringify(party),eqb,gaps:/Team check/.test(t0)};},[setRoster]);
+  return {chips,front:/Front line/.test(t0)&&/Rearguard/.test(t0),known:/Known in /.test(t0)||true,t1:/Training team/.test(t1)&&/training: Lv/.test(t1),same:JSON.stringify(ids)===JSON.stringify(party),eqb,gaps:/Team check/.test(t0)};},[setRoster]);
 console.log('ui',JSON.stringify(ui));
 chk('the Best Party screen has a chip per formation',ui.chips.length>=3&&ui.chips.includes('Balanced')&&ui.chips.includes('Training team')||JSON.stringify(ui.chips));
-chk('it shows Front line and Reserve, and the team check',ui.front&&ui.gaps);
+chk('it shows Front line and Rearguard, and the team check',ui.front&&ui.gaps);
 chk('picking Training team shows its reasons; Apply puts that six in that order',ui.t1&&ui.same||JSON.stringify(ui));
 chk('after Apply, "Equip best gear for this party" is still offered',ui.eqb);
 const daily=await ev(()=>{const A=__A,G=A.G;G.daily=1;A.V.modal=null;A.ACT.bpOpen();const t=A.V.modal&&A.V.modal.type;G.daily=0;A.V.modal=null;return t||null;});
@@ -72,11 +72,11 @@ chk('"Legendary" tag only on the legend heroes with legend quests',lg.bad.length
 chk('rare tavern visitors and other epic tier wayfarers say "Epic" instead',lg.epic.includes('zephra')&&lg.epic.includes('vaelith')&&lg.legEpic.length===0&&lg.epicSrc.every(s=>/^(r|g)\d$|^x$/.test(s))||JSON.stringify(lg));
 const cards=await ev(([fn])=>{const A=__A,set=eval(fn);set({mira:10,lumen:10,oren:10,zephra:10,kaevan:10,brann:10,tess:10});A.G.party=['mira','lumen','oren'];
   A.V.modal={type:'menu',tab:'party'};A.render();const minis=[...document.querySelectorAll('#modal button.mini')].map(b=>({t:b.innerText,leg:b.classList.contains('leg'),epic:b.classList.contains('epic'),arg:b.dataset.arg}));
-  const camp=[...document.querySelectorAll('#modal h4')].map(x=>x.textContent).find(t=>/At camp/.test(t));A.V.modal=null;A.render();return {minis,camp};},[setRoster]);
+  const camp=[...document.querySelectorAll('#modal h4')].map(x=>x.textContent).find(t=>/Reserves/.test(t));A.V.modal=null;A.render();return {minis,camp};},[setRoster]);
 console.log('cards',JSON.stringify(cards));
 const mz=cards.minis.find(m=>m.arg==='r:zephra'),mk=cards.minis.find(m=>m.arg==='r:kaevan'),mb=cards.minis.find(m=>m.arg==='r:brann');
 chk('roster card: Zephra (rare) shows EPIC, not LEGENDARY',!!mz&&/EPIC/.test(mz.t)&&!/LEGENDARY/.test(mz.t)&&mz.epic&&!mz.leg||JSON.stringify(mz));
 chk('roster card: Kaevan (legend) keeps LEGENDARY',!!mk&&/LEGENDARY/.test(mk.t)&&mk.leg||JSON.stringify(mk));
 chk('roster card: an ordinary wayfarer has neither',!!mb&&!/EPIC|LEGENDARY/.test(mb.t)||JSON.stringify(mb));
-chk('heroes outside the party are listed "At camp"',!!cards.camp||JSON.stringify(cards.camp));
+chk('heroes outside the party are listed under "Reserves"',!!cards.camp||JSON.stringify(cards.camp));
 await done(h);})();

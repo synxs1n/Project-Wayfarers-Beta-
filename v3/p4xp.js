@@ -1,5 +1,5 @@
 // =================== Beta v0.5.0 4.3: XP CATCH UP ===================
-// A hero below the highest level on the whole roster (v0.6.3: party AND heroes at camp, so a wayfarer who sat out a realm catches up
+// A hero below the highest level on the whole roster (v0.6.3: party AND reserves, so a wayfarer who sat out a realm catches up
 // to your top hero, not only to the six in this fight) gets XPCU.per more battle XP per level of gap, at most XPCU.max (config.js). A front row hero
 // gets the whole bonus, a reserve (benched) hero XPCU.bench of it, the fallen still get nothing, and heroes at the top level get no bonus.
 // It replaces the old flat x1.4 for heroes four or more levels behind (the share line in win(), engine.js): that factor is divided back
