@@ -10,5 +10,9 @@
         "google.com"
       ]
     }
+  },
+  "server": {
+    "url": "https://synxs1n.github.io/Project-Wayfarers-Beta-/",
+    "errorPath": "index.html"
   }
 }
