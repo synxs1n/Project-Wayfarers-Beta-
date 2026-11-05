@@ -1,6 +1,6 @@
 # Standing instructions for this repo
 
-Whenever you change the game, you also ship it to GitHub yourself, every time, without me asking. Repo: synxs1n/Project-Wayfarers-Beta- (branch main). The source is in v3/ (vanilla JS). The README has a "Shipping a change" section with these same steps.
+Whenever you change the game, you also ship it to GitHub yourself, every time, without me asking. Repo: synxs1n/Project-Wayfarers-Beta- (branch main). The source is in v3/ (vanilla JS). The README has a "Shipping a change" section with these same steps. Design notes, specs and test tips are in docs/ (start with docs/README.md).
 
 For every change:
 1. Edit the files in v3/ (never edit index.html by hand).
