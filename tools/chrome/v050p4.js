@@ -41,12 +41,13 @@ const g=await ev(()=>{const A=__A,G=A.G,o={};A.V.modal={type:'menu',tab:'faction
   A.toast('No one is left to send, so the faction pays 400+ gold instead.');o.toast=document.getElementById('toast').textContent;
   o.jingle=A.MJINGLE.rank.name;A.V.modal=null;return o;});
 console.log(JSON.stringify({sub:g.sub,tabs:g.tabLbl,strip:g.strip,hallOn:g.hallOn,steady:g.steady,toast:g.toast}));
-chk('Records and Guides tabs read Guilds',g.sub==='Guilds/Guilds'&&g.tabLbl.includes('Guilds')&&!g.tabLbl.includes('Factions'));
+// v0.6.3: the missions tab moved to Quests and reads Guild missions
+chk('Records and Quests tabs read Guilds',g.sub==='Guilds/Guild missions'&&g.tabLbl.includes('Guilds')&&!g.tabLbl.includes('Factions'));
 chk('no "faction" left in the Guilds pages',!/faction/i.test(g.txt)&&!/faction/i.test(g.fmis)&&/guild/i.test(g.txt));
 chk('tab ids and save keys unchanged (data-arg factions, G.fac)',/data-arg="factions"/.test(g.html)||g.strip!==null);
 chk('the shop rank strip button says Guilds and still opens the factions tab',g.strip==='Guilds');
 chk('the Steady Hand is the Steady Hand Guild',g.steady==='The Steady Hand Guild'&&/The Steady Hand Guild/i.test(g.txt));
-chk('Guild Hall has a Guilds tab with ranks and missions',g.hallTab&&g.hallOn==='Guilds'&&/Missions|Perks/.test(g.hallTxt)&&/Wayfarers. Guild/i.test(g.hallTxt)&&g.hallOthers>=6);
+chk('Guild Hall has a Guilds tab with ranks and missions',g.hallTab&&g.hallOn==='Guilds'&&/Missions|Perks/.test(g.hallTxt)&&/Wayfarers. Guild/i.test(g.hallTxt)&&g.hallOthers>=5);// v0.6.3: five hall tabs (Personal quests and Bounties are sections of Quests)
 chk('the save still writes G.fac',g.fac===true);
 chk('toasts and the Music Room say guild',g.toast==='No one is left to send, so the guild pays 400+ gold instead.'&&g.jingle==='Guild rank up');
 

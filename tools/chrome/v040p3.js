@@ -6,8 +6,9 @@ await ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.
 // ---- 3.1 menu
 await ev(()=>__A.ACT.menu());await wait(200);
 const top=await ev(()=>[...document.querySelectorAll('#modal .mgrp .chip')].map(x=>x.textContent));
-chk('top row is Party Backpack Guides Records Quests Map Settings',JSON.stringify(top)===JSON.stringify(['Party','Backpack','Guides','Records','Quests','Map','Settings'])||JSON.stringify(top));
-const want={Party:['Party','Roster','Loadouts','Companions'],Backpack:['Equipment','Items'],Guides:['What next?','Lore','Foe types','Guilds','Hints','Help'],Records:['Journey','Bestiary','Codex','Guilds','Music Room']};
+// v0.6.3: regrouped menu (Quests holds the guild missions, Backpack has Materials, Lore moved to Records)
+chk('top row is Party Backpack Quests Map Records Guides Settings',JSON.stringify(top)===JSON.stringify(['Party','Backpack','Quests','Map','Records','Guides','Settings'])||JSON.stringify(top));
+const want={Party:['Party','Roster','Loadouts','Companions'],Backpack:['Equipment','Items','Materials'],Quests:['Quests','Guild missions'],Records:['Journey','Lore','Bestiary','Codex','Guilds','Music Room'],Guides:['What next?','Foe types','Hints','Help']};
 for(const g of Object.keys(want)){
   await page.click(`#modal .mgrp .chip:has-text("${g}")`);await wait(150);
   const subs=await ev(()=>[...document.querySelectorAll('#modal .msub .chip')].map(x=>x.textContent));
@@ -16,16 +17,16 @@ for(const g of Object.keys(want)){
     const ok=await ev(([t])=>({on:[...document.querySelectorAll('#modal .msub .chip.on')].map(x=>x.textContent)[0],len:document.getElementById('modal').innerText.length}),[t]);
     chk('  '+g+' > '+t+' opens',ok.on===t&&ok.len>120||JSON.stringify(ok));}
 }
-for(const g of ['Quests','Map','Settings']){await page.click(`#modal .mgrp .chip:has-text("${g}")`);await wait(150);
+for(const g of ['Map','Settings']){await page.click(`#modal .mgrp .chip:has-text("${g}")`);await wait(150);
   const r=await ev(()=>({subs:document.querySelectorAll('#modal .msub').length,len:document.getElementById('modal').innerText.length,on:document.querySelector('#modal .mgrp .chip.on').textContent}));
   chk(g+' opens with no sub row',r.on===g&&r.subs===0&&r.len>80||JSON.stringify(r));}
 chk('Settings tab carries the real settings (sound, auto battle)',await ev(()=>/Sound/.test(document.getElementById('modal').innerText)&&!!document.querySelector('#modal [data-act="autoOpen"]')));
 await page.click('#modal [data-act="autoOpen"]');await wait(200);await page.click('#modal [data-act="xBack"]');await wait(200);
 chk('Auto settings from the menu returns to the menu',await ev(()=>__A.V.modal&&__A.V.modal.type==='menu'&&__A.V.modal.tab==='settings'));
 // group remembers its sub tab
-await page.click('#modal .mgrp .chip:has-text("Guides")');await wait(100);await page.click('#modal .msub .chip:text-is("Lore")');await wait(100);
+await page.click('#modal .mgrp .chip:has-text("Guides")');await wait(100);await page.click('#modal .msub .chip:text-is("Foe types")');await wait(100);
 await page.click('#modal .mgrp .chip:has-text("Backpack")');await wait(100);await page.click('#modal .mgrp .chip:has-text("Guides")');await wait(100);
-chk('returning to Guides reopens the tab you left (Lore)',await ev(()=>__A.V.modal.tab==='lore'));
+chk('returning to Guides reopens the tab you left (Foe types)',await ev(()=>__A.V.modal.tab==='types'));
 // old tab ids still resolve
 for(const t of ['next','party','equip','comp','roster','items','quests','beasts','codex','lore','map','system','loadouts','types','help','settings']){
   const r=await ev(([t])=>{__A.V.modal={type:'menu',tab:t};__A.render();return {len:document.getElementById('modal').innerText.length,on:document.querySelectorAll('#modal .chip.on').length};},[t]);

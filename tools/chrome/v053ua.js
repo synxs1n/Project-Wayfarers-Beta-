@@ -32,10 +32,10 @@ SHOPS.push({type:'tavern'},{type:'inn'},{type:'board'});
   const needFit=true;
   chk(`${tag}: Party menu 3+3 grid fits one view, three per row (${JSON.stringify(fit)})`,!needFit||(fit&&fit.cards===6&&fit.fits&&fit.rows)||JSON.stringify(fit));
   // touch targets
-  if(mobile){const small=await ev(async()=>{const A=__A,o=[];const meas=(sel,where)=>document.querySelectorAll(sel).forEach(e=>{const r=e.getBoundingClientRect();if(r.width&&r.height&&r.height<39.5)o.push(where+' '+(e.textContent||e.getAttribute('aria-label')||'').trim().slice(0,14)+' '+Math.round(r.height));});
+  if(mobile){const small=await ev(async()=>{const A=__A,o=[];const meas=(sel,where)=>document.querySelectorAll(sel).forEach(e=>{if(e.getAnimations)e.getAnimations({subtree:false});const r=e.getBoundingClientRect();if(r.width&&r.height&&r.height<39.5)o.push(where+' '+(e.textContent||e.getAttribute('aria-label')||'').trim().slice(0,14)+' '+Math.round(r.height));});
     A.V.modal=null;A.render();meas('.wbar .btn,.abtn,.hdr .btn','world');
-    A.V.modal={type:'menu',tab:'party'};A.render();await new Promise(r=>setTimeout(r,450));meas('#modal .mclose,#modal .mback,#modal .chips.mgrp .chip,#modal .chips.msub .chip,#modal .ptools .btn','menu');
-    A.V.modal={type:'smithy',tab:'weapons'};A.render();await new Promise(r=>setTimeout(r,450));meas('#modal .mclose,#modal .mback','smithy');
+    A.V.modal={type:'menu',tab:'party'};A.render();await new Promise(r=>setTimeout(r,450));await Promise.all(document.getAnimations().filter(a=>a.effect&&a.effect.getComputedTiming&&a.effect.getComputedTiming().iterations!==Infinity).map(a=>a.finished.catch(()=>0)));/* v0.6.3: measure after the panel's entrance scale, not during it */meas('#modal .mclose,#modal .mback,#modal .chips.mgrp .chip,#modal .chips.msub .chip,#modal .ptools .btn','menu');
+    A.V.modal={type:'smithy',tab:'weapons'};A.render();await new Promise(r=>setTimeout(r,450));await Promise.all(document.getAnimations().filter(a=>a.effect&&a.effect.getComputedTiming&&a.effect.getComputedTiming().iterations!==Infinity).map(a=>a.finished.catch(()=>0)));/* v0.6.3: measure after the panel's entrance scale, not during it */meas('#modal .mclose,#modal .mback','smithy');
     A.V.modal=null;A.render();A.startBattle({stage:0,kind:'field'});await new Promise(r=>setTimeout(r,700));meas('#bcmd .mi,#bcmd .btnrow .btn','battle');
     A.B.en.forEach(e=>e.hp=0);A.win();await new Promise(r=>setTimeout(r,900));meas('#modal .btn.gold','results');
     return o;});

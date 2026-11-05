@@ -20,7 +20,7 @@ const r=await H.ev(()=>{const A=__A;const out={};
  const ids=sl2.filter(Boolean);ids.slice(0,3).forEach(id=>A.ACT.hire(id));out.n0=A.tvInit().n[0];
  const extra=A.tvPool().find(id=>!G.roster[id]);const before=Object.keys(G.roster).length;if(extra){G.gold=99999;A.ACT.hire(extra);}out.capFree=!extra||Object.keys(G.roster).length===before+1;
  // html
- A.V.modal={type:'tavern'};A.render();const txt=document.querySelector('.panel').innerText;out.html=[!/Recruits left in this area/.test(txt),/Next shuffle/.test(txt),/Pork Chop/.test(txt),/Empty seat/.test(txt)];
+ A.V.modal={type:'tavern'};A.render();const txt=document.querySelector('.panel').innerText;out.html=[!/Recruits left in this area/.test(txt),/Next shuffle/.test(txt),(()=>{/* v0.6.3: food is on the Kitchen tab */A.V.modal={type:'tavern',tab:'kitchen'};A.render();const k=/Pork Chop/.test(document.querySelector('.panel').innerText);A.V.modal={type:'tavern'};A.render();return k;})(),/Empty seat/.test(txt)];
  // old save: no sub, no tv, many owned
  const g2=JSON.parse(JSON.stringify(A.packG()));delete g2.sub;delete g2.tv;Object.keys(A.TPL).filter(id=>!A.TPL[id].mon&&!['kaevan','nikaris','jaeson','vaelith'].includes(id)).slice(0,45).forEach(id=>{if(!g2.roster[id])g2.roster[id]=JSON.parse(JSON.stringify(g2.roster.mira));});
  const u=A.unpackG(g2);out.oldKeeps=Object.keys(u.roster).every(id=>u.sub.includes(id));out.oldSize=u.sub.length;

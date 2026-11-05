@@ -18,7 +18,7 @@ await ev(()=>{__A.ACT.shopF('show:usable');});await wait(100);
 const mem=await ev(()=>({f:__A.SHOPF(),saved:JSON.stringify(__A.META.cfg.shopF)}));
 chk('6.2 the filter is stored',mem.f.show==='usable'&&/usable/.test(mem.saved));
 await ev(()=>{__A.V.modal=null;__A.render();__A.V.modal={type:'smithy',tab:'weapons'};__A.render();});await wait(100);
-const on=await ev(()=>[...document.querySelectorAll('#modal .shopf .chip.on')].map(x=>x.textContent));
+const on=await ev(()=>[...document.querySelectorAll('#modal .shopf select option:checked')].map(x=>x.textContent));// v0.6.3: dropdowns
 chk('6.2 it is still selected when the shop is reopened',on.includes('Fits my party'));
 const usableOnly=await ev(()=>{const A=__A,P=A.G.party.map(i=>A.G.roster[i]);return [...document.querySelectorAll('#modal [data-act="buyGear"]')].every(b=>P.some(c=>A.canEquip(c,b.dataset.arg)));});
 chk('6.2 "Fits my party" shows only gear the party can use',usableOnly===true);

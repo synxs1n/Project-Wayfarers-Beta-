@@ -21,11 +21,13 @@ function modalBack(m){
   if(t==='fbcopy')return ()=>{V.modal=m.ret&&m.ret.type==='feedback'?m.ret:null;};
   if(t==='talk')return ()=>{V.modal=m.from||null;};
   if(t==='map')return ()=>{V.modal=m.from||null;};   // v0.4.1 1.9: the map has a back arrow next to the X (back to where it was opened from, else the world)
-  // v0.5.0 1.5: every shop screen has the back arrow. A sub tab or category goes back to the shop's first tab, the first tab leaves the shop.
-  const SHOP_HOME={smithy:'weapons',workshop:'shop',guild:'recruit',tavern:null,inn:null,board:null,archivist:null};
-  if(t in SHOP_HOME){const home=SHOP_HOME[t],tab=m.tab&&m.tab!=='party'?m.tab:home;
-    if(m.cat&&tab==='craft'){const first=t==='smithy'?(typeof SMITH_CATS!=='undefined'&&SMITH_CATS[0]):(typeof ALCH_CATS!=='undefined'&&ALCH_CATS[0]);if(first&&m.cat!==first)return ()=>{m.cat=first;};}
-    if(home&&tab!==home)return ()=>{m.tab=home;m.cat=null;};
+  // v0.5.0 1.5: every shop screen has the back arrow. v0.6.3: shops have main tabs and section chips (menus3.js), so back is one level:
+  // a section (or a hero picked on the Natures tab) goes back to All, a tab goes back to the shop's first tab, the first tab leaves the shop.
+  const SHOP_HOME={smithy:'shop',workshop:'shop',guild:'recruit',tavern:'hire',inn:null,board:null,archivist:null};
+  if(t in SHOP_HOME){if(typeof m3Norm==='function')m3Norm(m);const home=SHOP_HOME[t],tab=m.tab&&m.tab!=='party'?m.tab:home;
+    if(t==='guild'&&tab==='nature'&&m.nat)return ()=>{m.nat=null;};
+    if(m.sec&&m.sec!=='all')return ()=>{m.sec='all';};
+    if(home&&tab!==home)return ()=>{m.tab=home;m.sec='all';m._t=home;m.nat=null;};
     if(m.from)return ()=>{V.modal=m.from;};
     return ()=>{V.modal=null;};}
   if(m.from)return ()=>{V.modal=m.from;};

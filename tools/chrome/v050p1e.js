@@ -20,6 +20,7 @@ const r=await ev(()=>{const A=__A,o={miss:[],backBad:[],n:0};
   return o;});
 chk(`all ${r.n} shop screens show the back arrow next to the X`,r.miss.length===0||r.miss.join(' '));
 chk('the back arrow always does something',r.backBad.length===0||r.backBad.join(' '));
-chk('back from Tempering goes to the first Smithy tab',r.toHome==='weapons'||r.toHome);
+// v0.6.3: the Smithy's first tab is Shop (sections All, Weapons, Armor, Capes, Materials); a section goes back to All first
+chk('back from Tempering goes to the first Smithy tab',r.toHome==='shop'||r.toHome);
 chk('back from the first tab leaves the shop',r.left===true);
 await done(H);})();
