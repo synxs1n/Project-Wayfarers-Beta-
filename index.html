@@ -947,8 +947,63 @@ em.dl.blunt{background:#7a5a3a}em.dl.piercing{background:#7a3a4a}em.dl.ranged{ba
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
+(function(){const APP_VER="0.4.6";
+
+// =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6) ===================
+// Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
+// 1. In the background it checks the live site's version.json. When it is newer than what is running, it downloads the new
+//    index.html into the app's own cache and offers a Restart (otherwise it applies on the next launch).
+// 2. On launch, if a downloaded build is newer than the one packed in the APK, the packed game is skipped and the downloaded
+//    one is swapped into this same page. The page keeps its origin, so saves, settings and Google sign-in are untouched.
+// 3. A downloaded build that fails to start is marked bad and the packed one runs instead; a newer APK always wins over an older download.
+(function(){
+  const NATIVE=!!(window.androidBridge||(window.Capacitor&&window.Capacitor.isNativePlatform&&window.Capacitor.isNativePlatform()));
+  window.__LIVE={native:NATIVE,running:APP_VER,bundled:APP_VER,source:'apk'};
+  if(!NATIVE||window.__LIVEBOOTED)return;// a swapped-in build runs this again: nothing more to do
+  window.__LIVEBOOTED=1;
+  const LIVE='https://synxs1n.github.io/Project-Wayfarers-Beta-/',CACHE='aur-live-build',KEY=LIVE+'index.html';
+  const ls=(k,v)=>{try{if(v===undefined)return localStorage.getItem(k);if(v===null)localStorage.removeItem(k);else localStorage.setItem(k,v);}catch(e){return null;}};
+  const newer=(a,b)=>{const p=s=>String(s||'0').split('.').map(n=>+n||0);const x=p(a),y=p(b);for(let i=0;i<Math.max(x.length,y.length);i++){if((x[i]||0)!==(y[i]||0))return (x[i]||0)>(y[i]||0);}return false;};
+  const have=ls('aur-live-ver'),bad=ls('aur-live-bad');
+  // a build that was tried and never reported a good start is skipped
+  if(have&&ls('aur-live-try')===have&&ls('aur-live-ok')!==have){ls('aur-live-bad',have);ls('aur-live-try',null);}
+  const use=have&&newer(have,APP_VER)&&ls('aur-live-bad')!==have;
+  if(use){
+    window.__SKIPMAIN=1;ls('aur-live-try',have);
+    const swap=html=>{const d=new DOMParser().parseFromString(html,'text/html');
+      document.head.innerHTML=d.head.innerHTML;document.body.innerHTML=d.body.innerHTML;
+      // scripts set through innerHTML do not run; put fresh copies in, in order
+      [...document.body.querySelectorAll('script')].forEach(old=>{const s=document.createElement('script');s.text=old.textContent;old.replaceWith(s);});
+      window.__LIVE.running=have;window.__LIVE.source='download';
+      // the new build is good once the game has drawn its first screen
+      let n=0;const t=setInterval(()=>{const sc=document.getElementById('screen');if(sc&&sc.children.length){clearInterval(t);ls('aur-live-ok',have);ls('aur-live-try',null);}else if(++n>40){clearInterval(t);ls('aur-live-bad',have);location.reload();}},250);};
+    const go=()=>caches.open(CACHE).then(c=>c.match(KEY)).then(r=>r?r.text():null).then(h=>{if(h&&h.length>100000)swap(h);else{ls('aur-live-ver',null);location.reload();}})
+      .catch(()=>{ls('aur-live-ver',null);location.reload();});
+    if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',go,{once:true});else go();
+  }
+  // background check for a newer build
+  let busy=false;
+  async function check(){if(busy||!navigator.onLine)return;busy=true;
+    try{const r=await fetch(LIVE+'version.json?t='+Date.now(),{cache:'no-store'});if(!r.ok)return;const j=await r.json(),v=j&&j.version;
+      const cur=window.__LIVE.running;if(!v||!newer(v,cur))return;
+      if(ls('aur-live-ver')===v&&ls('aur-live-bad')!==v){bar(v);return;}
+      const h=await fetch(LIVE+'index.html?v='+encodeURIComponent(v),{cache:'no-store'});if(!h.ok)return;const html=await h.text();
+      if(html.length<100000||html.indexOf('APP_VER="'+v+'"')<0)return;// only keep a complete page for exactly that version
+      const c=await caches.open(CACHE);await c.put(KEY,new Response(html,{headers:{'content-type':'text/html'}}));
+      ls('aur-live-ver',v);ls('aur-live-ok',null);if(ls('aur-live-bad')===v)ls('aur-live-bad',null);bar(v);
+    }catch(e){}finally{busy=false;}}
+  function bar(v){if(document.getElementById('updbar'))return;const b=document.createElement('div');b.id='updbar';
+    b.style.cssText='position:fixed;left:50%;transform:translateX(-50%);bottom:calc(12px + env(safe-area-inset-bottom));z-index:99999;background:#2a1530;color:#f3e6c4;border:2px solid #d9a441;border-radius:10px;padding:10px 14px;font:14px system-ui,sans-serif;display:flex;gap:10px;align-items:center;box-shadow:0 4px 18px #000a;max-width:92vw';
+    b.innerHTML='<span>Update '+v+' is downloaded. It starts next time you open the game.</span><button style="background:#d9a441;color:#150b17;border:0;border-radius:6px;padding:6px 12px;font-weight:700;cursor:pointer">Restart now</button><button style="background:none;color:#f3e6c4;border:0;cursor:pointer;font-size:16px" title="Later">✕</button>';
+    const [,go,x]=b.children;go.onclick=()=>{try{if(typeof window.__saveNow==='function')window.__saveNow();}catch(e){}location.reload();};x.onclick=()=>b.remove();document.body.appendChild(b);}
+  setTimeout(check,5000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)check();});setInterval(check,30*60*1000);
+})();
+})();
+</script>
+<script>
 (()=>{
 'use strict';
+if(window.__SKIPMAIN){window.__SKIPMAIN=0;return;}// v0.4.6: a newer downloaded build is about to replace this one (liveboot.js)
 // =================== CONFIG: every tunable number in one place (Beta v0.4.0, Phase 11) ===================
 // This file loads FIRST. Changing a value here changes the game; nothing else in the code needs to be touched.
 // Rarity colours live with their tables (ITEM_TIERS in data.js, tier colours in tiers.js); heroes, skills, monsters, items, natures, the type chart,
@@ -1046,13 +1101,14 @@ const SMALL_PARTY={stages:2,hp:[.55,.85],pow:[.6,.88]};
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.4.5";
+const APP_VER="0.4.6";
 
 // =================== VERSION ===================
 // The one public version string. Patch (0.1.x) for fixes and balance, minor (0.x.0) for new systems.
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.4.6',['The Android app now updates itself: it downloads each new version in the background and starts it the next time you open the game, or straight away with Restart now. Saves and sign in stay as they are. If a new version ever fails to start, the app goes back to the version it was installed with.']],
  ['Beta v0.4.5',['A full orchestral soundtrack: every track is composed around one theme, the Meridian, with strings, harp, woodwinds, brass, choir, organ and orchestral percussion. Towns and fields change with day and night, every tileset has its own field arrangement, Calamity realms get their own, and a relit realm plays brighter.','Battles, elites, Scourges and the three phase Calamity fight each have their own music. A tension layer comes in when someone is under 30% HP, boss phases add a layer, and roamers chasing you in a dungeon raise the tension too. After a normal battle the field music picks up where it left off.','Jingles for level ups, recruits, quests, faction ranks, items, inn rests and relit beacons.','New sound effects for every weapon family, element, hit, heal, buff, debuff, Limit Break, summon, boss phase and menu, plus quiet footsteps on Mid or High.','Ambience: wind, birds, crickets, waves, rain and thunder, drips, a town murmur, embers and a Calamity hum. Settings > Ambience, quiet by default.','Settings: Music style (Orchestral or Classic chiptune) and Credits. Records > Music Room plays every track you have heard.']],
  ['Beta v0.4.3',['Capes: a fourth equipment slot for every class, sold at the Smithy beside armor and shown on your hero. Boss fights were re-tuned around them.','Before you play on a new version, the game offers to export your saves as a backup.','Fallen heroes earn no XP. Wins mostly on auto pay 66% XP and gold, and auto deals 85% damage. Random battles are a little rarer at every setting and never come within 8 steps of the last one.','After a boss you stay in the dungeon; its Echo appears once you have left and come back. A big boss HP bar runs along the top of boss and miniboss fights. Echoes pay a little more.','Every wayfarer has a rival of their own. Twenty new minibosses, dealt out so a journey rarely meets the same one twice. Travel packs from traders roll their contents.','Tempering lists only what can still be tempered, rarest first. Detonator skills say which primes they set off. The Tamer\'s Stick measures against the Bestiary as listed.','Much easier early game: regular foes are softer in every realm and much softer in the first two, there are no pack tactics in the first two realms, heroes recover more HP after each win early on, the world grows tougher only half as fast in the field, and the first two Scourges hit less hard. You begin with 400 gold, gold drops are up and shop prices down. Auto now deals 85% damage and pays 66%.','Twenty-four starters (three per class, three per element) for many more starting draws. Beat a wayfarer in a duel and they wait for you at the tavern. Accept all and Claim all buttons on the Quest Board, bounties and faction missions. Back to the main menu from Settings. The Inn closes after you rest. Town gates always meet a road with nothing in the way.','Fixes: Space at the Inn no longer puts you straight to bed, and the fortress gatehouse no longer covers your hero. Personal rewards, fortress charms and The Steady Hand charm re-tuned.']],
  ['Beta v0.4.1',['Fix and rebalance pass. Fixes: challenge fights no longer freeze, mimics and props never block paths, shield pips and draw order fixed, indoor maps ignore weather, dungeon entrances and levers placed properly, fewer east exits, map back button, latest input wins, auto settings saved, Records opens on Journey.','Rules: fallen heroes stay down until revived; Poison, Curse and boss Wounds last past the fight; weapon types rebalanced against beast and armored foes; Auto is banned in elite, miniboss and challenge fights and plays simpler; parties can be smaller than six; Lore in the battle menu; weather and time tags always visible; weather now falls in towns too.','Balance: tougher packs, bosses scale toward your party level and grow with every boss defeated, echo levels follow your party, small parties face softer foes, gold and XP trimmed and prices raised.','World: sixteen realms (twelve standard, four Calamity realms), each with its own look, monsters, weather, townsfolk and quests. A living Scourge or Calamity changes its realm until it falls. Visible foes roam the dungeons, side fortresses join the side caves, and most caves and fortresses end in a miniboss. Dusk and dawn look new.','Also: wayfarer challenge wording, start with one to three wayfarers, Gear menu is now Backpack, shop and craft lists sort by rarity with filters, Craft only tag, a dynamic title screen, NPCs with more to say, a sixth faction (The Steady Hand), personal quest rewards in three slots, and new item sprites.']],
@@ -6919,7 +6975,9 @@ function sfx(k){
 //   tracks  : compiled from the score in musicdata.js; intro once, then a seamless loop; stems fade in and out live
 //   moves   : 1.2 s crossfades, a battle stinger, field and dungeon tracks resume where they left off, ducking for big moments
 const AU2={on:false,ctx:null,g:null,inst:{},loading:{},failed:0,fmt:'ogg',voices:[],cur:null,old:[],pos:{},room:'hall',heard:null,toastOnce:0,lastSync:0};
-const AUDIO_BASE='audio/';
+const AUDIO_BASE='audio/',AUDIO_LIVE='https://synxs1n.github.io/Project-Wayfarers-Beta-/audio/';
+// the packed copy first; a live-updated Android build can need an instrument its APK never had, so it falls back to the site
+function au2Fetch(f){return fetch(AUDIO_BASE+f).then(r=>{if(r.ok)return r;throw 0;}).catch(()=>fetch(AUDIO_LIVE+f).then(r=>{if(!r.ok)throw new Error(f+' '+r.status);return r;}));}
 const VOICE_CAP=48;
 // ---------- graph ----------
 function au2Graph(ctx){
@@ -6955,10 +7013,10 @@ const INSTP={strings:{a:.09,r:.45,pan:-.15},tremolo:{a:.06,r:.35,pan:.1},pizz:{a
 const CORE_INST=['strings','harp','flute','horn','timpani','choir'];
 let INST_MAN=null;
 function au2Fmt(){try{const a=document.createElement('audio');return a.canPlayType('audio/ogg; codecs="vorbis"')?'ogg':'mp3';}catch(e){return 'mp3';}}
-async function au2Man(){if(INST_MAN)return INST_MAN;const r=await fetch(AUDIO_BASE+'inst.json');if(!r.ok)throw new Error('inst.json '+r.status);return INST_MAN=await r.json();}
+async function au2Man(){if(INST_MAN)return INST_MAN;const r=await au2Fetch('inst.json');return INST_MAN=await r.json();}
 async function au2Load(name,ctx){ctx=ctx||AU2.ctx;if(AU2.inst[name])return AU2.inst[name];if(AU2.loading[name])return AU2.loading[name];
   return AU2.loading[name]=(async()=>{const man=await au2Man(),M=man[name];if(!M)throw new Error('no instrument '+name);
-    const r=await fetch(AUDIO_BASE+name+'.'+AU2.fmt);if(!r.ok)throw new Error(name+' '+r.status);const ab=await r.arrayBuffer();
+    const r=await au2Fetch(name+'.'+AU2.fmt);const ab=await r.arrayBuffer();
     const buf=await new Promise((ok,no)=>{try{const p=ctx.decodeAudioData(ab,ok,no);if(p&&p.then)p.then(ok,no);}catch(e){no(e);}});
     // mp3 adds a little encoder delay: find where the first note really starts and shift every slot by it
     const d=buf.getChannelData(0),sr=buf.sampleRate;let off=0;const lim=Math.min(d.length,Math.floor(sr*.2));let pk=0;for(let i=0;i<lim;i++)pk=Math.max(pk,Math.abs(d[i]));
@@ -12727,6 +12785,7 @@ setTimeout(boot,300);
 })();
 
 // Update prompt: when the live site has a newer version than the one running, offer a one tap reload.
+window.__saveNow=()=>{try{if(G&&!G.daily)saveGame();}catch(e){}};// the Android live update saves before it restarts (liveboot.js)
 (function(){
   const NATIVE=!!window.androidBridge;
   const LIVE='https://synxs1n.github.io/Project-Wayfarers-Beta-/';

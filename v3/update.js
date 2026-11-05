@@ -1,4 +1,5 @@
 // Update prompt: when the live site has a newer version than the one running, offer a one tap reload.
+window.__saveNow=()=>{try{if(G&&!G.daily)saveGame();}catch(e){}};// the Android live update saves before it restarts (liveboot.js)
 (function(){
   const NATIVE=!!window.androidBridge;
   const LIVE='https://synxs1n.github.io/Project-Wayfarers-Beta-/';

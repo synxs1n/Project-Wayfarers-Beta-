@@ -7,7 +7,9 @@
 //   tracks  : compiled from the score in musicdata.js; intro once, then a seamless loop; stems fade in and out live
 //   moves   : 1.2 s crossfades, a battle stinger, field and dungeon tracks resume where they left off, ducking for big moments
 const AU2={on:false,ctx:null,g:null,inst:{},loading:{},failed:0,fmt:'ogg',voices:[],cur:null,old:[],pos:{},room:'hall',heard:null,toastOnce:0,lastSync:0};
-const AUDIO_BASE='audio/';
+const AUDIO_BASE='audio/',AUDIO_LIVE='https://synxs1n.github.io/Project-Wayfarers-Beta-/audio/';
+// the packed copy first; a live-updated Android build can need an instrument its APK never had, so it falls back to the site
+function au2Fetch(f){return fetch(AUDIO_BASE+f).then(r=>{if(r.ok)return r;throw 0;}).catch(()=>fetch(AUDIO_LIVE+f).then(r=>{if(!r.ok)throw new Error(f+' '+r.status);return r;}));}
 const VOICE_CAP=48;
 // ---------- graph ----------
 function au2Graph(ctx){
@@ -43,10 +45,10 @@ const INSTP={strings:{a:.09,r:.45,pan:-.15},tremolo:{a:.06,r:.35,pan:.1},pizz:{a
 const CORE_INST=['strings','harp','flute','horn','timpani','choir'];
 let INST_MAN=null;
 function au2Fmt(){try{const a=document.createElement('audio');return a.canPlayType('audio/ogg; codecs="vorbis"')?'ogg':'mp3';}catch(e){return 'mp3';}}
-async function au2Man(){if(INST_MAN)return INST_MAN;const r=await fetch(AUDIO_BASE+'inst.json');if(!r.ok)throw new Error('inst.json '+r.status);return INST_MAN=await r.json();}
+async function au2Man(){if(INST_MAN)return INST_MAN;const r=await au2Fetch('inst.json');return INST_MAN=await r.json();}
 async function au2Load(name,ctx){ctx=ctx||AU2.ctx;if(AU2.inst[name])return AU2.inst[name];if(AU2.loading[name])return AU2.loading[name];
   return AU2.loading[name]=(async()=>{const man=await au2Man(),M=man[name];if(!M)throw new Error('no instrument '+name);
-    const r=await fetch(AUDIO_BASE+name+'.'+AU2.fmt);if(!r.ok)throw new Error(name+' '+r.status);const ab=await r.arrayBuffer();
+    const r=await au2Fetch(name+'.'+AU2.fmt);const ab=await r.arrayBuffer();
     const buf=await new Promise((ok,no)=>{try{const p=ctx.decodeAudioData(ab,ok,no);if(p&&p.then)p.then(ok,no);}catch(e){no(e);}});
     // mp3 adds a little encoder delay: find where the first note really starts and shift every slot by it
     const d=buf.getChannelData(0),sr=buf.sampleRate;let off=0;const lim=Math.min(d.length,Math.floor(sr*.2));let pk=0;for(let i=0;i<lim;i++)pk=Math.max(pk,Math.abs(d[i]));

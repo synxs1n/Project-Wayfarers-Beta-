@@ -1,6 +1,6 @@
 # Project Aurelis: Wayfarers (Beta)
 
-Turn-based pixel art medieval fantasy RPG. Beta v0.4.5.
+Turn-based pixel art medieval fantasy RPG. Beta v0.4.6.
 
 Play in browser (installable as an app from the browser menu): https://synxs1n.github.io/Project-Wayfarers-Beta-/
 
@@ -21,6 +21,8 @@ Build everything with `sh build.sh`. Changing `RELEASE_VERSION` (for example to 
 5. Report the play link: https://synxs1n.github.io/Project-Wayfarers-Beta-/
 
 Do not delete the `latest` release; the app update links use it.
+
+The Android app updates itself from the live site (`v3/liveboot.js`): it downloads a newer `index.html` into its own cache and swaps it in on the next launch, falling back to the packed build if that version fails to start. Only a change to the native shell (plugins, icons, permissions) needs a new APK. Test: `node tools/chrome/liveupdate.js`.
 
 ## Audio
 
