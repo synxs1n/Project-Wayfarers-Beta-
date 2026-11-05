@@ -293,7 +293,7 @@ function mBoss(s){
     `<button class="btn" data-act="closeModal">Not yet</button><button class="btn gold" data-act="fightBoss" data-arg="${s}">Fight</button>`);
 }
 function mResult(i){
-  return `<div class="modal"><div class="panel box"><h2>Victory</h2>
+  return `<div class="modal"><div class="panel box result"><h2>Victory</h2>
     ${(i.learn||[]).length?`<div class="learntop"><h4>New skills</h4><div class="rows">${i.learn.map(o=>`<div class="row learnr">${learnLine(o)}</div>`).join('')}</div></div>`:''}
     <div class="rows"><div class="row"><b>Experience</b><span>+${fmt(i.xp)}</span></div><div class="row"><b>Gold</b><span>+${fmt(i.gold)}</span></div>
     ${Object.keys(i.mats).length?`<div class="row"><b>Materials</b><span>${Object.keys(i.mats).map(k=>i.mats[k]+' '+MATS[k]).join(', ')}</span></div>`:''}
