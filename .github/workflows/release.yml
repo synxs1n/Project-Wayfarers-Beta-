@@ -37,6 +37,10 @@ jobs:
           cp android-google-services.json android/app/google-services.json
           python3 - <<'PY'
           import re
+          p='android/variables.gradle';v=open(p).read()
+          if 'rgcfaIncludeGoogle' not in v:
+              v=v.replace('ext {','ext {\n    rgcfaIncludeGoogle = true',1)
+              open(p,'w').write(v)
           p='android/build.gradle';s=open(p).read()
           if 'google-services' not in s:
               s=re.sub(r"(dependencies\s*\{)",r"\1\n        classpath 'com.google.gms:google-services:4.4.2'",s,count=1)

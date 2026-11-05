@@ -15,7 +15,8 @@
     "@capacitor/android": "^6.1.2",
     "@capacitor/cli": "^6.1.2",
     "@capacitor/core": "^6.1.2",
-    "firebase": "^10.12.2"
+    "firebase": "^10.12.2",
+    "@capacitor-firebase/authentication": "^6.3.1"
   },
   "devDependencies": {
     "electron": "^31.7.7",

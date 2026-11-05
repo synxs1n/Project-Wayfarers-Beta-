@@ -3,5 +3,12 @@
   "appName": "Wayfarers",
   "webDir": "www",
   "backgroundColor": "#150b17",
-  "plugins": {}
+  "plugins": {
+    "FirebaseAuthentication": {
+      "skipNativeAuth": true,
+      "providers": [
+        "google.com"
+      ]
+    }
+  }
 }
