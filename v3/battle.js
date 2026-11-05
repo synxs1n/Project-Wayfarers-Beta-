@@ -151,6 +151,8 @@ function battleFrame(now){
     for(let i=0;i<16;i++){const a=i/16*Math.PI*2+p*1.5,r0=10+p*30,r1=r0+40+p*90;ctx.strokeStyle=i%2?col:'#fff2a0';ctx.lineWidth=i%2?2:1;ctx.beginPath();ctx.moveTo(cx+Math.cos(a)*r0,cy+Math.sin(a)*r0);ctx.lineTo(cx+Math.cos(a)*r1,cy+Math.sin(a)*r1);ctx.stroke();}
     ctx.globalAlpha=(1-p)*.35;ctx.fillStyle='#fff2a0';ctx.beginPath();ctx.arc(cx,cy,8+p*60,0,7);ctx.fill();ctx.restore();if(p<.05)BV.shake={t:now,life:500,amp:4};}}
   if(B.weather&&B.weather!=='clear')weatherFX(ctx,B.weather,W,H,now,true);
+  // v0.5.8: bars, pips and element badges last, over every sprite, spell particle and weather (unitHud)
+  units.forEach(({u,b})=>{try{unitHud(ctx,u,b,now);}catch(e){}});
   ctx.restore();
   if(BV.flash){const p=(now-BV.flash.t)/BV.flash.life;if(p>=0&&p<1){ctx.fillStyle=BV.flash.col;ctx.globalAlpha=1-p;ctx.fillRect(0,0,W,H);ctx.globalAlpha=1;}else if(p>=1)BV.flash=null;}
 }
@@ -214,7 +216,12 @@ function drawUnit(ctx,u,b,now,tgMode){
   if(has(u,'regen')&&Math.floor(now/300)%2){ctx.fillStyle='#7aff8a';ctx.fillRect(x-6+Math.floor(now/300)%12,y-10-Math.floor(now/50)%12,1,1);}
   if(has(u,'haste')){ctx.fillStyle='rgba(122,255,208,.6)';for(let i=0;i<3;i++)ctx.fillRect(x-dir*(10+((now/30+i*7)%8)),y-8-i*7,5,1);}
   if(has(u,'slow')){ctx.fillStyle='rgba(122,168,216,.5)';ctx.fillRect(x-b.w*.3,y-2,b.w*.6,1);}
-  // bars, shields and marks
+  // v0.5.8: the HP bar, shield pips, primed mark and element badges draw in a second pass after every sprite (unitHud),
+  // so a unit standing in front can no longer cover another unit's bar or element icon
+  u._hud={x,y};
+}
+// v0.5.8: one unit's HUD (bar, limit bar, shield pips, primed mark); battleui.js adds the element badges by wrapping it
+function unitHud(ctx,u,b,now){const hero=u.side==='p';const x=(u._hud?u._hud.x:b.x),y=(u._hud?u._hud.y:b.y);
   const bw=hero?24:Math.min(40,Math.round(b.w*.66)),bx=Math.round(x-bw/2),by=y+3;
   if(u.hp>0){
     u._dh=u._dh==null?u.hp:u._dh+(u.hp-u._dh)*Math.min(1,.18);if(Math.abs(u._dh-u.hp)<.5)u._dh=u.hp;
@@ -234,6 +241,7 @@ function drawUnit(ctx,u,b,now,tgMode){
 }
   }
 }
+
 function drawParts(ctx,now){
   const keep=[];
   BV.P.forEach(p=>{

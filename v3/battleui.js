@@ -23,8 +23,8 @@ function elb(el){return `<img class="elb" src="${cvURL('elb:'+el,()=>elShapeCv(e
 function elbs(list){return `<span class="elbs">${(list||[]).map(elb).join('')}</span>`;}
 function elbNamed(list){return (list||[]).map(el=>`<span class="elbn">${elb(el)} ${esc(EL[el]||el)}</span>`).join(' ');}
 // stage: shape badges next to each unit's HP bar, always visible. They sit left of the bar, or right of it when the left edge is too close.
-{const du0=drawUnit;drawUnit=function(ctx,u,b,now,tg){du0.apply(this,arguments);
-  try{if(!u||u.hp<=0||!u.el||!u.el.length)return;const hero=u.side==='p',bw=hero?24:Math.min(40,Math.round(b.w*.66)),x=b.x,y=b.y,bx=Math.round(x-bw/2),by=y+3,n=u.el.length,tw=n*10;
+{const uh0=unitHud;unitHud=function(ctx,u,b,now){uh0.apply(this,arguments);
+  try{const x0=u._hud?u._hud.x:b.x,y0=u._hud?u._hud.y:b.y;if(!u||u.hp<=0||!u.el||!u.el.length)return;const hero=u.side==='p',bw=hero?24:Math.min(40,Math.round(b.w*.66)),x=x0,y=y0,bx=Math.round(x-bw/2),by=y+3,n=u.el.length,tw=n*10;
     let sx=bx-tw-1;if(sx<1)sx=Math.min(BL.W-tw-1,bx+bw+2);
     u.el.forEach((el,i)=>ctx.drawImage(elShapeCv(el),sx+i*10,by-4));}catch(e){}};}
 // ----- cards -----
