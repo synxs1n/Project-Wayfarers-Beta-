@@ -7,25 +7,25 @@ ELK.forEach(()=>{});
 ['meadow','coast','cave','snow','heights','void'].forEach(th=>{
   BG['d_'+th]=function(ctx,W,H,R){
     const D=DTHEME[th];
-    gradBands(ctx,0,0,W,Math.floor(H*.62),[D.top,shade(D.w[3],1.2),D.w[1],D.w[0]]);
+    gradBands(ctx,0,0,W,bgGY(H),[D.top,shade(D.w[3],1.2),D.w[1],D.w[0]]);
     // back wall bricks
-    for(let y=Math.floor(H*.12);y<H*.6;y+=6){const off=(y/6)%2?0:7;for(let x=-off;x<W;x+=14){ctx.fillStyle=R()<.3?D.w[2]:R()<.5?D.w[0]:shade(D.w[0],.9);ctx.fillRect(x,y,13,5);}}
+    for(let y=Math.floor(H*.12);y<bgGY(H)-2;y+=6){const off=(y/6)%2?0:7;for(let x=-off;x<W;x+=14){ctx.fillStyle=R()<.3?D.w[2]:R()<.5?D.w[0]:shade(D.w[0],.9);ctx.fillRect(x,y,13,5);}}
     ctx.fillStyle='rgba(0,0,0,.35)';ctx.fillRect(0,0,W,Math.floor(H*.14));
     // pillars and arches
-    for(let i=0;i<4;i++){const x=Math.floor(W*(.08+i*.28));ctx.fillStyle=D.w[3];ctx.fillRect(x-1,0,12,Math.floor(H*.62));ctx.fillStyle=D.w[2];ctx.fillRect(x,0,10,Math.floor(H*.62));ctx.fillStyle=D.w[0];ctx.fillRect(x+7,0,3,Math.floor(H*.62));ctx.fillStyle=D.acc;ctx.fillRect(x+3,Math.floor(H*.3),4,4);}
-    for(let i=0;i<3;i++){const x=Math.floor(W*(.22+i*.28)),y=Math.floor(H*.3);ctx.fillStyle='#2a1a10';ctx.fillRect(x,y,2,6);ctx.fillStyle='#ffb04a';ctx.fillRect(x-1,y-4,4,4);ctx.fillStyle='#fff0a0';ctx.fillRect(x,y-3,2,2);}
+    for(let i=0;i<4;i++){const x=Math.floor(W*(.08+i*.28));ctx.fillStyle=D.w[3];ctx.fillRect(x-1,0,12,bgGY(H));ctx.fillStyle=D.w[2];ctx.fillRect(x,0,10,bgGY(H));ctx.fillStyle=D.w[0];ctx.fillRect(x+7,0,3,bgGY(H));ctx.fillStyle=D.acc;ctx.fillRect(x+3,Math.floor(H*.24),4,4);}
+    for(let i=0;i<3;i++){const x=Math.floor(W*(.22+i*.28)),y=Math.floor(H*.24);ctx.fillStyle='#2a1a10';ctx.fillRect(x,y,2,6);ctx.fillStyle='#ffb04a';ctx.fillRect(x-1,y-4,4,4);ctx.fillStyle='#fff0a0';ctx.fillRect(x,y-3,2,2);}
     if(th==='snow')for(let x=0;x<W;x+=4){ctx.fillStyle='#e8faff';ctx.fillRect(x,Math.floor(H*.14),2,2+((x*7)%5));}
     if(th==='meadow')for(let i=0;i<14;i++){const x=Math.floor(R()*W);ctx.fillStyle='#4a3a22';ctx.fillRect(x,Math.floor(H*.14),1,6+Math.floor(R()*14));ctx.fillStyle=D.acc;ctx.fillRect(x-1,Math.floor(H*.14),3,2);}
-    groundPlane(ctx,W,H,Math.floor(H*.62),[D.f[2],D.f[0],D.f[1],D.f[3]],R,D.f[3]);
-    for(let i=0;i<8;i++){const x=Math.floor(R()*W),y=Math.floor(H*.7+R()*H*.25);ctx.fillStyle=D.acc;ctx.globalAlpha=.5;ctx.fillRect(x,y,3,1);ctx.globalAlpha=1;}
+    groundPlane(ctx,W,H,bgGY(H),[D.f[2],D.f[0],D.f[1],D.f[3]],R,D.f[3]);
+    for(let i=0;i<8;i++){const x=Math.floor(R()*W),y=Math.floor(bgGY(H)+4+R()*(H-bgGY(H)-6));ctx.fillStyle=D.acc;ctx.globalAlpha=.5;ctx.fillRect(x,y,3,1);ctx.globalAlpha=1;}
   };
 });
 BG.arena=function(ctx,W,H,R){
   gradBands(ctx,0,0,W,H,['#3a5a9a','#6a8ac0','#c8b090','#a88a60']);
-  for(let i=0;i<3;i++){const y=Math.floor(H*(.18+i*.12));ctx.fillStyle=['#6a4a3a','#7a5a42','#8a6a4a'][i];ctx.fillRect(0,y,W,Math.floor(H*.12));for(let x=0;x<W;x+=3){ctx.fillStyle=['#e8c0a0','#c8805a','#f0d080','#5a7ac8','#c84a4a'][Math.floor(R()*5)];ctx.fillRect(x,y+1+Math.floor(R()*3),2,2);}}
-  for(let x=6;x<W;x+=40){ctx.fillStyle='#c83a3a';ctx.fillRect(x,Math.floor(H*.18),8,14);ctx.fillStyle='#f0c050';ctx.fillRect(x+3,Math.floor(H*.18)+4,2,2);}
-  ctx.fillStyle='#8a7a6a';ctx.fillRect(0,Math.floor(H*.54),W,Math.floor(H*.08));
-  groundPlane(ctx,W,H,Math.floor(H*.62),['#e0c890','#d0b47a','#c0a068','#a88a58'],R,'#b89a68');
+  for(let i=0;i<3;i++){const y=Math.floor(H*(.1+i*.11));ctx.fillStyle=['#6a4a3a','#7a5a42','#8a6a4a'][i];ctx.fillRect(0,y,W,Math.floor(H*.11));for(let x=0;x<W;x+=3){ctx.fillStyle=['#e8c0a0','#c8805a','#f0d080','#5a7ac8','#c84a4a'][Math.floor(R()*5)];ctx.fillRect(x,y+1+Math.floor(R()*3),2,2);}}
+  for(let x=6;x<W;x+=40){ctx.fillStyle='#c83a3a';ctx.fillRect(x,Math.floor(H*.1),8,14);ctx.fillStyle='#f0c050';ctx.fillRect(x+3,Math.floor(H*.1)+4,2,2);}
+  ctx.fillStyle='#8a7a6a';ctx.fillRect(0,bgGY(H)-Math.floor(H*.07),W,Math.floor(H*.07));
+  groundPlane(ctx,W,H,bgGY(H),['#e0c890','#d0b47a','#c0a068','#a88a58'],R,'#b89a68');
 };
 function battleTheme(){if(!B)return 'meadow';const th=ZS(B.stage).theme,k=B.spec.kind;if(k==='arena')return 'arena';if(k==='dungeon'||k==='boss'||k==='echoBoss')return 'd_'+th;return th;}
 // ----- layout -----
@@ -179,7 +179,9 @@ function drawUnit(ctx,u,b,now,tgMode){
   const c=spriteOf(u,walk);
   const breathe=!lying&&u.hp>0&&a>520&&Math.floor(now/(hero?620:760)+b.i*.5)%2===1;
   // shadow
-  ctx.fillStyle='rgba(10,6,24,.3)';const sw=Math.round(Math.min(b.w,40)*.4);ctx.beginPath();ctx.ellipse(x,y,sw,3,0,0,7);ctx.fill();
+  // v0.5.0 2.1: the shadow always sits on the ground plane (b.gy); flying foes hover above theirs with a gentle bob
+  if(b.hov&&u.hp>0)y+=Math.round(Math.sin(now/320+b.i)*1.5);
+  ctx.fillStyle='rgba(10,6,24,.3)';const sw=Math.round(Math.min(b.w,40)*.4);ctx.beginPath();ctx.ellipse(x,b.gy!=null?b.gy+(y-b.y)*(b.hov?0:1):y,b.hov?Math.max(4,sw-2):sw,b.hov?2:3,0,0,7);ctx.fill();
   ctx.globalAlpha=alpha;
   // casting aura
   if(a<520&&u.hp>0&&u.actKind&&u.actKind!=='phys'){const col=ELC[u.actEl]||(u.actKind==='heal'?'#7aff8a':'#fff6a0');const g=ctx.createRadialGradient(x,y-b.h*.45,2,x,y-b.h*.45,b.h*.7);g.addColorStop(0,col+'88');g.addColorStop(1,col+'00');ctx.fillStyle=g;ctx.fillRect(x-b.h,y-b.h*1.2,b.h*2,b.h*1.4);}
