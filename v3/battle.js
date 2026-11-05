@@ -29,7 +29,10 @@ BG.arena=function(ctx,W,H,R){
 };
 function battleTheme(){if(!B)return 'meadow';const th=ZS(B.stage).theme,k=B.spec.kind;if(k==='arena')return 'arena';if(k==='dungeon'||k==='boss'||k==='echoBoss')return 'd_'+th;return th;}
 // ----- layout -----
-function slotsFor(side,n,boss){const r=slotsFor0(side,n,boss);return BL.W<260?r.map(([x,y])=>[x,+(.06+y*.86).toFixed(3)]):r;}
+// v0.6.3: slots come from B3.slots (config.js) as [x share, depth on the ground band 0..1]; depth d lands at BATTLE_GROUND top + d*(bot-top)
+// through p2GroundY (p2world.js), so feet stay on the ground plane (2.1). The old tables (slotsFor0) are kept for reference.
+function slotsFor(side,n,boss){const T=B3.slots[BL.W<260?'tall':'wide'],t=side==='p'?T.p:boss?T.boss[Math.min(3,n)-1]:T.e[Math.min(5,n)-1];
+  const r=t.map(([x,d])=>[x,+(.48+d*.49).toFixed(4)]);while(r.length<n)r.push(r[r.length-1]);return r;}
 function slotsFor0(side,n,boss){
   if(BL.W<260){ // phones: taller stage, more vertical spread
     if(side==='e'){
@@ -53,18 +56,20 @@ function battleMode(){const vw=window.innerWidth,vh=window.visualViewport?window
 function layoutBattle(){
   const wrap=$('bwrap');if(!wrap)return;
   const bat=wrap.parentNode,mode=battleMode();
-  bat.classList.toggle('bside',mode==='side');wrap.style.width='';
-  const w=wrap.clientWidth||window.innerWidth-32,cv=$('bcv'),st=$('bstage');
+  bat.classList.toggle('bside',mode==='side');bat.classList.toggle('m-tall',mode==='tall');bat.classList.toggle('m-wide',mode==='wide');wrap.style.width='';
+  // v0.6.3: on landscape phones the stage column is sized from the screen (the right column keeps at least B3.sideCol px)
+  const w=mode==='side'&&bat.clientWidth?Math.max(200,Math.min(bat.clientWidth-B3.sideCol,bat.clientWidth*.62)):(wrap.clientWidth||window.innerWidth-32),cv=$('bcv'),st=$('bstage');
   if(mode==='tall'){
     const sc=2;BL={W:Math.floor(w/sc),H:BL.fitH?BL.fitH:(w<520?196:160),sc,fitH:BL.fitH,short:false,mode};
     cv.width=BL.W;cv.height=BL.H;cv.style.width=BL.W*sc+'px';cv.style.height=BL.H*sc+'px';wrap.style.height=BL.H*sc+'px';
     st.style.width=BL.W+'px';st.style.height=BL.H+'px';st.style.transform=`scale(${sc})`;return;}
-  const vh=window.visualViewport?window.visualViewport.height:window.innerHeight,hd=$('hdr')?$('hdr').offsetHeight:0,od=$('border')?$('border').offsetHeight:0,bb=document.querySelector('.bbottom');
-  const budget=mode==='side'?vh-hd-od-34:vh-hd-od-(bb?bb.offsetHeight:0)-34;
-  let sc=Math.min((w-8)/WIDE_W,Math.max(budget-8,0)/WIDE_H);sc=Math.max(mode==='side'?1.25:2,Math.min(3,Math.floor(sc*4)/4));
+  const vh=window.visualViewport?window.visualViewport.height:window.innerHeight,hd=$('hdr')?$('hdr').offsetHeight:0,od=(mode==='side'?0:($('border')?$('border').offsetHeight:0))+b3Extra(mode),bb=document.querySelector('.bbottom');
+  // v0.6.3: the wide stage leaves room for the commands (the cards beside them may run on and scroll)
+  const cmdEl=$('bcmd'),budget=mode==='side'?vh-hd-od-34:vh-hd-od-(cmdEl&&cmdEl.offsetHeight?cmdEl.offsetHeight:(bb?bb.offsetHeight:0))-34;
+  let sc=Math.min((w-8)/WIDE_W,Math.max(budget-8,0)/WIDE_H);sc=Math.max(mode==='side'?1.25:B3.minSc,Math.min(3,Math.floor(sc*4)/4));
   BL={W:WIDE_W,H:WIDE_H,sc,fitH:0,short:false,mode};
   cv.width=WIDE_W;cv.height=WIDE_H;cv.style.width=WIDE_W*sc+'px';cv.style.height=WIDE_H*sc+'px';
-  wrap.style.width=Math.round(WIDE_W*sc+8)+'px';wrap.style.height=Math.round(WIDE_H*sc+8)+'px';
+  wrap.style.width=Math.round(WIDE_W*sc+8)+'px';wrap.style.height=Math.round(WIDE_H*sc+8)+'px';bat.style.setProperty('--b3w',Math.round(WIDE_W*sc+8)+'px');
   st.style.width=WIDE_W+'px';st.style.height=WIDE_H+'px';st.style.transform=`scale(${sc})`;
 }
 function spriteOf(u,walk){if(u.heroArt)return imgOf('bhe:'+u.heroArt,()=>heroCanvas(u.heroArt,walk));return u.side==='p'?imgOf('bh:'+u.id+(walk?':w':'')+lookKey(u.id),()=>heroCanvas(u.id,walk)):imgOf('bm:'+u.art,()=>monCanvas(u.art));}
@@ -144,7 +149,7 @@ function battleFrame(now){
   const units=B.en.map(u=>({u,b:unitBox(u)})).concat(B.front.map(u=>({u,b:unitBox(u)}))).filter(o=>o.b).sort((a,b)=>a.b.y-b.b.y);
   units.forEach(({u,b})=>drawUnit(ctx,u,b,now,tgMode));
   // turn arrow
-  if(B.cur&&(B.mode==='cmd'||B.mode==='enemy')&&B.cur.hp>0){const b=unitBox(B.cur);if(b){const y=b.y-b.h-6+Math.round(Math.sin(now/140)*2);ctx.fillStyle='#150b17';ctx.fillRect(b.x-4,y-1,9,5);ctx.fillStyle=B.cur.side==='p'?'#ffd04a':'#ff6a6a';ctx.fillRect(b.x-3,y,7,1);ctx.fillRect(b.x-2,y+1,5,1);ctx.fillRect(b.x-1,y+2,3,1);ctx.fillRect(b.x,y+3,1,1);}}
+  // v0.6.3: the turn arrow sits where the stage layout put it (b3Lay), drawn with the HUD below
   drawParts(ctx,now);
   // Limit II: a golden sunburst with the hero's element behind it
   if(B.lim2T){const p=(Date.now()-B.lim2T.t)/1100;if(p>=1)B.lim2T=null;else{const cx=W/2,cy=H*.45,col=ELC[B.lim2T.el]||'#ffd04a';ctx.save();ctx.globalAlpha=(1-p)*.75;
@@ -152,7 +157,7 @@ function battleFrame(now){
     ctx.globalAlpha=(1-p)*.35;ctx.fillStyle='#fff2a0';ctx.beginPath();ctx.arc(cx,cy,8+p*60,0,7);ctx.fill();ctx.restore();if(p<.05)BV.shake={t:now,life:500,amp:4};}}
   if(B.weather&&B.weather!=='clear')weatherFX(ctx,B.weather,W,H,now,true);
   // v0.5.8: bars, pips and element badges last, over every sprite, spell particle and weather (unitHud)
-  units.forEach(({u,b})=>{try{unitHud(ctx,u,b,now);}catch(e){}});
+  units.forEach(({u,b})=>{try{unitHud(ctx,u,b,now);}catch(e){}});try{b3Arrow(ctx,now);}catch(e){}
   ctx.restore();
   if(BV.flash){const p=(now-BV.flash.t)/BV.flash.life;if(p>=0&&p<1){ctx.fillStyle=BV.flash.col;ctx.globalAlpha=1-p;ctx.fillRect(0,0,W,H);ctx.globalAlpha=1;}else if(p>=1)BV.flash=null;}
 }
@@ -204,7 +209,11 @@ function drawUnit(ctx,u,b,now,tgMode){
   if(hero&&typeof stickGlowOf==='function'){const gc=stickGlowOf(G.roster[u.id]);if(gc){const p=.5+.5*Math.sin(now/240);ctx.globalAlpha=.2+.25*p;ctx.fillStyle=gc;ctx.beginPath();ctx.ellipse(x,y-b.h*.45,b.w*.45+p*2,b.h*.5+p*2,0,0,7);ctx.fill();ctx.globalAlpha=alpha;}}
   draw(c);
   if(white)draw(whiteOf(c,(hero?'h':'m')+(u.id||u.art)));
-  if(tgMode&&targetable(u)){ctx.globalAlpha=.22+.18*Math.sin(now/120);draw(whiteOf(c,(hero?'h':'m')+(u.id||u.art)));ctx.globalAlpha=alpha;}
+  // v0.6.3: a foe the aimed detonator sets off glows in the detonating element's colour, with a ring at its feet; other targets pulse white
+  if(tgMode&&targetable(u)){const dg=typeof detGlow==='function'?detGlow(u):null,k=(hero?'h':'m')+(u.id||u.art);
+    if(dg){const p=.5+.5*Math.sin(now/110);ctx.globalAlpha=.3+.3*p;draw(whiteOf(c,k,dg));ctx.globalAlpha=.55+.35*p;ctx.strokeStyle=dg;ctx.lineWidth=1;const gy=b.gy!=null?b.gy:b.y,rw=Math.max(8,Math.min(b.w,44)*.42+p*2);
+      ctx.beginPath();ctx.ellipse(b.x,gy,rw,rw*.32,0,0,7);ctx.stroke();ctx.beginPath();ctx.ellipse(b.x,gy,rw*.62,rw*.2,0,0,7);ctx.stroke();ctx.globalAlpha=alpha;}
+    else{ctx.globalAlpha=(B.pend&&B.pend.sk&&B.pend.sk.role==='det'?.12:.22)+.18*Math.sin(now/120);draw(whiteOf(c,k));ctx.globalAlpha=alpha;}}
   if(u.side==='p'&&lbReady(u)&&u.hp>0){ctx.globalAlpha=.25+.2*Math.sin(now/150);draw(whiteOf(c,'lb'+u.id,'#ffd04a'));ctx.globalAlpha=alpha;}
   ctx.globalAlpha=1;
   // status flourishes
@@ -261,7 +270,7 @@ function fitBattle(){
   const mode=battleMode();
   if(mode!=='tall'){const old=BL.sc,om=BL.mode;layoutBattle();if(Math.abs(BL.sc-old)>.01||om!==BL.mode)renderBattle(true);return;}
   const vh=window.visualViewport?window.visualViewport.height:window.innerHeight;
-  const other=($('hdr')?$('hdr').offsetHeight:0)+($('border')?$('border').offsetHeight:0)+(document.querySelector('.bbottom')?document.querySelector('.bbottom').offsetHeight:0)+34;
+  const other=($('hdr')?$('hdr').offsetHeight:0)+($('border')?$('border').offsetHeight:0)+b3Extra('tall')+b3Below()+34;
   const room=vh-other,H=clamp(Math.floor(room/BL.sc),140,230);
   if(BL.mode!=='tall'){layoutBattle();renderBattle(true);return;}
   if(Math.abs(H-BL.H)>6&&!fitBattle.busy){fitBattle.busy=1;BL.fitH=H;layoutBattle();renderBattle(true);setTimeout(()=>{fitBattle.busy=0;},300);}

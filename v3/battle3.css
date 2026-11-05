@@ -1,0 +1,209 @@
+/* =================== Beta v0.6.3: battle screen (battle3.js) =================== */
+/* ----- stage labels: every box is placed by the layout pass (b3Lay) at exactly these sizes, in logical stage px ----- */
+.bstage .b3l{position:absolute;box-sizing:border-box;margin:0;transform:none}
+.bstage .utags.b3l{display:flex;flex-wrap:nowrap;justify-content:flex-start;align-items:stretch;gap:1px;z-index:5;pointer-events:auto}
+.bstage .utags.b3l .sti{flex:none;box-sizing:border-box;width:12px;height:10px;min-width:0;min-height:0;padding:0;justify-content:center;gap:0;border-width:.6px;border-radius:2px;font-size:5px}
+.bstage .utags.b3l .sti .stsym{width:6.5px;height:6.5px}
+.bstage .utags.b3l .sti sub{font-size:4.2px;margin-left:0}
+.bstage .primed.pmin.b3l{display:grid;place-items:center;padding:0;gap:0;border-radius:50%;border:1px solid var(--c);animation:b3bob 1.6s ease-in-out infinite;z-index:6}
+.bstage .primed.pmin.b3l .ico{width:8px;height:8px;margin:0}
+.bstage .primed.pmin.b3l i{right:-1px;bottom:-1px;font-size:4.2px;padding:0 .8px;border-width:.6px}
+@keyframes b3bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-.8px)}}
+html.rm .bstage .primed.pmin.b3l{animation:none}
+@media (prefers-reduced-motion:reduce){.bstage .primed.pmin.b3l{animation:none}}
+.bstage .b3tg{display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;z-index:7;padding:0;border-radius:2px;
+  background:rgba(10,8,20,.62);box-shadow:0 0 0 .5px rgba(255,230,170,.35);overflow:hidden}
+.bstage .b3tg .ename{position:static;transform:none;opacity:1;display:block;font:800 var(--f)/1.2 var(--fb);color:#fff;white-space:nowrap;text-shadow:0 0 1.5px #000}
+.bstage .b3tg .l2{display:flex;gap:1px;justify-content:center;align-items:center;white-space:nowrap}
+.bstage .b3tg .eff{position:static;transform:none;display:inline-flex;align-items:center;gap:.4px;font:800 calc(var(--f)*.92)/1.15 var(--fb);padding:0 1.5px;border-width:.5px;border-radius:1.5px;top:auto;bottom:auto}
+.bstage .b3tg .eff .ico{width:var(--f);height:var(--f)}
+.bstage .b3tg.det{background:rgba(40,16,60,.8);box-shadow:0 0 0 .6px #e8c8ff,0 0 4px rgba(200,150,255,.8)}
+.bstage .b3tg .eff.rx{font-weight:900;color:#fff;border-color:#e8c8ff;background:linear-gradient(90deg,#5a2a8a,#2a1450)}
+.bstage .unit.dethit{outline:none!important;animation:none}
+/* effect texts: the box is the text plus fxRise px of drift on top */
+.fxlayer .fx2.b3fx{display:flex;align-items:flex-end;justify-content:center;box-sizing:border-box;line-height:1;animation-name:b3rise}
+.fxlayer .fx2.b3fx.react b{display:inline-flex;align-items:center;gap:.6px;padding:.5px 1.6px;border:.6px solid #f0dcff;border-radius:2px;
+  background:linear-gradient(90deg,rgba(110,50,170,.92),rgba(46,20,84,.92));color:#fff8ff;font-weight:900;letter-spacing:.1px;box-shadow:0 0 3px rgba(210,160,255,.9);text-shadow:0 0 1px #000}
+.fxlayer .fx2.b3fx.react .ico{width:1em;height:1em}
+@keyframes b3rise{0%{transform:translateY(2px) scale(.7);opacity:0}7%{transform:translateY(0) scale(1.08);opacity:1}15%{transform:none}80%{opacity:1;transform:translateY(-2px)}100%{transform:translateY(-3px);opacity:0}}
+html.rm .fxlayer .fx2.b3fx{animation-name:fade2!important}
+@media (prefers-reduced-motion:reduce){.fxlayer .fx2.b3fx{animation-name:fade2!important}}
+
+/* ----- the screen: boss bar, turn order, stage, log ticker, then cards and commands ----- */
+.battle.b3{display:grid;grid-template-columns:minmax(0,1fr);grid-template-areas:"boss" "order" "stage" "line" "bot";gap:6px;align-items:start}
+.battle.b3 .bossbar{grid-area:boss;padding:4px 10px 6px}
+.battle.b3 .bossbar .bbn{font-size:.9rem}
+.battle.b3 .order{grid-area:order;display:flex;align-items:center;gap:6px;padding:3px 4px 3px 8px;overflow:hidden;min-height:46px;box-sizing:border-box}
+.battle.b3 .order .ocs{display:flex;align-items:center;gap:4px;flex:1 1 auto;min-width:0;overflow-x:auto;scrollbar-width:none}
+.battle.b3 .order .ocs::-webkit-scrollbar{display:none}
+.battle.b3 .order .ocs small{flex:none;padding-right:2px}
+.battle.b3 .order .osky{display:flex;gap:4px;flex:none}
+.battle.b3 .order .wchip{min-height:40px;min-width:40px;padding:0 9px;display:inline-flex;align-items:center;justify-content:center;gap:5px;white-space:nowrap}
+.battle.b3 .order .oc{width:30px;height:30px}
+.battle.b3 .order .oc img{width:48px;height:54px;margin-top:-5px}
+.battle.b3 .order .oc.e img{width:38px;height:38px;margin-top:-4px}
+.battle.b3 .bwrap{grid-area:stage}
+.battle.b3 .bline{grid-area:line;display:flex;align-items:center;gap:6px;min-height:40px;box-sizing:border-box;padding:0 0 0 10px;border:1px solid var(--ui-line-s,rgba(217,180,106,.3));border-left:2px solid var(--ui-gold,#d9b46a);border-radius:4px;background:linear-gradient(90deg,rgba(14,16,28,.92),rgba(20,23,40,.8))}
+.battle.b3 .bline .blog{position:static;display:block;flex:1 1 auto;min-width:0;left:auto;right:auto;top:auto;z-index:auto}
+.battle.b3 .bline .blog p{margin:0;padding:0;background:none;border:0;font-size:.82rem;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#f3e7cc}
+.battle.b3 .bline .blog p.flash{animation:b3logIn .5s ease-out both}
+@keyframes b3logIn{from{color:#ffe08a}to{color:#f3e7cc}}
+.battle.b3 .bline .blogbtn{position:static;flex:none;min-height:40px;min-width:64px;padding:0 10px;font-size:.78rem;border-radius:0 3px 3px 0}
+.battle.b3 .bbottom{grid-area:bot;display:grid;grid-template-columns:minmax(0,1fr);gap:6px;align-items:start}
+.battle.b3 .bbottom .bparty{order:1}
+.battle.b3 .bbottom .cmd{order:2}
+/* ----- cards ----- */
+.battle.b3 .bparty{display:grid;grid-template-columns:minmax(0,1fr);gap:6px}
+.battle.b3 .pgroup{display:block;padding:5px 6px 6px;border-radius:6px}
+.battle.b3 .pgroup>h3{margin:0 0 4px;font-size:.64rem;letter-spacing:.14em;line-height:1}
+.battle.b3 .pgroup.heroes{background:linear-gradient(180deg,rgba(28,34,58,.45),rgba(14,16,28,.3));border:1px solid rgba(217,180,106,.22);box-shadow:0 0 0 1px #000}
+.battle.b3 .pgroup.heroes>h3{color:#e9cf8f}
+.battle.b3 .pcs,.battle.b3 .fcs{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:5px}
+.battle.b3 .pcw{position:relative;display:grid;gap:2px;min-width:0;align-content:start}
+.battle.b3 .pcw .pc,.battle.b3 .fcw .fc{width:100%;display:flex;flex-direction:row;align-items:center;gap:6px;text-align:left;padding:4px 30px 4px 6px;min-height:44px;box-sizing:border-box}
+.battle.b3 .pcw .pc .port,.battle.b3 .fcw .fc .fci{width:30px;height:30px;flex:none}
+.battle.b3 .pcw .pc .port img{width:50px;height:56px;left:-10px;top:-8px}
+.battle.b3 .pc .pm,.battle.b3 .fc .pm{display:grid;gap:2px;min-width:0;flex:1;width:auto}
+.battle.b3 .uct{display:flex;flex-wrap:nowrap;align-items:center;justify-content:flex-start;gap:4px;padding:0;min-width:0}
+.battle.b3 .uct b{font-size:.86rem;line-height:1.15;flex:0 1 auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.battle.b3 .uct .ucl{font-size:.66rem;color:var(--mute);white-space:nowrap;flex:none}
+.battle.b3 .uct .elbs{margin-left:auto;gap:2px}
+.battle.b3 .uct .elb{width:12px;height:12px}
+.battle.b3 .ucr{display:grid;grid-template-columns:15px minmax(0,1fr) auto;align-items:center;gap:4px;min-width:0}
+.battle.b3 .ucr>i{display:block;font-size:.52rem;letter-spacing:0}
+.battle.b3 .ucr .bar{height:7px;margin:0}
+.battle.b3 .ucr .lbar{height:5px;margin:0}
+.battle.b3 .ucr .nums{font-size:.72rem;min-width:0;line-height:1.1}
+.battle.b3 .pc .pm small.ucc{display:none}
+.battle.b3 .uinfo{right:4px;top:50%;transform:translateY(-50%);width:24px;height:24px;margin-top:0}
+.battle.b3 .pcw .ptags,.battle.b3 .fcw .ptags{display:flex;flex-wrap:wrap;gap:3px;justify-content:flex-start;min-height:0;margin:0;padding:0 2px}
+.battle.b3 .pcw .ptags:empty{display:none}
+.battle.b3 .ptags .sti{min-height:20px;min-width:22px;font-size:.58rem}
+.battle.b3 .ptags .aty{font-size:.5rem;padding:2px 4px;border-width:1px;margin:0;align-self:center}
+.battle.b3 .pchip{font-size:.62rem;padding:1px 5px;gap:3px;border-width:1.5px;box-shadow:0 0 4px var(--c)}
+.battle.b3 .pchip .ico{width:12px;height:12px}
+.battle.b3 .pchip u{padding:0 3px}
+.battle.b3 .fwk{display:inline-flex;align-items:center;gap:2px;font:800 .58rem/1 var(--fb);padding:2px 4px;border-radius:3px;border:1px solid;letter-spacing:.02em}
+.battle.b3 .fwk .ico{width:12px;height:12px}
+.battle.b3 .fwk.up{color:#ffcf6a;border-color:rgba(255,190,90,.6);background:rgba(70,40,10,.6)}
+.battle.b3 .fwk.dn{color:#b8c8dc;border-color:rgba(160,180,210,.5);background:rgba(20,28,44,.6)}
+/* the hero whose turn it is: gold frame, glow and a marker; knocked out heroes stay grey */
+.battle.b3 .pcw .pc.turn{border-color:var(--ui-gold-hi,#f6dfa0);box-shadow:0 0 0 1px #000,0 0 0 2px rgba(246,223,160,.85),0 0 12px rgba(246,223,160,.45)}
+.battle.b3 .pcw .pc.turn::before{content:"";position:absolute;left:-1px;top:50%;margin-top:-6px;border:6px solid transparent;border-left:7px solid var(--ui-gold-hi,#f6dfa0);filter:drop-shadow(0 0 2px #000)}
+.battle.b3 .pcw .pc{position:relative}
+/* reserve: small chips (portrait, name, HP) */
+.battle.b3 .pgroup.rsv{padding:4px 6px 5px}
+.battle.b3 .pgroup.rsv .pcs{grid-template-columns:repeat(auto-fill,minmax(110px,1fr))}
+.battle.b3 .pgroup.rsv .pcw .pc.rs{min-height:40px;padding:3px 28px 3px 5px;gap:5px}
+.battle.b3 .pgroup.rsv .pcw .pc.rs .port{width:26px;height:26px}
+.battle.b3 .pgroup.rsv .pcw .pc.rs .port img{width:44px;height:50px;left:-9px;top:-8px}
+.battle.b3 .pgroup.rsv .uct b{font-size:.76rem}
+.battle.b3 .pgroup.rsv .uct .ucl,.battle.b3 .pgroup.rsv .uct .elbs{display:none}
+.battle.b3 .pgroup.rsv .uinfo{width:22px;height:22px}
+.battle.b3 .pgroup.foes{padding:5px 6px 6px}
+.battle.b3 .fcw .fc.dethit{box-shadow:0 0 0 2px #fff,0 0 12px var(--pc)}
+/* ----- commands ----- */
+.battle.b3 .cmd{padding:8px 9px 9px;gap:6px}
+.battle.b3 .who.cmdhead{gap:8px;padding:2px 0 6px;margin:0;flex-wrap:nowrap}
+.battle.b3 .who.cmdhead .port{width:32px;height:32px}
+.battle.b3 .who.cmdhead .port img{width:52px;height:58px;left:-10px;top:-8px}
+.battle.b3 .who.cmdhead>div{min-width:0}
+.battle.b3 .who.cmdhead b{font-size:1rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.battle.b3 .who.cmdhead b .turnl{font-style:normal;font-weight:600;color:var(--mute);font-size:.82rem}
+.battle.b3 .who.cmdhead small{font-size:.74rem}
+.battle.b3 .who.cmdhead .cmdback{min-height:40px;min-width:78px}
+.battle.b3 .menu.prim{grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}
+.battle.b3 .menu.sec{grid-template-columns:repeat(auto-fit,minmax(64px,1fr));gap:5px}
+.battle.b3 .menu.prim .mi{min-height:46px;padding:6px 6px 6px 20px;font-size:.95rem;font-weight:800}
+.battle.b3 .menu.prim .mi::before{left:7px}
+.battle.b3 .menu.sec .mi{min-height:40px;padding:4px 6px 4px 18px;font-size:.8rem;font-weight:700;background:linear-gradient(90deg,rgba(30,34,56,.85),rgba(20,22,38,.85));border-color:rgba(217,180,106,.16)}
+.battle.b3 .menu.sec .mi::before{left:6px;width:5px;height:5px;margin-top:-2.5px}
+.battle.b3 .menu.list{max-height:min(46vh,420px)}
+.battle.b3 .autorow{gap:5px;flex-wrap:wrap}
+.battle.b3 .autorow .btn.sm{min-height:40px;flex:1 1 auto;padding:0 8px}
+.battle.b3 .autorow .autowhy{flex:1 1 100%;order:9;margin:0;font-size:.72rem}
+.battle.b3 .autorow .btn.sm{flex:1 1 0;min-width:0;white-space:nowrap;padding:0 4px;font-size:.88rem}
+/* detonators in the skill list: one line per foe it sets off */
+.battle.b3 .detl,.detl{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:4px;margin-top:2px}
+.detf{display:inline-flex;align-items:center;gap:2px;padding:2px 6px;border:1px solid var(--c);border-radius:3px;background:linear-gradient(90deg,rgba(70,30,110,.85),rgba(30,16,50,.85));box-shadow:0 0 5px color-mix(in srgb,var(--c) 60%,transparent);font-size:.7rem;color:#fff}
+.detf .ico{width:13px;height:13px}.detf i{font-style:normal;color:#cbb6e8;font-size:.65rem}.detf b{margin-left:3px;color:#fff3c8;font-weight:900}.detf em{font-style:normal;color:#d8c8ee;margin-left:3px}
+/* ----- wide screens (tablets, the Fold open, desktops): commands on the left, foes and party beside them ----- */
+.battle.b3.m-wide .bbottom{grid-template-columns:minmax(280px,1fr) minmax(0,1.9fr)}
+.battle.b3.m-wide .bbottom .cmd{order:1}
+.battle.b3.m-wide .bbottom .bparty{order:2;grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.battle.b3.m-wide .fcs,.battle.b3.m-wide .pgroup.heroes .pcs{grid-template-columns:minmax(0,1fr)}
+.battle.b3.m-wide .pgroup.rsv{grid-column:2}
+.battle.b3.m-wide .pgroup.foes{grid-row:1/span 2}
+/* ----- landscape phones: the stage on the left, commands then cards in a scrolling column on the right ----- */
+.battle.b3.bside{grid-template-columns:var(--b3w,auto) minmax(0,1fr);grid-template-rows:auto auto minmax(0,1fr);grid-template-areas:"stage order" "stage bot" "line bot";column-gap:8px;row-gap:5px}
+.battle.b3.bside.hasboss{grid-template-rows:auto auto auto minmax(0,1fr);grid-template-areas:"boss order" "stage bot" "line bot" ". bot"}
+.battle.b3.bside .order .wchip .wxn{display:none}
+.battle.b3.bside .bline{align-self:start}
+.battle.b3.bside .order{max-width:100%}
+.battle.b3.bside .bwrap{grid-column:auto;margin:0}
+.battle.b3.bside .bbottom{grid-column:auto;align-self:stretch;max-height:calc(100vh - 120px);overflow:auto;overscroll-behavior:contain}
+.battle.b3.bside .bbottom .cmd{order:1}
+.battle.b3.bside .bbottom .bparty{order:2}
+.battle.b3.bside .fcs,.battle.b3.bside .pcs{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+.battle.b3.bside .pcw .pc{flex-direction:row}
+/* ----- portrait phones: three party cards side by side without portraits, two foe columns ----- */
+.battle.b3.m-tall .pgroup.heroes .pcs{grid-template-columns:repeat(3,minmax(0,1fr));gap:4px}
+.battle.b3.m-tall .pgroup.heroes .pcw .pc{padding:4px 5px;gap:0}
+.battle.b3.m-tall .pgroup.heroes .pcw .pc .port{display:none}
+.battle.b3.m-tall .pgroup.heroes .uct{padding-right:20px}
+.battle.b3.m-tall .pgroup.heroes .uinfo{top:3px;transform:none;right:3px;width:20px;height:20px;font-size:.7rem}
+.battle.b3.m-tall .pgroup.heroes .ucr{grid-template-columns:minmax(0,1fr) auto;gap:3px}
+.battle.b3.m-tall .pgroup.heroes .ucr>i{display:none}
+.battle.b3.m-tall .pgroup.heroes .uct .ucl{display:none}
+.battle.b3.m-tall .fcs{grid-template-columns:repeat(2,minmax(0,1fr));gap:4px}
+.battle.b3.m-tall .fcw .fc{padding:3px 28px 3px 4px;gap:4px;min-height:42px}
+.battle.b3.m-tall .fcw .fc .fci{width:24px;height:24px}
+.battle.b3.m-tall .fcw .fc .uct .ucl{display:none}
+.battle.b3.m-tall .fcw .fc .ucr>i{display:none}
+.battle.b3.m-tall .fcw .fc .ucr{grid-template-columns:minmax(0,1fr) auto}
+.battle.b3.m-tall .pgroup.rsv .pcs{grid-template-columns:repeat(3,minmax(0,1fr))}
+.battle.b3.m-tall .pgroup>h3{display:none}
+.battle.b3.m-tall .pgroup.rsv>h3{display:block}
+.battle.b3.m-tall .cmd .who.cmdhead small .cls{display:none}
+.battle.b3.m-tall .order .wchip .wxn{display:none}
+.battle.b3 .order .wchip .wxi{font-style:normal}
+/* status rows sit inside the card frame (in its bottom padding), so a card is one block */
+.battle.b3 .pcw.hastags .pc,.battle.b3 .fcw.hastags .fc{padding-bottom:27px}
+.battle.b3 .pcw.hastags .ptags{position:absolute;left:5px;right:30px;bottom:4px;flex-wrap:nowrap;overflow:hidden;z-index:2;pointer-events:none}
+.battle.b3 .pcw.hastags .ptags>*{pointer-events:auto}
+.battle.b3.m-tall .pgroup.heroes .pcw.hastags .ptags{right:4px}
+.battle.b3 .ptags .swko{font:800 .62rem/1 var(--fb);color:#ff9a8a;padding:2px 4px}
+.battle.b3.m-tall .ptags .aty{display:none}
+.battle.b3.m-tall .cmd .who.cmdhead .port{display:none}
+.battle.b3.m-tall .cmd .who.cmdhead{padding-bottom:4px}
+.battle.b3.m-tall .order{min-height:42px;padding-top:1px;padding-bottom:1px}
+.battle.b3.m-tall .order .oc{width:28px;height:28px}
+.battle.b3.m-tall .order .oc img{width:45px;height:50px;margin-top:-5px}
+.battle.b3.m-tall{gap:5px}
+.battle.b3.m-tall .pgroup.heroes .pcw.hastags .pc,.battle.b3.m-tall .fcw.hastags .fc{padding-bottom:27px}
+/* portrait: the party right over the commands (the active hero's numbers next to its commands), the foes and the rearguard under them */
+.battle.b3.m-tall .bbottom .bparty{display:contents}
+.battle.b3.m-tall .bbottom .pgroup.heroes{order:1}
+.battle.b3.m-tall .bbottom .cmd{order:2}
+.battle.b3.m-tall .bbottom .pgroup.foes{order:3}
+.battle.b3.m-tall .bbottom .pgroup.rsv{order:4}
+.battle.b3 .bline .blog p{display:block;max-width:100%}
+.battle.b3 .bline{overflow:hidden}
+/* boss bar: name and HP on one line, the shield on the right of the name */
+.battle.b3 .bossbar .bbn{display:flex;flex-wrap:nowrap;align-items:baseline;gap:6px;min-width:0}
+.battle.b3 .bossbar .bbn b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:0 1 auto}
+.battle.b3 .bossbar .bbn small{white-space:nowrap;flex:none}
+.battle.b3 .bossbar .bbn .bbsh{white-space:nowrap;flex:none;letter-spacing:0;font-size:.72rem}
+.battle.b3 .bossbar .bbn .nums{white-space:nowrap;flex:none;margin-left:auto}
+.battle.b3.m-tall .bossbar .bbn small{display:none}
+.battle.b3 .bossbar .bbbar{height:9px;margin-top:2px}
+/* rearguard chips stay rows (portrait, name, HP) at every width */
+.battle.b3 .pgroup.rsv .pcw .pc.rs{flex-direction:row;text-align:left;align-items:center}
+.battle.b3 .pgroup.rsv .pcw .pc.rs .pm{width:auto}
+.battle.b3 .pgroup.rsv .ucr{grid-template-columns:minmax(0,1fr) auto}
+.battle.b3 .pgroup.rsv .ucr>i{display:none}
+.battle.b3 .pgroup.rsv .ucr .nums{font-size:.66rem}
+.battle.b3 .pgroup.rsv .uct{padding-right:0}
+.battle.b3 .pgroup.rsv .pcw .pc.rs.swapok{outline-offset:-2px}
+.battle.b3.m-tall .fcw .fc{padding-right:32px}
+.battle.b3.m-tall .fcw .uinfo{right:4px}

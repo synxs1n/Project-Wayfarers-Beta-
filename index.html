@@ -1403,13 +1403,222 @@ details.m3how>summary:focus-visible{outline:2px solid var(--ui-gold-hi,#ffe39a);
 @media (max-width:420px){
   .chips.ssec .chip{padding:8px 7px 6px}
 }
+/* =================== Beta v0.6.3: battle screen (battle3.js) =================== */
+/* ----- stage labels: every box is placed by the layout pass (b3Lay) at exactly these sizes, in logical stage px ----- */
+.bstage .b3l{position:absolute;box-sizing:border-box;margin:0;transform:none}
+.bstage .utags.b3l{display:flex;flex-wrap:nowrap;justify-content:flex-start;align-items:stretch;gap:1px;z-index:5;pointer-events:auto}
+.bstage .utags.b3l .sti{flex:none;box-sizing:border-box;width:12px;height:10px;min-width:0;min-height:0;padding:0;justify-content:center;gap:0;border-width:.6px;border-radius:2px;font-size:5px}
+.bstage .utags.b3l .sti .stsym{width:6.5px;height:6.5px}
+.bstage .utags.b3l .sti sub{font-size:4.2px;margin-left:0}
+.bstage .primed.pmin.b3l{display:grid;place-items:center;padding:0;gap:0;border-radius:50%;border:1px solid var(--c);animation:b3bob 1.6s ease-in-out infinite;z-index:6}
+.bstage .primed.pmin.b3l .ico{width:8px;height:8px;margin:0}
+.bstage .primed.pmin.b3l i{right:-1px;bottom:-1px;font-size:4.2px;padding:0 .8px;border-width:.6px}
+@keyframes b3bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-.8px)}}
+html.rm .bstage .primed.pmin.b3l{animation:none}
+@media (prefers-reduced-motion:reduce){.bstage .primed.pmin.b3l{animation:none}}
+.bstage .b3tg{display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;z-index:7;padding:0;border-radius:2px;
+  background:rgba(10,8,20,.62);box-shadow:0 0 0 .5px rgba(255,230,170,.35);overflow:hidden}
+.bstage .b3tg .ename{position:static;transform:none;opacity:1;display:block;font:800 var(--f)/1.2 var(--fb);color:#fff;white-space:nowrap;text-shadow:0 0 1.5px #000}
+.bstage .b3tg .l2{display:flex;gap:1px;justify-content:center;align-items:center;white-space:nowrap}
+.bstage .b3tg .eff{position:static;transform:none;display:inline-flex;align-items:center;gap:.4px;font:800 calc(var(--f)*.92)/1.15 var(--fb);padding:0 1.5px;border-width:.5px;border-radius:1.5px;top:auto;bottom:auto}
+.bstage .b3tg .eff .ico{width:var(--f);height:var(--f)}
+.bstage .b3tg.det{background:rgba(40,16,60,.8);box-shadow:0 0 0 .6px #e8c8ff,0 0 4px rgba(200,150,255,.8)}
+.bstage .b3tg .eff.rx{font-weight:900;color:#fff;border-color:#e8c8ff;background:linear-gradient(90deg,#5a2a8a,#2a1450)}
+.bstage .unit.dethit{outline:none!important;animation:none}
+/* effect texts: the box is the text plus fxRise px of drift on top */
+.fxlayer .fx2.b3fx{display:flex;align-items:flex-end;justify-content:center;box-sizing:border-box;line-height:1;animation-name:b3rise}
+.fxlayer .fx2.b3fx.react b{display:inline-flex;align-items:center;gap:.6px;padding:.5px 1.6px;border:.6px solid #f0dcff;border-radius:2px;
+  background:linear-gradient(90deg,rgba(110,50,170,.92),rgba(46,20,84,.92));color:#fff8ff;font-weight:900;letter-spacing:.1px;box-shadow:0 0 3px rgba(210,160,255,.9);text-shadow:0 0 1px #000}
+.fxlayer .fx2.b3fx.react .ico{width:1em;height:1em}
+@keyframes b3rise{0%{transform:translateY(2px) scale(.7);opacity:0}7%{transform:translateY(0) scale(1.08);opacity:1}15%{transform:none}80%{opacity:1;transform:translateY(-2px)}100%{transform:translateY(-3px);opacity:0}}
+html.rm .fxlayer .fx2.b3fx{animation-name:fade2!important}
+@media (prefers-reduced-motion:reduce){.fxlayer .fx2.b3fx{animation-name:fade2!important}}
+
+/* ----- the screen: boss bar, turn order, stage, log ticker, then cards and commands ----- */
+.battle.b3{display:grid;grid-template-columns:minmax(0,1fr);grid-template-areas:"boss" "order" "stage" "line" "bot";gap:6px;align-items:start}
+.battle.b3 .bossbar{grid-area:boss;padding:4px 10px 6px}
+.battle.b3 .bossbar .bbn{font-size:.9rem}
+.battle.b3 .order{grid-area:order;display:flex;align-items:center;gap:6px;padding:3px 4px 3px 8px;overflow:hidden;min-height:46px;box-sizing:border-box}
+.battle.b3 .order .ocs{display:flex;align-items:center;gap:4px;flex:1 1 auto;min-width:0;overflow-x:auto;scrollbar-width:none}
+.battle.b3 .order .ocs::-webkit-scrollbar{display:none}
+.battle.b3 .order .ocs small{flex:none;padding-right:2px}
+.battle.b3 .order .osky{display:flex;gap:4px;flex:none}
+.battle.b3 .order .wchip{min-height:40px;min-width:40px;padding:0 9px;display:inline-flex;align-items:center;justify-content:center;gap:5px;white-space:nowrap}
+.battle.b3 .order .oc{width:30px;height:30px}
+.battle.b3 .order .oc img{width:48px;height:54px;margin-top:-5px}
+.battle.b3 .order .oc.e img{width:38px;height:38px;margin-top:-4px}
+.battle.b3 .bwrap{grid-area:stage}
+.battle.b3 .bline{grid-area:line;display:flex;align-items:center;gap:6px;min-height:40px;box-sizing:border-box;padding:0 0 0 10px;border:1px solid var(--ui-line-s,rgba(217,180,106,.3));border-left:2px solid var(--ui-gold,#d9b46a);border-radius:4px;background:linear-gradient(90deg,rgba(14,16,28,.92),rgba(20,23,40,.8))}
+.battle.b3 .bline .blog{position:static;display:block;flex:1 1 auto;min-width:0;left:auto;right:auto;top:auto;z-index:auto}
+.battle.b3 .bline .blog p{margin:0;padding:0;background:none;border:0;font-size:.82rem;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#f3e7cc}
+.battle.b3 .bline .blog p.flash{animation:b3logIn .5s ease-out both}
+@keyframes b3logIn{from{color:#ffe08a}to{color:#f3e7cc}}
+.battle.b3 .bline .blogbtn{position:static;flex:none;min-height:40px;min-width:64px;padding:0 10px;font-size:.78rem;border-radius:0 3px 3px 0}
+.battle.b3 .bbottom{grid-area:bot;display:grid;grid-template-columns:minmax(0,1fr);gap:6px;align-items:start}
+.battle.b3 .bbottom .bparty{order:1}
+.battle.b3 .bbottom .cmd{order:2}
+/* ----- cards ----- */
+.battle.b3 .bparty{display:grid;grid-template-columns:minmax(0,1fr);gap:6px}
+.battle.b3 .pgroup{display:block;padding:5px 6px 6px;border-radius:6px}
+.battle.b3 .pgroup>h3{margin:0 0 4px;font-size:.64rem;letter-spacing:.14em;line-height:1}
+.battle.b3 .pgroup.heroes{background:linear-gradient(180deg,rgba(28,34,58,.45),rgba(14,16,28,.3));border:1px solid rgba(217,180,106,.22);box-shadow:0 0 0 1px #000}
+.battle.b3 .pgroup.heroes>h3{color:#e9cf8f}
+.battle.b3 .pcs,.battle.b3 .fcs{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:5px}
+.battle.b3 .pcw{position:relative;display:grid;gap:2px;min-width:0;align-content:start}
+.battle.b3 .pcw .pc,.battle.b3 .fcw .fc{width:100%;display:flex;flex-direction:row;align-items:center;gap:6px;text-align:left;padding:4px 30px 4px 6px;min-height:44px;box-sizing:border-box}
+.battle.b3 .pcw .pc .port,.battle.b3 .fcw .fc .fci{width:30px;height:30px;flex:none}
+.battle.b3 .pcw .pc .port img{width:50px;height:56px;left:-10px;top:-8px}
+.battle.b3 .pc .pm,.battle.b3 .fc .pm{display:grid;gap:2px;min-width:0;flex:1;width:auto}
+.battle.b3 .uct{display:flex;flex-wrap:nowrap;align-items:center;justify-content:flex-start;gap:4px;padding:0;min-width:0}
+.battle.b3 .uct b{font-size:.86rem;line-height:1.15;flex:0 1 auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.battle.b3 .uct .ucl{font-size:.66rem;color:var(--mute);white-space:nowrap;flex:none}
+.battle.b3 .uct .elbs{margin-left:auto;gap:2px}
+.battle.b3 .uct .elb{width:12px;height:12px}
+.battle.b3 .ucr{display:grid;grid-template-columns:15px minmax(0,1fr) auto;align-items:center;gap:4px;min-width:0}
+.battle.b3 .ucr>i{display:block;font-size:.52rem;letter-spacing:0}
+.battle.b3 .ucr .bar{height:7px;margin:0}
+.battle.b3 .ucr .lbar{height:5px;margin:0}
+.battle.b3 .ucr .nums{font-size:.72rem;min-width:0;line-height:1.1}
+.battle.b3 .pc .pm small.ucc{display:none}
+.battle.b3 .uinfo{right:4px;top:50%;transform:translateY(-50%);width:24px;height:24px;margin-top:0}
+.battle.b3 .pcw .ptags,.battle.b3 .fcw .ptags{display:flex;flex-wrap:wrap;gap:3px;justify-content:flex-start;min-height:0;margin:0;padding:0 2px}
+.battle.b3 .pcw .ptags:empty{display:none}
+.battle.b3 .ptags .sti{min-height:20px;min-width:22px;font-size:.58rem}
+.battle.b3 .ptags .aty{font-size:.5rem;padding:2px 4px;border-width:1px;margin:0;align-self:center}
+.battle.b3 .pchip{font-size:.62rem;padding:1px 5px;gap:3px;border-width:1.5px;box-shadow:0 0 4px var(--c)}
+.battle.b3 .pchip .ico{width:12px;height:12px}
+.battle.b3 .pchip u{padding:0 3px}
+.battle.b3 .fwk{display:inline-flex;align-items:center;gap:2px;font:800 .58rem/1 var(--fb);padding:2px 4px;border-radius:3px;border:1px solid;letter-spacing:.02em}
+.battle.b3 .fwk .ico{width:12px;height:12px}
+.battle.b3 .fwk.up{color:#ffcf6a;border-color:rgba(255,190,90,.6);background:rgba(70,40,10,.6)}
+.battle.b3 .fwk.dn{color:#b8c8dc;border-color:rgba(160,180,210,.5);background:rgba(20,28,44,.6)}
+/* the hero whose turn it is: gold frame, glow and a marker; knocked out heroes stay grey */
+.battle.b3 .pcw .pc.turn{border-color:var(--ui-gold-hi,#f6dfa0);box-shadow:0 0 0 1px #000,0 0 0 2px rgba(246,223,160,.85),0 0 12px rgba(246,223,160,.45)}
+.battle.b3 .pcw .pc.turn::before{content:"";position:absolute;left:-1px;top:50%;margin-top:-6px;border:6px solid transparent;border-left:7px solid var(--ui-gold-hi,#f6dfa0);filter:drop-shadow(0 0 2px #000)}
+.battle.b3 .pcw .pc{position:relative}
+/* reserve: small chips (portrait, name, HP) */
+.battle.b3 .pgroup.rsv{padding:4px 6px 5px}
+.battle.b3 .pgroup.rsv .pcs{grid-template-columns:repeat(auto-fill,minmax(110px,1fr))}
+.battle.b3 .pgroup.rsv .pcw .pc.rs{min-height:40px;padding:3px 28px 3px 5px;gap:5px}
+.battle.b3 .pgroup.rsv .pcw .pc.rs .port{width:26px;height:26px}
+.battle.b3 .pgroup.rsv .pcw .pc.rs .port img{width:44px;height:50px;left:-9px;top:-8px}
+.battle.b3 .pgroup.rsv .uct b{font-size:.76rem}
+.battle.b3 .pgroup.rsv .uct .ucl,.battle.b3 .pgroup.rsv .uct .elbs{display:none}
+.battle.b3 .pgroup.rsv .uinfo{width:22px;height:22px}
+.battle.b3 .pgroup.foes{padding:5px 6px 6px}
+.battle.b3 .fcw .fc.dethit{box-shadow:0 0 0 2px #fff,0 0 12px var(--pc)}
+/* ----- commands ----- */
+.battle.b3 .cmd{padding:8px 9px 9px;gap:6px}
+.battle.b3 .who.cmdhead{gap:8px;padding:2px 0 6px;margin:0;flex-wrap:nowrap}
+.battle.b3 .who.cmdhead .port{width:32px;height:32px}
+.battle.b3 .who.cmdhead .port img{width:52px;height:58px;left:-10px;top:-8px}
+.battle.b3 .who.cmdhead>div{min-width:0}
+.battle.b3 .who.cmdhead b{font-size:1rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.battle.b3 .who.cmdhead b .turnl{font-style:normal;font-weight:600;color:var(--mute);font-size:.82rem}
+.battle.b3 .who.cmdhead small{font-size:.74rem}
+.battle.b3 .who.cmdhead .cmdback{min-height:40px;min-width:78px}
+.battle.b3 .menu.prim{grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}
+.battle.b3 .menu.sec{grid-template-columns:repeat(auto-fit,minmax(64px,1fr));gap:5px}
+.battle.b3 .menu.prim .mi{min-height:46px;padding:6px 6px 6px 20px;font-size:.95rem;font-weight:800}
+.battle.b3 .menu.prim .mi::before{left:7px}
+.battle.b3 .menu.sec .mi{min-height:40px;padding:4px 6px 4px 18px;font-size:.8rem;font-weight:700;background:linear-gradient(90deg,rgba(30,34,56,.85),rgba(20,22,38,.85));border-color:rgba(217,180,106,.16)}
+.battle.b3 .menu.sec .mi::before{left:6px;width:5px;height:5px;margin-top:-2.5px}
+.battle.b3 .menu.list{max-height:min(46vh,420px)}
+.battle.b3 .autorow{gap:5px;flex-wrap:wrap}
+.battle.b3 .autorow .btn.sm{min-height:40px;flex:1 1 auto;padding:0 8px}
+.battle.b3 .autorow .autowhy{flex:1 1 100%;order:9;margin:0;font-size:.72rem}
+.battle.b3 .autorow .btn.sm{flex:1 1 0;min-width:0;white-space:nowrap;padding:0 4px;font-size:.88rem}
+/* detonators in the skill list: one line per foe it sets off */
+.battle.b3 .detl,.detl{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:4px;margin-top:2px}
+.detf{display:inline-flex;align-items:center;gap:2px;padding:2px 6px;border:1px solid var(--c);border-radius:3px;background:linear-gradient(90deg,rgba(70,30,110,.85),rgba(30,16,50,.85));box-shadow:0 0 5px color-mix(in srgb,var(--c) 60%,transparent);font-size:.7rem;color:#fff}
+.detf .ico{width:13px;height:13px}.detf i{font-style:normal;color:#cbb6e8;font-size:.65rem}.detf b{margin-left:3px;color:#fff3c8;font-weight:900}.detf em{font-style:normal;color:#d8c8ee;margin-left:3px}
+/* ----- wide screens (tablets, the Fold open, desktops): commands on the left, foes and party beside them ----- */
+.battle.b3.m-wide .bbottom{grid-template-columns:minmax(280px,1fr) minmax(0,1.9fr)}
+.battle.b3.m-wide .bbottom .cmd{order:1}
+.battle.b3.m-wide .bbottom .bparty{order:2;grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.battle.b3.m-wide .fcs,.battle.b3.m-wide .pgroup.heroes .pcs{grid-template-columns:minmax(0,1fr)}
+.battle.b3.m-wide .pgroup.rsv{grid-column:2}
+.battle.b3.m-wide .pgroup.foes{grid-row:1/span 2}
+/* ----- landscape phones: the stage on the left, commands then cards in a scrolling column on the right ----- */
+.battle.b3.bside{grid-template-columns:var(--b3w,auto) minmax(0,1fr);grid-template-rows:auto auto minmax(0,1fr);grid-template-areas:"stage order" "stage bot" "line bot";column-gap:8px;row-gap:5px}
+.battle.b3.bside.hasboss{grid-template-rows:auto auto auto minmax(0,1fr);grid-template-areas:"boss order" "stage bot" "line bot" ". bot"}
+.battle.b3.bside .order .wchip .wxn{display:none}
+.battle.b3.bside .bline{align-self:start}
+.battle.b3.bside .order{max-width:100%}
+.battle.b3.bside .bwrap{grid-column:auto;margin:0}
+.battle.b3.bside .bbottom{grid-column:auto;align-self:stretch;max-height:calc(100vh - 120px);overflow:auto;overscroll-behavior:contain}
+.battle.b3.bside .bbottom .cmd{order:1}
+.battle.b3.bside .bbottom .bparty{order:2}
+.battle.b3.bside .fcs,.battle.b3.bside .pcs{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+.battle.b3.bside .pcw .pc{flex-direction:row}
+/* ----- portrait phones: three party cards side by side without portraits, two foe columns ----- */
+.battle.b3.m-tall .pgroup.heroes .pcs{grid-template-columns:repeat(3,minmax(0,1fr));gap:4px}
+.battle.b3.m-tall .pgroup.heroes .pcw .pc{padding:4px 5px;gap:0}
+.battle.b3.m-tall .pgroup.heroes .pcw .pc .port{display:none}
+.battle.b3.m-tall .pgroup.heroes .uct{padding-right:20px}
+.battle.b3.m-tall .pgroup.heroes .uinfo{top:3px;transform:none;right:3px;width:20px;height:20px;font-size:.7rem}
+.battle.b3.m-tall .pgroup.heroes .ucr{grid-template-columns:minmax(0,1fr) auto;gap:3px}
+.battle.b3.m-tall .pgroup.heroes .ucr>i{display:none}
+.battle.b3.m-tall .pgroup.heroes .uct .ucl{display:none}
+.battle.b3.m-tall .fcs{grid-template-columns:repeat(2,minmax(0,1fr));gap:4px}
+.battle.b3.m-tall .fcw .fc{padding:3px 28px 3px 4px;gap:4px;min-height:42px}
+.battle.b3.m-tall .fcw .fc .fci{width:24px;height:24px}
+.battle.b3.m-tall .fcw .fc .uct .ucl{display:none}
+.battle.b3.m-tall .fcw .fc .ucr>i{display:none}
+.battle.b3.m-tall .fcw .fc .ucr{grid-template-columns:minmax(0,1fr) auto}
+.battle.b3.m-tall .pgroup.rsv .pcs{grid-template-columns:repeat(3,minmax(0,1fr))}
+.battle.b3.m-tall .pgroup>h3{display:none}
+.battle.b3.m-tall .pgroup.rsv>h3{display:block}
+.battle.b3.m-tall .cmd .who.cmdhead small .cls{display:none}
+.battle.b3.m-tall .order .wchip .wxn{display:none}
+.battle.b3 .order .wchip .wxi{font-style:normal}
+/* status rows sit inside the card frame (in its bottom padding), so a card is one block */
+.battle.b3 .pcw.hastags .pc,.battle.b3 .fcw.hastags .fc{padding-bottom:27px}
+.battle.b3 .pcw.hastags .ptags{position:absolute;left:5px;right:30px;bottom:4px;flex-wrap:nowrap;overflow:hidden;z-index:2;pointer-events:none}
+.battle.b3 .pcw.hastags .ptags>*{pointer-events:auto}
+.battle.b3.m-tall .pgroup.heroes .pcw.hastags .ptags{right:4px}
+.battle.b3 .ptags .swko{font:800 .62rem/1 var(--fb);color:#ff9a8a;padding:2px 4px}
+.battle.b3.m-tall .ptags .aty{display:none}
+.battle.b3.m-tall .cmd .who.cmdhead .port{display:none}
+.battle.b3.m-tall .cmd .who.cmdhead{padding-bottom:4px}
+.battle.b3.m-tall .order{min-height:42px;padding-top:1px;padding-bottom:1px}
+.battle.b3.m-tall .order .oc{width:28px;height:28px}
+.battle.b3.m-tall .order .oc img{width:45px;height:50px;margin-top:-5px}
+.battle.b3.m-tall{gap:5px}
+.battle.b3.m-tall .pgroup.heroes .pcw.hastags .pc,.battle.b3.m-tall .fcw.hastags .fc{padding-bottom:27px}
+/* portrait: the party right over the commands (the active hero's numbers next to its commands), the foes and the rearguard under them */
+.battle.b3.m-tall .bbottom .bparty{display:contents}
+.battle.b3.m-tall .bbottom .pgroup.heroes{order:1}
+.battle.b3.m-tall .bbottom .cmd{order:2}
+.battle.b3.m-tall .bbottom .pgroup.foes{order:3}
+.battle.b3.m-tall .bbottom .pgroup.rsv{order:4}
+.battle.b3 .bline .blog p{display:block;max-width:100%}
+.battle.b3 .bline{overflow:hidden}
+/* boss bar: name and HP on one line, the shield on the right of the name */
+.battle.b3 .bossbar .bbn{display:flex;flex-wrap:nowrap;align-items:baseline;gap:6px;min-width:0}
+.battle.b3 .bossbar .bbn b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:0 1 auto}
+.battle.b3 .bossbar .bbn small{white-space:nowrap;flex:none}
+.battle.b3 .bossbar .bbn .bbsh{white-space:nowrap;flex:none;letter-spacing:0;font-size:.72rem}
+.battle.b3 .bossbar .bbn .nums{white-space:nowrap;flex:none;margin-left:auto}
+.battle.b3.m-tall .bossbar .bbn small{display:none}
+.battle.b3 .bossbar .bbbar{height:9px;margin-top:2px}
+/* rearguard chips stay rows (portrait, name, HP) at every width */
+.battle.b3 .pgroup.rsv .pcw .pc.rs{flex-direction:row;text-align:left;align-items:center}
+.battle.b3 .pgroup.rsv .pcw .pc.rs .pm{width:auto}
+.battle.b3 .pgroup.rsv .ucr{grid-template-columns:minmax(0,1fr) auto}
+.battle.b3 .pgroup.rsv .ucr>i{display:none}
+.battle.b3 .pgroup.rsv .ucr .nums{font-size:.66rem}
+.battle.b3 .pgroup.rsv .uct{padding-right:0}
+.battle.b3 .pgroup.rsv .pcw .pc.rs.swapok{outline-offset:-2px}
+.battle.b3.m-tall .fcw .fc{padding-right:32px}
+.battle.b3.m-tall .fcw .uinfo{right:4px}
 
 </style>
 <div id="app"><div id="hdr"></div><main id="screen"></main></div>
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.6.9";const APP_BUILD="951d34fd6fae";
+(function(){const APP_VER="0.7.0";const APP_BUILD="7b5282ef72b8";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -1771,18 +1980,36 @@ const TWISTS={on:true,
     {id:'elites',n:'Elites everywhere',risk:'Every wild fight has one shielded elite with 50% more HP.',gain:'+25% XP and gold.',pips:2,hp:1.5,xp:1.25,gold:1.25},
     {id:'react',n:'Reactions only',risk:'Only reactions crack shields; weak hits and skills no longer chip them.',gain:'Reactions hit 30% harder, +15% XP.',m:1.3,xp:1.15},
     {id:'iron',n:'Ironman',risk:'Fallen heroes stay down until you rest at an inn. No feathers, salts, tents or revive spells.',gain:'+40% XP.',xp:1.4}]}};
+// ===== v0.6.3 battle screen (battle3.js, battle3.css) =====
+// B3: the stage label layout, in logical stage px (the stage is drawn at BL.sc CSS px per px). body: margin kept around each sprite's
+// visible pixels; pad: gap between labels; R: how far a label may move from its spot (step: search grid); barW: HP bar widths;
+// prim: primed badge size; sti/stiH: one status icon; tagF: font of the target tag, tagN: longest name on it, tagR: how far it looks first
+// (it stays close to its unit, shorter without the name if it must); fxRise: how far an effect text drifts up; minSc: the smallest
+// scale of the wide stage (it shrinks toward it so the commands fit under it); sideCol: width kept for the command column on landscape phones;
+// memo: ms the canvas reuses the last layout before checking whether anything changed.
+// slots: where units stand, [x share of the stage, depth 0..1 on the ground band (BATTLE_GROUND top..bot)], for the tall (portrait)
+// and the wide stage; e[n-1] for n foes, boss[n-1] for boss fights, p for the three heroes on the field.
+const B3={body:1,pad:1,R:40,step:2,barW:{hero:24,foe:30},prim:13,sti:12,stiH:10,tagF:5,tagN:13,tagR:28,fxRise:3,minSc:1.5,sideCol:360,memo:40,
+  slots:{
+    tall:{p:[[.72,0],[.89,.42],[.71,.84]],
+      e:[[[.27,.5]],[[.22,.05],[.36,.8]],[[.33,0],[.12,.42],[.4,.84]],[[.34,0],[.1,.28],[.47,.5],[.2,.84]],[[.34,0],[.1,.22],[.52,.36],[.3,.6],[.09,.84]]],
+      boss:[[[.27,.62]],[[.24,.75],[.48,.05]],[[.22,.7],[.47,0],[.5,.84]]]},
+    wide:{p:[[.74,0],[.88,.42],[.71,.84]],
+      e:[[[.27,.5]],[[.2,.08],[.36,.8]],[[.3,0],[.12,.42],[.4,.84]],[[.31,0],[.1,.28],[.46,.5],[.22,.84]],[[.3,0],[.09,.22],[.5,.36],[.28,.6],[.08,.84]]],
+      boss:[[[.25,.62]],[[.22,.75],[.44,.05]],[[.2,.7],[.42,0],[.46,.84]]]}}};
 
 // Firebase web config for account sign in and cloud saves. These values are public by design (security comes from the Firestore rules).
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.6.9";const APP_BUILD="951d34fd6fae";
+const APP_VER="0.7.0";const APP_BUILD="7b5282ef72b8";
 
 // =================== VERSION ===================
 // The one public version string. Patch (0.1.x) for fixes and balance, minor (0.x.0) for new systems.
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.7.0',['Battle screen rehaul: HP plates, element badges, status rows and damage numbers are laid out so none sit on a face or on each other; the last log line sits under the stage; commands are grouped (Attack, Skills, Items, Guard / Scan, Lore, Switch, Flee / Auto); the active hero is framed in gold and cards are more compact. The battle start flash now covers the whole screen instead of one corner. Detonators: while aiming, the foes they will set off glow with a ring and a tag naming the reaction, and the reaction floats over the foe when it fires.']],
  ['Beta v0.6.9',['Shops and menus reorganised: every shop has Shop and Craft tabs with All plus sections (Alchemy now has its own Charms section), every filter is a dropdown with new options (for one hero, rarity, upgrades only, can afford, cheapest first), and the Menu is grouped as Party, Backpack, Quests, Map, Records, Guides and Settings. Fixed text cut off at the bottom of menus on phones with a browser bar (Fold Tempering).']],
  ['Beta v0.6.8',['World: fortresses stand up as real gatehouses in the HD-2D view; leaves, butterflies, snow and other drifting effects now stay in the world instead of sliding with the screen; nothing hovers over the hero\'s face any more (fixed the white and pink boxes left over in parts of the screen); opened chests disappear; the world map is now a parchment chart with little pictures of each town, field, dungeon, cave and fortress, roads between them and a pin for your party; side fortresses are just called fortresses.']],
  ['Beta v0.6.7',['Capes no longer show on hero sprites (they keep their stats); only weapons and personal quest rewards change how a hero looks. Every item now has its own icon: each weapon, armor and cape changes shape as its tier rises (gems, gold trim, a glint, a glow), every charm has its own pendant, and materials have icons too. The three legendary signature weapons got their names back.']],
@@ -7528,7 +7755,10 @@ BG.arena=function(ctx,W,H,R){
 };
 function battleTheme(){if(!B)return 'meadow';const th=ZS(B.stage).theme,k=B.spec.kind;if(k==='arena')return 'arena';if(k==='dungeon'||k==='boss'||k==='echoBoss')return 'd_'+th;return th;}
 // ----- layout -----
-function slotsFor(side,n,boss){const r=slotsFor0(side,n,boss);return BL.W<260?r.map(([x,y])=>[x,+(.06+y*.86).toFixed(3)]):r;}
+// v0.6.3: slots come from B3.slots (config.js) as [x share, depth on the ground band 0..1]; depth d lands at BATTLE_GROUND top + d*(bot-top)
+// through p2GroundY (p2world.js), so feet stay on the ground plane (2.1). The old tables (slotsFor0) are kept for reference.
+function slotsFor(side,n,boss){const T=B3.slots[BL.W<260?'tall':'wide'],t=side==='p'?T.p:boss?T.boss[Math.min(3,n)-1]:T.e[Math.min(5,n)-1];
+  const r=t.map(([x,d])=>[x,+(.48+d*.49).toFixed(4)]);while(r.length<n)r.push(r[r.length-1]);return r;}
 function slotsFor0(side,n,boss){
   if(BL.W<260){ // phones: taller stage, more vertical spread
     if(side==='e'){
@@ -7552,18 +7782,20 @@ function battleMode(){const vw=window.innerWidth,vh=window.visualViewport?window
 function layoutBattle(){
   const wrap=$('bwrap');if(!wrap)return;
   const bat=wrap.parentNode,mode=battleMode();
-  bat.classList.toggle('bside',mode==='side');wrap.style.width='';
-  const w=wrap.clientWidth||window.innerWidth-32,cv=$('bcv'),st=$('bstage');
+  bat.classList.toggle('bside',mode==='side');bat.classList.toggle('m-tall',mode==='tall');bat.classList.toggle('m-wide',mode==='wide');wrap.style.width='';
+  // v0.6.3: on landscape phones the stage column is sized from the screen (the right column keeps at least B3.sideCol px)
+  const w=mode==='side'&&bat.clientWidth?Math.max(200,Math.min(bat.clientWidth-B3.sideCol,bat.clientWidth*.62)):(wrap.clientWidth||window.innerWidth-32),cv=$('bcv'),st=$('bstage');
   if(mode==='tall'){
     const sc=2;BL={W:Math.floor(w/sc),H:BL.fitH?BL.fitH:(w<520?196:160),sc,fitH:BL.fitH,short:false,mode};
     cv.width=BL.W;cv.height=BL.H;cv.style.width=BL.W*sc+'px';cv.style.height=BL.H*sc+'px';wrap.style.height=BL.H*sc+'px';
     st.style.width=BL.W+'px';st.style.height=BL.H+'px';st.style.transform=`scale(${sc})`;return;}
-  const vh=window.visualViewport?window.visualViewport.height:window.innerHeight,hd=$('hdr')?$('hdr').offsetHeight:0,od=$('border')?$('border').offsetHeight:0,bb=document.querySelector('.bbottom');
-  const budget=mode==='side'?vh-hd-od-34:vh-hd-od-(bb?bb.offsetHeight:0)-34;
-  let sc=Math.min((w-8)/WIDE_W,Math.max(budget-8,0)/WIDE_H);sc=Math.max(mode==='side'?1.25:2,Math.min(3,Math.floor(sc*4)/4));
+  const vh=window.visualViewport?window.visualViewport.height:window.innerHeight,hd=$('hdr')?$('hdr').offsetHeight:0,od=(mode==='side'?0:($('border')?$('border').offsetHeight:0))+b3Extra(mode),bb=document.querySelector('.bbottom');
+  // v0.6.3: the wide stage leaves room for the commands (the cards beside them may run on and scroll)
+  const cmdEl=$('bcmd'),budget=mode==='side'?vh-hd-od-34:vh-hd-od-(cmdEl&&cmdEl.offsetHeight?cmdEl.offsetHeight:(bb?bb.offsetHeight:0))-34;
+  let sc=Math.min((w-8)/WIDE_W,Math.max(budget-8,0)/WIDE_H);sc=Math.max(mode==='side'?1.25:B3.minSc,Math.min(3,Math.floor(sc*4)/4));
   BL={W:WIDE_W,H:WIDE_H,sc,fitH:0,short:false,mode};
   cv.width=WIDE_W;cv.height=WIDE_H;cv.style.width=WIDE_W*sc+'px';cv.style.height=WIDE_H*sc+'px';
-  wrap.style.width=Math.round(WIDE_W*sc+8)+'px';wrap.style.height=Math.round(WIDE_H*sc+8)+'px';
+  wrap.style.width=Math.round(WIDE_W*sc+8)+'px';wrap.style.height=Math.round(WIDE_H*sc+8)+'px';bat.style.setProperty('--b3w',Math.round(WIDE_W*sc+8)+'px');
   st.style.width=WIDE_W+'px';st.style.height=WIDE_H+'px';st.style.transform=`scale(${sc})`;
 }
 function spriteOf(u,walk){if(u.heroArt)return imgOf('bhe:'+u.heroArt,()=>heroCanvas(u.heroArt,walk));return u.side==='p'?imgOf('bh:'+u.id+(walk?':w':'')+lookKey(u.id),()=>heroCanvas(u.id,walk)):imgOf('bm:'+u.art,()=>monCanvas(u.art));}
@@ -7643,7 +7875,7 @@ function battleFrame(now){
   const units=B.en.map(u=>({u,b:unitBox(u)})).concat(B.front.map(u=>({u,b:unitBox(u)}))).filter(o=>o.b).sort((a,b)=>a.b.y-b.b.y);
   units.forEach(({u,b})=>drawUnit(ctx,u,b,now,tgMode));
   // turn arrow
-  if(B.cur&&(B.mode==='cmd'||B.mode==='enemy')&&B.cur.hp>0){const b=unitBox(B.cur);if(b){const y=b.y-b.h-6+Math.round(Math.sin(now/140)*2);ctx.fillStyle='#150b17';ctx.fillRect(b.x-4,y-1,9,5);ctx.fillStyle=B.cur.side==='p'?'#ffd04a':'#ff6a6a';ctx.fillRect(b.x-3,y,7,1);ctx.fillRect(b.x-2,y+1,5,1);ctx.fillRect(b.x-1,y+2,3,1);ctx.fillRect(b.x,y+3,1,1);}}
+  // v0.6.3: the turn arrow sits where the stage layout put it (b3Lay), drawn with the HUD below
   drawParts(ctx,now);
   // Limit II: a golden sunburst with the hero's element behind it
   if(B.lim2T){const p=(Date.now()-B.lim2T.t)/1100;if(p>=1)B.lim2T=null;else{const cx=W/2,cy=H*.45,col=ELC[B.lim2T.el]||'#ffd04a';ctx.save();ctx.globalAlpha=(1-p)*.75;
@@ -7651,7 +7883,7 @@ function battleFrame(now){
     ctx.globalAlpha=(1-p)*.35;ctx.fillStyle='#fff2a0';ctx.beginPath();ctx.arc(cx,cy,8+p*60,0,7);ctx.fill();ctx.restore();if(p<.05)BV.shake={t:now,life:500,amp:4};}}
   if(B.weather&&B.weather!=='clear')weatherFX(ctx,B.weather,W,H,now,true);
   // v0.5.8: bars, pips and element badges last, over every sprite, spell particle and weather (unitHud)
-  units.forEach(({u,b})=>{try{unitHud(ctx,u,b,now);}catch(e){}});
+  units.forEach(({u,b})=>{try{unitHud(ctx,u,b,now);}catch(e){}});try{b3Arrow(ctx,now);}catch(e){}
   ctx.restore();
   if(BV.flash){const p=(now-BV.flash.t)/BV.flash.life;if(p>=0&&p<1){ctx.fillStyle=BV.flash.col;ctx.globalAlpha=1-p;ctx.fillRect(0,0,W,H);ctx.globalAlpha=1;}else if(p>=1)BV.flash=null;}
 }
@@ -7703,7 +7935,11 @@ function drawUnit(ctx,u,b,now,tgMode){
   if(hero&&typeof stickGlowOf==='function'){const gc=stickGlowOf(G.roster[u.id]);if(gc){const p=.5+.5*Math.sin(now/240);ctx.globalAlpha=.2+.25*p;ctx.fillStyle=gc;ctx.beginPath();ctx.ellipse(x,y-b.h*.45,b.w*.45+p*2,b.h*.5+p*2,0,0,7);ctx.fill();ctx.globalAlpha=alpha;}}
   draw(c);
   if(white)draw(whiteOf(c,(hero?'h':'m')+(u.id||u.art)));
-  if(tgMode&&targetable(u)){ctx.globalAlpha=.22+.18*Math.sin(now/120);draw(whiteOf(c,(hero?'h':'m')+(u.id||u.art)));ctx.globalAlpha=alpha;}
+  // v0.6.3: a foe the aimed detonator sets off glows in the detonating element's colour, with a ring at its feet; other targets pulse white
+  if(tgMode&&targetable(u)){const dg=typeof detGlow==='function'?detGlow(u):null,k=(hero?'h':'m')+(u.id||u.art);
+    if(dg){const p=.5+.5*Math.sin(now/110);ctx.globalAlpha=.3+.3*p;draw(whiteOf(c,k,dg));ctx.globalAlpha=.55+.35*p;ctx.strokeStyle=dg;ctx.lineWidth=1;const gy=b.gy!=null?b.gy:b.y,rw=Math.max(8,Math.min(b.w,44)*.42+p*2);
+      ctx.beginPath();ctx.ellipse(b.x,gy,rw,rw*.32,0,0,7);ctx.stroke();ctx.beginPath();ctx.ellipse(b.x,gy,rw*.62,rw*.2,0,0,7);ctx.stroke();ctx.globalAlpha=alpha;}
+    else{ctx.globalAlpha=(B.pend&&B.pend.sk&&B.pend.sk.role==='det'?.12:.22)+.18*Math.sin(now/120);draw(whiteOf(c,k));ctx.globalAlpha=alpha;}}
   if(u.side==='p'&&lbReady(u)&&u.hp>0){ctx.globalAlpha=.25+.2*Math.sin(now/150);draw(whiteOf(c,'lb'+u.id,'#ffd04a'));ctx.globalAlpha=alpha;}
   ctx.globalAlpha=1;
   // status flourishes
@@ -7760,7 +7996,7 @@ function fitBattle(){
   const mode=battleMode();
   if(mode!=='tall'){const old=BL.sc,om=BL.mode;layoutBattle();if(Math.abs(BL.sc-old)>.01||om!==BL.mode)renderBattle(true);return;}
   const vh=window.visualViewport?window.visualViewport.height:window.innerHeight;
-  const other=($('hdr')?$('hdr').offsetHeight:0)+($('border')?$('border').offsetHeight:0)+(document.querySelector('.bbottom')?document.querySelector('.bbottom').offsetHeight:0)+34;
+  const other=($('hdr')?$('hdr').offsetHeight:0)+($('border')?$('border').offsetHeight:0)+b3Extra('tall')+b3Below()+34;
   const room=vh-other,H=clamp(Math.floor(room/BL.sc),140,230);
   if(BL.mode!=='tall'){layoutBattle();renderBattle(true);return;}
   if(Math.abs(H-BL.H)>6&&!fitBattle.busy){fitBattle.busy=1;BL.fitH=H;layoutBattle();renderBattle(true);setTimeout(()=>{fitBattle.busy=0;},300);}
@@ -8453,8 +8689,10 @@ function buildScreen(){
       <div class="abtns"><button class="abtn b" data-act="runT" aria-label="Run">B</button><button class="abtn" data-act="talk" aria-label="Talk">A</button></div></div></div>`;
     WS.cv=$('wcv');WS.ctx=WS.cv.getContext('2d');worldSizeCanvas();
   }else if(s==='battle'){
-    scr.innerHTML=`<section class="battle"><div class="bossbar" id="bbossbar"></div><div class="order" id="border"></div>
-      <div class="bwrap" id="bwrap"><canvas id="bcv"></canvas><div class="bstage" id="bstage"></div><div class="bban" id="bban"></div><div class="blog" id="blog"></div><button class="blogbtn" data-act="blogT" aria-label="Open the battle log">📜 Log</button><div id="bover"></div></div>
+    // v0.6.3: the last log line and the Log button live in a ticker under the stage (nothing of the HUD sits on the scene's corners any more)
+    scr.innerHTML=`<section class="battle b3"><div class="bossbar" id="bbossbar"></div><div class="order" id="border"></div>
+      <div class="bwrap" id="bwrap"><canvas id="bcv"></canvas><div class="bstage" id="bstage"></div><div class="bban" id="bban"></div><div id="bover"></div></div>
+      <div class="bline" id="bline"><div class="blog" id="blog"></div><button class="blogbtn" data-act="blogT" aria-label="Open the battle log">📜 Log</button></div>
       <div class="bbottom"><div class="cmd" id="bcmd"></div><div class="bparty" id="bparty"></div></div></section>`;
     layoutBattle();
   }
@@ -8537,23 +8775,18 @@ function heroCard(id,sel,act,extra){
 function renderBattle(stageOnly){
   const now=Date.now();
   if(!stageOnly){const order=turnOrder(10);
-    const Wt=WEATHER[B.weather||'clear'];$('border').innerHTML=battleSkyTags()+(B.spec.kind==='daily'?`<span class="wchip d">Daily · wave ${B.wave}/${B.spec.waves} · ${B.pturns||0} turns</span>`:'')+'<small>Next</small>'+order.map((u,i)=>`<span class="oc ${u.side} ${i===0?'now':''}" style="--c:${ELC[u.el[0]]}" title="${esc(u.name)}"><img src="${u.heroArt?heroURL(u.heroArt):u.side==='p'?heroURL(u.id):monURL(u.art)}" alt=""></span>`).join('');}
+    const Wt=WEATHER[B.weather||'clear'];$('border').innerHTML=`<span class="ocs"><small>Next</small>${order.map((u,i)=>`<span class="oc ${u.side} ${i===0?'now':''}" style="--c:${ELC[u.el[0]]}" title="${esc(u.name)}"><img src="${u.heroArt?heroURL(u.heroArt):u.side==='p'?heroURL(u.id):monURL(u.art)}" alt=""></span>`).join('')}</span><span class="osky">${battleSkyTags()}${B.spec.kind==='daily'?`<span class="wchip d">Daily · wave ${B.wave}/${B.spec.waves} · ${B.pturns||0} turns</span>`:''}</span>`;}
   const pend=B.mode==='cmd'&&B.menu==='target'&&B.pend;
   let h='';
   B.en.forEach((e,i)=>{
     const b=unitBox(e);if(!b)return;const dead=e.hp<=0,tg=targetable(e);
     if(dead&&now-(e.deathT||0)>1500)return;
-    const kn=META.best[e.base]||{known:{}};
-    let hint='';
-    if(tg&&pend.sk){const els=skEls(pend.sk);hint=effBadge(pend.sk,e,B.cur);
-      if(pend.sk.role==='det'&&e.primed&&els.length){const el=els.find(x=>reactFor(e.primed.el,x));const R=el&&reactFor(e.primed.el,el);if(R)hint+=`<span class="eff rx">✸ ${R.n}</span>`;}
-      else if(pend.sk.role==='primer'&&!e.primed&&els.length)hint+=`<span class="eff px">⟐ Prime</span>`;}
     h+=`<button class="unit foe ${tg?'tg':''} ${e.primed&&!dead?'isprimed':''} ${tg&&detHits(pend&&pend.sk,e)?'dethit':''}" style="--pc:${e.primed&&ELC[e.primed.el]||'#fff'};left:${b.x-b.w/2}px;top:${b.y-b.h}px;width:${b.w}px;height:${b.h+8}px" data-act="tgtE" data-arg="${i}" ${tg?'':'tabindex="-1"'} aria-label="${esc(e.name)}${dead?' (defeated)':''}">
-      <span class="fxl">${fxHtml(e,now)}</span>${!dead?primedTag(e):''}${!dead?`<span class="ename">${esc(e.name)}${e.elite?' ★':''}</span>`:''}${hint}</button>`;
+      </button>`;
   });
   B.front.forEach((c,i)=>{
     const b=unitBox(c);const tg=targetable(c);
-    h+=`<button class="unit ally ${tg?'tg':''}" style="left:${b.x-b.w/2}px;top:${b.y-b.h}px;width:${b.w}px;height:${b.h}px" data-act="tgtA" data-arg="${allParty().indexOf(c)}" ${tg?'':'tabindex="-1"'} aria-label="${esc(c.name)}"><span class="fxl">${fxHtml(c,now)}</span></button>`;
+    h+=`<button class="unit ally ${tg?'tg':''}" style="left:${b.x-b.w/2}px;top:${b.y-b.h}px;width:${b.w}px;height:${b.h}px" data-act="tgtA" data-arg="${allParty().indexOf(c)}" ${tg?'':'tabindex="-1"'} aria-label="${esc(c.name)}"></button>`;
   });
   h+=stageTags();
   $('bstage').style.setProperty('--nd',numDur()+'s');
@@ -8562,7 +8795,7 @@ function renderBattle(stageOnly){
   if(stageOnly)return;
   {const last=B.log[B.log.length-1]||'',el=$('blog');if(el&&el.dataset.l!==String(B.log.length)+last){el.dataset.l=String(B.log.length)+last;el.innerHTML=last&&!B.logOpen?`<p class="last flash">${esc(last)}</p>`:'';}}
   {const ov=$('bover');if(ov)ov.innerHTML=blogPanel()+stPopHtml()+uDetHtml();}
-  $('bparty').innerHTML=foeCards()+`<div class="pgroup">${B.front.map(c=>pcard(c,false)).join('')}</div><div class="pgroup rsv"><h3>Rearguard</h3>${B.back.map(c=>pcard(c,true)).join('')||'<span class="note">No rearguard.</span>'}</div>`;
+  $('bparty').innerHTML=foeCards()+`<div class="pgroup heroes"><h3>Party</h3><div class="pcs">${B.front.map(c=>pcard(c,false)).join('')}</div></div>${B.back.length?`<div class="pgroup rsv"><h3>Rearguard</h3><div class="pcs">${B.back.map(c=>pcard(c,true)).join('')}</div></div>`:''}`;
   $('bcmd').innerHTML=cmdHtml();
   fitBattle();
 }
@@ -8593,18 +8826,18 @@ function cmdHtml(){
   B.swapAsk=null;
   // v0.5.0 1.4: Back is pinned in the command header at every level (greyed at the top level), one step up each tap
   const atTop=B.menu==='root',backB=`<button class="btn sm cmdback" data-act="back" ${atTop?'disabled aria-disabled="true" title="Already at the top of the menu"':'title="Back (Esc)"'}>← Back</button>`;
-  const who=`<div class="who cmdhead">${port(a.id)}<div><b>${esc(a.name)}</b><small>${CLS[TPL[a.id].cls].n}, ${a.mp} MP</small></div><span class="tags">${stButtons(a,{noWx:true,max:6})}</span>${backB}</div>`;
+  const who=`<div class="who cmdhead">${port(a.id)}<div><b>${esc(a.name)}<em class="turnl">'s turn</em></b><small><span class="cls">${CLS[TPL[a.id].cls].n}</span>${B.menu==='skills'?` <span class="nums mpn">${a.mp}/${a.S.mmp} MP</span>`:''}</small></div>${backB}</div>`;
   if(B.menu==='root'){
     const sw=canSwap(),rooted=has(a,'root'),lbOk=lbReady(a),L=LIMIT[TPL[a.id].cls],noFlee=B.boss||B.spec.kind==='elite'||B.spec.kind==='arena'||B.spec.kind==='daily';
     const bonds=ks.filter(s=>s.bond);
     body=`${lbOk?(()=>{const LS=limitSkill(a);return `<button class="mi limit ${LS.limit2?'l2':''}" data-act="cmd" data-arg="limit"><span class="n">${LS.tierN}: ${esc(LS.n)}</span><span class="m">Ready</span><small>${esc(LS.d)}${LS.limit2?'':' (Limit I: about 70% power.)'}</small></button>`;})():''}
-      <div class="menu"><button class="mi" data-act="cmd" data-arg="attack">Attack</button><button class="mi" data-act="cmd" data-arg="skills">Skills${bonds.length?' <em class="bondtag">Bond</em>':''}</button>
-      <button class="mi" data-act="cmd" data-arg="items">Items</button><button class="mi" data-act="cmd" data-arg="guard">Guard</button>
-      <button class="mi" data-act="cmd" data-arg="scan" title="Read a foe's exact stats and hidden quirks. Costs half a turn.">Scan</button><button class="mi" data-act="cmd" data-arg="lore" title="Elements, reactions and statuses. Read only, pauses the fight.">Lore</button>${canSummon(a)?`<button class="mi summon" data-act="summon" title="Your companion fights in this hero's place for a few turns">Summon ${esc(compOf(a).name)}</button>`:''}
+      <div class="menu prim"><button class="mi" data-act="cmd" data-arg="attack">Attack</button><button class="mi" data-act="cmd" data-arg="skills">Skills${bonds.length?' <em class="bondtag">Bond</em>':''}</button>
+      <button class="mi" data-act="cmd" data-arg="items">Items</button><button class="mi" data-act="cmd" data-arg="guard">Guard</button></div>
+      <div class="menu sec">${canSummon(a)?`<button class="mi summon" data-act="summon" title="Your companion fights in this hero's place for a few turns">Summon ${esc(compOf(a).name)}</button>`:''}<button class="mi" data-act="cmd" data-arg="scan" title="Read a foe's exact stats and hidden quirks. Costs half a turn.">Scan</button><button class="mi" data-act="cmd" data-arg="lore" title="Elements, reactions and statuses. Read only, pauses the fight.">Lore</button>
       <button class="mi" data-act="cmd" data-arg="swap" ${sw?'':'disabled'} title="${rooted?'Rooted: cannot switch out':'Swap this hero for a rearguard hero'}">${rooted?'Rooted':'Switch'}</button>
-      <button class="mi" data-act="cmd" data-arg="flee" ${noFlee?'disabled':''}>Flee</button></div><div class="btnrow">${auto}</div>`;
+      <button class="mi" data-act="cmd" data-arg="flee" ${noFlee?'disabled':''}>Flee</button></div><div class="btnrow autorow">${auto}</div>`;
   }else if(B.menu==='skills'){
-    body=`<div class="menu list">${ks.map(s=>`<button class="mi ${s.combo?'combo':''} ${s.bond?'bond':''}" data-act="sk" data-arg="${s.id}" ${a.mp<s.mp?'disabled':''}><span class="n">${skEls(s).map(ico).join('')}${esc(s.n)}${s.t==='all'||s.t==='allyAll'?' <em>All</em>':''}${s.combo?' <em class="c">Dual art</em>':''}${s.bond?' <em class="b">Bond</em>':''}${roleTag(s)}</span><span class="m">${s.mp} MP</span><small>${esc(s.d)}</small>${detLive(s)}${perkNote(a,s)}${effChips(s,a)}</button>`).join('')}</div>`;
+    body=`<div class="menu list">${ks.map(s=>`<button class="mi ${s.combo?'combo':''} ${s.bond?'bond':''}" data-act="sk" data-arg="${s.id}" ${a.mp<s.mp?'disabled':''}><span class="n">${skEls(s).map(ico).join('')}${esc(s.n)}${s.t==='all'||s.t==='allyAll'?' <em>All</em>':''}${s.combo?' <em class="c">Dual art</em>':''}${s.bond?' <em class="b">Bond</em>':''}${roleTag(s)}</span><span class="m">${s.mp} MP</span><small>${esc(s.d)}</small>${detList(s)}${perkNote(a,s)}${effChips(s,a)}</button>`).join('')}</div>`;
   }else if(B.menu==='items'){
     body=`<div class="menu list">${Object.keys(ITEMS).filter(id=>!ITEMS[id].ward&&!ITEMS[id].tent&&(!ITEMS[id].craft||(G.inv[id]||0)>0)&&(!ITEMS[id].flee||(G.inv[id]||0)>0)).map(id=>`<button class="mi" data-act="item" data-arg="${id}" ${(G.inv[id]||0)>0&&!(ITEMS[id].flee&&porkBlocked())?'':'disabled'}><span class="n">${itemIcon(id)} ${ITEMS[id].n}</span><span class="m">x${G.inv[id]||0}</span><small>${ITEMS[id].d}</small></button>`).join('')}</div>`;
   }else if(B.menu==='target'){
@@ -10239,20 +10472,8 @@ function stButtons(u,opt){
   if(o.max&&L.length>o.max){const more=L.length-(o.max-1);return L.slice(0,o.max-1).join('')+`<button class="sti more" data-act="stInfo" data-arg="${unitRef(u)}|all" aria-label="${more} more effects">+${more}</button>`;}
   return L.join('');
 }
-// one icon row per unit on the stage, placed so no row is covered by another row, a sprite's body or the stage edge
-function stageTags(){
-  if(!B)return '';const W=BL.W,H=BL.H,IW=15,RH=10,placed=[],out=[];
-  const units=B.en.filter(e=>e.hp>0).concat(B.front.filter(c=>c.hp>0)).map(u=>({u,b:unitBox(u)})).filter(o=>o.b);
-  const bodies=units.map(o=>({x:o.b.x-o.b.w*.3,y:o.b.y-o.b.h*.8,w:o.b.w*.6,h:o.b.h*.75,u:o.u}));
-  const hit=(r,q)=>r.x<q.x+q.w&&r.x+r.w>q.x&&r.y<q.y+q.h&&r.y+r.h>q.y;
-  units.sort((a,b)=>b.b.y-a.b.y).forEach(({u,b})=>{const n=Math.min(4,stItems(u,{noPrime:true}).length);if(!n)return;const w=n*IW+2;
-    const sh=u.maxShield?7:0;/* v0.4.0 1.3: the shield pips own the strip right under the HP bar, tags start below it */const cands=[b.y+7+sh,b.y+17+sh,b.y-b.h-RH+2,b.y-b.h-2*RH+2,b.y-Math.round(b.h/2)];let pos=null;
-    for(const y0 of cands){const y=clamp(y0,1,H-RH-1),x=clamp(Math.round(b.x-w/2),1,W-w-1),r={x,y,w,h:RH};
-      if(!placed.some(q=>hit(r,q))&&!bodies.some(q=>q.u!==u&&hit(r,q))){pos=r;break;}}
-    if(!pos){const y=clamp(b.y+7+sh,1,H-RH-1),x=clamp(Math.round(b.x-w/2),1,W-w-1);pos={x,y,w,h:RH};}
-    placed.push(pos);out.push(`<div class="utags ${u.side}" style="left:${pos.x}px;top:${pos.y}px;width:${pos.w}px">${stButtons(u,{max:4,noPrime:true})}</div>`);});
-  return out.join('');
-}
+// v0.6.3: every stage label (status rows, primed badges, target tags) comes from one layout pass (b3Lay, battle3.js)
+function stageTags(){return B?b3StageHtml():'';}
 function stPopHtml(){
   const P=B&&B.stPop;if(!P)return '';const u=unitOf(P.ref);if(!u){B.stPop=null;return '';}
   let title='',body='',src='',dur='';
@@ -12173,16 +12394,10 @@ const FX_STAG=90,FX_KEEP=6000;
 fxHtml=function(){return '';};
 function fxSize(){const k=BL.sc||2;return k>=2.75?5.5:k>=1.9?6.5:Math.min(10,Math.max(6.5,Math.round(14/k*2)/2));}// logical px: 16.5px on desktop, 13px on phones
 function fxScale(f){return /crit/.test(f.cls)?1.25:/effx|stat/.test(f.cls)?.82:/react/.test(f.cls)?1:1;}
-function fxLayer(now){if(!B)return '';let top=1;try{const bw=document.getElementById('bwrap'),bn=B.banner,on=!!bn&&now-bn.t<banDur(bn)*1000;if(on)top=Math.ceil(26/(BL.sc||2));if(bw)bw.classList.toggle('banon',on);}catch(e){}const W=BL.W,H=BL.H,base=fxSize(),out=[];
-  B.en.concat(B.front).forEach(u=>{if(!u||!u.fx||!u.fx.length)return;const b=unitBox(u);if(!b)return;
-    const live=u.fx.filter(f=>now-f.t<(fxDur(f)*1000+IMPACT+FX_STAG*6));if(!live.length)return;
-    // give each text a slot when it first shows; slots free up as texts fade
-    const used=new Set(live.filter(f=>f.slot!=null).map(f=>f.slot));live.forEach(f=>{if(f.slot==null){let s=0;while(used.has(s))s++;f.slot=s;used.add(s);f.stg=Math.min(s,5)*FX_STAG;}});
-    const head=b.y-b.h-(u.side==='e'?6:3),LH=base*1.15;
-    live.forEach(f=>{const fs=base*fxScale(f),w=String(f.txt).length*fs*.62+4;let y=head-f.slot*LH;
-      if(y-fs<top)y=b.y+fs+2+f.slot*LH;// no room above: stack below the feet instead
-      y=clamp(y,fs+top,H-2);const x=clamp(b.x,w/2+1,W-w/2-1),age=now-f.t,dl=fxDelay(f)+f.stg-age;
-      out.push(`<span class="fx2 ${f.cls}" style="left:${x.toFixed(1)}px;top:${(y-fs).toFixed(1)}px;font-size:${fs.toFixed(2)}px;animation-delay:${dl}ms;animation-duration:${fxDur(f)}s">${esc(f.txt)}</span>`);});});
+// v0.6.3: texts are placed by b3FxRects (battle3.js) around the unit, clear of every sprite and stage label; a reaction carries both element icons
+function fxLayer(now){if(!B)return '';try{const bw=document.getElementById('bwrap'),bn=B.banner,on=!!bn&&now-bn.t<banDur(bn)*1000;if(bw)bw.classList.toggle('banon',on);}catch(e){}
+  const out=b3FxRects(now).map(({f,r,fs})=>{const age=now-f.t,dl=fxDelay(f)+f.stg-age,rx=f.cls==='react';
+    return `<span class="fx2 b3fx ${f.cls}" style="left:${r.x}px;top:${r.y}px;width:${r.w}px;height:${r.h}px;font-size:${fs.toFixed(2)}px;animation-delay:${dl}ms;animation-duration:${fxDur(f)}s">${rx?`<b>${f.rp&&EL[f.rp]?ico(f.rp):''}${f.rd&&EL[f.rd]?ico(f.rd):''}✸ ${esc(f.txt)}</b>`:esc(f.txt)}</span>`;});
   return `<div class="fxlayer">${out.join('')}</div>`;}
 {const st0=stageTags;stageTags=function(){return st0.apply(this,arguments)+fxLayer(Date.now());};}
 
@@ -12629,8 +12844,12 @@ function foeKnown(e){return tierOf(bestEntry(e),e.boss)>=2;}
 function hpText(u){return `${Math.max(0,Math.ceil(u.hp))}/${u.S.mhp}`;}
 function uInfoBtn(u){return `<button class="uinfo" data-act="uInfo" data-arg="${unitRef(u)}" aria-label="Details for ${esc(u.name)}" title="Details">i</button>`;}
 // v0.3.5 2.1: the loud primed chip on every foe card, with turns left and a reaction hint while a detonator is being aimed
-function primedChip(e){if(!(e.primed&&e.hp>0&&EL[e.primed.el]))return '';const hit=B.mode==='cmd'&&B.pend&&detHits(B.pend.sk,e);
-  return `<span class="pchip ${hit?'hit':''}" style="--c:${ELC[e.primed.el]}" title="Primed with ${EL[e.primed.el]}. A matching Detonator sets off a reaction.">${ico(e.primed.el)}<b>PRIMED: ${EL[e.primed.el]}</b><i>${e.primed.t} turn${e.primed.t===1?'':'s'}</i>${hit?'<u>✸ REACTS</u>':''}</span>`;}
+// v0.6.3: compact (element, "Primed", turns left); while a detonator is aimed it names the reaction it will set off
+function primedChip(e){if(!(e.primed&&e.hp>0&&EL[e.primed.el]))return '';const sk=B.mode==='cmd'&&B.pend&&B.pend.sk,hit=detHits(sk,e),R=hit?(detTargets(sk).find(o=>o.e===e)||{}).R:null;
+  return `<span class="pchip ${hit?'hit':''}" style="--c:${ELC[e.primed.el]}" title="Primed with ${EL[e.primed.el]} for ${e.primed.t} more turn${e.primed.t===1?'':'s'}. A matching Detonator sets off a reaction.">${ico(e.primed.el)}<b>Primed</b><i>${e.primed.t}t</i>${R?`<u>✸ ${esc(R.n)}</u>`:''}</span>`;}
+// v0.6.3: the elements this foe is known to be weak to (and resists), from the Bestiary
+function foeWeak(e){try{const b=bestEntry(e),kn=Object.keys(b.known||{}).filter(el=>EL[el]),w=kn.filter(el=>effOf(el,e)>1),r=kn.filter(el=>effOf(el,e)<1);
+  return (w.length?`<span class="fwk up" title="Weak to ${esc(w.map(el=>EL[el]).join(', '))}">Weak ${w.map(ico).join('')}</span>`:'')+(r.length?`<span class="fwk dn" title="Resists ${esc(r.map(el=>EL[el]).join(', '))}">Res ${r.map(ico).join('')}</span>`:'');}catch(x){return '';}}
 // v0.4.0 1.3: shield pips get their own row on the foe card (and their own strip on the stage), never shared with status icons
 function shPips(u){if(!u.maxShield||u.hp<=0)return '';let h='';for(let i=0;i<u.maxShield;i++)h+=`<i class="${u.broken?'br':i<u.shield?'on':''}"></i>`;
   return `<span class="spips ${u.broken?'broken':''}" role="img" aria-label="Shield ${u.broken?'broken':u.shield+' of '+u.maxShield}" title="Shield ${u.broken?'broken':u.shield+'/'+u.maxShield}"><b>Shield</b><span class="spp">${h}</span>${u.broken?'<em>BROKEN</em>':''}</span>`;}
@@ -12639,10 +12858,12 @@ function foeCards(){
   if(!L.length)return '';
   return `<div class="pgroup foes"><h3>Foes</h3><div class="fcs">${L.map(({e,i})=>{const tg=targetable(e),dead=e.hp<=0,kn=foeKnown(e),pct=Math.max(0,Math.ceil(e.hp/e.S.mhp*100));
     const art=e.heroArt?heroURL(e.heroArt):monURL(e.art);
-    return `<div class="pcw fcw"><button class="fc ${tg?'tg':''} ${dead?'ko':''} ${e.primed&&!dead?'isprimed':''} ${tg&&detHits(B.pend&&B.pend.sk,e)?'dethit':''}" style="--pc:${e.primed&&ELC[e.primed.el]||'#fff'}" data-x="1 ${B.mode==='cmd'&&B.menu==='target'&&!tg?'':''}" data-act="tgtE" data-arg="${i}" ${tg?'':'tabindex="-1"'} aria-label="${esc(e.name)}, level ${e.lv}">
+    // v0.6.3: effects the stage already shows in full are not repeated here (b3OnStage); the reaction a detonator sets off always is
+    const tags=dead?'':(b3OnStage(e,'prim')&&!detHits(B.pend&&B.pend.sk,e)?'':primedChip(e))+foeWeak(e)+(b3OnStage(e,'tags')?'':stButtons(e,{max:BL.mode==='tall'?3:5,noWx:true,noPrime:true}))+(BL.mode==='tall'?'':archChips(e));
+    return `<div class="pcw fcw ${tags?'hastags':''}"><button class="fc ${tg?'tg':''} ${dead?'ko':''} ${e.primed&&!dead?'isprimed':''} ${tg&&detHits(B.pend&&B.pend.sk,e)?'dethit':''}" style="--pc:${e.primed&&ELC[e.primed.el]||'#fff'}" data-x="1 ${B.mode==='cmd'&&B.menu==='target'&&!tg?'':''}" data-act="tgtE" data-arg="${i}" ${tg?'':'tabindex="-1"'} aria-label="${esc(e.name)}, level ${e.lv}">
       <img class="fci" src="${art}" alt=""><span class="pm"><span class="uct"><b>${esc(e.name)}${e.elite?' ★':''}</b><span class="ucl">Lv ${e.lv}</span>${elbs(e.el)}</span>
       <span class="ucr"><i>HP</i>${bar(e.hp,e.S.mhp,'#e8504a')}<em class="nums">${dead?'KO':kn?hpText(e):pct+'%'}</em></span>${shPips(e)}</span></button>${uInfoBtn(e)}
-      <div class="ptags">${dead?'':archChips(e)+primedChip(e)+stButtons(e,{max:5,noWx:true})}</div></div>`;}).join('')}</div></div>`;
+      <div class="ptags">${tags}</div></div>`;}).join('')}</div></div>`;
 }
 function pcard0(c,rs,turn,tg,lb){
   const lim=!rs&&limitOpen(c),ko=c.hp<=0;
@@ -12656,7 +12877,8 @@ function pcard0(c,rs,turn,tg,lb){
 }
 function pcard(c,rs){
   const turn=B.mode==='cmd'&&B.cur===c,tg=allyTargetable(c),lb=c.lb||0;
-  return `<div class="pcw">`+pcard0(c,rs,turn,tg,lb)+uInfoBtn(c)+`<div class="ptags">${c.hp>0?stButtons(c,{max:6,noWx:true}):'<span class="swko">KO</span>'}</div></div>`;
+  const tags=rs?'':c.hp>0?(b3OnStage(c,'tags')?'':stButtons(c,{max:BL.mode==='tall'?3:6,noWx:true})):'<span class="swko">KO</span>';
+  return `<div class="pcw ${tags?'hastags':''}">`+pcard0(c,rs,turn,tg,lb)+uInfoBtn(c)+`<div class="ptags">${tags}</div></div>`;
 }
 // ----- unit detail panel -----
 const DSTATS=[['mhp','HP'],['mmp','MP'],['atk','ATK'],['def','DEF'],['mag','MAG'],['res','RES'],['spd','SPD']];
@@ -12705,7 +12927,7 @@ function uDetHtml(){
 function bossBarHtml(){if(!B||!B.en)return '';const b=B.en.find(e=>e.boss&&e.hp>0)||B.en.find(e=>e.elite&&e.hp>0&&B.spec&&(B.spec.mini||B.spec.kind==='elite'));if(!b)return '';
   const p=Math.max(0,Math.min(100,b.hp/b.S.mhp*100)),sh=b.maxShield?`<span class="bbsh">${'◆'.repeat(Math.max(0,b.shield||0))}${'◇'.repeat(Math.max(0,b.maxShield-(b.shield||0)))}</span>`:'';
   return `<div class="bbn"><b>${esc(b.name)}</b> <small>Lv ${b.lv}</small>${sh}<span class="nums">${Math.ceil(b.hp)} / ${b.S.mhp}</span></div><div class="bbbar"><i style="width:${p.toFixed(1)}%"></i></div>`;}
-{const rb0=renderBattle;renderBattle=function(){const r=rb0.apply(this,arguments);try{const el=document.getElementById('bbossbar');if(el){const h=bossBarHtml();if(el.innerHTML!==h)el.innerHTML=h;el.style.display=h?'':'none';}}catch(e){}return r;};}
+{const rb0=renderBattle;renderBattle=function(){const r=rb0.apply(this,arguments);try{const el=document.getElementById('bbossbar');if(el){const h=bossBarHtml();if(el.innerHTML!==h)el.innerHTML=h;el.style.display=h?'':'none';const bt=el.closest('.battle');if(bt)bt.classList.toggle('hasboss',!!h);}}catch(e){}return r;};}
 
 // ===== v0.4.0 2.2: Auto battle settings =====
 // One screen for every auto battle choice. It opens from Menu > Settings and from inside a battle (the gear next to the auto button).
@@ -17205,6 +17427,184 @@ const WFX_NONE=mkCv(1,1);
 // the ground under a chest is painted like the ground around it (it showed as an odd pale patch once the opened chest was gone)
 {const dt0=drawTile;drawTile=function(ctx,m,x,y,fr){const r=WFX.chestGone&&m&&m.t&&m.t[y]?m.t[y][x]:null;if((r==='C'||r==='K')&&typeof floorLike==='function'){m.t[y][x]=floorLike(m,x,y);try{return dt0.apply(this,arguments);}finally{m.t[y][x]=r;}}return dt0.apply(this,arguments);};}
 
+// =================== Beta v0.6.3: BATTLE SCREEN PASS ===================
+// 1) One layout pass for every label on the battle stage (b3Lay): HP plates (HP, limit, shield pips and element badges, drawn on the
+//    canvas by unitHud), primed badges, the turn arrow, status rows, target tags (name, effectiveness, reaction) and the floating effect
+//    texts. Each label is placed on a free spot near its unit: never over any unit's visible sprite (real alpha bounds of the sprite
+//    canvas, HD bitmaps included) and never over another label; when a spot cannot be found it falls back to a compact shape, then to
+//    the card (hidden on the stage, listed in L.hidden).
+// 2) The encounter flash and fades of the HD-2D world overlay are drawn at the canvas's backing scale (they used to cover a quarter).
+// 3) Detonator targeting: foes a detonator will set off glow in the reaction colour with a "✸ Melt" tag and both element icons; the
+//    skill list names them; the reaction floats over the detonated foe as a styled effect text.
+// 4) The battle screen layout (markup in ui.js / battleui.js, styles in battle3.css).
+
+// ----- 2) the encounter flash: the HD-2D overlay reset the transform to identity on a 2x canvas -----
+// While hdOverlay or hdBlit runs, setTransform(a..f) on the world canvas is scaled by the canvas's backing scale k (hdOverlay calls hdBlit,
+// so only the outermost call installs and removes the scaled version).
+{const wrapK=f=>function(){const cv=WS.cv,ctx=WS.ctx,k=cv&&cv._ss||1;if(k===1||!ctx||ctx._b3k)return f.apply(this,arguments);
+  const P=CanvasRenderingContext2D.prototype.setTransform;ctx._b3k=k;ctx.setTransform=function(a,b,c,d,e,g){if(arguments.length===6)return P.call(this,a*k,b*k,c*k,d*k,e*k,g*k);return P.apply(this,arguments);};
+  try{return f.apply(this,arguments);}finally{delete ctx.setTransform;ctx._b3k=0;}};
+  if(typeof hdOverlay==='function')hdOverlay=wrapK(hdOverlay);if(typeof hdBlit==='function')hdBlit=wrapK(hdBlit);}
+
+// ----- 1) sprite bounds -----
+// the visible (alpha) bounds of a sprite canvas in its logical pixels; HD canvases hold a k times larger bitmap
+function sprVB(c){if(!c)return null;if(c._vb)return c._vb;const k=c.hd||1,RW=c._rw||c.width,RH=c._rh||c.height;let l=RW,t=RH,r=-1,b=-1;
+  try{const d=c.getContext('2d').getImageData(0,0,RW,RH).data;
+    for(let y=0;y<RH;y++){const o=y*RW*4;for(let x=0;x<RW;x++)if(d[o+x*4+3]>40){if(x<l)l=x;if(x>r)r=x;if(y<t)t=y;b=y;}}}
+  catch(e){return {l:0,t:0,r:c.width,b:c.height};}
+  const v=r<0?{l:0,t:0,r:0,b:0,empty:1}:{l:l/k,t:t/k,r:(r+1)/k,b:(b+1)/k};try{c._vb=v;}catch(e){}return v;}
+// where a unit's sprite is on the stage (static pose: no lunge, hit or entrance offsets), logical px
+function b3Body(u,b){b=b||unitBox(u);if(!b)return null;const c=spriteOf(u,false);if(!c)return null;const v=sprVB(c),w=c.width,h=c.height,m=B3.body;
+  if(u.side==='p'&&u.hp<=0){// knocked out heroes lie on their side (drawUnit rotates the sprite a quarter turn)
+    const cx=b.x-4,cy=b.y-2;return {x:cx-h+6+v.t-m,y:cy-w/2-m,w:(v.b-v.t)+2*m,h:w+2*m};}
+  const dx=Math.round(b.x-w/2),dy=Math.round(b.y-h+1),hero=u.side==='p',l=hero?w-v.r:v.l,r=hero?w-v.l:v.r,bob=b.hov?2:0;
+  return {x:dx+l-m,y:dy+v.t-m-bob,w:r-l+2*m,h:v.b-v.t+2*m+2*bob};}
+// face: the top 40% of the visible body (used by the tests and to weigh fallbacks)
+function b3Face(bd){return bd?{x:bd.x,y:bd.y,w:bd.w,h:Math.max(6,bd.h*.4)}:null;}
+const b3Hit=(a,q,p)=>a.x<q.x+q.w+p&&a.x+a.w+p>q.x&&a.y<q.y+q.h+p&&a.y+a.h+p>q.y;
+// candidate offsets around an anchor, nearest first (cost: distance, sideways moves a little cheaper than vertical ones)
+const B3OFF=(()=>{const L=[],R=B3.R,s=B3.step;for(let dy=-R;dy<=R;dy+=s)for(let dx=-R;dx<=R;dx+=s){const d=Math.abs(dx)+Math.abs(dy)*1.25;if(d<=R*1.3)L.push([dx,dy,d]);}L.sort((a,b)=>a[2]-b[2]);return L;})();
+// try anchors [{x,y,c}] (c = extra cost) in order of total cost; first free rect of size w x h wins
+function b3Find(w,h,anchors,obs,W,H,R){R=R||B3.R;const K=anchors.length,ix=new Array(K).fill(0),pad=B3.pad;
+  for(let guard=0;guard<B3OFF.length*K;guard++){let bk=-1,bc=1e9;for(let k=0;k<K;k++){const o=B3OFF[ix[k]];if(!o)continue;const c=anchors[k].c+o[2];if(c<bc){bc=c;bk=k;}}
+    if(bk<0)return null;const o=B3OFF[ix[bk]++],a=anchors[bk];if(o[2]>R*1.3)continue;
+    const r={x:Math.round(a.x+o[0]),y:Math.round(a.y+o[1]),w,h};if(r.x<1||r.y<1||r.x+w>W-1||r.y+h>H-1)continue;
+    let ok=true;for(let i=0;i<obs.length;i++){const q=obs[i];if(b3Hit(r,q,q.body?0:pad)){ok=false;break;}}if(ok)return r;}
+  return null;}
+// ----- label sizes (logical px; battle3.css gives the DOM labels exactly these boxes) -----
+function b3PlateGeo(u,b){const hero=u.side==='p',n=(u.el||[]).length,bw=hero?B3.barW.hero:Math.min(B3.barW.foe,Math.max(18,Math.round(b.w*.66))),lim=hero&&limitOpen(u),ms=u.maxShield||0;
+  const bkW=Math.max(bw+2,ms?ms*5+1:0),bkH=4+(lim?3:0)+(ms?6:0),tw=n?n*10+1:0;
+  return {bw,lim,ms,n,bkW,bkH,tw,row:{w:tw+(n?1:0)+bkW,h:Math.max(n?11:0,bkH)},col:{w:Math.max(tw,bkW),h:(n?12:0)+bkH}};}
+let B3MC=null;const B3TW={};
+function b3TextW(t,px,wt){const k=wt+'|'+px+'|'+t;if(B3TW[k])return B3TW[k];if(!B3MC)B3MC=document.createElement('canvas').getContext('2d');
+  B3MC.font=`${wt} ${px*10}px Nunito, system-ui, sans-serif`;const w=B3MC.measureText(String(t)).width/10;return B3TW[k]=w;}
+// the target tag shown on a unit while a skill or item is aimed: name, effectiveness and the reaction a detonator sets off
+function b3TagInfo(u){const pend=B&&B.mode==='cmd'&&B.menu==='target'&&B.pend;if(!pend||!targetable(u))return null;const sk=pend.sk,out={name:b3Short(u.name)+(u.elite?' ★':''),eff:'',rx:null,px:false,html:''};
+  if(u.side==='e'&&sk){out.eff=effBadge(sk,u,B.cur);const els=skEls(sk);
+    if(sk.role==='det'&&u.primed&&els.length){const el=els.find(x=>reactFor(u.primed.el,x));const R=el&&reactFor(u.primed.el,el);if(R)out.rx={n:R.n,p:R.p,d:el};}
+    else if(sk.role==='primer'&&!u.primed&&els.length)out.px=true;}
+  return out;}
+function b3TagSize(T){const f=B3.tagF,w1=b3TextW(T.name,f,800)+4;let w2=0;const lab=(T.eff.match(/>([A-Za-z?]+)/)||[])[1]||'';if(lab)w2+=b3TextW(lab,f*.92,800)+5;if(T.rx)w2+=b3TextW('✸ '+T.rx.n,f*.92,900)+5+2*(f+1);if(T.px)w2+=b3TextW('⟐ Prime',f*.92,800)+5;
+  const lines=w2?2:1;return {w:Math.ceil(Math.max(w1,w2)*1.08+3),h:Math.ceil(lines*(f*1.25)+2)};}
+// ----- the pass -----
+const B3L={key:'',L:null};
+function b3Units(){if(!B)return [];return B.en.map(u=>({u,b:unitBox(u)})).concat(B.front.map(u=>({u,b:unitBox(u)}))).filter(o=>o.b&&(o.u.hp>0||o.u.side==='p'));}
+function b3Key(units){let k=BL.W+'x'+BL.H+'|'+(B.id||0)+'|'+(B.wave||0)+'|'+B.mode+B.menu+(B.pend?(B.pend.sk?B.pend.sk.id:B.pend.item||'s'):'')+'|'+(B.cur&&B.cur.hp>0?unitRef(B.cur):'')+'|'+(B.weather||'');
+  for(const {u,b} of units)k+='|'+u.side+(u.hp>0?1:0)+b.x+','+b.y+(b.hov?'h':'')+(u.el||[]).join('')+(u.maxShield||0)+(u.side==='p'&&limitOpen(u)?'L':'')+(u.primed&&u.hp>0?u.primed.el+u.primed.t:'')+':'+(u.hp>0?b3StN(u):0)+(u.broken?'b':'')+(u.art||u.id||'');
+  return k;}
+// the canvas asks every frame (once per unit): within B3.memo ms the last layout is reused without rebuilding the key; the DOM render
+// (b3StageHtml) always checks the key, so a new turn, target mode or status is laid out at once
+function b3Lay(fresh){if(!B)return null;const now=performance.now();if(!fresh&&B3L.L&&B3L.bid===B.id&&now-B3L.t<B3.memo)return B3L.L;
+  const units=b3Units(),key=b3Key(units);B3L.t=now;B3L.bid=B.id;if(B3L.key===key&&B3L.L)return B3L.L;
+  const W=BL.W,H=BL.H,obs=[],L={W,H,bodies:[],plates:new Map(),prim:new Map(),tags:new Map(),tgt:new Map(),arrow:null,hidden:[],all:[]};
+  units.forEach(({u,b})=>{const bd=b3Body(u,b);if(bd){bd.body=1;bd.u=u;obs.push(bd);L.bodies.push({u,r:bd,face:b3Face(bd),b});}});
+  const live=units.filter(o=>o.u.hp>0).sort((a,b)=>b.b.y-a.b.y);
+  const add=(kind,u,r,extra)=>{const o=Object.assign({kind,u,x:r.x,y:r.y,w:r.w,h:r.h},extra||{});obs.push(o);L.all.push(o);return o;};
+  const bodyOf=(u,b)=>{const o=L.bodies.find(q=>q.u===u);return o?o.r:{x:b.x-b.w/2,y:b.y-b.h,w:b.w,h:b.h};};
+  // depth on the ground band: units at the back carry their labels over the head (open sky), units in front under the feet
+  const G0=BATTLE_GROUND,depth=b=>clamp(((b.gy!=null?b.gy:b.y)/H-G0.top)/Math.max(.01,G0.bot-G0.top),0,1);
+  // anchors around a unit: under the feet, over the head, beside the body (toward the middle of the stage first)
+  const anch=(u,b,w,h,pref)=>{const bd=bodyOf(u,b),cx=Math.round(b.x-w/2),foot=Math.max(b.y,bd.y+bd.h)+1,top=bd.y-h-1,mid=Math.round(bd.y+Math.max(0,bd.h*.3-h/2)),inL=u.side==='p';
+    const A={below:{x:cx,y:foot},above:{x:cx,y:top},inner:{x:inL?bd.x-w-1:bd.x+bd.w+1,y:mid},outer:{x:inL?bd.x+bd.w+1:bd.x-w-1,y:mid}};return pref.map(([k,c])=>Object.assign({},A[k],{c:c||0}));};
+  const prefOf=b=>depth(b)<.45?[['above',0],['below',4],['inner',8],['outer',10]]:[['below',0],['above',4],['inner',8],['outer',10]];
+  // next to a placed box, on the side away from the unit's body (stacking outward), then the other sides
+  const nextTo=(p,bd,w,h,c0)=>{const up=p.y+p.h<=bd.y+2,cx=Math.round(p.x+p.w/2-w/2);return [{x:cx,y:up?p.y-h-1:p.y+p.h+1,c:c0},{x:p.x+p.w+1,y:Math.round(p.y+p.h/2-h/2),c:c0+1},{x:p.x-w-1,y:Math.round(p.y+p.h/2-h/2),c:c0+1},{x:cx,y:up?p.y+p.h+1:p.y-h-1,c:c0+6}];};
+  // HP plates first (they matter most and stay put while statuses come and go): a row (badges left of the bars), else a column
+  for(const {u,b} of live){const g=b3PlateGeo(u,b);let r=null,shape='row';
+    for(const sh of ['row','col']){const s=g[sh];r=b3Find(s.w,s.h,anch(u,b,s.w,s.h,prefOf(b)),obs,W,H);if(r){shape=sh;break;}}
+    if(r)L.plates.set(u,add('plate',u,r,{g,shape}));else L.hidden.push({kind:'plate',u});}
+  // primed badges (B3.prim square with the turns left), beside the plate
+  for(const {u,b} of live){if(!(u.primed&&EL[u.primed.el]))continue;const s=B3.prim,p=L.plates.get(u),bd=bodyOf(u,b);
+    const A=(p?[{x:p.x-s-1,y:Math.round(p.y+p.h/2-s/2),c:0},{x:p.x+p.w+1,y:Math.round(p.y+p.h/2-s/2),c:.5}]:[]).concat(anch(u,b,s,s,prefOf(b)).map(a=>Object.assign(a,{c:a.c+3})));
+    const r=b3Find(s,s,A,obs,W,H);if(r)L.prim.set(u,add('prim',u,r));else L.hidden.push({kind:'prim',u});}
+  // the turn arrow over whoever acts now (over the head, or over the plate when the plate is up there)
+  if(B.cur&&B.cur.hp>0&&(B.mode==='cmd'||B.mode==='enemy')){const o=live.find(q=>q.u===B.cur);if(o){const p=L.plates.get(o.u),bd=bodyOf(o.u,o.b);
+    const A=anch(o.u,o.b,9,6,[['above',0],['inner',6],['outer',8],['below',10]]);if(p&&p.y<bd.y)A.unshift({x:Math.round(o.b.x-4.5),y:p.y-7,c:0});
+    const r=b3Find(9,6,A,obs,W,H);if(r)L.arrow=add('arrow',o.u,r);else L.hidden.push({kind:'arrow',u:o.u});}}
+  // status rows: up to 4 icons, then 2 + "+N", then a lone "+N"; stacked on the outer side of the plate
+  for(const {u,b} of live){const n=stItems(u,{noPrime:true,noWx:true}).length;if(!n)continue;let r=null,m=0;const p=L.plates.get(u),bd=bodyOf(u,b);
+    for(const mx of n>4?[4,2,1]:n>2?[n,2,1]:[n,1]){const w=mx*(B3.sti+1)-1,h=B3.stiH,A=(p?nextTo(p,bd,w,h,0):[]).concat(anch(u,b,w,h,prefOf(b)).map(a=>Object.assign(a,{c:a.c+4})));
+      r=b3Find(w,h,A,obs,W,H);if(r){m=mx;break;}}
+    if(r)L.tags.set(u,add('tags',u,r,{max:m})),L.tags.get(u).n=n;else L.hidden.push({kind:'tags',u});}
+  // target tags while aiming (name, effectiveness, reaction): over the head first, they are what the player reads right now
+  for(const {u,b} of live){const T=b3TagInfo(u);if(!T)continue;const s=b3TagSize(T),bd=bodyOf(u,b);const A=anch(u,b,s.w,s.h,[['above',0],['inner',4],['outer',5],['below',6]]);
+    let r=b3Find(s.w,s.h,A,obs,W,H,B3.tagR);
+    if(!r&&(T.eff||T.rx||T.px)){const s2=b3TagSize(Object.assign({},T,{name:''}));r=b3Find(s2.w,s2.h,anch(u,b,s2.w,s2.h,[['above',0],['inner',4],['outer',5],['below',6]]),obs,W,H,B3.tagR);if(r)T.short=1;}
+    if(!r)r=b3Find(s.w,s.h,A,obs,W,H);
+    if(r)L.tgt.set(u,add('tgt',u,r,{T}));else L.hidden.push({kind:'tgt',u});}
+  L.obs=obs;B3L.key=key;B3L.L=L;return L;}
+
+// ----- the canvas HUD at the laid out spot: bars, limit, shield pips, element badges -----
+unitHud=function(ctx,u,b,now){if(!u||u.hp<=0)return;const L=b3Lay(),p=L&&L.plates.get(u);if(!p)return;const g=p.g,hero=u.side==='p';
+  u._dh=u._dh==null?u.hp:u._dh+(u.hp-u._dh)*Math.min(1,.18);if(Math.abs(u._dh-u.hp)<.5)u._dh=u.hp;
+  u._lag=u._lag==null?u.hp:(u._lag>u._dh?Math.max(u._dh,u._lag-u.S.mhp*.006):u._dh);
+  let ix,iy,bx,by;if(p.shape==='row'){ix=p.x;iy=p.y+Math.round((p.h-(g.n?11:0))/2);bx=p.x+g.tw+(g.n?1:0)+1;by=p.y+Math.round((p.h-g.bkH)/2)+1;}
+  else{ix=p.x+Math.round((p.w-g.tw)/2);iy=p.y;bx=p.x+Math.round((p.w-g.bkW)/2)+1;by=p.y+(g.n?12:0)+1;}
+  const bw=g.bw;ctx.fillStyle='#150b17';ctx.fillRect(bx-1,by-1,bw+2,4);ctx.fillStyle='#3a2a3a';ctx.fillRect(bx,by,bw,2);
+  ctx.fillStyle='#ffffff';ctx.fillRect(bx,by,Math.round(bw*u._lag/u.S.mhp),2);
+  const pct=u._dh/u.S.mhp;ctx.fillStyle=hero?(pct<.25?'#e8504a':pct<.5?'#f2c93a':'#5ad06a'):'#e8504a';ctx.fillRect(bx,by,Math.round(bw*pct),2);
+  if(g.lim){const lp=(u.lb||0)/100;ctx.fillStyle='#150b17';ctx.fillRect(bx-1,by+3,bw+2,3);ctx.fillStyle=lp>=1?(Math.floor(now/150)%2?'#c79bff':'#f1e4ff'):'#8a4be0';ctx.fillRect(bx,by+4,Math.round(bw*lp),1);}
+  if(g.ms){const py=by+4+(g.lim?3:0);for(let i=0;i<g.ms;i++){const px=bx-1+i*5;ctx.fillStyle='#150b17';ctx.fillRect(px,py,4,4);ctx.fillStyle=u.broken?'#5a3a3a':i<u.shield?'#ffd04a':'#4a4a5a';ctx.fillRect(px+1,py+1,2,2);}}
+  // v0.5.3: alpha 254 marks HUD pixels, so the GL stage (High) leaves them unlit and out of the bloom
+  if(BV.glFull){ctx.save();ctx.globalCompositeOperation='destination-out';ctx.globalAlpha=1/255;ctx.fillRect(bx-1,by-1,g.bkW,g.bkH);ctx.restore();}
+  (u.el||[]).forEach((el,i)=>ctx.drawImage(elShapeCv(el),ix+i*10,iy));
+  u._plate={ix,iy,bx,by};};
+// the turn arrow (battleFrame calls this instead of drawing over the head)
+function b3Arrow(ctx,now){const L=b3Lay(),a=L&&L.arrow;if(!a)return;const x=a.x+4,y=a.y+Math.round(Math.sin(now/140)*.5);
+  ctx.fillStyle='#150b17';ctx.fillRect(x-4,y,9,5);ctx.fillStyle=a.u.side==='p'?'#ffd04a':'#ff6a6a';ctx.fillRect(x-3,y+1,7,1);ctx.fillRect(x-2,y+2,5,1);ctx.fillRect(x-1,y+3,3,1);}
+
+// ----- DOM labels on the stage (status rows, primed badges, target tags) -----
+function b3StageHtml(){const L=b3Lay(true);if(!L)return '';const out=[],px=v=>v+'px';
+  L.tags.forEach((o,u)=>{out.push(`<div class="utags b3l ${u.side}" style="left:${px(o.x)};top:${px(o.y)};width:${px(o.w)};height:${px(o.h)}">${stButtons(u,{max:o.max,noPrime:true,noWx:true})}</div>`);});
+  L.prim.forEach((o,u)=>{out.push(`<span class="primed pmin b3l" style="--c:${ELC[u.primed.el]};left:${px(o.x)};top:${px(o.y)};width:${px(o.w)};height:${px(o.h)}" aria-label="Primed with ${EL[u.primed.el]}, ${u.primed.t} turn${u.primed.t===1?'':'s'} left">${ico(u.primed.el)}<i>${u.primed.t}</i></span>`);});
+  L.tgt.forEach((o,u)=>{const T=o.T,lab=(T.eff.match(/>([A-Za-z?]+)/)||[])[1]||'',cls=(T.eff.match(/class="eff ([a-z]+)/)||[])[1]||'';
+    const l2=(lab?`<span class="eff ${cls}">${lab}</span>`:'')+(T.rx?`<span class="eff rx">${ico(T.rx.p)}${ico(T.rx.d)}✸ ${esc(T.rx.n)}</span>`:'')+(T.px?'<span class="eff px">⟐ Prime</span>':'');
+    out.push(`<div class="b3tg b3l ${u.side} ${T.rx?'det':''}" style="left:${px(o.x)};top:${px(o.y)};width:${px(o.w)};height:${px(o.h)};--f:${B3.tagF}px">${T.short?'':`<b class="ename">${esc(T.name)}</b>`}${l2?`<span class="l2">${l2}</span>`:''}</div>`);});
+  return out.join('');}
+
+// ----- floating effect texts, placed through the same pass -----
+function b3FxRects(now){if(!B)return [];const L=b3Lay();if(!L)return [];let top=1;try{const bn=B.banner;if(bn&&now-bn.t<banDur(bn)*1000)top=Math.ceil(26/(BL.sc||2));}catch(e){}
+  const W=BL.W,H=BL.H,base=fxSize(),obs=L.obs.slice(),out=[];if(top>1)obs.push({x:0,y:0,w:W,h:top,body:1});
+  B.en.concat(B.front).forEach(u=>{if(!u||!u.fx||!u.fx.length)return;const b=unitBox(u);if(!b)return;
+    const live=u.fx.filter(f=>now-f.t<(fxDur(f)*1000+IMPACT+FX_STAG*6));if(!live.length)return;
+    const used=new Set(live.filter(f=>f.slot!=null).map(f=>f.slot));live.forEach(f=>{if(f.slot==null){let s=0;while(used.has(s))s++;f.slot=s;used.add(s);f.stg=Math.min(s,5)*FX_STAG;}});
+    live.sort((a,b)=>a.slot-b.slot);const bd=(L.bodies.find(q=>q.u===u)||{}).r||{x:b.x-b.w/2,y:b.y-b.h,w:b.w,h:b.h};
+    live.forEach(f=>{const rx=f.cls==='react',fs=base*fxScale(f),tw=(rx?b3TextW('✸ '+f.txt,fs,900)+2*(fs+1)+6:b3TextW(f.txt,fs,900)+3+(/crit/.test(f.cls)?fs*.45:0))*1.1+2,w=Math.ceil(tw),h=Math.ceil(fs*1.45+(rx?2:0))+B3.fxRise;
+      // over the head, over (or under) the unit's own plate when that sits there, beside the body, under the feet; near first, then wider
+      const A=[{x:b.x-w/2,y:bd.y-h-1,c:0},{x:bd.x+bd.w+1,y:bd.y,c:5},{x:bd.x-w-1,y:bd.y,c:5},{x:b.x-w/2,y:Math.max(b.y,bd.y+bd.h)+1,c:8}],p=L.plates.get(u);
+      if(p)A.push({x:p.x+p.w/2-w/2,y:p.y<bd.y?p.y-h-1:p.y+p.h+1,c:1});
+      const r=b3Find(w,h,A,obs,W,H,B3.R*.7)||b3Find(w,h,A,obs,W,H,B3.R*1.6);if(!r){f._hid=1;return;}f._hid=0;obs.push({x:r.x,y:r.y,w:r.w,h:r.h,f});out.push({u,f,r,fs});});});
+  return out;}
+
+// ----- 3) detonators -----
+// which live foes a detonator sets off, and the reaction on each
+function detTargets(sk){if(!B||!sk||sk.role!=='det')return [];const els=skEls(sk);return B.en.filter(e=>e.hp>0&&e.primed).map(e=>{const el=els.find(x=>reactFor(e.primed.el,x));const R=el&&reactFor(e.primed.el,el);return R?{e,R,p:e.primed.el,d:el}:null;}).filter(Boolean);}
+// the reaction text floats with both element icons: note them on the effect entry when the reaction fires
+{const dr0=doReaction;doReaction=function(a,t,el){const p=t&&t.primed&&t.primed.el,R=dr0.apply(this,arguments);try{if(R&&t&&t.fx){for(let i=t.fx.length-1;i>=0;i--){const f=t.fx[i];if(f.cls==='react'&&f.txt===R.n){f.rp=p;f.rd=el;break;}}}}catch(e){}return R;};}
+// in the skill list: every foe this detonator sets off right now, with the reaction and both element icons (else what it reacts with)
+function detList(s){if(!s||s.role!=='det'||!B)return '';const L=detTargets(s);if(!L.length)return detNote(s);
+  return `<span class="detl" aria-label="Detonates">${L.map(o=>`<span class="detf" style="--c:${ELC[o.d]||'#ffd04a'}">${ico(o.p)}<i>+</i>${ico(o.d)}<b>✸ ${esc(o.R.n)}</b><em>on ${esc(o.e.name)}</em></span>`).join('')}</span>`;}
+// on the stage, while a detonator is aimed: the colour a foe it sets off glows in (the detonating element), else null
+function detGlow(u){try{if(!B||u.side!=='e'||!(B.mode==='cmd'&&B.menu==='target'&&B.pend&&B.pend.sk))return null;const o=detTargets(B.pend.sk).find(q=>q.e===u);return o?(ELC[o.d]||'#ffd04a'):null;}catch(e){return null;}}
+// the save message keeps clear of the stage labels too (it already avoids the units and bars)
+if(typeof p5Avoid==='function'){const pa0=p5Avoid;p5Avoid=function(){const r=pa0.apply(this,arguments);try{if(V.screen==='battle'&&B&&B3L.L){const st=document.getElementById('bstage');if(st){const R=st.getBoundingClientRect(),k=BL.sc||2;
+  B3L.L.all.forEach(o=>r.push({left:R.left+o.x*k,top:R.top+o.y*k,right:R.left+(o.x+o.w)*k,bottom:R.top+(o.y+o.h)*k,width:o.w*k,height:o.h*k}));}}}catch(e){}return r;};}
+
+// ----- 4) the screen layout -----
+// height the stage must leave for the boss bar and the log ticker (plus the grid gaps), for layoutBattle and fitBattle
+function b3Extra(mode){let h=0;try{const bb=document.getElementById('bbossbar'),bl=document.getElementById('bline');if(bb&&bb.offsetHeight)h+=bb.offsetHeight+6;if(bl)h+=bl.offsetHeight+6;h+=6;}catch(e){}return h;}
+// sky chips in the order bar: icon and name in their own spans (the name hides on narrow screens; the chip keeps its title)
+{const bs0=battleSkyTags;battleSkyTags=function(){const h=bs0.apply(this,arguments);try{return String(h).replace(/(<button class="wchip[^>]*>)([^ <]+) ([^<]+)<\/button>/g,'$1<span class="wxi">$2</span><span class="wxn">$3</span></button>');}catch(e){return h;}};}
+// does the stage show this unit's statuses (kind 'tags', every icon, none folded into "+N") or its primed badge ('prim')?
+function b3OnStage(u,kind){try{const L=B3L.L;if(!L||!B||L.W!==BL.W||L.H!==BL.H)return false;if(kind==='prim')return L.prim.has(u);
+  const n=stItems(u,{noPrime:true,noWx:true}).length;if(!n)return true;const o=L.tags.get(u);return !!o&&o.max>=n;}catch(e){return false;}}
+// names on target tags: at most B3.tagN letters (whole words where they fit, else cut with an ellipsis)
+function b3Short(n){n=String(n);const M=B3.tagN;if(n.length<=M)return n;const w=n.split(' ');let o='';for(const p of w){if((o?o+' ':'').length+p.length>M)break;o=(o?o+' ':'')+p;}o=o.replace(/ (the|of|a|an|and)$/i,'');return o&&o.length>=5?o:n.slice(0,M-1)+'…';}
+// portrait: what must fit under the stage without scrolling (the party cards and the commands; foes and the rearguard may scroll)
+function b3Below(){try{const h=document.querySelector('.battle .pgroup.heroes'),c=document.getElementById('bcmd');return (h?h.offsetHeight+6:0)+(c?c.offsetHeight:0);}catch(e){return 0;}}
+// how many stage status icons a unit has (same count as stItems with noPrime and noWx, without building the markup)
+function b3StN(u){let n=u.broken&&u.maxShield?1:0;for(const k in u.st||{})if(STS[k])n++;return n;}
+
 // =================== Beta v0.5.1: quests ready to hand in (file: qready.js) ===================
 // When a Quest Board quest or a Guild mission is complete and waiting to be claimed, a toast says so once, the Menu button and the
 // Quests menu chip carry a "ready" count, and the quest rows show a "Ready to hand in" tag with where to claim it.
@@ -18253,6 +18653,7 @@ Object.assign(window.__A,{temperRank,forgeCost,hasMats,stSym,ST_SYM,pgSpot,pgGri
 Object.assign(window.__A,{GFX,GFX_Q,GFX_AUTO,GFX_CAM,gfxCfg,gfxTier,gfxApply,gfxAutoDecide,gfxAutoFeed,gfxStill,gfxCamPush,CAM,PARA,g6Ground,g6Sky,g6Bloom,g6Burst,titleDraw:(c,w,h,n)=>titleDraw(c,w,h,n),bgStatic:(a,b,c)=>bgStatic(a,b,c),onFx:(u,t,c)=>onFx(u,t,c),townDecorActors:(a,n,x,y)=>townDecorActors(a,n,x,y),part:o=>part(o),groundPlane:(...a)=>groundPlane(...a)});// v0.5.0 Phase 6
 Object.assign(window.__A,{HB,HD_BATTLE,HD_FLOOR,HD_LOOK,hbInfo,hbWanted,hbQ,hbLook,battleTheme:()=>battleTheme(),battleFrame:n=>battleFrame(n),BV});// v0.5.3 HD-2D battle stage
 Object.assign(window.__A,{iconCv,H2Atlas,HD,HD2D,hdActive,hdWant,hdTierQ,hdCfgOn,hdPick:e=>hdPick(e),mapPoint:e=>mapPoint(e),hdBake:m=>hdBake(m),TR,worldDraw2:n=>worldDraw(n)});
+['b3Lay','stItems','b3OnStage','b3Body','b3Face','sprVB','detTargets','B3','B3L','b3FxRects','b3StageHtml','slotsFor','unitHud','spriteOf','cmdHtml','foeCards','renderBattle'].forEach(k=>{if(Object.getOwnPropertyDescriptor(window.__A,k))return;try{Object.defineProperty(window.__A,k,{get:()=>eval(k),configurable:true});}catch(e){}});// v0.6.3 battle screen (tests)
 Object.assign(window.__A,{SC58:{hdSmall:(c,s,p)=>hdSmall(c,s,p),hdBlob2:()=>hdBlob2(),H2F,HD_SPR,hbLit:c=>hbLit(c),hbUnitLight:(u,K,n)=>hbUnitLight(u,K,n),get cu(){return HB.cu;}}});// v0.5.8 sprites in the scene (tests)
 try{Object.defineProperty(window.__A,'TW',{get:()=>TW,configurable:true});}catch(e){}// v0.6.3 twists (tests)
 Object.assign(window.__A,{W63:{WFX,WMAP,HW,MK,MKN,MAPICO_NAME,wfxRun:(...a)=>wfxRun(...a),wfxBirds:(...a)=>wfxBirds(...a),hdGatePart:m=>hdGatePart(m),mapMarks:m=>mapMarks(m),drawMini:()=>drawMini(),drawWorldMap:()=>drawWorldMap(),worldGraph:()=>worldGraph(),objCanvas:(a,b,c)=>objCanvas(a,b,c),get WM(){return typeof WMS!=="undefined"?WMS:null;}}});// v0.6.3 world pass (tests)

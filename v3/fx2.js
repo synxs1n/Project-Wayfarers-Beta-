@@ -10,15 +10,9 @@ const FX_STAG=90,FX_KEEP=6000;
 fxHtml=function(){return '';};
 function fxSize(){const k=BL.sc||2;return k>=2.75?5.5:k>=1.9?6.5:Math.min(10,Math.max(6.5,Math.round(14/k*2)/2));}// logical px: 16.5px on desktop, 13px on phones
 function fxScale(f){return /crit/.test(f.cls)?1.25:/effx|stat/.test(f.cls)?.82:/react/.test(f.cls)?1:1;}
-function fxLayer(now){if(!B)return '';let top=1;try{const bw=document.getElementById('bwrap'),bn=B.banner,on=!!bn&&now-bn.t<banDur(bn)*1000;if(on)top=Math.ceil(26/(BL.sc||2));if(bw)bw.classList.toggle('banon',on);}catch(e){}const W=BL.W,H=BL.H,base=fxSize(),out=[];
-  B.en.concat(B.front).forEach(u=>{if(!u||!u.fx||!u.fx.length)return;const b=unitBox(u);if(!b)return;
-    const live=u.fx.filter(f=>now-f.t<(fxDur(f)*1000+IMPACT+FX_STAG*6));if(!live.length)return;
-    // give each text a slot when it first shows; slots free up as texts fade
-    const used=new Set(live.filter(f=>f.slot!=null).map(f=>f.slot));live.forEach(f=>{if(f.slot==null){let s=0;while(used.has(s))s++;f.slot=s;used.add(s);f.stg=Math.min(s,5)*FX_STAG;}});
-    const head=b.y-b.h-(u.side==='e'?6:3),LH=base*1.15;
-    live.forEach(f=>{const fs=base*fxScale(f),w=String(f.txt).length*fs*.62+4;let y=head-f.slot*LH;
-      if(y-fs<top)y=b.y+fs+2+f.slot*LH;// no room above: stack below the feet instead
-      y=clamp(y,fs+top,H-2);const x=clamp(b.x,w/2+1,W-w/2-1),age=now-f.t,dl=fxDelay(f)+f.stg-age;
-      out.push(`<span class="fx2 ${f.cls}" style="left:${x.toFixed(1)}px;top:${(y-fs).toFixed(1)}px;font-size:${fs.toFixed(2)}px;animation-delay:${dl}ms;animation-duration:${fxDur(f)}s">${esc(f.txt)}</span>`);});});
+// v0.6.3: texts are placed by b3FxRects (battle3.js) around the unit, clear of every sprite and stage label; a reaction carries both element icons
+function fxLayer(now){if(!B)return '';try{const bw=document.getElementById('bwrap'),bn=B.banner,on=!!bn&&now-bn.t<banDur(bn)*1000;if(bw)bw.classList.toggle('banon',on);}catch(e){}
+  const out=b3FxRects(now).map(({f,r,fs})=>{const age=now-f.t,dl=fxDelay(f)+f.stg-age,rx=f.cls==='react';
+    return `<span class="fx2 b3fx ${f.cls}" style="left:${r.x}px;top:${r.y}px;width:${r.w}px;height:${r.h}px;font-size:${fs.toFixed(2)}px;animation-delay:${dl}ms;animation-duration:${fxDur(f)}s">${rx?`<b>${f.rp&&EL[f.rp]?ico(f.rp):''}${f.rd&&EL[f.rd]?ico(f.rd):''}✸ ${esc(f.txt)}</b>`:esc(f.txt)}</span>`;});
   return `<div class="fxlayer">${out.join('')}</div>`;}
 {const st0=stageTags;stageTags=function(){return st0.apply(this,arguments)+fxLayer(Date.now());};}

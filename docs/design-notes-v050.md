@@ -134,3 +134,6 @@ Details in `v063-world.md` (`v3/worldfx.js`, `WFX`/`WMAP` in config.js, test `ch
 
 ## Beta v0.6.9: shops and menus
 Details in `v063-menus.md` (`v3/menus3.js`, tests `chrome/v063m1.js`, `chrome/v063m2.js`). Panels sized from the visible screen height (the 92vh cap counted the area behind the browser bar). smithy3 Tempering render sits at the 600 ms line on v0.6.8 too.
+
+## Beta v0.7.0: battle screen
+Details in `v063-battle.md` (`v3/battle3.js`, `v3/battle3.css`, `B3` in config.js, tests `chrome/v063ba.js` to `v063bd.js`). One layout pass places every stage label off sprites and off each other; the start flash draws at the canvas backing scale; detonator targets glow with the reaction named.

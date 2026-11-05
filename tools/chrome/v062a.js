@@ -8,10 +8,10 @@ const {open,chk,done}=require('./pw');
 const cfg=t=>`localStorage.clear();localStorage.setItem('aurelis-meta-v1',JSON.stringify({cfg:{speed:1,enc:'off',diff:'normal',music:0,sfx:0,autoStats:true,autoEquip:false,gfx:'${t}',rmotion:true,hints:false}}));(()=>{let s=5;Math.random=()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296;};})();`;
 async function boot(t){const H=await open({w:390,h:844,mobile:true,dpr:2,pre:cfg(t)});const errs=[];H.page.on('console',m=>{if(m.type()==='error'&&!/file:|ERR_FILE|Failed to load resource/.test(m.text()))errs.push(m.text());});H.errs=errs;
   await H.ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;A.render();});await H.wait(400);return H;}
-// draws one world frame outside the loop (the GL frame is copied into #wcv, at logical size into the top left of its 2x bitmap) and measures the hero: the mean luminance of his body box,
+// draws one world frame outside the loop (the GL frame is copied into #wcv over its whole bitmap: v0.6.3 fixed the copy, which covered only the top left quarter of the 2x bitmap) and measures the hero: the mean luminance of his body box,
 // the rows just under his feet against the ground beside them, his quad size
 const measure=H=>H.ev(()=>{const A=__A,WS=A.WS,HD=A.HD;A.worldDraw2(performance.now());const M=HD.mats.vp,P=(x,y,z)=>{const X=M[0]*x+M[4]*y+M[8]*z+M[12],Y=M[1]*x+M[5]*y+M[9]*z+M[13],W=M[3]*x+M[7]*y+M[11]*z+M[15];return [(X/W+1)/2*WS.vw,(1-Y/W)/2*WS.vh];};
-  const fx=Math.round(WS.px)+8,fz=WS.py+12.5,foot=P(fx,0,fz),mid=P(fx,HD.heroH*.45,fz),cv=WS.cv,RW=cv._rw||cv.width,RH=cv._rh||cv.height,k=1,d=cv.getContext('2d').getImageData(0,0,RW,RH).data;
+  const fx=Math.round(WS.px)+8,fz=WS.py+12.5,foot=P(fx,0,fz),mid=P(fx,HD.heroH*.45,fz),cv=WS.cv,RW=cv._rw||cv.width,RH=cv._rh||cv.height,k=cv._ss||1,d=cv.getContext('2d').getImageData(0,0,RW,RH).data;
   const L=(x,y)=>{const i=(Math.floor(y*k)*RW+Math.floor(x*k))*4;return (d[i]*.3+d[i+1]*.59+d[i+2]*.11)/255;};
   let body=0,n=0;for(let y=-3;y<=3;y++)for(let x=-2;x<=2;x++){body+=L(mid[0]+x,mid[1]+y);n++;}body/=n;
   // a dark bar: a row under the feet where a run of 8+ pixels is far darker than the ground 14 px to each side

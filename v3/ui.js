@@ -91,8 +91,10 @@ function buildScreen(){
       <div class="abtns"><button class="abtn b" data-act="runT" aria-label="Run">B</button><button class="abtn" data-act="talk" aria-label="Talk">A</button></div></div></div>`;
     WS.cv=$('wcv');WS.ctx=WS.cv.getContext('2d');worldSizeCanvas();
   }else if(s==='battle'){
-    scr.innerHTML=`<section class="battle"><div class="bossbar" id="bbossbar"></div><div class="order" id="border"></div>
-      <div class="bwrap" id="bwrap"><canvas id="bcv"></canvas><div class="bstage" id="bstage"></div><div class="bban" id="bban"></div><div class="blog" id="blog"></div><button class="blogbtn" data-act="blogT" aria-label="Open the battle log">📜 Log</button><div id="bover"></div></div>
+    // v0.6.3: the last log line and the Log button live in a ticker under the stage (nothing of the HUD sits on the scene's corners any more)
+    scr.innerHTML=`<section class="battle b3"><div class="bossbar" id="bbossbar"></div><div class="order" id="border"></div>
+      <div class="bwrap" id="bwrap"><canvas id="bcv"></canvas><div class="bstage" id="bstage"></div><div class="bban" id="bban"></div><div id="bover"></div></div>
+      <div class="bline" id="bline"><div class="blog" id="blog"></div><button class="blogbtn" data-act="blogT" aria-label="Open the battle log">📜 Log</button></div>
       <div class="bbottom"><div class="cmd" id="bcmd"></div><div class="bparty" id="bparty"></div></div></section>`;
     layoutBattle();
   }
@@ -175,23 +177,18 @@ function heroCard(id,sel,act,extra){
 function renderBattle(stageOnly){
   const now=Date.now();
   if(!stageOnly){const order=turnOrder(10);
-    const Wt=WEATHER[B.weather||'clear'];$('border').innerHTML=battleSkyTags()+(B.spec.kind==='daily'?`<span class="wchip d">Daily · wave ${B.wave}/${B.spec.waves} · ${B.pturns||0} turns</span>`:'')+'<small>Next</small>'+order.map((u,i)=>`<span class="oc ${u.side} ${i===0?'now':''}" style="--c:${ELC[u.el[0]]}" title="${esc(u.name)}"><img src="${u.heroArt?heroURL(u.heroArt):u.side==='p'?heroURL(u.id):monURL(u.art)}" alt=""></span>`).join('');}
+    const Wt=WEATHER[B.weather||'clear'];$('border').innerHTML=`<span class="ocs"><small>Next</small>${order.map((u,i)=>`<span class="oc ${u.side} ${i===0?'now':''}" style="--c:${ELC[u.el[0]]}" title="${esc(u.name)}"><img src="${u.heroArt?heroURL(u.heroArt):u.side==='p'?heroURL(u.id):monURL(u.art)}" alt=""></span>`).join('')}</span><span class="osky">${battleSkyTags()}${B.spec.kind==='daily'?`<span class="wchip d">Daily · wave ${B.wave}/${B.spec.waves} · ${B.pturns||0} turns</span>`:''}</span>`;}
   const pend=B.mode==='cmd'&&B.menu==='target'&&B.pend;
   let h='';
   B.en.forEach((e,i)=>{
     const b=unitBox(e);if(!b)return;const dead=e.hp<=0,tg=targetable(e);
     if(dead&&now-(e.deathT||0)>1500)return;
-    const kn=META.best[e.base]||{known:{}};
-    let hint='';
-    if(tg&&pend.sk){const els=skEls(pend.sk);hint=effBadge(pend.sk,e,B.cur);
-      if(pend.sk.role==='det'&&e.primed&&els.length){const el=els.find(x=>reactFor(e.primed.el,x));const R=el&&reactFor(e.primed.el,el);if(R)hint+=`<span class="eff rx">✸ ${R.n}</span>`;}
-      else if(pend.sk.role==='primer'&&!e.primed&&els.length)hint+=`<span class="eff px">⟐ Prime</span>`;}
     h+=`<button class="unit foe ${tg?'tg':''} ${e.primed&&!dead?'isprimed':''} ${tg&&detHits(pend&&pend.sk,e)?'dethit':''}" style="--pc:${e.primed&&ELC[e.primed.el]||'#fff'};left:${b.x-b.w/2}px;top:${b.y-b.h}px;width:${b.w}px;height:${b.h+8}px" data-act="tgtE" data-arg="${i}" ${tg?'':'tabindex="-1"'} aria-label="${esc(e.name)}${dead?' (defeated)':''}">
-      <span class="fxl">${fxHtml(e,now)}</span>${!dead?primedTag(e):''}${!dead?`<span class="ename">${esc(e.name)}${e.elite?' ★':''}</span>`:''}${hint}</button>`;
+      </button>`;
   });
   B.front.forEach((c,i)=>{
     const b=unitBox(c);const tg=targetable(c);
-    h+=`<button class="unit ally ${tg?'tg':''}" style="left:${b.x-b.w/2}px;top:${b.y-b.h}px;width:${b.w}px;height:${b.h}px" data-act="tgtA" data-arg="${allParty().indexOf(c)}" ${tg?'':'tabindex="-1"'} aria-label="${esc(c.name)}"><span class="fxl">${fxHtml(c,now)}</span></button>`;
+    h+=`<button class="unit ally ${tg?'tg':''}" style="left:${b.x-b.w/2}px;top:${b.y-b.h}px;width:${b.w}px;height:${b.h}px" data-act="tgtA" data-arg="${allParty().indexOf(c)}" ${tg?'':'tabindex="-1"'} aria-label="${esc(c.name)}"></button>`;
   });
   h+=stageTags();
   $('bstage').style.setProperty('--nd',numDur()+'s');
@@ -200,7 +197,7 @@ function renderBattle(stageOnly){
   if(stageOnly)return;
   {const last=B.log[B.log.length-1]||'',el=$('blog');if(el&&el.dataset.l!==String(B.log.length)+last){el.dataset.l=String(B.log.length)+last;el.innerHTML=last&&!B.logOpen?`<p class="last flash">${esc(last)}</p>`:'';}}
   {const ov=$('bover');if(ov)ov.innerHTML=blogPanel()+stPopHtml()+uDetHtml();}
-  $('bparty').innerHTML=foeCards()+`<div class="pgroup">${B.front.map(c=>pcard(c,false)).join('')}</div><div class="pgroup rsv"><h3>Rearguard</h3>${B.back.map(c=>pcard(c,true)).join('')||'<span class="note">No rearguard.</span>'}</div>`;
+  $('bparty').innerHTML=foeCards()+`<div class="pgroup heroes"><h3>Party</h3><div class="pcs">${B.front.map(c=>pcard(c,false)).join('')}</div></div>${B.back.length?`<div class="pgroup rsv"><h3>Rearguard</h3><div class="pcs">${B.back.map(c=>pcard(c,true)).join('')}</div></div>`:''}`;
   $('bcmd').innerHTML=cmdHtml();
   fitBattle();
 }
@@ -231,18 +228,18 @@ function cmdHtml(){
   B.swapAsk=null;
   // v0.5.0 1.4: Back is pinned in the command header at every level (greyed at the top level), one step up each tap
   const atTop=B.menu==='root',backB=`<button class="btn sm cmdback" data-act="back" ${atTop?'disabled aria-disabled="true" title="Already at the top of the menu"':'title="Back (Esc)"'}>← Back</button>`;
-  const who=`<div class="who cmdhead">${port(a.id)}<div><b>${esc(a.name)}</b><small>${CLS[TPL[a.id].cls].n}, ${a.mp} MP</small></div><span class="tags">${stButtons(a,{noWx:true,max:6})}</span>${backB}</div>`;
+  const who=`<div class="who cmdhead">${port(a.id)}<div><b>${esc(a.name)}<em class="turnl">'s turn</em></b><small><span class="cls">${CLS[TPL[a.id].cls].n}</span>${B.menu==='skills'?` <span class="nums mpn">${a.mp}/${a.S.mmp} MP</span>`:''}</small></div>${backB}</div>`;
   if(B.menu==='root'){
     const sw=canSwap(),rooted=has(a,'root'),lbOk=lbReady(a),L=LIMIT[TPL[a.id].cls],noFlee=B.boss||B.spec.kind==='elite'||B.spec.kind==='arena'||B.spec.kind==='daily';
     const bonds=ks.filter(s=>s.bond);
     body=`${lbOk?(()=>{const LS=limitSkill(a);return `<button class="mi limit ${LS.limit2?'l2':''}" data-act="cmd" data-arg="limit"><span class="n">${LS.tierN}: ${esc(LS.n)}</span><span class="m">Ready</span><small>${esc(LS.d)}${LS.limit2?'':' (Limit I: about 70% power.)'}</small></button>`;})():''}
-      <div class="menu"><button class="mi" data-act="cmd" data-arg="attack">Attack</button><button class="mi" data-act="cmd" data-arg="skills">Skills${bonds.length?' <em class="bondtag">Bond</em>':''}</button>
-      <button class="mi" data-act="cmd" data-arg="items">Items</button><button class="mi" data-act="cmd" data-arg="guard">Guard</button>
-      <button class="mi" data-act="cmd" data-arg="scan" title="Read a foe's exact stats and hidden quirks. Costs half a turn.">Scan</button><button class="mi" data-act="cmd" data-arg="lore" title="Elements, reactions and statuses. Read only, pauses the fight.">Lore</button>${canSummon(a)?`<button class="mi summon" data-act="summon" title="Your companion fights in this hero's place for a few turns">Summon ${esc(compOf(a).name)}</button>`:''}
+      <div class="menu prim"><button class="mi" data-act="cmd" data-arg="attack">Attack</button><button class="mi" data-act="cmd" data-arg="skills">Skills${bonds.length?' <em class="bondtag">Bond</em>':''}</button>
+      <button class="mi" data-act="cmd" data-arg="items">Items</button><button class="mi" data-act="cmd" data-arg="guard">Guard</button></div>
+      <div class="menu sec">${canSummon(a)?`<button class="mi summon" data-act="summon" title="Your companion fights in this hero's place for a few turns">Summon ${esc(compOf(a).name)}</button>`:''}<button class="mi" data-act="cmd" data-arg="scan" title="Read a foe's exact stats and hidden quirks. Costs half a turn.">Scan</button><button class="mi" data-act="cmd" data-arg="lore" title="Elements, reactions and statuses. Read only, pauses the fight.">Lore</button>
       <button class="mi" data-act="cmd" data-arg="swap" ${sw?'':'disabled'} title="${rooted?'Rooted: cannot switch out':'Swap this hero for a rearguard hero'}">${rooted?'Rooted':'Switch'}</button>
-      <button class="mi" data-act="cmd" data-arg="flee" ${noFlee?'disabled':''}>Flee</button></div><div class="btnrow">${auto}</div>`;
+      <button class="mi" data-act="cmd" data-arg="flee" ${noFlee?'disabled':''}>Flee</button></div><div class="btnrow autorow">${auto}</div>`;
   }else if(B.menu==='skills'){
-    body=`<div class="menu list">${ks.map(s=>`<button class="mi ${s.combo?'combo':''} ${s.bond?'bond':''}" data-act="sk" data-arg="${s.id}" ${a.mp<s.mp?'disabled':''}><span class="n">${skEls(s).map(ico).join('')}${esc(s.n)}${s.t==='all'||s.t==='allyAll'?' <em>All</em>':''}${s.combo?' <em class="c">Dual art</em>':''}${s.bond?' <em class="b">Bond</em>':''}${roleTag(s)}</span><span class="m">${s.mp} MP</span><small>${esc(s.d)}</small>${detLive(s)}${perkNote(a,s)}${effChips(s,a)}</button>`).join('')}</div>`;
+    body=`<div class="menu list">${ks.map(s=>`<button class="mi ${s.combo?'combo':''} ${s.bond?'bond':''}" data-act="sk" data-arg="${s.id}" ${a.mp<s.mp?'disabled':''}><span class="n">${skEls(s).map(ico).join('')}${esc(s.n)}${s.t==='all'||s.t==='allyAll'?' <em>All</em>':''}${s.combo?' <em class="c">Dual art</em>':''}${s.bond?' <em class="b">Bond</em>':''}${roleTag(s)}</span><span class="m">${s.mp} MP</span><small>${esc(s.d)}</small>${detList(s)}${perkNote(a,s)}${effChips(s,a)}</button>`).join('')}</div>`;
   }else if(B.menu==='items'){
     body=`<div class="menu list">${Object.keys(ITEMS).filter(id=>!ITEMS[id].ward&&!ITEMS[id].tent&&(!ITEMS[id].craft||(G.inv[id]||0)>0)&&(!ITEMS[id].flee||(G.inv[id]||0)>0)).map(id=>`<button class="mi" data-act="item" data-arg="${id}" ${(G.inv[id]||0)>0&&!(ITEMS[id].flee&&porkBlocked())?'':'disabled'}><span class="n">${itemIcon(id)} ${ITEMS[id].n}</span><span class="m">x${G.inv[id]||0}</span><small>${ITEMS[id].d}</small></button>`).join('')}</div>`;
   }else if(B.menu==='target'){
