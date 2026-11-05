@@ -1,2 +1,2 @@
 latest
-# build 2. Bump this number to rebuild the apps. The game version lives in GAME_VERSION.
+# build 3 (TEST: Android built WITHOUT the native Google plugin to find the crash). Bump to rebuild.
