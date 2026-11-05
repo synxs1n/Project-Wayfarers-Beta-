@@ -3,7 +3,7 @@
   const NATIVE=!!window.androidBridge;
   const LIVE='https://synxs1n.github.io/Project-Wayfarers-Beta-/';
   const APK='https://github.com/synxs1n/Project-Wayfarers-Beta-/releases/latest/download/Wayfarers-android.apk';
-  if(!NATIVE&&!/^https?:$/.test(location.protocol))return;
+  if(NATIVE||!/^https?:$/.test(location.protocol))return; // native shell: update prompt off until the Android crash is understood
   function show(v){
     if(document.getElementById('updbar'))return;
     const b=document.createElement('div');b.id='updbar';
