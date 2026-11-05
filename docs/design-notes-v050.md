@@ -119,3 +119,6 @@ Full write-up: `v058-sprites-in-scene.md`. World (`hd2d.js`, `hd2dgl.js`): chara
 ## Beta v0.6.3: party tools
 Details in `v063-party.md`. Best Party formations (Balanced, Boss ready / Area answer, Fresh mix, Rotation fallback) and Training team in `v3/party3.js` (tunables `BP6` in config.js); catch up XP gap measured against the roster's top level (`p4xp.js`, XPCU unchanged, journey mean top level 41.6); "Equip best: at camp" for heroes outside the party; Legendary only for LEGEND_IDS, Epic for other rare heroes. Tests `chrome/v063pa.js`, `chrome/v063pb.js`.
 Beta v0.6.4: heroes outside the party are the Reserves and the back three of the party the Rearguard (owner's choice, replaces "At camp").
+
+## Beta v0.6.5: taming log, bond goals, camping
+Details and the pacing audit in `v063-progression.md` (`v3/v063prog.js`, `CAMP` block in config.js, test `chrome/v063g.js`). Audit: nearly every system unlocks in realm 1 and levels 15 to 30 get little new; camping is gated to realm 3, other gate moves are proposals in that doc.
