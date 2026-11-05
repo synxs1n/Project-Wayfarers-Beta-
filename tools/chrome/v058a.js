@@ -11,7 +11,7 @@ const META=t=>`localStorage.clear();localStorage.setItem('aurelis-meta-v1',JSON.
       const x=u._hud?u._hud.x:b.x,y=u._hud?u._hud.y:b.y,bx=Math.round(x-bw/2),by=y+3,tw=u.el.length*10;let sx=bx-tw-1;if(sx<1)sx=Math.min(A.BL.W-tw-1,bx+bw+2);
       u.el.forEach((el,i)=>{const ic=A.iconCv?A.iconCv(el):null;if(!ic)return;const id=ic.getContext('2d').getImageData(0,0,ic.width,ic.height).data;let miss=0,tot=0;
         for(let yy=0;yy<ic.height;yy++)for(let xx=0;xx<ic.width;xx++){const a=id[(yy*ic.width+xx)*4+3];if(a<250)continue;tot++;const px=Math.floor((sx+i*10+xx)*k+k/2),py=Math.floor((by-4+yy)*k+k/2),j=(py*W+px)*4;
-          const dr=Math.abs(D[j]-id[(yy*ic.width+xx)*4]),dg=Math.abs(D[j+1]-id[(yy*ic.width+xx)*4+1]),db=Math.abs(D[j+2]-id[(yy*ic.width+xx)*4+2]);if(dr+dg+db>60)miss++;}
+          const dr=Math.abs(D[j]-id[(yy*ic.width+xx)*4]),dg=Math.abs(D[j+1]-id[(yy*ic.width+xx)*4+1]),db=Math.abs(D[j+2]-id[(yy*ic.width+xx)*4+2]);if(dr+dg+db>60){/* a uniform darkening (the stage vignette near the edges) is not a cover: same colour, lower brightness */const ir=id[(yy*ic.width+xx)*4],ig=id[(yy*ic.width+xx)*4+1],ib=id[(yy*ic.width+xx)*4+2],k2=(D[j]+D[j+1]+D[j+2]+1)/(ir+ig+ib+1);const same=k2<1.02&&k2>.25&&Math.abs(D[j]-ir*k2)+Math.abs(D[j+1]-ig*k2)+Math.abs(D[j+2]-ib*k2)<36;if(!same)miss++;}}
         n++;if(tot&&miss/tot>.15)bad.push(u.name+' '+el+' '+Math.round(100*miss/tot)+'% covered');});});
     return {n,bad};});
   chk(`${gfx} ${WXX} ${w}x${h}: ${r.n} element badges, none covered by another unit`,r.n>0&&r.bad.length===0||JSON.stringify(r));
