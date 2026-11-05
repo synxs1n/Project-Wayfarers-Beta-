@@ -95,8 +95,11 @@ function pathOf(e,root){const p=[];while(e&&e!==root){const par=e.parentNode;p.u
 function byPath(p,root){let e=root;for(const i of p){e=e&&e.children[i];}return e||null;}
 function render(){
   if(!$('screen'))return;
-  if(BUILT!==V.screen)buildScreen();
+  const fresh=BUILT!==V.screen;if(fresh)buildScreen();
   $('hdr').innerHTML=vHeader();
+  // v0.5.0 1.2: size the world view again once the header for this screen is in place (it was sized against the battle header), and once more after layout settles
+  if(fresh&&(V.screen==='world'||V.screen==='battle')){try{if(scrollY||scrollX)window.scrollTo(0,0);}catch(e){}}
+  if(fresh&&V.screen==='world'){worldSizeCanvas();requestAnimationFrame(()=>{if(V.screen==='world')worldSizeCanvas();});}
   if(V.screen==='starter')$('starterBox').innerHTML=vStarter();
   if(V.screen==='world')renderWorldUI();
   if(V.screen==='battle'&&B)renderBattle();
@@ -629,6 +632,8 @@ function boot(){
   window.addEventListener('blur',()=>{WS.held=[];WS.padDir=null;WS.joyDir=null;KEYS_DOWN.clear();WS.swallow=null;});
   window.addEventListener('resize',()=>{if(V.screen==='world')worldSizeCanvas();if(V.screen==='battle'){layoutBattle();render();}});
   if(window.visualViewport)window.visualViewport.addEventListener('resize',()=>{if(V.screen==='world')worldSizeCanvas();});
+  // v0.5.0 1.2: header or toolbar height changes (a chip wraps, a banner appears) also resize the view
+  if(window.ResizeObserver){try{const ro=new ResizeObserver(()=>{if(V.screen==='world')worldSizeCanvas();});ro.observe($('hdr'));}catch(e){}}
   render();requestAnimationFrame(loop);
   setInterval(()=>{if(V.screen==='battle'&&B&&animating())renderBattle(true);},110);
 }
