@@ -32,12 +32,18 @@ function temperRank(o){const c=forgeCost(o.id);if(!c)return {ready:0,gain:0,clos
   let need=0,got=0;Object.keys(c.m).forEach(k=>{need+=c.m[k];got+=Math.min(c.m[k],G.mats[k]||0);});
   const close=(need?got/need:1)*.7+Math.min(1,c.gold?G.gold/c.gold:1)*.3;
   return {ready,gain,close};}
-function vTemper(){
+// v0.6.3: the ordered Tempering list on its own (section counts), and vTemper(o) with o.slot ('w','a','k','c'), o.show ('all','ready','eq','spare') and o.bar (the dropdown)
+function temperList(){
   const list=[];partyChars().forEach(c=>EQSL.forEach(sl=>{if(c.eq[sl])list.push({where:'eq',ref:{cid:c.id,slot:sl},id:c.eq[sl],who:c.name});}));
   // v0.5.1: identical spares share one row (tempering works on the first copy); a full pack listed hundreds of the same rows
   {const seen={};G.gear.forEach((id,i)=>{if(seen[id]){seen[id].n++;seen[id].who='Pack (x'+seen[id].n+')';return;}list.push(seen[id]={where:'spare',ref:i,id,who:'Pack',n:1});});}
   // v0.4.3: only what can be tempered, highest rarity first, then the highest temper level
-  const tl=temperOrder(list.filter(o=>gearOf(o.id)&&forgeCost(o.id)));// v0.5.0 3.1 (and 1.9): temperOrder lives in p3shop.js
+  return temperOrder(list.filter(o=>gearOf(o.id)&&forgeCost(o.id)));// v0.5.0 3.1 (and 1.9): temperOrder lives in p3shop.js
+}
+function vTemper(opt){opt=opt||{};
+  let tl=temperList();const n0=tl.length;
+  if(opt.slot)tl=tl.filter(o=>gearOf(o.id).slot===opt.slot);
+  if(opt.show==='ready')tl=tl.filter(o=>temperReady(o));else if(opt.show==='eq')tl=tl.filter(o=>o.where==='eq');else if(opt.show==='spare')tl=tl.filter(o=>o.where!=='eq');
   const why=typeof temperWhy==='function'?temperWhy(tl):{};// v0.5.1 3.1: tradeoff line between close options
   const rowOf=(o,ti)=>{const c=forgeCost(o.id),g=gearOf(o.id);if(!g)return '';
     if(!c)return `<div class="row rec tr" style="${tierVars(gTierIdx(g),g)}">${gearIcon(o.id)}<div class="grow"><b>${g.n}</b> ${tierChip(g)}<small>${esc(o.who)}. ${gearDesc(g)}</small><small class="up">${g.stick?'The Stick grows with your Bestiary, not the anvil.':'Fully tempered.'}</small></div></div>`;
@@ -48,7 +54,9 @@ function vTemper(){
       ${P&&P.cant.length?`<small class="warn">Still need ${P.cant.map(k=>MATS[k]).join(', ')}: ${P.cant.some(k=>MAT_OF[k]&&(MAT_OF[k].k==='relic'))?'relics and Dread Cores come from foes. ':''}${P.cant.some(k=>PART_PRICE[k])?'the counter is out of that part until you rest. ':''}${herbNote}</small>`:''}</div>
       <div class="btnrow tight col">${P&&P.any?`<button class="btn sm" data-act="temperBuy" data-arg='${JSON.stringify({w:o.where,r:o.ref})}' ${G.gold>=P.gold?'':'disabled'} title="Buy the missing ore, logs and parts here">Buy missing <span class="nums">${fmt(P.gold)}</span></button>`:''}<button class="btn sm ${ok?'gold':''}" data-act="forge" data-arg='${JSON.stringify({w:o.where,r:o.ref})}' ${ok?'':'disabled'}>Temper</button></div></div>`;};
   const rows=tl.map(rowOf).join('');
-  return `<p class="note">Tempering makes gear better: each level adds 25% to an item's stats, up to +3. Every level needs the item's own raw material (ore, logs or herbs at its tier), a monster part for its kind (fangs for blades and daggers, scales for mail, ichor for staves and robes, hide for bows and garb, grit for charms), this realm's relic (${MATS[ZS(G.stage).mat]}), and gold. +3 also needs a Dread Core. The Smithy sells ore, logs and a few parts right here.</p><div class="rows">${rows||'<p class="note">Nothing to temper right now. Fully tempered gear and the Tamer\'s Stick are not listed.</p>'}</div>`;
+  const bar=opt.bar&&typeof ddBar==='function'?ddBar([ddSel('Show','tShow','t',[['all','Everything'],['ready','Ready to temper'],['eq','Worn by the party'],['spare','Spares in the pack']],opt.show||'all')],'shopf'):'';
+  const empty=n0&&(opt.slot||(opt.show&&opt.show!=='all'))?'<p class="note empty">Nothing here matches. Try another section or Show: Everything.</p>':'<p class="note empty">Nothing to temper right now. Fully tempered gear and the Tamer\'s Stick are not listed.</p>';
+  return `${bar}<details class="m3how"><summary>How tempering works</summary><p class="note">Each level adds 25% to an item's stats, up to +3. Every level needs the item's own raw material (ore, logs or herbs at its tier), a monster part for its kind (fangs for blades and daggers, scales for mail, ichor for staves and robes, hide for bows and garb, grit for charms), this realm's relic (${MATS[ZS(G.stage).mat]}), and gold. +3 also needs a Dread Core. The Smithy sells ore, logs and a few parts right here.</p></details>${rows?`<div class="rows">${rows}</div>`:empty}`;
 }
 Object.assign(ACT,{
   temperBuy(a){const o=JSON.parse(a),id=o.w==='spare'?G.gear[o.r]:G.roster[o.r.cid].eq[o.r.slot];const c=id&&forgeCost(id);if(!c)return;

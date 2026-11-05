@@ -98,7 +98,7 @@ function padPoll(now){
       const sheet=V.modal&&(V.modal.type==='char'||(V.modal.type==='guild'&&V.modal.char))&&!V.modal.gear;
       if(sheet&&(edge('LB')||edge('RB')))ACT.charNav(edge('LB')?-1:1);
       if(moved){PAD.rep=now;if(sheet&&(dir==='l'||dir==='r'))ACT.charNav(dir==='l'?-1:1);else{const d0=dir.length===2?dir[0]:dir;padFocus(d0==='u'||d0==='l'?-1:1);}}
-      if(edge('A')){const a=document.activeElement;if(a&&a.matches&&a.matches('input,textarea'))a.focus();else if(a&&a.matches&&a.matches('button,[data-act]'))a.click();else padFocus(1);}
+      if(edge('A')){const a=document.activeElement;if(a&&a.matches&&a.matches('select')){a.selectedIndex=(a.selectedIndex+1)%a.options.length;a.dispatchEvent(new Event('change',{bubbles:true}));}/* v0.6.3: A steps a dropdown to its next choice */else if(a&&a.matches&&a.matches('input,textarea'))a.focus();else if(a&&a.matches&&a.matches('button,[data-act]'))a.click();else padFocus(1);}
       if(edge('B')){if(V.modal)ACT.xBack();else if(B&&B.uDet)ACT.uClose();else if(B&&B.stPop)ACT.stClose();else if(B&&B.logOpen)ACT.blogT();else if(B&&B.mode==='cmd'&&B.menu!=='root')ACT.back();}
       if((edge('X')||edge('S'))&&V.modal){ACT.xClose();}
       else if(edge('S')&&V.screen==='world')ACT.menu();
@@ -108,7 +108,7 @@ function padPoll(now){
 }
 function padFocus(d){
   const root=V.modal?document.getElementById('modal'):document.getElementById('screen');if(!root)return;
-  const all=Array.from(root.querySelectorAll('button:not([disabled]),input:not([disabled]),textarea:not([disabled])')).filter(e=>e.offsetParent!==null&&e.getAttribute('tabindex')!=='-1');
+  const all=Array.from(root.querySelectorAll('button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled])')).filter(e=>e.offsetParent!==null&&e.getAttribute('tabindex')!=='-1');
   if(!all.length)return;const i=all.indexOf(document.activeElement);const n=all[(i<0?(d>0?0:all.length-1):(i+d+all.length)%all.length)];n.focus();n.scrollIntoView({block:'nearest'});
 }
 // ----- touch: joystick pad and tap/drag on the map -----

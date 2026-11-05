@@ -11,18 +11,23 @@ function matchT(n,t,el){const f=LC(n);
   if(f.el!=='all'&&f.el!=='dual'&&!(el||t.el).includes(f.el))return false;
   if(f.cl==='legend')return t.src==='L';
   if(f.cl!=='all'&&t.cls!==f.cl)return false;return true;}
-const lmatch=(n,c)=>matchT(n,TPL[c.id],c.el);
+// v0.6.3: a Show filter on hero lists (lists.*.sh): everyone, in the party, not in it, unspent stat points, hurt or KO
+function lshow(n,c){const v=LC(n).sh||'all';if(v==='party')return G.party.includes(c.id);if(v==='bench')return !G.party.includes(c.id);
+  if(v==='pts')return (c.pts||0)>0;if(v==='hurt')return c.hp<c.S.mhp||Object.keys(c.st||{}).some(k=>STS[k]&&STS[k].bad);return true;}
+const lmatch=(n,c)=>matchT(n,TPL[c.id],c.el)&&lshow(n,c);
 function lsort(n,arr,dflt){const f=LC(n),a=arr.slice(),nm=x=>String(x.name||TPL[x.id].n),R=Object.keys(G.roster);
   const ord={name:(x,y)=>nm(x).localeCompare(nm(y)),lv:(x,y)=>y.lv-x.lv||nm(x).localeCompare(nm(y)),cls:(x,y)=>CLS[TPL[x.id].cls].n.localeCompare(CLS[TPL[y.id].cls].n)||y.lv-x.lv,
     el:(x,y)=>ELK.indexOf(x.el[0])-ELK.indexOf(y.el[0])||(x.el[1]?ELK.indexOf(x.el[1]):-1)-(y.el[1]?ELK.indexOf(y.el[1]):-1)||nm(x).localeCompare(nm(y)),
     hp:(x,y)=>(x.hp/x.S.mhp)-(y.hp/y.S.mhp)||nm(x).localeCompare(nm(y)),new:(x,y)=>R.indexOf(y.id)-R.indexOf(x.id)};
   return a.sort(ord[f.s]||dflt);}
-function filterBar(n,codex){const f=LC(n),chip=(act,v,cur,txt,cls)=>`<button class="chip ${cur===v?'on':''} ${cls||''}" data-act="${act}" data-arg="${n}:${v}">${txt}</button>`;
+// v0.6.3: every filter is a dropdown (ddSel in menus3.js); the actions and the stored record (META.cfg.lists) are unchanged
+function filterBar(n,codex){const f=LC(n);
   const cl=Object.keys(CLS).filter(k=>!CLS[k].legend&&(k!=='chronicler'||Object.values(G.roster).some(c=>TPL[c.id].cls==='chronicler')||codex));
   const hasL=codex||Object.values(G.roster).some(c=>TPL[c.id].src==='L');
-  return `<div class="lfbar"><div class="chips"><small class="lbl">Sort</small>${(codex?LSORT_C:LSORT_H).map(([k,t])=>chip('lSort',k,f.s,t)).join('')}</div>
-    <div class="chips"><small class="lbl">Element</small>${chip('lEl','all',f.el,'All')}${ELK.map(k=>chip('lEl',k,f.el,ico(k)+'<span class="sr"> '+EL[k]+'</span>')).join('')}${chip('lEl','dual',f.el,'Dual')}</div>
-    <div class="chips"><small class="lbl">Class</small>${chip('lCl','all',f.cl,'All')}${cl.map(k=>chip('lCl',k,f.cl,CLS[k].n)).join('')}${hasL?chip('lCl','legend',f.cl,'★ Legendary','legchip'):''}</div></div>`;}
+  return ddBar([ddSel('Sort','lSort',n,codex?LSORT_C:LSORT_H,f.s),
+    ddSel('Element','lEl',n,[['all','All elements']].concat(ELK.map(k=>[k,EL[k]]),[['dual','Dual type']]),f.el),
+    ddSel('Class','lCl',n,[['all','All classes']].concat(cl.map(k=>[k,CLS[k].n]),hasL?[['legend','★ Legendary']]:[]),f.cl),
+    n==='roster'?ddSel('Show','lSh',n,[['all','Everyone'],['party','In the party'],['bench','Reserves'],['pts','Unspent points'],['hurt','Hurt or ailing']],f.sh||'all'):''],'lfbar');}
 // ----- XP -----
 function xpLine(c,compact){if(c.lv>=LV_CAP)return `<span class="swb xpb"><span class="swbl">XP</span><span class="nums">Max level</span></span>`;
   const n=need(c.lv);return `<span class="swb xpb"><span class="swbl">XP</span>${bar(c.xp,n,'var(--gold)')}<span class="nums">${fmt(c.xp)}/${fmt(n)}${compact?'':` (${fmt(n-c.xp)} to Lv ${c.lv+1})`}</span></span>`;}
@@ -114,7 +119,7 @@ function mField(m){const P=G.party.map(id=>G.roster[id]).filter(Boolean),casters
 {const vm0=vModal;vModal=function(m){if(m){if(m.type==='ldRes')return mLdRes(m);if(m.type==='ldMgr')return mLdMgr(m);if(m.type==='bp')return mBestParty(m);if(m.type==='field')return mField(m);}return vm0.apply(this,arguments);};}
 const lstore=(n,k,v)=>{LC(n)[k]=v;saveMeta();render();};
 Object.assign(ACT,{
-  lSort(a){const [n,v]=a.split(':');lstore(n,'s',v);},lEl(a){const [n,v]=a.split(':');lstore(n,'el',v);},lCl(a){const [n,v]=a.split(':');lstore(n,'cl',v);},
+  lSort(a){const [n,v]=a.split(':');lstore(n,'s',v);},lEl(a){const [n,v]=a.split(':');lstore(n,'el',v);},lCl(a){const [n,v]=a.split(':');lstore(n,'cl',v);},lSh(a){const [n,v]=a.split(':');lstore(n,'sh',v);},lRg(a){const [n,v]=a.split(':');lstore(n,'rg',v);},
   ldMgr(){V.modal={type:'ldMgr',from:V.modal};render();},
   ldSave(i){i=+i;const L=LD();if(i<0||i>=LOADMAX)return;const nm=L[i]?L[i].name:'Loadout '+(i+1);L[i]=ldCapture(nm);for(let k=0;k<L.length;k++)if(!L[k])L[k]=ldCapture('Loadout '+(k+1));saveGame();toast('Loadout saved.');render();},
   ldDel(i){i=+i;const L=LD();if(L[i]){L[i]=null;while(L.length&&!L[L.length-1])L.pop();saveGame();render();}},

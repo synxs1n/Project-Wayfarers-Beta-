@@ -131,3 +131,6 @@ Details in `v063-art.md` (`v3/icons.js`, `v3/icons2.js`, test `chrome/v063s.js`)
 
 ## Beta v0.6.8: world fixes and the world map
 Details in `v063-world.md` (`v3/worldfx.js`, `WFX`/`WMAP` in config.js, test `chrome/v063wo.js`). Root cause of the boxes over the hero: the HD-2D overlay cleared only a quarter of the 2x canvas.
+
+## Beta v0.6.9: shops and menus
+Details in `v063-menus.md` (`v3/menus3.js`, tests `chrome/v063m1.js`, `chrome/v063m2.js`). Panels sized from the visible screen height (the 92vh cap counted the area behind the browser bar). smithy3 Tempering render sits at the 600 ms line on v0.6.8 too.

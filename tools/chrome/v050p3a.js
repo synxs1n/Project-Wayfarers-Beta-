@@ -25,8 +25,8 @@ await ev(()=>{const G=__A.G;G.stage=1;G.gold=1e6;['oren','mira','lumen'].forEach
   __A.META.cfg.shopF={};});
 const ord=await ev(()=>{__A.V.modal={type:'smithy',tab:'weapons'};__A.render();
   const ids=[...document.querySelectorAll('#modal [data-act="buyGear"]')].map(b=>b.dataset.arg);
-  const g=ids.map(id=>__P3.partyGainOf(id).top);const chip=document.querySelector('#modal [data-act="shopF"][data-arg="sort:best"]');
-  return {ids,g,chipOn:!!(chip&&chip.classList.contains('on')),why:document.querySelectorAll('#modal .p3why').length,borders:document.querySelectorAll('#modal .shoprow.tr').length,filters:document.querySelectorAll('#modal [data-act="shopF"][data-arg^="show:"]').length};});
+  const g=ids.map(id=>__P3.partyGainOf(id).top);const chip=null,sel=document.querySelector('#modal select[data-chg="shopF"][data-pre="sort"]');/* v0.6.3: the sort and show filters are dropdowns */
+  return {ids,g,chipOn:!!(sel&&sel.value==='best'),why:document.querySelectorAll('#modal .p3why').length,borders:document.querySelectorAll('#modal .shoprow.tr').length,filters:[...document.querySelectorAll('#modal select[data-chg="shopF"][data-pre="show"] option')].filter(o=>['all','usable','afford'].includes(o.value)).length};});
 const up=ord.g.filter(x=>x>=.005).length,sorted=ord.g.slice(0,up).every((v,i,a)=>i===0||a[i-1]>=v),upFirst=ord.g.slice(up).every(v=>v<.005);
 chk('3.1 "Best for party" is the default sort',ord.chipOn||JSON.stringify(ord));
 chk('3.1 shop: upgrades for the party first, best to worst',up>0&&sorted&&upFirst||JSON.stringify(ord.g));

@@ -1,0 +1,63 @@
+/* ===================== Beta v0.6.3: shops and menus (menus3.js) ===================== */
+/* Panels fit the screen the phone really shows: --vvh is the visual viewport height (menus3.js), so the panel's own scroll reaches
+   its last row even when the browser bar or the app's bars take part of the screen (100vh counts the screen behind them). */
+.box{max-height:calc(100vh - 32px);max-height:min(92vh,calc(var(--vvh,100dvh) - 32px))}
+.modal{align-items:safe center;justify-items:safe center}
+.modal>.box{margin:auto 0}
+/* the world header peeks out behind a centred panel as a cut "Wa..." on tablets and folds: hide its brand while a popup is up */
+@media (max-width:1000px){body.noscroll .hdr .brand{visibility:hidden}}
+
+/* ---------- shop navigation: main tabs (gilt strip) and section chips (underlined), the same two levels as the Menu ---------- */
+.shopnav{display:grid;gap:6px;margin:6px 0 8px}
+.shopnav .chips{margin:0}
+.chips.stabs{flex-wrap:wrap}
+.chips.ssec{flex-wrap:wrap}
+.chips.ssec .chip .cnt,.chips.stabs .chip .cnt{font:700 11px/1 var(--fb);opacity:.75;margin-left:3px;letter-spacing:0}
+.chips.ssec .chip.on .cnt{opacity:1}
+/* the purse in a shop's title */
+.hgold{display:inline-flex;align-items:center;gap:4px;margin-left:8px;padding:2px 8px;vertical-align:middle;font:800 13px/1.2 var(--fb);letter-spacing:0;color:#ffe7a6;
+  background:rgba(5,6,12,.55);border:1px solid var(--ui-line-s,#5f4a24);border-radius:999px;text-shadow:none;white-space:nowrap}
+.hgold svg,.hgold img,.hgold i{width:14px;height:14px}
+
+/* ---------- dropdown filters ---------- */
+.ddbar{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px 8px;margin:6px 0 8px;align-items:end}
+.ddbar.lfbar{margin:6px 0 10px}
+.dd{display:flex;flex-direction:column;gap:2px;min-width:0;margin:0}
+.ddl{font:800 10px/1.2 var(--fb);letter-spacing:.14em;text-transform:uppercase;color:var(--ui-gold,#d9b46a);padding-left:2px}
+.ddw{position:relative;display:block;min-width:0}
+.ddw::after{content:"";position:absolute;right:11px;top:50%;width:7px;height:7px;margin-top:-6px;border:solid var(--ui-gold,#d9b46a);border-width:0 2px 2px 0;transform:rotate(45deg);pointer-events:none}
+.ddsel{-webkit-appearance:none;appearance:none;display:block;width:100%;min-width:0;min-height:40px;padding:8px 30px 8px 10px;font:700 13px/1.2 var(--fb);color:var(--text,#efe6cf);
+  background:linear-gradient(180deg,#1f233a,#15182a);border:1px solid var(--ui-line-s,#5f4a24);border-radius:4px;box-shadow:0 0 0 1px rgba(0,0,0,.6);text-overflow:ellipsis;cursor:pointer}
+.ddsel:hover{border-color:var(--ui-line,#a98a4a)}
+.ddsel:focus-visible{outline:2px solid var(--ui-gold-hi,#ffe39a);outline-offset:2px}
+.ddsel option{color:#efe6cf;background:#15182a}
+.panel.scroll .ddsel{color:#2a1700;background:#f3e4c0;border-color:#8a6a3a}
+.panel.scroll .ddl{color:#7a4a14}
+html.rm .ddsel{transition:none}
+
+/* ---------- small bits ---------- */
+.note.empty{text-align:center;padding:10px 8px;border:1px dashed var(--ui-line-s,#5f4a24);border-radius:4px;opacity:.9}
+details.m3how{margin:4px 0 8px}
+details.m3how>summary{cursor:pointer;font:700 13px/1.3 var(--fb);color:var(--ui-gold,#d9b46a);padding:6px 2px;min-height:28px}
+details.m3how>summary:focus-visible{outline:2px solid var(--ui-gold-hi,#ffe39a);outline-offset:2px}
+/* long words and numbers never push a row past the panel */
+.box .row .grow{min-width:0}
+.box .row small,.box .row b{overflow-wrap:anywhere}
+/* short landscape screens (phones turned sideways, 844x390): tighter navigation so the list keeps its room */
+@media (orientation:landscape) and (max-height:560px){
+  .shopnav{gap:4px;margin:4px 0 6px}
+  .ddbar{grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:4px 8px;margin:4px 0 6px}
+  .ddl{font-size:9px}
+  /* main tabs and sections side by side, tabs no longer stretched across the panel */
+  .shopnav{grid-template-columns:auto minmax(0,1fr);align-items:end;column-gap:10px}
+  .shopnav>.chips.stabs .chip{flex:0 0 auto;padding:8px 12px}
+  .shopnav>.chips.stabs:only-child{grid-column:1/-1}
+  .box>p.note.facrank{margin:4px 0}
+  /* a label beside the dropdown instead of above it */
+  .dd{flex-direction:row;align-items:center;gap:6px}
+  .ddl{flex:none}
+  .ddw{flex:1 1 auto}
+}
+@media (max-width:420px){
+  .chips.ssec .chip{padding:8px 7px 6px}
+}

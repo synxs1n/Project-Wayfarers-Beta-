@@ -1340,13 +1340,76 @@ html.rm .menter .panel,html.rm .pc.tg,html.rm .swc.sel{animation:none}
   .title>.btnrow.center>.btn:last-child:nth-child(even){grid-column:auto}
 }
 /* ===== end v0.5.3 UI ===== */
+/* ===================== Beta v0.6.3: shops and menus (menus3.js) ===================== */
+/* Panels fit the screen the phone really shows: --vvh is the visual viewport height (menus3.js), so the panel's own scroll reaches
+   its last row even when the browser bar or the app's bars take part of the screen (100vh counts the screen behind them). */
+.box{max-height:calc(100vh - 32px);max-height:min(92vh,calc(var(--vvh,100dvh) - 32px))}
+.modal{align-items:safe center;justify-items:safe center}
+.modal>.box{margin:auto 0}
+/* the world header peeks out behind a centred panel as a cut "Wa..." on tablets and folds: hide its brand while a popup is up */
+@media (max-width:1000px){body.noscroll .hdr .brand{visibility:hidden}}
+
+/* ---------- shop navigation: main tabs (gilt strip) and section chips (underlined), the same two levels as the Menu ---------- */
+.shopnav{display:grid;gap:6px;margin:6px 0 8px}
+.shopnav .chips{margin:0}
+.chips.stabs{flex-wrap:wrap}
+.chips.ssec{flex-wrap:wrap}
+.chips.ssec .chip .cnt,.chips.stabs .chip .cnt{font:700 11px/1 var(--fb);opacity:.75;margin-left:3px;letter-spacing:0}
+.chips.ssec .chip.on .cnt{opacity:1}
+/* the purse in a shop's title */
+.hgold{display:inline-flex;align-items:center;gap:4px;margin-left:8px;padding:2px 8px;vertical-align:middle;font:800 13px/1.2 var(--fb);letter-spacing:0;color:#ffe7a6;
+  background:rgba(5,6,12,.55);border:1px solid var(--ui-line-s,#5f4a24);border-radius:999px;text-shadow:none;white-space:nowrap}
+.hgold svg,.hgold img,.hgold i{width:14px;height:14px}
+
+/* ---------- dropdown filters ---------- */
+.ddbar{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px 8px;margin:6px 0 8px;align-items:end}
+.ddbar.lfbar{margin:6px 0 10px}
+.dd{display:flex;flex-direction:column;gap:2px;min-width:0;margin:0}
+.ddl{font:800 10px/1.2 var(--fb);letter-spacing:.14em;text-transform:uppercase;color:var(--ui-gold,#d9b46a);padding-left:2px}
+.ddw{position:relative;display:block;min-width:0}
+.ddw::after{content:"";position:absolute;right:11px;top:50%;width:7px;height:7px;margin-top:-6px;border:solid var(--ui-gold,#d9b46a);border-width:0 2px 2px 0;transform:rotate(45deg);pointer-events:none}
+.ddsel{-webkit-appearance:none;appearance:none;display:block;width:100%;min-width:0;min-height:40px;padding:8px 30px 8px 10px;font:700 13px/1.2 var(--fb);color:var(--text,#efe6cf);
+  background:linear-gradient(180deg,#1f233a,#15182a);border:1px solid var(--ui-line-s,#5f4a24);border-radius:4px;box-shadow:0 0 0 1px rgba(0,0,0,.6);text-overflow:ellipsis;cursor:pointer}
+.ddsel:hover{border-color:var(--ui-line,#a98a4a)}
+.ddsel:focus-visible{outline:2px solid var(--ui-gold-hi,#ffe39a);outline-offset:2px}
+.ddsel option{color:#efe6cf;background:#15182a}
+.panel.scroll .ddsel{color:#2a1700;background:#f3e4c0;border-color:#8a6a3a}
+.panel.scroll .ddl{color:#7a4a14}
+html.rm .ddsel{transition:none}
+
+/* ---------- small bits ---------- */
+.note.empty{text-align:center;padding:10px 8px;border:1px dashed var(--ui-line-s,#5f4a24);border-radius:4px;opacity:.9}
+details.m3how{margin:4px 0 8px}
+details.m3how>summary{cursor:pointer;font:700 13px/1.3 var(--fb);color:var(--ui-gold,#d9b46a);padding:6px 2px;min-height:28px}
+details.m3how>summary:focus-visible{outline:2px solid var(--ui-gold-hi,#ffe39a);outline-offset:2px}
+/* long words and numbers never push a row past the panel */
+.box .row .grow{min-width:0}
+.box .row small,.box .row b{overflow-wrap:anywhere}
+/* short landscape screens (phones turned sideways, 844x390): tighter navigation so the list keeps its room */
+@media (orientation:landscape) and (max-height:560px){
+  .shopnav{gap:4px;margin:4px 0 6px}
+  .ddbar{grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:4px 8px;margin:4px 0 6px}
+  .ddl{font-size:9px}
+  /* main tabs and sections side by side, tabs no longer stretched across the panel */
+  .shopnav{grid-template-columns:auto minmax(0,1fr);align-items:end;column-gap:10px}
+  .shopnav>.chips.stabs .chip{flex:0 0 auto;padding:8px 12px}
+  .shopnav>.chips.stabs:only-child{grid-column:1/-1}
+  .box>p.note.facrank{margin:4px 0}
+  /* a label beside the dropdown instead of above it */
+  .dd{flex-direction:row;align-items:center;gap:6px}
+  .ddl{flex:none}
+  .ddw{flex:1 1 auto}
+}
+@media (max-width:420px){
+  .chips.ssec .chip{padding:8px 7px 6px}
+}
 
 </style>
 <div id="app"><div id="hdr"></div><main id="screen"></main></div>
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.6.8";const APP_BUILD="e0f02df91892";
+(function(){const APP_VER="0.6.9";const APP_BUILD="951d34fd6fae";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -1713,13 +1776,14 @@ const TWISTS={on:true,
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.6.8";const APP_BUILD="e0f02df91892";
+const APP_VER="0.6.9";const APP_BUILD="951d34fd6fae";
 
 // =================== VERSION ===================
 // The one public version string. Patch (0.1.x) for fixes and balance, minor (0.x.0) for new systems.
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.6.9',['Shops and menus reorganised: every shop has Shop and Craft tabs with All plus sections (Alchemy now has its own Charms section), every filter is a dropdown with new options (for one hero, rarity, upgrades only, can afford, cheapest first), and the Menu is grouped as Party, Backpack, Quests, Map, Records, Guides and Settings. Fixed text cut off at the bottom of menus on phones with a browser bar (Fold Tempering).']],
  ['Beta v0.6.8',['World: fortresses stand up as real gatehouses in the HD-2D view; leaves, butterflies, snow and other drifting effects now stay in the world instead of sliding with the screen; nothing hovers over the hero\'s face any more (fixed the white and pink boxes left over in parts of the screen); opened chests disappear; the world map is now a parchment chart with little pictures of each town, field, dungeon, cave and fortress, roads between them and a pin for your party; side fortresses are just called fortresses.']],
  ['Beta v0.6.7',['Capes no longer show on hero sprites (they keep their stats); only weapons and personal quest rewards change how a hero looks. Every item now has its own icon: each weapon, armor and cape changes shape as its tier rises (gems, gold trim, a glint, a glow), every charm has its own pendant, and materials have icons too. The three legendary signature weapons got their names back.']],
  ['Beta v0.6.6',['Daily Trial weekly twist: each week brings one rule change for the trial (this week: Weak spots hurt more), shown on the entry screen and as a chip in its battles; the trial stays the same for everyone on the same day. New Game+ modifiers: when starting a new cycle you may pick up to two (Foes hit harder, Cold inns, Elites everywhere, Reactions only, Ironman), each trading risk for more XP or gold.']],
@@ -8700,8 +8764,10 @@ function mBoard(){
     return `<div class="row"><div><b>${esc(q.title)}</b><small>${esc(q.desc)}</small><small>${q.state==='active'?prog+'. ':''}Reward: ${rew}</small></div>${btn}</div>`;}).join('')}</div>`);
 }
 // v0.4.0 3.1: seven top groups, with sub tabs where a group holds more than one page. Tab ids are unchanged so every old link still lands.
-const MENU_GROUPS=[['party','Party',['party','roster','loadouts','comp']],['gear','Backpack',['equip','items']],['guides','Guides',['next','lore','types','fmis','help']],['records','Records',['system','beasts','codex','factions']],['quests','Quests',['quests']],['map','Map',['map']],['settings','Settings',['settings']]];
-const MENU_SUB={party:'Party',roster:'Roster',loadouts:'Loadouts',comp:'Companions',equip:'Equipment',items:'Items',next:'What next?',lore:'Lore',types:'Foe types',help:'Help',beasts:'Bestiary',codex:'Codex',factions:'Factions',fmis:'Factions',system:'Journey',quests:'Quests',map:'Map',settings:'Settings'};
+// v0.6.3: regrouped so each group holds one kind of page: Quests has the guild missions, Backpack has Materials, Records has Lore
+// (the story so far), Guides keeps only the how-to pages. Ids are unchanged; 'pouch' is new (Materials, was the end of Items).
+const MENU_GROUPS=[['party','Party',['party','roster','loadouts','comp']],['gear','Backpack',['equip','items','pouch']],['quests','Quests',['quests','fmis']],['map','Map',['map']],['records','Records',['system','lore','beasts','codex','factions']],['guides','Guides',['next','types','help']],['settings','Settings',['settings']]];
+const MENU_SUB={pouch:'Materials',party:'Party',roster:'Roster',loadouts:'Loadouts',comp:'Companions',equip:'Equipment',items:'Items',next:'What next?',lore:'Lore',types:'Foe types',help:'Help',beasts:'Bestiary',codex:'Codex',factions:'Factions',fmis:'Factions',system:'Journey',quests:'Quests',map:'Map',settings:'Settings'};
 function menuGroupOf(tab){return MENU_GROUPS.find(g=>g[2].includes(tab))||MENU_GROUPS[0];}
 function menuTabsHtml(grp,tab){const top=`<div class="chips mgrp" role="tablist">${MENU_GROUPS.map(g=>`<button role="tab" aria-selected="${g===grp}" class="chip ${g===grp?'on':''}" data-act="menuGrp" data-arg="${g[0]}">${g[1]}</button>`).join('')}</div>`;
   const subs=grp[2].filter(t=>MENU_SUB[t]);return top+(subs.length>1?`<div class="chips msub" role="tablist">${subs.map(t=>`<button role="tab" aria-selected="${t===tab}" class="chip sm ${t===tab?'on':''}" data-act="menuTab" data-arg="${t}">${MENU_SUB[t]}</button>`).join('')}</div>`:'');}
@@ -8716,7 +8782,12 @@ function mMenu(m){
   if(tab==='roster'){const town=inTown(),list=lsort('roster',Object.values(G.roster).filter(c=>lmatch('roster',c)),(a,b)=>(G.party.includes(b.id)-G.party.includes(a.id))||b.lv-a.lv||a.name.localeCompare(b.name));V.charList=list.map(c=>c.id);
     const chips=filterBar('roster');
     body=`<p class="note">${Object.keys(G.roster).length} of ${ensureSub(G).length} wayfarers in this journey. Tap a hero to equip gear and spend stat points${town?', or to put them in your six':''}.${town?'':' Swapping roster heroes into your six happens in town.'}</p>${chips}<div class="grid mini">${list.map(c=>`<button class="mini ${G.party.includes(c.id)?'in':''} ${c.el.length>1?'dual':''} ${isLeg(c.id)?'leg':''}" data-act="viewChar" data-arg="${c.id}">${isLeg(c.id)?legSeal(1)+'<span class="legtag">LEGENDARY</span>':''}<img src="${heroURL(c.id)}" alt=""><span class="miniail">${typeof ailBadge==='function'?ailBadge(c.id):''}</span><b>${esc(c.name)}${c.legacy?' ★':''}</b><small>Lv ${c.lv} ${CLS[TPL[c.id].cls].n}</small>${xpMini(c)}<span class="els">${c.el.map(ico).join('')}${G.party.includes(c.id)?'<em class="pts">In party</em>':''}</span></button>`).join('')}</div>`;}
-  if(tab==='items')body=`<div class="rows">${Object.keys(ITEMS).filter(id=>!ITEMS[id].craft||(G.inv[id]||0)>0).map(id=>`<div class="row tr" style="${tierVars(iTierIdx(id))}"><div><b>${itemIcon(id)} ${ITEMS[id].n}</b> ${itemChip(id)} x${G.inv[id]||0}<small>${ITEMS[id].d}</small>${ITEMS[id].travel&&(G.inv[id]||0)>0&&travelWhyNot(id)?`<small class="warn">${esc(travelWhyNot(id))}</small>`:''}</div>${ITEMS[id].cure?'<span class="m">Battle only</span>':ITEMS[id].travel?`<button class="btn sm" data-act="useTravel" data-arg="${id}" ${(G.inv[id]||0)>0&&!travelWhyNot(id)?'':'disabled'} title="${esc(travelWhyNot(id))}">Use</button>`:`<button class="btn sm" data-act="useItem" data-arg="${id}" ${(G.inv[id]||0)>0?'':'disabled'}>Use</button>`}</div>`).join('')}</div><h4>Materials</h4>${vPouch()}`;
+  if(tab==='items'){const f=LC('items'),sh=f.sh||'all',kind=id=>{const o=ITEMS[id];return o.travel?'travel':(o.heal||o.mp||o.cure||o.revive)?'battle':'other';};
+    let ids=Object.keys(ITEMS).filter(id=>!ITEMS[id].craft||(G.inv[id]||0)>0).filter(id=>sh==='all'||(sh==='own'?(G.inv[id]||0)>0:kind(id)===sh));
+    const ord={name:(a,b)=>ITEMS[a].n.localeCompare(ITEMS[b].n),count:(a,b)=>(G.inv[b]||0)-(G.inv[a]||0)||ITEMS[a].n.localeCompare(ITEMS[b].n),rar:(a,b)=>iTierIdx(b)-iTierIdx(a)||ITEMS[a].n.localeCompare(ITEMS[b].n)}[f.s];if(ord)ids=ids.slice().sort(ord);
+    body=ddBar([ddSel('Show','lSh','items',[['all','All items'],['own','Carrying'],['battle','Healing and cures'],['travel','Travel gear']],sh),ddSel('Sort','lSort','items',[['def','Default'],['name','Name'],['count','Most carried'],['rar','Rarest first']],f.s)],'lfbar')
+      +(ids.length?`<div class="rows">${ids.map(id=>`<div class="row tr" style="${tierVars(iTierIdx(id))}"><div><b>${itemIcon(id)} ${ITEMS[id].n}</b> ${itemChip(id)} x${G.inv[id]||0}<small>${ITEMS[id].d}</small>${ITEMS[id].travel&&(G.inv[id]||0)>0&&travelWhyNot(id)?`<small class="warn">${esc(travelWhyNot(id))}</small>`:''}</div>${ITEMS[id].cure?'<span class="m">Battle only</span>':ITEMS[id].travel?`<button class="btn sm" data-act="useTravel" data-arg="${id}" ${(G.inv[id]||0)>0&&!travelWhyNot(id)?'':'disabled'} title="${esc(travelWhyNot(id))}">Use</button>`:`<button class="btn sm" data-act="useItem" data-arg="${id}" ${(G.inv[id]||0)>0?'':'disabled'}>Use</button>`}</div>`).join('')}</div>`:'<p class="note empty">No items match. Try Show: All items.</p>')+'<p class="note">Materials have their own tab: Backpack, Materials.</p>';}
+  if(tab==='pouch')body=`<p class="note">Herbs, ore, logs, monster parts and relics. Alchemy and the Smithy turn them into gear and brews.</p>${vPouch()}`;
   if(tab==='quests'){const act=G.quests.filter(q=>q.state==='active'),bt=G.bounties.filter(b=>b.state==='active');
     body=`<div class="rows">${act.map(q=>`<div class="row"><div><b>${esc(q.title)}</b><small>${esc(q.desc)}</small><small>${q.type==='tamer'?`${Math.min(stickCount().n,q.n)}/${q.n} creatures logged`:q.type==='legend'?legendProg(q):q.type==='hunt'?`${q.have||0}/${q.n}`:q.type==='gather'?`${Math.min(G.mats[q.mat]||0,q.n)}/${q.n}`:q.found?'Found':'Not found yet'}${questReady(q)?'. Ready to claim at a quest board.':''}</small></div></div>`).join('')}${bt.map(b=>`<div class="row"><div><b>Bounty: ${esc(b.name)}</b><small>Roaming ${esc(ZS(b.stage).n)}.</small></div></div>`).join('')||''}${!act.length&&!bt.length?'<p class="note">No active quests. Check the quest board in any town square, and the bounty board at the Guild Hall.</p>':''}</div>
     <h4>The journey</h4><div class="rows">${[0,1,2,3,4].map(s=>`<div class="row ${s>G.stage?'lock':''}"><div><b>${s>G.stage?'???':esc(ZS(s).n)}</b><small>${s>G.stage?'Ahead':esc(ZS(s).dungeon)+(G.cleared[s]?': relit':`: ${s<4?bossClass(bossKeyFor(s)):'Calamity'} waits`)}</small></div></div>`).join('')}</div>`;}
@@ -8742,9 +8813,13 @@ function vBestiary(){
     const t=tierOf(b,o.g),nm=nextMilestone(b,o.g),pk=perkOf(o.d.n,o.g);
     return `<button class="btile ${o.g?(FINALS[o.k]?'g cal':'g'):''} t${t}" data-act="beast" data-arg="${o.k}"><img src="${monURL(o.d.art)}" alt=""><b>${esc(o.d.n)}</b>${o.echo?'<em class="echot">Echo</em>':''}<span class="els">${o.d.el.map(ico).join('')}</span><span class="tier t${t}">${TIER_N[t]}${pk.lv?' '+'★'.repeat(pk.lv):''}</span><small class="nums mile">${esc(nm.perk.replace(' for a mastery perk','').replace(' for the next mastery perk',''))}</small></button>`;};
   const groups=ZONES.map((Z,zi)=>({n:Z.n,list:all.filter(o=>o.zone===zi)})).concat([{n:'Dungeon oddities',list:all.filter(o=>o.odd)},{n:'Scourges',list:all.filter(o=>o.g&&!o.echo&&!FINALS[o.k])},{n:'Calamities',list:all.filter(o=>o.g&&!o.echo&&FINALS[o.k])},{n:'Echoes',list:all.filter(o=>o.echo)}]).filter(G0=>G0.list.length);
+  // v0.6.3: dropdown filters (lists.beasts: sh what to show, rg which region)
+  const bf=LC('beasts'),bsh=bf.sh||'all',brg=bf.rg||'all',bOk=o=>{const b=META.best[o.d.n]||{},t=b.seen?tierOf(b,o.g):-1;return bsh==='all'||(bsh==='seen'?b.seen:bsh==='unseen'?!b.seen:bsh==='learn'?b.seen&&t<3:t===3);};
+  const shown=groups.map((G0,i)=>Object.assign({},G0,{i,list:G0.list.filter(bOk)})).filter(G0=>(brg==='all'||String(G0.i)===brg)&&G0.list.length);
+  const bbar=ddBar([ddSel('Show','lSh','beasts',[['all','Every creature'],['seen','Seen'],['unseen','Not seen yet'],['learn','Not mastered'],['mast','Mastered']],bsh),ddSel('Region','lRg','beasts',[['all','Every region']].concat(groups.map((G0,i)=>[String(i),esc(G0.n)])),brg)],'lfbar');
   const ap=archiveProgress(),mast=all.filter(o=>tierOf(META.best[o.d.n],o.g)===3).length;
-  return `<p class="note">${seen} of ${all.length} creatures seen, ${mast} mastered. Every entry starts at <b>Seen</b>. Kills or a scan make it <b>Studied</b> (exact stats, skills, drops, quirks); more kills plus a scan make it <b>Mastered</b> (drop odds, and a Scourge's or Calamity's turning point and pattern). Kill milestones (${PERK_KILLS.join(', ')}; ${PERK_KILLS_BOSS.join(', ')} for Scourges and Calamities) earn small permanent perks against that foe. Tied to your account across journeys and devices.</p>${syncNote()}<p class="note archp">${META.archivist?'✦ Every Scourge and Calamity is logged. The Archive is open: touch any waystone to visit it.':`<b class="nums">${ap.n}/${ap.of}</b> Scourges and Calamities logged. Log them all and someone will want to meet you.`}</p>
-    ${groups.map(G0=>{const n=G0.list.filter(o=>(META.best[o.d.n]||{}).seen).length;return `<h4>${esc(G0.n)} <span class="cnt nums">${n}/${G0.list.length}</span></h4><div class="btiles">${G0.list.map(tile).join('')}</div>`;}).join('')}`;
+  return `<p class="note">${seen} of ${all.length} creatures seen, ${mast} mastered.</p>${bbar}<details class="m3how"><summary>How the Bestiary works</summary><p class="note">Every entry starts at <b>Seen</b>. Kills or a scan make it <b>Studied</b> (exact stats, skills, drops, quirks); more kills plus a scan make it <b>Mastered</b> (drop odds, and a Scourge's or Calamity's turning point and pattern). Kill milestones (${PERK_KILLS.join(', ')}; ${PERK_KILLS_BOSS.join(', ')} for Scourges and Calamities) earn small permanent perks against that foe. Tied to your account across journeys and devices.</p></details>${syncNote()}<p class="note archp">${META.archivist?'✦ Every Scourge and Calamity is logged. The Archive is open: touch any waystone to visit it.':`<b class="nums">${ap.n}/${ap.of}</b> Scourges and Calamities logged. Log them all and someone will want to meet you.`}</p>
+    ${shown.map(G0=>{const full=groups[G0.i].list,n=full.filter(o=>(META.best[o.d.n]||{}).seen).length;return `<h4>${esc(G0.n)} <span class="cnt nums">${n}/${full.length}</span></h4><div class="btiles">${G0.list.map(tile).join('')}</div>`;}).join('')||'<p class="note empty">No creatures match. Try Show: Every creature.</p>'}`;
 }
 function beastLv(o){if(o.g)return null;let lv=20;if(G&&G.run&&G.run.order){const s=G.run.order.indexOf(o.zone);if(s>=0)lv=Math.round((STAGE_LV[s][0]+STAGE_LV[s][1])/2);}return lv;}
 function mBeast(m){
@@ -8925,7 +9000,7 @@ function boot(){
   document.addEventListener('pointerdown',e=>{const t=e.target.closest('.unit.tg[data-act]');if(!t)return;e.preventDefault();const f=ACT[t.dataset.act];if(f)f(t.dataset.arg,t);});
   document.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.classList&&e.target.classList.contains('unit')&&e.target.classList.contains('tg')){e.preventDefault();ACT[e.target.dataset.act](e.target.dataset.arg);}});
   window.addEventListener('keydown',e=>{
-    if(e.target&&/INPUT|TEXTAREA/.test(e.target.tagName))return;
+    if(e.target&&/INPUT|TEXTAREA|SELECT/.test(e.target.tagName)&&!(e.key==='Escape'&&e.target.tagName==='SELECT'))return;
     if(e.key==='Shift')WS.run=true;
     if((e.key==='n'||e.key==='N')&&!(e.target&&/INPUT|TEXTAREA/.test(e.target.tagName))){ACT.mute();return;}
     if(e.key==='Escape'&&V.modal){e.preventDefault();ACT.xBack();return;}
@@ -9049,7 +9124,7 @@ function padPoll(now){
       const sheet=V.modal&&(V.modal.type==='char'||(V.modal.type==='guild'&&V.modal.char))&&!V.modal.gear;
       if(sheet&&(edge('LB')||edge('RB')))ACT.charNav(edge('LB')?-1:1);
       if(moved){PAD.rep=now;if(sheet&&(dir==='l'||dir==='r'))ACT.charNav(dir==='l'?-1:1);else{const d0=dir.length===2?dir[0]:dir;padFocus(d0==='u'||d0==='l'?-1:1);}}
-      if(edge('A')){const a=document.activeElement;if(a&&a.matches&&a.matches('input,textarea'))a.focus();else if(a&&a.matches&&a.matches('button,[data-act]'))a.click();else padFocus(1);}
+      if(edge('A')){const a=document.activeElement;if(a&&a.matches&&a.matches('select')){a.selectedIndex=(a.selectedIndex+1)%a.options.length;a.dispatchEvent(new Event('change',{bubbles:true}));}/* v0.6.3: A steps a dropdown to its next choice */else if(a&&a.matches&&a.matches('input,textarea'))a.focus();else if(a&&a.matches&&a.matches('button,[data-act]'))a.click();else padFocus(1);}
       if(edge('B')){if(V.modal)ACT.xBack();else if(B&&B.uDet)ACT.uClose();else if(B&&B.stPop)ACT.stClose();else if(B&&B.logOpen)ACT.blogT();else if(B&&B.mode==='cmd'&&B.menu!=='root')ACT.back();}
       if((edge('X')||edge('S'))&&V.modal){ACT.xClose();}
       else if(edge('S')&&V.screen==='world')ACT.menu();
@@ -9059,7 +9134,7 @@ function padPoll(now){
 }
 function padFocus(d){
   const root=V.modal?document.getElementById('modal'):document.getElementById('screen');if(!root)return;
-  const all=Array.from(root.querySelectorAll('button:not([disabled]),input:not([disabled]),textarea:not([disabled])')).filter(e=>e.offsetParent!==null&&e.getAttribute('tabindex')!=='-1');
+  const all=Array.from(root.querySelectorAll('button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled])')).filter(e=>e.offsetParent!==null&&e.getAttribute('tabindex')!=='-1');
   if(!all.length)return;const i=all.indexOf(document.activeElement);const n=all[(i<0?(d>0?0:all.length-1):(i+d+all.length)%all.length)];n.focus();n.scrollIntoView({block:'nearest'});
 }
 // ----- touch: joystick pad and tap/drag on the map -----
@@ -10223,11 +10298,13 @@ function modalBack(m){
   if(t==='fbcopy')return ()=>{V.modal=m.ret&&m.ret.type==='feedback'?m.ret:null;};
   if(t==='talk')return ()=>{V.modal=m.from||null;};
   if(t==='map')return ()=>{V.modal=m.from||null;};   // v0.4.1 1.9: the map has a back arrow next to the X (back to where it was opened from, else the world)
-  // v0.5.0 1.5: every shop screen has the back arrow. A sub tab or category goes back to the shop's first tab, the first tab leaves the shop.
-  const SHOP_HOME={smithy:'weapons',workshop:'shop',guild:'recruit',tavern:null,inn:null,board:null,archivist:null};
-  if(t in SHOP_HOME){const home=SHOP_HOME[t],tab=m.tab&&m.tab!=='party'?m.tab:home;
-    if(m.cat&&tab==='craft'){const first=t==='smithy'?(typeof SMITH_CATS!=='undefined'&&SMITH_CATS[0]):(typeof ALCH_CATS!=='undefined'&&ALCH_CATS[0]);if(first&&m.cat!==first)return ()=>{m.cat=first;};}
-    if(home&&tab!==home)return ()=>{m.tab=home;m.cat=null;};
+  // v0.5.0 1.5: every shop screen has the back arrow. v0.6.3: shops have main tabs and section chips (menus3.js), so back is one level:
+  // a section (or a hero picked on the Natures tab) goes back to All, a tab goes back to the shop's first tab, the first tab leaves the shop.
+  const SHOP_HOME={smithy:'shop',workshop:'shop',guild:'recruit',tavern:'hire',inn:null,board:null,archivist:null};
+  if(t in SHOP_HOME){if(typeof m3Norm==='function')m3Norm(m);const home=SHOP_HOME[t],tab=m.tab&&m.tab!=='party'?m.tab:home;
+    if(t==='guild'&&tab==='nature'&&m.nat)return ()=>{m.nat=null;};
+    if(m.sec&&m.sec!=='all')return ()=>{m.sec='all';};
+    if(home&&tab!==home)return ()=>{m.tab=home;m.sec='all';m._t=home;m.nat=null;};
     if(m.from)return ()=>{V.modal=m.from;};
     return ()=>{V.modal=null;};}
   if(m.from)return ()=>{V.modal=m.from;};
@@ -10326,12 +10403,18 @@ function temperRank(o){const c=forgeCost(o.id);if(!c)return {ready:0,gain:0,clos
   let need=0,got=0;Object.keys(c.m).forEach(k=>{need+=c.m[k];got+=Math.min(c.m[k],G.mats[k]||0);});
   const close=(need?got/need:1)*.7+Math.min(1,c.gold?G.gold/c.gold:1)*.3;
   return {ready,gain,close};}
-function vTemper(){
+// v0.6.3: the ordered Tempering list on its own (section counts), and vTemper(o) with o.slot ('w','a','k','c'), o.show ('all','ready','eq','spare') and o.bar (the dropdown)
+function temperList(){
   const list=[];partyChars().forEach(c=>EQSL.forEach(sl=>{if(c.eq[sl])list.push({where:'eq',ref:{cid:c.id,slot:sl},id:c.eq[sl],who:c.name});}));
   // v0.5.1: identical spares share one row (tempering works on the first copy); a full pack listed hundreds of the same rows
   {const seen={};G.gear.forEach((id,i)=>{if(seen[id]){seen[id].n++;seen[id].who='Pack (x'+seen[id].n+')';return;}list.push(seen[id]={where:'spare',ref:i,id,who:'Pack',n:1});});}
   // v0.4.3: only what can be tempered, highest rarity first, then the highest temper level
-  const tl=temperOrder(list.filter(o=>gearOf(o.id)&&forgeCost(o.id)));// v0.5.0 3.1 (and 1.9): temperOrder lives in p3shop.js
+  return temperOrder(list.filter(o=>gearOf(o.id)&&forgeCost(o.id)));// v0.5.0 3.1 (and 1.9): temperOrder lives in p3shop.js
+}
+function vTemper(opt){opt=opt||{};
+  let tl=temperList();const n0=tl.length;
+  if(opt.slot)tl=tl.filter(o=>gearOf(o.id).slot===opt.slot);
+  if(opt.show==='ready')tl=tl.filter(o=>temperReady(o));else if(opt.show==='eq')tl=tl.filter(o=>o.where==='eq');else if(opt.show==='spare')tl=tl.filter(o=>o.where!=='eq');
   const why=typeof temperWhy==='function'?temperWhy(tl):{};// v0.5.1 3.1: tradeoff line between close options
   const rowOf=(o,ti)=>{const c=forgeCost(o.id),g=gearOf(o.id);if(!g)return '';
     if(!c)return `<div class="row rec tr" style="${tierVars(gTierIdx(g),g)}">${gearIcon(o.id)}<div class="grow"><b>${g.n}</b> ${tierChip(g)}<small>${esc(o.who)}. ${gearDesc(g)}</small><small class="up">${g.stick?'The Stick grows with your Bestiary, not the anvil.':'Fully tempered.'}</small></div></div>`;
@@ -10342,7 +10425,9 @@ function vTemper(){
       ${P&&P.cant.length?`<small class="warn">Still need ${P.cant.map(k=>MATS[k]).join(', ')}: ${P.cant.some(k=>MAT_OF[k]&&(MAT_OF[k].k==='relic'))?'relics and Dread Cores come from foes. ':''}${P.cant.some(k=>PART_PRICE[k])?'the counter is out of that part until you rest. ':''}${herbNote}</small>`:''}</div>
       <div class="btnrow tight col">${P&&P.any?`<button class="btn sm" data-act="temperBuy" data-arg='${JSON.stringify({w:o.where,r:o.ref})}' ${G.gold>=P.gold?'':'disabled'} title="Buy the missing ore, logs and parts here">Buy missing <span class="nums">${fmt(P.gold)}</span></button>`:''}<button class="btn sm ${ok?'gold':''}" data-act="forge" data-arg='${JSON.stringify({w:o.where,r:o.ref})}' ${ok?'':'disabled'}>Temper</button></div></div>`;};
   const rows=tl.map(rowOf).join('');
-  return `<p class="note">Tempering makes gear better: each level adds 25% to an item's stats, up to +3. Every level needs the item's own raw material (ore, logs or herbs at its tier), a monster part for its kind (fangs for blades and daggers, scales for mail, ichor for staves and robes, hide for bows and garb, grit for charms), this realm's relic (${MATS[ZS(G.stage).mat]}), and gold. +3 also needs a Dread Core. The Smithy sells ore, logs and a few parts right here.</p><div class="rows">${rows||'<p class="note">Nothing to temper right now. Fully tempered gear and the Tamer\'s Stick are not listed.</p>'}</div>`;
+  const bar=opt.bar&&typeof ddBar==='function'?ddBar([ddSel('Show','tShow','t',[['all','Everything'],['ready','Ready to temper'],['eq','Worn by the party'],['spare','Spares in the pack']],opt.show||'all')],'shopf'):'';
+  const empty=n0&&(opt.slot||(opt.show&&opt.show!=='all'))?'<p class="note empty">Nothing here matches. Try another section or Show: Everything.</p>':'<p class="note empty">Nothing to temper right now. Fully tempered gear and the Tamer\'s Stick are not listed.</p>';
+  return `${bar}<details class="m3how"><summary>How tempering works</summary><p class="note">Each level adds 25% to an item's stats, up to +3. Every level needs the item's own raw material (ore, logs or herbs at its tier), a monster part for its kind (fangs for blades and daggers, scales for mail, ichor for staves and robes, hide for bows and garb, grit for charms), this realm's relic (${MATS[ZS(G.stage).mat]}), and gold. +3 also needs a Dread Core. The Smithy sells ore, logs and a few parts right here.</p></details>${rows?`<div class="rows">${rows}</div>`:empty}`;
 }
 Object.assign(ACT,{
   temperBuy(a){const o=JSON.parse(a),id=o.w==='spare'?G.gear[o.r]:G.roster[o.r.cid].eq[o.r.slot];const c=id&&forgeCost(id);if(!c)return;
@@ -10518,12 +10603,15 @@ function vEquipTab(){const L=G.party.concat(Object.keys(G.roster).filter(id=>!G.
     <button class="btn sm" data-act="autoEqOne" data-arg="${id}" title="Equip the best spare gear for ${esc(c.name)}">Auto</button></div>`;}).join('')}</div>`;}
 function mEquipPick(m){const c=G.roster[m.char];if(!c)return '';const sl=m.slot,cur=c.eq[sl];
   const ids=[...new Set(G.gear.filter(id=>{const g=gearOf(id);return g&&g.slot===sl&&(!g.only||g.only===c.id);}))];
-  const ok=ids.filter(id=>canEquip(c,id)).sort((a,b)=>(gainFor(c,b).d)-(gainFor(c,a).d)),no=ids.filter(id=>!canEquip(c,id));
+  const ok0=ids.filter(id=>canEquip(c,id)).sort((a,b)=>(gainFor(c,b).d)-(gainFor(c,a).d)),no=ids.filter(id=>!canEquip(c,id));
+  // v0.6.3: dropdown filters, remembered in META.cfg.lists.eqpick (sh: all or upg, rg: a rarity)
+  const ef=LC('eqpick'),esh=ef.sh||'all',erg=ef.rg||'all',ok=ok0.filter(id=>(esh!=='upg'||gainFor(c,id).d>0.01)&&(erg==='all'||String(gTierIdx(gearOf(id)))===erg));
+  const ebar=ok0.length>1&&typeof ddBar==='function'?ddBar([ddSel('Show','lSh','eqpick',[['all','Everything that fits'],['upg','Upgrades only']],esh),ddSel('Rarity','lRg','eqpick',[['all','Any rarity']].concat(ITEM_TIERS.map((t,i)=>[String(i),esc(t.n)])),erg)],'lfbar'):'';
   const LST=(m.list||[]).filter(x=>G.roster[x]),li=LST.indexOf(c.id);
   return box(`${SLOTN[sl]}: ${esc(c.name)}`,`${LST.length>1?`<div class="cnav"><button class="btn sm" data-act="eqNav" data-arg="-1" aria-label="Previous hero">‹ Prev</button><small class="nums">${li+1} / ${LST.length}</small><button class="btn sm" data-act="eqNav" data-arg="1" aria-label="Next hero">Next ›</button></div>`:''}
     <div class="chips">${EQSL.map(s=>`<button class="chip ${s===sl?'on':''}" data-act="eqSlot" data-arg="${s}">${SLOTN[s]}</button>`).join('')}</div>
     <div class="row eqcur">${cur?gearIcon(cur):''}<div class="grow"><small>Equipped</small><b>${cur?esc(gearOf(cur).n):'Nothing'}</b>${cur?tierChip(gearOf(cur)):''}<small>${cur?gearDesc(cur):''}</small></div>${cur?`<button class="btn sm" data-act="eqOff">Unequip</button>`:''}</div>
-    <div class="rows">${ok.map(id=>{const n=G.gear.filter(x=>x===id).length,gg=gainFor(c,id);return `<div class="row tr ${gg.d>0.01?'upg':''}" style="${tierVars(gTierIdx(gearOf(id)),gearOf(id))}">${gearIcon(id)}<div class="grow"><b>${esc(gearOf(id).n)}</b> ${tierChip(gearOf(id))}${n>1?` <small>x${n}</small>`:''}<small>${gearDesc(id)}</small><small>${vsMark(c,id)} ${deltaHtml(c,id)}</small></div><button class="btn sm ${gg.d>0.01?'gold':''}" data-act="eqSet" data-arg="${id}">Equip</button></div>`;}).join('')||'<p class="note">No spare gear for this slot. The Smithy and Alchemy sell more.</p>'}
+    ${ebar}<div class="rows">${ok.map(id=>{const n=G.gear.filter(x=>x===id).length,gg=gainFor(c,id);return `<div class="row tr ${gg.d>0.01?'upg':''}" style="${tierVars(gTierIdx(gearOf(id)),gearOf(id))}">${gearIcon(id)}<div class="grow"><b>${esc(gearOf(id).n)}</b> ${tierChip(gearOf(id))}${n>1?` <small>x${n}</small>`:''}<small>${gearDesc(id)}</small><small>${vsMark(c,id)} ${deltaHtml(c,id)}</small></div><button class="btn sm ${gg.d>0.01?'gold':''}" data-act="eqSet" data-arg="${id}">Equip</button></div>`;}).join('')||(ok0.length?'<p class="note empty">Nothing matches the filters.</p>':'<p class="note empty">No spare gear for this slot. The Smithy and Alchemy sell more.</p>')}
     ${no.length?`<p class="note">${no.length} item${no.length>1?'s':''} in your pack can't be used by a ${CLS[TPL[c.id].cls].n} (tomes are for Mages, Archmages and Chroniclers).</p>`:''}</div>`,
     `<button class="btn" data-act="autoEqOne" data-arg="${c.id}">Auto best gear</button><button class="btn gold" data-act="xBack">Done</button>`,true);}
 // ----- "Equip this now?" for bought, crafted, won and found gear -----
@@ -10690,18 +10778,23 @@ function matchT(n,t,el){const f=LC(n);
   if(f.el!=='all'&&f.el!=='dual'&&!(el||t.el).includes(f.el))return false;
   if(f.cl==='legend')return t.src==='L';
   if(f.cl!=='all'&&t.cls!==f.cl)return false;return true;}
-const lmatch=(n,c)=>matchT(n,TPL[c.id],c.el);
+// v0.6.3: a Show filter on hero lists (lists.*.sh): everyone, in the party, not in it, unspent stat points, hurt or KO
+function lshow(n,c){const v=LC(n).sh||'all';if(v==='party')return G.party.includes(c.id);if(v==='bench')return !G.party.includes(c.id);
+  if(v==='pts')return (c.pts||0)>0;if(v==='hurt')return c.hp<c.S.mhp||Object.keys(c.st||{}).some(k=>STS[k]&&STS[k].bad);return true;}
+const lmatch=(n,c)=>matchT(n,TPL[c.id],c.el)&&lshow(n,c);
 function lsort(n,arr,dflt){const f=LC(n),a=arr.slice(),nm=x=>String(x.name||TPL[x.id].n),R=Object.keys(G.roster);
   const ord={name:(x,y)=>nm(x).localeCompare(nm(y)),lv:(x,y)=>y.lv-x.lv||nm(x).localeCompare(nm(y)),cls:(x,y)=>CLS[TPL[x.id].cls].n.localeCompare(CLS[TPL[y.id].cls].n)||y.lv-x.lv,
     el:(x,y)=>ELK.indexOf(x.el[0])-ELK.indexOf(y.el[0])||(x.el[1]?ELK.indexOf(x.el[1]):-1)-(y.el[1]?ELK.indexOf(y.el[1]):-1)||nm(x).localeCompare(nm(y)),
     hp:(x,y)=>(x.hp/x.S.mhp)-(y.hp/y.S.mhp)||nm(x).localeCompare(nm(y)),new:(x,y)=>R.indexOf(y.id)-R.indexOf(x.id)};
   return a.sort(ord[f.s]||dflt);}
-function filterBar(n,codex){const f=LC(n),chip=(act,v,cur,txt,cls)=>`<button class="chip ${cur===v?'on':''} ${cls||''}" data-act="${act}" data-arg="${n}:${v}">${txt}</button>`;
+// v0.6.3: every filter is a dropdown (ddSel in menus3.js); the actions and the stored record (META.cfg.lists) are unchanged
+function filterBar(n,codex){const f=LC(n);
   const cl=Object.keys(CLS).filter(k=>!CLS[k].legend&&(k!=='chronicler'||Object.values(G.roster).some(c=>TPL[c.id].cls==='chronicler')||codex));
   const hasL=codex||Object.values(G.roster).some(c=>TPL[c.id].src==='L');
-  return `<div class="lfbar"><div class="chips"><small class="lbl">Sort</small>${(codex?LSORT_C:LSORT_H).map(([k,t])=>chip('lSort',k,f.s,t)).join('')}</div>
-    <div class="chips"><small class="lbl">Element</small>${chip('lEl','all',f.el,'All')}${ELK.map(k=>chip('lEl',k,f.el,ico(k)+'<span class="sr"> '+EL[k]+'</span>')).join('')}${chip('lEl','dual',f.el,'Dual')}</div>
-    <div class="chips"><small class="lbl">Class</small>${chip('lCl','all',f.cl,'All')}${cl.map(k=>chip('lCl',k,f.cl,CLS[k].n)).join('')}${hasL?chip('lCl','legend',f.cl,'★ Legendary','legchip'):''}</div></div>`;}
+  return ddBar([ddSel('Sort','lSort',n,codex?LSORT_C:LSORT_H,f.s),
+    ddSel('Element','lEl',n,[['all','All elements']].concat(ELK.map(k=>[k,EL[k]]),[['dual','Dual type']]),f.el),
+    ddSel('Class','lCl',n,[['all','All classes']].concat(cl.map(k=>[k,CLS[k].n]),hasL?[['legend','★ Legendary']]:[]),f.cl),
+    n==='roster'?ddSel('Show','lSh',n,[['all','Everyone'],['party','In the party'],['bench','Reserves'],['pts','Unspent points'],['hurt','Hurt or ailing']],f.sh||'all'):''],'lfbar');}
 // ----- XP -----
 function xpLine(c,compact){if(c.lv>=LV_CAP)return `<span class="swb xpb"><span class="swbl">XP</span><span class="nums">Max level</span></span>`;
   const n=need(c.lv);return `<span class="swb xpb"><span class="swbl">XP</span>${bar(c.xp,n,'var(--gold)')}<span class="nums">${fmt(c.xp)}/${fmt(n)}${compact?'':` (${fmt(n-c.xp)} to Lv ${c.lv+1})`}</span></span>`;}
@@ -10793,7 +10886,7 @@ function mField(m){const P=G.party.map(id=>G.roster[id]).filter(Boolean),casters
 {const vm0=vModal;vModal=function(m){if(m){if(m.type==='ldRes')return mLdRes(m);if(m.type==='ldMgr')return mLdMgr(m);if(m.type==='bp')return mBestParty(m);if(m.type==='field')return mField(m);}return vm0.apply(this,arguments);};}
 const lstore=(n,k,v)=>{LC(n)[k]=v;saveMeta();render();};
 Object.assign(ACT,{
-  lSort(a){const [n,v]=a.split(':');lstore(n,'s',v);},lEl(a){const [n,v]=a.split(':');lstore(n,'el',v);},lCl(a){const [n,v]=a.split(':');lstore(n,'cl',v);},
+  lSort(a){const [n,v]=a.split(':');lstore(n,'s',v);},lEl(a){const [n,v]=a.split(':');lstore(n,'el',v);},lCl(a){const [n,v]=a.split(':');lstore(n,'cl',v);},lSh(a){const [n,v]=a.split(':');lstore(n,'sh',v);},lRg(a){const [n,v]=a.split(':');lstore(n,'rg',v);},
   ldMgr(){V.modal={type:'ldMgr',from:V.modal};render();},
   ldSave(i){i=+i;const L=LD();if(i<0||i>=LOADMAX)return;const nm=L[i]?L[i].name:'Loadout '+(i+1);L[i]=ldCapture(nm);for(let k=0;k<L.length;k++)if(!L[k])L[k]=ldCapture('Loadout '+(k+1));saveGame();toast('Loadout saved.');render();},
   ldDel(i){i=+i;const L=LD();if(L[i]){L[i]=null;while(L.length&&!L[L.length-1])L.pop();saveGame();render();}},
@@ -15847,6 +15940,217 @@ function hbsDraw(ctx,p,now){const t=now-p.t0;if(t<0)return;const q=t/p.life;if(q
       ctx.fillRect(R(p.x-r),R(p.y),r*2+1,1);ctx.fillRect(R(p.x),R(p.y-r),1,r*2+1);ctx.globalAlpha=(1-q)*.6;ctx.fillStyle='#ffe08a';ctx.fillRect(R(p.x-r*.6),R(p.y-r*.6),2,2);ctx.fillRect(R(p.x+r*.6-1),R(p.y+r*.6-1),2,2);ctx.globalCompositeOperation='source-over';break;}
     case 'hbC':{const e=1-q*q,x=p.x+p.dx*e,y=p.y+p.dy*e;ctx.globalCompositeOperation='lighter';ctx.globalAlpha=Math.min(1,q*3);ctx.fillStyle=p.col;ctx.fillRect(R(x),R(y),1,1);ctx.globalCompositeOperation='source-over';break;}}}
 {const dp0=drawParts;drawParts=function(ctx,now){const r=dp0.apply(this,arguments);if(!HB.on)return r;try{const P=BV.P;for(let i=0;i<P.length;i++)if(P[i].hb)hbsDraw(ctx,P[i],now);}catch(e){}ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';ctx.lineCap='butt';return r;};}
+
+// =================== Beta v0.6.3: SHOPS AND MENUS (file: menus3.js) ===================
+// Every shop has the same two levels: main tabs (the gilt strip the Menu uses) and section chips under them (the Menu's
+// underlined sub tabs), and the first section is always "All". Filters and sorts are dropdowns (ddSel), remembered where they
+// were before: shops in META.cfg.shopF, lists in META.cfg.lists. New optional fields: shopF.who, shopF.rar, shopF.tsh, lists.*.sh, lists.*.rg.
+// Modal state: V.modal.tab (main tab) and V.modal.sec (section, 'all' when missing). Old tab ids still land (M3_LEG):
+// smithy weapons/armor/mats go to Shop with that section, workshop relit/herbs to Shop, guild personal/bounties to Quests.
+// Back (nav.js modalBack): a section goes back to All, a tab goes back to the shop's first tab, the first tab leaves.
+
+// ----- dropdowns -----
+function ddSel(lbl,act,pre,opts,cur,cls){const c=String(cur==null?'':cur);
+  return `<label class="dd ${cls||''}"><span class="ddl">${lbl}</span><span class="ddw"><select class="ddsel" data-chg="${act}" data-pre="${pre}" aria-label="${esc(String(lbl).replace(/<[^>]*>/g,''))}">${opts.map(([v,t])=>`<option value="${v}"${String(v)===c?' selected':''}>${t}</option>`).join('')}</select></span></label>`;}
+function ddBar(parts,cls){parts=parts.filter(Boolean);return parts.length?`<div class="ddbar ${cls||''}">${parts.join('')}</div>`:'';}
+document.addEventListener('change',e=>{const t=e.target;if(!t||!t.matches||!t.matches('select[data-chg]'))return;const f=ACT[t.dataset.chg];if(!f)return;
+  V._ddFocus=[t.dataset.chg,t.dataset.pre];try{if(typeof sfx==='function')sfx('blip');}catch(x){}f(t.dataset.pre+':'+t.value,t);});
+// keep focus on the dropdown after the re-render it causes (keyboard and pad users)
+{const r0=render;render=function(){const r=r0.apply(this,arguments);try{const k=V._ddFocus;if(k){V._ddFocus=null;const s=[...document.querySelectorAll('#modal select[data-chg]')].find(x=>x.dataset.chg===k[0]&&x.dataset.pre===k[1]);if(s)s.focus({preventScroll:true});}}catch(e){}return r;};}
+
+// ----- the shop filter state (META.cfg.shopF) -----
+const M3_SORT={best:'Best for party',rarity:'Rarest first',ready:'Ready first',price:'Cheapest first',name:'Name'};
+function m3Who(){const f=SHOPF();return f.who&&f.who!=='all'&&G&&G.party.includes(f.who)&&G.roster[f.who]?G.roster[f.who]:null;}
+function m3Rar(){const f=SHOPF();return f.rar==null||f.rar==='all'?null:+f.rar;}
+function m3Upg(id){const c=m3Who(),min=(typeof SHOP_BEST!=='undefined'?SHOP_BEST.minPct:.005);
+  if(c){const g=gainFor(c,id);return !!g&&g.pct>=min;}return typeof partyGainOf==='function'?partyGainOf(id).top>=min:gainersFor(id).length>0;}
+// ctx: 'buy' (gear for sale), 'craft' (recipes), 'items' (potions and tonics), 'mixed' (an All page with both)
+function shopFBar(ctx){if(typeof p3ShopDefault==='function')p3ShopDefault();const f=SHOPF();ctx=ctx||'buy';
+  const sorts=['best','rarity'].concat(ctx==='craft'?['ready']:[]).concat(['price','name']).filter(k=>!(ctx==='items'&&k==='best'));
+  const shows=[['all','Everything'],['afford',ctx==='craft'?'Can craft now':'Can afford']].concat(ctx==='items'?[]:[['usable','Fits my party'],['upg','Upgrades only']]);
+  const P=G?G.party.map(id=>G.roster[id]).filter(Boolean):[],T=typeof ITEM_TIERS!=='undefined'?ITEM_TIERS:[];
+  return ddBar([ddSel('Sort','shopF','sort',sorts.map(k=>[k,M3_SORT[k]]),sorts.includes(f.sort)?f.sort:sorts[0]),
+    ddSel('Show','shopF','show',shows,shows.some(s=>s[0]===f.show)?f.show:'all'),
+    ctx==='items'?'':ddSel('For','shopF','who',[['all','Whole party']].concat(P.map(c=>[c.id,esc(c.name)+' ('+esc(CLS[TPL[c.id].cls].n)+')'])),m3Who()?f.who:'all'),
+    ddSel('Rarity','shopF','rar',[['all','Any rarity']].concat(T.map((t,i)=>[String(i),esc(t.n)])),m3Rar()==null?'all':String(m3Rar()))],'shopf');}
+// extra filters on top of the v0.4.1 and v0.5.0 ones (shopSortIds and recipeList keep their names and callers)
+{const ss=shopSortIds;shopSortIds=function(ids){let r=ss.apply(this,arguments);try{const f=SHOPF(),c=m3Who(),rr=m3Rar();
+  if(c)r=r.filter(id=>canEquip(c,id));if(rr!=null)r=r.filter(id=>gTierIdx(GEAR[id])===rr);if(f.show==='upg')r=r.filter(m3Upg);
+  if(f.sort==='price')r=r.slice().sort((a,b)=>GEAR[a].price-GEAR[b].price||GEAR[a].n.localeCompare(GEAR[b].n));
+  if(f.sort==='name')r=r.slice().sort((a,b)=>GEAR[a].n.localeCompare(GEAR[b].n));}catch(e){}return r;};}
+{const rl=recipeList;recipeList=function(list){let r=rl.apply(this,arguments);try{const f=SHOPF(),c=m3Who(),rr=m3Rar();
+  if(c)r=r.filter(x=>!x.id||canEquip(c,x.id));if(rr!=null)r=r.filter(x=>rarityOf(x)===rr);if(f.show==='upg')r=r.filter(x=>!x.id||m3Upg(x.id));
+  if(f.sort==='price')r=r.slice().sort((a,b)=>(a.g||0)-(b.g||0)||String(recipeName(a)).localeCompare(String(recipeName(b))));
+  if(f.sort==='name')r=r.slice().sort((a,b)=>String(recipeName(a)).localeCompare(String(recipeName(b))));}catch(e){}return r;};}
+// potions, tonics and travel gear for sale: rarity, price and name sorts, afford and rarity filters
+function m3ItemSort(ids,priceOf){const f=SHOPF(),rr=m3Rar(),pr=priceOf||(id=>ITEMS[id].price);let a=ids.slice();
+  if(f.show==='afford')a=a.filter(id=>G.gold>=pr(id));if(rr!=null)a=a.filter(id=>iTierIdx(id)===rr);
+  const nm=id=>ITEMS[id]?ITEMS[id].n:gearOf(id).n;
+  if(f.sort==='price')return a.sort((x,y)=>pr(x)-pr(y)||nm(x).localeCompare(nm(y)));
+  if(f.sort==='name')return a.sort((x,y)=>nm(x).localeCompare(nm(y)));
+  return a.sort((x,y)=>iTierIdx(y)-iTierIdx(x)||pr(y)-pr(x));}
+
+// ----- structure -----
+const M3_LEG={smithy:{weapons:['shop','weapons'],armor:['shop','armor'],capes:['shop','capes'],mats:['shop','mats']},
+  workshop:{relit:['shop','relit'],herbs:['shop','herb']},guild:{personal:['quests','personal'],bounties:['quests','bounties'],party:['recruit','all']},tavern:{},board:{}};
+const M3_HOME={smithy:'shop',workshop:'shop',guild:'recruit',tavern:'hire',board:null};
+const M3_TITLE={smithy:'The Smithy',workshop:'Alchemy',guild:'Wayfarers Guild Hall',tavern:'The Rusty Flagon',board:'Quest Board'};
+function m3Tabs(t){
+  if(t==='smithy')return [['shop','Shop'],['craft','Forge'],['forge','Tempering'],['sell','Sell']].concat(typeof efTabOn==='function'&&efTabOn()?[['echo','Echoforge']]:[]);
+  if(t==='workshop')return [['shop','Shop'],['craft','Brew &amp; craft'],['sell','Sell'],['pouch','Pouch']];
+  if(t==='guild')return [['recruit','Recruits'],['quests','Quests'],['nature','Natures'],['arena','Arena'],['guilds','Guilds']];
+  if(t==='tavern')return [['hire','Hire'],['kitchen','Kitchen']];
+  return [];}
+// item kinds at Alchemy
+const m3Kind=id=>{const o=ITEMS[id];return o.travel?'travel':(o.cure||o.revive)?'cure':'potion';};
+const M3_SLOTSEC={weapons:'w',armor:'a',capes:'k',charms:'c'};
+function m3SellCnt(slots){const o={};(G.gear||[]).forEach(id=>{const g=gearOf(id);if(g&&!g.stick&&slots.includes(g.slot))o[id]=(o[id]||0)+1;});return o;}
+function m3Secs(t,tab){const n=(a)=>a.length;
+  if(t==='smithy'){
+    if(tab==='shop'){const ar=shopStock('armor');return [['all','All'],['weapons','Weapons',n(shopStock('weapons'))],['armor','Armor',ar.filter(id=>gearOf(id).slot==='a').length],['capes','Capes',ar.filter(id=>gearOf(id).slot==='k').length],['mats','Materials']];}
+    if(tab==='craft')return [['all','All']].concat(RCAT.filter(([k])=>SMITH_CATS.includes(k)).map(([k,l])=>[k,l,RECIPES.filter(r=>r.cat===k&&recipeOpen(r)).length]));
+    if(tab==='forge'){const L=temperList();const c=s=>L.filter(o=>gearOf(o.id).slot===s).length;return [['all','All',L.length],['weapons','Weapons',c('w')],['armor','Armor',c('a')],['capes','Capes',c('k')],['charms','Charms',c('c')]];}
+    if(tab==='sell'){const C=m3SellCnt(['w','a','k']),c=s=>Object.keys(C).filter(id=>gearOf(id).slot===s).reduce((a,id)=>a+C[id],0);
+      return [['all','All'],['weapons','Weapons',c('w')],['armor','Armor',c('a')],['capes','Capes',c('k')],['mats','Materials']];}}
+  if(t==='workshop'){
+    if(tab==='shop'){const S=alchStock(),k=x=>S.filter(id=>m3Kind(id)===x).length;
+      return [['all','All'],['potion','Potions',k('potion')],['cure','Cures',k('cure')],['travel','Travel',k('travel')],['charm','Charms',shopStock('charms').length],['herb','Herbs',herbStock().length]].concat(G.cleared[townS()]?[['relit','Festival',RELIT_STOCK.length]]:[]);}
+    if(tab==='craft')return [['all','All']].concat(RCAT.filter(([k])=>ALCH_CATS.includes(k)).map(([k,l])=>[k,l,RECIPES.filter(r=>r.cat===k&&recipeOpen(r)).length]));
+    if(tab==='sell'){const C=m3SellCnt(['c']);return [['all','All'],['charm','Charms',Object.values(C).reduce((a,b)=>a+b,0)],['herb','Herbs',Object.keys(MATS).filter(id=>(G.mats[id]||0)>0&&MAT_OF[id].k==='herb').length]];}}
+  if(t==='guild'&&tab==='quests'){for(let s=0;s<=G.stage;s++)genBounties(s);return [['all','All'],['personal','Personal quests'],['bounties','Bounties',G.bounties.filter(b=>b.stage<=G.stage&&b.state!=='done').length]];}
+  if(t==='board'){const Q=m3Quests(),c=f=>Q.filter(f).length;
+    return [['all','All',Q.length],['ready','Ready',c(q=>q.state==='active'&&questReady(q))],['active','Active',c(q=>q.state==='active'&&!questReady(q))],['open','Open',c(q=>q.state==='open')],['done','Done',c(q=>q.state!=='open'&&q.state!=='active')]];}
+  return [];}
+// normalise V.modal for a shop: main tab plus section, old ids mapped
+function m3Norm(m){if(!m)return m;const t=m.type,L=M3_LEG[t];if(!L||(t==='guild'&&m.char))return m;
+  let tab=m.tab;if(!tab)tab=M3_HOME[t];
+  if(L[tab]){const [a,b]=L[tab];tab=a;m.sec=b;m._t=a;}
+  const T=m3Tabs(t);if(T.length&&!T.some(x=>x[0]===tab))tab=M3_HOME[t];
+  if(m.cat&&tab==='craft'){m.sec=m.cat;m._t=tab;}m.cat=null;
+  if(m._t!=null&&m._t!==tab)m.sec='all';// a tab changed since the section was picked (a fresh modal object keeps the section it names)
+  m.tab=tab;m._t=tab;
+  try{const S=m3Secs(t,tab);if(!S.some(x=>x[0]===m.sec))m.sec='all';}catch(e){m.sec='all';}
+  return m;}
+// header: title and the purse (the world header is covered by the panel on small screens)
+function m3Head(t){return `${M3_TITLE[t]} <span class="hgold nums" title="Your gold">${typeof coin==='function'?coin():''}<b>${fmt(G.gold)}</b></span>`;}
+function m3Nav(t,m,extra){const T=m3Tabs(t);let S=[];try{S=m3Secs(t,m.tab);}catch(e){}
+  const top=T.length>1?`<div class="chips mgrp stabs" role="tablist" aria-label="${esc(String(M3_TITLE[t]))} tabs">${T.map(([k,l])=>`<button role="tab" aria-selected="${k===m.tab}" class="chip ${k===m.tab?'on':''}" data-act="${t==='guild'?'gtab':'sTab'}" data-arg="${k}">${l}</button>`).join('')}</div>`:'';
+  const sub=S.length>1?`<div class="chips msub ssec" role="tablist" aria-label="Sections">${S.map(([k,l,c])=>`<button role="tab" aria-selected="${k===m.sec}" class="chip sm ${k===m.sec?'on':''}" data-act="sSec" data-arg="${k}">${l}${c!=null?` <span class="cnt nums">${c}</span>`:''}</button>`).join('')}</div>`:'';
+  return `<div class="shopnav">${top}${sub}${extra||''}</div>`;}
+const m3Empty=t=>`<p class="note empty">${t}</p>`;
+const m3H=(t,n)=>`<h4>${t}${n!=null?` <span class="cnt nums">${n}</span>`:''}</h4>`;
+const m3Rows=(h,empty)=>h?`<div class="rows">${h}</div>`:m3Empty(empty);
+function m3Box(t,m,body,btn){return box(m3Head(t),body,btn||'<button class="btn" data-act="closeModal">Leave</button>',true);}
+
+// ----- rows -----
+function m3GearRow(id){const g=GEAR[id];return `<div class="row shoprow tr" style="${tierVars(gTierIdx(g),g)}">${gearIcon(id)}<div class="grow"><b>${g.n}</b> ${tierChip(g)}<small>${vsParty(id)}</small><small>${gearDesc(g)}. Spares owned: ${G.gear.filter(x=>x===id).length}.</small>${bestTag(id)}${cmpPanel(id)}</div><button class="btn sm" data-act="buyGear" data-arg="${id}" ${G.gold>=g.price?'':'disabled'}>${g.price}</button></div>`;}
+function m3ItemRow(id){const o=ITEMS[id];return `<div class="row tr" style="${tierVars(iTierIdx(id))}"><div class="grow"><b>${itemIcon(id)} ${o.n}</b> ${itemChip(id)}<small>${o.d}. Carrying ${G.inv[id]||0}.</small></div><button class="btn sm" data-act="buyItem" data-arg="${id}" ${G.gold>=o.price&&(G.inv[id]||0)<invCap()?'':'disabled'}>${o.price}</button></div>`;}
+function m3SellRows(slots){const C=m3SellCnt(slots);return Object.keys(C).sort((a,b)=>gTierIdx(gearOf(b))-gTierIdx(gearOf(a))||gearOf(a).n.localeCompare(gearOf(b).n)).map(id=>{const g=gearOf(id);
+  return `<div class="row tr" style="${tierVars(gTierIdx(g),g)}">${gearIcon(id)}<div class="grow"><b>${g.n}</b> ${tierChip(g)} x${C[id]}<small>${SLOTN[g.slot]}. ${gearDesc(g)}</small></div><button class="btn sm" data-act="sell" data-arg="${id}">Sell ${sellVal(g)}</button></div>`;}).join('');}
+function m3RecRow(r){const mm=recipeMats(r),ok=recipeReady(r),have=r.item?`Carrying ${G.inv[r.item]||0}.`:`Owned spare: ${G.gear.filter(x=>x===r.id).length}.`;
+  const rg=r.id?gearOf(r.id):null,rt=rg?gTierIdx(rg):iTierIdx(r.item);
+  return `<div class="row rec tr ${ok?'ready':''}" style="${tierVars(rt,rg)}">${rg?gearIcon(r.id):''}<div class="grow"><b>${recipeName(r)}</b> ${rg?tierChip(rg):itemChip(r.item)}${rg?`<small>${vsParty(r.id)}</small>`:''}<small>${recipeDesc(r)} ${have}</small>${r.id?bestTag(r.id)+cmpPanel(r.id):''}<div class="mats">${matChips(mm)}${r.g?`<span class="matc gold ${G.gold>=r.g?'':'short'}"><i></i><b class="nums">${fmt(r.g)}</b> gold</span>`:''}</div></div><button class="btn sm ${ok?'gold':''}" data-act="craftR" data-arg="${RECIPES.indexOf(r)}" ${ok?'':'disabled'}>${r.item?'Craft':'Forge'}</button></div>`;}
+// a recipe page: one category, or every category of the station under its own heading (All)
+function m3Recipes(cats,sec,blurb){const one=sec!=='all'&&cats.includes(sec),list=one?[sec]:cats;let locked=0;
+  const parts=list.map(k=>{const all=RECIPES.filter(r=>r.cat===k),open=all.filter(recipeOpen);locked+=all.length-open.length;const L=recipeList(open);
+    const lab=(RCAT.find(x=>x[0]===k)||[k,k])[1];return (one?'':m3H(lab,L.length))+m3Rows(L.map(m3RecRow).join(''),open.length?'Nothing here matches the filters.':'No recipes of this kind yet.');}).join('');
+  return `<p class="note">${blurb}</p>${shopFBar('craft')}${parts}${locked?`<p class="note">${locked} more recipe${locked>1?'s unlock':' unlocks'} here as you push into later realms.</p>`:''}`;}
+function m3PlanBtn(){return G&&!G.daily?`<div class="btnrow p3smith"><button class="btn gold" data-act="p3Smith" title="Plans the best upgrade for each hero in your party, shows it, and only buys after you confirm">Buy, craft and equip best gear</button></div>`:'';}
+function m3SmithMatsBuy(){return `${m3H('Ore and wood')}<p class="note">Stock grows as you reach later realms.</p><div class="rows">${smithMatStock().map(id=>matBuyRow(id,MAT_PRICE[id])).join('')}</div>
+  ${m3H('Monster parts')}<p class="note">A few parts behind the counter, at a steep price and only ${PART_STOCK} of each per inn rest. Hunting is still the way to get them in bulk.</p><div class="rows">${Object.keys(PART_PRICE).map(id=>matBuyRow(id,partPrice(id),partLeft(id))).join('')}</div>`;}
+
+// ----- the Smithy -----
+function m3Smithy(m){const sec=m.sec,tab=m.tab;let body='';
+  if(tab==='shop'){
+    const W=shopSortIds(shopStock('weapons')),AR=shopSortIds(shopStock('armor')),A=AR.filter(id=>gearOf(id).slot==='a'),K=AR.filter(id=>gearOf(id).slot==='k');
+    const grp={weapons:['Weapons',W],armor:['Armor',A],capes:['Capes',K]},emp='Nothing on the shelves matches the filters.';
+    const gear=k=>(sec==='all'?m3H(grp[k][0],grp[k][1].length):'')+m3Rows(grp[k][1].map(m3GearRow).join(''),emp);
+    body=(sec==='mats'?'':shopFBar('buy')+m3PlanBtn())+(sec==='all'?['weapons','armor','capes'].map(gear).join('')+m3SmithMatsBuy():sec==='mats'?m3SmithMatsBuy():gear(sec));
+  }else if(tab==='craft')body=m3PlanBtn()+m3Recipes(SMITH_CATS,sec,'Smithy gear comes out already tempered, so it beats buying the same piece. Metal wants ore, wooden gear wants logs, and every piece wants monster parts.');
+  else if(tab==='forge')body=vTemper({slot:M3_SLOTSEC[sec]||null,show:SHOPF().tsh||'all',bar:true});
+  else if(tab==='sell'){const g=(sl,lab)=>(sec==='all'?m3H(lab):'')+m3Rows(m3SellRows(sl),'No spare '+lab.toLowerCase()+' in your pack.');
+    const mats=(sec==='all'?m3H('Materials'):'')+`<div class="rows">${matSellRows(['ore','wood','part','relic'])}</div>`;
+    body=(sec==='all'?g(['w'],'Weapons')+g(['a'],'Armor')+g(['k'],'Capes')+mats:sec==='mats'?mats:g([M3_SLOTSEC[sec]],{weapons:'Weapons',armor:'Armor',capes:'Capes'}[sec]))+'<p class="note">Charms and herbs sell at Alchemy.</p>';}
+  else if(tab==='echo')body=vEchoforge();
+  return m3Box('smithy',m,m3Nav('smithy',m)+body+'<p class="note">Equip gear from the menu anywhere. Potions, charms and travel gear are at Alchemy, the green-flask house in town.</p>');}
+// ----- Alchemy -----
+function m3Alchemy(m){const sec=m.sec,tab=m.tab;let body='';
+  if(tab==='shop'){const S=alchStock(),one=sec!=='all';
+    const items=k=>{const L=m3ItemSort(S.filter(id=>m3Kind(id)===k));return (one?'':m3H({potion:'Potions',cure:'Cures',travel:'Travel gear'}[k],L.length))+m3Rows(L.map(m3ItemRow).join(''),'Nothing here matches the filters.');};
+    const charms=()=>{const L=shopSortIds(shopStock('charms'));return (one?'':m3H('Charms',L.length))+m3Rows(L.map(m3GearRow).join(''),'No charms match the filters.');};
+    const herbs=()=>(one?'':m3H('Herbs'))+`<p class="note">Fresh herbs for brewing. Stock grows as you reach later realms.</p><div class="rows">${herbStock().map(id=>matBuyRow(id,MAT_PRICE[id])).join('')}</div>`;
+    const relit=()=>{if(!G.cleared[townS()])return '';const P={};RELIT_STOCK.forEach(([id,p])=>P[id]=p);const ids=RELIT_STOCK.map(x=>x[0]);
+      return (one?'':m3H('Festival wares',ids.length))+`<p class="note">The beacon is lit and the alchemist is in a generous mood: rare stock, only in relit towns.</p><div class="rows">${ids.map(id=>{const isItem=!!ITEMS[id],n=isItem?ITEMS[id].n:gearOf(id).n,d=isItem?ITEMS[id].d:gearDesc(id),price=P[id];return `<div class="row"><div class="grow"><b>${n}</b><small>${d}${isItem?'. Carrying '+(G.inv[id]||0):''}</small></div><button class="btn sm" data-act="buyRelit" data-arg="${id}" ${G.gold>=price?'':'disabled'}>${fmt(price)}</button></div>`;}).join('')}</div>`;};
+    const P={potion:()=>items('potion'),cure:()=>items('cure'),travel:()=>items('travel'),charm:charms,herb:herbs,relit};
+    body=(sec==='herb'||sec==='relit'?'':shopFBar(sec==='charm'?'buy':sec==='all'?'mixed':'items'))+(one?P[sec]():Object.keys(P).map(k=>P[k]()).join(''));
+  }else if(tab==='craft')body=m3Recipes(ALCH_CATS,sec,sec==='potion'?'Brew draughts from herbs you pick in the fields. Cheaper than buying, and some brews are Alchemy-only.':sec==='charm'?'Charms need monster parts and your realm\'s relic.':sec==='item'?'Stitch your own tent from logs and hide.':'Brew draughts from herbs, make charms from monster parts and your realm\'s relic, and stitch your own tent.');
+  else if(tab==='sell'){const ch=(sec==='all'?m3H('Charms'):'')+m3Rows(m3SellRows(['c']),'No spare charms. Weapons and armor sell at the Smithy.'),hb=(sec==='all'?m3H('Herbs'):'')+`<div class="rows">${matSellRows(['herb'])}</div>`;
+    body=sec==='charm'?ch:sec==='herb'?hb:ch+hb;}
+  else body=`<p class="note">Everything you have gathered. Herbs brew here; ore, logs and parts go to the Smithy.</p>${vPouch()}`;
+  return m3Box('workshop',m,m3Nav('workshop',m)+body);}
+// ----- the tavern -----
+function m3Tavern(m){const tab=m.tab;let body='';
+  if(tab==='kitchen')body=`<p class="note">Hot food for the road.</p><div class="rows">${tavernFood().map(id=>m3ItemRow(id)).join('')}</div><p class="note">A Pork Chop Sandwich walks you back to a dungeon's entrance; in battle it is a sure escape from ordinary fights.</p>`;
+  else{const SL=tvSlots(),L=SL.filter(Boolean),rare=G.rare&&!G.roster[G.rare]?G.rare:null,later=tavernLater(),nu=nextTavernUnlock(),pool=tavernPool().length;
+    body=`<p class="note">Sellswords, singers and strays, all for hire. Recruits arrive near your party's level with fitting gear.</p>
+    ${rare?`<div class="rare"><h3>A rare wayfarer is drinking alone</h3>${heroCard(rare,false,null,`<button class="btn gold" data-act="hire" data-arg="${rare}" ${G.gold>=recruitCost(rare)?'':'disabled'}>Hire for ${fmt(recruitCost(rare))}</button>`)}</div>`:G.stage>=2?'<p class="note">No rare wayfarers tonight. They drift in after Scourge fights, bounties and nights at the inn.</p>':''}
+    <div class="tvbar"><small>${esc(tvNextText())}</small>${pool>L.length?`<small>${pool} wayfarer${pool>1?'s':''} are in this town's pool; four tables, picked to suit your party.</small>`:''}</div>
+    <div class="grid cards">${SL.map(id=>id?heroCard(id,false,null,`<div class="fits">${fitTags(id)}</div><button class="btn gold" data-act="hire" data-arg="${id}" ${G.gold>=recruitCost(id)?'':'disabled'}>Hire for ${fmt(recruitCost(id))}</button>`):`<div class="card hero emptyseat"><b>Empty seat</b><small>Fills at the next shuffle.</small></div>`).join('')||m3Empty('Nobody new at the tables.')}</div>
+    ${later?`<p class="note">${later} more wayfarer${later>1?'s are':' is'} on the road${nu?`; the next arrive in about ${nu.need} battle${nu.need>1?'s':''}, or when you reach the next realm`:''}.</p>`:''}<p class="note">Some wayfarers won't sit in a tavern at all. Check the Guild Hall's recruitment challenges.</p>`;}
+  return m3Box('tavern',m,m3Nav('tavern',m)+body);}
+// ----- the Guild Hall -----
+function m3Bounties(){for(let s=0;s<=G.stage;s++)genBounties(s);const L=G.bounties.filter(b=>b.stage<=G.stage);
+  return `<p class="note">Marked monsters roam the fields. Accept a bounty and its quarry appears in that realm's field, glowing red. Beat it for gold, a stat charm and materials.</p>${typeof allBar==='function'?allBar('bountyAll','',L.filter(b=>b.state==='open').length,0):''}${m3Rows(L.map(b=>{const mo=MON[b.mon],md=ELITE_MODS.find(x=>x.k===b.mod);
+    return `<div class="row"><img class="mimg" src="${monURL(mo.art)}" alt=""><div class="grow"><b>${esc(b.name)}</b><small>${md.n}: ${md.d} Level ${b.lv}. Roams ${esc(ZS(b.stage).n)}.</small><small>${fmt(b.reward.gold)} gold, ${gearOf(b.reward.charm).n}</small></div>${b.state==='open'?`<button class="btn sm gold" data-act="bounty" data-arg="${b.id}">Accept</button>`:b.state==='active'?'<span class="m">Hunting</span>':'<span class="m up">Done</span>'}</div>`;}).join(''),'No bounties posted yet.')}`;}
+function m3Arena(){const cl=G.cleared.filter(Boolean).length;
+  return `<p class="note">The guild's fighting pit. Back-to-back waves of foes from every realm, no fleeing, no rest between waves.</p><div class="rows">${ARENA.map((A,i)=>`<div class="row"><div class="grow"><b>${A.n}</b><small>${A.waves} waves, foes level ${A.lvs[0]}-${A.lvs[1]}. Suggested party level ${A.rec}. ${A.min>cl?`Opens after ${A.min} Scourge${A.min>1?'s':''} fall${A.min>1?'':'s'}.`:`Best: ${G.arena[i]?'cleared x'+G.arena[i]:'not yet cleared'}.`}</small><small>${fmt(A.reward.gold)} gold, ${A.reward.mat} materials${A.reward.charm?', a stat charm':''}${A.reward.core?', '+A.reward.core+' Dread Cores':''}</small></div><button class="btn sm gold" data-act="arena" data-arg="${i}" ${A.min>cl?'disabled':''}>Enter</button></div>`).join('')}</div>
+    ${m3H('Echoes')}<p class="note">Beat a Scourge or the Calamity and an optional Echo of it lingers in its dungeon, on the rune circle where it fell. After the Calamity, the Echo Rift at any waystone lets you fight every Echo you have unlocked again.</p>`;}
+function m3Guild(m){const tab=m.tab,sec=m.sec;let body='';
+  if(tab==='recruit')body=vChallenges();
+  else if(tab==='nature')body=vNature(m);
+  else if(tab==='quests')body=sec==='personal'?vPersonal():sec==='bounties'?m3Bounties():m3H('Personal quests')+vPersonal()+m3H('Bounties')+m3Bounties();
+  else if(tab==='arena')body=m3Arena();
+  else body=`<p class="note">The guilds post their missions here and keep your ranks. The same pages are under Menu: Quests, Guild missions and Records, Guilds.</p>`+(typeof vFactions==='function'?vFactions():'');
+  return box(m3Head('guild'),m3Nav('guild',m)+body,'<button class="btn gold" data-act="closeModal">Done</button>',true);}
+// ----- the Quest Board -----
+function m3Quests(){for(let s=0;s<=G.stage;s++)genQuests(s);return G.quests.filter(q=>q.stage<=G.stage);}
+function m3Board(m){const sec=m.sec||'all',st=q=>q.state==='active'?(questReady(q)?0:1):q.state==='open'?2:3;
+  const qs=m3Quests().filter(q=>sec==='all'||(sec==='ready'?q.state==='active'&&questReady(q):sec==='active'?q.state==='active'&&!questReady(q):sec==='open'?q.state==='open':q.state!=='open'&&q.state!=='active')).sort((a,b)=>st(a)-st(b));
+  const Q=m3Quests(),bar=typeof allBar==='function'?allBar('qAcceptAll','qClaimAll',Q.filter(q=>q.state==='open').length,Q.filter(q=>q.state==='active'&&questReady(q)).length):'';
+  const rows=qs.map(q=>{
+    const prog=q.type==='tamer'?`${Math.min(stickCount().n,q.n)}/${q.n} creatures logged`:q.type==='legend'?legendProg(q):q.type==='hunt'?`${q.have||0}/${q.n} hunted`:q.type==='gather'?`${Math.min(G.mats[q.mat]||0,q.n)}/${q.n} gathered`:q.type==='vault'?((G.vaults||{})[q.stage]?'Hoard recovered':'Vault still sealed'):q.found?'Found':'Somewhere in the '+ZS(q.stage).dungeon;
+    const rew=q.type==='tamer'?"The Tamer's Stick, a weapon that grows with your Bestiary":q.type==='legend'?`${esc(TPL[q.hero].title)} may join you`:q.type==='wanderer'?`${TPL[q.hero].n} joins you`:`${fmt(q.reward.gold)} gold${q.reward.item?', '+ITEMS[q.reward.item].n+' x2':''}${q.reward.gear?', forged gear':''}`;
+    const btn=q.state==='open'?`<button class="btn sm" data-act="qAccept" data-arg="${q.id}">Accept</button>`:q.state==='active'?(questReady(q)?`<button class="btn sm gold" data-act="qClaim" data-arg="${q.id}">Claim</button>`:'<span class="m">Active</span>'):'<span class="m up">Done</span>';
+    return `<div class="row"><div class="grow"><b>${esc(q.title)}</b><small>${esc(q.desc)}</small><small>${q.state==='active'?prog+'. ':''}Reward: ${rew}</small></div>${btn}</div>`;}).join('');
+  return box(m3Head('board'),`<p class="note">Notices pinned three deep. Accept one, do the deed, then come back to any quest board to claim the reward.</p>${m3Nav('board',m)}${bar}${m3Rows(rows,{ready:'Nothing is ready to hand in yet.',active:'No quests under way.',open:'No new notices. More go up as your journey goes on.',done:'Nothing finished yet.'}[sec]||'No notices yet.')}`);}
+// ----- hooks: the shops go through the normaliser first -----
+mShop=function(m){m3Norm(m);return m3Smithy(m);};
+mWorkshop=function(m){m3Norm(m);return m3Alchemy(m);};
+mTavern=function(){const m=V.modal&&V.modal.type==='tavern'?m3Norm(V.modal):{type:'tavern',tab:'hire',sec:'all'};return m3Tavern(m);};
+mGuild=function(m){m3Norm(m);return m3Guild(m);};
+mBoard=function(){const m=V.modal&&V.modal.type==='board'?m3Norm(V.modal):{type:'board',sec:'all'};return m3Board(m);};
+Object.assign(ACT,{
+  sTab(k){const m=V.modal;if(!m)return;m.tab=k;m.sec='all';m._t=k;m.nat=null;V.cmp=null;V.swapSel=null;render();m3Top();},
+  sSec(k){const m=V.modal;if(!m)return;m.sec=k;V.cmp=null;render();m3Top();},
+  wcat(k){const m=V.modal;if(!m)return;m.sec=k;m._t=m.tab;render();},
+  tab(k){const m=V.modal;if(!m)return;m.tab=k;render();m3Top();},
+  // Tempering show filter (stored with the shop filters)
+  tShow(a){const v=String(a).split(':').pop();shopFSet('tsh',v);render();}
+});
+function m3Top(){const p=document.querySelector('#modal .panel');if(!p)return;const n=p.querySelector('.shopnav');p.scrollTop=n&&p.scrollTop>n.offsetTop?Math.max(0,n.offsetTop-60):p.scrollTop>0&&!n?0:p.scrollTop;}
+// the Guild Hall's tab action keeps the new state
+ACT.gtab=function(k){V.swapSel=null;V.modal={type:'guild',tab:k};render();};
+
+// ----- main menu: labels for the regrouped tabs (MENU_GROUPS in ui.js) -----
+try{MENU_SUB.fmis='Guild missions';MENU_SUB.pouch='Materials';MENU_SUB.system='Journey';}catch(e){}
+
+// ----- the visible viewport: panels fit the screen the phone really shows (the URL bar and the Android app's bars included) -----
+function m3Vh(){try{const v=window.visualViewport,h=Math.round(v?v.height:innerHeight);document.documentElement.style.setProperty('--vvh',h+'px');}catch(e){}}
+m3Vh();addEventListener('resize',m3Vh);try{if(window.visualViewport)visualViewport.addEventListener('resize',m3Vh);}catch(e){}
+try{if(screen.orientation&&screen.orientation.addEventListener)screen.orientation.addEventListener('change',()=>setTimeout(m3Vh,200));}catch(e){}
+
+// ----- test hook -----
+window.__M3={get MENU_GROUPS(){return MENU_GROUPS;},m3Norm,m3Tabs,m3Secs,shopFBar:c=>shopFBar(c),ddSel,M3_LEG,M3_HOME,m3Upg};
 
 // =================== Beta v0.6.3: PARTY SYSTEMS ===================
 // 1. Best Party suggests several formations instead of one: Balanced, Boss ready (Area answer once the boss is down), Fresh mix and a
