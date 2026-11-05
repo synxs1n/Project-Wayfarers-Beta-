@@ -23,8 +23,8 @@ const state=H=>H.ev(()=>{const A=__A,HB=A.HB,gl=document.getElementById('bgl'),b
     const px=await H.ev(()=>{const A=__A,HB=A.HB,gl=HB.gl,BL=A.BL;HB.redraw=true;A.battleFrame(performance.now());const w=HB.cv.width,h=HB.cv.height,buf=new Uint8Array(w*h*4);gl.readPixels(0,0,w,h,gl.RGBA,gl.UNSIGNED_BYTE,buf);
       let lit=0;for(let i=0;i<buf.length;i+=4*97)if(buf[i]+buf[i+1]+buf[i+2]>60)lit++;
       // HUD pixels: alpha 254 in the unit layer
-      const bc=document.getElementById('bcv'),d=bc.getContext('2d').getImageData(0,0,bc.width,bc.height).data;let hud=0,bad=0,worst=0;
-      for(let y=0;y<bc.height;y++)for(let x=0;x<bc.width;x++){const i=(y*bc.width+x)*4;if(d[i+3]!==254)continue;hud++;const gx=Math.floor((x+.5)/BL.W*w),gy=h-1-Math.floor((y+.5)/BL.H*h),j=(gy*w+gx)*4;
+      const bc=document.getElementById('bcv'),RW=bc._rw||bc.width,RH=bc._rh||bc.height,d=bc.getContext('2d').getImageData(0,0,RW,RH).data;let hud=0,bad=0,worst=0;// v0.5.5: the HD sprite pass gives #bcv a 2x backing store (_rw/_rh) while width/height report the logical size
+      for(let y=0;y<RH;y++)for(let x=0;x<RW;x++){const i=(y*RW+x)*4;if(d[i+3]!==254)continue;hud++;const gx=Math.floor((x+.5)/RW*w),gy=h-1-Math.floor((y+.5)/RH*h),j=(gy*w+gx)*4;
         const df=Math.max(Math.abs(buf[j]-d[i]),Math.abs(buf[j+1]-d[i+1]),Math.abs(buf[j+2]-d[i+2]));worst=Math.max(worst,df);if(df>40)bad++;}
       return {lit,n:Math.floor(buf.length/(4*97)),hud,bad,worst};});
     chk(`${t}: the GL frame has a lit stage (${px.lit}/${px.n} samples)`,px.lit>px.n*.8||JSON.stringify(px));
