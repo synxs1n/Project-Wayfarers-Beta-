@@ -3,7 +3,7 @@ on:
   push:
     tags: ['v*']
     branches: [main]
-    paths: ['RELEASE_VERSION','GAME_VERSION','index.html','v3/**','electron/**','icons/**','android-res/**','manifest.webmanifest','capacitor.config.json','package.json']
+    paths: ['RELEASE_VERSION','GAME_VERSION','index.html','v3/**','electron/**','icons/**','android-res/**','manifest.webmanifest','capacitor.config.json','package.json','audio/**']
   workflow_dispatch:
 permissions:
   contents: write
@@ -32,6 +32,7 @@ jobs:
           mkdir -p www
           cp index.html manifest.webmanifest sw.js www/
           cp -r icons www/icons
+          cp -r audio www/audio
       - run: npx cap add android
       - name: Google sign in setup (stable signing key, Firebase config, gradle plugin)
         env:

@@ -1,6 +1,6 @@
 # Project Aurelis: Wayfarers (Beta)
 
-Turn-based pixel art medieval fantasy RPG. Beta v0.4.4.
+Turn-based pixel art medieval fantasy RPG. Beta v0.4.5.
 
 Play in browser (installable as an app from the browser menu): https://synxs1n.github.io/Project-Wayfarers-Beta-/
 
@@ -21,3 +21,14 @@ Build everything with `sh build.sh`. Changing `RELEASE_VERSION` (for example to 
 5. Report the play link: https://synxs1n.github.io/Project-Wayfarers-Beta-/
 
 Do not delete the `latest` release; the app update links use it.
+
+## Audio
+
+The orchestral soundtrack is composed by hand in `v3/musicdata.js` (notation explained at the top of that file) and played by the sampler and sequencer in `v3/audio2.js`. Wiring to the game is `v3/music2.js`, sound effects `v3/sfx2.js`, ambience `v3/ambience.js`. The original chiptune engine (`v3/audio.js`) stays as Settings > Music style > Classic chiptune and as the fallback when samples cannot load.
+
+Instrument sprites live in `audio/` (`<instrument>.ogg`, an `.mp3` copy for browsers without Ogg Vorbis, and `inst.json`). Rebuild them with `python3 tools/audio/build_instruments.py <folder of FluidR3_GM *-ogg.js files> audio`. The audio test is `node tools/chrome/audio.js` (add `--gains` to print loudness levelling values).
+
+## CREDITS
+
+- Music: composed for Aurelis around one theme, the Meridian. All sound effects and ambience are synthesized in code.
+- Instruments: the FluidR3_GM General MIDI soundfont by Frank Wen, released under the MIT license, as rendered to per-note audio files by Benjamin Gleitzman in [midi-js-soundfonts](https://github.com/gleitz/midi-js-soundfonts), which publishes those renders under the Creative Commons Attribution 3.0 license (https://creativecommons.org/licenses/by/3.0/). The notes were trimmed, resampled to 32 kHz mono, re-encoded and packed into one sprite per instrument for this game.
