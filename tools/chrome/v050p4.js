@@ -58,7 +58,7 @@ const x=await ev(()=>{const A=__A,G=A.G,o={};const m=A.xpCatchMul;
   Object.values(G.roster).forEach(c=>{c.S=A.calcStats(c);c.hp=c.S.mhp;});
   A.startBattle({stage:0,kind:'field',weather:'clear'});const B=A.B;const xp0={};B.front.concat(B.back).forEach(c=>xp0[c.id]=c.xp);
   A.win();const info=A.V.modal.info;o.rows=info.catchup;o.txp=info.xp;
-  const html=A.mResult(info);o.line=(html.match(/<b>Catch up<\/b><span>([^<]*)/)||[])[1];
+  const html=A.mResult(info);o.line=[...html.matchAll(/<b>([^<]+)<\/b>(?:<em[^>]*>[^<]*<\/em>)?<span class="rs-cu"[^>]*>\+(\d+)% catch up/g)].map(m=>m[1]+' +'+m[2]+'%').join(', ');// v0.6.1: catch up shows on each hero's row
   o.gain={};B.front.concat(B.back).forEach(c=>o.gain[c.id]=c.xp-xp0[c.id]);
   A.V.modal=null;A.finishBattle('win');A.V.modal=null;return o;});
 console.log(JSON.stringify(x));

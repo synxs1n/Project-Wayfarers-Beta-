@@ -82,8 +82,8 @@ function duelFoes(spec){const s=spec.stage,lv=STAGE_LV[s][1],t=TPL[spec.hero],el
 {const ef0=encounterFoes;encounterFoes=function(spec){if(spec.kind==='duel')return duelFoes(spec);return ef0.apply(this,arguments);};}
 {const cw=typeof challengeWin==='function'?challengeWin:null;if(cw)challengeWin=function(spec,info){const r=cw.apply(this,arguments);try{
   if(spec&&spec.ce&&!G.roster[spec.ce.hero]){const mode=spec.ce.mode,h=spec.ce.hero;
-    if(mode==='duel'){const ce=ceInit();ce.duels++;ce.boost[h]=1;saveGame();info.legend=cwWin(h,'duel')+' '+cwPick(['Find me at the tavern when you want me. I will be waiting.','You won fair. I will keep a seat warm at the tavern.','Next tavern you walk into, look for me.'],h+':tail');}
-    else info.legend=ceJoin(h,cwWin(h,'thanks'));}}catch(e){}return r;};}
+    if(mode==='duel'){const ce=ceInit();ce.duels++;ce.boost[h]=1;saveGame();info.legendKind='duel';info.legend=cwWin(h,'duel')+' '+cwPick(['Find me at the tavern when you want me. I will be waiting.','You won fair. I will keep a seat warm at the tavern.','Next tavern you walk into, look for me.'],h+':tail');}
+    else{info.legendKind='wayfarer';info.legend=ceJoin(h,cwWin(h,'thanks'));}}}catch(e){}return r;};}
 // ----- the hiring discount for traders you bought from -----
 {const rc=recruitCost;recruitCost=function(id){let c=rc.apply(this,arguments);try{if(G&&G.ce&&G.ce.fr&&G.ce.fr[id])c=Math.round(c*.8);}catch(e){}return c;};}
 // ----- steps -----

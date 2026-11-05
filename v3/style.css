@@ -1003,3 +1003,6 @@ html.rm .primed.pmin{animation:none}
 .tmore{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
 .ttools{width:100%;text-align:center}.ttools summary{cursor:pointer;color:var(--mute,#cdbf9c);font-size:.9rem;padding:6px;list-style:none}.ttools summary::-webkit-details-marker{display:none}.ttools summary::after{content:' \25BE'}.ttools[open] summary::after{content:' \25B4'}
 .unit.tg .eff{top:auto;bottom:calc(100% + 6px)}.unit.tg .eff+.eff{bottom:calc(100% + 12px)}
+
+/* v0.6.1: with a panel open, the save note and cloud icon move to the bottom corner so they never sit on the logo */
+body.noscroll #p5save{top:auto!important;bottom:8px!important}
