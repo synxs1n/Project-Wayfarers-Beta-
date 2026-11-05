@@ -44,7 +44,9 @@ jobs:
           p='android/app/build.gradle';s=open(p).read()
           if 'com.google.gms.google-services' not in s:
               s+="\napply plugin: 'com.google.gms.google-services'\n"
-              open(p,'w').write(s)
+          if 'android-debug.keystore' not in s:
+              s=s.replace("android {","android {\n    signingConfigs.debug {\n        storeFile file(\"${rootDir}/../android-debug.keystore\")\n        storePassword 'android'\n        keyAlias 'androiddebugkey'\n        keyPassword 'android'\n    }",1)
+          open(p,'w').write(s)
           PY
       - name: App icons
         run: npx --yes @capacitor/assets generate --android || true
@@ -53,6 +55,8 @@ jobs:
         working-directory: android
         run: ./gradlew assembleDebug
       - run: cp android/app/build/outputs/apk/debug/app-debug.apk Wayfarers-android.apk
+      - name: Show signing fingerprint
+        run: keytool -printcert -jarfile Wayfarers-android.apk | grep SHA1
       - uses: actions/upload-artifact@v4
         with: { name: android-apk, path: Wayfarers-android.apk }
   windows:
