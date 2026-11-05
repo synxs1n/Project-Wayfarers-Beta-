@@ -68,7 +68,8 @@ function drawMarks(x,m,list,sc,ox,oy){x.textAlign='center';x.textBaseline='middl
 function drawPlayer(x,sc,px,py){const d=WS.dir||'d';x.save();x.translate(px,py);x.rotate({u:-Math.PI/2,r:0,d:Math.PI/2,l:Math.PI}[d]||0);const s=Math.max(4,sc*.9);
   x.fillStyle='#000';x.beginPath();x.moveTo(s+1,0);x.lineTo(-s*.7,-s*.8);x.lineTo(-s*.7,s*.8);x.closePath();x.fill();x.fillStyle='#ffffff';x.beginPath();x.moveTo(s,0);x.lineTo(-s*.6,-s*.65);x.lineTo(-s*.6,s*.65);x.closePath();x.fill();x.restore();}
 // ----- minimap (HUD) -----
-function miniOn(){const c=META.cfg.minimap;if(c===true||c===false)return c;return (window.innerWidth||800)>=560;}
+let MINI_VW=0;window.addEventListener('resize',()=>{MINI_VW=0;});
+function miniOn(){const c=META.cfg.minimap;if(c===true||c===false)return c;if(!MINI_VW)MINI_VW=window.innerWidth||800;return MINI_VW>=560;}
 function drawMini(){const cv=document.getElementById('mmap');if(!cv)return;const m=WS.m;if(!m||!G||!miniOn()||m.archive&&false){cv.style.display='none';return;}cv.style.display='block';
   const W=cv.width,H=cv.height,x=cv.getContext('2d'),sc=4,base=mapBase(m);x.imageSmoothingEnabled=false;x.fillStyle='#0a0710';x.fillRect(0,0,W,H);
   const ox=Math.round(W/2-(WS.x+.5)*sc),oy=Math.round(H/2-(WS.y+.5)*sc);x.drawImage(base,ox,oy,m.w*sc,m.h*sc);
@@ -76,7 +77,8 @@ function drawMini(){const cv=document.getElementById('mmap');if(!cv)return;const
 // v0.5.0 1.6: the minimap no longer depends on the weather chip drawing cleanly (an unknown sky used to stop it), and every world render makes sure it is there
 function ensureMini(){try{if(V.screen==='world'&&!document.getElementById('mmap')){const wv=document.querySelector('.wview');if(wv){wv.insertAdjacentHTML('beforeend','<canvas id="mmap" class="mmap" width="112" height="84" aria-hidden="true"></canvas>');}}drawMini();}catch(e){}}
 {const wu0=wkwUpdate;wkwUpdate=function(){try{wu0.apply(this,arguments);}catch(e){try{wdLog('wkwUpdate: '+e.message);}catch(_){}}ensureMini();};}
-{const r0=render;render=function(){const r=r0.apply(this,arguments);if(V.screen==='world')ensureMini();return r;};}
+// deferred to the next frame (and coalesced) so a render never pays for a forced layout here
+let miniRaf=0;{const r0=render;render=function(){const r=r0.apply(this,arguments);if(V.screen==='world'&&!miniRaf)miniRaf=requestAnimationFrame(()=>{miniRaf=0;ensureMini();});return r;};}
 // ----- full map -----
 function legendKeys(L){const ks=[];L.forEach(o=>{const k=mapIcoKey(o);if((MAPICO_NAME[k]||MKN[k])&&!ks.includes(k))ks.push(k);});return ks;}
 function mMap(){const m=WS.m;if(!m)return '';const lbl=m.cave?m.name:m.archive?(m.hub||'The Archive'):m.kind==='town'?ZS(m.s).town:m.kind==='field'?ZS(m.s).n:ZS(m.s).dungeon;

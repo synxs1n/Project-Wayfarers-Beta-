@@ -1,0 +1,109 @@
+// Beta v0.5.1: balance sims on the real game. Loads EVERY v3 module in build order (the list in v3build.py) in headless Chrome,
+// so every v0.5.0 system (XP catch up, surprise starts, first realm single types, Guild perks, shop and party changes) is live,
+// and drives battles with the same queue loop as tools/v3sim.js (the game's own careful brain or its auto).
+// Usage: node tools/fullsim.js <sim> [args]   sims: boss, stage1, xp, journey   (run from the repo root, no tools/v3 link needed)
+//   boss [N]        Scourge 4, Calamity and their Echoes at party levels 30/35/40/45, parties of 6 and 3
+//   stage1 [N]      stage 1 field fights at level 3: careful and auto, how many foes are dual type, surprise starts on roamers
+//   xp [fights]     XP catch up: newcomers below the party's top level, levels gained per hero
+//   journey [runs]  full journey pacing: every stage's required route, real maps, real encounter rate, recruits, bosses; ends with
+//                   the top hero's level and the party's average level
+const fs=require('fs'),path=require('path');const {chromium}=require('playwright');
+const ROOT=process.env.SIMROOT||path.join(__dirname,'..'),V3=path.join(ROOT,'v3');// SIMROOT=<another checkout> runs the same sims on that build (for before/after)
+const BP=fs.readFileSync(path.join(ROOT,'v3build.py'),'utf8'),MODS=JSON.parse((BP.match(/MODS=(\[[^\]]+\])/)||BP.match(/for n in (\[[^\]]+\])/))[1].replace(/'/g,'"'));
+const MOCK=(()=>{const s=fs.readFileSync(path.join(__dirname,'chrome','beta.js'),'utf8');const a=s.indexOf('const MOCK=`')+12;return s.slice(a,s.indexOf('`;',a));})();
+const SRC=MODS.map(f=>fs.readFileSync(path.join(V3,f),'utf8')).join('\n');
+// the same exports and loop as tools/v3sim.js, built inside the page
+const HARNESS=`
+function render(){}
+return {get G(){return G},set G(v){G=v},get B(){return B},V,get META(){return META},newGame,newChar,startBattle,advance,autoTurn,
+  autoTurnSmart:typeof autoTurnSmart==='function'?autoTurnSmart:autoTurn,setPause:p=>{PAUSE=p},setSmart:v=>{if(typeof SIM_SMART!=='undefined')SIM_SMART=v},
+  finishBattle,calcStats,TPL,RAW,GPOOL,FPOOL,STAGE_BOSS_LV,STAGE_LV,GEAR,recruit,refresh,encounterFoes,getMap,resetMaps,mapEntry,findPath:typeof findPath==='function'?findPath:null,
+  ENC_RATE,ENC_MIN_STEPS,SOLID,syncPools:typeof syncPools==='function'?syncPools:()=>{},roamSpawn:typeof roamSpawn==='function'?roamSpawn:null,ZS,newRun:typeof newRun==='function'?newRun:null,avgLv,gearTier,ROAM:typeof ROAM!=='undefined'?ROAM:null,SURPRISE:typeof SURPRISE!=='undefined'?SURPRISE:null,
+  DUAL_FROM:typeof DUAL_FROM!=='undefined'?DUAL_FROM:null,XPCU:typeof XPCU!=='undefined'?XPCU:null,need,
+  innHeal:()=>Object.values(G.roster).forEach(c=>{c.ail={};c.st={};c.S=calcStats(c);c.hp=c.S.mhp;c.mp=c.S.mmp;})};`;
+const LOOP=`
+const Q=window.__Q;
+function run(spec){Q.length=0;try{A.syncPools();}catch(e){}A.setSmart(!window.__AUTO);A.V.auto=true;A.META.best={};if(!A.startBattle(spec))return null;
+  let it=0;while(it++<400000){const m=A.V.modal;if(m&&(m.type==='result'||m.type==='lose'))break;
+    if(!Q.length){if(A.B&&A.B.mode==='cmd')(window.__AUTO?A.autoTurn:A.autoTurnSmart)();else if(A.B&&!A.B.over)A.advance();if(!Q.length)break;}
+    Q.shift()();}
+  const m=A.V.modal,res=m&&m.type==='result'?'win':m&&m.type==='lose'?'lose':'stuck',info=m&&m.info;const t=A.B?A.B.time:0,en=A.B?A.B.en.map(e=>({el:e.el.slice(),boss:!!e.boss,elite:!!e.elite})):[],sur=A.B?!!A.B.surprise:false;
+  A.V.modal=null;if(A.B)A.finishBattle('x');return {res,t,info,en,sur};}
+function party(ids,lv,tier){A.newGame(ids.slice(0,3));const G=A.G;G.roster={};G.party=[];ids.forEach(id=>{const c=G.roster[id]=A.newChar(id,lv,tier);if(A.GEAR['k_cape_'+Math.min(5,tier)]){c.eq.k='k_cape_'+Math.min(5,tier);c.S=A.calcStats(c);c.hp=c.S.mhp;c.mp=c.S.mmp;}G.party.push(id);});}
+let seed=909;const R=()=>{seed=(seed*1103515245+12345)&0x7fffffff;return seed/0x7fffffff;};
+const pool=A.RAW.filter(r=>r[6]!=='L'&&r[6]!=='x'&&A.TPL[r[0]]&&!A.TPL[r[0]].mon).map(r=>r[0]);
+const pick=n=>{const p=[];while(p.length<n){const id=pool[Math.floor(R()*pool.length)];if(!p.includes(id))p.push(id);}return p;};
+`;
+const SIMS={
+boss:N=>`N=${N||4};const out=[];
+  for(const SZ of [6,3])for(const L of [30,35,40,45]){const tier=L>=40?5:L>=35?4:3,row=[];
+    for(const [s,kind,label] of [[3,'boss','Scourge 4'],[4,'boss','Calamity'],[3,'storyEcho','Echo 4'],[4,'storyEcho','Echo Calamity']]){
+      const keys=s<4?A.GPOOL:A.FPOOL;let w=0,n=0;
+      keys.forEach(k=>{for(let i=0;i<(s<4?N:N*3);i++){party(pick(SZ),L,tier);A.G.stage=s;A.G.cleared=[0,1,2,3,4].map(x=>x<(kind==='boss'?s:s+1));
+        if(s<4)A.G.run.bosses[s]=k;else A.G.run.final=k;const spec=kind==='boss'?{stage:s,kind:'boss'}:{stage:s,kind:'storyEcho',key:k};
+        let r=null;try{r=run(spec);}catch(e){continue;}if(!r)continue;n++;if(r.res==='win')w++;}});
+      row.push(label+' '+w+'/'+n+'='+Math.round(100*w/Math.max(1,n))+'%');}
+    out.push('party '+SZ+' lv '+L+' tier '+tier+': '+row.join(' | '));}
+  return out.join('\\n');`,
+stage1:N=>`N=${N||200};const out=[];
+  for(const auto of [false,true]){window.__AUTO=auto;let w=0,n=0,hp=0,dual=0,foes=0;
+    for(let i=0;i<N;i++){party(pick(3),3,0);A.G.stage=0;A.G.cleared=[0,0,0,0,0];A.G.run.seed=1000+i;A.innHeal();
+      const mhp=A.G.party.reduce((a,id)=>a+A.G.roster[id].S.mhp,0);const r=run({stage:0,kind:'field'});if(!r)continue;n++;if(r.res==='win')w++;
+      hp+=1-A.G.party.reduce((a,id)=>a+Math.max(0,A.G.roster[id].hp),0)/mhp;r.en.forEach(e=>{foes++;if(e.el.length>1)dual++;});}
+    out.push((auto?'auto   ':'careful')+': party 3 at lv 3, stage 1 field: win '+Math.round(100*w/n)+'% | HP lost '+Math.round(100*hp/n)+'% | dual type foes '+dual+'/'+foes);}
+  window.__AUTO=false;
+  // surprise starts: an unaware roamer in the first dungeon, against one that saw you
+  for(const aware of [false,true]){let w=0,n=0,hp=0,sur=0;
+    for(let i=0;i<Math.round(N/2);i++){party(pick(3),7,1);A.G.stage=0;A.G.cleared=[0,0,0,0,0];A.innHeal();const mhp=A.G.party.reduce((a,id)=>a+A.G.roster[id].S.mhp,0);
+      A.G.run.seed=2000+i;A.resetMaps();const dm=A.getMap('d0'),rs=(dm.roam&&dm.roam.length?dm.roam:A.roamSpawn(dm)).filter(q=>!q.elite);if(!rs.length)continue;const ro=rs[i%rs.length];
+      const r=run({stage:0,kind:'dungeon',roam:{mid:dm.id,i:ro.i,mon:ro.mon,elite:false,mod:ro.mod,name:ro.name},surprise:!aware?1:0});if(!r)continue;n++;if(r.res==='win')w++;if(r.sur)sur++;
+      hp+=1-A.G.party.reduce((a,id)=>a+Math.max(0,A.G.roster[id].hp),0)/mhp;}
+    out.push('roamer, party 3 at lv 7, '+(aware?'it saw you  ':'unaware     ')+': win '+Math.round(100*w/n)+'% | HP lost '+Math.round(100*hp/n)+'% | surprise rounds '+sur+'/'+n);}
+  return out.join('\\n');`,
+xp:F=>`F=${F||30};const out=[];const ids=['brann','mira','sable','lumen','oren','gilda'];const lv=id=>{const c=A.G.roster[id];return c.lv+(A.need?c.xp/Math.max(1,A.need(c.lv)):0);};
+  for(const [s,L,gap] of [[1,14,3],[1,14,8],[2,21,10],[3,29,5],[4,36,6]]){let top=0,fr=0,bk=0,cu=0;const RUNS=3;
+    for(let r=0;r<RUNS;r++){party(ids,L,Math.min(5,s));A.G.stage=s;A.G.cleared=[0,1,2,3,4].map(x=>x<s);[ids[2],ids[5]].forEach(id=>{A.G.roster[id]=A.newChar(id,L-gap,Math.min(5,s));});
+      A.G.party=ids.slice(0,3).concat([ids[5],ids[3],ids[4]]);A.innHeal();const t0=lv(ids[0]),f0=lv(ids[2]),b0=lv(ids[5]);
+      for(let i=0;i<F;i++){const o=run({stage:s,kind:'field',weather:'clear'});if(o&&o.info&&(o.info.catchup||o.info.cu))cu++;A.innHeal();}
+      top+=lv(ids[0])-t0;fr+=lv(ids[2])-f0;bk+=lv(ids[5])-b0;}
+    out.push('stage '+(s+1)+', party lv '+L+', newcomers '+gap+' behind: levels gained in '+F+' fights: top hero '+(top/RUNS).toFixed(2)+', front newcomer '+(fr/RUNS).toFixed(2)+', reserve newcomer '+(bk/RUNS).toFixed(2)+' (fights with a catch up row: '+cu+')');}
+  return out.join('\\n');`,
+journey:RUNS=>`RUNS=${RUNS||3};const out=[];const ER=A.ENC_RATE.normal,GAP=A.ENC_MIN_STEPS,perFight=GAP+1/ER;
+  // steps of the required route on the real maps of this journey: town to the field gate, across the field to the dungeon, and the
+  // dungeon from its stairs to the boss door (4-way BFS, assets treated as walls). Fights = steps / (min gap + 1/rate) plus the roamers.
+  const bfs=(m,a,b)=>{if(!a||!b)return 0;const g=m.t,H=g.length,W=g[0].length,D=g.map(r=>r.map(()=>-1)),q=[a];D[a[1]][a[0]]=0;
+    const ok=(x,y)=>x>=0&&y>=0&&x<W&&y<H&&(!SOLIDS.includes(g[y][x])||'XGD|E'.includes(g[y][x]));
+    for(let i=0;i<q.length;i++){const [x,y]=q[i];if(Math.abs(x-b[0])+Math.abs(y-b[1])<=1)return D[y][x]+1;for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){const nx=x+dx,ny=y+dy;if(ok(nx,ny)&&D[ny][nx]<0){D[ny][nx]=D[y][x]+1;q.push([nx,ny]);}}}return 0;};
+  const SOLIDS=A.SOLID;
+  for(let r=0;r<RUNS;r++){seed=4242+r*77;const ids=pick(6);A.newGame(ids.slice(0,3));const G=A.G;G.run.seed=9000+r*131;A.resetMaps();
+    let fights=0,lost=0,bossTries=[],steps=[];
+    for(let s=0;s<5;s++){G.stage=s;G.cleared=[0,1,2,3,4].map(x=>x<s);
+      // a recruit joins at each new realm until the party has six (the tavern, near the party's level)
+      if(s>0&&G.party.length<6){const id=ids[G.party.length];G.gold=Math.max(G.gold,99999);A.recruit(id,true);}
+      const f=A.getMap('f'+s),d=A.getMap('d'+s),t=A.getMap('t'+s);
+      const fEnt=A.mapEntry(f),dEnt=A.mapEntry(d),fDun=f.ent?[f.ent[0],f.ent[1]+1]:null,bossDoor=d.bossAt;
+      const st=bfs(f,fEnt,fDun)+bfs(d,dEnt,bossDoor)*1.6;steps.push(Math.round(st));// the dungeon route doubles back for the key and lever
+      const roam=3+s,nf=Math.round(st/perFight)+roam;
+      for(let i=0;i<nf;i++){const o=run({stage:s,kind:i<roam?'dungeon':'field',weather:'clear'});fights++;if(!o||o.res!=='win'){lost++;A.innHeal();}
+        if(i%4===3)A.innHeal();}// a rest or a potion stop now and then
+      // the boss: rest, fight; after a loss, grind 3 more fights and try again (up to 6 tries)
+      A.innHeal();const k=G.run;if(s<4)k.bosses[s]=k.bosses[s]||A.GPOOL[s%A.GPOOL.length];else k.final=k.final||A.FPOOL[0];
+      let tries=0,won=false;while(!won&&tries<6){tries++;A.innHeal();const o=run({stage:s,kind:'boss'});won=o&&o.res==='win';
+        if(!won)for(let g=0;g<3;g++){run({stage:s,kind:'field',weather:'clear'});fights++;A.innHeal();}}
+      bossTries.push(tries);G.cleared[s]=true;A.innHeal();}
+    const lv=G.party.map(id=>G.roster[id].lv);
+    out.push('run '+(r+1)+': top hero lv '+Math.max(...lv)+', party average '+(lv.reduce((a,b)=>a+b,0)/lv.length).toFixed(1)+' ('+lv.join('/')+') | fights '+fights+' (lost '+lost+') | boss tries '+bossTries.join(',')+' | route steps '+steps.join(','));}
+  return out.join('\\n');`
+};
+(async()=>{const which=process.argv[2]||'boss',arg=+process.argv[3]||0;if(!SIMS[which]){console.log('sims: '+Object.keys(SIMS).join(', '));process.exit(1);}
+  const browser=await chromium.launch();const page=await browser.newPage();const errs=[];page.on('pageerror',e=>errs.push(e.message));
+  const P=path.join(require('os').tmpdir(),'fullsim_'+process.pid+'.html');
+  fs.writeFileSync(P,'<!doctype html><html><head><meta charset="utf-8"></head><body><script>localStorage.clear();</script>'+MOCK+'<div id="app"><header id="hdr"></header><main id="screen"></main><div id="modal"></div></div></body></html>');
+  await page.goto('file://'+P);
+  const t0=Date.now();
+  const r=await page.evaluate(([SRC,HARNESS,LOOP,BODY])=>{window.__Q=[];const st=f=>{window.__Q.push(f);return 1;};
+    const A=(new Function('setTimeout',SRC+HARNESS))(st);window.__A2=A;A.setPause(0);
+    return (new Function('A',LOOP+BODY))(A);},[SRC,HARNESS,LOOP,SIMS[which](arg)]);
+  console.log(`${which} on the full game (${MODS.length} modules), ${((Date.now()-t0)/1000).toFixed(0)} s`);console.log(r);
+  if(errs.length)console.log('page errors:',errs.slice(0,3).join(' | '));
+  await browser.close();try{fs.unlinkSync(P);}catch(e){}})();

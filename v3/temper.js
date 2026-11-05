@@ -34,17 +34,20 @@ function temperRank(o){const c=forgeCost(o.id);if(!c)return {ready:0,gain:0,clos
   return {ready,gain,close};}
 function vTemper(){
   const list=[];partyChars().forEach(c=>EQSL.forEach(sl=>{if(c.eq[sl])list.push({where:'eq',ref:{cid:c.id,slot:sl},id:c.eq[sl],who:c.name});}));
-  G.gear.forEach((id,i)=>list.push({where:'spare',ref:i,id,who:'Pack'}));
+  // v0.5.1: identical spares share one row (tempering works on the first copy); a full pack listed hundreds of the same rows
+  {const seen={};G.gear.forEach((id,i)=>{if(seen[id]){seen[id].n++;seen[id].who='Pack (x'+seen[id].n+')';return;}list.push(seen[id]={where:'spare',ref:i,id,who:'Pack',n:1});});}
   // v0.4.3: only what can be tempered, highest rarity first, then the highest temper level
   const tl=temperOrder(list.filter(o=>gearOf(o.id)&&forgeCost(o.id)));// v0.5.0 3.1 (and 1.9): temperOrder lives in p3shop.js
-  const rows=tl.map(o=>{const c=forgeCost(o.id),g=gearOf(o.id);if(!g)return '';
+  const why=typeof temperWhy==='function'?temperWhy(tl):{};// v0.5.1 3.1: tradeoff line between close options
+  const rowOf=(o,ti)=>{const c=forgeCost(o.id),g=gearOf(o.id);if(!g)return '';
     if(!c)return `<div class="row rec tr" style="${tierVars(gTierIdx(g),g)}">${gearIcon(o.id)}<div class="grow"><b>${g.n}</b> ${tierChip(g)}<small>${esc(o.who)}. ${gearDesc(g)}</small><small class="up">${g.stick?'The Stick grows with your Bestiary, not the anvil.':'Fully tempered.'}</small></div></div>`;
     const have=hasMats(c.m),ok=have&&G.gold>=c.gold,P=have?null:buyPlan(c.m),nx=gearOf(c.next);
     const herbNote=P&&P.cant.some(k=>MAT_OF[k]&&MAT_OF[k].k==='herb')?' Herbs are at Alchemy.':'';
-    return `<div class="row rec tr ${ok?'ready':''}" style="${tierVars(gTierIdx(g),g)}">${gearIcon(o.id)}<div class="grow"><b>${g.n} → +${plusOf(c.next)}</b> ${tierChip(g)}<small>${o.where==='eq'?vsMark(G.roster[o.ref.cid],c.next):vsParty(c.next)}</small><small>${esc(o.who)}. Now: ${gearDesc(g)}</small><small>Next: ${gearDesc(nx)}</small>${o.where==='eq'?`<small>${esc(o.who)}: ${deltaHtml(G.roster[o.ref.cid],c.next)}</small>`:bestTag(c.next)}
+    return `<div class="row rec tr ${ok?'ready':''}" style="${tierVars(gTierIdx(g),g)}">${gearIcon(o.id)}<div class="grow"><b>${g.n} → +${plusOf(c.next)}</b> ${tierChip(g)}<small>${o.where==='eq'?vsMark(G.roster[o.ref.cid],c.next):vsParty(c.next)}</small>${why[ti]?`<small class="p3why">⇄ ${why[ti]}</small>`:''}<small>${esc(o.who)}. Now: ${gearDesc(g)}</small><small>Next: ${gearDesc(nx)}</small>${o.where==='eq'?`<small>${esc(o.who)}: ${deltaHtml(G.roster[o.ref.cid],c.next)}</small>`:bestTag(c.next)}
       <div class="mats">${matChips(c.m)}<span class="matc gold ${G.gold>=c.gold?'':'short'}"><i></i><b class="nums">${fmt(c.gold)}</b> gold</span></div>
       ${P&&P.cant.length?`<small class="warn">Still need ${P.cant.map(k=>MATS[k]).join(', ')}: ${P.cant.some(k=>MAT_OF[k]&&(MAT_OF[k].k==='relic'))?'relics and Dread Cores come from foes. ':''}${P.cant.some(k=>PART_PRICE[k])?'the counter is out of that part until you rest. ':''}${herbNote}</small>`:''}</div>
-      <div class="btnrow tight col">${P&&P.any?`<button class="btn sm" data-act="temperBuy" data-arg='${JSON.stringify({w:o.where,r:o.ref})}' ${G.gold>=P.gold?'':'disabled'} title="Buy the missing ore, logs and parts here">Buy missing <span class="nums">${fmt(P.gold)}</span></button>`:''}<button class="btn sm ${ok?'gold':''}" data-act="forge" data-arg='${JSON.stringify({w:o.where,r:o.ref})}' ${ok?'':'disabled'}>Temper</button></div></div>`;}).join('');
+      <div class="btnrow tight col">${P&&P.any?`<button class="btn sm" data-act="temperBuy" data-arg='${JSON.stringify({w:o.where,r:o.ref})}' ${G.gold>=P.gold?'':'disabled'} title="Buy the missing ore, logs and parts here">Buy missing <span class="nums">${fmt(P.gold)}</span></button>`:''}<button class="btn sm ${ok?'gold':''}" data-act="forge" data-arg='${JSON.stringify({w:o.where,r:o.ref})}' ${ok?'':'disabled'}>Temper</button></div></div>`;};
+  const rows=tl.map(rowOf).join('');
   return `<p class="note">Tempering makes gear better: each level adds 25% to an item's stats, up to +3. Every level needs the item's own raw material (ore, logs or herbs at its tier), a monster part for its kind (fangs for blades and daggers, scales for mail, ichor for staves and robes, hide for bows and garb, grit for charms), this realm's relic (${MATS[ZS(G.stage).mat]}), and gold. +3 also needs a Dread Core. The Smithy sells ore, logs and a few parts right here.</p><div class="rows">${rows||'<p class="note">Nothing to temper right now. Fully tempered gear and the Tamer\'s Stick are not listed.</p>'}</div>`;
 }
 Object.assign(ACT,{

@@ -63,6 +63,18 @@ function temperReady(o,c){c=c||forgeCost(o.id);return !!c&&hasMats(c.m)&&G.gold>
 function temperOrder(list){const memo={},fc={},A=list.map((o,i)=>{const c=fc[o.id]||(fc[o.id]=forgeCost(o.id)),ok=temperReady(o,c);return {o,i,ok,g:temperGain(o,c,memo),cl:ok?1:temperClose(o,c),t:gTierIdx(gearOf(o.id))};});
   A.sort((x,y)=>(y.ok-x.ok)||(x.ok?(y.g-x.g||y.t-x.t):(y.cl-x.cl||y.g-x.g||y.t-x.t))||plusOf(y.o.id)-plusOf(x.o.id)||(x.o.where==='eq'?0:1)-(y.o.where==='eq'?0:1)||x.i-y.i);
   return A.map(x=>x.o);}
+// v0.5.1 3.1: the tradeoff line in Tempering. Two neighbours in the ordered list that improve the same hero by close amounts
+// (the shop rule: SHOP_BEST.closeAbs or closeRel) get a short reason on the second row: what each temper adds for that hero's class,
+// which costs less gold, which is ready now. Returns {index in the list: text}.
+function temperWho(o,c){if(o.where==='eq')return G.roster[o.ref.cid];const g=partyGainOf(c.next);return g.c||null;}
+function temperWhy(list){const out={},memo={};const R=list.map(o=>{const c=forgeCost(o.id);return c?{o,c,g:temperGain(o,c,memo),ok:temperReady(o,c),who:temperWho(o,c)}:null;});
+  for(let i=1;i<R.length;i++){const a=R[i-1],b=R[i];if(!a||!b||!a.who||!b.who||a.who!==b.who||a.ok!==b.ok)continue;
+    if(a.g<SHOP_BEST.minPct||b.g<SHOP_BEST.minPct)continue;if(Math.abs(a.g-b.g)>Math.max(SHOP_BEST.closeAbs,SHOP_BEST.closeRel*Math.max(a.g,b.g)))continue;
+    const W=CLASS_W[TPL[a.who.id].cls]||{atk:1,mag:1},adds=x=>{const now=gearOf(x.o.id),nx=gearOf(x.c.next);return ST.map(st=>({st,d:((nx[st]||0)-(now[st]||0))*((W[P3_GK[st]||st])||.15)})).filter(q=>q.d>0).sort((p,q)=>q.d-p.d).slice(0,2).map(q=>'more '+STN[q.st]);};
+    const pros=(x,y)=>{const L=adds(x),fx=gearOf(x.o.id).fam,fy=gearOf(y.o.id).fam;if(fx&&fx!==fy&&WPERK[fx])L.unshift(WPERK[fx].s.replace(/^[^:]*:\s*/,''));if(x.c.gold<y.c.gold*.9)L.unshift('cheaper');return L.slice(0,3);};
+    const n=x=>gearOf(x.o.id).n+' to +'+plusOf(x.c.next);
+    out[i]=`${esc(a.who.name)}: ${esc(n(a))}: ${pros(a,b).join(', ')||'about the same'}. ${esc(n(b))}: ${pros(b,a).join(', ')||'about the same'}.`;}
+  return out;}
 // 3.1 tradeoff line and 3.2 duplicate line, shown with the "Best for" tag of each row
 {const bt0=bestTag;bestTag=function(id){let h=bt0.apply(this,arguments);try{if(!G||G.daily)return h;const g=gearOf(id);if(!g)return h;
     const wear=G.party.map(x=>G.roster[x]).filter(c=>c&&c.eq&&c.eq[g.slot]===id),L=gainersFor(id);

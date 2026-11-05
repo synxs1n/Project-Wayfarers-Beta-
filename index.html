@@ -965,7 +965,7 @@ i.tag .stsym,i.tag.sttag .stsym{display:inline-block;width:1em;height:1em;vertic
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.5.1";const APP_BUILD="54d47fb4f37e";
+(function(){const APP_VER="0.5.1";const APP_BUILD="44f53cda79d0";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -1184,7 +1184,7 @@ const PORK={firstBoss:2,toTown:2};
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.5.1";const APP_BUILD="54d47fb4f37e";
+const APP_VER="0.5.1";const APP_BUILD="44f53cda79d0";
 
 // =================== VERSION ===================
 // The one public version string. Patch (0.1.x) for fixes and balance, minor (0.x.0) for new systems.
@@ -9582,17 +9582,20 @@ function temperRank(o){const c=forgeCost(o.id);if(!c)return {ready:0,gain:0,clos
   return {ready,gain,close};}
 function vTemper(){
   const list=[];partyChars().forEach(c=>EQSL.forEach(sl=>{if(c.eq[sl])list.push({where:'eq',ref:{cid:c.id,slot:sl},id:c.eq[sl],who:c.name});}));
-  G.gear.forEach((id,i)=>list.push({where:'spare',ref:i,id,who:'Pack'}));
+  // v0.5.1: identical spares share one row (tempering works on the first copy); a full pack listed hundreds of the same rows
+  {const seen={};G.gear.forEach((id,i)=>{if(seen[id]){seen[id].n++;seen[id].who='Pack (x'+seen[id].n+')';return;}list.push(seen[id]={where:'spare',ref:i,id,who:'Pack',n:1});});}
   // v0.4.3: only what can be tempered, highest rarity first, then the highest temper level
   const tl=temperOrder(list.filter(o=>gearOf(o.id)&&forgeCost(o.id)));// v0.5.0 3.1 (and 1.9): temperOrder lives in p3shop.js
-  const rows=tl.map(o=>{const c=forgeCost(o.id),g=gearOf(o.id);if(!g)return '';
+  const why=typeof temperWhy==='function'?temperWhy(tl):{};// v0.5.1 3.1: tradeoff line between close options
+  const rowOf=(o,ti)=>{const c=forgeCost(o.id),g=gearOf(o.id);if(!g)return '';
     if(!c)return `<div class="row rec tr" style="${tierVars(gTierIdx(g),g)}">${gearIcon(o.id)}<div class="grow"><b>${g.n}</b> ${tierChip(g)}<small>${esc(o.who)}. ${gearDesc(g)}</small><small class="up">${g.stick?'The Stick grows with your Bestiary, not the anvil.':'Fully tempered.'}</small></div></div>`;
     const have=hasMats(c.m),ok=have&&G.gold>=c.gold,P=have?null:buyPlan(c.m),nx=gearOf(c.next);
     const herbNote=P&&P.cant.some(k=>MAT_OF[k]&&MAT_OF[k].k==='herb')?' Herbs are at Alchemy.':'';
-    return `<div class="row rec tr ${ok?'ready':''}" style="${tierVars(gTierIdx(g),g)}">${gearIcon(o.id)}<div class="grow"><b>${g.n} → +${plusOf(c.next)}</b> ${tierChip(g)}<small>${o.where==='eq'?vsMark(G.roster[o.ref.cid],c.next):vsParty(c.next)}</small><small>${esc(o.who)}. Now: ${gearDesc(g)}</small><small>Next: ${gearDesc(nx)}</small>${o.where==='eq'?`<small>${esc(o.who)}: ${deltaHtml(G.roster[o.ref.cid],c.next)}</small>`:bestTag(c.next)}
+    return `<div class="row rec tr ${ok?'ready':''}" style="${tierVars(gTierIdx(g),g)}">${gearIcon(o.id)}<div class="grow"><b>${g.n} → +${plusOf(c.next)}</b> ${tierChip(g)}<small>${o.where==='eq'?vsMark(G.roster[o.ref.cid],c.next):vsParty(c.next)}</small>${why[ti]?`<small class="p3why">⇄ ${why[ti]}</small>`:''}<small>${esc(o.who)}. Now: ${gearDesc(g)}</small><small>Next: ${gearDesc(nx)}</small>${o.where==='eq'?`<small>${esc(o.who)}: ${deltaHtml(G.roster[o.ref.cid],c.next)}</small>`:bestTag(c.next)}
       <div class="mats">${matChips(c.m)}<span class="matc gold ${G.gold>=c.gold?'':'short'}"><i></i><b class="nums">${fmt(c.gold)}</b> gold</span></div>
       ${P&&P.cant.length?`<small class="warn">Still need ${P.cant.map(k=>MATS[k]).join(', ')}: ${P.cant.some(k=>MAT_OF[k]&&(MAT_OF[k].k==='relic'))?'relics and Dread Cores come from foes. ':''}${P.cant.some(k=>PART_PRICE[k])?'the counter is out of that part until you rest. ':''}${herbNote}</small>`:''}</div>
-      <div class="btnrow tight col">${P&&P.any?`<button class="btn sm" data-act="temperBuy" data-arg='${JSON.stringify({w:o.where,r:o.ref})}' ${G.gold>=P.gold?'':'disabled'} title="Buy the missing ore, logs and parts here">Buy missing <span class="nums">${fmt(P.gold)}</span></button>`:''}<button class="btn sm ${ok?'gold':''}" data-act="forge" data-arg='${JSON.stringify({w:o.where,r:o.ref})}' ${ok?'':'disabled'}>Temper</button></div></div>`;}).join('');
+      <div class="btnrow tight col">${P&&P.any?`<button class="btn sm" data-act="temperBuy" data-arg='${JSON.stringify({w:o.where,r:o.ref})}' ${G.gold>=P.gold?'':'disabled'} title="Buy the missing ore, logs and parts here">Buy missing <span class="nums">${fmt(P.gold)}</span></button>`:''}<button class="btn sm ${ok?'gold':''}" data-act="forge" data-arg='${JSON.stringify({w:o.where,r:o.ref})}' ${ok?'':'disabled'}>Temper</button></div></div>`;};
+  const rows=tl.map(rowOf).join('');
   return `<p class="note">Tempering makes gear better: each level adds 25% to an item's stats, up to +3. Every level needs the item's own raw material (ore, logs or herbs at its tier), a monster part for its kind (fangs for blades and daggers, scales for mail, ichor for staves and robes, hide for bows and garb, grit for charms), this realm's relic (${MATS[ZS(G.stage).mat]}), and gold. +3 also needs a Dread Core. The Smithy sells ore, logs and a few parts right here.</p><div class="rows">${rows||'<p class="note">Nothing to temper right now. Fully tempered gear and the Tamer\'s Stick are not listed.</p>'}</div>`;
 }
 Object.assign(ACT,{
@@ -11471,7 +11474,8 @@ function drawMarks(x,m,list,sc,ox,oy){x.textAlign='center';x.textBaseline='middl
 function drawPlayer(x,sc,px,py){const d=WS.dir||'d';x.save();x.translate(px,py);x.rotate({u:-Math.PI/2,r:0,d:Math.PI/2,l:Math.PI}[d]||0);const s=Math.max(4,sc*.9);
   x.fillStyle='#000';x.beginPath();x.moveTo(s+1,0);x.lineTo(-s*.7,-s*.8);x.lineTo(-s*.7,s*.8);x.closePath();x.fill();x.fillStyle='#ffffff';x.beginPath();x.moveTo(s,0);x.lineTo(-s*.6,-s*.65);x.lineTo(-s*.6,s*.65);x.closePath();x.fill();x.restore();}
 // ----- minimap (HUD) -----
-function miniOn(){const c=META.cfg.minimap;if(c===true||c===false)return c;return (window.innerWidth||800)>=560;}
+let MINI_VW=0;window.addEventListener('resize',()=>{MINI_VW=0;});
+function miniOn(){const c=META.cfg.minimap;if(c===true||c===false)return c;if(!MINI_VW)MINI_VW=window.innerWidth||800;return MINI_VW>=560;}
 function drawMini(){const cv=document.getElementById('mmap');if(!cv)return;const m=WS.m;if(!m||!G||!miniOn()||m.archive&&false){cv.style.display='none';return;}cv.style.display='block';
   const W=cv.width,H=cv.height,x=cv.getContext('2d'),sc=4,base=mapBase(m);x.imageSmoothingEnabled=false;x.fillStyle='#0a0710';x.fillRect(0,0,W,H);
   const ox=Math.round(W/2-(WS.x+.5)*sc),oy=Math.round(H/2-(WS.y+.5)*sc);x.drawImage(base,ox,oy,m.w*sc,m.h*sc);
@@ -11479,7 +11483,8 @@ function drawMini(){const cv=document.getElementById('mmap');if(!cv)return;const
 // v0.5.0 1.6: the minimap no longer depends on the weather chip drawing cleanly (an unknown sky used to stop it), and every world render makes sure it is there
 function ensureMini(){try{if(V.screen==='world'&&!document.getElementById('mmap')){const wv=document.querySelector('.wview');if(wv){wv.insertAdjacentHTML('beforeend','<canvas id="mmap" class="mmap" width="112" height="84" aria-hidden="true"></canvas>');}}drawMini();}catch(e){}}
 {const wu0=wkwUpdate;wkwUpdate=function(){try{wu0.apply(this,arguments);}catch(e){try{wdLog('wkwUpdate: '+e.message);}catch(_){}}ensureMini();};}
-{const r0=render;render=function(){const r=r0.apply(this,arguments);if(V.screen==='world')ensureMini();return r;};}
+// deferred to the next frame (and coalesced) so a render never pays for a forced layout here
+let miniRaf=0;{const r0=render;render=function(){const r=r0.apply(this,arguments);if(V.screen==='world'&&!miniRaf)miniRaf=requestAnimationFrame(()=>{miniRaf=0;ensureMini();});return r;};}
 // ----- full map -----
 function legendKeys(L){const ks=[];L.forEach(o=>{const k=mapIcoKey(o);if((MAPICO_NAME[k]||MKN[k])&&!ks.includes(k))ks.push(k);});return ks;}
 function mMap(){const m=WS.m;if(!m)return '';const lbl=m.cave?m.name:m.archive?(m.hub||'The Archive'):m.kind==='town'?ZS(m.s).town:m.kind==='field'?ZS(m.s).n:ZS(m.s).dungeon;
@@ -13187,6 +13192,18 @@ function temperReady(o,c){c=c||forgeCost(o.id);return !!c&&hasMats(c.m)&&G.gold>
 function temperOrder(list){const memo={},fc={},A=list.map((o,i)=>{const c=fc[o.id]||(fc[o.id]=forgeCost(o.id)),ok=temperReady(o,c);return {o,i,ok,g:temperGain(o,c,memo),cl:ok?1:temperClose(o,c),t:gTierIdx(gearOf(o.id))};});
   A.sort((x,y)=>(y.ok-x.ok)||(x.ok?(y.g-x.g||y.t-x.t):(y.cl-x.cl||y.g-x.g||y.t-x.t))||plusOf(y.o.id)-plusOf(x.o.id)||(x.o.where==='eq'?0:1)-(y.o.where==='eq'?0:1)||x.i-y.i);
   return A.map(x=>x.o);}
+// v0.5.1 3.1: the tradeoff line in Tempering. Two neighbours in the ordered list that improve the same hero by close amounts
+// (the shop rule: SHOP_BEST.closeAbs or closeRel) get a short reason on the second row: what each temper adds for that hero's class,
+// which costs less gold, which is ready now. Returns {index in the list: text}.
+function temperWho(o,c){if(o.where==='eq')return G.roster[o.ref.cid];const g=partyGainOf(c.next);return g.c||null;}
+function temperWhy(list){const out={},memo={};const R=list.map(o=>{const c=forgeCost(o.id);return c?{o,c,g:temperGain(o,c,memo),ok:temperReady(o,c),who:temperWho(o,c)}:null;});
+  for(let i=1;i<R.length;i++){const a=R[i-1],b=R[i];if(!a||!b||!a.who||!b.who||a.who!==b.who||a.ok!==b.ok)continue;
+    if(a.g<SHOP_BEST.minPct||b.g<SHOP_BEST.minPct)continue;if(Math.abs(a.g-b.g)>Math.max(SHOP_BEST.closeAbs,SHOP_BEST.closeRel*Math.max(a.g,b.g)))continue;
+    const W=CLASS_W[TPL[a.who.id].cls]||{atk:1,mag:1},adds=x=>{const now=gearOf(x.o.id),nx=gearOf(x.c.next);return ST.map(st=>({st,d:((nx[st]||0)-(now[st]||0))*((W[P3_GK[st]||st])||.15)})).filter(q=>q.d>0).sort((p,q)=>q.d-p.d).slice(0,2).map(q=>'more '+STN[q.st]);};
+    const pros=(x,y)=>{const L=adds(x),fx=gearOf(x.o.id).fam,fy=gearOf(y.o.id).fam;if(fx&&fx!==fy&&WPERK[fx])L.unshift(WPERK[fx].s.replace(/^[^:]*:\s*/,''));if(x.c.gold<y.c.gold*.9)L.unshift('cheaper');return L.slice(0,3);};
+    const n=x=>gearOf(x.o.id).n+' to +'+plusOf(x.c.next);
+    out[i]=`${esc(a.who.name)}: ${esc(n(a))}: ${pros(a,b).join(', ')||'about the same'}. ${esc(n(b))}: ${pros(b,a).join(', ')||'about the same'}.`;}
+  return out;}
 // 3.1 tradeoff line and 3.2 duplicate line, shown with the "Best for" tag of each row
 {const bt0=bestTag;bestTag=function(id){let h=bt0.apply(this,arguments);try{if(!G||G.daily)return h;const g=gearOf(id);if(!g)return h;
     const wear=G.party.map(x=>G.roster[x]).filter(c=>c&&c.eq&&c.eq[g.slot]===id),L=gainersFor(id);
