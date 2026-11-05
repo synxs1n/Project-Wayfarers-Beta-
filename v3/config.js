@@ -129,6 +129,16 @@ const SMITH_PLAN={minPct:.01};
 const BP_AWARE={arch:.18,el:.12,boss:1.5,dl:.04};
 // 3.6 boss readiness: how far below the boss the party average may be, and the potions and revives worth carrying
 const READY={lvGap:2,potions:4,revives:2};
+// v0.6.3 Best Party formations (party3.js). Role balance outweighs raw level and gear:
+//   str: weight per hero of sqrt(power / the roster's best power), so a big level or gear lead only counts a little;
+//   weak/weakPen: below this share of the best power a hero costs weakPen x the shortfall (they would not hold up; not for Training);
+//   role: value of the 1st, 2nd, 3rd hero who fills each role (negative = too many), pr/de: the first Primer and Detonator;
+//   dup: cost of each extra hero of a class already in the six; dl: each delivery covered (piercing, blunt, ranged, magic); el: each element;
+//   boss: how much more the Boss ready formation values the boss's element and archetype (or the area's, once the boss is down);
+//   overlap: cost per hero shared with earlier formations (Fresh mix: Balanced; Rotation: all; Boss ready: none, it says when it matches Balanced);
+//   train: a hero this many levels or more below the roster's top level is a trainee; at most max trainees in a Training team.
+const BP6={str:.5,weak:.55,weakPen:1.6,role:{tank:[1,.15,-.4],heal:[1,.3,-.3],sup:[.35,-.05,-.2],dmg:[.4,.35,.12,0]},pr:.4,de:.4,dup:.28,dl:.08,el:.05,
+  boss:{el:3,arch:2,area:2.5},overlap:{boss:0,mix:.32,rot:.32},train:{gap:3,max:4}};
 // 3.9 Pork Chop Sandwiches handed over after the first boss victory, and how many it takes to walk back to town from a dungeon
 const PORK={firstBoss:2,toTown:2};
 

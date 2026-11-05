@@ -5,6 +5,7 @@
 //   boss [N]        Scourge 4, Calamity and their Echoes at party levels 30/35/40/45, parties of 6 and 3
 //   stage1 [N]      stage 1 field fights at level 3: careful and auto, how many foes are dual type, surprise starts on roamers
 //   xp [fights]     XP catch up: newcomers below the party's top level, levels gained per hero
+//   xpcamp [fights] v0.6.3: a party of 6 that is G levels below a veteran resting at camp (the roster's top level), levels gained
 //   journey [runs]  full journey pacing: every stage's required route on the real maps at the real encounter rate, a recruit per
 //                   realm up to six, and each boss fought until it falls (5 more fights after each loss, like a player who grinds
 //                   until ready); ends with the top hero's level and the party's average level. Quests, chests and side caves are not
@@ -73,6 +74,14 @@ xp:F=>`F=${F||30};const out=[];const ids=['brann','mira','sable','lumen','oren',
       for(let i=0;i<F;i++){const o=run({stage:s,kind:'field',weather:'clear'});if(o&&o.info&&(o.info.catchup||o.info.cu))cu++;A.innHeal();}
       top+=lv(ids[0])-t0;fr+=lv(ids[2])-f0;bk+=lv(ids[5])-b0;}
     out.push('stage '+(s+1)+', party lv '+L+', newcomers '+gap+' behind: levels gained in '+F+' fights: top hero '+(top/RUNS).toFixed(2)+', front newcomer '+(fr/RUNS).toFixed(2)+', reserve newcomer '+(bk/RUNS).toFixed(2)+' (fights with a catch up row: '+cu+')');}
+  return out.join('\\n');`,
+xpcamp:F=>`F=${F||30};const out=[];const ids=['brann','mira','sable','lumen','oren','gilda'],vet='tess';const lv=id=>{const c=A.G.roster[id];return c.lv+(A.need?c.xp/Math.max(1,A.need(c.lv)):0);};
+  for(const [s,L,gap] of [[1,14,3],[2,21,5],[3,29,8],[4,36,4]]){let fr=0,bk=0,cu=0;const RUNS=3;
+    for(let r=0;r<RUNS;r++){party(ids,L-gap,Math.min(5,s));A.G.stage=s;A.G.cleared=[0,1,2,3,4].map(x=>x<s);A.G.roster[vet]=A.newChar(vet,L,Math.min(5,s));A.innHeal();
+      const f0=lv(ids[0]),b0=lv(ids[4]);
+      for(let i=0;i<F;i++){const o=run({stage:s,kind:'field',weather:'clear'});if(o&&o.info&&o.info.catchup&&o.info.catchup.length)cu++;A.innHeal();}
+      fr+=lv(ids[0])-f0;bk+=lv(ids[4])-b0;}
+    out.push('stage '+(s+1)+', veteran at camp lv '+L+', party '+gap+' behind: levels gained in '+F+' fights: front '+(fr/RUNS).toFixed(2)+', reserve '+(bk/RUNS).toFixed(2)+' (fights with a catch up row: '+cu+')');}
   return out.join('\\n');`,
 journey:RUNS=>`RUNS=${RUNS||3};window.__DBG=${process.env.DBG?1:0};const out=[];const ER=A.ENC_RATE.normal,GAP=A.ENC_MIN_STEPS,perFight=GAP+1/ER;
   // steps of the required route on the real maps of this journey: town to the field gate, across the field to the dungeon, and the

@@ -8,7 +8,12 @@ const coin=()=>`<img class="ico coin" src="${coinURL()}" alt="">`;
 const sellVal=g=>Math.round((g.price0||g.price)*.4);
 const port=(id,cls)=>`<span class="port ${cls||''} ${TPL[id]&&TPL[id].mon?'mon':''}"><img src="${heroURL(id)}" alt="">${typeof ailBadge==='function'&&!/noail/.test(cls||'')?ailBadge(id):''}</span>`;
 // v0.3.5 2.4: legendary stamp = gold seal + LEGENDARY banner, used on the sheet, roster card, codex entry and battle detail panel
-const isLeg=id=>!!(TPL[id]&&(TPL[id].src==='L'||(CLS[TPL[id].cls]||{}).legend));
+// v0.6.3: "Legendary" belongs only to the legend heroes with their own legend quests (LEGEND_IDS). Rare tavern visitors (src r*),
+// Scourge gifts (g*) and the special Archive hero (x) are tagged "Epic" instead (isEpic, epicTag; styles in party3.js).
+const isLeg=id=>!!(TPL[id]&&LEGEND_IDS.includes(id));
+const isEpic=id=>{const s=String((TPL[id]||{}).src||'');return !isLeg(id)&&!(TPL[id]||{}).mon&&(s[0]==='r'||s[0]==='g'||s==='x');};
+const epicTag=()=>'<span class="epictag">EPIC</span>';
+const heroTag=id=>isLeg(id)?legSeal(1)+'<span class="legtag">LEGENDARY</span>':isEpic(id)?epicTag():'';
 const legSeal=(sm)=>`<span class="legseal ${sm?'sm':''}" role="img" aria-label="Legendary"><svg viewBox="0 0 32 32" width="100%" height="100%" shape-rendering="crispEdges"><path d="M16 1l3 3 4-1 2 4 4 1-1 4 3 3-3 3 1 4-4 1-2 4-4-1-3 3-3-3-4 1-2-4-4-1 1-4-3-3 3-3-1-4 4-1 2-4 4 1z" fill="#150b17"/><path d="M16 3l2.5 2.5 3.5-.8 1.7 3.3 3.5.9-.8 3.5 2.6 2.6-2.6 2.6.8 3.5-3.5.9-1.7 3.3-3.5-.8L16 29l-2.5-2.5-3.5.8-1.7-3.3-3.5-.9.8-3.5L2.9 16l2.6-2.6-.8-3.5 3.5-.9 1.7-3.3 3.5.8z" fill="#f0b848"/><circle cx="16" cy="16" r="9" fill="#a8741a"/><circle cx="16" cy="16" r="7.4" fill="#ffd96a"/><path d="M16 9.5l1.9 4.1 4.4.5-3.3 3 .9 4.4-3.9-2.2-3.9 2.2.9-4.4-3.3-3 4.4-.5z" fill="#8a4be0" stroke="#150b17" stroke-width=".6"/></svg></span>`;
 const legBanner=()=>`<span class="legban">★ LEGENDARY ★</span>`;
 // v0.3.5 3.2: nature block for the hero sheet, and the pool line for cards/codex
@@ -160,8 +165,8 @@ function vStarter(){
 }
 function heroCard(id,sel,act,extra){
   const t=TPL[id],cls=CLS[t.cls],dual=t.el.length>1;
-  return `<${act?'button':'div'} class="card hero ${sel?'sel':''} ${dual?'dual':''} ${isLeg(id)?'leg':''}" ${act?`data-act="${act}" data-arg="${id}"`:''}>
-    ${isLeg(id)?legSeal(1)+'<span class="legtag">LEGENDARY</span>':''}${port(id,'big')}<div class="info"><b>${t.n}</b><small>${cls.n}</small><div class="els">${elChips(t.el)}</div>
+  return `<${act?'button':'div'} class="card hero ${sel?'sel':''} ${dual?'dual':''} ${isLeg(id)?'leg':isEpic(id)?'epic':''}" ${act?`data-act="${act}" data-arg="${id}"`:''}>
+    ${heroTag(id)}${port(id,'big')}<div class="info"><b>${t.n}</b><small>${cls.n}</small><div class="els">${elChips(t.el)}</div>
     <span class="trait" title="Each journey rolls one of these natures">${natPoolText(id)}</span></div>
     <p class="bio">${esc(t.bio)}</p><p class="mline">${masteryLine(id)}</p>${sigLine(id)}${extra||''}</${act?'button':'div'}>`;
 }
@@ -374,7 +379,7 @@ function mChar(id,edit){
   const L=LIMIT[t.cls],bonds=BONDS.filter(b=>b.a===id||b.b===id);
   const LST=(m.list||[]).filter(x=>G.roster[x]),li=LST.indexOf(id),nav=LST.length>1&&li>=0?`<div class="cnav"><button class="btn sm" data-act="charNav" data-arg="-1" aria-label="Previous hero">‹ Prev</button><small class="nums">${li+1} / ${LST.length}</small><button class="btn sm" data-act="charNav" data-arg="1" aria-label="Next hero">Next ›</button></div>`:'';
   return `<div class="modal"><div class="panel box wide charsheet ${isLeg(id)?'legsheet':''}">${nav}
-    ${isLeg(id)?`<div class="legstrip">${legSeal()}${legBanner()}${legSeal()}</div>`:''}<div class="mh"><div class="pbig"><img src="${heroURL(id)}" alt=""></div><div class="grow"><h2 class="cname">${esc(c.name)}${c.legacy?' <span class="cyc">Legacy</span>':''}</h2>${t.title?`<small class="ltitle">${esc(t.title)}</small>`:''}<small>${cls.n}, level ${c.lv}</small><div class="els">${elChips(t.el)}</div>
+    ${isLeg(id)?`<div class="legstrip">${legSeal()}${legBanner()}${legSeal()}</div>`:''}<div class="mh"><div class="pbig"><img src="${heroURL(id)}" alt=""></div><div class="grow"><h2 class="cname">${esc(c.name)}${c.legacy?' <span class="cyc">Legacy</span>':''}${isEpic(id)?' '+epicTag():''}</h2>${t.title?`<small class="ltitle">${esc(t.title)}</small>`:''}<small>${cls.n}, level ${c.lv}</small><div class="els">${elChips(t.el)}</div>
       ${natBlock(id,c)}<p class="bio">${esc(t.bio)}</p><p class="note nums">Battles together: ${btOf(c)} of ${PERSONAL_BT}</p>${classCard(t.cls)}<p class="mline">${masteryLine(id)}</p>${sigLine(id)}</div></div>
     <div class="xp">${c.lv>=LV_CAP?`<small>Level ${c.lv}: the cap. Nothing left to learn from XP, but every fight still pays.</small>`:`<small>XP ${fmt(c.xp)} / ${fmt(need(c.lv))}</small>${bar(c.xp,need(c.lv),'var(--gold)')}`}</div>
     <div class="stats tapstats">${[['hp',`${c.hp}/${S.mhp}`],['mp',`${c.mp}/${S.mmp}`],['atk',Math.round(S.atk)],['def',Math.round(S.def)],['mag',Math.round(S.mag)],['res',Math.round(S.res)],['spd',Math.round(S.spd)],['crit',Math.round(S.crit*100)+'%'],['eva',Math.round(S.eva*100)+'%'],['healP',Math.round(S.healP)]].map(([k,v])=>`<button class="stb" data-act="statInfo" data-arg="${k}" aria-label="What is ${STAT_INFO[k][0]}?">${STAT_INFO[k][0]} <b>${v}</b></button>`).join('')}</div>
