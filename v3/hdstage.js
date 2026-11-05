@@ -41,7 +41,7 @@ uniform vec4 uFP;uniform vec4 uFoc;uniform vec2 uRoad;
 uniform vec4 uL[NL];uniform vec4 uLC[NL];uniform vec4 uS[NS];uniform vec4 uD[ND];uniform vec4 uDC[ND];
 uniform vec3 uAmbF;uniform vec3 uAmbB;uniform vec3 uAmbU;uniform vec3 uFog;uniform vec2 uFogP;
 uniform vec3 uGain;uniform vec3 uLift;uniform vec4 uGrade;uniform vec4 uImp;uniform vec3 uImpC;uniform vec4 uSpot;
-uniform vec4 uKey;uniform vec3 uKeyC;uniform vec2 uKeyP;uniform float uT;uniform vec3 uSky;uniform vec2 uCloud;
+uniform vec4 uKey;uniform vec3 uKeyC;uniform vec2 uKeyP;uniform float uT;uniform vec3 uSky;uniform vec2 uCloud;uniform vec2 uUS;
 float sq(float f){return uFP.w*(.5+.9*f);}
 void main(){
   vec2 tc=vec2(vUv.x,1.-vUv.y);vec2 p=tc*uWH-uOff;
@@ -78,11 +78,22 @@ void main(){
 #endif
   // the unit layer (nearest, so pixels stay crisp); HUD pixels are unlit
   vec4 u=texture2D(uUn,tc);float hud=step(abs(u.a-.99608),.0025);
-  if(u.a>0.){vec3 lu=uAmbU+La*1.1;
+  if(u.a>0.){
+    // v0.5.8: units take the stage's light like the floor does. Raw sprite colours are softened first (they are more saturated and
+    // contrasty than the graded stage); the unit a pixel belongs to is found from the nearest feet (shadow) below it, which gives its
+    // height (a little darker toward the feet) and its side (the side facing the key light or a lamp or spell is brighter); the two
+    // strongest lights put a rim on the silhouette edge that faces them, the key light its own.
+    vec3 ur=u.rgb;float l0=dot(ur,vec3(.299,.587,.114));ur=mix(vec3(l0),ur,uUS.x);ur=(ur-.5)*uUS.y+.5;
+    float hb=1e3,sx=p.x,sw=8.;for(int i=0;i<NS;i++){vec4 S=uS[i];if(S.w>0.&&abs(p.x-S.x)<S.z*1.35){float h=S.y-p.y;if(h>-3.&&h<hb){hb=h;sx=S.x;sw=S.z;}}}
+    float ao=hb<1e2?mix(.74,1.,smoothstep(0.,15.,hb)):1.,sd=hb<1e2?clamp((p.x-sx)/sw,-1.,1.):0.;
+    vec3 lu=uAmbU*ao*(1.+.14*sd*uKey.x);
+    for(int i=0;i<NL;i++){vec4 l=uL[i];if(l.w>0.){vec2 d=(p-l.xy)/(l.w*.55);float sg=clamp((l.x-sx)/max(abs(l.x-sx),6.),-1.,1.);lu+=uLC[i].rgb*exp(-dot(d,d)*2.2)*1.1*(1.+.6*sd*sg);}}
 #if RIM
     vec4 n=texture2D(uUn,tc+vec2(uKey.x,-.6)/uWH);float rim=step(n.a,.5)*(1.-hud);lu+=uKeyC*rim*uKey.y;
+    for(int i=0;i<2;i++){vec4 l=uL[i];if(l.w>0.){vec2 dl=l.xy-p;float dd=length(dl);vec2 d=(p-l.xy)/(l.w*.8);float k=exp(-dot(d,d)*1.4);
+      vec4 m=texture2D(uUn,tc+dl/max(dd,1.)*1.5/uWH);lu+=uLC[i].rgb*step(m.a,.5)*(1.-hud)*k*.9;}}
 #endif
-    vec3 uc=mix(u.rgb*lu,u.rgb,hud);col=mix(col,uc,u.a);}
+    vec3 uc=mix(ur*lu,u.rgb,hud);col=mix(col,uc,u.a);}
 #if BLOOM
   col+=texture2D(uBl,tc).rgb*uGrade.w;
 #endif
@@ -326,7 +337,11 @@ function hbUnder(ctx,W,H,now){const still=hbStill(),K=HB.bake;if(!K)return;
 const HB_LS=[];
 // 'under' mode: a soft shadow sprite on the 2D canvas, squashed like the GL floor, nudged away from the key light
 let HB_SH=null;
-function hbShadow2D(ctx,x,gy,b,alpha){const K=HB.bake;if(!K)return;if(!HB_SH){HB_SH=mkCv(64,32);const c=HB_SH.getContext('2d'),g=c.createRadialGradient(32,16,0,32,16,16);g.addColorStop(0,'rgba(8,4,20,.62)');g.addColorStop(.55,'rgba(8,4,20,.42)');g.addColorStop(1,'rgba(8,4,20,0)');c.setTransform(2,0,0,1,0,0);c.fillStyle=g;c.fillRect(0,0,32,32);}
+function hbShadow2D(ctx,x,gy,b,alpha){const K=HB.bake;if(!K)return;if(!HB_SH){HB_SH=mkCv(64,32);const c=HB_SH.getContext('2d'),im=c.createImageData(64,32),d=im.data,sm=(a,b,v)=>{const t=Math.max(0,Math.min(1,(v-a)/(b-a)));return t*t*(3-2*t);};
+    // v0.5.8: the gradient used to be centred on the sprite's right edge (a scaled transform), so the shadow was half a blob with a hard
+    // vertical edge (a dark box beside every unit). Now a whole soft ellipse with a darker contact core.
+    for(let y=0;y<32;y++)for(let x=0;x<64;x++){const dx=(x+.5-32)/32,dy=(y+.5-16)/16,r=Math.sqrt(dx*dx+dy*dy),a=Math.min(1,.46*(1-sm(.1,.5,r))+.36*(1-sm(.3,1,r))),o=(y*64+x)*4;d[o]=8;d[o+1]=4;d[o+2]=20;d[o+3]=Math.round(a*255);}
+    c.putImageData(im,0,0);}
   const rx=Math.max(5,Math.min(b.w,40)*.5)*(b.hov?.7:1)*1.08,f=Math.max(0,Math.min(1,(gy-K.gy)/K.span)),ry=Math.max(1.5,rx*HD_FLOOR.sq*(.5+.9*f)),a=(b.hov?.55:.95)*(alpha==null?1:alpha);
   ctx.save();ctx.globalAlpha=a;ctx.imageSmoothingEnabled=true;ctx.drawImage(HB_SH,x-K.look.kx*rx*.28-rx,gy+.5-ry,rx*2,ry*2);ctx.restore();}
 function hbEq(a,b){if(!a||a.length!==b.length)return false;for(let i=0;i<a.length;i++)if(a[i]!==b[i])return false;return true;}
@@ -336,6 +351,51 @@ const HB_TINT=new WeakMap();
 function hbTint(c){const K=HB.bake;if(!K||!K.tint)return c;let m=HB_TINT.get(c);if(m&&m.k===K.tint.k)return m.cv;
   const o=mkCv(c.width,c.height),x=o.getContext('2d');x.drawImage(c,0,0);x.globalCompositeOperation='multiply';x.fillStyle=K.tint.css;x.fillRect(0,0,c.width,c.height);x.globalCompositeOperation='destination-in';x.drawImage(c,0,0);
   HB_TINT.set(c,{k:K.tint.k,cv:o});return o;}
+
+// ----- v0.5.8 'under' mode (Medium): sprites lit and graded in 2D, one cached copy per sprite canvas and lighting state -----
+// The state of a unit (hbUnitLight, every 250 ms, no allocation once warm): the stage ambient, the theme lights near it (torches,
+// braziers, lava glow, the boss circle) and the strongest effect light (spells, casting circles), with the side they come from, and the
+// key light's rim. It is folded into one integer (quantised), so a state change costs one 2D build of that sprite (hbLitBuild:
+// a pixel pass over the full HD bitmap, about a millisecond) and every other frame is a Map lookup. The pass: soften the raw colours,
+// light (ambient, a little darker toward the feet, the lights brighter on the side facing them), rim light on the silhouette edge
+// facing the key light, then the stage's own grade (gain, lift, saturation, contrast), so units sit in the graded still under them.
+const HB_LIT=new WeakMap(),HB_LP=[];
+function hbQc(v){return Math.max(0,Math.min(7,Math.round((v+.2)/1.6*7)));}
+function hbUnitLight(u,K,now){let P=u._hbP;if(P&&P.K===K&&now-P.t<250)return P;if(!P)P=u._hbP={K:null,t:0,key:0,lc:[0,0,0],side:0,rd:1,rs:0,flip:false};
+  const b=unitBox(u);P.K=K;P.t=now;P.flip=u.side==='p';if(!b){P.key=0;P.lc[0]=P.lc[1]=P.lc[2]=0;P.side=0;P.rs=0;return P;}
+  const cx=b.x,cy=b.y-b.h*.5;let r=0,g=0,bl=0,sx=0;
+  const add=(lx,ly,lr,col,k)=>{const dx=lx-cx,dy=ly-cy,d=Math.sqrt(dx*dx+dy*dy),e=k*Math.exp(-(d*d)/(lr*lr*.55));if(Math.abs(e)<.01)return;r+=col[0]*e;g+=col[1]*e;bl+=col[2]*e;sx+=e*(col[0]*.3+col[1]*.59+col[2]*.11)*dx/(d+8);};
+  for(const l of K.lights)add(l.x,l.y,l.r,l.col,l.int*.9);
+  let best=null,bv=0;for(const o of HB.L){const e=hbEnv(o,now);if(e<=0)continue;const v=Math.abs(o.int*e)*Math.exp(-((o.x-cx)**2+(o.y-cy)**2)/(o.r*o.r*.6));if(v>bv){bv=v;best=o;}}
+  if(best)add(best.x,best.y,best.r,best.col,best.int*hbEnv(best,now)*1.2);
+  P.lc[0]=r;P.lc[1]=g;P.lc[2]=bl;const kx=K.look.kx||0,ks=K.look.out?(K.look.night?.5:.8):.35;
+  const side=sx*2.5,rimx=side+kx*ks*.5;P.side=Math.max(-1,Math.min(1,side));P.rd=rimx>=0?1:-1;P.rs=Math.min(1,Math.abs(rimx)*1.4+(K.look.out?.25:0));
+  const sq=Math.round((P.side+1)*2),rq=Math.round(P.rs*3);P.key=hbQc(r)|hbQc(g)<<3|hbQc(bl)<<6|sq<<9|(P.rd>0?1:0)<<12|rq<<13|(P.flip?1:0)<<15;return P;}
+function hbLitBuild(c,K,P){const look=K.look,W0=c._rw||c.width,H0=c._rh||c.height,o=c.hd?hdCv(c.width,c.height,c.hd):mkCv(c.width,c.height),x=o.getContext('2d');x.drawImage(c,0,0);
+  let im;try{im=x.getImageData(0,0,W0,H0);}catch(e){return o;}const d=im.data,S=HD_SPR,am=look.amb,G=look.gain,Lf=look.lift,gs=look.sat,gc=look.con,lc=P.lc,kc=look.key,k=c.hd||1;
+  const fl=P.flip?-1:1,rdx=P.rd*fl*Math.max(1,Math.round(k)),rim=P.rs*S.rim,sm=v=>v<=0?0:v>=1?1:v*v*(3-2*v),A=(xx,yy)=>xx<0||yy<0||xx>=W0||yy>=H0?0:d[(yy*W0+xx)*4+3];
+  for(let y=0;y<H0;y++){const hv=1-(y+.5)/H0,ao=S.ao+(1-S.ao)*sm(hv/.42),am2=.94+.12*hv;
+    for(let xx=0;xx<W0;xx++){const i=(y*W0+xx)*4;if(!d[i+3])continue;const sd=((xx+.5)/W0*2-1)*fl,ls=1+.6*sd*P.side,edge=A(xx+rdx,y)<128,top=A(xx,y-k)<128;
+      let R=d[i]/255,Gc=d[i+1]/255,Bc=d[i+2]/255;const l0=R*.299+Gc*.587+Bc*.114;
+      R=((l0+(R-l0)*S.sat)-.5)*S.con+.5;Gc=((l0+(Gc-l0)*S.sat)-.5)*S.con+.5;Bc=((l0+(Bc-l0)*S.sat)-.5)*S.con+.5;
+      const ek=edge?rim*(.55+.45*hv):0,tk=top?.07:0;
+      R=Math.max(0,R)*(am[0]*am2*ao*(1+.1*sd*(look.kx||0))+lc[0]*ls)+(kc[0]*.45+lc[0]*.6)*ek+am[0]*tk;
+      Gc=Math.max(0,Gc)*(am[1]*am2*ao*(1+.1*sd*(look.kx||0))+lc[1]*ls)+(kc[1]*.45+lc[1]*.6)*ek+am[1]*tk;
+      Bc=Math.max(0,Bc)*(am[2]*am2*ao*(1+.1*sd*(look.kx||0))+lc[2]*ls)+(kc[2]*.45+lc[2]*.6)*ek+am[2]*tk;
+      // the stage grade (hbMainFS: gain, lift, saturation, contrast) and its soft shoulder
+      R=R*G[0]+Lf[0];Gc=Gc*G[1]+Lf[1];Bc=Bc*G[2]+Lf[2];const l1=R*.299+Gc*.587+Bc*.114;
+      R=((l1+(R-l1)*gs)-.5)*gc+.5;Gc=((l1+(Gc-l1)*gs)-.5)*gc+.5;Bc=((l1+(Bc-l1)*gs)-.5)*gc+.5;
+      d[i]=Math.max(0,Math.min(255,R/(1+Math.max(R-1,0)*.6)*255));d[i+1]=Math.max(0,Math.min(255,Gc/(1+Math.max(Gc-1,0)*.6)*255));d[i+2]=Math.max(0,Math.min(255,Bc/(1+Math.max(Bc-1,0)*.6)*255));}}
+  x.putImageData(im,0,0);return o;}
+// BV.tint on the 'under' stage: the unit being drawn is the one spriteOf was last asked for (drawUnit asks right before it tints)
+function hbLit(c){const K=HB.bake,u=HB.cu;if(!K||!u||!c||!c.width)return c;const P=hbUnitLight(u,K,performance.now());
+  let m=HB_LIT.get(c);if(!m||m.K!==K){m={K,map:new Map()};HB_LIT.set(c,m);}let o=m.map.get(P.key);if(o)return o;
+  if(m.map.size>40)m.map.clear();o=hbLitBuild(c,K,P);m.map.set(P.key,o);HB.litN=(HB.litN||0)+1;return o;}
+{const so0=spriteOf;spriteOf=function(u){HB.cu=u;return so0.apply(this,arguments);};}
+// v0.5.8: the element badges by the HP bars (battleui.js) are HUD too: on the full GL stage they are drawn from a copy whose solid pixels
+// carry alpha 254 (the HUD mark), so the unit lighting leaves them crisp and unlit wherever they are drawn
+if(typeof elShapeCv==='function'){const es0=elShapeCv,HB_EH={};elShapeCv=function(el){const c=es0.apply(this,arguments);if(!BV.glFull||!c)return c;let h=HB_EH[el];
+  if(!h){h=HB_EH[el]=mkCv(c.width,c.height);const x=h.getContext('2d');x.drawImage(c,0,0);try{const im=x.getImageData(0,0,h.width,h.height),d=im.data;for(let i=3;i<d.length;i+=4)if(d[i]>0)d[i]=254;x.putImageData(im,0,0);}catch(e){}}return h;};}
 
 function hbMainU(u,gl,K,look,q,o){const W=K.W,H=K.H,A=o.A;
   gl.uniform1i(u.uBg,0);gl.uniform1i(u.uFl,1);gl.uniform1i(u.uFl2,2);gl.uniform1i(u.uUn,3);gl.uniform1i(u.uBl,4);
@@ -347,7 +407,7 @@ function hbMainU(u,gl,K,look,q,o){const W=K.W,H=K.H,A=o.A;
   gl.uniform3f(u.uGain,look.gain[0],look.gain[1],look.gain[2]);gl.uniform3f(u.uLift,look.lift[0],look.lift[1],look.lift[2]);gl.uniform4f(u.uGrade,look.sat,look.con,look.vig,q.bloomK||0);
   gl.uniform4f(u.uImp,o.ix,o.iy,o.imp,0);gl.uniform3f(u.uImpC,o.ic[0],o.ic[1],o.ic[2]);gl.uniform4f(u.uSpot,o.spx,o.spy,o.spot,0);
   gl.uniform4f(u.uKey,look.kx||.7,look.night?.22:.3,look.out&&!look.night&&look.ph!=='indoor'?.05:.035,0);gl.uniform3f(u.uKeyC,look.key[0],look.key[1],look.key[2]);gl.uniform2f(u.uKeyP,look.kp[0]*W,look.kp[1]*H);gl.uniform1f(u.uT,o.t);
-  gl.uniform3f(u.uSky,look.sky[0],look.sky[1],look.sky[2]);gl.uniform2f(u.uCloud,look.cloud,0);}
+  gl.uniform3f(u.uSky,look.sky[0],look.sky[1],look.sky[2]);gl.uniform2f(u.uCloud,look.cloud,0);if(u.uUS)gl.uniform2f(u.uUS,HD_SPR.sat,HD_SPR.con);}
 function hbArr(nl,ns,nd){return {L:new Float32Array(nl*4),LC:new Float32Array(nl*4),S:new Float32Array(ns*4),D:new Float32Array(nd*4),DC:new Float32Array(nd*4)};}
 function hbPutLights(A,list,n){A.L.fill(0);A.LC.fill(0);for(let i=0;i<Math.min(n,list.length);i++){const l=list[i];A.L[i*4]=l[0];A.L[i*4+1]=l[1];A.L[i*4+2]=l[2];A.L[i*4+3]=l[3];const s=l[5];A.LC[i*4]=l[4][0]*s;A.LC[i*4+1]=l[4][1]*s;A.LC[i*4+2]=l[4][2]*s;}}
 function hbPutDecals(A,list,n,now,still){let di=0;for(let i=0;i<list.length&&di<n;i++){const o=list[i],e=o.t0?hbEnv(o,now):(still?1:.75+.25*Math.sin(now/700));if(e<=0)continue;const grow=o.t0&&o.grow?Math.min(1,(now-o.t0)/(o.life*.25)):1;
@@ -407,7 +467,7 @@ function hbFrame(now){const gl=HB.gl,q=hbQ(),W=BL.W,H=BL.H,key=HB.force||battleT
   const want=hbWanted()&&(HB.R||hbSetup());
   if(!want){if(HB.on){HB.on=false;hbShow(false);}BV.glStage=false;return bf0.apply(this,arguments);}
   if(!HB.on){HB.on=true;hbShow(true);}
-  const under=hbQ().mode==='under';BV.glStage=true;BV.glFull=!under;BV.glUnder=under?hbUnder:null;BV.tint=under?hbTint:null;BV.glShadow=under?hbShadow2D:null;let r;try{r=bf0.apply(this,arguments);}finally{BV.glStage=false;BV.glFull=false;BV.glUnder=null;BV.tint=null;BV.glShadow=null;}
+  const under=hbQ().mode==='under';BV.glStage=true;BV.glFull=!under;BV.glUnder=under?hbUnder:null;BV.tint=under?hbLit:null;BV.glShadow=under?hbShadow2D:null;let r;try{r=bf0.apply(this,arguments);}finally{BV.glStage=false;BV.glFull=false;BV.glUnder=null;BV.tint=null;BV.glShadow=null;}
   try{if(!hbFrame(now)){HB.on=false;hbShow(false);}}catch(e){HB.dead=true;HB.err=String(e&&e.message||e);HB.why='gl error';HB.on=false;hbShow(false);try{console.warn('HD stage off:',HB.err);}catch(x){}
     // redraw this frame in 2D so nothing is missing
     try{bf0.apply(this,arguments);}catch(x){}}

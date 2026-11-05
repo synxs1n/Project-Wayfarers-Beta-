@@ -28,12 +28,12 @@ function hdInitGL(){if(HD.gl)return !HD.lost;if(HD.broken)return false;
     HD.cv=cv;HD.gl=gl;hdResources();return true;
   }catch(e){HD.broken=true;HD.why=String(e&&e.message||e);HD.gl=null;return false;}}
 function hdResources(){const gl=HD.gl,A=['aP','aT','aC','aN'];
-  HD.P={scene:h2Program(gl,H2SRC.scene_v,H2SRC.scene_f,A),down:h2Program(gl,H2SRC.quad_v,H2SRC.down_f,['aP']),
+  HD.P={scene:h2Program(gl,H2SRC.scene_v,H2SRC.scene_f,A),char:h2Program(gl,H2SRC.scene_v,H2SRC.char_f,A),down:h2Program(gl,H2SRC.quad_v,H2SRC.down_f,['aP']),
     blur:h2Program(gl,H2SRC.quad_v,H2SRC.blur_f,['aP']),comp:h2Program(gl,H2SRC.quad_v,H2SRC.comp_f,['aP']),lm:h2Program(gl,H2SRC.lm_v,H2SRC.lm_f,['aP','aQ','aC']),lms:h2Program(gl,H2SRC.lms_v,H2SRC.lms_f,['aP'])};
   HD.ib=h2QuadIndex(gl);HD.fs=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,HD.fs);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW);
-  HD.atl=new H2Atlas(gl,1024);HD.vb=[gl.createBuffer(),gl.createBuffer(),gl.createBuffer(),gl.createBuffer()];
-  HD.dyn=new H2Batch(512);HD.dynB=new H2Batch(256);HD.dynA=new H2Batch(64);
-  HD.lmv=new Float32Array(HD2D.lmMax*4*7);HD.lmR=new Float32Array(4);
+  HD.atl=new H2Atlas(gl,1024);HD.vb=[gl.createBuffer(),gl.createBuffer(),gl.createBuffer(),gl.createBuffer(),gl.createBuffer(),gl.createBuffer()];
+  HD.dyn=new H2Batch(512);HD.dynB=new H2Batch(256);HD.dynA=new H2Batch(64);HD.dynC=new H2Batch(64);HD.dynCB=new H2Batch(8);// v0.5.8: characters (opaque, blended) for the character program
+  HD.lmv=new Float32Array(HD2D.lmMax*4*7);HD.lw=new Float32Array(HD2D.lmMax*4);HD.lmR=new Float32Array(4);
   HD.rt=null;HD.size='';HD.S=null;HD.map=null;HD.dirty=true;HD.blurOk=false;}
 // ----- the GL canvas sits under the world view's 2D canvas (WS.cv), same place and CSS size; WS.cv stays on top for taps, weather,
 // fades and the battle flash (transparent elsewhere). The view's sizing (worldSizeCanvas), the canvas rebuilt after a battle and the
@@ -339,45 +339,83 @@ function hdBill(bt,key,cv,fx,fy,fz,flip,sc,r,g,b,a,fl){const R=HD.atl.get(key,cv
 function hdDecal(bt,key,cv,cx,cz,w,d,r,g,b,a,y){const R=HD.atl.get(key,cv);if(!R)return;const yy=y||.6;
   H2P[0]=cx-w/2;H2P[1]=yy;H2P[2]=cz-d/2;H2P[3]=cx+w/2;H2P[4]=yy;H2P[5]=cz-d/2;H2P[6]=cx+w/2;H2P[7]=yy;H2P[8]=cz+d/2;H2P[9]=cx-w/2;H2P[10]=yy;H2P[11]=cz+d/2;bt.quad(H2P,R.u0,R.v0,R.u1,R.v1,r,g,b,a,0,1,0,4);}
 function hdShadow(cx,cz,w){hdDecal(HD.dynB,'blob',hdBlob(),cx,cz,w,w*.42,10,6,24,255);}// white sprite, dark vertex colour (no colour fringes from low alpha texels)
+// ----- v0.5.8: characters belong to the scene -----
+// a contact shadow with a darker core under the feet and a soft penumbra (white sprite, dark vertex colour)
+function hdBlob2(){return hdSpr('blob2',24,12,(c,w,h)=>{const d=c.createImageData(w,h),P=HD2D.spr.shadow;for(let y=0;y<h;y++)for(let x=0;x<w;x++){
+  const dx=(x+.5-w/2)/(w/2),dy=(y+.5-h/2)/(h/2),r=Math.sqrt(dx*dx+dy*dy),sm=(a,b,v)=>{const t=Math.max(0,Math.min(1,(v-a)/(b-a)));return t*t*(3-2*t);};
+  const a=Math.min(1,P[2]*(1-sm(.12,.5,r))+P[3]*(1-sm(.3,1,r))),o=(y*w+x)*4;d.data[o]=d.data[o+1]=d.data[o+2]=255;d.data[o+3]=Math.round(a*255);}c.putImageData(d,0,0);});}
+// a sprite shrunk to the scene's scale on the GL pixel grid (px texels per art px), once per sprite canvas. Pixel art does not survive an
+// average (faces and outlines turn to mush), so each target pixel takes the colour that covers most of its box in the full HD bitmap
+// (the sprite's own palette, no blends), except that a clearly darker colour (an outline, an eye, a seam) wins when it covers a fair
+// share of the box; coverage decides what is solid. At the default scale (2/3) one target pixel is exactly 3x3 texels. Drawn one texel
+// per pixel with NEAREST: crisp, no shimmer from skipped texels.
+const H2SM=new WeakMap(),H2SMc=new Int32Array(64),H2SMw=new Float32Array(64);
+function hdSmall(cv,s,px){const k=s*1000+px;let e=H2SM.get(cv);if(e&&e.k===k)return e.c;
+  const W0=cv._rw||cv.width,H0=cv._rh||cv.height,tw=Math.max(2,Math.round(cv.width*s*px/2)*2),fx=W0/tw,fy=fx,th=Math.max(2,Math.ceil(H0/fy-.01));
+  let src;try{src=cv.getContext('2d').getImageData(0,0,W0,H0).data;}catch(_){return cv;}
+  const o=mkCv(tw,th),oc=o.getContext('2d'),img=oc.createImageData(tw,th),d=img.data,C=H2SMc,Wt=H2SMw,L=c=>((c>>16)&255)*.3+((c>>8)&255)*.59+(c&255)*.11;
+  for(let ty=0;ty<th;ty++){const y1=H0-(th-1-ty)*fy,y0=y1-fy;// bottom aligned: the feet keep their row
+    for(let tx=0;tx<tw;tx++){const x0=tx*fx,x1=x0+fx;let sw=0,sa=0,n=0,tot=0;
+      for(let sy=Math.max(0,Math.floor(y0));sy<Math.ceil(y1)&&sy<H0;sy++){const wy=Math.min(y1,sy+1)-Math.max(y0,sy);if(wy<=0)continue;
+        for(let sx=Math.floor(x0);sx<Math.ceil(x1)&&sx<W0;sx++){const w=(Math.min(x1,sx+1)-Math.max(x0,sx))*wy,i=(sy*W0+sx)*4,a=src[i+3]/255;sw+=w;sa+=w*a;if(a<=.5)continue;
+          const c=(src[i]<<16)|(src[i+1]<<8)|src[i+2];let j=0;while(j<n&&C[j]!==c)j++;if(j===n){if(n>=64)continue;C[n]=c;Wt[n]=0;n++;}Wt[j]+=w;tot+=w;}}
+      if(!n||!sw||sa/sw<.34)continue;let bi=0,di=0;for(let j=1;j<n;j++){if(Wt[j]>Wt[bi])bi=j;if(L(C[j])<L(C[di]))di=j;}
+      if(L(C[di])<Math.min(L(C[bi])-70,120)&&Wt[di]>=tot*.3)bi=di;const c=C[bi],o4=(ty*tw+tx)*4;d[o4]=(c>>16)&255;d[o4+1]=(c>>8)&255;d[o4+2]=c&255;d[o4+3]=255;}}
+  oc.putImageData(img,0,0);H2SM.set(cv,{k,c:o});return o;}
+// which side the light comes from at a character's feet: the lights of this frame's light map (within reach, weighted like the map) and
+// the sun or moon. HD.rimD is -1 (left) or 1 (right), HD.rimS the rim strength 0..1. No allocation.
+function hdRim(x,z){const L=HD.lw,o=H2L;let dx=0;for(let i=0;i<HD.lmn;i++){const j=i*4,ddx=L[j]-x,ddz=L[j+1]-z,r=L[j+2],dd=ddx*ddx+ddz*ddz;if(dd>=r*r)continue;
+    const dist=Math.sqrt(dd),k=1-dist/r;dx+=L[j+3]*k*k*ddx/(dist+6);}
+  const sl=(o.sun[0]*.3+o.sun[1]*.59+o.sun[2]*.11)*1.5;dx+=sl*o.sd[0];HD.rimD=dx>=0?1:-1;HD.rimS=Math.min(1,Math.abs(dx)*2.2);}
+// a character billboard: the scene scaled copy, per vertex side (r) and height (b) for the shader, the rim side and strength and the
+// flip in the normal bytes. Returns the quad index (the hero's is drawn again for his silhouette).
+function hdChar(bt,cv,fx,fy,fz,flip,a,fl,sc){bt=bt===HD.dynB?HD.dynCB:HD.dynC;const s=sc==null?HD2D.spr.sc:sc,px=HD.px||1,sm=s===1||!cv.width?cv:hdSmall(cv,s,px),R=HD.atl.get(sm,sm);if(!R)return -1;
+  const V=HD.S.V,w=s===1?R.w:sm.width/px,h=(s===1?R.h:sm.height/px)*V,x0=fx-w/2,x1=fx+w/2,y1=fy+h;hdRim(fx,fz);HD.chW=w;HD.chH=h;
+  if(bt.n>=bt.max)bt.grow();const i=bt.n*4,X=HD.rimD>0?255:0,Y=Math.round(HD.rimS*255),Z=flip?0:255,u0=flip?R.u1:R.u0,u1=flip?R.u0:R.u1;
+  bt.v(i,x0,y1,fz,u0,R.v0,0,255,255,a,X,Y,Z,fl);bt.v(i+1,x1,y1,fz,u1,R.v0,255,255,255,a,X,Y,Z,fl);bt.v(i+2,x1,fy,fz,u1,R.v1,255,255,0,a,X,Y,Z,fl);bt.v(i+3,x0,fy,fz,u0,R.v1,0,255,0,a,X,Y,Z,fl);
+  return bt.n++;}
+// the contact shadow of the character just placed by hdChar: as wide as its body, nudged away from the light
+function hdShadowC(cx,cz,k){const P=HD2D.spr.shadow,w=Math.max(8,HD.chW*P[0]*(k||1)),off=-HD.rimD*HD.rimS*P[4];hdDecal(HD.dynB,'blob2',hdBlob2(),cx+off,cz,w*(1+HD.rimS*.12),w*P[1],8,5,20,255);}
 function hdPickAdd(id,fx,fz,h,w,tx,ty){if(HD.pkn>=160)return;const p=HD.pt;h2Proj(p,HD.mats.vp,fx,0,fz);const x0=p[0],y0=p[1];h2Proj(p,HD.mats.vp,fx+w/2,h,fz);const o=HD.pkn++*7,K=HD.pk;K[o]=x0-(p[0]-x0);K[o+1]=y0;K[o+2]=p[0];K[o+3]=p[1];K[o+4]=tx;K[o+5]=ty;K[o+6]=id;}
 function hdActors(m,now,ts){const B=HD.dyn,BB=HD.dynB,BA=HD.dynA,V=HD.S.V,still=gfxStill();HD.pkn=0;
   // the hero
   const lid=leaderId(),t=TPL[lid],view=WS.dir==='u'?'back':WS.dir==='d'?'front':'side',lk=heroLook(lid),frame=walkFrame(view,!!WS.mv,now);
   const hc=walkerCanvas(lid+lookKey(lid),lk,t.el,lid,view,frame),hx0=Math.round(WS.px)+8,hz=WS.py+12.5;
-  hdShadow(hx0,hz+1.5,18);HD.heroQ=hdBill(B,hc,hc,hx0,-1.5*V+(frame&&view==='side'?1*V:0),hz,view==='side'&&WS.face==='l',1,255,255,255,255,16);HD.heroH=hc.height*V;
-  try{const col=typeof stickGlowOf==='function'&&stickGlowOf(G.roster[G.party[0]]);if(col){const p=.5+.5*Math.sin(ts/260),c=hdRgb(col);hdDecal(BB,'ring',hdRing(),hx0,hz+1,20+p*4,8+p*2,c[0]*255,c[1]*255,c[2]*255,(.3+.3*p)*255);}}catch(e){}
+  // v0.5.8: every character goes through hdChar (scene scale, lit like the scene, rim light) with a contact shadow under its feet
+  const sp=HD2D.spr.sc;HD.heroQ=hdChar(B,hc,hx0,(-2.5+(frame&&view==='side'?1:0))*sp*V,hz,view==='side'&&WS.face==='l',255,16);HD.heroH=HD.chH;hdShadowC(hx0,hz+1);
+  try{const col=typeof stickGlowOf==='function'&&stickGlowOf(G.roster[G.party[0]]);if(col){const p=.5+.5*Math.sin(ts/260),c=hdRgb(col);hdDecal(BB,'ring',hdRing(),hx0,hz+1,(20+p*4)*.8,(8+p*2)*.8,c[0]*255,c[1]*255,c[2]*255,(.3+.3*p)*255);}}catch(e){}
   if(tileAt(m,WS.x,WS.y)===','&&!WS.mv&&m.kind!=='dungeon'){const gc=hdGrassS(m);hdBill(B,gc,gc,WS.x*TS+8,-1*V,WS.y*TS+15,false,1,255,255,255,255,0);}
   // townsfolk and gates
   m.npcs.forEach((n,i)=>{let nx=n.x*TS,ny=n.y*TS,moving=false;if(n.mv){const p=Math.min(1,(now-n.mv.t0)/420);nx=(n.mv.fx+(n.x-n.mv.fx)*p)*TS;ny=(n.mv.fy+(n.y-n.mv.fy)*p)*TS;moving=p<1;}
     if(Math.abs(nx-HD.cam.x)>420||Math.abs(ny-HD.cam.z)>520)return;
     if(n.portal){const ph=ts/320+n.x,st=((Math.round(ph/(Math.PI*2/24))%24)+24)%24,key='portal:'+n.key+':'+st;let c=H2F[key];
       if(!c){c=H2F[key]=mkCv(16,20);drawPortal(c.getContext('2d'),0,3,Object.assign({},n,{x:0}),st*(Math.PI*2/24)*320);}
-      hdBill(B,key,c,nx+8,-1*V,ny+14,false,1,255,255,255,255,2|16);hdPickAdd(i,nx+8,ny+14,20*V,16,n.x,n.y);return;}
+      hdBill(B,key,c,nx+8,-1*V,ny+14,false,1,255,255,255,255,2);hdPickAdd(i,nx+8,ny+14,20*V,16,n.x,n.y);return;}
     const v=n.view||'front',fm=moving?walkFrame(v,true,now):0,c=walkerCanvas('npc:'+n.name+m.id,n.look,['light'],null,v,fm),bob=moving||still?0:Math.floor(now/700+n.hx)%2;
-    hdShadow(nx+8,ny+14,16);hdBill(B,c,c,Math.round(nx)+8,-1.5*V,ny+12.5,v==='side'&&n.face==='l',1,255,255,255,255,16);hdPickAdd(i,nx+8,ny+12.5,c.height*V,c.width,n.x,n.y);});
+    hdChar(B,c,Math.round(nx)+8,-2.5*sp*V,ny+12.5,v==='side'&&n.face==='l',255,16);hdShadowC(Math.round(nx)+8,ny+13.5);hdPickAdd(i,nx+8,ny+12.5,Math.max(HD.chH,22*V),Math.max(HD.chW,16),n.x,n.y);});
   // bounty elites, lost wayfarers, roaming legends
   dynActors(m).forEach(a=>{const fx=a.x*TS+8,fz=a.y*TS+12.5,bob=still?0:Math.floor(now/450)%2;
     if(a.type==='legend'){const g=.5+.5*Math.sin(ts/240);hdDecal(BB,'glow',hdGlowS(),fx,fz+1,30,12,255,215,90,(.25+.3*g)*255);
       const c=a.mon?imgOf('mapmon:'+MON[a.mon].art,()=>monCanvas(MON[a.mon].art)):walkerCanvas('leg:'+TPL[a.q.hero].id,TPL[a.q.hero].look,TPL[a.q.hero].el,TPL[a.q.hero].id,'front',0);
-      hdBill(B,c,c,fx,(bob-1)*V,fz,!!a.mon,1,255,255,255,255,16);hdBill(B,'pipg',hdPip('#ffd24a'),fx,(c.height+4+bob)*V,fz,false,1,255,255,255,255,4);hdPickAdd(-1,fx,fz,c.height*V,c.width,a.x,a.y);return;}
+      hdChar(B,c,fx,(bob*.6-(a.mon?1:2.5)*sp)*V,fz,!!a.mon,255,16);hdShadowC(fx,fz+1);hdBill(B,'pipg',hdPip('#ffd24a'),fx,HD.chH+(3+bob)*V,fz,false,1,255,255,255,255,4);hdPickAdd(-1,fx,fz,Math.max(HD.chH,22*V),Math.max(HD.chW,16),a.x,a.y);return;}
     if(a.type==='elite'){const mo=MON[a.b.mon],c=imgOf('mapmon:'+mo.art,()=>monCanvas(mo.art)),p=.5+.5*Math.sin(ts/200);hdDecal(BB,'glow',hdGlowS(),fx,fz+1,30,12,255,60,60,(.3+.3*p)*255);
-      hdShadow(fx,fz+1,18);hdBill(B,c,c,fx,(bob-1)*V,fz,true,1,255,255,255,255,16);hdBill(B,'mkr',hdMark('#ff4a4a'),fx,(c.height+3+bob)*V,fz,false,1,255,255,255,255,4);hdPickAdd(-1,fx,fz,c.height*V,c.width,a.x,a.y);return;}
-    const tt=TPL[a.q.hero],c=walkerCanvas('wand:'+tt.id,tt.look,tt.el,tt.id,'front',0);hdShadow(fx,fz+1,16);hdBill(B,c,c,fx,(bob-1.5)*V,fz,false,1,255,255,255,255,16);
-    hdBill(B,'pipy',hdPip('#ffe08a'),fx,(c.height+3)*V,fz,false,1,255,255,255,255,4);hdPickAdd(-1,fx,fz,c.height*V,c.width,a.x,a.y);});
+      hdChar(B,c,fx,(bob*.6-sp)*V,fz,true,255,16);hdShadowC(fx,fz+1);hdBill(B,'mkr',hdMark('#ff4a4a'),fx,HD.chH+(3+bob)*V,fz,false,1,255,255,255,255,4);hdPickAdd(-1,fx,fz,Math.max(HD.chH,22*V),Math.max(HD.chW,16),a.x,a.y);return;}
+    const tt=TPL[a.q.hero],c=walkerCanvas('wand:'+tt.id,tt.look,tt.el,tt.id,'front',0);hdChar(B,c,fx,(bob*.6-2.5*sp)*V,fz,false,255,16);hdShadowC(fx,fz+1);
+    hdBill(B,'pipy',hdPip('#ffe08a'),fx,HD.chH+3*V,fz,false,1,255,255,255,255,4);hdPickAdd(-1,fx,fz,Math.max(HD.chH,22*V),Math.max(HD.chW,16),a.x,a.y);});
   // the Scourge or Calamity on its rune circle, or its Echo
   const dun=m.kind==='dungeon';
   const echoUp=dun&&m.bossAt&&!m.safe&&G.cleared[m.s]&&typeof storyEchoUp==='function'&&storyEchoUp(m.s);
   if(dun&&m.bossAt&&!m.safe&&(!G.cleared[m.s]||echoUp)){const def=guardianDef(bossKeyFor(m.s)),[bx,by]=m.bossAt;
     const c=echoUp?imgOf('mapecho:'+def.art,()=>monCanvas(MART['echo_'+def.art]?'echo_'+def.art:def.art)):imgOf('mapboss:'+def.art,()=>monCanvas(def.art)),bob=still?0:Math.sin(now/420)*1.5;
-    hdShadow(bx*TS+8,by*TS+13,26);const D=DTH(m),ac=hdRgb(D.acc);hdDecal(BA,'glow',hdGlowS(),bx*TS+8,by*TS+9,44,26,ac[0]*255,ac[1]*255,ac[2]*255,110);
-    hdBill(echoUp?BB:B,c,c,bx*TS+8,(bob-1)*V,by*TS+12,true,1,255,255,255,echoUp?Math.round((.72+.18*Math.sin(ts/300))*255):255,16);hdPickAdd(-1,bx*TS+8,by*TS+12,c.height*V,c.width,bx,by);}
+    const D=DTH(m),ac=hdRgb(D.acc);hdDecal(BA,'glow',hdGlowS(),bx*TS+8,by*TS+9,44*.8,26*.8,ac[0]*255,ac[1]*255,ac[2]*255,110);
+    hdChar(echoUp?BB:B,c,bx*TS+8,(bob*.6-sp)*V,by*TS+12,true,echoUp?Math.round((.72+.18*Math.sin(ts/300))*255):255,16);hdShadowC(bx*TS+8,by*TS+13);hdPickAdd(-1,bx*TS+8,by*TS+12,Math.max(HD.chH,22*V),Math.max(HD.chW,16),bx,by);}
   // roaming foes in dungeons: their sprite, an elite ring, a faint sight cone, "!" while chasing
   if(dun&&m.roam&&typeof ROAM!=='undefined')m.roam.forEach(r=>{if(r.dead)return;let x=r.x*TS,y=r.y*TS;if(r.t0&&r.fx!=null){const p=Math.min(1,(now-r.t0)/(r.mode==='chase'?ROAM.chaseMs:ROAM.patrolMs));x=(r.fx+(r.x-r.fx)*p)*TS;y=(r.fy+(r.y-r.fy)*p)*TS;}
-    if(Math.abs(x-HD.cam.x)>420||Math.abs(y-HD.cam.z)>520)return;const img=imgOf('rm:'+MON[r.mon].art,()=>monCanvas(MON[r.mon].art)),sc=22/Math.max(img.width,img.height),bob=still?0:Math.floor(now/300+r.i)%2;
+    if(Math.abs(x-HD.cam.x)>420||Math.abs(y-HD.cam.z)>520)return;const img=imgOf('rm:'+MON[r.mon].art,()=>monCanvas(MON[r.mon].art)),bob=still?0:Math.floor(now/300+r.i)%2;
     const [a,b]=DIRV[r.dir],S2=ROAM.sight*TS,cx=x+8,cz=y+8,ch=r.mode==='chase';H2P.set([cx,.5,cz,cx+a*S2-b*S2/2,.5,cz+b*S2-a*S2/2,cx+a*S2+b*S2/2,.5,cz+b*S2+a*S2/2,cx,.5,cz]);
     BB.quad(H2P,-1,0,-1,0,ch?255:255,ch?90:230,ch?60:150,ch?46:26,0,1,0,4);
-    hdShadow(cx,y+13,14);if(r.elite)hdDecal(BB,'ring',hdRing(),cx,y+13,20,8,255,200,61,230);
-    hdBill(B,img,img,cx,(bob-1)*V,y+12,false,sc,255,255,255,255,16);if(ch)hdBill(B,'mkr',hdMark('#ff5a3a'),cx,(img.height*sc+4)*V,y+12,false,.7,255,255,255,255,4);});
+    if(r.elite)hdDecal(BB,'ring',hdRing(),cx,y+13,20,8,255,200,61,230);
+    hdChar(B,img,cx,(bob*.6-sp)*V,y+12,false,255,16);hdShadowC(cx,y+13);if(ch)hdBill(B,'mkr',hdMark('#ff5a3a'),cx,HD.chH+4*V,y+12,false,.7,255,255,255,255,4);});
   // mimic tells: a red glint in the keyhole now and then
   if(dun&&m.chests&&typeof isMimic==='function')m.chests.forEach(([x,y])=>{if(G.chests[m.id+':'+x+','+y]||!isMimic(m,x,y))return;if(Math.floor(now/700+x)%5===0)hdBill(B,'pipr',hdPip('#ff4a4a'),x*TS+8,7*V,(y+1)*TS+1.2,false,.4,255,255,255,255,4);});
   // gathering spots, shelves, fountains, braziers, wall torches, windmill sails
@@ -401,10 +439,10 @@ function hdActors(m,now,ts){const B=HD.dyn,BB=HD.dynB,BA=HD.dynA,V=HD.S.V,still=
   (HD.S.smoke||[]).forEach((s,i)=>{for(let k=0;k<4;k++){const p=still?(k/4+.1):((ts/1600+k/4+i*.37)%1),r=1+Math.floor(p*3),dx=Math.sin(p*6+i)*3+p*6;
     H2P.set([s[0]+dx-r,s[1]+(p*26+r)*V,s[2],s[0]+dx+r,s[1]+(p*26+r)*V,s[2],s[0]+dx+r,s[1]+(p*26-r)*V,s[2],s[0]+dx-r,s[1]+(p*26-r)*V,s[2]]);BB.quad(H2P,-1,0,-1,0,225,225,235,Math.round(120*(1-p)),0,.45,.89,0);}});}
 // every light near the view becomes a soft disc in the light map (flicker and day/night weight in its colour); no allocation
-function hdLmAdd(x,z,r,cr,cg,cb){if(HD.lmn>=HD2D.lmMax)return;const R=HD.lmR,v=HD.lmv,o=HD.lmn++*28;
+function hdLmAdd(x,z,r,cr,cg,cb){if(HD.lmn>=HD2D.lmMax)return;const R=HD.lmR,v=HD.lmv,W=HD.lw,j=HD.lmn*4,o=HD.lmn++*28;W[j]=x;W[j+1]=z;W[j+2]=r;W[j+3]=cr*.3+cg*.59+cb*.11;// v0.5.8: kept in world units too, for the characters' rim side
   const X0=(x-r-R[0])/R[2]*2-1,X1=(x+r-R[0])/R[2]*2-1,Z0=(z-r-R[1])/R[3]*2-1,Z1=(z+r-R[1])/R[3]*2-1;
   v[o]=X0;v[o+1]=Z0;v[o+2]=-1;v[o+3]=-1;v[o+7]=X1;v[o+8]=Z0;v[o+9]=1;v[o+10]=-1;v[o+14]=X1;v[o+15]=Z1;v[o+16]=1;v[o+17]=1;v[o+21]=X0;v[o+22]=Z1;v[o+23]=-1;v[o+24]=1;
-  for(let k=0;k<4;k++){v[o+k*7+4]=cr;v[o+k*7+5]=cg;v[o+k*7+6]=cb;}}
+  for(let k=0;k<4;k++){v[o+k*7+4]=cr*.5;v[o+k*7+5]=cg*.5;v[o+k*7+6]=cb*.5;}}// v0.5.8: stored at half (headroom), the scene shader reads it x2
 const H2_FL=[.06,.14,.03,.05,.04,.08,.14,0];
 function hdLights(m,ts,q,o){const L=HD.S.L,n=L?L.length/8:0,R=HD.lmR,still=gfxStill(),dun=m.kind==='dungeon';HD.lmn=0;
   for(let i=0;i<n;i++){const o8=i*8,x=L[o8],z=L[o8+2],r=L[o8+3];if(x+r<R[0]||x-r>R[0]+R[2]||z+r<R[1]||z-r>R[1]+R[3])continue;
@@ -412,7 +450,7 @@ function hdLights(m,ts,q,o){const L=HD.S.L,n=L?L.length/8:0,R=HD.lmR,still=gfxSt
     const fl=H2_FL[type]||.05;if(!still)w*=1+fl*(Math.sin(ts/(70+(x%23))+L[o8+1])+.6*Math.sin(ts/31+x));
     const k=w*HD2D.lightK;hdLmAdd(x,z,r,L[o8+4]*k,L[o8+5]*k,L[o8+6]*k);}
   // the hero's own little light: a lantern in dungeons, caves and dark realms, a faint one at night
-  if(o.pl>.01){const pc=o.plC;hdLmAdd(WS.px+8,WS.py+12,HD2D.heroLight*(.7+.3*o.pl),pc[0]*o.pl,pc[1]*o.pl,pc[2]*o.pl);}
+  HD.plR=0;if(o.pl>.01){const pc=o.plC;HD.plR=HD2D.heroLight*(.7+.3*o.pl);hdLmAdd(WS.px+8,WS.py+12,HD.plR,pc[0]*o.pl,pc[1]*o.pl,pc[2]*o.pl);}
   if(dun&&m.bossAt&&!m.safe&&(!G.cleared[m.s]||(typeof storyEchoUp==='function'&&storyEchoUp(m.s)))){const D=hdRgb(DTH(m).acc);hdLmAdd(m.bossAt[0]*TS+8,m.bossAt[1]*TS+8,110,D[0]*.8,D[1]*.8,D[2]*.8);}
   try{const col=typeof stickGlowOf==='function'&&stickGlowOf(G.roster[G.party[0]]);if(col){const c=hdRgb(col);hdLmAdd(WS.px+8,WS.py+12,60,c[0]*.5,c[1]*.5,c[2]*.5);}}catch(e){}
   return HD.lmn;}
@@ -434,40 +472,52 @@ function hdDrawDyn(gl,i,bt,full){if(!bt.n)return;gl.bindBuffer(gl.ARRAY_BUFFER,H
 function hdPost(gl,P,prog,src,dst,w,h){gl.bindFramebuffer(gl.FRAMEBUFFER,dst?dst.f:null);gl.viewport(0,0,w,h);gl.useProgram(prog.p);gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,src.t);gl.uniform1i(prog.u.uT,0);}
 function hdFS(gl){gl.bindBuffer(gl.ARRAY_BUFFER,HD.fs);gl.vertexAttribPointer(0,2,gl.FLOAT,false,8,0);gl.drawArrays(gl.TRIANGLES,0,3);}
 // one pass over the whole scene into the bound target: static meshes, characters, then blended shadows, glows and smoke
-function hdScene(gl,S,o,now,still,full){const P=HD.P,u=P.scene.u,fr=still?0:Math.floor(now/520)%2,dm=HD.dbg||31;
+function hdScene(gl,S,o,now,still,full){const P=HD.P,u=P.scene.u,uc=P.char.u,fr=still?0:Math.floor(now/520)%2,dm=HD.dbg||31;
   gl.clearColor(o.gfog[0],o.gfog[1],o.gfog[2],1);gl.clearDepth(1);gl.depthMask(true);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
-  gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);gl.disable(gl.BLEND);gl.uniform1i(u.uMode,0);gl.uniform4fv(u.uXr,HD.xr);
+  gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);gl.disable(gl.BLEND);
   // near things first, the ground last: the depth test then skips the ground under walls, roofs, props and characters
-  gl.bindTexture(gl.TEXTURE_2D,HD.atl.t);hdDrawDyn(gl,0,HD.dyn,full);
+  gl.bindTexture(gl.TEXTURE_2D,HD.atl.t);gl.useProgram(P.char.p);gl.uniform1i(uc.uMode,0);hdDrawDyn(gl,4,HD.dynC,full);
+  gl.useProgram(P.scene.p);gl.uniform1i(u.uMode,0);gl.uniform4fv(u.uXr,HD.xr);hdDrawDyn(gl,0,HD.dyn,full);
   if(S.tcd){gl.bindTexture(gl.TEXTURE_2D,S.tcd);if(dm&8)hdDrawChunks(gl,S.mcd);if(dm&4)hdDrawChunks(gl,S.mbl);}
   gl.bindTexture(gl.TEXTURE_2D,fr?S.tg1:S.tg0);if(dm&2){hdDrawChunks(gl,S.mst);hdDrawMesh(gl,S.mmisc);}if(dm&1)hdDrawChunks(gl,S.mg);
   gl.depthMask(false);gl.enable(gl.BLEND);gl.uniform1i(u.uMode,2);gl.uniform4f(u.uXr,0,0,1,0);
+  // v0.5.8: shadows, glows and rings live in the sprite atlas. Until v0.5.7 this pass still had the ground texture bound, so every soft
+  // shadow came out as a solid dark rectangle under the feet (opaque ground texels), the "hard dark bar" under characters
+  gl.bindTexture(gl.TEXTURE_2D,HD.atl.t);
   gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);hdDrawDyn(gl,1,HD.dynB,full);
   gl.blendFunc(gl.SRC_ALPHA,gl.ONE);hdDrawDyn(gl,2,HD.dynA,full);
+  gl.useProgram(P.char.p);gl.uniform1i(uc.uMode,2);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);hdDrawDyn(gl,5,HD.dynCB,full);// the Echo, see-through
   // the hero shows through whatever stands in front of him as a soft silhouette
-  if(full&&HD.heroQ>=0){gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);gl.depthFunc(gl.GREATER);gl.uniform1i(u.uMode,1);gl.uniform4f(u.uSil,.98,.9,.62,.5);
-    gl.bindBuffer(gl.ARRAY_BUFFER,HD.vb[0]);h2Attribs(gl);gl.drawElements(gl.TRIANGLES,6,gl.UNSIGNED_SHORT,HD.heroQ*12);gl.depthFunc(gl.LEQUAL);}
-  gl.depthMask(true);gl.disable(gl.BLEND);gl.disable(gl.DEPTH_TEST);}
+  if(full&&HD.heroQ>=0){gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);gl.depthFunc(gl.GREATER);gl.uniform1i(uc.uMode,1);gl.uniform4f(uc.uSil,.98,.9,.62,.5);
+    gl.bindBuffer(gl.ARRAY_BUFFER,HD.vb[4]);h2Attribs(gl);gl.drawElements(gl.TRIANGLES,6,gl.UNSIGNED_SHORT,HD.heroQ*12);gl.depthFunc(gl.LEQUAL);}
+  gl.depthMask(true);gl.disable(gl.BLEND);gl.disable(gl.DEPTH_TEST);gl.useProgram(P.scene.p);}
 // Frame: light map, the scene straight onto the canvas (graded per pixel), a copy of it shrunk and blurred (the depth of field and bloom
 // source), then one blended pass lays the blur over the top and bottom of the view (tilt shift) with bloom, light shafts and the vignette.
 // One pass over the geometry per frame, culled to the chunks in view; nothing full size is rendered off screen.
 function hdFrame(now){const m=WS.m,gl=HD.gl,q=hdTierQ(),still=gfxStill(),ts=still?0:now;
   if(HD.dirty||HD.map!==m||!HD.S||HD.baseRef!==WS.base[0]){hdBake(m);HD.baseRef=WS.base[0];}
   const sz=hdSize(q);hdCamera(m,now,sz,q);const o=hdLook(m,now),S=HD.S;
-  HD.dyn.n=0;HD.dynB.n=0;HD.dynA.n=0;hdActors(m,now,ts);const nl=hdLights(m,ts,q,o);HD.dynUp=0;
+  HD.px=q.px||1;const nl=hdLights(m,ts,q,o);HD.dyn.n=0;HD.dynB.n=0;HD.dynA.n=0;HD.dynC.n=0;HD.dynCB.n=0;hdActors(m,now,ts);HD.dynUp=0;// v0.5.8: lights first, the characters read them
   hdDrawLM(gl,nl,o);
   const P=HD.P,sp=P.scene,u=sp.u,RT=HD.rt;
-  gl.useProgram(sp.p);for(let i=0;i<4;i++)gl.enableVertexAttribArray(i);gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,HD.ib);gl.disable(gl.CULL_FACE);
+  for(let i=0;i<4;i++)gl.enableVertexAttribArray(i);gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,HD.ib);gl.disable(gl.CULL_FACE);
+  for(const pr of [P.char,sp]){const u=pr.u;gl.useProgram(pr.p);// v0.5.8: the same uniforms for the scene and the character program
   gl.uniformMatrix4fv(u.uVP,false,HD.mats.vp);gl.uniform3f(u.uO,HD.cam.x,0,HD.cam.z);
   gl.uniform3fv(u.uAmb,o.amb);gl.uniform3fv(u.uSunC,o.sun);gl.uniform3fv(u.uSunD,o.sd);
   const R=HD.lmR;gl.uniform4f(u.uLR,R[0],R[1],1/R[2],1/R[3]);
   gl.uniform3f(u.uCam,HD.eye[0]-HD.cam.x,HD.eye[1],HD.eye[2]-HD.cam.z);gl.uniform3fv(u.uFogC,o.fog);
-  gl.uniform3f(u.uFog,HD.D*HD2D.fogStart,HD.D*HD2D.fogEnd,o.fogA);gl.uniform1f(u.uEmis,o.emis);gl.uniform1f(u.uAct,m.kind==='dungeon'?HD2D.actMin.dun:HD2D.actMin.out*Math.min(1,o.emis+.2));
+  gl.uniform3f(u.uFog,HD.D*HD2D.fogStart,HD.D*HD2D.fogEnd,o.fogA);gl.uniform1f(u.uEmis,o.emis);gl.uniform1f(u.uAct,m.kind==='dungeon'?HD2D.spr.act.dun:HD2D.spr.act.out*Math.min(1,o.emis+.2));
+  // v0.5.8 characters: pre-grade softening, light map spread, rim strength and colour (the sun or moon; lamps add their own colour in the
+  // shader), the ambient's hue for the readability floor, one atlas texel (the rim reads the neighbour toward the light)
+  {const P=HD2D.spr,a=o.amb,al=Math.max(.05,a[0]*.3+a[1]*.59+a[2]*.11),sn=o.sun,sl=Math.max(.05,sn[0]*.3+sn[1]*.59+sn[2]*.11),rk=Math.min(1,sl*2.2);
+    gl.uniform4f(u.uSpr,P.sat,P.con,P.spread,P.rim);gl.uniform1f(u.uSpZ,P.spread);gl.uniform3f(u.uRimC,sn[0]/sl*.42*rk,sn[1]/sl*.42*rk,sn[2]/sl*.42*rk);
+    gl.uniform3f(u.uAmbN,a[0]/al,a[1]/al,a[2]/al);gl.uniform1f(u.uAtl,1/HD.atl.s);
+    const pc=o.plC,pl=HD.plR?o.pl:0;gl.uniform3f(u.uPL,WS.px+8-HD.cam.x,WS.py+12-HD.cam.z,HD.plR||1);gl.uniform3f(u.uPLC,pc[0]*pl,pc[1]*pl,pc[2]*pl);}// uPL relative to uO, like vW
   hdGrade(o);gl.uniformMatrix3fv(u.uGM,false,HD.gm);gl.uniform3fv(u.uGB,HD.gb);
   // x-ray: props and walls in front of the hero thin out around him
   {const p=HD.pt;h2Proj(p,HD.mats.vp,WS.px+8,(HD.heroH||24)*.45,WS.py+12);const rr=(m.kind==='dungeon'?HD2D.xray.dun:HD2D.xray.out)*WS.scale*HD2D.zoom/(sz.ch/2);
     HD.xr[0]=p[0];HD.xr[1]=p[1];HD.xr[2]=HD.asp;HD.xr[3]=rr*rr;gl.uniform1f(u.uXd,WS.py+13-HD.cam.z);HD.heroNdc[0]=p[0];HD.heroNdc[1]=p[1];}
-  gl.uniform1i(u.uTex,0);gl.uniform1i(u.uLM,2);gl.activeTexture(gl.TEXTURE2);gl.bindTexture(gl.TEXTURE_2D,RT.lm.t);gl.activeTexture(gl.TEXTURE0);
+  gl.uniform1i(u.uTex,0);gl.uniform1i(u.uLM,2);}gl.activeTexture(gl.TEXTURE2);gl.bindTexture(gl.TEXTURE_2D,RT.lm.t);gl.activeTexture(gl.TEXTURE0);
   // graded fog colour for the clear (what shows past everything)
   {const g=o.gfog,f=o.fog,M=HD.gm,B=HD.gb;for(let i=0;i<3;i++)g[i]=Math.max(0,Math.min(1,M[i]*f[0]+M[3+i]*f[1]+M[6+i]*f[2]+B[i]));}
   const q1=RT.q1,q2=RT.q2,post=q.dof||q.bloom;
