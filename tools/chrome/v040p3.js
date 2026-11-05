@@ -7,7 +7,7 @@ await ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.
 await ev(()=>__A.ACT.menu());await wait(200);
 const top=await ev(()=>[...document.querySelectorAll('#modal .mgrp .chip')].map(x=>x.textContent));
 chk('top row is Party Backpack Guides Records Quests Map Settings',JSON.stringify(top)===JSON.stringify(['Party','Backpack','Guides','Records','Quests','Map','Settings'])||JSON.stringify(top));
-const want={Party:['Party','Roster','Loadouts','Companions'],Backpack:['Equipment','Items'],Guides:['What next?','Lore','Foe types','Factions','Help'],Records:['Journey','Bestiary','Codex','Factions']};
+const want={Party:['Party','Roster','Loadouts','Companions'],Backpack:['Equipment','Items'],Guides:['What next?','Lore','Foe types','Guilds','Help'],Records:['Journey','Bestiary','Codex','Guilds']};
 for(const g of Object.keys(want)){
   await page.click(`#modal .mgrp .chip:has-text("${g}")`);await wait(150);
   const subs=await ev(()=>[...document.querySelectorAll('#modal .msub .chip')].map(x=>x.textContent));
@@ -122,7 +122,7 @@ const cl=await ev(()=>{const t=__A.CLK_LEN;return {t,ph:(c)=>0}});
 const lens=await ev(()=>{const A=__A;const o={};[0,200,520,540,600,700,830,880].forEach(c=>{A.G.clock=c;o[c]=A.clockPhase();});return o;});
 chk('the cycle is 900 steps with day, dusk, night, dawn in order',lens[0]==='day'&&lens[200]==='day'&&lens[520]==='dusk'&&lens[540]==='dusk'&&lens[600]==='night'&&lens[700]==='night'&&lens[830]==='dawn'&&lens[880]==='dawn'||JSON.stringify(lens));
 chk('each phase is about 50% longer than before (330/60/150/60 -> 495/90/225/90)',await ev(()=>{const P=__A.CLK_PH;return P[0][2]-P[0][1]===495&&P[1][2]-P[1][1]===90&&P[2][2]-P[2][1]===225&&P[3][2]-P[3][1]===90;}));
-const snap=async(clock)=>{await ev(([c])=>{const A=__A;A.G.clock=c;A.WS.lock=false;},[clock]);await wait(450);return await ev(()=>{const cv=document.querySelector('canvas');const x=cv.getContext('2d');const d=x.getImageData(0,0,cv.width,cv.height).data;let r=0,g=0,b=0,n=0,bright=0;for(let i=0;i<d.length;i+=16){r+=d[i];g+=d[i+1];b+=d[i+2];n++;if(d[i]+d[i+1]+d[i+2]>660)bright++;}return {r:r/n,g:g/n,b:b/n,bright:bright/n};});};
+const snap=async(clock)=>{await ev(([c])=>{const A=__A;A.G.clock=c;A.WS.lock=false;},[clock]);await wait(450);await ev(()=>{const T=__A.TR;if(T){T.k=1;T.from=null;}});await wait(120);return await ev(()=>{const cv=document.querySelector('canvas');const x=cv.getContext('2d');const d=x.getImageData(0,0,cv.width,cv.height).data;let r=0,g=0,b=0,n=0,bright=0;for(let i=0;i<d.length;i+=16){r+=d[i];g+=d[i+1];b+=d[i+2];n++;if(d[i]+d[i+1]+d[i+2]>660)bright++;}return {r:r/n,g:g/n,b:b/n,bright:bright/n};});};
 const day=await snap(100),dusk=await snap(540),night=await snap(700),dawn=await snap(855);
 chk('dusk looks different from day (warmer: red above blue)',dusk.r-dusk.b>day.r-day.b+8||JSON.stringify([day,dusk]));
 chk('dawn looks different from day and from night',Math.abs(dawn.r-day.r)>3&&dawn.r>night.r||JSON.stringify([day,dawn,night]));

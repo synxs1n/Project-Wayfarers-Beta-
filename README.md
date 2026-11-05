@@ -1,4 +1,4 @@
-# Project Aurelis: Wayfarers (Beta)
+# Wayfarers (Beta)
 
 Turn-based pixel art medieval fantasy RPG. Beta v0.4.6.
 
