@@ -152,3 +152,35 @@ const GFX_AUTO={start:'medium',windowMs:3000,down:45,up:57,gap:250};
 const GFX_PARA={px:4,titleMs:24000};
 // Camera pushes [zoom, ms]: crits, reactions, shield breaks, Limit Breaks.
 const GFX_CAM={crit:[1.035,360],react:[1.05,520],brk:[1.06,600],limit:[1.05,760]};
+
+// ===== v0.5.3 HD-2D battle stage (hdstage.js, hdspell.js) =====
+// Medium and High draw the battle stage with WebGL1 under the DOM unit layer: a perspective ground plane per backdrop, a blurred far
+// backdrop (depth of field), point lights (theme torches, lava, crystals, the moon, spells), bloom, colour grading by time of day and
+// weather, soft unit shadows. Low, no WebGL, a lost context or GFX.off keep the old 2D stage exactly. Per tier:
+// on: use the GL stage. mode: 'full' draws the units through GL too (lit, graded, bloomed, rim light) every frame; 'under' bakes the lit
+// stage once and draws it under the visible 2D unit canvas, redrawing only when shadows, lights or the shake change (much cheaper; sprites
+// are tinted in 2D, no parallax, torches and light shafts stand still, floor circles are drawn in the unit layer). res: backing pixels per CSS pixel (capped by the device pixel ratio). maxPx: cap on backing pixels.
+// lights: point lights per frame. shadows: soft unit shadows. decals: glowing floor circles (casting circles, boss runes, ripples).
+// bloomK: bloom strength (0 = no bloom pass). dof: far backdrop and floor blur (0 = none). rays: light shafts (0 = off). rim: rim light on
+// units from the key light. spell: element spell effects (0 none, 1 some, 2 more; also capped by GFX_Q.parts). props: far scenery props.
+const HD_BATTLE={
+  low:   {on:0},
+  medium:{on:1,mode:'under',res:1,maxPx:520000,lights:4,shadows:6, decals:3,bloomK:.55,dof:1,  rays:1,rim:1,spell:1,props:1},
+  high:  {on:1,res:2,  maxPx:2300000,lights:8,shadows:12,decals:4,bloomK:.7, dof:1.2,rays:1,rim:1,spell:2,props:1}};
+// The floor: persp is the perspective offset as a share of the floor height (smaller = deeper perspective), tile is the world size of
+// one floor texture tile in logical px, sq is the depth squash of floor circles and shadows, focus is the sharp band [top, bottom] as a
+// share of the floor (units stand there; above it the floor blurs toward the horizon, below it a little toward the bottom edge).
+const HD_FLOOR={persp:.32,tile:96,sq:.34,focus:[.12,.9],fog:.55};
+// Colour grade per time of day (outdoor battles) and weather: gain (rgb multiplier), lift (rgb added), sat, contrast, amb (light on units,
+// rgb), key (key light colour), vig (vignette). Indoor stages (caves, halls, boss stages) use `indoor`.
+const HD_LOOK={
+  day:  {gain:[1.04,1.02,.98],lift:[0,0,.01],sat:1.1,con:1.08,amb:[1,1,.98],key:[1,.95,.82],vig:.32,sky:[.82,.9,1.08]},
+  dusk: {gain:[1.08,.9,.8],lift:[.02,0,.03],sat:1.04,con:1.08,amb:[1,.86,.78],key:[1,.62,.38],vig:.34,sky:[.9,.7,.86]},
+  night:{gain:[.74,.8,1],lift:[0,.01,.045],sat:.86,con:1.08,amb:[.86,.9,1.04],key:[.62,.72,1],vig:.42,sky:[.7,.75,1]},
+  dawn: {gain:[1.02,.92,.92],lift:[.02,.01,.03],sat:1,con:1.05,amb:[.98,.9,.92],key:[1,.78,.62],vig:.3,sky:[.92,.86,1.02]},
+  indoor:{gain:[.92,.9,.92],lift:[.01,0,.02],sat:1.02,con:1.1,amb:[.84,.82,.86],key:[1,.8,.6],vig:.38},
+  wx:{rain:{gain:[.82,.86,.94],sat:.82},storm:{gain:[.7,.74,.86],sat:.75},fog:{gain:[.92,.94,.96],sat:.7,fog:.5},snow:{gain:[.98,1,1.06],sat:.88},
+      blizzard:{gain:[.9,.95,1.05],sat:.75,fog:.35},sand:{gain:[1.04,.94,.78],sat:.85,fog:.3},heat:{gain:[1.08,.96,.86],sat:1.05},
+      ashfall:{gain:[.86,.8,.78],sat:.8,fog:.2},aurora:{gain:[.92,1,1.04],sat:1.1},starfall:{gain:[.9,.9,1.04],sat:1.05}}};
+// Camera pushes [zoom, ms] for big element hits (weak or crit) and every Limit Break hit, on top of GFX_CAM (GL stage only).
+const HD_CAM={big:[1.04,480],limit:[1.07,900]};

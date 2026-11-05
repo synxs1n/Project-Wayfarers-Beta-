@@ -129,10 +129,14 @@ function battleFrame(now){
   const ctx=cv.getContext('2d');ctx.imageSmoothingEnabled=false;
   const W=BL.W,H=BL.H,dt=Math.min(50,now-(BV.last||now));BV.last=now;
   let sx=0,sy=0;if(BV.shake){const p=(now-BV.shake.t)/BV.shake.life;if(p>=0&&p<1){sx=Math.round((Math.random()-.5)*2*BV.shake.amp*(1-p));sy=Math.round((Math.random()-.5)*2*BV.shake.amp*(1-p));}else if(p>=1)BV.shake=null;}
+  BV.sx=sx;BV.sy=sy;
+  // v0.5.3: with the HD-2D stage (hdstage.js) the backdrop is drawn in WebGL under this canvas, which then only holds units and effects
+  if(BV.glStage)ctx.clearRect(0,0,W,H);
   ctx.save();ctx.translate(sx,sy);
-  const th=battleTheme();ctx.drawImage(bgStatic(th,W,H),0,0);
+  if(BV.glStage&&BV.glUnder)BV.glUnder(ctx,W,H,now);
+  const th=battleTheme();if(!BV.glStage){ctx.drawImage(bgStatic(th,W,H),0,0);
   // v0.4.1 1.5: indoor (d_) backdrops have no sky, so no drifting clouds, butterflies or sea glints
-  if(!th.startsWith('d_'))bgAnim(ctx,th,W,H,now);
+  if(!th.startsWith('d_'))bgAnim(ctx,th,W,H,now);}
   if(B.banner&&B.banner.t!==BV.lastBanner){BV.lastBanner=B.banner.t;BV.flash={t:now,life:160,col:'rgba(255,255,255,.35)'};}
   // detect fresh actions
   B.en.concat(B.front,B.back).forEach(u=>{if(u.actT&&u.actT!==u._act){u._act=u.actT;onAction(u,now);}});
@@ -176,12 +180,14 @@ function drawUnit(ctx,u,b,now,tgMode){
   if(h>=0&&h<320&&!lying){x+=Math.round((1-h/320)*4)*-dir+(Math.floor(h/40)%2?1:-1)*(h<200?1:0);white=white||(h<90?1:0);}
   // break stagger
   if(u.broken&&u.hp>0)x+=Math.floor(now/90)%2;
-  const c=spriteOf(u,walk);
+  const c0=spriteOf(u,walk),c=BV.tint?BV.tint(c0):c0;// v0.5.3: the GL stage (Medium) tints sprites to the light of the scene
   const breathe=!lying&&u.hp>0&&a>520&&Math.floor(now/(hero?620:760)+b.i*.5)%2===1;
   // shadow
   // v0.5.0 2.1: the shadow always sits on the ground plane (b.gy); flying foes hover above theirs with a gentle bob
   if(b.hov&&u.hp>0)y+=Math.round(Math.sin(now/320+b.i)*1.5);
-  ctx.fillStyle='rgba(10,6,24,.3)';const sw=Math.round(Math.min(b.w,40)*.4);ctx.beginPath();ctx.ellipse(x,b.gy!=null?b.gy+(y-b.y)*(b.hov?0:1):y,b.hov?Math.max(4,sw-2):sw,b.hov?2:3,0,0,7);ctx.fill();
+  u._gx=x;u._gt=now;u._ga=alpha;// v0.5.3: where this unit was drawn, for the GL stage's soft shadow
+  if(BV.glShadow)BV.glShadow(ctx,x,b.gy!=null?b.gy:b.y,b,alpha);
+  else if(!BV.glStage){ctx.fillStyle='rgba(10,6,24,.3)';const sw=Math.round(Math.min(b.w,40)*.4);ctx.beginPath();ctx.ellipse(x,b.gy!=null?b.gy+(y-b.y)*(b.hov?0:1):y,b.hov?Math.max(4,sw-2):sw,b.hov?2:3,0,0,7);ctx.fill();}// the GL stage draws a soft shadow instead
   ctx.globalAlpha=alpha;
   // casting aura
   if(a<520&&u.hp>0&&u.actKind&&u.actKind!=='phys'){const col=ELC[u.actEl]||(u.actKind==='heal'?'#7aff8a':'#fff6a0');const g=ctx.createRadialGradient(x,y-b.h*.45,2,x,y-b.h*.45,b.h*.7);g.addColorStop(0,col+'88');g.addColorStop(1,col+'00');ctx.fillStyle=g;ctx.fillRect(x-b.h,y-b.h*1.2,b.h*2,b.h*1.4);}
@@ -218,6 +224,8 @@ function drawUnit(ctx,u,b,now,tgMode){
     const pct=u._dh/u.S.mhp;ctx.fillStyle=hero?(pct<.25?'#e8504a':pct<.5?'#f2c93a':'#5ad06a'):'#e8504a';ctx.fillRect(bx,by,Math.round(bw*pct),2);
     if(hero&&limitOpen(u)){const lp=(u.lb||0)/100;ctx.fillStyle='#150b17';ctx.fillRect(bx-1,by+3,bw+2,3);ctx.fillStyle=lp>=1?(Math.floor(now/150)%2?'#c79bff':'#f1e4ff'):'#8a4be0';ctx.fillRect(bx,by+4,Math.round(bw*lp),1);}
     if(u.maxShield){for(let i=0;i<u.maxShield;i++){const px=bx+i*5,py=by+5;ctx.fillStyle='#150b17';ctx.fillRect(px,py,4,4);ctx.fillStyle=u.broken?'#5a3a3a':i<u.shield?'#ffd04a':'#4a4a5a';ctx.fillRect(px+1,py+1,2,2);}}
+    // v0.5.3: alpha 254 marks HUD pixels (bars and pips), so the GL stage leaves them unlit and out of the bloom
+    if(BV.glFull){ctx.save();ctx.globalCompositeOperation='destination-out';ctx.globalAlpha=1/255;ctx.fillRect(bx-1,by-1,Math.max(bw+2,(u.maxShield||0)*5+1),u.maxShield?10:hero?7:4);ctx.restore();}
     if(u.primed&&ELC[u.primed.el]){const ic=iconCv(u.primed.el),col=ELC[u.primed.el],pl=.5+.5*Math.sin(now/160);const mx=x+Math.round(b.w*.3),my=y-b.h+2+Math.round(Math.sin(now/260)*1);
       ctx.globalAlpha=.18+.22*pl;ctx.fillStyle=col;ctx.beginPath();ctx.ellipse(x,y-b.h*.45,b.w*.55+pl*3,b.h*.6+pl*3,0,0,7);ctx.fill();
       ctx.globalAlpha=.7+.3*pl;ctx.strokeStyle=col;ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(x,y-2,b.w*.5+pl*3,5+pl,0,0,7);ctx.stroke();ctx.strokeStyle='#fff';ctx.lineWidth=1;ctx.beginPath();ctx.ellipse(x,y-2,b.w*.5+pl*3,5+pl,0,0,7);ctx.stroke();
