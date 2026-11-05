@@ -925,3 +925,8 @@ em.dl.blunt{background:#7a5a3a}em.dl.piercing{background:#7a3a4a}em.dl.ranged{ba
 }
 @media (orientation:landscape) and (max-height:620px){.swgridwrap{display:block}.swgridwrap>.ptools,.swgridwrap>.ldstrip{display:inline-flex;vertical-align:middle;margin:0 8px 2px 0}.swgridwrap>.swlist{margin-bottom:2px}}
 .allq{margin:4px 0 8px}
+
+/* v0.5.0 1.4: the battle Back button stays pinned at the top of the command panel */
+.who.cmdhead{position:sticky;top:0;z-index:3;background:var(--wood);padding:2px 0 4px;margin:-2px 0 0}
+.who.cmdhead .cmdback{margin-left:auto;flex:0 0 auto;min-width:72px}
+.who.cmdhead .cmdback[disabled]{opacity:.45}

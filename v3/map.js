@@ -73,7 +73,10 @@ function drawMini(){const cv=document.getElementById('mmap');if(!cv)return;const
   const W=cv.width,H=cv.height,x=cv.getContext('2d'),sc=4,base=mapBase(m);x.imageSmoothingEnabled=false;x.fillStyle='#0a0710';x.fillRect(0,0,W,H);
   const ox=Math.round(W/2-(WS.x+.5)*sc),oy=Math.round(H/2-(WS.y+.5)*sc);x.drawImage(base,ox,oy,m.w*sc,m.h*sc);
   const vis=mapMarks(m).filter(o=>Math.abs(o.x-WS.x)<W/sc&&Math.abs(o.y-WS.y)<H/sc);drawMarks(x,m,vis,sc,ox,oy);drawPlayer(x,sc,W/2,H/2);}
-{const wu0=wkwUpdate;wkwUpdate=function(){wu0.apply(this,arguments);try{if(V.screen==='world'&&!document.getElementById('mmap')){const wv=document.querySelector('.wview');if(wv){wv.insertAdjacentHTML('beforeend','<canvas id="mmap" class="mmap" width="112" height="84" aria-hidden="true"></canvas>');}}drawMini();}catch(e){}};}
+// v0.5.0 1.6: the minimap no longer depends on the weather chip drawing cleanly (an unknown sky used to stop it), and every world render makes sure it is there
+function ensureMini(){try{if(V.screen==='world'&&!document.getElementById('mmap')){const wv=document.querySelector('.wview');if(wv){wv.insertAdjacentHTML('beforeend','<canvas id="mmap" class="mmap" width="112" height="84" aria-hidden="true"></canvas>');}}drawMini();}catch(e){}}
+{const wu0=wkwUpdate;wkwUpdate=function(){try{wu0.apply(this,arguments);}catch(e){try{wdLog('wkwUpdate: '+e.message);}catch(_){}}ensureMini();};}
+{const r0=render;render=function(){const r=r0.apply(this,arguments);if(V.screen==='world')ensureMini();return r;};}
 // ----- full map -----
 function legendKeys(L){const ks=[];L.forEach(o=>{const k=mapIcoKey(o);if((MAPICO_NAME[k]||MKN[k])&&!ks.includes(k))ks.push(k);});return ks;}
 function mMap(){const m=WS.m;if(!m)return '';const lbl=m.cave?m.name:m.archive?(m.hub||'The Archive'):m.kind==='town'?ZS(m.s).town:m.kind==='field'?ZS(m.s).n:ZS(m.s).dungeon;
