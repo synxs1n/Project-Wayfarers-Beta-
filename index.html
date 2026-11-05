@@ -1346,7 +1346,7 @@ html.rm .menter .panel,html.rm .pc.tg,html.rm .swc.sel{animation:none}
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.6.2";const APP_BUILD="49a2d3386bab";
+(function(){const APP_VER="0.6.3";const APP_BUILD="348eb6a2dcd6";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -1558,6 +1558,16 @@ const SMITH_PLAN={minPct:.01};
 const BP_AWARE={arch:.18,el:.12,boss:1.5,dl:.04};
 // 3.6 boss readiness: how far below the boss the party average may be, and the potions and revives worth carrying
 const READY={lvGap:2,potions:4,revives:2};
+// v0.6.3 Best Party formations (party3.js). Role balance outweighs raw level and gear:
+//   str: weight per hero of sqrt(power / the roster's best power), so a big level or gear lead only counts a little;
+//   weak/weakPen: below this share of the best power a hero costs weakPen x the shortfall (they would not hold up; not for Training);
+//   role: value of the 1st, 2nd, 3rd hero who fills each role (negative = too many), pr/de: the first Primer and Detonator;
+//   dup: cost of each extra hero of a class already in the six; dl: each delivery covered (piercing, blunt, ranged, magic); el: each element;
+//   boss: how much more the Boss ready formation values the boss's element and archetype (or the area's, once the boss is down);
+//   overlap: cost per hero shared with earlier formations (Fresh mix: Balanced; Rotation: all; Boss ready: none, it says when it matches Balanced);
+//   train: a hero this many levels or more below the roster's top level is a trainee; at most max trainees in a Training team.
+const BP6={str:.5,weak:.55,weakPen:1.6,role:{tank:[1,.15,-.4],heal:[1,.3,-.3],sup:[.35,-.05,-.2],dmg:[.4,.35,.12,0]},pr:.4,de:.4,dup:.28,dl:.08,el:.05,
+  boss:{el:3,arch:2,area:2.5},overlap:{boss:0,mix:.32,rot:.32},train:{gap:3,max:4}};
 // 3.9 Pork Chop Sandwiches handed over after the first boss victory, and how many it takes to walk back to town from a dungeon
 const PORK={firstBoss:2,toTown:2};
 
@@ -1667,13 +1677,14 @@ HD2D.spr={sc:2/3,sat:.86,con:.9,spread:9,rim:.75,act:{out:.3,dun:.34},shadow:[.8
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.6.2";const APP_BUILD="49a2d3386bab";
+const APP_VER="0.6.3";const APP_BUILD="348eb6a2dcd6";
 
 // =================== VERSION ===================
 // The one public version string. Patch (0.1.x) for fixes and balance, minor (0.x.0) for new systems.
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.6.3',['Best Party now offers several formations (Balanced, Boss ready, Fresh mix) chosen for role balance over raw level and gear, plus a Training team that brings lagging heroes along with a strong tank and healer. Catch up XP now measures against the highest level hero on your whole roster. New Equip best: at camp fills out heroes outside the party from spare gear without touching the party. Legendary tags are now only for heroes with legend quests (Kaevan, Nikaris, Jaeson); other rare heroes show Epic.']],
  ['Beta v0.6.2',['Characters now belong to the HD-2D world and battle scenes: they take the light around them (sunlight, moonlight, a torch at their side, lava glow, spells), the scene\'s colour grade, fog in the distance and a soft rim light, and stand on a soft shadow instead of a hard dark bar. In the world they are drawn at a size that fits the rooms and streets. Fixed a pale line under the hero and tinted boxes around glows and shadows.']],
  ['Beta v0.6.1',['A clearer victory screen. A beaten foe you can tame now comes first, and pressing Continue without deciding asks whether to tame it or leave it behind. Gold, experience, materials and finds sit in a compact grid, and every hero in the fight shows the experience they gained, their catch up bonus, and any level up with points to spend. Wayfarers met on the road or won in a duel are no longer labelled Legendary; that label is kept for the legendary heroes. The save note no longer sits on the logo while a window is open.']],
  ['Beta v0.6.0',['A simpler title screen: Continue comes first when you have a journey, then New journey and the Daily Trial; Settings and Help sit in a small row, and Import, Recover and Redeem are grouped under Saves and codes. No more export reminder after every update: your saves are kept on your account, and Export is still in the Journey tab. Titles, banners and labels now use clean, smooth lettering instead of the pixel font, so numbers like 5 and S no longer look alike. Choosing a target no longer draws a box: the foes you can pick glow, with their name and a small hint above them.']],
@@ -8259,7 +8270,12 @@ const coin=()=>`<img class="ico coin" src="${coinURL()}" alt="">`;
 const sellVal=g=>Math.round((g.price0||g.price)*.4);
 const port=(id,cls)=>`<span class="port ${cls||''} ${TPL[id]&&TPL[id].mon?'mon':''}"><img src="${heroURL(id)}" alt="">${typeof ailBadge==='function'&&!/noail/.test(cls||'')?ailBadge(id):''}</span>`;
 // v0.3.5 2.4: legendary stamp = gold seal + LEGENDARY banner, used on the sheet, roster card, codex entry and battle detail panel
-const isLeg=id=>!!(TPL[id]&&(TPL[id].src==='L'||(CLS[TPL[id].cls]||{}).legend));
+// v0.6.3: "Legendary" belongs only to the legend heroes with their own legend quests (LEGEND_IDS). Rare tavern visitors (src r*),
+// Scourge gifts (g*) and the special Archive hero (x) are tagged "Epic" instead (isEpic, epicTag; styles in party3.js).
+const isLeg=id=>!!(TPL[id]&&LEGEND_IDS.includes(id));
+const isEpic=id=>{const s=String((TPL[id]||{}).src||'');return !isLeg(id)&&!(TPL[id]||{}).mon&&(s[0]==='r'||s[0]==='g'||s==='x');};
+const epicTag=()=>'<span class="epictag">EPIC</span>';
+const heroTag=id=>isLeg(id)?legSeal(1)+'<span class="legtag">LEGENDARY</span>':isEpic(id)?epicTag():'';
 const legSeal=(sm)=>`<span class="legseal ${sm?'sm':''}" role="img" aria-label="Legendary"><svg viewBox="0 0 32 32" width="100%" height="100%" shape-rendering="crispEdges"><path d="M16 1l3 3 4-1 2 4 4 1-1 4 3 3-3 3 1 4-4 1-2 4-4-1-3 3-3-3-4 1-2-4-4-1 1-4-3-3 3-3-1-4 4-1 2-4 4 1z" fill="#150b17"/><path d="M16 3l2.5 2.5 3.5-.8 1.7 3.3 3.5.9-.8 3.5 2.6 2.6-2.6 2.6.8 3.5-3.5.9-1.7 3.3-3.5-.8L16 29l-2.5-2.5-3.5.8-1.7-3.3-3.5-.9.8-3.5L2.9 16l2.6-2.6-.8-3.5 3.5-.9 1.7-3.3 3.5.8z" fill="#f0b848"/><circle cx="16" cy="16" r="9" fill="#a8741a"/><circle cx="16" cy="16" r="7.4" fill="#ffd96a"/><path d="M16 9.5l1.9 4.1 4.4.5-3.3 3 .9 4.4-3.9-2.2-3.9 2.2.9-4.4-3.3-3 4.4-.5z" fill="#8a4be0" stroke="#150b17" stroke-width=".6"/></svg></span>`;
 const legBanner=()=>`<span class="legban">★ LEGENDARY ★</span>`;
 // v0.3.5 3.2: nature block for the hero sheet, and the pool line for cards/codex
@@ -8411,8 +8427,8 @@ function vStarter(){
 }
 function heroCard(id,sel,act,extra){
   const t=TPL[id],cls=CLS[t.cls],dual=t.el.length>1;
-  return `<${act?'button':'div'} class="card hero ${sel?'sel':''} ${dual?'dual':''} ${isLeg(id)?'leg':''}" ${act?`data-act="${act}" data-arg="${id}"`:''}>
-    ${isLeg(id)?legSeal(1)+'<span class="legtag">LEGENDARY</span>':''}${port(id,'big')}<div class="info"><b>${t.n}</b><small>${cls.n}</small><div class="els">${elChips(t.el)}</div>
+  return `<${act?'button':'div'} class="card hero ${sel?'sel':''} ${dual?'dual':''} ${isLeg(id)?'leg':isEpic(id)?'epic':''}" ${act?`data-act="${act}" data-arg="${id}"`:''}>
+    ${heroTag(id)}${port(id,'big')}<div class="info"><b>${t.n}</b><small>${cls.n}</small><div class="els">${elChips(t.el)}</div>
     <span class="trait" title="Each journey rolls one of these natures">${natPoolText(id)}</span></div>
     <p class="bio">${esc(t.bio)}</p><p class="mline">${masteryLine(id)}</p>${sigLine(id)}${extra||''}</${act?'button':'div'}>`;
 }
@@ -8625,7 +8641,7 @@ function mChar(id,edit){
   const L=LIMIT[t.cls],bonds=BONDS.filter(b=>b.a===id||b.b===id);
   const LST=(m.list||[]).filter(x=>G.roster[x]),li=LST.indexOf(id),nav=LST.length>1&&li>=0?`<div class="cnav"><button class="btn sm" data-act="charNav" data-arg="-1" aria-label="Previous hero">‹ Prev</button><small class="nums">${li+1} / ${LST.length}</small><button class="btn sm" data-act="charNav" data-arg="1" aria-label="Next hero">Next ›</button></div>`:'';
   return `<div class="modal"><div class="panel box wide charsheet ${isLeg(id)?'legsheet':''}">${nav}
-    ${isLeg(id)?`<div class="legstrip">${legSeal()}${legBanner()}${legSeal()}</div>`:''}<div class="mh"><div class="pbig"><img src="${heroURL(id)}" alt=""></div><div class="grow"><h2 class="cname">${esc(c.name)}${c.legacy?' <span class="cyc">Legacy</span>':''}</h2>${t.title?`<small class="ltitle">${esc(t.title)}</small>`:''}<small>${cls.n}, level ${c.lv}</small><div class="els">${elChips(t.el)}</div>
+    ${isLeg(id)?`<div class="legstrip">${legSeal()}${legBanner()}${legSeal()}</div>`:''}<div class="mh"><div class="pbig"><img src="${heroURL(id)}" alt=""></div><div class="grow"><h2 class="cname">${esc(c.name)}${c.legacy?' <span class="cyc">Legacy</span>':''}${isEpic(id)?' '+epicTag():''}</h2>${t.title?`<small class="ltitle">${esc(t.title)}</small>`:''}<small>${cls.n}, level ${c.lv}</small><div class="els">${elChips(t.el)}</div>
       ${natBlock(id,c)}<p class="bio">${esc(t.bio)}</p><p class="note nums">Battles together: ${btOf(c)} of ${PERSONAL_BT}</p>${classCard(t.cls)}<p class="mline">${masteryLine(id)}</p>${sigLine(id)}</div></div>
     <div class="xp">${c.lv>=LV_CAP?`<small>Level ${c.lv}: the cap. Nothing left to learn from XP, but every fight still pays.</small>`:`<small>XP ${fmt(c.xp)} / ${fmt(need(c.lv))}</small>${bar(c.xp,need(c.lv),'var(--gold)')}`}</div>
     <div class="stats tapstats">${[['hp',`${c.hp}/${S.mhp}`],['mp',`${c.mp}/${S.mmp}`],['atk',Math.round(S.atk)],['def',Math.round(S.def)],['mag',Math.round(S.mag)],['res',Math.round(S.res)],['spd',Math.round(S.spd)],['crit',Math.round(S.crit*100)+'%'],['eva',Math.round(S.eva*100)+'%'],['healP',Math.round(S.healP)]].map(([k,v])=>`<button class="stb" data-act="statInfo" data-arg="${k}" aria-label="What is ${STAT_INFO[k][0]}?">${STAT_INFO[k][0]} <b>${v}</b></button>`).join('')}</div>
@@ -9490,7 +9506,7 @@ function vCodex(){
   const byCls={};const cf=LC('codex'),fOn=cf.el!=='all'||cf.cl!=='all',keep=id=>C[id]?matchT('codex',TPL[id]):!fOn,rk=id=>TPL[id].n,order=a=>{const seen=a.filter(id=>C[id]),rest=a.filter(id=>!C[id]);const o={name:(x,y)=>rk(x).localeCompare(rk(y)),lv:(x,y)=>(C[y].lv||0)-(C[x].lv||0)||rk(x).localeCompare(rk(y)),el:(x,y)=>ELK.indexOf(TPL[x].el[0])-ELK.indexOf(TPL[y].el[0])||rk(x).localeCompare(rk(y))}[cf.s];return (o?seen.sort(o):seen).concat(rest);};
   order(ids.filter(keep)).forEach(id=>{const k=TPL[id].src==='L'?'_legend':TPL[id].cls;(byCls[k]=byCls[k]||[]).push(id);});
   const tile=id=>{const c=C[id];if(!c)return `<div class="btile unk"><img src="${heroURL(id)}" alt=""><b>???</b><span class="els"></span></div>`;
-    return `<button class="btile ${TPL[id].src==='x'?'g':''} ${isLeg(id)?'leg':''}" data-act="codex" data-arg="${id}">${isLeg(id)?legSeal(1)+'<span class="legtag">LEGENDARY</span>':''}<img src="${heroURL(id)}" alt=""><b>${esc(TPL[id].n)}</b><span class="els">${TPL[id].el.map(ico).join('')}${c.rec?'':'<em class="nrec">Seen</em>'}</span></button>`;};
+    return `<button class="btile ${TPL[id].src==='x'?'g':''} ${isLeg(id)?'leg':isEpic(id)?'epic':''}" data-act="codex" data-arg="${id}">${heroTag(id)}<img src="${heroURL(id)}" alt=""><b>${esc(TPL[id].n)}</b><span class="els">${TPL[id].el.map(ico).join('')}${c.rec?'':'<em class="nrec">Seen</em>'}</span></button>`;};
   return `${syncNote()}<p class="note">${seen} of ${ids.length} wayfarers met across all your journeys. Heroes you meet at starts, taverns and rare visits are logged even if you never hire them.</p>${filterBar('codex',true)}
     ${Object.keys(CLS).filter(k=>!CLS[k].legend).concat(['_legend']).filter(k=>byCls[k]).map(k=>`<h4>${k==='_legend'?'★ Legendary':CLS[k].n} <span class="cnt nums">${byCls[k].filter(id=>C[id]).length}/${byCls[k].length}</span></h4><div class="btiles">${byCls[k].map(tile).join('')}</div>`).join('')}`;
 }
@@ -9498,7 +9514,7 @@ function codexStats(id){const t=TPL[id],f=CF[t.cls]||['staff','robe'],c={id,lv:2
 function mCodex(id){
   const t=TPL[id],c=(META.codex||{})[id];if(!t||!c)return '';
   const S=codexStats(id),sig=SIG[id];
-  return box(esc(t.title||t.n),`${isLeg(id)?`<div class="legstrip">${legSeal()}${legBanner()}${legSeal()}</div>`:''}<div class="mh"><div class="pbig"><img src="${heroURL(id)}" alt=""></div><div class="grow"><small>${CLS[t.cls].n}${t.src==="x"?" · Special":t.src==="L"?" · Legendary":""}</small><div class="els">${elChips(t.el)}</div><span class="trait">${natPoolText(id)}</span><p class="bio">${esc(t.bio)}</p>${classCard(t.cls)}${sig?`<p class="mline"><b>${esc(sig.n)}:</b> ${esc(sig.d)}</p>`:''}
+  return box(esc(t.title||t.n),`${isLeg(id)?`<div class="legstrip">${legSeal()}${legBanner()}${legSeal()}</div>`:''}<div class="mh"><div class="pbig"><img src="${heroURL(id)}" alt=""></div><div class="grow"><small>${CLS[t.cls].n}${isLeg(id)?" · Legendary":isEpic(id)?" · Epic"+(t.src==="x"?" · Special":""):t.src==="x"?" · Special":""}</small><div class="els">${elChips(t.el)}</div><span class="trait">${natPoolText(id)}</span><p class="bio">${esc(t.bio)}</p>${classCard(t.cls)}${sig?`<p class="mline"><b>${esc(sig.n)}:</b> ${esc(sig.d)}</p>`:''}
     <p class="note nums">${c.rec?`Recruited · best level ${c.lv||1}`:'Met but never recruited'}</p></div></div>
     <h4>Stats <small>(level 20, tier 4 gear, no stat points)</small></h4><div class="stats"><span>HP <b>${S.mhp}</b></span><span>MP <b>${S.mmp}</b></span><span>ATK <b>${Math.round(S.atk)}</b></span><span>DEF <b>${Math.round(S.def)}</b></span><span>MAG <b>${Math.round(S.mag)}</b></span><span>RES <b>${Math.round(S.res)}</b></span><span>SPD <b>${Math.round(S.spd)}</b></span><span>CRIT <b>${Math.round(S.crit*100)}%</b></span></div>
     ${bondCodex(id)}<h4>Limit Break</h4>${limitRows(t.cls,null)}
@@ -10214,7 +10230,7 @@ function vSwap(where){
     <h4>Front line</h4><div class="swlist ${grid?'g3':''}">${[0,1,2].map(i=>card(P[i],i)).join('')}</div>
     <h4>Reserve</h4><div class="swlist ${grid?'g3':''}">${[3,4,5].map(i=>card(P[i],i)).join('')}</div>
     ${sel&&sel.i!=null&&P[sel.i]?`<div class="btnrow">${town&&G.party.length>1?'<button class="btn sm" data-act="swapOut">Send to roster</button>':''}<button class="btn sm" data-act="swapCancel">Cancel</button></div>`:sel?'<div class="btnrow"><button class="btn sm" data-act="swapCancel">Cancel</button></div>':''}
-    ${town?`<h4>Roster <span class="cnt nums">${bench.length} waiting</span></h4>${filterBar('party')}<div class="grid mini">${benchS.map(c=>`<button class="mini ${sel&&sel.r===c.id?'sel':''} ${c.el.length>1?'dual':''} ${isLeg(c.id)?'leg':''}" data-act="swapTap" data-arg="r:${c.id}">${isLeg(c.id)?legSeal(1)+'<span class="legtag">LEGENDARY</span>':''}<img src="${heroURL(c.id)}" alt=""><b>${esc(c.name)}${c.legacy?' ★':''}</b><small>Lv ${c.lv} ${CLS[TPL[c.id].cls].n}</small><span class="els">${c.el.map(ico).join('')}</span></button>`).join('')||'<p class="note">Everyone you have recruited is already in your six.</p>'}</div>`
+    ${town?`<h4>At camp <span class="cnt nums">${bench.length} waiting</span></h4>${filterBar('party')}<div class="grid mini">${benchS.map(c=>`<button class="mini ${sel&&sel.r===c.id?'sel':''} ${c.el.length>1?'dual':''} ${isLeg(c.id)?'leg':isEpic(c.id)?'epic':''}" data-act="swapTap" data-arg="r:${c.id}">${heroTag(c.id)}<img src="${heroURL(c.id)}" alt=""><b>${esc(c.name)}${c.legacy?' ★':''}</b><small>Lv ${c.lv} ${CLS[TPL[c.id].cls].n}</small><span class="els">${c.el.map(ico).join('')}</span></button>`).join('')||'<p class="note">Everyone you have recruited is already in your six.</p>'}</div>`
       :'<p class="note">Reordering works anywhere. Swapping roster heroes into your six happens in town.</p>'}${grid?'</div>':''}`;
 }
 Object.assign(ACT,{
@@ -14265,7 +14281,8 @@ window.__AU={get AU(){return AU;},get AU2(){return AU2;},get SFXC(){return SFXC;
   au2Jingle:a=>au2Jingle(a),au2SetStyle:a=>au2SetStyle(a),au2Want:()=>au2Want(),sfx:k=>sfx(k),render:()=>render()};
 
 // =================== Beta v0.5.0 4.3: XP CATCH UP ===================
-// A hero below the party's highest level gets XPCU.per more battle XP per level of gap, at most XPCU.max (config.js). A front row hero
+// A hero below the highest level on the whole roster (v0.6.3: party AND heroes at camp, so a wayfarer who sat out a realm catches up
+// to your top hero, not only to the six in this fight) gets XPCU.per more battle XP per level of gap, at most XPCU.max (config.js). A front row hero
 // gets the whole bonus, a reserve (benched) hero XPCU.bench of it, the fallen still get nothing, and heroes at the top level get no bonus.
 // It replaces the old flat x1.4 for heroes four or more levels behind (the share line in win(), engine.js): that factor is divided back
 // out here so the two never stack. The Daily Trial is untouched. The result screen lists the bonus (info.catchup, ui wrapper in p4party.js).
@@ -14274,14 +14291,15 @@ let XPC=null;
 function xpCatchMul(lv,max,front){const gap=Math.max(0,(max|0)-(lv|0));if(!gap)return 1;return 1+Math.min(XPCU.max,XPCU.per*gap)*(front?1:XPCU.bench);}
 {const w0=win;win=function(){
   XPC=null;
-  try{if(B&&G&&!G.daily&&B.spec&&B.spec.kind!=='daily'){const P=B.front.concat(B.back);XPC={max:Math.max(...P.map(c=>c.lv)),front:B.front.slice(),all:P,rows:[]};}}catch(e){XPC=null;}
+  try{if(B&&G&&!G.daily&&B.spec&&B.spec.kind!=='daily'){const P=B.front.concat(B.back),pmax=Math.max(...P.map(c=>c.lv)),R=Object.values(G.roster||{}).map(c=>c.lv|0);
+    XPC={max:Math.max(pmax,...R),pmax,front:B.front.slice(),all:P,rows:[]};}}catch(e){XPC=null;}
   try{return w0.apply(this,arguments);}
   finally{try{if(XPC&&XPC.rows.length&&B&&B.result)B.result.catchup=XPC.rows;}catch(e){}XPC=null;}};}
 {const ax0=addXp;addXp=function(c,x){
   if(XPC&&c&&x>0&&XPC.all.includes(c)){
-    const front=XPC.front.includes(c),old=c.lv<XPC.max-3?1.4:1,m=xpCatchMul(c.lv,XPC.max,front),base=x/old;
+    const front=XPC.front.includes(c),old=c.lv<XPC.pmax-3?1.4:1,m=xpCatchMul(c.lv,XPC.max,front),base=x/old;
     x=Math.round(base*m);
-    if(m>1)XPC.rows.push({id:c.id,name:c.name,pct:Math.round((m-1)*100),xp:Math.max(0,x-Math.round(base)),front});}
+    if(m>1)XPC.rows.push({id:c.id,name:c.name,pct:Math.round((m-1)*100),xp:Math.max(0,x-Math.round(base)),front,gap:XPC.max-c.lv,top:XPC.max});}
   return ax0.apply(this,[c,x].concat([].slice.call(arguments,2)));};}
 
 // =================== Beta v0.5.0 PHASE 4: PARTY, GUILDS AND QUESTS ===================
@@ -14549,9 +14567,10 @@ function rsGrid(i){const cell=(k,v,cls)=>`<div class="rs-cell ${cls||''}"><small
   return `<div class="rs-grid">${c.join('')}</div>`;}
 function rsParty(i){const cu={};(i.catchup||[]).forEach(r=>{cu[r.id]=r;});const ups={};(i.ups||[]).forEach(u=>{ups[u.name]=u;});
   const L=i.xpBy&&i.xpBy.length?i.xpBy:G.party.map(id=>G.roster[id]).filter(Boolean).map(c=>({id:c.id,name:c.name,gain:null,lv0:c.lv,lv:c.lv,alive:c.hp>0}));
-  return `<h4>Your party</h4><div class="rs-party">${L.map(o=>{const c=G.roster[o.id];if(!c)return '';const up=ups[c.name],k=cu[o.id];
+  const top=(i.catchup||[]).reduce((a,r)=>Math.max(a,r.top||0),0);
+  return `<h4>Your party</h4>${top?`<p class="note rs-cunote"><small>Catch up: heroes below your top wayfarer (Lv ${top}, counting heroes at camp) earn more XP.</small></p>`:''}<div class="rs-party">${L.map(o=>{const c=G.roster[o.id];if(!c)return '';const up=ups[c.name],k=cu[o.id];
     const gain=o.gain==null?'':!o.alive?'<em class="rs-none">Fallen: no XP</em>':`<em class="rs-gain">+${fmt(o.gain)} XP</em>`;
-    return `<div class="rs-hero ${up?'up':''} ${o.alive?'':'ko'}">${port(c.id,'sm')}<div class="grow"><div class="rs-top"><b>${esc(c.name)}</b>${gain}${k?`<span class="rs-cu" title="Catch up: heroes below the party's top level gain more">+${k.pct}% catch up</span>`:''}</div>
+    return `<div class="rs-hero ${up?'up':''} ${o.alive?'':'ko'}">${port(c.id,'sm')}<div class="grow"><div class="rs-top"><b>${esc(c.name)}</b>${gain}${k?`<span class="rs-cu" title="Catch up: ${k.gap?k.gap+' level'+(k.gap===1?'':'s')+' below':'below'} your top wayfarer${k.top?' (Lv '+k.top+')':''}, counting heroes at camp. The further behind, the more XP">+${k.pct}% catch up</span>`:''}</div>
       ${up?`<div class="rs-lv">Level up! <b>Lv ${up.lv}</b>${up.pts?` <span class="up">${up.pts} stat point${up.pts>1?'s':''} to spend</span>`:''}</div>`:`<small>Lv ${c.lv}</small>`}${xpLine(c)}</div></div>`;}).join('')}</div>`;}
 function rsNotes(i){const rows=[];(i.quests||[]).forEach(q=>rows.push(`<div class="row"><b>Quest ready</b><span>${esc(q)}</span></div>`));
   (i.bonds||[]).forEach(b=>rows.push(`<div class="row bondr"><b>Bond grows</b><span>${esc(b.a)} and ${esc(b.b)}: level ${b.lv}${b.lv===2?' (joint tech unlocked)':b.lv===1||b.lv===3?' (new campfire talk on their sheets)':''}</span></div>`));
@@ -15762,6 +15781,158 @@ function hbsDraw(ctx,p,now){const t=now-p.t0;if(t<0)return;const q=t/p.life;if(q
       ctx.fillRect(R(p.x-r),R(p.y),r*2+1,1);ctx.fillRect(R(p.x),R(p.y-r),1,r*2+1);ctx.globalAlpha=(1-q)*.6;ctx.fillStyle='#ffe08a';ctx.fillRect(R(p.x-r*.6),R(p.y-r*.6),2,2);ctx.fillRect(R(p.x+r*.6-1),R(p.y+r*.6-1),2,2);ctx.globalCompositeOperation='source-over';break;}
     case 'hbC':{const e=1-q*q,x=p.x+p.dx*e,y=p.y+p.dy*e;ctx.globalCompositeOperation='lighter';ctx.globalAlpha=Math.min(1,q*3);ctx.fillStyle=p.col;ctx.fillRect(R(x),R(y),1,1);ctx.globalCompositeOperation='source-over';break;}}}
 {const dp0=drawParts;drawParts=function(ctx,now){const r=dp0.apply(this,arguments);if(!HB.on)return r;try{const P=BV.P;for(let i=0;i<P.length;i++)if(P[i].hb)hbsDraw(ctx,P[i],now);}catch(e){}ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';ctx.lineCap='butt';return r;};}
+
+// =================== Beta v0.6.3: PARTY SYSTEMS ===================
+// 1. Best Party suggests several formations instead of one: Balanced, Boss ready (Area answer once the boss is down), Fresh mix and a
+//    Training team. Role balance (tank, healer, damage, support, Primer, Detonator, deliveries, elements, answers to the area and its boss)
+//    outweighs raw level and gear (BP6 in config.js); each pick is explained and placed: the front line fights, the reserve swaps in.
+// 2. Training team: under-leveled heroes join behind a strong tank and healer and catch up (XP catch up, p4xp.js, measured against the
+//    top level on the whole roster since v0.6.3).
+// 4. "Equip best: at camp": auto equip for the heroes not in the party, from spare gear only. Never touches the party's gear or companions.
+//    Heroes outside the party are "at camp" (they rest at the campfire while the six travel; Campfire talks already live there).
+// 3.4 / 3.5 (p3shop.js) are kept: reasons per pick, the threat line, the team check, "Equip best gear for this party" after Apply.
+// No save fields. Nothing here runs in the Daily Trial.
+
+// ----- what each hero brings to a formation -----
+function p6Role(c){const k=p3Kit(c),t=TPL[c.id],cls=t.cls,sk=classSkills(t).filter(s=>skillKnown(c,s));
+  const sup=cls==='bard'||!k.tank&&!k.heal&&sk.some(s=>s.k==='status'&&(s.t==='ally'||s.t==='allyAll'));
+  return {k,cls,tank:k.tank,heal:k.heal,sup,dmg:!k.tank&&cls!=='healer'&&cls!=='bard',pr:k.pr,de:k.de};}
+// shared context for one Best Party pass: power, roles, threats
+function p6Ctx(){const all=Object.values(G.roster),pw={},R={};all.forEach(c=>{pw[c.id]=Math.max(1,loadoutScore(c,c.S));R[c.id]=p6Role(c);});
+  return {all,pw,R,mx:Math.max(1,...Object.values(pw)),T:p3Threats(),top:Math.max(1,...all.map(c=>c.lv|0)),size:Math.min(6,all.length)};}
+const p6Step=(arr,n)=>{let s=0;for(let i=0;i<n;i++)s+=arr[Math.min(i,arr.length-1)];return s;};
+// the formation score: roles first, then answers to what lies ahead, then a little strength
+function p6Score(set,X,mode,prev){const T=X.T,R=set.map(c=>X.R[c.id]),K=R.map(r=>r.k),cnt=f=>R.filter(f).length;let v=0;
+  set.forEach(c=>{const r=X.pw[c.id]/X.mx;v+=BP6.str*Math.sqrt(r);if(mode!=='train'&&r<BP6.weak)v-=BP6.weakPen*(BP6.weak-r);});
+  v+=p6Step(BP6.role.tank,cnt(r=>r.tank))+p6Step(BP6.role.heal,cnt(r=>r.heal))+p6Step(BP6.role.sup,cnt(r=>r.sup&&!r.heal))+p6Step(BP6.role.dmg,cnt(r=>r.dmg));
+  if(R.some(r=>r.pr))v+=BP6.pr;if(R.some(r=>r.de))v+=BP6.de;
+  const cl={};R.forEach(r=>{cl[r.cls]=(cl[r.cls]||0)+1;});Object.values(cl).forEach(n=>{if(n>1)v-=BP6.dup*(n-1);});
+  const els=new Set();set.forEach(c=>c.el.forEach(e=>els.add(e)));v+=BP6.el*els.size;
+  const dls=new Set();K.forEach(k=>k.dl.forEach(d=>dls.add(d)));['piercing','blunt','ranged','magic'].forEach(d=>{if(dls.has(d))v+=BP6.dl;});
+  const boss=mode==='boss',area=boss&&!T.boss,tot=Object.values(T.arch).reduce((a,b)=>a+b,0)||1;
+  Object.keys(T.arch).forEach(a=>{if(!K.some(k=>p3Answer(k,a)))return;const mul=boss?(T.boss&&T.boss.ty.includes(a)?BP6.boss.arch:area?BP6.boss.area:1):1;v+=BP_AWARE.arch*Math.min(1.5,T.arch[a]/tot*2)*mul;});
+  if(T.mons.length){const cov=T.mons.filter(k=>K.some(kit=>p3Beats(kit,MON[k].el))).length/T.mons.length;v+=BP_AWARE.el*cov*(area?BP6.boss.area:1);}
+  if(T.boss&&T.boss.el.length&&K.some(k=>p3Beats(k,T.boss.el)))v+=BP_AWARE.el*BP_AWARE.boss*(boss?BP6.boss.el:1);
+  const ov=BP6.overlap[mode]||0;if(ov&&prev)prev.forEach(p=>{v-=ov*set.filter(c=>p.includes(c.id)).length;});
+  return v;}
+// greedy fill, then swap passes; fixed heroes stay in
+function p6Search(X,sc,fixed){const all=X.all;let set=(fixed||[]).slice();const lock=new Set(set);
+  while(set.length<X.size){let b=null;all.forEach(c=>{if(set.includes(c))return;const s=sc(set.concat(c));if(!b||s>b.s)b={c,s};});if(!b)break;set.push(b.c);}
+  for(let pass=0;pass<3;pass++){let imp=false;for(let i=0;i<set.length;i++){if(lock.has(set[i]))continue;let cur=sc(set);
+    all.forEach(c=>{if(set.includes(c))return;const t=set.slice();t[i]=c;const v=sc(t);if(v>cur+1e-6){set=t;cur=v;imp=true;}});}if(!imp)break;}
+  return set;}
+// placement: the front line is who fights (tank, healer, the best damage dealer for this formation); the reserve swaps in when
+// someone falls or tires, so it holds the backup healer and tank first
+function p6Place(set,X,mode,train){const R=c=>X.R[c.id],by=(a,b)=>X.pw[b.id]-X.pw[a.id],rest=set.slice().sort(by),front=[],take=c=>{if(!c)return;rest.splice(rest.indexOf(c),1);front.push(c);};
+  const T=X.T,tr=new Set(train||[]);
+  if(mode==='train'){take(rest.find(c=>R(c).tank&&!tr.has(c)));take(rest.find(c=>R(c).heal&&!tr.has(c)));take(rest.find(c=>tr.has(c)));}
+  else{take(rest.find(c=>R(c).tank));take(rest.find(c=>R(c).heal&&!R(c).tank)||rest.find(c=>R(c).heal));
+    const dm=rest.filter(c=>R(c).dmg),ans=c=>(T.boss&&T.boss.el.length&&p3Beats(R(c).k,T.boss.el)?2:0)+Object.keys(T.arch).filter(a=>p3Answer(R(c).k,a)).length*.5;
+    take(mode==='boss'&&dm.length?dm.slice().sort((a,b)=>ans(b)-ans(a)||by(a,b))[0]:dm[0]);}
+  while(front.length<3&&rest.length)take(rest[0]);
+  const back=rest.sort((a,b)=>(mode==='train'?(tr.has(b)?1:0)-(tr.has(a)?1:0):0)||(R(b).heal?1:0)-(R(a).heal?1:0)||(R(b).tank?1:0)-(R(a).tank?1:0)||by(a,b));
+  return front.concat(back);}
+// reasons: the 3.4 answers first, then the hero's role in this formation
+function p6Why(set,X,mode,train){const base=p3Reasons(set,X.T),out={},tr=new Set((train||[]).map(c=>c.id)),seen={tank:0,heal:0};
+  set.forEach((c,i)=>{const r=X.R[c.id],L=(base[c.id]||[]).filter(t=>t!=='strong with the gear you own');
+    if(r.tank&&seen.tank++&&!L.includes('tank'))L.push(i<3?'second tank':'backup tank for the swap');
+    if(r.heal&&seen.heal++&&!L.includes('healer'))L.push(i<3?'second healer':'backup healer for the swap');
+    if(!L.length)L.push(r.sup?'support: buffs and wards the front line':r.dmg?'damage dealer':'steady all rounder');
+    if(tr.has(c.id)){const gap=X.top-c.lv,pct=Math.round((xpCatchMul(c.lv,X.top,i<3)-1)*100);L.unshift(`training: Lv ${c.lv}, ${gap} behind your top wayfarer, +${pct}% catch up XP${i<3?'':' (reserve share)'}`);}
+    else if(mode==='train'&&(r.tank||r.heal)&&i<3)L.push('keeps the trainees safe');
+    out[c.id]=L.slice(0,3);});
+  return out;}
+function p6Info(set,X){const R=set.map(c=>X.R[c.id]),els=new Set();set.forEach(c=>c.el.forEach(e=>els.add(e)));
+  return {els:els.size,heal:R.filter(r=>r.heal).length,tank:R.filter(r=>r.tank).length,pr:R.filter(r=>r.pr).length,de:R.filter(r=>r.de).length,sup:R.filter(r=>r.sup).length,dmg:R.filter(r=>r.dmg).length,
+    lv:set.length?Math.round(set.reduce((a,c)=>a+c.lv,0)/set.length):0,pw:set.reduce((a,c)=>a+X.pw[c.id],0)};}
+// the training team: the furthest behind train, the strongest tank and healer (not trainees) keep them alive
+function p6Train(X){const tr=X.all.filter(c=>X.top-c.lv>=BP6.train.gap).sort((a,b)=>a.lv-b.lv||X.pw[b.id]-X.pw[a.id]);if(!tr.length||X.size<3)return null;
+  const strong=X.all.filter(c=>!tr.includes(c)).sort((a,b)=>X.pw[b.id]-X.pw[a.id]),R=c=>X.R[c.id];
+  const tk=strong.find(c=>R(c).tank)||X.all.filter(c=>R(c).tank).sort((a,b)=>X.pw[b.id]-X.pw[a.id])[0];
+  const hl=strong.find(c=>R(c).heal&&c!==tk)||X.all.filter(c=>R(c).heal&&c!==tk).sort((a,b)=>X.pw[b.id]-X.pw[a.id])[0];
+  const anchors=[tk,hl].filter(Boolean),room=Math.max(1,X.size-anchors.length);
+  const trainees=tr.filter(c=>!anchors.includes(c)).slice(0,Math.min(BP6.train.max,room));if(!trainees.length)return null;
+  const fixed=anchors.concat(trainees),set=p6Search(X,s=>p6Score(s,X,'bal'),fixed);return {set,trainees,anchors};}
+const P6_NAMES={bal:'Balanced',boss:'Boss ready',area:'Area answer',mix:'Fresh mix',rot:'Rotation',train:'Training team'};
+function p6Summary(o,X,first){const T=X.T,nm=c=>esc(c.name);
+  if(o.key==='bal')return 'One of every role first (tank, healer, damage, support, Primer and Detonator), every delivery and a spread of elements. Level and gear only settle ties.';
+  if(o.key==='boss'){const els=T.boss.el.length?ELK.filter(e=>matchup(e,T.boss.el)>1).map(e=>EL[e]):[];
+    return `Built to bring down ${p3BossName(T.boss)}${els.length?`: ${els.slice(0,3).join(', ')} attacks hit it hard`:''}${T.boss.ty.length?`, with answers to its ${T.boss.ty.map(a=>ARCH[a].n.toLowerCase()).join(' and ')} side`:''}. The answer sits in the front line.`;}
+  if(o.key==='area'){const a=Object.keys(T.arch).filter(k=>T.mons.some(m=>tyOf(MON[m].art).includes(k)));
+    return a.length?`Built for ${esc(ZS(T.s).n)}: answers to the ${a.map(k=>ARCH_PL[k]).join(', ')} here and their elements.`:`Built for ${esc(ZS(T.s).n)}. Little is known about its monsters yet: every fight fills the Bestiary and sharpens this pick.`;}
+  if(o.key==='mix'){const sh=o.set.filter(c=>first.includes(c.id)).length;return `Different faces in the same roles, so more of your wayfarers see battle and grow. Shares ${sh} of 6 with Balanced.`;}
+  if(o.key==='rot')return 'The same roles again with the heroes the other formations left at camp, so everyone keeps up.';
+  if(o.key==='train')return `${o.trainees.map(c=>`${nm(c)} (Lv ${c.lv})`).join(', ')} ${o.trainees.length>1?'train':'trains'} behind ${o.anchors.map(nm).join(' and ')||'your strongest'}. Catch up XP is measured against your top wayfarer (Lv ${X.top}): the further behind, the more XP, up to +${Math.round(XPCU.max*100)}% in the front line and +${Math.round(XPCU.max*XPCU.bench*100)}% in reserve.`;
+  return '';}
+bestParty=function(){const keep=P3C;if(!P3C)P3C={why:{},kit:{}};
+  try{const X=p6Ctx(),opts=[],sets=[];
+    const add=(key,set,extra)=>{if(!set||!set.length)return;const ids0=set.map(c=>c.id).sort().join();
+      const same=opts.find(o=>o.set.map(c=>c.id).sort().join()===ids0);if(same&&key!=='train'){same.also=(same.also||[]).concat(P6_NAMES[key]);return;}
+      const mode=key==='area'?'boss':key,placed=p6Place(set,X,mode,extra&&extra.trainees),o=Object.assign({key,name:P6_NAMES[key],set:placed},extra||{});
+      o.ids=placed.map(c=>c.id);o.why=p6Why(placed,X,mode,o.trainees);o.info=p6Info(placed,X);opts.push(o);sets.push(o.ids);};
+    add('bal',p6Search(X,s=>p6Score(s,X,'bal')));
+    const bk=X.T.boss?'boss':'area';add(bk,p6Search(X,s=>p6Score(s,X,'boss',sets.slice(0,1))));
+    add('mix',p6Search(X,s=>p6Score(s,X,'mix',sets.slice(0,1))));
+    const tr=p6Train(X);if(tr)add('train',tr.set,{trainees:tr.trainees,anchors:tr.anchors});
+    // fewer than three different sixes (Boss ready matched Balanced, nobody to train): a Rotation gives the heroes who sat out a turn
+    if(opts.length<3&&X.all.length>X.size)add('rot',p6Search(X,s=>p6Score(s,X,'rot',sets.slice())));
+    const first=opts[0]?opts[0].ids:[];opts.forEach(o=>{o.sum=p6Summary(o,X,first);o.rel=opts[0]&&opts[0].info.pw?Math.round(o.info.pw/opts[0].info.pw*100):100;delete o.set;});
+    const P={opts,pick:0,T:X.T,top:X.top,noTrain:!tr};return p6Sel(P,0);}
+  finally{P3C=keep;}};
+function p6Sel(P,j){const o=P.opts[j]||P.opts[0];if(!o)return Object.assign(P,{ids:[],why:{},info:{els:0,heal:0,tank:0,pr:0,de:0,sup:0,dmg:0}});P.pick=P.opts.indexOf(o);P.ids=o.ids;P.why=o.why;P.info=o.info;P.key=o.key;return P;}
+mBestParty=function(m){const P=m.plan,o=P.opts[P.pick]||{},cur=new Set(G.party),same=P.ids.length===G.party.length&&P.ids.every(id=>cur.has(id)),I=P.info,T=P.T||p3Threats(),W=P.why||{};
+  const row=(id,i)=>{const c=G.roster[id];return `<div class="row ${cur.has(id)?'':'upg'}">${port(id,'sm')}<div class="grow"><b>${esc(c.name)}</b> <small>Lv ${c.lv} ${CLS[TPL[id].cls].n}</small><span class="els">${c.el.map(ico).join('')}</span><small class="p3bpwhy">${esc(c.name)}: ${(W[id]||[]).join('; ')}</small></div><small>${cur.has(id)?(G.party.indexOf(id)<3)===(i<3)?'Keeps place':i<3?'<span class="up">To the front</span>':'To reserve':'<span class="up">Joins</span>'}</small></div>`;};
+  const chips=`<div class="chips bp6f" role="group" aria-label="Formations">${P.opts.map((x,j)=>`<button class="chip ${j===P.pick?'on':''}" data-act="bpPick" data-arg="${j}" aria-pressed="${j===P.pick}">${x.name}</button>`).join('')}</div>`;
+  const out=G.party.filter(id=>!P.ids.includes(id));
+  return box('Best party',`<p class="note">Formations built on role balance first (tank, healer, damage, support, Primer, Detonator, every delivery and element) and on what your Bestiary knows about the road ahead. Level and gear count, but only a little. Pick one:</p>${chips}
+    ${P.noTrain?`<p class="note"><small>Training team: nobody is ${BP6.train.gap} or more levels behind your top wayfarer right now.</small></p>`:''}
+    <p class="note bp6sum"><b>${esc(o.name||'')}.</b> ${o.sum||''}${o.also?` <small>(${o.also.join(' and ')} would pick the same six.)</small>`:''}</p>${p3ThreatLine(T)}
+    <p class="note nums">Average Lv ${I.lv} · Power ${o.rel||100}% of Balanced · Tanks ${I.tank} · Healers ${I.heal} · Damage ${I.dmg} · Support ${I.sup} · Primers ${I.pr} · Detonators ${I.de} · Elements ${I.els}/8</p>
+    <h4>Front line <small>(fights)</small></h4><div class="rows">${P.ids.slice(0,3).map(row).join('')}</div>
+    ${P.ids.length>3?`<h4>Reserve <small>(swaps in when someone falls or tires)</small></h4><div class="rows">${P.ids.slice(3).map((id,i)=>row(id,i+3)).join('')}</div>`:''}
+    ${out.length?`<p class="note">Going to camp: ${out.map(id=>esc(G.roster[id].name)).join(', ')}.</p>`:''}
+    ${same&&P.ids.every((id,i)=>G.party[i]===id)?'<p class="note">This is already your party, in this order.</p>':''}${!same&&!inTown()?'<p class="note warn">Changing who is in your six happens in town. You can apply it there.</p>':''}${p3GapsHtml(P.ids,T,false)}`,
+    `<button class="btn gold" data-act="bpApply" ${!same&&!inTown()?'disabled':''}>Apply ${esc(o.name||'')}</button><button class="btn" data-act="xBack">Cancel</button>`);};
+{const bo0=ACT.bpOpen;ACT.bpOpen=function(){if(!G||G.daily)return;return bo0.apply(this,arguments);};}
+{const sw0=ACT.p3Swap;ACT.p3Swap=function(){const m=V.modal,key=m&&m.type==='bp'&&m.plan?m.plan.key:null;const r=sw0.apply(this,arguments);
+  try{const n=V.modal;if(key&&n&&n.type==='bp'&&n.plan&&n.plan.opts){const j=n.plan.opts.findIndex(o=>o.key===key);if(j>=0){p6Sel(n.plan,j);render();}}}catch(e){}return r;};}
+
+// ----- 4. Equip best: at camp (heroes outside the party, spare gear only) -----
+const P6_CAMP='At camp';
+function autoCamp(){if(!G||G.daily)return;const party=G.party.slice(),camp=Object.keys(G.roster).filter(id=>!party.includes(id));
+  if(!camp.length){toast('Nobody is at camp: every wayfarer you have is in your party.');return;}
+  const snap=snapAuto(),before={};Object.values(G.roster).forEach(c=>{before[c.id]={eq:Object.assign({},c.eq),comp:(compOf(c)||{}).id||null,pw:loadoutScore(c,c.S)};});
+  // gear: the pack plus what the heroes at camp already wear; the party is neither planned for nor taken from
+  applyGear(planGear(camp,[],true));Object.values(G.roster).forEach(refresh);
+  // companions: only ones not walking with a party member
+  const free=(G.tamed||[]).filter(o=>!o.with||!party.includes(o.with)),pairs=[];
+  free.forEach(o=>camp.forEach(id=>pairs.push({o,id,g:compGainFor(o,G.roster[id])})));
+  const dO=new Set(),dC=new Set(),map=new Map();pairs.sort((a,b)=>b.g-a.g).forEach(p=>{if(p.g<=.01||dO.has(p.o.id)||dC.has(p.id))return;dO.add(p.o.id);dC.add(p.id);map.set(p.o.id,p.id);});
+  free.forEach(o=>{if(map.has(o.id))o.with=map.get(o.id);else if(o.with&&camp.includes(o.with))o.with=null;});
+  Object.values(G.roster).forEach(refresh);
+  const rows=[];Object.values(G.roster).forEach(c=>{const b=before[c.id],ch=[];
+    GSLOTS.forEach(sl=>{if((b.eq[sl]||null)!==(c.eq[sl]||null))ch.push({sl,from:b.eq[sl]||null,to:c.eq[sl]||null});});
+    const nc=(compOf(c)||{}).id||null;if(ch.length||nc!==b.comp)rows.push({id:c.id,name:c.name,inParty:party.includes(c.id),ch,comp:nc!==b.comp?{from:b.comp,to:nc}:null,pw0:b.pw,pw1:loadoutScore(c,c.S)});});
+  saveGame();sfx('equip');V.modal={type:'autoEq',rows,snap,mode:'camp',from:V.modal};render();}
+{const ma0=mAutoEq;mAutoEq=function(m){let h=ma0.apply(this,arguments);if(typeof h!=='string')return h;h=h.split('<small>(roster)</small>').join('<small>(at camp)</small>');
+  if(m&&m.mode==='camp'){h=h.replace(/<h2>[^<]*<\/h2>/,`<h2>Equip best: ${P6_CAMP.toLowerCase()}</h2><p class="note p6camp">Only spare gear from your pack and what your heroes at camp already wear. Your party's gear and companions were not touched.</p>`);
+    if(!(m.rows||[]).length)h=h.replace(/<p>Everyone already[^<]*<\/p>/,'<p>Everyone at camp already has the best spare gear for their class.</p>');}
+  return h;};}
+{const ve0=vEquipTab;vEquipTab=function(){let h=ve0.apply(this,arguments);try{if(!G||G.daily||typeof h!=='string')return h;
+  h=h.replace('<h4>Roster</h4>',`<h4>${P6_CAMP}</h4>`);
+  const camp=Object.keys(G.roster).some(id=>!G.party.includes(id));
+  h=h.replace(/(<button class="btn" data-act="autoEqAll"[^>]*>[^<]*<\/button>)/,`$1<button class="btn" data-act="autoEqCamp" ${camp?'':'disabled'} title="Heroes at camp (not in your party) get the best spare gear from the pack. Never takes anything from your party.">Equip best: at camp</button>`);}catch(e){}return h;};}
+Object.assign(ACT,{bpPick(j){const m=V.modal;if(!m||m.type!=='bp'||!m.plan||!m.plan.opts)return;p6Sel(m.plan,+j||0);sfx('blip');render();},autoEqCamp(){autoCamp();}});
+
+// ----- styles: the Epic tag (ui.js isEpic/epicTag) and the formation chips -----
+try{const st=document.createElement('style');st.textContent=`.card.hero.epic,button.mini.epic,.btile.epic{position:relative;border-color:#b06aff;box-shadow:inset 0 0 0 2px #d2a8ff,0 0 8px rgba(176,106,255,.45);overflow:visible}
+.card.hero.epic>.epictag,button.mini.epic>.epictag,.btile.epic>.epictag{position:absolute;left:6px;top:-9px;z-index:3;padding:0 6px;font:900 .52rem/1.3 var(--fb);letter-spacing:.12em;color:#140a1e;background:linear-gradient(180deg,#e2c4ff,#a868f0);border:2px solid #140a1e}
+.cname .epictag{display:inline-block;vertical-align:middle;padding:0 6px;font:900 .55rem/1.4 var(--fb);letter-spacing:.12em;color:#140a1e;background:linear-gradient(180deg,#e2c4ff,#a868f0);border:2px solid #140a1e}
+.bp6f{margin:.4em 0}.bp6sum{margin:.3em 0}`;document.head.appendChild(st);}catch(e){}
+
+// ----- test hook (our own object; window.__A is not touched) -----
+window.__P6={bestParty:()=>bestParty(),autoCamp,p6Sel,isLeg:id=>isLeg(id),isEpic:id=>isEpic(id),heroTag:id=>heroTag(id),get BP6(){return BP6;},
+  role:id=>{const keep=P3C;P3C={why:{},kit:{}};try{const r=p6Role(G.roster[id]);return {tank:r.tank,heal:r.heal,sup:r.sup,dmg:r.dmg,pr:r.pr,de:r.de,cls:r.cls};}finally{P3C=keep;}}};
 
 // =================== Beta v0.5.1: quests ready to hand in (file: qready.js) ===================
 // When a Quest Board quest or a Guild mission is complete and waiting to be claimed, a toast says so once, the Menu button and the
