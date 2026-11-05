@@ -24,11 +24,20 @@ function buyPlan(m){let gold=0,ok=true;const buy=[],cant=[];
     else{cant.push(k);ok=false;}});
   return {gold,buy,cant,ok,any:buy.length>0};}
 function doBuyPlan(P){if(!P.any||G.gold<P.gold)return false;P.buy.forEach(([k,n,t])=>{if(t==='part')buyPart(k,n);else buyMat(k,n);});saveGame();return true;}
+// v0.5.0 1.9: how much a temper improves the piece (for the wearer, or the best party member for a spare) and how close it is
+function temperRank(o){const c=forgeCost(o.id);if(!c)return {ready:0,gain:0,close:0};
+  const have=hasMats(c.m),ready=have&&G.gold>=c.gold?1:0;let gain=0;
+  try{if(o.where==='eq'){const g=gainFor(G.roster[o.ref.cid],c.next);gain=g?g.d:0;}
+    else gain=Math.max(0,...partyChars().map(h=>{const g=gainFor(h,c.next);return g?g.d:0;}));}catch(e){}
+  let need=0,got=0;Object.keys(c.m).forEach(k=>{need+=c.m[k];got+=Math.min(c.m[k],G.mats[k]||0);});
+  const close=(need?got/need:1)*.7+Math.min(1,c.gold?G.gold/c.gold:1)*.3;
+  return {ready,gain,close};}
 function vTemper(){
   const list=[];partyChars().forEach(c=>EQSL.forEach(sl=>{if(c.eq[sl])list.push({where:'eq',ref:{cid:c.id,slot:sl},id:c.eq[sl],who:c.name});}));
   G.gear.forEach((id,i)=>list.push({where:'spare',ref:i,id,who:'Pack'}));
-  // v0.4.3: only what can be tempered, highest rarity first, then the highest temper level
-  const tl=list.filter(o=>gearOf(o.id)&&forgeCost(o.id)).sort((a,b)=>gTierIdx(gearOf(b.id))-gTierIdx(gearOf(a.id))||plusOf(b.id)-plusOf(a.id)||(a.where==='eq'?-1:1));
+  // v0.4.3: only what can be tempered. v0.5.0 1.9: what can be tempered right now comes first, biggest improvement first;
+  // then the rest, closest to ready first (materials and gold in hand), then by improvement. Rarity and temper level break ties.
+  const tl=list.filter(o=>gearOf(o.id)&&forgeCost(o.id)).map(o=>Object.assign(o,temperRank(o))).sort((a,b)=>(b.ready-a.ready)||(a.ready?b.gain-a.gain:(b.close-a.close)||(b.gain-a.gain))||gTierIdx(gearOf(b.id))-gTierIdx(gearOf(a.id))||plusOf(b.id)-plusOf(a.id)||(a.where==='eq'?-1:1));
   const rows=tl.map(o=>{const c=forgeCost(o.id),g=gearOf(o.id);if(!g)return '';
     if(!c)return `<div class="row rec tr" style="${tierVars(gTierIdx(g),g)}">${gearIcon(o.id)}<div class="grow"><b>${g.n}</b> ${tierChip(g)}<small>${esc(o.who)}. ${gearDesc(g)}</small><small class="up">${g.stick?'The Stick grows with your Bestiary, not the anvil.':'Fully tempered.'}</small></div></div>`;
     const have=hasMats(c.m),ok=have&&G.gold>=c.gold,P=have?null:buyPlan(c.m),nx=gearOf(c.next);

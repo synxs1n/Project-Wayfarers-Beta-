@@ -5,7 +5,7 @@
 function mInn(){
   const cost=innCost(townS()),ok=G.gold>=cost;
   return box('The Lantern Inn',`<div class="btnrow innb"><button class="btn gold big" data-act="rest" ${ok?'':'disabled'}>Rest for ${cost} gold${G.cleared[townS()]?' (festival price)':''}</button><button class="btn" data-act="save">Save journey</button></div>
-    <p class="note">A warm bed for all ${Object.keys(G.roster).length} heroes on your roster. Rest restores HP and MP, clears ailments and brings the morning.${ok?'':' You cannot afford a room right now.'}</p>`,
+    <p class="note">A warm bed for your wayfarers. Rest restores HP and MP, clears ailments and brings the morning.${ok?'':' You cannot afford a room right now.'}</p>`,
     '<button class="btn" data-act="closeModal">Leave</button>');
 }
 {const r0=render;render=function(){const r=r0.apply(this,arguments);try{if(V.modal&&V.modal.type==='inn'){const b=document.querySelector('#modal [data-act="rest"]');if(b&&!document.querySelector('#modal :focus')&&!b.disabled)b.focus({preventScroll:true});const p=document.querySelector('#modal .panel');if(p)p.scrollTop=0;}}catch(e){}return r;};}

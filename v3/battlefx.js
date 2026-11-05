@@ -17,9 +17,9 @@ function unitRef(u){return u.side==='e'?'e:'+B.en.indexOf(u):'p:'+allParty().ind
 // Beta v0.3.1: icons in priority order (Primed, Broken, ailments by turns left, boons, weather); with opt.max the rest fold into "+N"
 function stItems(u,o){const ref=unitRef(u),L=[];
   if(u.primed&&ELC[u.primed.el])L.push(`<button class="sti prime" style="--c:${ELC[u.primed.el]}" data-act="stInfo" data-arg="${ref}|primed" aria-label="Primed with ${EL[u.primed.el]}">⟐${ico(u.primed.el)}<sub>${u.primed.t||''}</sub></button>`);
-  if(u.broken&&u.maxShield)L.push(`<button class="sti bad" style="--c:#ffd04a" data-act="stInfo" data-arg="${ref}|broken" aria-label="Broken">BRK!</button>`);
+  if(u.broken&&u.maxShield)L.push(`<button class="sti bad" style="--c:#ffd04a" data-act="stInfo" data-arg="${ref}|broken" aria-label="Broken">${stSym('broken')}</button>`);
   const ks=Object.keys(u.st||{}).filter(k=>STS[k]).sort((a,b)=>(STS[b].bad?1:0)-(STS[a].bad?1:0)||(u.st[a].t||0)-(u.st[b].t||0));
-  ks.forEach(k=>{const d=STS[k],t=u.st[k].t;L.push(`<button class="sti ${d.bad?'bad':'good'}" style="--c:${d.c}" data-act="stInfo" data-arg="${ref}|${k}" aria-label="${esc(d.n)}${t?', '+t+' turns left':''}">${d.a}${t&&t<9?`<sub>${t}</sub>`:''}</button>`);});
+  ks.forEach(k=>{const d=STS[k],t=u.st[k].t;L.push(`<button class="sti ${d.bad?'bad':'good'}" style="--c:${d.c}" data-act="stInfo" data-arg="${ref}|${k}" aria-label="${esc(d.n)}${t?', '+t+' turns left':''}" title="${esc(d.n)}">${stSym(k)}${t&&t<9?`<sub>${t}</sub>`:''}</button>`);});
   if(!o.noWx&&B.weather&&B.weather!=='clear'){const W=WEATHER[B.weather];L.push(`<button class="sti wx" data-act="stInfo" data-arg="${ref}|weather" aria-label="${esc(W.n)}">${W.i}</button>`);}
   return L;}
 function stButtons(u,opt){
@@ -44,15 +44,15 @@ function stageTags(){
 function stPopHtml(){
   const P=B&&B.stPop;if(!P)return '';const u=unitOf(P.ref);if(!u){B.stPop=null;return '';}
   let title='',body='',src='',dur='';
-  if(P.k==='all'){title='All effects';body=Object.keys(u.st||{}).filter(k=>STS[k]).map(k=>`<b>${STS[k].n}</b> (${u.st[k].t} turns): ${STS[k].d}`).join('<br>')+(u.primed?`<br><b>Primed: ${EL[u.primed.el]}</b> (${u.primed.t} turns)`:'')||'Nothing.';}
+  if(P.k==='all'){title='All effects';body=Object.keys(u.st||{}).filter(k=>STS[k]).map(k=>`<b>${stSym(k,"big")} ${STS[k].n}</b> (${u.st[k].t} turns): ${STS[k].d}`).join('<br>')+(u.primed?`<br><b>Primed: ${EL[u.primed.el]}</b> (${u.primed.t} turns)`:'')||'Nothing.';}
   else   if(P.k==='weather'){const W=WEATHER[B.weather]||WEATHER.clear;title=`${W.i} ${W.n}`;body=W.d;src='The weather over this battlefield.';dur='Lasts the whole fight.';}
   else if(P.k==='primed'){if(!u.primed){B.stPop=null;return '';}const el=u.primed.el,L=Object.keys(REACT).map(k=>REACT[k]).filter(R=>R.p===el);
     title=`⟐ Primed: ${EL[el]}`;body=`A ✸ Detonator of a matching element sets off a reaction: ${L.map(R=>`${EL[R.d]} → ${R.n}`).join(', ')}. A primed foe can't be primed again until this fades or detonates.`;src=u.primed.by?`Primed by ${u.primed.by}.`:'';dur=`Fades after ${u.primed.t} more of its turn${u.primed.t===1?'':'s'}.`;}
   else if(P.k==='broken'){title='Broken';body='Its shield is shattered: it takes 50% more damage and loses its next turn.';dur='Recovers after it reels.';}
-  else{const st=(u.st||{})[P.k],d=STS[P.k];if(!st||!d){B.stPop=null;return '';}title=`${d.n} (${d.a})`;body=d.d;
+  else{const st=(u.st||{})[P.k],d=STS[P.k];if(!st||!d){B.stPop=null;return '';}title=d.n;body=d.d;
     src=st.src?(st.src==='self'?'Self-applied.':`From ${st.src}.`):'';dur=P.k==='ward'?'Until it blocks a hit, or '+st.t+' more turns.':P.k==='focus'?'Until the next attack, or '+st.t+' more turns.':P.k==='stun'?'Skips its next turn.':`${st.t} more turn${st.t===1?'':'s'} (counted on ${esc(u.name)}'s turns).`;
     if(st.v)body+=` About ${st.v} per turn.`;}
-  return `<div class="stpop" role="dialog" aria-label="${esc(title)}"><div class="sth"><b>${esc(u.name)}</b><button class="btn sm" data-act="stClose" aria-label="Close">✕</button></div><h5>${title}</h5><p>${body}</p>${src?`<small>${src}</small>`:''}${dur?`<small>${dur}</small>`:''}</div>`;
+  return `<div class="stpop" role="dialog" aria-label="${esc(title)}"><div class="sth"><b>${esc(u.name)}</b><button class="btn sm" data-act="stClose" aria-label="Close">✕</button></div><h5>${STS[P.k]||P.k==='broken'?stSym(P.k,'big')+' ':''}${esc(title)}</h5><p>${body}</p>${src?`<small>${src}</small>`:''}${dur?`<small>${dur}</small>`:''}</div>`;
 }
 // ----- the battle log panel -----
 function blogPanel(){if(!B||!B.logOpen)return '';

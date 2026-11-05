@@ -930,3 +930,16 @@ em.dl.blunt{background:#7a5a3a}em.dl.piercing{background:#7a3a4a}em.dl.ranged{ba
 .who.cmdhead{position:sticky;top:0;z-index:3;background:var(--wood);padding:2px 0 4px;margin:-2px 0 0}
 .who.cmdhead .cmdback{margin-left:auto;flex:0 0 auto;min-width:72px}
 .who.cmdhead .cmdback[disabled]{opacity:.45}
+
+/* v0.5.0 1.8: status symbols (stsym.js) sit inside their boxes at every size */
+.stsym{display:block;width:100%;height:100%;flex:0 0 auto;overflow:visible}
+.sti{justify-content:center;width:auto}
+.sti .stsym{width:6.5px;height:6.5px}
+.sti sub{position:relative}
+.ptags .sti .stsym,.who .tags .sti .stsym{width:12px;height:12px}
+.port .ail,.ailrow .ail,.swst .ail{display:inline-flex;align-items:center;justify-content:center;width:12px;height:12px;padding:1px;background:#150b17;color:var(--c,#ddd);border:1px solid var(--c,#888);border-radius:2px;box-sizing:border-box;font-size:0}
+.port .ailrow.dots .ail{width:11px;height:11px;padding:1px;border-radius:50%;display:flex;background:#150b17;border:1px solid var(--c,#888)}
+.swst{display:inline-flex;gap:2px;vertical-align:middle}
+i.tag .stsym,i.tag.sttag .stsym{display:inline-block;width:1em;height:1em;vertical-align:-.15em}
+.stpop .stsym.big,h3 .stsym.big,.stsym.big{display:inline-block;width:1.1em;height:1.1em;vertical-align:-.18em}
+.mini{position:relative}.mini .miniail{position:absolute;top:4px;right:4px;display:flex;gap:2px;pointer-events:none}.mini .miniail .ailrow{display:flex;gap:2px}.mini .miniail .ailrow.dots{flex-direction:column}

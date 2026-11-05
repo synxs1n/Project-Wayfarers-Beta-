@@ -57,7 +57,7 @@ if(typeof campRest==='function'){const cr0=campRest;campRest=function(){const r=
   Object.keys(MON).forEach(k=>{const m=MON[k];if(!m||!m.sk||!dark(k)||m.__curse)return;m.__curse=1;const s=m.sk.find(q=>q[3]!=='self'&&q[4]!=='buff');if(s)s[5]=(s[5]||[]).concat([['curse',AIL.foeCurse]]);});};})();
 {const sb0=startBattle;startBattle=function(){try{window.__ailFoes();}catch(e){}return sb0.apply(this,arguments);};}
 // small chips for the Party, Roster, Equipment and hero sheet
-function ailChips(c){const L=ailOf(c);return L.length?`<span class="ailrow" aria-label="Ailments">${L.map(k=>`<span class="ail ail-${k}" title="${STS[k].n}: ${STS[k].d}" style="background:${STS[k].c}">${STS[k].a}</span>`).join('')}</span>`:'';}
+function ailChips(c){const L=ailOf(c);return L.length?`<span class="ailrow" aria-label="Ailments">${L.map(k=>`<span class="ail ail-${k}" title="${STS[k].n}: ${STS[k].d}" style="--c:${STS[k].c}">${stSym(k)}</span>`).join('')}</span>`:'';}
 // the portrait badge: KO tag and ailment chips (v0.4.1 2.1 / 2.2); shown on Party, Roster, Equipment, Loadouts and the hero sheet
 function ailBadge(id){const c=typeof G!=='undefined'&&G&&G.roster&&G.roster[id];if(!c||(typeof B!=='undefined'&&B&&V.screen==='battle'))return '';
   const ko=c.hp<=0?'<span class="kotag" title="Knocked out: needs Smelling Salts, a Phoenix Feather, a revive skill, a tent or the inn">KO</span>':'';
