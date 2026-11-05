@@ -1,0 +1,252 @@
+// =================== VERSION ===================
+// The one public version string. Patch (0.1.x) for fixes and balance, minor (0.x.0) for new systems.
+// Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
+const GAME_VERSION='Beta v0.4.3';
+const CHANGELOG=[
+ ['Beta v0.4.3',['Capes: a fourth equipment slot for every class, sold at the Smithy beside armor and shown on your hero. Boss fights were re-tuned around them.','Before you play on a new version, the game offers to export your saves as a backup.','Fallen heroes earn no XP. Wins mostly on auto pay 66% XP and gold, and auto deals 85% damage. Random battles are a little rarer at every setting and never come within 8 steps of the last one.','After a boss you stay in the dungeon; its Echo appears once you have left and come back. A big boss HP bar runs along the top of boss and miniboss fights. Echoes pay a little more.','Every wayfarer has a rival of their own. Twenty new minibosses, dealt out so a journey rarely meets the same one twice. Travel packs from traders roll their contents.','Tempering lists only what can still be tempered, rarest first. Detonator skills say which primes they set off. The Tamer\'s Stick measures against the Bestiary as listed.','Much easier early game: regular foes are softer in every realm and much softer in the first two, there are no pack tactics in the first two realms, heroes recover more HP after each win early on, the world grows tougher only half as fast in the field, and the first two Scourges hit less hard. You begin with 400 gold, gold drops are up and shop prices down. Auto now deals 85% damage and pays 66%.','Twenty-four starters (three per class, three per element) for many more starting draws. Beat a wayfarer in a duel and they wait for you at the tavern. Accept all and Claim all buttons on the Quest Board, bounties and faction missions. Back to the main menu from Settings. The Inn closes after you rest. Town gates always meet a road with nothing in the way.','Fixes: Space at the Inn no longer puts you straight to bed, and the fortress gatehouse no longer covers your hero. Personal rewards, fortress charms and The Steady Hand charm re-tuned.']],
+ ['Beta v0.4.1',['Fix and rebalance pass. Fixes: challenge fights no longer freeze, mimics and props never block paths, shield pips and draw order fixed, indoor maps ignore weather, dungeon entrances and levers placed properly, fewer east exits, map back button, latest input wins, auto settings saved, Records opens on Journey.','Rules: fallen heroes stay down until revived; Poison, Curse and boss Wounds last past the fight; weapon types rebalanced against beast and armored foes; Auto is banned in elite, miniboss and challenge fights and plays simpler; parties can be smaller than six; Lore in the battle menu; weather and time tags always visible; weather now falls in towns too.','Balance: tougher packs, bosses scale toward your party level and grow with every boss defeated, echo levels follow your party, small parties face softer foes, gold and XP trimmed and prices raised.','World: sixteen realms (twelve standard, four Calamity realms), each with its own look, monsters, weather, townsfolk and quests. A living Scourge or Calamity changes its realm until it falls. Visible foes roam the dungeons, side fortresses join the side caves, and most caves and fortresses end in a miniboss. Dusk and dawn look new.','Also: wayfarer challenge wording, start with one to three wayfarers, Gear menu is now Backpack, shop and craft lists sort by rarity with filters, Craft only tag, a dynamic title screen, NPCs with more to say, a sixth faction (The Steady Hand), personal quest rewards in three slots, and new item sprites.']],
+ ['Beta v0.4.0',['Bug fixes: tapping or clicking a foe now targets it (touch, mouse, keys, pad), field skills that need a target work, shield pips have their own spot, the party stops walking the moment a battle starts, dungeon stairs never block the route, and Auto reads Start auto or Stop auto.',
+  'Battle: tap a reserve hero to switch, Auto settings live in the menu as well as in battle, Undead take damage from healing, and foes have archetypes (Flying, Armored, Jelly, Swarm, Beast and more) that skills and weapons answer by delivery (Slash, Blunt, Piercing, Ranged, Magic, Heal).',
+  'Menus: seven top groups with sub tabs, Forge is the new name for making gear, recipes you can make now come first, purchase animations, Pork Chop Sandwich leads back to the last town, longer dusk and dawn with their own look, starter sheets, Legacy heroes count toward the three starters, and item strength borders with tier pips.',
+  'Wayfarers: 64 single type wayfarers (every class in every element), a signature skill for every wayfarer, and a new starter draw of 8 options from a pool of 16.',
+  'World: one long winding field between towns, gates facing north, south, east and west with matching landings, a world map screen, and optional side caves with a special reward (a +2 piece of gear, a rare item, a challenge wayfarer or a unique charm). Old journeys keep their old maps.',
+  'Dungeons: about twice as big with side branches and dead ends, the lever is far from the entrance and opens the key room, then the key opens the boss door. Required route is about 16 to 20 minutes per main dungeon.',
+  'Weather: snow looks frosty on phones, and rare skies appear a few percent of the time: Blood Moon, Solar Eclipse, Meteor Shower and an Elemental Surge for every realm, each with fair effects both sides feel. The Daily Trial never uses them.',
+  'Chance encounters: about once per 200 steps on roads and in caves you may meet a wayfarer who needs a potion, is being ambushed, challenges you to a duel, or trades. Helping, winning or hiring brings them into your roster without using the tavern cap, and every wayfarer you meet is logged in the Codex.',
+  'Factions: Wayfarers\' Guild, Smiths\' Union, Alchemists\' Circle, Beastwardens and Archivists, six ranks each, missions in Guides and Records, modest perks and a unique charm per faction. Per journey only; your best rank is kept as a title.',
+  'Under the hood: all tunable numbers live in config.js, data tables are split into their own files, dead code is gone, and fog is drawn from a cached sprite.']],
+ ['Beta v0.3.5',['Wayfarers: wanderers are now called wayfarers everywhere. Each journey draws its own seeded subset of about 30 from a roster of 60+, always including anyone you already own; the Codex still tracks every wayfarer ever seen on your account.',
+  'Taverns: at most 4 offers, hiring leaves an empty seat until the next shuffle, shuffles only after an inn rest or a stage clear (with a cooldown shown on screen), each town has its own pool and a limited number of tavern recruits before you move on.',
+  'Natures: every wayfarer rolls one nature from a small pool that suits its class and personality. The Guild Hall Nature service rerolls within the pool or lets you pick one.',
+  'Type chart revamp: elements no longer resist themselves by default; every element now has real strengths and counters. Primers, detonators and reactions work as before.',
+  'Battle clarity: a loud Primed status (pulsing aura, chip with element and turns left, sound, target highlights), one new element icon set used everywhere, a purple Limit Break bar, and a legendary stamp on every Legendary hero.',
+  'Starting party: you may begin with one, two or three wayfarers. The game asks you to confirm a smaller start, and you can recruit more in any tavern. Fewer heroes means a harder early game, and big bosses grow tougher for every hero short of six.',
+  'Weapons and armor: each class uses 2 or 3 weapon types, each with its own perk (cleave, charge, crush, flurry, long draw, discord, soothe, tempo and more), new Monk knuckle and claw lines and Bard lute, harp and flute lines. Armor is Light, Medium or Heavy and only the matching classes wear it. Gear a hero can no longer use goes to your pack, never deleted, with a message.',
+  'World: every town, field and dungeon takes its mood from the Scourge or Calamity at the end of the stage, with no spoilers. New journeys get two fields per town (the dungeon waits in the second), bigger fields with side trails and shortcuts, and bigger dungeons with loops. Journeys started on an older build keep their original map shape.',
+  'Map and UI: clear icons and a legend for the Smithy, Alchemy, Inn, Tavern, Guild Hall, quest board, waystone, gates and dungeon entrances; the roster and party screens no longer overlap; the battle rewards Continue button stays in view; town props no longer float.']],
+ ['Beta v0.3.4',['Save safety: a save that cannot be read is never replaced or hidden. You get a clear message with Retry and Export, and the raw data stays exactly as it was.',
+  'Backups: before a version migration, an overwrite, a cleared slot, an import, a restore or a cloud pull, the old save is copied to a rolling backup (last 3 per slot).',
+  'Recover Saves (title screen): finds every save, backup and stray slot on this device and in your account, shows heroes, progress and times, and restores any of them into a slot you pick.',
+  'Export and Import: every slot exports as a code or a file, and imports check the save and ask before replacing anything. Use it to move a journey between devices or links.',
+  'Account saves: signed in players get cloud saves per slot with the last three versions kept, background sync, a sync icon, Sync in the Journey tab, and a choice when this device and your account differ. Visitors stay local with an Export reminder.',
+  'Saving to this device now tells you when it fails instead of failing silently.']],
+ ['Beta v0.3.3',['Bug fixes: the party can no longer walk through town buildings, heroes no longer look like they stand on roofs, the Smithy cannot get stuck on a failed redraw, and the battle scene keeps a fixed shape on wide phones instead of stretching.',
+  'Battle screen: every hero and foe card shows name, level, element symbols (a distinct shape per element), HP and MP bars with numbers, and a status row that is never covered. Tap or click any unit for a full detail panel.',
+  'Equipment: Auto best gear (party) may take from heroes outside the party, Equip best for everyone balances the roster, and the per-hero Auto never takes from anyone. All of them handle companions and show a summary with Undo. "Best for" now lists every party member an item helps, ranked, with stat arrows.',
+  'Party tools: team loadouts (8 slots), a Best Party suggestion, field skills (heals, cures, revives outside battle), XP to next level bars, sorting and filters for Party, Roster and Codex, and the Guild Hall no longer handles the party.',
+  'Town: the Inn opens on Rest with no scrolling. Bonds and campfire scenes moved to each hero\'s sheet. Tap the weather or day and night tag to see what it does here.',
+  'Endgame: the Echo Sanctum, a hall of sixteen Echo gates, replaces the Echo Rift once all five story Echoes are beaten.',
+  'Offline: the game is fully self contained and keeps playing and saving with no connection. Bestiary, Codex and report writes queue and sync safely when you are back online.']],
+ ['Beta v0.3.2',['Battle text is smaller and floats over the unit it affects, stacked so nothing overlaps, and stays up longer. The top banner is now a thin strip for big moments only.',
+  'New skill notices: "<Hero> learned <Skill>!" on the battle results and as a small toast in the world, with a New badge on the hero sheet.',
+  'Companions show their exact bonuses, and every monster family adds a small perk (crit, speed, ailment ward, thorns or mending).',
+  'Leveling is about 15% slower. Battles won mostly on auto pay 66% XP and gold (drops unchanged). Auto is locked on a boss until you beat that exact fight by hand once.',
+  'Echoes reworked: beat a Scourge or the Calamity and an optional Echo of it lingers in its dungeon. Beat all five and every Echo in Aurelis unlocks for your account. The Echo Rift at any waystone opens after the Calamity.',
+  'New: Echo Shards and Echo Essence, and six Echoforged weapons at the Smithy.',
+  'New: a full map and a minimap with fog of war (Map button, N, or Y on a pad).',
+  'Animation pass: swings, thrusts, bow draws, dashes, casts, songs and channels; foe telegraphs; boss phase flourishes; summon entrances. A Motion setting trims it all to simple flashes.']],
+ ['Beta v0.3.1',['Fixed: the Arena could not be challenged. Fixed: the Party Sheet button. Menus and the gear picker keep their scroll and focus when you spend a stat point.',
+  'Party rows now show portrait, level, class, HP and MP bars with numbers, elements and a KO or status marker. The battle log lists newest first, status icons never overlap, and floating numbers stay up longer.',
+  'Auto battle can now switch heroes in and out (with a short cooldown, shown in the banner). Resting at the inn fades out with a rest chime.',
+  'Towns: every building has its own roof color, shape and props, with big signs, and the quest board has a marker.',
+  'New: an Equipment menu, Auto best gear with undo, an optional Auto equip new gear setting, and Best for tags with an Equip this now? prompt after buying, crafting or winning gear.',
+  'New: Tomes for mages, the Faith stat for healers and chroniclers, and descriptions for every stat and class.',
+  "New: the Tamer's Stick. It grows stronger with every Bestiary entry and starts to glow; a Guild Hall quest hands it over.",
+  'New: day and night. Time moves as you walk and fight; at night some field foes change and all are a bit tougher. The inn sets it to morning, tents pass some time.',
+  'Weather now lasts a while, follows you between a realm\'s town and field, and is clear most of the time.',
+  'New: Mimics hide in some dungeon chests. Watch for a wiggle and a red glint.',
+  'Tamed monsters are now Companions: pair one with each hero for a bonus, and Summon it once per battle for 3 turns. Old saves convert automatically and return their gear.',
+  'Guild Hall challenges now rotate after an inn rest or a cleared Scourge, with four new heroes to earn. Accepted challenges stay posted.']],
+ ['Beta v0.3.0',['Fixed: dungeons could trap you when the lost wayfarer stood in the only corridor. Every dungeon is now checked when it is built (key before the boss door, lever before the vault, every chest, the stairs), and decor never sits on or beside the way forward. Saves stuck today are freed when you load.',
+  'New: a Stuck? button in the menu while you are in a dungeon. It walks the party back to the entrance for free.',
+  'Limit Breaks open at level 15 for every hero, with no other condition. Limit I is a lighter version; at level 30 it becomes Limit II, a new and stronger move.',
+  'The level cap is 50. A normal journey ends around level 38 to 42; levels past 40 come from New Game+, Nightmare Echoes, the new Eclipse Gauntlet arena tier and the Calamity rematch.',
+  'Every class and Legendary hero learns two new skills in the 40s and a level 50 capstone.',
+  'New Game+ foes gain 3 levels per cycle. The Calamity and the Nightmare Echoes rise to meet a party above level 40.']],
+ ['Beta v0.2.0',['Battles are easier to read: damage numbers by type, a scrollable battle log, and status icons you can tap for details.',
+  'Matchups show on every target before you strike (Weak, Neutral, Resists, Immune). Hidden quirks and Scourges stay a mystery until you hit or scan them.',
+  'The Bestiary grows with you: Seen, Studied and Mastered entries, plus small permanent perks for hunting the same foe.',
+  'Every popup has a back arrow next to the X. Party swapping is now tap one hero, tap another.',
+  'The Forge is now Tempering: each upgrade needs ore or logs, a monster part and a realm relic. Buy what you are missing right there.',
+  'Skills arrive about every 3 levels. Limit Breaks open at level 15 and personal quests at level 20, both after the second town. Skills you already learned stay learned.',
+  'Dungeon entrances sit further from the town gate.',
+  'The Journey tab has a pinned Save button, Scourge progress, and new stats including steps walked.']],
+ ['Beta v0.1.0',['The Smithy now handles every weapon and armor need: buying, selling, forging, crafting gear, and ore, wood and monster parts.',
+  'The Workshop is now Alchemy: potions, tonics, charms, Holy Water and tents, plus herbs and brewing.',
+  'New: Pork Chop Sandwich (tavern). A sure escape in ordinary fights, or a quick walk back to a dungeon\'s entrance.',
+  'New: Holy Water (Alchemy). Keeps random battles away for about 150 steps.',
+  'New: Tent (Alchemy, or craft one). Rest in the wild for 60% HP and MP. Pick your campsite carefully.',
+  'Version numbering restarts at Beta v0.1.0. Your saves carry over untouched.']]
+];
+// =================== ELEMENTS ===================
+const EL={fire:'Fire',water:'Water',earth:'Earth',wind:'Wind',lightning:'Lightning',ice:'Ice',light:'Light',shadow:'Shadow'};
+const ELK=Object.keys(EL);
+const ELC={fire:'#e8553a',water:'#3f8fe0',earth:'#b08a4a',wind:'#5fc9a0',lightning:'#f2c93a',ice:'#8fdcf0',light:'#f6e7a8',shadow:'#9a6ae0'};
+// Matchup chart (v0.3.5 revamp): attacker -> {strong: x2, resisted: x0.5}. No immunities.
+// Self matchups are no longer automatic. Only Fire, Ice and Shadow resist themselves (flame cannot burn flame, frost cannot chill frost, dark
+// cannot darken dark). Water, Earth, Wind and Light take neutral damage from their own element. Lightning is WEAK to itself (it arcs through
+// a conductor). Light is the glass element (no resistances) and Earth, Ice and Water are the sturdy ones.
+const CHART_DEF={
+ fire:{s:['ice','shadow'],r:['fire','water','earth']},
+ water:{s:['fire','earth'],r:['ice','shadow']},
+ earth:{s:['lightning','fire'],r:['wind','water']},
+ wind:{s:['earth','fire'],r:['lightning','ice']},
+ lightning:{s:['water','wind','light','lightning'],r:['earth']},
+ ice:{s:['wind','water','earth'],r:['ice','fire']},
+ light:{s:['shadow','ice'],r:['fire','lightning']},
+ shadow:{s:['light','lightning'],r:['shadow','water']}
+};
+const CHART={};ELK.forEach(a=>{CHART[a]={};ELK.forEach(d=>{CHART[a][d]=CHART_DEF[a].s.includes(d)?2:CHART_DEF[a].r.includes(d)?.5:1;});});
+// Dual-type defenders: matchups combine on a soft curve so nothing reaches x4.
+// both weak -> x2.5, weak+neutral -> x2, weak+resist -> x1, resist+neutral -> x0.5, both resist -> x0.35
+const DUAL_MAP={4:2.5,2:2,1:1,.5:.5,.25:.35};
+const CAP_GUARDED=2;   // Scourges, Calamities and heroes never take more than x2 from matchups
+function matchup(atkEl,defEls){
+  if(!atkEl)return 1;
+  const ms=defEls.map(d=>CHART[atkEl][d]);
+  if(ms.length===1)return ms[0];
+  const p=Math.round(ms[0]*ms[1]*100)/100;
+  return DUAL_MAP[p]!==undefined?DUAL_MAP[p]:p;
+}
+// Reactions: an elemental hit leaves a Mark; a different element on a marked foe triggers a reaction.
+const REACT={
+ 'fire+ice':{n:'Melt',p:'ice',d:'fire',m:1.8},
+ 'fire+water':{n:'Steam',p:'water',d:'fire',m:1.3,fx:[['blind',.7]]},
+ 'fire+wind':{n:'Wildfire',p:'fire',d:'wind',m:1.2,fx:[['burn',1]],splash:.35},
+ 'earth+fire':{n:'Magma',p:'earth',d:'fire',m:1.3,fx:[['break',.8],['burn',.6]]},
+ 'fire+lightning':{n:'Overload',p:'fire',d:'lightning',m:1.5,splash:.3},
+ 'fire+light':{n:'Solar Flare',p:'fire',d:'light',m:1.4,fx:[['blind',.5]]},
+ 'fire+shadow':{n:'Hellflame',p:'shadow',d:'fire',m:1.3,fx:[['weaken',.7],['burn',.5]]},
+ 'lightning+water':{n:'Conduct',p:'water',d:'lightning',m:1.3,fx:[['stun',.55]]},
+ 'ice+water':{n:'Freeze',p:'water',d:'ice',m:1.2,fx:[['stun',.45],['slow',.8]]},
+ 'earth+water':{n:'Mire',p:'water',d:'earth',m:1.15,fx:[['slow',.9],['root',.7]]},
+ 'water+wind':{n:'Squall',p:'wind',d:'water',m:1.2,fx:[['slow',.4]],splash:.3},
+ 'light+water':{n:'Purge',p:'light',d:'water',m:1.2,strip:1},
+ 'shadow+water':{n:'Drown',p:'shadow',d:'water',m:1.3,fx:[['root',.7],['weaken',.5]]},
+ 'earth+wind':{n:'Sandblast',p:'earth',d:'wind',m:1.2,fx:[['blind',.7]]},
+ 'earth+lightning':{n:'Grounded',p:'lightning',d:'earth',m:1.3,fx:[['break',.9]]},
+ 'earth+ice':{n:'Permafrost',p:'ice',d:'earth',m:1.2,fx:[['root',.8],['break',.4]]},
+ 'earth+light':{n:'Crystalize',p:'earth',d:'light',m:1.3,selfFx:[['ward',1]]},
+ 'earth+shadow':{n:'Grave',p:'earth',d:'shadow',m:1.3,fx:[['bleed',.8],['root',.5]]},
+ 'lightning+wind':{n:'Storm Surge',p:'wind',d:'lightning',m:1.3,splash:.45},
+ 'ice+wind':{n:'Frostbite',p:'wind',d:'ice',m:1.2,fx:[['bleed',.7],['slow',.6]]},
+ 'light+wind':{n:'Radiant Gale',p:'light',d:'wind',m:1.2,allyFx:[['regen',1]]},
+ 'shadow+wind':{n:'Nightshear',p:'shadow',d:'wind',m:1.3,fx:[['bleed',.8]]},
+ 'ice+lightning':{n:'Shatter',p:'ice',d:'lightning',m:1.7},
+ 'light+lightning':{n:'Judgement',p:'lightning',d:'light',m:1.6},
+ 'lightning+shadow':{n:'Blackout',p:'lightning',d:'shadow',m:1.3,fx:[['stun',.4],['blind',.4]]},
+ 'ice+light':{n:'Prism',p:'ice',d:'light',m:1.3,fx:[['blind',.4]],splash:.25},
+ 'ice+shadow':{n:'Deathchill',p:'shadow',d:'ice',m:1.4,fx:[['slow',.7],['weaken',.4]]},
+ 'light+shadow':{n:'Eclipse',p:'light',d:'shadow',m:2.0}
+};
+const reactKey=(a,b)=>[a,b].sort().join('+');
+// v4.7: reactions need a PRIMER skill to set them up and a DETONATOR skill to set them off. Each reaction has one primer element and one detonator element.
+function reactFor(primed,det){const R=REACT[reactKey(primed,det)];return R&&R.p===primed&&R.d===det?R:null;}
+const SKILL_ROLE={annotate:null,edge1:'det',edge2:'primer',titan:'det',lance1:'primer',lance2:'det',judge:'det',s1a:'primer',s1b:'det',s2a:'primer',s2b:'primer',s3a:'det',
+ ray1:'primer',ray2:'det',shiv1:'det',shiv2:'primer',assn:'det',arrow1:'primer',arrow2:'det',chi1:'det',chi2:'primer',dragon:'det',tune1:'primer',tune2:'primer',combo:'det'};
+const ROLE_N={primer:'Primer',det:'Detonator'};
+const MASTERY_BONUS=0.2;
+const MASTERY={
+ fire:{n:'Pyre Mastery',st:'burn',ch:.25,d:'Fire skills deal 20% more and may Burn.'},
+ water:{n:'Tide Mastery',st:'weaken',ch:.25,d:'Water skills deal 20% more and may Weaken.'},
+ earth:{n:'Stone Mastery',st:'break',ch:.25,d:'Earth skills deal 20% more and may Break armor.'},
+ wind:{n:'Gale Mastery',st:'bleed',ch:.25,d:'Wind skills deal 20% more and may cause Bleed.'},
+ lightning:{n:'Storm Mastery',st:'stun',ch:.12,d:'Lightning skills deal 20% more and may Stun.'},
+ ice:{n:'Frost Mastery',st:'slow',ch:.25,d:'Ice skills deal 20% more and may Slow.'},
+ light:{n:'Dawn Mastery',st:'blind',ch:.22,heal:.2,d:'Light skills deal 20% more and may Blind. Healing is 20% stronger.'},
+ shadow:{n:'Dusk Mastery',st:'poison',ch:.22,drain:.15,d:'Shadow skills deal 20% more, may Poison, and drain 15% of damage as HP.'}
+};
+const STS={
+ poison:{n:'Poison',a:'PSN',bad:1,t:4,c:'#b07ae0',d:'Loses 6% of max HP each turn.'},
+ bleed:{n:'Bleed',a:'BLD',bad:1,t:3,c:'#e04848',d:'Takes damage each turn based on the attacker.'},
+ burn:{n:'Burn',a:'BRN',bad:1,t:3,c:'#ff8a3a',d:'Loses 5% of max HP each turn and deals 15% less.'},
+ slow:{n:'Slow',a:'SLW',bad:1,t:3,c:'#7aa8d8',d:'Turns come 50% slower.'},
+ stun:{n:'Stun',a:'STN',bad:1,t:1,c:'#f2c93a',d:'Loses its next turn.'},
+ blind:{n:'Blind',a:'BLN',bad:1,t:3,c:'#9a9aaa',d:'Physical attacks hit half as often.'},
+ root:{n:'Root',a:'RT',bad:1,t:3,c:'#a07a42',d:'Cannot switch out or flee. Turns come 25% slower.'},
+ weaken:{n:'Weaken',a:'WK',bad:1,t:3,c:'#d07a8a',d:'Deals 25% less damage.'},
+ break:{n:'Break',a:'BRK',bad:1,t:3,c:'#d8a050',d:'Takes 30% more damage.'},
+ might:{n:'Might',a:'MGT',t:3,c:'#ff7a5a',d:'Deals 30% more damage.'},
+ bulwark:{n:'Bulwark',a:'BLW',t:3,c:'#7ab0ff',d:'Takes 30% less damage.'},
+ haste:{n:'Haste',a:'HST',t:3,c:'#7affd0',d:'Turns come 35% faster.'},
+ regen:{n:'Regen',a:'RGN',t:4,c:'#7aff8a',d:'Recovers 8% of max HP each turn.'},
+ ward:{n:'Ward',a:'WRD',t:6,c:'#f6e7a8',d:'Blocks the next hit completely.'},
+ taunt:{n:'Taunt',a:'TNT',t:3,c:'#ff5a5a',d:'Foes must aim single attacks at this hero.'},
+ focus:{n:'Focus',a:'FCS',t:5,c:'#ffd23d',d:'The next attack is a guaranteed critical.'}
+};
+const CLS={
+ warrior:{n:'Warrior',role:'Heavy melee. High HP and attack, hits groups, draws fire.',hp:[52,11],mp:[10,1.6],atk:[10,2.4],def:[8,1.9],mag:[3,.6],res:[4,1],spd:[8,.75],pref:['str','vit','dex']},
+ knight:{n:'Knight',role:'Tank. Taunts, wards allies and raises party defense.',hp:[60,12.5],mp:[10,1.7],atk:[8,1.9],def:[11,2.4],mag:[3,.7],res:[7,1.5],spd:[6,.6],pref:['vit','spi','str']},
+ mage:{n:'Mage',role:'Elemental caster. Big spells, hastes allies, fragile body.',hp:[36,7],mp:[28,3.8],atk:[4,.8],def:[4,1],mag:[12,2.7],res:[8,1.9],spd:[8,.75],pref:['int','spi','agi']},
+ healer:{n:'Healer',role:'Heals, cleanses, grants Regen and revives.',hp:[40,8],mp:[30,4],atk:[4,.8],def:[5,1.2],mag:[11,2.4],res:[9,2],spd:[8,.7],pref:['fth','spi','vit']},
+ thief:{n:'Thief',role:'Fastest class. Steals, poisons and blinds.',hp:[40,8.5],mp:[14,2],atk:[8,1.9],def:[5,1.3],mag:[4,.8],res:[5,1.2],spd:[13,1.1],pref:['agi','dex','luk']},
+ archer:{n:'Archer',role:'Ranged damage. Bleeds, roots and pierces armor.',hp:[42,8.5],mp:[16,2.2],atk:[9,2.1],def:[5,1.3],mag:[4,.8],res:[5,1.3],spd:[11,.95],pref:['dex','agi','str']},
+ monk:{n:'Monk',role:'Bare-fisted bruiser. Multi-hits, stuns, self-sustains.',hp:[50,10.5],mp:[14,2],atk:[10,2.3],def:[6,1.5],mag:[5,1],res:[6,1.4],spd:[10,.9],pref:['str','agi','vit']},
+sniper:{n:'Steppe Sniper',legend:1,role:'Legendary horse archer. Crossbow bolts of shadow and storm, and he shoots back when struck.',hp:[46,9.2],mp:[16,2.3],atk:[10,2.35],def:[6,1.5],mag:[4,.8],res:[6,1.4],spd:[11,1],pref:['dex','agi','str']},
+ druid:{n:'Druid',legend:1,role:'Legendary beast warden. Longbow, a wolf and a hawk at his call, and a way with wild things.',hp:[46,9.2],mp:[20,2.8],atk:[9,2.3],def:[6,1.4],mag:[7,1.5],res:[7,1.6],spd:[11,.95],pref:['dex','spi','agi']},
+ archmage:{n:'Archmage',legend:1,role:'Legendary spellweaver. Ice and lightning, two spells a turn, cheap to cast.',hp:[40,8],mp:[30,4],atk:[4,.8],def:[5,1.15],mag:[12,2.6],res:[9,2],spd:[9,.8],pref:['int','spi','agi']},
+ chronicler:{n:'Chronicler',role:'Archive caster. Wields the signature moves of every Scourge and Calamity you have defeated.',hp:[42,8.4],mp:[30,4.1],atk:[6,1.3],def:[6,1.5],mag:[13,2.8],res:[10,2.15],spd:[9,.85],pref:['int','fth','spi']},
+ bard:{n:'Bard',role:'Support. Party heals, buffs, Haste and enemy debuffs.',hp:[38,7.5],mp:[24,3.3],atk:[5,1.1],def:[5,1.2],mag:[9,2],res:[8,1.8],spd:[9,.85],pref:['spi','luk','int']}
+};
+// =================== ATTRIBUTES ===================
+const ATTR=['str','int','vit','spi','fth','agi','dex','luk'];
+const ATTRN={str:['Strength','Physical attack, a little defense'],int:['Intellect','Magic attack, a little MP and resistance'],vit:['Vitality','Max HP and defense'],spi:['Spirit','MP, resistance, healing power, ailment resistance'],fth:['Faith','Healing and revives first, a little magic damage and resistance'],agi:['Agility','Turn speed and evasion'],dex:['Dexterity','Accuracy, critical damage, some physical attack'],luk:['Luck','Critical chance, ailment chance, evasion, steals and drops']};
+const DEXLUK={sniper:{dex:[8,1.25],luk:[5,.7]},druid:{dex:[7,1.1],luk:[6,.9]},archmage:{dex:[3,.5],luk:[4,.6]},chronicler:{dex:[4,.6],luk:[5,.7]},warrior:{dex:[4,.6],luk:[3,.4]},knight:{dex:[3,.5],luk:[3,.4]},mage:{dex:[3,.5],luk:[4,.6]},healer:{dex:[3,.5],luk:[5,.7]},thief:{dex:[7,1.1],luk:[7,1.1]},archer:{dex:[8,1.2],luk:[5,.7]},monk:{dex:[6,.9],luk:[4,.6]},bard:{dex:[5,.7],luk:[7,1]}};
+// derived stat formulas (shared by heroes and the stat sheet)
+function deriveStats(a,L){const f=a.fth||0;
+  return {hp:20+a.vit*6+L*3,mp:4+a.spi*2.5+a.int+f*.6,atk:a.str*2+a.dex*.4,mag:a.int*2+f*1.2,def:a.vit*1.2+a.str*.3,res:a.spi*1.2+a.int*.3+f*.3,spd:4+a.agi};
+}
+// Class attribute curves are solved from the old stat curves so the balance carries over.
+// CLASS_ATTR_LEGACY keeps the pre-Faith curves: the Daily Trial uses them so its heroes stay exactly as they were.
+const CLASS_ATTR={},CLASS_ATTR_LEGACY={},GROWTH_KEEP=.82;
+const POINT_VAL={str:1,int:1,vit:1,spi:1,fth:1,agi:.6,dex:1,luk:1};
+// Beta v0.3.1 Faith: [base, growth]. Healers and Chroniclers scale mostly on it, Knights and Monks a little.
+// Their Intellect is lowered by 0.6 per Faith point so MAG stays where it was; healing goes up (Faith adds 0.5 heal power per point on top of MAG).
+const FTH={healer:[3,.9],chronicler:[3,.8],knight:[1,.3],monk:[1,.25]};
+Object.keys(CLS).forEach(k=>{
+  const c=CLS[k],dl=DEXLUK[k],at=i=>{
+    const dex=dl.dex[0]+dl.dex[1]*i,luk=dl.luk[0]+dl.luk[1]*i,atk=c.atk[0]+c.atk[1]*i,mag=c.mag[0]+c.mag[1]*i,hp=c.hp[0]+c.hp[1]*i,res=c.res[0]+c.res[1]*i,spd=c.spd[0]+c.spd[1]*i;
+    const int=mag/2,str=(atk-.4*dex)/2,vit=(hp-20-3*i)/6,spi=(res-.3*int)/1.2,agi=spd-4;
+    return {str,int,vit,spi,agi,dex,luk};};
+  // 18% of natural growth is handed to the player as free stat points instead
+  const a0=at(0),a1=at(1),b={},g={};ATTR.forEach(s=>{if(s==='fth')return;b[s]=a0[s];g[s]=(a1[s]-a0[s])*GROWTH_KEEP;});
+  CLASS_ATTR_LEGACY[k]={b:Object.assign({},b,{fth:0}),g:Object.assign({},g,{fth:0})};
+  const F=FTH[k]||[0,0];b.fth=F[0];g.fth=F[1]*GROWTH_KEEP;b.int-=.6*b.fth;g.int-=.6*g.fth;
+  const a15={};ATTR.forEach(s=>{if(s==='fth')return;a15[s]=a0[s]+(a1[s]-a0[s])*15;});a15.fth=0;const d15=deriveStats(a15,15);
+  Object.assign(CLASS_ATTR_LEGACY[k],{defM:(c.def[0]+c.def[1]*15)/d15.def,mpM:(c.mp[0]+c.mp[1]*15)/d15.mp});
+  CLASS_ATTR[k]={b,g,defM:(c.def[0]+c.def[1]*15)/d15.def,mpM:(c.mp[0]+c.mp[1]*15)/d15.mp};
+});
+const ST=['hp','mp','atk','def','mag','res','spd'];
+const EQSL=['w','a','c','k'];// v0.4.3: weapon, armor, charm, cape
+const CF={sniper:['crossbow','vest'],druid:['bow','vest'],archmage:['staff','robe'],chronicler:['tome','robe'],warrior:['blade','mail'],knight:['blade','mail'],monk:['knuckles','vest'],mage:['staff','robe'],healer:['staff','robe'],bard:['lute','robe'],archer:['bow','vest'],thief:['dagger','vest']};
+const TRAITS={
+ swift:['Swift','+10% agility'],sturdy:['Sturdy','+12% max HP'],arcane:['Arcane','+12% magic, +10% MP'],keen:['Keen','+8% critical chance'],
+ parthian:['Parthian Shot','Legendary: when attacked, sometimes dodges and fires straight back'],beastbond:['Beastbond','Legendary: tames monsters more often, and they come back stronger'],twinweave:['Twin Weave','Legendary: every spell is followed by a second spell of his other element at 30% power; spells cost about 30% less MP'],
+ bulwark:['Stalwart','+10% defense and resistance'],berserk:['Berserker','+10% attack'],mender:['Mender','+15% healing'],tempo:['Tempo','Actions take 8% less time']
+};
+
+// v0.3.5 3.2 NATURES. TRAITS above is the display table for the legendary/old ids; NATURES is the effect table every non-Daily calc reads.
+// fx: multipliers (agi hp mp atk def mag res heal) and additive crit/eva, tempo = action time multiplier. Old saves have no c.nat and keep TPL.trait.
+const NATURES={
+ swift:{n:'Swift',d:'+10% agility',fx:{agi:1.1}},sturdy:{n:'Sturdy',d:'+12% max HP',fx:{hp:1.12}},arcane:{n:'Arcane',d:'+12% magic, +10% MP',fx:{mag:1.12,mp:1.1}},
+ keen:{n:'Keen',d:'+8% critical chance',fx:{crit:.08}},bulwark:{n:'Stalwart',d:'+10% defense and resistance',fx:{def:1.1,res:1.1}},berserk:{n:'Berserker',d:'+10% attack',fx:{atk:1.1}},
+ mender:{n:'Mender',d:'+15% healing',fx:{heal:1.15}},tempo:{n:'Tempo',d:'Actions take 8% less time',fx:{tempo:.92}},
+ brave:{n:'Brave',d:'+6% attack, +6% max HP',fx:{atk:1.06,hp:1.06}},hardy:{n:'Hardy',d:'+8% defense, +6% max HP',fx:{def:1.08,hp:1.06}},
+ calm:{n:'Calm',d:'+12% resistance, +6% MP',fx:{res:1.12,mp:1.06}},focused:{n:'Focused',d:'+10% MP, +6% magic',fx:{mp:1.1,mag:1.06}},
+ wise:{n:'Wise',d:'+8% magic, +8% resistance',fx:{mag:1.08,res:1.08}},nimble:{n:'Nimble',d:'+6% agility, +4% evasion',fx:{agi:1.06,eva:.04}},
+ lucky:{n:'Lucky',d:'+5% critical chance, +4% evasion',fx:{crit:.05,eva:.04}},devout:{n:'Devout',d:'+10% healing, +8% resistance',fx:{heal:1.1,res:1.08}},
+ fierce:{n:'Fierce',d:'+5% critical chance, +6% attack',fx:{crit:.05,atk:1.06}},sharp:{n:'Sharp',d:'+6% critical chance, +6% agility',fx:{crit:.06,agi:1.06}},
+ fleet:{n:'Fleet',d:'+5% agility, actions take 4% less time',fx:{agi:1.05,tempo:.96}}
+};
+const NAT_CLASS={warrior:['brave','fierce','hardy','berserk','swift'],knight:['bulwark','hardy','sturdy','calm','brave'],mage:['arcane','focused','wise','keen','calm'],
+ healer:['mender','devout','wise','calm','sturdy'],thief:['swift','keen','nimble','lucky','fleet'],archer:['keen','sharp','nimble','lucky','swift'],
+ monk:['berserk','fierce','tempo','nimble','hardy'],bard:['tempo','focused','lucky','wise','swift']};
+const natHash=s=>{let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return h>>>0;};
+// each template's pool: its original trait plus 2 to 4 class-fit natures (3 to 5 total), picked by a stable hash of the hero id
+function natPool(id){const t=TPL[id];if(!t)return [];if(!NAT_CLASS[t.cls]||t.src==='L'||t.src==='x'||t.mon||!NATURES[t.trait])return [t.trait];
+  if(t._pool)return t._pool;const cp=NAT_CLASS[t.cls],h=natHash(id),r=h%cp.length,rot=cp.slice(r).concat(cp.slice(0,r)).filter(k=>k!==t.trait),n=2+(h>>>5)%3;
+  return t._pool=[t.trait].concat(rot.slice(0,n));}
+const natOf=c=>{const t=TPL[c.id];if(!t)return 'keen';return (G&&G.daily)?t.trait:(c.nat&&NATURES[c.nat]?c.nat:t.trait);};
+const natInfo=k=>NATURES[k]||(typeof TRAITS!=='undefined'&&TRAITS[k]?{n:TRAITS[k][0],d:TRAITS[k][1],fx:{}}:{n:'Unknown',d:'',fx:{}});
+// rolled once per journey from a stable seed, so a restored or re-opened save shows the same nature
+function natRoll(id){const P=natPool(id);if(P.length<2)return P[0];const seed=(typeof G!=='undefined'&&G&&G.run&&G.run.seed)||0;return P[natHash(id+':'+seed)%P.length];}

@@ -1,0 +1,50 @@
+const chromium=require('@sparticuz/chromium').default||require('@sparticuz/chromium');
+const puppeteer=require('puppeteer-core');const fs=require('fs');
+const MOCK=`<script>(()=>{const S=new Map();const mk=(p,d)=>({id:p.split('/').pop(),exists:!!d,data:()=>d?JSON.parse(JSON.stringify(d)):undefined,metadata:{}});
+const q=(cp,o)=>({orderBy:(f,dir)=>q(cp,Object.assign({},o,{f,dir})),limit:n=>q(cp,Object.assign({},o,{n})),where:()=>q(cp,o),
+ get:async()=>{let docs=[...S.entries()].filter(([k])=>k.startsWith(cp+'/')&&k.slice(cp.length+1).split('/').length===1).map(([k,v])=>mk(k,v));
+  if(o.f)docs.sort((a,b)=>(a.data()[o.f]-b.data()[o.f])*(o.dir==='desc'?-1:1));if(o.n)docs=docs.slice(0,o.n);return {docs,size:docs.length,empty:!docs.length};},
+ doc:id=>D(cp+'/'+id)});
+const D=p=>({id:p.split('/').pop(),path:p,get:async()=>mk(p,S.get(p)),set:async d=>{if(window.__VIEWONLY)throw {code:'invalid_argument'};S.set(p,JSON.parse(JSON.stringify(d)));},update:async d=>{if(!S.has(p))throw {code:'invalid_argument'};S.set(p,Object.assign(S.get(p),d));},collection:c=>q(p+'/'+c,{})});
+const db={doc:D,collection:p=>q(p,{})};window.__S=S;
+const user={me:async()=>({id:'u_test',name:'Tess Tester',isOwner:true,canEdit:true}),id:async()=>'u_test',isOwner:async()=>true,can:async()=>window.__VIEWONLY?false:true,profiles:async()=>({})};
+window.claude={use:async n=>n==='db'?db:n==='user'?user:null};})();</script>`;
+(async()=>{const browser=await puppeteer.launch({args:chromium.args,executablePath:await chromium.executablePath(),headless:'shell'});
+const page=await browser.newPage();const errs=[];page.on('pageerror',e=>{errs.push(e.message);console.log('PAGEERR',e.message);});
+await page.setViewport({width:390,height:844,isMobile:true,hasTouch:true});
+await page.setContent('<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body>'+MOCK+fs.readFileSync(__dirname+'/../out/aurelis3.html','utf8')+'</body></html>',{waitUntil:'load'});
+const wait=ms=>new Promise(r=>setTimeout(r,ms));const ev=(f,a)=>page.evaluate(f,a);const shot=async n=>{await wait(400);await page.screenshot({path:__dirname+'/fb_'+n+'.png'});};
+await shot('title');
+await ev(()=>{__A.ACT.new();['brann','mira','lumen'].forEach(id=>__A.ACT.pickS(id));__A.ACT.begin();__A.ACT.storyOk();__A.ACT.menu();});await wait(400);
+await page.click('#modal [data-act="fbOpen"]');await wait(600);await shot('new');
+await page.type('input[data-fb="title"]','Chest <b>won\'t</b> open & stuff');await page.type('textarea[data-fb="desc"]','<img src=x onerror=alert(1)> it broke');await page.type('textarea[data-fb="repro"]','1. walk\n2. press A');
+console.log('counter',await ev(()=>document.getElementById('fbc-title').textContent));await shot('typed');
+await page.click('[data-act="fbSend"]');await wait(800);await shot('sent');
+console.log('stored',await ev(()=>JSON.stringify([...__S.keys()])));
+const rep=await ev(()=>[...__S.entries()].find(([k])=>k.includes('/reports/'))[1]);console.log('ctx keys',Object.keys(rep.context).join(','),'events',rep.context.events.length,'dev',JSON.stringify(rep.context.device).slice(0,80));
+console.log('send disabled',await ev(()=>{__A.ACT.fbTab('new');return document.querySelector('[data-act="fbSend"]').disabled+' '+document.querySelector('[data-act="fbSend"]').textContent;}));
+await ev(()=>__A.ACT.fbTab('mine'));await wait(500);await shot('mine');
+await ev(()=>__A.ACT.fbTab('inbox'));await wait(500);await shot('inbox');
+await ev(()=>{const b=document.querySelector('[data-act="fbDetail"]');b.click();});await wait(300);
+await ev(()=>{__A.ACT.fbSetStatus('planned');});await wait(300);
+await page.type('textarea[data-fb="resp"]','Thanks, on it.');await ev(()=>__A.ACT.fbSaveResp());await wait(300);await shot('detail');
+console.log('after',await ev(()=>JSON.stringify([...__S.entries()].find(([k])=>k.includes('/reports/'))[1].status+'|'+[...__S.entries()].find(([k])=>k.includes('/reports/'))[1].response)));
+console.log('xss nodes',await ev(()=>document.querySelectorAll('#modal img[src="x"], #modal b b').length));
+await ev(()=>__A.ACT.fbTab('inbox'));await wait(400);await ev(()=>__A.ACT.fbCopyNew());await wait(300);
+await ev(()=>{__A.ACT.fbTab('help');});await shot('help');
+// view-only fallback
+await ev(()=>{window.__VIEWONLY=true;__A.V.modal=null;__A.ACT.fbOpen();});await wait(400);
+await ev(()=>{const F=__A.V.fb;F.title='x';F.desc='y';});await ev(()=>{});
+await ev(()=>{__A.V.fbErr=null;__A.FB.lastSent=0;});await ev(()=>{/* bypass cooldown */});
+await ev(()=>new Promise(r=>setTimeout(r,10)));
+await ev(()=>{__A.FBX&&0;});
+await ev(()=>{const f=__A;});
+await ev(()=>{__A.fbReset&&__A.fbReset();});
+await page.evaluate(()=>{window.__fbHack=1;});
+await ev(()=>__A.ACT.fbSend());await wait(600);await shot('viewonly');
+console.log('modal',await ev(()=>__A.V.modal.type));
+// battle pause entry
+await ev(()=>{window.__VIEWONLY=false;__A.V.modal=null;__A.setPause(400);__A.startBattle({stage:0,kind:'field'});});await page.waitForFunction(()=>__A.B&&__A.B.mode==='cmd',{timeout:30000});
+await ev(()=>{__A.V.modal={type:'pause'};__A.render();__A.ACT.fbOpen();});await wait(300);
+console.log('battle ctx',await ev(()=>JSON.stringify(window.__fbctx?0:__A.B.seed)));
+console.log('errs',errs.length);await browser.close();})().catch(e=>{console.log('ERR',e.message);process.exit(1);});
