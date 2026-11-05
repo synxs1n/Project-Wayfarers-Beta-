@@ -22,7 +22,7 @@ const r=await ev(async()=>{const A=__A,G=A.G,o={};
   const sc=A.stickCount();o.stickAll=sc.all;o.bestAll=new Set(A.bestAll().map(q=>q.d&&q.d.n)).size;
   // capes: a fourth slot, sold with armor, adds stats, shows on the hero, saves, auto-equip uses it
   const stock=A.shopStock('armor');o.capeShop=stock.some(id=>/^k_cape_/.test(id));
-  const c=G.roster[G.party[0]];const hp0=A.calcStats(c).mhp,k0=A.lookKey(c.id);G.gear.push('k_cape_1');c.eq.k='k_cape_1';c.S=A.calcStats(c);o.capeHp=c.S.mhp>hp0;o.capeLook=A.lookKey(c.id)!==k0&&(A.heroLook(c.id).back||[]).includes('cape');
+  const c=G.roster[G.party[0]];const hp0=A.calcStats(c).mhp,k0=A.lookKey(c.id),b0=JSON.stringify(A.heroLook(c.id));G.gear.push('k_cape_1');c.eq.k='k_cape_1';c.S=A.calcStats(c);o.capeHp=c.S.mhp>hp0;o.capeLook=A.lookKey(c.id)===k0&&JSON.stringify(A.heroLook(c.id))===b0;// v0.6.3: capes no longer show on the hero
   o.capeSave=A.packG().roster[c.id].eq.k==='k_cape_1';c.eq.k=null;A.ACT.autoEqParty&&A.ACT.autoEqParty();o.capeAuto=G.party.some(id=>G.roster[id].eq.k);A.V.modal=null;
   // tempering lists only temperable gear, highest rarity first
   G.gear.push('w_blade_0','w_blade_3','a_mail_2+3');A.V.modal={type:'smithy',tab:'temper'};const h=A.vTemper();o.temperFull=!/a_mail_2\+3|Fully tempered/.test(h);
@@ -37,7 +37,7 @@ chk('a journey never repeats a miniboss design (first 12 sites)',r.miniUniq===tr
 chk('auto pays 66%, encounters rarer, 8 steps between battles',r.autoRew===.66&&r.enc==='{"off":0,"low":0.05,"normal":0.095,"high":0.14}'&&r.minSteps===8);
 chk('a detonator hints only when a foe is primed for it right now',r.detNone===true&&r.detNote===true);
 chk("the Tamer's Stick counts against the Bestiary list",r.stickAll===r.bestAll);
-chk('capes: sold, add stats, show on the hero, save, auto-equip fills them',r.capeShop&&r.capeHp&&r.capeLook&&r.capeSave&&r.capeAuto);
+chk('capes: sold, add stats, not drawn on the hero (v0.6.3), save, auto-equip fills them',r.capeShop&&r.capeHp&&r.capeLook&&r.capeSave&&r.capeAuto);
 chk('tempering hides fully tempered gear',r.temperFull===true);
 // boss: you stay in the dungeon, the echo waits until you have left, and a big boss bar is shown
 const b=await ev(async()=>{const A=__A,G=A.G,o={};const d=A.getMap('d0');A.placeAt('d0',d.bossAt[0],d.bossAt[1]+1,'u');A.V.screen='world';

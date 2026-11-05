@@ -46,7 +46,7 @@ const PQ_TEXT={
  monk:'{n}\'s old master fell to {r}. Time to finish the lesson.',
  bard:'{n} needs one more verse for the ballad, and {r} is it.',
  chronicler:'{n} is missing one page from the archive, and {r} ate it.'};
-const SIGW={chronicler:'Lost Folio',warrior:'Heirloom Edge',knight:'Vow Blade',mage:'Lost Focus',healer:'Lamp Relic',thief:'Debt Collector',archer:'Second Shot',monk:"Master's Wraps",bard:'Final Verse'};
+const SIGW={chronicler:'Lost Folio',warrior:'Heirloom Edge',knight:'Vow Blade',mage:'Lost Focus',healer:'Lamp Relic',thief:'Debt Collector',archer:'Second Shot',monk:"Master's Wraps",bard:'Final Verse',sniper:'Horizon Arbalest',druid:'Packcall Bow',archmage:'Stormglass Rod'};
 const ALTW={sword:'greatsword',greatsword:'katana',axe:'hammer',hammer:'axe',spear:'trident',trident:'spear',dagger:'twindagger',twindagger:'katana',bow:'crossbow',crossbow:'bow',
  staff_orb:'staff_crystal',staff_crystal:'staff_sun',staff_sun:'staff_orb',staff_crook:'staff_sun',rod:'staff_crystal',tome:'staff_orb',lute:'harp',harp:'fan',fan:'harp',fists:'claws',claws:'katana',scythe:'katana',katana:'greatsword',mace:'hammer'};
 function registerSignatures(){RAW.forEach(r=>{const id=r[0],t=TPL[id],fam=CF[t.cls][0],base=GEAR['w_'+fam+'_4']||GEAR['w_'+fam+'_3'],o={n:`${t.n}'s ${SIGW[t.cls]}`,slot:'w',tier:4,only:id,fam:fam,el:t.el[0],price:2400,attr:{[CLS[t.cls].pref[0]]:5}};
@@ -136,5 +136,6 @@ function slotSummary(s){const o=loadRaw(s);if(!o)return null;const party=(o.part
   return {stage:o.stage,cleared:(o.cleared||[]).filter(Boolean).length,cycle:o.run?o.run.cycle:0,party,lv:party.length?Math.round(party.reduce((a,id)=>a+((o.roster[id]||{}).lv||0),0)/party.length):0,gold:o.gold,savedAt:o.savedAt||0,battles:(o.stats||{}).battles||0};}
 function exportSave(){return 'AWSAVE1.'+btoa(unescape(encodeURIComponent(JSON.stringify(packG()))));}
 function importSave(code){try{const o=JSON.parse(decodeURIComponent(escape(atob(String(code).trim().replace(/^AWSAVE1\./,'')))));if(!o||o.ver!==3)return null;return unpackG(o);}catch(e){return null;}}
-// v0.4.3: sprite cache key for whatever changes a hero's look (signature gear, cape)
-function lookKey(id){try{const c=G&&G.roster[id];if(!c||!c.eq)return '';const k=EQSL.map(sl=>{const v=c.eq[sl];return v&&(/^u[ac]?_/.test(v)||/^k_/.test(v))?v:'';}).join('|');return k.replace(/\|/g,'')?':'+k:'';}catch(e){return '';}}
+// v0.4.3: sprite cache key for whatever changes a hero's look. v0.6.3: only the hero's own personal reward (signature weapon, Oathmantle,
+// Token) changes the look; capes and shop armor no longer show on the body, so they are not part of the key.
+function lookKey(id){try{const c=G&&G.roster[id];if(!c||!c.eq)return '';const k=['w','a','c'].map(sl=>{const v=String(c.eq[sl]||'');return /^u[ac]?_/.test(v)&&v.endsWith('_'+id)?v:'';}).join('|');return k.replace(/\|/g,'')?':'+k:'';}catch(e){return '';}}
