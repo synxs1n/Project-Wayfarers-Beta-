@@ -320,7 +320,7 @@ function mTavern(){
     <div class="tvbar"><small>${esc(tvNextText())}</small>${pool>L.length?`<small>${pool} wayfarer${pool>1?'s':''} are in this town's pool; four tables, picked to suit your party.</small>`:''}</div>
     <div class="grid cards">${SL.map(id=>id?heroCard(id,false,null,`<div class="fits">${fitTags(id)}</div><button class="btn gold" data-act="hire" data-arg="${id}" ${G.gold>=recruitCost(id)?'':'disabled'}>Hire for ${fmt(recruitCost(id))}</button>`):`<div class="card hero emptyseat"><b>Empty seat</b><small>Fills at the next shuffle.</small></div>`).join('')||'<p class="note">Nobody new at the tables.</p>'}</div>
     ${later?`<p class="note">${later} more wayfarer${later>1?'s are':' is'} on the road${nu?`; the next arrive in about ${nu.need} battle${nu.need>1?'s':''}, or when you reach the next realm`:''}.</p>`:''}<p class="note">Some wayfarers won't sit in a tavern at all. Check the Guild Hall's recruitment challenges.</p>
-    <h4>From the kitchen</h4><div class="rows">${tavernFood().map(id=>{const o=ITEMS[id];return `<div class="row"><div><b>${itemIcon(id)} ${o.n}</b><small>${o.d}. Carrying ${G.inv[id]||0}.</small></div><button class="btn sm" data-act="buyItem" data-arg="${id}" ${G.gold>=o.price&&(G.inv[id]||0)<9?'':'disabled'}>${o.price}</button></div>`;}).join('')}</div>`,'<button class="btn" data-act="closeModal">Leave</button>',true);
+    <h4>From the kitchen</h4><div class="rows">${tavernFood().map(id=>{const o=ITEMS[id];return `<div class="row"><div><b>${itemIcon(id)} ${o.n}</b><small>${o.d}. Carrying ${G.inv[id]||0}.</small></div><button class="btn sm" data-act="buyItem" data-arg="${id}" ${G.gold>=o.price&&(G.inv[id]||0)<invCap()?'':'disabled'}>${o.price}</button></div>`;}).join('')}</div>`,'<button class="btn" data-act="closeModal">Leave</button>',true);
 }
 function mShop(m){
   // Beta v0.1.0: the Smithy owns weapons and armor end to end: buy, sell, Forge, temper, and the ore, wood and parts they need.
@@ -546,7 +546,7 @@ const ACT={
   respec(){const c=G.roster[V.modal.char],cost=respecCost(c);if(G.gold<cost)return;G.gold-=cost;c.pts+=Object.values(c.alloc).reduce((a,b)=>a+b,0);c.alloc={};c.auto=false;refresh(c);saveGame();toast('Points refunded. Spend them as you like.');render();},
   seal(){const c=G.roster[V.modal.char],code=heroSeal(c);try{navigator.clipboard.writeText(code).then(()=>toast('Hero seal copied. Co-op raids will use these.'),()=>toast(code.slice(0,40)+'...'));}catch(e){toast('Seal: '+code.slice(0,40)+'...');}},
   hire(id){if(!hireOK(id))return;if(recruit(id,false)){toast(TPL[id].n+' joins your roster. Add them to your six from the menu while in town.');sfx('buy');}else toast('Not enough gold.');render();},
-  buyItem(id){const it=ITEMS[id];if(G.gold>=it.price&&(G.inv[id]||0)<9){G.gold-=it.price;G.inv[id]=(G.inv[id]||0)+1;saveGame();sfx('buy');}render();},
+  buyItem(id){const it=ITEMS[id];if(G.gold>=it.price&&(G.inv[id]||0)<invCap()){G.gold-=it.price;G.inv[id]=(G.inv[id]||0)+1;saveGame();sfx('buy');}render();},
   buyGear(id){const g=GEAR[id];if(G.gold>=g.price){G.gold-=g.price;G.gear.push(id);saveGame();sfx('buy');toast('Bought '+g.n+'.');}render();},
   sell(id){const i=G.gear.indexOf(id);if(i>=0){G.gear.splice(i,1);G.gold+=sellVal(gearOf(id));saveGame();sfx('buy');}render();},
   forge(a){const o=JSON.parse(a);const r=forge(o.w,o.r);if(r){toast('Forged: '+gearOf(r).n);sfx('chest');}else sfx('deny');render();},

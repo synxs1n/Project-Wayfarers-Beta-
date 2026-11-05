@@ -78,7 +78,7 @@ function facSync(quiet){if(!G||G.daily)return;const f=facInit();FAC.forEach(F=>{
 {const fg=forge;forge=function(){const r=fg.apply(this,arguments);try{if(r&&!G.daily)facCredit('temper');}catch(e){}return r;};}
 {const cr=craft;craft=function(rcp){const g0=G.gold,r=cr.apply(this,arguments);try{if(r&&!G.daily){const spent=g0-G.gold;
   if(rcp.item){facCredit('potion');const rb=facSumAll('rebate');if(rb>0&&spent>0){const back=Math.round(spent*rb);if(back>0){G.gold+=back;toast(`Circle rebate: ${back} gold back.`);}}
-    const dbl=facRank('alch')>=6?.15:0;if(dbl&&Math.random()<dbl&&(G.inv[rcp.item]||0)<9){G.inv[rcp.item]++;toast('The Archmage\'s touch: one extra!');}}
+    const dbl=facRank('alch')>=6?.15:0;if(dbl&&Math.random()<dbl&&(G.inv[rcp.item]||0)<invCap()){G.inv[rcp.item]++;toast('The Archmage\'s touch: one extra!');}}
   else{facCredit('forge');const rb=facSmithRebate();if(rb>0&&spent>0){const back=Math.round(spent*rb);if(back>0){G.gold+=back;toast(`Union rebate: ${back} gold back.`);}}}}}catch(e){}return r;};}
 {const rt=registerTamed;registerTamed=function(o){const r=rt.apply(this,arguments);try{if(G&&!G.daily&&o&&!o._fc){o._fc=1;facCredit('tame');}}catch(e){}return r;};}
 {const fc=forgeCost;forgeCost=function(){const c=fc.apply(this,arguments);try{if(c&&G&&!G.daily){const d=facSmithDisc();if(d>0)c.gold=Math.max(1,Math.round(c.gold*(1-d)));}}catch(e){}return c;};}
@@ -99,7 +99,7 @@ ACT.facPerk=function(a){const [id,rk]=String(a).split(':'),r=+rk,F=FACB[id];if(!
   saveGame();sfx('level');render();};
 ACT.facBuy=function(a){const [id,i]=String(a).split(':'),S=(FSTOCK[id]||[])[+i];if(!S||!G||G.daily)return;const need=S[3]||4,item=S[4];if(facRank(id)<(FACB[id].perks.findIndex(p=>p&&p.k==='stock')+1))return;
   if(G.gold<S[2])return;let key=S[0];if(!item){key=S[0]==='$rel'?ZS(G.stage).mat:resolveDrop(S[0],G.stage);}
-  if(item&&(G.inv[key]||0)>=9){toast('You carry the most of those already.');return;}
+  if(item&&(G.inv[key]||0)>=invCap()){toast('You carry the most of those already.');return;}
   G.gold-=S[2];if(item)G.inv[key]=(G.inv[key]||0)+1;else{const q=/\(3\)/.test(S[1])?3:1;if(S[0]==='hide'||S[0]==='fang'||S[0]==='scale'||S[0]==='$rel'||/bundle/.test(S[1]))G.mats[key]=(G.mats[key]||0)+3;else G.mats[key]=(G.mats[key]||0)+q;}
   saveGame();sfx('chest');toast(`Bought ${S[1]}.`);render();};
 // ---------- screens ----------

@@ -133,7 +133,7 @@ function vNext(){
   const P=partyOf(),pts=Object.values(G.roster).filter(c=>c.pts>0),spare=P.filter(upgradeSpare);
   if(pts.length)add(false,`${pts.length} hero${pts.length>1?'es have':' has'} unspent stat points`,pts.slice(0,4).map(c=>esc(c.name)).join(', ')+'. Open them from Party or Roster.');
   if(spare.length)add(false,'Better gear is sitting in your pack',spare.slice(0,4).map(c=>esc(c.name)).join(', ')+' could equip an upgrade.');
-  const canR=RECIPES.filter(r=>recipeOpen(r)&&G.gold>=r.g&&hasMats(recipeMats(r))&&!(r.item&&(G.inv[r.item]||0)>=9));
+  const canR=RECIPES.filter(r=>recipeOpen(r)&&G.gold>=r.g&&hasMats(recipeMats(r))&&!(r.item&&(G.inv[r.item]||0)>=invCap()));
   const cS=canR.filter(r=>SMITH_CATS.includes(r.cat)).length,cA=canR.length-cS;
   if(cS)add(false,`${cS} weapon or armor recipe${cS>1?'s':''} you can Forge right now`,'At the Smithy.');
   if(cA)add(false,`${cA} potion, charm or tent recipe${cA>1?'s':''} you can craft right now`,'At Alchemy.');

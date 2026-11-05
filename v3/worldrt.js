@@ -245,7 +245,7 @@ function openChest(x,y){
   if(m.cave&&(m.chests||[]).some(c=>c[0]===x&&c[1]===y&&c[2]==='reward')){rebuildBase();const t=caveReward(m.s);saveGame();say(null,'You open the chest. '+t);return;}
   if(vault){G.vaults=G.vaults||{};G.vaults[s]=1;const ch=pick(['c_str','c_int','c_vit','c_spi','c_agi','c_dex','c_luk']),g=econG(200+s*150);G.gear.push(ch);G.gold+=g;msg=`Inside: ${gearOf(ch).n} and ${g} gold!`;}
   else if(r<.28){const g=econG(60+s*110+ri(0,40));G.gold+=g;msg=`Inside: ${g} gold.`;}
-  else if(r<.52){const it=pick(['potion','potion','ether','remedy','plume',s>=1?'hipotion':'potion']);const n=it==='plume'?1:2;G.inv[it]=Math.min(9,(G.inv[it]||0)+n);msg=`Inside: ${n>1?n+' x ':''}${ITEMS[it].n}.`;}
+  else if(r<.52){const it=pick(['potion','potion','ether','remedy','plume',s>=1?'hipotion':'potion']);const n=it==='plume'?1:2;G.inv[it]=Math.min(invCap(),(G.inv[it]||0)+n);msg=`Inside: ${n>1?n+' x ':''}${ITEMS[it].n}.`;}
   else if(r<.7){const n=dun?3:2;G.mats[Z.mat]=(G.mats[Z.mat]||0)+n;msg=`Inside: ${n} x ${MATS[Z.mat]}.`;}
   else if(r<.9){const gid=lootBase()+'_'+tier+(dun?'+1':'');G.gear.push(gid);msg=`Inside: ${gearOf(gid).n} (${ITEM_TIERS[gTierIdx(gearOf(gid))].n})! Equip it from the menu, anywhere.`;}
   else{const cid=pick(['c_vital','c_mana','c_swift','c_clarity','c_'+pick(ELK)]);G.gear.push(cid);msg=`Inside: ${gearOf(cid).n} (${ITEM_TIERS[gTierIdx(gearOf(cid))].n})!`;}

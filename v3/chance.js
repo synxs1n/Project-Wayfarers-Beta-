@@ -94,6 +94,6 @@ const PACK_TABLE=[['potion',3,0],['hipotion',2,1],['ether',3,0],['remedy',2,0],[
 function packContents(){const s=G.stage|0,L=PACK_TABLE.filter(r=>ITEMS[r[0]]&&r[2]<=s+1),got={};
   const roll=()=>{const tot=L.reduce((a,b)=>a+b[1],0);let r=Math.random()*tot;for(const x of L){if((r-=x[1])<0)return x[0];}return L[0][0];};
   const n=3+(Math.random()<.25?1:0);for(let i=0;i<n;i++){const k=roll();got[k]=(got[k]||0)+1;}
-  const parts=[];Object.keys(got).forEach(k=>{const add=Math.min(got[k],9-(G.inv[k]||0));if(add>0){G.inv[k]=(G.inv[k]||0)+add;}parts.push(`${got[k]>1?got[k]+' x ':'a '}${ITEMS[k].n}`);});
+  const parts=[];Object.keys(got).forEach(k=>{const add=Math.min(got[k],invCap()-(G.inv[k]||0));if(add>0){G.inv[k]=(G.inv[k]||0)+add;}parts.push(`${got[k]>1?got[k]+' x ':'a '}${ITEMS[k].n}`);});
   if(Math.random()<.2){const m=ZS(s).mat;G.mats[m]=(G.mats[m]||0)+2;parts.push(`2 ${MATS[m]}`);}
   return parts.length>1?parts.slice(0,-1).join(', ')+' and '+parts[parts.length-1]:parts[0];}

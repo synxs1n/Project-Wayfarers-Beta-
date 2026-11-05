@@ -8,8 +8,8 @@ await page.waitForFunction(()=>__A.V.screen==='world',{timeout:20000});
 await ev(()=>{__A.ACT.menu();});await wait(150);
 const top=await ev(()=>[...document.querySelectorAll('#modal .mgrp .chip')].map(x=>x.textContent));
 chk('6.1 the menu group is called Backpack',top.includes('Backpack')&&!top.includes('Gear'));
-// 6.2 shop sorted by rarity, descending
-await ev(()=>{__A.V.modal={type:'smithy',tab:'weapons'};__A.render();});await wait(150);
+// 6.2 shop sorted by rarity, descending (v0.5.0 3.1: "Best for party" is the default now, so pick Rarest first)
+await ev(()=>{__A.V.modal={type:'smithy',tab:'weapons'};__A.render();__A.ACT.shopF('sort:rarity');});await wait(150);
 const t1=await ev(()=>[...document.querySelectorAll('#modal .shoprow')].map(r=>{const m=(r.querySelector('.tchip')||{}).className||'';const x=m.match(/\bt(\d)\b/);return x?+x[1]:-1;}));
 console.log('weapons tiers',JSON.stringify(t1));
 chk('6.2 the smithy lists the rarest first',t1.length>1&&t1.every((v,i)=>i===0||v<=t1[i-1]));
