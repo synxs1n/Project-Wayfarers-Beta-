@@ -977,3 +977,7 @@ html.rm .menter{animation:none}
 /* v0.5.1: status symbols under the name in the Party menu; new skills lead the battle results */
 .swstrow{display:flex;gap:3px;margin:1px 0 2px;line-height:1}.swstrow .swst{display:flex;gap:3px}.swstrow .ail{width:15px;height:15px}
 .learntop{margin:-2px 0 8px;padding:6px 8px;border:1px solid var(--gold,#d9a441);border-radius:6px;background:rgba(217,164,65,.08)}.learntop h4{margin-top:0}
+/* ===== Beta v0.5.3: HD-2D world (hd2d.js). The WebGL view sits under the 2D canvas, which keeps taps, weather and fades. ===== */
+.wview canvas.wgl{position:absolute;margin:0;pointer-events:none;image-rendering:pixelated;z-index:0}
+.wview:not(.hd) canvas.wgl{display:none}
+.wview.hd #wcv{position:relative;z-index:1}

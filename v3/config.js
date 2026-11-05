@@ -152,3 +152,36 @@ const GFX_AUTO={start:'medium',windowMs:3000,down:45,up:57,gap:250};
 const GFX_PARA={px:4,titleMs:24000};
 // Camera pushes [zoom, ms]: crits, reactions, shield breaks, Limit Breaks.
 const GFX_CAM={crit:[1.035,360],react:[1.05,520],brk:[1.06,600],limit:[1.05,760]};
+// ===== Beta v0.5.3: HD-2D world renderer (hd2d.js, hd2dgl.js) =====
+// Medium and High graphics draw the world maps through WebGL as a lit diorama (Low, no WebGL or Settings > HD-2D world off: the 2D view).
+// pitch: camera tilt in degrees below the horizon; fov: vertical field of view (maxHfov caps the horizontal one on wide views); zoom: 1 =
+// sprites as big as in the 2D view; follow: camera glide time constant (ms); topSlack: how far past the map's top edge the camera may
+// look (share of the view); sway: idle camera drift (px, degrees, ms; off under reduced motion). wall: block heights in art pixels
+// (dungeon walls, field cliffs, town walls); water/deep: how far water and cloud seas sit below the ground. fogStart/fogEnd: distance
+// fog, in camera distances. xray: radius (art px) around the hero where props and walls in front of him thin out; actMin: the least
+// light characters get (dark places stay readable); heroLight: radius of the hero's lantern; shaft: light shaft strength.
+// dof: tilt shift (shift of the sharp band from the hero, band half height, ramp, strength; all shares of the view height).
+// bloom: threshold and strength (Medium, High). tiers: px = internal pixels per art pixel (1 = the 2D view's own grid), blur = size
+// divisor of the blurred copy, lmap = light map size (every light in view is drawn into it each frame), bloom 1 = from the blurred copy,
+// 2 = its own wider pass, dof 1 or 2 blur rounds, shafts on or off, every = remake the blurred copy every n frames.
+// lmMax: most lights per frame; lightK: light strength; chunk: static geometry chunk size in tiles (culling).
+// look: lighting and grade per time of day and place; weather: how each weather scales ambient and sun and tints the fog.
+const HD2D={pitch:40,fov:28,maxHfov:40,zoom:1,follow:85,topSlack:.2,sway:{amp:.7,pitch:.25,ms:11000},
+  wall:{dungeon:22,cliff:12,town:14},water:-3,deep:-14,fogStart:1.15,fogEnd:2.7,xray:{out:26,dun:40},actMin:{out:.62,dun:.58},heroLight:120,shaft:.09,
+  dof:{shift:.06,band:.1,ramp:.32,max:1},bloom:{thr:.86,med:.5,high:.55},
+  tiers:{medium:{px:1,blur:2,lmap:128,bloom:1,dof:1,shafts:1,every:2},high:{px:1,blur:2,lmap:192,bloom:2,dof:1,shafts:1}},lmMax:96,lightK:.8,chunk:8,
+  suns:{day:[-.55,.78,.3],dusk:[-.9,.36,.25],dawn:[.9,.36,.25]},
+  look:{
+    day:  {amb:[.66,.66,.7],sun:[.5,.47,.4],sd:[-.55,.78,.3],sh:[.55,0,0],fog:[.74,.84,.98],fogA:.32,exp:1,con:1.07,sat:1.14,vig:.32,lift:[0,0,.02],gain:[1.03,1,.96],emis:0,lamp:0,shaft:1,shC:[1,.93,.72],pl:0},
+    dusk: {amb:[.52,.4,.46],sun:[.72,.4,.2],sd:[-.9,.36,.25],sh:[0,.62,0],fog:[.86,.52,.42],fogA:.42,exp:1,con:1.06,sat:1.08,vig:.4,lift:[.02,0,.03],gain:[1.08,.95,.86],emis:.75,lamp:.8,shaft:1.3,shC:[1,.62,.35],pl:.25},
+    night:{amb:[.28,.33,.54],sun:[.1,.14,.25],sd:[.3,.85,.4],sh:[.28,0,0],fog:[.07,.09,.2],fogA:.55,exp:1.06,con:1.05,sat:.86,vig:.5,lift:[0,.01,.04],gain:[.94,.97,1.08],emis:1,lamp:1,shaft:0,shC:[.6,.7,1],pl:.6},
+    dawn: {amb:[.5,.47,.58],sun:[.62,.48,.38],sd:[.9,.36,.25],sh:[0,0,.58],fog:[.82,.76,.88],fogA:.45,exp:1,con:1.03,sat:1,vig:.36,lift:[.02,.01,.03],gain:[1.04,.98,1],emis:.45,lamp:.5,shaft:1.2,shC:[1,.8,.62],pl:.2},
+    dungeon:{amb:[.3,.27,.34],sun:[0,0,0],sd:[0,1,.3],sh:[0,0,0],fog:[.03,.02,.04],fogA:.72,exp:1.1,con:1.08,sat:1.06,vig:.56,lift:[0,0,.015],gain:[1.04,1,.98],emis:1,lamp:1,shaft:0,pl:1,bloom:.2},
+    cave: {amb:[.28,.25,.32],sun:[0,0,0],sd:[0,1,.3],sh:[0,0,0],fog:[.03,.025,.04],fogA:.72,exp:1.1,con:1.08,sat:1.08,vig:.58,lift:[0,0,.015],gain:[1.05,1,.97],emis:1,lamp:1,shaft:0,pl:1,bloom:.2},
+    hall: {amb:[.42,.36,.56],sun:[0,0,0],sd:[0,1,.3],sh:[0,0,0],fog:[.06,.04,.1],fogA:.6,exp:1.05,con:1.05,sat:1.08,vig:.45,lift:[.01,0,.03],gain:[1.02,1,1.04],emis:1,lamp:1,shaft:0,pl:.5,bloom:.25},
+    darkRealm:{amb:[.86,.76,.72],sun:.5}},
+  weather:{clear:{amb:1,sun:1},rain:{amb:.84,sun:.35,fog:[.5,.58,.68],fogA:.14,sat:.86,shaft:0},storm:{amb:.7,sun:.15,fog:[.3,.33,.45],fogA:.35,sat:.8,shaft:0},
+    snow:{amb:1.04,sun:.6,fog:[.88,.93,1],fogA:.25,sat:.9,shaft:.4},blizzard:{amb:1,sun:.3,fog:[.92,.95,1],fogA:.55,sat:.8,shaft:0},fog:{amb:.95,sun:.45,fog:[.8,.83,.88],fogA:.55,sat:.85,shaft:.2},
+    gale:{amb:1,sun:.9,shaft:.6},sand:{amb:.95,sun:.7,fog:[.86,.72,.5],fogA:.4,sat:.95,shaft:.5},heat:{amb:1.04,sun:1.15,fog:[1,.82,.62],fogA:.15,warm:1},
+    ashfall:{amb:.8,sun:.45,fog:[.45,.38,.36],fogA:.35,sat:.8,shaft:.3},aurora:{amb:.95,sun:.8,fog:[.3,.6,.55],fogA:.12},starfall:{amb:.95,sun:.9,fog:[.3,.3,.5],fogA:.1},
+    bloodmoon:{amb:.8,sun:.5,fog:[.5,.1,.12],fogA:.3,warm:1,shaft:0},eclipse:{amb:.6,sun:.1,fog:[.1,.1,.2],fogA:.3,shaft:0},meteor:{amb:.9,sun:.8}}};
