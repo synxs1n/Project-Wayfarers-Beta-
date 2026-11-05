@@ -233,3 +233,25 @@ const HD2D={pitch:40,fov:28,maxHfov:40,zoom:1,follow:85,topSlack:.2,sway:{amp:.7
 // act: the least light a character gets (outdoors at night, in dungeons), added in the ambient's colour; shadow: contact shadow
 // [width as a share of the sprite, depth as a share of the width, core darkness, soft darkness, offset away from the key light px].
 HD2D.spr={sc:2/3,sat:.86,con:.9,spread:9,rim:.75,act:{out:.3,dun:.34},shadow:[.8,.55,.36,.3,1.6]};
+// v0.6.3 TWISTS (twists.js): small rule changes for repeat content.
+// daily: one twist per ISO week of the trial's date (the same for all seven days, never random), picked as (isoYear*53+isoWeek) mod the pool
+// size, so two weeks in a row never share one. Each twist only works inside the Daily Trial. c is the short battle chip, d the one line.
+// ng: New Game+ modifiers, up to max picked on the starter screen (off by default), stored in G.ngMods. xp/gold multiply battle rewards.
+const TWISTS={on:true,
+  daily:[
+    {id:'fire2',n:'Fire reactions deal double',c:'Fire x2',d:'Any reaction with Fire in it, primed or detonated, hits twice as hard.',m:2},
+    {id:'heal',n:'Healing halved',c:'Heals ½',d:'Heal skills and potions restore half as much.',m:.5},
+    {id:'shield',n:'Shields start one pip higher',c:'Shield +1',d:'The Daily Terror and the Echo start with one more shield pip.',add:1},
+    {id:'weak',n:'Weak spots hurt more',c:'Weakness +25%',d:'Super effective hits deal 25% more, for you and for them.',m:1.25},
+    {id:'linger',n:'Status effects last a turn longer',c:'Effects +1',d:'Every status lasts one more turn, good or bad.',add:1},
+    {id:'primed',n:'Every foe is primed at start',c:'All primed',d:'Each foe enters primed, so your detonators can strike at once.',t:3},
+    {id:'crit',n:'Sharp eyes',c:'Crits +10%',d:'Everyone lands critical hits 10% more often.',add:.1},
+    {id:'ward',n:'Warded entry',c:'Ward start',d:'Your front three start every wave with Ward, which blocks one hit.'},
+    {id:'limit',n:'Limits half charged',c:'Limit 50%',d:'Your heroes start the trial with Limit gauges half full.',v:50},
+    {id:'glass',n:'Glass foes',c:'Glass foes',d:'Foes have 20% less HP but hit 20% harder.',hp:.8,pow:1.2}],
+  ng:{max:2,mods:[
+    {id:'brutal',n:'Foes hit harder',risk:'Foes deal 30% more damage.',gain:'+30% XP and gold.',pow:1.3,xp:1.3,gold:1.3},
+    {id:'coldinn',n:'Cold inns',risk:'Inns heal only half of what you are missing.',gain:'+50% gold.',heal:.5,gold:1.5},
+    {id:'elites',n:'Elites everywhere',risk:'Every wild fight has one shielded elite with 50% more HP.',gain:'+25% XP and gold.',pips:2,hp:1.5,xp:1.25,gold:1.25},
+    {id:'react',n:'Reactions only',risk:'Only reactions crack shields; weak hits and skills no longer chip them.',gain:'Reactions hit 30% harder, +15% XP.',m:1.3,xp:1.15},
+    {id:'iron',n:'Ironman',risk:'Fallen heroes stay down until you rest at an inn. No feathers, salts, tents or revive spells.',gain:'+40% XP.',xp:1.4}]}};
