@@ -49,7 +49,7 @@ vec3 g(vec2 p){vec3 c=texture2D(uT,p).rgb;return uThr>0.0?max(c-uThr,0.0)/(1.0-u
 void main(){vec3 c=g(v)*0.227027+(g(v+uD*1.3846154)+g(v-uD*1.3846154))*0.3162162+(g(v+uD*3.2307692)+g(v-uD*3.2307692))*0.0702703;gl_FragColor=vec4(c,1.0);}`,
 comp_f:`precision mediump float;uniform sampler2D uB;uniform sampler2D uG;
 uniform vec4 uDof;uniform vec4 uBl;uniform vec4 uSh;uniform vec3 uShC;uniform vec2 uAsp;uniform float uVig;varying vec2 v;
-void main(){vec3 b=texture2D(uB,v).rgb;float dy=v.y-uDof.x;float k=clamp((abs(dy)-uDof.y)/uDof.z,0.0,1.0);k=k*k*(3.0-2.0*k)*uDof.w;
+void main(){vec3 b=texture2D(uB,v).rgb;float dy=v.y-uDof.x;float k=clamp((abs(dy)-uDof.y)/uDof.z,0.0,1.0);k=k*k*(3.0-2.0*k)*uDof.w*(dy<0.0?0.35:1.0);
   vec3 g=uBl.z>0.5?texture2D(uG,v).rgb:max(b-uBl.x,0.0)/(1.0-uBl.x);vec3 add=g*uBl.y;
   if(uSh.x>0.0){float a=dot(v*uAsp,vec2(0.80,0.60));float w=sin(a*7.0+uSh.y*0.17)*0.5+0.5;w=w*w;w*=w;add+=uShC*(w*uSh.x*smoothstep(0.15,1.0,v.y));}
   vec2 q=(v-0.5)*vec2(uAsp.x,1.0)*1.15;float vg=1.0-uVig*smoothstep(0.18,0.62,dot(q,q));

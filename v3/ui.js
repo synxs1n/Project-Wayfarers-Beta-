@@ -23,7 +23,8 @@ const roleTag=s=>{const r=s.role&&skEls(s).length?`<em class="role ${s.role}" ti
 // v0.4.3: in battle, a detonator shows a hint only when it can set off a foe that is Primed right now
 const detLive=s=>{try{if(!s||s.role!=='det'||!B)return '';const els=skEls(s),hit=B.en.filter(e=>e.hp>0&&e.primed&&els.some(x=>reactFor(e.primed.el,x)));if(!hit.length)return '';const R=reactFor(hit[0].primed.el,els.find(x=>reactFor(hit[0].primed.el,x)));return `<small class="detn">✸ Can set off ${esc(R.n)} on ${esc(hit[0].name)}${hit.length>1?` (+${hit.length-1} more)`:''}</small>`;}catch(e){return '';}};
 const detNote=s=>{if(!s||s.role!=='det')return '';const els=skEls(s),L=Object.keys(REACT).map(k=>REACT[k]).filter(R=>els.includes(R.d));if(!L.length)return '';return `<small class="detn">✸ Sets off: ${L.map(R=>`${EL[R.p]}-primed → <b>${R.n}</b> x${R.m}`).join(', ')}</small>`;};
-const primedTag=u=>u.primed&&u.hp>0&&EL[u.primed.el]?`<span class="primed" style="--c:${ELC[u.primed.el]}">${ico(u.primed.el)}PRIMED ${EL[u.primed.el].toUpperCase()} ${u.primed.t}T</span>`:'';
+// v0.5.9: the primed marker is a small floating element badge with the turns left (the full text lives in the tap popup and the card)
+const primedTag=u=>u.primed&&u.hp>0&&EL[u.primed.el]?`<span class="primed pmin" style="--c:${ELC[u.primed.el]}" aria-label="Primed with ${EL[u.primed.el]}, ${u.primed.t} turn${u.primed.t===1?'':'s'} left">${ico(u.primed.el)}<i>${u.primed.t}</i></span>`:'';
 // v0.3.5 2.1: does the skill being aimed set off this foe's prime?
 const detHits=(sk,e)=>!!(sk&&sk.role==='det'&&e&&e.primed&&e.hp>0&&skEls(sk).some(x=>reactFor(e.primed.el,x)));
 const stTags=u=>Object.keys(u.st||{}).map(k=>`<i class="tag ${STS[k].bad?'bad':'good'}" style="--c:${STS[k].c}" title="${STS[k].n}: ${STS[k].d}">${stSym(k)}</i>`).join('');

@@ -96,3 +96,8 @@ Full write-up: `v053-hd2d.md`. `hd2dgl.js` and `hd2d.js` (before `pathguard.js`)
 
 ## Beta v0.5.8
 - **Fix: element badges and bars covered on the battle stage.** The HP bar, limit bar, shield pips, primed mark (battle.js) and the element badges (a wrapper in battleui.js) were drawn right after each unit's own sprite, in y order, so a unit standing lower covered the badge of the unit behind it (the owner's report: a knight's element icon under the mage in front), and rain and snow drew over all of them. They now live in `unitHud(ctx,u,b,now)`, which `battleFrame` calls for every unit after all sprites, particles and weather; `drawUnit` records the animated position in `u._hud`. Test: `chrome/v058a.js` (Low and Medium, clear, snow and rain, portrait and landscape): fails on v0.5.7 in all 8 cases, passes now.
+
+## Beta v0.5.9
+- **Primed marker.** `primedTag` (ui.js) is a small floating element badge with the turns left (`.primed.pmin`, a gentle bob, still under reduced motion), replacing the "PRIMED ICE 1T" chip. The canvas sphere, ground ring and orbiting sparks in `unitHud` are gone, and the stage status row no longer repeats a primed chip (`stItems(u,{noPrime:true})`); the foe card's "PRIMED: element, turns" line and the tap popup keep the details.
+- **HD-2D focus band.** `HD2D.dof` is now `{shift:.06,band:.24,ramp:.5,max:.7}` (was band .1, ramp .32, max 1), and the post shader blurs the near side (below the hero) at 35% of the far side. On a portrait phone the whole lower half used to smear.
+- Test: `chrome/v059a.js`.

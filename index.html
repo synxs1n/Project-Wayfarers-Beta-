@@ -998,6 +998,14 @@ html.rm .menter{animation:none}
 .wview:not(.hd) canvas.wgl{display:none}
 .wview.hd #wcv{position:relative;z-index:1}
 
+/* v0.5.9: primed marker = a small floating element badge with the turns left */
+.primed.pmin{top:-16px;gap:0;padding:1px;border-radius:50%;border:1px solid var(--c);background:radial-gradient(circle,#150b17 55%,rgba(21,11,23,.6));box-shadow:0 0 4px var(--c);font:900 5px/1 var(--fb);animation:pminBob 1.6s ease-in-out infinite}
+.primed.pmin .ico{width:8px;height:8px}
+.primed.pmin i{position:absolute;right:-4px;bottom:-3px;font-style:normal;color:#fff;background:#150b17;border:1px solid var(--c);border-radius:3px;padding:0 1px;font:900 4.5px/1 var(--fb)}
+@keyframes pminBob{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,-1.5px)}}
+html.rm .primed.pmin{animation:none}
+@media (prefers-reduced-motion:reduce){.primed.pmin{animation:none}}
+
 /* ===== v0.5.3 UI: "Gilded Night". Concatenated after style.css by v3build.py, so these rules win at equal specificity.
    Deep ink-blue lacquer panels, thin antique-gold double rules with corner filigree (CSS/SVG data URIs, all original),
    soft gradients and shadows, a clear gold cursor on command menus. Fonts: Jacquard 24 (logo only), Pixelify Sans (titles),
@@ -1321,7 +1329,7 @@ html.rm .menter .panel,html.rm .pc.tg,html.rm .swc.sel{animation:none}
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.5.8";const APP_BUILD="cb4175d01510";
+(function(){const APP_VER="0.5.9";const APP_BUILD="7d3c151c8fcb";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -1611,7 +1619,7 @@ const HD_CAM={big:[1.04,480],limit:[1.07,900]};
 // look: lighting and grade per time of day and place; weather: how each weather scales ambient and sun and tints the fog.
 const HD2D={pitch:40,fov:28,maxHfov:40,zoom:1,follow:85,topSlack:.2,sway:{amp:.7,pitch:.25,ms:11000},
   wall:{dungeon:22,cliff:12,town:14},water:-3,deep:-14,fogStart:1.15,fogEnd:2.7,xray:{out:26,dun:40},actMin:{out:.62,dun:.58},heroLight:120,shaft:.09,
-  dof:{shift:.06,band:.1,ramp:.32,max:1},bloom:{thr:.86,med:.5,high:.55},
+  dof:{shift:.06,band:.24,ramp:.5,max:.7},bloom:{thr:.86,med:.5,high:.55},
   tiers:{medium:{px:1,blur:2,lmap:128,bloom:1,dof:1,shafts:1,every:2},high:{px:1,blur:2,lmap:192,bloom:2,dof:1,shafts:1}},lmMax:96,lightK:.8,chunk:8,
   suns:{day:[-.55,.78,.3],dusk:[-.9,.36,.25],dawn:[.9,.36,.25]},
   look:{
@@ -1633,13 +1641,14 @@ const HD2D={pitch:40,fov:28,maxHfov:40,zoom:1,follow:85,topSlack:.2,sway:{amp:.7
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.5.8";const APP_BUILD="cb4175d01510";
+const APP_VER="0.5.9";const APP_BUILD="7d3c151c8fcb";
 
 // =================== VERSION ===================
 // The one public version string. Patch (0.1.x) for fixes and balance, minor (0.x.0) for new systems.
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.5.9',['A primed foe now shows a small floating element badge with the turns left, in place of the large PRIMED chip and the glowing sphere; tap it for the full explanation, which is also on the foe card. The HD-2D world keeps much more of the screen in focus: the sharp band around your party is wider, the blur is gentler, and the near side of the view stays almost sharp.']],
  ['Beta v0.5.8',['Fix: on the battle stage, a fighter standing in front no longer covers another fighter\'s element badge or HP bar, and falling rain and snow no longer hide them. Bars, shield pips and element badges now always draw on top.']],
  ['Beta v0.5.7',['Fix: heroes, townsfolk and monsters in the HD-2D world no longer look sliced and smeared; they now show with their full detail.']],
  ['Beta v0.5.6',['The world is now a lit diorama on Medium and High graphics: a tilted camera follows your party over maps where walls, cliffs and houses rise from the ground with gabled roofs and lit windows, props stand upright, water sits low and lava glows. Lamps, torches, windows, braziers and crystals light the ground around them, the sun casts soft shadows, fog gathers in the distance, and bloom, a tilt-shift focus band, light shafts and colour grading follow the time of day and the weather. Anything that stands in front of your hero thins out so you never lose sight of them. Settings > HD-2D world turns it off; Low and devices without WebGL keep the classic view.']],
@@ -7583,12 +7592,7 @@ function unitHud(ctx,u,b,now){const hero=u.side==='p';const x=(u._hud?u._hud.x:b
     if(u.maxShield){for(let i=0;i<u.maxShield;i++){const px=bx+i*5,py=by+5;ctx.fillStyle='#150b17';ctx.fillRect(px,py,4,4);ctx.fillStyle=u.broken?'#5a3a3a':i<u.shield?'#ffd04a':'#4a4a5a';ctx.fillRect(px+1,py+1,2,2);}}
     // v0.5.3: alpha 254 marks HUD pixels (bars and pips), so the GL stage leaves them unlit and out of the bloom
     if(BV.glFull){ctx.save();ctx.globalCompositeOperation='destination-out';ctx.globalAlpha=1/255;ctx.fillRect(bx-1,by-1,Math.max(bw+2,(u.maxShield||0)*5+1),u.maxShield?10:hero?7:4);ctx.restore();}
-    if(u.primed&&ELC[u.primed.el]){const ic=iconCv(u.primed.el),col=ELC[u.primed.el],pl=.5+.5*Math.sin(now/160);const mx=x+Math.round(b.w*.3),my=y-b.h+2+Math.round(Math.sin(now/260)*1);
-      ctx.globalAlpha=.18+.22*pl;ctx.fillStyle=col;ctx.beginPath();ctx.ellipse(x,y-b.h*.45,b.w*.55+pl*3,b.h*.6+pl*3,0,0,7);ctx.fill();
-      ctx.globalAlpha=.7+.3*pl;ctx.strokeStyle=col;ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(x,y-2,b.w*.5+pl*3,5+pl,0,0,7);ctx.stroke();ctx.strokeStyle='#fff';ctx.lineWidth=1;ctx.beginPath();ctx.ellipse(x,y-2,b.w*.5+pl*3,5+pl,0,0,7);ctx.stroke();
-      for(let i=0;i<4;i++){const a=now/420+i*1.571;ctx.fillStyle=i%2?'#fff':col;ctx.fillRect(Math.round(x+Math.cos(a)*(b.w*.5+pl*3)),Math.round(y-2+Math.sin(a)*(5+pl)),2,2);}
-      ctx.globalAlpha=1;ctx.drawImage(ic,Math.round(x-5),Math.round(y-b.h-11+Math.sin(now/260)*1.5));
-}
+    // v0.5.9: no sphere, ring or sparks around a primed unit any more: the floating element badge (primedTag, ui.js) marks it
   }
 }
 
@@ -8241,7 +8245,8 @@ const roleTag=s=>{const r=s.role&&skEls(s).length?`<em class="role ${s.role}" ti
 // v0.4.3: in battle, a detonator shows a hint only when it can set off a foe that is Primed right now
 const detLive=s=>{try{if(!s||s.role!=='det'||!B)return '';const els=skEls(s),hit=B.en.filter(e=>e.hp>0&&e.primed&&els.some(x=>reactFor(e.primed.el,x)));if(!hit.length)return '';const R=reactFor(hit[0].primed.el,els.find(x=>reactFor(hit[0].primed.el,x)));return `<small class="detn">✸ Can set off ${esc(R.n)} on ${esc(hit[0].name)}${hit.length>1?` (+${hit.length-1} more)`:''}</small>`;}catch(e){return '';}};
 const detNote=s=>{if(!s||s.role!=='det')return '';const els=skEls(s),L=Object.keys(REACT).map(k=>REACT[k]).filter(R=>els.includes(R.d));if(!L.length)return '';return `<small class="detn">✸ Sets off: ${L.map(R=>`${EL[R.p]}-primed → <b>${R.n}</b> x${R.m}`).join(', ')}</small>`;};
-const primedTag=u=>u.primed&&u.hp>0&&EL[u.primed.el]?`<span class="primed" style="--c:${ELC[u.primed.el]}">${ico(u.primed.el)}PRIMED ${EL[u.primed.el].toUpperCase()} ${u.primed.t}T</span>`:'';
+// v0.5.9: the primed marker is a small floating element badge with the turns left (the full text lives in the tap popup and the card)
+const primedTag=u=>u.primed&&u.hp>0&&EL[u.primed.el]?`<span class="primed pmin" style="--c:${ELC[u.primed.el]}" aria-label="Primed with ${EL[u.primed.el]}, ${u.primed.t} turn${u.primed.t===1?'':'s'} left">${ico(u.primed.el)}<i>${u.primed.t}</i></span>`:'';
 // v0.3.5 2.1: does the skill being aimed set off this foe's prime?
 const detHits=(sk,e)=>!!(sk&&sk.role==='det'&&e&&e.primed&&e.hp>0&&skEls(sk).some(x=>reactFor(e.primed.el,x)));
 const stTags=u=>Object.keys(u.st||{}).map(k=>`<i class="tag ${STS[k].bad?'bad':'good'}" style="--c:${STS[k].c}" title="${STS[k].n}: ${STS[k].d}">${stSym(k)}</i>`).join('');
@@ -10063,7 +10068,7 @@ function unitOf(ref){if(!B)return null;const [side,i]=String(ref).split(':');ret
 function unitRef(u){return u.side==='e'?'e:'+B.en.indexOf(u):'p:'+allParty().indexOf(u);}
 // Beta v0.3.1: icons in priority order (Primed, Broken, ailments by turns left, boons, weather); with opt.max the rest fold into "+N"
 function stItems(u,o){const ref=unitRef(u),L=[];
-  if(u.primed&&ELC[u.primed.el])L.push(`<button class="sti prime" style="--c:${ELC[u.primed.el]}" data-act="stInfo" data-arg="${ref}|primed" aria-label="Primed with ${EL[u.primed.el]}">⟐${ico(u.primed.el)}<sub>${u.primed.t||''}</sub></button>`);
+  if(u.primed&&ELC[u.primed.el]&&!o.noPrime)L.push(`<button class="sti prime" style="--c:${ELC[u.primed.el]}" data-act="stInfo" data-arg="${ref}|primed" aria-label="Primed with ${EL[u.primed.el]}">⟐${ico(u.primed.el)}<sub>${u.primed.t||''}</sub></button>`);
   if(u.broken&&u.maxShield)L.push(`<button class="sti bad" style="--c:#ffd04a" data-act="stInfo" data-arg="${ref}|broken" aria-label="Broken">${stSym('broken')}</button>`);
   const ks=Object.keys(u.st||{}).filter(k=>STS[k]).sort((a,b)=>(STS[b].bad?1:0)-(STS[a].bad?1:0)||(u.st[a].t||0)-(u.st[b].t||0));
   ks.forEach(k=>{const d=STS[k],t=u.st[k].t;L.push(`<button class="sti ${d.bad?'bad':'good'}" style="--c:${d.c}" data-act="stInfo" data-arg="${ref}|${k}" aria-label="${esc(d.n)}${t?', '+t+' turns left':''}" title="${esc(d.n)}">${stSym(k)}${t&&t<9?`<sub>${t}</sub>`:''}</button>`);});
@@ -10080,12 +10085,12 @@ function stageTags(){
   const units=B.en.filter(e=>e.hp>0).concat(B.front.filter(c=>c.hp>0)).map(u=>({u,b:unitBox(u)})).filter(o=>o.b);
   const bodies=units.map(o=>({x:o.b.x-o.b.w*.3,y:o.b.y-o.b.h*.8,w:o.b.w*.6,h:o.b.h*.75,u:o.u}));
   const hit=(r,q)=>r.x<q.x+q.w&&r.x+r.w>q.x&&r.y<q.y+q.h&&r.y+r.h>q.y;
-  units.sort((a,b)=>b.b.y-a.b.y).forEach(({u,b})=>{const n=Math.min(4,stItems(u,{}).length);if(!n)return;const w=n*IW+2;
+  units.sort((a,b)=>b.b.y-a.b.y).forEach(({u,b})=>{const n=Math.min(4,stItems(u,{noPrime:true}).length);if(!n)return;const w=n*IW+2;
     const sh=u.maxShield?7:0;/* v0.4.0 1.3: the shield pips own the strip right under the HP bar, tags start below it */const cands=[b.y+7+sh,b.y+17+sh,b.y-b.h-RH+2,b.y-b.h-2*RH+2,b.y-Math.round(b.h/2)];let pos=null;
     for(const y0 of cands){const y=clamp(y0,1,H-RH-1),x=clamp(Math.round(b.x-w/2),1,W-w-1),r={x,y,w,h:RH};
       if(!placed.some(q=>hit(r,q))&&!bodies.some(q=>q.u!==u&&hit(r,q))){pos=r;break;}}
     if(!pos){const y=clamp(b.y+7+sh,1,H-RH-1),x=clamp(Math.round(b.x-w/2),1,W-w-1);pos={x,y,w,h:RH};}
-    placed.push(pos);out.push(`<div class="utags ${u.side}" style="left:${pos.x}px;top:${pos.y}px;width:${pos.w}px">${stButtons(u,{max:4})}</div>`);});
+    placed.push(pos);out.push(`<div class="utags ${u.side}" style="left:${pos.x}px;top:${pos.y}px;width:${pos.w}px">${stButtons(u,{max:4,noPrime:true})}</div>`);});
   return out.join('');
 }
 function stPopHtml(){
@@ -15675,7 +15680,7 @@ vec3 g(vec2 p){vec3 c=texture2D(uT,p).rgb;return uThr>0.0?max(c-uThr,0.0)/(1.0-u
 void main(){vec3 c=g(v)*0.227027+(g(v+uD*1.3846154)+g(v-uD*1.3846154))*0.3162162+(g(v+uD*3.2307692)+g(v-uD*3.2307692))*0.0702703;gl_FragColor=vec4(c,1.0);}`,
 comp_f:`precision mediump float;uniform sampler2D uB;uniform sampler2D uG;
 uniform vec4 uDof;uniform vec4 uBl;uniform vec4 uSh;uniform vec3 uShC;uniform vec2 uAsp;uniform float uVig;varying vec2 v;
-void main(){vec3 b=texture2D(uB,v).rgb;float dy=v.y-uDof.x;float k=clamp((abs(dy)-uDof.y)/uDof.z,0.0,1.0);k=k*k*(3.0-2.0*k)*uDof.w;
+void main(){vec3 b=texture2D(uB,v).rgb;float dy=v.y-uDof.x;float k=clamp((abs(dy)-uDof.y)/uDof.z,0.0,1.0);k=k*k*(3.0-2.0*k)*uDof.w*(dy<0.0?0.35:1.0);
   vec3 g=uBl.z>0.5?texture2D(uG,v).rgb:max(b-uBl.x,0.0)/(1.0-uBl.x);vec3 add=g*uBl.y;
   if(uSh.x>0.0){float a=dot(v*uAsp,vec2(0.80,0.60));float w=sin(a*7.0+uSh.y*0.17)*0.5+0.5;w=w*w;w*=w;add+=uShC*(w*uSh.x*smoothstep(0.15,1.0,v.y));}
   vec2 q=(v-0.5)*vec2(uAsp.x,1.0)*1.15;float vg=1.0-uVig*smoothstep(0.18,0.62,dot(q,q));

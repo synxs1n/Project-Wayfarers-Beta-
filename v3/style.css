@@ -981,3 +981,11 @@ html.rm .menter{animation:none}
 .wview canvas.wgl{position:absolute;margin:0;pointer-events:none;image-rendering:pixelated;z-index:0}
 .wview:not(.hd) canvas.wgl{display:none}
 .wview.hd #wcv{position:relative;z-index:1}
+
+/* v0.5.9: primed marker = a small floating element badge with the turns left */
+.primed.pmin{top:-16px;gap:0;padding:1px;border-radius:50%;border:1px solid var(--c);background:radial-gradient(circle,#150b17 55%,rgba(21,11,23,.6));box-shadow:0 0 4px var(--c);font:900 5px/1 var(--fb);animation:pminBob 1.6s ease-in-out infinite}
+.primed.pmin .ico{width:8px;height:8px}
+.primed.pmin i{position:absolute;right:-4px;bottom:-3px;font-style:normal;color:#fff;background:#150b17;border:1px solid var(--c);border-radius:3px;padding:0 1px;font:900 4.5px/1 var(--fb)}
+@keyframes pminBob{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,-1.5px)}}
+html.rm .primed.pmin{animation:none}
+@media (prefers-reduced-motion:reduce){.primed.pmin{animation:none}}

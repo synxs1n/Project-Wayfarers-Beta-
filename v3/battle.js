@@ -233,12 +233,7 @@ function unitHud(ctx,u,b,now){const hero=u.side==='p';const x=(u._hud?u._hud.x:b
     if(u.maxShield){for(let i=0;i<u.maxShield;i++){const px=bx+i*5,py=by+5;ctx.fillStyle='#150b17';ctx.fillRect(px,py,4,4);ctx.fillStyle=u.broken?'#5a3a3a':i<u.shield?'#ffd04a':'#4a4a5a';ctx.fillRect(px+1,py+1,2,2);}}
     // v0.5.3: alpha 254 marks HUD pixels (bars and pips), so the GL stage leaves them unlit and out of the bloom
     if(BV.glFull){ctx.save();ctx.globalCompositeOperation='destination-out';ctx.globalAlpha=1/255;ctx.fillRect(bx-1,by-1,Math.max(bw+2,(u.maxShield||0)*5+1),u.maxShield?10:hero?7:4);ctx.restore();}
-    if(u.primed&&ELC[u.primed.el]){const ic=iconCv(u.primed.el),col=ELC[u.primed.el],pl=.5+.5*Math.sin(now/160);const mx=x+Math.round(b.w*.3),my=y-b.h+2+Math.round(Math.sin(now/260)*1);
-      ctx.globalAlpha=.18+.22*pl;ctx.fillStyle=col;ctx.beginPath();ctx.ellipse(x,y-b.h*.45,b.w*.55+pl*3,b.h*.6+pl*3,0,0,7);ctx.fill();
-      ctx.globalAlpha=.7+.3*pl;ctx.strokeStyle=col;ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(x,y-2,b.w*.5+pl*3,5+pl,0,0,7);ctx.stroke();ctx.strokeStyle='#fff';ctx.lineWidth=1;ctx.beginPath();ctx.ellipse(x,y-2,b.w*.5+pl*3,5+pl,0,0,7);ctx.stroke();
-      for(let i=0;i<4;i++){const a=now/420+i*1.571;ctx.fillStyle=i%2?'#fff':col;ctx.fillRect(Math.round(x+Math.cos(a)*(b.w*.5+pl*3)),Math.round(y-2+Math.sin(a)*(5+pl)),2,2);}
-      ctx.globalAlpha=1;ctx.drawImage(ic,Math.round(x-5),Math.round(y-b.h-11+Math.sin(now/260)*1.5));
-}
+    // v0.5.9: no sphere, ring or sparks around a primed unit any more: the floating element badge (primedTag, ui.js) marks it
   }
 }
 
