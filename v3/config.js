@@ -31,6 +31,21 @@ const ENC_MIN_STEPS=8;// v0.4.3: at least 8 tiles walked between random battles
 // chance meetings with a wayfarer (chance.js): about 1 in 170 steps after a 30 step quiet gap, at most 2 per area
 const CE_ODDS=1/170, CE_GAP=30, CE_AREA_CAP=2;
 
+// ----- Beta v0.5.0 phase 2: battle and world logic (p2world.js) -----
+// BATTLE_GROUND: every battle backdrop has a solid ground plane from gy (share of the stage height) down; units stand between top and bot,
+// flying foes hover hover px above their shadow. Water, lava and sky are only drawn above gy, as scenery.
+const BATTLE_GROUND={gy:.5,top:.56,bot:.96,hover:9};
+// SURPRISE: touching a roaming dungeon foe that has not seen you gives a free first round: every hero on the front line acts free times
+// before any foe moves. A "Surprise!" banner shows. Elite roamers keep their no auto rule.
+const SURPRISE={free:1};
+// DUAL_FROM: the first stage (0 = the first realm) where dual type wayfarers (taverns, challenges, chance meetings) and dual type regular
+// monsters appear. Bosses, minibosses, elites, mimics and other special foes may be dual at any stage.
+const DUAL_FROM=1;
+// TOWN_LANE: every town gate gets a clear approach lane at least this many tiles wide to the main road
+const TOWN_LANE=2;
+// HINTS: early game hints show only while the journey is in stages below HINTS_UNTIL; delay before one appears (ms)
+const HINTS_UNTIL=1,HINT_DELAY=1400;
+
 // ----- day and night -----
 const CLK_LEN=900,CLK_PH=[['day',0,495],['dusk',495,585],['night',585,810],['dawn',810,900]]; // v0.4.0 3.7: every phase is 50% longer than in v0.3.x (was 600 steps around)
 const NIGHT_POW=1.1;
