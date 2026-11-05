@@ -125,3 +125,6 @@ Details and the pacing audit in `v063-progression.md` (`v3/v063prog.js`, `CAMP` 
 
 ## Beta v0.6.6: weekly Daily Trial twist and New Game+ modifiers
 Details in `v063-twists.md` (`v3/twists.js`, `TWISTS` in config.js, tests `chrome/v063wa.js`, `chrome/v063wb.js`). Twist = TWISTS.daily[(isoYear*53+isoWeek) % 10], deterministic. Known: Ironman auto may waste a turn trying to revive; Healing halved skips Regen and drain; Glass foes may be harsh.
+
+## Beta v0.6.7: no capes on sprites, one icon per item
+Details in `v063-art.md` (`v3/icons.js`, `v3/icons2.js`, test `chrome/v063s.js`): 381 icons, 0 duplicates; capes keep stats but draw nothing; Camp Supplies has its own bedroll icon.

@@ -57,7 +57,7 @@ ACT.efForge=function(f){if(!ECHOFORGE[f])return;const m=efCost(f),base=efBaseIn(
 // a recognizable look: violet frame and a spark on the icon
 {const gi0=gearIcon;gearIcon=function(id){const g=gearOf(id);if(!g||!g.ef)return gi0.apply(this,arguments);const key='gie:'+g.ef+':'+(g.plus||0);
   return `<img class="gico ef" alt="" src="${cvURL(key,()=>{const c=mkCv(16,16),x=c.getContext('2d');x.fillStyle='#2a1640';x.fillRect(0,0,16,16);x.fillStyle='#b48aff';x.fillRect(0,0,16,1);x.fillRect(0,15,16,1);x.fillRect(0,0,1,16);x.fillRect(15,0,1,16);
-    const fam=gearFamOf(id);(GICON[fam]||GICON.charm).forEach(([a,b,w,h])=>{x.fillStyle='#1a0a2a';x.fillRect(a-1,b-1,w+2,h+2);});(GICON[fam]||GICON.charm).forEach(([a,b,w,h],i)=>{x.fillStyle=i?'#8a5ad0':'#e0c8ff';x.fillRect(a,b,w,h);});
-    x.fillStyle='#fff';x.fillRect(12,2,1,3);x.fillRect(11,3,3,1);if(g.plus){x.fillStyle='#ffd04a';for(let i=0;i<g.plus;i++)x.fillRect(12-i*3,13,2,2);}return c;})}">`;};}
+    drawGearIcon(x,gearFamOf(id),null,5,null,id);// v0.6.3: the mythic design of the family in echo colours (icons2.js)
+    if(g.plus){x.fillStyle='#ffd04a';for(let i=0;i<g.plus;i++)x.fillRect(12-i*3,13,2,2);}return c;})}">`;};}
 // gear text mentions the perk
 {const gd0=gearDesc;gearDesc=function(id){let s=gd0.apply(this,arguments);try{const g=typeof id==='string'?gearOf(id):id;if(g&&g.ef&&g.efPerk)s+=(s?', ':'')+g.efPerk;}catch(e){}return s;};}

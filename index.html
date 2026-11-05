@@ -1346,7 +1346,7 @@ html.rm .menter .panel,html.rm .pc.tg,html.rm .swc.sel{animation:none}
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.6.6";const APP_BUILD="54a9f79bfeaa";
+(function(){const APP_VER="0.6.7";const APP_BUILD="93fd5ac9a72d";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -1704,13 +1704,14 @@ const TWISTS={on:true,
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.6.6";const APP_BUILD="54a9f79bfeaa";
+const APP_VER="0.6.7";const APP_BUILD="93fd5ac9a72d";
 
 // =================== VERSION ===================
 // The one public version string. Patch (0.1.x) for fixes and balance, minor (0.x.0) for new systems.
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.6.7',['Capes no longer show on hero sprites (they keep their stats); only weapons and personal quest rewards change how a hero looks. Every item now has its own icon: each weapon, armor and cape changes shape as its tier rises (gems, gold trim, a glint, a glow), every charm has its own pendant, and materials have icons too. The three legendary signature weapons got their names back.']],
  ['Beta v0.6.6',['Daily Trial weekly twist: each week brings one rule change for the trial (this week: Weak spots hurt more), shown on the entry screen and as a chip in its battles; the trial stays the same for everyone on the same day. New Game+ modifiers: when starting a new cycle you may pick up to two (Foes hit harder, Cold inns, Elites everywhere, Reactions only, Ironman), each trading risk for more XP or gold.']],
  ['Beta v0.6.5',['Taming log: Records > Bestiary shows Tamed X of Y, where seen foes roam, and silhouettes for the ones you have not met. Bond goals: hero sheets and a new Bonds page show how many wins side by side until the next campfire talk or joint tech, with a notice when a talk is ready. Make camp (from the third realm, Camp Supplies at Alchemy): rest in the field for a small heal and pick one boon for the next 3 battles, then listen to ready campfire talks.']],
  ['Beta v0.6.4',['Names: heroes outside your party are now your Reserves, and the back three of the party are the Rearguard. The button is now Equip best: reserves.']],
@@ -5246,7 +5247,7 @@ const PQ_TEXT={
  monk:'{n}\'s old master fell to {r}. Time to finish the lesson.',
  bard:'{n} needs one more verse for the ballad, and {r} is it.',
  chronicler:'{n} is missing one page from the archive, and {r} ate it.'};
-const SIGW={chronicler:'Lost Folio',warrior:'Heirloom Edge',knight:'Vow Blade',mage:'Lost Focus',healer:'Lamp Relic',thief:'Debt Collector',archer:'Second Shot',monk:"Master's Wraps",bard:'Final Verse'};
+const SIGW={chronicler:'Lost Folio',warrior:'Heirloom Edge',knight:'Vow Blade',mage:'Lost Focus',healer:'Lamp Relic',thief:'Debt Collector',archer:'Second Shot',monk:"Master's Wraps",bard:'Final Verse',sniper:'Horizon Arbalest',druid:'Packcall Bow',archmage:'Stormglass Rod'};
 const ALTW={sword:'greatsword',greatsword:'katana',axe:'hammer',hammer:'axe',spear:'trident',trident:'spear',dagger:'twindagger',twindagger:'katana',bow:'crossbow',crossbow:'bow',
  staff_orb:'staff_crystal',staff_crystal:'staff_sun',staff_sun:'staff_orb',staff_crook:'staff_sun',rod:'staff_crystal',tome:'staff_orb',lute:'harp',harp:'fan',fan:'harp',fists:'claws',claws:'katana',scythe:'katana',katana:'greatsword',mace:'hammer'};
 function registerSignatures(){RAW.forEach(r=>{const id=r[0],t=TPL[id],fam=CF[t.cls][0],base=GEAR['w_'+fam+'_4']||GEAR['w_'+fam+'_3'],o={n:`${t.n}'s ${SIGW[t.cls]}`,slot:'w',tier:4,only:id,fam:fam,el:t.el[0],price:2400,attr:{[CLS[t.cls].pref[0]]:5}};
@@ -5336,8 +5337,9 @@ function slotSummary(s){const o=loadRaw(s);if(!o)return null;const party=(o.part
   return {stage:o.stage,cleared:(o.cleared||[]).filter(Boolean).length,cycle:o.run?o.run.cycle:0,party,lv:party.length?Math.round(party.reduce((a,id)=>a+((o.roster[id]||{}).lv||0),0)/party.length):0,gold:o.gold,savedAt:o.savedAt||0,battles:(o.stats||{}).battles||0};}
 function exportSave(){return 'AWSAVE1.'+btoa(unescape(encodeURIComponent(JSON.stringify(packG()))));}
 function importSave(code){try{const o=JSON.parse(decodeURIComponent(escape(atob(String(code).trim().replace(/^AWSAVE1\./,'')))));if(!o||o.ver!==3)return null;return unpackG(o);}catch(e){return null;}}
-// v0.4.3: sprite cache key for whatever changes a hero's look (signature gear, cape)
-function lookKey(id){try{const c=G&&G.roster[id];if(!c||!c.eq)return '';const k=EQSL.map(sl=>{const v=c.eq[sl];return v&&(/^u[ac]?_/.test(v)||/^k_/.test(v))?v:'';}).join('|');return k.replace(/\|/g,'')?':'+k:'';}catch(e){return '';}}
+// v0.4.3: sprite cache key for whatever changes a hero's look. v0.6.3: only the hero's own personal reward (signature weapon, Oathmantle,
+// Token) changes the look; capes and shop armor no longer show on the body, so they are not part of the key.
+function lookKey(id){try{const c=G&&G.roster[id];if(!c||!c.eq)return '';const k=['w','a','c'].map(sl=>{const v=String(c.eq[sl]||'');return /^u[ac]?_/.test(v)&&v.endsWith('_'+id)?v:'';}).join('|');return k.replace(/\|/g,'')?':'+k:'';}catch(e){return '';}}
 
 // =================== WORLD GENERATION ===================
 const TS=16;
@@ -10480,10 +10482,10 @@ const GICON={blade:[[7,1,2,9],[5,10,6,1],[7,11,2,3]],dagger:[[7,4,2,6],[5,10,6,1
   stick:[[7,1,2,13],[9,4,2,1],[5,8,2,1]]};
 const TIERC=['#b8b8c0','#8ac0ff','#7ae89a','#ffcf6a','#e08aff','#ff7a6a'];
 function gearFamOf(id){const b=baseIdOf(id);if(b==='w_stick')return 'stick';if(b.startsWith('c_'))return 'charm';return b.split('_')[1];}
-function gearIcon(id){const g=gearOf(id);if(!g)return '';const fam=gearFamOf(id),glow=g.stick?g.glow:null,key='gi2:'+fam+':'+(glow||g.tier)+':'+(g.plus||0);
+function gearIcon(id){const g=gearOf(id);if(!g)return '';const fam=gearFamOf(id),glow=g.stick?g.glow:null,key='gi3:'+baseIdOf(id)+':'+(glow||g.tier)+':'+(g.plus||0);// v0.6.3: one icon per item (icons.js)
   return `<img class="gico" alt="" src="${cvURL(key,()=>{const c=mkCv(16,16),x=c.getContext('2d'),col=glow||TIERC[Math.min(5,g.tier||0)];
     if(glow&&g.stickP&&g.stickP.tier>0){x.fillStyle=glow+'55';x.fillRect(0,0,16,16);}
-    drawGearIcon(x,fam,col,g.tier||0,glow);
+    drawGearIcon(x,fam,col,g.tier||0,glow,id);
     if(g.plus){x.fillStyle='#ffd04a';for(let i=0;i<g.plus;i++)x.fillRect(12-i*3,13,2,2);}return c;})}">`;}
 // ----- stat previews -----
 function statsWith(c,sl,id){const eq=Object.assign({},c.eq);eq[sl]=id;return calcStats(Object.assign({},c,{eq}));}
@@ -11667,8 +11669,8 @@ ACT.efForge=function(f){if(!ECHOFORGE[f])return;const m=efCost(f),base=efBaseIn(
 // a recognizable look: violet frame and a spark on the icon
 {const gi0=gearIcon;gearIcon=function(id){const g=gearOf(id);if(!g||!g.ef)return gi0.apply(this,arguments);const key='gie:'+g.ef+':'+(g.plus||0);
   return `<img class="gico ef" alt="" src="${cvURL(key,()=>{const c=mkCv(16,16),x=c.getContext('2d');x.fillStyle='#2a1640';x.fillRect(0,0,16,16);x.fillStyle='#b48aff';x.fillRect(0,0,16,1);x.fillRect(0,15,16,1);x.fillRect(0,0,1,16);x.fillRect(15,0,1,16);
-    const fam=gearFamOf(id);(GICON[fam]||GICON.charm).forEach(([a,b,w,h])=>{x.fillStyle='#1a0a2a';x.fillRect(a-1,b-1,w+2,h+2);});(GICON[fam]||GICON.charm).forEach(([a,b,w,h],i)=>{x.fillStyle=i?'#8a5ad0':'#e0c8ff';x.fillRect(a,b,w,h);});
-    x.fillStyle='#fff';x.fillRect(12,2,1,3);x.fillRect(11,3,3,1);if(g.plus){x.fillStyle='#ffd04a';for(let i=0;i<g.plus;i++)x.fillRect(12-i*3,13,2,2);}return c;})}">`;};}
+    drawGearIcon(x,gearFamOf(id),null,5,null,id);// v0.6.3: the mythic design of the family in echo colours (icons2.js)
+    if(g.plus){x.fillStyle='#ffd04a';for(let i=0;i<g.plus;i++)x.fillRect(12-i*3,13,2,2);}return c;})}">`;};}
 // gear text mentions the perk
 {const gd0=gearDesc;gearDesc=function(id){let s=gd0.apply(this,arguments);try{const g=typeof id==='string'?gearOf(id):id;if(g&&g.ef&&g.efPerk)s+=(s?', ':'')+g.efPerk;}catch(e){}return s;};}
 
@@ -13157,66 +13159,18 @@ buildRivals();
 {const sp0=startPersonal;startPersonal=function(id){const q=sp0.apply(this,arguments);try{const k='rv_'+id;if(q&&MON[k]){const t=TPL[id];q.mon=k;q.name=MON[k].n;
   q.text=PQ_TEXT[t.cls].replace(/\{n\}/g,t.n).replace(/\{r\}/g,q.name).replace(/\{e\}/g,EL[t.el[0]].toLowerCase());saveGame();}}catch(e){}return q;};}
 
-// ===== Beta v0.4.1 6.4: richer item and equipment sprites =====
-// Gear icons keep their 16x16 silhouettes (GICON) but every part now has a role: metal, grip, accent, cloth, page, string or wood.
-// Metal is shaded from the tier colour (highlight on the top-left edge, shadow bottom-right), grips get leather wraps, accents carry the
-// tier's gem colour (TIER_GEM), and families add their own details: a gem in a sword's guard, an orb on a staff, a rune on a tome, trims on
-// armor. The Tamer's Stick keeps its Bestiary-coloured glow. Consumables get their own icons (bottles, feathers, food, scrolls).
-// palettes follow the rarity borders (ITEM_TIERS): common iron, uncommon green steel, rare blue steel, epic violet, legendary gold, mythic crimson
+// ===== Beta v0.4.1 6.4: item and equipment sprite palettes =====
+// palettes follow the rarity borders (ITEM_TIERS): common iron, uncommon green steel, rare blue steel, epic violet, legendary gold, mythic crimson.
+// v0.6.3: the drawing moved to icons.js / icons2.js (one design per item: drawGearIcon, drawItemIcon, itemIcon, matIcon); these stay the
+// shared tier colours for metal, gems and trims.
 const TIER_METAL=['#b8bcc4','#c4dcc8','#a8c8f0','#ccb0f4','#ffd870','#ff9a8a'];
 const TIER_GEM=['#d8a060','#5fcf6a','#4a9bff','#b06aff','#ffc83d','#ff4a3a'];
 const TIER_TRIM=['#8a6a4a','#b8d0b8','#d0d8e8','#e0d0ff','#ffe9a0','#ffd25a'];
-const GROLE={blade:'mxg',dagger:'mxg',staff:'go',tome:'cxx',bow:'wwsw',crossbow:'wmxx',mail:'mtt',robe:'ctt',vest:'ctt',charm:'xmx',axe:'gmm',greatsword:'mxg',
-  lance:'mgx',mace:'gmxx',shortsword:'mxg',longbow:'wwsw',knuckles:'mxxx',claws:'mmmg',qstaff:'gxx',lute:'wgx',harp:'wwss',flute:'wxxx',stick:'gww'};
-const GRIP='#6a4026',WOOD='#9a6a3a',STR='#e8e0c8';
-function paintPart(x,r,role,col,tier){const [a,b,w,h]=r,gem=TIER_GEM[Math.min(5,tier||0)],trim=TIER_TRIM[Math.min(5,tier||0)];
-  const base=role==='m'?col:role==='g'?GRIP:role==='w'?WOOD:role==='s'?STR:role==='c'?shade(col,.62):role==='t'?trim:role==='o'?gem:role==='x'?trim:col;
-  x.fillStyle=base;x.fillRect(a,b,w,h);
-  if(w*h>=3&&role!=='s'){x.fillStyle=tint(base,.38);if(h>=w)x.fillRect(a,b,1,h);else x.fillRect(a,b,w,1);
-    x.fillStyle=shade(base,.62);if(h>=w&&w>1)x.fillRect(a+w-1,b,1,h);else if(w>h&&h>1)x.fillRect(a,b+h-1,w,1);}
-  if(role==='g'&&h>=3)for(let y=b+1;y<b+h;y+=2){x.fillStyle=shade(GRIP,.7);x.fillRect(a,y,w,1);}
-  if(role==='o'){x.fillStyle=tint(gem,.6);x.fillRect(a+1,b,1,1);}
-  return base;}
-function drawGearIcon(x,fam,col,tier,glow){
-  col=TIER_METAL[Math.min(5,tier||0)];
-  const P=GICON[fam]||GICON.charm,R=GROLE[fam]||'',g=TIER_GEM[Math.min(5,tier||0)];
-  P.forEach(([a,b,w,h])=>{x.fillStyle=OUTC;x.fillRect(a-1,b-1,w+2,h+2);});
-  if(fam==='stick'){P.forEach(([a,b,w,h],i)=>{x.fillStyle=i?'#8a5a2a':'#a8784a';x.fillRect(a,b,w,h);x.fillStyle='#c89a6a';x.fillRect(a,b,1,h);});
-    if(glow){x.fillStyle=glow;x.fillRect(7,1,2,2);x.fillStyle=tint(glow,.6);x.fillRect(7,1,1,1);}return;}
-  P.forEach((r,i)=>paintPart(x,r,R[i]||(i?'x':'m'),col,tier));
-  // family details
-  const px=(a,b,c)=>{x.fillStyle=c;x.fillRect(a,b,1,1);};
-  if(['blade','greatsword','shortsword','dagger'].includes(fam)){const gd=P[1];px(gd[0]+Math.floor(gd[2]/2)-0,gd[1],g);px(P[0][0],P[0][1],tint(col,.7));if(tier>=3)px(P[0][0]+1,P[0][1]+Math.floor(P[0][3]/2),tint(g,.4));}
-  if(fam==='tome'){x.fillStyle=g;x.fillRect(7,6,2,4);x.fillStyle=tint(g,.5);x.fillRect(7,6,1,1);}
-  if(fam==='mail'||fam==='vest'||fam==='robe'){const r=P[0];x.fillStyle=TIER_TRIM[Math.min(5,tier)];x.fillRect(r[0],r[1]+Math.floor(r[3]/2),r[2],1);px(r[0]+Math.floor(r[2]/2),r[1]+1,g);
-    if(fam==='mail')for(let yy=r[1]+2;yy<r[1]+r[3]-1;yy+=2)for(let xx=r[0]+1;xx<r[0]+r[2]-1;xx+=2)px(xx,yy,shade(col,.8));}
-  if(fam==='charm'){x.fillStyle=g;x.fillRect(7,6,2,3);px(7,6,tint(g,.6));}
-  if(fam==='axe'||fam==='mace'){const h=P[1];px(h[0],h[1],tint(col,.7));px(h[0]+h[2]-1,h[1]+h[3]-1,shade(col,.5));}
-  if(fam==='lance'){px(7,0,tint(col,.7));}
-  if(fam==='bow'||fam==='longbow'||fam==='crossbow'){px(P[0][0],P[0][1],g);}
-  if(fam==='lute'||fam==='harp'){px(8,9,g);}
-  if(fam==='knuckles'||fam==='claws'){P.slice(1).forEach(r=>px(r[0],r[1],tint(col,.7)));}
-}
-// ----- consumables -----
-const ITEM_SPR={potion:['bottle','#e04a4a'],hipotion:['bottle','#ff3a6a',1],ether:['bottle','#4a8aff'],sage:['bottle','#7a5aff',1],remedy:['bottle','#5ae07a'],
-  elixir:['bottle','#ffd04a',2],vigor:['bottle','#ff9a3a',1],plume:['feather','#ff7a3a'],salts:['pouch','#e0d8b0'],ash:['jar','#d8d0c8'],bandage:['roll','#f0e8d8'],
-  porkchop:['food','#c8743a'],holywater:['bottle','#bfe6ff',2],tent:['tent','#7aa04a']};
-function drawItemIcon(x,id){const S=ITEM_SPR[id]||(String(id).includes('sand')?['food','#d89a4a']:['pouch','#a8784a']),[k,c,lux]=S;
-  const o=(a,b,w,h,col)=>{x.fillStyle=col;x.fillRect(a,b,w,h);},ol=(a,b,w,h)=>o(a-1,b-1,w+2,h+2,OUTC);
-  if(k==='bottle'){ol(6,1,4,3);ol(4,4,8,10);o(6,1,4,3,'#a8784a');o(6,1,4,1,'#c89a6a');o(4,4,8,10,'#d8e8f0');o(5,7,6,6,c);o(5,7,6,1,tint(c,.4));o(10,7,1,6,shade(c,.7));o(5,5,1,2,'#ffffff');
-    if(lux){o(4,10,8,1,lux>1?'#ffd25a':'#d0d8e8');}}
-  else if(k==='feather'){ol(7,1,2,13);o(7,1,2,13,c);o(5,3,2,8,tint(c,.3));o(9,4,2,7,shade(c,.75));o(7,12,2,3,'#f0e0c0');o(8,2,1,10,tint(c,.6));}
-  else if(k==='pouch'){ol(4,5,8,9);o(4,5,8,9,c);o(4,5,8,1,tint(c,.4));o(11,6,1,8,shade(c,.7));o(6,3,4,2,shade(c,.8));o(7,7,2,1,'#5a3a22');}
-  else if(k==='jar'){ol(5,2,6,2);ol(4,4,8,10);o(5,2,6,2,'#8a6a4a');o(4,4,8,10,c);o(4,4,1,10,tint(c,.5));o(11,4,1,10,shade(c,.7));o(6,8,4,2,'#9a7aff');}
-  else if(k==='roll'){ol(3,5,10,6);o(3,5,10,6,c);o(3,5,10,1,'#ffffff');o(3,10,10,1,shade(c,.75));o(10,6,2,4,shade(c,.85));o(6,7,3,2,'#e04a4a');}
-  else if(k==='food'){ol(2,9,12,4);ol(3,5,10,4);o(2,9,12,4,'#e0b070');o(3,5,10,4,c);o(3,8,10,1,'#5ac04a');o(3,5,10,1,tint(c,.3));o(2,12,12,1,shade('#e0b070',.7));}
-  else if(k==='tent'){ol(2,4,12,10);for(let i=0;i<6;i++)o(7-i,4+i*1.6|0,2+i*2,2,i%2?c:shade(c,.8));o(7,9,2,5,'#2a1a10');}
-}
-function itemIcon(id){return `<img class="gico iico" alt="" src="${cvURL('ii:'+id,()=>{const c=mkCv(16,16);drawItemIcon(c.getContext('2d'),id);return c;})}">`;}
 
 // ===== Beta v0.4.3: capes, a fourth equipment slot ('k') =====
-// Every class can wear a cape. Capes add HP, resistance and a little speed, about a quarter of what armor gives at the same tier,
-// and they show on the hero (a cape in the tier's colour). Sold at the Smithy beside armor, tempered like garb (logs and hide).
+// Every class can wear a cape. Capes add HP, resistance and a little speed, about a quarter of what armor gives at the same tier.
+// Sold at the Smithy beside armor, tempered like garb (logs and hide). v0.6.3: capes no longer show on the hero's sprite (only the
+// weapon and the hero's own personal reward change the look); a hero's own cape from their base look stays.
 // Old saves simply have no cape equipped.
 
 SLOTN.k='Cape';
@@ -13225,12 +13179,8 @@ const CAPE_ST=[[25,4,0],[45,8,1],[70,13,2],[100,19,3],[140,26,4],[190,34,5]],CAP
 const CAPE_COL=['#8a6a4a','#5fa86a','#4a7ad8','#9a5ae0','#e0b030','#d84a3a'];
 CAPE_N.forEach((n,t)=>{const [hp,res,spd]=CAPE_ST[t];addGear('k_cape_'+t,{n,slot:'k',tier:t,fam:'cape',hp,res,spd:spd||undefined,price:CAPE_PRICE[t]});});
 if(typeof GICON!=='undefined')GICON.cape=[[5,2,6,2],[4,4,8,9],[3,9,2,4],[11,9,2,4]];
-if(typeof GROLE!=='undefined')GROLE.cape='xccc';
 if(typeof FAM_RAW!=='undefined'){FAM_RAW.cape='wood';FAM_PART.cape='hide';}
 {const ss0=shopStock;shopStock=function(tab){const r=ss0.apply(this,arguments);if(tab==='armor'&&G){const tiers=[Math.min(5,G.stage)];if(G.stage>0)tiers.unshift(G.stage-1);tiers.forEach(t=>r.push('k_cape_'+t));}return r;};}
-// the cape shows on the hero in its tier colour
-{const hl0=heroLook;heroLook=function(id){const L=hl0.apply(this,arguments);try{const c=G&&G.roster[id],g=c&&c.eq&&gearOf(c.eq.k);if(L&&g){const o=Object.assign({},L);o.back=(L.back||[]).includes('cape')?L.back:(L.back||[]).concat('cape');o.pal=Object.assign({},L.pal||{},{Y:CAPE_COL[Math.min(5,g.tier||0)]});return o;}}catch(e){}return L;};}
-{const hs0=hasSignature;hasSignature=function(id){if(hs0.apply(this,arguments))return true;try{const c=G&&G.roster[id];return !!(c&&c.eq&&c.eq.k);}catch(e){return false;}};}
 
 // =================== SAVE RECOVERY AND ACCOUNT SAVES (Beta v0.3.4) ===================
 // Local keys are unchanged (aurelis-wayfarers-v3, -s1, -s2, aurelis-meta-v1). New and optional only:
@@ -16251,6 +16201,538 @@ ACT.ngMod=function(id){if(!TW.mod(id))return;const L=V.ngMods=V.ngMods||[];const
   h=h.replace(/(<b>New Game\+<\/b><\/div><span class="m nums">Cycle \d+<\/span><\/div>)/,'$1'+rows);}}catch(e){}return h;};}
 // tests: read any game binding by name (window.__A.TW.get('restAll'))
 TW.get=k=>eval(k);
+
+// ===== Beta v0.6.3: one icon per item (gear, consumables, materials) =====
+// Every icon is code-drawn on a 16x16 grid of material keys, then painted in one pass: a bevel from the upper left (light on the top and
+// left edges of each shape, shadow on the bottom and right), a coloured outline (the darkest tone of the part it touches), and for rare
+// pieces an aura ring and sparkles. Shapes change with the tier (not only the palette): tier 0 is plain, every tier adds a part or a new
+// silhouette, tier 3+ carries gold trim and a gem, tier 4+ a glint and tier 5 a glow. Signature weapons, Oathmantles and Tokens get their
+// own silhouettes per personal reward kind, coloured by the hero's elements with a per-hero variant, so no two heroes share an icon.
+// Keys: M metal (tier palette), m darker metal, T trim, G gem, W wood, L leather grip, C/K cloth, P page, B bone, R string, F feather,
+// E element glow (flat), S white glint (flat), X dark inset, O orb (gem tone). Lowercase = a darker step of the same material.
+// Test: tools/chrome/v063s.js renders every icon and fails on duplicates. Sheet: tools/chrome/v063sheet.js.
+const IC_TRIM=['#a8784a','#c8a060','#e0e4ec','#f0c050','#7a9aff','#ffd25a'];
+const IC_WOOD=['#9a6a3a','#c8aa78','#7a9a5a','#4a8a9a','#d8e4f0','#4a3466'];
+const IC_GRIP=['#6a4026','#5a3a2a','#3a4a6a','#4a2a5a','#2a3a6a','#5a1a2a'];
+const IC_CLOTH=['#8a7a5a','#5f9a6a','#4a6ad0','#8a5ad8','#e0b030','#c83a3a'];
+const IC_FLAT='SEX';
+function icBuf(){return new Array(256).fill('');}
+function icSet(b,x,y,k){x=Math.round(x);y=Math.round(y);if(x<0||y<0||x>15||y>15)return;b[y*16+x]=k;}
+function icGet(b,x,y){return x<0||y<0||x>15||y>15?'':b[y*16+x];}
+function icRect(b,x,y,w,h,k){for(let j=0;j<h;j++)for(let i=0;i<w;i++)icSet(b,x+i,y+j,k);}
+function icLine(b,x0,y0,x1,y1,k){let dx=Math.abs(x1-x0),dy=-Math.abs(y1-y0),sx=x0<x1?1:-1,sy=y0<y1?1:-1,e=dx+dy;for(let n=0;n<64;n++){icSet(b,x0,y0,k);if(x0===x1&&y0===y1)break;const e2=2*e;if(e2>=dy){e+=dy;x0+=sx;}if(e2<=dx){e+=dx;y0+=sy;}}}
+function icArt(b,x,y,rows,map){rows.forEach((s,j)=>{for(let i=0;i<s.length;i++){const c=s[i];if(c==='.'||c===' ')continue;icSet(b,x+i,y+j,c==='_'?'':(map&&map[c])||c);}});}
+function icDisc(b,cx,cy,r,k){for(let y=0;y<16;y++)for(let x=0;x<16;x++){const dx=x-cx,dy=y-cy;if(dx*dx+dy*dy<=r*r)icSet(b,x,y,k);}}
+// diagonal space for weapons held from the lower left to the upper right: pixel (x,15-x) is s=x, v=0; v>0 is toward the lower right
+function icUV(b,k,f){for(let y=0;y<16;y++)for(let x=0;x<16;x++){const s=(x+15-y)/2,v=(x-15+y)/2;const r=f(s,v);if(r)icSet(b,x,y,r===true?k:r);}}
+const icAt=(s,v)=>[Math.round(s+v),Math.round(15-(s-v))];
+function icPt(b,s,v,k){const [x,y]=icAt(s,v);icSet(b,x,y,k);}
+function icMirror(b){for(let y=0;y<16;y++)for(let x=0;x<8;x++){const a=b[y*16+x],c=b[y*16+15-x];b[y*16+x]=c;b[y*16+15-x]=a;}}
+// paint the key grid
+function icPaint(x,b,P,o){o=o||{};const flat=(P._flat||'')+IC_FLAT;
+  const col=k=>{if(P[k])return P[k];const u=k.toUpperCase();if(u!==k&&P[u])return shade(P[u],.68);return '#ff00ff';};
+  const at=(i,j)=>icGet(b,i,j);
+  const outl=new Array(256).fill(null);
+  for(let j=0;j<16;j++)for(let i=0;i<16;i++){if(at(i,j))continue;const n=[at(i,j-1),at(i-1,j),at(i+1,j),at(i,j+1)].filter(Boolean);
+    if(n.length)outl[j*16+i]=mix(shade(col(n[0]),.32),OUTC,.5);}
+  if(o.aura){x.globalAlpha=o.auraA||.24;x.fillStyle=o.aura;
+    for(let j=0;j<16;j++)for(let i=0;i<16;i++){if(at(i,j)||outl[j*16+i])continue;let near=0;for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++)if(outl[(j+dy)*16+i+dx]&&i+dx>=0&&i+dx<16&&j+dy>=0&&j+dy<16)near=1;if(near)x.fillRect(i,j,1,1);}
+    x.globalAlpha=1;}
+  for(let j=0;j<16;j++)for(let i=0;i<16;i++){const c=outl[j*16+i];if(c){x.fillStyle=c;x.fillRect(i,j,1,1);}}
+  for(let j=0;j<16;j++)for(let i=0;i<16;i++){const k=at(i,j);if(!k)continue;let c=col(k);
+    if(!flat.includes(k)){const L=(!at(i,j-1))+(!at(i-1,j)),D=(!at(i,j+1))+(!at(i+1,j));if(L>D)c=tint(c,.36);else if(D>L)c=shade(c,.72);}
+    x.fillStyle=c;x.fillRect(i,j,1,1);}
+  (o.spark||[]).forEach(([a,c])=>{const s=o.sparkC||'#ffffff';x.fillStyle=s;x.fillRect(a,c,1,1);x.globalAlpha=.6;[[1,0],[-1,0],[0,1],[0,-1]].forEach(([dx,dy])=>{if(!at(a+dx,c+dy))x.fillRect(a+dx,c+dy,1,1);});x.globalAlpha=1;});
+}
+// ----- palettes -----
+function icPal(t,o){t=Math.max(0,Math.min(5,t|0));o=o||{};const P={M:TIER_METAL[t],G:TIER_GEM[t],T:IC_TRIM[t],W:IC_WOOD[t],L:IC_GRIP[t],C:IC_CLOTH[t],K:shade(IC_CLOTH[t],.7),
+  P:'#efe6cc',B:'#ece2c8',R:'#f0ead8',F:'#e8e0d0',E:'#8af0ff',S:'#ffffff',X:'#1a1020',O:TIER_GEM[t]};return Object.assign(P,o);}
+// ----- swords -----
+// o: p pommel s, pr pommel radius, g guard s, gl guard half width, T tip s, l/r blade half widths (v), tp taper, curve start, cv bend,
+// jag teeth, ful fuller key, rk ricasso length, wide widening near the middle (leaf blade)
+function icSword(b,o){const g=o.g,T=o.T,tp=o.tp||2,l=o.l||0,r=o.r==null?.5:o.r;
+  icUV(b,'M',(s,v)=>{if(s<=g||s>T)return false;let f=Math.min(1,(T-s)*tp);let w=1;if(o.wide)w=1+o.wide*Math.max(0,1-Math.abs(s-(g+(T-g)*.45))/((T-g)*.45));
+    let vv=v;if(o.curve!=null&&s>o.curve)vv=v+(s-o.curve)*(s-o.curve)*(o.cv||.05);
+    const L=(o.rk&&s<g+o.rk?Math.max(l,.5):l)*w,R=r*w;return vv>=-L*f-.01&&vv<=R*f+.01;});
+  if(o.wave)icUV(b,'M',(s,v)=>s>g+.9&&s<T-1&&((Math.floor(s)%2===0&&Math.abs(v+(o.l||0)+.5)<.01)||(Math.floor(s)%2===1&&Math.abs(v-r-.5)<.01)));
+  if(o.jag)icUV(b,'M',(s,v)=>s>g+1&&s<T-1.5&&Math.abs(v+l+.5)<.01&&Math.floor(s)%2===0);
+  if(o.ful)icUV(b,o.ful,(s,v)=>s>g+.9&&s<T-2&&Math.abs(v)<.01&&icGet(b,...icAt(s,v)));
+  icUV(b,o.gk||'T',(s,v)=>Math.abs(s-g)<=.5&&Math.abs(v)<=o.gl+.01);
+  icUV(b,o.hk||'L',(s,v)=>s>o.p&&s<g&&v>-.01&&v<.51);
+  icUV(b,o.pk||'T',(s,v)=>(s-o.p)*(s-o.p)+v*v<=o.pr*o.pr+.01);}
+// ----- hafted weapons: a shaft along v=0 from s0 to s1 -----
+function icHaft(b,s0,s1,k){icUV(b,k,(s,v)=>s>=s0&&s<=s1&&v>-.01&&v<.51);}
+// ----- weapon families: f(b,t,P) returns paint options -----
+const ICF={};
+ICF.blade=(b,t)=>{const S=[{p:1,pr:.5,g:3.5,gl:1,T:12.5},{p:1,pr:.75,g:3.5,gl:1.5,T:13,rk:1.5},{p:1,pr:.75,g:4,gl:1.5,T:13.5,curve:7,cv:.035,l:.5,r:.5,tp:1.2},
+  {p:1,pr:.75,g:4,gl:2,T:14,l:.5,r:.5,ful:'m'},{p:1,pr:1,g:4,gl:2,T:14,l:.5,r:.5,jag:1,ful:'E'},{p:1,pr:1,g:4.5,gl:2.5,T:14.5,l:.5,r:.5,tp:1.2,ful:'G'}][t];
+  icSword(b,S);const o={};
+  if(t>=2)icPt(b,S.g,0,'G');
+  if(t===3){icPt(b,S.g+.5,-2.5,'T');icPt(b,S.g+.5,2.5,'T');}
+  if(t>=4){icPt(b,S.g-1,0,'T');icPt(b,S.p,0,'G');o.spark=[[13,1]];}
+  if(t===5){icPt(b,S.g+1,-2,'T');icPt(b,S.g+1,2,'T');o.aura=TIER_GEM[5];o.spark=[[14,1],[9,3]];}
+  return o;};
+ICF.shortsword=(b,t)=>{const S=[{p:1.5,pr:.5,g:4,gl:1,T:10.5,wide:.9,l:.5,r:.5},{p:1.5,pr:.5,g:4,gl:2,T:11,l:0,r:.5,tp:1},{p:1.5,pr:.75,g:4,gl:1.5,T:11,wide:1,l:.5,r:.5,curve:7,cv:.12},
+  {p:1.5,pr:.75,g:4,gl:1.5,T:11.5,l:.5,r:.5,jag:1},{p:1.5,pr:.75,g:4.5,gl:2,T:12,wide:.8,l:.5,r:.5,ful:'E'},{p:1.5,pr:1,g:4.5,gl:2.5,T:12,l:.5,r:1,tp:1,ful:'X'}][t];
+  icSword(b,S);const o={};
+  if(t===2){icPt(b,S.g,-1.5,'G');icPt(b,S.g,1.5,'G');}
+  if(t===3){icPt(b,8,-1.5,'E');icPt(b,10,-1.5,'E');icPt(b,S.g,0,'G');}
+  if(t>=4){icPt(b,S.g,0,'G');icPt(b,S.p,0,'G');o.spark=[[11,3]];}
+  if(t===5){o.aura='#b06aff';o.spark=[[12,2]];}
+  return o;};
+ICF.dagger=(b,t)=>{const S=[{p:3,pr:.5,g:5,gl:1,T:10},{p:3,pr:.5,g:5,gl:1.5,T:11.5,l:0,r:0,tp:1},{p:3,pr:.75,g:5,gl:1,T:10.5,curve:6.5,cv:.09,r:.5,l:.5,tp:1.5},
+  {p:3,pr:.5,g:5,gl:1.5,T:11,jag:1,r:.5,l:.5,tp:1.2},{p:3,pr:.75,g:5.5,gl:2,T:12,r:.5,l:0,tp:1,wave:1},{p:2.5,pr:.75,g:5,gl:1,T:13,l:0,r:0,tp:1}][t];
+  if(t===2)S.bk='B';if(t===3)S.bk='E';
+  icSword(b,S);const o={};
+  if(t===4){icPt(b,S.g,0,'G');o.spark=[[12,2]];}
+  if(t===2)icPt(b,S.g,0,'G');
+  if(t===5){icPt(b,S.g,-1.5,'G');icPt(b,S.g,1.5,'G');icUV(b,'X',(s,v)=>s>6&&s<12&&Math.abs(v)<.01);o.aura='#b06aff';o.spark=[[13,2]];}
+  return o;};
+ICF.greatsword=(b,t)=>{const S=[{p:.5,pr:.5,g:3.5,gl:1.5,T:14,l:.5,r:.5,gw2:1},{p:.5,pr:.75,g:3.5,gl:2,T:14,l:.5,r:.5,gw2:1,rk:2},{p:.5,pr:.75,g:3.5,gl:2,T:14.5,l:.5,r:1,ful:'m',gw2:1},
+  {p:.5,pr:1,g:4,gl:2.5,T:14.5,l:1,r:1,tp:.8,ful:'T',gw2:1},{p:.5,pr:1,g:4,gl:2.5,T:15,l:.5,r:1,jag:1,ful:'E',gw2:1},{p:.5,pr:1,g:4,gl:3,T:15,l:1,r:1,tp:.7,ful:'G',gw2:1}][t];
+  icSword(b,S);const o={};
+  if(t===1){icPt(b,S.g+2,-1,'M');icPt(b,S.g+2,1,'M');}
+  if(t>=3)icPt(b,S.g,0,'G');
+  if(t>=4){o.spark=[[14,1]];}
+  if(t===5){icUV(b,'',(s,v)=>Math.abs(s-9)<.01&&Math.abs(v)<.01);icPt(b,9.5,-.5,'S');o.aura=TIER_GEM[5];}
+  return o;};
+ICF.axe=(b,t)=>{const top=[11,12,12,12.5,13,13.5][t];icHaft(b,1,top,'W');icHaft(b,1,3.5,'L');const o={};
+  const sc=[10,10.5,10.5,11,11,11.5][t],hl=[1.6,2.1,2.1,2.4,2.6,2.6][t],R=[2.2,3,3,3,3.5,3.5][t];
+  icUV(b,'M',(s,v)=>{const d=(s-sc)/hl;if(Math.abs(d)>1||v>-.4)return false;const rr=t===1?R:R*Math.sqrt(1-d*d*(t===4?.3:.8));return v>=-rr-.01;});
+  if(t===4)icUV(b,'',(s,v)=>Math.abs(s-sc)<.6&&v<-2.4);
+  if(t===2)icUV(b,'M',(s,v)=>v>.4&&v<2.1-Math.abs(s-sc)*1.2);
+  if(t>=3)icUV(b,'M',(s,v)=>{const d=(s-sc)/(hl*.8);return Math.abs(d)<=1&&v>.4&&v<=(t===5?R:R*.7)*Math.sqrt(1-d*d)+.01;});
+  icUV(b,'S',(s,v)=>t>=1&&Math.abs(s-sc)<1.1&&(Math.abs(v+R)<.3||(t>=3&&Math.abs(v-(t===5?R:R*.7))<.3))&&icGet(b,...icAt(s,v))==='M');
+  if(t>=2)icPt(b,sc,0,'G');
+  if(t>=3)icPt(b,top+.5,0,'T');
+  if(t>=4)o.spark=[[13,1]];
+  if(t===5){o.aura=TIER_GEM[5];icPt(b,sc,-1,'T');icPt(b,sc,1,'T');}
+  return o;};
+ICF.mace=(b,t)=>{const o={};
+  if(t===1){icHaft(b,1,7,'W');icHaft(b,1,3,'L');[[8,.5],[9,0],[10,.5]].forEach(([s,v])=>icPt(b,s,v,'m'));icDisc(b,12,4,2.2,'M');icPt(b,12,4,'m');icSet(b,12,1,'M');icSet(b,15,4,'M');icSet(b,12,7,'M');icSet(b,9,4,'M');return o;}
+  icHaft(b,1,[10,0,11,11,11.5,12][t],'W');icHaft(b,1,3.5,'L');
+  if(t===0){icDisc(b,11.5,3.5,2.5,'M');icSet(b,11,3,'S');}
+  if(t===2){icUV(b,'M',(s,v)=>Math.abs(s-11)<=1.01&&Math.abs(v)<=2.51);icUV(b,'m',(s,v)=>Math.abs(s-11)<.01&&Math.abs(v)<=2.51);}
+  if(t===3){icDisc(b,11.5,3.5,2.3,'M');[[11,0],[14,3],[11,6],[8,3],[14,0],[9,1],[14,6],[9,6]].slice(0,6).forEach(([a,c])=>icSet(b,a+(a>11?0:0),c,'T'));icSet(b,11,3,'G');}
+  if(t===4){icUV(b,'M',(s,v)=>Math.abs(s-11.5)<=1.51&&Math.abs(v)<=2.51);icArt(b,10,2,['.E.','EE.','.EE','.E.']);o.spark=[[14,1]];}
+  if(t===5){icUV(b,'M',(s,v)=>Math.abs(s-12)<=1.51&&Math.abs(v)<=3.01&&!(Math.abs(s-12)>1&&Math.abs(v)>2.4));icPt(b,12,0,'G');icPt(b,12,-2,'T');icPt(b,12,2,'T');icPt(b,10,0,'T');o.aura=TIER_GEM[5];o.spark=[[14,0]];}
+  if(t>=2&&t!==4)icPt(b,9.5,.5,'T');
+  return o;};
+ICF.lance=(b,t)=>{const o={};const ts=[11,10.5,10.5,10.5,10,10][t];icHaft(b,0,ts,'W');icHaft(b,0,3,'L');
+  const tl=[3,4,3.5,4,4.5,5][t],tw=[.6,.9,1.2,.8,.7,1][t];
+  icUV(b,'M',(s,v)=>{if(s<ts||s>ts+tl)return false;const f=t===2?Math.sin(Math.PI*(s-ts)/tl)*1.3:(ts+tl-s)/tl;return Math.abs(v)<=tw*f*1.5+.01;});
+  if(t===1)icUV(b,'M',(s,v)=>s>=3&&s<=4.5&&Math.abs(v)<=(4.6-s)*1.2+.01);
+  if(t===2){icPt(b,ts-.5,1.5,'C');icPt(b,ts-1,2,'C');icPt(b,ts-1.5,2.5,'C');}
+  if(t===3)icUV(b,'M',(s,v)=>Math.abs(s-(ts+.5))<=.5&&Math.abs(v)<=2.01);
+  if(t===4){icUV(b,'M',(s,v)=>s>=ts&&s<=ts+2.5&&Math.abs(Math.abs(v)-1.5)<.01);icUV(b,'M',(s,v)=>Math.abs(s-ts)<=.5&&Math.abs(v)<=1.51);o.spark=[[14,0]];}
+  if(t===5){icUV(b,'T',(s,v)=>Math.abs(s-ts)<=.5&&Math.abs(v)<=2.01);icPt(b,ts,0,'G');icPt(b,ts+2,0,'S');o.aura=TIER_GEM[5];}
+  if(t>=3)icPt(b,ts-.5,.5,'T');
+  if(t>=2&&t<5)icPt(b,ts,0,'G');
+  return o;};
+ICF.staff=(b,t)=>{const o={};const top=[11,10.5,10,10,10,10][t];icHaft(b,1,top,'W');
+  if(t===0){icDisc(b,12,3,1.9,'W');icSet(b,11,2,'w');icSet(b,13,4,'w');}
+  if(t===1){icArt(b,9,0,['..MMM.','.M...M','M.....','M.....','.M....']);icSet(b,13,3,'G');icSet(b,14,1,'S');}
+  if(t===2){icArt(b,10,1,['T...T','.GGG.','.GGG.','TGGG.','..T..']);icSet(b,11,2,'S');}
+  if(t===3){icArt(b,9,0,['..MMMM','.M...M','.M.G.M','.M..M.','..M...']);icSet(b,12,0,'S');}
+  if(t===4){icArt(b,10,0,['...E.','..EEE','.EGGE','.EGE.','..T..','.T.T.']);icSet(b,12,2,'S');o.spark=[[15,0]];}
+  if(t===5){icArt(b,9,0,['.TTTT.','T....T','T.GG.T','T.GG.T','T....T','.TTTT.']);icSet(b,11,2,'S');o.aura=TIER_GEM[5];o.spark=[[14,0],[8,1]];}
+  if(t>=2)icPt(b,top-.5,.5,'T');
+  if(t>=3)icPt(b,3,0,'T');
+  return o;};
+ICF.qstaff=(b,t)=>{const o={};icHaft(b,.5,14.5,'W');
+  const caps=[[1,14],[1,14],[1,1.5,13.5,14],[.5,1.5,13.5,14.5],[.5,1,14,14.5],[.5,1.5,13.5,14.5]][t];
+  caps.forEach(s=>{icPt(b,s,0,'M');icPt(b,s,.5,'M');});
+  if(t>=1){[5,10].forEach(s=>{icPt(b,s,0,'L');icPt(b,s,.5,'L');icPt(b,s+.5,0,'L');icPt(b,s+.5,.5,'L');});}
+  if(t===2)icUV(b,'M',(s,v)=>s>6&&s<9&&v>-.01&&v<.51);
+  if(t===3){icPt(b,7.5,-.5,'E');icPt(b,8,1,'E');icPt(b,7.5,.5,'G');}
+  if(t===4){icUV(b,'E',(s,v)=>s>3&&s<12&&Math.abs(v-(Math.floor(s)%2?-.5:1))<.01);o.spark=[[15,0]];}
+  if(t===5){icPt(b,7.5,.5,'G');icPt(b,7.5,-.5,'T');icPt(b,7.5,1.5,'T');icPt(b,14.5,0,'G');icPt(b,1,0,'G');o.aura=TIER_GEM[5];}
+  return o;};
+ICF.tome=(b,t,P)=>{const o={};const cov=['#7a4a2a','#3a7a4a','#2a4a8a','#2a5a7a','#3a3a6a','#4a1a2a'][t];P.C=cov;P.K=shade(cov,.7);
+  icRect(b,3,2,10,12,'C');icRect(b,3,2,2,12,'K');icRect(b,12,3,1,10,'P');icRect(b,4,13,8,1,'P');
+  if(t===0){icRect(b,8,2,1,12,'L');}
+  if(t===1){icArt(b,7,5,['..M.','.MM.','MMM.','.M..'.replace('M','W')]);icArt(b,7,5,['..G.','.GG.','GGM.','.M..']);}
+  if(t===2){icArt(b,5,2,['T......T'.slice(0,7)]);icSet(b,11,2,'T');icSet(b,11,13,'T');icSet(b,5,13,'T');icArt(b,7,6,['.T.','TGT','.T.']);}
+  if(t===3){icArt(b,6,5,['..TT.','.T..T','T.GG.','.T...','..TTT']);}
+  if(t===4){icRect(b,5,2,7,1,'T');icRect(b,5,13,7,1,'T');icArt(b,6,5,['.TTT.','TSGGT','TGGGT','.TTT.']);icRect(b,3,7,2,2,'T');o.spark=[[13,1]];}
+  if(t===5){icRect(b,5,2,7,1,'T');icRect(b,5,13,7,1,'T');icArt(b,6,4,['..T..','.TGT.','TGSGT','.TGT.','..T..']);icSet(b,6,11,'S');icSet(b,10,11,'S');o.aura=TIER_GEM[5];}
+  return o;};
+ICF.bow=(b,t)=>{const o={};const ax=y=>Math.round(3+Math.pow((y-7.5)/7.5,2)*5);
+  for(let y=0;y<16;y++){const x=ax(y);icSet(b,x,y,'W');icSet(b,x+1,y,'W');}
+  for(let y=1;y<15;y++)icSet(b,10,y,'R');icRect(b,3,7,2,2,'L');
+  if(t>=1){icSet(b,9,0,'T');icSet(b,9,15,'T');}
+  if(t===2){icArt(b,5,0,['FF','.F']);icArt(b,5,14,['.F','FF']);icSet(b,4,3,'F');icSet(b,4,12,'F');}
+  if(t===3){icArt(b,2,3,['E','.','.','.','.','.','.','.','.','E']);icSet(b,1,7,'E');icSet(b,1,8,'E');icSet(b,3,8,'G');}
+  if(t===4){icArt(b,5,0,['FFF','F..']);icArt(b,5,14,['F..','FFF']);icLine(b,1,8,13,8,'W');icArt(b,13,7,['M.','MM','M.']);icSet(b,1,7,'F');icSet(b,1,9,'F');icSet(b,3,7,'G');o.spark=[[15,8]];}
+  if(t===5){icDisc(b,4,7.5,2.2,'T');icRect(b,3,7,2,2,'G');icSet(b,3,7,'S');icSet(b,9,0,'G');icSet(b,9,15,'G');o.aura=TIER_GEM[5];o.spark=[[8,1],[8,14]];}
+  return o;};
+ICF.longbow=(b,t)=>{const o={};const ax=y=>Math.round(4+Math.pow((y-7.5)/7.5,2)*3);for(let y=0;y<16;y++){const x=ax(y);icSet(b,x,y,'W');if(t>=2||(y>3&&y<12))icSet(b,x+1,y,'W');}
+  for(let y=1;y<15;y++)icSet(b,8,y,'R');icRect(b,4,7,2,2,'L');
+  if(t>=1){icLine(b,2,8,13,8,'W');icArt(b,13,7,['M.','MM','M.']);icSet(b,2,7,'F');icSet(b,2,9,'F');icSet(b,1,8,'F');icSet(b,8,8,'R');}
+  if(t===2){icSet(b,8,0,'F');icSet(b,8,15,'F');icSet(b,9,0,'F');icSet(b,9,15,'F');}
+  if(t===3){icSet(b,8,0,'E');icSet(b,8,15,'E');icSet(b,3,3,'E');icSet(b,3,12,'E');icSet(b,4,7,'G');}
+  if(t===4){icArt(b,6,0,['FFF','.F.']);icArt(b,6,14,['.F.','FFF']);icSet(b,4,7,'G');icRect(b,1,7,1,3,'F');o.spark=[[15,8]];}
+  if(t===5){icDisc(b,4.5,7.5,1.8,'T');icRect(b,4,7,2,2,'G');icSet(b,4,7,'S');icSet(b,13,8,'G');o.aura=TIER_GEM[5];o.spark=[[9,0],[9,15]];}
+  return o;};
+ICF.crossbow=(b,t)=>{const o={};icRect(b,7,3,2,12,'W');icRect(b,7,12,2,3,'L');
+  const pw=[5,6,6,6,7,7][t];icRect(b,8-pw,4,pw*2,1,'M');icSet(b,8-pw,5,'M');icSet(b,7+pw,5,'M');
+  icLine(b,9-pw,5,7,8,'R');icLine(b,6+pw,5,8,8,'R');icRect(b,7,1,2,3,'M');icSet(b,7,0,'S');
+  if(t===1){icRect(b,6,1,4,1,'M');icSet(b,6,10,'M');icSet(b,9,10,'M');}
+  if(t===2){icRect(b,8-pw,6,pw*2,1,'M');icSet(b,8-pw,7,'M');icSet(b,7+pw,7,'M');icSet(b,8,9,'G');}
+  if(t===3){icRect(b,7,0,2,1,'E');icSet(b,6,1,'E');icSet(b,9,1,'E');icSet(b,8,9,'G');}
+  if(t===4){icArt(b,6,7,['..E.','.EE.','..EE','..E.']);icSet(b,1,3,'T');icSet(b,14,3,'T');o.spark=[[8,0]];}
+  if(t===5){icRect(b,8-pw,3,pw*2,1,'T');icSet(b,1,5,'G');icSet(b,14,5,'G');icSet(b,8,9,'G');icRect(b,6,12,4,1,'T');o.aura=TIER_GEM[5];}
+  return o;};
+const IC_FIST=['..AA.AA.AA.AA.','.AAAAAAAAAAAAA','.AAAAAAAAAAAAA','BBAAAAAAAAAAAA','BBBBBBBBBBBBB.','BBBBBBBBBBBBB.','.BBBBBBBBBBB..','..CCCCCCCCC...','..CCCCCCCCC...'];
+ICF.knuckles=(b,t,P,o0,map)=>{const o={};const M=map||[{A:'C',B:'C',C:'K'},{A:'M',B:'L',C:'C'},{A:'M',B:'L',C:'M'},{A:'M',B:'M',C:'T'},{A:'M',B:'M',C:'T'},{A:'M',B:'m',C:'T'}][t];
+  icArt(b,1,4,IC_FIST,M);
+  [4,7,10].forEach(x=>{icSet(b,x,5,M.A.toLowerCase());icSet(b,x,6,M.A.toLowerCase());});icSet(b,3,7,M.B.toLowerCase());icSet(b,4,7,M.B.toLowerCase());
+  if(t===0||map){for(let x=3;x<14;x+=3){icSet(b,x,5,'K');icSet(b,x-1,8,'K');icSet(b,x,9,'K');}}
+  
+  if(t===2&&!map)[3,6,9,12].forEach(x=>icSet(b,x,3,'M'));
+  if(t===3)icSet(b,7,8,'G');
+  if(t===4){icArt(b,6,7,['.E.','EE.','.EE']);icArt(b,11,11,['TT','.T']);o.spark=[[14,2]];}
+  if(t===5){[3,6,9,12].forEach(x=>icSet(b,x,4,'G'));icSet(b,7,8,'G');icSet(b,8,8,'S');o.aura=TIER_GEM[5];}
+  return o;};
+ICF.claws=(b,t)=>{const o={};const n=[3,3,3,3,4,4][t],len=[8,9,9,10,10,11][t];
+  icRect(b,2,11,12,3,'L');icRect(b,2,11,12,1,'M');
+  for(let i=0;i<n;i++){const x0=(n===3?3+i*4:2+i*3.5)|0;for(let k=0;k<len;k++){const y=10-k,cx=x0+Math.round(t>=2?Math.pow(k/len,2)*3:k*.15);icSet(b,cx,y,'M');if(k<len-2+(t===1?1:0))icSet(b,cx+1,y,'M');}}
+  if(t===2)[3,7,11].forEach(x=>icSet(b,x+1,10,'G'));
+  if(t===3)icRect(b,2,13,12,1,'E');
+  if(t===4){icRect(b,2,12,12,1,'T');o.spark=[[14,0]];}
+  if(t===5){icRect(b,2,12,12,1,'T');[4,8,11].forEach(x=>icSet(b,x,12,'G'));o.aura=TIER_GEM[5];}
+  if(t>=3)icSet(b,8,12,'G');
+  return o;};
+ICF.lute=(b,t,P)=>{const o={};icDisc(b,6,10,[3.6,3.6,3.8,3.6,3.8,4][t],'W');icDisc(b,6.3,9.7,1.1,'X');
+  icUV(b,'w',(s,v)=>s>8.5&&s<13&&v>-.01&&v<.51);icUV(b,'M',(s,v)=>s>=13&&s<14.5&&v>-.51&&v<.51);
+  icSet(b,4,12,'m');icSet(b,8,12,'m');
+  if(t===1){icSet(b,6,13,'T');icSet(b,2,10,'T');}
+  if(t===2){icRect(b,3,13,7,1,'M');icSet(b,6,6,'M');}
+  if(t===3){icArt(b,2,12,['E...E','.E.E.']);icSet(b,6,13,'G');}
+  if(t===4){icDisc(b,6.3,9.7,1.1,'E');icSet(b,6,10,'G');o.spark=[[15,0]];icSet(b,2,7,'T');icSet(b,10,7,'T');}
+  if(t===5){icRect(b,2,10,1,1,'T');icRect(b,10,10,1,1,'T');icSet(b,6,14,'T');icSet(b,6,9,'G');icSet(b,6,10,'S');o.aura=TIER_GEM[5];}
+  return o;};
+ICF.harp=(b,t)=>{const o={};icLine(b,3,2,3,13,'W');icLine(b,3,2,12,4,'W');icLine(b,12,4,10,13,'W');icLine(b,3,13,10,13,'W');icSet(b,4,13,'W');
+  for(let x=5;x<11;x+=2)icLine(b,x,3+((x-3)*2/9|0),x,12,'R');
+  if(t===1){icRect(b,2,1,2,2,'M');icSet(b,12,3,'M');}
+  if(t===2){icArt(b,12,1,['TT','.T','.T']);icSet(b,3,8,'G');}
+  if(t===3){icArt(b,11,2,['EE','E.']);icSet(b,3,8,'G');icRect(b,2,13,2,2,'T');}
+  if(t===4){icArt(b,0,0,['.TT.','TGGT','.TT.']);icSet(b,13,4,'T');o.spark=[[14,2]];icSet(b,2,8,'E');}
+  if(t===5){icArt(b,1,0,['.T.','TGT','.T.']);icArt(b,11,12,['TT','TG']);icSet(b,3,8,'G');o.aura=TIER_GEM[5];}
+  return o;};
+ICF.flute=(b,t,P)=>{const o={};
+  if(t===2){[0,1,2,3,4,5].forEach(i=>icRect(b,3+i*2,4+i,2,9-i,'W'));icRect(b,3,9,12,1,'L');return o;}
+  if(t===3){icArt(b,3,4,['...MMMM...','..MMMMMMM.','.MMXMXMXMM','MMMMMMMMM.','.MMMMMMM..','..MMMM....']);icSet(b,12,5,'G');return o;}
+  const k=t===0?'B':'M';icUV(b,k,(s,v)=>s>1&&s<14&&v>-.51&&v<.51);
+  [5,7,9,11].forEach(s=>icPt(b,s,0,'X'));
+  if(t===0){icPt(b,1.5,-.5,'B');icPt(b,1.5,.5,'B');icPt(b,13.5,.5,'B');}
+  if(t===1){icPt(b,13.5,.5,'T');icPt(b,2,.5,'T');}
+  if(t===4){icUV(b,'E',(s,v)=>s>1&&s<14&&Math.abs(v+.5)<.01);[5,7,9,11].forEach(s=>icPt(b,s,0,'X'));icPt(b,3,0,'G');o.spark=[[14,1]];}
+  if(t===5){icPt(b,13.5,-.5,'T');icPt(b,13.5,1,'T');icPt(b,14,0,'G');icPt(b,3,0,'G');icPt(b,2,-1,'T');o.aura=TIER_GEM[5];}
+  return o;};
+ICF.stick=(b,t,P,o0)=>{const o={};icHaft(b,1.5,13.5,'W');icPt(b,9,-1,'W');icPt(b,9.5,-1.5,'W');icPt(b,6,1,'W');icPt(b,6.5,1.5,'w');icPt(b,4,0,'w');
+  if(o0.glow){P.E=o0.glow;icPt(b,13.5,0,'E');icPt(b,14,.5,'E');icPt(b,10,-2,'E');o.aura=o0.glowTier>0?o0.glow:null;o.spark=o0.glowTier>1?[[15,0]]:null;}
+  return o;};
+// ----- armor (upright) -----
+ICF.mail=(b,t)=>{const o={};
+  const body=['.MMM....MMM.','MMMMM..MMMMM','MMMMMMMMMMMM','MMMMMMMMMMMM','.MMMMMMMMMM.','.MMMMMMMMMM.','.MMMMMMMMMM.','..MMMMMMMM..','..MMMMMMMM..','...MMMMMM...'];
+  icArt(b,2,3,body,t===0?{M:'L'}:null);
+  if(t===0){icRect(b,7,5,2,7,'l');[[5,6],[10,6],[5,9],[10,9]].forEach(([a,c])=>icSet(b,a,c,'T'));}
+  if(t===1){for(let y=5;y<12;y+=2)for(let x=4;x<12;x+=2)icSet(b,x+(y%4===1?1:0),y,'m');icRect(b,4,11,8,1,'L');}
+  if(t===2){icRect(b,3,7,10,1,'m');icRect(b,4,10,8,1,'m');icArt(b,7,5,['GG']);icRect(b,4,12,8,1,'L');}
+  if(t>=3){icArt(b,0,2,['.TTT','TTTTT','TTTT','.TT']);icArt(b,11,2,['TTT.','TTTTT','.TTTT','..TT'.padStart(5,'.')]);}
+  if(t===3){icArt(b,6,6,['.TT.','TGGT','.TT.']);icRect(b,4,11,8,1,'T');}
+  if(t===4){icArt(b,6,5,['..E.','.EE.','..EE','.E..']);icRect(b,4,11,8,1,'T');icSet(b,8,11,'G');o.spark=[[15,1]];}
+  if(t===5){icArt(b,5,5,['..T..','.TGT.','TGSGT','.TGT.','..T..']);icRect(b,4,11,8,1,'T');icSet(b,1,3,'G');icSet(b,14,3,'G');o.aura=TIER_GEM[5];}
+  return o;};
+ICF.robe=(b,t,P)=>{const o={};const cl=['#c8b890','#a8d8a8','#4a6ad0','#9ad0e8','#d8e4f8','#2a1a3a'][t];P.C=cl;P.K=shade(cl,.72);
+  icArt(b,3,1,['..CCCCCC..','.CCC..CCC.','CCCCKKCCCC','CC.CCCC.CC','CC.CCCC.CC','C..CCCC..C','...CCCC...','..CCCCCC..','..CCCCCC..','.CCCCCCCC.','.CCCCCCCC.','CCCCCCCCCC','CCCCCCCCCC']);
+  if(t===0)icRect(b,6,7,4,1,'L');
+  if(t===1){icRect(b,6,7,4,1,'T');icRect(b,7,8,1,5,'K');}
+  if(t===2){icRect(b,6,7,4,1,'T');icRect(b,7,8,2,6,'T');icSet(b,7,7,'G');}
+  if(t===3){icRect(b,6,7,4,1,'T');icArt(b,5,10,['E.EE.E','.E..E.']);icSet(b,7,3,'G');}
+  if(t===4){icRect(b,6,7,4,1,'T');icRect(b,3,13,10,1,'T');icArt(b,7,9,['.E','EE','E.']);icSet(b,7,7,'G');icSet(b,8,7,'G');o.spark=[[14,1]];}
+  if(t===5){icRect(b,6,7,4,1,'T');icRect(b,3,13,10,1,'T');[[5,10],[9,11],[7,12],[10,9]].forEach(([a,c])=>icSet(b,a,c,'S'));icSet(b,7,7,'G');icSet(b,8,7,'G');icArt(b,5,1,['TT..TT']);o.aura=TIER_GEM[5];}
+  return o;};
+ICF.vest=(b,t,P)=>{const o={};const cl=['#9a7a4a','#5a7a4a','#5aa08a','#a0c8e0','#e0c870','#4a3a6a'][t];P.C=cl;P.K=shade(cl,.72);
+  icArt(b,3,2,['.CC....CC.','CCCC..CCCC','CCCCCCCCCC','.CCCCCCCC.','.CCCCCCCC.','.CCCCCCCC.','.CCCCCCCC.','.CCCCCCCC.','.CCCCCCCC.','..CCCCCC..']);
+  icRect(b,7,4,2,8,'K');
+  if(t===0){icSet(b,5,7,'L');icSet(b,10,7,'L');icRect(b,4,10,8,1,'L');}
+  if(t===1){icRect(b,4,9,8,1,'L');icSet(b,8,9,'M');icRect(b,4,5,2,3,'K');}
+  if(t===2){icArt(b,1,3,['F..','FF.','.F.']);icArt(b,12,3,['..F','.FF','.F.']);icRect(b,4,9,8,1,'L');icSet(b,8,9,'G');}
+  if(t===3){icRect(b,4,9,8,1,'T');icArt(b,4,5,['E....E','.E..E.']);icSet(b,8,9,'G');}
+  if(t===4){icArt(b,0,2,['FF..','.FFF','..F.']);icArt(b,12,2,['..FF','FFF.','.F..']);icRect(b,4,9,8,1,'T');icSet(b,8,9,'G');o.spark=[[14,0]];}
+  if(t===5){icArt(b,5,5,['S....','...S.','.S...']);icRect(b,4,9,8,1,'T');icSet(b,8,9,'G');icSet(b,7,9,'G');icArt(b,3,12,['..T..TT..T'.slice(0,10)]);o.aura=TIER_GEM[5];}
+  return o;};
+// ----- capes -----
+ICF.cape=(b,t,P)=>{const o={};P.C=CAPE_COL[t];P.K=shade(CAPE_COL[t],.7);
+  const shape=[['....CC....','...CCCC...','..CCCCCC..','..CCCCCC..','.CCCCCCCC.','.CCCCCCCC.','.CCCCCCCC.','CCCCCCCCCC','CCCCCCCCCC','CC.CC.CC.C'],
+    ['..CCCCCC..','.CCCCCCCC.','.CCCCCCCC.','.CCCCCCCC.','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','.CCCCCCCC.'],
+    ['...KKKK...','..KCCCCK..','..CCCCCC..','.CCCCCCCC.','.CCCCCCCC.','.CCCCCCCC.','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','C.CC.CC.CC'],
+    ['..CCCCCC..','.CCCCCCCC.','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','.CC.CC.CC.'],
+    ['.TTTTTTTT.','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','TTTTTTTTTT'],
+    ['.TTTTTTTT.','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','TCTCTCTCTC']][t];
+  icArt(b,3,2,shape);
+  for(let y=5;y<2+shape.length;y++){icSet(b,6,y,'K');icSet(b,9,y,'K');}
+  if(t===0){icSet(b,8,3,'L');}
+  if(t===1){icRect(b,5,3,6,1,'K');icSet(b,8,3,'M');}
+  if(t===2){icSet(b,7,3,'G');icSet(b,8,3,'G');}
+  if(t===3){icRect(b,3,4,10,1,'T');icSet(b,8,4,'G');icSet(b,7,4,'G');}
+  if(t===4){icSet(b,5,3,'G');icSet(b,10,3,'G');icArt(b,6,7,['.TT.','TTTT','.TT.']);o.spark=[[14,2]];}
+  if(t===5){icSet(b,5,3,'G');icSet(b,10,3,'G');[[5,7],[10,9],[7,11],[8,6]].forEach(([a,c])=>icSet(b,a,c,'S'));o.aura=TIER_GEM[5];}
+  return o;};
+// ----- silhouette extras: pixels each tier adds outside the family shape (only where the grid is empty), so tiers differ in shape -----
+const IC_SIL={
+ tome:[[],[[13,6,'M'],[13,7,'M'],[13,8,'M'],[13,9,'M']],[[2,1,'T'],[13,1,'T'],[2,14,'T'],[13,14,'T']],[[9,14,'G'],[9,15,'G'],[10,14,'G'],[10,15,'G']],
+   [[7,0,'E'],[8,0,'E'],[7,1,'E'],[8,1,'E'],[13,7,'T'],[13,8,'T']],[[2,1,'G'],[13,1,'G'],[2,14,'G'],[13,14,'G'],[7,1,'T'],[8,1,'T'],[9,14,'T'],[9,15,'T']]],
+ bow:[[],[[10,0,'T'],[10,15,'T'],[2,7,'L'],[2,8,'L']]],
+ crossbow:[[],[],[],[[1,3,'E'],[14,3,'E'],[7,15,'E'],[8,15,'E']]],
+ greatsword:[[],[],[],[],[[4,15,'T'],[5,15,'T'],[0,10,'T'],[0,11,'T']]],
+ longbow:[[],[],[],[],[],[[3,0,'G'],[3,15,'G'],[2,1,'G'],[2,14,'G']]],
+ knuckles:[[[4,13,'K'],[5,14,'K'],[9,13,'K'],[9,14,'K']],[[0,6,'M'],[0,7,'M'],[0,8,'M'],[0,9,'M']],[],[[2,11,'T'],[2,12,'T'],[1,11,'T'],[1,12,'T']],
+   [[12,11,'T'],[12,12,'T'],[13,11,'T'],[13,10,'T']],[[4,3,'G'],[7,3,'G'],[10,3,'G'],[13,3,'G']]],
+ qstaff:[[],[],[[5,8,'M'],[7,10,'M'],[8,5,'M'],[10,7,'M']],[],[],[[3,10,'T'],[5,12,'T'],[10,3,'T'],[12,5,'T']]],
+ lute:[[],[[12,0,'T'],[11,1,'T'],[15,3,'T'],[14,4,'T']]],
+ flute:[[],[[1,11,'T'],[2,12,'T'],[13,2,'T'],[14,3,'T']],[],[],[[10,6,'C'],[10,7,'C'],[11,8,'C'],[9,8,'C']]],
+ mail:[[],[[5,13,'m'],[6,13,'m'],[7,13,'m'],[8,13,'m'],[9,13,'m'],[10,13,'m']],[],[],[[0,1,'T'],[1,1,'T'],[14,1,'T'],[15,1,'T']],
+   [[4,13,'T'],[5,13,'T'],[6,13,'T'],[7,13,'T'],[8,13,'T'],[9,13,'T'],[10,13,'T'],[11,13,'T']]],
+ robe:[[],[[3,7,'C'],[3,8,'C'],[12,7,'C'],[12,8,'C']],[[2,5,'C'],[2,6,'C'],[13,5,'C'],[13,6,'C']],[[4,1,'E'],[11,1,'E'],[3,2,'E'],[12,2,'E']],
+   [[2,13,'T'],[13,13,'T'],[2,14,'T'],[13,14,'T'],[1,14,'T'],[14,14,'T']],[[4,14,'T'],[7,14,'T'],[8,14,'T'],[11,14,'T'],[1,9,'S'],[14,11,'S']]],
+ vest:[[],[[6,2,'L'],[9,2,'L'],[12,9,'L'],[12,10,'L']],[],[[4,1,'E'],[11,1,'E'],[3,1,'E'],[12,1,'E']]]};
+function icSil(b,fam,t){((IC_SIL[fam]||[])[t]||[]).forEach(([x,y,k])=>{if(!icGet(b,x,y))icSet(b,x,y,k);});}
+
+// ===== Beta v0.6.3: icons part 2: charms, personal rewards, Echoforged, consumables, materials, and the hooks =====
+// ----- small glyphs (5x5, '#' takes the glyph key) -----
+const IC_GLY={
+ cross:['..#..','..#..','#####','..#..','..#..'],eye:['.....','.###.','#.#.#','.###.','.....'],flame:['..#..','.##..','.###.','#####','.###.'],
+ drop:['..#..','.###.','.###.','#####','.###.'],leaf:['...##','..###','.###.','###..','#....'],bolt:['...#.','..##.','.###.','.##..','.#...'],
+ snow:['#.#.#','.###.','##.##','.###.','#.#.#'],sun:['..#..','.###.','#####','.###.','..#..'],moon:['.###.','##...','#....','##...','.###.'],
+ wind:['####.','....#','.###.','#....','.####'],star:['..#..','.###.','#####','.#.#.','#...#'],rock:['..#..','.###.','.####','#####','#####'],
+ heart:['.#.#.','#####','#####','.###.','..#..'],fist:['.###.','#####','#####','####.','.##..'],shell:['..#..','.###.','#.#.#','#####','.###.'],
+ feather:['...##','..##.','.##..','##...','#....'],clover:['.#.#.','#####','.###.','#####','..#..'],hammer:['####.','####.','.#...','.#...','.#...'],
+ wave:['.....','.#..#','#.##.','.....','#####'],key:['.##..','#..#.','.##..','..#..','..##.'],hand:['#.#.#','#####','#####','.####','.###.'],
+ page:['####.','#..##','#####','#...#','#####'],paw:['#.#.#','.....','.###.','#####','.###.'],shield:['#####','#####','#####','.###.','..#..'],
+ sword:['....#','...#.','#.#..','.#...','#.#..'],arrow:['..###','...##','..#.#','.#...','#....'],note:['..##.','..#.#','..#..','###..','##...'],
+ aim:['..#..','.#.#.','##.##','.#.#.','..#..'],quill:['...##','..###','.##..','##...','#....'],orb:['.###.','##..#','#...#','#...#','.###.'],
+ thorn:['#...#','.#.#.','..#..','.#.#.','#...#'],spire:['..#..','..#..','.###.','.###.','#####'],crown:['#.#.#','#####','#####','.....','.....'],
+ ring:['.###.','#...#','#...#','#...#','.###.']};
+function icGlyph(b,x,y,name,k){icArt(b,x,y,(IC_GLY[name]||IC_GLY.star).map(r=>r.replace(/#/g,k)));}
+// ----- charm bodies (7x7) -----
+const IC_BODY={
+ round:['..###..','.#####.','#######','#######','#######','.#####.','..###..'],
+ drop:['...#...','..###..','.#####.','#######','#######','.#####.','..###..'],
+ shield:['#######','#######','#######','#######','.#####.','..###..','...#...'],
+ diamond:['...#...','..###..','.#####.','#######','.#####.','..###..','...#...'],
+ heart:['.##.##.','#######','#######','#######','.#####.','..###..','...#...'],
+ seal:['.#####.','#######','#######','#######','#######','#######','.#####.'],
+ star:['...#...','..###..','#######','.#####.','.#####.','.##.##.','##...##'],
+ leaf:['....###','..#####','.######','#######','######.','#####..','.##....'],
+ crescent:['..###..','.##....','##.....','##.....','##.....','.##....','..###..'],
+ fang:['#######','.#####.','.#####.','..###..','..###..','...#...','...#...'],
+ knot:['.##.##.','#..#..#','#..#..#','.##.##.','#..#..#','#..#..#','.##.##.'],
+ wing:['......#','....###','..#####','.######','#######','.##.##.','#..#..#'],
+ vial:['..###..','...#...','..###..','.#####.','#######','#######','.#####.'],
+ page:['######.','#######','#######','#######','#######','#######','#######'],
+ hammer:['#######','#######','..###..','...#...','...#...','...#...','..###..'],
+ anvil:['#######','.######','...###.','...##..','..####.','.######','.......'],
+ paw:['#.#.#..','.......','.###...','#####..','.###...','.......','.......'],
+ crest:['#.#.#.#','#######','#######','#######','.#####.','..###..','...#...'],
+ pearl:['.......','..###..','.#####.','.#####.','..###..','.......','.......']};
+function icBody(b,x,y,name,k){icArt(b,x,y,(IC_BODY[name]||IC_BODY.round).map(r=>r.replace(/#/g,k)));}
+function icBodyRim(b,x,y,name,k){const R=IC_BODY[name]||IC_BODY.round;R.forEach((r,j)=>{for(let i=0;i<r.length;i++){if(r[i]!=='#')continue;
+  const e=(R[j-1]||'')[i]!=='#'||(R[j+1]||'')[i]!=='#'||r[i-1]!=='#'||r[i+1]!=='#';if(e)icSet(b,x+i,y+j,k);}});}
+// a pendant: a cord, chain or pin bar, the body (7x7 at 4,6), an inset glyph and dots
+function icPendant(b,s){const cord=s.cord||'chain',by=s.by||6;
+  if(cord==='pin'){icRect(b,2,3,12,1,'M');icSet(b,13,2,'M');icSet(b,1,3,'M');icRect(b,7,4,2,2,'M');}
+  else if(cord!=='none'){const k=cord==='chain'?'T':'L';icLine(b,3,0,7,4,k);icLine(b,12,0,8,4,k);if(cord==='chain')[1,3].forEach(i=>{icSet(b,3+i,i,'t');icSet(b,12-i,i,'t');});icRect(b,7,4,2,2,'M');}
+  icBody(b,4,by,s.body||'round','G');
+  if(s.rim)icBodyRim(b,4,by,s.body||'round',s.rim);
+  if(s.gly)icGlyph(b,5,by+1,s.gly,s.gk||'S');
+  (s.dot||[]).forEach(([a,c,k2])=>icSet(b,a,c,k2||'S'));}
+// charm designs per id
+const IC_CHARM={
+ c_vital:{body:'heart',G:'#e04a5a',cord:'cord',dot:[[6,7]]},
+ c_mana:{body:'drop',G:'#4a8aff',cord:'cord',dot:[[6,9],[6,10]]},
+ c_swift:{body:'wing',G:'#7ae0a0',cord:'cord',rim:'g'},
+ c_clarity:{body:'diamond',G:'#bfe6ff',gly:'eye',gk:'X',cord:'chain'},
+ c_fth:{body:'round',G:'#fff2b8',gly:'cross',gk:'T',cord:'chain',rim:'T',halo:1},
+ c_str:{body:'shield',G:'#a06a4a',gly:'fist',gk:'E',E:'#f0c090',cord:'cord'},
+ c_int:{body:'round',G:'#6a5ad0',gly:'eye',gk:'E',E:'#ffe9a0',cord:'chain'},
+ c_vit:{body:'leaf',G:'#5ab04a',cord:'cord',dot:[[6,11,'g'],[7,10,'g'],[8,9,'g'],[9,8,'g']]},
+ c_spi:{body:'round',G:'#e8d8b8',gly:'shell',gk:'g',cord:'cord'},
+ c_agi:{body:'round',G:'#7ad0c0',gly:'wind',gk:'S',cord:'chain'},
+ c_dex:{body:'diamond',G:'#c89a5a',gly:'feather',gk:'E',E:'#f4ecd8',cord:'cord'},
+ c_luk:{body:'round',G:'#3aa04a',gly:'clover',gk:'E',E:'#9af07a',cord:'chain'},
+ c_cv0:{body:'round',G:'#5a8a3a',gly:'rock',gk:'g',cord:'cord',rim:'L'},
+ c_cv1:{body:'pearl',G:'#f4f0ff',cord:'chain',shell:1},
+ c_cv2:{body:'seal',G:'#4a2a2a',gly:'bolt',gk:'E',E:'#ff8a3a',cord:'chain'},
+ c_cv3:{body:'fang',G:'#d8f0ff',cord:'cord',dot:[[7,7,'E'],[8,8,'E'],[8,10,'E']],E:'#6ac0ff'},
+ c_cv4:{body:'star',G:'#ffe27a',cord:'chain',tail:1},
+ c_fa0:{body:'shield',G:'#c84a3a',gly:'crown',gk:'T',cord:'pin'},
+ c_fa1:{body:'anvil',G:'#8a8a98',cord:'pin',dot:[[6,6,'T'],[7,6,'T']]},
+ c_fa2:{body:'vial',G:'#5ad0a0',cord:'pin'},
+ c_fa3:{body:'paw',G:'#a06a3a',cord:'cord',by:7},
+ c_fa4:{body:'page',G:'#efe6cc',gly:'quill',gk:'X',cord:'pin'},
+ c_fa5:{body:'knot',G:'#c8a060',cord:'cord'},
+ c_fb0:{body:'seal',G:'#ffd25a',gly:'crown',gk:'X',cord:'chain',rim:'g',aura:1},
+ c_fb1:{body:'hammer',G:'#ffd25a',cord:'chain',dot:[[7,7,'E'],[8,7,'E']],E:'#ff6a3a',aura:1},
+ c_fb2:{body:'vial',G:'#b06aff',cord:'chain',rim:'T',aura:1},
+ c_fb3:{body:'heart',G:'#e04a5a',gly:'leaf',gk:'E',E:'#7ae07a',cord:'chain',aura:1},
+ c_fb4:{body:'page',G:'#fff4d8',gly:'star',gk:'T',cord:'chain',rim:'T',aura:1},
+ c_fb5:{body:'round',G:'#ffd25a',gly:'hand',gk:'g',cord:'chain',rim:'T',aura:1},
+ c_ft0:{body:'crest',G:'#3a6a3a',gly:'thorn',gk:'E',E:'#9ae06a',cord:'pin'},
+ c_ft1:{body:'seal',G:'#2a5a8a',gly:'wave',gk:'E',E:'#bfe6ff',cord:'pin'},
+ c_ft2:{body:'shield',G:'#8a2a1a',gly:'flame',gk:'E',E:'#ffa040',cord:'pin'},
+ c_ft3:{body:'diamond',G:'#6a8aa8',gly:'snow',gk:'S',cord:'pin'},
+ c_ft4:{body:'crest',G:'#3a2a5a',gly:'spire',gk:'E',E:'#c890ff',cord:'pin'}};
+const IC_ELGLY={fire:'flame',water:'drop',earth:'rock',wind:'wind',lightning:'bolt',ice:'snow',light:'sun',shadow:'moon'};
+const IC_ELBODY={fire:'round',water:'drop',earth:'seal',wind:'round',lightning:'diamond',ice:'diamond',light:'star',shadow:'crescent'};
+function icCharmDraw(b,id,g,P){const o={};let s=IC_CHARM[id];
+  if(!s&&g.el&&ELC[g.el]){const e=g.el;s={body:IC_ELBODY[e],G:shade(ELC[e],.85),cord:'chain'};
+    if(e==='fire'){s.gly='flame';s.gk='E';s.E='#ffd06a';}if(e==='earth'){s.gly='rock';s.gk='g';}if(e==='wind'){s.gly='wind';s.gk='S';}
+    if(e==='lightning'){s.gly='bolt';s.gk='X';}if(e==='ice'){s.gly='snow';s.gk='S';}if(e==='light'){s.rim='T';s.dot=[[7,9,'S']];}
+    if(e==='shadow')s.dot=[[8,9,'S'],[9,8,'S']];if(e==='water')s.dot=[[6,9,'S'],[6,10,'S']];}
+  if(!s)s={body:'round',G:TIER_GEM[Math.min(5,g.tier|0)],cord:'chain'};
+  P.G=s.G;if(s.E)P.E=s.E;
+  icPendant(b,s);
+  if(s.halo)icRect(b,5,1,6,1,'T');
+  if(s.shell){P.M='#e8b8a8';icArt(b,3,11,['.MMMMMMM.','MMMMMMMMM','.M.M.M.M.']);}
+  if(s.tail){P.E='#ffe9a0';icSet(b,12,5,'E');icSet(b,13,4,'E');icSet(b,14,3,'S');}
+  if(id==='c_fa2'||id==='c_fb2'){P.E=id==='c_fa2'?'#9af0c0':'#e0b0ff';icRect(b,6,10,3,2,'E');}
+  if(s.aura){o.aura='#ffd25a';o.auraA=.32;o.spark=[[14,1]];}
+  return o;}
+// ----- personal rewards: signature weapons, Oathmantles, Tokens -----
+// per-hero variant: the hero's place among heroes with the same reward kind, class or weight and elements, so no two share an icon
+let IC_SIGV=null;
+function icSigVar(id,kind){if(!IC_SIGV){IC_SIGV={};const B={};RAW.forEach(r=>{const h=r[0],t=TPL[h];if(!t||!t.el)return;['w','a','c'].forEach(k=>{
+  const key=k+':'+(k==='a'?(CLS_ARM[t.cls]||'medium'):k==='c'?'':t.cls)+':'+t.el.join('+');(B[key]=B[key]||[]).push(h);IC_SIGV[k+':'+h]=B[key].length-1;});});}
+  return IC_SIGV[kind+':'+id]||0;}
+function icElc(t,i){const e=t&&t.el&&(t.el[i]||t.el[0]);return ELC[e]||'#ffd25a';}
+const IC_SIGF={
+ warrior(b,v){icSword(b,{p:1,pr:.75,g:4,gl:2,T:13.5,l:1,r:.5,tp:.9,gk:'G',pk:'T'});icUV(b,'',(s,vv)=>s>12.6&&vv<-.4);
+   icUV(b,'E',(s,vv)=>s>5.5&&s<12&&Math.abs(vv+.5)<.01&&Math.floor(s*2)%(3+v%2)===0);icPt(b,1,0,'X');icPt(b,4,0,'G');
+   if(v%3===1){icPt(b,4.5,-2.5,'T');icPt(b,4.5,2.5,'T');}if(v%3===2){icPt(b,3.5,-1.5,'G');icPt(b,3.5,1.5,'G');}if(v>=3){icPt(b,.5,-.5,'E');icPt(b,.5,.5,'E');}},
+ knight(b,v){icSword(b,{p:1,pr:.5,g:3.5,gl:2.5,T:14.5,l:.5,r:.5,tp:1.5,ful:'E',gk:'G',pk:'T'});icPt(b,4,-3,'T');icPt(b,4,3,'T');icPt(b,4.5,-3.5,'T');icPt(b,4.5,3.5,'T');icPt(b,3.5,0,'G');
+   if(v%3===1){icPt(b,2.5,-1,'T');icPt(b,2.5,1,'T');}if(v%3===2){icPt(b,5,-2,'S');icPt(b,5,2,'S');}if(v>=3){icPt(b,13,-1,'S');icPt(b,12.5,1.5,'S');}},
+ mage(b,v){icHaft(b,1,9.5,'W');icPt(b,9.5,-1,'T');icPt(b,9.5,1,'T');icPt(b,10,-1.5,'T');icPt(b,10,1.5,'T');icArt(b,11,0,['.E.','EEE','EGE','EGE','.E.']);icSet(b,12,1,'S');
+   [[[9,4],[14,4]],[[14,0],[10,1]],[[9,1],[15,3]],[[9,3],[14,5]]][v%4].forEach(([a,c])=>icSet(b,a,c,'S'));if(v>=4)icSet(b,8,2,'E');},
+ healer(b,v){icHaft(b,1,10,'W');icPt(b,10.5,.5,'T');icPt(b,11,0,'T');icArt(b,11,3,['TTT','..T']);icArt(b,11,5,['MMMM','MEEM','MEEM','.MM.']);icSet(b,12,7,'G');
+   [[3,0],[6,0],[7.5,.5],[5,.5]].slice(0,1+v%4).forEach(([s,vv])=>icPt(b,s,vv,'T'));if(v>=4)icSet(b,15,9,'S');},
+ thief(b,v){icSword(b,{p:3,pr:1,g:5,gl:2,T:12.5,l:0,r:.5,tp:1,wave:1,gk:'G',pk:'T'});icPt(b,3,0,'G');icUV(b,'E',(s,vv)=>s>5.5&&s<12&&icGet(b,...icAt(s,vv))==='M'&&!icGet(b,...icAt(s,vv-.5)));
+   if(v%3===1)icPt(b,5,-1.5,'G');if(v%3===2)icPt(b,5,1.5,'G');if(v>=3)icPt(b,2,-1,'T');},
+ archer(b,v){ICF.bow(b,1);icLine(b,2,8,12,8,'T');icArt(b,12,6,['E..','EEE','EEE','EEE','E..'].map(r=>r.slice(0,3)));icArt(b,0,7,['GG','.G','GG']);icRect(b,3,6,2,4,'G');
+   [[9,0],[9,15],[6,1],[6,14]].slice(0,1+v%4).forEach(([a,c])=>icSet(b,a,c,'T'));},
+ monk(b,v,P){P.C='#f4f0e8';P.K=P.E;ICF.knuckles(b,0,P,null,{A:'C',B:'C',C:'G'});icArt(b,12,12,['EE.','.EE','..E','.E.']);icSet(b,7,8,'G');
+   [[4,3],[13,3],[3,13],[2,13]].slice(0,1+v%4).forEach(([a,c])=>icSet(b,a,c,'T'));},
+ bard(b,v){icArt(b,3,2,['T......T','TT....TT','.T....T.','.TRRRRT.','.TRRRRT.','.TRRRRT.','..TRRT..']);icDisc(b,7.5,11,3,'W');icDisc(b,7.5,11,1,'X');icSet(b,7,11,'G');icArt(b,12,0,['.EE','.E.','EE.']);
+   [[1,13],[14,13],[2,8],[13,8]].slice(0,1+v%4).forEach(([a,c])=>icSet(b,a,c,'E'));},
+ sniper(b){ICF.crossbow(b,5);icRect(b,7,5,2,6,'X');icArt(b,5,7,['..E.','.EE.','..EE','..E.']);icSet(b,8,0,'G');},
+ druid(b){ICF.longbow(b,3);icArt(b,2,0,['M.M','MMM']);icArt(b,2,14,['MMM','M.M']);icSet(b,3,7,'G');icSet(b,3,8,'E');},
+ archmage(b){icHaft(b,1,9.5,'W');icDisc(b,12,3,2.6,'E');icDisc(b,12,3,1.2,'G');icSet(b,11,2,'S');icArt(b,9,6,['.S','S.']);icSet(b,15,0,'S');},
+ chronicler(b,v,P){ICF.tome(b,4,P);icArt(b,10,0,['.PPP','PPPP','.PP.']);icArt(b,0,0,['PP','PP']);}};
+const IC_TOKG={warrior:'sword',knight:'shield',mage:'star',healer:'cross',thief:'key',archer:'arrow',monk:'fist',bard:'note',sniper:'aim',druid:'paw',archmage:'orb',chronicler:'quill'};
+function icSigDraw(b,id,g,P){const h=g.only,t=TPL[h]||{},kind=id.startsWith('ua_')?'a':id.startsWith('uc_')?'c':'w',v=icSigVar(h,kind),o={};
+  const e1=icElc(t,0),e2=t.el&&t.el[1]?icElc(t,1):'#f4f0f8',q=v%4;
+  P.E=e1;P.G=e2;P.T=['#ffd25a','#e0e4ec','#ffb060','#fff0b0'][q];P.M=['#f4f0e8','#a8b4d8','#e8c890','#d0f0ff'][q];P.W=shade(e2,[.55,.8,.38,.68][q]);P.L=shade(e2,[.42,.62,.3,.52][q]);
+  if(kind==='w'){(IC_SIGF[t.cls]||IC_SIGF.warrior)(b,v,P);o.aura=icElc(t,0);o.auraA=.3;}
+  else if(kind==='a'){const wt=g.fam||'mail';P.C=['#f6ecd0','#dfe4f2','#f2d6bc','#d6ead0'][q];P.K=shade(e1,.8);P.T=t.el&&t.el[1]?e2:'#ffd25a';
+    const rows=wt==='robe'?['TTT....TTT','CCCCKKCCCC','CCCCKKCCCC','CC.CKKC.CC','C..CKKC..C','...CKKC...','..CCKKCC..','.CCCKKCCC.','.CCCKKCCC.','CCCCKKCCCC','TTTTTTTTTT']
+      :wt==='vest'?['TT......TT','CCCC..CCCC','CCCCKKCCCC','.CCCKKCCC.','.CCCKKCCC.','.CCCKKCCC.','.CCCKKCCC.','.CCCKKCCC.','..TTTTTT..']
+      :['TTTT..TTTT','TTMMMMMMTT','TMCCKKCCMT','.MCCKKCCM.','.MCCKKCCM.','.MCCKKCCM.','.MCCKKCCM.','.MTTTTTTM.','..MCKKCM..'];
+    icArt(b,3,2,rows);icBody(b,4,4,['shield','diamond','seal','crest'][v%4],'X');icGlyph(b,5,5,IC_ELGLY[t.el&&t.el[0]]||'star','E');
+    if(t.el&&t.el[1])[[4,4],[10,4]].forEach(([a,c])=>icSet(b,a,c,'G'));
+    o.aura='#ffd25a';o.auraA=.3;o.spark=[[14,1]];}
+  else{P.M=['#ffd25a','#e0e4ec','#e8a060','#fff0c0'][q];P.C=e1;P.K=e2;const rs=Math.floor(v/4)%3;icRect(b,5,10,2,rs===2?4:5,'C');icRect(b,9,10,2,rs===2?4:5,'K');if(rs===0){icSet(b,5,15,'');icSet(b,10,15,'');}if(rs===1){icSet(b,6,15,'');icSet(b,9,15,'');icSet(b,4,14,'C');icSet(b,11,14,'K');}
+    icDisc(b,7.5,6.5,4.6,'M');icDisc(b,7.5,6.5,3.3,'X');P.X=shade(e2,.32);icGlyph(b,5,4,IC_TOKG[t.cls]||'star','E');
+    
+    o.aura=icElc(t,0);o.auraA=.3;}
+  return o;}
+// ----- Echoforged: the mythic design of the family in echo colours, with an echo ring -----
+function icEfPal(P){Object.assign(P,{M:'#e0c8ff',G:'#b48aff',T:'#ffd9a0',W:'#5a3a8a',L:'#2a1640',E:'#d8b8ff',C:'#6a3aa8',K:'#4a2a7a'});}
+// ----- the hooks: drawGearIcon(x,fam,col,tier,glow,id) and the gear icon per item -----
+function icFamOf(id,g){const b=baseIdOf(id);if(b==='w_stick')return 'stick';if(g.slot==='c')return 'charm';if(g.fam)return g.fam;const p=b.split('_');return p[1]||'charm';}
+function icDrawGear(x,id,glow,glowTier){const g=gearOf(id)||GEAR[baseIdOf(id)];if(!g)return;const bid=baseIdOf(id),fam=icFamOf(id,g),t=Math.min(5,g.tier||0),b=icBuf(),P=icPal(t);let o={};
+  if(g.only&&/^u[ac]?_/.test(bid))o=icSigDraw(b,bid,g,P);
+  else if(fam==='charm')o=icCharmDraw(b,bid,g,P);
+  else if(g.ef){icEfPal(P);o=(ICF[fam]||ICF.blade)(b,5,P,{})||{};o.aura='#b48aff';o.auraA=.5;icArt(b,0,0,['.E.','E.E','.E.']);o.spark=[[13,1]];}
+  else{o=(ICF[fam]||ICF.blade)(b,t,P,{glow,glowTier:glowTier||(g.stickP?g.stickP.tier:0)})||{};icSil(b,fam,t);}
+  icPaint(x,b,P,o||{});}
+// (x, family, colour, tier, Stick glow[, gear id]): with an id, the item's own design; without, the shop design of that family and tier
+function drawGearIcon(x,fam,col,tier,glow,id){if(id)return icDrawGear(x,id,glow);const b=icBuf(),P=icPal(tier);const o=fam==='charm'?icCharmDraw(b,'',{tier},P):(ICF[fam]||ICF.blade)(b,Math.min(5,tier||0),P,{glow,glowTier:glow?1:0})||{};icPaint(x,b,P,o);}
+// ----- consumables -----
+const IC_ITEM={
+ campkit(b,P){P.C='#8a5a2a';P.K='#5a3a1a';P.E='#ffb43a';icArt(b,1,4,['..CCCCCCCCCC..','.CCCCCCCCCCCC.','CCKCCCCCCCKCCC','CCKCCCCCCCKCCC','.CCCCCCCCCCCC.','..CCCCCCCCCC..']);icRect(b,4,4,1,6,'L');icRect(b,10,4,1,6,'L');icArt(b,5,10,['..E..','.EEE.','EESEE']);icArt(b,4,13,['WW.WW','.WWW.']);},
+ potion(b,P){P.E='#e04a4a';icArt(b,6,1,['LLLL','.MM.']);icArt(b,3,3,['...GGGG...','..GGGGGG..','.GGGGGGGG.','.GEEEEEEG.','GEEEEEEEEG','GEEEEEEEEG','GEEEEEEEEG','.GEEEEEEG.','..GGGGGG..']);icSet(b,5,7,'S');},
+ hipotion(b,P){P.E='#ff3a6a';icArt(b,5,0,['.LLLL.','LLLLLL','.TTTT.']);icArt(b,2,3,['...GGGGGG...','..GGGGGGGG..','.GGGGGGGGGG.','.GEEEEEEEEG.','GEEEEEEEEEEG','TTTTTTTTTTTT','GEEEEEEEEEEG','.GEEEEEEEEG.','..GEEEEEEG..','...GGGGGG...']);icSet(b,4,7,'S');icSet(b,5,6,'S');},
+ ether(b,P){P.E='#4a8aff';icArt(b,6,0,['LLLL','.MM.']);icArt(b,5,2,['.GGGG.','.GGGG.','GGGGGG','GEEEEG','GEEEEG','GEEEEG','GEEEEG','GEEEEG','GEEEEG','GEEEEG','GEEEEG','.GGGG.']);icSet(b,6,5,'S');icSet(b,6,6,'S');},
+ sage(b,P){P.E='#7a5aff';P.W='#7aa04a';icArt(b,6,1,['.WW','WW.']);icArt(b,5,2,['.LLLL','..MM.']);icArt(b,2,4,['...GGGGGG...','..GEEEEEEG..','.GEEEEEEEEG.','GEEEEEEEEEEG','GEEEEEEEEEEG','GEEEEEEEEEEG','.GEEEEEEEEG.','..GGGGGGGG..']);icSet(b,4,7,'S');},
+ remedy(b,P){P.E='#5ae07a';icArt(b,6,2,['LLLL','.MM.']);icArt(b,4,4,['GGGGGGGG','GEEEEEEG','GEPPPPEG','GEPXPPEG'.replace('X','P'),'GEPPPPEG','GEEEEEEG','GEEEEEEG','GEEEEEEG','GGGGGGGG']);icSet(b,7,6,'X');icRect(b,6,7,3,1,'X');icSet(b,7,8,'X');P.X='#d83a3a';icSet(b,5,5,'S');},
+ elixir(b,P,o){P.E='#ffd04a';P.T='#ffd25a';icArt(b,6,0,['.T.','TST','.T.']);icArt(b,6,3,['.M.']);icArt(b,3,4,['..GGGGG...','.GTTTTTG..','GEEEEEEEG.','GEEEEEEEG.','GEESEEEEG.','GEEEEEEEG.','.GEEEEEG..','..TTTTT...','..T...T...']);icSet(b,4,6,'S');o.aura='#ffd04a';o.spark=[[13,2],[2,12]];},
+ vigor(b,P){P.E='#ff9a3a';icArt(b,6,1,['LLLL','.GG.','.GG.']);icArt(b,3,4,['...GG.....','...GG.....','..GEEG....','..GEEG....','.GEEEEG...','.GEEEEEG..','GEEEEEEEG.','GGGGGGGGG.']);icSet(b,5,7,'S');icSet(b,12,4,'E');icSet(b,13,3,'S');},
+ holywater(b,P,o){P.E='#bfe6ff';P.T='#f0c050';icArt(b,6,0,['.TT.','TTTT','.MM.']);icArt(b,4,3,['..GGGG..','.GEEEEG.','GEEEEEEG','GEETTEEG','GETTTTEG','GEETTEEG','GEETTEEG','GEEEEEEG','.GEEEEG.','..GGGG..']);o.aura='#fff2b8';o.auraA=.3;},
+ plume(b,P,o){P.F='#ff7a3a';P.E='#ffd04a';icUV(b,'F',(s,v)=>s>2&&s<14&&Math.abs(v+ .3)<=Math.min(1.6,(14-s)*.4,(s-2)*.6)+.01);icUV(b,'E',(s,v)=>s>5&&s<13&&Math.abs(v+1.5)<.01&&Math.floor(s)%2===0);icHaft(b,.5,13.5,'B');icPt(b,12,-1,'S');o.spark=[[14,1]];},
+ salts(b,P){P.C='#e0d8b0';icArt(b,5,1,['.LL.','LLLL']);icArt(b,3,3,['..CCCCCC..','.CCCCCCCC.','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','.CCCCCCCC.','..CCCCCC..']);icRect(b,5,3,6,1,'L');icArt(b,10,0,['..S','.S.']);icSet(b,13,2,'S');icSet(b,6,7,'K');icSet(b,9,8,'K');},
+ ash(b,P){P.M='#a89a8a';P.C='#d8d0c8';icArt(b,4,1,['..MMMM..','.MMMMMM.']);icArt(b,4,3,['MMMMMMMM','.MCCCCM.','MCCCCCCM','MCCXXCCM','MCCCCCCM','MCCCCCCM','.MCCCCM.','..MMMM..','.MMMMMM.']);P.X='#9a7aff';icSet(b,4,7,'M');},
+ bandage(b,P){P.C='#f0e8d8';icDisc(b,6,8,4.2,'C');icDisc(b,6,8,1.3,'K');icArt(b,9,9,['CCCCC','CCCCC','.CCCC']);icSet(b,11,10,'X');P.X='#e04a4a';icSet(b,10,10,'X');icSet(b,12,10,'X');},
+ porkchop(b,P){P.C='#e0b070';P.E='#c8743a';icArt(b,1,4,['..CCCCCCCCCC..','.CCCCCCCCCCCC.']);icRect(b,1,6,14,1,'G');P.G='#5ac04a';icRect(b,1,7,14,2,'E');icRect(b,2,9,12,1,'X');P.X='#f4d04a';icArt(b,1,10,['CCCCCCCCCCCCCC','.CCCCCCCCCCCC.']);icSet(b,4,4,'S');},
+ tent(b,P){P.C='#7aa04a';P.K='#5a7a3a';icArt(b,1,2,['.......M......','......CCC.....','.....CCCKC....','....CCCKKKC...','...CCCKXKKKC..','..CCCKXXXKKKC.','.CCCKXXXXKKKKC','CCCKXXXXXXKKKK']);P.X='#2a1a10';icRect(b,0,10,16,1,'L');icSet(b,7,1,'T');}};
+function drawItemIconV3(x,id){const b=icBuf(),P=icPal(1),o={};const f=IC_ITEM[id];if(f)f(b,P,o);else{(String(id).includes('sand')?IC_ITEM.porkchop:IC_ITEM.salts)(b,P,o);}
+  P.G=P.G||'#d8e8f0';if(['potion','hipotion','ether','sage','remedy','elixir','vigor','holywater'].includes(id))P.G='#d8e8f0';icPaint(x,b,P,o);}
+function drawItemIcon(x,id){return drawItemIconV3(x,id);}
+function itemIcon(id){return `<img class="gico iico" alt="" src="${cvURL('ii3:'+id,()=>{const c=mkCv(16,16);drawItemIcon(c.getContext('2d'),id);return c;})}">`;}
+// ----- materials -----
+const IC_MAT={
+ copper:['nug','#c87a4a'],iron:['ingot','#9aa0a8'],mythril:['crys','#7ab0f0'],
+ oak:['log','#9a6a3a'],ash:['log2','#c8b090'],elder:['log3','#5a4a3a'],
+ healroot:['root','#c8a070'],bluecap:['shroom','#4a7ae0'],sunpetal:['flower','#ffd04a'],starbloom:['starf','#e0c8ff'],
+ hide:['pelt','#a8784a'],fang:['fang','#ece2c8'],scale:['scale','#4aa08a'],ichor:['wisp','#7af0d0'],grit:['pebbles','#a89a7a'],
+ moss:['moss','#5aa040'],shell:['spiral','#f0c8a8'],ore:['ember','#e8553a'],shard:['icicle','#8fdcf0'],feather:['sfeather','#f2c93a'],dust:['dust','#9a6ae0'],core:['core','#c83a3a'],
+ essence:['essence','#b48aff']};
+const IC_MATF={
+ nug(b){icArt(b,3,4,['...MMM....','.MMMMMMM..','MMMMMMMMM.','MMMmMMMMMM','.MMMMMmMMM','..MMMMMMM.','....MMM...']);icSet(b,5,6,'S');},
+ ingot(b){icArt(b,2,5,['...MMMMMMMM.','..MMMMMMMMM.','.MMMMMMMMMMm','MMMMMMMMMMmm','mmmmmmmmmmm.']);icRect(b,2,11,10,1,'X');},
+ crys(b){icArt(b,3,2,['....M.....','...MMM.M..','...MMMMMM.','..MMMMMMM.','.MMMMMMMMM','LLMMMMMMLL','LLLLLLLLLL','.LLLLLLLL.']);icSet(b,7,4,'S');icSet(b,10,4,'S');},
+ log(b){icArt(b,1,5,['.WWWWWWWWWW...','WWWWWWWWWWWLLL','WWWWWWWWWWLWwL','WWWWWWWWWWLwWL','.WWWWWWWWWWLLL']);icSet(b,13,7,'W');},
+ log2(b){icArt(b,2,6,['WWWWWWWWWWLL','WWWWWWWWWWLW','WWWWWWWWWWLL']);icArt(b,3,2,['.E.','EEE','.E.','.W.']);},
+ log3(b){icArt(b,1,5,['.WWWWWWWWWW...','WWWWWWWWWWWLLL','WWWWEWWWWWLXXL','WWWWWWWWWWLXXL','.WWWWWWWWWWLLL']);icArt(b,2,4,['GG.G..GG']);},
+ root(b){icArt(b,5,1,['G.G.G','.GGG.','..G..']);icArt(b,5,4,['.WWW.','WWWWW','WWWWW','.WWW.','..WW.','.W.W.','W...W']);},
+ shroom(b){icArt(b,2,2,['...GGGGGG...','.GGGSGGGGGG.','GGGGGGGSGGGG','GGGGGGGGGGGG','....WWWW....','....WWWW....','....WWWW....','...WWWWWW...']);},
+ flower(b){icArt(b,3,1,['...GGG....','..GGGGG...','.GGEEEGG..','.GGEEEGG..','..GGGGG...','...GGG....','....L.....','..LLL.....','....L.LL..','....LL....']);},
+ starf(b){icArt(b,3,1,['....G.....','....G.....','..GGGGG...','GGGGEGGGG.','..GGGGG...','..G...G...','.G..L..G..','....L.....','..LLL.....','....LL....']);},
+ pelt(b){icArt(b,2,2,['.CC....CC.','CCCCCCCCCC','.CCCCCCCC.','.CCCCCCCC.','.CCCCCCCC.','CCCCCCCCCC','CC.CCCC.CC','...CCCC...','....CC....']);icSet(b,7,6,'K');icSet(b,9,8,'K');},
+ fang(b){icArt(b,5,2,['MMMMMM','.MMMMM','.MMMM.','..MMM.','..MM..','..MM..','...M..','...M..']);icSet(b,6,3,'S');},
+ scale(b){icArt(b,3,3,['..GGGGG...','.GGGGGGG..','GGGgGgGGG.','GGgGGGgGG.','.GGGGGGG..','..GGGGG...','...GGG....','....G.....']);icSet(b,5,4,'S');},
+ wisp(b){icArt(b,5,1,['..E...','.EE...','.EEE..','EEEEE.','EESEE.','EEEEE.','.EEE..']);icArt(b,3,9,['.EE..EE.','..EEEE..']);},
+ pebbles(b){icArt(b,2,7,['...MM.....','..MMMM.MM.','.MMMMMMMMM','MMMMMMMMMM','.MMmMMMmM.']);icArt(b,5,4,['.MM','MMM']);},
+ moss(b){icArt(b,2,5,['..GG..GG....','.GGGGGGGGG..','GGGGGGGGGGG.','GGGgGGGGgGGG','.GGGGGGGGGG.']);icArt(b,3,10,['MMMMMMMMMM']);},
+ spiral(b){icArt(b,3,3,['...GGGG...','.GGGGGGGG.','GGGGgggGGG','GGGgGGGgGG','GGGgGgGGGG','.GGGggGGG.','..GGGGGG..','....GGGG..']);icSet(b,5,4,'S');},
+ ember(b){icArt(b,3,4,['..XXXXX...','.XXXXXXXX.','XXXEXXXXXX','XXXXEEXXXX','XXXXXXEXXX','.XXXXXXXX.','..XXXXX...']);},
+ icicle(b){icArt(b,5,1,['...G..','..GGG.','..GGG.','.GGGG.','.GGSG.','GGGGG.','GGGG..','GGG...','.GG...','.G....']);icSet(b,11,9,'G');icSet(b,11,10,'G');icSet(b,12,11,'G');},
+ sfeather(b){icUV(b,'F',(s,v)=>s>2&&s<14&&Math.abs(v)<=Math.min(1.5,(14-s)*.4,(s-2)*.6)+.01);icHaft(b,.5,13,'B');icArt(b,9,5,['.E','E.','EE']);},
+ dust(b){icArt(b,2,8,['...GGGGG...','.GGGGGGGGG.','GGGGgGGGGGG']);[[4,4],[8,2],[11,5],[6,6],[10,7]].forEach(([a,c])=>icSet(b,a,c,'S'));},
+ core(b,P){icDisc(b,7.5,7.5,4.8,'X');icDisc(b,7.5,7.5,2.2,'G');icSet(b,7,7,'S');icSet(b,8,8,'X');[[2,2],[13,2],[2,13],[13,13]].forEach(([a,c])=>icSet(b,a,c,'X'));},
+ essence(b){icArt(b,4,0,['...E....','..EE....','..EEE...','.EEEE.E.','.EEEEEE.','EEEESEEE','EEEEEEEE','.EEEEEE.','..EEEE..']);icSet(b,3,12,'S');icSet(b,12,13,'S');},
+ shardA(b){icArt(b,4,1,['...G...','..GGG..','..GGG..','.GGGGG.','.GGGGG.','GGGGGGG','.GGGGG.','..GGG..','...G...']);},
+ shardB(b){icArt(b,3,2,['......G..','.....GG..','....GGG..','...GGGG..','..GGGGG..','.GGGGGG..','GGGGGGG..','.GGGGG...','..GG.....']);},
+ shardC(b){icArt(b,3,2,['.G....G.','.GG..GG.','.GGGGGG.','GGGGGGGG','GGGGGGGG','.GGGGGG.','..GGGG..','...GG...']);},
+ shardD(b){icArt(b,4,1,['..G.G..','.GGGGG.','.GGGGG.','GGGGGGG','.GGGGG.','.GGGGG.','..GGG..','...G...','...G...']);}};
+let IC_ESI=null;
+function icMatDraw(x,id){const b=icBuf(),P=icPal(1),o={};const m=IC_MAT[id];
+  if(m){const [k,c]=m;P.M=c;P.G=c;P.W=c;P.C=c;P.K=shade(c,.75);P.E=c;P.F=c;
+    if(k==='log'||k==='log2'||k==='log3'){P.L=tint(c,.35);P.E='#9ae06a';P.G='#5aa040';if(k==='log3'){P.E='#8af0ff';P.X='#2a2018';}}
+    if(k==='ingot')P.X='#6a6a74';if(k==='crys')P.L='#6a6a74';if(k==='root'){P.G='#5ab04a';}if(k==='flower'){P.E='#e07a2a';P.L='#4a9a3a';}if(k==='starf'){P.E='#ffffff';P.L='#4a9a3a';}
+    if(k==='wisp')o.aura='#7af0d0';if(k==='moss')P.M='#7a6a4a';if(k==='ember'){P.X='#3a2a2a';P.E='#ff8a3a';o.aura='#e8553a';o.auraA=.3;}
+    if(k==='sfeather'){P.F='#d8dcf0';P.E='#f2c93a';}if(k==='dust')o.aura='#9a6ae0';if(k==='core'){P.X='#2a1020';P.G='#ff3a3a';o.aura='#c83a3a';}if(k==='essence'){o.aura='#b48aff';}
+    IC_MATF[k](b,P);}
+  else if(/^es_/.test(id)){if(!IC_ESI){IC_ESI={};Object.keys(MATS).filter(k=>/^es_/.test(k)).forEach((k,i)=>{IC_ESI[k]=i;});}
+    const i=IC_ESI[id]||0,d=guardianDef(id.slice(3))||{},el=(d.el&&d.el[0])||'shadow';P.G=ELC[el]||'#b48aff';P.E=tint(P.G,.6);
+    IC_MATF[['shardA','shardB','shardC','shardD'][i%4]](b,P);
+    const gl=IC_GLY[['eye','cross','moon','star'][Math.floor(i/4)%4]];gl.forEach((r,j)=>{for(let k=0;k<5;k++)if(r[k]==='#'&&icGet(b,5+k,4+j))icSet(b,5+k,4+j,'S');});o.aura='#b48aff';o.auraA=.35;}
+  else{P.C=(MAT_OF[id]||{}).c||'#c4b28c';IC_MATF.pelt(b,P);}
+  icPaint(x,b,P,o);}
+function matIcon(id){return `<img class="gico iico mico" alt="" src="${cvURL('mi3:'+id,()=>{const c=mkCv(16,16);icMatDraw(c.getContext('2d'),id);return c;})}">`;}
+// test hooks (window.__A is built after every module; add getters only for keys it does not have)
+setTimeout(()=>{try{const A=window.__A;if(!A)return;const H={matIcon:()=>matIcon,icDrawGear:()=>icDrawGear,icMatDraw:()=>icMatDraw,drawItemIcon:()=>drawItemIcon,IC_MAT:()=>IC_MAT};Object.keys(H).forEach(k=>{if(!Object.getOwnPropertyDescriptor(A,k))Object.defineProperty(A,k,{get:H[k],configurable:true});});}catch(e){}},0);
 
 // =================== Beta v0.5.1: quests ready to hand in (file: qready.js) ===================
 // When a Quest Board quest or a Guild mission is complete and waiting to be claimed, a toast says so once, the Menu button and the

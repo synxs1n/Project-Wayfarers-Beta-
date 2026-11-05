@@ -11,10 +11,10 @@ const GICON={blade:[[7,1,2,9],[5,10,6,1],[7,11,2,3]],dagger:[[7,4,2,6],[5,10,6,1
   stick:[[7,1,2,13],[9,4,2,1],[5,8,2,1]]};
 const TIERC=['#b8b8c0','#8ac0ff','#7ae89a','#ffcf6a','#e08aff','#ff7a6a'];
 function gearFamOf(id){const b=baseIdOf(id);if(b==='w_stick')return 'stick';if(b.startsWith('c_'))return 'charm';return b.split('_')[1];}
-function gearIcon(id){const g=gearOf(id);if(!g)return '';const fam=gearFamOf(id),glow=g.stick?g.glow:null,key='gi2:'+fam+':'+(glow||g.tier)+':'+(g.plus||0);
+function gearIcon(id){const g=gearOf(id);if(!g)return '';const fam=gearFamOf(id),glow=g.stick?g.glow:null,key='gi3:'+baseIdOf(id)+':'+(glow||g.tier)+':'+(g.plus||0);// v0.6.3: one icon per item (icons.js)
   return `<img class="gico" alt="" src="${cvURL(key,()=>{const c=mkCv(16,16),x=c.getContext('2d'),col=glow||TIERC[Math.min(5,g.tier||0)];
     if(glow&&g.stickP&&g.stickP.tier>0){x.fillStyle=glow+'55';x.fillRect(0,0,16,16);}
-    drawGearIcon(x,fam,col,g.tier||0,glow);
+    drawGearIcon(x,fam,col,g.tier||0,glow,id);
     if(g.plus){x.fillStyle='#ffd04a';for(let i=0;i<g.plus;i++)x.fillRect(12-i*3,13,2,2);}return c;})}">`;}
 // ----- stat previews -----
 function statsWith(c,sl,id){const eq=Object.assign({},c.eq);eq[sl]=id;return calcStats(Object.assign({},c,{eq}));}
