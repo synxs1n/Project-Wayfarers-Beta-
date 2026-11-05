@@ -943,3 +943,33 @@ em.dl.blunt{background:#7a5a3a}em.dl.piercing{background:#7a3a4a}em.dl.ranged{ba
 i.tag .stsym,i.tag.sttag .stsym{display:inline-block;width:1em;height:1em;vertical-align:-.15em}
 .stpop .stsym.big,h3 .stsym.big,.stsym.big{display:inline-block;width:1.1em;height:1.1em;vertical-align:-.18em}
 .mini{position:relative}.mini .miniail{position:absolute;top:4px;right:4px;display:flex;gap:2px;pointer-events:none}.mini .miniail .ailrow{display:flex;gap:2px}.mini .miniail .ailrow.dots{flex-direction:column}
+
+/* ===== Beta v0.5.0 Phase 6: cleaner UI, depth of field, battle camera (6.1, 6.2, 6.5). Readability rules unchanged: status symbols,
+   shield pips, primed marker, element icons and the save indicator are not restyled here. ===== */
+body{text-rendering:optimizeLegibility}
+:root{--mute:#e0d1ac}
+.btn,.chip,.abtn,.row[data-act]{transition:background-color .12s,transform .09s ease-out,box-shadow .12s,filter .12s}
+.btn:active:not(:disabled){transform:translateY(2px) scale(.985);filter:brightness(1.12)}
+.chip:active:not(:disabled){transform:scale(.96)}
+.btn:focus-visible,.chip:focus-visible,.row[data-act]:focus-visible{outline:2px solid #ffd870;outline-offset:2px}
+.panel{box-shadow:inset 0 0 0 2px var(--bronze),inset 0 0 0 4px #6a4a22,inset 0 10px 18px -12px rgba(255,220,160,.22),4px 4px 0 rgba(0,0,0,.45),0 14px 34px rgba(0,0,0,.35)}
+.panel.scroll{box-shadow:inset 0 0 0 2px #b08a4a,inset 0 0 0 4px #8a6a3a,4px 4px 0 rgba(0,0,0,.45),0 14px 34px rgba(0,0,0,.35)}
+.rows{gap:7px}
+.row{box-shadow:inset 0 1px 0 rgba(255,235,190,.06)}
+.bar>i{transition:width .35s cubic-bezier(.2,.8,.2,1);box-shadow:inset 0 1px 0 rgba(255,255,255,.28),inset 0 -1px 0 rgba(0,0,0,.25)}
+.menter{animation:g6menter .18s cubic-bezier(.2,.8,.2,1)}
+@keyframes g6menter{from{opacity:0;transform:translateY(6px) scale(.975)}to{opacity:1;transform:none}}
+/* damage numbers: a crisp one pixel outline, a soft drop and a smoother pop */
+.fx2{text-shadow:1px 0 0 #000,-1px 0 0 #000,0 1px 0 #000,0 -1px 0 #000,.7px .7px 0 #000,-.7px -.7px 0 #000,0 1.6px 1.4px rgba(0,0,0,.55);animation-name:g6rise}
+.fx2.crit{font-weight:900;letter-spacing:.3px}
+@keyframes g6rise{0%{transform:translate(-50%,4px) scale(.6);opacity:0}7%{transform:translate(-50%,-2px) scale(1.16);opacity:1}15%{transform:translate(-50%,-2px) scale(1)}80%{opacity:1;transform:translate(-50%,-5px)}100%{transform:translate(-50%,-8px);opacity:0}}
+/* battle camera pushes move the canvas and the unit layer together */
+.bwrap canvas{transform-origin:0 0}
+/* depth of field: an open menu softens the world or battle behind it (blur on High, a dim on Low and Medium) */
+#screen{transition:filter .2s}
+html.mopen.gq-dof2 #screen{filter:blur(1.6px) saturate(.85)}
+html.mopen.gq-dof2 .modal{background:rgba(8,4,2,.62)}
+html.mopen.gq-dof1 #screen{filter:saturate(.8)}
+.gfxrows{margin-top:6px}
+html.rm .btn,html.rm .chip,html.rm .abtn,html.rm .row[data-act],html.rm #screen,html.rm .bar>i{transition:none}
+html.rm .menter{animation:none}

@@ -90,3 +90,24 @@ const CREEP={per:.05,field:.5};
 
 // 5.5 early game with a short party: regular foes in the first two stages are eased for parties of 1 or 2 (index = heroes - 1)
 const SMALL_PARTY={stages:2,hp:[.55,.85],pow:[.6,.88]};
+
+// ===== Beta v0.5.0 Phase 6: graphics quality (gfx6*.js) =====
+// Settings > Graphics stores META.cfg.gfx: 'auto' (default), 'low', 'medium' or 'high'. Auto measures the frame rate on the world and
+// battle screens and steps a tier down or up (GFX_AUTO), remembering its last pick in META.cfg.gfxAuto. Every feature below is per tier:
+// parts: battle particle cap. amb: drifting leaves or dust on the world. birds: birds crossing the sky (fields and towns, by day). critters:
+// hopping critters per field. grass: swaying tall grass. water: moving glints on water. bloom: soft glow around lamps, torches, windows and
+// spells (2 = also battle particles). vignette: soft dark edges. ao: soft contact shading at the foot of walls and buildings (baked into the
+// map, free per frame). shadows: soft shadows under townsfolk on the map. gest: townsfolk idle gestures. parallax: battle and title backdrop
+// layers drift apart. camera: battle camera pushes on big hits and Limit Breaks. impact: one dark impact frame on crits, breaks and reactions.
+// elfx: richer elemental particles (2 = more of them). dof: menus soften the scene behind them (0 none, 1 dim, 2 blur). shake: largest screen shake in px.
+const GFX_Q={
+  low:   {parts:140,amb:0, birds:0,critters:0,grass:0,water:1,bloom:0,vignette:1,ao:1,shadows:1,gest:1,parallax:0,camera:1,impact:0,elfx:0,dof:1,shake:1},
+  medium:{parts:280,amb:10,birds:3,critters:3,grass:1,water:1,bloom:1,vignette:1,ao:1,shadows:1,gest:1,parallax:1,camera:1,impact:1,elfx:1,dof:1,shake:2},
+  high:  {parts:500,amb:22,birds:5,critters:5,grass:1,water:1,bloom:2,vignette:1,ao:1,shadows:1,gest:1,parallax:1,camera:1,impact:1,elfx:2,dof:2,shake:2}};
+// Auto: start tier when nothing is remembered, the measuring window, step down below `down` fps, step up at or above `up` fps
+// (never back up to a tier that already failed this session). Frames slower than `gap` ms (tab switches, loading) are ignored.
+const GFX_AUTO={start:'medium',windowMs:3000,down:45,up:57,gap:250};
+// Parallax: how far (logical px) the sky and far layers drift from the ground plane, and the title screen's slow drift period (ms).
+const GFX_PARA={px:4,titleMs:24000};
+// Camera pushes [zoom, ms]: crits, reactions, shield breaks, Limit Breaks.
+const GFX_CAM={crit:[1.035,360],react:[1.05,520],brk:[1.06,600],limit:[1.05,760]};
