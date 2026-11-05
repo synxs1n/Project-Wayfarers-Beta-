@@ -3,7 +3,8 @@
 // META.cfg.gfxAuto remembers the last tier Auto settled on. Nothing here touches the save, the Daily Trial or game state.
 // World passes are in gfx6world.js, battle passes in gfx6battle.js. All new motion freezes under reduced motion (gfxStill()).
 const GFX_TIERS=['low','medium','high'];
-const GFX={q:GFX_Q.medium,tier:'medium',auto:null,failed:{},last:0,n:0,sum:0,fps:0,decisions:0};
+// GFX.off (tests only, never saved): bypass every Phase 6 pass, to measure the renderer as it was
+const GFX={off:false,q:GFX_Q.medium,tier:'medium',auto:null,failed:{},last:0,n:0,sum:0,fps:0,decisions:0};
 function gfxCfg(){const c=META&&META.cfg&&META.cfg.gfx;return GFX_TIERS.includes(c)?c:'auto';}
 function gfxAutoStart(){const r=META&&META.cfg&&META.cfg.gfxAuto;return GFX_TIERS.includes(r)?r:GFX_AUTO.start;}
 function gfxTier(){const c=gfxCfg();if(c!=='auto')return c;if(!GFX.auto)GFX.auto=gfxAutoStart();return GFX.auto;}
@@ -54,7 +55,7 @@ const PARA_SPLIT={meadow:.3,coast:.5,cave:.3,snow:.18,heights:.5,void:.42};// sk
     band(0,Math.min(sp,gy),1);band(Math.min(sp,gy),gy,.5);band(gy,H,0);return PARA.cv;}
   catch(e){PARA.cap=null;return bs0.apply(this,arguments);}};}
 // title screen: a slow drift of the backdrop layers (frozen under reduced motion)
-{const td0=titleDraw;titleDraw=function(ctx,W,H,now){PARA.on=!!GFX.q.parallax;PARA.off=gfxStill()?0:Math.sin(now/GFX_PARA.titleMs*Math.PI*2);try{return td0.apply(this,arguments);}finally{PARA.on=false;}};}
+{const td0=titleDraw;titleDraw=function(ctx,W,H,now){PARA.on=!!GFX.q.parallax&&!GFX.off;PARA.off=gfxStill()?0:Math.sin(now/GFX_PARA.titleMs*Math.PI*2);try{return td0.apply(this,arguments);}finally{PARA.on=false;}};}
 // ----- menus: depth of field (the scene behind an open menu dims or blurs, by tier) -----
 {const r0=render;render=function(){const r=r0.apply(this,arguments);try{document.documentElement.classList.toggle('mopen',!!V.modal&&(V.screen==='world'||V.screen==='battle'));}catch(e){}return r;};}
 // ----- Settings > Graphics -----

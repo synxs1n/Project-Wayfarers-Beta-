@@ -25,7 +25,7 @@ function g6CamApply(now){const cv=document.getElementById('bcv'),st=document.get
 // ----- richer elemental hits -----
 const G6EL={fire:'#ff8a3a',water:'#6ab8ff',earth:'#c89a5a',wind:'#8ae8c0',lightning:'#fff07a',ice:'#bfefff',light:'#fff6c8',shadow:'#b07ae0',hit:'#ffe08a',arcane:'#d0b0ff'};
 function g6P(o){o.g6=1;part(o);}
-function g6Burst(x,y,el,start,big){const lv=GFX.q.elfx;if(!lv||gfxStill())return;const n=Math.round((big?8:5)*(lv>1?1:.6)),R=Math.random,col=G6EL[el]||G6EL.hit;
+function g6Burst(x,y,el,start,big){const lv=GFX.q.elfx;if(!lv||gfxStill()||GFX.off)return;const n=Math.round((big?8:5)*(lv>1?1:.6)),R=Math.random,col=G6EL[el]||G6EL.hit;
   g6P({k:'g6gl',x,y,t0:start,life:big?360:260,r:big?26:18,col:g6Rgba(col,.8)});
   for(let i=0;i<n;i++){const a=R()*Math.PI*2,s=20+R()*40;
     if(el==='fire')g6P({k:'g6em',x:x+(R()-.5)*14,y:y+(R()-.5)*8,vx:(R()-.5)*16,vy:-24-R()*30,t0:start+R()*80,life:520+R()*300,col:R()<.5?'#ffb04a':'#ff5a1a'});
@@ -53,9 +53,9 @@ function g6DrawPart(ctx,p,now){const t=now-p.t0;if(t<0)return;const q=t/p.life;i
     case 'g6x':{const r=Math.round(1+3*Math.sin(q*Math.PI));ctx.globalAlpha=1-q;ctx.fillStyle=p.col;ctx.fillRect(Math.round(p.x)-r,Math.round(p.y),r*2+1,1);ctx.fillRect(Math.round(p.x),Math.round(p.y)-r,1,r*2+1);break;}}}
 function g6Orbs(ctx,p,now){if(p.k!=='orb')return;const t=now-p.t0;if(t<0)return;const q=t/p.life;if(q>=1)return;const e=q*q*(3-2*q),x=p.x+(p.x2-p.x)*e,y=p.y+(p.y2-p.y)*e-Math.sin(q*Math.PI)*10;
   ctx.globalCompositeOperation='lighter';ctx.globalAlpha=.7;ctx.drawImage(g6Glow(g6Rgba(p.col,.8)),x-10,y-10,20,20);ctx.globalCompositeOperation='source-over';}
-{const dp0=drawParts;drawParts=function(ctx,now){const r=dp0.apply(this,arguments);try{const P=BV.P,bl=GFX.q.bloom>1;for(let i=0;i<P.length;i++){const p=P[i];if(p.g6)g6DrawPart(ctx,p,now);else if(bl)g6Orbs(ctx,p,now);}}catch(e){}ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';return r;};}
+{const dp0=drawParts;drawParts=function(ctx,now){const r=dp0.apply(this,arguments);if(GFX.off)return r;try{const P=BV.P,bl=GFX.q.bloom>1;for(let i=0;i<P.length;i++){const p=P[i];if(p.g6)g6DrawPart(ctx,p,now);else if(bl)g6Orbs(ctx,p,now);}}catch(e){}ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';return r;};}
 // ----- camera pushes and impact frames come from the same hooks that spawn hit effects -----
-{const of0=onFx;onFx=function(u,txt,cls){of0.apply(this,arguments);try{if(!B||V.screen!=='battle'||!u)return;const c=centerOf(u);if(!c)return;const now=performance.now(),start=now+IMPACT;
+{const of0=onFx;onFx=function(u,txt,cls){of0.apply(this,arguments);try{if(!B||V.screen!=='battle'||!u||GFX.off)return;const c=centerOf(u);if(!c)return;const now=performance.now(),start=now+IMPACT;
   // hit reaction: a little dust kicked up at the feet as the unit is knocked back
   if(/dmg/.test(cls||'')&&!/poison|burn|bleed/.test(cls)&&GFX.q.elfx&&!gfxStill()){const b=unitBox(u);if(b){const dir=u.side==='p'?1:-1;for(let i=0;i<4;i++)g6P({k:'p',x:b.x+(Math.random()-.5)*8,y:b.y-1,vx:dir*(14+Math.random()*22),vy:-6-Math.random()*8,g:40,t0:start,life:300+Math.random()*160,col:i%2?'rgba(220,210,190,.8)':'rgba(160,150,130,.7)',sz:i%2?2:1});}}
   const crit=/crit/.test(cls||''),react=cls==='react',brk=txt==='BREAK';if(!(crit||react||brk))return;
@@ -66,7 +66,7 @@ function g6Impact(ctx,W,H,now){const d=now-G6I.t;if(!G6I.t||d<0||d>70)return;ctx
 // ----- victory hop -----
 {const ub0=unitBox;unitBox=function(u){const b=ub0.apply(this,arguments);try{if(b&&G6V.win&&u&&u.side==='p'&&u.hp>0){const d=performance.now()-G6V.t0;if(d>0&&d<2400)b.y-=Math.round(Math.abs(Math.sin(d/150+b.i*.9))*3*(1-d/2400));}}catch(e){}return b;};}
 // ----- the frame -----
-{const bf0=battleFrame;battleFrame=function(now){if(!B)return bf0.apply(this,arguments);const q=GFX.q,still=gfxStill();
+{const bf0=battleFrame;battleFrame=function(now){if(!B||GFX.off)return bf0.apply(this,arguments);const q=GFX.q,still=gfxStill();
   try{if(BV.shake&&!BV.shake._g6){BV.shake._g6=1;BV.shake.amp=Math.min(BV.shake.amp,q.shake);}
     // Limit Breaks push the camera toward the hero
     for(let i=0;i<B.front.length;i++){const u=B.front[i];if(u.actLimit&&u.actLimit!==u._g6lim){u._g6lim=u.actLimit;if(Date.now()-u.actLimit<400){const c=centerOf(u);if(c)gfxCamPush(c.x,c.y,GFX_CAM.limit);}}}

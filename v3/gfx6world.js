@@ -35,9 +35,6 @@ function g6Ground(ctx,m,cx,cy,vw,vh,ts){const q=GFX.q,T=m.kind==='dungeon'?null:
         ctx.globalAlpha=1;ctx.fillStyle=T.tg[1];ctx.fillRect(px+3+Math.floor(h*3),py+9,1,3);ctx.fillRect(px+10+Math.floor(h*4),py+4,1,3);
         ctx.fillStyle=T.tg[2];ctx.fillRect(px+3+Math.floor(h*3)+s,py+8,1,1);ctx.fillRect(px+10+Math.floor(h*4)+s,py+3,1,1);}}
     ctx.globalAlpha=1;}
-  // soft shadows under townsfolk (the hero already has one)
-  if(q.shadows){const sh=g6Shadow(),pn=performance.now();for(let i=0;i<m.npcs.length;i++){const n=m.npcs[i];if(n.portal)continue;let nx=n.x*TS,ny=n.y*TS;if(n.mv){const p=Math.min(1,(pn-n.mv.t0)/420);nx=(n.mv.fx+(n.x-n.mv.fx)*p)*TS;ny=(n.mv.fy+(n.y-n.mv.fy)*p)*TS;}
-    const sx=Math.round(nx)+8-cx,sy=Math.round(ny)+15-cy;if(sx<-16||sy<-8||sx>vw+16||sy>vh+8)continue;ctx.drawImage(sh,sx-9,sy-3,18,6);}}
   if(q.critters&&m.kind==='field')g6Critters(ctx,m,cx,cy,vw,vh,ts);
   if(q.birds&&g6BirdsOn(m))g6Birds(ctx,vw,vh,ts,true,wind);}
 // ----- critters: rabbits on grass, crabs on sand; they hop about and duck away when you come close -----
@@ -81,8 +78,16 @@ const G6A={g:{y:-1e9,deco:'gfx6:ground',draw:null},s:{y:1e9,deco:'gfx6:sky',draw
 G6A.g.draw=()=>{const a=G6A.a;if(a)try{g6Ground(a.ctx,a.m,a.cx,a.cy,a.vw,a.vh,a.ts);}catch(e){}};
 G6A.s.draw=()=>{const a=G6A.a;if(a)try{g6Sky(a.ctx,a.m,a.cx,a.cy,a.vw,a.vh,a.ts,a.still);}catch(e){}};
 const G6ARGS={ctx:null,m:null,cx:0,cy:0,vw:0,vh:0,ts:0,still:false};
-{const td0=townDecorActors;townDecorActors=function(actors,now,cx,cy){td0.apply(this,arguments);const m=WS.m;if(!m||m.archive)return;
-  const still=gfxStill(),A=G6ARGS;A.ctx=WS.ctx;A.m=m;A.cx=cx;A.cy=cy;A.vw=WS.vw;A.vh=WS.vh;A.ts=still?0:now;A.still=still;G6A.a=A;actors.push(G6A.g,G6A.s);};}
+{const td0=townDecorActors;townDecorActors=function(actors,now,cx,cy){td0.apply(this,arguments);const m=WS.m;if(!m||m.archive||GFX.off)return;
+  const still=gfxStill(),A=G6ARGS;A.ctx=WS.ctx;A.m=m;A.cx=cx;A.cy=cy;A.vw=WS.vw;A.vh=WS.vh;A.ts=still?0:now;A.still=still;G6A.a=A;actors.push(G6A.g,G6A.s);
+  if(GFX.q.shadows)g6NpcShadows(actors,m,now,cx,cy);};}
+// soft shadows under townsfolk (the hero already has one). Each is its own depth sorted entry just before its townsperson, so whatever
+// hides the townsperson (a wall, a roof) hides the shadow too. One reusable entry per townsperson, made once.
+function g6NpcShadows(actors,m,now,cx,cy){for(let i=0;i<m.npcs.length;i++){const n=m.npcs[i];if(n.portal)continue;let nx=n.x*TS,ny=n.y*TS;
+  if(n.mv){const p=Math.min(1,(now-n.mv.t0)/420);nx=(n.mv.fx+(n.x-n.mv.fx)*p)*TS;ny=(n.mv.fy+(n.y-n.mv.fy)*p)*TS;}
+  const sx=Math.round(nx)+8-cx,sy=Math.round(ny)+15-cy;if(sx<-16||sy<-8||sx>WS.vw+16||sy>WS.vh+8)continue;
+  let a=n._g6sh;if(!a){a=n._g6sh={y:0,deco:'gfx6:shadow',sx:0,sy:0,draw:null};a.draw=()=>{WS.ctx.drawImage(g6Shadow(),a.sx-9,a.sy-3,18,6);};}
+  a.y=ny-.01;a.sx=sx;a.sy=sy;actors.push(a);}}
 // ----- 3. bloom with per light flicker, then the vignette -----
 const G6FLK={lamp:.06,fire:.14,torch:.14,gold:.05,lava:.08,cyan:.03,violet:.04,day:0};
 // windows and lamps (no type) only bloom from dusk to dawn and in dark places; fires, torches and crystals always do
@@ -95,6 +100,6 @@ function g6Bloom(ctx,m,cx,cy,vw,vh,ts){const ph=m.kind==='dungeon'?'night':g6Day
   ctx.globalCompositeOperation='lighter';
   if(m.lights)m.lights.forEach(g6BloomOne);if(m.tl)m.tl.forEach(g6BloomOne);
   ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';}
-{const wd0=worldDraw;worldDraw=function(now){wd0(now);try{const m=WS.m,ctx=WS.ctx;if(!m||!ctx||!WS.cam)return;const q=GFX.q,still=gfxStill(),ts=still?0:now,cx=Math.round(WS.cam.x),cy=Math.round(WS.cam.y);
+{const wd0=worldDraw;worldDraw=function(now){wd0(now);try{const m=WS.m,ctx=WS.ctx;if(!m||!ctx||!WS.cam||GFX.off)return;const q=GFX.q,still=gfxStill(),ts=still?0:now,cx=Math.round(WS.cam.x),cy=Math.round(WS.cam.y);
   if(q.bloom)g6Bloom(ctx,m,cx,cy,WS.vw,WS.vh,ts);
   if(q.vignette){const ph=m.kind==='dungeon'?'night':g6Day(),a=m.kind==='dungeon'||m.cave?.5:ph==='night'?.42:ph==='day'?.26:.34;ctx.drawImage(g6Vignette(WS.vw,WS.vh,a),0,0);}}catch(e){}};}

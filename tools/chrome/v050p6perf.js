@@ -3,7 +3,8 @@
 // drawMs: the cost of one frame's world or battle draw, the minimum over many short runs of direct worldDraw/battleFrame calls, each followed by a one pixel read so the canvas really rasterizes (the minimum, over REPS whole passes, is
 // the figure least disturbed by other work on the machine). Tiers are measured interleaved in the same page and scene, so they compare fairly.
 // Every 2D canvas is made CPU backed (willReadFrequently) in both builds, so the timings are real raster work, as on a phone without GPU canvas.
-// fps: real requestAnimationFrame rate over a window, with the share of frames slower than 20 ms. The baseline (PWBASE, the build before
+// 'before: P6 passes off' is this build with every Phase 6 pass bypassed (GFX.off), measured interleaved with the tiers in the same page
+// and scene: the cleanest before and after. fps: real requestAnimationFrame rate over a window, with the share of frames slower than 20 ms. The baseline (PWBASE, the build before
 // Phase 6) is measured in the same scenes from the same seed. Usage: PWHTML=../../out/aurelis3.html PWBASE=../../out/baseline.html node v050p6perf.js [rate] [fpsMs]
 const {open,chk}=require('./pw');const fs=require('fs');
 const RATE=+process.argv[2]||4,MS=+process.argv[3]||3000,ROUNDS=4;
@@ -18,7 +19,7 @@ async function run(html,tiers){
   const H=await open({w:390,h:844,mobile:true,dpr:2,html:patch(html),pre:`(()=>{const gc=HTMLCanvasElement.prototype.getContext;HTMLCanvasElement.prototype.getContext=function(t,o){return gc.call(this,t,t==='2d'?Object.assign({willReadFrequently:true},o||{}):o);};})();(()=>{let s=2;Math.random=()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296;};})();localStorage.clear();localStorage.setItem('aurelis-meta-v1',JSON.stringify({cfg:{speed:1,enc:'off',diff:'normal',music:0,sfx:0,autoStats:true,autoEquip:false,gfx:'medium',rmotion:false}}));`});
   const {ev,wait,page,ctx}=H;const cdp=await ctx.newCDPSession(page);const out={};tiers.forEach(t=>out[t]={});
   await ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;A.render();});
-  const setTier=t=>ev(t=>{const A=__A;if(t&&A.gfxApply){A.META.cfg.gfx=t;A.gfxApply();}},t);
+  const setTier=t=>ev(t=>{const A=__A;if(t&&A.gfxApply){A.GFX.off=t==='off';A.META.cfg.gfx=t==='off'?'high':t;A.gfxApply();}},t);
   for(const [name,fn] of Object.entries(SCENES)){
     const k=await ev(fn);if(k==='b'){await page.waitForFunction(()=>__A.B&&__A.B.mode==='cmd',{timeout:30000}).catch(()=>{});
       await ev(()=>{const A=__A,B=A.B;B.en.forEach(e=>{e.S.mhp=e.hp=999999;});B.front.forEach(c=>{c.hp=c.S.mhp=999999;});A.ACT.auto();});}
@@ -37,8 +38,8 @@ async function run(html,tiers){
 (async()=>{const rows=[],REPS=+process.env.REPS||2,merge=(a,b)=>{if(!a)return b;Object.keys(b).forEach(k=>{a[k].drawMs=Math.min(a[k].drawMs,b[k].drawMs);if(b[k].p6Ms!=null)a[k].p6Ms=Math.min(a[k].p6Ms,b[k].p6Ms);if(b[k].fps[0]>a[k].fps[0])a[k].fps=b[k].fps;});return a;};
   let base=null,aft={};const cur=fs.readFileSync(process.env.PWHTML||__dirname+'/../../out/aurelis3.html','utf8');
   for(let rep=0;rep<REPS;rep++){if(process.env.PWBASE){const b=await run(fs.readFileSync(process.env.PWBASE,'utf8'),['base']);base=merge(base,b.base);}
-    const a=await run(cur,['low','medium','high']);['low','medium','high'].forEach(t=>aft[t]=merge(aft[t],a[t]));}
-  if(base)rows.push(['before (v0.4.6 renderer)',base]);['low','medium','high'].forEach(t=>rows.push(['after: '+t,aft[t]]));
+    const a=await run(cur,['off','low','medium','high']);['off','low','medium','high'].forEach(t=>aft[t]=merge(aft[t],a[t]));}
+  if(base)rows.push(['before: v0.4.6 build',base]);rows.push(['before: P6 passes off',aft.off]);['low','medium','high'].forEach(t=>rows.push(['after: '+t,aft[t]]));
   console.log(`\nCPU x${RATE}, 390x844 @2x. Each cell: draw ms per frame | fps (share of frames over 20 ms)`);
   console.log('build                     | town (night)          | field (rain)          | dungeon               | battle (auto, rain)');
   rows.forEach(([l,r])=>console.log(l.padEnd(25)+' | '+['town','field','dungeon','battle'].map(k=>`${r[k].drawMs.toFixed(2)} ms${r[k].p6Ms!=null?' (P6 '+r[k].p6Ms.toFixed(2)+')':''} | ${r[k].fps[0]} (${r[k].fps[1]}%)`.padEnd(32)).join(' | ')));
