@@ -1,6 +1,6 @@
 // Playwright harness (replaces puppeteer+sparticuz in this workspace). Usage: const {open,chk,done}=require('./pw');
 const fs=require('fs');const path=require('path');
-const {chromium}=require('/opt/npm-tools/node_modules/playwright');
+const {chromium}=require('playwright');
 const MOCK=(()=>{const s=fs.readFileSync(__dirname+'/beta.js','utf8');const a=s.indexOf('const MOCK=`')+12;return s.slice(a,s.indexOf('`;',a));})();
 let fails=0,errs=[];
 async function open(opt={}){
