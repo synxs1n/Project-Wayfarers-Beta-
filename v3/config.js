@@ -102,6 +102,15 @@ const ARCH_FOE_CLAMP=[.4,1.8];
 // companions (comp.js): a summoned companion stays COMP_TURNS of its own turns; COMP_BONUS: the paired hero's stat bonus
 // (base, with Beastbond, for a tamed Scourge).
 const COMP_TURNS=3,COMP_BONUS={base:.04,bb:.06,scourge:.08};
+// TAME (v0.9.5, comp3.js): companions grow with the battles they win beside their hero (o.bt, an optional save field). At skillAt battles
+// they learn a second skill (sk, by family: name, power, target, kind, effects; the element is the companion's own); at evoAt they evolve:
+// a new name (pre + the monster's name), +evoBonus on the paired hero's stat bonus and a recoloured sprite (the monster's palette pulled
+// toward col by k, the same repaint the realm variants use; no new art).
+const TAME={skillAt:12,evoAt:30,evoBonus:.03,k:.45,
+  pre:{beast:'Alpha',flyer:'Sky',spirit:'Elder',shell:'Iron',ooze:'Grand',scourge:'Dread'},
+  col:{beast:'#e0a040',flyer:'#7ac8ff',spirit:'#c8a0ff',shell:'#b0b8c8',ooze:'#6ad07a',scourge:'#ff5a4a'},
+  sk:{beast:['Feral Rush',1.35,'one','phys',[['bleed',.3]]],flyer:['Gale Sweep',1.0,'all','mag',[['slow',.25]]],spirit:['Spirit Flare',1.25,'one','mag',[['weaken',.3]]],
+    shell:['Shell Bash',1.4,'one','phys',[['stun',.15]]],ooze:['Engulf',1.05,'all','mag',[['poison',.3]]],scourge:['Dread Roar',1.15,'all','mag',[['weaken',.3]]]}};
 
 // ==== 3. Foes and bosses: boss levels and muscle, field packs, creep, echoes, roamers, side sites, mimics, surprise starts ====
 // SURPRISE: touching a roaming dungeon foe that has not seen you gives a free first round: every hero in the vanguard acts free times
@@ -116,7 +125,37 @@ const BOSS_LV={frac:.5,cap:12};
 // 3.2 bosses: shield pips +50% (5 to 8, 7 to 11); the break window hits for less and is over once the foe loses the turn it staggers
 const BOSS_PIPS={mult:1.5};const BREAK_WIN={bonus:1.3,short:true};
 // 3.2 extra boss muscle on top of the old stat table (hp and power multipliers)
-const BOSS_BUFF={hp:[1.15,1.65,1.7,2.0,1.52],pow:[1.05,1.34,1.38,1.6,1.28]}// v0.4.3: re-tuned with capes; v0.8.2: the first three Scourges eased (were hp 1.3, 1.75, 1.8 and pow 1.15, 1.4, 1.44) so no boss is a wall
+const BOSS_BUFF={hp:[.9,1.5,1.55,1.76,1.36],pow:[1,1.34,1.38,1.6,1.28]}// v0.4.3: re-tuned with capes; v0.8.2: the first three Scourges eased (were hp 1.3, 1.75, 1.8 and pow 1.15, 1.4, 1.44) so no boss is a wall; v0.9.5: hp [1.15,1.65,1.7,2.0,1.52] -> about 4 to 10% less, the realm gimmicks (BOSS_GIM) carry the rest
+// BOSS_GIM (v0.9.5, battle4.js): every Scourge and Calamity brings one realm gimmick to its first fight (kind 'boss'; not Echoes, not the Daily
+// Trial). Each is telegraphed on the boss's turn (a log line, a "Telegraph" chip on the boss, a mark on the heroes it will hit) and lands on its
+// next turn, so reading it pays. first: the boss's turn of the first telegraph; every: turns between telegraphs (per boss: every).
+// Types: slot (a Vanguard spot, or n spots, takes pct of max HP; Guard halves it and stops st), rod (the strongest hero is marked; pct to
+// them and arc of that to the neighbours; swap them out to ground it), chill (each Vanguard hero not guarding gains a Chill stack: x(1+spd)
+// slower per stack, Frozen (a lost turn) at max; a Fire skill clears it), tide and dark (an arena level rises to max; tide: heroes without
+// Water are x(1+spd) slower per level and Water skills deal x(1+dmg) more per level, an Earth skill lowers it; dark: heroes deal dmg less
+// per level, a Fire or Light skill lights a torch and clears it), sac (the boss readies something: thr = damage share that stops it,
+// els = elements that stop it, brk = a Break stops it; fx: heal, summon (mon), spores (st on the Vanguard), buff (self)), mirror (for one
+// round the boss takes cut less from kind and reflects refl of the damage), veil (for one round it takes cut less until a Scan or a Light
+// skill reveals it), wing (it takes off for a round: non Ranged physical hits deal cut less; then it dives at a marked spot for pct),
+// phase2 (at warn of its HP it cracks; at at a new move set (sk) and its shield back).
+// stageK: the gimmick's damage and healing by stage (the first Scourge is the gentle introduction; reactions only open in the second realm).
+const BOSS_GIM={on:true,daily:false,first:2,every:4,stageK:[.5,.85,1,1,1],
+  def:{thornwarden:{t:'slot',n:'Thorn Snare',pct:.14,el:'earth',st:'root',d:'Roots erupt under one Vanguard spot on its next turn',tell:'Thorny roots creep under {who}',hit:'Roots burst under {who}'},
+    drake:{t:'tide',n:'Rising Tide',every:3,max:3,spd:.05,dmg:.08,d:'The water rises every few turns: heroes without Water slow down and Water skills hit harder. An Earth skill dams it',tell:'The water swells around your feet',hit:'The tide rises'},
+    cinderking:{t:'slot',n:'Lava Vents',pct:.17,el:'fire',st:'burn',d:'A lava vent erupts under one Vanguard spot on its next turn',tell:'The ground glows red under {who}',hit:'A lava vent erupts under {who}'},
+    hoarwyrm:{t:'chill',n:'Blizzard',max:3,spd:.12,d:'The blizzard chills every hero who is not guarding; three stacks freeze a hero for a turn. A Fire skill thaws the caster',tell:'The blizzard thickens',hit:'The blizzard howls through the Vanguard'},
+    ysolde:{t:'rod',n:'Lightning Rod',pct:.2,arc:.35,el:'lightning',d:'She marks the strongest hero; lightning strikes them on her next turn and arcs to their neighbours. Swap them out to ground it',tell:'The air crackles around {who}',hit:'Lightning strikes {who}'},
+    bonecolossus:{t:'sac',n:'Reassemble',fx:'heal',heal:.12,thr:.07,d:'It gathers its bones to heal; deal enough damage before its next turn to scatter them',tell:'Bones rattle toward the Colossus',hit:'The Colossus pulls its bones back together',stop:'The bones scatter'},
+    queenmantis:{t:'sac',n:'Brood',fx:'summon',mon:'gustimp',thr:.07,d:'An egg sac swells; burst it with enough damage before her next turn or it hatches',tell:'An egg sac swells on the Queen',hit:'The egg sac hatches',stop:'The egg sac bursts'},
+    gloomcap:{t:'sac',n:'Spore Bloom',fx:'spores',st:['poison'],els:['fire'],thr:.06,d:'A spore pod swells; a Fire skill or heavy damage pops it, or it poisons every hero not guarding',tell:'A spore pod swells on the Matriarch',hit:'The spore pod bursts over the Vanguard',stop:'The spore pod shrivels'},
+    ironsentinel:{t:'sac',n:'Overheat',fx:'buff',buff:['might','haste'],els:['water','ice'],thr:.08,d:'Its furnace glows white; a Water or Ice hit or heavy damage cools it, or it overclocks (Might and Haste)',tell:'The Sentinel\'s furnace glows white',hit:'The Sentinel overclocks',stop:'Steam hisses: the furnace cools'},
+    siren:{t:'mirror',n:'Mirror Song',every:5,kinds:['mag'],cut:.35,refl:.12,d:'Every few turns she raises a water mirror for a round: magic deals less and part of it splashes back. Use weapons then',tell:'The Siren\'s song turns glassy',hit:'A mirror of water rises around the Siren'},
+    ashwyvern:{t:'wing',n:'Take Wing',every:5,cut:.35,pct:.16,el:'fire',d:'It takes to the air for a round (weapon hits glance off unless Ranged), then dives at a marked spot',tell:'The Wyvern spreads its wings',hit:'The Wyvern takes to the air',dive:'The Wyvern dives at {who}'},
+    frostlich:{t:'veil',n:'Grave Mist',cut:.5,d:'Every few turns it fades into mist for a round and takes far less damage, until a Scan or a Light skill reveals it',tell:'Frost mist gathers around the Lich',hit:'The Lich fades into the mist'},
+    dimmer:{t:'dark',n:'Swallowed Light',every:3,max:2,dmg:.1,d:'The dark deepens every few turns: heroes deal less per level. A Fire or Light skill lights a torch and clears it',tell:'The lights around you gutter',hit:'The dark deepens'},
+    nidhra:{t:'phase2',n:'Eclipse Form',warn:.65,at:.5,sk:[['Corona Flare','fire',1.3,'all','mag',[['burn',.5]]],['Night Talon','shadow',2.0,'one','phys',[['bleed',.6]]],['Eclipse Roar','shadow',1.1,'all','phys',[['weaken',.4]]]],d:'At half HP it becomes the Eclipse: new moves and its shield back. Save a weakness hit for after',tell:'Cracks of black fire spread across Nidhra',hit:'Nidhra becomes the Eclipse'},
+    hollowking:{t:'sac',n:'Royal Guard',fx:'summon',mon:'voidspawn',brk:1,thr:.08,d:'He calls a servant from the void; Break his shield or hit him hard before his next turn to stop it',tell:'The King raises his hand to call a servant',hit:'A void spawn answers the King',stop:'The call goes unanswered'},
+    seraph:{t:'slot',n:'Pillars of Ash',n2:2,pct:.12,el:'light',st:'blind',d:'Pillars of holy fire fall on two Vanguard spots on its next turn',tell:'Light gathers over {who}',hit:'Pillars of ash fall on {who}'}}};
 // 3.4 small parties: each hero short of six makes Scourges and Calamities this much beefier (a full party of six is the benchmark)
 const BOSS_SIZE={hp:.07,pow:.06};// per stage 1 to 5
 // 3.3 echo levels. Story echo base = boss base + storyAdd; Sanctum echoes use fixed bases. While the party's highest hero is more than
@@ -131,7 +170,10 @@ const CREEP={per:.05,field:.5};
 const SMALL_PARTY={stages:2,hp:[.55,.85],pow:[.6,.88]};
 // ROAM: roaming dungeon foes (roam.js): base + perStage per dungeon, elite share, sight (tiles), patrol and chase step ms, giveUp
 // (tiles before a chaser walks home), minFromStart (tiles from the entrance), lvUp, hpM and powM over random battles.
-const ROAM={base:3,perStage:1,elite:.2,sight:4,patrolMs:620,chaseMs:330,giveUp:7,minFromStart:9,lvUp:2,hpM:1.3,powM:1.12};
+// v0.9.5: field: roamers on each realm's field too (base + perStage), never within minFromExit tiles of an exit, cave, dungeon or town gate.
+// roles: each realm's roamers include at least one of every foe role in its pool (B4.roleOf), so the fights teach the roles.
+const ROAM={base:4,perStage:1,elite:.2,sight:4,patrolMs:620,chaseMs:330,giveUp:7,minFromStart:9,lvUp:2,hpM:1.3,powM:1.12,// v0.9.5: base 3 -> 4
+  field:{base:2,perStage:1,minFromExit:7},roles:true};
 // SITES: side fortresses (fortW x fortH tiles) and minibosses (sites.js): mini = share of caves and fortresses with one, miniHp,
 // miniPow and miniLv: its HP, power and level over the area.
 const SITES={fortW:62,fortH:40,mini:.9,miniHp:6,miniPow:1.55,miniLv:4};
@@ -262,11 +304,20 @@ const ROLES={
     {id:'c_rl_ward',n:"Warden's Badge",st:{hp:110,def:10},perk:{tauntDef:.15},d:'Takes 15% less while Taunting',price:560}],
   shopFrom:1};
 
+// PACE (v0.9.5, pacing.js): the realm (0 = the first) in which each system opens on a journey started on v0.9.5 or later. Older journeys,
+// New Game+ cycles and the Daily Trial have everything open. pcUnlocked(system) reads it (the onboarding tips can ask it too).
+// combat, elements and taming are always open; tempering keeps its own rule (after the first Scourge); camp follows CAMP.fromStage.
+const PACE={at:{elements:0,combat:0,taming:0,reactions:1,gear:1,bonds:1,camp:2,guilds:2,echoforge:3,arenaGold:3,ngplus:3}};
+
 // ==== 6. World: encounters, chance meetings, travel items, day and night, weather tables, factions, map generation ====
 // encounters on the road
 // ENC_RATE: chance per step to meet a random battle, by the Settings choice. CE_*: chance meetings with a wayfarer (chance.js), about 1 in 170 steps after a 30 step gap, 2 per area at most
-const ENC_RATE={off:0,low:.07,normal:.13,high:.18};// v0.8.2: about 30% more on every setting (was .05/.095/.14) for the 4.5 to 6 hour journey (docs/v080-roles-balance.md)
-const ENC_MIN_STEPS=7;// v0.8.2: at least 7 tiles walked between random battles (was 8)
+const ENC_RATE={off:0,low:.02,normal:.035,high:.06};// v0.9.5: fewer, better fights: about half the random battles of v0.8.2 (was .07/.13/.18); visible roamers (ROAM) make up the rest
+const ENC_MIN_STEPS=12;// v0.9.5: at least 12 tiles walked between random battles (v0.8.2: 7)
+// ENC (v0.9.5, roam.js): what an ordinary fight pays now that there are fewer of them. rew: XP and gold multipliers for random field and
+// dungeon battles and roamers (a number, or one per stage: the early realms lost the most fights); roam: an extra multiplier for a roamer (on top of rew). Bosses, elites, minibosses, the arena and the Daily
+// Trial are not touched. Applied through facMul (engine.js win), like the NG+ modifiers.
+const ENC={rew:{xp:[2,1.6,1.2,1,.85],gold:1.3},roam:{xp:1.1,gold:1.15}};
 // chance meetings with a wayfarer (chance.js): about 1 in 170 steps after a 30 step quiet gap, at most 2 per area
 const CE_ODDS=1/170, CE_GAP=30, CE_AREA_CAP=2;
 // TOWN_LANE: every town gate gets a clear approach lane at least this many tiles wide to the main road

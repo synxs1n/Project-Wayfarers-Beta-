@@ -455,8 +455,8 @@ function hdActors(m,now,ts){const B=HD.dyn,BB=HD.dynB,BA=HD.dynA,V=HD.S.V,still=
     const c=echoUp?imgOf('mapecho:'+def.art,()=>monCanvas(MART['echo_'+def.art]?'echo_'+def.art:def.art)):imgOf('mapboss:'+def.art,()=>monCanvas(def.art)),bob=still?0:Math.sin(now/420)*1.5;
     const D=DTH(m),ac=hdRgb(D.acc);hdDecal(BA,'glow',hdGlowS(),bx*TS+8,by*TS+9,44*.8,26*.8,ac[0]*255,ac[1]*255,ac[2]*255,110);
     hdChar(echoUp?BB:B,c,bx*TS+8,(bob*.6-sp)*V,by*TS+12,true,echoUp?Math.round((.72+.18*Math.sin(ts/300))*255):255,16);hdShadowC(bx*TS+8,by*TS+13);hdPickAdd(-1,bx*TS+8,by*TS+12,Math.max(HD.chH,22*V),Math.max(HD.chW,16),bx,by);}
-  // roaming foes in dungeons: their sprite, an elite ring, a faint sight cone, "!" while chasing
-  if(dun&&m.roam&&typeof ROAM!=='undefined')m.roam.forEach(r=>{if(r.dead)return;let x=r.x*TS,y=r.y*TS;if(r.t0&&r.fx!=null){const p=Math.min(1,(now-r.t0)/(r.mode==='chase'?ROAM.chaseMs:ROAM.patrolMs));x=(r.fx+(r.x-r.fx)*p)*TS;y=(r.fy+(r.y-r.fy)*p)*TS;}
+  // roaming foes in dungeons and (v0.9.5) on fields: their sprite, an elite ring, a faint sight cone, "!" while chasing
+  if(m.roam&&(dun||m.kind==='field')&&typeof ROAM!=='undefined')m.roam.forEach(r=>{if(r.dead)return;let x=r.x*TS,y=r.y*TS;if(r.t0&&r.fx!=null){const p=Math.min(1,(now-r.t0)/(r.mode==='chase'?ROAM.chaseMs:ROAM.patrolMs));x=(r.fx+(r.x-r.fx)*p)*TS;y=(r.fy+(r.y-r.fy)*p)*TS;}
     if(Math.abs(x-HD.cam.x)>420||Math.abs(y-HD.cam.z)>520)return;const img=imgOf('rm:'+MON[r.mon].art,()=>monCanvas(MON[r.mon].art)),bob=still?0:Math.floor(now/300+r.i)%2;
     const [a,b]=DIRV[r.dir],S2=ROAM.sight*TS,cx=x+8,cz=y+8,ch=r.mode==='chase';H2P.set([cx,.5,cz,cx+a*S2-b*S2/2,.5,cz+b*S2-a*S2/2,cx+a*S2+b*S2/2,.5,cz+b*S2+a*S2/2,cx,.5,cz]);
     BB.quad(H2P,-1,0,-1,0,ch?255:255,ch?90:230,ch?60:150,ch?46:26,0,1,0,4);

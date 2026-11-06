@@ -1,4 +1,4 @@
-// ===== pacing.js (v0.7.2): pacing spread: when each system first unlocks =====
+// ===== pacing.js (v0.7.2): pacing spread: when each system first unlocks (v0.9.5: by realm, pcUnlocked) =====
 // =================== Beta v0.7.2: pacing spread (owner approved the docs/v063-progression.md proposals) ===================
 // Realm 1 used to introduce almost every system at once, and levels 15 to 30 got little new. Four gates move later:
 //  1. Guild missions open after the first Scourge falls (ranks from other sources keep counting; accepted missions stay).
@@ -21,3 +21,45 @@ function pcTemperOpen(){return pcFirstBoss()||pcHasTempered();}
 // 4. personal quests: the lock text follows PERSONAL_REALM
 {const ord=n=>['first','second','third','fourth','fifth'][n]||('realm '+(n+1));
   const lt0=personalLockText;personalLockText=function(c){return lt0.apply(this,arguments).replace('Unlocks in the second realm','Unlocks in the '+ord(PERSONAL_REALM)+' realm');};}
+
+// =================== Beta v0.9.5: depth unlocks by realm (owner approved) ===================
+// PACE (config.js) says in which realm each system opens on a new journey: realm 1 elements, basic combat and taming; realm 2 reactions,
+// gear upgrades (Tempering still waits for the first Scourge, above) and bonds; realm 3 camp and guild missions; realm 4 the endgame extras
+// (the Echoforge, the arena's Golden Coliseum, a New Game+ teaser). Gating only hides or holds back; it never removes anything:
+//  - a journey started before v0.9.5 (no G.pcV) keeps every system it had (only the v0.7.2 gates above apply to it),
+//  - a New Game+ cycle and the Daily Trial have everything open.
+// pcUnlocked(system) is the one test (systems: PACE.at keys); other modules (onboarding tips, What next?) should ask it before
+// pointing the player at a system. pcRealm() is the realm index the journey has reached (0 = the first realm).
+function pcRealm(){return G?Math.max(G.stage|0,(G.cleared||[]).filter(Boolean).length):0;}
+function pcGated(){return !!(G&&!G.daily&&G.pcV);}
+function pcUnlocked(sys){if(!G||!pcGated())return true;const at=PACE.at[sys];if(at==null)return true;if(sys==='echoforge'&&G.won)return true;return pcRealm()>=at;}
+function pcOrd(n){return ['first','second','third','fourth','fifth'][n]||('realm '+(n+1));}
+function pcLockText(sys){return `opens in the ${pcOrd(PACE.at[sys]||0)} realm`;}
+// new journeys get the gates (an NG+ cycle does not)
+{const ng0=newGame;newGame=function(ids,cycle){const r=ng0.apply(this,arguments);try{if(G&&!cycle)G.pcV=1;}catch(e){}return r;};}
+// reactions: in a gated first realm a primer skill is a plain hit (it marks nothing, so nothing detonates)
+{const pf0=perform;perform=function(a,sk,tgts){if(sk&&sk.role==='primer'&&a&&a.side==='p'&&!pcUnlocked('reactions')){
+    try{G.pcN=G.pcN||{};if(!G.pcN.react){G.pcN.react=1;log('Elemental reactions awaken in the second realm. Until then a primer is a plain hit.');}}catch(e){}
+    return pf0.call(this,a,Object.assign({},sk,{role:null}),tgts);}
+  return pf0.apply(this,arguments);};}
+// bonds: in a gated first realm wins side by side do not count yet
+{const w0=win;win=function(){if(!G||pcUnlocked('bonds'))return w0.apply(this,arguments);const b0=JSON.stringify(G.bonds||{}),t0=(G.talks||[]).length;const r=w0.apply(this,arguments);
+  try{G.bonds=JSON.parse(b0);if(G.talks)G.talks.length=Math.min(G.talks.length,t0);const i=V.modal&&V.modal.info;if(i&&i.bonds)i.bonds=[];}catch(e){}return r;};}
+if(typeof bondSheet==='function'){const bs0=bondSheet;bondSheet=function(){if(!pcUnlocked('bonds'))return '';return bs0.apply(this,arguments);};}
+if(typeof vBonds==='function'){const vb0=vBonds;vBonds=function(){if(!pcUnlocked('bonds'))return `<p class="note pclock">Bonds ${pcLockText('bonds')}: from then on, heroes who win side by side in the Vanguard grow closer, with campfire talks and joint techs.</p>`;return vb0.apply(this,arguments);};}
+// guild missions: the third realm on a new journey (the v0.7.2 first Scourge rule above still holds for older journeys)
+function pcGuildOpen(){return pcGated()?pcUnlocked('guilds'):pcFirstBoss();}
+{const fl1=facMissionList;facMissionList=function(id){if(!pcGated()||pcGuildOpen())return fl1.apply(this,arguments);const f=facInit();return fl1.apply(this,arguments).filter(m=>f.acc[m.id]!=null);};}
+{const fa1=ACT.facAccept;ACT.facAccept=function(id){if(pcGated()&&!pcGuildOpen()){toast('Guild missions '+pcLockText('guilds')+'.');return;}return fa1.apply(this,arguments);};}
+{const vm1=vFacMissions;vFacMissions=function(){const h=vm1.apply(this,arguments);if(!G||!pcGated()||pcGuildOpen())return h;const t=`Guild missions ${pcLockText('guilds')}.`;
+  return h.includes(`Guild missions ${PC_LOCK}.`)?h.replace(`Guild missions ${PC_LOCK}.`,t):`<p class="note pclock">${t} Your standing with each faction already counts from what you do on the road.</p>`+h;};}
+// the Echoforge: the fourth realm (or once the journey is won)
+if(typeof efTabOn==='function'){const ef0=efTabOn;efTabOn=function(){return ef0.apply(this,arguments)&&pcUnlocked('echoforge');};}
+// the arena's top tiers: the Golden Coliseum needs the fourth realm (ARENA min already asks for three Scourges)
+// one notice per realm when it opens something new (and the New Game+ teaser in the fourth)
+const PC_NEWS={1:'New in this realm: elemental reactions (a primer marks a foe, a detonator sets it off) and bonds between heroes who win side by side.',
+  2:'New in this realm: guild missions at the Guild Hall, and Camp Supplies at Alchemy for making camp on the road.',
+  3:'New in this realm: the Echoforge at the Smithy and the Golden Coliseum. Beyond the last Calamity waits New Game+: keep your heroes, face harder foes, add modifiers.'};
+function pcNews(){try{if(!pcGated())return;const r=Math.min(3,pcRealm());G.pcN=G.pcN||{};for(let k=1;k<=r;k++){if(G.pcN['r'+k])continue;G.pcN['r'+k]=1;if(k===r&&PC_NEWS[k])toast(PC_NEWS[k]);}}catch(e){}}
+{const sl0=showLocation;showLocation=function(){const r=sl0.apply(this,arguments);try{if(WS.m&&WS.m.kind==='town')pcNews();}catch(e){}return r;};}
+try{window.__P95={pcUnlocked,pcRealm,pcGated,pcLockText,pcNews,pcGuildOpen,get PACE(){return PACE;}};}catch(e){}

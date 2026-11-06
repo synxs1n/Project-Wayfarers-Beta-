@@ -1,4 +1,4 @@
-// ===== battle4.js (v0.7.0): battle mechanics: detonation MP refund, free swap, Momentum, foe roles, the boss Cataclysm =====
+// ===== battle4.js (v0.7.0): battle mechanics: detonation MP refund, free swap, Momentum, foe roles, the boss Cataclysm; v0.9.5: boss realm gimmicks =====
 // 1) Detonation reward: the hero who sets off a reaction gets MP back, shown in the floating reaction text ("+N MP").
 // 2) Free swap: on a hero's turn another Vanguard hero can trade places with a Rearguard hero without using the turn, once every
 //    B4.swap.cd party turns. Rooted heroes cannot step back. Auto battle uses it only where its own switch rules say it helps.
@@ -152,8 +152,142 @@ b4HookPlan();b4HookTurn();
     if(m!==1)r.dmg=Math.max(1,Math.round(r.dmg*m));}catch(e){}
   return r;};}
 
+// ----- 5) v0.9.5 boss gimmicks: one realm gimmick per Scourge and Calamity (BOSS_GIM in config.js) -----
+// Data driven: BOSS_GIM.def[boss key] = {t: type, ...tunables}. Each is telegraphed on the boss's turn (a log line, a "Telegraph" chip on
+// the boss, a "Marked" or "Lightning rod" chip on the heroes it will hit) and lands at the start of its next turn, before its usual move.
+// One-round effects (mirror, veil, airborne) end at its next turn. The battle-only state is B.b4g (never saved). No RNG, no clock:
+// targets come from the turn count and the heroes' stats, so a telegraph read in advance is what happens. Not in the Daily Trial
+// (BOSS_GIM.daily) and only in the first fight with a Scourge or Calamity (kind 'boss'; Echoes keep their own extra phase).
+STS.g_tele={n:'Telegraph',a:'TEL',t:99,c:'#ffb04a',d:'Its realm gimmick lands on its next turn. Open its details (i) to see what it does and how to answer it.'};
+STS.g_mark={n:'Marked',a:'MRK',bad:1,t:99,c:'#ff6a3a',d:'The boss\'s realm gimmick lands on this spot on its next turn. Guard halves it, or swap a sturdier hero into this spot.'};
+STS.g_rod={n:'Lightning rod',a:'ROD',bad:1,t:99,c:'#ffe04a',d:'Lightning strikes this hero on the boss\'s next turn and arcs to the heroes beside them. Guard halves it; swapping this hero out grounds it.'};
+STS.g_chill={n:'Chill',a:'CHL',bad:1,t:99,c:'#9ad8ff',d:'Slower for each stack. At the limit the hero freezes and loses a turn. A Fire skill or a cleanse thaws it; Guard keeps the blizzard off.'};
+STS.g_air={n:'Airborne',a:'AIR',t:99,c:'#d0e0ff',d:'In the air for a round: weapon hits glance off (Ranged shots and magic still land). It dives at the marked spot next turn.'};
+STS.g_veil={n:'Veiled',a:'VEL',t:99,c:'#b0c8e0',d:'Hidden in mist: it takes much less damage until a Scan or a Light skill reveals it, or its next turn comes.'};
+STS.g_mirror={n:'Mirror',a:'MIR',t:99,c:'#7ae0ff',d:'A mirror of water: magic deals less and part of it splashes back at the caster until its next turn. Weapons are safe.'};
+STS.g_tide={n:'Rising Tide',a:'TID',t:99,c:'#4aa8ff',d:'The arena floods: heroes without Water are slower and Water skills hit harder for each level. An Earth skill dams it one level.'};
+STS.g_dark={n:'Darkness',a:'DRK',t:99,c:'#8a7aa8',d:'Heroes deal less damage for each level of darkness. A Fire or Light skill lights a torch and clears it.'};
+ST_SYM.g_tele='<path d="M5 .6 9.6 9H.4Z" fill="none" stroke="currentColor" stroke-width="1.2"/><path d="M4.4 3.2h1.2v3.2H4.4ZM4.4 7h1.2v1.1H4.4Z"/>';
+ST_SYM.g_mark='<circle cx="5" cy="5" r="4" fill="none" stroke="currentColor" stroke-width="1.2"/><circle cx="5" cy="5" r="1.6"/>';
+ST_SYM.g_rod='<path d="M6 .5 2.5 5.5h2.2L3.6 9.5 7.6 4.2H5.3Z"/>';
+ST_SYM.g_chill='<path d="M4.4.5h1.2v9H4.4ZM.6 4.4h8.8v1.2H.6ZM1.6 2.4l.8-.8 6 6-.8.8ZM7.6 1.6l.8.8-6 6-.8-.8Z"/>';
+ST_SYM.g_air='<path d="M.5 6C2 3 4 3 5 4.6 6 3 8 3 9.5 6 8 5 6.6 5 5 6.6 3.4 5 2 5 .5 6Z"/>';
+ST_SYM.g_veil='<path d="M.5 3.5h9v1.2h-9ZM1.5 5.8h7V7h-7ZM2.6 8h4.8v1.1H2.6Z"/>';
+ST_SYM.g_mirror='<path d="M5 .5 9 5 5 9.5 1 5Z" fill="none" stroke="currentColor" stroke-width="1.2"/><path d="M3.4 4.6 5 2.8v3.8Z"/>';
+ST_SYM.g_tide='<path d="M.5 4c1.5-1.2 3-1.2 4.5 0s3 1.2 4.5 0v1.3c-1.5 1.2-3 1.2-4.5 0S2 4.1.5 5.3ZM.5 7c1.5-1.2 3-1.2 4.5 0s3 1.2 4.5 0v1.3c-1.5 1.2-3 1.2-4.5 0S2 7.1.5 8.3Z"/>';
+ST_SYM.g_dark='<path d="M6.5.8A4.4 4.4 0 1 0 9.2 7 3.6 3.6 0 0 1 6.5.8Z"/>';
+function b4GimOn(){return !!(B&&BOSS_GIM.on&&B.spec&&B.spec.kind==='boss'&&!(G&&G.daily&&!BOSS_GIM.daily));}
+function b4GimDefOf(key){return BOSS_GIM.def[String(key||'').replace(/^echo_/,'')]||null;}
+function b4GimLine(D){return D?`${D.n}: ${D.d}.`:'';}
+function b4GimLive(){return B.front.map((c,i)=>c&&c.hp>0?i:-1).filter(i=>i>=0);}
+function b4GimWho(L){const n=L.map(c=>c.name);return n.length>1?n.slice(0,-1).join(', ')+' and '+n[n.length-1]:n[0]||'the Vanguard';}
+function b4GimFill(s,L){return String(s||'').replace('{who}',b4GimWho(L||[]));}
+// the spots it marks: a fixed walk over the live spots from the boss key and the telegraph count (n spots); 'weak': the weakest hero's spot
+function b4GimSlots(n,weak){const S=B.b4g,live=b4GimLive();if(!live.length)return [];
+  if(weak){const c=live.map(i=>B.front[i]).sort((x,y)=>x.hp/x.S.mhp-y.hp/y.S.mhp||B.front.indexOf(x)-B.front.indexOf(y))[0];return [B.front.indexOf(c)];}
+  const st=(hashS(S.key)+S.ticks*2)%3,out=[];for(let k=0;k<3&&out.length<n;k++){const i=(st+k)%3;if(live.includes(i))out.push(i);}return out;}
+// one hit from the gimmick: a share of the hero's max HP, halved by Guard; a guarding hero also shrugs off its status
+function b4GimK(){return (BOSS_GIM.stageK||[])[Math.min(4,(B&&B.stage)|0)]||1;}
+function b4GimHit(u,c,pct,el,st){if(!c||c.hp<=0)return 0;const d=Math.max(1,Math.round(c.S.mhp*pct*b4GimK()*(c.guard?.5:1)));const now=Date.now();
+  c.fxEl=el||null;c.fxT=now;c.hitT=now;fx(c,String(d),'dmg');log(`${c.name} takes ${d}${c.guard?' (guarded)':''}.`);B.b4gHits=(B.b4gHits||0)+d;hurt(c,d);
+  if(c.hp>0&&st&&!c.guard)addSt(c,st,u);return d;}
+// keeps the chips in step with the state: the boss shows what it readies, the heroes what will hit them (also after swaps and falls)
+function b4GimSync(){const S=B&&B.b4g;if(!S)return;const u=S.u,P=S.pend,A=S.act,D=S.D,set=(c,k,on,v)=>{if(!c||!c.st)return;if(on&&c.hp>0){if(!c.st[k])c.st[k]={t:99};if(v!=null)c.st[k].v=v;}else if(c.st[k])delete c.st[k];};
+  set(u,'g_tele',!!P||(D.t==='phase2'&&S.warned&&!S.done));set(u,'g_air',!!A&&A.t==='air');set(u,'g_veil',!!A&&A.t==='veil');set(u,'g_mirror',!!A&&A.t==='mirror');
+  set(u,'g_tide',D.t==='tide'&&S.lvl>0,S.lvl);set(u,'g_dark',D.t==='dark'&&S.lvl>0,S.lvl);
+  const slots=P&&P.t==='slot'?P.slots:A&&A.t==='air'?A.slots:[];
+  B.front.forEach((c,i)=>{set(c,'g_mark',slots.includes(i));set(c,'g_rod',!!P&&P.t==='rod'&&c&&c.id===P.id);});
+  B.back.forEach(c=>{set(c,'g_mark',false);set(c,'g_rod',false);});}
+// what the boss does on its turn, before its usual move: one-round effects end, a pending telegraph lands, a new one may begin
+function b4GimTell(u){const S=B.b4g,D=S.D,live=b4GimLive();if(!live.length)return;let L=[];
+  if((D.t==='tide'||D.t==='dark')&&S.lvl>=D.max)return;
+  S.ticks++;
+  if(D.t==='slot'){const sl=b4GimSlots(D.n2||1);if(!sl.length)return;S.pend={t:'slot',slots:sl};L=sl.map(i=>B.front[i]);}
+  else if(D.t==='rod'){const c=live.map(i=>B.front[i]).sort((x,y)=>Math.max(y.S.atk,y.S.mag)-Math.max(x.S.atk,x.S.mag)||B.front.indexOf(x)-B.front.indexOf(y))[0];S.pend={t:'rod',id:c.id};L=[c];}
+  else if(D.t==='sac')S.pend={t:'sac',hp0:u.hp,stop:0};
+  else if(D.t==='mirror')S.pend={t:'mirror',kind:D.kinds[(S.ticks-1)%D.kinds.length]};
+  else S.pend={t:D.t};
+  B.b4gTells=(B.b4gTells||0)+1;fx(u,'Telegraph','stat bad');log(`${b4GimFill(D.tell,L)}: ${D.n} on ${u.name}'s next turn. ${b4GimHint(D)}`);}
+function b4GimHint(D){return {slot:'Guard halves it, or swap a sturdier hero in.',rod:'Guard halves it; swap that hero out to ground it.',chill:'Guard to keep the cold off; a Fire skill thaws a hero.',
+  tide:'An Earth skill dams the water.',dark:'A Fire or Light skill lights a torch.',sac:D.els?`Hit it with ${D.els.map(e=>EL[e]).join(' or ')}${D.thr?' or deal heavy damage':''} first.`:D.brk?'Break its shield or deal heavy damage first.':'Deal heavy damage first.',
+  mirror:'Use weapons, not magic, next round.',veil:'Scan it or use a Light skill to reveal it.',wing:'Use Ranged shots or magic while it flies; Guard the marked spot.',phase2:''}[D.t]||'';}
+function b4GimLand(u){const S=B.b4g,D=S.D,P=S.pend;S.pend=null;if(!P)return;B.b4gLand=(B.b4gLand||0)+1;
+  if(P.t==='slot'){const L=P.slots.map(i=>B.front[i]).filter(c=>c&&c.hp>0);log(b4GimFill(D.hit,L)+'!');banner(D.n,'#ff9a5a');L.forEach(c=>b4GimHit(u,c,D.pct,D.el,D.st));}
+  else if(P.t==='rod'){const c=B.front.find(x=>x&&x.id===P.id&&x.hp>0);if(!c){log(`The lightning finds no rod and grounds harmlessly.`);fx(u,'Grounded','stat');return;}
+    log(b4GimFill(D.hit,[c])+'!');banner(D.n,'#ffe04a');const i=B.front.indexOf(c);b4GimHit(u,c,D.pct,D.el,null);[i-1,i+1].forEach(j=>{const n=B.front[j];if(n&&n.hp>0)b4GimHit(u,n,D.pct*D.arc,D.el,null);});}
+  else if(P.t==='chill'){log(D.hit+'!');B.front.forEach(c=>{if(!c||c.hp<=0)return;if(c.guard){fx(c,'Braced','stat good');return;}
+    const v=((c.st.g_chill&&c.st.g_chill.v)||0)+1;if(v>=D.max){delete c.st.g_chill;fx(c,'Frozen','stat bad');log(`${c.name} freezes solid!`);addSt(c,'stun',u,true);}else{c.st.g_chill={t:99,v};fx(c,'Chill '+v,'stat bad');}});}
+  else if(P.t==='tide'||P.t==='dark'){S.lvl=Math.min(D.max,S.lvl+1);fx(u,D.n+' '+S.lvl,'stat bad');log(`${D.hit} (level ${S.lvl} of ${D.max}).`);}
+  else if(P.t==='sac'){const stop=P.stop||(D.thr&&P.hp0-u.hp>=D.thr*u.S.mhp)||(D.brk&&u.broken);
+    if(stop){log(D.stop+'!');fx(u,'Stopped','stat');B.b4gStop=(B.b4gStop||0)+1;return;}
+    log(D.hit+'!');banner(D.n,'#ff9a5a');
+    if(D.fx==='heal'){const n=Math.min(u.S.mhp-u.hp,Math.round(u.S.mhp*D.heal*b4GimK()));if(n>0){u.hp+=n;fx(u,'+'+n,'heal');}}
+    else if(D.fx==='summon'){if(B.en.filter(x=>x.hp>0).length<3&&MON[D.mon]){const s=makeEnemy(MON[D.mon],Math.max(1,u.lv-3));s.next=B.time+300;s.enterT=Date.now();B.en.push(s);log(`${s.name} joins the fight!`);}}
+    else if(D.fx==='spores')B.front.forEach(c=>{if(c&&c.hp>0&&!c.guard)(D.st||[]).forEach(k=>addSt(c,k,u,true));});
+    else if(D.fx==='buff')(D.buff||[]).forEach(k=>addSt(u,k,u,true));}
+  else if(P.t==='mirror'){S.act={t:'mirror',kind:P.kind};log(D.hit+'.');}
+  else if(P.t==='veil'){S.act={t:'veil'};log(D.hit+'.');}
+  else if(P.t==='wing'){S.act={t:'air',slots:b4GimSlots(1,true)};const c=B.front[S.act.slots[0]];log(`${D.hit}! It will dive at ${c?c.name+'\'s':'a'} spot next turn.`);}}
+function b4GimExpire(u){const S=B.b4g,D=S.D,A=S.act;if(!A)return;S.act=null;
+  if(A.t==='air'){const L=A.slots.map(i=>B.front[i]).filter(c=>c&&c.hp>0);log(b4GimFill(D.dive,L)+'!');L.forEach(c=>b4GimHit(u,c,D.pct,D.el,null));}
+  else if(A.t==='veil')log(`The mist around ${u.name} thins.`);else if(A.t==='mirror')log(`The mirror around ${u.name} falls.`);}
+function b4GimPhase(u){const S=B&&B.b4g;if(!S||u!==S.u||S.D.t!=='phase2'||u.hp<=0)return;const D=S.D;
+  if(!S.warned&&u.hp<=u.S.mhp*D.warn){S.warned=1;B.b4gTells=(B.b4gTells||0)+1;fx(u,'Telegraph','stat bad');log(`${D.tell}: at half HP it becomes something worse. ${D.d}.`);}
+  if(!S.done&&u.hp<=u.S.mhp*D.at){S.done=1;B.b4gLand=(B.b4gLand||0)+1;u.sk=D.sk.map(s=>({id:'e'+s[0],n:s[0],el:s[1],pw:s[2],t:s[3],k:s[4],fx:s[5]||null,mp:0,cost:1,hits:1}));u._b5p=null;
+    if(u.maxShield){u.shield=u.maxShield;u.broken=0;}banner(D.hit+'!','#c89aff');log(`${D.hit}! New moves: ${u.sk.map(s=>s.n).join(', ')}. Its shield is whole again.`);}}
+function b4GimTurn(u){const S=B.b4g;const n=(u.turns||0)+1;b4GimExpire(u);if(B.over)return;b4GimLand(u);
+  if(!B.over&&S.D.t!=='phase2'&&n>=BOSS_GIM.first&&(n-BOSS_GIM.first)%(S.D.every||BOSS_GIM.every)===0)b4GimTell(u);b4GimSync();}
+function b4GimStart(){B.b4g=null;if(!b4GimOn())return;const u=B.en.find(e=>e.boss&&e.key&&b4GimDefOf(e.key));if(!u)return;const D=b4GimDefOf(u.key);
+  B.b4g={u,key:String(u.key).replace(/^echo_/,''),D,ticks:0,pend:null,act:null,lvl:0};log(`Realm gimmick: ${b4GimLine(D)}`);}
+function b4HookGim(){if(enemyTurn0.__b4g)return;const et0=enemyTurn0;
+  enemyTurn0=function(u){try{if(B&&!B.over&&B.b4g&&u===B.b4g.u&&u.hp>0){b4GimTurn(u);if(checkEnd())return;}}catch(e){try{wdLog('b4 gimmick: '+(e&&e.message||e),u);}catch(_){}}
+    return et0.apply(this,arguments);};enemyTurn0.__b4g=1;if(et0.__b4)enemyTurn0.__b4=1;}
+// effects on damage and speed (tide, dark, mirror, veil, airborne, chill)
+{const cd1=calcDamage;calcDamage=function(a,sk,t){const r=cd1.apply(this,arguments);
+  try{const S=B&&B.b4g;if(!S||!r||!r.dmg||!a||!t||!sk)return r;const D=S.D,A=S.act;let m=1;
+    if(D.t==='tide'&&S.lvl&&skEls(sk).includes('water'))m*=1+D.dmg*S.lvl;
+    if(D.t==='dark'&&S.lvl&&a.side==='p')m*=Math.max(.3,1-D.dmg*S.lvl);
+    if(A&&a.side==='p'&&t===S.u){if(A.t==='mirror'&&sk.k===A.kind)m*=1-D.cut;else if(A.t==='veil')m*=1-D.cut;else if(A.t==='air'&&sk.k==='phys'&&deliveryOf(a,sk)!=='ranged')m*=1-D.cut;}
+    if(m!==1)r.dmg=Math.max(1,Math.round(r.dmg*m));}catch(e){}return r;};}
+{const dl0=delayOf;delayOf=function(u,cost){let d=dl0.apply(this,arguments);try{const S=B&&B.b4g;if(S&&u&&u.side==='p'){const D=S.D;
+  if(D.t==='chill'&&u.st&&u.st.g_chill)d*=1+D.spd*(u.st.g_chill.v||1);if(D.t==='tide'&&S.lvl&&!(u.el||[]).includes('water'))d*=1+D.spd*S.lvl;}}catch(e){}return d;};}
+// the answers: element hits stop a readied move, Fire thaws, Earth dams the tide, Fire or Light lights a torch, Light reveals; a mirror splashes back
+{const pf1=perform;perform=function(a,sk,tgts){const S=B&&B.b4g;if(!S||!a||a.side!=='p'||!sk)return pf1.apply(this,arguments);const u=S.u,hp0=u.hp;const r=pf1.apply(this,arguments);
+  try{const D=S.D,els=skEls(sk),off=sk.k==='phys'||sk.k==='mag',hit=u.hp<hp0;
+    if(S.pend&&S.pend.t==='sac'&&D.els&&hit&&els.some(e=>D.els.includes(e))&&!S.pend.stop){S.pend.stop=1;fx(u,'Interrupted','stat good');log(`${a.name}'s ${els.filter(e=>D.els.includes(e)).map(e=>EL[e]).join(' ')} hit stops the ${D.n}!`);}
+    if(off&&D.t==='chill'&&els.includes('fire')&&a.st&&a.st.g_chill){delete a.st.g_chill;fx(a,'Thawed','stat good');log(`${a.name} burns off the chill.`);}
+    if(off&&D.t==='tide'&&S.lvl>0&&els.includes('earth')){S.lvl--;fx(u,'Tide '+S.lvl,'stat');log(`${a.name}'s Earth dams the water (level ${S.lvl}).`);}
+    if(off&&D.t==='dark'&&S.lvl>0&&(els.includes('fire')||els.includes('light'))){S.lvl=0;fx(a,'Torch!','stat good');log(`${a.name} lights a torch. The dark falls back.`);}
+    if(off&&S.act&&S.act.t==='veil'&&els.includes('light')&&(tgts||[]).includes(u)){S.act=null;fx(u,'Revealed','stat good');log(`${a.name}'s light reveals ${u.name}.`);}
+    if(S.act&&S.act.t==='mirror'&&hit&&sk.k===S.act.kind&&a.hp>0&&!a.isComp){const d=Math.max(1,Math.round((hp0-u.hp)*D.refl));fx(a,String(d),'dmg');log(`The mirror splashes ${d} back at ${a.name}.`);hurt(a,d);}
+    b4GimPhase(u);b4GimSync();}catch(e){}return r;};}
+{const sc1=scan;scan=function(t){const S=B&&B.b4g;const r=sc1.apply(this,arguments);try{if(S&&S.u===t){if(S.act&&S.act.t==='veil'){S.act=null;fx(t,'Revealed','stat good');log(`The scan cuts through the mist: ${t.name} is revealed.`);}log(`Realm gimmick: ${b4GimLine(S.D)}`);b4GimSync();}}catch(e){}return r;};}
+{const hu1=hurt;hurt=function(t,d){const r=hu1.apply(this,arguments);try{if(B&&B.b4g&&t===B.b4g.u)b4GimPhase(t);}catch(e){}return r;};}
+// the i panel: the boss's gimmick and where it stands now
+function b4GimNow(){const S=B&&B.b4g;if(!S)return '';const D=S.D,P=S.pend,A=S.act;
+  if(P)return `Telegraphed: ${D.n} lands on its next turn. ${b4GimHint(D)}`;if(A)return A.t==='air'?'Airborne now; it dives at the marked spot next turn.':A.t==='veil'?'Veiled now.':'Mirror raised now: weapons are safe.';
+  if(D.t==='tide'||D.t==='dark')return `Level ${S.lvl} of ${D.max}.`;if(D.t==='phase2')return S.done?'The Eclipse form is here.':S.warned?'Cracking: it changes at half HP.':`It changes at ${Math.round(D.at*100)}% HP.`;return 'Nothing readied right now.';}
+if(typeof uDetHtml==='function'){const ud0=uDetHtml;uDetHtml=function(){let h=ud0.apply(this,arguments);try{const S=B&&B.b4g,P=B&&B.uDet,u=P&&typeof unitOf==='function'?unitOf(P.ref):null;
+  if(h&&S&&u===S.u){const row=`<div class="udst b4gim"><b class="dn">Realm gimmick: ${esc(S.D.n)}</b><small>${esc(S.D.d)}. ${esc(b4GimNow())}</small></div>`;h=h.replace('<h4>Effects</h4>','<h4>Effects</h4>'+row);}}catch(e){}return h;};}
+// careful play (sims): reads the telegraph like a player reading the log
+function b4GimSmart(a){const S=B.b4g;if(!S||!S.u||S.u.hp<=0)return false;const u=S.u,D=S.D,P=S.pend,A=S.act,ix=B.front.indexOf(a),foes=B.en.filter(e=>e.hp>0);
+  const soon=u.next<=B.time+delayOf(a,.6),ks=known(a).filter(s=>a.mp>=(s.mp||0)),dmg=ks.filter(s=>(s.k==='phys'||s.k==='mag')&&!s.limit&&!s.steal&&s.t!=='self'&&s.t!=='ally'&&s.t!=='allyAll'&&s.t!=='dead');
+  const val=(s,t)=>s.pw*(s.hits||1)*bestMult(s,t,a)*(s.t==='all'?Math.min(3,foes.length)*.7:1),best=(L,t)=>L.slice().sort((x,y)=>val(y,t)-val(x,t))[0],go=s=>{exec(s,s.t==='all'||s.t==='rand'?foes:[u]);return true;};
+  const marked=P&&((P.t==='slot'&&P.slots.includes(ix))||(P.t==='rod'&&P.id===a.id))||A&&A.t==='air'&&A.slots.includes(ix);
+  if(marked&&soon&&a.hp/a.S.mhp<(D.pct||.2)+.55){guard();return true;}
+  if(P&&P.t==='chill'&&soon&&((a.st.g_chill&&a.st.g_chill.v)||0)>=D.max-1){guard();return true;}
+  if(D.t==='chill'&&a.st.g_chill){const s=best(dmg.filter(s=>skEls(s).includes('fire')),u);if(s)return go(s);}
+  if(P&&P.t==='sac'&&!P.stop){const L=D.els?dmg.filter(s=>skEls(s).some(e=>D.els.includes(e))):[];const s=best(L.length?L:dmg.filter(s=>s.t!=='all'),u);if(s)return go(s);}
+  if(D.t==='tide'&&S.lvl>=2){const s=best(dmg.filter(s=>skEls(s).includes('earth')),u);if(s)return go(s);}
+  if(D.t==='dark'&&S.lvl>=2){const s=best(dmg.filter(s=>skEls(s).some(e=>e==='fire'||e==='light')),u);if(s)return go(s);}
+  if(A&&A.t==='veil'){const s=best(dmg.filter(s=>skEls(s).includes('light')),u);if(s)return go(s);const o=foes.find(e=>e!==u);if(!o){scan(u);return true;}}
+  if(A&&A.t==='mirror'){const L=dmg.filter(s=>s.k!==A.kind);const s=best(L,u);if(s)return go(s);if(A.kind==='mag'){exec(ATTACK,[u]);return true;}}
+  if(A&&A.t==='air'){const L=dmg.filter(s=>s.k==='mag'||deliveryOf(a,s)==='ranged');const s=best(L,u);if(s)return go(s);}
+  return false;}
+
 // ----- smart play for the sims (SIM_SMART, the "careful player" yardstick): reads roles, guards telegraphs, swaps, varies -----
 function b4Smart(){const a=B.cur;if(!a||a.side!=='p')return false;const foes=B.en.filter(e=>e.hp>0),fr=B.front.filter(c=>c.hp>0);if(!foes.length)return false;
+  if(b4GimSmart(a))return true;
   const R=B4.roles,ratio=c=>c.hp/c.S.mhp,ks=known(a).filter(s=>a.mp>=(s.mp||0));
   if(b4FreeReady()){const others=fr.filter(c=>c!==a&&b4CanOut(c)),bench=B.back.filter(c=>c.hp>0&&ratio(c)>.5).sort((x,y)=>ratio(y)-ratio(x));
     const ch=foes.find(e=>b4Role(e)==='charge'&&has(e,'charge')),ct=ch&&B.front[ch.b4slot];
@@ -184,7 +318,7 @@ function b4Smart(){const a=B.cur;if(!a||a.side!=='p')return false;const foes=B.e
   if(!B||B.over||B.mode!=='cmd')return;return ats0.apply(this,arguments);};}
 
 // ----- start of battle -----
-{const sb0=startBattle;startBattle=function(){try{b4HookPlan();b4HookTurn();}catch(e){}const r=sb0.apply(this,arguments);try{if(r!==false&&B){B.b4mo=null;if(b4On('mo'))b4MoS();
+{const sb0=startBattle;startBattle=function(){try{b4HookPlan();b4HookTurn();b4HookGim();}catch(e){}const r=sb0.apply(this,arguments);try{if(r!==false&&B){B.b4mo=null;if(b4On('mo'))b4MoS();b4GimStart();
   const roles=[...new Set(B.en.filter(e=>b4Role(e)).map(e=>e.role))];if(roles.length)B.b4seen=roles;}}catch(e){}return r;};}
 
 // ----- UI: the momentum gauge in the log ticker under the stage -----
@@ -197,7 +331,7 @@ function b4MoDraw(){const bl=document.getElementById('bline');if(!bl)return;let 
   if(!B||!b4On('mo')){if(el)el.remove();return;}
   if(!el){el=document.createElement('button');el.id='b4mo';el.type='button';el.dataset.act='b4mo';bl.insertBefore(el,bl.firstChild);}
   const st=b4MoState(),h=b4MoHtml(),lab=b4MoLabel();if(el.dataset.h!==h){el.dataset.h=h;el.innerHTML=h;el.className='b4mo '+st;el.setAttribute('aria-label',lab);el.title=lab;}}
-{const rb0=renderBattle;renderBattle=function(stageOnly){const r=rb0.apply(this,arguments);try{if(!stageOnly)b4MoDraw();}catch(e){}return r;};}
+{const rb0=renderBattle;renderBattle=function(stageOnly){try{b4GimSync();}catch(e){}const r=rb0.apply(this,arguments);try{if(!stageOnly)b4MoDraw();}catch(e){}return r;};}
 ACT.b4mo=function(){if(!B||!b4On('mo'))return;log(b4MoLabel());render();};
 
 // ----- UI: the switch menu (who steps back, then who comes in) -----
@@ -226,5 +360,5 @@ if(typeof mBeast==='function'){const mb0=mBeast;mBeast=function(m){let h=mb0.app
 
 // ----- tests -----
 const B4X={get cfg(){return B4;},plan:u=>b4RolePlan(u),roleLine:u=>b4RoleLine(u),roleOf:m=>b4RoleOfMon(m),ROLE:B4ROLE,freeSwap:(f,b)=>b4FreeSwap(f,b),freeReady:()=>b4FreeReady(),freeLeft:()=>b4FreeLeft(),
-  mo:()=>B?b4MoS():null,moState:()=>b4MoState(),sig:s=>b4Sig(s),hex:c=>b4Hex(c),smart:()=>b4Smart(),detGain:a=>b4DetGain(a),
+  mo:()=>B?b4MoS():null,gim:()=>B&&B.b4g,gimDef:k=>b4GimDefOf(k),gimTurn:u=>b4GimTurn(u),gimSync:()=>b4GimSync(),gimNow:()=>b4GimNow(),gimSmart:a=>b4GimSmart(a),get GIM(){return BOSS_GIM;},moState:()=>b4MoState(),sig:s=>b4Sig(s),hex:c=>b4Hex(c),smart:()=>b4Smart(),detGain:a=>b4DetGain(a),
   foeTurn:u=>{B.cur=u;B.mode='enemy';enemyTurn0(u);},exec:(s,t)=>exec(s,t),guard:()=>guard(),calc:(a,s,t,b)=>calcDamage(a,s,t,b),rng:f=>{RNG=f||Math.random;},doSwap:i=>doSwap(i)};
