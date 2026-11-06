@@ -19,7 +19,7 @@ for(const [w,h] of SIZES){const tag=w+'x'+h;const H=await open({w,h,mobile:w<100
   const kinds=['primed','shield','status','types','react','weak'];
   for(let i=0;i<N;i++){const seed=300+i*41+w,R=(k=>()=>((k=Math.imul(k^k>>>15,2246822507)+0x6D2B79F5>>>0)%1e6)/1e6)(seed);
     const opt={seed,heroes:1+Math.floor(R()*6),foes:1+Math.floor(R()*5),stage:0};opt.fly=Math.floor(R()*Math.min(2,opt.foes+1));
-    const r0=await battle(H,opt);if(r0.mode!=='cmd'){console.log('  skip',JSON.stringify(opt),r0.mode);continue;}
+    const r0=await battle(H,opt);await H.ev(()=>{__A.G.pcV=0;});/* v0.9.6: a journey from before the realm unlocks, so every card can show (gating: v095na) */if(r0.mode!=='cmd'){console.log('  skip',JSON.stringify(opt),r0.mode);continue;}
     await dress(H,{seed:seed+1,maxSt:3,fx:1,prime:0,shield:0});
     const kind=kinds[i%kinds.length];
     const c=await ev(async k=>{const A=__A,O=__OB,B=A.B,e=B.en.find(x=>x.hp>0);clearInterval(O.OB.tick);O.obM().s={};O.OB.q=[];if(O.OB.cur)O.obClose();

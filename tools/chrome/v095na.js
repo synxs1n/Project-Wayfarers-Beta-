@@ -53,9 +53,9 @@ chk('a Crushing Charge on a guarded hero counts, an unguarded one does not',r.gu
 // the lines and amounts
 const base=await ev(FIGHT,{zero:1});await ev(CLOSE);
 const b4=await ev(FIGHT,{nz:{react:2,brk:1,guard:1,surge:1}});await ev(CLOSE);
-chk('four systems used: four lines at +5% each (+20%)',b4.info.nz&&b4.info.nz.lines.length===4&&Math.abs(b4.info.nz.pct-.20)<1e-9||JSON.stringify(b4.info.nz));
-chk('the bonus pays 20% more gold than the same win without it',Math.abs(b4.gold-base.gold-Math.round(base.gold*.20))<=1||JSON.stringify([base.gold,b4.gold]));
-chk('each hero gets 20% more XP from it',b4.xp.every((x,i)=>Math.abs(x-base.xp[i]-Math.round(base.xp[i]*.20))<=1)||JSON.stringify([base.xp,b4.xp]));
+chk('four systems used: four lines at +4% each (+16%)',b4.info.nz&&b4.info.nz.lines.length===4&&Math.abs(b4.info.nz.pct-.16)<1e-9||JSON.stringify(b4.info.nz));
+chk('the bonus pays 16% more gold than the same win without it',Math.abs(b4.gold-base.gold-Math.round(base.gold*.16))<=1||JSON.stringify([base.gold,b4.gold]));
+chk('each hero gets 16% more XP from it',b4.xp.every((x,i)=>Math.abs(x-base.xp[i]-Math.round(base.xp[i]*.16))<=1)||JSON.stringify([base.xp,b4.xp]));
 chk('the rewards screen lists the lines (Reaction set off, Shield broken, Guarded a telegraphed hit, Momentum Surge reached)',['Reaction set off','Shield broken','Guarded a telegraphed hit','Momentum Surge reached'].every(s=>b4.html.includes(s))&&(b4.html.match(/rs-bon sys/g)||[]).length===4||b4.html.slice(0,500));
 chk('a reaction counts once per battle however many',b4.info.nz.lines.filter(l=>l.k==='react').length===1);
 // tame on the rewards screen: +6% more, up to the cap
@@ -65,12 +65,12 @@ r=await ev(async()=>{const A=__A,G=A.G;const k=Object.keys(A.MON).filter(k=>!A.M
   // a second tame call pays nothing more
   A.ACT.tame();const g2=G.gold;return {p0,p1,dg:g1-g0,dg2:g2-g1,base:i.nzBase.gold,tame:h1.includes('Creature tamed'),cap:/the most one battle pays/.test(h1),lines:i.nz.lines.length,tamed:i.tamed};});
 await ev(CLOSE);
-chk('taming adds its line and +5% (20% -> 25%, the cap)',r.tame&&Math.abs(r.p1-.25)<1e-9&&r.lines===5||JSON.stringify(r));
-chk('taming pays its share of the battle gold, once',r.dg===Math.round(r.base*.05)&&r.dg2===0||JSON.stringify(r));
+chk('taming adds its line and +4% (16% -> 20%, the cap)',r.tame&&Math.abs(r.p1-.20)<1e-9&&r.lines===5||JSON.stringify(r));
+chk('taming pays its share of the battle gold, once',r.dg===Math.round(r.base*.04)&&r.dg2===0||JSON.stringify(r));
 chk('at the cap the screen says so',r.cap===true);
-r=await ev(async F=>{const A=__A,N=__NZ,S=N.NUDGE.sys,s0=S.react;S.react=.2;const f=new Function('o','return ('+F+')(o)');const x=await f({nz:{react:1,brk:1,guard:1,surge:1}});S.react=s0;return x.info.nz;},FIGHT.toString());
+r=await ev(async F=>{const A=__A,N=__NZ,S=N.NUDGE.sys,s0=S.react;S.react=.15;const f=new Function('o','return ('+F+')(o)');const x=await f({nz:{react:1,brk:1,guard:1,surge:1}});S.react=s0;return x.info.nz;},FIGHT.toString());
 await ev(CLOSE);
-chk('the cap holds: +20% + 5% = 25%, the systems past the cap pay nothing',Math.abs(r.pct-.25)<1e-9&&r.lines.length===2&&Math.abs(r.lines[1].p-.05)<1e-9||JSON.stringify(r));
+chk('the cap holds: +15% + 4% + 1% (cut) = 20%, the system past the cap pays nothing',Math.abs(r.pct-.20)<1e-9&&r.lines.length===3&&Math.abs(r.lines[2].p-.01)<1e-9||JSON.stringify(r));
 r=await ev(FIGHT,{auto:1,nz:{react:1}});await ev(CLOSE);
 chk('auto wins earn the system bonus too',r.info.autoCut&&r.info.nz&&r.info.nz.lines.length===1||JSON.stringify(r.info));
 
@@ -109,6 +109,12 @@ r=await ev(()=>{const A=__A;A.V.modal={type:'autoset'};A.render();const h=docume
 chk('Auto settings explain the bonus and the unlock',r===true||r);
 
 // ---------- 4) tip cards ----------
+// v0.9.6 depth unlocks: on a new journey in the first realm, reaction cards wait for the second realm (pcUnlocked); later realms below
+r=await ev(()=>{const A=__A,O=__OB,N=__NZ,G=A.G;O.obM().s={};O.obM().u={};A.setPause(99999);const k=Object.keys(A.MON).filter(k=>!A.MON[k].mimic)[0];
+  const st=G.stage,cl=G.cleared.slice();G.stage=0;G.cleared=[false,false,false,false,false];A.startBattle({stage:0,kind:"field",weather:"clear",foes:[A.makeEnemy(A.MON[k],4)]});const B=A.B,e=B.en[0];B.pturns=1;B.mode="cmd";
+  e.primed={el:"fire",t:2};const o={pcV:G.pcV,gated:N.obEval(O.TIPMAP.primed),raw:!!O.TIPMAP.primed.t(),shield:(e.maxShield=3,e.shield=3,!!N.obEval(O.TIPMAP.shield))};A.V.modal=null;A.finishBattle("x");A.V.screen="world";
+  G.stage=3;G.cleared=[true,true,true,false,false];return o;});
+chk("first realm of a new journey: no primed card (reactions open in the second realm), the shield card still shows",r.pcV===1&&r.gated===null&&r.raw&&r.shield||JSON.stringify(r));
 r=await ev(()=>{const A=__A,O=__OB,N=__NZ,G=A.G;O.obM().s={};O.obM().u={};A.setPause(99999);
   const k=Object.keys(A.MON).filter(k=>!A.MON[k].mimic)[0];A.startBattle({stage:0,kind:'field',weather:'clear',foes:[A.makeEnemy(A.MON[k],4)]});const B=A.B,e=B.en[0];B.pturns=1;B.mode='cmd';
   const o={};e.primed={el:'fire',t:2};o.primed=N.obEval(O.TIPMAP.primed);

@@ -15,6 +15,7 @@ const glC=(k)=>((G.goals&&G.goals.c&&G.goals.c[k])|0);
 function glAdd(k,n){if(!glOn()||!(n>0))return;const st=glS();st.c[k]=(st.c[k]|0)+n;}
 const glBattles=()=>((G.stats&&G.stats.battles)|0);
 const glKnows=role=>partyOf().some(c=>{try{return known(c).some(s=>s.role===role);}catch(e){return false;}});
+const glPc=s=>typeof pcUnlocked!=='function'||pcUnlocked(s);// v0.9.6 depth unlocks by realm (pacing.js): no goal points at a system that is not open yet
 const glTop=()=>Math.max(1,...partyOf().map(c=>c.lv|0));
 // counter goals: done when the counter grew by n since the goal was shown
 const glCnt=(k,n)=>({k,n,done:st=>glC(k)-((st.b[k+'@'])|0)>=n,prog:st=>Math.min(n,glC(k)-((st.b[k+'@'])|0))});
@@ -22,21 +23,21 @@ const glCnt=(k,n)=>({k,n,done:st=>glC(k)-((st.b[k+'@'])|0)>=n,prog:st=>Math.min(
 const GOALS=[
  {id:'weak',t:'Hit a foe on its weak spot',sub:()=>'Aim where the target tag says Weak: the hit deals more and cracks shields.',ok:()=>true,...glCnt('weak',1)},
  {id:'manual',t:'Win a fight without auto',sub:()=>`A fight you play yourself pays +${manualBonusPct()}% XP and gold.`,ok:()=>glC('autoWin')>=1,...glCnt('manWin',1)},
- {id:'react',t:'Set off 3 reactions',sub:()=>'Prime a foe with one element, then hit it with a Detonator of another.',ok:()=>glKnows('primer')&&glKnows('det'),...glCnt('react',3),item:'ether'},
+ {id:'react',t:'Set off 3 reactions',sub:()=>'Prime a foe with one element, then hit it with a Detonator of another.',ok:()=>glPc('reactions')&&glKnows('primer')&&glKnows('det'),...glCnt('react',3),item:'ether'},
  {id:'scan',t:'Scan a foe in battle',sub:()=>'Scan shows its stats and quirk, and opens auto against that kind of foe.',ok:()=>glBattles()>=2,...glCnt('scan',1)},
- {id:'quest',t:'Take a quest from the board',sub:()=>'The Quest Board in town pays gold and items for hunts and errands.',ok:()=>(G.quests||[]).length>0,done:()=>(G.quests||[]).some(q=>q.state&&q.state!=='open')},
+ {id:'quest',t:'Take a quest from the Notice Board',sub:()=>'Notice Board > Quests, in town: gold and items for hunts and errands.',ok:()=>(G.quests||[]).length>0,done:()=>(G.quests||[]).some(q=>q.state&&q.state!=='open')},
  {id:'switch',t:'Switch in a Rearguard hero',sub:()=>'On a Vanguard hero\'s turn, Switch brings a fresh hero in who acts at once.',ok:()=>(G.party||[]).length>3,...glCnt('swap',1)},
  {id:'brk',t:"Break a foe's shield",sub:()=>'Hit a shielded elite or boss on its weakness, or with a reaction.',ok:()=>(G.stage|0)>=1||glTop()>=7,...glCnt('brk',1),item:'remedy'},
- {id:'tame',t:'Tame a creature',sub:()=>'Beat a bounty beast, then choose Tame it on the rewards screen.',ok:()=>(G.stage|0)>=1||glTop()>=8,
+ {id:'tame',t:'Tame a creature',sub:()=>'Beat a bounty beast, then choose Tame it on the rewards screen.',ok:()=>glPc('taming')&&(G.stage|0)>=1||glTop()>=8,
   done:()=>(G.tamed||[]).length>0||Object.keys(G.tameLog||{}).length>0,item:'potion'},
- {id:'bounty',t:'Beat a bounty',sub:()=>'Accept one at the Guild Hall and find the beast on the map.',ok:()=>glTop()>=5&&(G.bounties||[]).some(b=>b.state==='open'||b.state==='active'),...glCnt('bounty',1)},
+ {id:'bounty',t:'Beat a bounty',sub:()=>'Notice Board > Bounties: accept one, then find the beast on the map.',ok:()=>glTop()>=5&&(G.bounties||[]).some(b=>b.state==='open'||b.state==='active'),...glCnt('bounty',1)},
  {id:'guard',t:'Guard against a big hit',sub:()=>'When a foe winds up or gathers power, Guard the hero it aims at.',ok:()=>glC('tele')>=1,...glCnt('guard',1),item:'potion'},
  {id:'surge',t:'Reach a Momentum Surge',sub:()=>'Mix different moves: the Momentum bar fills and your heroes surge.',ok:()=>glBattles()>=8,...glCnt('surge',1)},
- {id:'comp',t:'Pair a companion with a hero',sub:()=>'Party > Companions: a stat bonus and a Summon in battle.',ok:()=>(G.tamed||[]).length>0,done:()=>(G.tamed||[]).some(o=>o.with)},
- {id:'temper',t:'Temper a piece of gear',sub:()=>'Smithy > Tempering: +1 for parts and gold.',ok:()=>typeof pcTemperOpen!=='function'||pcTemperOpen(),done:()=>typeof pcHasTempered==='function'&&pcHasTempered()},
- {id:'guildm',t:'Take on a guild mission',sub:()=>'Guild Hall > Quests > Guild missions: rank and perks sooner.',ok:()=>typeof pcFirstBoss!=='function'||pcFirstBoss(),
+ {id:'comp',t:'Pair a companion with a hero',sub:()=>'Party > Companions: a stat bonus and a Summon in battle.',ok:()=>glPc('taming')&&(G.tamed||[]).length>0,done:()=>(G.tamed||[]).some(o=>o.with)},
+ {id:'temper',t:'Temper a piece of gear',sub:()=>'Smithy > Tempering: +1 for parts and gold.',ok:()=>glPc('gear')&&(typeof pcTemperOpen!=='function'||pcTemperOpen()),done:()=>typeof pcHasTempered==='function'&&pcHasTempered()},
+ {id:'guildm',t:'Take on a guild mission',sub:()=>'Notice Board > Guilds: missions raise your rank and its perks sooner.',ok:()=>glPc('guilds')&&(typeof pcGuildOpen==='function'?pcGuildOpen():typeof pcFirstBoss!=='function'||pcFirstBoss()),
   done:()=>{try{const f=facInit();return Object.keys(f.acc||{}).length+Object.keys(f.done||{}).length>0;}catch(e){return false;}}},
- {id:'camp',t:'Make camp in the field',sub:()=>'Camp Supplies from Alchemy; Make camp from the Party tab.',ok:()=>(G.stage|0)>=(typeof CAMP!=='undefined'?CAMP.fromStage:2),done:()=>glC('camp')>0,item:'campkit'}];
+ {id:'camp',t:'Make camp in the field',sub:()=>'Camp Supplies from Alchemy; Make camp from the Party tab.',ok:()=>glPc('camp')&&(G.stage|0)>=(typeof CAMP!=='undefined'?CAMP.fromStage:2),done:()=>glC('camp')>0,item:'campkit'}];
 const GLMAP={};GOALS.forEach(g=>{GLMAP[g.id]=g;});
 // ----- the story goal: head out, find the lair, beat its Scourge (the Calamity in the last realm) -----
 function glStoryDef(s,k){const Z=ZS(s),foe=s<4?'Scourge':'Calamity';

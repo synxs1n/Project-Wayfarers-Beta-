@@ -119,7 +119,7 @@ const TIPS=[
   g:'Build Party (Party tab) looks at your roster, the foes of this area and its boss, and suggests a Vanguard and Rearguard in formations: Balanced, Boss ready, Area answer, Fresh mix, Rotation. Training team puts heroes who fell behind beside a strong tank and healer, so the XP catch up bonus lifts them quickly.'},
  // town
  {id:'guild',n:'Guilds and guild missions',sec:'Town',x:'o:guild',go:['menuTab','fmis','Guild missions'],
-  t:()=>{if(!obWorld()||typeof facRank!=='function')return null;const F=FAC.find(f=>facRank(f.id)>=2);return F?`New rank with the ${F.n}! Each rank adds a perk; guild missions in Quests raise it faster.`:null;},
+  t:()=>{if(!obWorld()||typeof facRank!=='function')return null;const F=FAC.find(f=>facRank(f.id)>=2);return F?`New rank with the ${F.n}! Each rank adds a perk; Notice Board missions raise it faster.`:null;},
   g:'Five guilds watch what you do anyway: wins and bounties, forging and tempering, brewing, taming, and knowledge. Each rank brings a perk (cheaper inns, gold, XP, unique charms). Guild missions in the Quests menu add extra standing. Ranks are per journey.'},
  {id:'personal',n:'Personal quests',sec:'Town',
   t:()=>{if(!obWorld())return null;const c=partyOf().find(c=>personalEligible(c)&&!(G.personal&&G.personal[c.id]&&G.personal[c.id].state!=='open'));return c?`${p2Nm(c)} has a personal quest! Start it at the Guild Hall for a reward of their own.`:null;},
@@ -223,10 +223,13 @@ function obPlaceBattle(d){const wrap=document.getElementById('bwrap');if(!wrap)r
 if(typeof p5Avoid==='function'){const pa1=p5Avoid;p5Avoid=function(){const r=pa1.apply(this,arguments);try{const d=document.getElementById('p2hint');if(d&&d.classList.contains('show')){const b=d.getBoundingClientRect();if(b.width)r.push(b);}}catch(e){}return r;};}
 
 // ----- the queue -----
-function obEval(t){try{if(t.x&&!tipUsed(t.x))return null;return t.t()||null;}catch(e){return null;}}
+// v0.9.6 depth unlocks by realm (pacing.js pcUnlocked): a card about a system that is not open yet on this journey waits for it
+const OB_PACE={primed:'reactions',react:'reactions',react2:'reactions',tame:'taming',comp:'taming',stick:'taming',summon:'taming',bond:'bonds',camp:'camp',guild:'guilds',temper:'gear',echoforge:'echoforge'};
+const obPc=id=>!OB_PACE[id]||typeof pcUnlocked!=='function'||pcUnlocked(OB_PACE[id]);
+function obEval(t){try{if(t.x&&!tipUsed(t.x))return null;if(!obPc(t.id))return null;return t.t()||null;}catch(e){return null;}}
 // v0.9.5: opening a system once (for the expert cards): the Smithy's Tempering and Echoforge tabs, the Guild Hall, Lore
 function obOpened(){try{if(!G||G.daily)return;const m=V.modal;if(!m)return;
-  if(m.type==='smithy'&&m.tab==='forge')tipUse('o:temper');if(m.type==='smithy'&&m.tab==='echo')tipUse('o:echo');if(m.type==='guild')tipUse('o:guild');
+  if(m.type==='smithy'&&m.tab==='forge')tipUse('o:temper');if(m.type==='smithy'&&m.tab==='echo')tipUse('o:echo');if(m.type==='guild'||(m.type==='board'&&m.tab==='guilds'))tipUse('o:guild');
   if(m.type==='battlelore'||(m.type==='menu'&&m.tab==='lore'))tipUse('o:lore');}catch(e){}}
 {const ng0=ACT.ngMod;if(typeof ng0==='function')ACT.ngMod=function(){try{const M=obM();if(!M.u['o:ng']){M.u['o:ng']=1;saveMeta();}}catch(e){}return ng0.apply(this,arguments);};}
 function obHold(){if(obBossHold())return true;const m=V.modal;if(m&&['story','talk','legacy','lose','boss','slots','export','import','feedback','fbcopy'].includes(m.type))return true;
@@ -267,7 +270,7 @@ function obUntried(){const out=[];if(!G||G.daily)return out;const add=(t,s)=>out
   try{if(tipSeen('switch')&&!tipUsed('switch'))add('Try Switch in battle','On a hurt hero\'s turn it brings in a Rearguard hero, who acts at once.');}catch(e){}
   try{if(tipSeen('limit')&&!tipUsed('limit'))add('Try a Limit move','When a hero\'s gold bar is full, the Limit button tops their commands.');}catch(e){}
   try{if(tipSeen('summon')&&!tipUsed('summon'))add('Try Summon in battle','A hero with a companion can call it in to fight for a few turns.');}catch(e){}
-  try{if(tipSeen('guild')&&typeof facInit==='function'){const f=facInit();if(!Object.keys(f.acc||{}).length&&!Object.keys(f.done||{}).length)add('Try a guild mission','Quests > Guild missions: extra standing and the next perk sooner.');}}catch(e){}
+  try{if(tipSeen('guild')&&obPc('guild')&&typeof facInit==='function'){const f=facInit();if(!Object.keys(f.acc||{}).length&&!Object.keys(f.done||{}).length)add('Try a guild mission','Notice Board > Guilds: extra standing and the next perk sooner.');}}catch(e){}
   try{if(tipSeen('bestparty')&&!tipUsed('bestparty'))add('Try Build Party','Party tab: it suggests a party for this area and a Training team for heroes who fell behind.');}catch(e){}
   try{const R=obReserves();if(tipSeen('reserves')&&!tipUsed('reserves')&&R.length&&(G.gear||[]).some(id=>{const g=gearOf(id);return g&&!g.stick;}))add('Equip best: reserves','Party tab: your Reserves take the best spare gear from the pack.');}catch(e){}
   try{if(tipSeen('charm')){const c=(G.gear||[]).filter(obCharm);const empty=partyOf().filter(h=>!h.eq.c);if(c.length&&empty.length)add(`A charm is waiting in your pack`,`${empty.slice(0,3).map(h=>esc(p2Nm(h))).join(', ')} ${empty.length>1?'have':'has'} an empty charm slot. Backpack > Equipment.`);}}catch(e){}

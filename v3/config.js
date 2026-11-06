@@ -553,6 +553,6 @@ const TWISTS={on:true,
 // goals: the "Next goals" panel in the world. max items shown (one story goal and up to max-1 system goals); a done goal pays
 //   gold[realm] gold and xp x the XP to the next level to every party hero (fallen ones too), plus the goal's item if it has one.
 const NUDGE={on:true,
-  sys:{react:.05,brk:.05,guard:.05,surge:.05,tame:.05,cap:.25},
+  sys:{react:.04,brk:.04,guard:.04,surge:.04,tame:.04,cap:.20},
   autoKills:3,
-  goals:{on:true,max:4,gold:[40,80,130,180,240],xp:.05}};
+  goals:{on:true,max:4,gold:[40,80,130,180,240],xp:.03}};

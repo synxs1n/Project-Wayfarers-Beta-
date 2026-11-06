@@ -8,7 +8,7 @@
 // Usage (from tools/chrome): PWHTML=../../out/aurelis3.html node v070oa.js
 const {open,chk,done}=require('./pw');const {battle}=require('./v063lib');
 const PRE=x=>`localStorage.clear();localStorage.setItem('aurelis-meta-v1',JSON.stringify({cfg:Object.assign({speed:1,enc:'off',music:0,sfx:0,gfx:'low',hints:false,tips:true},${JSON.stringify(x||{})})}));`;
-const START=()=>{const A=__A;A.ACT.new();['oren','mira','lumen'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;A.render();clearInterval(__OB.OB.tick);};
+const START=()=>{const A=__A;A.ACT.new();['oren','mira','lumen'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;A.render();clearInterval(__OB.OB.tick);A.G.pcV=0;/* v0.9.6: a journey from before the realm unlocks, so every card can show (gating: v095na) */};
 // fire one tick now (no gap), return the card on screen
 const TICK=()=>{const O=__OB;O.OB.last=0;O.obTick();const d=document.getElementById('p2hint');return {cur:O.OB.cur,vis:document.querySelectorAll('#p2hint.show').length,txt:d&&d.classList.contains('show')?d.textContent:'',q:O.OB.q.slice()};};
 (async()=>{
@@ -48,7 +48,7 @@ const expect={camp:[false,true],comp:[false,true],charm:[false,true],bond:[false
 W.guild=await ev(async()=>{const O=__OB,T=()=>!!O.TIPMAP.guild.t();const b=T();O.facInit().bonus.guild=99999;await new Promise(q=>setTimeout(q,300));const a=T();O.facInit().bonus.guild=0;await new Promise(q=>setTimeout(q,300));return [b,a];});
 for(const k of Object.keys(expect))chk(`moment ${k}: off before, on at the moment${expect[k].length>2?', off when the window closes':''}`,JSON.stringify(W[k])===JSON.stringify(expect[k])||JSON.stringify(W[k]));
 // ---------- 1) moments: battle ----------
-await battle(H,{seed:5,heroes:5,foes:2});
+await battle(H,{seed:5,heroes:5,foes:2});await ev(()=>{__A.G.pcV=0;});
 const Bm=await ev(()=>{const A=__A,O=__OB,B=A.B,G=A.G,out={};const T=id=>!!O.TIPMAP[id].t();const e=B.en[0],h=B.cur;
   const c=(id,set,undo)=>{const before=T(id);set();const at=T(id);out[id]=[before,at];if(undo)undo();};
   c('weak',()=>{B.hitWeak=1;},()=>{B.hitWeak=0;});
@@ -128,7 +128,7 @@ chk('once camp has been made, that line goes',r===false||r);
 // ---------- 6) Settings, boss first turn, Daily Trial ----------
 r=await ev(()=>{const A=__A;A.V.modal={type:'menu',tab:'settings'};A.render();const h=document.getElementById('modal').innerHTML;A.V.modal=null;A.render();return {tips:/<b>Tips<\/b>/.test(h),reset:/data-act="tipsReset"/.test(h),hints:/<b>Hints<\/b>/.test(h)};});
 chk('Settings has Tips (on by default) and Reset tips, next to Hints',r.tips&&r.reset&&r.hints||JSON.stringify(r));
-await battle(H,{seed:9,heroes:3,boss:true,stage:1});
+await battle(H,{seed:9,heroes:3,boss:true,stage:1});await ev(()=>{__A.G.pcV=0;});
 r=await ev(()=>{const A=__A,O=__OB,B=A.B,e=B.en.find(x=>x.boss);delete O.obM().s.primed;e.primed={el:'fire',t:2};e.turns=0;O.OB.last=0;O.obTick();const a={hold:O.obBossHold(),cur:O.OB.cur};
   e.turns=1;B.pturns=2;O.OB.last=0;O.obTick();a.after=O.OB.cur;A.ACT.tipOk();return a;});
 chk('no card during a boss\'s first turn; it shows once the boss has acted',r.hold&&!r.cur&&r.after&&r.after!=='none'||JSON.stringify(r));

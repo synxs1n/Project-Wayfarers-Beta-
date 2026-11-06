@@ -10,7 +10,7 @@ What changed is the framing. The rewards screen counts from the auto level up: a
 
 ## 2. A bonus for using the systems
 `B.nz` (set at each battle start in prog2.js) counts, for the party: reactions set off (a wrapper on `doReaction`, hero side only; the battle helper's `B.nReact` is not needed), shields broken (`chipShield`), telegraphed hits taken while guarding (a Crushing Charge or a Cataclysm from battle4.js landing on a guarded hero, read in the `perform` wrapper), and a Momentum Surge reached (`B.b4mo.full`). Taming is added on the rewards screen when the player presses Tame it.
-Each system used pays `NUDGE.sys[k]` (5%) of the win's XP (each hero gets 5% of what they gained in it) and of its battle gold, once per battle, at most `NUDGE.sys.cap` (25%) per battle. The rewards screen lists one line per system under the rewards grid ("Reaction set off +5% XP and gold", ...) and a total ("the most one battle pays" at the cap). Auto wins earn them too; auto rarely triggers them. Bonus XP that crosses a level shows on the hero's row like any level up, and new skills join the list.
+Each system used pays `NUDGE.sys[k]` (4%) of the win's XP (each hero gets 4% of what they gained in it) and of its battle gold, once per battle, at most `NUDGE.sys.cap` (20%) per battle. The rewards screen lists one line per system under the rewards grid ("Reaction set off +4% XP and gold", ...) and a total ("the most one battle pays" at the cap). Auto wins earn them too; auto rarely triggers them. Bonus XP that crosses a level shows on the hero's row like any level up, and new skills join the list.
 
 ## 3. Auto unlocks per foe type
 An ordinary fight allows auto when every foe type in it is open: beaten by hand `NUDGE.autoKills` (3) times this journey, or scanned. A win counts as by hand when auto ran at most half the hero turns (the same rule as the reward). Kills count when the whole fight is won (arena waves together). Bosses, Calamities, Echoes and legend fights keep the old rule (win that fight by hand once) and elite, miniboss and challenge fights still never allow auto.
@@ -30,12 +30,26 @@ Basic cards show for everyone, as before. Expert cards (`x` in TIPS) wait until 
 A compact list in the world view, 2 to 4 goals: the next story step and up to three system goals.
 - Story: "Head out into <realm>", "Find the Scourge's lair in <realm>" (the Calamity's in the last realm), "Defeat the Scourge in the <dungeon>".
 - System goals, offered in this order when they make sense and the player has not done them: Hit a foe on its weak spot, Win a fight without auto (after an auto win), Set off 3 reactions (once the party knows a primer and a detonator), Scan a foe, Take a quest from the board, Switch in a Rearguard hero (with more than three heroes), Break a foe's shield (level 7 or the second realm), Tame a creature (level 8 or the second realm), Beat a bounty (level 5 with one posted), Guard against a big hit (after a telegraph was seen), Reach a Momentum Surge (after 8 battles), Pair a companion, Temper a piece of gear (when tempering is open), Take on a guild mission (after the first Scourge), Make camp in the field (third realm). Counted goals show progress ("Set off 3 reactions 2/3") and count from when they were shown.
-- Done: a toast ("Goal done: Set off 3 reactions. +40 gold, XP, Ether."), paid once: `NUDGE.goals.gold[realm]` gold (40 to 240), 5% of a level of XP for each party hero, and an item for some goals (Ether, Remedy, Potion, Camp Supplies). The next goal takes its place.
+- Done: a toast ("Goal done: Set off 3 reactions. +40 gold, XP, Ether."), paid once: `NUDGE.goals.gold[realm]` gold (40 to 240), 3% of a level of XP for each party hero, and an item for some goals (Ether, Remedy, Potion, Camp Supplies). The next goal takes its place.
 - Panel: top label "Next goals" folds to a small "Goals N" chip (remembered in `META.cfg.goalsMin`). It sits in a free corner of the view (bottom first, the save note lives top left), checked every 350 ms: never over the hero (the HD-2D hero box when that view is live, else the 2D camera), the stick, the A/B buttons, the minimap, the area banner, a dialogue line or a first realm hint card; if the full list does not fit it shows two goals, then the chip (which then opens What next?). Hidden in battle, with any window open and during dialogue. The save note keeps clear of it.
 - Guides > What next? starts with the same goals and their rewards.
 - Saved in the optional field `G.goals` {a: shown, d: done, c: counters, b: counter at the time a goal was shown}. A save without it marks every goal it already met as done without paying. Deterministic: no random calls; the list order decides.
 
-## Economy
+## On top of v0.9.6 (realm unlocks, Notice Board)
+- Goals and tip cards ask `pcUnlocked(system)` (pacing.js) before pointing at a system. On a new journey (G.pcV) in the first realm there is no reactions goal, no primed, reaction or Reactions in depth card, no tame or companion goal or card before taming opens, no temper goal or card before gear opens, no camp or guild mission goal or card before the third realm, no Echoforge card before the fourth, no bond card before the second. Older journeys (no G.pcV) are not gated, as in pacing.js. The reaction bonus cannot fire before reactions open (primers are plain hits).
+- Gating sits in the queue (`obEval`, `OB_PACE` in onboard.js) and in each goal's `ok`; a card's own moment is unchanged.
+- The quest, bounty and guild mission goals point to the Notice Board (Quests, Bounties, Guilds tabs); opening its Guilds tab counts as opening the guilds for the expert guild card.
+- v070oa and v070ob set `G.pcV=0` (a journey from before the realm unlocks) so every card can still show at its moment; the gating itself is checked in v095na and v095nb.
+- With v0.9.6's fewer random fights and field roamers, the sim shows about 52 fights per journey played by hand before their foe types open (of about 145). Hours stay under the 5.2 h line, so `NUDGE.autoKills` stays 3. The shares came down to 4% per system, a 20% cap and 3% of a level per goal to keep the top level near 42.
+
+| SEED, 16 runs | v0.9.6 main (NUDGE off) | with the nudges |
+|---|---|---|
+| 1 | 40.9 / 4.72 h / 153 fights | 42.1 / 4.76 h / 143 fights |
+| 2 | 41.0 / 4.90 h / 161 fights | 42.1 / 4.79 h / 145 fights |
+
+(At 5% / 25% / 5% it was 42.7 / 4.88 h and 42.1 / 4.74 h.)
+
+## Economy (v0.9.4 base, before the merge)
 `SEED=1 node tools/fullsim.js journey 8` (the time model now charges a fight whose foe types are not open yet as a manual fight, and pays it at the manual rate; `NUDGE.on=false` reproduces the old numbers exactly):
 
 | build | top level mean | range | hours typical | fights | by hand while auto was not open |
