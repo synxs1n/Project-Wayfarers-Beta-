@@ -251,7 +251,6 @@ function buildDungeon3(R,th,s){
   const hostFor=(lock,other)=>{const c2=cen(lock),hosts=chain.concat(openSide).filter(r=>r!==leverRoom||R()<.3).sort((a,b)=>(Math.abs(cen(a)[0]-c2[0])+Math.abs(cen(a)[1]-c2[1]))-(Math.abs(cen(b)[0]-c2[0])+Math.abs(cen(b)[1]-c2[1])));
     for(const h of hosts.slice(0,6)){const hc=cen(h);for(const hf of (R()<.5?[true,false]:[false,true])){const Q=lpath(hc[0],hc[1],c2[0],c2[1],hf);
       if(Q.some(([x,y])=>inR(x,y,boss,1)||inR(x,y,other,1)))continue;
-      if(Q.some(([x,y])=>D.get(x,y)==='.'&&!inR(x,y,h,0)&&!inR(x,y,lock,0)&&false))continue;
       let bar=null;for(let i=Q.length-1;i>=0;i--){const [x,y]=Q[i];if(!inR(x,y,lock,0)){bar=[x,y];break;}}
       if(!bar)continue;Q.forEach(([x,y])=>{if(D.get(x,y)==='#')D.put(x,y,'.');});return bar;}}
     return null;};

@@ -122,7 +122,6 @@ function unpackG(o){
 }
 const slotKey=s=>SAVEKEY+(s?'-s'+s:'');
 function saveGame(){if(!G||G.daily)return false;try{G.savedAt=Date.now();localStorage.setItem(slotKey(META.slot||0),JSON.stringify(packG()));return true;}catch(e){return false;}}
-function loadRaw(slot){try{const s=localStorage.getItem(slotKey(slot==null?(META.slot||0):slot));const o=s?JSON.parse(s):null;return o&&o.ver===3?o:null;}catch(e){return null;}}
 function newGame(ids,cycle,legacy){
   G={ver:3,wv:3,dunRev:2,run:newRun(cycle||0),stage:0,cleared:[false,false,false,false,false],gold:400,roster:{},party:[],
      inv:{potion:4,hipotion:0,ether:1,remedy:2,plume:1,elixir:0},mats:{},gath:{},gear:[],won:false,
@@ -189,11 +188,6 @@ function useItemField(id,c){
 // ----- forge -----
 function plusOf(id){const m=String(id).match(/\+(\d)$/);return m?+m[1]:0;}
 function baseIdOf(id){return String(id).replace(/\+\d$/,'');}
-function forgeCost(id){
-  const n=plusOf(id),g=gearOf(baseIdOf(id));if(n>=3)return null;
-  const mat=ZS(G.stage).mat,m={[mat]:n+1};if(n===2)m.core=1;
-  return {gold:Math.round(g.price*.6*(n+1)),m,next:baseIdOf(id)+'+'+(n+1)};
-}
 function hasMats(m){return Object.keys(m).every(k=>(G.mats[k]||0)>=m[k]);}
 function payMats(m){Object.keys(m).forEach(k=>{G.mats[k]-=m[k];});}
 function forge(where,ref){
@@ -274,7 +268,6 @@ function tryFx(t,k,ch,src){
   if(src&&src.S&&STS[k].bad){if(k==='stun'&&src.S.stun)c*=src.S.stun;else if(k==='bleed'&&src.S.bleed)c*=src.S.bleed;else if(src.S.status)c*=src.S.status;}
   if(RNG()<c)addSt(t,k,src);
 }
-function cleanse(t){let n=0;Object.keys(t.st).forEach(k=>{if(STS[k].bad){delete t.st[k];n++;}});return n;}
 
 // =================== DAMAGE ===================
 function skEls(sk){return !sk.el?[]:Array.isArray(sk.el)?sk.el:[sk.el];}
@@ -361,7 +354,6 @@ function encounterFoes(spec){
 function allParty(){return B.front.concat(B.back);}
 function WX(){return WEATHER[(B&&B.weather)||'clear']||WEATHER.clear;}
 function delayOf(u,cost){let d=cost*1000/(18+u.S.spd)*(u.S.tempo||1);if(B&&WX().spd)d/=WX().spd;if(has(u,'slow'))d*=1.5;if(has(u,'haste'))d*=.65;if(has(u,'root'))d*=1.25;return d;}
-function log(m){if(!B)return;B.log.push(m);if(B.log.length>60)B.log.shift();}
 function fx(u,txt,cls){const now=Date.now();u.fx=(u.fx||[]).filter(f=>now-f.t<4000);u.fx.push({t:now,txt,cls});if(/dmg/.test(cls))u.hitT=now;if(typeof onFx==='function')onFx(u,txt,cls);}
 function banner(txt,col){if(!B)return;B.banner={t:Date.now(),txt,col:col||'#ffe3a0'};}
 
@@ -608,7 +600,7 @@ function exec(sk,tgts){
   endTurn(a,cost);
 }
 // Beta v0.2.0: Limit Breaks open at level 15, and only once the party has reached the second town.
-const LIMIT_LV=15,PERSONAL_LV=20;
+const LIMIT_LV=15;
 function town2Reached(){return !!(G&&(G.daily||G.stage>=1||(G.been&&G.been.t1)||(G.cleared&&G.cleared[0])));}
 // Beta v0.3.0: level is the only gate. Limit I from 15, Limit II from 30.
 const LIMIT2_LV=30;
@@ -642,31 +634,6 @@ function enemyTurn(u){
   const bt=B;const tk=setTimeout(()=>{if(B===bt&&!B.over&&B.cur===u&&u.__wd===tk){wdForce(u,'stall: no action in '+WD_MS+'ms');}},WD_MS);u.__wd=tk;
   try{enemyTurn0(u);}catch(e){wdForce(u,'error: '+(e&&e.message||e));}
   finally{clearTimeout(tk);u.__wd=null;}
-}
-function enemyTurn0(u){
-  if(!B||B.over||u.hp<=0)return;
-  const live=B.front.filter(c=>c.hp>0);
-  if(!live.length){advance();return;}
-  u.turns++;
-  if(u.boss&&!u.enraged&&u.hp<u.S.mhp*.3){u.enraged=true;u.S.atk*=1.15;u.S.mag*=1.15;log(`${u.name} flies into a rage!`);fx(u,'Enraged','stat bad');}
-  let sk=ATTACK;
-  const buffs=u.sk.filter(s=>s.k==='buff'&&!(s.fx||[]).every(([k])=>has(u,k)));
-  const dmg=u.sk.filter(s=>s.k!=='buff');
-  if(buffs.length&&RNG()<.22)sk=buffs[0];
-  else if(u.boss&&u.turns%3===0&&dmg.some(s=>s.t==='all'))sk=dmg.find(s=>s.t==='all');
-  else if(dmg.length&&RNG()<.55)sk=pick(dmg);
-  let tg;
-  if(sk.t==='self')tg=[u];
-  else if(sk.t==='all')tg=live;
-  else{const taunt=live.filter(c=>has(c,'taunt'));
-    if(taunt.length)tg=[taunt[0]];
-    else{const low=live.slice().sort((a,b)=>a.hp/a.S.mhp-b.hp/b.S.mhp)[0];
-      const packed=!u.boss&&!u.elite&&!(G&&G.daily)&&(B.stage||0)>=(PACK.fromStage||0)&&B.en.filter(e=>e.hp>0&&!e.boss&&!e.elite).length>1;
-      if(packed&&B.packT&&B.packT.hp>0&&live.includes(B.packT)&&RNG()<PACK.focus)tg=[B.packT];
-      else{tg=[RNG()<.3?low:pick(live)];if(packed)B.packT=tg[0];}}}
-  if(sk.hits===1&&u.multi>1&&sk.t==='one')sk=Object.assign({},sk,{hits:u.multi});
-  perform(u,sk,tg);
-  endTurn(u,1);
 }
 
 // ----- player commands -----
@@ -939,7 +906,6 @@ function bondLv(a,b){const p=G.bonds[bondKey(a,b)]||0;return p>=BOND_LV[2]?3:p>=
 function chooseLegacy(id){if(!META.legacy.includes(id))META.legacy.push(id);META.cycles=(META.cycles||0)+1;saveMeta();}
 // ----- multiplayer groundwork -----
 // A Hero Seal is a portable, versioned snapshot of one hero. A future co-op lobby takes two seals per player
-// (3 players x 2 heroes), rebuilds them with sealToChar, and runs the battle on a shared seed so every client agrees.
+// (3 players x 2 heroes), rebuilds them and runs the battle on a shared seed (the unused sealToChar reader was removed in the cleanup pass).
 function playerUid(){if(!META.uid){META.uid=Math.random().toString(36).slice(2,10);saveMeta();}return META.uid;}
 function heroSeal(c){const o={v:1,id:c.id,lv:c.lv,alloc:c.alloc,eq:c.eq,vet:c.vet||0,owner:playerUid()};return 'AWS1.'+btoa(JSON.stringify(o));}
-function sealToChar(s){try{const o=JSON.parse(atob(String(s).replace(/^AWS1\./,'')));if(!TPL[o.id])return null;const c=newChar(o.id,o.lv,0);c.alloc=o.alloc||{};c.pts=0;c.eq=o.eq;c.vet=o.vet||0;c.owner=o.owner;c.S=calcStats(c);c.hp=c.S.mhp;c.mp=c.S.mmp;return c;}catch(e){return null;}}

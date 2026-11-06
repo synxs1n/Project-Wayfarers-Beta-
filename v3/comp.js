@@ -17,11 +17,11 @@ function migrateCompanions(g){if(g.compV)return;const back=[],ids={};
   const free=g.party.slice();(g.tamed||[]).forEach(o=>{if(o.with&&g.roster[o.with])return;const h=free.find(id=>!(g.tamed||[]).some(x=>x.with===id));o.with=h||null;});g.compV=1;}
 {const up0=unpackG;unpackG=function(o){const g=up0.apply(this,arguments);try{migrateCompanions(g);}catch(e){}return g;};}
 // taming no longer adds a party member
-tameElite=function(t){const m=MON[t.mon]||guardianDef(t.mon);if(!m)return null;
+function tameElite(t){const m=MON[t.mon]||guardianDef(t.mon);if(!m)return null;
   const o={id:'tm'+Date.now().toString(36)+Math.floor(Math.random()*1296).toString(36),mon:t.mon,name:t.bb?t.name:t.name.replace(m.n+' ',''),cls:tameClass(m),trait:tameTrait(m),bb:t.bb?1:0,scourge:t.scourge?1:0,with:null};
   if(o.name.startsWith('the '))o.name=m.n+' '+o.name;registerTamed(o);G.tamed.push(o);G.compV=1;
   const free=partyChars().find(c=>!compOf(c));if(free){o.with=free.id;}saveGame();
-  setTimeout(()=>toast(`${o.name} is now a Companion${o.with?' of '+G.roster[o.with].name:''}. Manage it in Menu > Companions.`),400);return o;};
+  setTimeout(()=>toast(`${o.name} is now a Companion${o.with?' of '+G.roster[o.with].name:''}. Manage it in Menu > Companions.`),400);return o;}
 // stat bonus for the paired hero (not in the Daily Trial, which has no companions)
 {const cs0=calcStats;calcStats=function(c){const S=cs0.apply(this,arguments);try{if(c&&c.side==='p'&&G&&!G.daily&&!c.isComp){const o=compOf(c);if(o){const k=compBonus(o),d=compDef(o);
   S.mhp=Math.round(S.mhp*(1+k));S.atk*=1+k;S.mag*=1+k;S.def*=1+k;S.res*=1+k;const el=d&&d.el&&d.el[0];if(el)S.elBoost[el]=(S.elBoost[el]||0)+.1;S.comp=o.id;applyCompPerk(S,o);}}}catch(e){}return S;};}

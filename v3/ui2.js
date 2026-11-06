@@ -1,20 +1,6 @@
 // =================== UI: v4 additions ===================
 function townS(){return WS.m&&WS.m.kind==='town'?WS.m.s:-1;}
 const RELIT_STOCK=[['c_str',420],['c_int',420],['c_vit',420],['c_spi',420],['c_agi',420],['c_dex',480],['c_luk',480],['elixir',650],['plume',220]];
-function vPersonal(){
-  const po=c=>{const q=G.personal[c.id];return !q||q.state==='open'?(personalEligible(c)?2:3):q.state==='active'?(q.ready||q.won?0:1):4;},list=Object.values(G.roster).filter(c=>!TPL[c.id].mon).sort((a,b)=>po(a)-po(b)||b.lv-a.lv);
-  return `<p>Every wayfarer has unfinished business. At level ${PERSONAL_LV}, once you have reached the second town, a hero's personal quest opens: accept it and a rival roams the current realm's field. Bring that hero in your six to face it and win their signature item: a weapon, armor or accessory bound to that hero, which changes how they look.</p>
-  <div class="rows">${list.map(c=>{const q=G.personal[c.id],t=TPL[c.id],w=gearOf(sigGid(c.id))||gearOf('u_'+c.id);
-    const st=!personalEligible(c)&&(!q||q.state==='open')?`<span class="m">${personalLockText(c)}</span>`:!q||q.state==='open'?`<button class="btn sm gold" data-act="personal" data-arg="${c.id}">Accept</button>`:q.state==='active'?'<span class="m">Rival roaming</span>':'<span class="m up">Done</span>';
-    return `<div class="row ${personalEligible(c)||(q&&q.state!=='open')?'':'lock'}">${port(c.id)}<div class="grow"><b>${esc(t.n)}: ${esc(w.n)}</b><small>${q&&q.text?esc(q.text)+(q.state==='active'?` It prowls ${esc(ZS(q.stage).n)}.`:''):esc(gearDesc(w))}</small></div>${st}</div>`;}).join('')}</div>`;
-}
-function mSlots(m){
-  const rows=[0,1,2].map(s=>{const o=slotSummary(s);
-    const info=o?`Stage ${o.stage+1}, ${o.cleared} of 5 beacons relit${o.cycle?', NG+'+o.cycle:''}. Party level ${o.lv}, ${fmt(o.gold)} gold, ${o.battles} battles.${o.savedAt?' Saved '+new Date(o.savedAt).toLocaleString():''}`:'Empty';
-    const btn=m.mode==='load'?`<button class="btn sm gold" data-act="slotLoad" data-arg="${s}" ${o?'':'disabled'}>Load</button>`:`<button class="btn sm ${o?'':'gold'}" data-act="slotNew" data-arg="${s}">${o?'Overwrite':'Start here'}</button>`;
-    return `<div class="row"><div class="grow"><b>Slot ${s+1}${(META.slot||0)===s?' <span class="cyc">last used</span>':''}</b><small>${info}</small>${o?`<div class="els">${o.party.slice(0,6).map(id=>TPL[id]?port(id,'sm'):'').join('')}</div>`:''}</div>${btn}${o?`<button class="btn sm" data-act="slotDel" data-arg="${s}" aria-label="Delete slot ${s+1}">✕</button>`:''}</div>`;}).join('');
-  return box(m.mode==='load'?'Continue a journey':'Choose a save slot',`<div class="rows">${rows}</div>`,m.mode==='new'?'<button class="btn" data-act="toTitle">Back</button>':'');
-}
 function mExport(){const code=exportSave();return box('Export save',`<p class="note">Copy this code somewhere safe. Paste it into Import save on any device to carry this journey over.</p><textarea id="expta" readonly rows="6">${esc(code)}</textarea>`,'<button class="btn gold" data-act="copyExport">Copy</button><button class="btn" data-act="closeModal">Close</button>');}
 function mImport(){return box('Import save',`<p class="note">Paste a save code. It loads into slot ${(META.slot||0)+1}${slotSummary(META.slot||0)?' and replaces what is there':''}.</p><textarea id="impta" rows="6" placeholder="AWSAVE1...."></textarea>`,'<button class="btn gold" data-act="doImport">Import</button><button class="btn" data-act="closeModal">Cancel</button>');}
 // ----- daily trial -----
@@ -63,13 +49,8 @@ async function lbPost(score,turns,kos){
 // ----- actions -----
 Object.assign(ACT,{
   pause(){if(V.screen==='battle'){V.modal={type:'pause'};render();}},
-  slotLoad(s){META.slot=+s;saveMeta();const o=loadRaw(+s);if(!o)return;try{G=unpackG(o);}catch(e){toast('That save could not be read.');return;}enterWorldFromSave();},
-  slotNew(s){META.slot=+s;saveMeta();V.modal=null;render();},
-  slotDel(s){try{localStorage.removeItem(slotKey(+s));}catch(e){}toast(`Slot ${+s+1} cleared.`);render();},
   exportOpen(){V.modal={type:'export'};render();},
-  importOpen(){V.modal={type:'import'};render();},
   copyExport(){const t=$('expta');if(!t)return;t.select();try{navigator.clipboard.writeText(t.value).then(()=>toast('Save code copied.'),()=>toast('Select the text and copy it.'));}catch(e){toast('Select the text and copy it.');}},
-  doImport(){const t=$('impta');const g=t&&importSave(t.value);if(!g){toast('That code did not work. Check it was copied whole.');return;}G=g;saveGame();toast('Journey imported.');enterWorldFromSave();},
   daily(){V.lb=null;V.modal={type:'dailyIntro'};render();},
   dailyGo(){V.lbPosted=false;V.lbMsg='';V.modal=null;V.auto=false;if(!startDaily())toast('Could not start the trial.');},
   async postScore(){const m=V.modal;if(!m||V.lbPosted)return;V.lbMsg='Posting...';render();V.lbMsg=await lbPost(m.score,m.turns,m.kos);V.lbPosted=/posted|still/i.test(V.lbMsg);V.lb=null;render();},
@@ -189,8 +170,6 @@ function recipeOrder(list){const A=list.map(r=>({r,ok:recipeReady(r),g:recipeGai
 // ===== Beta v0.4.1 6.2: shops and the smithy list the rarest first, with filters that remember =====
 const SHOPF=()=>{const o=META.cfg.shopF=META.cfg.shopF||{};return Object.assign({sort:'rarity',show:'all'},o);};
 function shopFSet(k,v){META.cfg.shopF=Object.assign(SHOPF(),{[k]:v});try{saveMeta();}catch(e){}}
-function shopFBar(){const f=SHOPF(),ch=(k,v,t)=>`<button class="chip ${f[k]===v?'on':''}" data-act="shopF" data-arg="${k}:${v}">${t}</button>`;
-  return `<div class="lfbar shopf"><div class="chips"><small class="lbl">Sort</small>${ch('sort','rarity','Rarest first')}${ch('sort','ready','Ready first')}</div><div class="chips"><small class="lbl">Show</small>${ch('show','all','All')}${ch('show','usable','Fits my party')}${ch('show','afford','Can afford or craft')}</div></div>`;}
 const rarityOf=o=>{const g=o.id?gearOf(o.id):null;return g?gTierIdx(g):(o.item?iTierIdx(o.item):0);};
 function shopSortIds(ids){const f=SHOPF(),P=G.party.map(h=>G.roster[h]).filter(Boolean);let a=ids.slice();
   if(f.show==='usable')a=a.filter(id=>P.some(c=>canEquip(c,id)));
@@ -201,45 +180,10 @@ function recipeList(list){const f=SHOPF(),P=G.party.map(h=>G.roster[h]).filter(B
   if(f.show==='afford')a=a.filter(r=>recipeReady(r));
   if(f.sort==='ready')return recipeOrder(a);
   return a.sort((x,y)=>rarityOf(y)-rarityOf(x)||String(recipeName(x)).localeCompare(String(recipeName(y))));}
-function vRecipes(cat,cats,blurb){
-  const all=RECIPES.filter(r=>r.cat===cat),open=all.filter(recipeOpen),locked=all.length-open.length;
-  return `<div class="chips">${RCAT.filter(([k])=>cats.includes(k)).map(([k,n])=>`<button class="chip ${cat===k?'on':''}" data-act="wcat" data-arg="${k}">${n}</button>`).join('')}</div>
-      <p class="note">${blurb}</p>${shopFBar()}
-      <div class="rows">${recipeList(open).map(r=>{const mm=recipeMats(r),ok=recipeReady(r),have=r.item?`Carrying ${G.inv[r.item]||0}.`:`Owned spare: ${G.gear.filter(x=>x===r.id).length}.`;
-        const rg=r.id?gearOf(r.id):null,rt=rg?gTierIdx(rg):iTierIdx(r.item);
-        return `<div class="row rec tr ${ok?'ready':''}" style="${tierVars(rt,rg)}">${rg?gearIcon(r.id):''}<div class="grow"><b>${recipeName(r)}</b> ${rg?tierChip(rg):itemChip(r.item)}${rg?`<small>${vsParty(r.id)}</small>`:''}<small>${recipeDesc(r)} ${have}</small>${r.id?bestTag(r.id)+cmpPanel(r.id):''}<div class="mats">${matChips(mm)}${r.g?`<span class="matc gold ${G.gold>=r.g?'':'short'}"><i></i><b class="nums">${fmt(r.g)}</b> gold</span>`:''}</div></div><button class="btn sm ${ok?'gold':''}" data-act="craftR" data-arg="${RECIPES.indexOf(r)}" ${ok?'':'disabled'}>${r.item?'Craft':'Forge'}</button></div>`;}).join('')}</div>
-      ${locked?`<p class="note">${locked} more recipe${locked>1?'s unlock':' unlocks'} here as you push into later realms.</p>`:''}`;
-}
 function matBuyRow(id,p,left){const lim=left==null?9:left;return `<div class="row"><div class="grow"><b><span class="dot" style="--mc:${MAT_OF[id].c}"></span>${MATS[id]}</b><small class="nums">${MAT_OF[id].n}. You have ${G.mats[id]||0}.${left!=null?` ${left} left until you next rest at an inn.`:''}</small></div><div class="btnrow tight"><button class="btn sm" data-act="${left!=null?'buyPart':'buyMat'}" data-arg="${id},1" ${G.gold>=p&&lim>=1?'':'disabled'}><span class="nums">${p}</span></button>${left==null?`<button class="btn sm" data-act="buyMat" data-arg="${id},5" ${G.gold>=p*5?'':'disabled'}>x5 <span class="nums">${p*5}</span></button>`:''}</div></div>`;}
 function matSellRows(kinds){const ids=Object.keys(MATS).filter(id=>(G.mats[id]||0)>0&&kinds.includes(MAT_OF[id].k));
   return ids.map(id=>`<div class="row"><div class="grow"><b><span class="dot" style="--mc:${MAT_OF[id].c}"></span>${MATS[id]}</b><small class="nums">You have ${G.mats[id]}. ${matSell(id)} gold each.</small></div><div class="btnrow tight"><button class="btn sm" data-act="sellMat" data-arg="${id},1">Sell 1</button>${G.mats[id]>=5?`<button class="btn sm" data-act="sellMat" data-arg="${id},5">Sell 5</button>`:''}</div></div>`).join('')||'<p class="note">Nothing of that kind in your pouch.</p>';}
-function vSmithMats(){
-  return `<h4>Ore and wood</h4><p class="note">Stock grows as you reach later realms.</p><div class="rows">${smithMatStock().map(id=>matBuyRow(id,MAT_PRICE[id])).join('')}</div>
-    <h4>Monster parts</h4><p class="note">The smith keeps a few parts behind the counter, at a steep price and only ${PART_STOCK} of each per inn rest. Hunting is still the way to get them in bulk.</p><div class="rows">${Object.keys(PART_PRICE).map(id=>matBuyRow(id,partPrice(id),partLeft(id))).join('')}</div>
-    <h4>Sell</h4><div class="rows">${matSellRows(['ore','wood','part','relic'])}</div>`;
-}
-function mWorkshop(m){
-  // Beta v0.1.0: the green-flask house is Alchemy (internal key stays 'workshop').
-  const tab=m.tab||'shop',cat=ALCH_CATS.includes(m.cat)?m.cat:'potion';
-  const T=[['shop','Shop'],['craft','Brew &amp; craft'],['herbs','Herbs'],['sell','Sell'],['pouch','Pouch']];if(G.cleared[townS()])T.splice(1,0,['relit','Festival wares']);let body='';
-  if(tab==='shop'){
-    const it=alchStock().slice().sort((a,b)=>iTierIdx(b)-iTierIdx(a)||ITEMS[b].price-ITEMS[a].price).map(id=>{const o=ITEMS[id];return `<div class="row tr" style="${tierVars(iTierIdx(id))}"><div><b>${itemIcon(id)} ${o.n}</b> ${itemChip(id)}<small>${o.d}. Carrying ${G.inv[id]||0}.</small></div><button class="btn sm" data-act="buyItem" data-arg="${id}" ${G.gold>=o.price&&(G.inv[id]||0)<invCap()?'':'disabled'}>${o.price}</button></div>`;}).join('');
-    const ch=shopSortIds(shopStock('charms')).map(id=>{const g=GEAR[id];return `<div class="row shoprow tr" style="${tierVars(gTierIdx(g),g)}">${gearIcon(id)}<div class="grow"><b>${g.n}</b> ${tierChip(g)}<small>${vsParty(id)}</small><small>${gearDesc(g)}. Spares owned: ${G.gear.filter(x=>x===id).length}.</small>${bestTag(id)}${cmpPanel(id)}</div><button class="btn sm" data-act="buyGear" data-arg="${id}" ${G.gold>=g.price?'':'disabled'}>${g.price}</button></div>`;}).join('');
-    body=`<h4>Potions, tonics and travel gear</h4><div class="rows">${it}</div><h4>Charms</h4><div class="rows">${ch}</div>`;
-  }else if(tab==='craft'){
-    body=vRecipes(cat,ALCH_CATS,cat==='potion'?'Brew draughts from herbs you pick in the fields. Cheaper than buying, and some brews are Alchemy-only.':cat==='charm'?'Charms need monster parts and your realm\'s relic.':'Stitch your own tent from logs and hide.');
-  }else if(tab==='relit'){
-    body=`<p class="note">The beacon is lit and the alchemist is in a generous mood: rare stock, only in relit towns.</p><div class="rows">`+RELIT_STOCK.map(([id,price])=>{const isItem=!!ITEMS[id],n=isItem?ITEMS[id].n:gearOf(id).n,d=isItem?ITEMS[id].d:gearDesc(id);return `<div class="row"><div><b>${n}</b><small>${d}${isItem?'. Carrying '+(G.inv[id]||0):''}</small></div><button class="btn sm" data-act="buyRelit" data-arg="${id}" ${G.gold>=price?'':'disabled'}>${fmt(price)}</button></div>`;}).join('')+'</div>';
-  }else if(tab==='herbs'){
-    body=`<p class="note">Fresh herbs for brewing. Stock grows as you reach later realms.</p><div class="rows">${herbStock().map(id=>matBuyRow(id,MAT_PRICE[id])).join('')}</div><h4>Sell herbs</h4><div class="rows">${matSellRows(['herb'])}</div>`;
-  }else if(tab==='sell'){
-    const cnt={};G.gear.forEach(g=>{const o=gearOf(g);if(o&&o.slot==='c')cnt[g]=(cnt[g]||0)+1;});
-    body=`<div class="rows">${Object.keys(cnt).map(id=>{const g=gearOf(id);return `<div class="row tr" style="${tierVars(gTierIdx(g),g)}">${gearIcon(id)}<div class="grow"><b>${g.n}</b> ${tierChip(g)} x${cnt[id]}<small>Charm. ${gearDesc(g)}</small></div><button class="btn sm" data-act="sell" data-arg="${id}">Sell ${sellVal(g)}</button></div>`;}).join('')||'<p class="note">No spare charms. Weapons and armor sell at the Smithy.</p>'}</div><h4>Herbs</h4><div class="rows">${matSellRows(['herb'])}</div>`;
-  }else body=vPouch();
-  return box('Alchemy',tabs(T,tab,'tab')+body,'<button class="btn" data-act="closeModal">Leave</button>',true);
-}
 Object.assign(ACT,{
-  wcat(k){V.modal.cat=k;render();},
   shopF(a){const [k,v]=a.split(':');shopFSet(k,v);render();},
   craftR(i){const r=RECIPES[+i];if(craft(r)){toast((r.item?'Crafted: ':'Forged: ')+recipeName(r)+(r.item?'':'. Equip it from the menu.'));sfx('chest');}else sfx('deny');render();},
   buyMat(a){const [id,n]=a.split(',');if(buyMat(id,+n)){sfx('buy');}else sfx('deny');render();},

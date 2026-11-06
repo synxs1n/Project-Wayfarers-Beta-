@@ -47,9 +47,9 @@ function superOk(k,ph){const W=WEATHER[k];return !!W&&(!W.when||W.when===ph);}
 // the weather table for a realm at a given phase: base shares with the rare skies taken out of the clear share
 function wxList(theme,ph){const base=(WX_TABLE[theme]||[['clear',1]]).map(x=>x.slice()),sup=(SUPER_TABLE[theme]||[]).filter(x=>superOk(x[0],ph)),cut=sup.reduce((a,b)=>a+b[1],0);
   const c=base.find(x=>x[0]==='clear');if(c)c[1]-=cut;return base.concat(sup.map(x=>x.slice()));}
-rollWeather=function(s,avoid){const L=wxList(ZS(s).theme,clockPhase());const tot=L.reduce((a,b)=>a+b[1],0);let w='clear';
+function rollWeather(s,avoid){const L=wxList(ZS(s).theme,clockPhase());const tot=L.reduce((a,b)=>a+b[1],0);let w='clear';
   for(let k=0;k<4;k++){let r=Math.random()*tot;for(const [n,c] of L){if((r-=c)<0){w=n;break;}}if(w!==avoid||w==='clear')break;}
-  G.weather[s]=w;G.wx=G.wx||{};G.wx[s]=WX_MIN+Math.floor(Math.random()*(WX_MAX-WX_MIN));return w;};
+  G.weather[s]=w;G.wx=G.wx||{};G.wx[s]=WX_MIN+Math.floor(Math.random()*(WX_MAX-WX_MIN));return w;}
 function superGuide(){const ph=k=>WEATHER[k].when?` <i>(${WEATHER[k].when} only)</i>`:'';
   const rows=Object.keys(WEATHER).filter(k=>WEATHER[k].sup&&!WEATHER[k].surge).concat(['surge_fire']).map(k=>{const W=WEATHER[k];return `<div class="row"><div><b>${W.i} ${k==='surge_fire'?'Elemental Surge (one per realm)':W.n}</b>${k==='surge_fire'?'':ph(k)}<small>${k==='surge_fire'?'Each realm has its own: Verdant (Meadow, Earth), Tidal (Coast, Water), Ember (Caves, Fire), Frost (Frostmere, Ice), Gust (Heights, Wind), Void (Void, Shadow). That element +30%, its opposite -10%, +5% XP.':W.d}</small></div></div>`;}).join('');
   return `<h4>Rare skies</h4><p class="note">A few percent of weather rolls turn into one of these (clear skies stay the majority). They last as long as any weather, bring a strong visual, and every effect cuts both ways, so foes feel them too. Some only come at night or by day, and they end when that part of the day does. The Daily Trial never uses them.</p><div class="rows compact">${rows}</div>`;}

@@ -32,7 +32,6 @@ function cwWin(hero,kind){const t=TPL[hero],C=CW_CLS[t.cls]||CW_CLS.warrior,tr=C
   if(kind==='duel')return `${t.n} nods, ${tr}. "${C.win}."`;
   if(kind==='thanks')return `${t.n}, ${tr}: "${C.ask}."`;
   return C.win;}
-function cwDecline(hero){const t=TPL[hero],C=CW_CLS[t.cls]||CW_CLS.warrior;return `${t.n}, ${C.tic}: "${C.decline}."`;}
 // hook into the event, the leave line, the duel result and the thanks lines
 {const cs0=ceStart;ceStart=function(m,hero,type){const r=cs0.apply(this,arguments);try{const ev=V.modal&&V.modal.type==='cev'&&V.modal.ev;if(ev&&ev.hero===hero){const th=cwTheme(m),cave=!!m.cave,intro=cwIntro(hero,th,cave);
   if(ev.type==='help'&&ev.mode==='potion')ev.text=`${intro}, sits against a rock, pale, pressing a rag to a bad cut. "${cwAsk(hero,'potion')}? I cannot pay you, but ${CW_CLS[TPL[hero].cls].ask.charAt(0).toLowerCase()+CW_CLS[TPL[hero].cls].ask.slice(1)}."`;

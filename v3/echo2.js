@@ -23,8 +23,7 @@ function mEchoAsk(m){const s=m.s,k=bossKeyFor(s),d=guardianDef(k),lv=storyEchoLv
 // ----- which Echoes answer (the Echo Sanctum, sanctum.js, is the place to fight them) -----
 function riftKeys(){if(!G)return [];const own=[0,1,2,3,4].filter(s=>(G.echoStory||{})[s]).map(s=>bossKeyFor(s));return META.echoRift?echoKeys():own;}
 Object.assign(ACT,{
-  echoStory(s){s=+s;V.modal=null;if(!startBattle({stage:s,kind:'storyEcho',key:bossKeyFor(s)})){toast('Your party needs rest first.');render();}},
-  riftFight(k){if(!riftKeys().includes(k))return;V.modal=null;if(!startBattle(riftSpec(k))){toast('Your party needs rest first.');render();}}});
+  echoStory(s){s=+s;V.modal=null;if(!startBattle({stage:s,kind:'storyEcho',key:bossKeyFor(s)})){toast('Your party needs rest first.');render();}}});
 // ----- rewards: shards, essence, more drops than a normal boss; the account unlock -----
 {const w0=win;win=function(){const sp=B&&B.spec;const r=w0.apply(this,arguments);try{if(!sp||G.daily)return r;const story=sp.kind==='storyEcho',rift=sp.kind==='echoBoss'&&sp.rift;if(!story&&!rift)return r;
   const k=sp.key,info=V.modal&&V.modal.info||{},add=(id,n)=>{G.mats[id]=(G.mats[id]||0)+n;info.mats=info.mats||{};info.mats[id]=(info.mats[id]||0)+n;};

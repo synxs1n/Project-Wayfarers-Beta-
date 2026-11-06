@@ -181,11 +181,11 @@ function m3Board(m){const sec=m.sec||'all',st=q=>q.state==='active'?(questReady(
     return `<div class="row"><div class="grow"><b>${esc(q.title)}</b><small>${esc(q.desc)}</small><small>${q.state==='active'?prog+'. ':''}Reward: ${rew}</small></div>${btn}</div>`;}).join('');
   return box(m3Head('board'),`<p class="note">Notices pinned three deep. Accept one, do the deed, then come back to any quest board to claim the reward.</p>${m3Nav('board',m)}${bar}${m3Rows(rows,{ready:'Nothing is ready to hand in yet.',active:'No quests under way.',open:'No new notices. More go up as your journey goes on.',done:'Nothing finished yet.'}[sec]||'No notices yet.')}`);}
 // ----- hooks: the shops go through the normaliser first -----
-mShop=function(m){m3Norm(m);return m3Smithy(m);};
-mWorkshop=function(m){m3Norm(m);return m3Alchemy(m);};
-mTavern=function(){const m=V.modal&&V.modal.type==='tavern'?m3Norm(V.modal):{type:'tavern',tab:'hire',sec:'all'};return m3Tavern(m);};
-mGuild=function(m){m3Norm(m);return m3Guild(m);};
-mBoard=function(){const m=V.modal&&V.modal.type==='board'?m3Norm(V.modal):{type:'board',sec:'all'};return m3Board(m);};
+function mShop(m){m3Norm(m);return m3Smithy(m);}
+function mWorkshop(m){m3Norm(m);return m3Alchemy(m);}
+function mTavern(){const m=V.modal&&V.modal.type==='tavern'?m3Norm(V.modal):{type:'tavern',tab:'hire',sec:'all'};return m3Tavern(m);}
+function mGuild(m){m3Norm(m);return m3Guild(m);}
+function mBoard(){const m=V.modal&&V.modal.type==='board'?m3Norm(V.modal):{type:'board',sec:'all'};return m3Board(m);}
 Object.assign(ACT,{
   sTab(k){const m=V.modal;if(!m)return;m.tab=k;m.sec='all';m._t=k;m.nat=null;V.cmp=null;V.swapSel=null;render();m3Top();},
   sSec(k){const m=V.modal;if(!m)return;m.sec=k;V.cmp=null;render();m3Top();},

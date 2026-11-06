@@ -12,7 +12,6 @@ function mergeBest(a,b){a=renameBest(a);b=renameBest(b);const out={};new Set(Obj
 function mergeCodex(a,b){const out={};new Set(Object.keys(a||{}).concat(Object.keys(b||{}))).forEach(k=>{const x=(a||{})[k]||{},y=(b||{})[k]||{};
   const sx=x.seen||0,sy=y.seen||0;out[k]={seen:sx&&sy?Math.min(sx,sy):sx||sy,rec:Math.max(x.rec||0,y.rec||0),lv:Math.max(x.lv||0,y.lv||0)};});return out;}
 function profileOf(meta){return {v:1,best:meta.best||{},codex:meta.codex||{},flags:{archivist:meta.archivist?1:0,legends:Object.assign({},meta.legends||{}),fac:Object.assign({},meta.facBest||{})}};}
-const stable=o=>JSON.stringify(o,Object.keys(o).sort());
 function sameProfile(a,b){try{return JSON.stringify(normP(a))===JSON.stringify(normP(b));}catch(e){return false;}}
 function normP(p){const s=o=>{if(!o||typeof o!=='object')return o;const r={};Object.keys(o).sort().forEach(k=>{r[k]=s(o[k]);});return r;};return s({best:p.best||{},codex:p.codex||{},flags:p.flags||{}});}
 function applyRemote(r){

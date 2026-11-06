@@ -167,7 +167,7 @@ function dlBattleWho(spec){if(!spec)return null;if(spec.ce&&spec.ce.mode==='duel
 // ----- 1. the road duel: the opening, the bond reply, the decline -----
 {const cs1=ceStart;ceStart=function(m,hero,type){const r=cs1.apply(this,arguments);try{const ev=V.modal&&V.modal.type==='cev'&&V.modal.ev;
   if(ev&&ev.hero===hero&&ev.type==='duel'){const intro=cwIntro(hero,cwTheme(m),!!m.cave);ev.text=`${intro}, steps into your path and sizes you up. "${dlLine(hero,'o')}"`;ev.reply=dlReply(hero);ev.dl=1;render();}}catch(e){}return r;};}
-cwDecline=function(hero){return dlQuote(hero,'d');};
+function cwDecline(hero){return dlQuote(hero,'d');}
 {const vm1=vModal;vModal=function(m){let h=vm1.apply(this,arguments);try{
   if(m&&m.type==='cev'&&m.ev&&m.ev.reply&&typeof h==='string'){const R=m.ev.reply;h=h.replace('</p></div>',`</p></div><p class="dl-rep"><b>${esc(dlName(R.by))}:</b> "${esc(R.text)}"</p>`);}
   else if(m&&m.type==='lose'&&typeof h==='string'&&typeof B!=='undefined'&&B){const w=dlBattleWho(B.spec);if(w)h=h.replace('</p>','</p>'+dlSay(w.id,'l'));}

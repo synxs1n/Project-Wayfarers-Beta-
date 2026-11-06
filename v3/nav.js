@@ -35,8 +35,8 @@ function modalBack(m){
 }
 // popups opened from another popup remember where they came from
 ['settings','slots'].forEach(k=>{const f=ACT[k];if(!f)return;ACT[k]=function(){const prev=V.modal;const r=f.apply(this,arguments);if(V.modal&&prev&&prev!==V.modal&&prev.type!==V.modal.type)V.modal.from=prev;return r;};});
-{const wc0=withClose;withClose=function(h){const m=V.modal;const back=modalBack(m);
-  return h.replace(/<div class="panel([^"]*)">/,(x)=>x+`<div class="mnav">${back?'<button class="mback" data-act="xBack" aria-label="Back" title="Back (Esc)">←</button>':''}<button class="mclose" data-act="xClose" aria-label="Close everything" title="Close">✕</button></div>`);};}
+function withClose(h){const m=V.modal;const back=modalBack(m);
+  return h.replace(/<div class="panel([^"]*)">/,(x)=>x+`<div class="mnav">${back?'<button class="mback" data-act="xBack" aria-label="Back" title="Back (Esc)">←</button>':''}<button class="mclose" data-act="xClose" aria-label="Close everything" title="Close">✕</button></div>`);}
 {const xc0=ACT.xClose;ACT.xClose=function(){const m=V.modal;V.swapSel=null;if(m&&m.type==='talk'){V.modal=null;render();return;}return xc0.apply(this,arguments);};}
 ACT.xBack=function(){const f=modalBack(V.modal);if(!f)return ACT.xClose();V.swapSel=null;f();if(typeof sfx==='function')sfx('blip');render();const p=document.querySelector('#modal .panel');if(p)p.scrollTop=0;};
 
@@ -90,4 +90,3 @@ Object.assign(ACT,{
   swapCancel(){V.swapSel=null;render();}
 });
 {const mt0=ACT.menuTab;ACT.menuTab=function(){V.swapSel=null;return mt0.apply(this,arguments);};}
-{const gt0=ACT.gtab;if(gt0)ACT.gtab=function(){V.swapSel=null;return gt0.apply(this,arguments);};}

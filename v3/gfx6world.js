@@ -54,10 +54,6 @@ function g6Critters(ctx,m,cx,cy,vw,vh,ts){const sp=g6CritterSpots(m),n=Math.min(
     else{const fl=(step%2)?1:0;ctx.fillStyle='#c8b498';ctx.fillRect(x,y-hop,4,3);ctx.fillRect(x+(fl?-1:3),y-1-hop,2,2);ctx.fillStyle='#e8dcc8';ctx.fillRect(x+(fl?-1:4),y-3-hop,1,2);ctx.fillStyle='#ffffff';ctx.fillRect(x+(fl?4:-1),y-hop,1,1);}}}
 // ----- birds: a small flock crosses now and then by day; their shadows slide over the ground -----
 function g6BirdsOn(m){if(m.kind==='dungeon'||m.cave||m.archive||m.theme==='cave'||m.theme==='void')return false;const w=G.weather&&G.weather[m.s];if(w&&/rain|storm|blizzard|sand|ashfall/.test(w))return false;const d=g6Day();return d==='day'||d==='dawn';}
-function g6Birds(ctx,vw,vh,ts,shadow,wind){const P=26000,t=ts%P,dur=11000;if(t>dur)return;const p=t/dur,n=GFX.q.birds;
-  for(let i=0;i<n;i++){const bx=Math.round(-24+p*(vw+48)*(1+wind*.15)-(i%2?i*5:i*4)),by=Math.round(vh*.16+(i%2?-1:1)*Math.ceil(i/2)*4+Math.sin(ts/700+i)*2);
-    if(shadow){ctx.fillStyle='rgba(10,6,24,.14)';ctx.fillRect(bx+14,by+Math.round(vh*.45),3,1);continue;}
-    const f=Math.sin(ts/110+i*1.7)>0?1:0;ctx.fillStyle='rgba(28,22,36,.85)';ctx.fillRect(bx,by,1,1);ctx.fillRect(bx-2,by-1+f,2,1);ctx.fillRect(bx+1,by-1+f,2,1);}}
 // ----- 2b. sky layer: drifting leaves or dust, birds, townsfolk gestures -----
 function g6Sky(ctx,m,cx,cy,vw,vh,ts,still){const q=GFX.q,wind=g6WindNow(m),dun=m.kind==='dungeon';
   // v0.6.3: leaves and dust drift in world space (worldfx.js), so they stay where they are when the camera moves

@@ -380,7 +380,6 @@ function hdBill(bt,key,cv,fx,fy,fz,flip,sc,r,g,b,a,fl){const R=HD.atl.get(key,cv
 // a flat decal lying on the ground, centred at (cx, cz)
 function hdDecal(bt,key,cv,cx,cz,w,d,r,g,b,a,y){const R=HD.atl.get(key,cv);if(!R)return;const yy=y||.6;
   H2P[0]=cx-w/2;H2P[1]=yy;H2P[2]=cz-d/2;H2P[3]=cx+w/2;H2P[4]=yy;H2P[5]=cz-d/2;H2P[6]=cx+w/2;H2P[7]=yy;H2P[8]=cz+d/2;H2P[9]=cx-w/2;H2P[10]=yy;H2P[11]=cz+d/2;bt.quad(H2P,R.u0,R.v0,R.u1,R.v1,r,g,b,a,0,1,0,4);}
-function hdShadow(cx,cz,w){hdDecal(HD.dynB,'blob',hdBlob(),cx,cz,w,w*.42,10,6,24,255);}// white sprite, dark vertex colour (no colour fringes from low alpha texels)
 // ----- v0.5.8: characters belong to the scene -----
 // a contact shadow with a darker core under the feet and a soft penumbra (white sprite, dark vertex colour)
 function hdBlob2(){return hdSpr('blob2',24,12,(c,w,h)=>{const d=c.createImageData(w,h),P=HD2D.spr.shadow;for(let y=0;y<h;y++)for(let x=0;x<w;x++){

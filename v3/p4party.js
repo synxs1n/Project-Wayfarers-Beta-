@@ -9,16 +9,16 @@
 
 // ---------- 4.1 personal quests ----------
 function realmReached(n){return !!(G&&(G.daily||(G.stage||0)>=n||(n>0&&G.cleared&&G.cleared[n-1])));}
-personalEligible=function(c){return !!c&&!!TPL[c.id]&&!TPL[c.id].mon&&realmReached(PERSONAL_REALM)&&btOf(c)>=PERSONAL_BT;};
-personalLockText=function(c){return !realmReached(PERSONAL_REALM)?'Unlocks in the second realm':`Battles together: ${btOf(c)} of ${PERSONAL_BT}`;};
+function personalEligible(c){return !!c&&!!TPL[c.id]&&!TPL[c.id].mon&&realmReached(PERSONAL_REALM)&&btOf(c)>=PERSONAL_BT;}
+function personalLockText(c){return !realmReached(PERSONAL_REALM)?'Unlocks in the second realm':`Battles together: ${btOf(c)} of ${PERSONAL_BT}`;}
 function pqShown(c){const q=G.personal&&G.personal[c.id];return !!(q&&q.state&&q.state!=='open')||personalEligible(c);}
-vPersonal=function(){
+function vPersonal(){
   const list=Object.values(G.roster).filter(c=>!TPL[c.id].mon&&pqShown(c)).sort((a,b)=>b.lv-a.lv);
   const intro=`<p>Every wayfarer has unfinished business. Once your party reaches the third realm, a hero who has fought ${PERSONAL_BT} battles beside you can take up their personal quest: accept it and a rival roams the current realm's field. Bring that hero in your six to face it and win their signature item: a weapon, armor or accessory bound to that hero, which changes how they look.</p>`;
   if(!list.length)return intro+`<p class="note">${realmReached(PERSONAL_REALM)?`No wayfarer is ready yet. Each hero's sheet shows their battles together (${PERSONAL_BT} needed).`:'Personal quests open in the third realm.'}</p>`;
   return intro+`<div class="rows">${list.map(c=>{const q=G.personal[c.id],t=TPL[c.id],w=gearOf(sigGid(c.id))||gearOf('u_'+c.id);
     const st=!q||q.state==='open'?`<button class="btn sm gold" data-act="personal" data-arg="${c.id}">Accept</button>`:q.state==='active'?'<span class="m">Rival roaming</span>':'<span class="m up">Done</span>';
-    return `<div class="row">${port(c.id)}<div class="grow"><b>${esc(t.n)}: ${esc(w.n)}</b><small>${q&&q.text?esc(q.text)+(q.state==='active'?` It prowls ${esc(ZS(q.stage).n)}.`:''):esc(gearDesc(w))}</small></div>${st}</div>`;}).join('')}</div>`;};
+    return `<div class="row">${port(c.id)}<div class="grow"><b>${esc(t.n)}: ${esc(w.n)}</b><small>${q&&q.text?esc(q.text)+(q.state==='active'?` It prowls ${esc(ZS(q.stage).n)}.`:''):esc(gearDesc(w))}</small></div>${st}</div>`;}).join('')}</div>`;}
 function pqSheetLine(c){const q=G&&G.personal&&G.personal[c.id];let s=`Battles together: ${btOf(c)} of ${PERSONAL_BT}`;
   if(q&&q.state==='done')s+='. Personal quest done';else if(q&&q.state==='active')s+='. Personal quest under way';
   else if(TPL[c.id]&&TPL[c.id].mon){}else if(!realmReached(PERSONAL_REALM))s+='. Unlocks in the '+(['first','second','third','fourth','fifth'][PERSONAL_REALM]||'later')+' realm';else if(personalEligible(c))s+='. Personal quest ready at the Guild Hall';
@@ -35,18 +35,6 @@ function guildText(s){if(typeof s!=='string'||!/faction/i.test(s))return s;// te
 {const v0=vFacMissions;vFacMissions=function(){return guildText(v0.apply(this,arguments));};}
 {const vm0=vModal;vModal=function(m){return guildText(vm0.apply(this,arguments));};}
 {const t0=toast;toast=function(m){return t0.apply(this,[guildText(m)].concat([].slice.call(arguments,1)));};}
-// a Guilds tab in the Guild Hall, next to its own tabs (read from the hall's tab bar so tabs added elsewhere stay)
-{const g0=mGuild;mGuild=function(m){
-  if(!m||m.tab!=='guilds'){const h=g0.apply(this,arguments);return h.replace(/(<div class="chips">[\s\S]*?)(<\/div>)/,'$1<button class="chip " data-act="gtab" data-arg="guilds">Guilds</button>$2');}
-  const h=g0.apply(this,[Object.assign({},m,{tab:'recruit'})].concat([].slice.call(arguments,1)));const k=h.match(/<div class="chips">[\s\S]*?<\/div>/);
-  const chips=(k?k[0]:'<div class="chips"></div>').replace(/class="chip on"/g,'class="chip "').replace(/<\/div>$/,'<button class="chip on" data-act="gtab" data-arg="guilds">Guilds</button></div>');
-  const body=`<p class="note">The guilds post their missions here and keep your ranks. The same page is under Menu, Records, Guilds.</p>`+(typeof vFactions==='function'?vFactions():'');
-  return box('Wayfarers Guild Hall',chips+body,'<button class="btn gold" data-act="closeModal">Done</button>',true);};}
-
-// ---------- 4.3 result screen: who got the catch up bonus ----------
-{const r0=mResult;mResult=function(i){let h=r0.apply(this,arguments);try{const L=i&&i.catchup;if(L&&L.length&&typeof h==='string'){
-  const row=`<div class="row xpcu"><b>Catch up</b><span>${L.map(r=>`${esc(r.name)} +${r.pct}%${r.xp?` (+${fmt(r.xp)} XP)`:''}`).join(', ')}</span></div>`;
-  const a=h.indexOf('<b>Gold</b>'),e=a>=0?h.indexOf('</div>',a):-1;if(e>=0)h=h.slice(0,e+6)+row+h.slice(e+6);}}catch(e){}return h;};}
 
 // ---------- 4.4 the boss's energy lingers ----------
 function bossEnergyText(s){let n='The Scourge';try{const d=guardianDef(bossKeyFor(s));if(d&&d.n)n=d.n;}catch(e){}

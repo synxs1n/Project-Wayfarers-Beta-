@@ -23,7 +23,6 @@ function icDisc(b,cx,cy,r,k){for(let y=0;y<16;y++)for(let x=0;x<16;x++){const dx
 function icUV(b,k,f){for(let y=0;y<16;y++)for(let x=0;x<16;x++){const s=(x+15-y)/2,v=(x-15+y)/2;const r=f(s,v);if(r)icSet(b,x,y,r===true?k:r);}}
 const icAt=(s,v)=>[Math.round(s+v),Math.round(15-(s-v))];
 function icPt(b,s,v,k){const [x,y]=icAt(s,v);icSet(b,x,y,k);}
-function icMirror(b){for(let y=0;y<16;y++)for(let x=0;x<8;x++){const a=b[y*16+x],c=b[y*16+15-x];b[y*16+x]=c;b[y*16+15-x]=a;}}
 // paint the key grid
 function icPaint(x,b,P,o){o=o||{};const flat=(P._flat||'')+IC_FLAT;
   const col=k=>{if(P[k])return P[k];const u=k.toUpperCase();if(u!==k&&P[u])return shade(P[u],.68);return '#ff00ff';};

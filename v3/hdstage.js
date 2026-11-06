@@ -346,12 +346,6 @@ function hbShadow2D(ctx,x,gy,b,alpha){const K=HB.bake;if(!K)return;if(!HB_SH){HB
   ctx.save();ctx.globalAlpha=a;ctx.imageSmoothingEnabled=true;ctx.drawImage(HB_SH,x-K.look.kx*rx*.28-rx,gy+.5-ry,rx*2,ry*2);ctx.restore();}
 function hbEq(a,b){if(!a||a.length!==b.length)return false;for(let i=0;i<a.length;i++)if(a[i]!==b[i])return false;return true;}
 function hbCopy(a,b){if(!a||a.length!==b.length)a=new Float32Array(b.length);a.set(b);return a;}
-// 'under' mode: sprites take the scene's light in 2D (a multiplied copy per sprite canvas, cached)
-const HB_TINT=new WeakMap();
-function hbTint(c){const K=HB.bake;if(!K||!K.tint)return c;let m=HB_TINT.get(c);if(m&&m.k===K.tint.k)return m.cv;
-  const o=mkCv(c.width,c.height),x=o.getContext('2d');x.drawImage(c,0,0);x.globalCompositeOperation='multiply';x.fillStyle=K.tint.css;x.fillRect(0,0,c.width,c.height);x.globalCompositeOperation='destination-in';x.drawImage(c,0,0);
-  HB_TINT.set(c,{k:K.tint.k,cv:o});return o;}
-
 // ----- v0.5.8 'under' mode (Medium): sprites lit and graded in 2D, one cached copy per sprite canvas and lighting state -----
 // The state of a unit (hbUnitLight, every 250 ms, no allocation once warm): the stage ambient, the theme lights near it (torches,
 // braziers, lava glow, the boss circle) and the strongest effect light (spells, casting circles), with the side they come from, and the
@@ -359,7 +353,7 @@ function hbTint(c){const K=HB.bake;if(!K||!K.tint)return c;let m=HB_TINT.get(c);
 // a pixel pass over the full HD bitmap, about a millisecond) and every other frame is a Map lookup. The pass: soften the raw colours,
 // light (ambient, a little darker toward the feet, the lights brighter on the side facing them), rim light on the silhouette edge
 // facing the key light, then the stage's own grade (gain, lift, saturation, contrast), so units sit in the graded still under them.
-const HB_LIT=new WeakMap(),HB_LP=[];
+const HB_LIT=new WeakMap();
 function hbQc(v){return Math.max(0,Math.min(7,Math.round((v+.2)/1.6*7)));}
 function hbUnitLight(u,K,now){let P=u._hbP;if(P&&P.K===K&&now-P.t<250)return P;if(!P)P=u._hbP={K:null,t:0,key:0,lc:[0,0,0],side:0,rd:1,rs:0,flip:false};
   const b=unitBox(u);P.K=K;P.t=now;P.flip=u.side==='p';if(!b){P.key=0;P.lc[0]=P.lc[1]=P.lc[2]=0;P.side=0;P.rs=0;return P;}

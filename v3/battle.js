@@ -30,23 +30,9 @@ BG.arena=function(ctx,W,H,R){
 function battleTheme(){if(!B)return 'meadow';const th=ZS(B.stage).theme,k=B.spec.kind;if(k==='arena')return 'arena';if(k==='dungeon'||k==='boss'||k==='echoBoss')return 'd_'+th;return th;}
 // ----- layout -----
 // v0.6.3: slots come from B3.slots (config.js) as [x share, depth on the ground band 0..1]; depth d lands at BATTLE_GROUND top + d*(bot-top)
-// through p2GroundY (p2world.js), so feet stay on the ground plane (2.1). The old tables (slotsFor0) are kept for reference.
+// through p2GroundY (p2world.js), so feet stay on the ground plane (2.1).
 function slotsFor(side,n,boss){const T=B3.slots[BL.W<260?'tall':'wide'],t=side==='p'?T.p:boss?T.boss[Math.min(3,n)-1]:T.e[Math.min(5,n)-1];
   const r=t.map(([x,d])=>[x,+(.48+d*.49).toFixed(4)]);while(r.length<n)r.push(r[r.length-1]);return r;}
-function slotsFor0(side,n,boss){
-  if(BL.W<260){ // phones: taller stage, more vertical spread
-    if(side==='e'){
-      if(boss)return n>2?[[.24,.78],[.44,.5],[.44,.94]]:n>1?[[.24,.8],[.44,.52]]:[[.27,.8]];
-      return [[[.27,.78]],[[.2,.6],[.3,.9]],[[.28,.52],[.12,.72],[.32,.92]],[[.28,.5],[.1,.66],[.36,.76],[.18,.94]]][n-1]||[[.27,.5],[.1,.66],[.36,.76],[.18,.94],[.3,.62]];
-    }
-    return [[.78,.56],[.9,.74],[.7,.92]];
-  }
-  if(side==='e'){
-    if(boss)return n>2?[[.2,.86],[.42,.64],[.44,.88]]:n>1?[[.22,.86],[.42,.66]]:[[.25,.86]];
-    return [[[.26,.84]],[[.18,.7],[.32,.88]],[[.27,.62],[.11,.76],[.37,.88]],[[.27,.6],[.1,.72],[.38,.78],[.2,.9]]][n-1]||[[.26,.84],[.1,.72],[.38,.78],[.2,.9],[.3,.62]];
-  }
-  return [[.76,.64],[.9,.77],[.7,.9]];
-}
 // v0.3.3: the stage keeps a fixed aspect ratio. Portrait phones keep the tall stage (width follows the screen, 2x scale).
 // Everything wider (tablets, desktops, landscape phones at 16:9, 19.5:9 or 21:9) uses ONE fixed 320x150 logical stage that is
 // scaled uniformly and centred (pillarbox or letterbox), never stretched. Landscape phones also put the command panel beside the scene.
@@ -85,7 +71,6 @@ function unitBox(u){
 }
 const WHITE={};
 function whiteOf(c,key,col){const k=key+(col||'');if(WHITE[k])return WHITE[k];const o=mkCv(c.width,c.height),x=o.getContext('2d');x.drawImage(c,0,0);x.globalCompositeOperation='source-in';x.fillStyle=col||'#ffffff';x.fillRect(0,0,c.width,c.height);return WHITE[k]=o;}
-const ICV={};
 function iconCv(el){return elShapeCv(el);}
 // ----- particles -----
 function part(o){o.t0=o.t0||performance.now();BV.P.push(o);if(BV.P.length>500)BV.P.splice(0,BV.P.length-500);}
@@ -232,22 +217,6 @@ function drawUnit(ctx,u,b,now,tgMode){
   // v0.5.8: the HP bar, shield pips, primed mark and element badges draw in a second pass after every sprite (unitHud),
   // so a unit standing in front can no longer cover another unit's bar or element icon
   u._hud={x,y};
-}
-// v0.5.8: one unit's HUD (bar, limit bar, shield pips, primed mark); battleui.js adds the element badges by wrapping it
-function unitHud(ctx,u,b,now){const hero=u.side==='p';const x=(u._hud?u._hud.x:b.x),y=(u._hud?u._hud.y:b.y);
-  const bw=hero?24:Math.min(40,Math.round(b.w*.66)),bx=Math.round(x-bw/2),by=y+3;
-  if(u.hp>0){
-    u._dh=u._dh==null?u.hp:u._dh+(u.hp-u._dh)*Math.min(1,.18);if(Math.abs(u._dh-u.hp)<.5)u._dh=u.hp;
-    u._lag=u._lag==null?u.hp:(u._lag>u._dh?Math.max(u._dh,u._lag-u.S.mhp*.006):u._dh);
-    ctx.fillStyle='#150b17';ctx.fillRect(bx-1,by-1,bw+2,4);ctx.fillStyle='#3a2a3a';ctx.fillRect(bx,by,bw,2);
-    ctx.fillStyle='#ffffff';ctx.fillRect(bx,by,Math.round(bw*u._lag/u.S.mhp),2);
-    const pct=u._dh/u.S.mhp;ctx.fillStyle=hero?(pct<.25?'#e8504a':pct<.5?'#f2c93a':'#5ad06a'):'#e8504a';ctx.fillRect(bx,by,Math.round(bw*pct),2);
-    if(hero&&limitOpen(u)){const lp=(u.lb||0)/100;ctx.fillStyle='#150b17';ctx.fillRect(bx-1,by+3,bw+2,3);ctx.fillStyle=lp>=1?(Math.floor(now/150)%2?'#c79bff':'#f1e4ff'):'#8a4be0';ctx.fillRect(bx,by+4,Math.round(bw*lp),1);}
-    if(u.maxShield){for(let i=0;i<u.maxShield;i++){const px=bx+i*5,py=by+5;ctx.fillStyle='#150b17';ctx.fillRect(px,py,4,4);ctx.fillStyle=u.broken?'#5a3a3a':i<u.shield?'#ffd04a':'#4a4a5a';ctx.fillRect(px+1,py+1,2,2);}}
-    // v0.5.3: alpha 254 marks HUD pixels (bars and pips), so the GL stage leaves them unlit and out of the bloom
-    if(BV.glFull){ctx.save();ctx.globalCompositeOperation='destination-out';ctx.globalAlpha=1/255;ctx.fillRect(bx-1,by-1,Math.max(bw+2,(u.maxShield||0)*5+1),u.maxShield?10:hero?7:4);ctx.restore();}
-    // v0.5.9: no sphere, ring or sparks around a primed unit any more: the floating element badge (primedTag, ui.js) marks it
-  }
 }
 
 function drawParts(ctx,now){

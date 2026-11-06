@@ -17,7 +17,6 @@ const MD_QUAL={'':[0,4,7],m:[0,3,7],'7':[0,4,7,10],m7:[0,3,7,10],maj7:[0,4,7,11]
 const MD_RANGE={strings:[40,88],tremolo:[43,79],pizz:[36,84],cello:[36,67],bass:[28,55],harp:[36,96],flute:[60,96],oboe:[58,88],clarinet:[50,86],horn:[41,77],trumpet:[55,82],
   trombone:[40,70],brass:[41,79],choir:[48,79],organ:[36,84],celesta:[60,96],glock:[72,99],lute:[40,76],fiddle:[55,88],accordion:[48,79],timpani:[38,56],taiko:[40,52],tom:[43,55]};
 const MD_ACC={pad:1,drone:1,pedal:1,arp8:1,arp16:1,arp68:1,bass:1,bassq:1,bass8:1,walk:1,ost8:1,ost16:1,pulse8:1,oompah:1,stab:1};
-const MD_DRUM={sn:1,sng:1,bd:1,cym:1,crash:1,swell:1,shk:1,tri:1,drip:1,roll:1};
 function mdPitch(s){const m=/^([A-G])([#b]?)(\d)$/.exec(s);if(!m)throw new Error('bad pitch '+s);return 12*(+m[3]+1)+MD_PC[m[1]]+(m[2]==='#'?1:m[2]==='b'?-1:0);}
 function mdDur(s){let t=0,i=0;while(i<s.length){const d0=MD_DUR[s[i]];if(!d0)throw new Error('bad length '+s);let d=d0;i++;if(s[i]==='.'){d*=1.5;i++;}t+=d;}return t;}
 function mdMel(str){let tk=0,v=.8;const ev=[];

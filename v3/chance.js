@@ -13,9 +13,6 @@ function cePool(){const sub=(typeof ensureSub==='function'?ensureSub(G):G.sub)||
   return sub.filter(id=>{const t=TPL[id];if(!t||t.mon||G.roster[id])return false;const s=t.src||'';if(s==='L'||s==='x'||id==='vaelith'||id==='nikaris')return false;
     if((s[0]==='t'||s[0]==='r')&&+s.slice(1)>G.stage+1)return false;return true;});}
 function ceCanHere(m){return !!m&&!G.daily&&!m.archive&&(m.kind==='field'||(m.kind==='dungeon'&&m.cave))&&!(m.kind==='dungeon'&&!m.cave);}
-function cePick(m){const P=cePool();if(!P.length)return null;const ce=ceInit(),th=ZS(m.s).theme,els=CE_THEME_EL[th]||[];
-  const w=P.map(id=>{const t=TPL[id];let x=1;if((t.el||[]).some(e=>els.includes(e)))x*=2.5;x/=1+(ce.met[id]||0);return x;});
-  const tot=w.reduce((a,b)=>a+b,0);let r=Math.random()*tot,k=0;for(;k<P.length-1;k++){if((r-=w[k])<0)break;}return P[k];}
 function ceType(m){const ph=m.cave?'day':clockPhase();const night=ph==='night',day=ph==='day'||ph==='dawn';const ce=ceInit();
   const hasPot=(G.inv&&G.inv.potion>0);
   const W={help:40*(night?1.5:1),duel:30*(day?1.4:.8),merchant:30*(day||ph==='dusk'?1.5:.5)};

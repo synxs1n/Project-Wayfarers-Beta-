@@ -106,7 +106,7 @@ function b3Lay(fresh){if(!B)return null;const now=performance.now();if(!fresh&&B
   L.obs=obs;B3L.key=key;B3L.L=L;return L;}
 
 // ----- the canvas HUD at the laid out spot: bars, limit, shield pips, element badges -----
-unitHud=function(ctx,u,b,now){if(!u||u.hp<=0)return;const L=b3Lay(),p=L&&L.plates.get(u);if(!p)return;const g=p.g,hero=u.side==='p';
+function unitHud(ctx,u,b,now){if(!u||u.hp<=0)return;const L=b3Lay(),p=L&&L.plates.get(u);if(!p)return;const g=p.g,hero=u.side==='p';
   u._dh=u._dh==null?u.hp:u._dh+(u.hp-u._dh)*Math.min(1,.18);if(Math.abs(u._dh-u.hp)<.5)u._dh=u.hp;
   u._lag=u._lag==null?u.hp:(u._lag>u._dh?Math.max(u._dh,u._lag-u.S.mhp*.006):u._dh);
   let ix,iy,bx,by;if(p.shape==='row'){ix=p.x;iy=p.y+Math.round((p.h-(g.n?11:0))/2);bx=p.x+g.tw+(g.n?1:0)+1;by=p.y+Math.round((p.h-g.bkH)/2)+1;}
@@ -119,7 +119,7 @@ unitHud=function(ctx,u,b,now){if(!u||u.hp<=0)return;const L=b3Lay(),p=L&&L.plate
   // v0.5.3: alpha 254 marks HUD pixels, so the GL stage (High) leaves them unlit and out of the bloom
   if(BV.glFull){ctx.save();ctx.globalCompositeOperation='destination-out';ctx.globalAlpha=1/255;ctx.fillRect(bx-1,by-1,g.bkW,g.bkH);ctx.restore();}
   (u.el||[]).forEach((el,i)=>ctx.drawImage(elShapeCv(el),ix+i*10,iy));
-  u._plate={ix,iy,bx,by};};
+  u._plate={ix,iy,bx,by};}
 // the turn arrow (battleFrame calls this instead of drawing over the head)
 function b3Arrow(ctx,now){const L=b3Lay(),a=L&&L.arrow;if(!a)return;const x=a.x+4,y=a.y+Math.round(Math.sin(now/140)*.5);
   ctx.fillStyle='#150b17';ctx.fillRect(x-4,y,9,5);ctx.fillStyle=a.u.side==='p'?'#ffd04a':'#ff6a6a';ctx.fillRect(x-3,y+1,7,1);ctx.fillRect(x-2,y+2,5,1);ctx.fillRect(x-1,y+3,3,1);}

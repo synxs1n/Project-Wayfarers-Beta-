@@ -52,7 +52,6 @@ const HDK={};
 function hdKey(col,m){const key=col+m;if(HDK[key])return HDK[key];const R=hdRamp(col,m),OUT=hx(OUTC),lit=SPR.outA-.15,dk=SPR.outA+.12;
   return HDK[key]={m,R,base:hx(col),lum:hdLum(col),rim:hx(mix(tint(col,.55),'#dcecff',.45)),
     olL:R[5].map((v,j)=>v*(1-lit)+OUT[j]*lit),olD:R[5].map((v,j)=>v*(1-dk)+OUT[j]*dk),ol2:R[5].map((v,j)=>v*.25+OUT[j]*.75)};}
-const HDM={};
 // Paint a key grid at SPR.k (2) times the detail. opt: flat, noAO, rim (outline colour), glow, hero (material names), detail(K,W,H) hook.
 function paintHD(g,pal,opt){
   opt=opt||{};const W0=g.w,H0=g.h,W=W0*2,H=H0*2,KC=epx(g.a,W0,H0);

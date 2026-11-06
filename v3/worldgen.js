@@ -50,7 +50,7 @@ function propIssues(g,bld){
   const anch=(x,y)=>N4.some(([a,b])=>PROP_ANCHOR.includes(at(x+a,y+b)||' '));
   const path=(x,y)=>N4.some(([a,b])=>PROP_PATH.includes(at(x+a,y+b)||' '));
   const ok=new Set(),q=[];
-  for(let y=0;y<H;y++)for(let x=0;x<W;x++){const c=g[y][x];if(!PROP_CLUSTER.includes(c)&&c!=='u')continue;if(anch(x,y)||(c!=='u'||true)&&path(x,y)){ok.add(x+','+y);q.push([x,y]);}}
+  for(let y=0;y<H;y++)for(let x=0;x<W;x++){const c=g[y][x];if(!PROP_CLUSTER.includes(c)&&c!=='u')continue;if(anch(x,y)||path(x,y)){ok.add(x+','+y);q.push([x,y]);}}
   while(q.length){const [x,y]=q.pop();N4.forEach(([a,b])=>{const c=at(x+a,y+b);if(c&&PROP_CLUSTER.includes(c)&&PROP_CLUSTER.includes(g[y][x])&&!ok.has((x+a)+','+(y+b))){ok.add((x+a)+','+(y+b));q.push([x+a,y+b]);}});}
   for(let y=0;y<H;y++)for(let x=0;x<W;x++){const c=g[y][x];if((PROP_CLUSTER.includes(c)||c==='u')&&!ok.has(x+','+y))out.push({x,y,c,why:'floating '+c});}
   (bld||[]).forEach(b=>{const [dx,dy]=b.door;for(let a=-1;a<=1;a++){const c=at(dx+a,dy+1);if(c&&(PROP_CH.includes(c)&&c!=='y'&&c!=='O'))out.push({x:dx+a,y:dy+1,c,why:'door-front '+c});}

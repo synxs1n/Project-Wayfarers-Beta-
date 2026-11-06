@@ -65,12 +65,12 @@ function tvSlots(){const t=tvInit();if(tvDue())tvShuffle();
   // a slot whose hero joined by another route (a challenge, a gift) becomes an empty seat too
   t.sl=t.sl.map(id=>id&&!G.roster[id]?id:null);return t.sl;}
 // what the tavern screen and the "What next?" guide see: the heroes sitting at the tables right now
-tavernOffers=function(){return tvSlots().filter(Boolean);};
+function tavernOffers(){return tvSlots().filter(Boolean);}
 function tvNextText(){const t=tvInit(),c=Math.max(0,TV_CD-tvSince());
   if(t.ev&&c<=0)return 'Next shuffle: the next time you walk in.';
   if(t.ev)return `Next shuffle: after ${c} more battle${c>1?'s':''} (you have already rested or cleared a stage).`;
   return `Next shuffle: after you rest at an inn or clear a stage, and at least ${TV_CD} battles since the last one${c>0?` (${c} to go)`:''}.`;}
-tavernLater=function(){const mine=tvPool().length;const later=RAW.filter(r=>(r[6][0]==='t')&&inSub(r[0])&&!G.roster[r[0]]&&!challIsPooled(r[0])&&!tavernUnlocked(r[0])).length;return later;};
+function tavernLater(){const mine=tvPool().length;const later=RAW.filter(r=>(r[6][0]==='t')&&inSub(r[0])&&!G.roster[r[0]]&&!challIsPooled(r[0])&&!tavernUnlocked(r[0])).length;return later;}
 {const rc2=recruit;recruit=function(id,free){const was=!G.roster[id],r=rc2.apply(this,arguments);try{if(r&&was&&!free&&TPL[id].src[0]!=='r'){const t=tvInit();t.n[G.stage]=(t.n[G.stage]||0)+1;const i=t.sl?t.sl.indexOf(id):-1;if(i>=0)t.sl[i]=null;}}catch(e){}return r;};}
 // v0.5.0: gold is the only thing that can stop a hire (recruit() checks it)
 const hireOK=id=>!!TPL[id];

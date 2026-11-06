@@ -89,9 +89,9 @@ function realmWxList(s){const Z=ZS(s),R=realmAt(s);const L=wxList(R&&isRv2()?R.w
 
 // ---------- realm weighting (4.3): chance meetings and taverns lean toward the realm's and the overlay's elements ----------
 function realmEls(s){const R=realmAt(s),o=bovAt(s);const a=R&&isRv2()?R.els.concat(R.favor||[]):(CE_THEME_EL[ZS(s).theme]||[]);return {base:a,ov:o?o.el:[]};}
-cePick=function(m){const P=cePool();if(!P.length)return null;const ce=ceInit(),E=realmEls(m.s);
+function cePick(m){const P=cePool();if(!P.length)return null;const ce=ceInit(),E=realmEls(m.s);
   const w=P.map(id=>{const t=TPL[id];let x=1;if((t.el||[]).some(e=>E.base.includes(e)))x*=2.5;if((t.el||[]).some(e=>E.ov.includes(e)))x*=1.5;x/=1+(ce.met[id]||0);return x;});
-  const tot=w.reduce((a,b)=>a+b,0);let r=Math.random()*tot,k=0;for(;k<P.length-1;k++){if((r-=w[k])<0)break;}return P[k];};
+  const tot=w.reduce((a,b)=>a+b,0);let r=Math.random()*tot,k=0;for(;k<P.length-1;k++){if((r-=w[k])<0)break;}return P[k];}
 if(typeof recruitFit==='function'){const rf0=recruitFit;recruitFit=function(id,N){const o=rf0.apply(this,arguments);try{if(o&&isRv2()&&WS.m&&typeof WS.m.s==='number'){const E=realmEls(WS.m.s),t=TPL[id];
   if((t.el||[]).some(e=>E.base.includes(e)))o.w*=1.4;if((t.el||[]).some(e=>E.ov.includes(e)))o.w*=1.25;}}catch(e){}return o;};}
 

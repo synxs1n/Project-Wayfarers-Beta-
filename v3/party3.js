@@ -80,7 +80,7 @@ function p6Summary(o,X,first){const T=X.T,nm=c=>esc(c.name);
   if(o.key==='rot')return 'The same roles again with the heroes the other formations left in reserve, so everyone keeps up.';
   if(o.key==='train')return `${o.trainees.map(c=>`${nm(c)} (Lv ${c.lv})`).join(', ')} ${o.trainees.length>1?'train':'trains'} behind ${o.anchors.map(nm).join(' and ')||'your strongest'}. Catch up XP is measured against your top wayfarer (Lv ${X.top}): the further behind, the more XP, up to +${Math.round(XPCU.max*100)}% in the vanguard and +${Math.round(XPCU.max*XPCU.bench*100)}% in the rearguard.`;
   return '';}
-bestParty=function(){const keep=P3C;if(!P3C)P3C={why:{},kit:{}};
+function bestParty(){const keep=P3C;if(!P3C)P3C={why:{},kit:{}};
   try{const X=p6Ctx(),opts=[],sets=[];
     const add=(key,set,extra)=>{if(!set||!set.length)return;const ids0=set.map(c=>c.id).sort().join();
       const same=opts.find(o=>o.set.map(c=>c.id).sort().join()===ids0);if(same&&key!=='train'){same.also=(same.also||[]).concat(P6_NAMES[key]);return;}
@@ -94,9 +94,9 @@ bestParty=function(){const keep=P3C;if(!P3C)P3C={why:{},kit:{}};
     if(opts.length<3&&X.all.length>X.size)add('rot',p6Search(X,s=>p6Score(s,X,'rot',sets.slice())));
     const first=opts[0]?opts[0].ids:[];opts.forEach(o=>{o.sum=p6Summary(o,X,first);o.rel=opts[0]&&opts[0].info.pw?Math.round(o.info.pw/opts[0].info.pw*100):100;delete o.set;});
     const P={opts,pick:0,T:X.T,top:X.top,noTrain:!tr};return p6Sel(P,0);}
-  finally{P3C=keep;}};
+  finally{P3C=keep;}}
 function p6Sel(P,j){const o=P.opts[j]||P.opts[0];if(!o)return Object.assign(P,{ids:[],why:{},info:{els:0,heal:0,tank:0,pr:0,de:0,sup:0,dmg:0}});P.pick=P.opts.indexOf(o);P.ids=o.ids;P.why=o.why;P.info=o.info;P.key=o.key;return P;}
-mBestParty=function(m){const P=m.plan,o=P.opts[P.pick]||{},cur=new Set(G.party),same=P.ids.length===G.party.length&&P.ids.every(id=>cur.has(id)),I=P.info,T=P.T||p3Threats(),W=P.why||{};
+function mBestParty(m){const P=m.plan,o=P.opts[P.pick]||{},cur=new Set(G.party),same=P.ids.length===G.party.length&&P.ids.every(id=>cur.has(id)),I=P.info,T=P.T||p3Threats(),W=P.why||{};
   const row=(id,i)=>{const c=G.roster[id];return `<div class="row ${cur.has(id)?'':'upg'}">${port(id,'sm')}<div class="grow"><b>${esc(c.name)}</b> <small>Lv ${c.lv} ${CLS[TPL[id].cls].n}</small><span class="els">${c.el.map(ico).join('')}</span><small class="p3bpwhy">${esc(c.name)}: ${(W[id]||[]).join('; ')}</small></div><small>${cur.has(id)?(G.party.indexOf(id)<3)===(i<3)?'Keeps place':i<3?'<span class="up">To the front</span>':'To rearguard':'<span class="up">Joins</span>'}</small></div>`;};
   const chips=`<div class="chips bp6f" role="group" aria-label="Formations">${P.opts.map((x,j)=>`<button class="chip ${j===P.pick?'on':''}" data-act="bpPick" data-arg="${j}" aria-pressed="${j===P.pick}">${x.name}</button>`).join('')}</div>`;
   const out=G.party.filter(id=>!P.ids.includes(id));
@@ -108,7 +108,7 @@ mBestParty=function(m){const P=m.plan,o=P.opts[P.pick]||{},cur=new Set(G.party),
     ${P.ids.length>3?`<h4>Rearguard <small>(swaps in when someone falls or tires)</small></h4><div class="rows">${P.ids.slice(3).map((id,i)=>row(id,i+3)).join('')}</div>`:''}
     ${out.length?`<p class="note">Going to the reserves: ${out.map(id=>esc(G.roster[id].name)).join(', ')}.</p>`:''}
     ${same&&P.ids.every((id,i)=>G.party[i]===id)?'<p class="note">This is already your party, in this order.</p>':''}${!same&&!inTown()?'<p class="note warn">Changing who is in your six happens in town. You can apply it there.</p>':''}${p3GapsHtml(P.ids,T,false)}`,
-    `<button class="btn gold" data-act="bpApply" ${!same&&!inTown()?'disabled':''}>Apply ${esc(o.name||'')}</button><button class="btn" data-act="xBack">Cancel</button>`);};
+    `<button class="btn gold" data-act="bpApply" ${!same&&!inTown()?'disabled':''}>Apply ${esc(o.name||'')}</button><button class="btn" data-act="xBack">Cancel</button>`);}
 {const bo0=ACT.bpOpen;ACT.bpOpen=function(){if(!G||G.daily)return;return bo0.apply(this,arguments);};}
 {const sw0=ACT.p3Swap;ACT.p3Swap=function(){const m=V.modal,key=m&&m.type==='bp'&&m.plan?m.plan.key:null;const r=sw0.apply(this,arguments);
   try{const n=V.modal;if(key&&n&&n.type==='bp'&&n.plan&&n.plan.opts){const j=n.plan.opts.findIndex(o=>o.key===key);if(j>=0){p6Sel(n.plan,j);render();}}}catch(e){}return r;};}

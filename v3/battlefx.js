@@ -1,13 +1,7 @@
 // =================== BATTLE READABILITY (Beta v0.2.0) ===================
 // Floating numbers follow battle speed, a scrollable battle log, and tappable status icons with a details popup.
 const LOG_MAX=50;
-// floating text stays readable: 1.1s at 1x, never shorter than 0.75s even at 2x
-function numDur(){return clamp(1.5/(META.cfg.speed||1),.9,1.8);}
-// Beta v0.3.1: every floating text stays 1.2-1.8s (scaled by speed, never under 0.9s); reactions, statuses and other
-// important lines get +0.6s, and long text gets a little more per letter
-function fxDur(f){let d=numDur();if(/react|stat|effx|BREAK/.test(f.cls)||f.txt==='BREAK')d+=.6;const L=String(f.txt).length;if(L>8)d+=Math.min(.7,.04*(L-8));return +d.toFixed(2);}
-function banDur(bn){const sp=META.cfg.speed||1;let d=clamp(2.2/sp,1.4,2.4);const L=String(bn.txt).length;if(L>12)d+=Math.min(.8,.04*(L-12));return +d.toFixed(2);}
-{const lg0=log;log=function(m){if(!B)return;B.log.push(m);if(B.log.length>LOG_MAX)B.log.splice(0,B.log.length-LOG_MAX);B.logT=Date.now();};}
+function log(m){if(!B)return;B.log.push(m);if(B.log.length>LOG_MAX)B.log.splice(0,B.log.length-LOG_MAX);B.logT=Date.now();}
 {const fb0=finishBattle;finishBattle=function(){try{if(B)FB.lastLog=B.log.slice(-10);}catch(e){}return fb0.apply(this,arguments);};}
 
 // ----- status icons -----

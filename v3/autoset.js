@@ -15,7 +15,7 @@ function mAutoSet(m){
 }
 {const vm0=vModal;vModal=function(m){if(m&&m.type==='autoset')return mAutoSet(m);return vm0.apply(this,arguments);};}
 Object.assign(ACT,{
-  autoOpen(){if(G&&G.daily&&false)return;V.modal={type:'autoset',from:V.modal||null};render();},
+  autoOpen(){V.modal={type:'autoset',from:V.modal||null};render();},
   autoCfg(a){const [k,v]=JSON.parse(a);META.cfg.auto=META.cfg.auto||{};META.cfg.auto[k]=v;if(G){G.auto=G.auto||Object.assign({},META.cfg.auto);G.auto[k]=v;saveGame();}saveMeta();render();},
   autoReset(){META.cfg.auto={};if(G)G.auto={};saveMeta();if(G)saveGame();toast('Auto battle settings reset.');render();}
 });

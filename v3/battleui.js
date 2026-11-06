@@ -22,11 +22,6 @@ function elShapeCv(el){if(ELSV[el])return ELSV[el];const S=ELSHAPE[el]||ELSHAPE.
 function elb(el){return `<img class="elb" src="${cvURL('elb:'+el,()=>elShapeCv(el))}" alt="${esc(ELNAME2[el]||EL[el]||el)}" title="${esc(ELNAME2[el]||EL[el]||el)}">`;}
 function elbs(list){return `<span class="elbs">${(list||[]).map(elb).join('')}</span>`;}
 function elbNamed(list){return (list||[]).map(el=>`<span class="elbn">${elb(el)} ${esc(EL[el]||el)}</span>`).join(' ');}
-// stage: shape badges next to each unit's HP bar, always visible. They sit left of the bar, or right of it when the left edge is too close.
-{const uh0=unitHud;unitHud=function(ctx,u,b,now){uh0.apply(this,arguments);
-  try{const x0=u._hud?u._hud.x:b.x,y0=u._hud?u._hud.y:b.y;if(!u||u.hp<=0||!u.el||!u.el.length)return;const hero=u.side==='p',bw=hero?24:Math.min(40,Math.round(b.w*.66)),x=x0,y=y0,bx=Math.round(x-bw/2),by=y+3,n=u.el.length,tw=n*10;
-    let sx=bx-tw-1;if(sx<1)sx=Math.min(BL.W-tw-1,bx+bw+2);
-    u.el.forEach((el,i)=>ctx.drawImage(elShapeCv(el),sx+i*10,by-4));}catch(e){}};}
 // ----- cards -----
 function foeKnown(e){return tierOf(bestEntry(e),e.boss)>=2;}
 function hpText(u){return `${Math.max(0,Math.ceil(u.hp))}/${u.S.mhp}`;}

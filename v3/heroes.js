@@ -108,11 +108,9 @@ const RAW=[
 ];
 const TPL={};RAW.forEach(r=>{TPL[r[0]]={id:r[0],n:r[1],cls:r[2],el:r[3],trait:r[4],bio:r[5],src:r[6],look:r[7]};});
 const STARTERS=RAW.filter(r=>r[6]==='s').map(r=>r[0]);
-const SPECIAL_HEROES=RAW.filter(r=>r[6]==='x'||r[6]==='L').map(r=>r[0]);
 const LEGEND_IDS=RAW.filter(r=>r[6]==='L').map(r=>r[0]);
 TPL.kaevan.title='Kaevan Temur, the Shadowstorm';TPL.nikaris.title='Nikaris Thornwhisper, the Beastwarden';TPL.jaeson.title='Jaeson Vael, the Stormfrost';TPL.vaelith.title='Vaelith Ashgrave, the Last Archivist';
 const GIFTS=['kael','sylva','gorm','dagna','astra'];
-const isDual=id=>TPL[id].el.length>1;
 const SIG={
  kael:{n:"Stormcaller's Pulse",d:'Acts first in every battle and starts it with Haste.'},
  sylva:{n:'Mire Stride',d:'Immune to Root and Slow. Deals 25% more to foes that are Slowed or Rooted.'},

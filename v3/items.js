@@ -171,7 +171,6 @@ const FAM_MAT_V35={axe:['ore','fang'],greatsword:['ore','scale'],lance:['ore','h
 function lootBase(rnd){const R=rnd||(()=>Math.random()),cls=new Set();try{Object.values(G.roster).forEach(c=>{if(TPL[c.id])cls.add(TPL[c.id].cls);});}catch(e){}
   const w=new Set(),a=new Set();(cls.size?[...cls]:Object.keys(CLS_WPN)).forEach(k=>{(CLS_WPN[k]||[]).forEach(f=>w.add('w_'+f));a.add('a_'+ARM_FAM[CLS_ARM[k]||'medium']);});
   const W=[...w].filter(x=>GEAR[x+'_0']),A=[...a];const l=R()<.62?W:A;return l[Math.floor(R()*l.length)];}
-const gearWeight=g=>g&&g.slot==='a'?g.weight||null:null;
 function canEquip(c,id){const g=gearOf(id);if(!g||!c)return false;const t=TPL[c.id];if(!t)return false;
   if(g.only)return g.only===c.id;           // signature weapons: their owner only, whatever the type
   if(g.stick)return true;                    // the Tamer's Stick fits anyone

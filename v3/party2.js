@@ -32,7 +32,6 @@ function filterBar(n,codex){const f=LC(n);
 function xpLine(c,compact){if(c.lv>=LV_CAP)return `<span class="swb xpb"><span class="swbl">XP</span><span class="nums">Max level</span></span>`;
   const n=need(c.lv);return `<span class="swb xpb"><span class="swbl">XP</span>${bar(c.xp,n,'var(--gold)')}<span class="nums">${fmt(c.xp)}/${fmt(n)}${compact?'':` (${fmt(n-c.xp)} to Lv ${c.lv+1})`}</span></span>`;}
 const xpMini=c=>c.lv>=LV_CAP?'<span class="xpm"><small>Max</small></span>':`<span class="xpm" title="${fmt(need(c.lv)-c.xp)} XP to Lv ${c.lv+1}">${bar(c.xp,need(c.lv),'var(--gold)')}<small class="nums">${fmt(need(c.lv)-c.xp)} to Lv ${c.lv+1}</small></span>`;
-function xpRows(){return `<h4>Experience</h4><div class="rows xpres">${G.party.map(id=>G.roster[id]).filter(Boolean).map(c=>`<div class="row">${port(c.id,'sm')}<div class="grow"><b>${esc(c.name)}</b> <small>Lv ${c.lv}${c.hp<=0?" · fallen, no XP":""}</small>${xpLine(c)}</div></div>`).join('')}</div>`;}
 // ----- loadouts -----
 const LD=()=>G.loadouts=G.loadouts||[];
 function ldCapture(name){const eq={},comp={};G.party.forEach(id=>{const c=G.roster[id];eq[id]=Object.assign({},c.eq);const o=compOf(c);if(o)comp[id]=o.id;});return {name,party:G.party.slice(),eq,comp,t:Date.now()};}
@@ -76,21 +75,6 @@ function mLdMgr(m){const L=LD();
     '<button class="btn gold" data-act="xBack">Done</button>');}
 // ----- best party -----
 const healer=c=>classSkills(TPL[c.id]).some(s=>(s.k==='heal'||s.k==='revive')&&skillKnown(c,s));
-const roleOf=c=>{const sk=classSkills(TPL[c.id]).filter(s=>skillKnown(c,s));return {heal:healer(c),pr:sk.some(s=>s.role==='primer'),de:sk.some(s=>s.role==='detonator'),tank:['knight','warrior','monk'].includes(TPL[c.id].cls)};};
-function bpScore(set,pw,mx){const R=set.map(c=>roleOf(c)),els=new Set();set.forEach(c=>c.el.forEach(e=>els.add(e)));
-  let v=set.reduce((a,c)=>a+pw[c.id]/mx,0);const nh=R.filter(r=>r.heal).length;v+=nh?(.35+(nh>1?.05:0)):0;v+=els.size*.08;v+=R.some(r=>r.pr)?.12:0;v+=R.some(r=>r.de)?.12:0;v+=R.some(r=>r.tank)?.15:0;return v;}
-function bestParty(){const all=Object.values(G.roster),pw={};all.forEach(c=>{pw[c.id]=Math.max(1,loadoutScore(c,c.S));});const mx=Math.max(...Object.values(pw)),size=Math.min(6,all.length);
-  let set=[];while(set.length<size){let b=null;all.forEach(c=>{if(set.includes(c))return;const s=bpScore(set.concat(c),pw,mx);if(!b||s>b.s)b=({c,s});});set.push(b.c);}
-  for(let pass=0;pass<3;pass++){let imp=false;for(let i=0;i<set.length;i++)all.forEach(c=>{if(set.includes(c))return;const t=set.slice();t[i]=c;if(bpScore(t,pw,mx)>bpScore(set,pw,mx)+1e-6){set=t;imp=true;}});if(!imp)break;}
-  set.sort((a,b)=>pw[b.id]-pw[a.id]);const R=set.map(roleOf),els=new Set();set.forEach(c=>c.el.forEach(e=>els.add(e)));
-  return {ids:set.map(c=>c.id),info:{els:els.size,heal:R.filter(r=>r.heal).length,pr:R.filter(r=>r.pr).length,de:R.filter(r=>r.de).length,tank:R.filter(r=>r.tank).length}};}
-function mBestParty(m){const P=m.plan,cur=new Set(G.party),same=P.ids.length===G.party.length&&P.ids.every(id=>cur.has(id)),I=P.info;
-  return box('Best party',`<p class="note">Picked for strength with your current gear, plus a healer, a tank, Primer and Detonator coverage and a spread of elements. Run Auto best gear afterward to get the most out of them.</p>
-    <p class="note nums">Elements covered ${I.els}/8 · Healers ${I.heal} · Tanks ${I.tank} · Primers ${I.pr} · Detonators ${I.de}</p>
-    <div class="rows">${P.ids.map(id=>{const c=G.roster[id];return `<div class="row ${cur.has(id)?'':'upg'}">${port(id,'sm')}<div class="grow"><b>${esc(c.name)}</b> <small>Lv ${c.lv} ${CLS[TPL[id].cls].n}</small><span class="els">${c.el.map(ico).join('')}</span></div><small>${cur.has(id)?'Keeps place':'<span class="up">Joins</span>'}</small></div>`;}).join('')}</div>
-    ${G.party.filter(id=>!P.ids.includes(id)).length?`<p class="note">Leaving the six: ${G.party.filter(id=>!P.ids.includes(id)).map(id=>esc(G.roster[id].name)).join(', ')}.</p>`:''}
-    ${same&&P.ids.every((id,i)=>G.party[i]===id)?'<p class="note">This is already your party, in this order.</p>':''}${!same&&!inTown()?'<p class="note warn">Changing who is in your six happens in town. You can apply it there.</p>':''}`,
-    `<button class="btn gold" data-act="bpApply" ${!same&&!inTown()?'disabled':''}>Apply</button><button class="btn" data-act="xBack">Cancel</button>`);}
 // ----- field skills -----
 function fsSkills(c){return classSkills(TPL[c.id]).filter(s=>skillKnown(c,s)&&(s.k==='heal'||s.k==='revive'));}
 const fsNeedsTgt=s=>s.t==='ally'||s.t==='dead';

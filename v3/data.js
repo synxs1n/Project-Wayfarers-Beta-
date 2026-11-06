@@ -185,7 +185,6 @@ const reactKey=(a,b)=>[a,b].sort().join('+');
 function reactFor(primed,det){const R=REACT[reactKey(primed,det)];return R&&R.p===primed&&R.d===det?R:null;}
 const SKILL_ROLE={annotate:null,edge1:'det',edge2:'primer',titan:'det',lance1:'primer',lance2:'det',judge:'det',s1a:'primer',s1b:'det',s2a:'primer',s2b:'primer',s3a:'det',
  ray1:'primer',ray2:'det',shiv1:'det',shiv2:'primer',assn:'det',arrow1:'primer',arrow2:'det',chi1:'det',chi2:'primer',dragon:'det',tune1:'primer',tune2:'primer',combo:'det'};
-const ROLE_N={primer:'Primer',det:'Detonator'};
 const MASTERY_BONUS=0.2;
 const MASTERY={
  fire:{n:'Pyre Mastery',st:'burn',ch:.25,d:'Fire skills deal 20% more and may Burn.'},

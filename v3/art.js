@@ -211,11 +211,6 @@ function heroGrid(L,walk){
   if(L.wpn==='twindagger')g.rect(20,17,2,2,hk);
   return g;
 }
-function heroCanvas(id,walk){
-  const t=TPL[id];const L=t.look;
-  return paint(heroGrid(L,walk),heroPal(L,t.el),{flat:'EmeCrh',noAO:'SHe'});
-}
-function heroURL(id,walk){return cvURL('h:'+id+(walk?':w':''),()=>heroCanvas(id,walk));}
 
 // =================== MONSTERS ===================
 // Every foe is drawn facing right. Normal foes on a 40x40 grid, guardians on 60x60.
@@ -535,16 +530,6 @@ const BIG_ART=['thornwarden','drake','cinderking','hoarwyrm','ysolde','dimmer','
 const MON_SIZE=n=>BIG_ART.includes(n)?60:40;
 
 // =================== ICONS ===================
-const ICON={
-fire:['...A....','..AA....','..AAA.A.','.AABAAAA','.ABBBAAA','.ABBBBAA','..ABBBA.','...AAA..'],
-water:['...A....','...A....','..AAA...','..AAA...','.AABAA..','.AABAA..','.AAAAA..','..AAA...'],
-earth:['........','...AA...','..AAAA..','..ABAAA.','.AABAAAA','.AAAAAAA','AAAAAAAA','........'],
-wind:['..AAAA..','.A....A.','......A.','AAAAAA..','.......A','.AAAA.A.','..A..AA.','...AAA..'],
-lightning:['....AAA.','...AAA..','..AAA...','.AAAAAA.','...AAA..','..AA....','..A.....','.A......'],
-ice:['...A....','.A.A.A..','..AAA...','AAABAAA.','..AAA...','.A.A.A..','...A....','........'],
-light:['...B....','.B.B.B..','..AAA...','BAAAAAB.','..AAA...','.B.B.B..','...B....','........'],
-shadow:['..AAA...','.AA.....','AA......','AA......','AA......','.AA..A..','..AAAA..','........']
-};
 function iconURL(el){return cvURL('i:'+el,()=>elShapeCv(el));} // v0.3.5: same set as the cards (see ELSHAPE in battleui.js)
 function coinURL(){return cvURL('coin',()=>{const g=new PG(10,10,1,1);g.ell(4,4,4,4,'G');g.rect(3,2,2,4,'Y');return paint(g,{G:'#f0b848',Y:'#fff0a8'},{flat:'Y'});});}
 
@@ -756,31 +741,9 @@ function weaponFB(g,L,view){
     if(L.sh==='round'){g.ell(16,17,4.6,4.6,'M');g.ell(16,17,3.4,3.4,'Z');g.s(16,17,'G');}
   }
 }
-function heroGridFB(L,view,frame,id){
-  const g=new PG(34,38,1,5);
-  backItemsFB(g,L,view,'under');
-  legsFB(g,L,frame);
-  torsoFB(g,L,view);
-  drawFlair(g,L,id,view);
-  headFB(g,L,view);
-  faceFB(g,L,view);
-  if(L.hat)hatFB(g,L,view);
-  backItemsFB(g,L,view,'over');
-  weaponFB(g,L,view);
-  return g;
-}
 // side view with flair, via the original builder
 const _heroGrid0=heroGrid;
 heroGrid=function(L,walk,id){const g=_heroGrid0(L,walk);if(id)drawFlair(g,L,id,'side');return g;};
-heroCanvas=function(id,walk){const t=TPL[id],L=t.look;return paint(heroGrid(L,walk,id),heroPal(L,t.el,id),{flat:'EmeCrh',noAO:'SHe'});};
-// world walker frames: view = side|front|back, frame 0 stand, 1/2 steps
-function walkerCanvas(key,L,els,id,view,frame){
-  return imgOf('wk:'+key+':'+view+':'+frame,()=>{
-    if(view==='side')return paint(heroGrid(L,frame>0,id),heroPal(L,els,id),{flat:'EmeCrh',noAO:'SHe'});
-    const g=heroGridFB(L,view,frame,id);const c=paint(g,heroPal(L,els,id),{flat:'EmeCrh',noAO:'SHe'});
-    const o=mkCv(34,34);o.getContext('2d').drawImage(c,0,-4);return o;
-  });
-}
 
 // =================== MONSTER DETAIL PASS ===================
 // Extra color and pattern drawn over each base design.

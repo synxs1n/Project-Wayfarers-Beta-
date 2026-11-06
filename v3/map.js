@@ -72,11 +72,6 @@ function drawPlayer(x,sc,px,py){const d=WS.dir||'d';x.save();x.translate(px,py);
 // ----- minimap (HUD) -----
 let MINI_VW=0;window.addEventListener('resize',()=>{MINI_VW=0;});
 function miniOn(){const c=META.cfg.minimap;if(c===true||c===false)return c;if(!MINI_VW)MINI_VW=window.innerWidth||800;return MINI_VW>=560;}
-function drawMini(){const cv=document.getElementById('mmap');if(!cv)return;const m=WS.m;if(!m||!G||!miniOn()||m.archive&&false){cv.style.display='none';return;}cv.style.display='block';
-  const W=cv.width,H=cv.height,x=cv.getContext('2d'),sc=4,base=mapBase(m);x.imageSmoothingEnabled=false;x.fillStyle='#0a0710';x.fillRect(0,0,W,H);
-  const ox=Math.round(W/2-(WS.x+.5)*sc),oy=Math.round(H/2-(WS.y+.5)*sc);x.drawImage(base,ox,oy,m.w*sc,m.h*sc);
-  // v0.6.3: opened chests are gone from the world, so the minimap leaves them out (the full map shows them dimmed)
-  const vis=mapMarks(m).filter(o=>!MK_DONE[o.k]&&Math.abs(o.x-WS.x)<W/sc&&Math.abs(o.y-WS.y)<H/sc);drawMarks(x,m,vis,sc,ox,oy);drawPlayer(x,sc,W/2,H/2);}
 // v0.5.0 1.6: the minimap no longer depends on the weather chip drawing cleanly (an unknown sky used to stop it), and every world render makes sure it is there
 function ensureMini(){try{if(V.screen==='world'&&!document.getElementById('mmap')){const wv=document.querySelector('.wview');if(wv){wv.insertAdjacentHTML('beforeend','<canvas id="mmap" class="mmap" width="112" height="84" aria-hidden="true"></canvas>');}}drawMini();}catch(e){}}
 {const wu0=wkwUpdate;wkwUpdate=function(){try{wu0.apply(this,arguments);}catch(e){try{wdLog('wkwUpdate: '+e.message);}catch(_){}}ensureMini();};}
@@ -154,7 +149,6 @@ function worldGraph(){
   side.forEach(f=>f());
   return {nodes,edges};
 }
-const WG_COL={town:'#ffe8a0',field:'#8ec06a',dungeon:'#c89aff',cave:'#5ad0ff',fort:'#e07a5a'};
 // ----- v0.6.3: the world map as an illustrated, code drawn chart -----
 // A parchment sheet (grain, stains, burnt edge, compass rose); each area drawn as a little vignette in its realm's colours: towns as
 // clusters of roofs, fields as countryside with a road through it, dungeons as dark towers (a gold beacon once relit), caves as rock arches,

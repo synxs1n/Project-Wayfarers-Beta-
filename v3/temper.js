@@ -7,14 +7,14 @@ const FAM_RAW=Object.assign(Object.fromEntries(Object.entries(FAM_MAT_V35).map((
 const FAM_PART=Object.assign(Object.fromEntries(Object.entries(FAM_MAT_V35).map(([k,v])=>[k,v[1]])),{tome:'ichor',blade:'fang',dagger:'fang',crossbow:'fang',staff:'ichor',bow:'hide',mail:'scale',robe:'ichor',vest:'hide',charm:'grit'});
 function gearFam(id){const b=baseIdOf(id);if(b.startsWith('c_'))return 'charm';const p=b.split('_');return p[1]||'blade';}
 function temperRaw(id){const g=gearOf(baseIdOf(id)),f=FAM_RAW[gearFam(id)]||'ore',t=g?(g.tier<=1?0:g.tier<=3?1:2):0;return TIERED[f][t];}
-forgeCost=function(id){
+function forgeCost(id){
   const n=plusOf(id),g=gearOf(baseIdOf(id));if(!g||n>=3||g.stick)return null;
   const raw=temperRaw(id),part=FAM_PART[gearFam(id)],rel=ZS(G.stage).mat,m={};
   const add=(k,v)=>{if(v)m[k]=(m[k]||0)+v;};
   add(raw,TEMPER.raw[n]);add(part,TEMPER.part[n]);add(rel,TEMPER.relic[n]);add('core',TEMPER.core[n]);
   const old=Math.round(g.price*TEMPER.goldK[n]),rawCost=(MAT_PRICE[raw]||0)*TEMPER.raw[n];
   return {gold:Math.max(Math.round(old*TEMPER.floor),old-rawCost),m,next:baseIdOf(id)+'+'+(n+1),old};
-};
+}
 // what the Smithy can sell you toward a cost, and what it can't
 function buyPlan(m){let gold=0,ok=true;const buy=[],cant=[];
   Object.keys(m).forEach(k=>{const miss=Math.max(0,m[k]-(G.mats[k]||0));if(!miss)return;
@@ -62,4 +62,4 @@ Object.assign(ACT,{
   temperBuy(a){const o=JSON.parse(a),id=o.w==='spare'?G.gear[o.r]:G.roster[o.r.cid].eq[o.r.slot];const c=id&&forgeCost(id);if(!c)return;
     if(doBuyPlan(buyPlan(c.m))){sfx('buy');toast('Bought what the Smithy had.');}else sfx('deny');render();}
 });
-{const fg0=ACT.forge;ACT.forge=function(a){const o=JSON.parse(a);const r=forge(o.w,o.r);if(r){toast('Tempered: '+gearOf(r).n);sfx('chest');}else sfx('deny');render();};}
+ACT.forge=function(a){const o=JSON.parse(a);const r=forge(o.w,o.r);if(r){toast('Tempered: '+gearOf(r).n);sfx('chest');}else sfx('deny');render();};

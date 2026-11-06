@@ -40,13 +40,13 @@ function rsParty(i){const cu={};(i.catchup||[]).forEach(r=>{cu[r.id]=r;});const 
 function rsNotes(i){const rows=[];(i.quests||[]).forEach(q=>rows.push(`<div class="row"><b>Quest ready</b><span>${esc(q)}</span></div>`));
   (i.bonds||[]).forEach(b=>rows.push(`<div class="row bondr"><b>Bond grows</b><span>${esc(b.a)} and ${esc(b.b)}: level ${b.lv}${b.lv===2?' (joint tech unlocked)':b.lv===1||b.lv===3?' (new campfire talk: make camp or open their sheets)':''}</span></div>`));
   return (rows.length?`<div class="rows">${rows.join('')}</div>`:'')+(i.notes||[]).map(n=>`<p class="note echonote">${esc(n)}</p>`).join('')+(i.autoCut?`<p class="note autocut">Won mostly on auto: ${Math.round(i.autoCut*100)}% XP and gold. Drops and loot are unchanged.</p>`:'');}
-mResult=function(i){
+function mResult(i){
   const pend=i.tame&&!i.tamed,foot=pend&&i.tameWarn?`<p class="rs-ask">${esc(i.tame.name)} is still waiting. Tame it, or leave it behind?</p><button class="btn gold" data-act="tame">Tame it</button><button class="btn" data-act="resultLeave">Leave it and continue</button>`:'<button class="btn gold" data-act="resultOk">Continue</button>';
   return `<div class="modal"><div class="panel box result rs"><h2>Victory</h2>
     ${rsTame(i)}
     ${(i.learn||[]).length?`<div class="learntop"><h4>New skills</h4><div class="rows">${i.learn.map(o=>`<div class="row learnr">${learnLine(o)}</div>`).join('')}</div></div>`:''}
     ${rsJoin(i)}${rsGrid(i)}${rsParty(i)}${rsNotes(i)}
-    <div class="btnrow stickyb rs-foot">${foot}</div></div></div>`;};
+    <div class="btnrow stickyb rs-foot">${foot}</div></div></div>`;}
 {const ok0=ACT.resultOk;ACT.resultOk=function(){const i=V.modal&&V.modal.info;if(i&&i.tame&&!i.tamed&&!i.tameWarn){i.tameWarn=1;try{sfx('blip');}catch(e){}render();const p=document.querySelector('#modal .panel');if(p)p.scrollTop=0;return;}return ok0.apply(this,arguments);};}
 ACT.resultLeave=function(){const i=V.modal&&V.modal.info;if(i)i.tame=null;return ACT.resultOk();};
 try{const css=document.createElement('style');css.textContent=`

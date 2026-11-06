@@ -15,9 +15,6 @@ const WEATHER={
  ashfall:{n:'Ashfall',i:'☁',el:{fire:1.15,shadow:1.1},dot:1.25,d:'Fire +15%, Shadow +10%. Poison and Burn deal 25% more.'}
 };
 const WX_BASE=Object.keys(WEATHER); // v0.4.0: the Daily Trial only ever picks from these (rare skies are added later and must not shift its seeded pick)
-const REALM_WEATHER={meadow:[['clear',4],['rain',3],['storm',1],['fog',2]],coast:[['clear',3],['rain',2],['storm',2],['sand',2],['fog',1]],cave:[['clear',3],['heat',3],['ashfall',2],['fog',1]],
- snow:[['snow',4],['blizzard',2],['clear',2],['aurora',1]],heights:[['clear',2],['gale',3],['storm',3],['fog',1]],void:[['starfall',3],['fog',2],['ashfall',1],['aurora',1],['clear',1]]};
-function rollWeather(s,avoid){const L=REALM_WEATHER[ZS(s).theme]||[['clear',1]];let tot=L.reduce((a,b)=>a+b[1],0),w='clear';for(let k=0;k<4;k++){let r=Math.random()*tot;for(const [n,c] of L){if((r-=c)<0){w=n;break;}}if(w!==avoid)break;}G.weather[s]=w;return w;}
 function battleWeather(spec){if(spec.kind==='field'||spec.kind==='elite')return (G.weather||{})[spec.stage]||'clear';return 'clear';}
 function weatherStart(front,en){
   const W=WX();
@@ -73,8 +70,6 @@ function heroLook(id){const t=TPL[id];if(!t.look)return null;const S=sigSlots(id
   if(S.a){L.back=(t.look.back||[]).includes('cape')?t.look.back:(t.look.back||[]).concat('cape');L.pal=Object.assign({},t.look.pal||{},{Q:'#f6d98a',G:'#ffe27a'});}
   if(S.c){if(!t.look.hat||t.look.hat==='none')L.hat='circlet';L.pal=Object.assign({},L.pal||t.look.pal||{},{G:'#7af0ff',Y:(t.look.pal||{}).Y});}
   return L;}
-function personalEligible(c){return !!c&&c.lv>=PERSONAL_LV&&town2Reached()&&btOf(c)>=PERSONAL_BT&&!TPL[c.id].mon;}
-function personalLockText(c){return c.lv<PERSONAL_LV?`Unlocks at level ${PERSONAL_LV}`:!town2Reached()?'Unlocks after you reach the second town':`Battles together: ${btOf(c)} of ${PERSONAL_BT}`;}
 function startPersonal(id){
   const c=G.roster[id];if(!personalEligible(c)||(G.personal[id]&&G.personal[id].state!=='open'))return null;
   const s=G.stage,Z=ZS(s),R=seeded((hashS(id)+G.run.seed)>>>0),mon=Z.pool[Math.floor(R()*Z.pool.length)],mod=ELITE_MODS[Math.floor(R()*ELITE_MODS.length)];
@@ -92,14 +87,6 @@ function personalDone(b,info){
 function tameClass(m){if(m.mag>m.atk+.15)return m.res>=1.15?'healer':'mage';if(m.def>=1.35)return 'knight';if(m.spd>=1.35)return 'thief';if(m.spd>=1.15)return 'archer';return m.hp>=1.3?'warrior':'monk';}
 function tameTrait(m){return m.spd>=1.3?'swift':m.def>=1.4?'bulwark':m.hp>=1.4?'sturdy':m.mag>=1.2?'arcane':m.atk>=1.2?'berserk':'keen';}
 function registerTamed(o){const m=MON[o.mon]||guardianDef(o.mon);if(!m)return;TPL[o.id]={id:o.id,n:o.name,cls:o.cls,el:m.el.slice(),trait:o.trait,bio:o.scourge?`A lesser whelp of ${m.n}, a Scourge, coaxed into following you by Nikaris. A shadow of the real thing, but loyal.`:o.bb?`Tamed with Nikaris's help. A ${m.n} that trusts you now, and fights harder for it.`:`Tamed after a bounty hunt. A ${m.n}, still a little feral, fiercely loyal now.`,src:'tame',look:null,mon:o.mon,art:m.art,bb:o.bb?1:0,scourge:o.scourge?1:0};}
-function tameElite(t){
-  const m=MON[t.mon]||guardianDef(t.mon);if(!m)return null;
-  const o={id:'tm'+Date.now().toString(36),mon:t.mon,name:t.bb?t.name:t.name.replace(m.n+' ',''),cls:tameClass(m),trait:tameTrait(m),bb:t.bb?1:0,scourge:t.scourge?1:0};
-  if(o.name.startsWith('the '))o.name=m.n+' '+o.name;
-  registerTamed(o);G.tamed.push(o);
-  const c=newChar(o.id,Math.max(2,avgLv()-1),gearTier());G.roster[o.id]=c;if(G.party.length<6){G.party.push(o.id);if(B&&B.front.length+B.back.length<6)B.back.push(c);}
-  saveGame();return o;
-}
 
 // =================== DAILY TRIAL ===================
 // A short, seeded gauntlet: the same party, weather and foes for everyone on a given day. It never touches your journey save.
@@ -135,7 +122,6 @@ function endDaily(){const stash=G&&G.daily?G.daily.stash:null;B=null;G=stash;ret
 function slotSummary(s){const o=loadRaw(s);if(!o)return null;const party=(o.party||[]).filter(id=>TPL[id]||(o.tamed||[]).some(t=>t.id===id));
   return {stage:o.stage,cleared:(o.cleared||[]).filter(Boolean).length,cycle:o.run?o.run.cycle:0,party,lv:party.length?Math.round(party.reduce((a,id)=>a+((o.roster[id]||{}).lv||0),0)/party.length):0,gold:o.gold,savedAt:o.savedAt||0,battles:(o.stats||{}).battles||0};}
 function exportSave(){return 'AWSAVE1.'+btoa(unescape(encodeURIComponent(JSON.stringify(packG()))));}
-function importSave(code){try{const o=JSON.parse(decodeURIComponent(escape(atob(String(code).trim().replace(/^AWSAVE1\./,'')))));if(!o||o.ver!==3)return null;return unpackG(o);}catch(e){return null;}}
 // v0.4.3: sprite cache key for whatever changes a hero's look. v0.6.3: only the hero's own personal reward (signature weapon, Oathmantle,
 // Token) changes the look; capes and shop armor no longer show on the body, so they are not part of the key.
 function lookKey(id){try{const c=G&&G.roster[id];if(!c||!c.eq)return '';const k=['w','a','c'].map(sl=>{const v=String(c.eq[sl]||'');return /^u[ac]?_/.test(v)&&v.endsWith('_'+id)?v:'';}).join('|');return k.replace(/\|/g,'')?':'+k:'';}catch(e){return '';}}

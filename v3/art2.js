@@ -141,7 +141,7 @@ function heroGridView(L,view,frame,id){
   backItemsFB(g,L,view,'over');raceFB(g,L,view,'over');weaponFB(g,L,view);
   const o=toTall(g,2);applySize(o,L);return o;
 }
-heroCanvas=function(id,walk){const t=TPL[id];if(t.mon)return monCanvas(t.art);const L=heroLook(id);return paint(heroGridSide(L,walk,id),heroPal(L,t.el,id),{flat:HFLAT,noAO:'SHe'});};
+function heroCanvas(id,walk){const t=TPL[id];if(t.mon)return monCanvas(t.art);const L=heroLook(id);return paint(heroGridSide(L,walk,id),heroPal(L,t.el,id),{flat:HFLAT,noAO:'SHe'});}
 function heroURL(id,walk){if(TPL[id]&&TPL[id].mon)return monURL(TPL[id].art);return cvURL('h3:'+id+(walk?':w':'')+lookKey(id),()=>heroCanvas(id,walk));}
 function walkerCanvas(key,L,els,id,view,frame){
   if(id&&TPL[id]&&TPL[id].mon)return imgOf('wkm:'+id,()=>monCanvas(TPL[id].art));

@@ -26,15 +26,7 @@ function recruitFit(id,N){
   if(!N.pr&&R.P){w+=2.5;why.push('Brings a ⟐ Primer');}
   return {w,why};
 }
-// the tavern shows four offers, weighted toward what the party lacks; they reshuffle after resting, clearing a stage or when new faces arrive
-function tavernOffers(){
-  const pool=tavernPool();if(pool.length<=4)return pool;
-  const N=partyNeeds(),R=seeded(hashS((G.run.seed||0)+':tav:'+(G.tavRoll||0)+':'+(typeof townS==='function'?townS():0)+':'+pool.length)),left=pool.slice(),out=[];
-  while(out.length<4&&left.length){const w=left.map(id=>recruitFit(id,N).w),tot=w.reduce((a,b)=>a+b,0);let r=R()*tot,i=0;for(;i<left.length-1;i++){if((r-=w[i])<0)break;}out.push(left.splice(i,1)[0]);}
-  return out;
-}
 function fitTags(id){return recruitFit(id).why.map(w=>`<em class="fit">${esc(w)}</em>`).join('');}
-function tavernLater(){return RAW.filter(r=>r[6][0]==='t'&&!G.roster[r[0]]&&!challIsPooled(r[0])&&!tavernUnlocked(r[0])).length;}
 function nextTavernUnlock(){const b=battlesSoFar();for(let n=1;n<TAV_BATTLES.length;n++){if(n>G.stage&&b<TAV_BATTLES[n])return {n,need:TAV_BATTLES[n]-b};}return null;}
 function rerollTavern(){G.tavRoll=(G.tavRoll||0)+1;}
 {const ra=restAll;restAll=function(){const r=ra.apply(this,arguments);if(r)rerollTavern();return r;};}

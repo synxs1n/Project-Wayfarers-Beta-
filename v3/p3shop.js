@@ -20,8 +20,6 @@ const p3c=()=>P3C||{why:{},kit:{}};
 function partyGainOf(id){const L=gainersFor(id);return L.length?{top:L[0].g.pct,sum:L.reduce((a,o)=>a+o.g.pct,0),c:L[0].c}:{top:0,sum:0,c:null};}
 // the shop sort chips: "Best for party" is the new default (one time switch for players who never picked a sort)
 function p3ShopDefault(){try{const o=META.cfg.shopF=META.cfg.shopF||{};if(!o.p3){o.p3=1;o.sort='best';try{saveMeta();}catch(e){}}}catch(e){}}
-function shopFBar(){p3ShopDefault();const f=SHOPF(),ch=(k,v,t)=>`<button class="chip ${f[k]===v?'on':''}" data-act="shopF" data-arg="${k}:${v}">${t}</button>`;
-  return `<div class="lfbar shopf"><div class="chips"><small class="lbl">Sort</small>${ch('sort','best','Best for party')}${ch('sort','rarity','Rarest first')}${ch('sort','ready','Ready first')}</div><div class="chips"><small class="lbl">Show</small>${ch('show','all','All')}${ch('show','usable','Fits my party')}${ch('show','afford','Can afford or craft')}</div></div>`;}
 // short labels for the tradeoff line
 const P3_GK={hp:'mhp',mp:'mmp'};
 function p3Label(a,b){const ga=gearOf(a),gb=gearOf(b);if(ga.fam&&gb.fam&&ga.fam!==gb.fam&&WT_NAME[ga.fam]&&WT_NAME[gb.fam])return [WT_NAME[ga.fam],WT_NAME[gb.fam]];
@@ -137,10 +135,6 @@ function p3SmithRun(plan){
 {const ma0=mAutoEq;mAutoEq=function(m){let h=ma0.apply(this,arguments);if(!m||m.mode!=='smith')return h;const R=m.p3||{};
   const note=`<p class="note p3res">${R.stop?`<b class="warn">Stopped: ${R.stop==='gold'?'the gold ran out':'materials ran out'} after ${R.done} of ${R.of}.</b> Everything bought before that is equipped. `:''}Spent ${fmt(R.spent||0)} gold: bought ${R.bought||0}, forged ${R.forged||0}. Undo puts the gear back; purchases stay in your pack.</p>`;
   return h.replace(/<h2>[^<]*<\/h2>/,`<h2>Best gear: bought, forged and equipped</h2>${note}`);};}
-// the button, on the Smithy's buying and Forge tabs
-{const ms0=mShop;mShop=function(m){let h=ms0.apply(this,arguments);try{const tab=(m&&m.tab)||'weapons';if(!G||G.daily||!['weapons','armor','craft'].includes(tab))return h;
-  const btn=`<div class="btnrow p3smith"><button class="btn gold" data-act="p3Smith" title="Plans the best upgrade for each hero in your party, shows it, and only buys after you confirm">Buy, craft and equip best gear</button></div>`;
-  const i=h.indexOf('<div class="rows">');if(i>=0)h=h.slice(0,i)+btn+h.slice(i);}catch(e){}return h;};}
 
 // ===================== 3.4 / 3.5: Best Party and the team check =====================
 const ARCH_PL={flying:'flyers',armored:'armored foes',jelly:'jellies',undead:'undead',swarm:'swarms',beast:'beasts',plant:'plants'};
@@ -172,8 +166,6 @@ function p3TeamScore(set,pw,mx,T){const K=set.map(p3Kit),els=new Set();set.forEa
   if(T.mons.length){const cov=T.mons.filter(k=>K.some(kit=>p3Beats(kit,MON[k].el))).length/T.mons.length;v+=BP_AWARE.el*cov;}
   if(T.boss&&T.boss.el.length&&K.some(k=>p3Beats(k,T.boss.el)))v+=BP_AWARE.el*BP_AWARE.boss;
   return v;}
-// the old scorer, kept for anything that still calls it; it now also sees detonators (role 'det') and the area
-bpScore=function(set,pw,mx){return p3TeamScore(set,pw,mx,p3Threats());};
 function p3Reasons(set,T){const K=new Map(set.map(c=>[c.id,p3Kit(c)])),out={},used=new Set();
   set.forEach(c=>{out[c.id]=[];});
   const give=(c,t,key)=>{if(key&&used.has(key))return;if(key)used.add(key);if(out[c.id].length<2)out[c.id].push(t);};
@@ -184,11 +176,6 @@ function p3Reasons(set,T){const K=new Map(set.map(c=>[c.id,p3Kit(c)])),out={},us
   const tk=set.filter(c=>K.get(c.id).tank);if(tk.length)give(tk[0],'tank','tank');
   const pr=set.find(c=>K.get(c.id).pr);if(pr)give(pr,'Primer','pr');const de=set.find(c=>K.get(c.id).de);if(de)give(de,'Detonator','de');
   set.forEach(c=>{if(!out[c.id].length)out[c.id].push('strong with the gear you own');});return out;}
-bestParty=function(){const all=Object.values(G.roster),pw={};all.forEach(c=>{pw[c.id]=Math.max(1,loadoutScore(c,c.S));});const mx=Math.max(...Object.values(pw)),size=Math.min(6,all.length),T=p3Threats(),sc=s=>p3TeamScore(s,pw,mx,T);
-  let set=[];while(set.length<size){let b=null;all.forEach(c=>{if(set.includes(c))return;const s=sc(set.concat(c));if(!b||s>b.s)b={c,s};});set.push(b.c);}
-  for(let pass=0;pass<3;pass++){let imp=false;for(let i=0;i<set.length;i++)all.forEach(c=>{if(set.includes(c))return;const t=set.slice();t[i]=c;if(sc(t)>sc(set)+1e-6){set=t;imp=true;}});if(!imp)break;}
-  set.sort((a,b)=>pw[b.id]-pw[a.id]);const K=set.map(p3Kit),els=new Set();set.forEach(c=>c.el.forEach(e=>els.add(e)));
-  return {ids:set.map(c=>c.id),why:p3Reasons(set,T),T,info:{els:els.size,heal:K.filter(k=>k.heal).length,pr:K.filter(k=>k.pr).length,de:K.filter(k=>k.de).length,tank:K.filter(k=>k.tank).length}};};
 // 3.5 what a party is missing, who on the roster could fill it, and the best one tap swap
 function p3Gaps(ids,T){T=T||p3Threats();const set=ids.map(id=>G.roster[id]).filter(Boolean),K=set.map(p3Kit),bench=Object.values(G.roster).filter(c=>!ids.includes(c.id));
   const pw={};Object.values(G.roster).forEach(c=>{pw[c.id]=Math.max(1,loadoutScore(c,c.S));});const mx=Math.max(1,...Object.values(pw));
@@ -213,13 +200,6 @@ function p3ThreatLine(T){const a=Object.keys(T.arch).filter(k=>T.mons.some(m=>ty
   const parts=[];if(a.length)parts.push(`Known in ${esc(ZS(T.s).n)}: ${a.map(k=>ARCH_PL[k]).join(', ')}`);
   if(T.boss)parts.push(`${p3BossName(T.boss)}: ${T.boss.el.map(e=>EL[e]).join('/')}${T.boss.ty.length?', '+T.boss.ty.map(k=>ARCH[k].n).join(', '):''}`);
   const t=parts.join(' · ');return t?`<p class="note p3thr">${t.charAt(0).toUpperCase()+t.slice(1)}.</p>`:'';}
-function mBestParty(m){const P=m.plan,cur=new Set(G.party),same=P.ids.length===G.party.length&&P.ids.every(id=>cur.has(id)),I=P.info,T=P.T||p3Threats(),W=P.why||{};
-  return box('Best party',`<p class="note">Picked for strength with your current gear, a healer and a tank, Primer and Detonator coverage, every delivery (piercing, blunt, ranged, magic, healing) with weapons each hero may hold, and answers to what your Bestiary and the realm's signs say lies ahead.</p>${p3ThreatLine(T)}
-    <p class="note nums">Elements covered ${I.els}/8 · Healers ${I.heal} · Tanks ${I.tank} · Primers ${I.pr} · Detonators ${I.de}</p>
-    <div class="rows">${P.ids.map(id=>{const c=G.roster[id];return `<div class="row ${cur.has(id)?'':'upg'}">${port(id,'sm')}<div class="grow"><b>${esc(c.name)}</b> <small>Lv ${c.lv} ${CLS[TPL[id].cls].n}</small><span class="els">${c.el.map(ico).join('')}</span><small class="p3bpwhy">${esc(c.name)}: ${(W[id]||[]).join('; ')}</small></div><small>${cur.has(id)?'Keeps place':'<span class="up">Joins</span>'}</small></div>`;}).join('')}</div>
-    ${G.party.filter(id=>!P.ids.includes(id)).length?`<p class="note">Leaving the six: ${G.party.filter(id=>!P.ids.includes(id)).map(id=>esc(G.roster[id].name)).join(', ')}.</p>`:''}
-    ${same&&P.ids.every((id,i)=>G.party[i]===id)?'<p class="note">This is already your party, in this order.</p>':''}${!same&&!inTown()?'<p class="note warn">Changing who is in your six happens in town. You can apply it there.</p>':''}${p3GapsHtml(P.ids,T,false)}`,
-    `<button class="btn gold" data-act="bpApply" ${!same&&!inTown()?'disabled':''}>Apply</button><button class="btn" data-act="xBack">Cancel</button>`);}
 {const vm0=vModal;vModal=function(m){if(m){if(m.type==='bp')return mBestParty(m);if(m.type==='p3plan')return mP3Plan(m);}return vm0.apply(this,arguments);};}
 // after Best Party: offer Auto best gear for the new six right away
 {const ba0=ACT.bpApply;ACT.bpApply=function(){const r=ba0.apply(this,arguments);if(V.modal&&V.modal.type==='ldRes'){V.modal.p3bp=1;render();}return r;};}

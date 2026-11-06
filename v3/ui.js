@@ -20,7 +20,6 @@ const legBanner=()=>`<span class="legban">★ LEGENDARY ★</span>`;
 const natPoolText=id=>{const P=natPool(id);if(P.length<2){const k=P[0]||TPL[id].trait;return `Nature: ${esc(natInfo(k).n)}, ${esc(natInfo(k).d)}`;}return `Nature pool: ${P.map(k=>esc(natInfo(k).n)).join(', ')}`;};
 function natBlock(id,c){const k=natOf(c),I=natInfo(k),P=natPool(id),legacy=P.indexOf(k)<0;
   return `<span class="trait natb"><b>Nature: ${esc(I.n)}</b>${legacy?' <em class="cyc">Legacy</em>':''}<small>${esc(I.d)}</small>${P.length>1?`<span class="natpool">${P.map(p=>`<i class="${p===k?'cur':''}" title="${esc(natInfo(p).d)}">${esc(natInfo(p).n)}</i>`).join('')}</span><small>Change it at the Guild Hall, Nature tab.</small>`:'<small>Fixed nature.</small>'}</span>`;}
-const legStamp=(sm)=>legSeal(sm)+(sm?'':legBanner());
 const roleTag=s=>{const r=s.role&&skEls(s).length?`<em class="role ${s.role}" title="${s.role==='primer'?'Primes a foe with its element for 2 turns. A matching Detonator sets off a reaction.':'Sets off a reaction on a foe Primed with a matching element.'}">${s.role==='primer'?'⟐ Primer':'✸ Detonator'}</em>`:'';
   // v0.4.0 2.4: every damaging and healing skill shows how it is delivered (Slash, Blunt, Piercing, Ranged, Magic, Heal)
   const d=typeof dlChip==='function'&&(s.k==='phys'||s.k==='mag'||s.k==='heal'||s.k==='revive')?dlChip(s,(B&&B.mode==='cmd'&&B.cur&&TPL[B.cur.id])?TPL[B.cur.id].cls:null):'';return d+r;};
@@ -29,11 +28,8 @@ const roleTag=s=>{const r=s.role&&skEls(s).length?`<em class="role ${s.role}" ti
 const detLive=s=>{try{if(!s||s.role!=='det'||!B)return '';const els=skEls(s),hit=B.en.filter(e=>e.hp>0&&e.primed&&els.some(x=>reactFor(e.primed.el,x)));if(!hit.length)return '';const R=reactFor(hit[0].primed.el,els.find(x=>reactFor(hit[0].primed.el,x)));return `<small class="detn">✸ Can set off ${esc(R.n)} on ${esc(hit[0].name)}${hit.length>1?` (+${hit.length-1} more)`:''}</small>`;}catch(e){return '';}};
 const detNote=s=>{if(!s||s.role!=='det')return '';const els=skEls(s),L=Object.keys(REACT).map(k=>REACT[k]).filter(R=>els.includes(R.d));if(!L.length)return '';// v0.7.7: symbols only (the owner's call): ✸ then the primed elements it sets off; the words live in the tooltip
   return `<small class="detn sym" title="Sets off: ${L.map(R=>`${EL[R.p]} primed: ${R.n} x${R.m}`).join(', ')}" aria-label="Detonates ${L.map(R=>EL[R.p]).join(', ')}">✸ ${[...new Set(L.map(R=>R.p))].map(p=>ico(p)).join('')}</small>`;};
-// v0.5.9: the primed marker is a small floating element badge with the turns left (the full text lives in the tap popup and the card)
-const primedTag=u=>u.primed&&u.hp>0&&EL[u.primed.el]?`<span class="primed pmin" style="--c:${ELC[u.primed.el]}" aria-label="Primed with ${EL[u.primed.el]}, ${u.primed.t} turn${u.primed.t===1?'':'s'} left">${ico(u.primed.el)}<i>${u.primed.t}</i></span>`:'';
 // v0.3.5 2.1: does the skill being aimed set off this foe's prime?
 const detHits=(sk,e)=>!!(sk&&sk.role==='det'&&e&&e.primed&&e.hp>0&&skEls(sk).some(x=>reactFor(e.primed.el,x)));
-const stTags=u=>Object.keys(u.st||{}).map(k=>`<i class="tag ${STS[k].bad?'bad':'good'}" style="--c:${STS[k].c}" title="${STS[k].n}: ${STS[k].d}">${stSym(k)}</i>`).join('');
 const matChips=m=>Object.keys(m).filter(k=>m[k]).map(k=>`<span class="matc ${(G.mats[k]||0)>=m[k]?'':'short'}" style="--mc:${(MAT_OF[k]||{}).c||'#c4b28c'}"><i></i>${MATS[k]} <b class="nums">${G.mats[k]||0}/${m[k]}</b></span>`).join(' ');
 function toast(m){const t=$('toast');if(!t)return;t.textContent=m;t.className='show';clearTimeout(toast.h);toast.h=setTimeout(()=>{t.className='';},2400);}
 // v0.3.5: one line saying what the equipped weapon type does to this skill (empty when it does nothing)
@@ -103,7 +99,6 @@ function buildScreen(){
 
 // ----- render -----
 // v5.0: every popup gets a close X that stays pinned to the top corner while the panel scrolls
-function withClose(h){return h.replace(/<div class="panel([^"]*)">/,(x)=>x+'<button class="mclose" data-act="xClose" aria-label="Close" title="Close (Esc)">✕</button>');}
 function pathOf(e,root){const p=[];while(e&&e!==root){const par=e.parentNode;p.unshift([...par.children].indexOf(e));e=par;}return p;}
 function byPath(p,root){let e=root;for(const i of p){e=e&&e.children[i];}return e||null;}
 function render(){
@@ -203,7 +198,6 @@ function renderBattle(stageOnly){
   fitBattle();
 }
 function fxDelay(f){return /poison|burn|bleed|heal|good/.test(f.cls)?0:IMPACT;}
-function fxHtml(u,now){return (u.fx||[]).filter(f=>now-f.t<fxDur(f)*1000+IMPACT).map((f,i)=>`<span class="num ${f.cls}" style="animation-delay:${fxDelay(f)-(now-f.t)}ms;animation-duration:${fxDur(f)}s;--o:${i*7}px">${esc(f.txt)}</span>`).join('');}
 function animating(){if(!B)return false;const now=Date.now();return B.en.concat(B.front,B.back).some(u=>(u.fx||[]).some(f=>now-f.t<fxDur(f)*1000+100+IMPACT)||now-(u.deathT||0)<1500)||(B.banner&&now-B.banner.t<banDur(B.banner)*1000+100);}
 function allyTargetable(c){
   if(!(B.mode==='cmd'&&B.menu==='target'&&B.pend))return false;
@@ -300,66 +294,6 @@ function mBoss(s){
     <p class="bclass ${bossClass(bossKeyFor(s)).toLowerCase()}">${bossClass(bossKeyFor(s))}</p><p class="note">${BOSS_CLASS_D[bossClass(bossKeyFor(s))]} ${final?'It waits at the end of the journey':'It guards the beacon of the '+esc(ZS(s).dungeon)}. Level ${bossLvFor(s)}${bossLvFor(s)>STAGE_BOSS_LV[s]+ngLvOff()?` (base ${STAGE_BOSS_LV[s]+ngLvOff()}, raised by your strongest hero)`:''}${G.run.cycle?', NG+'+G.run.cycle:''}. It carries a ${final?7:5}-pip Break shield: weaknesses and reactions chip it. There is no running. Your party: average level ${avgLv()}.</p>`,
     `<button class="btn" data-act="closeModal">Not yet</button><button class="btn gold" data-act="fightBoss" data-arg="${s}">Fight</button>`);
 }
-function mResult(i){
-  return `<div class="modal"><div class="panel box result"><h2>Victory</h2>
-    ${(i.learn||[]).length?`<div class="learntop"><h4>New skills</h4><div class="rows">${i.learn.map(o=>`<div class="row learnr">${learnLine(o)}</div>`).join('')}</div></div>`:''}
-    <div class="rows"><div class="row"><b>Experience</b><span>+${fmt(i.xp)}</span></div><div class="row"><b>Gold</b><span>+${fmt(i.gold)}</span></div>
-    ${Object.keys(i.mats).length?`<div class="row"><b>Materials</b><span>${Object.keys(i.mats).map(k=>i.mats[k]+' '+MATS[k]).join(', ')}</span></div>`:''}
-    ${i.drops.length?`<div class="row"><b>Found</b><span>${i.drops.map(d=>`<span class="tfr" style="${tierVars(iTierIdx(d))}">${ITEMS[d].n} ${itemChip(d)}</span>`).join(' ')}</span></div>`:''}
-    ${i.bounty?`<div class="row gift"><b>Bounty claimed</b><span>${esc(i.bounty)}</span></div>`:''}
-    ${i.arena?`<div class="row gift"><b>Arena cleared</b><span>${esc(i.arena)}</span></div>`:''}
-    ${i.gear?`<div class="row tr" style="${tierVars(gTierIdx(gearOf(i.gear)),gearOf(i.gear))}"><b>Spoils</b><span class="tfr">${gearIcon(i.gear)} ${gearOf(i.gear).n} ${tierChip(gearOf(i.gear))}</span></div>`:''}
-    ${i.personal?`<div class="row gift"><b>${esc(i.personal)}'s quest complete</b><span>${gearOf(i.gear).n}</span></div>`:''}
-    ${i.legend?`<div class="row gift legrow"><b>Legendary</b><span>${esc(i.legend)}</span></div>`:''}
-    ${i.tame&&!i.tamed?`<div class="tame"><img src="${monURL((MON[i.tame.mon]||guardianDef(i.tame.mon)).art)}" alt=""><div><b>${esc(i.tame.name)} is beaten but breathing.</b><small>${i.tame.bb?'Nikaris kneels and whistles softly. Beastbond: it would join with +12% stats and keep its own move. ':''}It watches you warily. Tame it, and it travels with you as a Companion.</small><div class="btnrow"><button class="btn sm gold" data-act="tame">Tame it</button><button class="btn sm" data-act="untame">Let it go</button></div></div></div>`:''}${i.tamed?`<div class="row gift"><b>${esc(i.tamed)} joins your roster</b><span>Tamed</span></div>`:''}
-    ${i.gift?`<div class="row gift">${port(i.gift,'sm')}<b>${TPL[i.gift].n} joins you</b><span>${elChips(TPL[i.gift].el)}</span></div>`:''}
-    ${i.quests.map(q=>`<div class="row"><b>Quest ready</b><span>${esc(q)}</span></div>`).join('')}
-    ${i.bonds.map(b=>`<div class="row bondr"><b>Bond grows</b><span>${esc(b.a)} and ${esc(b.b)}: level ${b.lv}${b.lv===2?' (joint tech unlocked)':b.lv===1||b.lv===3?' (new campfire talk on their sheets)':''}</span></div>`).join('')}</div>
-    ${i.ups.length?`<h4>Level up</h4><div class="rows">${i.ups.map(u=>`<div class="row"><b>${esc(u.name)} reaches Lv ${u.lv}</b>${u.pts?`<small class="up">${u.pts} stat point${u.pts>1?'s':''} to spend at the Guild</small>`:''}</div>`).join('')}</div>`:''}
-    ${(i.notes||[]).map(n=>`<p class="note echonote">${esc(n)}</p>`).join('')}
-    ${i.autoCut?`<p class="note autocut">Won mostly on auto: ${Math.round(i.autoCut*100)}% XP and gold. Drops and loot are unchanged.</p>`:''}
-    ${xpRows()}
-    <div class="btnrow stickyb"><button class="btn gold" data-act="resultOk">Continue</button></div></div></div>`;
-}
-function mTavern(){
-  const SL=tvSlots(),L=SL.filter(Boolean),rare=G.rare&&!G.roster[G.rare]?G.rare:null,later=tavernLater(),nu=nextTavernUnlock(),pool=tavernPool().length;
-  return box('The Rusty Flagon',`<p>Sellswords, singers and strays, all for hire. Recruits arrive near your party's level with fitting gear.</p>
-    ${rare?`<div class="rare"><h3>A rare wayfarer is drinking alone</h3>${heroCard(rare,false,null,`<button class="btn gold" data-act="hire" data-arg="${rare}" ${G.gold>=recruitCost(rare)?'':'disabled'}>Hire for ${fmt(recruitCost(rare))}</button>`)}</div>`:G.stage>=2?'<p class="note">No rare wayfarers tonight. They drift in after Scourge fights, bounties and nights at the inn.</p>':''}
-    <div class="tvbar"><small>${esc(tvNextText())}</small>${pool>L.length?`<small>${pool} wayfarer${pool>1?'s':''} are in this town's pool; four tables, picked to suit your party.</small>`:''}</div>
-    <div class="grid cards">${SL.map(id=>id?heroCard(id,false,null,`<div class="fits">${fitTags(id)}</div><button class="btn gold" data-act="hire" data-arg="${id}" ${G.gold>=recruitCost(id)?'':'disabled'}>Hire for ${fmt(recruitCost(id))}</button>`):`<div class="card hero emptyseat"><b>Empty seat</b><small>Fills at the next shuffle.</small></div>`).join('')||'<p class="note">Nobody new at the tables.</p>'}</div>
-    ${later?`<p class="note">${later} more wayfarer${later>1?'s are':' is'} on the road${nu?`; the next arrive in about ${nu.need} battle${nu.need>1?'s':''}, or when you reach the next realm`:''}.</p>`:''}<p class="note">Some wayfarers won't sit in a tavern at all. Check the Guild Hall's recruitment challenges.</p>
-    <h4>From the kitchen</h4><div class="rows">${tavernFood().map(id=>{const o=ITEMS[id];return `<div class="row"><div><b>${itemIcon(id)} ${o.n}</b><small>${o.d}. Carrying ${G.inv[id]||0}.</small></div><button class="btn sm" data-act="buyItem" data-arg="${id}" ${G.gold>=o.price&&(G.inv[id]||0)<invCap()?'':'disabled'}>${o.price}</button></div>`;}).join('')}</div>`,'<button class="btn" data-act="closeModal">Leave</button>',true);
-}
-function mShop(m){
-  // Beta v0.1.0: the Smithy owns weapons and armor end to end: buy, sell, Forge, temper, and the ore, wood and parts they need.
-  const tab=m.tab||'weapons';
-  const T=[['weapons','Weapons'],['armor','Armor'],['craft','Forge'],['forge','Tempering'],['mats','Materials'],['sell','Sell']].concat(typeof efTabOn==='function'&&efTabOn()?[['echo','Echoforge']]:[]);let rows='';
-  if(tab==='sell'){const cnt={};G.gear.forEach(g=>{const o=gearOf(g);if(o&&o.slot!=='c'&&!o.stick)cnt[g]=(cnt[g]||0)+1;});rows=Object.keys(cnt).map(id=>{const g=gearOf(id);return `<div class="row tr" style="${tierVars(gTierIdx(g),g)}">${gearIcon(id)}<div class="grow"><b>${g.n}</b> ${tierChip(g)} x${cnt[id]}<small>${SLOTN[g.slot]}. ${gearDesc(g)}</small></div><button class="btn sm" data-act="sell" data-arg="${id}">Sell ${sellVal(g)}</button></div>`;}).join('')||'<p class="note">No spare weapons or armor in your pack. Charms sell at Alchemy.</p>';}
-  else if(tab==='forge')rows=vTemper();
-  else if(tab==='craft'){const cat=SMITH_CATS.includes(m.cat)?m.cat:'weapon';rows=vRecipes(cat,SMITH_CATS,'Smithy gear comes out already tempered, so it beats buying the same piece. Metal wants ore, wooden gear wants logs, and every piece wants monster parts.');}
-  else if(tab==='mats')rows=vSmithMats();
-  else if(tab==='echo')rows=vEchoforge();
-  else rows=shopFBar()+shopSortIds(shopStock(tab)).map(id=>{const g=GEAR[id];return `<div class="row shoprow tr" style="${tierVars(gTierIdx(g),g)}">${gearIcon(id)}<div class="grow"><b>${g.n}</b> ${tierChip(g)}<small>${vsParty(id)}</small><small>${gearDesc(g)}. Spares owned: ${G.gear.filter(x=>x===id).length}.</small>${bestTag(id)}${cmpPanel(id)}</div><button class="btn sm" data-act="buyGear" data-arg="${id}" ${G.gold>=g.price?'':'disabled'}>${g.price}</button></div>`;}).join('');
-  return box('The Smithy',tabs(T,tab,'tab')+`<div class="rows">${rows}</div><p class="note">Equip gear from the menu anywhere. Potions, charms and travel gear are at Alchemy, the green-flask house in town.</p>`,'<button class="btn" data-act="closeModal">Leave</button>',true);
-}
-function mGuild(m){
-  const tab=m.tab&&m.tab!=='party'?m.tab:'recruit';
-  const T=[['recruit','Recruits'],['nature','Nature'],['personal','Personal quests'],['bounties','Bounties'],['arena','Arena']];
-  let body='';
-  if(tab==='recruit'){body=vChallenges();}
-  else if(tab==='nature'){body=vNature(m);}
-  else if(tab==='personal'){body=vPersonal();
-  }else if(tab==='bounties'){
-    for(let s=0;s<=G.stage;s++)genBounties(s);
-    body=`<p>Marked monsters roam the fields. Accept a bounty and its quarry appears in that realm's field, glowing red. Beat it for gold, a stat charm and materials.</p>${typeof allBar==='function'?allBar('bountyAll','',G.bounties.filter(b=>b.stage<=G.stage&&b.state==='open').length,0):''}<div class="rows">${G.bounties.filter(b=>b.stage<=G.stage).map(b=>{const mo=MON[b.mon],md=ELITE_MODS.find(x=>x.k===b.mod);
-      return `<div class="row"><img class="mimg" src="${monURL(mo.art)}" alt=""><div class="grow"><b>${esc(b.name)}</b><small>${md.n}: ${md.d} Level ${b.lv}. Roams ${esc(ZS(b.stage).n)}.</small><small>${fmt(b.reward.gold)} gold, ${gearOf(b.reward.charm).n}</small></div>${b.state==='open'?`<button class="btn sm gold" data-act="bounty" data-arg="${b.id}">Accept</button>`:b.state==='active'?'<span class="m">Hunting</span>':'<span class="m up">Done</span>'}</div>`;}).join('')}</div>`;
-  }else{
-    const cl=G.cleared.filter(Boolean).length;
-    body=`<p>The guild's fighting pit. Back-to-back waves of foes from every realm, no fleeing, no rest between waves.</p><div class="rows">${ARENA.map((A,i)=>`<div class="row"><div><b>${A.n}</b><small>${A.waves} waves, foes level ${A.lvs[0]}-${A.lvs[1]}. Suggested party level ${A.rec}. ${A.min>cl?`Opens after ${A.min} Scourge${A.min>1?'s':''} fall${A.min>1?'':'s'}.`:`Best: ${G.arena[i]?'cleared x'+G.arena[i]:'not yet cleared'}.`}</small><small>${fmt(A.reward.gold)} gold, ${A.reward.mat} materials${A.reward.charm?', a stat charm':''}${A.reward.core?', '+A.reward.core+' Dread Cores':''}</small></div><button class="btn sm gold" data-act="arena" data-arg="${i}" ${A.min>cl?'disabled':''}>Enter</button></div>`).join('')}</div>
-    <h4>Echoes</h4><p class="note">Beat a Scourge or the Calamity and an optional Echo of it lingers in its dungeon, on the rune circle where it fell. After the Calamity, the Echo Rift at any waystone lets you fight every Echo you have unlocked again.</p>`;
-  }
-  return box('Wayfarers Guild Hall',tabs(T,tab,'gtab')+body,'<button class="btn gold" data-act="closeModal">Done</button>',true);
-}
 function gearDiff(c,id){const g=gearOf(id),o=gearOf(c.eq[g.slot])||{},p=[];ST.forEach(s=>{const d=Math.round((g[s]||0)-(o[s]||0));if(d)p.push(`<b class="${d>0?'up':'dn'}">${d>0?'+':''}${d} ${STN[s]}</b>`);});
   ATTR.forEach(k=>{const d=((g.attr||{})[k]||0)-((o.attr||{})[k]||0);if(d)p.push(`<b class="${d>0?'up':'dn'}">${d>0?'+':''}${d} ${k.toUpperCase()}</b>`);});
   if(g.el&&o.el!==g.el)p.push(`<b class="up">${EL[g.el]} ward</b>`);if(g.immune&&!o.immune)p.push('<b class="up">Clarity</b>');return p.join(' ')||'<span class="mute">no change</span>';}
@@ -389,15 +323,6 @@ function mChar(id,edit){
     <h4>Skills</h4><p class="note">⟐ Primers mark a foe with their element for 2 turns. ✸ Detonators set off a reaction on a foe primed with a matching element. Other elemental skills just hit.</p><div class="rows">${classSkills(t).concat(id==='vaelith'?archiveSkills():[]).map(s=>`<div class="row ${!skillKnown(c,s)?'lock':''} ${s.combo?'combo':''} ${s.archive?'arcrow':''}"><div><b>${skEls(s).map(ico).join('')}${esc(s.n)}</b>${roleTag(s)}<small>${esc(s.d)}</small>${perkNote(c,s)}</div><span class="m">${!skillKnown(c,s)?'Lv '+s.lv:s.mp+' MP'}</span></div>`).join('')}</div>
     ${bondSheet(id)}
     <div class="btnrow"><button class="btn gold" data-act="${m.type==='guild'?'charBack':'menuBack'}">Back</button></div></div></div>`;
-}
-function mBoard(){
-  for(let s=0;s<=G.stage;s++)genQuests(s);
-  const qs=G.quests.filter(q=>q.stage<=G.stage);
-  return box('Quest Board',`<p>Notices pinned three deep. Accept one, do the deed, then come back to any quest board to claim the reward.</p><div class="rows">${qs.map(q=>{
-    const prog=q.type==='tamer'?`${Math.min(stickCount().n,q.n)}/${q.n} creatures logged`:q.type==='legend'?legendProg(q):q.type==='hunt'?`${q.have||0}/${q.n} hunted`:q.type==='gather'?`${Math.min(G.mats[q.mat]||0,q.n)}/${q.n} gathered`:q.type==='vault'?((G.vaults||{})[q.stage]?'Hoard recovered':'Vault still sealed'):q.found?'Found':'Somewhere in the '+ZS(q.stage).dungeon;
-    const rew=q.type==='tamer'?"The Tamer's Stick, a weapon that grows with your Bestiary":q.type==='legend'?`${esc(TPL[q.hero].title)} may join you`:q.type==='wanderer'?`${TPL[q.hero].n} joins you`:`${fmt(q.reward.gold)} gold${q.reward.item?', '+ITEMS[q.reward.item].n+' x2':''}${q.reward.gear?', forged gear':''}`;
-    const btn=q.state==='open'?`<button class="btn sm" data-act="qAccept" data-arg="${q.id}">Accept</button>`:q.state==='active'?(questReady(q)?`<button class="btn sm gold" data-act="qClaim" data-arg="${q.id}">Claim</button>`:'<span class="m">Active</span>'):'<span class="m up">Done</span>';
-    return `<div class="row"><div><b>${esc(q.title)}</b><small>${esc(q.desc)}</small><small>${q.state==='active'?prog+'. ':''}Reward: ${rew}</small></div>${btn}</div>`;}).join('')}</div>`);
 }
 // v0.4.0 3.1: seven top groups, with sub tabs where a group holds more than one page. Tab ids are unchanged so every old link still lands.
 // v0.6.3: regrouped so each group holds one kind of page: Quests has the guild missions, Backpack has Materials, Records has Lore
@@ -517,7 +442,6 @@ const ACT={
   new(){V.screen='starter';V.pick=[];V.starterSeed=(Math.random()*4294967296)>>>0;V.starterOpts=starterDraw(V.starterSeed);V.ngCycle=META.cycles||0;V.legacyPick=(META.legacy||[]).filter(id=>TPL[id]).slice(-1);if([0,1,2].some(s=>slotState(s)!=='empty')){V.modal={type:'slots',mode:'new'};}render();},
   pickLeg(id){const L=V.legacyPick=V.legacyPick||[];const i=L.indexOf(id);if(i>=0)L.splice(i,1);else{L.push(id);if(L.length>2)L.shift();}while(V.pick.length>starterSlots())V.pick.pop();render();},
   slots(){V.modal={type:'slots',mode:'load'};render();},
-  cont(){const o=loadRaw();if(!o){toast('No saved journey found.');return;}try{G=unpackG(o);}catch(e){toast('That save could not be read.');return;}enterWorldFromSave();},
   toTitle(){V.screen='title';V.modal=null;B=null;render();},
   beginGo(){V.modal=null;V.confirmFew=1;try{ACT.begin();}finally{V.confirmFew=0;}},
   pickS(id){const i=V.pick.indexOf(id);if(i>=0)V.pick.splice(i,1);else if(V.pick.length<starterSlots())V.pick.push(id);render();},
@@ -550,8 +474,6 @@ const ACT={
   
   closeModal(){V.modal=null;render();},
   flt(k){V.flt=k;render();},
-  tab(k){V.modal.tab=k;render();},
-  gtab(k){V.modal={type:'guild',tab:k};render();},
   openChar(id){V.modal={type:'guild',char:id,gear:null,tab:'party',list:(V.charList||[]).slice()};render();},
   charBack(){V.modal={type:'guild',tab:'recruit'};render();},
   gearSlot(sl){V.modal.gear=sl;render();},
@@ -568,7 +490,6 @@ const ACT={
   buyItem(id){const it=ITEMS[id];if(G.gold>=it.price&&(G.inv[id]||0)<invCap()){G.gold-=it.price;G.inv[id]=(G.inv[id]||0)+1;saveGame();sfx('buy');}render();},
   buyGear(id){const g=GEAR[id];if(G.gold>=g.price){G.gold-=g.price;G.gear.push(id);saveGame();sfx('buy');toast('Bought '+g.n+'.');}render();},
   sell(id){const i=G.gear.indexOf(id);if(i>=0){G.gear.splice(i,1);G.gold+=sellVal(gearOf(id));saveGame();sfx('buy');}render();},
-  forge(a){const o=JSON.parse(a);const r=forge(o.w,o.r);if(r){toast('Forged: '+gearOf(r).n);sfx('chest');}else sfx('deny');render();},
   craft(i){const r=RECIPES[+i];if(craft(r)){toast((r.item?'Crafted: ':'Forged: ')+(r.item?ITEMS[r.item].n:gearOf(r.id).n));sfx('chest');}else sfx('deny');render();},
   qAccept(id){const q=G.quests.find(q=>q.id===id);if(q){q.state='active';saveGame();toast('Quest accepted: '+q.title);}render();},
   qClaim(id){const q=G.quests.find(q=>q.id===id);if(!q)return;if(q.type==='wanderer'){q.state='claimed';G.gold+=200+q.stage*150;toast(`The town thanks you: ${200+q.stage*150} gold.`);saveGame();render();return;}const r=claimQuest(q);if(r){toast('Reward: '+r.join(', '));sfx('chest');}render();},

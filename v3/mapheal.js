@@ -3,7 +3,7 @@
 // (the optimistic reach) and once as solid (the strict reach). Any required tile (exit, gate, stairs, entrance, lever, boss door,
 // building door, cave mouth) that only the optimistic flood reaches is "blocked". healMap(m) clears or moves the blockers on the
 // shortest optimistic route until nothing is blocked. It runs on every map as it is built, so older saves heal when a map loads.
-const HEAL_PROPS=PROP_CH,HEAL_LOOSE='C'+PROP_CH;
+const HEAL_LOOSE='C'+PROP_CH;
 function mapEntry(m){
   if(m.gates&&m.gates.start&&m.gates.start.arrive)return m.gates.start.arrive;
   if(m.start)return m.start;

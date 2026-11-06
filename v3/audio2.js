@@ -117,7 +117,6 @@ function au2Fade(C,now,fade){C.stopAt=now+fade+.1;C.N.g.gain.cancelScheduledValu
 function au2Stop(fade){const g=AU2.g;if(!g||!AU2.cur)return;const now=g.ctx.currentTime,C=AU2.cur;if(C.resume)AU2.pos[C.key]=au2Beat(C,now);au2Fade(C,now,fade==null?1:fade);AU2.old.push(C);AU2.cur=null;}
 function au2StemSet(map,C){C=C||AU2.cur;if(!C||!map)return;const now=AU2.ctx.currentTime;C.stems=C.stems||{};Object.keys(map).forEach(s=>{if(!C.N.stem[s])return;const on=!!map[s];if(C.stems[s]===on)return;C.stems[s]=on;
   const gn=C.N.stem[s].gain;gn.cancelScheduledValues(now);gn.setValueAtTime(gn.value,now);gn.linearRampToValueAtTime(on?1:0,now+(on?1.5:2.5));});}
-function au2Stem(s,on){const C=AU2.cur;if(!C||!C.N.stem[s])return;const m={};m[s]=on;au2StemSet(m,C);}
 function au2Tick(){const g=AU2.g;if(!g||g.ctx.state!=='running')return;const ctx=g.ctx,now=ctx.currentTime,ahead=now+.25;
   AU2.old=AU2.old.filter(C=>C.stopAt>now);
   [AU2.cur].concat(AU2.old).forEach(C=>{if(!C||C.waitFor)return;const T=C.T,sec=60/T.bpm/4;const lim=C.stopAt||1e9;

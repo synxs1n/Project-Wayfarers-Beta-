@@ -40,7 +40,7 @@ function b5Knows(u){try{return tierOf(bestEntry(u),u.boss)>=2;}catch(e){return f
 function b5Intent(u){if(!B||!u||u.side!=='e'||u.hp<=0)return null;const p=foePlan(u);if(!p)return null;const k=b5Knows(u);
   return {cat:k?p.cat:'unknown',sk:p.sk,known:k,title:k?`Next: ${p.sk.n} (${B5CAT[p.cat]})`:'Next move unknown. Scan it or study it in the Bestiary.'};}
 // enemyTurn0 split in two: the planned choice (foePlan), then the original targeting and the action
-enemyTurn0=function(u){
+function enemyTurn0(u){
   if(!B||B.over||u.hp<=0)return;
   const live=B.front.filter(c=>c.hp>0);
   if(!live.length){advance();return;}
@@ -61,7 +61,7 @@ enemyTurn0=function(u){
   B5R.trace.push({foe:u.name,turn:u.turns,plan:plan&&plan.cat,did:b5Cat(sk),sk:sk.n,shown,known:b5Knows(u)});if(B5R.trace.length>400)B5R.trace.shift();
   const go=m=>{B.b5m=m;try{perform(u,sk,tg);}finally{if(B)B.b5m=null;}endTurn(u,1);};
   if(b5TimedOk(u,sk,tg)){const bt=B,t=tg[0];b5Ring(t,'def',ok=>{if(B!==bt||B.over||B.cur!==u||u.hp<=0)return;try{if(ok)fx(t,'Timed guard','stat good');go(ok?{a:u,t,m:1-B5.defDown}:null);}catch(e){wdForce(u,'timed guard: '+(e&&e.message||e));}});return;}
-  go(null);};
+  go(null);}
 // the icon the screen shows for a foe right now (read back from the stage label, else from the order bar): what the tests compare
 function b5Shown(u){try{const r=unitRef(u),e=document.querySelector(`#bstage .b5it[data-u="${r}"]`)||document.querySelector(`#border .b5oi[data-u="${r}"]`);return e?e.dataset.cat:null;}catch(e){return null;}}
 

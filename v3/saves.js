@@ -35,7 +35,7 @@ function svParse(str){
 function svSlotRaw(s){return svLs.get(slotKey(s));}
 function slotState(s){const raw=svSlotRaw(s);if(!raw)return 'empty';return svParse(raw).ok?'ok':'bad';}
 // loadRaw now repairs a missing ver; a damaged slot reads as null here, but the raw text is left alone and shown as damaged
-loadRaw=function(slot){const raw=svSlotRaw(slot==null?(META.slot||0):slot);if(!raw)return null;const p=svParse(raw);return p.ok?p.o:null;};
+function loadRaw(slot){const raw=svSlotRaw(slot==null?(META.slot||0):slot);if(!raw)return null;const p=svParse(raw);return p.ok?p.o:null;}
 // ---------- progress ----------
 function svProg(o){const ro=o.roster||{},party=(o.party||[]).filter(id=>ro[id]),st=o.stats||{};
   return {stage:o.stage||0,cleared:(Array.isArray(o.cleared)?o.cleared:[]).filter(Boolean).length,cycle:(o.run&&o.run.cycle)||0,heroes:Object.keys(ro).length,battles:st.battles||0,play:st.play||0,
@@ -352,7 +352,7 @@ document.addEventListener('change',e=>{const f=e.target&&e.target.id==='svfile'&
 // the status icon follows the screen
 {const r0=render;render=function(){const x=r0.apply(this,arguments);try{svIcon();}catch(e){}return x;};}
 // old helpers keep working: importSave now reports through the same checks and never writes anything itself
-importSave=function(code){const r=svDecode(code);if(!r.ok)return null;try{return unpackG(r.o);}catch(e){return null;}};
+function importSave(code){const r=svDecode(code);if(!r.ok)return null;try{return unpackG(r.o);}catch(e){return null;}}
 ACT.doImport=function(){ACT.svImportGo();};
 // v0.4.3: before playing on a new version, offer to export every save made by an older one (a backup the player keeps)
 function svOldSlots(){const out=[];[0,1,2].forEach(s=>{try{const raw=svSlotRaw(s),p=svParse(raw);if(p.ok&&(p.o.gv||'')!==GAME_VERSION)out.push({s,gv:p.o.gv||'an older version'});}catch(e){}});return out;}
@@ -362,8 +362,6 @@ function mSvUpdate(){const L=svOldSlots();
     `<button class="btn" data-act="svUpdOk">Continue to the game</button>`);}
 {const vm1=vModal;vModal=function(m){if(m&&m.type==='svupdate')return mSvUpdate();return vm1.apply(this,arguments);};}
 ACT.svUpdOk=function(){META.cfg=META.cfg||{};META.cfg.updSeen=GAME_VERSION;try{saveMeta();}catch(e){}V.modal=null;render();};
-// v0.6.0: no export popup after every update any more: saves are backed up on the account and Export stays in the Journey tab
-{const r2=render;render=function(){try{if(false&&V.screen==='title'&&!V.modal&&!G&&(META.cfg||{}).updSeen!==GAME_VERSION&&svOldSlots().length){V.modal={type:'svupdate'};}}catch(e){}return r2.apply(this,arguments);};}
 // v0.4.3: Settings has a way back to the main menu (the journey is saved first)
 {const sb0=settingsBody;settingsBody=function(){const h=sb0.apply(this,arguments);if(!G||V.screen==='title')return h;
   return h+`<div class="rows"><div class="row"><div><b>Main menu</b><small>${G.daily?'Leave the Daily Trial and go back to the title screen.':'Your journey is saved first. Continue picks it up again.'}</small></div><button class="btn sm" data-act="quitTitle">Back to the main menu</button></div></div>`;};}
