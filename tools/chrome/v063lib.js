@@ -53,9 +53,9 @@ async function rects(H){return H.ev(()=>{const A=__A,L=A.b3Lay?A.b3Lay():null,st
     out.labels.push(Object.assign(S(r),{k:e.className.split(' ').slice(0,2).join('.'),n:e.textContent.slice(0,12),over:e.scrollWidth>e.clientWidth+1||e.scrollHeight>e.clientHeight+2}));});
   ['bbossbar','border'].forEach(id=>{const e=document.getElementById(id);if(!e)return;const r=e.getBoundingClientRect();if(r.width&&r.height)out.labels.push({x:r.left,y:r.top,w:r.width,h:r.height,k:id,n:''});});
   return out;});}
-function overlaps(R,tol){tol=tol==null?.5:tol;const hit=(a,b)=>a.x<b.x+b.w-tol&&a.x+a.w-tol>b.x&&a.y<b.y+b.h-tol&&a.y+a.h-tol>b.y,bad=[];
+function overlaps(R,tol){tol=tol==null?.5:tol;const hitT=(a,b,t)=>a.x<b.x+b.w-t&&a.x+a.w-t>b.x&&a.y<b.y+b.h-t&&a.y+a.h-t>b.y,hit=(a,b)=>hitT(a,b,tol),bad=[];// v0.7.5: the order bar gets 3 px (a hit shake zooms the stage for a moment)
   for(let i=0;i<R.labels.length;i++){const a=R.labels[i];if(a.over)bad.push('overflow '+a.k);
-    for(let j=i+1;j<R.labels.length;j++){const b=R.labels[j];if(hit(a,b))bad.push(`${a.k}(${a.n}) x ${b.k}(${b.n})`);}
+    for(let j=i+1;j<R.labels.length;j++){const b=R.labels[j];if((a.k==='border'||b.k==='border')?hitT(a,b,3):hit(a,b))bad.push(`${a.k}(${a.n}) x ${b.k}(${b.n})`);}
     if(a.k==='bbossbar'||a.k==='border')continue;
     R.bodies.forEach(b=>{if(hit(a,b))bad.push(`${a.k}(${a.n}) on sprite ${b.n}`);});}
   return bad;}

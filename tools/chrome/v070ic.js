@@ -34,7 +34,7 @@ const nextHero=H=>H.ev(async()=>{const A=__A,B=A.B;A.setPause(40);for(let i=0;i<
   // no press at all: the attack still happens, normal damage
   {await nextHero(H);const a=await attack(H);const l=await after(H);chk('on: no press: the ring closes, the attack goes on at normal damage',a.ring&&l&&l.ok===false&&l.why==='none'||JSON.stringify({a,l}));}
   // a foe's single target attack on a hero: the guard ring, a timed press cuts the damage by 15%
-  {await nextHero(H);const g=await H.ev(async()=>{const A=__A,B=A.B,e=B.en.find(x=>x.hp>0);e.sk=[];e._b5p=null;e.S.acc=5;B.front.forEach(c=>{c.S.eva=0;c.S.mhp=c.hp=99999;if(c.st)delete c.st.ward;});e.next=B.time+.01;A.B5.R.last=null;
+  {await nextHero(H);const g=await H.ev(async()=>{const A=__A,B=A.B,e=B.en.find(x=>x.hp>0);e.sk=[];e.role=null;e._b5p=null;e.S.acc=5;B.front.forEach(c=>{c.S.eva=0;c.S.mhp=c.hp=99999;if(c.st)delete c.st.ward;});e.next=B.time+.01;A.B5.R.last=null;
       A.setPause(30);A.ACT.cmd('guard');for(let i=0;i<200&&!A.B5.R.ring;i++)await new Promise(q=>setTimeout(q,10));const R=A.B5.R.ring;return R?{ring:true,kind:R.kind,wait:Math.round(R.t0+R.T-performance.now())}:{ring:false,mode:B.mode,cur:B.cur&&B.cur.name};});
     if(g.ring){await H.wait(Math.max(0,g.wait-25));await H.page.keyboard.press(' ');}const l=await after(H);
     chk('on: a foe attacks a hero: the guard ring, a timed press takes 15% off',g.ring&&g.kind==='def'&&l&&l.ok&&l.base&&Math.abs(l.dmg/l.base-.85)<.02+1/l.base||JSON.stringify({g,l}));}

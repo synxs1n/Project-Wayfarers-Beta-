@@ -26,8 +26,8 @@ for(const [w,h] of [[390,844],[844,390],[933,705],[1280,720]]){const H=await ope
     itN+=it.live;itHid+=Math.max(0,it.live-it.shown);
     if(it.issues.length){barBad++;if(ex.length<14)ex.push(`${w}x${h} #${i} bar: ${it.issues.slice(0,3).join('; ')}`);}
     if(o.length){bad++;if(ex.length<14)ex.push(`${w}x${h} #${i} ${JSON.stringify(opt)}: ${o.slice(0,4).join('; ')}`);}}
-  chk(`${w}x${h}: ${n} battles, no label (intent labels included) overlaps another label or a sprite`,n>=N*.8&&bad===0||`${bad} of ${n} battles with overlaps`);
-  chk(`${w}x${h}: the order bar is off the stage and every entry fits, no badge on a portrait`,barBad===0||`${barBad} battles`);
+  chk(`${w}x${h}: ${n} battles, no label (intent labels included) overlaps another label or a sprite`,n>=N*.8&&bad===0||`${bad} of ${n} battles with overlaps: `+ex.filter(x=>!/bar:/.test(x)).join(" | "));
+  chk(`${w}x${h}: the order bar is off the stage and every entry fits, no badge on a portrait`,barBad===0||`${barBad} battles: `+ex.filter(x=>/bar:/.test(x)).join(" | "));
   await H.browser.close();}
 ex.forEach(e=>console.log('  ',e));
 console.log(`intent labels: ${itN-itHid} of ${itN} live foes on the stage`);

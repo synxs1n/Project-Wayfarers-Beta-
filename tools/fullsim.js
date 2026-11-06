@@ -6,6 +6,7 @@
 //   stage1 [N]      stage 1 field fights at level 3: careful and auto, how many foes are dual type, surprise starts on roamers
 //   xp [fights]     XP catch up: newcomers below the party's top level, levels gained per hero
 //   xpcamp [fights] v0.6.3: a party of 6 that is G levels below a veteran resting at camp (the roster's top level), levels gained
+//   b4 [N]          v0.7.0: auto against careful play on normal fights and bosses (win, turns, HP lost)
 //   journey [runs]  full journey pacing: every stage's required route on the real maps at the real encounter rate, a recruit per
 //                   realm up to six, and each boss fought until it falls (5 more fights after each loss, like a player who grinds
 //                   until ready); ends with the top hero's level and the party's average level. Quests, chests and side caves are not
@@ -22,7 +23,7 @@ return {get G(){return G},set G(v){G=v},get B(){return B},V,get META(){return ME
   autoTurnSmart:typeof autoTurnSmart==='function'?autoTurnSmart:autoTurn,setPause:p=>{PAUSE=p},setSmart:v=>{if(typeof SIM_SMART!=='undefined')SIM_SMART=v},
   finishBattle,calcStats,TPL,RAW,GPOOL,FPOOL,STAGE_BOSS_LV,STAGE_LV,GEAR,recruit,refresh,encounterFoes,getMap,resetMaps,mapEntry,findPath:typeof findPath==='function'?findPath:null,
   ENC_RATE,ENC_MIN_STEPS,SOLID,syncPools:typeof syncPools==='function'?syncPools:()=>{},roamSpawn:typeof roamSpawn==='function'?roamSpawn:null,ZS,newRun:typeof newRun==='function'?newRun:null,avgLv,gearTier,ROAM:typeof ROAM!=='undefined'?ROAM:null,SURPRISE:typeof SURPRISE!=='undefined'?SURPRISE:null,
-  DUAL_FROM:typeof DUAL_FROM!=='undefined'?DUAL_FROM:null,XPCU:typeof XPCU!=='undefined'?XPCU:null,need,
+  DUAL_FROM:typeof DUAL_FROM!=='undefined'?DUAL_FROM:null,B4:typeof B4!=='undefined'?B4:null,XPCU:typeof XPCU!=='undefined'?XPCU:null,need,
   innHeal:()=>Object.values(G.roster).forEach(c=>{c.ail={};c.st={};c.S=calcStats(c);c.hp=c.S.mhp;c.mp=c.S.mmp;})};`;
 const LOOP=`
 const Q=window.__Q;
@@ -32,8 +33,9 @@ function run(spec){Q.length=0;try{A.syncPools();}catch(e){}
   let it=0;while(it++<400000){const m=A.V.modal;if(m&&(m.type==='result'||m.type==='lose'))break;
     if(!Q.length){if(A.B&&A.B.mode==='cmd')(window.__AUTO?A.autoTurn:A.autoTurnSmart)();else if(A.B&&!A.B.over)A.advance();if(!Q.length)break;}
     Q.shift()();}
-  const m=A.V.modal,res=m&&m.type==='result'?'win':m&&m.type==='lose'?'lose':'stuck',info=m&&m.info;const t=A.B?A.B.time:0,en=A.B?A.B.en.map(e=>({el:e.el.slice(),boss:!!e.boss,elite:!!e.elite})):[],sur=A.B?!!A.B.surprise:false;
-  A.V.modal=null;if(A.B)A.finishBattle('x');return {res,t,info,en,sur};}
+  const m=A.V.modal,res=m&&m.type==='result'?'win':m&&m.type==='lose'?'lose':'stuck',info=m&&m.info;const t=A.B?A.B.time:0,en=A.B?A.B.en.map(e=>({el:e.el.slice(),boss:!!e.boss,elite:!!e.elite,role:e.role||null})):[],sur=A.B?!!A.B.surprise:false;
+  const pt=A.B?A.B.pturns||0:0,b4=A.B?{det:A.B.nDet||0,mp:A.B.b4detMp||0,sw:(A.B.b4swN||0),aSw:A.B.autoSwaps||0,roles:A.B.b4roles||{},mo:A.B.b4mo?A.B.b4mo.hist.length:0}:{};
+  A.V.modal=null;if(A.B)A.finishBattle('x');return {res,t,info,en,sur,pt,b4};}
 function party(ids,lv,tier){A.newGame(ids.slice(0,3));const G=A.G;G.roster={};G.party=[];ids.forEach(id=>{const c=G.roster[id]=A.newChar(id,lv,tier);if(A.GEAR['k_cape_'+Math.min(5,tier)]){c.eq.k='k_cape_'+Math.min(5,tier);c.S=A.calcStats(c);c.hp=c.S.mhp;c.mp=c.S.mmp;}G.party.push(id);});}
 let seed=909;const R=()=>{seed=(seed*1103515245+12345)&0x7fffffff;return seed/0x7fffffff;};
 const pool=A.RAW.filter(r=>r[6]!=='L'&&r[6]!=='x'&&A.TPL[r[0]]&&!A.TPL[r[0]].mon).map(r=>r[0]);
@@ -82,6 +84,21 @@ xpcamp:F=>`F=${F||30};const out=[];const ids=['brann','mira','sable','lumen','or
       for(let i=0;i<F;i++){const o=run({stage:s,kind:'field',weather:'clear'});if(o&&o.info&&o.info.catchup&&o.info.catchup.length)cu++;A.innHeal();}
       fr+=lv(ids[0])-f0;bk+=lv(ids[4])-b0;}
     out.push('stage '+(s+1)+', veteran at camp lv '+L+', party '+gap+' behind: levels gained in '+F+' fights: front '+(fr/RUNS).toFixed(2)+', reserve '+(bk/RUNS).toFixed(2)+' (fights with a catch up row: '+cu+')');}
+  return out.join('\\n');`,
+// v0.7.0 battle mechanics: auto (the game's auto battle) against careful play (the sims' careful brain; on v0.7.0 it also reads
+// foe roles, guards telegraphs, uses the free swap and varies its moves) on normal fights and bosses, parties of 6 (3 front, 3 Rearguard).
+// Per row: win rate, party actions per fight (turns), HP lost (the whole party's HP, fights started at full). Run it with SIMROOT on the
+// previous build for the before numbers. B4OFF=swap,mo,det,roles switches those v0.7.0 systems off (to see what each one does); B4SET=roles.boss.pw=2.4,mo.dmg=.1 tries other tunables.
+b4:N=>`N=${N||40};const out=[];${JSON.stringify(process.env.B4OFF||'')}.split(',').forEach(k=>{if(k&&A.B4&&A.B4[k])A.B4[k].on=false;});${JSON.stringify(process.env.B4SET||'')}.split(',').forEach(kv=>{const [k,v]=kv.split('=');if(!k||!A.B4)return;const p=k.split('.'),o=p.slice(0,-1).reduce((q,x)=>q[x],A.B4);o[p[p.length-1]]=+v;});const hpOf=()=>A.G.party.reduce((a,id)=>a+Math.max(0,A.G.roster[id].hp),0);
+  const row=(label,mk)=>{const cols=[];for(const auto of [true,false]){window.__AUTO=auto;let w=0,n=0,pt=0,hp=0,det=0,sw=0,rf=0,ro=0;
+      for(let i=0;i<N;i++){const spec=mk(i);A.innHeal();const mhp=A.G.party.reduce((a,id)=>a+A.G.roster[id].S.mhp,0);let r=null;try{r=run(spec);}catch(e){continue;}if(!r)continue;n++;if(r.res==='win')w++;
+        pt+=r.pt;hp+=1-hpOf()/mhp;det+=r.b4.det||0;sw+=(r.b4.sw||0);rf+=(r.b4.mp||0);ro+=Object.values(r.b4.roles||{}).reduce((a,b)=>a+b,0);}
+      cols.push((auto?'auto   ':'careful')+' win '+Math.round(100*w/Math.max(1,n))+'% turns '+(pt/Math.max(1,n)).toFixed(1)+' HP lost '+Math.round(100*hp/Math.max(1,n))+'% (reactions '+(det/Math.max(1,n)).toFixed(2)+', free swaps '+(sw/Math.max(1,n)).toFixed(2)+', role moves '+(ro/Math.max(1,n)).toFixed(2)+')');}
+    window.__AUTO=false;out.push(label+'\\n    '+cols.join('\\n    '));};
+  for(let s=0;s<5;s++){const L=Math.round((A.STAGE_LV[s][0]+A.STAGE_LV[s][1])/2)+1;
+    row('stage '+(s+1)+' field, party of 6 at lv '+L,i=>{seed=5000+s*977+i*13;party(pick(6),L,s);A.G.stage=s;A.G.cleared=[0,1,2,3,4].map(x=>x<s);A.G.run.seed=7000+i;return {stage:s,kind:'field',weather:'clear'};});}
+  for(let s=0;s<5;s++){const L=A.STAGE_BOSS_LV[s];
+    row('stage '+(s+1)+' boss, party of 6 at lv '+L,i=>{seed=8000+s*911+i*17;party(pick(6),L,s);A.G.stage=s;A.G.cleared=[0,1,2,3,4].map(x=>x<s);if(s<4)A.G.run.bosses[s]=A.GPOOL[i%A.GPOOL.length];else A.G.run.final=A.FPOOL[i%A.FPOOL.length];return {stage:s,kind:'boss'};});}
   return out.join('\\n');`,
 journey:RUNS=>`RUNS=${RUNS||3};window.__DBG=${process.env.DBG?1:0};const out=[];const ER=A.ENC_RATE.normal,GAP=A.ENC_MIN_STEPS,perFight=GAP+1/ER;
   // steps of the required route on the real maps of this journey: town to the field gate, across the field to the dungeon, and the

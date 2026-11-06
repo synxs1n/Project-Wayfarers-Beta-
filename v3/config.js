@@ -306,3 +306,32 @@ const B3={body:1,pad:1,R:40,step:2,barW:{hero:24,foe:30},prim:13,sti:12,stiH:10,
 // window in ms (reduced motion: the ring does not move, it lights up for the window instead); atkUp: damage bonus of a timed hit;
 // defDown: damage cut of a timed guard against a foe's single target attack; grace: ms after the ring opens before a press counts.
 const B5={order:{tall:6,wide:8},bigPw:1.55,stCh:.4,it:{w:11,h:10},ringMs:900,win:130,winRM:260,atkUp:.15,defDown:.15,grace:90};
+// ===== Beta v0.7.0 battle mechanics (battle4.js, battle4.css) =====
+// det: a hero who detonates a reaction gets mpPct of max MP back (at least mpMin), shown in the reaction text ("+N MP"); at most
+//   maxPerAct refunds per action (an all-foes detonator can set off several reactions).
+// swap: a free swap (another Vanguard hero trades places with a Rearguard hero while the acting hero keeps its turn) once every cd
+//   party turns. Rooted heroes cannot step back. autoWhy: the auto switch rules (autoSwitchPick) auto battle may use it for. The acting hero stepping back itself is the old Switch (its turn goes to the newcomer).
+// mo: the party's Momentum gauge, 0..max. Each hero action has a kind (attack; a skill's element and delivery; guard; heal; item;
+//   support; scan; limit). The same kind as the party's last action adds rep; a different kind moves it toward the middle of the
+//   zone by vary; Guard above the middle cools it by guard. In the zone [lo,hi] heroes deal dmg more and take taken less. Reaching
+//   max overheats it: heroes deal pen less and take pen more until it falls back to hi. Every battle starts at start.
+// roles: foe roles (Scan and the Bestiary name them). roleOf: MON key -> role; realm, night and overlay variants inherit their base's.
+//   guard (Shieldbearer): pips shield pips; while they hold, its allies take cover less damage. hex (Hexer): every other turn it
+//   stacks Hex on a hero (hexDmg less damage per stack); a Hex on a hero already at hexMax bursts for doom of max HP.
+//   charge (Charger): every chargeEvery turns it winds up, next turn it hits that hero's slot for chargePw (Guard halves it).
+//   leech (Leech): every leechEvery turns it drains each Vanguard hero not guarding (leechPw) and heals leechHeal of its max HP per hero.
+//   flank (Skirmisher): once the same three heroes have stood in the Vanguard for flankAt party actions, it hits the weakest for flankPw.
+//   boss: every Scourge and Calamity gathers power on every every-th turn (its turn is spent) and next turn strikes the whole
+//   Vanguard for pw (its usual all-foes skills are about 1.1 to 1.25). Guard halves it for each hero who guards.
+// daily: which systems run in the Daily Trial (all of them are deterministic: no clock, only the battle's seeded RNG).
+const B4={det:{on:true,mpPct:.1,mpMin:4,maxPerAct:2},
+  swap:{on:true,cd:3,autoWhy:['hurt','debuffed','healer']},
+  mo:{on:true,start:20,lo:40,hi:75,max:100,rep:22,vary:14,guard:26,dmg:.1,taken:.1,pen:.05},
+  roles:{on:true,cover:.4,pips:2,hexDmg:.08,hexMax:3,doom:.3,chargeEvery:3,chargePw:2.6,leechEvery:2,leechPw:.6,leechHeal:.07,flankAt:6,flankPw:1.9,
+    boss:{on:true,every:4,pw:3}},
+  roleOf:{shellguard:'guard',iceknight:'guard',huskguard:'guard',
+    ashwraith:'hex',eclipsewraith:'hex',rimewight:'hex',galephantom:'hex',
+    barrowbones:'charge',yeti:'charge',slaggolem:'charge',gargoyle:'charge',drownedsailor:'charge',
+    brinejelly:'leech',voidspawn:'leech',cavebat:'leech',
+    frostwolf:'flank',thunderhawk:'flank',stareater:'flank',gull:'flank'},
+  daily:{det:true,swap:true,mo:true,roles:true}};

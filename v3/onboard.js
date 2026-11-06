@@ -217,7 +217,8 @@ function obTick(){try{
     const back=()=>{obClose();delete obM().s[id];saveMeta();OB.q=OB.q.filter(x=>x!==id);OB.q.unshift(id);OB.last=0;};
     if(obBossHold()){back();return;}// never during a boss's first turn: it comes back after
     // a battle card leaves with its battle (or when a window opens over it), a window card with its window, a world card when the view changes
-    const gone=c.scr==='battle'?(V.screen!=='battle'||!B||B.id!==c.bid||B.over||!!V.modal):c.modal?(!V.modal||V.modal.type!==c.modal):(V.screen!==c.scr||(c.scr==='world'&&!!V.modal));
+    // v0.7.5: a window card is judged by its window first (the rewards window sits over the battle screen, which made a tame tip flash on and off)
+    const gone=c.modal?(!V.modal||V.modal.type!==c.modal):c.scr==='battle'?(V.screen!=='battle'||!B||B.id!==c.bid||B.over||!!V.modal):(V.screen!==c.scr||(c.scr==='world'&&!!V.modal));
     if(gone){if(Date.now()-OB.shownAt<2500)back();else obClose();return;}// hardly seen: it shows again at the next such moment
     if(OB.el&&!OB.el.isConnected)obMount();return;}
   if(V.obPrev&&!(V.modal&&V.modal.type==='menu'))V.obPrev=null;
@@ -272,7 +273,7 @@ function vSysGuide(m){const at=m&&m.obAt,met=TIPS.filter(t=>t.always||tipSeen(t.
 try{const css=document.createElement('style');css.textContent=`#p2hint.ob{width:min(92vw,420px);display:flex;flex-wrap:wrap;align-items:center;gap:2px 8px}#p2hint.ob .obt{flex:1 1 270px;min-width:0;overflow-wrap:anywhere}
   #p2hint.ob .btnrow{margin:2px 0 0 auto;flex:0 0 auto}#p2hint.ob.bat{font-size:11.5px;padding:5px 8px}#p2hint.ob.slim{flex-wrap:nowrap;align-items:center;font-size:11px;padding:3px 8px;line-height:1.25}#p2hint.ob.slim .obt{flex:1 1 auto}#p2hint.ob.slim .btnrow{margin:0}
   #p2hint.inl{position:relative;left:auto;top:auto;bottom:auto;transform:none;max-width:none;width:auto;margin:4px 0 8px;z-index:1;box-shadow:0 2px 10px rgba(0,0,0,.35)}
-  #p2hint.inl.show{transform:none}
+  #p2hint.inl.show{transform:none}#p2hint.inl{transition:none}/* v0.7.5: a window card is put back after every re-render of the window; with the fade it flashed */
   .obg{display:flex;flex-direction:column;gap:4px;margin-bottom:6px}.obgi{border:1px solid rgba(255,208,74,.25);border-radius:8px;padding:6px 9px;background:rgba(255,255,255,.03)}
   .obgi summary{cursor:pointer;font-weight:800;min-height:28px;display:flex;align-items:center}.obgi.at{border-color:#ffd04a}.obgi .note{margin:4px 0}
   .obset .chips{flex-wrap:wrap}`;document.head.appendChild(css);}catch(e){}
