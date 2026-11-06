@@ -1914,6 +1914,52 @@ body:has(.battle.b3.m-wide.b8short){padding-top:6px}
 /* a narrow turn order bar (the right column on short landscape screens): smaller sky chips, the NEXT label folds away (the entries keep their titles) */
 .battle.b3.m-wide .order{container-type:inline-size}
 @container (max-width:330px){.battle.b3.m-wide .order .ocs>small{display:none}.battle.b3.m-wide .order .osky .wchip{min-width:30px;padding:0 4px}.battle.b3.m-wide .order .osky{gap:2px}}
+
+/* =================== Beta v0.9.5: battle clarity (battle3.js section 9, battle5.js cues) =================== */
+/* the key weakness on a foe card: one chip (a button: tap for the full chips); a reaction setup is purple with ✸ */
+.battle.b3 .ptags button.fwk{cursor:pointer;font:800 .58rem/1 var(--fb);min-height:0;margin:0;box-shadow:none;text-transform:none}
+.battle.b3 .fwk.b9key i{font-style:normal;font-weight:900;color:#ffe9b8;opacity:.8;margin-left:1px}
+.battle.b3 .fwk.b9key.rx{color:#f2e2ff;border-color:rgba(214,170,255,.75);background:linear-gradient(90deg,rgba(90,42,138,.75),rgba(42,20,80,.75))}
+.battle.b3 .fcw .fwk.b9key.rx b{font-size:.7rem}
+.battle.b3.m-tall .fcw .fwk.b9key.rx b,.battle.b3.m-wide .fcw .fwk.b9key.rx b{font-size:.62rem}
+.battle.b3.m-tall .fcw .fwk.b9key.rx b::before,.battle.b3.m-wide .fcw .fwk.b9key.rx b::before{content:none}
+.battle.b3 .fwk.b9less{color:#d8cfe6;border-color:rgba(200,190,220,.4);background:rgba(20,16,30,.6);padding:0 4px}
+/* simple mode: Vanguard cards keep the name, bars, elements and statuses (level and class in the i panel and Expert mode) */
+.battle.b3:not(.b9x) .pgroup.heroes .pc .ucl,.battle.b3:not(.b9x) .pgroup.heroes .pc .ucc{display:none}
+/* the i panel: capped chips and the plain type line */
+.udet .b9det{margin:6px 0 2px}.udet .b9chips{display:flex;flex-wrap:wrap;gap:6px}
+.udet .fwk{display:inline-flex;align-items:center;gap:3px;font:800 .7rem/1 var(--fb);padding:3px 6px;border-radius:3px;border:1px solid}
+.udet .fwk .ico{width:14px;height:14px}.udet .fwk.up{color:#ffcf6a;border-color:rgba(255,190,90,.6);background:rgba(70,40,10,.6)}
+.udet .fwk.dn{color:#b8c8dc;border-color:rgba(160,180,210,.5);background:rgba(20,28,44,.6)}.udet .fwk .dli.res{opacity:.62;filter:saturate(.45)}
+.udet .b9ty{margin-top:4px}
+/* the primed badge pulses gently when the acting hero holds a matching detonator */
+.bstage .primed.pmin.b3l.b9rdy{animation:b3bob 1.6s ease-in-out infinite,b9pulse 1.3s ease-in-out infinite;box-shadow:0 0 0 .6px var(--c)}
+@keyframes b9pulse{0%,100%{box-shadow:0 0 0 .4px var(--c),0 0 1px var(--c)}50%{box-shadow:0 0 0 1px var(--c),0 0 4px var(--c)}}
+.battle.b3 .pchip.b9rdy{outline:1.5px solid #fff3c0;outline-offset:1px}
+html.rm .bstage .primed.pmin.b3l.b9rdy{animation:none;box-shadow:0 0 0 1px var(--c),0 0 3px var(--c)}
+@media (prefers-reduced-motion:reduce){.bstage .primed.pmin.b3l.b9rdy{animation:none;box-shadow:0 0 0 1px var(--c),0 0 3px var(--c)}}
+/* the reaction moment: one flash under 120 ms in both element colours, the name banner (logical stage px, placed clear of faces) */
+.bstage .b9fl{position:absolute;left:0;top:0;pointer-events:none;z-index:8;background:linear-gradient(100deg,var(--c1),#fff 50%,var(--c2));mix-blend-mode:screen;opacity:0;animation-name:b9flash;animation-timing-function:ease-out;animation-fill-mode:both}
+@keyframes b9flash{0%{opacity:0}25%{opacity:.42}100%{opacity:0}}
+.bstage .b9ban{position:absolute;box-sizing:border-box;display:flex;align-items:center;justify-content:center;gap:.12em;pointer-events:none;z-index:9;white-space:nowrap;overflow:hidden;
+  border-radius:.25em;border:.06em solid rgba(255,240,255,.85);background:linear-gradient(90deg,transparent,rgba(46,20,84,.9) 12%,rgba(46,20,84,.9) 88%,transparent),linear-gradient(90deg,var(--c1),var(--c2));
+  box-shadow:0 0 .35em var(--c2);color:#fff;font-family:var(--fb);line-height:1;text-shadow:0 0 .12em #000;animation-name:b9ban;animation-timing-function:ease-out;animation-fill-mode:both}
+.bstage .b9ban b{font-weight:900;letter-spacing:.03em}
+.bstage .b9ban .ico{width:1em;height:1em;flex:none}
+@keyframes b9ban{0%{opacity:0;transform:scaleX(.6)}12%{opacity:1;transform:scaleX(1.04)}20%{transform:none}80%{opacity:1}100%{opacity:0}}
+html.rm .bstage .b9ban{animation:none!important;opacity:1}
+@media (prefers-reduced-motion:reduce){.bstage .b9ban{animation:none;opacity:1}}
+/* intent cues on the command panel: the button to press glows; the cue line replaces the class name in the header */
+.battle.b3 .cmd .mi.b9glow{border-color:#ffd04a;box-shadow:0 0 0 1px rgba(255,208,74,.65),0 0 9px rgba(255,190,60,.55);animation:b9glow 1.4s ease-in-out infinite}
+.battle.b3 .cmd .mi.b9glow.cl{border-color:#8ff0c0;box-shadow:0 0 0 1px rgba(143,240,192,.6),0 0 9px rgba(120,230,170,.5)}
+@keyframes b9glow{0%,100%{filter:none}50%{filter:brightness(1.18)}}
+html.rm .battle.b3 .cmd .mi.b9glow{animation:none}
+@media (prefers-reduced-motion:reduce){.battle.b3 .cmd .mi.b9glow{animation:none}}
+.battle.b3 .cmd .mi .b9ex{font-style:normal;color:#ffd04a;font-weight:900}
+.battle.b3 .who.cmdhead .b9cue.inhead{flex:1 1 0;min-width:0;margin:0 0 0 auto;font-size:.66rem;line-height:1.12;font-weight:800;color:#ffd04a;text-align:right;white-space:normal;overflow-wrap:anywhere}
+.battle.b3 .who.cmdhead .autowhy.inhead+.b9cue.inhead{margin-left:6px}
+.battle.b3 .who.cmdhead .b9cue.inhead+.cmdback{margin-left:6px}
+.battle.b3 .cmdhead .b9cue.it{color:#ffb0a0}.battle.b3 .cmdhead .b9cue.hx{color:#e6b8ff}
 /* Beta v0.7.0 battle information and input (battle5.js) */
 /* stage intent label: a box laid out by b3Lay (logical stage px) */
 .bstage .b5it{display:grid;place-items:center;padding:0;border-radius:2px;border:.6px solid #150b17;background:rgba(21,11,23,.86);color:#ffd8c8;pointer-events:none;z-index:6;box-shadow:0 0 0 .5px rgba(255,255,255,.25);overflow:hidden}
@@ -1946,6 +1992,12 @@ body:has(.battle.b3.m-wide.b8short){padding-top:6px}
 .battle.b3.m-tall .order .b5oi,.battle.b3.bside .order .b5oi{width:13px;height:13px}
 .battle.b3.m-tall .order .b5oi svg,.battle.b3.bside .order .b5oi svg{width:9px;height:9px}
 .battle.b3.m-tall .order .b5oi b,.battle.b3.bside .order .b5oi b{font-size:9px}
+/* v0.9.5: a telegraphed big hit widens the intent label to "Guard!"; the key weakness tag (one per foe, laid out by b3Lay) */
+.bstage .b5it.b9tel{display:flex;align-items:center;justify-content:center;gap:1px;border-color:#ffd04a;color:#ff6a4a;box-shadow:0 0 0 .5px #ffd04a,0 0 3px rgba(255,190,60,.85)}
+.bstage .b5it.b9tel em{font:900 5px/1 var(--fb,system-ui);font-style:normal;color:#ffe08a;white-space:nowrap;letter-spacing:.05px}
+.bstage .b9wk{display:grid;place-items:center;padding:0;border-radius:2px;border:.6px solid #ffbe5a;background:rgba(60,34,8,.88);pointer-events:none;z-index:6;box-shadow:0 0 0 .4px rgba(21,11,23,.9);overflow:hidden}
+.bstage .b9wk .ico,.bstage .b9wk .dli{width:8px;height:8px;margin:0}
+.bstage .b9wk.rx{border-color:#e8c8ff;background:rgba(70,30,110,.9);box-shadow:0 0 0 .4px rgba(21,11,23,.9),0 0 3px rgba(200,150,255,.9)}
 /* ===== Beta v0.7.0 battle mechanics (battle4.js): the Momentum gauge in the log ticker, the switch menu ===== */
 .battle.b3 .bline .b4mo{flex:none;display:flex;flex-direction:column;justify-content:center;gap:3px;width:98px;min-height:40px;margin:0 0 0 -6px;padding:3px 6px;box-sizing:border-box;
   background:rgba(10,12,22,.7);border:1px solid rgba(217,180,106,.28);border-radius:3px;color:#f3e7cc;font:inherit;cursor:pointer;text-align:left}
@@ -1977,7 +2029,7 @@ body:has(.battle.b3.m-wide.b8short){padding-top:6px}
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.9.6";const APP_BUILD="60aba5fd44d8";
+(function(){const APP_VER="0.9.7";const APP_BUILD="152030c5b92f";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2605,7 +2657,7 @@ const TWISTS={on:true,
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.9.6";const APP_BUILD="60aba5fd44d8";
+const APP_VER="0.9.7";const APP_BUILD="152030c5b92f";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2613,6 +2665,7 @@ const APP_VER="0.9.6";const APP_BUILD="60aba5fd44d8";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.9.7',['Clearer battles: each foe shows its one key weakness (one your party can set up a reaction with, when there is one); tap it for the rest, or turn on Expert battle info in Settings to see everything. Damage types are now Physical, Ranged and Magic (plus Heal against undead), with at most two weaknesses and two resistances shown. Reactions hit harder on screen: a flash, a name banner, a new sound and a camera punch, and the primed badge pulses when your hero can set it off. Cues tell you what to do: Guard! before a telegraphed hit, Interrupt when a foe winds up, Cleanse when a hex stacks.']],
  ['Beta v0.9.6',['Fewer, better fights: random battles are much rarer and fields now have visible roamers (including each realm\'s foe roles) you can choose to fight or sneak up on; fights pay more, so a journey still ends around level 40. Every Scourge and Calamity has its own realm gimmick that it telegraphs a turn ahead (rising tide, lava vents, a lightning rod, a blizzard, broods of adds, a phase change at half health and more) with a clear answer. Tamed companions grow: a second skill after 12 battles and an evolution after 30. New journeys unlock systems realm by realm (reactions and bonds in the second realm, camp and guild missions in the third, the Echoforge in the fourth); saves you already have keep everything.']],
  ['Beta v0.9.5',['Menus simplified: one Notice Board with Quests, Guilds, Bounties and Arena tabs (claimable first), reachable from the board, the Guild Hall and the Menu. Guilds now have three ranks with one line each (nothing you claimed is lost; some perks open sooner). Every gear slot has an Upgrade button that picks the best next step you can afford (equip a spare, buy, forge, temper or Echoforge) with Show all options for tinkerers; the Smithy shows the best upgrade per slot first. Build Party and Equip best come first on the Party and Equipment tabs.']],
  ['Beta v0.9.4',['Momentum is simpler: doing something different fills the gauge, repeating the same move or only attacking drains it. Fill it to get a Surge (heroes deal 15% more and take 10% less); let it run empty and the party is Drained (10% less dealt, 10% more taken) until you mix it up again.']],
@@ -8654,6 +8707,7 @@ function sfx(k){
   case 'weak':noiseHit(t,.09,.25,600,D);tone('square',300,t,.1,.12,D,90);break;
   case 'crit':noiseHit(t,.14,.3,500,D);tone('sawtooth',400,t,.15,.12,D,60);break;
   case 'react':[0,7,12,19].forEach((n,i)=>tone('square',MIDI(67+n),t+i*.035,.12,.09,D));noiseHit(t,.2,.18,1500,D);break;
+  case 'reaction':tone('triangle',MIDI(43),t,.3,.2,D,MIDI(31));noiseHit(t,.16,.2,900,D);[0,4,7,12].forEach((n,i)=>tone('square',MIDI(72+n),t+.02+i*.03,.09,.07,D));break; // v0.9.5: the reaction moment
   case 'break':noiseHit(t,.35,.35,300,D);[19,12,7,0].forEach((n,i)=>tone('square',MIDI(72+n),t+i*.05,.1,.1,D));break;
   case 'ko':tone('square',MIDI(60),t,.3,.1,D,MIDI(36));break;
   case 'win':[0,0,0,4,7,12].forEach((n,i)=>tone('square',MIDI(72+n),t+i*.11,i===5?.5:.1,.1,D));break;
@@ -12829,7 +12883,9 @@ function fxScale(f){return /crit/.test(f.cls)?1.25:/effx|stat/.test(f.cls)?.82:/
 function fxLayer(now){if(!B)return '';try{const bw=document.getElementById('bwrap'),bn=B.banner,on=!!bn&&now-bn.t<banDur(bn)*1000;if(bw)bw.classList.toggle('banon',on);}catch(e){}
   const out=b3FxRects(now).map(({f,r,fs})=>{const age=now-f.t,dl=fxDelay(f)+f.stg-age,rx=f.cls==='react';
     return `<span class="fx2 b3fx ${f.cls}" style="left:${r.x}px;top:${r.y}px;width:${r.w}px;height:${r.h}px;font-size:${fs.toFixed(2)}px;animation-delay:${dl}ms;animation-duration:${fxDur(f)}s">${rx?`<b>${f.rp&&EL[f.rp]?ico(f.rp):''}${f.rd&&EL[f.rd]?ico(f.rd):''}✸ ${esc(f.txt)}</b>`:esc(f.txt)}</span>`;});
-  return `<div class="fxlayer">${out.join('')}</div>`;}
+  // v0.9.5: the reaction moment's flash and banner (battle3.js section 9) ride in the same layer
+  let rx='';try{rx=typeof b9RxHtml==='function'?b9RxHtml():'';}catch(e){}
+  return `<div class="fxlayer">${out.join('')}</div>${rx}`;}
 {const st0=stageTags;stageTags=function(){return st0.apply(this,arguments)+fxLayer(Date.now());};}
 
 // ===== learn.js (v0.3.2): new skill notices =====
@@ -13349,7 +13405,7 @@ function uInfoBtn(u){return `<button class="uinfo" data-act="uInfo" data-arg="${
 // v0.3.5 2.1: the loud primed chip on every foe card, with turns left and a reaction hint while a detonator is being aimed
 // v0.6.3: compact (element, "Primed", turns left); while a detonator is aimed it names the reaction it will set off
 function primedChip(e){if(!(e.primed&&e.hp>0&&EL[e.primed.el]))return '';const sk=B.mode==='cmd'&&B.pend&&B.pend.sk,hit=detHits(sk,e),R=hit?(detTargets(sk).find(o=>o.e===e)||{}).R:null;
-  return `<span class="pchip ${hit?'hit':''}" style="--c:${ELC[e.primed.el]}" title="Primed with ${EL[e.primed.el]} for ${e.primed.t} more turn${e.primed.t===1?'':'s'}. A matching Detonator sets off a reaction.">${ico(e.primed.el)}<b>Primed</b><i>${e.primed.t}t</i>${R?`<u>✸ ${esc(R.n)}</u>`:''}</span>`;}
+  return `<span class="pchip ${hit?'hit':''} ${typeof b9Ready==='function'&&b9Ready(e)?'b9rdy':''}" style="--c:${ELC[e.primed.el]}" title="Primed with ${EL[e.primed.el]} for ${e.primed.t} more turn${e.primed.t===1?'':'s'}. A matching Detonator sets off a reaction.">${ico(e.primed.el)}<b>Primed</b><i>${e.primed.t}t</i>${R?`<u>✸ ${esc(R.n)}</u>`:''}</span>`;}
 // v0.6.3: the elements this foe is known to be weak to (and resists), from the Bestiary
 function foeWeak(e){try{const b=bestEntry(e),kn=Object.keys(b.known||{}).filter(el=>EL[el]),w=kn.filter(el=>effOf(el,e)>1),r=kn.filter(el=>effOf(el,e)<1);
   return (w.length?`<span class="fwk up" title="Weak to ${esc(w.map(el=>EL[el]).join(', '))}">Weak ${w.map(ico).join('')}</span>`:'')+(r.length?`<span class="fwk dn" title="Resists ${esc(r.map(el=>EL[el]).join(', '))}">Res ${r.map(ico).join('')}</span>`:'');}catch(x){return '';}}
@@ -15369,6 +15425,12 @@ function sfx2(k){const g=sxG();if(!g)return false;const now=performance.now();if
     if(k==='crit'){sxTone(D,{f:60,f1:32,dur:.6,v:.5});sxNoise(D,{type:'lowpass',f:3000,f1:200,dur:.5,v:.35,a:.001});au2Duck(.35,.25);}return true;}
   case 'react':{const r=SFXC.react||{};const a=SXE[r.a]||SXE.arcane,b=SXE[r.b]||SXE.arcane;a.i(D);setTimeout(()=>{if(sxG())b.i(D);},60);
     sxNoise(D,{t:.08,type:'lowpass',f:4000,f1:300,dur:.7,v:.4,a:.002});sxTone(D,{t:.08,f:70,f1:35,dur:.7,v:.4});return true;}
+  // v0.9.5: the reaction moment (battle3.js b9React, at the hit): a timpani punch with a low drop, a short bright brass stab and the
+  // detonating element's impact, softened through its own gain; a light duck so it reads over the music without a jolt
+  case 'reaction':{const r=SFXC.react||{},E=SXE[r.a]||SXE.arcane,c=g.ctx,q=c.createGain();q.gain.value=.55;q.connect(D);au2Duck(.3,.35);
+    sxSmp(D,'timpani',40,{t:.01,v:.85,dur:.6})||sxTone(D,{f:84,f1:42,dur:.4,v:.36});sxTone(D,{f:64,f1:34,dur:.45,v:.3});
+    [60,67,72,76].forEach((m,i)=>sxSmp(D,'brass',m,{t:.02+i*.012,v:.26,dur:.26})||sxTone(D,{t:.02,type:'triangle',f:MIDI(m),dur:.24,v:.045,lp:2400}));
+    E.i(q);sxPings(D,.06,4,2200,4200,.035);return true;}
   case 'break':sxPings(D,0,12,2000,7000,.1);sxNoise(D,{type:'highpass',f:2500,dur:.4,v:.4,a:.001});sxTone(D,{f:90,f1:40,dur:.4,v:.35});return true;
   case 'heal':if(performance.now()-(SFXC.skipHeal||0)<40)return true;[79,83,86,91].forEach((m,i)=>sxSmp(D,'celesta',m,{t:i*.06,v:.35,dur:.4})||sxTone(D,{t:i*.06,f:MIDI(m),dur:.35,v:.06}));sxTone(D,{f:500,f1:1000,dur:.6,v:.05,a:.2});return true;
   case 'buff':sxTone(D,{f:660,f1:990,dur:.3,v:.07,a:.05});sxTone(D,{t:.08,f:990,f1:1320,dur:.3,v:.06,a:.05});return true;
@@ -15394,6 +15456,8 @@ function sfx2(k){const g=sxG();if(!g)return false;const now=performance.now();if
   return false;}
 const sfxClassic=sfx;
 sfx=function(k){try{if(AU2.on&&sfx2(k))return;}catch(e){}if(!AU2.on)return sfxClassic.apply(this,arguments);};
+// v0.9.5: a reaction in battle plays the new 'reaction' sound instead of the older 'react' one (both would land on the same hit)
+{const s1=sfx;sfx=function(k){try{if(k==='reaction')SFXC.nRx=(SFXC.nRx||0)+1;if(k==='react'&&V.screen==='battle'&&performance.now()<(SFXC.rxSkip||0))return;}catch(e){}return s1.apply(this,arguments);};}
 // ---------- context hooks ----------
 if(typeof onAction==='function'){const oa0=onAction;onAction=function(a,now){try{SFXC.wt=a&&a.side==='p'&&a.eq?(gearOf(a.eq.w)||{}).wt||null:null;SFXC.el=a&&(a.actEl||null);}catch(e){}return oa0.apply(this,arguments);};}
 if(typeof onFx==='function'){const of0=onFx;onFx=function(u,txt,cls){try{if(u)SFXC.hitEl=u.fxEl||null;if(cls==='react'&&u)SFXC.react={a:u.reactEl,b:u.reactP};if(/resist|immune|block|guard|null/i.test(String(txt)))SFXC.block=1;
@@ -18505,7 +18569,7 @@ function b3Arrow(ctx,now){const L=b3Lay(),a=L&&L.arrow;if(!a)return;const x=a.x+
 // ----- DOM labels on the stage (status rows, primed badges, target tags) -----
 function b3StageHtml(){const L=b3Lay(true);if(!L)return '';const out=[],px=v=>v+'px';
   L.tags.forEach((o,u)=>{out.push(`<div class="utags b3l ${u.side}" style="left:${px(o.x)};top:${px(o.y)};width:${px(o.w)};height:${px(o.h)}">${stButtons(u,{max:o.max,noPrime:true,noWx:true})}</div>`);});
-  L.prim.forEach((o,u)=>{out.push(`<span class="primed pmin b3l" style="--c:${ELC[u.primed.el]};left:${px(o.x)};top:${px(o.y)};width:${px(o.w)};height:${px(o.h)}" aria-label="Primed with ${EL[u.primed.el]}, ${u.primed.t} turn${u.primed.t===1?'':'s'} left">${ico(u.primed.el)}<i>${u.primed.t}</i></span>`);});
+  L.prim.forEach((o,u)=>{out.push(`<span class="primed pmin b3l${b9Ready(u)?' b9rdy':''}" style="--c:${ELC[u.primed.el]};left:${px(o.x)};top:${px(o.y)};width:${px(o.w)};height:${px(o.h)}" aria-label="Primed with ${EL[u.primed.el]}, ${u.primed.t} turn${u.primed.t===1?'':'s'} left">${ico(u.primed.el)}<i>${u.primed.t}</i></span>`);});
   L.tgt.forEach((o,u)=>{const T=o.T,lab=(T.eff.replace(/<span class="eff [a-z]+ arch"[\s\S]*$/,'').match(/>([A-Za-z?]+)/)||[])[1]||'',cls=(T.eff.match(/class="eff ([a-z]+)/)||[])[1]||'';
     const l2=(lab?`<span class="eff ${cls}">${lab}</span>`:'')+(T.rx?`<span class="eff rx">${ico(T.rx.p)}${ico(T.rx.d)}✸ ${esc(T.rx.n)}</span>`:'')+(T.px?`<span class="eff px" title="Primes it with ${esc(EL[T.px]||'')}">⟐${ico(T.px)}</span>`:'')+(T.dl?`<span class="eff ${T.dl.up?'up':'dn'} arch" title="${esc(T.dl.tip||'')}">${T.dl.up?'▲':'▼'}${dlIco(T.dl.d)}</span>`:''),tk=b3TagKey(T),kf=B3TK[tk];
     out.push(`<div class="b3tg b3l ${u.side} ${T.rx?'det':''}" data-tk="${esc(tk)}" style="left:${px(o.x)};top:${px(o.y)};width:${px(o.w)};height:${px(o.h)};--f:${(B3.tagF*(kf||1)).toFixed(2)}px">${T.short?'':`<b class="ename">${esc(T.name)}</b>`}${l2?`<span class="l2">${l2}</span>`:''}</div>`);});
@@ -18514,6 +18578,7 @@ function b3StageHtml(){const L=b3Lay(true);if(!L)return '';const out=[],px=v=>v+
 // ----- floating effect texts, placed through the same pass -----
 function b3FxRects(now){if(!B)return [];const L=b3Lay();if(!L)return [];let top=1;try{const bn=B.banner;if(bn&&now-bn.t<banDur(bn)*1000)top=Math.ceil(26/(BL.sc||2));}catch(e){}
   const W=BL.W,H=BL.H,base=fxSize(),obs=L.obs.slice(),out=[];if(top>1)obs.push({x:0,y:0,w:W,h:top,body:1});
+  try{const bx=b9BanNow();if(bx)obs.push({x:bx.x,y:bx.y,w:bx.w,h:bx.h,body:1});}catch(e){}// v0.9.5: effect texts keep clear of the reaction banner
   B.en.concat(B.front).forEach(u=>{if(!u||!u.fx||!u.fx.length)return;const b=unitBox(u);if(!b)return;
     const live=u.fx.filter(f=>now-f.t<(fxDur(f)*1000+IMPACT+FX_STAG*6));if(!live.length)return;
     const used=new Set(live.filter(f=>f.slot!=null).map(f=>f.slot));live.forEach(f=>{if(f.slot==null){let s=0;while(used.has(s))s++;f.slot=s;used.add(s);f.stg=Math.min(s,5)*FX_STAG;}});
@@ -18529,7 +18594,8 @@ function b3FxRects(now){if(!B)return [];const L=b3Lay();if(!L)return [];let top=
 // which live foes a detonator sets off, and the reaction on each
 function detTargets(sk){if(!B||!sk||sk.role!=='det')return [];const els=skEls(sk);return B.en.filter(e=>e.hp>0&&e.primed).map(e=>{const el=els.find(x=>reactFor(e.primed.el,x));const R=el&&reactFor(e.primed.el,el);return R?{e,R,p:e.primed.el,d:el}:null;}).filter(Boolean);}
 // the reaction text floats with both element icons: note them on the effect entry when the reaction fires
-{const dr0=doReaction;doReaction=function(a,t,el){const p=t&&t.primed&&t.primed.el,R=dr0.apply(this,arguments);try{if(R&&t&&t.fx){for(let i=t.fx.length-1;i>=0;i--){const f=t.fx[i];if(f.cls==='react'&&f.txt===R.n){f.rp=p;f.rd=el;break;}}}}catch(e){}return R;};}
+{const dr0=doReaction;doReaction=function(a,t,el){const p=t&&t.primed&&t.primed.el,R=dr0.apply(this,arguments);try{if(R&&t&&t.fx){for(let i=t.fx.length-1;i>=0;i--){const f=t.fx[i];if(f.cls==='react'&&f.txt===R.n){f.rp=p;f.rd=el;break;}}}}catch(e){}
+  try{if(R&&t)b9React(a,t,p,el,R);}catch(e){}return R;};}// v0.9.5: the reaction moment (section 9)
 // in the skill list: every foe this detonator sets off right now, with the reaction and both element icons (else what it reacts with)
 function detList(s){if(!s||s.role!=='det'||!B)return '';const L=detTargets(s);if(!L.length)return detNote(s);
   // v0.7.7: symbols only: the primed element on each foe it sets off now (the reaction and foe names stay in the tooltip)
@@ -18759,6 +18825,110 @@ function b8Small(c){if(!c||!c.hd||c.hd<2||!(B8H.k<1))return c;let o=B8HC.get(c);
   B8HC.set(c,o);return o;}
 {const so=spriteOf;spriteOf=function(u,walk){const c=so.apply(this,arguments);try{if(u&&(u.heroArt||u.side==='p'&&!(TPL[u.id]&&TPL[u.id].mon)))return b8Small(c);}catch(e){}return c;};}
 
+// ----- 9) v0.9.5: battle clarity (simple layer, damage groups, reaction moments) -----
+// Simple by default: each foe shows ONE key weakness (card and stage tag), the one that sets up a reaction for this party when there is
+// one; the full chips (at most two weak and two resist, highest multipliers first) on tap (the key chip, the i panel) or always with
+// Settings > Expert battle info (META.cfg.expertBattle, off when missing). Damage types read as three groups (Physical = slash, blunt and
+// piercing; Ranged; Magic; and Heal for the Undead) with one symbol each (the dlIco art); a foe's types are one plain line (i panel, Scan).
+// Reactions get a moment: one short flash in both element colours (never under reduced motion), a "✸ Melt!" banner placed clear of
+// every face, a punchy sound and a quick camera punch on the target; B.nReact counts them (for the rewards screen).
+const B9={flashMs:100,banMs:900,gap:400,sndGap:250,last:0,lastSnd:0,ev:[],seq:0};
+function b9Expert(){try{return META.cfg.expertBattle===true;}catch(e){return false;}}
+const DG_NAME={phys:'Physical',ranged:'Ranged',magic:'Magic',heal:'Heal'},DG_ART={phys:'slash',ranged:'ranged',magic:'magic',heal:'heal'},DG_OF={slash:'phys',blunt:'phys',piercing:'phys',ranged:'ranged',magic:'magic',heal:'heal'};
+function dgIco(g,cls){const d=DG_ART[g];if(!d)return '';return `<img class="ico dli dg ${g} ${cls||''}" src="${cvURL('dli:'+d,()=>dlShapeCv(d))}" alt="${DG_NAME[g]}" title="${DG_NAME[g]}">`;}
+// the group multipliers of a known foe type: Physical is the mean of slash, blunt and piercing (each clamped as archMult does)
+function foeDg(e){const out={};try{if(!e||!revealed(e))return out;const ty=(e.ty||[]).filter(k=>ARCH[k]&&ARCH[k].dl);
+  if(ty.length){const C=e.boss?ARCH_BOSS_CLAMP:ARCH_FOE_CLAMP,sub=d=>{let m=1;ty.forEach(k=>{const v=ARCH[k].dl[d];if(v!=null)m*=v;});return clamp(m,C[0],C[1]);};
+    out.phys=(sub('slash')+sub('blunt')+sub('piercing'))/3;out.ranged=sub('ranged');out.magic=sub('magic');}
+  if(isUndead(e))out.heal=1.5;}catch(x){}return out;}
+// every known weakness and resistance: {w:[{k:'el'|'dg',id,m}],r:[...]}, strongest first (elements before groups on a tie)
+function b9Weak(e){const w=[],r=[];try{const b=bestEntry(e);Object.keys(b.known||{}).filter(el=>EL[el]).forEach(el=>{const m=effOf(el,e);if(m>1)w.push({k:'el',id:el,m});else if(m<1)r.push({k:'el',id:el,m});});
+  const D=foeDg(e);for(const g in D){const m=D[g];if(m>=1.1)w.push({k:'dg',id:g,m});else if(m<=.9)r.push({k:'dg',id:g,m});}}catch(x){}
+  const el1=(a,b)=>(a.k==='el'?0:1)-(b.k==='el'?0:1);w.sort((a,b)=>b.m-a.m||el1(a,b));r.sort((a,b)=>a.m-b.m||el1(a,b));return {w,r};}
+// the party's primer and detonator elements (live Vanguard heroes), and the detonators the acting hero can cast now
+let B9P={k:'',P:null};
+function b9Party(){if(!B)return {pr:new Set(),dt:new Set(),now:new Set()};const k=(B.id||0)+'|'+(B.actN||0)+'|'+(B.cur&&B.mode==='cmd'?unitRef(B.cur)+B.cur.mp:'')+'|'+B.front.map(c=>c.id+(c.hp>0?1:0)).join();
+  if(B9P.k===k&&B9P.P)return B9P.P;const P={pr:new Set(),dt:new Set(),now:new Set()};
+  B.front.forEach(c=>{if(!c||c.hp<=0||c.side!=='p'||c.isComp)return;let ks=[];try{ks=known(c)||[];}catch(e){}
+    ks.forEach(s=>{const els=skEls(s);if(!els.length)return;if(s.role==='primer')P.pr.add(els[0]);else if(s.role==='det')els.forEach(x=>{P.dt.add(x);if(c===B.cur&&B.mode==='cmd'&&c.mp>=(s.mp||0))P.now.add(x);});});});
+  B9P={k,P};return P;}
+// how a weakness element sets up a reaction for this party: 3 it detonates the foe's current prime, 2 a hero primes with it and another
+// detonates it (or the reverse), 1 a hero uses it in a primer or detonator, 0 none. {s, R (the reaction), how}
+function b9Rx(e,el,P){try{if(e.primed&&e.hp>0&&P.dt.has(el)){const R=reactFor(e.primed.el,el);if(R)return {s:3,R,how:`detonates its ${EL[e.primed.el]} prime: ${R.n}`};}
+  if(P.pr.has(el))for(const d of P.dt){const R=reactFor(el,d);if(R)return {s:2,R,how:`prime it, then ${EL[d]} sets off ${R.n}`};}
+  if(P.dt.has(el))for(const p of P.pr){const R=reactFor(p,el);if(R)return {s:2,R,how:`detonates a ${EL[p]} prime: ${R.n}`};}
+  if(P.pr.has(el)||P.dt.has(el))return {s:1,R:null,how:'your heroes prime or detonate with it'};}catch(x){}return {s:0};}
+// the one weakness worth showing: a reaction setup first, then the strongest
+function b9Key(e){if(!e||e.side!=='e'||e.hp<=0)return null;const W=b9Weak(e);if(!W.w.length)return null;const P=b9Party();let best=null;
+  W.w.forEach((x,i)=>{const X=x.k==='el'?b9Rx(e,x.id,P):{s:0},v=X.s*10+x.m-i*.001;if(!best||v>best.v)best=Object.assign({},x,{s:X.s,R:X.R,how:X.how,v});});
+  best.more=W.w.length+W.r.length>1;return best;}
+const b9Name=x=>x.k==='el'?EL[x.id]:DG_NAME[x.id];
+const b9Ico=(x,res)=>x.k==='el'?ico(x.id):dgIco(x.id,res?'res':'');
+function b9KeyTip(e,k){return `Weak to ${b9Name(k)}`+(k.s>1&&k.how?` (${k.how})`:k.s===1?' (your heroes use it)':'')+'.';}
+// full chips: on tap (the key chip toggles the card, an open i panel), or always in Expert mode
+function b9Full(e){try{const r=unitRef(e);return b9Expert()||!!(B&&B.b9x&&B.b9x[r])||!!(B&&B.uDet&&B.uDet.ref===r);}catch(x){return false;}}
+function b9Chips(e){const W=b9Weak(e),w=W.w.slice(0,2),r=W.r.slice(0,2),nm=L=>L.map(b9Name).join(', ');
+  return (w.length?`<span class="fwk up" title="Weak to ${esc(nm(w))}"><b>Weak</b>${w.map(x=>b9Ico(x)).join('')}</span>`:'')+(r.length?`<span class="fwk dn" title="Resists ${esc(nm(r))}"><b>Res</b>${r.map(x=>b9Ico(x,1)).join('')}</span>`:'');}
+// foe cards: the key weakness (a button: tap for the full chips), or the capped chips
+foeWeak=function(e){try{if(b9Full(e)){const h=b9Chips(e);return h&&B&&B.b9x&&B.b9x[unitRef(e)]&&!b9Expert()?h+`<button class="fwk b9less" data-act="b9wx" data-arg="${unitRef(e)}" aria-label="Show less for ${esc(e.name)}" title="Show less">−</button>`:h;}
+  const k=b9Key(e);if(!k)return '';
+  return `<button class="fwk up b9key ${k.s>1?'rx':''}" data-act="b9wx" data-arg="${unitRef(e)}" data-k="${k.k}:${k.id}" data-s="${k.s}" title="${esc(b9KeyTip(e,k))} Tap for the rest." aria-label="${esc(e.name)}: ${esc(b9KeyTip(e,k))} Tap for the rest."><b>${k.s>1?'✸':'Weak'}</b>${b9Ico(k)}${k.more?'<i>+</i>':''}</button>`;}catch(x){return '';}};
+ACT.b9wx=function(ref){if(!B)return;B.b9x=B.b9x||{};B.b9x[ref]=!B.b9x[ref];renderBattle();};
+// foe types as one plain line (the i panel and Scan)
+const ARCH_LINE={flying:'Flying: ranged hits hard',armored:'Armored: magic and piercing cut through, other hits glance off',jelly:'Jelly: magic wrecks it, weapons sink in',
+  undead:'Undead: healing and Light burn it, blunt blows shatter it',swarm:'Swarm: hits on every foe shred it',beast:'Beast: blunt blows batter it',plant:'Plant: slashes and fire cut it down'};
+function b9TypeLine(e){try{if(!e||!e.ty||!e.ty.length||!revealed(e))return '';const L=e.ty.map(k=>ARCH_LINE[k]).filter(Boolean);return L.length?L.join('. ')+'.':'';}catch(x){return '';}}
+{const sc0=scan;scan=function(t){const r=sc0.apply(this,arguments);try{const ln=b9TypeLine(t);if(ln&&B)log(ln);}catch(e){}return r;};}
+// the i panel: the capped chips and the type line under "From the Bestiary"
+{const ud0=uDetHtml;uDetHtml=function(){let h=ud0.apply(this,arguments);try{const P=B&&B.uDet,u=P&&unitOf(P.ref);if(h&&u&&u.side==='e'){const c=b9Chips(u),ln=b9TypeLine(u);
+  if(c||ln){const add=`<div class="b9det">${c?`<div class="b9chips">${c}</div>`:''}${ln?`<p class="note b9ty">${esc(ln)}</p>`:''}</div>`;const k=h.indexOf('<div class="btnrow"><button class="btn gold" data-act="uClose"');h=k>=0?h.slice(0,k)+add+h.slice(k):h;}}}catch(e){}return h;};}
+// simple / expert on the battle screen (CSS: hero cards show only what matters in simple mode)
+{const rb=renderBattle;renderBattle=function(stageOnly){try{const bt=document.querySelector('.battle.b3');if(bt)bt.classList.toggle('b9x',b9Expert());}catch(e){}return rb.apply(this,arguments);};}
+// simple mode: a hero card's status row keeps to three icons ("+N" for the rest; the stage and the i panel show them all)
+{const pc0=pcard;pcard=function(c,rs){let h=pc0.apply(this,arguments);try{if(!rs&&!b9Expert()&&c.hp>0&&BL.mode!=='tall'&&!b3OnStage(c,'tags')&&stItems(c,{noWx:true}).length>3){const k=h.lastIndexOf('<div class="ptags">');if(k>=0)h=h.slice(0,k)+`<div class="ptags">${stButtons(c,{max:3,noWx:true})}</div></div>`;}}catch(e){}return h;};}
+// the setting
+{const sb0=settingsBody;settingsBody=function(){let h=sb0.apply(this,arguments);try{const on=b9Expert();
+  const row=`<div class="row b9set"><div><b>Expert battle info</b><small>Foe cards show every weakness and resistance (up to two of each) and hero cards their level, class and elements. Off: each foe shows its one key weakness; tap it for the rest.</small></div><div class="chips"><button class="chip ${on?'':'on'}" data-act="cfg" data-arg='["expertBattle",false]'>Off</button><button class="chip ${on?'on':''}" data-act="cfg" data-arg='["expertBattle",true]'>On</button></div></div>`;
+  const k=h.indexOf('<div class="btnrow"><button class="btn" data-act="autoOpen"');h=k>=0?h.slice(0,k)+`<div class="rows">${row}</div>`+h.slice(k):h+`<div class="rows">${row}</div>`;}catch(e){}return h;};}
+
+// ----- the reaction moment -----
+// does the acting hero hold a detonator (with the MP) that sets off this foe's prime? (its primed badge pulses)
+function b9Ready(e){try{if(!e||!e.primed||e.hp<=0||!B||B.mode!=='cmd'||!B.cur||B.cur.side!=='p')return false;const P=b9Party();for(const d of P.now)if(reactFor(e.primed.el,d))return true;}catch(x){}return false;}
+function b9Still(){try{return typeof gfxStill==='function'?gfxStill():reducedMotion();}catch(e){return false;}}
+function b9React(a,t,p,d,R){if(!B||!t)return;B.nReact=(B.nReact||0)+1;const now=Date.now(),bt=B;
+  const ev={id:++B9.seq,t:now,t0:now+IMPACT,n:R.n,p,d,u:t,flash:false,snd:false};
+  if(!b9Still()&&now-B9.last>B9.gap){ev.flash=true;B9.last=now;}
+  try{BV.flash=null;}catch(e){}// the canvas flash onFx set for this reaction: the one flash is ours
+  if(now-B9.lastSnd>B9.sndGap){ev.snd=true;B9.lastSnd=now;try{SFXC.rxSkip=performance.now()+IMPACT+400;}catch(e){}later(()=>{try{if(B===bt&&typeof sfx==='function')sfx('reaction');}catch(e){}},IMPACT);}
+  B.b9rx=ev;B9.ev.push({id:ev.id,n:R.n,flash:ev.flash,snd:ev.snd,t:now});if(B9.ev.length>60)B9.ev.shift();
+  b9Punch(t);later(()=>{try{if(B===bt&&V.screen==='battle')renderBattle(true);}catch(e){}},IMPACT);}
+// a quick camera punch on the target: both stage renderers follow the camera (the 2D canvas and the HD-2D GL stage, gfx6battle.js)
+function b9Punch(t){try{if(b9Still()||typeof CAM==='undefined'||!GFX.q.camera)return;const c=centerOf(t);if(!c)return;
+  CAM.on=true;CAM.t0=performance.now()+IMPACT;CAM.z=1.085;CAM.dur=320;CAM.fx=c.x;CAM.fy=c.y;CAM.pk=1;}catch(e){}}
+if(typeof g6CamEnv==='function'){const ce0=g6CamEnv;g6CamEnv=function(now){if(!(CAM.on&&CAM.pk))return ce0.apply(this,arguments);const t=(now-CAM.t0)/CAM.dur;if(t<0)return 0;if(t>=1){CAM.on=false;CAM.pk=0;return 0;}
+  return t<.18?t/.18:1-Math.pow((t-.18)/.82,.7);};}
+if(typeof gfxCamPush==='function'){const cp0=gfxCamPush;gfxCamPush=function(){const t0=CAM.t0;const r=cp0.apply(this,arguments);if(CAM.t0!==t0)CAM.pk=0;return r;};}
+// the banner's box: across the stage, clear of every face, label and the top banner strip (then of faces and plates, then of faces)
+function b9BanBox(ev){const L=b3Lay();if(!L)return null;const W=BL.W,H=BL.H,sc=BL.sc||2;
+  let top=1;try{const bn=B.banner;if(bn&&Date.now()-bn.t<banDur(bn)*1000)top=Math.ceil(26/sc);}catch(e){}
+  const faces=L.bodies.map(o=>Object.assign({},o.face,{body:1})),strip={x:0,y:0,w:W,h:top,body:1};
+  for(const k of [1,.8,.65]){const fs=Math.max(5,Math.min(10,20/sc))*k,w=Math.min(W-4,Math.ceil(b3TextW('✸ '+ev.n+'!',fs,900)*1.12+2*(fs+1)+fs*1.6)),h=Math.ceil(fs*1.55);
+    for(const obs of [L.obs.concat([strip]),faces.concat(L.all.filter(o=>o.kind==='plate'||o.kind==='intent'),[strip]),faces.concat([strip])]){
+      const C=[];for(let y=top+1;y+h<=H-1;y+=2)for(const f of [0,-1,1,-2,2,-3,3]){const x=Math.round(W/2-w/2+f*W/10);if(x<1||x+w>W-1)continue;C.push({x,y,c:Math.abs(y+h/2-H*.32)/2+Math.abs(f)*3});}
+      C.sort((a,b)=>a.c-b.c);for(const q of C){const r={x:q.x,y:q.y,w,h};if(!obs.some(o=>b3Hit(r,o,o.body?0:B3.pad)))return Object.assign(r,{fs});}}}
+  return null;}
+// the banner box of the reaction showing now (placed once, at its first render)
+function b9BanNow(){const ev=B&&B.b9rx;if(!ev)return null;const age=Date.now()-ev.t0;if(age<0||age>B9.banMs)return null;if(ev.r===undefined)ev.r=b9BanBox(ev);return ev.r;}
+// the flash and the banner, in the stage's own layer (fxLayer appends this); negative delays keep the animation running across re-renders
+function b9RxHtml(){const ev=B&&B.b9rx;if(!ev)return '';const age=Date.now()-ev.t0;if(age<0||age>B9.banMs){if(age>B9.banMs+200)B.b9rx=null;return '';}
+  const c1=ELC[ev.p]||'#d8b8ff',c2=ELC[ev.d]||'#ffd04a';let h='';
+  // the flash runs from its first render (a busy frame cannot skip it, and it is never longer than flashMs)
+  if(ev.flash&&!b9Still()){if(ev.fa==null)ev.fa=Date.now();const fa=Date.now()-ev.fa;if(fa<B9.flashMs){h+=`<div class="b9fl" data-id="${ev.id}" style="width:${BL.W}px;height:${BL.H}px;--c1:${c1};--c2:${c2};animation-duration:${B9.flashMs}ms;animation-delay:-${fa}ms" aria-hidden="true"></div>`;ev.flashShown=1;}}
+  const r=b9BanNow();
+  if(r){h+=`<div class="b9ban" data-id="${ev.id}" role="status" style="left:${r.x}px;top:${r.y}px;width:${r.w}px;height:${r.h}px;font-size:${r.fs.toFixed(2)}px;--c1:${c1};--c2:${c2};animation-duration:${B9.banMs}ms;animation-delay:-${age}ms">${EL[ev.p]?ico(ev.p):''}${EL[ev.d]?ico(ev.d):''}<b>✸ ${esc(ev.n)}!</b></div>`;ev.banShown=1;}
+  return h;}
+{const an0=animating;animating=function(){return an0.apply(this,arguments)||!!(B&&B.b9rx&&Date.now()-B.b9rx.t0<B9.banMs+150);};}
+
 // ===== battle5.js (v0.7.0): battle information and input: turn forecast, foe intents, timed hits =====
 // 1) The turn order bar shows the next turns (B5.order) from the engine's own turn model: every live unit acts when its `next` time
 //    comes up (advance0 picks the smallest, heroes win ties), and after acting waits delayOf(u, cost). The forecast steps that model
@@ -18834,8 +19004,8 @@ const B5SVG={attack:'<path d="M3 13L13 3M4.5 8.5l3 3M3 13l-1 1" stroke-width="2.
 function b5Icon(cat){if(cat==='unknown'||!B5SVG[cat])return '<b>?</b>';return `<svg viewBox="0 0 16 16" aria-hidden="true" stroke="currentColor" fill="none" stroke-linecap="round">${B5SVG[cat]}</svg>`;}
 
 // ----- the stage label, placed by the layout pass after everything else -----
-function b5LayIntents(L){L.intent=new Map();const W=L.W,H=L.H,w=B5.it.w,h=B5.it.h;
-  B.en.forEach(u=>{if(u.hp<=0)return;const b=unitBox(u);if(!b)return;const bo=L.bodies.find(q=>q.u===u),bd=bo?bo.r:{x:b.x-b.w/2,y:b.y-b.h,w:b.w,h:b.h},p=L.plates.get(u),A=[];
+function b5LayIntents(L){L.intent=new Map();const W=L.W,H=L.H,h=B5.it.h;
+  B.en.forEach(u=>{if(u.hp<=0)return;const w=b9IntW(u);const b=unitBox(u);if(!b)return;const bo=L.bodies.find(q=>q.u===u),bd=bo?bo.r:{x:b.x-b.w/2,y:b.y-b.h,w:b.w,h:b.h},p=L.plates.get(u),A=[];
     // beside the HP plate first (toward the middle of the stage, then outward), then over and under it, then around the body
     if(p){const my=Math.round(p.y+p.h/2-h/2);A.push({x:p.x+p.w+1,y:my,c:0},{x:p.x-w-1,y:my,c:1},{x:Math.round(p.x+p.w/2-w/2),y:p.y-h-1,c:2},{x:Math.round(p.x+p.w/2-w/2),y:p.y+p.h+1,c:3});}
     const cx=Math.round(b.x-w/2);A.push({x:cx,y:bd.y-h-1,c:4},{x:bd.x+bd.w+1,y:bd.y,c:6},{x:bd.x-w-1,y:bd.y,c:6},{x:cx,y:Math.max(b.y,bd.y+bd.h)+1,c:8});
@@ -18843,7 +19013,7 @@ function b5LayIntents(L){L.intent=new Map();const W=L.W,H=L.H,w=B5.it.w,h=B5.it.
     if(r){const o=Object.assign({kind:'intent',u},r);L.obs.push(o);L.all.push(o);L.intent.set(u,o);}else L.hidden.push({kind:'intent',u});});}
 {const lay0=b3Lay;b3Lay=function(){const L=lay0.apply(this,arguments);if(L&&!L._b5&&B){L._b5=1;try{b5LayIntents(L);}catch(e){}}return L;};}
 {const sh0=b3StageHtml;b3StageHtml=function(){let h=sh0.apply(this,arguments);try{const L=B3L.L;if(L&&L.intent){const px=v=>v+'px';
-  L.intent.forEach((o,u)=>{const I=b5Intent(u);if(!I)return;h+=`<span class="b5it b3l ${I.cat}" data-u="${unitRef(u)}" data-cat="${I.cat}" style="left:${px(o.x)};top:${px(o.y)};width:${px(o.w)};height:${px(o.h)}" title="${esc(I.title)}" aria-label="${esc(u.name)}: ${esc(I.title)}">${b5Icon(I.cat)}</span>`;});}}catch(e){}return h;};}
+  L.intent.forEach((o,u)=>{const I=b5Intent(u);if(!I)return;const T=o.w>B5.it.w&&b9TelePlan(u),ti=T?`${I.title}. Guard halves it; a stun or stripping its boons stops it.`:I.title;h+=`<span class="b5it b3l ${I.cat}${T?' b9tel':''}" data-u="${unitRef(u)}" data-cat="${I.cat}" style="left:${px(o.x)};top:${px(o.y)};width:${px(o.w)};height:${px(o.h)}" title="${esc(ti)}" aria-label="${esc(u.name)}: ${esc(ti)}">${b5Icon(I.cat)}${T?`<em>${B9W.g}</em>`:''}</span>`;});}}catch(e){}return h;};}
 
 // ----- 1) the turn forecast -----
 // steps the engine's model forward: [{u,t}] for the next n turns. cost: what the acting hero's chosen action costs (preview)
@@ -18921,6 +19091,46 @@ function b5Fit(){try{const o=document.querySelector('#border .ocs');if(!o)return
   const out=()=>{const R=o.getBoundingClientRect(),L=o.querySelectorAll(':scope>.oc,:scope>.b5oe');const l=L[L.length-1];if(!l)return false;const q=l.getBoundingClientRect();return q.right>R.right+.5;};
   while((o.scrollWidth>o.clientWidth+1||out())&&k++<10){const L=o.querySelectorAll(':scope>.oc,:scope>.b5oe');if(L.length<=3)break;L[L.length-1].remove();}}catch(e){}}
 {const rb0=renderBattle;renderBattle=function(stageOnly){const r=rb0.apply(this,arguments);if(!stageOnly)b5Fit();return r;};}
+
+// ----- v0.9.5: battle clarity on the stage and the command panel -----
+// The key weakness tag: one small label per foe (battle3.js b9Key: a reaction setup first), placed after the intents, beside them or the
+// HP plate (never on a sprite or another label; a foe whose tag finds no spot keeps it on its card only). A telegraphed big hit (a
+// Charger's Crushing Charge, a boss's Cataclysm, any big hit a foe is winding up for) widens that foe's intent label to "Guard!", and
+// the acting hero's command panel says what to do: Guard (it glows) when the hit lands on this hero before its next turn, "Interrupt:
+// stun or strip buffs" while a foe winds up, and the cleanse (Skills or Items glows) when a Hex is stacked on a hero.
+const B9W={w:11,h:10,g:'Guard!'};
+function b9TelePlan(u){if(!B||!u||u.side!=='e'||u.hp<=0)return null;let P=null;try{P=typeof b4RolePlan==='function'?b4RolePlan(u):null;}catch(e){}
+  if(P&&(P.kind==='unleash'||P.kind==='cataclysm'))return {u,n:P.n,tg:P.tg||[]};
+  try{if(has(u,'charge')){const p=foePlan(u);if(p&&p.cat==='big')return {u,n:p.sk&&p.sk.n||'Big hit',tg:B.front.filter(c=>c.hp>0)};}}catch(e){}return null;}
+function b9IntW(u){return b9TelePlan(u)?B5.it.w+Math.ceil(b3TextW(B9W.g,5,900)*1.1)+3:B5.it.w;}
+function b9LayWeak(L){L.wk=new Map();const W=L.W,H=L.H,w=B9W.w,h=B9W.h;
+  B.en.forEach(u=>{if(u.hp<=0)return;const k=b9Key(u);if(!k)return;const b=unitBox(u);if(!b)return;const bo=L.bodies.find(q=>q.u===u),bd=bo?bo.r:{x:b.x-b.w/2,y:b.y-b.h,w:b.w,h:b.h},p=L.plates.get(u),it=L.intent&&L.intent.get(u),A=[];
+    if(it){const my=Math.round(it.y+it.h/2-h/2);A.push({x:it.x+it.w+1,y:my,c:0},{x:it.x-w-1,y:my,c:1});}
+    if(p){const my=Math.round(p.y+p.h/2-h/2);A.push({x:p.x+p.w+1,y:my,c:1.5},{x:p.x-w-1,y:my,c:2},{x:Math.round(p.x+p.w/2-w/2),y:p.y-h-1,c:3},{x:Math.round(p.x+p.w/2-w/2),y:p.y+p.h+1,c:3.5});}
+    const cx=Math.round(b.x-w/2);A.push({x:cx,y:bd.y-h-1,c:5},{x:bd.x+bd.w+1,y:bd.y,c:6},{x:bd.x-w-1,y:bd.y,c:6},{x:cx,y:Math.max(b.y,bd.y+bd.h)+1,c:8});
+    B3SG={u};const r=b3Find(w,h,A,L.obs,W,H,B3.R*.6);B3SG=null;if(r){const o=Object.assign({kind:'weak',u,k},r);L.obs.push(o);L.all.push(o);L.wk.set(u,o);}});}
+{const lay0=b3Lay;b3Lay=function(){const L=lay0.apply(this,arguments);if(L&&!L._b9&&B){L._b9=1;try{b9LayWeak(L);}catch(e){}}return L;};}
+// the layout is rebuilt when a foe's key weakness or its telegraph changes
+{const k0=b3Key;b3Key=function(units){let k=k0.apply(this,arguments);try{k+='|w'+B.en.map(e=>{if(e.hp<=0)return '-';const x=b9Key(e);return (x?x.k[0]+x.id+x.s:'')+(b9TelePlan(e)?'T':'');}).join(',');}catch(e){}return k;};}
+{const sh0=b3StageHtml;b3StageHtml=function(){let h=sh0.apply(this,arguments);try{const L=B3L.L;if(L&&L.wk){const px=v=>v+'px';
+  L.wk.forEach((o,u)=>{const k=b9Key(u)||o.k,t=b9KeyTip(u,k);h+=`<span class="b9wk b3l ${k.s>1?'rx':''}" data-u="${unitRef(u)}" data-k="${k.k}:${k.id}" data-s="${k.s}" style="left:${px(o.x)};top:${px(o.y)};width:${px(o.w)};height:${px(o.h)}" title="${esc(t)}" aria-label="${esc(u.name)}: ${esc(t)}">${k.k==='el'?ico(k.id):dgIco(k.id)}</span>`;});}}catch(e){}return h;};}
+// what the acting hero should know before choosing: {k:'guard'|'int'|'hex', txt, tip, glow:'guard'|'skills'|'items'}
+function b9CanStop(a){try{return known(a).find(s=>a.mp>=(s.mp||0)&&(s.k==='phys'||s.k==='mag')&&(s.strip||(s.fx||[]).some(([k])=>k==='stun')))||null;}catch(e){return null;}}
+function b9Cleanse(a){try{const s=known(a).find(s=>s.cleanse&&a.mp>=(s.mp||0)&&(s.t==='ally'||s.t==='allyAll'));if(s)return 'skills';if(G&&G.inv&&(G.inv.remedy||0)>0)return 'items';}catch(e){}return null;}
+function b9Cue(){if(!B||B.over||B.auto||B.mode!=='cmd'||!B.cur||B.cur.side!=='p'||B.cur.isComp)return null;const a=B.cur;let ord=null;
+  const before=u=>{ord=ord||b5Order(12);for(let i=1;i<ord.length;i++){const x=ord[i].u;if(x===a)return false;if(x===u)return true;}return false;};
+  for(const u of B.en){const T=b9TelePlan(u);if(T&&T.tg.includes(a)&&before(u))return {k:'guard',u,glow:'guard',txt:`Guard! ${T.n} next`,tip:`${u.name}'s ${T.n} hits ${T.tg.length>1?'the whole Vanguard':a.name} before ${a.name} acts again. Guard halves it.`};}
+  const wind=B.en.find(u=>u.hp>0&&has(u,'charge'));
+  if(wind){const s=b9CanStop(a);return {k:'int',u:wind,glow:s?'skills':null,txt:'Interrupt: stun or strip buffs',tip:`${wind.name} is winding up. A stun or stripping its boons stops it.`+(s?` ${a.name} can: ${s.n}.`:'')};}
+  let hx=null;try{hx=B.front.filter(c=>c.hp>0&&!c.isComp&&b4Hex(c)>=2).sort((x,y)=>b4Hex(y)-b4Hex(x))[0];}catch(e){}
+  if(hx){const via=b9Cleanse(a);if(via)return {k:'hex',u:hx,glow:via,txt:`Hex ${b4Hex(hx)} on ${hx.name}: cleanse it`,tip:`${hx.name} carries ${b4Hex(hx)} Hex stacks; at ${B4.roles.hexMax} the next one bursts. ${via==='skills'?'A cleanse skill':'A Remedy'} clears it.`};}
+  return null;}
+{const ch0=cmdHtml;cmdHtml=function(){let h=ch0.apply(this,arguments);try{if(!B||B.menu!=='root'||B.swapAsk)return h;const C=b9Cue();if(!C)return h;
+  const cls=C.k==='guard'?'g':C.k==='int'?'it':'hx',cue=`<span class="b9cue inhead ${cls}" role="status" title="${esc(C.tip)}" aria-label="${esc(C.tip)}">${esc(C.txt)}</span>`,bk='<button class="btn sm cmdback"';
+  if(h.indexOf(bk)>=0)h=h.replace(bk,cue+bk);
+  if(C.glow==='guard')h=h.replace('data-arg="guard">Guard</button>',`data-arg="guard" title="${esc(C.tip)}">Guard!</button>`).replace('<button class="mi" data-act="cmd" data-arg="guard"','<button class="mi b9glow" data-act="cmd" data-arg="guard"');
+  else if(C.glow==='skills')h=h.replace('<button class="mi" data-act="cmd" data-arg="skills"',`<button class="mi b9glow ${C.k==='hex'?'cl':''}" title="${esc(C.tip)}" data-act="cmd" data-arg="skills"`);
+  else if(C.glow==='items')h=h.replace('<button class="mi" data-act="cmd" data-arg="items"',`<button class="mi b9glow cl" title="${esc(C.tip)}" data-act="cmd" data-arg="items"`);}catch(e){}return h;};}
 
 // tests: window.__A.B5
 const B5API={cfg:B5,R:B5R,order:(n,c)=>b5Order(n,c),plan:u=>foePlan(u),intent:u=>b5Intent(u),cat:sk=>b5Cat(sk),knows:u=>b5Knows(u),press:()=>b5Press(),timedOn:()=>b5TimedOn(),choose:(u,r,n)=>foeChoose(u,r,n)};
@@ -22317,6 +22527,7 @@ Object.assign(window.__A,{iconCv,H2Atlas,HD,HD2D,hdActive,hdWant,hdTierQ,hdCfgOn
 ['b3Lay','stItems','b3OnStage','b3Body','b3Face','sprVB','detTargets','B3','B3L','b3FxRects','b3StageHtml','slotsFor','unitHud','spriteOf','cmdHtml','foeCards','renderBattle','b8Strip','dlIco','foeDl','foeWeak','B8','EL','effOf','revealed','dlChip','effBadge','ARCH','DL_NAME','bestEntry','effInfo','b8Small','B8H','b8HAt'].forEach(k=>{if(Object.getOwnPropertyDescriptor(window.__A,k))return;try{Object.defineProperty(window.__A,k,{get:()=>eval(k),configurable:true});}catch(e){}});// v0.6.3 battle screen (tests)
 Object.assign(window.__A,{SC58:{hdSmall:(c,s,p)=>hdSmall(c,s,p),hdBlob2:()=>hdBlob2(),H2F,HD_SPR,hbLit:c=>hbLit(c),hbUnitLight:(u,K,n)=>hbUnitLight(u,K,n),get cu(){return HB.cu;}}});// v0.5.8 sprites in the scene (tests)
 try{Object.defineProperty(window.__A,'TW',{get:()=>TW,configurable:true});}catch(e){}// v0.6.3 twists (tests)
+try{Object.defineProperty(window.__A,'B9',{get:()=>({cfg:B9,expert:()=>b9Expert(),key:e=>b9Key(e),weak:e=>b9Weak(e),dg:e=>foeDg(e),party:()=>b9Party(),rx:(e,el)=>b9Rx(e,el,b9Party()),cue:()=>b9Cue(),tele:u=>b9TelePlan(u),typeLine:e=>b9TypeLine(e),ready:e=>b9Ready(e),reactFor:(p,d)=>reactFor(p,d),CAM,env:n=>g6CamEnv(n),DG_NAME,get nSnd(){return SFXC.nRx||0;}}),configurable:true});}catch(e){}// v0.9.5 battle clarity (tests)
 try{Object.defineProperty(window.__A,'B5',{get:()=>B5API,configurable:true});}catch(e){}// v0.7.0 battle information and input (tests)
 try{Object.defineProperty(window.__A,'B4',{get:()=>B4X,configurable:true});}catch(e){}// v0.7.0 battle mechanics (tests)
 Object.assign(window.__A,{W63:{WFX,WMAP,HW,MK,MKN,MAPICO_NAME,wfxRun:(...a)=>wfxRun(...a),wfxBirds:(...a)=>wfxBirds(...a),hdGatePart:m=>hdGatePart(m),mapMarks:m=>mapMarks(m),drawMini:()=>drawMini(),drawWorldMap:()=>drawWorldMap(),worldGraph:()=>worldGraph(),objCanvas:(a,b,c)=>objCanvas(a,b,c),get WM(){return typeof WMS!=="undefined"?WMS:null;}}});// v0.6.3 world pass (tests)
