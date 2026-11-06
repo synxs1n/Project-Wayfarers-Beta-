@@ -27,6 +27,9 @@ const HARNESS=`
 function render(){}
 // v0.9.5: the sims play elite roamers and minibosses by hand too (the game bans auto there), like the boss auto lock below
 if(typeof autoBan==='function')autoBan=function(){return null;};
+// v0.9.5 auto per foe type (prog2.js): a fight whose foe types are not open yet is played by hand. The sims drive every fight with the
+// careful brain through B.auto, so the lock is lifted while such a fight runs (window.__TYPEFREE) and the fight is paid and timed as manual.
+if(typeof autoTypeReason==='function'){const atr0=autoTypeReason;autoTypeReason=function(){return window.__TYPEFREE?null:atr0.apply(this,arguments);};}
 return {get G(){return G},set G(v){G=v},get B(){return B},V,get META(){return META},newGame,newChar,startBattle,advance,autoTurn,
   autoTurnSmart:typeof autoTurnSmart==='function'?autoTurnSmart:autoTurn,setPause:p=>{PAUSE=p},setSmart:v=>{if(typeof SIM_SMART!=='undefined')SIM_SMART=v},
   finishBattle,calcStats,TPL,RAW,GPOOL,FPOOL,STAGE_BOSS_LV,STAGE_LV,GEAR,recruit,refresh,encounterFoes,getMap,resetMaps,mapEntry,findPath:typeof findPath==='function'?findPath:null,
@@ -39,13 +42,13 @@ const Q=window.__Q;
 ${JSON.stringify(process.env.CFGSET||'')}.split(';').forEach(kv=>{if(!kv)return;const i=kv.indexOf('=');A.cfgSet(kv.slice(0,i),JSON.parse(kv.slice(i+1)));});// CFGSET='BOSS_LV.frac=.3;ECON.xp=1' tries other config values (objects only)
 function run(spec){Q.length=0;try{A.syncPools();}catch(e){}
   // the sims stand in for a player who plays every fight: the 'win it manually once first' auto lock on bosses does not apply
-  try{A.G.bossWon=new Proxy({},{get:()=>1});}catch(e){}A.setSmart(!window.__AUTO);A.V.auto=true;try{A.META.cfg.autoOn=true;}catch(e){}A.META.best={};if(!A.startBattle(spec))return null;
+  try{A.G.bossWon=new Proxy({},{get:()=>1});}catch(e){}A.setSmart(!window.__AUTO);A.V.auto=true;try{A.META.cfg.autoOn=true;}catch(e){}A.META.best={};window.__TYPEFREE=0;if(!A.startBattle(spec))return null;const lk=!!(A.B&&A.B.autoLock);if(lk){window.__TYPEFREE=1;A.B.auto=true;}
   let it=0;while(it++<400000){const m=A.V.modal;if(m&&(m.type==='result'||m.type==='lose'))break;
     if(!Q.length){if(A.B&&A.B.mode==='cmd')(window.__AUTO?A.autoTurn:A.autoTurnSmart)();else if(A.B&&!A.B.over)A.advance();if(!Q.length)break;}
-    if(window.__MANUAL&&A.B)A.B.tA=0;Q.shift()();}
+    if((window.__MANUAL||lk)&&A.B)A.B.tA=0;Q.shift()();}
   const m=A.V.modal,res=m&&m.type==='result'?'win':m&&m.type==='lose'?'lose':'stuck',info=m&&m.info;const t=A.B?A.B.time:0,en=A.B?A.B.en.map(e=>({el:e.el.slice(),boss:!!e.boss,elite:!!e.elite,role:e.role||null})):[],sur=A.B?!!A.B.surprise:false;
   const pt=A.B?A.B.pturns||0:0,an=A.B?A.B.actN||0:0,b4=A.B?{det:A.B.nDet||0,mp:A.B.b4detMp||0,sw:(A.B.b4swN||0),aSw:A.B.autoSwaps||0,roles:A.B.b4roles||{},mo:A.B.b4mo?A.B.b4mo.hist.length:0,gt:A.B.b4gTells||0,gl:A.B.b4gLand||0,gs:A.B.b4gStop||0,gh:A.B.b4gHits||0,gk:A.B.b4g?A.B.b4g.key:null}:{};
-  A.V.modal=null;if(A.B)A.finishBattle('x');return {res,t,info,en,sur,pt,an,b4};}
+  A.V.modal=null;if(A.B)A.finishBattle("x");window.__TYPEFREE=0;return {res,t,info,en,sur,pt,an,b4,lk};}
 function party(ids,lv,tier){A.newGame(ids.slice(0,3));const G=A.G;G.roster={};G.party=[];ids.forEach(id=>{const c=G.roster[id]=A.newChar(id,lv,tier);if(A.GEAR['k_cape_'+Math.min(5,tier)]){c.eq.k='k_cape_'+Math.min(5,tier);c.S=A.calcStats(c);c.hp=c.S.mhp;c.mp=c.S.mmp;}G.party.push(id);});}
 let seed=909;const R=()=>{seed=(seed*1103515245+12345)&0x7fffffff;return seed/0x7fffffff;};
 const pool=A.RAW.filter(r=>r[6]!=='L'&&r[6]!=='x'&&A.TPL[r[0]]&&!A.TPL[r[0]].mon).map(r=>r[0]);
@@ -142,7 +145,7 @@ gim:N=>`N=${N||6};const out=[];const SZ=[3,4,5,6,6];
       row.push(k+' '+Math.round(100*w/Math.max(1,n))+'% t'+(gt/Math.max(1,n)).toFixed(1)+' l'+(gl/Math.max(1,n)).toFixed(1)+' s'+(gs/Math.max(1,n)).toFixed(1)+' hp'+Math.round(100*gh/Math.max(1,mh))+'%');}
     out.push((auto?'auto    ':'careful ')+'stage '+(s+1)+' party '+SZ[s]+' lv '+A.STAGE_BOSS_LV[s]+': '+row.join(' | '));}}
   window.__AUTO=false;return out.join('\\n');`,
-journey:RUNS=>`RUNS=${RUNS||3};window.__DBG=${process.env.DBG?1:0};const out=[];const TM=${JSON.stringify(TIME)},EXPL=${+process.env.EXPLORE||1.5};const sums={h:[],hm:[],ha:[],lv:[],f:[],tries:[],rf:[],rn:[],si:[],mi:[],mw:[]};const SITESHARE=${process.env.SITESHARE!=null?+process.env.SITESHARE:.7};const ROAMSHARE=${process.env.ROAMSHARE!=null?+process.env.ROAMSHARE:.8};
+journey:RUNS=>`RUNS=${RUNS||3};window.__DBG=${process.env.DBG?1:0};const out=[];const TM=${JSON.stringify(TIME)},EXPL=${+process.env.EXPLORE||1.5};const sums={lk:[],h:[],hm:[],ha:[],lv:[],f:[],tries:[],rf:[],rn:[],si:[],mi:[],mw:[]};const SITESHARE=${process.env.SITESHARE!=null?+process.env.SITESHARE:.7};const ROAMSHARE=${process.env.ROAMSHARE!=null?+process.env.ROAMSHARE:.8};
   const fT=(o,boss,auto)=>!o?0:TM.fightIn+TM.fightOut+(boss?TM.bossIntro:0)+o.pt*(auto?TM.autoDecide:TM.decide)+(o.an||o.pt*2)*(auto?TM.animAuto:TM.anim);
   // rewards: the game pays AUTO_REW of the XP for a win auto mostly played. A typical player plays (1-autoShare) of the ordinary fights by hand
   // (full XP) and every boss by hand; ALLAUTO=1 pays every ordinary fight at the auto rate (the pre v0.8.2 journey, where every fight counted as auto)
@@ -155,7 +158,7 @@ journey:RUNS=>`RUNS=${RUNS||3};window.__DBG=${process.env.DBG?1:0};const out=[];
     for(let i=0;i<q.length;i++){const [x,y]=q[i];if(Math.abs(x-b[0])+Math.abs(y-b[1])<=1)return D[y][x]+1;for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){const nx=x+dx,ny=y+dy;if(ok(nx,ny)&&D[ny][nx]<0){D[ny][nx]=D[y][x]+1;q.push([nx,ny]);}}}return 0;};
   const SOLIDS=A.SOLID;
   for(let r=0;r<RUNS;r++){seed=4242+r*77;const ids=pick(6);A.newGame(ids.slice(0,3));const G=A.G;G.run.seed=9000+r*131;A.resetMaps();
-    let sitesN=0,siteAcc=0,miniN=0,miniW=0,rfN=0,rnN=0,fights=0,lost=0,bossTries=[],steps=[],grinds=[],sec=0,secM=0,secA=0,walk=0,losses=0;
+    let lockN=0,sitesN=0,siteAcc=0,miniN=0,miniW=0,rfN=0,rnN=0,fights=0,lost=0,bossTries=[],steps=[],grinds=[],sec=0,secM=0,secA=0,walk=0,losses=0;
     for(let s=0;s<5;s++){G.stage=s;G.cleared=[0,1,2,3,4].map(x=>x<s);
       // a recruit joins at each new realm until the party has six (the tavern, near the party's level)
       if(s>0&&G.party.length<6){const id=ids[G.party.length];G.gold=Math.max(G.gold,99999);A.recruit(id,true);}
@@ -172,28 +175,28 @@ journey:RUNS=>`RUNS=${RUNS||3};window.__DBG=${process.env.DBG?1:0};const out=[];
       const nf=Math.round(st*EXPL/perFight);walk+=st*EXPL+nR*TM.roamWalk;rfN+=nR;rnN+=nf;
       for(let i=0;i<nR+nf;i++){const isR=i<nR,q=isR?RL[Math.floor(i*RL.length/Math.max(1,nR))]:null;window.__MANUAL=isR&&q.r.elite?1:MAN(i);
         const spec=isR?{stage:s,kind:q.m.kind==='dungeon'?'dungeon':'field',weather:'clear',roam:{mid:q.m.id,i:q.r.i,mon:q.r.mon,elite:q.r.elite,mod:q.r.mod,name:q.r.name},surprise:i%2?1:0}:{stage:s,kind:'field',weather:'clear'};
-        const o=run(spec);window.__MANUAL=0;fights++;const man=isR&&q.r.elite;sec+=man?fT(o,0,0):fTt(o,0);secM+=fT(o,0,0);secA+=man?fT(o,0,0):fT(o,0,1);if(!o||o.res!=='win'){lost++;A.innHeal();}
+        const o=run(spec);window.__MANUAL=0;fights++;const man=isR&&q.r.elite||!!(o&&o.lk);lockN+=o&&o.lk?1:0;sec+=man?fT(o,0,0):fTt(o,0);secM+=fT(o,0,0);secA+=man?fT(o,0,0):fT(o,0,1);if(!o||o.res!=='win'){lost++;A.innHeal();}
         if(i%4===3)A.innHeal();}// a rest or a potion stop now and then
 
       // the boss: rest, fight; after a loss, grind 3 more fights and try again (up to 6 tries)
       A.innHeal();const k=G.run;if(s<4)k.bosses[s]=k.bosses[s]||A.GPOOL[s%A.GPOOL.length];else k.final=k.final||A.FPOOL[0];
       let tries=0,won=false,grind=0;while(!won&&tries<40){tries++;A.innHeal();window.__MANUAL=1;const o=run({stage:s,kind:'boss'});window.__MANUAL=0;won=o&&o.res==='win';{const x=fT(o,1,0);sec+=x;secM+=x;secA+=x;}if(!won)losses++;if(window.__DBG&&r===0)out.push('stage '+s+' try '+tries+' lv '+G.party.map(id=>G.roster[id].lv).join('/')+' -> '+(o?o.res+' t='+o.t+' foes '+(o.en||[]).length:'null'));
-        if(!won)for(let g=0;g<5;g++){window.__MANUAL=MAN(g);const o2=run({stage:s,kind:'field',weather:'clear'});window.__MANUAL=0;sec+=fTt(o2,0);secM+=fT(o2,0,0);secA+=fT(o2,0,1);fights++;grind++;A.innHeal();}}
+        if(!won)for(let g=0;g<5;g++){window.__MANUAL=MAN(g);const o2=run({stage:s,kind:'field',weather:'clear'});window.__MANUAL=0;const lk2=!!(o2&&o2.lk);lockN+=lk2?1:0;sec+=lk2?fT(o2,0,0):fTt(o2,0);secM+=fT(o2,0,0);secA+=fT(o2,0,lk2?0:1);fights++;grind++;A.innHeal();}}
       bossTries.push(tries);grinds.push(grind);G.cleared[s]=true;A.innHeal();
       // v0.9.5: side sites (the field's cave and side fortress), SITESHARE of them visited once the realm's boss has fallen (first runs
       // mostly come back for them): siteSteps walked (the random battles on them at
       // the dungeon rate, 0.6), siteTime spent on chests and the prize, and the miniboss (by hand) where the site has one
       for(const c of (f.caves||[])){if(((r*7+s*3+(f.caves.indexOf(c)))%10)>=Math.round(10*SITESHARE))continue;sitesN++;walk+=TM.siteSteps;sec+=TM.siteTime;secM+=TM.siteTime;secA+=TM.siteTime;
-        siteAcc+=TM.siteSteps*.6/perFight;while(siteAcc>=1){siteAcc--;window.__MANUAL=MAN(fights);const o=run({stage:s,kind:'dungeon',weather:'clear'});window.__MANUAL=0;fights++;rnN++;sec+=fTt(o,0);secM+=fT(o,0,0);secA+=fT(o,0,1);if(!o||o.res!=='win'){lost++;A.innHeal();}}
+        siteAcc+=TM.siteSteps*.6/perFight;while(siteAcc>=1){siteAcc--;window.__MANUAL=MAN(fights);const o=run({stage:s,kind:'dungeon',weather:'clear'});window.__MANUAL=0;fights++;rnN++;const lk3=!!(o&&o.lk);lockN+=lk3?1:0;sec+=lk3?fT(o,0,0):fTt(o,0);secM+=fT(o,0,0);secA+=fT(o,0,lk3?0:1);if(!o||o.res!=='win'){lost++;A.innHeal();}}
         if(A.miniFor&&A.siteHasMini&&A.siteHasMini(c.id)){const mb=A.miniFor({id:c.id});window.__MANUAL=1;const o=run({stage:s,kind:'mini',weather:'clear',mini:{id:c.id,mon:mb.mon,name:mb.name,mod:mb.mod}});window.__MANUAL=0;fights++;miniN++;if(o&&o.res==='win')miniW++;const x=fT(o,0,0);sec+=x;secM+=x;secA+=x;}
         A.innHeal();}}
     const lv=G.party.map(id=>G.roster[id].lv);
     // walking (route steps at the walk speed, plus the field and dungeon detours a first run makes), towns and story, and a walk back to the inn after each lost boss
     const over=walk*TM.wander/TM.walk+5*(TM.town+TM.story+TM.side)+losses*TM.retry+TM.start;const H=x=>(x+over)/3600;
-    sums.h.push(H(sec));sums.hm.push(H(secM));sums.ha.push(H(secA));sums.lv.push(Math.max(...lv));sums.f.push(fights);sums.tries.push(bossTries.reduce((a,b)=>a+b,0));sums.rf.push(rfN);sums.rn.push(rnN);sums.si.push(sitesN);sums.mi.push(miniN);sums.mw.push(miniW);
-    out.push('run '+(r+1)+' ['+ids.map(id=>id+':'+A.TPL[id].cls).join(' ')+']: top hero lv '+Math.max(...lv)+', party average '+(lv.reduce((a,b)=>a+b,0)/lv.length).toFixed(1)+' ('+lv.join('/')+') | fights '+fights+' (roamers '+rfN+', random '+rnN+', minibosses '+miniW+'/'+miniN+' at '+sitesN+' sites, lost '+lost+') | boss tries '+bossTries.join(',')+' ('+bossTries.map((t,i)=>i<4?G.run.bosses[i]:G.run.final).join(' ')+')'+' | extra fights before each boss fell '+grinds.join(',')+' | route steps '+steps.join(',')+' | hours: typical '+H(sec).toFixed(2)+', all manual '+H(secM).toFixed(2)+', auto fields '+H(secA).toFixed(2));}
+    sums.h.push(H(sec));sums.hm.push(H(secM));sums.ha.push(H(secA));sums.lv.push(Math.max(...lv));sums.f.push(fights);sums.tries.push(bossTries.reduce((a,b)=>a+b,0));sums.rf.push(rfN);sums.rn.push(rnN);sums.si.push(sitesN);sums.mi.push(miniN);sums.mw.push(miniW);sums.lk.push(lockN);
+    out.push('run '+(r+1)+' ['+ids.map(id=>id+':'+A.TPL[id].cls).join(' ')+']: top hero lv '+Math.max(...lv)+', party average '+(lv.reduce((a,b)=>a+b,0)/lv.length).toFixed(1)+' ('+lv.join('/')+') | fights '+fights+' (roamers '+rfN+', random '+rnN+', minibosses '+miniW+'/'+miniN+' at '+sitesN+' sites, lost '+lost+', '+lockN+' by hand while auto was not open) | boss tries '+bossTries.join(',')+' ('+bossTries.map((t,i)=>i<4?G.run.bosses[i]:G.run.final).join(' ')+')'+' | extra fights before each boss fell '+grinds.join(',')+' | route steps '+steps.join(',')+' | hours: typical '+H(sec).toFixed(2)+', all manual '+H(secM).toFixed(2)+', auto fields '+H(secA).toFixed(2));}
   const mean=a=>a.reduce((x,y)=>x+y,0)/a.length,sd=a=>{const m=mean(a);return Math.sqrt(mean(a.map(x=>(x-m)*(x-m))));};
-  out.push('SUMMARY runs '+RUNS+': top level mean '+mean(sums.lv).toFixed(1)+' sd '+sd(sums.lv).toFixed(1)+' range '+Math.min(...sums.lv)+'-'+Math.max(...sums.lv)+' | fights mean '+mean(sums.f).toFixed(0)+' ('+Math.min(...sums.f)+'-'+Math.max(...sums.f)+') (roamers '+mean(sums.rf).toFixed(0)+', random '+mean(sums.rn).toFixed(0)+', minibosses '+mean(sums.mi).toFixed(1)+' won '+mean(sums.mw).toFixed(1)+', sites '+mean(sums.si).toFixed(1)+') | boss tries mean '+mean(sums.tries).toFixed(1)+' (max '+Math.max(...sums.tries)+') | hours typical '+mean(sums.h).toFixed(2)+' ('+Math.min(...sums.h).toFixed(2)+'-'+Math.max(...sums.h).toFixed(2)+'), all manual '+mean(sums.hm).toFixed(2)+', auto fields '+mean(sums.ha).toFixed(2));
+  out.push('SUMMARY runs '+RUNS+': top level mean '+mean(sums.lv).toFixed(1)+' sd '+sd(sums.lv).toFixed(1)+' range '+Math.min(...sums.lv)+'-'+Math.max(...sums.lv)+' | fights mean '+mean(sums.f).toFixed(0)+' ('+Math.min(...sums.f)+'-'+Math.max(...sums.f)+') (roamers '+mean(sums.rf).toFixed(0)+', random '+mean(sums.rn).toFixed(0)+', minibosses '+mean(sums.mi).toFixed(1)+' won '+mean(sums.mw).toFixed(1)+', sites '+mean(sums.si).toFixed(1)+') | by hand while auto was not open mean '+mean(sums.lk).toFixed(0)+' | boss tries mean '+mean(sums.tries).toFixed(1)+' (max '+Math.max(...sums.tries)+') | hours typical '+mean(sums.h).toFixed(2)+' ('+Math.min(...sums.h).toFixed(2)+'-'+Math.max(...sums.h).toFixed(2)+'), all manual '+mean(sums.hm).toFixed(2)+', auto fields '+mean(sums.ha).toFixed(2));
   return out.join('\\n');`
 };
 (async()=>{const which=process.argv[2]||'boss',arg=+process.argv[3]||0;if(!SIMS[which]){console.log('sims: '+Object.keys(SIMS).join(', '));process.exit(1);}

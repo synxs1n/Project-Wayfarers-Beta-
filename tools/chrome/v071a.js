@@ -30,7 +30,7 @@ const qo=await ev(()=>{const A=__A,G=A.G;A.V.modal={type:'board',sec:'all'};A.re
   A.V.modal=null;return {rows:rows.join('')};});
 chk('quest board: claimable first, then active, then open',/^R+A+O*D*$/.test(qo.rows||'')||JSON.stringify(qo));
 // Auto and Run remembered across a reload
-await ev(()=>{const A=__A;A.B=null;A.V.modal=null;if(!A.V.auto)A.ACT.auto();if(!A.WS.run)A.ACT.runT();A.saveGame();});
+await ev(()=>{const A=__A;if(A.B)A.finishBattle('x');/* v0.9.5: leave the fight (A.B=null was a no-op; a fight against new foe types locks Auto) */A.V.modal=null;if(!A.V.auto)A.ACT.auto();if(!A.WS.run)A.ACT.runT();A.saveGame();});
 await page.reload({waitUntil:'load'});await wait(800);
 const rem=await ev(()=>({auto:!!__A.V.auto,run:!!__A.WS.run,cfg:[__A.META.cfg.autoOn,__A.META.cfg.runOn]}));
 chk('Auto and Run are remembered after a reload',rem.auto&&rem.run||JSON.stringify(rem));

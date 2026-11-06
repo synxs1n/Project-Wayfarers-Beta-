@@ -45,7 +45,7 @@ evals any name), `window.__AU` (ambience.js), `__P2` (p2world.js), `__P3` (p3sho
 | Daily Trial and twists | `engine2.js` (dailyGo, seeded RNG), `ui2.js` (screens), `twists.js`, `config.js` 9 |
 | audio | `audio.js` (chiptune fallback), `audio2.js` (orchestral engine), `musicdata.js` (score), `music2.js` (wiring), `sfx2.js`, `ambience.js` |
 | graphics tiers and settings | `gfx6.js` (GFX tiers), `p5settings.js`, `ui.js` settingsBody (wrapped by several modules) |
-| onboarding, hints, What next? | `onboard.js` (tip cards), `p2world.js` (hints), `progression.js` (What next?), `pacing.js` (unlock timing; `pcUnlocked(system)`, PACE) |
+| onboarding, hints, What next? | `onboard.js` (tip cards), `goals.js` (Next goals panel), `p2world.js` (hints), `progression.js` (What next?), `pacing.js` (unlock timing; `pcUnlocked(system)`, PACE) |
 | boss realm gimmicks (telegraphs, landings, answers) | `battle4.js` (b4Gim*), `BOSS_GIM` in `config.js` 3 |
 | encounter rate, roamers on fields and in dungeons, ordinary fight rewards | `ENC_RATE`, `ENC`, `ROAM` in `config.js`; `worldrt.js` (arrive), `roam.js` |
 | title screen | `title7.js`, `logo.js`, `ui.js` (title scene) |
@@ -105,6 +105,7 @@ v0.7
 - `remember.js` remember Auto and Run · `pacing.js` unlock pacing (v0.9.5: by realm, pcUnlocked) · `comp3.js` companion growth (v0.9.5) · `onboard.js` tip cards · `duellines.js` duel voices · `qready.js` quests ready
 - `battle3.js` battle screen pass (labels, unitHud; v0.8.0: phone and Fold fit, compact foe list, damage type symbols `dlIco`); v0.9.5 section 9: key weakness `b9Key`, Expert battle info, damage groups `foeDg`, reaction moment `b9React` · `battle5.js` forecast, foe intents, timed hits · `battle4.js` detonation refund, free swap, Momentum, roles
 - `remember.js` remember Auto and Run · `pacing.js` unlock pacing · `onboard.js` tip cards · `duellines.js` duel voices · `qready.js` quests ready
+- `remember.js` remember Auto and Run · `pacing.js` unlock pacing (v0.9.5: by realm, pcUnlocked) · `comp3.js` companion growth (v0.9.5) · `onboard.js` tip cards · `goals.js` Next goals panel (v0.9.5 nudges) · `duellines.js` duel voices · `qready.js` quests ready
 - `hd2dgl.js` HD-2D WebGL layer · `hd2d.js` HD-2D world renderer · `weather7.js` layered weather · `pathguard.js` path protection
 - `sprhd2.js` HD sprite consumers · `logo.js` wordmark · `title7.js` title (v0.8.0: six wayfarers walking through the realms) · `visuals7.js` minimap tiles, victory crest, arena
 

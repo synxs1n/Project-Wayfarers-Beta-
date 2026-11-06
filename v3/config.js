@@ -540,3 +540,19 @@ const TWISTS={on:true,
     {id:'elites',n:'Elites everywhere',risk:'Every wild fight has one shielded elite with 50% more HP.',gain:'+25% XP and gold.',pips:2,hp:1.5,xp:1.25,gold:1.25},
     {id:'react',n:'Reactions only',risk:'Only reactions crack shields; weak hits and skills no longer chip them.',gain:'Reactions hit 30% harder, +15% XP.',m:1.3,xp:1.15},
     {id:'iron',n:'Ironman',risk:'Fallen heroes stay down until you rest at an inn. No feathers, salts, tents or revive spells.',gain:'+40% XP.',xp:1.4}]}};
+
+// ==== NUDGE (v0.9.5): lead players into the systems (prog2.js, results.js, onboard.js, goals.js; docs/v095-nudges.md) ====
+// Nothing here runs in the Daily Trial.
+// Manual bonus: the economy is unchanged. An auto win still pays AUTO_REW of a hand played win; the rewards screen now counts from the
+// auto level up, so a win you play yourself shows "+X% for playing it yourself" with X = 1/AUTO_REW - 1 (52% at .66).
+// sys: a small bonus on a win's XP and gold for each system used in that battle (once each per battle), capped at cap per battle.
+//   react: a hero set off a reaction; brk: a foe's shield broke; guard: a guarded hero took a telegraphed hit (Crushing Charge,
+//   Cataclysm); surge: Momentum reached a Surge; tame: a creature was tamed on the rewards screen. Auto wins earn them too.
+// autoKills: auto battle opens against a foe type once it has been beaten by hand this many times this journey (or scanned).
+//   A fight allows auto when every foe type in it is open. Bosses keep their own rule (win that fight by hand once).
+// goals: the "Next goals" panel in the world. max items shown (one story goal and up to max-1 system goals); a done goal pays
+//   gold[realm] gold and xp x the XP to the next level to every party hero (fallen ones too), plus the goal's item if it has one.
+const NUDGE={on:true,
+  sys:{react:.04,brk:.04,guard:.04,surge:.04,tame:.04,cap:.20},
+  autoKills:3,
+  goals:{on:true,max:4,gold:[40,80,130,180,240],xp:.03}};

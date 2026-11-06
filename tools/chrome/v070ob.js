@@ -19,7 +19,7 @@ for(const [w,h] of SIZES){const tag=w+'x'+h;const H=await open({w,h,mobile:w<100
   const kinds=['primed','shield','status','types','react','weak'];
   for(let i=0;i<N;i++){const seed=300+i*41+w,R=(k=>()=>((k=Math.imul(k^k>>>15,2246822507)+0x6D2B79F5>>>0)%1e6)/1e6)(seed);
     const opt={seed,heroes:1+Math.floor(R()*6),foes:1+Math.floor(R()*5),stage:0};opt.fly=Math.floor(R()*Math.min(2,opt.foes+1));
-    const r0=await battle(H,opt);if(r0.mode!=='cmd'){console.log('  skip',JSON.stringify(opt),r0.mode);continue;}
+    const r0=await battle(H,opt);await H.ev(()=>{__A.G.pcV=0;});/* v0.9.6: a journey from before the realm unlocks, so every card can show (gating: v095na) */if(r0.mode!=='cmd'){console.log('  skip',JSON.stringify(opt),r0.mode);continue;}
     await dress(H,{seed:seed+1,maxSt:3,fx:1,prime:0,shield:0});
     const kind=kinds[i%kinds.length];
     const c=await ev(async k=>{const A=__A,O=__OB,B=A.B,e=B.en.find(x=>x.hp>0);clearInterval(O.OB.tick);O.obM().s={};O.OB.q=[];if(O.OB.cur)O.obClose();
@@ -53,7 +53,7 @@ for(const [w,h] of SIZES){const tag=w+'x'+h;const H=await open({w,h,mobile:w<100
   if(c)await H.shot('v070ob_world_'+tag);
   await ev(()=>__A.ACT.tipOk());
   // ---------- inside a shop window ----------
-  r=await ev(async()=>{const A=__A,O=__OB,G=A.G;delete O.obM().s.temper;G.gold=999999;G.party.forEach(id=>{const c=G.roster[id];['w','a'].forEach(sl=>{const f=c.eq[sl]&&O.forgeCost(c.eq[sl]);if(f)Object.keys(f.m).forEach(k=>{G.mats[k]=(G.mats[k]||0)+f.m[k];});});});
+  r=await ev(async()=>{const A=__A,O=__OB,G=A.G;delete O.obM().s.temper;O.obM().u['o:temper']=1;/* v0.9.5: an expert card, shown once the Tempering tab was opened */G.gold=999999;G.party.forEach(id=>{const c=G.roster[id];['w','a'].forEach(sl=>{const f=c.eq[sl]&&O.forgeCost(c.eq[sl]);if(f)Object.keys(f.m).forEach(k=>{G.mats[k]=(G.mats[k]||0)+f.m[k];});});});
     A.V.modal={type:'smithy'};A.render();O.OB.last=0;O.obTick();A.render();await new Promise(q=>setTimeout(q,350));
     const d=document.getElementById('p2hint'),p=document.querySelector('#modal .panel.box');if(!d||!p)return {none:1,cur:O.OB.cur};const b=d.getBoundingClientRect(),pb=p.getBoundingClientRect();
     return {cur:O.OB.cur,inside:p.contains(d),fits:b.left>=pb.left-.5&&b.right<=pb.right+.5,side:p.scrollWidth>p.clientWidth+1,vis:pb.bottom<=innerHeight+.5&&pb.top>=-.5};});
@@ -69,7 +69,7 @@ for(const [w,h] of SIZES){const tag=w+'x'+h;const H=await open({w,h,mobile:w<100
     const res={n,cut,out,side:p.scrollWidth>p.clientWidth+1,vis:pb.bottom<=innerHeight+.5&&pb.top>=-.5,end:last.bottom<=innerHeight+.5};A.V.modal=null;A.render();return res;});
   chk(`${tag}: Guides > How it works lists every system (${r.n}), nothing cut, the end can be reached`,r.n===await ev(()=>__OB.TIPS.length)&&!r.cut&&!r.out&&!r.side&&r.vis&&r.end||JSON.stringify(r));
   // ---------- starter screen (New Game+) ----------
-  r=await ev(async()=>{const A=__A,O=__OB;delete O.obM().s.ngplus;const g=A.G;A.V.screen='starter';A.V.ngCycle=1;A.V.pick=A.V.pick||[];A.render();O.OB.last=0;O.obTick();A.render();await new Promise(q=>setTimeout(q,300));
+  r=await ev(async()=>{const A=__A,O=__OB;delete O.obM().s.ngplus;O.obM().u['o:ng']=1;/* v0.9.5: an expert card, shown once a modifier was tried */const g=A.G;A.V.screen='starter';A.V.ngCycle=1;A.V.pick=A.V.pick||[];A.render();O.OB.last=0;O.obTick();A.render();await new Promise(q=>setTimeout(q,300));
     const d=document.getElementById('p2hint'),pk=document.querySelector('.ngpick');return {cur:O.OB.cur,before:!!(d&&pk&&d.nextElementSibling===pk)};});
   c=await ev(CARD);
   chk(`${tag}: on the New Game+ starter screen the card sits above the modifiers, fits, nothing cut`,r.cur==='ngplus'&&r.before&&c&&!c.clip&&c.lines<=2||JSON.stringify([r,c]));
