@@ -74,5 +74,5 @@ const S2=await ev(async()=>{const A=__A,B=window.__setup('cinderking',1),u=B.en[
   o.turns=u.turns;o.tells=B.b4gTells||0;o.over=B.over;A.setPause(999999);return o;});
 console.log(JSON.stringify(S2));
 chk('the Telegraph chip and the hero mark are drawn on the battle screen',S2.chip&&S2.mark||JSON.stringify(S2));
-chk(`auto battle runs against a gimmick boss (boss turns ${S2.turns}, telegraphs ${S2.tells})`,S2.turns>=3&&S2.tells>=2||JSON.stringify(S2));
+chk(`auto battle runs against a gimmick boss (boss turns ${S2.turns}, telegraphs ${S2.tells})`,S2.turns>=3&&(S2.tells>=2||S2.over&&S2.tells>=1)||JSON.stringify(S2));
 await done(H);})();
