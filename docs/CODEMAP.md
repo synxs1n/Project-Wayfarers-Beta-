@@ -24,7 +24,7 @@ evals any name), `window.__AU` (ambience.js), `__P2` (p2world.js), `__P3` (p3sho
 | class roles (primary and secondary), role skills, role charms, roleOut | `roles.js`, `ROLES` in `config.js` 5; role weapon families in `items.js`, icons in `icons.js` |
 | monsters, bosses, archetypes | `foes.js`, `monsters2.js`, `art3.js` (guardians), `archetype.js`, `echocore.js` (echo forms) |
 | damage, statuses, reactions | `engine.js` (calcDamage, addSt, doReaction), `data.js` (REACT, STS), `ailments.js`, `archetype.js`, `battle4.js` (Momentum) |
-| battle flow (turn order, enemy AI, auto) | `engine.js` (startBattle, advance, enemyTurn, autoTurn), `battle5.js` (forecast order, foePlan, enemyTurn0), `battle4.js` (roles, free swap), `prog2.js` (auto lock) |
+| battle flow (turn order, enemy AI, auto) | `engine.js` (startBattle, advance, enemyTurn, autoTurn), `battle5.js` (forecast order, foePlan, enemyTurn0), `battle4.js` (roles, free swap), `prog2.js` (auto lock, auto per foe type, system counters B.nz) |
 | battle screen (stage, labels, HUD, commands, cards) | `battle.js` (BL layout, drawUnit), `battle3.js` (labels, unitHud, FX placement), `battle5.js`/`battle4.js` (forecast, Momentum bar), `battleui.js` (cards, badges), `ui.js` renderBattle, CSS `battle3.css`, `battle5.css`, `battle4.css`, `ui3.css` |
 | battle effects and animation | `anim.js`, `fx2.js` (floating text), `gfx6battle.js`, `hdspell.js` |
 | battle backdrops, HD-2D battle stage | `bg.js`, `p2world.js` (backdrop from the terrain), `hdstage.js`, `visuals7.js` (arena) |
@@ -43,7 +43,7 @@ evals any name), `window.__AU` (ambience.js), `__P2` (p2world.js), `__P3` (p3sho
 | Daily Trial and twists | `engine2.js` (dailyGo, seeded RNG), `ui2.js` (screens), `twists.js`, `config.js` 9 |
 | audio | `audio.js` (chiptune fallback), `audio2.js` (orchestral engine), `musicdata.js` (score), `music2.js` (wiring), `sfx2.js`, `ambience.js` |
 | graphics tiers and settings | `gfx6.js` (GFX tiers), `p5settings.js`, `ui.js` settingsBody (wrapped by several modules) |
-| onboarding, hints, What next? | `onboard.js` (tip cards), `p2world.js` (hints), `progression.js` (What next?), `pacing.js` (unlock timing) |
+| onboarding, hints, What next? | `onboard.js` (tip cards), `goals.js` (Next goals panel), `p2world.js` (hints), `progression.js` (What next?), `pacing.js` (unlock timing) |
 | title screen | `title7.js`, `logo.js`, `ui.js` (title scene) |
 | test hooks | `v3/shell.html` (`window.__A`), `p45hook.js`, the `window.__*` objects above |
 
@@ -98,7 +98,7 @@ v0.4.5 to v0.6
 
 v0.7
 - `battle3.js` battle screen pass (labels, unitHud; v0.8.0: phone and Fold fit, compact foe list, damage type symbols `dlIco`) · `battle5.js` forecast, foe intents, timed hits · `battle4.js` detonation refund, free swap, Momentum, roles
-- `remember.js` remember Auto and Run · `pacing.js` unlock pacing · `onboard.js` tip cards · `duellines.js` duel voices · `qready.js` quests ready
+- `remember.js` remember Auto and Run · `pacing.js` unlock pacing · `onboard.js` tip cards · `goals.js` Next goals panel (v0.9.5) · `duellines.js` duel voices · `qready.js` quests ready
 - `hd2dgl.js` HD-2D WebGL layer · `hd2d.js` HD-2D world renderer · `weather7.js` layered weather · `pathguard.js` path protection
 - `sprhd2.js` HD sprite consumers · `logo.js` wordmark · `title7.js` title (v0.8.0: six wayfarers walking through the realms) · `visuals7.js` minimap tiles, victory crest, arena
 

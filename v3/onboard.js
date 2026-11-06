@@ -1,4 +1,6 @@
 // ===== onboard.js (v0.7.0): onboarding: one tip card the first time each system appears =====
+// v0.9.5 (docs/v095-nudges.md): battle cards are one line actions with a reason; expert cards (x: Reactions in depth, Tempering, Echoforge,
+// guild ranks, New Game+ modifiers) wait until the player has opened that system once (META.tips.u "o:..." keys, set by obOpened).
 // One short card (two lines at most, plain words) the first time the player really meets a system: the first primed foe, the
 // first shield, the first tame offer, the first time Alchemy sells Camp Supplies, and so on. It reuses the 2.7 hint card
 // (p2world.js: the #p2hint element, its look and hintPlace) with "Got it" and "More" (More opens Guides > How it works at that
@@ -34,42 +36,57 @@ const obFoes=()=>B?B.en.filter(e=>e&&e.hp>0):[];
 function obCharm(id){const g=gearOf(id);return !!(g&&g.slot==='c');}
 function obReserves(){return G?Object.keys(G.roster).filter(id=>!G.party.includes(id)):[];}
 
+// v0.9.5 battle cards are one line actions with a reason. A primed foe names the hero and skill that sets it off, when the party has one.
+function obPrimedTip(e){const pe=e.primed.el;let best=null;
+  try{obFront().forEach(c=>{if(best)return;known(c).forEach(s=>{if(best||s.role!=='det'||(s.mp||0)>c.mp)return;const x=skEls(s).find(el=>reactFor(pe,el));if(x)best={c,s,R:reactFor(pe,x)};});});}catch(err){}
+  if(best)return `Primed with ${EL[pe]}: try ${p2Nm(best.c)}'s ${best.s.n} on ${e.name}.`;
+  const ds=Object.values(REACT).filter(R=>R.p===pe).map(R=>EL[R.d]);
+  return `${e.name} is primed with ${EL[pe]}. Try a ${ds[0]} Detonator on it.`;}
+function obReactFx(R){const W={blind:'blinds',stun:'stuns',slow:'slows',burn:'burns',root:'roots',break:'breaks armor',weaken:'weakens',bleed:'makes it bleed'};
+  const L=(R.fx||[]).map(f=>W[f[0]]).filter(Boolean);if(R.splash)L.push('splashes nearby foes');if(R.strip)L.push('strips buffs');if(R.selfFx)L.push('wards the caster');if(R.allyFx)L.push('heals your Vanguard over time');
+  return L.length?L[0]:'hits harder than most';}
+// expert cards (x): only after the player has opened that system once (META.tips.u), so a newcomer meets the basics first
 // ----- the systems: id, Guides section, the moment (returns the card text, or null when it is not the moment), the longer Guides text -----
 // t: card text. g: Guides text. sec: Guides group. more: the Guides tab "More" opens ('sysg' by default). go: a button on the Guides entry.
 const TIPS=[
  // battle
  {id:'weak',n:'Elements',sec:'Battle',more:'types',go:['menuTab','types','Foe types'],
-  t:()=>obBat()&&B.hitWeak?'Weak spot! Each foe has an element; when you aim, its tag says Weak, Neutral or Resists.':null,
+  t:()=>obBat()&&B.hitWeak?'Weak spot! Aim where the tag says Weak: more damage, and shields crack.':null,
   g:'Every hero and foe has one or two elements (fire, water, earth and so on). Hitting a weakness deals extra damage and cracks a shield; a resisted hit does less. The tag over a foe while you aim tells you which before you strike. Guides > Foe types has the full chart.'},
  {id:'types',n:'Foe types',sec:'Battle',more:'types',go:['menuTab','types','Foe types'],
-  t:()=>{if(!obBat())return null;const e=obFoes().find(x=>x.ty&&x.ty.length&&ARCH[x.ty[0]]);return e?`${e.name} is ${ARCH[e.ty[0]].n}. A foe's type decides which kinds of hits work best on it.`:null;},
+  t:()=>{if(!obBat())return null;const e=obFoes().find(x=>x.ty&&x.ty.length&&ARCH[x.ty[0]]);return e?`${e.name} is ${ARCH[e.ty[0]].n}. Tap it to see which kinds of hits it fears, then use those.`:null;},
   g:'Many foes have a type such as Flying, Armored, Jelly, Undead, Swarm, Beast or Plant. The type decides which kinds of hits work best against it. Tap a foe in battle, or open Guides > Foe types, to read what each type fears.'},
  {id:'deliver',n:'Kinds of hits',sec:'Battle',more:'types',
-  t:()=>{if(!obBat())return null;const e=B.en.find(x=>(x.fx||[]).some(f=>/effx/.test(f.cls||'')));return e?'▲ over a foe: your kind of hit suits it. ▼: it glances off. Weapons decide the kind.':null;},
+  t:()=>{if(!obBat())return null;const e=B.en.find(x=>(x.fx||[]).some(f=>/effx/.test(f.cls||'')));return e?'▲ over a foe: this kind of hit suits it, keep using that hero. ▼: try another hero.':null;},
   g:'Every attack has a kind: Slash, Blunt, Piercing, Ranged or Magic (heals count as Heal). Against a foe with a type, some kinds hit harder (▲ over the foe) and some glance off (▼). Weapons decide the kind of a plain Attack, so a mixed party has an answer for every type.'},
  {id:'shield',n:'Shields and Break',sec:'Battle',
-  t:()=>{if(!obBat())return null;const e=obFoes().find(x=>x.maxShield>0);return e?`${e.name} has a shield (the diamonds). Weak hits and reactions crack it; at zero it Breaks.`:null;},
+  t:()=>{if(!obBat())return null;const e=obFoes().find(x=>x.maxShield>0);return e?`${e.name} has a shield. Hit its weakness or set off a reaction on it to Break it.`:null;},
   g:'Elites, Scourges and Calamities carry a shield, shown as diamonds beside their HP bar. Hits on a weakness crack one diamond and reactions crack three. When the last one goes the foe Breaks: it loses its next turn and takes more damage until it recovers.'},
  {id:'primed',n:'Primers',sec:'Battle',
-  t:()=>{if(!obBat())return null;const e=obFoes().find(x=>x.primed&&EL[x.primed.el]);return e?`${e.name} is Primed with ${EL[e.primed.el]}! A Detonator of another element sets it off.`:null;},
+  t:()=>{if(!obBat())return null;const e=obFoes().find(x=>x.primed&&EL[x.primed.el]);return e?obPrimedTip(e):null;},
   g:'A Primer skill marks a foe with its element for two turns (the small element badge with a number). While it lasts, a Detonator skill of a different element sets it off. Primers and Detonators are role skills that wayfarers learn with levels; the skill list says which is which.'},
  {id:'react',n:'Reactions and Detonators',sec:'Battle',
-  t:()=>{if(!obBat()||!(B.nDet>0))return null;const e=B.en.find(x=>x.reactN);return `${e?e.reactN+'! ':''}A Primer then a Detonator makes a reaction: a big hit that cracks shields too.`;},
+  t:()=>{if(!obBat()||!(B.nDet>0))return null;const e=B.en.find(x=>x.reactN);return `${e?e.reactN+'! ':''}Primer then Detonator hits hard and cracks shields. Prime the next foe too.`;},
   g:'When a Detonator hits a Primed foe, the two elements react: Melt, Overload, Shatter and many more, each with its own extra effect. A reaction hits hard and cracks three shield diamonds. While you aim a Detonator, the foes it would set off glow and name the reaction.'},
+ // v0.9.5: an expert card, only once the player has opened Lore (in battle or the menu)
+ {id:'react2',n:'Reactions in depth',sec:'Battle',x:'o:lore',go:['cmdLoreOb','','Lore'],
+  t:()=>{if(!obBat()||!(B.nDet>0))return null;const e=B.en.find(x=>x.reactN&&x.reactP&&x.reactEl);if(!e)return null;const R=REACT[reactKey(e.reactP,e.reactEl)];if(!R)return null;
+   return `${R.n} also ${obReactFx(R)}. Every element pair reacts its own way; Lore lists all ${Object.keys(REACT).length}.`;},
+  g:'Every pair of elements makes its own reaction, and each adds something besides the big hit: Steam and Sandblast blind, Conduct and Freeze stun, Mire and Permafrost root, Wildfire and Overload splash onto other foes, Purge strips a foe\'s buffs, Melt and Eclipse simply hit hardest. The primer element is the one marked on the foe; the detonator is the skill you hit it with. Lore in battle lists them all.'},
  {id:'status',n:'Statuses',sec:'Battle',go:['cmdLoreOb','','Lore'],
-  t:()=>{if(!obBat())return null;const u=obFront().concat(obFoes()).find(x=>Object.keys(x.st||{}).some(k=>STS[k]&&STS[k].bad));return u?`${u.name} has a status. Tap a hero or foe to read its icons; a Remedy cures bad ones.`:null;},
+  t:()=>{if(!obBat())return null;const u=obFront().concat(obFoes()).find(x=>Object.keys(x.st||{}).some(k=>STS[k]&&STS[k].bad));return u?`${u.name} has a status. Tap them to read the icon; a Remedy cures the bad ones.`:null;},
   g:'Statuses are small icons next to a unit: poison, burn, slow, stun and others hurt, while haste, might and ward help. They wear off after a few turns. Tap a hero or foe to read them, use a Remedy from Items to cure a hero, and open Lore in battle for the full list.'},
  {id:'limit',n:'Limit',sec:'Battle',
-  t:()=>{if(!obBat()||B.mode!=='cmd'||!B.cur||B.cur.side!=='p'||!lbReady(B.cur))return null;return `${p2Nm(B.cur)}'s Limit is full! Its gold button now tops the commands: a big move.`;},
+  t:()=>{if(!obBat()||B.mode!=='cmd'||!B.cur||B.cur.side!=='p'||!lbReady(B.cur))return null;return `${p2Nm(B.cur)}'s Limit is full. Tap the gold Limit button now for their biggest move.`;},
   g:'Heroes fill a Limit bar (the thin gold bar under their HP) by taking hits and when allies fall. When it is full, a gold Limit button appears at the top of that hero\'s commands. Limit moves are each class\'s strongest; at higher levels they grow into a stronger second tier.'},
  {id:'switch',n:'Switching',sec:'Battle',
-  t:()=>{if(!obBat()||B.mode!=='cmd'||!B.cur||B.cur.side!=='p'||!canSwap())return null;const c=B.cur;return c.hp<c.S.mhp*.4?`${p2Nm(c)} is hurt. Switch trades them for a Rearguard hero, who acts at once.`:null;},
+  t:()=>{if(!obBat()||B.mode!=='cmd'||!B.cur||B.cur.side!=='p'||!canSwap())return null;const c=B.cur;return c.hp<c.S.mhp*.4?`${p2Nm(c)} is hurt. Switch them out: a Rearguard hero comes in and acts at once.`:null;},
   g:'The front three of your party are the Vanguard and the back three the Rearguard. On a Vanguard hero\'s turn, Switch trades that hero for one of them, and the newcomer acts at once. The hero who steps back sheds their statuses. When a Vanguard hero falls, the next Rearguard hero steps in by themselves.'},
  {id:'scan',n:'Scan and Lore',sec:'Battle',go:['menuTab','beasts','Bestiary'],
-  t:()=>{if(!obBat()||B.mode!=='cmd')return null;const e=obFoes().find(x=>x.boss||x.elite);if(!e)return null;const b=(META.best||{})[e.base]||{};return b.scan?null:'Scan shows a foe\'s exact stats and hidden quirk for half a turn. Lore explains the rest.';},
+  t:()=>{if(!obBat()||B.mode!=='cmd')return null;const e=obFoes().find(x=>x.boss||x.elite);if(!e)return null;const b=(META.best||{})[e.base]||{};return b.scan?null:`Scan ${e.name} first: its exact stats and hidden quirk show, for half a turn.`;},
   g:'Scan, under the main commands, reads one foe\'s exact HP and stats, its hidden quirk and a boss\'s turning point, for half a turn. What you learn stays in the Bestiary. Lore pauses the fight and lists elements, reactions and statuses.'},
  {id:'summon',n:'Summons',sec:'Creatures',
-  t:()=>{if(!obBat()||B.mode!=='cmd'||!B.cur||!canSummon(B.cur))return null;const o=compOf(B.cur);return o?`${p2Nm(B.cur)} can Summon ${o.name}: it fights in their place for a few turns.`:null;},
+  t:()=>{if(!obBat()||B.mode!=='cmd'||!B.cur||!canSummon(B.cur))return null;const o=compOf(B.cur);return o?`${p2Nm(B.cur)} can Summon ${o.name}: call it in to fight for a few turns.`:null;},
   g:'A hero paired with a companion gets a Summon command. The companion takes the hero\'s place for a few turns, once per battle, then the hero comes back. Companions never fight in the Daily Trial.'},
  {id:'echo',n:'Echoes',sec:'Later',
   t:()=>{if(!obBat())return null;const e=obFoes().find(x=>/^Echo /.test(x.name||''));return e?`${e.name} is an Echo, a stronger form of a beaten boss. Its shards forge rare weapons.`:null;},
@@ -101,8 +118,8 @@ const TIPS=[
   t:()=>{if(!obModal('menu')||obTab()!=='party')return null;return obReserves().length?'Build Party suggests parties for this area. Training team helps heroes who fell behind.':null;},
   g:'Build Party (Party tab) looks at your roster, the foes of this area and its boss, and suggests a Vanguard and Rearguard in formations: Balanced, Boss ready, Area answer, Fresh mix, Rotation. Training team puts heroes who fell behind beside a strong tank and healer, so the XP catch up bonus lifts them quickly.'},
  // town
- {id:'guild',n:'Guilds and guild missions',sec:'Town',go:['menuTab','fmis','Guild missions'],
-  t:()=>{if(!obWorld()||typeof facRank!=='function')return null;const F=FAC.find(f=>facRank(f.id)>=2);return F?`New rank with the ${F.n}! Guild missions in Quests earn rank even faster.`:null;},
+ {id:'guild',n:'Guilds and guild missions',sec:'Town',x:'o:guild',go:['menuTab','fmis','Guild missions'],
+  t:()=>{if(!obWorld()||typeof facRank!=='function')return null;const F=FAC.find(f=>facRank(f.id)>=2);return F?`New rank with the ${F.n}! Each rank adds a perk; guild missions in Quests raise it faster.`:null;},
   g:'Five guilds watch what you do anyway: wins and bounties, forging and tempering, brewing, taming, and knowledge. Each rank brings a perk (cheaper inns, gold, XP, unique charms). Guild missions in the Quests menu add extra standing. Ranks are per journey.'},
  {id:'personal',n:'Personal quests',sec:'Town',
   t:()=>{if(!obWorld())return null;const c=partyOf().find(c=>personalEligible(c)&&!(G.personal&&G.personal[c.id]&&G.personal[c.id].state!=='open'));return c?`${p2Nm(c)} has a personal quest! Start it at the Guild Hall for a reward of their own.`:null;},
@@ -113,8 +130,8 @@ const TIPS=[
  {id:'arena',n:'Arena',sec:'Town',
   t:()=>{if(!obModal('guild')||V.modal.char)return null;const cl=(G.cleared||[]).filter(Boolean).length;return ARENA.some((A,i)=>A.min<=cl&&!(G.arena||{})[i])?'The Arena is open: waves of foes back to back for prizes. No fleeing, no rest.':null;},
   g:'The Guild Hall\'s Arena opens Bronze after the first Scourge, Silver after the second and Gold after the third. Waves come back to back with no rest and no fleeing; each tier pays gold and materials the first time.'},
- {id:'temper',n:'Tempering',sec:'Town',
-  t:()=>{if(!obModal('smithy'))return null;const ok=partyOf().some(c=>EQSL.some(sl=>{const id=c.eq[sl];const f=id&&forgeCost(id);return f&&G.gold>=f.gold&&hasMats(f.m);}));return ok?'Tempering raises gear by +1 with parts and gold. Look in the Tempering tab.':null;},
+ {id:'temper',n:'Tempering',sec:'Town',x:'o:temper',
+  t:()=>{if(!obModal('smithy'))return null;const ok=partyOf().some(c=>EQSL.some(sl=>{const id=c.eq[sl];const f=id&&forgeCost(id);return f&&G.gold>=f.gold&&hasMats(f.m);}));return ok?'Temper what your best hitter holds first. Past +1 needs the realm relic, later a Dread Core.':null;},
   g:'At the Smithy\'s Tempering tab, parts from monsters and gold raise a weapon, armor, cape or charm by +1. The list puts ready upgrades first. Going past +1 needs the realm\'s relic and, later, a Dread Core.'},
  {id:'craft',n:'Crafting',sec:'Town',
   t:()=>{const sm=obModal('smithy'),al=obModal('workshop');if(!sm&&!al)return null;const can=RECIPES.some(r=>recipeOpen(r)&&(sm?SMITH_CATS.includes(r.cat):!SMITH_CATS.includes(r.cat))&&G.gold>=r.g&&hasMats(recipeMats(r)));
@@ -124,14 +141,14 @@ const TIPS=[
   t:()=>{if(!obWorld())return null;return (G.gear||[]).some(obCharm)?'You found a charm! Each hero has one charm slot. Equip it in Backpack > Equipment.':null;},
   g:'Charms fill the fourth gear slot of each hero: a small stat boost or a special effect. Bounties drop stat charms, Alchemy sells and brews them (Shop > Charms), and guild ranks give unique ones. They can be tempered too.'},
  // later
- {id:'echoforge',n:'Echoforge',sec:'Later',
-  t:()=>{if(!obModal('smithy')||typeof efTabOn!=='function'||!efTabOn())return null;return 'The Echoforge tab turns Echo Shards and Essence into Echoforged weapons.';},
+ {id:'echoforge',n:'Echoforge',sec:'Later',x:'o:echo',
+  t:()=>{if(!obModal('smithy')||typeof efTabOn!=='function'||!efTabOn())return null;return 'Each Echo\'s shards forge a different weapon. Read the Echoforge list, then pick which Echo to hunt.';},
   g:'Once you hold Echo Shards (or the journey is won), the Smithy shows an Echoforge tab. It turns Shards and Essence from Echoes into six Echoforged weapons, each the strongest of its family.'},
  {id:'legend',n:'Legends',sec:'Later',
   t:()=>{if(!obModal('board'))return null;return (G.quests||[]).some(q=>q.type==='legend'&&(q.state==='open'||q.state==='active'))?'A legend quest! Follow its steps to meet a Legendary wayfarer who may join you.':null;},
   g:'From the second realm, a Quest Board may post a legend quest. Its steps lead to a Legendary wayfarer, a hand made hero with a unique class and trait. Accept it, follow the steps shown in Quests, and they may join you.'},
- {id:'ngplus',n:'New Game+ modifiers',sec:'Later',
-  t:()=>{if(V.screen!=='starter'||!((V.ngCycle||0)>0)||typeof TWISTS==='undefined'||!TWISTS.on||V.modal)return null;return `Modifiers add risk for more reward for this whole cycle. Pick up to ${TWISTS.ng.max}, or none.`;},
+ {id:'ngplus',n:'New Game+ modifiers',sec:'Later',x:'o:ng',
+  t:()=>{if(V.screen!=='starter'||!((V.ngCycle||0)>0)||typeof TWISTS==='undefined'||!TWISTS.on||V.modal)return null;return `Modifiers last this whole cycle: each risk pays more XP or gold. Pick up to ${TWISTS.ng.max}, or none.`;},
   g:'When you start a New Game+ cycle you may pick a few modifiers (on the hero picking screen). Each adds a risk, such as tougher foes or heroes who stay down, and a gain, such as more XP or gold. They last for the whole cycle and show on the save card.'},
  {id:'twist',n:'Daily Trial twist',sec:'Later',always:1,
   t:()=>null,
@@ -184,7 +201,7 @@ function obPlaceBattle(d){const wrap=document.getElementById('bwrap');if(!wrap)r
   // stay put while the spot is still clear of every sprite and card (no jumping around as labels come and go)
   if(d.dataset.obp===String(B&&B.id)&&d.offsetWidth){const r=d.getBoundingClientRect(),lr=(document.getElementById('bline')||wrap).getBoundingClientRect();
     const inside=r.left>=Math.min(W.left,lr.left)-1&&r.right<=Math.max(W.right,lr.right)+1&&r.top>=W.top-1&&r.bottom<=Math.max(W.bottom,lr.bottom)+1;if(inside&&obFree(r.left,r.top,r.width,r.height,bodies,1))return true;}
-  d.classList.remove('slim');
+  d.classList.remove('slim','tight');
   const widths=[Math.min(420,W.width-12),Math.min(340,W.width-12)].filter((v,i,a)=>v>=150&&a.indexOf(v)===i);
   const put=(x,y,w)=>{d.style.left=Math.round(x+w/2)+'px';d.style.top=Math.round(y)+'px';d.style.bottom='auto';d.dataset.obp=String(B&&B.id);return true;};
   // 1) a free spot on the stage: first clear of everything, then clear of sprites and cards (it may touch a label)
@@ -194,8 +211,8 @@ function obPlaceBattle(d){const wrap=document.getElementById('bwrap');if(!wrap)r
         for(const x of xs){if(x<W.left+2||x+w>W.right-2||!obFree(x,y,w,h,ob,3))continue;const s=Math.abs(x+w/2-cx);if(!best||s<best.s)best={x,y,s};}}
       if(best)return put(best.x,best.y,w);}}
   // 2) a crowded stage (short landscape screens): a slim card over the log line under the stage, the buttons beside the text
-  const ln=document.getElementById('bline');if(ln){const Lr=ln.getBoundingClientRect();if(Lr.width>=200){d.classList.add('slim');const w=Lr.width;d.style.width=w+'px';d.style.maxWidth=w+'px';const h=d.offsetHeight;
-    const y=Lr.bottom-h;if(obFree(Lr.left,y,w,h,bodies,1))return put(Lr.left,y,w);d.classList.remove('slim');}}
+  const ln=document.getElementById('bline');if(ln){const Lr=ln.getBoundingClientRect();if(Lr.width>=200){d.classList.add('slim');const w=Lr.width;d.style.width=w+'px';d.style.maxWidth=w+'px';if(obLines(d)>2)d.classList.add('tight');/* v0.9.5: a long tip in a narrow slim card takes a smaller type, two lines at most */const h=d.offsetHeight;
+    const y=Lr.bottom-h;if(obFree(Lr.left,y,w,h,bodies,1))return put(Lr.left,y,w);d.classList.remove('slim','tight');}}
   d.style.width='';d.style.maxWidth='';delete d.dataset.obp;return false;}
 // replaces p2world's hintPlace: in battle the search above (falls back to the old spot at the top of the stage), elsewhere the default spot
 {const hp0=hintPlace;hintPlace=function(d){d=d||document.getElementById('p2hint');if(!d)return;if(d.classList.contains('inl'))return;
@@ -206,10 +223,15 @@ function obPlaceBattle(d){const wrap=document.getElementById('bwrap');if(!wrap)r
 if(typeof p5Avoid==='function'){const pa1=p5Avoid;p5Avoid=function(){const r=pa1.apply(this,arguments);try{const d=document.getElementById('p2hint');if(d&&d.classList.contains('show')){const b=d.getBoundingClientRect();if(b.width)r.push(b);}}catch(e){}return r;};}
 
 // ----- the queue -----
-function obEval(t){try{return t.t()||null;}catch(e){return null;}}
+function obEval(t){try{if(t.x&&!tipUsed(t.x))return null;return t.t()||null;}catch(e){return null;}}
+// v0.9.5: opening a system once (for the expert cards): the Smithy's Tempering and Echoforge tabs, the Guild Hall, Lore
+function obOpened(){try{if(!G||G.daily)return;const m=V.modal;if(!m)return;
+  if(m.type==='smithy'&&m.tab==='forge')tipUse('o:temper');if(m.type==='smithy'&&m.tab==='echo')tipUse('o:echo');if(m.type==='guild')tipUse('o:guild');
+  if(m.type==='battlelore'||(m.type==='menu'&&m.tab==='lore'))tipUse('o:lore');}catch(e){}}
+{const ng0=ACT.ngMod;if(typeof ng0==='function')ACT.ngMod=function(){try{const M=obM();if(!M.u['o:ng']){M.u['o:ng']=1;saveMeta();}}catch(e){}return ng0.apply(this,arguments);};}
 function obHold(){if(obBossHold())return true;const m=V.modal;if(m&&['story','talk','legacy','lose','boss','slots','export','import','feedback','fbcopy'].includes(m.type))return true;
   if(V.screen==='title')return true;return false;}
-function obTick(){try{
+function obTick(){try{obOpened();
   if(!tipsOn()){if(OB.cur)obClose();OB.q=[];return;}
   if(OB.cur&&P2.hint!=='tip:'+OB.cur){OB.cur=null;OB.curCtx=null;clearTimeout(OB.hide);}// a first realm hint took the card over
   if(OB.cur){const c=OB.curCtx||{},id=OB.cur;
@@ -270,7 +292,7 @@ function vSysGuide(m){const at=m&&m.obAt,met=TIPS.filter(t=>t.always||tipSeen(t.
   return h+`<div class="rows obset"><div class="row"><div class="grow"><b>Tips</b><small>A short card the first time you meet each part of the game. Read them again in Guides > How it works.</small></div><div class="chips"><button class="chip ${on?'on':''}" data-act="cfg" data-arg='["tips",true]'>On</button><button class="chip ${on?'':'on'}" data-act="cfg" data-arg='["tips",false]'>Off</button><button class="chip" data-act="tipsReset">Reset tips</button></div></div></div>`;};}
 
 try{const css=document.createElement('style');css.textContent=`#p2hint.ob{width:min(92vw,420px);display:flex;flex-wrap:wrap;align-items:center;gap:2px 8px}#p2hint.ob .obt{flex:1 1 270px;min-width:0;overflow-wrap:anywhere}
-  #p2hint.ob .btnrow{margin:2px 0 0 auto;flex:0 0 auto}#p2hint.ob.bat{font-size:11.5px;padding:5px 8px}#p2hint.ob.slim{flex-wrap:nowrap;align-items:center;font-size:11px;padding:3px 8px;line-height:1.25}#p2hint.ob.slim .obt{flex:1 1 auto}#p2hint.ob.slim .btnrow{margin:0}
+  #p2hint.ob .btnrow{margin:2px 0 0 auto;flex:0 0 auto}#p2hint.ob.bat{font-size:11.5px;padding:5px 8px}#p2hint.ob.slim{flex-wrap:nowrap;align-items:center;font-size:11px;padding:3px 8px;line-height:1.25}#p2hint.ob.slim .obt{flex:1 1 auto}#p2hint.ob.slim.tight{font-size:9.5px;line-height:1.15}#p2hint.ob.slim.tight .btn{padding:2px 7px;min-height:24px;font-size:10px}#p2hint.ob.slim .btnrow{margin:0}
   #p2hint.inl{position:relative;left:auto;top:auto;bottom:auto;transform:none;max-width:none;width:auto;margin:4px 0 8px;z-index:1;box-shadow:0 2px 10px rgba(0,0,0,.35)}
   #p2hint.inl.show{transform:none}#p2hint.inl{transition:none}/* v0.7.5: a window card is put back after every re-render of the window; with the fade it flashed */
   .obg{display:flex;flex-direction:column;gap:4px;margin-bottom:6px}.obgi{border:1px solid rgba(255,208,74,.25);border-radius:8px;padding:6px 9px;background:rgba(255,255,255,.03)}
