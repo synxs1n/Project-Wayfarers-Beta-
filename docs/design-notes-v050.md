@@ -191,3 +191,6 @@ Details in `v085-sync.md` (saves.js, cloud.js, p5settings.js, SAVE_UI sync timin
 
 ## Beta v0.8.8: themed dungeons and the boss lair
 Details in `v082-dungeons.md` (`v3/dungeon8.js` after pathguard.js; tests `chrome/v082da.js`, `v082db.js`, perf `v082dperf.js`). Materials per realm match the battle backdrops; organic materials carve wall edges with their own seeded RNG under the reachability and content checks; the lair is a tower, skull gate and beacon with its own map icon and relit look.
+
+## Beta v0.8.9: Fold battle layout follow up
+Details in `v080-battle-phones.md` (follow up section; battle3.js/css; test `chrome/v080b.js` with 412x810, 933x615 and 6h/2f). Wide: the arrangement with the largest stage wins (right column 340/370/410 px, log and foes may sit in either column), last panels reach the bottom. Portrait: commands before the party cards, acting hero HP/MP in the command header, bottom padding uses env(safe-area-inset-bottom).
