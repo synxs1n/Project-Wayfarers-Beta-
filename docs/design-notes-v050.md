@@ -200,3 +200,6 @@ title7.js uses the overworld walker sprite shrunk like the HD-2D world (hdSmall 
 
 ## Beta v0.9.1: title music at launch
 ui.js boot calls audioInit() 300 ms after load (the context starts running where autoplay is allowed, else waits suspended for the first tap). The release workflow patches MainActivity to setMediaPlaybackRequiresUserGesture(false); electron/main.js sets autoplayPolicy no-user-gesture-required.
+
+## Beta v0.9.2: natural lair, HD-2D uniforms
+dungeon8.js lair section: a rock mound of field rock tiles around the unchanged entrance (kept only if reachability is no worse), HD-2D geometry built like the fortress gatehouse, 2D shaded heightfield, no text; relit look in gold. hd2d.js: the line setting uEmis and uAct had joined a comment in v0.8.0 and never ran. Tests `chrome/v082da.js`, `v082db.js`.
