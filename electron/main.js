@@ -24,6 +24,14 @@ function create() {
   // Live site first, so updates arrive on their own. Fall back to the bundled copy when offline.
   let fell = false;
   w.webContents.on('did-fail-load', (e, code, d, url, main) => { if (main && !fell && url.startsWith(LIVE)) { fell = true; local(w); } });
+  // v0.8.5: before the window closes, let the game save and upload the journey (window.svBeforeClose, at most 4 s).
+  let closing = false;
+  w.on('close', (e) => {
+    if (closing) return;
+    e.preventDefault(); closing = true;
+    const ask = w.webContents.executeJavaScript('typeof window.svBeforeClose==="function"?window.svBeforeClose().then(()=>1,()=>0):0', true).catch(() => 0);
+    Promise.race([ask, new Promise((r) => setTimeout(r, 4000))]).then(() => { if (!w.isDestroyed()) w.destroy(); });
+  });
   w.loadURL(LIVE, { userAgent: UA });
 }
 app.whenReady().then(() => { create(); app.on('activate', () => { if (!BrowserWindow.getAllWindows().length) create(); }); });

@@ -41,7 +41,7 @@ function svProg(o){const ro=o.roster||{},party=(o.party||[]).filter(id=>ro[id]),
   return {stage:o.stage||0,cleared:(Array.isArray(o.cleared)?o.cleared:[]).filter(Boolean).length,cycle:(o.run&&o.run.cycle)||0,heroes:Object.keys(ro).length,battles:st.battles||0,play:st.play||0,
     lv:party.length?Math.round(party.reduce((a,id)=>a+(ro[id].lv||0),0)/party.length):0,gold:o.gold||0,saved:o.savedAt||0};}
 function svScore(p){return p.cycle*100000+p.stage*10000+p.cleared*2000+p.heroes*100+Math.min(5000,p.battles)+Math.min(999,Math.floor(p.play/60000));}
-function svDom(a,b){return ['cycle','stage','cleared','heroes','battles','lv'].every(k=>(a[k]||0)>=(b[k]||0));}
+function svDom(a,b){return ['cycle','stage','cleared','heroes','battles','lv','play'].every(k=>(a[k]||0)>=(b[k]||0));}
 function svProgText(p){return `Stage ${p.stage+1}, ${p.cleared} of 5 beacons${p.cycle?', NG+'+p.cycle:''}. ${p.heroes} heroes, party level ${p.lv}, ${fmt(p.battles)} battles${p.play?', '+durText(p.play)+' played':''}.`;}
 function svHeroLine(o){const ro=o.roster||{};return (o.party||[]).filter(id=>ro[id]).slice(0,6).map(id=>(TPL[id]?TPL[id].n:id)+' '+(ro[id].lv||'?')).join(', ');}
 function svWhen(t){return t?new Date(t).toLocaleString():'unknown time';}
@@ -79,14 +79,14 @@ function svLoad(slot){
   G=g;META.slot=+slot;saveMeta();enterWorldFromSave();
 }
 Object.assign(ACT,{
-  cont(){svLoad(META.slot||0);},
-  slotLoad(s){svLoad(+s);},
+  cont(){const s=META.slot||0;svGate(s,()=>svLoad(s));},
+  slotLoad(s){s=+s;svGate(s,()=>svLoad(s));},
   slotNew(s){const raw=svSlotRaw(+s);if(raw)svBackup(+s,raw,'before a new journey replaced it');META.slot=+s;saveMeta();V.modal=null;render();},
   slotDel(s){s=+s;const raw=svSlotRaw(s);if(raw)svBackup(s,raw,'before the slot was cleared');svLs.del(slotKey(s));toast(`Slot ${s+1} cleared. A backup stays in Recover Saves.`);svRefreshTitle();render();},
   svRetry(s){svLoad(+s);},
 });
 // ---------- scanning storage for everything that looks like a save ----------
-const SV_SKIP=/^(aurelis-meta-v1|aurelis-daily-|aurelis-legend|aurelis-offline|aurelis-dev-v1|aurelis-bak-idx)/;
+const SV_SKIP=/^(aurelis-meta-v1|aurelis-sync-v1|aurelis-daily-|aurelis-legend|aurelis-offline|aurelis-dev-v1|aurelis-bak-idx)/;
 function svScan(){
   const out=[];let n=0;try{n=localStorage.length;}catch(e){return out;}
   for(let i=0;i<n;i++){let k;try{k=localStorage.key(i);}catch(e){continue;}
@@ -122,13 +122,30 @@ async function svDownload(name,text){
 }
 function svFileName(slot){const d=new Date();return `aurelis-slot${slot+1}-${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}.awsave`;}
 // ---------- cloud ----------
+// v0.8.5 sync between devices (docs/v085-sync.md):
+//   aurelis-sync-v1  {b:{<slot>:hash},k:{<slot>:hash},sk:ms}  b = the cloud version this device last matched (pushed, pulled or found equal),
+//                    k = a cloud version the player chose to replace ("Keep this one"), sk = this device's clock offset to the server
+//   new optional cloud fields: par (the cloud hash a version replaced), srvAt (server time of the write, Firebase only)
+//   Who wins: the side that changed since the last match. Only when both changed (or nothing is known) do progress and time decide,
+//   with the time corrected by each device's clock offset, and a journey open on the slot always asks instead of switching.
+const SYNCKEY='aurelis-sync-v1';
+function svSyncLoad(){let o=null;try{o=JSON.parse(svLs.get(SYNCKEY)||'null');}catch(e){}o=o&&typeof o==='object'?o:{};SV.syncU=o.u||null;SV.base=Object.assign({},o.b||{});SV.keep=Object.assign({},o.k||{});SV.skew=typeof o.sk==='number'&&isFinite(o.sk)?o.sk:0;}
+function svSyncSave(){svLs.set(SYNCKEY,JSON.stringify({u:SV.uid||SV.syncU||null,b:SV.base,k:SV.keep,sk:SV.skew||0}));}
+function svSetBase(slot,hash){if(SV.base[slot]===hash)return;SV.base[slot]=hash;svSyncSave();}
+Object.assign(SV,{again:false,first:null,firstDone:false,newer:null,later:{},keep:{},skew:0,dirtyAt:0,lastCheck:0});
+svSyncLoad();
+SV.first=new Promise(r=>{SV.firstRes=r;});
+function svFirstDone(){if(SV.firstDone)return;SV.firstDone=true;try{SV.firstRes();}catch(e){}}
 async function svCap(){
   if(SV.db&&SV.uid)return true;
   const db=await capOf('db'),user=await capOf('user');let uid=null;
   if(user){try{uid=await user.id();}catch(e){}}
   let can=null;if(user&&user.can){try{can=await user.can('data.write');}catch(e){}}
   if(!db||!uid||can===false){SV.status='local';svIcon();return false;}
-  SV.db=db;SV.uid=uid;return true;
+  SV.db=db;SV.uid=uid;
+  if(SV.syncU&&SV.syncU!==uid){SV.base={};SV.keep={};SV.hold={};SV.div=[];SV.newer=null;}   // another account: what we matched before means nothing here
+  if(SV.syncU!==uid){SV.syncU=uid;svSyncSave();}
+  return true;
 }
 const svRef=(kind,key)=>SV.db.doc('saves/'+SV.uid+'/'+kind+'/'+key);
 async function svPut(kind,key,meta,b64,prevN){
@@ -147,89 +164,168 @@ async function svDelDoc(kind,key){
   for(let k=1;k<n;k++){try{await SV.db.doc('saves/'+SV.uid+'/c/'+kind+key+'-'+k).delete();}catch(e){}}
   await svRef(kind,key).delete();
 }
-async function svPush(slot,why){
+// push this device's slot. cd = the cloud doc the decision was made on (read again when missing). The replaced version becomes
+// history entry hi%3 (the last three are kept). Where the db offers txn (Firebase), history and save are one atomic write that
+// only lands if the cloud still holds cd, so a slow or late push can never replace a newer save from another device.
+async function svPush(slot,why,cd){
   const raw=svSlotRaw(slot),p=svParse(raw);if(!p.ok)return false;
-  const prog=svProg(p.o),b64=await svPack(raw),dev=svDev();
-  const cur=await svRef('s',slot).get();let hi=0,prevN=0;
-  if(cur.exists){const old=cur.data();hi=old.hi||0;prevN=old.n||1;
-    // the version being replaced becomes history entry hi%3 (the last three are kept)
-    const prev=await svGet('s',slot).catch(()=>null);
-    if(prev){const hk=slot+'-'+(hi%3);let hn=0;try{const hs=await svRef('h',hk).get();if(hs.exists)hn=hs.data().n||1;}catch(e){}
-      await svPut('h',hk,Object.assign({},old,{hist:1,replacedAt:Date.now()}),prev.b64,hn);hi=hi+1;}}
-  const hash=svHash(raw);
-  await svPut('s',slot,{v:1,sv:3,gv:p.o.gv||'older',slot,savedAt:p.o.savedAt||Date.now(),score:svScore(prog),prog,dev:dev.label,hash,hi,pushedAt:Date.now(),why:why||''},b64,prevN);
-  SV.base[slot]=hash;return true;
+  if(cd===undefined){const s=await svRef('s',slot).get();cd=s.exists?s.data():null;}
+  const pre='saves/'+SV.uid+'/',hk=cd?slot+'-'+((cd.hi||0)%3):null;
+  const [b64,prevB64,hn]=await Promise.all([svPack(raw),
+    cd?((cd.n||1)>1?svGet('s',slot).then(x=>x&&x.b64).catch(()=>null):Promise.resolve(cd.data||null)):null,
+    hk?svRef('h',hk).get().then(s=>s.exists?(s.data().n||1):0).catch(()=>0):0]);
+  const prog=svProg(p.o),dev=svDev(),hash=svHash(raw),W=[];
+  const put=(kind,key,meta,b,stamp)=>{const n=Math.max(1,Math.ceil(b.length/SV_CH));for(let k=1;k<n;k++)W.push({path:pre+'c/'+kind+key+'-'+k,data:{d:b.slice(k*SV_CH,(k+1)*SV_CH),t:meta.savedAt||0}});
+    W.push({path:pre+kind+'/'+key,data:Object.assign({},meta,{n,data:b.slice(0,SV_CH)}),stamp:!!stamp});return n;};
+  let hi=cd?cd.hi||0:0,hN=0;
+  if(cd&&prevB64){hN=put('h',hk,Object.assign({},cd,{hist:1,replacedAt:Date.now()}),prevB64);hi=hi+1;}
+  const sN=put('s',slot,{v:1,sv:3,gv:p.o.gv||'older',slot,savedAt:p.o.savedAt||Date.now(),score:svScore(prog),prog,dev:dev.label,hash,hi,pushedAt:Date.now(),why:why||'',par:cd?cd.hash||null:null},b64,true);
+  if(SV.db.txn)await SV.db.txn(pre+'s/'+slot,cd?cd.hash||null:null,W);
+  else for(const w of W)await SV.db.doc(w.path).set(w.data);
+  for(let k=sN;k<(cd?cd.n||1:0);k++){try{await SV.db.doc(pre+'c/s'+slot+'-'+k).delete();}catch(e){}}
+  if(hN)for(let k=hN;k<hn;k++){try{await SV.db.doc(pre+'c/h'+hk+'-'+k).delete();}catch(e){}}
+  delete SV.keep[slot];SV.base[slot]=hash;svSyncSave();return true;
 }
 async function svPull(slot,why){
   const c=await svGet('s',slot);if(!c)return false;
   const p=svParse(c.raw);if(!p.ok)throw new Error('the cloud copy is damaged: '+p.why);
-  const old=svSlotRaw(slot);if(old)svBackup(slot,old,'before the cloud save replaced it');
+  const old=svSlotRaw(slot);if(old&&old!==c.raw)svBackup(slot,old,'before the cloud save replaced it');
   if(!svLs.set(slotKey(slot),c.raw))throw new Error('this device has no room to store it');
-  SV.base[slot]=c.d.hash||svHash(c.raw);return true;
+  delete SV.keep[slot];SV.base[slot]=c.d.hash||svHash(c.raw);svSyncSave();return true;
 }
-// compare one slot: push, pull, leave alone, or flag a divergence. live = a journey is open on this slot: never pull or prompt mid game.
+// clocks: a doc written through a txn carries the server time (srvAt) and the writer's clock (pushedAt); their difference is that
+// device's clock offset. Our own docs teach us ours. Times compared across devices are put on the server clock first.
+const SV_SKEWMAX=86400000;
+function svDocSkew(cd){const x=cd&&typeof cd.srvAt==='number'&&typeof cd.pushedAt==='number'?cd.srvAt-cd.pushedAt:0;return Math.abs(x)<SV_SKEWMAX?x:0;}
+function svLearnSkew(cd){try{if(cd&&typeof cd.srvAt==='number'&&cd.dev===svDev().label){const k=svDocSkew(cd);if(Math.abs(k-(SV.skew||0))>500){SV.skew=k;svSyncSave();}}}catch(e){}}
+const svCloudTime=cd=>(cd.savedAt||0)+svDocSkew(cd);
+const svLocalTime=t=>(t||0)+(SV.skew||0);
+// what to do with a slot whose local and cloud copies differ: 'push', 'pull' or 'div' (both changed and nothing says which is right)
+const SV_SKEWWIN=15*60000;
+function svDecide(slot,o,hash,cd){
+  const base=SV.base[slot];
+  if(SV.keep[slot]&&SV.keep[slot]===cd.hash)return 'push';                       // the player already chose this device over that cloud copy
+  if(base){const lc=hash!==base,cc=cd.hash!==base;
+    if(cc&&!lc)return 'pull';                                                      // only the cloud moved on since we last matched
+    if(lc&&!cc)return 'push';}                                                     // only this device moved on
+  if(cd.par&&cd.par===hash)return 'pull';                                          // the cloud copy was made from exactly this one
+  const L=svProg(o),C=cd.prog||{},cD=svDom(C,L),lD=svDom(L,C),dc=svCloudTime(cd)-svLocalTime(L.saved);
+  if(cD&&!lD&&dc>-SV_SKEWWIN)return 'pull';                                        // more progress wins over a clock a few minutes off
+  if(lD&&!cD&&dc<SV_SKEWWIN)return 'push';
+  if(dc>2000)return cD?'pull':'div';if(dc<-2000)return lD?'push':'div';return lD?'push':cD?'pull':'div';
+}
+// compare one slot: push, pull, leave alone, or flag it. live = a journey is open on this slot: never switch it under the player, ask.
 async function svCheck(slot,live){
   const raw=svSlotRaw(slot),pr=raw?svParse(raw):{ok:false};
   const snap=await svRef('s',slot).get(),cd=snap.exists?snap.data():null;
+  if(cd)svLearnSkew(cd);
   if(!pr.ok&&raw)return 'damaged';                                   // never touch a slot we cannot read
   if(!raw&&!cd)return 'none';
-  if(raw&&!cd){svBackup(slot,raw,'before the first cloud upload');await svPush(slot,'first upload');return 'pushed';}
-  if(!raw&&cd){if(live)return 'skip';await svPull(slot,'restored');SV.restored=(SV.restored||0)+1;return 'pulled';}
-  const L=svProg(pr.o),hash=svHash(raw);
-  if(cd.hash===hash){SV.base[slot]=hash;return 'same';}
-  const dc=(cd.savedAt||0)-(L.saved||0),cD=svDom(cd.prog||{},L),lD=svDom(L,cd.prog||{});
-  let act;
-  if(dc>2000)act=cD?'pull':'div';else if(dc<-2000)act=lD?'push':'div';else act=lD?'push':cD?'pull':'div';
-  if(act==='push'){await svPush(slot,'newer');return 'pushed';}
-  if(act==='pull'&&!live){await svPull(slot,'newer');SV.restored=(SV.restored||0)+1;return 'pulled';}
-  if(!SV.div.some(d=>d.slot===slot))SV.div.push({slot,L:{prog:L,saved:L.saved},C:cd});
-  SV.hold[slot]=1;return 'div';
+  if(SV.hold[slot]){if(cd&&cd.hash===SV.hold[slot])return 'held';svUnhold(slot);}   // waiting for the player; a further cloud change is decided afresh
+  if(raw&&!cd){svBackup(slot,raw,'before the first cloud upload');await svPush(slot,'first upload',null);return 'pushed';}
+  if(!raw&&cd){if(live)return 'skip';await svPull(slot,'restored');svNote(slot,cd);return 'pulled';}
+  const hash=svHash(raw);
+  if(cd.hash===hash){svSetBase(slot,hash);return 'same';}
+  const act=svDecide(slot,pr.o,hash,cd);
+  if(act==='push'){await svPush(slot,'newer',cd);return 'pushed';}
+  if(live){SV.hold[slot]=cd.hash;SV.newer={slot,C:cd,kind:act==='pull'?'newer':'differ'};svMaybeNewer();return 'newer';}
+  if(act==='pull'){await svPull(slot,'newer');svNote(slot,cd);return 'pulled';}
+  const L=svProg(pr.o);SV.div=SV.div.filter(d=>d.slot!==slot);SV.div.push({slot,L:{prog:L,saved:L.saved},C:cd});
+  SV.hold[slot]=cd.hash;return 'div';
 }
+function svUnhold(slot){SV.hold[slot]=0;SV.div=SV.div.filter(d=>d.slot!==slot);
+  if(SV.newer&&SV.newer.slot===slot){SV.newer=null;try{if(V.modal&&V.modal.type==='svnewer'){V.modal=null;render();}}catch(e){}}}
+function svNote(slot,cd){SV.restored=(SV.restored||0)+1;SV.restoredFrom=cd&&cd.dev||'';}
 function svStatus(s,msg){SV.status=s;if(msg!==undefined)SV.errMsg=msg;svIcon();}
 function svErrKind(e){const c=e&&e.code;if(c==='not_granted'||c==='permission_denied'||c==='not_writer'||c==='forbidden')return 'local';return 'error';}
-// autosave marks a slot dirty; one debounced pass pushes it
-function svMark(slot){SV.dirty[slot]=1;if(SV.status==='local')return;clearTimeout(SV.timer);SV.timer=setTimeout(svFlush,6000);if(SV.status!=='error')svStatus(navigator.onLine===false?'queued':'syncing');}
-async function svFlush(manual){
-  if(SV.busy){clearTimeout(SV.timer);SV.timer=setTimeout(svFlush,1500);return;}
-  const slots=Object.keys(SV.dirty).map(Number);if(!slots.length&&!manual)return;
-  if(navigator.onLine===false){svStatus('queued');return;}
-  SV.busy=true;
-  try{
-    if(!(await svCap())){return;}
-    svStatus('syncing');
-    for(const s of (slots.length?slots:[META.slot||0])){
-      if(SV.hold[s]){continue;}
-      const live=!!G&&V.screen!=='title'&&(META.slot||0)===s;
-      const r=await svCheck(s,live);delete SV.dirty[s];
-      if(r==='div'){try{toast('Your cloud save and this device differ. Pick one on the title screen.');}catch(e){}}
-    }
-    SV.last=Date.now();svStatus(SV.div.length?'attention':'synced','');clearTimeout(SV.retry);
-  }catch(e){
-    const k=svErrKind(e);svStatus(k,(e&&e.message)||String(e));
-    if(k==='error'){clearTimeout(SV.retry);SV.retry=setTimeout(()=>svFlush(),60000);}
-  }finally{SV.busy=false;if(typeof V!=='undefined'&&V.modal&&V.modal.type==='menu')try{render();}catch(e){}}
-}
-// first load of the session: compare every slot with the cloud
-async function svInit(){
-  if(SV.busy){setTimeout(svInit,1500);return;}
-  if(navigator.onLine===false){svStatus('queued');return;}
-  SV.busy=true;
+function svLive(s){try{return !!G&&!G.daily&&V.screen!=='title'&&(META.slot||0)===s;}catch(e){return false;}}
+function svAttn(){return SV.div.length||SV.newer;}
+// autosave marks a slot dirty; a short debounce pushes it, and a slot is never left unsynced longer than syncMax while saves keep coming
+function svMark(slot){SV.dirty[slot]=1;if(SV.status==='local')return;
+  const now=Date.now();if(!SV.dirtyAt)SV.dirtyAt=now;
+  const d=Math.max(0,Math.min(SAVE_UI.syncDelay,(SAVE_UI.syncMax||30000)-(now-SV.dirtyAt)));
+  clearTimeout(SV.timer);SV.timer=setTimeout(()=>{SV.timer=null;svFlush();},d);
+  if(SV.status!=='error')svStatus(navigator.onLine===false?'queued':'syncing');}
+// one sync pass. all = compare every slot with the cloud (start, coming back, the periodic check); otherwise only the dirty ones.
+// A pass asked for while another runs is chained right after it, never dropped.
+async function svFlush(manual,all){
+  if(SV.busy){SV.again=SV.again==='all'||all?'all':true;return;}
+  const slots=all?[0,1,2]:Object.keys(SV.dirty).map(Number);
+  if(!slots.length&&!manual){if(all)svFirstDone();return;}
+  if(navigator.onLine===false){svStatus('queued');svFirstDone();return;}
+  SV.busy=true;clearTimeout(SV.timer);SV.timer=null;SV.dirtyAt=0;
   try{
     if(!(await svCap()))return;
     svStatus('syncing');
-    for(const s of [0,1,2]){const live=!!G&&V.screen!=='title'&&(META.slot||0)===s;if(SV.hold[s])continue;const r=await svCheck(s,live);delete SV.dirty[s];}
-    svStatus(SV.div.length?'attention':'synced','');SV.last=Date.now();
-    if(SV.restored){try{toast('Restored '+SV.restored+' save'+(SV.restored>1?'s':'')+' from your account.');}catch(e){}SV.restored=0;}
-  }catch(e){const k=svErrKind(e);svStatus(k,(e&&e.message)||String(e));if(k==='error'){clearTimeout(SV.retry);SV.retry=setTimeout(()=>svFlush(true),60000);}}
-  finally{SV.busy=false;svMaybeDiv();svRefreshTitle();}
+    for(const s of (slots.length?slots:[META.slot||0])){
+      const live=svLive(s),was=SV.dirty[s];delete SV.dirty[s];      // cleared before the read: a save made while this pass runs stays dirty
+      let r;try{r=await svCheck(s,live);}catch(e){if(was)SV.dirty[s]=1;throw e;}
+      if(r==='held'&&was)SV.dirty[s]=1;
+      if(r==='div'&&!all){try{toast('Your cloud save and this device differ. Pick one on the title screen.');}catch(e){}}
+    }
+    SV.last=Date.now();svStatus(svAttn()?'attention':'synced','');clearTimeout(SV.retry);
+    if(SV.restored){try{toast(SV.restored>1?'Updated '+SV.restored+' saves from your account.':'Updated a save from your account'+(SV.restoredFrom?' ('+SV.restoredFrom+')':'')+'.');}catch(e){}SV.restored=0;}
+  }catch(e){
+    if(e&&e.code==='changed'){SV.again='all';svStatus('syncing');}       // the cloud moved on under us: look again at once
+    else{const k=svErrKind(e);svStatus(k,(e&&e.message)||String(e));
+      if(k==='error'){clearTimeout(SV.retry);SV.retry=setTimeout(()=>svFlush(true,true),60000);}}
+  }finally{
+    SV.busy=false;SV.lastCheck=Date.now();if(all)svFirstDone();
+    svMaybeDiv();svMaybeNewer();if(all)svRefreshTitle();
+    if(typeof V!=='undefined'&&V.modal&&V.modal.type==='menu')try{render();}catch(e){}
+    if(SV.again){const a=SV.again;SV.again=false;setTimeout(()=>svFlush(a==='all',a==='all'),0);}
+  }
 }
+// first pass of the session: compare every slot with the cloud as soon as the account answers
+function svInit(){return svFlush(true,true);}
+// leaving this device (hidden, page hide, freeze, window blur, the app pausing or closing): save where it is safe, then push at once
+function svSafeSave(){try{return !!G&&!G.daily&&V.screen==='world'&&!B&&!(typeof WS!=='undefined'&&WS.lock);}catch(e){return false;}}
+function svLeave(why){
+  try{if(svSafeSave()){const slot=META.slot||0;if(JSON.stringify(packG())!==svSlotRaw(slot))saveGame();}}catch(e){}   // in a battle the slot keeps the pre-battle save
+  if(SV.status==='local'||!Object.keys(SV.dirty).length)return;
+  if(SV.busy){SV.again=SV.again||true;return;}
+  clearTimeout(SV.timer);SV.timer=null;svFlush();
+}
+// coming back to this device: look at every slot again (a newer save from another device shows up here)
+function svBack(){if(SV.status==='local'||!SV.firstDone)return;if(!SV.busy&&Date.now()-SV.lastCheck<800&&!Object.keys(SV.dirty).length)return;svFlush(false,true);}   // visible and focus often come together: one pass
+// Electron (Windows app) asks before closing its window: push and wait a moment
+async function svBeforeClose(){svLeave('close');const t0=Date.now();while((SV.busy||Object.keys(SV.dirty).length&&SV.status!=='local'&&SV.status!=='error'&&SV.status!=='queued')&&Date.now()-t0<3500)await new Promise(r=>setTimeout(r,100));return true;}
+try{window.svBeforeClose=svBeforeClose;}catch(e){}
 function svRefreshTitle(){try{if(V.screen==='title'){BUILT=null;render();}}catch(e){}}
-function svMaybeDiv(){if(SV.div.length&&V.screen==='title'&&!V.modal){V.modal={type:'svdiv',slot:SV.div[0].slot};try{render();}catch(e){}}}
-window.addEventListener('online',()=>{svStatus(SV.status==='local'?'local':'syncing');setTimeout(()=>{SV.db?svFlush(true):svInit();},800);});
+function svMaybeDiv(){
+  try{if(SV.newer&&V.screen==='title'){const n=SV.newer,o=loadRaw(n.slot);SV.newer=null;if(o){const L=svProg(o);SV.div=SV.div.filter(d=>d.slot!==n.slot);SV.div.push({slot:n.slot,L:{prog:L,saved:L.saved},C:n.C});}else SV.hold[n.slot]=0;}}catch(e){}
+  const d=SV.div.find(x=>SV.later[x.slot]!==x.C.hash);
+  if(d&&V.screen==='title'&&!V.modal){V.modal={type:'svdiv',slot:d.slot};try{render();}catch(e){}}}
+// a newer save for the open journey: ask once the player is free (not in a battle, a menu or a transition)
+function svMaybeNewer(){try{if(SV.newer&&V.screen==='world'&&!V.modal&&!B&&!(typeof WS!=='undefined'&&WS.lock)){V.modal={type:'svnewer',slot:SV.newer.slot};render();}}catch(e){}}
+setInterval(()=>{try{
+  svMaybeNewer();if(SV.newer&&V.screen==='title')svMaybeDiv();
+  const per=SAVE_UI.recheck||60000;
+  if(SV.firstDone&&SV.db&&!SV.busy&&SV.status!=='local'&&document.visibilityState==='visible'&&Date.now()-SV.lastCheck>=per-1000)svFlush(false,true);   // the 1 s tick: a pass at most every recheck ms
+}catch(e){}},1000);
+window.addEventListener('online',()=>{svStatus(SV.status==='local'?'local':'syncing');setTimeout(()=>svFlush(true,true),800);});
 window.addEventListener('offline',()=>{if(SV.status!=='local')svStatus('queued');});
-document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&Object.keys(SV.dirty).length&&SV.status!=='local')svFlush();});
-setTimeout(()=>{try{svInit();}catch(e){}},2800);
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')svLeave('hidden');else svBack();});
+window.addEventListener('pagehide',()=>svLeave('pagehide'));
+document.addEventListener('freeze',()=>svLeave('freeze'));
+window.addEventListener('blur',()=>svLeave('blur'));
+window.addEventListener('focus',svBack);
+window.addEventListener('pageshow',e=>{if(e.persisted)svBack();});
+document.addEventListener('pause',()=>svLeave('pause'),false);          // Capacitor / Cordova lifecycle events on document
+document.addEventListener('resume',svBack,false);
+setTimeout(()=>{try{const C=window.Capacitor,P=C&&C.Plugins&&C.Plugins.App;if(P&&P.addListener&&(!C.isPluginAvailable||C.isPluginAvailable('App'))){P.addListener('pause',()=>svLeave('pause'));P.addListener('resume',svBack);P.addListener('appStateChange',s=>{if(s&&s.isActive===false)svLeave('pause');else svBack();});}}catch(e){}},0);
+// start: once the page has loaded (cloud.js has set up the account by then), not on a fixed delay
+{const go=()=>setTimeout(()=>{try{svInit();}catch(e){svFirstDone();}},400);if(document.readyState==='complete')go();else window.addEventListener('load',go,{once:true});}
 {const tt0=ACT.toTitle;ACT.toTitle=function(){const r=tt0.apply(this,arguments);setTimeout(svMaybeDiv,50);return r;};}
+// Continue and loading a slot wait for the first cloud check (at most SAVE_UI.cloudWait), so an older local copy is not opened by mistake
+function svGate(slot,fn){
+  const raw=svSlotRaw(slot);
+  if(SV.firstDone||SV.status==='local'||navigator.onLine===false||SV.dirty[slot]||!raw||!svParse(raw).ok)return svGateGo(slot,fn);
+  V.modal={type:'svwait',slot};render();let done=false;
+  const go=()=>{if(done)return;done=true;clearTimeout(t);if(V.modal&&V.modal.type==='svwait')V.modal=null;svGateGo(slot,fn);};
+  const t=setTimeout(go,SAVE_UI.cloudWait||6000);SV.first.then(go);SV.gateGo=go;
+}
+function svGateGo(slot,fn){const d=SV.div.find(x=>x.slot===slot);if(d&&V.screen==='title'){V.modal={type:'svdiv',slot};render();return;}fn();}
 // ---------- cloud list, delete ----------
 async function svCloudList(){
   if(!(await svCap()))return [];const out=[];
@@ -312,9 +408,22 @@ function mSvDiv(m){
     <div class="row"><div class="grow"><b>In your account</b><small>${esc(svProgText(c.prog||{stage:0,cleared:0,heroes:0,battles:0,lv:0}))}</small><small>Saved ${esc(svWhen(c.savedAt))} on ${esc(c.dev||'another device')}</small></div></div>`,
     `<button class="btn gold" data-act="svKeepLocal" data-arg="${d.slot}">Keep this device</button><button class="btn gold" data-act="svUseCloud" data-arg="${d.slot}">Use my account</button><button class="btn" data-act="svLater" data-arg="${d.slot}">Decide later</button>`);
 }
+function mSvWait(m){return box(m.load?'Loading the newer save…':'Checking cloud saves…',m.load?'<p>Reading it from your account.</p>':`<p>Looking for a newer save of slot ${(m.slot||0)+1} in your account.</p><p class="note">This takes a moment. If it is slow, the save on this device opens and the check keeps going.</p>`,m.load?' ':'<button class="btn" data-act="svWaitSkip">Use this device now</button>');}
+function mSvNewer(m){
+  const n=SV.newer;if(!n)return box('All matched','<p>Nothing to decide.</p>','<button class="btn" data-act="closeModal">Close</button>');
+  const c=n.C,lo=loadRaw(n.slot),when=svWhen(svCloudTime(c)-(SV.skew||0)),dev=esc(c.dev||'another device');
+  return box(n.kind==='newer'?'A newer save exists':'Your account has a different save',`<p>${n.kind==='newer'?'A newer save':'A different save'} from <b>${dev}</b>, ${esc(when)}, exists for slot ${n.slot+1}.</p>
+    <div class="row"><div class="grow"><b>In your account</b><small>${esc(svProgText(c.prog||{stage:0,cleared:0,heroes:0,battles:0,lv:0}))}</small><small>Saved ${esc(when)} on ${dev}</small></div></div>
+    ${lo?`<div class="row"><div class="grow"><b>Playing now on this device</b><small>${esc(svProgText(svProg(lo)))}</small><small>Saved ${esc(svWhen(lo.savedAt))}</small></div></div>`:''}
+    <p class="note">Nothing is lost either way. Load it keeps this device's journey in Recover Saves; Keep this one keeps the other save in your account's history.</p>`,
+    `<button class="btn gold" data-act="svNewerLoad">Load it</button><button class="btn" data-act="svNewerKeep">Keep this one</button>`);
+}
 function mSvDel(m){return box('Delete cloud save?',`<p>This removes the cloud copy of slot ${m.slot+1} from your account. The save on this device stays. The last three older cloud versions are kept until you delete them too.</p>`,`<button class="btn gold" data-act="svDelDo" data-arg="${m.slot}">Delete cloud save</button><button class="btn" data-act="closeModal">Keep it</button>`);}
 function mSvDelHist(){return box('Delete cloud history?',`<p>This removes the older cloud versions kept as backups, for all slots. Current cloud saves and saves on this device stay.</p>`,'<button class="btn gold" data-act="svDelHistDo">Delete history</button><button class="btn" data-act="recoverOpen">Keep it</button>');}
-{const vm0=vModal;vModal=function(m){if(m){switch(m.type){case 'slots':return mSlots(m);case 'svfail':return mSvFail(m);case 'svexport':return mSvExport(m);case 'import':return mSvImport(m);case 'svimpconfirm':return mSvImpConfirm(m);case 'recover':return mRecover(m);case 'svrestore':return mSvRestore(m);case 'svdiv':return mSvDiv(m);case 'svdel':return mSvDel(m);case 'svdelhist':return mSvDelHist();}}return vm0.apply(this,arguments);};}
+{const vm0=vModal;vModal=function(m){if(m){switch(m.type){case 'slots':return mSlots(m);case 'svfail':return mSvFail(m);case 'svexport':return mSvExport(m);case 'import':return mSvImport(m);case 'svimpconfirm':return mSvImpConfirm(m);case 'recover':return mRecover(m);case 'svrestore':return mSvRestore(m);case 'svdiv':return mSvDiv(m);case 'svwait':return mSvWait(m);case 'svnewer':return mSvNewer(m);case 'svdel':return mSvDel(m);case 'svdelhist':return mSvDelHist();}}return vm0.apply(this,arguments);};}
+// run fn while no other sync pass runs (waits up to 10 s for one in flight)
+async function svLocked(fn){const t0=Date.now();while(SV.busy&&Date.now()-t0<10000)await new Promise(r=>setTimeout(r,100));
+  SV.busy=true;try{return await fn();}finally{SV.busy=false;if(SV.again){const a=SV.again;SV.again=false;setTimeout(()=>svFlush(a==='all',a==='all'),0);}}}
 function svPickedSlot(def){const r=document.querySelector('input[name="svslot"]:checked');return r?+r.value:def;}
 Object.assign(ACT,{
   svExport(s){s=+s;const raw=svSlotRaw(s),p=svParse(raw);if(!p.ok){toast('That slot has nothing readable to export. Use Recover Saves.');return;}V.modal={type:'svexport',slot:s,code:svCode(JSON.stringify(p.o))};render();},
@@ -336,9 +445,22 @@ Object.assign(ACT,{
   svRestoreDo(){const m=V.modal;if(!m||m.type!=='svrestore')return;const s=svPickedSlot(m.slot),old=svSlotRaw(s);if(old)svBackup(s,old,'before a restore replaced it');
     if(!svLs.set(slotKey(s),m.raw)){toast('This device has no room to store that save.');return;}
     META.slot=s;saveMeta();SV.hold[s]=0;SV.dirty[s]=1;clearTimeout(SV.timer);SV.timer=setTimeout(svFlush,1500);toast('Restored into slot '+(s+1)+'.');V.modal=null;svRefreshTitle();render();},
-  svKeepLocal(s){s=+s;V.modal=null;SV.div=SV.div.filter(d=>d.slot!==s);SV.hold[s]=0;render();(async()=>{try{if(await svCap()){svStatus('syncing');await svPush(s,'chosen on this device');svStatus(SV.div.length?'attention':'synced','');}}catch(e){svStatus(svErrKind(e),e&&e.message);}svMaybeDiv();})();},
+  svKeepLocal(s){s=+s;V.modal=null;const dd=SV.div.find(d=>d.slot===s);if(dd&&dd.C&&dd.C.hash){SV.keep[s]=dd.C.hash;svSyncSave();}SV.div=SV.div.filter(d=>d.slot!==s);SV.hold[s]=0;render();(async()=>{try{if(await svCap()){svStatus('syncing');await svPush(s,'chosen on this device');svStatus(SV.div.length?'attention':'synced','');}}catch(e){svStatus(svErrKind(e),e&&e.message);}svMaybeDiv();})();},
   svUseCloud(s){s=+s;V.modal=null;SV.div=SV.div.filter(d=>d.slot!==s);SV.hold[s]=0;render();(async()=>{try{if(await svCap()){svStatus('syncing');await svPull(s,'chosen');svStatus(SV.div.length?'attention':'synced','');toast('Slot '+(s+1)+' now matches your account. The old copy is in Recover Saves.');}}catch(e){svStatus(svErrKind(e),e&&e.message);toast('Could not read the cloud copy. Nothing changed.');}render();svMaybeDiv();})();},
-  svLater(s){V.modal=null;render();},
+  svLater(s){s=+s;const d=SV.div.find(x=>x.slot===s);if(d)SV.later[s]=d.C.hash;V.modal=null;render();},
+  svWaitSkip(){if(SV.gateGo)SV.gateGo();},
+  async svNewerLoad(){const n=SV.newer;if(!n){V.modal=null;render();return;}const s=n.slot;
+    try{if(svSafeSave())saveGame();}catch(e){}                              // this device's journey goes into the backup that svPull writes
+    V.modal={type:'svwait',slot:s,load:1};render();
+    const ok=await svLocked(async()=>{if(!(await svCap()))return false;return await svPull(s,'chosen');}).catch(e=>{toast('Could not read the cloud copy. Nothing changed.');return false;});
+    if(V.modal&&V.modal.type==='svwait')V.modal=null;
+    if(!ok){render();return;}
+    SV.newer=null;svUnhold(s);delete SV.dirty[s];svStatus(svAttn()?'attention':'synced','');
+    svLoad(s);toast('Loaded the newer save. This device\'s journey is kept in Recover Saves.');},
+  async svNewerKeep(){const n=SV.newer;if(!n){V.modal=null;render();return;}const s=n.slot;SV.keep[s]=n.C.hash;svSyncSave();SV.newer=null;svUnhold(s);V.modal=null;render();
+    try{if(svSafeSave())saveGame();}catch(e){}
+    try{await svLocked(async()=>{if(await svCap()){svStatus('syncing');await svPush(s,'kept on this device');delete SV.dirty[s];svStatus(svAttn()?'attention':'synced','');}});toast('Kept this device\'s journey. The other save stays in your account history.');}
+    catch(e){SV.dirty[s]=1;svStatus(svErrKind(e),e&&e.message);}},
   svSyncNow(){if(SV.status==='local'){toast('Progress is not synced to an account here. Use Export save.');return;}SV.dirty[META.slot||0]=1;svStatus(navigator.onLine===false?'queued':'syncing');render();svFlush(true).then(()=>toast(SV.status==='synced'?'Synced.':SV.status==='error'?'Sync failed. Your local save is safe.':SV.status==='queued'?'Offline. It will sync later.':'Sync done.'));},
   svDelAsk(s){V.modal={type:'svdel',slot:+s};render();},
   async svDelDo(s){s=+s;V.modal=null;render();try{if(await svCap()){await svDelDoc('s',s);SV.base[s]=null;toast('Cloud save for slot '+(s+1)+' deleted. History is kept.');}}catch(e){toast('Could not delete it right now.');}},
@@ -358,3 +480,5 @@ ACT.doImport=function(){ACT.svImportGo();};
 {const sb0=settingsBody;settingsBody=function(){const h=sb0.apply(this,arguments);if(!G||V.screen==='title')return h;
   return h+`<div class="rows"><div class="row"><div><b>Main menu</b><small>${G.daily?'Leave the Daily Trial and go back to the title screen.':'Your journey is saved first. Continue picks it up again.'}</small></div><button class="btn sm" data-act="quitTitle">Back to the main menu</button></div></div>`;};}
 ACT.quitTitle=function(){if(V.screen==='battle'){toast('Finish or flee the battle first.');return;}try{if(G&&!G.daily)saveGame();}catch(e){}V.modal=null;WS.held=[];V.screen='title';G=null;B=null;render();};
+// v0.8.5 test hook (tests reach the sync code here; window.__A is left alone)
+try{window.__SV85={get SV(){return SV;},svPush:(...a)=>svPush(...a),svPull:(...a)=>svPull(...a),svFlush:(...a)=>svFlush(...a),svCheck:(...a)=>svCheck(...a),svLeave:w=>svLeave(w),svBack:()=>svBack(),svHash:s=>svHash(s),svDecide:(...a)=>svDecide(...a),svDev:()=>svDev()};}catch(e){}

@@ -1,8 +1,8 @@
 // ===== p5settings.js (v0.5.0): settings, saving indicator and title =====
 // 5.1 Master, Music and Sound effects sliders with their own mutes. META.cfg.master (0..1, default 1), .music, .sfx (0..1, as before),
 //     .mute (master mute, the top bar button), .muteMusic, .muteSfx. Applied instantly through audioVol / au2Vol, saved with the settings.
-// 5.2 cloud sync stays automatic (saves.js svMark: debounced after each save, signed in players with write access only). Added here:
-//     the debounce comes from SAVE_UI.syncDelay, and leaving or hiding the page pushes a pending save right away.
+// 5.2 cloud sync stays automatic (saves.js svMark: debounced after each save, signed in players with write access only).
+//     The debounce comes from SAVE_UI.syncDelay; leaving or hiding the page saves and pushes right away (saves.js svLeave, v0.8.5).
 // 5.3 the game is "Wayfarers (Beta)": title screen, tab title, top bar, menu footer, Help, changelog heading and feedback context.
 //     Save keys, db paths and ids keep their aurelis names.
 // 5.5 a Save button pinned in the main menu header (slot, last saved), and a small save message in a free top corner for every save.
@@ -33,10 +33,9 @@ document.addEventListener('input',e=>{const el=e.target,k=el&&el.dataset&&el.dat
 document.addEventListener('change',e=>{const k=e.target&&e.target.dataset&&e.target.dataset.vol;if(k){clearTimeout(volSaveT);try{saveMeta();}catch(x){}}});
 
 // ---------- 5.2 cloud sync ----------
-{const m0=svMark;svMark=function(slot){const r=m0.apply(this,arguments);try{if(SV.status!=='local'&&SAVE_UI.syncDelay!==6000){clearTimeout(SV.timer);SV.timer=setTimeout(svFlush,SAVE_UI.syncDelay);}}catch(e){}return r;};}
-function p5FlushNow(){try{if(Object.keys(SV.dirty).length&&SV.status!=='local'&&SV.db&&!SV.busy){clearTimeout(SV.timer);svFlush();}}catch(e){}}
-document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')p5FlushNow();});
-window.addEventListener('pagehide',p5FlushNow);
+// v0.8.5: the debounce (SAVE_UI.syncDelay, now 2 s, at most SAVE_UI.syncMax) and the push on leaving live in saves.js (svMark, svLeave).
+// Leaving saves the journey first where it is safe, and a push already in flight gets a second one chained after it.
+function p5FlushNow(){try{svLeave('hide');}catch(e){}}
 
 // ---------- 5.3 the name ----------
 try{document.title=gameTitleVer();}catch(e){}
