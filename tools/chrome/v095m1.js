@@ -5,7 +5,7 @@
 // Usage: PWHTML=../../out/aurelis3.html node v095m1.js
 const {open,chk,done}=require('./pw');
 (async()=>{const H=await open({w:390,h:844,mobile:true,pre:`localStorage.clear();localStorage.setItem('aurelis-meta-v1',JSON.stringify({cfg:{hints:false,music:0,sfx:0,enc:'off'}}));`});const {ev}=H;
-await ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;A.G.gold=5000;A.G.stage=1;A.G.cleared[0]=1;A.render();});
+await ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;A.G.gold=5000;A.G.stage=1;A.G.cleared[0]=1;A.G.pcV=0;/* a journey from before the v0.9.6 realm unlocks: guild missions open after the first Scourge */A.render();});
 const nav=()=>ev(()=>({tabs:[...document.querySelectorAll('#modal .stabs .chip')].map(x=>x.textContent.trim()),secs:[...document.querySelectorAll('#modal .ssec .chip,#modal .nbsec .chip')].map(x=>x.textContent.replace(/\s*\d+$/,'').trim()),
   on:[...document.querySelectorAll('#modal .stabs .chip.on,#modal .ssec .chip.on,#modal .nbsec .chip.on')].map(x=>x.textContent.replace(/\s*\d+$/,'').trim()),
   sub:[...document.querySelectorAll('#modal .msub .chip')].map(x=>x.textContent.replace(/\s*\d+$/,'').trim()),title:(document.querySelector('#modal h2')||{}).textContent||''}));
