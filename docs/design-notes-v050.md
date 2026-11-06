@@ -188,3 +188,6 @@ Details in `v080-weather-title.md`. Clarity boxes: w7Bank puffs clipped to a rec
 
 ## Beta v0.8.7: cross-device save sync
 Details in `v085-sync.md` (saves.js, cloud.js, p5settings.js, SAVE_UI sync timings, electron/main.js close hook; tests `chrome/v085s.js`, `v085s2.js` with `syncmock.js`). Base version tracking (local key aurelis-sync-v1), transactional push on Firebase, save then push on leaving, Continue waits for the first check, re-check every 60 s and on return, prompt instead of the permanent hold.
+
+## Beta v0.8.8: themed dungeons and the boss lair
+Details in `v082-dungeons.md` (`v3/dungeon8.js` after pathguard.js; tests `chrome/v082da.js`, `v082db.js`, perf `v082dperf.js`). Materials per realm match the battle backdrops; organic materials carve wall edges with their own seeded RNG under the reachability and content checks; the lair is a tower, skull gate and beacon with its own map icon and relit look.
