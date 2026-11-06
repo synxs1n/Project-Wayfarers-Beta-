@@ -6,7 +6,7 @@
 
 SLOTN.k='Cape';
 const CAPE_N=['Traveler\'s Cloak','Woolen Cape','Ranger\'s Mantle','Silk Cloak','Royal Mantle','Mythweave Cape'];
-const CAPE_ST=[[25,4,0],[45,8,1],[70,13,2],[100,19,3],[140,26,4],[190,34,5]],CAPE_PRICE=[60,120,240,420,700,1000];
+// CAPE_ST, CAPE_PRICE: in config.js
 const CAPE_COL=['#8a6a4a','#5fa86a','#4a7ad8','#9a5ae0','#e0b030','#d84a3a'];
 CAPE_N.forEach((n,t)=>{const [hp,res,spd]=CAPE_ST[t];addGear('k_cape_'+t,{n,slot:'k',tier:t,fam:'cape',hp,res,spd:spd||undefined,price:CAPE_PRICE[t]});});
 if(typeof GICON!=='undefined')GICON.cape=[[5,2,6,2],[4,4,8,9],[3,9,2,4],[11,9,2,4]];

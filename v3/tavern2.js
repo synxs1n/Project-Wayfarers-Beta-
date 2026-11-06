@@ -2,7 +2,7 @@
 // G.sub  = the wayfarers that exist in this journey (about 28 to 32), drawn once from the journey seed and saved with the run.
 // G.tv   = tavern state { sl: the 4 table slots (id or null once hired), sh: shuffles so far, at: battle count at the last shuffle, ev: a rest or stage clear
 //          happened since, n: {stage: tavern recruits made in that area, kept for records only} }. Old saves have neither field and get safe defaults on first read.
-const SUB_MIN=28,SUB_SPAN=5;           // target size 28..32
+// SUB_MIN, SUB_SPAN: in config.js
 const POOL_IDS=()=>RAW.filter(r=>r[6]!=='L'&&r[6]!=='x'&&TPL[r[0]]).map(r=>r[0]);
 function subReq(set,must){must=must||[]; // returns the list of unmet guarantees as [label, candidate test]
   const ids=[...set],cl={},el={};let pr=0,dt=0,du=0,ch=0,early=0;

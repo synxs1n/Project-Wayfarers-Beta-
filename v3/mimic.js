@@ -2,7 +2,7 @@
 // About 1 in 8 ordinary dungeon chests is a mimic, picked from the run seed so it is stable across reloads.
 // Never the Beacon Key chest or a vault chest, so a mimic can never block progress; the tile stays a chest either way,
 // so dungeon validation is unchanged. Beat it and you get the chest's loot plus a bonus.
-const MIMIC_RATE=.13;
+// MIMIC_RATE: in config.js
 MART.mimic=g=>{g.rect(6,16,28,18,'W');g.rect(6,10,28,7,'L');g.rect(6,16,28,2,'G');g.rect(18,15,4,6,'G');g.rect(19,17,2,2,'K');
   for(let i=0;i<6;i++){g.s(9+i*4,18,'T');g.s(10+i*4,19,'T');}for(let i=0;i<6;i++){g.s(9+i*4,16,'T');}
   g.rect(12,21,16,7,'M');g.ell(14,12,2,1.5,'E');g.ell(26,12,2,1.5,'E');g.rect(4,32,4,4,'W');g.rect(32,32,4,4,'W');

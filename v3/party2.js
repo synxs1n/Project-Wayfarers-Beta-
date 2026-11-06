@@ -2,7 +2,7 @@
 // Sorting and filters (remembered in META.cfg.lists), XP bars, team loadouts (G.loadouts, up to 8, optional save field),
 // Best Party suggestion, and field skills (heals, cures and revives outside battle).
 // Buffs are not offered as field skills: every statuses is cleared when a battle starts, so they could never carry over.
-const LOADMAX=8;
+// LOADMAX: in config.js
 // ----- sort and filter state: one record per list, remembered -----
 const LSORT_H=[['def','Default'],['name','Name'],['lv','Level'],['cls','Class'],['el','Element'],['hp','HP %'],['new','Recent']],LSORT_C=[['def','Default'],['name','Name'],['lv','Level'],['el','Element']];
 function LC(n){const o=META.cfg.lists=META.cfg.lists||{};return o[n]=Object.assign({s:'def',el:'all',cl:'all'},o[n]||{});}

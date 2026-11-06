@@ -1,7 +1,7 @@
 // =================== TRAVEL ITEMS (Beta v0.1.0) ===================
 // Pork Chop Sandwich, Holy Water and Tent. New save fields (defaulted on read): G.ward (steps left), G.pbuy (parts bought since last rest).
 // The Daily Trial swaps in its own fixed inventory, so none of these can reach it; the checks below block them anyway.
-const TENT_HEAL=.6,TENT_REVIVE=.3,AMBUSH_RATE={field:.3,dungeon:.45},AMBUSH_POW=1.15;
+// TENT_HEAL, TENT_REVIVE, AMBUSH_RATE, AMBUSH_POW: in config.js
 
 // ----- battle: Pork Chop Sandwich -----
 function porkBlocked(){if(!B)return true;const k=B.spec.kind;return !!(B.boss||G.daily||k==='boss'||k==='echoBoss'||k==='legend'||k==='daily'||k==='arena');}

@@ -1,7 +1,7 @@
 // ===== v0.4.0 3.8: starter hero sheets (and, in later phases, the starter draw rules) =====
 // The sheet shows a hero as they would begin: level 3, no nature bonus, no gear beyond the class kit.
 // It reads the same tables the game does, so it never drifts from the real numbers.
-const STARTER_LV=3;
+// STARTER_LV: in config.js
 // ===== v0.4.0 4.4: the starter draw =====
 // STARTERS (heroes.js) is the pool of 24 single type wayfarers: 3 per element, 3 per class (v0.4.3; was 16). A new journey shows 8 of them, drawn from a seed:
 // all 8 elements different and all 8 classes different. The pool is a 2-regular bipartite graph (class - element), so a perfect matching always exists;

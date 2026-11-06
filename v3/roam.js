@@ -4,7 +4,7 @@
 // They spawn only on open room tiles (never corridors, never near the entrance, never on stairs, chests, levers or doors), so a
 // required path is never blocked: a chaser gives up and walks home. They are tougher than random battles, and a few are elites
 // (no auto). Random battles still happen in dungeons. Beaten roamers stay beaten for this journey (G.roamDead, optional).
-const ROAM={base:3,perStage:1,elite:.2,sight:4,patrolMs:620,chaseMs:330,giveUp:7,minFromStart:9,lvUp:2,hpM:1.3,powM:1.12};
+// ROAM: in config.js
 function roamOpen(m,x,y){return tileAt(m,x,y)==='.';}
 function roamInterior(m,x,y){if(!roamOpen(m,x,y))return false;let n=0;for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++)if((dx||dy)&&roamOpen(m,x+dx,y+dy))n++;return n>=7;}
 function roamSpawn(m){

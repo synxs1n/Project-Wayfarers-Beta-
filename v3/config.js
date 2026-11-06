@@ -3,71 +3,43 @@
 // Rarity colours live with their tables (ITEM_TIERS in data.js, tier colours in tiers.js); heroes, skills, monsters, items, natures, the type chart,
 // weapon and armor rules, zone themes, factions, encounters and weather each have their own table, listed in the developer guide in the design notes.
 
-// ----- leveling and difficulty -----
+// Contents (search for "// ==== N." to jump):
+//   1. Progression: XP, levels, difficulty, Limit Breaks, bonds
+//   2. Battle rules: drops, auto battle, ailments, reactions, archetypes, companions, Momentum and foe roles (B4)
+//   3. Foes and bosses: boss levels and muscle, field packs, creep, echoes, roamers, side sites, mimics, surprise starts
+//   4. Economy and shops: prices, gold and XP rates, pack size, Smithy, tempering, Echoforged, capes
+//   5. Party and roster: taverns, the journey roster, personal quests, Best Party, loadouts, Make camp
+//   6. World: encounters, chance meetings, travel items, day and night, weather tables, factions, map generation
+//   7. Interface timings: transitions, the save indicator, hints, battle information (B5)
+//   8. Graphics: quality tiers, HD sprites, HD-2D battle stage and world, world effects, weather layers, battle screen layout (B3)
+//   9. Twists: the Daily Trial weekly twist and New Game+ modifiers
+// Tunables that used to sit in their modules are at the end of their section (the module keeps a one line pointer).
+
+// ==== 1. Progression: XP, levels, difficulty, Limit Breaks, bonds ====
+// leveling and difficulty
 // Beta v0.3.2: leveling is about 15% slower (XP_SLOW); the level 50 cap and the above-40 scaling are unchanged
 const XP_SLOW=1.15;
 const need=lv=>Math.round(11*XP_SLOW*Math.pow(lv,1.55)); // XP to go from level lv to lv+1
 const DIFF={story:{hp:.8,pow:.8,rew:1},normal:{hp:1,pow:1,rew:1},hard:{hp:1.18,pow:1.18,rew:1.25}};
-
-// ----- battle drops: chance per beaten foe, multiplied by the party's luck bonus -----
-const DROP={realm:.38,part:.55,potion:.15,ether:.07,remedy:.07,hipotion:.05};
-
-// ----- limit breaks and bonds -----
+// limit breaks and bonds
 const LIMIT_I=.7;        // Limit Break skills are this much stronger than the normal version
 const BOND_LV=[4,10,20]; // fights side by side needed for bond levels 1, 2 and 3
+// 4.3 XP catch up: +per for each level a hero is below the party's highest, at most +max. Reserve heroes get bench x that bonus.
+// v0.7.1: much bigger for heroes far behind: bonus = per*gap + sq*gap^2, capped at max (gap 2: +38%, 5: +125%, 8: +248%, 10+: +300%)
+const XPCU={per:.15,sq:.02,max:3,bench:1};
+// v0.7.2: the Rearguard earns the same battle XP as the Vanguard (was 0.6), so the six stay about the same level
+const XP_REAR=1;
+// LV_CAP: hard level cap (v0.3.0; heroes already above it in old saves keep their level). LIMIT_LV / LIMIT2_LV: Limit I and
+// Limit II open at these levels (level is the only gate since v0.3.0).
+const LV_CAP=50;
+const LIMIT_LV=15;
+const LIMIT2_LV=30;
+// STARTER_LV: the level a starter hero begins at (and the starter sheets show).
+const STARTER_LV=3;
 
-// ----- prices -----
-const MAT_PRICE={copper:18,iron:45,mythril:110,oak:14,ash:40,elder:95,healroot:10,bluecap:22,sunpetal:48,starbloom:120};
-
-// ----- taverns and the Guild Hall board -----
-const TAV_BATTLES=[0,12,32,55,80];
-const CHALL_POST=3;// how many open challenges a board shows at once (accepted ones always stay posted on top)
-const TV_SLOTS=4,TV_CAP=Infinity,TV_CD=5;     // 4 tables, no per area recruit cap (v0.5.0), 5 battles between shuffles
-
-// ----- encounters on the road -----
-// ENC_RATE: chance per step to meet a random battle, by the Settings choice. CE_*: chance meetings with a wayfarer (chance.js), about 1 in 170 steps after a 30 step gap, 2 per area at most
-const ENC_RATE={off:0,low:.05,normal:.095,high:.14};// v0.4.3: about 13% fewer at every setting
-const ENC_MIN_STEPS=8;// v0.4.3: at least 8 tiles walked between random battles
-// chance meetings with a wayfarer (chance.js): about 1 in 170 steps after a 30 step quiet gap, at most 2 per area
-const CE_ODDS=1/170, CE_GAP=30, CE_AREA_CAP=2;
-
-// ----- Beta v0.5.0 phase 2: battle and world logic (p2world.js) -----
-// BATTLE_GROUND: every battle backdrop has a solid ground plane from gy (share of the stage height) down; units stand between top and bot,
-// flying foes hover hover px above their shadow. Water, lava and sky are only drawn above gy, as scenery.
-const BATTLE_GROUND={gy:.5,top:.56,bot:.96,hover:9};
-// SURPRISE: touching a roaming dungeon foe that has not seen you gives a free first round: every hero in the vanguard acts free times
-// before any foe moves. A "Surprise!" banner shows. Elite roamers keep their no auto rule.
-const SURPRISE={free:1};
-// DUAL_FROM: the first stage (0 = the first realm) where dual type wayfarers (taverns, challenges, chance meetings) and dual type regular
-// monsters appear. Bosses, minibosses, elites, mimics and other special foes may be dual at any stage.
-const DUAL_FROM=1;
-// TOWN_LANE: every town gate gets a clear approach lane at least this many tiles wide to the main road
-const TOWN_LANE=2;
-// HINTS: early game hints show only while the journey is in stages below HINTS_UNTIL; delay before one appears (ms)
-const HINTS_UNTIL=1,HINT_DELAY=1400;
-
-// ----- day and night -----
-const CLK_LEN=900,CLK_PH=[['day',0,495],['dusk',495,585],['night',585,810],['dawn',810,900]]; // v0.4.0 3.7: every phase is 50% longer than in v0.3.x (was 600 steps around)
-const NIGHT_POW=1.1;
-
-// ----- weather: how many steps a weather lasts, and the odds out of 100 per realm -----
-const WX_MIN=300,WX_MAX=520;
-// everyday weather, shares out of 100
-const WX_TABLE={meadow:[['clear',72],['rain',14],['fog',9],['storm',5]],coast:[['clear',70],['rain',12],['fog',8],['sand',6],['storm',4]],
-  cave:[['clear',72],['heat',13],['fog',8],['ashfall',7]],snow:[['clear',65],['snow',23],['blizzard',6],['aurora',4],['fog',2]],
-  heights:[['clear',65],['storm',15],['gale',14],['fog',4],['blizzard',2]],void:[['clear',66],['starfall',16],['fog',8],['aurora',6],['ashfall',4]]};
-// rare skies (Blood Moon, Eclipse, Meteor Shower, Elemental Surge): shares out of 100, taken out of the clear share. Day or night limits are set by "when" on each sky in world3.js
-const SUPER_TABLE={meadow:[['surge_earth',2],['bloodmoon',2],['eclipse',1]],coast:[['surge_water',2],['meteor',1.5],['bloodmoon',1.5]],cave:[['surge_fire',2],['bloodmoon',2],['meteor',1]],
-  snow:[['surge_ice',2],['eclipse',1.5],['meteor',1.5]],heights:[['surge_wind',2],['eclipse',1.5],['meteor',1.5]],void:[['surge_shadow',2],['eclipse',1],['bloodmoon',1.5],['meteor',1.5]]};
-
-// ----- factions: standing needed for ranks 1 to 6 -----
-const REP_AT=[0,40,110,230,400,640];
-
-// Beta v0.4.1 1.7: where the dungeon lever may sit. minFrac: the lever is at least route/minFrac steps from the stairs (3 = outside the first third),
-// plus minExtra steps; minHops: rooms walked through before the lever room (1 = never in the first two rooms).
-const DUN_LEVER={minFrac:3,minExtra:4,minHops:1};
-// Beta v0.4.1 1.8: at most this share of a journey's forward gate exits (town and field ends) may face east.
-const GATE_EAST_MAX=.4;
+// ==== 2. Battle rules: drops, auto battle, ailments, reactions, archetypes, companions, Momentum and foe roles (B4) ====
+// battle drops: chance per beaten foe, multiplied by the party's luck bonus
+const DROP={realm:.38,part:.55,potion:.15,ether:.07,remedy:.07,hipotion:.05};
 // Beta v0.4.1 2.5: the auto battle brain. healAt: heal an ally below this percent of max HP. skillChance: how often a turn uses a plain damage skill
 // instead of a basic attack. power: damage multiplier for everything auto does outside the Trial. spread: how often a single target attack picks a random foe instead of the first in line. dailySmart: keep the careful old brain inside the Daily Trial (the Trial must stay identical).
 const AUTO_NERF={healAt:40,skillChance:1,spread:0,power:.85,aware:.6,potion:0,smart:.6,limit:.5,det:.5,dailySmart:true};
@@ -76,27 +48,66 @@ const AUTO_NERF={healAt:40,skillChance:1,spread:0,power:.85,aware:.6,potion:0,sm
 // curseHeal: share of healing a Cursed hero receives. woundMhp: share of max HP a Wounded hero keeps.
 // bossWound: chance a Scourge or Calamity's heaviest single hit leaves a Wound. foeCurse: chance for undead and shadow foes' skills to Curse.
 const AIL={poisonSteps:5,poisonPct:.01,curseHeal:.6,woundMhp:.8,bossWound:.3,foeCurse:.18};
+// Beta v0.7.0 battle mechanics (battle4.js, battle4.css)
+// det: a hero who detonates a reaction gets mpPct of max MP back (at least mpMin), shown in the reaction text ("+N MP"); at most
+//   maxPerAct refunds per action (an all-foes detonator can set off several reactions).
+// swap: a free swap (another Vanguard hero trades places with a Rearguard hero while the acting hero keeps its turn) once every cd
+//   party turns. Rooted heroes cannot step back. autoWhy: the auto switch rules (autoSwitchPick) auto battle may use it for. The acting hero stepping back itself is the old Switch (its turn goes to the newcomer).
+// mo: the party's Momentum gauge, 0..max. Each hero action has a kind (attack; a skill's element and delivery; guard; heal; item;
+//   support; scan; limit). The same kind as the party's last action adds rep; a different kind moves it toward the middle of the
+//   zone by vary; Guard above the middle cools it by guard. In the zone [lo,hi] heroes deal dmg more and take taken less. Reaching
+//   max overheats it: heroes deal pen less and take pen more until it falls back to hi. Every battle starts at start.
+// roles: foe roles (Scan and the Bestiary name them). roleOf: MON key -> role; realm, night and overlay variants inherit their base's.
+//   guard (Shieldbearer): pips shield pips; while they hold, its allies take cover less damage. hex (Hexer): every other turn it
+//   stacks Hex on a hero (hexDmg less damage per stack); a Hex on a hero already at hexMax bursts for doom of max HP.
+//   charge (Charger): every chargeEvery turns it winds up, next turn it hits that hero's slot for chargePw (Guard halves it).
+//   leech (Leech): every leechEvery turns it drains each Vanguard hero not guarding (leechPw) and heals leechHeal of its max HP per hero.
+//   flank (Skirmisher): once the same three heroes have stood in the Vanguard for flankAt party actions, it hits the weakest for flankPw.
+//   boss: every Scourge and Calamity gathers power on every every-th turn (its turn is spent) and next turn strikes the whole
+//   Vanguard for pw (its usual all-foes skills are about 1.1 to 1.25). Guard halves it for each hero who guards.
+// daily: which systems run in the Daily Trial (all of them are deterministic: no clock, only the battle's seeded RNG).
+const B4={det:{on:true,mpPct:.1,mpMin:4,maxPerAct:2},
+  swap:{on:true,cd:3,autoWhy:['hurt','debuffed','healer']},
+  mo:{on:true,start:20,lo:40,hi:75,max:100,rep:22,vary:14,guard:26,dmg:.1,taken:.1,pen:.05},
+  roles:{on:true,cover:.4,pips:2,hexDmg:.08,hexMax:3,doom:.3,chargeEvery:3,chargePw:2.6,leechEvery:2,leechPw:.6,leechHeal:.07,flankAt:6,flankPw:1.9,
+    boss:{on:true,every:4,pw:3}},
+  roleOf:{shellguard:'guard',iceknight:'guard',huskguard:'guard',
+    ashwraith:'hex',eclipsewraith:'hex',rimewight:'hex',galephantom:'hex',
+    barrowbones:'charge',yeti:'charge',slaggolem:'charge',gargoyle:'charge',drownedsailor:'charge',
+    brinejelly:'leech',voidspawn:'leech',cavebat:'leech',
+    frostwolf:'flank',thunderhawk:'flank',stareater:'flank',gull:'flank'},
+  daily:{det:true,swap:true,mo:true,roles:true}};
+// DET_BONUS: detonations take two deliberate steps, so they hit harder than the old free reactions did.
+const DET_BONUS=1.3;
+// AUTO_SWAP_CD: auto battle brings in a reserve hero at most once every this many party turns, and a hero who just came in stays
+// at least this many turns (v0.3.1).
+const AUTO_SWAP_CD=3;
+// AUTO_REW: a win where auto ran more than half of the heroes' turns pays this share of XP and gold (prog2.js; drops unchanged;
+// not the Daily Trial). v0.4.3: was .75, then .6.
+const AUTO_REW=.66;// v0.4.3: was .75, then .6
+// QUIRK_RES: damage share a foe quirk resistance lets through (insight.js). PERK_*: bestiary mastery perks per tier: kills needed
+// (bosses: PERK_KILLS_BOSS), extra damage and extra drop chance against that monster.
+const QUIRK_RES=.4;
+const PERK_KILLS=[10,25,50],PERK_KILLS_BOSS=[2,4,6],PERK_DMG=[.03,.05,.08],PERK_DROP=[0,.05,.1];
+// archetypes (archetype.js)
+const UNDEAD_LIGHT=1.35;//  extra Light damage taken by Undead (on top of the type chart; the better of the two applies)
+const HEAL_HURT=.75;//  share of a heal's amount that an Undead foe takes as holy damage
+const HEAL_HURT_AOE=.6;//  same, for heals that cover the whole party
+const HEAL_HURT_PW_CAP=2.2;//  heals above this power do not hurt any more (Full Mend and Miracle stay fair)
+const ARCH_BOSS_CLAMP=[.75,1.3]; // Scourges and Calamities never swing further than this, so no one hero is mandatory
+const ARCH_FOE_CLAMP=[.4,1.8];
+// companions (comp.js): a summoned companion stays COMP_TURNS of its own turns; COMP_BONUS: the paired hero's stat bonus
+// (base, with Beastbond, for a tamed Scourge).
+const COMP_TURNS=3,COMP_BONUS={base:.04,bb:.06,scourge:.08};
 
-// ===== Beta v0.4.1 3.5 economy (all editable here) =====
-// gold/xp: multipliers on what the player earns (the Daily Trial is exempt). gear/items/forge: price multipliers. recruit: tavern hire price.
-const ECON={gold:.9,xp:.85,gear:1.6,items:1.6,recruit:3,rareRecruit:2.6,inn:{base:30,per:25}};// v0.4.3: gold easier, prices lower (was gold .75, gear and items x2, recruits x3.5)
-const econG=n=>(typeof G!=='undefined'&&G&&G.daily)?n:Math.round(n*ECON.gold);
-// 6.6 personal quests: a hero must also have fought this many battles beside you in this journey (per hero, saved as bt)
-const PERSONAL_BT=40;
-// ===== Beta v0.5.0 phases 4 and 5 (p4xp.js, p4party.js, p5settings.js) =====
-// 4.1 personal quests: no level gate any more; PERSONAL_BT battles together and the party in this realm (0 based) or later.
-const PERSONAL_REALM=2;// v0.7.2: third realm (was the second), see pacing.js
-// 4.3 XP catch up: +per for each level a hero is below the party's highest, at most +max. Reserve heroes get bench x that bonus.
-// v0.7.1: much bigger for heroes far behind: bonus = per*gap + sq*gap^2, capped at max (gap 2: +38%, 5: +125%, 8: +248%, 10+: +300%)
-const XPCU={per:.15,sq:.02,max:3,bench:1};
-// v0.7.2: the Rearguard earns the same battle XP as the Vanguard (was 0.6), so the six stay about the same level
-const XP_REAR=1;
-// 5.4 transitions, in ms of world screen time: time of day blends over tod, weather over wx (visuals and ambience beds).
-const TRANS={tod:11000,wx:6500,ambTod:10,ambWx:6};
-// 5.5 save indicator: show "Saving..." this long, then "Saved", hold, then fade. minGap = autosaves closer than this share one message.
-// syncDelay: the cloud upload waits this long after the last save (debounced, signed in players with write access only).
-const SAVE_UI={saving:350,hold:2000,fade:450,minGap:2500,syncDelay:6000};
-// ===== Beta v0.4.1 Phase 3 balance knobs (one place, editable) =====
+// ==== 3. Foes and bosses: boss levels and muscle, field packs, creep, echoes, roamers, side sites, mimics, surprise starts ====
+// SURPRISE: touching a roaming dungeon foe that has not seen you gives a free first round: every hero in the vanguard acts free times
+// before any foe moves. A "Surprise!" banner shows. Elite roamers keep their no auto rule.
+const SURPRISE={free:1};
+// DUAL_FROM: the first stage (0 = the first realm) where dual type wayfarers (taverns, challenges, chance meetings) and dual type regular
+// monsters appear. Bosses, minibosses, elites, mimics and other special foes may be dual at any stage.
+const DUAL_FROM=1;
+// Beta v0.4.1 Phase 3 balance knobs (one place, editable)
 // 3.2 boss level = max(base, base + frac*(party highest - base)), never more than cap above base
 const BOSS_LV={frac:.5,cap:12};
 // 3.2 bosses: shield pips +50% (5 to 8, 7 to 11); the break window hits for less and is over once the foe loses the turn it staggers
@@ -108,18 +119,30 @@ const BOSS_SIZE={hp:.07,pow:.06};// per stage 1 to 5
 // 3.3 echo levels. Story echo base = boss base + storyAdd; Sanctum echoes use fixed bases. While the party's highest hero is more than
 // window below the base the echo stays at base; once within window of it (or higher) the echo is exactly party highest + window. No cap.
 const ECHO_LV={window:2,storyAdd:2,sanctum:50,sanctumFinal:56};
-
 // 3.1 regular encounters: field foes hit a little harder with more HP, and packs work together (never in the Daily Trial)
 const FIELD_FOE={hp:[.9,.9,1,1.05,1.08],pow:[.85,.86,.97,1,1.02]};// per stage 1 to 5
 const PACK={focus:.6,frenzy:.05,maxFrenzy:.15,fromStage:2};// v0.4.3: no pack tactics in the first realm
-
 // 3.7 world strength creep: every base boss defeated makes all foes this much stronger (hp and power), stacking. Not in the Daily Trial.
 const CREEP={per:.05,field:.5};
-
 // 5.5 early game with a short party: regular foes in the first two stages are eased for parties of 1 or 2 (index = heroes - 1)
 const SMALL_PARTY={stages:2,hp:[.55,.85],pow:[.6,.88]};
+// ROAM: roaming dungeon foes (roam.js): base + perStage per dungeon, elite share, sight (tiles), patrol and chase step ms, giveUp
+// (tiles before a chaser walks home), minFromStart (tiles from the entrance), lvUp, hpM and powM over random battles.
+const ROAM={base:3,perStage:1,elite:.2,sight:4,patrolMs:620,chaseMs:330,giveUp:7,minFromStart:9,lvUp:2,hpM:1.3,powM:1.12};
+// SITES: side fortresses (fortW x fortH tiles) and minibosses (sites.js): mini = share of caves and fortresses with one, miniHp,
+// miniPow and miniLv: its HP, power and level over the area.
+const SITES={fortW:62,fortH:40,mini:.9,miniHp:6,miniPow:1.55,miniLv:4};
+// MIMIC_RATE: share of ordinary dungeon chests that are mimics (mimic.js; picked from the run seed).
+const MIMIC_RATE=.13;
 
-// ===== Beta v0.5.0 Phase 3: shops, gear and items (p3shop.js) =====
+// ==== 4. Economy and shops: prices, gold and XP rates, pack size, Smithy, tempering, Echoforged, capes ====
+// prices
+const MAT_PRICE={copper:18,iron:45,mythril:110,oak:14,ash:40,elder:95,healroot:10,bluecap:22,sunpetal:48,starbloom:120};
+// Beta v0.4.1 3.5 economy (all editable here)
+// gold/xp: multipliers on what the player earns (the Daily Trial is exempt). gear/items/forge: price multipliers. recruit: tavern hire price.
+const ECON={gold:.9,xp:.85,gear:1.6,items:1.6,recruit:3,rareRecruit:2.6,inn:{base:30,per:25}};// v0.4.3: gold easier, prices lower (was gold .75, gear and items x2, recruits x3.5)
+const econG=n=>(typeof G!=='undefined'&&G&&G.daily)?n:Math.round(n*ECON.gold);
+// Beta v0.5.0 Phase 3: shops, gear and items (p3shop.js)
 // 3.8 how many of one item the pack holds (was 9). The Daily Trial keeps its old cap so its runs stay exactly as before.
 const ITEM_MAX=50,ITEM_MAX_DAILY=9;
 const invCap=()=>(typeof G!=='undefined'&&G&&G.daily)?ITEM_MAX_DAILY:ITEM_MAX;
@@ -128,6 +151,29 @@ const invCap=()=>(typeof G!=='undefined'&&G&&G.daily)?ITEM_MAX_DAILY:ITEM_MAX;
 const SHOP_BEST={closeAbs:.02,closeRel:.2,minPct:.005};
 // 3.3 Smithy plan: the smallest gain worth buying or crafting for (share of the hero's gear score)
 const SMITH_PLAN={minPct:.01};
+// 3.9 Pork Chop Sandwiches handed over after the first boss victory, and how many it takes to walk back to town from a dungeon
+const PORK={firstBoss:2,toTown:2};
+// TEMPER: tempering costs for +1, +2, +3 (temper.js): raw material, monster parts, realm relics, Dread Cores, gold factor, floor.
+const TEMPER={raw:[2,3,4],part:[1,2,3],relic:[1,2,2],core:[0,0,1],goldK:[.6,1.2,1.8],floor:.25};
+// Echoforged weapons (echocore.js): EF_K = tier 6 stats multiplier; forging costs EF_SHARDS shards, EF_ESS essence, EF_CORE cores
+// and EF_GOLD gold.
+const EF_K=1.18;
+const EF_SHARDS=2,EF_ESS=6,EF_CORE=3,EF_GOLD=3000;
+// capes (capes.js): CAPE_ST per tier [HP, resistance, speed]; CAPE_PRICE per tier.
+const CAPE_ST=[[25,4,0],[45,8,1],[70,13,2],[100,19,3],[140,26,4],[190,34,5]],CAPE_PRICE=[60,120,240,420,700,1000];
+// STICK_Q: Bestiary entries the Tamer's Stick quest asks for (equip.js).
+const STICK_Q=6;
+
+// ==== 5. Party and roster: taverns, the journey roster, personal quests, Best Party, loadouts, Make camp ====
+// taverns and the Guild Hall board
+const TAV_BATTLES=[0,12,32,55,80];
+const CHALL_POST=3;// how many open challenges a board shows at once (accepted ones always stay posted on top)
+const TV_SLOTS=4,TV_CAP=Infinity,TV_CD=5;     // 4 tables, no per area recruit cap (v0.5.0), 5 battles between shuffles
+// 6.6 personal quests: a hero must also have fought this many battles beside you in this journey (per hero, saved as bt)
+const PERSONAL_BT=40;
+// Beta v0.5.0 phases 4 and 5 (p4xp.js, p4party.js, p5settings.js)
+// 4.1 personal quests: no level gate any more; PERSONAL_BT battles together and the party in this realm (0 based) or later.
+const PERSONAL_REALM=2;// v0.7.2: third realm (was the second), see pacing.js
 // 3.4 Best Party: extra weight for answering what the area and its boss are known to be (archetypes, elements) and for delivery spread
 const BP_AWARE={arch:.18,el:.12,boss:1.5,dl:.04};
 // 3.6 boss readiness: how far below the boss the party average may be, and the potions and revives worth carrying
@@ -142,10 +188,70 @@ const READY={lvGap:2,potions:4,revives:2};
 //   train: a hero this many levels or more below the roster's top level is a trainee; at most max trainees in a Training team.
 const BP6={str:.5,weak:.55,weakPen:1.6,role:{tank:[1,.15,-.4],heal:[1,.3,-.3],sup:[.35,-.05,-.2],dmg:[.4,.35,.12,0]},pr:.4,de:.4,dup:.28,dl:.08,el:.05,
   boss:{el:3,arch:2,area:2.5},overlap:{boss:0,mix:.32,rot:.32},train:{gap:3,max:4}};
-// 3.9 Pork Chop Sandwiches handed over after the first boss victory, and how many it takes to walk back to town from a dungeon
-const PORK={firstBoss:2,toTown:2};
+// Beta v0.6.3: Make camp (v063prog.js)
+// price: Camp Supplies (Alchemy, from stage fromStage, 0 based: 2 = the third realm, about level 15). heal: share of max HP and MP
+// standing heroes get back (an inn gives everything, a Tent 60%). cool: battles between camps. dur: battles a boon lasts.
+// atk / def: boon stat bonus. first: first turn delay multiplier for Early rise. drop: extra drop chance for Forager's luck.
+const CAMP={price:40,fromStage:2,heal:.25,cool:2,dur:3,atk:.1,def:.1,first:.35,drop:.25};
+// the journey roster (tavern2.js): SUB_MIN + up to SUB_SPAN-1 wayfarers exist in a journey
+const SUB_MIN=28,SUB_SPAN=5;//  target size 28..32
+// LOADMAX: saved team loadouts (party2.js).
+const LOADMAX=8;
 
-// ===== Beta v0.5.0 Phase 6: graphics quality (gfx6*.js) =====
+// ==== 6. World: encounters, chance meetings, travel items, day and night, weather tables, factions, map generation ====
+// encounters on the road
+// ENC_RATE: chance per step to meet a random battle, by the Settings choice. CE_*: chance meetings with a wayfarer (chance.js), about 1 in 170 steps after a 30 step gap, 2 per area at most
+const ENC_RATE={off:0,low:.05,normal:.095,high:.14};// v0.4.3: about 13% fewer at every setting
+const ENC_MIN_STEPS=8;// v0.4.3: at least 8 tiles walked between random battles
+// chance meetings with a wayfarer (chance.js): about 1 in 170 steps after a 30 step quiet gap, at most 2 per area
+const CE_ODDS=1/170, CE_GAP=30, CE_AREA_CAP=2;
+// TOWN_LANE: every town gate gets a clear approach lane at least this many tiles wide to the main road
+const TOWN_LANE=2;
+// day and night
+const CLK_LEN=900,CLK_PH=[['day',0,495],['dusk',495,585],['night',585,810],['dawn',810,900]]; // v0.4.0 3.7: every phase is 50% longer than in v0.3.x (was 600 steps around)
+const NIGHT_POW=1.1;
+// weather: how many steps a weather lasts, and the odds out of 100 per realm
+const WX_MIN=300,WX_MAX=520;
+// everyday weather, shares out of 100
+const WX_TABLE={meadow:[['clear',72],['rain',14],['fog',9],['storm',5]],coast:[['clear',70],['rain',12],['fog',8],['sand',6],['storm',4]],
+  cave:[['clear',72],['heat',13],['fog',8],['ashfall',7]],snow:[['clear',65],['snow',23],['blizzard',6],['aurora',4],['fog',2]],
+  heights:[['clear',65],['storm',15],['gale',14],['fog',4],['blizzard',2]],void:[['clear',66],['starfall',16],['fog',8],['aurora',6],['ashfall',4]]};
+// rare skies (Blood Moon, Eclipse, Meteor Shower, Elemental Surge): shares out of 100, taken out of the clear share. Day or night limits are set by "when" on each sky in world3.js
+const SUPER_TABLE={meadow:[['surge_earth',2],['bloodmoon',2],['eclipse',1]],coast:[['surge_water',2],['meteor',1.5],['bloodmoon',1.5]],cave:[['surge_fire',2],['bloodmoon',2],['meteor',1]],
+  snow:[['surge_ice',2],['eclipse',1.5],['meteor',1.5]],heights:[['surge_wind',2],['eclipse',1.5],['meteor',1.5]],void:[['surge_shadow',2],['eclipse',1],['bloodmoon',1.5],['meteor',1.5]]};
+// factions: standing needed for ranks 1 to 6
+const REP_AT=[0,40,110,230,400,640];
+// Beta v0.4.1 1.7: where the dungeon lever may sit. minFrac: the lever is at least route/minFrac steps from the stairs (3 = outside the first third),
+// plus minExtra steps; minHops: rooms walked through before the lever room (1 = never in the first two rooms).
+const DUN_LEVER={minFrac:3,minExtra:4,minHops:1};
+// Beta v0.4.1 1.8: at most this share of a journey's forward gate exits (town and field ends) may face east.
+const GATE_EAST_MAX=.4;
+// travel items (travel.js): a Tent heals TENT_HEAL and revives at TENT_REVIVE; camping can be ambushed (AMBUSH_RATE per
+// area kind, foes AMBUSH_POW stronger).
+const TENT_HEAL=.6,TENT_REVIVE=.3,AMBUSH_RATE={field:.3,dungeon:.45},AMBUSH_POW=1.15;
+
+// ==== 7. Interface timings: transitions, the save indicator, hints, battle information (B5) ====
+// HINTS: early game hints show only while the journey is in stages below HINTS_UNTIL; delay before one appears (ms)
+const HINTS_UNTIL=1,HINT_DELAY=1400;
+// 5.4 transitions, in ms of world screen time: time of day blends over tod, weather over wx (visuals and ambience beds).
+const TRANS={tod:11000,wx:6500,ambTod:10,ambWx:6};
+// 5.5 save indicator: show "Saving..." this long, then "Saved", hold, then fade. minGap = autosaves closer than this share one message.
+// syncDelay: the cloud upload waits this long after the last save (debounced, signed in players with write access only).
+const SAVE_UI={saving:350,hold:2000,fade:450,minGap:2500,syncDelay:6000};
+// Beta v0.7.0 battle information and input (battle5.js)
+// order: turns shown in the order bar on portrait phones (tall), elsewhere (wide); bigPw: a foe damage skill at or above this power (or
+// one that hits the whole party) shows the "big hit" intent; stCh: a skill whose status chance is at least this shows "status";
+// it: the stage intent label's size (logical stage px); ringMs: how long the timing ring takes to close; win / winRM: half the timing
+// window in ms (reduced motion: the ring does not move, it lights up for the window instead); atkUp: damage bonus of a timed hit;
+// defDown: damage cut of a timed guard against a foe's single target attack; grace: ms after the ring opens before a press counts.
+const B5={order:{tall:6,wide:8},bigPw:1.55,stCh:.4,it:{w:11,h:10},ringMs:900,win:130,winRM:260,atkUp:.15,defDown:.15,grace:90};
+
+// ==== 8. Graphics: quality tiers, HD sprites, HD-2D battle stage and world, world effects, weather layers, battle screen layout (B3) ====
+// Beta v0.5.0 phase 2: battle and world logic (p2world.js)
+// BATTLE_GROUND: every battle backdrop has a solid ground plane from gy (share of the stage height) down; units stand between top and bot,
+// flying foes hover hover px above their shadow. Water, lava and sky are only drawn above gy, as scenery.
+const BATTLE_GROUND={gy:.5,top:.56,bot:.96,hover:9};
+// Beta v0.5.0 Phase 6: graphics quality (gfx6*.js)
 // Settings > Graphics stores META.cfg.gfx: 'auto' (default), 'low', 'medium' or 'high'. Auto measures the frame rate on the world and
 // battle screens and steps a tier down or up (GFX_AUTO), remembering its last pick in META.cfg.gfxAuto. Every feature below is per tier:
 // parts: battle particle cap. amb: drifting leaves or dust on the world. birds: birds crossing the sky (fields and towns, by day). critters:
@@ -165,15 +271,14 @@ const GFX_AUTO={start:'medium',windowMs:3000,down:45,up:57,gap:250};
 const GFX_PARA={px:4,titleMs:24000};
 // Camera pushes [zoom, ms]: crits, reactions, shield breaks, Limit Breaks.
 const GFX_CAM={crit:[1.035,360],react:[1.05,520],brk:[1.06,600],limit:[1.05,760]};
-
-// ===== Beta v0.5.3: HD sprites (sprhd.js, sprhd2.js) =====
+// Beta v0.5.3: HD sprites (sprhd.js, sprhd2.js)
 // SPRITE_HD true: heroes, townsfolk and monsters are painted at twice the detail (SPR.k) with five step light ramps, rim light and coloured
 // line art, heroes stand SPR.addH logical px taller (longer legs and torso, same head), and the world and battle canvases render at SPR.k
 // so that detail shows. Every sprite canvas still reports its logical size (width/height), so nothing that places sprites changes.
 // false: the v0.5.2 sprites and canvases, exactly as before.
 const SPRITE_HD=true;
 const SPR={k:2,addH:6,rimA:.5,outA:.55};
-// ===== v0.5.3 HD-2D battle stage (hdstage.js, hdspell.js) =====
+// v0.5.3 HD-2D battle stage (hdstage.js, hdspell.js)
 // Medium and High draw the battle stage with WebGL1 under the DOM unit layer: a perspective ground plane per backdrop, a blurred far
 // backdrop (depth of field), point lights (theme torches, lava, crystals, the moon, spells), bloom, colour grading by time of day and
 // weather, soft unit shadows. Low, no WebGL, a lost context or GFX.off keep the old 2D stage exactly. Per tier:
@@ -207,14 +312,14 @@ const HD_CAM={big:[1.04,480],limit:[1.07,900]};
 // v0.5.8 units in the battle stage (Medium 'under' and High 'full'): sat and con soften the raw sprite colours before the light and the
 // grade, ao is the light left at the feet (a little darker toward the ground), rim the key light rim strength on Medium (High: HD_BATTLE rim).
 const HD_SPR={sat:.86,con:.9,ao:.74,rim:.7};
-// ===== v0.6.3 world pass (worldfx.js, hd2d.js, map.js) =====
+// v0.6.3 world pass (worldfx.js, hd2d.js, map.js)
 // WFX: ambience particles live in world space (art px), repeated on a lattice of cells about one view in size and wrapped around the
 // camera, so they stay where they are when the camera moves (in 2D and HD-2D alike). ref: the view area the per view counts are for.
 // hero: no particle is drawn over the hero's box (half width, height above the feet, below the feet; art px). n: counts per ref area.
 // bird: one flock crossing per period (ms) at height h. chestGone: opened chests vanish from the map and can be walked over.
 const WFX={ref:80000,cell:128,margin:96,maxN:120,hero:[10,30,3],n:{spark:14,snow:46,wind:8,fly:4,spray:5,mote:12,dust:10,lantern:7,firefly:12,dew:12},
   bird:{period:26000,dur:11000,h:64,span:560},chestGone:true,hdZ:[560,180]};
-// ===== v0.7.7 weather (weather7.js) =====
+// v0.7.7 weather (weather7.js)
 // WX7: every weather drawn in layers. tier: per graphics tier. cap: most falling particles on the 2D canvas per frame (world 2D, the
 // HD-2D overlay, battle); rain/snow/sand/ash/wind: base counts per 2D view (far, mid, near layer); ground: puddles, ripples, splashes and
 // settling flakes (0 off, 1 on, 2 more); banks: fog and dust banks per layer; shimmer: heat haze distortion (0 off, 1 on); soft: soft
@@ -232,7 +337,7 @@ const WX7={on:true,
   gl:{rain:420,storm:540,snow:320,blizzard:420,sand:280,ash:120,ember:30,gale:70,leaf:24,heat:40,bank:1},glRef:420000,heroPad:4};
 // WMAP: the illustrated world map (map.js). vig: vignette size in cells.
 const WMAP={cell:[64,150,38],vig:.78,names:84};// cell: px per area (normal min, max, min on short landscape screens); names: written out from this cell size
-// ===== Beta v0.5.3: HD-2D world renderer (hd2d.js, hd2dgl.js) =====
+// Beta v0.5.3: HD-2D world renderer (hd2d.js, hd2dgl.js)
 // Medium and High graphics draw the world maps through WebGL as a lit diorama (Low, no WebGL or Settings > HD-2D world off: the 2D view).
 // pitch: camera tilt in degrees below the horizon; fov: vertical field of view (maxHfov caps the horizontal one on wide views); zoom: 1 =
 // sprites as big as in the 2D view; follow: camera glide time constant (ms); topSlack: how far past the map's top edge the camera may
@@ -271,11 +376,26 @@ const HD2D={pitch:40,fov:28,maxHfov:40,zoom:1,follow:85,topSlack:.2,sway:{amp:.7
 // act: the least light a character gets (outdoors at night, in dungeons), added in the ambient's colour; shadow: contact shadow
 // [width as a share of the sprite, depth as a share of the width, core darkness, soft darkness, offset away from the key light px].
 HD2D.spr={sc:2/3,sat:.86,con:.9,spread:9,rim:.75,act:{out:.3,dun:.34},shadow:[.8,.55,.36,.3,1.6]};
-// ===== Beta v0.6.3: Make camp (v063prog.js) =====
-// price: Camp Supplies (Alchemy, from stage fromStage, 0 based: 2 = the third realm, about level 15). heal: share of max HP and MP
-// standing heroes get back (an inn gives everything, a Tent 60%). cool: battles between camps. dur: battles a boon lasts.
-// atk / def: boon stat bonus. first: first turn delay multiplier for Early rise. drop: extra drop chance for Forager's luck.
-const CAMP={price:40,fromStage:2,heal:.25,cool:2,dur:3,atk:.1,def:.1,first:.35,drop:.25};
+// v0.6.3 battle screen (battle3.js, battle3.css)
+// B3: the stage label layout, in logical stage px (the stage is drawn at BL.sc CSS px per px). body: margin kept around each sprite's
+// visible pixels; pad: gap between labels; R: how far a label may move from its spot (step: search grid); barW: HP bar widths;
+// prim: primed badge size; sti/stiH: one status icon; tagF: font of the target tag, tagN: longest name on it, tagR: how far it looks first
+// (it stays close to its unit, shorter without the name if it must); fxRise: how far an effect text drifts up; minSc: the smallest
+// scale of the wide stage (it shrinks toward it so the commands fit under it); sideCol: width kept for the command column on landscape phones;
+// memo: ms the canvas reuses the last layout before checking whether anything changed. v0.7.6: wideMin / wideStep: the smallest scale and the
+// step of the wide stage when it is sized from the columns under it (1.35 keeps it at least 210 px tall on the Fold open at 933x705).
+// slots: where units stand, [x share of the stage, depth 0..1 on the ground band (BATTLE_GROUND top..bot)], for the tall (portrait)
+// and the wide stage; e[n-1] for n foes, boss[n-1] for boss fights, p for the three heroes on the field.
+const B3={body:1,pad:1,R:40,step:2,barW:{hero:24,foe:30},prim:13,sti:12,stiH:10,tagF:5,tagN:13,tagR:28,fxRise:3,minSc:1.5,wideMin:1.35,wideStep:.05,sideCol:360,memo:40,
+  slots:{
+    tall:{p:[[.72,0],[.89,.42],[.71,.84]],
+      e:[[[.27,.5]],[[.22,.05],[.36,.8]],[[.33,0],[.12,.42],[.4,.84]],[[.34,0],[.1,.28],[.47,.5],[.2,.84]],[[.34,0],[.1,.22],[.52,.36],[.3,.6],[.09,.84]]],
+      boss:[[[.27,.62]],[[.24,.75],[.48,.05]],[[.22,.7],[.47,0],[.5,.84]]]},
+    wide:{p:[[.74,0],[.88,.42],[.71,.84]],
+      e:[[[.27,.5]],[[.2,.08],[.36,.8]],[[.3,0],[.12,.42],[.4,.84]],[[.31,0],[.1,.28],[.46,.5],[.22,.84]],[[.3,0],[.09,.22],[.5,.36],[.28,.6],[.08,.84]]],
+      boss:[[[.25,.62]],[[.22,.75],[.44,.05]],[[.2,.7],[.42,0],[.46,.84]]]}}};
+
+// ==== 9. Twists: the Daily Trial weekly twist and New Game+ modifiers ====
 // v0.6.3 TWISTS (twists.js): small rule changes for repeat content.
 // daily: one twist per ISO week of the trial's date (the same for all seven days, never random), picked as (isoYear*53+isoWeek) mod the pool
 // size, so two weeks in a row never share one. Each twist only works inside the Daily Trial. c is the short battle chip, d the one line.
@@ -298,57 +418,3 @@ const TWISTS={on:true,
     {id:'elites',n:'Elites everywhere',risk:'Every wild fight has one shielded elite with 50% more HP.',gain:'+25% XP and gold.',pips:2,hp:1.5,xp:1.25,gold:1.25},
     {id:'react',n:'Reactions only',risk:'Only reactions crack shields; weak hits and skills no longer chip them.',gain:'Reactions hit 30% harder, +15% XP.',m:1.3,xp:1.15},
     {id:'iron',n:'Ironman',risk:'Fallen heroes stay down until you rest at an inn. No feathers, salts, tents or revive spells.',gain:'+40% XP.',xp:1.4}]}};
-// ===== v0.6.3 battle screen (battle3.js, battle3.css) =====
-// B3: the stage label layout, in logical stage px (the stage is drawn at BL.sc CSS px per px). body: margin kept around each sprite's
-// visible pixels; pad: gap between labels; R: how far a label may move from its spot (step: search grid); barW: HP bar widths;
-// prim: primed badge size; sti/stiH: one status icon; tagF: font of the target tag, tagN: longest name on it, tagR: how far it looks first
-// (it stays close to its unit, shorter without the name if it must); fxRise: how far an effect text drifts up; minSc: the smallest
-// scale of the wide stage (it shrinks toward it so the commands fit under it); sideCol: width kept for the command column on landscape phones;
-// memo: ms the canvas reuses the last layout before checking whether anything changed. v0.7.6: wideMin / wideStep: the smallest scale and the
-// step of the wide stage when it is sized from the columns under it (1.35 keeps it at least 210 px tall on the Fold open at 933x705).
-// slots: where units stand, [x share of the stage, depth 0..1 on the ground band (BATTLE_GROUND top..bot)], for the tall (portrait)
-// and the wide stage; e[n-1] for n foes, boss[n-1] for boss fights, p for the three heroes on the field.
-const B3={body:1,pad:1,R:40,step:2,barW:{hero:24,foe:30},prim:13,sti:12,stiH:10,tagF:5,tagN:13,tagR:28,fxRise:3,minSc:1.5,wideMin:1.35,wideStep:.05,sideCol:360,memo:40,
-  slots:{
-    tall:{p:[[.72,0],[.89,.42],[.71,.84]],
-      e:[[[.27,.5]],[[.22,.05],[.36,.8]],[[.33,0],[.12,.42],[.4,.84]],[[.34,0],[.1,.28],[.47,.5],[.2,.84]],[[.34,0],[.1,.22],[.52,.36],[.3,.6],[.09,.84]]],
-      boss:[[[.27,.62]],[[.24,.75],[.48,.05]],[[.22,.7],[.47,0],[.5,.84]]]},
-    wide:{p:[[.74,0],[.88,.42],[.71,.84]],
-      e:[[[.27,.5]],[[.2,.08],[.36,.8]],[[.3,0],[.12,.42],[.4,.84]],[[.31,0],[.1,.28],[.46,.5],[.22,.84]],[[.3,0],[.09,.22],[.5,.36],[.28,.6],[.08,.84]]],
-      boss:[[[.25,.62]],[[.22,.75],[.44,.05]],[[.2,.7],[.42,0],[.46,.84]]]}}};
-// ----- Beta v0.7.0 battle information and input (battle5.js) -----
-// order: turns shown in the order bar on portrait phones (tall), elsewhere (wide); bigPw: a foe damage skill at or above this power (or
-// one that hits the whole party) shows the "big hit" intent; stCh: a skill whose status chance is at least this shows "status";
-// it: the stage intent label's size (logical stage px); ringMs: how long the timing ring takes to close; win / winRM: half the timing
-// window in ms (reduced motion: the ring does not move, it lights up for the window instead); atkUp: damage bonus of a timed hit;
-// defDown: damage cut of a timed guard against a foe's single target attack; grace: ms after the ring opens before a press counts.
-const B5={order:{tall:6,wide:8},bigPw:1.55,stCh:.4,it:{w:11,h:10},ringMs:900,win:130,winRM:260,atkUp:.15,defDown:.15,grace:90};
-// ===== Beta v0.7.0 battle mechanics (battle4.js, battle4.css) =====
-// det: a hero who detonates a reaction gets mpPct of max MP back (at least mpMin), shown in the reaction text ("+N MP"); at most
-//   maxPerAct refunds per action (an all-foes detonator can set off several reactions).
-// swap: a free swap (another Vanguard hero trades places with a Rearguard hero while the acting hero keeps its turn) once every cd
-//   party turns. Rooted heroes cannot step back. autoWhy: the auto switch rules (autoSwitchPick) auto battle may use it for. The acting hero stepping back itself is the old Switch (its turn goes to the newcomer).
-// mo: the party's Momentum gauge, 0..max. Each hero action has a kind (attack; a skill's element and delivery; guard; heal; item;
-//   support; scan; limit). The same kind as the party's last action adds rep; a different kind moves it toward the middle of the
-//   zone by vary; Guard above the middle cools it by guard. In the zone [lo,hi] heroes deal dmg more and take taken less. Reaching
-//   max overheats it: heroes deal pen less and take pen more until it falls back to hi. Every battle starts at start.
-// roles: foe roles (Scan and the Bestiary name them). roleOf: MON key -> role; realm, night and overlay variants inherit their base's.
-//   guard (Shieldbearer): pips shield pips; while they hold, its allies take cover less damage. hex (Hexer): every other turn it
-//   stacks Hex on a hero (hexDmg less damage per stack); a Hex on a hero already at hexMax bursts for doom of max HP.
-//   charge (Charger): every chargeEvery turns it winds up, next turn it hits that hero's slot for chargePw (Guard halves it).
-//   leech (Leech): every leechEvery turns it drains each Vanguard hero not guarding (leechPw) and heals leechHeal of its max HP per hero.
-//   flank (Skirmisher): once the same three heroes have stood in the Vanguard for flankAt party actions, it hits the weakest for flankPw.
-//   boss: every Scourge and Calamity gathers power on every every-th turn (its turn is spent) and next turn strikes the whole
-//   Vanguard for pw (its usual all-foes skills are about 1.1 to 1.25). Guard halves it for each hero who guards.
-// daily: which systems run in the Daily Trial (all of them are deterministic: no clock, only the battle's seeded RNG).
-const B4={det:{on:true,mpPct:.1,mpMin:4,maxPerAct:2},
-  swap:{on:true,cd:3,autoWhy:['hurt','debuffed','healer']},
-  mo:{on:true,start:20,lo:40,hi:75,max:100,rep:22,vary:14,guard:26,dmg:.1,taken:.1,pen:.05},
-  roles:{on:true,cover:.4,pips:2,hexDmg:.08,hexMax:3,doom:.3,chargeEvery:3,chargePw:2.6,leechEvery:2,leechPw:.6,leechHeal:.07,flankAt:6,flankPw:1.9,
-    boss:{on:true,every:4,pw:3}},
-  roleOf:{shellguard:'guard',iceknight:'guard',huskguard:'guard',
-    ashwraith:'hex',eclipsewraith:'hex',rimewight:'hex',galephantom:'hex',
-    barrowbones:'charge',yeti:'charge',slaggolem:'charge',gargoyle:'charge',drownedsailor:'charge',
-    brinejelly:'leech',voidspawn:'leech',cavebat:'leech',
-    frostwolf:'flank',thunderhawk:'flank',stareater:'flank',gull:'flank'},
-  daily:{det:true,swap:true,mo:true,roles:true}};

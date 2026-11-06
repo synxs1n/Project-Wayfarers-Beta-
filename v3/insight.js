@@ -5,7 +5,7 @@
 const QUIRK={mossling:{imm:['poison']},dewtoad:{res:'earth'},cinderpup:{imm:['burn']},shellguard:{res:'lightning'},cavebat:{imm:['blind']},
   slaggolem:{res:'earth'},frostwolf:{imm:['slow']},iceknight:{res:'water'},stormling:{imm:['stun']},gargoyle:{res:'ice'},voidspawn:{imm:['poison']},
   eclipsewraith:{res:'wind'},huskguard:{res:'earth',imm:['bleed']},cloudray:{res:'water'}};
-const QUIRK_RES=.4;
+// QUIRK_RES: in config.js
 function quirkDef(art){const q=QUIRK[art],m=MON[art];if(!q||!m)return null;const o={};if(q.res&&matchup(q.res,m.el)===1)o.res=q.res;if(q.imm)o.imm=q.imm.slice();return (o.res||o.imm)?o:null;}
 function quirkText(q){if(!q)return '';const p=[];if(q.res)p.push(`shrugs off ${EL[q.res]} (takes ${Math.round((1-QUIRK_RES)*100)}%)`);if(q.imm)p.push('immune to '+q.imm.map(k=>STS[k].n).join(' and '));return p.join('; ');}
 {const me0=makeEnemy;makeEnemy=function(m,lv,opt){const e=me0.apply(this,arguments);if(!e.boss){const q=quirkDef(m.art);if(q){e.q=q;if(q.res)e.S.elRes[q.res]=QUIRK_RES;if(q.imm)e.imm=q.imm;}}return e;};}
@@ -54,7 +54,7 @@ function shortName(n){const p=String(n).split(' ');const last=p[p.length-1];cons
 
 // ----- bestiary tiers and mastery perks -----
 const TIER_N=['Unseen','Seen','Studied','Mastered'];
-const PERK_KILLS=[10,25,50],PERK_KILLS_BOSS=[2,4,6],PERK_DMG=[.03,.05,.08],PERK_DROP=[0,.05,.1];
+// PERK_KILLS, PERK_KILLS_BOSS, PERK_DMG, PERK_DROP: in config.js
 function tierOf(b,boss){if(!b||!b.seen)return 0;const k=b.kills||0,sc=!!b.scan;
   if(boss){if(k>=3&&(sc||k>=5))return 3;if(k>=1||sc)return 2;return 1;}
   if(k>=25&&(sc||k>=50))return 3;if(k>=10||sc)return 2;return 1;}

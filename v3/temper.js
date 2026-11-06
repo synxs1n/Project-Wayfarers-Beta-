@@ -2,7 +2,7 @@
 // Each +1 (up to +3) needs the item's raw material at its tier, a monster part for its family, this realm's relic,
 // and a Dread Core for +3. Gold is the old forge gold minus what the raw material costs at the Smithy, so buying the
 // raw material and tempering costs the same gold as before, and the monster parts are the new gate on top.
-const TEMPER={raw:[2,3,4],part:[1,2,3],relic:[1,2,2],core:[0,0,1],goldK:[.6,1.2,1.8],floor:.25};
+// TEMPER: in config.js
 const FAM_RAW=Object.assign(Object.fromEntries(Object.entries(FAM_MAT_V35).map(([k,v])=>[k,v[0]])),{tome:'wood',blade:'ore',dagger:'ore',crossbow:'ore',mail:'ore',staff:'wood',bow:'wood',robe:'wood',vest:'wood',charm:'herb'});
 const FAM_PART=Object.assign(Object.fromEntries(Object.entries(FAM_MAT_V35).map(([k,v])=>[k,v[1]])),{tome:'ichor',blade:'fang',dagger:'fang',crossbow:'fang',staff:'ichor',bow:'hide',mail:'scale',robe:'ichor',vest:'hide',charm:'grit'});
 function gearFam(id){const b=baseIdOf(id);if(b.startsWith('c_'))return 'charm';const p=b.split('_');return p[1]||'blade';}

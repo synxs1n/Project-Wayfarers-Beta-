@@ -8,7 +8,7 @@ const pick=a=>a[Math.floor(RNG()*a.length)];
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const fmt=n=>Math.round(n).toLocaleString('en-US');
 // Beta v0.3.0: hard cap 50 (heroes already above it in old saves keep their level).
-const LV_CAP=50;
+// LV_CAP: in config.js
 
 function battlePaused(){return V.screen==='battle'&&((V.modal&&['settings','menu','pause','feedback','fbcopy','wxinfo','battlelore'].includes(V.modal.type))||!!(B&&B.uDet));}
 const later=(f,ms)=>setTimeout(function run(){if(battlePaused())return setTimeout(run,120);f();},ms);
@@ -486,7 +486,7 @@ function chipShield(t,n,why){
   if(t.shield<=0){t.broken=2;t.recover=0;t.breakT=Date.now();log(`${t.name}'s guard shatters! It takes ${Math.round((BREAK_WIN.bonus-1)*100)}% more damage and loses its next turn.`);fx(t,'BREAK','stat bad');}
 }
 // detonations take two deliberate steps now, so they hit harder than the old free reactions did
-const DET_BONUS=1.3;
+// DET_BONUS: in config.js
 function doReaction(a,t,el){
   if(!t.primed||!el)return null;
   const R0=reactFor(t.primed.el,el);if(!R0)return null;const rk=reactKey(t.primed.el,el);t.primed=null;B.nDet=(B.nDet||0)+1;
@@ -600,10 +600,10 @@ function exec(sk,tgts){
   endTurn(a,cost);
 }
 // Beta v0.2.0: Limit Breaks open at level 15, and only once the party has reached the second town.
-const LIMIT_LV=15;
+// LIMIT_LV: in config.js
 function town2Reached(){return !!(G&&(G.daily||G.stage>=1||(G.been&&G.been.t1)||(G.cleared&&G.cleared[0])));}
 // Beta v0.3.0: level is the only gate. Limit I from 15, Limit II from 30.
-const LIMIT2_LV=30;
+// LIMIT2_LV: in config.js
 function limitOpen(c){return !!c&&c.lv>=LIMIT_LV;}
 function limitTier(c){return !c?0:c.lv>=LIMIT2_LV?2:c.lv>=LIMIT_LV?1:0;}
 function lbAdd(c,n){if(!limitOpen(c)){c.lb=0;return;}c.lb=Math.min(100,(c.lb||0)+n);}
@@ -682,7 +682,7 @@ function flee(){
 // ----- auto battle -----
 // Beta v0.3.1: auto battle can bring in a reserve hero when it clearly helps. Only the acting hero can step back, at most
 // once every 3 party turns, and a hero who just came in stays at least 3 turns.
-const AUTO_SWAP_CD=3;
+// AUTO_SWAP_CD: in config.js
 // v0.4.0 2.2: every auto battle choice the player can tune. The defaults reproduce the earlier fixed behaviour exactly.
 const AUTO_DEF={swap:true,swHealer:true,swDet:true,swHurt:true,swWeak:true,healAt:50,cure:true,reviveSkill:true,potion:true,potionAt:30,reviveItem:true,buff:true,debuff:true,mp:'normal',limit:'always',focus:'smart'};
 // v0.4.1 1.11: auto battle settings live in the save (G.auto, optional); a save without them takes this device's last settings the first time they are read

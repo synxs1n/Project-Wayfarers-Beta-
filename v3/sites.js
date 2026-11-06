@@ -6,7 +6,7 @@
 // never needed to progress. Legendaries never come from them.
 // Minibosses: about 90% of caves and fortresses (seeded per site) have a capstone fight guarding the prize. Opening the prize chest
 // wakes it; win and the prize is yours plus a bonus. Minibosses can never be auto battled.
-const SITES={fortW:62,fortH:40,mini:.9,miniHp:6,miniPow:1.55,miniLv:4};
+// SITES: in config.js
 const FORT_NAMES=['Briarwatch Keep','Saltmarch Bastion','Emberwall Hold','Frostcrag Redoubt','Duskspire Citadel'];
 const FORT_CHARMS={0:'c_ft0',1:'c_ft1',2:'c_ft2',3:'c_ft3',4:'c_ft4'};
 [['c_ft0','Briarwatch Sigil',{hp:150,atk:12,def:8}],['c_ft1','Saltmarch Seal',{mp:70,res:14,def:8}],['c_ft2','Emberwall Badge',{atk:18,spd:6}],['c_ft3','Frostcrag Token',{def:16,hp:110}],['c_ft4','Duskspire Crest',{mag:16,spd:8,mp:50}]]

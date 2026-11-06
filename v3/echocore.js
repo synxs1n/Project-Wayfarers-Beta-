@@ -24,7 +24,7 @@ const ECHO_CAT={k:'echo',n:'Echo relics',c:'#b48aff',ids:[],d:'Left behind by Ec
 (function(){MATS.essence='Echo Essence';ECHO_CAT.ids.push('essence');echoKeys().forEach(k=>{const id='es_'+k;MATS[id]='Shard: '+guardianDef(k).n;ECHO_CAT.ids.push(id);});
   MATCAT.push(ECHO_CAT);ECHO_CAT.ids.forEach(id=>{MAT_OF[id]=ECHO_CAT;});})();
 // ----- Echoforged weapons: tier 6 stats x1.18 plus a perk; temperable like any weapon -----
-const EF_K=1.18;
+// EF_K: in config.js
 const ECHOFORGE={
   blade:{n:'Ruinsong',perk:'+8% crit chance and +20% crit damage',crit:.08,critDmg:.2,sh:['cinderking','bonecolossus','hollowking']},
   dagger:{n:'Nightneedle',perk:'+6% evasion and +10% speed',eva:.06,spdP:.1,sh:['gloomcap','queenmantis','nidhra']},
@@ -32,7 +32,7 @@ const ECHOFORGE={
   crossbow:{n:'Stormlock',perk:'+15% damage to Scourges, Calamities and Echoes',bossDmg:.15,sh:['drake','ironsentinel','dimmer']},
   staff:{n:'Tidelight',perk:'+10% damage with every element',elAll:.1,sh:['siren','thornwarden','seraph']},
   tome:{n:'Starscript',perk:'+15% damage to Primed foes',primeDmg:.15,sh:['ysolde','frostlich','nidhra']}};
-const EF_SHARDS=2,EF_ESS=6,EF_CORE=3,EF_GOLD=3000;
+// EF_SHARDS, EF_ESS, EF_CORE, EF_GOLD: in config.js
 (function(){Object.keys(ECHOFORGE).forEach(f=>{const b=GEAR['w_'+f+'_5'],E=ECHOFORGE[f],o={n:'Echoforged '+E.n,slot:'w',tier:5,price:Math.round(b.price*1.6),ef:f,fam:f,efPerk:E.perk};
   ST.forEach(s=>{if(b[s])o[s]=Math.round(b[s]*(s==='spd'?1:EF_K));});['mpEff','elDmg','tome'].forEach(q=>{if(b[q])o[q]=b[q];});addGear('w_'+f+'_ef',o);});})();
 function efCost(f){const m={};ECHOFORGE[f].sh.forEach(k=>{m['es_'+k]=EF_SHARDS;});m.essence=EF_ESS;m.core=EF_CORE;return m;}

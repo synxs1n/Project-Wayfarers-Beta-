@@ -17,12 +17,12 @@ const ARCH={
   plant:{n:'Plant',d:'Slashing cuts it down, ranged shots pin it and fire burns it. Blunt blows and water do little.',dl:{slash:1.25,ranged:1.1,blunt:.85},el:{fire:1.25,water:.85}}
 };
 const ARCH_KEYS=Object.keys(ARCH);
-const UNDEAD_LIGHT=1.35;     // extra Light damage taken by Undead (on top of the type chart; the better of the two applies)
-const HEAL_HURT=.75;         // share of a heal's amount that an Undead foe takes as holy damage
-const HEAL_HURT_AOE=.6;      // same, for heals that cover the whole party
-const HEAL_HURT_PW_CAP=2.2;  // heals above this power do not hurt any more (Full Mend and Miracle stay fair)
-const ARCH_BOSS_CLAMP=[.75,1.3]; // Scourges and Calamities never swing further than this, so no one hero is mandatory
-const ARCH_FOE_CLAMP=[.4,1.8];
+// UNDEAD_LIGHT: in config.js
+// HEAL_HURT: in config.js
+// HEAL_HURT_AOE: in config.js
+// HEAL_HURT_PW_CAP: in config.js
+// ARCH_BOSS_CLAMP: in config.js
+// ARCH_FOE_CLAMP: in config.js
 
 // Which tags each foe carries.
 const MON_TY={

@@ -4,7 +4,7 @@
 // In battle that hero can Summon it once: it takes the hero's place for 3 of its own turns (4 with Beastbond), using its
 // own monster skills at the hero's level, then the hero comes back. While it is out the hero cannot be targeted.
 // MIGRATION (G.compV=1): tamed monsters in the roster are removed from roster and party, their gear goes back to the pack.
-const COMP_TURNS=3,COMP_BONUS={base:.04,bb:.06,scourge:.08};
+// COMP_TURNS, COMP_BONUS: in config.js
 function compOf(c){return c&&G&&(G.tamed||[]).find(o=>o.with===c.id)||null;}
 function compBonus(o){return o.scourge?COMP_BONUS.scourge:o.bb?COMP_BONUS.bb:COMP_BONUS.base;}
 function compDef(o){return MON[o.mon]||guardianDef(o.mon);}

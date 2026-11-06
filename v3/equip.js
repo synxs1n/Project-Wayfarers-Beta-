@@ -84,7 +84,7 @@ Object.assign(ACT,{
   eqNowNo(){eqNowNext(V.modal);}
 });
 // ----- the Tamer's Stick quest (Beta v0.3.1): on the first town's board in every journey until claimed -----
-const STICK_Q=6;
+// STICK_Q: in config.js
 {const gq0=genQuests;genQuests=function(s){const r=gq0.apply(this,arguments);try{if(!G.quests.some(q=>q.id==='tamer')&&!G.gear.includes('w_stick')&&!Object.values(G.roster).some(c=>c.eq.w==='w_stick'))
   G.quests.push({id:'tamer',stage:0,type:'tamer',n:STICK_Q,state:'open',title:"The Tamer's Stick",desc:`Old Wren the beast tamer swears her walking stick grows with what its owner knows about monsters. Log ${STICK_Q} creatures in your Bestiary and she will give it to you.`,reward:{}});}catch(e){}return r;};}
 {const qr0=questReady;questReady=function(q){if(q&&q.type==='tamer')return q.state==='active'&&stickCount().n>=q.n;return qr0.apply(this,arguments);};}

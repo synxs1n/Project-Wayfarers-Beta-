@@ -2,7 +2,7 @@
 // B2: a win where auto ran more than half of your heroes' turns pays 66% XP and gold (drops unchanged; not the Daily Trial).
 // B3: auto is off on a boss fight (Scourge, Calamity, echo, legend event) until that exact fight has been won manually
 // this journey. New optional field G.bossWon {key:1}; old saves count every Scourge or Calamity they already cleared.
-const AUTO_REW=.66;// v0.4.3: was .75, then .6
+// AUTO_REW: in config.js
 function bossFightKey(spec){if(!spec||!G||G.daily)return null;const k=spec.kind;
   if(k==='boss')return 'b:'+bossKeyFor(spec.stage);if(k==='storyEcho'||(k==='echoBoss'&&!spec.daily))return 'e:'+spec.key;if(k==='legend')return 'L:'+spec.hero+':'+(spec.step||0);return null;}
 // v0.4.1 2.4: no auto at all in elite, miniboss and challenge fights (duels, ambushes, legend events). The reason shows on the Auto button.
