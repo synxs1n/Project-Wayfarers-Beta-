@@ -288,10 +288,11 @@ const TWISTS={on:true,
 // prim: primed badge size; sti/stiH: one status icon; tagF: font of the target tag, tagN: longest name on it, tagR: how far it looks first
 // (it stays close to its unit, shorter without the name if it must); fxRise: how far an effect text drifts up; minSc: the smallest
 // scale of the wide stage (it shrinks toward it so the commands fit under it); sideCol: width kept for the command column on landscape phones;
-// memo: ms the canvas reuses the last layout before checking whether anything changed.
+// memo: ms the canvas reuses the last layout before checking whether anything changed. v0.7.6: wideMin / wideStep: the smallest scale and the
+// step of the wide stage when it is sized from the columns under it (1.35 keeps it at least 210 px tall on the Fold open at 933x705).
 // slots: where units stand, [x share of the stage, depth 0..1 on the ground band (BATTLE_GROUND top..bot)], for the tall (portrait)
 // and the wide stage; e[n-1] for n foes, boss[n-1] for boss fights, p for the three heroes on the field.
-const B3={body:1,pad:1,R:40,step:2,barW:{hero:24,foe:30},prim:13,sti:12,stiH:10,tagF:5,tagN:13,tagR:28,fxRise:3,minSc:1.5,sideCol:360,memo:40,
+const B3={body:1,pad:1,R:40,step:2,barW:{hero:24,foe:30},prim:13,sti:12,stiH:10,tagF:5,tagN:13,tagR:28,fxRise:3,minSc:1.5,wideMin:1.35,wideStep:.05,sideCol:360,memo:40,
   slots:{
     tall:{p:[[.72,0],[.89,.42],[.71,.84]],
       e:[[[.27,.5]],[[.22,.05],[.36,.8]],[[.33,0],[.12,.42],[.4,.84]],[[.34,0],[.1,.28],[.47,.5],[.2,.84]],[[.34,0],[.1,.22],[.52,.36],[.3,.6],[.09,.84]]],

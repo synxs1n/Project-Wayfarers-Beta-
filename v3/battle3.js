@@ -53,9 +53,9 @@ function b3TextW(t,px,wt){const k=wt+'|'+px+'|'+t;if(B3TW[k])return B3TW[k];if(!
 function b3TagInfo(u){const pend=B&&B.mode==='cmd'&&B.menu==='target'&&B.pend;if(!pend||!targetable(u))return null;const sk=pend.sk,out={name:b3Short(u.name)+(u.elite?' ★':''),eff:'',rx:null,px:false,html:''};
   if(u.side==='e'&&sk){out.eff=effBadge(sk,u,B.cur);const els=skEls(sk);
     if(sk.role==='det'&&u.primed&&els.length){const el=els.find(x=>reactFor(u.primed.el,x));const R=el&&reactFor(u.primed.el,el);if(R)out.rx={n:R.n,p:R.p,d:el};}
-    else if(sk.role==='primer'&&!u.primed&&els.length)out.px=true;}
+    else if(sk.role==='primer'&&!u.primed&&els.length)out.px=els[0];}
   return out;}
-function b3TagSize(T){const f=B3.tagF,w1=b3TextW(T.name,f,800)+4;let w2=0;const lab=(T.eff.match(/>([A-Za-z?]+)/)||[])[1]||'';if(lab)w2+=b3TextW(lab,f*.92,800)+5;if(T.rx)w2+=b3TextW('✸ '+T.rx.n,f*.92,900)+5+2*(f+1);if(T.px)w2+=b3TextW('⟐ Prime',f*.92,800)+5;
+function b3TagSize(T){const f=B3.tagF,w1=b3TextW(T.name,f,800)+4;let w2=0;const lab=(T.eff.match(/>([A-Za-z?]+)/)||[])[1]||'';if(lab)w2+=b3TextW(lab,f*.92,800)+5;if(T.rx)w2+=b3TextW('✸ '+T.rx.n,f*.92,900)+5+2*(f+1);if(T.px)w2+=b3TextW('⟐',f*.92,800)+f+6;
   const lines=w2?2:1;return {w:Math.ceil(Math.max(w1,w2)*1.08+3),h:Math.ceil(lines*(f*1.25)+2)};}
 // ----- the pass -----
 const B3L={key:'',L:null};
@@ -129,8 +129,8 @@ function b3StageHtml(){const L=b3Lay(true);if(!L)return '';const out=[],px=v=>v+
   L.tags.forEach((o,u)=>{out.push(`<div class="utags b3l ${u.side}" style="left:${px(o.x)};top:${px(o.y)};width:${px(o.w)};height:${px(o.h)}">${stButtons(u,{max:o.max,noPrime:true,noWx:true})}</div>`);});
   L.prim.forEach((o,u)=>{out.push(`<span class="primed pmin b3l" style="--c:${ELC[u.primed.el]};left:${px(o.x)};top:${px(o.y)};width:${px(o.w)};height:${px(o.h)}" aria-label="Primed with ${EL[u.primed.el]}, ${u.primed.t} turn${u.primed.t===1?'':'s'} left">${ico(u.primed.el)}<i>${u.primed.t}</i></span>`);});
   L.tgt.forEach((o,u)=>{const T=o.T,lab=(T.eff.match(/>([A-Za-z?]+)/)||[])[1]||'',cls=(T.eff.match(/class="eff ([a-z]+)/)||[])[1]||'';
-    const l2=(lab?`<span class="eff ${cls}">${lab}</span>`:'')+(T.rx?`<span class="eff rx">${ico(T.rx.p)}${ico(T.rx.d)}✸ ${esc(T.rx.n)}</span>`:'')+(T.px?'<span class="eff px">⟐ Prime</span>':'');
-    out.push(`<div class="b3tg b3l ${u.side} ${T.rx?'det':''}" style="left:${px(o.x)};top:${px(o.y)};width:${px(o.w)};height:${px(o.h)};--f:${B3.tagF}px">${T.short?'':`<b class="ename">${esc(T.name)}</b>`}${l2?`<span class="l2">${l2}</span>`:''}</div>`);});
+    const l2=(lab?`<span class="eff ${cls}">${lab}</span>`:'')+(T.rx?`<span class="eff rx">${ico(T.rx.p)}${ico(T.rx.d)}✸ ${esc(T.rx.n)}</span>`:'')+(T.px?`<span class="eff px" title="Primes it with ${esc(EL[T.px]||'')}">⟐${ico(T.px)}</span>`:''),tk=b3TagKey(T),kf=B3TK[tk];
+    out.push(`<div class="b3tg b3l ${u.side} ${T.rx?'det':''}" data-tk="${esc(tk)}" style="left:${px(o.x)};top:${px(o.y)};width:${px(o.w)};height:${px(o.h)};--f:${(B3.tagF*(kf||1)).toFixed(2)}px">${T.short?'':`<b class="ename">${esc(T.name)}</b>`}${l2?`<span class="l2">${l2}</span>`:''}</div>`);});
   return out.join('');}
 
 // ----- floating effect texts, placed through the same pass -----
@@ -176,3 +176,33 @@ function b3Short(n){n=String(n);const M=B3.tagN;if(n.length<=M)return n;const w=
 function b3Below(){try{const h=document.querySelector('.battle .pgroup.heroes'),c=document.getElementById('bcmd');return (h?h.offsetHeight+6:0)+(c?c.offsetHeight:0);}catch(e){return 0;}}
 // how many stage status icons a unit has (same count as stItems with noPrime and noWx, without building the markup)
 function b3StN(u){let n=u.broken&&u.maxShield?1:0;for(const k in u.st||{})if(STS[k])n++;return n;}
+
+// ----- 5) Beta v0.7.6: the wide layout fits the viewport -----
+// what the two columns under the stage need (commands + foes on the left, Vanguard + Rearguard on the right), in CSS px. The commands count
+// at their tallest top-level height seen in this battle (a sub menu scrolls inside its panel instead, so the stage does not jump), and the
+// whole need only grows within a battle (the stage only shrinks, a few times at most).
+function b3WideNeed(bat){try{const cmd=document.getElementById('bcmd'),foes=bat.querySelector('.bbottom .pgroup.foes'),pty=bat.querySelector('.bbottom .b3pty'),bb=bat.querySelector('.bbottom');
+  if(!cmd||!bb)return 0;const gap=parseFloat(getComputedStyle(bb).rowGap)||5,full=e=>e?Math.max(e.offsetHeight,e.scrollHeight+(e.offsetHeight-e.clientHeight)):0;
+  let ch=full(cmd);const root=B&&!B.over&&(B.menu==='root'||B.mode!=='cmd')&&!B.swapAsk;
+  if(B){if(root)B._b3cmd=Math.max(B._b3cmd||0,ch);else ch=B._b3cmd||Math.min(ch,230);}
+  const fc=foes&&foes.querySelector('.fcs'),fh=foes?foes.offsetHeight+(fc?fc.scrollHeight-fc.clientHeight:0):0,n=Math.max(ch+(foes?gap+fh:0),full(pty));
+  if(B){B._b3need=Math.max(B._b3need||0,n);return B._b3need;}return n;}catch(e){return 0;}}
+function b3DocTop(e){return e.getBoundingClientRect().top+(window.scrollY||0);}
+// the stage scale: as large as the width allows, small enough that the columns fit under it (never below B3.wideMin)
+function b3WideSc(w,vh,wrap,bat){try{const cs=getComputedStyle(bat),gap=parseFloat(cs.rowGap)||5,bl=document.getElementById('bline'),padB=parseFloat(getComputedStyle(document.body).paddingBottom)||0;
+  const below=gap+(bl?bl.offsetHeight:40)+gap,Hs=vh-b3DocTop(wrap)-below-b3WideNeed(bat)-padB-2,st=B3.wideStep||.05;
+  let sc=Math.min((w-8)/WIDE_W,(Hs-8)/WIDE_H,3);sc=Math.floor(sc/st+1e-6)*st;return Math.max(B3.wideMin||1.35,Math.round(sc*100)/100);}catch(e){return B3.minSc;}}
+// the height left for the columns (their panels scroll inside themselves past it, the page never does)
+function b3WideBot(wrap,bat){try{const bb=bat.querySelector('.bbottom');if(!bb)return;const vh=window.visualViewport?window.visualViewport.height:window.innerHeight,padB=parseFloat(getComputedStyle(document.body).paddingBottom)||0;
+  bat.style.setProperty('--b3bot',Math.max(140,Math.floor(vh-b3DocTop(bb)-padB-1))+'px');}catch(e){}}
+// a card status row that does not fit its line wraps to a second one (wide layout)
+function b3TagFit(){try{document.querySelectorAll('.battle.b3 .bparty .pcw.hastags>.ptags').forEach(t=>{if(t.scrollWidth>t.clientWidth+1)t.parentNode.classList.add('tagwrap');});}catch(e){}}
+// v0.7.6: a target tag's text always fits its laid out box. The box comes from the layout pass (measured with the canvas font); where the
+// device draws the text wider (its own font or text scaling), the tag's font shrinks once to fit (remembered per text, so it does not flicker).
+const B3TK={};
+function b3TagKey(T){return [T.short?'':T.name,T.eff,T.rx?T.rx.n:'',T.px||''].join('|');}
+function b3FitTags(){try{const st=document.getElementById('bstage');if(!st)return;st.querySelectorAll('.b3tg[data-tk]').forEach(t=>{const tk=t.dataset.tk;
+  for(let it=0;it<3;it++){const R=t.getBoundingClientRect();if(!R.width)return;let w=0,h=0;[...t.children].forEach(c=>{const q=c.getBoundingClientRect();w=Math.max(w,q.width);h+=q.height;});
+    const k=Math.min((R.width-1.2*(R.width/t.offsetWidth))/w,(R.height-.6*(R.height/t.offsetHeight))/h);if(!(k<1))break;
+    const f=(B3TK[tk]||1)*k*.97;B3TK[tk]=Math.max(.45,f);t.style.setProperty('--f',(B3.tagF*B3TK[tk]).toFixed(2)+'px');}});}catch(e){}}
+{const rb=renderBattle;renderBattle=function(){const r=rb.apply(this,arguments);if(B&&B.menu==='target')b3FitTags();return r;};}

@@ -67,10 +67,13 @@ function layoutBattle(){
   // v0.6.3: the wide stage leaves room for the commands (the cards beside them may run on and scroll)
   const cmdEl=$('bcmd'),budget=mode==='side'?vh-hd-od-34:vh-hd-od-(cmdEl&&cmdEl.offsetHeight?cmdEl.offsetHeight:(bb?bb.offsetHeight:0))-34;
   let sc=Math.min((w-8)/WIDE_W,Math.max(budget-8,0)/WIDE_H);sc=Math.max(mode==='side'?1.25:B3.minSc,Math.min(3,Math.floor(sc*4)/4));
+  // v0.7.6: the wide layout sizes the stage from what the two columns under it need (b3WideSc), so the screen fits the viewport
+  if(mode==='wide')sc=b3WideSc(w,vh,wrap,bat);
   BL={W:WIDE_W,H:WIDE_H,sc,fitH:0,short:false,mode};
   cv.width=WIDE_W;cv.height=WIDE_H;cv.style.width=WIDE_W*sc+'px';cv.style.height=WIDE_H*sc+'px';
   wrap.style.width=Math.round(WIDE_W*sc+8)+'px';wrap.style.height=Math.round(WIDE_H*sc+8)+'px';bat.style.setProperty('--b3w',Math.round(WIDE_W*sc+8)+'px');
   st.style.width=WIDE_W+'px';st.style.height=WIDE_H+'px';st.style.transform=`scale(${sc})`;
+  if(mode==='wide')b3WideBot(wrap,bat);else bat.style.removeProperty('--b3bot');
 }
 function spriteOf(u,walk){if(u.heroArt)return imgOf('bhe:'+u.heroArt,()=>heroCanvas(u.heroArt,walk));return u.side==='p'?imgOf('bh:'+u.id+(walk?':w':'')+lookKey(u.id),()=>heroCanvas(u.id,walk)):imgOf('bm:'+u.art,()=>monCanvas(u.art));}
 function unitBox(u){
@@ -266,6 +269,7 @@ function drawParts(ctx,now){
 
 // phones: grow or shrink the stage so the whole battle screen fits without scrolling
 function fitBattle(){
+  b3TagFit();{const bt=document.querySelector('.battle.b3');if(bt){bt.classList.toggle('b3list',!!document.querySelector('#bcmd .menu.list'));}}
   const wrap=$('bwrap');if(!wrap||(B&&B.menu!=='root'))return;
   const mode=battleMode();
   if(mode!=='tall'){const old=BL.sc,om=BL.mode;layoutBattle();if(Math.abs(BL.sc-old)>.01||om!==BL.mode)renderBattle(true);return;}

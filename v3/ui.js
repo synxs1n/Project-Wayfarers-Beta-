@@ -198,7 +198,7 @@ function renderBattle(stageOnly){
   if(stageOnly)return;
   {const last=B.log[B.log.length-1]||'',el=$('blog');if(el&&el.dataset.l!==String(B.log.length)+last){el.dataset.l=String(B.log.length)+last;el.innerHTML=last&&!B.logOpen?`<p class="last flash">${esc(last)}</p>`:'';}}
   {const ov=$('bover');if(ov)ov.innerHTML=blogPanel()+stPopHtml()+uDetHtml();}
-  $('bparty').innerHTML=foeCards()+`<div class="pgroup heroes"><h3>Vanguard</h3><div class="pcs">${B.front.map(c=>pcard(c,false)).join('')}</div></div>${B.back.length?`<div class="pgroup rsv"><h3>Rearguard</h3><div class="pcs">${B.back.map(c=>pcard(c,true)).join('')}</div></div>`:''}`;
+  $('bparty').innerHTML=foeCards()+`<div class="b3pty"><div class="pgroup heroes"><h3>Vanguard</h3><div class="pcs">${B.front.map(c=>pcard(c,false)).join('')}</div></div>${B.back.length?`<div class="pgroup rsv"><h3>Rearguard</h3><div class="pcs">${B.back.map(c=>pcard(c,true)).join('')}</div></div>`:''}</div>`;
   $('bcmd').innerHTML=cmdHtml();
   fitBattle();
 }
