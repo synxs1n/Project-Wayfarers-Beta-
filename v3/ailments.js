@@ -18,13 +18,13 @@ const ailOf=c=>AIL_KEYS.filter(k=>c&&c.ail&&c.ail[k]);
 // wound shrinks max HP everywhere stats are computed
 {const cs0=calcStats;calcStats=function(c){const S=cs0.apply(this,arguments);if(c&&c.ail&&c.ail.wound){S.mhp=Math.max(10,Math.round(S.mhp*AIL.woundMhp));}return S;};}
 // cleansing: passing ailments always go; curse goes to Purify style skills; wound only to the big revive-and-cleanse heals (opt.hard) and the Bandage
-function cleanse(t,opt){opt=opt||{};let n=0;
+function cleanse(t,opt){// with no opt, the battle's own calls choose: a revive-and-cleanse skill is hard:1, an item cure is item:1 (see perform/useItem below)
+  if(!opt&&typeof B!=='undefined'&&B&&B.hardCleanse)opt={hard:1};else if(!opt&&typeof B!=='undefined'&&B&&B.itemCure)opt={item:1};opt=opt||{};let n=0;
   Object.keys(t.st||{}).forEach(k=>{const d=STS[k];if(!d||!d.bad)return;if(d.hard&&!opt.hard)return;if(k==='curse'&&opt.item)return;delete t.st[k];n++;});
   if(t.ail){AIL_KEYS.forEach(k=>{if(!t.ail[k])return;if(k==='wound'&&!opt.hard)return;if(k==='curse'&&opt.item)return;if(k==='poison'&&opt.only&&opt.only!=='poison')return;delete t.ail[k];n++;});}
   if(n&&opt.hard){try{refresh(t);}catch(e){}}return n;}
 // the battle's cleanse calls: items are cure:1 (passing ailments only); skills with revive and cleanse also lift Wounds
 {const pf0=perform;perform=function(a,sk,tgts){if(sk&&sk.cleanse&&sk.revive)B.hardCleanse=1;try{return pf0.apply(this,arguments);}finally{B&&(B.hardCleanse=0);}};}
-{const c1=cleanse;cleanse=function(t,opt){if(!opt&&typeof B!=='undefined'&&B&&B.hardCleanse)opt={hard:1};else if(!opt&&typeof B!=='undefined'&&B&&B.itemCure)opt={item:1};return c1.call(this,t,opt);};}
 {const ui0=useItem;useItem=function(id,t){const it=ITEMS[id];if(typeof B!=='undefined'&&B)B.itemCure=!!(it&&it.cure);try{
     if(it&&(it.curse||it.wound)&&G.inv[id]&&t&&t.hp>0&&B){const key=it.curse?'curse':'wound';if(!t.st[key]){toast&&toast(t.name+' has no '+STS[key].n+'.');return;}
       delete t.st[key];if(t.ail)delete t.ail[key];if(key==='wound')refresh(t);fx(t,'Cured','heal');log(`${B.cur.name} uses ${it.n}. ${t.name} is cured.`);t.healT=Date.now();G.inv[id]--;B.cur.actT=Date.now();B.cur.actKind='item';endTurn(B.cur,.8);return;}

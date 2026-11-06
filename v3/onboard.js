@@ -207,7 +207,7 @@ if(typeof p5Avoid==='function'){const pa1=p5Avoid;p5Avoid=function(){const r=pa1
 
 // ----- the queue -----
 function obEval(t){try{return t.t()||null;}catch(e){return null;}}
-function obHold(){if(obBossHold())return true;const m=V.modal;if(m&&['story','talk','legacy','svupdate','lose','boss','slots','export','import','feedback','fbcopy'].includes(m.type))return true;
+function obHold(){if(obBossHold())return true;const m=V.modal;if(m&&['story','talk','legacy','lose','boss','slots','export','import','feedback','fbcopy'].includes(m.type))return true;
   if(V.screen==='title')return true;return false;}
 function obTick(){try{
   if(!tipsOn()){if(OB.cur)obClose();OB.q=[];return;}

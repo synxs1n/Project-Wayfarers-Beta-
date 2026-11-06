@@ -354,14 +354,6 @@ document.addEventListener('change',e=>{const f=e.target&&e.target.id==='svfile'&
 // old helpers keep working: importSave now reports through the same checks and never writes anything itself
 function importSave(code){const r=svDecode(code);if(!r.ok)return null;try{return unpackG(r.o);}catch(e){return null;}}
 ACT.doImport=function(){ACT.svImportGo();};
-// v0.4.3: before playing on a new version, offer to export every save made by an older one (a backup the player keeps)
-function svOldSlots(){const out=[];[0,1,2].forEach(s=>{try{const raw=svSlotRaw(s),p=svParse(raw);if(p.ok&&(p.o.gv||'')!==GAME_VERSION)out.push({s,gv:p.o.gv||'an older version'});}catch(e){}});return out;}
-function mSvUpdate(){const L=svOldSlots();
-  return box(`Updated to ${esc(GAME_VERSION)}`,`<p class="note">The game has updated. Your journeys will load as they are, but it is a good moment to keep a copy. Export a save now and you can bring it back with Import at any time.</p>
-    <div class="rows">${L.map(o=>`<div class="row"><div class="grow"><b>Slot ${o.s+1}</b><small>Saved by ${esc(o.gv)}</small></div><button class="btn sm gold" data-act="svExport" data-arg="${o.s}">Export</button></div>`).join('')}</div>`,
-    `<button class="btn" data-act="svUpdOk">Continue to the game</button>`);}
-{const vm1=vModal;vModal=function(m){if(m&&m.type==='svupdate')return mSvUpdate();return vm1.apply(this,arguments);};}
-ACT.svUpdOk=function(){META.cfg=META.cfg||{};META.cfg.updSeen=GAME_VERSION;try{saveMeta();}catch(e){}V.modal=null;render();};
 // v0.4.3: Settings has a way back to the main menu (the journey is saved first)
 {const sb0=settingsBody;settingsBody=function(){const h=sb0.apply(this,arguments);if(!G||V.screen==='title')return h;
   return h+`<div class="rows"><div class="row"><div><b>Main menu</b><small>${G.daily?'Leave the Daily Trial and go back to the title screen.':'Your journey is saved first. Continue picks it up again.'}</small></div><button class="btn sm" data-act="quitTitle">Back to the main menu</button></div></div>`;};}

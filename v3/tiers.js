@@ -5,8 +5,9 @@ function iTierIdx(id){if(ITEM_TIER_OF[id]!=null)return ITEM_TIER_OF[id];const o=
 function tierVars(t,g){const T=ITEM_TIERS[t];return `--tc:${g&&g.stick&&g.glow?g.glow:T.c};--tc2:${T.c2||T.c}`;}
 // small label: pip, name and (for tempered gear) the +N marker
 function tierChip(x,plus){const g=typeof x==='object'&&x;const t=g?gTierIdx(g):x,p=g?(g.plus||0):(plus||0),T=ITEM_TIERS[t];
-  return `<em class="tchip t${t}${t===6?' ef':''}" style="${tierVars(t,g)}" title="${T.n} tier${p?', tempered +'+p:''}"><i aria-hidden="true">${g&&g.stick?'✦':T.pip}</i>${T.n}${p?`<b class="tplus">+${p}</b>`:''}</em>`;}
-function itemChip(id){const t=iTierIdx(id),T=ITEM_TIERS[t];return `<em class="tchip t${t}" style="${tierVars(t)}" title="${T.n} tier"><i aria-hidden="true">${T.pip}</i>${T.n}</em>`;}
+  const r=`<em class="tchip t${t}${t===6?' ef':''}" style="${tierVars(t,g)}" title="${T.n} tier${p?', tempered +'+p:''}"><i aria-hidden="true">${g&&g.stick?'✦':T.pip}</i>${T.n}${p?`<b class="tplus">+${p}</b>`:''}</em>`;
+  try{return g&&g.id?r+craftTag(g.id):r;}catch(e){return r;}}// gear objects also get the Craft only tag
+function itemChip(id){const t=iTierIdx(id),T=ITEM_TIERS[t];return `<em class="tchip t${t}" style="${tierVars(t)}" title="${T.n} tier"><i aria-hidden="true">${T.pip}</i>${T.n}</em>`+craftTag(id);}
 // framed gear icon (same canvas icon as before, now inside the tier border)
 {const gi0=gearIcon;gearIcon=function(id){const s=gi0.apply(this,arguments);if(!s)return s;const g=gearOf(id),t=gTierIdx(g),T=ITEM_TIERS[t];
   return `<span class="gframe t${t}${t===6?' ef':''}${g.stick?' stk':''}" style="${tierVars(t,g)}" title="${T.n}${g.plus?', tempered +'+g.plus:''}" role="img" aria-label="${T.n} ${esc(g.n)}">${s}<b class="tpip" aria-hidden="true">${g.stick?'✦':T.pip}</b></span>`;};}
@@ -33,6 +34,4 @@ function shopAllIds(){if(_shopAll)return _shopAll;const S=new Set(),fam=new Set(
 function craftOnly(id){if(!id)return false;const m=String(id).match(/^(.*)\+(\d)$/);if(m)return craftOnly(m[1]);// a tempered piece can be bought and tempered, so it only counts when its base is craft only too
   if(String(id).startsWith('c_'))return false;// stat charms also turn up in vaults and chests
   return (!!GEAR[id]||!!ITEMS[id])&&!shopAllIds().has(id)&&!(GEAR[id]&&GEAR[id].stick)&&!(GEAR[id]&&GEAR[id].legend);}
-const craftTag=id=>craftOnly(id)?'<em class="tchip craftonly" title="No shop sells this. You can only craft it.">Craft only</em>':'';
-{const tc0=tierChip;tierChip=function(x){const r=tc0.apply(this,arguments);try{return typeof x==='object'&&x&&x.id?r+craftTag(x.id):r;}catch(e){return r;}};}
-{const ic0=itemChip;itemChip=function(id){return ic0.apply(this,arguments)+craftTag(id);};}
+function craftTag(id){return craftOnly(id)?'<em class="tchip craftonly" title="No shop sells this. You can only craft it.">Craft only</em>':'';}

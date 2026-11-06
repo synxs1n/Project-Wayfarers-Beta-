@@ -63,7 +63,10 @@ function tvShuffle(){
   t.sl=out;t.at=battlesSoFar();t.ev=false;G.tavRoll=(G.tavRoll||0)+1;try{out.forEach(id=>typeof codexSee==='function'&&codexSee(id));}catch(e){}return t;}
 function tvSlots(){const t=tvInit();if(tvDue())tvShuffle();
   // a slot whose hero joined by another route (a challenge, a gift) becomes an empty seat too
-  t.sl=t.sl.map(id=>id&&!G.roster[id]?id:null);return t.sl;}
+  t.sl=t.sl.map(id=>id&&!G.roster[id]?id:null);
+  // v0.4.3: beating a wayfarer in a duel earns a seat: they wait in the tavern (any town) until you hire them
+  try{const b=Object.keys((G.ce&&G.ce.boost)||{}).filter(id=>TPL[id]&&!G.roster[id]);
+    b.forEach(id=>{if(t.sl.includes(id))return;const k=t.sl.findIndex(x=>!x||G.roster[x]||!ceBoosted(x));if(t.sl.length<TV_SLOTS)t.sl.push(id);else if(k>=0)t.sl[k]=id;});}catch(e){}return t.sl;}
 // what the tavern screen and the "What next?" guide see: the heroes sitting at the tables right now
 function tavernOffers(){return tvSlots().filter(Boolean);}
 function tvNextText(){const t=tvInit(),c=Math.max(0,TV_CD-tvSince());
@@ -75,6 +78,3 @@ function tavernLater(){const mine=tvPool().length;const later=RAW.filter(r=>(r[6
 // v0.5.0: gold is the only thing that can stop a hire (recruit() checks it)
 const hireOK=id=>!!TPL[id];
 
-// v0.4.3: beating a wayfarer in a duel earns a seat: they wait in the tavern (any town) until you hire them
-{const ts0=tvSlots;tvSlots=function(){ts0.apply(this,arguments);const t=tvInit();try{const b=Object.keys((G.ce&&G.ce.boost)||{}).filter(id=>TPL[id]&&!G.roster[id]);
-  b.forEach(id=>{if(t.sl.includes(id))return;const k=t.sl.findIndex(x=>!x||G.roster[x]||!ceBoosted(x));if(t.sl.length<TV_SLOTS)t.sl.push(id);else if(k>=0)t.sl[k]=id;});}catch(e){}return t.sl;};}

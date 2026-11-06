@@ -91,7 +91,7 @@ function drawFullMap(){const cv=document.getElementById('fmap'),m=WS.m;if(!cv||!
   const sc=Math.max(2,Math.floor(Math.min(maxW/m.w,maxH/m.h)));cv.width=m.w*sc;cv.height=m.h*sc;cv.style.width=cv.width+'px';cv.style.height=cv.height+'px';
   const x=cv.getContext('2d');x.imageSmoothingEnabled=false;x.fillStyle='#0a0710';x.fillRect(0,0,cv.width,cv.height);x.drawImage(mapBase(m),0,0,m.w*sc,m.h*sc);
   drawMarks(x,m,mapMarks(m),sc,0,0);drawPlayer(x,sc,(WS.x+.5)*sc,(WS.y+.5)*sc);}
-{const vm0=vModal;vModal=function(md){if(md&&md.type==='map')return mMap(md);return vm0.apply(this,arguments);};}
+{const vm0=vModal;vModal=function(md){if(md&&md.type==='map')return mMap(md);if(md&&md.type==='worldmap')return mWorldMap(md);return vm0.apply(this,arguments);};}// the minimap's full map and (v0.6.3) the world map
 ACT.map=function(){if(!G||V.screen!=='world'||!WS.m)return;if(V.modal&&V.modal.type==='map'){V.modal=null;render();return;}const prev=V.modal;V.modal={type:'map',from:prev&&prev.type!=='map'?prev:null};render();};
 ACT.miniT=function(){META.cfg.minimap=!miniOn();saveMeta();drawMini();render();};
 window.addEventListener('keydown',e=>{if((e.key==='n'||e.key==='N')&&V.screen==='world'&&!(e.target&&e.target.matches&&e.target.matches('input,textarea'))&&(!V.modal||V.modal.type==='map')){e.preventDefault();ACT.map();}});
@@ -276,7 +276,6 @@ ACT.wmTap=function(arg,el){const cv=el||document.getElementById('wmap');if(!cv)r
   const px=(p.x-r.left)*cv.width/r.width,py=(p.y-r.top)*cv.height/r.height;let best=null,bd=1e9;WMS.hit.forEach(o=>{const d=Math.hypot(o.x-px,o.y-py);if(d<o.r*1.1&&d<bd){bd=d;best=o;}});
   WMS.sel=best?(WMS.sel===best.id?null:best.id):null;drawWorldMap();if(typeof sfx==='function'&&best)sfx('blip');try{wmGo();}catch(e){}};
 {const st=document.createElement('style');st.textContent='.wmbox .wmap{border:2px solid #6a4a24;border-radius:4px;background:#e2cb98;box-shadow:0 2px 10px rgba(0,0,0,.45);cursor:pointer;touch-action:manipulation}.wmlegend .wml{width:28px;height:28px;vertical-align:middle}.wmlegend span{display:inline-flex;align-items:center;gap:4px}';document.head.appendChild(st);}
-{const vm1=vModal;vModal=function(md){if(md&&md.type==='worldmap')return mWorldMap(md);return vm1.apply(this,arguments);};}
 function openWorldMap(){const prev=V.modal;V.modal={type:'worldmap',from:prev&&prev.type==='map'?prev:{type:'map'}};render();}
 ACT.worldMap=function(){if(!G||V.screen!=='world')return;openWorldMap();};
 window.addEventListener('resize',()=>{if(V.modal&&V.modal.type==='worldmap')drawWorldMap();});
