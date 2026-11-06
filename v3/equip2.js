@@ -76,7 +76,7 @@ function autoRun(mode,oneId){
   saveGame();sfx('equip');V.modal={type:'autoEq',rows,snap,mode,from:V.modal};render();
 }
 const compName=id=>{const o=(G.tamed||[]).find(x=>x.id===id);return o?esc(o.name):'none';};
-function mAutoEq(m){const rows=m.rows||[],ttl={party:'Auto best gear: party',all:'Equip best for everyone',one:'Auto best gear'}[m.mode]||'Auto best gear';
+function mAutoEq(m){const rows=m.rows||[],ttl={party:'Equip best: party',all:'Equip best for everyone',one:'Auto best gear'}[m.mode]||'Auto best gear';
   const a=rows.reduce((s,r)=>s+r.pw0,0),b=rows.reduce((s,r)=>s+r.pw1,0),pct=a>0?Math.round((b-a)/a*100):0;
   const body=rows.length?`<p class="note">${rows.length} hero${rows.length>1?'es':''} changed, combined gear power ${pct>=0?'+':''}${pct}%. Undo puts everything back exactly.</p><div class="rows">${rows.map(r=>{const d=r.pw0>0?Math.round((r.pw1-r.pw0)/r.pw0*100):0;
     return `<div class="row">${port(r.id,'sm')}<div class="grow"><b>${esc(r.name)}</b>${r.inParty?'':' <small>(roster)</small>'} <span class="${d>=0?'up':'dn'}">${d>=0?'▲':'▼'} ${Math.abs(d)}%</span>

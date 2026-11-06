@@ -1,5 +1,5 @@
 // ===== factions.js (v0.4.0): factions: reputation, ranks, missions and their perks =====
-// Five factions, six ranks each. Reputation = counters you already earn by playing (forging, potions, taming, wins, echoes, Scourges, helping wayfarers)
+// Six factions (shown as guilds), six standing steps each, shown as three ranks since v0.9.5 (FAC3 below). Reputation = counters you already earn by playing (forging, potions, taming, wins, echoes, Scourges, helping wayfarers)
 // plus bonus from missions. Everything is per journey (G.fac, an optional save field). Only the highest rank reached per faction goes in the account
 // profile (META.facBest) and it is a title, nothing more. Nothing here is required to finish the game, Legendary heroes never come from factions,
 // and the Daily Trial ignores all of it (no counters, no discounts, no bonuses).
@@ -24,6 +24,27 @@ const FAC=[
   perks:[null,{t:'XP +2%',k:'xp',v:.02},{t:'Battle gold +3%',k:'gold',v:.03},{t:'Inn rooms cost 5% less',k:'inn',v:.05},{t:'Steady Knot, a unique charm',k:'charm',id:'c_fa5'},{t:'Signature: The Steady Hand, a strong unique charm, and the title The Steady Hand',k:'sig',id:'c_fb5'}]}
 ];
 const FACB=Object.fromEntries(FAC.map(f=>[f.id,f]));
+// ---------- v0.9.5: three ranks per guild ----------
+// Standing still climbs the six old steps (facRank, REP_AT, META.facBest, G.fac.seen and the claim keys 'id:step' keep their meaning),
+// but the player sees three ranks. Step 1 is rank 1, steps 2 to 4 are rank 2 (at REP_AT[1], 40 standing), steps 5 and 6 are rank 3
+// (at REP_AT[4], 400 standing). Every old perk moves to the rank that holds its step, so each perk now opens at the same standing or
+// earlier: nobody loses a perk they had, and a claimed charm or recruit stays claimed (same keys). Same kind perks merge (the best counts).
+const FAC3_STEP=[0,1,2,2,2,3,3];// step -> rank
+const facTierOf=step=>FAC3_STEP[Math.max(1,Math.min(6,step|0))];
+const FAC3_AT=()=>[0,REP_AT[1],REP_AT[4]];
+const FAC3={
+ guild:{n:['Recruit','Pathfinder','Guildmaster'],t:['Take the guild\'s missions and earn standing.','Inn rooms 10% less, battle gold +5%, and a challenge only wayfarer joins you.','Two unique charms (Guildmark Pin, Guildmaster\'s Seal) and the title Guildmaster.']},
+ smiths:{n:['Apprentice','Journeyman','Grandsmith'],t:['Take the guild\'s missions and earn standing.','Tempering 10% less, 10% of forging gold back, and the Union counter (Dread Cores, ore and wood).','Two unique charms (Anvilmark Charm, Grandsmith\'s Hammerpin) and the title Grandsmith.']},
+ alch:{n:['Initiate','Distiller','Archmage of Vials'],t:['Take the guild\'s missions and earn standing.','15% of brewing gold back, and the Circle counter (Elixirs, herb bundles).','A 15% chance of one extra from every brew, two unique charms (Vialmark Charm, Archmage\'s Phial) and the title Archmage of Vials.']},
+ wardens:{n:['Pup','Handler','Warden of Wilds'],t:['Take the guild\'s missions and earn standing.','XP +5%, and the Warden counter (parts bundles).','Two unique charms (Wildcall Charm, Wild Heart) and the title Warden of Wilds.']},
+ archive:{n:['Reader','Cataloguer','Keeper of the Last Page'],t:['Take the guild\'s missions and earn standing.','XP +3%, the Archive counter (relic bundles), and a challenge only wayfarer joins you.','Two unique charms (Inkmark Charm, The Last Page) and the title Keeper of the Last Page.']},
+ hand:{n:['Onlooker','Sure Hand','The Steady Hand'],t:['Take the guild\'s missions and earn standing.','XP +2%, battle gold +3%, and inn rooms 5% less.','Two unique charms (Steady Knot, The Steady Hand) and the title The Steady Hand.']}};
+function facTier(id){return facTierOf(facRank(id));}
+const facTierName=(id,t)=>FAC3[id].n[(t||facTier(id))-1];
+// the old steps whose perks a rank holds, and its claimable perks (charms and the recruit), each claimed under its old key
+function facTierSteps(t){const o=[];for(let s=1;s<=6;s++)if(FAC3_STEP[s]===t)o.push(s);return o;}
+function facTierClaims(id,t){return facTierSteps(t).map(s=>({s,p:FACB[id].perks[s-1],key:id+':'+s})).filter(o=>o.p&&(o.p.k==='charm'||o.p.k==='sig'||o.p.k==='recruit'));}
+function facTierNeed(id){const t=facTier(id);return t>=3?null:FAC3_AT()[t];}
 // missions: count-based, tracked from the moment you accept. {k} is a counter, n the goal, rep the reward, r the rank needed to see it
 const FMIS=[
  ['g1','guild','Clear the roads','Win 10 battles.','wins',10,12,1],['g2','guild','A good week','Win 25 battles.','wins',25,24,1],['g3','guild','Underground work','Win 8 dungeon battles.','dwins',8,20,1],
@@ -64,63 +85,71 @@ let FACMEMO={t:0,v:{},g:null};
 function facDirty(){FACMEMO.t=0;}
 function facRank(id){const now=Date.now();if(now-FACMEMO.t>250||FACMEMO.g!==G){FACMEMO={t:now,v:{},g:G};}if(FACMEMO.v[id]!=null)return FACMEMO.v[id];const r=facRep(id);let k=1;REP_AT.forEach((x,i)=>{if(r>=x)k=i+1;});FACMEMO.v[id]=k;return k;}
 function facNeed(id){const r=facRank(id);return r>=6?null:REP_AT[r];}
-function facPerks(id,rank){const o=[];FACB[id].perks.forEach((p,i)=>{if(p&&i+1<=rank)o.push(p);});return o;}
+function facPerks(id,rank){const t=facTierOf(rank),o=[];FACB[id].perks.forEach((p,i)=>{if(p&&facTierOf(i+1)<=t)o.push(p);});return o;}// v0.9.5: every perk of the ranks reached
 function facSum(k){if(!G||G.daily)return 0;let s=0;FAC.forEach(F=>facPerks(F.id,facRank(F.id)).forEach(p=>{if(p.k===k)s=Math.max(s,p.v||0);}));return s;}// same kind of perk from one faction is not stacked across ranks, the best one counts
 function facSumAll(k){if(!G||G.daily)return 0;let s=0;FAC.forEach(F=>{let b=0;facPerks(F.id,facRank(F.id)).forEach(p=>{if(p.k===k)b=Math.max(b,p.v||0);});s+=b;});return s;}
 function facMul(){return {xp:1+facSumAll('xp'),gold:1+facSumAll('gold')};}
 function facBest(){if(!G||G.daily)return;META.facBest=META.facBest||{};let ch=0;FAC.forEach(F=>{const r=facRank(F.id);if(r>(META.facBest[F.id]||0)){META.facBest[F.id]=r;ch=1;}});if(ch){try{saveMeta();profileDirty();}catch(e){}}}
 // rank-up notices (checked after fights, claims and when the screen opens)
 function facSync(quiet){if(!G||G.daily)return;const f=facInit();FAC.forEach(F=>{const r=facRank(F.id),was=f.seen[F.id]||0;if(!was){f.seen[F.id]=r;return;}// first look just records where an old save stands
-  if(r>was){f.seen[F.id]=r;if(!quiet)toast(`${F.n}: rank ${r}, ${F.ranks[r-1]}!`);}});facBest();}
+  if(r>was){f.seen[F.id]=r;const t=facTierOf(r);if(!quiet&&t>facTierOf(was))toast(`${F.n}: rank ${t}, ${facTierName(F.id,t)}! ${FAC3[F.id].t[t-1]}`);}});facBest();}
 // ---------- hooks that feed the counters ----------
 {const au=autoTurn;autoTurn=function(){const r=au.apply(this,arguments);try{if(B&&B.auto)B.autoUsed=1;}catch(e){}return r;};}
 {const fb=finishBattle;finishBattle=function(how){const sp=B&&B.spec,manual=!!(B&&!B.autoUsed&&!B.auto);const r=fb.apply(this,arguments);try{if(G&&!G.daily&&how==='win'&&sp){const k=sp.kind;if(k==='dungeon')facCredit('dwins');if(k==='elite')facCredit('elite');}if(G&&!G.daily&&how==='win'){facCredit('wins');if(manual)facCredit('manual');}facSync();}catch(e){}return r;};}
 {const fg=forge;forge=function(){const r=fg.apply(this,arguments);try{if(r&&!G.daily)facCredit('temper');}catch(e){}return r;};}
 {const cr=craft;craft=function(rcp){const g0=G.gold,r=cr.apply(this,arguments);try{if(r&&!G.daily){const spent=g0-G.gold;
   if(rcp.item){facCredit('potion');const rb=facSumAll('rebate');if(rb>0&&spent>0){const back=Math.round(spent*rb);if(back>0){G.gold+=back;toast(`Circle rebate: ${back} gold back.`);}}
-    const dbl=facRank('alch')>=6?.15:0;if(dbl&&Math.random()<dbl&&(G.inv[rcp.item]||0)<invCap()){G.inv[rcp.item]++;toast('The Archmage\'s touch: one extra!');}}
+    const dbl=facTier('alch')>=3?.15:0;if(dbl&&Math.random()<dbl&&(G.inv[rcp.item]||0)<invCap()){G.inv[rcp.item]++;toast('The Archmage\'s touch: one extra!');}}
   else{facCredit('forge');const rb=facSmithRebate();if(rb>0&&spent>0){const back=Math.round(spent*rb);if(back>0){G.gold+=back;toast(`Union rebate: ${back} gold back.`);}}}}}catch(e){}return r;};}
 {const rt=registerTamed;registerTamed=function(o){const r=rt.apply(this,arguments);try{if(G&&!G.daily&&o&&!o._fc){o._fc=1;facCredit('tame');}}catch(e){}return r;};}
 {const fc=forgeCost;forgeCost=function(){const c=fc.apply(this,arguments);try{if(c&&G&&!G.daily){const d=facSmithDisc();if(d>0)c.gold=Math.max(1,Math.round(c.gold*(1-d)));}}catch(e){}return c;};}
 {const ic=innCost;innCost=function(){let c=ic.apply(this,arguments);try{if(G&&!G.daily){const d=facSum('inn');if(d>0)c=Math.max(1,Math.round(c*(1-d)));}}catch(e){}return c;};}
-function facSmithDisc(){const r=facRank('smiths');let b=0;FACB.smiths.perks.slice(0,r).forEach(p=>{if(p&&p.k==='forge')b=Math.max(b,p.v);});return b;}
-function facSmithRebate(){const r=facRank('smiths');let b=0;FACB.smiths.perks.slice(0,r).forEach(p=>{if(p&&p.rebate)b=Math.max(b,p.rebate);});return b;}
+function facSmithDisc(){let b=0;facPerks('smiths',facRank('smiths')).forEach(p=>{if(p.k==='forge')b=Math.max(b,p.v);});return b;}
+function facSmithRebate(){let b=0;facPerks('smiths',facRank('smiths')).forEach(p=>{if(p.rebate)b=Math.max(b,p.rebate);});return b;}
 // ---------- missions ----------
-function facMissionList(id){const f=facInit(),r=facRank(id),pool=FMIS.filter(m=>m.f===id&&m.r<=r&&!f.done[m.id]);
+function facMissionList(id){const f=facInit(),t=facTier(id),pool=FMIS.filter(m=>m.f===id&&facTierOf(m.r)<=t&&!f.done[m.id]);
   const acc=pool.filter(m=>f.acc[m.id]!=null),rest=pool.filter(m=>f.acc[m.id]==null);if(rest.length<=2)return acc.concat(rest);
   const R=seeded(hashS((G.run.seed||1)+':fm:'+id+':'+(G.tavRoll||0))),left=rest.slice(),pk=[];while(pk.length<2&&left.length){pk.push(left.splice(Math.floor(R()*left.length),1)[0]);}return acc.concat(pk);}
 // v0.7.7: progress counts everything done on this journey, also before the mission was accepted (the owner's call); acc only marks it taken
 function facProg(m){return Math.max(0,Math.min(m.n,facCount(m.k)));}
 ACT.facAccept=function(id){const m=FMIS.find(x=>x.id===id);if(!m||!G||G.daily)return;const f=facInit();if(f.acc[id]!=null)return;f.acc[id]=facCount(m.k);saveGame();toast(`Mission taken: ${m.t}.`);render();};
 ACT.facClaim=function(id){const m=FMIS.find(x=>x.id===id);if(!m)return;const f=facInit();if(f.acc[id]==null||f.done[id]||facProg(m)<m.n)return;f.done[id]=1;f.bonus[m.f]=(f.bonus[m.f]||0)+m.rep;facDirty();const g=Math.round(m.rep*7*(1+.25*G.stage));G.gold+=g;facSync();saveGame();sfx('chest');toast(`${m.t} done: +${m.rep} standing, ${g} gold.`);render();};
-ACT.facPerk=function(a){const [id,rk]=String(a).split(':'),r=+rk,F=FACB[id];if(!F||!G||G.daily)return;const f=facInit(),key=id+':'+r;if(f.claim[key]||facRank(id)<r)return;const p=F.perks[r-1];if(!p)return;
-  if(p.k==='charm'||p.k==='sig'){G.gear.push(p.id);f.claim[key]=1;toast(`${gearOf(p.id).n} added to your gear.`);}
+ACT.facPerk=function(a){const [id,rk]=String(a).split(':'),r=+rk,F=FACB[id];if(!F||!G||G.daily)return;const f=facInit(),key=id+':'+r,t=facTierOf(r);if(f.claim[key]||facTier(id)<t)return;const p=F.perks[r-1];if(!p)return;
+  // v0.9.5: one Claim per rank hands over every charm of that rank not yet claimed (the old keys are marked, so old saves stay claimed)
+  if(p.k==='charm'||p.k==='sig'){const got=[];facTierClaims(id,t).forEach(o=>{if((o.p.k==='charm'||o.p.k==='sig')&&!f.claim[o.key]){G.gear.push(o.p.id);f.claim[o.key]=1;got.push(gearOf(o.p.id).n);}});toast(`${got.join(' and ')} added to your gear.`);}
   else if(p.k==='recruit'){const pool=(typeof caveRecruitPool==='function'?caveRecruitPool(Math.min(4,G.stage+1)):[]);if(pool.length){const h=pool[hashS((G.run.seed||1)+key)%pool.length];recruit(h,true);try{codexSee(h,{rec:1,lv:G.roster[h].lv});}catch(e){}f.claim[key]=1;toast(`${TPL[h].n} joins you, sent by ${F.n}.`);}
     else{G.gold+=400+200*G.stage;f.claim[key]=1;toast('No one is left to send, so the faction pays 400+ gold instead.');}}
   saveGame();sfx('level');render();};
-ACT.facBuy=function(a){const [id,i]=String(a).split(':'),S=(FSTOCK[id]||[])[+i];if(!S||!G||G.daily)return;const need=S[3]||4,item=S[4];if(facRank(id)<(FACB[id].perks.findIndex(p=>p&&p.k==='stock')+1))return;
+ACT.facBuy=function(a){const [id,i]=String(a).split(':'),S=(FSTOCK[id]||[])[+i];if(!S||!G||G.daily)return;const need=S[3]||4,item=S[4];if(facTier(id)<facTierOf(FACB[id].perks.findIndex(p=>p&&p.k==='stock')+1))return;
   if(G.gold<S[2])return;let key=S[0];if(!item){key=S[0]==='$rel'?ZS(G.stage).mat:resolveDrop(S[0],G.stage);}
   if(item&&(G.inv[key]||0)>=invCap()){toast('You carry the most of those already.');return;}
   G.gold-=S[2];if(item)G.inv[key]=(G.inv[key]||0)+1;else{const q=/\(3\)/.test(S[1])?3:1;if(S[0]==='hide'||S[0]==='fang'||S[0]==='scale'||S[0]==='$rel'||/bundle/.test(S[1]))G.mats[key]=(G.mats[key]||0)+3;else G.mats[key]=(G.mats[key]||0)+q;}
   saveGame();sfx('chest');toast(`Bought ${S[1]}.`);render();};
 // ---------- screens ----------
-function facBar(id){const r=facRank(id),rep=facRep(id),nx=facNeed(id),lo=REP_AT[r-1];const pc=nx==null?100:Math.round((rep-lo)/(nx-lo)*100);
-  return `<div class="facbar" style="height:8px;background:#222;border-radius:4px;overflow:hidden;margin:4px 0"><i style="display:block;height:8px;width:${pc}%;background:${FACB[id].col}"></i></div>`;}
-function facMisRow(m){const f=facInit(),acc=f.acc[m.id]!=null,pr=facProg(m),ready=acc&&pr>=m.n;
-  const btn=ready?`<button class="btn sm gold" data-act="facClaim" data-arg="${m.id}">Claim</button>`:acc?`<span class="m">${pr}/${m.n}</span>`:`<button class="btn sm ${pr>=m.n?'gold':''}" data-act="facAccept" data-arg="${m.id}">Accept</button>`;
-  return `<div class="row"><div><b>${esc(m.t)}</b><small>${esc(m.d)} Reward: +${m.rep} standing and gold.${!ready?` Progress ${pr}/${m.n}${!acc&&pr>=m.n?', done already: accept to claim':''}.`:''}</small></div>${btn}</div>`;}
-function vFactions(){if(!G)return '';facSync(true);const f=facInit(),best=META.facBest||{};
-  const tt=FAC.filter(F=>(META.facBest||{})[F.id]>=6).map(F=>F.ranks[5]);return `${tt.length?`<p class="note"><b>Account titles:</b> ${tt.map(esc).join(', ')}</p>`:''}<p class="note">Six factions track what you already do on the road. Their standing and perks belong to this journey only. Nothing here is needed to finish the game. Only the best rank you reach is kept on your account, as a title.</p>`+FAC.map(F=>{
-    const r=facRank(F.id),rep=facRep(F.id),nx=facNeed(F.id),perks=F.perks.map((p,i)=>{if(!p)return '';const rk=i+1,on=r>=rk,key=F.id+':'+rk;
-      let act='';if(on&&(p.k==='charm'||p.k==='recruit'||p.k==='sig')){act=f.claim[key]?'<span class="m up">Claimed</span>':`<button class="btn sm gold" data-act="facPerk" data-arg="${key}">Claim</button>`;}
-      return `<div class="row ${on?'':'lock'}"><div><b>Rank ${rk}: ${esc(F.ranks[i])}</b><small>${esc(p.t)}${on&&!act?'':''}</small></div>${on?(act||'<span class="m up">Active</span>'):'<span class="m">Locked</span>'}</div>`;}).join('');
-    const si=F.perks.findIndex(p=>p&&p.k==='stock')+1,stock=si&&r>=si?`<h5>Counter stock</h5><div class="rows compact">${(FSTOCK[F.id]||[]).map((S,i)=>`<div class="row"><div><b>${esc(S[1])}</b></div><button class="btn sm" data-act="facBuy" data-arg="${F.id}:${i}" ${G.gold<S[2]?'disabled':''}>${fmt(S[2])}g</button></div>`).join('')}</div>`:'';
-    const ms=facMissionList(F.id).map(facMisRow).join('');
-    return `<div class="panel-sub facc" style="border-left:4px solid ${F.col};padding:6px 10px;margin:8px 0;background:rgba(255,255,255,.03)"><h4>${F.i} ${esc(F.n)} <small class="m">${esc(F.ranks[r-1])}${best[F.id]>r?' (best: '+esc(F.ranks[best[F.id]-1])+')':''}</small></h4><small>${esc(F.desc)}</small>${facBar(F.id)}<small>${nx==null?`${rep} standing. Top rank.`:`${rep} / ${nx} standing for ${esc(F.ranks[r])}`}</small>
-      <details><summary>Perks (${F.perks.filter((p,i)=>p&&r>=i+1).length}/5)</summary><div class="rows compact">${perks}</div></details>${stock}${ms?`<h5>Missions</h5><div class="rows compact">${ms}</div>`:''}</div>`;}).join('');}
-function vFacMissions(){if(!G)return '';facSync(true);
-  return `<p class="note">Missions the factions have posted for you right now. They rotate after an inn rest, like the Guild Hall board. Accepted ones stay until done. Standing from any source also counts toward ranks on the Factions page in Records.</p>`+FAC.map(F=>{const ms=facMissionList(F.id);return `<h4>${F.i} ${esc(F.n)} <small class="m">${esc(F.ranks[facRank(F.id)-1])}</small></h4><div class="rows compact">${ms.length?ms.map(facMisRow).join(''):'<div class="row"><small>Nothing posted. Rank up to see more.</small></div>'}</div>`;}).join('');}
+// v0.9.5: three ranks, one line each. The missions are a list of their own on the Notice Board's Guilds tab (board in menus3.js).
+function facBar(id){const t=facTier(id),rep=facRep(id),nx=facTierNeed(id),lo=FAC3_AT()[t-1];const pc=nx==null?100:Math.max(0,Math.min(100,Math.round((rep-lo)/(nx-lo)*100)));
+  return `<div class="facbar"><i style="width:${pc}%;background:${FACB[id].col}"></i></div>`;}
+function facMisState(m){const f=facInit(),acc=f.acc[m.id]!=null,pr=facProg(m);return f.done[m.id]?'done':acc?(pr>=m.n?'ready':'active'):'open';}
+function facMisRow(m){const f=facInit(),acc=f.acc[m.id]!=null,pr=facProg(m),ready=acc&&pr>=m.n,F=FACB[m.f];
+  const btn=ready?`<button class="btn sm gold" data-act="facClaim" data-arg="${m.id}">Claim</button>`:acc?`<span class="m nums">${pr}/${m.n}</span>`:`<button class="btn sm ${pr>=m.n?'gold':''}" data-act="facAccept" data-arg="${m.id}">Accept</button>`;
+  return `<div class="row facm"><div class="grow"><b>${esc(m.t)}</b>${ready?' <em class="qtag">Ready</em>':''} <small class="facg" style="--fc:${F.col}">${F.i} ${esc(F.n)}</small><small>${esc(m.d)} Reward: +${m.rep} standing and gold.${!ready?` Progress ${pr}/${m.n}${!acc&&pr>=m.n?', done already: accept to claim':''}.`:''}</small></div>${btn}</div>`;}
+function facRankRows(F){const f=facInit(),t=facTier(F.id),D=FAC3[F.id],at=FAC3_AT();
+  return D.n.map((nm,i)=>{const rk=i+1,on=t>=rk,C=facTierClaims(F.id,rk),open=C.filter(o=>!f.claim[o.key]);
+    const act=!on?`<span class="m nums">${fmt(at[i])}</span>`:C.length?(open.length?`<button class="btn sm gold" data-act="facPerk" data-arg="${open[0].key}">Claim</button>`:'<span class="m up">Claimed</span>'):'<span class="m up">Active</span>';
+    return `<div class="row ${on?'':'lock'}"><div class="grow"><b>${rk}. ${esc(nm)}</b><small>${esc(D.t[i])}</small></div>${act}</div>`;}).join('');}
+function vFactions(){if(!G)return '';facSync(true);const best=META.facBest||{};
+  const tt=FAC.filter(F=>facTierOf(best[F.id]||1)>=3).map(F=>FAC3[F.id].n[2]);
+  return `${tt.length?`<p class="note"><b>Account titles:</b> ${tt.map(esc).join(', ')}</p>`:''}<p class="note">Each guild has three ranks. Standing comes from what you already do on the road, and missions add more. Ranks and perks belong to this journey; the top rank you reach is kept on your account as a title. Nothing here is needed to finish the game.</p>`+FAC.map(F=>{
+    const t=facTier(F.id),rep=facRep(F.id),nx=facTierNeed(F.id),si=F.perks.findIndex(p=>p&&p.k==='stock')+1;
+    const stock=si&&t>=facTierOf(si)?`<details class="facstock"><summary>Counter stock</summary><div class="rows compact">${(FSTOCK[F.id]||[]).map((S,i)=>`<div class="row"><div class="grow"><b>${esc(S[1])}</b></div><button class="btn sm" data-act="facBuy" data-arg="${F.id}:${i}" ${G.gold<S[2]?'disabled':''}>${fmt(S[2])}g</button></div>`).join('')}</div></details>`:'';
+    return `<div class="facc" style="--fc:${F.col}"><h4>${F.i} ${esc(F.n)} <small class="m">Rank ${t}: ${esc(facTierName(F.id,t))}</small></h4><small>${esc(F.desc)}</small>${facBar(F.id)}<small class="nums">${nx==null?`${fmt(rep)} standing. Top rank.`:`${fmt(rep)} / ${fmt(nx)} standing for ${esc(facTierName(F.id,t+1))}`}</small>
+      <div class="rows compact facr">${facRankRows(F)}</div>${stock}</div>`;}).join('');}
+// every posted mission, ready to claim first, then under way, then open; sec: all, ready, active, open
+function facMisAll(){return FAC.flatMap(F=>facMissionList(F.id));}
+function vFacMissions(sec){if(!G)return '';facSync(true);sec=sec||'all';const o={ready:0,active:1,open:2};
+  const L=facMisAll().filter(m=>sec==='all'||facMisState(m)===sec).sort((a,b)=>o[facMisState(a)]-o[facMisState(b)]);
+  return `<p class="note">Missions rotate after an inn rest. Accepted ones stay until done, and everything you did before accepting counts.</p>${L.length?`<div class="rows">${L.map(facMisRow).join('')}</div>`:`<p class="note empty">${{ready:'No mission is ready to claim yet.',active:'No missions under way.',open:'No new missions posted. Rank up for more.'}[sec]||'No missions posted yet. Rank up for more.'}</p>`}`;}
 // rank strip on the matching shop screens
-{const vm0=vModal;vModal=function(m){const h=vm0.apply(this,arguments);try{const map={smithy:'smiths',workshop:'alch',board:'guild',beast:'wardens',archivist:'archive'};const id=m&&map[m.type];
-  if(id&&G&&!G.daily&&typeof h==='string'){const F=FACB[id],r=facRank(id),pk=facPerks(id,r).slice(-1)[0];const strip=`<p class="note facrank" style="border-left:3px solid ${F.col};padding-left:6px">${F.i} ${esc(F.n)}: ${esc(F.ranks[r-1])}${pk?'. '+esc(pk.t):''} <button class="btn sm" data-act="menuTab" data-arg="factions">Factions</button></p>`;
+{const vm0=vModal;vModal=function(m){const h=vm0.apply(this,arguments);try{const map={smithy:'smiths',workshop:'alch',beast:'wardens',archivist:'archive'};const id=m&&map[m.type];
+  if(id&&G&&!G.daily&&typeof h==='string'){const F=FACB[id],t=facTier(id);const strip=`<p class="note facrank" style="border-left:3px solid ${F.col};padding-left:6px">${F.i} ${esc(F.n)}: ${esc(facTierName(id,t))}. ${esc(FAC3[id].t[t-1])} <button class="btn sm" data-act="menuTab" data-arg="factions">Guilds</button></p>`;
     const k=h.indexOf('</h2>');if(k>0)return h.slice(0,k+5)+strip+h.slice(k+5);}}catch(e){}return h;};}

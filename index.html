@@ -1410,6 +1410,34 @@ details.m3how>summary:focus-visible{outline:2px solid var(--ui-gold-hi,#ffe39a);
 @media (max-width:420px){
   .chips.ssec .chip{padding:8px 7px 6px}
 }
+
+/* ===================== Beta v0.9.5: Notice Board, three guild ranks, the Upgrade button ===================== */
+/* sections under the menu's own tabs (Menu > Quests): small pills, wrapping */
+.chips.nbsec{flex-wrap:wrap;gap:4px;margin:6px 0 8px;background:none;padding:0}
+.chips.nbsec .chip .cnt{font:700 11px/1 var(--fb);opacity:.75;margin-left:3px;letter-spacing:0}
+/* guild cards: one line per rank */
+.facc{border-left:4px solid var(--fc,#e0b04a);padding:6px 10px;margin:8px 0;background:rgba(255,255,255,.03)}
+.facc h4{margin:2px 0;flex-wrap:wrap;row-gap:2px}
+.facc h4::after{display:none}
+.facc h4 small{min-width:0;letter-spacing:.06em}
+.facbar{height:8px;background:#222;border-radius:4px;overflow:hidden;margin:4px 0}
+.facbar i{display:block;height:8px}
+.facr{margin-top:4px}
+.facg{display:inline;color:var(--fc,#e0b04a);font-weight:700;opacity:.95}
+.row.facm small.facg{display:inline;margin-left:2px}
+details.facstock>summary{cursor:pointer;font:700 13px/1.3 var(--fb);color:var(--ui-gold,#d9b46a);padding:6px 2px;min-height:28px}
+/* Upgrade: the button on each slot, the best step card, the per slot list in the Smithy */
+.eq.upgeq{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:6px}
+.upgslot{display:flex;gap:6px;align-items:stretch;min-width:0}
+.upgslot>.btn,.upgslot>.eqv{flex:1 1 auto;min-width:0;text-align:left}
+.upgslot>.btn.upgb{flex:0 0 auto;text-align:center}
+.btn.upgb em{font-style:normal;margin-left:3px}
+.upgcard{border:1px solid var(--ui-line-s,#5f4a24);border-radius:6px;padding:8px 10px;margin:6px 0;background:rgba(255,215,120,.05)}
+.upgcard .upgk{font:800 11px/1.2 var(--fb);letter-spacing:.12em;text-transform:uppercase;color:var(--ui-gold,#d9b46a)}
+.upgba{display:flex;flex-wrap:wrap;gap:4px 10px;margin:4px 0}
+.upgba span{white-space:nowrap}
+.upgbest{margin:6px 0 10px}
+.upgbest .row .btn{white-space:nowrap}
 /* =================== Beta v0.6.3: battle screen (battle3.js) =================== */
 /* ----- stage labels: every box is placed by the layout pass (b3Lay) at exactly these sizes, in logical stage px ----- */
 .bstage .b3l{position:absolute;box-sizing:border-box;margin:0;transform:none}
@@ -1949,7 +1977,7 @@ body:has(.battle.b3.m-wide.b8short){padding-top:6px}
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.9.4";const APP_BUILD="aad46aabfb34";
+(function(){const APP_VER="0.9.6";const APP_BUILD="60aba5fd44d8";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2134,6 +2162,15 @@ const ARCH_FOE_CLAMP=[.4,1.8];
 // companions (comp.js): a summoned companion stays COMP_TURNS of its own turns; COMP_BONUS: the paired hero's stat bonus
 // (base, with Beastbond, for a tamed Scourge).
 const COMP_TURNS=3,COMP_BONUS={base:.04,bb:.06,scourge:.08};
+// TAME (v0.9.5, comp3.js): companions grow with the battles they win beside their hero (o.bt, an optional save field). At skillAt battles
+// they learn a second skill (sk, by family: name, power, target, kind, effects; the element is the companion's own); at evoAt they evolve:
+// a new name (pre + the monster's name), +evoBonus on the paired hero's stat bonus and a recoloured sprite (the monster's palette pulled
+// toward col by k, the same repaint the realm variants use; no new art).
+const TAME={skillAt:12,evoAt:30,evoBonus:.03,k:.45,
+  pre:{beast:'Alpha',flyer:'Sky',spirit:'Elder',shell:'Iron',ooze:'Grand',scourge:'Dread'},
+  col:{beast:'#e0a040',flyer:'#7ac8ff',spirit:'#c8a0ff',shell:'#b0b8c8',ooze:'#6ad07a',scourge:'#ff5a4a'},
+  sk:{beast:['Feral Rush',1.35,'one','phys',[['bleed',.3]]],flyer:['Gale Sweep',1.0,'all','mag',[['slow',.25]]],spirit:['Spirit Flare',1.25,'one','mag',[['weaken',.3]]],
+    shell:['Shell Bash',1.4,'one','phys',[['stun',.15]]],ooze:['Engulf',1.05,'all','mag',[['poison',.3]]],scourge:['Dread Roar',1.15,'all','mag',[['weaken',.3]]]}};
 
 // ==== 3. Foes and bosses: boss levels and muscle, field packs, creep, echoes, roamers, side sites, mimics, surprise starts ====
 // SURPRISE: touching a roaming dungeon foe that has not seen you gives a free first round: every hero in the vanguard acts free times
@@ -2148,7 +2185,37 @@ const BOSS_LV={frac:.5,cap:12};
 // 3.2 bosses: shield pips +50% (5 to 8, 7 to 11); the break window hits for less and is over once the foe loses the turn it staggers
 const BOSS_PIPS={mult:1.5};const BREAK_WIN={bonus:1.3,short:true};
 // 3.2 extra boss muscle on top of the old stat table (hp and power multipliers)
-const BOSS_BUFF={hp:[1.15,1.65,1.7,2.0,1.52],pow:[1.05,1.34,1.38,1.6,1.28]}// v0.4.3: re-tuned with capes; v0.8.2: the first three Scourges eased (were hp 1.3, 1.75, 1.8 and pow 1.15, 1.4, 1.44) so no boss is a wall
+const BOSS_BUFF={hp:[.9,1.5,1.55,1.7,1.36],pow:[1,1.34,1.38,1.6,1.28]}// v0.4.3: re-tuned with capes; v0.8.2: the first three Scourges eased (were hp 1.3, 1.75, 1.8 and pow 1.15, 1.4, 1.44) so no boss is a wall; v0.9.5: hp [1.15,1.65,1.7,2.0,1.52] -> about 4 to 10% less, the realm gimmicks (BOSS_GIM) carry the rest
+// BOSS_GIM (v0.9.5, battle4.js): every Scourge and Calamity brings one realm gimmick to its first fight (kind 'boss'; not Echoes, not the Daily
+// Trial). Each is telegraphed on the boss's turn (a log line, a "Telegraph" chip on the boss, a mark on the heroes it will hit) and lands on its
+// next turn, so reading it pays. first: the boss's turn of the first telegraph; every: turns between telegraphs (per boss: every).
+// Types: slot (a Vanguard spot, or n spots, takes pct of max HP; Guard halves it and stops st), rod (the strongest hero is marked; pct to
+// them and arc of that to the neighbours; swap them out to ground it), chill (each Vanguard hero not guarding gains a Chill stack: x(1+spd)
+// slower per stack, Frozen (a lost turn) at max; a Fire skill clears it), tide and dark (an arena level rises to max; tide: heroes without
+// Water are x(1+spd) slower per level and Water skills deal x(1+dmg) more per level, an Earth skill lowers it; dark: heroes deal dmg less
+// per level, a Fire or Light skill lights a torch and clears it), sac (the boss readies something: thr = damage share that stops it,
+// els = elements that stop it, brk = a Break stops it; fx: heal, summon (mon), spores (st on the Vanguard), buff (self)), mirror (for one
+// round the boss takes cut less from kind and reflects refl of the damage), veil (for one round it takes cut less until a Scan or a Light
+// skill reveals it), wing (it takes off for a round: non Ranged physical hits deal cut less; then it dives at a marked spot for pct),
+// phase2 (at warn of its HP it cracks; at at a new move set (sk) and its shield back).
+// stageK: the gimmick's damage and healing by stage (the first Scourge is the gentle introduction; reactions only open in the second realm).
+const BOSS_GIM={on:true,daily:false,first:2,every:4,stageK:[.5,.85,1,1,1],
+  def:{thornwarden:{t:'slot',n:'Thorn Snare',pct:.14,el:'earth',st:'root',d:'Roots erupt under one Vanguard spot on its next turn',tell:'Thorny roots creep under {who}',hit:'Roots burst under {who}'},
+    drake:{t:'tide',n:'Rising Tide',every:3,max:3,spd:.05,dmg:.08,d:'The water rises every few turns: heroes without Water slow down and Water skills hit harder. An Earth skill dams it',tell:'The water swells around your feet',hit:'The tide rises'},
+    cinderking:{t:'slot',n:'Lava Vents',pct:.17,el:'fire',st:'burn',d:'A lava vent erupts under one Vanguard spot on its next turn',tell:'The ground glows red under {who}',hit:'A lava vent erupts under {who}'},
+    hoarwyrm:{t:'chill',n:'Blizzard',max:3,spd:.12,d:'The blizzard chills every hero who is not guarding; three stacks freeze a hero for a turn. A Fire skill thaws the caster',tell:'The blizzard thickens',hit:'The blizzard howls through the Vanguard'},
+    ysolde:{t:'rod',n:'Lightning Rod',pct:.2,arc:.35,el:'lightning',d:'She marks the strongest hero; lightning strikes them on her next turn and arcs to their neighbours. Swap them out to ground it',tell:'The air crackles around {who}',hit:'Lightning strikes {who}'},
+    bonecolossus:{t:'sac',n:'Reassemble',fx:'heal',heal:.12,thr:.07,d:'It gathers its bones to heal; deal enough damage before its next turn to scatter them',tell:'Bones rattle toward the Colossus',hit:'The Colossus pulls its bones back together',stop:'The bones scatter'},
+    queenmantis:{t:'sac',n:'Brood',fx:'summon',mon:'gustimp',thr:.07,d:'An egg sac swells; burst it with enough damage before her next turn or it hatches',tell:'An egg sac swells on the Queen',hit:'The egg sac hatches',stop:'The egg sac bursts'},
+    gloomcap:{t:'sac',n:'Spore Bloom',fx:'spores',st:['poison'],els:['fire'],thr:.06,d:'A spore pod swells; a Fire skill or heavy damage pops it, or it poisons every hero not guarding',tell:'A spore pod swells on the Matriarch',hit:'The spore pod bursts over the Vanguard',stop:'The spore pod shrivels'},
+    ironsentinel:{t:'sac',n:'Overheat',fx:'buff',buff:['might','haste'],els:['water','ice'],thr:.08,d:'Its furnace glows white; a Water or Ice hit or heavy damage cools it, or it overclocks (Might and Haste)',tell:'The Sentinel\'s furnace glows white',hit:'The Sentinel overclocks',stop:'Steam hisses: the furnace cools'},
+    siren:{t:'mirror',n:'Mirror Song',every:5,kinds:['mag'],cut:.35,refl:.12,d:'Every few turns she raises a water mirror for a round: magic deals less and part of it splashes back. Use weapons then',tell:'The Siren\'s song turns glassy',hit:'A mirror of water rises around the Siren'},
+    ashwyvern:{t:'wing',n:'Take Wing',every:5,cut:.35,pct:.16,el:'fire',d:'It takes to the air for a round (weapon hits glance off unless Ranged), then dives at a marked spot',tell:'The Wyvern spreads its wings',hit:'The Wyvern takes to the air',dive:'The Wyvern dives at {who}'},
+    frostlich:{t:'veil',n:'Grave Mist',cut:.5,d:'Every few turns it fades into mist for a round and takes far less damage, until a Scan or a Light skill reveals it',tell:'Frost mist gathers around the Lich',hit:'The Lich fades into the mist'},
+    dimmer:{t:'dark',n:'Swallowed Light',every:3,max:2,dmg:.1,d:'The dark deepens every few turns: heroes deal less per level. A Fire or Light skill lights a torch and clears it',tell:'The lights around you gutter',hit:'The dark deepens'},
+    nidhra:{t:'phase2',n:'Eclipse Form',warn:.65,at:.5,sk:[['Corona Flare','fire',1.3,'all','mag',[['burn',.5]]],['Night Talon','shadow',2.0,'one','phys',[['bleed',.6]]],['Eclipse Roar','shadow',1.1,'all','phys',[['weaken',.4]]]],d:'At half HP it becomes the Eclipse: new moves and its shield back. Save a weakness hit for after',tell:'Cracks of black fire spread across Nidhra',hit:'Nidhra becomes the Eclipse'},
+    hollowking:{t:'sac',n:'Royal Guard',fx:'summon',mon:'voidspawn',brk:1,thr:.08,d:'He calls a servant from the void; Break his shield or hit him hard before his next turn to stop it',tell:'The King raises his hand to call a servant',hit:'A void spawn answers the King',stop:'The call goes unanswered'},
+    seraph:{t:'slot',n:'Pillars of Ash',n2:2,pct:.12,el:'light',st:'blind',d:'Pillars of holy fire fall on two Vanguard spots on its next turn',tell:'Light gathers over {who}',hit:'Pillars of ash fall on {who}'}}};
 // 3.4 small parties: each hero short of six makes Scourges and Calamities this much beefier (a full party of six is the benchmark)
 const BOSS_SIZE={hp:.07,pow:.06};// per stage 1 to 5
 // 3.3 echo levels. Story echo base = boss base + storyAdd; Sanctum echoes use fixed bases. While the party's highest hero is more than
@@ -2163,7 +2230,10 @@ const CREEP={per:.05,field:.5};
 const SMALL_PARTY={stages:2,hp:[.55,.85],pow:[.6,.88]};
 // ROAM: roaming dungeon foes (roam.js): base + perStage per dungeon, elite share, sight (tiles), patrol and chase step ms, giveUp
 // (tiles before a chaser walks home), minFromStart (tiles from the entrance), lvUp, hpM and powM over random battles.
-const ROAM={base:3,perStage:1,elite:.2,sight:4,patrolMs:620,chaseMs:330,giveUp:7,minFromStart:9,lvUp:2,hpM:1.3,powM:1.12};
+// v0.9.5: field: roamers on each realm's field too (base + perStage), never within minFromExit tiles of an exit, cave, dungeon or town gate.
+// roles: each realm's roamers include at least one of every foe role in its pool (B4.roleOf), so the fights teach the roles.
+const ROAM={base:4,perStage:1,elite:.2,sight:4,patrolMs:620,chaseMs:330,giveUp:7,minFromStart:9,lvUp:2,hpM:1.3,powM:1.12,// v0.9.5: base 3 -> 4
+  field:{base:2,perStage:1,minFromExit:7},roles:true};
 // SITES: side fortresses (fortW x fortH tiles) and minibosses (sites.js): mini = share of caves and fortresses with one, miniHp,
 // miniPow and miniLv: its HP, power and level over the area.
 const SITES={fortW:62,fortH:40,mini:.9,miniHp:6,miniPow:1.55,miniLv:4};
@@ -2294,11 +2364,20 @@ const ROLES={
     {id:'c_rl_ward',n:"Warden's Badge",st:{hp:110,def:10},perk:{tauntDef:.15},d:'Takes 15% less while Taunting',price:560}],
   shopFrom:1};
 
+// PACE (v0.9.5, pacing.js): the realm (0 = the first) in which each system opens on a journey started on v0.9.5 or later. Older journeys,
+// New Game+ cycles and the Daily Trial have everything open. pcUnlocked(system) reads it (the onboarding tips can ask it too).
+// combat, elements and taming are always open; tempering keeps its own rule (after the first Scourge); camp follows CAMP.fromStage.
+const PACE={at:{elements:0,combat:0,taming:0,reactions:1,gear:1,bonds:1,camp:2,guilds:2,echoforge:3,arenaGold:3,ngplus:3}};
+
 // ==== 6. World: encounters, chance meetings, travel items, day and night, weather tables, factions, map generation ====
 // encounters on the road
 // ENC_RATE: chance per step to meet a random battle, by the Settings choice. CE_*: chance meetings with a wayfarer (chance.js), about 1 in 170 steps after a 30 step gap, 2 per area at most
-const ENC_RATE={off:0,low:.07,normal:.13,high:.18};// v0.8.2: about 30% more on every setting (was .05/.095/.14) for the 4.5 to 6 hour journey (docs/v080-roles-balance.md)
-const ENC_MIN_STEPS=7;// v0.8.2: at least 7 tiles walked between random battles (was 8)
+const ENC_RATE={off:0,low:.02,normal:.035,high:.06};// v0.9.5: fewer, better fights: one random battle about every 41 steps on Normal instead of every 15 (v0.8.2: .07/.13/.18); visible roamers (ROAM) and side sites make up the rest
+const ENC_MIN_STEPS=12;// v0.9.5: at least 12 tiles walked between random battles (v0.8.2: 7)
+// ENC (v0.9.5, roam.js): what an ordinary fight pays now that there are fewer of them. rew: XP and gold multipliers for random field and
+// dungeon battles and roamers (a number, or one per stage: the early realms lost the most fights); roam: an extra multiplier for a roamer (on top of rew). Bosses, elites, minibosses, the arena and the Daily
+// Trial are not touched. Applied through facMul (engine.js win), like the NG+ modifiers.
+const ENC={rew:{xp:[2,1.6,1.2,1,.85],gold:1.45},roam:{xp:1.1,gold:1.15}};
 // chance meetings with a wayfarer (chance.js): about 1 in 170 steps after a 30 step quiet gap, at most 2 per area
 const CE_ODDS=1/170, CE_GAP=30, CE_AREA_CAP=2;
 // TOWN_LANE: every town gate gets a clear approach lane at least this many tiles wide to the main road
@@ -2526,7 +2605,7 @@ const TWISTS={on:true,
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.9.4";const APP_BUILD="aad46aabfb34";
+const APP_VER="0.9.6";const APP_BUILD="60aba5fd44d8";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2534,6 +2613,8 @@ const APP_VER="0.9.4";const APP_BUILD="aad46aabfb34";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.9.6',['Fewer, better fights: random battles are much rarer and fields now have visible roamers (including each realm\'s foe roles) you can choose to fight or sneak up on; fights pay more, so a journey still ends around level 40. Every Scourge and Calamity has its own realm gimmick that it telegraphs a turn ahead (rising tide, lava vents, a lightning rod, a blizzard, broods of adds, a phase change at half health and more) with a clear answer. Tamed companions grow: a second skill after 12 battles and an evolution after 30. New journeys unlock systems realm by realm (reactions and bonds in the second realm, camp and guild missions in the third, the Echoforge in the fourth); saves you already have keep everything.']],
+ ['Beta v0.9.5',['Menus simplified: one Notice Board with Quests, Guilds, Bounties and Arena tabs (claimable first), reachable from the board, the Guild Hall and the Menu. Guilds now have three ranks with one line each (nothing you claimed is lost; some perks open sooner). Every gear slot has an Upgrade button that picks the best next step you can afford (equip a spare, buy, forge, temper or Echoforge) with Show all options for tinkerers; the Smithy shows the best upgrade per slot first. Build Party and Equip best come first on the Party and Equipment tabs.']],
  ['Beta v0.9.4',['Momentum is simpler: doing something different fills the gauge, repeating the same move or only attacking drains it. Fill it to get a Surge (heroes deal 15% more and take 10% less); let it run empty and the party is Drained (10% less dealt, 10% more taken) until you mix it up again.']],
  ['Beta v0.9.3',['Battle screen on phones: the action menu has bigger buttons and fills the space under the battle view, with the party and foes below it (scroll down to see them; the commands always show in full on each turn). Phones turned sideways and other short wide screens now get a layout that fits: battle view, log and party on the left, commands with full labels and the foes on the right, nothing cut off. Hero health bars keep their distance from the foes, and heroes in battle are drawn at the same size and pixel look as the foes.']],
  ['Beta v0.9.2',['The Scourge lair is now part of the land: a rock mound of the realm\'s own ground (frozen rock with icicles, basalt with ember cracks, earth and roots, sandstone, wet rock) with a dark cave mouth dug into it, claw gouges, bones, torches, a broken banner of the Scourge and a faint plume of its light; no flat tower or lettering. It still has its own Lair icon on the map and turns gold once relit. Also fixed the HD-2D world lighting: snow fields and other scenes are no longer washed out.']],
@@ -9430,9 +9511,6 @@ function mMenu(m){
     body=ddBar([ddSel('Show','lSh','items',[['all','All items'],['own','Carrying'],['battle','Healing and cures'],['travel','Travel gear']],sh),ddSel('Sort','lSort','items',[['def','Default'],['name','Name'],['count','Most carried'],['rar','Rarest first']],f.s)],'lfbar')
       +(ids.length?`<div class="rows">${ids.map(id=>`<div class="row tr" style="${tierVars(iTierIdx(id))}"><div><b>${itemIcon(id)} ${ITEMS[id].n}</b> ${itemChip(id)} x${G.inv[id]||0}<small>${ITEMS[id].d}</small>${ITEMS[id].travel&&(G.inv[id]||0)>0&&travelWhyNot(id)?`<small class="warn">${esc(travelWhyNot(id))}</small>`:''}</div>${ITEMS[id].cure?'<span class="m">Battle only</span>':ITEMS[id].travel?`<button class="btn sm" data-act="useTravel" data-arg="${id}" ${(G.inv[id]||0)>0&&!travelWhyNot(id)?'':'disabled'} title="${esc(travelWhyNot(id))}">Use</button>`:`<button class="btn sm" data-act="useItem" data-arg="${id}" ${(G.inv[id]||0)>0?'':'disabled'}>Use</button>`}</div>`).join('')}</div>`:'<p class="note empty">No items match. Try Show: All items.</p>')+'<p class="note">Materials have their own tab: Backpack, Materials.</p>';}
   if(tab==='pouch')body=`<p class="note">Herbs, ore, logs, monster parts and relics. Alchemy and the Smithy turn them into gear and brews.</p>${vPouch()}`;
-  if(tab==='quests'){const act=G.quests.filter(q=>q.state==='active').sort((a,b)=>(questReady(b)?1:0)-(questReady(a)?1:0)),bt=G.bounties.filter(b=>b.state==='active'),pr=Object.values(G.personal||{}).filter(q=>q&&q.state==='active'&&TPL[q.personal]);
-    body=`<div class="rows">${act.map(q=>`<div class="row"><div><b>${esc(q.title)}</b><small>${esc(q.desc)}</small><small>${q.type==='tamer'?`${Math.min(stickCount().n,q.n)}/${q.n} creatures logged`:q.type==='legend'?legendProg(q):q.type==='hunt'?`${q.have||0}/${q.n}`:q.type==='gather'?`${Math.min(G.mats[q.mat]||0,q.n)}/${q.n}`:q.found?'Found':'Not found yet'}${questReady(q)?'. Ready to claim at a quest board.':''}</small></div></div>`).join('')}${bt.map(b=>`<div class="row"><div><b>Bounty: ${esc(b.name)}</b><small>Roaming ${esc(ZS(b.stage).n)}.</small></div></div>`).join('')||''}${pr.map(q=>`<div class="row rgrow">${port(q.personal)}<div class="grow"><b>Rival: ${esc(q.name)}</b><small>${esc(TPL[q.personal].n)}'s personal quest. Roaming ${esc(ZS(q.stage).n)}.${rivalNeed(q)?` <b class="rgneed">${esc(rivalNeedShort(q))}.</b>`:''}</small></div></div>`).join('')}${!act.length&&!bt.length&&!pr.length?'<p class="note">No active quests. Check the quest board in any town square, and the bounty board at the Guild Hall.</p>':''}</div>
-    <h4>The journey</h4><div class="rows">${[0,1,2,3,4].map(s=>`<div class="row ${s>G.stage?'lock':''}"><div><b>${s>G.stage?'???':esc(ZS(s).n)}</b><small>${s>G.stage?'Ahead':esc(ZS(s).dungeon)+(G.cleared[s]?': relit':`: ${s<4?bossClass(bossKeyFor(s)):'Calamity'} waits`)}</small></div></div>`).join('')}</div>`;}
   if(tab==='next')body=vNext();
   if(tab==='beasts')body=vBestiary();
   if(tab==='codex')body=vCodex();
@@ -9444,6 +9522,7 @@ function mMenu(m){
   if(tab==='types'&&typeof vTypes==='function')body=vTypes();
   if(tab==='help')body=`<p class="note">Stuck, confused or found a bug? Everything here is also in the other Guides tabs: What next? points at your next goal, Lore tells the story so far, and Foe types explains who is weak to what.</p><div class="btnrow"><button class="btn gold" data-act="fbOpen">Help / Feedback</button></div>`;
   if(tab==='settings')body=settingsBody();
+  if(typeof nbMenuBody==='function'){const nb=nbMenuBody(m);if(nb!=null)body=nb;}// v0.9.5: Quests, Guilds, Bounties, Arena are the Notice Board (menus3.js)
   return box('Menu',menuTabsHtml(grp,tab)+body,`<span class="verf">${esc(GAME_VERSION)}</span>${canStuck()?'<button class="btn" data-act="stuckAsk" title="Return to the dungeon entrance for free">Stuck?</button>':''}<button class="btn" data-act="fbOpen">Help / Feedback</button><button class="btn gold" data-act="closeModal">Close</button>`,true);
 }
 function bestAll(){
@@ -10846,7 +10925,7 @@ function modalBack(m){
   if(t==='char')return ()=>{V.modal={type:'menu',tab:V.lastMenuTab||'party'};};
   if(t==='guild'&&m.char)return ()=>{V.modal={type:'guild',tab:'recruit'};};
   if(t==='beast')return ()=>{V.modal={type:'menu',tab:'beasts'};};
-  if(t==='eqPick')return ()=>{V.modal={type:'menu',tab:'equip'};};
+  if(t==='eqPick')return ()=>{V.modal=m.from&&m.from.type==='upg'?m.from:{type:'menu',tab:'equip'};};// v0.9.5: Upgrade > Show all options comes back to Upgrade
   if(t==='compPick')return ()=>{V.modal={type:'menu',tab:'comp'};};
   if(t==='autoEq')return ()=>{V.modal=m.from&&m.from.type!=='autoEq'?m.from:{type:'menu',tab:'equip'};};
   if(t==='useitem')return ()=>{V.modal={type:'menu',tab:'items'};};
@@ -10862,7 +10941,7 @@ function modalBack(m){
   if(t==='map')return ()=>{V.modal=m.from||null;};   // v0.4.1 1.9: the map has a back arrow next to the X (back to where it was opened from, else the world)
   // v0.5.0 1.5: every shop screen has the back arrow. v0.6.3: shops have main tabs and section chips (menus3.js), so back is one level:
   // a section (or a hero picked on the Natures tab) goes back to All, a tab goes back to the shop's first tab, the first tab leaves the shop.
-  const SHOP_HOME={smithy:'shop',workshop:'shop',guild:'recruit',tavern:'hire',inn:null,board:null,archivist:null};
+  const SHOP_HOME={smithy:'shop',workshop:'shop',guild:'guilds',tavern:'hire',inn:null,board:'quests',archivist:null};// v0.9.5: the Guild Hall and the Notice Board start on the board's Guilds and Quests tabs
   if(t in SHOP_HOME){if(typeof m3Norm==='function')m3Norm(m);const home=SHOP_HOME[t],tab=m.tab&&m.tab!=='party'?m.tab:home;
     if(t==='guild'&&tab==='nature'&&m.nat)return ()=>{m.nat=null;};
     if(m.sec&&m.sec!=='all')return ()=>{m.sec='all';};
@@ -10901,7 +10980,7 @@ function vSwap(where){
     const bad=[...new Set(Object.keys(c.st||{}).filter(k=>STS[k]&&STS[k].bad).concat(typeof ailOf==='function'?ailOf(c):[]))],mark=c.hp<=0?'<em class="swko">KO</em>':bad.length?`<em class="swst" aria-label="${bad.map(k=>STS[k].n).join(', ')}">${bad.map(k=>`<span class="ail" style="--c:${STS[k].c}" title="${STS[k].n}">${stSym(k)}</span>`).join('')}</em>`:'';
     return `<div class="swc ${grid?'':'row'} ${on?'sel':''} ${c.hp<=0?'ko':''}"><button class="swm" data-act="swapTap" data-arg="p:${i}" aria-pressed="${on}" aria-label="${esc(c.name)}, ${lab}${on?', selected':''}">${port(c.id,'noail')}<span class="swi"><span class="swn"><b>${esc(c.name)}</b><span class="els">${c.el.map(ico).join('')}</span></span>${mark?`<span class="swstrow">${mark}</span>`:''}<small>${grid?'':lab+' · '}Lv ${c.lv} ${CLS[TPL[c.id].cls].n}${c.pts?` · <span class="up">${c.pts} pts</span>`:''}</small><span class="swb"><span class="swbl">HP</span>${bar(c.hp,c.S.mhp,'var(--hp)')}<span class="nums">${c.hp}/${c.S.mhp}</span></span><span class="swb"><span class="swbl">MP</span>${bar(c.mp,c.S.mmp,'var(--mp)')}<span class="nums">${c.mp}/${c.S.mmp}</span></span>${grid?xpLine(c,true):xpLine(c)}</span></button><button class="btn sm swsheet" data-act="${openAct}" data-arg="${c.id}" aria-label="Open ${esc(c.name)}'s sheet">Sheet</button></div>`;};
   const bench=Object.values(G.roster).filter(c=>!G.party.includes(c.id)).filter(c=>lmatch('party',c));const benchS=lsort('party',bench,(a,b)=>b.lv-a.lv||a.name.localeCompare(b.name));
-  return `${grid?'<div class="swgridwrap">':''}<div class="btnrow ptools"><button class="btn sm" data-act="bpOpen">Build party</button><button class="btn sm" data-act="fsOpen">Field skills</button>${(G.talks||[]).length?`<button class="btn sm gold" data-act="campfire">Campfire talks (${G.talks.length})</button>`:''}</div>${ldStrip()}<p class="note swhint ${sel?'on':''}">${hint}</p>
+  return `${grid?'<div class="swgridwrap">':''}<div class="btnrow ptools"><button class="btn sm gold" data-act="bpOpen">Build party</button>${G.daily?'':`<button class="btn sm" data-act="autoEqParty" title="The best gear you own for your party. May take gear from your reserves.">Equip best: party</button><button class="btn sm" data-act="autoEqCamp" ${Object.keys(G.roster).some(id=>!G.party.includes(id))?'':'disabled'} title="Your reserves get the best spare gear from the pack. Never takes anything from your party.">Equip best: reserves</button>`}<button class="btn sm" data-act="fsOpen">Field skills</button>${(G.talks||[]).length?`<button class="btn sm gold" data-act="campfire">Campfire talks (${G.talks.length})</button>`:''}</div>${ldStrip()}<p class="note swhint ${sel?'on':''}">${hint}</p>
     <h4>Vanguard</h4><div class="swlist ${grid?'g3':''}">${[0,1,2].map(i=>card(P[i],i)).join('')}</div>
     <h4>Rearguard</h4><div class="swlist ${grid?'g3':''}">${[3,4,5].map(i=>card(P[i],i)).join('')}</div>
     ${sel&&sel.i!=null&&P[sel.i]?`<div class="btnrow">${town&&G.party.length>1?'<button class="btn sm" data-act="swapOut">Send to roster</button>':''}<button class="btn sm" data-act="swapCancel">Cancel</button></div>`:sel?'<div class="btnrow"><button class="btn sm" data-act="swapCancel">Cancel</button></div>':''}
@@ -11158,8 +11237,9 @@ function fitsFor(id){if(FITC&&FITC[id])return FITC[id];const r=Object.values(G.r
 // ----- the Equipment tab -----
 // v0.8.3: only the party (the owner's call); reserves are geared with Equip best: reserves or from their sheet in Party
 function vEquipTab(){const L=G.party.filter(id=>G.roster[id]);V.charList=L.slice();
-  return `<p class="note">Every hero's weapon, armor and charm at a glance. Tap a slot to change it; works anywhere outside battle.</p>
-  <div class="btnrow"><button class="btn gold" data-act="autoEqParty" title="Party first. May take gear and companions from heroes outside the party.">Auto best gear: party</button><button class="btn" data-act="autoEqAll" title="Balances the whole roster, still favouring the party.">Equip best for everyone</button></div><p class="note"><small>The per-hero Auto button only uses your pack and free companions. It never takes from another hero.</small></p>
+  // v0.9.5: the team helpers come first (Build party, Equip best for the party and the reserves); the note follows
+  return `<div class="btnrow eqtools">${G.daily?'':'<button class="btn" data-act="bpOpen">Build party</button>'}<button class="btn gold" data-act="autoEqParty" title="Party first. May take gear and companions from heroes outside the party.">Equip best: party</button><button class="btn" data-act="autoEqAll" title="Balances the whole roster, still favouring the party.">Equip best for everyone</button></div>
+  <p class="note">Every hero's weapon, armor and charm at a glance. Tap a slot to change it; works anywhere outside battle. A hero's sheet has an Upgrade button on each slot. <small>The per-hero Auto button only uses your pack and free companions. It never takes from another hero.</small></p>
   <div class="eqlist">${L.map((id,i)=>{const c=G.roster[id];return `${i===G.party.length&&i?'<h4>Roster</h4>':i===0?'<h4>Party</h4>':''}<div class="eqrow">${port(id)}<div class="grow"><b>${esc(c.name)}</b><small>Lv ${c.lv} ${CLS[TPL[id].cls].n}</small>${xpMini(c)}
     <div class="eqslots">${EQSL.map(sl=>{const g=gearOf(c.eq[sl]);return `<button class="eqs" data-act="eqPick" data-arg="${id},${sl}">${g?gearIcon(c.eq[sl]):'<span class="gico empty"></span>'}<span><small>${SLOTN[sl]}</small>${g?esc(g.n):'Empty'}</span></button>`;}).join('')}</div></div>
     <button class="btn sm" data-act="autoEqOne" data-arg="${id}" title="Equip the best spare gear for ${esc(c.name)}">Auto</button></div>`;}).join('')}</div>`;}
@@ -11296,7 +11376,7 @@ function autoRun(mode,oneId){
   saveGame();sfx('equip');V.modal={type:'autoEq',rows,snap,mode,from:V.modal};render();
 }
 const compName=id=>{const o=(G.tamed||[]).find(x=>x.id===id);return o?esc(o.name):'none';};
-function mAutoEq(m){const rows=m.rows||[],ttl={party:'Auto best gear: party',all:'Equip best for everyone',one:'Auto best gear'}[m.mode]||'Auto best gear';
+function mAutoEq(m){const rows=m.rows||[],ttl={party:'Equip best: party',all:'Equip best for everyone',one:'Auto best gear'}[m.mode]||'Auto best gear';
   const a=rows.reduce((s,r)=>s+r.pw0,0),b=rows.reduce((s,r)=>s+r.pw1,0),pct=a>0?Math.round((b-a)/a*100):0;
   const body=rows.length?`<p class="note">${rows.length} hero${rows.length>1?'es':''} changed, combined gear power ${pct>=0?'+':''}${pct}%. Undo puts everything back exactly.</p><div class="rows">${rows.map(r=>{const d=r.pw0>0?Math.round((r.pw1-r.pw0)/r.pw0*100):0;
     return `<div class="row">${port(r.id,'sm')}<div class="grow"><b>${esc(r.name)}</b>${r.inParty?'':' <small>(roster)</small>'} <span class="${d>=0?'up':'dn'}">${d>=0?'▲':'▼'} ${Math.abs(d)}%</span>
@@ -11839,7 +11919,7 @@ function cwWin(hero,kind){const t=TPL[hero],C=CW_CLS[t.cls]||CW_CLS.warrior,tr=C
   else ev.text=`${intro}, turned peddler, tips a hat. "${cwAsk(hero,'trade')}. I could hire on with you for a fair price, or sell you a travel pack."`;}}catch(e){}return r;};}
 
 // ===== factions.js (v0.4.0): factions: reputation, ranks, missions and their perks =====
-// Five factions, six ranks each. Reputation = counters you already earn by playing (forging, potions, taming, wins, echoes, Scourges, helping wayfarers)
+// Six factions (shown as guilds), six standing steps each, shown as three ranks since v0.9.5 (FAC3 below). Reputation = counters you already earn by playing (forging, potions, taming, wins, echoes, Scourges, helping wayfarers)
 // plus bonus from missions. Everything is per journey (G.fac, an optional save field). Only the highest rank reached per faction goes in the account
 // profile (META.facBest) and it is a title, nothing more. Nothing here is required to finish the game, Legendary heroes never come from factions,
 // and the Daily Trial ignores all of it (no counters, no discounts, no bonuses).
@@ -11864,6 +11944,27 @@ const FAC=[
   perks:[null,{t:'XP +2%',k:'xp',v:.02},{t:'Battle gold +3%',k:'gold',v:.03},{t:'Inn rooms cost 5% less',k:'inn',v:.05},{t:'Steady Knot, a unique charm',k:'charm',id:'c_fa5'},{t:'Signature: The Steady Hand, a strong unique charm, and the title The Steady Hand',k:'sig',id:'c_fb5'}]}
 ];
 const FACB=Object.fromEntries(FAC.map(f=>[f.id,f]));
+// ---------- v0.9.5: three ranks per guild ----------
+// Standing still climbs the six old steps (facRank, REP_AT, META.facBest, G.fac.seen and the claim keys 'id:step' keep their meaning),
+// but the player sees three ranks. Step 1 is rank 1, steps 2 to 4 are rank 2 (at REP_AT[1], 40 standing), steps 5 and 6 are rank 3
+// (at REP_AT[4], 400 standing). Every old perk moves to the rank that holds its step, so each perk now opens at the same standing or
+// earlier: nobody loses a perk they had, and a claimed charm or recruit stays claimed (same keys). Same kind perks merge (the best counts).
+const FAC3_STEP=[0,1,2,2,2,3,3];// step -> rank
+const facTierOf=step=>FAC3_STEP[Math.max(1,Math.min(6,step|0))];
+const FAC3_AT=()=>[0,REP_AT[1],REP_AT[4]];
+const FAC3={
+ guild:{n:['Recruit','Pathfinder','Guildmaster'],t:['Take the guild\'s missions and earn standing.','Inn rooms 10% less, battle gold +5%, and a challenge only wayfarer joins you.','Two unique charms (Guildmark Pin, Guildmaster\'s Seal) and the title Guildmaster.']},
+ smiths:{n:['Apprentice','Journeyman','Grandsmith'],t:['Take the guild\'s missions and earn standing.','Tempering 10% less, 10% of forging gold back, and the Union counter (Dread Cores, ore and wood).','Two unique charms (Anvilmark Charm, Grandsmith\'s Hammerpin) and the title Grandsmith.']},
+ alch:{n:['Initiate','Distiller','Archmage of Vials'],t:['Take the guild\'s missions and earn standing.','15% of brewing gold back, and the Circle counter (Elixirs, herb bundles).','A 15% chance of one extra from every brew, two unique charms (Vialmark Charm, Archmage\'s Phial) and the title Archmage of Vials.']},
+ wardens:{n:['Pup','Handler','Warden of Wilds'],t:['Take the guild\'s missions and earn standing.','XP +5%, and the Warden counter (parts bundles).','Two unique charms (Wildcall Charm, Wild Heart) and the title Warden of Wilds.']},
+ archive:{n:['Reader','Cataloguer','Keeper of the Last Page'],t:['Take the guild\'s missions and earn standing.','XP +3%, the Archive counter (relic bundles), and a challenge only wayfarer joins you.','Two unique charms (Inkmark Charm, The Last Page) and the title Keeper of the Last Page.']},
+ hand:{n:['Onlooker','Sure Hand','The Steady Hand'],t:['Take the guild\'s missions and earn standing.','XP +2%, battle gold +3%, and inn rooms 5% less.','Two unique charms (Steady Knot, The Steady Hand) and the title The Steady Hand.']}};
+function facTier(id){return facTierOf(facRank(id));}
+const facTierName=(id,t)=>FAC3[id].n[(t||facTier(id))-1];
+// the old steps whose perks a rank holds, and its claimable perks (charms and the recruit), each claimed under its old key
+function facTierSteps(t){const o=[];for(let s=1;s<=6;s++)if(FAC3_STEP[s]===t)o.push(s);return o;}
+function facTierClaims(id,t){return facTierSteps(t).map(s=>({s,p:FACB[id].perks[s-1],key:id+':'+s})).filter(o=>o.p&&(o.p.k==='charm'||o.p.k==='sig'||o.p.k==='recruit'));}
+function facTierNeed(id){const t=facTier(id);return t>=3?null:FAC3_AT()[t];}
 // missions: count-based, tracked from the moment you accept. {k} is a counter, n the goal, rep the reward, r the rank needed to see it
 const FMIS=[
  ['g1','guild','Clear the roads','Win 10 battles.','wins',10,12,1],['g2','guild','A good week','Win 25 battles.','wins',25,24,1],['g3','guild','Underground work','Win 8 dungeon battles.','dwins',8,20,1],
@@ -11904,65 +12005,73 @@ let FACMEMO={t:0,v:{},g:null};
 function facDirty(){FACMEMO.t=0;}
 function facRank(id){const now=Date.now();if(now-FACMEMO.t>250||FACMEMO.g!==G){FACMEMO={t:now,v:{},g:G};}if(FACMEMO.v[id]!=null)return FACMEMO.v[id];const r=facRep(id);let k=1;REP_AT.forEach((x,i)=>{if(r>=x)k=i+1;});FACMEMO.v[id]=k;return k;}
 function facNeed(id){const r=facRank(id);return r>=6?null:REP_AT[r];}
-function facPerks(id,rank){const o=[];FACB[id].perks.forEach((p,i)=>{if(p&&i+1<=rank)o.push(p);});return o;}
+function facPerks(id,rank){const t=facTierOf(rank),o=[];FACB[id].perks.forEach((p,i)=>{if(p&&facTierOf(i+1)<=t)o.push(p);});return o;}// v0.9.5: every perk of the ranks reached
 function facSum(k){if(!G||G.daily)return 0;let s=0;FAC.forEach(F=>facPerks(F.id,facRank(F.id)).forEach(p=>{if(p.k===k)s=Math.max(s,p.v||0);}));return s;}// same kind of perk from one faction is not stacked across ranks, the best one counts
 function facSumAll(k){if(!G||G.daily)return 0;let s=0;FAC.forEach(F=>{let b=0;facPerks(F.id,facRank(F.id)).forEach(p=>{if(p.k===k)b=Math.max(b,p.v||0);});s+=b;});return s;}
 function facMul(){return {xp:1+facSumAll('xp'),gold:1+facSumAll('gold')};}
 function facBest(){if(!G||G.daily)return;META.facBest=META.facBest||{};let ch=0;FAC.forEach(F=>{const r=facRank(F.id);if(r>(META.facBest[F.id]||0)){META.facBest[F.id]=r;ch=1;}});if(ch){try{saveMeta();profileDirty();}catch(e){}}}
 // rank-up notices (checked after fights, claims and when the screen opens)
 function facSync(quiet){if(!G||G.daily)return;const f=facInit();FAC.forEach(F=>{const r=facRank(F.id),was=f.seen[F.id]||0;if(!was){f.seen[F.id]=r;return;}// first look just records where an old save stands
-  if(r>was){f.seen[F.id]=r;if(!quiet)toast(`${F.n}: rank ${r}, ${F.ranks[r-1]}!`);}});facBest();}
+  if(r>was){f.seen[F.id]=r;const t=facTierOf(r);if(!quiet&&t>facTierOf(was))toast(`${F.n}: rank ${t}, ${facTierName(F.id,t)}! ${FAC3[F.id].t[t-1]}`);}});facBest();}
 // ---------- hooks that feed the counters ----------
 {const au=autoTurn;autoTurn=function(){const r=au.apply(this,arguments);try{if(B&&B.auto)B.autoUsed=1;}catch(e){}return r;};}
 {const fb=finishBattle;finishBattle=function(how){const sp=B&&B.spec,manual=!!(B&&!B.autoUsed&&!B.auto);const r=fb.apply(this,arguments);try{if(G&&!G.daily&&how==='win'&&sp){const k=sp.kind;if(k==='dungeon')facCredit('dwins');if(k==='elite')facCredit('elite');}if(G&&!G.daily&&how==='win'){facCredit('wins');if(manual)facCredit('manual');}facSync();}catch(e){}return r;};}
 {const fg=forge;forge=function(){const r=fg.apply(this,arguments);try{if(r&&!G.daily)facCredit('temper');}catch(e){}return r;};}
 {const cr=craft;craft=function(rcp){const g0=G.gold,r=cr.apply(this,arguments);try{if(r&&!G.daily){const spent=g0-G.gold;
   if(rcp.item){facCredit('potion');const rb=facSumAll('rebate');if(rb>0&&spent>0){const back=Math.round(spent*rb);if(back>0){G.gold+=back;toast(`Circle rebate: ${back} gold back.`);}}
-    const dbl=facRank('alch')>=6?.15:0;if(dbl&&Math.random()<dbl&&(G.inv[rcp.item]||0)<invCap()){G.inv[rcp.item]++;toast('The Archmage\'s touch: one extra!');}}
+    const dbl=facTier('alch')>=3?.15:0;if(dbl&&Math.random()<dbl&&(G.inv[rcp.item]||0)<invCap()){G.inv[rcp.item]++;toast('The Archmage\'s touch: one extra!');}}
   else{facCredit('forge');const rb=facSmithRebate();if(rb>0&&spent>0){const back=Math.round(spent*rb);if(back>0){G.gold+=back;toast(`Union rebate: ${back} gold back.`);}}}}}catch(e){}return r;};}
 {const rt=registerTamed;registerTamed=function(o){const r=rt.apply(this,arguments);try{if(G&&!G.daily&&o&&!o._fc){o._fc=1;facCredit('tame');}}catch(e){}return r;};}
 {const fc=forgeCost;forgeCost=function(){const c=fc.apply(this,arguments);try{if(c&&G&&!G.daily){const d=facSmithDisc();if(d>0)c.gold=Math.max(1,Math.round(c.gold*(1-d)));}}catch(e){}return c;};}
 {const ic=innCost;innCost=function(){let c=ic.apply(this,arguments);try{if(G&&!G.daily){const d=facSum('inn');if(d>0)c=Math.max(1,Math.round(c*(1-d)));}}catch(e){}return c;};}
-function facSmithDisc(){const r=facRank('smiths');let b=0;FACB.smiths.perks.slice(0,r).forEach(p=>{if(p&&p.k==='forge')b=Math.max(b,p.v);});return b;}
-function facSmithRebate(){const r=facRank('smiths');let b=0;FACB.smiths.perks.slice(0,r).forEach(p=>{if(p&&p.rebate)b=Math.max(b,p.rebate);});return b;}
+function facSmithDisc(){let b=0;facPerks('smiths',facRank('smiths')).forEach(p=>{if(p.k==='forge')b=Math.max(b,p.v);});return b;}
+function facSmithRebate(){let b=0;facPerks('smiths',facRank('smiths')).forEach(p=>{if(p.rebate)b=Math.max(b,p.rebate);});return b;}
 // ---------- missions ----------
-function facMissionList(id){const f=facInit(),r=facRank(id),pool=FMIS.filter(m=>m.f===id&&m.r<=r&&!f.done[m.id]);
+function facMissionList(id){const f=facInit(),t=facTier(id),pool=FMIS.filter(m=>m.f===id&&facTierOf(m.r)<=t&&!f.done[m.id]);
   const acc=pool.filter(m=>f.acc[m.id]!=null),rest=pool.filter(m=>f.acc[m.id]==null);if(rest.length<=2)return acc.concat(rest);
   const R=seeded(hashS((G.run.seed||1)+':fm:'+id+':'+(G.tavRoll||0))),left=rest.slice(),pk=[];while(pk.length<2&&left.length){pk.push(left.splice(Math.floor(R()*left.length),1)[0]);}return acc.concat(pk);}
 // v0.7.7: progress counts everything done on this journey, also before the mission was accepted (the owner's call); acc only marks it taken
 function facProg(m){return Math.max(0,Math.min(m.n,facCount(m.k)));}
 ACT.facAccept=function(id){const m=FMIS.find(x=>x.id===id);if(!m||!G||G.daily)return;const f=facInit();if(f.acc[id]!=null)return;f.acc[id]=facCount(m.k);saveGame();toast(`Mission taken: ${m.t}.`);render();};
 ACT.facClaim=function(id){const m=FMIS.find(x=>x.id===id);if(!m)return;const f=facInit();if(f.acc[id]==null||f.done[id]||facProg(m)<m.n)return;f.done[id]=1;f.bonus[m.f]=(f.bonus[m.f]||0)+m.rep;facDirty();const g=Math.round(m.rep*7*(1+.25*G.stage));G.gold+=g;facSync();saveGame();sfx('chest');toast(`${m.t} done: +${m.rep} standing, ${g} gold.`);render();};
-ACT.facPerk=function(a){const [id,rk]=String(a).split(':'),r=+rk,F=FACB[id];if(!F||!G||G.daily)return;const f=facInit(),key=id+':'+r;if(f.claim[key]||facRank(id)<r)return;const p=F.perks[r-1];if(!p)return;
-  if(p.k==='charm'||p.k==='sig'){G.gear.push(p.id);f.claim[key]=1;toast(`${gearOf(p.id).n} added to your gear.`);}
+ACT.facPerk=function(a){const [id,rk]=String(a).split(':'),r=+rk,F=FACB[id];if(!F||!G||G.daily)return;const f=facInit(),key=id+':'+r,t=facTierOf(r);if(f.claim[key]||facTier(id)<t)return;const p=F.perks[r-1];if(!p)return;
+  // v0.9.5: one Claim per rank hands over every charm of that rank not yet claimed (the old keys are marked, so old saves stay claimed)
+  if(p.k==='charm'||p.k==='sig'){const got=[];facTierClaims(id,t).forEach(o=>{if((o.p.k==='charm'||o.p.k==='sig')&&!f.claim[o.key]){G.gear.push(o.p.id);f.claim[o.key]=1;got.push(gearOf(o.p.id).n);}});toast(`${got.join(' and ')} added to your gear.`);}
   else if(p.k==='recruit'){const pool=(typeof caveRecruitPool==='function'?caveRecruitPool(Math.min(4,G.stage+1)):[]);if(pool.length){const h=pool[hashS((G.run.seed||1)+key)%pool.length];recruit(h,true);try{codexSee(h,{rec:1,lv:G.roster[h].lv});}catch(e){}f.claim[key]=1;toast(`${TPL[h].n} joins you, sent by ${F.n}.`);}
     else{G.gold+=400+200*G.stage;f.claim[key]=1;toast('No one is left to send, so the faction pays 400+ gold instead.');}}
   saveGame();sfx('level');render();};
-ACT.facBuy=function(a){const [id,i]=String(a).split(':'),S=(FSTOCK[id]||[])[+i];if(!S||!G||G.daily)return;const need=S[3]||4,item=S[4];if(facRank(id)<(FACB[id].perks.findIndex(p=>p&&p.k==='stock')+1))return;
+ACT.facBuy=function(a){const [id,i]=String(a).split(':'),S=(FSTOCK[id]||[])[+i];if(!S||!G||G.daily)return;const need=S[3]||4,item=S[4];if(facTier(id)<facTierOf(FACB[id].perks.findIndex(p=>p&&p.k==='stock')+1))return;
   if(G.gold<S[2])return;let key=S[0];if(!item){key=S[0]==='$rel'?ZS(G.stage).mat:resolveDrop(S[0],G.stage);}
   if(item&&(G.inv[key]||0)>=invCap()){toast('You carry the most of those already.');return;}
   G.gold-=S[2];if(item)G.inv[key]=(G.inv[key]||0)+1;else{const q=/\(3\)/.test(S[1])?3:1;if(S[0]==='hide'||S[0]==='fang'||S[0]==='scale'||S[0]==='$rel'||/bundle/.test(S[1]))G.mats[key]=(G.mats[key]||0)+3;else G.mats[key]=(G.mats[key]||0)+q;}
   saveGame();sfx('chest');toast(`Bought ${S[1]}.`);render();};
 // ---------- screens ----------
-function facBar(id){const r=facRank(id),rep=facRep(id),nx=facNeed(id),lo=REP_AT[r-1];const pc=nx==null?100:Math.round((rep-lo)/(nx-lo)*100);
-  return `<div class="facbar" style="height:8px;background:#222;border-radius:4px;overflow:hidden;margin:4px 0"><i style="display:block;height:8px;width:${pc}%;background:${FACB[id].col}"></i></div>`;}
-function facMisRow(m){const f=facInit(),acc=f.acc[m.id]!=null,pr=facProg(m),ready=acc&&pr>=m.n;
-  const btn=ready?`<button class="btn sm gold" data-act="facClaim" data-arg="${m.id}">Claim</button>`:acc?`<span class="m">${pr}/${m.n}</span>`:`<button class="btn sm ${pr>=m.n?'gold':''}" data-act="facAccept" data-arg="${m.id}">Accept</button>`;
-  return `<div class="row"><div><b>${esc(m.t)}</b><small>${esc(m.d)} Reward: +${m.rep} standing and gold.${!ready?` Progress ${pr}/${m.n}${!acc&&pr>=m.n?', done already: accept to claim':''}.`:''}</small></div>${btn}</div>`;}
-function vFactions(){if(!G)return '';facSync(true);const f=facInit(),best=META.facBest||{};
-  const tt=FAC.filter(F=>(META.facBest||{})[F.id]>=6).map(F=>F.ranks[5]);return `${tt.length?`<p class="note"><b>Account titles:</b> ${tt.map(esc).join(', ')}</p>`:''}<p class="note">Six factions track what you already do on the road. Their standing and perks belong to this journey only. Nothing here is needed to finish the game. Only the best rank you reach is kept on your account, as a title.</p>`+FAC.map(F=>{
-    const r=facRank(F.id),rep=facRep(F.id),nx=facNeed(F.id),perks=F.perks.map((p,i)=>{if(!p)return '';const rk=i+1,on=r>=rk,key=F.id+':'+rk;
-      let act='';if(on&&(p.k==='charm'||p.k==='recruit'||p.k==='sig')){act=f.claim[key]?'<span class="m up">Claimed</span>':`<button class="btn sm gold" data-act="facPerk" data-arg="${key}">Claim</button>`;}
-      return `<div class="row ${on?'':'lock'}"><div><b>Rank ${rk}: ${esc(F.ranks[i])}</b><small>${esc(p.t)}${on&&!act?'':''}</small></div>${on?(act||'<span class="m up">Active</span>'):'<span class="m">Locked</span>'}</div>`;}).join('');
-    const si=F.perks.findIndex(p=>p&&p.k==='stock')+1,stock=si&&r>=si?`<h5>Counter stock</h5><div class="rows compact">${(FSTOCK[F.id]||[]).map((S,i)=>`<div class="row"><div><b>${esc(S[1])}</b></div><button class="btn sm" data-act="facBuy" data-arg="${F.id}:${i}" ${G.gold<S[2]?'disabled':''}>${fmt(S[2])}g</button></div>`).join('')}</div>`:'';
-    const ms=facMissionList(F.id).map(facMisRow).join('');
-    return `<div class="panel-sub facc" style="border-left:4px solid ${F.col};padding:6px 10px;margin:8px 0;background:rgba(255,255,255,.03)"><h4>${F.i} ${esc(F.n)} <small class="m">${esc(F.ranks[r-1])}${best[F.id]>r?' (best: '+esc(F.ranks[best[F.id]-1])+')':''}</small></h4><small>${esc(F.desc)}</small>${facBar(F.id)}<small>${nx==null?`${rep} standing. Top rank.`:`${rep} / ${nx} standing for ${esc(F.ranks[r])}`}</small>
-      <details><summary>Perks (${F.perks.filter((p,i)=>p&&r>=i+1).length}/5)</summary><div class="rows compact">${perks}</div></details>${stock}${ms?`<h5>Missions</h5><div class="rows compact">${ms}</div>`:''}</div>`;}).join('');}
-function vFacMissions(){if(!G)return '';facSync(true);
-  return `<p class="note">Missions the factions have posted for you right now. They rotate after an inn rest, like the Guild Hall board. Accepted ones stay until done. Standing from any source also counts toward ranks on the Factions page in Records.</p>`+FAC.map(F=>{const ms=facMissionList(F.id);return `<h4>${F.i} ${esc(F.n)} <small class="m">${esc(F.ranks[facRank(F.id)-1])}</small></h4><div class="rows compact">${ms.length?ms.map(facMisRow).join(''):'<div class="row"><small>Nothing posted. Rank up to see more.</small></div>'}</div>`;}).join('');}
+// v0.9.5: three ranks, one line each. The missions are a list of their own on the Notice Board's Guilds tab (board in menus3.js).
+function facBar(id){const t=facTier(id),rep=facRep(id),nx=facTierNeed(id),lo=FAC3_AT()[t-1];const pc=nx==null?100:Math.max(0,Math.min(100,Math.round((rep-lo)/(nx-lo)*100)));
+  return `<div class="facbar"><i style="width:${pc}%;background:${FACB[id].col}"></i></div>`;}
+function facMisState(m){const f=facInit(),acc=f.acc[m.id]!=null,pr=facProg(m);return f.done[m.id]?'done':acc?(pr>=m.n?'ready':'active'):'open';}
+function facMisRow(m){const f=facInit(),acc=f.acc[m.id]!=null,pr=facProg(m),ready=acc&&pr>=m.n,F=FACB[m.f];
+  const btn=ready?`<button class="btn sm gold" data-act="facClaim" data-arg="${m.id}">Claim</button>`:acc?`<span class="m nums">${pr}/${m.n}</span>`:`<button class="btn sm ${pr>=m.n?'gold':''}" data-act="facAccept" data-arg="${m.id}">Accept</button>`;
+  return `<div class="row facm"><div class="grow"><b>${esc(m.t)}</b>${ready?' <em class="qtag">Ready</em>':''} <small class="facg" style="--fc:${F.col}">${F.i} ${esc(F.n)}</small><small>${esc(m.d)} Reward: +${m.rep} standing and gold.${!ready?` Progress ${pr}/${m.n}${!acc&&pr>=m.n?', done already: accept to claim':''}.`:''}</small></div>${btn}</div>`;}
+function facRankRows(F){const f=facInit(),t=facTier(F.id),D=FAC3[F.id],at=FAC3_AT();
+  return D.n.map((nm,i)=>{const rk=i+1,on=t>=rk,C=facTierClaims(F.id,rk),open=C.filter(o=>!f.claim[o.key]);
+    const act=!on?`<span class="m nums">${fmt(at[i])}</span>`:C.length?(open.length?`<button class="btn sm gold" data-act="facPerk" data-arg="${open[0].key}">Claim</button>`:'<span class="m up">Claimed</span>'):'<span class="m up">Active</span>';
+    return `<div class="row ${on?'':'lock'}"><div class="grow"><b>${rk}. ${esc(nm)}</b><small>${esc(D.t[i])}</small></div>${act}</div>`;}).join('');}
+function vFactions(){if(!G)return '';facSync(true);const best=META.facBest||{};
+  const tt=FAC.filter(F=>facTierOf(best[F.id]||1)>=3).map(F=>FAC3[F.id].n[2]);
+  return `${tt.length?`<p class="note"><b>Account titles:</b> ${tt.map(esc).join(', ')}</p>`:''}<p class="note">Each guild has three ranks. Standing comes from what you already do on the road, and missions add more. Ranks and perks belong to this journey; the top rank you reach is kept on your account as a title. Nothing here is needed to finish the game.</p>`+FAC.map(F=>{
+    const t=facTier(F.id),rep=facRep(F.id),nx=facTierNeed(F.id),si=F.perks.findIndex(p=>p&&p.k==='stock')+1;
+    const stock=si&&t>=facTierOf(si)?`<details class="facstock"><summary>Counter stock</summary><div class="rows compact">${(FSTOCK[F.id]||[]).map((S,i)=>`<div class="row"><div class="grow"><b>${esc(S[1])}</b></div><button class="btn sm" data-act="facBuy" data-arg="${F.id}:${i}" ${G.gold<S[2]?'disabled':''}>${fmt(S[2])}g</button></div>`).join('')}</div></details>`:'';
+    return `<div class="facc" style="--fc:${F.col}"><h4>${F.i} ${esc(F.n)} <small class="m">Rank ${t}: ${esc(facTierName(F.id,t))}</small></h4><small>${esc(F.desc)}</small>${facBar(F.id)}<small class="nums">${nx==null?`${fmt(rep)} standing. Top rank.`:`${fmt(rep)} / ${fmt(nx)} standing for ${esc(facTierName(F.id,t+1))}`}</small>
+      <div class="rows compact facr">${facRankRows(F)}</div>${stock}</div>`;}).join('');}
+// every posted mission, ready to claim first, then under way, then open; sec: all, ready, active, open
+function facMisAll(){return FAC.flatMap(F=>facMissionList(F.id));}
+function vFacMissions(sec){if(!G)return '';facSync(true);sec=sec||'all';const o={ready:0,active:1,open:2};
+  const L=facMisAll().filter(m=>sec==='all'||facMisState(m)===sec).sort((a,b)=>o[facMisState(a)]-o[facMisState(b)]);
+  return `<p class="note">Missions rotate after an inn rest. Accepted ones stay until done, and everything you did before accepting counts.</p>${L.length?`<div class="rows">${L.map(facMisRow).join('')}</div>`:`<p class="note empty">${{ready:'No mission is ready to claim yet.',active:'No missions under way.',open:'No new missions posted. Rank up for more.'}[sec]||'No missions posted yet. Rank up for more.'}</p>`}`;}
 // rank strip on the matching shop screens
-{const vm0=vModal;vModal=function(m){const h=vm0.apply(this,arguments);try{const map={smithy:'smiths',workshop:'alch',board:'guild',beast:'wardens',archivist:'archive'};const id=m&&map[m.type];
-  if(id&&G&&!G.daily&&typeof h==='string'){const F=FACB[id],r=facRank(id),pk=facPerks(id,r).slice(-1)[0];const strip=`<p class="note facrank" style="border-left:3px solid ${F.col};padding-left:6px">${F.i} ${esc(F.n)}: ${esc(F.ranks[r-1])}${pk?'. '+esc(pk.t):''} <button class="btn sm" data-act="menuTab" data-arg="factions">Factions</button></p>`;
+{const vm0=vModal;vModal=function(m){const h=vm0.apply(this,arguments);try{const map={smithy:'smiths',workshop:'alch',beast:'wardens',archivist:'archive'};const id=m&&map[m.type];
+  if(id&&G&&!G.daily&&typeof h==='string'){const F=FACB[id],t=facTier(id);const strip=`<p class="note facrank" style="border-left:3px solid ${F.col};padding-left:6px">${F.i} ${esc(F.n)}: ${esc(facTierName(id,t))}. ${esc(FAC3[id].t[t-1])} <button class="btn sm" data-act="menuTab" data-arg="factions">Guilds</button></p>`;
     const k=h.indexOf('</h2>');if(k>0)return h.slice(0,k+5)+strip+h.slice(k+5);}}catch(e){}return h;};}
 
 // ===== mimic.js (v0.3.1): mimic chests =====
@@ -13854,25 +13963,35 @@ function overlayGuide(){if(!G||!G.run||G.daily)return '';const s=WS.m&&typeof WS
 const REALM_OPENING='The Meridian Light that keeps the sky of Aurelis bright has begun to gutter. One by one the beacons are going dark, and a Scourge sits at the end of every road. You and your companions set out to light them again.';
 {const bg0=ACT.begin;ACT.begin=function(){const r=bg0.apply(this,arguments);try{if(V.modal&&V.modal.type==='story'&&isRv2()&&V.modal.text===ZS(0).intro)V.modal.text=REALM_OPENING+' '+ZS(0).intro;}catch(e){}return r;};}
 
-// ===== roam.js (v0.4.1): roaming dungeon foes =====
+// ===== roam.js (v0.4.1): roaming dungeon foes (v0.9.5: and field foes; the realm's roles among them; ordinary fights pay more) =====
 // Visible foes patrol the rooms of main dungeons. Touching one (or being caught) starts a battle; they can be avoided: they patrol
 // back and forth inside rooms, see only a short cone ahead (ROAM.sight tiles), and move slower than you even when they chase.
 // They spawn only on open room tiles (never corridors, never near the entrance, never on stairs, chests, levers or doors), so a
 // required path is never blocked: a chaser gives up and walks home. They are tougher than random battles, and a few are elites
 // (no auto). Random battles still happen in dungeons. Beaten roamers stay beaten for this journey (G.roamDead, optional).
 // ROAM: in config.js
-function roamOpen(m,x,y){return tileAt(m,x,y)==='.';}
+function roamOpen(m,x,y){const c=tileAt(m,x,y);return m.kind==='field'?(c===','||c==='.'):c==='.';}
 function roamInterior(m,x,y){if(!roamOpen(m,x,y))return false;let n=0;for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++)if((dx||dy)&&roamOpen(m,x+dx,y+dy))n++;return n>=7;}
+// v0.9.5: places a roamer keeps away from on a field: exits, caves, the dungeon door, side sites and people
+function roamKeepOut(m){const L=[];(m.exits||[]).forEach(e=>L.push([e.x,e.y]));(m.caves||[]).forEach(c=>L.push([c.x,c.y]));if(m.ent)L.push([m.ent[0],m.ent[1]]);
+  (m.npcs||[]).forEach(n=>L.push([n.x,n.y]));if(m.start)L.push(m.start);return L;}
+function roamCanSpawn(m){return !!m&&!m.safe&&!m.archive&&!m.sanctum&&!!G&&!G.daily&&(m.kind==='dungeon'?!(m.cave||m.fort):m.kind==='field'&&!!(ROAM.field&&ROAM.field.base>0));}
+// v0.9.5: the realm's foe roles first (one roamer each), then the rest of the pool at random
+function roamPick(R,pool,n){const out=[];if(ROAM.roles&&typeof b4RoleOfMon==='function'){const seen={};pool.forEach(k=>{const r=MON[k]&&b4RoleOfMon(MON[k]);if(r&&!seen[r]){seen[r]=1;out.push(k);}});}
+  while(out.length<n)out.push(pool[Math.floor(R()*pool.length)]);return out.slice(0,n);}
 function roamSpawn(m){
-  if(!m||m.kind!=='dungeon'||m.cave||m.fort||m.archive||m.sanctum||!G||G.daily)return [];if(m.roam)return m.roam;
-  const R=seeded((hashS(m.id)+((G.run&&G.run.seed)||0))>>>0),s=m.s|0,st=m.start||[0,0],spots=[];
-  for(let y=1;y<m.h-1;y++)for(let x=1;x<m.w-1;x++){if(Math.abs(x-st[0])+Math.abs(y-st[1])<ROAM.minFromStart)continue;if(WS.m===m&&Math.abs(x-WS.x)+Math.abs(y-WS.y)<6)continue;if(roamInterior(m,x,y))spots.push([x,y]);}
-  const n=ROAM.base+ROAM.perStage*s,dead=(G.roamDead||{})[m.id]||[],pool=ZS(s).pool,out=[];
+  if(!roamCanSpawn(m))return [];if(m.roam)return m.roam;
+  const R=seeded((hashS(m.id)+((G.run&&G.run.seed)||0))>>>0),s=m.s|0,st=m.start||[0,0],spots=[],fld=m.kind==='field',keep=fld?roamKeepOut(m):[],kd=fld?ROAM.field.minFromExit:0;
+  for(let y=1;y<m.h-1;y++)for(let x=1;x<m.w-1;x++){if(!fld&&Math.abs(x-st[0])+Math.abs(y-st[1])<ROAM.minFromStart)continue;if(WS.m===m&&Math.abs(x-WS.x)+Math.abs(y-WS.y)<6)continue;
+    if(fld&&keep.some(([kx,ky])=>Math.abs(x-kx)+Math.abs(y-ky)<kd))continue;if(roamInterior(m,x,y))spots.push([x,y]);}
+  const n=fld?ROAM.field.base+ROAM.field.perStage*s:ROAM.base+ROAM.perStage*s,dead=(G.roamDead||{})[m.id]||[],pool=ZS(s).pool,out=[];
+  // the realm's roles go first (the monster picks have their own seeded stream)
+  const mons=roamPick(seeded((hashS(m.id+'role')+((G.run&&G.run.seed)||0))>>>0),pool,n);
   for(let i=0;i<n&&spots.length;i++){const k=Math.floor(R()*spots.length),[x,y]=spots.splice(k,1)[0];
     // keep them apart
     for(let j=spots.length-1;j>=0;j--)if(Math.abs(spots[j][0]-x)+Math.abs(spots[j][1]-y)<6)spots.splice(j,1);
-    const elite=R()<ROAM.elite,mon=pool[Math.floor(R()*pool.length)],mod=elite?ELITE_MODS[Math.floor(R()*ELITE_MODS.length)].k:null;
-    out.push({i,x,y,hx:x,hy:y,dir:['u','d','l','r'][Math.floor(R()*4)],mon,elite,mod,name:elite?`${MON[mon].n} ${ELITE_TITLES[Math.floor(R()*ELITE_TITLES.length)]}`:MON[mon].n,dead:dead.includes(i),t:0,mode:'patrol',lost:0,rest:0});}
+    const elite=R()<ROAM.elite,mon=mons[i],mod=elite?ELITE_MODS[Math.floor(R()*ELITE_MODS.length)].k:null;
+    out.push({i,x,y,hx:x,hy:y,dir:['u','d','l','r'][Math.floor(R()*4)],mon,elite,mod,name:elite?`${MON[mon].n} ${ELITE_TITLES[Math.floor(R()*ELITE_TITLES.length)]}`:MON[mon].n,dead:dead.includes(i),t:0,mode:'patrol',lost:0,rest:0,role:(typeof b4RoleOfMon==='function'&&b4RoleOfMon(MON[mon]))||null});}
   m.roam=out;return out;}
 function roamSees(m,r,px,py){const [dx,dy]=DIRV[r.dir],vx=px-r.x,vy=py-r.y,fw=vx*dx+vy*dy,side=Math.abs(vx*dy-vy*dx);
   if(fw<1||fw>ROAM.sight||side>Math.ceil(fw/2))return false;
@@ -13886,7 +14005,7 @@ function roamTick(m,now){
     if(r.mode==='patrol'&&roamSees(m,r,px,py)){r.mode='chase';r.lost=0;if(typeof sfx==='function')sfx('encounter');}
     const ms=r.mode==='chase'?ROAM.chaseMs:ROAM.patrolMs;if(now-r.t<ms)continue;r.t=now;r.fx=r.x;r.fy=r.y;r.t0=now;
     if(r.mode==='chase'){const d=Math.abs(px-r.x)+Math.abs(py-r.y);if(d>ROAM.giveUp||++r.lost>40){r.mode='home';continue;}
-      const opts=[['r',1,0],['l',-1,0],['d',0,1],['u',0,-1]].filter(([,a,b])=>{const c=tileAt(m,r.x+a,r.y+b);return !SOLID.includes(c)&&c!=='E';});
+      const opts=[['r',1,0],['l',-1,0],['d',0,1],['u',0,-1]].filter(([,a,b])=>{const c=tileAt(m,r.x+a,r.y+b);return !SOLID.includes(c)&&c!=='E'&&!(m.exits||[]).some(e=>e.x===r.x+a&&e.y===r.y+b);});
       opts.sort((A,B)=>(Math.abs(px-(r.x+A[1]))+Math.abs(py-(r.y+A[2])))-(Math.abs(px-(r.x+B[1]))+Math.abs(py-(r.y+B[2]))));
       if(opts.length){const [d2,a,b]=opts[0];r.dir=d2;r.x+=a;r.y+=b;}}
     else if(r.mode==='home'){if(r.x===r.hx&&r.y===r.hy){r.mode='patrol';continue;}const a=Math.sign(r.hx-r.x),b=a?0:Math.sign(r.hy-r.y);
@@ -13910,9 +14029,9 @@ function roamFight(m,r){haltInput();WS.lock=true;WS.flash=performance.now();if(t
   try{if(ro&&G){const m=MAPS[ro.mid],R=m&&m.roam&&m.roam.find(q=>q.i===ro.i);
     if(how==='win'){G.roamDead=G.roamDead||{};const L=G.roamDead[ro.mid]=G.roamDead[ro.mid]||[];if(!L.includes(ro.i))L.push(ro.i);if(R)R.dead=true;}
     else if(R){R.x=R.hx;R.y=R.hy;R.mode='patrol';R.rest=performance.now()+4000;}}}catch(e){}return r;};}
-{const wt0=worldTick;worldTick=function(dt,now){wt0.apply(this,arguments);try{const m=WS.m;if(V.screen==='world'&&m&&m.kind==='dungeon'){if(!m.roam)roamSpawn(m);roamTick(m,now);}}catch(e){}};}
+{const wt0=worldTick;worldTick=function(dt,now){wt0.apply(this,arguments);try{const m=WS.m;if(V.screen==='world'&&m&&(m.kind==='dungeon'||m.kind==='field')){if(!m.roam)roamSpawn(m);if(m.roam)roamTick(m,now);}}catch(e){}};}
 // drawing: the foe's own sprite at small size, a gold ring for elites, a faint sight cone, a "!" while chasing
-{const wd0=worldDraw;worldDraw=function(now){wd0(now);try{const m=WS.m;if(!m||!m.roam||m.kind!=='dungeon')return;const ctx=WS.ctx,cx=Math.round(WS.cam.x),cy=Math.round(WS.cam.y),still=typeof reducedMotion==='function'&&reducedMotion();
+{const wd0=worldDraw;worldDraw=function(now){wd0(now);try{const m=WS.m;if(!m||!m.roam||(m.kind!=='dungeon'&&m.kind!=='field'))return;const ctx=WS.ctx,cx=Math.round(WS.cam.x),cy=Math.round(WS.cam.y),still=typeof reducedMotion==='function'&&reducedMotion();
   m.roam.forEach(r=>{if(r.dead)return;let x=r.x*TS,y=r.y*TS;if(r.t0&&r.fx!=null){const p=Math.min(1,(now-r.t0)/(r.mode==='chase'?ROAM.chaseMs:ROAM.patrolMs));x=(r.fx+(r.x-r.fx)*p)*TS;y=(r.fy+(r.y-r.fy)*p)*TS;}
     x-=cx;y-=cy;if(x<-40||y<-40||x>WS.vw+40||y>WS.vh+40)return;
     const [a,b]=DIRV[r.dir],S=ROAM.sight*TS;ctx.save();ctx.fillStyle=r.mode==='chase'?'rgba(255,90,60,.16)':'rgba(255,230,150,.09)';ctx.beginPath();ctx.moveTo(x+8,y+8);
@@ -13922,6 +14041,11 @@ function roamFight(m,r){haltInput();WS.lock=true;WS.flash=performance.now();if(t
     if(r.elite){ctx.strokeStyle='#ffc83d';ctx.lineWidth=1;ctx.beginPath();ctx.ellipse(x+8,y+14,9,3,0,0,6.283);ctx.stroke();}
     ctx.drawImage(img,x+8-sz/2,y+14-sz-bob,sz,sz);
     if(r.mode==='chase'){ctx.fillStyle='#ff5a3a';ctx.fillRect(x+7,y-16,2,5);ctx.fillRect(x+7,y-10,2,2);}});}catch(e){}};}
+// v0.9.5: fewer random battles, so an ordinary fight pays more (ENC in config.js): random field and dungeon battles and roamers.
+// Read once per win through facMul, the same hook as the NG+ modifiers. Bosses, elites, minibosses, the arena and the Trial are untouched.
+function encRewMul(){try{if(!B||!G||G.daily||!B.spec)return null;const sp=B.spec;if((sp.kind!=='field'&&sp.kind!=='dungeon')||sp.mini||B.en.some(e=>e.boss))return null;
+  const r=ENC.rew,q=sp.roam?ENC.roam:{xp:1,gold:1},st=Math.min(4,(B.stage|0)),at=v=>Array.isArray(v)?v[st]:v;return {xp:at(r.xp)*q.xp,gold:at(r.gold)*q.gold};}catch(e){return null;}}
+if(typeof facMul==='function'){const fm1=facMul;facMul=function(){const r=Object.assign({},fm1.apply(this,arguments));const k=encRewMul();if(k){r.xp*=k.xp;r.gold*=k.gold;}return r;};}
 
 // ===== sites.js (v0.4.1): side caves, side fortresses, minibosses =====
 // Side caves get their own look (mossy rock palette, damp green light, drips) and their own music, so they never read as a main dungeon.
@@ -14700,7 +14824,7 @@ Object.assign(ACT,{
   facClaimAll(){const f=facInit();let n=0;FAC.forEach(F=>facMissionList(F.id).forEach(m=>{if(f.acc[m.id]!=null&&!f.done[m.id]&&facProg(m)>=m.n){ACT.facClaim(m.id);n++;}}));if(n>1)toast(`Claimed ${n} missions.`);render();}});
 {const vf0=vFacMissions;vFacMissions=function(){const h=vf0.apply(this,arguments);try{const f=facInit();let a=0,c=0;FAC.forEach(F=>facMissionList(F.id).forEach(m=>{if(f.acc[m.id]==null)a++;else if(!f.done[m.id]&&facProg(m)>=m.n)c++;}));
   return allBar('facAcceptAll','facClaimAll',a,c)+h;}catch(e){return h;}};}
-{const vF0=vFactions;vFactions=function(){const h=vF0.apply(this,arguments);try{if(!G)return h;const f=facInit();let a=0,c=0;FAC.forEach(F=>facMissionList(F.id).forEach(m=>{if(f.acc[m.id]==null)a++;else if(!f.done[m.id]&&facProg(m)>=m.n)c++;}));return allBar('facAcceptAll','facClaimAll',a,c)+h;}catch(e){return h;}};}
+// v0.9.5: the ranks page (vFactions) no longer lists missions, so it has no bar of its own; the Notice Board's Guilds tab shows the missions bar once
 
 // ===== economy.js (v0.4.1): prices: ECON multipliers applied once every table is built =====
 (function(){const g=o=>{if(o&&o.price!=null&&!o.__ec){o.price0=o.price;o.price=Math.round(o.price*ECON.gear);o.__ec=1;}};
@@ -14711,7 +14835,7 @@ Object.assign(ACT,{
 // =================== Beta v0.5.0 PHASE 3: SHOPS, GEAR AND ITEMS ===================
 // 3.1 "Best for party" order in shops, Forge and Tempering, with a tradeoff line when two upgrades are close.
 // 3.2 an item one hero already wears is still suggested when it would help another party member (the second hero's gain is shown).
-// 3.3 Smithy: "Buy, craft and equip best gear" (plan, confirm, run, Undo for the equips, clean stop when gold runs out).
+// 3.3 Smithy: "Upgrade whole party" (v0.9.5 name; was "Buy, craft and equip best gear": plan, confirm, run, Undo for the equips, clean stop when gold runs out).
 // 3.4 Best Party reads the area and its boss (Bestiary, theme): delivery coverage, legal weapons, archetype and element answers, reasons per pick.
 // 3.5 Team check on the Party tab and in Best Party: what is missing, who could fill it, one tap swap.
 // 3.6 Boss readiness on the boss prompt, the story echo prompt and the Bestiary entry. Never blocks, never names unknown mechanics.
@@ -14827,7 +14951,7 @@ function mP3Plan(m){const P=m.plan,cn=id=>G.roster[id]?esc(G.roster[id].name):'?
     <p class="nums p3tot"><b>Total: ${fmt(P.total)} gold</b> · You have ${fmt(G.gold)} · Left after: ${fmt(Math.max(0,G.gold-P.total))}</p>${short?'<p class="warn">You no longer have enough gold for all of it. It will stop when the gold runs out.</p>':''}
     <p class="note"><small>Undo afterwards puts everyone's gear back as it was; what you bought or forged stays in your pack.</small></p>`
     :`<p>Nothing to buy or forge: your party already has the best the Smithy can offer${P.cant.length?' for the gold and materials you have':''}.</p>${cant?`<h4>Out of reach for now</h4><div class="rows">${cant}</div>`:''}`;
-  return box('Buy, craft and equip best gear',body,`<button class="btn" data-act="xBack">Cancel</button>${P.picks.length?`<button class="btn gold" data-act="p3SmithGo">Confirm: ${fmt(P.total)} gold</button>`:''}`,true);}
+  return box('Upgrade whole party',body,`<button class="btn" data-act="xBack">Cancel</button>${P.picks.length?`<button class="btn gold" data-act="p3SmithGo">Confirm: ${fmt(P.total)} gold</button>`:''}`,true);}
 function p3SmithRun(plan){
   const got=[];let stop=null,spent=0,bought=0,forged=0;
   for(const p of plan.picks){const c=G.roster[p.cid];if(!c)continue;
@@ -14927,7 +15051,7 @@ function p3Ready(s,lv){const P=partyChars(),K=P.map(p3Kit),out=[],bench=Object.v
   const avg=P.length?P.reduce((a,c)=>a+c.lv,0)/P.length:0,av=Math.round(avg);
   add(avg>=lv-READY.lvGap,`Level: your party averages ${av}, it is level ${lv}`,avg>=lv-READY.lvGap?'':`Win a few more fights first; about level ${lv-READY.lvGap} or higher is a fair match.`);
   const want=Math.min(5,s),low=P.filter(c=>['w','a'].some(sl=>{const g=gearOf(c.eq[sl]);return !g||gTierIdx(g)<want;}));
-  add(!low.length,`Gear: tier ${ITEM_TIERS[want].n} or better`,low.length?`${low.map(nm).join(', ')} ${low.length>1?'still carry':'still carries'} older or missing gear. The Smithy's "Buy, craft and equip best gear" button sorts it out.`:'');
+  add(!low.length,`Gear: tier ${ITEM_TIERS[want].n} or better`,low.length?`${low.map(nm).join(', ')} ${low.length>1?'still carry':'still carries'} older or missing gear. The Smithy's Upgrade whole party button, or Upgrade on each slot of a hero sheet, sorts it out.`:'');
   add(K.some(k=>k.heal),'Healer',K.some(k=>k.heal)?'':'Nobody in your party can heal.'+who(k=>k.heal));
   const good=[...new Set(ty.flatMap(a=>Object.keys((ARCH[a]||{}).dl||{}).filter(x=>ARCH[a].dl[x]>=1.1)))];
   if(good.length){const has=good.filter(x=>K.some(k=>k.dl.has(x)));add(has.length>0,`${ty.map(a=>ARCH[a].n).join(' and ')}: ${good.map(x=>DL_NAME[x]).join(' or ')} attacks`,has.length?'':`Nobody brings ${good.map(x=>DL_NAME[x].toLowerCase()).join(' or ')} attacks.`+who(k=>good.some(x=>k.dl.has(x))));}
@@ -14968,6 +15092,89 @@ function p3Pork2(){const why=p3PorkWhy();if(why){toast(why);sfx('deny');return f
   h=h.replace(/(<button class="btn sm" data-act="useTravel" data-arg="holywater"[^>]*>Use<\/button>)/,(x)=>`<div class="btnrow tight col">${x}<button class="btn sm ${G.hwAuto?'gold':''}" data-act="p3HwAuto" aria-pressed="${!!G.hwAuto}" title="When the ward ends, use another Holy Water if you have one">Reapply automatically: ${G.hwAuto?'On':'Off'}</button></div>`);
   if(WS.m&&WS.m.kind==='dungeon'&&(G.inv.porkchop||0)>0)h=h.replace(/(<button class="btn sm" data-act="useTravel" data-arg="porkchop"[^>]*>Use<\/button>)/,(x)=>`<div class="btnrow tight col">${x.replace('>Use<','>Use 1: dungeon entrance<')}<button class="btn sm" data-act="p3Pork2" ${p3PorkWhy()?'disabled':''} title="${esc(p3PorkWhy())}">Use ${PORK.toTown}: return to town</button></div>`);}catch(e){}return h;};}
 
+// ===================== v0.9.5: one Upgrade button per gear slot =====================
+// For one hero and one slot, every single next step is listed (upgOpts): equip a better spare from the pack, buy a piece (Smithy, or
+// Alchemy for charms), forge a recipe (Smithy, or Alchemy for charms), temper the piece worn now (buying the ore, logs or parts the
+// Smithy sells if any are missing), or Echoforge a tier 6 weapon. upgBest picks the one that raises this hero's gear score
+// (loadoutScore, the same score as Auto best gear and "Best for party") the most among those the player can pay for now, the
+// cheaper on a tie. Shop steps need a town (the pack works anywhere). upgApply does it in one tap. Off in the Daily Trial.
+const UPG_KIND=['pack','buy','forge','temper','ef'];
+const UPG_LBL={pack:'Equip from your pack',buy:'Buy',forge:'Forge',temper:'Temper',ef:'Echoforge'};
+function upgTown(){try{return inTown();}catch(e){return false;}}
+function upgShop(sl){if(sl==='c')return shopStock('charms');if(sl==='w')return shopStock('weapons');return shopStock('armor').filter(id=>gearOf(id)&&gearOf(id).slot===sl);}
+function upgOpts(c,sl){const out=[];if(!G||G.daily||!c)return out;const cur=c.eq[sl]||null,town=upgTown();
+  const add=o=>{if(!gearOf(o.id))return;const g=gainFor(c,o.id);if(!g||g.d<=.01)return;o.d=g.d;o.pct=g.pct;o.cid=c.id;o.sl=sl;o.key=o.k+':'+(o.k==='forge'?o.ri:o.k==='ef'?o.f:o.id);out.push(o);};
+  [...new Set(G.gear)].forEach(id=>{if(slotOk(c,sl,id))add({k:'pack',id,gold:0,ok:true});});
+  upgShop(sl).forEach(id=>{if(GEAR[id]&&slotOk(c,sl,id))add({k:'buy',id,gold:GEAR[id].price,ok:town&&G.gold>=GEAR[id].price,town:1});});
+  RECIPES.forEach((r,i)=>{if(!r.id||!recipeOpen(r)||!slotOk(c,sl,r.id))return;const m=recipeMats(r);add({k:'forge',id:r.id,ri:i,gold:r.g,m,ok:town&&G.gold>=r.g&&hasMats(m),town:1});});
+  if(cur&&(typeof pcTemperOpen!=='function'||pcTemperOpen())){const fc=forgeCost(cur);if(fc){const have=hasMats(fc.m),P=have?null:buyPlan(fc.m),buy=P&&P.ok&&P.any?P:null;
+    add({k:'temper',id:fc.next,gold:fc.gold+(buy?buy.gold:0),m:fc.m,buy,cant:P&&!P.ok?P.cant:null,ok:town&&(have||!!buy)&&G.gold>=fc.gold+(buy?buy.gold:0),town:1});}}
+  if(sl==='w'&&typeof ECHOFORGE!=='undefined'&&typeof efBaseIn==='function')Object.keys(ECHOFORGE).forEach(f=>{const base=efBaseIn(f),worn=cur&&baseIdOf(cur)==='w_'+f+'_5'?plusOf(cur):-1;
+    let plus=-1,src=null;if(base){plus=base.plus;src='pack';}if(worn>plus){plus=worn;src='eq';}if(!src)return;const m=efCost(f);
+    add({k:'ef',f,src,id:'w_'+f+'_ef'+(plus?'+'+plus:''),gold:EF_GOLD,m,ok:town&&hasMats(m)&&G.gold>=EF_GOLD,town:1});});
+  return out;}
+// the order: most gain, then less gold, then fewer materials, then pack before buying before forging
+const upgCmp=(a,b)=>(b.d-a.d)||(a.gold-b.gold)||(upgMatN(a)-upgMatN(b))||(UPG_KIND.indexOf(a.k)-UPG_KIND.indexOf(b.k));
+function upgMatN(o){return o.m?Object.values(o.m).reduce((s,v)=>s+v,0):0;}
+function upgBest(c,sl){const L=upgOpts(c,sl).sort(upgCmp),best=L.find(o=>o.ok)||null;
+  // what to save up for: the best step overall when it beats what can be done now
+  const goal=L.find(o=>!o.ok&&(!best||o.d>best.d+.01))||null;return {best,goal,all:L};}
+function upgWhat(o,here){const g=gearOf(o.id),n=g?g.n:'?';
+  if(o.k==='pack')return `Equip ${esc(n)} from your pack`;if(o.k==='buy')return here?`Buy ${esc(n)}`:`Buy ${esc(n)} at ${gearOf(o.id).slot==='c'?'Alchemy':'the Smithy'}`;
+  if(o.k==='forge')return `Forge ${esc(n)}`;if(o.k==='temper')return `Temper to ${esc(n)}`;return `Echoforge ${esc(n)}`;}
+function upgCost(o){if(!o.gold&&!o.m)return 'Free';return `${o.m?matChips(o.m):''}<span class="matc gold ${G.gold>=o.gold?'':'short'}"><i></i><b class="nums">${fmt(o.gold)}</b> gold</span>${o.buy?`<small class="note">Includes ${fmt(o.buy.gold)} gold for ${o.buy.buy.map(([k,n])=>n+' '+esc(MATS[k])).join(', ')} from the Smithy.</small>`:''}`;}
+// before and after for the stats that change
+function upgBA(c,o){const a=c.S,b=statsWith(c,o.sl,o.id),p=[];DSTAT.forEach(([k,n])=>{const x=Math.round(a[k]||0),y=Math.round(b[k]||0);if(x!==y)p.push(`<span>${n} <b class="nums">${x}</b> → <b class="nums ${y>x?'up':'dn'}">${y}</b></span>`);});return p.length?`<div class="upgba">${p.join('')}</div>`:'';}
+const upgPct=o=>'+'+Math.max(1,Math.round(o.pct*100))+'%';
+// one tap: do the step, equip the result
+function upgApply(o){const c=G.roster[o.cid];if(!c)return false;const sl=o.sl;
+  if(o.k==='pack'){if(!G.gear.includes(o.id))return false;}
+  else if(o.k==='buy'){const g=GEAR[o.id];if(!g||G.gold<g.price)return false;G.gold-=g.price;G.gear.push(o.id);}
+  else if(o.k==='forge'){const r=RECIPES[o.ri];if(!r||!craft(r))return false;}
+  else if(o.k==='temper'){if(o.buy&&!doBuyPlan(buyPlan(forgeCost(c.eq[sl]).m)))return false;const r=forge('eq',{cid:c.id,slot:sl});if(!r)return false;saveGame();return r;}
+  else if(o.k==='ef'){const m=efCost(o.f);if(!hasMats(m)||G.gold<EF_GOLD)return false;
+    if(o.src==='eq'){if(baseIdOf(c.eq.w||'')!=='w_'+o.f+'_5')return false;G.gold-=EF_GOLD;payMats(m);c.eq.w=o.id;refresh(c);saveGame();return o.id;}
+    const base=efBaseIn(o.f);if(!base)return false;G.gold-=EF_GOLD;payMats(m);G.gear.splice(base.i,1);G.gear.push(o.id);}
+  if(!G.gear.includes(o.id))return false;equipGear(c,o.id);saveGame();return o.id;}
+// the Upgrade popup: the best step, its cost and before/after, one button to do it, and the full lists for tinkerers
+function upgOpenM(cid,sl){V.modal={type:'upg',cid,sl,from:V.modal&&V.modal.type!=='upg'?V.modal:(V.modal&&V.modal.from)||null};render();}
+function mUpg(m){const c=G.roster[m.cid];if(!c)return box('Upgrade','<p>That hero is not here.</p>','<button class="btn gold" data-act="xBack">Back</button>');
+  const sl=m.sl,cur=c.eq[sl],R=upgBest(c,sl),o=R.best,town=upgTown();
+  const curRow=`<div class="row eqcur">${cur?gearIcon(cur):'<span class="gico empty"></span>'}<div class="grow"><small>Now</small><b>${cur?esc(gearOf(cur).n):'Nothing'}</b> ${cur?tierChip(gearOf(cur)):''}<small>${cur?gearDesc(cur):''}</small></div></div>`;
+  const card=o?`<div class="upgcard"><span class="upgk">Best next step</span><div class="row">${gearIcon(o.id)}<div class="grow"><b>${upgWhat(o)}</b> ${tierChip(gearOf(o.id))} <em class="up">${upgPct(o)}</em><small>${gearDesc(o.id)}</small>${upgBA(c,o)}<div class="mats">${upgCost(o)}</div></div></div></div>`
+    :`<p class="note empty">Nothing better for this slot that you can pay for right now.</p>`;
+  const goal=R.goal?`<p class="note upggoal"><b>Save up for:</b> ${upgWhat(R.goal)} (${upgPct(R.goal)}), ${R.goal.town&&!town?'in town':R.goal.cant?'needs '+R.goal.cant.map(k=>esc(MATS[k])).join(', '):R.goal.m&&!hasMats(R.goal.m)?'needs materials':fmt(R.goal.gold)+' gold'}.</p>`:'';
+  const far=!town&&R.all.some(x=>x.town)?'<p class="note">Buying, forging and tempering happen in town. Here only spares in your pack count.</p>':'';
+  return box(`Upgrade: ${SLOTN[sl]} for ${esc(c.name)}`,curRow+card+goal+far,
+    `<button class="btn" data-act="upgAll">Show all options</button>${o?`<button class="btn gold" data-act="upgDo" data-arg="${c.id},${sl},${o.key}">Upgrade${o.gold?': '+fmt(o.gold)+' gold':''}</button>`:''}<button class="btn" data-act="xBack">Back</button>`,true);}
+// the button on a slot: shows the gain when there is a step to take
+function upgBtn(c,sl,cls){if(!G||G.daily)return '';const o=upgBest(c,sl).best;
+  return `<button class="btn sm upgb ${o?'gold':''} ${cls||''}" data-act="upgOpen" data-arg="${c.id},${sl}" title="${o?esc(upgWhat(o).replace(/<[^>]*>/g,''))+' '+upgPct(o):'Nothing better to buy, forge or temper right now'}">Upgrade${o?` <em>${upgPct(o)}</em>`:''}</button>`;}
+// shops: the best step for each slot first (the hero it helps most), one tap each
+function upgSlotsHtml(slots,noPlan){if(!G||G.daily)return '';const rows=slots.map(sl=>{let b=null;partyChars().forEach(c=>{const o=upgBest(c,sl).best;if(o&&(!b||o.pct>b.pct+1e-9||(Math.abs(o.pct-b.pct)<=1e-9&&o.gold<b.gold)))b=o;});return b;}).filter(Boolean);
+  return `<div class="upgbest">${m3H('Best upgrade for each slot')}${rows.length?`<div class="rows">${rows.map(o=>{const c=G.roster[o.cid];
+    return `<div class="row">${gearIcon(o.id)}<div class="grow"><small>${SLOTN[o.sl]} for ${esc(c.name)}</small><b>${upgWhat(o,1)}</b> <em class="up">${upgPct(o)}</em><small>${deltaHtml(c,o.id)}</small></div><button class="btn sm gold" data-act="upgDo" data-arg="${c.id},${o.sl},${o.key}">${o.gold?fmt(o.gold)+' gold':'Equip'}</button></div>`;}).join('')}</div>`:m3Empty('Your party already has the best you can pay for here.')}${noPlan?'':`<div class="btnrow p3smith"><button class="btn" data-act="p3Smith" title="Plans the best upgrade for each hero in your party, shows it, and only buys after you confirm">Upgrade whole party</button></div>`}</div>`;}
+{const vm0=vModal;vModal=function(m){if(m&&m.type==='upg')return mUpg(m);return vm0.apply(this,arguments);};}
+// the hero sheet: an Upgrade button on each slot
+{const mc0=mChar;mChar=function(id,edit){let h=mc0.apply(this,arguments);try{const c=G&&G.roster[id];if(!c||G.daily||typeof h!=='string')return h;
+  h=h.replace(/<h4>Equipment<\/h4><div class="eq">[\s\S]*?<\/div>/,()=>`<h4>Equipment</h4><div class="eq upgeq">${EQSL.map(sl=>`<div class="upgslot">${edit?`<button class="btn sm" data-act="gearSlot" data-arg="${sl}"><small>${SLOTN[sl]}</small> ${c.eq[sl]?gearOf(c.eq[sl]).n:'Empty'}</button>`:`<span class="eqv"><small>${SLOTN[sl]}</small> ${c.eq[sl]?gearOf(c.eq[sl]).n:'Empty'}</span>`}${upgBtn(c,sl)}</div>`).join('')}</div>`);}catch(e){}return h;};}
+Object.assign(ACT,{
+  upgOpen(a){const [cid,sl]=String(a).split(',');if(!G||G.daily||!G.roster[cid]||!EQSL.includes(sl))return;upgOpenM(cid,sl);},
+  upgDo(a){const [cid,sl,key]=String(a).split(',');const c=G&&G.roster[cid];if(!c||G.daily)return;const o=upgBest(c,sl).best;
+    if(!o||o.key!==key){toast('Something changed. Here is the best step now.');render();return;}
+    const was=c.eq[sl],r=upgApply(o);if(!r){sfx('deny');toast('That could not be done right now.');render();return;}
+    sfx(o.k==='pack'?'equip':'chest');toast(`${c.name}: ${was?gearOf(was).n:'nothing'} → ${gearOf(c.eq[sl]).n} (${upgPct(o)}).`);render();},
+  upgAll(){const m=V.modal;if(!m||m.type!=='upg')return;const c=G.roster[m.cid],sl=m.sl,o=upgBest(c,sl).best||upgBest(c,sl).goal,from=m;
+    if(!upgTown()){V.modal={type:'eqPick',char:m.cid,slot:sl,list:[m.cid],from};render();return;}
+    const sec={w:'weapons',a:'armor',k:'capes',c:'charms'}[sl];
+    if(o&&o.k==='temper')V.modal={type:'smithy',tab:'forge',sec,from};
+    else if(o&&o.k==='ef')V.modal={type:'smithy',tab:'echo',from};
+    else if(sl==='c')V.modal=o&&o.k==='forge'?{type:'workshop',tab:'craft',sec:'charm',from}:{type:'workshop',tab:'shop',sec:'charm',from};
+    else if(o&&o.k==='forge')V.modal={type:'smithy',tab:'craft',from};
+    else V.modal={type:'smithy',tab:'shop',sec,from};
+    render();}
+});
+
 // ===================== actions =====================
 Object.assign(ACT,{
   p3Smith(){if(!G||G.daily)return;V.modal={type:'p3plan',plan:p3SmithPlan(),from:V.modal};render();},
@@ -14987,7 +15194,7 @@ try{const st=document.createElement('style');st.textContent=`.p3why,.p3dup,.p3bp
 .p3ready{margin-top:.5em}.p3ready .warnr b{color:#ffcf6a}.p3mk{flex:0 0 1.4em;text-align:center;font-size:1.1em}.p3tot{margin:.5em 0}.p3thr{margin:.3em 0}`;document.head.appendChild(st);}catch(e){}
 
 // ----- test hook (window.__A is built after all modules; this one is ours) -----
-window.__P3={partyGainOf,shopSortIds:(a)=>shopSortIds(a),recipeList:(a)=>recipeList(a),temperOrder,temperGain,p3SmithPlan,p3SmithRun,p3Kit,p3Threats,p3Gaps,p3Ready,p3Pork2,p3PorkWhy,
+window.__P3={upgOpts:(c,sl)=>upgOpts(c,sl),upgBest:(c,sl)=>upgBest(c,sl),upgApply:o=>upgApply(o),partyGainOf,shopSortIds:(a)=>shopSortIds(a),recipeList:(a)=>recipeList(a),temperOrder,temperGain,p3SmithPlan,p3SmithRun,p3Kit,p3Threats,p3Gaps,p3Ready,p3Pork2,p3PorkWhy,
   bestParty:()=>bestParty(),invCap,get ITEM_MAX(){return ITEM_MAX;},get P3C(){return P3C;},p3Tradeoff,withCache:f=>{const o=P3C;P3C={why:{},kit:{}};try{return f(P3C);}finally{P3C=o;}}};
 
 // ===== music2.js (v0.4.5): music wiring, settings, the Music Room, credits =====
@@ -16797,13 +17004,15 @@ function m3ItemSort(ids,priceOf){const f=SHOPF(),rr=m3Rar(),pr=priceOf||(id=>ITE
 
 // ----- structure -----
 const M3_LEG={smithy:{weapons:['shop','weapons'],armor:['shop','armor'],capes:['shop','capes'],mats:['shop','mats']},
-  workshop:{relit:['shop','relit'],herbs:['shop','herb']},guild:{personal:['quests','personal'],bounties:['quests','bounties'],party:['recruit','all']},tavern:{},board:{}};
-const M3_HOME={smithy:'shop',workshop:'shop',guild:'recruit',tavern:'hire',board:null};
-const M3_TITLE={smithy:'The Smithy',workshop:'Alchemy',guild:'Wayfarers Guild Hall',tavern:'The Rusty Flagon',board:'Quest Board'};
+  workshop:{relit:['shop','relit'],herbs:['shop','herb']},guild:{personal:['quests','personal'],party:['recruit','all']},tavern:{},board:{personal:['quests','personal']}};
+// v0.9.5: the Guild Hall opens on the Notice Board's Guilds tab; the town board opens on Quests (board tabs: NB_TABS below)
+const M3_HOME={smithy:'shop',workshop:'shop',guild:'guilds',tavern:'hire',board:'quests'};
+const M3_TITLE={smithy:'The Smithy',workshop:'Alchemy',guild:'Wayfarers Guild Hall',tavern:'The Rusty Flagon',board:'Notice Board'};
 function m3Tabs(t){
   if(t==='smithy')return [['shop','Shop'],['craft','Forge'],['forge','Tempering'],['sell','Sell']].concat(typeof efTabOn==='function'&&efTabOn()?[['echo','Echoforge']]:[]);
   if(t==='workshop')return [['shop','Shop'],['craft','Brew &amp; craft'],['sell','Sell'],['pouch','Pouch']];
-  if(t==='guild')return [['recruit','Recruits'],['quests','Quests'],['nature','Natures'],['arena','Arena'],['guilds','Guilds']];
+  if(t==='guild')return NB_TABS.concat([['recruit','Recruits'],['nature','Natures']]);
+  if(t==='board')return NB_TABS;
   if(t==='tavern')return [['hire','Hire'],['kitchen','Kitchen']];
   return [];}
 // item kinds at Alchemy
@@ -16822,9 +17031,7 @@ function m3Secs(t,tab){const n=(a)=>a.length;
       return [['all','All'],['potion','Potions',k('potion')],['cure','Cures',k('cure')],['travel','Travel',k('travel')],['charm','Charms',shopStock('charms').length],['herb','Herbs',herbStock().length]].concat(G.cleared[townS()]?[['relit','Festival',RELIT_STOCK.length]]:[]);}
     if(tab==='craft')return [['all','All']].concat(RCAT.filter(([k])=>ALCH_CATS.includes(k)).map(([k,l])=>[k,l,RECIPES.filter(r=>r.cat===k&&recipeOpen(r)).length]));
     if(tab==='sell'){const C=m3SellCnt(['c']);return [['all','All'],['charm','Charms',Object.values(C).reduce((a,b)=>a+b,0)],['herb','Herbs',Object.keys(MATS).filter(id=>(G.mats[id]||0)>0&&MAT_OF[id].k==='herb').length]];}}
-  if(t==='guild'&&tab==='quests'){for(let s=0;s<=G.stage;s++)genBounties(s);return [['all','All'],['personal','Personal quests'],['bounties','Bounties',G.bounties.filter(b=>b.stage<=G.stage&&b.state!=='done').length]];}
-  if(t==='board'){const Q=m3Quests(),c=f=>Q.filter(f).length;
-    return [['all','All',Q.length],['ready','Ready',c(q=>q.state==='active'&&questReady(q))],['active','Active',c(q=>q.state==='active'&&!questReady(q))],['open','Open',c(q=>q.state==='open')],['done','Done',c(q=>q.state!=='open'&&q.state!=='active')]];}
+  if(t==='guild'||t==='board')return nbSecs(tab);
   return [];}
 // normalise V.modal for a shop: main tab plus section, old ids mapped
 function m3Norm(m){if(!m)return m;const t=m.type,L=M3_LEG[t];if(!L||(t==='guild'&&m.char))return m;
@@ -16860,7 +17067,7 @@ function m3Recipes(cats,sec,blurb){const one=sec!=='all'&&cats.includes(sec),lis
   const parts=list.map(k=>{const all=RECIPES.filter(r=>r.cat===k),open=all.filter(recipeOpen);locked+=all.length-open.length;const L=recipeList(open);
     const lab=(RCAT.find(x=>x[0]===k)||[k,k])[1];return (one?'':m3H(lab,L.length))+m3Rows(L.map(m3RecRow).join(''),open.length?'Nothing here matches the filters.':'No recipes of this kind yet.');}).join('');
   return `<p class="note">${blurb}</p>${shopFBar('craft')}${parts}${locked?`<p class="note">${locked} more recipe${locked>1?'s unlock':' unlocks'} here as you push into later realms.</p>`:''}`;}
-function m3PlanBtn(){return G&&!G.daily?`<div class="btnrow p3smith"><button class="btn gold" data-act="p3Smith" title="Plans the best upgrade for each hero in your party, shows it, and only buys after you confirm">Buy, craft and equip best gear</button></div>`:'';}
+function m3PlanBtn(){return G&&!G.daily?`<div class="btnrow p3smith"><button class="btn gold" data-act="p3Smith" title="Plans the best upgrade for each hero in your party, shows it, and only buys after you confirm">Upgrade whole party</button></div>`:'';}
 function m3SmithMatsBuy(){return `${m3H('Ore and wood')}<p class="note">Stock grows as you reach later realms.</p><div class="rows">${smithMatStock().map(id=>matBuyRow(id,MAT_PRICE[id])).join('')}</div>
   ${m3H('Monster parts')}<p class="note">A few parts behind the counter, at a steep price and only ${PART_STOCK} of each per inn rest. Hunting is still the way to get them in bulk.</p><div class="rows">${Object.keys(PART_PRICE).map(id=>matBuyRow(id,partPrice(id),partLeft(id))).join('')}</div>`;}
 
@@ -16870,7 +17077,8 @@ function m3Smithy(m){const sec=m.sec,tab=m.tab;let body='';
     const W=shopSortIds(shopStock('weapons')),AR=shopSortIds(shopStock('armor')),A=AR.filter(id=>gearOf(id).slot==='a'),K=AR.filter(id=>gearOf(id).slot==='k');
     const grp={weapons:['Weapons',W],armor:['Armor',A],capes:['Capes',K]},emp='Nothing on the shelves matches the filters.';
     const gear=k=>(sec==='all'?m3H(grp[k][0],grp[k][1].length):'')+m3Rows(grp[k][1].map(m3GearRow).join(''),emp);
-    body=(sec==='mats'?'':shopFBar('buy')+m3PlanBtn())+(sec==='all'?['weapons','armor','capes'].map(gear).join('')+m3SmithMatsBuy():sec==='mats'?m3SmithMatsBuy():gear(sec));
+    // v0.9.5: the best step for each slot comes first (p3shop.js upgSlotsHtml, with Upgrade whole party), then the filters and the shelves
+    body=(sec==='mats'?'':(typeof upgSlotsHtml==='function'?upgSlotsHtml(sec==='all'?['w','a','k']:[{weapons:'w',armor:'a',capes:'k'}[sec]]):m3PlanBtn())+shopFBar('buy'))+(sec==='all'?['weapons','armor','capes'].map(gear).join('')+m3SmithMatsBuy():sec==='mats'?m3SmithMatsBuy():gear(sec));
   }else if(tab==='craft')body=m3PlanBtn()+m3Recipes(SMITH_CATS,sec,'Smithy gear comes out already tempered, so it beats buying the same piece. Metal wants ore, wooden gear wants logs, and every piece wants monster parts.');
   else if(tab==='forge')body=vTemper({slot:M3_SLOTSEC[sec]||null,show:SHOPF().tsh||'all',bar:true});
   else if(tab==='sell'){const g=(sl,lab)=>(sec==='all'?m3H(lab):'')+m3Rows(m3SellRows(sl),'No spare '+lab.toLowerCase()+' in your pack.');
@@ -16887,7 +17095,7 @@ function m3Alchemy(m){const sec=m.sec,tab=m.tab;let body='';
     const relit=()=>{if(!G.cleared[townS()])return '';const P={};RELIT_STOCK.forEach(([id,p])=>P[id]=p);const ids=RELIT_STOCK.map(x=>x[0]);
       return (one?'':m3H('Festival wares',ids.length))+`<p class="note">The beacon is lit and the alchemist is in a generous mood: rare stock, only in relit towns.</p><div class="rows">${ids.map(id=>{const isItem=!!ITEMS[id],n=isItem?ITEMS[id].n:gearOf(id).n,d=isItem?ITEMS[id].d:gearDesc(id),price=P[id];return `<div class="row"><div class="grow"><b>${n}</b><small>${d}${isItem?'. Carrying '+(G.inv[id]||0):''}</small></div><button class="btn sm" data-act="buyRelit" data-arg="${id}" ${G.gold>=price?'':'disabled'}>${fmt(price)}</button></div>`;}).join('')}</div>`;};
     const P={potion:()=>items('potion'),cure:()=>items('cure'),travel:()=>items('travel'),charm:charms,herb:herbs,relit};
-    body=(sec==='herb'||sec==='relit'?'':shopFBar(sec==='charm'?'buy':sec==='all'?'mixed':'items'))+(one?P[sec]():Object.keys(P).map(k=>P[k]()).join(''));
+    body=(sec==='charm'&&typeof upgSlotsHtml==='function'?upgSlotsHtml(['c'],1):'')+(sec==='herb'||sec==='relit'?'':shopFBar(sec==='charm'?'buy':sec==='all'?'mixed':'items'))+(one?P[sec]():Object.keys(P).map(k=>P[k]()).join(''));
   }else if(tab==='craft')body=m3Recipes(ALCH_CATS,sec,sec==='potion'?'Brew draughts from herbs you pick in the fields. Cheaper than buying, and some brews are Alchemy-only.':sec==='charm'?'Charms need monster parts and your realm\'s relic.':sec==='item'?'Stitch your own tent from logs and hide.':'Brew draughts from herbs, make charms from monster parts and your realm\'s relic, and stitch your own tent.');
   else if(tab==='sell'){const ch=(sec==='all'?m3H('Charms'):'')+m3Rows(m3SellRows(['c']),'No spare charms. Weapons and armor sell at the Smithy.'),hb=(sec==='all'?m3H('Herbs'):'')+`<div class="rows">${matSellRows(['herb'])}</div>`;
     body=sec==='charm'?ch:sec==='herb'?hb:ch+hb;}
@@ -16903,37 +17111,61 @@ function m3Tavern(m){const tab=m.tab;let body='';
     <div class="grid cards">${SL.map(id=>id?heroCard(id,false,null,`<div class="fits">${fitTags(id)}</div><button class="btn gold" data-act="hire" data-arg="${id}" ${G.gold>=recruitCost(id)?'':'disabled'}>Hire for ${fmt(recruitCost(id))}</button>`):`<div class="card hero emptyseat"><b>Empty seat</b><small>Fills at the next shuffle.</small></div>`).join('')||m3Empty('Nobody new at the tables.')}</div>
     ${later?`<p class="note">${later} more wayfarer${later>1?'s are':' is'} on the road${nu?`; the next arrive in about ${nu.need} battle${nu.need>1?'s':''}, or when you reach the next realm`:''}.</p>`:''}<p class="note">Some wayfarers won't sit in a tavern at all. Check the Guild Hall's recruitment challenges.</p>`;}
   return m3Box('tavern',m,m3Nav('tavern',m)+body);}
-// ----- the Guild Hall -----
-function m3Bounties(){for(let s=0;s<=G.stage;s++)genBounties(s);const bo=b=>b.state==='active'?0:b.state==='open'?1:2,L=G.bounties.filter(b=>b.stage<=G.stage).sort((a,b)=>bo(a)-bo(b));
-  return `<p class="note">Marked monsters roam the fields. Accept a bounty and its quarry appears in that realm's field, glowing red. Beat it for gold, a stat charm and materials.</p>${typeof allBar==='function'?allBar('bountyAll','',L.filter(b=>b.state==='open').length,0):''}${m3Rows(L.map(b=>{const mo=MON[b.mon],md=ELITE_MODS.find(x=>x.k===b.mod);
-    return `<div class="row"><img class="mimg" src="${monURL(mo.art)}" alt=""><div class="grow"><b>${esc(b.name)}</b><small>${md.n}: ${md.d} Level ${b.lv}. Roams ${esc(ZS(b.stage).n)}.</small><small>${fmt(b.reward.gold)} gold, ${gearOf(b.reward.charm).n}</small></div>${b.state==='open'?`<button class="btn sm gold" data-act="bounty" data-arg="${b.id}">Accept</button>`:b.state==='active'?'<span class="m">Hunting</span>':'<span class="m up">Done</span>'}</div>`;}).join(''),'No bounties posted yet.')}`;}
-function m3Arena(){const cl=G.cleared.filter(Boolean).length;
-  return `<p class="note">The guild's fighting pit. Back-to-back waves of foes from every realm, no fleeing, no rest between waves.</p><div class="rows">${ARENA.map((A,i)=>`<div class="row"><div class="grow"><b>${A.n}</b><small>${A.waves} waves, foes level ${A.lvs[0]}-${A.lvs[1]}. Suggested party level ${A.rec}. ${A.min>cl?`Opens after ${A.min} Scourge${A.min>1?'s':''} fall${A.min>1?'':'s'}.`:`Best: ${G.arena[i]?'cleared x'+G.arena[i]:'not yet cleared'}.`}</small><small>${fmt(A.reward.gold)} gold, ${A.reward.mat} materials${A.reward.charm?', a stat charm':''}${A.reward.core?', '+A.reward.core+' Dread Cores':''}</small></div><button class="btn sm gold" data-act="arena" data-arg="${i}" ${A.min>cl?'disabled':''}>Enter</button></div>`).join('')}</div>
+// ----- v0.9.5: the Notice Board (Quests, Guilds, Bounties, Arena), reached from the town board, the Guild Hall and Menu > Quests -----
+// One set of tabs and bodies (nbBody) drawn in three places: the board building ({type:'board'}, its own tabs), the Guild Hall (the same
+// tabs plus Recruits and Natures, opening on Guilds) and the Menu's Quests group (the menu tabs quests, factions, qbounty, qarena).
+// Each tab has All plus Ready / Active / Open (Done where it applies); claimable first, then under way, then open.
+const NB_TABS=[['quests','Quests'],['guilds','Guilds'],['bounties','Bounties'],['arena','Arena']];
+const NB_MENU={quests:'quests',factions:'guilds',qbounty:'bounties',qarena:'arena'};// menu tab -> board tab
+const NB_ORD={ready:0,active:1,open:2,done:3};
+function nbQState(q){return q.state==='active'?(questReady(q)?'ready':'active'):q.state==='open'?'open':'done';}
+function nbBState(b){return b.state==='open'||b.state==='active'?b.state:'done';}
+function nbPersonal(){try{return Object.values(G.roster).filter(c=>TPL[c.id]&&!TPL[c.id].mon&&pqShown(c));}catch(e){return [];}}
+function nbBountyList(){for(let s=0;s<=G.stage;s++)genBounties(s);return G.bounties.filter(b=>b.stage<=G.stage);}
+function nbSecs(tab){
+  if(tab==='quests'){const Q=m3Quests(),c=s=>Q.filter(q=>nbQState(q)===s).length;return [['all','All',Q.length],['ready','Ready',c('ready')],['active','Active',c('active')],['open','Open',c('open')],['done','Done',c('done')],['personal','Personal',nbPersonal().length]];}
+  if(tab==='guilds'){const L=typeof facMisAll==='function'?facMisAll():[],c=s=>L.filter(m=>facMisState(m)===s).length;return [['all','All',L.length],['ready','Ready',c('ready')],['active','Active',c('active')],['open','Open',c('open')]];}
+  if(tab==='bounties'){const L=nbBountyList(),c=s=>L.filter(b=>nbBState(b)===s).length;return [['all','All',L.length],['active','Active',c('active')],['open','Open',c('open')],['done','Done',c('done')]];}
+  return [];}
+function nbQuestRow(q){const st=nbQState(q);
+  const prog=q.type==='tamer'?`${Math.min(stickCount().n,q.n)}/${q.n} creatures logged`:q.type==='legend'?legendProg(q):q.type==='hunt'?`${q.have||0}/${q.n} hunted`:q.type==='gather'?`${Math.min(G.mats[q.mat]||0,q.n)}/${q.n} gathered`:q.type==='vault'?((G.vaults||{})[q.stage]?'Hoard recovered':'Vault still sealed'):q.found?'Found':'Somewhere in the '+ZS(q.stage).dungeon;
+  const rew=q.type==='tamer'?"The Tamer's Stick, a weapon that grows with your Bestiary":q.type==='legend'?`${esc(TPL[q.hero].title)} may join you`:q.type==='wanderer'?`${TPL[q.hero].n} joins you`:`${fmt(q.reward.gold)} gold${q.reward.item?', '+ITEMS[q.reward.item].n+' x2':''}${q.reward.gear?', forged gear':''}`;
+  const btn=st==='open'?`<button class="btn sm" data-act="qAccept" data-arg="${q.id}">Accept</button>`:st==='ready'?`<button class="btn sm gold" data-act="qClaim" data-arg="${q.id}">Claim</button>`:st==='active'?'<span class="m">Active</span>':'<span class="m up">Done</span>';
+  return `<div class="row"><div class="grow"><b>${esc(q.title)}</b>${st==='ready'?' <em class="qtag">Ready</em>':''}<small>${esc(q.desc)}</small><small>${q.state==='active'?prog+'. ':''}Reward: ${rew}</small></div>${btn}</div>`;}
+function nbQuests(sec){const Q=m3Quests();let h='';
+  if(sec!=='personal'){const L=Q.filter(q=>sec==='all'||nbQState(q)===sec).sort((a,b)=>NB_ORD[nbQState(a)]-NB_ORD[nbQState(b)]);
+    h+=(typeof allBar==='function'?allBar('qAcceptAll','qClaimAll',Q.filter(q=>q.state==='open').length,Q.filter(q=>q.state==='active'&&questReady(q)).length):'')
+      +m3Rows(L.map(nbQuestRow).join(''),{ready:'Nothing is ready to hand in yet.',active:'No quests under way.',open:'No new notices. More go up as your journey goes on.',done:'Nothing finished yet.'}[sec]||'No notices yet.');}
+  if(sec==='personal'||(sec==='all'&&nbPersonal().length))h+=(sec==='all'?m3H('Personal quests'):'')+vPersonal();
+  return `<p class="note">Accept a notice, do the deed, then claim the reward here or on any town's board.</p>${h}`;}
+function nbBounties(sec){const L=nbBountyList().filter(b=>sec==='all'||nbBState(b)===sec).sort((a,b)=>NB_ORD[nbBState(a)]-NB_ORD[nbBState(b)]);
+  return `<p class="note">Accept a bounty and its marked beast roams that realm's field, glowing red. Beat it for gold, a stat charm and materials.</p>${typeof allBar==='function'?allBar('bountyAll','',nbBountyList().filter(b=>b.state==='open').length,0):''}${m3Rows(L.map(b=>{const mo=MON[b.mon],md=ELITE_MODS.find(x=>x.k===b.mod);
+    return `<div class="row"><img class="mimg" src="${monURL(mo.art)}" alt=""><div class="grow"><b>${esc(b.name)}</b><small>${md.n}: ${md.d} Level ${b.lv}. Roams ${esc(ZS(b.stage).n)}.</small><small>${fmt(b.reward.gold)} gold, ${gearOf(b.reward.charm).n}</small></div>${b.state==='open'?`<button class="btn sm gold" data-act="bounty" data-arg="${b.id}">Accept</button>`:b.state==='active'?'<span class="m">Hunting</span>':'<span class="m up">Done</span>'}</div>`;}).join(''),{active:'No bounties under way.',open:'No open bounties.',done:'No bounties done yet.'}[sec]||'No bounties posted yet.')}`;}
+function nbArena(menu){const cl=G.cleared.filter(Boolean).length,far=menu&&!inTown();
+  return `<p class="note">The guild's fighting pit. Back-to-back waves of foes from every realm, no fleeing, no rest between waves.${far?' Enter it from any town.':''}</p><div class="rows">${ARENA.map((A,i)=>`<div class="row"><div class="grow"><b>${A.n}</b><small>${A.waves} waves, foes level ${A.lvs[0]}-${A.lvs[1]}. Suggested party level ${A.rec}. ${A.min>cl?`Opens after ${A.min} Scourge${A.min>1?'s':''} fall${A.min>1?'':'s'}.`:`Best: ${G.arena[i]?'cleared x'+G.arena[i]:'not yet cleared'}.`}</small><small>${fmt(A.reward.gold)} gold, ${A.reward.mat} materials${A.reward.charm?', a stat charm':''}${A.reward.core?', '+A.reward.core+' Dread Cores':''}</small></div><button class="btn sm gold" data-act="arena" data-arg="${i}" ${A.min>cl||far?'disabled':''}>Enter</button></div>`).join('')}</div>
     ${m3H('Echoes')}<p class="note">Beat a Scourge or the Calamity and an optional Echo of it lingers in its dungeon, on the rune circle where it fell. After the Calamity, the Echo Rift at any waystone lets you fight every Echo you have unlocked again.</p>`;}
+function nbGuilds(sec){return (typeof vFacMissions==='function'?vFacMissions(sec):'')+(sec==='all'&&typeof vFactions==='function'?m3H('Ranks and perks')+vFactions():'');}
+function nbBody(tab,sec,menu){sec=sec||'all';
+  if(tab==='guilds')return nbGuilds(sec);if(tab==='bounties')return nbBounties(sec);if(tab==='arena')return nbArena(menu);return nbQuests(sec);}
+// the Menu's Quests group draws the same bodies, with the section chips under the menu's own tabs (ui.js mMenu asks nbMenuBody)
+function nbMenuBody(m){const tab=NB_MENU[m&&m.tab];if(!tab||!G)return null;const S=nbSecs(tab);if(!S.some(x=>x[0]===m.sec))m.sec='all';
+  const nav=S.length>1?`<div class="chips nbsec" role="tablist" aria-label="Sections">${S.map(([k,l,c])=>`<button role="tab" aria-selected="${k===m.sec}" class="chip sm ${k===m.sec?'on':''}" data-act="sSec" data-arg="${k}">${l}${c!=null?` <span class="cnt nums">${c}</span>`:''}</button>`).join('')}</div>`:'';
+  return nav+nbBody(tab,m.sec,true);}
+// ----- the Guild Hall: the Notice Board's tabs plus Recruits and Natures -----
 function m3Guild(m){const tab=m.tab,sec=m.sec;let body='';
   if(tab==='recruit')body=vChallenges();
   else if(tab==='nature')body=vNature(m);
-  else if(tab==='quests')body=sec==='personal'?vPersonal():sec==='bounties'?m3Bounties():m3H('Personal quests')+vPersonal()+m3H('Bounties')+m3Bounties();
-  else if(tab==='arena')body=m3Arena();
-  else body=`<p class="note">The guilds post their missions here and keep your ranks. The same pages are under Menu: Quests, Guild missions and Records, Guilds.</p>`+(typeof vFactions==='function'?vFactions():'');
+  else body=nbBody(tab,sec);
   return box(m3Head('guild'),m3Nav('guild',m)+body,'<button class="btn gold" data-act="closeModal">Done</button>',true);}
-// ----- the Quest Board -----
+// ----- the Notice Board building in town -----
 function m3Quests(){for(let s=0;s<=G.stage;s++)genQuests(s);return G.quests.filter(q=>q.stage<=G.stage);}
-function m3Board(m){const sec=m.sec||'all',st=q=>q.state==='active'?(questReady(q)?0:1):q.state==='open'?2:3;
-  const qs=m3Quests().filter(q=>sec==='all'||(sec==='ready'?q.state==='active'&&questReady(q):sec==='active'?q.state==='active'&&!questReady(q):sec==='open'?q.state==='open':q.state!=='open'&&q.state!=='active')).sort((a,b)=>st(a)-st(b));
-  const Q=m3Quests(),bar=typeof allBar==='function'?allBar('qAcceptAll','qClaimAll',Q.filter(q=>q.state==='open').length,Q.filter(q=>q.state==='active'&&questReady(q)).length):'';
-  const rows=qs.map(q=>{
-    const prog=q.type==='tamer'?`${Math.min(stickCount().n,q.n)}/${q.n} creatures logged`:q.type==='legend'?legendProg(q):q.type==='hunt'?`${q.have||0}/${q.n} hunted`:q.type==='gather'?`${Math.min(G.mats[q.mat]||0,q.n)}/${q.n} gathered`:q.type==='vault'?((G.vaults||{})[q.stage]?'Hoard recovered':'Vault still sealed'):q.found?'Found':'Somewhere in the '+ZS(q.stage).dungeon;
-    const rew=q.type==='tamer'?"The Tamer's Stick, a weapon that grows with your Bestiary":q.type==='legend'?`${esc(TPL[q.hero].title)} may join you`:q.type==='wanderer'?`${TPL[q.hero].n} joins you`:`${fmt(q.reward.gold)} gold${q.reward.item?', '+ITEMS[q.reward.item].n+' x2':''}${q.reward.gear?', forged gear':''}`;
-    const btn=q.state==='open'?`<button class="btn sm" data-act="qAccept" data-arg="${q.id}">Accept</button>`:q.state==='active'?(questReady(q)?`<button class="btn sm gold" data-act="qClaim" data-arg="${q.id}">Claim</button>`:'<span class="m">Active</span>'):'<span class="m up">Done</span>';
-    return `<div class="row"><div class="grow"><b>${esc(q.title)}</b><small>${esc(q.desc)}</small><small>${q.state==='active'?prog+'. ':''}Reward: ${rew}</small></div>${btn}</div>`;}).join('');
-  return box(m3Head('board'),`<p class="note">Notices pinned three deep. Accept one, do the deed, then come back to any quest board to claim the reward.</p>${m3Nav('board',m)}${bar}${m3Rows(rows,{ready:'Nothing is ready to hand in yet.',active:'No quests under way.',open:'No new notices. More go up as your journey goes on.',done:'Nothing finished yet.'}[sec]||'No notices yet.')}`);}
+function m3Board(m){return box(m3Head('board'),m3Nav('board',m)+nbBody(m.tab,m.sec),'<button class="btn gold" data-act="closeModal">Done</button>',true);}
 // ----- hooks: the shops go through the normaliser first -----
 function mShop(m){m3Norm(m);return m3Smithy(m);}
 function mWorkshop(m){m3Norm(m);return m3Alchemy(m);}
 function mTavern(){const m=V.modal&&V.modal.type==='tavern'?m3Norm(V.modal):{type:'tavern',tab:'hire',sec:'all'};return m3Tavern(m);}
 function mGuild(m){m3Norm(m);return m3Guild(m);}
-function mBoard(){const m=V.modal&&V.modal.type==='board'?m3Norm(V.modal):{type:'board',sec:'all'};return m3Board(m);}
+function mBoard(){const m=m3Norm(V.modal&&V.modal.type==='board'?V.modal:{type:'board'});return m3Board(m);}
 Object.assign(ACT,{
   sTab(k){const m=V.modal;if(!m)return;m.tab=k;m.sec='all';m._t=k;m.nat=null;V.cmp=null;V.swapSel=null;render();m3Top();},
   sSec(k){const m=V.modal;if(!m)return;m.sec=k;V.cmp=null;render();m3Top();},
@@ -16948,6 +17180,12 @@ ACT.gtab=function(k){V.swapSel=null;V.modal={type:'guild',tab:k};render();};
 
 // ----- main menu: labels for the regrouped tabs (MENU_GROUPS in ui.js) -----
 try{MENU_SUB.fmis='Guild missions';MENU_SUB.pouch='Materials';MENU_SUB.system='Journey';}catch(e){}
+// v0.9.5: Menu > Quests is the Notice Board: Quests, Guilds (ranks, perks and missions; was Records > Guilds and Quests > Guild missions),
+// Bounties and Arena. The old tab id 'fmis' lands on Guilds.
+try{const QG=MENU_GROUPS.find(g=>g[0]==='quests'),RG=MENU_GROUPS.find(g=>g[0]==='records');QG[2].splice(0,QG[2].length,'quests','factions','qbounty','qarena');
+  const k=RG[2].indexOf('factions');if(k>=0)RG[2].splice(k,1);MENU_SUB.qbounty='Bounties';MENU_SUB.qarena='Arena';}catch(e){}
+{const mt0=ACT.menuTab;ACT.menuTab=function(t){return mt0.call(this,t==='fmis'?'factions':t);};}
+{const mm0=mMenu;mMenu=function(m){if(m&&m.tab==='fmis')m.tab='factions';return mm0.apply(this,arguments);};}
 
 // ----- the visible viewport: panels fit the screen the phone really shows (the URL bar and the Android app's bars included) -----
 function m3Vh(){try{const v=window.visualViewport,h=Math.round(v?v.height:innerHeight);document.documentElement.style.setProperty('--vvh',h+'px');}catch(e){}}
@@ -16955,7 +17193,7 @@ m3Vh();addEventListener('resize',m3Vh);try{if(window.visualViewport)visualViewpo
 try{if(screen.orientation&&screen.orientation.addEventListener)screen.orientation.addEventListener('change',()=>setTimeout(m3Vh,200));}catch(e){}
 
 // ----- test hook -----
-window.__M3={get MENU_GROUPS(){return MENU_GROUPS;},m3Norm,m3Tabs,m3Secs,shopFBar:c=>shopFBar(c),ddSel,M3_LEG,M3_HOME,m3Upg};
+window.__M3={get MENU_GROUPS(){return MENU_GROUPS;},m3Norm,m3Tabs,m3Secs,NB_TABS,NB_MENU,nbSecs,nbBody,shopFBar:c=>shopFBar(c),ddSel,M3_LEG,M3_HOME,m3Upg};
 
 // ===== party3.js (v0.6.3): party systems: Best Party formations, Training team, Equip best at camp =====
 // 1. Best Party suggests several formations instead of one: Balanced, Boss ready (Area answer once the boss is down), Fresh mix and a
@@ -18687,7 +18925,7 @@ function b5Fit(){try{const o=document.querySelector('#border .ocs');if(!o)return
 // tests: window.__A.B5
 const B5API={cfg:B5,R:B5R,order:(n,c)=>b5Order(n,c),plan:u=>foePlan(u),intent:u=>b5Intent(u),cat:sk=>b5Cat(sk),knows:u=>b5Knows(u),press:()=>b5Press(),timedOn:()=>b5TimedOn(),choose:(u,r,n)=>foeChoose(u,r,n)};
 
-// ===== battle4.js (v0.7.0): battle mechanics: detonation MP refund, free swap, Momentum, foe roles, the boss Cataclysm =====
+// ===== battle4.js (v0.7.0): battle mechanics: detonation MP refund, free swap, Momentum, foe roles, the boss Cataclysm; v0.9.5: boss realm gimmicks =====
 // 1) Detonation reward: the hero who sets off a reaction gets MP back, shown in the floating reaction text ("+N MP").
 // 2) Free swap: on a hero's turn another Vanguard hero can trade places with a Rearguard hero without using the turn, once every
 //    B4.swap.cd party turns. Rooted heroes cannot step back. Auto battle uses it only where its own switch rules say it helps.
@@ -18841,8 +19079,142 @@ b4HookPlan();b4HookTurn();
     if(m!==1)r.dmg=Math.max(1,Math.round(r.dmg*m));}catch(e){}
   return r;};}
 
+// ----- 5) v0.9.5 boss gimmicks: one realm gimmick per Scourge and Calamity (BOSS_GIM in config.js) -----
+// Data driven: BOSS_GIM.def[boss key] = {t: type, ...tunables}. Each is telegraphed on the boss's turn (a log line, a "Telegraph" chip on
+// the boss, a "Marked" or "Lightning rod" chip on the heroes it will hit) and lands at the start of its next turn, before its usual move.
+// One-round effects (mirror, veil, airborne) end at its next turn. The battle-only state is B.b4g (never saved). No RNG, no clock:
+// targets come from the turn count and the heroes' stats, so a telegraph read in advance is what happens. Not in the Daily Trial
+// (BOSS_GIM.daily) and only in the first fight with a Scourge or Calamity (kind 'boss'; Echoes keep their own extra phase).
+STS.g_tele={n:'Telegraph',a:'TEL',t:99,c:'#ffb04a',d:'Its realm gimmick lands on its next turn. Open its details (i) to see what it does and how to answer it.'};
+STS.g_mark={n:'Marked',a:'MRK',bad:1,t:99,c:'#ff6a3a',d:'The boss\'s realm gimmick lands on this spot on its next turn. Guard halves it, or swap a sturdier hero into this spot.'};
+STS.g_rod={n:'Lightning rod',a:'ROD',bad:1,t:99,c:'#ffe04a',d:'Lightning strikes this hero on the boss\'s next turn and arcs to the heroes beside them. Guard halves it; swapping this hero out grounds it.'};
+STS.g_chill={n:'Chill',a:'CHL',bad:1,t:99,c:'#9ad8ff',d:'Slower for each stack. At the limit the hero freezes and loses a turn. A Fire skill or a cleanse thaws it; Guard keeps the blizzard off.'};
+STS.g_air={n:'Airborne',a:'AIR',t:99,c:'#d0e0ff',d:'In the air for a round: weapon hits glance off (Ranged shots and magic still land). It dives at the marked spot next turn.'};
+STS.g_veil={n:'Veiled',a:'VEL',t:99,c:'#b0c8e0',d:'Hidden in mist: it takes much less damage until a Scan or a Light skill reveals it, or its next turn comes.'};
+STS.g_mirror={n:'Mirror',a:'MIR',t:99,c:'#7ae0ff',d:'A mirror of water: magic deals less and part of it splashes back at the caster until its next turn. Weapons are safe.'};
+STS.g_tide={n:'Rising Tide',a:'TID',t:99,c:'#4aa8ff',d:'The arena floods: heroes without Water are slower and Water skills hit harder for each level. An Earth skill dams it one level.'};
+STS.g_dark={n:'Darkness',a:'DRK',t:99,c:'#8a7aa8',d:'Heroes deal less damage for each level of darkness. A Fire or Light skill lights a torch and clears it.'};
+ST_SYM.g_tele='<path d="M5 .6 9.6 9H.4Z" fill="none" stroke="currentColor" stroke-width="1.2"/><path d="M4.4 3.2h1.2v3.2H4.4ZM4.4 7h1.2v1.1H4.4Z"/>';
+ST_SYM.g_mark='<circle cx="5" cy="5" r="4" fill="none" stroke="currentColor" stroke-width="1.2"/><circle cx="5" cy="5" r="1.6"/>';
+ST_SYM.g_rod='<path d="M6 .5 2.5 5.5h2.2L3.6 9.5 7.6 4.2H5.3Z"/>';
+ST_SYM.g_chill='<path d="M4.4.5h1.2v9H4.4ZM.6 4.4h8.8v1.2H.6ZM1.6 2.4l.8-.8 6 6-.8.8ZM7.6 1.6l.8.8-6 6-.8-.8Z"/>';
+ST_SYM.g_air='<path d="M.5 6C2 3 4 3 5 4.6 6 3 8 3 9.5 6 8 5 6.6 5 5 6.6 3.4 5 2 5 .5 6Z"/>';
+ST_SYM.g_veil='<path d="M.5 3.5h9v1.2h-9ZM1.5 5.8h7V7h-7ZM2.6 8h4.8v1.1H2.6Z"/>';
+ST_SYM.g_mirror='<path d="M5 .5 9 5 5 9.5 1 5Z" fill="none" stroke="currentColor" stroke-width="1.2"/><path d="M3.4 4.6 5 2.8v3.8Z"/>';
+ST_SYM.g_tide='<path d="M.5 4c1.5-1.2 3-1.2 4.5 0s3 1.2 4.5 0v1.3c-1.5 1.2-3 1.2-4.5 0S2 4.1.5 5.3ZM.5 7c1.5-1.2 3-1.2 4.5 0s3 1.2 4.5 0v1.3c-1.5 1.2-3 1.2-4.5 0S2 7.1.5 8.3Z"/>';
+ST_SYM.g_dark='<path d="M6.5.8A4.4 4.4 0 1 0 9.2 7 3.6 3.6 0 0 1 6.5.8Z"/>';
+function b4GimOn(){return !!(B&&BOSS_GIM.on&&B.spec&&B.spec.kind==='boss'&&!(G&&G.daily&&!BOSS_GIM.daily));}
+function b4GimDefOf(key){return BOSS_GIM.def[String(key||'').replace(/^echo_/,'')]||null;}
+function b4GimLine(D){return D?`${D.n}: ${D.d}.`:'';}
+function b4GimLive(){return B.front.map((c,i)=>c&&c.hp>0?i:-1).filter(i=>i>=0);}
+function b4GimWho(L){const n=L.map(c=>c.name);return n.length>1?n.slice(0,-1).join(', ')+' and '+n[n.length-1]:n[0]||'the Vanguard';}
+function b4GimFill(s,L){return String(s||'').replace('{who}',b4GimWho(L||[]));}
+// the spots it marks: a fixed walk over the live spots from the boss key and the telegraph count (n spots); 'weak': the weakest hero's spot
+function b4GimSlots(n,weak){const S=B.b4g,live=b4GimLive();if(!live.length)return [];
+  if(weak){const c=live.map(i=>B.front[i]).sort((x,y)=>x.hp/x.S.mhp-y.hp/y.S.mhp||B.front.indexOf(x)-B.front.indexOf(y))[0];return [B.front.indexOf(c)];}
+  const st=(hashS(S.key)+S.ticks*2)%3,out=[];for(let k=0;k<3&&out.length<n;k++){const i=(st+k)%3;if(live.includes(i))out.push(i);}return out;}
+// one hit from the gimmick: a share of the hero's max HP, halved by Guard; a guarding hero also shrugs off its status
+function b4GimK(){return (BOSS_GIM.stageK||[])[Math.min(4,(B&&B.stage)|0)]||1;}
+function b4GimHit(u,c,pct,el,st){if(!c||c.hp<=0)return 0;const d=Math.max(1,Math.round(c.S.mhp*pct*b4GimK()*(c.guard?.5:1)));const now=Date.now();
+  c.fxEl=el||null;c.fxT=now;c.hitT=now;fx(c,String(d),'dmg');log(`${c.name} takes ${d}${c.guard?' (guarded)':''}.`);B.b4gHits=(B.b4gHits||0)+d;hurt(c,d);
+  if(c.hp>0&&st&&!c.guard)addSt(c,st,u);return d;}
+// keeps the chips in step with the state: the boss shows what it readies, the heroes what will hit them (also after swaps and falls)
+function b4GimSync(){const S=B&&B.b4g;if(!S)return;const u=S.u,P=S.pend,A=S.act,D=S.D,set=(c,k,on,v)=>{if(!c||!c.st)return;if(on&&c.hp>0){if(!c.st[k])c.st[k]={t:99};if(v!=null)c.st[k].v=v;}else if(c.st[k])delete c.st[k];};
+  set(u,'g_tele',!!P||(D.t==='phase2'&&S.warned&&!S.done));set(u,'g_air',!!A&&A.t==='air');set(u,'g_veil',!!A&&A.t==='veil');set(u,'g_mirror',!!A&&A.t==='mirror');
+  set(u,'g_tide',D.t==='tide'&&S.lvl>0,S.lvl);set(u,'g_dark',D.t==='dark'&&S.lvl>0,S.lvl);
+  const slots=P&&P.t==='slot'?P.slots:A&&A.t==='air'?A.slots:[];
+  B.front.forEach((c,i)=>{set(c,'g_mark',slots.includes(i));set(c,'g_rod',!!P&&P.t==='rod'&&c&&c.id===P.id);});
+  B.back.forEach(c=>{set(c,'g_mark',false);set(c,'g_rod',false);});}
+// what the boss does on its turn, before its usual move: one-round effects end, a pending telegraph lands, a new one may begin
+function b4GimTell(u){const S=B.b4g,D=S.D,live=b4GimLive();if(!live.length)return;let L=[];
+  if((D.t==='tide'||D.t==='dark')&&S.lvl>=D.max)return;
+  S.ticks++;
+  if(D.t==='slot'){const sl=b4GimSlots(D.n2||1);if(!sl.length)return;S.pend={t:'slot',slots:sl};L=sl.map(i=>B.front[i]);}
+  else if(D.t==='rod'){const c=live.map(i=>B.front[i]).sort((x,y)=>Math.max(y.S.atk,y.S.mag)-Math.max(x.S.atk,x.S.mag)||B.front.indexOf(x)-B.front.indexOf(y))[0];S.pend={t:'rod',id:c.id};L=[c];}
+  else if(D.t==='sac')S.pend={t:'sac',hp0:u.hp,stop:0};
+  else if(D.t==='mirror')S.pend={t:'mirror',kind:D.kinds[(S.ticks-1)%D.kinds.length]};
+  else S.pend={t:D.t};
+  B.b4gTells=(B.b4gTells||0)+1;fx(u,'Telegraph','stat bad');log(`${b4GimFill(D.tell,L)}: ${D.n} on ${u.name}'s next turn. ${b4GimHint(D)}`);}
+function b4GimHint(D){return {slot:'Guard halves it, or swap a sturdier hero in.',rod:'Guard halves it; swap that hero out to ground it.',chill:'Guard to keep the cold off; a Fire skill thaws a hero.',
+  tide:'An Earth skill dams the water.',dark:'A Fire or Light skill lights a torch.',sac:D.els?`Hit it with ${D.els.map(e=>EL[e]).join(' or ')}${D.thr?' or deal heavy damage':''} first.`:D.brk?'Break its shield or deal heavy damage first.':'Deal heavy damage first.',
+  mirror:'Use weapons, not magic, next round.',veil:'Scan it or use a Light skill to reveal it.',wing:'Use Ranged shots or magic while it flies; Guard the marked spot.',phase2:''}[D.t]||'';}
+function b4GimLand(u){const S=B.b4g,D=S.D,P=S.pend;S.pend=null;if(!P)return;B.b4gLand=(B.b4gLand||0)+1;
+  if(P.t==='slot'){const L=P.slots.map(i=>B.front[i]).filter(c=>c&&c.hp>0);log(b4GimFill(D.hit,L)+'!');banner(D.n,'#ff9a5a');L.forEach(c=>b4GimHit(u,c,D.pct,D.el,D.st));}
+  else if(P.t==='rod'){const c=B.front.find(x=>x&&x.id===P.id&&x.hp>0);if(!c){log(`The lightning finds no rod and grounds harmlessly.`);fx(u,'Grounded','stat');return;}
+    log(b4GimFill(D.hit,[c])+'!');banner(D.n,'#ffe04a');const i=B.front.indexOf(c);b4GimHit(u,c,D.pct,D.el,null);[i-1,i+1].forEach(j=>{const n=B.front[j];if(n&&n.hp>0)b4GimHit(u,n,D.pct*D.arc,D.el,null);});}
+  else if(P.t==='chill'){log(D.hit+'!');B.front.forEach(c=>{if(!c||c.hp<=0)return;if(c.guard){fx(c,'Braced','stat good');return;}
+    const v=((c.st.g_chill&&c.st.g_chill.v)||0)+1;if(v>=D.max){delete c.st.g_chill;fx(c,'Frozen','stat bad');log(`${c.name} freezes solid!`);addSt(c,'stun',u,true);}else{c.st.g_chill={t:99,v};fx(c,'Chill '+v,'stat bad');}});}
+  else if(P.t==='tide'||P.t==='dark'){S.lvl=Math.min(D.max,S.lvl+1);fx(u,D.n+' '+S.lvl,'stat bad');log(`${D.hit} (level ${S.lvl} of ${D.max}).`);}
+  else if(P.t==='sac'){const stop=P.stop||(D.thr&&P.hp0-u.hp>=D.thr*u.S.mhp)||(D.brk&&u.broken);
+    if(stop){log(D.stop+'!');fx(u,'Stopped','stat');B.b4gStop=(B.b4gStop||0)+1;return;}
+    log(D.hit+'!');banner(D.n,'#ff9a5a');
+    if(D.fx==='heal'){const n=Math.min(u.S.mhp-u.hp,Math.round(u.S.mhp*D.heal*b4GimK()));if(n>0){u.hp+=n;fx(u,'+'+n,'heal');}}
+    else if(D.fx==='summon'){if(B.en.filter(x=>x.hp>0).length<3&&MON[D.mon]){const s=makeEnemy(MON[D.mon],Math.max(1,u.lv-3));s.next=B.time+300;s.enterT=Date.now();B.en.push(s);log(`${s.name} joins the fight!`);}}
+    else if(D.fx==='spores')B.front.forEach(c=>{if(c&&c.hp>0&&!c.guard)(D.st||[]).forEach(k=>addSt(c,k,u,true));});
+    else if(D.fx==='buff')(D.buff||[]).forEach(k=>addSt(u,k,u,true));}
+  else if(P.t==='mirror'){S.act={t:'mirror',kind:P.kind};log(D.hit+'.');}
+  else if(P.t==='veil'){S.act={t:'veil'};log(D.hit+'.');}
+  else if(P.t==='wing'){S.act={t:'air',slots:b4GimSlots(1,true)};const c=B.front[S.act.slots[0]];log(`${D.hit}! It will dive at ${c?c.name+'\'s':'a'} spot next turn.`);}}
+function b4GimExpire(u){const S=B.b4g,D=S.D,A=S.act;if(!A)return;S.act=null;
+  if(A.t==='air'){const L=A.slots.map(i=>B.front[i]).filter(c=>c&&c.hp>0);log(b4GimFill(D.dive,L)+'!');L.forEach(c=>b4GimHit(u,c,D.pct,D.el,null));}
+  else if(A.t==='veil')log(`The mist around ${u.name} thins.`);else if(A.t==='mirror')log(`The mirror around ${u.name} falls.`);}
+function b4GimPhase(u){const S=B&&B.b4g;if(!S||u!==S.u||S.D.t!=='phase2'||u.hp<=0)return;const D=S.D;
+  if(!S.warned&&u.hp<=u.S.mhp*D.warn){S.warned=1;B.b4gTells=(B.b4gTells||0)+1;fx(u,'Telegraph','stat bad');log(`${D.tell}: at half HP it becomes something worse. ${D.d}.`);}
+  if(!S.done&&u.hp<=u.S.mhp*D.at){S.done=1;B.b4gLand=(B.b4gLand||0)+1;u.sk=D.sk.map(s=>({id:'e'+s[0],n:s[0],el:s[1],pw:s[2],t:s[3],k:s[4],fx:s[5]||null,mp:0,cost:1,hits:1}));u._b5p=null;
+    if(u.maxShield){u.shield=u.maxShield;u.broken=0;}banner(D.hit+'!','#c89aff');log(`${D.hit}! New moves: ${u.sk.map(s=>s.n).join(', ')}. Its shield is whole again.`);}}
+function b4GimTurn(u){const S=B.b4g;const n=(u.turns||0)+1;b4GimExpire(u);if(B.over)return;b4GimLand(u);
+  if(!B.over&&S.D.t!=='phase2'&&n>=BOSS_GIM.first&&(n-BOSS_GIM.first)%(S.D.every||BOSS_GIM.every)===0)b4GimTell(u);b4GimSync();}
+function b4GimStart(){B.b4g=null;if(!b4GimOn())return;const u=B.en.find(e=>e.boss&&e.key&&b4GimDefOf(e.key));if(!u)return;const D=b4GimDefOf(u.key);
+  B.b4g={u,key:String(u.key).replace(/^echo_/,''),D,ticks:0,pend:null,act:null,lvl:0};log(`Realm gimmick: ${b4GimLine(D)}`);}
+function b4HookGim(){if(enemyTurn0.__b4g)return;const et0=enemyTurn0;
+  enemyTurn0=function(u){try{if(B&&!B.over&&B.b4g&&u===B.b4g.u&&u.hp>0){b4GimTurn(u);if(checkEnd())return;}}catch(e){try{wdLog('b4 gimmick: '+(e&&e.message||e),u);}catch(_){}}
+    return et0.apply(this,arguments);};enemyTurn0.__b4g=1;if(et0.__b4)enemyTurn0.__b4=1;}
+// effects on damage and speed (tide, dark, mirror, veil, airborne, chill)
+{const cd1=calcDamage;calcDamage=function(a,sk,t){const r=cd1.apply(this,arguments);
+  try{const S=B&&B.b4g;if(!S||!r||!r.dmg||!a||!t||!sk)return r;const D=S.D,A=S.act;let m=1;
+    if(D.t==='tide'&&S.lvl&&skEls(sk).includes('water'))m*=1+D.dmg*S.lvl;
+    if(D.t==='dark'&&S.lvl&&a.side==='p')m*=Math.max(.3,1-D.dmg*S.lvl);
+    if(A&&a.side==='p'&&t===S.u){if(A.t==='mirror'&&sk.k===A.kind)m*=1-D.cut;else if(A.t==='veil')m*=1-D.cut;else if(A.t==='air'&&sk.k==='phys'&&deliveryOf(a,sk)!=='ranged')m*=1-D.cut;}
+    if(m!==1)r.dmg=Math.max(1,Math.round(r.dmg*m));}catch(e){}return r;};}
+{const dl0=delayOf;delayOf=function(u,cost){let d=dl0.apply(this,arguments);try{const S=B&&B.b4g;if(S&&u&&u.side==='p'){const D=S.D;
+  if(D.t==='chill'&&u.st&&u.st.g_chill)d*=1+D.spd*(u.st.g_chill.v||1);if(D.t==='tide'&&S.lvl&&!(u.el||[]).includes('water'))d*=1+D.spd*S.lvl;}}catch(e){}return d;};}
+// the answers: element hits stop a readied move, Fire thaws, Earth dams the tide, Fire or Light lights a torch, Light reveals; a mirror splashes back
+{const pf1=perform;perform=function(a,sk,tgts){const S=B&&B.b4g;if(!S||!a||a.side!=='p'||!sk)return pf1.apply(this,arguments);const u=S.u,hp0=u.hp;const r=pf1.apply(this,arguments);
+  try{const D=S.D,els=skEls(sk),off=sk.k==='phys'||sk.k==='mag',hit=u.hp<hp0;
+    if(S.pend&&S.pend.t==='sac'&&D.els&&hit&&els.some(e=>D.els.includes(e))&&!S.pend.stop){S.pend.stop=1;fx(u,'Interrupted','stat good');log(`${a.name}'s ${els.filter(e=>D.els.includes(e)).map(e=>EL[e]).join(' ')} hit stops the ${D.n}!`);}
+    if(off&&D.t==='chill'&&els.includes('fire')&&a.st&&a.st.g_chill){delete a.st.g_chill;fx(a,'Thawed','stat good');log(`${a.name} burns off the chill.`);}
+    if(off&&D.t==='tide'&&S.lvl>0&&els.includes('earth')){S.lvl--;fx(u,'Tide '+S.lvl,'stat');log(`${a.name}'s Earth dams the water (level ${S.lvl}).`);}
+    if(off&&D.t==='dark'&&S.lvl>0&&(els.includes('fire')||els.includes('light'))){S.lvl=0;fx(a,'Torch!','stat good');log(`${a.name} lights a torch. The dark falls back.`);}
+    if(off&&S.act&&S.act.t==='veil'&&els.includes('light')&&(tgts||[]).includes(u)){S.act=null;fx(u,'Revealed','stat good');log(`${a.name}'s light reveals ${u.name}.`);}
+    if(S.act&&S.act.t==='mirror'&&hit&&sk.k===S.act.kind&&a.hp>0&&!a.isComp){const d=Math.max(1,Math.round((hp0-u.hp)*D.refl));fx(a,String(d),'dmg');log(`The mirror splashes ${d} back at ${a.name}.`);hurt(a,d);}
+    b4GimPhase(u);b4GimSync();}catch(e){}return r;};}
+{const sc1=scan;scan=function(t){const S=B&&B.b4g;const r=sc1.apply(this,arguments);try{if(S&&S.u===t){if(S.act&&S.act.t==='veil'){S.act=null;fx(t,'Revealed','stat good');log(`The scan cuts through the mist: ${t.name} is revealed.`);}log(`Realm gimmick: ${b4GimLine(S.D)}`);b4GimSync();}}catch(e){}return r;};}
+{const hu1=hurt;hurt=function(t,d){const r=hu1.apply(this,arguments);try{if(B&&B.b4g&&t===B.b4g.u){b4GimPhase(t);b4GimSync();}}catch(e){}return r;};}
+// the i panel: the boss's gimmick and where it stands now
+function b4GimNow(){const S=B&&B.b4g;if(!S)return '';const D=S.D,P=S.pend,A=S.act;
+  if(P)return `Telegraphed: ${D.n} lands on its next turn. ${b4GimHint(D)}`;if(A)return A.t==='air'?'Airborne now; it dives at the marked spot next turn.':A.t==='veil'?'Veiled now.':'Mirror raised now: weapons are safe.';
+  if(D.t==='tide'||D.t==='dark')return `Level ${S.lvl} of ${D.max}.`;if(D.t==='phase2')return S.done?'The Eclipse form is here.':S.warned?'Cracking: it changes at half HP.':`It changes at ${Math.round(D.at*100)}% HP.`;return 'Nothing readied right now.';}
+if(typeof uDetHtml==='function'){const ud0=uDetHtml;uDetHtml=function(){let h=ud0.apply(this,arguments);try{const S=B&&B.b4g,P=B&&B.uDet,u=P&&typeof unitOf==='function'?unitOf(P.ref):null;
+  if(h&&S&&u===S.u){const row=`<div class="udst b4gim"><b class="dn">Realm gimmick: ${esc(S.D.n)}</b><small>${esc(S.D.d)}. ${esc(b4GimNow())}</small></div>`;h=h.replace('<h4>Effects</h4>','<h4>Effects</h4>'+row);}}catch(e){}return h;};}
+// careful play (sims): reads the telegraph like a player reading the log
+function b4GimSmart(a){const S=B.b4g;if(!S||!S.u||S.u.hp<=0)return false;const u=S.u,D=S.D,P=S.pend,A=S.act,ix=B.front.indexOf(a),foes=B.en.filter(e=>e.hp>0);
+  const soon=u.next<=B.time+delayOf(a,.6),ks=known(a).filter(s=>a.mp>=(s.mp||0)),dmg=ks.filter(s=>(s.k==='phys'||s.k==='mag')&&!s.limit&&!s.steal&&s.t!=='self'&&s.t!=='ally'&&s.t!=='allyAll'&&s.t!=='dead');
+  const val=(s,t)=>s.pw*(s.hits||1)*bestMult(s,t,a)*(s.t==='all'?Math.min(3,foes.length)*.7:1),best=(L,t)=>L.slice().sort((x,y)=>val(y,t)-val(x,t))[0],go=s=>{exec(s,s.t==='all'||s.t==='rand'?foes:[u]);return true;};
+  const marked=P&&((P.t==='slot'&&P.slots.includes(ix))||(P.t==='rod'&&P.id===a.id))||A&&A.t==='air'&&A.slots.includes(ix);
+  if(marked&&soon&&a.hp/a.S.mhp<(D.pct||.2)+.55){guard();return true;}
+  if(P&&P.t==='chill'&&soon&&((a.st.g_chill&&a.st.g_chill.v)||0)>=D.max-1){guard();return true;}
+  if(D.t==='chill'&&a.st.g_chill){const s=best(dmg.filter(s=>skEls(s).includes('fire')),u);if(s)return go(s);}
+  if(P&&P.t==='sac'&&!P.stop){const L=D.els?dmg.filter(s=>skEls(s).some(e=>D.els.includes(e))):[];const s=best(L.length?L:dmg.filter(s=>s.t!=='all'),u);if(s)return go(s);}
+  if(D.t==='tide'&&S.lvl>=2){const s=best(dmg.filter(s=>skEls(s).includes('earth')),u);if(s)return go(s);}
+  if(D.t==='dark'&&S.lvl>=2){const s=best(dmg.filter(s=>skEls(s).some(e=>e==='fire'||e==='light')),u);if(s)return go(s);}
+  if(A&&A.t==='veil'){const s=best(dmg.filter(s=>skEls(s).includes('light')),u);if(s)return go(s);const o=foes.find(e=>e!==u);if(!o){scan(u);return true;}}
+  if(A&&A.t==='mirror'){const L=dmg.filter(s=>s.k!==A.kind);const s=best(L,u);if(s)return go(s);if(A.kind==='mag'){exec(ATTACK,[u]);return true;}}
+  if(A&&A.t==='air'){const L=dmg.filter(s=>s.k==='mag'||deliveryOf(a,s)==='ranged');const s=best(L,u);if(s)return go(s);}
+  return false;}
+
 // ----- smart play for the sims (SIM_SMART, the "careful player" yardstick): reads roles, guards telegraphs, swaps, varies -----
 function b4Smart(){const a=B.cur;if(!a||a.side!=='p')return false;const foes=B.en.filter(e=>e.hp>0),fr=B.front.filter(c=>c.hp>0);if(!foes.length)return false;
+  if(b4GimSmart(a))return true;
   const R=B4.roles,ratio=c=>c.hp/c.S.mhp,ks=known(a).filter(s=>a.mp>=(s.mp||0));
   if(b4FreeReady()){const others=fr.filter(c=>c!==a&&b4CanOut(c)),bench=B.back.filter(c=>c.hp>0&&ratio(c)>.5).sort((x,y)=>ratio(y)-ratio(x));
     const ch=foes.find(e=>b4Role(e)==='charge'&&has(e,'charge')),ct=ch&&B.front[ch.b4slot];
@@ -18873,7 +19245,7 @@ function b4Smart(){const a=B.cur;if(!a||a.side!=='p')return false;const foes=B.e
   if(!B||B.over||B.mode!=='cmd')return;return ats0.apply(this,arguments);};}
 
 // ----- start of battle -----
-{const sb0=startBattle;startBattle=function(){try{b4HookPlan();b4HookTurn();}catch(e){}const r=sb0.apply(this,arguments);try{if(r!==false&&B){B.b4mo=null;if(b4On('mo'))b4MoS();
+{const sb0=startBattle;startBattle=function(){try{b4HookPlan();b4HookTurn();b4HookGim();}catch(e){}const r=sb0.apply(this,arguments);try{if(r!==false&&B){B.b4mo=null;if(b4On('mo'))b4MoS();b4GimStart();
   const roles=[...new Set(B.en.filter(e=>b4Role(e)).map(e=>e.role))];if(roles.length)B.b4seen=roles;}}catch(e){}return r;};}
 
 // ----- UI: the momentum gauge in the log ticker under the stage -----
@@ -18886,7 +19258,7 @@ function b4MoDraw(){const bl=document.getElementById('bline');if(!bl)return;let 
   if(!B||!b4On('mo')){if(el)el.remove();return;}
   if(!el){el=document.createElement('button');el.id='b4mo';el.type='button';el.dataset.act='b4mo';bl.insertBefore(el,bl.firstChild);}
   const st=b4MoState(),h=b4MoHtml(),lab=b4MoLabel();if(el.dataset.h!==h){el.dataset.h=h;el.innerHTML=h;el.className='b4mo '+st;el.setAttribute('aria-label',lab);el.title=lab;}}
-{const rb0=renderBattle;renderBattle=function(stageOnly){const r=rb0.apply(this,arguments);try{if(!stageOnly)b4MoDraw();}catch(e){}return r;};}
+{const rb0=renderBattle;renderBattle=function(stageOnly){try{b4GimSync();}catch(e){}const r=rb0.apply(this,arguments);try{if(!stageOnly)b4MoDraw();}catch(e){}return r;};}
 ACT.b4mo=function(){if(!B||!b4On('mo'))return;log(b4MoLabel());render();};
 
 // ----- UI: the switch menu (who steps back, then who comes in) -----
@@ -18915,7 +19287,7 @@ if(typeof mBeast==='function'){const mb0=mBeast;mBeast=function(m){let h=mb0.app
 
 // ----- tests -----
 const B4X={get cfg(){return B4;},plan:u=>b4RolePlan(u),roleLine:u=>b4RoleLine(u),roleOf:m=>b4RoleOfMon(m),ROLE:B4ROLE,freeSwap:(f,b)=>b4FreeSwap(f,b),freeReady:()=>b4FreeReady(),freeLeft:()=>b4FreeLeft(),
-  mo:()=>B?b4MoS():null,moState:()=>b4MoState(),sig:s=>b4Sig(s),hex:c=>b4Hex(c),smart:()=>b4Smart(),detGain:a=>b4DetGain(a),
+  mo:()=>B?b4MoS():null,gim:()=>B&&B.b4g,gimDef:k=>b4GimDefOf(k),gimTurn:u=>b4GimTurn(u),gimSync:()=>b4GimSync(),gimNow:()=>b4GimNow(),gimSmart:a=>b4GimSmart(a),get GIM(){return BOSS_GIM;},moState:()=>b4MoState(),sig:s=>b4Sig(s),hex:c=>b4Hex(c),smart:()=>b4Smart(),detGain:a=>b4DetGain(a),
   foeTurn:u=>{B.cur=u;B.mode='enemy';enemyTurn0(u);},exec:(s,t)=>exec(s,t),guard:()=>guard(),calc:(a,s,t,b)=>calcDamage(a,s,t,b),rng:f=>{RNG=f||Math.random;},doSwap:i=>doSwap(i)};
 
 // ===== remember.js (v0.7.1): remember Auto and Run =====
@@ -18933,7 +19305,7 @@ function remSet(k,v){try{META.cfg[k]=!!v;saveMeta();}catch(e){}}
 window.addEventListener('keyup',e=>{if(e.key==='Shift'&&remOn('runOn'))WS.run=true;});
 {const sb0=startBattle;startBattle=function(spec){try{if(!(spec&&spec.kind==='daily')&&!(G&&G.daily))V.auto=remOn('autoOn');}catch(e){}return sb0.apply(this,arguments);};}
 
-// ===== pacing.js (v0.7.2): pacing spread: when each system first unlocks =====
+// ===== pacing.js (v0.7.2): pacing spread: when each system first unlocks (v0.9.5: by realm, pcUnlocked) =====
 // =================== Beta v0.7.2: pacing spread (owner approved the docs/v063-progression.md proposals) ===================
 // Realm 1 used to introduce almost every system at once, and levels 15 to 30 got little new. Four gates move later:
 //  1. Guild missions open after the first Scourge falls (ranks from other sources keep counting; accepted missions stay).
@@ -18956,6 +19328,87 @@ function pcTemperOpen(){return pcFirstBoss()||pcHasTempered();}
 // 4. personal quests: the lock text follows PERSONAL_REALM
 {const ord=n=>['first','second','third','fourth','fifth'][n]||('realm '+(n+1));
   const lt0=personalLockText;personalLockText=function(c){return lt0.apply(this,arguments).replace('Unlocks in the second realm','Unlocks in the '+ord(PERSONAL_REALM)+' realm');};}
+
+// =================== Beta v0.9.5: depth unlocks by realm (owner approved) ===================
+// PACE (config.js) says in which realm each system opens on a new journey: realm 1 elements, basic combat and taming; realm 2 reactions,
+// gear upgrades (Tempering still waits for the first Scourge, above) and bonds; realm 3 camp and guild missions; realm 4 the endgame extras
+// (the Echoforge, the arena's Golden Coliseum, a New Game+ teaser). Gating only hides or holds back; it never removes anything:
+//  - a journey started before v0.9.5 (no G.pcV) keeps every system it had (only the v0.7.2 gates above apply to it),
+//  - a New Game+ cycle and the Daily Trial have everything open.
+// pcUnlocked(system) is the one test (systems: PACE.at keys); other modules (onboarding tips, What next?) should ask it before
+// pointing the player at a system. pcRealm() is the realm index the journey has reached (0 = the first realm).
+function pcRealm(){return G?Math.max(G.stage|0,(G.cleared||[]).filter(Boolean).length):0;}
+function pcGated(){return !!(G&&!G.daily&&G.pcV);}
+function pcUnlocked(sys){if(!G||!pcGated())return true;const at=PACE.at[sys];if(at==null)return true;if(sys==='echoforge'&&G.won)return true;return pcRealm()>=at;}
+function pcOrd(n){return ['first','second','third','fourth','fifth'][n]||('realm '+(n+1));}
+function pcLockText(sys){return `opens in the ${pcOrd(PACE.at[sys]||0)} realm`;}
+// new journeys get the gates (an NG+ cycle does not)
+{const ng0=newGame;newGame=function(ids,cycle){const r=ng0.apply(this,arguments);try{if(G&&!cycle)G.pcV=1;}catch(e){}return r;};}
+// reactions: in a gated first realm a primer skill is a plain hit (it marks nothing, so nothing detonates)
+{const pf0=perform;perform=function(a,sk,tgts){if(sk&&sk.role==='primer'&&a&&a.side==='p'&&!pcUnlocked('reactions')){
+    try{G.pcN=G.pcN||{};if(!G.pcN.react){G.pcN.react=1;log('Elemental reactions awaken in the second realm. Until then a primer is a plain hit.');}}catch(e){}
+    return pf0.call(this,a,Object.assign({},sk,{role:null}),tgts);}
+  return pf0.apply(this,arguments);};}
+// bonds: in a gated first realm wins side by side do not count yet
+{const w0=win;win=function(){if(!G||pcUnlocked('bonds'))return w0.apply(this,arguments);const b0=JSON.stringify(G.bonds||{}),t0=(G.talks||[]).length;const r=w0.apply(this,arguments);
+  try{G.bonds=JSON.parse(b0);if(G.talks)G.talks.length=Math.min(G.talks.length,t0);const i=V.modal&&V.modal.info;if(i&&i.bonds)i.bonds=[];}catch(e){}return r;};}
+if(typeof bondSheet==='function'){const bs0=bondSheet;bondSheet=function(){if(!pcUnlocked('bonds'))return '';return bs0.apply(this,arguments);};}
+if(typeof vBonds==='function'){const vb0=vBonds;vBonds=function(){if(!pcUnlocked('bonds'))return `<p class="note pclock">Bonds ${pcLockText('bonds').replace('opens','open')}: from then on, heroes who win side by side in the Vanguard grow closer, with campfire talks and joint techs.</p>`;return vb0.apply(this,arguments);};}
+// guild missions: the third realm on a new journey (the v0.7.2 first Scourge rule above still holds for older journeys)
+function pcGuildOpen(){return pcGated()?pcUnlocked('guilds'):pcFirstBoss();}
+{const fl1=facMissionList;facMissionList=function(id){if(!pcGated()||pcGuildOpen())return fl1.apply(this,arguments);const f=facInit();return fl1.apply(this,arguments).filter(m=>f.acc[m.id]!=null);};}
+{const fa1=ACT.facAccept;ACT.facAccept=function(id){if(pcGated()&&!pcGuildOpen()){toast('Guild missions '+pcLockText('guilds')+'.');return;}return fa1.apply(this,arguments);};}
+{const vm1=vFacMissions;vFacMissions=function(){const h=vm1.apply(this,arguments);if(!G||!pcGated()||pcGuildOpen())return h;const t=`Guild missions ${pcLockText('guilds')}.`;
+  return h.includes(`Guild missions ${PC_LOCK}.`)?h.replace(`Guild missions ${PC_LOCK}.`,t):`<p class="note pclock">${t} Your standing with each faction already counts from what you do on the road.</p>`+h;};}
+// the Echoforge: the fourth realm (or once the journey is won)
+if(typeof efTabOn==='function'){const ef0=efTabOn;efTabOn=function(){return ef0.apply(this,arguments)&&pcUnlocked('echoforge');};}
+// the arena's top tiers: the Golden Coliseum needs the fourth realm (ARENA min already asks for three Scourges)
+// one notice per realm when it opens something new (and the New Game+ teaser in the fourth)
+const PC_NEWS={1:'New in this realm: elemental reactions (a primer marks a foe, a detonator sets it off) and bonds between heroes who win side by side.',
+  2:'New in this realm: guild missions at the Guild Hall, and Camp Supplies at Alchemy for making camp on the road.',
+  3:'New in this realm: the Echoforge at the Smithy and the Golden Coliseum. Beyond the last Calamity waits New Game+: keep your heroes, face harder foes, add modifiers.'};
+function pcNews(){try{if(!pcGated())return;const r=Math.min(3,pcRealm());G.pcN=G.pcN||{};for(let k=1;k<=r;k++){if(G.pcN['r'+k])continue;G.pcN['r'+k]=1;if(k===r&&PC_NEWS[k])toast(PC_NEWS[k]);}}catch(e){}}
+{const sl0=showLocation;showLocation=function(){const r=sl0.apply(this,arguments);try{if(WS.m&&WS.m.kind==='town')pcNews();}catch(e){}return r;};}
+try{window.__P95={pcUnlocked,pcRealm,pcGated,pcLockText,pcNews,pcGuildOpen,get PACE(){return PACE;}};}catch(e){}
+
+// ===== comp3.js (v0.9.5): companions grow: a second skill and an evolution from the battles they win beside their hero =====
+// Each companion counts the battles it wins while its hero is in the six (o.bt, an optional save field; old saves start at 0).
+// At TAME.skillAt it learns a second skill (by family, in its own element). At TAME.evoAt it evolves: a new name, a bigger bonus for its
+// hero and a recoloured sprite (the monster's palette pulled toward the family colour, the realm variants' repaint; no new art files).
+// Progress shows in Menu > Companions, on the hero sheet and in Records > Bestiary > Taming log ("evolves after 12 more battles").
+// Not in the Daily Trial (it has no companions). TAME: in config.js.
+function compBt(o){return (o&&o.bt)|0;}
+function compStage(o){const b=compBt(o);return b>=TAME.evoAt?2:b>=TAME.skillAt?1:0;}
+function compEvoArt(art,f){const key='ev_'+art;try{if(!MART[art])return art;if(!MART[key]){const col=TAME.col[f]||'#ffd04a',k=TAME.k;
+    MART[key]=g=>{const o=MART[art](g),pal={};Object.keys(o.pal).forEach(q=>{pal[q]='KEW'.includes(q)?o.pal[q]:recol(o.pal[q],col,k);});return Object.assign({},o,{pal});};
+    if(MEXTRA[art])MEXTRA[key]=(g,p)=>{MEXTRA[art](g,p);Object.keys(p).forEach(q=>{if(!'KEW'.includes(q))p[q]=recol(p[q],col,k);});};
+    if(BIG_ART.includes(art)&&!BIG_ART.includes(key))BIG_ART.push(key);}return key;}catch(e){return art;}}
+function compSkill2(o,d){const f=compFamily(o),t=TAME.sk[f]||TAME.sk.beast,el=(d&&d.el&&d.el[0])||'earth';return [t[0],el,t[1],t[2],t[3],t[4]];}
+function compEvoName(o,d){return (TAME.pre[compFamily(o)]||'Elder')+' '+((d&&d.n)||'');}
+// the companion as it is now: its second skill and its evolved name and look join the monster's own data
+{const cd0=compDef;compDef=function(o){const d=cd0.apply(this,arguments);try{const st=compStage(o);if(!d||!st)return d;const e=Object.assign({},d);
+  e.sk=(d.sk||[]).concat([compSkill2(o,d)]);if(st>=2){e.n=compEvoName(o,d);e.art=compEvoArt(d.art,compFamily(o));e.evo=1;}return e;}catch(x){return d;}};}
+{const cb0=compBonus;compBonus=function(o){return cb0.apply(this,arguments)+(compStage(o)>=2?TAME.evoBonus:0);};}
+{const rt0=registerTamed;registerTamed=function(o){const r=rt0.apply(this,arguments);try{if(o&&TPL[o.id]&&compStage(o)>=2){const d=compDef(o);if(d&&d.art)TPL[o.id].art=d.art;}}catch(e){}return r;};}
+// what comes next, in one line
+function compNext(o){const b=compBt(o),d0=MON[o.mon]||guardianDef(o.mon),s2=compSkill2(o,d0)[0],evo=compEvoName(o,d0),pl=n=>n+' more battle'+(n===1?'':'s');
+  if(b<TAME.skillAt)return `Learns ${s2} after ${pl(TAME.skillAt-b)}, evolves after ${pl(TAME.evoAt-b)}`;
+  if(b<TAME.evoAt)return `Knows ${s2}. Evolves into ${evo} after ${pl(TAME.evoAt-b)}`;return `Fully grown: ${evo}, with ${s2}`;}
+function compProgHtml(o){const b=compBt(o),st=compStage(o),goal=st===0?TAME.skillAt:TAME.evoAt,p=Math.min(100,Math.round(100*b/TAME.evoAt));
+  return `<span class="c3prog"><b>Bond ${st}</b> · ${b} battle${b===1?'':'s'} won together · ${esc(compNext(o))}<i class="c3bar" aria-hidden="true"><i style="width:${p}%"></i></i></span>`;}
+{const bt0=compBonusText;compBonusText=function(o){const h=bt0.apply(this,arguments);try{return h+`</small><small class="c3line">${compProgHtml(o)}`;}catch(e){return h;}};}
+// counting: every won battle with its hero anywhere in the six
+{const w0=win;win=function(){let ids=null;try{if(B&&G&&!G.daily&&(G.tamed||[]).length)ids=allParty().map(u=>u&&u.isComp&&u.owner?u.owner.id:u&&u.id).filter(Boolean);}catch(e){}
+  const r=w0.apply(this,arguments);
+  try{if(ids)(G.tamed||[]).forEach(o=>{if(!o.with||!ids.includes(o.with))return;const s0=compStage(o),d0=MON[o.mon]||guardianDef(o.mon);o.bt=compBt(o)+1;const s1=compStage(o);
+    if(s1>s0){if(s1===1)toast(`${o.name} learned ${compSkill2(o,d0)[0]}!`);else{toast(`${o.name} evolves into ${compEvoName(o,d0)}!`);if(TPL[o.id]){const d=compDef(o);if(d)TPL[o.id].art=d.art;}}
+      if(G.roster[o.with])refresh(G.roster[o.with]);}});}catch(e){}return r;};}
+// Taming log: the companions you have and how far each has grown
+if(typeof vTameLog==='function'){const tl0=vTameLog;vTameLog=function(){const h=tl0.apply(this,arguments);try{const L=G&&G.tamed||[];if(!L.length)return h;
+  const rows=L.map(o=>{const d=compDef(o);return `<div class="row comprow"><img class="mimg" src="${monURL(d.art)}" alt=""><div class="grow"><b>${esc(o.name)}</b> <small>${esc(d.n)}</small><small>${compProgHtml(o)}</small></div></div>`;}).join('');
+  return `<h4>Your companions</h4><div class="rows c3log">${rows}</div>`+h;}catch(e){return h;}};}
+try{const css=document.createElement('style');css.textContent=`.c3prog{display:block;line-height:1.3}.c3bar{display:block;height:4px;margin-top:3px;background:rgba(255,255,255,.12);border-radius:2px;overflow:hidden;max-width:220px}.c3bar>i{display:block;height:100%;background:#ffd04a}`;document.head.appendChild(css);}catch(e){}
+try{window.__C3={compBt,compStage,compNext,compEvoArt,compSkill2,compEvoName,get TAME(){return TAME;}};}catch(e){}
 
 // ===== onboard.js (v0.7.0): onboarding: one tip card the first time each system appears =====
 // One short card (two lines at most, plain words) the first time the player really meets a system: the first primed foe, the
@@ -19485,12 +19938,12 @@ function rgBump(m,a){if(WS.rgMap!==m.id){WS.rgMap=m.id;WS.rgSaid={};}if(WS.inSrc
 try{window.__RG={need:b=>rivalNeed(b),ghost:a=>ghostActor(a),text:b=>rivalNeedText(b),alpha:RG,actors:()=>WS.m?dynActors(WS.m):[],marks:()=>WS.m?mapMarks(WS.m):[]};}catch(e){}
 
 // ===== qready.js (v0.5.1): quests ready to hand in =====
-// When a Quest Board quest or a Guild mission is complete and waiting to be claimed, a toast says so once, the Menu button and the
+// When a Notice Board quest or a Guild mission is complete and waiting to be claimed, a toast says so once, the Menu button and the
 // Quests menu chip carry a "ready" count, and the quest rows show a "Ready to hand in" tag with where to claim it.
 // New optional save field: G.qNote {key: 1} (what has already been announced; a claimed quest drops out of it). Off in the Daily Trial.
 function qReadyList(){const out=[];if(!G||G.daily)return out;
-  try{(G.quests||[]).forEach(q=>{if(q.state==='active'&&questReady(q))out.push({k:'q:'+q.id,t:q.title,where:'any quest board'});});}catch(e){}
-  try{if(typeof FMIS!=='undefined'&&typeof facInit==='function'){const f=facInit();FMIS.forEach(m=>{if(f.acc[m.id]!=null&&!f.done[m.id]&&facProg(m)>=m.n)out.push({k:'m:'+m.id,t:m.t,where:'the Guild Hall'});});}}catch(e){}
+  try{(G.quests||[]).forEach(q=>{if(q.state==='active'&&questReady(q))out.push({k:'q:'+q.id,t:q.title,where:'the Notice Board (Menu > Quests)',tab:'quests'});});}catch(e){}
+  try{if(typeof FMIS!=='undefined'&&typeof facInit==='function'){const f=facInit();FMIS.forEach(m=>{if(f.acc[m.id]!=null&&!f.done[m.id]&&facProg(m)>=m.n)out.push({k:'m:'+m.id,t:m.t,where:'the Notice Board (Menu > Quests, Guilds)',tab:'factions'});});}}catch(e){}
   return out;}
 const qReadyCount=()=>qReadyList().length;
 let qrLast=0;
@@ -19502,10 +19955,11 @@ function qReadyCheck(){if(!G||G.daily||B||V.screen!=='world')return;const now=Da
   // v0.8.2: silent right after a battle (leaving the rewards screen made a noise); the toast still shows
   try{if(typeof sfx==='function'&&!(V.endT&&Date.now()-V.endT<5000))sfx('chest');}catch(e){}}
 // the Menu button and the Quests chip carry the count; ready rows get a tag
-{const mt0=menuTabsHtml;menuTabsHtml=function(grp,tab){let h=mt0.apply(this,arguments);try{const n=qReadyCount();if(n)h=h.replace(/(data-arg="quests">)Quests(<\/button>)/,`$1Quests <em class="qtag" title="Ready to hand in">${n} ready</em>$2`);}catch(e){}return h;};}
+// v0.9.5: the Quests group chip carries the total; inside the group, the Quests and Guilds tabs carry their own counts
+{const mt0=menuTabsHtml;menuTabsHtml=function(grp,tab){let h=mt0.apply(this,arguments);try{const L=qReadyList(),n=L.length;if(n)h=h.replace(/(data-act="menuGrp" data-arg="quests">)Quests(<\/button>)/,`$1Quests <em class="qtag" title="Ready to hand in">${n} ready</em>$2`);
+  if(grp&&grp[0]==='quests')['quests','factions'].forEach(t=>{const k=L.filter(o=>o.tab===t).length;if(k)h=h.replace(new RegExp('(data-act="menuTab" data-arg="'+t+'">)([^<]*)(</button>)'),`$1$2 <em class="qtag" title="Ready to hand in">${k}</em>$3`);});}catch(e){}return h;};}
 {const r0=render;render=function(){const r=r0.apply(this,arguments);try{qReadyCheck();const n=G&&!G.daily?qReadyCount():0;
-  document.querySelectorAll('[data-act="menu"]').forEach(b=>{let t=b.querySelector('.qdot');if(n&&!t){t=document.createElement('em');t.className='qdot';b.appendChild(t);}if(t){if(n){t.textContent=n;t.title=n+' ready to hand in';}else t.remove();}});
-  if(V.modal&&V.modal.type==='menu'&&V.modal.tab==='quests')document.querySelectorAll('#modal .row').forEach(row=>{const s=row.querySelector('small');if(s&&/Ready to claim at a quest board/.test(row.textContent)&&!row.querySelector('.qtag')){const b=row.querySelector('b');if(b)b.insertAdjacentHTML('afterend',' <em class="qtag">Ready to hand in</em>');}});}catch(e){}return r;};}
+  document.querySelectorAll('[data-act="menu"]').forEach(b=>{let t=b.querySelector('.qdot');if(n&&!t){t=document.createElement('em');t.className='qdot';b.appendChild(t);}if(t){if(n){t.textContent=n;t.title=n+' ready to hand in';}else t.remove();}});}catch(e){}return r;};}// v0.9.5: the board's rows tag themselves (Ready)
 try{const css=document.createElement('style');css.textContent=`.qtag{display:inline-block;font:700 .68rem/1.2 var(--fb,system-ui);font-style:normal;color:#150b17;background:#7affc8;border-radius:8px;padding:1px 6px;margin-left:4px;vertical-align:1px}
   .qdot{position:absolute;top:-6px;right:-6px;min-width:18px;height:18px;border-radius:9px;background:#7affc8;color:#150b17;font:800 .7rem/18px var(--fb,system-ui);font-style:normal;text-align:center;box-shadow:0 0 0 2px #150b17;pointer-events:none}
   [data-act="menu"]{position:relative}`;document.head.appendChild(css);}catch(e){}
@@ -20140,8 +20594,8 @@ function hdActors(m,now,ts){const B=HD.dyn,BB=HD.dynB,BA=HD.dynA,V=HD.S.V,still=
     const c=echoUp?imgOf('mapecho:'+def.art,()=>monCanvas(MART['echo_'+def.art]?'echo_'+def.art:def.art)):imgOf('mapboss:'+def.art,()=>monCanvas(def.art)),bob=still?0:Math.sin(now/420)*1.5;
     const D=DTH(m),ac=hdRgb(D.acc);hdDecal(BA,'glow',hdGlowS(),bx*TS+8,by*TS+9,44*.8,26*.8,ac[0]*255,ac[1]*255,ac[2]*255,110);
     hdChar(echoUp?BB:B,c,bx*TS+8,(bob*.6-sp)*V,by*TS+12,true,echoUp?Math.round((.72+.18*Math.sin(ts/300))*255):255,16);hdShadowC(bx*TS+8,by*TS+13);hdPickAdd(-1,bx*TS+8,by*TS+12,Math.max(HD.chH,22*V),Math.max(HD.chW,16),bx,by);}
-  // roaming foes in dungeons: their sprite, an elite ring, a faint sight cone, "!" while chasing
-  if(dun&&m.roam&&typeof ROAM!=='undefined')m.roam.forEach(r=>{if(r.dead)return;let x=r.x*TS,y=r.y*TS;if(r.t0&&r.fx!=null){const p=Math.min(1,(now-r.t0)/(r.mode==='chase'?ROAM.chaseMs:ROAM.patrolMs));x=(r.fx+(r.x-r.fx)*p)*TS;y=(r.fy+(r.y-r.fy)*p)*TS;}
+  // roaming foes in dungeons and (v0.9.5) on fields: their sprite, an elite ring, a faint sight cone, "!" while chasing
+  if(m.roam&&(dun||m.kind==='field')&&typeof ROAM!=='undefined')m.roam.forEach(r=>{if(r.dead)return;let x=r.x*TS,y=r.y*TS;if(r.t0&&r.fx!=null){const p=Math.min(1,(now-r.t0)/(r.mode==='chase'?ROAM.chaseMs:ROAM.patrolMs));x=(r.fx+(r.x-r.fx)*p)*TS;y=(r.fy+(r.y-r.fy)*p)*TS;}
     if(Math.abs(x-HD.cam.x)>420||Math.abs(y-HD.cam.z)>520)return;const img=imgOf('rm:'+MON[r.mon].art,()=>monCanvas(MON[r.mon].art)),bob=still?0:Math.floor(now/300+r.i)%2;
     const [a,b]=DIRV[r.dir],S2=ROAM.sight*TS,cx=x+8,cz=y+8,ch=r.mode==='chase';H2P.set([cx,.5,cz,cx+a*S2-b*S2/2,.5,cz+b*S2-a*S2/2,cx+a*S2+b*S2/2,.5,cz+b*S2+a*S2/2,cx,.5,cz]);
     BB.quad(H2P,-1,0,-1,0,ch?255:255,ch?90:230,ch?60:150,ch?46:26,0,1,0,4);

@@ -2,7 +2,7 @@
 // (heals less than the inn, one boon for CAMP.dur battles, blocked in town and the Daily Trial), and layouts at 390x844 and 933x705.
 const {open,chk,done}=require('./pw');
 const SIZES=[[390,844,true],[933,705,false]];
-async function setup(ev){await ev(()=>{const A=__A;A.ACT.new();['oren','mira','lumen'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;A.META.cfg.hints=false;A.render();});}
+async function setup(ev){await ev(()=>{const A=__A;A.ACT.new();['oren','mira','lumen'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;A.META.cfg.hints=false;delete A.G.pcV;A.render();});}// v0.9.5: a journey from before the realm gates (bonds open in the second realm on new journeys, v095p3.js)
 // no clipped text in the open modal: every text element fits its box horizontally, and nothing runs off the panel
 const clipCheck=()=>{const p=document.querySelector('#modal .panel');if(!p)return 'no panel';const pr=p.getBoundingClientRect(),bad=[];
   if(pr.right>innerWidth+1||pr.left<-1)bad.push('panel '+Math.round(pr.left)+'..'+Math.round(pr.right));

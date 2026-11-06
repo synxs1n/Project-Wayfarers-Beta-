@@ -7,6 +7,7 @@ Read these before a big pass:
 - `design-notes-v050.md`: Beta v0.5.0 (the big fix, logic, shops, party, settings and graphics pass). Wins over the older notes. Phase reports: `v050-phase2.md`, `v050-phase3.md`, `v050-phase45.md`.
 - `v053-ui.md`: the v0.5.3 UI pass ("Gilded Night" menus, HUD and battle panels in `v3/ui3.css`), its design language, tests and limits.
 - `v063-menus.md`: the shops and menus pass (two-level shop tabs, dropdown filters, regrouped menu, panels sized to the visible screen, the clipping test).
+- `v095-menus.md`: the Notice Board (Quests, Guilds, Bounties, Arena in one place), three ranks per guild, the Upgrade button on each gear slot, team help first on the Party and Equipment tabs.
 - `v053-hd2d.md`: Beta v0.5.3 HD-2D world renderer (WebGL diorama view of the world maps on Medium and High graphics).
 - `v058-sprites-in-scene.md`: characters and monsters lit, graded, scaled and grounded in the HD-2D world and battle stages (Medium, High).
 - `v063-party.md`: Beta v0.6.3 party systems (Best Party formations and Training team, XP catch up against the roster's top level, "Equip best: at camp", Legendary only for legends and Epic tags).
@@ -28,6 +29,7 @@ Read these before a big pass:
 - `v076-battle-layout.md`: the v0.7.6 wide battle layout (commands with the foes under them, the party column with one hero per row, the stage sized so the screen fits, no text cut, aim tags that always fit).
 - `v080-battle-phones.md`: the v0.8.0 battle screen on phones and the Galaxy Z Fold (sized from the visible viewport, the column arrangement and compaction on short wide screens, portrait commands always on screen, the compact foe list), the battle transition drawn at 4x on Medium and High, damage type symbols.
 - `v085-sync.md`: save sync between devices (v0.8.5): what was wrong, who wins (last matched version, then progress and server corrected time), leaving and coming back, Continue waits for the cloud, the newer save prompt, the two device tests.
+- `v095-bosses-pacing.md`: v0.9.5 fewer, better fights (lower encounter rate, roamers on fields with the realm's roles, ordinary fights pay more), a realm gimmick for every Scourge and Calamity, companion growth (second skill, evolution), depth unlocks by realm (`pcUnlocked`), with the journey and boss sim numbers.
 - `v095-nudges.md`: leading players into the systems (v0.9.5): the manual bonus line, system bonuses on the rewards screen, auto per foe type, tip cards as invitations (basic and expert), the Next goals panel; economy numbers and tests.
 - `audio-notes-v045.md`: the orchestral audio (v0.4.5) and Android live updates (v0.4.6).
 - `v050-prompt.md`: the full spec for the Beta v0.5.0 pass. Rollback point: `rollback-v046.md`.

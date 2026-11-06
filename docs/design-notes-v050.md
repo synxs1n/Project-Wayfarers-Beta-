@@ -209,3 +209,6 @@ Details in `v080-battle-phones.md` (follow up 2; battle3.js/css, battle.js; test
 
 ## Beta v0.9.4: simpler Momentum
 B4.mo {start:30,max:100,vary:16,rep:15,offN:3,off:10,fullOff:80,emptyOff:20,dmg:.15,taken:.1,pen:.1}: a different move fills, the same move again drains, attacking after 3 offensive moves in a row drains; full = Surge until below 80, empty = Drained until above 20. States build/full/empty (battle4.js, battle4.css). Tests `chrome/v070m1.js`, `v070m2.js`.
+
+## Beta v0.9.5: Notice Board, three guild ranks, Upgrade button
+Details in `v095-menus.md` (menus3.js, factions.js, p3shop.js Upgrade step search, nav/equip ordering; tests `chrome/v095m1.js` to `v095m4.js`). Ranks: the six old steps map to three shown ranks, perks move to the rank holding their step (some open sooner).
