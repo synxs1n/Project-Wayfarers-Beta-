@@ -1410,6 +1410,34 @@ details.m3how>summary:focus-visible{outline:2px solid var(--ui-gold-hi,#ffe39a);
 @media (max-width:420px){
   .chips.ssec .chip{padding:8px 7px 6px}
 }
+
+/* ===================== Beta v0.9.5: Notice Board, three guild ranks, the Upgrade button ===================== */
+/* sections under the menu's own tabs (Menu > Quests): small pills, wrapping */
+.chips.nbsec{flex-wrap:wrap;gap:4px;margin:6px 0 8px;background:none;padding:0}
+.chips.nbsec .chip .cnt{font:700 11px/1 var(--fb);opacity:.75;margin-left:3px;letter-spacing:0}
+/* guild cards: one line per rank */
+.facc{border-left:4px solid var(--fc,#e0b04a);padding:6px 10px;margin:8px 0;background:rgba(255,255,255,.03)}
+.facc h4{margin:2px 0;flex-wrap:wrap;row-gap:2px}
+.facc h4::after{display:none}
+.facc h4 small{min-width:0;letter-spacing:.06em}
+.facbar{height:8px;background:#222;border-radius:4px;overflow:hidden;margin:4px 0}
+.facbar i{display:block;height:8px}
+.facr{margin-top:4px}
+.facg{display:inline;color:var(--fc,#e0b04a);font-weight:700;opacity:.95}
+.row.facm small.facg{display:inline;margin-left:2px}
+details.facstock>summary{cursor:pointer;font:700 13px/1.3 var(--fb);color:var(--ui-gold,#d9b46a);padding:6px 2px;min-height:28px}
+/* Upgrade: the button on each slot, the best step card, the per slot list in the Smithy */
+.eq.upgeq{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:6px}
+.upgslot{display:flex;gap:6px;align-items:stretch;min-width:0}
+.upgslot>.btn,.upgslot>.eqv{flex:1 1 auto;min-width:0;text-align:left}
+.upgslot>.btn.upgb{flex:0 0 auto;text-align:center}
+.btn.upgb em{font-style:normal;margin-left:3px}
+.upgcard{border:1px solid var(--ui-line-s,#5f4a24);border-radius:6px;padding:8px 10px;margin:6px 0;background:rgba(255,215,120,.05)}
+.upgcard .upgk{font:800 11px/1.2 var(--fb);letter-spacing:.12em;text-transform:uppercase;color:var(--ui-gold,#d9b46a)}
+.upgba{display:flex;flex-wrap:wrap;gap:4px 10px;margin:4px 0}
+.upgba span{white-space:nowrap}
+.upgbest{margin:6px 0 10px}
+.upgbest .row .btn{white-space:nowrap}
 /* =================== Beta v0.6.3: battle screen (battle3.js) =================== */
 /* ----- stage labels: every box is placed by the layout pass (b3Lay) at exactly these sizes, in logical stage px ----- */
 .bstage .b3l{position:absolute;box-sizing:border-box;margin:0;transform:none}
@@ -1949,7 +1977,7 @@ body:has(.battle.b3.m-wide.b8short){padding-top:6px}
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.9.4";const APP_BUILD="aad46aabfb34";
+(function(){const APP_VER="0.9.5";const APP_BUILD="ad4ab167f716";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2526,7 +2554,7 @@ const TWISTS={on:true,
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.9.4";const APP_BUILD="aad46aabfb34";
+const APP_VER="0.9.5";const APP_BUILD="ad4ab167f716";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2534,6 +2562,7 @@ const APP_VER="0.9.4";const APP_BUILD="aad46aabfb34";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.9.5',['Menus simplified: one Notice Board with Quests, Guilds, Bounties and Arena tabs (claimable first), reachable from the board, the Guild Hall and the Menu. Guilds now have three ranks with one line each (nothing you claimed is lost; some perks open sooner). Every gear slot has an Upgrade button that picks the best next step you can afford (equip a spare, buy, forge, temper or Echoforge) with Show all options for tinkerers; the Smithy shows the best upgrade per slot first. Build Party and Equip best come first on the Party and Equipment tabs.']],
  ['Beta v0.9.4',['Momentum is simpler: doing something different fills the gauge, repeating the same move or only attacking drains it. Fill it to get a Surge (heroes deal 15% more and take 10% less); let it run empty and the party is Drained (10% less dealt, 10% more taken) until you mix it up again.']],
  ['Beta v0.9.3',['Battle screen on phones: the action menu has bigger buttons and fills the space under the battle view, with the party and foes below it (scroll down to see them; the commands always show in full on each turn). Phones turned sideways and other short wide screens now get a layout that fits: battle view, log and party on the left, commands with full labels and the foes on the right, nothing cut off. Hero health bars keep their distance from the foes, and heroes in battle are drawn at the same size and pixel look as the foes.']],
  ['Beta v0.9.2',['The Scourge lair is now part of the land: a rock mound of the realm\'s own ground (frozen rock with icicles, basalt with ember cracks, earth and roots, sandstone, wet rock) with a dark cave mouth dug into it, claw gouges, bones, torches, a broken banner of the Scourge and a faint plume of its light; no flat tower or lettering. It still has its own Lair icon on the map and turns gold once relit. Also fixed the HD-2D world lighting: snow fields and other scenes are no longer washed out.']],
@@ -9430,9 +9459,6 @@ function mMenu(m){
     body=ddBar([ddSel('Show','lSh','items',[['all','All items'],['own','Carrying'],['battle','Healing and cures'],['travel','Travel gear']],sh),ddSel('Sort','lSort','items',[['def','Default'],['name','Name'],['count','Most carried'],['rar','Rarest first']],f.s)],'lfbar')
       +(ids.length?`<div class="rows">${ids.map(id=>`<div class="row tr" style="${tierVars(iTierIdx(id))}"><div><b>${itemIcon(id)} ${ITEMS[id].n}</b> ${itemChip(id)} x${G.inv[id]||0}<small>${ITEMS[id].d}</small>${ITEMS[id].travel&&(G.inv[id]||0)>0&&travelWhyNot(id)?`<small class="warn">${esc(travelWhyNot(id))}</small>`:''}</div>${ITEMS[id].cure?'<span class="m">Battle only</span>':ITEMS[id].travel?`<button class="btn sm" data-act="useTravel" data-arg="${id}" ${(G.inv[id]||0)>0&&!travelWhyNot(id)?'':'disabled'} title="${esc(travelWhyNot(id))}">Use</button>`:`<button class="btn sm" data-act="useItem" data-arg="${id}" ${(G.inv[id]||0)>0?'':'disabled'}>Use</button>`}</div>`).join('')}</div>`:'<p class="note empty">No items match. Try Show: All items.</p>')+'<p class="note">Materials have their own tab: Backpack, Materials.</p>';}
   if(tab==='pouch')body=`<p class="note">Herbs, ore, logs, monster parts and relics. Alchemy and the Smithy turn them into gear and brews.</p>${vPouch()}`;
-  if(tab==='quests'){const act=G.quests.filter(q=>q.state==='active').sort((a,b)=>(questReady(b)?1:0)-(questReady(a)?1:0)),bt=G.bounties.filter(b=>b.state==='active'),pr=Object.values(G.personal||{}).filter(q=>q&&q.state==='active'&&TPL[q.personal]);
-    body=`<div class="rows">${act.map(q=>`<div class="row"><div><b>${esc(q.title)}</b><small>${esc(q.desc)}</small><small>${q.type==='tamer'?`${Math.min(stickCount().n,q.n)}/${q.n} creatures logged`:q.type==='legend'?legendProg(q):q.type==='hunt'?`${q.have||0}/${q.n}`:q.type==='gather'?`${Math.min(G.mats[q.mat]||0,q.n)}/${q.n}`:q.found?'Found':'Not found yet'}${questReady(q)?'. Ready to claim at a quest board.':''}</small></div></div>`).join('')}${bt.map(b=>`<div class="row"><div><b>Bounty: ${esc(b.name)}</b><small>Roaming ${esc(ZS(b.stage).n)}.</small></div></div>`).join('')||''}${pr.map(q=>`<div class="row rgrow">${port(q.personal)}<div class="grow"><b>Rival: ${esc(q.name)}</b><small>${esc(TPL[q.personal].n)}'s personal quest. Roaming ${esc(ZS(q.stage).n)}.${rivalNeed(q)?` <b class="rgneed">${esc(rivalNeedShort(q))}.</b>`:''}</small></div></div>`).join('')}${!act.length&&!bt.length&&!pr.length?'<p class="note">No active quests. Check the quest board in any town square, and the bounty board at the Guild Hall.</p>':''}</div>
-    <h4>The journey</h4><div class="rows">${[0,1,2,3,4].map(s=>`<div class="row ${s>G.stage?'lock':''}"><div><b>${s>G.stage?'???':esc(ZS(s).n)}</b><small>${s>G.stage?'Ahead':esc(ZS(s).dungeon)+(G.cleared[s]?': relit':`: ${s<4?bossClass(bossKeyFor(s)):'Calamity'} waits`)}</small></div></div>`).join('')}</div>`;}
   if(tab==='next')body=vNext();
   if(tab==='beasts')body=vBestiary();
   if(tab==='codex')body=vCodex();
@@ -9444,6 +9470,7 @@ function mMenu(m){
   if(tab==='types'&&typeof vTypes==='function')body=vTypes();
   if(tab==='help')body=`<p class="note">Stuck, confused or found a bug? Everything here is also in the other Guides tabs: What next? points at your next goal, Lore tells the story so far, and Foe types explains who is weak to what.</p><div class="btnrow"><button class="btn gold" data-act="fbOpen">Help / Feedback</button></div>`;
   if(tab==='settings')body=settingsBody();
+  if(typeof nbMenuBody==='function'){const nb=nbMenuBody(m);if(nb!=null)body=nb;}// v0.9.5: Quests, Guilds, Bounties, Arena are the Notice Board (menus3.js)
   return box('Menu',menuTabsHtml(grp,tab)+body,`<span class="verf">${esc(GAME_VERSION)}</span>${canStuck()?'<button class="btn" data-act="stuckAsk" title="Return to the dungeon entrance for free">Stuck?</button>':''}<button class="btn" data-act="fbOpen">Help / Feedback</button><button class="btn gold" data-act="closeModal">Close</button>`,true);
 }
 function bestAll(){
@@ -10846,7 +10873,7 @@ function modalBack(m){
   if(t==='char')return ()=>{V.modal={type:'menu',tab:V.lastMenuTab||'party'};};
   if(t==='guild'&&m.char)return ()=>{V.modal={type:'guild',tab:'recruit'};};
   if(t==='beast')return ()=>{V.modal={type:'menu',tab:'beasts'};};
-  if(t==='eqPick')return ()=>{V.modal={type:'menu',tab:'equip'};};
+  if(t==='eqPick')return ()=>{V.modal=m.from&&m.from.type==='upg'?m.from:{type:'menu',tab:'equip'};};// v0.9.5: Upgrade > Show all options comes back to Upgrade
   if(t==='compPick')return ()=>{V.modal={type:'menu',tab:'comp'};};
   if(t==='autoEq')return ()=>{V.modal=m.from&&m.from.type!=='autoEq'?m.from:{type:'menu',tab:'equip'};};
   if(t==='useitem')return ()=>{V.modal={type:'menu',tab:'items'};};
@@ -10862,7 +10889,7 @@ function modalBack(m){
   if(t==='map')return ()=>{V.modal=m.from||null;};   // v0.4.1 1.9: the map has a back arrow next to the X (back to where it was opened from, else the world)
   // v0.5.0 1.5: every shop screen has the back arrow. v0.6.3: shops have main tabs and section chips (menus3.js), so back is one level:
   // a section (or a hero picked on the Natures tab) goes back to All, a tab goes back to the shop's first tab, the first tab leaves the shop.
-  const SHOP_HOME={smithy:'shop',workshop:'shop',guild:'recruit',tavern:'hire',inn:null,board:null,archivist:null};
+  const SHOP_HOME={smithy:'shop',workshop:'shop',guild:'guilds',tavern:'hire',inn:null,board:'quests',archivist:null};// v0.9.5: the Guild Hall and the Notice Board start on the board's Guilds and Quests tabs
   if(t in SHOP_HOME){if(typeof m3Norm==='function')m3Norm(m);const home=SHOP_HOME[t],tab=m.tab&&m.tab!=='party'?m.tab:home;
     if(t==='guild'&&tab==='nature'&&m.nat)return ()=>{m.nat=null;};
     if(m.sec&&m.sec!=='all')return ()=>{m.sec='all';};
@@ -10901,7 +10928,7 @@ function vSwap(where){
     const bad=[...new Set(Object.keys(c.st||{}).filter(k=>STS[k]&&STS[k].bad).concat(typeof ailOf==='function'?ailOf(c):[]))],mark=c.hp<=0?'<em class="swko">KO</em>':bad.length?`<em class="swst" aria-label="${bad.map(k=>STS[k].n).join(', ')}">${bad.map(k=>`<span class="ail" style="--c:${STS[k].c}" title="${STS[k].n}">${stSym(k)}</span>`).join('')}</em>`:'';
     return `<div class="swc ${grid?'':'row'} ${on?'sel':''} ${c.hp<=0?'ko':''}"><button class="swm" data-act="swapTap" data-arg="p:${i}" aria-pressed="${on}" aria-label="${esc(c.name)}, ${lab}${on?', selected':''}">${port(c.id,'noail')}<span class="swi"><span class="swn"><b>${esc(c.name)}</b><span class="els">${c.el.map(ico).join('')}</span></span>${mark?`<span class="swstrow">${mark}</span>`:''}<small>${grid?'':lab+' · '}Lv ${c.lv} ${CLS[TPL[c.id].cls].n}${c.pts?` · <span class="up">${c.pts} pts</span>`:''}</small><span class="swb"><span class="swbl">HP</span>${bar(c.hp,c.S.mhp,'var(--hp)')}<span class="nums">${c.hp}/${c.S.mhp}</span></span><span class="swb"><span class="swbl">MP</span>${bar(c.mp,c.S.mmp,'var(--mp)')}<span class="nums">${c.mp}/${c.S.mmp}</span></span>${grid?xpLine(c,true):xpLine(c)}</span></button><button class="btn sm swsheet" data-act="${openAct}" data-arg="${c.id}" aria-label="Open ${esc(c.name)}'s sheet">Sheet</button></div>`;};
   const bench=Object.values(G.roster).filter(c=>!G.party.includes(c.id)).filter(c=>lmatch('party',c));const benchS=lsort('party',bench,(a,b)=>b.lv-a.lv||a.name.localeCompare(b.name));
-  return `${grid?'<div class="swgridwrap">':''}<div class="btnrow ptools"><button class="btn sm" data-act="bpOpen">Build party</button><button class="btn sm" data-act="fsOpen">Field skills</button>${(G.talks||[]).length?`<button class="btn sm gold" data-act="campfire">Campfire talks (${G.talks.length})</button>`:''}</div>${ldStrip()}<p class="note swhint ${sel?'on':''}">${hint}</p>
+  return `${grid?'<div class="swgridwrap">':''}<div class="btnrow ptools"><button class="btn sm gold" data-act="bpOpen">Build party</button>${G.daily?'':`<button class="btn sm" data-act="autoEqParty" title="The best gear you own for your party. May take gear from your reserves.">Equip best: party</button><button class="btn sm" data-act="autoEqCamp" ${Object.keys(G.roster).some(id=>!G.party.includes(id))?'':'disabled'} title="Your reserves get the best spare gear from the pack. Never takes anything from your party.">Equip best: reserves</button>`}<button class="btn sm" data-act="fsOpen">Field skills</button>${(G.talks||[]).length?`<button class="btn sm gold" data-act="campfire">Campfire talks (${G.talks.length})</button>`:''}</div>${ldStrip()}<p class="note swhint ${sel?'on':''}">${hint}</p>
     <h4>Vanguard</h4><div class="swlist ${grid?'g3':''}">${[0,1,2].map(i=>card(P[i],i)).join('')}</div>
     <h4>Rearguard</h4><div class="swlist ${grid?'g3':''}">${[3,4,5].map(i=>card(P[i],i)).join('')}</div>
     ${sel&&sel.i!=null&&P[sel.i]?`<div class="btnrow">${town&&G.party.length>1?'<button class="btn sm" data-act="swapOut">Send to roster</button>':''}<button class="btn sm" data-act="swapCancel">Cancel</button></div>`:sel?'<div class="btnrow"><button class="btn sm" data-act="swapCancel">Cancel</button></div>':''}
@@ -11158,8 +11185,9 @@ function fitsFor(id){if(FITC&&FITC[id])return FITC[id];const r=Object.values(G.r
 // ----- the Equipment tab -----
 // v0.8.3: only the party (the owner's call); reserves are geared with Equip best: reserves or from their sheet in Party
 function vEquipTab(){const L=G.party.filter(id=>G.roster[id]);V.charList=L.slice();
-  return `<p class="note">Every hero's weapon, armor and charm at a glance. Tap a slot to change it; works anywhere outside battle.</p>
-  <div class="btnrow"><button class="btn gold" data-act="autoEqParty" title="Party first. May take gear and companions from heroes outside the party.">Auto best gear: party</button><button class="btn" data-act="autoEqAll" title="Balances the whole roster, still favouring the party.">Equip best for everyone</button></div><p class="note"><small>The per-hero Auto button only uses your pack and free companions. It never takes from another hero.</small></p>
+  // v0.9.5: the team helpers come first (Build party, Equip best for the party and the reserves); the note follows
+  return `<div class="btnrow eqtools">${G.daily?'':'<button class="btn" data-act="bpOpen">Build party</button>'}<button class="btn gold" data-act="autoEqParty" title="Party first. May take gear and companions from heroes outside the party.">Equip best: party</button><button class="btn" data-act="autoEqAll" title="Balances the whole roster, still favouring the party.">Equip best for everyone</button></div>
+  <p class="note">Every hero's weapon, armor and charm at a glance. Tap a slot to change it; works anywhere outside battle. A hero's sheet has an Upgrade button on each slot. <small>The per-hero Auto button only uses your pack and free companions. It never takes from another hero.</small></p>
   <div class="eqlist">${L.map((id,i)=>{const c=G.roster[id];return `${i===G.party.length&&i?'<h4>Roster</h4>':i===0?'<h4>Party</h4>':''}<div class="eqrow">${port(id)}<div class="grow"><b>${esc(c.name)}</b><small>Lv ${c.lv} ${CLS[TPL[id].cls].n}</small>${xpMini(c)}
     <div class="eqslots">${EQSL.map(sl=>{const g=gearOf(c.eq[sl]);return `<button class="eqs" data-act="eqPick" data-arg="${id},${sl}">${g?gearIcon(c.eq[sl]):'<span class="gico empty"></span>'}<span><small>${SLOTN[sl]}</small>${g?esc(g.n):'Empty'}</span></button>`;}).join('')}</div></div>
     <button class="btn sm" data-act="autoEqOne" data-arg="${id}" title="Equip the best spare gear for ${esc(c.name)}">Auto</button></div>`;}).join('')}</div>`;}
@@ -11296,7 +11324,7 @@ function autoRun(mode,oneId){
   saveGame();sfx('equip');V.modal={type:'autoEq',rows,snap,mode,from:V.modal};render();
 }
 const compName=id=>{const o=(G.tamed||[]).find(x=>x.id===id);return o?esc(o.name):'none';};
-function mAutoEq(m){const rows=m.rows||[],ttl={party:'Auto best gear: party',all:'Equip best for everyone',one:'Auto best gear'}[m.mode]||'Auto best gear';
+function mAutoEq(m){const rows=m.rows||[],ttl={party:'Equip best: party',all:'Equip best for everyone',one:'Auto best gear'}[m.mode]||'Auto best gear';
   const a=rows.reduce((s,r)=>s+r.pw0,0),b=rows.reduce((s,r)=>s+r.pw1,0),pct=a>0?Math.round((b-a)/a*100):0;
   const body=rows.length?`<p class="note">${rows.length} hero${rows.length>1?'es':''} changed, combined gear power ${pct>=0?'+':''}${pct}%. Undo puts everything back exactly.</p><div class="rows">${rows.map(r=>{const d=r.pw0>0?Math.round((r.pw1-r.pw0)/r.pw0*100):0;
     return `<div class="row">${port(r.id,'sm')}<div class="grow"><b>${esc(r.name)}</b>${r.inParty?'':' <small>(roster)</small>'} <span class="${d>=0?'up':'dn'}">${d>=0?'▲':'▼'} ${Math.abs(d)}%</span>
@@ -11839,7 +11867,7 @@ function cwWin(hero,kind){const t=TPL[hero],C=CW_CLS[t.cls]||CW_CLS.warrior,tr=C
   else ev.text=`${intro}, turned peddler, tips a hat. "${cwAsk(hero,'trade')}. I could hire on with you for a fair price, or sell you a travel pack."`;}}catch(e){}return r;};}
 
 // ===== factions.js (v0.4.0): factions: reputation, ranks, missions and their perks =====
-// Five factions, six ranks each. Reputation = counters you already earn by playing (forging, potions, taming, wins, echoes, Scourges, helping wayfarers)
+// Six factions (shown as guilds), six standing steps each, shown as three ranks since v0.9.5 (FAC3 below). Reputation = counters you already earn by playing (forging, potions, taming, wins, echoes, Scourges, helping wayfarers)
 // plus bonus from missions. Everything is per journey (G.fac, an optional save field). Only the highest rank reached per faction goes in the account
 // profile (META.facBest) and it is a title, nothing more. Nothing here is required to finish the game, Legendary heroes never come from factions,
 // and the Daily Trial ignores all of it (no counters, no discounts, no bonuses).
@@ -11864,6 +11892,27 @@ const FAC=[
   perks:[null,{t:'XP +2%',k:'xp',v:.02},{t:'Battle gold +3%',k:'gold',v:.03},{t:'Inn rooms cost 5% less',k:'inn',v:.05},{t:'Steady Knot, a unique charm',k:'charm',id:'c_fa5'},{t:'Signature: The Steady Hand, a strong unique charm, and the title The Steady Hand',k:'sig',id:'c_fb5'}]}
 ];
 const FACB=Object.fromEntries(FAC.map(f=>[f.id,f]));
+// ---------- v0.9.5: three ranks per guild ----------
+// Standing still climbs the six old steps (facRank, REP_AT, META.facBest, G.fac.seen and the claim keys 'id:step' keep their meaning),
+// but the player sees three ranks. Step 1 is rank 1, steps 2 to 4 are rank 2 (at REP_AT[1], 40 standing), steps 5 and 6 are rank 3
+// (at REP_AT[4], 400 standing). Every old perk moves to the rank that holds its step, so each perk now opens at the same standing or
+// earlier: nobody loses a perk they had, and a claimed charm or recruit stays claimed (same keys). Same kind perks merge (the best counts).
+const FAC3_STEP=[0,1,2,2,2,3,3];// step -> rank
+const facTierOf=step=>FAC3_STEP[Math.max(1,Math.min(6,step|0))];
+const FAC3_AT=()=>[0,REP_AT[1],REP_AT[4]];
+const FAC3={
+ guild:{n:['Recruit','Pathfinder','Guildmaster'],t:['Take the guild\'s missions and earn standing.','Inn rooms 10% less, battle gold +5%, and a challenge only wayfarer joins you.','Two unique charms (Guildmark Pin, Guildmaster\'s Seal) and the title Guildmaster.']},
+ smiths:{n:['Apprentice','Journeyman','Grandsmith'],t:['Take the guild\'s missions and earn standing.','Tempering 10% less, 10% of forging gold back, and the Union counter (Dread Cores, ore and wood).','Two unique charms (Anvilmark Charm, Grandsmith\'s Hammerpin) and the title Grandsmith.']},
+ alch:{n:['Initiate','Distiller','Archmage of Vials'],t:['Take the guild\'s missions and earn standing.','15% of brewing gold back, and the Circle counter (Elixirs, herb bundles).','A 15% chance of one extra from every brew, two unique charms (Vialmark Charm, Archmage\'s Phial) and the title Archmage of Vials.']},
+ wardens:{n:['Pup','Handler','Warden of Wilds'],t:['Take the guild\'s missions and earn standing.','XP +5%, and the Warden counter (parts bundles).','Two unique charms (Wildcall Charm, Wild Heart) and the title Warden of Wilds.']},
+ archive:{n:['Reader','Cataloguer','Keeper of the Last Page'],t:['Take the guild\'s missions and earn standing.','XP +3%, the Archive counter (relic bundles), and a challenge only wayfarer joins you.','Two unique charms (Inkmark Charm, The Last Page) and the title Keeper of the Last Page.']},
+ hand:{n:['Onlooker','Sure Hand','The Steady Hand'],t:['Take the guild\'s missions and earn standing.','XP +2%, battle gold +3%, and inn rooms 5% less.','Two unique charms (Steady Knot, The Steady Hand) and the title The Steady Hand.']}};
+function facTier(id){return facTierOf(facRank(id));}
+const facTierName=(id,t)=>FAC3[id].n[(t||facTier(id))-1];
+// the old steps whose perks a rank holds, and its claimable perks (charms and the recruit), each claimed under its old key
+function facTierSteps(t){const o=[];for(let s=1;s<=6;s++)if(FAC3_STEP[s]===t)o.push(s);return o;}
+function facTierClaims(id,t){return facTierSteps(t).map(s=>({s,p:FACB[id].perks[s-1],key:id+':'+s})).filter(o=>o.p&&(o.p.k==='charm'||o.p.k==='sig'||o.p.k==='recruit'));}
+function facTierNeed(id){const t=facTier(id);return t>=3?null:FAC3_AT()[t];}
 // missions: count-based, tracked from the moment you accept. {k} is a counter, n the goal, rep the reward, r the rank needed to see it
 const FMIS=[
  ['g1','guild','Clear the roads','Win 10 battles.','wins',10,12,1],['g2','guild','A good week','Win 25 battles.','wins',25,24,1],['g3','guild','Underground work','Win 8 dungeon battles.','dwins',8,20,1],
@@ -11904,65 +11953,73 @@ let FACMEMO={t:0,v:{},g:null};
 function facDirty(){FACMEMO.t=0;}
 function facRank(id){const now=Date.now();if(now-FACMEMO.t>250||FACMEMO.g!==G){FACMEMO={t:now,v:{},g:G};}if(FACMEMO.v[id]!=null)return FACMEMO.v[id];const r=facRep(id);let k=1;REP_AT.forEach((x,i)=>{if(r>=x)k=i+1;});FACMEMO.v[id]=k;return k;}
 function facNeed(id){const r=facRank(id);return r>=6?null:REP_AT[r];}
-function facPerks(id,rank){const o=[];FACB[id].perks.forEach((p,i)=>{if(p&&i+1<=rank)o.push(p);});return o;}
+function facPerks(id,rank){const t=facTierOf(rank),o=[];FACB[id].perks.forEach((p,i)=>{if(p&&facTierOf(i+1)<=t)o.push(p);});return o;}// v0.9.5: every perk of the ranks reached
 function facSum(k){if(!G||G.daily)return 0;let s=0;FAC.forEach(F=>facPerks(F.id,facRank(F.id)).forEach(p=>{if(p.k===k)s=Math.max(s,p.v||0);}));return s;}// same kind of perk from one faction is not stacked across ranks, the best one counts
 function facSumAll(k){if(!G||G.daily)return 0;let s=0;FAC.forEach(F=>{let b=0;facPerks(F.id,facRank(F.id)).forEach(p=>{if(p.k===k)b=Math.max(b,p.v||0);});s+=b;});return s;}
 function facMul(){return {xp:1+facSumAll('xp'),gold:1+facSumAll('gold')};}
 function facBest(){if(!G||G.daily)return;META.facBest=META.facBest||{};let ch=0;FAC.forEach(F=>{const r=facRank(F.id);if(r>(META.facBest[F.id]||0)){META.facBest[F.id]=r;ch=1;}});if(ch){try{saveMeta();profileDirty();}catch(e){}}}
 // rank-up notices (checked after fights, claims and when the screen opens)
 function facSync(quiet){if(!G||G.daily)return;const f=facInit();FAC.forEach(F=>{const r=facRank(F.id),was=f.seen[F.id]||0;if(!was){f.seen[F.id]=r;return;}// first look just records where an old save stands
-  if(r>was){f.seen[F.id]=r;if(!quiet)toast(`${F.n}: rank ${r}, ${F.ranks[r-1]}!`);}});facBest();}
+  if(r>was){f.seen[F.id]=r;const t=facTierOf(r);if(!quiet&&t>facTierOf(was))toast(`${F.n}: rank ${t}, ${facTierName(F.id,t)}! ${FAC3[F.id].t[t-1]}`);}});facBest();}
 // ---------- hooks that feed the counters ----------
 {const au=autoTurn;autoTurn=function(){const r=au.apply(this,arguments);try{if(B&&B.auto)B.autoUsed=1;}catch(e){}return r;};}
 {const fb=finishBattle;finishBattle=function(how){const sp=B&&B.spec,manual=!!(B&&!B.autoUsed&&!B.auto);const r=fb.apply(this,arguments);try{if(G&&!G.daily&&how==='win'&&sp){const k=sp.kind;if(k==='dungeon')facCredit('dwins');if(k==='elite')facCredit('elite');}if(G&&!G.daily&&how==='win'){facCredit('wins');if(manual)facCredit('manual');}facSync();}catch(e){}return r;};}
 {const fg=forge;forge=function(){const r=fg.apply(this,arguments);try{if(r&&!G.daily)facCredit('temper');}catch(e){}return r;};}
 {const cr=craft;craft=function(rcp){const g0=G.gold,r=cr.apply(this,arguments);try{if(r&&!G.daily){const spent=g0-G.gold;
   if(rcp.item){facCredit('potion');const rb=facSumAll('rebate');if(rb>0&&spent>0){const back=Math.round(spent*rb);if(back>0){G.gold+=back;toast(`Circle rebate: ${back} gold back.`);}}
-    const dbl=facRank('alch')>=6?.15:0;if(dbl&&Math.random()<dbl&&(G.inv[rcp.item]||0)<invCap()){G.inv[rcp.item]++;toast('The Archmage\'s touch: one extra!');}}
+    const dbl=facTier('alch')>=3?.15:0;if(dbl&&Math.random()<dbl&&(G.inv[rcp.item]||0)<invCap()){G.inv[rcp.item]++;toast('The Archmage\'s touch: one extra!');}}
   else{facCredit('forge');const rb=facSmithRebate();if(rb>0&&spent>0){const back=Math.round(spent*rb);if(back>0){G.gold+=back;toast(`Union rebate: ${back} gold back.`);}}}}}catch(e){}return r;};}
 {const rt=registerTamed;registerTamed=function(o){const r=rt.apply(this,arguments);try{if(G&&!G.daily&&o&&!o._fc){o._fc=1;facCredit('tame');}}catch(e){}return r;};}
 {const fc=forgeCost;forgeCost=function(){const c=fc.apply(this,arguments);try{if(c&&G&&!G.daily){const d=facSmithDisc();if(d>0)c.gold=Math.max(1,Math.round(c.gold*(1-d)));}}catch(e){}return c;};}
 {const ic=innCost;innCost=function(){let c=ic.apply(this,arguments);try{if(G&&!G.daily){const d=facSum('inn');if(d>0)c=Math.max(1,Math.round(c*(1-d)));}}catch(e){}return c;};}
-function facSmithDisc(){const r=facRank('smiths');let b=0;FACB.smiths.perks.slice(0,r).forEach(p=>{if(p&&p.k==='forge')b=Math.max(b,p.v);});return b;}
-function facSmithRebate(){const r=facRank('smiths');let b=0;FACB.smiths.perks.slice(0,r).forEach(p=>{if(p&&p.rebate)b=Math.max(b,p.rebate);});return b;}
+function facSmithDisc(){let b=0;facPerks('smiths',facRank('smiths')).forEach(p=>{if(p.k==='forge')b=Math.max(b,p.v);});return b;}
+function facSmithRebate(){let b=0;facPerks('smiths',facRank('smiths')).forEach(p=>{if(p.rebate)b=Math.max(b,p.rebate);});return b;}
 // ---------- missions ----------
-function facMissionList(id){const f=facInit(),r=facRank(id),pool=FMIS.filter(m=>m.f===id&&m.r<=r&&!f.done[m.id]);
+function facMissionList(id){const f=facInit(),t=facTier(id),pool=FMIS.filter(m=>m.f===id&&facTierOf(m.r)<=t&&!f.done[m.id]);
   const acc=pool.filter(m=>f.acc[m.id]!=null),rest=pool.filter(m=>f.acc[m.id]==null);if(rest.length<=2)return acc.concat(rest);
   const R=seeded(hashS((G.run.seed||1)+':fm:'+id+':'+(G.tavRoll||0))),left=rest.slice(),pk=[];while(pk.length<2&&left.length){pk.push(left.splice(Math.floor(R()*left.length),1)[0]);}return acc.concat(pk);}
 // v0.7.7: progress counts everything done on this journey, also before the mission was accepted (the owner's call); acc only marks it taken
 function facProg(m){return Math.max(0,Math.min(m.n,facCount(m.k)));}
 ACT.facAccept=function(id){const m=FMIS.find(x=>x.id===id);if(!m||!G||G.daily)return;const f=facInit();if(f.acc[id]!=null)return;f.acc[id]=facCount(m.k);saveGame();toast(`Mission taken: ${m.t}.`);render();};
 ACT.facClaim=function(id){const m=FMIS.find(x=>x.id===id);if(!m)return;const f=facInit();if(f.acc[id]==null||f.done[id]||facProg(m)<m.n)return;f.done[id]=1;f.bonus[m.f]=(f.bonus[m.f]||0)+m.rep;facDirty();const g=Math.round(m.rep*7*(1+.25*G.stage));G.gold+=g;facSync();saveGame();sfx('chest');toast(`${m.t} done: +${m.rep} standing, ${g} gold.`);render();};
-ACT.facPerk=function(a){const [id,rk]=String(a).split(':'),r=+rk,F=FACB[id];if(!F||!G||G.daily)return;const f=facInit(),key=id+':'+r;if(f.claim[key]||facRank(id)<r)return;const p=F.perks[r-1];if(!p)return;
-  if(p.k==='charm'||p.k==='sig'){G.gear.push(p.id);f.claim[key]=1;toast(`${gearOf(p.id).n} added to your gear.`);}
+ACT.facPerk=function(a){const [id,rk]=String(a).split(':'),r=+rk,F=FACB[id];if(!F||!G||G.daily)return;const f=facInit(),key=id+':'+r,t=facTierOf(r);if(f.claim[key]||facTier(id)<t)return;const p=F.perks[r-1];if(!p)return;
+  // v0.9.5: one Claim per rank hands over every charm of that rank not yet claimed (the old keys are marked, so old saves stay claimed)
+  if(p.k==='charm'||p.k==='sig'){const got=[];facTierClaims(id,t).forEach(o=>{if((o.p.k==='charm'||o.p.k==='sig')&&!f.claim[o.key]){G.gear.push(o.p.id);f.claim[o.key]=1;got.push(gearOf(o.p.id).n);}});toast(`${got.join(' and ')} added to your gear.`);}
   else if(p.k==='recruit'){const pool=(typeof caveRecruitPool==='function'?caveRecruitPool(Math.min(4,G.stage+1)):[]);if(pool.length){const h=pool[hashS((G.run.seed||1)+key)%pool.length];recruit(h,true);try{codexSee(h,{rec:1,lv:G.roster[h].lv});}catch(e){}f.claim[key]=1;toast(`${TPL[h].n} joins you, sent by ${F.n}.`);}
     else{G.gold+=400+200*G.stage;f.claim[key]=1;toast('No one is left to send, so the faction pays 400+ gold instead.');}}
   saveGame();sfx('level');render();};
-ACT.facBuy=function(a){const [id,i]=String(a).split(':'),S=(FSTOCK[id]||[])[+i];if(!S||!G||G.daily)return;const need=S[3]||4,item=S[4];if(facRank(id)<(FACB[id].perks.findIndex(p=>p&&p.k==='stock')+1))return;
+ACT.facBuy=function(a){const [id,i]=String(a).split(':'),S=(FSTOCK[id]||[])[+i];if(!S||!G||G.daily)return;const need=S[3]||4,item=S[4];if(facTier(id)<facTierOf(FACB[id].perks.findIndex(p=>p&&p.k==='stock')+1))return;
   if(G.gold<S[2])return;let key=S[0];if(!item){key=S[0]==='$rel'?ZS(G.stage).mat:resolveDrop(S[0],G.stage);}
   if(item&&(G.inv[key]||0)>=invCap()){toast('You carry the most of those already.');return;}
   G.gold-=S[2];if(item)G.inv[key]=(G.inv[key]||0)+1;else{const q=/\(3\)/.test(S[1])?3:1;if(S[0]==='hide'||S[0]==='fang'||S[0]==='scale'||S[0]==='$rel'||/bundle/.test(S[1]))G.mats[key]=(G.mats[key]||0)+3;else G.mats[key]=(G.mats[key]||0)+q;}
   saveGame();sfx('chest');toast(`Bought ${S[1]}.`);render();};
 // ---------- screens ----------
-function facBar(id){const r=facRank(id),rep=facRep(id),nx=facNeed(id),lo=REP_AT[r-1];const pc=nx==null?100:Math.round((rep-lo)/(nx-lo)*100);
-  return `<div class="facbar" style="height:8px;background:#222;border-radius:4px;overflow:hidden;margin:4px 0"><i style="display:block;height:8px;width:${pc}%;background:${FACB[id].col}"></i></div>`;}
-function facMisRow(m){const f=facInit(),acc=f.acc[m.id]!=null,pr=facProg(m),ready=acc&&pr>=m.n;
-  const btn=ready?`<button class="btn sm gold" data-act="facClaim" data-arg="${m.id}">Claim</button>`:acc?`<span class="m">${pr}/${m.n}</span>`:`<button class="btn sm ${pr>=m.n?'gold':''}" data-act="facAccept" data-arg="${m.id}">Accept</button>`;
-  return `<div class="row"><div><b>${esc(m.t)}</b><small>${esc(m.d)} Reward: +${m.rep} standing and gold.${!ready?` Progress ${pr}/${m.n}${!acc&&pr>=m.n?', done already: accept to claim':''}.`:''}</small></div>${btn}</div>`;}
-function vFactions(){if(!G)return '';facSync(true);const f=facInit(),best=META.facBest||{};
-  const tt=FAC.filter(F=>(META.facBest||{})[F.id]>=6).map(F=>F.ranks[5]);return `${tt.length?`<p class="note"><b>Account titles:</b> ${tt.map(esc).join(', ')}</p>`:''}<p class="note">Six factions track what you already do on the road. Their standing and perks belong to this journey only. Nothing here is needed to finish the game. Only the best rank you reach is kept on your account, as a title.</p>`+FAC.map(F=>{
-    const r=facRank(F.id),rep=facRep(F.id),nx=facNeed(F.id),perks=F.perks.map((p,i)=>{if(!p)return '';const rk=i+1,on=r>=rk,key=F.id+':'+rk;
-      let act='';if(on&&(p.k==='charm'||p.k==='recruit'||p.k==='sig')){act=f.claim[key]?'<span class="m up">Claimed</span>':`<button class="btn sm gold" data-act="facPerk" data-arg="${key}">Claim</button>`;}
-      return `<div class="row ${on?'':'lock'}"><div><b>Rank ${rk}: ${esc(F.ranks[i])}</b><small>${esc(p.t)}${on&&!act?'':''}</small></div>${on?(act||'<span class="m up">Active</span>'):'<span class="m">Locked</span>'}</div>`;}).join('');
-    const si=F.perks.findIndex(p=>p&&p.k==='stock')+1,stock=si&&r>=si?`<h5>Counter stock</h5><div class="rows compact">${(FSTOCK[F.id]||[]).map((S,i)=>`<div class="row"><div><b>${esc(S[1])}</b></div><button class="btn sm" data-act="facBuy" data-arg="${F.id}:${i}" ${G.gold<S[2]?'disabled':''}>${fmt(S[2])}g</button></div>`).join('')}</div>`:'';
-    const ms=facMissionList(F.id).map(facMisRow).join('');
-    return `<div class="panel-sub facc" style="border-left:4px solid ${F.col};padding:6px 10px;margin:8px 0;background:rgba(255,255,255,.03)"><h4>${F.i} ${esc(F.n)} <small class="m">${esc(F.ranks[r-1])}${best[F.id]>r?' (best: '+esc(F.ranks[best[F.id]-1])+')':''}</small></h4><small>${esc(F.desc)}</small>${facBar(F.id)}<small>${nx==null?`${rep} standing. Top rank.`:`${rep} / ${nx} standing for ${esc(F.ranks[r])}`}</small>
-      <details><summary>Perks (${F.perks.filter((p,i)=>p&&r>=i+1).length}/5)</summary><div class="rows compact">${perks}</div></details>${stock}${ms?`<h5>Missions</h5><div class="rows compact">${ms}</div>`:''}</div>`;}).join('');}
-function vFacMissions(){if(!G)return '';facSync(true);
-  return `<p class="note">Missions the factions have posted for you right now. They rotate after an inn rest, like the Guild Hall board. Accepted ones stay until done. Standing from any source also counts toward ranks on the Factions page in Records.</p>`+FAC.map(F=>{const ms=facMissionList(F.id);return `<h4>${F.i} ${esc(F.n)} <small class="m">${esc(F.ranks[facRank(F.id)-1])}</small></h4><div class="rows compact">${ms.length?ms.map(facMisRow).join(''):'<div class="row"><small>Nothing posted. Rank up to see more.</small></div>'}</div>`;}).join('');}
+// v0.9.5: three ranks, one line each. The missions are a list of their own on the Notice Board's Guilds tab (board in menus3.js).
+function facBar(id){const t=facTier(id),rep=facRep(id),nx=facTierNeed(id),lo=FAC3_AT()[t-1];const pc=nx==null?100:Math.max(0,Math.min(100,Math.round((rep-lo)/(nx-lo)*100)));
+  return `<div class="facbar"><i style="width:${pc}%;background:${FACB[id].col}"></i></div>`;}
+function facMisState(m){const f=facInit(),acc=f.acc[m.id]!=null,pr=facProg(m);return f.done[m.id]?'done':acc?(pr>=m.n?'ready':'active'):'open';}
+function facMisRow(m){const f=facInit(),acc=f.acc[m.id]!=null,pr=facProg(m),ready=acc&&pr>=m.n,F=FACB[m.f];
+  const btn=ready?`<button class="btn sm gold" data-act="facClaim" data-arg="${m.id}">Claim</button>`:acc?`<span class="m nums">${pr}/${m.n}</span>`:`<button class="btn sm ${pr>=m.n?'gold':''}" data-act="facAccept" data-arg="${m.id}">Accept</button>`;
+  return `<div class="row facm"><div class="grow"><b>${esc(m.t)}</b>${ready?' <em class="qtag">Ready</em>':''} <small class="facg" style="--fc:${F.col}">${F.i} ${esc(F.n)}</small><small>${esc(m.d)} Reward: +${m.rep} standing and gold.${!ready?` Progress ${pr}/${m.n}${!acc&&pr>=m.n?', done already: accept to claim':''}.`:''}</small></div>${btn}</div>`;}
+function facRankRows(F){const f=facInit(),t=facTier(F.id),D=FAC3[F.id],at=FAC3_AT();
+  return D.n.map((nm,i)=>{const rk=i+1,on=t>=rk,C=facTierClaims(F.id,rk),open=C.filter(o=>!f.claim[o.key]);
+    const act=!on?`<span class="m nums">${fmt(at[i])}</span>`:C.length?(open.length?`<button class="btn sm gold" data-act="facPerk" data-arg="${open[0].key}">Claim</button>`:'<span class="m up">Claimed</span>'):'<span class="m up">Active</span>';
+    return `<div class="row ${on?'':'lock'}"><div class="grow"><b>${rk}. ${esc(nm)}</b><small>${esc(D.t[i])}</small></div>${act}</div>`;}).join('');}
+function vFactions(){if(!G)return '';facSync(true);const best=META.facBest||{};
+  const tt=FAC.filter(F=>facTierOf(best[F.id]||1)>=3).map(F=>FAC3[F.id].n[2]);
+  return `${tt.length?`<p class="note"><b>Account titles:</b> ${tt.map(esc).join(', ')}</p>`:''}<p class="note">Each guild has three ranks. Standing comes from what you already do on the road, and missions add more. Ranks and perks belong to this journey; the top rank you reach is kept on your account as a title. Nothing here is needed to finish the game.</p>`+FAC.map(F=>{
+    const t=facTier(F.id),rep=facRep(F.id),nx=facTierNeed(F.id),si=F.perks.findIndex(p=>p&&p.k==='stock')+1;
+    const stock=si&&t>=facTierOf(si)?`<details class="facstock"><summary>Counter stock</summary><div class="rows compact">${(FSTOCK[F.id]||[]).map((S,i)=>`<div class="row"><div class="grow"><b>${esc(S[1])}</b></div><button class="btn sm" data-act="facBuy" data-arg="${F.id}:${i}" ${G.gold<S[2]?'disabled':''}>${fmt(S[2])}g</button></div>`).join('')}</div></details>`:'';
+    return `<div class="facc" style="--fc:${F.col}"><h4>${F.i} ${esc(F.n)} <small class="m">Rank ${t}: ${esc(facTierName(F.id,t))}</small></h4><small>${esc(F.desc)}</small>${facBar(F.id)}<small class="nums">${nx==null?`${fmt(rep)} standing. Top rank.`:`${fmt(rep)} / ${fmt(nx)} standing for ${esc(facTierName(F.id,t+1))}`}</small>
+      <div class="rows compact facr">${facRankRows(F)}</div>${stock}</div>`;}).join('');}
+// every posted mission, ready to claim first, then under way, then open; sec: all, ready, active, open
+function facMisAll(){return FAC.flatMap(F=>facMissionList(F.id));}
+function vFacMissions(sec){if(!G)return '';facSync(true);sec=sec||'all';const o={ready:0,active:1,open:2};
+  const L=facMisAll().filter(m=>sec==='all'||facMisState(m)===sec).sort((a,b)=>o[facMisState(a)]-o[facMisState(b)]);
+  return `<p class="note">Missions rotate after an inn rest. Accepted ones stay until done, and everything you did before accepting counts.</p>${L.length?`<div class="rows">${L.map(facMisRow).join('')}</div>`:`<p class="note empty">${{ready:'No mission is ready to claim yet.',active:'No missions under way.',open:'No new missions posted. Rank up for more.'}[sec]||'No missions posted yet. Rank up for more.'}</p>`}`;}
 // rank strip on the matching shop screens
-{const vm0=vModal;vModal=function(m){const h=vm0.apply(this,arguments);try{const map={smithy:'smiths',workshop:'alch',board:'guild',beast:'wardens',archivist:'archive'};const id=m&&map[m.type];
-  if(id&&G&&!G.daily&&typeof h==='string'){const F=FACB[id],r=facRank(id),pk=facPerks(id,r).slice(-1)[0];const strip=`<p class="note facrank" style="border-left:3px solid ${F.col};padding-left:6px">${F.i} ${esc(F.n)}: ${esc(F.ranks[r-1])}${pk?'. '+esc(pk.t):''} <button class="btn sm" data-act="menuTab" data-arg="factions">Factions</button></p>`;
+{const vm0=vModal;vModal=function(m){const h=vm0.apply(this,arguments);try{const map={smithy:'smiths',workshop:'alch',beast:'wardens',archivist:'archive'};const id=m&&map[m.type];
+  if(id&&G&&!G.daily&&typeof h==='string'){const F=FACB[id],t=facTier(id);const strip=`<p class="note facrank" style="border-left:3px solid ${F.col};padding-left:6px">${F.i} ${esc(F.n)}: ${esc(facTierName(id,t))}. ${esc(FAC3[id].t[t-1])} <button class="btn sm" data-act="menuTab" data-arg="factions">Guilds</button></p>`;
     const k=h.indexOf('</h2>');if(k>0)return h.slice(0,k+5)+strip+h.slice(k+5);}}catch(e){}return h;};}
 
 // ===== mimic.js (v0.3.1): mimic chests =====
@@ -14700,7 +14757,7 @@ Object.assign(ACT,{
   facClaimAll(){const f=facInit();let n=0;FAC.forEach(F=>facMissionList(F.id).forEach(m=>{if(f.acc[m.id]!=null&&!f.done[m.id]&&facProg(m)>=m.n){ACT.facClaim(m.id);n++;}}));if(n>1)toast(`Claimed ${n} missions.`);render();}});
 {const vf0=vFacMissions;vFacMissions=function(){const h=vf0.apply(this,arguments);try{const f=facInit();let a=0,c=0;FAC.forEach(F=>facMissionList(F.id).forEach(m=>{if(f.acc[m.id]==null)a++;else if(!f.done[m.id]&&facProg(m)>=m.n)c++;}));
   return allBar('facAcceptAll','facClaimAll',a,c)+h;}catch(e){return h;}};}
-{const vF0=vFactions;vFactions=function(){const h=vF0.apply(this,arguments);try{if(!G)return h;const f=facInit();let a=0,c=0;FAC.forEach(F=>facMissionList(F.id).forEach(m=>{if(f.acc[m.id]==null)a++;else if(!f.done[m.id]&&facProg(m)>=m.n)c++;}));return allBar('facAcceptAll','facClaimAll',a,c)+h;}catch(e){return h;}};}
+// v0.9.5: the ranks page (vFactions) no longer lists missions, so it has no bar of its own; the Notice Board's Guilds tab shows the missions bar once
 
 // ===== economy.js (v0.4.1): prices: ECON multipliers applied once every table is built =====
 (function(){const g=o=>{if(o&&o.price!=null&&!o.__ec){o.price0=o.price;o.price=Math.round(o.price*ECON.gear);o.__ec=1;}};
@@ -14711,7 +14768,7 @@ Object.assign(ACT,{
 // =================== Beta v0.5.0 PHASE 3: SHOPS, GEAR AND ITEMS ===================
 // 3.1 "Best for party" order in shops, Forge and Tempering, with a tradeoff line when two upgrades are close.
 // 3.2 an item one hero already wears is still suggested when it would help another party member (the second hero's gain is shown).
-// 3.3 Smithy: "Buy, craft and equip best gear" (plan, confirm, run, Undo for the equips, clean stop when gold runs out).
+// 3.3 Smithy: "Upgrade whole party" (v0.9.5 name; was "Buy, craft and equip best gear": plan, confirm, run, Undo for the equips, clean stop when gold runs out).
 // 3.4 Best Party reads the area and its boss (Bestiary, theme): delivery coverage, legal weapons, archetype and element answers, reasons per pick.
 // 3.5 Team check on the Party tab and in Best Party: what is missing, who could fill it, one tap swap.
 // 3.6 Boss readiness on the boss prompt, the story echo prompt and the Bestiary entry. Never blocks, never names unknown mechanics.
@@ -14827,7 +14884,7 @@ function mP3Plan(m){const P=m.plan,cn=id=>G.roster[id]?esc(G.roster[id].name):'?
     <p class="nums p3tot"><b>Total: ${fmt(P.total)} gold</b> · You have ${fmt(G.gold)} · Left after: ${fmt(Math.max(0,G.gold-P.total))}</p>${short?'<p class="warn">You no longer have enough gold for all of it. It will stop when the gold runs out.</p>':''}
     <p class="note"><small>Undo afterwards puts everyone's gear back as it was; what you bought or forged stays in your pack.</small></p>`
     :`<p>Nothing to buy or forge: your party already has the best the Smithy can offer${P.cant.length?' for the gold and materials you have':''}.</p>${cant?`<h4>Out of reach for now</h4><div class="rows">${cant}</div>`:''}`;
-  return box('Buy, craft and equip best gear',body,`<button class="btn" data-act="xBack">Cancel</button>${P.picks.length?`<button class="btn gold" data-act="p3SmithGo">Confirm: ${fmt(P.total)} gold</button>`:''}`,true);}
+  return box('Upgrade whole party',body,`<button class="btn" data-act="xBack">Cancel</button>${P.picks.length?`<button class="btn gold" data-act="p3SmithGo">Confirm: ${fmt(P.total)} gold</button>`:''}`,true);}
 function p3SmithRun(plan){
   const got=[];let stop=null,spent=0,bought=0,forged=0;
   for(const p of plan.picks){const c=G.roster[p.cid];if(!c)continue;
@@ -14927,7 +14984,7 @@ function p3Ready(s,lv){const P=partyChars(),K=P.map(p3Kit),out=[],bench=Object.v
   const avg=P.length?P.reduce((a,c)=>a+c.lv,0)/P.length:0,av=Math.round(avg);
   add(avg>=lv-READY.lvGap,`Level: your party averages ${av}, it is level ${lv}`,avg>=lv-READY.lvGap?'':`Win a few more fights first; about level ${lv-READY.lvGap} or higher is a fair match.`);
   const want=Math.min(5,s),low=P.filter(c=>['w','a'].some(sl=>{const g=gearOf(c.eq[sl]);return !g||gTierIdx(g)<want;}));
-  add(!low.length,`Gear: tier ${ITEM_TIERS[want].n} or better`,low.length?`${low.map(nm).join(', ')} ${low.length>1?'still carry':'still carries'} older or missing gear. The Smithy's "Buy, craft and equip best gear" button sorts it out.`:'');
+  add(!low.length,`Gear: tier ${ITEM_TIERS[want].n} or better`,low.length?`${low.map(nm).join(', ')} ${low.length>1?'still carry':'still carries'} older or missing gear. The Smithy's Upgrade whole party button, or Upgrade on each slot of a hero sheet, sorts it out.`:'');
   add(K.some(k=>k.heal),'Healer',K.some(k=>k.heal)?'':'Nobody in your party can heal.'+who(k=>k.heal));
   const good=[...new Set(ty.flatMap(a=>Object.keys((ARCH[a]||{}).dl||{}).filter(x=>ARCH[a].dl[x]>=1.1)))];
   if(good.length){const has=good.filter(x=>K.some(k=>k.dl.has(x)));add(has.length>0,`${ty.map(a=>ARCH[a].n).join(' and ')}: ${good.map(x=>DL_NAME[x]).join(' or ')} attacks`,has.length?'':`Nobody brings ${good.map(x=>DL_NAME[x].toLowerCase()).join(' or ')} attacks.`+who(k=>good.some(x=>k.dl.has(x))));}
@@ -14968,6 +15025,89 @@ function p3Pork2(){const why=p3PorkWhy();if(why){toast(why);sfx('deny');return f
   h=h.replace(/(<button class="btn sm" data-act="useTravel" data-arg="holywater"[^>]*>Use<\/button>)/,(x)=>`<div class="btnrow tight col">${x}<button class="btn sm ${G.hwAuto?'gold':''}" data-act="p3HwAuto" aria-pressed="${!!G.hwAuto}" title="When the ward ends, use another Holy Water if you have one">Reapply automatically: ${G.hwAuto?'On':'Off'}</button></div>`);
   if(WS.m&&WS.m.kind==='dungeon'&&(G.inv.porkchop||0)>0)h=h.replace(/(<button class="btn sm" data-act="useTravel" data-arg="porkchop"[^>]*>Use<\/button>)/,(x)=>`<div class="btnrow tight col">${x.replace('>Use<','>Use 1: dungeon entrance<')}<button class="btn sm" data-act="p3Pork2" ${p3PorkWhy()?'disabled':''} title="${esc(p3PorkWhy())}">Use ${PORK.toTown}: return to town</button></div>`);}catch(e){}return h;};}
 
+// ===================== v0.9.5: one Upgrade button per gear slot =====================
+// For one hero and one slot, every single next step is listed (upgOpts): equip a better spare from the pack, buy a piece (Smithy, or
+// Alchemy for charms), forge a recipe (Smithy, or Alchemy for charms), temper the piece worn now (buying the ore, logs or parts the
+// Smithy sells if any are missing), or Echoforge a tier 6 weapon. upgBest picks the one that raises this hero's gear score
+// (loadoutScore, the same score as Auto best gear and "Best for party") the most among those the player can pay for now, the
+// cheaper on a tie. Shop steps need a town (the pack works anywhere). upgApply does it in one tap. Off in the Daily Trial.
+const UPG_KIND=['pack','buy','forge','temper','ef'];
+const UPG_LBL={pack:'Equip from your pack',buy:'Buy',forge:'Forge',temper:'Temper',ef:'Echoforge'};
+function upgTown(){try{return inTown();}catch(e){return false;}}
+function upgShop(sl){if(sl==='c')return shopStock('charms');if(sl==='w')return shopStock('weapons');return shopStock('armor').filter(id=>gearOf(id)&&gearOf(id).slot===sl);}
+function upgOpts(c,sl){const out=[];if(!G||G.daily||!c)return out;const cur=c.eq[sl]||null,town=upgTown();
+  const add=o=>{if(!gearOf(o.id))return;const g=gainFor(c,o.id);if(!g||g.d<=.01)return;o.d=g.d;o.pct=g.pct;o.cid=c.id;o.sl=sl;o.key=o.k+':'+(o.k==='forge'?o.ri:o.k==='ef'?o.f:o.id);out.push(o);};
+  [...new Set(G.gear)].forEach(id=>{if(slotOk(c,sl,id))add({k:'pack',id,gold:0,ok:true});});
+  upgShop(sl).forEach(id=>{if(GEAR[id]&&slotOk(c,sl,id))add({k:'buy',id,gold:GEAR[id].price,ok:town&&G.gold>=GEAR[id].price,town:1});});
+  RECIPES.forEach((r,i)=>{if(!r.id||!recipeOpen(r)||!slotOk(c,sl,r.id))return;const m=recipeMats(r);add({k:'forge',id:r.id,ri:i,gold:r.g,m,ok:town&&G.gold>=r.g&&hasMats(m),town:1});});
+  if(cur&&(typeof pcTemperOpen!=='function'||pcTemperOpen())){const fc=forgeCost(cur);if(fc){const have=hasMats(fc.m),P=have?null:buyPlan(fc.m),buy=P&&P.ok&&P.any?P:null;
+    add({k:'temper',id:fc.next,gold:fc.gold+(buy?buy.gold:0),m:fc.m,buy,cant:P&&!P.ok?P.cant:null,ok:town&&(have||!!buy)&&G.gold>=fc.gold+(buy?buy.gold:0),town:1});}}
+  if(sl==='w'&&typeof ECHOFORGE!=='undefined'&&typeof efBaseIn==='function')Object.keys(ECHOFORGE).forEach(f=>{const base=efBaseIn(f),worn=cur&&baseIdOf(cur)==='w_'+f+'_5'?plusOf(cur):-1;
+    let plus=-1,src=null;if(base){plus=base.plus;src='pack';}if(worn>plus){plus=worn;src='eq';}if(!src)return;const m=efCost(f);
+    add({k:'ef',f,src,id:'w_'+f+'_ef'+(plus?'+'+plus:''),gold:EF_GOLD,m,ok:town&&hasMats(m)&&G.gold>=EF_GOLD,town:1});});
+  return out;}
+// the order: most gain, then less gold, then fewer materials, then pack before buying before forging
+const upgCmp=(a,b)=>(b.d-a.d)||(a.gold-b.gold)||(upgMatN(a)-upgMatN(b))||(UPG_KIND.indexOf(a.k)-UPG_KIND.indexOf(b.k));
+function upgMatN(o){return o.m?Object.values(o.m).reduce((s,v)=>s+v,0):0;}
+function upgBest(c,sl){const L=upgOpts(c,sl).sort(upgCmp),best=L.find(o=>o.ok)||null;
+  // what to save up for: the best step overall when it beats what can be done now
+  const goal=L.find(o=>!o.ok&&(!best||o.d>best.d+.01))||null;return {best,goal,all:L};}
+function upgWhat(o,here){const g=gearOf(o.id),n=g?g.n:'?';
+  if(o.k==='pack')return `Equip ${esc(n)} from your pack`;if(o.k==='buy')return here?`Buy ${esc(n)}`:`Buy ${esc(n)} at ${gearOf(o.id).slot==='c'?'Alchemy':'the Smithy'}`;
+  if(o.k==='forge')return `Forge ${esc(n)}`;if(o.k==='temper')return `Temper to ${esc(n)}`;return `Echoforge ${esc(n)}`;}
+function upgCost(o){if(!o.gold&&!o.m)return 'Free';return `${o.m?matChips(o.m):''}<span class="matc gold ${G.gold>=o.gold?'':'short'}"><i></i><b class="nums">${fmt(o.gold)}</b> gold</span>${o.buy?`<small class="note">Includes ${fmt(o.buy.gold)} gold for ${o.buy.buy.map(([k,n])=>n+' '+esc(MATS[k])).join(', ')} from the Smithy.</small>`:''}`;}
+// before and after for the stats that change
+function upgBA(c,o){const a=c.S,b=statsWith(c,o.sl,o.id),p=[];DSTAT.forEach(([k,n])=>{const x=Math.round(a[k]||0),y=Math.round(b[k]||0);if(x!==y)p.push(`<span>${n} <b class="nums">${x}</b> → <b class="nums ${y>x?'up':'dn'}">${y}</b></span>`);});return p.length?`<div class="upgba">${p.join('')}</div>`:'';}
+const upgPct=o=>'+'+Math.max(1,Math.round(o.pct*100))+'%';
+// one tap: do the step, equip the result
+function upgApply(o){const c=G.roster[o.cid];if(!c)return false;const sl=o.sl;
+  if(o.k==='pack'){if(!G.gear.includes(o.id))return false;}
+  else if(o.k==='buy'){const g=GEAR[o.id];if(!g||G.gold<g.price)return false;G.gold-=g.price;G.gear.push(o.id);}
+  else if(o.k==='forge'){const r=RECIPES[o.ri];if(!r||!craft(r))return false;}
+  else if(o.k==='temper'){if(o.buy&&!doBuyPlan(buyPlan(forgeCost(c.eq[sl]).m)))return false;const r=forge('eq',{cid:c.id,slot:sl});if(!r)return false;saveGame();return r;}
+  else if(o.k==='ef'){const m=efCost(o.f);if(!hasMats(m)||G.gold<EF_GOLD)return false;
+    if(o.src==='eq'){if(baseIdOf(c.eq.w||'')!=='w_'+o.f+'_5')return false;G.gold-=EF_GOLD;payMats(m);c.eq.w=o.id;refresh(c);saveGame();return o.id;}
+    const base=efBaseIn(o.f);if(!base)return false;G.gold-=EF_GOLD;payMats(m);G.gear.splice(base.i,1);G.gear.push(o.id);}
+  if(!G.gear.includes(o.id))return false;equipGear(c,o.id);saveGame();return o.id;}
+// the Upgrade popup: the best step, its cost and before/after, one button to do it, and the full lists for tinkerers
+function upgOpenM(cid,sl){V.modal={type:'upg',cid,sl,from:V.modal&&V.modal.type!=='upg'?V.modal:(V.modal&&V.modal.from)||null};render();}
+function mUpg(m){const c=G.roster[m.cid];if(!c)return box('Upgrade','<p>That hero is not here.</p>','<button class="btn gold" data-act="xBack">Back</button>');
+  const sl=m.sl,cur=c.eq[sl],R=upgBest(c,sl),o=R.best,town=upgTown();
+  const curRow=`<div class="row eqcur">${cur?gearIcon(cur):'<span class="gico empty"></span>'}<div class="grow"><small>Now</small><b>${cur?esc(gearOf(cur).n):'Nothing'}</b> ${cur?tierChip(gearOf(cur)):''}<small>${cur?gearDesc(cur):''}</small></div></div>`;
+  const card=o?`<div class="upgcard"><span class="upgk">Best next step</span><div class="row">${gearIcon(o.id)}<div class="grow"><b>${upgWhat(o)}</b> ${tierChip(gearOf(o.id))} <em class="up">${upgPct(o)}</em><small>${gearDesc(o.id)}</small>${upgBA(c,o)}<div class="mats">${upgCost(o)}</div></div></div></div>`
+    :`<p class="note empty">Nothing better for this slot that you can pay for right now.</p>`;
+  const goal=R.goal?`<p class="note upggoal"><b>Save up for:</b> ${upgWhat(R.goal)} (${upgPct(R.goal)}), ${R.goal.town&&!town?'in town':R.goal.cant?'needs '+R.goal.cant.map(k=>esc(MATS[k])).join(', '):R.goal.m&&!hasMats(R.goal.m)?'needs materials':fmt(R.goal.gold)+' gold'}.</p>`:'';
+  const far=!town&&R.all.some(x=>x.town)?'<p class="note">Buying, forging and tempering happen in town. Here only spares in your pack count.</p>':'';
+  return box(`Upgrade: ${SLOTN[sl]} for ${esc(c.name)}`,curRow+card+goal+far,
+    `<button class="btn" data-act="upgAll">Show all options</button>${o?`<button class="btn gold" data-act="upgDo" data-arg="${c.id},${sl},${o.key}">Upgrade${o.gold?': '+fmt(o.gold)+' gold':''}</button>`:''}<button class="btn" data-act="xBack">Back</button>`,true);}
+// the button on a slot: shows the gain when there is a step to take
+function upgBtn(c,sl,cls){if(!G||G.daily)return '';const o=upgBest(c,sl).best;
+  return `<button class="btn sm upgb ${o?'gold':''} ${cls||''}" data-act="upgOpen" data-arg="${c.id},${sl}" title="${o?esc(upgWhat(o).replace(/<[^>]*>/g,''))+' '+upgPct(o):'Nothing better to buy, forge or temper right now'}">Upgrade${o?` <em>${upgPct(o)}</em>`:''}</button>`;}
+// shops: the best step for each slot first (the hero it helps most), one tap each
+function upgSlotsHtml(slots,noPlan){if(!G||G.daily)return '';const rows=slots.map(sl=>{let b=null;partyChars().forEach(c=>{const o=upgBest(c,sl).best;if(o&&(!b||o.pct>b.pct+1e-9||(Math.abs(o.pct-b.pct)<=1e-9&&o.gold<b.gold)))b=o;});return b;}).filter(Boolean);
+  return `<div class="upgbest">${m3H('Best upgrade for each slot')}${rows.length?`<div class="rows">${rows.map(o=>{const c=G.roster[o.cid];
+    return `<div class="row">${gearIcon(o.id)}<div class="grow"><small>${SLOTN[o.sl]} for ${esc(c.name)}</small><b>${upgWhat(o,1)}</b> <em class="up">${upgPct(o)}</em><small>${deltaHtml(c,o.id)}</small></div><button class="btn sm gold" data-act="upgDo" data-arg="${c.id},${o.sl},${o.key}">${o.gold?fmt(o.gold)+' gold':'Equip'}</button></div>`;}).join('')}</div>`:m3Empty('Your party already has the best you can pay for here.')}${noPlan?'':`<div class="btnrow p3smith"><button class="btn" data-act="p3Smith" title="Plans the best upgrade for each hero in your party, shows it, and only buys after you confirm">Upgrade whole party</button></div>`}</div>`;}
+{const vm0=vModal;vModal=function(m){if(m&&m.type==='upg')return mUpg(m);return vm0.apply(this,arguments);};}
+// the hero sheet: an Upgrade button on each slot
+{const mc0=mChar;mChar=function(id,edit){let h=mc0.apply(this,arguments);try{const c=G&&G.roster[id];if(!c||G.daily||typeof h!=='string')return h;
+  h=h.replace(/<h4>Equipment<\/h4><div class="eq">[\s\S]*?<\/div>/,()=>`<h4>Equipment</h4><div class="eq upgeq">${EQSL.map(sl=>`<div class="upgslot">${edit?`<button class="btn sm" data-act="gearSlot" data-arg="${sl}"><small>${SLOTN[sl]}</small> ${c.eq[sl]?gearOf(c.eq[sl]).n:'Empty'}</button>`:`<span class="eqv"><small>${SLOTN[sl]}</small> ${c.eq[sl]?gearOf(c.eq[sl]).n:'Empty'}</span>`}${upgBtn(c,sl)}</div>`).join('')}</div>`);}catch(e){}return h;};}
+Object.assign(ACT,{
+  upgOpen(a){const [cid,sl]=String(a).split(',');if(!G||G.daily||!G.roster[cid]||!EQSL.includes(sl))return;upgOpenM(cid,sl);},
+  upgDo(a){const [cid,sl,key]=String(a).split(',');const c=G&&G.roster[cid];if(!c||G.daily)return;const o=upgBest(c,sl).best;
+    if(!o||o.key!==key){toast('Something changed. Here is the best step now.');render();return;}
+    const was=c.eq[sl],r=upgApply(o);if(!r){sfx('deny');toast('That could not be done right now.');render();return;}
+    sfx(o.k==='pack'?'equip':'chest');toast(`${c.name}: ${was?gearOf(was).n:'nothing'} → ${gearOf(c.eq[sl]).n} (${upgPct(o)}).`);render();},
+  upgAll(){const m=V.modal;if(!m||m.type!=='upg')return;const c=G.roster[m.cid],sl=m.sl,o=upgBest(c,sl).best||upgBest(c,sl).goal,from=m;
+    if(!upgTown()){V.modal={type:'eqPick',char:m.cid,slot:sl,list:[m.cid],from};render();return;}
+    const sec={w:'weapons',a:'armor',k:'capes',c:'charms'}[sl];
+    if(o&&o.k==='temper')V.modal={type:'smithy',tab:'forge',sec,from};
+    else if(o&&o.k==='ef')V.modal={type:'smithy',tab:'echo',from};
+    else if(sl==='c')V.modal=o&&o.k==='forge'?{type:'workshop',tab:'craft',sec:'charm',from}:{type:'workshop',tab:'shop',sec:'charm',from};
+    else if(o&&o.k==='forge')V.modal={type:'smithy',tab:'craft',from};
+    else V.modal={type:'smithy',tab:'shop',sec,from};
+    render();}
+});
+
 // ===================== actions =====================
 Object.assign(ACT,{
   p3Smith(){if(!G||G.daily)return;V.modal={type:'p3plan',plan:p3SmithPlan(),from:V.modal};render();},
@@ -14987,7 +15127,7 @@ try{const st=document.createElement('style');st.textContent=`.p3why,.p3dup,.p3bp
 .p3ready{margin-top:.5em}.p3ready .warnr b{color:#ffcf6a}.p3mk{flex:0 0 1.4em;text-align:center;font-size:1.1em}.p3tot{margin:.5em 0}.p3thr{margin:.3em 0}`;document.head.appendChild(st);}catch(e){}
 
 // ----- test hook (window.__A is built after all modules; this one is ours) -----
-window.__P3={partyGainOf,shopSortIds:(a)=>shopSortIds(a),recipeList:(a)=>recipeList(a),temperOrder,temperGain,p3SmithPlan,p3SmithRun,p3Kit,p3Threats,p3Gaps,p3Ready,p3Pork2,p3PorkWhy,
+window.__P3={upgOpts:(c,sl)=>upgOpts(c,sl),upgBest:(c,sl)=>upgBest(c,sl),upgApply:o=>upgApply(o),partyGainOf,shopSortIds:(a)=>shopSortIds(a),recipeList:(a)=>recipeList(a),temperOrder,temperGain,p3SmithPlan,p3SmithRun,p3Kit,p3Threats,p3Gaps,p3Ready,p3Pork2,p3PorkWhy,
   bestParty:()=>bestParty(),invCap,get ITEM_MAX(){return ITEM_MAX;},get P3C(){return P3C;},p3Tradeoff,withCache:f=>{const o=P3C;P3C={why:{},kit:{}};try{return f(P3C);}finally{P3C=o;}}};
 
 // ===== music2.js (v0.4.5): music wiring, settings, the Music Room, credits =====
@@ -16797,13 +16937,15 @@ function m3ItemSort(ids,priceOf){const f=SHOPF(),rr=m3Rar(),pr=priceOf||(id=>ITE
 
 // ----- structure -----
 const M3_LEG={smithy:{weapons:['shop','weapons'],armor:['shop','armor'],capes:['shop','capes'],mats:['shop','mats']},
-  workshop:{relit:['shop','relit'],herbs:['shop','herb']},guild:{personal:['quests','personal'],bounties:['quests','bounties'],party:['recruit','all']},tavern:{},board:{}};
-const M3_HOME={smithy:'shop',workshop:'shop',guild:'recruit',tavern:'hire',board:null};
-const M3_TITLE={smithy:'The Smithy',workshop:'Alchemy',guild:'Wayfarers Guild Hall',tavern:'The Rusty Flagon',board:'Quest Board'};
+  workshop:{relit:['shop','relit'],herbs:['shop','herb']},guild:{personal:['quests','personal'],party:['recruit','all']},tavern:{},board:{personal:['quests','personal']}};
+// v0.9.5: the Guild Hall opens on the Notice Board's Guilds tab; the town board opens on Quests (board tabs: NB_TABS below)
+const M3_HOME={smithy:'shop',workshop:'shop',guild:'guilds',tavern:'hire',board:'quests'};
+const M3_TITLE={smithy:'The Smithy',workshop:'Alchemy',guild:'Wayfarers Guild Hall',tavern:'The Rusty Flagon',board:'Notice Board'};
 function m3Tabs(t){
   if(t==='smithy')return [['shop','Shop'],['craft','Forge'],['forge','Tempering'],['sell','Sell']].concat(typeof efTabOn==='function'&&efTabOn()?[['echo','Echoforge']]:[]);
   if(t==='workshop')return [['shop','Shop'],['craft','Brew &amp; craft'],['sell','Sell'],['pouch','Pouch']];
-  if(t==='guild')return [['recruit','Recruits'],['quests','Quests'],['nature','Natures'],['arena','Arena'],['guilds','Guilds']];
+  if(t==='guild')return NB_TABS.concat([['recruit','Recruits'],['nature','Natures']]);
+  if(t==='board')return NB_TABS;
   if(t==='tavern')return [['hire','Hire'],['kitchen','Kitchen']];
   return [];}
 // item kinds at Alchemy
@@ -16822,9 +16964,7 @@ function m3Secs(t,tab){const n=(a)=>a.length;
       return [['all','All'],['potion','Potions',k('potion')],['cure','Cures',k('cure')],['travel','Travel',k('travel')],['charm','Charms',shopStock('charms').length],['herb','Herbs',herbStock().length]].concat(G.cleared[townS()]?[['relit','Festival',RELIT_STOCK.length]]:[]);}
     if(tab==='craft')return [['all','All']].concat(RCAT.filter(([k])=>ALCH_CATS.includes(k)).map(([k,l])=>[k,l,RECIPES.filter(r=>r.cat===k&&recipeOpen(r)).length]));
     if(tab==='sell'){const C=m3SellCnt(['c']);return [['all','All'],['charm','Charms',Object.values(C).reduce((a,b)=>a+b,0)],['herb','Herbs',Object.keys(MATS).filter(id=>(G.mats[id]||0)>0&&MAT_OF[id].k==='herb').length]];}}
-  if(t==='guild'&&tab==='quests'){for(let s=0;s<=G.stage;s++)genBounties(s);return [['all','All'],['personal','Personal quests'],['bounties','Bounties',G.bounties.filter(b=>b.stage<=G.stage&&b.state!=='done').length]];}
-  if(t==='board'){const Q=m3Quests(),c=f=>Q.filter(f).length;
-    return [['all','All',Q.length],['ready','Ready',c(q=>q.state==='active'&&questReady(q))],['active','Active',c(q=>q.state==='active'&&!questReady(q))],['open','Open',c(q=>q.state==='open')],['done','Done',c(q=>q.state!=='open'&&q.state!=='active')]];}
+  if(t==='guild'||t==='board')return nbSecs(tab);
   return [];}
 // normalise V.modal for a shop: main tab plus section, old ids mapped
 function m3Norm(m){if(!m)return m;const t=m.type,L=M3_LEG[t];if(!L||(t==='guild'&&m.char))return m;
@@ -16860,7 +17000,7 @@ function m3Recipes(cats,sec,blurb){const one=sec!=='all'&&cats.includes(sec),lis
   const parts=list.map(k=>{const all=RECIPES.filter(r=>r.cat===k),open=all.filter(recipeOpen);locked+=all.length-open.length;const L=recipeList(open);
     const lab=(RCAT.find(x=>x[0]===k)||[k,k])[1];return (one?'':m3H(lab,L.length))+m3Rows(L.map(m3RecRow).join(''),open.length?'Nothing here matches the filters.':'No recipes of this kind yet.');}).join('');
   return `<p class="note">${blurb}</p>${shopFBar('craft')}${parts}${locked?`<p class="note">${locked} more recipe${locked>1?'s unlock':' unlocks'} here as you push into later realms.</p>`:''}`;}
-function m3PlanBtn(){return G&&!G.daily?`<div class="btnrow p3smith"><button class="btn gold" data-act="p3Smith" title="Plans the best upgrade for each hero in your party, shows it, and only buys after you confirm">Buy, craft and equip best gear</button></div>`:'';}
+function m3PlanBtn(){return G&&!G.daily?`<div class="btnrow p3smith"><button class="btn gold" data-act="p3Smith" title="Plans the best upgrade for each hero in your party, shows it, and only buys after you confirm">Upgrade whole party</button></div>`:'';}
 function m3SmithMatsBuy(){return `${m3H('Ore and wood')}<p class="note">Stock grows as you reach later realms.</p><div class="rows">${smithMatStock().map(id=>matBuyRow(id,MAT_PRICE[id])).join('')}</div>
   ${m3H('Monster parts')}<p class="note">A few parts behind the counter, at a steep price and only ${PART_STOCK} of each per inn rest. Hunting is still the way to get them in bulk.</p><div class="rows">${Object.keys(PART_PRICE).map(id=>matBuyRow(id,partPrice(id),partLeft(id))).join('')}</div>`;}
 
@@ -16870,7 +17010,8 @@ function m3Smithy(m){const sec=m.sec,tab=m.tab;let body='';
     const W=shopSortIds(shopStock('weapons')),AR=shopSortIds(shopStock('armor')),A=AR.filter(id=>gearOf(id).slot==='a'),K=AR.filter(id=>gearOf(id).slot==='k');
     const grp={weapons:['Weapons',W],armor:['Armor',A],capes:['Capes',K]},emp='Nothing on the shelves matches the filters.';
     const gear=k=>(sec==='all'?m3H(grp[k][0],grp[k][1].length):'')+m3Rows(grp[k][1].map(m3GearRow).join(''),emp);
-    body=(sec==='mats'?'':shopFBar('buy')+m3PlanBtn())+(sec==='all'?['weapons','armor','capes'].map(gear).join('')+m3SmithMatsBuy():sec==='mats'?m3SmithMatsBuy():gear(sec));
+    // v0.9.5: the best step for each slot comes first (p3shop.js upgSlotsHtml, with Upgrade whole party), then the filters and the shelves
+    body=(sec==='mats'?'':(typeof upgSlotsHtml==='function'?upgSlotsHtml(sec==='all'?['w','a','k']:[{weapons:'w',armor:'a',capes:'k'}[sec]]):m3PlanBtn())+shopFBar('buy'))+(sec==='all'?['weapons','armor','capes'].map(gear).join('')+m3SmithMatsBuy():sec==='mats'?m3SmithMatsBuy():gear(sec));
   }else if(tab==='craft')body=m3PlanBtn()+m3Recipes(SMITH_CATS,sec,'Smithy gear comes out already tempered, so it beats buying the same piece. Metal wants ore, wooden gear wants logs, and every piece wants monster parts.');
   else if(tab==='forge')body=vTemper({slot:M3_SLOTSEC[sec]||null,show:SHOPF().tsh||'all',bar:true});
   else if(tab==='sell'){const g=(sl,lab)=>(sec==='all'?m3H(lab):'')+m3Rows(m3SellRows(sl),'No spare '+lab.toLowerCase()+' in your pack.');
@@ -16887,7 +17028,7 @@ function m3Alchemy(m){const sec=m.sec,tab=m.tab;let body='';
     const relit=()=>{if(!G.cleared[townS()])return '';const P={};RELIT_STOCK.forEach(([id,p])=>P[id]=p);const ids=RELIT_STOCK.map(x=>x[0]);
       return (one?'':m3H('Festival wares',ids.length))+`<p class="note">The beacon is lit and the alchemist is in a generous mood: rare stock, only in relit towns.</p><div class="rows">${ids.map(id=>{const isItem=!!ITEMS[id],n=isItem?ITEMS[id].n:gearOf(id).n,d=isItem?ITEMS[id].d:gearDesc(id),price=P[id];return `<div class="row"><div class="grow"><b>${n}</b><small>${d}${isItem?'. Carrying '+(G.inv[id]||0):''}</small></div><button class="btn sm" data-act="buyRelit" data-arg="${id}" ${G.gold>=price?'':'disabled'}>${fmt(price)}</button></div>`;}).join('')}</div>`;};
     const P={potion:()=>items('potion'),cure:()=>items('cure'),travel:()=>items('travel'),charm:charms,herb:herbs,relit};
-    body=(sec==='herb'||sec==='relit'?'':shopFBar(sec==='charm'?'buy':sec==='all'?'mixed':'items'))+(one?P[sec]():Object.keys(P).map(k=>P[k]()).join(''));
+    body=(sec==='charm'&&typeof upgSlotsHtml==='function'?upgSlotsHtml(['c'],1):'')+(sec==='herb'||sec==='relit'?'':shopFBar(sec==='charm'?'buy':sec==='all'?'mixed':'items'))+(one?P[sec]():Object.keys(P).map(k=>P[k]()).join(''));
   }else if(tab==='craft')body=m3Recipes(ALCH_CATS,sec,sec==='potion'?'Brew draughts from herbs you pick in the fields. Cheaper than buying, and some brews are Alchemy-only.':sec==='charm'?'Charms need monster parts and your realm\'s relic.':sec==='item'?'Stitch your own tent from logs and hide.':'Brew draughts from herbs, make charms from monster parts and your realm\'s relic, and stitch your own tent.');
   else if(tab==='sell'){const ch=(sec==='all'?m3H('Charms'):'')+m3Rows(m3SellRows(['c']),'No spare charms. Weapons and armor sell at the Smithy.'),hb=(sec==='all'?m3H('Herbs'):'')+`<div class="rows">${matSellRows(['herb'])}</div>`;
     body=sec==='charm'?ch:sec==='herb'?hb:ch+hb;}
@@ -16903,37 +17044,61 @@ function m3Tavern(m){const tab=m.tab;let body='';
     <div class="grid cards">${SL.map(id=>id?heroCard(id,false,null,`<div class="fits">${fitTags(id)}</div><button class="btn gold" data-act="hire" data-arg="${id}" ${G.gold>=recruitCost(id)?'':'disabled'}>Hire for ${fmt(recruitCost(id))}</button>`):`<div class="card hero emptyseat"><b>Empty seat</b><small>Fills at the next shuffle.</small></div>`).join('')||m3Empty('Nobody new at the tables.')}</div>
     ${later?`<p class="note">${later} more wayfarer${later>1?'s are':' is'} on the road${nu?`; the next arrive in about ${nu.need} battle${nu.need>1?'s':''}, or when you reach the next realm`:''}.</p>`:''}<p class="note">Some wayfarers won't sit in a tavern at all. Check the Guild Hall's recruitment challenges.</p>`;}
   return m3Box('tavern',m,m3Nav('tavern',m)+body);}
-// ----- the Guild Hall -----
-function m3Bounties(){for(let s=0;s<=G.stage;s++)genBounties(s);const bo=b=>b.state==='active'?0:b.state==='open'?1:2,L=G.bounties.filter(b=>b.stage<=G.stage).sort((a,b)=>bo(a)-bo(b));
-  return `<p class="note">Marked monsters roam the fields. Accept a bounty and its quarry appears in that realm's field, glowing red. Beat it for gold, a stat charm and materials.</p>${typeof allBar==='function'?allBar('bountyAll','',L.filter(b=>b.state==='open').length,0):''}${m3Rows(L.map(b=>{const mo=MON[b.mon],md=ELITE_MODS.find(x=>x.k===b.mod);
-    return `<div class="row"><img class="mimg" src="${monURL(mo.art)}" alt=""><div class="grow"><b>${esc(b.name)}</b><small>${md.n}: ${md.d} Level ${b.lv}. Roams ${esc(ZS(b.stage).n)}.</small><small>${fmt(b.reward.gold)} gold, ${gearOf(b.reward.charm).n}</small></div>${b.state==='open'?`<button class="btn sm gold" data-act="bounty" data-arg="${b.id}">Accept</button>`:b.state==='active'?'<span class="m">Hunting</span>':'<span class="m up">Done</span>'}</div>`;}).join(''),'No bounties posted yet.')}`;}
-function m3Arena(){const cl=G.cleared.filter(Boolean).length;
-  return `<p class="note">The guild's fighting pit. Back-to-back waves of foes from every realm, no fleeing, no rest between waves.</p><div class="rows">${ARENA.map((A,i)=>`<div class="row"><div class="grow"><b>${A.n}</b><small>${A.waves} waves, foes level ${A.lvs[0]}-${A.lvs[1]}. Suggested party level ${A.rec}. ${A.min>cl?`Opens after ${A.min} Scourge${A.min>1?'s':''} fall${A.min>1?'':'s'}.`:`Best: ${G.arena[i]?'cleared x'+G.arena[i]:'not yet cleared'}.`}</small><small>${fmt(A.reward.gold)} gold, ${A.reward.mat} materials${A.reward.charm?', a stat charm':''}${A.reward.core?', '+A.reward.core+' Dread Cores':''}</small></div><button class="btn sm gold" data-act="arena" data-arg="${i}" ${A.min>cl?'disabled':''}>Enter</button></div>`).join('')}</div>
+// ----- v0.9.5: the Notice Board (Quests, Guilds, Bounties, Arena), reached from the town board, the Guild Hall and Menu > Quests -----
+// One set of tabs and bodies (nbBody) drawn in three places: the board building ({type:'board'}, its own tabs), the Guild Hall (the same
+// tabs plus Recruits and Natures, opening on Guilds) and the Menu's Quests group (the menu tabs quests, factions, qbounty, qarena).
+// Each tab has All plus Ready / Active / Open (Done where it applies); claimable first, then under way, then open.
+const NB_TABS=[['quests','Quests'],['guilds','Guilds'],['bounties','Bounties'],['arena','Arena']];
+const NB_MENU={quests:'quests',factions:'guilds',qbounty:'bounties',qarena:'arena'};// menu tab -> board tab
+const NB_ORD={ready:0,active:1,open:2,done:3};
+function nbQState(q){return q.state==='active'?(questReady(q)?'ready':'active'):q.state==='open'?'open':'done';}
+function nbBState(b){return b.state==='open'||b.state==='active'?b.state:'done';}
+function nbPersonal(){try{return Object.values(G.roster).filter(c=>TPL[c.id]&&!TPL[c.id].mon&&pqShown(c));}catch(e){return [];}}
+function nbBountyList(){for(let s=0;s<=G.stage;s++)genBounties(s);return G.bounties.filter(b=>b.stage<=G.stage);}
+function nbSecs(tab){
+  if(tab==='quests'){const Q=m3Quests(),c=s=>Q.filter(q=>nbQState(q)===s).length;return [['all','All',Q.length],['ready','Ready',c('ready')],['active','Active',c('active')],['open','Open',c('open')],['done','Done',c('done')],['personal','Personal',nbPersonal().length]];}
+  if(tab==='guilds'){const L=typeof facMisAll==='function'?facMisAll():[],c=s=>L.filter(m=>facMisState(m)===s).length;return [['all','All',L.length],['ready','Ready',c('ready')],['active','Active',c('active')],['open','Open',c('open')]];}
+  if(tab==='bounties'){const L=nbBountyList(),c=s=>L.filter(b=>nbBState(b)===s).length;return [['all','All',L.length],['active','Active',c('active')],['open','Open',c('open')],['done','Done',c('done')]];}
+  return [];}
+function nbQuestRow(q){const st=nbQState(q);
+  const prog=q.type==='tamer'?`${Math.min(stickCount().n,q.n)}/${q.n} creatures logged`:q.type==='legend'?legendProg(q):q.type==='hunt'?`${q.have||0}/${q.n} hunted`:q.type==='gather'?`${Math.min(G.mats[q.mat]||0,q.n)}/${q.n} gathered`:q.type==='vault'?((G.vaults||{})[q.stage]?'Hoard recovered':'Vault still sealed'):q.found?'Found':'Somewhere in the '+ZS(q.stage).dungeon;
+  const rew=q.type==='tamer'?"The Tamer's Stick, a weapon that grows with your Bestiary":q.type==='legend'?`${esc(TPL[q.hero].title)} may join you`:q.type==='wanderer'?`${TPL[q.hero].n} joins you`:`${fmt(q.reward.gold)} gold${q.reward.item?', '+ITEMS[q.reward.item].n+' x2':''}${q.reward.gear?', forged gear':''}`;
+  const btn=st==='open'?`<button class="btn sm" data-act="qAccept" data-arg="${q.id}">Accept</button>`:st==='ready'?`<button class="btn sm gold" data-act="qClaim" data-arg="${q.id}">Claim</button>`:st==='active'?'<span class="m">Active</span>':'<span class="m up">Done</span>';
+  return `<div class="row"><div class="grow"><b>${esc(q.title)}</b>${st==='ready'?' <em class="qtag">Ready</em>':''}<small>${esc(q.desc)}</small><small>${q.state==='active'?prog+'. ':''}Reward: ${rew}</small></div>${btn}</div>`;}
+function nbQuests(sec){const Q=m3Quests();let h='';
+  if(sec!=='personal'){const L=Q.filter(q=>sec==='all'||nbQState(q)===sec).sort((a,b)=>NB_ORD[nbQState(a)]-NB_ORD[nbQState(b)]);
+    h+=(typeof allBar==='function'?allBar('qAcceptAll','qClaimAll',Q.filter(q=>q.state==='open').length,Q.filter(q=>q.state==='active'&&questReady(q)).length):'')
+      +m3Rows(L.map(nbQuestRow).join(''),{ready:'Nothing is ready to hand in yet.',active:'No quests under way.',open:'No new notices. More go up as your journey goes on.',done:'Nothing finished yet.'}[sec]||'No notices yet.');}
+  if(sec==='personal'||(sec==='all'&&nbPersonal().length))h+=(sec==='all'?m3H('Personal quests'):'')+vPersonal();
+  return `<p class="note">Accept a notice, do the deed, then claim the reward here or on any town's board.</p>${h}`;}
+function nbBounties(sec){const L=nbBountyList().filter(b=>sec==='all'||nbBState(b)===sec).sort((a,b)=>NB_ORD[nbBState(a)]-NB_ORD[nbBState(b)]);
+  return `<p class="note">Accept a bounty and its marked beast roams that realm's field, glowing red. Beat it for gold, a stat charm and materials.</p>${typeof allBar==='function'?allBar('bountyAll','',nbBountyList().filter(b=>b.state==='open').length,0):''}${m3Rows(L.map(b=>{const mo=MON[b.mon],md=ELITE_MODS.find(x=>x.k===b.mod);
+    return `<div class="row"><img class="mimg" src="${monURL(mo.art)}" alt=""><div class="grow"><b>${esc(b.name)}</b><small>${md.n}: ${md.d} Level ${b.lv}. Roams ${esc(ZS(b.stage).n)}.</small><small>${fmt(b.reward.gold)} gold, ${gearOf(b.reward.charm).n}</small></div>${b.state==='open'?`<button class="btn sm gold" data-act="bounty" data-arg="${b.id}">Accept</button>`:b.state==='active'?'<span class="m">Hunting</span>':'<span class="m up">Done</span>'}</div>`;}).join(''),{active:'No bounties under way.',open:'No open bounties.',done:'No bounties done yet.'}[sec]||'No bounties posted yet.')}`;}
+function nbArena(menu){const cl=G.cleared.filter(Boolean).length,far=menu&&!inTown();
+  return `<p class="note">The guild's fighting pit. Back-to-back waves of foes from every realm, no fleeing, no rest between waves.${far?' Enter it from any town.':''}</p><div class="rows">${ARENA.map((A,i)=>`<div class="row"><div class="grow"><b>${A.n}</b><small>${A.waves} waves, foes level ${A.lvs[0]}-${A.lvs[1]}. Suggested party level ${A.rec}. ${A.min>cl?`Opens after ${A.min} Scourge${A.min>1?'s':''} fall${A.min>1?'':'s'}.`:`Best: ${G.arena[i]?'cleared x'+G.arena[i]:'not yet cleared'}.`}</small><small>${fmt(A.reward.gold)} gold, ${A.reward.mat} materials${A.reward.charm?', a stat charm':''}${A.reward.core?', '+A.reward.core+' Dread Cores':''}</small></div><button class="btn sm gold" data-act="arena" data-arg="${i}" ${A.min>cl||far?'disabled':''}>Enter</button></div>`).join('')}</div>
     ${m3H('Echoes')}<p class="note">Beat a Scourge or the Calamity and an optional Echo of it lingers in its dungeon, on the rune circle where it fell. After the Calamity, the Echo Rift at any waystone lets you fight every Echo you have unlocked again.</p>`;}
+function nbGuilds(sec){return (typeof vFacMissions==='function'?vFacMissions(sec):'')+(sec==='all'&&typeof vFactions==='function'?m3H('Ranks and perks')+vFactions():'');}
+function nbBody(tab,sec,menu){sec=sec||'all';
+  if(tab==='guilds')return nbGuilds(sec);if(tab==='bounties')return nbBounties(sec);if(tab==='arena')return nbArena(menu);return nbQuests(sec);}
+// the Menu's Quests group draws the same bodies, with the section chips under the menu's own tabs (ui.js mMenu asks nbMenuBody)
+function nbMenuBody(m){const tab=NB_MENU[m&&m.tab];if(!tab||!G)return null;const S=nbSecs(tab);if(!S.some(x=>x[0]===m.sec))m.sec='all';
+  const nav=S.length>1?`<div class="chips nbsec" role="tablist" aria-label="Sections">${S.map(([k,l,c])=>`<button role="tab" aria-selected="${k===m.sec}" class="chip sm ${k===m.sec?'on':''}" data-act="sSec" data-arg="${k}">${l}${c!=null?` <span class="cnt nums">${c}</span>`:''}</button>`).join('')}</div>`:'';
+  return nav+nbBody(tab,m.sec,true);}
+// ----- the Guild Hall: the Notice Board's tabs plus Recruits and Natures -----
 function m3Guild(m){const tab=m.tab,sec=m.sec;let body='';
   if(tab==='recruit')body=vChallenges();
   else if(tab==='nature')body=vNature(m);
-  else if(tab==='quests')body=sec==='personal'?vPersonal():sec==='bounties'?m3Bounties():m3H('Personal quests')+vPersonal()+m3H('Bounties')+m3Bounties();
-  else if(tab==='arena')body=m3Arena();
-  else body=`<p class="note">The guilds post their missions here and keep your ranks. The same pages are under Menu: Quests, Guild missions and Records, Guilds.</p>`+(typeof vFactions==='function'?vFactions():'');
+  else body=nbBody(tab,sec);
   return box(m3Head('guild'),m3Nav('guild',m)+body,'<button class="btn gold" data-act="closeModal">Done</button>',true);}
-// ----- the Quest Board -----
+// ----- the Notice Board building in town -----
 function m3Quests(){for(let s=0;s<=G.stage;s++)genQuests(s);return G.quests.filter(q=>q.stage<=G.stage);}
-function m3Board(m){const sec=m.sec||'all',st=q=>q.state==='active'?(questReady(q)?0:1):q.state==='open'?2:3;
-  const qs=m3Quests().filter(q=>sec==='all'||(sec==='ready'?q.state==='active'&&questReady(q):sec==='active'?q.state==='active'&&!questReady(q):sec==='open'?q.state==='open':q.state!=='open'&&q.state!=='active')).sort((a,b)=>st(a)-st(b));
-  const Q=m3Quests(),bar=typeof allBar==='function'?allBar('qAcceptAll','qClaimAll',Q.filter(q=>q.state==='open').length,Q.filter(q=>q.state==='active'&&questReady(q)).length):'';
-  const rows=qs.map(q=>{
-    const prog=q.type==='tamer'?`${Math.min(stickCount().n,q.n)}/${q.n} creatures logged`:q.type==='legend'?legendProg(q):q.type==='hunt'?`${q.have||0}/${q.n} hunted`:q.type==='gather'?`${Math.min(G.mats[q.mat]||0,q.n)}/${q.n} gathered`:q.type==='vault'?((G.vaults||{})[q.stage]?'Hoard recovered':'Vault still sealed'):q.found?'Found':'Somewhere in the '+ZS(q.stage).dungeon;
-    const rew=q.type==='tamer'?"The Tamer's Stick, a weapon that grows with your Bestiary":q.type==='legend'?`${esc(TPL[q.hero].title)} may join you`:q.type==='wanderer'?`${TPL[q.hero].n} joins you`:`${fmt(q.reward.gold)} gold${q.reward.item?', '+ITEMS[q.reward.item].n+' x2':''}${q.reward.gear?', forged gear':''}`;
-    const btn=q.state==='open'?`<button class="btn sm" data-act="qAccept" data-arg="${q.id}">Accept</button>`:q.state==='active'?(questReady(q)?`<button class="btn sm gold" data-act="qClaim" data-arg="${q.id}">Claim</button>`:'<span class="m">Active</span>'):'<span class="m up">Done</span>';
-    return `<div class="row"><div class="grow"><b>${esc(q.title)}</b><small>${esc(q.desc)}</small><small>${q.state==='active'?prog+'. ':''}Reward: ${rew}</small></div>${btn}</div>`;}).join('');
-  return box(m3Head('board'),`<p class="note">Notices pinned three deep. Accept one, do the deed, then come back to any quest board to claim the reward.</p>${m3Nav('board',m)}${bar}${m3Rows(rows,{ready:'Nothing is ready to hand in yet.',active:'No quests under way.',open:'No new notices. More go up as your journey goes on.',done:'Nothing finished yet.'}[sec]||'No notices yet.')}`);}
+function m3Board(m){return box(m3Head('board'),m3Nav('board',m)+nbBody(m.tab,m.sec),'<button class="btn gold" data-act="closeModal">Done</button>',true);}
 // ----- hooks: the shops go through the normaliser first -----
 function mShop(m){m3Norm(m);return m3Smithy(m);}
 function mWorkshop(m){m3Norm(m);return m3Alchemy(m);}
 function mTavern(){const m=V.modal&&V.modal.type==='tavern'?m3Norm(V.modal):{type:'tavern',tab:'hire',sec:'all'};return m3Tavern(m);}
 function mGuild(m){m3Norm(m);return m3Guild(m);}
-function mBoard(){const m=V.modal&&V.modal.type==='board'?m3Norm(V.modal):{type:'board',sec:'all'};return m3Board(m);}
+function mBoard(){const m=m3Norm(V.modal&&V.modal.type==='board'?V.modal:{type:'board'});return m3Board(m);}
 Object.assign(ACT,{
   sTab(k){const m=V.modal;if(!m)return;m.tab=k;m.sec='all';m._t=k;m.nat=null;V.cmp=null;V.swapSel=null;render();m3Top();},
   sSec(k){const m=V.modal;if(!m)return;m.sec=k;V.cmp=null;render();m3Top();},
@@ -16948,6 +17113,12 @@ ACT.gtab=function(k){V.swapSel=null;V.modal={type:'guild',tab:k};render();};
 
 // ----- main menu: labels for the regrouped tabs (MENU_GROUPS in ui.js) -----
 try{MENU_SUB.fmis='Guild missions';MENU_SUB.pouch='Materials';MENU_SUB.system='Journey';}catch(e){}
+// v0.9.5: Menu > Quests is the Notice Board: Quests, Guilds (ranks, perks and missions; was Records > Guilds and Quests > Guild missions),
+// Bounties and Arena. The old tab id 'fmis' lands on Guilds.
+try{const QG=MENU_GROUPS.find(g=>g[0]==='quests'),RG=MENU_GROUPS.find(g=>g[0]==='records');QG[2].splice(0,QG[2].length,'quests','factions','qbounty','qarena');
+  const k=RG[2].indexOf('factions');if(k>=0)RG[2].splice(k,1);MENU_SUB.qbounty='Bounties';MENU_SUB.qarena='Arena';}catch(e){}
+{const mt0=ACT.menuTab;ACT.menuTab=function(t){return mt0.call(this,t==='fmis'?'factions':t);};}
+{const mm0=mMenu;mMenu=function(m){if(m&&m.tab==='fmis')m.tab='factions';return mm0.apply(this,arguments);};}
 
 // ----- the visible viewport: panels fit the screen the phone really shows (the URL bar and the Android app's bars included) -----
 function m3Vh(){try{const v=window.visualViewport,h=Math.round(v?v.height:innerHeight);document.documentElement.style.setProperty('--vvh',h+'px');}catch(e){}}
@@ -16955,7 +17126,7 @@ m3Vh();addEventListener('resize',m3Vh);try{if(window.visualViewport)visualViewpo
 try{if(screen.orientation&&screen.orientation.addEventListener)screen.orientation.addEventListener('change',()=>setTimeout(m3Vh,200));}catch(e){}
 
 // ----- test hook -----
-window.__M3={get MENU_GROUPS(){return MENU_GROUPS;},m3Norm,m3Tabs,m3Secs,shopFBar:c=>shopFBar(c),ddSel,M3_LEG,M3_HOME,m3Upg};
+window.__M3={get MENU_GROUPS(){return MENU_GROUPS;},m3Norm,m3Tabs,m3Secs,NB_TABS,NB_MENU,nbSecs,nbBody,shopFBar:c=>shopFBar(c),ddSel,M3_LEG,M3_HOME,m3Upg};
 
 // ===== party3.js (v0.6.3): party systems: Best Party formations, Training team, Equip best at camp =====
 // 1. Best Party suggests several formations instead of one: Balanced, Boss ready (Area answer once the boss is down), Fresh mix and a
@@ -19485,12 +19656,12 @@ function rgBump(m,a){if(WS.rgMap!==m.id){WS.rgMap=m.id;WS.rgSaid={};}if(WS.inSrc
 try{window.__RG={need:b=>rivalNeed(b),ghost:a=>ghostActor(a),text:b=>rivalNeedText(b),alpha:RG,actors:()=>WS.m?dynActors(WS.m):[],marks:()=>WS.m?mapMarks(WS.m):[]};}catch(e){}
 
 // ===== qready.js (v0.5.1): quests ready to hand in =====
-// When a Quest Board quest or a Guild mission is complete and waiting to be claimed, a toast says so once, the Menu button and the
+// When a Notice Board quest or a Guild mission is complete and waiting to be claimed, a toast says so once, the Menu button and the
 // Quests menu chip carry a "ready" count, and the quest rows show a "Ready to hand in" tag with where to claim it.
 // New optional save field: G.qNote {key: 1} (what has already been announced; a claimed quest drops out of it). Off in the Daily Trial.
 function qReadyList(){const out=[];if(!G||G.daily)return out;
-  try{(G.quests||[]).forEach(q=>{if(q.state==='active'&&questReady(q))out.push({k:'q:'+q.id,t:q.title,where:'any quest board'});});}catch(e){}
-  try{if(typeof FMIS!=='undefined'&&typeof facInit==='function'){const f=facInit();FMIS.forEach(m=>{if(f.acc[m.id]!=null&&!f.done[m.id]&&facProg(m)>=m.n)out.push({k:'m:'+m.id,t:m.t,where:'the Guild Hall'});});}}catch(e){}
+  try{(G.quests||[]).forEach(q=>{if(q.state==='active'&&questReady(q))out.push({k:'q:'+q.id,t:q.title,where:'the Notice Board (Menu > Quests)',tab:'quests'});});}catch(e){}
+  try{if(typeof FMIS!=='undefined'&&typeof facInit==='function'){const f=facInit();FMIS.forEach(m=>{if(f.acc[m.id]!=null&&!f.done[m.id]&&facProg(m)>=m.n)out.push({k:'m:'+m.id,t:m.t,where:'the Notice Board (Menu > Quests, Guilds)',tab:'factions'});});}}catch(e){}
   return out;}
 const qReadyCount=()=>qReadyList().length;
 let qrLast=0;
@@ -19502,10 +19673,11 @@ function qReadyCheck(){if(!G||G.daily||B||V.screen!=='world')return;const now=Da
   // v0.8.2: silent right after a battle (leaving the rewards screen made a noise); the toast still shows
   try{if(typeof sfx==='function'&&!(V.endT&&Date.now()-V.endT<5000))sfx('chest');}catch(e){}}
 // the Menu button and the Quests chip carry the count; ready rows get a tag
-{const mt0=menuTabsHtml;menuTabsHtml=function(grp,tab){let h=mt0.apply(this,arguments);try{const n=qReadyCount();if(n)h=h.replace(/(data-arg="quests">)Quests(<\/button>)/,`$1Quests <em class="qtag" title="Ready to hand in">${n} ready</em>$2`);}catch(e){}return h;};}
+// v0.9.5: the Quests group chip carries the total; inside the group, the Quests and Guilds tabs carry their own counts
+{const mt0=menuTabsHtml;menuTabsHtml=function(grp,tab){let h=mt0.apply(this,arguments);try{const L=qReadyList(),n=L.length;if(n)h=h.replace(/(data-act="menuGrp" data-arg="quests">)Quests(<\/button>)/,`$1Quests <em class="qtag" title="Ready to hand in">${n} ready</em>$2`);
+  if(grp&&grp[0]==='quests')['quests','factions'].forEach(t=>{const k=L.filter(o=>o.tab===t).length;if(k)h=h.replace(new RegExp('(data-act="menuTab" data-arg="'+t+'">)([^<]*)(</button>)'),`$1$2 <em class="qtag" title="Ready to hand in">${k}</em>$3`);});}catch(e){}return h;};}
 {const r0=render;render=function(){const r=r0.apply(this,arguments);try{qReadyCheck();const n=G&&!G.daily?qReadyCount():0;
-  document.querySelectorAll('[data-act="menu"]').forEach(b=>{let t=b.querySelector('.qdot');if(n&&!t){t=document.createElement('em');t.className='qdot';b.appendChild(t);}if(t){if(n){t.textContent=n;t.title=n+' ready to hand in';}else t.remove();}});
-  if(V.modal&&V.modal.type==='menu'&&V.modal.tab==='quests')document.querySelectorAll('#modal .row').forEach(row=>{const s=row.querySelector('small');if(s&&/Ready to claim at a quest board/.test(row.textContent)&&!row.querySelector('.qtag')){const b=row.querySelector('b');if(b)b.insertAdjacentHTML('afterend',' <em class="qtag">Ready to hand in</em>');}});}catch(e){}return r;};}
+  document.querySelectorAll('[data-act="menu"]').forEach(b=>{let t=b.querySelector('.qdot');if(n&&!t){t=document.createElement('em');t.className='qdot';b.appendChild(t);}if(t){if(n){t.textContent=n;t.title=n+' ready to hand in';}else t.remove();}});}catch(e){}return r;};}// v0.9.5: the board's rows tag themselves (Ready)
 try{const css=document.createElement('style');css.textContent=`.qtag{display:inline-block;font:700 .68rem/1.2 var(--fb,system-ui);font-style:normal;color:#150b17;background:#7affc8;border-radius:8px;padding:1px 6px;margin-left:4px;vertical-align:1px}
   .qdot{position:absolute;top:-6px;right:-6px;min-width:18px;height:18px;border-radius:9px;background:#7affc8;color:#150b17;font:800 .7rem/18px var(--fb,system-ui);font-style:normal;text-align:center;box-shadow:0 0 0 2px #150b17;pointer-events:none}
   [data-act="menu"]{position:relative}`;document.head.appendChild(css);}catch(e){}
