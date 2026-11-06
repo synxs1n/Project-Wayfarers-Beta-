@@ -182,3 +182,6 @@ Details in `v080-roles-balance.md` (`v3/roles.js` heroRoleSet, ROLES in config.j
 
 ## Beta v0.8.5: battle screen on phones and the Fold
 Details in `v080-battle-phones.md` (battle3.js/css, battle.js portrait fit; test `chrome/v080b.js`). Transition root cause: the v0.6.3 hdOverlay setTransform x2 wrapper doubled hd2d.js's own 2x transform in the game loop (drawn at 4x); now only identity calls are scaled. Damage type symbols dlIco(d) on foe cards (weak/resist from archetypes), skill delivery chips and aim tags. Stage settles before the first frame (b8CmdEst measures the real menu).
+
+## Beta v0.8.6: fog and weather fixes, walking title
+Details in `v080-weather-title.md`. Clarity boxes: w7Bank puffs clipped to a rectangle (fixed with an edge fade), High stage lit weather as unit pixels in a hard column, and the hero box exclusion is now a feathered face ellipse (WX7.face). Title: six heroes walk through cycling realms with parallax; emblem beside the wordmark. Tests `chrome/v080wa.js`, `v080wt.js`.
