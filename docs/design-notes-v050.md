@@ -185,3 +185,6 @@ Details in `v080-battle-phones.md` (battle3.js/css, battle.js portrait fit; test
 
 ## Beta v0.8.6: fog and weather fixes, walking title
 Details in `v080-weather-title.md`. Clarity boxes: w7Bank puffs clipped to a rectangle (fixed with an edge fade), High stage lit weather as unit pixels in a hard column, and the hero box exclusion is now a feathered face ellipse (WX7.face). Title: six heroes walk through cycling realms with parallax; emblem beside the wordmark. Tests `chrome/v080wa.js`, `v080wt.js`.
+
+## Beta v0.8.7: cross-device save sync
+Details in `v085-sync.md` (saves.js, cloud.js, p5settings.js, SAVE_UI sync timings, electron/main.js close hook; tests `chrome/v085s.js`, `v085s2.js` with `syncmock.js`). Base version tracking (local key aurelis-sync-v1), transactional push on Firebase, save then push on leaving, Continue waits for the first check, re-check every 60 s and on return, prompt instead of the permanent hold.
