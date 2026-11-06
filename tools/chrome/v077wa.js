@@ -6,7 +6,8 @@
 //  3. reduced motion: two moments draw the same picture (2D and battle), no strikes, no gusts
 //  4. lightning follows the safe flash rules: over 10 minutes of storm never more than 3 flashes in any second (2 by design), each flash
 //     brief (under 100 ms over 0.02), peak under 0.5; a strike lights the HD-2D scene and draws a bolt
-//  5. nothing over the hero: 2D particles (150 moments per weather) and HD-2D GL quads (40 frames per weather) never in his box
+//  5. nothing over the hero's face (v0.8.0: a feathered ellipse, not his whole box): 2D particles (150 moments per weather) and HD-2D GL
+//     quads (40 frames per weather) never inside the ellipse's core
 //  6. blends draw both weathers at their weights; the rare skies keep drawing; the victory crest is not blackletter; the minimap is the
 //     styled one and keeps its scale; the arena backdrop is the new colosseum; no game RNG is consumed by the weather
 //  7. no page errors, no console errors
@@ -48,7 +49,7 @@ const REC2D=`(T)=>{const A=__A,ctx=A.WS.ctx,P=CanvasRenderingContext2D.prototype
     const rows=[];let hits=0,tot=0;
     for(const w of ALL){await ev(`(${PLACE})(${JSON.stringify(w)})`);await wait(120);
       const r=await ev(`(()=>{const rec=(${REC2D});let n=0,tot=0,st=null,mx=0;for(let i=0;i<150;i++){const q=rec(20000+i*397),hx=q.hero[0]-q.cam[0],hy=q.hero[1]-q.cam[1];st=st||q.st;mx=Math.max(mx,q.st.n);
-        q.r.forEach(r=>{tot++;if(r[0]+r[2]>hx-10&&r[0]<hx+10&&r[1]+r[3]>hy-30&&r[1]<hy+3)n++;});}return {n,tot,st,mx,live:__A.HD.live};})()`);
+        const F=q.st.face;q.r.forEach(r=>{tot++;if(F){const dx=(r[0]+r[2]/2-F[0])/F[2],dy=(r[1]+r[3]/2-F[1])/F[3];if(dx*dx+dy*dy<F[4]*.95)n++;}else n++;});}return {n,tot,st,mx,live:__A.HD.live};})()`);
       rows.push([w,r]);hits+=r.n;tot+=r.tot;}
     const S=Object.fromEntries(rows.map(([w,r])=>[w,r.st]));
     if(tier==='medium'){
@@ -68,7 +69,7 @@ const REC2D=`(T)=>{const A=__A,ctx=A.WS.ctx,P=CanvasRenderingContext2D.prototype
     else{const mx=Math.max(...rows.map(([w,r])=>r.mx));
       chk(`2D low: cheap (most particles in a frame ${mx}, cap ${await ev(()=>__A.W7.WX7.tier.low.cap)}; no near layer, no ground layer)`,mx<=await ev(()=>__A.W7.WX7.tier.low.cap)&&rows.every(([w,r])=>r.st.layers[2]===0||['starfall','meteor'].includes(w))&&rows.every(([w,r])=>r.st.ground===0)||JSON.stringify(rows.map(([w,r])=>[w,r.mx,r.st.layers,r.st.ground])));
       chk(`2D low: every weather still draws (${rows.map(([w,r])=>w+' '+r.st.n).join(', ')})`,rows.every(([w,r])=>r.st.n>0)||'empty');}
-    chk(`2D ${tier}: no weather particle over the hero in 150 moments of each weather (${hits} of ${tot})`,tot>2000&&hits===0||JSON.stringify({hits,tot,by:rows.filter(([w,r])=>r.n).map(([w,r])=>w+':'+r.n)}));
+    chk(`2D ${tier}: no weather particle on the hero's face in 150 moments of each weather (${hits} of ${tot})`,tot>2000&&hits===0||JSON.stringify({hits,tot,by:rows.filter(([w,r])=>r.n).map(([w,r])=>w+':'+r.n)}));
     // reduced motion: two moments look the same
     const rm=await ev(`(()=>{const A=__A;A.META.cfg.rmotion=true;const o={};const cv=document.createElement('canvas');cv.width=420;cv.height=320;const x=cv.getContext('2d');const hash=()=>{const d=x.getImageData(0,0,cv.width,cv.height).data;let h=0;for(let i=0;i<d.length;i+=12)h=(h*31+d[i]+d[i+1]*7+d[i+2]*13+d[i+3])>>>0;return h;};
       for(const w of ${JSON.stringify(ALL)}){(${PLACE})(w);A.TR.wx.key=null;A.trUpdate(1);x.clearRect(0,0,420,320);A.W7.w7World(x,'w2d',A.WS.m,200,150,420,320,10000);const a=hash();x.clearRect(0,0,420,320);A.W7.w7World(x,'w2d',A.WS.m,200,150,420,320,23456);const b=hash();o[w]=a===b;}A.META.cfg.rmotion=false;return o;})()`);
@@ -92,7 +93,7 @@ const REC2D=`(T)=>{const A=__A,ctx=A.WS.ctx,P=CanvasRenderingContext2D.prototype
     chk(`HD-2D ${tier}: puddles, ripples and splashes lie on the ground in rain (rain ${res.rain.glG}, storm ${res.storm.glG} decals)`,res.rain.glG>10&&res.storm.glG>10||JSON.stringify([res.rain,res.storm]));
     chk(`HD-2D ${tier}: the overlay keeps the near and sky layers (${ALL.map(w=>w+' '+res[w].ov).join(', ')})`,['rain','storm','snow','blizzard','sand','aurora','starfall','meteor'].every(w=>res[w].ov>0&&res[w].mode==='ov')||JSON.stringify(res));
     chk(`HD-2D ${tier}: heat shimmers in the composite (strength ${res.heat.heat})`,res.heat.heat>0);
-    chk(`HD-2D ${tier}: no GL weather quad over the hero in 40 frames of each weather (${ALL.map(w=>res[w].hits).reduce((a,b)=>a+b,0)})`,ALL.every(w=>res[w].hits===0)||JSON.stringify(Object.fromEntries(ALL.map(w=>[w,res[w].hits]))));
+    chk(`HD-2D ${tier}: no GL weather quad on the hero's face in 40 frames of each weather (${ALL.map(w=>res[w].hits).reduce((a,b)=>a+b,0)})`,ALL.every(w=>res[w].hits===0)||JSON.stringify(Object.fromEntries(ALL.map(w=>[w,res[w].hits]))));
     chk(`HD-2D ${tier}: no renderer or weather errors`,ALL.every(w=>!res[w].err&&!res[w].wfx)||JSON.stringify(ALL.map(w=>[res[w].err,res[w].wfx])));
     if(tier==='medium'){
       // a strike lights the scene and draws a bolt
@@ -100,9 +101,9 @@ const REC2D=`(T)=>{const A=__A,ctx=A.WS.ctx,P=CanvasRenderingContext2D.prototype
         if(k===16){amb1=__A.W7.stats.hdFlash;bolt=__A.W7.stats.bolt;W.hold=0;W.force=0;r({amb0,amb1,bolt,flash:__A.W7.stats.flash});}else requestAnimationFrame(st);};requestAnimationFrame(st);}))()`);
       chk(`HD-2D: a lightning strike lights the scene and draws a bolt (${JSON.stringify(lt)})`,lt.amb1>.1&&lt.bolt>0||JSON.stringify(lt));
       // the overlay's near layer stays off the hero (its box from the GL view)
-      const ovh=await ev(`(()=>new Promise(r=>{(${PLACE})('rain');const A=__A,ctx=A.WS.ctx,f0=ctx.drawImage;let n=0,tot=0;ctx.drawImage=function(im,x,y){if(arguments.length===3&&im.height>=18&&im.width<=12){tot++;const B=A.W7.HW.b,vw=A.WS.vw,vh=A.WS.vh,x0=(B[0]+1)/2*vw,x1=(B[2]+1)/2*vw,y0=(1-B[3])/2*vh,y1=(1-B[1])/2*vh;if(x+im.width>x0&&x<x1&&y+im.height>y0&&y<y1)n++;}return f0.apply(this,arguments);};
+      const ovh=await ev(`(()=>new Promise(r=>{(${PLACE})('rain');const A=__A,ctx=A.WS.ctx,f0=ctx.drawImage;let n=0,tot=0;ctx.drawImage=function(im,x,y){if(arguments.length===3&&im.height>=18&&im.width<=12){tot++;const F=A.W7.stats.face;if(F){const dx=(x+im.width/2-F[0])/F[2],dy=(y+im.height/2-F[1])/F[3];if(dx*dx+dy*dy<F[4]*.95)n++;}}return f0.apply(this,arguments);};
         let k=0;const st=()=>{if(++k<60)requestAnimationFrame(st);else{delete ctx.drawImage;r({n,tot});}};requestAnimationFrame(st);}))()`);
-      chk(`HD-2D: no near rain streak of the overlay over the hero in 60 frames (${ovh.n} of ${ovh.tot})`,ovh.tot>20&&ovh.n===0||JSON.stringify(ovh));}
+      chk(`HD-2D: no near rain streak of the overlay on the hero's face in 60 frames (${ovh.n} of ${ovh.tot})`,ovh.tot>20&&ovh.n===0||JSON.stringify(ovh));}
     chk(`HD-2D ${tier}: no console errors (${H.errs.slice(0,2).join(' | ')})`,H.errs.length===0);await H.browser.close();}
   // reduced motion in HD-2D: the overlay holds still
   {const H=await boot('medium',933,705,true);const {ev,wait}=H;await ev(`(${PLACE})('rain')`);await wait(600);

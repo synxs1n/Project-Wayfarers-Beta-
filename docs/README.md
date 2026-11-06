@@ -17,6 +17,7 @@ Read these before a big pass:
 - `v071-world.md`: the v0.7.1 world pass (props HD-2D hides behind walls kept off those tiles, clear door aprons, no holes in buildings, the `drawAudit` sweep over every map kind; tap the full map or minimap to walk there).
 - `v077-weather.md`: the v0.7.7 weather and old visuals pass (every weather in layers in 2D, in the HD-2D scene and on the battle stage, safe lightning, tiers, the victory crest, minimap tiles, the arena backdrop).
 - `v080-rivals.md`: personal quest rivals drawn see through (2D, HD-2D, map) and passable while their wayfarer is not in your six; talking names the hero with their portrait (`v3/rivalghost.js`).
+- `v080-weather-title.md`: the v0.8.0 weather and title pass (the boxes of clarity: hard edged bank sprites, weather lit as units on the High stage, the rectangular hero cut out; soft face falloff; smooth fog with distance; the title's six wayfarers walking through the realms).
 - `v063-battle.md`: the v0.6.3 battle screen pass (one layout pass for every stage label, the battle start flash, detonator targeting, the new battle screen layout).
 - `v070-onboarding.md`: one short tip card the first time the player meets each system (`v3/onboard.js`), Guides > How it works, What next? "Not tried yet", Settings Tips and Reset tips, battle cards placed clear of sprites.
 - `v071-title.md`: the title pass (HD-2D camp title scene, the code-drawn wordmark and emblem in `logo.js`, app icons from `tools/mkicons.js`).

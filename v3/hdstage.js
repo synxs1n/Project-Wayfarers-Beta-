@@ -84,14 +84,19 @@ void main(){
     // height (a little darker toward the feet) and its side (the side facing the key light or a lamp or spell is brighter); the two
     // strongest lights put a rim on the silhouette edge that faces them, the key light its own.
     vec3 ur=u.rgb;float l0=dot(ur,vec3(.299,.587,.114));ur=mix(vec3(l0),ur,uUS.x);ur=(ur-.5)*uUS.y+.5;
-    float hb=1e3,sx=p.x,sw=8.;for(int i=0;i<NS;i++){vec4 S=uS[i];if(S.w>0.&&abs(p.x-S.x)<S.z*1.35){float h=S.y-p.y;if(h>-3.&&h<hb){hb=h;sx=S.x;sw=S.z;}}}
-    float ao=hb<1e2?mix(.74,1.,smoothstep(0.,15.,hb)):1.,sd=hb<1e2?clamp((p.x-sx)/sw,-1.,1.):0.;
+    // v0.8.0: the weather and soft glows share this layer; they are translucent, sprites are opaque. Only opaque pixels (un) take the
+    // per unit shading, and it fades out toward the side of each unit's column (wc), so a fog bank, rain or snow crossing a unit's
+    // column is no longer darkened or rim lit inside a hard edged box around it (the "boxes of clarity" in battle on High)
+    float un=smoothstep(.55,.92,u.a);
+    float hb=1e3,sx=p.x,sw=8.,wc=0.;for(int i=0;i<NS;i++){vec4 S=uS[i];float dx=abs(p.x-S.x)/(S.z*1.35);if(S.w>0.&&dx<1.){float h=S.y-p.y;if(h>-3.&&h<hb){hb=h;sx=S.x;sw=S.z;wc=1.-smoothstep(.72,1.,dx);}}}
+    wc*=un*smoothstep(-3.,-1.,hb);
+    float ao=hb<1e2?mix(1.,mix(.74,1.,smoothstep(0.,15.,hb)),wc):1.,sd=hb<1e2?clamp((p.x-sx)/sw,-1.,1.)*wc:0.;
     vec3 lu=uAmbU*ao*(1.+.14*sd*uKey.x);
     for(int i=0;i<NL;i++){vec4 l=uL[i];if(l.w>0.){vec2 d=(p-l.xy)/(l.w*.55);float sg=clamp((l.x-sx)/max(abs(l.x-sx),6.),-1.,1.);lu+=uLC[i].rgb*exp(-dot(d,d)*2.2)*1.1*(1.+.6*sd*sg);}}
 #if RIM
-    vec4 n=texture2D(uUn,tc+vec2(uKey.x,-.6)/uWH);float rim=step(n.a,.5)*(1.-hud);lu+=uKeyC*rim*uKey.y;
+    vec4 n=texture2D(uUn,tc+vec2(uKey.x,-.6)/uWH);float rim=step(n.a,.5)*(1.-hud)*un;lu+=uKeyC*rim*uKey.y;
     for(int i=0;i<2;i++){vec4 l=uL[i];if(l.w>0.){vec2 dl=l.xy-p;float dd=length(dl);vec2 d=(p-l.xy)/(l.w*.8);float k=exp(-dot(d,d)*1.4);
-      vec4 m=texture2D(uUn,tc+dl/max(dd,1.)*1.5/uWH);lu+=uLC[i].rgb*step(m.a,.5)*(1.-hud)*k*.9;}}
+      vec4 m=texture2D(uUn,tc+dl/max(dd,1.)*1.5/uWH);lu+=uLC[i].rgb*step(m.a,.5)*(1.-hud)*un*k*.9;}}
 #endif
     vec3 uc=mix(ur*lu,u.rgb,hud);col=mix(col,uc,u.a);}
 #if BLOOM
@@ -303,7 +308,7 @@ void main(){vec2 tc=vec2(vUv.x,1.-vUv.y);vec2 p=tc*uWH-uOff;vec2 sp=clamp(p/uWH,
   vec4 u=texture2D(uUn,tc);float hud=step(abs(u.a-.99608),.0025);
   if(u.a>0.){vec3 lu=uAmbU+La*1.1;
 #if RIM
-    vec4 n=texture2D(uUn,tc+vec2(uKey.x,-.6)/uWH);lu+=uKeyC*step(n.a,.5)*(1.-hud)*uKey.y;
+    vec4 n=texture2D(uUn,tc+vec2(uKey.x,-.6)/uWH);lu+=uKeyC*step(n.a,.5)*(1.-hud)*smoothstep(.55,.92,u.a)*uKey.y;
 #endif
     col=mix(col,grade(u.rgb*lu)*vg,u.a*(1.-hud));}
 #endif
