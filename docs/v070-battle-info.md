@@ -92,7 +92,7 @@ shared with other test runs).
 
 Regression list: v063ba, v063bb, v063bc, v063bd, v058a, v053b, v060a, v050p1d, v051a, v063wa, v050p2daily (Daily Trial identical to the
 old build), v041p6, liveupdate pass before and after. `v062a` has one world lighting check that flips between runs on both builds (before:
-"torch close by lights the hero" in one run, after: "torch" in one run and "hero lit like the scene" in another; 21 of 22 pass each time);
+"torch close by lights the hero" in one run, after: "no hard dark bar under the feet" in one run and "hero lit like the scene" in another; 21 of 22 pass each time);
 it tests the world, which this pass does not touch.
 
 Frame rate (`v053bperf.js`, `TIERS=medium REPS=3`, CPU 4x, dpr 2, a field battle on auto in rain, best of 3):
