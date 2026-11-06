@@ -12,8 +12,10 @@
 // ----- 2) the encounter flash: the HD-2D overlay reset the transform to identity on a 2x canvas -----
 // While hdOverlay or hdBlit runs, setTransform(a..f) on the world canvas is scaled by the canvas's backing scale k (hdOverlay calls hdBlit,
 // so only the outermost call installs and removes the scaled version).
+// v0.8.0: only identity calls are scaled. hd2d.js now sets the backing scale itself in the game loop (setTransform(k,0,0,k,0,0)); scaling
+// that again drew the overlay at k*k, so the battle swirl spun around the bottom right corner (the view showed its top left quarter, zoomed).
 {const wrapK=f=>function(){const cv=WS.cv,ctx=WS.ctx,k=cv&&cv._ss||1;if(k===1||!ctx||ctx._b3k)return f.apply(this,arguments);
-  const P=CanvasRenderingContext2D.prototype.setTransform;ctx._b3k=k;ctx.setTransform=function(a,b,c,d,e,g){if(arguments.length===6)return P.call(this,a*k,b*k,c*k,d*k,e*k,g*k);return P.apply(this,arguments);};
+  const P=CanvasRenderingContext2D.prototype.setTransform;ctx._b3k=k;ctx.setTransform=function(a,b,c,d,e,g){if(arguments.length===6&&a===1&&b===0&&c===0&&d===1)return P.call(this,k,0,0,k,e*k,g*k);return P.apply(this,arguments);};
   try{return f.apply(this,arguments);}finally{delete ctx.setTransform;ctx._b3k=0;}};
   if(typeof hdOverlay==='function')hdOverlay=wrapK(hdOverlay);if(typeof hdBlit==='function')hdBlit=wrapK(hdBlit);}
 
@@ -53,9 +55,11 @@ function b3TextW(t,px,wt){const k=wt+'|'+px+'|'+t;if(B3TW[k])return B3TW[k];if(!
 function b3TagInfo(u){const pend=B&&B.mode==='cmd'&&B.menu==='target'&&B.pend;if(!pend||!targetable(u))return null;const sk=pend.sk,out={name:b3Short(u.name)+(u.elite?' ★':''),eff:'',rx:null,px:false,html:''};
   if(u.side==='e'&&sk){out.eff=effBadge(sk,u,B.cur);const els=skEls(sk);
     if(sk.role==='det'&&u.primed&&els.length){const el=els.find(x=>reactFor(u.primed.el,x));const R=el&&reactFor(u.primed.el,el);if(R)out.rx={n:R.n,p:R.p,d:el};}
-    else if(sk.role==='primer'&&!u.primed&&els.length)out.px=els[0];}
+    else if(sk.role==='primer'&&!u.primed&&els.length)out.px=els[0];
+    // v0.8.0: the archetype effectiveness (▲ / ▼ and the delivery symbol)
+    try{const I=effInfo(sk,u,B.cur),A=I&&I.arch;if(A&&(A.lab==='up'||A.lab==='dn')&&DL_NAME[A.dl])out.dl={up:A.lab==='up',d:A.dl,tip:A.tip};}catch(e){}}
   return out;}
-function b3TagSize(T){const f=B3.tagF,w1=b3TextW(T.name,f,800)+4;let w2=0;const lab=(T.eff.match(/>([A-Za-z?]+)/)||[])[1]||'';if(lab)w2+=b3TextW(lab,f*.92,800)+5;if(T.rx)w2+=b3TextW('✸ '+T.rx.n,f*.92,900)+5+2*(f+1);if(T.px)w2+=b3TextW('⟐',f*.92,800)+f+6;
+function b3TagSize(T){const f=B3.tagF,w1=b3TextW(T.name,f,800)+4;let w2=0;const lab=(T.eff.replace(/<span class="eff [a-z]+ arch"[\s\S]*$/,'').match(/>([A-Za-z?]+)/)||[])[1]||'';if(lab)w2+=b3TextW(lab,f*.92,800)+5;if(T.rx)w2+=b3TextW('✸ '+T.rx.n,f*.92,900)+5+2*(f+1);if(T.px)w2+=b3TextW('⟐',f*.92,800)+f+6;if(T.dl)w2+=b3TextW('▲',f*.92,800)+f+6;
   const lines=w2?2:1;return {w:Math.ceil(Math.max(w1,w2)*1.08+3),h:Math.ceil(lines*(f*1.25)+2)};}
 // ----- the pass -----
 const B3L={key:'',L:null};
@@ -128,8 +132,8 @@ function b3Arrow(ctx,now){const L=b3Lay(),a=L&&L.arrow;if(!a)return;const x=a.x+
 function b3StageHtml(){const L=b3Lay(true);if(!L)return '';const out=[],px=v=>v+'px';
   L.tags.forEach((o,u)=>{out.push(`<div class="utags b3l ${u.side}" style="left:${px(o.x)};top:${px(o.y)};width:${px(o.w)};height:${px(o.h)}">${stButtons(u,{max:o.max,noPrime:true,noWx:true})}</div>`);});
   L.prim.forEach((o,u)=>{out.push(`<span class="primed pmin b3l" style="--c:${ELC[u.primed.el]};left:${px(o.x)};top:${px(o.y)};width:${px(o.w)};height:${px(o.h)}" aria-label="Primed with ${EL[u.primed.el]}, ${u.primed.t} turn${u.primed.t===1?'':'s'} left">${ico(u.primed.el)}<i>${u.primed.t}</i></span>`);});
-  L.tgt.forEach((o,u)=>{const T=o.T,lab=(T.eff.match(/>([A-Za-z?]+)/)||[])[1]||'',cls=(T.eff.match(/class="eff ([a-z]+)/)||[])[1]||'';
-    const l2=(lab?`<span class="eff ${cls}">${lab}</span>`:'')+(T.rx?`<span class="eff rx">${ico(T.rx.p)}${ico(T.rx.d)}✸ ${esc(T.rx.n)}</span>`:'')+(T.px?`<span class="eff px" title="Primes it with ${esc(EL[T.px]||'')}">⟐${ico(T.px)}</span>`:''),tk=b3TagKey(T),kf=B3TK[tk];
+  L.tgt.forEach((o,u)=>{const T=o.T,lab=(T.eff.replace(/<span class="eff [a-z]+ arch"[\s\S]*$/,'').match(/>([A-Za-z?]+)/)||[])[1]||'',cls=(T.eff.match(/class="eff ([a-z]+)/)||[])[1]||'';
+    const l2=(lab?`<span class="eff ${cls}">${lab}</span>`:'')+(T.rx?`<span class="eff rx">${ico(T.rx.p)}${ico(T.rx.d)}✸ ${esc(T.rx.n)}</span>`:'')+(T.px?`<span class="eff px" title="Primes it with ${esc(EL[T.px]||'')}">⟐${ico(T.px)}</span>`:'')+(T.dl?`<span class="eff ${T.dl.up?'up':'dn'} arch" title="${esc(T.dl.tip||'')}">${T.dl.up?'▲':'▼'}${dlIco(T.dl.d)}</span>`:''),tk=b3TagKey(T),kf=B3TK[tk];
     out.push(`<div class="b3tg b3l ${u.side} ${T.rx?'det':''}" data-tk="${esc(tk)}" style="left:${px(o.x)};top:${px(o.y)};width:${px(o.w)};height:${px(o.h)};--f:${(B3.tagF*(kf||1)).toFixed(2)}px">${T.short?'':`<b class="ename">${esc(T.name)}</b>`}${l2?`<span class="l2">${l2}</span>`:''}</div>`);});
   return out.join('');}
 
@@ -173,36 +177,141 @@ function b3OnStage(u,kind){try{const L=B3L.L;if(!L||!B||L.W!==BL.W||L.H!==BL.H)r
 // names on target tags: at most B3.tagN letters (whole words where they fit, else cut with an ellipsis)
 function b3Short(n){n=String(n);const M=B3.tagN;if(n.length<=M)return n;const w=n.split(' ');let o='';for(const p of w){if((o?o+' ':'').length+p.length>M)break;o=(o?o+' ':'')+p;}o=o.replace(/ (the|of|a|an|and)$/i,'');return o&&o.length>=5?o:n.slice(0,M-1)+'…';}
 // portrait: what must fit under the stage without scrolling (the party cards and the commands; foes and the rearguard may scroll)
-function b3Below(){try{const h=document.querySelector('.battle .pgroup.heroes'),c=document.getElementById('bcmd');return (h?h.offsetHeight+6:0)+(c?c.offsetHeight:0);}catch(e){return 0;}}
+function b3Below(){try{const h=document.querySelector('.battle .pgroup.heroes'),c=document.getElementById('bcmd'),ce=b8CmdEst(),f=document.querySelector('.battle .b8fl'),bb=document.querySelector('.battle .bbottom'),g=bb?parseFloat(getComputedStyle(bb).rowGap)||6:6;
+  return (h?h.offsetHeight+g:0)+Math.max(c?c.offsetHeight:0,B&&B.menu==='root'?ce:0)+(f&&f.offsetHeight?f.offsetHeight+g:0);}catch(e){return 0;}}
+// v0.8.0: the height the command panel will have at a hero's top level menu, measured once per battle (and per panel width) from a
+// hidden copy, so the layout reserves it from the first frame: during the battle intro the panel only shows "..." and the auto row, and
+// sizing the stage from that made it shrink (the units shifting) when the first hero turn opened the menu. The tallest Vanguard hero
+// counts (Summon, Limit, Rooted change the rows). The battle state is put back exactly; nothing random is drawn.
+function b8CmdEst(){try{if(!B||B.over||B.auto)return 0;const cmd=document.getElementById('bcmd');if(!cmd||!cmd.offsetWidth||!cmd.parentNode)return 0;
+  const hs=B.front.filter(c=>c&&c.hp>0&&!c.isComp);if(!hs.length)return 0;
+  const k=(B.id||0)+'|'+BL.mode+'|'+cmd.offsetWidth+'|'+hs.map(c=>c.id+(lbReady(c)?'L':'')+(canSummon(c)?'S':'')).join()+'|'+document.querySelector('.battle').className;
+  if(B._b8ce&&B._b8ce.k===k)return B._b8ce.h;
+  const sv={mode:B.mode,cur:B.cur,menu:B.menu,pend:B.pend,swapAsk:B.swapAsk,b4out:B.b4out};let h=0;const c=cmd.cloneNode(false);c.removeAttribute('id');
+  c.style.cssText='position:absolute;visibility:hidden;pointer-events:none;left:0;top:0;width:'+cmd.offsetWidth+'px;height:auto;max-height:none;overflow:visible';
+  cmd.parentNode.appendChild(c);
+  try{for(const a of hs){B.mode='cmd';B.cur=a;B.menu='root';B.pend=null;B.swapAsk=null;c.innerHTML=cmdHtml();h=Math.max(h,c.offsetHeight);}}
+  finally{c.remove();Object.assign(B,sv);}
+  B._b8ce={k,h};return h;}catch(e){return 0;}}
 // how many stage status icons a unit has (same count as stItems with noPrime and noWx, without building the markup)
 function b3StN(u){let n=u.broken&&u.maxShield?1:0;for(const k in u.st||{})if(STS[k])n++;return n;}
 
-// ----- 5) Beta v0.7.6: the wide layout fits the viewport -----
-// what the two columns under the stage need (commands + foes on the left, Vanguard + Rearguard on the right), in CSS px. The commands count
-// at their tallest top-level height seen in this battle (a sub menu scrolls inside its panel instead, so the stage does not jump), and the
-// whole need only grows within a battle (the stage only shrinks, a few times at most).
-function b3WideNeed(bat){try{const cmd=document.getElementById('bcmd'),foes=bat.querySelector('.bbottom .pgroup.foes'),pty=bat.querySelector('.bbottom .b3pty'),bb=bat.querySelector('.bbottom');
-  if(!cmd||!bb)return 0;const gap=parseFloat(getComputedStyle(bb).rowGap)||5,full=e=>e?Math.max(e.offsetHeight,e.scrollHeight+(e.offsetHeight-e.clientHeight)):0;
-  let ch=full(cmd);const root=B&&!B.over&&(B.menu==='root'||B.mode!=='cmd')&&!B.swapAsk;
-  if(B){if(root)B._b3cmd=Math.max(B._b3cmd||0,ch);else ch=B._b3cmd||Math.min(ch,230);}
-  const fc=foes&&foes.querySelector('.fcs'),fh=foes?foes.offsetHeight+(fc?fc.scrollHeight-fc.clientHeight:0):0,n=Math.max(ch+(foes?gap+fh:0),full(pty));
-  if(B){B._b3need=Math.max(B._b3need||0,n);return B._b3need;}return n;}catch(e){return 0;}}
+// ----- 5) Beta v0.7.6 / v0.8.0: the wide layout fits the viewport -----
+// v0.8.0 (phones and the Galaxy Z Fold): B8.min is the smallest wide stage scale (1.1 = 165 px tall); under B8.tightAt the cards and
+// commands compact (b8tight); tallMin / tallMax: the portrait stage height range in logical px (x2 on screen: 240 to 460 px).
+const B8={min:1.1,tightAt:1.35,tallMin:120,tallMax:230,col:6,gap:4};
+// what the columns under the stage need, in CSS px: L = the commands and the foes (left column), P = the party column. The commands count
+// at their tallest top-level height seen in this battle (a sub menu scrolls inside its panel instead, so the stage does not jump), and both
+// only grow within a battle (per compaction state), so the stage only shrinks, a few times at most.
+function b3WideNeed(bat){try{const cmd=document.getElementById('bcmd'),foes=bat.querySelector('#bparty .pgroup.foes'),pty=bat.querySelector('#bparty .b3pty'),bb=bat.querySelector('.bbottom');
+  if(!cmd||!bb)return {L:0,P:0};const gap=parseFloat(getComputedStyle(bb).rowGap)||5,full=e=>e?Math.max(e.offsetHeight,e.scrollHeight+(e.offsetHeight-e.clientHeight)):0;
+  let ch=Math.max(full(cmd),b8CmdEst());const root=B&&!B.over&&(B.menu==='root'||B.mode!=='cmd')&&!B.swapAsk,t=bat.classList.contains('b8tight')?'t':'';
+  if(B){if(root)B['_b3cmd'+t]=Math.max(B['_b3cmd'+t]||0,ch);else ch=B['_b3cmd'+t]||Math.min(ch,230);}
+  const fc=foes&&foes.querySelector('.fcs'),fh=foes&&foes.offsetHeight?foes.offsetHeight+(fc?fc.scrollHeight-fc.clientHeight:0):(B&&B['_b3fh'+t]||0);
+  if(B&&fh)B['_b3fh'+t]=Math.max(B['_b3fh'+t]||0,fh);
+  const L=ch+(fh?gap+fh:0),P=full(pty);
+  if(B){const k='_b3need'+t,o=B[k]||{L:0,P:0};B[k]={L:Math.max(o.L,L),P:Math.max(o.P,P)};return B[k];}return {L,P};}catch(e){return {L:0,P:0};}}
 function b3DocTop(e){return e.getBoundingClientRect().top+(window.scrollY||0);}
-// the stage scale: as large as the width allows, small enough that the columns fit under it (never below B3.wideMin)
-function b3WideSc(w,vh,wrap,bat){try{const cs=getComputedStyle(bat),gap=parseFloat(cs.rowGap)||5,bl=document.getElementById('bline'),padB=parseFloat(getComputedStyle(document.body).paddingBottom)||0;
-  const below=gap+(bl?bl.offsetHeight:40)+gap,Hs=vh-b3DocTop(wrap)-below-b3WideNeed(bat)-padB-2,st=B3.wideStep||.05;
-  let sc=Math.min((w-8)/WIDE_W,(Hs-8)/WIDE_H,3);sc=Math.floor(sc/st+1e-6)*st;return Math.max(B3.wideMin||1.35,Math.round(sc*100)/100);}catch(e){return B3.minSc;}}
-// the height left for the columns (their panels scroll inside themselves past it, the page never does)
-function b3WideBot(wrap,bat){try{const bb=bat.querySelector('.bbottom');if(!bb)return;const vh=window.visualViewport?window.visualViewport.height:window.innerHeight,padB=parseFloat(getComputedStyle(document.body).paddingBottom)||0;
+function b3Vh(){return window.visualViewport?window.visualViewport.height:window.innerHeight;}
+// the stage scale. Two arrangements are tried (v0.8.0), and the one with the larger stage wins (the stacked one on a tie):
+// - stacked (v0.7.6): the boss bar and the turn order on one row over the stage, the log strip under it, then the two columns;
+// - column (b8col): the stage and the log strip head the left column (commands and foes under them), the boss bar, the turn order and
+//   the party column fill the right column from the top, so the space beside the stage is used.
+// As large as the width allows, small enough that the columns fit; under B8.tightAt the cards and commands compact (once per battle);
+// never below B8.min (then a panel scrolls inside itself, the page never does).
+function b3WideSc(w,vh,wrap,bat){try{bat.style.removeProperty('--b8r');// natural row heights while measuring (b3WideBot sets them again)
+  const padB=parseFloat(getComputedStyle(document.body).paddingBottom)||0,gap=B8.gap,st=B3.wideStep||.05,bl=document.getElementById('bline'),ord=document.getElementById('border'),bb=document.getElementById('bbossbar');
+  const boss=bat.classList.contains('hasboss')&&bb&&bb.offsetHeight>0,lh=bl?bl.offsetHeight:40,oh=ord?ord.offsetHeight:46,bh=boss?bb.offsetHeight:0,W=bat.clientWidth,top=b3DocTop(bat),avail=vh-top-padB-2;
+  const fit=(ww,hh)=>{const s=Math.min((ww-8)/WIDE_W,(hh-8)/WIDE_H,3);return Math.round(Math.floor(s/st+1e-6)*st*100)/100;};
+  const pick=()=>{const N=b3WideNeed(bat),below=gap+lh+gap,row=(bh?Math.max(oh,bh):gap+oh)+gap;// stacked: without a boss its empty grid row still adds a gap
+    const s1=fit(W,avail-row-below-Math.max(N.L,N.P)),cw=(W-B8.col)*1.42/2.42,right=(bh?bh+gap:0)+oh+gap+N.P+7;
+    const s2=right<=avail?fit(cw,avail-below-N.L):-1;
+    // compact only: the log strip may move up into the right column too (under the turn order), when that column has the room
+    const right3=right+lh+gap,s3=bat.classList.contains('b8tight')&&right3<=avail?fit(cw,avail-gap-N.L):-1;
+    if(s3>Math.max(s1,s2)+1e-6)return {sc:s3,col:true,lr:true};return s2>s1+1e-6?{sc:s2,col:true}:{sc:s1,col:false};};
+  let r=pick();
+  if(r.sc<B8.tightAt&&B&&!B._b8t){B._b8t=1;bat.classList.add('b8tight');r=pick();}
+  bat.classList.toggle('b8tight',!!(B&&B._b8t));bat.classList.toggle('b8col',r.col);bat.classList.toggle('b8lr',!!r.lr);
+  return Math.max(B8.min,r.sc);}catch(e){return B3.minSc;}}
+// the height left for the columns (their panels scroll inside themselves past it, the page never does). In the column arrangement the
+// whole battle grid gets the visible height and its rows are set here: the boss bar, the order bar, the rest of the stage's height (where
+// the party column starts), the log strip, the commands and the foes (the commands take the foes' rows while a list menu is open).
+function b3WideBot(wrap,bat){try{const vh=b3Vh(),padB=parseFloat(getComputedStyle(document.body).paddingBottom)||0;
+  if(bat.classList.contains('b8col')){const H=Math.floor(vh-b3DocTop(bat)-padB-1),bb=document.getElementById('bbossbar'),boss=bat.classList.contains('hasboss')&&bb&&bb.style.display!=='none',
+      ord=document.getElementById('border'),oh=ord?ord.offsetHeight:46,bh=boss?bb.offsetHeight:0,sh=parseFloat(wrap.style.height)||wrap.offsetHeight,g=B8.gap,
+      lr=bat.classList.contains('b8lr'),bl=document.getElementById('bline'),lh=lr&&bl?bl.offsetHeight:0,
+      rest=Math.max(0,sh-oh-(bh?bh+g:0)-(lh?lh+g:0)-g),list=bat.classList.contains('b3list');
+    bat.style.setProperty('--b8h',H+'px');
+    bat.style.setProperty('--b8r',(bh?bh+'px ':'')+oh+'px '+(lh?lh+'px ':'')+rest+'px '+(lh?'':'auto ')+(list?'minmax(0,1fr) 0px':'minmax(0,max-content) minmax(58px,1fr)'));
+    bat.style.removeProperty('--b3bot');return;}
+  bat.style.removeProperty('--b8h');bat.style.removeProperty('--b8r');
+  const bb=bat.querySelector('.bbottom');if(!bb)return;
   bat.style.setProperty('--b3bot',Math.max(140,Math.floor(vh-b3DocTop(bb)-padB-1))+'px');}catch(e){}}
 // a card status row that does not fit its line wraps to a second one (wide layout)
 function b3TagFit(){try{document.querySelectorAll('.battle.b3 .bparty .pcw.hastags>.ptags').forEach(t=>{if(t.scrollWidth>t.clientWidth+1)t.parentNode.classList.add('tagwrap');});}catch(e){}}
 // v0.7.6: a target tag's text always fits its laid out box. The box comes from the layout pass (measured with the canvas font); where the
 // device draws the text wider (its own font or text scaling), the tag's font shrinks once to fit (remembered per text, so it does not flicker).
 const B3TK={};
-function b3TagKey(T){return [T.short?'':T.name,T.eff,T.rx?T.rx.n:'',T.px||''].join('|');}
+function b3TagKey(T){return [T.short?'':T.name,T.eff,T.rx?T.rx.n:'',T.px||'',T.dl?(T.dl.up?'+':'-')+T.dl.d:''].join('|');}
 function b3FitTags(){try{const st=document.getElementById('bstage');if(!st)return;st.querySelectorAll('.b3tg[data-tk]').forEach(t=>{const tk=t.dataset.tk;
   for(let it=0;it<3;it++){const R=t.getBoundingClientRect();if(!R.width)return;let w=0,h=0;[...t.children].forEach(c=>{const q=c.getBoundingClientRect();w=Math.max(w,q.width);h+=q.height;});
     const k=Math.min((R.width-1.2*(R.width/t.offsetWidth))/w,(R.height-.6*(R.height/t.offsetHeight))/h);if(!(k<1))break;
     const f=(B3TK[tk]||1)*k*.97;B3TK[tk]=Math.max(.45,f);t.style.setProperty('--f',(B3.tagF*B3TK[tk]).toFixed(2)+'px');}});}catch(e){}}
 {const rb=renderBattle;renderBattle=function(){const r=rb.apply(this,arguments);if(B&&B.menu==='target')b3FitTags();return r;};}
+
+// ----- 6) v0.8.0: portrait phones (the Fold closed, 344 to 412 px wide): stage, turn order, the acting hero and the commands on screen -----
+// The stage is fitted (fitBattle, B8.tallMin..tallMax logical px) so the party cards, the commands and the compact foe list fit under it.
+// Everything under the stage sits in one box as tall as the rest of the visible screen (--b3bot, from visualViewport); the full foe cards
+// and the Rearguard follow the foe list inside that box and scroll there (it returns to the top at each hero turn), the page never scrolls.
+// the compact foe list: one row of small buttons (name, HP bar), every live foe at a glance; a tap aims at it or opens its details, like its card
+function b8Strip(){if(!B||BL.mode!=='tall')return '';const now=Date.now(),L=B.en.map((e,i)=>({e,i})).filter(({e})=>!(e.hp<=0&&now-(e.deathT||0)>1500));if(!L.length)return '';
+  const pend=B.mode==='cmd'&&B.menu==='target'&&B.pend;
+  return `<div class="b8fl" role="list" aria-label="Foes">${L.map(({e,i})=>{const dead=e.hp<=0,tg=targetable(e),pct=dead?0:Math.max(2,Math.ceil(e.hp/e.S.mhp*100)),kn=foeKnown(e);
+    return `<button class="fl ${tg?'tg':''} ${dead?'ko':''} ${e.primed&&!dead?'isprimed':''} ${tg&&detHits(pend&&pend.sk,e)?'dethit':''}" style="--pc:${e.primed&&ELC[e.primed.el]||'#fff'}" role="listitem" data-act="tgtE" data-arg="${i}" aria-label="${esc(e.name)}, ${dead?'knocked out':(kn?hpText(e):pct+'%')+' HP'}" title="${esc(e.name)}"><span class="n">${esc(e.name)}${e.elite?' ★':''}</span><span class="b"><i style="width:${pct}%"></i></span></button>`;}).join('')}</div>`;}
+{const fc0=foeCards;foeCards=function(){const h=fc0.apply(this,arguments);try{return b8Strip()+h;}catch(e){return h;}};}
+// portrait: the auto lock note moves into the command header, between the hero's name and Back (one line less under the auto row)
+{const ch0=cmdHtml;cmdHtml=function(){const h=ch0.apply(this,arguments);try{if(BL.mode!=='tall')return h;const m=String(h).match(/<small class="autowhy">[^<]*<\/small>/),bk='<button class="btn sm cmdback"';
+  if(!m||h.indexOf(bk)<0)return h;return h.replace(m[0],'').replace(bk,m[0].replace('class="autowhy"','class="autowhy inhead"')+bk);}catch(e){return h;}};}
+// the height left under the stage (portrait): the box under it is exactly as tall as the rest of the visible screen
+function b8TallBot(bat){try{const bb=bat&&bat.querySelector('.bbottom');if(!bb)return;const padB=parseFloat(getComputedStyle(document.body).paddingBottom)||0;
+  bat.style.setProperty('--b3bot',Math.max(120,Math.floor(b3Vh()-b3DocTop(bb)-padB-1))+'px');}catch(e){}}
+// each hero turn starts with the box under the stage at its top (the commands in view)
+{const rb=renderBattle;renderBattle=function(stageOnly){const r=rb.apply(this,arguments);try{if(!stageOnly&&B&&BL.mode==='tall'){const bb=document.querySelector('.battle.b3 .bbottom'),k=(B.mode==='cmd'&&B.cur?unitRef(B.cur):'')+'|'+B.menu+'|'+(B.id||0);
+    if(bb&&bb._b8k!==k){bb._b8k=k;bb.scrollTop=0;}}}catch(e){}return r;};}
+// the wrappers that run after the base render (the boss bar, the turn order fit, Momentum, intents) can still change a panel's height:
+// once the whole render has run (a microtask, so still before the frame is painted) the fit is checked again, so the stage settles in one
+// go and never leaves the columns short
+{let b8mq=0;const rb=renderBattle;renderBattle=function(stageOnly){const r=rb.apply(this,arguments);try{if(!stageOnly&&!b8mq){b8mq=1;queueMicrotask(()=>{b8mq=0;
+  try{if(V.screen==='battle'&&B&&$('bwrap')){if(BL.mode==='wide'){const o=BL.sc;layoutBattle();if(Math.abs(BL.sc-o)>.01)renderBattle(true);}else if(BL.mode==='tall')fitBattle();}}catch(e){}});}}catch(e){}return r;};}
+// the visible viewport changes (the browser bar shows or hides, the Fold opens or closes, the keyboard): fit the battle again
+if(window.visualViewport){let b8q=0;visualViewport.addEventListener('resize',()=>{if(b8q)return;b8q=requestAnimationFrame(()=>{b8q=0;try{if(V.screen==='battle'&&B){BL.fitH=0;layoutBattle();render();}}catch(e){}});});}
+
+// ----- 7) v0.8.0: damage type (delivery) symbols -----
+// One code-drawn 11x11 symbol per delivery in the element icons' style (dark outline, a colour fill, a light inner mark): Slash a blade,
+// Blunt a hammer, Piercing a spear tip, Ranged an arrow, Magic a star, Heal a cross. dlIco(d) gives the <img> (the name in alt and title).
+const DLSHAPE={slash:['.......##','......#o#','.....#o#.','....#o#..','.#.#o#...','..#o#....','..##.....','.#..#....','#........'],
+  blunt:['.#######.','.##ooo##.','.#######.','....#....','....#....','....#....','....#....','....#....','...###...'],
+  piercing:['....#....','...#o#...','..#ooo#..','..#ooo#..','...#o#...','....#....','....#....','....#....','...###...'],
+  ranged:['.....####','......#o#','.....#oo#','....#o.##','...#o....','..#o.....','##o......','.##......','#.#......'],
+  magic:['....#....','...#o#...','...#o#...','###ooo###','.##ooo##.','..#ooo#..','..##.##..','.##...##.','.#.....#.'],
+  heal:['...###...','...#o#...','...#o#...','####o####','#ooooooo#','####o####','...#o#...','...#o#...','...###...']};
+const DLC={slash:'#b9c6dc',blunt:'#d39a58',piercing:'#ec7484',ranged:'#62d494',magic:'#ad86ff',heal:'#62e08a'};const DLSV={};
+function dlShapeCv(d){if(DLSV[d])return DLSV[d];const S=DLSHAPE[d]||DLSHAPE.slash,c=mkCv(11,11),x=c.getContext('2d'),col=DLC[d]||'#ccc',hi=tint(col,.6);
+  for(let y=0;y<9;y++)for(let i=0;i<9;i++){if(S[y][i]==='.')continue;for(let a=-1;a<=1;a++)for(let b=-1;b<=1;b++){x.fillStyle='#150b17';x.fillRect(i+1+a,y+1+b,1,1);}}
+  for(let y=0;y<9;y++)for(let i=0;i<9;i++){const p=S[y][i];if(p==='.')continue;x.fillStyle=p==='o'?hi:col;x.fillRect(i+1,y+1,1,1);}return DLSV[d]=c;}
+function dlIco(d,cls){if(!DL_NAME[d])return '';return `<img class="ico dli ${d} ${cls||''}" src="${cvURL('dli:'+d,()=>dlShapeCv(d))}" alt="${DL_NAME[d]}" title="${DL_NAME[d]}">`;}
+// what a foe is weak to (x1.1 or more) and resists (x0.9 or less) by delivery, from its archetypes (Undead also burn from healing magic);
+// known once the foe type has been hit or scanned (as its traits are: revealed()), the same way its element weaknesses are learned
+function foeDl(e){const out={w:[],r:[]};try{if(!e||!revealed(e))return out;const ty=(e.ty||[]).filter(k=>ARCH[k]&&ARCH[k].dl);
+  ['slash','blunt','piercing','ranged','magic'].forEach(d=>{let m=1,any=false;ty.forEach(k=>{const v=ARCH[k].dl[d];if(v!=null){m*=v;any=true;}});if(!any)return;
+    const C=e.boss?ARCH_BOSS_CLAMP:ARCH_FOE_CLAMP;m=clamp(m,C[0],C[1]);if(m>=1.1)out.w.push(d);else if(m<=.9)out.r.push(d);});
+  if(isUndead(e))out.w.push('heal');}catch(x){}return out;}
+// foe cards (every layout): the element and delivery weaknesses and resistances together, words in the tooltip on narrow cards
+foeWeak=function(e){try{const b=bestEntry(e),kn=Object.keys(b.known||{}).filter(el=>EL[el]),w=kn.filter(el=>effOf(el,e)>1),r=kn.filter(el=>effOf(el,e)<1),D=foeDl(e);
+  const nm=(els,dls)=>els.map(el=>EL[el]).concat(dls.map(d=>DL_NAME[d])).join(', ');
+  return (w.length||D.w.length?`<span class="fwk up" title="Weak to ${esc(nm(w,D.w))}"><b>Weak</b>${w.map(ico).join('')}${D.w.map(d=>dlIco(d)).join('')}</span>`:'')+
+    (r.length||D.r.length?`<span class="fwk dn" title="Resists ${esc(nm(r,D.r))}"><b>Res</b>${r.map(ico).join('')}${D.r.map(d=>dlIco(d,'res')).join('')}</span>`:'');}catch(x){return '';}};
+// the skill list's delivery chip: the symbol (the name and hint stay in its tooltip)
+dlChip=function(s,cls){const d=dlFor(cls||null,s);return d?`<em class="dl ${d} sym" title="Delivery: ${DL_NAME[d]} (${DL_HINT[d]}). Some foes resist or fear this kind of attack." aria-label="${DL_NAME[d]}">${dlIco(d)}</em>`:'';};
+// the effectiveness chip ("▲ Slash" against a foe's archetype): the arrow and the symbol, the numbers in the tooltip
+if(typeof effBadge==='function'){const eb1=effBadge;effBadge=function(){const h=eb1.apply(this,arguments);try{return String(h).replace(/(<span class="eff (?:up|dn) arch" title="[^"]*">)(▲|▼) ([A-Za-z]+)<\/span>/g,(m,a,ar,n)=>{const d=Object.keys(DL_NAME).find(k=>DL_NAME[k]===n);return d?`${a}${ar}${dlIco(d)}</span>`:m;});}catch(e){return h;}};}
