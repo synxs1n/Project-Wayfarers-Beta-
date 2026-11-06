@@ -308,3 +308,94 @@ body:has(.battle.b3.m-wide){padding-bottom:4px}
 .battle.b3.m-wide.hasboss>.bossbar{align-self:stretch;display:flex;flex-direction:column;justify-content:center;box-sizing:border-box;min-height:46px;min-width:0}
 .battle.b3.m-wide.hasboss>.order{min-width:0;align-self:stretch}
 .battle.b3.m-wide.hasboss .order .wchip .wxn{display:none}
+/* ===== Beta v0.8.0: phones and the Galaxy Z Fold (open and closed) ===== */
+/* wide, short screens: the foes panel never shrinks to nothing (it keeps at least one row; the commands scroll inside first) */
+.battle.b3.m-wide .bbottom{grid-template-rows:minmax(0,max-content) minmax(58px,1fr)}
+/* wide, the column arrangement (b8col, chosen by b3WideSc when it gives the larger stage): the stage and the log strip head the left
+   column, the commands and the foes under them; the boss bar, the turn order and the party column fill the right column from the top.
+   The grid is as tall as the visible screen (--b8h) and its rows come from b3WideBot (--b8r). */
+.battle.b3.m-wide.b8col{grid-template-columns:minmax(0,1.42fr) minmax(0,1fr);column-gap:6px;row-gap:4px;height:var(--b8h,auto);grid-template-rows:var(--b8r,auto);
+  grid-template-areas:"stage order" "stage pty" "line pty" "cmd pty" "foes pty";align-content:start;box-sizing:border-box}
+.battle.b3.m-wide.b8col.hasboss{grid-template-columns:minmax(0,1.42fr) minmax(0,1fr);grid-template-areas:"stage boss" "stage order" "stage pty" "line pty" "cmd pty" "foes pty"}
+.battle.b3.m-wide.b8col .bbottom,.battle.b3.m-wide.b8col .bbottom .bparty{display:contents}
+.battle.b3.m-wide.b8col>.bwrap{grid-area:stage;justify-self:center;align-self:start;margin:0}
+.battle.b3.m-wide.b8col>.bline{grid-area:line;align-self:start}
+.battle.b3.m-wide.b8col>.bossbar{grid-area:boss}
+.battle.b3.m-wide.b8col>.order{grid-area:order;align-self:stretch;min-width:0}
+.battle.b3.m-wide.b8col .order .wchip .wxn{display:none}
+.battle.b3.m-wide.b8col .bbottom .cmd{grid-area:cmd;max-height:100%}
+.battle.b3.m-wide.b8col .bbottom .pgroup.foes{grid-area:foes;margin-top:5px;max-height:calc(100% - 5px)}
+.battle.b3.m-wide.b8col .bbottom .b3pty{grid-area:pty;max-height:100%;align-self:start}
+.battle.b3.m-wide.b8col.b3list .bbottom .cmd{grid-area:auto;grid-column:1;grid-row:cmd-start/foes-end}
+/* wide, compact (b8tight, under B8.tightAt): the auto lock note inline in the auto row, tighter commands, cards and header */
+.battle.b3.m-wide.b8tight .autorow{flex-wrap:nowrap;align-items:center}
+.battle.b3.m-wide.b8tight .autorow .autowhy{order:0;flex:1.5 1 0;min-width:0;font-size:.66rem;line-height:1.15;white-space:normal;text-align:center}
+.battle.b3.m-wide.b8tight .cmd{padding:4px 7px 5px;gap:3px}
+.battle.b3.m-wide.b8tight .who.cmdhead{padding:0}
+.battle.b3.m-wide.b8tight .menu.prim .mi{min-height:40px;padding-top:3px;padding-bottom:3px}
+.battle.b3.m-wide.b8tight .pgroup.heroes .pcw .pc{min-height:40px;padding-top:2px}
+.battle.b3.m-wide.b8tight .pgroup.heroes .pcw:not(.hastags) .pc{padding-bottom:2px}
+.battle.b3.m-wide.b8tight .fcw .fc{padding-top:2px}
+.battle.b3.m-wide.b8tight .fcw:not(.hastags) .fc{padding-bottom:2px}
+.battle.b3.m-wide.b8tight .bbottom .b3pty{gap:8px}
+body:has(.battle.b3.m-wide.b8tight) .hdr{padding-bottom:2px;margin-bottom:2px}
+/* portrait phones: everything under the stage in one box as tall as the rest of the visible screen (--b3bot); the party cards, the
+   commands and the compact foe list first, then the foe cards and the Rearguard (they scroll inside the box, the page never does) */
+body:has(.battle.b3.m-tall){padding-bottom:4px}
+body:has(.battle.b3.m-tall) .hdr{padding-bottom:2px;margin-bottom:2px}
+.battle.b3.m-tall .bbottom{max-height:var(--b3bot,none);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;padding:2px;margin:-2px;box-sizing:border-box}
+.battle.b3.m-tall .bbottom .b8fl{order:3}
+.battle.b3.m-tall .bbottom .pgroup.foes{order:4}
+.battle.b3.m-tall .bbottom .pgroup.rsv{order:5}
+.battle.b3 .b8fl{display:flex;gap:4px;min-width:0}
+.battle.b3:not(.m-tall) .b8fl{display:none}
+.battle.b3 .b8fl .fl{flex:1 1 0;min-width:0;min-height:40px;display:flex;flex-direction:column;justify-content:center;align-items:stretch;gap:4px;padding:3px 6px;box-sizing:border-box;
+  border:1px solid rgba(230,140,120,.38);border-radius:4px;background:linear-gradient(180deg,rgba(44,22,30,.9),rgba(22,13,22,.9));color:#f3e7cc;text-align:left;font:800 .68rem/1.1 var(--fb);cursor:pointer}
+.battle.b3 .b8fl .fl .n{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.battle.b3 .b8fl .fl .b{display:block;height:5px;border-radius:2px;background:#3a2a3a;overflow:hidden;box-shadow:0 0 0 1px #150b17}
+.battle.b3 .b8fl .fl .b i{display:block;height:100%;background:#e8504a}
+.battle.b3 .b8fl .fl.ko{opacity:.45}
+.battle.b3 .b8fl .fl.isprimed{border-color:var(--pc)}
+.battle.b3 .b8fl .fl.tg{border-color:#ffd04a;box-shadow:0 0 0 1px #ffd04a,0 0 8px rgba(255,208,74,.35)}
+.battle.b3 .b8fl .fl.dethit{box-shadow:0 0 0 2px #fff,0 0 10px var(--pc)}
+/* portrait commands: one row of secondary commands (the Summon button wider), labels that fit a 344 px screen */
+.battle.b3.m-tall .cmd{padding:6px 7px 7px;gap:5px}
+.battle.b3.m-tall .who.cmdhead{padding:0 0 2px}
+.battle.b3.m-tall .menu.prim{gap:4px}
+.battle.b3.m-tall .menu.prim .mi{min-height:44px;padding:5px 3px 5px 14px;font-size:.9rem}
+.battle.b3.m-tall .menu.prim .mi::before{left:5px}
+.battle.b3.m-tall .menu.sec{display:flex;gap:4px}
+.battle.b3.m-tall .menu.sec .mi{flex:1 1 0;min-width:0;padding:3px 2px;font-size:.74rem;display:flex;align-items:center;justify-content:center;text-align:center}
+.battle.b3.m-tall .menu.sec .mi::before{display:none}
+.battle.b3.m-tall .menu.sec .mi.summon{flex:2 1 0;font-size:.7rem;line-height:1.05}
+.battle.b3.m-tall .autorow{gap:4px}
+.battle.b3.m-tall .autorow .btn.sm{font-size:.8rem}
+.battle.b3.m-tall .autorow .autowhy{font-size:.66rem;line-height:1.1}
+/* portrait party cards: a little tighter */
+.battle.b3.m-tall .pgroup.heroes{padding:4px 5px}
+.battle.b3.m-tall .pgroup.heroes .pcw .pc{padding:3px 4px}
+.battle.b3.m-tall .pgroup.heroes .pc .pm{gap:1px}
+/* the Rearguard in the scrolling part: two per row on narrow phones, so their HP numbers fit */
+@media (max-width:420px){.battle.b3.m-tall .pgroup.rsv .pcs{grid-template-columns:repeat(2,minmax(0,1fr))}}
+/* damage type symbols (dlIco): next to the element icons on foe cards; resisted ones dimmer and greyer. On narrow cards the words
+   Weak / Res give way to arrows (the words stay in the tooltip) */
+.battle.b3 .fwk b{font:inherit}
+.battle.b3 .fwk .dli.res,.dli.res{opacity:.62;filter:saturate(.45)}
+.battle.b3.m-tall .fwk b,.battle.b3.m-wide .fwk b{font-size:0}
+.battle.b3.m-tall .fwk b::before,.battle.b3.m-wide .fwk b::before{font-size:.62rem}
+.battle.b3.m-tall .fwk.up b::before,.battle.b3.m-wide .fwk.up b::before{content:"▲"}
+.battle.b3.m-tall .fwk.dn b::before,.battle.b3.m-wide .fwk.dn b::before{content:"▼"}
+@container (min-width:215px){.battle.b3.m-wide .fcw .fwk b{font-size:inherit}.battle.b3.m-wide .fcw .fwk b::before{content:none}}
+em.dl.sym{display:inline-flex;align-items:center;padding:1px 2px;background:#150b17;border-color:#3a3048}
+em.dl.sym .ico{width:12px;height:12px;vertical-align:0}
+.bstage .b3tg .eff.arch .ico{width:var(--f);height:var(--f)}
+.battle.b3 .who.cmdhead .autowhy.inhead{flex:1 1 0;min-width:0;margin:0 0 0 auto;font-size:.64rem;line-height:1.1;color:var(--mute);text-align:right;white-space:normal}
+.battle.b3 .who.cmdhead .autowhy.inhead+.cmdback{margin-left:6px}
+/* compact Weak / Res rows on wide and portrait foe cards: no chip frame, 10 px icons, the arrow in the row's colour */
+.battle.b3.m-wide .fcw .fwk,.battle.b3.m-tall .fcw .fwk{padding:0 1px;border:0;background:none;gap:1px}
+.battle.b3.m-wide .fcw .fwk .ico,.battle.b3.m-tall .fcw .fwk .ico{width:11px;height:11px}
+.battle.b3.m-wide .fcw .ptags,.battle.b3.m-tall .fcw .ptags{column-gap:4px}
+/* compact column arrangement with the log strip in the right column (b8lr): the left column is the stage, the commands and the foes */
+.battle.b3.m-wide.b8col.b8lr{grid-template-areas:"stage order" "stage line" "stage pty" "cmd pty" "foes pty"}
+.battle.b3.m-wide.b8col.b8lr.hasboss{grid-template-areas:"stage boss" "stage order" "stage line" "stage pty" "cmd pty" "foes pty"}
+.battle.b3.m-wide.b8col.b8lr>.bline{align-self:stretch;min-width:0}

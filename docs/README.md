@@ -22,6 +22,7 @@ Read these before a big pass:
 - `v070-battle-info.md`: the v0.7.0 battle information and input pass (turn forecast bar, foe intents from planned actions, optional timed hits; `v3/battle5.js`).
 - `v070-battle-mech.md`: the v0.7.0 battle mechanics (detonation MP refund, free swap, Momentum, foe roles and the boss Cataclysm, `b4RolePlan` for intents) with the auto vs careful sim numbers.
 - `v076-battle-layout.md`: the v0.7.6 wide battle layout (commands with the foes under them, the party column with one hero per row, the stage sized so the screen fits, no text cut, aim tags that always fit).
+- `v080-battle-phones.md`: the v0.8.0 battle screen on phones and the Galaxy Z Fold (sized from the visible viewport, the column arrangement and compaction on short wide screens, portrait commands always on screen, the compact foe list), the battle transition drawn at 4x on Medium and High, damage type symbols.
 - `audio-notes-v045.md`: the orchestral audio (v0.4.5) and Android live updates (v0.4.6).
 - `v050-prompt.md`: the full spec for the Beta v0.5.0 pass. Rollback point: `rollback-v046.md`.
 

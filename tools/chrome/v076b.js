@@ -14,7 +14,7 @@ const CASES=[[3,1],[4,3],[5,5],[6,5],[6,2],[3,4],[6,'b']];
 // what a page shows: overflowing text, the panel boxes, the document size
 const MEASURE=()=>{const out={bad:[]},vis=e=>{const q=e.getBoundingClientRect();return q.width>0&&q.height>0;};
   // names may end in an ellipsis; nothing else may be cut
-  const NAME='.uct b,.cmdhead b,.bbn b,.b4o .n,.blog p,.detf';
+  const NAME='.uct b,.cmdhead b,.bbn b,.b4o .n,.blog p,.detf,.b8fl .n';// v0.8.0: the portrait compact foe list's names
   document.querySelectorAll('.battle *').forEach(e=>{if(e.closest('#bstage')||e.closest('#bover')||!vis(e)||/^(IMG|CANVAS|svg)$/i.test(e.tagName))return;
     const txt=[...e.childNodes].some(n=>n.nodeType===3&&n.textContent.trim()),btn=e.tagName==='BUTTON';if(!txt&&!btn&&!e.classList.contains('ptags'))return;
     if(e.classList.contains('port')||e.classList.contains('oc'))return;

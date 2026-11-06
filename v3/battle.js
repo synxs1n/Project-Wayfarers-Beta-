@@ -243,9 +243,14 @@ function fitBattle(){
   const wrap=$('bwrap');if(!wrap||(B&&B.menu!=='root'))return;
   const mode=battleMode();
   if(mode!=='tall'){const old=BL.sc,om=BL.mode;layoutBattle();if(Math.abs(BL.sc-old)>.01||om!==BL.mode)renderBattle(true);return;}
-  const vh=window.visualViewport?window.visualViewport.height:window.innerHeight;
-  const other=($('hdr')?$('hdr').offsetHeight:0)+($('border')?$('border').offsetHeight:0)+b3Extra('tall')+b3Below()+34;
-  const room=vh-other,H=clamp(Math.floor(room/BL.sc),140,230);
-  if(BL.mode!=='tall'){layoutBattle();renderBattle(true);return;}
-  if(Math.abs(H-BL.H)>6&&!fitBattle.busy){fitBattle.busy=1;BL.fitH=H;layoutBattle();renderBattle(true);setTimeout(()=>{fitBattle.busy=0;},300);}
+  // v0.8.0: measured from the visible viewport (visualViewport): the stage's top, the log strip under it, the party cards, the commands
+  // and the compact foe list (b3Below), the body's bottom padding; a stage that would push them off the screen always shrinks at once
+  const vh=b3Vh(),bat=wrap.parentNode,gap=parseFloat(getComputedStyle(bat).rowGap)||5,bl=$('bline'),padB=parseFloat(getComputedStyle(document.body).paddingBottom)||0;
+  const room=vh-b3DocTop(wrap)-Math.max(0,wrap.offsetHeight-BL.H*BL.sc)-gap-(bl?bl.offsetHeight:40)-gap-b3Below()-padB-2,H=clamp(Math.floor(room/BL.sc),B8.tallMin,B8.tallMax);
+  if(BL.mode!=='tall'){layoutBattle();renderBattle(true);b8TallBot(bat);return;}
+  // v0.8.0: settles in one go (no deferred second step), and within a battle the stage only shrinks (it grows back only when the visible
+  // viewport changes), so the units never shift while the intro plays or between turns
+  const grow=H-BL.H>6&&(!B||B._b8vh!==vh||!B._b8fit);if(B){B._b8fit=1;B._b8vh=vh;}
+  if(H<BL.H||grow){BL.fitH=H;layoutBattle();renderBattle(true);}
+  b8TallBot(bat);
 }
