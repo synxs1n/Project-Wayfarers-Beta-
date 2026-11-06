@@ -1977,7 +1977,7 @@ body:has(.battle.b3.m-wide.b8short){padding-top:6px}
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.9.5";const APP_BUILD="ad4ab167f716";
+(function(){const APP_VER="0.9.6";const APP_BUILD="60aba5fd44d8";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2162,6 +2162,15 @@ const ARCH_FOE_CLAMP=[.4,1.8];
 // companions (comp.js): a summoned companion stays COMP_TURNS of its own turns; COMP_BONUS: the paired hero's stat bonus
 // (base, with Beastbond, for a tamed Scourge).
 const COMP_TURNS=3,COMP_BONUS={base:.04,bb:.06,scourge:.08};
+// TAME (v0.9.5, comp3.js): companions grow with the battles they win beside their hero (o.bt, an optional save field). At skillAt battles
+// they learn a second skill (sk, by family: name, power, target, kind, effects; the element is the companion's own); at evoAt they evolve:
+// a new name (pre + the monster's name), +evoBonus on the paired hero's stat bonus and a recoloured sprite (the monster's palette pulled
+// toward col by k, the same repaint the realm variants use; no new art).
+const TAME={skillAt:12,evoAt:30,evoBonus:.03,k:.45,
+  pre:{beast:'Alpha',flyer:'Sky',spirit:'Elder',shell:'Iron',ooze:'Grand',scourge:'Dread'},
+  col:{beast:'#e0a040',flyer:'#7ac8ff',spirit:'#c8a0ff',shell:'#b0b8c8',ooze:'#6ad07a',scourge:'#ff5a4a'},
+  sk:{beast:['Feral Rush',1.35,'one','phys',[['bleed',.3]]],flyer:['Gale Sweep',1.0,'all','mag',[['slow',.25]]],spirit:['Spirit Flare',1.25,'one','mag',[['weaken',.3]]],
+    shell:['Shell Bash',1.4,'one','phys',[['stun',.15]]],ooze:['Engulf',1.05,'all','mag',[['poison',.3]]],scourge:['Dread Roar',1.15,'all','mag',[['weaken',.3]]]}};
 
 // ==== 3. Foes and bosses: boss levels and muscle, field packs, creep, echoes, roamers, side sites, mimics, surprise starts ====
 // SURPRISE: touching a roaming dungeon foe that has not seen you gives a free first round: every hero in the vanguard acts free times
@@ -2176,7 +2185,37 @@ const BOSS_LV={frac:.5,cap:12};
 // 3.2 bosses: shield pips +50% (5 to 8, 7 to 11); the break window hits for less and is over once the foe loses the turn it staggers
 const BOSS_PIPS={mult:1.5};const BREAK_WIN={bonus:1.3,short:true};
 // 3.2 extra boss muscle on top of the old stat table (hp and power multipliers)
-const BOSS_BUFF={hp:[1.15,1.65,1.7,2.0,1.52],pow:[1.05,1.34,1.38,1.6,1.28]}// v0.4.3: re-tuned with capes; v0.8.2: the first three Scourges eased (were hp 1.3, 1.75, 1.8 and pow 1.15, 1.4, 1.44) so no boss is a wall
+const BOSS_BUFF={hp:[.9,1.5,1.55,1.7,1.36],pow:[1,1.34,1.38,1.6,1.28]}// v0.4.3: re-tuned with capes; v0.8.2: the first three Scourges eased (were hp 1.3, 1.75, 1.8 and pow 1.15, 1.4, 1.44) so no boss is a wall; v0.9.5: hp [1.15,1.65,1.7,2.0,1.52] -> about 4 to 10% less, the realm gimmicks (BOSS_GIM) carry the rest
+// BOSS_GIM (v0.9.5, battle4.js): every Scourge and Calamity brings one realm gimmick to its first fight (kind 'boss'; not Echoes, not the Daily
+// Trial). Each is telegraphed on the boss's turn (a log line, a "Telegraph" chip on the boss, a mark on the heroes it will hit) and lands on its
+// next turn, so reading it pays. first: the boss's turn of the first telegraph; every: turns between telegraphs (per boss: every).
+// Types: slot (a Vanguard spot, or n spots, takes pct of max HP; Guard halves it and stops st), rod (the strongest hero is marked; pct to
+// them and arc of that to the neighbours; swap them out to ground it), chill (each Vanguard hero not guarding gains a Chill stack: x(1+spd)
+// slower per stack, Frozen (a lost turn) at max; a Fire skill clears it), tide and dark (an arena level rises to max; tide: heroes without
+// Water are x(1+spd) slower per level and Water skills deal x(1+dmg) more per level, an Earth skill lowers it; dark: heroes deal dmg less
+// per level, a Fire or Light skill lights a torch and clears it), sac (the boss readies something: thr = damage share that stops it,
+// els = elements that stop it, brk = a Break stops it; fx: heal, summon (mon), spores (st on the Vanguard), buff (self)), mirror (for one
+// round the boss takes cut less from kind and reflects refl of the damage), veil (for one round it takes cut less until a Scan or a Light
+// skill reveals it), wing (it takes off for a round: non Ranged physical hits deal cut less; then it dives at a marked spot for pct),
+// phase2 (at warn of its HP it cracks; at at a new move set (sk) and its shield back).
+// stageK: the gimmick's damage and healing by stage (the first Scourge is the gentle introduction; reactions only open in the second realm).
+const BOSS_GIM={on:true,daily:false,first:2,every:4,stageK:[.5,.85,1,1,1],
+  def:{thornwarden:{t:'slot',n:'Thorn Snare',pct:.14,el:'earth',st:'root',d:'Roots erupt under one Vanguard spot on its next turn',tell:'Thorny roots creep under {who}',hit:'Roots burst under {who}'},
+    drake:{t:'tide',n:'Rising Tide',every:3,max:3,spd:.05,dmg:.08,d:'The water rises every few turns: heroes without Water slow down and Water skills hit harder. An Earth skill dams it',tell:'The water swells around your feet',hit:'The tide rises'},
+    cinderking:{t:'slot',n:'Lava Vents',pct:.17,el:'fire',st:'burn',d:'A lava vent erupts under one Vanguard spot on its next turn',tell:'The ground glows red under {who}',hit:'A lava vent erupts under {who}'},
+    hoarwyrm:{t:'chill',n:'Blizzard',max:3,spd:.12,d:'The blizzard chills every hero who is not guarding; three stacks freeze a hero for a turn. A Fire skill thaws the caster',tell:'The blizzard thickens',hit:'The blizzard howls through the Vanguard'},
+    ysolde:{t:'rod',n:'Lightning Rod',pct:.2,arc:.35,el:'lightning',d:'She marks the strongest hero; lightning strikes them on her next turn and arcs to their neighbours. Swap them out to ground it',tell:'The air crackles around {who}',hit:'Lightning strikes {who}'},
+    bonecolossus:{t:'sac',n:'Reassemble',fx:'heal',heal:.12,thr:.07,d:'It gathers its bones to heal; deal enough damage before its next turn to scatter them',tell:'Bones rattle toward the Colossus',hit:'The Colossus pulls its bones back together',stop:'The bones scatter'},
+    queenmantis:{t:'sac',n:'Brood',fx:'summon',mon:'gustimp',thr:.07,d:'An egg sac swells; burst it with enough damage before her next turn or it hatches',tell:'An egg sac swells on the Queen',hit:'The egg sac hatches',stop:'The egg sac bursts'},
+    gloomcap:{t:'sac',n:'Spore Bloom',fx:'spores',st:['poison'],els:['fire'],thr:.06,d:'A spore pod swells; a Fire skill or heavy damage pops it, or it poisons every hero not guarding',tell:'A spore pod swells on the Matriarch',hit:'The spore pod bursts over the Vanguard',stop:'The spore pod shrivels'},
+    ironsentinel:{t:'sac',n:'Overheat',fx:'buff',buff:['might','haste'],els:['water','ice'],thr:.08,d:'Its furnace glows white; a Water or Ice hit or heavy damage cools it, or it overclocks (Might and Haste)',tell:'The Sentinel\'s furnace glows white',hit:'The Sentinel overclocks',stop:'Steam hisses: the furnace cools'},
+    siren:{t:'mirror',n:'Mirror Song',every:5,kinds:['mag'],cut:.35,refl:.12,d:'Every few turns she raises a water mirror for a round: magic deals less and part of it splashes back. Use weapons then',tell:'The Siren\'s song turns glassy',hit:'A mirror of water rises around the Siren'},
+    ashwyvern:{t:'wing',n:'Take Wing',every:5,cut:.35,pct:.16,el:'fire',d:'It takes to the air for a round (weapon hits glance off unless Ranged), then dives at a marked spot',tell:'The Wyvern spreads its wings',hit:'The Wyvern takes to the air',dive:'The Wyvern dives at {who}'},
+    frostlich:{t:'veil',n:'Grave Mist',cut:.5,d:'Every few turns it fades into mist for a round and takes far less damage, until a Scan or a Light skill reveals it',tell:'Frost mist gathers around the Lich',hit:'The Lich fades into the mist'},
+    dimmer:{t:'dark',n:'Swallowed Light',every:3,max:2,dmg:.1,d:'The dark deepens every few turns: heroes deal less per level. A Fire or Light skill lights a torch and clears it',tell:'The lights around you gutter',hit:'The dark deepens'},
+    nidhra:{t:'phase2',n:'Eclipse Form',warn:.65,at:.5,sk:[['Corona Flare','fire',1.3,'all','mag',[['burn',.5]]],['Night Talon','shadow',2.0,'one','phys',[['bleed',.6]]],['Eclipse Roar','shadow',1.1,'all','phys',[['weaken',.4]]]],d:'At half HP it becomes the Eclipse: new moves and its shield back. Save a weakness hit for after',tell:'Cracks of black fire spread across Nidhra',hit:'Nidhra becomes the Eclipse'},
+    hollowking:{t:'sac',n:'Royal Guard',fx:'summon',mon:'voidspawn',brk:1,thr:.08,d:'He calls a servant from the void; Break his shield or hit him hard before his next turn to stop it',tell:'The King raises his hand to call a servant',hit:'A void spawn answers the King',stop:'The call goes unanswered'},
+    seraph:{t:'slot',n:'Pillars of Ash',n2:2,pct:.12,el:'light',st:'blind',d:'Pillars of holy fire fall on two Vanguard spots on its next turn',tell:'Light gathers over {who}',hit:'Pillars of ash fall on {who}'}}};
 // 3.4 small parties: each hero short of six makes Scourges and Calamities this much beefier (a full party of six is the benchmark)
 const BOSS_SIZE={hp:.07,pow:.06};// per stage 1 to 5
 // 3.3 echo levels. Story echo base = boss base + storyAdd; Sanctum echoes use fixed bases. While the party's highest hero is more than
@@ -2191,7 +2230,10 @@ const CREEP={per:.05,field:.5};
 const SMALL_PARTY={stages:2,hp:[.55,.85],pow:[.6,.88]};
 // ROAM: roaming dungeon foes (roam.js): base + perStage per dungeon, elite share, sight (tiles), patrol and chase step ms, giveUp
 // (tiles before a chaser walks home), minFromStart (tiles from the entrance), lvUp, hpM and powM over random battles.
-const ROAM={base:3,perStage:1,elite:.2,sight:4,patrolMs:620,chaseMs:330,giveUp:7,minFromStart:9,lvUp:2,hpM:1.3,powM:1.12};
+// v0.9.5: field: roamers on each realm's field too (base + perStage), never within minFromExit tiles of an exit, cave, dungeon or town gate.
+// roles: each realm's roamers include at least one of every foe role in its pool (B4.roleOf), so the fights teach the roles.
+const ROAM={base:4,perStage:1,elite:.2,sight:4,patrolMs:620,chaseMs:330,giveUp:7,minFromStart:9,lvUp:2,hpM:1.3,powM:1.12,// v0.9.5: base 3 -> 4
+  field:{base:2,perStage:1,minFromExit:7},roles:true};
 // SITES: side fortresses (fortW x fortH tiles) and minibosses (sites.js): mini = share of caves and fortresses with one, miniHp,
 // miniPow and miniLv: its HP, power and level over the area.
 const SITES={fortW:62,fortH:40,mini:.9,miniHp:6,miniPow:1.55,miniLv:4};
@@ -2322,11 +2364,20 @@ const ROLES={
     {id:'c_rl_ward',n:"Warden's Badge",st:{hp:110,def:10},perk:{tauntDef:.15},d:'Takes 15% less while Taunting',price:560}],
   shopFrom:1};
 
+// PACE (v0.9.5, pacing.js): the realm (0 = the first) in which each system opens on a journey started on v0.9.5 or later. Older journeys,
+// New Game+ cycles and the Daily Trial have everything open. pcUnlocked(system) reads it (the onboarding tips can ask it too).
+// combat, elements and taming are always open; tempering keeps its own rule (after the first Scourge); camp follows CAMP.fromStage.
+const PACE={at:{elements:0,combat:0,taming:0,reactions:1,gear:1,bonds:1,camp:2,guilds:2,echoforge:3,arenaGold:3,ngplus:3}};
+
 // ==== 6. World: encounters, chance meetings, travel items, day and night, weather tables, factions, map generation ====
 // encounters on the road
 // ENC_RATE: chance per step to meet a random battle, by the Settings choice. CE_*: chance meetings with a wayfarer (chance.js), about 1 in 170 steps after a 30 step gap, 2 per area at most
-const ENC_RATE={off:0,low:.07,normal:.13,high:.18};// v0.8.2: about 30% more on every setting (was .05/.095/.14) for the 4.5 to 6 hour journey (docs/v080-roles-balance.md)
-const ENC_MIN_STEPS=7;// v0.8.2: at least 7 tiles walked between random battles (was 8)
+const ENC_RATE={off:0,low:.02,normal:.035,high:.06};// v0.9.5: fewer, better fights: one random battle about every 41 steps on Normal instead of every 15 (v0.8.2: .07/.13/.18); visible roamers (ROAM) and side sites make up the rest
+const ENC_MIN_STEPS=12;// v0.9.5: at least 12 tiles walked between random battles (v0.8.2: 7)
+// ENC (v0.9.5, roam.js): what an ordinary fight pays now that there are fewer of them. rew: XP and gold multipliers for random field and
+// dungeon battles and roamers (a number, or one per stage: the early realms lost the most fights); roam: an extra multiplier for a roamer (on top of rew). Bosses, elites, minibosses, the arena and the Daily
+// Trial are not touched. Applied through facMul (engine.js win), like the NG+ modifiers.
+const ENC={rew:{xp:[2,1.6,1.2,1,.85],gold:1.45},roam:{xp:1.1,gold:1.15}};
 // chance meetings with a wayfarer (chance.js): about 1 in 170 steps after a 30 step quiet gap, at most 2 per area
 const CE_ODDS=1/170, CE_GAP=30, CE_AREA_CAP=2;
 // TOWN_LANE: every town gate gets a clear approach lane at least this many tiles wide to the main road
@@ -2554,7 +2605,7 @@ const TWISTS={on:true,
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.9.5";const APP_BUILD="ad4ab167f716";
+const APP_VER="0.9.6";const APP_BUILD="60aba5fd44d8";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2562,6 +2613,7 @@ const APP_VER="0.9.5";const APP_BUILD="ad4ab167f716";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.9.6',['Fewer, better fights: random battles are much rarer and fields now have visible roamers (including each realm\'s foe roles) you can choose to fight or sneak up on; fights pay more, so a journey still ends around level 40. Every Scourge and Calamity has its own realm gimmick that it telegraphs a turn ahead (rising tide, lava vents, a lightning rod, a blizzard, broods of adds, a phase change at half health and more) with a clear answer. Tamed companions grow: a second skill after 12 battles and an evolution after 30. New journeys unlock systems realm by realm (reactions and bonds in the second realm, camp and guild missions in the third, the Echoforge in the fourth); saves you already have keep everything.']],
  ['Beta v0.9.5',['Menus simplified: one Notice Board with Quests, Guilds, Bounties and Arena tabs (claimable first), reachable from the board, the Guild Hall and the Menu. Guilds now have three ranks with one line each (nothing you claimed is lost; some perks open sooner). Every gear slot has an Upgrade button that picks the best next step you can afford (equip a spare, buy, forge, temper or Echoforge) with Show all options for tinkerers; the Smithy shows the best upgrade per slot first. Build Party and Equip best come first on the Party and Equipment tabs.']],
  ['Beta v0.9.4',['Momentum is simpler: doing something different fills the gauge, repeating the same move or only attacking drains it. Fill it to get a Surge (heroes deal 15% more and take 10% less); let it run empty and the party is Drained (10% less dealt, 10% more taken) until you mix it up again.']],
  ['Beta v0.9.3',['Battle screen on phones: the action menu has bigger buttons and fills the space under the battle view, with the party and foes below it (scroll down to see them; the commands always show in full on each turn). Phones turned sideways and other short wide screens now get a layout that fits: battle view, log and party on the left, commands with full labels and the foes on the right, nothing cut off. Hero health bars keep their distance from the foes, and heroes in battle are drawn at the same size and pixel look as the foes.']],
@@ -13911,25 +13963,35 @@ function overlayGuide(){if(!G||!G.run||G.daily)return '';const s=WS.m&&typeof WS
 const REALM_OPENING='The Meridian Light that keeps the sky of Aurelis bright has begun to gutter. One by one the beacons are going dark, and a Scourge sits at the end of every road. You and your companions set out to light them again.';
 {const bg0=ACT.begin;ACT.begin=function(){const r=bg0.apply(this,arguments);try{if(V.modal&&V.modal.type==='story'&&isRv2()&&V.modal.text===ZS(0).intro)V.modal.text=REALM_OPENING+' '+ZS(0).intro;}catch(e){}return r;};}
 
-// ===== roam.js (v0.4.1): roaming dungeon foes =====
+// ===== roam.js (v0.4.1): roaming dungeon foes (v0.9.5: and field foes; the realm's roles among them; ordinary fights pay more) =====
 // Visible foes patrol the rooms of main dungeons. Touching one (or being caught) starts a battle; they can be avoided: they patrol
 // back and forth inside rooms, see only a short cone ahead (ROAM.sight tiles), and move slower than you even when they chase.
 // They spawn only on open room tiles (never corridors, never near the entrance, never on stairs, chests, levers or doors), so a
 // required path is never blocked: a chaser gives up and walks home. They are tougher than random battles, and a few are elites
 // (no auto). Random battles still happen in dungeons. Beaten roamers stay beaten for this journey (G.roamDead, optional).
 // ROAM: in config.js
-function roamOpen(m,x,y){return tileAt(m,x,y)==='.';}
+function roamOpen(m,x,y){const c=tileAt(m,x,y);return m.kind==='field'?(c===','||c==='.'):c==='.';}
 function roamInterior(m,x,y){if(!roamOpen(m,x,y))return false;let n=0;for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++)if((dx||dy)&&roamOpen(m,x+dx,y+dy))n++;return n>=7;}
+// v0.9.5: places a roamer keeps away from on a field: exits, caves, the dungeon door, side sites and people
+function roamKeepOut(m){const L=[];(m.exits||[]).forEach(e=>L.push([e.x,e.y]));(m.caves||[]).forEach(c=>L.push([c.x,c.y]));if(m.ent)L.push([m.ent[0],m.ent[1]]);
+  (m.npcs||[]).forEach(n=>L.push([n.x,n.y]));if(m.start)L.push(m.start);return L;}
+function roamCanSpawn(m){return !!m&&!m.safe&&!m.archive&&!m.sanctum&&!!G&&!G.daily&&(m.kind==='dungeon'?!(m.cave||m.fort):m.kind==='field'&&!!(ROAM.field&&ROAM.field.base>0));}
+// v0.9.5: the realm's foe roles first (one roamer each), then the rest of the pool at random
+function roamPick(R,pool,n){const out=[];if(ROAM.roles&&typeof b4RoleOfMon==='function'){const seen={};pool.forEach(k=>{const r=MON[k]&&b4RoleOfMon(MON[k]);if(r&&!seen[r]){seen[r]=1;out.push(k);}});}
+  while(out.length<n)out.push(pool[Math.floor(R()*pool.length)]);return out.slice(0,n);}
 function roamSpawn(m){
-  if(!m||m.kind!=='dungeon'||m.cave||m.fort||m.archive||m.sanctum||!G||G.daily)return [];if(m.roam)return m.roam;
-  const R=seeded((hashS(m.id)+((G.run&&G.run.seed)||0))>>>0),s=m.s|0,st=m.start||[0,0],spots=[];
-  for(let y=1;y<m.h-1;y++)for(let x=1;x<m.w-1;x++){if(Math.abs(x-st[0])+Math.abs(y-st[1])<ROAM.minFromStart)continue;if(WS.m===m&&Math.abs(x-WS.x)+Math.abs(y-WS.y)<6)continue;if(roamInterior(m,x,y))spots.push([x,y]);}
-  const n=ROAM.base+ROAM.perStage*s,dead=(G.roamDead||{})[m.id]||[],pool=ZS(s).pool,out=[];
+  if(!roamCanSpawn(m))return [];if(m.roam)return m.roam;
+  const R=seeded((hashS(m.id)+((G.run&&G.run.seed)||0))>>>0),s=m.s|0,st=m.start||[0,0],spots=[],fld=m.kind==='field',keep=fld?roamKeepOut(m):[],kd=fld?ROAM.field.minFromExit:0;
+  for(let y=1;y<m.h-1;y++)for(let x=1;x<m.w-1;x++){if(!fld&&Math.abs(x-st[0])+Math.abs(y-st[1])<ROAM.minFromStart)continue;if(WS.m===m&&Math.abs(x-WS.x)+Math.abs(y-WS.y)<6)continue;
+    if(fld&&keep.some(([kx,ky])=>Math.abs(x-kx)+Math.abs(y-ky)<kd))continue;if(roamInterior(m,x,y))spots.push([x,y]);}
+  const n=fld?ROAM.field.base+ROAM.field.perStage*s:ROAM.base+ROAM.perStage*s,dead=(G.roamDead||{})[m.id]||[],pool=ZS(s).pool,out=[];
+  // the realm's roles go first (the monster picks have their own seeded stream)
+  const mons=roamPick(seeded((hashS(m.id+'role')+((G.run&&G.run.seed)||0))>>>0),pool,n);
   for(let i=0;i<n&&spots.length;i++){const k=Math.floor(R()*spots.length),[x,y]=spots.splice(k,1)[0];
     // keep them apart
     for(let j=spots.length-1;j>=0;j--)if(Math.abs(spots[j][0]-x)+Math.abs(spots[j][1]-y)<6)spots.splice(j,1);
-    const elite=R()<ROAM.elite,mon=pool[Math.floor(R()*pool.length)],mod=elite?ELITE_MODS[Math.floor(R()*ELITE_MODS.length)].k:null;
-    out.push({i,x,y,hx:x,hy:y,dir:['u','d','l','r'][Math.floor(R()*4)],mon,elite,mod,name:elite?`${MON[mon].n} ${ELITE_TITLES[Math.floor(R()*ELITE_TITLES.length)]}`:MON[mon].n,dead:dead.includes(i),t:0,mode:'patrol',lost:0,rest:0});}
+    const elite=R()<ROAM.elite,mon=mons[i],mod=elite?ELITE_MODS[Math.floor(R()*ELITE_MODS.length)].k:null;
+    out.push({i,x,y,hx:x,hy:y,dir:['u','d','l','r'][Math.floor(R()*4)],mon,elite,mod,name:elite?`${MON[mon].n} ${ELITE_TITLES[Math.floor(R()*ELITE_TITLES.length)]}`:MON[mon].n,dead:dead.includes(i),t:0,mode:'patrol',lost:0,rest:0,role:(typeof b4RoleOfMon==='function'&&b4RoleOfMon(MON[mon]))||null});}
   m.roam=out;return out;}
 function roamSees(m,r,px,py){const [dx,dy]=DIRV[r.dir],vx=px-r.x,vy=py-r.y,fw=vx*dx+vy*dy,side=Math.abs(vx*dy-vy*dx);
   if(fw<1||fw>ROAM.sight||side>Math.ceil(fw/2))return false;
@@ -13943,7 +14005,7 @@ function roamTick(m,now){
     if(r.mode==='patrol'&&roamSees(m,r,px,py)){r.mode='chase';r.lost=0;if(typeof sfx==='function')sfx('encounter');}
     const ms=r.mode==='chase'?ROAM.chaseMs:ROAM.patrolMs;if(now-r.t<ms)continue;r.t=now;r.fx=r.x;r.fy=r.y;r.t0=now;
     if(r.mode==='chase'){const d=Math.abs(px-r.x)+Math.abs(py-r.y);if(d>ROAM.giveUp||++r.lost>40){r.mode='home';continue;}
-      const opts=[['r',1,0],['l',-1,0],['d',0,1],['u',0,-1]].filter(([,a,b])=>{const c=tileAt(m,r.x+a,r.y+b);return !SOLID.includes(c)&&c!=='E';});
+      const opts=[['r',1,0],['l',-1,0],['d',0,1],['u',0,-1]].filter(([,a,b])=>{const c=tileAt(m,r.x+a,r.y+b);return !SOLID.includes(c)&&c!=='E'&&!(m.exits||[]).some(e=>e.x===r.x+a&&e.y===r.y+b);});
       opts.sort((A,B)=>(Math.abs(px-(r.x+A[1]))+Math.abs(py-(r.y+A[2])))-(Math.abs(px-(r.x+B[1]))+Math.abs(py-(r.y+B[2]))));
       if(opts.length){const [d2,a,b]=opts[0];r.dir=d2;r.x+=a;r.y+=b;}}
     else if(r.mode==='home'){if(r.x===r.hx&&r.y===r.hy){r.mode='patrol';continue;}const a=Math.sign(r.hx-r.x),b=a?0:Math.sign(r.hy-r.y);
@@ -13967,9 +14029,9 @@ function roamFight(m,r){haltInput();WS.lock=true;WS.flash=performance.now();if(t
   try{if(ro&&G){const m=MAPS[ro.mid],R=m&&m.roam&&m.roam.find(q=>q.i===ro.i);
     if(how==='win'){G.roamDead=G.roamDead||{};const L=G.roamDead[ro.mid]=G.roamDead[ro.mid]||[];if(!L.includes(ro.i))L.push(ro.i);if(R)R.dead=true;}
     else if(R){R.x=R.hx;R.y=R.hy;R.mode='patrol';R.rest=performance.now()+4000;}}}catch(e){}return r;};}
-{const wt0=worldTick;worldTick=function(dt,now){wt0.apply(this,arguments);try{const m=WS.m;if(V.screen==='world'&&m&&m.kind==='dungeon'){if(!m.roam)roamSpawn(m);roamTick(m,now);}}catch(e){}};}
+{const wt0=worldTick;worldTick=function(dt,now){wt0.apply(this,arguments);try{const m=WS.m;if(V.screen==='world'&&m&&(m.kind==='dungeon'||m.kind==='field')){if(!m.roam)roamSpawn(m);if(m.roam)roamTick(m,now);}}catch(e){}};}
 // drawing: the foe's own sprite at small size, a gold ring for elites, a faint sight cone, a "!" while chasing
-{const wd0=worldDraw;worldDraw=function(now){wd0(now);try{const m=WS.m;if(!m||!m.roam||m.kind!=='dungeon')return;const ctx=WS.ctx,cx=Math.round(WS.cam.x),cy=Math.round(WS.cam.y),still=typeof reducedMotion==='function'&&reducedMotion();
+{const wd0=worldDraw;worldDraw=function(now){wd0(now);try{const m=WS.m;if(!m||!m.roam||(m.kind!=='dungeon'&&m.kind!=='field'))return;const ctx=WS.ctx,cx=Math.round(WS.cam.x),cy=Math.round(WS.cam.y),still=typeof reducedMotion==='function'&&reducedMotion();
   m.roam.forEach(r=>{if(r.dead)return;let x=r.x*TS,y=r.y*TS;if(r.t0&&r.fx!=null){const p=Math.min(1,(now-r.t0)/(r.mode==='chase'?ROAM.chaseMs:ROAM.patrolMs));x=(r.fx+(r.x-r.fx)*p)*TS;y=(r.fy+(r.y-r.fy)*p)*TS;}
     x-=cx;y-=cy;if(x<-40||y<-40||x>WS.vw+40||y>WS.vh+40)return;
     const [a,b]=DIRV[r.dir],S=ROAM.sight*TS;ctx.save();ctx.fillStyle=r.mode==='chase'?'rgba(255,90,60,.16)':'rgba(255,230,150,.09)';ctx.beginPath();ctx.moveTo(x+8,y+8);
@@ -13979,6 +14041,11 @@ function roamFight(m,r){haltInput();WS.lock=true;WS.flash=performance.now();if(t
     if(r.elite){ctx.strokeStyle='#ffc83d';ctx.lineWidth=1;ctx.beginPath();ctx.ellipse(x+8,y+14,9,3,0,0,6.283);ctx.stroke();}
     ctx.drawImage(img,x+8-sz/2,y+14-sz-bob,sz,sz);
     if(r.mode==='chase'){ctx.fillStyle='#ff5a3a';ctx.fillRect(x+7,y-16,2,5);ctx.fillRect(x+7,y-10,2,2);}});}catch(e){}};}
+// v0.9.5: fewer random battles, so an ordinary fight pays more (ENC in config.js): random field and dungeon battles and roamers.
+// Read once per win through facMul, the same hook as the NG+ modifiers. Bosses, elites, minibosses, the arena and the Trial are untouched.
+function encRewMul(){try{if(!B||!G||G.daily||!B.spec)return null;const sp=B.spec;if((sp.kind!=='field'&&sp.kind!=='dungeon')||sp.mini||B.en.some(e=>e.boss))return null;
+  const r=ENC.rew,q=sp.roam?ENC.roam:{xp:1,gold:1},st=Math.min(4,(B.stage|0)),at=v=>Array.isArray(v)?v[st]:v;return {xp:at(r.xp)*q.xp,gold:at(r.gold)*q.gold};}catch(e){return null;}}
+if(typeof facMul==='function'){const fm1=facMul;facMul=function(){const r=Object.assign({},fm1.apply(this,arguments));const k=encRewMul();if(k){r.xp*=k.xp;r.gold*=k.gold;}return r;};}
 
 // ===== sites.js (v0.4.1): side caves, side fortresses, minibosses =====
 // Side caves get their own look (mossy rock palette, damp green light, drips) and their own music, so they never read as a main dungeon.
@@ -18858,7 +18925,7 @@ function b5Fit(){try{const o=document.querySelector('#border .ocs');if(!o)return
 // tests: window.__A.B5
 const B5API={cfg:B5,R:B5R,order:(n,c)=>b5Order(n,c),plan:u=>foePlan(u),intent:u=>b5Intent(u),cat:sk=>b5Cat(sk),knows:u=>b5Knows(u),press:()=>b5Press(),timedOn:()=>b5TimedOn(),choose:(u,r,n)=>foeChoose(u,r,n)};
 
-// ===== battle4.js (v0.7.0): battle mechanics: detonation MP refund, free swap, Momentum, foe roles, the boss Cataclysm =====
+// ===== battle4.js (v0.7.0): battle mechanics: detonation MP refund, free swap, Momentum, foe roles, the boss Cataclysm; v0.9.5: boss realm gimmicks =====
 // 1) Detonation reward: the hero who sets off a reaction gets MP back, shown in the floating reaction text ("+N MP").
 // 2) Free swap: on a hero's turn another Vanguard hero can trade places with a Rearguard hero without using the turn, once every
 //    B4.swap.cd party turns. Rooted heroes cannot step back. Auto battle uses it only where its own switch rules say it helps.
@@ -19012,8 +19079,142 @@ b4HookPlan();b4HookTurn();
     if(m!==1)r.dmg=Math.max(1,Math.round(r.dmg*m));}catch(e){}
   return r;};}
 
+// ----- 5) v0.9.5 boss gimmicks: one realm gimmick per Scourge and Calamity (BOSS_GIM in config.js) -----
+// Data driven: BOSS_GIM.def[boss key] = {t: type, ...tunables}. Each is telegraphed on the boss's turn (a log line, a "Telegraph" chip on
+// the boss, a "Marked" or "Lightning rod" chip on the heroes it will hit) and lands at the start of its next turn, before its usual move.
+// One-round effects (mirror, veil, airborne) end at its next turn. The battle-only state is B.b4g (never saved). No RNG, no clock:
+// targets come from the turn count and the heroes' stats, so a telegraph read in advance is what happens. Not in the Daily Trial
+// (BOSS_GIM.daily) and only in the first fight with a Scourge or Calamity (kind 'boss'; Echoes keep their own extra phase).
+STS.g_tele={n:'Telegraph',a:'TEL',t:99,c:'#ffb04a',d:'Its realm gimmick lands on its next turn. Open its details (i) to see what it does and how to answer it.'};
+STS.g_mark={n:'Marked',a:'MRK',bad:1,t:99,c:'#ff6a3a',d:'The boss\'s realm gimmick lands on this spot on its next turn. Guard halves it, or swap a sturdier hero into this spot.'};
+STS.g_rod={n:'Lightning rod',a:'ROD',bad:1,t:99,c:'#ffe04a',d:'Lightning strikes this hero on the boss\'s next turn and arcs to the heroes beside them. Guard halves it; swapping this hero out grounds it.'};
+STS.g_chill={n:'Chill',a:'CHL',bad:1,t:99,c:'#9ad8ff',d:'Slower for each stack. At the limit the hero freezes and loses a turn. A Fire skill or a cleanse thaws it; Guard keeps the blizzard off.'};
+STS.g_air={n:'Airborne',a:'AIR',t:99,c:'#d0e0ff',d:'In the air for a round: weapon hits glance off (Ranged shots and magic still land). It dives at the marked spot next turn.'};
+STS.g_veil={n:'Veiled',a:'VEL',t:99,c:'#b0c8e0',d:'Hidden in mist: it takes much less damage until a Scan or a Light skill reveals it, or its next turn comes.'};
+STS.g_mirror={n:'Mirror',a:'MIR',t:99,c:'#7ae0ff',d:'A mirror of water: magic deals less and part of it splashes back at the caster until its next turn. Weapons are safe.'};
+STS.g_tide={n:'Rising Tide',a:'TID',t:99,c:'#4aa8ff',d:'The arena floods: heroes without Water are slower and Water skills hit harder for each level. An Earth skill dams it one level.'};
+STS.g_dark={n:'Darkness',a:'DRK',t:99,c:'#8a7aa8',d:'Heroes deal less damage for each level of darkness. A Fire or Light skill lights a torch and clears it.'};
+ST_SYM.g_tele='<path d="M5 .6 9.6 9H.4Z" fill="none" stroke="currentColor" stroke-width="1.2"/><path d="M4.4 3.2h1.2v3.2H4.4ZM4.4 7h1.2v1.1H4.4Z"/>';
+ST_SYM.g_mark='<circle cx="5" cy="5" r="4" fill="none" stroke="currentColor" stroke-width="1.2"/><circle cx="5" cy="5" r="1.6"/>';
+ST_SYM.g_rod='<path d="M6 .5 2.5 5.5h2.2L3.6 9.5 7.6 4.2H5.3Z"/>';
+ST_SYM.g_chill='<path d="M4.4.5h1.2v9H4.4ZM.6 4.4h8.8v1.2H.6ZM1.6 2.4l.8-.8 6 6-.8.8ZM7.6 1.6l.8.8-6 6-.8-.8Z"/>';
+ST_SYM.g_air='<path d="M.5 6C2 3 4 3 5 4.6 6 3 8 3 9.5 6 8 5 6.6 5 5 6.6 3.4 5 2 5 .5 6Z"/>';
+ST_SYM.g_veil='<path d="M.5 3.5h9v1.2h-9ZM1.5 5.8h7V7h-7ZM2.6 8h4.8v1.1H2.6Z"/>';
+ST_SYM.g_mirror='<path d="M5 .5 9 5 5 9.5 1 5Z" fill="none" stroke="currentColor" stroke-width="1.2"/><path d="M3.4 4.6 5 2.8v3.8Z"/>';
+ST_SYM.g_tide='<path d="M.5 4c1.5-1.2 3-1.2 4.5 0s3 1.2 4.5 0v1.3c-1.5 1.2-3 1.2-4.5 0S2 4.1.5 5.3ZM.5 7c1.5-1.2 3-1.2 4.5 0s3 1.2 4.5 0v1.3c-1.5 1.2-3 1.2-4.5 0S2 7.1.5 8.3Z"/>';
+ST_SYM.g_dark='<path d="M6.5.8A4.4 4.4 0 1 0 9.2 7 3.6 3.6 0 0 1 6.5.8Z"/>';
+function b4GimOn(){return !!(B&&BOSS_GIM.on&&B.spec&&B.spec.kind==='boss'&&!(G&&G.daily&&!BOSS_GIM.daily));}
+function b4GimDefOf(key){return BOSS_GIM.def[String(key||'').replace(/^echo_/,'')]||null;}
+function b4GimLine(D){return D?`${D.n}: ${D.d}.`:'';}
+function b4GimLive(){return B.front.map((c,i)=>c&&c.hp>0?i:-1).filter(i=>i>=0);}
+function b4GimWho(L){const n=L.map(c=>c.name);return n.length>1?n.slice(0,-1).join(', ')+' and '+n[n.length-1]:n[0]||'the Vanguard';}
+function b4GimFill(s,L){return String(s||'').replace('{who}',b4GimWho(L||[]));}
+// the spots it marks: a fixed walk over the live spots from the boss key and the telegraph count (n spots); 'weak': the weakest hero's spot
+function b4GimSlots(n,weak){const S=B.b4g,live=b4GimLive();if(!live.length)return [];
+  if(weak){const c=live.map(i=>B.front[i]).sort((x,y)=>x.hp/x.S.mhp-y.hp/y.S.mhp||B.front.indexOf(x)-B.front.indexOf(y))[0];return [B.front.indexOf(c)];}
+  const st=(hashS(S.key)+S.ticks*2)%3,out=[];for(let k=0;k<3&&out.length<n;k++){const i=(st+k)%3;if(live.includes(i))out.push(i);}return out;}
+// one hit from the gimmick: a share of the hero's max HP, halved by Guard; a guarding hero also shrugs off its status
+function b4GimK(){return (BOSS_GIM.stageK||[])[Math.min(4,(B&&B.stage)|0)]||1;}
+function b4GimHit(u,c,pct,el,st){if(!c||c.hp<=0)return 0;const d=Math.max(1,Math.round(c.S.mhp*pct*b4GimK()*(c.guard?.5:1)));const now=Date.now();
+  c.fxEl=el||null;c.fxT=now;c.hitT=now;fx(c,String(d),'dmg');log(`${c.name} takes ${d}${c.guard?' (guarded)':''}.`);B.b4gHits=(B.b4gHits||0)+d;hurt(c,d);
+  if(c.hp>0&&st&&!c.guard)addSt(c,st,u);return d;}
+// keeps the chips in step with the state: the boss shows what it readies, the heroes what will hit them (also after swaps and falls)
+function b4GimSync(){const S=B&&B.b4g;if(!S)return;const u=S.u,P=S.pend,A=S.act,D=S.D,set=(c,k,on,v)=>{if(!c||!c.st)return;if(on&&c.hp>0){if(!c.st[k])c.st[k]={t:99};if(v!=null)c.st[k].v=v;}else if(c.st[k])delete c.st[k];};
+  set(u,'g_tele',!!P||(D.t==='phase2'&&S.warned&&!S.done));set(u,'g_air',!!A&&A.t==='air');set(u,'g_veil',!!A&&A.t==='veil');set(u,'g_mirror',!!A&&A.t==='mirror');
+  set(u,'g_tide',D.t==='tide'&&S.lvl>0,S.lvl);set(u,'g_dark',D.t==='dark'&&S.lvl>0,S.lvl);
+  const slots=P&&P.t==='slot'?P.slots:A&&A.t==='air'?A.slots:[];
+  B.front.forEach((c,i)=>{set(c,'g_mark',slots.includes(i));set(c,'g_rod',!!P&&P.t==='rod'&&c&&c.id===P.id);});
+  B.back.forEach(c=>{set(c,'g_mark',false);set(c,'g_rod',false);});}
+// what the boss does on its turn, before its usual move: one-round effects end, a pending telegraph lands, a new one may begin
+function b4GimTell(u){const S=B.b4g,D=S.D,live=b4GimLive();if(!live.length)return;let L=[];
+  if((D.t==='tide'||D.t==='dark')&&S.lvl>=D.max)return;
+  S.ticks++;
+  if(D.t==='slot'){const sl=b4GimSlots(D.n2||1);if(!sl.length)return;S.pend={t:'slot',slots:sl};L=sl.map(i=>B.front[i]);}
+  else if(D.t==='rod'){const c=live.map(i=>B.front[i]).sort((x,y)=>Math.max(y.S.atk,y.S.mag)-Math.max(x.S.atk,x.S.mag)||B.front.indexOf(x)-B.front.indexOf(y))[0];S.pend={t:'rod',id:c.id};L=[c];}
+  else if(D.t==='sac')S.pend={t:'sac',hp0:u.hp,stop:0};
+  else if(D.t==='mirror')S.pend={t:'mirror',kind:D.kinds[(S.ticks-1)%D.kinds.length]};
+  else S.pend={t:D.t};
+  B.b4gTells=(B.b4gTells||0)+1;fx(u,'Telegraph','stat bad');log(`${b4GimFill(D.tell,L)}: ${D.n} on ${u.name}'s next turn. ${b4GimHint(D)}`);}
+function b4GimHint(D){return {slot:'Guard halves it, or swap a sturdier hero in.',rod:'Guard halves it; swap that hero out to ground it.',chill:'Guard to keep the cold off; a Fire skill thaws a hero.',
+  tide:'An Earth skill dams the water.',dark:'A Fire or Light skill lights a torch.',sac:D.els?`Hit it with ${D.els.map(e=>EL[e]).join(' or ')}${D.thr?' or deal heavy damage':''} first.`:D.brk?'Break its shield or deal heavy damage first.':'Deal heavy damage first.',
+  mirror:'Use weapons, not magic, next round.',veil:'Scan it or use a Light skill to reveal it.',wing:'Use Ranged shots or magic while it flies; Guard the marked spot.',phase2:''}[D.t]||'';}
+function b4GimLand(u){const S=B.b4g,D=S.D,P=S.pend;S.pend=null;if(!P)return;B.b4gLand=(B.b4gLand||0)+1;
+  if(P.t==='slot'){const L=P.slots.map(i=>B.front[i]).filter(c=>c&&c.hp>0);log(b4GimFill(D.hit,L)+'!');banner(D.n,'#ff9a5a');L.forEach(c=>b4GimHit(u,c,D.pct,D.el,D.st));}
+  else if(P.t==='rod'){const c=B.front.find(x=>x&&x.id===P.id&&x.hp>0);if(!c){log(`The lightning finds no rod and grounds harmlessly.`);fx(u,'Grounded','stat');return;}
+    log(b4GimFill(D.hit,[c])+'!');banner(D.n,'#ffe04a');const i=B.front.indexOf(c);b4GimHit(u,c,D.pct,D.el,null);[i-1,i+1].forEach(j=>{const n=B.front[j];if(n&&n.hp>0)b4GimHit(u,n,D.pct*D.arc,D.el,null);});}
+  else if(P.t==='chill'){log(D.hit+'!');B.front.forEach(c=>{if(!c||c.hp<=0)return;if(c.guard){fx(c,'Braced','stat good');return;}
+    const v=((c.st.g_chill&&c.st.g_chill.v)||0)+1;if(v>=D.max){delete c.st.g_chill;fx(c,'Frozen','stat bad');log(`${c.name} freezes solid!`);addSt(c,'stun',u,true);}else{c.st.g_chill={t:99,v};fx(c,'Chill '+v,'stat bad');}});}
+  else if(P.t==='tide'||P.t==='dark'){S.lvl=Math.min(D.max,S.lvl+1);fx(u,D.n+' '+S.lvl,'stat bad');log(`${D.hit} (level ${S.lvl} of ${D.max}).`);}
+  else if(P.t==='sac'){const stop=P.stop||(D.thr&&P.hp0-u.hp>=D.thr*u.S.mhp)||(D.brk&&u.broken);
+    if(stop){log(D.stop+'!');fx(u,'Stopped','stat');B.b4gStop=(B.b4gStop||0)+1;return;}
+    log(D.hit+'!');banner(D.n,'#ff9a5a');
+    if(D.fx==='heal'){const n=Math.min(u.S.mhp-u.hp,Math.round(u.S.mhp*D.heal*b4GimK()));if(n>0){u.hp+=n;fx(u,'+'+n,'heal');}}
+    else if(D.fx==='summon'){if(B.en.filter(x=>x.hp>0).length<3&&MON[D.mon]){const s=makeEnemy(MON[D.mon],Math.max(1,u.lv-3));s.next=B.time+300;s.enterT=Date.now();B.en.push(s);log(`${s.name} joins the fight!`);}}
+    else if(D.fx==='spores')B.front.forEach(c=>{if(c&&c.hp>0&&!c.guard)(D.st||[]).forEach(k=>addSt(c,k,u,true));});
+    else if(D.fx==='buff')(D.buff||[]).forEach(k=>addSt(u,k,u,true));}
+  else if(P.t==='mirror'){S.act={t:'mirror',kind:P.kind};log(D.hit+'.');}
+  else if(P.t==='veil'){S.act={t:'veil'};log(D.hit+'.');}
+  else if(P.t==='wing'){S.act={t:'air',slots:b4GimSlots(1,true)};const c=B.front[S.act.slots[0]];log(`${D.hit}! It will dive at ${c?c.name+'\'s':'a'} spot next turn.`);}}
+function b4GimExpire(u){const S=B.b4g,D=S.D,A=S.act;if(!A)return;S.act=null;
+  if(A.t==='air'){const L=A.slots.map(i=>B.front[i]).filter(c=>c&&c.hp>0);log(b4GimFill(D.dive,L)+'!');L.forEach(c=>b4GimHit(u,c,D.pct,D.el,null));}
+  else if(A.t==='veil')log(`The mist around ${u.name} thins.`);else if(A.t==='mirror')log(`The mirror around ${u.name} falls.`);}
+function b4GimPhase(u){const S=B&&B.b4g;if(!S||u!==S.u||S.D.t!=='phase2'||u.hp<=0)return;const D=S.D;
+  if(!S.warned&&u.hp<=u.S.mhp*D.warn){S.warned=1;B.b4gTells=(B.b4gTells||0)+1;fx(u,'Telegraph','stat bad');log(`${D.tell}: at half HP it becomes something worse. ${D.d}.`);}
+  if(!S.done&&u.hp<=u.S.mhp*D.at){S.done=1;B.b4gLand=(B.b4gLand||0)+1;u.sk=D.sk.map(s=>({id:'e'+s[0],n:s[0],el:s[1],pw:s[2],t:s[3],k:s[4],fx:s[5]||null,mp:0,cost:1,hits:1}));u._b5p=null;
+    if(u.maxShield){u.shield=u.maxShield;u.broken=0;}banner(D.hit+'!','#c89aff');log(`${D.hit}! New moves: ${u.sk.map(s=>s.n).join(', ')}. Its shield is whole again.`);}}
+function b4GimTurn(u){const S=B.b4g;const n=(u.turns||0)+1;b4GimExpire(u);if(B.over)return;b4GimLand(u);
+  if(!B.over&&S.D.t!=='phase2'&&n>=BOSS_GIM.first&&(n-BOSS_GIM.first)%(S.D.every||BOSS_GIM.every)===0)b4GimTell(u);b4GimSync();}
+function b4GimStart(){B.b4g=null;if(!b4GimOn())return;const u=B.en.find(e=>e.boss&&e.key&&b4GimDefOf(e.key));if(!u)return;const D=b4GimDefOf(u.key);
+  B.b4g={u,key:String(u.key).replace(/^echo_/,''),D,ticks:0,pend:null,act:null,lvl:0};log(`Realm gimmick: ${b4GimLine(D)}`);}
+function b4HookGim(){if(enemyTurn0.__b4g)return;const et0=enemyTurn0;
+  enemyTurn0=function(u){try{if(B&&!B.over&&B.b4g&&u===B.b4g.u&&u.hp>0){b4GimTurn(u);if(checkEnd())return;}}catch(e){try{wdLog('b4 gimmick: '+(e&&e.message||e),u);}catch(_){}}
+    return et0.apply(this,arguments);};enemyTurn0.__b4g=1;if(et0.__b4)enemyTurn0.__b4=1;}
+// effects on damage and speed (tide, dark, mirror, veil, airborne, chill)
+{const cd1=calcDamage;calcDamage=function(a,sk,t){const r=cd1.apply(this,arguments);
+  try{const S=B&&B.b4g;if(!S||!r||!r.dmg||!a||!t||!sk)return r;const D=S.D,A=S.act;let m=1;
+    if(D.t==='tide'&&S.lvl&&skEls(sk).includes('water'))m*=1+D.dmg*S.lvl;
+    if(D.t==='dark'&&S.lvl&&a.side==='p')m*=Math.max(.3,1-D.dmg*S.lvl);
+    if(A&&a.side==='p'&&t===S.u){if(A.t==='mirror'&&sk.k===A.kind)m*=1-D.cut;else if(A.t==='veil')m*=1-D.cut;else if(A.t==='air'&&sk.k==='phys'&&deliveryOf(a,sk)!=='ranged')m*=1-D.cut;}
+    if(m!==1)r.dmg=Math.max(1,Math.round(r.dmg*m));}catch(e){}return r;};}
+{const dl0=delayOf;delayOf=function(u,cost){let d=dl0.apply(this,arguments);try{const S=B&&B.b4g;if(S&&u&&u.side==='p'){const D=S.D;
+  if(D.t==='chill'&&u.st&&u.st.g_chill)d*=1+D.spd*(u.st.g_chill.v||1);if(D.t==='tide'&&S.lvl&&!(u.el||[]).includes('water'))d*=1+D.spd*S.lvl;}}catch(e){}return d;};}
+// the answers: element hits stop a readied move, Fire thaws, Earth dams the tide, Fire or Light lights a torch, Light reveals; a mirror splashes back
+{const pf1=perform;perform=function(a,sk,tgts){const S=B&&B.b4g;if(!S||!a||a.side!=='p'||!sk)return pf1.apply(this,arguments);const u=S.u,hp0=u.hp;const r=pf1.apply(this,arguments);
+  try{const D=S.D,els=skEls(sk),off=sk.k==='phys'||sk.k==='mag',hit=u.hp<hp0;
+    if(S.pend&&S.pend.t==='sac'&&D.els&&hit&&els.some(e=>D.els.includes(e))&&!S.pend.stop){S.pend.stop=1;fx(u,'Interrupted','stat good');log(`${a.name}'s ${els.filter(e=>D.els.includes(e)).map(e=>EL[e]).join(' ')} hit stops the ${D.n}!`);}
+    if(off&&D.t==='chill'&&els.includes('fire')&&a.st&&a.st.g_chill){delete a.st.g_chill;fx(a,'Thawed','stat good');log(`${a.name} burns off the chill.`);}
+    if(off&&D.t==='tide'&&S.lvl>0&&els.includes('earth')){S.lvl--;fx(u,'Tide '+S.lvl,'stat');log(`${a.name}'s Earth dams the water (level ${S.lvl}).`);}
+    if(off&&D.t==='dark'&&S.lvl>0&&(els.includes('fire')||els.includes('light'))){S.lvl=0;fx(a,'Torch!','stat good');log(`${a.name} lights a torch. The dark falls back.`);}
+    if(off&&S.act&&S.act.t==='veil'&&els.includes('light')&&(tgts||[]).includes(u)){S.act=null;fx(u,'Revealed','stat good');log(`${a.name}'s light reveals ${u.name}.`);}
+    if(S.act&&S.act.t==='mirror'&&hit&&sk.k===S.act.kind&&a.hp>0&&!a.isComp){const d=Math.max(1,Math.round((hp0-u.hp)*D.refl));fx(a,String(d),'dmg');log(`The mirror splashes ${d} back at ${a.name}.`);hurt(a,d);}
+    b4GimPhase(u);b4GimSync();}catch(e){}return r;};}
+{const sc1=scan;scan=function(t){const S=B&&B.b4g;const r=sc1.apply(this,arguments);try{if(S&&S.u===t){if(S.act&&S.act.t==='veil'){S.act=null;fx(t,'Revealed','stat good');log(`The scan cuts through the mist: ${t.name} is revealed.`);}log(`Realm gimmick: ${b4GimLine(S.D)}`);b4GimSync();}}catch(e){}return r;};}
+{const hu1=hurt;hurt=function(t,d){const r=hu1.apply(this,arguments);try{if(B&&B.b4g&&t===B.b4g.u){b4GimPhase(t);b4GimSync();}}catch(e){}return r;};}
+// the i panel: the boss's gimmick and where it stands now
+function b4GimNow(){const S=B&&B.b4g;if(!S)return '';const D=S.D,P=S.pend,A=S.act;
+  if(P)return `Telegraphed: ${D.n} lands on its next turn. ${b4GimHint(D)}`;if(A)return A.t==='air'?'Airborne now; it dives at the marked spot next turn.':A.t==='veil'?'Veiled now.':'Mirror raised now: weapons are safe.';
+  if(D.t==='tide'||D.t==='dark')return `Level ${S.lvl} of ${D.max}.`;if(D.t==='phase2')return S.done?'The Eclipse form is here.':S.warned?'Cracking: it changes at half HP.':`It changes at ${Math.round(D.at*100)}% HP.`;return 'Nothing readied right now.';}
+if(typeof uDetHtml==='function'){const ud0=uDetHtml;uDetHtml=function(){let h=ud0.apply(this,arguments);try{const S=B&&B.b4g,P=B&&B.uDet,u=P&&typeof unitOf==='function'?unitOf(P.ref):null;
+  if(h&&S&&u===S.u){const row=`<div class="udst b4gim"><b class="dn">Realm gimmick: ${esc(S.D.n)}</b><small>${esc(S.D.d)}. ${esc(b4GimNow())}</small></div>`;h=h.replace('<h4>Effects</h4>','<h4>Effects</h4>'+row);}}catch(e){}return h;};}
+// careful play (sims): reads the telegraph like a player reading the log
+function b4GimSmart(a){const S=B.b4g;if(!S||!S.u||S.u.hp<=0)return false;const u=S.u,D=S.D,P=S.pend,A=S.act,ix=B.front.indexOf(a),foes=B.en.filter(e=>e.hp>0);
+  const soon=u.next<=B.time+delayOf(a,.6),ks=known(a).filter(s=>a.mp>=(s.mp||0)),dmg=ks.filter(s=>(s.k==='phys'||s.k==='mag')&&!s.limit&&!s.steal&&s.t!=='self'&&s.t!=='ally'&&s.t!=='allyAll'&&s.t!=='dead');
+  const val=(s,t)=>s.pw*(s.hits||1)*bestMult(s,t,a)*(s.t==='all'?Math.min(3,foes.length)*.7:1),best=(L,t)=>L.slice().sort((x,y)=>val(y,t)-val(x,t))[0],go=s=>{exec(s,s.t==='all'||s.t==='rand'?foes:[u]);return true;};
+  const marked=P&&((P.t==='slot'&&P.slots.includes(ix))||(P.t==='rod'&&P.id===a.id))||A&&A.t==='air'&&A.slots.includes(ix);
+  if(marked&&soon&&a.hp/a.S.mhp<(D.pct||.2)+.55){guard();return true;}
+  if(P&&P.t==='chill'&&soon&&((a.st.g_chill&&a.st.g_chill.v)||0)>=D.max-1){guard();return true;}
+  if(D.t==='chill'&&a.st.g_chill){const s=best(dmg.filter(s=>skEls(s).includes('fire')),u);if(s)return go(s);}
+  if(P&&P.t==='sac'&&!P.stop){const L=D.els?dmg.filter(s=>skEls(s).some(e=>D.els.includes(e))):[];const s=best(L.length?L:dmg.filter(s=>s.t!=='all'),u);if(s)return go(s);}
+  if(D.t==='tide'&&S.lvl>=2){const s=best(dmg.filter(s=>skEls(s).includes('earth')),u);if(s)return go(s);}
+  if(D.t==='dark'&&S.lvl>=2){const s=best(dmg.filter(s=>skEls(s).some(e=>e==='fire'||e==='light')),u);if(s)return go(s);}
+  if(A&&A.t==='veil'){const s=best(dmg.filter(s=>skEls(s).includes('light')),u);if(s)return go(s);const o=foes.find(e=>e!==u);if(!o){scan(u);return true;}}
+  if(A&&A.t==='mirror'){const L=dmg.filter(s=>s.k!==A.kind);const s=best(L,u);if(s)return go(s);if(A.kind==='mag'){exec(ATTACK,[u]);return true;}}
+  if(A&&A.t==='air'){const L=dmg.filter(s=>s.k==='mag'||deliveryOf(a,s)==='ranged');const s=best(L,u);if(s)return go(s);}
+  return false;}
+
 // ----- smart play for the sims (SIM_SMART, the "careful player" yardstick): reads roles, guards telegraphs, swaps, varies -----
 function b4Smart(){const a=B.cur;if(!a||a.side!=='p')return false;const foes=B.en.filter(e=>e.hp>0),fr=B.front.filter(c=>c.hp>0);if(!foes.length)return false;
+  if(b4GimSmart(a))return true;
   const R=B4.roles,ratio=c=>c.hp/c.S.mhp,ks=known(a).filter(s=>a.mp>=(s.mp||0));
   if(b4FreeReady()){const others=fr.filter(c=>c!==a&&b4CanOut(c)),bench=B.back.filter(c=>c.hp>0&&ratio(c)>.5).sort((x,y)=>ratio(y)-ratio(x));
     const ch=foes.find(e=>b4Role(e)==='charge'&&has(e,'charge')),ct=ch&&B.front[ch.b4slot];
@@ -19044,7 +19245,7 @@ function b4Smart(){const a=B.cur;if(!a||a.side!=='p')return false;const foes=B.e
   if(!B||B.over||B.mode!=='cmd')return;return ats0.apply(this,arguments);};}
 
 // ----- start of battle -----
-{const sb0=startBattle;startBattle=function(){try{b4HookPlan();b4HookTurn();}catch(e){}const r=sb0.apply(this,arguments);try{if(r!==false&&B){B.b4mo=null;if(b4On('mo'))b4MoS();
+{const sb0=startBattle;startBattle=function(){try{b4HookPlan();b4HookTurn();b4HookGim();}catch(e){}const r=sb0.apply(this,arguments);try{if(r!==false&&B){B.b4mo=null;if(b4On('mo'))b4MoS();b4GimStart();
   const roles=[...new Set(B.en.filter(e=>b4Role(e)).map(e=>e.role))];if(roles.length)B.b4seen=roles;}}catch(e){}return r;};}
 
 // ----- UI: the momentum gauge in the log ticker under the stage -----
@@ -19057,7 +19258,7 @@ function b4MoDraw(){const bl=document.getElementById('bline');if(!bl)return;let 
   if(!B||!b4On('mo')){if(el)el.remove();return;}
   if(!el){el=document.createElement('button');el.id='b4mo';el.type='button';el.dataset.act='b4mo';bl.insertBefore(el,bl.firstChild);}
   const st=b4MoState(),h=b4MoHtml(),lab=b4MoLabel();if(el.dataset.h!==h){el.dataset.h=h;el.innerHTML=h;el.className='b4mo '+st;el.setAttribute('aria-label',lab);el.title=lab;}}
-{const rb0=renderBattle;renderBattle=function(stageOnly){const r=rb0.apply(this,arguments);try{if(!stageOnly)b4MoDraw();}catch(e){}return r;};}
+{const rb0=renderBattle;renderBattle=function(stageOnly){try{b4GimSync();}catch(e){}const r=rb0.apply(this,arguments);try{if(!stageOnly)b4MoDraw();}catch(e){}return r;};}
 ACT.b4mo=function(){if(!B||!b4On('mo'))return;log(b4MoLabel());render();};
 
 // ----- UI: the switch menu (who steps back, then who comes in) -----
@@ -19086,7 +19287,7 @@ if(typeof mBeast==='function'){const mb0=mBeast;mBeast=function(m){let h=mb0.app
 
 // ----- tests -----
 const B4X={get cfg(){return B4;},plan:u=>b4RolePlan(u),roleLine:u=>b4RoleLine(u),roleOf:m=>b4RoleOfMon(m),ROLE:B4ROLE,freeSwap:(f,b)=>b4FreeSwap(f,b),freeReady:()=>b4FreeReady(),freeLeft:()=>b4FreeLeft(),
-  mo:()=>B?b4MoS():null,moState:()=>b4MoState(),sig:s=>b4Sig(s),hex:c=>b4Hex(c),smart:()=>b4Smart(),detGain:a=>b4DetGain(a),
+  mo:()=>B?b4MoS():null,gim:()=>B&&B.b4g,gimDef:k=>b4GimDefOf(k),gimTurn:u=>b4GimTurn(u),gimSync:()=>b4GimSync(),gimNow:()=>b4GimNow(),gimSmart:a=>b4GimSmart(a),get GIM(){return BOSS_GIM;},moState:()=>b4MoState(),sig:s=>b4Sig(s),hex:c=>b4Hex(c),smart:()=>b4Smart(),detGain:a=>b4DetGain(a),
   foeTurn:u=>{B.cur=u;B.mode='enemy';enemyTurn0(u);},exec:(s,t)=>exec(s,t),guard:()=>guard(),calc:(a,s,t,b)=>calcDamage(a,s,t,b),rng:f=>{RNG=f||Math.random;},doSwap:i=>doSwap(i)};
 
 // ===== remember.js (v0.7.1): remember Auto and Run =====
@@ -19104,7 +19305,7 @@ function remSet(k,v){try{META.cfg[k]=!!v;saveMeta();}catch(e){}}
 window.addEventListener('keyup',e=>{if(e.key==='Shift'&&remOn('runOn'))WS.run=true;});
 {const sb0=startBattle;startBattle=function(spec){try{if(!(spec&&spec.kind==='daily')&&!(G&&G.daily))V.auto=remOn('autoOn');}catch(e){}return sb0.apply(this,arguments);};}
 
-// ===== pacing.js (v0.7.2): pacing spread: when each system first unlocks =====
+// ===== pacing.js (v0.7.2): pacing spread: when each system first unlocks (v0.9.5: by realm, pcUnlocked) =====
 // =================== Beta v0.7.2: pacing spread (owner approved the docs/v063-progression.md proposals) ===================
 // Realm 1 used to introduce almost every system at once, and levels 15 to 30 got little new. Four gates move later:
 //  1. Guild missions open after the first Scourge falls (ranks from other sources keep counting; accepted missions stay).
@@ -19127,6 +19328,87 @@ function pcTemperOpen(){return pcFirstBoss()||pcHasTempered();}
 // 4. personal quests: the lock text follows PERSONAL_REALM
 {const ord=n=>['first','second','third','fourth','fifth'][n]||('realm '+(n+1));
   const lt0=personalLockText;personalLockText=function(c){return lt0.apply(this,arguments).replace('Unlocks in the second realm','Unlocks in the '+ord(PERSONAL_REALM)+' realm');};}
+
+// =================== Beta v0.9.5: depth unlocks by realm (owner approved) ===================
+// PACE (config.js) says in which realm each system opens on a new journey: realm 1 elements, basic combat and taming; realm 2 reactions,
+// gear upgrades (Tempering still waits for the first Scourge, above) and bonds; realm 3 camp and guild missions; realm 4 the endgame extras
+// (the Echoforge, the arena's Golden Coliseum, a New Game+ teaser). Gating only hides or holds back; it never removes anything:
+//  - a journey started before v0.9.5 (no G.pcV) keeps every system it had (only the v0.7.2 gates above apply to it),
+//  - a New Game+ cycle and the Daily Trial have everything open.
+// pcUnlocked(system) is the one test (systems: PACE.at keys); other modules (onboarding tips, What next?) should ask it before
+// pointing the player at a system. pcRealm() is the realm index the journey has reached (0 = the first realm).
+function pcRealm(){return G?Math.max(G.stage|0,(G.cleared||[]).filter(Boolean).length):0;}
+function pcGated(){return !!(G&&!G.daily&&G.pcV);}
+function pcUnlocked(sys){if(!G||!pcGated())return true;const at=PACE.at[sys];if(at==null)return true;if(sys==='echoforge'&&G.won)return true;return pcRealm()>=at;}
+function pcOrd(n){return ['first','second','third','fourth','fifth'][n]||('realm '+(n+1));}
+function pcLockText(sys){return `opens in the ${pcOrd(PACE.at[sys]||0)} realm`;}
+// new journeys get the gates (an NG+ cycle does not)
+{const ng0=newGame;newGame=function(ids,cycle){const r=ng0.apply(this,arguments);try{if(G&&!cycle)G.pcV=1;}catch(e){}return r;};}
+// reactions: in a gated first realm a primer skill is a plain hit (it marks nothing, so nothing detonates)
+{const pf0=perform;perform=function(a,sk,tgts){if(sk&&sk.role==='primer'&&a&&a.side==='p'&&!pcUnlocked('reactions')){
+    try{G.pcN=G.pcN||{};if(!G.pcN.react){G.pcN.react=1;log('Elemental reactions awaken in the second realm. Until then a primer is a plain hit.');}}catch(e){}
+    return pf0.call(this,a,Object.assign({},sk,{role:null}),tgts);}
+  return pf0.apply(this,arguments);};}
+// bonds: in a gated first realm wins side by side do not count yet
+{const w0=win;win=function(){if(!G||pcUnlocked('bonds'))return w0.apply(this,arguments);const b0=JSON.stringify(G.bonds||{}),t0=(G.talks||[]).length;const r=w0.apply(this,arguments);
+  try{G.bonds=JSON.parse(b0);if(G.talks)G.talks.length=Math.min(G.talks.length,t0);const i=V.modal&&V.modal.info;if(i&&i.bonds)i.bonds=[];}catch(e){}return r;};}
+if(typeof bondSheet==='function'){const bs0=bondSheet;bondSheet=function(){if(!pcUnlocked('bonds'))return '';return bs0.apply(this,arguments);};}
+if(typeof vBonds==='function'){const vb0=vBonds;vBonds=function(){if(!pcUnlocked('bonds'))return `<p class="note pclock">Bonds ${pcLockText('bonds').replace('opens','open')}: from then on, heroes who win side by side in the Vanguard grow closer, with campfire talks and joint techs.</p>`;return vb0.apply(this,arguments);};}
+// guild missions: the third realm on a new journey (the v0.7.2 first Scourge rule above still holds for older journeys)
+function pcGuildOpen(){return pcGated()?pcUnlocked('guilds'):pcFirstBoss();}
+{const fl1=facMissionList;facMissionList=function(id){if(!pcGated()||pcGuildOpen())return fl1.apply(this,arguments);const f=facInit();return fl1.apply(this,arguments).filter(m=>f.acc[m.id]!=null);};}
+{const fa1=ACT.facAccept;ACT.facAccept=function(id){if(pcGated()&&!pcGuildOpen()){toast('Guild missions '+pcLockText('guilds')+'.');return;}return fa1.apply(this,arguments);};}
+{const vm1=vFacMissions;vFacMissions=function(){const h=vm1.apply(this,arguments);if(!G||!pcGated()||pcGuildOpen())return h;const t=`Guild missions ${pcLockText('guilds')}.`;
+  return h.includes(`Guild missions ${PC_LOCK}.`)?h.replace(`Guild missions ${PC_LOCK}.`,t):`<p class="note pclock">${t} Your standing with each faction already counts from what you do on the road.</p>`+h;};}
+// the Echoforge: the fourth realm (or once the journey is won)
+if(typeof efTabOn==='function'){const ef0=efTabOn;efTabOn=function(){return ef0.apply(this,arguments)&&pcUnlocked('echoforge');};}
+// the arena's top tiers: the Golden Coliseum needs the fourth realm (ARENA min already asks for three Scourges)
+// one notice per realm when it opens something new (and the New Game+ teaser in the fourth)
+const PC_NEWS={1:'New in this realm: elemental reactions (a primer marks a foe, a detonator sets it off) and bonds between heroes who win side by side.',
+  2:'New in this realm: guild missions at the Guild Hall, and Camp Supplies at Alchemy for making camp on the road.',
+  3:'New in this realm: the Echoforge at the Smithy and the Golden Coliseum. Beyond the last Calamity waits New Game+: keep your heroes, face harder foes, add modifiers.'};
+function pcNews(){try{if(!pcGated())return;const r=Math.min(3,pcRealm());G.pcN=G.pcN||{};for(let k=1;k<=r;k++){if(G.pcN['r'+k])continue;G.pcN['r'+k]=1;if(k===r&&PC_NEWS[k])toast(PC_NEWS[k]);}}catch(e){}}
+{const sl0=showLocation;showLocation=function(){const r=sl0.apply(this,arguments);try{if(WS.m&&WS.m.kind==='town')pcNews();}catch(e){}return r;};}
+try{window.__P95={pcUnlocked,pcRealm,pcGated,pcLockText,pcNews,pcGuildOpen,get PACE(){return PACE;}};}catch(e){}
+
+// ===== comp3.js (v0.9.5): companions grow: a second skill and an evolution from the battles they win beside their hero =====
+// Each companion counts the battles it wins while its hero is in the six (o.bt, an optional save field; old saves start at 0).
+// At TAME.skillAt it learns a second skill (by family, in its own element). At TAME.evoAt it evolves: a new name, a bigger bonus for its
+// hero and a recoloured sprite (the monster's palette pulled toward the family colour, the realm variants' repaint; no new art files).
+// Progress shows in Menu > Companions, on the hero sheet and in Records > Bestiary > Taming log ("evolves after 12 more battles").
+// Not in the Daily Trial (it has no companions). TAME: in config.js.
+function compBt(o){return (o&&o.bt)|0;}
+function compStage(o){const b=compBt(o);return b>=TAME.evoAt?2:b>=TAME.skillAt?1:0;}
+function compEvoArt(art,f){const key='ev_'+art;try{if(!MART[art])return art;if(!MART[key]){const col=TAME.col[f]||'#ffd04a',k=TAME.k;
+    MART[key]=g=>{const o=MART[art](g),pal={};Object.keys(o.pal).forEach(q=>{pal[q]='KEW'.includes(q)?o.pal[q]:recol(o.pal[q],col,k);});return Object.assign({},o,{pal});};
+    if(MEXTRA[art])MEXTRA[key]=(g,p)=>{MEXTRA[art](g,p);Object.keys(p).forEach(q=>{if(!'KEW'.includes(q))p[q]=recol(p[q],col,k);});};
+    if(BIG_ART.includes(art)&&!BIG_ART.includes(key))BIG_ART.push(key);}return key;}catch(e){return art;}}
+function compSkill2(o,d){const f=compFamily(o),t=TAME.sk[f]||TAME.sk.beast,el=(d&&d.el&&d.el[0])||'earth';return [t[0],el,t[1],t[2],t[3],t[4]];}
+function compEvoName(o,d){return (TAME.pre[compFamily(o)]||'Elder')+' '+((d&&d.n)||'');}
+// the companion as it is now: its second skill and its evolved name and look join the monster's own data
+{const cd0=compDef;compDef=function(o){const d=cd0.apply(this,arguments);try{const st=compStage(o);if(!d||!st)return d;const e=Object.assign({},d);
+  e.sk=(d.sk||[]).concat([compSkill2(o,d)]);if(st>=2){e.n=compEvoName(o,d);e.art=compEvoArt(d.art,compFamily(o));e.evo=1;}return e;}catch(x){return d;}};}
+{const cb0=compBonus;compBonus=function(o){return cb0.apply(this,arguments)+(compStage(o)>=2?TAME.evoBonus:0);};}
+{const rt0=registerTamed;registerTamed=function(o){const r=rt0.apply(this,arguments);try{if(o&&TPL[o.id]&&compStage(o)>=2){const d=compDef(o);if(d&&d.art)TPL[o.id].art=d.art;}}catch(e){}return r;};}
+// what comes next, in one line
+function compNext(o){const b=compBt(o),d0=MON[o.mon]||guardianDef(o.mon),s2=compSkill2(o,d0)[0],evo=compEvoName(o,d0),pl=n=>n+' more battle'+(n===1?'':'s');
+  if(b<TAME.skillAt)return `Learns ${s2} after ${pl(TAME.skillAt-b)}, evolves after ${pl(TAME.evoAt-b)}`;
+  if(b<TAME.evoAt)return `Knows ${s2}. Evolves into ${evo} after ${pl(TAME.evoAt-b)}`;return `Fully grown: ${evo}, with ${s2}`;}
+function compProgHtml(o){const b=compBt(o),st=compStage(o),goal=st===0?TAME.skillAt:TAME.evoAt,p=Math.min(100,Math.round(100*b/TAME.evoAt));
+  return `<span class="c3prog"><b>Bond ${st}</b> · ${b} battle${b===1?'':'s'} won together · ${esc(compNext(o))}<i class="c3bar" aria-hidden="true"><i style="width:${p}%"></i></i></span>`;}
+{const bt0=compBonusText;compBonusText=function(o){const h=bt0.apply(this,arguments);try{return h+`</small><small class="c3line">${compProgHtml(o)}`;}catch(e){return h;}};}
+// counting: every won battle with its hero anywhere in the six
+{const w0=win;win=function(){let ids=null;try{if(B&&G&&!G.daily&&(G.tamed||[]).length)ids=allParty().map(u=>u&&u.isComp&&u.owner?u.owner.id:u&&u.id).filter(Boolean);}catch(e){}
+  const r=w0.apply(this,arguments);
+  try{if(ids)(G.tamed||[]).forEach(o=>{if(!o.with||!ids.includes(o.with))return;const s0=compStage(o),d0=MON[o.mon]||guardianDef(o.mon);o.bt=compBt(o)+1;const s1=compStage(o);
+    if(s1>s0){if(s1===1)toast(`${o.name} learned ${compSkill2(o,d0)[0]}!`);else{toast(`${o.name} evolves into ${compEvoName(o,d0)}!`);if(TPL[o.id]){const d=compDef(o);if(d)TPL[o.id].art=d.art;}}
+      if(G.roster[o.with])refresh(G.roster[o.with]);}});}catch(e){}return r;};}
+// Taming log: the companions you have and how far each has grown
+if(typeof vTameLog==='function'){const tl0=vTameLog;vTameLog=function(){const h=tl0.apply(this,arguments);try{const L=G&&G.tamed||[];if(!L.length)return h;
+  const rows=L.map(o=>{const d=compDef(o);return `<div class="row comprow"><img class="mimg" src="${monURL(d.art)}" alt=""><div class="grow"><b>${esc(o.name)}</b> <small>${esc(d.n)}</small><small>${compProgHtml(o)}</small></div></div>`;}).join('');
+  return `<h4>Your companions</h4><div class="rows c3log">${rows}</div>`+h;}catch(e){return h;}};}
+try{const css=document.createElement('style');css.textContent=`.c3prog{display:block;line-height:1.3}.c3bar{display:block;height:4px;margin-top:3px;background:rgba(255,255,255,.12);border-radius:2px;overflow:hidden;max-width:220px}.c3bar>i{display:block;height:100%;background:#ffd04a}`;document.head.appendChild(css);}catch(e){}
+try{window.__C3={compBt,compStage,compNext,compEvoArt,compSkill2,compEvoName,get TAME(){return TAME;}};}catch(e){}
 
 // ===== onboard.js (v0.7.0): onboarding: one tip card the first time each system appears =====
 // One short card (two lines at most, plain words) the first time the player really meets a system: the first primed foe, the
@@ -20312,8 +20594,8 @@ function hdActors(m,now,ts){const B=HD.dyn,BB=HD.dynB,BA=HD.dynA,V=HD.S.V,still=
     const c=echoUp?imgOf('mapecho:'+def.art,()=>monCanvas(MART['echo_'+def.art]?'echo_'+def.art:def.art)):imgOf('mapboss:'+def.art,()=>monCanvas(def.art)),bob=still?0:Math.sin(now/420)*1.5;
     const D=DTH(m),ac=hdRgb(D.acc);hdDecal(BA,'glow',hdGlowS(),bx*TS+8,by*TS+9,44*.8,26*.8,ac[0]*255,ac[1]*255,ac[2]*255,110);
     hdChar(echoUp?BB:B,c,bx*TS+8,(bob*.6-sp)*V,by*TS+12,true,echoUp?Math.round((.72+.18*Math.sin(ts/300))*255):255,16);hdShadowC(bx*TS+8,by*TS+13);hdPickAdd(-1,bx*TS+8,by*TS+12,Math.max(HD.chH,22*V),Math.max(HD.chW,16),bx,by);}
-  // roaming foes in dungeons: their sprite, an elite ring, a faint sight cone, "!" while chasing
-  if(dun&&m.roam&&typeof ROAM!=='undefined')m.roam.forEach(r=>{if(r.dead)return;let x=r.x*TS,y=r.y*TS;if(r.t0&&r.fx!=null){const p=Math.min(1,(now-r.t0)/(r.mode==='chase'?ROAM.chaseMs:ROAM.patrolMs));x=(r.fx+(r.x-r.fx)*p)*TS;y=(r.fy+(r.y-r.fy)*p)*TS;}
+  // roaming foes in dungeons and (v0.9.5) on fields: their sprite, an elite ring, a faint sight cone, "!" while chasing
+  if(m.roam&&(dun||m.kind==='field')&&typeof ROAM!=='undefined')m.roam.forEach(r=>{if(r.dead)return;let x=r.x*TS,y=r.y*TS;if(r.t0&&r.fx!=null){const p=Math.min(1,(now-r.t0)/(r.mode==='chase'?ROAM.chaseMs:ROAM.patrolMs));x=(r.fx+(r.x-r.fx)*p)*TS;y=(r.fy+(r.y-r.fy)*p)*TS;}
     if(Math.abs(x-HD.cam.x)>420||Math.abs(y-HD.cam.z)>520)return;const img=imgOf('rm:'+MON[r.mon].art,()=>monCanvas(MON[r.mon].art)),bob=still?0:Math.floor(now/300+r.i)%2;
     const [a,b]=DIRV[r.dir],S2=ROAM.sight*TS,cx=x+8,cz=y+8,ch=r.mode==='chase';H2P.set([cx,.5,cz,cx+a*S2-b*S2/2,.5,cz+b*S2-a*S2/2,cx+a*S2+b*S2/2,.5,cz+b*S2+a*S2/2,cx,.5,cz]);
     BB.quad(H2P,-1,0,-1,0,ch?255:255,ch?90:230,ch?60:150,ch?46:26,0,1,0,4);
