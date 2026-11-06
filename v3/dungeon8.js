@@ -13,11 +13,10 @@
 //    with a wider keep-out, then without liquid, then entirely). Only wall shapes change. Generation and the game RNG are untouched: all of
 //    this uses its
 //    own seeded generator (hashS of the journey seed and map id), and every map rebuilds the same way from its seed.
-// 3. The boss lair on the field: the main dungeon entrance is a skull-carved gate under a dark tower with a beacon, braziers, the
-//    Scourge's banner and a LAIR plaque, with a light column over the beacon. Relit (boss beaten): a gold beacon, warm braziers, a calm
-//    gold column. Its own map icon and legend entry ("Lair"). Both renderers (the tower and the column are billboards in HD-2D).
-// 4. A save made inside a dungeon whose tile became solid (it cannot happen with carving only, but liquids or a future reshape could)
-//    loads on the nearest open tile instead of the town inn.
+// 3. The boss lair on the field: the main dungeon entrance is dug into a rock mound raised from the field's own ground (solid field rock
+//    around the unchanged entrance), geometry in HD-2D and a raised hill in 2D, with a lit mouth, claw gouges, torches, a broken banner of
+//    the Scourge, bones and a trampled lane, and a faint plume. Relit: gold light, cleared. Its own map icon and legend entry ("Lair").
+// 4. A save made on a tile that became solid (a dungeon liquid, a lair mound tile) loads on the nearest open tile instead of the town inn.
 // window.__D8OFF (tests) switches all of it off for maps built while it is set.
 const D8M={
  ice:{n:'Ice cavern',f:['#a8c6de','#96b4ce','#c6def0','#7090ae'],w:['#78a8d4','#6290bc','#bfe4fa','#22365c'],top:'#122038',acc:'#dff8ff',acc2:'#8fdcf0',liq:'ice',lt:'ice',dark:'rgba(4,10,28,.76)',hero:'rgba(170,220,255,.18)'},
@@ -206,7 +205,7 @@ function d8Prop(mat,kind,D){const key=mat+':'+kind+':'+D.acc+D.w[0];if(D8P[key])
   return D8P[key]=cv;}
 const D8_PGLOW={ice:'ice',icevault:'ice',lava:'lava',forge:'lava',root:'fungus',keep:'torch',astral:'violet',rock:'ice'};
 {const oc0=objCanvas;objCanvas=function(theme,kind,v){const m=D8.dm;if(m&&m.d8&&(kind==='pillar'||(kind==='grave'&&m.d8==='crypt')))return d8Prop(m.d8,kind,DTH(m));return oc0.apply(this,arguments);};}
-{const do0=drawObjects;drawObjects=function(ctx,m,y){const keep=D8.dm;D8.dm=m&&m.kind==='dungeon'&&m.d8?m:null;
+{const do0=drawObjects;drawObjects=function(ctx,m,y){if(m&&m.kind==='field'&&m.d8lair&&!D8.card&&!window.__D8OFF){try{const Lr=m.d8lair;if(y===Math.max(...Lr.tiles.map(t=>t[1]))){const h=d8Hill2D(m,Lr);ctx.drawImage(h.cv,h.x,h.y);}}catch(e){}}const keep=D8.dm;D8.dm=m&&m.kind==='dungeon'&&m.d8?m:null;
   try{const r=do0.apply(this,arguments);if(D8.dm){const g=m.theme==='cave'||m.theme==='void'?null:D8_PGLOW[m.d8];if(g)for(let x=0;x<m.w;x++)if(tileAt(m,x,y)==='P'){m.lights=m.lights||[];m.lights.push([x*TS+8,y*TS-4,g==='torch'?26:16,g]);}}return r;}
   finally{D8.dm=keep;}};}
 
@@ -237,88 +236,217 @@ function d8BgKey(pre,mat,base){const id='d8'+mat,M=D8M[mat];if(!DTHEME[id])DTHEM
   const pre=mt[1]==='d_'&&sp.d8org?'c_':mt[1];return d8BgKey(pre,sp.d8,mt[2])||k;}catch(e){return k;}};}
 
 // =================== 3. the boss lair on the field ===================
+// v0.8.9 (owner: "the lair sprite is flat ... it should be more natural looking ... part of the land, as the boss would have dug it out"):
+// the main dungeon's entrance (E, unchanged) is dug into a rock mound raised from the field's own ground. The entrance's footprint ('U')
+// and the open clearing behind and beside it (the generator keeps 5 x 4 tiles open around every entrance) become field rock ('#', solid
+// like a cliff), never the entrance tile, its approach lane (three tiles out the way it faces) or an exit; the mound is kept only if every
+// target stays reachable and nothing ends up on a path (mapIssues, pathAssets), and a mound tile goes again if it would hide a prop north
+// of it (pgHides). Drawn from the dungeon's material (frozen rock, basalt, earth and roots, sandstone, wet rock, mountain rock, crystal),
+// leaning toward the field's own cliff colours:
+// - HD-2D: real geometry (hdBakeBuildings, like the fortress gatehouse): a heightfield hill over the mound tiles, highest at the back and
+//   the middle, a rock face at the front with the cave mouth in it (dark, claw gouged, lit from inside), sloping into the ground at the
+//   sides; heights are capped so a prop north of it still shows (the pgHides rule with the real heights). Torches on the front faces, a
+//   broken banner of the Scourge and a skull pile on top, a faint plume of the mouth's light rising from the top (not over the hero).
+// - 2D: the same mound drawn on its tiles (front faces, a stepped top with the ground showing at the rounded corners), the mouth in its
+//   face, torches, banner and skull pile as the entrance's prop, the glow and the plume over it (clipped out of the hero's box).
+// - around it: a trampled lane out of the mouth with claw marks, bones and rubble on the ground (ground art, both renderers).
+// - relit: gold light, calm torches, no banner, bones or rubble, a faint gold plume.
+const D8LR={
+ ice:{r:['#5e7290','#4a5c76','#8098b4','#283448'],cap:'#a4b8d0',cap2:'#e4eef8',glow:'#7ab8ff'},
+ basalt:{r:['#3e3432','#2e2624','#5a4a44','#141010'],cap:'#2c2422',cap2:'#4a3a34',glow:'#ff5a1a'},
+ earth:{r:['#6a5038','#56402c','#86684a','#2e2216'],cap:'#4e8a3c',cap2:'#3a6a2e',glow:'#d8a040'},
+ sand:{r:['#c09060','#a87a4e','#dcb07a','#6a4a2a'],cap:'#e8cc96',cap2:'#d4b47c',glow:'#ff9a3a'},
+ wet:{r:['#3e5052','#2e3e40','#5a7070','#141e1e'],cap:'#3e6a4a',cap2:'#2e5038',glow:'#4ad0b8'},
+ grey:{r:['#6e6c7a','#5a5866','#8a889a','#2a2834'],cap:'#8a9a6a',cap2:'#6a7a52',glow:'#ff7a2a'},
+ crystal:{r:['#3a3050','#2a2240','#54487a','#120c20'],cap:'#4a3e6a',cap2:'#3a2e58',glow:'#9a6aff'}};
+const D8_LMAT={ice:'ice',icevault:'ice',lava:'basalt',forge:'basalt',root:'earth',crypt:'earth',sand:'sand',sea:'wet',flood:'wet',keep:'grey',rock:'grey',astral:'crystal'};
 function d8LairState(m){const s=m.s,st=d8StyleFor(s,false,false),lit=!!(G&&G.cleared&&G.cleared[s]);let bk=null;try{bk=bossAtStage(s);}catch(e){}const B=(typeof BTHEME!=='undefined'&&BTHEME[bk])||null;
-  return {mat:st.mat,lit,bk,cloth:B?B.mix:'#5a2a4a',em:B?B.dec[0]:'#e8c070',motif:B?B.motif:'crown'};}
-const D8L={W:64,H:100};
-// part: 'all' (2D), 'card' (HD-2D: the gate, braziers and plaque, at most 56 px tall), 'tower' (HD-2D billboard behind the gate)
-function d8LairCanvas(L,part){const key='lair:'+L.mat+':'+L.bk+':'+(L.lit?1:0)+':'+part;return imgOf(key,()=>{const W=D8L.W,H=D8L.H,cv=mkCv(W,H),c=cv.getContext('2d'),M=D8M[L.mat],b=H-1;let w=M.w;
-  const f=(col,x,y,ww,hh)=>{c.fillStyle=col;c.fillRect(x,y,ww,hh);};const ww0=w;w=ww0.map(q=>shade(q,.72));const eye=L.lit?'#8a6a3a':'#ff3a2a',fire=L.lit?['#ffd04a','#fff6c0']:['#ff3a2a','#ffb04a'],beac=L.lit?['#ffd04a','#fff6c8']:['#c03aff','#ff6a4a'];
-  const tower=part!=='card',gate=part!=='tower';
-  if(tower){// the dark tower, tapering, with lit slits and the beacon cage on top
-    const t0=8;f('#150b17',20,t0+6,24,b-t0-6);f(shade(w[1],.55),21,t0+7,22,b-t0-8);for(let y=t0+10;y<b-30;y+=5)f(shade(w[0],.62),22,y,20,3);
-    f(shade(w[3],1.1),21,t0+7,2,b-t0-8);f(shade(w[0],.75),40,t0+7,2,b-t0-8);
-    for(let i=0;i<4;i++)f('#150b17',19+i*7,t0+2,5,5),f(shade(w[1],.7),20+i*7,t0+3,3,4);
-    [t0+18,t0+32].forEach(y=>{f('#150b17',30,y,4,8);f(L.lit?'#ffd88a':'#ff4a3a',31,y+1,2,6);});
-    // the beacon: a cage with a burning orb
-    f('#150b17',26,0,12,t0+3);f('#3a3040',27,1,10,t0+1);f(beac[0],29,1,6,t0-1);f(beac[1],31,2,2,t0-4);f('#3a3040',28,1,1,t0);f('#3a3040',35,1,1,t0);
-    // the Scourge's banner (relit: the realm's gold pennant)
-    const by=t0+40;f('#2a1a10',25,by-1,14,2);f(L.lit?'#c89a3a':L.cloth,26,by+1,12,22);f(L.lit?'#e8c060':shade(L.cloth,1.25),26,by+1,12,2);f(L.lit?'#c89a3a':L.cloth,26,by+23,4,3);f(L.lit?'#c89a3a':L.cloth,34,by+23,4,3);
-    d8Glyph(f,L.lit?'sun':L.motif,32,by+11,L.lit?'#fff2b0':L.em);}
-  if(gate){const gy=b-42;// the skull-carved gate
-    f('#150b17',6,gy-1,52,b-gy+2);f(w[1],7,gy,50,b-gy);f(w[0],8,gy+1,48,b-gy-2);for(let y=gy+4;y<b-2;y+=5)for(let x=8+((y/5)%2?0:5);x<56;x+=10)f(shade(w[0],.85),x,y,9,1);
-    f(w[2],7,gy,50,2);for(let x=7;x<57;x+=6)f(w[2],x,gy-3,4,3);
-    // horns
-    c.fillStyle=tint(w[2],.35);c.beginPath();c.moveTo(14,gy+2);c.lineTo(4,gy-12);c.lineTo(18,gy+2);c.fill();c.beginPath();c.moveTo(50,gy+2);c.lineTo(60,gy-12);c.lineTo(46,gy+2);c.fill();
-    // the skull over the door
-    const sx=32,sy=gy+10;c.fillStyle='#e8e0d0';c.beginPath();c.ellipse(sx,sy,10,8,0,0,7);c.fill();f('#e8e0d0',sx-6,sy+4,12,6);f('#c8c0b0',sx-10,sy+1,2,4);f('#c8c0b0',sx+8,sy+1,2,4);
-    f('#150b17',sx-7,sy-1,5,5);f('#150b17',sx+2,sy-1,5,5);f(eye,sx-6,sy,3,3);f(eye,sx+3,sy,3,3);f('#150b17',sx-1,sy+4,2,2);for(let i=-5;i<6;i+=2)f('#150b17',sx+i,sy+8,1,2);
-    // the doorway over the entrance tile (canvas x 24..40)
-    f('#150b17',23,b-24,18,24);f('#05030a',24,b-22,16,22);c.fillStyle='#05030a';c.beginPath();c.ellipse(32,b-22,8,5,0,Math.PI,0);c.fill();
-    for(let x=26;x<39;x+=4)f(L.lit?'#4a3a2a':'#3a2a2a',x,b-20,1,8);f(L.lit?'#4a3a2a':'#3a2a2a',25,b-14,14,1);
-    // flanking spiked pillars with braziers
-    [[1,9],[55,9]].forEach(([x,ww])=>{f('#150b17',x-1,b-34,ww+2,35);f(w[1],x,b-33,ww,33);f(w[2],x,b-33,ww,2);f('#2a2a34',x-1,b-38,ww+2,5);f('#5a4a40',x,b-39,ww,2);f(fire[0],x+1,b-45,ww-2,6);f(fire[1],x+3,b-43,ww-6,3);
-      c.fillStyle=tint(w[2],.3);c.beginPath();c.moveTo(x,b-33);c.lineTo(x+ww/2,b-38);c.lineTo(x+ww,b-33);c.fill();});
-    // the plaque: LAIR
-    f('#150b17',19,gy-12,26,10);f(L.lit?'#7a5a2a':'#4a1a1a',20,gy-11,24,8);f(L.lit?'#9a7a3a':'#6a2a2a',20,gy-11,24,1);c.font='bold 7px "Trebuchet MS",Verdana,sans-serif';c.textAlign='center';c.textBaseline='alphabetic';
-    c.fillStyle='#000';c.fillText('LAIR',33,gy-4);c.fillStyle=L.lit?'#ffe8a0':'#ffb0a0';c.fillText('LAIR',32,gy-5);
-    // material touches
-    if(L.mat==='ice'||L.mat==='icevault'||L.mat==='rock')for(let x=8;x<56;x+=3)f('#eefaff',x,gy+2,1,2+((x*7)%5));
-    else if(L.mat==='lava'||L.mat==='forge'){f('#ff6a1a',10,b-6,8,1);f('#ff6a1a',46,b-9,6,1);f('#ffd04a',12,b-6,3,1);}
-    else if(L.mat==='root'){for(let i=0;i<5;i++){let x=10+i*10,y=gy;for(let k=0;k<6;k++){f('#3a2614',x,y,1,2);y+=2;x+=k%2?1:-1;}}f('#7af0a0',10,b-4,4,2);f('#c890f0',50,b-4,4,2);}
-    else if(L.mat==='sea'||L.mat==='flood'){f('#2a6a4a',8,b-8,2,8);f('#2a6a4a',54,b-10,2,10);f('#f0a0b0',12,b-5,3,4);}
-    else if(L.mat==='sand'){f('#e0c494',6,b-5,20,5);f('#e0c494',40,b-4,18,4);}
-    else if(L.mat==='astral'){f(M.acc,12,gy+12,2,2);f(M.acc,50,gy+12,2,2);}}
-  return cv;});}
-function d8Glyph(f,k,x,y,col){const P={thorn:[[0,-5,1,10],[-3,-2,3,1],[1,1,3,1]],tide:[[-4,-1,8,1],[-3,1,6,1],[-2,3,4,1]],ember:[[-1,-4,2,8],[-3,-1,6,3]],frost:[[0,-4,1,9],[-4,0,9,1],[-3,-3,1,1],[3,-3,1,1],[-3,3,1,1],[3,3,1,1]],
-  bolt:[[0,-5,2,4],[-2,-1,4,2],[-1,1,2,4]],bone:[[-4,-1,9,2],[-5,-2,2,4],[4,-2,2,4]],comb:[[-3,-3,6,1],[-4,-2,1,4],[3,-2,1,4],[-3,2,6,1]],spore:[[-1,-1,3,3],[-4,-3,2,2],[3,2,2,2]],gear:[[-2,-2,5,5],[-4,0,9,1],[0,-4,1,9]],
-  pearl:[[-2,-2,4,4],[-1,-3,2,1]],ash:[[-3,-1,7,2],[-2,1,5,1]],grave:[[0,-4,1,9],[-2,-2,5,1]],eclipse:[[-3,-3,6,6],[-1,-1,2,2]],scale:[[-3,-2,6,1],[-2,0,6,1],[-3,2,6,1]],crown:[[-4,-1,9,3],[-4,-3,1,2],[0,-3,1,2],[4,-3,1,2]],
-  feather:[[0,-5,1,10],[-2,-3,2,1],[1,-1,2,1]],sun:[[-2,-2,5,5],[0,-5,1,2],[0,4,1,2],[-5,0,2,1],[4,0,2,1]]}[k]||[[-2,-2,5,5]];P.forEach(([a,b,w,h])=>f(col,x+a,y+b,w,h));}
-// the entrance tile's 'facade' sprite: the lair. Lights for the beacon and the braziers go on the map's light list (both renderers bake them)
-{const o2=obj2;obj2=function(theme,kind,v){const m=typeof P2!=='undefined'&&P2.dm;if(kind==='facade'&&m&&m.kind==='field'&&m.ent&&!window.__D8OFF){try{const L=d8LairState(m),cv=d8LairCanvas(L,D8.card?'card':'all');
-      const ex=m.ent[0]*TS+8,ey=(m.ent[1]+1)*TS;m.lights=m.lights||[];m.lights.push([ex-27,ey-44,22,L.lit?'gold':'fire'],[ex+27,ey-44,22,L.lit?'gold':'fire']);if(!D8.card)m.lights.push([ex,ey-96,30,L.lit?'gold':'violet']);
-      D8.lair.drawn=(D8.lair.drawn||0)+1;D8.lair.last={id:m.id,lit:L.lit,mat:L.mat,part:D8.card?'card':'all',w:cv.width,h:cv.height};return cv;}catch(e){}}
+  const lk=D8_LMAT[st.mat]||'grey',P0=D8LR[lk];let cl=null;try{cl=THM(m).cl;}catch(e){}const r=P0.r.map((c,i)=>cl&&cl[i]?lerpHex(c,cl[i],.25):c);
+  return {mat:st.mat,lk,lit,bk,cloth:B?B.mix:'#5a2a4a',em:B?B.dec[0]:'#e8c070',motif:B?B.motif:'crown',r,cap:P0.cap,cap2:P0.cap2,glow:lit?'#ffd870':P0.glow,key:lk+':'+(lit?1:0)+':'+bk+':'+(cl?cl[0]:'')};}
+const d8LH=(x,y,k)=>((Math.imul(x*73856093^y*19349663,k*83492791+1)>>>0)%1000)/1000;
+// the mound: which tiles, their heights (art px) and the hill's corner heights
+function d8LairShape(m){if(m.kind!=='field'||!m.ent||m.d8lair!==undefined||window.__D8OFF)return;m.d8lair=null;
+  const [ex,ey]=m.ent,out=m.entOut||[ex,ey+1],fv=[out[0]-ex,out[1]-ey],g=m.t,H=g.length,W=g[0].length,lane=new Set(),ex8=new Set((m.exits||[]).map(e=>e.x+','+e.y));
+  for(let k=1;k<=3;k++)lane.add((ex+fv[0]*k)+','+(ey+fv[1]*k));
+  const core=[],extra=[],bk=[-fv[0],-fv[1]],sd=[fv[1],fv[0]],rel={};
+  for(let b=0;b<=2;b++)for(let s2=-2;s2<=2;s2++){if(!b&&!s2)continue;const x=ex+bk[0]*b+sd[0]*s2,y=ey+bk[1]*b+sd[1]*s2,k=x+','+y;rel[k]=[b,s2];if(x<1||y<1||x>=W-1||y>=H-1||lane.has(k)||ex8.has(k))continue;const c=g[y][x];
+    if(c==='U')core.push([x,y,c]);else if('.,f'.includes(c)&&!(m.signs&&m.signs[k]!=null)&&!(m.npcs||[]).some(n=>n.x===x&&n.y===y))extra.push([x,y,c]);}
+  const iss=()=>(typeof mapIssues==='function'?mapIssues(m).length:0)+(typeof pathAssets==='function'?pathAssets(m).length:0),i0=iss();
+  const put=L=>L.forEach(([x,y])=>{g[y][x]='#';}),back=L=>L.forEach(([x,y,c])=>{g[y][x]=c;});
+  const hides=([x,y])=>{for(let k=1;k<=3;k++){const yy=y-k,c=g[yy]&&g[yy][x];if(c&&PG_PROP_H[c]!=null&&c!=='#'&&pgHides(m,x,yy,c))return true;}return false;};
+  let tiles=core.concat(extra);put(tiles);
+  for(let pass=0;pass<5;pass++){const bad=tiles.filter(hides);if(!bad.length)break;back(bad);tiles=tiles.filter(t=>!bad.includes(t));}
+  if(iss()>i0){back(tiles);tiles=core.filter(t=>!hides(t));put(tiles);if(iss()>i0){back(tiles);tiles=[];}}
+  if(!tiles.length)return;
+  const mask=new Set(tiles.map(([x,y])=>x+','+y)),under={};tiles.forEach(([x,y,c])=>{under[x+','+y]=c==='U'?'.':c;});
+  const Th=Math.tan(((typeof HD2D!=='undefined'&&HD2D.pitch)||40)*Math.PI/180),hmax={},hh={};
+  const south=fv[0]===0&&fv[1]===1;
+  // facing the camera (south): the hill rises right behind the mouth; any other way: a low hill with the mouth at its foot, rising away
+  tiles.forEach(([x,y])=>{const q=rel[x+','+y]||[1,0],b=q[0],a=Math.abs(q[1]);let h=south?[24,36,32][b]-6*a:[18,30,26][b]-5*a;h+=Math.round((d8LH(x,y,3)-.5)*8);
+    // a prop up to three rows north still shows (the pgHides rule, with this height instead of a cliff's)
+    let cap=60;for(let k=1;k<=3;k++){const yy=y-k,c=g[yy]&&g[yy][x];if(!c||mask.has(x+','+yy))continue;const ph=PG_PROP_H[c];if(ph!=null)cap=Math.min(cap,ph-PG_VIS+((k-1)*TS-.5)*Th-1);}
+    hmax[x+','+y]=Math.max(8,cap);hh[x+','+y]=Math.max(8,Math.min(h,cap));});
+  const isM=(x,y)=>mask.has(x+','+y),mt=[ex+bk[0],ey+bk[1]],mouth=isM(mt[0],mt[1])?mt:null,cor={};
+  for(let cy=ey-3;cy<=ey+3;cy++)for(let cx=ex-3;cx<=ex+4;cx++){const A4=[[cx-1,cy-1],[cx,cy-1],[cx-1,cy],[cx,cy]],adj=A4.filter(([x,y])=>isM(x,y));if(!adj.length){cor[cx+','+cy]=0;continue;}
+    let n=adj.length;if(south&&mouth&&A4.some(([x,y])=>x===ex&&y===ey)&&A4.some(([x,y])=>x===mouth[0]&&y===mouth[1]))n=5;// the mouth's face keeps its full height
+    const mean=adj.reduce((a,[x,y])=>a+hh[x+','+y],0)/adj.length,f=n>=5?1:n===4?1.05:n===3?.72:n===2?.38:.14,cap=Math.min(...adj.map(([x,y])=>hmax[x+','+y]));
+    cor[cx+','+cy]=Math.max(0,Math.min(cap,mean*f+(d8LH(cx,cy,5)-.5)*(n>=4?7:3)));}
+  const torches=[[ex+sd[0],ey+sd[1]],[ex-sd[0],ey-sd[1]]].filter(([x,y])=>isM(x,y)),deco=[[ex+bk[0]-sd[0],ey+bk[1]-sd[1]],[ex+bk[0]+sd[0],ey+bk[1]+sd[1]]].map(t=>isM(t[0],t[1])?t:null);
+  m.d8lair={tiles:tiles.map(t=>[t[0],t[1]]),mask,under,hh,cor,mouth,torches,deco,south,ex,ey,fv,lane:[...lane].map(k=>k.split(',').map(Number)),top:Math.max(...Object.values(hh))};m.tl=null;}
+{const g0=getMap;getMap=function(id){const had=!!MAPS[id],m=g0.apply(this,arguments);if(!had&&m&&m.kind==='field'){try{d8LairShape(m);}catch(e){try{wdLog('d8 lair '+id+': '+e.message);}catch(_){}}}return m;};}
+// ----- art: one 64x64 sheet per look (A rock face, B top, C the mouth's face, D side face) -----
+function d8LairTex(L){return imgOf('d8ltex:'+L.key,()=>{const c=mkCv(64,64),x=c.getContext('2d'),R=mulberry(hashS(L.key)),r=L.r;const f=(col,a,b,w,h)=>{x.fillStyle=col;x.fillRect(a,b,w,h);};
+  const rock=(ox,oy,k)=>{f(shade(r[0],k),ox,oy,32,32);for(let i=0;i<26;i++){const w=3+Math.floor(R()*7),h=2+Math.floor(R()*4),a=ox+Math.floor(R()*30),b=oy+Math.floor(R()*30);f(shade(R()<.4?r[2]:R()<.6?r[1]:r[0],k*(.92+R()*.12)),a,b,Math.min(w,ox+32-a),Math.min(h,oy+32-b));f(shade(tint(r[0],.15),k),a,b,Math.min(w,ox+32-a),1);}
+    for(let i=0;i<6;i++){let a=ox+2+Math.floor(R()*26),b=oy+3+Math.floor(R()*24);const dx=R()<.5?1:-1;for(let s=0;s<4;s++){f(shade(r[3],k),a,b,2,1);a+=dx*2;b+=R()<.5?1:0;if(a<ox||a>=ox+31||b>=oy+32)break;}}
+    if(L.lk==='ice'){for(let a=ox;a<ox+32;a+=3){const l=2+Math.floor(R()*7);f('#e8f6ff',a,oy,2,2);f('#c8e8ff',a,oy+2,1,l);}for(let i=0;i<4;i++)f('rgba(230,248,255,.4)',ox+Math.floor(R()*30),oy+4,1,24);}
+    else if(L.lk==='basalt'){if(!L.lit&&ox===0&&oy===0){let a=ox+9+Math.floor(R()*14),b=oy+10;for(let s=0;s<4;s++){f(s%2?'#ff6a1a':'#c84a1a',a,b,1,2);a+=R()<.5?1:-1;b+=3;}}}
+    else if(L.lk==='earth'){for(let i=0;i<4;i++){let a=ox+1+Math.floor(R()*30),b=oy;for(let s=0;s<3;s++){f('#3a2614',a,b,1,2);b+=2;a+=R()<.3?1:R()<.5?-1:0;}}for(let i=0;i<6;i++)f(R()<.5?'#8a7a68':'#5a5048',ox+Math.floor(R()*28),oy+8+Math.floor(R()*22),3,2);for(let a=ox;a<ox+32;a+=2)if(R()<.7)f('#4a7a34',a,oy,2,1+Math.floor(R()*3));}
+    else if(L.lk==='sand'){for(let b=oy+3;b<oy+32;b+=6){f(shade(tint(r[0],.18),k),ox,b,32,2);f(shade(r[1],k*.9),ox,b+2,32,1);}}
+    else if(L.lk==='wet'){for(let i=0;i<5;i++)f('rgba(200,250,255,.22)',ox+Math.floor(R()*31),oy+2,1,26);for(let a=ox+1;a<ox+32;a+=4)f('#2a6a4a',a,oy+26-Math.floor(R()*4),1,6);}
+    else if(L.lk==='crystal'){for(let i=0;i<3;i++){const a=ox+3+Math.floor(R()*24),b=oy+8+Math.floor(R()*16);f('#8b5fd0',a,b,2,6);f('#d8c0ff',a,b,1,2);}}
+    else for(let a=ox;a<ox+32;a+=3)if(R()<.5)f('#5a7a4a',a,oy,2,1+Math.floor(R()*2));};
+  rock(0,0,1);rock(32,32,.8);
+  // B: the top of the hill
+  f(L.cap,32,0,32,32);for(let i=0;i<30;i++)f(R()<.5?L.cap2:tint(L.cap,.12),32+Math.floor(R()*29),Math.floor(R()*30),2+Math.floor(R()*4),1+Math.floor(R()*2));
+  if(L.lk==='ice')for(let i=0;i<10;i++)f('#bcd2ea',32+Math.floor(R()*28),Math.floor(R()*30),4,1);
+  else if(L.lk==='basalt'&&!L.lit)for(let i=0;i<6;i++)f('#ff6a1a',32+Math.floor(R()*31),Math.floor(R()*31),1,1);
+  else if(L.lk==='earth'||L.lk==='grey'||L.lk==='wet')for(let i=0;i<14;i++){const a=32+Math.floor(R()*30),b=Math.floor(R()*28);f(shade(L.cap,.75),a,b,1,3);f(tint(L.cap,.2),a+1,b+1,1,2);}
+  for(let i=0;i<6;i++)f(shade(r[1],.9),32+Math.floor(R()*28),Math.floor(R()*28),3,2);
+  // C: the face with the mouth: a dark arch dug into the rock, claw gouged, with rubble at its sill
+  rock(0,32,.96);const cx=16,by=63;x.fillStyle=shade(r[3],.7);x.beginPath();x.ellipse(cx,by-17,8.5,7,0,Math.PI,0);x.fill();f(shade(r[3],.7),cx-8.5,by-17,17,18);
+  const gl=hx(L.glow);for(let y=0;y<22;y++){const t=y/21,k=L.lit?.32:.42;const col=`rgb(${Math.round(6+gl[0]*k*t*t)},${Math.round(4+gl[1]*k*t*t)},${Math.round(10+gl[2]*k*t*t)})`;const half=y<6?Math.round(Math.sqrt(Math.max(0,36-(6-y)*(6-y)))*1.15):7;f(col,cx-half,by-22+y,half*2,1);}
+  for(let a=-9;a<=9;a+=3){f(tint(r[2],.1),cx+a,by-25+Math.round(Math.abs(a)*.6),2,2);}
+  [[-1],[1]].forEach(([sd])=>{for(let i=0;i<3;i++){const x0=cx+sd*(11+i*2);for(let s=0;s<9;s++){f(shade(r[3],.8),x0+sd*Math.round(s*.4),by-26+s*2,1,2);f(tint(r[1],.2),x0+sd*Math.round(s*.4)+1,by-26+s*2,1,1);}}});
+  if(!L.lit){f('#e8e0d0',cx-6,by-2,3,1);f('#e8e0d0',cx+3,by-3,4,1);f('#e8e0d0',cx+5,by-4,1,3);f(r[1],cx-9,by-3,3,3);f(r[2],cx+8,by-2,2,2);}
+  return c;});}
+function d8LairExtras(L){return imgOf('d8lext:'+L.key,()=>{const c=mkCv(48,24),x=c.getContext('2d'),f=(col,a,b,w,h)=>{x.fillStyle=col;x.fillRect(a,b,w,h);};
+  // 0..15: a broken banner of the Scourge on a leaning pole; 16..31: a skull and bones; 32..47 spare
+  for(let i=0;i<22;i++)f('#3a2a1a',6+Math.round(i*.12),2+i,2,1);f(L.cloth,8,4,7,9);f(shade(L.cloth,.75),8,13,2,4);f(shade(L.cloth,.75),12,13,2,6);f('#150b17',10,8,2,2);d8Glyph(f,L.motif,11,8,L.em);
+  f('#e8e0d0',20,15,8,6);f('#e8e0d0',21,13,6,3);f('#150b17',21,16,2,2);f('#150b17',25,16,2,2);f('#150b17',23,19,2,1);f('#d8d0c0',17,21,14,2);f('#c8c0b0',18,20,2,3);f('#c8c0b0',28,20,2,3);
+  return c;});}
+function d8Plume(){return imgOf('d8plume',()=>{const c=mkCv(16,128),x=c.getContext('2d');for(let y=0;y<128;y++){const t=y/127,a=Math.pow(t,1.6)*.55,w=3+Math.sin(y/9)*1.5+t*3;x.fillStyle=`rgba(255,255,255,${a.toFixed(3)})`;x.fillRect(Math.round(8-w/2+Math.sin(y/13)*2),y,Math.round(w),1);}return c;});}
+function d8Glyph(f,k,x,y,col){const P={thorn:[[0,-3,1,6],[-2,-1,2,1],[1,1,2,1]],tide:[[-3,-1,6,1],[-2,1,4,1]],ember:[[-1,-3,2,6],[-2,0,4,2]],frost:[[0,-3,1,7],[-3,0,7,1]],bolt:[[0,-3,2,3],[-1,0,2,3]],
+  bone:[[-3,-1,7,2]],comb:[[-2,-2,4,1],[-2,1,4,1]],spore:[[-1,-1,2,2]],gear:[[-2,-2,4,4]],pearl:[[-1,-1,3,3]],ash:[[-2,-1,5,2]],grave:[[0,-3,1,6],[-1,-1,3,1]],eclipse:[[-2,-2,4,4]],scale:[[-2,-1,4,1],[-2,1,4,1]],
+  crown:[[-3,-1,7,2],[-3,-2,1,1],[0,-2,1,1],[3,-2,1,1]],feather:[[0,-3,1,6]]}[k]||[[-1,-1,3,3]];P.forEach(([a,b,w,h])=>f(col,x+a,y+b,w,h));}
+// ----- HD-2D: the hill as building geometry -----
+{const bb0=hdBakeBuildings;hdBakeBuildings=function(m,S,bsp,deco){try{const Lr=m&&m.kind==='field'&&m.d8lair;if(Lr&&!window.__D8OFF){const L=d8LairState(m);
+    const xs=Lr.tiles.map(t=>t[0]),ys=Lr.tiles.map(t=>t[1]),bx=Math.min(...xs),by=Math.min(...ys);bsp=(bsp||[]).concat([{b:{x:bx,y:by,w:Math.max(...xs)-bx+1,h:Math.max(...ys)-by+1,k:'d8lair',door:[Lr.ex,Lr.ey]},cv:d8LairTex(L)}]);}}catch(e){}return bb0.call(this,m,S,bsp,deco);};}
+{const bk0=hdBldKind;hdBldKind=function(m,b){if(b&&b.k==='d8lair')return 'gate';return bk0.apply(this,arguments);};}
+{const gg0=hdGateGeo;hdGateGeo=function(m,S,b,Q,U,Vv,p,V,bt){if(b&&b.k==='d8lair')return d8LairGeo(m,S,b,Q,U,Vv,p,V);return gg0.apply(this,arguments);};}
+function d8LairGeo(m,S,b,Q,U,Vv,p,V){const Lr=m.d8lair,isM=(x,y)=>Lr.mask.has(x+','+y),C=(x,y)=>(Lr.cor[x+','+y]||0)*V;let n=0,top=0;
+  Lr.tiles.forEach(([x,y])=>{const x0=x*TS,x1=x0+TS,z0=y*TS,z1=z0+TS,a=C(x,y),bq=C(x+1,y),c=C(x+1,y+1),d=C(x,y+1);top=Math.max(top,a,bq,c,d);
+    const dx=((bq+c)-(a+d))/2/TS,dz=((d+c)-(a+bq))/2/TS,l=Math.hypot(dx,1,dz),u0=((x+y)%2)*16,v0=(y%2)*16;
+    const steep=Math.abs(dx)+Math.abs(dz)>.55*V,tu=steep?((x*3)%2)*16:32+u0;Q([x0,a,z0,x1,bq,z0,x1,c,z1,x0,d,z1],U(p,tu),Vv(p,v0),U(p,tu+16),Vv(p,v0+16),255,[-dx/l,1/l,-dz/l],8);n++;
+    const isE=(a2,b2)=>a2===Lr.ex&&b2===Lr.ey,reg=(e)=>e?[8,32]:null;
+    if(!isM(x,y+1)&&(d>.5||c>.5)){const ah=Math.min(32,Math.max(d,c)/V),me=reg(isE(x,y+1)),ox=me?me[0]:((x*5)%2)*16,oy=me?me[1]:0;
+      Q([x0,d,z1,x1,c,z1,x1,0,z1,x0,0,z1],U(p,ox),Vv(p,oy+32-ah),U(p,ox+16),Vv(p,oy+32),255,[0,0,1],2|8);n++;}
+    if(!isM(x-1,y)&&(a>.5||d>.5)){const ah=Math.min(32,Math.max(a,d)/V),me=reg(isE(x-1,y)),ox=me?me[0]:32,oy=me?me[1]:32;Q([x0,a,z0,x0,d,z1,x0,0,z1,x0,0,z0],U(p,ox),Vv(p,oy+32-ah),U(p,ox+16),Vv(p,oy+32),255,[-1,0,0],8);n++;}
+    if(!isM(x+1,y)&&(bq>.5||c>.5)){const ah=Math.min(32,Math.max(bq,c)/V),me=reg(isE(x+1,y)),ox=me?me[0]:48,oy=me?me[1]:32,w=me?16:16;Q([x1,c,z1,x1,bq,z0,x1,0,z0,x1,0,z1],U(p,ox),Vv(p,oy+32-ah),U(p,ox+w),Vv(p,oy+32),255,[1,0,0],8);n++;}});
+  S.bh.push({b,h:top});D8.lair.hd=Object.assign(D8.lair.hd||{},{geo:n,top:+(top/V).toFixed(1),id:m.id});}
+// a mound tile is ground for the block pass (the hill above stands in its place)
+{const hk1=hdKind;hdKind=function(m,c,x,y){if(m&&m.kind==='field'&&m.d8lair&&x!=null&&m.d8lair.mask.has(x+','+y))return 0;return hk1.apply(this,arguments);};}
+{const ha0=hdActors;hdActors=function(m,now,ts){ha0.apply(this,arguments);try{const Lr=m&&m.kind==='field'&&m.d8lair;if(!Lr||window.__D8OFF)return;const V=HD.S.V,ex=Lr.ex*TS+8;
+  if(Math.abs(ex-HD.cam.x)>480||Math.abs(Lr.ey*TS-HD.cam.z)>640)return;const L=d8LairState(m),still=gfxStill(),gl=hdRgb(L.glow).map(v=>Math.round(v*255)),p=still?.85:.8+.2*Math.sin(ts/(L.lit?1100:520));
+  // light spilling from the mouth
+  const mzx=ex-Lr.fv[0]*7,mzz=Lr.ey*TS+8-Lr.fv[1]*7+(Lr.south?.2:0);if(Lr.mouth)hdBill(HD.dynA,'glow',hdGlowS(),mzx,(Lr.south?4:2)*V,mzz,false,.5,gl[0],gl[1],gl[2],Math.round((L.lit?30:45)*p),4);
+  // torches on the front faces
+  const hAt0=(x,y)=>((Lr.cor[x+','+y]||0)+(Lr.cor[(x+1)+','+y]||0)+(Lr.cor[x+','+(y+1)]||0)+(Lr.cor[(x+1)+','+(y+1)]||0))/4;
+  Lr.torches.forEach(([x,y],i)=>{const f=still?0:Math.floor(now/110+x)%3,tx=x*TS+8+Lr.fv[0]*7,tz=y*TS+8+Lr.fv[1]*8.4,ty=Lr.south?7:hAt0(x,y)+4;hdBill(HD.dyn,'torch'+f,hdTorchS(f),tx,ty*V,tz,false,1,255,255,255,255,4);
+    hdBill(HD.dynA,'glow',hdGlowS(),tx,(ty+8)*V,tz+.6,false,L.lit?.8:1,255,L.lit?200:150,L.lit?110:70,L.lit?60:85,4);});
+  const ex2=d8LairExtras(L),tpx=0,hAt=(x,y)=>((Lr.cor[x+','+y]||0)+(Lr.cor[(x+1)+','+y]||0)+(Lr.cor[x+','+(y+1)]||0)+(Lr.cor[(x+1)+','+(y+1)]||0))/4;
+  if(!L.lit){const bt=Lr.deco[0],sk=Lr.deco[1];
+    // cut regions of the extras sheet as their own sprites
+    const sub=(k,sx,w)=>imgOf('d8lsub:'+L.key+k,()=>{const c=mkCv(w,24);c.getContext('2d').drawImage(ex2,sx,0,w,24,0,0,w,24);return c;});
+    if(bt)hdBill(HD.dyn,'d8ban:'+L.key,sub('b',0,16),bt[0]*TS+8,(hAt(bt[0],bt[1])-2)*V,bt[1]*TS+9,false,1,255,255,255,255,2|8);
+    if(sk)hdBill(HD.dyn,'d8sk:'+L.key,sub('s',16,16),sk[0]*TS+8,(hAt(sk[0],sk[1])-2)*V,sk[1]*TS+9,false,1,255,255,255,255,2|8);}
+  // the plume rising from the top: faint, the mouth's colour; not while the hero stands right in front of it
+  const tp=Lr.tiles.reduce((a,t)=>Lr.hh[t+'']>=Lr.hh[a+'']?t:a,Lr.tiles[0]),pz=tp[1]*TS+8,hx=WS.px+8,hz=WS.py+12,front=Math.abs(hx-ex)<22&&hz<pz;D8.lair.hd=Object.assign(D8.lair.hd||{},{front,lit:L.lit,plume:front?0:1});
+  if(!front)hdBill(HD.dynA,'d8plume:'+L.glow,d8Tint(d8Plume(),L.glow),tp[0]*TS+8,(Lr.top-4)*V,pz,false,1,255,255,255,Math.round((L.lit?35:50)*p),4);}catch(e){}};}
+// the lair's 2D lights (marked) are left out of the HD-2D bake: hdLights adds its own, smaller ones
+{const bl0=hdBakeLights;hdBakeLights=function(m,S,lights){return bl0.call(this,m,S,(lights||[]).filter(L=>L[4]!==1));};}
+// ----- 2D: the mound on its tiles, the ground around it, the extras as the entrance's prop -----
+// 2D: the hill as a small heightfield seen from the south and above: each ground pixel is lifted by its height (bilinear over the tile's
+// corner heights, 0 off the mound), drawn north to south so the near slope covers the far one; slopes facing the light are lighter,
+// flat ground is the cap (snow, ash, grass, sand, moss), steep ground the rock; the mouth is cut into the face over the entrance
+const D8_K2=.62;
+function d8Hill2D(m,Lr){const L=d8LairState(m);return imgOf('d8hill:'+m.id+':'+L.key+':'+Lr.tiles.length+':'+(m.s||0)+':'+(G.run&&G.run.seed),()=>{
+  const xs=Lr.tiles.map(t=>t[0]),ys=Lr.tiles.map(t=>t[1]),bx=Math.min(...xs),by=Math.min(...ys),W=(Math.max(...xs)-bx+1)*TS,H=(Math.max(...ys)-by+1)*TS,M=Math.ceil(Lr.top*D8_K2)+3;
+  const cv=mkCv(W,H+M),c=cv.getContext('2d'),img=c.createImageData(W,H+M),d=img.data,R=mulberry(hashS(m.id+L.key));
+  const hgt=(gx,gy)=>{const tx=bx+Math.floor(gx/TS),ty=by+Math.floor(gy/TS);if(!Lr.mask.has(tx+','+ty))return 0;const u=(gx%TS)/TS,v=(gy%TS)/TS,C=(a,b)=>Lr.cor[a+','+b]||0;
+    return (C(tx,ty)*(1-u)+C(tx+1,ty)*u)*(1-v)+(C(tx,ty+1)*(1-u)+C(tx+1,ty+1)*u)*v;};
+  const NZ=d8Noise(hashS(m.id+'hill'),W,H,7),HF=new Float32Array(W*H);for(let gy=0;gy<H;gy++)for(let gx=0;gx<W;gx++){const h0=hgt(gx,gy);HF[gy*W+gx]=h0>0?h0*(.72+.56*NZ(gx,gy))-2+(d8LH(gx,gy,11)-.5)*1.2:0;}
+  const rk=L.r.map(hx),cp=hx(L.cap),cp2=hx(L.cap2),put=(x,y,col,k)=>{if(x<0||y<0||x>=W||y>=H+M)return;const o=(y*W+x)*4;d[o]=Math.min(255,col[0]*k);d[o+1]=Math.min(255,col[1]*k);d[o+2]=Math.min(255,col[2]*k);d[o+3]=255;};
+  for(let gx=0;gx<W;gx++)for(let gy=0;gy<H;gy++){const h=HF[gy*W+gx];if(h<1.2)continue;
+    const hx1=gx>0?HF[gy*W+gx-1]:0,hx2=gx<W-1?HF[gy*W+gx+1]:0,hy1=gy>0?HF[(gy-1)*W+gx]:0,hy2=gy<H-1?HF[(gy+1)*W+gx]:0,sx=(hx2-hx1)/2,sy=(hy2-hy1)/2,st=Math.min(1,Math.hypot(sx,sy)/1.4);
+    const lit=Math.max(.55,Math.min(1.25,1+(sx*.35+sy*.5)*.55)),grain=.94+d8LH(gx*3,gy*5,13)*.12;
+    const top=st>.45?rk[d8LH(gx>>2,gy>>2,17)<.3?2:0]:(d8LH(gx>>1,gy>>1,19)<.25?cp2:cp),y0=M+gy-Math.round(h*D8_K2);
+    const fy=M+gy;for(let y=y0+1;y<=fy;y++){const t=(y-y0)/Math.max(1,fy-y0);put(gx,y,rk[t>.75?3:1],(.95-.3*t)*grain);}
+    put(gx,y0,top,lit*grain);}
+  // a dark rim where the surface meets the sky behind it, so the hill stands off the ground (snow on snow too)
+  for(let x=0;x<W;x++){let y=0;while(y<H+M&&d[(y*W+x)*4+3]===0)y++;if(y<H+M){const o=(y*W+x)*4;d[o]*=.55;d[o+1]*=.55;d[o+2]*=.6;}}
+  for(let y=0;y<H+M;y++)for(let x=0;x<W;x++){const o=(y*W+x)*4;if(!d[o+3])continue;const l=x>0&&d[o-1]===0,r2=x<W-1&&d[o+7]===0;if(l||r2){d[o]*=.6;d[o+1]*=.6;d[o+2]*=.65;}}
+  c.putImageData(img,0,0);
+  for(let i=0;i<18;i++){const gx=Math.floor(R()*W),gy=Math.floor(R()*H),h=HF[gy*W+gx];if(h<6)continue;const y=M+gy-Math.round(h*D8_K2);c.fillStyle=L.r[3];c.fillRect(gx,y+2,1,3);}
+  if(L.lk==='ice')for(let gx=0;gx<W;gx+=3){for(let gy=H-1;gy>=0;gy--){const h=HF[gy*W+gx];if(h>4){const y=M+gy-Math.round(h*D8_K2);c.fillStyle='#e8f6ff';c.fillRect(gx,y+1,1,2+(gx*7)%4);break;}}}
+  else if(L.lk==='basalt'&&!L.lit)for(let i=0;i<5;i++){const gx=4+Math.floor(R()*(W-8)),gy=Math.floor(R()*H),h=HF[gy*W+gx];if(h<6)continue;const y=M+gy-Math.round(h*D8_K2);c.fillStyle='#ff6a1a';c.fillRect(gx,y+1,1,4);}
+  else if(L.lk==='earth')for(let i=0;i<8;i++){const gx=Math.floor(R()*W),gy=Math.floor(R()*H),h=HF[gy*W+gx];if(h<6)continue;const y=M+gy-Math.round(h*D8_K2);c.fillStyle='#3a2614';c.fillRect(gx,y+1,1,5);}
+  if(Lr.south&&Lr.mouth){const mx=(Lr.ex-bx)*TS+8,gyE=(Lr.ey-by)*TS,hm=((Lr.cor[Lr.ex+','+Lr.ey]||0)+(Lr.cor[(Lr.ex+1)+','+Lr.ey]||0))/2,top=Math.round(hm*D8_K2),fy=M+gyE;
+    const ah=Math.max(9,Math.min(top+2,18)),gl=hx(L.glow);c.fillStyle=L.r[3];c.beginPath();c.ellipse(mx,fy-ah+5,7.5,5.5,0,Math.PI,0);c.fill();c.fillRect(mx-7.5,fy-ah+5,15,ah-5);
+    for(let y=0;y<ah-2;y++){const t=y/(ah-3),k=L.lit?.3:.45;c.fillStyle=`rgb(${Math.round(6+gl[0]*k*t*t)},${Math.round(4+gl[1]*k*t*t)},${Math.round(10+gl[2]*k*t*t)})`;const half=y<4?4+y:6;c.fillRect(mx-half,fy-ah+3+y,half*2,1);}
+    for(const sd of [-1,1])for(let i=0;i<2;i++)for(let s2=0;s2<4;s2++){c.fillStyle=L.r[3];c.fillRect(mx+sd*(9+i*2)+sd*Math.round(s2*.4),fy-ah+2+s2*2,1,2);}}
+  const out=mkCv(W+8,H+M+6),oc=out.getContext('2d');oc.fillStyle='rgba(10,6,16,.28)';oc.beginPath();oc.ellipse(4+W/2,M+H-4,W/2+3,H/2,0,0,7);oc.fill();oc.drawImage(cv,4,0);
+  return {cv:out,x:bx*TS-4,y:by*TS-M};});}
+function d8LairGround2D(ctx,m,x,y,Lr){const L=d8LairState(m),c=tileAt(m,x,y),px=x*TS,py=y*TS,R=mulberry(x*313+y*199+m.s*7),f=(col,a,b,w,h)=>{ctx.fillStyle=col;ctx.fillRect(px+a,py+b,w,h);};
+  if(x===Lr.ex&&y===Lr.ey){// the way in, going down into the dark
+    if(Lr.south){for(let row=0;row<16;row++){const t=row/15;ctx.fillStyle=`rgba(8,4,12,${(.85-.6*t).toFixed(2)})`;ctx.fillRect(px+2,py+row,12,1);}}
+    else{// dug into the ground at the hill's foot: a dark hole with a rubble rim, lit from below
+      const gl=hx(L.glow);ctx.fillStyle=L.r[1];ctx.beginPath();ctx.ellipse(px+8,py+8,7.5,6.5,0,0,7);ctx.fill();ctx.fillStyle='#07040a';ctx.beginPath();ctx.ellipse(px+8,py+8,6,5,0,0,7);ctx.fill();
+      ctx.fillStyle=`rgba(${gl[0]},${gl[1]},${gl[2]},${L.lit?.25:.35})`;ctx.beginPath();ctx.ellipse(px+8,py+10,3.5,2,0,0,7);ctx.fill();for(let a=0;a<8;a++){const t=a/8*6.283;f(L.r[2],8+Math.round(Math.cos(t)*7)-1,8+Math.round(Math.sin(t)*6)-1,2,2);}}
+    if(!L.lit){f('#e8e0d0',4,12,3,1);f('#e8e0d0',10,13,2,1);}return;}
+  if(SOLID.includes(c)||'=B'.includes(c))return;const onLane=Lr.lane.some(([a,b])=>a===x&&b===y);
+  if(onLane){ctx.fillStyle=L.lit?'rgba(70,50,30,.16)':'rgba(40,24,12,.3)';ctx.fillRect(px+2,py,12,16);ctx.fillRect(px+4,py-1,8,18);
+    if(!L.lit)for(let i=0;i<3;i++){const a=3+i*4,b=3+Math.floor(R()*6);for(let s=0;s<4;s++)f('rgba(20,10,6,.55)',a+s,b+s,1,1);}}
+  if(L.lit)return;const d=Math.abs(x-Lr.ex)+Math.abs(y-Lr.ey);if(d>4)return;
+  if(d8LH(x,y,7)<.45){f('#e8e0d0',2+Math.floor(R()*9),3+Math.floor(R()*9),4,1);if(R()<.5)f('#d8d0c0',3+Math.floor(R()*8),6+Math.floor(R()*6),1,3);}
+  if(d8LH(x,y,9)<.55)for(let i=0;i<3;i++){const a=Math.floor(R()*13),b=Math.floor(R()*13);f(L.r[1],a,b,2,2);f(L.r[2],a,b,1,1);}}
+{const dt0=drawTile;drawTile=function(ctx,m,x,y,frame){const Lr=m&&m.kind==='field'&&m.d8lair;if(!Lr||window.__D8OFF)return dt0.apply(this,arguments);const k=x+','+y;
+  if(Lr.mask.has(k)){const c=m.t[y][x];m.t[y][x]=Lr.under[k]||'.';try{dt0.apply(this,arguments);}finally{m.t[y][x]=c;}D8.lair.n2d=(D8.lair.n2d||0)+1;return;}
+  const r=dt0.apply(this,arguments);if(Math.abs(x-Lr.ex)<=4&&Math.abs(y-Lr.ey)<=4)d8LairGround2D(ctx,m,x,y,Lr);return r;};}
+const D8_EMPTY=mkCv(1,1);
+// the entrance's prop: in 2D the torches on the front faces, the banner and the skull pile on top (the mouth is in the face art);
+// in HD-2D nothing (the hill and its billboards are geometry)
+{const o2=obj2;obj2=function(theme,kind,v){const m=typeof P2!=='undefined'&&P2.dm;if(kind==='facade'&&m&&m.kind==='field'&&m.ent&&m.d8lair&&!window.__D8OFF){try{const Lr=m.d8lair,L=d8LairState(m);
+      m.lights=m.lights||[];if(Lr.mouth)m.lights.push([Lr.ex*TS+8-Lr.fv[0]*6,Lr.ey*TS+8-Lr.fv[1]*6,20,L.lit?'gold':'fire',1]);Lr.torches.forEach(([tx,ty])=>m.lights.push([tx*TS+8+Lr.fv[0]*8,ty*TS+(Lr.south?0:4),12,L.lit?'gold':'torch',1]));
+      D8.lair.drawn=(D8.lair.drawn||0)+1;D8.lair.last={id:m.id,lit:L.lit,lk:L.lk,part:'mound',tiles:Lr.tiles.length,south:Lr.south};}catch(e){}return D8_EMPTY;}
   return o2.apply(this,arguments);};}
 {const hc0=hdBakeCards;hdBakeCards=function(){D8.card=1;try{return hc0.apply(this,arguments);}finally{D8.card=0;}};}
-// the light column over the beacon, its pulse and the brazier flames (2D); none of it over the hero
-function d8LairFx(m){if(!m||m.kind!=='field'||!m.ent||window.__D8OFF)return null;const L=d8LairState(m);return {L,x:m.ent[0]*TS+8,y:(m.ent[1]+1)*TS};}
-function d8Beam(){return imgOf('d8beam',()=>{const c=mkCv(12,160),x=c.getContext('2d'),g=x.createLinearGradient(0,160,0,0);g.addColorStop(0,'rgba(255,255,255,.75)');g.addColorStop(.3,'rgba(255,255,255,.35)');g.addColorStop(1,'rgba(255,255,255,0)');
-  x.fillStyle=g;x.fillRect(3,0,6,160);x.globalAlpha=.4;x.fillRect(0,0,12,160);return c;});}
-function d8Tint(cv,col){return imgOf('d8tint:'+col,()=>{const c=mkCv(cv.width,cv.height),x=c.getContext('2d');x.drawImage(cv,0,0);x.globalCompositeOperation='source-in';x.fillStyle=col;x.fillRect(0,0,c.width,c.height);return c;});}
+function d8LairFx(m){if(!m||m.kind!=='field'||!m.d8lair||window.__D8OFF)return null;const Lr=m.d8lair;return {L:d8LairState(m),Lr,x:Lr.ex*TS+8,y:(Lr.ey+1)*TS};}
+function d8Tint(cv,col){return imgOf('d8tint:'+col+cv.width+'x'+cv.height,()=>{const c=mkCv(cv.width,cv.height),x=c.getContext('2d');x.drawImage(cv,0,0);x.globalCompositeOperation='source-in';x.fillStyle=col;x.fillRect(0,0,c.width,c.height);return c;});}
+// 2D: the light from the mouth, the torch flames and the plume, never inside the hero's box
 {const wd0=worldDraw;worldDraw=function(now){wd0.apply(this,arguments);try{if(typeof hdActive==='function'&&hdActive())return;const m=WS.m,ctx=WS.ctx,o=d8LairFx(m);if(!o||!WS.cam)return;
-  const cx=Math.round(WS.cam.x),cy=Math.round(WS.cam.y),still=gfxStill(),t=still?0:now,X=o.x-cx,Y=o.y-cy;if(X<-80||X>WS.vw+80||Y<-40||Y>WS.vh+260)return;
+  const cx=Math.round(WS.cam.x),cy=Math.round(WS.cam.y),still=gfxStill(),t=still?0:now,X=o.x-cx,Y=o.y-cy;if(X<-80||X>WS.vw+80||Y<-60||Y>WS.vh+200)return;
   const hx=Math.round(WS.px)+8-cx,hy=Math.round(WS.py)-cy;ctx.save();ctx.beginPath();ctx.rect(0,0,WS.vw,WS.vh);ctx.rect(hx-10,hy-10,20,28);ctx.clip('evenodd');
-  const p=.75+.25*Math.sin(t/(o.L.lit?900:420)),col=o.L.lit?'#ffd870':'#c84aff';ctx.globalCompositeOperation='lighter';ctx.globalAlpha=(o.L.lit?.35:.55)*p;
-  ctx.drawImage(d8Tint(d8Beam(),col),X-6,Y-96-160+4);const g=ctx.createRadialGradient(X,Y-92,1,X,Y-92,26);g.addColorStop(0,o.L.lit?'rgba(255,220,120,.6)':'rgba(220,70,255,.6)');g.addColorStop(1,'rgba(0,0,0,0)');ctx.globalAlpha=p;ctx.fillStyle=g;ctx.fillRect(X-26,Y-118,52,52);
-  ctx.globalCompositeOperation='source-over';ctx.globalAlpha=1;const fl=Math.floor(t/140)%2;[[-27,0],[27,1]].forEach(([dx,k])=>{ctx.fillStyle=o.L.lit?(fl^k?'#ffe08a':'#ffd04a'):(fl^k?'#ff6a3a':'#ff3a2a');ctx.fillRect(X+dx-2,Y-47-(fl^k),4,3);});
-  ctx.restore();D8.lair.fx2d={x:X,y:Y,lit:o.L.lit,a:+(p).toFixed(2)};}catch(e){}};}
-// HD-2D: the tower behind the gate card, the beacon glow and the column (skipped while the hero stands in front of them), and their lights
-{const ha0=hdActors;hdActors=function(m,now,ts){ha0.apply(this,arguments);try{const o=d8LairFx(m);if(!o)return;const V=HD.S.V,tw=d8LairCanvas(o.L,'tower'),fx=o.x,fz=o.y-TS+2;
-  if(Math.abs(fx-HD.cam.x)>480||Math.abs(fz-HD.cam.z)>640)return;hdBill(HD.dyn,'d8tower:'+o.L.mat+o.L.bk+(o.L.lit?1:0),tw,fx,0,fz,false,1,255,255,255,255,2|8);
-  const hx=WS.px+8,hz=WS.py+12,front=Math.abs(hx-fx)<22&&hz<fz;D8.lair.hd={front,lit:o.L.lit};if(front)return;
-  const p=gfxStill()?.85:.75+.25*Math.sin(ts/(o.L.lit?900:420)),c=o.L.lit?[255,215,110]:[210,80,255];
-  hdBill(HD.dynA,'glow',hdGlowS(),fx,92*V,fz+1,false,1,c[0],c[1],c[2],Math.round(90*p),4);
-  hdBill(HD.dynA,'d8beam:'+(o.L.lit?1:0),d8Tint(d8Beam(),o.L.lit?'#ffd870':'#c84aff'),fx,96*V,fz+.5,false,1,255,255,255,Math.round((o.L.lit?80:120)*p),4);D8.lair.hd.beam=1;}catch(e){}};}
-{const hl0=hdLights;hdLights=function(m,ts,q,o2){const n=hl0.apply(this,arguments);try{const o=d8LairFx(m);if(!o)return n;const p=gfxStill()?1:.8+.2*Math.sin(ts/(o.L.lit?900:420)),k=HD2D.lightK||1;
-  if(o.L.lit)hdLmAdd(o.x,o.y-20,100,.7*p*k,.55*p*k,.28*p*k);else hdLmAdd(o.x,o.y-20,110,.6*p*k,.18*p*k,.75*p*k);return HD.lmn;}catch(e){return n;}};}
+  const p=.8+.2*Math.sin(t/(o.L.lit?1100:520)),gl=hx2(o.L.glow);ctx.globalCompositeOperation='lighter';
+  if(o.Lr.mouth){const mx=X-o.Lr.fv[0]*6,my=Y-8-o.Lr.fv[1]*6+(o.Lr.south?-2:0),g=ctx.createRadialGradient(mx,my,1,mx,my,18);g.addColorStop(0,`rgba(${gl},${(o.L.lit?.28:.4)*p})`);g.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=g;ctx.fillRect(mx-18,my-18,36,36);}
+  {const tp=o.Lr.tiles.reduce((a,q)=>o.Lr.hh[q+'']>=o.Lr.hh[a+'']?q:a,o.Lr.tiles[0]);ctx.globalAlpha=(o.L.lit?.18:.26)*p;ctx.drawImage(d8Tint(d8Plume(),o.L.glow),tp[0]*TS-cx,tp[1]*TS-cy-128+4);}ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';
+  const fl=Math.floor(t/140)%2,Lr=o.Lr,hAt=(x,y)=>((Lr.cor[x+','+y]||0)+(Lr.cor[(x+1)+','+y]||0)+(Lr.cor[x+','+(y+1)]||0)+(Lr.cor[(x+1)+','+(y+1)]||0))/4,tile=(tx,ty)=>[tx*TS+8-cx,ty*TS+10-cy-Math.round(hAt(tx,ty)*D8_K2)];
+  if(!o.L.lit){const ex2=d8LairExtras(o.L);if(Lr.deco[0]){const [a,b]=tile(...Lr.deco[0]);ctx.drawImage(ex2,0,0,16,24,a-8,b-24-4,16,24);}if(Lr.deco[1]){const [a,b]=tile(...Lr.deco[1]);ctx.drawImage(ex2,16,0,16,24,a-8,b-24-4,16,24);}}
+  Lr.torches.forEach(([tx,ty],i)=>{let [a,b]=tile(tx,ty);a+=Lr.fv[0]*6;b=Lr.south?(ty+1)*TS-cy-4:b+Lr.fv[1]*5;ctx.fillStyle='#3a2a1a';ctx.fillRect(a-1,b-8,2,8);ctx.fillStyle='#5a4a3a';ctx.fillRect(a-2,b-5,4,2);
+    ctx.fillStyle=o.L.lit?(fl^i?'#ffe08a':'#ffd04a'):(fl^i?'#ffb04a':'#ff7a2a');ctx.fillRect(a-2,b-12-(fl^i),4,4);ctx.fillStyle='#fff0b0';ctx.fillRect(a-1,b-11,2,2);});
+  ctx.restore();D8.lair.fx2d={x:X,y:Y,lit:o.L.lit,a:+p.toFixed(2)};}catch(e){}};}
+function hx2(c){const h=hx(c);return h.join(',');}
 // the map: its own icon and legend entry
-MAPICO_X.lair=[[4,0,2,2,'#ff5a3a'],[4,0,1,1,'#ffd0a0'],[3,2,4,3,'#3a2c44'],[1,5,8,5,'#5a4a5e'],[0,3,1,3,'#c8c0b0'],[9,3,1,3,'#c8c0b0'],[3,5,4,2,'#e8e0d0'],[3,5,1,1,'#ff3a3a'],[6,5,1,1,'#ff3a3a'],[4,7,2,3,'#0a0710']];
-MAPICO_X.lairlit=[[4,0,2,2,'#ffd04a'],[4,0,1,1,'#fff6c8'],[3,2,4,3,'#4a3c4c'],[1,5,8,5,'#6a5a5e'],[0,3,1,3,'#c8c0b0'],[9,3,1,3,'#c8c0b0'],[3,5,4,2,'#e8e0d0'],[3,5,1,1,'#7a6a5a'],[6,5,1,1,'#7a6a5a'],[4,7,2,3,'#0a0710']];
+MAPICO_X.lair=[[2,4,6,1,'#6a5a4c'],[1,5,8,5,'#5a4a3e'],[0,7,10,3,'#4a3c32'],[3,3,4,1,'#7a6a5a'],[4,6,2,4,'#0a0710'],[4,9,2,1,'#ff6a3a'],[3,2,1,1,'#e8e0d0'],[6,1,1,2,'#3a2a1a'],[7,1,2,1,'#c0392b']];
+MAPICO_X.lairlit=[[2,4,6,1,'#7a6a5c'],[1,5,8,5,'#6a5a4e'],[0,7,10,3,'#5a4c42'],[3,3,4,1,'#8a7a6a'],[4,6,2,4,'#0a0710'],[4,9,2,1,'#ffd04a'],[4,1,2,2,'#ffd04a']];
 MAPICO_NAME.lair='Lair';MAPICO_NAME.lairlit='Lair (relit)';MKN.lair='Lair';MKN.lairlit='Lair (relit)';MK.lair=['#ff5a3a','☗'];MK.lairlit=['#ffd04a','☗'];
 {const mm0=mapMarks;mapMarks=function(m){const L=mm0.apply(this,arguments);try{if(m&&m.kind==='field'&&!window.__D8OFF)L.forEach(o=>{if(o.k==='dungeon')o.k=G.cleared&&G.cleared[m.s]?'lairlit':'lair';});}catch(e){}return L;};}
 
 // =================== 4. saves made inside a reshaped dungeon ===================
-{const ew0=enterWorldFromSave;enterWorldFromSave=function(){try{const p=G&&G.pos;if(p&&/^[dko]\d/.test(String(p.m))){resetMaps();const m=getMap(p.m);if(m&&m.kind==='dungeon'&&solidAt(m,p.x,p.y)){const s=d8Nearest(m,p.x,p.y);if(s){p.x=s[0];p.y=s[1];D8.moved=[p.m,s[0],s[1]];}}}}catch(e){}
+{const ew0=enterWorldFromSave;enterWorldFromSave=function(){try{const p=G&&G.pos;if(p&&/^[dkofg]\d/.test(String(p.m))){resetMaps();const m=getMap(p.m);if(m&&(m.kind==='dungeon'||m.kind==='field')&&solidAt(m,p.x,p.y)){const s=d8Nearest(m,p.x,p.y);if(s){p.x=s[0];p.y=s[1];D8.moved=[p.m,s[0],s[1]];}}}}catch(e){}
   return ew0.apply(this,arguments);};}
 function d8Nearest(m,x,y){const seen=new Set([x+','+y]),q=[[x,y]];for(let i=0;i<q.length&&i<20000;i++){const [cx,cy]=q[i];if(!(cx===x&&cy===y)&&!solidAt(m,cx,cy)&&tileAt(m,cx,cy)!=='E')return [cx,cy];
   for(const [a,b] of [[1,0],[-1,0],[0,1],[0,-1]]){const nx=cx+a,ny=cy+b,k=nx+','+ny;if(nx<0||ny<0||nx>=m.w||ny>=m.h||seen.has(k))continue;seen.add(k);q.push([nx,ny]);}}return m.start||null;}
-try{window.__D8={D8,D8M,D8_REALM,D8_ZONE,D8_CAVE,styleFor:d8StyleFor,styleOf:d8StyleOf,simple:d8Simple,lair:m=>d8LairFx(m),lairCanvas:(L,p)=>d8LairCanvas(L,p),nearest:d8Nearest,issues:d8Issues,enterFromSave:()=>enterWorldFromSave(),mMap:()=>mMap(),BG:k=>!!BG[k],D8P:()=>Object.keys(D8P),lairFx:()=>d8LairFx(WS.m)};}catch(e){}
+// test hook: props up to three rows north of the mound that its real (HD-2D) height would hide (the pgHides rule)
+function d8LairHidden(m){const Lr=m&&m.d8lair;if(!Lr)return [];const out=[],Th=Math.tan(HD2D.pitch*Math.PI/180);Lr.tiles.forEach(([x,y])=>{const h=Math.max(Lr.cor[x+','+y]||0,Lr.cor[(x+1)+','+y]||0,Lr.cor[x+','+(y+1)]||0,Lr.cor[(x+1)+','+(y+1)]||0);
+  for(let k=1;k<=3;k++){const yy=y-k,c=m.t[yy]&&m.t[yy][x];if(!c||Lr.mask.has(x+','+yy))continue;const ph=PG_PROP_H[c];if(ph==null||c==='#')continue;const v=h-((k-1)*TS-.5)*Th;if(ph-v<PG_VIS)out.push({x,y:yy,c,ph,v:+v.toFixed(1)});}});return out;}
+try{window.__D8={D8,D8M,D8_REALM,D8_ZONE,D8_CAVE,styleFor:d8StyleFor,styleOf:d8StyleOf,simple:d8Simple,lair:m=>d8LairFx(m),lairTex:L=>d8LairTex(L),lairState:m=>d8LairState(m),nearest:d8Nearest,issues:d8Issues,enterFromSave:()=>enterWorldFromSave(),mMap:()=>mMap(),BG:k=>!!BG[k],D8P:()=>Object.keys(D8P),lairFx:()=>d8LairFx(WS.m),lairHidden:m=>d8LairHidden(m),facade:m=>{const k=P2.dm;P2.dm=m;try{const c=obj2(m.theme,'facade');return [c.width,c.height];}finally{P2.dm=k;}}};}catch(e){}

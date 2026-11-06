@@ -10,22 +10,24 @@ const SZ={fold:[933,705],phone:[390,844]};
 (async()=>{
   for(const tier of ['low','medium'])for(const sz of SIZES){const [w,h]=SZ[sz];
     const H=await open({w,h,mobile:true,dpr:1,pre:META(tier)});const {ev,wait,page}=H;const errs=[];page.on('console',m=>{if(m.type()==='error'&&!/file:|ERR_FILE|Failed to load resource/.test(m.text()))errs.push(m.text());});
-    await ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;A.G.run.seed=424242;A.resetMaps();A.render();});await wait(500);
+    await ev(sd=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;A.G.run.seed=sd;A.resetMaps();A.render();},+(process.env.SEED||424242));await wait(500);
     const realms=await ev(()=>__A.ZONES.map((z,i)=>({i,key:z.key||('zone'+i),n:z.dungeon,th:z.theme})));
     const view=async n=>{const el=await page.$('.wview');if(el)await el.screenshot({path:path.join(OUT,n+'.png')});else{console.log('no world view for',n,await ev(()=>__A.V.screen+' '+(__A.V.modal&&__A.V.modal.type)));await page.screenshot({path:path.join(OUT,n+'.png')});}};
-    for(const R of realms){if(ONLY.length&&!ONLY.includes(R.key))continue;const s=1;
+    for(const R of realms){if(ONLY.length&&!ONLY.includes(R.key))continue;const s=+(process.env.STAGE||1);
       const setup=await ev(([i,s,T])=>{const A=__A,G=A.G;G.run.order[s]=i;G.cleared[s]=0;A.resetMaps();A.G.clock=150;A.G.weather[s]='clear';const d=A.getMap('d'+s),f=A.getMap('f'+s);d.roam=[];
         // a roomy spot near the stairs, and one south of the boss
         const open=(x,y)=>{let n=0;for(let j=-3;j<=3;j++)for(let k=-4;k<=4;k++)if(!A.solidAt(d,x+k,y+j))n++;return n;};
         let best=null,bs=-1;for(let y=d.start[1]-6;y<=d.start[1]+6;y++)for(let x=d.start[0]-2;x<=d.start[0]+10;x++){if(y<1||x<1||y>=d.h-1||x>=d.w-1||A.solidAt(d,x,y))continue;const v=open(x,y)-Math.abs(x-d.start[0]-4)*.3;if(v>bs){bs=v;best=[x,y];}}
         let boss=null;for(let y=0;y<d.h&&!boss;y++)for(let x=0;x<d.w;x++)if(d.t[y][x]==='D'){for(const dx of [3,2,4,1])if(!A.solidAt(d,x-dx,y)){boss=[x-dx,y];break;}break;}
+        let lane=null;if(f.ent){const o=f.entOut||[f.ent[0],f.ent[1]+1],fv=[o[0]-f.ent[0],o[1]-f.ent[1]];for(const k of [3,4,2,1])if(!lane&&!A.solidAt(f,f.ent[0]+fv[0]*k,f.ent[1]+fv[1]*k))lane=[f.ent[0]+fv[0]*k,f.ent[1]+fv[1]*k];}
         let lair=null;if(f.ent){for(const dy of (T==='low'?[3,4,2,5]:[5,6,4,3,2]))if(!A.solidAt(f,f.ent[0],f.ent[1]+dy)){lair=[f.ent[0],f.ent[1]+dy];break;}}
         let pool=null;for(let y=2;y<d.h-3&&!pool;y++)for(let x=2;x<d.w-2;x++)if(d.t[y][x]==='~'&&!A.solidAt(d,x,y+2)&&!A.solidAt(d,x,y+1)){pool=[x,y+2];break;}
-        return {best,boss,lair,pool};},[R.i,s,tier]);
-      const shot=async(name,fn,arg)=>{await ev(fn,arg);await wait(tier==='low'?500:1100);await view(`${TAG}_${R.key}_${name}_${tier}_${sz}`);};
+        return {best,boss,lair,pool,lane};},[R.i,s,tier]);
+      const shot=async(name,fn,arg)=>{if(process.env.SCENES&&!process.env.SCENES.split(',').includes(name))return;await ev(fn,arg);await ev(()=>{try{__A.TR.ph=null;__A.TR.wx.key=null;}catch(e){}__A.render();});await wait(tier==='low'?500:1400);await view(`${TAG}_${R.key}_${name}_${tier}_${sz}`);};
       if(setup.best)await shot('dun',([s,p])=>{const A=__A;A.V.modal=null;A.WS.dlg=null;A.placeAt('d'+s,p[0],p[1],'d');A.render();},[s,setup.best]);
       if(setup.pool)await shot('pool',([s,p])=>{const A=__A;A.V.modal=null;A.WS.dlg=null;A.placeAt('d'+s,p[0],p[1],'u');A.render();},[s,setup.pool]);
       if(setup.boss)await shot('boss',([s,p])=>{const A=__A;A.V.modal=null;A.WS.dlg=null;A.placeAt('d'+s,p[0],p[1],'u');A.render();},[s,setup.boss]);
+      if(setup.lane)await shot('lairlane',([s,p])=>{const A=__A;A.V.modal=null;A.WS.dlg=null;A.G.cleared[s]=0;A.placeAt('f'+s,p[0],p[1],'u');A.render();},[s,setup.lane]);
       if(setup.lair){await shot('lair',([s,p])=>{const A=__A;A.V.modal=null;A.WS.dlg=null;A.G.cleared[s]=0;A.placeAt('f'+s,p[0],p[1],'u');A.render();},[s,setup.lair]);
         await shot('lairlit',([s,p])=>{const A=__A;A.V.modal=null;A.WS.dlg=null;A.G.cleared[s]=1;A.resetMaps();A.placeAt('f'+s,p[0],p[1],'u');A.render();},[s,setup.lair]);
         await ev(s=>{__A.G.cleared[s]=0;__A.resetMaps();},s);}
