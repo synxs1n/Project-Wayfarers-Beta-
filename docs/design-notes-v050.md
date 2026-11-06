@@ -194,3 +194,6 @@ Details in `v082-dungeons.md` (`v3/dungeon8.js` after pathguard.js; tests `chrom
 
 ## Beta v0.8.9: Fold battle layout follow up
 Details in `v080-battle-phones.md` (follow up section; battle3.js/css; test `chrome/v080b.js` with 412x810, 933x615 and 6h/2f). Wide: the arrangement with the largest stage wins (right column 340/370/410 px, log and foes may sit in either column), last panels reach the bottom. Portrait: commands before the party cards, acting hero HP/MP in the command header, bottom padding uses env(safe-area-inset-bottom).
+
+## Beta v0.9.0: title heroes at the world's scale
+title7.js uses the overworld walker sprite shrunk like the HD-2D world (hdSmall at HD2D.spr.sc) at a whole device pixel scale, about 1/8 of the scene height (T7.cfg.heroFrac); props banded by distance. Tests `chrome/v080wt.js`, `v071t.js`.
