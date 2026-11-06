@@ -48,6 +48,7 @@ function mResult(i){
     ${rsJoin(i)}${rsGrid(i)}${rsParty(i)}${rsNotes(i)}
     <div class="btnrow stickyb rs-foot">${foot}</div></div></div>`;}
 {const ok0=ACT.resultOk;ACT.resultOk=function(){const i=V.modal&&V.modal.info;if(i&&i.tame&&!i.tamed&&!i.tameWarn){i.tameWarn=1;try{sfx('blip');}catch(e){}render();const p=document.querySelector('#modal .panel');if(p)p.scrollTop=0;return;}return ok0.apply(this,arguments);};}
+{const fbE=finishBattle;finishBattle=function(){V.endT=Date.now();return fbE.apply(this,arguments);};}// v0.8.2: when the last battle ended (qready stays quiet then)
 ACT.resultLeave=function(){const i=V.modal&&V.modal.info;if(i)i.tame=null;return ACT.resultOk();};
 try{const css=document.createElement('style');css.textContent=`
 .rs .rs-tame{display:flex;gap:10px;align-items:center;padding:10px;margin:2px 0 10px;border:2px solid #7affc8;border-radius:8px;background:rgba(122,255,200,.08);box-shadow:0 0 12px rgba(122,255,200,.25)}
@@ -63,3 +64,5 @@ try{const css=document.createElement('style');css.textContent=`
 .rs .rs-top{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}.rs .rs-gain{font-style:normal;color:#9ad0ff;font-weight:800}.rs .rs-none{font-style:normal;opacity:.75}
 .rs .rs-cu{font-size:.72rem;color:#7affc8}.rs .rs-lv{color:#ffd04a;font-weight:700}.rs .rs-ask{width:100%;margin:0 0 6px;font-weight:700;color:#ffd04a}
 .rs .rs-foot{flex-wrap:wrap}`;document.head.appendChild(css);}catch(e){}
+// v0.8.2 test aid: the last sounds asked for, by name (window.__SFX, at most 50)
+{const s0=sfx;sfx=function(n){try{const L=window.__SFX=window.__SFX||[];L.push(n);if(L.length>50)L.shift();}catch(e){}return s0.apply(this,arguments);};}

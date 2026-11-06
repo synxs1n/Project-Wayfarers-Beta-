@@ -13,7 +13,8 @@ function qReadyCheck(){if(!G||G.daily||B||V.screen!=='world')return;const now=Da
   Object.keys(N).forEach(k=>{if(!live[k])delete N[k];});
   const fresh=L.filter(o=>!N[o.k]);if(!fresh.length)return;fresh.forEach(o=>N[o.k]=1);
   toast(fresh.length===1?`Quest ready to hand in: ${fresh[0].t}. Claim it at ${fresh[0].where}.`:`${fresh.length} quests are ready to hand in. See Menu > Quests.`);
-  try{if(typeof sfx==='function')sfx('chest');}catch(e){}}
+  // v0.8.2: silent right after a battle (leaving the rewards screen made a noise); the toast still shows
+  try{if(typeof sfx==='function'&&!(V.endT&&Date.now()-V.endT<5000))sfx('chest');}catch(e){}}
 // the Menu button and the Quests chip carry the count; ready rows get a tag
 {const mt0=menuTabsHtml;menuTabsHtml=function(grp,tab){let h=mt0.apply(this,arguments);try{const n=qReadyCount();if(n)h=h.replace(/(data-arg="quests">)Quests(<\/button>)/,`$1Quests <em class="qtag" title="Ready to hand in">${n} ready</em>$2`);}catch(e){}return h;};}
 {const r0=render;render=function(){const r=r0.apply(this,arguments);try{qReadyCheck();const n=G&&!G.daily?qReadyCount():0;

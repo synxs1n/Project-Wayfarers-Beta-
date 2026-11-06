@@ -127,6 +127,8 @@ button.card.hero:hover{background:var(--wood2)}
 .dlg{display:grid;gap:4px;width:100%;text-align:left;padding:12px 16px 14px;background:rgba(14,8,4,.92);border:4px solid var(--ink);box-shadow:inset 0 0 0 2px var(--bronze);position:relative}
 .dlg b{color:var(--gold)}
 .dlg i{position:absolute;right:12px;bottom:6px;font-style:normal;color:var(--gold);animation:bob .8s steps(1) infinite}
+.dlg.por{grid-template-columns:auto minmax(0,1fr);column-gap:12px;align-items:center}.dlg.por .dlgpor{grid-row:1/span 2;position:relative;width:52px;height:52px;overflow:hidden;background:radial-gradient(circle at 50% 70%,#4a4060,#1a1626);border:1px solid rgba(217,180,106,.55);border-radius:4px}.dlg.por .dlgpor img{position:absolute;width:80px;height:80px;left:-14px;top:-2px;max-width:none;image-rendering:pixelated}.dlg.por>b,.dlg.por>span:not(.dlgpor){grid-column:2}
+.rgneed{color:#ffd58a;font-weight:700}
 .wbar{display:flex;justify-content:space-between;align-items:center;gap:10px}
 .wkeys{color:var(--mute);font-size:.85rem}
 .pad{display:none;justify-content:space-between;align-items:center;gap:16px;padding:4px 6px;user-select:none;-webkit-user-select:none;touch-action:none}
@@ -1784,7 +1786,7 @@ body:has(.battle.b3.m-wide){padding-bottom:4px}
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.8.1";const APP_BUILD="82e870398a6a";
+(function(){const APP_VER="0.8.2";const APP_BUILD="decdc239d72f";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2291,7 +2293,7 @@ const TWISTS={on:true,
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.8.1";const APP_BUILD="82e870398a6a";
+const APP_VER="0.8.2";const APP_BUILD="decdc239d72f";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2299,6 +2301,7 @@ const APP_VER="0.8.1";const APP_BUILD="82e870398a6a";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.8.2',['Personal quest rivals whose wayfarer is not in your six now show see through on the map, with a hollow star on the minimap. You can walk through them and they will not fight; talk to one to learn who it waits for (with their portrait). Bring that hero into your party and it stands solid and fights as before. The Quests tab, Guild Hall and What next? say who is needed. Leaving the rewards screen no longer plays a sound (the victory theme is enough).']],
  ['Beta v0.8.1',['Best Party is now Build Party, since it offers several parties. The Training team now takes your lowest level heroes, and only brings a higher one when nobody lower can be the tank or healer (and then the lowest one who can). Areas with flying foes now bring a real ranged attacker, an Archer first: lances and spells only half answer flyers.']],
  ['Beta v0.8.0',['Weather overhaul: rain, storms, snow, blizzards, fog, gales, sandstorms, heat, ashfall, auroras and starfall now come in layers with depth in the world (2D and HD-2D) and in battle: puddles and splashes on wet ground, lightning that lights the scene (gently, never strobing), drifting fog banks that walls hide, settling snow and ash, heat shimmer. Old visuals updated: the Victory crest in the new lettering, a sunlit colosseum for the Arena, and a shaded minimap.']],
  ['Beta v0.7.9',['Wide battle screen (Galaxy Fold open, tablets, desktop): everything now fits without scrolling. Under the stage, the commands sit on top with the foes right below them, and the party sits beside them, Vanguard then Rearguard, one hero per row. Command buttons widen and wrap instead of cutting words, aim tags and foe cards no longer cut off text, and boss fights put the boss bar beside the turn order to save room.']],
@@ -6520,7 +6523,7 @@ function tileAt(m,x,y){
   if(c==='|'&&G.levers[m.id])return '.';
   return c;
 }
-function solidAt(m,x,y){const c=tileAt(m,x,y);if(c==='c')return true;if(SOLID.includes(c))return true;return m.npcs.some(n=>n.x===x&&n.y===y)||dynActors(m).some(a=>a.x===x&&a.y===y);}
+function solidAt(m,x,y){const c=tileAt(m,x,y);if(c==='c')return true;if(SOLID.includes(c))return true;return m.npcs.some(n=>n.x===x&&n.y===y)||dynActors(m).some(a=>a.x===x&&a.y===y&&!ghostActor(a));}
 // actors that depend on game state: bounty elites in fields, the lost wayfarer in dungeons
 function dynActors(m){
   const out=[];
@@ -7381,7 +7384,7 @@ function diagOk(m,x,y,d){const [dx,dy]=DIRV[d],tx=x+dx,ty=y+dy;
   if(solidAt(m,x+dx,y)||solidAt(m,x,y+dy)||solidAt(m,tx,ty))return false;
   const c=tileAt(m,tx,ty);if('EXGD|'.includes(c))return false;
   if(m.exits.some(e=>e.x===tx&&e.y===ty)||m.bld.some(b=>b.door[0]===tx&&b.door[1]===ty))return false;
-  if(dynActors(m).some(a=>(a.x===tx&&a.y===ty)||(a.x===x+dx&&a.y===y)||(a.x===x&&a.y===y+dy)))return false;
+  if(dynActors(m).some(a=>!ghostActor(a)&&((a.x===tx&&a.y===ty)||(a.x===x+dx&&a.y===y)||(a.x===x&&a.y===y+dy))))return false;
   return true;}
 function tryStep(now){
   const m=WS.m,d=worldInputDir();if(!d)return;
@@ -7406,7 +7409,7 @@ function tryStepDir(now,d){
   if(c==='G'){bumpSay(`The gate is sealed with a ${bossClass(bossKeyFor(m.s))}'s sigil. Defeat whatever lurks in the ${ZS(m.s).dungeon} to break it.`);return;}
   if(c==='D'){bumpSay('A heavy door with a beacon-shaped keyhole. The key must be somewhere in these halls.');return;}
   if(c==='|'){bumpSay(barsText(m,nx,ny));return;}
-  const act=dynActors(m).find(a=>a.x===nx&&a.y===ny);if(act){WS.held=[];actorTalk(act);return;}
+  const act=dynActors(m).find(a=>a.x===nx&&a.y===ny);if(act&&ghostActor(act)){if(rgBump(m,act))return;}else if(act){WS.held=[];actorTalk(act);return;}
   if(solidAt(m,nx,ny))return;
   WS.mv={fx:WS.x,fy:WS.y,tx:nx,ty:ny,t0:now,dur:stepMs()};
 }
@@ -7495,7 +7498,7 @@ function interact(){
   if(c==='a')return say(null,'The anvil is still warm.');
 }
 function actorTalk(a){
-  if(a.type==='elite'){if(a.b.personal&&!G.party.includes(a.b.personal)){say(null,`${a.b.name} ignores you. This fight belongs to ${TPL[a.b.personal].n}: bring them in your party of six.`);return;}V.modal={type:'elite',b:a.b};render();return;}
+  if(a.type==='elite'){if(ghostActor(a)){ghostTalk(a);return;}V.modal={type:'elite',b:a.b};render();return;}
   if(a.type==='wanderer'){const q=a.q,t=TPL[q.hero];
     say(t.n,`You came for me? I got turned around in the dark and something big started breathing behind that door. Let's get out of here.`,()=>{q.found=true;if(!G.roster[q.hero])recruit(q.hero,true);toast(t.n+' joins your roster. Report back to the quest board.');saveGame();render();});}
 }
@@ -7609,6 +7612,7 @@ function worldDraw(now){
   // bounty elites and lost wayfarers
   dynActors(m).forEach(a=>{actors.push({y:a.y*TS,draw:()=>{
     if(a.type==='legend'){drawLegendActor(ctx,a,cx,cy,now);}
+    else if(ghostActor(a))rgDraw2D(ctx,a,cx,cy,now);
     else if(a.type==='elite'){const mo=MON[a.b.mon],c=imgOf('mapmon:'+mo.art,()=>monCanvas(mo.art));const bob=Math.floor(now/400)%2,p=.5+.5*Math.sin(now/200);
       ctx.fillStyle=`rgba(255,60,60,${.18+.18*p})`;ctx.beginPath();ctx.ellipse(a.x*TS+8-cx,a.y*TS+14-cy,14,5,0,0,7);ctx.fill();
       drawSprite(ctx,c,a.x*TS+8-cx,a.y*TS+17-cy-bob,true);ctx.fillStyle='#ff4a4a';ctx.fillRect(a.x*TS+7-cx,a.y*TS-26-cy-bob,3,6);ctx.fillRect(a.x*TS+7-cx,a.y*TS-18-cy-bob,3,2);}
@@ -9145,8 +9149,8 @@ function mMenu(m){
     body=ddBar([ddSel('Show','lSh','items',[['all','All items'],['own','Carrying'],['battle','Healing and cures'],['travel','Travel gear']],sh),ddSel('Sort','lSort','items',[['def','Default'],['name','Name'],['count','Most carried'],['rar','Rarest first']],f.s)],'lfbar')
       +(ids.length?`<div class="rows">${ids.map(id=>`<div class="row tr" style="${tierVars(iTierIdx(id))}"><div><b>${itemIcon(id)} ${ITEMS[id].n}</b> ${itemChip(id)} x${G.inv[id]||0}<small>${ITEMS[id].d}</small>${ITEMS[id].travel&&(G.inv[id]||0)>0&&travelWhyNot(id)?`<small class="warn">${esc(travelWhyNot(id))}</small>`:''}</div>${ITEMS[id].cure?'<span class="m">Battle only</span>':ITEMS[id].travel?`<button class="btn sm" data-act="useTravel" data-arg="${id}" ${(G.inv[id]||0)>0&&!travelWhyNot(id)?'':'disabled'} title="${esc(travelWhyNot(id))}">Use</button>`:`<button class="btn sm" data-act="useItem" data-arg="${id}" ${(G.inv[id]||0)>0?'':'disabled'}>Use</button>`}</div>`).join('')}</div>`:'<p class="note empty">No items match. Try Show: All items.</p>')+'<p class="note">Materials have their own tab: Backpack, Materials.</p>';}
   if(tab==='pouch')body=`<p class="note">Herbs, ore, logs, monster parts and relics. Alchemy and the Smithy turn them into gear and brews.</p>${vPouch()}`;
-  if(tab==='quests'){const act=G.quests.filter(q=>q.state==='active').sort((a,b)=>(questReady(b)?1:0)-(questReady(a)?1:0)),bt=G.bounties.filter(b=>b.state==='active');
-    body=`<div class="rows">${act.map(q=>`<div class="row"><div><b>${esc(q.title)}</b><small>${esc(q.desc)}</small><small>${q.type==='tamer'?`${Math.min(stickCount().n,q.n)}/${q.n} creatures logged`:q.type==='legend'?legendProg(q):q.type==='hunt'?`${q.have||0}/${q.n}`:q.type==='gather'?`${Math.min(G.mats[q.mat]||0,q.n)}/${q.n}`:q.found?'Found':'Not found yet'}${questReady(q)?'. Ready to claim at a quest board.':''}</small></div></div>`).join('')}${bt.map(b=>`<div class="row"><div><b>Bounty: ${esc(b.name)}</b><small>Roaming ${esc(ZS(b.stage).n)}.</small></div></div>`).join('')||''}${!act.length&&!bt.length?'<p class="note">No active quests. Check the quest board in any town square, and the bounty board at the Guild Hall.</p>':''}</div>
+  if(tab==='quests'){const act=G.quests.filter(q=>q.state==='active').sort((a,b)=>(questReady(b)?1:0)-(questReady(a)?1:0)),bt=G.bounties.filter(b=>b.state==='active'),pr=Object.values(G.personal||{}).filter(q=>q&&q.state==='active'&&TPL[q.personal]);
+    body=`<div class="rows">${act.map(q=>`<div class="row"><div><b>${esc(q.title)}</b><small>${esc(q.desc)}</small><small>${q.type==='tamer'?`${Math.min(stickCount().n,q.n)}/${q.n} creatures logged`:q.type==='legend'?legendProg(q):q.type==='hunt'?`${q.have||0}/${q.n}`:q.type==='gather'?`${Math.min(G.mats[q.mat]||0,q.n)}/${q.n}`:q.found?'Found':'Not found yet'}${questReady(q)?'. Ready to claim at a quest board.':''}</small></div></div>`).join('')}${bt.map(b=>`<div class="row"><div><b>Bounty: ${esc(b.name)}</b><small>Roaming ${esc(ZS(b.stage).n)}.</small></div></div>`).join('')||''}${pr.map(q=>`<div class="row rgrow">${port(q.personal)}<div class="grow"><b>Rival: ${esc(q.name)}</b><small>${esc(TPL[q.personal].n)}'s personal quest. Roaming ${esc(ZS(q.stage).n)}.${rivalNeed(q)?` <b class="rgneed">${esc(rivalNeedShort(q))}.</b>`:''}</small></div></div>`).join('')}${!act.length&&!bt.length&&!pr.length?'<p class="note">No active quests. Check the quest board in any town square, and the bounty board at the Guild Hall.</p>':''}</div>
     <h4>The journey</h4><div class="rows">${[0,1,2,3,4].map(s=>`<div class="row ${s>G.stage?'lock':''}"><div><b>${s>G.stage?'???':esc(ZS(s).n)}</b><small>${s>G.stage?'Ahead':esc(ZS(s).dungeon)+(G.cleared[s]?': relit':`: ${s<4?bossClass(bossKeyFor(s)):'Calamity'} waits`)}</small></div></div>`).join('')}</div>`;}
   if(tab==='next')body=vNext();
   if(tab==='beasts')body=vBestiary();
@@ -9315,7 +9319,7 @@ const ACT={
     if(B.pend.item){const it=ITEMS[B.pend.item];if(it.revive?c.hp<=0:c.hp>0)useItem(B.pend.item,c);return;}
     const s=B.pend.sk;if(!s)return;if(s.t==='ally'&&c.hp>0)exec(s,[c]);else if(s.t==='dead'&&c.hp<=0)exec(s,[c]);},
   sw(i){if(!B||B.mode!=='cmd')return;if(doSwap(+i)===false)render();},
-  resultOk(){const i=V.modal.info;if(i.ups.length)sfx('level');if(i.story){V.modal={type:'story',title:i.story.title,text:i.story.text,btn:G.won&&B&&B.stage===4?'The light returns':'Continue',after:'finish'};render();}else{V.modal=null;finishBattle('win');}},
+  resultOk(){const i=V.modal.info;/* v0.8.2: no sound on leaving the rewards (the victory theme is enough) */if(i.story){V.modal={type:'story',title:i.story.title,text:i.story.text,btn:G.won&&B&&B.stage===4?'The light returns':'Continue',after:'finish'};render();}else{V.modal=null;finishBattle('win');}},
   storyOk(){const m=V.modal;V.modal=null;if(m&&m.after==='finish')finishBattle('win');else render();},
   loseOk(){V.modal=null;finishBattle('lose');}
 };
@@ -10227,6 +10231,7 @@ function vNext(){
   if(qo.length)add(false,`${qo.length} quest${qo.length>1?'s':''} waiting on the board`,qo.slice(0,3).map(q=>esc(q.title)).join(', '));
   const ba=G.bounties.filter(b=>b.state==='active'),bo=G.bounties.filter(b=>b.state==='open'&&b.stage<=s);
   ba.forEach(b=>add(false,`Bounty: ${esc(b.name)}`,`Roaming ${esc(ZS(b.stage).n)}. Beat it to claim it${G.tamed.length<8?' and maybe tame it':''}.`));
+  Object.values(G.personal||{}).filter(q=>q&&q.state==='active'&&TPL[q.personal]).forEach(q=>add(false,`Rival: ${esc(q.name)}`,`${esc(TPL[q.personal].n)}'s personal quest, roaming ${esc(ZS(q.stage).n)}. `+(typeof rivalNeed==='function'&&rivalNeed(q)?`<b class="rgneed">${esc(rivalNeedShort(q))}.</b>`:`${esc(TPL[q.personal].n)} is in your party: face it.`)));
   if(bo.length)add(false,`${bo.length} bount${bo.length>1?'ies':'y'} posted at the Guild Hall`,'Elite monsters with gold, a stat charm and materials.');
   // exploring
   (worldV3()?[['f'+s,Z.n],['d'+s,Z.dungeon],['k'+s,typeof CAVE_NAMES!=='undefined'?CAVE_NAMES[s]:'Side cave']]:[['g'+s,Z.n+' (first field)'],['f'+s,worldV2()?Z.n+' (deeper fields)':Z.n],['d'+s,Z.dungeon]]).forEach(([mid,n])=>{if(!been[mid])return;const nl=nodesLeft(mid),cl=chestsLeft(mid);if(nl)add(false,`${nl} gathering spot${nl>1?'s':''} left in ${esc(n)}`,'Herbs, ore and logs. They regrow when you rest at an inn.');if(cl)add(false,`${cl} unopened chest${cl>1?'s':''} in ${esc(n)}`,'');});
@@ -12526,12 +12531,12 @@ function mapMarks(m){const out=[],T=m.t;for(let y=0;y<m.h;y++)for(let x=0;x<m.w;
     if(gg){if(gg.x===e.x&&gg.y===e.y)out.push({x:e.x,y:e.y,k:String(e.to.m)[0]==='t'?'town':'exit',dir:gg.side});return;}
     out.push({x:e.x,y:e.y,k:String(e.to.m)[0]==='t'?'town':'exit'});});
   (m.bld||[]).forEach(b=>{if(isSeen(m,b.door[0],b.door[1])&&SERVICE[b.k])out.push({x:b.door[0],y:b.door[1],k:'svc',svc:b.k});});
-  try{dynActors(m).forEach(a=>{if(isSeen(m,a.x,a.y))out.push({x:a.x,y:a.y,k:'quest'});});}catch(e){}
+  try{dynActors(m).forEach(a=>{if(isSeen(m,a.x,a.y))out.push({x:a.x,y:a.y,k:ghostActor(a)?'questghost':'quest'});});}catch(e){}
   return out;}
 const MK={chest:['#e8b04a','▪'],chestopen:['#6a5a3a','▫'],vault:['#c89aff','▪'],vaultopen:['#5a4a6a','▫'],key:['#ffd04a','⚿'],keyopen:['#6a5a3a','▫'],stairs:['#ffe08a','▲'],dungeon:['#ffe08a','▼'],waystone:['#5ad0ff','◆'],
   boss:['#ff4a4a','●'],bossdone:['#7a5a5a','○'],echo:['#c89aff','◎'],door:['#ff9a4a','■'],dooropen:['#8a6a4a','□'],bars:['#a8a8b8','#'],keybars:['#ffd04a','#'],barsopen:['#5a5a6a','·'],lever:['#ffd04a','┤'],leverdone:['#6a6a5a','┤'],
-  cave:['#5ad0ff','◒'],gate:['#ff6a6a','║'],gateopen:['#6a8a6a','║'],board:['#e8c860','!'],town:['#ffe8a0','⌂'],exit:['#d8d8d8','➜'],svc:['#ffffff','•'],quest:['#5aff9a','★']};
-const MKN={cave:'Side cave',chest:'Chest',chestopen:'Opened chest',vault:'Vault chest',key:'Beacon Key',stairs:'Stairs out',dungeon:'Dungeon entrance',waystone:'Waystone',boss:'Scourge or Calamity',echo:'Echo',door:'Boss door',bars:'Bars',keybars:'Bars over the key room',lever:'Lever',gate:'Sealed gate',town:'Town',exit:'Road on',board:'Quest board',svc:'Shop or service',quest:'Quest or bounty target'};
+  cave:['#5ad0ff','◒'],gate:['#ff6a6a','║'],gateopen:['#6a8a6a','║'],board:['#e8c860','!'],town:['#ffe8a0','⌂'],exit:['#d8d8d8','➜'],svc:['#ffffff','•'],quest:['#5aff9a','★'],questghost:['#a8c8b8','☆']};
+const MKN={cave:'Side cave',chest:'Chest',chestopen:'Opened chest',vault:'Vault chest',key:'Beacon Key',stairs:'Stairs out',dungeon:'Dungeon entrance',waystone:'Waystone',boss:'Scourge or Calamity',echo:'Echo',door:'Boss door',bars:'Bars',keybars:'Bars over the key room',lever:'Lever',gate:'Sealed gate',town:'Town',exit:'Road on',board:'Quest board',svc:'Shop or service',quest:'Quest or bounty target',questghost:'Rival waiting for a wayfarer not in your party'};
 // ----- v0.3.5 1.4: one pixel-icon set shared by the map, minimap, legend and building signs (SVC_ICON in towngfx.js has the shop icons) -----
 const MAPICO_X={
   waystone:[[4,0,2,1,'#d8f6ff'],[3,1,4,2,'#5ad0ff'],[2,3,6,3,'#3aa8e8'],[3,6,4,2,'#3aa8e8'],[4,8,2,2,'#2a78b8'],[4,2,1,3,'#d8f6ff']],
@@ -12550,9 +12555,11 @@ function mapIcoDraw(x,k,cx,cy,size){const R=mapIcoRects(k);if(!R)return false;co
 function drawMarks(x,m,list,sc,ox,oy){x.textAlign='center';x.textBaseline='middle';x.font=`800 ${Math.max(7,Math.round(sc*1.15))}px sans-serif`;
   list.forEach(o=>{const M=MK[o.k]||['#fff','•'],px=ox+(o.x+.5)*sc,py=oy+(o.y+.5)*sc;
     if(o.dir){const v=SIDE_V[o.dir],ar={n:'▲',s:'▼',e:'▶',w:'◀'}[o.dir],d=Math.max(8,sc*1.8);x.fillStyle='rgba(0,0,0,.7)';x.fillText(ar,px-v[0]*d+1,py-v[1]*d+1);x.fillStyle='#ffe08a';x.fillText(ar,px-v[0]*d,py-v[1]*d);}
-    if(mapIcoDraw(x,mapIcoKey(o),px,py,Math.max(10,Math.round(sc*2.4))))return;const dim=MK_DONE[o.k];if(dim)x.globalAlpha=.45;x.fillStyle='rgba(0,0,0,.6)';x.fillText(M[1],px+1,py+1);x.fillStyle=M[0];x.fillText(M[1],px,py);if(dim)x.globalAlpha=1;});}
+    if(mapIcoDraw(x,mapIcoKey(o),px,py,Math.max(10,Math.round(sc*2.4))))return;const dim=MK_DONE[o.k]||MK_GHOST[o.k];if(dim)x.globalAlpha=.45;x.fillStyle='rgba(0,0,0,.6)';x.fillText(M[1],px+1,py+1);x.fillStyle=M[0];x.fillText(M[1],px,py);if(dim)x.globalAlpha=1;});}
 // opened chests (the chest itself has vanished from the world): left off the minimap, dimmed on the full map
 const MK_DONE={chestopen:1,vaultopen:1,keyopen:1};
+// v0.8.0: a personal rival waiting for a wayfarer who is not in your six: hollow star, dimmed (rivalghost.js)
+const MK_GHOST={questghost:1};
 function drawPlayer(x,sc,px,py){const d=WS.dir||'d';x.save();x.translate(px,py);x.rotate({u:-Math.PI/2,r:0,d:Math.PI/2,l:Math.PI}[d]||0);const s=Math.max(4,sc*.9);
   x.fillStyle='#000';x.beginPath();x.moveTo(s+1,0);x.lineTo(-s*.7,-s*.8);x.lineTo(-s*.7,s*.8);x.closePath();x.fill();x.fillStyle='#ffffff';x.beginPath();x.moveTo(s,0);x.lineTo(-s*.6,-s*.65);x.lineTo(-s*.6,s*.65);x.closePath();x.fill();x.restore();}
 // ----- minimap (HUD) -----
@@ -14773,7 +14780,7 @@ function vPersonal(){
   if(!list.length)return intro+`<p class="note">${realmReached(PERSONAL_REALM)?`No wayfarer is ready yet. Each hero's sheet shows their battles together (${PERSONAL_BT} needed).`:'Personal quests open in the third realm.'}</p>`;
   return intro+`<div class="rows">${list.map(c=>{const q=G.personal[c.id],t=TPL[c.id],w=gearOf(sigGid(c.id))||gearOf('u_'+c.id);
     const st=!q||q.state==='open'?`<button class="btn sm gold" data-act="personal" data-arg="${c.id}">Accept</button>`:q.state==='active'?'<span class="m">Rival roaming</span>':'<span class="m up">Done</span>';
-    return `<div class="row">${port(c.id)}<div class="grow"><b>${esc(t.n)}: ${esc(w.n)}</b><small>${q&&q.text?esc(q.text)+(q.state==='active'?` It prowls ${esc(ZS(q.stage).n)}.`:''):esc(gearDesc(w))}</small></div>${st}</div>`;}).join('')}</div>`;}
+    return `<div class="row">${port(c.id)}<div class="grow"><b>${esc(t.n)}: ${esc(w.n)}</b><small>${q&&q.text?esc(q.text)+(q.state==='active'?` It prowls ${esc(ZS(q.stage).n)}.`+(rivalNeed(q)?` <b class="rgneed">${esc(rivalNeedShort(q))}.</b>`:''):''):esc(gearDesc(w))}</small></div>${st}</div>`;}).join('')}</div>`;}
 function pqSheetLine(c){const q=G&&G.personal&&G.personal[c.id];let s=`Battles together: ${btOf(c)} of ${PERSONAL_BT}`;
   if(q&&q.state==='done')s+='. Personal quest done';else if(q&&q.state==='active')s+='. Personal quest under way';
   else if(TPL[c.id]&&TPL[c.id].mon){}else if(!realmReached(PERSONAL_REALM))s+='. Unlocks in the '+(['first','second','third','fourth','fifth'][PERSONAL_REALM]||'later')+' realm';else if(personalEligible(c))s+='. Personal quest ready at the Guild Hall';
@@ -15023,6 +15030,7 @@ function mResult(i){
     ${rsJoin(i)}${rsGrid(i)}${rsParty(i)}${rsNotes(i)}
     <div class="btnrow stickyb rs-foot">${foot}</div></div></div>`;}
 {const ok0=ACT.resultOk;ACT.resultOk=function(){const i=V.modal&&V.modal.info;if(i&&i.tame&&!i.tamed&&!i.tameWarn){i.tameWarn=1;try{sfx('blip');}catch(e){}render();const p=document.querySelector('#modal .panel');if(p)p.scrollTop=0;return;}return ok0.apply(this,arguments);};}
+{const fbE=finishBattle;finishBattle=function(){V.endT=Date.now();return fbE.apply(this,arguments);};}// v0.8.2: when the last battle ended (qready stays quiet then)
 ACT.resultLeave=function(){const i=V.modal&&V.modal.info;if(i)i.tame=null;return ACT.resultOk();};
 try{const css=document.createElement('style');css.textContent=`
 .rs .rs-tame{display:flex;gap:10px;align-items:center;padding:10px;margin:2px 0 10px;border:2px solid #7affc8;border-radius:8px;background:rgba(122,255,200,.08);box-shadow:0 0 12px rgba(122,255,200,.25)}
@@ -15038,6 +15046,8 @@ try{const css=document.createElement('style');css.textContent=`
 .rs .rs-top{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}.rs .rs-gain{font-style:normal;color:#9ad0ff;font-weight:800}.rs .rs-none{font-style:normal;opacity:.75}
 .rs .rs-cu{font-size:.72rem;color:#7affc8}.rs .rs-lv{color:#ffd04a;font-weight:700}.rs .rs-ask{width:100%;margin:0 0 6px;font-weight:700;color:#ffd04a}
 .rs .rs-foot{flex-wrap:wrap}`;document.head.appendChild(css);}catch(e){}
+// v0.8.2 test aid: the last sounds asked for, by name (window.__SFX, at most 50)
+{const s0=sfx;sfx=function(n){try{const L=window.__SFX=window.__SFX||[];L.push(n);if(L.length>50)L.shift();}catch(e){}return s0.apply(this,arguments);};}
 
 // ===== p2world.js (v0.5.0): battle and world logic: backdrops from the terrain, ground plane, surprise starts, single and dual types, hints =====
 // 2.1 battle backdrops from the terrain under the party, units always on a solid ground plane, flyers hover over a shadow
@@ -18610,6 +18620,49 @@ try{const st=document.createElement('style');st.textContent='.dl-say,.dl-rep{mar
 // tests (our own object; window.__A is left alone)
 try{window.__DL={LINES:DUEL_LINES,REPLY:DUEL_REPLY,GUILD:DUEL_GUILD,line:dlLine,fallback:dlFallback,quote:dlQuote,reply:dlReply,who:dlBattleWho};}catch(e){}
 
+// ===== rivalghost.js (v0.8.0): a personal quest rival waits, see through, until its wayfarer is in your six =====
+// A personal quest rival (G.personal[id], state 'active') stands on its realm's field like a bounty elite, but only fights when that
+// hero is in the party (G.party: the six, Vanguard and Rearguard alike; the same rule fightElite always used). Without them:
+//  - both world renderers draw it at about 45% opacity, half desaturated, with a faint shimmer and no red aura or marker
+//    (worldrt.js worldDraw for 2D, hd2d.js hdActors for HD-2D call rgGhostAlpha and rgGhostCanvas);
+//  - it is not solid (worldgen.js solidAt, worldrt.js diagOk skip it), so you walk through it or around it;
+//  - bumping into it once per map visit (not while tap walking), or facing it and pressing A, shows a short line naming the
+//    wayfarer it waits for, with that hero's portrait (WS.dlg.por, drawn by the renderWorldUI wrapper below). Never a battle;
+//  - the minimap and full map show a hollow, dimmed star ('questghost' in map.js);
+//  - the Personal quests row, the Quests tab and Guides > What next? say "needs <hero> in your party".
+// Nothing here reads or advances the game RNG, and no save key changes.
+function rivalNeed(b){return b&&b.personal&&b.state==='active'&&G&&TPL[b.personal]&&!(G.party||[]).includes(b.personal)?b.personal:null;}
+function ghostActor(a){return !!(a&&a.type==='elite'&&rivalNeed(a.b));}
+function rivalNeedText(b){const n=TPL[b.personal].n;return `This one waits for ${n}. Bring ${n} in your party to face it.`;}
+function rivalNeedShort(b){return `Needs ${TPL[b.personal].n} in your party`;}
+function ghostTalk(a){const b=a.b;say(b.name,rivalNeedText(b));if(WS.dlg){WS.dlg.por=b.personal;if(typeof renderWorldUI==='function')renderWorldUI();}}
+// test hook data: the alpha each renderer drew each ghost with on its last frame
+const RG={d2:{},hd:{}};
+function rgGhostAlpha(now,b){return .45+.05*Math.sin(now/320+(hashS(b.id)%7));}
+// a half desaturated, slightly cool copy of the map sprite (pixels only; cached per art)
+function rgGhostCanvas(src,key){return imgOf('ghost:'+key,()=>{const c=mkCv(src.width,src.height),x=c.getContext('2d');x.drawImage(src,0,0);
+  try{const d=x.getImageData(0,0,c.width,c.height),p=d.data;for(let i=0;i<p.length;i+=4){if(!p[i+3])continue;const l=p[i]*.3+p[i+1]*.59+p[i+2]*.11;
+    p[i]=Math.round(p[i]*.45+l*.55*.94);p[i+1]=Math.round(p[i+1]*.45+l*.55*1.0);p[i+2]=Math.round(Math.min(255,p[i+2]*.45+l*.55*1.12));}x.putImageData(d,0,0);}catch(e){}
+  return c;});}
+// 2D: the ghost and its shimmer (two pale motes drifting up through it)
+function rgDraw2D(ctx,a,cx,cy,now){const b=a.b,mo=MON[b.mon],src=imgOf('mapmon:'+mo.art,()=>monCanvas(mo.art)),c=rgGhostCanvas(src,mo.art);
+  const bob=Math.floor(now/400)%2,X=a.x*TS+8-cx,Y=a.y*TS-cy,al=rgGhostAlpha(now,b);
+  ctx.save();ctx.fillStyle='rgba(170,200,255,.10)';ctx.beginPath();ctx.ellipse(X,Y+14,11,4,0,0,7);ctx.fill();
+  ctx.globalAlpha=al;drawSprite(ctx,c,X,Y+17-bob,true);
+  for(let k=0;k<2;k++){const p=((now/1500+k*.5+(hashS(b.id)%5)*.1)%1);ctx.globalAlpha=.5*(1-p);ctx.fillStyle='#dcecff';ctx.fillRect(Math.round(X-5+k*9+Math.sin(p*6+k)*2),Math.round(Y+8-p*22),1,2);}
+  ctx.restore();RG.d2[b.id]=al;}
+// HD-2D: called from hdActors with its batches; drawn in the blended batch so the alpha holds
+function rgDrawHD(a,BB,fx,fz,bob,sp,V,ts){const b=a.b,mo=MON[b.mon],src=imgOf('mapmon:'+mo.art,()=>monCanvas(mo.art)),c=rgGhostCanvas(src,mo.art),al=rgGhostAlpha(ts,b);
+  hdDecal(BB,'glow',hdGlowS(),fx,fz+1,22,9,170,200,255,40);
+  hdChar(BB,c,fx,(bob*.6-sp)*V,fz,true,Math.round(al*255),16);hdShadowC(fx,fz+1,.7);RG.hd[b.id]=al;}
+// the needed hero's portrait beside the line
+{const rw0=renderWorldUI;renderWorldUI=function(){const r=rw0.apply(this,arguments);try{const d=$('wdlg'),id=WS.dlg&&WS.dlg.por;
+  if(d&&id&&TPL[id]){const bt=d.querySelector('.dlg');if(bt&&!bt.querySelector('.dlgpor')){bt.classList.add('por');bt.insertAdjacentHTML('afterbegin',`<span class="dlgpor"><img src="${heroURL(id)}" alt="${esc(TPL[id].n)}"></span>`);}}}catch(e){}return r;};}
+// the bump hint shows once per rival per map visit, and never while a tap walk passes through
+{const wi0=worldInputDir;worldInputDir=function(){WS.inSrc=(inputSources()[0]||[])[0]||null;return wi0.apply(this,arguments);};}
+function rgBump(m,a){if(WS.rgMap!==m.id){WS.rgMap=m.id;WS.rgSaid={};}if(WS.inSrc==='tap'||WS.rgSaid[a.b.id])return false;WS.rgSaid[a.b.id]=1;WS.held=[];ghostTalk(a);return true;}
+try{window.__RG={need:b=>rivalNeed(b),ghost:a=>ghostActor(a),text:b=>rivalNeedText(b),alpha:RG,actors:()=>WS.m?dynActors(WS.m):[],marks:()=>WS.m?mapMarks(WS.m):[]};}catch(e){}
+
 // ===== qready.js (v0.5.1): quests ready to hand in =====
 // When a Quest Board quest or a Guild mission is complete and waiting to be claimed, a toast says so once, the Menu button and the
 // Quests menu chip carry a "ready" count, and the quest rows show a "Ready to hand in" tag with where to claim it.
@@ -18625,7 +18678,8 @@ function qReadyCheck(){if(!G||G.daily||B||V.screen!=='world')return;const now=Da
   Object.keys(N).forEach(k=>{if(!live[k])delete N[k];});
   const fresh=L.filter(o=>!N[o.k]);if(!fresh.length)return;fresh.forEach(o=>N[o.k]=1);
   toast(fresh.length===1?`Quest ready to hand in: ${fresh[0].t}. Claim it at ${fresh[0].where}.`:`${fresh.length} quests are ready to hand in. See Menu > Quests.`);
-  try{if(typeof sfx==='function')sfx('chest');}catch(e){}}
+  // v0.8.2: silent right after a battle (leaving the rewards screen made a noise); the toast still shows
+  try{if(typeof sfx==='function'&&!(V.endT&&Date.now()-V.endT<5000))sfx('chest');}catch(e){}}
 // the Menu button and the Quests chip carry the count; ready rows get a tag
 {const mt0=menuTabsHtml;menuTabsHtml=function(grp,tab){let h=mt0.apply(this,arguments);try{const n=qReadyCount();if(n)h=h.replace(/(data-arg="quests">)Quests(<\/button>)/,`$1Quests <em class="qtag" title="Ready to hand in">${n} ready</em>$2`);}catch(e){}return h;};}
 {const r0=render;render=function(){const r=r0.apply(this,arguments);try{qReadyCheck();const n=G&&!G.daily?qReadyCount():0;
@@ -19250,6 +19304,7 @@ function hdActors(m,now,ts){const B=HD.dyn,BB=HD.dynB,BA=HD.dynA,V=HD.S.V,still=
     if(a.type==='legend'){const g=.5+.5*Math.sin(ts/240);hdDecal(BB,'glow',hdGlowS(),fx,fz+1,30,12,255,215,90,(.25+.3*g)*255);
       const c=a.mon?imgOf('mapmon:'+MON[a.mon].art,()=>monCanvas(MON[a.mon].art)):walkerCanvas('leg:'+TPL[a.q.hero].id,TPL[a.q.hero].look,TPL[a.q.hero].el,TPL[a.q.hero].id,'front',0);
       hdChar(B,c,fx,(bob*.6-(a.mon?1:2.5)*sp)*V,fz,!!a.mon,255,16);hdShadowC(fx,fz+1);hdBill(B,'pipg',hdPip('#ffd24a'),fx,HD.chH+(3+bob)*V,fz,false,1,255,255,255,255,4);hdPickAdd(-1,fx,fz,Math.max(HD.chH,22*V),Math.max(HD.chW,16),a.x,a.y);return;}
+    if(ghostActor(a)){rgDrawHD(a,BB,fx,fz,bob,sp,V,ts);hdPickAdd(-1,fx,fz,Math.max(HD.chH,22*V),Math.max(HD.chW,16),a.x,a.y);return;}
     if(a.type==='elite'){const mo=MON[a.b.mon],c=imgOf('mapmon:'+mo.art,()=>monCanvas(mo.art)),p=.5+.5*Math.sin(ts/200);hdDecal(BB,'glow',hdGlowS(),fx,fz+1,30,12,255,60,60,(.3+.3*p)*255);
       hdChar(B,c,fx,(bob*.6-sp)*V,fz,true,255,16);hdShadowC(fx,fz+1);hdBill(B,'mkr',hdMark('#ff4a4a'),fx,HD.chH+(3+bob)*V,fz,false,1,255,255,255,255,4);hdPickAdd(-1,fx,fz,Math.max(HD.chH,22*V),Math.max(HD.chW,16),a.x,a.y);return;}
     const tt=TPL[a.q.hero],c=walkerCanvas('wand:'+tt.id,tt.look,tt.el,tt.id,'front',0);hdChar(B,c,fx,(bob*.6-2.5*sp)*V,fz,false,255,16);hdShadowC(fx,fz+1);

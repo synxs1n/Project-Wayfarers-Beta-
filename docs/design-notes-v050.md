@@ -170,3 +170,6 @@ Details in `v077-weather.md` (`v3/weather7.js`, `v3/visuals7.js`, `WX7` in confi
 
 ## Beta v0.8.1: Build Party
 Renamed Best Party to Build Party. p6Train: the lowest levels on the roster; a missing tank or healer is filled by the lowest level hero with that role (replacing the highest non unique member). p6Fly + BP6.fly: flying share of the area (seen foes, else the pool) and a flying boss reward ranged deliveries (one 1.2, two +0.35, an Archer +0.45), since piercing and magic only half answer flyers and Archers were never picked. Tests `chrome/v081a.js`, `v063pa.js` (training rule).
+
+## Beta v0.8.2: rival ghosts, quiet rewards exit
+Details in `v080-rivals.md` (`v3/rivalghost.js`; test `chrome/v080r.js`). Leaving the rewards screen is silent: no level jingle in resultOk, and qready's chime waits 5 s after a battle ends (V.endT set in results.js). window.__SFX records sound names for tests (`chrome/v082s.js`).

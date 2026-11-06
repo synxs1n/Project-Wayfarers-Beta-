@@ -520,7 +520,7 @@ const ACT={
     if(B.pend.item){const it=ITEMS[B.pend.item];if(it.revive?c.hp<=0:c.hp>0)useItem(B.pend.item,c);return;}
     const s=B.pend.sk;if(!s)return;if(s.t==='ally'&&c.hp>0)exec(s,[c]);else if(s.t==='dead'&&c.hp<=0)exec(s,[c]);},
   sw(i){if(!B||B.mode!=='cmd')return;if(doSwap(+i)===false)render();},
-  resultOk(){const i=V.modal.info;if(i.ups.length)sfx('level');if(i.story){V.modal={type:'story',title:i.story.title,text:i.story.text,btn:G.won&&B&&B.stage===4?'The light returns':'Continue',after:'finish'};render();}else{V.modal=null;finishBattle('win');}},
+  resultOk(){const i=V.modal.info;/* v0.8.2: no sound on leaving the rewards (the victory theme is enough) */if(i.story){V.modal={type:'story',title:i.story.title,text:i.story.text,btn:G.won&&B&&B.stage===4?'The light returns':'Continue',after:'finish'};render();}else{V.modal=null;finishBattle('win');}},
   storyOk(){const m=V.modal;V.modal=null;if(m&&m.after==='finish')finishBattle('win');else render();},
   loseOk(){V.modal=null;finishBattle('lose');}
 };
