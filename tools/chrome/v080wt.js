@@ -1,6 +1,7 @@
 // v0.8.0 title: six wayfarers on the road through the realms.
 //  1. at every listed window size (Windows app desktop sizes and phones), all six heroes are drawn, each whole inside the visible scene
-//     and the viewport, at a whole scale of the 2x bitmap, never under the menu, the wordmark or the Beta label
+//     and the viewport, never under the menu, the wordmark or the Beta label; v0.8.9: drawn as the overworld walker on the world's own
+//     sprite grid (HD2D.spr.sc, like the HD-2D world) at a whole number of device pixels per texel, about an eighth of the scene high
 //  2. they walk: walk frames alternate and the bodies bob; the ground scrolls
 //  3. the background travels to another realm over time (cross fade), and keeps cycling
 //  4. Low graphics and reduced motion: one still frame
@@ -26,8 +27,10 @@ const hash=H=>H.ev(()=>{const c=document.getElementById('t7cv'),d=c.getContext('
       const hits=[];s.bodies.forEach(b=>{s.menu.forEach(mm=>{if(inter(b,mm))hits.push(mm.t+' over '+b.id);});[['logo',s.logo],['beta',s.beta]].forEach(([n,q])=>{if(q&&inter(b,q))hits.push(n+' over '+b.id);});});
       const E=s.crest;chk(`${t2}: the emblem (crest) is on the title beside the wordmark, fully visible (${E?Math.round(E.right-E.left)+' px':'missing'})`,!!E&&E.polys>8&&E.right-E.left>=40&&E.left>=vis.left-.5&&E.top>=vis.top-.5&&E.right<=vis.right+.5&&E.bottom<=vis.bottom+.5&&!s.bodies.some(b=>inter(b,E))&&!s.menu.some(m=>inter(m,E))&&!(s.logo&&inter(s.logo,E))||JSON.stringify({E,vis}));
       chk(`${t2}: no hero under the menu, the wordmark or the Beta label`,hits.length===0||hits.slice(0,3).join(' | '));
-      const bad=s.drawn.filter(d=>!(d.rw===d.lw*2&&d.rh===d.lh*2&&Number.isInteger(d.k)&&d.k>=1&&d.w===d.rw*d.k&&d.h===d.rh*d.k));
-      chk(`${t2}: heroes drawn from the real 2x bitmap at a whole scale`,bad.length===0||JSON.stringify(bad[0]));
+      const bad=s.drawn.filter(d=>!(d.wsc>0&&d.rw===Math.max(2,Math.round(d.lw*d.wsc/2)*2)&&Number.isInteger(d.k)&&d.k>=1&&d.w===d.rw*d.k&&d.h===d.rh*d.k));
+      chk(`${t2}: heroes drawn as the overworld sprite (world grid, ${s.drawn[0]&&s.drawn[0].rw+'x'+s.drawn[0].rh} texels) at a whole number of pixels per texel (${s.k})`,bad.length===0||JSON.stringify(bad[0]));
+      const sh=S.bottom-S.top,hf=s.bodies.map(b=>(b.bottom-b.top)/sh),hmax=Math.max(...hf);
+      chk(`${t2}: heroes sized like the overworld, about an eighth of the scene high (tallest ${(hmax*100).toFixed(1)} % of ${Math.round(sh)} px)`,hmax>=.075&&hmax<=.19||hmax.toFixed(3));
       const ov=[];for(let i=0;i<s.bodies.length;i++)for(let j=i+1;j<s.bodies.length;j++){const a=s.bodies[i],b=s.bodies[j],ox=Math.min(a.right,b.right)-Math.max(a.left,b.left);if(ox>4&&inter(a,b))ov.push(a.id+'/'+b.id+' '+Math.round(ox));}
       chk(`${t2}: no hero hides another (body boxes overlap by at most a few px)`,ov.length===0||ov.join(', '));}
     if(w===1280){// walking, bobbing, travelling, realm changes

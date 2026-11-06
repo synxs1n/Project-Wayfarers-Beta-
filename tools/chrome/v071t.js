@@ -1,4 +1,4 @@
-// v0.7.1 title pass (v0.8.0: the camp became six wayfarers on the road through the realms, see v080wt.js): the HD-2D title (HD sprites at their real 2x bitmap, no old lineup), the code-drawn wordmark on the title
+// v0.7.1 title pass (v0.8.0: the camp became six wayfarers on the road through the realms, see v080wt.js): the HD-2D title (v0.8.9: the overworld walker on the world's sprite grid, no old lineup), the code-drawn wordmark on the title
 // and in the header, menu and logo off every face at four sizes (with and without a save), Low tier and reduced motion still,
 // Medium animated, and every icon the manifest, the page, Android, Windows and Electron point at exists at the right pixel size.
 // Run from tools/chrome: PWHTML=../../out/aurelis3.html node v071t.js
@@ -19,8 +19,8 @@ async function title(H){const {ev,wait}=H;await wait(1200);
 function judge(tag,t,save){
   chk(`${tag}: the title scene canvas is up and the old lineup and backdrop are gone`,t.cv&&!t.old||JSON.stringify({cv:t.cv,old:t.old}));
   chk(`${tag}: all six heroes drawn (v0.8.0: the party on the road)`,t.drawn.length===6||t.drawn.length);
-  const bad=t.drawn.filter(d=>!(d.rw===d.lw*2&&d.rh===d.lh*2&&Number.isInteger(d.k)&&d.k>=1&&d.w===d.rw*d.k&&d.h===d.rh*d.k));
-  chk(`${tag}: heroes drawn from the real 2x bitmap at a whole scale`,bad.length===0||JSON.stringify(bad[0]));
+  const bad=t.drawn.filter(d=>!(d.wsc>0&&d.rw===Math.max(2,Math.round(d.lw*d.wsc/2)*2)&&Number.isInteger(d.k)&&d.k>=1&&d.w===d.rw*d.k&&d.h===d.rh*d.k));
+  chk(`${tag}: heroes drawn as the overworld sprite at a whole scale (v0.8.9)`,bad.length===0||JSON.stringify(bad[0]));
   chk(`${tag}: wordmark on the title and in the header`,!!(t.logo&&t.logo.w>120&&t.hdr&&t.hdr.h>=14&&t.hdrPolys>20)||JSON.stringify({logo:t.logo,hdr:t.hdr}));
   chk(`${tag}: no blackletter in the header`,!/Jacquard/.test(t.font)||t.font);
   const hits=[];t.faces.forEach(f=>{t.menu.forEach(m=>{if(inter(f,m))hits.push(m.t+' over '+f.id);});[['logo',t.logo],['beta',t.beta]].forEach(([n,b])=>{if(b&&inter(f,b))hits.push(n+' over '+f.id);});});
@@ -47,7 +47,7 @@ const hash=H=>H.ev(()=>{const c=document.getElementById('t7cv'),x=c.getContext('
       const l2=await ev(()=>__A.T7.frames),lh1=await hash(H);
       chk('low: one still frame, no redraws',l.still===true&&l2===l.f&&lh0===lh1||JSON.stringify({l,l2,same:lh0===lh1}));
       chk('low: drawn at 1x (cheap)',l.cw===l.ccw||l.cw+' vs '+l.ccw);
-      const ld=await ev(()=>__A.T7.drawn);chk('low: still the HD sprites',ld.length===6&&ld.every(d=>d.rw===d.lw*2)||JSON.stringify(ld[0]));
+      const ld=await ev(()=>__A.T7.drawn);chk('low: still the overworld sprites',ld.length===6&&ld.every(d=>d.wsc>0&&d.rw===Math.max(2,Math.round(d.lw*d.wsc/2)*2))||JSON.stringify(ld[0]));
       await ev(()=>{const A=__A;A.META.cfg.gfx='medium';A.META.cfg.rmotion=true;A.gfxApply();});await wait(400);
       const r0=await ev(()=>__A.T7.frames);await wait(700);const r1=await ev(()=>__A.T7.frames);
       chk('reduced motion: still',r1===r0||r1-r0);

@@ -12,7 +12,7 @@
 // Math.random on the title screen as it always has). The canvas is #t7cv; tests read T7 (window.__A.T7).
 const T7={key:'',fg:null,spr:{},lit:{},heroes:[],faces:[],drawn:[],frames:0,still:false,dpr:1,k:1,W:0,H:0,last:0,ids:null,prev:null,fadeT:0,next:0,logo:'',hlogo:'',
   realm:'',rN:0,ri:0,rp:-1,rT:0,rFade:0,order:null,bk:{},visit:0,wx:null,wxP:null,tt:0,lastT:0,
-  cfg:{every:[8000,12000],fade:1800,speed:26,step:210,lineup:36000}};
+  cfg:{every:[8000,12000],fade:1800,speed:26,step:210,lineup:36000,heroFrac:8}};
 const T7C={fps:30};
 function t7Low(){try{return typeof GFX!=='undefined'&&GFX.tier==='low';}catch(e){return false;}}
 function t7Still(){return t7Low()||(typeof reducedMotion==='function'&&reducedMotion());}
@@ -24,13 +24,15 @@ function t7Rng(s){return ()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296;}
 function t7H(i,k){let h=(i*374761393+k*668265263)>>>0;h=Math.imul(h^(h>>>13),1274126177)>>>0;return ((h^(h>>>16))>>>0)/4294967296;}
 function t7Cv(w,h){const c=document.createElement('canvas');c.width=Math.max(1,Math.round(w));c.height=Math.max(1,Math.round(h));return c;}
 const t7Rgb=(c,a)=>`rgba(${c[0]},${c[1]},${c[2]},${a==null?1:a})`;
-// ----- sprites: the HD bitmap (72x92 for a 36x46 hero), standing and walking -----
+// ----- sprites: the overworld walker (v0.8.9): the side view walk frames the world draws, shrunk to the world's own sprite grid
+// exactly as the HD-2D world does it (hdSmall at HD2D.spr.sc: one texel per 3 x 3 pixels of the HD bitmap, the sprite's own palette),
+// then drawn at a whole number of device pixels per texel, so the party has the proportions and pixel density of the heroes in the world
 function t7Sprite(id){const k=id+(typeof lookKey==='function'?lookKey(id):'');if(T7.spr[k])return T7.spr[k];
-  const DI=CanvasRenderingContext2D.prototype._hdDI||CanvasRenderingContext2D.prototype.drawImage;
-  const grab=walk=>{const c=heroCanvas(id,walk),rw=c._rw||c.width,rh=c._rh||c.height,b=t7Cv(rw,rh);DI.call(b.getContext('2d'),c,0,0,rw,rh,0,0,rw,rh);return {b,c,rw,rh};};// the real bitmap, unscaled
-  const s0=grab(false);let s1=null;try{s1=grab(true);if(s1.rw!==s0.rw||s1.rh!==s0.rh)s1=null;}catch(e){s1=null;}
-  const rw=s0.rw,rh=s0.rh,d=s0.b.getContext('2d').getImageData(0,0,rw,rh).data;let x0=rw,x1=0,y0=rh,y1=0;for(let y=0;y<rh;y++)for(let i=0;i<rw;i++)if(d[(y*rw+i)*4+3]>40){if(i<x0)x0=i;if(i>x1)x1=i;if(y<y0)y0=y;if(y>y1)y1=y;}
-  return T7.spr[k]={id,c:s0.b,cw:s1?s1.b:s0.b,rw,rh,lw:s0.c.width,lh:s0.c.height,box:{x0,x1,y0,y1}};}
+  const sc=(typeof HD2D!=='undefined'&&HD2D.spr&&HD2D.spr.sc)||2/3,L=heroLook(id),el=TPL[id].el,key=id+(typeof lookKey==='function'?lookKey(id):'');
+  const grab=fr=>{const c=walkerCanvas(key,L,el,id,'side',fr),sm=typeof hdSmall==='function'?hdSmall(c,sc,1):c,b=t7Cv(sm.width,sm.height);b.getContext('2d').drawImage(sm,0,0);return {b,c};};
+  const s0=grab(0);let s1=null;try{s1=grab(1);if(s1.b.width!==s0.b.width||s1.b.height!==s0.b.height)s1=null;}catch(e){s1=null;}
+  const rw=s0.b.width,rh=s0.b.height,d=s0.b.getContext('2d').getImageData(0,0,rw,rh).data;let x0=rw,x1=0,y0=rh,y1=0;for(let y=0;y<rh;y++)for(let i=0;i<rw;i++)if(d[(y*rw+i)*4+3]>40){if(i<x0)x0=i;if(i>x1)x1=i;if(y<y0)y0=y;if(y>y1)y1=y;}
+  return T7.spr[k]={id,c:s0.b,cw:s1?s1.b:s0.b,rw,rh,lw:s0.c.width,lh:s0.c.height,wsc:sc,box:{x0,x1,y0,y1}};}
 // lit copy for a realm's light: amb (multiplier), key (rim colour) from side kd (+1: light from the right), sky (top rim colour)
 function t7Lit(s,R){const key=s.id+':'+s.rw+':'+R.n;if(T7.lit[key])return T7.lit[key];const L=R.lit,out=[];
   for(const src of s.cw===s.c?[s.c]:[s.c,s.cw]){const {rw,rh}=s,o=t7Cv(rw,rh),x=o.getContext('2d');x.drawImage(src,0,0);const im=x.getImageData(0,0,rw,rh),d=im.data,al=new Uint8Array(rw*rh);
@@ -38,7 +40,7 @@ function t7Lit(s,R){const key=s.id+':'+s.rw+':'+R.n;if(T7.lit[key])return T7.lit
     for(let y=0;y<rh;y++)for(let i=0;i<rw;i++){const p=(y*rw+i)*4;if(al[y*rw+i]<40)continue;const vf=.6+.4*Math.max(0,Math.min(1,(y-y0)/hh)),lf=Math.max(0,Math.min(1,((i/rw-.5)*kd)*1.4+.5))*L.side;
       let r=d[p],g=d[p+1],b=d[p+2];const l=r*.3+g*.59+b*.11;r=r*.9+l*.1;g=g*.9+l*.1;b=b*.9+l*.1;
       r=r*(L.amb[0]*(1-.12*(1-vf))+lf*L.key[0]/255*.5);g=g*(L.amb[1]*(1-.12*(1-vf))+lf*L.key[1]/255*.5);b=b*(L.amb[2]*(1-.12*(1-vf))+lf*L.key[2]/255*.5);
-      const e1=a(i+kd,y)<40,e2=!e1&&a(i+kd*2,y)<40,up=a(i,y-1)<40;
+      const e1=a(i+kd,y)<40,e2=false,up=a(i,y-1)<40;// one texel of rim (the sprites are on the world's grid)
       if(e1||e2){const k=(e1?1:.45)*L.rim;r+=(L.key[0]-r)*k;g+=(L.key[1]-g)*k;b+=(L.key[2]-b)*k;}else if(up){r+=(L.sky[0]-r)*.35;g+=(L.sky[1]-g)*.35;b+=(L.sky[2]-b)*.35;}
       d[p]=Math.min(255,r);d[p+1]=Math.min(255,g);d[p+2]=Math.min(255,b);}
     x.putImageData(im,0,0);out.push(o);}
@@ -122,45 +124,63 @@ function t7Bake(R,W,H,dpr){const low=t7Low(),hy=T7.hy,gy=T7.gy,P=W,u=Math.max(1,
       x.fillStyle='#ffcf78';win.forEach(([a,b])=>x.fillRect(a,b,u*1.1,u*1.3));x.globalCompositeOperation='lighter';win.forEach(([a,b])=>{const g=x.createRadialGradient(a,b,0,a,b,u*4);g.addColorStop(0,'rgba(255,190,90,.4)');g.addColorStop(1,'rgba(255,190,90,0)');x.fillStyle=g;x.fillRect(a-u*4,b-u*4,u*8,u*8);});x.globalCompositeOperation='source-over';}
     else if(M==='peaks'){x.fillStyle=R.mid;t7Ridge(x,P,hy+H*.02,H*.1,seed+6,hy+H*.06,[3,6,13]);x.fill();}
     out.mid={c:blur(c,.7*dpr),y:top};}
-  // ground strip: the ground, the road the party walks, props by the road
-  {const top=Math.round(hy+H*.02),h=H-top,c=t7Cv(P,h),x=c.getContext('2d'),r=t7Rng(211+seed|0);x.translate(0,-top);
+  // ground strip: the ground, the road the party walks, props by the road. v0.8.9: everything on the ground is sized from the heroes
+  // (hH, their height on screen), so a fence or a bush is fence or bush sized next to them, and the ground carries detail at every
+  // distance (tufts and stones lit from the realm's key side, smaller and hazier toward the horizon), so no realm shows a flat band
+  {const top=Math.round(hy+H*.02),h=H-top,c=t7Cv(P,h),x=c.getContext('2d'),r=t7Rng(211+seed|0),hH=T7.heroH||H/8,G0=t7Hex(R.g[0]),G1=t7Hex(R.g[1]),KY=R.lit.key,kd=R.lit.kd;x.translate(0,-top);
     const g=x.createLinearGradient(0,top,0,H);g.addColorStop(0,R.g[0]);g.addColorStop(1,R.g[1]);x.fillStyle=g;x.fillRect(0,top,P,h);
-    const ry0=gy-H*.035,ry1=gy+H*.03;{const rg=x.createLinearGradient(0,ry0,0,ry1);rg.addColorStop(0,t7Rgb(t7Hex(R.road),0));rg.addColorStop(.2,t7Rgb(t7Hex(R.road),.85));rg.addColorStop(.8,t7Rgb(t7Hex(R.road),.85));rg.addColorStop(1,t7Rgb(t7Hex(R.road),0));x.fillStyle=rg;x.fillRect(0,ry0,P,ry1-ry0);}
-    x.fillStyle='rgba(0,0,0,.12)';for(let i=0;i<60;i++){const px=r()*P,py=ry0+(ry1-ry0)*r(),w=u*(.6+r()*1.6);x.fillRect(px,py,w,w*.5);}
-    for(let i=0;i<Math.round(P/(3*dpr));i++){const px=r()*P,py=top+r()*(h),d=(py-top)/h;if(py>ry0-u&&py<ry1)continue;x.fillStyle=`rgba(0,0,0,${(.08+.1*d).toFixed(2)})`;x.fillRect(px,py,Math.max(1,u*(.5+d)),Math.max(1,u*(1+2*d)));}
-    const PR=R.prop,n=PR==='town'?6:9;for(let i=0;i<n;i++){const px=(i+r()*.7)/n*P,far=r()<.55,py=far?ry0-H*(.01+r()*.06):ry1+H*(.045+r()*.05),s=H*(far?.045:.07)*(.8+r()*.4);
-      t7Wrap(P,px,X=>t7Prop(x,PR,X,py,s,r,u));}
+    // soft patches of lighter and darker ground (big, low contrast), and by night the sky's glow toward the horizon
+    for(let i=0;i<26;i++){const px=r()*P,py=top+r()*h,d=(py-top)/h,rw=hH*(1.2+r()*2.4)*(.5+d),rh=rw*.22,lt=r()<.5;t7Wrap(P,px,X=>{const gg=x.createRadialGradient(X,py,0,X,py,rw);gg.addColorStop(0,lt?t7Rgb(KY,.07+.05*R.night):'rgba(0,0,0,.09)');gg.addColorStop(1,lt?t7Rgb(KY,0):'rgba(0,0,0,0)');x.save();x.translate(X,py);x.scale(1,rh/rw);x.translate(-X,-py);x.fillStyle=gg;x.fillRect(X-rw,py-rw,rw*2,rw*2);x.restore();});}
+    if(R.night){const hz=x.createLinearGradient(0,top,0,top+h*.45);hz.addColorStop(0,t7Rgb(R.haze,.22));hz.addColorStop(1,t7Rgb(R.haze,0));x.fillStyle=hz;x.fillRect(0,top,P,h*.45);}
+    const ry0=gy-hH*.2,ry1=gy+hH*.2;{const rg=x.createLinearGradient(0,ry0-hH*.08,0,ry1+hH*.08);rg.addColorStop(0,t7Rgb(t7Hex(R.road),0));rg.addColorStop(.25,t7Rgb(t7Hex(R.road),.9));rg.addColorStop(.75,t7Rgb(t7Hex(R.road),.9));rg.addColorStop(1,t7Rgb(t7Hex(R.road),0));x.fillStyle=rg;x.fillRect(0,ry0-hH*.08,P,ry1-ry0+hH*.16);
+      x.fillStyle=t7Rgb(KY,.12+.08*R.night);x.fillRect(0,Math.round(ry0+hH*.02),P,Math.max(1,Math.round(T7.k*.7)));}// a lit edge on the far side of the road
+    const px1=Math.max(1,Math.round(T7.k*.8));
+    x.fillStyle='rgba(0,0,0,.16)';for(let i=0;i<P/(hH*.12);i++){const qx=r()*P,qy=ry0+(ry1-ry0)*r(),w=px1*(1+r()*2);x.fillRect(Math.round(qx),Math.round(qy),w,Math.max(1,w>>1));}// pebbles and ruts
+    // tufts: a dark blade pair with a lit tip on the key side; size and contrast grow toward the viewer
+    const TC=R.prop==='desert'||R.prop==='coast'?null:t7Rgb(G1.map(v=>v*.6|0)),TL=t7Rgb([G0[0]*.55+KY[0]*.45|0,G0[1]*.55+KY[1]*.45|0,G0[2]*.55+KY[2]*.45|0]);
+    for(let i=0;i<Math.round(P/(hH*.07));i++){const qx=r()*P,qy=top+r()*h,d=(qy-top)/h;if(qy>ry0-px1*2&&qy<ry1+px1)continue;const z=Math.max(1,Math.round(px1*(.6+d*1.6)));
+      if(TC){x.fillStyle=TC;x.globalAlpha=.5+.4*d;x.fillRect(Math.round(qx),Math.round(qy-z*2),z,z*2);x.fillRect(Math.round(qx+z*1.5),Math.round(qy-z*1.5),z,z*1.5);x.fillStyle=TL;x.fillRect(Math.round(qx+(kd>0?z*1.5:0)),Math.round(qy-z*2),z,z);}
+      else{x.fillStyle=r()<.5?'rgba(0,0,0,.18)':t7Rgb(KY,.25);x.globalAlpha=.6+.4*d;x.fillRect(Math.round(qx),Math.round(qy),z*2,z);}}
+    x.globalAlpha=1;
+    // props: a hazy far band, the far side of the road, the front band (each sized from the heroes)
+    const PR=R.prop;for(const [n,y0,y1,s0,s1,a,lo] of [[PR==='town'?8:14,top+h*.05,ry0-hH*.6,.28,.45,.7,PR==='town'],[PR==='town'?5:7,ry0-hH*.45,ry0-hH*.25,.5,.75,1,false],[6,ry1+hH*.5,H-hH*.1,.6,.85,1,true]]){
+      for(let i=0;i<n;i++){const qx=(i+r()*.7)/n*P,qy=y0+(y1-y0)*r(),sz=hH*(s0+(s1-s0)*r());const sd=(r()*1e9)|0;x.globalAlpha=a;t7Wrap(P,qx,X=>t7Prop(x,PR,X,qy,sz,t7Rng(sd),Math.max(1,sz/20),lo));}}// the same prop on both sides of a wrap
+    x.globalAlpha=1;
     out.gr={c,y:top};}
   // front grass: dark soft tufts at the bottom edge (near depth of field), its own faster layer
-  {const top=Math.round(H*.88),h=H-top,c=t7Cv(P,h),x=c.getContext('2d'),r=t7Rng(97+seed|0);x.translate(0,-top);x.fillStyle=R.night?'#06070c':t7Rgb(t7Hex(R.g[1]).map(v=>v*.45|0));
-    if(R.prop!=='desert'&&R.prop!=='lava'&&R.prop!=='coast'){for(let i=0;i<P/(5*dpr);i++){const px=r()*P,ph=H*(.02+r()*.05),py=H+2;t7Wrap(P,px,X=>{x.beginPath();x.moveTo(X-ph*.12,py);x.quadraticCurveTo(X+ph*.1,py-ph*.6,X+ph*(r()-.5)*.8,py-ph);x.quadraticCurveTo(X+ph*.05,py-ph*.5,X+ph*.14,py);x.fill();});}}
+  {const top=Math.round(H*.88),h=H-top,c=t7Cv(P,h),x=c.getContext('2d'),r=t7Rng(97+seed|0);x.translate(0,-top);x.fillStyle=t7Rgb(t7Hex(R.g[1]).map(v=>v*(R.night?.6:.45)|0));
+    if(R.prop!=='desert'&&R.prop!=='lava'&&R.prop!=='coast'){for(let i=0;i<P/(5*dpr);i++){const px=r()*P,ph=H*(.02+r()*.05),py=H+2;t7Wrap(P,px,X=>{x.beginPath();x.moveTo(X-ph*.12,py);x.quadraticCurveTo(X+ph*.1,py-ph*.6,X+ph*(((i*0.618)%1)-.5)*.8,py-ph);x.quadraticCurveTo(X+ph*.05,py-ph*.5,X+ph*.14,py);x.fill();});}}
     else{for(let i=0;i<12;i++){const px=r()*P,s=H*(.02+r()*.03);t7Wrap(P,px,X=>{x.beginPath();x.ellipse(X,H,s*1.6,s,0,0,7);x.fill();});}}
     out.fr={c:blur(c,1.6*dpr),y:top};}
   return out;}
 function t7Hex(h){if(h[0]!=='#')return [128,128,128];const v=parseInt(h.slice(1),16);return [v>>16&255,v>>8&255,v&255];}
-function t7Prop(x,K,X,py,s,r,u){
-  if(K==='meadow'){if(r()<.5){x.fillStyle='#2e5a26';x.beginPath();x.ellipse(X,py-s*.35,s*.6,s*.4,0,0,7);x.fill();x.fillStyle='#e8d070';x.fillRect(X-s*.2,py-s*.5,u,u);x.fillStyle='#f0a0c0';x.fillRect(X+s*.15,py-s*.4,u,u);}
+// low: a prop in front of the party (the bottom band) is always a low one, so nothing nearer than the road reaches up over the heroes
+function t7Prop(x,K,X,py,s,r,u,low){const pk=low?(K==='meadow'?0:1):r();
+  if(K==='town'&&low){x.fillStyle='#1c2018';x.beginPath();x.ellipse(X,py-s*.28,s*.75,s*.32,0,0,7);x.fill();x.fillStyle='rgba(255,190,110,.22)';x.beginPath();x.ellipse(X+s*.15,py-s*.46,s*.45,s*.12,0,0,7);x.fill();return;}// a hedge, lit by the lamps
+  if(K==='meadow'){if(pk<.5){x.fillStyle='#2e5a26';x.beginPath();x.ellipse(X,py-s*.35,s*.6,s*.4,0,0,7);x.fill();x.fillStyle='#e8d070';x.fillRect(X-s*.2,py-s*.5,u,u);x.fillStyle='#f0a0c0';x.fillRect(X+s*.15,py-s*.4,u,u);}
     else{x.fillStyle='#6a4a30';x.fillRect(X-s*.6,py-s*.5,s*1.2,s*.12);x.fillRect(X-s*.6,py-s*.25,s*1.2,s*.12);x.fillRect(X-s*.55,py-s*.65,s*.12,s*.65);x.fillRect(X+s*.45,py-s*.65,s*.12,s*.65);}}
-  else if(K==='forest'){if(r()<.6)t7Pine(x,X,py,s*2.2,'#1e3428');else{x.fillStyle='#4a5048';x.beginPath();x.ellipse(X,py-s*.2,s*.5,s*.3,0,0,7);x.fill();x.fillStyle='#c84a3a';x.beginPath();x.arc(X+s*.6,py-s*.25,s*.15,Math.PI,0);x.fill();}}
-  else if(K==='snow'){if(r()<.6)t7Pine(x,X,py,s*2,'#2a3c4a',true);else{x.fillStyle='#f4f8ff';x.beginPath();x.ellipse(X,py-s*.15,s*.7,s*.3,0,0,7);x.fill();}}
-  else if(K==='desert'){if(r()<.5){x.fillStyle='#4a7a3a';x.fillRect(X-s*.1,py-s*1.1,s*.2,s*1.1);x.fillRect(X-s*.4,py-s*.8,s*.12,s*.4);x.fillRect(X-s*.4,py-s*.5,s*.3,s*.1);x.fillRect(X+s*.28,py-s*.9,s*.12,s*.45);x.fillRect(X+s*.1,py-s*.55,s*.3,s*.1);}
+  else if(K==='forest'){if(pk<.6)t7Pine(x,X,py,s*2.2,'#1e3428');else{x.fillStyle='#4a5048';x.beginPath();x.ellipse(X,py-s*.2,s*.5,s*.3,0,0,7);x.fill();x.fillStyle='#c84a3a';x.beginPath();x.arc(X+s*.6,py-s*.25,s*.15,Math.PI,0);x.fill();}}
+  else if(K==='snow'){if(pk<.6)t7Pine(x,X,py,s*2,'#2a3c4a',true);else{x.fillStyle='#f4f8ff';x.beginPath();x.ellipse(X,py-s*.15,s*.7,s*.3,0,0,7);x.fill();}}
+  else if(K==='desert'){if(pk<.5){x.fillStyle='#4a7a3a';x.fillRect(X-s*.1,py-s*1.1,s*.2,s*1.1);x.fillRect(X-s*.4,py-s*.8,s*.12,s*.4);x.fillRect(X-s*.4,py-s*.5,s*.3,s*.1);x.fillRect(X+s*.28,py-s*.9,s*.12,s*.45);x.fillRect(X+s*.1,py-s*.55,s*.3,s*.1);}
     else{x.fillStyle='#a87a50';x.beginPath();x.ellipse(X,py-s*.2,s*.55,s*.28,0,0,7);x.fill();x.fillStyle='#d8b080';x.beginPath();x.ellipse(X-s*.1,py-s*.3,s*.3,s*.12,0,0,7);x.fill();}}
   else if(K==='lava'){x.fillStyle='#120c0e';x.beginPath();x.moveTo(X-s*.6,py);x.lineTo(X-s*.2,py-s*.8);x.lineTo(X+s*.3,py-s*.6);x.lineTo(X+s*.6,py);x.fill();x.fillStyle='rgba(255,110,40,.8)';x.fillRect(X-s*.7,py+u,s*1.4,Math.max(1,u*.8));
     const g=x.createRadialGradient(X,py+u,0,X,py+u,s);g.addColorStop(0,'rgba(255,120,40,.35)');g.addColorStop(1,'rgba(255,120,40,0)');x.fillStyle=g;x.fillRect(X-s,py-s,s*2,s*2);}
-  else if(K==='coast'){if(r()<.5){x.strokeStyle='#5a3a2a';x.lineWidth=s*.12;x.beginPath();x.moveTo(X,py);x.quadraticCurveTo(X+s*.2,py-s,X+s*.1,py-s*1.6);x.stroke();x.fillStyle='#2e5a3a';for(let j=0;j<5;j++){const a=-Math.PI/2+(j-2)*.7;x.beginPath();x.ellipse(X+s*.1+Math.cos(a)*s*.4,py-s*1.6+Math.sin(a)*s*.25+s*.15,s*.45,s*.1,a,0,7);x.fill();}}
+  else if(K==='coast'){if(pk<.5){x.strokeStyle='#5a3a2a';x.lineWidth=s*.12;x.beginPath();x.moveTo(X,py);x.quadraticCurveTo(X+s*.2,py-s,X+s*.1,py-s*1.6);x.stroke();x.fillStyle='#2e5a3a';for(let j=0;j<5;j++){const a=-Math.PI/2+(j-2)*.7;x.beginPath();x.ellipse(X+s*.1+Math.cos(a)*s*.4,py-s*1.6+Math.sin(a)*s*.25+s*.15,s*.45,s*.1,a,0,7);x.fill();}}
     else{x.fillStyle='#8a7a6a';x.beginPath();x.ellipse(X,py-s*.15,s*.5,s*.25,0,0,7);x.fill();x.fillStyle='#f4e8d0';x.fillRect(X+s*.5,py-s*.1,u*1.5,u);}}
   else if(K==='town'){x.fillStyle='#2a2028';x.fillRect(X-s*.05,py-s*1.5,s*.1,s*1.5);x.fillRect(X-s*.18,py-s*1.6,s*.36,s*.2);x.fillStyle='#ffd27a';x.fillRect(X-s*.12,py-s*1.45,s*.24,s*.22);
     x.globalCompositeOperation='lighter';const g=x.createRadialGradient(X,py-s*1.34,0,X,py-s*1.34,s*1.1);g.addColorStop(0,'rgba(255,190,100,.45)');g.addColorStop(1,'rgba(255,190,100,0)');x.fillStyle=g;x.fillRect(X-s*1.1,py-s*2.44,s*2.2,s*2.2);x.globalCompositeOperation='source-over';
     x.fillStyle='rgba(255,190,100,.18)';x.beginPath();x.ellipse(X,py,s*.8,s*.18,0,0,7);x.fill();}
   else if(K==='heights'){x.fillStyle='#2a343c';x.beginPath();x.moveTo(X-s*.7,py);x.lineTo(X-s*.3,py-s*.7);x.lineTo(X+s*.2,py-s*.55);x.lineTo(X+s*.7,py);x.fill();x.fillStyle='rgba(180,220,255,.25)';x.fillRect(X-s*.3,py-s*.7,s*.4,u);}}
 // ----- layout: one whole scale at which all six heroes fit the width and the height between the wordmark and the ground -----
-function t7Layout(W,H,dpr){const ids=t7Ids(),S=ids.map(id=>t7Sprite(id));T7.hy=Math.round(H*.6);T7.gy=Math.round(H*.875);
-  const bws=S.map(s=>s.box.x1-s.box.x0+1),bh=Math.max(...S.map(s=>s.box.y1-s.box.y0+1)),gapU=7,span=bws.reduce((a,b)=>a+b,0)+gapU*5;
-  const top=Math.max((T7.logoB||0)+4*dpr,H*.06),kW=(W*.94)/span,kH=(T7.gy-top)/(bh+3),kA=Math.max(1,Math.round(H*.3/bh));
-  let k=Math.floor(Math.min(kW,kH,kA));if(k<1)k=Math.min(kW,kH);// a stage too small for 1x: the one case drawn below a whole scale
-  T7.k=k;const tot=span*k,x0=Math.round(Math.max(W*.03,(W-tot)/2+W*.03*(W>tot*1.25?1:0)));let x=x0;const hs=[];
-  // walking right: the lead hero is the rightmost; back and front rows alternate (a staggered file), the back row a little higher and smaller in light
-  S.forEach((s,i)=>{const bw=bws[i],h={id:ids[i],s,i,row:i%2,ph:i*1.7,bph:t7H(i,7)*6};h.cx=x+((bw/2))*k;h.y=T7.gy-(h.row?Math.round(4*k):0);h.x0=x;x+=(bw+gapU)*k;hs.push(h);});
+function t7Layout(W,H,dpr){const ids=t7Ids(),S=ids.map(id=>t7Sprite(id));T7.hy=Math.round(H*.58);T7.gy=Math.round(H*.86);
+  const bws=S.map(s=>s.box.x1-s.box.x0+1),bh=Math.max(...S.map(s=>s.box.y1-s.box.y0+1)),gapU=4,span=bws.reduce((a,b)=>a+b,0)+gapU*5;
+  // v0.8.9: a hero is about an eighth of the scene's height (the owner: "sized more like overworld in game"), at a whole number of
+  // device pixels per texel; never wider than the stage or taller than the room under the wordmark
+  const top=Math.max((T7.logoB||0)+4*dpr,H*.06),kW=(W*.92)/span,kH=(T7.gy-top)/(bh+3),kA=Math.max(1,Math.round(H/T7.cfg.heroFrac/bh));
+  let k=Math.floor(Math.min(kW,kH,kA));if(k<1)k=Math.min(kW,kH);
+  T7.k=k;T7.heroH=bh*k;const tot=span*k,x0=Math.round((W-tot)/2+W*.04*(W>tot*1.6?1:0));let x=x0;const hs=[];
+  // walking right: the lead hero is the rightmost; back and front rows alternate (a staggered file)
+  S.forEach((s,i)=>{const bw=bws[i],h={id:ids[i],s,i,row:i%2,ph:i*1.7,bph:t7H(i,7)*6};h.cx=x+((bw/2))*k;h.y=T7.gy-(h.row?Math.round(2*k):0);h.x0=x;x+=(bw+gapU)*k;hs.push(h);});
   hs.reverse();hs.forEach((h,j)=>h.lead=j===0);hs.sort((a,b)=>a.y-b.y||a.i-b.i);T7.heroes=hs;}
 // ----- the realm cycle (clock seeded order, no game RNG) -----
 function t7Order(){if(!T7.order){const s=(Date.now()/1000|0)%997,o=T7R.map((r,i)=>i);for(let i=o.length-1;i>0;i--){const j=Math.floor(t7H(s,i)*(i+1));[o[i],o[j]]=[o[j],o[i]];}
@@ -199,7 +219,7 @@ function t7Frame(now,force){const cv=document.getElementById('t7cv');if(!cv)retu
   const RP=T7.rp>=0?t7Realm(T7.rp):null,BP=RP?t7Baked(RP):null;T7.realm=R.n;
   if(!still&&!RP&&now-T7.rT>1500){const Rn=t7Realm(T7.ri+1);if(!T7.bk[Rn.n+':'+W+'x'+H+':'+low])t7Baked(Rn);}// bake the next realm ahead, between transitions
   // the world scrolls by: travel in device px; far layers slower (parallax)
-  const v=C.speed*Math.max(1,T7.k)*dpr*.5,trav=t*v;
+  const v=C.speed*Math.max(1,T7.k)*.9,trav=t*v;// about three quarters of a hero's height a second
   const layer=(L,f)=>{if(!L)return;const P=L.c.width,o=((trav*f)%P+P)%P;x.drawImage(L.c,-o,L.y);x.drawImage(L.c,P-o,L.y);};
   const scene=(Bk,a)=>{x.globalAlpha=a;x.drawImage(Bk.sky,0,0);layer(Bk.far,.06);layer(Bk.mid,.25);layer(Bk.gr,1);};
   x.setTransform(1,0,0,1,0,0);x.globalCompositeOperation='source-over';x.globalAlpha=1;x.imageSmoothingEnabled=true;
@@ -207,11 +227,11 @@ function t7Frame(now,force){const cv=document.getElementById('t7cv');if(!cv)retu
   if(!still&&R.stars){const r=t7Rng(3);x.fillStyle='#fff6dc';for(let i=0;i<12;i++){const sx=r()*W,sy=r()*T7.hy*.5,a=Math.max(0,Math.sin(t*1.7+i*2.1));if(a>.6){x.globalAlpha=(a-.6)*2*e;x.fillRect(Math.round(sx),Math.round(sy),dpr*1.5,dpr*1.5);}}x.globalAlpha=1;}
   // the party: contact shadows, then the heroes (back row first), lit for the realm (and the one being left while it fades)
   const k=T7.k,ws=still?0:t*1000/C.step,rec=[];
-  const shadow=(h,a)=>{const cx=h.cx,fy=h.y,r=k*14;const g=x.createRadialGradient(cx,fy,0,cx,fy,r);g.addColorStop(0,`rgba(4,2,8,${(.5*a).toFixed(3)})`);g.addColorStop(1,'rgba(4,2,8,0)');x.fillStyle=g;x.save();x.translate(cx,fy);x.scale(1,.28);x.beginPath();x.arc(0,0,r,0,7);x.fill();x.restore();};
+  const shadow=(h,a)=>{const cx=h.cx,fy=h.y,r=k*9;const g=x.createRadialGradient(cx,fy,0,cx,fy,r);g.addColorStop(0,`rgba(4,2,8,${(.5*a).toFixed(3)})`);g.addColorStop(1,'rgba(4,2,8,0)');x.fillStyle=g;x.save();x.translate(cx,fy);x.scale(1,.28);x.beginPath();x.arc(0,0,r,0,7);x.fill();x.restore();};
   T7.heroes.forEach(h=>shadow(h,1));
-  const drawSet=(hs,Rl,alpha,kk,out)=>{x.imageSmoothingEnabled=!Number.isInteger(kk);hs.forEach(h=>{const {rw,rh,box}=h.s,L=t7Lit(h.s,Rl),ph=ws+h.ph,fr=still?0:Math.floor(ph)%2,bob=still?0:(fr?0:-1)*Math.max(1,Math.round(kk)),sway=still?0:Math.round(Math.sin(t*.55+h.bph)*kk*1.5),
+  const drawSet=(hs,Rl,alpha,kk,out)=>{x.imageSmoothingEnabled=false;hs.forEach(h=>{const {rw,rh,box}=h.s,L=t7Lit(h.s,Rl),ph=ws+h.ph,fr=still?0:Math.floor(ph)%2,bob=still?0:(fr?0:-1)*Math.max(1,Math.round(kk)),sway=still?0:Math.round(Math.sin(t*.55+h.bph)*kk*1.5),
       dw=rw*kk,dh=rh*kk,dx=Math.round(h.cx-((box.x0+box.x1+1)/2)*kk)+sway,dy=Math.round(h.y-(box.y1+1)*kk)+bob;x.globalAlpha=alpha;x.drawImage(L[fr],dx,dy,dw,dh);
-      if(out)out.push({id:h.id,rw,rh,lw:h.s.lw,lh:h.s.lh,k:kk,x:dx,y:dy,w:dw,h:dh,lead:!!h.lead,box:{x:dx+box.x0*kk,y:dy+box.y0*kk,w:(box.x1-box.x0+1)*kk,h:(box.y1-box.y0+1)*kk},face:{x:dx+box.x0*kk,y:dy+box.y0*kk,w:(box.x1-box.x0+1)*kk,h:Math.round((box.y1-box.y0)*.42*kk)}});});x.globalAlpha=1;};
+      if(out)out.push({id:h.id,rw,rh,lw:h.s.lw,lh:h.s.lh,wsc:h.s.wsc,k:kk,x:dx,y:dy,w:dw,h:dh,lead:!!h.lead,box:{x:dx+box.x0*kk,y:dy+box.y0*kk,w:(box.x1-box.x0+1)*kk,h:(box.y1-box.y0+1)*kk},face:{x:dx+box.x0*kk,y:dy+box.y0*kk,w:(box.x1-box.x0+1)*kk,h:Math.round((box.y1-box.y0)*.42*kk)}});});x.globalAlpha=1;};
   const fadeK=T7.prev&&!still?Math.min(1,(now-T7.fadeT)/900):1;if(fadeK>=1)T7.prev=null;
   if(T7.prev)drawSet(T7.prev.heroes,R,1-fadeK,T7.prev.k,null);
   if(RP){drawSet(T7.heroes,RP,T7.prev?fadeK:1,k,null);drawSet(T7.heroes,R,(T7.prev?fadeK:1)*e,k,rec);}else drawSet(T7.heroes,R,T7.prev?fadeK:1,k,rec);T7.drawn=rec;

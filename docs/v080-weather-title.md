@@ -124,3 +124,23 @@ machine; the rerun is above). High battle on SwiftShader stays at 2 to 4 fps as 
 - Bank billboards in HD-2D still cut straight where they pass through a wall or tree (no soft particles); the feathered sprite keeps
   the cut faint.
 - The title scene is 2D canvas (cheap on every tier), not the WebGL renderer.
+
+## v0.8.9 follow up: heroes sized like the overworld
+The owner, on a phone: "Title screen sprites look off, should be sized more like overworld in game." The v0.8.0 party used the battle
+sprite's 2x HD bitmap at the largest whole scale that fit (a hero was about 30 % of the scene high, each pixel 4 to 5 device pixels on
+a phone), blocky and unlike the heroes in the world; the night realms' ground was a flat dark band at phone size.
+- Sprites: the overworld walker (`walkerCanvas`, side view, its two walk frames), shrunk to the world's own sprite grid exactly as the
+  HD-2D world does it (`hdSmall` at `HD2D.spr.sc`, 2/3: about 24 x 31 texels, each the dominant colour of its 3 x 3 pixels of the HD
+  bitmap), then drawn at a whole number of device pixels per texel with smoothing off. Same proportions and pixel density as in the
+  world, crisp. Rim light one texel wide.
+- Size: a hero is about an eighth of the scene high (`T7.cfg.heroFrac` 8; 12 to 14 % at the listed sizes), still the largest whole
+  scale that fits the width and the room under the wordmark. The file is tighter (4 texel gaps), the horizon at 0.58 and the road at
+  0.86 of the scene, the travel speed about three quarters of a hero's height a second.
+- Ground: every prop and detail on the ground is sized from the heroes' height: a hazy band of small props toward the horizon, the far
+  side of the road, and a front band of low props only (bushes, rocks, mounds, hedges: nothing in front of the party reaches up over
+  it); tufts and stones lit from the realm's key side, soft lighter and darker patches, a lit far edge on the road, pebbles and ruts,
+  and by night the sky's glow toward the horizon and front grass that is no longer black. The town's far band is hedges (fewer lamps).
+  Props are drawn from their own seed on both sides of a wrap (identical at the tile seam).
+- Tests: `v080wt.js` checks the overworld sprite grid at a whole scale and the height (7.5 to 19 % of the scene); `v071t.js` the same
+  sprite rule.
+
