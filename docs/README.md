@@ -21,6 +21,7 @@ Read these before a big pass:
 - `v071-title.md`: the title pass (HD-2D camp title scene, the code-drawn wordmark and emblem in `logo.js`, app icons from `tools/mkicons.js`).
 - `v070-battle-info.md`: the v0.7.0 battle information and input pass (turn forecast bar, foe intents from planned actions, optional timed hits; `v3/battle5.js`).
 - `v070-battle-mech.md`: the v0.7.0 battle mechanics (detonation MP refund, free swap, Momentum, foe roles and the boss Cataclysm, `b4RolePlan` for intents) with the auto vs careful sim numbers.
+- `v080-roles-balance.md`: v0.8.2 class roles (a primary and secondary roles per class, role skills, weapons and charms, the 55 to 75% band) and the pacing pass (journey sim with gear and a time model, encounters, the eased Scourges).
 - `v076-battle-layout.md`: the v0.7.6 wide battle layout (commands with the foes under them, the party column with one hero per row, the stage sized so the screen fits, no text cut, aim tags that always fit).
 - `audio-notes-v045.md`: the orchestral audio (v0.4.5) and Android live updates (v0.4.6).
 - `v050-prompt.md`: the full spec for the Beta v0.5.0 pass. Rollback point: `rollback-v046.md`.

@@ -62,7 +62,15 @@ const WN={blade:['Iron Blade','Steel Brand','Mythril Saber','Dawnsteel Blade','S
  qstaff:['Oak Quarterstaff','Ash Quarterstaff','Mythril Bo','Dawnwood Staff','Stormwood Bo','Starwood Staff'],
  lute:['Pine Lute','Maple Lute','Silverstring Lute','Tidesong Lute','Skyglass Lute','Hollow Star Lute'],
  harp:['Reed Harp','Silver Harp','Sage Harp','Tidesong Harp','Skyglass Harp','Hollow Star Harp'],
- flute:['Bone Flute','Silver Flute','Sage Pipe','Tidesong Flute','Skyglass Flute','Hollow Star Flute']};
+ flute:['Bone Flute','Silver Flute','Sage Pipe','Tidesong Flute','Skyglass Flute','Hollow Star Flute'],
+ // v0.8.2 role weapons (roles.js): each leans a class into its secondary role
+ thrown:['Iron Shuriken','Steel Kunai','Viper Stars','Rime Kunai','Storm Shuriken','Umbra Kunai'],
+ beads:['Wooden Beads','Jade Beads','Pilgrim Beads','Dawn Rosary','Storm Rosary','Starlit Rosary'],
+ wand:['Ash Wand','Bone Wand','Hexwood Wand','Rime Wand','Stormglass Wand','Void Wand'],
+ censer:['Clay Censer','Brass Censer','Silver Censer','Dawn Censer','Storm Censer','Star Censer'],
+ warhammer:['Iron Warhammer','Steel Warhammer','Mythril Warhammer','Dawnsteel Warhammer','Storm Warhammer','Star Warhammer'],
+ standard:['Rag Standard','Guild Standard','Mythril Standard','Dawn Standard','Storm Standard','Star Standard'],
+ lyre:['Pine Lyre','Silver Lyre','Sage Lyre','Tidesong Lyre','Skyglass Lyre','Hollow Star Lyre']};
 const AN={mail:['Leather Vest','Chain Mail','Mythril Mail','Dawnplate','Stormplate','Starplate'],
  robe:['Linen Robe','Silk Robe','Mage Vestment','Rime Robe','Skyweave Robe','Void Robe'],
  vest:['Hide Jerkin','Scout Garb','Windrunner Garb','Frostrunner Garb','Gale Garb','Twilight Garb']};
@@ -88,6 +96,14 @@ for(let t=0;t<6;t++){
   addGear('w_lute_'+t,{n:WN.lute[t],slot:'w',tier:t,mag:Math.round(WP[t]*.9),res:Math.round(WP[t]*.3),mp:Math.round(WP[t]*.7),price:PRICE[t]});
   addGear('w_harp_'+t,{n:WN.harp[t],slot:'w',tier:t,mag:Math.round(WP[t]*.86),res:Math.round(WP[t]*.4),mp:Math.round(WP[t]*.8),price:PRICE[t]});
   addGear('w_flute_'+t,{n:WN.flute[t],slot:'w',tier:t,mag:Math.round(WP[t]*.82),res:Math.round(WP[t]*.25),mp:Math.round(WP[t]*.6),spd:1+t*1.2,price:PRICE[t]});
+  // v0.8.2 role weapons: the same power budget, spent toward a secondary role (perks in WPERK)
+  addGear('w_thrown_'+t,{n:WN.thrown[t],slot:'w',tier:t,atk:Math.round(WP[t]*.8),spd:2+t*1.4,price:PRICE[t]});
+  addGear('w_beads_'+t,{n:WN.beads[t],slot:'w',tier:t,atk:Math.round(WP[t]*.7),mag:Math.round(WP[t]*.55),res:Math.round(WP[t]*.2),attr:{fth:1+t},price:PRICE[t]});
+  addGear('w_wand_'+t,{n:WN.wand[t],slot:'w',tier:t,mag:Math.round(WP[t]*.95),mp:Math.round(WP[t]*.5),spd:1+t*.6,price:PRICE[t]});
+  addGear('w_censer_'+t,{n:WN.censer[t],slot:'w',tier:t,mag:Math.round(WP[t]*.88),res:Math.round(WP[t]*.35),mp:Math.round(WP[t]*.6),price:PRICE[t]});
+  addGear('w_warhammer_'+t,{n:WN.warhammer[t],slot:'w',tier:t,atk:Math.round(WP[t]*.98),def:Math.round(WP[t]*.12),price:PRICE[t]});
+  addGear('w_standard_'+t,{n:WN.standard[t],slot:'w',tier:t,atk:Math.round(WP[t]*.88),def:Math.round(WP[t]*.15),res:Math.round(WP[t]*.15),price:PRICE[t]});
+  addGear('w_lyre_'+t,{n:WN.lyre[t],slot:'w',tier:t,mag:Math.round(WP[t]*1.02),mp:Math.round(WP[t]*.5),res:Math.round(WP[t]*.2),price:PRICE[t]});
   addGear('a_mail_'+t,{n:AN.mail[t],slot:'a',tier:t,def:Math.round(AP[t]*ARM_K),res:Math.round(AP[t]*ARM_K*.4),hp:AP[t]*3,spd:-(1+Math.round(t*.4)),mp:-Math.round(AP[t]*.3),price:Math.round(PRICE[t]*.9)});
   addGear('a_robe_'+t,{n:AN.robe[t],slot:'a',tier:t,res:Math.round(AP[t]*ARM_K),def:Math.round(AP[t]*ARM_K*.45),mag:Math.round(AP[t]*.4),mp:Math.round(AP[t]*1.2),spd:1+Math.round(t*.8),attr:{fth:1+t},price:Math.round(PRICE[t]*.9)});
   addGear('a_vest_'+t,{n:AN.vest[t],slot:'a',tier:t,def:Math.round(AP[t]*ARM_K*.72),res:Math.round(AP[t]*ARM_K*.72),spd:1+t,price:Math.round(PRICE[t]*.9)});
@@ -140,9 +156,9 @@ function stickGear(){const P=stickPower();return {id:'w_stick',n:'Stick: For the
 function gearDesc(id){const g=typeof id==='string'?gearOf(id):id;if(!g)return '';const p=[];ST.forEach(s=>{if(g[s])p.push((g[s]>0?'+':'')+Math.round(g[s])+' '+STN[s]);});if(g.slot==='w'&&g.fam&&WT_NAME[g.fam])p.unshift(WT_NAME[g.fam]);if(g.slot==='a'&&g.weight)p.unshift(ARM_NAME[g.weight]);if(g.fam&&WPERK[g.fam]&&g.fam!=='staff')p.push(WPERK[g.fam].p);if(g.attr)Object.keys(g.attr).forEach(k=>p.push('+'+g.attr[k]+' '+k.toUpperCase()));if(g.el)p.push('+15% '+EL[g.el]+' damage, 15% less taken');if(g.immune)p.push('Halves ailment chance');if(g.mpEff)p.push(WPERK.staff.p);if(g.stick){const P=g.stickP;p.push(`${P.name} glow: ${P.n}/${P.all} Bestiary entries`+(P.next?`, grows again at ${P.next}`:', fully grown'));}return p.join(', ');}
 // ----- v0.3.5 weapon types, weapon perks and armor weights -----
 Object.keys(GEAR).forEach(id=>{let m=id.match(/^w_([a-z]+)_\d$/);if(m){GEAR[id].fam=m[1];GEAR[id].wt=m[1];}m=id.match(/^a_(mail|robe|vest)_\d$/);if(m){GEAR[id].fam=m[1];GEAR[id].weight={mail:'heavy',vest:'medium',robe:'light'}[m[1]];}});
-const WT_NAME={blade:'Sword',axe:'Axe',greatsword:'Greatsword',lance:'Lance',mace:'Mace',staff:'Staff',tome:'Tome',dagger:'Dagger',shortsword:'Short sword',bow:'Bow',longbow:'Longbow',crossbow:'Crossbow',knuckles:'Knuckles',claws:'Claws',qstaff:'Quarterstaff',lute:'Lute',harp:'Harp',flute:'Flute'};
+const WT_NAME={blade:'Sword',axe:'Axe',greatsword:'Greatsword',lance:'Lance',mace:'Mace',staff:'Staff',tome:'Tome',dagger:'Dagger',shortsword:'Short sword',bow:'Bow',longbow:'Longbow',crossbow:'Crossbow',knuckles:'Knuckles',claws:'Claws',qstaff:'Quarterstaff',lute:'Lute',harp:'Harp',flute:'Flute',thrown:'Throwing stars',beads:'Prayer beads',wand:'Wand',censer:'Censer',warhammer:'Warhammer',standard:'War standard',lyre:'Lyre'};
 // which weapon types a class may wield, and which armor weight it may wear
-const CLS_WPN={warrior:['blade','axe','greatsword'],knight:['blade','lance','mace'],mage:['staff','tome'],healer:['staff','tome','mace'],thief:['dagger','shortsword'],archer:['bow','longbow','crossbow'],monk:['knuckles','claws','qstaff'],bard:['lute','harp','flute'],
+const CLS_WPN={warrior:['blade','axe','greatsword','warhammer'],knight:['blade','lance','mace','standard'],mage:['staff','tome','wand'],healer:['staff','tome','mace','censer'],thief:['dagger','shortsword','thrown'],archer:['bow','longbow','crossbow'],monk:['knuckles','claws','qstaff','beads'],bard:['lute','harp','flute','lyre'],
   sniper:['crossbow','bow'],druid:['bow','longbow'],archmage:['staff','tome'],chronicler:['tome','staff']};
 const CLS_ARM={warrior:'heavy',knight:'heavy',mage:'light',healer:'light',bard:'light',chronicler:'light',archmage:'light',thief:'medium',archer:'medium',monk:'medium',sniper:'medium',druid:'medium'};
 const ARM_NAME={light:'Light armor',medium:'Medium armor',heavy:'Heavy armor'};
@@ -166,8 +182,16 @@ const WPERK={
  qstaff:{p:'Reach: +5% accuracy, +6% evasion',s:'Quarterstaff: +5% accuracy',acc:.05,eva:.06},
  lute:{p:'Discord: debuffs land 25% more often and last 1 turn longer',s:'Lute: debuffs +25% chance, +1 turn',status:1.25,debT:1},
  harp:{p:'Soothe: +10% healing, buffs last 1 turn longer',s:'Harp: +10% healing, buffs +1 turn',healUp:.10,buffT:1},
- flute:{p:'Tempo: actions take 5% less time, buffs last 1 turn longer',s:'Flute: faster actions, buffs +1 turn',tempo:.95,buffT:1}};
-const FAM_MAT_V35={axe:['ore','fang'],greatsword:['ore','scale'],lance:['ore','hide'],mace:['ore','grit'],shortsword:['ore','fang'],longbow:['wood','hide'],knuckles:['ore','hide'],claws:['ore','fang'],qstaff:['wood','grit'],lute:['wood','ichor'],harp:['wood','ichor'],flute:['wood','bluecap']};
+ flute:{p:'Tempo: actions take 5% less time, buffs last 1 turn longer',s:'Flute: faster actions, buffs +1 turn',tempo:.95,buffT:1},
+ // v0.8.2 role weapons
+ thrown:{p:'Thrown: basic attacks are Ranged (flying foes cannot weave away), +5% critical chance',s:'Throwing stars: Ranged attacks, +5% crit',crit:.05},
+ beads:{p:'Prayer: +15% healing, buffs you give last 1 turn longer',s:'Prayer beads: +15% healing, buffs +1 turn',healUp:.15,buffT:1},
+ wand:{p:'Hex: debuffs land 30% more often and last 1 turn longer',s:'Wand: debuffs +30% chance, +1 turn',status:1.3,debT:1},
+ censer:{p:'Incense: buffs you give last 1 turn longer, +5% healing',s:'Censer: buffs +1 turn, +5% healing',buffT:1,healUp:.05},
+ warhammer:{p:'Sunder: debuffs land 25% more often and last 1 turn longer',s:'Warhammer: debuffs +25% chance, +1 turn',status:1.25,debT:1},
+ standard:{p:'Rally: buffs you give last 1 turn longer, +4% accuracy',s:'War standard: buffs +1 turn',buffT:1,acc:.04},
+ lyre:{p:'Resonance: +10% spell damage',s:'Lyre: +10% spell damage',spellPow:.10}};
+const FAM_MAT_V35={axe:['ore','fang'],greatsword:['ore','scale'],lance:['ore','hide'],mace:['ore','grit'],shortsword:['ore','fang'],longbow:['wood','hide'],knuckles:['ore','hide'],claws:['ore','fang'],qstaff:['wood','grit'],lute:['wood','ichor'],harp:['wood','ichor'],flute:['wood','bluecap'],thrown:['ore','fang'],beads:['wood','grit'],wand:['wood','ichor'],censer:['ore','ichor'],warhammer:['ore','grit'],standard:['ore','hide'],lyre:['wood','ichor']};
 // loot: a random weapon or armor base (w_axe, a_mail ...) that somebody in the current roster can actually use
 function lootBase(rnd){const R=rnd||(()=>Math.random()),cls=new Set();try{Object.values(G.roster).forEach(c=>{if(TPL[c.id])cls.add(TPL[c.id].cls);});}catch(e){}
   const w=new Set(),a=new Set();(cls.size?[...cls]:Object.keys(CLS_WPN)).forEach(k=>{(CLS_WPN[k]||[]).forEach(f=>w.add('w_'+f));a.add('a_'+ARM_FAM[CLS_ARM[k]||'medium']);});

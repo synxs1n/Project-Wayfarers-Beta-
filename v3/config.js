@@ -113,7 +113,7 @@ const BOSS_LV={frac:.5,cap:12};
 // 3.2 bosses: shield pips +50% (5 to 8, 7 to 11); the break window hits for less and is over once the foe loses the turn it staggers
 const BOSS_PIPS={mult:1.5};const BREAK_WIN={bonus:1.3,short:true};
 // 3.2 extra boss muscle on top of the old stat table (hp and power multipliers)
-const BOSS_BUFF={hp:[1.3,1.75,1.8,2.0,1.52],pow:[1.15,1.4,1.44,1.6,1.28]}// v0.4.3: re-tuned with capes;
+const BOSS_BUFF={hp:[1.15,1.65,1.7,2.0,1.52],pow:[1.05,1.34,1.38,1.6,1.28]}// v0.4.3: re-tuned with capes; v0.8.2: the first three Scourges eased (were hp 1.3, 1.75, 1.8 and pow 1.15, 1.4, 1.44) so no boss is a wall
 // 3.4 small parties: each hero short of six makes Scourges and Calamities this much beefier (a full party of six is the benchmark)
 const BOSS_SIZE={hp:.07,pow:.06};// per stage 1 to 5
 // 3.3 echo levels. Story echo base = boss base + storyAdd; Sanctum echoes use fixed bases. While the party's highest hero is more than
@@ -140,7 +140,7 @@ const MIMIC_RATE=.13;
 const MAT_PRICE={copper:18,iron:45,mythril:110,oak:14,ash:40,elder:95,healroot:10,bluecap:22,sunpetal:48,starbloom:120};
 // Beta v0.4.1 3.5 economy (all editable here)
 // gold/xp: multipliers on what the player earns (the Daily Trial is exempt). gear/items/forge: price multipliers. recruit: tavern hire price.
-const ECON={gold:.9,xp:.85,gear:1.6,items:1.6,recruit:3,rareRecruit:2.6,inn:{base:30,per:25}};// v0.4.3: gold easier, prices lower (was gold .75, gear and items x2, recruits x3.5)
+const ECON={gold:.9,xp:.87,gear:1.6,items:1.6,recruit:3,rareRecruit:2.6,inn:{base:30,per:25}};// v0.4.3: gold easier, prices lower (was gold .75, gear and items x2, recruits x3.5) v0.8.2: xp .85 -> .87 with more encounters (ENC_RATE)
 const econG=n=>(typeof G!=='undefined'&&G&&G.daily)?n:Math.round(n*ECON.gold);
 // Beta v0.5.0 Phase 3: shops, gear and items (p3shop.js)
 // 3.8 how many of one item the pack holds (was 9). The Daily Trial keeps its old cap so its runs stay exactly as before.
@@ -198,12 +198,72 @@ const CAMP={price:40,fromStage:2,heal:.25,cool:2,dur:3,atk:.1,def:.1,first:.35,d
 const SUB_MIN=28,SUB_SPAN=5;//  target size 28..32
 // LOADMAX: saved team loadouts (party2.js).
 const LOADMAX=8;
+// v0.8.2 class roles (roles.js). Every class has a primary role and one or two secondary roles, delivered by skills (sk, added to the
+// class list at fixed levels, so old saves learn them on load by level) and by gear that leans into them (new weapon families in items.js,
+// role charms below). A secondary role's output is meant to land at band[0] to band[1] of the dedicated class's (ded) primary output,
+// measured by roleOut on a plain template per class (its element taken from ref; no signature skill) at level lv with each class's standard weapon and armor of tier tier.
+// Roles: tank, phys (physical damage), magic, ranged (ranged delivery, catches flyers), healer, buffer (support), debuffer.
+// Every class also primes and detonates (skills.js ROLE_FILL), so primer/detonator is a shared tag, not a secondary.
+// w: how roleOut weighs statuses (per target per turn); area: targets an all-foes or all-allies move counts for; self: weight of a buff
+// that only lands on the user; tauntless: a would-be tank without a taunt; tankRef: foe attack multiplier for the tank measure;
+// top: roleOut adds up a hero's best this-many moves for the role; chiK: Monk and Druid chi heals (chi:1) use the better of healing power and chiK x attack.
+// sk: the new skills per class. el 'e1' takes the hero's first element; {n1} in names and text is its name. charms: role charms
+// (sold at the charm stall from stage 2, 0 based shopFrom) and their perks (healUp, spellPow, buffT, debT, status, rngPow, tauntDef).
+const ROLES={
+  cls:{warrior:{p:'phys',s:['tank','debuffer']},knight:{p:'tank',s:['buffer']},archer:{p:'ranged',s:['debuffer']},thief:{p:'debuffer',s:['ranged']},
+    monk:{p:'phys',s:['healer','buffer']},mage:{p:'magic',s:['debuffer']},healer:{p:'healer',s:['buffer']},bard:{p:'buffer',s:['magic','healer']},
+    sniper:{p:'ranged',s:['debuffer']},druid:{p:'ranged',s:['healer','debuffer']},archmage:{p:'magic',s:['buffer']},chronicler:{p:'magic',s:['debuffer','healer']}},
+  ded:{tank:'knight',phys:'warrior',magic:'mage',ranged:'archer',healer:'healer',buffer:'bard',debuffer:'thief'},
+  ref:{warrior:'brann',knight:'oren',archer:'tess',thief:'sable',monk:'dorn',mage:'mira',healer:'lumen',bard:'brook',sniper:'kaevan',druid:'nikaris',archmage:'jaeson',chronicler:'vaelith'},
+  band:[.55,.75],lv:30,tier:3,
+  names:{tank:'Tank',phys:'Physical damage',magic:'Magic damage',ranged:'Ranged',healer:'Healer',buffer:'Support',debuffer:'Debuffer'},
+  w:{buff:{might:1,haste:1,bulwark:1,regen:.8,ward:.7,focus:.5,taunt:.2},debuff:{break:1,weaken:1,slow:.8,stun:1.4,blind:.7,poison:.6,bleed:.6,burn:.6,root:.4},
+    area:2,self:.6,tauntless:.55,tankRef:1.12,top:2,chiK:1.25},
+  sk:{
+    warrior:[{id:'r_sunder',n:'Sunder',k:'phys',pw:1.1,mp:5,lv:11,fx:[['break',.8]],d:'A splitting blow that cracks armor. Likely Breaks.',r:'debuffer'},
+      {id:'r_shout',n:'Intimidating Shout',k:'status',t:'all',mp:8,lv:16,fx:[['weaken',.8]],d:'A roar that shakes every foe. Likely Weakens them.',r:'debuffer'},
+      {id:'r_stance',n:'Iron Stance',k:'status',t:'self',mp:7,lv:20,fx:[['taunt',1],['regen',1]],d:'Plants his feet: Taunt and Regen. The line hides behind him.',r:'tank'}],
+    knight:[{id:'r_banner',n:'Raise the Banner',k:'status',t:'allyAll',mp:12,lv:19,fx:[['haste',1]],d:'The standard goes up: Haste for the vanguard.',r:'buffer'},
+      {id:'r_cover',n:'Shield Ally',k:'status',t:'ally',mp:5,lv:13,fx:[['bulwark',1],['regen',1]],d:'Covers an ally: Bulwark and Regen.',r:'buffer'}],
+    archer:[{id:'r_cripple',n:'Crippling Shot',k:'phys',pw:1,mp:6,lv:15,dl:'ranged',fx:[['weaken',.85],['slow',.6]],d:'An arrow to the sword arm. Likely Weakens, may Slow.',r:'debuffer'},
+      {id:'r_flare',n:'Flare Arrow',k:'phys',pw:.8,mp:8,t:'all',lv:18,dl:'ranged',fx:[['blind',.7]],d:'A burning flare bursts over every foe. May Blind.',r:'debuffer'}],
+    thief:[{id:'r_stars',n:'Throwing Stars',k:'phys',pw:.7,hits:2,mp:3,cost:.8,lv:4,dl:'ranged',d:'Two quick stars from the hip. Ranged: flying foes cannot weave away.',r:'ranged'},
+      {id:'r_kunai',n:'Kunai Volley',k:'phys',pw:.8,mp:9,t:'all',lv:16,dl:'ranged',fx:[['bleed',.4]],d:'A fan of kunai at every foe. Ranged; may Bleed.',r:'ranged'},
+      {id:'r_hamstr',n:'Hamstring',k:'phys',pw:.8,mp:5,cost:.8,lv:12,fx:[['slow',.8],['weaken',.5]],d:'A cut behind the knee. Likely Slows, may Weaken.',r:'debuffer'},
+      {id:'r_toxin',n:'Toxic Cloud',k:'status',t:'all',mp:10,lv:18,fx:[['poison',.85],['weaken',.6]],d:'A cloud of venom over every foe. Likely Poisons, may Weaken.',r:'debuffer'},
+      {id:'r_fuma',n:'Fuma Shuriken',k:'phys',pw:1.9,mp:12,cost:1.1,pierce:1,lv:24,dl:'ranged',d:'A great folding shuriken that cuts through armor. Ranged; ignores half of defense.',r:'ranged'}],
+    monk:[{id:'r_chimend',n:'Chi Mend',k:'heal',chi:1,pw:1.6,mp:5,t:'ally',lv:7,d:'Pushes chi into an ally to close their wounds.',r:'healer'},
+      {id:'r_harmony',n:'Harmony Meditation',k:'status',t:'allyAll',mp:10,lv:14,fx:[['focus',1]],heal:.1,d:'The line breathes with him: Focus for the vanguard and a 10% heal.',r:'buffer'},
+      {id:'r_lotus',n:'Lotus Circle',k:'heal',chi:1,pw:1.1,mp:12,t:'allyAll',lv:21,d:'A shared meditation that heals the vanguard.',r:'healer'}],
+    mage:[{id:'r_snare',n:'Time Snare',k:'status',t:'all',mp:10,lv:16,fx:[['slow',.6],['weaken',.25]],d:'Thickens time around every foe. Likely Slows, may Weaken.',r:'debuffer'}],
+    healer:[{id:'r_bless',n:'Blessing',k:'status',t:'ally',mp:6,lv:10,fx:[['might',1],['regen',1]],d:'A blessing on one ally: Might and Regen.',r:'buffer'},
+      {id:'r_aegis',n:'Holy Aegis',k:'status',t:'allyAll',mp:14,lv:17,fx:[['bulwark',1]],d:'A dome of light: Bulwark for the vanguard.',r:'buffer'}],
+    bard:[{id:'r_anthem',n:'Anthem of Valor',k:'status',t:'allyAll',mp:16,lv:14,fx:[['might',1],['haste',1]],d:'The battle anthem: Might and Haste for the vanguard.',r:'buffer'},
+      {id:'r_aria',n:'{n1} Aria',k:'mag',pw:1.9,mp:5,lv:5,el:'e1',d:'A piercing {n1} note aimed at one foe.',r:'magic'},
+      {id:'r_ballad',n:'Healing Ballad',k:'heal',pw:2.1,mp:6,t:'ally',lv:8,d:'A slow ballad that mends one ally.',r:'healer'},
+      {id:'r_chorus',n:'Restoring Chorus',k:'heal',pw:1.35,mp:12,t:'allyAll',lv:18,fx:[['regen',1]],d:'The whole line sings along: heals the vanguard and grants Regen.',r:'healer'},
+      {id:'r_storm',n:'{n1} Storm Song',k:'mag',pw:2.5,mp:14,cost:1.2,lv:26,el:'e1',d:'The song rises into a {n1} storm on one foe. Slow recovery.',r:'magic'}],
+    sniper:[{id:'r_hobble',n:'Hobbling Bolt',k:'phys',pw:1,mp:6,lv:14,dl:'ranged',fx:[['slow',.8],['weaken',.6]],d:'A bolt to the leg. Likely Slows, may Weaken.',r:'debuffer'},
+      {id:'r_flash',n:'Flash Bolt',k:'phys',pw:.9,mp:11,t:'all',lv:20,dl:'ranged',fx:[['blind',.7],['slow',.4]],d:'A bolt that bursts into light over every foe. May Blind and Slow.',r:'debuffer'}],
+    druid:[{id:'r_tangle',n:'Tangleroot',k:'status',t:'all',mp:9,lv:12,fx:[['root',.7],['slow',.6]],d:'Roots burst up under every foe. May Root and Slow.',r:'debuffer'},
+      {id:'r_sap',n:'Healing Sap',k:'heal',chi:1,pw:1.9,mp:6,t:'ally',lv:7,d:'Old tree sap on a wound.',r:'healer'}],
+    archmage:[{id:'r_frostmail',n:'Frost Mail',k:'status',t:'allyAll',mp:12,lv:18,fx:[['bulwark',1]],heal:.1,d:'A skin of rime for the vanguard: Bulwark and a 10% heal.',r:'buffer'}],
+    chronicler:[{id:'r_draft',n:'Corrected Draft',k:'heal',pw:1.15,mp:12,t:'allyAll',lv:18,d:'Rewrites the last page: heals the vanguard.',r:'healer'}]},
+  // adj: changes to existing class skills (by class and skill id), merged in when the list is built
+  adj:{chronicler:{annotate:{fx:[['break',.9],['weaken',.5]],rl:'debuffer'},redact:{fx:[['blind',.7]]}},bard:{tune1:{pw:1},tune2:{pw:1}},druid:{wildmend:{chi:1,pw:1.15}}},
+  charms:[{id:'c_rl_mend',n:"Mender's Locket",st:{mag:8,res:6},attr:{fth:3},perk:{healUp:.12},d:'+12% healing',price:520},
+    {id:'c_rl_song',n:'Spellstring Charm',st:{mag:12,mp:30},perk:{spellPow:.08},d:'+8% spell damage',price:520},
+    {id:'c_rl_quiv',n:'Kunai Pouch',st:{atk:8,spd:4},attr:{dex:3},perk:{rngPow:.1},d:'+10% Ranged damage',price:520},
+    {id:'c_rl_herald',n:"Herald's Horn",st:{hp:60,res:6},perk:{buffT:1},d:'Buffs you give last 1 turn longer',price:560},
+    {id:'c_rl_hex',n:"Hexer's Eye",st:{mag:6},attr:{luk:4},perk:{status:1.2,debT:1},d:'Debuffs land 20% more often and last 1 turn longer',price:560},
+    {id:'c_rl_ward',n:"Warden's Badge",st:{hp:110,def:10},perk:{tauntDef:.15},d:'Takes 15% less while Taunting',price:560}],
+  shopFrom:1};
 
 // ==== 6. World: encounters, chance meetings, travel items, day and night, weather tables, factions, map generation ====
 // encounters on the road
 // ENC_RATE: chance per step to meet a random battle, by the Settings choice. CE_*: chance meetings with a wayfarer (chance.js), about 1 in 170 steps after a 30 step gap, 2 per area at most
-const ENC_RATE={off:0,low:.05,normal:.095,high:.14};// v0.4.3: about 13% fewer at every setting
-const ENC_MIN_STEPS=8;// v0.4.3: at least 8 tiles walked between random battles
+const ENC_RATE={off:0,low:.07,normal:.13,high:.18};// v0.8.2: about 30% more on every setting (was .05/.095/.14) for the 4.5 to 6 hour journey (docs/v080-roles-balance.md)
+const ENC_MIN_STEPS=7;// v0.8.2: at least 7 tiles walked between random battles (was 8)
 // chance meetings with a wayfarer (chance.js): about 1 in 170 steps after a 30 step quiet gap, at most 2 per area
 const CE_ODDS=1/170, CE_GAP=30, CE_AREA_CAP=2;
 // TOWN_LANE: every town gate gets a clear approach lane at least this many tiles wide to the main road

@@ -43,14 +43,15 @@ const tyOf=art=>(MON_TY[art]||BOSS_TY[art]||[]).slice();
 // ---- delivery ----
 // Basic attacks follow the weapon in hand; skills follow the class (with a few per skill exceptions).
 const WT_DL={blade:'slash',axe:'slash',greatsword:'slash',lance:'piercing',mace:'blunt',staff:'blunt',tome:'blunt',dagger:'piercing',shortsword:'slash',
-  bow:'ranged',longbow:'ranged',crossbow:'ranged',knuckles:'blunt',claws:'slash',qstaff:'blunt',lute:'blunt',harp:'blunt',flute:'blunt'};
+  bow:'ranged',longbow:'ranged',crossbow:'ranged',knuckles:'blunt',claws:'slash',qstaff:'blunt',lute:'blunt',harp:'blunt',flute:'blunt',
+  thrown:'ranged',beads:'blunt',wand:'blunt',censer:'blunt',warhammer:'blunt',standard:'piercing',lyre:'blunt'};// v0.8.2 role weapons: thrown stars are Ranged
 const DL_CLS={warrior:'slash',knight:'blunt',thief:'slash',archer:'ranged',sniper:'ranged',druid:'slash',monk:'blunt',mage:'blunt',healer:'blunt',bard:'blunt',archmage:'blunt',chronicler:'blunt'};
 const DL_OVR={
   warrior:{rend:'piercing',titan:'blunt',quake:'blunt',laststand:'blunt'},
   knight:{lance1:'piercing',lance2:'piercing',sburst:'piercing',holylance:'piercing',judge:'blunt',consec:'blunt',consground:'blunt',bash:'blunt'},
   thief:{stab:'piercing',steal:'piercing',shiv1:'piercing',assn:'piercing',shadowstep:'piercing',lotus:'piercing',dart:'ranged',dart2:'ranged',fan:'ranged'},
   monk:{chi1:'ranged',fists:'piercing',ascend:'blunt'},
-  druid:{hawk:'piercing'},
+  druid:{hawk:'piercing',s1a:'ranged',s1b:'ranged',s3a:'ranged',wildmark:'ranged'},// v0.8.2: his arrows are Ranged
   archer:{}
 };
 function dlFor(cls,s){

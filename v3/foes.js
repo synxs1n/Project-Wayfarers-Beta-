@@ -39,7 +39,7 @@ const GUARDIANS={
    phase:{at:.5,say:'Varroth wraps himself in magma armor!',self:[['ward',1],['might',1]]},intro:'Cinderking Varroth rises from the slag, crowned in cooling iron.'},
  hoarwyrm:{n:'Hoarwyrm',art:'hoarwyrm',el:['ice','wind'],hp:5.2,atk:1.2,def:1.2,mag:1.2,res:1.2,spd:1.05,sk:[['Glacial Bite','ice',1.7,'one','phys',[['bleed',.5]]],['Whiteout','ice',1.15,'all','mag',[['slow',.45]]],['Frost Breath','ice',1.3,'one','mag',[['slow',1]]]],
    phase:{at:.5,say:'The Hoarwyrm summons a blizzard!',party:[['slow',.8]]},intro:'The Hoarwyrm unfolds from the ice, wings like sheets of glass.'},
- ysolde:{n:'Stormcaller Ysolde',art:'ysolde',el:['lightning','light'],hp:5.2,atk:1,def:1.1,mag:1.35,res:1.4,spd:1.15,sk:[['Judgement Bolt','lightning',1.7,'one','mag',[['stun',.22]]],['Thunderhead','lightning',1.2,'all','mag'],['Radiant Veil','light',0,'self','buff',[['ward',1]]]],
+ ysolde:{n:'Stormcaller Ysolde',art:'ysolde',el:['lightning','light'],hp:5.2,atk:1,def:1.1,mag:1.25,res:1.4,spd:1.08,sk:[['Judgement Bolt','lightning',1.7,'one','mag',[['stun',.22]]],['Thunderhead','lightning',1.2,'all','mag'],['Radiant Veil','light',0,'self','buff',[['ward',1]]]],
    phase:{at:.5,say:'Ysolde calls a Stormling to her side!',summon:'stormling'},intro:'Stormcaller Ysolde hangs in the air, eyes white with lightning, the beacon bleeding shadow behind her.'},
  bonecolossus:{n:'Bone Colossus',art:'bonecolossus',el:['shadow','earth'],hp:5.8,atk:1.3,def:1.35,mag:.9,res:1,spd:.85,sk:[['Ossuary Slam','earth',1.7,'one','phys',[['stun',.2]]],['Grave Dust','shadow',1.1,'all','mag',[['poison',.4]]]],
    phase:{at:.4,say:'The Colossus pulls its bones back together!',heal:.18},intro:'Bones grind together in the dark: a Colossus built from every warrior the barrow ever took.'},
@@ -47,15 +47,17 @@ const GUARDIANS={
    phase:{at:.5,say:'The Queen calls her brood!',summon:'gustimp'},intro:'Chitin clicks overhead. The Queen Mantis drops from the ceiling, blades raised in prayer.'},
  gloomcap:{n:'Gloomcap Matriarch',art:'gloomcap',el:['shadow','water'],hp:5.6,atk:1,def:1.15,mag:1.3,res:1.2,spd:.9,sk:[['Spore Burst','shadow',1.1,'all','mag',[['poison',.6]]],['Drowning Mold','water',1.5,'one','mag',[['weaken',.5]]]],
    phase:{at:.5,say:'The Matriarch fills the air with choking spores!',party:[['poison',.7],['blind',.4]]},intro:'A towering mushroom breathes out a sigh of glowing spores. Something old and patient lives in its gills.'},
- ironsentinel:{n:'Iron Sentinel',art:'ironsentinel',el:['lightning','fire'],hp:5.6,atk:1.3,def:1.45,mag:1.1,res:.95,spd:.9,sk:[['Piston Fist','fire',1.6,'one','phys',[['burn',.4]]],['Arc Discharge','lightning',1.15,'all','mag',[['stun',.15]]]],
+ ironsentinel:{n:'Iron Sentinel',art:'ironsentinel',el:['lightning','fire'],hp:5.6,atk:1.3,def:1.35,mag:1.1,res:.95,spd:.9,sk:[['Piston Fist','fire',1.6,'one','phys',[['burn',.4]]],['Arc Discharge','lightning',1.15,'all','mag',[['stun',.15]]]],
    phase:{at:.5,say:'OVERCLOCK. The Sentinel vents steam and speeds up!',self:[['haste',1],['might',1]],selfBad:[['break',1]]},intro:'Gears turn in the walls. An Iron Sentinel built by a forgotten guild clanks awake, its furnace heart blazing.'},
- siren:{n:'Siren of the Deep',art:'siren',el:['water','light'],hp:5.2,atk:.95,def:1.05,mag:1.35,res:1.3,spd:1.1,sk:[['Drowning Song','water',1.2,'all','mag',[['slow',.4]]],['Lure','light',1.5,'one','mag',[['stun',.3]]]],
+ siren:{n:'Siren of the Deep',art:'siren',el:['water','light'],hp:5.2,atk:.95,def:1.05,mag:1.28,res:1.3,spd:1.1,sk:[['Drowning Song','water',1.2,'all','mag',[['slow',.4]]],['Lure','light',1.5,'one','mag',[['stun',.3]]]],
    phase:{at:.5,say:'The Siren sings a healing hymn to herself!',self:[['regen',1]],heal:.1},intro:'A voice hums under the water, impossibly sweet. The Siren of the Deep rises, pearl-eyed.'},
  ashwyvern:{n:'Ashen Wyvern',art:'ashwyvern',el:['fire','wind'],hp:5.2,atk:1.3,def:1.1,mag:1.15,res:1,spd:1.15,sk:[['Cinder Dive','fire',1.6,'one','phys',[['burn',.5]]],['Ash Gale','wind',1.1,'all','mag',[['blind',.35]]]],
    phase:{at:.5,say:'The Wyvern takes to the air!',self:[['haste',1],['bulwark',1]]},intro:'Ash rains from the rafters. An Ashen Wyvern lands on the beacon and screams.'},
- frostlich:{n:'Frost Lich',art:'frostlich',el:['ice','shadow'],hp:5,atk:.9,def:1,mag:1.4,res:1.35,spd:1,sk:[['Soul Frost','ice',1.6,'one','mag',[['slow',.6]]],['Grave Chill','shadow',1.15,'all','mag',[['weaken',.4]]]],
-   phase:{at:.5,say:'The Lich hides behind its phylactery ward!',self:[['ward',1]],wardEvery:3},intro:'Frost crawls up the walls in the shape of letters. The Frost Lich turns a page of its book and smiles.'}
+ frostlich:{n:'Frost Lich',art:'frostlich',el:['ice','shadow'],hp:5,atk:.9,def:1,mag:1.25,res:1.35,spd:1,sk:[['Soul Frost','ice',1.6,'one','mag',[['slow',.6]]],['Grave Chill','shadow',1.15,'all','mag',[['weaken',.4]]]],
+   phase:{at:.5,say:'The Lich hides behind its phylactery ward!',self:[['ward',1]],wardEvery:4},intro:'Frost crawls up the walls in the shape of letters. The Frost Lich turns a page of its book and smiles.'}
 };
+// v0.8.2: the Frost Lich (mag 1.4, ward every 3 turns), Ysolde (mag 1.35, spd 1.15), the Iron Sentinel (def 1.45) and the Siren (mag 1.35)
+// were eased: in fullsim.js bossgrid they won 0 to 40% where the other Scourges won 50 to 90% (docs/v080-roles-balance.md)
 const FINALS={
  dimmer:{n:'The Dimmer',art:'dimmer',el:['shadow','light'],hp:6.2,atk:1.25,def:1.3,mag:1.35,res:1.4,spd:1.1,sk:[['Hollow Hand','shadow',1.8,'one','phys',[['weaken',.5]]],['Dimming','shadow',1.25,'all','mag',[['blind',.3]]],['Starfall','light',1.3,'all','mag',[['break',.4]]]],
    phase:{at:.5,say:'The Dimmer swallows the light around it!',self:[['might',1],['bulwark',1]],party:[['blind',.5]]},intro:'The Dimmer waits in the black: a tall hollow in the shape of a figure, wearing every light it has swallowed.'},

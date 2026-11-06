@@ -21,6 +21,7 @@ evals any name), `window.__AU` (ambience.js), `__P2` (p2world.js), `__P3` (p3sho
 | XP curve, level cap, Limit Break levels, catch up XP | `config.js` 1; `engine.js` (gainXP, `need`), `p4xp.js` |
 | hero roster, classes, looks | `heroes.js`, `data.js` (classes, growth), `art.js`/`art2.js` (sprites), `sprhd.js` (HD paint) |
 | skills, Limit Breaks, bonds | `skills.js`; bond scenes `town2.js`, bond goals `v063prog.js` |
+| class roles (primary and secondary), role skills, role charms, roleOut | `roles.js`, `ROLES` in `config.js` 5; role weapon families in `items.js`, icons in `icons.js` |
 | monsters, bosses, archetypes | `foes.js`, `monsters2.js`, `art3.js` (guardians), `archetype.js`, `echocore.js` (echo forms) |
 | damage, statuses, reactions | `engine.js` (calcDamage, addSt, doReaction), `data.js` (REACT, STS), `ailments.js`, `archetype.js`, `battle4.js` (Momentum) |
 | battle flow (turn order, enemy AI, auto) | `engine.js` (startBattle, advance, enemyTurn, autoTurn), `battle5.js` (forecast order, foePlan, enemyTurn0), `battle4.js` (roles, free swap), `prog2.js` (auto lock) |
@@ -99,6 +100,9 @@ v0.7
 - `remember.js` remember Auto and Run · `pacing.js` unlock pacing · `onboard.js` tip cards · `duellines.js` duel voices · `qready.js` quests ready
 - `hd2dgl.js` HD-2D WebGL layer · `hd2d.js` HD-2D world renderer · `weather7.js` layered weather · `pathguard.js` path protection
 - `sprhd2.js` HD sprite consumers · `logo.js` wordmark · `title7.js` HD-2D title · `visuals7.js` minimap tiles, victory crest, arena
+
+v0.8
+- `roles.js` class roles: secondary role skills and charms, chi heals, roleOut / roleTable / heroRoleSet (built right after `sigskills.js`)
 
 CSS: `fonts.css`, `style.css`, `ui3.css` (v0.5.3 Gilded Night), `menus3.css`, `battle3.css`, `battle5.css`, `battle4.css`.
 Shell: `shell.html` (page, `window.__A`), `liveboot.js` (Android live update boot), `sw.js` (service worker).
