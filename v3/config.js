@@ -334,7 +334,11 @@ const WX7={on:true,
         high:  {cap:460,rain:[110,80,20],snow:[96,64,16],sand:[90,56,12],ash:[56,32,10],wind:[24,16,6],ground:2,banks:[5,5,3],shimmer:1,soft:2,gl:1,glN:1.7,glCap:1800,stars:40}},
   par:[.82,1,1.35],
   bolt:{gap:[4200,9200],pulses:[[0,70,.42],[150,60,.24]],light:1.1,life:260},
-  gl:{rain:420,storm:540,snow:320,blizzard:420,sand:280,ash:120,ember:30,gale:70,leaf:24,heat:40,bank:1},glRef:420000,heroPad:4};
+  gl:{rain:420,storm:540,snow:320,blizzard:420,sand:280,ash:120,ember:30,gale:70,leaf:24,heat:40,bank:1},glRef:420000,heroPad:4,
+  // v0.8.0: readability around the hero is a feathered ellipse, never a clear box. face: centre y (share of his box from the top), radii
+  // (shares of the box), core (squared elliptical distance below which nothing is drawn; the rest fades in smoothly), bank: the least
+  // alpha a near fog bank keeps over his face. fogPar: parallax of ground fog banks (they lie on the ground; falling layers use par)
+  face:{y:.28,rx:.85,ry:.4,core:.22,bank:.4},fogPar:[.96,1,1.05]};
 // WMAP: the illustrated world map (map.js). vig: vignette size in cells.
 const WMAP={cell:[64,150,38],vig:.78,names:84};// cell: px per area (normal min, max, min on short landscape screens); names: written out from this cell size
 // Beta v0.5.3: HD-2D world renderer (hd2d.js, hd2dgl.js)
@@ -351,6 +355,7 @@ const WMAP={cell:[64,150,38],vig:.78,names:84};// cell: px per area (normal min,
 // 2 = its own wider pass, dof 1 or 2 blur rounds, shafts on or off, every = remake the blurred copy every n frames.
 // lmMax: most lights per frame; lightK: light strength; chunk: static geometry chunk size in tiles (culling).
 // look: lighting and grade per time of day and place; weather: how each weather scales ambient and sun and tints the fog.
+// fogN (v0.8.0): where the distance fog starts in that weather, as a share of fogStart (fog 0.3: it thickens smoothly from near the hero).
 const HD2D={pitch:40,fov:28,maxHfov:40,zoom:1,follow:85,topSlack:.2,sway:{amp:.7,pitch:.25,ms:11000},
   wall:{dungeon:22,cliff:12,town:14},water:-3,deep:-14,fogStart:1.15,fogEnd:2.7,xray:{out:26,dun:40},actMin:{out:.62,dun:.58},heroLight:120,shaft:.09,
   dof:{shift:.06,band:.24,ramp:.5,max:.7},bloom:{thr:.86,med:.5,high:.55},
@@ -366,8 +371,8 @@ const HD2D={pitch:40,fov:28,maxHfov:40,zoom:1,follow:85,topSlack:.2,sway:{amp:.7
     hall: {amb:[.42,.36,.56],sun:[0,0,0],sd:[0,1,.3],sh:[0,0,0],fog:[.06,.04,.1],fogA:.6,exp:1.05,con:1.05,sat:1.08,vig:.45,lift:[.01,0,.03],gain:[1.02,1,1.04],emis:1,lamp:1,shaft:0,pl:.5,bloom:.25},
     darkRealm:{amb:[.86,.76,.72],sun:.5}},
   weather:{clear:{amb:1,sun:1},rain:{amb:.84,sun:.35,fog:[.5,.58,.68],fogA:.14,sat:.86,shaft:0},storm:{amb:.7,sun:.15,fog:[.3,.33,.45],fogA:.35,sat:.8,shaft:0},
-    snow:{amb:1.04,sun:.6,fog:[.88,.93,1],fogA:.25,sat:.9,shaft:.4},blizzard:{amb:1,sun:.3,fog:[.92,.95,1],fogA:.55,sat:.8,shaft:0},fog:{amb:.95,sun:.45,fog:[.8,.83,.88],fogA:.55,sat:.85,shaft:.2},
-    gale:{amb:1,sun:.9,shaft:.6},sand:{amb:.95,sun:.7,fog:[.86,.72,.5],fogA:.4,sat:.95,shaft:.5},heat:{amb:1.04,sun:1.15,fog:[1,.82,.62],fogA:.15,warm:1},
+    snow:{amb:1.04,sun:.6,fog:[.88,.93,1],fogA:.25,sat:.9,shaft:.4},blizzard:{amb:1,sun:.3,fog:[.92,.95,1],fogA:.55,sat:.8,shaft:0,fogN:.55},fog:{amb:.95,sun:.45,fog:[.8,.83,.88],fogA:.55,sat:.85,shaft:.2,fogN:.3},
+    gale:{amb:1,sun:.9,shaft:.6},sand:{amb:.95,sun:.7,fog:[.86,.72,.5],fogA:.4,sat:.95,shaft:.5,fogN:.65},heat:{amb:1.04,sun:1.15,fog:[1,.82,.62],fogA:.15,warm:1},
     ashfall:{amb:.8,sun:.45,fog:[.45,.38,.36],fogA:.35,sat:.8,shaft:.3},aurora:{amb:.95,sun:.8,fog:[.3,.6,.55],fogA:.12},starfall:{amb:.95,sun:.9,fog:[.3,.3,.5],fogA:.1},
     bloodmoon:{amb:.8,sun:.5,fog:[.5,.1,.12],fogA:.3,warm:1,shaft:0},eclipse:{amb:.6,sun:.1,fog:[.1,.1,.2],fogA:.3,shaft:0},meteor:{amb:.9,sun:.8}}};
 // v0.5.8 sprites in the scene (world): sc = billboard scale (1 = the 2D view's size; 2/3 puts a hero at about 1.5 tiles, one pixel per 3x3 texels of the HD bitmap), drawn from a

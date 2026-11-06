@@ -77,6 +77,9 @@ function tintFor(t){// smooth colour by clock position
   if(T[3]>.2){ctx.save();ctx.globalCompositeOperation='lighter';(m.lights||[]).forEach(L=>{const x=L[0]-cx,y=L[1]-cy,r=(L[2]||18)*1.6;if(x<-r||y<-r||x>WS.vw+r||y>WS.vh+r)return;const g=ctx.createRadialGradient(x,y,1,x,y,r);g.addColorStop(0,`rgba(255,200,120,${.35*T[3]/.46})`);g.addColorStop(1,'rgba(255,200,120,0)');ctx.fillStyle=g;ctx.fillRect(x-r,y-r,r*2,r*2);});ctx.restore();}}catch(e){}};}
 
 // ----- rare sky visuals -----
+function surgeGlow(ctx,C,W,H,a){const d=Math.max(6,Math.min(W,H)*.09);ctx.save();ctx.globalAlpha=1;
+  for(const [x0,y0,x1,y1,rx,ry,rw,rh] of [[0,0,0,d,0,0,W,d],[0,H,0,H-d,0,H-d,W,d],[0,0,d,0,0,0,d,H],[W,0,W-d,0,W-d,0,d,H]]){const g=ctx.createLinearGradient(x0,y0,x1,y1);g.addColorStop(0,`rgba(${C},${a.toFixed(3)})`);g.addColorStop(1,`rgba(${C},0)`);ctx.fillStyle=g;ctx.fillRect(rx,ry,rw,rh);}
+  ctx.restore();}
 {const wf0=weatherFX;weatherFX=function(ctx,w,W,H,now,battle){const Wx=WEATHER[w];if(!Wx||!Wx.sup)return wf0.apply(this,arguments);const t=now/1000;
   if(w==='bloodmoon'){ctx.fillStyle='rgba(130,10,24,.28)';ctx.fillRect(0,0,W,H);const mx=Math.floor(W*.78),my=Math.floor(H*.16);const g=ctx.createRadialGradient(mx,my,2,mx,my,30);g.addColorStop(0,'rgba(255,90,70,.55)');g.addColorStop(1,'rgba(255,60,40,0)');ctx.fillStyle=g;ctx.fillRect(mx-30,my-30,60,60);ctx.fillStyle='#d8403a';ctx.fillRect(mx-5,my-5,10,10);ctx.fillStyle='#f06a58';ctx.fillRect(mx-3,my-4,4,3);
     ctx.fillStyle='rgba(255,120,110,.5)';for(let i=0;i<10;i++){const x=Math.floor((i*61+t*8)%W),y=Math.floor(H-((t*10+i*37)%H));ctx.fillRect(x,y,1,1);}}
@@ -84,5 +87,7 @@ function tintFor(t){// smooth colour by clock position
   else if(w==='meteor'){ctx.fillStyle='rgba(10,10,40,.12)';ctx.fillRect(0,0,W,H);for(let i=0;i<7;i++){const p=((t*.45+i*.17)%1),x=Math.floor(((i*89)%W)+p*70-30),y=Math.floor(p*H*.8-10);ctx.globalAlpha=Math.max(0,1-p*.9);ctx.fillStyle='#fff1b8';ctx.fillRect(x,y,2,2);ctx.fillStyle='#ff9a3a';for(let k=1;k<7;k++){ctx.fillRect(x-k*2,y-k*2+1,2,1);}ctx.globalAlpha=1;}}
   else if(Wx.surge){const C={earth:'90,220,90',water:'80,170,255',fire:'255,120,50',ice:'170,230,255',wind:'220,255,230',shadow:'170,90,255'}[Wx.surge];ctx.fillStyle=`rgba(${C},.07)`;ctx.fillRect(0,0,W,H);
     for(let i=0;i<30;i++){const p=((t*.18+i*.071)%1),x=Math.floor((i*47+Math.sin(t+i)*8)%W),y=Math.floor(H-p*H);ctx.globalAlpha=Math.sin(p*3.14);ctx.fillStyle=`rgb(${C})`;ctx.fillRect(x,y,i%4===0?2:1,i%4===0?2:1);}ctx.globalAlpha=1;
-    const pulse=(Math.sin(t*1.6)+1)/2;ctx.strokeStyle=`rgba(${C},${(.12+pulse*.14).toFixed(2)})`;ctx.lineWidth=2;ctx.strokeRect(1,1,W-2,H-2);}
+    // v0.8.0: a soft glow along the edges of the view instead of a 2 px rectangle (in the world the layer scrolls with the ground, so the
+    // rectangle slid across the map; weather7.js draws this glow in screen space there)
+    if(battle)surgeGlow(ctx,C,W,H,.12+(Math.sin(t*1.6)+1)/2*.14);}
 };}

@@ -313,6 +313,7 @@ function hdMix(o,a,w){o.amb[0]+=a.amb[0]*w;o.amb[1]+=a.amb[1]*w;o.amb[2]+=a.amb[
   o.emis+=a.emis*w;o.lamp+=a.lamp*w;o.shaft+=(a.shaft||0)*w;o.pl+=(a.pl||0)*w;o.bloom+=(a.bloom||0)*w;}
 function hdZero(o){['amb','sun','fog','lift','gain','sd','shW','shC'].forEach(k=>{o[k][0]=o[k][1]=o[k][2]=0;});o.fogA=o.exp=o.con=o.sat=o.vig=o.emis=o.lamp=o.shaft=o.pl=o.bloom=0;}
 function hdLook(m,now){const o=H2L,P=HD2D.look;hdZero(o);const dun=m.kind==='dungeon',T=dun?null:THM(m);
+  o.fogS=1;
   if(dun){const D=DTH(m),a=hdRgb(D.acc),base=m.archive?P.hall:m.cave?P.cave:P.dungeon;hdMix(o,base,1);for(let i=0;i<3;i++){o.amb[i]*=.8+.4*a[i];o.fog[i]=o.fog[i]*.6+hdRgb(D.top)[i]*.6;}}
   else{let wsum=0;const pp=phaseProg();['day','dusk','night','dawn'].forEach(ph=>{const w=typeof trPhW==='function'?trPhW(ph):(pp.ph===ph?1:0);if(w<=0)return;wsum+=w;
       let L=P[ph];if(ph==='dusk'||ph==='dawn'){// late dusk and early dawn lean toward night; a phase being blended out keeps the progress it had
@@ -322,10 +323,12 @@ function hdLook(m,now){const o=H2L,P=HD2D.look;hdZero(o);const dun=m.kind==='dun
     // weather (blended like the Phase 5 weather fade)
     const X=typeof TR!=='undefined'?TR.wx:null,cur=G.weather?G.weather[m.s]||'clear':'clear';let wl=[[cur,1]];
     if(X&&X.from&&X.k<1){const e=trEase(X.k);wl=[[X.cur||cur,e],[X.from,1-e]];}
-    const acc={amb:0,sun:0,fog:[0,0,0],fogA:0,sat:0,shaft:0,warm:0};wl.forEach(([w,k])=>{const M=HD2D.weather[w]||HD2D.weather.clear;acc.amb+=M.amb*k;acc.sun+=M.sun*k;acc.fogA+=(M.fogA||0)*k;acc.sat+=(M.sat||1)*k;acc.shaft+=(M.shaft==null?1:M.shaft)*k;acc.warm+=(M.warm||0)*k;
-      const fc=M.fog||o.fog;for(let i=0;i<3;i++)acc.fog[i]+=fc[i]*k;});
+    // v0.8.0: a weather's fog colour is a daylight colour; by night and dusk it takes the scene's light (fl), so fog never glows grey over a night field
+    const fl=Math.pow(Math.min(1,.15+(o.amb[0]+o.amb[1]+o.amb[2])/3+(o.sun[0]+o.sun[1]+o.sun[2])/3*.8),1.5);
+    const acc={amb:0,sun:0,fog:[0,0,0],fogA:0,sat:0,shaft:0,warm:0,near:0};wl.forEach(([w,k])=>{const M=HD2D.weather[w]||HD2D.weather.clear;acc.amb+=M.amb*k;acc.near+=(M.fogN==null?1:M.fogN)*k;acc.sun+=M.sun*k;acc.fogA+=(M.fogA||0)*k;acc.sat+=(M.sat||1)*k;acc.shaft+=(M.shaft==null?1:M.shaft)*k;acc.warm+=(M.warm||0)*k;
+      const fc=M.fog||o.fog,lk=M.fog?fl:1;for(let i=0;i<3;i++)acc.fog[i]+=fc[i]*k*lk;});
     for(let i=0;i<3;i++){o.amb[i]*=acc.amb;o.sun[i]*=acc.sun;o.fog[i]=o.fog[i]*(1-Math.min(1,acc.fogA))+acc.fog[i]*Math.min(1,acc.fogA);}
-    o.fogA=Math.min(.92,o.fogA+acc.fogA*.6);o.sat*=acc.sat;o.shaft*=acc.shaft;o.gain[0]*=1+acc.warm*.06;o.gain[2]*=1-acc.warm*.06;
+    o.fogA=Math.min(.92,o.fogA+acc.fogA*.6);o.fogS=acc.near;o.sat*=acc.sat;o.shaft*=acc.shaft;o.gain[0]*=1+acc.warm*.06;o.gain[2]*=1-acc.warm*.06;
     // legends that bend the sky: the wildcaller's night, the rider's dusk
     try{const LQ=typeof legendQ==='function'&&m.kind==='field'?legendQ(m):[];if(LQ.some(q=>q.hero==='nikaris')){for(let i=0;i<3;i++){o.amb[i]*=.55;o.sun[i]*=.3;}o.emis=1;o.lamp=1;}
       else if(LQ.some(q=>q.hero==='kaevan')){o.gain[0]*=1.08;o.gain[2]*=.9;}}catch(e){}
@@ -486,8 +489,12 @@ function hdActors(m,now,ts){const B=HD.dyn,BB=HD.dynB,BA=HD.dynA,V=HD.S.V,still=
 // tested, so walls and buildings hide them), glowing ones unlit. None is drawn over the hero: a particle whose screen position falls in
 // his box is left out. Until v0.6.2 these were screen space dots on the 2D canvas over the GL frame (they slid along with the camera).
 const HW={hx:0,hz:0,b:new Float32Array(4),p:new Float32Array(4),n:0};
+// v0.8.0: a quad in front of the hero fades by a feathered ellipse around his face on screen (hdFaceK), instead of every quad in his
+// box being dropped (a clear box that followed him through dense rain and snow); the rest of him stands in the weather like the ground
+function hdFaceK(px,py){const B=HW.b,w=B[2]-B[0],h=B[3]-B[1];if(!(w>0&&h>0))return 1;const F=typeof WX7!=='undefined'&&WX7.face||{y:.28,rx:.85,ry:.4,core:.22};
+  const dx=(px-(B[0]+B[2])/2)/(w*F.rx),dy=(py-(B[3]-h*F.y))/(h*F.ry),d=dx*dx+dy*dy;if(d>=1)return 1;const u=Math.max(0,(d-F.core)/(1-F.core));return u*u*(3-2*u);}
 function hdWfxEmit(x,z,h,w,hh,c,a,g){const R=HD.lmR;if(x<R[0]||x>R[0]+R[2]||z<R[1]||z>R[1]+R[3])return;const V=HD.S.V,y0=h*V,y1=(h+hh)*V;
-  if(Math.abs(x-HW.hx)<26&&z>HW.hz-8&&z<HW.hz+160){const p=HW.p,B=HW.b;h2Proj(p,HD.mats.vp,x,(y0+y1)/2,z);if(p[0]>B[0]&&p[0]<B[2]&&p[1]>B[1]&&p[1]<B[3])return;}
+  if(Math.abs(x-HW.hx)<44&&z>HW.hz-8){const p=HW.p;h2Proj(p,HD.mats.vp,x,(y0+y1)/2,z);const fk=hdFaceK(p[0],p[1]);if(fk<.03)return;a*=fk;}// behind him (smaller z) his sprite hides them (depth)
   const C=wfxRgb(c),al=Math.round(255*a*C[3]);if(al<3)return;const P=H2P,x0=x-w/2,x1=x+w/2;
   P[0]=x0;P[1]=y1;P[2]=z;P[3]=x1;P[4]=y1;P[5]=z;P[6]=x1;P[7]=y0;P[8]=z;P[9]=x0;P[10]=y0;P[11]=z;HD.dynB.quad(P,-1,0,-1,0,C[0],C[1],C[2],al,0,.45,.89,g?4:0);HW.n++;}
 function hdWfxBird(x,z,h,f){const R=HD.lmR;if(x<R[0]||x>R[0]+R[2]||z<R[1]||z>R[1]+R[3])return;
@@ -568,7 +575,7 @@ function hdFrame(now){const m=WS.m,gl=HD.gl,q=hdTierQ(),still=gfxStill(),ts=stil
   gl.uniform3fv(u.uAmb,o.amb);gl.uniform3fv(u.uSunC,o.sun);gl.uniform3fv(u.uSunD,o.sd);
   const R=HD.lmR;gl.uniform4f(u.uLR,R[0],R[1],1/R[2],1/R[3]);
   gl.uniform3f(u.uCam,HD.eye[0]-HD.cam.x,HD.eye[1],HD.eye[2]-HD.cam.z);gl.uniform3fv(u.uFogC,o.fog);
-  gl.uniform3f(u.uFog,HD.D*HD2D.fogStart,HD.D*HD2D.fogEnd,o.fogA);gl.uniform1f(u.uEmis,o.emis);gl.uniform1f(u.uAct,m.kind==='dungeon'?HD2D.spr.act.dun:HD2D.spr.act.out*Math.min(1,o.emis+.2));
+  {const f=HD.fogU||(HD.fogU=[0,0,0]);f[0]=HD.D*HD2D.fogStart*(o.fogS||1);f[1]=HD.D*HD2D.fogEnd*(.55+.45*(o.fogS||1));f[2]=o.fogA;gl.uniform3f(u.uFog,f[0],f[1],f[2]);}// v0.8.0: fog, blizzard and sand start nearer (fogN)gl.uniform1f(u.uEmis,o.emis);gl.uniform1f(u.uAct,m.kind==='dungeon'?HD2D.spr.act.dun:HD2D.spr.act.out*Math.min(1,o.emis+.2));
   // v0.5.8 characters: pre-grade softening, light map spread, rim strength and colour (the sun or moon; lamps add their own colour in the
   // shader), the ambient's hue for the readability floor, one atlas texel (the rim reads the neighbour toward the light)
   {const P=HD2D.spr,a=o.amb,al=Math.max(.05,a[0]*.3+a[1]*.59+a[2]*.11),sn=o.sun,sl=Math.max(.05,sn[0]*.3+sn[1]*.59+sn[2]*.11),rk=Math.min(1,sl*2.2);

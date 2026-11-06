@@ -1,4 +1,4 @@
-// v0.7.1 title pass: the HD-2D camp title (HD sprites at their real 2x bitmap, no old lineup), the code-drawn wordmark on the title
+// v0.7.1 title pass (v0.8.0: the camp became six wayfarers on the road through the realms, see v080wt.js): the HD-2D title (HD sprites at their real 2x bitmap, no old lineup), the code-drawn wordmark on the title
 // and in the header, menu and logo off every face at four sizes (with and without a save), Low tier and reduced motion still,
 // Medium animated, and every icon the manifest, the page, Android, Windows and Electron point at exists at the right pixel size.
 // Run from tools/chrome: PWHTML=../../out/aurelis3.html node v071t.js
@@ -10,21 +10,21 @@ const inter=(a,b)=>a.left<b.right-1&&b.left<a.right-1&&a.top<b.bottom-1&&b.top<a
 async function title(H){const {ev,wait}=H;await wait(1200);
   return ev(()=>{const A=__A,T=A.T7,r=e=>{const b=e.getBoundingClientRect();return {left:b.left,top:b.top,right:b.right,bottom:b.bottom,w:b.width,h:b.height};};
     const menu=[...document.querySelectorAll('.t7side .btn,.t7side summary')].filter(e=>e.offsetParent).map(e=>({t:(e.textContent||'').trim().slice(0,20),...r(e)}));
-    const logo=document.querySelector('.t7logo svg'),hdr=document.querySelector('#hdr .brand .wfm svg');
+    const logo=document.querySelector('.t7wm svg'),hdr=document.querySelector('#hdr .brand .wfm svg');
     return {cv:!!document.getElementById('t7cv'),old:!!document.querySelector('.lineup,#tcv,.tstage'),drawn:T.drawn,faces:T.faces,menu,
       logo:logo?r(logo):null,beta:document.querySelector('.t7beta')?r(document.querySelector('.t7beta')):null,hdr:hdr?r(hdr):null,hdrPolys:hdr?hdr.querySelectorAll('polygon').length:0,
       order:[...document.querySelectorAll('.tmenu .tmain .btn')].map(b=>b.dataset.act).join(','),sw:document.documentElement.scrollWidth,iw:innerWidth,ih:innerHeight,
       cw:document.getElementById('t7cv')?document.getElementById('t7cv').width:0,ccw:document.getElementById('t7cv')?document.getElementById('t7cv').clientWidth:0,dpr:devicePixelRatio,
       font:getComputedStyle(document.querySelector('#hdr .brand b')).fontFamily};});}
 function judge(tag,t,save){
-  chk(`${tag}: the camp scene canvas is up and the old lineup and backdrop are gone`,t.cv&&!t.old||JSON.stringify({cv:t.cv,old:t.old}));
-  chk(`${tag}: at least 4 heroes drawn`,t.drawn.length>=4||t.drawn.length);
+  chk(`${tag}: the title scene canvas is up and the old lineup and backdrop are gone`,t.cv&&!t.old||JSON.stringify({cv:t.cv,old:t.old}));
+  chk(`${tag}: all six heroes drawn (v0.8.0: the party on the road)`,t.drawn.length===6||t.drawn.length);
   const bad=t.drawn.filter(d=>!(d.rw===d.lw*2&&d.rh===d.lh*2&&Number.isInteger(d.k)&&d.k>=1&&d.w===d.rw*d.k&&d.h===d.rh*d.k));
   chk(`${tag}: heroes drawn from the real 2x bitmap at a whole scale`,bad.length===0||JSON.stringify(bad[0]));
   chk(`${tag}: wordmark on the title and in the header`,!!(t.logo&&t.logo.w>120&&t.hdr&&t.hdr.h>=14&&t.hdrPolys>20)||JSON.stringify({logo:t.logo,hdr:t.hdr}));
   chk(`${tag}: no blackletter in the header`,!/Jacquard/.test(t.font)||t.font);
   const hits=[];t.faces.forEach(f=>{t.menu.forEach(m=>{if(inter(f,m))hits.push(m.t+' over '+f.id);});[['logo',t.logo],['beta',t.beta]].forEach(([n,b])=>{if(b&&inter(f,b))hits.push(n+' over '+f.id);});});
-  chk(`${tag}: menu and logo clear of every face (${t.faces.length} faces, ${t.menu.length} controls)`,t.faces.length>=4&&hits.length===0||hits.slice(0,4).join(' | ')||t.faces.length);
+  chk(`${tag}: menu and logo clear of every face (${t.faces.length} faces, ${t.menu.length} controls)`,t.faces.length===6&&hits.length===0||hits.slice(0,4).join(' | ')||t.faces.length);
   chk(`${tag}: no sideways scroll`,t.sw<=t.iw+1||t.sw+'>'+t.iw);
   const first=t.menu[0];chk(`${tag}: the first menu button is on screen`,!!first&&first.bottom<=t.ih||JSON.stringify(first));
   if(save)chk(`${tag}: Continue first, then New journey and the Daily Trial`,t.order==='slots,new,daily'||t.order);
@@ -41,13 +41,13 @@ const hash=H=>H.ev(()=>{const c=document.getElementById('t7cv'),x=c.getContext('
     judge(tag+' with a save',await title(H),true);
     if(w===390){// Medium animates; Low and reduced motion hold still
       const f0=await ev(()=>__A.T7.frames),h0=await hash(H);await wait(700);const f1=await ev(()=>__A.T7.frames),h1=await hash(H);
-      chk('medium: the scene animates (fire, embers, breathing)',f1>f0+5&&h1!==h0||JSON.stringify({f0,f1,same:h0===h1}));
+      chk('medium: the scene animates (walking party, scrolling realm)',f1>f0+5&&h1!==h0||JSON.stringify({f0,f1,same:h0===h1}));
       await ev(()=>{const A=__A;A.META.cfg.gfx='low';A.gfxApply();});await wait(400);
       const l=await ev(()=>({f:__A.T7.frames,cw:document.getElementById('t7cv').width,ccw:document.getElementById('t7cv').clientWidth,still:__A.T7.still}));const lh0=await hash(H);await wait(800);
       const l2=await ev(()=>__A.T7.frames),lh1=await hash(H);
       chk('low: one still frame, no redraws',l.still===true&&l2===l.f&&lh0===lh1||JSON.stringify({l,l2,same:lh0===lh1}));
       chk('low: drawn at 1x (cheap)',l.cw===l.ccw||l.cw+' vs '+l.ccw);
-      const ld=await ev(()=>__A.T7.drawn);chk('low: still the HD sprites',ld.length>=4&&ld.every(d=>d.rw===d.lw*2)||JSON.stringify(ld[0]));
+      const ld=await ev(()=>__A.T7.drawn);chk('low: still the HD sprites',ld.length===6&&ld.every(d=>d.rw===d.lw*2)||JSON.stringify(ld[0]));
       await ev(()=>{const A=__A;A.META.cfg.gfx='medium';A.META.cfg.rmotion=true;A.gfxApply();});await wait(400);
       const r0=await ev(()=>__A.T7.frames);await wait(700);const r1=await ev(()=>__A.T7.frames);
       chk('reduced motion: still',r1===r0||r1-r0);
