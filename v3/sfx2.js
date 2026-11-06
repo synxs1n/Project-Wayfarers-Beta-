@@ -57,7 +57,7 @@ function sfx2(k){const g=sxG();if(!g)return false;const now=performance.now();if
   case 'cancel':sxTone(U,{f:880,dur:.07,v:.09});sxTone(U,{t:.06,f:660,dur:.12,v:.09});return true;
   case 'deny':sxTone(U,{type:'triangle',f:180,dur:.09,v:.2,lp:900});sxTone(U,{t:.1,type:'triangle',f:150,dur:.14,v:.2,lp:900});return true;
   case 'door':sxNoise(D,{type:'lowpass',f:420,dur:.25,v:.3,a:.02});sxTone(D,{f:150,f1:95,dur:.2,v:.22});sxNoise(D,{t:.18,type:'lowpass',f:900,dur:.06,v:.25,a:.002});return true;
-  case 'chest':sxNoise(D,{type:'bandpass',f:380,f1:520,dur:.35,v:.18,q:4,a:.08});sxNoise(D,{t:.3,type:'lowpass',f:800,dur:.08,v:.3,a:.002});setTimeout(()=>sxJ('item',()=>{}),340);return true;
+  case 'chest':/* v0.8.3: softer (the owner found it jarring) */sxNoise(D,{type:'bandpass',f:380,f1:520,dur:.3,v:.09,q:4,a:.08});sxNoise(D,{t:.26,type:'lowpass',f:700,dur:.07,v:.1,a:.004});setTimeout(()=>sxJ('item',()=>{}),340);return true;
   case 'lever':sxNoise(D,{type:'bandpass',f:1800,dur:.05,v:.3,a:.001,q:3});sxTone(D,{t:.05,type:'triangle',f:240,f1:120,dur:.15,v:.2});sxNoise(D,{t:.12,type:'lowpass',f:500,dur:.5,v:.25,a:.05});return true;
   case 'waystone':sxPings(D,0,6,1800,3600,.05);sxTone(D,{f:110,dur:1.2,v:.12,a:.3});[72,76,79,84].forEach((m,i)=>sxSmp(D,'celesta',m,{t:.1+i*.08,v:.35,dur:.5}));return true;
   case 'encounter':{sxNoise(D,{type:'bandpass',f:400,f1:5000,dur:.35,v:.3,q:1.5,a:.3});sxPings(D,.34,8,2500,6000,.08);sxNoise(D,{t:.34,type:'highpass',f:3000,dur:.3,v:.3,a:.001});sxTone(D,{t:.34,f:80,f1:40,dur:.4,v:.3});return true;}

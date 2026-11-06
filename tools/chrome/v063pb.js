@@ -48,7 +48,7 @@ const ce=await ev(()=>{const A=__A,G=A.G,GEAR=A.GEAR,o={};G.roster={};['mira','l
   G.daily=1;const before=S();__P6.autoCamp();o.daily=S()===before&&!(A.V.modal&&A.V.modal.type==='autoEq');G.daily=0;A.V.modal=null;
   return o;});
 console.log(JSON.stringify({btn:ce.btn,mode:ce.mode,camp:ce.camp,rows:ce.rows,pack:[ce.pack0,ce.pack1],comp:[ce.comp0,ce.comp1]}));
-chk('Equipment tab has "Equip best: reserves" and lists the others under Reserves',ce.btn==='Equip best: reserves'&&ce.campH||JSON.stringify({btn:ce.btn,h:ce.campH}));
+chk('Equipment tab has "Equip best: reserves" and lists only the party (v0.8.3)',ce.btn==='Equip best: reserves'&&!ce.campH||JSON.stringify({btn:ce.btn,h:ce.campH}));
 chk('it equips the heroes at camp from the pack',ce.mode==='camp'&&ce.camp.every(e=>e.w||e.a)&&ce.pack1<ce.pack0||JSON.stringify(ce.camp));
 chk('it never touches the party\'s gear',ce.p1===ce.p0);
 chk('it never moves a party hero\'s companion; a free one may go to camp',ce.comp1[0]==='mira'&&(ce.comp1[1]===null||['brann','tess','sable'].includes(ce.comp1[1]))||JSON.stringify(ce.comp1));

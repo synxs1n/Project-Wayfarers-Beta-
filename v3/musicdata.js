@@ -299,12 +299,12 @@ const MJINGLE={
  recruit:{name:'New recruit',bpm:100,sec:{A:{bars:1,ch:'C',p:[['horn','G3e C4e. D4s E4h. re',{v:.85}],['harp','arp16',{o:3,v:.45}]]}}},
  quest:{name:'Quest complete',bpm:120,sec:{A:{bars:1,ch:'F:2 C:2',p:[['flute','A5e G5e F5q E5e G5e C6q',{v:.8}],['glock','rh C6h',{v:.5}],['strings','pad',{o:4,v:.25}]]}}},
  rank:{name:'Faction rank up',bpm:116,sec:{A:{bars:1,ch:'G:2 C:2',p:[['brass','D5e G4e B4e D5e E5h',{v:.85}],['strings','pad',{o:4,v:.3}]],dr:{timp:'x.......x',cym:'........x'}}}},
- item:{name:'Item get',bpm:120,sec:{A:{bars:1,ch:'C',p:[['glock','E6s G6s C7e. rq. rh',{v:.7}],['celesta','re C6e. rq. rh',{v:.4}]]}}},
+ item:{name:'Item get',bpm:120,sec:{A:{bars:1,ch:'C',p:[['celesta','E6s G6s C7e. rq. rh',{v:.45}],['glock','re C7e. rq. rh',{v:.22}]]}}},// v0.8.3: softer, celesta led
  inn:{name:'Inn rest',bpm:84,sec:{A:{bars:2,ch:'C | F:2 C:2',p:[['harp','G4q C5q E5q D5q | C5w',{v:.6}],['celesta','rw | G5h E5h',{v:.4}],['strings','pad',{o:4,v:.2}]]}}},
  beacon:{name:'Beacon relit',bpm:84,sec:{A:{bars:2,ch:'C | G:2 C:2',p:[['choir',MER,{v:.85}],['brass',MER,{o:-1,v:.55}],['strings','pad',{o:4,v:.3}],['harp','arp16',{o:3,v:.35}]],dr:{timp:'R...R...........',crash:'.'.repeat(16)+'X'}}}}};
 // per-track gain, set from the loudness test so every track sits within about 3 dB (tools/chrome/audio.js prints new values)
 const MGAIN={"title":1,"town":1.04,"dungeon":1.09,"cave":1.62,"fort":0.94,"archive":1.3,"battle1":0.99,"battle2":0.92,"elite":0.55,"boss":0.9,"cal1":1,"cal2":0.87,"cal3":0.6,"arena":1.09,"victory":1.05,"legacy":1.15,"field_meadow":0.99,"field_coast":1,"field_cave":0.98,"field_snow":1.15,"field_heights":0.97,"field_void":0.96,"field_cal":0.88,
-  level:1.5,recruit:1.2,quest:1.25,rank:1.5,item:2.5,inn:1.8,beacon:1};
+  level:1.5,recruit:1.2,quest:1.25,rank:1.5,item:1.1,inn:1.8,beacon:1};
 const MCACHE={};
 function musicTrack(id,opt){opt=opt||{};const key=[id,opt.theme||'',opt.night?1:0,opt.cal?1:0,opt.bright?1:0,opt.tr||0,opt.boss||''].join('|');if(MCACHE[key])return MCACHE[key];
   let raw=null;if(MTRACK[id])raw=MTRACK[id](opt);else if(MJINGLE[id])raw=Object.assign({form:['A'],once:1,room:'hall'},MJINGLE[id]);if(!raw)return null;

@@ -319,7 +319,7 @@ const HD_SPR={sat:.86,con:.9,ao:.74,rim:.7};
 // hero: no particle is drawn over the hero's box (half width, height above the feet, below the feet; art px). n: counts per ref area.
 // bird: one flock crossing per period (ms) at height h. chestGone: opened chests vanish from the map and can be walked over.
 const WFX={ref:80000,cell:128,margin:96,maxN:120,hero:[10,30,3],n:{spark:14,snow:46,wind:8,fly:4,spray:5,mote:12,dust:10,lantern:7,firefly:12,dew:12},
-  bird:{period:26000,dur:11000,h:64,span:560},chestGone:true,hdZ:[560,180]};
+  bird:{period:26000,dur:11000,h:64,span:560},chestGone:true,chestAnim:{open:320,hold:250,fade:450},hdZ:[560,180]};
 // v0.7.7 weather (weather7.js)
 // WX7: every weather drawn in layers. tier: per graphics tier. cap: most falling particles on the 2D canvas per frame (world 2D, the
 // HD-2D overlay, battle); rain/snow/sand/ash/wind: base counts per 2D view (far, mid, near layer); ground: puddles, ripples, splashes and

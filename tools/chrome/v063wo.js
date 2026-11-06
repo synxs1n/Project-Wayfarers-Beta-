@@ -38,7 +38,7 @@ const REC=`(T)=>{const A=__A,ctx=A.WS.ctx,f0=ctx.fillRect,C=['#fff2a0','#ffd04a'
     const px=()=>ev(c=>{const A=__A,cv=A.WS.base&&A.WS.base[0];if(!cv)return null;const d=cv.getContext('2d').getImageData(c.x*16,c.y*16-8,16,24).data;let h=0;for(let i=0;i<d.length;i+=4)h=(h*31+d[i]*3+d[i+1]*5+d[i+2]*7)>>>0;return h;},c);
     const ref=await ev(c=>{const A=__A,m=A.getMap(c.id),r=m.t[c.y][c.x];m.t[c.y][c.x]=m.t[c.y+1][c.x];A.rebuildBase();return r;},c);const bare=await px();
     await ev(c=>{const A=__A,m=A.getMap(c.id);m.t[c.y][c.x]='C';A.rebuildBase();},c);const shut=await px();
-    await ev(c=>{const A=__A;A.openChest(c.x,c.y);A.V.modal=null;try{A.nextDlg();}catch(e){}A.V.modal=null;A.render();},c);await wait(300);const opened=await px();
+    await ev(c=>{const A=__A;A.openChest(c.x,c.y);A.V.modal=null;try{A.nextDlg();}catch(e){}A.V.modal=null;A.render();},c);await wait(1400);const opened=await px();// v0.8.3: the open animation plays and fades first
     const st=await ev(c=>{const A=__A,m=A.WS.m,k=m.id+':'+c.x+','+c.y;return {saved:!!A.G.chests[k],solid:A.solidAt(m,c.x,c.y),tile:A.tileAt(m,c.x,c.y),left:A.chestsLeft?A.chestsLeft(m.id):null,marks:A.mapMarks(m).filter(o=>o.x===c.x&&o.y===c.y).map(o=>o.k)};},c);
     chk(`chest: the ground where an opened chest stood looks like bare ground (closed ${shut!==bare}, opened = bare ${opened===bare})`,shut!==bare&&opened===bare||JSON.stringify({bare,shut,opened}));
     chk(`chest: opened stays opened in the save and can be walked over (${JSON.stringify(st)})`,st.saved&&st.solid===false&&st.tile==='c'&&st.marks.join()==='chestopen'||JSON.stringify(st));

@@ -76,7 +76,7 @@ function sfx(k){
   case 'step':break;
   case 'blip':tone('square',880,t,.04,.08,D);break;
   case 'door':noiseHit(t,.12,.2,400,D);tone('triangle',180,t,.12,.2,D,120);break;
-  case 'chest':[0,4,7,12].forEach((n,i)=>tone('square',MIDI(72+n),t+i*.06,.12,.1,D));break;
+  case 'chest':[0,4,7].forEach((n,i)=>tone('triangle',MIDI(76+n),t+i*.07,.1,.045,D));break;// v0.8.3: softer
   case 'lever':tone('square',220,t,.08,.12,D,110);noiseHit(t+.06,.2,.2,300,D);break;
   case 'encounter':for(let i=0;i<6;i++)tone('square',MIDI(84-i*3),t+i*.04,.06,.1,D);break;
   case 'swing':noiseHit(t,.08,.14,2500,D);break;

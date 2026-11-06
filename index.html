@@ -1786,7 +1786,7 @@ body:has(.battle.b3.m-wide){padding-bottom:4px}
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.8.2";const APP_BUILD="decdc239d72f";
+(function(){const APP_VER="0.8.3";const APP_BUILD="87982c4cbb2f";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2188,7 +2188,7 @@ const HD_SPR={sat:.86,con:.9,ao:.74,rim:.7};
 // hero: no particle is drawn over the hero's box (half width, height above the feet, below the feet; art px). n: counts per ref area.
 // bird: one flock crossing per period (ms) at height h. chestGone: opened chests vanish from the map and can be walked over.
 const WFX={ref:80000,cell:128,margin:96,maxN:120,hero:[10,30,3],n:{spark:14,snow:46,wind:8,fly:4,spray:5,mote:12,dust:10,lantern:7,firefly:12,dew:12},
-  bird:{period:26000,dur:11000,h:64,span:560},chestGone:true,hdZ:[560,180]};
+  bird:{period:26000,dur:11000,h:64,span:560},chestGone:true,chestAnim:{open:320,hold:250,fade:450},hdZ:[560,180]};
 // v0.7.7 weather (weather7.js)
 // WX7: every weather drawn in layers. tier: per graphics tier. cap: most falling particles on the 2D canvas per frame (world 2D, the
 // HD-2D overlay, battle); rain/snow/sand/ash/wind: base counts per 2D view (far, mid, near layer); ground: puddles, ripples, splashes and
@@ -2293,7 +2293,7 @@ const TWISTS={on:true,
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.8.2";const APP_BUILD="decdc239d72f";
+const APP_VER="0.8.3";const APP_BUILD="87982c4cbb2f";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2301,6 +2301,7 @@ const APP_VER="0.8.2";const APP_BUILD="decdc239d72f";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.8.3',['Chests open again: the lid pops with a glint, the open chest stays while you read what you found, then it fades away. The chest and item sounds are softer. The Equipment tab lists only your party (gear your reserves with Equip best: reserves or from their sheet).']],
  ['Beta v0.8.2',['Personal quest rivals whose wayfarer is not in your six now show see through on the map, with a hollow star on the minimap. You can walk through them and they will not fight; talk to one to learn who it waits for (with their portrait). Bring that hero into your party and it stands solid and fights as before. The Quests tab, Guild Hall and What next? say who is needed. Leaving the rewards screen no longer plays a sound (the victory theme is enough).']],
  ['Beta v0.8.1',['Best Party is now Build Party, since it offers several parties. The Training team now takes your lowest level heroes, and only brings a higher one when nobody lower can be the tank or healer (and then the lowest one who can). Areas with flying foes now bring a real ranged attacker, an Archer first: lances and spells only half answer flyers.']],
  ['Beta v0.8.0',['Weather overhaul: rain, storms, snow, blizzards, fog, gales, sandstorms, heat, ashfall, auroras and starfall now come in layers with depth in the world (2D and HD-2D) and in battle: puddles and splashes on wet ground, lightning that lights the scene (gently, never strobing), drifting fog banks that walls hide, settling snow and ash, heat shimmer. Old visuals updated: the Victory crest in the new lettering, a sunlit colosseum for the Arena, and a shaded minimap.']],
@@ -8283,7 +8284,7 @@ function sfx(k){
   case 'step':break;
   case 'blip':tone('square',880,t,.04,.08,D);break;
   case 'door':noiseHit(t,.12,.2,400,D);tone('triangle',180,t,.12,.2,D,120);break;
-  case 'chest':[0,4,7,12].forEach((n,i)=>tone('square',MIDI(72+n),t+i*.06,.12,.1,D));break;
+  case 'chest':[0,4,7].forEach((n,i)=>tone('triangle',MIDI(76+n),t+i*.07,.1,.045,D));break;// v0.8.3: softer
   case 'lever':tone('square',220,t,.08,.12,D,110);noiseHit(t+.06,.2,.2,300,D);break;
   case 'encounter':for(let i=0;i<6;i++)tone('square',MIDI(84-i*3),t+i*.04,.06,.1,D);break;
   case 'swing':noiseHit(t,.08,.14,2500,D);break;
@@ -8778,12 +8779,12 @@ const MJINGLE={
  recruit:{name:'New recruit',bpm:100,sec:{A:{bars:1,ch:'C',p:[['horn','G3e C4e. D4s E4h. re',{v:.85}],['harp','arp16',{o:3,v:.45}]]}}},
  quest:{name:'Quest complete',bpm:120,sec:{A:{bars:1,ch:'F:2 C:2',p:[['flute','A5e G5e F5q E5e G5e C6q',{v:.8}],['glock','rh C6h',{v:.5}],['strings','pad',{o:4,v:.25}]]}}},
  rank:{name:'Faction rank up',bpm:116,sec:{A:{bars:1,ch:'G:2 C:2',p:[['brass','D5e G4e B4e D5e E5h',{v:.85}],['strings','pad',{o:4,v:.3}]],dr:{timp:'x.......x',cym:'........x'}}}},
- item:{name:'Item get',bpm:120,sec:{A:{bars:1,ch:'C',p:[['glock','E6s G6s C7e. rq. rh',{v:.7}],['celesta','re C6e. rq. rh',{v:.4}]]}}},
+ item:{name:'Item get',bpm:120,sec:{A:{bars:1,ch:'C',p:[['celesta','E6s G6s C7e. rq. rh',{v:.45}],['glock','re C7e. rq. rh',{v:.22}]]}}},// v0.8.3: softer, celesta led
  inn:{name:'Inn rest',bpm:84,sec:{A:{bars:2,ch:'C | F:2 C:2',p:[['harp','G4q C5q E5q D5q | C5w',{v:.6}],['celesta','rw | G5h E5h',{v:.4}],['strings','pad',{o:4,v:.2}]]}}},
  beacon:{name:'Beacon relit',bpm:84,sec:{A:{bars:2,ch:'C | G:2 C:2',p:[['choir',MER,{v:.85}],['brass',MER,{o:-1,v:.55}],['strings','pad',{o:4,v:.3}],['harp','arp16',{o:3,v:.35}]],dr:{timp:'R...R...........',crash:'.'.repeat(16)+'X'}}}}};
 // per-track gain, set from the loudness test so every track sits within about 3 dB (tools/chrome/audio.js prints new values)
 const MGAIN={"title":1,"town":1.04,"dungeon":1.09,"cave":1.62,"fort":0.94,"archive":1.3,"battle1":0.99,"battle2":0.92,"elite":0.55,"boss":0.9,"cal1":1,"cal2":0.87,"cal3":0.6,"arena":1.09,"victory":1.05,"legacy":1.15,"field_meadow":0.99,"field_coast":1,"field_cave":0.98,"field_snow":1.15,"field_heights":0.97,"field_void":0.96,"field_cal":0.88,
-  level:1.5,recruit:1.2,quest:1.25,rank:1.5,item:2.5,inn:1.8,beacon:1};
+  level:1.5,recruit:1.2,quest:1.25,rank:1.5,item:1.1,inn:1.8,beacon:1};
 const MCACHE={};
 function musicTrack(id,opt){opt=opt||{};const key=[id,opt.theme||'',opt.night?1:0,opt.cal?1:0,opt.bright?1:0,opt.tr||0,opt.boss||''].join('|');if(MCACHE[key])return MCACHE[key];
   let raw=null;if(MTRACK[id])raw=MTRACK[id](opt);else if(MJINGLE[id])raw=Object.assign({form:['A'],once:1,room:'hall'},MJINGLE[id]);if(!raw)return null;
@@ -10871,7 +10872,8 @@ function fitsFor(id){if(FITC&&FITC[id])return FITC[id];const r=Object.values(G.r
 {const r0=render;render=function(){FITC={};try{return r0.apply(this,arguments);}finally{FITC=null;}};}
 // ----- auto best gear -----
 // ----- the Equipment tab -----
-function vEquipTab(){const L=G.party.concat(Object.keys(G.roster).filter(id=>!G.party.includes(id)).sort((a,b)=>G.roster[b].lv-G.roster[a].lv));V.charList=L.slice();
+// v0.8.3: only the party (the owner's call); reserves are geared with Equip best: reserves or from their sheet in Party
+function vEquipTab(){const L=G.party.filter(id=>G.roster[id]);V.charList=L.slice();
   return `<p class="note">Every hero's weapon, armor and charm at a glance. Tap a slot to change it; works anywhere outside battle.</p>
   <div class="btnrow"><button class="btn gold" data-act="autoEqParty" title="Party first. May take gear and companions from heroes outside the party.">Auto best gear: party</button><button class="btn" data-act="autoEqAll" title="Balances the whole roster, still favouring the party.">Equip best for everyone</button></div><p class="note"><small>The per-hero Auto button only uses your pack and free companions. It never takes from another hero.</small></p>
   <div class="eqlist">${L.map((id,i)=>{const c=G.roster[id];return `${i===G.party.length&&i?'<h4>Roster</h4>':i===0?'<h4>Party</h4>':''}<div class="eqrow">${port(id)}<div class="grow"><b>${esc(c.name)}</b><small>Lv ${c.lv} ${CLS[TPL[id].cls].n}</small>${xpMini(c)}
@@ -14630,7 +14632,7 @@ function sfx2(k){const g=sxG();if(!g)return false;const now=performance.now();if
   case 'cancel':sxTone(U,{f:880,dur:.07,v:.09});sxTone(U,{t:.06,f:660,dur:.12,v:.09});return true;
   case 'deny':sxTone(U,{type:'triangle',f:180,dur:.09,v:.2,lp:900});sxTone(U,{t:.1,type:'triangle',f:150,dur:.14,v:.2,lp:900});return true;
   case 'door':sxNoise(D,{type:'lowpass',f:420,dur:.25,v:.3,a:.02});sxTone(D,{f:150,f1:95,dur:.2,v:.22});sxNoise(D,{t:.18,type:'lowpass',f:900,dur:.06,v:.25,a:.002});return true;
-  case 'chest':sxNoise(D,{type:'bandpass',f:380,f1:520,dur:.35,v:.18,q:4,a:.08});sxNoise(D,{t:.3,type:'lowpass',f:800,dur:.08,v:.3,a:.002});setTimeout(()=>sxJ('item',()=>{}),340);return true;
+  case 'chest':/* v0.8.3: softer (the owner found it jarring) */sxNoise(D,{type:'bandpass',f:380,f1:520,dur:.3,v:.09,q:4,a:.08});sxNoise(D,{t:.26,type:'lowpass',f:700,dur:.07,v:.1,a:.004});setTimeout(()=>sxJ('item',()=>{}),340);return true;
   case 'lever':sxNoise(D,{type:'bandpass',f:1800,dur:.05,v:.3,a:.001,q:3});sxTone(D,{t:.05,type:'triangle',f:240,f1:120,dur:.15,v:.2});sxNoise(D,{t:.12,type:'lowpass',f:500,dur:.5,v:.25,a:.05});return true;
   case 'waystone':sxPings(D,0,6,1800,3600,.05);sxTone(D,{f:110,dur:1.2,v:.12,a:.3});[72,76,79,84].forEach((m,i)=>sxSmp(D,'celesta',m,{t:.1+i*.08,v:.35,dur:.5}));return true;
   case 'encounter':{sxNoise(D,{type:'bandpass',f:400,f1:5000,dur:.35,v:.3,q:1.5,a:.3});sxPings(D,.34,8,2500,6000,.08);sxNoise(D,{t:.34,type:'highpass',f:3000,dur:.3,v:.3,a:.001});sxTone(D,{t:.34,f:80,f1:40,dur:.4,v:.3});return true;}
@@ -17492,7 +17494,23 @@ function wfxTiled(ctx,vw,vh,ox,oy,fn){let L=WFXT.cv;if(!L||L.width!==vw||L.heigh
 // ----- opened chests vanish (WFX.chestGone): nothing is drawn for an opened chest (the 'c' tile state), and it no longer blocks the way.
 // The save keeps G.chests as before (quests, vaults, keys, chestsLeft read it); the full map shows opened chests dimmed, the minimap not.
 const WFX_NONE=mkCv(1,1);
-{const oc0=objCanvas;objCanvas=function(th,kind){if(kind==='chestOpen'&&WFX.chestGone)return WFX_NONE;return oc0.apply(this,arguments);};}
+let WFX_OC0=null;
+{const oc0=objCanvas;WFX_OC0=oc0;objCanvas=function(th,kind){if(kind==='chestOpen'&&WFX.chestGone)return WFX_NONE;return oc0.apply(this,arguments);};}
+// v0.8.3: the opening is shown before the chest goes (the owner liked it): the lid pops open with a glint, the open chest stays while the
+// loot is collected (the find text), then it fades out. Drawn on top in both renderers; the tile itself is already gone from the map.
+const WFX_OPEN={};window.__WFXO=WFX_OPEN;// key -> {m,x,y,th,t0,done} (window.__WFXO for tests)
+{const op0=openChest;openChest=function(x,y){const m=WS.m,key=m&&m.id+':'+x+','+y,was=!!(G&&G.chests&&key&&G.chests[key]);const r=op0.apply(this,arguments);
+  try{if(!was&&key&&G.chests[key]&&WFX.chestGone)WFX_OPEN[key]={m:m.id,x,y,th:m.theme,t0:performance.now(),done:0};}catch(e){}return r;};}
+function wfxChestAnims(now,draw){const T=WFX.chestAnim||{open:320,hold:250,fade:450};for(const k in WFX_OPEN){const o=WFX_OPEN[k];if(!WS.m||WS.m.id!==o.m){delete WFX_OPEN[k];continue;}
+  const busy=!!(WS.dlg||V.modal),age=now-o.t0;if(!busy&&age>T.open&&!o.done)o.done=now;
+  const fa=o.done?Math.max(0,1-(now-o.done-T.hold)/T.fade):1;if(fa<=0){delete WFX_OPEN[k];continue;}
+  const open=age>=T.open*.45,cv=WFX_OC0(o.th,open?'chestOpen':'chest'),jig=!open&&!gfxStill()?Math.round(Math.sin(age/26)):0,glint=open&&age<T.open+260;
+  draw(o,cv,fa,jig,glint);}}
+{const wd0=worldDraw;worldDraw=function(now){wd0(now);try{if(typeof hdActive==='function'&&hdActive())return;const ctx=WS.ctx,cx=Math.round(WS.cam.x),cy=Math.round(WS.cam.y);
+  wfxChestAnims(performance.now(),(o,cv,fa,jig,glint)=>{const px=o.x*TS-cx-1+jig,py=o.y*TS-cy+16-cv.height;ctx.save();ctx.globalAlpha=fa;ctx.drawImage(cv,px,py);
+    if(glint){ctx.fillStyle='rgba(255,236,160,.9)';ctx.fillRect(px+7,py-2,2,2);ctx.fillRect(px+3,py+1,1,1);ctx.fillRect(px+12,py,1,1);}ctx.restore();});}catch(e){}};}
+{const ha0=hdActors;hdActors=function(m,now,ts){const r=ha0.apply(this,arguments);try{const V=HD.S.V;
+  wfxChestAnims(performance.now(),(o,cv,fa,jig,glint)=>{hdChar(HD.dyn,cv,o.x*TS+8+jig,0,o.y*TS+12,false,Math.round(255*fa),0,1);});}catch(e){}return r;};}
 {const sa0=solidAt;solidAt=function(m,x,y){if(WFX.chestGone&&m&&m.t&&tileAt(m,x,y)==='c'){const r=m.t[y]&&m.t[y][x];if((r==='C'||r==='K')&&G&&G.chests&&G.chests[m.id+':'+x+','+y])return m.npcs.some(n=>n.x===x&&n.y===y)||dynActors(m).some(a=>a.x===x&&a.y===y);}return sa0.apply(this,arguments);};}
 // the ground under a chest is painted like the ground around it (it showed as an odd pale patch once the opened chest was gone)
 {const dt0=drawTile;drawTile=function(ctx,m,x,y,fr){const r=WFX.chestGone&&m&&m.t&&m.t[y]?m.t[y][x]:null;if((r==='C'||r==='K')&&typeof floorLike==='function'){m.t[y][x]=floorLike(m,x,y);try{return dt0.apply(this,arguments);}finally{m.t[y][x]=r;}}return dt0.apply(this,arguments);};}

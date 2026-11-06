@@ -35,7 +35,8 @@ function fitsFor(id){if(FITC&&FITC[id])return FITC[id];const r=Object.values(G.r
 {const r0=render;render=function(){FITC={};try{return r0.apply(this,arguments);}finally{FITC=null;}};}
 // ----- auto best gear -----
 // ----- the Equipment tab -----
-function vEquipTab(){const L=G.party.concat(Object.keys(G.roster).filter(id=>!G.party.includes(id)).sort((a,b)=>G.roster[b].lv-G.roster[a].lv));V.charList=L.slice();
+// v0.8.3: only the party (the owner's call); reserves are geared with Equip best: reserves or from their sheet in Party
+function vEquipTab(){const L=G.party.filter(id=>G.roster[id]);V.charList=L.slice();
   return `<p class="note">Every hero's weapon, armor and charm at a glance. Tap a slot to change it; works anywhere outside battle.</p>
   <div class="btnrow"><button class="btn gold" data-act="autoEqParty" title="Party first. May take gear and companions from heroes outside the party.">Auto best gear: party</button><button class="btn" data-act="autoEqAll" title="Balances the whole roster, still favouring the party.">Equip best for everyone</button></div><p class="note"><small>The per-hero Auto button only uses your pack and free companions. It never takes from another hero.</small></p>
   <div class="eqlist">${L.map((id,i)=>{const c=G.roster[id];return `${i===G.party.length&&i?'<h4>Roster</h4>':i===0?'<h4>Party</h4>':''}<div class="eqrow">${port(id)}<div class="grow"><b>${esc(c.name)}</b><small>Lv ${c.lv} ${CLS[TPL[id].cls].n}</small>${xpMini(c)}

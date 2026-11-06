@@ -173,3 +173,6 @@ Renamed Best Party to Build Party. p6Train: the lowest levels on the roster; a m
 
 ## Beta v0.8.2: rival ghosts, quiet rewards exit
 Details in `v080-rivals.md` (`v3/rivalghost.js`; test `chrome/v080r.js`). Leaving the rewards screen is silent: no level jingle in resultOk, and qready's chime waits 5 s after a battle ends (V.endT set in results.js). window.__SFX records sound names for tests (`chrome/v082s.js`).
+
+## Beta v0.8.3: chest opening, softer chest sound, Equipment lists the party
+worldfx.js: WFX_OPEN plays the opening on top in both renderers (lid at 45% of WFX.chestAnim.open, glint, hold while the find text or a window is up, then fade). sfx2.js chest noise halved; the item jingle is celesta led and its gain 2.5 -> 1.1; classic chest chime is a soft triangle. vEquipTab lists G.party only. Test `chrome/v083a.js`.
