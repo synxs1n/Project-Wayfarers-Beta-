@@ -1908,7 +1908,7 @@ body:has(.battle.b3.m-wide),body:has(.battle.b3.m-tall){padding-bottom:max(4px,e
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.9.2";const APP_BUILD="46728897d2d6";
+(function(){const APP_VER="0.9.2";const APP_BUILD="32994f4aaa9f";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2482,7 +2482,7 @@ const TWISTS={on:true,
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.9.2";const APP_BUILD="46728897d2d6";
+const APP_VER="0.9.2";const APP_BUILD="32994f4aaa9f";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -20156,7 +20156,9 @@ function hdFrame(now){const m=WS.m,gl=HD.gl,q=hdTierQ(),still=gfxStill(),ts=stil
   const R=HD.lmR;gl.uniform4f(u.uLR,R[0],R[1],1/R[2],1/R[3]);
   gl.uniform3f(u.uCam,HD.eye[0]-HD.cam.x,HD.eye[1],HD.eye[2]-HD.cam.z);gl.uniform3fv(u.uFogC,o.fog);
   {const f=HD.fogU||(HD.fogU=[0,0,0]);f[0]=HD.D*HD2D.fogStart*(o.fogS||1);f[1]=HD.D*HD2D.fogEnd*(.55+.45*(o.fogS||1));f[2]=o.fogA;gl.uniform3f(u.uFog,f[0],f[1],f[2]);}// v0.8.0: fog, blizzard and sand start nearer (fogN)
-  gl.uniform1f(u.uEmis,o.emis);gl.uniform1f(u.uAct,m.kind==='dungeon'?HD2D.spr.act.dun:HD2D.spr.act.out*Math.min(1,o.emis+.2));
+  // v0.9.2: uEmis is set again (a v0.8.0 comment had swallowed this line, so lamps and windows lost their night glow); the characters'
+  // readability floor (uAct) stays off as it has been since v0.8.0, the scene's character lighting is tuned that way (v062a)
+  gl.uniform1f(u.uEmis,o.emis);gl.uniform1f(u.uAct,0);
   // v0.5.8 characters: pre-grade softening, light map spread, rim strength and colour (the sun or moon; lamps add their own colour in the
   // shader), the ambient's hue for the readability floor, one atlas texel (the rim reads the neighbour toward the light)
   {const P=HD2D.spr,a=o.amb,al=Math.max(.05,a[0]*.3+a[1]*.59+a[2]*.11),sn=o.sun,sl=Math.max(.05,sn[0]*.3+sn[1]*.59+sn[2]*.11),rk=Math.min(1,sl*2.2);
@@ -20973,7 +20975,7 @@ function d8Tile(ctx,m,x,y,frame){const mat=m.d8,D=DTH(m),org=m.d8org,c=tileAt(m,
   const f=(col,a,b,w,h)=>{ctx.fillStyle=col;ctx.fillRect(px+a,py+b,w,h);};const isW=(dx,dy)=>tileAt(m,x+dx,y+dy)==='#';D8.n2d[mat]=(D8.n2d[mat]||0)+1;
   if(c==='#'){
     if(!isW(0,1)){d8FaceArt(f,R,mat,D,16,d8tv(x,y)>=2,org,(x*3+y*5)%(org?11:7)===3?L:null,px,py);
-      if(!org&&(x*3+y*5)%7===0&&tileAt(m,x,y+1)!=='~'){f('#3a2a1a',7,6,2,6);f('#5a4a3a',6,10,4,2);L.push([px+8,py+5,34,'torch']);m.torches=m.torches||[];m.torches.push([px+8,py+5]);}}
+      if((x*3+y*5)%(org?14:7)===0&&tileAt(m,x,y+1)!=='~'){f('#3a2a1a',7,6,2,6);f('#5a4a3a',6,10,4,2);L.push([px+8,py+5,34,'torch']);m.torches=m.torches||[];m.torches.push([px+8,py+5]);}}
     else{d8TopArt(f,R,mat,D,org);if(!isW(-1,0))f(D.w[1],0,0,2,16);if(!isW(1,0))f(D.w[1],14,0,2,16);if(!isW(0,-1))f(D.w[1],0,0,16,2);
       if(org){// rounded outer corners of the rock mass
         if(!isW(-1,0)&&!isW(0,-1)){f(D.f[1],0,0,3,1);f(D.f[1],0,0,1,3);}if(!isW(1,0)&&!isW(0,-1)){f(D.f[1],13,0,3,1);f(D.f[1],15,0,1,3);}}}
@@ -21020,7 +21022,7 @@ const D8_PGLOW={ice:'ice',icevault:'ice',lava:'lava',forge:'lava',root:'fungus',
     D8.hd.struct=m.d8;D8.hd.id=m.id;}}catch(e){}return cv;};}
 
 // =================== 1. battles fought here use the same material ===================
-{const sb0=startBattle;startBattle=function(spec){try{if(spec&&typeof spec==='object'&&!(G&&G.daily)&&spec.kind!=='daily'&&spec.kind!=='arena'&&V.screen==='world'&&WS.m&&WS.m.d8){spec.d8=WS.m.d8;spec.d8org=WS.m.d8org?1:0;}}catch(e){}
+{const sb0=startBattle;startBattle=function(spec){try{if(spec&&typeof spec==='object'&&!(G&&G.daily)&&spec.kind!=='daily'&&spec.kind!=='arena'&&!spec.bg&&V.screen==='world'&&WS.m&&WS.m.d8){spec.d8=WS.m.d8;spec.d8org=WS.m.d8org?1:0;}}catch(e){}
   return sb0.apply(this,arguments);};}
 function d8BgExtra(ctx,W,H,R,mat,pre){const gy=bgGY(H),D=DTHEME['d8'+mat],f=(c,x,y,w,h)=>{ctx.fillStyle=c;ctx.fillRect(Math.round(x),Math.round(y),w,h);};
   if(mat==='ice'||mat==='icevault'){for(let x=0;x<W;x+=3+Math.floor(R()*4)){const l=3+Math.floor(R()*10);f('#eefaff',x,0,2,2);f('#cfeeff',x,2,1,l);}for(let i=0;i<6;i++){const x=Math.floor(R()*W),y=gy+2+Math.floor(R()*(H-gy-4));f('#ffffff',x,y,4,1);f('#bfe6ff',x+1,y-1,2,1);}}
