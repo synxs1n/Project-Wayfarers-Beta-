@@ -115,10 +115,9 @@ function b5TimedOn(){try{return META.cfg.timedHits===true&&!(G&&G.daily)&&!(B&&B
 function b5TimedOk(a,sk,tg){if(!B||B.auto||!b5TimedOn()||!a||!sk||!tg||tg.length!==1||V.screen!=='battle')return false;const t=tg[0];
   if(!t||t.hp<=0||sk.t!=='one'||!(sk.k==='phys'||sk.k==='mag'))return false;
   if(a.side==='p')return !a.isComp&&t.side==='e';return a.side==='e'&&t.side==='p';}
-function b5RM(){try{return typeof reducedMotion==='function'&&reducedMotion();}catch(e){return false;}}
 // show the ring over unit t; done(true) on a press inside the window, done(false) on an early press or none
 function b5Ring(t,kind,done){const wrap=$('bwrap'),b=unitBox(t),sc=BL.sc||2;if(!wrap||!b){done(false);return;}
-  const rm=b5RM(),win=rm?B5.winRM:B5.win,T=B5.ringMs,el=document.createElement('div');
+  const rm=trRM(),win=rm?B5.winRM:B5.win,T=B5.ringMs,el=document.createElement('div');
   el.className=`b5ring ${kind} ${rm?'rm':''}`;el.setAttribute('role','status');el.setAttribute('aria-live','assertive');
   const cx=b.x*sc,cy=(b.y-b.h*.55)*sc,R=Math.max(24,Math.min(44,b.h*sc*.42));
   el.style.cssText=`left:${cx}px;top:${cy}px;--r:${R}px;--ms:${T}ms`;

@@ -18,13 +18,12 @@ const CW_CLS={
 const CW_EL={fire:'smelling faintly of smoke',water:'with damp hair and a wet cuff',earth:'with dust to the knees',wind:'with their hair never quite still',ice:'with frost along the sleeves',lightning:'with a faint crackle in the air around them',light:'looking oddly well rested',shadow:'standing a little too far into the shade'};
 const CW_AREA={meadow:'in the tall grass',coast:'with salt on the wind',cave:'in the cool dark',snow:'in the thin cold light',heights:'where the wind never quits',void:'in an odd, listening quiet'};
 const CW_TRAIT={berserk:'a little too eager',arcane:'a little too clever',swift:'already half turned to go',keen:'watching every move you make',bulwark:'standing very square',mender:'wincing at your scratches',tempo:'tapping a quick rhythm on a knee',sturdy:'unbothered by the weather',fierce:'grinning more than is polite',brave:'not remotely nervous',hardy:'shrugging off a bad bruise',focused:'barely blinking',wise:'taking a long look at the sky',devout:'murmuring a short prayer',calm:'smiling at nothing in particular',nimble:'bouncing on the balls of their feet',lucky:'flipping a coin and not looking at it',sharp:'looking you over twice',parthian:'glancing back along the road',beastbond:'with something small and furry peeking from a pocket',twinweave:'pausing as if for a second voice to finish a sentence'};
-function cwHash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return h>>>0;}
-function cwPick(a,k){return a[cwHash(k)%a.length];}
+function cwPick(a,k){return a[hashS(k)%a.length];}
 function cwBio(hero){const b=(TPL[hero].bio||'').replace(/\.$/,'');return b?b.charAt(0).toLowerCase()+b.slice(1):'';}
 function cwTheme(m){try{return (ZS(m.s)||{}).theme||'meadow';}catch(e){return 'meadow';}}
 // the opening: who they are and what they look like right now (the event text then adds the situation and the ask)
 function cwIntro(hero,theme,cave){const t=TPL[hero],C=CW_CLS[t.cls]||CW_CLS.warrior,el=CW_EL[(t.el||[])[0]]||'',area=cave?CW_AREA.cave:(CW_AREA[theme]||CW_AREA.meadow),tr=CW_TRAIT[t.trait]||'';
-  const form=cwHash(hero+':in'+theme)%3;
+  const form=hashS(hero+':in'+theme)%3;
   const a=`${t.n}, ${C.who}, ${C.tic}, ${el}`,b=`${t.n}, ${C.who} with ${C.gear}, ${tr}`,c=`${t.n} (${cwBio(hero)})`;
   return [a,b,c][form]+`, ${area}`;}
 function cwAsk(hero,mode){const C=CW_CLS[TPL[hero].cls]||CW_CLS.warrior;return {potion:C.plea,ambush:C.shout,duel:C.challenge,trade:C.trade,ask:C.ask}[mode]||C.ask;}

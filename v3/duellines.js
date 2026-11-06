@@ -155,7 +155,7 @@ function dlFallback(id,k){const t=TPL[id]||{n:id,cls:'warrior',el:['light']},n=t
   return L[k]||L.o;}
 // pick a line: own lines first, else the fallback. Variants are chosen from the journey seed only (no game RNG).
 function dlSeed(){try{return String(G&&G.run&&G.run.seed||0);}catch(e){return '0';}}
-function dlLine(id,k){const L=DUEL_LINES[id];let v=L&&L[k];if(Array.isArray(v))v=v.length?v[cwHash(dlSeed()+':'+id+':'+k)%v.length]:null;return v||dlFallback(id,k);}
+function dlLine(id,k){const L=DUEL_LINES[id];let v=L&&L[k];if(Array.isArray(v))v=v.length?v[hashS(dlSeed()+':'+id+':'+k)%v.length]:null;return v||dlFallback(id,k);}
 function dlName(id){return (TPL[id]&&TPL[id].n)||id;}
 function dlQuote(id,k){return `${dlName(id)}: "${dlLine(id,k)}"`;}
 // a bond partner in your six who speaks up when the challenger is their old friend

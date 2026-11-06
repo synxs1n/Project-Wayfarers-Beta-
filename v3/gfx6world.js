@@ -10,7 +10,6 @@ const WX_WIND={clear:.35,rain:.8,storm:1.7,fog:.15,snow:.45,blizzard:1.9,gale:2.
 const G6W={amb:{meadow:['#e8a23a','#c8642a','#9ac850'],heights:['#b8d070','#e0c060','#ffffff'],coast:['#f0e0b0','#e8d4a0','#ffffff'],cave:['#ffb070','#d0a090','#ff8a3a'],void:['#c8a0ff','#7fe0c0','#ffffff'],snow:['#ffffff','#e0f0ff','#c8dcf0'],dun:['#e6d6c0','#c8b8a8','#a89888']},
   bubbles:['dots','note','bang','heart']};
 function g6WindNow(m){if(!m||m.kind==='dungeon'||m.cave)return .1;const w=G.weather&&G.weather[m.s];return WX_WIND[w]!=null?WX_WIND[w]:.35;}
-function g6Hash(x,y){let h=(x*374761393+y*668265263)|0;h=(h^(h>>>13))*1274126177|0;return ((h^(h>>>16))>>>0)/4294967296;}
 // the weight of a time of day right now (blending while the 5.4 transition runs), and a value mixed across the phases by those weights
 function g6PhW(p,ph){try{if(typeof trPhW==='function'&&typeof trWorldOn==='function'&&trWorldOn())return trPhW(p);}catch(e){}return p===ph?1:0;}
 function g6PhMix(f,ph){let t=0,v=0;for(const p of ['day','dusk','night','dawn']){const w=g6PhW(p,ph);if(w>0){t+=w;v+=w*f(p);}}return t>0?v/t:f(ph);}
@@ -32,9 +31,9 @@ function g6Ground(ctx,m,cx,cy,vw,vh,ts){const q=GFX.q,T=m.kind==='dungeon'?null:
   const x0=Math.max(0,Math.floor(cx/TS)),x1=Math.min(m.w-1,Math.ceil((cx+vw)/TS)),y0=Math.max(0,Math.floor(cy/TS)),y1=Math.min(m.h-1,Math.ceil((cy+vh)/TS));
   if(T&&(q.water||q.grass)){
     for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++){const c=tileAt(m,x,y),px=x*TS-cx,py=y*TS-cy;
-      if(q.water&&(c==='~'||c==='o')){const h=g6Hash(x,y),ph=(ts/1400+h)%1;if(ph<.55){const a=Math.sin(ph/.55*Math.PI);ctx.globalAlpha=.55*a;ctx.fillStyle=T.w[2];
+      if(q.water&&(c==='~'||c==='o')){const h=wfxH(x,y),ph=(ts/1400+h)%1;if(ph<.55){const a=Math.sin(ph/.55*Math.PI);ctx.globalAlpha=.55*a;ctx.fillStyle=T.w[2];
           const gx=px+2+Math.floor(h*9),gy=py+3+Math.floor(h*97)%9,s=Math.round(ph*4*(wind+.5));ctx.fillRect(gx+s,gy,3,1);if(h>.5)ctx.fillRect(gx+s+5,gy+3,2,1);}}
-      else if(q.grass&&c===','&&!(x===WS.x&&y===WS.y)){const h=g6Hash(x,y),sw=Math.sin(ts/(520-wind*80)+x*.8+y*.35+h*3)*(.6+wind*.9),s=Math.max(-2,Math.min(2,Math.round(sw)));
+      else if(q.grass&&c===','&&!(x===WS.x&&y===WS.y)){const h=wfxH(x,y),sw=Math.sin(ts/(520-wind*80)+x*.8+y*.35+h*3)*(.6+wind*.9),s=Math.max(-2,Math.min(2,Math.round(sw)));
         ctx.globalAlpha=1;ctx.fillStyle=T.tg[1];ctx.fillRect(px+3+Math.floor(h*3),py+9,1,3);ctx.fillRect(px+10+Math.floor(h*4),py+4,1,3);
         ctx.fillStyle=T.tg[2];ctx.fillRect(px+3+Math.floor(h*3)+s,py+8,1,1);ctx.fillRect(px+10+Math.floor(h*4)+s,py+3,1,1);}}
     ctx.globalAlpha=1;}

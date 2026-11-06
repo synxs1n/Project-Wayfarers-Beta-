@@ -143,7 +143,6 @@ function hbInfo(key){const D=th=>DTHEME[th]||DTHEME.meadow;
   if((m=/^boss_(\w+)$/.exec(key)))return {key,base:m[1],kind:'boss',g:'boss',D:D(m[1])};
   if((m=/^f:(\w+):(\w+)$/.exec(key)))return {key,base:m[1],kind:'field',g:m[2],out:true,D:D(m[1])};
   return {key,base:key,kind:'field',g:(typeof BG_NATURAL!=='undefined'&&BG_NATURAL[key])||'grass',out:true,D:D(key)};}
-function hbHash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return h>>>0;}
 function hbRGB(c){if(/^#[0-9a-f]{6}$/i.test(c)){const n=parseInt(c.slice(1),16);return [(n>>16)/255,((n>>8)&255)/255,(n&255)/255];}return [1,1,1];}
 // ----- floor textures (128x128, tileable pixel art; alpha below 1 marks glowing pixels) -----
 const HB_TS=128;
@@ -153,7 +152,7 @@ function hbGPal(info){const P=typeof BG_GPAL!=='undefined'?BG_GPAL:{},g=info.g,t
   const nat=(typeof BG_NATURAL!=='undefined'&&BG_NATURAL[th])||'grass',gg=g==='road'?nat:g;
   if(th==='snow'&&gg!=='rock')return P.snow||[['#f4faff','#e4eef6','#ccdcea','#b8cce0'],'#c8d8e8'];
   return P[gg]||P.grass||[['#6ab858','#5aa048','#4c8f3e','#3f7f32'],'#3a7a30'];}
-function hbFloorTile(info,road){const N=HB_TS,cv=mkCv(N,N),x=cv.getContext('2d'),R=mulberry(hbHash(info.key+(road?':r':''))),glow=[];
+function hbFloorTile(info,road){const N=HB_TS,cv=mkCv(N,N),x=cv.getContext('2d'),R=mulberry(hashS(info.key+(road?':r':''))),glow=[];
   const P=hbGPal(info),c=P[0],ln=P[1],pk=a=>a[Math.floor(R()*a.length)];
   const px=(X,Y,w,h,col)=>{x.fillStyle=col;X=((Math.floor(X)%N)+N)%N;Y=((Math.floor(Y)%N)+N)%N;for(const ox of [0,-N])for(const oy of [0,-N])x.fillRect(X+ox,Y+oy,w,h);};
   const blot=(n,cols,smax)=>{for(let i=0;i<n;i++){const s=1+Math.floor(R()*smax);px(R()*N,R()*N,s+Math.floor(R()*2),s,pk(cols));}};
@@ -241,9 +240,9 @@ function hbBake(key,W,H){const gl=HB.gl,q=hbQ(),info=hbInfo(key),gy=bgGY(H),M=(t
   let base;try{base=bgStatic(key,BW,H);}catch(e){base=null;}
   if(base)c.drawImage(base,0,0,BW,gy,0,0,BW,gy);else{c.fillStyle='#334';c.fillRect(0,0,BW,gy);}
   // the drifting clouds of the 2D stage are baked in as soft far clouds (outdoors, by day)
-  if(info.kind==='field'&&!look.night&&/meadow|heights|snow|coast/.test(info.base)&&typeof cloudBlob==='function'){const Rc=mulberry(hbHash(key)+3),cc=info.base==='heights'?['#3a4060','#262a44']:info.base==='coast'?['#f8c8b0','#e8a890']:['#ffffff','#d8e8f4'];
+  if(info.kind==='field'&&!look.night&&/meadow|heights|snow|coast/.test(info.base)&&typeof cloudBlob==='function'){const Rc=mulberry(hashS(key)+3),cc=info.base==='heights'?['#3a4060','#262a44']:info.base==='coast'?['#f8c8b0','#e8a890']:['#ffffff','#d8e8f4'];
     for(let i=0;i<3;i++)cloudBlob(c,Math.floor(Rc()*BW*.9),Math.floor(gy*(.12+Rc()*.3)),22+Math.floor(Rc()*18),cc[0],cc[1]);}
-  const lights=[];if(q.props)hbProps(c,info,BW,gy,strip,H,mulberry(hbHash(key)+W*7+H),lights,look.night);
+  const lights=[];if(q.props)hbProps(c,info,BW,gy,strip,H,mulberry(hashS(key)+W*7+H),lights,look.night);
   // fog: the colour of the backdrop just above the ground line
   let fog=[.6,.65,.7];try{const d=c.getImageData(0,Math.max(0,gy-3),BW,1).data;let r=0,g=0,b=0,n=0;for(let i=0;i<d.length;i+=4){if(d[i+3]>200){r+=d[i];g+=d[i+1];b+=d[i+2];n++;}}if(n)fog=[r/n/255,g/n/255,b/n/255];}catch(e){}
   // blur (depth of field) and bloom, once

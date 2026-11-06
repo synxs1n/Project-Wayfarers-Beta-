@@ -6,7 +6,7 @@ function shade(h,f){return rh(hx(h).map(v=>v*f));}
 function tint(h,f){return rh(hx(h).map(v=>v+(255-v)*f));}
 function mix(a,b,t){const A=hx(a),B=hx(b);return rh(A.map((v,i)=>v+(B[i]-v)*t));}
 function mkCv(w,h){const c=document.createElement('canvas');c.width=w;c.height=h;return c;}
-function mulberry(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+function mulberry(a){return seeded(a);}// the art and map name for seeded() (engine.js): one mulberry32 generator
 function hashS(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return h>>>0;}
 
 class PG{

@@ -1,12 +1,11 @@
 // =================== ANIMATION PASS (Beta v0.3.2) ===================
 // Battle first. Every pose fits the old 520ms action window and lands its strike before the hit (IMPACT), so turns are
 // no slower at 1x; at higher speeds the recovery is cut short. With reduced motion, poses become simple flashes.
-function rm(){return typeof reducedMotion==='function'&&reducedMotion();}
 const ANIM_CLS={warrior:'swing',knight:'thrust',monk:'jab',thief:'dash',archer:'bow',druid:'bow',sniper:'crossbow',mage:'cast',archmage:'cast',chronicler:'cast',healer:'channel',bard:'play'};
 function animStyle(u){if(u.side!=='p'||u.isComp)return 'foe';const t=TPL[u.id];return (t&&ANIM_CLS[t.cls])||'swing';}
 const ease=q=>q<0?0:q>1?1:q*q*(3-2*q);
 // returns the sprite offset for this moment of the action; a is ms since the action began
-function animPose(u,a,dir,b){if(rm())return {dx:0,dy:0};const sp=META.cfg.speed||1,k=u.actKind,st=animStyle(u);
+function animPose(u,a,dir,b){if(gfxStill())return {dx:0,dy:0};const sp=META.cfg.speed||1,k=u.actKind,st=animStyle(u);
   const rec=(t0,len)=>1-ease((a-t0)/(len/Math.max(1,sp*.8)));// recovery shrinks at higher speeds
   if(u.actLimit&&Date.now()-u.actLimit<700){const q=a/520;return {dx:0,dy:-Math.round(6*Math.sin(Math.min(1,q)*Math.PI))};}
   if(k==='phys'||(st==='foe'&&k!=='mag'&&k!=='heal'&&k!=='buff'&&k!=='status')){
@@ -29,7 +28,7 @@ function streak(x,y,dir,col,start,n){for(let i=0;i<(n||5);i++)part({k:'p',x:x-di
 function projectile(x,y,x2,y2,col,start,life,thick){part({k:'shot',x,y,x2,y2,t0:start,life,col,thick});}
 function notes(x,y,start){for(let i=0;i<3;i++)part({k:'note',x:x+(i-1)*6,y,t0:start+i*90,life:600,col:['#ffd04a','#8ad0ff','#ff9ad0'][i]});}
 function converge(x,y,col,start){for(let i=0;i<10;i++){const a=i/10*Math.PI*2,r=16;part({k:'p',x:x+Math.cos(a)*r,y:y+Math.sin(a)*r*.6,vx:-Math.cos(a)*r*5,vy:-Math.sin(a)*r*3,g:0,t0:start,life:180,col,sz:1});}}
-{const oa0=onAction;onAction=function(a,now){oa0.apply(this,arguments);try{if(rm())return;const c=centerOf(a);if(!c)return;const b=unitBox(a),dir=a.side==='p'?-1:1,st=animStyle(a),k=a.actKind;
+{const oa0=onAction;onAction=function(a,now){oa0.apply(this,arguments);try{if(gfxStill())return;const c=centerOf(a);if(!c)return;const b=unitBox(a),dir=a.side==='p'?-1:1,st=animStyle(a),k=a.actKind;
   const tg=B.en.concat(B.front).filter(u=>u!==a&&u.fxT&&Math.abs(u.fxT-a.actT)<60),t0=tg[0]&&centerOf(tg[0]);
   if(a.actLimit&&Date.now()-a.actLimit<200){part({k:'ring',x:c.x,y:b.y-1,t0:now,life:600,col:'#ffd04a',r:26,flat:1});sparkleUp(c.x,c.y,'#ffd04a',now,14);}
   if(k==='phys'||st==='foe'&&(k==='phys'||!k)){
@@ -51,13 +50,13 @@ function converge(x,y,col,start){for(let i=0;i<10;i++){const a=i/10*Math.PI*2,r=
   BV.P=BV.P.filter(p=>!p.dead);}catch(e){}ctx.globalAlpha=1;return dp0.apply(this,arguments);};}
 // Limit Breaks get their own pose; bosses flourish on phase changes
 {const pf0=perform;perform=function(a,sk){try{if(a&&sk&&sk.limit)a.actLimit=Date.now();}catch(e){}return pf0.apply(this,arguments);};}
-{const cp0=checkPhase;checkPhase=function(e){const was=e&&e.phaseDone,was2=e&&e.p2done;cp0.apply(this,arguments);try{if(e&&e.boss&&((!was&&e.phaseDone)||(!was2&&e.p2done))&&V.screen==='battle'&&!rm()){const c=centerOf(e),now=performance.now();if(!c)return;
+{const cp0=checkPhase;checkPhase=function(e){const was=e&&e.phaseDone,was2=e&&e.p2done;cp0.apply(this,arguments);try{if(e&&e.boss&&((!was&&e.phaseDone)||(!was2&&e.p2done))&&V.screen==='battle'&&!gfxStill()){const c=centerOf(e),now=performance.now();if(!c)return;
   part({k:'rays',x:c.x,y:c.y,t0:now,life:700,col:'#ff9a6a'});part({k:'ring',x:c.x,y:c.y,t0:now,life:600,col:'#ff6a3a',r:48});part({k:'ring',x:c.x,y:c.y,t0:now+120,life:520,col:'#ffffff',r:32});BV.shake={t:now,life:420,amp:3};BV.flash={t:now,life:180,col:'rgba(255,140,90,.3)'};}}catch(x){}};}
 // summons: a circle opens on the way in, a puff on the way out
-{const sc0=summonComp;summonComp=function(){const a=B&&B.cur;const r=sc0.apply(this,arguments);try{const u=B.front.find(x=>x.isComp&&x.owner===a);if(u&&!rm()){const now=performance.now(),b=unitBox(u),col=ELC[(u.el||[])[0]]||'#ffd04a';
+{const sc0=summonComp;summonComp=function(){const a=B&&B.cur;const r=sc0.apply(this,arguments);try{const u=B.front.find(x=>x.isComp&&x.owner===a);if(u&&!gfxStill()){const now=performance.now(),b=unitBox(u),col=ELC[(u.el||[])[0]]||'#ffd04a';
   part({k:'circle',x:b.x,y:b.y-1,t0:now,life:700,col});part({k:'ring',x:b.x,y:b.y-b.h*.5,t0:now+150,life:500,col:'#ffffff',r:30});sparkleUp(b.x,b.y-b.h*.5,col,now+120,16);}}catch(e){}return r;};}
-{const cr0=compReturn;compReturn=function(u){let c=null;try{c=centerOf(u);}catch(e){}const r=cr0.apply(this,arguments);try{if(c&&!rm()){const now=performance.now();for(let i=0;i<14;i++){const a=Math.random()*Math.PI*2;part({k:'p',x:c.x,y:c.y,vx:Math.cos(a)*40,vy:Math.sin(a)*30-20,g:0,t0:now,life:420,col:i%2?'#ffffff':'#c8c0d8',sz:2});}}}catch(e){}return r;};}
+{const cr0=compReturn;compReturn=function(u){let c=null;try{c=centerOf(u);}catch(e){}const r=cr0.apply(this,arguments);try{if(c&&!gfxStill()){const now=performance.now();for(let i=0;i<14;i++){const a=Math.random()*Math.PI*2;part({k:'p',x:c.x,y:c.y,vx:Math.cos(a)*40,vy:Math.sin(a)*30-20,g:0,t0:now,life:420,col:i%2?'#ffffff':'#c8c0d8',sz:2});}}}catch(e){}return r;};}
 // reduced motion: no screen shake
-{const bf0=battleFrame;battleFrame=function(now){if(rm())BV.shake=null;return bf0.apply(this,arguments);};}
+{const bf0=battleFrame;battleFrame=function(now){if(gfxStill())BV.shake=null;return bf0.apply(this,arguments);};}
 // menus and the map: a short fade when a window first opens (not on every refresh)
-{const r0=render;render=function(){const key=V.modal?V.modal.type+':'+(V.modal.tab||''):null;const r=r0.apply(this,arguments);try{if(key&&key!==V._animKey&&!rm()){const el=document.querySelector('#modal .modal')||document.querySelector('#modal > *');if(el){el.classList.remove('menter');void el.offsetWidth;el.classList.add('menter');}}V._animKey=key;}catch(e){}return r;};}
+{const r0=render;render=function(){const key=V.modal?V.modal.type+':'+(V.modal.tab||''):null;const r=r0.apply(this,arguments);try{if(key&&key!==V._animKey&&!gfxStill()){const el=document.querySelector('#modal .modal')||document.querySelector('#modal > *');if(el){el.classList.remove('menter');void el.offsetWidth;el.classList.add('menter');}}V._animKey=key;}catch(e){}return r;};}

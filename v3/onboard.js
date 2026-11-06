@@ -21,7 +21,6 @@ function tipsOn(){const c=META.cfg||{};return c.tips!=null?c.tips!==false:c.hint
 function tipSeen(id){return !!obM().s[id];}
 function tipUsed(id){return !!obM().u[id];}
 function tipUse(id){try{if(!G||G.daily)return;const M=obM();if(!M.u[id]){M.u[id]=1;saveMeta();}}catch(e){}}
-const obNm=c=>c?(c.name||(TPL[c.id]&&TPL[c.id].n)||c.id):'';
 const obLive=()=>!!(G&&G.run&&!G.daily);
 // contexts: a battle in progress with the commands up at least once, the world with no window open, a given window
 function obBat(){return !!(obLive()&&V.screen==='battle'&&B&&!B.over&&!V.modal&&(B.pturns||0)>=1&&!(B.spec&&B.spec.kind==='daily'));}
@@ -61,16 +60,16 @@ const TIPS=[
   t:()=>{if(!obBat())return null;const u=obFront().concat(obFoes()).find(x=>Object.keys(x.st||{}).some(k=>STS[k]&&STS[k].bad));return u?`${u.name} has a status. Tap a hero or foe to read its icons; a Remedy cures bad ones.`:null;},
   g:'Statuses are small icons next to a unit: poison, burn, slow, stun and others hurt, while haste, might and ward help. They wear off after a few turns. Tap a hero or foe to read them, use a Remedy from Items to cure a hero, and open Lore in battle for the full list.'},
  {id:'limit',n:'Limit',sec:'Battle',
-  t:()=>{if(!obBat()||B.mode!=='cmd'||!B.cur||B.cur.side!=='p'||!lbReady(B.cur))return null;return `${obNm(B.cur)}'s Limit is full! Its gold button now tops the commands: a big move.`;},
+  t:()=>{if(!obBat()||B.mode!=='cmd'||!B.cur||B.cur.side!=='p'||!lbReady(B.cur))return null;return `${p2Nm(B.cur)}'s Limit is full! Its gold button now tops the commands: a big move.`;},
   g:'Heroes fill a Limit bar (the thin gold bar under their HP) by taking hits and when allies fall. When it is full, a gold Limit button appears at the top of that hero\'s commands. Limit moves are each class\'s strongest; at higher levels they grow into a stronger second tier.'},
  {id:'switch',n:'Switching',sec:'Battle',
-  t:()=>{if(!obBat()||B.mode!=='cmd'||!B.cur||B.cur.side!=='p'||!canSwap())return null;const c=B.cur;return c.hp<c.S.mhp*.4?`${obNm(c)} is hurt. Switch trades them for a Rearguard hero, who acts at once.`:null;},
+  t:()=>{if(!obBat()||B.mode!=='cmd'||!B.cur||B.cur.side!=='p'||!canSwap())return null;const c=B.cur;return c.hp<c.S.mhp*.4?`${p2Nm(c)} is hurt. Switch trades them for a Rearguard hero, who acts at once.`:null;},
   g:'The front three of your party are the Vanguard and the back three the Rearguard. On a Vanguard hero\'s turn, Switch trades that hero for one of them, and the newcomer acts at once. The hero who steps back sheds their statuses. When a Vanguard hero falls, the next Rearguard hero steps in by themselves.'},
  {id:'scan',n:'Scan and Lore',sec:'Battle',go:['menuTab','beasts','Bestiary'],
   t:()=>{if(!obBat()||B.mode!=='cmd')return null;const e=obFoes().find(x=>x.boss||x.elite);if(!e)return null;const b=(META.best||{})[e.base]||{};return b.scan?null:'Scan shows a foe\'s exact stats and hidden quirk for half a turn. Lore explains the rest.';},
   g:'Scan, under the main commands, reads one foe\'s exact HP and stats, its hidden quirk and a boss\'s turning point, for half a turn. What you learn stays in the Bestiary. Lore pauses the fight and lists elements, reactions and statuses.'},
  {id:'summon',n:'Summons',sec:'Creatures',
-  t:()=>{if(!obBat()||B.mode!=='cmd'||!B.cur||!canSummon(B.cur))return null;const o=compOf(B.cur);return o?`${obNm(B.cur)} can Summon ${o.name}: it fights in their place for a few turns.`:null;},
+  t:()=>{if(!obBat()||B.mode!=='cmd'||!B.cur||!canSummon(B.cur))return null;const o=compOf(B.cur);return o?`${p2Nm(B.cur)} can Summon ${o.name}: it fights in their place for a few turns.`:null;},
   g:'A hero paired with a companion gets a Summon command. The companion takes the hero\'s place for a few turns, once per battle, then the hero comes back. Companions never fight in the Daily Trial.'},
  {id:'echo',n:'Echoes',sec:'Later',
   t:()=>{if(!obBat())return null;const e=obFoes().find(x=>/^Echo /.test(x.name||''));return e?`${e.name} is an Echo, a stronger form of a beaten boss. Its shards forge rare weapons.`:null;},
@@ -88,7 +87,7 @@ const TIPS=[
  // party
  {id:'bond',n:'Bonds and campfire talks',sec:'Party',go:['bondsOpen','','Bonds'],
   t:()=>{if(!obWorld())return null;const k=Object.keys(G.bonds||{}).find(k=>(G.bonds[k]||0)>=1&&BONDMAP[k]&&G.roster[BONDMAP[k].a]&&G.roster[BONDMAP[k].b]);if(!k)return null;const b=BONDMAP[k];
-   return `${obNm(G.roster[b.a])} and ${obNm(G.roster[b.b])} won side by side. More wins bring a campfire talk, then a joint tech.`;},
+   return `${p2Nm(G.roster[b.a])} and ${p2Nm(G.roster[b.b])} won side by side. More wins bring a campfire talk, then a joint tech.`;},
   g:'Some pairs of wayfarers share a bond. Every win with both of them standing in the Vanguard counts. After enough wins they share a campfire talk, then learn a joint tech, then a second talk. The Party tab\'s Bonds page shows how close each pair is.'},
  {id:'camp',n:'Make camp and boons',sec:'Party',
   t:()=>{if(!obLive())return null;const have=(G.inv.campkit||0)>0;
@@ -96,7 +95,7 @@ const TIPS=[
    return obWorld()&&have?'You carry Camp Supplies. In the field, Make camp from the Party tab for a heal and a boon.':null;},
   g:'Camp Supplies are sold at Alchemy from the third realm. In a field or dungeon (not in town or next to a guardian), Make camp from the Party tab: standing heroes get back a quarter of their HP and MP, and you pick one boon for the next 3 battles (Whetstone, Watch fire, Early rise or Forager\'s luck).'},
  {id:'reserves',n:'Reserves and Equip best',sec:'Party',go:['menuTab','party','Party'],
-  t:()=>{if(!obWorld())return null;const r=obReserves();return r.length?`${obNm(G.roster[r[0]])} is a Reserve, outside the party. Swap heroes in town from the Party tab.`:null;},
+  t:()=>{if(!obWorld())return null;const r=obReserves();return r.length?`${p2Nm(G.roster[r[0]])} is a Reserve, outside the party. Swap heroes in town from the Party tab.`:null;},
   g:'Heroes outside the party are your Reserves. They still earn some XP. In town you can swap them into the party from the Party tab. Equip best: reserves hands them the best spare gear in the pack, never taking anything from your party.'},
  {id:'bestparty',n:'Best Party and Training team',sec:'Party',go:['bpOpen','','Best Party'],
   t:()=>{if(!obModal('menu')||obTab()!=='party')return null;return obReserves().length?'Best Party suggests a party for this area. Training team helps heroes who fell behind.':null;},
@@ -106,7 +105,7 @@ const TIPS=[
   t:()=>{if(!obWorld()||typeof facRank!=='function')return null;const F=FAC.find(f=>facRank(f.id)>=2);return F?`New rank with the ${F.n}! Guild missions in Quests earn rank even faster.`:null;},
   g:'Five guilds watch what you do anyway: wins and bounties, forging and tempering, brewing, taming, and knowledge. Each rank brings a perk (cheaper inns, gold, XP, unique charms). Guild missions in the Quests menu add extra standing. Ranks are per journey.'},
  {id:'personal',n:'Personal quests',sec:'Town',
-  t:()=>{if(!obWorld())return null;const c=partyOf().find(c=>personalEligible(c)&&!(G.personal&&G.personal[c.id]&&G.personal[c.id].state!=='open'));return c?`${obNm(c)} has a personal quest! Start it at the Guild Hall for a reward of their own.`:null;},
+  t:()=>{if(!obWorld())return null;const c=partyOf().find(c=>personalEligible(c)&&!(G.personal&&G.personal[c.id]&&G.personal[c.id].state!=='open'));return c?`${p2Nm(c)} has a personal quest! Start it at the Guild Hall for a reward of their own.`:null;},
   g:'After about 40 battles together, from the second realm on, a wayfarer asks for help with something of their own. Start it in the Guild Hall (Quests > Personal quests). The reward is a unique item bound to that hero.'},
  {id:'bounty',n:'Bounties',sec:'Town',
   t:()=>{if(!obModal('guild')||V.modal.char)return null;return (G.bounties||[]).some(b=>b.state==='open')?'Bounties are elite beasts in the fields. Beat one for gold and a charm, maybe a tame.':null;},
@@ -249,7 +248,7 @@ function obUntried(){const out=[];if(!G||G.daily)return out;const add=(t,s)=>out
   try{if(tipSeen('guild')&&typeof facInit==='function'){const f=facInit();if(!Object.keys(f.acc||{}).length&&!Object.keys(f.done||{}).length)add('Try a guild mission','Quests > Guild missions: extra standing and the next perk sooner.');}}catch(e){}
   try{if(tipSeen('bestparty')&&!tipUsed('bestparty'))add('Try Best Party','Party tab: it suggests a party for this area and a Training team for heroes who fell behind.');}catch(e){}
   try{const R=obReserves();if(tipSeen('reserves')&&!tipUsed('reserves')&&R.length&&(G.gear||[]).some(id=>{const g=gearOf(id);return g&&!g.stick;}))add('Equip best: reserves','Party tab: your Reserves take the best spare gear from the pack.');}catch(e){}
-  try{if(tipSeen('charm')){const c=(G.gear||[]).filter(obCharm);const empty=partyOf().filter(h=>!h.eq.c);if(c.length&&empty.length)add(`A charm is waiting in your pack`,`${empty.slice(0,3).map(h=>esc(obNm(h))).join(', ')} ${empty.length>1?'have':'has'} an empty charm slot. Backpack > Equipment.`);}}catch(e){}
+  try{if(tipSeen('charm')){const c=(G.gear||[]).filter(obCharm);const empty=partyOf().filter(h=>!h.eq.c);if(c.length&&empty.length)add(`A charm is waiting in your pack`,`${empty.slice(0,3).map(h=>esc(p2Nm(h))).join(', ')} ${empty.length>1?'have':'has'} an empty charm slot. Backpack > Equipment.`);}}catch(e){}
   return out;}
 {const vn0=vNext;vNext=function(){let h=vn0.apply(this,arguments);try{const L=obUntried();if(L.length){
   const sec=`<h4>Not tried yet</h4><div class="rows compact obnt">${L.map(([t,s])=>`<div class="row nxt"><span class="nxi">•</span><div class="grow"><b>${t}</b>${s?`<small>${s}</small>`:''}</div></div>`).join('')}</div>`;
