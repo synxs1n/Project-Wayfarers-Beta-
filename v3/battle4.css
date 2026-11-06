@@ -1,0 +1,28 @@
+/* ===== Beta v0.7.0 battle mechanics (battle4.js): the Momentum gauge in the log ticker, the switch menu ===== */
+.battle.b3 .bline .b4mo{flex:none;display:flex;flex-direction:column;justify-content:center;gap:3px;width:98px;min-height:40px;margin:0 0 0 -6px;padding:3px 6px;box-sizing:border-box;
+  background:rgba(10,12,22,.7);border:1px solid rgba(217,180,106,.28);border-radius:3px;color:#f3e7cc;font:inherit;cursor:pointer;text-align:left}
+.battle.b3 .bline .b4mo .b4mt{display:flex;justify-content:space-between;align-items:baseline;gap:4px;line-height:1;white-space:nowrap}
+.battle.b3 .bline .b4mo .b4mt b{font-size:.6rem;font-weight:800;letter-spacing:0;color:#e9dcc0}
+.battle.b3 .bline .b4mo .b4mt em{font-style:normal;font-size:.66rem;font-weight:900;color:#c9c4d8}
+.battle.b3 .bline .b4mo .b4bar{position:relative;display:block;height:6px;border-radius:2px;background:#2a2638;box-shadow:inset 0 0 0 1px #000;overflow:hidden}
+.battle.b3 .bline .b4mo .b4bar i{position:absolute;top:0;bottom:0;left:0;display:block}
+.battle.b3 .bline .b4mo .b4bar i.z{background:rgba(255,208,74,.28);border-left:1px solid rgba(255,220,140,.7);border-right:1px solid rgba(255,220,140,.7)}
+.battle.b3 .bline .b4mo .b4bar i.v{background:#9a8ab8;transition:width .25s ease-out}
+.battle.b3 .bline .b4mo.zone{border-color:rgba(255,208,74,.75)}
+.battle.b3 .bline .b4mo.zone .b4mt em{color:#ffd76a}
+.battle.b3 .bline .b4mo.zone .b4bar i.v{background:#ffd04a}
+.battle.b3 .bline .b4mo.hot .b4mt em{color:#ffb070}
+.battle.b3 .bline .b4mo.hot .b4bar i.v{background:#ff9a3a}
+.battle.b3 .bline .b4mo.over{border-color:rgba(255,106,90,.8)}
+.battle.b3 .bline .b4mo.over .b4mt em{color:#ff9a8a}
+.battle.b3 .bline .b4mo.over .b4bar i.v{background:#ff5a4a}
+@media (prefers-reduced-motion:reduce){.battle.b3 .bline .b4mo .b4bar i.v{transition:none}}
+/* the switch menu: who steps back (the acting hero, or another front hero through the free swap) */
+.b4out{display:flex;flex-wrap:wrap;align-items:stretch;gap:5px;margin:0 0 6px}
+.b4out .b4ol{flex:1 0 100%;font-size:.7rem;font-weight:800;letter-spacing:.06em;color:#e9cf8f}
+.b4out .mi.b4o{flex:1 1 0;min-width:0;min-height:44px;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:1px;padding:5px 6px 5px 22px}
+.b4out .mi.b4o .n{font-size:.78rem;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.b4out .mi.b4o small{font-size:.66rem;white-space:nowrap}
+.b4out .mi.b4o.on{border-color:var(--ui-gold,#d9b46a);box-shadow:inset 0 0 0 1px rgba(255,220,140,.5)}
+.b4out .mi.b4o.on::before{background:var(--ui-gold-hi,#ffe3a0)}
+.b4role{margin:0 0 6px}
