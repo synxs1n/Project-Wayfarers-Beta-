@@ -179,3 +179,6 @@ worldfx.js: WFX_OPEN plays the opening on top in both renderers (lid at 45% of W
 
 ## Beta v0.8.4: secondary roles and balance
 Details in `v080-roles-balance.md` (`v3/roles.js` heroRoleSet, ROLES in config.js, 7 role weapon families, 6 role charms; ENC_RATE, ECON.xp, BOSS_BUFF and four outlier bosses eased; fullsim journey models gear buying, 40% manual fights, exploring, and a time model). party3.js p6Role reads heroRoleSet: a secondary tank or healer counts as half (p6StepF). Tests `chrome/v080ca.js`, `v080cb.js`.
+
+## Beta v0.8.5: battle screen on phones and the Fold
+Details in `v080-battle-phones.md` (battle3.js/css, battle.js portrait fit; test `chrome/v080b.js`). Transition root cause: the v0.6.3 hdOverlay setTransform x2 wrapper doubled hd2d.js's own 2x transform in the game loop (drawn at 4x); now only identity calls are scaled. Damage type symbols dlIco(d) on foe cards (weak/resist from archetypes), skill delivery chips and aim tags. Stage settles before the first frame (b8CmdEst measures the real menu).
