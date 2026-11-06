@@ -197,3 +197,6 @@ Details in `v080-battle-phones.md` (follow up section; battle3.js/css; test `chr
 
 ## Beta v0.9.0: title heroes at the world's scale
 title7.js uses the overworld walker sprite shrunk like the HD-2D world (hdSmall at HD2D.spr.sc) at a whole device pixel scale, about 1/8 of the scene height (T7.cfg.heroFrac); props banded by distance. Tests `chrome/v080wt.js`, `v071t.js`.
+
+## Beta v0.9.1: title music at launch
+ui.js boot calls audioInit() 300 ms after load (the context starts running where autoplay is allowed, else waits suspended for the first tap). The release workflow patches MainActivity to setMediaPlaybackRequiresUserGesture(false); electron/main.js sets autoplayPolicy no-user-gesture-required.

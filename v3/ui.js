@@ -547,6 +547,10 @@ const KEYDIR={ArrowUp:'u',ArrowDown:'d',ArrowLeft:'l',ArrowRight:'r',w:'u',s:'d'
 function boot(){
   loadMeta();applyCfg();
   const unlock=()=>{audioInit();if(AU.ctx&&AU.ctx.state==='suspended')AU.ctx.resume();};
+  // v0.9.1: start the audio at launch so the title music plays where the system allows it (the Windows app, the Android app, browsers
+  // the player often uses); elsewhere the context waits suspended and the first tap resumes it. It used to wait for the first tap, which
+  // on the title is usually Continue, so the menu music was never heard.
+  try{setTimeout(()=>{try{audioInit();if(AU.ctx&&AU.ctx.state==='suspended')AU.ctx.resume().catch(()=>{});}catch(e){}},300);}catch(e){}
   document.addEventListener('pointerdown',unlock);document.addEventListener('keydown',unlock);
   document.addEventListener('click',e=>{const t=e.target.closest('[data-act]');if(!t||t.disabled)return;if(t.classList.contains('unit'))return;if(V._press&&Date.now()-V._press.t<350&&V._press.act===t.dataset.act&&V._press.arg===(t.dataset.arg||''))return;const f=ACT[t.dataset.act];if(f){e.preventDefault();f(t.dataset.arg,t);}});
   // Beta v0.3.1: if a re-render swaps the button out between press and release, the browser drops the click.

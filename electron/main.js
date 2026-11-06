@@ -9,7 +9,7 @@ function create() {
     width: 1280, height: 800, minWidth: 640, minHeight: 480,
     backgroundColor: '#150b17', autoHideMenuBar: true,
     icon: path.join(__dirname, '..', 'icons', 'icon-512.png'),
-    webPreferences: { contextIsolation: true, sandbox: true }
+    webPreferences: { contextIsolation: true, sandbox: true, autoplayPolicy: 'no-user-gesture-required' }
   });
   w.setMenuBarVisibility(false);
   w.webContents.setUserAgent(UA);

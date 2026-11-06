@@ -34,6 +34,17 @@ jobs:
           cp -r icons www/icons
           cp -r audio www/audio
       - run: npx cap add android
+      - name: Allow audio without a tap (title music on launch)
+        run: |
+          python3 - <<'PY'
+          import glob
+          for p in glob.glob('android/app/src/main/java/**/MainActivity.java',recursive=True):
+              s=open(p).read()
+              if 'setMediaPlaybackRequiresUserGesture' in s: continue
+              s=s.replace('import com.getcapacitor.BridgeActivity;','import com.getcapacitor.BridgeActivity;\nimport android.os.Bundle;')
+              s=s.replace('public class MainActivity extends BridgeActivity {}','public class MainActivity extends BridgeActivity {\n    @Override\n    public void onCreate(Bundle savedInstanceState) {\n        super.onCreate(savedInstanceState);\n        try { this.bridge.getWebView().getSettings().setMediaPlaybackRequiresUserGesture(false); } catch (Exception e) {}\n    }\n}')
+              open(p,'w').write(s);print('patched',p)
+          PY
       - name: Google sign in setup (stable signing key, Firebase config, gradle plugin)
         env:
           RUN_N: ${{ github.run_number }}
