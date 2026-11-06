@@ -215,3 +215,6 @@ Details in `v095-menus.md` (menus3.js, factions.js, p3shop.js Upgrade step searc
 
 ## Beta v0.9.6: fewer fights, boss gimmicks, companion growth, realm unlocks
 Details in `v095-bosses-pacing.md` (ENC block, field roamers in roam.js, battle4.js section 5 BOSS_GIM, comp3.js TAME, pacing.js pcUnlocked; tests `chrome/v095p1.js` to `v095p3.js`). Journey sim: about 150 fights, top level about 40.5, 4.6 to 4.9 h typical.
+
+## Beta v0.9.7: battle clarity
+Details in `v095-battle-clarity.md` (battle3.js section 9, battle5.js, battleui.js, fx2.js, sfx2/audio reaction sound; META.cfg.expertBattle; test `chrome/v095b.js`).
