@@ -12,7 +12,14 @@
 // ----- what each hero brings to a formation -----
 function p6Role(c){const k=p3Kit(c),t=TPL[c.id],cls=t.cls,sk=classSkills(t).filter(s=>skillKnown(c,s));
   const sup=cls==='bard'||!k.tank&&!k.heal&&sk.some(s=>s.k==='status'&&(s.t==='ally'||s.t==='allyAll'));
-  return {k,cls,tank:k.tank,heal:k.heal,sup,dmg:!k.tank&&cls!=='healer'&&cls!=='bard',pr:k.pr,de:k.de};}
+  // v0.8.4: secondary roles (roles.js heroRoleSet): a secondary tank or healer counts as half of one, a secondary support as support
+  let H=null;try{H=typeof heroRoleSet==='function'?heroRoleSet(c):null;}catch(e){H=null;}
+  if(!H||!H.primary)return {k,cls,tank:k.tank,heal:k.heal,sup,dmg:!k.tank&&cls!=='healer'&&cls!=='bard',pr:k.pr,de:k.de,tankH:0,healH:0};
+  const P=H.primary,has=H.has||{},sec=r=>P!==r&&has[r];
+  const tank=k.tank||P==='tank',heal=k.heal||P==='healer';
+  return {k,cls,tank,heal,tankH:!tank&&sec('tank')?.5:0,healH:!heal&&sec('healer')?.5:0,sup:sup||P==='buffer'||sec('buffer'),
+    dmg:['phys','magic','ranged'].includes(P)||(P==='debuffer'&&!tank&&!heal),pr:k.pr,de:k.de};}
+const p6StepF=(arr,n)=>{const f=Math.floor(n);return p6Step(arr,f)+(n-f)*arr[Math.min(f,arr.length-1)];};
 // v0.8.1: how much of what lies ahead flies (seen foes of this area; the whole area pool when nothing is seen yet), 0..1, and a flying boss
 function p6Fly(T){try{let n=0,f=0;const pool=T.mons.length?T.mons:(ZS(T.s).pool||[]);pool.forEach(k=>{const d=MON[k];if(!d)return;n++;if(tyOf(d.art).includes('flying'))f++;});
   return {share:n?f/n:0,boss:!!(T.boss&&(T.boss.ty||[]).includes('flying'))};}catch(e){return {share:0,boss:false};}}
@@ -23,7 +30,7 @@ const p6Step=(arr,n)=>{let s=0;for(let i=0;i<n;i++)s+=arr[Math.min(i,arr.length-
 // the formation score: roles first, then answers to what lies ahead, then a little strength
 function p6Score(set,X,mode,prev){const T=X.T,R=set.map(c=>X.R[c.id]),K=R.map(r=>r.k),cnt=f=>R.filter(f).length;let v=0;
   set.forEach(c=>{const r=X.pw[c.id]/X.mx;v+=BP6.str*Math.sqrt(r);if(mode!=='train'&&r<BP6.weak)v-=BP6.weakPen*(BP6.weak-r);});
-  v+=p6Step(BP6.role.tank,cnt(r=>r.tank))+p6Step(BP6.role.heal,cnt(r=>r.heal))+p6Step(BP6.role.sup,cnt(r=>r.sup&&!r.heal))+p6Step(BP6.role.dmg,cnt(r=>r.dmg));
+  const half=f=>R.reduce((a,r)=>a+(r[f]||0),0);v+=p6StepF(BP6.role.tank,cnt(r=>r.tank)+half('tankH'))+p6StepF(BP6.role.heal,cnt(r=>r.heal)+half('healH'))+p6Step(BP6.role.sup,cnt(r=>r.sup&&!r.heal))+p6Step(BP6.role.dmg,cnt(r=>r.dmg));
   if(R.some(r=>r.pr))v+=BP6.pr;if(R.some(r=>r.de))v+=BP6.de;
   const cl={};R.forEach(r=>{cl[r.cls]=(cl[r.cls]||0)+1;});Object.values(cl).forEach(n=>{if(n>1)v-=BP6.dup*(n-1);});
   const els=new Set();set.forEach(c=>c.el.forEach(e=>els.add(e)));v+=BP6.el*els.size;

@@ -1786,7 +1786,7 @@ body:has(.battle.b3.m-wide){padding-bottom:4px}
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.8.3";const APP_BUILD="87982c4cbb2f";
+(function(){const APP_VER="0.8.4";const APP_BUILD="ec503b2a2bed";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -1982,7 +1982,7 @@ const BOSS_LV={frac:.5,cap:12};
 // 3.2 bosses: shield pips +50% (5 to 8, 7 to 11); the break window hits for less and is over once the foe loses the turn it staggers
 const BOSS_PIPS={mult:1.5};const BREAK_WIN={bonus:1.3,short:true};
 // 3.2 extra boss muscle on top of the old stat table (hp and power multipliers)
-const BOSS_BUFF={hp:[1.3,1.75,1.8,2.0,1.52],pow:[1.15,1.4,1.44,1.6,1.28]}// v0.4.3: re-tuned with capes;
+const BOSS_BUFF={hp:[1.15,1.65,1.7,2.0,1.52],pow:[1.05,1.34,1.38,1.6,1.28]}// v0.4.3: re-tuned with capes; v0.8.2: the first three Scourges eased (were hp 1.3, 1.75, 1.8 and pow 1.15, 1.4, 1.44) so no boss is a wall
 // 3.4 small parties: each hero short of six makes Scourges and Calamities this much beefier (a full party of six is the benchmark)
 const BOSS_SIZE={hp:.07,pow:.06};// per stage 1 to 5
 // 3.3 echo levels. Story echo base = boss base + storyAdd; Sanctum echoes use fixed bases. While the party's highest hero is more than
@@ -2009,7 +2009,7 @@ const MIMIC_RATE=.13;
 const MAT_PRICE={copper:18,iron:45,mythril:110,oak:14,ash:40,elder:95,healroot:10,bluecap:22,sunpetal:48,starbloom:120};
 // Beta v0.4.1 3.5 economy (all editable here)
 // gold/xp: multipliers on what the player earns (the Daily Trial is exempt). gear/items/forge: price multipliers. recruit: tavern hire price.
-const ECON={gold:.9,xp:.85,gear:1.6,items:1.6,recruit:3,rareRecruit:2.6,inn:{base:30,per:25}};// v0.4.3: gold easier, prices lower (was gold .75, gear and items x2, recruits x3.5)
+const ECON={gold:.9,xp:.87,gear:1.6,items:1.6,recruit:3,rareRecruit:2.6,inn:{base:30,per:25}};// v0.4.3: gold easier, prices lower (was gold .75, gear and items x2, recruits x3.5) v0.8.2: xp .85 -> .87 with more encounters (ENC_RATE)
 const econG=n=>(typeof G!=='undefined'&&G&&G.daily)?n:Math.round(n*ECON.gold);
 // Beta v0.5.0 Phase 3: shops, gear and items (p3shop.js)
 // 3.8 how many of one item the pack holds (was 9). The Daily Trial keeps its old cap so its runs stay exactly as before.
@@ -2067,12 +2067,72 @@ const CAMP={price:40,fromStage:2,heal:.25,cool:2,dur:3,atk:.1,def:.1,first:.35,d
 const SUB_MIN=28,SUB_SPAN=5;//  target size 28..32
 // LOADMAX: saved team loadouts (party2.js).
 const LOADMAX=8;
+// v0.8.2 class roles (roles.js). Every class has a primary role and one or two secondary roles, delivered by skills (sk, added to the
+// class list at fixed levels, so old saves learn them on load by level) and by gear that leans into them (new weapon families in items.js,
+// role charms below). A secondary role's output is meant to land at band[0] to band[1] of the dedicated class's (ded) primary output,
+// measured by roleOut on a plain template per class (its element taken from ref; no signature skill) at level lv with each class's standard weapon and armor of tier tier.
+// Roles: tank, phys (physical damage), magic, ranged (ranged delivery, catches flyers), healer, buffer (support), debuffer.
+// Every class also primes and detonates (skills.js ROLE_FILL), so primer/detonator is a shared tag, not a secondary.
+// w: how roleOut weighs statuses (per target per turn); area: targets an all-foes or all-allies move counts for; self: weight of a buff
+// that only lands on the user; tauntless: a would-be tank without a taunt; tankRef: foe attack multiplier for the tank measure;
+// top: roleOut adds up a hero's best this-many moves for the role; chiK: Monk and Druid chi heals (chi:1) use the better of healing power and chiK x attack.
+// sk: the new skills per class. el 'e1' takes the hero's first element; {n1} in names and text is its name. charms: role charms
+// (sold at the charm stall from stage 2, 0 based shopFrom) and their perks (healUp, spellPow, buffT, debT, status, rngPow, tauntDef).
+const ROLES={
+  cls:{warrior:{p:'phys',s:['tank','debuffer']},knight:{p:'tank',s:['buffer']},archer:{p:'ranged',s:['debuffer']},thief:{p:'debuffer',s:['ranged']},
+    monk:{p:'phys',s:['healer','buffer']},mage:{p:'magic',s:['debuffer']},healer:{p:'healer',s:['buffer']},bard:{p:'buffer',s:['magic','healer']},
+    sniper:{p:'ranged',s:['debuffer']},druid:{p:'ranged',s:['healer','debuffer']},archmage:{p:'magic',s:['buffer']},chronicler:{p:'magic',s:['debuffer','healer']}},
+  ded:{tank:'knight',phys:'warrior',magic:'mage',ranged:'archer',healer:'healer',buffer:'bard',debuffer:'thief'},
+  ref:{warrior:'brann',knight:'oren',archer:'tess',thief:'sable',monk:'dorn',mage:'mira',healer:'lumen',bard:'brook',sniper:'kaevan',druid:'nikaris',archmage:'jaeson',chronicler:'vaelith'},
+  band:[.55,.75],lv:30,tier:3,
+  names:{tank:'Tank',phys:'Physical damage',magic:'Magic damage',ranged:'Ranged',healer:'Healer',buffer:'Support',debuffer:'Debuffer'},
+  w:{buff:{might:1,haste:1,bulwark:1,regen:.8,ward:.7,focus:.5,taunt:.2},debuff:{break:1,weaken:1,slow:.8,stun:1.4,blind:.7,poison:.6,bleed:.6,burn:.6,root:.4},
+    area:2,self:.6,tauntless:.55,tankRef:1.12,top:2,chiK:1.25},
+  sk:{
+    warrior:[{id:'r_sunder',n:'Sunder',k:'phys',pw:1.1,mp:5,lv:11,fx:[['break',.8]],d:'A splitting blow that cracks armor. Likely Breaks.',r:'debuffer'},
+      {id:'r_shout',n:'Intimidating Shout',k:'status',t:'all',mp:8,lv:16,fx:[['weaken',.8]],d:'A roar that shakes every foe. Likely Weakens them.',r:'debuffer'},
+      {id:'r_stance',n:'Iron Stance',k:'status',t:'self',mp:7,lv:20,fx:[['taunt',1],['regen',1]],d:'Plants his feet: Taunt and Regen. The line hides behind him.',r:'tank'}],
+    knight:[{id:'r_banner',n:'Raise the Banner',k:'status',t:'allyAll',mp:12,lv:19,fx:[['haste',1]],d:'The standard goes up: Haste for the vanguard.',r:'buffer'},
+      {id:'r_cover',n:'Shield Ally',k:'status',t:'ally',mp:5,lv:13,fx:[['bulwark',1],['regen',1]],d:'Covers an ally: Bulwark and Regen.',r:'buffer'}],
+    archer:[{id:'r_cripple',n:'Crippling Shot',k:'phys',pw:1,mp:6,lv:15,dl:'ranged',fx:[['weaken',.85],['slow',.6]],d:'An arrow to the sword arm. Likely Weakens, may Slow.',r:'debuffer'},
+      {id:'r_flare',n:'Flare Arrow',k:'phys',pw:.8,mp:8,t:'all',lv:18,dl:'ranged',fx:[['blind',.7]],d:'A burning flare bursts over every foe. May Blind.',r:'debuffer'}],
+    thief:[{id:'r_stars',n:'Throwing Stars',k:'phys',pw:.7,hits:2,mp:3,cost:.8,lv:4,dl:'ranged',d:'Two quick stars from the hip. Ranged: flying foes cannot weave away.',r:'ranged'},
+      {id:'r_kunai',n:'Kunai Volley',k:'phys',pw:.8,mp:9,t:'all',lv:16,dl:'ranged',fx:[['bleed',.4]],d:'A fan of kunai at every foe. Ranged; may Bleed.',r:'ranged'},
+      {id:'r_hamstr',n:'Hamstring',k:'phys',pw:.8,mp:5,cost:.8,lv:12,fx:[['slow',.8],['weaken',.5]],d:'A cut behind the knee. Likely Slows, may Weaken.',r:'debuffer'},
+      {id:'r_toxin',n:'Toxic Cloud',k:'status',t:'all',mp:10,lv:18,fx:[['poison',.85],['weaken',.6]],d:'A cloud of venom over every foe. Likely Poisons, may Weaken.',r:'debuffer'},
+      {id:'r_fuma',n:'Fuma Shuriken',k:'phys',pw:1.9,mp:12,cost:1.1,pierce:1,lv:24,dl:'ranged',d:'A great folding shuriken that cuts through armor. Ranged; ignores half of defense.',r:'ranged'}],
+    monk:[{id:'r_chimend',n:'Chi Mend',k:'heal',chi:1,pw:1.6,mp:5,t:'ally',lv:7,d:'Pushes chi into an ally to close their wounds.',r:'healer'},
+      {id:'r_harmony',n:'Harmony Meditation',k:'status',t:'allyAll',mp:10,lv:14,fx:[['focus',1]],heal:.1,d:'The line breathes with him: Focus for the vanguard and a 10% heal.',r:'buffer'},
+      {id:'r_lotus',n:'Lotus Circle',k:'heal',chi:1,pw:1.1,mp:12,t:'allyAll',lv:21,d:'A shared meditation that heals the vanguard.',r:'healer'}],
+    mage:[{id:'r_snare',n:'Time Snare',k:'status',t:'all',mp:10,lv:16,fx:[['slow',.6],['weaken',.25]],d:'Thickens time around every foe. Likely Slows, may Weaken.',r:'debuffer'}],
+    healer:[{id:'r_bless',n:'Blessing',k:'status',t:'ally',mp:6,lv:10,fx:[['might',1],['regen',1]],d:'A blessing on one ally: Might and Regen.',r:'buffer'},
+      {id:'r_aegis',n:'Holy Aegis',k:'status',t:'allyAll',mp:14,lv:17,fx:[['bulwark',1]],d:'A dome of light: Bulwark for the vanguard.',r:'buffer'}],
+    bard:[{id:'r_anthem',n:'Anthem of Valor',k:'status',t:'allyAll',mp:16,lv:14,fx:[['might',1],['haste',1]],d:'The battle anthem: Might and Haste for the vanguard.',r:'buffer'},
+      {id:'r_aria',n:'{n1} Aria',k:'mag',pw:1.9,mp:5,lv:5,el:'e1',d:'A piercing {n1} note aimed at one foe.',r:'magic'},
+      {id:'r_ballad',n:'Healing Ballad',k:'heal',pw:2.1,mp:6,t:'ally',lv:8,d:'A slow ballad that mends one ally.',r:'healer'},
+      {id:'r_chorus',n:'Restoring Chorus',k:'heal',pw:1.35,mp:12,t:'allyAll',lv:18,fx:[['regen',1]],d:'The whole line sings along: heals the vanguard and grants Regen.',r:'healer'},
+      {id:'r_storm',n:'{n1} Storm Song',k:'mag',pw:2.5,mp:14,cost:1.2,lv:26,el:'e1',d:'The song rises into a {n1} storm on one foe. Slow recovery.',r:'magic'}],
+    sniper:[{id:'r_hobble',n:'Hobbling Bolt',k:'phys',pw:1,mp:6,lv:14,dl:'ranged',fx:[['slow',.8],['weaken',.6]],d:'A bolt to the leg. Likely Slows, may Weaken.',r:'debuffer'},
+      {id:'r_flash',n:'Flash Bolt',k:'phys',pw:.9,mp:11,t:'all',lv:20,dl:'ranged',fx:[['blind',.7],['slow',.4]],d:'A bolt that bursts into light over every foe. May Blind and Slow.',r:'debuffer'}],
+    druid:[{id:'r_tangle',n:'Tangleroot',k:'status',t:'all',mp:9,lv:12,fx:[['root',.7],['slow',.6]],d:'Roots burst up under every foe. May Root and Slow.',r:'debuffer'},
+      {id:'r_sap',n:'Healing Sap',k:'heal',chi:1,pw:1.9,mp:6,t:'ally',lv:7,d:'Old tree sap on a wound.',r:'healer'}],
+    archmage:[{id:'r_frostmail',n:'Frost Mail',k:'status',t:'allyAll',mp:12,lv:18,fx:[['bulwark',1]],heal:.1,d:'A skin of rime for the vanguard: Bulwark and a 10% heal.',r:'buffer'}],
+    chronicler:[{id:'r_draft',n:'Corrected Draft',k:'heal',pw:1.15,mp:12,t:'allyAll',lv:18,d:'Rewrites the last page: heals the vanguard.',r:'healer'}]},
+  // adj: changes to existing class skills (by class and skill id), merged in when the list is built
+  adj:{chronicler:{annotate:{fx:[['break',.9],['weaken',.5]],rl:'debuffer'},redact:{fx:[['blind',.7]]}},bard:{tune1:{pw:1},tune2:{pw:1}},druid:{wildmend:{chi:1,pw:1.15}}},
+  charms:[{id:'c_rl_mend',n:"Mender's Locket",st:{mag:8,res:6},attr:{fth:3},perk:{healUp:.12},d:'+12% healing',price:520},
+    {id:'c_rl_song',n:'Spellstring Charm',st:{mag:12,mp:30},perk:{spellPow:.08},d:'+8% spell damage',price:520},
+    {id:'c_rl_quiv',n:'Kunai Pouch',st:{atk:8,spd:4},attr:{dex:3},perk:{rngPow:.1},d:'+10% Ranged damage',price:520},
+    {id:'c_rl_herald',n:"Herald's Horn",st:{hp:60,res:6},perk:{buffT:1},d:'Buffs you give last 1 turn longer',price:560},
+    {id:'c_rl_hex',n:"Hexer's Eye",st:{mag:6},attr:{luk:4},perk:{status:1.2,debT:1},d:'Debuffs land 20% more often and last 1 turn longer',price:560},
+    {id:'c_rl_ward',n:"Warden's Badge",st:{hp:110,def:10},perk:{tauntDef:.15},d:'Takes 15% less while Taunting',price:560}],
+  shopFrom:1};
 
 // ==== 6. World: encounters, chance meetings, travel items, day and night, weather tables, factions, map generation ====
 // encounters on the road
 // ENC_RATE: chance per step to meet a random battle, by the Settings choice. CE_*: chance meetings with a wayfarer (chance.js), about 1 in 170 steps after a 30 step gap, 2 per area at most
-const ENC_RATE={off:0,low:.05,normal:.095,high:.14};// v0.4.3: about 13% fewer at every setting
-const ENC_MIN_STEPS=8;// v0.4.3: at least 8 tiles walked between random battles
+const ENC_RATE={off:0,low:.07,normal:.13,high:.18};// v0.8.2: about 30% more on every setting (was .05/.095/.14) for the 4.5 to 6 hour journey (docs/v080-roles-balance.md)
+const ENC_MIN_STEPS=7;// v0.8.2: at least 7 tiles walked between random battles (was 8)
 // chance meetings with a wayfarer (chance.js): about 1 in 170 steps after a 30 step quiet gap, at most 2 per area
 const CE_ODDS=1/170, CE_GAP=30, CE_AREA_CAP=2;
 // TOWN_LANE: every town gate gets a clear approach lane at least this many tiles wide to the main road
@@ -2293,7 +2353,7 @@ const TWISTS={on:true,
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.8.3";const APP_BUILD="87982c4cbb2f";
+const APP_VER="0.8.4";const APP_BUILD="ec503b2a2bed";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2301,6 +2361,7 @@ const APP_VER="0.8.3";const APP_BUILD="87982c4cbb2f";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.8.4',['Secondary roles: every class now has a main role and one or two backup roles, with new skills and gear for them. Bards sing a magic damage song and stronger healing songs, so they can stand in for a mage or healer; Thieves throw stars and kunai that hit flyers; Monks meditate to heal and buff; Warriors can taunt and debuff; Knights rally the party; Mages and Archers hinder foes; Healers bless. New role gear: war hammers, war standards, throwing stars and kunai, prayer beads, wands, censers and lyres, plus six role charms. Build Party counts backup tanks and healers as half a role. Pacing: a bit more encounters and XP and the first Scourges eased, so a first journey ends around level 40 in about 4.5 to 5.5 hours.']],
  ['Beta v0.8.3',['Chests open again: the lid pops with a glint, the open chest stays while you read what you found, then it fades away. The chest and item sounds are softer. The Equipment tab lists only your party (gear your reserves with Equip best: reserves or from their sheet).']],
  ['Beta v0.8.2',['Personal quest rivals whose wayfarer is not in your six now show see through on the map, with a hollow star on the minimap. You can walk through them and they will not fight; talk to one to learn who it waits for (with their portrait). Bring that hero into your party and it stands solid and fights as before. The Quests tab, Guild Hall and What next? say who is needed. Leaving the rewards screen no longer plays a sound (the victory theme is enough).']],
  ['Beta v0.8.1',['Best Party is now Build Party, since it offers several parties. The Training team now takes your lowest level heroes, and only brings a higher one when nobody lower can be the tank or healer (and then the lowest one who can). Areas with flying foes now bring a real ranged attacker, an Archer first: lances and spells only half answer flyers.']],
@@ -3127,7 +3188,15 @@ const WN={blade:['Iron Blade','Steel Brand','Mythril Saber','Dawnsteel Blade','S
  qstaff:['Oak Quarterstaff','Ash Quarterstaff','Mythril Bo','Dawnwood Staff','Stormwood Bo','Starwood Staff'],
  lute:['Pine Lute','Maple Lute','Silverstring Lute','Tidesong Lute','Skyglass Lute','Hollow Star Lute'],
  harp:['Reed Harp','Silver Harp','Sage Harp','Tidesong Harp','Skyglass Harp','Hollow Star Harp'],
- flute:['Bone Flute','Silver Flute','Sage Pipe','Tidesong Flute','Skyglass Flute','Hollow Star Flute']};
+ flute:['Bone Flute','Silver Flute','Sage Pipe','Tidesong Flute','Skyglass Flute','Hollow Star Flute'],
+ // v0.8.2 role weapons (roles.js): each leans a class into its secondary role
+ thrown:['Iron Shuriken','Steel Kunai','Viper Stars','Rime Kunai','Storm Shuriken','Umbra Kunai'],
+ beads:['Wooden Beads','Jade Beads','Pilgrim Beads','Dawn Rosary','Storm Rosary','Starlit Rosary'],
+ wand:['Ash Wand','Bone Wand','Hexwood Wand','Rime Wand','Stormglass Wand','Void Wand'],
+ censer:['Clay Censer','Brass Censer','Silver Censer','Dawn Censer','Storm Censer','Star Censer'],
+ warhammer:['Iron Warhammer','Steel Warhammer','Mythril Warhammer','Dawnsteel Warhammer','Storm Warhammer','Star Warhammer'],
+ standard:['Rag Standard','Guild Standard','Mythril Standard','Dawn Standard','Storm Standard','Star Standard'],
+ lyre:['Pine Lyre','Silver Lyre','Sage Lyre','Tidesong Lyre','Skyglass Lyre','Hollow Star Lyre']};
 const AN={mail:['Leather Vest','Chain Mail','Mythril Mail','Dawnplate','Stormplate','Starplate'],
  robe:['Linen Robe','Silk Robe','Mage Vestment','Rime Robe','Skyweave Robe','Void Robe'],
  vest:['Hide Jerkin','Scout Garb','Windrunner Garb','Frostrunner Garb','Gale Garb','Twilight Garb']};
@@ -3153,6 +3222,14 @@ for(let t=0;t<6;t++){
   addGear('w_lute_'+t,{n:WN.lute[t],slot:'w',tier:t,mag:Math.round(WP[t]*.9),res:Math.round(WP[t]*.3),mp:Math.round(WP[t]*.7),price:PRICE[t]});
   addGear('w_harp_'+t,{n:WN.harp[t],slot:'w',tier:t,mag:Math.round(WP[t]*.86),res:Math.round(WP[t]*.4),mp:Math.round(WP[t]*.8),price:PRICE[t]});
   addGear('w_flute_'+t,{n:WN.flute[t],slot:'w',tier:t,mag:Math.round(WP[t]*.82),res:Math.round(WP[t]*.25),mp:Math.round(WP[t]*.6),spd:1+t*1.2,price:PRICE[t]});
+  // v0.8.2 role weapons: the same power budget, spent toward a secondary role (perks in WPERK)
+  addGear('w_thrown_'+t,{n:WN.thrown[t],slot:'w',tier:t,atk:Math.round(WP[t]*.8),spd:2+t*1.4,price:PRICE[t]});
+  addGear('w_beads_'+t,{n:WN.beads[t],slot:'w',tier:t,atk:Math.round(WP[t]*.7),mag:Math.round(WP[t]*.55),res:Math.round(WP[t]*.2),attr:{fth:1+t},price:PRICE[t]});
+  addGear('w_wand_'+t,{n:WN.wand[t],slot:'w',tier:t,mag:Math.round(WP[t]*.95),mp:Math.round(WP[t]*.5),spd:1+t*.6,price:PRICE[t]});
+  addGear('w_censer_'+t,{n:WN.censer[t],slot:'w',tier:t,mag:Math.round(WP[t]*.88),res:Math.round(WP[t]*.35),mp:Math.round(WP[t]*.6),price:PRICE[t]});
+  addGear('w_warhammer_'+t,{n:WN.warhammer[t],slot:'w',tier:t,atk:Math.round(WP[t]*.98),def:Math.round(WP[t]*.12),price:PRICE[t]});
+  addGear('w_standard_'+t,{n:WN.standard[t],slot:'w',tier:t,atk:Math.round(WP[t]*.88),def:Math.round(WP[t]*.15),res:Math.round(WP[t]*.15),price:PRICE[t]});
+  addGear('w_lyre_'+t,{n:WN.lyre[t],slot:'w',tier:t,mag:Math.round(WP[t]*1.02),mp:Math.round(WP[t]*.5),res:Math.round(WP[t]*.2),price:PRICE[t]});
   addGear('a_mail_'+t,{n:AN.mail[t],slot:'a',tier:t,def:Math.round(AP[t]*ARM_K),res:Math.round(AP[t]*ARM_K*.4),hp:AP[t]*3,spd:-(1+Math.round(t*.4)),mp:-Math.round(AP[t]*.3),price:Math.round(PRICE[t]*.9)});
   addGear('a_robe_'+t,{n:AN.robe[t],slot:'a',tier:t,res:Math.round(AP[t]*ARM_K),def:Math.round(AP[t]*ARM_K*.45),mag:Math.round(AP[t]*.4),mp:Math.round(AP[t]*1.2),spd:1+Math.round(t*.8),attr:{fth:1+t},price:Math.round(PRICE[t]*.9)});
   addGear('a_vest_'+t,{n:AN.vest[t],slot:'a',tier:t,def:Math.round(AP[t]*ARM_K*.72),res:Math.round(AP[t]*ARM_K*.72),spd:1+t,price:Math.round(PRICE[t]*.9)});
@@ -3205,9 +3282,9 @@ function stickGear(){const P=stickPower();return {id:'w_stick',n:'Stick: For the
 function gearDesc(id){const g=typeof id==='string'?gearOf(id):id;if(!g)return '';const p=[];ST.forEach(s=>{if(g[s])p.push((g[s]>0?'+':'')+Math.round(g[s])+' '+STN[s]);});if(g.slot==='w'&&g.fam&&WT_NAME[g.fam])p.unshift(WT_NAME[g.fam]);if(g.slot==='a'&&g.weight)p.unshift(ARM_NAME[g.weight]);if(g.fam&&WPERK[g.fam]&&g.fam!=='staff')p.push(WPERK[g.fam].p);if(g.attr)Object.keys(g.attr).forEach(k=>p.push('+'+g.attr[k]+' '+k.toUpperCase()));if(g.el)p.push('+15% '+EL[g.el]+' damage, 15% less taken');if(g.immune)p.push('Halves ailment chance');if(g.mpEff)p.push(WPERK.staff.p);if(g.stick){const P=g.stickP;p.push(`${P.name} glow: ${P.n}/${P.all} Bestiary entries`+(P.next?`, grows again at ${P.next}`:', fully grown'));}return p.join(', ');}
 // ----- v0.3.5 weapon types, weapon perks and armor weights -----
 Object.keys(GEAR).forEach(id=>{let m=id.match(/^w_([a-z]+)_\d$/);if(m){GEAR[id].fam=m[1];GEAR[id].wt=m[1];}m=id.match(/^a_(mail|robe|vest)_\d$/);if(m){GEAR[id].fam=m[1];GEAR[id].weight={mail:'heavy',vest:'medium',robe:'light'}[m[1]];}});
-const WT_NAME={blade:'Sword',axe:'Axe',greatsword:'Greatsword',lance:'Lance',mace:'Mace',staff:'Staff',tome:'Tome',dagger:'Dagger',shortsword:'Short sword',bow:'Bow',longbow:'Longbow',crossbow:'Crossbow',knuckles:'Knuckles',claws:'Claws',qstaff:'Quarterstaff',lute:'Lute',harp:'Harp',flute:'Flute'};
+const WT_NAME={blade:'Sword',axe:'Axe',greatsword:'Greatsword',lance:'Lance',mace:'Mace',staff:'Staff',tome:'Tome',dagger:'Dagger',shortsword:'Short sword',bow:'Bow',longbow:'Longbow',crossbow:'Crossbow',knuckles:'Knuckles',claws:'Claws',qstaff:'Quarterstaff',lute:'Lute',harp:'Harp',flute:'Flute',thrown:'Throwing stars',beads:'Prayer beads',wand:'Wand',censer:'Censer',warhammer:'Warhammer',standard:'War standard',lyre:'Lyre'};
 // which weapon types a class may wield, and which armor weight it may wear
-const CLS_WPN={warrior:['blade','axe','greatsword'],knight:['blade','lance','mace'],mage:['staff','tome'],healer:['staff','tome','mace'],thief:['dagger','shortsword'],archer:['bow','longbow','crossbow'],monk:['knuckles','claws','qstaff'],bard:['lute','harp','flute'],
+const CLS_WPN={warrior:['blade','axe','greatsword','warhammer'],knight:['blade','lance','mace','standard'],mage:['staff','tome','wand'],healer:['staff','tome','mace','censer'],thief:['dagger','shortsword','thrown'],archer:['bow','longbow','crossbow'],monk:['knuckles','claws','qstaff','beads'],bard:['lute','harp','flute','lyre'],
   sniper:['crossbow','bow'],druid:['bow','longbow'],archmage:['staff','tome'],chronicler:['tome','staff']};
 const CLS_ARM={warrior:'heavy',knight:'heavy',mage:'light',healer:'light',bard:'light',chronicler:'light',archmage:'light',thief:'medium',archer:'medium',monk:'medium',sniper:'medium',druid:'medium'};
 const ARM_NAME={light:'Light armor',medium:'Medium armor',heavy:'Heavy armor'};
@@ -3231,8 +3308,16 @@ const WPERK={
  qstaff:{p:'Reach: +5% accuracy, +6% evasion',s:'Quarterstaff: +5% accuracy',acc:.05,eva:.06},
  lute:{p:'Discord: debuffs land 25% more often and last 1 turn longer',s:'Lute: debuffs +25% chance, +1 turn',status:1.25,debT:1},
  harp:{p:'Soothe: +10% healing, buffs last 1 turn longer',s:'Harp: +10% healing, buffs +1 turn',healUp:.10,buffT:1},
- flute:{p:'Tempo: actions take 5% less time, buffs last 1 turn longer',s:'Flute: faster actions, buffs +1 turn',tempo:.95,buffT:1}};
-const FAM_MAT_V35={axe:['ore','fang'],greatsword:['ore','scale'],lance:['ore','hide'],mace:['ore','grit'],shortsword:['ore','fang'],longbow:['wood','hide'],knuckles:['ore','hide'],claws:['ore','fang'],qstaff:['wood','grit'],lute:['wood','ichor'],harp:['wood','ichor'],flute:['wood','bluecap']};
+ flute:{p:'Tempo: actions take 5% less time, buffs last 1 turn longer',s:'Flute: faster actions, buffs +1 turn',tempo:.95,buffT:1},
+ // v0.8.2 role weapons
+ thrown:{p:'Thrown: basic attacks are Ranged (flying foes cannot weave away), +5% critical chance',s:'Throwing stars: Ranged attacks, +5% crit',crit:.05},
+ beads:{p:'Prayer: +15% healing, buffs you give last 1 turn longer',s:'Prayer beads: +15% healing, buffs +1 turn',healUp:.15,buffT:1},
+ wand:{p:'Hex: debuffs land 30% more often and last 1 turn longer',s:'Wand: debuffs +30% chance, +1 turn',status:1.3,debT:1},
+ censer:{p:'Incense: buffs you give last 1 turn longer, +5% healing',s:'Censer: buffs +1 turn, +5% healing',buffT:1,healUp:.05},
+ warhammer:{p:'Sunder: debuffs land 25% more often and last 1 turn longer',s:'Warhammer: debuffs +25% chance, +1 turn',status:1.25,debT:1},
+ standard:{p:'Rally: buffs you give last 1 turn longer, +4% accuracy',s:'War standard: buffs +1 turn',buffT:1,acc:.04},
+ lyre:{p:'Resonance: +10% spell damage',s:'Lyre: +10% spell damage',spellPow:.10}};
+const FAM_MAT_V35={axe:['ore','fang'],greatsword:['ore','scale'],lance:['ore','hide'],mace:['ore','grit'],shortsword:['ore','fang'],longbow:['wood','hide'],knuckles:['ore','hide'],claws:['ore','fang'],qstaff:['wood','grit'],lute:['wood','ichor'],harp:['wood','ichor'],flute:['wood','bluecap'],thrown:['ore','fang'],beads:['wood','grit'],wand:['wood','ichor'],censer:['ore','ichor'],warhammer:['ore','grit'],standard:['ore','hide'],lyre:['wood','ichor']};
 // loot: a random weapon or armor base (w_axe, a_mail ...) that somebody in the current roster can actually use
 function lootBase(rnd){const R=rnd||(()=>Math.random()),cls=new Set();try{Object.values(G.roster).forEach(c=>{if(TPL[c.id])cls.add(TPL[c.id].cls);});}catch(e){}
   const w=new Set(),a=new Set();(cls.size?[...cls]:Object.keys(CLS_WPN)).forEach(k=>{(CLS_WPN[k]||[]).forEach(f=>w.add('w_'+f));a.add('a_'+ARM_FAM[CLS_ARM[k]||'medium']);});
@@ -3334,7 +3419,7 @@ const GUARDIANS={
    phase:{at:.5,say:'Varroth wraps himself in magma armor!',self:[['ward',1],['might',1]]},intro:'Cinderking Varroth rises from the slag, crowned in cooling iron.'},
  hoarwyrm:{n:'Hoarwyrm',art:'hoarwyrm',el:['ice','wind'],hp:5.2,atk:1.2,def:1.2,mag:1.2,res:1.2,spd:1.05,sk:[['Glacial Bite','ice',1.7,'one','phys',[['bleed',.5]]],['Whiteout','ice',1.15,'all','mag',[['slow',.45]]],['Frost Breath','ice',1.3,'one','mag',[['slow',1]]]],
    phase:{at:.5,say:'The Hoarwyrm summons a blizzard!',party:[['slow',.8]]},intro:'The Hoarwyrm unfolds from the ice, wings like sheets of glass.'},
- ysolde:{n:'Stormcaller Ysolde',art:'ysolde',el:['lightning','light'],hp:5.2,atk:1,def:1.1,mag:1.35,res:1.4,spd:1.15,sk:[['Judgement Bolt','lightning',1.7,'one','mag',[['stun',.22]]],['Thunderhead','lightning',1.2,'all','mag'],['Radiant Veil','light',0,'self','buff',[['ward',1]]]],
+ ysolde:{n:'Stormcaller Ysolde',art:'ysolde',el:['lightning','light'],hp:5.2,atk:1,def:1.1,mag:1.25,res:1.4,spd:1.08,sk:[['Judgement Bolt','lightning',1.7,'one','mag',[['stun',.22]]],['Thunderhead','lightning',1.2,'all','mag'],['Radiant Veil','light',0,'self','buff',[['ward',1]]]],
    phase:{at:.5,say:'Ysolde calls a Stormling to her side!',summon:'stormling'},intro:'Stormcaller Ysolde hangs in the air, eyes white with lightning, the beacon bleeding shadow behind her.'},
  bonecolossus:{n:'Bone Colossus',art:'bonecolossus',el:['shadow','earth'],hp:5.8,atk:1.3,def:1.35,mag:.9,res:1,spd:.85,sk:[['Ossuary Slam','earth',1.7,'one','phys',[['stun',.2]]],['Grave Dust','shadow',1.1,'all','mag',[['poison',.4]]]],
    phase:{at:.4,say:'The Colossus pulls its bones back together!',heal:.18},intro:'Bones grind together in the dark: a Colossus built from every warrior the barrow ever took.'},
@@ -3342,15 +3427,17 @@ const GUARDIANS={
    phase:{at:.5,say:'The Queen calls her brood!',summon:'gustimp'},intro:'Chitin clicks overhead. The Queen Mantis drops from the ceiling, blades raised in prayer.'},
  gloomcap:{n:'Gloomcap Matriarch',art:'gloomcap',el:['shadow','water'],hp:5.6,atk:1,def:1.15,mag:1.3,res:1.2,spd:.9,sk:[['Spore Burst','shadow',1.1,'all','mag',[['poison',.6]]],['Drowning Mold','water',1.5,'one','mag',[['weaken',.5]]]],
    phase:{at:.5,say:'The Matriarch fills the air with choking spores!',party:[['poison',.7],['blind',.4]]},intro:'A towering mushroom breathes out a sigh of glowing spores. Something old and patient lives in its gills.'},
- ironsentinel:{n:'Iron Sentinel',art:'ironsentinel',el:['lightning','fire'],hp:5.6,atk:1.3,def:1.45,mag:1.1,res:.95,spd:.9,sk:[['Piston Fist','fire',1.6,'one','phys',[['burn',.4]]],['Arc Discharge','lightning',1.15,'all','mag',[['stun',.15]]]],
+ ironsentinel:{n:'Iron Sentinel',art:'ironsentinel',el:['lightning','fire'],hp:5.6,atk:1.3,def:1.35,mag:1.1,res:.95,spd:.9,sk:[['Piston Fist','fire',1.6,'one','phys',[['burn',.4]]],['Arc Discharge','lightning',1.15,'all','mag',[['stun',.15]]]],
    phase:{at:.5,say:'OVERCLOCK. The Sentinel vents steam and speeds up!',self:[['haste',1],['might',1]],selfBad:[['break',1]]},intro:'Gears turn in the walls. An Iron Sentinel built by a forgotten guild clanks awake, its furnace heart blazing.'},
- siren:{n:'Siren of the Deep',art:'siren',el:['water','light'],hp:5.2,atk:.95,def:1.05,mag:1.35,res:1.3,spd:1.1,sk:[['Drowning Song','water',1.2,'all','mag',[['slow',.4]]],['Lure','light',1.5,'one','mag',[['stun',.3]]]],
+ siren:{n:'Siren of the Deep',art:'siren',el:['water','light'],hp:5.2,atk:.95,def:1.05,mag:1.28,res:1.3,spd:1.1,sk:[['Drowning Song','water',1.2,'all','mag',[['slow',.4]]],['Lure','light',1.5,'one','mag',[['stun',.3]]]],
    phase:{at:.5,say:'The Siren sings a healing hymn to herself!',self:[['regen',1]],heal:.1},intro:'A voice hums under the water, impossibly sweet. The Siren of the Deep rises, pearl-eyed.'},
  ashwyvern:{n:'Ashen Wyvern',art:'ashwyvern',el:['fire','wind'],hp:5.2,atk:1.3,def:1.1,mag:1.15,res:1,spd:1.15,sk:[['Cinder Dive','fire',1.6,'one','phys',[['burn',.5]]],['Ash Gale','wind',1.1,'all','mag',[['blind',.35]]]],
    phase:{at:.5,say:'The Wyvern takes to the air!',self:[['haste',1],['bulwark',1]]},intro:'Ash rains from the rafters. An Ashen Wyvern lands on the beacon and screams.'},
- frostlich:{n:'Frost Lich',art:'frostlich',el:['ice','shadow'],hp:5,atk:.9,def:1,mag:1.4,res:1.35,spd:1,sk:[['Soul Frost','ice',1.6,'one','mag',[['slow',.6]]],['Grave Chill','shadow',1.15,'all','mag',[['weaken',.4]]]],
-   phase:{at:.5,say:'The Lich hides behind its phylactery ward!',self:[['ward',1]],wardEvery:3},intro:'Frost crawls up the walls in the shape of letters. The Frost Lich turns a page of its book and smiles.'}
+ frostlich:{n:'Frost Lich',art:'frostlich',el:['ice','shadow'],hp:5,atk:.9,def:1,mag:1.25,res:1.35,spd:1,sk:[['Soul Frost','ice',1.6,'one','mag',[['slow',.6]]],['Grave Chill','shadow',1.15,'all','mag',[['weaken',.4]]]],
+   phase:{at:.5,say:'The Lich hides behind its phylactery ward!',self:[['ward',1]],wardEvery:4},intro:'Frost crawls up the walls in the shape of letters. The Frost Lich turns a page of its book and smiles.'}
 };
+// v0.8.2: the Frost Lich (mag 1.4, ward every 3 turns), Ysolde (mag 1.35, spd 1.15), the Iron Sentinel (def 1.45) and the Siren (mag 1.35)
+// were eased: in fullsim.js bossgrid they won 0 to 40% where the other Scourges won 50 to 90% (docs/v080-roles-balance.md)
 const FINALS={
  dimmer:{n:'The Dimmer',art:'dimmer',el:['shadow','light'],hp:6.2,atk:1.25,def:1.3,mag:1.35,res:1.4,spd:1.1,sk:[['Hollow Hand','shadow',1.8,'one','phys',[['weaken',.5]]],['Dimming','shadow',1.25,'all','mag',[['blind',.3]]],['Starfall','light',1.3,'all','mag',[['break',.4]]]],
    phase:{at:.5,say:'The Dimmer swallows the light around it!',self:[['might',1],['bulwark',1]],party:[['blind',.5]]},intro:'The Dimmer waits in the black: a tall hollow in the shape of a figure, wearing every light it has swallowed.'},
@@ -12281,14 +12368,15 @@ const tyOf=art=>(MON_TY[art]||BOSS_TY[art]||[]).slice();
 // ---- delivery ----
 // Basic attacks follow the weapon in hand; skills follow the class (with a few per skill exceptions).
 const WT_DL={blade:'slash',axe:'slash',greatsword:'slash',lance:'piercing',mace:'blunt',staff:'blunt',tome:'blunt',dagger:'piercing',shortsword:'slash',
-  bow:'ranged',longbow:'ranged',crossbow:'ranged',knuckles:'blunt',claws:'slash',qstaff:'blunt',lute:'blunt',harp:'blunt',flute:'blunt'};
+  bow:'ranged',longbow:'ranged',crossbow:'ranged',knuckles:'blunt',claws:'slash',qstaff:'blunt',lute:'blunt',harp:'blunt',flute:'blunt',
+  thrown:'ranged',beads:'blunt',wand:'blunt',censer:'blunt',warhammer:'blunt',standard:'piercing',lyre:'blunt'};// v0.8.2 role weapons: thrown stars are Ranged
 const DL_CLS={warrior:'slash',knight:'blunt',thief:'slash',archer:'ranged',sniper:'ranged',druid:'slash',monk:'blunt',mage:'blunt',healer:'blunt',bard:'blunt',archmage:'blunt',chronicler:'blunt'};
 const DL_OVR={
   warrior:{rend:'piercing',titan:'blunt',quake:'blunt',laststand:'blunt'},
   knight:{lance1:'piercing',lance2:'piercing',sburst:'piercing',holylance:'piercing',judge:'blunt',consec:'blunt',consground:'blunt',bash:'blunt'},
   thief:{stab:'piercing',steal:'piercing',shiv1:'piercing',assn:'piercing',shadowstep:'piercing',lotus:'piercing',dart:'ranged',dart2:'ranged',fan:'ranged'},
   monk:{chi1:'ranged',fists:'piercing',ascend:'blunt'},
-  druid:{hawk:'piercing'},
+  druid:{hawk:'piercing',s1a:'ranged',s1b:'ranged',s3a:'ranged',wildmark:'ranged'},// v0.8.2: his arrows are Ranged
   archer:{}
 };
 function dlFor(cls,s){
@@ -13308,6 +13396,98 @@ function sigReport(){
   rows.forEach(r=>{if(r.s&&gen.has(r.s.n))dups.push('collides with a generic skill: '+r.s.n);});
   return {count:rows.filter(r=>r.s).length,heroes:ids.length,dups};
 }
+
+// ===== roles.js (v0.8.2): class roles: a primary and secondary roles per class, the skills and charms behind them, and roleOut =====
+// Tunables and the skill table: ROLES in config.js (section 5). Weapon families that lean into a secondary role live in items.js
+// (thrown, beads, wand, censer, warhammer, standard, lyre), their icons in icons.js, their delivery in archetype.js (thrown is Ranged).
+// The new skills join each class list at fixed levels after the respacer has run, so no older skill moves and an old save learns
+// them on load from its level (skillKnown reads the level). The Daily Trial sees them too (its heroes are level 26): see the doc.
+// Party scoring: heroRoleSet(c) returns {cls, primary, secondary:[...], has:{role:true}, out:{role:share}} for party3.js.
+
+// ---- skills ----
+function rlSkills(t){const L=(ROLES.sk[t.cls]||[]),e1=t.el[0],n1=EL[e1]||'';
+  return L.map(o=>{const x=Object.assign({cost:1,hits:1,t:'one',mp:0,el:null,fixed:1},JSON.parse(JSON.stringify(o)));
+    if(x.el==='e1')x.el=e1;x.n=x.n.replace(/\{n1\}/g,n1);x.d=x.d.replace(/\{n1\}/g,n1);x.lv0=x.lv;x.rl=x.r;delete x.r;
+    if(!x.dl){const d=dlFor(t.cls,x);if(d)x.dl=d;}if(x.rl&&ROLES.names[x.rl])x.d+=' '+ROLES.names[x.rl]+' role.';return x;});}
+{const cs2=classSkills;classSkills=function(t){const L=cs2.apply(this,arguments);
+  if(!L||L._rl||!t||t.mon||!ROLES.sk[t.cls])return L;L._rl=1;
+  try{const A=(ROLES.adj||{})[t.cls]||{};L.forEach(s=>{if(A[s.id])Object.assign(s,JSON.parse(JSON.stringify(A[s.id])));});
+    const have=new Set(L.map(s=>s.id));rlSkills(t).forEach(s=>{if(!have.has(s.id))L.push(s);});L.sort((a,b)=>a.lv-b.lv||(a.lv0||a.lv)-(b.lv0||b.lv));}catch(e){}
+  return L;};}
+
+// Monk chi heals (chi:1) draw on the better of healing power and ROLES.w.chiK x attack
+const rlHealP=(a,sk)=>{const h=a.S.healP||a.S.mag;return sk&&sk.chi?Math.max(h,ROLES.w.chiK*a.S.atk):h;};
+{const pf8=perform;perform=function(a,sk){if(!(sk&&sk.chi&&a&&a.S))return pf8.apply(this,arguments);const h0=a.S.healP;a.S.healP=rlHealP(a,sk);
+  try{return pf8.apply(this,arguments);}finally{a.S.healP=h0;}};}
+
+// ---- role charms ----
+ROLES.charms.forEach(c=>addGear(c.id,Object.assign({n:c.n,slot:'c',tier:2,price:c.price,rl:c.perk,rlD:c.d},c.st,c.attr?{attr:c.attr}:{})));
+{const ss0=shopStock;shopStock=function(tab){const o=ss0.apply(this,arguments);try{if(tab==='charms'&&G&&!G.daily&&G.stage>=ROLES.shopFrom)ROLES.charms.forEach(c=>{if(!o.includes(c.id))o.push(c.id);});}catch(e){}return o;};}
+{const gd1=gearDesc;gearDesc=function(id){const s=gd1.apply(this,arguments),g=typeof id==='string'?gearOf(id):id;return g&&g.rlD?s+(s?', ':'')+g.rlD:s;};}
+// charm perks join the weapon perks (never in the Daily Trial, which ignores perks)
+{const cs0=calcStats;calcStats=function(c){const S=cs0.apply(this,arguments);try{if(G&&G.daily)return S;
+  EQSL.forEach(sl=>{const g=gearOf(c.eq&&c.eq[sl]);const P=g&&g.rl;if(!P)return;
+    ['healUp','spellPow','buffT','debT','rngPow','tauntDef'].forEach(k=>{if(P[k])S[k]=(S[k]||0)+P[k];});if(P.status)S.status=(S.status||1)*P.status;});}catch(e){}return S;};}
+// spellPow is read by calcDamage only when a weapon is held (S.wp), which every hero has; Kunai Pouch and Warden's Badge need their own hook
+{const cd3=calcDamage;calcDamage=function(a,sk,t){const r=cd3.apply(this,arguments);try{if(!r||!r.dmg||!a||!t||(G&&G.daily))return r;let m=1;
+  if(a.side==='p'&&a.S&&a.S.rngPow&&deliveryOf(a,sk)==='ranged')m*=1+a.S.rngPow;
+  if(t.side==='p'&&t.S&&t.S.tauntDef&&has(t,'taunt'))m*=1-t.S.tauntDef;
+  if(m!==1)r.dmg=Math.max(1,Math.round(r.dmg*m));}catch(e){}return r;};}
+
+// ---- measuring a role (deterministic: no RNG draws, no battle state) ----
+// roleOut(c,role): what hero c delivers in that role, per action, from its known skills (see ROLES in config.js for the weights).
+function rlDummy(lv,ty){const S={mhp:9999,def:6+1.8*lv,res:6+1.8*lv,atk:(9+2.7*lv)*FOE_POW,mag:(9+2.7*lv)*FOE_POW,spd:8,eva:0,elBoost:{},elRes:{},crit:0,critDmg:1.5,tempo:1};
+  return {side:'e',name:'Dummy',base:'__rl_dummy',el:['__none'],lv,S,hp:9999,st:{},ty:ty||[]};}
+function rlDmg(c,sk,t){const s=Object.assign({},sk,{el:null,fx:null,execute:0,afflicted:0});const r0=RNG,b0=B;let d=0;
+  try{RNG=()=>.5;B=null;d=calcDamage(c,s,t).dmg;}finally{RNG=r0;B=b0;}return d*(sk.hits||1);}
+const rlTg=sk=>sk.t==='all'||sk.t==='allyAll'||sk.t==='rand'?ROLES.w.area:sk.t==='self'?ROLES.w.self:1;
+function rlKit(c){return known(c).filter(s=>!s.bond&&!s.limit&&!s.cap&&!/^sg_/.test(s.id)).concat([ATTACK]);}
+function roleOut(c,role){const K=rlKit(c),W=ROLES.w,S=c.S,V=[];const top=v=>{if(v>0)V.push(v);};
+  if(role==='phys'||role==='magic'||role==='ranged'){const t=rlDummy(c.lv,role==='ranged'?['flying']:[]);
+    K.forEach(s=>{if(!(s.k==='phys'||s.k==='mag'))return;if(role==='phys'&&(s.k!=='phys'||(s.id!=='attack'&&deliveryOf(c,s)==='ranged')))return;if(role==='magic'&&s.k!=='mag')return;
+      if(role==='ranged'&&deliveryOf(c,s)!=='ranged')return;top(rlDmg(c,s,t)*(s.t==='rand'?1:rlTg(s))/(s.cost||1));});}
+  else if(role==='healer'){K.forEach(s=>{if(s.k!=='heal')return;top(s.pw*rlHealP(c,s)*(1+(S.healUp||0))*rlTg(s)/(s.cost||1));});}
+  else if(role==='buffer'){K.forEach(s=>{const fx=s.k==='status'&&s.t!=='one'&&s.t!=='all'?(s.fx||[]):s.k==='heal'?(s.fx||[]):[];const al=(s.allyFx||[]);let v=0;
+      fx.concat(al).forEach(([k])=>{if(STS[k]&&!STS[k].bad&&W.buff[k])v+=W.buff[k]*(STS[k].t+(S.buffT||0))*(al.some(q=>q[0]===k)?W.area:rlTg(s));});
+      if(s.k==='status'&&s.heal)v+=s.heal*10*rlTg(s);top(v/(s.cost||1));});}
+  else if(role==='debuffer'){K.forEach(s=>{let v=0;(s.fx||[]).forEach(([k,ch])=>{if(!STS[k]||!STS[k].bad||!W.debuff[k])return;
+      const m=k==='stun'&&S.stun?S.stun:k==='bleed'&&S.bleed?S.bleed:(S.status||1);v+=Math.min(1,ch*m)*W.debuff[k]*(STS[k].t+(S.debT||0));});
+      if(s.k==='status'||s.k==='phys'||s.k==='mag')top(v*(s.t==='all'?W.area:1)/(s.cost||1));});}
+  else if(role==='tank'){const A=(9+2.7*c.lv)*FOE_POW*W.tankRef,frac=A/(A+S.def);let v=S.mhp/frac;
+    const taunt=K.some(s=>(s.fx||[]).some(q=>q[0]==='taunt')),bw=K.some(s=>s.k==='status'&&(s.t==='self'||s.t==='allyAll')&&(s.fx||[]).some(q=>q[0]==='bulwark'));
+    if(!taunt)v*=W.tauntless;if(bw)v/=.7;return v;}
+  return V.sort((a,b)=>b-a).slice(0,W.top||1).reduce((a,b)=>a+b,0);}
+// a measuring hero: class reference id, level, the class's standard weapon and armor at a tier, points spent by preference, a neutral nature
+// the measuring heroes are plain class templates (no signature skill, no hero quirk) that only exist while rlWith runs
+function rlWith(fn){const add=[];Object.keys(ROLES.cls).forEach(cls=>{const id='_rl_'+cls,r=TPL[ROLES.ref[cls]];if(!r||!CLS[cls]||TPL[id])return;
+    TPL[id]={id,n:CLS[cls].n,cls,el:[r.el[0]],trait:'keen',src:'s',bio:'',look:r.look};add.push(id);});
+  try{return fn();}finally{add.forEach(id=>{delete TPL[id];});}}
+function rlRef(cls,lv,tier,wfam){const id='_rl_'+cls;if(!TPL[id])return null;const f=CF[cls],pr=CLS[cls].pref,pat=[0,1,0,2,0,1],al={},n=Math.floor(lv/2);
+  for(let i=0;i<n;i++){const k=pr[pat[i%6]];al[k]=(al[k]||0)+1;}
+  const c={id,name:TPL[id].n,el:TPL[id].el,side:'p',lv,xp:0,eq:{w:'w_'+(wfam||f[0])+'_'+tier,a:'a_'+f[1]+'_'+tier,c:null},alloc:al,pts:0,st:{},nat:'keen',hp:1,mp:1};
+  c.S=calcStats(c);c.hp=c.S.mhp;c.mp=c.S.mmp;return c;}
+// share of the dedicated class's primary output, for every role of every class (same level and tier)
+function roleTable(lv,tier){return rlWith(()=>roleTable0(lv,tier));}
+function roleTable0(lv,tier){lv=lv||ROLES.lv;tier=tier==null?ROLES.tier:tier;const out={},ded={};
+  Object.keys(ROLES.ded).forEach(r=>{const c=rlRef(ROLES.ded[r],lv,tier);ded[r]=c?roleOut(c,r):0;});
+  Object.keys(ROLES.cls).forEach(cls=>{const c=rlRef(cls,lv,tier);if(!c)return;const R=ROLES.cls[cls],o={};
+    [R.p].concat(R.s).forEach(r=>{o[r]=ded[r]?+(roleOut(c,r)/ded[r]).toFixed(3):0;});out[cls]={primary:R.p,secondary:R.s.slice(),share:o};});
+  return out;}
+// for party scoring: the hero's roles, whether its kit already delivers them at its level, and its output share against a
+// dedicated class hero of the same level and tier (cached per hero, level and weapon)
+const RLC={};
+function heroRoleSet(c){return rlWith(()=>heroRoleSet0(c));}
+function heroRoleSet0(c){const t=c&&TPL[c.id];if(!t)return null;const R=ROLES.cls[t.cls];if(!R)return {cls:t.cls,primary:null,secondary:[],has:{},out:{}};
+  const key=c.id+':'+c.lv+':'+(c.eq&&c.eq.w)+':'+(c.eq&&c.eq.c);if(RLC[key])return RLC[key];
+  const tier=Math.max(0,Math.min(5,(gearOf(c.eq&&c.eq.w)||{}).tier||0)),out={},has={};
+  [R.p].concat(R.s).forEach(r=>{const d=rlRef(ROLES.ded[r],c.lv,tier),dv=d?roleOut(d,r):0,v=roleOut(c,r);out[r]=dv?+(v/dv).toFixed(3):0;
+    has[r]=r===R.p?true:known(c).some(s=>s.rl===r)||out[r]>=ROLES.band[0];});
+  return RLC[key]={cls:t.cls,primary:R.p,secondary:R.s.slice(),has,out};}
+const roleName=r=>ROLES.names[r]||r;
+// the class card names the roles
+if(typeof classCard==='function'){const cc0=classCard;classCard=function(cls){const h=cc0.apply(this,arguments),R=ROLES.cls[cls];if(!R)return h;
+  const line=`<small class="rlline"><b>Role</b> ${esc(roleName(R.p))} · <b>Also</b> ${R.s.map(r=>esc(roleName(r))).join(', ')}</small>`;
+  return h.replace(/<\/div>\s*$/,line+'</div>');};}
 
 // ===== npc2.js (v0.4.1): NPC dialogue =====
 // Each NPC keeps their original line (and the re-lit town variant) and gains more: realm flavor, hints that adapt to the journey (no spoilers)
@@ -16450,7 +16630,14 @@ window.__M3={get MENU_GROUPS(){return MENU_GROUPS;},m3Norm,m3Tabs,m3Secs,shopFBa
 // ----- what each hero brings to a formation -----
 function p6Role(c){const k=p3Kit(c),t=TPL[c.id],cls=t.cls,sk=classSkills(t).filter(s=>skillKnown(c,s));
   const sup=cls==='bard'||!k.tank&&!k.heal&&sk.some(s=>s.k==='status'&&(s.t==='ally'||s.t==='allyAll'));
-  return {k,cls,tank:k.tank,heal:k.heal,sup,dmg:!k.tank&&cls!=='healer'&&cls!=='bard',pr:k.pr,de:k.de};}
+  // v0.8.4: secondary roles (roles.js heroRoleSet): a secondary tank or healer counts as half of one, a secondary support as support
+  let H=null;try{H=typeof heroRoleSet==='function'?heroRoleSet(c):null;}catch(e){H=null;}
+  if(!H||!H.primary)return {k,cls,tank:k.tank,heal:k.heal,sup,dmg:!k.tank&&cls!=='healer'&&cls!=='bard',pr:k.pr,de:k.de,tankH:0,healH:0};
+  const P=H.primary,has=H.has||{},sec=r=>P!==r&&has[r];
+  const tank=k.tank||P==='tank',heal=k.heal||P==='healer';
+  return {k,cls,tank,heal,tankH:!tank&&sec('tank')?.5:0,healH:!heal&&sec('healer')?.5:0,sup:sup||P==='buffer'||sec('buffer'),
+    dmg:['phys','magic','ranged'].includes(P)||(P==='debuffer'&&!tank&&!heal),pr:k.pr,de:k.de};}
+const p6StepF=(arr,n)=>{const f=Math.floor(n);return p6Step(arr,f)+(n-f)*arr[Math.min(f,arr.length-1)];};
 // v0.8.1: how much of what lies ahead flies (seen foes of this area; the whole area pool when nothing is seen yet), 0..1, and a flying boss
 function p6Fly(T){try{let n=0,f=0;const pool=T.mons.length?T.mons:(ZS(T.s).pool||[]);pool.forEach(k=>{const d=MON[k];if(!d)return;n++;if(tyOf(d.art).includes('flying'))f++;});
   return {share:n?f/n:0,boss:!!(T.boss&&(T.boss.ty||[]).includes('flying'))};}catch(e){return {share:0,boss:false};}}
@@ -16461,7 +16648,7 @@ const p6Step=(arr,n)=>{let s=0;for(let i=0;i<n;i++)s+=arr[Math.min(i,arr.length-
 // the formation score: roles first, then answers to what lies ahead, then a little strength
 function p6Score(set,X,mode,prev){const T=X.T,R=set.map(c=>X.R[c.id]),K=R.map(r=>r.k),cnt=f=>R.filter(f).length;let v=0;
   set.forEach(c=>{const r=X.pw[c.id]/X.mx;v+=BP6.str*Math.sqrt(r);if(mode!=='train'&&r<BP6.weak)v-=BP6.weakPen*(BP6.weak-r);});
-  v+=p6Step(BP6.role.tank,cnt(r=>r.tank))+p6Step(BP6.role.heal,cnt(r=>r.heal))+p6Step(BP6.role.sup,cnt(r=>r.sup&&!r.heal))+p6Step(BP6.role.dmg,cnt(r=>r.dmg));
+  const half=f=>R.reduce((a,r)=>a+(r[f]||0),0);v+=p6StepF(BP6.role.tank,cnt(r=>r.tank)+half('tankH'))+p6StepF(BP6.role.heal,cnt(r=>r.heal)+half('healH'))+p6Step(BP6.role.sup,cnt(r=>r.sup&&!r.heal))+p6Step(BP6.role.dmg,cnt(r=>r.dmg));
   if(R.some(r=>r.pr))v+=BP6.pr;if(R.some(r=>r.de))v+=BP6.de;
   const cl={};R.forEach(r=>{cl[r.cls]=(cl[r.cls]||0)+1;});Object.values(cl).forEach(n=>{if(n>1)v-=BP6.dup*(n-1);});
   const els=new Set();set.forEach(c=>c.el.forEach(e=>els.add(e)));v+=BP6.el*els.size;
@@ -17114,6 +17301,84 @@ ICF.flute=(b,t,P)=>{const o={};
   if(t===4){icUV(b,'E',(s,v)=>s>1&&s<14&&Math.abs(v+.5)<.01);[5,7,9,11].forEach(s=>icPt(b,s,0,'X'));icPt(b,3,0,'G');o.spark=[[14,1]];}
   if(t===5){icPt(b,13.5,-.5,'T');icPt(b,13.5,1,'T');icPt(b,14,0,'G');icPt(b,3,0,'G');icPt(b,2,-1,'T');o.aura=TIER_GEM[5];}
   return o;};
+// ----- v0.8.2 role weapons: throwing stars and kunai, prayer beads, wands, censers, warhammers, war standards, lyres -----
+const IC_STAR=['......M......','.....MMM.....','.....MMM.....','....MMMMM....','...MMMMMMM...','.MMMMMMMMMMM.','MMMMMMXMMMMMM','.MMMMMMMMMMM.','...MMMMMMM...','....MMMMM....','.....MMM.....','.....MMM.....','......M......'];
+function icKunai(b,mir,s0){const tmp=icBuf();icSword(tmp,{p:s0||2,pr:.9,g:5,gl:.5,T:13,wide:1.1,l:.5,r:.5,tp:1.2});icUV(tmp,'',(s,v)=>Math.abs(s-(s0||2))<.01&&Math.abs(v)<.01);
+  for(let y=0;y<16;y++)for(let x=0;x<16;x++){const k=tmp[y*16+x];if(k)icSet(b,mir?15-x:x,y,k);}}
+ICF.thrown=(b,t)=>{const o={};
+  if(t===0){icArt(b,1,1,IC_STAR);}
+  if(t===1){icKunai(b,0);icPt(b,8,0,'m');}
+  if(t===2){icArt(b,1,1,IC_STAR);icLine(b,3,3,5,5,'M');icLine(b,13,3,11,5,'M');icLine(b,3,13,5,11,'M');icLine(b,13,13,11,11,'M');icSet(b,7,7,'G');}
+  if(t===3){icKunai(b,0);icKunai(b,1);icSet(b,7,7,'G');icSet(b,8,8,'E');}
+  if(t===4){icArt(b,1,1,IC_STAR);[[5,5],[11,5],[5,11],[11,11]].forEach(([x,y])=>icSet(b,x,y,'T'));icRect(b,6,6,3,3,'T');icSet(b,7,7,'G');icSet(b,7,0,'E');icSet(b,7,14,'E');o.spark=[[14,1]];}
+  if(t===5){icKunai(b,0);icKunai(b,1);icRect(b,7,1,2,9,'M');icRect(b,7,0,2,1,'S');icSet(b,7,10,'T');icSet(b,8,10,'T');icRect(b,7,11,2,3,'L');icSet(b,7,7,'G');icSet(b,8,7,'G');o.aura=TIER_GEM[5];}
+  return o;};
+ICF.beads=(b,t,P)=>{const o={};const n=[10,12,12,14,14,16][t],r=[4.6,4.6,5,5,5.4,5.4][t],cy=[7,7,6.5,6.5,6.5,6.5][t];
+  for(let i=0;i<n;i++){const a=Math.PI/2+i*2*Math.PI/n;icSet(b,8+Math.cos(a)*r,cy+Math.sin(a)*r,t>=2&&i%3===0?'G':i%2?'w':'W');}
+  icSet(b,8,cy+r+1,'M');
+  if(t===0)icLine(b,8,13,8,15,'C');
+  if(t===1){icLine(b,8,13,8,15,'C');icSet(b,7,15,'C');icSet(b,9,15,'C');icSet(b,8,13,'T');}
+  if(t===2){icRect(b,7,12,3,2,'M');icLine(b,7,14,6,15,'C');icLine(b,9,14,10,15,'C');}
+  if(t===3){icRect(b,7,12,3,3,'T');icSet(b,8,13,'G');icSet(b,8,15,'C');icDisc(b,8,6.5,1.5,'');for(let i=0;i<6;i++){const a=i*Math.PI/3;icSet(b,8+Math.cos(a)*2.2,6.5+Math.sin(a)*2.2,'m');}}
+  if(t===4){icArt(b,6,12,['.TTT.','TGEGT','.TTT.']);icSet(b,8,15,'C');o.spark=[[14,1]];}
+  if(t===5){icArt(b,6,12,['.TTT.','TGSGT','TGGGT','.TTT.']);icSet(b,8,0,'T');o.aura=TIER_GEM[5];o.spark=[[14,2]];}
+  return o;};
+ICF.wand=(b,t,P)=>{const o={};const hk=['W','B','W','M','T','X'][t],top=[10,10,9.5,9.5,9.5,9][t];icHaft(b,2,top,hk);icHaft(b,2,4,'L');
+  const [tx,ty]=icAt(top+1.5,0);
+  if(t===0){icDisc(b,tx,ty,1.3,'W');icSet(b,tx,ty,'w');}
+  if(t===1){icArt(b,tx-1,ty-1,['BBB','XBX','.B.']);icSet(b,tx+1,ty-2,'B');}
+  if(t===2){[[5,.5],[7,0],[9,.5]].forEach(([s2,v])=>icPt(b,s2,v,'w'));icArt(b,tx-1,ty-1,['M.M','.G.','M.M']);}
+  if(t===3){icArt(b,tx-1,ty-2,['..E','.EE','EEE','.E.']);icSet(b,tx,ty,'S');}
+  if(t===4){icDisc(b,tx,ty,1.6,'G');icSet(b,tx,ty-1,'S');icArt(b,tx-3,ty-3,['E..','.E.']);icSet(b,tx+2,ty+2,'E');o.spark=[[15,0]];}
+  if(t===5){icArt(b,tx-2,ty-2,['.TTT.','T...T','T.G.T','T...T','.TTT.']);icSet(b,tx,ty,'G');o.aura='#b06aff';o.spark=[[14,0]];}
+  if(t>=2)icPt(b,4.5,.5,'T');
+  return o;};
+ICF.censer=(b,t,P)=>{const o={};const cy=[9,9,9.5,9,9,9.5][t],r=[3,3.2,3.4,3.5,3.6,3.8][t];
+  icLine(b,8,0,8,Math.round(cy-r-1),'m');[1,3].forEach(y=>icSet(b,7,y,'M'));
+  icDisc(b,8,cy,r,'M');icRect(b,8-Math.round(r),Math.round(cy)-1,Math.round(r)*2+1,1,'m');
+  [[7,Math.round(cy)+1],[9,Math.round(cy)+1]].forEach(([x,y])=>icSet(b,x,y,'X'));
+  if(t>=1)icRect(b,6,Math.round(cy+r)+1,5,1,'M');
+  if(t===2){icSet(b,3,Math.round(cy),'M');icSet(b,13,Math.round(cy),'M');icSet(b,3,Math.round(cy)-1,'M');icSet(b,13,Math.round(cy)-1,'M');}
+  if(t===3){icArt(b,6,Math.round(cy-r)-1,['.TTT.','TTGTT']);}
+  if(t===4){icArt(b,11,1,['.E','E.','.E','E.']);icArt(b,3,2,['E.','.E','E.']);icSet(b,8,Math.round(cy),'G');o.spark=[[14,0]];}
+  if(t===5){icArt(b,5,Math.round(cy-r)-1,['.TTTTT.','TTTGTTT']);icArt(b,11,1,['.S','E.','.E']);icSet(b,3,Math.round(cy),'T');icSet(b,13,Math.round(cy),'T');o.aura=TIER_GEM[5];}
+  return o;};
+ICF.warhammer=(b,t)=>{const o={};const top=[11,11.5,11.5,12,12,12.5][t];icHaft(b,1,top,'W');icHaft(b,1,3.5,'L');
+  const hs=[10,10.5,10.5,11,11,11][t],hw=[1,1.2,1.5,1.5,1.5,1.8][t],face=[2,2.5,2.5,3,3,3][t],spk=[1.5,2,2.5,3,3,3.5][t];
+  icUV(b,'M',(s,v)=>Math.abs(s-hs)<=hw+.01&&v<=0.01&&v>=-face-.01);
+  icUV(b,'M',(s,v)=>v>0&&v<=spk+.01&&Math.abs(s-hs)<=hw*(1-v/(spk+1))+.01);
+  icUV(b,'m',(s,v)=>Math.abs(v+face)<.01&&Math.abs(s-hs)<=hw+.01);
+  if(t>=2)icPt(b,hs,0,'G');
+  if(t>=3)icPt(b,top+.5,0,'T');
+  if(t===3)icPt(b,hs,-1,'T');
+  if(t>=4){icUV(b,'E',(s,v)=>Math.abs(s-hs)<.01&&v<-.9&&v>-face+.5);o.spark=[[14,1]];}
+  if(t===5){icPt(b,hs+hw,-1,'T');icPt(b,hs-hw,-1,'T');o.aura=TIER_GEM[5];}
+  return o;};
+ICF.standard=(b,t,P)=>{const o={};const cl=['#8a7a5a','#c84a3a','#4a6ad0','#e0b030','#5aa0d0','#8a3ad0'][t];P.C=cl;P.K=shade(cl,.7);
+  icRect(b,4,2,1,14,'W');icRect(b,4,13,1,3,'L');icArt(b,3,0,['.M.','MMM']);
+  const F=[['CCCCCCC','CCCCCC.','CCCCC..','CCCC...','CCC....'],
+    ['CCCCCCCC','CCCCCCCC','CCCCCCCC','CCCCCCC.','CCCCCC..'],
+    ['CCCCCCCCC','CCCCCCCCC','CCCCCCCCC','CCCC.CCCC','CCC...CCC'],
+    ['CCCCCCCCC','CCCCCCCCC','CCCCCCCCC','CCCCCCCCC','CCCCCCCCC','C.C.C.C.C'],
+    ['CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCC..CCCC'],
+    ['CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','C.CC..CC.C']][t];
+  icArt(b,5,2,F);icRect(b,5,2,F[0].length,1,'K');
+  if(t===1)icSet(b,8,4,'T');
+  if(t===2){icArt(b,8,3,['.T.','TGT','.T.']);}
+  if(t===3){icArt(b,8,3,['TTT','TGT','.T.']);icRect(b,5,2,9,1,'T');}
+  if(t===4){icArt(b,8,3,['.E.','EE.','.EE','.E.']);icRect(b,5,2,10,1,'T');icSet(b,4,0,'S');o.spark=[[15,1]];}
+  if(t===5){icArt(b,7,3,['..T..','.TGT.','TGSGT','.TGT.']);icRect(b,5,2,10,1,'T');icSet(b,3,1,'G');icSet(b,5,1,'G');o.aura=TIER_GEM[5];}
+  return o;};
+ICF.lyre=(b,t,P)=>{const o={};const w=[3,3,4,4,4,5][t];
+  icLine(b,8-w,2,8-w+1,11,'W');icLine(b,8+w,2,8+w-1,11,'W');icRect(b,8-w+1,11,2*w-1,2,'W');icRect(b,8-w,3,2*w+1,1,'M');
+  for(let x=8-w+2;x<=8+w-2;x+=2)icLine(b,x,4,x,10,'R');
+  icSet(b,8-w-1,1,'W');icSet(b,8+w+1,1,'W');
+  if(t===1){icSet(b,8-w-1,0,'T');icSet(b,8+w+1,0,'T');}
+  if(t===2){icRect(b,7,13,3,1,'M');icSet(b,8,12,'G');}
+  if(t===3){icArt(b,8-w-2,0,['E']);icArt(b,8+w+2,0,['E']);icSet(b,8,12,'G');icRect(b,6,13,5,1,'T');}
+  if(t===4){icRect(b,8-w,3,2*w+1,1,'T');icSet(b,8,3,'G');icArt(b,6,13,['.EEE.','..E..']);o.spark=[[15,0]];}
+  if(t===5){icRect(b,8-w,3,2*w+1,1,'T');icSet(b,8,3,'G');icSet(b,8,12,'S');icArt(b,5,13,['TTTTTTT','..TGT..']);o.aura=TIER_GEM[5];}
+  return o;};
 ICF.stick=(b,t,P,o0)=>{const o={};icHaft(b,1.5,13.5,'W');icPt(b,9,-1,'W');icPt(b,9.5,-1.5,'W');icPt(b,6,1,'W');icPt(b,6.5,1.5,'w');icPt(b,4,0,'w');
   if(o0.glow){P.E=o0.glow;icPt(b,13.5,0,'E');icPt(b,14,.5,'E');icPt(b,10,-2,'E');o.aura=o0.glowTier>0?o0.glow:null;o.spark=o0.glowTier>1?[[15,0]]:null;}
   return o;};
@@ -17265,6 +17530,13 @@ const IC_CHARM={
  c_fb4:{body:'page',G:'#fff4d8',gly:'star',gk:'T',cord:'chain',rim:'T',aura:1},
  c_fb5:{body:'round',G:'#ffd25a',gly:'hand',gk:'g',cord:'chain',rim:'T',aura:1},
  c_ft0:{body:'crest',G:'#3a6a3a',gly:'thorn',gk:'E',E:'#9ae06a',cord:'pin'},
+ // v0.8.2 role charms (roles.js)
+ c_rl_mend:{body:'heart',G:'#f0e0a0',gly:'cross',gk:'E',E:'#5ac05a',cord:'chain'},
+ c_rl_song:{body:'round',G:'#9a7ae0',gly:'note',gk:'S',cord:'cord',rim:'T'},
+ c_rl_quiv:{body:'diamond',G:'#5a5a6a',gly:'star',gk:'S',cord:'pin'},
+ c_rl_herald:{body:'crest',G:'#e0b040',gly:'sun',gk:'X',cord:'chain'},
+ c_rl_hex:{body:'round',G:'#4a2a6a',gly:'eye',gk:'E',E:'#c890ff',cord:'chain',rim:'T'},
+ c_rl_ward:{body:'shield',G:'#7a8aa0',gly:'hammer',gk:'T',cord:'pin'},
  c_ft1:{body:'seal',G:'#2a5a8a',gly:'wave',gk:'E',E:'#bfe6ff',cord:'pin'},
  c_ft2:{body:'shield',G:'#8a2a1a',gly:'flame',gk:'E',E:'#ffa040',cord:'pin'},
  c_ft3:{body:'diamond',G:'#6a8aa8',gly:'snow',gk:'S',cord:'pin'},
@@ -20450,6 +20722,7 @@ window.__A={walkable,ceInit,tvSlots,genQuests,STARTERS,starterDraw,ECON,AUTO_NER
 ['heroRoles','SOLID','WEATHER','WX_BASE','weatherFX','superGuide','recruitCost','ceStart','ceStep','ceInit','cePool','wxList','SUPER_TABLE','superOk','facRank','facRep','facInit','facCount','facCredit','FAC','FMIS','facMissionList','facProg','tyOf','facSync','facMul','facBest','worldPlan','caveReward','enterCave','leaveCave','leaveDungeon','buildCaveMap','worldGraph','openWorldMap','sigReport','SIG_NAMES','starterDraw','ITEM_TIERS','gTierIdx','tierChip','gearIcon','starterSlots','STARTERS','CLK_LEN','CLK_PH','clockPhase','wxInfoBody','recipeOrder','recipeGain','recipeReady','recipeClose','effOf','calcDamage','healsUndead','storyEchoUp','riftKeys','echoDef','efCost','autoLocked','bossFightKey','learnScanAll','isSeen','mapMarks','genSub','subOK','subReq','ensureSub','inSub','tvSlots','tvInit','tvLeft','tvEvent','tvNextText','tvPool','tvDue','tvShuffle','mTavern','hireOK','TV_CAP','TV_CD','POOL_IDS','natPool','natOf','natRoll','NATURES','natInfo','natRerollCost','natChooseCost','NAT_CLASS','iconURL','seenOf','mapIcoDraw','drawMini','MAPCV','revealAround','fxLayer','numDur','compBonusText','compPerk','checkPhase','win','unitBox','LNQ','challVisible','challEligible','challState','isMimic','migrateCompanions','canSummon','summonComp','compOf','clockPhase','tickClock','isNight','rollWeather','wxStep','nightPool','encounterFoes','restAll','tameElite','openChest','rerollTavern','bestAll','gearTier','SV','svCheck','svFlush','svInit','svPush','svPull','svScan','svParse','svBackup','svPack','svUnpack','svProg','svCloudList','svDelDoc','svGet','svCap','slotState','slotKey','svDecode','SV_CH','svStatus','svSlotRaw','svLoad','loadRaw','svHash','svIdx'].forEach(k=>{try{Object.defineProperty(window.__A,k,{get:()=>eval(k)});}catch(e){}});
 Object.assign(window.__A,{temperRank,forgeCost,hasMats,stSym,ST_SYM,pgSpot,pgGrid,pathAssets,guardPaths,pgCuts,worldTick,findPath,solidAt,diagOk,tileAt});Object.assign(window.__A,{btOf,personalEligible,craftOnly,shopSortIds,SHOPF,autoTurnSmart,allParty,useItemField,ailBadge,ailChips,ailOf,battleSkyTags,battleIndoors,autoReason,autoBan,itemStock,perform,cleanse,useItem,lose,endTurn});Object.defineProperty(window.__A,'BL',{get:()=>BL});Object.defineProperty(window.__A,'WXT',{get:()=>WX_TABLE});Object.defineProperty(window.__A,'GEAR',{get:()=>GEAR});
 // v0.5.3 sprites: live getters for the sprite builders and caches (tests and the sprite sheet)
+['ROLES','roleTable','roleOut','heroRoleSet','rlRef','rlSkills','shopStock','deliveryOf','known'].forEach(k=>{try{if(!Object.getOwnPropertyDescriptor(window.__A,k))Object.defineProperty(window.__A,k,{get:()=>eval(k),configurable:true});}catch(e){}});// v0.8.2 roles
 ['heroCanvas','monCanvas','walkerCanvas','heroGridView','MART','MON_SIZE','BIG_ART','IMG','URL_CACHE','spriteOf','imgOf','walkFrame','drawSprite','heroPal','SPRITE_HD','SPR','sprHD','paintHD','villagerLook','whiteOf','mountCanvas','petCanvas','halfCanvas'].forEach(k=>{try{Object.defineProperty(window.__A,k,{get:()=>eval(k),configurable:true});}catch(e){}});
 Object.assign(window.__A,{GFX,GFX_Q,GFX_AUTO,GFX_CAM,gfxCfg,gfxTier,gfxApply,gfxAutoDecide,gfxAutoFeed,gfxStill,gfxCamPush,CAM,PARA,g6Ground,g6Sky,g6Bloom,g6Burst,titleDraw:(c,w,h,n)=>titleDraw(c,w,h,n),bgStatic:(a,b,c)=>bgStatic(a,b,c),onFx:(u,t,c)=>onFx(u,t,c),townDecorActors:(a,n,x,y)=>townDecorActors(a,n,x,y),part:o=>part(o),groundPlane:(...a)=>groundPlane(...a)});// v0.5.0 Phase 6
 Object.assign(window.__A,{HB,HD_BATTLE,HD_FLOOR,HD_LOOK,hbInfo,hbWanted,hbQ,hbLook,battleTheme:()=>battleTheme(),battleFrame:n=>battleFrame(n),BV});// v0.5.3 HD-2D battle stage

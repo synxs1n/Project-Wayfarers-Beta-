@@ -176,3 +176,6 @@ Details in `v080-rivals.md` (`v3/rivalghost.js`; test `chrome/v080r.js`). Leavin
 
 ## Beta v0.8.3: chest opening, softer chest sound, Equipment lists the party
 worldfx.js: WFX_OPEN plays the opening on top in both renderers (lid at 45% of WFX.chestAnim.open, glint, hold while the find text or a window is up, then fade). sfx2.js chest noise halved; the item jingle is celesta led and its gain 2.5 -> 1.1; classic chest chime is a soft triangle. vEquipTab lists G.party only. Test `chrome/v083a.js`.
+
+## Beta v0.8.4: secondary roles and balance
+Details in `v080-roles-balance.md` (`v3/roles.js` heroRoleSet, ROLES in config.js, 7 role weapon families, 6 role charms; ENC_RATE, ECON.xp, BOSS_BUFF and four outlier bosses eased; fullsim journey models gear buying, 40% manual fights, exploring, and a time model). party3.js p6Role reads heroRoleSet: a secondary tank or healer counts as half (p6StepF). Tests `chrome/v080ca.js`, `v080cb.js`.
