@@ -31,7 +31,7 @@ const LOOP=`
 const Q=window.__Q;
 function run(spec){Q.length=0;try{A.syncPools();}catch(e){}
   // the sims stand in for a player who plays every fight: the 'win it manually once first' auto lock on bosses does not apply
-  try{A.G.bossWon=new Proxy({},{get:()=>1});}catch(e){}A.setSmart(!window.__AUTO);A.V.auto=true;A.META.best={};if(!A.startBattle(spec))return null;
+  try{A.G.bossWon=new Proxy({},{get:()=>1});}catch(e){}A.setSmart(!window.__AUTO);A.V.auto=true;try{A.META.cfg.autoOn=true;}catch(e){}A.META.best={};if(!A.startBattle(spec))return null;
   let it=0;while(it++<400000){const m=A.V.modal;if(m&&(m.type==='result'||m.type==='lose'))break;
     if(!Q.length){if(A.B&&A.B.mode==='cmd')(window.__AUTO?A.autoTurn:A.autoTurnSmart)();else if(A.B&&!A.B.over)A.advance();if(!Q.length)break;}
     Q.shift()();}
