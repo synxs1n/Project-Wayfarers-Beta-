@@ -34,7 +34,7 @@ console.log('fixtures',RAW.length,RAW_BIG.length);
 
 // ---- 1. failed migration keeps the original and Recover finds it ----
 {const bad=JSON.parse(RAW);delete bad.mats;delete bad.gv;const braw=JSON.stringify(bad);
- const H=await boot({[key(0)]:braw});
+ const H=await boot({[key(0)]:braw});await H.wait(1500);   // v0.8.5: Continue first waits for the first cloud check (at most 6 s); let it finish
  const r=await H.ev(()=>{const A=__A;A.ACT.cont();const m=A.V.modal;return {modal:m&&m.type,loaded:A.V.screen==='world',raw:A.svSlotRaw(0),baks:[0,1,2].map(i=>localStorage.getItem('aurelis-bak-0-'+i)).filter(Boolean).length};});
  ck('failed migration: shows the failure screen, does not enter the world',r.modal==='svfail'&&!r.loaded||JSON.stringify(r));
  ck('failed migration: original slot data is byte for byte unchanged',r.raw===braw);

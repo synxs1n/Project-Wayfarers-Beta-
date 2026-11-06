@@ -23,12 +23,23 @@ function boot(){
   return ready;
 }
 // ----- db wrapper: the small subset of the claude.ai db API the game uses -----
-function wrapSnap(s){return {exists:s.exists,id:s.id,data:()=>s.data()};}
+// server timestamps (srvAt) come back as numbers (ms), like every other time the game stores
+function plain(d){if(!d||typeof d!=='object')return d;const o={};Object.keys(d).forEach(k=>{const v=d[k];o[k]=v&&typeof v.toMillis==='function'?v.toMillis():v;});return o;}
+function wrapSnap(s){return {exists:s.exists,id:s.id,data:()=>plain(s.data())};}
 function docRef(path){const r=fs.doc(path);return {get:async()=>wrapSnap(await r.get()),set:(d)=>r.set(d),update:(d)=>r.update(d),delete:()=>r.delete()};}
+// v0.8.5 save sync: one atomic write that only lands while the doc at `path` still holds `expect` (its hash; null = must not exist).
+// Writes marked stamp get the server time (srvAt) and this device's clock at commit (pushedAt), so other devices can correct for clock skew.
+async function txn(path,expect,writes){
+  await fs.runTransaction(async t=>{
+    const s=await t.get(fs.doc(path)),h=s.exists?((s.data()||{}).hash||null):null;
+    if(h!==(expect||null))throw Object.assign(new Error('the cloud save changed while uploading'),{code:'changed'});
+    for(const w of writes){const d=w.stamp?Object.assign({},w.data,{pushedAt:Date.now(),srvAt:FB.firestore.FieldValue.serverTimestamp()}):w.data;t.set(fs.doc(w.path),d);}
+  });
+}
 function colRef(path,q){const c=q||fs.collection(path);return {
   get:async()=>{const s=await c.get();return {docs:s.docs.map(wrapSnap),size:s.size};},
   orderBy:(f,d)=>colRef(path,c.orderBy(f,d)),limit:n=>colRef(path,c.limit(n))};}
-const DB={doc:docRef,collection:colRef};
+const DB={doc:docRef,collection:colRef,txn};
 const USER={id:async()=>cur?cur.uid:null,can:async()=>!!cur,me:async()=>({id:cur.uid,name:cur.displayName||(cur.email||'').split('@')[0],isOwner:false}),profiles:async()=>({})};
 window.claude={use:async name=>{
   if(name!=='db'&&name!=='user')return null;

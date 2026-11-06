@@ -298,7 +298,9 @@ const HINTS_UNTIL=1,HINT_DELAY=1400;
 const TRANS={tod:11000,wx:6500,ambTod:10,ambWx:6};
 // 5.5 save indicator: show "Saving..." this long, then "Saved", hold, then fade. minGap = autosaves closer than this share one message.
 // syncDelay: the cloud upload waits this long after the last save (debounced, signed in players with write access only).
-const SAVE_UI={saving:350,hold:2000,fade:450,minGap:2500,syncDelay:6000};
+// v0.8.5: syncMax = never more than this unsynced while saves keep coming; recheck = compare every slot with the cloud this often
+// while the page is visible; cloudWait = Continue waits at most this long for the first cloud check.
+const SAVE_UI={saving:350,hold:2000,fade:450,minGap:2500,syncDelay:2000,syncMax:30000,recheck:60000,cloudWait:6000};
 // Beta v0.7.0 battle information and input (battle5.js)
 // order: turns shown in the order bar on portrait phones (tall), elsewhere (wide); bigPw: a foe damage skill at or above this power (or
 // one that hits the whole party) shows the "big hit" intent; stCh: a skill whose status chance is at least this shows "status";
