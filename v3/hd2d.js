@@ -589,7 +589,8 @@ function hdFrame(now){const m=WS.m,gl=HD.gl,q=hdTierQ(),still=gfxStill(),ts=stil
   // the blurred copy is remade every q.every frames (Medium: every other frame; the parts it softens are out of focus anyway), and at once
   // after a jump of the camera; the composite below runs every frame
   const camMv=Math.abs(HD.cam.x-(HD.lastBx||0))+Math.abs(HD.cam.z-(HD.lastBz||0));HD.postN=(HD.postN||0)+1;
-  const redo=!HD.blurOk||HD.postN>=(q.every||1)||camMv>48||HD.blurSize!==HD.size||HD.syncDraw;
+  const ht=typeof w7HeatGL==='function'?w7HeatGL():0;// v0.7.7 heat shimmer reads the fresh copy of the frame
+  const redo=!HD.blurOk||HD.postN>=(q.every||1)||camMv>48||HD.blurSize!==HD.size||HD.syncDraw||ht>0;
   if(redo){HD.postN=0;HD.blurOk=true;HD.blurSize=HD.size;HD.lastBx=HD.cam.x;HD.lastBz=HD.cam.z;
   // the finished frame, copied (one call, no second pass over the scene) and shrunk: the source of the blur
     gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,RT.cp.t);gl.copyTexSubImage2D(gl.TEXTURE_2D,0,0,0,0,0,sz.w,sz.h);
@@ -610,6 +611,7 @@ function hdFrame(now){const m=WS.m,gl=HD.gl,q=hdTierQ(),still=gfxStill(),ts=stil
   gl.uniform4f(C.u.uDof,fy+dof.shift,dof.band*wide,dof.ramp*Math.sqrt(wide),q.dof?dof.max:0);
   gl.uniform4f(C.u.uBl,thr,(q.bloom>1?bl.high:bl.med)*(1+o.bloom),RT.e1?1:0,0);
   gl.uniform4f(C.u.uSh,q.shafts&&m.kind!=='dungeon'?o.shaft*HD2D.shaft:0,ts/1000,0,0);gl.uniform3fv(C.u.uShC,o.shC);gl.uniform2f(C.u.uAsp,sz.w/sz.h,1);gl.uniform1f(C.u.uVig,o.vig);
+  if(C.u.uHt){gl.activeTexture(gl.TEXTURE3);gl.bindTexture(gl.TEXTURE_2D,RT.cp.t);gl.uniform1i(C.u.uC,3);gl.activeTexture(gl.TEXTURE0);gl.uniform4f(C.u.uHt,ht,ts/1000,Math.min(.98,fy+.12),1/sz.w);}
   gl.enable(gl.BLEND);gl.blendFunc(gl.ONE,gl.ONE_MINUS_SRC_ALPHA);hdFS(gl);gl.disable(gl.BLEND);
   HD.frames++;}
 // ----- the 2D canvas on top: weather, ambience particles, festival lanterns, battle flash and fades (all screen space) -----
@@ -636,7 +638,8 @@ function hdOverlay(now,composed){const ctx=WS.ctx,m=WS.m,vw=WS.vw,vh=WS.vh,still
   const k=composed?1:Math.max(1,(WS.cv._rw||vw)/vw);
   ctx.setTransform(k,0,0,k,0,0);ctx.globalAlpha=1;ctx.imageSmoothingEnabled=false;
   let w=(m.kind==='field'||m.kind==='town')?(G.weather[m.s]||'clear'):null;const amb=m.amb&&!still;if(w==='clear'&&!(typeof TR!=='undefined'&&TR.wx&&TR.wx.k<1))w=null;
-  if(w||amb){hdOvOffset(HOV);wfxTiled(ctx,vw,vh,HOV[0],HOV[1],c=>{if(w)weatherFX(c,w,vw,vh,ts,false);if(amb)themeFX(c,m,vw,vh,now);});}
+  if(w||amb){hdOvOffset(HOV);const w7=!!w&&typeof w7World==='function'&&w7World(ctx,'ov',m,HOV[0],HOV[1],vw,vh,ts);// v0.7.7: the near and sky layers (the rest is in the GL scene)
+    if((w&&!w7)||amb)wfxTiled(ctx,vw,vh,HOV[0],HOV[1],c=>{if(w&&!w7)weatherFX(c,w,vw,vh,ts,false);if(amb)themeFX(c,m,vw,vh,now);});}
   if(WS.flash&&now-WS.flash<460){const p=(now-WS.flash)/460;ctx.fillStyle=`rgba(255,255,255,${Math.floor(p*7)%2?0.85:0})`;ctx.fillRect(0,0,vw,vh);
     ctx.fillStyle='#0a0612';for(let i=0;i<8;i++){const a=i/8*Math.PI*2+p*4;ctx.save();ctx.translate(vw/2,vh/2);ctx.rotate(a);ctx.fillRect(0,-3,Math.max(vw,vh)*p,6);ctx.restore();}}
   if(WS.fade&&now-WS.fade<230){ctx.fillStyle=`rgba(8,4,2,${(now-WS.fade)/230})`;ctx.fillRect(0,0,vw,vh);}

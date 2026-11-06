@@ -150,6 +150,7 @@ function battleFrame(now){
   B.en.concat(B.front,B.back).forEach(u=>{if(u.actT&&u.actT!==u._act){u._act=u.actT;onAction(u,now);}});
   const tgMode=B.mode==='cmd'&&B.menu==='target'&&B.pend;
   const units=B.en.map(u=>({u,b:unitBox(u)})).concat(B.front.map(u=>({u,b:unitBox(u)}))).filter(o=>o.b).sort((a,b)=>a.b.y-b.b.y);
+  if(B.weather&&B.weather!=='clear'&&typeof w7BattleGround==='function')w7BattleGround(ctx,W,H,now);// v0.7.7: puddles, ripples, settling flakes, low fog under the units
   units.forEach(({u,b})=>drawUnit(ctx,u,b,now,tgMode));
   // turn arrow
   // v0.6.3: the turn arrow sits where the stage layout put it (b3Lay), drawn with the HUD below

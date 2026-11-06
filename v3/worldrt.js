@@ -384,7 +384,9 @@ function worldDraw(now){
   // put while the camera moves; weather and theme layers scroll with the world
   if(m.kind==='field'&&G.cleared[m.s]){ctx.fillStyle='rgba(255,210,120,.07)';ctx.fillRect(0,0,vw,vh);}
   wfxDraw2D(ctx,'amb',m,cx,cy,vw,vh,gfxStill()?0:now);
-  {let w=(m.kind==='field'||m.kind==='town')?(G.weather[m.s]||'clear'):null;if(w==='clear'&&!(typeof TR!=='undefined'&&TR.wx&&TR.wx.k<1))w=null;if(w||m.amb)wfxTiled(ctx,vw,vh,cx,cy,c=>{if(w)weatherFX(c,w,vw,vh,now,false);if(m.amb)themeFX(c,m,vw,vh,now);});}
+  {let w=(m.kind==='field'||m.kind==='town')?(G.weather[m.s]||'clear'):null;if(w==='clear'&&!(typeof TR!=='undefined'&&TR.wx&&TR.wx.k<1))w=null;// v0.7.7: the weather in layers (weather7.js), drawn straight onto the view with its own parallax; the old full screen layer otherwise
+    const w7=!!w&&typeof w7World==='function'&&w7World(ctx,'w2d',m,cx,cy,vw,vh,gfxStill()?0:now);
+    if((w&&!w7)||m.amb)wfxTiled(ctx,vw,vh,cx,cy,c=>{if(w&&!w7)weatherFX(c,w,vw,vh,now,false);if(m.amb)themeFX(c,m,vw,vh,now);});}
   if(m.kind==='town'&&G.cleared[m.s])festivalFX(ctx,m,cx,cy,vw,vh,now);
   if(dun){const e=m.start;const ex=e[0]*TS+8-cx,ey=(e[1]-1)*TS-cy-6+Math.round(Math.sin(now/200)*2);ctx.fillStyle='#150b17';ctx.fillRect(ex-4,ey-1,9,6);ctx.fillStyle='#ffe08a';ctx.fillRect(ex-3,ey+3,7,1);ctx.fillRect(ex-2,ey+2,5,1);ctx.fillRect(ex-1,ey+1,3,1);ctx.fillRect(ex,ey,1,1);}
   if(WS.flash&&now-WS.flash<460){const p=(now-WS.flash)/460;ctx.fillStyle=`rgba(255,255,255,${Math.floor(p*7)%2?0.85:0})`;ctx.fillRect(0,0,vw,vh);
