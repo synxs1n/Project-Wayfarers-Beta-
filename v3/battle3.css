@@ -474,3 +474,49 @@ body:has(.battle.b3.m-wide.b8short){padding-top:6px}
 /* a narrow turn order bar (the right column on short landscape screens): smaller sky chips, the NEXT label folds away (the entries keep their titles) */
 .battle.b3.m-wide .order{container-type:inline-size}
 @container (max-width:330px){.battle.b3.m-wide .order .ocs>small{display:none}.battle.b3.m-wide .order .osky .wchip{min-width:30px;padding:0 4px}.battle.b3.m-wide .order .osky{gap:2px}}
+
+/* =================== Beta v0.9.5: battle clarity (battle3.js section 9, battle5.js cues) =================== */
+/* the key weakness on a foe card: one chip (a button: tap for the full chips); a reaction setup is purple with ✸ */
+.battle.b3 .ptags button.fwk{cursor:pointer;font:800 .58rem/1 var(--fb);min-height:0;margin:0;box-shadow:none;text-transform:none}
+.battle.b3 .fwk.b9key i{font-style:normal;font-weight:900;color:#ffe9b8;opacity:.8;margin-left:1px}
+.battle.b3 .fwk.b9key.rx{color:#f2e2ff;border-color:rgba(214,170,255,.75);background:linear-gradient(90deg,rgba(90,42,138,.75),rgba(42,20,80,.75))}
+.battle.b3 .fcw .fwk.b9key.rx b{font-size:.7rem}
+.battle.b3.m-tall .fcw .fwk.b9key.rx b,.battle.b3.m-wide .fcw .fwk.b9key.rx b{font-size:.62rem}
+.battle.b3.m-tall .fcw .fwk.b9key.rx b::before,.battle.b3.m-wide .fcw .fwk.b9key.rx b::before{content:none}
+.battle.b3 .fwk.b9less{color:#d8cfe6;border-color:rgba(200,190,220,.4);background:rgba(20,16,30,.6);padding:0 4px}
+/* simple mode: Vanguard cards keep the name, bars, elements and statuses (level and class in the i panel and Expert mode) */
+.battle.b3:not(.b9x) .pgroup.heroes .pc .ucl,.battle.b3:not(.b9x) .pgroup.heroes .pc .ucc{display:none}
+/* the i panel: capped chips and the plain type line */
+.udet .b9det{margin:6px 0 2px}.udet .b9chips{display:flex;flex-wrap:wrap;gap:6px}
+.udet .fwk{display:inline-flex;align-items:center;gap:3px;font:800 .7rem/1 var(--fb);padding:3px 6px;border-radius:3px;border:1px solid}
+.udet .fwk .ico{width:14px;height:14px}.udet .fwk.up{color:#ffcf6a;border-color:rgba(255,190,90,.6);background:rgba(70,40,10,.6)}
+.udet .fwk.dn{color:#b8c8dc;border-color:rgba(160,180,210,.5);background:rgba(20,28,44,.6)}.udet .fwk .dli.res{opacity:.62;filter:saturate(.45)}
+.udet .b9ty{margin-top:4px}
+/* the primed badge pulses gently when the acting hero holds a matching detonator */
+.bstage .primed.pmin.b3l.b9rdy{animation:b3bob 1.6s ease-in-out infinite,b9pulse 1.3s ease-in-out infinite;box-shadow:0 0 0 .6px var(--c)}
+@keyframes b9pulse{0%,100%{box-shadow:0 0 0 .4px var(--c),0 0 1px var(--c)}50%{box-shadow:0 0 0 1px var(--c),0 0 4px var(--c)}}
+.battle.b3 .pchip.b9rdy{outline:1.5px solid #fff3c0;outline-offset:1px}
+html.rm .bstage .primed.pmin.b3l.b9rdy{animation:none;box-shadow:0 0 0 1px var(--c),0 0 3px var(--c)}
+@media (prefers-reduced-motion:reduce){.bstage .primed.pmin.b3l.b9rdy{animation:none;box-shadow:0 0 0 1px var(--c),0 0 3px var(--c)}}
+/* the reaction moment: one flash under 120 ms in both element colours, the name banner (logical stage px, placed clear of faces) */
+.bstage .b9fl{position:absolute;left:0;top:0;pointer-events:none;z-index:8;background:linear-gradient(100deg,var(--c1),#fff 50%,var(--c2));mix-blend-mode:screen;opacity:0;animation-name:b9flash;animation-timing-function:ease-out;animation-fill-mode:both}
+@keyframes b9flash{0%{opacity:0}25%{opacity:.42}100%{opacity:0}}
+.bstage .b9ban{position:absolute;box-sizing:border-box;display:flex;align-items:center;justify-content:center;gap:.12em;pointer-events:none;z-index:9;white-space:nowrap;overflow:hidden;
+  border-radius:.25em;border:.06em solid rgba(255,240,255,.85);background:linear-gradient(90deg,transparent,rgba(46,20,84,.9) 12%,rgba(46,20,84,.9) 88%,transparent),linear-gradient(90deg,var(--c1),var(--c2));
+  box-shadow:0 0 .35em var(--c2);color:#fff;font-family:var(--fb);line-height:1;text-shadow:0 0 .12em #000;animation-name:b9ban;animation-timing-function:ease-out;animation-fill-mode:both}
+.bstage .b9ban b{font-weight:900;letter-spacing:.03em}
+.bstage .b9ban .ico{width:1em;height:1em;flex:none}
+@keyframes b9ban{0%{opacity:0;transform:scaleX(.6)}12%{opacity:1;transform:scaleX(1.04)}20%{transform:none}80%{opacity:1}100%{opacity:0}}
+html.rm .bstage .b9ban{animation:none!important;opacity:1}
+@media (prefers-reduced-motion:reduce){.bstage .b9ban{animation:none;opacity:1}}
+/* intent cues on the command panel: the button to press glows; the cue line replaces the class name in the header */
+.battle.b3 .cmd .mi.b9glow{border-color:#ffd04a;box-shadow:0 0 0 1px rgba(255,208,74,.65),0 0 9px rgba(255,190,60,.55);animation:b9glow 1.4s ease-in-out infinite}
+.battle.b3 .cmd .mi.b9glow.cl{border-color:#8ff0c0;box-shadow:0 0 0 1px rgba(143,240,192,.6),0 0 9px rgba(120,230,170,.5)}
+@keyframes b9glow{0%,100%{filter:none}50%{filter:brightness(1.18)}}
+html.rm .battle.b3 .cmd .mi.b9glow{animation:none}
+@media (prefers-reduced-motion:reduce){.battle.b3 .cmd .mi.b9glow{animation:none}}
+.battle.b3 .cmd .mi .b9ex{font-style:normal;color:#ffd04a;font-weight:900}
+.battle.b3 .who.cmdhead .b9cue.inhead{flex:1 1 0;min-width:0;margin:0 0 0 auto;font-size:.66rem;line-height:1.12;font-weight:800;color:#ffd04a;text-align:right;white-space:normal;overflow-wrap:anywhere}
+.battle.b3 .who.cmdhead .autowhy.inhead+.b9cue.inhead{margin-left:6px}
+.battle.b3 .who.cmdhead .b9cue.inhead+.cmdback{margin-left:6px}
+.battle.b3 .cmdhead .b9cue.it{color:#ffb0a0}.battle.b3 .cmdhead .b9cue.hx{color:#e6b8ff}

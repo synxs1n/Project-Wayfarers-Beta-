@@ -73,8 +73,8 @@ const B5SVG={attack:'<path d="M3 13L13 3M4.5 8.5l3 3M3 13l-1 1" stroke-width="2.
 function b5Icon(cat){if(cat==='unknown'||!B5SVG[cat])return '<b>?</b>';return `<svg viewBox="0 0 16 16" aria-hidden="true" stroke="currentColor" fill="none" stroke-linecap="round">${B5SVG[cat]}</svg>`;}
 
 // ----- the stage label, placed by the layout pass after everything else -----
-function b5LayIntents(L){L.intent=new Map();const W=L.W,H=L.H,w=B5.it.w,h=B5.it.h;
-  B.en.forEach(u=>{if(u.hp<=0)return;const b=unitBox(u);if(!b)return;const bo=L.bodies.find(q=>q.u===u),bd=bo?bo.r:{x:b.x-b.w/2,y:b.y-b.h,w:b.w,h:b.h},p=L.plates.get(u),A=[];
+function b5LayIntents(L){L.intent=new Map();const W=L.W,H=L.H,h=B5.it.h;
+  B.en.forEach(u=>{if(u.hp<=0)return;const w=b9IntW(u);const b=unitBox(u);if(!b)return;const bo=L.bodies.find(q=>q.u===u),bd=bo?bo.r:{x:b.x-b.w/2,y:b.y-b.h,w:b.w,h:b.h},p=L.plates.get(u),A=[];
     // beside the HP plate first (toward the middle of the stage, then outward), then over and under it, then around the body
     if(p){const my=Math.round(p.y+p.h/2-h/2);A.push({x:p.x+p.w+1,y:my,c:0},{x:p.x-w-1,y:my,c:1},{x:Math.round(p.x+p.w/2-w/2),y:p.y-h-1,c:2},{x:Math.round(p.x+p.w/2-w/2),y:p.y+p.h+1,c:3});}
     const cx=Math.round(b.x-w/2);A.push({x:cx,y:bd.y-h-1,c:4},{x:bd.x+bd.w+1,y:bd.y,c:6},{x:bd.x-w-1,y:bd.y,c:6},{x:cx,y:Math.max(b.y,bd.y+bd.h)+1,c:8});
@@ -82,7 +82,7 @@ function b5LayIntents(L){L.intent=new Map();const W=L.W,H=L.H,w=B5.it.w,h=B5.it.
     if(r){const o=Object.assign({kind:'intent',u},r);L.obs.push(o);L.all.push(o);L.intent.set(u,o);}else L.hidden.push({kind:'intent',u});});}
 {const lay0=b3Lay;b3Lay=function(){const L=lay0.apply(this,arguments);if(L&&!L._b5&&B){L._b5=1;try{b5LayIntents(L);}catch(e){}}return L;};}
 {const sh0=b3StageHtml;b3StageHtml=function(){let h=sh0.apply(this,arguments);try{const L=B3L.L;if(L&&L.intent){const px=v=>v+'px';
-  L.intent.forEach((o,u)=>{const I=b5Intent(u);if(!I)return;h+=`<span class="b5it b3l ${I.cat}" data-u="${unitRef(u)}" data-cat="${I.cat}" style="left:${px(o.x)};top:${px(o.y)};width:${px(o.w)};height:${px(o.h)}" title="${esc(I.title)}" aria-label="${esc(u.name)}: ${esc(I.title)}">${b5Icon(I.cat)}</span>`;});}}catch(e){}return h;};}
+  L.intent.forEach((o,u)=>{const I=b5Intent(u);if(!I)return;const T=o.w>B5.it.w&&b9TelePlan(u),ti=T?`${I.title}. Guard halves it; a stun or stripping its boons stops it.`:I.title;h+=`<span class="b5it b3l ${I.cat}${T?' b9tel':''}" data-u="${unitRef(u)}" data-cat="${I.cat}" style="left:${px(o.x)};top:${px(o.y)};width:${px(o.w)};height:${px(o.h)}" title="${esc(ti)}" aria-label="${esc(u.name)}: ${esc(ti)}">${b5Icon(I.cat)}${T?`<em>${B9W.g}</em>`:''}</span>`;});}}catch(e){}return h;};}
 
 // ----- 1) the turn forecast -----
 // steps the engine's model forward: [{u,t}] for the next n turns. cost: what the acting hero's chosen action costs (preview)
@@ -160,6 +160,46 @@ function b5Fit(){try{const o=document.querySelector('#border .ocs');if(!o)return
   const out=()=>{const R=o.getBoundingClientRect(),L=o.querySelectorAll(':scope>.oc,:scope>.b5oe');const l=L[L.length-1];if(!l)return false;const q=l.getBoundingClientRect();return q.right>R.right+.5;};
   while((o.scrollWidth>o.clientWidth+1||out())&&k++<10){const L=o.querySelectorAll(':scope>.oc,:scope>.b5oe');if(L.length<=3)break;L[L.length-1].remove();}}catch(e){}}
 {const rb0=renderBattle;renderBattle=function(stageOnly){const r=rb0.apply(this,arguments);if(!stageOnly)b5Fit();return r;};}
+
+// ----- v0.9.5: battle clarity on the stage and the command panel -----
+// The key weakness tag: one small label per foe (battle3.js b9Key: a reaction setup first), placed after the intents, beside them or the
+// HP plate (never on a sprite or another label; a foe whose tag finds no spot keeps it on its card only). A telegraphed big hit (a
+// Charger's Crushing Charge, a boss's Cataclysm, any big hit a foe is winding up for) widens that foe's intent label to "Guard!", and
+// the acting hero's command panel says what to do: Guard (it glows) when the hit lands on this hero before its next turn, "Interrupt:
+// stun or strip buffs" while a foe winds up, and the cleanse (Skills or Items glows) when a Hex is stacked on a hero.
+const B9W={w:11,h:10,g:'Guard!'};
+function b9TelePlan(u){if(!B||!u||u.side!=='e'||u.hp<=0)return null;let P=null;try{P=typeof b4RolePlan==='function'?b4RolePlan(u):null;}catch(e){}
+  if(P&&(P.kind==='unleash'||P.kind==='cataclysm'))return {u,n:P.n,tg:P.tg||[]};
+  try{if(has(u,'charge')){const p=foePlan(u);if(p&&p.cat==='big')return {u,n:p.sk&&p.sk.n||'Big hit',tg:B.front.filter(c=>c.hp>0)};}}catch(e){}return null;}
+function b9IntW(u){return b9TelePlan(u)?B5.it.w+Math.ceil(b3TextW(B9W.g,5,900)*1.1)+3:B5.it.w;}
+function b9LayWeak(L){L.wk=new Map();const W=L.W,H=L.H,w=B9W.w,h=B9W.h;
+  B.en.forEach(u=>{if(u.hp<=0)return;const k=b9Key(u);if(!k)return;const b=unitBox(u);if(!b)return;const bo=L.bodies.find(q=>q.u===u),bd=bo?bo.r:{x:b.x-b.w/2,y:b.y-b.h,w:b.w,h:b.h},p=L.plates.get(u),it=L.intent&&L.intent.get(u),A=[];
+    if(it){const my=Math.round(it.y+it.h/2-h/2);A.push({x:it.x+it.w+1,y:my,c:0},{x:it.x-w-1,y:my,c:1});}
+    if(p){const my=Math.round(p.y+p.h/2-h/2);A.push({x:p.x+p.w+1,y:my,c:1.5},{x:p.x-w-1,y:my,c:2},{x:Math.round(p.x+p.w/2-w/2),y:p.y-h-1,c:3},{x:Math.round(p.x+p.w/2-w/2),y:p.y+p.h+1,c:3.5});}
+    const cx=Math.round(b.x-w/2);A.push({x:cx,y:bd.y-h-1,c:5},{x:bd.x+bd.w+1,y:bd.y,c:6},{x:bd.x-w-1,y:bd.y,c:6},{x:cx,y:Math.max(b.y,bd.y+bd.h)+1,c:8});
+    B3SG={u};const r=b3Find(w,h,A,L.obs,W,H,B3.R*.6);B3SG=null;if(r){const o=Object.assign({kind:'weak',u,k},r);L.obs.push(o);L.all.push(o);L.wk.set(u,o);}});}
+{const lay0=b3Lay;b3Lay=function(){const L=lay0.apply(this,arguments);if(L&&!L._b9&&B){L._b9=1;try{b9LayWeak(L);}catch(e){}}return L;};}
+// the layout is rebuilt when a foe's key weakness or its telegraph changes
+{const k0=b3Key;b3Key=function(units){let k=k0.apply(this,arguments);try{k+='|w'+B.en.map(e=>{if(e.hp<=0)return '-';const x=b9Key(e);return (x?x.k[0]+x.id+x.s:'')+(b9TelePlan(e)?'T':'');}).join(',');}catch(e){}return k;};}
+{const sh0=b3StageHtml;b3StageHtml=function(){let h=sh0.apply(this,arguments);try{const L=B3L.L;if(L&&L.wk){const px=v=>v+'px';
+  L.wk.forEach((o,u)=>{const k=b9Key(u)||o.k,t=b9KeyTip(u,k);h+=`<span class="b9wk b3l ${k.s>1?'rx':''}" data-u="${unitRef(u)}" data-k="${k.k}:${k.id}" data-s="${k.s}" style="left:${px(o.x)};top:${px(o.y)};width:${px(o.w)};height:${px(o.h)}" title="${esc(t)}" aria-label="${esc(u.name)}: ${esc(t)}">${k.k==='el'?ico(k.id):dgIco(k.id)}</span>`;});}}catch(e){}return h;};}
+// what the acting hero should know before choosing: {k:'guard'|'int'|'hex', txt, tip, glow:'guard'|'skills'|'items'}
+function b9CanStop(a){try{return known(a).find(s=>a.mp>=(s.mp||0)&&(s.k==='phys'||s.k==='mag')&&(s.strip||(s.fx||[]).some(([k])=>k==='stun')))||null;}catch(e){return null;}}
+function b9Cleanse(a){try{const s=known(a).find(s=>s.cleanse&&a.mp>=(s.mp||0)&&(s.t==='ally'||s.t==='allyAll'));if(s)return 'skills';if(G&&G.inv&&(G.inv.remedy||0)>0)return 'items';}catch(e){}return null;}
+function b9Cue(){if(!B||B.over||B.auto||B.mode!=='cmd'||!B.cur||B.cur.side!=='p'||B.cur.isComp)return null;const a=B.cur;let ord=null;
+  const before=u=>{ord=ord||b5Order(12);for(let i=1;i<ord.length;i++){const x=ord[i].u;if(x===a)return false;if(x===u)return true;}return false;};
+  for(const u of B.en){const T=b9TelePlan(u);if(T&&T.tg.includes(a)&&before(u))return {k:'guard',u,glow:'guard',txt:`Guard! ${T.n} next`,tip:`${u.name}'s ${T.n} hits ${T.tg.length>1?'the whole Vanguard':a.name} before ${a.name} acts again. Guard halves it.`};}
+  const wind=B.en.find(u=>u.hp>0&&has(u,'charge'));
+  if(wind){const s=b9CanStop(a);return {k:'int',u:wind,glow:s?'skills':null,txt:'Interrupt: stun or strip buffs',tip:`${wind.name} is winding up. A stun or stripping its boons stops it.`+(s?` ${a.name} can: ${s.n}.`:'')};}
+  let hx=null;try{hx=B.front.filter(c=>c.hp>0&&!c.isComp&&b4Hex(c)>=2).sort((x,y)=>b4Hex(y)-b4Hex(x))[0];}catch(e){}
+  if(hx){const via=b9Cleanse(a);if(via)return {k:'hex',u:hx,glow:via,txt:`Hex ${b4Hex(hx)} on ${hx.name}: cleanse it`,tip:`${hx.name} carries ${b4Hex(hx)} Hex stacks; at ${B4.roles.hexMax} the next one bursts. ${via==='skills'?'A cleanse skill':'A Remedy'} clears it.`};}
+  return null;}
+{const ch0=cmdHtml;cmdHtml=function(){let h=ch0.apply(this,arguments);try{if(!B||B.menu!=='root'||B.swapAsk)return h;const C=b9Cue();if(!C)return h;
+  const cls=C.k==='guard'?'g':C.k==='int'?'it':'hx',cue=`<span class="b9cue inhead ${cls}" role="status" title="${esc(C.tip)}" aria-label="${esc(C.tip)}">${esc(C.txt)}</span>`,bk='<button class="btn sm cmdback"';
+  if(h.indexOf(bk)>=0)h=h.replace(bk,cue+bk);
+  if(C.glow==='guard')h=h.replace('data-arg="guard">Guard</button>',`data-arg="guard" title="${esc(C.tip)}">Guard!</button>`).replace('<button class="mi" data-act="cmd" data-arg="guard"','<button class="mi b9glow" data-act="cmd" data-arg="guard"');
+  else if(C.glow==='skills')h=h.replace('<button class="mi" data-act="cmd" data-arg="skills"',`<button class="mi b9glow ${C.k==='hex'?'cl':''}" title="${esc(C.tip)}" data-act="cmd" data-arg="skills"`);
+  else if(C.glow==='items')h=h.replace('<button class="mi" data-act="cmd" data-arg="items"',`<button class="mi b9glow cl" title="${esc(C.tip)}" data-act="cmd" data-arg="items"`);}catch(e){}return h;};}
 
 // tests: window.__A.B5
 const B5API={cfg:B5,R:B5R,order:(n,c)=>b5Order(n,c),plan:u=>foePlan(u),intent:u=>b5Intent(u),cat:sk=>b5Cat(sk),knows:u=>b5Knows(u),press:()=>b5Press(),timedOn:()=>b5TimedOn(),choose:(u,r,n)=>foeChoose(u,r,n)};

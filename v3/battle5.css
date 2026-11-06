@@ -30,3 +30,9 @@
 .battle.b3.m-tall .order .b5oi,.battle.b3.bside .order .b5oi{width:13px;height:13px}
 .battle.b3.m-tall .order .b5oi svg,.battle.b3.bside .order .b5oi svg{width:9px;height:9px}
 .battle.b3.m-tall .order .b5oi b,.battle.b3.bside .order .b5oi b{font-size:9px}
+/* v0.9.5: a telegraphed big hit widens the intent label to "Guard!"; the key weakness tag (one per foe, laid out by b3Lay) */
+.bstage .b5it.b9tel{display:flex;align-items:center;justify-content:center;gap:1px;border-color:#ffd04a;color:#ff6a4a;box-shadow:0 0 0 .5px #ffd04a,0 0 3px rgba(255,190,60,.85)}
+.bstage .b5it.b9tel em{font:900 5px/1 var(--fb,system-ui);font-style:normal;color:#ffe08a;white-space:nowrap;letter-spacing:.05px}
+.bstage .b9wk{display:grid;place-items:center;padding:0;border-radius:2px;border:.6px solid #ffbe5a;background:rgba(60,34,8,.88);pointer-events:none;z-index:6;box-shadow:0 0 0 .4px rgba(21,11,23,.9);overflow:hidden}
+.bstage .b9wk .ico,.bstage .b9wk .dli{width:8px;height:8px;margin:0}
+.bstage .b9wk.rx{border-color:#e8c8ff;background:rgba(70,30,110,.9);box-shadow:0 0 0 .4px rgba(21,11,23,.9),0 0 3px rgba(200,150,255,.9)}

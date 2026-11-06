@@ -87,6 +87,7 @@ function sfx(k){
   case 'weak':noiseHit(t,.09,.25,600,D);tone('square',300,t,.1,.12,D,90);break;
   case 'crit':noiseHit(t,.14,.3,500,D);tone('sawtooth',400,t,.15,.12,D,60);break;
   case 'react':[0,7,12,19].forEach((n,i)=>tone('square',MIDI(67+n),t+i*.035,.12,.09,D));noiseHit(t,.2,.18,1500,D);break;
+  case 'reaction':tone('triangle',MIDI(43),t,.3,.2,D,MIDI(31));noiseHit(t,.16,.2,900,D);[0,4,7,12].forEach((n,i)=>tone('square',MIDI(72+n),t+.02+i*.03,.09,.07,D));break; // v0.9.5: the reaction moment
   case 'break':noiseHit(t,.35,.35,300,D);[19,12,7,0].forEach((n,i)=>tone('square',MIDI(72+n),t+i*.05,.1,.1,D));break;
   case 'ko':tone('square',MIDI(60),t,.3,.1,D,MIDI(36));break;
   case 'win':[0,0,0,4,7,12].forEach((n,i)=>tone('square',MIDI(72+n),t+i*.11,i===5?.5:.1,.1,D));break;
