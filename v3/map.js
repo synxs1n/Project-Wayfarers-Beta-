@@ -88,10 +88,10 @@ function mMap(){const m=WS.m;if(!m)return '';const lbl=m.cave?m.name:m.archive?(
   const L=mapMarks(m),kinds=[...new Set(L.map(o=>o.k))].filter(k=>MKN[k]);
   setTimeout(()=>{drawFullMap();document.querySelectorAll('canvas.lgi').forEach(c=>{const x=c.getContext('2d');x.imageSmoothingEnabled=false;mapIcoDraw(x,c.dataset.ico,10,10,16);});},0);
   return `<div class="modal mapmodal" data-act="xClose"><div class="panel box mapbox"><div class="mh"><h2>${esc(lbl)}</h2></div>
-    <canvas id="fmap" class="fmap" aria-label="Map of ${esc(lbl)}"></canvas>
+    <canvas id="fmap" class="fmap" data-act="fmTap" aria-label="Map of ${esc(lbl)}"></canvas><p class="note fmnote" id="fmnote" aria-live="polite"></p>
     <div class="maplegend"><span><b style="color:#fff">➤</b> You</span>${legendKeys(L).map(k=>MAPICO_NAME[k]?`<span><canvas class="lgi" data-ico="${k}" width="20" height="20"></canvas> ${MAPICO_NAME[k]}</span>`:`<span><b style="color:${MK[k][0]}">${MK[k][1]}</b> ${MKN[k]}</span>`).join('')}</div>
     <div class="btnrow"><button class="btn sm" data-act="worldMap">World map</button></div>
-    <p class="note">Only places your party has seen are drawn. Tap anywhere, press N or Esc, or B on a pad to close.</p></div></div>`;}
+    <p class="note">Only places your party has seen are drawn. Tap a place you have been to and the party walks there. Tap outside the map, press N or Esc, or B on a pad to close.</p></div></div>`;}
 function drawFullMap(){const cv=document.getElementById('fmap'),m=WS.m;if(!cv||!m)return;const box=cv.parentElement,maxW=Math.min(900,(box.clientWidth||340)-8),maxH=Math.max(160,(window.innerHeight||600)*.62);
   const sc=Math.max(2,Math.floor(Math.min(maxW/m.w,maxH/m.h)));cv.width=m.w*sc;cv.height=m.h*sc;cv.style.width=cv.width+'px';cv.style.height=cv.height+'px';
   const x=cv.getContext('2d');x.imageSmoothingEnabled=false;x.fillStyle='#0a0710';x.fillRect(0,0,cv.width,cv.height);x.drawImage(mapBase(m),0,0,m.w*sc,m.h*sc);
@@ -273,15 +273,97 @@ function mWorldMap(){
   return `<div class="modal mapmodal" data-act="xClose"><div class="panel box mapbox wmbox"><div class="mh"><h2>World map</h2></div>
     <canvas id="wmap" class="fmap wmap" data-act="wmTap" aria-label="World map"></canvas>
     <div class="maplegend wmlegend">${L.map(([k,n])=>`<span><canvas class="wml" data-k="${k}" width="28" height="28"></canvas> ${n}</span>`).join('')}</div>
+    <div class="btnrow" id="wmgo"></div>
     <p class="note">Tap a place to see its name. Roads follow the gates, so a gate on the north edge leads up the map. Places appear as you find them; side caves and fortresses are optional. Tap outside the map to close.</p></div></div>`;
 }
 // a tap on the map shows that place's name (and does not close the map); a tap on empty parchment hides it again
 document.addEventListener('pointerdown',e=>{if(e.target&&e.target.id==='wmap')WMS.pt={x:e.clientX,y:e.clientY,t:Date.now()};},true);
 ACT.wmTap=function(arg,el){const cv=el||document.getElementById('wmap');if(!cv)return;const p=WMS.pt;if(!p)return;const r=cv.getBoundingClientRect();if(!r.width)return;
   const px=(p.x-r.left)*cv.width/r.width,py=(p.y-r.top)*cv.height/r.height;let best=null,bd=1e9;WMS.hit.forEach(o=>{const d=Math.hypot(o.x-px,o.y-py);if(d<o.r*1.1&&d<bd){bd=d;best=o;}});
-  WMS.sel=best?(WMS.sel===best.id?null:best.id):null;drawWorldMap();if(typeof sfx==='function'&&best)sfx('blip');};
+  WMS.sel=best?(WMS.sel===best.id?null:best.id):null;drawWorldMap();if(typeof sfx==='function'&&best)sfx('blip');try{wmGo();}catch(e){}};
 {const st=document.createElement('style');st.textContent='.wmbox .wmap{border:2px solid #6a4a24;border-radius:4px;background:#e2cb98;box-shadow:0 2px 10px rgba(0,0,0,.45);cursor:pointer;touch-action:manipulation}.wmlegend .wml{width:28px;height:28px;vertical-align:middle}.wmlegend span{display:inline-flex;align-items:center;gap:4px}';document.head.appendChild(st);}
 {const vm1=vModal;vModal=function(md){if(md&&md.type==='worldmap')return mWorldMap(md);return vm1.apply(this,arguments);};}
 function openWorldMap(){const prev=V.modal;V.modal={type:'worldmap',from:prev&&prev.type==='map'?prev:{type:'map'}};render();}
 ACT.worldMap=function(){if(!G||V.screen!=='world')return;openWorldMap();};
 window.addEventListener('resize',()=>{if(V.modal&&V.modal.type==='worldmap')drawWorldMap();});
+
+// =================== Beta v0.7.1: tap the map to walk there ===================
+// On the full map (Map button) and on the minimap, a tap on a tile the party has already seen on this map walks the hero there along the
+// shortest known route: A* over the real collision grid (8 ways, never cutting a corner, the same rules as a step: diagOk; doors, exits,
+// stairs, gates and boss circles are never walked through) and through seen tiles only. A door or building, a shop, an exit, stairs or
+// anything solid: the walk stops on the tile in front of it, facing it, and does not go in. The walk is one more movement source (WS.auto,
+// source 'auto', after keys, pad, joystick, drag and tap): any other input stops it, so do a random encounter (haltInput), a dialog or
+// menu opening, a new map and a way that stays blocked. A tile not seen yet says so. The walk animates like any other. State: WS.auto
+// (not saved). Both renderers share it (the maps are 2D overlays; the walk is gameplay).
+const AW={unseen:'You have not been there yet.',noway:'There is no way there that you know of.',blocked:'Something blocks the way.'};
+const AW_D8=['u','d','l','r','ul','ur','dl','dr'];
+// a tile the walk may stand on along the way
+function awPass(m,x,y){if(!m||x<0||y<0||x>=m.w||y>=m.h)return false;if(solidAt(m,x,y))return false;if((m.exits||[]).some(e=>e.x===x&&e.y===y))return false;
+  if('EXG'.includes(tileAt(m,x,y)))return false;return !(m.bld||[]).some(b=>b.door[0]===x&&b.door[1]===y);}
+const awFaceTo=(fx,fy,tx,ty)=>tx>fx?'r':tx<fx?'l':ty>fy?'d':'u';
+// where a tap on (tx,ty) ends: the tile itself, or the tiles in front of what is there; [x,y,face]
+function awGoal(m,tx,ty){const W=m.w,H=m.h,b=(m.bld||[]).find(b=>tx>=b.x&&tx<b.x+b.w&&ty>=b.y&&ty<b.y+b.h);
+  if(b&&b.door)return {what:'door',b,c:[[b.door[0],b.door[1]+1,'u']]};
+  const ex=(m.exits||[]).find(e=>e.x===tx&&e.y===ty);
+  const around=(x,y)=>[[0,1],[0,-1],[1,0],[-1,0]].map(([a,c])=>[x+a,y+c,awFaceTo(x+a,y+c,x,y)]).filter(([x2,y2])=>awPass(m,x2,y2)||(x2===WS.x&&y2===WS.y));
+  if(ex){const v=ex.x===0?[1,0]:ex.x===W-1?[-1,0]:ex.y===0?[0,1]:ex.y===H-1?[0,-1]:[0,0],f=awFaceTo(tx+v[0],ty+v[1],tx,ty),c=[[tx+v[0],ty+v[1],f]].filter(([x,y])=>awPass(m,x,y)||(x===WS.x&&y===WS.y));
+    return {what:'exit',c:c.length?c:around(tx,ty)};}
+  if(awPass(m,tx,ty)||(tx===WS.x&&ty===WS.y))return {what:'tile',c:[[tx,ty,null]]};
+  return {what:'thing',c:around(tx,ty)};}
+// A* from the hero to the nearest goal tile; returns {dirs,end:[x,y,face]} or null
+function awPath(m,sx,sy,goals){if(!goals.length)return null;const W=m.w,H=m.h,N=W*H,g=new Float64Array(N).fill(Infinity),pv=new Int32Array(N).fill(-1),pd=new Int8Array(N),done=new Uint8Array(N),gk=new Map();
+  goals.forEach(q=>gk.set(q[1]*W+q[0],q));const hh=(x,y)=>{let b=1e9;for(const [gx,gy] of goals){const dx=Math.abs(gx-x),dy=Math.abs(gy-y),v=Math.max(dx,dy)+.4142*Math.min(dx,dy);if(v<b)b=v;}return b;};
+  const s0=sy*W+sx,hp=p2Heap();g[s0]=0;hp.push([hh(sx,sy),s0]);let end=-1;
+  while(hp.n){const [,k]=hp.pop();if(done[k])continue;done[k]=1;if(gk.has(k)){end=k;break;}const x=k%W,y=(k-x)/W;
+    for(let i=0;i<8;i++){const d=AW_D8[i],[a,b]=DIRV[d],nx=x+a,ny=y+b;if(nx<0||ny<0||nx>=W||ny>=H)continue;const nk=ny*W+nx;if(done[nk])continue;
+      if(!gk.has(nk)&&!(awPass(m,nx,ny)&&isSeen(m,nx,ny)))continue;if(gk.has(nk)&&!awPass(m,nx,ny)&&nk!==s0)continue;
+      if(i>=4&&!diagOk(m,x,y,d))continue;const ng=g[k]+(i>=4?1.4142:1);if(ng<g[nk]){g[nk]=ng;pv[nk]=k;pd[nk]=i;hp.push([ng+hh(nx,ny),nk]);}}}
+  if(end<0)return null;const dirs=[];for(let k=end;k!==s0;k=pv[k])dirs.unshift(AW_D8[pd[k]]);return {dirs,end:gk.get(end)};}
+// plan a walk to a tapped tile: {res:'ok'|'unseen'|'noway'|'here', plan}
+function awPlan(m,tx,ty){if(!m||!G||tx<0||ty<0||tx>=m.w||ty>=m.h)return {res:'noway'};if(!isSeen(m,tx,ty))return {res:'unseen'};
+  const goal=awGoal(m,tx,ty),here=goal.c.find(([x,y])=>x===WS.x&&y===WS.y);if(here)return {res:'here',face:here[2]};
+  const P=awPath(m,WS.x,WS.y,goal.c);if(!P)return {res:'noway'};return {res:'ok',plan:{m:m.id,tx,ty,goals:goal.c,what:goal.what,dirs:P.dirs,end:P.end,at:WS.x+','+WS.y,fails:0}};}
+function awGo(p,src){WS.target=null;WS.path=null;WS.touchDir=null;WS.auto=Object.assign(p,{src});WS.autoT=performance.now();}
+function awFace(f){if(!f)return;WS.dir=f;if(f==='l'||f==='r')WS.face=f;}
+function awStop(why){const A=WS.auto;if(!A)return;WS.auto=null;A.why=why;WS.autoLast=A;if(why==='blocked')toast(AW.blocked);}
+// the next step of the walk (called from worldInputDir while the walk is the newest source)
+function awNext(){const A=WS.auto,m=WS.m;if(!A||!m||A.m!==m.id){awStop('map');return null;}
+  const at=A.goals.find(([x,y])=>x===WS.x&&y===WS.y);if(at){WS.auto=null;A.why='arrived';WS.autoLast=A;awFace(at[2]);return null;}
+  let replan=A.at!==WS.x+','+WS.y||!A.dirs.length;
+  if(!replan){const d=A.dirs[0],[a,b]=DIRV[d];if(!awPass(m,WS.x+a,WS.y+b)&&!A.goals.some(([x,y])=>x===WS.x+a&&y===WS.y+b)||(d.length===2&&!diagOk(m,WS.x,WS.y,d)))replan=true;}
+  if(replan){if(A.at!==WS.x+','+WS.y&&A.lastAt===WS.x+','+WS.y&&++A.fails>3){awStop('blocked');return null;}A.lastAt=WS.x+','+WS.y;
+    const P=awPath(m,WS.x,WS.y,A.goals);if(!P){awStop('blocked');return null;}A.dirs=P.dirs;A.end=P.end;}
+  const d=A.dirs.shift(),[a,b]=DIRV[d];A.at=(WS.x+a)+','+(WS.y+b);return d;}
+{const is0=inputSources;inputSources=function(){const c=is0.apply(this,arguments);if(WS.auto){c.push(['auto',WS.autoT||0]);c.sort((a,b)=>b[1]-a[1]);}return c;};}
+{const ia0=inputActive;inputActive=function(){return !!WS.auto||ia0.apply(this,arguments);};}
+{const wi0=worldInputDir;worldInputDir=function(){if(!WS.auto)return wi0.apply(this,arguments);const top=(inputSources()[0]||[])[0];
+  if(top!=='auto'){awStop('input');return wi0.apply(this,arguments);}return awNext();};}
+{const h0=haltInput;haltInput=function(){awStop('halt');return h0.apply(this,arguments);};}
+{const wt0=worldTick;worldTick=function(){if(WS.auto&&(V.modal||WS.dlg))awStop(WS.dlg?'dialog':'menu');return wt0.apply(this,arguments);};}
+{const pa1=placeAt;placeAt=function(){awStop('map');return pa1.apply(this,arguments);};}
+// any key, and any press in the world view that is not a map, stops the walk
+window.addEventListener('keydown',e=>{if(WS.auto&&V.screen==='world'&&!e.repeat)awStop('input');},true);
+document.addEventListener('pointerdown',e=>{if(!WS.auto||V.screen!=='world')return;const t=e.target;if(t&&t.closest&&t.closest('#mmap,#fmap'))return;awStop('input');},true);
+// start a walk from a map tap; returns the result so the caller can say why not
+function awTap(m,tx,ty,src,before){const r=awPlan(m,tx,ty);
+  if(r.res==='unseen'||r.res==='noway'){if(typeof sfx==='function')sfx('deny');return r;}
+  if(before)before();if(r.res==='here'){awFace(r.face);return r;}awGo(r.plan,src);if(typeof sfx==='function')sfx('blip');return r;}
+// the full map: a tap on a seen tile closes the map and walks; on an unseen one it says so and the map stays open
+const FMT={pt:null};
+document.addEventListener('pointerdown',e=>{if(e.target&&e.target.id==='fmap')FMT.pt={x:e.clientX,y:e.clientY};},true);
+function fmTile(cv,cx,cy){const m=WS.m,r=cv.getBoundingClientRect();if(!m||!r.width||!r.height)return null;return [Math.floor((cx-r.left)/r.width*m.w),Math.floor((cy-r.top)/r.height*m.h)];}
+ACT.fmTap=function(arg,el){const cv=el||document.getElementById('fmap'),p=FMT.pt,m=WS.m;FMT.pt=null;if(!cv||!p||!m||V.screen!=='world')return;const t=fmTile(cv,p.x,p.y);if(!t)return;
+  const r=awTap(m,t[0],t[1],'map',()=>{V.modal=null;render();});const n=document.getElementById('fmnote');
+  if(n&&(r.res==='unseen'||r.res==='noway')){n.textContent=AW[r.res];n.classList.remove('on');void n.offsetWidth;n.classList.add('on');}};
+// the minimap: it takes taps (it used to let them through to the world view)
+function mmTile(cv,cx,cy){const m=WS.m,r=cv.getBoundingClientRect();if(!m||!r.width)return null;const sc=4,px=(cx-r.left)*cv.width/r.width,py=(cy-r.top)*cv.height/r.height,
+  ox=Math.round(cv.width/2-(WS.x+.5)*sc),oy=Math.round(cv.height/2-(WS.y+.5)*sc);return [Math.floor((px-ox)/sc),Math.floor((py-oy)/sc)];}
+document.addEventListener('pointerdown',e=>{const cv=e.target;if(!cv||cv.id!=='mmap'||V.screen!=='world')return;e.preventDefault();e.stopPropagation();
+  if(V.modal||WS.dlg||WS.lock||!WS.m)return;const t=mmTile(cv,e.clientX,e.clientY);if(!t)return;const r=awTap(WS.m,t[0],t[1],'mini');
+  if(r.res==='unseen'||r.res==='noway')toast(AW[r.res]);},{capture:true,passive:false});
+{const st=document.createElement('style');st.textContent='#mmap.mmap{pointer-events:auto;cursor:pointer;touch-action:none}.fmap[data-act]{cursor:pointer;touch-action:manipulation}.fmnote{min-height:1.2em;margin:2px 0 0;text-align:center;color:#ffd98a}.fmnote.on{animation:fmn .9s ease}@keyframes fmn{0%{opacity:0}20%{opacity:1}}';document.head.appendChild(st);}
+// the world map: a visited town offers the waystone's own travel when the party stands at a waystone (no new fast travel)
+function wmAtStone(){const m=WS.m;if(!m)return false;for(let b=-1;b<=1;b++)for(let a=-1;a<=1;a++)if(tileAt(m,WS.x+a,WS.y+b)==='W')return true;return false;}
+function wmGo(){const el=document.getElementById('wmgo');if(!el)return;const id=WMS.sel,s=id&&/^t\d$/.test(id)?+id.slice(1):null;
+  if(s==null||!(G.visited||[]).includes(s)||G.daily||(WS.m&&WS.m.id==='t'+s)){el.innerHTML='';return;}
+  el.innerHTML=wmAtStone()?`<button class="btn sm gold" data-act="travel" data-arg="${s}">Travel to ${esc(ZS(s).town)}</button>`:`<small class="note">A waystone can carry you to ${esc(ZS(s).town)}.</small>`;}
