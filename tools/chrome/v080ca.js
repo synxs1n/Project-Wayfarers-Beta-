@@ -15,7 +15,8 @@ if(oldHtml){const O=await open({html:oldHtml});
   await O.browser.close();}
 const pre='localStorage.clear();'+(saved?`(function(o){for(const k in o)localStorage.setItem(k,o[k]);})(${JSON.stringify(saved)});`:'');
 const H=await open({pre});const {ev,wait}=H;
-if(saved){const r=await ev(()=>{const A=__A;A.ACT.cont();const G=A.G,out={};
+if(saved){await ev(()=>{__A.ACT.cont();});for(let i=0;i<40&&!(await ev(()=>!!__A.G));i++)await wait(250);// Continue may wait for the save sync first (v0.8.5)
+  const r=await ev(()=>{const A=__A;const G=A.G,out={};
     ['dorn','brook','tamsin','lumen'].forEach(id=>{const c=G.roster[id];out[id]={lv:c.lv,rl:A.known(c).filter(s=>s.rl).map(s=>s.id)};});return out;});
   await wait(200);await ev(()=>__A.render());await wait(300);
   const note=await ev(()=>{const el=document.getElementById('lnq');return el?el.textContent:'';});

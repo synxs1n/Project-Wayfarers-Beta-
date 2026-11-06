@@ -46,7 +46,7 @@ function pcLockText(sys){return `opens in the ${pcOrd(PACE.at[sys]||0)} realm`;}
 {const w0=win;win=function(){if(!G||pcUnlocked('bonds'))return w0.apply(this,arguments);const b0=JSON.stringify(G.bonds||{}),t0=(G.talks||[]).length;const r=w0.apply(this,arguments);
   try{G.bonds=JSON.parse(b0);if(G.talks)G.talks.length=Math.min(G.talks.length,t0);const i=V.modal&&V.modal.info;if(i&&i.bonds)i.bonds=[];}catch(e){}return r;};}
 if(typeof bondSheet==='function'){const bs0=bondSheet;bondSheet=function(){if(!pcUnlocked('bonds'))return '';return bs0.apply(this,arguments);};}
-if(typeof vBonds==='function'){const vb0=vBonds;vBonds=function(){if(!pcUnlocked('bonds'))return `<p class="note pclock">Bonds ${pcLockText('bonds')}: from then on, heroes who win side by side in the Vanguard grow closer, with campfire talks and joint techs.</p>`;return vb0.apply(this,arguments);};}
+if(typeof vBonds==='function'){const vb0=vBonds;vBonds=function(){if(!pcUnlocked('bonds'))return `<p class="note pclock">Bonds ${pcLockText('bonds').replace('opens','open')}: from then on, heroes who win side by side in the Vanguard grow closer, with campfire talks and joint techs.</p>`;return vb0.apply(this,arguments);};}
 // guild missions: the third realm on a new journey (the v0.7.2 first Scourge rule above still holds for older journeys)
 function pcGuildOpen(){return pcGated()?pcUnlocked('guilds'):pcFirstBoss();}
 {const fl1=facMissionList;facMissionList=function(id){if(!pcGated()||pcGuildOpen())return fl1.apply(this,arguments);const f=facInit();return fl1.apply(this,arguments).filter(m=>f.acc[m.id]!=null);};}

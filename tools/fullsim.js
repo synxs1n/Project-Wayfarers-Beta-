@@ -13,6 +13,10 @@
 //                   realm up to six, and each boss fought until it falls (5 more fights after each loss, like a player who grinds
 //                   until ready); ends with the top hero's level and the party's average level. Quests, chests and side caves are not
 //                   counted, so real players end a little higher
+//                   v0.9.5: the visible roamers the journey spawns (field and dungeon; ROAMSHARE=.8 of them fought, half caught unaware) are
+//                   real roamer fights, and the side sites (the field's cave and fortress; SITESHARE=.7 visited, after the boss) add their
+//                   walk, time and miniboss. SUMMARY splits the fights into roamers, random and minibosses.
+//   gim [N]         v0.9.5: every Scourge and Calamity with its realm gimmick: win rate, telegraphs, landings, answers, gimmick damage
 const fs=require('fs'),path=require('path');const {chromium}=require('playwright');
 const ROOT=process.env.SIMROOT||path.join(__dirname,'..'),V3=path.join(ROOT,'v3');// SIMROOT=<another checkout> runs the same sims on that build (for before/after)
 const BP=fs.readFileSync(path.join(ROOT,'v3build.py'),'utf8'),MODS=JSON.parse((BP.match(/MODS=(\[[^\]]+\])/)||BP.match(/for n in (\[[^\]]+\])/))[1].replace(/'/g,'"'));

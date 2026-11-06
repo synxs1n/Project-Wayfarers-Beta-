@@ -262,7 +262,7 @@ function b4HookGim(){if(enemyTurn0.__b4g)return;const et0=enemyTurn0;
     if(S.act&&S.act.t==='mirror'&&hit&&sk.k===S.act.kind&&a.hp>0&&!a.isComp){const d=Math.max(1,Math.round((hp0-u.hp)*D.refl));fx(a,String(d),'dmg');log(`The mirror splashes ${d} back at ${a.name}.`);hurt(a,d);}
     b4GimPhase(u);b4GimSync();}catch(e){}return r;};}
 {const sc1=scan;scan=function(t){const S=B&&B.b4g;const r=sc1.apply(this,arguments);try{if(S&&S.u===t){if(S.act&&S.act.t==='veil'){S.act=null;fx(t,'Revealed','stat good');log(`The scan cuts through the mist: ${t.name} is revealed.`);}log(`Realm gimmick: ${b4GimLine(S.D)}`);b4GimSync();}}catch(e){}return r;};}
-{const hu1=hurt;hurt=function(t,d){const r=hu1.apply(this,arguments);try{if(B&&B.b4g&&t===B.b4g.u)b4GimPhase(t);}catch(e){}return r;};}
+{const hu1=hurt;hurt=function(t,d){const r=hu1.apply(this,arguments);try{if(B&&B.b4g&&t===B.b4g.u){b4GimPhase(t);b4GimSync();}}catch(e){}return r;};}
 // the i panel: the boss's gimmick and where it stands now
 function b4GimNow(){const S=B&&B.b4g;if(!S)return '';const D=S.D,P=S.pend,A=S.act;
   if(P)return `Telegraphed: ${D.n} lands on its next turn. ${b4GimHint(D)}`;if(A)return A.t==='air'?'Airborne now; it dives at the marked spot next turn.':A.t==='veil'?'Veiled now.':'Mirror raised now: weapons are safe.';

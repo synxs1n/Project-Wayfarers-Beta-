@@ -125,7 +125,7 @@ const BOSS_LV={frac:.5,cap:12};
 // 3.2 bosses: shield pips +50% (5 to 8, 7 to 11); the break window hits for less and is over once the foe loses the turn it staggers
 const BOSS_PIPS={mult:1.5};const BREAK_WIN={bonus:1.3,short:true};
 // 3.2 extra boss muscle on top of the old stat table (hp and power multipliers)
-const BOSS_BUFF={hp:[.9,1.5,1.55,1.76,1.36],pow:[1,1.34,1.38,1.6,1.28]}// v0.4.3: re-tuned with capes; v0.8.2: the first three Scourges eased (were hp 1.3, 1.75, 1.8 and pow 1.15, 1.4, 1.44) so no boss is a wall; v0.9.5: hp [1.15,1.65,1.7,2.0,1.52] -> about 4 to 10% less, the realm gimmicks (BOSS_GIM) carry the rest
+const BOSS_BUFF={hp:[.9,1.5,1.55,1.7,1.36],pow:[1,1.34,1.38,1.6,1.28]}// v0.4.3: re-tuned with capes; v0.8.2: the first three Scourges eased (were hp 1.3, 1.75, 1.8 and pow 1.15, 1.4, 1.44) so no boss is a wall; v0.9.5: hp [1.15,1.65,1.7,2.0,1.52] -> about 4 to 10% less, the realm gimmicks (BOSS_GIM) carry the rest
 // BOSS_GIM (v0.9.5, battle4.js): every Scourge and Calamity brings one realm gimmick to its first fight (kind 'boss'; not Echoes, not the Daily
 // Trial). Each is telegraphed on the boss's turn (a log line, a "Telegraph" chip on the boss, a mark on the heroes it will hit) and lands on its
 // next turn, so reading it pays. first: the boss's turn of the first telegraph; every: turns between telegraphs (per boss: every).
@@ -312,12 +312,12 @@ const PACE={at:{elements:0,combat:0,taming:0,reactions:1,gear:1,bonds:1,camp:2,g
 // ==== 6. World: encounters, chance meetings, travel items, day and night, weather tables, factions, map generation ====
 // encounters on the road
 // ENC_RATE: chance per step to meet a random battle, by the Settings choice. CE_*: chance meetings with a wayfarer (chance.js), about 1 in 170 steps after a 30 step gap, 2 per area at most
-const ENC_RATE={off:0,low:.02,normal:.035,high:.06};// v0.9.5: fewer, better fights: about half the random battles of v0.8.2 (was .07/.13/.18); visible roamers (ROAM) make up the rest
+const ENC_RATE={off:0,low:.02,normal:.035,high:.06};// v0.9.5: fewer, better fights: one random battle about every 41 steps on Normal instead of every 15 (v0.8.2: .07/.13/.18); visible roamers (ROAM) and side sites make up the rest
 const ENC_MIN_STEPS=12;// v0.9.5: at least 12 tiles walked between random battles (v0.8.2: 7)
 // ENC (v0.9.5, roam.js): what an ordinary fight pays now that there are fewer of them. rew: XP and gold multipliers for random field and
 // dungeon battles and roamers (a number, or one per stage: the early realms lost the most fights); roam: an extra multiplier for a roamer (on top of rew). Bosses, elites, minibosses, the arena and the Daily
 // Trial are not touched. Applied through facMul (engine.js win), like the NG+ modifiers.
-const ENC={rew:{xp:[2,1.6,1.2,1,.85],gold:1.3},roam:{xp:1.1,gold:1.15}};
+const ENC={rew:{xp:[2,1.6,1.2,1,.85],gold:1.45},roam:{xp:1.1,gold:1.15}};
 // chance meetings with a wayfarer (chance.js): about 1 in 170 steps after a 30 step quiet gap, at most 2 per area
 const CE_ODDS=1/170, CE_GAP=30, CE_AREA_CAP=2;
 // TOWN_LANE: every town gate gets a clear approach lane at least this many tiles wide to the main road

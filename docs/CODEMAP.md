@@ -37,13 +37,15 @@ evals any name), `window.__AU` (ambience.js), `__P2` (p2world.js), `__P3` (p3sho
 | minimap, area map, world map | `map.js`, `visuals7.js` (drawMini) |
 | menus and shops | `menus3.js` (tabs, filters, Smithy, Alchemy, Tavern, Guild, Board), `ui.js` (vModal, mMenu, mChar), `ui2.js` (crafting, sort filters), `p3shop.js` (Best for party, Smithy plan), `temper.js`, `equip.js`/`equip2.js`, CSS `menus3.css` |
 | party, Best Party, loadouts, roster | `party2.js`, `p3shop.js` (scoring), `party3.js` (formations, Training team), `nav.js` (swaps), `tavern2.js` (journey roster, tavern tables), `progression.js` |
-| companions and taming | `comp.js`, `comp2.js`, `engine2.js` (registerTamed), `v063prog.js` (Taming log) |
+| companions and taming | `comp.js`, `comp2.js`, `comp3.js` (growth: second skill, evolution, TAME), `engine2.js` (registerTamed), `v063prog.js` (Taming log) |
 | quests, factions, guilds | `engine.js` (genQuests, claimQuest), `factions.js`, `p4party.js` (personal quests by realm), `allq.js`, `qready.js` |
 | saves and slots | `engine.js` (packG/unpackG, saveGame), `saves.js` (slots, backups, import/export, loadRaw), `gearmig.js` (old gear), `cloud.js` + `account.js` (accounts). Keys: `aurelis-wayfarers-v3` (+`-s1`, `-s2`), `aurelis-meta-v1`. Sync between devices (svMark, svFlush, svCheck/svDecide, svLeave, svGate, the newer save prompt; `aurelis-sync-v1`): `saves.js`, see `docs/v085-sync.md` |
 | Daily Trial and twists | `engine2.js` (dailyGo, seeded RNG), `ui2.js` (screens), `twists.js`, `config.js` 9 |
 | audio | `audio.js` (chiptune fallback), `audio2.js` (orchestral engine), `musicdata.js` (score), `music2.js` (wiring), `sfx2.js`, `ambience.js` |
 | graphics tiers and settings | `gfx6.js` (GFX tiers), `p5settings.js`, `ui.js` settingsBody (wrapped by several modules) |
-| onboarding, hints, What next? | `onboard.js` (tip cards), `p2world.js` (hints), `progression.js` (What next?), `pacing.js` (unlock timing) |
+| onboarding, hints, What next? | `onboard.js` (tip cards), `p2world.js` (hints), `progression.js` (What next?), `pacing.js` (unlock timing; `pcUnlocked(system)`, PACE) |
+| boss realm gimmicks (telegraphs, landings, answers) | `battle4.js` (b4Gim*), `BOSS_GIM` in `config.js` 3 |
+| encounter rate, roamers on fields and in dungeons, ordinary fight rewards | `ENC_RATE`, `ENC`, `ROAM` in `config.js`; `worldrt.js` (arrive), `roam.js` |
 | title screen | `title7.js`, `logo.js`, `ui.js` (title scene) |
 | test hooks | `v3/shell.html` (`window.__A`), `p45hook.js`, the `window.__*` objects above |
 
@@ -98,7 +100,7 @@ v0.4.5 to v0.6
 
 v0.7
 - `battle3.js` battle screen pass (labels, unitHud; v0.8.0: phone and Fold fit, compact foe list, damage type symbols `dlIco`) · `battle5.js` forecast, foe intents, timed hits · `battle4.js` detonation refund, free swap, Momentum, roles
-- `remember.js` remember Auto and Run · `pacing.js` unlock pacing · `onboard.js` tip cards · `duellines.js` duel voices · `qready.js` quests ready
+- `remember.js` remember Auto and Run · `pacing.js` unlock pacing (v0.9.5: by realm, pcUnlocked) · `comp3.js` companion growth (v0.9.5) · `onboard.js` tip cards · `duellines.js` duel voices · `qready.js` quests ready
 - `hd2dgl.js` HD-2D WebGL layer · `hd2d.js` HD-2D world renderer · `weather7.js` layered weather · `pathguard.js` path protection
 - `sprhd2.js` HD sprite consumers · `logo.js` wordmark · `title7.js` title (v0.8.0: six wayfarers walking through the realms) · `visuals7.js` minimap tiles, victory crest, arena
 
