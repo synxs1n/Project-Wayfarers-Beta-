@@ -108,6 +108,7 @@ function vNext(){
   if(qo.length)add(false,`${qo.length} quest${qo.length>1?'s':''} waiting on the board`,qo.slice(0,3).map(q=>esc(q.title)).join(', '));
   const ba=G.bounties.filter(b=>b.state==='active'),bo=G.bounties.filter(b=>b.state==='open'&&b.stage<=s);
   ba.forEach(b=>add(false,`Bounty: ${esc(b.name)}`,`Roaming ${esc(ZS(b.stage).n)}. Beat it to claim it${G.tamed.length<8?' and maybe tame it':''}.`));
+  Object.values(G.personal||{}).filter(q=>q&&q.state==='active'&&TPL[q.personal]).forEach(q=>add(false,`Rival: ${esc(q.name)}`,`${esc(TPL[q.personal].n)}'s personal quest, roaming ${esc(ZS(q.stage).n)}. `+(typeof rivalNeed==='function'&&rivalNeed(q)?`<b class="rgneed">${esc(rivalNeedShort(q))}.</b>`:`${esc(TPL[q.personal].n)} is in your party: face it.`)));
   if(bo.length)add(false,`${bo.length} bount${bo.length>1?'ies':'y'} posted at the Guild Hall`,'Elite monsters with gold, a stat charm and materials.');
   // exploring
   (worldV3()?[['f'+s,Z.n],['d'+s,Z.dungeon],['k'+s,typeof CAVE_NAMES!=='undefined'?CAVE_NAMES[s]:'Side cave']]:[['g'+s,Z.n+' (first field)'],['f'+s,worldV2()?Z.n+' (deeper fields)':Z.n],['d'+s,Z.dungeon]]).forEach(([mid,n])=>{if(!been[mid])return;const nl=nodesLeft(mid),cl=chestsLeft(mid);if(nl)add(false,`${nl} gathering spot${nl>1?'s':''} left in ${esc(n)}`,'Herbs, ore and logs. They regrow when you rest at an inn.');if(cl)add(false,`${cl} unopened chest${cl>1?'s':''} in ${esc(n)}`,'');});

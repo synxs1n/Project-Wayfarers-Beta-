@@ -440,6 +440,7 @@ function hdActors(m,now,ts){const B=HD.dyn,BB=HD.dynB,BA=HD.dynA,V=HD.S.V,still=
     if(a.type==='legend'){const g=.5+.5*Math.sin(ts/240);hdDecal(BB,'glow',hdGlowS(),fx,fz+1,30,12,255,215,90,(.25+.3*g)*255);
       const c=a.mon?imgOf('mapmon:'+MON[a.mon].art,()=>monCanvas(MON[a.mon].art)):walkerCanvas('leg:'+TPL[a.q.hero].id,TPL[a.q.hero].look,TPL[a.q.hero].el,TPL[a.q.hero].id,'front',0);
       hdChar(B,c,fx,(bob*.6-(a.mon?1:2.5)*sp)*V,fz,!!a.mon,255,16);hdShadowC(fx,fz+1);hdBill(B,'pipg',hdPip('#ffd24a'),fx,HD.chH+(3+bob)*V,fz,false,1,255,255,255,255,4);hdPickAdd(-1,fx,fz,Math.max(HD.chH,22*V),Math.max(HD.chW,16),a.x,a.y);return;}
+    if(ghostActor(a)){rgDrawHD(a,BB,fx,fz,bob,sp,V,ts);hdPickAdd(-1,fx,fz,Math.max(HD.chH,22*V),Math.max(HD.chW,16),a.x,a.y);return;}
     if(a.type==='elite'){const mo=MON[a.b.mon],c=imgOf('mapmon:'+mo.art,()=>monCanvas(mo.art)),p=.5+.5*Math.sin(ts/200);hdDecal(BB,'glow',hdGlowS(),fx,fz+1,30,12,255,60,60,(.3+.3*p)*255);
       hdChar(B,c,fx,(bob*.6-sp)*V,fz,true,255,16);hdShadowC(fx,fz+1);hdBill(B,'mkr',hdMark('#ff4a4a'),fx,HD.chH+(3+bob)*V,fz,false,1,255,255,255,255,4);hdPickAdd(-1,fx,fz,Math.max(HD.chH,22*V),Math.max(HD.chW,16),a.x,a.y);return;}
     const tt=TPL[a.q.hero],c=walkerCanvas('wand:'+tt.id,tt.look,tt.el,tt.id,'front',0);hdChar(B,c,fx,(bob*.6-2.5*sp)*V,fz,false,255,16);hdShadowC(fx,fz+1);
