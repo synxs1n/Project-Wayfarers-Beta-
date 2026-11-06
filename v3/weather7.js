@@ -216,7 +216,8 @@ function w7World(ctx,mode,m,ox,oy,vw,vh,now){if(!WX7.on)return false;if(W7.rec)W
     // fewer particles in a blend so the sum stays near one weather's count
     if(L.length)w7Run(ctx,V,L,now);else{W7.stats.n=0;W7.stats.w='';}return true;}catch(e){W7.err=String(e&&e.stack||e).slice(0,300);return false;}finally{if(W7.rec)W7.rec(false);}}
 // ----- battle: the ground layer under the units (battle.js), everything else after them (weatherFX) -----
-function w7BattleV(W,H,now){const V=w7Begin('bt',W,H,0,0,now);V.gy=bgGY(H);V.area=Math.min(V.area,.9);// the battle canvas redraws all of its units every frame: a lighter sharelet out=true;try{out=!(typeof battleIndoors==='function'&&battleIndoors());}catch(e){}
+function w7BattleV(W,H,now){const V=w7Begin('bt',W,H,0,0,now);V.gy=bgGY(H);V.area=Math.min(V.area,.9);// the battle canvas redraws all of its units every frame: a lighter share
+  let out=true;try{out=!(typeof battleIndoors==='function'&&battleIndoors());}catch(e){}
   V.night=0;if(out){try{const p=clockPhase();V.night=p==='night'?1:p==='dusk'?.35:p==='dawn'?.25:0;}catch(e){}}return V;}
 function w7BattleGround(ctx,W,H,now){if(!WX7.on||!B||!B.weather||B.weather==='clear')return;try{const V=w7BattleV(W,H,now);V.gr=true;V.air=false;W7.bL=[[B.weather,1]];w7Run(ctx,V,W7.bL,now);W7.stats.btGround=W7.stats.ground;}catch(e){W7.err=String(e&&e.stack||e).slice(0,300);}}
 // ----- hooks -----
