@@ -161,3 +161,6 @@ facProg counts the journey total (acc only marks a mission taken); detonator not
 
 ## Beta v0.7.8: unique challenge lines
 Details in `v077-duel-lines.md` (`v3/duellines.js`, 736 lines, 8 per hero plus bond replies and Guild challengers; fallback built from name, class, element and trait; picks by journey seed, never the game RNG). Test `chrome/v077d.js`.
+
+## Beta v0.7.9: wide battle layout
+Details in `v076-battle-layout.md` (battle3.js/css, B3.wideMin/wideStep in config.js, test `chrome/v076b.js`). Two columns under the stage: commands over foes, party (Vanguard then Rearguard rows). No page scroll at 933x705 to 1280x800; aim tags shrink to fit their box. Type chips left off wide foe cards (still in the i panel).

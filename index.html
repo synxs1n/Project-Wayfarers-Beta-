@@ -1537,13 +1537,8 @@ html.rm .fxlayer .fx2.b3fx{animation-name:fade2!important}
 .battle.b3 .detl,.detl{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:4px;margin-top:2px}
 .detf{display:inline-flex;align-items:center;gap:2px;padding:2px 6px;border:1px solid var(--c);border-radius:3px;background:linear-gradient(90deg,rgba(70,30,110,.85),rgba(30,16,50,.85));box-shadow:0 0 5px color-mix(in srgb,var(--c) 60%,transparent);font-size:.7rem;color:#fff}
 .detf .ico{width:13px;height:13px}.detf i{font-style:normal;color:#cbb6e8;font-size:.65rem}.detf b{margin-left:3px;color:#fff3c8;font-weight:900}.detf em{font-style:normal;color:#d8c8ee;margin-left:3px}
-/* ----- wide screens (tablets, the Fold open, desktops): commands on the left, foes and party beside them ----- */
-.battle.b3.m-wide .bbottom{grid-template-columns:minmax(280px,1fr) minmax(0,1.9fr)}
-.battle.b3.m-wide .bbottom .cmd{order:1}
-.battle.b3.m-wide .bbottom .bparty{order:2;grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
-.battle.b3.m-wide .fcs,.battle.b3.m-wide .pgroup.heroes .pcs{grid-template-columns:minmax(0,1fr)}
-.battle.b3.m-wide .pgroup.rsv{grid-column:2}
-.battle.b3.m-wide .pgroup.foes{grid-row:1/span 2}
+/* the party column (Vanguard, Rearguard): a wrapper only the wide layout uses as a box */
+.battle.b3 .b3pty{display:contents}
 /* ----- landscape phones: the stage on the left, commands then cards in a scrolling column on the right ----- */
 .battle.b3.bside{grid-template-columns:var(--b3w,auto) minmax(0,1fr);grid-template-rows:auto auto minmax(0,1fr);grid-template-areas:"stage order" "stage bot" "line bot";column-gap:8px;row-gap:5px}
 .battle.b3.bside.hasboss{grid-template-rows:auto auto auto minmax(0,1fr);grid-template-areas:"boss order" "stage bot" "line bot" ". bot"}
@@ -1617,6 +1612,112 @@ html.rm .fxlayer .fx2.b3fx{animation-name:fade2!important}
 .battle.b3 .pgroup.rsv .pcw .pc.rs.swapok{outline-offset:-2px}
 .battle.b3.m-tall .fcw .fc{padding-right:32px}
 .battle.b3.m-tall .fcw .uinfo{right:4px}
+/* ===== Beta v0.7.6: wide screens (the Fold open, tablets, desktops). Two columns under the stage: the commands with the foes right under
+   them on the left, the party (Vanguard, then Rearguard, one hero per row) on the right. Both stretch to the width; the whole screen fits
+   the viewport (layoutBattle sizes the stage from what the columns need and sets --b3bot, the height left for them). ===== */
+body:has(.battle.b3.m-wide){padding-bottom:4px}
+.battle.b3.m-wide{gap:4px}
+.battle.b3.m-wide .order{min-height:46px;padding-top:2px;padding-bottom:2px}
+.battle.b3.m-wide .bbottom{grid-template-columns:minmax(0,1.42fr) minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);gap:5px 6px;align-items:start;height:var(--b3bot,auto);box-sizing:border-box}
+.battle.b3.m-wide .bbottom .bparty{display:contents}
+.battle.b3.m-wide .bbottom .cmd{grid-column:1;grid-row:1;align-self:start;max-height:100%;min-height:0;box-sizing:border-box;overflow:auto;overscroll-behavior:contain}
+.battle.b3.m-wide .bbottom .pgroup.foes{grid-column:1;grid-row:2;align-self:start;max-height:100%;min-height:0;box-sizing:border-box;display:flex;flex-direction:column}
+.battle.b3.m-wide .bbottom .pgroup.foes>.fcs{min-height:0;overflow:auto;overscroll-behavior:contain}
+.battle.b3.m-wide .bbottom .b3pty{grid-column:2;grid-row:1/span 2;display:grid;gap:5px;align-content:start;max-height:100%;min-height:0;overflow:auto;overscroll-behavior:contain}
+/* commands: compact rows, labels never cut (they wrap to two lines or shrink before that) */
+.battle.b3.m-wide .cmd{padding:5px 8px 6px;gap:4px}
+.battle.b3.m-wide .who.cmdhead{padding:0 0 2px}
+.battle.b3.m-wide .menu.prim .mi{min-height:42px;padding:4px 6px 4px 20px}
+.battle.b3.m-wide .menu.sec{grid-template-columns:repeat(auto-fit,minmax(70px,1fr))}
+.battle.b3.m-wide .menu.list{max-height:none;overflow:visible;grid-template-columns:repeat(auto-fill,minmax(210px,1fr))}
+.battle.b3.m-wide .menu.list .mi small{white-space:normal}
+/* foes: compact cards, 3 across (2 for 2 or 4 foes, one for a single foe); a narrow column takes 2 */
+.battle.b3.m-wide .pgroup.foes{padding:4px 5px 5px;container-type:inline-size}
+.battle.b3.m-wide .pgroup>h3{margin-bottom:3px}
+/* six tracks: 3 cards a row (span 2); with 2 or 4 foes 2 a row, a lone foe the whole row; 5 foes: 3 then 2 wider ones (no empty slot) */
+.battle.b3.m-wide .fcs{grid-template-columns:repeat(6,minmax(0,1fr));gap:4px}
+.battle.b3.m-wide .fcs>.fcw{grid-column:span 2}
+.battle.b3.m-wide .fcs:has(>.fcw:nth-child(2):last-child)>.fcw,.battle.b3.m-wide .fcs:has(>.fcw:nth-child(4):last-child)>.fcw,.battle.b3.m-wide .fcs:has(>.fcw:nth-child(5):last-child)>.fcw:nth-child(n+4){grid-column:span 3}
+.battle.b3.m-wide .fcs>.fcw:only-child{grid-column:1/-1}
+@container (max-width:430px){.battle.b3.m-wide .fcs>.fcw,.battle.b3.m-wide .fcs>.fcw:nth-child(n){grid-column:span 3}.battle.b3.m-wide .fcs>.fcw:last-child:nth-child(odd){grid-column:1/-1}}
+.battle.b3.m-wide .fcw .fc{min-height:40px;padding:3px 30px 3px 5px;gap:5px}
+.battle.b3.m-wide .fcw .fc .fci{width:26px;height:26px}
+.battle.b3.m-wide .fcw .fc .pm{gap:1px}
+.battle.b3.m-wide .fcw .fc .uct b{font-size:.78rem}
+.battle.b3.m-wide .fcw .fc .ucr{grid-template-columns:minmax(0,1fr) auto;gap:4px}
+.battle.b3.m-wide .fcw .fc .ucr>i{display:none}
+.battle.b3.m-wide .fcw .uinfo{right:4px}
+/* status rows and type chips: a short row inside the card's bottom edge */
+.battle.b3.m-wide .pcw.hastags .pc,.battle.b3.m-wide .fcw.hastags .fc{padding-bottom:21px}
+.battle.b3.m-wide .pcw.hastags .ptags{bottom:3px;left:5px;right:30px;gap:2px}
+.battle.b3.m-wide .ptags .sti{min-height:16px;min-width:18px}
+.battle.b3.m-wide .ptags .aty{padding:1px 4px}
+.battle.b3.m-wide .ptags .fwk{padding:1px 3px}
+.battle.b3.m-wide .ptags .pchip{padding:0 4px}
+/* a status row that does not fit one line wraps (the card grows; b3TagFit sets .tagwrap) */
+.battle.b3 .bparty .pgroup .pcw.hastags.tagwrap .pc,.battle.b3 .bparty .pgroup .fcw.hastags.tagwrap .fc{padding-bottom:50px}
+.battle.b3 .pcw.hastags.tagwrap .ptags{flex-wrap:wrap;row-gap:3px}
+.battle.b3.m-wide .bparty .pgroup .pcw.hastags.tagwrap .pc,.battle.b3.m-wide .bparty .pgroup .fcw.hastags.tagwrap .fc{padding-bottom:39px}
+.battle.b3.m-wide .pcw.hastags.tagwrap .ptags{flex-wrap:wrap;row-gap:2px}
+/* the Vanguard: one hero per row, name on top, HP, MP and Limit side by side under it */
+.battle.b3.m-wide .pgroup{padding:4px 5px 5px}
+.battle.b3.m-wide .pgroup.heroes .pcs,.battle.b3.m-wide .pgroup.rsv .pcs{grid-template-columns:minmax(0,1fr);gap:4px}
+.battle.b3.m-wide .pgroup.heroes .pcw .pc{min-height:44px;padding:3px 30px 3px 6px;gap:6px}
+.battle.b3.m-wide .pgroup.heroes .pc .pm{grid-template-columns:minmax(0,1.3fr) minmax(0,1.1fr) minmax(0,.8fr);column-gap:8px;row-gap:2px}
+.battle.b3.m-wide .pgroup.heroes .pc .pm .uct{grid-column:1/-1}
+.battle.b3.m-wide .pgroup.heroes .ucr{grid-template-columns:auto minmax(0,1fr) auto;gap:3px}
+.battle.b3.m-wide .pgroup.heroes .ucr .nums{font-size:.68rem}
+/* the Rearguard: the same rows, one line each (portrait, name, level, elements, HP), dashed as before */
+.battle.b3.m-wide .pgroup.rsv .pcw .pc.rs{min-height:40px;padding:2px 30px 2px 6px;gap:6px}
+.battle.b3.m-wide .pgroup.rsv .pc.rs .pm{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);align-items:center;column-gap:8px}
+.battle.b3.m-wide .pgroup.rsv .uct .ucl{display:inline}
+.battle.b3.m-wide .pgroup.rsv .uct .elbs{display:inline-flex}
+.battle.b3.m-wide .pgroup.rsv .uct b{font-size:.8rem}
+.battle.b3.m-wide .pgroup.rsv .ucr{grid-template-columns:auto minmax(0,1fr) auto}
+.battle.b3.m-wide .pgroup.rsv .ucr>i{display:block}
+.battle.b3.m-wide .pgroup.rsv .ucr .nums{font-size:.68rem}
+/* v0.7.6: command labels are never cut: a label that does not fit wraps to a second line (words are not split) */
+.battle.b3 .cmd .mi,.battle.b3 .cmd .btn{white-space:normal;line-height:1.12;overflow-wrap:normal}
+.battle.b3 .autorow .btn.sm{white-space:normal;line-height:1.1}
+/* v0.7.6 wide: group titles sit on the panel's top edge (a small tab), so the cards start right under it */
+.battle.b3.m-wide .bbottom .pgroup{position:relative;padding-top:8px}
+.battle.b3.m-wide .bbottom .pgroup>h3{position:absolute;top:0;left:8px;transform:translateY(-50%);margin:0;padding:1px 6px;font-size:.6rem;line-height:1.1;border-radius:3px;background:#10121f;border:1px solid rgba(217,180,106,.3);z-index:3;pointer-events:none}
+.battle.b3.m-wide .bbottom .pgroup.foes>h3{color:#f0b0a0;border-color:rgba(230,140,120,.4)}
+.battle.b3.m-wide .bbottom{row-gap:9px}
+.battle.b3.m-wide .bbottom .b3pty{gap:10px;padding-top:0}
+.battle.b3.m-wide .bbottom .b3pty,.battle.b3.m-wide .bbottom .cmd{margin-top:0}
+.battle.b3.m-wide .bbottom .b3pty{padding-top:7px;margin-top:-7px}
+/* compact foe cards: no type chips (as on phones; the i panel lists them), the level only where the card has room */
+.battle.b3.m-wide .fcw .ptags .aty{display:none}
+.battle.b3.m-wide .fcw{container-type:inline-size}
+.battle.b3.m-wide .fcw .fc .uct .ucl{display:none}
+@container (min-width:215px){.battle.b3.m-wide .fcw .fc .uct .ucl{display:inline}}
+.battle.b3.m-wide .pgroup.heroes .pcw .pc{min-height:42px}
+.battle.b3.m-wide .order .wchip{height:40px;min-height:40px;box-sizing:border-box}
+.battle.b3.m-wide .order .osky{height:40px;align-items:center}
+/* shield pips in a compact foe card: the word "Shield" only where the card has room (the pips keep their spoken label) */
+.battle.b3.m-wide .fcw .spips{flex-wrap:wrap;gap:2px 4px;margin-top:1px}
+.battle.b3.m-wide .fcw .spips .spp{gap:1px}
+@container (max-width:214px){.battle.b3.m-wide .fcw .spips>b{display:none}}
+/* room inside the scrolling boxes for the cards' frames and glows */
+.battle.b3.m-wide .bbottom .pgroup.foes>.fcs{padding:2px;margin:-2px}
+.battle.b3.m-wide .bbottom .b3pty{padding-left:2px;padding-right:2px;margin-left:-2px;margin-right:-2px;padding-bottom:2px}
+/* a list sub menu (skills, items, switch) takes the whole left column; the foes come back for the target step (the stage keeps their plates) */
+.battle.b3.m-wide.b3list .bbottom .pgroup.foes{display:none}
+.battle.b3.m-wide.b3list .bbottom .cmd{grid-row:1/span 2}
+.battle.b3.m-wide .menu.list:has(>.mi[data-act="sw"]){grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
+/* a narrow party column (small tablets in portrait): the bars go back to one per line */
+.battle.b3.m-wide .bbottom .pgroup.heroes,.battle.b3.m-wide .bbottom .pgroup.rsv{container-type:inline-size}
+@container (max-width:340px){
+  .battle.b3.m-wide .pgroup.heroes .pc .pm{grid-template-columns:minmax(0,1fr)}
+  .battle.b3.m-wide .pgroup.rsv .pc.rs .pm{grid-template-columns:minmax(0,1fr);row-gap:2px}
+}
+@container (max-width:430px){.battle.b3.m-wide .fcs:has(>.fcw:last-child:nth-child(odd))>.fcw:last-child{grid-column:1/-1}}
+/* boss fights: the boss bar and the turn order share one row (the stage keeps its height) */
+.battle.b3.m-wide.hasboss{grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"boss order" "stage stage" "line line" "bot bot"}
+.battle.b3.m-wide.hasboss>.bossbar{align-self:stretch;display:flex;flex-direction:column;justify-content:center;box-sizing:border-box;min-height:46px;min-width:0}
+.battle.b3.m-wide.hasboss>.order{min-width:0;align-self:stretch}
+.battle.b3.m-wide.hasboss .order .wchip .wxn{display:none}
 /* Beta v0.7.0 battle information and input (battle5.js) */
 /* stage intent label: a box laid out by b3Lay (logical stage px) */
 .bstage .b5it{display:grid;place-items:center;padding:0;border-radius:2px;border:.6px solid #150b17;background:rgba(21,11,23,.86);color:#ffd8c8;pointer-events:none;z-index:6;box-shadow:0 0 0 .5px rgba(255,255,255,.25);overflow:hidden}
@@ -1683,7 +1784,7 @@ html.rm .fxlayer .fx2.b3fx{animation-name:fade2!important}
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.7.8";const APP_BUILD="c122852afe74";
+(function(){const APP_VER="0.7.9";const APP_BUILD="20f894cbc2b3";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2054,10 +2155,11 @@ const TWISTS={on:true,
 // prim: primed badge size; sti/stiH: one status icon; tagF: font of the target tag, tagN: longest name on it, tagR: how far it looks first
 // (it stays close to its unit, shorter without the name if it must); fxRise: how far an effect text drifts up; minSc: the smallest
 // scale of the wide stage (it shrinks toward it so the commands fit under it); sideCol: width kept for the command column on landscape phones;
-// memo: ms the canvas reuses the last layout before checking whether anything changed.
+// memo: ms the canvas reuses the last layout before checking whether anything changed. v0.7.6: wideMin / wideStep: the smallest scale and the
+// step of the wide stage when it is sized from the columns under it (1.35 keeps it at least 210 px tall on the Fold open at 933x705).
 // slots: where units stand, [x share of the stage, depth 0..1 on the ground band (BATTLE_GROUND top..bot)], for the tall (portrait)
 // and the wide stage; e[n-1] for n foes, boss[n-1] for boss fights, p for the three heroes on the field.
-const B3={body:1,pad:1,R:40,step:2,barW:{hero:24,foe:30},prim:13,sti:12,stiH:10,tagF:5,tagN:13,tagR:28,fxRise:3,minSc:1.5,sideCol:360,memo:40,
+const B3={body:1,pad:1,R:40,step:2,barW:{hero:24,foe:30},prim:13,sti:12,stiH:10,tagF:5,tagN:13,tagR:28,fxRise:3,minSc:1.5,wideMin:1.35,wideStep:.05,sideCol:360,memo:40,
   slots:{
     tall:{p:[[.72,0],[.89,.42],[.71,.84]],
       e:[[[.27,.5]],[[.22,.05],[.36,.8]],[[.33,0],[.12,.42],[.4,.84]],[[.34,0],[.1,.28],[.47,.5],[.2,.84]],[[.34,0],[.1,.22],[.52,.36],[.3,.6],[.09,.84]]],
@@ -2106,13 +2208,14 @@ const B4={det:{on:true,mpPct:.1,mpMin:4,maxPerAct:2},
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.7.8";const APP_BUILD="c122852afe74";
+const APP_VER="0.7.9";const APP_BUILD="20f894cbc2b3";
 
 // =================== VERSION ===================
 // The one public version string. Patch (0.1.x) for fixes and balance, minor (0.x.0) for new systems.
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.7.9',['Wide battle screen (Galaxy Fold open, tablets, desktop): everything now fits without scrolling. Under the stage, the commands sit on top with the foes right below them, and the party sits beside them, Vanguard then Rearguard, one hero per row. Command buttons widen and wrap instead of cutting words, aim tags and foe cards no longer cut off text, and boss fights put the boss bar beside the turn order to save room.']],
  ['Beta v0.7.8',['Every wayfarer now has their own voice when they challenge you on the road: their own opening, a line if you decline, a shout at half health, a line when they lose and join, when you fall and when you run. Bonded heroes in your party answer them, personal quest rivals and the legends get their own lines too, and Guild Hall challengers say their piece.']],
  ['Beta v0.7.7',['Guild missions now count what you already did on this journey, so a mission you have already done can be claimed as soon as you accept it. Detonator hints in the skill list are now just element symbols (hold or hover for the words). No more blue flash when you tap the screen to move.']],
  ['Beta v0.7.6',['Tap to walk: tap a spot you have already explored on the map or minimap and your hero walks there (stops in front of doors and exits, stops on any input or an encounter). Fixed being unable to walk next to the Alchemy door in Hearthholm: bushes, chests and signs hidden behind walls in the HD-2D view still blocked the way. Every map type was swept: nothing invisible blocks you any more, door fronts stay clear, and gaps in building walls are filled.']],
@@ -7905,10 +8008,13 @@ function layoutBattle(){
   // v0.6.3: the wide stage leaves room for the commands (the cards beside them may run on and scroll)
   const cmdEl=$('bcmd'),budget=mode==='side'?vh-hd-od-34:vh-hd-od-(cmdEl&&cmdEl.offsetHeight?cmdEl.offsetHeight:(bb?bb.offsetHeight:0))-34;
   let sc=Math.min((w-8)/WIDE_W,Math.max(budget-8,0)/WIDE_H);sc=Math.max(mode==='side'?1.25:B3.minSc,Math.min(3,Math.floor(sc*4)/4));
+  // v0.7.6: the wide layout sizes the stage from what the two columns under it need (b3WideSc), so the screen fits the viewport
+  if(mode==='wide')sc=b3WideSc(w,vh,wrap,bat);
   BL={W:WIDE_W,H:WIDE_H,sc,fitH:0,short:false,mode};
   cv.width=WIDE_W;cv.height=WIDE_H;cv.style.width=WIDE_W*sc+'px';cv.style.height=WIDE_H*sc+'px';
   wrap.style.width=Math.round(WIDE_W*sc+8)+'px';wrap.style.height=Math.round(WIDE_H*sc+8)+'px';bat.style.setProperty('--b3w',Math.round(WIDE_W*sc+8)+'px');
   st.style.width=WIDE_W+'px';st.style.height=WIDE_H+'px';st.style.transform=`scale(${sc})`;
+  if(mode==='wide')b3WideBot(wrap,bat);else bat.style.removeProperty('--b3bot');
 }
 function spriteOf(u,walk){if(u.heroArt)return imgOf('bhe:'+u.heroArt,()=>heroCanvas(u.heroArt,walk));return u.side==='p'?imgOf('bh:'+u.id+(walk?':w':'')+lookKey(u.id),()=>heroCanvas(u.id,walk)):imgOf('bm:'+u.art,()=>monCanvas(u.art));}
 function unitBox(u){
@@ -8104,6 +8210,7 @@ function drawParts(ctx,now){
 
 // phones: grow or shrink the stage so the whole battle screen fits without scrolling
 function fitBattle(){
+  b3TagFit();{const bt=document.querySelector('.battle.b3');if(bt){bt.classList.toggle('b3list',!!document.querySelector('#bcmd .menu.list'));}}
   const wrap=$('bwrap');if(!wrap||(B&&B.menu!=='root'))return;
   const mode=battleMode();
   if(mode!=='tall'){const old=BL.sc,om=BL.mode;layoutBattle();if(Math.abs(BL.sc-old)>.01||om!==BL.mode)renderBattle(true);return;}
@@ -8908,7 +9015,7 @@ function renderBattle(stageOnly){
   if(stageOnly)return;
   {const last=B.log[B.log.length-1]||'',el=$('blog');if(el&&el.dataset.l!==String(B.log.length)+last){el.dataset.l=String(B.log.length)+last;el.innerHTML=last&&!B.logOpen?`<p class="last flash">${esc(last)}</p>`:'';}}
   {const ov=$('bover');if(ov)ov.innerHTML=blogPanel()+stPopHtml()+uDetHtml();}
-  $('bparty').innerHTML=foeCards()+`<div class="pgroup heroes"><h3>Vanguard</h3><div class="pcs">${B.front.map(c=>pcard(c,false)).join('')}</div></div>${B.back.length?`<div class="pgroup rsv"><h3>Rearguard</h3><div class="pcs">${B.back.map(c=>pcard(c,true)).join('')}</div></div>`:''}`;
+  $('bparty').innerHTML=foeCards()+`<div class="b3pty"><div class="pgroup heroes"><h3>Vanguard</h3><div class="pcs">${B.front.map(c=>pcard(c,false)).join('')}</div></div>${B.back.length?`<div class="pgroup rsv"><h3>Rearguard</h3><div class="pcs">${B.back.map(c=>pcard(c,true)).join('')}</div></div>`:''}</div>`;
   $('bcmd').innerHTML=cmdHtml();
   fitBattle();
 }
@@ -13058,7 +13165,7 @@ function foeCards(){
   return `<div class="pgroup foes"><h3>Foes</h3><div class="fcs">${L.map(({e,i})=>{const tg=targetable(e),dead=e.hp<=0,kn=foeKnown(e),pct=Math.max(0,Math.ceil(e.hp/e.S.mhp*100));
     const art=e.heroArt?heroURL(e.heroArt):monURL(e.art);
     // v0.6.3: effects the stage already shows in full are not repeated here (b3OnStage); the reaction a detonator sets off always is
-    const tags=dead?'':(b3OnStage(e,'prim')&&!detHits(B.pend&&B.pend.sk,e)?'':primedChip(e))+foeWeak(e)+(b3OnStage(e,'tags')?'':stButtons(e,{max:BL.mode==='tall'?3:5,noWx:true,noPrime:true}))+(BL.mode==='tall'?'':archChips(e));
+    const tags=dead?'':(b3OnStage(e,'prim')&&!detHits(B.pend&&B.pend.sk,e)?'':primedChip(e))+foeWeak(e)+(b3OnStage(e,'tags')?'':stButtons(e,{max:BL.mode==='tall'?3:5,noWx:true,noPrime:true}))+(BL.mode==='tall'||BL.mode==='wide'?'':archChips(e));
     return `<div class="pcw fcw ${tags?'hastags':''}"><button class="fc ${tg?'tg':''} ${dead?'ko':''} ${e.primed&&!dead?'isprimed':''} ${tg&&detHits(B.pend&&B.pend.sk,e)?'dethit':''}" style="--pc:${e.primed&&ELC[e.primed.el]||'#fff'}" data-x="1 ${B.mode==='cmd'&&B.menu==='target'&&!tg?'':''}" data-act="tgtE" data-arg="${i}" ${tg?'':'tabindex="-1"'} aria-label="${esc(e.name)}, level ${e.lv}">
       <img class="fci" src="${art}" alt=""><span class="pm"><span class="uct"><b>${esc(e.name)}${e.elite?' ★':''}</b><span class="ucl">Lv ${e.lv}</span>${elbs(e.el)}</span>
       <span class="ucr"><i>HP</i>${bar(e.hp,e.S.mhp,'#e8504a')}<em class="nums">${dead?'KO':kn?hpText(e):pct+'%'}</em></span>${shPips(e)}</span></button>${uInfoBtn(e)}
@@ -17688,9 +17795,9 @@ function b3TextW(t,px,wt){const k=wt+'|'+px+'|'+t;if(B3TW[k])return B3TW[k];if(!
 function b3TagInfo(u){const pend=B&&B.mode==='cmd'&&B.menu==='target'&&B.pend;if(!pend||!targetable(u))return null;const sk=pend.sk,out={name:b3Short(u.name)+(u.elite?' ★':''),eff:'',rx:null,px:false,html:''};
   if(u.side==='e'&&sk){out.eff=effBadge(sk,u,B.cur);const els=skEls(sk);
     if(sk.role==='det'&&u.primed&&els.length){const el=els.find(x=>reactFor(u.primed.el,x));const R=el&&reactFor(u.primed.el,el);if(R)out.rx={n:R.n,p:R.p,d:el};}
-    else if(sk.role==='primer'&&!u.primed&&els.length)out.px=true;}
+    else if(sk.role==='primer'&&!u.primed&&els.length)out.px=els[0];}
   return out;}
-function b3TagSize(T){const f=B3.tagF,w1=b3TextW(T.name,f,800)+4;let w2=0;const lab=(T.eff.match(/>([A-Za-z?]+)/)||[])[1]||'';if(lab)w2+=b3TextW(lab,f*.92,800)+5;if(T.rx)w2+=b3TextW('✸ '+T.rx.n,f*.92,900)+5+2*(f+1);if(T.px)w2+=b3TextW('⟐ Prime',f*.92,800)+5;
+function b3TagSize(T){const f=B3.tagF,w1=b3TextW(T.name,f,800)+4;let w2=0;const lab=(T.eff.match(/>([A-Za-z?]+)/)||[])[1]||'';if(lab)w2+=b3TextW(lab,f*.92,800)+5;if(T.rx)w2+=b3TextW('✸ '+T.rx.n,f*.92,900)+5+2*(f+1);if(T.px)w2+=b3TextW('⟐',f*.92,800)+f+6;
   const lines=w2?2:1;return {w:Math.ceil(Math.max(w1,w2)*1.08+3),h:Math.ceil(lines*(f*1.25)+2)};}
 // ----- the pass -----
 const B3L={key:'',L:null};
@@ -17764,8 +17871,8 @@ function b3StageHtml(){const L=b3Lay(true);if(!L)return '';const out=[],px=v=>v+
   L.tags.forEach((o,u)=>{out.push(`<div class="utags b3l ${u.side}" style="left:${px(o.x)};top:${px(o.y)};width:${px(o.w)};height:${px(o.h)}">${stButtons(u,{max:o.max,noPrime:true,noWx:true})}</div>`);});
   L.prim.forEach((o,u)=>{out.push(`<span class="primed pmin b3l" style="--c:${ELC[u.primed.el]};left:${px(o.x)};top:${px(o.y)};width:${px(o.w)};height:${px(o.h)}" aria-label="Primed with ${EL[u.primed.el]}, ${u.primed.t} turn${u.primed.t===1?'':'s'} left">${ico(u.primed.el)}<i>${u.primed.t}</i></span>`);});
   L.tgt.forEach((o,u)=>{const T=o.T,lab=(T.eff.match(/>([A-Za-z?]+)/)||[])[1]||'',cls=(T.eff.match(/class="eff ([a-z]+)/)||[])[1]||'';
-    const l2=(lab?`<span class="eff ${cls}">${lab}</span>`:'')+(T.rx?`<span class="eff rx">${ico(T.rx.p)}${ico(T.rx.d)}✸ ${esc(T.rx.n)}</span>`:'')+(T.px?'<span class="eff px">⟐ Prime</span>':'');
-    out.push(`<div class="b3tg b3l ${u.side} ${T.rx?'det':''}" style="left:${px(o.x)};top:${px(o.y)};width:${px(o.w)};height:${px(o.h)};--f:${B3.tagF}px">${T.short?'':`<b class="ename">${esc(T.name)}</b>`}${l2?`<span class="l2">${l2}</span>`:''}</div>`);});
+    const l2=(lab?`<span class="eff ${cls}">${lab}</span>`:'')+(T.rx?`<span class="eff rx">${ico(T.rx.p)}${ico(T.rx.d)}✸ ${esc(T.rx.n)}</span>`:'')+(T.px?`<span class="eff px" title="Primes it with ${esc(EL[T.px]||'')}">⟐${ico(T.px)}</span>`:''),tk=b3TagKey(T),kf=B3TK[tk];
+    out.push(`<div class="b3tg b3l ${u.side} ${T.rx?'det':''}" data-tk="${esc(tk)}" style="left:${px(o.x)};top:${px(o.y)};width:${px(o.w)};height:${px(o.h)};--f:${(B3.tagF*(kf||1)).toFixed(2)}px">${T.short?'':`<b class="ename">${esc(T.name)}</b>`}${l2?`<span class="l2">${l2}</span>`:''}</div>`);});
   return out.join('');}
 
 // ----- floating effect texts, placed through the same pass -----
@@ -17811,6 +17918,36 @@ function b3Short(n){n=String(n);const M=B3.tagN;if(n.length<=M)return n;const w=
 function b3Below(){try{const h=document.querySelector('.battle .pgroup.heroes'),c=document.getElementById('bcmd');return (h?h.offsetHeight+6:0)+(c?c.offsetHeight:0);}catch(e){return 0;}}
 // how many stage status icons a unit has (same count as stItems with noPrime and noWx, without building the markup)
 function b3StN(u){let n=u.broken&&u.maxShield?1:0;for(const k in u.st||{})if(STS[k])n++;return n;}
+
+// ----- 5) Beta v0.7.6: the wide layout fits the viewport -----
+// what the two columns under the stage need (commands + foes on the left, Vanguard + Rearguard on the right), in CSS px. The commands count
+// at their tallest top-level height seen in this battle (a sub menu scrolls inside its panel instead, so the stage does not jump), and the
+// whole need only grows within a battle (the stage only shrinks, a few times at most).
+function b3WideNeed(bat){try{const cmd=document.getElementById('bcmd'),foes=bat.querySelector('.bbottom .pgroup.foes'),pty=bat.querySelector('.bbottom .b3pty'),bb=bat.querySelector('.bbottom');
+  if(!cmd||!bb)return 0;const gap=parseFloat(getComputedStyle(bb).rowGap)||5,full=e=>e?Math.max(e.offsetHeight,e.scrollHeight+(e.offsetHeight-e.clientHeight)):0;
+  let ch=full(cmd);const root=B&&!B.over&&(B.menu==='root'||B.mode!=='cmd')&&!B.swapAsk;
+  if(B){if(root)B._b3cmd=Math.max(B._b3cmd||0,ch);else ch=B._b3cmd||Math.min(ch,230);}
+  const fc=foes&&foes.querySelector('.fcs'),fh=foes?foes.offsetHeight+(fc?fc.scrollHeight-fc.clientHeight:0):0,n=Math.max(ch+(foes?gap+fh:0),full(pty));
+  if(B){B._b3need=Math.max(B._b3need||0,n);return B._b3need;}return n;}catch(e){return 0;}}
+function b3DocTop(e){return e.getBoundingClientRect().top+(window.scrollY||0);}
+// the stage scale: as large as the width allows, small enough that the columns fit under it (never below B3.wideMin)
+function b3WideSc(w,vh,wrap,bat){try{const cs=getComputedStyle(bat),gap=parseFloat(cs.rowGap)||5,bl=document.getElementById('bline'),padB=parseFloat(getComputedStyle(document.body).paddingBottom)||0;
+  const below=gap+(bl?bl.offsetHeight:40)+gap,Hs=vh-b3DocTop(wrap)-below-b3WideNeed(bat)-padB-2,st=B3.wideStep||.05;
+  let sc=Math.min((w-8)/WIDE_W,(Hs-8)/WIDE_H,3);sc=Math.floor(sc/st+1e-6)*st;return Math.max(B3.wideMin||1.35,Math.round(sc*100)/100);}catch(e){return B3.minSc;}}
+// the height left for the columns (their panels scroll inside themselves past it, the page never does)
+function b3WideBot(wrap,bat){try{const bb=bat.querySelector('.bbottom');if(!bb)return;const vh=window.visualViewport?window.visualViewport.height:window.innerHeight,padB=parseFloat(getComputedStyle(document.body).paddingBottom)||0;
+  bat.style.setProperty('--b3bot',Math.max(140,Math.floor(vh-b3DocTop(bb)-padB-1))+'px');}catch(e){}}
+// a card status row that does not fit its line wraps to a second one (wide layout)
+function b3TagFit(){try{document.querySelectorAll('.battle.b3 .bparty .pcw.hastags>.ptags').forEach(t=>{if(t.scrollWidth>t.clientWidth+1)t.parentNode.classList.add('tagwrap');});}catch(e){}}
+// v0.7.6: a target tag's text always fits its laid out box. The box comes from the layout pass (measured with the canvas font); where the
+// device draws the text wider (its own font or text scaling), the tag's font shrinks once to fit (remembered per text, so it does not flicker).
+const B3TK={};
+function b3TagKey(T){return [T.short?'':T.name,T.eff,T.rx?T.rx.n:'',T.px||''].join('|');}
+function b3FitTags(){try{const st=document.getElementById('bstage');if(!st)return;st.querySelectorAll('.b3tg[data-tk]').forEach(t=>{const tk=t.dataset.tk;
+  for(let it=0;it<3;it++){const R=t.getBoundingClientRect();if(!R.width)return;let w=0,h=0;[...t.children].forEach(c=>{const q=c.getBoundingClientRect();w=Math.max(w,q.width);h+=q.height;});
+    const k=Math.min((R.width-1.2*(R.width/t.offsetWidth))/w,(R.height-.6*(R.height/t.offsetHeight))/h);if(!(k<1))break;
+    const f=(B3TK[tk]||1)*k*.97;B3TK[tk]=Math.max(.45,f);t.style.setProperty('--f',(B3.tagF*B3TK[tk]).toFixed(2)+'px');}});}catch(e){}}
+{const rb=renderBattle;renderBattle=function(){const r=rb.apply(this,arguments);if(B&&B.menu==='target')b3FitTags();return r;};}
 
 // =================== Beta v0.7.0: BATTLE INFORMATION AND INPUT ===================
 // 1) The turn order bar shows the next turns (B5.order) from the engine's own turn model: every live unit acts when its `next` time
