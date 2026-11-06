@@ -212,3 +212,6 @@ B4.mo {start:30,max:100,vary:16,rep:15,offN:3,off:10,fullOff:80,emptyOff:20,dmg:
 
 ## Beta v0.9.5: Notice Board, three guild ranks, Upgrade button
 Details in `v095-menus.md` (menus3.js, factions.js, p3shop.js Upgrade step search, nav/equip ordering; tests `chrome/v095m1.js` to `v095m4.js`). Ranks: the six old steps map to three shown ranks, perks move to the rank holding their step (some open sooner).
+
+## Beta v0.9.6: fewer fights, boss gimmicks, companion growth, realm unlocks
+Details in `v095-bosses-pacing.md` (ENC block, field roamers in roam.js, battle4.js section 5 BOSS_GIM, comp3.js TAME, pacing.js pcUnlocked; tests `chrome/v095p1.js` to `v095p3.js`). Journey sim: about 150 fights, top level about 40.5, 4.6 to 4.9 h typical.
