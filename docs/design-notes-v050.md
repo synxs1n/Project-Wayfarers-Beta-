@@ -143,3 +143,6 @@ Front three are the Vanguard (all user facing "front line" text). XPCU {per:.15,
 
 ## Beta v0.7.2: pacing spread and Rearguard XP
 Owner approved the v063-progression.md proposals: `v3/pacing.js` gates guild missions and Tempering behind the first Scourge (Tempering stays open with tempered gear), the Tamer's Stick quest moves to stage 1, PERSONAL_REALM=2. XP_REAR=1 and XPCU.bench=1: the Rearguard earns the same XP and catch up as the Vanguard. Test `chrome/v072a.js` (+ v050p4, v071a).
+
+## Beta v0.7.3: tips (onboarding)
+Details and every card in `v070-onboarding.md` (`v3/onboard.js`, tests `chrome/v070oa.js`, `chrome/v070ob.js`). META.tips holds seen/used; Tips toggle and Reset tips in Settings; Guides > How it works.
