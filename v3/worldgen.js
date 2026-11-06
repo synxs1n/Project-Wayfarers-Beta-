@@ -657,7 +657,7 @@ function tileAt(m,x,y){
   if(c==='|'&&G.levers[m.id])return '.';
   return c;
 }
-function solidAt(m,x,y){const c=tileAt(m,x,y);if(c==='c')return true;if(SOLID.includes(c))return true;return m.npcs.some(n=>n.x===x&&n.y===y)||dynActors(m).some(a=>a.x===x&&a.y===y);}
+function solidAt(m,x,y){const c=tileAt(m,x,y);if(c==='c')return true;if(SOLID.includes(c))return true;return m.npcs.some(n=>n.x===x&&n.y===y)||dynActors(m).some(a=>a.x===x&&a.y===y&&!ghostActor(a));}
 // actors that depend on game state: bounty elites in fields, the lost wayfarer in dungeons
 function dynActors(m){
   const out=[];

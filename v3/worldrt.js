@@ -116,7 +116,7 @@ function diagOk(m,x,y,d){const [dx,dy]=DIRV[d],tx=x+dx,ty=y+dy;
   if(solidAt(m,x+dx,y)||solidAt(m,x,y+dy)||solidAt(m,tx,ty))return false;
   const c=tileAt(m,tx,ty);if('EXGD|'.includes(c))return false;
   if(m.exits.some(e=>e.x===tx&&e.y===ty)||m.bld.some(b=>b.door[0]===tx&&b.door[1]===ty))return false;
-  if(dynActors(m).some(a=>(a.x===tx&&a.y===ty)||(a.x===x+dx&&a.y===y)||(a.x===x&&a.y===y+dy)))return false;
+  if(dynActors(m).some(a=>!ghostActor(a)&&((a.x===tx&&a.y===ty)||(a.x===x+dx&&a.y===y)||(a.x===x&&a.y===y+dy))))return false;
   return true;}
 function tryStep(now){
   const m=WS.m,d=worldInputDir();if(!d)return;
@@ -141,7 +141,7 @@ function tryStepDir(now,d){
   if(c==='G'){bumpSay(`The gate is sealed with a ${bossClass(bossKeyFor(m.s))}'s sigil. Defeat whatever lurks in the ${ZS(m.s).dungeon} to break it.`);return;}
   if(c==='D'){bumpSay('A heavy door with a beacon-shaped keyhole. The key must be somewhere in these halls.');return;}
   if(c==='|'){bumpSay(barsText(m,nx,ny));return;}
-  const act=dynActors(m).find(a=>a.x===nx&&a.y===ny);if(act){WS.held=[];actorTalk(act);return;}
+  const act=dynActors(m).find(a=>a.x===nx&&a.y===ny);if(act&&ghostActor(act)){if(rgBump(m,act))return;}else if(act){WS.held=[];actorTalk(act);return;}
   if(solidAt(m,nx,ny))return;
   WS.mv={fx:WS.x,fy:WS.y,tx:nx,ty:ny,t0:now,dur:stepMs()};
 }
@@ -230,7 +230,7 @@ function interact(){
   if(c==='a')return say(null,'The anvil is still warm.');
 }
 function actorTalk(a){
-  if(a.type==='elite'){if(a.b.personal&&!G.party.includes(a.b.personal)){say(null,`${a.b.name} ignores you. This fight belongs to ${TPL[a.b.personal].n}: bring them in your party of six.`);return;}V.modal={type:'elite',b:a.b};render();return;}
+  if(a.type==='elite'){if(ghostActor(a)){ghostTalk(a);return;}V.modal={type:'elite',b:a.b};render();return;}
   if(a.type==='wanderer'){const q=a.q,t=TPL[q.hero];
     say(t.n,`You came for me? I got turned around in the dark and something big started breathing behind that door. Let's get out of here.`,()=>{q.found=true;if(!G.roster[q.hero])recruit(q.hero,true);toast(t.n+' joins your roster. Report back to the quest board.');saveGame();render();});}
 }
@@ -344,6 +344,7 @@ function worldDraw(now){
   // bounty elites and lost wayfarers
   dynActors(m).forEach(a=>{actors.push({y:a.y*TS,draw:()=>{
     if(a.type==='legend'){drawLegendActor(ctx,a,cx,cy,now);}
+    else if(ghostActor(a))rgDraw2D(ctx,a,cx,cy,now);
     else if(a.type==='elite'){const mo=MON[a.b.mon],c=imgOf('mapmon:'+mo.art,()=>monCanvas(mo.art));const bob=Math.floor(now/400)%2,p=.5+.5*Math.sin(now/200);
       ctx.fillStyle=`rgba(255,60,60,${.18+.18*p})`;ctx.beginPath();ctx.ellipse(a.x*TS+8-cx,a.y*TS+14-cy,14,5,0,0,7);ctx.fill();
       drawSprite(ctx,c,a.x*TS+8-cx,a.y*TS+17-cy-bob,true);ctx.fillStyle='#ff4a4a';ctx.fillRect(a.x*TS+7-cx,a.y*TS-26-cy-bob,3,6);ctx.fillRect(a.x*TS+7-cx,a.y*TS-18-cy-bob,3,2);}
