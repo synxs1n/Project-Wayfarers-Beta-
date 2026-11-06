@@ -267,7 +267,7 @@ function hdBake(m){const sig=hdSig(m);if(HD.S&&HD.S.m===m&&HD.S.sig===sig&&HD.ma
     m.lights=save.lights;m.smoke=save.smoke;m.bsp=save.bsp;
     const W=m.w,H=m.h,HT=new Float32Array(W*H),KD=new Uint8Array(W*H);S.HT=HT;S.KD=KD;
     const hOf=k=>k===1?HD2D.wall.dungeon*V:k===2?HD2D.wall.cliff*V:k===3?HD2D.wall.town*V:k===4?HD2D.water*V:k===5?HD2D.deep*V:k===6?HD2D.water*V:0;
-    for(let y=0;y<H;y++)for(let x=0;x<W;x++){const k=hdKind(m,tileAt(m,x,y));KD[y*W+x]=k;HT[y*W+x]=hOf(k);}
+    for(let y=0;y<H;y++)for(let x=0;x<W;x++){const k=hdKind(m,tileAt(m,x,y),x,y);KD[y*W+x]=k;HT[y*W+x]=hOf(k);}
     cards=hdBakeCards(m,S,g0,g1);deco=hdBakeDeco(m);blds=hdBakeBuildings(m,S,save.bsp,deco);
     m.lights=save.lights;m.smoke=save.smoke;m.bsp=save.bsp;if(save.torches)m.torches=save.torches;if(save.mills)m.mills=save.mills;
     if(m.kind!=='dungeon')sh=hdBakeShadow(m,S);
@@ -576,7 +576,8 @@ function hdFrame(now){const m=WS.m,gl=HD.gl,q=hdTierQ(),still=gfxStill(),ts=stil
   gl.uniform3fv(u.uAmb,o.amb);gl.uniform3fv(u.uSunC,o.sun);gl.uniform3fv(u.uSunD,o.sd);
   const R=HD.lmR;gl.uniform4f(u.uLR,R[0],R[1],1/R[2],1/R[3]);
   gl.uniform3f(u.uCam,HD.eye[0]-HD.cam.x,HD.eye[1],HD.eye[2]-HD.cam.z);gl.uniform3fv(u.uFogC,o.fog);
-  {const f=HD.fogU||(HD.fogU=[0,0,0]);f[0]=HD.D*HD2D.fogStart*(o.fogS||1);f[1]=HD.D*HD2D.fogEnd*(.55+.45*(o.fogS||1));f[2]=o.fogA;gl.uniform3f(u.uFog,f[0],f[1],f[2]);}// v0.8.0: fog, blizzard and sand start nearer (fogN)gl.uniform1f(u.uEmis,o.emis);gl.uniform1f(u.uAct,m.kind==='dungeon'?HD2D.spr.act.dun:HD2D.spr.act.out*Math.min(1,o.emis+.2));
+  {const f=HD.fogU||(HD.fogU=[0,0,0]);f[0]=HD.D*HD2D.fogStart*(o.fogS||1);f[1]=HD.D*HD2D.fogEnd*(.55+.45*(o.fogS||1));f[2]=o.fogA;gl.uniform3f(u.uFog,f[0],f[1],f[2]);}// v0.8.0: fog, blizzard and sand start nearer (fogN)
+  gl.uniform1f(u.uEmis,o.emis);gl.uniform1f(u.uAct,m.kind==='dungeon'?HD2D.spr.act.dun:HD2D.spr.act.out*Math.min(1,o.emis+.2));
   // v0.5.8 characters: pre-grade softening, light map spread, rim strength and colour (the sun or moon; lamps add their own colour in the
   // shader), the ambient's hue for the readability floor, one atlas texel (the rim reads the neighbour toward the light)
   {const P=HD2D.spr,a=o.amb,al=Math.max(.05,a[0]*.3+a[1]*.59+a[2]*.11),sn=o.sun,sl=Math.max(.05,sn[0]*.3+sn[1]*.59+sn[2]*.11),rk=Math.min(1,sl*2.2);
