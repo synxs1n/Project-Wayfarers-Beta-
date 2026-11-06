@@ -156,7 +156,7 @@ function m3Tavern(m){const tab=m.tab;let body='';
     ${later?`<p class="note">${later} more wayfarer${later>1?'s are':' is'} on the road${nu?`; the next arrive in about ${nu.need} battle${nu.need>1?'s':''}, or when you reach the next realm`:''}.</p>`:''}<p class="note">Some wayfarers won't sit in a tavern at all. Check the Guild Hall's recruitment challenges.</p>`;}
   return m3Box('tavern',m,m3Nav('tavern',m)+body);}
 // ----- the Guild Hall -----
-function m3Bounties(){for(let s=0;s<=G.stage;s++)genBounties(s);const L=G.bounties.filter(b=>b.stage<=G.stage);
+function m3Bounties(){for(let s=0;s<=G.stage;s++)genBounties(s);const bo=b=>b.state==='active'?0:b.state==='open'?1:2,L=G.bounties.filter(b=>b.stage<=G.stage).sort((a,b)=>bo(a)-bo(b));
   return `<p class="note">Marked monsters roam the fields. Accept a bounty and its quarry appears in that realm's field, glowing red. Beat it for gold, a stat charm and materials.</p>${typeof allBar==='function'?allBar('bountyAll','',L.filter(b=>b.state==='open').length,0):''}${m3Rows(L.map(b=>{const mo=MON[b.mon],md=ELITE_MODS.find(x=>x.k===b.mod);
     return `<div class="row"><img class="mimg" src="${monURL(mo.art)}" alt=""><div class="grow"><b>${esc(b.name)}</b><small>${md.n}: ${md.d} Level ${b.lv}. Roams ${esc(ZS(b.stage).n)}.</small><small>${fmt(b.reward.gold)} gold, ${gearOf(b.reward.charm).n}</small></div>${b.state==='open'?`<button class="btn sm gold" data-act="bounty" data-arg="${b.id}">Accept</button>`:b.state==='active'?'<span class="m">Hunting</span>':'<span class="m up">Done</span>'}</div>`;}).join(''),'No bounties posted yet.')}`;}
 function m3Arena(){const cl=G.cleared.filter(Boolean).length;

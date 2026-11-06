@@ -2,7 +2,7 @@
 // 1. Taming log: a second view inside Records > Bestiary. Every foe that can join you (bounty beasts and Nikaris's wild friends,
 //    plus the lesser whelps of Scourges) is shown as Tamed, Seen (with where it roams) or unseen (a silhouette and "???"),
 //    with "Tamed X of Y" for this journey. Seen comes from the account Bestiary, tamed from this journey.
-// 2. Bond goals: hero sheets and the new Bonds page say how many more wins side by side (both in the front line and standing
+// 2. Bond goals: hero sheets and the new Bonds page say how many more wins side by side (both in the vanguard and standing
 //    when the fight is won, the counter G.bonds already keeps) until the next talk or tech. A toast says when a talk is ready.
 //    Bond pacing (BOND_LV) is unchanged.
 // 3. Make camp: Camp Supplies (sold at Alchemy from realm CAMP.fromStage + 1) let the party rest in a field or dungeon: standing
@@ -57,7 +57,7 @@ function bondGoal(k){const b=BONDMAP[k];if(!b)return null;const p=(G.bonds||{})[
   const n=nx.at-p,w=x=>`${x} more win${x>1?'s':''} side by side`;
   let text=`${w(n)} until the ${nx.what}`;if(nt&&nt!==nx)text+=`, ${nt.at-p} until the next talk`;
   return {p,n,next:nx.what,talkIn:nt?nt.at-p:null,at:nx.at,text:text+'.'};}
-const BOND_HOW='A win counts when both stand in the front line at the end of the fight.';
+const BOND_HOW='A win counts when both stand in the vanguard at the end of the fight.';
 const talkArg=t=>t.k+':'+(t.lv>=3&&BONDMAP[t.k]&&BONDMAP[t.k].talk2?3:1);
 function readyTalks(){const seen={},out=[];(G.talks||[]).forEach(t=>{const b=BONDMAP[t.k];if(!b||!G.roster[b.a]||!G.roster[b.b])return;const a=talkArg(t);if(seen[a])return;seen[a]=1;out.push({arg:a,b});});return out;}
 bondSheet=function(id){const L=BONDS.filter(b=>b.a===id||b.b===id);if(!L.length)return '';

@@ -223,7 +223,9 @@ function mBestParty(m){const P=m.plan,cur=new Set(G.party),same=P.ids.length===G
 {const vm0=vModal;vModal=function(m){if(m){if(m.type==='bp')return mBestParty(m);if(m.type==='p3plan')return mP3Plan(m);}return vm0.apply(this,arguments);};}
 // after Best Party: offer Auto best gear for the new six right away
 {const ba0=ACT.bpApply;ACT.bpApply=function(){const r=ba0.apply(this,arguments);if(V.modal&&V.modal.type==='ldRes'){V.modal.p3bp=1;render();}return r;};}
-{const lr0=mLdRes;mLdRes=function(m){let h=lr0.apply(this,arguments);if(m&&m.p3bp){const i=h.lastIndexOf('<div class="btnrow">');if(i>=0)h=h.slice(0,i)+'<div class="btnrow p3eqb"><button class="btn gold" data-act="autoEqParty">Equip best gear for this party</button></div>'+h.slice(i);}return h;};}
+{const lr0=mLdRes;mLdRes=function(m){let h=lr0.apply(this,arguments);if(m&&m.p3bp){const i=h.lastIndexOf('<div class="btnrow">');if(i>=0)h=h.slice(0,i)+(m.p3bpDone?'<p class="note p3eqb done">Best gear equipped for this party.</p>':'<div class="btnrow p3eqb"><button class="btn gold" data-act="autoEqParty">Equip best gear for this party</button></div>')+h.slice(i);}return h;};}
+// v0.7.1: once used from this screen the button is replaced by a done note (it used to stay after equipping)
+{const ae0=ACT.autoEqParty;ACT.autoEqParty=function(){const m=V.modal;if(m&&m.type==='ldRes'&&m.p3bp)m.p3bpDone=1;return ae0.apply(this,arguments);};}
 // the Party tab gets the team check under the grid
 {const vs0=vSwap;vSwap=function(where){const h=vs0.apply(this,arguments);try{if(!G||G.daily||where!=='menu')return h;return h+p3GapsHtml(G.party.slice(),null,false);}catch(e){return h;}};}
 

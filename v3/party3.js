@@ -1,7 +1,7 @@
 // =================== Beta v0.6.3: PARTY SYSTEMS ===================
 // 1. Best Party suggests several formations instead of one: Balanced, Boss ready (Area answer once the boss is down), Fresh mix and a
 //    Training team. Role balance (tank, healer, damage, support, Primer, Detonator, deliveries, elements, answers to the area and its boss)
-//    outweighs raw level and gear (BP6 in config.js); each pick is explained and placed: the front line fights, the rearguard swaps in.
+//    outweighs raw level and gear (BP6 in config.js); each pick is explained and placed: the vanguard fights, the rearguard swaps in.
 // 2. Training team: under-leveled heroes join behind a strong tank and healer and catch up (XP catch up, p4xp.js, measured against the
 //    top level on the whole roster since v0.6.3).
 // 4. "Equip best: reserves": auto equip for the heroes not in the party, from spare gear only. Never touches the party's gear or companions.
@@ -37,7 +37,7 @@ function p6Search(X,sc,fixed){const all=X.all;let set=(fixed||[]).slice();const 
   for(let pass=0;pass<3;pass++){let imp=false;for(let i=0;i<set.length;i++){if(lock.has(set[i]))continue;let cur=sc(set);
     all.forEach(c=>{if(set.includes(c))return;const t=set.slice();t[i]=c;const v=sc(t);if(v>cur+1e-6){set=t;cur=v;imp=true;}});}if(!imp)break;}
   return set;}
-// placement: the front line is who fights (tank, healer, the best damage dealer for this formation); the rearguard swaps in when
+// placement: the vanguard is who fights (tank, healer, the best damage dealer for this formation); the rearguard swaps in when
 // someone falls or tires, so it holds the backup healer and tank first
 function p6Place(set,X,mode,train){const R=c=>X.R[c.id],by=(a,b)=>X.pw[b.id]-X.pw[a.id],rest=set.slice().sort(by),front=[],take=c=>{if(!c)return;rest.splice(rest.indexOf(c),1);front.push(c);};
   const T=X.T,tr=new Set(train||[]);
@@ -53,7 +53,7 @@ function p6Why(set,X,mode,train){const base=p3Reasons(set,X.T),out={},tr=new Set
   set.forEach((c,i)=>{const r=X.R[c.id],L=(base[c.id]||[]).filter(t=>t!=='strong with the gear you own');
     if(r.tank&&seen.tank++&&!L.includes('tank'))L.push(i<3?'second tank':'backup tank for the swap');
     if(r.heal&&seen.heal++&&!L.includes('healer'))L.push(i<3?'second healer':'backup healer for the swap');
-    if(!L.length)L.push(r.sup?'support: buffs and wards the front line':r.dmg?'damage dealer':'steady all rounder');
+    if(!L.length)L.push(r.sup?'support: buffs and wards the vanguard':r.dmg?'damage dealer':'steady all rounder');
     if(tr.has(c.id)){const gap=X.top-c.lv,pct=Math.round((xpCatchMul(c.lv,X.top,i<3)-1)*100);L.unshift(`training: Lv ${c.lv}, ${gap} behind your top wayfarer, +${pct}% catch up XP${i<3?'':' (rearguard share)'}`);}
     else if(mode==='train'&&(r.tank||r.heal)&&i<3)L.push('keeps the trainees safe');
     out[c.id]=L.slice(0,3);});
@@ -73,12 +73,12 @@ const P6_NAMES={bal:'Balanced',boss:'Boss ready',area:'Area answer',mix:'Fresh m
 function p6Summary(o,X,first){const T=X.T,nm=c=>esc(c.name);
   if(o.key==='bal')return 'One of every role first (tank, healer, damage, support, Primer and Detonator), every delivery and a spread of elements. Level and gear only settle ties.';
   if(o.key==='boss'){const els=T.boss.el.length?ELK.filter(e=>matchup(e,T.boss.el)>1).map(e=>EL[e]):[];
-    return `Built to bring down ${p3BossName(T.boss)}${els.length?`: ${els.slice(0,3).join(', ')} attacks hit it hard`:''}${T.boss.ty.length?`, with answers to its ${T.boss.ty.map(a=>ARCH[a].n.toLowerCase()).join(' and ')} side`:''}. The answer sits in the front line.`;}
+    return `Built to bring down ${p3BossName(T.boss)}${els.length?`: ${els.slice(0,3).join(', ')} attacks hit it hard`:''}${T.boss.ty.length?`, with answers to its ${T.boss.ty.map(a=>ARCH[a].n.toLowerCase()).join(' and ')} side`:''}. The answer sits in the vanguard.`;}
   if(o.key==='area'){const a=Object.keys(T.arch).filter(k=>T.mons.some(m=>tyOf(MON[m].art).includes(k)));
     return a.length?`Built for ${esc(ZS(T.s).n)}: answers to the ${a.map(k=>ARCH_PL[k]).join(', ')} here and their elements.`:`Built for ${esc(ZS(T.s).n)}. Little is known about its monsters yet: every fight fills the Bestiary and sharpens this pick.`;}
   if(o.key==='mix'){const sh=o.set.filter(c=>first.includes(c.id)).length;return `Different faces in the same roles, so more of your wayfarers see battle and grow. Shares ${sh} of 6 with Balanced.`;}
   if(o.key==='rot')return 'The same roles again with the heroes the other formations left in reserve, so everyone keeps up.';
-  if(o.key==='train')return `${o.trainees.map(c=>`${nm(c)} (Lv ${c.lv})`).join(', ')} ${o.trainees.length>1?'train':'trains'} behind ${o.anchors.map(nm).join(' and ')||'your strongest'}. Catch up XP is measured against your top wayfarer (Lv ${X.top}): the further behind, the more XP, up to +${Math.round(XPCU.max*100)}% in the front line and +${Math.round(XPCU.max*XPCU.bench*100)}% in reserve.`;
+  if(o.key==='train')return `${o.trainees.map(c=>`${nm(c)} (Lv ${c.lv})`).join(', ')} ${o.trainees.length>1?'train':'trains'} behind ${o.anchors.map(nm).join(' and ')||'your strongest'}. Catch up XP is measured against your top wayfarer (Lv ${X.top}): the further behind, the more XP, up to +${Math.round(XPCU.max*100)}% in the vanguard and +${Math.round(XPCU.max*XPCU.bench*100)}% in the rearguard.`;
   return '';}
 bestParty=function(){const keep=P3C;if(!P3C)P3C={why:{},kit:{}};
   try{const X=p6Ctx(),opts=[],sets=[];
@@ -104,7 +104,7 @@ mBestParty=function(m){const P=m.plan,o=P.opts[P.pick]||{},cur=new Set(G.party),
     ${P.noTrain?`<p class="note"><small>Training team: nobody is ${BP6.train.gap} or more levels behind your top wayfarer right now.</small></p>`:''}
     <p class="note bp6sum"><b>${esc(o.name||'')}.</b> ${o.sum||''}${o.also?` <small>(${o.also.join(' and ')} would pick the same six.)</small>`:''}</p>${p3ThreatLine(T)}
     <p class="note nums">Average Lv ${I.lv} · Power ${o.rel||100}% of Balanced · Tanks ${I.tank} · Healers ${I.heal} · Damage ${I.dmg} · Support ${I.sup} · Primers ${I.pr} · Detonators ${I.de} · Elements ${I.els}/8</p>
-    <h4>Front line <small>(fights)</small></h4><div class="rows">${P.ids.slice(0,3).map(row).join('')}</div>
+    <h4>Vanguard <small>(fights)</small></h4><div class="rows">${P.ids.slice(0,3).map(row).join('')}</div>
     ${P.ids.length>3?`<h4>Rearguard <small>(swaps in when someone falls or tires)</small></h4><div class="rows">${P.ids.slice(3).map((id,i)=>row(id,i+3)).join('')}</div>`:''}
     ${out.length?`<p class="note">Going to the reserves: ${out.map(id=>esc(G.roster[id].name)).join(', ')}.</p>`:''}
     ${same&&P.ids.every((id,i)=>G.party[i]===id)?'<p class="note">This is already your party, in this order.</p>':''}${!same&&!inTown()?'<p class="note warn">Changing who is in your six happens in town. You can apply it there.</p>':''}${p3GapsHtml(P.ids,T,false)}`,

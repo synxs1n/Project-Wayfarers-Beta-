@@ -1618,7 +1618,7 @@ html.rm .fxlayer .fx2.b3fx{animation-name:fade2!important}
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.7.0";const APP_BUILD="7b5282ef72b8";
+(function(){const APP_VER="0.7.1";const APP_BUILD="043b218eee0c";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -1736,7 +1736,7 @@ const CE_ODDS=1/170, CE_GAP=30, CE_AREA_CAP=2;
 // BATTLE_GROUND: every battle backdrop has a solid ground plane from gy (share of the stage height) down; units stand between top and bot,
 // flying foes hover hover px above their shadow. Water, lava and sky are only drawn above gy, as scenery.
 const BATTLE_GROUND={gy:.5,top:.56,bot:.96,hover:9};
-// SURPRISE: touching a roaming dungeon foe that has not seen you gives a free first round: every hero on the front line acts free times
+// SURPRISE: touching a roaming dungeon foe that has not seen you gives a free first round: every hero in the vanguard acts free times
 // before any foe moves. A "Surprise!" banner shows. Elite roamers keep their no auto rule.
 const SURPRISE={free:1};
 // DUAL_FROM: the first stage (0 = the first realm) where dual type wayfarers (taverns, challenges, chance meetings) and dual type regular
@@ -1788,7 +1788,8 @@ const PERSONAL_BT=40;
 // 4.1 personal quests: no level gate any more; PERSONAL_BT battles together and the party in this realm (0 based) or later.
 const PERSONAL_REALM=1;
 // 4.3 XP catch up: +per for each level a hero is below the party's highest, at most +max. Reserve heroes get bench x that bonus.
-const XPCU={per:.10,max:.50,bench:.5};
+// v0.7.1: much bigger for heroes far behind: bonus = per*gap + sq*gap^2, capped at max (gap 2: +38%, 5: +125%, 8: +248%, 10+: +300%)
+const XPCU={per:.15,sq:.02,max:3,bench:.5};
 // 5.4 transitions, in ms of world screen time: time of day blends over tod, weather over wx (visuals and ambience beds).
 const TRANS={tod:11000,wx:6500,ambTod:10,ambWx:6};
 // 5.5 save indicator: show "Saving..." this long, then "Saved", hold, then fade. minGap = autosaves closer than this share one message.
@@ -1971,7 +1972,7 @@ const TWISTS={on:true,
     {id:'linger',n:'Status effects last a turn longer',c:'Effects +1',d:'Every status lasts one more turn, good or bad.',add:1},
     {id:'primed',n:'Every foe is primed at start',c:'All primed',d:'Each foe enters primed, so your detonators can strike at once.',t:3},
     {id:'crit',n:'Sharp eyes',c:'Crits +10%',d:'Everyone lands critical hits 10% more often.',add:.1},
-    {id:'ward',n:'Warded entry',c:'Ward start',d:'Your front three start every wave with Ward, which blocks one hit.'},
+    {id:'ward',n:'Warded entry',c:'Ward start',d:'Your vanguard start every wave with Ward, which blocks one hit.'},
     {id:'limit',n:'Limits half charged',c:'Limit 50%',d:'Your heroes start the trial with Limit gauges half full.',v:50},
     {id:'glass',n:'Glass foes',c:'Glass foes',d:'Foes have 20% less HP but hit 20% harder.',hp:.8,pow:1.2}],
   ng:{max:2,mods:[
@@ -2002,13 +2003,14 @@ const B3={body:1,pad:1,R:40,step:2,barW:{hero:24,foe:30},prim:13,sti:12,stiH:10,
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.7.0";const APP_BUILD="7b5282ef72b8";
+const APP_VER="0.7.1";const APP_BUILD="043b218eee0c";
 
 // =================== VERSION ===================
 // The one public version string. Patch (0.1.x) for fixes and balance, minor (0.x.0) for new systems.
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.7.1',['The front three of your party are now the Vanguard (the back three stay the Rearguard). Catch up XP is much bigger for heroes far behind your top wayfarer (+38% at 2 levels, +125% at 5, up to +300% at 10 or more), so swapping heroes in pays off fast. Auto battle and Run are now remembered between plays and updates. Quest lists put quests you can claim first, then active ones. After Best Party, Equip best gear shows as done once used.']],
  ['Beta v0.7.0',['Battle screen rehaul: HP plates, element badges, status rows and damage numbers are laid out so none sit on a face or on each other; the last log line sits under the stage; commands are grouped (Attack, Skills, Items, Guard / Scan, Lore, Switch, Flee / Auto); the active hero is framed in gold and cards are more compact. The battle start flash now covers the whole screen instead of one corner. Detonators: while aiming, the foes they will set off glow with a ring and a tag naming the reaction, and the reaction floats over the foe when it fires.']],
  ['Beta v0.6.9',['Shops and menus reorganised: every shop has Shop and Craft tabs with All plus sections (Alchemy now has its own Charms section), every filter is a dropdown with new options (for one hero, rarity, upgrades only, can afford, cheapest first), and the Menu is grouped as Party, Backpack, Quests, Map, Records, Guides and Settings. Fixed text cut off at the bottom of menus on phones with a browser bar (Fold Tempering).']],
  ['Beta v0.6.8',['World: fortresses stand up as real gatehouses in the HD-2D view; leaves, butterflies, snow and other drifting effects now stay in the world instead of sliding with the screen; nothing hovers over the hero\'s face any more (fixed the white and pink boxes left over in parts of the screen); opened chests disappear; the world map is now a parchment chart with little pictures of each town, field, dungeon, cave and fortress, roads between them and a pin for your party; side fortresses are just called fortresses.']],
@@ -2408,11 +2410,11 @@ const SIG={
  sylva:{n:'Mire Stride',d:'Immune to Root and Slow. Deals 25% more to foes that are Slowed or Rooted.'},
  gorm:{n:'Molten Core',d:'Foes who strike him with physical attacks have a 35% chance to catch Burn.'},
  dagna:{n:'Glacier Heart',d:'The first time she drops below 40% HP in a battle, she gains Ward and Bulwark.'},
- zephra:{n:'Tailwind',d:'If she starts on the front line, the whole front line begins with Haste.'},
+ zephra:{n:'Tailwind',d:'If she starts in the vanguard, the whole vanguard begins with Haste.'},
  astra:{n:'Penumbra',d:'Her attacks are never resisted: elemental damage never drops below normal.'},
  ember:{n:'Kindling',d:'Each damaging skill she casts adds 10% damage for the rest of the battle, up to 50%. Switching out resets it.'},
  vex:{n:'Double Time',d:'Single-target attacks have a 25% chance to let him act again almost at once.'},
- isolde:{n:'Tidal Grace',d:'Her heals also grant Regen. If she falls, the front line is healed for 25% of max HP.'},
+ isolde:{n:'Tidal Grace',d:'Her heals also grant Regen. If she falls, the vanguard is healed for 25% of max HP.'},
  nyx:{n:'Cold Hands',d:'Every hit strips one boon (Might, Bulwark, Haste, Regen, Ward, Focus) from the target.'},
  kaevan:{n:'Parthian Shot',d:'When a foe attacks him, 22% of the time he wheels away untouched and fires a Lightning bolt straight back.'},
  nikaris:{n:'Beastbond',d:'With him in the party, beaten monsters sometimes ask to join (10% in normal fights). Anything tamed while he travels with you gets +12% stats and keeps one of its monster skills. Beaten Scourges sometimes yield a much weaker Lesser Scourge.'},
@@ -2438,16 +2440,16 @@ const COMBO={
  'water+wind':{n:'Monsoon',k:'mag',pw:1.05,t:'all',fx:[['slow',.5],['weaken',.3]],d:'Driving rain that slows and weakens all foes.'},
  'lightning+water':{n:'Electrocute',k:'mag',pw:2.2,t:'one',fx:[['stun',.45]],d:'Water carries the current. High Stun chance.'},
  'ice+water':{n:'Glacial Tide',k:'mag',pw:1.0,t:'all',fx:[['slow',.6]],d:'A freezing wave that slows all foes.'},
- 'light+water':{n:'Holy Spring',k:'heal',pw:1.0,t:'allyAll',fx:[['regen',1]],cleanse:1,d:'Heals and cleanses the front line and grants Regen.'},
+ 'light+water':{n:'Holy Spring',k:'heal',pw:1.0,t:'allyAll',fx:[['regen',1]],cleanse:1,d:'Heals and cleanses the vanguard and grants Regen.'},
  'shadow+water':{n:'Undertow',k:'mag',pw:1.9,t:'one',fx:[['root',.8],['slow',.6]],d:'Drags a foe under. Roots and slows.'},
  'earth+wind':{n:'Sandstorm',k:'mag',pw:1.0,t:'all',fx:[['blind',.6]],d:'Scouring sand that blinds all foes.'},
  'earth+lightning':{n:'Magnet Quake',k:'phys',pw:1.9,t:'one',fx:[['root',.7],['break',.5]],d:'A charged quake. Roots and breaks armor.'},
  'earth+ice':{n:'Permafrost',k:'phys',pw:1.9,t:'one',fx:[['slow',.8]],self:[['bulwark',1]],d:'Frozen earth slows a foe and shields you with Bulwark.'},
- 'earth+light':{n:'Crystal Bastion',k:'status',t:'allyAll',fx:[['ward',1],['bulwark',1]],d:'Crystal walls give the front line Ward and Bulwark.'},
+ 'earth+light':{n:'Crystal Bastion',k:'status',t:'allyAll',fx:[['ward',1],['bulwark',1]],d:'Crystal walls give the vanguard Ward and Bulwark.'},
  'earth+shadow':{n:'Grave Grasp',k:'phys',pw:1.8,t:'one',fx:[['root',.8],['bleed',.7]],d:'Hands from the earth. Roots and bleeds.'},
  'lightning+wind':{n:'Thunderstorm',k:'mag',pw:1.15,t:'all',fx:[['stun',.15]],d:'Lightning rakes all foes. May Stun.'},
  'ice+wind':{n:'Whiteout',k:'mag',pw:1.05,t:'all',fx:[['slow',.5],['blind',.3]],d:'A blizzard on all foes. Slows and blinds.'},
- 'light+wind':{n:'Aurora',k:'status',t:'allyAll',fx:[['regen',1],['haste',1]],d:'Shimmering lights grant Regen and Haste to the front line.'},
+ 'light+wind':{n:'Aurora',k:'status',t:'allyAll',fx:[['regen',1],['haste',1]],d:'Shimmering lights grant Regen and Haste to the vanguard.'},
  'shadow+wind':{n:'Night Wind',k:'mag',pw:1.05,t:'all',fx:[['blind',.5],['bleed',.3]],d:'Cutting dark wind on all foes.'},
  'ice+lightning':{n:'Cryo Spark',k:'mag',pw:2.0,t:'one',fx:[['stun',.35],['slow',.5]],d:'Freezing current. Stuns and slows.'},
  'light+lightning':{n:'Judgement Bolt',k:'mag',pw:2.6,t:'one',pierce:1,d:'Holy lightning that ignores half of resistance.'},
@@ -2491,8 +2493,8 @@ function classSkills(t){
     add({id:'javelin',n:'Javelin',k:'phys',pw:1.2,mp:3,lv:9,dl:'ranged',d:'Throw a javelin. Flying foes cannot weave away from it.'});
     add({id:'aegis',n:'Aegis',k:'status',t:'ally',mp:6,lv:7,fx:[['ward',1]],d:'Ward an ally: blocks the next hit completely.'});
     if(e2)add({id:'lance2',n:n2+' Lance',k:'phys',pw:1.6,mp:5,el:e2,lv:8,d:`Charge tipped with ${n2}.`});
-    add({id:'wall',n:'Guard Wall',k:'status',t:'allyAll',mp:10,lv:11,fx:[['bulwark',1]],d:'Bulwark for the front line.'});
-    add({id:'rally',n:'Rally',k:'status',t:'allyAll',mp:12,lv:16,fx:[['might',1]],d:'Might for the front line.'});
+    add({id:'wall',n:'Guard Wall',k:'status',t:'allyAll',mp:10,lv:11,fx:[['bulwark',1]],d:'Bulwark for the vanguard.'});
+    add({id:'rally',n:'Rally',k:'status',t:'allyAll',mp:12,lv:16,fx:[['might',1]],d:'Might for the vanguard.'});
     add({id:'judge',n:'Judgement',k:'phys',pw:2.8,mp:15,el:e1,cost:1.3,lv:22,d:`Heavy ${n1} strike. Slow recovery.`});
     break;
   case 'mage':
@@ -2509,10 +2511,10 @@ function classSkills(t){
     add({id:'renew',n:'Renew',k:'status',t:'ally',mp:5,lv:3,fx:[['regen',1]],d:'Regen on an ally: heals every turn.'});
     add({id:'ray1',n:n1+' Ray',k:'mag',pw:1.3,mp:5,el:e1,lv:4,d:`Beam of ${n1}.`});
     add({id:'purify',n:'Purify',k:'heal',pw:.6,mp:4,t:'ally',cleanse:1,lv:6,d:'Cures all ailments and heals a little.'});
-    add({id:'mendall',n:'Mend All',k:'heal',pw:1.1,mp:12,t:'allyAll',lv:8,d:'Heals the front line.'});
+    add({id:'mendall',n:'Mend All',k:'heal',pw:1.1,mp:12,t:'allyAll',lv:8,d:'Heals the vanguard.'});
     if(e2)add({id:'ray2',n:n2+' Ray',k:'mag',pw:1.3,mp:5,el:e2,lv:8,d:`Beam of ${n2}.`});
     add({id:'raise',n:'Raise',k:'revive',pw:.4,mp:14,t:'dead',lv:11,d:'Revives a fallen ally at 40% HP.'});
-    add({id:'sanct',n:'Sanctuary',k:'status',t:'allyAll',mp:14,lv:14,fx:[['regen',1]],d:'Regen for the whole front line.'});
+    add({id:'sanct',n:'Sanctuary',k:'status',t:'allyAll',mp:14,lv:14,fx:[['regen',1]],d:'Regen for the whole vanguard.'});
     add({id:'fullmend',n:'Full Mend',k:'heal',pw:4,mp:18,cost:1.2,t:'ally',lv:20,d:'Powerful single heal.'});
     break;
   case 'thief':
@@ -2561,7 +2563,7 @@ function classSkills(t){
     add({id:'thorn',n:'Thornwhisper',k:'status',t:'all',mp:7,lv:8,fx:[['root',.5],['slow',.4]],d:'Brambles answer his whisper. May Root and Slow every foe.'});
     add({id:'s1b',n:'Nightbloom Arrow',k:'phys',pw:1.75,mp:5,el:'shadow',lv:11,d:'An arrow that blooms dark on impact.'});
     add({id:'pack',n:'Pack Hunt',k:'phys',pw:1,mp:10,t:'all',lv:14,fx:[['bleed',.4]],d:'Wolf, hawk and ranger hit every foe together.'});
-    add({id:'wildmend',n:'Wild Mend',k:'heal',pw:.9,mp:10,t:'allyAll',lv:17,d:'Old forest medicine for the front line.'});
+    add({id:'wildmend',n:'Wild Mend',k:'heal',pw:.9,mp:10,t:'allyAll',lv:17,d:'Old forest medicine for the vanguard.'});
     add({id:'s3a',n:'Moonless Volley',k:'phys',pw:1.25,mp:14,cost:1.2,t:'all',el:'shadow',lv:22,d:'A volley loosed in perfect dark.'});
     break;
   case 'archmage':
@@ -2583,13 +2585,13 @@ function classSkills(t){
     add({id:'s3a',n:'Final Chapter',k:'mag',pw:3.3,mp:24,cost:1.3,el:e1,lv:20,d:`The last page, written in ${n1}. Slow recovery.`});
     break;
   case 'bard':
-    add({id:'song',n:'Soothing Song',k:'heal',pw:.8,mp:8,t:'allyAll',lv:1,d:'Heals the front line.'});
-    add({id:'hymn',n:'Battle Hymn',k:'status',t:'allyAll',mp:8,lv:3,fx:[['might',1]],d:'Might for the front line.'});
+    add({id:'song',n:'Soothing Song',k:'heal',pw:.8,mp:8,t:'allyAll',lv:1,d:'Heals the vanguard.'});
+    add({id:'hymn',n:'Battle Hymn',k:'status',t:'allyAll',mp:8,lv:3,fx:[['might',1]],d:'Might for the vanguard.'});
     add({id:'dis',n:'Dissonance',k:'status',t:'all',mp:8,lv:6,fx:[['break',.8]],d:'May Break every foe.'});
     add({id:'tune1',n:n1+' Tune',k:'mag',pw:.9,mp:10,t:'all',el:e1,lv:9,d:`${n1} melody on all foes.`});
     add({id:'lull',n:'Lullaby',k:'status',t:'all',mp:9,lv:11,fx:[['slow',.7]],d:'May Slow every foe.'});
     if(e2)add({id:'tune2',n:n2+' Tune',k:'mag',pw:.9,mp:10,t:'all',el:e2,lv:13,d:`${n2} melody on all foes.`});
-    add({id:'allegro',n:'Allegro',k:'status',t:'allyAll',mp:14,lv:15,fx:[['haste',1]],d:'Haste for the front line.'});
+    add({id:'allegro',n:'Allegro',k:'status',t:'allyAll',mp:14,lv:15,fx:[['haste',1]],d:'Haste for the vanguard.'});
     add({id:'req',n:'Requiem',k:'revive',pw:.5,mp:20,t:'dead',lv:24,d:'Revives a fallen ally at 50% HP.'});
     break;
   }
@@ -2639,9 +2641,9 @@ function respaceSkills(S,t,T,n1,e1){
 // One per class, themed by the hero's first element. The gauge fills from damage dealt and taken.
 const LIMIT={
  warrior:{n:'Worldsplitter',k:'phys',pw:2.4,t:'all',fx:[['break',.6]],d:'A ground-splitting blow on every foe. May Break.'},
- knight:{n:'Bastion',k:'status',t:'allyAll',fx:[['ward',1],['bulwark',1],['might',1]],heal:.2,d:'Ward, Bulwark and Might for the front line, and a small heal.'},
+ knight:{n:'Bastion',k:'status',t:'allyAll',fx:[['ward',1],['bulwark',1],['might',1]],heal:.2,d:'Ward, Bulwark and Might for the vanguard, and a small heal.'},
  mage:{n:'Starfall',k:'mag',pw:2.6,t:'all',d:'Calls a rain of elemental stars on every foe.'},
- healer:{n:'Benediction',k:'heal',pw:3,t:'allyAll',revive:.4,cleanse:1,d:'Fully restores and cleanses the front line and revives every fallen hero at 40% HP.'},
+ healer:{n:'Benediction',k:'heal',pw:3,t:'allyAll',revive:.4,cleanse:1,d:'Fully restores and cleanses the vanguard and revives every fallen hero at 40% HP.'},
  thief:{n:'Thousand Cuts',k:'phys',pw:.8,t:'rand',hits:7,crit:.2,d:'Seven blinding strikes at random foes.'},
  archer:{n:'Arrowstorm',k:'phys',pw:2.2,t:'all',fx:[['bleed',.7]],d:'A storm of arrows on every foe. Likely Bleeds.'},
  monk:{n:'Hundred Fists',k:'phys',pw:.65,t:'one',hits:7,d:'Seven blows on one foe.'},
@@ -2649,14 +2651,14 @@ const LIMIT={
  druid:{n:'Call of the Wild',k:'phys',pw:.8,t:'rand',hits:6,fx:[['bleed',.5]],d:'Every beast in earshot answers: six savage strikes at random foes.'},
  archmage:{n:'Stormfrost Singularity',k:'mag',pw:2.8,t:'all',fx:[['slow',.6],['stun',.25]],d:'A point of absolute cold that throws lightning in every direction.'},
  chronicler:{n:'Index of Ruin',k:'mag',pw:2.7,t:'all',fx:[['weaken',.5],['break',.5]],d:'Reads every catalogued horror aloud at once. Strikes all foes; may Weaken and Break.'},
- bard:{n:'Grand Anthem',k:'status',t:'allyAll',fx:[['might',1],['haste',1],['regen',1]],heal:.3,d:'Might, Haste and Regen for the front line, plus a 30% heal.'}
+ bard:{n:'Grand Anthem',k:'status',t:'allyAll',fx:[['might',1],['haste',1],['regen',1]],heal:.3,d:'Might, Haste and Regen for the vanguard, plus a 30% heal.'}
 };
 // Beta v0.3.0: Limit I opens at level 15 (70% of the values above); at level 30 it becomes Limit II, a new move at ~130% power.
 const LIMIT2={
  warrior:{n:'Cataclysm Edge',k:'phys',pw:3.1,t:'all',fx:[['break',.9]],self:[['might',1]],shieldChip:2,d:'Splits the battlefield with one swing: every foe takes a huge hit and likely Breaks, and you gain Might. Chips 2 shield pips.'},
- knight:{n:'Citadel of Dawn',k:'status',t:'allyAll',fx:[['ward',1],['bulwark',1],['might',1],['regen',1]],heal:.3,d:'A fortress of light: Ward, Bulwark, Might and Regen for the front line, and a 30% heal.'},
+ knight:{n:'Citadel of Dawn',k:'status',t:'allyAll',fx:[['ward',1],['bulwark',1],['might',1],['regen',1]],heal:.3,d:'A fortress of light: Ward, Bulwark, Might and Regen for the vanguard, and a 30% heal.'},
  mage:{n:'Meteor Requiem',k:'mag',pw:3.4,t:'all',fx:[['break',.5]],shieldChip:2,d:'A falling sky of elemental stars on every foe. May Break; chips 2 shield pips.'},
- healer:{n:"Seraph's Grace",k:'heal',pw:3.9,t:'allyAll',revive:.7,cleanse:1,fx:[['regen',1]],d:'Restores and cleanses the front line, grants Regen, and revives every fallen hero at 70% HP.'},
+ healer:{n:"Seraph's Grace",k:'heal',pw:3.9,t:'allyAll',revive:.7,cleanse:1,fx:[['regen',1]],d:'Restores and cleanses the vanguard, grants Regen, and revives every fallen hero at 70% HP.'},
  thief:{n:'Phantom Waltz',k:'phys',pw:1.04,t:'rand',hits:7,crit:.3,steal:1,d:'Seven strikes from nowhere at random foes, each with a high crit chance, and a pocket picked on the way out.'},
  archer:{n:'Skyfall Volley',k:'phys',pw:2.86,t:'all',fx:[['bleed',.9],['slow',.5]],d:'The sky goes dark with arrows. Every foe likely Bleeds and may Slow.'},
  monk:{n:"Heaven's Thousand",k:'phys',pw:.85,t:'one',hits:7,fx:[['stun',.4]],d:'Seven blows too fast to see, ending in a strike that may Stun.'},
@@ -2664,11 +2666,11 @@ const LIMIT2={
  druid:{n:'Primal Stampede',k:'phys',pw:1.04,t:'rand',hits:6,fx:[['bleed',.7],['root',.4]],d:'The forest itself charges: six savage strikes at random foes. Likely Bleeds, may Root.'},
  archmage:{n:'Absolute Tempest',k:'mag',pw:3.64,t:'all',fx:[['slow',.8],['stun',.35]],shieldChip:2,d:'A storm of ice and lightning that stops time. Every foe likely Slows and may Stun; chips 2 shield pips.'},
  chronicler:{n:'The Last Index',k:'mag',pw:3.5,t:'all',fx:[['weaken',.7],['break',.7]],shieldChip:2,d:'Closes the book on every foe at once. Likely Weakens and Breaks; chips 2 shield pips.'},
- bard:{n:'Encore Eternal',k:'status',t:'allyAll',fx:[['might',1],['haste',1],['regen',1],['ward',1]],heal:.4,d:'The song that never ends: Might, Haste, Regen and Ward for the front line, plus a 40% heal.'}
+ bard:{n:'Encore Eternal',k:'status',t:'allyAll',fx:[['might',1],['haste',1],['regen',1],['ward',1]],heal:.4,d:'The song that never ends: Might, Haste, Regen and Ward for the vanguard, plus a 40% heal.'}
 };
 // Beta v0.3.0: level 42 and 46 skills and a level 50 capstone for every class. Fixed levels: the respacer leaves them alone.
 // New skill flags: execute (x2 damage below that HP share), drain (heal by that share of damage), shieldChip (extra Break pips),
-// strip (removes the target's boons), lbParty (adds Limit gauge to the front line).
+// strip (removes the target's boons), lbParty (adds Limit gauge to the vanguard).
 function lateSkills(cls,e1,e2,n1,n2){const E2=e2||e1,N2=n2||n1;const L={
  warrior:[{id:'quake',n:'Earthshaker',k:'phys',pw:1.3,mp:14,t:'all',el:e1,role:'primer',lv:42,fx:[['slow',.4]],d:`Stamps ${n1} through the ground under every foe. May Slow.`},
   {id:'laststand',n:'Last Stand',k:'status',t:'self',mp:12,lv:46,fx:[['might',1],['bulwark',1],['regen',1]],d:'Plants his feet: Might, Bulwark and Regen.'},
@@ -2679,7 +2681,7 @@ function lateSkills(cls,e1,e2,n1,n2){const E2=e2||e1,N2=n2||n1;const L={
  mage:[{id:'seal',n:'Prismatic Seal',k:'mag',pw:.95,mp:16,t:'all',el:E2,role:'primer',lv:42,fx:[['weaken',.4]],d:`Seals every foe in ${N2}. May Weaken.`},
   {id:'overchan',n:'Overchannel',k:'status',t:'self',mp:10,lv:46,fx:[['might',1],['haste',1]],d:'Burns the reserves: Might and Haste.'},
   {id:'cataclysm',n:'Cataclysm',k:'mag',pw:2.1,mp:34,cost:1.4,t:'all',el:e2?[e1,e2]:e1,role:'det',lv:50,strip:1,shieldChip:2,cap:1,d:'Unmakes the field: huge damage to every foe, strips their boons and chips 2 shield pips.'}],
- healer:[{id:'radward',n:'Radiant Ward',k:'heal',pw:1.4,mp:18,t:'allyAll',cleanse:1,lv:42,fx:[['ward',1]],d:'Heals and cleanses the front line and gives everyone Ward.'},
+ healer:[{id:'radward',n:'Radiant Ward',k:'heal',pw:1.4,mp:18,t:'allyAll',cleanse:1,lv:42,fx:[['ward',1]],d:'Heals and cleanses the vanguard and gives everyone Ward.'},
   {id:'judgray',n:'Brand of Dawn',k:'mag',pw:1.1,mp:14,t:'all',el:e1,role:'primer',lv:46,fx:[['blind',.3]],d:`Brands every foe with ${n1}. May Blind.`},
   {id:'miracle',n:'Miracle',k:'heal',pw:3.5,mp:40,t:'allyAll',revive:.6,cleanse:1,lv:50,fx:[['regen',1]],lbParty:30,cap:1,d:'Full heal and cleanse for the line, every fallen hero back at 60%, Regen, and +30 Limit gauge.'}],
  thief:[{id:'shadowstep',n:'Shadowstep',k:'phys',pw:1.6,mp:10,cost:.7,el:e1,role:'primer',crit:.3,lv:42,fx:[['blind',.5]],d:`Steps through the dark with a ${n1} blade. High crit, may Blind.`},
@@ -5512,7 +5514,7 @@ const WEATHER={
  fog:{n:'Fog',i:'≋',el:{shadow:1.15,light:.9},acc:.07,enc:1.25,d:'Physical hits land 7% less often. Shadow +15%, Light -10%. Foes find you more often.'},
  gale:{n:'Gale',i:'↯',el:{wind:1.2,earth:.85},gale:1,d:'Wind +20%, Earth -15%. The fastest fighter on each side starts with Haste.'},
  sand:{n:'Sandstorm',i:'∴',el:{earth:1.2,water:.85},blind:.06,d:'Earth +20%, Water -15%. Now and then a gust of sand Blinds someone, never the same fighter twice in a row.'},
- aurora:{n:'Aurora',i:'✦',el:{light:1.2},heal:1.25,regenStart:1,enc:.75,d:'Light +20%, healing +25%. Your front line starts every fight with Regen. Fewer encounters.'},
+ aurora:{n:'Aurora',i:'✦',el:{light:1.2},heal:1.25,regenStart:1,enc:.75,d:'Light +20%, healing +25%. Your vanguard starts every fight with Regen. Fewer encounters.'},
  starfall:{n:'Starfall',i:'✧',el:{light:1.15,shadow:1.15},crit:.05,d:'Light and Shadow +15%. Critical chance +5% for everyone.'},
  ashfall:{n:'Ashfall',i:'☁',el:{fire:1.15,shadow:1.1},dot:1.25,d:'Fire +15%, Shadow +10%. Poison and Burn deal 25% more.'}
 };
@@ -8795,7 +8797,7 @@ function renderBattle(stageOnly){
   if(stageOnly)return;
   {const last=B.log[B.log.length-1]||'',el=$('blog');if(el&&el.dataset.l!==String(B.log.length)+last){el.dataset.l=String(B.log.length)+last;el.innerHTML=last&&!B.logOpen?`<p class="last flash">${esc(last)}</p>`:'';}}
   {const ov=$('bover');if(ov)ov.innerHTML=blogPanel()+stPopHtml()+uDetHtml();}
-  $('bparty').innerHTML=foeCards()+`<div class="pgroup heroes"><h3>Party</h3><div class="pcs">${B.front.map(c=>pcard(c,false)).join('')}</div></div>${B.back.length?`<div class="pgroup rsv"><h3>Rearguard</h3><div class="pcs">${B.back.map(c=>pcard(c,true)).join('')}</div></div>`:''}`;
+  $('bparty').innerHTML=foeCards()+`<div class="pgroup heroes"><h3>Vanguard</h3><div class="pcs">${B.front.map(c=>pcard(c,false)).join('')}</div></div>${B.back.length?`<div class="pgroup rsv"><h3>Rearguard</h3><div class="pcs">${B.back.map(c=>pcard(c,true)).join('')}</div></div>`:''}`;
   $('bcmd').innerHTML=cmdHtml();
   fitBattle();
 }
@@ -8969,7 +8971,7 @@ function mChar(id,edit){
       <div class="rows">${Object.keys(cnt).map(g=>`<div class="row"><div><b>${gearOf(g).n}</b> x${cnt[g]}<small>${gearDesc(g)}</small><small>${gearDiff(c,g)}</small></div><button class="btn sm" data-act="equip" data-arg="${g}">Equip</button></div>`).join('')||'<p class="note">No spare gear for this slot. Buy some at the smithy or find it in chests.</p>'}</div>`,
       `${c.eq[m.gear]?`<button class="btn sm" data-act="unequip" data-arg="${m.gear}">Unequip</button>`:''}<button class="btn" data-act="gearBack">Done</button>`);
   }
-  const slots=[0,1,2,3,4,5].map(i=>{const oc=G.roster[G.party[i]];return `<button class="btn sm ${G.party[i]===id?'gold':''}" data-act="assign" data-arg="${i}">${i<3?'Front':'Rearguard'} ${i%3+1}${oc?': '+esc(oc.name):''}</button>`;}).join('');
+  const slots=[0,1,2,3,4,5].map(i=>{const oc=G.roster[G.party[i]];return `<button class="btn sm ${G.party[i]===id?'gold':''}" data-act="assign" data-arg="${i}">${i<3?'Vanguard':'Rearguard'} ${i%3+1}${oc?': '+esc(oc.name):''}</button>`;}).join('');
   const A=S.attr,attrRows=ATTR.map(k=>`<div class="arow"><button class="stb an" data-act="statInfo" data-arg="${k}" aria-label="What is ${ATTRN[k][0]}?"><b>${k.toUpperCase()}</b> <small>${ATTRN[k][0]}</small></button><b>${Math.round(A[k])}</b>${c.alloc[k]?`<small class="up">+${c.alloc[k]}</small>`:'<small></small>'}${edit?`<button class="btn sm" data-act="addPt" data-arg="${k}" ${c.pts>0?'':'disabled'} aria-label="Add a point to ${ATTRN[k][0]}">+</button>`:''}</div>`).join('');
   const L=LIMIT[t.cls],bonds=BONDS.filter(b=>b.a===id||b.b===id);
   const LST=(m.list||[]).filter(x=>G.roster[x]),li=LST.indexOf(id),nav=LST.length>1&&li>=0?`<div class="cnav"><button class="btn sm" data-act="charNav" data-arg="-1" aria-label="Previous hero">‹ Prev</button><small class="nums">${li+1} / ${LST.length}</small><button class="btn sm" data-act="charNav" data-arg="1" aria-label="Next hero">Next ›</button></div>`:'';
@@ -9021,7 +9023,7 @@ function mMenu(m){
     body=ddBar([ddSel('Show','lSh','items',[['all','All items'],['own','Carrying'],['battle','Healing and cures'],['travel','Travel gear']],sh),ddSel('Sort','lSort','items',[['def','Default'],['name','Name'],['count','Most carried'],['rar','Rarest first']],f.s)],'lfbar')
       +(ids.length?`<div class="rows">${ids.map(id=>`<div class="row tr" style="${tierVars(iTierIdx(id))}"><div><b>${itemIcon(id)} ${ITEMS[id].n}</b> ${itemChip(id)} x${G.inv[id]||0}<small>${ITEMS[id].d}</small>${ITEMS[id].travel&&(G.inv[id]||0)>0&&travelWhyNot(id)?`<small class="warn">${esc(travelWhyNot(id))}</small>`:''}</div>${ITEMS[id].cure?'<span class="m">Battle only</span>':ITEMS[id].travel?`<button class="btn sm" data-act="useTravel" data-arg="${id}" ${(G.inv[id]||0)>0&&!travelWhyNot(id)?'':'disabled'} title="${esc(travelWhyNot(id))}">Use</button>`:`<button class="btn sm" data-act="useItem" data-arg="${id}" ${(G.inv[id]||0)>0?'':'disabled'}>Use</button>`}</div>`).join('')}</div>`:'<p class="note empty">No items match. Try Show: All items.</p>')+'<p class="note">Materials have their own tab: Backpack, Materials.</p>';}
   if(tab==='pouch')body=`<p class="note">Herbs, ore, logs, monster parts and relics. Alchemy and the Smithy turn them into gear and brews.</p>${vPouch()}`;
-  if(tab==='quests'){const act=G.quests.filter(q=>q.state==='active'),bt=G.bounties.filter(b=>b.state==='active');
+  if(tab==='quests'){const act=G.quests.filter(q=>q.state==='active').sort((a,b)=>(questReady(b)?1:0)-(questReady(a)?1:0)),bt=G.bounties.filter(b=>b.state==='active');
     body=`<div class="rows">${act.map(q=>`<div class="row"><div><b>${esc(q.title)}</b><small>${esc(q.desc)}</small><small>${q.type==='tamer'?`${Math.min(stickCount().n,q.n)}/${q.n} creatures logged`:q.type==='legend'?legendProg(q):q.type==='hunt'?`${q.have||0}/${q.n}`:q.type==='gather'?`${Math.min(G.mats[q.mat]||0,q.n)}/${q.n}`:q.found?'Found':'Not found yet'}${questReady(q)?'. Ready to claim at a quest board.':''}</small></div></div>`).join('')}${bt.map(b=>`<div class="row"><div><b>Bounty: ${esc(b.name)}</b><small>Roaming ${esc(ZS(b.stage).n)}.</small></div></div>`).join('')||''}${!act.length&&!bt.length?'<p class="note">No active quests. Check the quest board in any town square, and the bounty board at the Guild Hall.</p>':''}</div>
     <h4>The journey</h4><div class="rows">${[0,1,2,3,4].map(s=>`<div class="row ${s>G.stage?'lock':''}"><div><b>${s>G.stage?'???':esc(ZS(s).n)}</b><small>${s>G.stage?'Ahead':esc(ZS(s).dungeon)+(G.cleared[s]?': relit':`: ${s<4?bossClass(bossKeyFor(s)):'Calamity'} waits`)}</small></div></div>`).join('')}</div>`;}
   if(tab==='next')body=vNext();
@@ -9067,7 +9069,7 @@ function mBeast(m){
   if(o.g&&G&&G.run){const bs=(G.run.bosses||[]).indexOf(o.k),sg=bs>=0?bs:(G.run.final===o.k?4:-1);if(sg>=0){const base=STAGE_BOSS_LV[sg]+ngLvOff(),cur=bossLvFor(sg);st=`<p class="note nums">Level ${cur}${cur>base?` (base ${base}, raised by your strongest hero)`:''} this journey.</p>`;}else st=`<p class="note nums">Not waiting anywhere on this journey.</p>`;}
   if(T>=2&&!o.g){const e=makeEnemy(d,lv);st=`<div class="stats"><span>HP <b>${e.S.mhp}</b></span><span>ATK <b>${Math.round(e.S.atk)}</b></span><span>DEF <b>${Math.round(e.S.def)}</b></span><span>MAG <b>${Math.round(e.S.mag)}</b></span><span>RES <b>${Math.round(e.S.res)}</b></span><span>SPD <b>${Math.round(e.S.spd)}</b></span></div><p class="note">At level ${lv}, on your current difficulty.</p>`;}
   const lock=(need,what)=>`<p class="note lockl">${what} at <b>${TIER_N[need]}</b>.</p>`;
-  const skillLine=x=>`<div class="row"><div class="grow"><b>${x[1]?ico(x[1]):''}${esc(x[0])}</b><small>${x[4]==='buff'?'Buffs itself':x[3]==='all'?'Hits your whole front line':'Hits one hero'}${x[4]==='phys'?', physical':x[4]==='mag'?', magic':''}${x[2]&&x[4]!=='buff'?`, power ${x[2]}`:''}${x[5]?'. May inflict '+x[5].map(f=>STS[f[0]].n).join(', '):''}.</small></div></div>`;
+  const skillLine=x=>`<div class="row"><div class="grow"><b>${x[1]?ico(x[1]):''}${esc(x[0])}</b><small>${x[4]==='buff'?'Buffs itself':x[3]==='all'?'Hits your whole vanguard':'Hits one hero'}${x[4]==='phys'?', physical':x[4]==='mag'?', magic':''}${x[2]&&x[4]!=='buff'?`, power ${x[2]}`:''}${x[5]?'. May inflict '+x[5].map(f=>STS[f[0]].n).join(', '):''}.</small></div></div>`;
   return box(esc(d.n),`<div class="bdet"><div class="bimg"><img src="${monURL(d.art)}" alt=""></div><div class="grow"><div class="els">${elChips(d.el)}</div><p class="note">${where}</p><p class="nums"><b class="tier t${T}">${TIER_N[T]}</b> · Defeated ${b.kills||0}${b.scan?' · Scanned':''}</p>${nm.tier?`<small class="nums">${esc(nm.tier)}</small>`:''}</div></div>
     <h4>Mastery perks</h4><p class="note nums">${pk.lv?`Rank ${pk.lv}: +${Math.round(pk.dmg*100)}% damage against it${pk.drop?`, +${Math.round(pk.drop*100)}% drop chance`:''}. `:'None yet. '}${esc(nm.perk)}. Perks are off in the Daily Trial.</p>
     <h4>Matchups</h4><div class="rows compact"><div class="row"><b>Weak to</b><span>${weak.map(el=>show(el)?ico(el)+' '+EL[el]:'?').join(', ')||'Nothing'}</span></div><div class="row"><b>Resists</b><span>${res.map(el=>show(el)?ico(el)+' '+EL[el]:'?').join(', ')||'Nothing'}</span></div>
@@ -9261,7 +9263,7 @@ function boot(){
 function townS(){return WS.m&&WS.m.kind==='town'?WS.m.s:-1;}
 const RELIT_STOCK=[['c_str',420],['c_int',420],['c_vit',420],['c_spi',420],['c_agi',420],['c_dex',480],['c_luk',480],['elixir',650],['plume',220]];
 function vPersonal(){
-  const list=Object.values(G.roster).filter(c=>!TPL[c.id].mon).sort((a,b)=>b.lv-a.lv);
+  const po=c=>{const q=G.personal[c.id];return !q||q.state==='open'?(personalEligible(c)?2:3):q.state==='active'?(q.ready||q.won?0:1):4;},list=Object.values(G.roster).filter(c=>!TPL[c.id].mon).sort((a,b)=>po(a)-po(b)||b.lv-a.lv);
   return `<p>Every wayfarer has unfinished business. At level ${PERSONAL_LV}, once you have reached the second town, a hero's personal quest opens: accept it and a rival roams the current realm's field. Bring that hero in your six to face it and win their signature item: a weapon, armor or accessory bound to that hero, which changes how they look.</p>
   <div class="rows">${list.map(c=>{const q=G.personal[c.id],t=TPL[c.id],w=gearOf(sigGid(c.id))||gearOf('u_'+c.id);
     const st=!personalEligible(c)&&(!q||q.state==='open')?`<span class="m">${personalLockText(c)}</span>`:!q||q.state==='open'?`<button class="btn sm gold" data-act="personal" data-arg="${c.id}">Accept</button>`:q.state==='active'?'<span class="m">Rival roaming</span>':'<span class="m up">Done</span>';
@@ -10546,22 +10548,22 @@ function setSlots(P){G.party=P.filter(Boolean);}
 function swapTown(where){return where==='guild'||inTown();}
 function vSwap(where){
   const town=swapTown(where),sel=V.swapSel,P=partySlots(),openAct=where==='guild'?'openChar':'viewChar';
-  // v0.4.3: in the Menu the party is a 3 + 3 grid (front line on top, rearguard below) that fits one screen
+  // v0.4.3: in the Menu the party is a 3 + 3 grid (vanguard on top, rearguard below) that fits one screen
   const grid=where==='menu';
   V.charList=G.party.slice();
   const name=id=>id&&G.roster[id]?esc(G.roster[id].name):'';
-  const hint=!sel?'Tap a hero, then tap another to swap places. The front three start each fight.'
+  const hint=!sel?'Tap a hero, then tap another to swap places. The vanguard start each fight.'
     :sel.r?`Tap a party slot to put ${name(sel.r)} there.`
     :sel.fill?'Tap a roster hero to fill the empty slot.'
     :`Tap who to swap with ${name(P[sel.i])}.${town?' Or tap a roster hero below to swap them in.':''}`;
-  const card=(id,i)=>{const c=id&&G.roster[id],on=sel&&sel.i===i,lab=(i<3?'Front ':'Rearguard ')+(i%3+1);
+  const card=(id,i)=>{const c=id&&G.roster[id],on=sel&&sel.i===i,lab=(i<3?'Vanguard ':'Rearguard ')+(i%3+1);
     if(!c)return `<div class="swc ${grid?'':'row'} empty ${on?'sel':''}"><button class="swm" data-act="swapTap" data-arg="p:${i}" ${town||sel?'':'disabled'}><small>${lab}</small><span>Empty slot</span></button></div>`;
     // Beta v0.3.1: one readable row per hero: portrait, name, level and class, elements, HP and MP with numbers, KO or status marker
     const bad=[...new Set(Object.keys(c.st||{}).filter(k=>STS[k]&&STS[k].bad).concat(typeof ailOf==='function'?ailOf(c):[]))],mark=c.hp<=0?'<em class="swko">KO</em>':bad.length?`<em class="swst" aria-label="${bad.map(k=>STS[k].n).join(', ')}">${bad.map(k=>`<span class="ail" style="--c:${STS[k].c}" title="${STS[k].n}">${stSym(k)}</span>`).join('')}</em>`:'';
     return `<div class="swc ${grid?'':'row'} ${on?'sel':''} ${c.hp<=0?'ko':''}"><button class="swm" data-act="swapTap" data-arg="p:${i}" aria-pressed="${on}" aria-label="${esc(c.name)}, ${lab}${on?', selected':''}">${port(c.id,'noail')}<span class="swi"><span class="swn"><b>${esc(c.name)}</b><span class="els">${c.el.map(ico).join('')}</span></span>${mark?`<span class="swstrow">${mark}</span>`:''}<small>${grid?'':lab+' · '}Lv ${c.lv} ${CLS[TPL[c.id].cls].n}${c.pts?` · <span class="up">${c.pts} pts</span>`:''}</small><span class="swb"><span class="swbl">HP</span>${bar(c.hp,c.S.mhp,'var(--hp)')}<span class="nums">${c.hp}/${c.S.mhp}</span></span><span class="swb"><span class="swbl">MP</span>${bar(c.mp,c.S.mmp,'var(--mp)')}<span class="nums">${c.mp}/${c.S.mmp}</span></span>${grid?xpLine(c,true):xpLine(c)}</span></button><button class="btn sm swsheet" data-act="${openAct}" data-arg="${c.id}" aria-label="Open ${esc(c.name)}'s sheet">Sheet</button></div>`;};
   const bench=Object.values(G.roster).filter(c=>!G.party.includes(c.id)).filter(c=>lmatch('party',c));const benchS=lsort('party',bench,(a,b)=>b.lv-a.lv||a.name.localeCompare(b.name));
   return `${grid?'<div class="swgridwrap">':''}<div class="btnrow ptools"><button class="btn sm" data-act="bpOpen">Best party</button><button class="btn sm" data-act="fsOpen">Field skills</button>${(G.talks||[]).length?`<button class="btn sm gold" data-act="campfire">Campfire talks (${G.talks.length})</button>`:''}</div>${ldStrip()}<p class="note swhint ${sel?'on':''}">${hint}</p>
-    <h4>Front line</h4><div class="swlist ${grid?'g3':''}">${[0,1,2].map(i=>card(P[i],i)).join('')}</div>
+    <h4>Vanguard</h4><div class="swlist ${grid?'g3':''}">${[0,1,2].map(i=>card(P[i],i)).join('')}</div>
     <h4>Rearguard</h4><div class="swlist ${grid?'g3':''}">${[3,4,5].map(i=>card(P[i],i)).join('')}</div>
     ${sel&&sel.i!=null&&P[sel.i]?`<div class="btnrow">${town&&G.party.length>1?'<button class="btn sm" data-act="swapOut">Send to roster</button>':''}<button class="btn sm" data-act="swapCancel">Cancel</button></div>`:sel?'<div class="btnrow"><button class="btn sm" data-act="swapCancel">Cancel</button></div>':''}
     ${town?`<h4>Reserves <span class="cnt nums">${bench.length} waiting</span></h4>${filterBar('party')}<div class="grid mini">${benchS.map(c=>`<button class="mini ${sel&&sel.r===c.id?'sel':''} ${c.el.length>1?'dual':''} ${isLeg(c.id)?'leg':isEpic(c.id)?'epic':''}" data-act="swapTap" data-arg="r:${c.id}">${heroTag(c.id)}<img src="${heroURL(c.id)}" alt=""><b>${esc(c.name)}${c.legacy?' ★':''}</b><small>Lv ${c.lv} ${CLS[TPL[c.id].cls].n}</small><span class="els">${c.el.map(ico).join('')}</span></button>`).join('')||'<p class="note">Everyone you have recruited is already in your six.</p>'}</div>`
@@ -11268,7 +11270,7 @@ const STAT_INFO={
   healP:['HEAL','Healing power for heal skills, Regen and revives.','Raised mostly by Faith, then Spirit and MAG.']};
 function prefersAttr(k){return Object.keys(CLS).filter(c=>(CLS[c].pref||[]).includes(k)).map(c=>CLS[c].n);}
 const CLASS_DESC={
-  warrior:{role:'Front-line damage',str:'Big single hits, sweeps that hit every foe, War Cry to draw attacks.',wpn:'Blades and mail'},
+  warrior:{role:'Vanguard damage',str:'Big single hits, sweeps that hit every foe, War Cry to draw attacks.',wpn:'Blades and mail'},
   knight:{role:'Tank and protector',str:'Taunts, Wards and Bulwark for the line; the toughest body in the game.',wpn:'Blades and mail'},
   mage:{role:'Elemental caster',str:'The strongest spells, storms that hit every foe, Haste and Hex.',wpn:'Staves (cheaper spells, +10% elemental) or tomes (more raw power), and robes'},
   healer:{role:'Healer',str:'Heals, cleanses, Regen and revives. Scales mostly on Faith.',wpn:'Staves and robes'},
@@ -11481,7 +11483,7 @@ function packContents(){const s=G.stage|0,L=PACK_TABLE.filter(r=>ITEMS[r[0]]&&r[
 // Every line is built from the wayfarer's own details: class (habit, gear, how they talk), element (what they carry in the air), trait
 // (a turn of phrase), the area they are met in, their name and their own bio. The tables are all here and editable.
 const CW_CLS={
- warrior:{who:'a fighter',tic:'rolling a stiff shoulder',gear:'a notched blade across their back',plea:'Got a potion? I will not ask twice, and I will not forget it',shout:'Steel out, friend, there are more of them than I counted',challenge:'You swing like people who think they are good. Let me check that, one honest round',win:'Well swung. I was wrong about you, a little',decline:'Ha. Suit yourselves, my arm will keep',trade:'Prices are as honest as my sword arm, which is saying a lot',ask:'Walk with me and I will keep the front line busy'},
+ warrior:{who:'a fighter',tic:'rolling a stiff shoulder',gear:'a notched blade across their back',plea:'Got a potion? I will not ask twice, and I will not forget it',shout:'Steel out, friend, there are more of them than I counted',challenge:'You swing like people who think they are good. Let me check that, one honest round',win:'Well swung. I was wrong about you, a little',decline:'Ha. Suit yourselves, my arm will keep',trade:'Prices are as honest as my sword arm, which is saying a lot',ask:'Walk with me and I will keep the vanguard busy'},
  knight:{who:'a knight',tic:'adjusting a dented pauldron',gear:'a shield with more scars than paint',plea:'A potion, if you can spare one. A knight pays her debts, I promise',shout:'Stand behind me! No, wait, that is a bad idea, there are too many. Help!',challenge:'A trial of arms, then. Nothing cruel, just a measure of your worth',win:'Honour is served. Tell the tavern keepers my name, they might remember it',decline:'No shame in it. The road is long and so is my patience',trade:'A knight on the road has to eat, so I have turned to trade',ask:'Take me on and I will hold the line until it breaks'},
  mage:{who:'a mage',tic:'tapping a sleeve full of loose notes',gear:'a staff wound with ribbons',plea:'A potion, please, a small one. I have a headache and a cut and I am out of clever ideas',shout:'I had a plan for these! It involved fewer of them. Help!',challenge:'I have a theory about how you fight. A demonstration would prove it, and it will be quick',win:'Fascinating. The data says I should buy you a drink, if we meet in a tavern',decline:'Pity, I had the equation ready. Another time',trade:'These are components, not trinkets, and the prices reflect that',ask:'If I walk with you the experiments get much better, trust me'},
  thief:{who:'a rogue',tic:'counting coins that were not there a moment ago',gear:'a belt of too many small pouches',plea:'You would not have a potion on you? I would make it worth your while, quietly',shout:'Friends! Quickly! I did not steal anything from these ones, probably!',challenge:'Quick wits and quicker hands. A little bout, fair play, mostly',win:'Fair is fair. If I turn up in a tavern, the first round is on somebody else',decline:'Fine, fine. Keep your purse tight, I was only asking',trade:'Everything here fell off a cart. A different cart, a very long time ago',ask:'Take me along and nothing of yours will go missing'},
@@ -13170,7 +13172,7 @@ function sigBuild(t){
   if(nu==='mp')s.mp=Math.max(0,s.mp-1);if(nu==='heal'&&s.k==='heal')s.pw=+(s.pw*1.1).toFixed(2);if(nu==='crit'&&(s.k==='phys'||s.k==='mag'))s.crit=.1;
   if(fx.length)s.fx=fx;
   // description: the hand written line plus what it does, built from the numbers so it never drifts
-  const who=s.t==='all'?'every foe':s.t==='one'?'one foe':s.t==='ally'?'one ally':'the front line',parts=[];
+  const who=s.t==='all'?'every foe':s.t==='one'?'one foe':s.t==='ally'?'one ally':'the vanguard',parts=[];
   const stTxt=tp.rider==='ally'?(fx||[]).map(f=>SIG_ST_N[f[0]]).join(' and '):sigFoeTxt(fx||[]);
   if(s.k==='phys'||s.k==='mag')parts.push((s.hits>1?`${s.hits} quick hits on ${who}`:`Hits ${who}`)+(stTxt?`; ${stTxt}.`:'.'));
   else if(s.k==='heal')parts.push(`Heals ${who}${stTxt?` and grants ${stTxt}`:''}.`);
@@ -14321,7 +14323,9 @@ function mBestParty(m){const P=m.plan,cur=new Set(G.party),same=P.ids.length===G
 {const vm0=vModal;vModal=function(m){if(m){if(m.type==='bp')return mBestParty(m);if(m.type==='p3plan')return mP3Plan(m);}return vm0.apply(this,arguments);};}
 // after Best Party: offer Auto best gear for the new six right away
 {const ba0=ACT.bpApply;ACT.bpApply=function(){const r=ba0.apply(this,arguments);if(V.modal&&V.modal.type==='ldRes'){V.modal.p3bp=1;render();}return r;};}
-{const lr0=mLdRes;mLdRes=function(m){let h=lr0.apply(this,arguments);if(m&&m.p3bp){const i=h.lastIndexOf('<div class="btnrow">');if(i>=0)h=h.slice(0,i)+'<div class="btnrow p3eqb"><button class="btn gold" data-act="autoEqParty">Equip best gear for this party</button></div>'+h.slice(i);}return h;};}
+{const lr0=mLdRes;mLdRes=function(m){let h=lr0.apply(this,arguments);if(m&&m.p3bp){const i=h.lastIndexOf('<div class="btnrow">');if(i>=0)h=h.slice(0,i)+(m.p3bpDone?'<p class="note p3eqb done">Best gear equipped for this party.</p>':'<div class="btnrow p3eqb"><button class="btn gold" data-act="autoEqParty">Equip best gear for this party</button></div>')+h.slice(i);}return h;};}
+// v0.7.1: once used from this screen the button is replaced by a done note (it used to stay after equipping)
+{const ae0=ACT.autoEqParty;ACT.autoEqParty=function(){const m=V.modal;if(m&&m.type==='ldRes'&&m.p3bp)m.p3bpDone=1;return ae0.apply(this,arguments);};}
 // the Party tab gets the team check under the grid
 {const vs0=vSwap;vSwap=function(where){const h=vs0.apply(this,arguments);try{if(!G||G.daily||where!=='menu')return h;return h+p3GapsHtml(G.party.slice(),null,false);}catch(e){return h;}};}
 
@@ -14665,13 +14669,13 @@ window.__AU={get AU(){return AU;},get AU2(){return AU2;},get SFXC(){return SFXC;
 
 // =================== Beta v0.5.0 4.3: XP CATCH UP ===================
 // A hero below the highest level on the whole roster (v0.6.3: party AND reserves, so a wayfarer who sat out a realm catches up
-// to your top hero, not only to the six in this fight) gets XPCU.per more battle XP per level of gap, at most XPCU.max (config.js). A front row hero
+// to your top hero, not only to the six in this fight) gets XPCU.per more battle XP per level of gap, at most XPCU.max (config.js). A vanguard hero
 // gets the whole bonus, a reserve (benched) hero XPCU.bench of it, the fallen still get nothing, and heroes at the top level get no bonus.
 // It replaces the old flat x1.4 for heroes four or more levels behind (the share line in win(), engine.js): that factor is divided back
 // out here so the two never stack. The Daily Trial is untouched. The result screen lists the bonus (info.catchup, ui wrapper in p4party.js).
 // Pure engine code (no DOM) so the node sims can load it: SIMEXTRA=v3/p4xp.js node pacing.js ...
 let XPC=null;
-function xpCatchMul(lv,max,front){const gap=Math.max(0,(max|0)-(lv|0));if(!gap)return 1;return 1+Math.min(XPCU.max,XPCU.per*gap)*(front?1:XPCU.bench);}
+function xpCatchMul(lv,max,front){const gap=Math.max(0,(max|0)-(lv|0));if(!gap)return 1;return 1+Math.min(XPCU.max,XPCU.per*gap+(XPCU.sq||0)*gap*gap)*(front?1:XPCU.bench);}
 {const w0=win;win=function(){
   XPC=null;
   try{if(B&&G&&!G.daily&&B.spec&&B.spec.kind!=='daily'){const P=B.front.concat(B.back),pmax=Math.max(...P.map(c=>c.lv)),R=Object.values(G.roster||{}).map(c=>c.lv|0);
@@ -15079,7 +15083,7 @@ function p2Flying(u){return !!(u&&u.side==='e'&&u.ty&&u.ty.includes('flying'));}
 
 // ---------------------------------------------------------------- 2.2 surprise starts ----------------------------------------------------------------
 // A roamer still on patrol has not seen the party. Touching it (or it bumping into you) without being spotted first gives a free round:
-// every hero on the front line acts once before any foe moves. A roamer that chased you (or is walking home after losing you) saw you first.
+// every hero in the vanguard acts once before any foe moves. A roamer that chased you (or is walking home after losing you) saw you first.
 {const rf0=roamFight;roamFight=function(m,r){try{P2.sur=r&&r.mode==='patrol'?{mid:m.id,i:r.i,t:Date.now()}:null;}catch(e){}return rf0.apply(this,arguments);};}
 function p2Surprise(){if(!B)return;const P=B.front.filter(c=>c.hp>0),E=B.en.filter(e=>e.hp>0);if(!P.length||!E.length)return;
   const free=Math.max(1,(SURPRISE&&SURPRISE.free)||1);P.forEach((c,k)=>{c.next=B.time+k*.001;});
@@ -16321,7 +16325,7 @@ function m3Tavern(m){const tab=m.tab;let body='';
     ${later?`<p class="note">${later} more wayfarer${later>1?'s are':' is'} on the road${nu?`; the next arrive in about ${nu.need} battle${nu.need>1?'s':''}, or when you reach the next realm`:''}.</p>`:''}<p class="note">Some wayfarers won't sit in a tavern at all. Check the Guild Hall's recruitment challenges.</p>`;}
   return m3Box('tavern',m,m3Nav('tavern',m)+body);}
 // ----- the Guild Hall -----
-function m3Bounties(){for(let s=0;s<=G.stage;s++)genBounties(s);const L=G.bounties.filter(b=>b.stage<=G.stage);
+function m3Bounties(){for(let s=0;s<=G.stage;s++)genBounties(s);const bo=b=>b.state==='active'?0:b.state==='open'?1:2,L=G.bounties.filter(b=>b.stage<=G.stage).sort((a,b)=>bo(a)-bo(b));
   return `<p class="note">Marked monsters roam the fields. Accept a bounty and its quarry appears in that realm's field, glowing red. Beat it for gold, a stat charm and materials.</p>${typeof allBar==='function'?allBar('bountyAll','',L.filter(b=>b.state==='open').length,0):''}${m3Rows(L.map(b=>{const mo=MON[b.mon],md=ELITE_MODS.find(x=>x.k===b.mod);
     return `<div class="row"><img class="mimg" src="${monURL(mo.art)}" alt=""><div class="grow"><b>${esc(b.name)}</b><small>${md.n}: ${md.d} Level ${b.lv}. Roams ${esc(ZS(b.stage).n)}.</small><small>${fmt(b.reward.gold)} gold, ${gearOf(b.reward.charm).n}</small></div>${b.state==='open'?`<button class="btn sm gold" data-act="bounty" data-arg="${b.id}">Accept</button>`:b.state==='active'?'<span class="m">Hunting</span>':'<span class="m up">Done</span>'}</div>`;}).join(''),'No bounties posted yet.')}`;}
 function m3Arena(){const cl=G.cleared.filter(Boolean).length;
@@ -16377,7 +16381,7 @@ window.__M3={get MENU_GROUPS(){return MENU_GROUPS;},m3Norm,m3Tabs,m3Secs,shopFBa
 // =================== Beta v0.6.3: PARTY SYSTEMS ===================
 // 1. Best Party suggests several formations instead of one: Balanced, Boss ready (Area answer once the boss is down), Fresh mix and a
 //    Training team. Role balance (tank, healer, damage, support, Primer, Detonator, deliveries, elements, answers to the area and its boss)
-//    outweighs raw level and gear (BP6 in config.js); each pick is explained and placed: the front line fights, the rearguard swaps in.
+//    outweighs raw level and gear (BP6 in config.js); each pick is explained and placed: the vanguard fights, the rearguard swaps in.
 // 2. Training team: under-leveled heroes join behind a strong tank and healer and catch up (XP catch up, p4xp.js, measured against the
 //    top level on the whole roster since v0.6.3).
 // 4. "Equip best: reserves": auto equip for the heroes not in the party, from spare gear only. Never touches the party's gear or companions.
@@ -16413,7 +16417,7 @@ function p6Search(X,sc,fixed){const all=X.all;let set=(fixed||[]).slice();const 
   for(let pass=0;pass<3;pass++){let imp=false;for(let i=0;i<set.length;i++){if(lock.has(set[i]))continue;let cur=sc(set);
     all.forEach(c=>{if(set.includes(c))return;const t=set.slice();t[i]=c;const v=sc(t);if(v>cur+1e-6){set=t;cur=v;imp=true;}});}if(!imp)break;}
   return set;}
-// placement: the front line is who fights (tank, healer, the best damage dealer for this formation); the rearguard swaps in when
+// placement: the vanguard is who fights (tank, healer, the best damage dealer for this formation); the rearguard swaps in when
 // someone falls or tires, so it holds the backup healer and tank first
 function p6Place(set,X,mode,train){const R=c=>X.R[c.id],by=(a,b)=>X.pw[b.id]-X.pw[a.id],rest=set.slice().sort(by),front=[],take=c=>{if(!c)return;rest.splice(rest.indexOf(c),1);front.push(c);};
   const T=X.T,tr=new Set(train||[]);
@@ -16429,7 +16433,7 @@ function p6Why(set,X,mode,train){const base=p3Reasons(set,X.T),out={},tr=new Set
   set.forEach((c,i)=>{const r=X.R[c.id],L=(base[c.id]||[]).filter(t=>t!=='strong with the gear you own');
     if(r.tank&&seen.tank++&&!L.includes('tank'))L.push(i<3?'second tank':'backup tank for the swap');
     if(r.heal&&seen.heal++&&!L.includes('healer'))L.push(i<3?'second healer':'backup healer for the swap');
-    if(!L.length)L.push(r.sup?'support: buffs and wards the front line':r.dmg?'damage dealer':'steady all rounder');
+    if(!L.length)L.push(r.sup?'support: buffs and wards the vanguard':r.dmg?'damage dealer':'steady all rounder');
     if(tr.has(c.id)){const gap=X.top-c.lv,pct=Math.round((xpCatchMul(c.lv,X.top,i<3)-1)*100);L.unshift(`training: Lv ${c.lv}, ${gap} behind your top wayfarer, +${pct}% catch up XP${i<3?'':' (rearguard share)'}`);}
     else if(mode==='train'&&(r.tank||r.heal)&&i<3)L.push('keeps the trainees safe');
     out[c.id]=L.slice(0,3);});
@@ -16449,12 +16453,12 @@ const P6_NAMES={bal:'Balanced',boss:'Boss ready',area:'Area answer',mix:'Fresh m
 function p6Summary(o,X,first){const T=X.T,nm=c=>esc(c.name);
   if(o.key==='bal')return 'One of every role first (tank, healer, damage, support, Primer and Detonator), every delivery and a spread of elements. Level and gear only settle ties.';
   if(o.key==='boss'){const els=T.boss.el.length?ELK.filter(e=>matchup(e,T.boss.el)>1).map(e=>EL[e]):[];
-    return `Built to bring down ${p3BossName(T.boss)}${els.length?`: ${els.slice(0,3).join(', ')} attacks hit it hard`:''}${T.boss.ty.length?`, with answers to its ${T.boss.ty.map(a=>ARCH[a].n.toLowerCase()).join(' and ')} side`:''}. The answer sits in the front line.`;}
+    return `Built to bring down ${p3BossName(T.boss)}${els.length?`: ${els.slice(0,3).join(', ')} attacks hit it hard`:''}${T.boss.ty.length?`, with answers to its ${T.boss.ty.map(a=>ARCH[a].n.toLowerCase()).join(' and ')} side`:''}. The answer sits in the vanguard.`;}
   if(o.key==='area'){const a=Object.keys(T.arch).filter(k=>T.mons.some(m=>tyOf(MON[m].art).includes(k)));
     return a.length?`Built for ${esc(ZS(T.s).n)}: answers to the ${a.map(k=>ARCH_PL[k]).join(', ')} here and their elements.`:`Built for ${esc(ZS(T.s).n)}. Little is known about its monsters yet: every fight fills the Bestiary and sharpens this pick.`;}
   if(o.key==='mix'){const sh=o.set.filter(c=>first.includes(c.id)).length;return `Different faces in the same roles, so more of your wayfarers see battle and grow. Shares ${sh} of 6 with Balanced.`;}
   if(o.key==='rot')return 'The same roles again with the heroes the other formations left in reserve, so everyone keeps up.';
-  if(o.key==='train')return `${o.trainees.map(c=>`${nm(c)} (Lv ${c.lv})`).join(', ')} ${o.trainees.length>1?'train':'trains'} behind ${o.anchors.map(nm).join(' and ')||'your strongest'}. Catch up XP is measured against your top wayfarer (Lv ${X.top}): the further behind, the more XP, up to +${Math.round(XPCU.max*100)}% in the front line and +${Math.round(XPCU.max*XPCU.bench*100)}% in reserve.`;
+  if(o.key==='train')return `${o.trainees.map(c=>`${nm(c)} (Lv ${c.lv})`).join(', ')} ${o.trainees.length>1?'train':'trains'} behind ${o.anchors.map(nm).join(' and ')||'your strongest'}. Catch up XP is measured against your top wayfarer (Lv ${X.top}): the further behind, the more XP, up to +${Math.round(XPCU.max*100)}% in the vanguard and +${Math.round(XPCU.max*XPCU.bench*100)}% in the rearguard.`;
   return '';}
 bestParty=function(){const keep=P3C;if(!P3C)P3C={why:{},kit:{}};
   try{const X=p6Ctx(),opts=[],sets=[];
@@ -16480,7 +16484,7 @@ mBestParty=function(m){const P=m.plan,o=P.opts[P.pick]||{},cur=new Set(G.party),
     ${P.noTrain?`<p class="note"><small>Training team: nobody is ${BP6.train.gap} or more levels behind your top wayfarer right now.</small></p>`:''}
     <p class="note bp6sum"><b>${esc(o.name||'')}.</b> ${o.sum||''}${o.also?` <small>(${o.also.join(' and ')} would pick the same six.)</small>`:''}</p>${p3ThreatLine(T)}
     <p class="note nums">Average Lv ${I.lv} · Power ${o.rel||100}% of Balanced · Tanks ${I.tank} · Healers ${I.heal} · Damage ${I.dmg} · Support ${I.sup} · Primers ${I.pr} · Detonators ${I.de} · Elements ${I.els}/8</p>
-    <h4>Front line <small>(fights)</small></h4><div class="rows">${P.ids.slice(0,3).map(row).join('')}</div>
+    <h4>Vanguard <small>(fights)</small></h4><div class="rows">${P.ids.slice(0,3).map(row).join('')}</div>
     ${P.ids.length>3?`<h4>Rearguard <small>(swaps in when someone falls or tires)</small></h4><div class="rows">${P.ids.slice(3).map((id,i)=>row(id,i+3)).join('')}</div>`:''}
     ${out.length?`<p class="note">Going to the reserves: ${out.map(id=>esc(G.roster[id].name)).join(', ')}.</p>`:''}
     ${same&&P.ids.every((id,i)=>G.party[i]===id)?'<p class="note">This is already your party, in this order.</p>':''}${!same&&!inTown()?'<p class="note warn">Changing who is in your six happens in town. You can apply it there.</p>':''}${p3GapsHtml(P.ids,T,false)}`,
@@ -16530,7 +16534,7 @@ window.__P6={bestParty:()=>bestParty(),autoCamp,p6Sel,isLeg:id=>isLeg(id),isEpic
 // 1. Taming log: a second view inside Records > Bestiary. Every foe that can join you (bounty beasts and Nikaris's wild friends,
 //    plus the lesser whelps of Scourges) is shown as Tamed, Seen (with where it roams) or unseen (a silhouette and "???"),
 //    with "Tamed X of Y" for this journey. Seen comes from the account Bestiary, tamed from this journey.
-// 2. Bond goals: hero sheets and the new Bonds page say how many more wins side by side (both in the front line and standing
+// 2. Bond goals: hero sheets and the new Bonds page say how many more wins side by side (both in the vanguard and standing
 //    when the fight is won, the counter G.bonds already keeps) until the next talk or tech. A toast says when a talk is ready.
 //    Bond pacing (BOND_LV) is unchanged.
 // 3. Make camp: Camp Supplies (sold at Alchemy from realm CAMP.fromStage + 1) let the party rest in a field or dungeon: standing
@@ -16585,7 +16589,7 @@ function bondGoal(k){const b=BONDMAP[k];if(!b)return null;const p=(G.bonds||{})[
   const n=nx.at-p,w=x=>`${x} more win${x>1?'s':''} side by side`;
   let text=`${w(n)} until the ${nx.what}`;if(nt&&nt!==nx)text+=`, ${nt.at-p} until the next talk`;
   return {p,n,next:nx.what,talkIn:nt?nt.at-p:null,at:nx.at,text:text+'.'};}
-const BOND_HOW='A win counts when both stand in the front line at the end of the fight.';
+const BOND_HOW='A win counts when both stand in the vanguard at the end of the fight.';
 const talkArg=t=>t.k+':'+(t.lv>=3&&BONDMAP[t.k]&&BONDMAP[t.k].talk2?3:1);
 function readyTalks(){const seen={},out=[];(G.talks||[]).forEach(t=>{const b=BONDMAP[t.k];if(!b||!G.roster[b.a]||!G.roster[b.b])return;const a=talkArg(t);if(seen[a])return;seen[a]=1;out.push({arg:a,b});});return out;}
 bondSheet=function(id){const L=BONDS.filter(b=>b.a===id||b.b===id);if(!L.length)return '';
@@ -17604,6 +17608,21 @@ function b3Short(n){n=String(n);const M=B3.tagN;if(n.length<=M)return n;const w=
 function b3Below(){try{const h=document.querySelector('.battle .pgroup.heroes'),c=document.getElementById('bcmd');return (h?h.offsetHeight+6:0)+(c?c.offsetHeight:0);}catch(e){return 0;}}
 // how many stage status icons a unit has (same count as stItems with noPrime and noWx, without building the markup)
 function b3StN(u){let n=u.broken&&u.maxShield?1:0;for(const k in u.st||{})if(STS[k])n++;return n;}
+
+// =================== Beta v0.7.1: remember Auto and Run ===================
+// The Auto battle toggle and the Run toggle used to live only in memory (V.auto, WS.run), so they reset on every launch and every update.
+// They are now stored in META.cfg (optional new fields autoOn, runOn; the meta key aurelis-meta-v1 is unchanged) and restored on boot.
+// Shift still runs while held; letting go returns to the saved Run choice. The Daily Trial still starts with Auto off (it does not change
+// the saved choice), and the next normal battle uses the saved choice again.
+function remOn(k){try{return !!(META&&META.cfg&&META.cfg[k]);}catch(e){return false;}}
+function remSet(k,v){try{META.cfg[k]=!!v;saveMeta();}catch(e){}}
+// META is read in boot(), after the modules load, so the saved choices are applied right after it
+{const bt0=boot;boot=function(){const r=bt0.apply(this,arguments);try{V.auto=remOn('autoOn');WS.run=remOn('runOn');}catch(e){}return r;};}
+{const a0=ACT.auto;ACT.auto=function(){const r=a0.apply(this,arguments);remSet('autoOn',V.auto);return r;};}
+{const r0=ACT.runT;ACT.runT=function(){const r=r0.apply(this,arguments);remSet('runOn',WS.run);return r;};}
+{const h0=haltInput;haltInput=function(){const r=h0.apply(this,arguments);try{WS.run=remOn('runOn');}catch(e){}return r;};}
+window.addEventListener('keyup',e=>{if(e.key==='Shift'&&remOn('runOn'))WS.run=true;});
+{const sb0=startBattle;startBattle=function(spec){try{if(!(spec&&spec.kind==='daily')&&!(G&&G.daily))V.auto=remOn('autoOn');}catch(e){}return sb0.apply(this,arguments);};}
 
 // =================== Beta v0.5.1: quests ready to hand in (file: qready.js) ===================
 // When a Quest Board quest or a Guild mission is complete and waiting to be claimed, a toast says so once, the Menu button and the

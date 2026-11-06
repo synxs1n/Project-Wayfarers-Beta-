@@ -137,3 +137,6 @@ Details in `v063-menus.md` (`v3/menus3.js`, tests `chrome/v063m1.js`, `chrome/v0
 
 ## Beta v0.7.0: battle screen
 Details in `v063-battle.md` (`v3/battle3.js`, `v3/battle3.css`, `B3` in config.js, tests `chrome/v063ba.js` to `v063bd.js`). One layout pass places every stage label off sprites and off each other; the start flash draws at the canvas backing scale; detonator targets glow with the reaction named.
+
+## Beta v0.7.1: Vanguard, catch up curve, remembered toggles
+Front three are the Vanguard (all user facing "front line" text). XPCU {per:.15,sq:.02,max:3,bench:.5}: bonus = per*gap + sq*gap^2 (cap +300%); the top hero never gets it, so the journey pacing for the top hero is unchanged. `v3/remember.js` stores Auto and Run in META.cfg.autoOn/runOn. Quest lists sort claimable, active, open, done. Best Party's Equip best gear becomes a done note once used. Test `chrome/v071a.js`.

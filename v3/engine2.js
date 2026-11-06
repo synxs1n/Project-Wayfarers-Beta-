@@ -10,7 +10,7 @@ const WEATHER={
  fog:{n:'Fog',i:'≋',el:{shadow:1.15,light:.9},acc:.07,enc:1.25,d:'Physical hits land 7% less often. Shadow +15%, Light -10%. Foes find you more often.'},
  gale:{n:'Gale',i:'↯',el:{wind:1.2,earth:.85},gale:1,d:'Wind +20%, Earth -15%. The fastest fighter on each side starts with Haste.'},
  sand:{n:'Sandstorm',i:'∴',el:{earth:1.2,water:.85},blind:.06,d:'Earth +20%, Water -15%. Now and then a gust of sand Blinds someone, never the same fighter twice in a row.'},
- aurora:{n:'Aurora',i:'✦',el:{light:1.2},heal:1.25,regenStart:1,enc:.75,d:'Light +20%, healing +25%. Your front line starts every fight with Regen. Fewer encounters.'},
+ aurora:{n:'Aurora',i:'✦',el:{light:1.2},heal:1.25,regenStart:1,enc:.75,d:'Light +20%, healing +25%. Your vanguard starts every fight with Regen. Fewer encounters.'},
  starfall:{n:'Starfall',i:'✧',el:{light:1.15,shadow:1.15},crit:.05,d:'Light and Shadow +15%. Critical chance +5% for everyone.'},
  ashfall:{n:'Ashfall',i:'☁',el:{fire:1.15,shadow:1.1},dot:1.25,d:'Fire +15%, Shadow +10%. Poison and Burn deal 25% more.'}
 };

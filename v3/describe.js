@@ -13,7 +13,7 @@ const STAT_INFO={
   healP:['HEAL','Healing power for heal skills, Regen and revives.','Raised mostly by Faith, then Spirit and MAG.']};
 function prefersAttr(k){return Object.keys(CLS).filter(c=>(CLS[c].pref||[]).includes(k)).map(c=>CLS[c].n);}
 const CLASS_DESC={
-  warrior:{role:'Front-line damage',str:'Big single hits, sweeps that hit every foe, War Cry to draw attacks.',wpn:'Blades and mail'},
+  warrior:{role:'Vanguard damage',str:'Big single hits, sweeps that hit every foe, War Cry to draw attacks.',wpn:'Blades and mail'},
   knight:{role:'Tank and protector',str:'Taunts, Wards and Bulwark for the line; the toughest body in the game.',wpn:'Blades and mail'},
   mage:{role:'Elemental caster',str:'The strongest spells, storms that hit every foe, Haste and Hex.',wpn:'Staves (cheaper spells, +10% elemental) or tomes (more raw power), and robes'},
   healer:{role:'Healer',str:'Heals, cleanses, Regen and revives. Scales mostly on Faith.',wpn:'Staves and robes'},

@@ -2,7 +2,7 @@
 function townS(){return WS.m&&WS.m.kind==='town'?WS.m.s:-1;}
 const RELIT_STOCK=[['c_str',420],['c_int',420],['c_vit',420],['c_spi',420],['c_agi',420],['c_dex',480],['c_luk',480],['elixir',650],['plume',220]];
 function vPersonal(){
-  const list=Object.values(G.roster).filter(c=>!TPL[c.id].mon).sort((a,b)=>b.lv-a.lv);
+  const po=c=>{const q=G.personal[c.id];return !q||q.state==='open'?(personalEligible(c)?2:3):q.state==='active'?(q.ready||q.won?0:1):4;},list=Object.values(G.roster).filter(c=>!TPL[c.id].mon).sort((a,b)=>po(a)-po(b)||b.lv-a.lv);
   return `<p>Every wayfarer has unfinished business. At level ${PERSONAL_LV}, once you have reached the second town, a hero's personal quest opens: accept it and a rival roams the current realm's field. Bring that hero in your six to face it and win their signature item: a weapon, armor or accessory bound to that hero, which changes how they look.</p>
   <div class="rows">${list.map(c=>{const q=G.personal[c.id],t=TPL[c.id],w=gearOf(sigGid(c.id))||gearOf('u_'+c.id);
     const st=!personalEligible(c)&&(!q||q.state==='open')?`<span class="m">${personalLockText(c)}</span>`:!q||q.state==='open'?`<button class="btn sm gold" data-act="personal" data-arg="${c.id}">Accept</button>`:q.state==='active'?'<span class="m">Rival roaming</span>':'<span class="m up">Done</span>';

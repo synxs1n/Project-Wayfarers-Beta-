@@ -35,7 +35,7 @@ const CE_ODDS=1/170, CE_GAP=30, CE_AREA_CAP=2;
 // BATTLE_GROUND: every battle backdrop has a solid ground plane from gy (share of the stage height) down; units stand between top and bot,
 // flying foes hover hover px above their shadow. Water, lava and sky are only drawn above gy, as scenery.
 const BATTLE_GROUND={gy:.5,top:.56,bot:.96,hover:9};
-// SURPRISE: touching a roaming dungeon foe that has not seen you gives a free first round: every hero on the front line acts free times
+// SURPRISE: touching a roaming dungeon foe that has not seen you gives a free first round: every hero in the vanguard acts free times
 // before any foe moves. A "Surprise!" banner shows. Elite roamers keep their no auto rule.
 const SURPRISE={free:1};
 // DUAL_FROM: the first stage (0 = the first realm) where dual type wayfarers (taverns, challenges, chance meetings) and dual type regular
@@ -87,7 +87,8 @@ const PERSONAL_BT=40;
 // 4.1 personal quests: no level gate any more; PERSONAL_BT battles together and the party in this realm (0 based) or later.
 const PERSONAL_REALM=1;
 // 4.3 XP catch up: +per for each level a hero is below the party's highest, at most +max. Reserve heroes get bench x that bonus.
-const XPCU={per:.10,max:.50,bench:.5};
+// v0.7.1: much bigger for heroes far behind: bonus = per*gap + sq*gap^2, capped at max (gap 2: +38%, 5: +125%, 8: +248%, 10+: +300%)
+const XPCU={per:.15,sq:.02,max:3,bench:.5};
 // 5.4 transitions, in ms of world screen time: time of day blends over tod, weather over wx (visuals and ambience beds).
 const TRANS={tod:11000,wx:6500,ambTod:10,ambWx:6};
 // 5.5 save indicator: show "Saving..." this long, then "Saved", hold, then fade. minGap = autosaves closer than this share one message.
@@ -270,7 +271,7 @@ const TWISTS={on:true,
     {id:'linger',n:'Status effects last a turn longer',c:'Effects +1',d:'Every status lasts one more turn, good or bad.',add:1},
     {id:'primed',n:'Every foe is primed at start',c:'All primed',d:'Each foe enters primed, so your detonators can strike at once.',t:3},
     {id:'crit',n:'Sharp eyes',c:'Crits +10%',d:'Everyone lands critical hits 10% more often.',add:.1},
-    {id:'ward',n:'Warded entry',c:'Ward start',d:'Your front three start every wave with Ward, which blocks one hit.'},
+    {id:'ward',n:'Warded entry',c:'Ward start',d:'Your vanguard start every wave with Ward, which blocks one hit.'},
     {id:'limit',n:'Limits half charged',c:'Limit 50%',d:'Your heroes start the trial with Limit gauges half full.',v:50},
     {id:'glass',n:'Glass foes',c:'Glass foes',d:'Foes have 20% less HP but hit 20% harder.',hp:.8,pow:1.2}],
   ng:{max:2,mods:[

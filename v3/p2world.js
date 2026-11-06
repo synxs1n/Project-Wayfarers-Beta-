@@ -95,7 +95,7 @@ function p2Flying(u){return !!(u&&u.side==='e'&&u.ty&&u.ty.includes('flying'));}
 
 // ---------------------------------------------------------------- 2.2 surprise starts ----------------------------------------------------------------
 // A roamer still on patrol has not seen the party. Touching it (or it bumping into you) without being spotted first gives a free round:
-// every hero on the front line acts once before any foe moves. A roamer that chased you (or is walking home after losing you) saw you first.
+// every hero in the vanguard acts once before any foe moves. A roamer that chased you (or is walking home after losing you) saw you first.
 {const rf0=roamFight;roamFight=function(m,r){try{P2.sur=r&&r.mode==='patrol'?{mid:m.id,i:r.i,t:Date.now()}:null;}catch(e){}return rf0.apply(this,arguments);};}
 function p2Surprise(){if(!B)return;const P=B.front.filter(c=>c.hp>0),E=B.en.filter(e=>e.hp>0);if(!P.length||!E.length)return;
   const free=Math.max(1,(SURPRISE&&SURPRISE.free)||1);P.forEach((c,k)=>{c.next=B.time+k*.001;});

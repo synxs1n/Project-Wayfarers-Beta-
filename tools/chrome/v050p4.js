@@ -63,10 +63,10 @@ const x=await ev(()=>{const A=__A,G=A.G,o={};const m=A.xpCatchMul;
   o.gain={};B.front.concat(B.back).forEach(c=>o.gain[c.id]=c.xp-xp0[c.id]);
   A.V.modal=null;A.finishBattle('win');A.V.modal=null;return o;});
 console.log(JSON.stringify(x));
-chk('catch up: +10% per level, +50% cap, top level none, reserve half',JSON.stringify(x.mul)==='[1,1.1,1.3,1.5,1.5,1.1,1.25]');
-chk('the result lists who got it, not the top heroes',Array.isArray(x.rows)&&x.rows.some(r=>r.id==='lumen'&&r.pct===30)&&x.rows.some(r=>r.id==='brann'&&r.pct===25)&&!x.rows.some(r=>r.id==='mira'||r.id==='oren'));
-chk('the result screen shows a Catch up line',/Lumen \+30%/.test(x.line||'')&&/Brann \+25%/.test(x.line||''));
-chk('XP really moves: lumen (3 behind) gets 1.3x the top hero',x.gain.mira>0&&Math.abs(x.gain.lumen/x.gain.mira-1.3)<.03);
+chk('catch up: v0.7.1 curve (+15%/level +2%/level², cap +300%), top level none, reserve half',JSON.stringify(x.mul)==='[1,1.17,1.63,2.25,3.97,1.19,2.485]');
+chk('the result lists who got it, not the top heroes',Array.isArray(x.rows)&&x.rows.some(r=>r.id==='lumen'&&r.pct===63)&&x.rows.some(r=>r.id==='brann'&&r.pct===81)&&!x.rows.some(r=>r.id==='mira'||r.id==='oren'));
+chk('the result screen shows a Catch up line',/Lumen \+63%/.test(x.line||'')&&/Brann \+81%/.test(x.line||''));
+chk('XP really moves: lumen (3 behind) gets 1.63x the top hero',x.gain.mira>0&&Math.abs(x.gain.lumen/x.gain.mira-1.63)<.03);
 
 // ---------- 4.4 ----------
 const b=await ev(async()=>{const A=__A,G=A.G,o={msgs:[],toasts:[]};A.setPause&&A.setPause(0);

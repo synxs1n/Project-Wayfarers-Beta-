@@ -15,16 +15,16 @@ const COMBO={
  'water+wind':{n:'Monsoon',k:'mag',pw:1.05,t:'all',fx:[['slow',.5],['weaken',.3]],d:'Driving rain that slows and weakens all foes.'},
  'lightning+water':{n:'Electrocute',k:'mag',pw:2.2,t:'one',fx:[['stun',.45]],d:'Water carries the current. High Stun chance.'},
  'ice+water':{n:'Glacial Tide',k:'mag',pw:1.0,t:'all',fx:[['slow',.6]],d:'A freezing wave that slows all foes.'},
- 'light+water':{n:'Holy Spring',k:'heal',pw:1.0,t:'allyAll',fx:[['regen',1]],cleanse:1,d:'Heals and cleanses the front line and grants Regen.'},
+ 'light+water':{n:'Holy Spring',k:'heal',pw:1.0,t:'allyAll',fx:[['regen',1]],cleanse:1,d:'Heals and cleanses the vanguard and grants Regen.'},
  'shadow+water':{n:'Undertow',k:'mag',pw:1.9,t:'one',fx:[['root',.8],['slow',.6]],d:'Drags a foe under. Roots and slows.'},
  'earth+wind':{n:'Sandstorm',k:'mag',pw:1.0,t:'all',fx:[['blind',.6]],d:'Scouring sand that blinds all foes.'},
  'earth+lightning':{n:'Magnet Quake',k:'phys',pw:1.9,t:'one',fx:[['root',.7],['break',.5]],d:'A charged quake. Roots and breaks armor.'},
  'earth+ice':{n:'Permafrost',k:'phys',pw:1.9,t:'one',fx:[['slow',.8]],self:[['bulwark',1]],d:'Frozen earth slows a foe and shields you with Bulwark.'},
- 'earth+light':{n:'Crystal Bastion',k:'status',t:'allyAll',fx:[['ward',1],['bulwark',1]],d:'Crystal walls give the front line Ward and Bulwark.'},
+ 'earth+light':{n:'Crystal Bastion',k:'status',t:'allyAll',fx:[['ward',1],['bulwark',1]],d:'Crystal walls give the vanguard Ward and Bulwark.'},
  'earth+shadow':{n:'Grave Grasp',k:'phys',pw:1.8,t:'one',fx:[['root',.8],['bleed',.7]],d:'Hands from the earth. Roots and bleeds.'},
  'lightning+wind':{n:'Thunderstorm',k:'mag',pw:1.15,t:'all',fx:[['stun',.15]],d:'Lightning rakes all foes. May Stun.'},
  'ice+wind':{n:'Whiteout',k:'mag',pw:1.05,t:'all',fx:[['slow',.5],['blind',.3]],d:'A blizzard on all foes. Slows and blinds.'},
- 'light+wind':{n:'Aurora',k:'status',t:'allyAll',fx:[['regen',1],['haste',1]],d:'Shimmering lights grant Regen and Haste to the front line.'},
+ 'light+wind':{n:'Aurora',k:'status',t:'allyAll',fx:[['regen',1],['haste',1]],d:'Shimmering lights grant Regen and Haste to the vanguard.'},
  'shadow+wind':{n:'Night Wind',k:'mag',pw:1.05,t:'all',fx:[['blind',.5],['bleed',.3]],d:'Cutting dark wind on all foes.'},
  'ice+lightning':{n:'Cryo Spark',k:'mag',pw:2.0,t:'one',fx:[['stun',.35],['slow',.5]],d:'Freezing current. Stuns and slows.'},
  'light+lightning':{n:'Judgement Bolt',k:'mag',pw:2.6,t:'one',pierce:1,d:'Holy lightning that ignores half of resistance.'},
@@ -68,8 +68,8 @@ function classSkills(t){
     add({id:'javelin',n:'Javelin',k:'phys',pw:1.2,mp:3,lv:9,dl:'ranged',d:'Throw a javelin. Flying foes cannot weave away from it.'});
     add({id:'aegis',n:'Aegis',k:'status',t:'ally',mp:6,lv:7,fx:[['ward',1]],d:'Ward an ally: blocks the next hit completely.'});
     if(e2)add({id:'lance2',n:n2+' Lance',k:'phys',pw:1.6,mp:5,el:e2,lv:8,d:`Charge tipped with ${n2}.`});
-    add({id:'wall',n:'Guard Wall',k:'status',t:'allyAll',mp:10,lv:11,fx:[['bulwark',1]],d:'Bulwark for the front line.'});
-    add({id:'rally',n:'Rally',k:'status',t:'allyAll',mp:12,lv:16,fx:[['might',1]],d:'Might for the front line.'});
+    add({id:'wall',n:'Guard Wall',k:'status',t:'allyAll',mp:10,lv:11,fx:[['bulwark',1]],d:'Bulwark for the vanguard.'});
+    add({id:'rally',n:'Rally',k:'status',t:'allyAll',mp:12,lv:16,fx:[['might',1]],d:'Might for the vanguard.'});
     add({id:'judge',n:'Judgement',k:'phys',pw:2.8,mp:15,el:e1,cost:1.3,lv:22,d:`Heavy ${n1} strike. Slow recovery.`});
     break;
   case 'mage':
@@ -86,10 +86,10 @@ function classSkills(t){
     add({id:'renew',n:'Renew',k:'status',t:'ally',mp:5,lv:3,fx:[['regen',1]],d:'Regen on an ally: heals every turn.'});
     add({id:'ray1',n:n1+' Ray',k:'mag',pw:1.3,mp:5,el:e1,lv:4,d:`Beam of ${n1}.`});
     add({id:'purify',n:'Purify',k:'heal',pw:.6,mp:4,t:'ally',cleanse:1,lv:6,d:'Cures all ailments and heals a little.'});
-    add({id:'mendall',n:'Mend All',k:'heal',pw:1.1,mp:12,t:'allyAll',lv:8,d:'Heals the front line.'});
+    add({id:'mendall',n:'Mend All',k:'heal',pw:1.1,mp:12,t:'allyAll',lv:8,d:'Heals the vanguard.'});
     if(e2)add({id:'ray2',n:n2+' Ray',k:'mag',pw:1.3,mp:5,el:e2,lv:8,d:`Beam of ${n2}.`});
     add({id:'raise',n:'Raise',k:'revive',pw:.4,mp:14,t:'dead',lv:11,d:'Revives a fallen ally at 40% HP.'});
-    add({id:'sanct',n:'Sanctuary',k:'status',t:'allyAll',mp:14,lv:14,fx:[['regen',1]],d:'Regen for the whole front line.'});
+    add({id:'sanct',n:'Sanctuary',k:'status',t:'allyAll',mp:14,lv:14,fx:[['regen',1]],d:'Regen for the whole vanguard.'});
     add({id:'fullmend',n:'Full Mend',k:'heal',pw:4,mp:18,cost:1.2,t:'ally',lv:20,d:'Powerful single heal.'});
     break;
   case 'thief':
@@ -138,7 +138,7 @@ function classSkills(t){
     add({id:'thorn',n:'Thornwhisper',k:'status',t:'all',mp:7,lv:8,fx:[['root',.5],['slow',.4]],d:'Brambles answer his whisper. May Root and Slow every foe.'});
     add({id:'s1b',n:'Nightbloom Arrow',k:'phys',pw:1.75,mp:5,el:'shadow',lv:11,d:'An arrow that blooms dark on impact.'});
     add({id:'pack',n:'Pack Hunt',k:'phys',pw:1,mp:10,t:'all',lv:14,fx:[['bleed',.4]],d:'Wolf, hawk and ranger hit every foe together.'});
-    add({id:'wildmend',n:'Wild Mend',k:'heal',pw:.9,mp:10,t:'allyAll',lv:17,d:'Old forest medicine for the front line.'});
+    add({id:'wildmend',n:'Wild Mend',k:'heal',pw:.9,mp:10,t:'allyAll',lv:17,d:'Old forest medicine for the vanguard.'});
     add({id:'s3a',n:'Moonless Volley',k:'phys',pw:1.25,mp:14,cost:1.2,t:'all',el:'shadow',lv:22,d:'A volley loosed in perfect dark.'});
     break;
   case 'archmage':
@@ -160,13 +160,13 @@ function classSkills(t){
     add({id:'s3a',n:'Final Chapter',k:'mag',pw:3.3,mp:24,cost:1.3,el:e1,lv:20,d:`The last page, written in ${n1}. Slow recovery.`});
     break;
   case 'bard':
-    add({id:'song',n:'Soothing Song',k:'heal',pw:.8,mp:8,t:'allyAll',lv:1,d:'Heals the front line.'});
-    add({id:'hymn',n:'Battle Hymn',k:'status',t:'allyAll',mp:8,lv:3,fx:[['might',1]],d:'Might for the front line.'});
+    add({id:'song',n:'Soothing Song',k:'heal',pw:.8,mp:8,t:'allyAll',lv:1,d:'Heals the vanguard.'});
+    add({id:'hymn',n:'Battle Hymn',k:'status',t:'allyAll',mp:8,lv:3,fx:[['might',1]],d:'Might for the vanguard.'});
     add({id:'dis',n:'Dissonance',k:'status',t:'all',mp:8,lv:6,fx:[['break',.8]],d:'May Break every foe.'});
     add({id:'tune1',n:n1+' Tune',k:'mag',pw:.9,mp:10,t:'all',el:e1,lv:9,d:`${n1} melody on all foes.`});
     add({id:'lull',n:'Lullaby',k:'status',t:'all',mp:9,lv:11,fx:[['slow',.7]],d:'May Slow every foe.'});
     if(e2)add({id:'tune2',n:n2+' Tune',k:'mag',pw:.9,mp:10,t:'all',el:e2,lv:13,d:`${n2} melody on all foes.`});
-    add({id:'allegro',n:'Allegro',k:'status',t:'allyAll',mp:14,lv:15,fx:[['haste',1]],d:'Haste for the front line.'});
+    add({id:'allegro',n:'Allegro',k:'status',t:'allyAll',mp:14,lv:15,fx:[['haste',1]],d:'Haste for the vanguard.'});
     add({id:'req',n:'Requiem',k:'revive',pw:.5,mp:20,t:'dead',lv:24,d:'Revives a fallen ally at 50% HP.'});
     break;
   }
@@ -216,9 +216,9 @@ function respaceSkills(S,t,T,n1,e1){
 // One per class, themed by the hero's first element. The gauge fills from damage dealt and taken.
 const LIMIT={
  warrior:{n:'Worldsplitter',k:'phys',pw:2.4,t:'all',fx:[['break',.6]],d:'A ground-splitting blow on every foe. May Break.'},
- knight:{n:'Bastion',k:'status',t:'allyAll',fx:[['ward',1],['bulwark',1],['might',1]],heal:.2,d:'Ward, Bulwark and Might for the front line, and a small heal.'},
+ knight:{n:'Bastion',k:'status',t:'allyAll',fx:[['ward',1],['bulwark',1],['might',1]],heal:.2,d:'Ward, Bulwark and Might for the vanguard, and a small heal.'},
  mage:{n:'Starfall',k:'mag',pw:2.6,t:'all',d:'Calls a rain of elemental stars on every foe.'},
- healer:{n:'Benediction',k:'heal',pw:3,t:'allyAll',revive:.4,cleanse:1,d:'Fully restores and cleanses the front line and revives every fallen hero at 40% HP.'},
+ healer:{n:'Benediction',k:'heal',pw:3,t:'allyAll',revive:.4,cleanse:1,d:'Fully restores and cleanses the vanguard and revives every fallen hero at 40% HP.'},
  thief:{n:'Thousand Cuts',k:'phys',pw:.8,t:'rand',hits:7,crit:.2,d:'Seven blinding strikes at random foes.'},
  archer:{n:'Arrowstorm',k:'phys',pw:2.2,t:'all',fx:[['bleed',.7]],d:'A storm of arrows on every foe. Likely Bleeds.'},
  monk:{n:'Hundred Fists',k:'phys',pw:.65,t:'one',hits:7,d:'Seven blows on one foe.'},
@@ -226,14 +226,14 @@ const LIMIT={
  druid:{n:'Call of the Wild',k:'phys',pw:.8,t:'rand',hits:6,fx:[['bleed',.5]],d:'Every beast in earshot answers: six savage strikes at random foes.'},
  archmage:{n:'Stormfrost Singularity',k:'mag',pw:2.8,t:'all',fx:[['slow',.6],['stun',.25]],d:'A point of absolute cold that throws lightning in every direction.'},
  chronicler:{n:'Index of Ruin',k:'mag',pw:2.7,t:'all',fx:[['weaken',.5],['break',.5]],d:'Reads every catalogued horror aloud at once. Strikes all foes; may Weaken and Break.'},
- bard:{n:'Grand Anthem',k:'status',t:'allyAll',fx:[['might',1],['haste',1],['regen',1]],heal:.3,d:'Might, Haste and Regen for the front line, plus a 30% heal.'}
+ bard:{n:'Grand Anthem',k:'status',t:'allyAll',fx:[['might',1],['haste',1],['regen',1]],heal:.3,d:'Might, Haste and Regen for the vanguard, plus a 30% heal.'}
 };
 // Beta v0.3.0: Limit I opens at level 15 (70% of the values above); at level 30 it becomes Limit II, a new move at ~130% power.
 const LIMIT2={
  warrior:{n:'Cataclysm Edge',k:'phys',pw:3.1,t:'all',fx:[['break',.9]],self:[['might',1]],shieldChip:2,d:'Splits the battlefield with one swing: every foe takes a huge hit and likely Breaks, and you gain Might. Chips 2 shield pips.'},
- knight:{n:'Citadel of Dawn',k:'status',t:'allyAll',fx:[['ward',1],['bulwark',1],['might',1],['regen',1]],heal:.3,d:'A fortress of light: Ward, Bulwark, Might and Regen for the front line, and a 30% heal.'},
+ knight:{n:'Citadel of Dawn',k:'status',t:'allyAll',fx:[['ward',1],['bulwark',1],['might',1],['regen',1]],heal:.3,d:'A fortress of light: Ward, Bulwark, Might and Regen for the vanguard, and a 30% heal.'},
  mage:{n:'Meteor Requiem',k:'mag',pw:3.4,t:'all',fx:[['break',.5]],shieldChip:2,d:'A falling sky of elemental stars on every foe. May Break; chips 2 shield pips.'},
- healer:{n:"Seraph's Grace",k:'heal',pw:3.9,t:'allyAll',revive:.7,cleanse:1,fx:[['regen',1]],d:'Restores and cleanses the front line, grants Regen, and revives every fallen hero at 70% HP.'},
+ healer:{n:"Seraph's Grace",k:'heal',pw:3.9,t:'allyAll',revive:.7,cleanse:1,fx:[['regen',1]],d:'Restores and cleanses the vanguard, grants Regen, and revives every fallen hero at 70% HP.'},
  thief:{n:'Phantom Waltz',k:'phys',pw:1.04,t:'rand',hits:7,crit:.3,steal:1,d:'Seven strikes from nowhere at random foes, each with a high crit chance, and a pocket picked on the way out.'},
  archer:{n:'Skyfall Volley',k:'phys',pw:2.86,t:'all',fx:[['bleed',.9],['slow',.5]],d:'The sky goes dark with arrows. Every foe likely Bleeds and may Slow.'},
  monk:{n:"Heaven's Thousand",k:'phys',pw:.85,t:'one',hits:7,fx:[['stun',.4]],d:'Seven blows too fast to see, ending in a strike that may Stun.'},
@@ -241,11 +241,11 @@ const LIMIT2={
  druid:{n:'Primal Stampede',k:'phys',pw:1.04,t:'rand',hits:6,fx:[['bleed',.7],['root',.4]],d:'The forest itself charges: six savage strikes at random foes. Likely Bleeds, may Root.'},
  archmage:{n:'Absolute Tempest',k:'mag',pw:3.64,t:'all',fx:[['slow',.8],['stun',.35]],shieldChip:2,d:'A storm of ice and lightning that stops time. Every foe likely Slows and may Stun; chips 2 shield pips.'},
  chronicler:{n:'The Last Index',k:'mag',pw:3.5,t:'all',fx:[['weaken',.7],['break',.7]],shieldChip:2,d:'Closes the book on every foe at once. Likely Weakens and Breaks; chips 2 shield pips.'},
- bard:{n:'Encore Eternal',k:'status',t:'allyAll',fx:[['might',1],['haste',1],['regen',1],['ward',1]],heal:.4,d:'The song that never ends: Might, Haste, Regen and Ward for the front line, plus a 40% heal.'}
+ bard:{n:'Encore Eternal',k:'status',t:'allyAll',fx:[['might',1],['haste',1],['regen',1],['ward',1]],heal:.4,d:'The song that never ends: Might, Haste, Regen and Ward for the vanguard, plus a 40% heal.'}
 };
 // Beta v0.3.0: level 42 and 46 skills and a level 50 capstone for every class. Fixed levels: the respacer leaves them alone.
 // New skill flags: execute (x2 damage below that HP share), drain (heal by that share of damage), shieldChip (extra Break pips),
-// strip (removes the target's boons), lbParty (adds Limit gauge to the front line).
+// strip (removes the target's boons), lbParty (adds Limit gauge to the vanguard).
 function lateSkills(cls,e1,e2,n1,n2){const E2=e2||e1,N2=n2||n1;const L={
  warrior:[{id:'quake',n:'Earthshaker',k:'phys',pw:1.3,mp:14,t:'all',el:e1,role:'primer',lv:42,fx:[['slow',.4]],d:`Stamps ${n1} through the ground under every foe. May Slow.`},
   {id:'laststand',n:'Last Stand',k:'status',t:'self',mp:12,lv:46,fx:[['might',1],['bulwark',1],['regen',1]],d:'Plants his feet: Might, Bulwark and Regen.'},
@@ -256,7 +256,7 @@ function lateSkills(cls,e1,e2,n1,n2){const E2=e2||e1,N2=n2||n1;const L={
  mage:[{id:'seal',n:'Prismatic Seal',k:'mag',pw:.95,mp:16,t:'all',el:E2,role:'primer',lv:42,fx:[['weaken',.4]],d:`Seals every foe in ${N2}. May Weaken.`},
   {id:'overchan',n:'Overchannel',k:'status',t:'self',mp:10,lv:46,fx:[['might',1],['haste',1]],d:'Burns the reserves: Might and Haste.'},
   {id:'cataclysm',n:'Cataclysm',k:'mag',pw:2.1,mp:34,cost:1.4,t:'all',el:e2?[e1,e2]:e1,role:'det',lv:50,strip:1,shieldChip:2,cap:1,d:'Unmakes the field: huge damage to every foe, strips their boons and chips 2 shield pips.'}],
- healer:[{id:'radward',n:'Radiant Ward',k:'heal',pw:1.4,mp:18,t:'allyAll',cleanse:1,lv:42,fx:[['ward',1]],d:'Heals and cleanses the front line and gives everyone Ward.'},
+ healer:[{id:'radward',n:'Radiant Ward',k:'heal',pw:1.4,mp:18,t:'allyAll',cleanse:1,lv:42,fx:[['ward',1]],d:'Heals and cleanses the vanguard and gives everyone Ward.'},
   {id:'judgray',n:'Brand of Dawn',k:'mag',pw:1.1,mp:14,t:'all',el:e1,role:'primer',lv:46,fx:[['blind',.3]],d:`Brands every foe with ${n1}. May Blind.`},
   {id:'miracle',n:'Miracle',k:'heal',pw:3.5,mp:40,t:'allyAll',revive:.6,cleanse:1,lv:50,fx:[['regen',1]],lbParty:30,cap:1,d:'Full heal and cleanse for the line, every fallen hero back at 60%, Regen, and +30 Limit gauge.'}],
  thief:[{id:'shadowstep',n:'Shadowstep',k:'phys',pw:1.6,mp:10,cost:.7,el:e1,role:'primer',crit:.3,lv:42,fx:[['blind',.5]],d:`Steps through the dark with a ${n1} blade. High crit, may Blind.`},

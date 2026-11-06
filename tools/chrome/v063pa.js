@@ -53,10 +53,10 @@ const ui=await ev(([fn])=>{const A=__A,set=eval(fn);set({oren:25,lumen:25,mira:2
   A.ACT.bpOpen();A.render();const m=()=>document.querySelector('#modal');const chips=[...m().querySelectorAll('[data-act="bpPick"]')].map(b=>b.textContent);
   const t0=m().textContent;const j=A.V.modal.plan.opts.findIndex(o=>o.key==='train');A.ACT.bpPick(j);A.render();const t1=m().textContent;const ids=A.V.modal.plan.ids.slice();
   A.ACT.bpApply();A.render();const party=A.G.party.slice();const eqb=!!document.querySelector('#modal [data-act="autoEqParty"]');A.V.modal=null;
-  return {chips,front:/Front line/.test(t0)&&/Rearguard/.test(t0),known:/Known in /.test(t0)||true,t1:/Training team/.test(t1)&&/training: Lv/.test(t1),same:JSON.stringify(ids)===JSON.stringify(party),eqb,gaps:/Team check/.test(t0)};},[setRoster]);
+  return {chips,front:/Vanguard/.test(t0)&&/Rearguard/.test(t0),known:/Known in /.test(t0)||true,t1:/Training team/.test(t1)&&/training: Lv/.test(t1),same:JSON.stringify(ids)===JSON.stringify(party),eqb,gaps:/Team check/.test(t0)};},[setRoster]);
 console.log('ui',JSON.stringify(ui));
 chk('the Best Party screen has a chip per formation',ui.chips.length>=3&&ui.chips.includes('Balanced')&&ui.chips.includes('Training team')||JSON.stringify(ui.chips));
-chk('it shows Front line and Rearguard, and the team check',ui.front&&ui.gaps);
+chk('it shows Vanguard and Rearguard, and the team check',ui.front&&ui.gaps);
 chk('picking Training team shows its reasons; Apply puts that six in that order',ui.t1&&ui.same||JSON.stringify(ui));
 chk('after Apply, "Equip best gear for this party" is still offered',ui.eqb);
 const daily=await ev(()=>{const A=__A,G=A.G;G.daily=1;A.V.modal=null;A.ACT.bpOpen();const t=A.V.modal&&A.V.modal.type;G.daily=0;A.V.modal=null;return t||null;});

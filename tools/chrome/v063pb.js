@@ -13,18 +13,18 @@ const fight=`(lvs,party)=>{const A=__A,G=A.G,o={};G.stage=0;G.roster={};Object.k
 const a=await ev(([fn])=>eval(fn)({mira:12,lumen:9,oren:12,brann:12,tess:14},['mira','lumen','oren','brann']),[fight]);
 console.log(JSON.stringify({rows:a.rows,gain:a.gain}));
 const pc=id=>(a.rows.find(r=>r.id===id)||{}).pct||0;
-chk('catch up measures the gap to the roster top (Lv 14 at camp): the party\'s Lv 12 heroes get +20% (was 0)',pc('mira')===20&&pc('oren')===20||JSON.stringify(a.rows));
-chk('5 behind in the front line: +50% (cap kept, +10% per level)',pc('lumen')===50||JSON.stringify(a.rows));
-chk('reserve keeps half: Brann (reserve, 2 behind) +10%',pc('brann')===10||JSON.stringify(a.rows));
+chk('catch up measures the gap to the roster top (Lv 14 at camp): the party\'s Lv 12 heroes get +38% (was 0)',pc('mira')===38&&pc('oren')===38||JSON.stringify(a.rows));
+chk('5 behind in the front line: +125% (v0.7.1 curve)',pc('lumen')===125||JSON.stringify(a.rows));
+chk('reserve keeps half: Brann (reserve, 2 behind) +19%',pc('brann')===19||JSON.stringify(a.rows));
 chk('the hero at camp gets nothing from a fight they sat out',!a.rows.some(r=>r.id==='tess')&&a.gain.tess===undefined);
-chk('XP really moves: Lumen gets 1.5/1.2 of Mira',a.gain.mira>0&&Math.abs(a.gain.lumen/a.gain.mira-1.25)<Math.max(.03,1.5/a.gain.mira)||JSON.stringify(a.gain));
-chk('the rewards screen shows it per hero and names the roster top level',/Mira<\/b>(?:<em[^>]*>[^<]*<\/em>)?<span class="rs-cu"[^>]*>\+20% catch up/.test(a.html)&&/top wayfarer \(Lv 14, counting your reserves\)/.test(a.html)||a.html.slice(0,600));
+chk('XP really moves: Lumen gets 2.25/1.38 of Mira',a.gain.mira>0&&Math.abs(a.gain.lumen/a.gain.mira-2.25/1.38)<Math.max(.03,1.5/a.gain.mira)||JSON.stringify(a.gain));
+chk('the rewards screen shows it per hero and names the roster top level',/Mira<\/b>(?:<em[^>]*>[^<]*<\/em>)?<span class="rs-cu"[^>]*>\+38% catch up/.test(a.html)&&/top wayfarer \(Lv 14, counting your reserves\)/.test(a.html)||a.html.slice(0,600));
 const b=await ev(([fn])=>eval(fn)({mira:14,lumen:9,oren:12},['mira','lumen','oren']),[fight]);
-chk('the top hero gets no bonus when they are in the party (Lv 14 Mira)',!b.rows.some(r=>r.id==='mira')&&(b.rows.find(r=>r.id==='lumen')||{}).pct===50||JSON.stringify(b.rows));
+chk('the top hero gets no bonus when they are in the party (Lv 14 Mira)',!b.rows.some(r=>r.id==='mira')&&(b.rows.find(r=>r.id==='lumen')||{}).pct===125||JSON.stringify(b.rows));
 const f=await ev(([fn])=>{const A=__A,G=A.G;const o=eval(fn)({mira:12,lumen:12,oren:12},['mira','lumen','oren']);return o.rows;},[fight]);
 chk('no gap anywhere: no catch up rows',f.length===0||JSON.stringify(f));
 const m=await ev(()=>{const x=__A.xpCatchMul;return [x(10,10,true),x(9,10,true),x(5,10,true),x(1,10,true),x(8,10,false)].map(v=>+v.toFixed(3));});
-chk('XPCU unchanged: +10% per level, +50% cap, reserve half',JSON.stringify(m)==='[1,1.1,1.5,1.5,1.1]'||JSON.stringify(m));
+chk('XPCU v0.7.1 curve, reserve half',JSON.stringify(m)==='[1,1.17,2.25,3.97,1.19]'||JSON.stringify(m));
 
 // ---- Equip best: reserves ----
 const ce=await ev(()=>{const A=__A,G=A.G,GEAR=A.GEAR,o={};G.roster={};['mira','lumen','oren','brann','tess','sable'].forEach(id=>{const c=A.newChar(id,15,0);G.roster[id]=c;c.eq={w:null,a:null,c:null};});

@@ -66,7 +66,7 @@ function sigBuild(t){
   if(nu==='mp')s.mp=Math.max(0,s.mp-1);if(nu==='heal'&&s.k==='heal')s.pw=+(s.pw*1.1).toFixed(2);if(nu==='crit'&&(s.k==='phys'||s.k==='mag'))s.crit=.1;
   if(fx.length)s.fx=fx;
   // description: the hand written line plus what it does, built from the numbers so it never drifts
-  const who=s.t==='all'?'every foe':s.t==='one'?'one foe':s.t==='ally'?'one ally':'the front line',parts=[];
+  const who=s.t==='all'?'every foe':s.t==='one'?'one foe':s.t==='ally'?'one ally':'the vanguard',parts=[];
   const stTxt=tp.rider==='ally'?(fx||[]).map(f=>SIG_ST_N[f[0]]).join(' and '):sigFoeTxt(fx||[]);
   if(s.k==='phys'||s.k==='mag')parts.push((s.hits>1?`${s.hits} quick hits on ${who}`:`Hits ${who}`)+(stTxt?`; ${stTxt}.`:'.'));
   else if(s.k==='heal')parts.push(`Heals ${who}${stTxt?` and grants ${stTxt}`:''}.`);
