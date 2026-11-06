@@ -155,3 +155,50 @@ not committed.
   every foe); the Switch command lists the Rearguard too.
 - A Limit Break becoming ready adds a row to the commands mid-battle; the stage then shrinks once (as in v0.7.6).
 - Wide foe cards use 11 px symbols without the words Weak / Res under 215 px (▲ / ▼ instead; the words are in the tooltip).
+
+## Follow up (after v0.8.6): two more real-device screenshots
+GAME_VERSION and the changelog are untouched here too.
+
+**Fold open** (933 x about 615 CSS px visible): the stage was about 470x225 in the upper left, under it the commands and two foe cards,
+the right column held the turn bar, the log strip, the Vanguard and the Rearguard, and both columns ended in an empty band (about 90 px,
+the right one 80 px higher). Measured on the previous build: bands of 71 to 393 px under the right column (the left 4 to 58 px).
+- The column arrangement is now planned from both columns' stacks (`b3WideSc`): the right column is 340, 370, 410 px or the old 1fr share
+  (`B8.R`), and the log strip and the foes each go under the stage or into the right column (`b8lr`, `b8fr`), whichever gives the
+  largest stage, then the least empty space. Heights at each width come from hidden copies (`b8HAt`: the top level commands, the foes
+  panel, the party column, each only growing within a battle). With two or three foes the foes usually sit in the right column under
+  the party, so the stage takes the whole left column width (552x263 at 933x615 against 440x211 before).
+- The grid rows are built from both stacks (`b3WideBot`, `--b8r`, `--gr-*`); each column's last panel reaches the bottom of the screen
+  (the commands panel's rows grow when it is last; the foes panel or the party column's last group stretches), so no column ends in an
+  empty band.
+- The party rows keep HP, MP and Limit side by side down to a 300 px wide group (was 340), so a 340 px right column still has one line of bars.
+- Compaction starts under 1.7 (was 1.35); in it the foe cards show ▲ / ▼ instead of the words Weak / Res, so their rows fit one line.
+- Fixes on the way: the secondary command row is one flex row with a wider Summon button (its name was cut at some widths); a foe card
+  in a row with a taller one fills its cell (its status row could hang under a shorter frame); card status rows are checked afresh for
+  wrapping on every fit (the card widths change with the arrangement); the switch list's entries are at least 168 px; the commands panel
+  keeps its planned row in every state (the foes under it no longer jump up on a foe's turn or in auto).
+- `v076b`: its "foes right under the commands" check also accepts the foes beside the commands under the party column (the intended
+  change); nothing else in it changed.
+
+**Fold closed** (412 x about 810 CSS px): the last command row (Pause / Start auto / Speed / ⚙) was cut off under the party cards.
+- Portrait order is now: turn order, stage, log strip, **the commands**, the party cards, the compact foe list, then the foe cards and
+  the Rearguard. The command header carries the acting hero's HP and MP (bars and numbers under the name), since the cards now follow.
+- The bottom padding of the battle screen is `max(4px, env(safe-area-inset-bottom))`: with `viewport-fit=cover` an edge to edge app draws
+  under the navigation bar, and the last row could sit behind it (headless Chrome has no inset, so the tests cannot show this one).
+- Turn order bar: the sky chips now clip inside their own box (`.osky` can shrink, a chip's icon is capped), so a wider device glyph
+  (the report showed "☁!" over NEXT) cannot run over the NEXT label or the entries. This could not be reproduced in headless Chrome,
+  even with text drawn 125% larger; the new check guards it.
+
+| size | before (6h/5f miniboss · 6h/5f · 6h/2f · 3h/2f) | after |
+|---|---|---|
+| 933x615 | 408x196 · 408x196 · 440x211 · 440x211 | 408x196 · 456x218 · 552x263 · 552x263 |
+| 933x620 | 424x203 · 424x203 · - · 456x218 | 424x203 · 456x218 · 552x263 · 552x263 |
+| 933x660 | 504x241 · 504x241 · 520x248 · 520x248 | 504x241 · 552x263 · 552x263 · 552x263 |
+| 933x705 | 520x248 · 472x226 · 520x248 · 520x248 | 552x263 · 552x263 · 552x263 · 552x263 |
+| 1280x720 | 456x218 · 536x256 · - · 568x271 | 584x278 · 648x308 · 648x308 · 648x308 |
+| portrait (344x882, 360x780, 390x844, 412x810, 412x915) | unchanged stage sizes | unchanged (312x348 to 380x408); the commands first |
+
+`v080b` additions: 412x810 and 933x615, a 6 heroes / 2 foes case; wide: no empty band over 24 px at the bottom of either column;
+portrait: every command row on screen with the party cards after them, the acting hero's HP and MP on screen (header or card); the turn
+order bar's chips clear of NEXT and the entries (every layout case, and every weather with 125% text at five sizes). On the previous
+build: 80 fails at 933x615, 933x660, 933x705, 412x810, 390x844 (48 bands of 25 to 393 px, 32 portrait checks with the cards before the
+commands); after: passes (1663 checks for the whole file). The regression list passes after (v076b with the one check change above).

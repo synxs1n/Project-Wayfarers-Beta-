@@ -18,12 +18,12 @@
 // and a field fight started for real, sampled every frame for 2 s and until just after the first hero turn: the stage's box and every
 // foe's place on the screen never change.
 // Fails on the build before this pass, passes now.
-// Usage (from tools/chrome): PWHTML=../../out/aurelis3.html node v080b.js [shots] [layout|trans|dl|settle]   (shots: shots-v080b/, SHOTPFX=prefix)
+// Usage (from tools/chrome): PWHTML=../../out/aurelis3.html node v080b.js [shots] [layout|trans|dl|settle|order]   (shots: shots-v080b/, SHOTPFX=prefix)
 const {open,chk,done}=require('./pw');const {META,battle,dress}=require('./v063lib');
-const SHOTS=process.argv.includes('shots'),ONLY=process.argv.find(a=>a==='layout'||a==='trans'||a==='dl'||a==='settle'),fs=require('fs'),DIR=__dirname+'/shots-v080b',PFX=process.env.SHOTPFX||'';
+const SHOTS=process.argv.includes('shots'),ONLY=process.argv.find(a=>['layout','trans','dl','settle','order'].includes(a)),fs=require('fs'),DIR=__dirname+'/shots-v080b',PFX=process.env.SHOTPFX||'';
 if(SHOTS)fs.mkdirSync(DIR,{recursive:true});
-const SIZES=process.env.SIZES?process.env.SIZES.split(',').map(s=>s.split('x').map(Number)):[[344,882],[360,780],[390,844],[412,915],[933,620],[933,660],[933,705],[1280,720]];
-const CASES=[['mini',6,5],['field',6,5],['field',3,2]];
+const SIZES=process.env.SIZES?process.env.SIZES.split(',').map(s=>s.split('x').map(Number)):[[344,882],[360,780],[390,844],[412,810],[412,915],[933,615],[933,620],[933,660],[933,705],[1280,720]];
+const CASES=[['mini',6,5],['field',6,5],['field',6,2],['field',3,2]];
 const MEASURE=()=>{const out={bad:[]},vis=e=>{const q=e.getBoundingClientRect();return q.width>0&&q.height>0;};
   const NAME='.uct b,.cmdhead b,.bbn b,.b4o .n,.blog p,.detf,.fl .n';
   document.querySelectorAll('.battle *').forEach(e=>{if(e.closest('#bstage')||e.closest('#bover')||!vis(e)||/^(IMG|CANVAS|svg)$/i.test(e.tagName))return;
@@ -50,6 +50,20 @@ const MEASURE=()=>{const out={bad:[]},vis=e=>{const q=e.getBoundingClientRect();
   // a card's status / weakness row stays in the card's bottom padding, never over its name or bars
   document.querySelectorAll('#bparty .pcw.hastags').forEach(c=>{const t=c.querySelector('.ptags'),m=c.querySelector('.pm');if(!t||!m||!vis(t)||!vis(m)||!t.children.length)return;const a=t.getBoundingClientRect(),b=m.getBoundingClientRect();
     if(a.top<b.bottom-1&&a.bottom>b.top+1&&a.left<b.right-1&&a.right>b.left+1)out.bad.push('card row over the card: "'+c.textContent.trim().replace(/\s+/g,' ').slice(0,20)+'"');});
+  // v0.8.7: the acting hero's HP and MP in the command header (portrait), the commands before the party cards (portrait)
+  out.hdrBars=shown(document.querySelector('#bcmd .cmdhead .b8hm'));const hg=R('#bparty .pgroup.heroes');out.cmdR=R('#bcmd');out.cmdFirst=!hg||!out.cmdR||hg.t>=out.cmdR.b-1;
+  out.cmdAll=[...document.querySelectorAll('#bcmd .mi,#bcmd .btn,#bcmd .autowhy')].filter(vis).every(shown);
+  // wide: no empty band at the bottom of either column (the lowest panel of each column against the bottom of the visible screen)
+  {const padB=parseFloat(getComputedStyle(document.body).paddingBottom)||0,bot=innerHeight-padB,c=out.cmdR,cols=[0,0];
+    ['#bwrap','#bline','#border','#bbossbar','#bcmd','#bparty .pgroup.foes','#bparty .b3pty'].map(R).filter(Boolean).forEach(q=>{const k=c&&(q.l+q.r)/2>c.r?1:0;cols[k]=Math.max(cols[k],q.b);});
+    out.band=cols.map(b=>Math.round(bot-b));}
+  // the turn order bar: the NEXT label, the entries and the sky chips never overlap, and the chips stay inside the bar
+  // an entry counts by its visible part (the entries row clips what does not fit)
+  const clipOc=e=>{const q=e.getBoundingClientRect(),c=e.closest('.ocs').getBoundingClientRect(),l=Math.max(q.left,c.left),r=Math.min(q.right,c.right);return r-l>1?{left:l,right:r,top:q.top,bottom:q.bottom}:null;};
+  {const ob=document.getElementById('border'),hit=(a,b)=>a.left<b.right-.5&&a.right>b.left+.5&&a.top<b.bottom-.5&&a.bottom>b.top+.5,ov=[];if(ob){const O=ob.getBoundingClientRect(),
+    nx=[...ob.querySelectorAll('.ocs>small')].filter(vis).map(e=>e.getBoundingClientRect()),oc=[...ob.querySelectorAll('.oc')].filter(vis).map(clipOc).filter(Boolean),ch=[...ob.querySelectorAll('.wchip')].filter(vis).map(e=>e.getBoundingClientRect());
+    ch.forEach((c,i)=>{if(c.left<O.left-.5||c.right>O.right+.5)ov.push('chip '+i+' outside the bar');nx.forEach(n=>{if(hit(c,n))ov.push('chip '+i+' over NEXT');});oc.forEach((o,j)=>{if(hit(c,o))ov.push('chip '+i+' over entry '+j);});});}
+    out.orderOv=ov;}
   out.taps=[...document.querySelectorAll('#bcmd .menu.prim .mi')].filter(vis).map(e=>Math.round(e.getBoundingClientRect().height)).filter(h=>h<40).length;
   return out;};
 async function heroTurn(H){// Guard, then let the fight run until the next hero command turn
@@ -71,12 +85,15 @@ async function setup(H,kind,he,fo,seed){
       const b=await setup(H,kind,he,fo,11*he+fo);if(b.mode!=='cmd'){chk(`${tag}: battle ready`,'mode '+b.mode);await H.browser.close();continue;}
       for(let turn=0;turn<4;turn++){if(turn)await heroTurn(H);const st=await H.ev(()=>({mode:__A.B.mode,over:__A.B.over,side:__A.B.cur&&__A.B.cur.side}));if(st.over||st.mode!=='cmd'||st.side!=='p')break;
         const m=await H.ev(MEASURE),t=`${tag} turn ${turn+1} (${m.curName})`;
-        if(turn===0)console.log(`LAYOUT ${w}x${h} ${kind} ${he}h/${fo}f: stage ${Math.round(m.stage.w)}x${Math.round(m.stage.h)}, document ${m.docH}/${m.vh}, ${m.cls}`);
+        if(turn===0)console.log(`LAYOUT ${w}x${h} ${kind} ${he}h/${fo}f: stage ${Math.round(m.stage.w)}x${Math.round(m.stage.h)}, document ${m.docH}/${m.vh}, bands ${m.band.join('/')}, ${m.cls}`);
         if(SHOTS&&turn===0)await H.page.screenshot({path:`${DIR}/${PFX}${w}x${h}_${kind}_${he}h${fo}f.png`});
         if(turn===0&&kind==='mini')chk(`${t}: the scene has the boss bar, the summon button and the auto lock note`,m.boss&&m.summon&&!!m.autowhy||JSON.stringify({boss:m.boss,summon:m.summon,why:m.autowhy}));
         chk(`${t}: the page does not scroll (document ${m.docH} <= ${m.vh}, ${m.docW} <= ${m.vw})`,m.docH<=m.vh+.5&&m.docW<=m.vw+1&&m.scrollY===0);
         chk(`${t}: Attack, Skills, Items and Guard fully on screen`,m.prim.length===4&&m.prim.every(p=>p.ok)||JSON.stringify(m.prim));
-        chk(`${t}: the turn order bar, the stage and the acting hero's card on screen`,m.orderOk&&m.stageOk&&m.curOk||JSON.stringify({o:m.orderOk,s:m.stageOk,c:m.curOk}));
+        chk(`${t}: the turn order bar, the stage and the acting hero's ${wide?'card':'HP and MP'} on screen`,m.orderOk&&m.stageOk&&(wide?m.curOk:m.hdrBars||m.curOk)||JSON.stringify({o:m.orderOk,s:m.stageOk,c:m.curOk,h:m.hdrBars}));
+        chk(`${t}: the turn order bar's chips clear of NEXT and the entries`,m.orderOv.length===0||m.orderOv.join(' | '));
+        if(wide)chk(`${t}: no empty band at the bottom of either column (${m.band.join(' / ')} px)`,m.band.every(b=>b<=24));
+        else{chk(`${t}: every command row on screen (the party cards come after the commands)`,m.cmdAll&&m.cmdFirst||JSON.stringify({all:m.cmdAll,first:m.cmdFirst}));}
         const minH=wide?165:240;chk(`${t}: the stage is at least ${minH} px tall (${Math.round(m.stage.h)}x${Math.round(m.stage.w)})`,m.stage.h>=minH-.5);
         if(wide){chk(`${t}: every live foe's card fully shown (${m.foeShown} of ${m.live})`,m.foeShown>=m.live&&m.live>0||JSON.stringify({shown:m.foeShown,cards:m.foeCards,live:m.live,foes:m.foes}));
           chk(`${t}: every Vanguard row shown (nothing scrolls inside its panel)`,m.vrows.every(Boolean)&&m.inner.length===0||JSON.stringify({rows:m.vrows,inner:m.inner}));}
@@ -104,6 +121,15 @@ async function setup(H,kind,he,fo,seed){
       Math.abs(f.cx-.5)<.08&&Math.abs(f.cy-.5)<.08&&Math.min(...f.q)>=Math.max(...f.q)*.4&&Math.min(...f.q)>0||JSON.stringify(f));}
     if(SHOTS){await H.ev(async()=>{const WS=__A.WS;WS.flash=performance.now()-180;WS.lock=true;await new Promise(q=>requestAnimationFrame(()=>requestAnimationFrame(q)));});
       await H.page.screenshot({path:`${DIR}/${PFX}trans_${gfx}${hd?'':'2d'}_${w}x${h}.png`});await H.ev(()=>{__A.WS.lock=false;});}
+    await H.browser.close();}
+  // the turn order bar with the device's text drawn larger (Android font scaling): every weather, field fights, portrait and Fold sizes
+  if(!ONLY||ONLY==='order')for(const [w,h] of [[344,882],[360,780],[390,844],[412,810],[933,615]]){const H=await open({w,h,mobile:true,pre:META('medium')}),tag=`${w}x${h} turn order bar`;
+    await battle(H,{heroes:6,foes:5,seed:9,lv:22});await H.page.addStyleTag({content:'html{font-size:125%}'});
+    const r=await H.ev(()=>{const A=__A,B=A.B,bad=[];for(const k of Object.keys(A.WEATHER)){B.weather=k;A.render();const ob=document.getElementById('border'),O=ob.getBoundingClientRect(),hit=(a,b)=>a.left<b.right-.5&&a.right>b.left+.5&&a.top<b.bottom-.5&&a.bottom>b.top+.5,
+      vis=e=>{const q=e.getBoundingClientRect();return q.width>0&&q.height>0;},nx=[...ob.querySelectorAll('.ocs>small')].filter(vis).map(e=>e.getBoundingClientRect()),oc=[...ob.querySelectorAll('.oc')].filter(vis).map(e=>{const q=e.getBoundingClientRect(),c=e.closest('.ocs').getBoundingClientRect(),l=Math.max(q.left,c.left),r=Math.min(q.right,c.right);return r-l>1?{left:l,right:r,top:q.top,bottom:q.bottom}:null;}).filter(Boolean);
+      ob.querySelectorAll('.wchip').forEach(c=>{if(!vis(c))return;const q=c.getBoundingClientRect();if(q.left<O.left-.5||q.right>O.right+.5)bad.push(k+': chip outside');if(nx.some(n=>hit(q,n)))bad.push(k+': chip over NEXT');if(oc.some(o=>hit(q,o)))bad.push(k+': chip over an entry');});
+      if(oc.length<4)bad.push(k+': only '+oc.length+' entries');}return bad;});
+    chk(`${tag}: with 125% text, every weather: the chips stay clear of NEXT and the entries, at least 4 entries`,r.length===0||r.slice(0,4).join(' | '));
     await H.browser.close();}
   // damage type symbols: one per delivery, on foe cards (once the foe type is known), in the skill list and on aim tags
   if(!ONLY||ONLY==='dl')for(const [w,h] of [[344,882],[933,620],[1280,720]]){const H=await open({w,h,mobile:w<1000,pre:META('medium')}),tag=`${w}x${h} damage types`;

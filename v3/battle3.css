@@ -178,8 +178,8 @@ html.rm .fxlayer .fx2.b3fx{animation-name:fade2!important}
 .battle.b3.m-tall .pgroup.heroes .pcw.hastags .pc,.battle.b3.m-tall .fcw.hastags .fc{padding-bottom:27px}
 /* portrait: the party right over the commands (the active hero's numbers next to its commands), the foes and the rearguard under them */
 .battle.b3.m-tall .bbottom .bparty{display:contents}
-.battle.b3.m-tall .bbottom .pgroup.heroes{order:1}
-.battle.b3.m-tall .bbottom .cmd{order:2}
+.battle.b3.m-tall .bbottom .pgroup.heroes{order:2}
+.battle.b3.m-tall .bbottom .cmd{order:1}
 .battle.b3.m-tall .bbottom .pgroup.foes{order:3}
 .battle.b3.m-tall .bbottom .pgroup.rsv{order:4}
 .battle.b3 .bline .blog p{display:block;max-width:100%}
@@ -298,7 +298,7 @@ body:has(.battle.b3.m-wide){padding-bottom:4px}
 .battle.b3.m-wide .menu.list:has(>.mi[data-act="sw"]){grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
 /* a narrow party column (small tablets in portrait): the bars go back to one per line */
 .battle.b3.m-wide .bbottom .pgroup.heroes,.battle.b3.m-wide .bbottom .pgroup.rsv{container-type:inline-size}
-@container (max-width:340px){
+@container (max-width:300px){
   .battle.b3.m-wide .pgroup.heroes .pc .pm{grid-template-columns:minmax(0,1fr)}
   .battle.b3.m-wide .pgroup.rsv .pc.rs .pm{grid-template-columns:minmax(0,1fr);row-gap:2px}
 }
@@ -311,22 +311,25 @@ body:has(.battle.b3.m-wide){padding-bottom:4px}
 /* ===== Beta v0.8.0: phones and the Galaxy Z Fold (open and closed) ===== */
 /* wide, short screens: the foes panel never shrinks to nothing (it keeps at least one row; the commands scroll inside first) */
 .battle.b3.m-wide .bbottom{grid-template-rows:minmax(0,max-content) minmax(58px,1fr)}
-/* wide, the column arrangement (b8col, chosen by b3WideSc when it gives the larger stage): the stage and the log strip head the left
-   column, the commands and the foes under them; the boss bar, the turn order and the party column fill the right column from the top.
-   The grid is as tall as the visible screen (--b8h) and its rows come from b3WideBot (--b8r). */
-.battle.b3.m-wide.b8col{grid-template-columns:minmax(0,1.42fr) minmax(0,1fr);column-gap:6px;row-gap:4px;height:var(--b8h,auto);grid-template-rows:var(--b8r,auto);
-  grid-template-areas:"stage order" "stage pty" "line pty" "cmd pty" "foes pty";align-content:start;box-sizing:border-box}
-.battle.b3.m-wide.b8col.hasboss{grid-template-columns:minmax(0,1.42fr) minmax(0,1fr);grid-template-areas:"stage boss" "stage order" "stage pty" "line pty" "cmd pty" "foes pty"}
+/* wide, the column arrangement (b8col, chosen by b3WideSc when it gives the larger stage). v0.8.7: the left column (--b8L wide) holds
+   the stage and the commands, the right one the boss bar, the turn order and the party column; the log strip and the foes go to either
+   side (b8lr, b8fr). The grid is as tall as the visible screen (--b8h); its rows (--b8r) and each panel's rows (--gr-*) come from
+   b3WideBot, built from both columns' stacks, and each column's last panel reaches the bottom. */
+.battle.b3.m-wide.b8col,.battle.b3.m-wide.b8col.hasboss{grid-template-columns:var(--b8L,minmax(0,1.42fr)) minmax(0,1fr);grid-template-areas:none;column-gap:6px;row-gap:0;
+  height:var(--b8h,auto);grid-template-rows:var(--b8r,auto);align-content:start;box-sizing:border-box}
 .battle.b3.m-wide.b8col .bbottom,.battle.b3.m-wide.b8col .bbottom .bparty{display:contents}
-.battle.b3.m-wide.b8col>.bwrap{grid-area:stage;justify-self:center;align-self:start;margin:0}
-.battle.b3.m-wide.b8col>.bline{grid-area:line;align-self:start}
-.battle.b3.m-wide.b8col>.bossbar{grid-area:boss}
-.battle.b3.m-wide.b8col>.order{grid-area:order;align-self:stretch;min-width:0}
+.battle.b3.m-wide.b8col>.bwrap{grid-area:auto;grid-column:1;grid-row:var(--gr-stage);justify-self:center;align-self:start;margin:0}
+.battle.b3.m-wide.b8col>.bline{grid-area:auto;grid-column:var(--gc-line);grid-row:var(--gr-line);align-self:start;min-width:0}
+.battle.b3.m-wide.b8col>.bossbar{grid-area:auto;grid-column:2;grid-row:var(--gr-boss);align-self:start}
+.battle.b3.m-wide.b8col>.order{grid-area:auto;grid-column:2;grid-row:var(--gr-order);align-self:start;min-width:0}
 .battle.b3.m-wide.b8col .order .wchip .wxn{display:none}
-.battle.b3.m-wide.b8col .bbottom .cmd{grid-area:cmd;max-height:100%}
-.battle.b3.m-wide.b8col .bbottom .pgroup.foes{grid-area:foes;margin-top:5px;max-height:calc(100% - 5px)}
-.battle.b3.m-wide.b8col .bbottom .b3pty{grid-area:pty;max-height:100%;align-self:start}
-.battle.b3.m-wide.b8col.b3list .bbottom .cmd{grid-area:auto;grid-column:1;grid-row:cmd-start/foes-end}
+.battle.b3.m-wide.b8col .bbottom .cmd{grid-area:auto;grid-column:1;grid-row:var(--gr-cmd);max-height:100%;align-self:stretch;min-height:0}
+.battle.b3.m-wide.b8col .bbottom .pgroup.foes{grid-area:auto;grid-column:var(--gc-foes);grid-row:var(--gr-foes);margin-top:0;max-height:100%;align-self:stretch}
+.battle.b3.m-wide.b8col .bbottom .b3pty{grid-area:auto;grid-column:2;grid-row:var(--gr-pty);max-height:100%;align-self:stretch;display:flex;flex-direction:column}
+.battle.b3.m-wide.b8col .bbottom .b3pty>.pgroup:last-child{flex:1 1 auto}
+.battle.b3.m-wide.b8col.b8fr .bbottom .cmd{align-self:stretch}
+.battle.b3.m-wide.b8col.b3list .bbottom .cmd{grid-row:var(--gr-cmdl);align-self:stretch}
+.battle.b3.m-wide.b8col.b8fr.b3list .bbottom .pgroup.foes{display:flex}
 /* wide, compact (b8tight, under B8.tightAt): the auto lock note inline in the auto row, tighter commands, cards and header */
 .battle.b3.m-wide.b8tight .autorow{flex-wrap:nowrap;align-items:center}
 .battle.b3.m-wide.b8tight .autorow .autowhy{order:0;flex:1.5 1 0;min-width:0;font-size:.66rem;line-height:1.15;white-space:normal;text-align:center}
@@ -395,7 +398,35 @@ em.dl.sym .ico{width:12px;height:12px;vertical-align:0}
 .battle.b3.m-wide .fcw .fwk,.battle.b3.m-tall .fcw .fwk{padding:0 1px;border:0;background:none;gap:1px}
 .battle.b3.m-wide .fcw .fwk .ico,.battle.b3.m-tall .fcw .fwk .ico{width:11px;height:11px}
 .battle.b3.m-wide .fcw .ptags,.battle.b3.m-tall .fcw .ptags{column-gap:4px}
-/* compact column arrangement with the log strip in the right column (b8lr): the left column is the stage, the commands and the foes */
-.battle.b3.m-wide.b8col.b8lr{grid-template-areas:"stage order" "stage line" "stage pty" "cmd pty" "foes pty"}
-.battle.b3.m-wide.b8col.b8lr.hasboss{grid-template-areas:"stage boss" "stage order" "stage line" "stage pty" "cmd pty" "foes pty"}
-.battle.b3.m-wide.b8col.b8lr>.bline{align-self:stretch;min-width:0}
+
+/* ===== Beta v0.8.7 ===== */
+/* the bottom of the screen clears the system navigation bar where the app draws edge to edge (viewport-fit=cover) */
+body:has(.battle.b3.m-wide),body:has(.battle.b3.m-tall){padding-bottom:max(4px,env(safe-area-inset-bottom,0px))}
+/* portrait: the acting hero's HP and MP in the command header (the party cards now come after the commands) */
+.battle.b3 .who.cmdhead small .b8hm{display:flex;align-items:center;gap:3px;margin-top:2px;min-width:0}
+.battle.b3 .who.cmdhead .b8hm .hb{display:block;flex:0 1 40px;min-width:18px;height:5px;border-radius:2px;background:#2a2234;overflow:hidden;box-shadow:0 0 0 1px #150b17}
+.battle.b3 .who.cmdhead .b8hm .hb i{display:block;height:100%}
+.battle.b3 .who.cmdhead .b8hm .hb.hp i{background:var(--hp,#5ad06a)}
+.battle.b3 .who.cmdhead .b8hm .hb.mp i{background:var(--mp,#5aa8ff)}
+.battle.b3 .who.cmdhead .b8hm em{font-style:normal;font-size:.64rem;line-height:1;color:#e8dcc0;flex:none;margin-right:3px}
+/* the turn order bar: the sky chips never cover the NEXT label or the entries (they clip inside their own box instead) */
+.battle.b3 .order .osky{flex:0 1 auto;min-width:0;overflow:hidden}
+.battle.b3 .order .ocs{flex:1 1 auto;min-width:0}
+.battle.b3 .order .ocs>small{flex:none}
+.battle.b3 .order .osky .wchip{flex:0 1 auto;min-width:36px;overflow:hidden}
+.battle.b3 .order .osky .wchip .wxi{display:inline-block;max-width:1.6em;overflow:hidden;text-overflow:clip}
+/* foe cards in one row share its height: each card's frame fills its cell, so a status / weakness row never falls under a shorter frame */
+.battle.b3 .fcs>.fcw{align-content:stretch}
+.battle.b3 .fcs>.fcw>.fc{height:100%}
+/* wide: the secondary commands in one row, the Summon button wider (its companion's name fits) */
+.battle.b3.m-wide .menu.sec{display:flex;gap:5px}
+.battle.b3.m-wide .menu.sec .mi{flex:1 1 0;min-width:0}
+.battle.b3.m-wide .menu.sec .mi.summon{flex:1.7 1 0}
+/* compact: the words Weak / Res give way to the arrows on every foe card (one line more often fits) */
+@container (min-width:215px){
+  .battle.b3.m-wide.b8tight .fcw .fwk b{font-size:0}
+  .battle.b3.m-wide.b8tight .fcw .fwk.up b::before{content:"▲";font-size:.62rem}
+  .battle.b3.m-wide.b8tight .fcw .fwk.dn b::before{content:"▼";font-size:.62rem}
+}
+/* the switch list: entries wide enough for a name, HP and the class line at every column width */
+.battle.b3.m-wide .menu.list:has(>.mi[data-act="sw"]){grid-template-columns:repeat(auto-fill,minmax(168px,1fr))}
