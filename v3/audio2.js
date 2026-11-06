@@ -146,7 +146,9 @@ function au2Heard(id){try{META.heard=META.heard||{};if(!META.heard[id]){META.hea
 // ---------- start, style, lifecycle ----------
 function au2StyleOn(){return (META.cfg.mstyle||'orch')==='orch'&&!AU2.dead;}
 function au2Vol(){const g=AU2.g;if(!g)return;const m=META.cfg.mute?0:1;g.bus.music.gain.value=(META.cfg.music??.45)*1.6*m;g.bus.sfx.gain.value=(META.cfg.sfx??.6)*1.3*m;g.bus.ui.gain.value=(META.cfg.sfx??.6)*1.1*m;g.bus.amb.gain.value=(META.cfg.amb??.3)*1.5*m;}
-function au2Start(){if(AU2.g||!AU.ctx||!au2StyleOn())return;AU.track=null;AU2.ctx=AU.ctx;AU2.fmt=au2Fmt();AU2.g=au2Graph(AU.ctx);au2Vol();
+function au2Start(){if(AU2.g||!AU.ctx||!au2StyleOn())return;
+  // v0.9.3: a page opened as a local file cannot fetch the samples (the browser logs an error for each try): stay on the chiptune quietly
+  try{if(location.protocol==='file:'){AU2.failed=AU2.failed||6;return;}}catch(e){}AU.track=null;AU2.ctx=AU.ctx;AU2.fmt=au2Fmt();AU2.g=au2Graph(AU.ctx);au2Vol();
   // keep the chiptune buses silent while the orchestra plays (classic sfx still route through AU.fx for anything not overridden)
   AU2.on=true;const t0=performance.now();
   au2LoadAll(CORE_INST).then(()=>{if(AU2.failed>=3||!Object.keys(AU2.inst).length){au2Fail('Could not load the orchestra samples, so the classic chiptune music is playing.');return;}

@@ -203,3 +203,6 @@ ui.js boot calls audioInit() 300 ms after load (the context starts running where
 
 ## Beta v0.9.2: natural lair, HD-2D uniforms
 dungeon8.js lair section: a rock mound of field rock tiles around the unchanged entrance (kept only if reachability is no worse), HD-2D geometry built like the fortress gatehouse, 2D shaded heightfield, no text; relit look in gold. hd2d.js: the line setting uEmis and uAct had joined a comment in v0.8.0 and never ran. Tests `chrome/v082da.js`, `v082db.js`.
+
+## Beta v0.9.3: phones and short landscape battle layout, hero size
+Details in `v080-battle-phones.md` (follow up 2; battle3.js/css, battle.js; tests `chrome/v080b.js`, `v063bd.js`). Portrait: 56 px main commands fill under the stage, party and foes scroll below. Every screen >= 560 px wide uses the fitting planner; short screens can put commands in the right column, header hidden under 430 px tall. Hero labels keep 5 px from foes. Battle heroes drawn at 5/6 (about 32 px, like humanoid foes). audio2.js skips the orchestra on file:// pages.
