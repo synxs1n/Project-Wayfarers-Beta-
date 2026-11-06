@@ -154,7 +154,8 @@ function detTargets(sk){if(!B||!sk||sk.role!=='det')return [];const els=skEls(sk
 {const dr0=doReaction;doReaction=function(a,t,el){const p=t&&t.primed&&t.primed.el,R=dr0.apply(this,arguments);try{if(R&&t&&t.fx){for(let i=t.fx.length-1;i>=0;i--){const f=t.fx[i];if(f.cls==='react'&&f.txt===R.n){f.rp=p;f.rd=el;break;}}}}catch(e){}return R;};}
 // in the skill list: every foe this detonator sets off right now, with the reaction and both element icons (else what it reacts with)
 function detList(s){if(!s||s.role!=='det'||!B)return '';const L=detTargets(s);if(!L.length)return detNote(s);
-  return `<span class="detl" aria-label="Detonates">${L.map(o=>`<span class="detf" style="--c:${ELC[o.d]||'#ffd04a'}">${ico(o.p)}<i>+</i>${ico(o.d)}<b>✸ ${esc(o.R.n)}</b><em>on ${esc(o.e.name)}</em></span>`).join('')}</span>`;}
+  // v0.7.7: symbols only: the primed element on each foe it sets off now (the reaction and foe names stay in the tooltip)
+  return `<span class="detl sym" aria-label="Detonates">${L.map(o=>`<span class="detf" style="--c:${ELC[o.d]||'#ffd04a'}" title="${esc(o.R.n)} on ${esc(o.e.name)}">✸ ${ico(o.p)}</span>`).join('')}</span>`;}
 // on the stage, while a detonator is aimed: the colour a foe it sets off glows in (the detonating element), else null
 function detGlow(u){try{if(!B||u.side!=='e'||!(B.mode==='cmd'&&B.menu==='target'&&B.pend&&B.pend.sk))return null;const o=detTargets(B.pend.sk).find(q=>q.e===u);return o?(ELC[o.d]||'#ffd04a'):null;}catch(e){return null;}}
 // the save message keeps clear of the stage labels too (it already avoids the units and bars)

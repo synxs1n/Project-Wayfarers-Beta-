@@ -89,7 +89,8 @@ function facSmithRebate(){const r=facRank('smiths');let b=0;FACB.smiths.perks.sl
 function facMissionList(id){const f=facInit(),r=facRank(id),pool=FMIS.filter(m=>m.f===id&&m.r<=r&&!f.done[m.id]);
   const acc=pool.filter(m=>f.acc[m.id]!=null),rest=pool.filter(m=>f.acc[m.id]==null);if(rest.length<=2)return acc.concat(rest);
   const R=seeded(hashS((G.run.seed||1)+':fm:'+id+':'+(G.tavRoll||0))),left=rest.slice(),pk=[];while(pk.length<2&&left.length){pk.push(left.splice(Math.floor(R()*left.length),1)[0]);}return acc.concat(pk);}
-function facProg(m){const f=facInit();return Math.max(0,Math.min(m.n,facCount(m.k)-(f.acc[m.id]||0)));}
+// v0.7.7: progress counts everything done on this journey, also before the mission was accepted (the owner's call); acc only marks it taken
+function facProg(m){return Math.max(0,Math.min(m.n,facCount(m.k)));}
 ACT.facAccept=function(id){const m=FMIS.find(x=>x.id===id);if(!m||!G||G.daily)return;const f=facInit();if(f.acc[id]!=null)return;f.acc[id]=facCount(m.k);saveGame();toast(`Mission taken: ${m.t}.`);render();};
 ACT.facClaim=function(id){const m=FMIS.find(x=>x.id===id);if(!m)return;const f=facInit();if(f.acc[id]==null||f.done[id]||facProg(m)<m.n)return;f.done[id]=1;f.bonus[m.f]=(f.bonus[m.f]||0)+m.rep;facDirty();const g=Math.round(m.rep*7*(1+.25*G.stage));G.gold+=g;facSync();saveGame();sfx('chest');toast(`${m.t} done: +${m.rep} standing, ${g} gold.`);render();};
 ACT.facPerk=function(a){const [id,rk]=String(a).split(':'),r=+rk,F=FACB[id];if(!F||!G||G.daily)return;const f=facInit(),key=id+':'+r;if(f.claim[key]||facRank(id)<r)return;const p=F.perks[r-1];if(!p)return;
@@ -106,8 +107,8 @@ ACT.facBuy=function(a){const [id,i]=String(a).split(':'),S=(FSTOCK[id]||[])[+i];
 function facBar(id){const r=facRank(id),rep=facRep(id),nx=facNeed(id),lo=REP_AT[r-1];const pc=nx==null?100:Math.round((rep-lo)/(nx-lo)*100);
   return `<div class="facbar" style="height:8px;background:#222;border-radius:4px;overflow:hidden;margin:4px 0"><i style="display:block;height:8px;width:${pc}%;background:${FACB[id].col}"></i></div>`;}
 function facMisRow(m){const f=facInit(),acc=f.acc[m.id]!=null,pr=facProg(m),ready=acc&&pr>=m.n;
-  const btn=ready?`<button class="btn sm gold" data-act="facClaim" data-arg="${m.id}">Claim</button>`:acc?`<span class="m">${pr}/${m.n}</span>`:`<button class="btn sm" data-act="facAccept" data-arg="${m.id}">Accept</button>`;
-  return `<div class="row"><div><b>${esc(m.t)}</b><small>${esc(m.d)} Reward: +${m.rep} standing and gold.${acc&&!ready?` Progress ${pr}/${m.n}.`:''}</small></div>${btn}</div>`;}
+  const btn=ready?`<button class="btn sm gold" data-act="facClaim" data-arg="${m.id}">Claim</button>`:acc?`<span class="m">${pr}/${m.n}</span>`:`<button class="btn sm ${pr>=m.n?'gold':''}" data-act="facAccept" data-arg="${m.id}">Accept</button>`;
+  return `<div class="row"><div><b>${esc(m.t)}</b><small>${esc(m.d)} Reward: +${m.rep} standing and gold.${!ready?` Progress ${pr}/${m.n}${!acc&&pr>=m.n?', done already: accept to claim':''}.`:''}</small></div>${btn}</div>`;}
 function vFactions(){if(!G)return '';facSync(true);const f=facInit(),best=META.facBest||{};
   const tt=FAC.filter(F=>(META.facBest||{})[F.id]>=6).map(F=>F.ranks[5]);return `${tt.length?`<p class="note"><b>Account titles:</b> ${tt.map(esc).join(', ')}</p>`:''}<p class="note">Six factions track what you already do on the road. Their standing and perks belong to this journey only. Nothing here is needed to finish the game. Only the best rank you reach is kept on your account, as a title.</p>`+FAC.map(F=>{
     const r=facRank(F.id),rep=facRep(F.id),nx=facNeed(F.id),perks=F.perks.map((p,i)=>{if(!p)return '';const rk=i+1,on=r>=rk,key=F.id+':'+rk;

@@ -27,7 +27,8 @@ const roleTag=s=>{const r=s.role&&skEls(s).length?`<em class="role ${s.role}" ti
 // v0.4.3: a visible note on every detonator: which primed elements it sets off, and the reaction
 // v0.4.3: in battle, a detonator shows a hint only when it can set off a foe that is Primed right now
 const detLive=s=>{try{if(!s||s.role!=='det'||!B)return '';const els=skEls(s),hit=B.en.filter(e=>e.hp>0&&e.primed&&els.some(x=>reactFor(e.primed.el,x)));if(!hit.length)return '';const R=reactFor(hit[0].primed.el,els.find(x=>reactFor(hit[0].primed.el,x)));return `<small class="detn">✸ Can set off ${esc(R.n)} on ${esc(hit[0].name)}${hit.length>1?` (+${hit.length-1} more)`:''}</small>`;}catch(e){return '';}};
-const detNote=s=>{if(!s||s.role!=='det')return '';const els=skEls(s),L=Object.keys(REACT).map(k=>REACT[k]).filter(R=>els.includes(R.d));if(!L.length)return '';return `<small class="detn">✸ Sets off: ${L.map(R=>`${EL[R.p]}-primed → <b>${R.n}</b> x${R.m}`).join(', ')}</small>`;};
+const detNote=s=>{if(!s||s.role!=='det')return '';const els=skEls(s),L=Object.keys(REACT).map(k=>REACT[k]).filter(R=>els.includes(R.d));if(!L.length)return '';// v0.7.7: symbols only (the owner's call): ✸ then the primed elements it sets off; the words live in the tooltip
+  return `<small class="detn sym" title="Sets off: ${L.map(R=>`${EL[R.p]} primed: ${R.n} x${R.m}`).join(', ')}" aria-label="Detonates ${L.map(R=>EL[R.p]).join(', ')}">✸ ${[...new Set(L.map(R=>R.p))].map(p=>ico(p)).join('')}</small>`;};
 // v0.5.9: the primed marker is a small floating element badge with the turns left (the full text lives in the tap popup and the card)
 const primedTag=u=>u.primed&&u.hp>0&&EL[u.primed.el]?`<span class="primed pmin" style="--c:${ELC[u.primed.el]}" aria-label="Primed with ${EL[u.primed.el]}, ${u.primed.t} turn${u.primed.t===1?'':'s'} left">${ico(u.primed.el)}<i>${u.primed.t}</i></span>`:'';
 // v0.3.5 2.1: does the skill being aimed set off this foe's prime?

@@ -1,3 +1,6 @@
+/* v0.7.7: no blue tap flash or text selection when tapping the world or the stage to move (Android draws a tinted box over anything with a click handler) */
+*{-webkit-tap-highlight-color:transparent}
+canvas,#world,#wv,#bstage,#bwrap,.joy{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 /* Layout concept: a torchlit keep. Stone wall behind, oak plank panels bound in bronze, parchment for story, chunky pixel bevels. */
 :root{
   --stone:#1b1511;--wood:#4a2f18;--wood2:#5e3d1f;--wood3:#3a2412;--bronze:#a67c3d;--ink:#0e0804;

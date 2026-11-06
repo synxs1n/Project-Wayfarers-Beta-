@@ -155,3 +155,6 @@ Details in `v070-battle-info.md` (`v3/battle5.js`: turn forecast bar, foe intent
 
 ## Beta v0.7.6: tap to walk and the hidden blocker sweep
 Details in `v071-world.md`. Root cause of the Hearthholm stuck spot: a bush on the row just north of the town wall, fully hidden by the wall in HD-2D but still solid. `pathguard.js` now moves or clears every prop HD-2D would hide (pgHides), keeps door aprons clear, fills holes in buildings, and laneFix steps gate arrivals back instead of paving a building. Tap to walk in `map.js` (A* over seen tiles). Tests `chrome/v071wa.js`, `v071wb.js`, `v071wt.js`.
+
+## Beta v0.7.7: mission progress, detonator symbols, no tap flash
+facProg counts the journey total (acc only marks a mission taken); detonator notes in the skill list are element symbols with the words in the tooltip (ui.js detNote, battle3.js detList); global -webkit-tap-highlight-color:transparent and no selection on the world and stage. Test `chrome/v077a.js`.
