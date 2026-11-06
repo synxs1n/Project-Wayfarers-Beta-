@@ -35,10 +35,10 @@ evals any name), `window.__AU` (ambience.js), `__P2` (p2world.js), `__P3` (p3sho
 | HD-2D world (Medium and High graphics) | `hd2d.js` (worldDraw replacement), `hd2dgl.js` (WebGL layer), `config.js` 8 (HD2D) |
 | weather and day/night | `world3.js` (tables, rolls, clock), `engine2.js` (WEATHER defs, battle weather), `p5trans.js` (blends), `weather7.js` (layers), `config.js` 6 and 8 |
 | minimap, area map, world map | `map.js`, `visuals7.js` (drawMini) |
-| menus and shops | `menus3.js` (tabs, filters, Smithy, Alchemy, Tavern, Guild, Board), `ui.js` (vModal, mMenu, mChar), `ui2.js` (crafting, sort filters), `p3shop.js` (Best for party, Smithy plan), `temper.js`, `equip.js`/`equip2.js`, CSS `menus3.css` |
+| menus and shops | `menus3.js` (tabs, filters, Smithy, Alchemy, Tavern, Guild, Board), `ui.js` (vModal, mMenu, mChar), `ui2.js` (crafting, sort filters), `p3shop.js` (Best for party, Smithy plan "Upgrade whole party", the Upgrade button upgOpts/upgBest), `temper.js`, `equip.js`/`equip2.js`, CSS `menus3.css` |
 | party, Best Party, loadouts, roster | `party2.js`, `p3shop.js` (scoring), `party3.js` (formations, Training team), `nav.js` (swaps), `tavern2.js` (journey roster, tavern tables), `progression.js` |
 | companions and taming | `comp.js`, `comp2.js`, `engine2.js` (registerTamed), `v063prog.js` (Taming log) |
-| quests, factions, guilds | `engine.js` (genQuests, claimQuest), `factions.js`, `p4party.js` (personal quests by realm), `allq.js`, `qready.js` |
+| quests, factions, guilds | `engine.js` (genQuests, claimQuest), `menus3.js` (the Notice Board: NB_TABS, nbBody, nbMenuBody), `factions.js` (FAC3: three ranks over six steps), `p4party.js` (personal quests by realm), `allq.js`, `qready.js` |
 | saves and slots | `engine.js` (packG/unpackG, saveGame), `saves.js` (slots, backups, import/export, loadRaw), `gearmig.js` (old gear), `cloud.js` + `account.js` (accounts). Keys: `aurelis-wayfarers-v3` (+`-s1`, `-s2`), `aurelis-meta-v1`. Sync between devices (svMark, svFlush, svCheck/svDecide, svLeave, svGate, the newer save prompt; `aurelis-sync-v1`): `saves.js`, see `docs/v085-sync.md` |
 | Daily Trial and twists | `engine2.js` (dailyGo, seeded RNG), `ui2.js` (screens), `twists.js`, `config.js` 9 |
 | audio | `audio.js` (chiptune fallback), `audio2.js` (orchestral engine), `musicdata.js` (score), `music2.js` (wiring), `sfx2.js`, `ambience.js` |

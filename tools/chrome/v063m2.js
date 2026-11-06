@@ -28,16 +28,17 @@ await show({type:'workshop',tab:'craft'});n=await nav();chk('Alchemy craft secti
 await show({type:'workshop',tab:'sell'});n=await nav();chk('Alchemy Sell sections: All, Charms, Herbs',JSON.stringify(n.secs)===JSON.stringify(['All','Charms','Herbs'])||JSON.stringify(n.secs));
 await show({type:'tavern'});n=await nav();chk('Tavern tabs: Hire, Kitchen',JSON.stringify(n.tabs)===JSON.stringify(['Hire','Kitchen'])||JSON.stringify(n.tabs));
 const kit=await ev(()=>{__A.ACT.sTab('kitchen');return !!document.querySelector('#modal [data-act="buyItem"][data-arg="porkchop"]');});chk('Tavern > Kitchen sells the sandwiches',kit);
-await show({type:'guild'});n=await nav();chk('Guild Hall tabs: Recruits, Quests, Natures, Arena, Guilds',JSON.stringify(n.tabs)===JSON.stringify(['Recruits','Quests','Natures','Arena','Guilds'])||JSON.stringify(n.tabs));
-await show({type:'guild',tab:'quests'});n=await nav();chk('Guild Hall > Quests sections: All, Personal quests, Bounties',JSON.stringify(n.secs)===JSON.stringify(['All','Personal quests','Bounties'])||JSON.stringify(n.secs));
-await show({type:'board'});n=await nav();chk('Quest Board sections: All, Ready, Active, Open, Done',JSON.stringify(n.secs)===JSON.stringify(['All','Ready','Active','Open','Done'])||JSON.stringify(n.secs));
+// v0.9.5: the Guild Hall holds the Notice Board's tabs (Quests, Guilds, Bounties, Arena) plus Recruits and Natures; the board has the same four
+await show({type:'guild'});n=await nav();chk('Guild Hall tabs: Quests, Guilds, Bounties, Arena, Recruits, Natures',JSON.stringify(n.tabs)===JSON.stringify(['Quests','Guilds','Bounties','Arena','Recruits','Natures'])||JSON.stringify(n.tabs));
+await show({type:'guild',tab:'quests'});n=await nav();chk('Guild Hall > Quests sections: All, Ready, Active, Open, Done, Personal',JSON.stringify(n.secs)===JSON.stringify(['All','Ready','Active','Open','Done','Personal'])||JSON.stringify(n.secs));
+await show({type:'board'});n=await nav();chk('Notice Board sections: All, Ready, Active, Open, Done, Personal',JSON.stringify(n.secs)===JSON.stringify(['All','Ready','Active','Open','Done','Personal'])||JSON.stringify(n.secs));
 const hg=await ev(()=>{const o={};for(const t of ['smithy','workshop','tavern','guild','board']){__A.V.modal={type:t};__A.render();o[t]=!!document.querySelector('#modal h2 .hgold');}return o;});
 chk('every shop title carries the purse',Object.values(hg).every(Boolean)||JSON.stringify(hg));
 // ---- old ids still land
 const leg=await ev(()=>{const o={};const t=(m)=>{__A.V.modal=m;__A.render();return __A.V.modal.tab+'/'+__A.V.modal.sec;};
   o.w=t({type:'smithy',tab:'weapons'});o.m=t({type:'smithy',tab:'mats'});o.c=t({type:'smithy',tab:'craft',cat:'armor'});o.r=t({type:'workshop',tab:'herbs'});o.p=t({type:'guild',tab:'personal'});o.b=t({type:'guild',tab:'bounties'});
   o.wOnly=(__A.V.modal={type:'smithy',tab:'weapons'},__A.render(),[...document.querySelectorAll('#modal [data-act="buyGear"]')].every(b=>__A.GEAR[b.dataset.arg].slot==='w'));return o;});
-chk('old tab ids map to the new tab and section',leg.w==='shop/weapons'&&leg.m==='shop/mats'&&leg.c==='craft/armor'&&leg.r==='shop/herb'&&leg.p==='quests/personal'&&leg.b==='quests/bounties'&&leg.wOnly||JSON.stringify(leg));
+chk('old tab ids map to the new tab and section',leg.w==='shop/weapons'&&leg.m==='shop/mats'&&leg.c==='craft/armor'&&leg.r==='shop/herb'&&leg.p==='quests/personal'&&leg.b==='bounties/all'&&leg.wOnly||JSON.stringify(leg));
 // ---- back: one level at a time
 const bk=await ev(()=>{const A=__A,o=[];A.V.modal={type:'smithy'};A.render();A.ACT.sTab('forge');A.ACT.sSec('armor');
   const st=()=>A.V.modal?A.V.modal.tab+'/'+A.V.modal.sec:'closed';o.push(st());for(let i=0;i<3;i++){A.ACT.xBack();o.push(st());}return o;});
@@ -87,7 +88,7 @@ const top=await ev(()=>[...document.querySelectorAll('#modal .mgrp .chip')].map(
 chk('menu groups: Party, Backpack, Quests, Map, Records, Guides, Settings',JSON.stringify(top)===JSON.stringify(['Party','Backpack','Quests','Map','Records','Guides','Settings'])||JSON.stringify(top));
 const sub=await ev(()=>{const o={};for(const g of ['gear','quests','records','guides']){__A.ACT.menuGrp(g);o[g]=[...document.querySelectorAll('#modal .msub .chip')].map(x=>x.textContent.trim());}return o;});
 chk('Backpack: Equipment, Items, Materials',JSON.stringify(sub.gear)===JSON.stringify(['Equipment','Items','Materials'])||JSON.stringify(sub.gear));
-chk('Quests: Quests, Guild missions',JSON.stringify(sub.quests)===JSON.stringify(['Quests','Guild missions'])||JSON.stringify(sub.quests));
+chk('Quests: Quests, Guilds, Bounties, Arena (v0.9.5 Notice Board)',JSON.stringify(sub.quests.map(x=>x.replace(/\s*\d+$/,'')))===JSON.stringify(['Quests','Guilds','Bounties','Arena'])||JSON.stringify(sub.quests));
 chk('Records holds Lore',sub.records.includes('Lore')&&!sub.guides.includes('Lore')||JSON.stringify(sub));
 chk('the pinned Save button is still in the menu title',await ev(()=>!!document.querySelector('#modal h2 .savepin [data-act="p5Save"]')));
 // ---- Daily Trial: shops still open and no plan button

@@ -7,6 +7,7 @@ Read these before a big pass:
 - `design-notes-v050.md`: Beta v0.5.0 (the big fix, logic, shops, party, settings and graphics pass). Wins over the older notes. Phase reports: `v050-phase2.md`, `v050-phase3.md`, `v050-phase45.md`.
 - `v053-ui.md`: the v0.5.3 UI pass ("Gilded Night" menus, HUD and battle panels in `v3/ui3.css`), its design language, tests and limits.
 - `v063-menus.md`: the shops and menus pass (two-level shop tabs, dropdown filters, regrouped menu, panels sized to the visible screen, the clipping test).
+- `v095-menus.md`: the Notice Board (Quests, Guilds, Bounties, Arena in one place), three ranks per guild, the Upgrade button on each gear slot, team help first on the Party and Equipment tabs.
 - `v053-hd2d.md`: Beta v0.5.3 HD-2D world renderer (WebGL diorama view of the world maps on Medium and High graphics).
 - `v058-sprites-in-scene.md`: characters and monsters lit, graded, scaled and grounded in the HD-2D world and battle stages (Medium, High).
 - `v063-party.md`: Beta v0.6.3 party systems (Best Party formations and Training team, XP catch up against the roster's top level, "Equip best: at camp", Legendary only for legends and Epic tags).

@@ -8,7 +8,7 @@ function modalBack(m){
   if(t==='char')return ()=>{V.modal={type:'menu',tab:V.lastMenuTab||'party'};};
   if(t==='guild'&&m.char)return ()=>{V.modal={type:'guild',tab:'recruit'};};
   if(t==='beast')return ()=>{V.modal={type:'menu',tab:'beasts'};};
-  if(t==='eqPick')return ()=>{V.modal={type:'menu',tab:'equip'};};
+  if(t==='eqPick')return ()=>{V.modal=m.from&&m.from.type==='upg'?m.from:{type:'menu',tab:'equip'};};// v0.9.5: Upgrade > Show all options comes back to Upgrade
   if(t==='compPick')return ()=>{V.modal={type:'menu',tab:'comp'};};
   if(t==='autoEq')return ()=>{V.modal=m.from&&m.from.type!=='autoEq'?m.from:{type:'menu',tab:'equip'};};
   if(t==='useitem')return ()=>{V.modal={type:'menu',tab:'items'};};
@@ -24,7 +24,7 @@ function modalBack(m){
   if(t==='map')return ()=>{V.modal=m.from||null;};   // v0.4.1 1.9: the map has a back arrow next to the X (back to where it was opened from, else the world)
   // v0.5.0 1.5: every shop screen has the back arrow. v0.6.3: shops have main tabs and section chips (menus3.js), so back is one level:
   // a section (or a hero picked on the Natures tab) goes back to All, a tab goes back to the shop's first tab, the first tab leaves the shop.
-  const SHOP_HOME={smithy:'shop',workshop:'shop',guild:'recruit',tavern:'hire',inn:null,board:null,archivist:null};
+  const SHOP_HOME={smithy:'shop',workshop:'shop',guild:'guilds',tavern:'hire',inn:null,board:'quests',archivist:null};// v0.9.5: the Guild Hall and the Notice Board start on the board's Guilds and Quests tabs
   if(t in SHOP_HOME){if(typeof m3Norm==='function')m3Norm(m);const home=SHOP_HOME[t],tab=m.tab&&m.tab!=='party'?m.tab:home;
     if(t==='guild'&&tab==='nature'&&m.nat)return ()=>{m.nat=null;};
     if(m.sec&&m.sec!=='all')return ()=>{m.sec='all';};
@@ -63,7 +63,7 @@ function vSwap(where){
     const bad=[...new Set(Object.keys(c.st||{}).filter(k=>STS[k]&&STS[k].bad).concat(typeof ailOf==='function'?ailOf(c):[]))],mark=c.hp<=0?'<em class="swko">KO</em>':bad.length?`<em class="swst" aria-label="${bad.map(k=>STS[k].n).join(', ')}">${bad.map(k=>`<span class="ail" style="--c:${STS[k].c}" title="${STS[k].n}">${stSym(k)}</span>`).join('')}</em>`:'';
     return `<div class="swc ${grid?'':'row'} ${on?'sel':''} ${c.hp<=0?'ko':''}"><button class="swm" data-act="swapTap" data-arg="p:${i}" aria-pressed="${on}" aria-label="${esc(c.name)}, ${lab}${on?', selected':''}">${port(c.id,'noail')}<span class="swi"><span class="swn"><b>${esc(c.name)}</b><span class="els">${c.el.map(ico).join('')}</span></span>${mark?`<span class="swstrow">${mark}</span>`:''}<small>${grid?'':lab+' · '}Lv ${c.lv} ${CLS[TPL[c.id].cls].n}${c.pts?` · <span class="up">${c.pts} pts</span>`:''}</small><span class="swb"><span class="swbl">HP</span>${bar(c.hp,c.S.mhp,'var(--hp)')}<span class="nums">${c.hp}/${c.S.mhp}</span></span><span class="swb"><span class="swbl">MP</span>${bar(c.mp,c.S.mmp,'var(--mp)')}<span class="nums">${c.mp}/${c.S.mmp}</span></span>${grid?xpLine(c,true):xpLine(c)}</span></button><button class="btn sm swsheet" data-act="${openAct}" data-arg="${c.id}" aria-label="Open ${esc(c.name)}'s sheet">Sheet</button></div>`;};
   const bench=Object.values(G.roster).filter(c=>!G.party.includes(c.id)).filter(c=>lmatch('party',c));const benchS=lsort('party',bench,(a,b)=>b.lv-a.lv||a.name.localeCompare(b.name));
-  return `${grid?'<div class="swgridwrap">':''}<div class="btnrow ptools"><button class="btn sm" data-act="bpOpen">Build party</button><button class="btn sm" data-act="fsOpen">Field skills</button>${(G.talks||[]).length?`<button class="btn sm gold" data-act="campfire">Campfire talks (${G.talks.length})</button>`:''}</div>${ldStrip()}<p class="note swhint ${sel?'on':''}">${hint}</p>
+  return `${grid?'<div class="swgridwrap">':''}<div class="btnrow ptools"><button class="btn sm gold" data-act="bpOpen">Build party</button>${G.daily?'':`<button class="btn sm" data-act="autoEqParty" title="The best gear you own for your party. May take gear from your reserves.">Equip best: party</button><button class="btn sm" data-act="autoEqCamp" ${Object.keys(G.roster).some(id=>!G.party.includes(id))?'':'disabled'} title="Your reserves get the best spare gear from the pack. Never takes anything from your party.">Equip best: reserves</button>`}<button class="btn sm" data-act="fsOpen">Field skills</button>${(G.talks||[]).length?`<button class="btn sm gold" data-act="campfire">Campfire talks (${G.talks.length})</button>`:''}</div>${ldStrip()}<p class="note swhint ${sel?'on':''}">${hint}</p>
     <h4>Vanguard</h4><div class="swlist ${grid?'g3':''}">${[0,1,2].map(i=>card(P[i],i)).join('')}</div>
     <h4>Rearguard</h4><div class="swlist ${grid?'g3':''}">${[3,4,5].map(i=>card(P[i],i)).join('')}</div>
     ${sel&&sel.i!=null&&P[sel.i]?`<div class="btnrow">${town&&G.party.length>1?'<button class="btn sm" data-act="swapOut">Send to roster</button>':''}<button class="btn sm" data-act="swapCancel">Cancel</button></div>`:sel?'<div class="btnrow"><button class="btn sm" data-act="swapCancel">Cancel</button></div>':''}

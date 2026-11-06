@@ -10,4 +10,4 @@ Object.assign(ACT,{
   facClaimAll(){const f=facInit();let n=0;FAC.forEach(F=>facMissionList(F.id).forEach(m=>{if(f.acc[m.id]!=null&&!f.done[m.id]&&facProg(m)>=m.n){ACT.facClaim(m.id);n++;}}));if(n>1)toast(`Claimed ${n} missions.`);render();}});
 {const vf0=vFacMissions;vFacMissions=function(){const h=vf0.apply(this,arguments);try{const f=facInit();let a=0,c=0;FAC.forEach(F=>facMissionList(F.id).forEach(m=>{if(f.acc[m.id]==null)a++;else if(!f.done[m.id]&&facProg(m)>=m.n)c++;}));
   return allBar('facAcceptAll','facClaimAll',a,c)+h;}catch(e){return h;}};}
-{const vF0=vFactions;vFactions=function(){const h=vF0.apply(this,arguments);try{if(!G)return h;const f=facInit();let a=0,c=0;FAC.forEach(F=>facMissionList(F.id).forEach(m=>{if(f.acc[m.id]==null)a++;else if(!f.done[m.id]&&facProg(m)>=m.n)c++;}));return allBar('facAcceptAll','facClaimAll',a,c)+h;}catch(e){return h;}};}
+// v0.9.5: the ranks page (vFactions) no longer lists missions, so it has no bar of its own; the Notice Board's Guilds tab shows the missions bar once

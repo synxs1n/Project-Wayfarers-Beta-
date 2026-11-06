@@ -49,13 +49,15 @@ function m3ItemSort(ids,priceOf){const f=SHOPF(),rr=m3Rar(),pr=priceOf||(id=>ITE
 
 // ----- structure -----
 const M3_LEG={smithy:{weapons:['shop','weapons'],armor:['shop','armor'],capes:['shop','capes'],mats:['shop','mats']},
-  workshop:{relit:['shop','relit'],herbs:['shop','herb']},guild:{personal:['quests','personal'],bounties:['quests','bounties'],party:['recruit','all']},tavern:{},board:{}};
-const M3_HOME={smithy:'shop',workshop:'shop',guild:'recruit',tavern:'hire',board:null};
-const M3_TITLE={smithy:'The Smithy',workshop:'Alchemy',guild:'Wayfarers Guild Hall',tavern:'The Rusty Flagon',board:'Quest Board'};
+  workshop:{relit:['shop','relit'],herbs:['shop','herb']},guild:{personal:['quests','personal'],party:['recruit','all']},tavern:{},board:{personal:['quests','personal']}};
+// v0.9.5: the Guild Hall opens on the Notice Board's Guilds tab; the town board opens on Quests (board tabs: NB_TABS below)
+const M3_HOME={smithy:'shop',workshop:'shop',guild:'guilds',tavern:'hire',board:'quests'};
+const M3_TITLE={smithy:'The Smithy',workshop:'Alchemy',guild:'Wayfarers Guild Hall',tavern:'The Rusty Flagon',board:'Notice Board'};
 function m3Tabs(t){
   if(t==='smithy')return [['shop','Shop'],['craft','Forge'],['forge','Tempering'],['sell','Sell']].concat(typeof efTabOn==='function'&&efTabOn()?[['echo','Echoforge']]:[]);
   if(t==='workshop')return [['shop','Shop'],['craft','Brew &amp; craft'],['sell','Sell'],['pouch','Pouch']];
-  if(t==='guild')return [['recruit','Recruits'],['quests','Quests'],['nature','Natures'],['arena','Arena'],['guilds','Guilds']];
+  if(t==='guild')return NB_TABS.concat([['recruit','Recruits'],['nature','Natures']]);
+  if(t==='board')return NB_TABS;
   if(t==='tavern')return [['hire','Hire'],['kitchen','Kitchen']];
   return [];}
 // item kinds at Alchemy
@@ -74,9 +76,7 @@ function m3Secs(t,tab){const n=(a)=>a.length;
       return [['all','All'],['potion','Potions',k('potion')],['cure','Cures',k('cure')],['travel','Travel',k('travel')],['charm','Charms',shopStock('charms').length],['herb','Herbs',herbStock().length]].concat(G.cleared[townS()]?[['relit','Festival',RELIT_STOCK.length]]:[]);}
     if(tab==='craft')return [['all','All']].concat(RCAT.filter(([k])=>ALCH_CATS.includes(k)).map(([k,l])=>[k,l,RECIPES.filter(r=>r.cat===k&&recipeOpen(r)).length]));
     if(tab==='sell'){const C=m3SellCnt(['c']);return [['all','All'],['charm','Charms',Object.values(C).reduce((a,b)=>a+b,0)],['herb','Herbs',Object.keys(MATS).filter(id=>(G.mats[id]||0)>0&&MAT_OF[id].k==='herb').length]];}}
-  if(t==='guild'&&tab==='quests'){for(let s=0;s<=G.stage;s++)genBounties(s);return [['all','All'],['personal','Personal quests'],['bounties','Bounties',G.bounties.filter(b=>b.stage<=G.stage&&b.state!=='done').length]];}
-  if(t==='board'){const Q=m3Quests(),c=f=>Q.filter(f).length;
-    return [['all','All',Q.length],['ready','Ready',c(q=>q.state==='active'&&questReady(q))],['active','Active',c(q=>q.state==='active'&&!questReady(q))],['open','Open',c(q=>q.state==='open')],['done','Done',c(q=>q.state!=='open'&&q.state!=='active')]];}
+  if(t==='guild'||t==='board')return nbSecs(tab);
   return [];}
 // normalise V.modal for a shop: main tab plus section, old ids mapped
 function m3Norm(m){if(!m)return m;const t=m.type,L=M3_LEG[t];if(!L||(t==='guild'&&m.char))return m;
@@ -112,7 +112,7 @@ function m3Recipes(cats,sec,blurb){const one=sec!=='all'&&cats.includes(sec),lis
   const parts=list.map(k=>{const all=RECIPES.filter(r=>r.cat===k),open=all.filter(recipeOpen);locked+=all.length-open.length;const L=recipeList(open);
     const lab=(RCAT.find(x=>x[0]===k)||[k,k])[1];return (one?'':m3H(lab,L.length))+m3Rows(L.map(m3RecRow).join(''),open.length?'Nothing here matches the filters.':'No recipes of this kind yet.');}).join('');
   return `<p class="note">${blurb}</p>${shopFBar('craft')}${parts}${locked?`<p class="note">${locked} more recipe${locked>1?'s unlock':' unlocks'} here as you push into later realms.</p>`:''}`;}
-function m3PlanBtn(){return G&&!G.daily?`<div class="btnrow p3smith"><button class="btn gold" data-act="p3Smith" title="Plans the best upgrade for each hero in your party, shows it, and only buys after you confirm">Buy, craft and equip best gear</button></div>`:'';}
+function m3PlanBtn(){return G&&!G.daily?`<div class="btnrow p3smith"><button class="btn gold" data-act="p3Smith" title="Plans the best upgrade for each hero in your party, shows it, and only buys after you confirm">Upgrade whole party</button></div>`:'';}
 function m3SmithMatsBuy(){return `${m3H('Ore and wood')}<p class="note">Stock grows as you reach later realms.</p><div class="rows">${smithMatStock().map(id=>matBuyRow(id,MAT_PRICE[id])).join('')}</div>
   ${m3H('Monster parts')}<p class="note">A few parts behind the counter, at a steep price and only ${PART_STOCK} of each per inn rest. Hunting is still the way to get them in bulk.</p><div class="rows">${Object.keys(PART_PRICE).map(id=>matBuyRow(id,partPrice(id),partLeft(id))).join('')}</div>`;}
 
@@ -122,7 +122,8 @@ function m3Smithy(m){const sec=m.sec,tab=m.tab;let body='';
     const W=shopSortIds(shopStock('weapons')),AR=shopSortIds(shopStock('armor')),A=AR.filter(id=>gearOf(id).slot==='a'),K=AR.filter(id=>gearOf(id).slot==='k');
     const grp={weapons:['Weapons',W],armor:['Armor',A],capes:['Capes',K]},emp='Nothing on the shelves matches the filters.';
     const gear=k=>(sec==='all'?m3H(grp[k][0],grp[k][1].length):'')+m3Rows(grp[k][1].map(m3GearRow).join(''),emp);
-    body=(sec==='mats'?'':shopFBar('buy')+m3PlanBtn())+(sec==='all'?['weapons','armor','capes'].map(gear).join('')+m3SmithMatsBuy():sec==='mats'?m3SmithMatsBuy():gear(sec));
+    // v0.9.5: the best step for each slot comes first (p3shop.js upgSlotsHtml, with Upgrade whole party), then the filters and the shelves
+    body=(sec==='mats'?'':(typeof upgSlotsHtml==='function'?upgSlotsHtml(sec==='all'?['w','a','k']:[{weapons:'w',armor:'a',capes:'k'}[sec]]):m3PlanBtn())+shopFBar('buy'))+(sec==='all'?['weapons','armor','capes'].map(gear).join('')+m3SmithMatsBuy():sec==='mats'?m3SmithMatsBuy():gear(sec));
   }else if(tab==='craft')body=m3PlanBtn()+m3Recipes(SMITH_CATS,sec,'Smithy gear comes out already tempered, so it beats buying the same piece. Metal wants ore, wooden gear wants logs, and every piece wants monster parts.');
   else if(tab==='forge')body=vTemper({slot:M3_SLOTSEC[sec]||null,show:SHOPF().tsh||'all',bar:true});
   else if(tab==='sell'){const g=(sl,lab)=>(sec==='all'?m3H(lab):'')+m3Rows(m3SellRows(sl),'No spare '+lab.toLowerCase()+' in your pack.');
@@ -139,7 +140,7 @@ function m3Alchemy(m){const sec=m.sec,tab=m.tab;let body='';
     const relit=()=>{if(!G.cleared[townS()])return '';const P={};RELIT_STOCK.forEach(([id,p])=>P[id]=p);const ids=RELIT_STOCK.map(x=>x[0]);
       return (one?'':m3H('Festival wares',ids.length))+`<p class="note">The beacon is lit and the alchemist is in a generous mood: rare stock, only in relit towns.</p><div class="rows">${ids.map(id=>{const isItem=!!ITEMS[id],n=isItem?ITEMS[id].n:gearOf(id).n,d=isItem?ITEMS[id].d:gearDesc(id),price=P[id];return `<div class="row"><div class="grow"><b>${n}</b><small>${d}${isItem?'. Carrying '+(G.inv[id]||0):''}</small></div><button class="btn sm" data-act="buyRelit" data-arg="${id}" ${G.gold>=price?'':'disabled'}>${fmt(price)}</button></div>`;}).join('')}</div>`;};
     const P={potion:()=>items('potion'),cure:()=>items('cure'),travel:()=>items('travel'),charm:charms,herb:herbs,relit};
-    body=(sec==='herb'||sec==='relit'?'':shopFBar(sec==='charm'?'buy':sec==='all'?'mixed':'items'))+(one?P[sec]():Object.keys(P).map(k=>P[k]()).join(''));
+    body=(sec==='charm'&&typeof upgSlotsHtml==='function'?upgSlotsHtml(['c'],1):'')+(sec==='herb'||sec==='relit'?'':shopFBar(sec==='charm'?'buy':sec==='all'?'mixed':'items'))+(one?P[sec]():Object.keys(P).map(k=>P[k]()).join(''));
   }else if(tab==='craft')body=m3Recipes(ALCH_CATS,sec,sec==='potion'?'Brew draughts from herbs you pick in the fields. Cheaper than buying, and some brews are Alchemy-only.':sec==='charm'?'Charms need monster parts and your realm\'s relic.':sec==='item'?'Stitch your own tent from logs and hide.':'Brew draughts from herbs, make charms from monster parts and your realm\'s relic, and stitch your own tent.');
   else if(tab==='sell'){const ch=(sec==='all'?m3H('Charms'):'')+m3Rows(m3SellRows(['c']),'No spare charms. Weapons and armor sell at the Smithy.'),hb=(sec==='all'?m3H('Herbs'):'')+`<div class="rows">${matSellRows(['herb'])}</div>`;
     body=sec==='charm'?ch:sec==='herb'?hb:ch+hb;}
@@ -155,37 +156,61 @@ function m3Tavern(m){const tab=m.tab;let body='';
     <div class="grid cards">${SL.map(id=>id?heroCard(id,false,null,`<div class="fits">${fitTags(id)}</div><button class="btn gold" data-act="hire" data-arg="${id}" ${G.gold>=recruitCost(id)?'':'disabled'}>Hire for ${fmt(recruitCost(id))}</button>`):`<div class="card hero emptyseat"><b>Empty seat</b><small>Fills at the next shuffle.</small></div>`).join('')||m3Empty('Nobody new at the tables.')}</div>
     ${later?`<p class="note">${later} more wayfarer${later>1?'s are':' is'} on the road${nu?`; the next arrive in about ${nu.need} battle${nu.need>1?'s':''}, or when you reach the next realm`:''}.</p>`:''}<p class="note">Some wayfarers won't sit in a tavern at all. Check the Guild Hall's recruitment challenges.</p>`;}
   return m3Box('tavern',m,m3Nav('tavern',m)+body);}
-// ----- the Guild Hall -----
-function m3Bounties(){for(let s=0;s<=G.stage;s++)genBounties(s);const bo=b=>b.state==='active'?0:b.state==='open'?1:2,L=G.bounties.filter(b=>b.stage<=G.stage).sort((a,b)=>bo(a)-bo(b));
-  return `<p class="note">Marked monsters roam the fields. Accept a bounty and its quarry appears in that realm's field, glowing red. Beat it for gold, a stat charm and materials.</p>${typeof allBar==='function'?allBar('bountyAll','',L.filter(b=>b.state==='open').length,0):''}${m3Rows(L.map(b=>{const mo=MON[b.mon],md=ELITE_MODS.find(x=>x.k===b.mod);
-    return `<div class="row"><img class="mimg" src="${monURL(mo.art)}" alt=""><div class="grow"><b>${esc(b.name)}</b><small>${md.n}: ${md.d} Level ${b.lv}. Roams ${esc(ZS(b.stage).n)}.</small><small>${fmt(b.reward.gold)} gold, ${gearOf(b.reward.charm).n}</small></div>${b.state==='open'?`<button class="btn sm gold" data-act="bounty" data-arg="${b.id}">Accept</button>`:b.state==='active'?'<span class="m">Hunting</span>':'<span class="m up">Done</span>'}</div>`;}).join(''),'No bounties posted yet.')}`;}
-function m3Arena(){const cl=G.cleared.filter(Boolean).length;
-  return `<p class="note">The guild's fighting pit. Back-to-back waves of foes from every realm, no fleeing, no rest between waves.</p><div class="rows">${ARENA.map((A,i)=>`<div class="row"><div class="grow"><b>${A.n}</b><small>${A.waves} waves, foes level ${A.lvs[0]}-${A.lvs[1]}. Suggested party level ${A.rec}. ${A.min>cl?`Opens after ${A.min} Scourge${A.min>1?'s':''} fall${A.min>1?'':'s'}.`:`Best: ${G.arena[i]?'cleared x'+G.arena[i]:'not yet cleared'}.`}</small><small>${fmt(A.reward.gold)} gold, ${A.reward.mat} materials${A.reward.charm?', a stat charm':''}${A.reward.core?', '+A.reward.core+' Dread Cores':''}</small></div><button class="btn sm gold" data-act="arena" data-arg="${i}" ${A.min>cl?'disabled':''}>Enter</button></div>`).join('')}</div>
+// ----- v0.9.5: the Notice Board (Quests, Guilds, Bounties, Arena), reached from the town board, the Guild Hall and Menu > Quests -----
+// One set of tabs and bodies (nbBody) drawn in three places: the board building ({type:'board'}, its own tabs), the Guild Hall (the same
+// tabs plus Recruits and Natures, opening on Guilds) and the Menu's Quests group (the menu tabs quests, factions, qbounty, qarena).
+// Each tab has All plus Ready / Active / Open (Done where it applies); claimable first, then under way, then open.
+const NB_TABS=[['quests','Quests'],['guilds','Guilds'],['bounties','Bounties'],['arena','Arena']];
+const NB_MENU={quests:'quests',factions:'guilds',qbounty:'bounties',qarena:'arena'};// menu tab -> board tab
+const NB_ORD={ready:0,active:1,open:2,done:3};
+function nbQState(q){return q.state==='active'?(questReady(q)?'ready':'active'):q.state==='open'?'open':'done';}
+function nbBState(b){return b.state==='open'||b.state==='active'?b.state:'done';}
+function nbPersonal(){try{return Object.values(G.roster).filter(c=>TPL[c.id]&&!TPL[c.id].mon&&pqShown(c));}catch(e){return [];}}
+function nbBountyList(){for(let s=0;s<=G.stage;s++)genBounties(s);return G.bounties.filter(b=>b.stage<=G.stage);}
+function nbSecs(tab){
+  if(tab==='quests'){const Q=m3Quests(),c=s=>Q.filter(q=>nbQState(q)===s).length;return [['all','All',Q.length],['ready','Ready',c('ready')],['active','Active',c('active')],['open','Open',c('open')],['done','Done',c('done')],['personal','Personal',nbPersonal().length]];}
+  if(tab==='guilds'){const L=typeof facMisAll==='function'?facMisAll():[],c=s=>L.filter(m=>facMisState(m)===s).length;return [['all','All',L.length],['ready','Ready',c('ready')],['active','Active',c('active')],['open','Open',c('open')]];}
+  if(tab==='bounties'){const L=nbBountyList(),c=s=>L.filter(b=>nbBState(b)===s).length;return [['all','All',L.length],['active','Active',c('active')],['open','Open',c('open')],['done','Done',c('done')]];}
+  return [];}
+function nbQuestRow(q){const st=nbQState(q);
+  const prog=q.type==='tamer'?`${Math.min(stickCount().n,q.n)}/${q.n} creatures logged`:q.type==='legend'?legendProg(q):q.type==='hunt'?`${q.have||0}/${q.n} hunted`:q.type==='gather'?`${Math.min(G.mats[q.mat]||0,q.n)}/${q.n} gathered`:q.type==='vault'?((G.vaults||{})[q.stage]?'Hoard recovered':'Vault still sealed'):q.found?'Found':'Somewhere in the '+ZS(q.stage).dungeon;
+  const rew=q.type==='tamer'?"The Tamer's Stick, a weapon that grows with your Bestiary":q.type==='legend'?`${esc(TPL[q.hero].title)} may join you`:q.type==='wanderer'?`${TPL[q.hero].n} joins you`:`${fmt(q.reward.gold)} gold${q.reward.item?', '+ITEMS[q.reward.item].n+' x2':''}${q.reward.gear?', forged gear':''}`;
+  const btn=st==='open'?`<button class="btn sm" data-act="qAccept" data-arg="${q.id}">Accept</button>`:st==='ready'?`<button class="btn sm gold" data-act="qClaim" data-arg="${q.id}">Claim</button>`:st==='active'?'<span class="m">Active</span>':'<span class="m up">Done</span>';
+  return `<div class="row"><div class="grow"><b>${esc(q.title)}</b>${st==='ready'?' <em class="qtag">Ready</em>':''}<small>${esc(q.desc)}</small><small>${q.state==='active'?prog+'. ':''}Reward: ${rew}</small></div>${btn}</div>`;}
+function nbQuests(sec){const Q=m3Quests();let h='';
+  if(sec!=='personal'){const L=Q.filter(q=>sec==='all'||nbQState(q)===sec).sort((a,b)=>NB_ORD[nbQState(a)]-NB_ORD[nbQState(b)]);
+    h+=(typeof allBar==='function'?allBar('qAcceptAll','qClaimAll',Q.filter(q=>q.state==='open').length,Q.filter(q=>q.state==='active'&&questReady(q)).length):'')
+      +m3Rows(L.map(nbQuestRow).join(''),{ready:'Nothing is ready to hand in yet.',active:'No quests under way.',open:'No new notices. More go up as your journey goes on.',done:'Nothing finished yet.'}[sec]||'No notices yet.');}
+  if(sec==='personal'||(sec==='all'&&nbPersonal().length))h+=(sec==='all'?m3H('Personal quests'):'')+vPersonal();
+  return `<p class="note">Accept a notice, do the deed, then claim the reward here or on any town's board.</p>${h}`;}
+function nbBounties(sec){const L=nbBountyList().filter(b=>sec==='all'||nbBState(b)===sec).sort((a,b)=>NB_ORD[nbBState(a)]-NB_ORD[nbBState(b)]);
+  return `<p class="note">Accept a bounty and its marked beast roams that realm's field, glowing red. Beat it for gold, a stat charm and materials.</p>${typeof allBar==='function'?allBar('bountyAll','',nbBountyList().filter(b=>b.state==='open').length,0):''}${m3Rows(L.map(b=>{const mo=MON[b.mon],md=ELITE_MODS.find(x=>x.k===b.mod);
+    return `<div class="row"><img class="mimg" src="${monURL(mo.art)}" alt=""><div class="grow"><b>${esc(b.name)}</b><small>${md.n}: ${md.d} Level ${b.lv}. Roams ${esc(ZS(b.stage).n)}.</small><small>${fmt(b.reward.gold)} gold, ${gearOf(b.reward.charm).n}</small></div>${b.state==='open'?`<button class="btn sm gold" data-act="bounty" data-arg="${b.id}">Accept</button>`:b.state==='active'?'<span class="m">Hunting</span>':'<span class="m up">Done</span>'}</div>`;}).join(''),{active:'No bounties under way.',open:'No open bounties.',done:'No bounties done yet.'}[sec]||'No bounties posted yet.')}`;}
+function nbArena(menu){const cl=G.cleared.filter(Boolean).length,far=menu&&!inTown();
+  return `<p class="note">The guild's fighting pit. Back-to-back waves of foes from every realm, no fleeing, no rest between waves.${far?' Enter it from any town.':''}</p><div class="rows">${ARENA.map((A,i)=>`<div class="row"><div class="grow"><b>${A.n}</b><small>${A.waves} waves, foes level ${A.lvs[0]}-${A.lvs[1]}. Suggested party level ${A.rec}. ${A.min>cl?`Opens after ${A.min} Scourge${A.min>1?'s':''} fall${A.min>1?'':'s'}.`:`Best: ${G.arena[i]?'cleared x'+G.arena[i]:'not yet cleared'}.`}</small><small>${fmt(A.reward.gold)} gold, ${A.reward.mat} materials${A.reward.charm?', a stat charm':''}${A.reward.core?', '+A.reward.core+' Dread Cores':''}</small></div><button class="btn sm gold" data-act="arena" data-arg="${i}" ${A.min>cl||far?'disabled':''}>Enter</button></div>`).join('')}</div>
     ${m3H('Echoes')}<p class="note">Beat a Scourge or the Calamity and an optional Echo of it lingers in its dungeon, on the rune circle where it fell. After the Calamity, the Echo Rift at any waystone lets you fight every Echo you have unlocked again.</p>`;}
+function nbGuilds(sec){return (typeof vFacMissions==='function'?vFacMissions(sec):'')+(sec==='all'&&typeof vFactions==='function'?m3H('Ranks and perks')+vFactions():'');}
+function nbBody(tab,sec,menu){sec=sec||'all';
+  if(tab==='guilds')return nbGuilds(sec);if(tab==='bounties')return nbBounties(sec);if(tab==='arena')return nbArena(menu);return nbQuests(sec);}
+// the Menu's Quests group draws the same bodies, with the section chips under the menu's own tabs (ui.js mMenu asks nbMenuBody)
+function nbMenuBody(m){const tab=NB_MENU[m&&m.tab];if(!tab||!G)return null;const S=nbSecs(tab);if(!S.some(x=>x[0]===m.sec))m.sec='all';
+  const nav=S.length>1?`<div class="chips nbsec" role="tablist" aria-label="Sections">${S.map(([k,l,c])=>`<button role="tab" aria-selected="${k===m.sec}" class="chip sm ${k===m.sec?'on':''}" data-act="sSec" data-arg="${k}">${l}${c!=null?` <span class="cnt nums">${c}</span>`:''}</button>`).join('')}</div>`:'';
+  return nav+nbBody(tab,m.sec,true);}
+// ----- the Guild Hall: the Notice Board's tabs plus Recruits and Natures -----
 function m3Guild(m){const tab=m.tab,sec=m.sec;let body='';
   if(tab==='recruit')body=vChallenges();
   else if(tab==='nature')body=vNature(m);
-  else if(tab==='quests')body=sec==='personal'?vPersonal():sec==='bounties'?m3Bounties():m3H('Personal quests')+vPersonal()+m3H('Bounties')+m3Bounties();
-  else if(tab==='arena')body=m3Arena();
-  else body=`<p class="note">The guilds post their missions here and keep your ranks. The same pages are under Menu: Quests, Guild missions and Records, Guilds.</p>`+(typeof vFactions==='function'?vFactions():'');
+  else body=nbBody(tab,sec);
   return box(m3Head('guild'),m3Nav('guild',m)+body,'<button class="btn gold" data-act="closeModal">Done</button>',true);}
-// ----- the Quest Board -----
+// ----- the Notice Board building in town -----
 function m3Quests(){for(let s=0;s<=G.stage;s++)genQuests(s);return G.quests.filter(q=>q.stage<=G.stage);}
-function m3Board(m){const sec=m.sec||'all',st=q=>q.state==='active'?(questReady(q)?0:1):q.state==='open'?2:3;
-  const qs=m3Quests().filter(q=>sec==='all'||(sec==='ready'?q.state==='active'&&questReady(q):sec==='active'?q.state==='active'&&!questReady(q):sec==='open'?q.state==='open':q.state!=='open'&&q.state!=='active')).sort((a,b)=>st(a)-st(b));
-  const Q=m3Quests(),bar=typeof allBar==='function'?allBar('qAcceptAll','qClaimAll',Q.filter(q=>q.state==='open').length,Q.filter(q=>q.state==='active'&&questReady(q)).length):'';
-  const rows=qs.map(q=>{
-    const prog=q.type==='tamer'?`${Math.min(stickCount().n,q.n)}/${q.n} creatures logged`:q.type==='legend'?legendProg(q):q.type==='hunt'?`${q.have||0}/${q.n} hunted`:q.type==='gather'?`${Math.min(G.mats[q.mat]||0,q.n)}/${q.n} gathered`:q.type==='vault'?((G.vaults||{})[q.stage]?'Hoard recovered':'Vault still sealed'):q.found?'Found':'Somewhere in the '+ZS(q.stage).dungeon;
-    const rew=q.type==='tamer'?"The Tamer's Stick, a weapon that grows with your Bestiary":q.type==='legend'?`${esc(TPL[q.hero].title)} may join you`:q.type==='wanderer'?`${TPL[q.hero].n} joins you`:`${fmt(q.reward.gold)} gold${q.reward.item?', '+ITEMS[q.reward.item].n+' x2':''}${q.reward.gear?', forged gear':''}`;
-    const btn=q.state==='open'?`<button class="btn sm" data-act="qAccept" data-arg="${q.id}">Accept</button>`:q.state==='active'?(questReady(q)?`<button class="btn sm gold" data-act="qClaim" data-arg="${q.id}">Claim</button>`:'<span class="m">Active</span>'):'<span class="m up">Done</span>';
-    return `<div class="row"><div class="grow"><b>${esc(q.title)}</b><small>${esc(q.desc)}</small><small>${q.state==='active'?prog+'. ':''}Reward: ${rew}</small></div>${btn}</div>`;}).join('');
-  return box(m3Head('board'),`<p class="note">Notices pinned three deep. Accept one, do the deed, then come back to any quest board to claim the reward.</p>${m3Nav('board',m)}${bar}${m3Rows(rows,{ready:'Nothing is ready to hand in yet.',active:'No quests under way.',open:'No new notices. More go up as your journey goes on.',done:'Nothing finished yet.'}[sec]||'No notices yet.')}`);}
+function m3Board(m){return box(m3Head('board'),m3Nav('board',m)+nbBody(m.tab,m.sec),'<button class="btn gold" data-act="closeModal">Done</button>',true);}
 // ----- hooks: the shops go through the normaliser first -----
 function mShop(m){m3Norm(m);return m3Smithy(m);}
 function mWorkshop(m){m3Norm(m);return m3Alchemy(m);}
 function mTavern(){const m=V.modal&&V.modal.type==='tavern'?m3Norm(V.modal):{type:'tavern',tab:'hire',sec:'all'};return m3Tavern(m);}
 function mGuild(m){m3Norm(m);return m3Guild(m);}
-function mBoard(){const m=V.modal&&V.modal.type==='board'?m3Norm(V.modal):{type:'board',sec:'all'};return m3Board(m);}
+function mBoard(){const m=m3Norm(V.modal&&V.modal.type==='board'?V.modal:{type:'board'});return m3Board(m);}
 Object.assign(ACT,{
   sTab(k){const m=V.modal;if(!m)return;m.tab=k;m.sec='all';m._t=k;m.nat=null;V.cmp=null;V.swapSel=null;render();m3Top();},
   sSec(k){const m=V.modal;if(!m)return;m.sec=k;V.cmp=null;render();m3Top();},
@@ -200,6 +225,12 @@ ACT.gtab=function(k){V.swapSel=null;V.modal={type:'guild',tab:k};render();};
 
 // ----- main menu: labels for the regrouped tabs (MENU_GROUPS in ui.js) -----
 try{MENU_SUB.fmis='Guild missions';MENU_SUB.pouch='Materials';MENU_SUB.system='Journey';}catch(e){}
+// v0.9.5: Menu > Quests is the Notice Board: Quests, Guilds (ranks, perks and missions; was Records > Guilds and Quests > Guild missions),
+// Bounties and Arena. The old tab id 'fmis' lands on Guilds.
+try{const QG=MENU_GROUPS.find(g=>g[0]==='quests'),RG=MENU_GROUPS.find(g=>g[0]==='records');QG[2].splice(0,QG[2].length,'quests','factions','qbounty','qarena');
+  const k=RG[2].indexOf('factions');if(k>=0)RG[2].splice(k,1);MENU_SUB.qbounty='Bounties';MENU_SUB.qarena='Arena';}catch(e){}
+{const mt0=ACT.menuTab;ACT.menuTab=function(t){return mt0.call(this,t==='fmis'?'factions':t);};}
+{const mm0=mMenu;mMenu=function(m){if(m&&m.tab==='fmis')m.tab='factions';return mm0.apply(this,arguments);};}
 
 // ----- the visible viewport: panels fit the screen the phone really shows (the URL bar and the Android app's bars included) -----
 function m3Vh(){try{const v=window.visualViewport,h=Math.round(v?v.height:innerHeight);document.documentElement.style.setProperty('--vvh',h+'px');}catch(e){}}
@@ -207,4 +238,4 @@ m3Vh();addEventListener('resize',m3Vh);try{if(window.visualViewport)visualViewpo
 try{if(screen.orientation&&screen.orientation.addEventListener)screen.orientation.addEventListener('change',()=>setTimeout(m3Vh,200));}catch(e){}
 
 // ----- test hook -----
-window.__M3={get MENU_GROUPS(){return MENU_GROUPS;},m3Norm,m3Tabs,m3Secs,shopFBar:c=>shopFBar(c),ddSel,M3_LEG,M3_HOME,m3Upg};
+window.__M3={get MENU_GROUPS(){return MENU_GROUPS;},m3Norm,m3Tabs,m3Secs,NB_TABS,NB_MENU,nbSecs,nbBody,shopFBar:c=>shopFBar(c),ddSel,M3_LEG,M3_HOME,m3Upg};

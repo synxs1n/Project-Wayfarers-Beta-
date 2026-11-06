@@ -2,7 +2,7 @@
 // =================== Beta v0.5.0 PHASE 3: SHOPS, GEAR AND ITEMS ===================
 // 3.1 "Best for party" order in shops, Forge and Tempering, with a tradeoff line when two upgrades are close.
 // 3.2 an item one hero already wears is still suggested when it would help another party member (the second hero's gain is shown).
-// 3.3 Smithy: "Buy, craft and equip best gear" (plan, confirm, run, Undo for the equips, clean stop when gold runs out).
+// 3.3 Smithy: "Upgrade whole party" (v0.9.5 name; was "Buy, craft and equip best gear": plan, confirm, run, Undo for the equips, clean stop when gold runs out).
 // 3.4 Best Party reads the area and its boss (Bestiary, theme): delivery coverage, legal weapons, archetype and element answers, reasons per pick.
 // 3.5 Team check on the Party tab and in Best Party: what is missing, who could fill it, one tap swap.
 // 3.6 Boss readiness on the boss prompt, the story echo prompt and the Bestiary entry. Never blocks, never names unknown mechanics.
@@ -118,7 +118,7 @@ function mP3Plan(m){const P=m.plan,cn=id=>G.roster[id]?esc(G.roster[id].name):'?
     <p class="nums p3tot"><b>Total: ${fmt(P.total)} gold</b> · You have ${fmt(G.gold)} · Left after: ${fmt(Math.max(0,G.gold-P.total))}</p>${short?'<p class="warn">You no longer have enough gold for all of it. It will stop when the gold runs out.</p>':''}
     <p class="note"><small>Undo afterwards puts everyone's gear back as it was; what you bought or forged stays in your pack.</small></p>`
     :`<p>Nothing to buy or forge: your party already has the best the Smithy can offer${P.cant.length?' for the gold and materials you have':''}.</p>${cant?`<h4>Out of reach for now</h4><div class="rows">${cant}</div>`:''}`;
-  return box('Buy, craft and equip best gear',body,`<button class="btn" data-act="xBack">Cancel</button>${P.picks.length?`<button class="btn gold" data-act="p3SmithGo">Confirm: ${fmt(P.total)} gold</button>`:''}`,true);}
+  return box('Upgrade whole party',body,`<button class="btn" data-act="xBack">Cancel</button>${P.picks.length?`<button class="btn gold" data-act="p3SmithGo">Confirm: ${fmt(P.total)} gold</button>`:''}`,true);}
 function p3SmithRun(plan){
   const got=[];let stop=null,spent=0,bought=0,forged=0;
   for(const p of plan.picks){const c=G.roster[p.cid];if(!c)continue;
@@ -218,7 +218,7 @@ function p3Ready(s,lv){const P=partyChars(),K=P.map(p3Kit),out=[],bench=Object.v
   const avg=P.length?P.reduce((a,c)=>a+c.lv,0)/P.length:0,av=Math.round(avg);
   add(avg>=lv-READY.lvGap,`Level: your party averages ${av}, it is level ${lv}`,avg>=lv-READY.lvGap?'':`Win a few more fights first; about level ${lv-READY.lvGap} or higher is a fair match.`);
   const want=Math.min(5,s),low=P.filter(c=>['w','a'].some(sl=>{const g=gearOf(c.eq[sl]);return !g||gTierIdx(g)<want;}));
-  add(!low.length,`Gear: tier ${ITEM_TIERS[want].n} or better`,low.length?`${low.map(nm).join(', ')} ${low.length>1?'still carry':'still carries'} older or missing gear. The Smithy's "Buy, craft and equip best gear" button sorts it out.`:'');
+  add(!low.length,`Gear: tier ${ITEM_TIERS[want].n} or better`,low.length?`${low.map(nm).join(', ')} ${low.length>1?'still carry':'still carries'} older or missing gear. The Smithy's Upgrade whole party button, or Upgrade on each slot of a hero sheet, sorts it out.`:'');
   add(K.some(k=>k.heal),'Healer',K.some(k=>k.heal)?'':'Nobody in your party can heal.'+who(k=>k.heal));
   const good=[...new Set(ty.flatMap(a=>Object.keys((ARCH[a]||{}).dl||{}).filter(x=>ARCH[a].dl[x]>=1.1)))];
   if(good.length){const has=good.filter(x=>K.some(k=>k.dl.has(x)));add(has.length>0,`${ty.map(a=>ARCH[a].n).join(' and ')}: ${good.map(x=>DL_NAME[x]).join(' or ')} attacks`,has.length?'':`Nobody brings ${good.map(x=>DL_NAME[x].toLowerCase()).join(' or ')} attacks.`+who(k=>good.some(x=>k.dl.has(x))));}
@@ -259,6 +259,89 @@ function p3Pork2(){const why=p3PorkWhy();if(why){toast(why);sfx('deny');return f
   h=h.replace(/(<button class="btn sm" data-act="useTravel" data-arg="holywater"[^>]*>Use<\/button>)/,(x)=>`<div class="btnrow tight col">${x}<button class="btn sm ${G.hwAuto?'gold':''}" data-act="p3HwAuto" aria-pressed="${!!G.hwAuto}" title="When the ward ends, use another Holy Water if you have one">Reapply automatically: ${G.hwAuto?'On':'Off'}</button></div>`);
   if(WS.m&&WS.m.kind==='dungeon'&&(G.inv.porkchop||0)>0)h=h.replace(/(<button class="btn sm" data-act="useTravel" data-arg="porkchop"[^>]*>Use<\/button>)/,(x)=>`<div class="btnrow tight col">${x.replace('>Use<','>Use 1: dungeon entrance<')}<button class="btn sm" data-act="p3Pork2" ${p3PorkWhy()?'disabled':''} title="${esc(p3PorkWhy())}">Use ${PORK.toTown}: return to town</button></div>`);}catch(e){}return h;};}
 
+// ===================== v0.9.5: one Upgrade button per gear slot =====================
+// For one hero and one slot, every single next step is listed (upgOpts): equip a better spare from the pack, buy a piece (Smithy, or
+// Alchemy for charms), forge a recipe (Smithy, or Alchemy for charms), temper the piece worn now (buying the ore, logs or parts the
+// Smithy sells if any are missing), or Echoforge a tier 6 weapon. upgBest picks the one that raises this hero's gear score
+// (loadoutScore, the same score as Auto best gear and "Best for party") the most among those the player can pay for now, the
+// cheaper on a tie. Shop steps need a town (the pack works anywhere). upgApply does it in one tap. Off in the Daily Trial.
+const UPG_KIND=['pack','buy','forge','temper','ef'];
+const UPG_LBL={pack:'Equip from your pack',buy:'Buy',forge:'Forge',temper:'Temper',ef:'Echoforge'};
+function upgTown(){try{return inTown();}catch(e){return false;}}
+function upgShop(sl){if(sl==='c')return shopStock('charms');if(sl==='w')return shopStock('weapons');return shopStock('armor').filter(id=>gearOf(id)&&gearOf(id).slot===sl);}
+function upgOpts(c,sl){const out=[];if(!G||G.daily||!c)return out;const cur=c.eq[sl]||null,town=upgTown();
+  const add=o=>{if(!gearOf(o.id))return;const g=gainFor(c,o.id);if(!g||g.d<=.01)return;o.d=g.d;o.pct=g.pct;o.cid=c.id;o.sl=sl;o.key=o.k+':'+(o.k==='forge'?o.ri:o.k==='ef'?o.f:o.id);out.push(o);};
+  [...new Set(G.gear)].forEach(id=>{if(slotOk(c,sl,id))add({k:'pack',id,gold:0,ok:true});});
+  upgShop(sl).forEach(id=>{if(GEAR[id]&&slotOk(c,sl,id))add({k:'buy',id,gold:GEAR[id].price,ok:town&&G.gold>=GEAR[id].price,town:1});});
+  RECIPES.forEach((r,i)=>{if(!r.id||!recipeOpen(r)||!slotOk(c,sl,r.id))return;const m=recipeMats(r);add({k:'forge',id:r.id,ri:i,gold:r.g,m,ok:town&&G.gold>=r.g&&hasMats(m),town:1});});
+  if(cur&&(typeof pcTemperOpen!=='function'||pcTemperOpen())){const fc=forgeCost(cur);if(fc){const have=hasMats(fc.m),P=have?null:buyPlan(fc.m),buy=P&&P.ok&&P.any?P:null;
+    add({k:'temper',id:fc.next,gold:fc.gold+(buy?buy.gold:0),m:fc.m,buy,cant:P&&!P.ok?P.cant:null,ok:town&&(have||!!buy)&&G.gold>=fc.gold+(buy?buy.gold:0),town:1});}}
+  if(sl==='w'&&typeof ECHOFORGE!=='undefined'&&typeof efBaseIn==='function')Object.keys(ECHOFORGE).forEach(f=>{const base=efBaseIn(f),worn=cur&&baseIdOf(cur)==='w_'+f+'_5'?plusOf(cur):-1;
+    let plus=-1,src=null;if(base){plus=base.plus;src='pack';}if(worn>plus){plus=worn;src='eq';}if(!src)return;const m=efCost(f);
+    add({k:'ef',f,src,id:'w_'+f+'_ef'+(plus?'+'+plus:''),gold:EF_GOLD,m,ok:town&&hasMats(m)&&G.gold>=EF_GOLD,town:1});});
+  return out;}
+// the order: most gain, then less gold, then fewer materials, then pack before buying before forging
+const upgCmp=(a,b)=>(b.d-a.d)||(a.gold-b.gold)||(upgMatN(a)-upgMatN(b))||(UPG_KIND.indexOf(a.k)-UPG_KIND.indexOf(b.k));
+function upgMatN(o){return o.m?Object.values(o.m).reduce((s,v)=>s+v,0):0;}
+function upgBest(c,sl){const L=upgOpts(c,sl).sort(upgCmp),best=L.find(o=>o.ok)||null;
+  // what to save up for: the best step overall when it beats what can be done now
+  const goal=L.find(o=>!o.ok&&(!best||o.d>best.d+.01))||null;return {best,goal,all:L};}
+function upgWhat(o,here){const g=gearOf(o.id),n=g?g.n:'?';
+  if(o.k==='pack')return `Equip ${esc(n)} from your pack`;if(o.k==='buy')return here?`Buy ${esc(n)}`:`Buy ${esc(n)} at ${gearOf(o.id).slot==='c'?'Alchemy':'the Smithy'}`;
+  if(o.k==='forge')return `Forge ${esc(n)}`;if(o.k==='temper')return `Temper to ${esc(n)}`;return `Echoforge ${esc(n)}`;}
+function upgCost(o){if(!o.gold&&!o.m)return 'Free';return `${o.m?matChips(o.m):''}<span class="matc gold ${G.gold>=o.gold?'':'short'}"><i></i><b class="nums">${fmt(o.gold)}</b> gold</span>${o.buy?`<small class="note">Includes ${fmt(o.buy.gold)} gold for ${o.buy.buy.map(([k,n])=>n+' '+esc(MATS[k])).join(', ')} from the Smithy.</small>`:''}`;}
+// before and after for the stats that change
+function upgBA(c,o){const a=c.S,b=statsWith(c,o.sl,o.id),p=[];DSTAT.forEach(([k,n])=>{const x=Math.round(a[k]||0),y=Math.round(b[k]||0);if(x!==y)p.push(`<span>${n} <b class="nums">${x}</b> → <b class="nums ${y>x?'up':'dn'}">${y}</b></span>`);});return p.length?`<div class="upgba">${p.join('')}</div>`:'';}
+const upgPct=o=>'+'+Math.max(1,Math.round(o.pct*100))+'%';
+// one tap: do the step, equip the result
+function upgApply(o){const c=G.roster[o.cid];if(!c)return false;const sl=o.sl;
+  if(o.k==='pack'){if(!G.gear.includes(o.id))return false;}
+  else if(o.k==='buy'){const g=GEAR[o.id];if(!g||G.gold<g.price)return false;G.gold-=g.price;G.gear.push(o.id);}
+  else if(o.k==='forge'){const r=RECIPES[o.ri];if(!r||!craft(r))return false;}
+  else if(o.k==='temper'){if(o.buy&&!doBuyPlan(buyPlan(forgeCost(c.eq[sl]).m)))return false;const r=forge('eq',{cid:c.id,slot:sl});if(!r)return false;saveGame();return r;}
+  else if(o.k==='ef'){const m=efCost(o.f);if(!hasMats(m)||G.gold<EF_GOLD)return false;
+    if(o.src==='eq'){if(baseIdOf(c.eq.w||'')!=='w_'+o.f+'_5')return false;G.gold-=EF_GOLD;payMats(m);c.eq.w=o.id;refresh(c);saveGame();return o.id;}
+    const base=efBaseIn(o.f);if(!base)return false;G.gold-=EF_GOLD;payMats(m);G.gear.splice(base.i,1);G.gear.push(o.id);}
+  if(!G.gear.includes(o.id))return false;equipGear(c,o.id);saveGame();return o.id;}
+// the Upgrade popup: the best step, its cost and before/after, one button to do it, and the full lists for tinkerers
+function upgOpenM(cid,sl){V.modal={type:'upg',cid,sl,from:V.modal&&V.modal.type!=='upg'?V.modal:(V.modal&&V.modal.from)||null};render();}
+function mUpg(m){const c=G.roster[m.cid];if(!c)return box('Upgrade','<p>That hero is not here.</p>','<button class="btn gold" data-act="xBack">Back</button>');
+  const sl=m.sl,cur=c.eq[sl],R=upgBest(c,sl),o=R.best,town=upgTown();
+  const curRow=`<div class="row eqcur">${cur?gearIcon(cur):'<span class="gico empty"></span>'}<div class="grow"><small>Now</small><b>${cur?esc(gearOf(cur).n):'Nothing'}</b> ${cur?tierChip(gearOf(cur)):''}<small>${cur?gearDesc(cur):''}</small></div></div>`;
+  const card=o?`<div class="upgcard"><span class="upgk">Best next step</span><div class="row">${gearIcon(o.id)}<div class="grow"><b>${upgWhat(o)}</b> ${tierChip(gearOf(o.id))} <em class="up">${upgPct(o)}</em><small>${gearDesc(o.id)}</small>${upgBA(c,o)}<div class="mats">${upgCost(o)}</div></div></div></div>`
+    :`<p class="note empty">Nothing better for this slot that you can pay for right now.</p>`;
+  const goal=R.goal?`<p class="note upggoal"><b>Save up for:</b> ${upgWhat(R.goal)} (${upgPct(R.goal)}), ${R.goal.town&&!town?'in town':R.goal.cant?'needs '+R.goal.cant.map(k=>esc(MATS[k])).join(', '):R.goal.m&&!hasMats(R.goal.m)?'needs materials':fmt(R.goal.gold)+' gold'}.</p>`:'';
+  const far=!town&&R.all.some(x=>x.town)?'<p class="note">Buying, forging and tempering happen in town. Here only spares in your pack count.</p>':'';
+  return box(`Upgrade: ${SLOTN[sl]} for ${esc(c.name)}`,curRow+card+goal+far,
+    `<button class="btn" data-act="upgAll">Show all options</button>${o?`<button class="btn gold" data-act="upgDo" data-arg="${c.id},${sl},${o.key}">Upgrade${o.gold?': '+fmt(o.gold)+' gold':''}</button>`:''}<button class="btn" data-act="xBack">Back</button>`,true);}
+// the button on a slot: shows the gain when there is a step to take
+function upgBtn(c,sl,cls){if(!G||G.daily)return '';const o=upgBest(c,sl).best;
+  return `<button class="btn sm upgb ${o?'gold':''} ${cls||''}" data-act="upgOpen" data-arg="${c.id},${sl}" title="${o?esc(upgWhat(o).replace(/<[^>]*>/g,''))+' '+upgPct(o):'Nothing better to buy, forge or temper right now'}">Upgrade${o?` <em>${upgPct(o)}</em>`:''}</button>`;}
+// shops: the best step for each slot first (the hero it helps most), one tap each
+function upgSlotsHtml(slots,noPlan){if(!G||G.daily)return '';const rows=slots.map(sl=>{let b=null;partyChars().forEach(c=>{const o=upgBest(c,sl).best;if(o&&(!b||o.pct>b.pct+1e-9||(Math.abs(o.pct-b.pct)<=1e-9&&o.gold<b.gold)))b=o;});return b;}).filter(Boolean);
+  return `<div class="upgbest">${m3H('Best upgrade for each slot')}${rows.length?`<div class="rows">${rows.map(o=>{const c=G.roster[o.cid];
+    return `<div class="row">${gearIcon(o.id)}<div class="grow"><small>${SLOTN[o.sl]} for ${esc(c.name)}</small><b>${upgWhat(o,1)}</b> <em class="up">${upgPct(o)}</em><small>${deltaHtml(c,o.id)}</small></div><button class="btn sm gold" data-act="upgDo" data-arg="${c.id},${o.sl},${o.key}">${o.gold?fmt(o.gold)+' gold':'Equip'}</button></div>`;}).join('')}</div>`:m3Empty('Your party already has the best you can pay for here.')}${noPlan?'':`<div class="btnrow p3smith"><button class="btn" data-act="p3Smith" title="Plans the best upgrade for each hero in your party, shows it, and only buys after you confirm">Upgrade whole party</button></div>`}</div>`;}
+{const vm0=vModal;vModal=function(m){if(m&&m.type==='upg')return mUpg(m);return vm0.apply(this,arguments);};}
+// the hero sheet: an Upgrade button on each slot
+{const mc0=mChar;mChar=function(id,edit){let h=mc0.apply(this,arguments);try{const c=G&&G.roster[id];if(!c||G.daily||typeof h!=='string')return h;
+  h=h.replace(/<h4>Equipment<\/h4><div class="eq">[\s\S]*?<\/div>/,()=>`<h4>Equipment</h4><div class="eq upgeq">${EQSL.map(sl=>`<div class="upgslot">${edit?`<button class="btn sm" data-act="gearSlot" data-arg="${sl}"><small>${SLOTN[sl]}</small> ${c.eq[sl]?gearOf(c.eq[sl]).n:'Empty'}</button>`:`<span class="eqv"><small>${SLOTN[sl]}</small> ${c.eq[sl]?gearOf(c.eq[sl]).n:'Empty'}</span>`}${upgBtn(c,sl)}</div>`).join('')}</div>`);}catch(e){}return h;};}
+Object.assign(ACT,{
+  upgOpen(a){const [cid,sl]=String(a).split(',');if(!G||G.daily||!G.roster[cid]||!EQSL.includes(sl))return;upgOpenM(cid,sl);},
+  upgDo(a){const [cid,sl,key]=String(a).split(',');const c=G&&G.roster[cid];if(!c||G.daily)return;const o=upgBest(c,sl).best;
+    if(!o||o.key!==key){toast('Something changed. Here is the best step now.');render();return;}
+    const was=c.eq[sl],r=upgApply(o);if(!r){sfx('deny');toast('That could not be done right now.');render();return;}
+    sfx(o.k==='pack'?'equip':'chest');toast(`${c.name}: ${was?gearOf(was).n:'nothing'} → ${gearOf(c.eq[sl]).n} (${upgPct(o)}).`);render();},
+  upgAll(){const m=V.modal;if(!m||m.type!=='upg')return;const c=G.roster[m.cid],sl=m.sl,o=upgBest(c,sl).best||upgBest(c,sl).goal,from=m;
+    if(!upgTown()){V.modal={type:'eqPick',char:m.cid,slot:sl,list:[m.cid],from};render();return;}
+    const sec={w:'weapons',a:'armor',k:'capes',c:'charms'}[sl];
+    if(o&&o.k==='temper')V.modal={type:'smithy',tab:'forge',sec,from};
+    else if(o&&o.k==='ef')V.modal={type:'smithy',tab:'echo',from};
+    else if(sl==='c')V.modal=o&&o.k==='forge'?{type:'workshop',tab:'craft',sec:'charm',from}:{type:'workshop',tab:'shop',sec:'charm',from};
+    else if(o&&o.k==='forge')V.modal={type:'smithy',tab:'craft',from};
+    else V.modal={type:'smithy',tab:'shop',sec,from};
+    render();}
+});
+
 // ===================== actions =====================
 Object.assign(ACT,{
   p3Smith(){if(!G||G.daily)return;V.modal={type:'p3plan',plan:p3SmithPlan(),from:V.modal};render();},
@@ -278,5 +361,5 @@ try{const st=document.createElement('style');st.textContent=`.p3why,.p3dup,.p3bp
 .p3ready{margin-top:.5em}.p3ready .warnr b{color:#ffcf6a}.p3mk{flex:0 0 1.4em;text-align:center;font-size:1.1em}.p3tot{margin:.5em 0}.p3thr{margin:.3em 0}`;document.head.appendChild(st);}catch(e){}
 
 // ----- test hook (window.__A is built after all modules; this one is ours) -----
-window.__P3={partyGainOf,shopSortIds:(a)=>shopSortIds(a),recipeList:(a)=>recipeList(a),temperOrder,temperGain,p3SmithPlan,p3SmithRun,p3Kit,p3Threats,p3Gaps,p3Ready,p3Pork2,p3PorkWhy,
+window.__P3={upgOpts:(c,sl)=>upgOpts(c,sl),upgBest:(c,sl)=>upgBest(c,sl),upgApply:o=>upgApply(o),partyGainOf,shopSortIds:(a)=>shopSortIds(a),recipeList:(a)=>recipeList(a),temperOrder,temperGain,p3SmithPlan,p3SmithRun,p3Kit,p3Threats,p3Gaps,p3Ready,p3Pork2,p3PorkWhy,
   bestParty:()=>bestParty(),invCap,get ITEM_MAX(){return ITEM_MAX;},get P3C(){return P3C;},p3Tradeoff,withCache:f=>{const o=P3C;P3C={why:{},kit:{}};try{return f(P3C);}finally{P3C=o;}}};
