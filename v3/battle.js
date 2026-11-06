@@ -38,7 +38,9 @@ function slotsFor(side,n,boss){const T=B3.slots[BL.W<260?'tall':'wide'],t=side==
 // scaled uniformly and centred (pillarbox or letterbox), never stretched. Landscape phones also put the command panel beside the scene.
 const WIDE_W=320,WIDE_H=150;
 function battleMode(){const vw=window.innerWidth,vh=window.visualViewport?window.visualViewport.height:window.innerHeight,sc=$('screen'),cont=sc?sc.clientWidth:vw-32;
-  if(cont<560)return 'tall';return (vh<=560&&vw>vh*1.25)?'side':'wide';}
+  // v0.8.10: short landscape screens use the wide planner too (it measures what fits: the commands may go beside the stage); the old
+  // 'side' layout is no longer chosen
+  if(cont<560)return 'tall';return 'wide';}
 function layoutBattle(){
   const wrap=$('bwrap');if(!wrap)return;
   const bat=wrap.parentNode,mode=battleMode();
@@ -246,7 +248,8 @@ function fitBattle(){
   // v0.8.0: measured from the visible viewport (visualViewport): the stage's top, the log strip under it, the party cards, the commands
   // and the compact foe list (b3Below), the body's bottom padding; a stage that would push them off the screen always shrinks at once
   const vh=b3Vh(),bat=wrap.parentNode,gap=parseFloat(getComputedStyle(bat).rowGap)||5,bl=$('bline'),padB=parseFloat(getComputedStyle(document.body).paddingBottom)||0;
-  const room=vh-b3DocTop(wrap)-Math.max(0,wrap.offsetHeight-BL.H*BL.sc)-gap-(bl?bl.offsetHeight:40)-gap-b3Below()-padB-2,H=clamp(Math.floor(room/BL.sc),B8.tallMin,B8.tallMax);
+  // v0.8.10: b8TallPlan shares the room under the stage: the commands (grown to fill it) and the top edge of the party cards
+  const room=vh-b3DocTop(wrap)-Math.max(0,wrap.offsetHeight-BL.H*BL.sc)-gap-(bl?bl.offsetHeight:40)-gap-padB-2,H=b8TallPlan(bat,room);
   if(BL.mode!=='tall'){layoutBattle();renderBattle(true);b8TallBot(bat);return;}
   // v0.8.0: settles in one go (no deferred second step), and within a battle the stage only shrinks (it grows back only when the visible
   // viewport changes), so the units never shift while the intro plays or between turns

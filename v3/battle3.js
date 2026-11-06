@@ -38,11 +38,17 @@ const b3Hit=(a,q,p)=>a.x<q.x+q.w+p&&a.x+a.w+p>q.x&&a.y<q.y+q.h+p&&a.y+a.h+p>q.y;
 // candidate offsets around an anchor, nearest first (cost: distance, sideways moves a little cheaper than vertical ones)
 const B3OFF=(()=>{const L=[],R=B3.R,s=B3.step;for(let dy=-R;dy<=R;dy+=s)for(let dx=-R;dx<=R;dx+=s){const d=Math.abs(dx)+Math.abs(dy)*1.25;if(d<=R*1.3)L.push([dx,dy,d]);}L.sort((a,b)=>a[2]-b[2]);return L;})();
 // try anchors [{x,y,c}] (c = extra cost) in order of total cost; first free rect of size w x h wins
-function b3Find(w,h,anchors,obs,W,H,R){R=R||B3.R;const K=anchors.length,ix=new Array(K).fill(0),pad=B3.pad;
+// v0.8.10: while b3Lay places a unit's labels (B3SG.u), they keep B3.sideGap px from the other side's sprites and labels and a hero's
+// labels stay on the heroes' half of the stage; when no spot allows that, the gap shrinks to 2 px, then the plain rules apply
+let B3SG=null;
+function b3Find(w,h,anchors,obs,W,H,R){const sg=B3SG;if(sg&&sg.u){B3SG=null;try{const R0=R||B3.R;for(const [gap,half,rk] of [[B3.sideGap||5,true,1],[4,true,1],[4,false,1],[3,false,1],[2,false,1],[2,false,1.6]]){const r=b3Find0(w,h,anchors,obs,W,H,R0*rk,sg.u,gap,half);if(r)return r;}}finally{B3SG=sg;}}
+  return b3Find0(w,h,anchors,obs,W,H,R);}
+function b3Find0(w,h,anchors,obs,W,H,R,su,sgap,half){R=R||B3.R;const K=anchors.length,ix=new Array(K).fill(0),pad=B3.pad,hero=su&&su.side==='p';
   for(let guard=0;guard<B3OFF.length*K;guard++){let bk=-1,bc=1e9;for(let k=0;k<K;k++){const o=B3OFF[ix[k]];if(!o)continue;const c=anchors[k].c+o[2];if(c<bc){bc=c;bk=k;}}
     if(bk<0)return null;const o=B3OFF[ix[bk]++],a=anchors[bk];if(o[2]>R*1.3)continue;
     const r={x:Math.round(a.x+o[0]),y:Math.round(a.y+o[1]),w,h};if(r.x<1||r.y<1||r.x+w>W-1||r.y+h>H-1)continue;
-    let ok=true;for(let i=0;i<obs.length;i++){const q=obs[i];if(b3Hit(r,q,q.body?0:pad)){ok=false;break;}}if(ok)return r;}
+    if(su&&half&&hero&&r.x+w/2<W*.5)continue;
+    let ok=true;for(let i=0;i<obs.length;i++){const q=obs[i];if(b3Hit(r,q,su&&q.u&&q.u.side!==su.side?sgap:(q.body?0:pad))){ok=false;break;}}if(ok)return r;}
   return null;}
 // ----- label sizes (logical px; battle3.css gives the DOM labels exactly these boxes) -----
 function b3PlateGeo(u,b){const hero=u.side==='p',n=(u.el||[]).length,bw=hero?B3.barW.hero:Math.min(B3.barW.foe,Math.max(18,Math.round(b.w*.66))),lim=hero&&limitOpen(u),ms=u.maxShield||0;
@@ -85,29 +91,29 @@ function b3Lay(fresh){if(!B)return null;const now=performance.now();if(!fresh&&B
   // next to a placed box, on the side away from the unit's body (stacking outward), then the other sides
   const nextTo=(p,bd,w,h,c0)=>{const up=p.y+p.h<=bd.y+2,cx=Math.round(p.x+p.w/2-w/2);return [{x:cx,y:up?p.y-h-1:p.y+p.h+1,c:c0},{x:p.x+p.w+1,y:Math.round(p.y+p.h/2-h/2),c:c0+1},{x:p.x-w-1,y:Math.round(p.y+p.h/2-h/2),c:c0+1},{x:cx,y:up?p.y+p.h+1:p.y-h-1,c:c0+6}];};
   // HP plates first (they matter most and stay put while statuses come and go): a row (badges left of the bars), else a column
-  for(const {u,b} of live){const g=b3PlateGeo(u,b);let r=null,shape='row';
+  for(const {u,b} of live){B3SG={u};const g=b3PlateGeo(u,b);let r=null,shape='row';
     for(const sh of ['row','col']){const s=g[sh];r=b3Find(s.w,s.h,anch(u,b,s.w,s.h,prefOf(b)),obs,W,H);if(r){shape=sh;break;}}
     if(r)L.plates.set(u,add('plate',u,r,{g,shape}));else L.hidden.push({kind:'plate',u});}
   // primed badges (B3.prim square with the turns left), beside the plate
-  for(const {u,b} of live){if(!(u.primed&&EL[u.primed.el]))continue;const s=B3.prim,p=L.plates.get(u),bd=bodyOf(u,b);
+  for(const {u,b} of live){B3SG={u};if(!(u.primed&&EL[u.primed.el]))continue;const s=B3.prim,p=L.plates.get(u),bd=bodyOf(u,b);
     const A=(p?[{x:p.x-s-1,y:Math.round(p.y+p.h/2-s/2),c:0},{x:p.x+p.w+1,y:Math.round(p.y+p.h/2-s/2),c:.5}]:[]).concat(anch(u,b,s,s,prefOf(b)).map(a=>Object.assign(a,{c:a.c+3})));
     const r=b3Find(s,s,A,obs,W,H);if(r)L.prim.set(u,add('prim',u,r));else L.hidden.push({kind:'prim',u});}
   // the turn arrow over whoever acts now (over the head, or over the plate when the plate is up there)
   if(B.cur&&B.cur.hp>0&&(B.mode==='cmd'||B.mode==='enemy')){const o=live.find(q=>q.u===B.cur);if(o){const p=L.plates.get(o.u),bd=bodyOf(o.u,o.b);
     const A=anch(o.u,o.b,9,6,[['above',0],['inner',6],['outer',8],['below',10]]);if(p&&p.y<bd.y)A.unshift({x:Math.round(o.b.x-4.5),y:p.y-7,c:0});
-    const r=b3Find(9,6,A,obs,W,H);if(r)L.arrow=add('arrow',o.u,r);else L.hidden.push({kind:'arrow',u:o.u});}}
+    B3SG={u:o.u};const r=b3Find(9,6,A,obs,W,H);B3SG=null;if(r)L.arrow=add('arrow',o.u,r);else L.hidden.push({kind:'arrow',u:o.u});}}
   // status rows: up to 4 icons, then 2 + "+N", then a lone "+N"; stacked on the outer side of the plate
-  for(const {u,b} of live){const n=stItems(u,{noPrime:true,noWx:true}).length;if(!n)continue;let r=null,m=0;const p=L.plates.get(u),bd=bodyOf(u,b);
+  for(const {u,b} of live){B3SG={u};const n=stItems(u,{noPrime:true,noWx:true}).length;if(!n)continue;let r=null,m=0;const p=L.plates.get(u),bd=bodyOf(u,b);
     for(const mx of n>4?[4,2,1]:n>2?[n,2,1]:[n,1]){const w=mx*(B3.sti+1)-1,h=B3.stiH,A=(p?nextTo(p,bd,w,h,0):[]).concat(anch(u,b,w,h,prefOf(b)).map(a=>Object.assign(a,{c:a.c+4})));
       r=b3Find(w,h,A,obs,W,H);if(r){m=mx;break;}}
     if(r)L.tags.set(u,add('tags',u,r,{max:m})),L.tags.get(u).n=n;else L.hidden.push({kind:'tags',u});}
   // target tags while aiming (name, effectiveness, reaction): over the head first, they are what the player reads right now
-  for(const {u,b} of live){const T=b3TagInfo(u);if(!T)continue;const s=b3TagSize(T),bd=bodyOf(u,b);const A=anch(u,b,s.w,s.h,[['above',0],['inner',4],['outer',5],['below',6]]);
+  for(const {u,b} of live){B3SG={u};const T=b3TagInfo(u);if(!T)continue;const s=b3TagSize(T),bd=bodyOf(u,b);const A=anch(u,b,s.w,s.h,[['above',0],['inner',4],['outer',5],['below',6]]);
     let r=b3Find(s.w,s.h,A,obs,W,H,B3.tagR);
     if(!r&&(T.eff||T.rx||T.px)){const s2=b3TagSize(Object.assign({},T,{name:''}));r=b3Find(s2.w,s2.h,anch(u,b,s2.w,s2.h,[['above',0],['inner',4],['outer',5],['below',6]]),obs,W,H,B3.tagR);if(r)T.short=1;}
     if(!r)r=b3Find(s.w,s.h,A,obs,W,H);
     if(r)L.tgt.set(u,add('tgt',u,r,{T}));else L.hidden.push({kind:'tgt',u});}
-  L.obs=obs;B3L.key=key;B3L.L=L;return L;}
+  B3SG=null;L.obs=obs;B3L.key=key;B3L.L=L;return L;}
 
 // ----- the canvas HUD at the laid out spot: bars, limit, shield pips, element badges -----
 function unitHud(ctx,u,b,now){if(!u||u.hp<=0)return;const L=b3Lay(),p=L&&L.plates.get(u);if(!p)return;const g=p.g,hero=u.side==='p';
@@ -189,7 +195,7 @@ function b8CmdEst(w){try{if(!B||B.over||B.auto)return 0;const cmd=document.getEl
   const k=(B.id||0)+'|'+BL.mode+'|'+W+'|'+hs.map(c=>c.id+(lbReady(c)?'L':'')+(canSummon(c)?'S':'')+(has(c,'root')?'R':'')).join()+'|'+document.querySelector('.battle').className.replace(/ b3list/,'');
   B._b8ce=B._b8ce||{};if(B._b8ce[k]!=null)return B._b8ce[k];
   const sv={mode:B.mode,cur:B.cur,menu:B.menu,pend:B.pend,swapAsk:B.swapAsk,b4out:B.b4out};let h=0;const c=cmd.cloneNode(false);c.removeAttribute('id');
-  c.style.cssText='position:absolute;visibility:hidden;pointer-events:none;left:0;top:0;width:'+W+'px;height:auto;max-height:none;overflow:visible;grid-row:auto;grid-column:auto';
+  c.style.cssText='position:absolute;visibility:hidden;pointer-events:none;left:0;top:0;width:'+W+'px;height:auto;max-height:none;min-height:0;overflow:visible;grid-row:auto;grid-column:auto;--b8gp:0px;--b8gs:0px;--b8ga:0px';
   cmd.parentNode.appendChild(c);
   try{for(const a of hs){B.mode='cmd';B.cur=a;B.menu='root';B.pend=null;B.swapAsk=null;c.innerHTML=cmdHtml();h=Math.max(h,c.offsetHeight);}}
   finally{c.remove();Object.assign(B,sv);}
@@ -202,7 +208,7 @@ function b3StN(u){let n=u.broken&&u.maxShield?1:0;for(const k in u.st||{})if(STS
 // commands compact (b8tight); tallMin / tallMax: the portrait stage height range in logical px (x2 on screen: 240 to 460 px).
 // v0.8.7: R: the right column widths tried in the column arrangement (the party rows keep HP, MP and Limit side by side down to 340 px);
 // minL: the narrowest left column (the commands).
-const B8={min:1.1,tightAt:1.7,tallMin:120,tallMax:230,col:6,gap:4,R:[340,370,410],minL:420};
+const B8={min:1.1,tightAt:1.7,tallMin:120,tallMax:230,col:6,gap:4,R:[340,370,410],minL:420,Rc:[260,290,320,350,380],pMin:56,shortH:430,crH:460,fMin:100,stripH:44,tallGrow:28,peek:46};
 // a panel's height at a given width, from a hidden copy (kind 'cmd': the top level command panel, 'foes': the foes panel, 'pty': the
 // party column), in CSS px. Each only grows within a battle (per width and compaction state), so the stage only shrinks, a few times at most.
 function b8HAt(kind,w){try{if(!B)return 0;const bat=document.querySelector('.battle.b3'),bb=bat&&bat.querySelector('.bbottom');if(!bb)return 0;w=Math.round(w);
@@ -230,22 +236,42 @@ function b3Vh(){return window.visualViewport?window.visualViewport.height:window
 //   B8.R px wide, whichever gives the larger stage (the stage spans the left column's width when the height allows).
 // Under B8.tightAt the cards and commands compact (once per battle); never below B8.min (then a panel scrolls inside itself).
 function b3WideSc(w,vh,wrap,bat){try{
+  // v0.8.10: on a short landscape screen (under B8.shortH px) the game header gives its row to the battle (Pause keeps Settings and Help)
+  bat.classList.toggle('b8short',vh<B8.shortH);
   const padB=parseFloat(getComputedStyle(document.body).paddingBottom)||0,gap=B8.gap,st=B3.wideStep||.05,bl=document.getElementById('bline'),ord=document.getElementById('border'),bb=document.getElementById('bbossbar');
   const boss=bat.classList.contains('hasboss')&&bb&&bb.offsetHeight>0,lh=bl?bl.offsetHeight:40,oh=ord?ord.offsetHeight:46,bh=boss?bb.offsetHeight:0,W=bat.clientWidth,top=b3DocTop(bat),avail=vh-top-padB-2;
+  const short=vh<B8.shortH;// a short screen keeps the log strip under the stage (the commands go beside the stage instead)
   const fit=(ww,hh)=>{const s=Math.min((ww-8)/WIDE_W,(hh-8)/WIDE_H,3);return Math.round(Math.floor(s/st+1e-6)*st*100)/100;},sh=s=>Math.round(WIDE_H*s+8);
   const pick=()=>{const out=[];
     {const L0=(W-B8.col)*1.42/2.42,ch=b8HAt('cmd',L0),fh=b8HAt('foes',L0),P=b8HAt('pty',W-B8.col-L0),row=(bh?Math.max(oh,bh):gap+oh)+gap,need=Math.max(ch+(fh?9+fh:0),P);
       const fix=row+gap+lh+gap+need,sc=fit(W,avail-fix);out.push({sc,col:false,band:Math.max(0,avail-fix-sh(sc))+Math.abs(ch+(fh?9+fh:0)-P),n:0});}
     const Rs=[...new Set(B8.R.concat([Math.round((W-B8.col)/2.42)]))].filter(R=>W-B8.col-R>=B8.minL);
-    for(const R of Rs){const L=W-B8.col-R,ch=b8HAt('cmd',L),P=b8HAt('pty',R),fL=b8HAt('foes',L),fR=b8HAt('foes',R);
-      for(const lr of [false,true])for(const fr of [false,true]){if(fr&&!fR)continue;
-        const right=(bh?bh+gap:0)+oh+(lr?gap+lh:0)+gap+P+(fr?9+fR:0);if(right>avail)continue;
+    // the party column may scroll inside itself as a last resort (short screens), never below B8.pMin px
+    for(const R of Rs){const L=W-B8.col-R,ch=b8HAt('cmd',L),P0=b8HAt('pty',R),fL=b8HAt('foes',L),fR=b8HAt('foes',R);
+      for(const lr of short?[false]:[false,true])for(const fr of [false,true]){if(fr&&!fR)continue;
+        const rest=(bh?bh+gap:0)+oh+(lr?gap+lh:0)+gap+(fr?9+fR:0),P=Math.min(P0,avail-rest);if(P<Math.min(P0,B8.pMin))continue;const right=rest+P;
         const left=(lr?0:gap+lh)+gap+ch+(!fr&&fL?9+fL:0),sc=fit(L,avail-left);
-        out.push({sc,col:true,lr,fr,R,L,ch,P,fh:fr?fR:fL,band:Math.max(0,avail-sh(sc)-left)+Math.max(0,avail-right),n:1+(lr?1:0)+(fr?1:0)});}}
-    out.sort((a,b)=>(b.sc-a.sc)||(a.band-b.band)||(a.n-b.n));return out[0];};
+        out.push({sc,col:true,lr,fr,R,L,ch,P,P0,fh:fr?fR:fL,band:Math.max(0,avail-sh(sc)-left)+Math.max(0,avail-right)+(P0-P)*3,n:1+(lr?1:0)+(fr?1:0)});}}
+    // v0.8.10: the commands in the right column (under the turn order), the party under the stage and the log strip (short landscape
+    // screens: the Fold closed turned sideways, phones in landscape); the commands always fit whole, the party may scroll inside itself
+    for(const R of avail<B8.crH?B8.Rc:[]){const L=W-B8.col-R;if(L<WIDE_W*B8.min+8)continue;const ch=b8HAt('cmd',R),P0=b8HAt('pty',L),fL=b8HAt('foes',L),fR=b8HAt('foes',R);
+      for(const fr of [false,true]){if(fr&&!fR)continue;const right=(bh?bh+gap:0)+oh+gap+ch+(fr?9+fR:0);if(right>avail)continue;
+        // the party (and the foes when they are on this side) share what the stage leaves; at the smallest stage each may scroll inside
+        const fixL=gap+lh+gap+(!fr&&fL?9:0),fl=fr?0:fL;let P=P0,F=fl,sc=fit(L,avail-fixL-P-F);
+        let fs=false;
+        if(sc<B8.min){const rem=avail-fixL-sh(B8.min),m=B8.pMin;sc=B8.min;
+          if(!fl){if(rem<Math.min(P0,m))continue;P=rem;}
+          else if(rem>=P0+fl){P=P0;F=fl;}
+          else if(rem>=B8.fMin+m){F=Math.max(B8.fMin,Math.round(rem*fl/(P0+fl)));P=rem-F;if(P<m){P=m;F=rem-m;}}
+          // too little room for a row of foe cards: the compact foe list (one row of buttons) stands in for them
+          else if(rem>=B8.stripH+Math.min(P0,m)){F=B8.stripH;fs=true;P=Math.min(P0,rem-F);sc=Math.max(B8.min,fit(L,avail-fixL-P-F));}else continue;}
+        out.push({sc,col:true,cr:true,fr,fs,R,L,ch,P,P0,F0:fs?F:fl,fh:fr?fR:F,band:Math.max(0,avail-sh(sc)-fixL-P-F)+Math.max(0,avail-right)+(P0-P)*3+(fs?0:fl-F)*3,n:3+(fr?1:0)+(fs?2:0)});}}
+    // an arrangement that shows everything whole (nothing squeezed to scroll, the stage at least B8.min) wins over any that does not
+    out.forEach(o=>{o.fits=o.sc>=B8.min?1:0;o.whole=o.fits&&!(o.P0>o.P)&&!(o.F0>o.fh)?1:0;});
+    out.sort((a,b)=>(b.whole-a.whole)||(b.fits-a.fits)||(b.sc-a.sc)||(a.band-b.band)||(a.n-b.n));return out[0];};
   let r=pick();
   if(r.sc<B8.tightAt&&B&&!B._b8t){B._b8t=1;bat.classList.add('b8tight');r=pick();}
-  bat.classList.toggle('b8tight',!!(B&&B._b8t));bat.classList.toggle('b8col',r.col);bat.classList.toggle('b8lr',!!r.lr);bat.classList.toggle('b8fr',!!r.fr);
+  bat.classList.toggle('b8tight',!!(B&&B._b8t));bat.classList.toggle('b8col',r.col);bat.classList.toggle('b8lr',!!r.lr);bat.classList.toggle('b8fr',!!r.fr);bat.classList.toggle('b8cr',!!r.cr);bat.classList.toggle('b8fs',!!r.fs);
   bat._b8p=Object.assign({bh,oh,lh},r);
   return Math.max(B8.min,r.sc);}catch(e){return B3.minSc;}}
 // the height left for the columns (their panels scroll inside themselves past it, the page never does). In the column arrangement the
@@ -253,8 +279,8 @@ function b3WideSc(w,vh,wrap,bat){try{
 // top and bottom; the last item of each column reaches the bottom of the screen, so neither column leaves an empty band).
 function b3WideBot(wrap,bat){try{const vh=b3Vh(),padB=parseFloat(getComputedStyle(document.body).paddingBottom)||0,p=bat._b8p;
   if(bat.classList.contains('b8col')&&p){const H=Math.floor(vh-b3DocTop(bat)-padB-1),g=B8.gap,sh=parseFloat(wrap.style.height)||wrap.offsetHeight,list=bat.classList.contains('b3list');
-    const Lst=[['stage',sh,0]].concat(p.lr?[]:[['line',p.lh,g]],[['cmd',p.ch,g]],!p.fr&&p.fh?[['foes',p.fh,9]]:[]),
-      Rst=(p.bh?[['boss',p.bh,0]]:[]).concat([['order',p.oh,p.bh?g:0]],p.lr?[['line',p.lh,g]]:[],[['pty',p.P,g]],p.fr&&p.fh?[['foes',p.fh,9]]:[]);
+    const Lst=p.cr?[['stage',sh,0],['line',p.lh,g],['pty',p.P,g]].concat(!p.fr&&p.fh?[['foes',p.fh,9]]:[]):[['stage',sh,0]].concat(p.lr?[]:[['line',p.lh,g]],[['cmd',p.ch,g]],!p.fr&&p.fh?[['foes',p.fh,9]]:[]),
+      Rst=(p.bh?[['boss',p.bh,0]]:[]).concat([['order',p.oh,p.bh?g:0]],p.cr?[['cmd',p.ch,g]]:[],p.lr?[['line',p.lh,g]]:[],p.cr?[]:[['pty',p.P,g]],p.fr&&p.fh?[['foes',p.fh,9]]:[]);
     const ys=new Set([0,H]),pos={};
     for(const S of [Lst,Rst]){let y=0;S.forEach(([k,h,gb],i)=>{y+=gb;const a=Math.min(y,H-1);y+=h;const b=i===S.length-1?H:Math.min(y,H);pos[k]=[a,b];ys.add(a);ys.add(b);});}
     const Y=[...ys].sort((a,b)=>a-b),ix=v=>Y.indexOf(v)+1,rows=[];for(let i=1;i<Y.length;i++)rows.push(Math.max(0,Y[i]-Y[i-1])+'px');
@@ -262,7 +288,7 @@ function b3WideBot(wrap,bat){try{const vh=b3Vh(),padB=parseFloat(getComputedStyl
     for(const k in pos)bat.style.setProperty('--gr-'+k,ix(pos[k][0])+' / '+ix(pos[k][1]));
     // a list menu (skills, items, switch) takes the commands down to the bottom of the left column (foes there hide meanwhile)
     bat.style.setProperty('--gr-cmdl',ix(pos.cmd[0])+' / '+Y.length);
-    bat.style.setProperty('--gc-line',p.lr?'2':'1');bat.style.setProperty('--gc-foes',p.fr?'2':'1');
+    bat.style.setProperty('--gc-line',p.lr?'2':'1');bat.style.setProperty('--gc-foes',p.fr?'2':'1');bat.style.setProperty('--gc-cmd',p.cr?'2':'1');bat.style.setProperty('--gc-pty',p.cr?'1':'2');
     bat.style.removeProperty('--b3bot');return;}
   ['--b8h','--b8r','--b8L'].forEach(v=>bat.style.removeProperty(v));
   const bb=bat.querySelector('.bbottom');if(!bb)return;
@@ -285,7 +311,8 @@ function b3FitTags(){try{const st=document.getElementById('bstage');if(!st)retur
 // Everything under the stage sits in one box as tall as the rest of the visible screen (--b3bot, from visualViewport); the full foe cards
 // and the Rearguard follow the foe list inside that box and scroll there (it returns to the top at each hero turn), the page never scrolls.
 // the compact foe list: one row of small buttons (name, HP bar), every live foe at a glance; a tap aims at it or opens its details, like its card
-function b8Strip(){if(!B||BL.mode!=='tall')return '';const now=Date.now(),L=B.en.map((e,i)=>({e,i})).filter(({e})=>!(e.hp<=0&&now-(e.deathT||0)>1500));if(!L.length)return '';
+function b8Strip(){if(!B||BL.mode==='side')return '';// v0.8.10: also in the wide layout, where it stands in for the foe cards on a short screen (b8fs)
+  const now=Date.now(),L=B.en.map((e,i)=>({e,i})).filter(({e})=>!(e.hp<=0&&now-(e.deathT||0)>1500));if(!L.length)return '';
   const pend=B.mode==='cmd'&&B.menu==='target'&&B.pend;
   return `<div class="b8fl" role="list" aria-label="Foes">${L.map(({e,i})=>{const dead=e.hp<=0,tg=targetable(e),pct=dead?0:Math.max(2,Math.ceil(e.hp/e.S.mhp*100)),kn=foeKnown(e);
     return `<button class="fl ${tg?'tg':''} ${dead?'ko':''} ${e.primed&&!dead?'isprimed':''} ${tg&&detHits(pend&&pend.sk,e)?'dethit':''}" style="--pc:${e.primed&&ELC[e.primed.el]||'#fff'}" role="listitem" data-act="tgtE" data-arg="${i}" aria-label="${esc(e.name)}, ${dead?'knocked out':(kn?hpText(e):pct+'%')+' HP'}" title="${esc(e.name)}"><span class="n">${esc(e.name)}${e.elite?' ★':''}</span><span class="b"><i style="width:${pct}%"></i></span></button>`;}).join('')}</div>`;}
@@ -298,9 +325,19 @@ function b8Strip(){if(!B||BL.mode!=='tall')return '';const now=Date.now(),L=B.en
     h=h.replace(/(<div class="who cmdhead">[\s\S]*?<small>)/,'$1'+bars);}
   const m=String(h).match(/<small class="autowhy">[^<]*<\/small>/);
   if(!m||h.indexOf(bk)<0)return h;return h.replace(m[0],'').replace(bk,m[0].replace('class="autowhy"','class="autowhy inhead"')+bk);}catch(e){return h;}};}
+// v0.8.10 portrait: the room under the stage goes to the commands first, at their natural height plus up to B8.tallGrow px (taller
+// rows, easier to tap; the owner: "make the action menu a bit bigger to fill in space and push the other menus down"), and the top
+// B8.peek px of the party cards (they and the foes are in the box under the commands, which scrolls); the stage takes the rest, never
+// under B8.tallMin. On a small screen the rows grow less before the stage gives way. Returns the stage height (logical px).
+function b8TallPlan(bat,room){try{const sc=BL.sc||2,ch0=b8CmdEst()||(document.getElementById('bcmd')||{}).offsetHeight||200,G=B8.tallGrow,pk=B8.peek,g6=6;
+  let g=G,H=Math.floor((room-ch0-g-g6-pk)/sc);
+  if(H<B8.tallMin){g=Math.max(0,Math.min(G,room-ch0-g6-pk-B8.tallMin*sc));H=Math.floor((room-ch0-g-g6-pk)/sc);}
+  H=clamp(H,B8.tallMin,B8.tallMax);
+  bat.style.setProperty('--b8gp',Math.round(g*.43)+'px');bat.style.setProperty('--b8gs',Math.round(g*.29)+'px');bat.style.setProperty('--b8ga',Math.round(g*.28)+'px');
+  return H;}catch(e){return B8.tallMin;}}
 // the height left under the stage (portrait): the box under it is exactly as tall as the rest of the visible screen
 function b8TallBot(bat){try{const bb=bat&&bat.querySelector('.bbottom');if(!bb)return;const padB=parseFloat(getComputedStyle(document.body).paddingBottom)||0;
-  bat.style.setProperty('--b3bot',Math.max(120,Math.floor(b3Vh()-b3DocTop(bb)-padB-1))+'px');}catch(e){}}
+  const bh=Math.max(120,Math.floor(b3Vh()-b3DocTop(bb)-padB-1));bat.style.setProperty('--b3bot',bh+'px');bat.style.setProperty('--b8cm',Math.max(0,bh-B8.peek-6-4)+'px');}catch(e){}}
 // each hero turn starts with the box under the stage at its top (the commands in view)
 {const rb=renderBattle;renderBattle=function(stageOnly){const r=rb.apply(this,arguments);try{if(!stageOnly&&B&&BL.mode==='tall'){const bb=document.querySelector('.battle.b3 .bbottom'),k=(B.mode==='cmd'&&B.cur?unitRef(B.cur):'')+'|'+B.menu+'|'+(B.id||0);
     if(bb&&bb._b8k!==k){bb._b8k=k;bb.scrollTop=0;}}}catch(e){}return r;};}
@@ -308,7 +345,7 @@ function b8TallBot(bat){try{const bb=bat&&bat.querySelector('.bbottom');if(!bb)r
 // once the whole render has run (a microtask, so still before the frame is painted) the fit is checked again, so the stage settles in one
 // go and never leaves the columns short
 {let b8mq=0;const rb=renderBattle;renderBattle=function(stageOnly){const r=rb.apply(this,arguments);try{if(!stageOnly&&!b8mq){b8mq=1;queueMicrotask(()=>{b8mq=0;
-  try{if(V.screen==='battle'&&B&&$('bwrap')){if(BL.mode==='wide'){const o=BL.sc;layoutBattle();b3TagFit();if(Math.abs(BL.sc-o)>.01)renderBattle(true);}else if(BL.mode==='tall')fitBattle();}}catch(e){}});}}catch(e){}return r;};}
+  try{if(V.screen==='battle'&&B&&$('bwrap')){if(BL.mode==='wide'){const o=BL.sc;layoutBattle();b3TagFit();if(typeof b5Fit==='function')b5Fit();if(Math.abs(BL.sc-o)>.01)renderBattle(true);}else if(BL.mode==='tall')fitBattle();}}catch(e){}});}}catch(e){}return r;};}
 // the visible viewport changes (the browser bar shows or hides, the Fold opens or closes, the keyboard): fit the battle again
 if(window.visualViewport){let b8q=0;visualViewport.addEventListener('resize',()=>{if(b8q)return;b8q=requestAnimationFrame(()=>{b8q=0;try{if(V.screen==='battle'&&B){BL.fitH=0;layoutBattle();render();}}catch(e){}});});}
 
@@ -341,3 +378,15 @@ foeWeak=function(e){try{const b=bestEntry(e),kn=Object.keys(b.known||{}).filter(
 dlChip=function(s,cls){const d=dlFor(cls||null,s);return d?`<em class="dl ${d} sym" title="Delivery: ${DL_NAME[d]} (${DL_HINT[d]}). Some foes resist or fear this kind of attack." aria-label="${DL_NAME[d]}">${dlIco(d)}</em>`:'';};
 // the effectiveness chip ("▲ Slash" against a foe's archetype): the arrow and the symbol, the numbers in the tooltip
 if(typeof effBadge==='function'){const eb1=effBadge;effBadge=function(){const h=eb1.apply(this,arguments);try{return String(h).replace(/(<span class="eff (?:up|dn) arch" title="[^"]*">)(▲|▼) ([A-Za-z]+)<\/span>/g,(m,a,ar,n)=>{const d=Object.keys(DL_NAME).find(k=>DL_NAME[k]===n);return d?`${a}${ar}${dlIco(d)}</span>`:m;});}catch(e){return h;}};}
+
+// ----- 8) v0.8.10: hero sprites in battle in proportion with the foes -----
+// The battle hero sprites (36x46 logical, painted at 2x) stood about 38 px tall against 25 to 33 px for humanoid foes and read as chunky
+// next to them and next to their size in the world. In battle they are drawn at B8H.k (5/6) of that: the 2x bitmap is resampled once,
+// nearest neighbour (crisp, no blur), into a new 2x canvas, so heroes keep the foes' pixel density; every consumer (the stage, the layout
+// pass, the GL stage, hit flashes) gets that canvas from spriteOf. Tamed monsters fighting as heroes keep their monster size.
+const B8H={k:5/6},B8HC=new WeakMap();
+function b8Small(c){if(!c||!c.hd||c.hd<2||!(B8H.k<1))return c;let o=B8HC.get(c);if(o)return o;const k=c.hd,RW=c._rw||Math.round(c.width*k),RH=c._rh||Math.round(c.height*k);
+  const tw=Math.round(RW*B8H.k),th=Math.round(RH*B8H.k),lw=Math.ceil(tw/k),lh=Math.ceil(th/k);o=hdCv(lw,lh,k);const x=o.getContext('2d');
+  x.setTransform(1,0,0,1,0,0);x.imageSmoothingEnabled=false;(x._hdDI||x.drawImage).call(x,c,0,0,RW,RH,Math.round((lw*k-tw)/2),lh*k-th,tw,th);// bitmap pixels (sprhd.js reads logical ones)x.setTransform(k,0,0,k,0,0);
+  B8HC.set(c,o);return o;}
+{const so=spriteOf;spriteOf=function(u,walk){const c=so.apply(this,arguments);try{if(u&&(u.heroArt||u.side==='p'&&!(TPL[u.id]&&TPL[u.id].mon)))return b8Small(c);}catch(e){}return c;};}

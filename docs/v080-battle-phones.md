@@ -202,3 +202,56 @@ portrait: every command row on screen with the party cards after them, the actin
 order bar's chips clear of NEXT and the entries (every layout case, and every weather with 125% text at five sizes). On the previous
 build: 80 fails at 933x615, 933x660, 933x705, 412x810, 390x844 (48 bands of 25 to 393 px, 32 portrait checks with the cards before the
 commands); after: passes (1663 checks for the whole file). The regression list passes after (v076b with the one check change above).
+
+## Second follow up (after v0.8.9): the Fold closed upright and sideways, label spacing, hero sprite size
+
+**Fold closed, upright** (412 x about 812 CSS px visible): the party cards were cut off at the bottom with no way to reach them, and
+the owner asked for a bigger action menu that fills the space and pushes the other menus down.
+- `b8TallPlan` (battle3.js) shares the room under the stage: the commands at their natural height plus up to `B8.tallGrow` (28 px:
+  the main row 44 to 56 px, the others 40 to 48 px), the top `B8.peek` (46 px) of the party cards, the stage takes the rest (never under
+  240 px). The commands panel fills the box down to that peek. The party cards, the compact foe list, the foe cards and the Rearguard
+  follow in the box under the commands, which scrolls (back to the top at each hero turn); the header keeps the acting hero's HP and MP.
+  On a small phone the rows grow less before the stage gives way.
+
+**Fold closed, sideways and other short landscape screens** (705x455, 740x360, 750x475, 800x380, 844x390, 915x412): the old "side"
+layout (stage left, everything else in one scrolling column) left an empty area under the stage and squeezed the commands
+("Atta", "Skil"). Every screen at least 560 px wide now goes through the wide planner, which gained:
+- a **commands-right** arrangement (`b8cr`): stage, log strip and the party (then the foes) in the left column; the boss bar, the
+  turn order and the commands (then the foes, `b8fr`) in the right one, 260 to 380 px wide (`B8.Rc`). The commands always fit whole;
+- a narrow command panel (container query, under 360 px): the four main commands two by two with full labels, the secondary row and
+  the auto row smaller; the panel never grows wider than its column (it was 9 px wider and scrolled sideways);
+- on screens under 430 px tall (`B8.shortH`, `b8short`) the game header gives its row to the battle (Pause keeps Settings and Help);
+- last resorts, in this order, when not everything fits whole: the party and the foes share what the stage leaves (each scrolls inside
+  its panel, the party never under 56 px, the foes never under one row of cards, 100 px); then the **compact foe list** stands in for
+  the foe cards (`b8fs`; tap a foe on the stage or in the list for its details). An arrangement that shows everything whole always wins
+  over one that squeezes, then the larger stage.
+
+**Labels too close across the sides** ("one of the heroes' HP bars has its elements too close to the enemy"): while `b3Lay` places a
+unit's labels (`B3SG`), they keep 5 px from the other side's sprites and labels and a hero's labels stay on the heroes' half of the
+stage; when no spot allows that the gap steps down (4, 3, 2 px, then a wider search) before the old rules apply.
+
+**Hero sprites in battle** ("heroes look oversized compared to the world"): the battle hero sprites (36x46 logical at 2x) stood
+38.5 px tall against about 33 px for the taller humanoid foes. In battle they are drawn at 5/6 (`B8H.k`): the 2x bitmap is resampled
+once, nearest neighbour (crisp), into a new 2x canvas (so they keep the foes' pixel density); `spriteOf` hands that canvas to the
+stage, the layout pass, the GL stage and the hit flashes. Heroes are now about 32 px tall. Tamed monsters fighting as heroes keep their
+size. (sprhd.js reads 9-argument `drawImage` source rectangles in logical units; the resample uses the raw `_hdDI`.)
+
+Tests (`v080b`): the six landscape sizes and 412x812 join the layout cases (short landscape: the party and the foes shown or
+reachable in their panels; portrait: the party cards and every foe reachable by scrolling the box under the commands, main commands
+at least 50 px tall on screens 800 px and taller, the right column inside the screen); a `sides` section (random battles at 390x844,
+412x812, 844x390, 933x660): no hero label under 2 px from a foe sprite or label and at most 5% under 4 px, hero labels on the heroes'
+half, the tallest hero at most 1.1x the taller foes, 2x pixels for both.
+
+Results (the build this follow up started from, v0.8.9, against this one; `v080b` 3170 checks pass after):
+- 412x812 (6h/5f miniboss · 6h/5f · 6h/2f · 3h/2f): stage 380x278 · 380x304 · 380x304 · 380x304 before, the party cards cut off at the
+  bottom with nothing to scroll (96 fails: the acting hero's card, the party not reachable); after 380x326 · 380x352 · 380x352 · 380x352,
+  main commands 56 px tall, the party cards and foes in the box under them.
+- Short landscape (705x455, 740x360, 750x475, 800x380, 844x390, 915x412): before, the side layout with a 408x196 (915: 488x233) stage
+  and an empty area under it, the page 29 to 37 px taller than the screen at 740x360 to 915x412, the commands clipped ("Attack" 69/54);
+  after, no page scroll, every command whole, the party and the foes shown or reachable in their panels; the stage is 360x173 with a
+  full party (392x188 to 440x211 with three heroes), smaller than the old (overflowing) one: the commands, the party and the foes now
+  share the height instead of falling off the screen.
+- Label spacing (`sides`, before): 8 of 49 hero labels within 4 px of a foe at 390x844, 4 of them within 2 px; after at most one.
+- Hero height: 38.5 px before against 33.5 to 34.5 px for the taller foes; about 32 px after.
+- `v063bd`: its "active hero's card on screen" check at 390x844 also accepts the hero's HP and MP in the command header (the cards now
+  follow the commands, as asked). The rest of the regression list passes unchanged.
