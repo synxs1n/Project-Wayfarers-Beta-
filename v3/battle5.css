@@ -1,0 +1,32 @@
+/* Beta v0.7.0 battle information and input (battle5.js) */
+/* stage intent label: a box laid out by b3Lay (logical stage px) */
+.bstage .b5it{display:grid;place-items:center;padding:0;border-radius:2px;border:.6px solid #150b17;background:rgba(21,11,23,.86);color:#ffd8c8;pointer-events:none;z-index:6;box-shadow:0 0 0 .5px rgba(255,255,255,.25);overflow:hidden}
+.bstage .b5it svg{width:8px;height:8px;display:block}
+.bstage .b5it b{font:900 7px/1 var(--fb,system-ui);color:#e8dcc0}
+.b5it.attack,.b5oi.attack{color:#ff9a7a}.b5it.big,.b5oi.big{color:#ff4a4a}.b5it.buff,.b5oi.buff{color:#ffd04a}.b5it.status,.b5oi.status{color:#c89aff}
+.b5it.heal,.b5oi.heal{color:#7aff8a}.b5it.guard,.b5oi.guard{color:#7ab0ff}.b5it.summon,.b5oi.summon{color:#7affc8}
+.bstage .b5it.big{border-color:#ff4a4a;box-shadow:0 0 3px rgba(255,74,74,.8)}
+/* order bar: the intent beside a foe's portrait */
+.order .b5oe{display:inline-flex;align-items:flex-end;flex:none;gap:0}
+.order .b5oi{flex:none;display:grid;place-items:center;width:15px;height:15px;margin-left:1px;margin-bottom:-1px;border-radius:3px;background:#150b17;border:1px solid rgba(255,255,255,.3);font-style:normal;position:relative;z-index:1;box-sizing:border-box}
+.order .b5oi svg{width:11px;height:11px}
+.order .b5oi b{font:900 11px/1 var(--fb,system-ui);color:#e8dcc0}
+.order .oc.b5pv{outline:2px dashed #ffd04a;outline-offset:1px}
+.order .ocs.pv small{color:#ffd04a}
+/* the timing ring: an outer ring closes onto the target ring; press as they meet */
+.b5ring{position:absolute;width:0;height:0;z-index:30;pointer-events:none}
+.b5ring i{position:absolute;left:calc(var(--r)*-1);top:calc(var(--r)*-1);width:calc(var(--r)*2);height:calc(var(--r)*2);border-radius:50%;box-sizing:border-box}
+.b5ring .tgt{border:3px solid rgba(255,255,255,.85);box-shadow:0 0 0 2px #150b17,inset 0 0 0 2px #150b17}
+.b5ring .cl{border:3px solid #ffd04a;box-shadow:0 0 6px #ffd04a;animation:b5close var(--ms) linear forwards}
+.b5ring.def .cl{border-color:#7ab0ff;box-shadow:0 0 6px #7ab0ff}
+.b5ring b{position:absolute;left:-40px;width:80px;top:calc(var(--r) + 4px);text-align:center;font:900 12px/1 var(--fb,system-ui);color:#fff;text-shadow:0 0 3px #000,0 0 2px #000}
+.b5ring.lit .tgt{border-color:#ffd04a;box-shadow:0 0 0 2px #150b17,0 0 12px #ffd04a}
+.b5ring.hit .tgt{border-color:#7aff8a;box-shadow:0 0 16px #7aff8a}.b5ring.hit .cl{opacity:0}
+.b5ring.miss{opacity:.45}
+@keyframes b5close{from{transform:scale(2.3);opacity:.5}to{transform:scale(1);opacity:1}}
+/* reduced motion: the closing ring is not drawn; the target ring lights up for the (wider) window instead */
+.b5ring.rm .cl{animation:none;display:none}
+/* narrow bars: smaller badges */
+.battle.b3.m-tall .order .b5oi,.battle.b3.bside .order .b5oi{width:13px;height:13px}
+.battle.b3.m-tall .order .b5oi svg,.battle.b3.bside .order .b5oi svg{width:9px;height:9px}
+.battle.b3.m-tall .order .b5oi b,.battle.b3.bside .order .b5oi b{font-size:9px}

@@ -296,3 +296,10 @@ const B3={body:1,pad:1,R:40,step:2,barW:{hero:24,foe:30},prim:13,sti:12,stiH:10,
     wide:{p:[[.74,0],[.88,.42],[.71,.84]],
       e:[[[.27,.5]],[[.2,.08],[.36,.8]],[[.3,0],[.12,.42],[.4,.84]],[[.31,0],[.1,.28],[.46,.5],[.22,.84]],[[.3,0],[.09,.22],[.5,.36],[.28,.6],[.08,.84]]],
       boss:[[[.25,.62]],[[.22,.75],[.44,.05]],[[.2,.7],[.42,0],[.46,.84]]]}}};
+// ----- Beta v0.7.0 battle information and input (battle5.js) -----
+// order: turns shown in the order bar on portrait phones (tall), elsewhere (wide); bigPw: a foe damage skill at or above this power (or
+// one that hits the whole party) shows the "big hit" intent; stCh: a skill whose status chance is at least this shows "status";
+// it: the stage intent label's size (logical stage px); ringMs: how long the timing ring takes to close; win / winRM: half the timing
+// window in ms (reduced motion: the ring does not move, it lights up for the window instead); atkUp: damage bonus of a timed hit;
+// defDown: damage cut of a timed guard against a foe's single target attack; grace: ms after the ring opens before a press counts.
+const B5={order:{tall:6,wide:8},bigPw:1.55,stCh:.4,it:{w:11,h:10},ringMs:900,win:130,winRM:260,atkUp:.15,defDown:.15,grace:90};

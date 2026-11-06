@@ -14,6 +14,7 @@ Read these before a big pass:
 - `v063-art.md`: v0.6.3 art pass: capes no longer drawn on heroes (only the weapon and the personal reward change the look) and one code-drawn icon per item (`icons.js`, `icons2.js`), with the before/after audit.
 - `v063-world.md`: the v0.6.3 world pass (fortress gatehouse in HD-2D, ambience in world space, the HD-2D overlay quarter bug, opened chests vanish, the illustrated world map, "Fortress").
 - `v063-battle.md`: the v0.6.3 battle screen pass (one layout pass for every stage label, the battle start flash, detonator targeting, the new battle screen layout).
+- `v070-battle-info.md`: the v0.7.0 battle information and input pass (turn forecast bar, foe intents from planned actions, optional timed hits; `v3/battle5.js`).
 - `audio-notes-v045.md`: the orchestral audio (v0.4.5) and Android live updates (v0.4.6).
 - `v050-prompt.md`: the full spec for the Beta v0.5.0 pass. Rollback point: `rollback-v046.md`.
 
