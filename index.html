@@ -2029,7 +2029,7 @@ html.rm .battle.b3 .cmd .mi.b9glow{animation:none}
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.9.7";const APP_BUILD="152030c5b92f";
+(function(){const APP_VER="0.9.8";const APP_BUILD="a36189a4c03e";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2653,11 +2653,27 @@ const TWISTS={on:true,
     {id:'react',n:'Reactions only',risk:'Only reactions crack shields; weak hits and skills no longer chip them.',gain:'Reactions hit 30% harder, +15% XP.',m:1.3,xp:1.15},
     {id:'iron',n:'Ironman',risk:'Fallen heroes stay down until you rest at an inn. No feathers, salts, tents or revive spells.',gain:'+40% XP.',xp:1.4}]}};
 
+// ==== NUDGE (v0.9.5): lead players into the systems (prog2.js, results.js, onboard.js, goals.js; docs/v095-nudges.md) ====
+// Nothing here runs in the Daily Trial.
+// Manual bonus: the economy is unchanged. An auto win still pays AUTO_REW of a hand played win; the rewards screen now counts from the
+// auto level up, so a win you play yourself shows "+X% for playing it yourself" with X = 1/AUTO_REW - 1 (52% at .66).
+// sys: a small bonus on a win's XP and gold for each system used in that battle (once each per battle), capped at cap per battle.
+//   react: a hero set off a reaction; brk: a foe's shield broke; guard: a guarded hero took a telegraphed hit (Crushing Charge,
+//   Cataclysm); surge: Momentum reached a Surge; tame: a creature was tamed on the rewards screen. Auto wins earn them too.
+// autoKills: auto battle opens against a foe type once it has been beaten by hand this many times this journey (or scanned).
+//   A fight allows auto when every foe type in it is open. Bosses keep their own rule (win that fight by hand once).
+// goals: the "Next goals" panel in the world. max items shown (one story goal and up to max-1 system goals); a done goal pays
+//   gold[realm] gold and xp x the XP to the next level to every party hero (fallen ones too), plus the goal's item if it has one.
+const NUDGE={on:true,
+  sys:{react:.04,brk:.04,guard:.04,surge:.04,tame:.04,cap:.20},
+  autoKills:3,
+  goals:{on:true,max:4,gold:[40,80,130,180,240],xp:.03}};
+
 // Firebase web config for account sign in and cloud saves. These values are public by design (security comes from the Firestore rules).
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.9.7";const APP_BUILD="152030c5b92f";
+const APP_VER="0.9.8";const APP_BUILD="a36189a4c03e";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2665,6 +2681,7 @@ const APP_VER="0.9.7";const APP_BUILD="152030c5b92f";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.9.8',['Playing it yourself pays: hand-played wins show their bonus (+52% XP and gold), and using the systems earns a little more (setting off reactions, breaking shields, guarding a telegraphed hit, reaching a Surge, taming). Auto now opens per foe type once you have beaten that foe by hand three times or scanned it; the Auto button says what is left. Tip cards are short invitations ("Primed with Fire: try Mira\'s Gale Burst") and the expert ones wait until you open that system. A Next goals panel on the map points the way: story goals plus small challenges that each pay a reward once.']],
  ['Beta v0.9.7',['Clearer battles: each foe shows its one key weakness (one your party can set up a reaction with, when there is one); tap it for the rest, or turn on Expert battle info in Settings to see everything. Damage types are now Physical, Ranged and Magic (plus Heal against undead), with at most two weaknesses and two resistances shown. Reactions hit harder on screen: a flash, a name banner, a new sound and a camera punch, and the primed badge pulses when your hero can set it off. Cues tell you what to do: Guard! before a telegraphed hit, Interrupt when a foe winds up, Cleanse when a hex stacks.']],
  ['Beta v0.9.6',['Fewer, better fights: random battles are much rarer and fields now have visible roamers (including each realm\'s foe roles) you can choose to fight or sneak up on; fights pay more, so a journey still ends around level 40. Every Scourge and Calamity has its own realm gimmick that it telegraphs a turn ahead (rising tide, lava vents, a lightning rod, a blizzard, broods of adds, a phase change at half health and more) with a clear answer. Tamed companions grow: a second skill after 12 battles and an evolution after 30. New journeys unlock systems realm by realm (reactions and bonds in the second realm, camp and guild missions in the third, the Echoforge in the fourth); saves you already have keep everything.']],
  ['Beta v0.9.5',['Menus simplified: one Notice Board with Quests, Guilds, Bounties and Arena tabs (claimable first), reachable from the board, the Guild Hall and the Menu. Guilds now have three ranks with one line each (nothing you claimed is lost; some perks open sooner). Every gear slot has an Upgrade button that picks the best next step you can afford (equip a spare, buy, forge, temper or Echoforge) with Show all options for tinkerers; the Smithy shows the best upgrade per slot first. Build Party and Equip best come first on the Party and Equipment tabs.']],
@@ -12920,11 +12937,18 @@ let lnLast=0;
   let h=mc0.apply(this,arguments);const ids=V._skShown[id];if(!ids||!ids.length||!G.roster[id])return h;const c=G.roster[id],i=h.indexOf('<h4>Skills</h4>');if(i<0)return h;
   let tail=h.slice(i);ids.forEach(sid=>{const s=skById(c,sid);if(!s)return;const k=esc(s.n)+'</b>';const j=tail.indexOf(k);if(j>=0)tail=tail.slice(0,j)+esc(s.n)+' <em class="newb">New</em></b>'+tail.slice(j+k.length);});return h.slice(0,i)+tail;};}
 
-// ===== prog2.js (v0.3.2): auto rules: reduced rewards on auto wins, the boss auto lock =====
-// B2: a win where auto ran more than half of your heroes' turns pays 66% XP and gold (drops unchanged; not the Daily Trial).
+// ===== prog2.js (v0.3.2): auto rules: the auto/manual reward gap, the boss auto lock, auto per foe type (v0.9.5), battle system counters =====
+// B2: a win where auto ran more than half of your heroes' turns pays AUTO_REW of a hand played win's XP and gold (drops unchanged;
+// not the Daily Trial). v0.9.5: same numbers, shown the other way round: the rewards screen counts from the auto level and a win you
+// play yourself shows "+52% for playing it yourself" (results.js). autoRewardMul is unchanged, so the economy is too.
 // B3: auto is off on a boss fight (Scourge, Calamity, echo, legend event) until that exact fight has been won manually
 // this journey. New optional field G.bossWon {key:1}; old saves count every Scourge or Calamity they already cleared.
-// AUTO_REW: in config.js
+// v0.9.5 auto per foe type: an ordinary fight allows auto once every foe type in it is open: beaten by hand NUDGE.autoKills times this
+// journey, or scanned. New optional field G.autoOk {foe name: hand kills, NUDGE.autoKills when scanned}. A save without it (made before
+// v0.9.5) starts from the account Bestiary (kills >= NUDGE.autoKills or scanned), so nobody loses auto they had. New journeys start empty.
+// v0.9.5 counters per battle (B.nz) for the system bonuses on the rewards screen (results.js): reactions set off by heroes, shields
+// broken, telegraphed hits taken while guarding, a Momentum Surge reached.
+// AUTO_REW, NUDGE: in config.js
 function bossFightKey(spec){if(!spec||!G||G.daily)return null;const k=spec.kind;
   if(k==='boss')return 'b:'+bossKeyFor(spec.stage);if(k==='storyEcho'||(k==='echoBoss'&&!spec.daily))return 'e:'+spec.key;if(k==='legend')return 'L:'+spec.hero+':'+(spec.step||0);return null;}
 // v0.4.1 2.4: no auto at all in elite, miniboss and challenge fights (duels, ambushes, legend events). The reason shows on the Auto button.
@@ -12933,16 +12957,47 @@ function autoBan(spec){if(!spec||!G||G.daily)return null;const k=spec.kind;
   if(spec.mini||k==='mini')return 'No auto in miniboss fights';
   if(k==='duel'||spec.ce||k==='legend'||k==='challenge'||spec.challenge)return 'No auto in challenge fights';
   return null;}
-function autoReason(){if(!B||!G||G.daily)return null;const ban=autoBan(B.spec);if(ban)return ban;const k=bossFightKey(B.spec);return k&&!(G.bossWon||{})[k]?'Win this fight manually once first':null;}
+// ----- v0.9.5: auto per foe type -----
+const nzLive=()=>!!(typeof NUDGE!=='undefined'&&NUDGE.on&&G&&!G.daily);
+function autoOkMap(){if(!G)return {};if(!G.autoOk||typeof G.autoOk!=='object'){// a save from before v0.9.5: start from the account Bestiary
+    const o={},N=NUDGE.autoKills;try{Object.keys(META.best||{}).forEach(k=>{const b=META.best[k]||{};if((b.kills||0)>=N||b.scan)o[k]=N;});}catch(e){}G.autoOk=o;}
+  return G.autoOk;}
+function autoTypeLeft(name){return Math.max(0,NUDGE.autoKills-((autoOkMap()[name])|0));}
+const autoTypeFoe=e=>!!(e&&e.side!=='p'&&!e.boss&&!e.elite&&!e.isComp&&e.base);
+const anA=n=>(/^[aeiou]/i.test(n)?'an ':'a ')+n;
+function autoTypeReason(){if(!B||!nzLive()||!NUDGE.autoKills)return null;if(bossFightKey(B.spec))return null;
+  const left=[];(B.en||[]).forEach(e=>{if(!autoTypeFoe(e)||e.hp<=0&&!B.over)return;const n=autoTypeLeft(e.base);if(n>0&&!left.some(x=>x[0]===e.base))left.push([e.base,n]);});
+  if(!left.length)return null;left.sort((a,b)=>a[1]-b[1]);const [nm,n]=left[0];
+  return `Beat ${anA(nm)} by hand ${n} more time${n>1?'s':''} to auto it`+(left.length>1?` (and ${left.length-1} more foe type${left.length>2?'s':''})`:'');}
+function autoTypeOpen(name,why){const M=autoOkMap(),N=NUDGE.autoKills,was=(M[name]|0)>=N;if(why==='scan')M[name]=Math.max(M[name]|0,N);else M[name]=(M[name]|0)+1;
+  return !was&&(M[name]|0)>=N;}
+function autoReason(){if(!B||!G||G.daily)return null;const ban=autoBan(B.spec);if(ban)return ban;const k=bossFightKey(B.spec);if(k&&!(G.bossWon||{})[k])return 'Win this fight manually once first';
+  return autoTypeReason();}
 function autoLocked(){return !!autoReason();}
 function autoRewardMul(){if(!B||!G||G.daily||B.spec.kind==='daily')return 1;const p=B.tP||0,a=B.tA||0;return p&&a>p/2?AUTO_REW:1;}
+// the bonus a hand played win shows over the auto level (the same totals as before: manual = auto x 1/AUTO_REW)
+function manualBonusPct(){return Math.round((1/AUTO_REW-1)*100);}
 function autoBtnHtml(){const why=autoReason();if(why)return `<button class="btn sm autolock" data-act="auto" aria-disabled="true" title="${why}">Auto locked</button><small class="autowhy">${why}</small>`;
   return `<button class="btn sm ${B.auto?'gold':''}" data-act="auto" aria-pressed="${B.auto?'true':'false'}">${B.auto?'Stop auto':'Start auto'}</button>`;}
-{const sb0=startBattle;startBattle=function(spec){const r=sb0.apply(this,arguments);try{if(r!==false&&B){B.tP=0;B.tA=0;if(autoLocked()){B.auto=false;B.autoLock=1;}}}catch(e){}return r;};}
-{const pf0=perform;perform=function(a){try{if(B&&a&&a.side==='p'&&!a.isComp){B.tP=(B.tP||0)+1;if(B.auto)B.tA=(B.tA||0)+1;}}catch(e){}return pf0.apply(this,arguments);};}
+{const sb0=startBattle;startBattle=function(spec){const r=sb0.apply(this,arguments);try{if(r!==false&&B){B.tP=0;B.tA=0;B.nz={react:0,brk:0,guard:0,surge:0,tele:0};if(autoLocked()){B.auto=false;B.autoLock=1;}}}catch(e){}return r;};}
+{const pf0=perform;perform=function(a,sk,tg){try{if(B&&a&&a.side==='p'&&!a.isComp){B.tP=(B.tP||0)+1;if(B.auto)B.tA=(B.tA||0)+1;}
+    if(B&&B.nz){if(B.b4mo&&B.b4mo.full)B.nz.surge=1;
+      // a telegraphed hit (battle4.js: Crushing Charge, Cataclysm) landing on a guarded hero
+      if(a&&a.side!=='p'&&sk&&(sk.id==='b4charge'||sk.id==='b4cata')){B.nz.tele++;if((tg||[]).some(c=>c&&c.side==='p'&&c.hp>0&&c.guard))B.nz.guard++;}}}catch(e){}
+  const r=pf0.apply(this,arguments);try{if(B&&B.nz&&B.b4mo&&B.b4mo.full)B.nz.surge=1;}catch(e){}return r;};}
+{const dr0=doReaction;doReaction=function(a,t,el){const r=dr0.apply(this,arguments);try{if(r&&B&&B.nz&&a&&a.side==='p')B.nz.react++;}catch(e){}return r;};}
+{const cs0=chipShield;chipShield=function(t){const was=t&&t.broken;const r=cs0.apply(this,arguments);try{if(B&&B.nz&&t&&t.side!=='p'&&!was&&t.broken===2)B.nz.brk++;}catch(e){}return r;};}
 {const at0=autoTurn;autoTurn=function(){if(autoLocked()){if(B)B.auto=false;return;}return at0.apply(this,arguments);};}
 {const a0=ACT.auto;ACT.auto=function(){if(autoLocked()){toast('Auto is locked here: '+(autoReason()||'win this fight manually once first').replace(/^./,c=>c.toLowerCase())+'.');if(typeof sfx==='function')sfx('deny');return;}return a0.apply(this,arguments);};}
-{const w0=win;win=function(){try{const k=B&&bossFightKey(B.spec);if(k&&!(B.tA>0)){G.bossWon=G.bossWon||{};G.bossWon[k]=1;}}catch(e){}return w0.apply(this,arguments);};}
+{const w0=win;win=function(){let man=false,kills=null;try{const k=B&&bossFightKey(B.spec);if(k&&!(B.tA>0)){G.bossWon=G.bossWon||{};G.bossWon[k]=1;}
+    if(B&&nzLive()&&B.spec&&B.spec.kind!=='daily'){man=autoRewardMul()===1;kills=(B.kills&&B.kills.length?B.kills:B.en).filter(e=>autoTypeFoe(e)&&e.hp<=0);}}catch(e){}
+  const was=B,r=w0.apply(this,arguments);
+  // hand kills open auto per foe type (counted once the whole fight is won, not per wave)
+  try{if(man&&kills&&B===was&&B&&B.result){const fresh=[];kills.forEach(e=>{if(autoTypeOpen(e.base)&&!fresh.includes(e.base))fresh.push(e.base);});
+    if(fresh.length){B.result.autoNew=fresh;toast(`Auto unlocked against ${fresh.slice(0,2).join(' and ')}${fresh.length>2?' and more':''}.`);}}}catch(e){}
+  return r;};}
+{const sc0=scan;scan=function(t){const r=sc0.apply(this,arguments);try{if(t&&nzLive()&&autoTypeFoe(t)&&B&&B.spec&&B.spec.kind!=='daily'&&autoTypeOpen(t.base,'scan'))toast(`Scanned: auto unlocked against ${t.base}.`);}catch(e){}return r;};}
+{const ng0=newGame;newGame=function(){const r=ng0.apply(this,arguments);try{if(G&&!G.daily)G.autoOk={};}catch(e){}return r;};}
 {const up0=unpackG;unpackG=function(o){const g=up0.apply(this,arguments);try{if(!g.bossWon){g.bossWon={};(g.cleared||[]).forEach((c,s)=>{if(!c||!g.run)return;const k=s<4?(g.run.bosses||[])[s]:g.run.final;if(k)g.bossWon['b:'+k]=1;});}}catch(e){}return g;};}
 
 // ===== map.js (v0.3.2): the area map, the minimap and the illustrated world map =====
@@ -13498,7 +13553,7 @@ function mAutoSet(m){
   const sub=(k,lab,help)=>c.swap?opt(k,OO,'&nbsp;&nbsp;↳ '+lab,help):'';
   const spd=`<div class="row"><div class="grow"><b>Battle speed</b></div><div class="chips">${[[1,'1x'],[1.5,'1.5x'],[2,'2x']].map(v=>`<button class="chip ${META.cfg.speed===v[0]?'on':''}" data-act="cfg" data-arg='${JSON.stringify(['speed',v[0]])}'>${v[1]}</button>`).join('')}</div></div>`;
   return box('Auto battle settings',`<p class="note">These apply to every auto battle, including the one running right now. ${inB?'Close this to get back to the fight.':''}</p>
-    <h4>What auto does</h4><div class="rows"><div class="row"><div class="grow"><b>A less careful fighter</b><small>Auto plays some turns well and some carelessly: it may swing at the first foe in line, miss a weakness, sit on a Limit Break or let a Primed foe go. It heals allies below ${AUTO_NERF.healAt}% HP, never uses items, and deals ${Math.round(AUTO_NERF.power*100)}% damage. Wins in auto pay ${Math.round(AUTO_REW*100)}% XP and gold. Elite, miniboss and challenge fights do not allow auto at all.</small></div></div></div>
+    <h4>What auto does</h4><div class="rows"><div class="row"><div class="grow"><b>A less careful fighter</b><small>Auto plays some turns well and some carelessly: it may swing at the first foe in line, miss a weakness, sit on a Limit Break or let a Primed foe go. It heals allies below ${AUTO_NERF.healAt}% HP, never uses items, and deals ${Math.round(AUTO_NERF.power*100)}% damage. Fights you play yourself pay +${manualBonusPct()}% XP and gold over auto wins. Auto opens against a kind of foe once you have beaten it by hand ${NUDGE.autoKills} times this journey (or scanned it); a boss needs one win by hand first. Elite, miniboss and challenge fights do not allow auto at all.</small></div></div></div>
     <h4>Options</h4><div class="rows">${opt('mp',[['normal','Normal'],['save','Save MP']],'MP use','Save MP keeps a quarter of the bar back for heals and leans on free attacks.')}</div>
     <h4>Pace</h4><div class="rows">${spd}</div>`,
     `<button class="btn" data-act="autoReset">Reset to default</button><button class="btn gold" data-act="xBack">Done</button>`,true);
@@ -15777,10 +15832,13 @@ queueMicrotask(()=>{try{const A=window.__A;if(!A)return;const X={realmReached,pq
 //   5. every hero who took part with the XP they actually gained (catch-up bonus included), level ups and points to spend;
 //   6. quest, bond and story notes.
 // Continue with a tame still pending does not throw it away: the footer asks "Tame it" or "Leave it".
+// v0.9.5 (NUDGE in config.js): the manual bonus line (a hand played win shows "+52% for playing it yourself", the same totals as before)
+// and small system bonuses (reaction, shield broken, telegraph guarded, Momentum Surge, tame), each a share of the win's XP and gold, capped.
 // Per-hero XP is measured, not guessed: win() is wrapped to snapshot each hero's total XP before and after (info.xpBy).
 function rsTotXp(c){let t=c.xp||0;for(let l=1;l<c.lv;l++)t+=need(l);return t;}
 {const w0=win;win=function(){let snap=null;try{if(B&&G&&B.spec&&B.spec.kind!=='daily'){snap={};B.front.concat(B.back).forEach(c=>{if(c&&c.id&&G.roster[c.id])snap[c.id]={xp:rsTotXp(G.roster[c.id]),lv:G.roster[c.id].lv,front:B.front.includes(c),alive:c.hp>0};});}}catch(e){snap=null;}
   const r=w0.apply(this,arguments);
+  try{const info=(B&&B.result)||(V.modal&&V.modal.info);if(snap&&info&&!info.nzDone)nzApply(info,snap);}catch(e){}
   try{const info=(B&&B.result)||(V.modal&&V.modal.info);if(snap&&info){info.xpBy=Object.keys(snap).map(id=>{const c=G.roster[id],s=snap[id];return {id,name:c.name,gain:Math.max(0,rsTotXp(c)-s.xp),lv0:s.lv,lv:c.lv,front:s.front,alive:s.alive};});}}catch(e){}
   try{if(V.modal&&V.modal.type==='result')render();}catch(e){}
   return r;};}
@@ -15810,13 +15868,45 @@ function rsParty(i){const cu={};(i.catchup||[]).forEach(r=>{cu[r.id]=r;});const 
       ${up?`<div class="rs-lv">Level up! <b>Lv ${up.lv}</b>${up.pts?` <span class="up">${up.pts} stat point${up.pts>1?'s':''} to spend</span>`:''}</div>`:`<small>Lv ${c.lv}</small>`}${xpLine(c)}</div></div>`;}).join('')}</div>`;}
 function rsNotes(i){const rows=[];(i.quests||[]).forEach(q=>rows.push(`<div class="row"><b>Quest ready</b><span>${esc(q)}</span></div>`));
   (i.bonds||[]).forEach(b=>rows.push(`<div class="row bondr"><b>Bond grows</b><span>${esc(b.a)} and ${esc(b.b)}: level ${b.lv}${b.lv===2?' (joint tech unlocked)':b.lv===1||b.lv===3?' (new campfire talk: make camp or open their sheets)':''}</span></div>`));
-  return (rows.length?`<div class="rows">${rows.join('')}</div>`:'')+(i.notes||[]).map(n=>`<p class="note echonote">${esc(n)}</p>`).join('')+(i.autoCut?`<p class="note autocut">Won mostly on auto: ${Math.round(i.autoCut*100)}% XP and gold. Drops and loot are unchanged.</p>`:'');}
+  return (rows.length?`<div class="rows">${rows.join('')}</div>`:'')+(i.notes||[]).map(n=>`<p class="note echonote">${esc(n)}</p>`).join('')+(i.autoNew&&i.autoNew.length?`<p class="note rs-autonew">Auto unlocked against ${i.autoNew.map(esc).join(', ')}: beaten by hand ${NUDGE.autoKills} times.</p>`:'');}
+// ----- v0.9.5 bonuses -----
+const NZ_LAB={react:'Reaction set off',brk:'Shield broken',guard:'Guarded a telegraphed hit',surge:'Momentum Surge reached',tame:'Creature tamed'};
+// the battle part of a win's gold (bounty and arena prizes are fixed sums, outside the auto/manual gap and the bonuses)
+function nzBattleGold(info,spec){let g=info.gold||0;try{if(spec&&spec.kind==='elite'&&spec.bounty&&!spec.bounty.personal)g-=econG(spec.bounty.reward.gold);if(spec&&spec.kind==='arena'&&ARENA[spec.tier])g-=econG(ARENA[spec.tier].reward.gold);}catch(e){}return Math.max(0,g);}
+// pay a share p of the win: each hero gets p of the XP they gained in it, and p of the battle gold; returns {xp (the most one hero got), gold}
+function nzPay(info,p){const out={xp:0,gold:0};if(!(p>0))return out;const base=info.nzBase||{};
+  Object.keys(base.by||{}).forEach(id=>{const c=G.roster[id],g=base.by[id];if(!c||!(g>0))return;const add=Math.round(g*p);if(add<=0)return;const ups=addXp(c,add);out.xp=Math.max(out.xp,add);
+    if(ups.length){info.ups=info.ups||[];let u=info.ups.find(x=>x.name===c.name);if(!u){u={name:c.name,lv:c.lv,learned:[],pts:c.pts};info.ups.push(u);}u.lv=c.lv;u.pts=c.pts;u.learned=(u.learned||[]).concat(ups.flatMap(x=>x.learned));}});
+  const g=Math.round((base.gold||0)*p);if(g>0){G.gold+=g;info.gold+=g;out.gold=g;}
+  info.xp=(info.xp||0)+Math.round((base.xp||0)*p);
+  try{const L=learnScanAll();if(L.length)info.learn=(info.learn||[]).concat(L);}catch(e){}
+  return out;}
+function nzApply(info,snap){info.nzDone=1;if(!B||!G||G.daily||!B.spec||B.spec.kind==='daily'||typeof NUDGE==='undefined'||!NUDGE.on)return;
+  const by={};Object.keys(snap).forEach(id=>{const c=G.roster[id];if(c)by[id]=Math.max(0,rsTotXp(c)-snap[id].xp);});
+  const gold=nzBattleGold(info,B.spec);info.nzBase={by,gold,xp:info.xp||0};
+  // 1. the manual bonus: what this win pays over the same win on auto (these totals are what the game always paid)
+  if(!info.autoCut){const k=1-AUTO_REW;info.manual={pct:manualBonusPct(),xp:Math.round((info.xp||0)*k),gold:Math.round(gold*k)};}
+  // 2. the systems used in this battle, once each, within the cap
+  const z=B.nz||{},S=NUDGE.sys,lines=[];let pct=0;
+  ['react','brk','guard','surge'].forEach(k=>{if((z[k]||0)>0&&S[k]>0){const p=Math.min(S[k],Math.max(0,S.cap-pct));if(p>0){pct+=p;lines.push({k,p});}}});
+  info.nz={lines,pct,xp:0,gold:0};if(pct>0){const o=nzPay(info,pct);info.nz.xp=o.xp;info.nz.gold=o.gold;}}
+function rsBonus(i){const L=[],pc=p=>Math.round(p*100)+'%';
+  if(i.manual)L.push(`<div class="rs-bon man"><b>+${i.manual.pct}% for playing it yourself</b><span>+${fmt(i.manual.xp)} XP, +${fmt(i.manual.gold)} gold over an auto win</span></div>`);
+  else if(i.autoCut)L.push(`<div class="rs-bon auto"><b>Won on auto</b><span>Play a fight yourself for +${manualBonusPct()}% XP and gold.</span></div>`);
+  const z=i.nz;if(z&&z.lines.length){z.lines.forEach(o=>L.push(`<div class="rs-bon sys"><b>${NZ_LAB[o.k]||o.k}</b><span>+${pc(o.p)} XP and gold</span></div>`));
+    L.push(`<div class="rs-bon tot"><small>Systems bonus +${pc(z.pct)}${z.pct>=NUDGE.sys.cap-1e-9?' (the most one battle pays)':''}: up to +${fmt(z.xp)} XP a hero, +${fmt(z.gold)} gold</small></div>`);}
+  return L.length?`<div class="rs-bons">${L.join('')}</div>`:'';}
+// a tame on the rewards screen adds its bonus (within the cap)
+{const t0=ACT.tame;ACT.tame=function(){const i=V.modal&&V.modal.info,was=i&&i.tamed;const r=t0.apply(this,arguments);
+  try{if(i&&!was&&i.tamed&&i.nz&&!i.nzTame&&G&&!G.daily){i.nzTame=1;const S=NUDGE.sys,p=Math.min(S.tame||0,Math.max(0,S.cap-i.nz.pct));
+    if(p>0){const o=nzPay(i,p);i.nz.lines.push({k:'tame',p});i.nz.pct+=p;i.nz.xp+=o.xp;i.nz.gold+=o.gold;
+      (i.xpBy||[]).forEach(x=>{const c=G.roster[x.id];if(c&&i.nzBase.by[x.id]>0){x.gain+=Math.round(i.nzBase.by[x.id]*p);x.lv=c.lv;}});render();}}}catch(e){}return r;};}
 function mResult(i){
   const pend=i.tame&&!i.tamed,foot=pend&&i.tameWarn?`<p class="rs-ask">${esc(i.tame.name)} is still waiting. Tame it, or leave it behind?</p><button class="btn gold" data-act="tame">Tame it</button><button class="btn" data-act="resultLeave">Leave it and continue</button>`:'<button class="btn gold" data-act="resultOk">Continue</button>';
   return `<div class="modal"><div class="panel box result rs"><h2>Victory</h2>
     ${rsTame(i)}
     ${(i.learn||[]).length?`<div class="learntop"><h4>New skills</h4><div class="rows">${i.learn.map(o=>`<div class="row learnr">${learnLine(o)}</div>`).join('')}</div></div>`:''}
-    ${rsJoin(i)}${rsGrid(i)}${rsParty(i)}${rsNotes(i)}
+    ${rsJoin(i)}${rsGrid(i)}${rsBonus(i)}${rsParty(i)}${rsNotes(i)}
     <div class="btnrow stickyb rs-foot">${foot}</div></div></div>`;}
 {const ok0=ACT.resultOk;ACT.resultOk=function(){const i=V.modal&&V.modal.info;if(i&&i.tame&&!i.tamed&&!i.tameWarn){i.tameWarn=1;try{sfx('blip');}catch(e){}render();const p=document.querySelector('#modal .panel');if(p)p.scrollTop=0;return;}return ok0.apply(this,arguments);};}
 {const fbE=finishBattle;finishBattle=function(){V.endT=Date.now();return fbE.apply(this,arguments);};}// v0.8.2: when the last battle ended (qready stays quiet then)
@@ -15834,7 +15924,11 @@ try{const css=document.createElement('style');css.textContent=`
 .rs .rs-hero.up{background:rgba(255,208,74,.09);border:1px solid rgba(255,208,74,.5)}.rs .rs-hero.ko{opacity:.6}
 .rs .rs-top{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}.rs .rs-gain{font-style:normal;color:#9ad0ff;font-weight:800}.rs .rs-none{font-style:normal;opacity:.75}
 .rs .rs-cu{font-size:.72rem;color:#7affc8}.rs .rs-lv{color:#ffd04a;font-weight:700}.rs .rs-ask{width:100%;margin:0 0 6px;font-weight:700;color:#ffd04a}
-.rs .rs-foot{flex-wrap:wrap}`;document.head.appendChild(css);}catch(e){}
+.rs .rs-foot{flex-wrap:wrap}
+.rs .rs-bons{display:grid;gap:4px;margin:-4px 0 12px}.rs .rs-bon{display:flex;gap:2px 8px;align-items:baseline;flex-wrap:wrap;padding:4px 8px;border-radius:6px;background:rgba(255,208,74,.07)}
+.rs .rs-bon b{color:#ffd04a;font-size:.92rem}.rs .rs-bon span{font-size:.8rem;opacity:.9;min-width:0;overflow-wrap:anywhere}.rs .rs-bon.man{border:1px solid rgba(255,208,74,.55);background:rgba(255,208,74,.12)}
+.rs .rs-bon.auto{background:rgba(255,255,255,.04)}.rs .rs-bon.auto b{color:var(--mute,#aab)}.rs .rs-bon.tot{background:none;padding:0 8px}.rs .rs-bon.tot small{opacity:.8}
+.rs .rs-autonew{color:#7affc8}`;document.head.appendChild(css);}catch(e){}
 // v0.8.2 test aid: the last sounds asked for, by name (window.__SFX, at most 50)
 {const s0=sfx;sfx=function(n){try{const L=window.__SFX=window.__SFX||[];L.push(n);if(L.length>50)L.shift();}catch(e){}return s0.apply(this,arguments);};}
 
@@ -19621,6 +19715,8 @@ try{const css=document.createElement('style');css.textContent=`.c3prog{display:b
 try{window.__C3={compBt,compStage,compNext,compEvoArt,compSkill2,compEvoName,get TAME(){return TAME;}};}catch(e){}
 
 // ===== onboard.js (v0.7.0): onboarding: one tip card the first time each system appears =====
+// v0.9.5 (docs/v095-nudges.md): battle cards are one line actions with a reason; expert cards (x: Reactions in depth, Tempering, Echoforge,
+// guild ranks, New Game+ modifiers) wait until the player has opened that system once (META.tips.u "o:..." keys, set by obOpened).
 // One short card (two lines at most, plain words) the first time the player really meets a system: the first primed foe, the
 // first shield, the first tame offer, the first time Alchemy sells Camp Supplies, and so on. It reuses the 2.7 hint card
 // (p2world.js: the #p2hint element, its look and hintPlace) with "Got it" and "More" (More opens Guides > How it works at that
@@ -19656,42 +19752,57 @@ const obFoes=()=>B?B.en.filter(e=>e&&e.hp>0):[];
 function obCharm(id){const g=gearOf(id);return !!(g&&g.slot==='c');}
 function obReserves(){return G?Object.keys(G.roster).filter(id=>!G.party.includes(id)):[];}
 
+// v0.9.5 battle cards are one line actions with a reason. A primed foe names the hero and skill that sets it off, when the party has one.
+function obPrimedTip(e){const pe=e.primed.el;let best=null;
+  try{obFront().forEach(c=>{if(best)return;known(c).forEach(s=>{if(best||s.role!=='det'||(s.mp||0)>c.mp)return;const x=skEls(s).find(el=>reactFor(pe,el));if(x)best={c,s,R:reactFor(pe,x)};});});}catch(err){}
+  if(best)return `Primed with ${EL[pe]}: try ${p2Nm(best.c)}'s ${best.s.n} on ${e.name}.`;
+  const ds=Object.values(REACT).filter(R=>R.p===pe).map(R=>EL[R.d]);
+  return `${e.name} is primed with ${EL[pe]}. Try a ${ds[0]} Detonator on it.`;}
+function obReactFx(R){const W={blind:'blinds',stun:'stuns',slow:'slows',burn:'burns',root:'roots',break:'breaks armor',weaken:'weakens',bleed:'makes it bleed'};
+  const L=(R.fx||[]).map(f=>W[f[0]]).filter(Boolean);if(R.splash)L.push('splashes nearby foes');if(R.strip)L.push('strips buffs');if(R.selfFx)L.push('wards the caster');if(R.allyFx)L.push('heals your Vanguard over time');
+  return L.length?L[0]:'hits harder than most';}
+// expert cards (x): only after the player has opened that system once (META.tips.u), so a newcomer meets the basics first
 // ----- the systems: id, Guides section, the moment (returns the card text, or null when it is not the moment), the longer Guides text -----
 // t: card text. g: Guides text. sec: Guides group. more: the Guides tab "More" opens ('sysg' by default). go: a button on the Guides entry.
 const TIPS=[
  // battle
  {id:'weak',n:'Elements',sec:'Battle',more:'types',go:['menuTab','types','Foe types'],
-  t:()=>obBat()&&B.hitWeak?'Weak spot! Each foe has an element; when you aim, its tag says Weak, Neutral or Resists.':null,
+  t:()=>obBat()&&B.hitWeak?'Weak spot! Aim where the tag says Weak: more damage, and shields crack.':null,
   g:'Every hero and foe has one or two elements (fire, water, earth and so on). Hitting a weakness deals extra damage and cracks a shield; a resisted hit does less. The tag over a foe while you aim tells you which before you strike. Guides > Foe types has the full chart.'},
  {id:'types',n:'Foe types',sec:'Battle',more:'types',go:['menuTab','types','Foe types'],
-  t:()=>{if(!obBat())return null;const e=obFoes().find(x=>x.ty&&x.ty.length&&ARCH[x.ty[0]]);return e?`${e.name} is ${ARCH[e.ty[0]].n}. A foe's type decides which kinds of hits work best on it.`:null;},
+  t:()=>{if(!obBat())return null;const e=obFoes().find(x=>x.ty&&x.ty.length&&ARCH[x.ty[0]]);return e?`${e.name} is ${ARCH[e.ty[0]].n}. Tap it to see which kinds of hits it fears, then use those.`:null;},
   g:'Many foes have a type such as Flying, Armored, Jelly, Undead, Swarm, Beast or Plant. The type decides which kinds of hits work best against it. Tap a foe in battle, or open Guides > Foe types, to read what each type fears.'},
  {id:'deliver',n:'Kinds of hits',sec:'Battle',more:'types',
-  t:()=>{if(!obBat())return null;const e=B.en.find(x=>(x.fx||[]).some(f=>/effx/.test(f.cls||'')));return e?'▲ over a foe: your kind of hit suits it. ▼: it glances off. Weapons decide the kind.':null;},
+  t:()=>{if(!obBat())return null;const e=B.en.find(x=>(x.fx||[]).some(f=>/effx/.test(f.cls||'')));return e?'▲ over a foe: this kind of hit suits it, keep using that hero. ▼: try another hero.':null;},
   g:'Every attack has a kind: Slash, Blunt, Piercing, Ranged or Magic (heals count as Heal). Against a foe with a type, some kinds hit harder (▲ over the foe) and some glance off (▼). Weapons decide the kind of a plain Attack, so a mixed party has an answer for every type.'},
  {id:'shield',n:'Shields and Break',sec:'Battle',
-  t:()=>{if(!obBat())return null;const e=obFoes().find(x=>x.maxShield>0);return e?`${e.name} has a shield (the diamonds). Weak hits and reactions crack it; at zero it Breaks.`:null;},
+  t:()=>{if(!obBat())return null;const e=obFoes().find(x=>x.maxShield>0);return e?`${e.name} has a shield. Hit its weakness or set off a reaction on it to Break it.`:null;},
   g:'Elites, Scourges and Calamities carry a shield, shown as diamonds beside their HP bar. Hits on a weakness crack one diamond and reactions crack three. When the last one goes the foe Breaks: it loses its next turn and takes more damage until it recovers.'},
  {id:'primed',n:'Primers',sec:'Battle',
-  t:()=>{if(!obBat())return null;const e=obFoes().find(x=>x.primed&&EL[x.primed.el]);return e?`${e.name} is Primed with ${EL[e.primed.el]}! A Detonator of another element sets it off.`:null;},
+  t:()=>{if(!obBat())return null;const e=obFoes().find(x=>x.primed&&EL[x.primed.el]);return e?obPrimedTip(e):null;},
   g:'A Primer skill marks a foe with its element for two turns (the small element badge with a number). While it lasts, a Detonator skill of a different element sets it off. Primers and Detonators are role skills that wayfarers learn with levels; the skill list says which is which.'},
  {id:'react',n:'Reactions and Detonators',sec:'Battle',
-  t:()=>{if(!obBat()||!(B.nDet>0))return null;const e=B.en.find(x=>x.reactN);return `${e?e.reactN+'! ':''}A Primer then a Detonator makes a reaction: a big hit that cracks shields too.`;},
+  t:()=>{if(!obBat()||!(B.nDet>0))return null;const e=B.en.find(x=>x.reactN);return `${e?e.reactN+'! ':''}Primer then Detonator hits hard and cracks shields. Prime the next foe too.`;},
   g:'When a Detonator hits a Primed foe, the two elements react: Melt, Overload, Shatter and many more, each with its own extra effect. A reaction hits hard and cracks three shield diamonds. While you aim a Detonator, the foes it would set off glow and name the reaction.'},
+ // v0.9.5: an expert card, only once the player has opened Lore (in battle or the menu)
+ {id:'react2',n:'Reactions in depth',sec:'Battle',x:'o:lore',go:['cmdLoreOb','','Lore'],
+  t:()=>{if(!obBat()||!(B.nDet>0))return null;const e=B.en.find(x=>x.reactN&&x.reactP&&x.reactEl);if(!e)return null;const R=REACT[reactKey(e.reactP,e.reactEl)];if(!R)return null;
+   return `${R.n} also ${obReactFx(R)}. Every element pair reacts its own way; Lore lists all ${Object.keys(REACT).length}.`;},
+  g:'Every pair of elements makes its own reaction, and each adds something besides the big hit: Steam and Sandblast blind, Conduct and Freeze stun, Mire and Permafrost root, Wildfire and Overload splash onto other foes, Purge strips a foe\'s buffs, Melt and Eclipse simply hit hardest. The primer element is the one marked on the foe; the detonator is the skill you hit it with. Lore in battle lists them all.'},
  {id:'status',n:'Statuses',sec:'Battle',go:['cmdLoreOb','','Lore'],
-  t:()=>{if(!obBat())return null;const u=obFront().concat(obFoes()).find(x=>Object.keys(x.st||{}).some(k=>STS[k]&&STS[k].bad));return u?`${u.name} has a status. Tap a hero or foe to read its icons; a Remedy cures bad ones.`:null;},
+  t:()=>{if(!obBat())return null;const u=obFront().concat(obFoes()).find(x=>Object.keys(x.st||{}).some(k=>STS[k]&&STS[k].bad));return u?`${u.name} has a status. Tap them to read the icon; a Remedy cures the bad ones.`:null;},
   g:'Statuses are small icons next to a unit: poison, burn, slow, stun and others hurt, while haste, might and ward help. They wear off after a few turns. Tap a hero or foe to read them, use a Remedy from Items to cure a hero, and open Lore in battle for the full list.'},
  {id:'limit',n:'Limit',sec:'Battle',
-  t:()=>{if(!obBat()||B.mode!=='cmd'||!B.cur||B.cur.side!=='p'||!lbReady(B.cur))return null;return `${p2Nm(B.cur)}'s Limit is full! Its gold button now tops the commands: a big move.`;},
+  t:()=>{if(!obBat()||B.mode!=='cmd'||!B.cur||B.cur.side!=='p'||!lbReady(B.cur))return null;return `${p2Nm(B.cur)}'s Limit is full. Tap the gold Limit button now for their biggest move.`;},
   g:'Heroes fill a Limit bar (the thin gold bar under their HP) by taking hits and when allies fall. When it is full, a gold Limit button appears at the top of that hero\'s commands. Limit moves are each class\'s strongest; at higher levels they grow into a stronger second tier.'},
  {id:'switch',n:'Switching',sec:'Battle',
-  t:()=>{if(!obBat()||B.mode!=='cmd'||!B.cur||B.cur.side!=='p'||!canSwap())return null;const c=B.cur;return c.hp<c.S.mhp*.4?`${p2Nm(c)} is hurt. Switch trades them for a Rearguard hero, who acts at once.`:null;},
+  t:()=>{if(!obBat()||B.mode!=='cmd'||!B.cur||B.cur.side!=='p'||!canSwap())return null;const c=B.cur;return c.hp<c.S.mhp*.4?`${p2Nm(c)} is hurt. Switch them out: a Rearguard hero comes in and acts at once.`:null;},
   g:'The front three of your party are the Vanguard and the back three the Rearguard. On a Vanguard hero\'s turn, Switch trades that hero for one of them, and the newcomer acts at once. The hero who steps back sheds their statuses. When a Vanguard hero falls, the next Rearguard hero steps in by themselves.'},
  {id:'scan',n:'Scan and Lore',sec:'Battle',go:['menuTab','beasts','Bestiary'],
-  t:()=>{if(!obBat()||B.mode!=='cmd')return null;const e=obFoes().find(x=>x.boss||x.elite);if(!e)return null;const b=(META.best||{})[e.base]||{};return b.scan?null:'Scan shows a foe\'s exact stats and hidden quirk for half a turn. Lore explains the rest.';},
+  t:()=>{if(!obBat()||B.mode!=='cmd')return null;const e=obFoes().find(x=>x.boss||x.elite);if(!e)return null;const b=(META.best||{})[e.base]||{};return b.scan?null:`Scan ${e.name} first: its exact stats and hidden quirk show, for half a turn.`;},
   g:'Scan, under the main commands, reads one foe\'s exact HP and stats, its hidden quirk and a boss\'s turning point, for half a turn. What you learn stays in the Bestiary. Lore pauses the fight and lists elements, reactions and statuses.'},
  {id:'summon',n:'Summons',sec:'Creatures',
-  t:()=>{if(!obBat()||B.mode!=='cmd'||!B.cur||!canSummon(B.cur))return null;const o=compOf(B.cur);return o?`${p2Nm(B.cur)} can Summon ${o.name}: it fights in their place for a few turns.`:null;},
+  t:()=>{if(!obBat()||B.mode!=='cmd'||!B.cur||!canSummon(B.cur))return null;const o=compOf(B.cur);return o?`${p2Nm(B.cur)} can Summon ${o.name}: call it in to fight for a few turns.`:null;},
   g:'A hero paired with a companion gets a Summon command. The companion takes the hero\'s place for a few turns, once per battle, then the hero comes back. Companions never fight in the Daily Trial.'},
  {id:'echo',n:'Echoes',sec:'Later',
   t:()=>{if(!obBat())return null;const e=obFoes().find(x=>/^Echo /.test(x.name||''));return e?`${e.name} is an Echo, a stronger form of a beaten boss. Its shards forge rare weapons.`:null;},
@@ -19723,8 +19834,8 @@ const TIPS=[
   t:()=>{if(!obModal('menu')||obTab()!=='party')return null;return obReserves().length?'Build Party suggests parties for this area. Training team helps heroes who fell behind.':null;},
   g:'Build Party (Party tab) looks at your roster, the foes of this area and its boss, and suggests a Vanguard and Rearguard in formations: Balanced, Boss ready, Area answer, Fresh mix, Rotation. Training team puts heroes who fell behind beside a strong tank and healer, so the XP catch up bonus lifts them quickly.'},
  // town
- {id:'guild',n:'Guilds and guild missions',sec:'Town',go:['menuTab','fmis','Guild missions'],
-  t:()=>{if(!obWorld()||typeof facRank!=='function')return null;const F=FAC.find(f=>facRank(f.id)>=2);return F?`New rank with the ${F.n}! Guild missions in Quests earn rank even faster.`:null;},
+ {id:'guild',n:'Guilds and guild missions',sec:'Town',x:'o:guild',go:['menuTab','fmis','Guild missions'],
+  t:()=>{if(!obWorld()||typeof facRank!=='function')return null;const F=FAC.find(f=>facRank(f.id)>=2);return F?`New rank with the ${F.n}! Each rank adds a perk; Notice Board missions raise it faster.`:null;},
   g:'Five guilds watch what you do anyway: wins and bounties, forging and tempering, brewing, taming, and knowledge. Each rank brings a perk (cheaper inns, gold, XP, unique charms). Guild missions in the Quests menu add extra standing. Ranks are per journey.'},
  {id:'personal',n:'Personal quests',sec:'Town',
   t:()=>{if(!obWorld())return null;const c=partyOf().find(c=>personalEligible(c)&&!(G.personal&&G.personal[c.id]&&G.personal[c.id].state!=='open'));return c?`${p2Nm(c)} has a personal quest! Start it at the Guild Hall for a reward of their own.`:null;},
@@ -19735,8 +19846,8 @@ const TIPS=[
  {id:'arena',n:'Arena',sec:'Town',
   t:()=>{if(!obModal('guild')||V.modal.char)return null;const cl=(G.cleared||[]).filter(Boolean).length;return ARENA.some((A,i)=>A.min<=cl&&!(G.arena||{})[i])?'The Arena is open: waves of foes back to back for prizes. No fleeing, no rest.':null;},
   g:'The Guild Hall\'s Arena opens Bronze after the first Scourge, Silver after the second and Gold after the third. Waves come back to back with no rest and no fleeing; each tier pays gold and materials the first time.'},
- {id:'temper',n:'Tempering',sec:'Town',
-  t:()=>{if(!obModal('smithy'))return null;const ok=partyOf().some(c=>EQSL.some(sl=>{const id=c.eq[sl];const f=id&&forgeCost(id);return f&&G.gold>=f.gold&&hasMats(f.m);}));return ok?'Tempering raises gear by +1 with parts and gold. Look in the Tempering tab.':null;},
+ {id:'temper',n:'Tempering',sec:'Town',x:'o:temper',
+  t:()=>{if(!obModal('smithy'))return null;const ok=partyOf().some(c=>EQSL.some(sl=>{const id=c.eq[sl];const f=id&&forgeCost(id);return f&&G.gold>=f.gold&&hasMats(f.m);}));return ok?'Temper what your best hitter holds first. Past +1 needs the realm relic, later a Dread Core.':null;},
   g:'At the Smithy\'s Tempering tab, parts from monsters and gold raise a weapon, armor, cape or charm by +1. The list puts ready upgrades first. Going past +1 needs the realm\'s relic and, later, a Dread Core.'},
  {id:'craft',n:'Crafting',sec:'Town',
   t:()=>{const sm=obModal('smithy'),al=obModal('workshop');if(!sm&&!al)return null;const can=RECIPES.some(r=>recipeOpen(r)&&(sm?SMITH_CATS.includes(r.cat):!SMITH_CATS.includes(r.cat))&&G.gold>=r.g&&hasMats(recipeMats(r)));
@@ -19746,14 +19857,14 @@ const TIPS=[
   t:()=>{if(!obWorld())return null;return (G.gear||[]).some(obCharm)?'You found a charm! Each hero has one charm slot. Equip it in Backpack > Equipment.':null;},
   g:'Charms fill the fourth gear slot of each hero: a small stat boost or a special effect. Bounties drop stat charms, Alchemy sells and brews them (Shop > Charms), and guild ranks give unique ones. They can be tempered too.'},
  // later
- {id:'echoforge',n:'Echoforge',sec:'Later',
-  t:()=>{if(!obModal('smithy')||typeof efTabOn!=='function'||!efTabOn())return null;return 'The Echoforge tab turns Echo Shards and Essence into Echoforged weapons.';},
+ {id:'echoforge',n:'Echoforge',sec:'Later',x:'o:echo',
+  t:()=>{if(!obModal('smithy')||typeof efTabOn!=='function'||!efTabOn())return null;return 'Each Echo\'s shards forge a different weapon. Read the Echoforge list, then pick which Echo to hunt.';},
   g:'Once you hold Echo Shards (or the journey is won), the Smithy shows an Echoforge tab. It turns Shards and Essence from Echoes into six Echoforged weapons, each the strongest of its family.'},
  {id:'legend',n:'Legends',sec:'Later',
   t:()=>{if(!obModal('board'))return null;return (G.quests||[]).some(q=>q.type==='legend'&&(q.state==='open'||q.state==='active'))?'A legend quest! Follow its steps to meet a Legendary wayfarer who may join you.':null;},
   g:'From the second realm, a Quest Board may post a legend quest. Its steps lead to a Legendary wayfarer, a hand made hero with a unique class and trait. Accept it, follow the steps shown in Quests, and they may join you.'},
- {id:'ngplus',n:'New Game+ modifiers',sec:'Later',
-  t:()=>{if(V.screen!=='starter'||!((V.ngCycle||0)>0)||typeof TWISTS==='undefined'||!TWISTS.on||V.modal)return null;return `Modifiers add risk for more reward for this whole cycle. Pick up to ${TWISTS.ng.max}, or none.`;},
+ {id:'ngplus',n:'New Game+ modifiers',sec:'Later',x:'o:ng',
+  t:()=>{if(V.screen!=='starter'||!((V.ngCycle||0)>0)||typeof TWISTS==='undefined'||!TWISTS.on||V.modal)return null;return `Modifiers last this whole cycle: each risk pays more XP or gold. Pick up to ${TWISTS.ng.max}, or none.`;},
   g:'When you start a New Game+ cycle you may pick a few modifiers (on the hero picking screen). Each adds a risk, such as tougher foes or heroes who stay down, and a gain, such as more XP or gold. They last for the whole cycle and show on the save card.'},
  {id:'twist',n:'Daily Trial twist',sec:'Later',always:1,
   t:()=>null,
@@ -19806,7 +19917,7 @@ function obPlaceBattle(d){const wrap=document.getElementById('bwrap');if(!wrap)r
   // stay put while the spot is still clear of every sprite and card (no jumping around as labels come and go)
   if(d.dataset.obp===String(B&&B.id)&&d.offsetWidth){const r=d.getBoundingClientRect(),lr=(document.getElementById('bline')||wrap).getBoundingClientRect();
     const inside=r.left>=Math.min(W.left,lr.left)-1&&r.right<=Math.max(W.right,lr.right)+1&&r.top>=W.top-1&&r.bottom<=Math.max(W.bottom,lr.bottom)+1;if(inside&&obFree(r.left,r.top,r.width,r.height,bodies,1))return true;}
-  d.classList.remove('slim');
+  d.classList.remove('slim','tight');
   const widths=[Math.min(420,W.width-12),Math.min(340,W.width-12)].filter((v,i,a)=>v>=150&&a.indexOf(v)===i);
   const put=(x,y,w)=>{d.style.left=Math.round(x+w/2)+'px';d.style.top=Math.round(y)+'px';d.style.bottom='auto';d.dataset.obp=String(B&&B.id);return true;};
   // 1) a free spot on the stage: first clear of everything, then clear of sprites and cards (it may touch a label)
@@ -19816,8 +19927,8 @@ function obPlaceBattle(d){const wrap=document.getElementById('bwrap');if(!wrap)r
         for(const x of xs){if(x<W.left+2||x+w>W.right-2||!obFree(x,y,w,h,ob,3))continue;const s=Math.abs(x+w/2-cx);if(!best||s<best.s)best={x,y,s};}}
       if(best)return put(best.x,best.y,w);}}
   // 2) a crowded stage (short landscape screens): a slim card over the log line under the stage, the buttons beside the text
-  const ln=document.getElementById('bline');if(ln){const Lr=ln.getBoundingClientRect();if(Lr.width>=200){d.classList.add('slim');const w=Lr.width;d.style.width=w+'px';d.style.maxWidth=w+'px';const h=d.offsetHeight;
-    const y=Lr.bottom-h;if(obFree(Lr.left,y,w,h,bodies,1))return put(Lr.left,y,w);d.classList.remove('slim');}}
+  const ln=document.getElementById('bline');if(ln){const Lr=ln.getBoundingClientRect();if(Lr.width>=200){d.classList.add('slim');const w=Lr.width;d.style.width=w+'px';d.style.maxWidth=w+'px';if(obLines(d)>2)d.classList.add('tight');/* v0.9.5: a long tip in a narrow slim card takes a smaller type, two lines at most */const h=d.offsetHeight;
+    const y=Lr.bottom-h;if(obFree(Lr.left,y,w,h,bodies,1))return put(Lr.left,y,w);d.classList.remove('slim','tight');}}
   d.style.width='';d.style.maxWidth='';delete d.dataset.obp;return false;}
 // replaces p2world's hintPlace: in battle the search above (falls back to the old spot at the top of the stage), elsewhere the default spot
 {const hp0=hintPlace;hintPlace=function(d){d=d||document.getElementById('p2hint');if(!d)return;if(d.classList.contains('inl'))return;
@@ -19828,10 +19939,18 @@ function obPlaceBattle(d){const wrap=document.getElementById('bwrap');if(!wrap)r
 if(typeof p5Avoid==='function'){const pa1=p5Avoid;p5Avoid=function(){const r=pa1.apply(this,arguments);try{const d=document.getElementById('p2hint');if(d&&d.classList.contains('show')){const b=d.getBoundingClientRect();if(b.width)r.push(b);}}catch(e){}return r;};}
 
 // ----- the queue -----
-function obEval(t){try{return t.t()||null;}catch(e){return null;}}
+// v0.9.6 depth unlocks by realm (pacing.js pcUnlocked): a card about a system that is not open yet on this journey waits for it
+const OB_PACE={primed:'reactions',react:'reactions',react2:'reactions',tame:'taming',comp:'taming',stick:'taming',summon:'taming',bond:'bonds',camp:'camp',guild:'guilds',temper:'gear',echoforge:'echoforge'};
+const obPc=id=>!OB_PACE[id]||typeof pcUnlocked!=='function'||pcUnlocked(OB_PACE[id]);
+function obEval(t){try{if(t.x&&!tipUsed(t.x))return null;if(!obPc(t.id))return null;return t.t()||null;}catch(e){return null;}}
+// v0.9.5: opening a system once (for the expert cards): the Smithy's Tempering and Echoforge tabs, the Guild Hall, Lore
+function obOpened(){try{if(!G||G.daily)return;const m=V.modal;if(!m)return;
+  if(m.type==='smithy'&&m.tab==='forge')tipUse('o:temper');if(m.type==='smithy'&&m.tab==='echo')tipUse('o:echo');if(m.type==='guild'||(m.type==='board'&&m.tab==='guilds'))tipUse('o:guild');
+  if(m.type==='battlelore'||(m.type==='menu'&&m.tab==='lore'))tipUse('o:lore');}catch(e){}}
+{const ng0=ACT.ngMod;if(typeof ng0==='function')ACT.ngMod=function(){try{const M=obM();if(!M.u['o:ng']){M.u['o:ng']=1;saveMeta();}}catch(e){}return ng0.apply(this,arguments);};}
 function obHold(){if(obBossHold())return true;const m=V.modal;if(m&&['story','talk','legacy','lose','boss','slots','export','import','feedback','fbcopy'].includes(m.type))return true;
   if(V.screen==='title')return true;return false;}
-function obTick(){try{
+function obTick(){try{obOpened();
   if(!tipsOn()){if(OB.cur)obClose();OB.q=[];return;}
   if(OB.cur&&P2.hint!=='tip:'+OB.cur){OB.cur=null;OB.curCtx=null;clearTimeout(OB.hide);}// a first realm hint took the card over
   if(OB.cur){const c=OB.curCtx||{},id=OB.cur;
@@ -19867,7 +19986,7 @@ function obUntried(){const out=[];if(!G||G.daily)return out;const add=(t,s)=>out
   try{if(tipSeen('switch')&&!tipUsed('switch'))add('Try Switch in battle','On a hurt hero\'s turn it brings in a Rearguard hero, who acts at once.');}catch(e){}
   try{if(tipSeen('limit')&&!tipUsed('limit'))add('Try a Limit move','When a hero\'s gold bar is full, the Limit button tops their commands.');}catch(e){}
   try{if(tipSeen('summon')&&!tipUsed('summon'))add('Try Summon in battle','A hero with a companion can call it in to fight for a few turns.');}catch(e){}
-  try{if(tipSeen('guild')&&typeof facInit==='function'){const f=facInit();if(!Object.keys(f.acc||{}).length&&!Object.keys(f.done||{}).length)add('Try a guild mission','Quests > Guild missions: extra standing and the next perk sooner.');}}catch(e){}
+  try{if(tipSeen('guild')&&obPc('guild')&&typeof facInit==='function'){const f=facInit();if(!Object.keys(f.acc||{}).length&&!Object.keys(f.done||{}).length)add('Try a guild mission','Notice Board > Guilds: extra standing and the next perk sooner.');}}catch(e){}
   try{if(tipSeen('bestparty')&&!tipUsed('bestparty'))add('Try Build Party','Party tab: it suggests a party for this area and a Training team for heroes who fell behind.');}catch(e){}
   try{const R=obReserves();if(tipSeen('reserves')&&!tipUsed('reserves')&&R.length&&(G.gear||[]).some(id=>{const g=gearOf(id);return g&&!g.stick;}))add('Equip best: reserves','Party tab: your Reserves take the best spare gear from the pack.');}catch(e){}
   try{if(tipSeen('charm')){const c=(G.gear||[]).filter(obCharm);const empty=partyOf().filter(h=>!h.eq.c);if(c.length&&empty.length)add(`A charm is waiting in your pack`,`${empty.slice(0,3).map(h=>esc(p2Nm(h))).join(', ')} ${empty.length>1?'have':'has'} an empty charm slot. Backpack > Equipment.`);}}catch(e){}
@@ -19892,7 +20011,7 @@ function vSysGuide(m){const at=m&&m.obAt,met=TIPS.filter(t=>t.always||tipSeen(t.
   return h+`<div class="rows obset"><div class="row"><div class="grow"><b>Tips</b><small>A short card the first time you meet each part of the game. Read them again in Guides > How it works.</small></div><div class="chips"><button class="chip ${on?'on':''}" data-act="cfg" data-arg='["tips",true]'>On</button><button class="chip ${on?'':'on'}" data-act="cfg" data-arg='["tips",false]'>Off</button><button class="chip" data-act="tipsReset">Reset tips</button></div></div></div>`;};}
 
 try{const css=document.createElement('style');css.textContent=`#p2hint.ob{width:min(92vw,420px);display:flex;flex-wrap:wrap;align-items:center;gap:2px 8px}#p2hint.ob .obt{flex:1 1 270px;min-width:0;overflow-wrap:anywhere}
-  #p2hint.ob .btnrow{margin:2px 0 0 auto;flex:0 0 auto}#p2hint.ob.bat{font-size:11.5px;padding:5px 8px}#p2hint.ob.slim{flex-wrap:nowrap;align-items:center;font-size:11px;padding:3px 8px;line-height:1.25}#p2hint.ob.slim .obt{flex:1 1 auto}#p2hint.ob.slim .btnrow{margin:0}
+  #p2hint.ob .btnrow{margin:2px 0 0 auto;flex:0 0 auto}#p2hint.ob.bat{font-size:11.5px;padding:5px 8px}#p2hint.ob.slim{flex-wrap:nowrap;align-items:center;font-size:11px;padding:3px 8px;line-height:1.25}#p2hint.ob.slim .obt{flex:1 1 auto}#p2hint.ob.slim.tight{font-size:9.5px;line-height:1.15}#p2hint.ob.slim.tight .btn{padding:2px 7px;min-height:24px;font-size:10px}#p2hint.ob.slim .btnrow{margin:0}
   #p2hint.inl{position:relative;left:auto;top:auto;bottom:auto;transform:none;max-width:none;width:auto;margin:4px 0 8px;z-index:1;box-shadow:0 2px 10px rgba(0,0,0,.35)}
   #p2hint.inl.show{transform:none}#p2hint.inl{transition:none}/* v0.7.5: a window card is put back after every re-render of the window; with the fade it flashed */
   .obg{display:flex;flex-direction:column;gap:4px;margin-bottom:6px}.obgi{border:1px solid rgba(255,208,74,.25);border-radius:8px;padding:6px 9px;background:rgba(255,255,255,.03)}
@@ -19903,6 +20022,162 @@ try{const css=document.createElement('style');css.textContent=`#p2hint.ob{width:
 try{window.__OB={OB,TIPS,TIPMAP,tipsOn,tipSeen,tipUsed,obTick,obShow,obClose,obPlaceBattle,obRects,obBossHold,obUntried,vSysGuide,obM,get G(){return G},get B(){return B},get V(){return V},get META(){return META},
   get BONDS(){return BONDS},get FAC(){return FAC},get RECIPES(){return RECIPES},forgeCost:id=>forgeCost(id),recipeMats:r=>recipeMats(r),recipeOpen:r=>recipeOpen(r),gearOf:id=>gearOf(id),facInit:()=>facInit(),facRank:id=>facRank(id),bondKey:(a,b)=>bondKey(a,b),
   canSwap:()=>canSwap(),canSummon:a=>canSummon(a),lbReady:c=>lbReady(c),b3Lay:f=>b3Lay(f),get BL(){return BL},vNext:()=>vNext(),hintPlace:d=>hintPlace(d),get P2(){return P2}};}catch(e){}
+
+// ===== goals.js (v0.9.5): "Next goals": a small list in the world that leads into the story and the deeper systems =====
+// Two to four goals at a time: the next story step ("Find the Scourge's lair in Verdane") and up to three system goals picked by
+// progress and by what the player has not tried yet ("Set off 3 reactions", "Temper a piece of gear", "Tame a creature", "Make camp",
+// "Win a fight without auto"). A goal done pays once (gold by realm, a little XP for the party, sometimes an item) with a toast.
+// Shown as a compact panel in the world view (collapsible; it moves to a free corner and never sits over the hero, the stick, the
+// A/B buttons, the minimap or the area banner; when no corner is free it shrinks to a small chip) and in Guides > What next?.
+// Deterministic: the order of GOALS decides, no random calls. Not in the Daily Trial. Tunables: NUDGE.goals (config.js).
+// New optional save field G.goals = {a:[shown ids], d:{id:1 done}, c:{counters}, b:{id: counter when shown}}. A save without it
+// (an older journey) marks every goal it has already met as done, silently, so nothing is paid twice or out of the blue.
+const GL={el:null,sig:'',tick:null,flash:0};
+function glOn(){return !!(typeof NUDGE!=='undefined'&&NUDGE.on&&NUDGE.goals&&NUDGE.goals.on&&typeof G!=='undefined'&&G&&G.run&&!G.daily);}
+function glS(){let st=G.goals;if(!st||typeof st!=='object'){st=G.goals={a:[],d:{},c:{},b:{}};glSweep(st);}
+  st.a=Array.isArray(st.a)?st.a:[];st.d=st.d||{};st.c=st.c||{};st.b=st.b||{};return st;}
+const glC=(k)=>((G.goals&&G.goals.c&&G.goals.c[k])|0);
+function glAdd(k,n){if(!glOn()||!(n>0))return;const st=glS();st.c[k]=(st.c[k]|0)+n;}
+const glBattles=()=>((G.stats&&G.stats.battles)|0);
+const glKnows=role=>partyOf().some(c=>{try{return known(c).some(s=>s.role===role);}catch(e){return false;}});
+const glPc=s=>typeof pcUnlocked!=='function'||pcUnlocked(s);// v0.9.6 depth unlocks by realm (pacing.js): no goal points at a system that is not open yet
+const glTop=()=>Math.max(1,...partyOf().map(c=>c.lv|0));
+// counter goals: done when the counter grew by n since the goal was shown
+const glCnt=(k,n)=>({k,n,done:st=>glC(k)-((st.b[k+'@'])|0)>=n,prog:st=>Math.min(n,glC(k)-((st.b[k+'@'])|0))});
+// ----- the system goals, in the order they are offered -----
+const GOALS=[
+ {id:'weak',t:'Hit a foe on its weak spot',sub:()=>'Aim where the target tag says Weak: the hit deals more and cracks shields.',ok:()=>true,...glCnt('weak',1)},
+ {id:'manual',t:'Win a fight without auto',sub:()=>`A fight you play yourself pays +${manualBonusPct()}% XP and gold.`,ok:()=>glC('autoWin')>=1,...glCnt('manWin',1)},
+ {id:'react',t:'Set off 3 reactions',sub:()=>'Prime a foe with one element, then hit it with a Detonator of another.',ok:()=>glPc('reactions')&&glKnows('primer')&&glKnows('det'),...glCnt('react',3),item:'ether'},
+ {id:'scan',t:'Scan a foe in battle',sub:()=>'Scan shows its stats and quirk, and opens auto against that kind of foe.',ok:()=>glBattles()>=2,...glCnt('scan',1)},
+ {id:'quest',t:'Take a quest from the Notice Board',sub:()=>'Notice Board > Quests, in town: gold and items for hunts and errands.',ok:()=>(G.quests||[]).length>0,done:()=>(G.quests||[]).some(q=>q.state&&q.state!=='open')},
+ {id:'switch',t:'Switch in a Rearguard hero',sub:()=>'On a Vanguard hero\'s turn, Switch brings a fresh hero in who acts at once.',ok:()=>(G.party||[]).length>3,...glCnt('swap',1)},
+ {id:'brk',t:"Break a foe's shield",sub:()=>'Hit a shielded elite or boss on its weakness, or with a reaction.',ok:()=>(G.stage|0)>=1||glTop()>=7,...glCnt('brk',1),item:'remedy'},
+ {id:'tame',t:'Tame a creature',sub:()=>'Beat a bounty beast, then choose Tame it on the rewards screen.',ok:()=>glPc('taming')&&(G.stage|0)>=1||glTop()>=8,
+  done:()=>(G.tamed||[]).length>0||Object.keys(G.tameLog||{}).length>0,item:'potion'},
+ {id:'bounty',t:'Beat a bounty',sub:()=>'Notice Board > Bounties: accept one, then find the beast on the map.',ok:()=>glTop()>=5&&(G.bounties||[]).some(b=>b.state==='open'||b.state==='active'),...glCnt('bounty',1)},
+ {id:'guard',t:'Guard against a big hit',sub:()=>'When a foe winds up or gathers power, Guard the hero it aims at.',ok:()=>glC('tele')>=1,...glCnt('guard',1),item:'potion'},
+ {id:'surge',t:'Reach a Momentum Surge',sub:()=>'Mix different moves: the Momentum bar fills and your heroes surge.',ok:()=>glBattles()>=8,...glCnt('surge',1)},
+ {id:'comp',t:'Pair a companion with a hero',sub:()=>'Party > Companions: a stat bonus and a Summon in battle.',ok:()=>glPc('taming')&&(G.tamed||[]).length>0,done:()=>(G.tamed||[]).some(o=>o.with)},
+ {id:'temper',t:'Temper a piece of gear',sub:()=>'Smithy > Tempering: +1 for parts and gold.',ok:()=>glPc('gear')&&(typeof pcTemperOpen!=='function'||pcTemperOpen()),done:()=>typeof pcHasTempered==='function'&&pcHasTempered()},
+ {id:'guildm',t:'Take on a guild mission',sub:()=>'Notice Board > Guilds: missions raise your rank and its perks sooner.',ok:()=>glPc('guilds')&&(typeof pcGuildOpen==='function'?pcGuildOpen():typeof pcFirstBoss!=='function'||pcFirstBoss()),
+  done:()=>{try{const f=facInit();return Object.keys(f.acc||{}).length+Object.keys(f.done||{}).length>0;}catch(e){return false;}}},
+ {id:'camp',t:'Make camp in the field',sub:()=>'Camp Supplies from Alchemy; Make camp from the Party tab.',ok:()=>glPc('camp')&&(G.stage|0)>=(typeof CAMP!=='undefined'?CAMP.fromStage:2),done:()=>glC('camp')>0,item:'campkit'}];
+const GLMAP={};GOALS.forEach(g=>{GLMAP[g.id]=g;});
+// ----- the story goal: head out, find the lair, beat its Scourge (the Calamity in the last realm) -----
+function glStoryDef(s,k){const Z=ZS(s),foe=s<4?'Scourge':'Calamity';
+  if(k==='a')return {id:'st'+s+'a',t:`Head out into ${Z.n}`,sub:'Leave town by its gate and explore.'};
+  if(k==='b')return {id:'st'+s+'b',t:`Find the ${foe}'s lair in ${Z.n}`,sub:`The ${Z.dungeon}: its entrance hides off the road. Look for glowing stairs.`};
+  return {id:'st'+s+'c',t:`Defeat the ${foe} in the ${Z.dungeon}`,sub:'Check readiness in Guides > What next? first.'};}
+function glStory(){const s=G.stage|0;if(G.won||s>4)return null;const been=G.been||{},fk=(typeof worldV2==='function'&&worldV2()&&!worldV3()?'g':'f')+s,cl=!!(G.cleared||[])[s];
+  return glStoryDef(s,!been[fk]&&!been['d'+s]&&!cl?'a':!been['d'+s]&&!cl?'b':'c');}
+function glStoryDone(id){const m=/^st(\d)([abc])$/.exec(id);if(!m)return false;const s=+m[1],k=m[2],been=G.been||{};
+  if((G.cleared||[])[s]||(G.stage|0)>s||G.won)return true;if(k==='c')return false;if(k==='b')return !!been['d'+s];
+  const fk=(typeof worldV2==='function'&&worldV2()&&!worldV3()?'g':'f')+s;return !!(been[fk]||been['d'+s]);}
+function glDef(id){if(GLMAP[id])return GLMAP[id];const m=/^st(\d)([abc])$/.exec(id);if(!m)return null;try{return glStoryDef(+m[1],m[2]);}catch(e){return {id,t:'Story step',sub:''};}}
+function glDone(id,st){try{if(/^st/.test(id))return glStoryDone(id);const g=GLMAP[id];return !!(g&&g.done(st));}catch(e){return false;}}
+// an older journey: everything already met counts as done, without pay
+function glSweep(st){try{GOALS.forEach(g=>{if(!g.k&&glDone(g.id,st))st.d[g.id]=1;});}catch(e){}}
+// ----- rewards -----
+function glReward(id){const s=Math.min(4,G.stage|0),N=NUDGE.goals,g=GLMAP[id]||{};return {gold:N.gold[s]||N.gold[N.gold.length-1]||0,xp:N.xp||0,item:g.item&&ITEMS[g.item]?g.item:null};}
+function glRewardText(R){return `+${fmt(R.gold)} gold, XP${R.item?', '+ITEMS[R.item].n:''}`;}
+function glPay(id){const st=glS();if(st.d[id])return null;st.d[id]=1;const R=glReward(id);
+  G.gold+=R.gold;partyOf().forEach(c=>{try{addXp(c,Math.max(1,Math.round(need(c.lv)*R.xp)));}catch(e){}});
+  if(R.item)G.inv[R.item]=Math.min(invCap(),(G.inv[R.item]||0)+1);
+  try{const L=learnScanAll();if(L.length&&typeof lnQueue==='function')lnQueue(L);}catch(e){}
+  return R;}
+// ----- the shown list: finish what is done, then fill up to NUDGE.goals.max -----
+function glCheck(pay){if(!glOn())return [];const st=glS(),paid=[];
+  st.a=st.a.filter(id=>{if(st.d[id])return false;if(!glDone(id,st))return true;if(pay!==false){const d=glDef(id),R=glPay(id);if(R)paid.push([d?d.t:id,R]);}else st.d[id]=1;return false;});
+  const S=glStory();if(S&&!st.a.some(id=>/^st/.test(id))){if(st.d[S.id]||glDone(S.id,st))st.d[S.id]=st.d[S.id]||1;else st.a.unshift(S.id);}
+  const max=Math.max(2,NUDGE.goals.max|0);
+  for(const g of GOALS){if(st.a.length>=max)break;if(st.d[g.id]||st.a.includes(g.id))continue;let ok=false;try{ok=g.ok();}catch(e){}if(!ok)continue;
+    if(!g.k&&glDone(g.id,st)){st.d[g.id]=1;continue;}// already done before it was ever shown: nothing to lead into
+    if(g.k)st.b[g.k+'@']=glC(g.k);st.a.push(g.id);}
+  if(paid.length){GL.flash=Date.now();const t=paid.map(([n,R])=>`Goal done: ${n}. ${glRewardText(R)}.`).join(' ');try{toast(t);}catch(e){}try{sfx('chest');}catch(e){}}
+  return paid;}
+function glList(){if(!glOn())return [];const st=glS();return st.a.map(id=>{const d=glDef(id);if(!d)return null;const g=GLMAP[id];let p='';try{if(g&&g.k&&g.n>1)p=`${g.prog(st)}/${g.n}`;}catch(e){}
+  return {id,t:d.t,sub:typeof d.sub==='function'?d.sub():d.sub,p,R:glReward(id),story:/^st/.test(id)};}).filter(Boolean);}
+// ----- counters from battles and actions -----
+{const w0=win;win=function(){const r=w0.apply(this,arguments);try{if(glOn()&&B&&B.result&&!B.result.glCount&&B.spec&&B.spec.kind!=='daily'){B.result.glCount=1;const z=B.nz||{};
+    glAdd('react',z.react|0);glAdd('brk',z.brk|0);glAdd('guard',z.guard|0);glAdd('surge',z.surge?1:0);glAdd('tele',z.tele|0);glAdd('weak',B.hitWeak?1:0);glAdd('swap',(B.b4swN|0)>0?1:0);
+    glAdd(autoRewardMul()===1?'manWin':'autoWin',1);if(B.spec.kind==='elite'&&B.spec.bounty&&!B.spec.bounty.personal)glAdd('bounty',1);}}catch(e){}return r;};}
+{const sc0=scan;scan=function(){const r=sc0.apply(this,arguments);try{if(B&&B.spec&&B.spec.kind!=='daily')glAdd('scan',1);}catch(e){}return r;};}
+if(typeof campMake==='function'){const cm0=campMake;campMake=function(){const r=cm0.apply(this,arguments);try{if(r&&typeof r!=='string')glAdd('camp',1);}catch(e){}return r;};}
+{const fb0=finishBattle;finishBattle=function(){const r=fb0.apply(this,arguments);try{glCheck();glRender();}catch(e){}return r;};}
+{const ng0=newGame;newGame=function(){const r=ng0.apply(this,arguments);try{if(G&&!G.daily)G.goals={a:[],d:{},c:{},b:{}};}catch(e){}return r;};}
+
+// ----- the panel in the world view -----
+function glMin(){try{return !!(META.cfg&&META.cfg.goalsMin);}catch(e){return false;}}
+ACT.goalsT=function(){META.cfg.goalsMin=!glMin();saveMeta();GL.sig='';glRender();};
+ACT.goalsMore=function(){V.modal={type:'menu',tab:'next'};render();};
+const glR=e=>{if(!e)return null;const b=e.getBoundingClientRect();return b.width&&b.height?{l:b.left,t:b.top,r:b.right,b:b.bottom}:null;};
+// the hero on screen: the HD-2D box when that view is live, else the 2D camera; padded, and never smaller than a tile or two
+function glHero(){const cv=WS.cv,R=cv&&cv.getBoundingClientRect();if(!R||!R.width)return null;let box=null;
+  try{if(typeof HD!=='undefined'&&HD.live&&typeof HW!=='undefined'&&HW.b&&(HW.b[2]-HW.b[0])>0){const B_=HW.b,x0=(B_[0]+1)/2*R.width,x1=(B_[2]+1)/2*R.width,y1=(1-B_[1])/2*R.height,y0=(1-B_[3])/2*R.height;
+    box={l:R.left+Math.min(x0,x1),r:R.left+Math.max(x0,x1),t:R.top+Math.min(y0,y1),b:R.top+Math.max(y0,y1)};}}catch(e){}
+  if(!box&&WS.cam&&WS.vw){const k=R.width/WS.vw,x=(WS.px+8-WS.cam.x)*k,y=(WS.py+8-WS.cam.y)*k;box={l:R.left+x-8*k,r:R.left+x+8*k,t:R.top+y-18*k,b:R.top+y+9*k};}
+  if(!box)return null;const p=Math.max(14,(R.width/(WS.vw||R.width))*12);return {l:box.l-p,r:box.r+p,t:box.t-p*1.4,b:box.b+p};}
+function glObstacles(){const out=[],add=(e,pad)=>{const r=glR(e);if(r)out.push({l:r.l-pad,t:r.t-pad,r:r.r+pad,b:r.b+pad});};
+  const h=glHero();if(h)out.push(h);
+  ['#joy','.pad .abtns','#mmap','#wloc','#wdlg .dlg','#wkw'].forEach(s=>document.querySelectorAll(s).forEach(e=>{if(getComputedStyle(e).display!=='none'&&getComputedStyle(e).visibility!=='hidden'&&(s!=='#wloc'||e.classList.contains('on')||e.textContent.trim()))add(e,6);}));
+  const hn=document.getElementById('p2hint');if(hn&&hn.classList.contains('show')&&!hn.classList.contains('inl'))add(hn,6);
+  return out;}
+const glHit=(x,y,w,h,obs)=>obs.some(o=>x<o.r&&x+w>o.l&&y<o.b&&y+h>o.t);
+function glHtml(L,mode,auto){const n=L.length;
+  if(mode==='chip')return `<button class="glhead" data-act="${auto?'goalsMore':'goalsT'}" aria-expanded="false" aria-label="Show next goals"><b>Goals</b><span class="gln">${n}</span><i>▸</i></button>`;
+  const show=mode==='two'?L.slice(0,2):L;
+  return `<button class="glhead" data-act="goalsT" aria-expanded="true" aria-label="Hide next goals"><b>Next goals</b><i>▾</i></button><ul class="gll">${show.map(g=>`<li class="${g.story?'st':''}" data-goal="${g.id}" title="${esc(g.sub||'')}"><span>${esc(g.t)}</span>${g.p?`<em>${g.p}</em>`:''}</li>`).join('')}</ul>${show.length<n?`<button class="glmore" data-act="goalsMore">+${n-show.length} more</button>`:''}`;}
+function glEl(){const wv=document.querySelector('.wview');if(!wv)return null;let e=GL.el;if(!e||!e.isConnected||e.parentNode!==wv){e=document.getElementById('glp');if(!e){e=document.createElement('div');e.id='glp';e.setAttribute('role','region');e.setAttribute('aria-label','Next goals');}wv.appendChild(e);GL.el=e;GL.sig='';}return e;}
+// the size of the panel in each mode, measured once per content in a hidden copy (so the panel itself is not rewritten to try modes)
+function glSize(wv,L,mode){const key=mode+'|'+L.map(g=>g.id+g.p).join(',')+'|'+Math.round(wv.getBoundingClientRect().width);GL.ms=GL.ms||{};if(GL.ms[key])return GL.ms[key];
+  let m=document.getElementById('glpm');if(!m){m=document.createElement('div');m.id='glpm';m.setAttribute('aria-hidden','true');}if(m.parentNode!==wv)wv.appendChild(m);
+  m.className='gl '+mode;m.innerHTML=glHtml(L,mode);const s={w:m.offsetWidth,h:m.offsetHeight};m.innerHTML='';
+  if(Object.keys(GL.ms).length>40)GL.ms={};GL.ms[key]=s;return s;}
+// a free spot for a w x h box in the view: where it is now if still free, then the corners (bottom first: the save note lives top left), then along the sides
+function glSpot(wv,w,h,obs,cur){const W=wv.getBoundingClientRect(),cv=WS.cv&&WS.cv.getBoundingClientRect();if(!W.width)return null;
+  const A=cv&&cv.width?cv:W,m=8,xs=[A.left+m,A.right-m-w],ys=[A.bottom-m-h,A.top+m+34,A.top+m];
+  const cands=[];if(cur)cands.push([W.left+cur.x,W.top+cur.y]);
+  [[0,0],[0,1],[1,0],[1,1],[0,2],[1,2]].forEach(([i,j])=>cands.push([xs[i],ys[j]]));
+  for(let y=A.top+m;y+h<=A.bottom-m;y+=12){cands.push([xs[0],y]);cands.push([xs[1],y]);}
+  for(const [x,y] of cands){if(x<A.left-0.5||y<A.top-0.5||x+w>A.right+0.5||y+h>A.bottom+0.5)continue;if(!glHit(x,y,w,h,obs))return {x:Math.round(x-W.left),y:Math.round(y-W.top)};}
+  return null;}
+function glRender(){try{const e0=document.getElementById('glp');
+  const off=!glOn()||V.screen!=='world'||!!B||!!V.modal||!!WS.dlg||!WS.cv;
+  if(off){if(e0)e0.style.display='none';return;}
+  const L=glList();const e=glEl();if(!e)return;if(!L.length){e.style.display='none';return;}e.style.display='';
+  const wv=e.parentNode,obs=glObstacles(),user=glMin(),want=user?['chip']:['full','two','chip'];
+  const cur=GL.pos&&GL.sig&&e.style.left?GL.pos:null;let mode=want[want.length-1],at=null;
+  for(const md of want){const s=glSize(wv,L,md);const sameMode=GL.sig&&GL.sig.split('|')[0]===md;at=glSpot(wv,s.w,s.h,obs,sameMode?cur:null);if(at){mode=md;break;}}
+  if(!at)at={x:8,y:42};// nowhere free (a tiny view): the chip under the save note, top left
+  const sig=mode+'|'+(mode==='chip'&&!user?'a':'')+'|'+L.map(g=>g.id+g.p).join(',');
+  if(GL.sig!==sig){e.innerHTML=glHtml(L,mode,mode==='chip'&&!user);GL.sig=sig;}
+  e.className='gl '+mode+(Date.now()-GL.flash<3000?' flash':'');
+  e.style.left=at.x+'px';e.style.top=at.y+'px';GL.pos=at;}catch(err){}}
+{const r0=render;render=function(){const r=r0.apply(this,arguments);try{if(V.screen==='world'&&!B){glCheck();}glRender();}catch(e){}return r;};}
+GL.tick=setInterval(()=>{try{if(V.screen==='world'&&!B)glRender();}catch(e){}},350);
+// the corner save note keeps clear of the panel
+if(typeof p5Avoid==='function'){const pa2=p5Avoid;p5Avoid=function(){const r=pa2.apply(this,arguments);try{const d=document.getElementById('glp');if(d&&d.style.display!=='none'){const b=d.getBoundingClientRect();if(b.width)r.push(b);}}catch(e){}return r;};}
+
+// ----- Guides > What next?: the same goals with their rewards -----
+{const vn0=vNext;vNext=function(){let h=vn0.apply(this,arguments);try{if(glOn()){glCheck();const L=glList();if(L.length){
+  const sec=`<h4>Next goals</h4><div class="rows compact glnext">${L.map(g=>`<div class="row nxt"><span class="nxi">${g.story?'★':'•'}</span><div class="grow"><b>${esc(g.t)}${g.p?` <em class="glp">${g.p}</em>`:''}</b><small>${esc(g.sub||'')} Reward: ${esc(glRewardText(g.R))}.</small></div></div>`).join('')}</div>`;
+  h=sec+h;}}}catch(e){}return h;};}
+
+try{const css=document.createElement('style');css.textContent=`
+.gl{position:absolute;z-index:4;max-width:min(250px,48%);min-width:0;background:rgba(14,12,26,.82);border:1px solid rgba(217,180,106,.6);border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,.45);color:#f4ead2;font-size:11.5px;line-height:1.25;padding:4px 7px 5px;pointer-events:auto}
+.gl.chip{padding:2px 4px}.gl .glhead{all:unset;cursor:pointer;display:flex;gap:6px;align-items:center;min-height:26px;width:100%;box-sizing:border-box;font-size:11.5px}.gl .glhead b{color:#ffd04a;letter-spacing:.03em}
+.gl .glhead i{font-style:normal;margin-left:auto;opacity:.8}.gl .gln{background:#ffd04a;color:#1a1424;border-radius:9px;padding:0 6px;font-weight:800;font-size:10.5px}
+.gl .gll{list-style:none;margin:2px 0 0;padding:0;display:grid;gap:3px}.gl .gll li{display:flex;gap:6px;align-items:baseline;padding-left:10px;position:relative;overflow-wrap:anywhere}
+.gl .gll li:before{content:'•';position:absolute;left:0;color:#ffd04a}.gl .gll li.st:before{content:'★'}.gl .gll li span{flex:1 1 auto;min-width:0}.gl .gll li em{font-style:normal;color:#9ad0ff;font-weight:700;flex:0 0 auto}
+.gl .glmore{all:unset;cursor:pointer;font-size:10.5px;color:#9ad0ff;margin-top:2px;display:block}
+.gl.flash{animation:glf 1.2s ease 2}@keyframes glf{50%{box-shadow:0 0 14px rgba(255,208,74,.8)}}@media (prefers-reduced-motion:reduce){.gl.flash{animation:none}}
+.glnext em.glp{font-style:normal;color:#9ad0ff}#glpm{visibility:hidden;left:0;top:0;pointer-events:none;z-index:-1}`;document.head.appendChild(css);}catch(e){}
+try{window.__GL={GL,GOALS,glS,glCheck,glList,glRender,glSpot,glHero,glObstacles,glStory,glReward,glOn,get G(){return G},get V(){return V},get B(){return B},get WS(){return WS},get META(){return META}};}catch(e){}
+// test hook for the other v0.9.5 nudges (separate from __A, so no getter there is touched)
+try{window.__NZ={get NUDGE(){return NUDGE},get AUTO_REW(){return AUTO_REW},autoReason:()=>autoReason(),autoOkMap:()=>autoOkMap(),autoTypeLeft:n=>autoTypeLeft(n),manualBonusPct:()=>manualBonusPct(),
+  autoRewardMul:()=>autoRewardMul(),scan:t=>scan(t),doReaction:(a,t,el)=>doReaction(a,t,el),chipShield:(t,n)=>chipShield(t,n),makeEnemy:(m,l,o)=>makeEnemy(m,l,o),packG:()=>packG(),unpackG:o=>unpackG(o),
+  obEval:t=>obEval(t),obOpened:()=>obOpened(),obPrimedTip:e=>obPrimedTip(e),get toast(){const t=document.getElementById('toast');return t?t.textContent:'';}};}catch(e){}
 
 // ===== duellines.js (v0.7.7): every wayfarer who challenges you speaks in their own voice =====
 // Before this, a road duel used one line per class, so every fighter (or every mage) said the same thing. Now each of the 92
