@@ -78,6 +78,13 @@ const IC_CHARM={
  c_fb4:{body:'page',G:'#fff4d8',gly:'star',gk:'T',cord:'chain',rim:'T',aura:1},
  c_fb5:{body:'round',G:'#ffd25a',gly:'hand',gk:'g',cord:'chain',rim:'T',aura:1},
  c_ft0:{body:'crest',G:'#3a6a3a',gly:'thorn',gk:'E',E:'#9ae06a',cord:'pin'},
+ // v0.8.2 role charms (roles.js)
+ c_rl_mend:{body:'heart',G:'#f0e0a0',gly:'cross',gk:'E',E:'#5ac05a',cord:'chain'},
+ c_rl_song:{body:'round',G:'#9a7ae0',gly:'note',gk:'S',cord:'cord',rim:'T'},
+ c_rl_quiv:{body:'diamond',G:'#5a5a6a',gly:'star',gk:'S',cord:'pin'},
+ c_rl_herald:{body:'crest',G:'#e0b040',gly:'sun',gk:'X',cord:'chain'},
+ c_rl_hex:{body:'round',G:'#4a2a6a',gly:'eye',gk:'E',E:'#c890ff',cord:'chain',rim:'T'},
+ c_rl_ward:{body:'shield',G:'#7a8aa0',gly:'hammer',gk:'T',cord:'pin'},
  c_ft1:{body:'seal',G:'#2a5a8a',gly:'wave',gk:'E',E:'#bfe6ff',cord:'pin'},
  c_ft2:{body:'shield',G:'#8a2a1a',gly:'flame',gk:'E',E:'#ffa040',cord:'pin'},
  c_ft3:{body:'diamond',G:'#6a8aa8',gly:'snow',gk:'S',cord:'pin'},

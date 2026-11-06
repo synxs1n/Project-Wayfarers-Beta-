@@ -225,6 +225,84 @@ ICF.flute=(b,t,P)=>{const o={};
   if(t===4){icUV(b,'E',(s,v)=>s>1&&s<14&&Math.abs(v+.5)<.01);[5,7,9,11].forEach(s=>icPt(b,s,0,'X'));icPt(b,3,0,'G');o.spark=[[14,1]];}
   if(t===5){icPt(b,13.5,-.5,'T');icPt(b,13.5,1,'T');icPt(b,14,0,'G');icPt(b,3,0,'G');icPt(b,2,-1,'T');o.aura=TIER_GEM[5];}
   return o;};
+// ----- v0.8.2 role weapons: throwing stars and kunai, prayer beads, wands, censers, warhammers, war standards, lyres -----
+const IC_STAR=['......M......','.....MMM.....','.....MMM.....','....MMMMM....','...MMMMMMM...','.MMMMMMMMMMM.','MMMMMMXMMMMMM','.MMMMMMMMMMM.','...MMMMMMM...','....MMMMM....','.....MMM.....','.....MMM.....','......M......'];
+function icKunai(b,mir,s0){const tmp=icBuf();icSword(tmp,{p:s0||2,pr:.9,g:5,gl:.5,T:13,wide:1.1,l:.5,r:.5,tp:1.2});icUV(tmp,'',(s,v)=>Math.abs(s-(s0||2))<.01&&Math.abs(v)<.01);
+  for(let y=0;y<16;y++)for(let x=0;x<16;x++){const k=tmp[y*16+x];if(k)icSet(b,mir?15-x:x,y,k);}}
+ICF.thrown=(b,t)=>{const o={};
+  if(t===0){icArt(b,1,1,IC_STAR);}
+  if(t===1){icKunai(b,0);icPt(b,8,0,'m');}
+  if(t===2){icArt(b,1,1,IC_STAR);icLine(b,3,3,5,5,'M');icLine(b,13,3,11,5,'M');icLine(b,3,13,5,11,'M');icLine(b,13,13,11,11,'M');icSet(b,7,7,'G');}
+  if(t===3){icKunai(b,0);icKunai(b,1);icSet(b,7,7,'G');icSet(b,8,8,'E');}
+  if(t===4){icArt(b,1,1,IC_STAR);[[5,5],[11,5],[5,11],[11,11]].forEach(([x,y])=>icSet(b,x,y,'T'));icRect(b,6,6,3,3,'T');icSet(b,7,7,'G');icSet(b,7,0,'E');icSet(b,7,14,'E');o.spark=[[14,1]];}
+  if(t===5){icKunai(b,0);icKunai(b,1);icRect(b,7,1,2,9,'M');icRect(b,7,0,2,1,'S');icSet(b,7,10,'T');icSet(b,8,10,'T');icRect(b,7,11,2,3,'L');icSet(b,7,7,'G');icSet(b,8,7,'G');o.aura=TIER_GEM[5];}
+  return o;};
+ICF.beads=(b,t,P)=>{const o={};const n=[10,12,12,14,14,16][t],r=[4.6,4.6,5,5,5.4,5.4][t],cy=[7,7,6.5,6.5,6.5,6.5][t];
+  for(let i=0;i<n;i++){const a=Math.PI/2+i*2*Math.PI/n;icSet(b,8+Math.cos(a)*r,cy+Math.sin(a)*r,t>=2&&i%3===0?'G':i%2?'w':'W');}
+  icSet(b,8,cy+r+1,'M');
+  if(t===0)icLine(b,8,13,8,15,'C');
+  if(t===1){icLine(b,8,13,8,15,'C');icSet(b,7,15,'C');icSet(b,9,15,'C');icSet(b,8,13,'T');}
+  if(t===2){icRect(b,7,12,3,2,'M');icLine(b,7,14,6,15,'C');icLine(b,9,14,10,15,'C');}
+  if(t===3){icRect(b,7,12,3,3,'T');icSet(b,8,13,'G');icSet(b,8,15,'C');icDisc(b,8,6.5,1.5,'');for(let i=0;i<6;i++){const a=i*Math.PI/3;icSet(b,8+Math.cos(a)*2.2,6.5+Math.sin(a)*2.2,'m');}}
+  if(t===4){icArt(b,6,12,['.TTT.','TGEGT','.TTT.']);icSet(b,8,15,'C');o.spark=[[14,1]];}
+  if(t===5){icArt(b,6,12,['.TTT.','TGSGT','TGGGT','.TTT.']);icSet(b,8,0,'T');o.aura=TIER_GEM[5];o.spark=[[14,2]];}
+  return o;};
+ICF.wand=(b,t,P)=>{const o={};const hk=['W','B','W','M','T','X'][t],top=[10,10,9.5,9.5,9.5,9][t];icHaft(b,2,top,hk);icHaft(b,2,4,'L');
+  const [tx,ty]=icAt(top+1.5,0);
+  if(t===0){icDisc(b,tx,ty,1.3,'W');icSet(b,tx,ty,'w');}
+  if(t===1){icArt(b,tx-1,ty-1,['BBB','XBX','.B.']);icSet(b,tx+1,ty-2,'B');}
+  if(t===2){[[5,.5],[7,0],[9,.5]].forEach(([s2,v])=>icPt(b,s2,v,'w'));icArt(b,tx-1,ty-1,['M.M','.G.','M.M']);}
+  if(t===3){icArt(b,tx-1,ty-2,['..E','.EE','EEE','.E.']);icSet(b,tx,ty,'S');}
+  if(t===4){icDisc(b,tx,ty,1.6,'G');icSet(b,tx,ty-1,'S');icArt(b,tx-3,ty-3,['E..','.E.']);icSet(b,tx+2,ty+2,'E');o.spark=[[15,0]];}
+  if(t===5){icArt(b,tx-2,ty-2,['.TTT.','T...T','T.G.T','T...T','.TTT.']);icSet(b,tx,ty,'G');o.aura='#b06aff';o.spark=[[14,0]];}
+  if(t>=2)icPt(b,4.5,.5,'T');
+  return o;};
+ICF.censer=(b,t,P)=>{const o={};const cy=[9,9,9.5,9,9,9.5][t],r=[3,3.2,3.4,3.5,3.6,3.8][t];
+  icLine(b,8,0,8,Math.round(cy-r-1),'m');[1,3].forEach(y=>icSet(b,7,y,'M'));
+  icDisc(b,8,cy,r,'M');icRect(b,8-Math.round(r),Math.round(cy)-1,Math.round(r)*2+1,1,'m');
+  [[7,Math.round(cy)+1],[9,Math.round(cy)+1]].forEach(([x,y])=>icSet(b,x,y,'X'));
+  if(t>=1)icRect(b,6,Math.round(cy+r)+1,5,1,'M');
+  if(t===2){icSet(b,3,Math.round(cy),'M');icSet(b,13,Math.round(cy),'M');icSet(b,3,Math.round(cy)-1,'M');icSet(b,13,Math.round(cy)-1,'M');}
+  if(t===3){icArt(b,6,Math.round(cy-r)-1,['.TTT.','TTGTT']);}
+  if(t===4){icArt(b,11,1,['.E','E.','.E','E.']);icArt(b,3,2,['E.','.E','E.']);icSet(b,8,Math.round(cy),'G');o.spark=[[14,0]];}
+  if(t===5){icArt(b,5,Math.round(cy-r)-1,['.TTTTT.','TTTGTTT']);icArt(b,11,1,['.S','E.','.E']);icSet(b,3,Math.round(cy),'T');icSet(b,13,Math.round(cy),'T');o.aura=TIER_GEM[5];}
+  return o;};
+ICF.warhammer=(b,t)=>{const o={};const top=[11,11.5,11.5,12,12,12.5][t];icHaft(b,1,top,'W');icHaft(b,1,3.5,'L');
+  const hs=[10,10.5,10.5,11,11,11][t],hw=[1,1.2,1.5,1.5,1.5,1.8][t],face=[2,2.5,2.5,3,3,3][t],spk=[1.5,2,2.5,3,3,3.5][t];
+  icUV(b,'M',(s,v)=>Math.abs(s-hs)<=hw+.01&&v<=0.01&&v>=-face-.01);
+  icUV(b,'M',(s,v)=>v>0&&v<=spk+.01&&Math.abs(s-hs)<=hw*(1-v/(spk+1))+.01);
+  icUV(b,'m',(s,v)=>Math.abs(v+face)<.01&&Math.abs(s-hs)<=hw+.01);
+  if(t>=2)icPt(b,hs,0,'G');
+  if(t>=3)icPt(b,top+.5,0,'T');
+  if(t===3)icPt(b,hs,-1,'T');
+  if(t>=4){icUV(b,'E',(s,v)=>Math.abs(s-hs)<.01&&v<-.9&&v>-face+.5);o.spark=[[14,1]];}
+  if(t===5){icPt(b,hs+hw,-1,'T');icPt(b,hs-hw,-1,'T');o.aura=TIER_GEM[5];}
+  return o;};
+ICF.standard=(b,t,P)=>{const o={};const cl=['#8a7a5a','#c84a3a','#4a6ad0','#e0b030','#5aa0d0','#8a3ad0'][t];P.C=cl;P.K=shade(cl,.7);
+  icRect(b,4,2,1,14,'W');icRect(b,4,13,1,3,'L');icArt(b,3,0,['.M.','MMM']);
+  const F=[['CCCCCCC','CCCCCC.','CCCCC..','CCCC...','CCC....'],
+    ['CCCCCCCC','CCCCCCCC','CCCCCCCC','CCCCCCC.','CCCCCC..'],
+    ['CCCCCCCCC','CCCCCCCCC','CCCCCCCCC','CCCC.CCCC','CCC...CCC'],
+    ['CCCCCCCCC','CCCCCCCCC','CCCCCCCCC','CCCCCCCCC','CCCCCCCCC','C.C.C.C.C'],
+    ['CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCC..CCCC'],
+    ['CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','C.CC..CC.C']][t];
+  icArt(b,5,2,F);icRect(b,5,2,F[0].length,1,'K');
+  if(t===1)icSet(b,8,4,'T');
+  if(t===2){icArt(b,8,3,['.T.','TGT','.T.']);}
+  if(t===3){icArt(b,8,3,['TTT','TGT','.T.']);icRect(b,5,2,9,1,'T');}
+  if(t===4){icArt(b,8,3,['.E.','EE.','.EE','.E.']);icRect(b,5,2,10,1,'T');icSet(b,4,0,'S');o.spark=[[15,1]];}
+  if(t===5){icArt(b,7,3,['..T..','.TGT.','TGSGT','.TGT.']);icRect(b,5,2,10,1,'T');icSet(b,3,1,'G');icSet(b,5,1,'G');o.aura=TIER_GEM[5];}
+  return o;};
+ICF.lyre=(b,t,P)=>{const o={};const w=[3,3,4,4,4,5][t];
+  icLine(b,8-w,2,8-w+1,11,'W');icLine(b,8+w,2,8+w-1,11,'W');icRect(b,8-w+1,11,2*w-1,2,'W');icRect(b,8-w,3,2*w+1,1,'M');
+  for(let x=8-w+2;x<=8+w-2;x+=2)icLine(b,x,4,x,10,'R');
+  icSet(b,8-w-1,1,'W');icSet(b,8+w+1,1,'W');
+  if(t===1){icSet(b,8-w-1,0,'T');icSet(b,8+w+1,0,'T');}
+  if(t===2){icRect(b,7,13,3,1,'M');icSet(b,8,12,'G');}
+  if(t===3){icArt(b,8-w-2,0,['E']);icArt(b,8+w+2,0,['E']);icSet(b,8,12,'G');icRect(b,6,13,5,1,'T');}
+  if(t===4){icRect(b,8-w,3,2*w+1,1,'T');icSet(b,8,3,'G');icArt(b,6,13,['.EEE.','..E..']);o.spark=[[15,0]];}
+  if(t===5){icRect(b,8-w,3,2*w+1,1,'T');icSet(b,8,3,'G');icSet(b,8,12,'S');icArt(b,5,13,['TTTTTTT','..TGT..']);o.aura=TIER_GEM[5];}
+  return o;};
 ICF.stick=(b,t,P,o0)=>{const o={};icHaft(b,1.5,13.5,'W');icPt(b,9,-1,'W');icPt(b,9.5,-1.5,'W');icPt(b,6,1,'W');icPt(b,6.5,1.5,'w');icPt(b,4,0,'w');
   if(o0.glow){P.E=o0.glow;icPt(b,13.5,0,'E');icPt(b,14,.5,'E');icPt(b,10,-2,'E');o.aura=o0.glowTier>0?o0.glow:null;o.spark=o0.glowTier>1?[[15,0]]:null;}
   return o;};
