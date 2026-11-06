@@ -164,3 +164,6 @@ Details in `v077-duel-lines.md` (`v3/duellines.js`, 736 lines, 8 per hero plus b
 
 ## Beta v0.7.9: wide battle layout
 Details in `v076-battle-layout.md` (battle3.js/css, B3.wideMin/wideStep in config.js, test `chrome/v076b.js`). Two columns under the stage: commands over foes, party (Vanguard then Rearguard rows). No page scroll at 933x705 to 1280x800; aim tags shrink to fit their box. Type chips left off wide foe cards (still in the i panel).
+
+## Beta v0.8.0: weather in layers, old visuals pass
+Details in `v077-weather.md` (`v3/weather7.js`, `v3/visuals7.js`, `WX7` in config.js, tests `chrome/v077wa.js`, `v077wb.js`). No game RNG used; lightning at most 2 flashes per strike, under 100 ms, peak 0.42. Victory crest, Arena backdrop and minimap upgraded.

@@ -1784,7 +1784,7 @@ body:has(.battle.b3.m-wide){padding-bottom:4px}
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.7.9";const APP_BUILD="20f894cbc2b3";
+(function(){const APP_VER="0.8.0";const APP_BUILD="8028c0ecc2af";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2081,6 +2081,22 @@ const HD_SPR={sat:.86,con:.9,ao:.74,rim:.7};
 // bird: one flock crossing per period (ms) at height h. chestGone: opened chests vanish from the map and can be walked over.
 const WFX={ref:80000,cell:128,margin:96,maxN:120,hero:[10,30,3],n:{spark:14,snow:46,wind:8,fly:4,spray:5,mote:12,dust:10,lantern:7,firefly:12,dew:12},
   bird:{period:26000,dur:11000,h:64,span:560},chestGone:true,hdZ:[560,180]};
+// ===== v0.7.7 weather (weather7.js) =====
+// WX7: every weather drawn in layers. tier: per graphics tier. cap: most falling particles on the 2D canvas per frame (world 2D, the
+// HD-2D overlay, battle); rain/snow/sand/ash/wind: base counts per 2D view (far, mid, near layer); ground: puddles, ripples, splashes and
+// settling flakes (0 off, 1 on, 2 more); banks: fog and dust banks per layer; shimmer: heat haze distortion (0 off, 1 on); soft: soft
+// sprites for near particles (0: plain pixels); gl: weather particles inside the HD-2D scene; glN: their count scale; glCap: most GL
+// weather quads. par: parallax of the far, mid and near layers against the camera (1 = moves with the ground). bolt: storm strikes
+// (gap: shortest and longest time between strikes in ms; pulses: [start ms, length ms, peak] of each flash of a strike: two brief
+// flashes per strike at most and strikes at least 4 s apart, so never more than 2 flashes in any second; peak: the white over the
+// screen; light: how much a flash lights the HD-2D scene). gl: GL counts per glRef world area. heroPad: px kept clear around the hero.
+const WX7={on:true,
+  tier:{low:   {cap:90, rain:[46,24,0], snow:[40,22,0],sand:[34,16,0],ash:[22,10,0],wind:[12,6,0],ground:0,banks:[6,0,0],shimmer:0,soft:0,gl:0,glN:0,glCap:0,stars:10},
+        medium:{cap:260,rain:[70,48,12],snow:[60,40,10],sand:[56,34,8],ash:[34,20,6],wind:[16,10,4],ground:1,banks:[4,4,2],shimmer:1,soft:1,gl:1,glN:1,glCap:900,stars:24},
+        high:  {cap:460,rain:[110,80,20],snow:[96,64,16],sand:[90,56,12],ash:[56,32,10],wind:[24,16,6],ground:2,banks:[5,5,3],shimmer:1,soft:2,gl:1,glN:1.7,glCap:1800,stars:40}},
+  par:[.82,1,1.35],
+  bolt:{gap:[4200,9200],pulses:[[0,70,.42],[150,60,.24]],light:1.1,life:260},
+  gl:{rain:420,storm:540,snow:320,blizzard:420,sand:280,ash:120,ember:30,gale:70,leaf:24,heat:40,bank:1},glRef:420000,heroPad:4};
 // WMAP: the illustrated world map (map.js). vig: vignette size in cells.
 const WMAP={cell:[64,150,38],vig:.78,names:84};// cell: px per area (normal min, max, min on short landscape screens); names: written out from this cell size
 // ===== Beta v0.5.3: HD-2D world renderer (hd2d.js, hd2dgl.js) =====
@@ -2208,13 +2224,14 @@ const B4={det:{on:true,mpPct:.1,mpMin:4,maxPerAct:2},
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.7.9";const APP_BUILD="20f894cbc2b3";
+const APP_VER="0.8.0";const APP_BUILD="8028c0ecc2af";
 
 // =================== VERSION ===================
 // The one public version string. Patch (0.1.x) for fixes and balance, minor (0.x.0) for new systems.
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.8.0',['Weather overhaul: rain, storms, snow, blizzards, fog, gales, sandstorms, heat, ashfall, auroras and starfall now come in layers with depth in the world (2D and HD-2D) and in battle: puddles and splashes on wet ground, lightning that lights the scene (gently, never strobing), drifting fog banks that walls hide, settling snow and ash, heat shimmer. Old visuals updated: the Victory crest in the new lettering, a sunlit colosseum for the Arena, and a shaded minimap.']],
  ['Beta v0.7.9',['Wide battle screen (Galaxy Fold open, tablets, desktop): everything now fits without scrolling. Under the stage, the commands sit on top with the foes right below them, and the party sits beside them, Vanguard then Rearguard, one hero per row. Command buttons widen and wrap instead of cutting words, aim tags and foe cards no longer cut off text, and boss fights put the boss bar beside the turn order to save room.']],
  ['Beta v0.7.8',['Every wayfarer now has their own voice when they challenge you on the road: their own opening, a line if you decline, a shout at half health, a line when they lose and join, when you fall and when you run. Bonded heroes in your party answer them, personal quest rivals and the legends get their own lines too, and Guild Hall challengers say their piece.']],
  ['Beta v0.7.7',['Guild missions now count what you already did on this journey, so a mission you have already done can be claimed as soon as you accept it. Detonator hints in the skill list are now just element symbols (hold or hover for the words). No more blue flash when you tap the screen to move.']],
@@ -7642,7 +7659,9 @@ function worldDraw(now){
   // put while the camera moves; weather and theme layers scroll with the world
   if(m.kind==='field'&&G.cleared[m.s]){ctx.fillStyle='rgba(255,210,120,.07)';ctx.fillRect(0,0,vw,vh);}
   wfxDraw2D(ctx,'amb',m,cx,cy,vw,vh,gfxStill()?0:now);
-  {let w=(m.kind==='field'||m.kind==='town')?(G.weather[m.s]||'clear'):null;if(w==='clear'&&!(typeof TR!=='undefined'&&TR.wx&&TR.wx.k<1))w=null;if(w||m.amb)wfxTiled(ctx,vw,vh,cx,cy,c=>{if(w)weatherFX(c,w,vw,vh,now,false);if(m.amb)themeFX(c,m,vw,vh,now);});}
+  {let w=(m.kind==='field'||m.kind==='town')?(G.weather[m.s]||'clear'):null;if(w==='clear'&&!(typeof TR!=='undefined'&&TR.wx&&TR.wx.k<1))w=null;// v0.7.7: the weather in layers (weather7.js), drawn straight onto the view with its own parallax; the old full screen layer otherwise
+    const w7=!!w&&typeof w7World==='function'&&w7World(ctx,'w2d',m,cx,cy,vw,vh,gfxStill()?0:now);
+    if((w&&!w7)||m.amb)wfxTiled(ctx,vw,vh,cx,cy,c=>{if(w&&!w7)weatherFX(c,w,vw,vh,now,false);if(m.amb)themeFX(c,m,vw,vh,now);});}
   if(m.kind==='town'&&G.cleared[m.s])festivalFX(ctx,m,cx,cy,vw,vh,now);
   if(dun){const e=m.start;const ex=e[0]*TS+8-cx,ey=(e[1]-1)*TS-cy-6+Math.round(Math.sin(now/200)*2);ctx.fillStyle='#150b17';ctx.fillRect(ex-4,ey-1,9,6);ctx.fillStyle='#ffe08a';ctx.fillRect(ex-3,ey+3,7,1);ctx.fillRect(ex-2,ey+2,5,1);ctx.fillRect(ex-1,ey+1,3,1);ctx.fillRect(ex,ey,1,1);}
   if(WS.flash&&now-WS.flash<460){const p=(now-WS.flash)/460;ctx.fillStyle=`rgba(255,255,255,${Math.floor(p*7)%2?0.85:0})`;ctx.fillRect(0,0,vw,vh);
@@ -8091,6 +8110,7 @@ function battleFrame(now){
   B.en.concat(B.front,B.back).forEach(u=>{if(u.actT&&u.actT!==u._act){u._act=u.actT;onAction(u,now);}});
   const tgMode=B.mode==='cmd'&&B.menu==='target'&&B.pend;
   const units=B.en.map(u=>({u,b:unitBox(u)})).concat(B.front.map(u=>({u,b:unitBox(u)}))).filter(o=>o.b).sort((a,b)=>a.b.y-b.b.y);
+  if(B.weather&&B.weather!=='clear'&&typeof w7BattleGround==='function')w7BattleGround(ctx,W,H,now);// v0.7.7: puddles, ripples, settling flakes, low fog under the units
   units.forEach(({u,b})=>drawUnit(ctx,u,b,now,tgMode));
   // turn arrow
   // v0.6.3: the turn arrow sits where the stage layout put it (b3Lay), drawn with the HUD below
@@ -18972,13 +18992,15 @@ void main(){gl_FragColor=(texture2D(uT,v+uPx*vec2(-1.0,-1.0))+texture2D(uT,v+uPx
 blur_f:`precision mediump float;uniform sampler2D uT;uniform vec2 uD;uniform float uThr;varying vec2 v;
 vec3 g(vec2 p){vec3 c=texture2D(uT,p).rgb;return uThr>0.0?max(c-uThr,0.0)/(1.0-uThr):c;}
 void main(){vec3 c=g(v)*0.227027+(g(v+uD*1.3846154)+g(v-uD*1.3846154))*0.3162162+(g(v+uD*3.2307692)+g(v-uD*3.2307692))*0.0702703;gl_FragColor=vec4(c,1.0);}`,
-comp_f:`precision mediump float;uniform sampler2D uB;uniform sampler2D uG;
+comp_f:`precision mediump float;uniform sampler2D uB;uniform sampler2D uG;uniform sampler2D uC;uniform vec4 uHt;
 uniform vec4 uDof;uniform vec4 uBl;uniform vec4 uSh;uniform vec3 uShC;uniform vec2 uAsp;uniform float uVig;varying vec2 v;
 void main(){vec3 b=texture2D(uB,v).rgb;float dy=v.y-uDof.x;float k=clamp((abs(dy)-uDof.y)/uDof.z,0.0,1.0);k=k*k*(3.0-2.0*k)*uDof.w*(dy<0.0?0.35:1.0);
   vec3 g=uBl.z>0.5?texture2D(uG,v).rgb:max(b-uBl.x,0.0)/(1.0-uBl.x);vec3 add=g*uBl.y;
   if(uSh.x>0.0){float a=dot(v*uAsp,vec2(0.80,0.60));float w=sin(a*7.0+uSh.y*0.17)*0.5+0.5;w=w*w;w*=w;add+=uShC*(w*uSh.x*smoothstep(0.15,1.0,v.y));}
   vec2 q=(v-0.5)*vec2(uAsp.x,1.0)*1.15;float vg=1.0-uVig*smoothstep(0.18,0.62,dot(q,q));
-  gl_FragColor=vec4((b*k)*vg+add,1.0-(1.0-k)*vg);}`
+  // v0.7.7 heat shimmer: the sharp frame, shifted sideways by a slow wave, above the hero's head (toward the far ground), uHt = (strength, s, from v.y, 1/width)
+  float hm=0.0;vec3 hc=vec3(0.0);if(uHt.x>0.0){hm=clamp(uHt.x,0.0,1.0)*smoothstep(uHt.z,uHt.z+0.22,v.y);vec2 o=vec2(sin(v.y*140.0+uHt.y*4.3)+0.5*sin(v.y*53.0-uHt.y*2.1),0.0)*uHt.w*(0.4+0.9*hm);hc=texture2D(uC,v+o).rgb;}
+  gl_FragColor=vec4((b*k)*vg+add+hc*(hm*(1.0-k)*vg),1.0-(1.0-k)*vg*(1.0-hm));}`
 };
 function h2Shader(gl,type,src){const s=gl.createShader(type);gl.shaderSource(s,src);gl.compileShader(s);
   if(!gl.getShaderParameter(s,gl.COMPILE_STATUS)&&!gl.isContextLost()){const e=gl.getShaderInfoLog(s);gl.deleteShader(s);throw new Error('hd2d shader: '+e);}return s;}
@@ -19651,7 +19673,8 @@ function hdFrame(now){const m=WS.m,gl=HD.gl,q=hdTierQ(),still=gfxStill(),ts=stil
   // the blurred copy is remade every q.every frames (Medium: every other frame; the parts it softens are out of focus anyway), and at once
   // after a jump of the camera; the composite below runs every frame
   const camMv=Math.abs(HD.cam.x-(HD.lastBx||0))+Math.abs(HD.cam.z-(HD.lastBz||0));HD.postN=(HD.postN||0)+1;
-  const redo=!HD.blurOk||HD.postN>=(q.every||1)||camMv>48||HD.blurSize!==HD.size||HD.syncDraw;
+  const ht=typeof w7HeatGL==='function'?w7HeatGL():0;// v0.7.7 heat shimmer reads the fresh copy of the frame
+  const redo=!HD.blurOk||HD.postN>=(q.every||1)||camMv>48||HD.blurSize!==HD.size||HD.syncDraw||ht>0;
   if(redo){HD.postN=0;HD.blurOk=true;HD.blurSize=HD.size;HD.lastBx=HD.cam.x;HD.lastBz=HD.cam.z;
   // the finished frame, copied (one call, no second pass over the scene) and shrunk: the source of the blur
     gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,RT.cp.t);gl.copyTexSubImage2D(gl.TEXTURE_2D,0,0,0,0,0,sz.w,sz.h);
@@ -19672,6 +19695,7 @@ function hdFrame(now){const m=WS.m,gl=HD.gl,q=hdTierQ(),still=gfxStill(),ts=stil
   gl.uniform4f(C.u.uDof,fy+dof.shift,dof.band*wide,dof.ramp*Math.sqrt(wide),q.dof?dof.max:0);
   gl.uniform4f(C.u.uBl,thr,(q.bloom>1?bl.high:bl.med)*(1+o.bloom),RT.e1?1:0,0);
   gl.uniform4f(C.u.uSh,q.shafts&&m.kind!=='dungeon'?o.shaft*HD2D.shaft:0,ts/1000,0,0);gl.uniform3fv(C.u.uShC,o.shC);gl.uniform2f(C.u.uAsp,sz.w/sz.h,1);gl.uniform1f(C.u.uVig,o.vig);
+  if(C.u.uHt){gl.activeTexture(gl.TEXTURE3);gl.bindTexture(gl.TEXTURE_2D,RT.cp.t);gl.uniform1i(C.u.uC,3);gl.activeTexture(gl.TEXTURE0);gl.uniform4f(C.u.uHt,ht,ts/1000,Math.min(.98,fy+.12),1/sz.w);}
   gl.enable(gl.BLEND);gl.blendFunc(gl.ONE,gl.ONE_MINUS_SRC_ALPHA);hdFS(gl);gl.disable(gl.BLEND);
   HD.frames++;}
 // ----- the 2D canvas on top: weather, ambience particles, festival lanterns, battle flash and fades (all screen space) -----
@@ -19698,7 +19722,8 @@ function hdOverlay(now,composed){const ctx=WS.ctx,m=WS.m,vw=WS.vw,vh=WS.vh,still
   const k=composed?1:Math.max(1,(WS.cv._rw||vw)/vw);
   ctx.setTransform(k,0,0,k,0,0);ctx.globalAlpha=1;ctx.imageSmoothingEnabled=false;
   let w=(m.kind==='field'||m.kind==='town')?(G.weather[m.s]||'clear'):null;const amb=m.amb&&!still;if(w==='clear'&&!(typeof TR!=='undefined'&&TR.wx&&TR.wx.k<1))w=null;
-  if(w||amb){hdOvOffset(HOV);wfxTiled(ctx,vw,vh,HOV[0],HOV[1],c=>{if(w)weatherFX(c,w,vw,vh,ts,false);if(amb)themeFX(c,m,vw,vh,now);});}
+  if(w||amb){hdOvOffset(HOV);const w7=!!w&&typeof w7World==='function'&&w7World(ctx,'ov',m,HOV[0],HOV[1],vw,vh,ts);// v0.7.7: the near and sky layers (the rest is in the GL scene)
+    if((w&&!w7)||amb)wfxTiled(ctx,vw,vh,HOV[0],HOV[1],c=>{if(w&&!w7)weatherFX(c,w,vw,vh,ts,false);if(amb)themeFX(c,m,vw,vh,now);});}
   if(WS.flash&&now-WS.flash<460){const p=(now-WS.flash)/460;ctx.fillStyle=`rgba(255,255,255,${Math.floor(p*7)%2?0.85:0})`;ctx.fillRect(0,0,vw,vh);
     ctx.fillStyle='#0a0612';for(let i=0;i<8;i++){const a=i/8*Math.PI*2+p*4;ctx.save();ctx.translate(vw/2,vh/2);ctx.rotate(a);ctx.fillRect(0,-3,Math.max(vw,vh)*p,6);ctx.restore();}}
   if(WS.fade&&now-WS.fade<230){ctx.fillStyle=`rgba(8,4,2,${(now-WS.fade)/230})`;ctx.fillRect(0,0,vw,vh);}
@@ -19731,6 +19756,290 @@ function hdRow(){const on=hdCfgOn();if(!HD.gl&&!HD.broken){try{hdInitGL();}catch
   const note=HD.broken?' Not available on this device, so the classic view is used.':(hdTierQ()?'':' Graphics is on Low, which keeps the classic view.');
   return `<div class="rows hdrows"><div class="row"><div><b>HD-2D world</b><small>Towns, fields and dungeons as a lit diorama: tilted camera, depth of field, glow and shadows. Medium and High graphics.${note}</small></div><div class="chips"><button class="chip ${on?'on':''}" data-act="cfg" data-arg='["hd2d",true]'>On</button><button class="chip ${on?'':'on'}" data-act="cfg" data-arg='["hd2d",false]'>Off</button></div></div></div>`;}
 {const sb0=settingsBody;settingsBody=function(){return sb0.apply(this,arguments)+hdRow();};}
+
+// =================== v0.7.7: the weather, drawn in layers (weather7.js) ===================
+// Every weather of the game in the world view (2D renderer and the HD-2D overlay), inside the HD-2D scene, and on the battle stage:
+//  - far, mid and near layers: far particles are small, dim and slow and lag the camera (parallax), near ones are large, soft and fast and
+//    lead it; the layer that touches the ground (puddles, ripples, splashes, settling flakes and ash) moves exactly with the ground.
+//  - HD-2D: rain streaks, flakes, grains, ash, embers, wind streaks, fog and dust banks are quads in the GL scene (world positions, lit,
+//    depth tested, smaller with distance); puddles, ripples and splashes lie on the ground; wet ground is darker and glossier (grade);
+//    a lightning flash lights the scene; heat shimmers through the composite pass. The 2D overlay keeps only what is near the lens or in
+//    the sky (near streaks, gusts, bolts, the flash, starfall, aurora).
+//  - smooth blends: each weather of Phase 5's blend (TR.wx) is drawn at its own weight (no offscreen layers).
+// Rules kept: nothing is drawn over the hero (2D: his box is skipped, HD-2D: hdWfxEmit's box test, the shimmer starts above his head);
+// battle labels are DOM over the canvas and unit HUD is drawn after the weather (v0.5.8); reduced motion shows a still frame (t = 0, no
+// flashes, no gusts); no game RNG or Math.random is used (positions come from a hash of the index and the time, the fog bank sprites
+// from their own seeded mulberry), so the Daily Trial and every seeded test are untouched. Low keeps a cheap version (WX7.tier.low).
+// The rare skies Blood Moon, Solar Eclipse and the Elemental Surges keep their v0.4.0 look (world3.js), now anchored like before.
+const W7={stats:{mode:'',w:'',n:0,layers:[0,0,0],ground:0,banks:0,shimmer:0,flash:0,bolt:0,gl:0,glG:0},force:0,spr:{},pud:new Map(),pudMap:null,err:null,heat:0,log:null};
+const W7R=mulberry(7707);// visual only: shapes of the fog and gust bank sprites
+const W7M=(v,P)=>((v%P)+P)%P;
+const w7H=(i,k)=>wfxH(i,k);
+function w7Q(){let t='medium';try{t=GFX.tier||gfxTier();}catch(e){}return WX7.tier[t]||WX7.tier.medium;}
+function w7Still(){try{return gfxStill();}catch(e){return false;}}
+// ----- sprites (drawn once) -----
+function w7Spr(key,w,h,fn){let c=W7.spr[key];if(!c){c=W7.spr[key]=mkCv(w,h);fn(c.getContext('2d'),w,h);}return c;}
+// a slanted streak, bright at its head (bottom), fading toward its tail; wid 1 to 3 (outer columns soft)
+function w7Streak(len,wid,s,rgb,a){return w7Spr(`st${len}:${wid}:${s}:${rgb}:${a}`,Math.ceil(len*Math.abs(s))+wid+2,len+2,(c)=>{const x0=s<0?Math.ceil(len*-s)+1:1;
+  for(let y=0;y<len;y++){const k=Math.pow((y+1)/len,.9)*a,x=Math.round(x0+y*s);c.fillStyle=`rgba(${rgb},${k.toFixed(3)})`;c.fillRect(x,y+1,1,1);
+    if(wid>1){c.fillStyle=`rgba(${rgb},${(k*.32).toFixed(3)})`;c.fillRect(x-1,y+1,1,1);if(wid>2)c.fillRect(x+1,y+1,1,1);}}});}
+function w7Dot(key,r,rgb,a){const n=Math.ceil(r*2)+2;return w7Spr('dot'+key,n,n,(c)=>{const g=c.createRadialGradient(n/2,n/2,0,n/2,n/2,r);g.addColorStop(0,`rgba(${rgb},${a})`);g.addColorStop(.45,`rgba(${rgb},${a*.6})`);g.addColorStop(1,`rgba(${rgb},0)`);c.fillStyle=g;c.fillRect(0,0,n,n);});}
+// a soft cloud bank: many faint puffs in an elongated heap (fog, dust, blizzard gusts); tinted copies with source-in
+function w7Bank(flat){return w7Spr('bank'+flat,192,flat?48:80,(c,w,h)=>{const R=W7R;for(let i=0;i<44;i++){const x=18+R()*156,e=1-Math.abs(x-96)/110,y=h/2+(R()-.5)*h*.36*e,r=(flat?12:16)+R()*(flat?16:24)*e;
+  c.save();c.translate(x,y);c.scale(flat?2.2:1.35,1);const g=c.createRadialGradient(0,0,0,0,0,r);g.addColorStop(0,'rgba(255,255,255,.26)');g.addColorStop(1,'rgba(255,255,255,0)');c.fillStyle=g;c.fillRect(-r,-r,r*2,r*2);c.restore();}});}
+function w7BankT(flat,col){return w7Spr(`bankT${flat}:${col}`,192,flat?48:80,(c,w,h)=>{c.drawImage(w7Bank(flat),0,0);c.globalCompositeOperation='source-in';c.fillStyle=col;c.fillRect(0,0,w,h);});}
+function w7Puddle(){return w7Spr('pud',32,12,(c)=>{c.fillStyle='rgba(34,50,84,.46)';c.beginPath();c.ellipse(16,6,15,5.2,0,0,7);c.fill();
+  c.fillStyle='rgba(130,160,210,.22)';c.beginPath();c.ellipse(13,5,9,2.6,0,0,7);c.fill();c.strokeStyle='rgba(215,228,255,.5)';c.lineWidth=1;c.beginPath();c.ellipse(16,6,14,4.6,0,Math.PI*1.08,Math.PI*1.92);c.stroke();
+  c.fillStyle='rgba(255,255,255,.55)';c.fillRect(9,3,4,1);});}
+function w7Ripple(){return w7Spr('rip',20,8,(c)=>{c.strokeStyle='rgba(255,255,255,.9)';c.lineWidth=1;c.beginPath();c.ellipse(10,4,9,3.2,0,0,7);c.stroke();});}
+function w7Spec(){return w7Spr('spec',16,6,(c)=>{const g=c.createRadialGradient(8,3,0,8,3,8);g.addColorStop(0,'rgba(255,255,255,.9)');g.addColorStop(1,'rgba(255,255,255,0)');c.fillStyle=g;c.save();c.scale(1,.38);c.fillRect(0,0,16,16);c.restore();});}
+function w7Ribbon(col){return w7Spr('aur'+col,4,64,(c)=>{const g=c.createLinearGradient(0,0,0,64);g.addColorStop(0,`rgba(${col},0)`);g.addColorStop(.3,`rgba(${col},.85)`);g.addColorStop(.62,`rgba(${col},.32)`);g.addColorStop(1,`rgba(${col},0)`);c.fillStyle=g;c.fillRect(0,0,4,64);});}
+// ----- lightning: strikes on a fixed schedule from a hash of the strike index (no RNG). Each strike flashes at most twice, briefly, and
+// strikes are at least WX7.bolt.gap[0] ms apart, so there are never more than 2 flashes in any second. Reduced motion: no strikes.
+const W7S={k:0,dt:0,f:0,far:false,x:0};
+function w7FlashAt(dt,mul){let f=0;for(const p of WX7.bolt.pulses){if(dt>=p[0]&&dt<p[0]+p[1]){const u=(dt-p[0])/p[1];f=p[2]*Math.pow(1-u,1.6);}}return f*mul;}
+function w7Strike(ms){const B=WX7.bolt,S=W7S;S.f=0;S.k=-1;if(w7Still())return S;
+  if(W7.force&&(W7.hold||ms>=W7.force&&ms-W7.force<B.life)){S.k=7;S.dt=W7.hold?30:ms-W7.force;S.far=false;S.x=.62;S.f=w7FlashAt(S.dt,1);return S;}
+  const P=B.gap[1],j=B.gap[1]-B.gap[0],k0=Math.floor(ms/P);
+  for(let k=k0;k>=k0-1;k--){const T=k*P+w7H(k,301)*j,dt=ms-T;if(dt>=0&&dt<B.life){S.k=k;S.dt=dt;S.far=W7M(k,3)===1;S.x=.12+.76*w7H(k,302);S.f=w7FlashAt(dt,S.far?.35:1);return S;}}
+  return S;}
+// a soft periodic gust, 0 to 1 (blizzard whiteouts, sand and gale bands); 0 under reduced motion (t = 0)
+function w7Gust(t){if(!t)return 0;const g=Math.max(0,Math.sin(t*1.15+Math.sin(t*.37)*1.6));return g*g*g;}
+// the weathers to draw now and their weights (Phase 5's blend)
+const W7L=[];
+function w7List(m){W7L.length=0;if(!m||!G||!G.weather)return W7L;const cur=G.weather[m.s]||'clear',X=typeof TR!=='undefined'?TR.wx:null;
+  if(X&&X.from&&X.k<1&&X.cur===cur&&X.from!==cur){const e=trEase(X.k);if(X.from!=='clear')W7L.push([X.from,1-e]);if(cur!=='clear')W7L.push([cur,e]);}
+  else if(cur!=='clear')W7L.push([cur,1]);return W7L;}
+const W7_OWN={rain:1,storm:1,snow:1,blizzard:1,fog:1,gale:1,sand:1,heat:1,ashfall:1,aurora:1,starfall:1,meteor:1};
+function w7Night(){try{const p=phaseProg();if(typeof trPhW==='function'&&TR.inDraw){return Math.min(1,trPhW('night')+trPhW('dusk')*.35*p.p+trPhW('dawn')*.3*(1-p.p));}
+  return p.ph==='night'?1:p.ph==='dusk'?.35*p.p:p.ph==='dawn'?.3*(1-p.p):0;}catch(e){return 0;}}
+// ----- the 2D painter. V: mode ('w2d' world 2D, 'ov' HD-2D overlay, 'bt' battle), W, H, ox, oy (camera, px), gy (battle floor line),
+// t (s), ms, q (tier), hero box hx0..hy1, night (0..1), gr (draw the ground layer), m (map) -----
+const W7V={air:true,mode:'',W:0,H:0,ox:0,oy:0,gy:0,t:0,ms:0,q:null,hx0:0,hy0:0,hx1:0,hy1:0,night:0,gr:true,m:null,area:1};
+const W7F={s:0,vx:0,vy:0,par:1,mg:12,w:1,h:1,spr:null,col:'#fff',a:1,hero:false,sway:0,swayF:1,flip:false,top:0};
+function w7F(o){W7F.s=0;W7F.vx=0;W7F.vy=0;W7F.par=1;W7F.mg=12;W7F.w=1;W7F.h=1;W7F.spr=null;W7F.col='#fff';W7F.a=1;W7F.hero=true;W7F.sway=0;W7F.swayF=1;W7F.flip=false;W7F.top=0;return Object.assign(W7F,o);}
+// one falling layer of n particles; returns how many were drawn
+function w7Fall(ctx,V,n,o,k,L){if(n<=0||o.a*k<.01)return 0;const W=V.W,H=V.H,mg=o.mg,PW=W+mg*2,top=o.top?Math.min(H,o.top):H,PH=top+mg*2,t=V.t,ox=V.ox*o.par,oy=V.oy*o.par,sp=o.spr;
+  ctx.globalAlpha=o.a*k;if(!sp)ctx.fillStyle=o.col;let d=0;const hm=o.hero&&V.hx1>V.hx0,w=sp?sp.width:o.w,h=sp?sp.height:o.h;
+  for(let i=0;i<n;i++){const r=1+.35*w7H(i,o.s+2);let x=W7M(w7H(i,o.s)*PW+t*o.vx*r-ox,PW)-mg,y=W7M(w7H(i,o.s+1)*PH+t*o.vy*r-oy,PH)-mg;
+    if(o.sway)x+=Math.sin(t*o.swayF+i*1.7)*o.sway;
+    let ww=w,hh=h;if(o.flip&&Math.floor(t*3+i)%2){ww=h;hh=w;}
+    if(x<-ww||y<-hh||x>W||y>top)continue;if(hm&&x+ww>V.hx0&&x<V.hx1&&y+hh>V.hy0&&y<V.hy1)continue;
+    if(sp)ctx.drawImage(sp,Math.round(x),Math.round(y));else ctx.fillRect(Math.round(x),Math.round(y),ww,hh);d++;}
+  V.n+=d;W7.stats.layers[L]+=d;return d;}
+function w7Tint(ctx,V,col,a){if(a<.004)return;ctx.globalAlpha=a;ctx.fillStyle=col;ctx.fillRect(0,0,V.W,V.H);}
+const W7GC=new Map();
+function w7Grad(ctx,V,y0,y1,c0,c1,a){if(a<.004)return;const key=ctx.canvas.width+':'+(y0|0)+':'+(y1|0)+c0+c1;let g=W7GC.get(key);if(!g){if(W7GC.size>64)W7GC.clear();g=ctx.createLinearGradient(0,y0,0,y1);g.addColorStop(0,c0);g.addColorStop(1,c1);W7GC.set(key,g);}ctx.globalAlpha=a;ctx.fillStyle=g;ctx.fillRect(0,Math.min(y0,y1),V.W,Math.abs(y1-y0));}
+const w7Cnt=(V,n)=>Math.round(n*V.area);
+// ground spots: world 2D moves them with the ground (par 1); battle puts them on the floor with perspective; returns [x, y, scale]
+const W7G=[0,0,1];
+function w7Spot(V,a,b){if(V.mode==='bt'){const fl=V.H-V.gy-6,y=V.gy+5+b*fl;W7G[0]=a*V.W;W7G[1]=y;W7G[2]=.45+.6*(y-V.gy)/Math.max(1,V.H-V.gy);return W7G;}
+  const mg=16,PW=V.W+mg*2,PH=V.H+mg*2;W7G[0]=W7M(a*PW-V.ox,PW)-mg;W7G[1]=W7M(b*PH-V.oy,PH)-mg;W7G[2]=1;return W7G;}
+const w7HeroHit=(V,x,y,w,h)=>V.hx1>V.hx0&&x+w>V.hx0&&x<V.hx1&&y+h>V.hy0&&y<V.hy1;
+// splashes with a ripple ring (rain)
+function w7Splash(ctx,V,n,k){const rip=w7Ripple();let d=0;ctx.fillStyle='rgba(225,236,255,.9)';
+  for(let j=0;j<n;j++){const L=.36,ph=V.t/L+w7H(j,401),c=Math.floor(ph),a=ph-c;if(a>.62)continue;const P=w7Spot(V,w7H(c*13+j,402),w7H(c*17+j,403)),x=P[0],y=P[1],s=P[2];
+    const rw=(3+a*13)*s,rh=rw*.38;if(w7HeroHit(V,x-rw/2,y-6*s,rw,6*s+rh))continue;
+    ctx.globalAlpha=(1-a/.62)*.55*k;ctx.drawImage(rip,x-rw/2,y-rh/2,rw,rh);
+    if(a<.26){ctx.globalAlpha=(1-a/.26)*.8*k;const u=a*30*s;ctx.fillRect(Math.round(x-1-u*.4),Math.round(y-u*.5),1,1);ctx.fillRect(Math.round(x+1+u*.4),Math.round(y-u*.45),1,1);ctx.fillRect(Math.round(x),Math.round(y-u*.7),1,1);}d++;}
+  V.n+=d;W7.stats.ground+=d;}
+// puddles on open ground with rings from the drops (world 2D: cached per map cell; battle: a few on the floor)
+function w7PudAt(m,cx,cy){if(W7.pudMap!==m){W7.pud.clear();W7.pudMap=m;}const key=cx*4096+cy;let p=W7.pud.get(key);if(p!==undefined)return p;p=null;
+  const C=44,h=w7H(cx*7919+cy*104729,411+m.s);if(h<.3){const x=cx*C+8+w7H(cx*31+cy,412)*28,y=cy*C+8+w7H(cx+cy*37,413)*28,tx=Math.floor(x/TS),ty=Math.floor(y/TS),ok=(X,Y)=>{const r=m.t&&m.t[Y];const ch=r&&r[X];return !!ch&&ch!=='~'&&ch!=='B'&&SOLID.indexOf(ch)<0;};
+    if(ok(tx,ty)&&ok(Math.floor((x-10)/TS),ty)&&ok(Math.floor((x+10)/TS),ty))p=[x,y,.7+w7H(cx*3+cy*5,414)*.7];}W7.pud.set(key,p);return p;}
+function w7Puddles(ctx,V,k){const pd=w7Puddle(),rip=w7Ripple();let d=0;
+  const one=(x,y,s,id)=>{const w=32*s,h=12*s;if(x<-w||y<-h||x>V.W+w||y>V.H+h)return;if(w7HeroHit(V,x-w/2,y-h/2,w,h))return;ctx.globalAlpha=.8*k;ctx.drawImage(pd,x-w/2,y-h/2,w,h);
+    for(let r=0;r<2;r++){const L=.95,ph=V.t/L+w7H(id*3+r,415),a=ph-Math.floor(ph),c=Math.floor(ph),rx=x+(w7H(c*7+id+r,416)-.5)*w*.45,ry=y+(w7H(c*5+id+r,417)-.5)*h*.35,rw=(2+a*10)*s,rh=rw*.38;
+      ctx.globalAlpha=(1-a)*.5*k;ctx.drawImage(rip,rx-rw/2,ry-rh/2,rw,rh);}d++;};
+  if(V.mode==='bt'){for(let j=0;j<5;j++){const y=V.gy+(.2+.75*w7H(j,422))*(V.H-V.gy),s=(.7+.9*(y-V.gy)/Math.max(1,V.H-V.gy))*(1+w7H(j,423)*.6);one((.06+.88*w7H(j,421))*V.W,y,s,j);}}
+  else if(V.m){const C=44,x0=Math.floor(V.ox/C)-1,x1=Math.floor((V.ox+V.W)/C)+1,y0=Math.floor(V.oy/C)-1,y1=Math.floor((V.oy+V.H)/C)+1;
+    for(let cy=y0;cy<=y1;cy++)for(let cx=x0;cx<=x1;cx++){const p=w7PudAt(V.m,cx,cy);if(p)one(p[0]-V.ox,p[1]-V.oy,p[2],cx*101+cy);}}
+  V.n+=d;W7.stats.ground+=d;}
+// settling flakes or ash: land, rest a moment, fade
+function w7Settle(ctx,V,n,k,col,life){let d=0;ctx.fillStyle=col;for(let j=0;j<n;j++){const ph=V.t/life+w7H(j,431),c=Math.floor(ph),a=ph-c,P=w7Spot(V,w7H(c*11+j,432),w7H(c*19+j,433));
+  if(w7HeroHit(V,P[0]-1,P[1]-1,3,3))continue;ctx.globalAlpha=(a<.08?a/.08:1-(a-.08)/.92)*.85*k;ctx.fillRect(Math.round(P[0]),Math.round(P[1]),j%3?1:2,1);d++;}V.n+=d;W7.stats.ground+=d;}
+// lightning bolt: a jagged line from the top of the view down toward the horizon, with a glow and a branch
+function w7Bolt(ctx,V,S,k){const life=WX7.bolt.life;if(S.k<0||S.dt>=life)return;const fade=1-S.dt/life,W=V.W,top=V.mode==='bt'?V.gy*.92:V.mode==='ov'?V.H*.36:V.H*(.32+.22*w7H(S.k,303));
+  const x0=S.x*W,len=S.far?top*.55:top,pts=[];let x=x0,y=-4;const n=8;for(let i=0;i<=n;i++){pts.push(x,y);y+=len/n;x+=(w7H(S.k*31+i,304)-.5)*(S.far?10:22);}
+  const line=(lw,col,a,from,to)=>{ctx.globalAlpha=a*k;ctx.strokeStyle=col;ctx.lineWidth=lw;ctx.beginPath();ctx.moveTo(pts[from*2],pts[from*2+1]);for(let i=from+1;i<=to;i++)ctx.lineTo(pts[i*2],pts[i*2+1]);ctx.stroke();};
+  ctx.lineJoin='round';const fl=S.dt<50||(S.dt>150&&S.dt<200)?1:.55;
+  line(S.far?4:8,'rgba(150,170,255,1)',.18*fade*fl,0,n);line(S.far?2:3.5,'rgba(200,210,255,1)',.35*fade*fl,0,n);line(S.far?1:1.8,'#f8f9ff',fade*fl,0,n);
+  if(!S.far){const b=3,bx=[pts[b*2],pts[b*2+1]];ctx.globalAlpha=.6*fade*fl*k;ctx.lineWidth=1;ctx.strokeStyle='#e8ecff';ctx.beginPath();ctx.moveTo(bx[0],bx[1]);
+    let X=bx[0],Y=bx[1];for(let i=0;i<3;i++){X+=8+w7H(S.k*7+i,305)*10;Y+=len/n*.9;ctx.lineTo(X,Y);}ctx.stroke();}
+  W7.stats.bolt++;}
+// heat shimmer on a 2D canvas: rows of the band are shifted sideways by a slow wave (the canvas is drawn onto itself)
+function w7Shimmer(ctx,V,y0,y1,amp){if(!(y1>y0)||amp<.2)return;const cv=ctx.canvas,sc=cv.width/Math.max(1,V.W),t=V.t,step=3;let d=0;
+  for(let y=Math.max(0,Math.floor(y0));y<Math.min(V.H,y1);y+=step){const e=Math.sin((y-y0)/(y1-y0)*Math.PI),off=Math.sin(y*.23+t*5.1)*amp*e+Math.sin(y*.07-t*2.3)*amp*.4*e;if(Math.abs(off)<.25)continue;
+    if(V.hx1>V.hx0&&y+step>V.hy0-6&&y<V.hy1)continue;ctx.globalAlpha=1;ctx.drawImage(cv,0,Math.round(y*sc),cv.width,Math.round(step*sc),off,y,V.W,step);d++;}W7.stats.shimmer+=d;}
+// fog and dust banks: three layers that drift at their own speed and parallax; near banks fade around the hero
+function w7Banks(ctx,V,k,ns,col,o){const sp=w7BankT(o.flat?1:0,col),bw=sp.width,bh=sp.height;let d=0;const hx=(V.hx0+V.hx1)/2,hy=(V.hy0+V.hy1)/2;
+  for(let L=0;L<3;L++){const n=ns[L];if(!n)continue;const sc=Math.min(o.sc[L],V.W*1.15/bw),w=bw*sc,h=bh*sc,par=WX7.par[L],PW=V.W+w,y0=o.y0!=null?o.y0:-h*.3,y1=o.y1!=null?o.y1:V.H+h*.1,PH=Math.max(8,y1-y0);
+    for(let i=0;i<n;i++){let x=W7M(w7H(i,441+L*5)*PW+V.t*o.v[L]*(1+.3*w7H(i,442+L*5))-V.ox*par,PW)-w*.75,y=y0+W7M(w7H(i,443+L*5)*PH-V.oy*par*(V.mode==='bt'?0:1),PH)-h/2;
+      let a=o.a[L]*(.78+.22*Math.sin(V.t*.31+i*2.1));if(L===2&&V.hx1>V.hx0){const dx=(x+w/2-hx)/(w*.6),dy=(y+h/2-hy)/(h*.9),dd=dx*dx+dy*dy;if(dd<1)a*=dd;}
+      if(a*k<.01)continue;ctx.globalAlpha=a*k;ctx.drawImage(sp,x,y,w,h);d++;}}
+  V.n+=d;W7.stats.banks+=d;}
+// ----- one weather at weight k. V.gr: the ground layer (puddles, ripples, splashes, settling, back banks, shimmer); V.air: the tint and
+// everything in the air. The world draws both at once; battles draw the ground under the units and the air over them -----
+function w7Paint(ctx,w,k,V){const q=V.q,t=V.t,W=V.W,H=V.H,nt=V.night,ov=V.mode==='ov',bt=V.mode==='bt',gr=V.gr&&q.ground>0&&!ov,soft=q.soft>0,air=V.air,c=(n)=>w7Cnt(V,n);
+  if(w==='rain'||w==='storm'){const st=w==='storm',R=q.rain,sl=st?.34:.16,m=st?1.35:1;
+    if(gr){if(bt){w7Grad(ctx,V,V.gy,H,'rgba(60,90,140,1)','rgba(150,180,225,1)',.14*k);ctx.globalAlpha=.16*k;ctx.fillStyle='rgba(210,222,245,1)';for(let i=0;i<3;i++)ctx.fillRect(0,Math.round(V.gy+3+i*(i+2)*2),W,1);}
+      w7Puddles(ctx,V,k);w7Splash(ctx,V,Math.round(c(q.ground>1?40:24)*(st?1.3:1)),k);}
+    if(!air)return;
+    w7Tint(ctx,V,st?'rgb(16,20,44)':'rgb(26,36,64)',(ov?.12:st?.28:.17)*k);if(soft&&!bt)w7Grad(ctx,V,0,H*.5,'rgba(150,165,195,1)','rgba(150,165,195,0)',(ov?.12:.18)*k);
+    const fc=nt>.5?'#7a89a8':'#b8c7e0',rgb=nt>.5?'150,165,200':'205,222,250';
+    if(!ov){w7Fall(ctx,V,c(R[0]*m),w7F({s:211,vx:420*sl,vy:420,par:WX7.par[0],w:1,h:4,col:fc,a:.42}),k,0);
+      w7Fall(ctx,V,c(R[1]*m),w7F({s:214,vx:640*sl,vy:640,par:1,spr:w7Streak(9,1,sl,rgb,.95),a:.7}),k,1);}
+    if(soft)w7Fall(ctx,V,c(R[2]*m),w7F({s:217,vx:1000*sl,vy:1000,par:WX7.par[2],mg:30,spr:w7Streak(q.soft>1?24:20,3,sl,rgb,.8),a:ov?.38:.42}),k,2);
+    if(st){const S=w7Strike(V.ms);W7.stats.flash=Math.max(W7.stats.flash,S.f*k);if(S.k>=0){w7Bolt(ctx,V,S,k);if(S.f>0)w7Tint(ctx,V,'rgb(226,232,255)',S.f*k*(ov?.6:1));}}
+    return;}
+  if(w==='snow'||w==='blizzard'){const bz=w==='blizzard',S=q.snow,m=bz?1.6:1,g=bz?w7Gust(t):0,wind=bz?150+g*120:14;
+    if(gr)w7Settle(ctx,V,c(q.ground>1?40:26),k,nt>.5?'#b8c8e8':'#ffffff',2.4);
+    if(!air)return;
+    w7Tint(ctx,V,bz?'rgb(226,236,252)':'rgb(208,226,255)',(bz?(ov?.1:.16)+g*.12:(ov?.05:.08))*k);
+    const fc=nt>.5?'#c4d2ee':'#f2f7ff',rgb=nt>.5?'200,214,240':'255,255,255';
+    if(!ov){w7Fall(ctx,V,c(S[0]*m),w7F({s:221,vx:wind*.7,vy:bz?70:16,par:WX7.par[0],w:1,h:1,col:fc,a:.6,sway:bz?1:3,swayF:.9}),k,0);
+      w7Fall(ctx,V,c(S[1]*m),w7F({s:224,vx:wind,vy:bz?100:28,par:1,spr:soft?w7Dot('sm'+rgb,1.8,rgb,.95):null,w:2,h:2,col:fc,a:.9,sway:bz?2:5,swayF:1.3}),k,1);}
+    if(soft)w7Fall(ctx,V,c(S[2]*m),w7F({s:227,vx:wind*1.5,vy:bz?150:52,par:WX7.par[2],mg:24,spr:w7Dot('sn'+rgb,q.soft>1?4.5:3.6,rgb,.75),a:.6,sway:bz?3:8,swayF:.8}),k,2);
+    if(bz&&soft)w7Banks(ctx,V,k*(.5+g*.8),[0,2,3],nt>.5?'rgb(190,205,235)':'rgb(244,248,255)',{flat:1,sc:[1,1.7,2.6],v:[0,240,420],a:[0,.7,.6],y0:bt?V.gy-60:null,y1:bt?H:null});
+    return;}
+  if(w==='fog'){const col=nt>.5?'rgb(120,132,160)':'rgb(222,227,236)',B=q.banks;
+    if(V.gr&&!ov&&soft)w7Banks(ctx,V,k,[B[0],B[1],0],col,{sc:[.9,1.25,1],v:[4,8,0],a:[.36,.4,0],y0:bt?V.gy-46:null,y1:bt?V.gy+30:null});
+    if(!air)return;
+    if(!soft){for(let i=0;i<B[0];i++){const x=Math.floor(W7M(t*6+i*90-V.ox,W+160)-80),y=Math.floor(H*(.15+i*.14)-W7M(V.oy,H*.14));ctx.globalAlpha=k;ctx.drawImage(fogSprite(),x-70,y-70);}V.n+=B[0];W7.stats.banks+=B[0];}
+    w7Tint(ctx,V,col,(ov?.05:soft?.1:.18)*k);
+    if(soft)w7Banks(ctx,V,k,[0,0,B[2]],col,{sc:[1,1,bt?2.2:1.9],v:[0,0,14],a:[0,0,ov?.24:.34],y0:bt?V.gy:null,y1:bt?H+30:null});
+    return;}
+  if(w==='gale'){const Wd=q.wind,g=w7Gust(t);if(!air)return;
+    if(!ov){w7Fall(ctx,V,c(Wd[0]),w7F({s:231,vx:300,vy:0,par:WX7.par[0],w:6,h:1,col:'#ffffff',a:.32,sway:2,swayF:3}),k,0);
+      w7Fall(ctx,V,c(Wd[1]),w7F({s:234,vx:460,vy:12,par:1,spr:w7Spr('gw',16,1,(x)=>{const gg=x.createLinearGradient(0,0,16,0);gg.addColorStop(0,'rgba(255,255,255,0)');gg.addColorStop(1,'rgba(255,255,255,.9)');x.fillStyle=gg;x.fillRect(0,0,16,1);}),a:.55,sway:3,swayF:2.6}),k,1);
+      w7Fall(ctx,V,c(6),w7F({s:237,vx:230,vy:30,par:1,w:2,h:1,col:'#7aa040',a:1,sway:10,swayF:4,flip:true}),k,1);w7Fall(ctx,V,c(4),w7F({s:240,vx:200,vy:26,par:1,w:2,h:1,col:'#a8863a',a:1,sway:12,swayF:3.4,flip:true}),k,1);}
+    if(soft)w7Fall(ctx,V,c(Wd[2]),w7F({s:243,vx:760,vy:20,par:WX7.par[2],mg:40,spr:w7Spr('gwn',34,2,(x)=>{const gg=x.createLinearGradient(0,0,34,0);gg.addColorStop(0,'rgba(255,255,255,0)');gg.addColorStop(.8,'rgba(255,255,255,.7)');gg.addColorStop(1,'rgba(255,255,255,0)');x.fillStyle=gg;x.fillRect(0,0,34,2);}),a:.28+g*.25,sway:4,swayF:2}),k,2);
+    return;}
+  if(w==='sand'){const S=q.sand,g=w7Gust(t);if(!air)return;
+    w7Grad(ctx,V,0,H,'rgba(214,170,100,1)','rgba(200,150,90,1)',(ov?.12:.2)*k+g*.08*k);
+    if(!ov){w7Fall(ctx,V,c(S[0]),w7F({s:251,vx:260,vy:18,par:WX7.par[0],w:1,h:1,col:'#e6c890',a:.55,sway:3,swayF:2.2}),k,0);
+      w7Fall(ctx,V,c(S[1]),w7F({s:254,vx:360,vy:26,par:1,w:2,h:1,col:'#f2d8a2',a:.75,sway:5,swayF:1.9}),k,1);}
+    if(soft){w7Fall(ctx,V,c(S[2]),w7F({s:257,vx:560,vy:40,par:WX7.par[2],mg:20,spr:w7Dot('gr',2.6,'236,200,140',.7),a:.55,sway:6,swayF:1.4}),k,2);
+      w7Banks(ctx,V,k*(.3+g*.9),[0,2,2],'rgb(222,180,116)',{flat:1,sc:[1,1.5,2.2],v:[0,200,380],a:[0,.6,.5],y0:bt?V.gy-50:null,y1:bt?H:null});}
+    return;}
+  if(w==='heat'){
+    if(V.gr&&!ov&&q.shimmer&&soft&&!V.still){const y0=bt?V.gy-34:0,y1=bt?V.gy+10:H*.42;w7Shimmer(ctx,V,y0,y1,1.4*k);}
+    if(V.gr&&bt){ctx.globalAlpha=.16*k;ctx.fillStyle='rgba(255,236,200,1)';for(let i=0;i<3;i++){const y=V.gy-6-i*7;for(let x=0;x<W;x+=6)ctx.fillRect(x,Math.round(y+Math.sin(x*.09+t*3+i)*1.5),6,1);}}
+    if(!air)return;
+    w7Grad(ctx,V,bt?V.gy-40:0,H,'rgba(255,200,120,1)','rgba(255,140,60,1)',(ov?.06:.11)*k);
+    w7Fall(ctx,V,c(soft?18:10),w7F({s:261,vx:0,vy:-14,par:1,w:1,h:3,col:'rgba(255,226,190,1)',a:.28,sway:2,swayF:3,top:bt?V.gy:0}),k,1);
+    return;}
+  if(w==='ashfall'){const A=q.ash;
+    if(gr)w7Settle(ctx,V,c(20),k,'#7a7070',3.2);
+    if(!air)return;
+    w7Tint(ctx,V,'rgb(58,48,46)',(ov?.08:.15)*k);
+    if(!ov){w7Fall(ctx,V,c(A[0]),w7F({s:271,vx:6,vy:12,par:WX7.par[0],w:1,h:1,col:'#5e5656',a:.7,sway:4,swayF:.8}),k,0);
+      w7Fall(ctx,V,c(A[1]),w7F({s:274,vx:9,vy:20,par:1,w:2,h:1,col:'#9a9090',a:.85,sway:7,swayF:1.1,flip:true}),k,1);}
+    const ec=c(soft?(q.soft>1?14:9):5),emb=soft?w7Dot('emb',3,'255,150,60',.9):null;
+    ctx.globalCompositeOperation='lighter';w7Fall(ctx,V,ec,w7F({s:277,vx:8,vy:-10,par:1,spr:emb,w:1,h:1,col:'#ff7a3a',a:.55+.35*Math.sin(t*7),sway:9,swayF:1.7}),k,1);ctx.globalCompositeOperation='source-over';
+    if(soft)w7Fall(ctx,V,c(A[2]),w7F({s:280,vx:14,vy:34,par:WX7.par[2],mg:20,spr:w7Dot('ash',3.4,'150,140,138',.75),a:.55,sway:10,swayF:.7}),k,2);
+    return;}
+  if(w==='aurora'){if(!air)return;const top=bt?V.gy*.9:ov?H*.42:H*.4,cols=['90,255,170','140,120,255','90,220,255'],st=soft?3:4;
+    w7Grad(ctx,V,0,top,'rgba(40,120,110,1)','rgba(40,120,110,0)',.16*k);
+    for(let L=0;L<3;L++){const rb=w7Ribbon(cols[L]),ox=V.ox*(.4+L*.1);for(let x=-st;x<W+st;x+=st){const u=x+ox,y=top*.05+L*top*.12+Math.sin(u/26+t*.5+L)*top*.1+Math.sin(u/9+t*1.3)*2,h=top*(.5+.18*Math.sin(u/40+t*.7+L*2));
+      if(w7HeroHit(V,x,y,st,h))continue;ctx.globalAlpha=k*(.34+.22*Math.sin(u/34+t*.9+L*1.7))*(L===1?.75:1);ctx.drawImage(rb,x,y,st,h);}V.n++;W7.stats.rib=(W7.stats.rib||0)+Math.ceil(W/st);}
+    return;}
+  if(w==='starfall'||w==='meteor'){if(!air)return;const mt=w==='meteor',top=bt?V.gy*.95:ov?H*.45:H;
+    w7Tint(ctx,V,mt?'rgb(20,14,40)':'rgb(18,16,60)',.1*k);
+    const tw=w7Cnt(V,q.stars);for(let i=0;i<tw;i++){const x=W7M(w7H(i,291)*(W+20)-V.ox*.5,W+20)-10,y=W7M(w7H(i,292)*top-V.oy*.5,top),a=.35+.5*Math.max(0,Math.sin(t*(1.3+w7H(i,293))+i*2.3));
+      if(w7HeroHit(V,x-1,y-1,2,2))continue;ctx.globalAlpha=a*k;ctx.fillStyle=i%5?'#e8e6ff':'#fff2c0';ctx.fillRect(Math.round(x),Math.round(y),1,1);}V.n+=tw;
+    const n=mt?6:8,head=w7Dot(mt?'mh':'sh',mt?3.4:2.4,mt?'255,236,180':'255,250,230',1);let d=0;
+    for(let j=0;j<n;j++){const P=(mt?3.4:2.6)+w7H(j,294)*2,ph=t/P+w7H(j,295),c=Math.floor(ph),a=ph-c,life=mt?.42:.3;if(a>life||!t)continue;const u=a/life;
+      const ang=(mt?.75:.5)+w7H(c*7+j,296)*.35,dx=Math.cos(ang),dy=Math.sin(ang),trav=(mt?140:180)*(.7+.5*w7H(c+j,297)),len=(mt?60:40)*(.6+.6*w7H(c*3+j,298));
+      const x=w7H(c*13+j,299)*W*1.2-W*.1+dx*trav*u,y=w7H(c*11+j,300)*top*.6+dy*trav*u;if(y>top+20)continue;
+      if(w7HeroHit(V,Math.min(x,x-dx*len),Math.min(y,y-dy*len),Math.abs(dx*len)+4,Math.abs(dy*len)+4))continue;
+      const fa=Math.sin(u*Math.PI)*k,gx=ctx.createLinearGradient(x,y,x-dx*len,y-dy*len);gx.addColorStop(0,mt?'rgba(255,220,150,.95)':'rgba(255,250,225,.95)');gx.addColorStop(.35,mt?'rgba(255,130,50,.6)':'rgba(200,160,255,.45)');gx.addColorStop(1,'rgba(160,120,255,0)');
+      ctx.globalAlpha=fa;ctx.strokeStyle=gx;ctx.lineWidth=mt?2.2:1.3;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x-dx*len,y-dy*len);ctx.stroke();
+      ctx.globalCompositeOperation='lighter';ctx.drawImage(head,x-head.width/2,y-head.height/2);ctx.globalCompositeOperation='source-over';d++;}V.n+=d;W7.stats.layers[2]+=d;
+    return;}
+}
+// the rare skies kept from v0.4.0 (world3.js), drawn like before (a view sized layer that scrolls with the world), faded by k
+const W7_OLD={cv:null};
+function w7Legacy(ctx,w,k,V,now){if(!V.air)return;const f=W7.old;if(!f)return;
+  if(V.mode==='bt'){if(k>=.999)return f(ctx,w,V.W,V.H,now,true);}
+  let c=W7_OLD.cv;if(!c||c.width!==V.W||c.height!==V.H)c=W7_OLD.cv=mkCv(V.W,V.H);const o=c.getContext('2d');o.setTransform(1,0,0,1,0,0);o.globalAlpha=1;o.globalCompositeOperation='source-over';o.clearRect(0,0,V.W,V.H);
+  if(V.mode==='bt')f(o,w,V.W,V.H,now,true);else wfxTiled(o,V.W,V.H,V.ox,V.oy,cc=>f(cc,w,V.W,V.H,now,false));ctx.globalAlpha=k;ctx.drawImage(c,0,0);}
+function w7Begin(mode,W,H,ox,oy,ms){const V=W7V,S=W7.stats,still=w7Still();V.mode=mode;V.W=W;V.H=H;V.ox=ox;V.oy=oy;V.ms=still?0:ms;V.t=V.ms/1000;V.still=still;V.q=w7Q();V.n=0;V.gr=true;V.air=true;V.hx0=V.hx1=0;V.gy=0;
+  V.area=Math.max(.55,Math.min(1.8,W*H/(420*320)));S.mode=mode;S.n=0;S.layers[0]=S.layers[1]=S.layers[2]=0;S.ground=S.banks=S.shimmer=S.bolt=0;S.flash=0;return V;}
+function w7Run(ctx,V,L,now){ctx.save();try{ctx.globalCompositeOperation='source-over';for(const [w,k] of L){if(k<=.002)continue;if(W7_OWN[w])w7Paint(ctx,w,k,V);else w7Legacy(ctx,w,k,V,now);}}
+  finally{ctx.restore();}W7.stats.n=Math.min(V.n,1e6);W7.stats.w=L.map(x=>x[0]).join('+');}
+// ----- the world: 2D renderer (mode 'w2d', camera cx, cy) and the HD-2D overlay (mode 'ov', ox, oy: the ground's screen motion) -----
+function w7World(ctx,mode,m,ox,oy,vw,vh,now){if(!WX7.on)return false;if(W7.rec)W7.rec(true);try{const L=w7List(m);const V=w7Begin(mode,vw,vh,ox,oy,now);V.m=m;V.night=w7Night();
+    if(mode==='w2d'){const hx=Math.round(WS.px)+8-ox,hy=Math.round(WS.py)+16-oy,P=WX7.heroPad,H=WFX.hero;V.hx0=hx-H[0]-P;V.hx1=hx+H[0]+P;V.hy0=hy-H[1]-P;V.hy1=hy+H[2]+P;}
+    else if(typeof HW!=='undefined'&&HW.b){const B=HW.b,P=WX7.heroPad;V.hx0=(B[0]+1)/2*vw-P;V.hx1=(B[2]+1)/2*vw+P;V.hy0=(1-B[3])/2*vh-P;V.hy1=(1-B[1])/2*vh+P;}
+    // fewer particles in a blend so the sum stays near one weather's count
+    if(L.length)w7Run(ctx,V,L,now);else{W7.stats.n=0;W7.stats.w='';}return true;}catch(e){W7.err=String(e&&e.stack||e).slice(0,300);return false;}finally{if(W7.rec)W7.rec(false);}}
+// ----- battle: the ground layer under the units (battle.js), everything else after them (weatherFX) -----
+function w7BattleV(W,H,now){const V=w7Begin('bt',W,H,0,0,now);V.gy=bgGY(H);V.area=Math.min(V.area,.9);// the battle canvas redraws all of its units every frame: a lighter sharelet out=true;try{out=!(typeof battleIndoors==='function'&&battleIndoors());}catch(e){}
+  V.night=0;if(out){try{const p=clockPhase();V.night=p==='night'?1:p==='dusk'?.35:p==='dawn'?.25:0;}catch(e){}}return V;}
+function w7BattleGround(ctx,W,H,now){if(!WX7.on||!B||!B.weather||B.weather==='clear')return;try{const V=w7BattleV(W,H,now);V.gr=true;V.air=false;W7.bL=[[B.weather,1]];w7Run(ctx,V,W7.bL,now);W7.stats.btGround=W7.stats.ground;}catch(e){W7.err=String(e&&e.stack||e).slice(0,300);}}
+// ----- hooks -----
+{const f0=weatherFX;W7.old=f0;weatherFX=function(ctx,w,W,H,now,battle){if(!battle||!WX7.on)return f0.apply(this,arguments);
+  try{const V=w7BattleV(W,H,now);V.gr=false;V.air=true;W7.bL=[[w,1]];w7Run(ctx,V,W7.bL,now);return;}catch(e){W7.err=String(e&&e.stack||e).slice(0,300);}return f0.apply(this,arguments);};}
+// ----- HD-2D: weather inside the GL scene (world positions, lit, depth tested), the wet grade, the lightning light, the heat shimmer -----
+function w7Emit(x,z,h,w,hh,c,a,g){if(Math.abs(x-HW.hx)<44&&w7HdHero(x,z,h+hh/2))return;const n=HW.n;hdWfxEmit(x,z,h,w,hh,c,a,g);if(W7.dbg&&HW.n>n&&w7HdHero(x,z,h+hh/2))W7.dbg.hits++;}
+function w7HdHero(x,z,h){const p=HW.p,Bx=HW.b;h2Proj(p,HD.mats.vp,x,h*HD.S.V,z);return p[0]>Bx[0]&&p[0]<Bx[2]&&p[1]>Bx[1]&&p[1]<Bx[3];}
+function w7Dec(bt,key,cv,x,z,w,d,r,g,b,a,y){const R=HD.lmR;if(x<R[0]||x>R[0]+R[2]||z<R[1]||z>R[1]+R[3])return;if(a<3)return;if(w7HdHero(x,z,0))return;hdDecal(bt,key,cv,x,z,w,d,r,g,b,Math.min(255,a|0),y);W7.stats.glG++;}
+function w7Bill(key,cv,x,h,z,sc,r,g,b,a){const R=HD.lmR;if(x<R[0]-120||x>R[0]+R[2]+120||z<R[1]||z>R[1]+R[3]+40)return;if(a<3)return;hdBill(HD.dynB,key,cv,x,h,z,false,sc,r,g,b,Math.min(255,a|0),0);W7.stats.gl++;}
+// a bank (billboard) fades where it would cover the hero on screen: its centre's distance to his box in the view (NDC)
+function w7BankFade(x,h,z,hh){const p=HW.p,Bx=HW.b;h2Proj(p,HD.mats.vp,x,(h+hh*.5)*HD.S.V,z);const cx=(Bx[0]+Bx[2])/2,cy=(Bx[1]+Bx[3])/2,a=HD.asp||1,d=Math.hypot((p[0]-cx)*a,p[1]-cy);return Math.min(1,Math.max(0,(d-.16)/.34));}
+function w7Gl(m,ts){const q=w7Q();W7.stats.gl=0;W7.stats.glG=0;W7.heat=0;if(!WX7.on||!q.gl||!m||m.archive||(m.kind!=='field'&&m.kind!=='town'))return;const L=w7List(m);if(!L.length)return;
+  const R=HD.lmR,C=WFX.cell,Px=Math.ceil(R[2]/C)*C+C,Pz=Math.ceil((WFX.hdZ[0]+WFX.hdZ[1])/C)*C,cx=HD.cam.x,cz=HD.cam.z-(WFX.hdZ[0]-WFX.hdZ[1])/2,t=ts/1000,A=Px*Pz/WX7.glRef*q.glN,G7=WX7.gl,o=H2L;
+  const lum=Math.min(1,.3+((o.amb[0]+o.amb[1]+o.amb[2])/3+(o.sun[0]+o.sun[1]+o.sun[2])/3)*.75),n0=HW.n;let budget=q.glCap;
+  const cnt=v=>{const n=Math.min(budget,Math.round(v*A));budget-=n;return n;};
+  const put=(x,z,h,w,hh,c,a,g)=>w7Emit(wfxW(x,cx,Px),wfxW(z,cz,Pz),h,w,hh,c,a,g);
+  const rip=w7Ripple(),pud=w7Puddle(),spec=w7Spec();
+  for(const [w,k] of L){
+    if(w==='rain'||w==='storm'){const st=w==='storm',n=cnt(st?G7.storm:G7.rain),H0=84,sp=st?380:300,wx=st?.3:.12,lq=Math.max(.5,Math.round(lum*8)/8),col=`rgb(${190*lq|0},${206*lq|0},${236*lq|0})`;
+      for(let i=0;i<n;i++){const ph=t*sp/H0+w7H(i,501),c=Math.floor(ph),f=ph-c,bx=w7H(i*131+c,502)*Px,bz=w7H(i*137+c,503)*Pz,h=H0*(1-f);
+        put(bx-wx*h,bz,h,1,9,col,.6*k,1);
+        if(f<.14&&q.ground){const px=w7H(i*131+c-1,502)*Px,pz=w7H(i*137+c-1,503)*Pz,a=f/.14,X=wfxW(px,cx,Px),Z=wfxW(pz,cz,Pz);
+          w7Dec(HD.dynB,'w7rip',rip,X,Z,3+a*9,(3+a*9)*.42,220*lum,232*lum,255*lum,(1-a)*150*k,.5);if(a<.6){put(px-1-a*3,pz,a*4,1,1,'#dce8ff',(1-a)*.7*k,0);put(px+1+a*3,pz,a*3.5,1,1,'#dce8ff',(1-a)*.7*k,0);}}}
+      // puddles with a sky glint and rings from the drops, on open ground near the camera
+      if(q.ground){const Cc=44,x0=Math.floor(R[0]/Cc),x1=Math.floor((R[0]+R[2])/Cc),z0=Math.floor(R[1]/Cc),z1=Math.floor((R[1]+R[3])/Cc);let np=0;
+        for(let gz=z0;gz<=z1;gz++)for(let gx=x0;gx<=x1;gx++){const p=w7PudAt(m,gx,gz);if(!p||np>60)continue;np++;const s=p[2];
+          w7Dec(HD.dynB,'w7pud',pud,p[0],p[1],32*s,12*s,255*Math.max(.45,lum),255*Math.max(.45,lum),255*Math.max(.5,lum),210*k,.45);
+          w7Dec(HD.dynA,'w7spec',spec,p[0]-4*s,p[1]-1.5*s,14*s,4*s,200*lum,215*lum,255*lum,90*k*lum,.55);
+          for(let r=0;r<2;r++){const ph=t/.95+w7H(gx*3+gz*7+r,505),a=ph-Math.floor(ph),c=Math.floor(ph),rx=p[0]+(w7H(c*7+gx+r,506)-.5)*12*s,rz=p[1]+(w7H(c*5+gz+r,507)-.5)*3*s,rw=2+a*9*s;
+            w7Dec(HD.dynB,'w7rip',rip,rx,rz,rw,rw*.4,230*lum,238*lum,255*lum,(1-a)*170*k,.5);}}}
+      if(st){const S=w7Strike(ts||0);if(S.f>0)W7.stats.flash=Math.max(W7.stats.flash,S.f*k);}
+      continue;}
+    if(w==='snow'||w==='blizzard'){const bz=w==='blizzard',n=cnt(bz?G7.blizzard:G7.snow),H0=70,sp=bz?70:26,g=bz?w7Gust(t):0,wx=bz?2.2+g:.25,col=lum<.55?'#aab8d8':'#ffffff';
+      for(let i=0;i<n;i++){const ph=t*sp*(1+.3*w7H(i,511))/H0+w7H(i,512),c=Math.floor(ph),f=ph-c,bx=w7H(i*131+c,513)*Px,bz2=w7H(i*137+c,514)*Pz,h=H0*(1-f),sw=Math.sin(t*1.3+i*1.9)*(bz?2:5);
+        put(bx-wx*h+sw,bz2,h,bz?(i%3?2:3):(i%4?1:2),bz?.8:(i%4?.8:1.5),col,(bz?.75:.95)*k,0);
+        if(q.ground&&f<.45&&!bz){const px=w7H(i*131+c-1,513)*Px,pz=w7H(i*137+c-1,514)*Pz;put(px+Math.sin(t*1.3+i*1.9)*5,pz,.15,1,1,col,(1-f/.45)*.8*k,0);}}
+      if(bz){const nb=cnt(14*G7.bank);for(let i=0;i<nb;i++){const x=w7H(i,515)*Px+t*(160+g*140),z=w7H(i,516)*Pz,h=4+w7H(i,517)*26,X=wfxW(x,cx,Px),Z=wfxW(z,cz,Pz),fd=w7BankFade(X,h,Z,28);
+        w7Bill('w7gust',w7Bank(1),X,h,Z,1.1+w7H(i,518)*.8,240,246,255,(70+g*110)*k*fd);}}
+      continue;}
+    if(w==='fog'||w==='sand'){const fog=w==='fog',nb=cnt((fog?16:14)*G7.bank*(q.banks[2]>2?1.05:1)),g=fog?0:w7Gust(t),sp=fog?7:150+g*120,cv=w7Bank(fog?0:1);
+      for(let i=0;i<nb;i++){const x=w7H(i,521)*Px+t*sp*(1+.25*w7H(i,522)),z=w7H(i,523)*Pz,h=(fog?2:1)+w7H(i,524)*(fog?20:24),X=wfxW(x,cx,Px),Z=wfxW(z,cz,Pz),fd=w7BankFade(X,h,Z,fog?40:28);
+        const br=Math.sin(t*.3+i*2.1)*.15+.85;w7Bill(fog?'w7fog':'w7gust',cv,X,h,Z,fog?1.4+w7H(i,525)*1.1:1.3+w7H(i,525)*.9,fog?235:240,fog?238:206,fog?244:150,(fog?140:120+g*110)*br*k*fd);}
+      if(!fog){const n=cnt(G7.sand);for(let i=0;i<n;i++){const x=w7H(i,526)*Px+t*(280+g*160)*(1+.4*w7H(i,527)),z=w7H(i,528)*Pz,h=1+w7H(i,529)*26+Math.sin(t*2+i)*2;put(x,z,h,i%3?3:5,.8,i%2?'#f6e2b4':'#e6c48a',.9*k,0);}}
+      continue;}
+    if(w==='gale'){const n=cnt(G7.gale),g=w7Gust(t);for(let i=0;i<n;i++){const x=w7H(i,531)*Px+t*(320+g*200),z=w7H(i,532)*Pz,h=8+w7H(i,533)*44+Math.sin(t*3+i)*2;put(x,z,h,10+(i%4)*3,1,'#ffffff',.32*k,0);}
+      const nl=cnt(G7.leaf);for(let i=0;i<nl;i++){const x=w7H(i,534)*Px+t*240+Math.sin(t*4+i)*10,z=w7H(i,535)*Pz+Math.cos(t*2+i)*6,h=3+w7H(i,536)*28+Math.sin(t*5+i)*4,fl=Math.floor(t*4+i)%2;put(x,z,h,fl?2:1,fl?1:2,i%3?'#7aa040':'#a8863a',k,0);}
+      continue;}
+    if(w==='ashfall'){const n=cnt(G7.ash);for(let i=0;i<n;i++){const H0=64,ph=t*14*(1+.4*w7H(i,541))/H0+w7H(i,542),c=Math.floor(ph),f=ph-c,fl=Math.floor(t*2.5+i)%2;
+        put(w7H(i*131+c,543)*Px+Math.sin(t*.9+i)*7,w7H(i*137+c,544)*Pz,H0*(1-f),fl?2:1,fl?1:2,i%5?'#8a8080':'#5a5252',.85*k,0);}
+      const ne=cnt(G7.ember);for(let i=0;i<ne;i++){const H0=50,h=(t*9*(1+.5*w7H(i,545))+w7H(i,546)*H0)%H0,a=.5+.45*Math.sin(t*7+i*3);put(w7H(i,547)*Px+Math.sin(t*1.7+i)*9,w7H(i,548)*Pz,h,1,1,i%3?'#ff8a3a':'#ffd070',a*Math.min(1,(H0-h)/10)*k,1);}
+      continue;}
+    if(w==='heat'){W7.heat=Math.max(W7.heat,k*q.shimmer);const n=cnt(G7.heat);for(let i=0;i<n;i++){const H0=26,h=(t*10*(1+.5*w7H(i,551))+w7H(i,552)*H0)%H0;put(w7H(i,553)*Px+Math.sin(t*3+i)*2,w7H(i,554)*Pz,h,1,4,'#ffe6c0',.18*Math.sin(h/H0*Math.PI)*k,1);}
+      continue;}}
+  W7.stats.gl+=HW.n-n0;}
+{const w0=hdWfx;hdWfx=function(m,ts){w0.apply(this,arguments);try{w7Gl(m,ts);}catch(e){W7.err=String(e&&e.stack||e).slice(0,300);}};}
+// the wet grade (rain), the lightning light (storm) on the HD-2D scene
+function w7Look(o,m,now){if(!WX7.on||!m||(m.kind!=='field'&&m.kind!=='town'))return;const L=w7List(m);let wet=0,f=0;
+  for(const [w,k] of L){if(w==='rain'||w==='storm')wet+=k*(w==='storm'?1.2:1);if(w==='storm'){const S=w7Strike(w7Still()?0:now);f=Math.max(f,S.f*k);}}
+  if(wet>0){o.sat*=1-.1*wet;o.con*=1+.07*wet;o.exp*=1-.05*wet;o.bloom+=.15*wet;}
+  if(f>0){const b=WX7.bolt.light*f;o.amb[0]+=b*.85;o.amb[1]+=b*.9;o.amb[2]+=b;o.exp*=1+f*.25;}W7.stats.hdFlash=f;}
+{const l0=hdLook;hdLook=function(m,now){const o=l0.apply(this,arguments);try{w7Look(o,m,now);}catch(e){}return o;};}
+// heat shimmer in the composite pass (hd2d.js reads it): strength, and where it starts (above the hero's head, toward the far ground)
+function w7HeatGL(){return WX7.on&&!w7Still()?W7.heat:0;}
 
 // =================== Beta v0.5.0 1.3: paths are protected (file: pathguard.js) ===================
 // Every walkable corridor and path tile, dead ends and alternate routes included, is protected. Stairs, chests, levers, key chests,
@@ -20253,6 +20562,89 @@ try{const st=document.createElement('style');st.id='t7-css';st.textContent=`
 .brand b.wfm{display:block;height:24px;line-height:0;font-size:0;font-family:var(--fb);text-shadow:none}.brand b.wfm svg{height:100%;width:auto;display:block}
 @media (max-width:480px){.brand b.wfm{height:17px}}`;document.head.appendChild(st);}catch(e){}
 
+// =================== v0.7.7: lingering old visuals (visuals7.js) ===================
+// The worst offenders of the v0.7.7 review (docs/v077-weather.md), brought to the HD-2D look. Visual only: no game state, no save field.
+//  1. The victory crest: the blackletter "Victory" (Jacquard 24) is now set like the Wayfarers wordmark (logo.js): heavy capitals in the
+//     Nunito UI face, a gold bevel with a dark outline, a soft glow and compass stars either side. No blackletter is left on screen.
+//  2. The minimap: each tile was one flat 4 x 4 block cut from a 2 px colour map, with a hard stair step edge where the explored area
+//     ends. Tiles are now shaded like the map they show (lit top edges and shadowed feet on walls, trees and buildings, a drop shadow on
+//     the ground below them, grain on grass and floors, glints on water), the explored edge fades out, and the frame gets a soft vignette.
+//     Same canvas, same scale (4 px a tile, 112 x 84), so taps and markers line up exactly as before.
+//  3. The arena backdrop: flat bands with confetti dots for a crowd. Now a sunlit colosseum: sky with soft clouds, a sweeping two tier
+//     arcade with lit piers and shadowed arches, a crowd of heads and shoulders in rows that fall into shade, striped awnings, hanging
+//     banners with folds and gold trim, and a podium wall in stone blocks with a cast shadow on the sand. Drawn once (bgStatic cache)
+//     from its own seeded generator, so no game RNG is touched.
+(function(){const st=document.createElement('style');st.textContent=`
+html:root{--flogo:'Nunito',system-ui,-apple-system,'Segoe UI',sans-serif}
+html body .panel.result>.mclose+h2,html body .panel.result>.mnav+h2{font:900 2.05rem/1.05 var(--fb);letter-spacing:.2em;text-transform:uppercase;color:#ffe9b0;
+  text-shadow:0 -1px 0 #fff6d8,0 1px 0 #c98f34,0 2px 0 #7a4c16,0 3px 0 #2a1606,0 4px 6px rgba(0,0,0,.6),0 0 22px rgba(255,196,96,.42);padding-left:64px;padding-right:64px}
+html body .panel.result>.mclose+h2::before,html body .panel.result>.mnav+h2::before,html body .panel.result>.mclose+h2::after,html body .panel.result>.mnav+h2::after{content:"✦";display:inline-block;font-size:.55em;vertical-align:.32em;color:#f6d27a;letter-spacing:0;margin:0 .55em;text-shadow:0 0 8px rgba(255,210,120,.8),0 1px 0 #5a3410}
+`;document.head.appendChild(st);})();
+// ----- 2. minimap -----
+const MM7={cv:null,key:'',gen:0,t:0,img:null};
+{const mb0=mapBase;mapBase=function(m){const was=!!(MAPCV.dirty||MAPCV.id!==m.id||!MAPCV.cv);const r=mb0.apply(this,arguments);if(was)MM7.gen++;return r;};}
+function mm7Base(m){const base=mapBase(m),key=m.id+':'+MM7.gen,now=performance.now();
+  if(MM7.key===key&&MM7.cv)return MM7.cv;if(MM7.cv&&MM7.key.split(':')[0]===m.id&&now-MM7.t<300)return MM7.cv;// at most ~3 rebuilds a second while exploring
+  const T=4,W=m.w*T,H=m.h*T;let c=MM7.cv;if(!c||c.width!==W||c.height!==H)c=MM7.cv=mkCv(W,H);const x=c.getContext('2d');
+  const src=base.getContext('2d').getImageData(0,0,m.w*2,m.h*2).data,img=x.createImageData(W,H),d=img.data,MW=m.w*2;
+  const col=(i,y)=>{const o=((y*2)*MW+i*2)*4;return src[o+3]?o:-1;};
+  const solid=(i,y)=>{const r=m.t[y];const ch=r&&r[i];return !!ch&&ch!=='~'&&SOLID.indexOf(ch)>=0;},water=(i,y)=>{const r=m.t[y];return !!r&&r[i]==='~';};
+  for(let y=0;y<m.h;y++)for(let i=0;i<m.w;i++){const o=col(i,y);if(o<0)continue;const R0=src[o],G0=src[o+1],B0=src[o+2],sd=solid(i,y),wt=water(i,y),h=wfxH(i*7+y*131,903);
+    const up=y>0&&col(i,y-1)>=0,dn=y<m.h-1&&col(i,y+1)>=0,lf=i>0&&col(i-1,y)>=0,rt=i<m.w-1&&col(i+1,y)>=0,sAbove=y>0&&solid(i,y-1)&&!sd;
+    for(let py=0;py<T;py++)for(let px=0;px<T;px++){let k=1,a=255;
+      if(sd){if(py===0&&!(y>0&&solid(i,y-1)))k=1.3;else if(py>=T-1&&!(y<m.h-1&&solid(i,y+1)))k=.62;else if(px===0)k=1.08;else if(px===T-1)k=.86;}
+      else if(wt){k=((px+py*2+i+y)%7===0)?1.28:1-(py/T)*.06;}
+      else{k=1+((px*3+py*5+((h*16)|0))%9===0?.09:0)-((px+py+((h*8)|0))%11===0?.07:0);if(sAbove&&py===0)k*=.72;else if(sAbove&&py===1)k*=.86;}
+      // the explored edge fades out instead of a hard stair step
+      if(!up&&py===0||!dn&&py===T-1||!lf&&px===0||!rt&&px===T-1)a=150;
+      const q=((y*T+py)*W+i*T+px)*4;d[q]=Math.min(255,R0*k);d[q+1]=Math.min(255,G0*k);d[q+2]=Math.min(255,B0*k);d[q+3]=a;}}
+  x.putImageData(img,0,0);MM7.key=key;MM7.t=now;return c;}
+function mm7Vig(W,H){return MM7.vig&&MM7.vig.width===W?MM7.vig:(MM7.vig=(()=>{const v=mkCv(W,H),g=v.getContext('2d'),r=g.createRadialGradient(W/2,H/2,Math.min(W,H)*.32,W/2,H/2,Math.max(W,H)*.62);r.addColorStop(0,'rgba(6,4,14,0)');r.addColorStop(1,'rgba(6,4,14,.62)');g.fillStyle=r;g.fillRect(0,0,W,H);return v;})());}
+drawMini=function(){const cv=document.getElementById('mmap');if(!cv)return;const m=WS.m;if(!m||!G||!miniOn()){cv.style.display='none';return;}cv.style.display='block';
+  const W=cv.width,H=cv.height,x=cv.getContext('2d'),sc=4;x.imageSmoothingEnabled=false;
+  {const g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,'#141026');g.addColorStop(1,'#0a0712');x.fillStyle=g;x.fillRect(0,0,W,H);}
+  const ox=Math.round(W/2-(WS.x+.5)*sc),oy=Math.round(H/2-(WS.y+.5)*sc);let b=null;try{b=mm7Base(m);}catch(e){b=null;}
+  if(b)x.drawImage(b,ox,oy);else x.drawImage(mapBase(m),ox,oy,m.w*sc,m.h*sc);
+  x.drawImage(mm7Vig(W,H),0,0);
+  const vis=mapMarks(m).filter(o=>!MK_DONE[o.k]&&Math.abs(o.x-WS.x)<W/sc&&Math.abs(o.y-WS.y)<H/sc);drawMarks(x,m,vis,sc,ox,oy);
+  {const g=x.createRadialGradient(W/2,H/2,0,W/2,H/2,9);g.addColorStop(0,'rgba(255,236,170,.5)');g.addColorStop(1,'rgba(255,236,170,0)');x.fillStyle=g;x.fillRect(W/2-9,H/2-9,18,18);}
+  drawPlayer(x,sc,W/2,H/2);};
+// ----- 3. the arena backdrop -----
+BG.arena=function(ctx,W,H,R){const gy=bgGY(H),S=(c,a)=>{const h=hx(c);return `rgba(${h[0]},${h[1]},${h[2]},${a})`;};
+  // sky with soft clouds
+  {const g=ctx.createLinearGradient(0,0,0,gy);g.addColorStop(0,'#3e66b0');g.addColorStop(.55,'#7fa4d8');g.addColorStop(1,'#d8c8a8');ctx.fillStyle=g;ctx.fillRect(0,0,W,gy);}
+  for(let i=0;i<5;i++){const cx=R()*W,cy=H*(.04+R()*.08),r=10+R()*16;for(let k=0;k<5;k++){const g=ctx.createRadialGradient(cx+k*r*.6,cy+(R()-.5)*4,0,cx+k*r*.6,cy,r);g.addColorStop(0,'rgba(255,255,255,.5)');g.addColorStop(1,'rgba(255,255,255,0)');ctx.fillStyle=g;ctx.fillRect(cx+k*r*.6-r,cy-r,r*2,r*2);}}
+  // the arcade: a curve that rises toward the sides (the bowl seen from the floor)
+  const top=y=>H*.1+Math.pow(Math.abs(y/W-.5)*2,2)*H*.04,wallB=gy-Math.floor(H*.07);
+  const T0=x=>top(x),T1=x=>T0(x)+H*.09,T2=x=>T1(x)+H*.1,T3=x=>wallB;
+  // stone body of the stands, shaded from the lit centre
+  for(let x=0;x<W;x+=2){const t=T0(x),e=Math.abs(x/W-.5)*2;const g=ctx.createLinearGradient(0,t,0,wallB);g.addColorStop(0,`rgb(${196-e*40|0},${168-e*36|0},${130-e*30|0})`);g.addColorStop(1,`rgb(${132-e*30|0},${104-e*26|0},${80-e*22|0})`);ctx.fillStyle=g;ctx.fillRect(x,t,2,wallB-t);}
+  // striped awnings along the top
+  for(let x=0;x<W;x+=12){const t=T0(x);ctx.fillStyle=(x/12|0)%2?'#c8453a':'#f0e2c0';ctx.beginPath();ctx.moveTo(x,t-6);ctx.lineTo(x+12,T0(x+12)-6);ctx.lineTo(x+12,T0(x+12)-1);ctx.quadraticCurveTo(x+6,t+3,x,t-1);ctx.fill();}
+  ctx.fillStyle='rgba(0,0,0,.18)';for(let x=0;x<W;x+=2)ctx.fillRect(x,T0(x)-1,2,3);
+  // crowd rows in the two tiers: heads and shoulders in varied cloth, darker toward the back of each tier
+  const cloth=['#c84a4a','#4a7ac8','#e0b050','#5aa060','#a060c0','#e08a50','#e8e0d0','#507080'],skin=['#f0c8a0','#d8a070','#a87048','#7a4a2a'];
+  for(const [ya,yb] of [[T0,T1],[T1,T2]]){for(let row=0;row<4;row++)for(let x=-2;x<W;x+=4){const y0=ya(x)+3,y1=yb(x)-4,y=y0+(y1-y0)*(row/4)+R()*1.2,sh=.62+row*.12;if(R()<.08)continue;
+      const c=hx(cloth[Math.floor(R()*cloth.length)]),s=hx(skin[Math.floor(R()*skin.length)]),bob=R()<.15?-1:0;
+      ctx.fillStyle=`rgb(${c[0]*sh|0},${c[1]*sh|0},${c[2]*sh|0})`;ctx.fillRect(x+R()*1.5,y+3+bob,4,3);ctx.fillStyle=`rgb(${s[0]*sh|0},${s[1]*sh|0},${s[2]*sh|0})`;ctx.fillRect(x+1+R()*1.5,y+bob,2,3);}
+    // a balustrade under each tier
+    for(let x=0;x<W;x+=1){const y=yb(x)-2;ctx.fillStyle=x%5===0?'#7a5e44':'#b89a76';ctx.fillRect(x,y,1,3);}ctx.fillStyle='rgba(255,240,210,.35)';for(let x=0;x<W;x+=2)ctx.fillRect(x,yb(x)-3,2,1);}
+  // the lower arcade: piers and dark arches
+  for(let x=4;x<W;x+=22){const t=T2(x)+2,b=wallB-1,w=12;ctx.fillStyle='#3a2a22';ctx.beginPath();ctx.moveTo(x,b);ctx.lineTo(x,t+6);ctx.quadraticCurveTo(x+w/2,t-2,x+w,t+6);ctx.lineTo(x+w,b);ctx.fill();
+    const g=ctx.createLinearGradient(0,t,0,b);g.addColorStop(0,'rgba(0,0,0,.35)');g.addColorStop(1,'rgba(40,24,16,0)');ctx.fillStyle=g;ctx.fillRect(x,t,w,b-t);
+    ctx.fillStyle='rgba(255,236,200,.28)';ctx.fillRect(x+w+1,t,2,b-t);ctx.fillStyle='rgba(0,0,0,.2)';ctx.fillRect(x-2,t,2,b-t);}
+  // banners hanging from the top tier, with folds and gold trim
+  for(let x=10;x<W;x+=44){const t=T0(x)+1,h=Math.floor(H*.13),w=9;const g=ctx.createLinearGradient(x,0,x+w,0);g.addColorStop(0,'#8a1e22');g.addColorStop(.4,'#d03a34');g.addColorStop(.7,'#a82a2a');g.addColorStop(1,'#701818');
+    ctx.fillStyle=g;ctx.beginPath();ctx.moveTo(x,t);ctx.lineTo(x+w,t);ctx.lineTo(x+w,t+h);ctx.lineTo(x+w/2,t+h-4);ctx.lineTo(x,t+h);ctx.fill();
+    ctx.fillStyle='#f0c050';ctx.fillRect(x,t,w,2);ctx.fillRect(x+w/2-1.5,t+h*.35,3,3);ctx.fillStyle='rgba(255,230,150,.5)';ctx.fillRect(x+1,t+h*.35+1,1,1);}
+  // the podium wall in stone blocks with a lit coping and its shadow on the sand
+  const ph=Math.floor(H*.07);{const g=ctx.createLinearGradient(0,wallB,0,gy);g.addColorStop(0,'#a8927a');g.addColorStop(1,'#6e5a48');ctx.fillStyle=g;ctx.fillRect(0,wallB,W,ph);}
+  ctx.fillStyle='rgba(40,26,18,.4)';for(let r=0;r<3;r++){const y=wallB+Math.round(ph*(r+1)/3)-1;ctx.fillRect(0,y,W,1);for(let x=(r%2)*7;x<W;x+=14)ctx.fillRect(x,wallB+Math.round(ph*r/3),1,Math.round(ph/3));}
+  ctx.fillStyle='#e8d6b4';ctx.fillRect(0,wallB-1,W,2);ctx.fillStyle='rgba(255,255,255,.25)';ctx.fillRect(0,wallB-1,W,1);
+  groundPlane(ctx,W,H,gy,['#e0c890','#d0b47a','#c0a068','#a88a58'],R,'#b89a68');
+  {const g=ctx.createLinearGradient(0,gy,0,gy+H*.06);g.addColorStop(0,'rgba(60,40,20,.35)');g.addColorStop(1,'rgba(60,40,20,0)');ctx.fillStyle=g;ctx.fillRect(0,gy,W,H*.06);}
+  for(let i=0;i<40;i++){const x=R()*W,y=gy+4+R()*(H-gy-6);ctx.fillStyle=R()<.5?'rgba(255,240,200,.35)':'rgba(120,90,50,.3)';ctx.fillRect(x,y,2+R()*3,1);}};
+
 window.__A={walkable,ceInit,tvSlots,genQuests,STARTERS,starterDraw,ECON,AUTO_NERF,rebuildBase,detLive,REACT,skEls,packContents,miniFor,AUTO_REW,ENC_RATE,ENC_MIN_STEPS,detNote,classSkills,stickCount,bestAll,calcStats,lookKey,vTemper,storyEchoUp,leaveDungeon,win,ldApply,genFort,caveOk,enterCave,siteHasMini,openChest,nextDlg,WS,mapIcoRects,roamSpawn,roamInterior,roamSees,mapTargets,DIRV,tileAt,STAGE_LV,autoBan,rollWeather,guardianDef,mapIssues,mapEntry,syncPools,bovAt,calFxAt,realmAt,REALMS,BOV,CAL_FX,overlayGuide,liftOverlay,drawGearIcon,gearIcon,itemIcon,RAW,sigKind,sigGid,personalDone,heroLook,hasSignature,LEGEND_IDS,facDirty,facCount,facRank,facRep,FACB,FAC,finishBattle,npcWords,npcHints,npcPool,titleMake,titleAdvance,TTS,placeAt,wkwUpdate,innSpot,getMap,monURL,enterVia,applyBossTheme,BTHEME,resetMaps,rebuildBase,shopStock,gearDesc,calcStats,gearMigrate,CLS_WPN,CLS_ARM,WPERK,WT_NAME,equipWhy,lootBase,GEAR,canEquip,gearOf,perkNote,FAM_MAT_V35,fbDraft,META:{get best(){return META.best},get codex(){return META.codex},get q(){return META.q}},saveMeta,OFF,offPending,offFlush,PROFILE,profileSync,codexSee,getMap,placeAt,interact,sanctumOpen,riftKeys,echoKeys,BONDS,bondKey,wkwUpdate,inTown,WS,LC,lsort,bestParty,fsCast,fsSkills,ldApply,MON,registerTamed,stickPower,stickCount,autoOne,planGear,bestTag,gainersFor,compGainFor,refresh,fitsFor,canEquip,gearOf,queueNewGear,ARENA,fxDur,banDur,stageTags,autoSwitchPick,layoutBattle,newChar,calcStats,limitSkill,limitTier,canStuck,dunReachable,LV_CAP,addXp,echoSpec,bossLvFor,fx,MON,log,effInfo,tierOf,perkOf,quirkDef,forgeCost,buyPlan,vJourney,modalBack,partySlots,limitOpen,town2Reached,skillKnown,known,classSkills,paceMigrate,unpackG,packG,makeEnemy,QUIRK,arrive,enterDungeon,wkwUpdate,useTravel,travelWhyNot,porkFlee,porkBlocked,encTile,campRest,buyPart,partLeft,alchStock,GAME_VERSION,CHANGELOG,ITEMS,tavernOffers,tavernPool,recruitFit,partyNeeds,vNext,CHALL,innSpot,RECIPES,MATS,FB,fbContext,REDEEM,legendJoin,legendQ,genQuests,dynActors,convInit,PROFILE,profileSync,checkArchive,GPOOL,FPOOL,guardianDef,saveMeta,archiveSkills,get G(){return G;},set G(v){G=v;},get B(){return B;},get V(){return V;},get META(){return META;},WS,ACT,render,newGame,placeAt,startBattle,autoTurn,advance,finishBattle,getMap,innSpot,setPause:p=>{PAUSE=p;},autoCfg,worldInputDir,inputSources,battleFrame,battleTheme,STS,MAPS,mapIssues,healMap,mimicReward,dropChest,interact,worldDraw,TPL,ZONES,ZS,newChar,recruit,saveGame,resetMaps,dynActors,tileAt,BV,refresh,genBounties,genQuests,vStarter,heroCard,heroURL,iconURL,masteryLine,AU,buildTrack,tone,noiseHit,MIDI,sfx,audioVol};
 ['heroRoles','SOLID','WEATHER','WX_BASE','weatherFX','superGuide','recruitCost','ceStart','ceStep','ceInit','cePool','wxList','SUPER_TABLE','superOk','facRank','facRep','facInit','facCount','facCredit','FAC','FMIS','facMissionList','facProg','facSync','facMul','facBest','worldPlan','caveReward','enterCave','leaveCave','leaveDungeon','buildCaveMap','worldGraph','openWorldMap','sigReport','SIG_NAMES','starterDraw','ITEM_TIERS','gTierIdx','tierChip','gearIcon','starterSlots','STARTERS','CLK_LEN','CLK_PH','clockPhase','wxInfoBody','recipeOrder','recipeGain','recipeReady','recipeClose','effOf','calcDamage','healsUndead','storyEchoUp','riftKeys','echoDef','efCost','autoLocked','bossFightKey','learnScanAll','isSeen','mapMarks','genSub','subOK','subReq','ensureSub','inSub','tvSlots','tvInit','tvLeft','tvEvent','tvNextText','tvPool','tvDue','tvShuffle','mTavern','hireOK','TV_CAP','TV_CD','POOL_IDS','natPool','natOf','natRoll','NATURES','natInfo','natRerollCost','natChooseCost','NAT_CLASS','iconURL','seenOf','mapIcoDraw','drawMini','MAPCV','revealAround','fxLayer','numDur','compBonusText','compPerk','checkPhase','win','unitBox','LNQ','challVisible','challEligible','challState','isMimic','migrateCompanions','canSummon','summonComp','compOf','clockPhase','tickClock','isNight','rollWeather','wxStep','nightPool','encounterFoes','restAll','tameElite','openChest','rerollTavern','bestAll','gearTier','SV','svCheck','svFlush','svInit','svPush','svPull','svScan','svParse','svBackup','svPack','svUnpack','svProg','svCloudList','svDelDoc','svGet','svCap','slotState','slotKey','svDecode','SV_CH','svStatus','svSlotRaw','svLoad','loadRaw','svHash','svIdx'].forEach(k=>{try{Object.defineProperty(window.__A,k,{get:()=>eval(k)});}catch(e){}});
 Object.assign(window.__A,{temperRank,forgeCost,hasMats,stSym,ST_SYM,pgSpot,pgGrid,pathAssets,guardPaths,pgCuts,worldTick,findPath,solidAt,diagOk,tileAt});Object.assign(window.__A,{btOf,personalEligible,craftOnly,shopSortIds,SHOPF,autoTurnSmart,allParty,useItemField,ailBadge,ailChips,ailOf,battleSkyTags,battleIndoors,autoReason,autoBan,itemStock,perform,cleanse,useItem,lose,endTurn});Object.defineProperty(window.__A,'BL',{get:()=>BL});Object.defineProperty(window.__A,'WXT',{get:()=>WX_TABLE});Object.defineProperty(window.__A,'GEAR',{get:()=>GEAR});
@@ -20269,6 +20661,7 @@ try{Object.defineProperty(window.__A,'B4',{get:()=>B4X,configurable:true});}catc
 Object.assign(window.__A,{W63:{WFX,WMAP,HW,MK,MKN,MAPICO_NAME,wfxRun:(...a)=>wfxRun(...a),wfxBirds:(...a)=>wfxBirds(...a),hdGatePart:m=>hdGatePart(m),mapMarks:m=>mapMarks(m),drawMini:()=>drawMini(),drawWorldMap:()=>drawWorldMap(),worldGraph:()=>worldGraph(),objCanvas:(a,b,c)=>objCanvas(a,b,c),get WM(){return typeof WMS!=="undefined"?WMS:null;}}});// v0.6.3 world pass (tests)
 try{Object.defineProperty(window.__A,'T7',{get:()=>T7,configurable:true});Object.defineProperty(window.__A,'WF_LOGO',{get:()=>WF_LOGO,configurable:true});}catch(e){}// v0.7.1 title (tests)
 Object.assign(window.__A,{W71:{drawAudit:m=>drawAudit(m),pgClearAprons:m=>pgClearAprons(m),pgPlugHoles:m=>pgPlugHoles(m),pgDropHidden:m=>pgDropHidden(m),pgHides:(m,x,y,c)=>pgHides(m,x,y,c),pgOcclude:(m,x,y)=>pgOcclude(m,x,y),PG_PROP_H,PG_VIS,laneFix:m=>laneFix(m),AW,awPlan:(m,x,y)=>awPlan(m,x,y),awTap:(m,x,y,s)=>awTap(m,x,y,s),awPass:(m,x,y)=>awPass(m,x,y),mmTile:(c,x,y)=>mmTile(c,x,y),wmGo:()=>wmGo(),get auto(){return WS.auto;},get last(){return WS.autoLast;}}});// v0.7.1 world pass (tests)
+Object.assign(window.__A,{W7:{W7,WX7,HW,w7Strike:ms=>Object.assign({},w7Strike(ms)),w7Gust:t=>w7Gust(t),w7List:m=>w7List(m).map(x=>x.slice()),w7World:(...a)=>w7World(...a),w7BattleGround:(...a)=>w7BattleGround(...a),w7HeatGL:()=>w7HeatGL(),w7Q:()=>w7Q(),weatherFX:(...a)=>weatherFX(...a),get stats(){return W7.stats;},get err(){return W7.err;}}});// v0.7.7 weather (tests)
 boot();
 })();
 </script>
