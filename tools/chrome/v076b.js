@@ -25,7 +25,7 @@ const MEASURE=()=>{const out={bad:[]},vis=e=>{const q=e.getBoundingClientRect();
   document.querySelectorAll('#bcmd button,#bline button,#border button,#bparty button').forEach(b=>{if(!vis(b))return;const q=b.getBoundingClientRect();
     b.querySelectorAll('span,b,em,small').forEach(s=>{if(!vis(s)||s.matches(NAME)||s.closest('.ptags'))return;const r=s.getBoundingClientRect();if(r.right>q.right+1.5||r.left<q.left-1.5)out.bad.push('label out of its button: "'+s.textContent.trim().slice(0,20)+'"');});});
   const R=s=>{const e=typeof s==='string'?document.querySelector(s):s;if(!e||!vis(e))return null;const q=e.getBoundingClientRect();return {l:q.left,t:q.top,r:q.right,b:q.bottom,w:q.width,h:q.height};};
-  out.canSwap=(()=>{const B=__A.B,a=B.cur;return B.mode==='cmd'&&!B.pend&&!B.auto&&a&&!(a.st&&a.st.root)&&B.back.some(c=>c.hp>0);})();out.docH=document.documentElement.scrollHeight;out.docW=document.documentElement.scrollWidth;out.vw=innerWidth;out.vh=innerHeight;out.mode=__A.BL.mode;out.menu=__A.B.menu;
+  out.canSwap=(()=>{const B=__A.B,a=B.cur;return B.mode==='cmd'&&!B.pend&&!B.auto&&a&&!(a.st&&a.st.root)&&B.back.some(c=>c.hp>0);})();out.docH=document.documentElement.scrollHeight;out.docW=document.documentElement.scrollWidth;out.vw=innerWidth;out.vh=innerHeight;out.mode=__A.BL.mode;out.fr=!!document.querySelector('.battle.b8fr');out.menu=__A.B.menu;
   out.bat=R('.battle');out.stage=R('#bwrap');out.order=R('#border');out.line=R('#bline');out.mo=R('#bline .b4mo');out.logb=R('#bline .blogbtn');out.sky=[...document.querySelectorAll('#border .wchip')].map(R).filter(Boolean);
   out.cmd=R('#bcmd');out.foes=R('#bparty .pgroup.foes');out.heroes=R('#bparty .pgroup.heroes');out.rsv=R('#bparty .pgroup.rsv');out.pty=R('#bparty .b3pty');
   out.rrows=[...document.querySelectorAll('#bparty .pgroup.rsv .pcw')].map(R).filter(Boolean);out.vrows=[...document.querySelectorAll('#bparty .pgroup.heroes .pcw')].map(R).filter(Boolean);
@@ -50,7 +50,8 @@ const MEASURE=()=>{const out={bad:[]},vis=e=>{const q=e.getBoundingClientRect();
       chk(`${t}: turn order, sky chips, stage, Momentum and the log strip on screen`,[m.order,m.stage,m.line,m.mo,m.logb].every(q=>q&&q.t>=-1&&q.b<=m.vh+1)&&m.sky.length>0&&m.sky.every(q=>q.b<=m.vh+1)||JSON.stringify({o:m.order,s:m.stage,l:m.line}));
       if(!['skills','items','switch'].includes(st))chk(`${t}: nothing has to scroll inside its panel either`,m.inner.length===0||m.inner.join(' | '));
       chk(`${t}: tap targets 40 px or more; fonts ${m.fsz.toFixed(1)} px`,m.taps===0&&m.fsz>=10.5||m.taps+' small, font '+m.fsz);
-      if(m.foes)chk(`${t}: the foes sit right under the commands, in the same column`,m.foes.t>=m.cmd.b-1&&m.foes.t-m.cmd.b<16&&Math.abs(m.foes.l-m.cmd.l)<3&&Math.abs(m.foes.w-m.cmd.w)<3||JSON.stringify({cmd:m.cmd,foes:m.foes}));
+      // v0.8.7: or beside the commands, under the party column (the column arrangement puts few foes there when that gives a larger stage)
+      if(m.foes)chk(`${t}: the foes sit right under the commands in the same column, or beside them under the party column`,m.foes.t>=m.cmd.b-1&&m.foes.t-m.cmd.b<16&&Math.abs(m.foes.l-m.cmd.l)<3&&Math.abs(m.foes.w-m.cmd.w)<3||m.fr&&m.pty&&m.foes.l>=m.cmd.r-1&&Math.abs(m.foes.l-m.pty.l)<6&&m.foes.t>=m.pty.b-1&&m.foes.t<m.cmd.b||JSON.stringify({cmd:m.cmd,foes:m.foes,pty:m.pty,fr:m.fr}));
       else chk(`${t}: the foes hide only while a list menu takes the column`,['skills','items','switch'].includes(st)||'no foes panel');
       const pc=m.pty||m.heroes;
       chk(`${t}: the party column is beside the commands: Vanguard, then the Rearguard`,pc&&m.heroes&&pc.l>=m.cmd.r&&m.heroes.l>=m.cmd.r&&(!m.rsv||m.rsv.t>=m.heroes.b-1&&Math.abs(m.rsv.l-m.heroes.l)<3)||JSON.stringify({cmd:m.cmd,h:m.heroes,r:m.rsv}));
