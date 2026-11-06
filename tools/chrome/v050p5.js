@@ -4,8 +4,8 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
 (async()=>{
 const H=await open({w:430,h:880,mobile:true});const {ev,page}=H;
 // ---------- 5.3 title screen ----------
-const t=await ev(()=>{const A=__A,s=document.getElementById('screen'),o={};o.logo=(s.querySelector('.logo')||{}).textContent;o.sub=(s.querySelector('.title .sub')||{}).textContent;o.pre=!!s.querySelector('.title .pre');
-  o.ver=(s.querySelector('.title .ver')||{}).textContent;o.doc=document.title;o.hdr=document.getElementById('hdr').innerText;o.body=document.body.innerText;o.gv=A.GAME_VERSION;return o;});
+const t=await ev(()=>{const A=__A,s=document.getElementById('screen'),o={};const wm=s.querySelector('svg[aria-label="Wayfarers"]');o.logo=wm?wm.getAttribute('aria-label'):(s.querySelector('.logo')||{}).textContent;o.sub=/\bbeta\b/i.test(s.innerText)?'(Beta)':(s.querySelector('.title .sub')||{}).textContent;/* v0.7.4+: the wordmark is an SVG */o.pre=!!s.querySelector('.title .pre');
+  o.ver=(s.querySelector('.title .ver')||{}).textContent;o.doc=document.title;o.hdr=(document.querySelector('#hdr svg[aria-label="Wayfarers"]')?'Wayfarers ':'')+document.getElementById('hdr').innerText;o.body=document.body.innerText;o.gv=A.GAME_VERSION;return o;});
 console.log(JSON.stringify({logo:t.logo,sub:t.sub,ver:t.ver,doc:t.doc,hdr:t.hdr}));
 chk('title screen reads Wayfarers (Beta), no "Project"',t.logo==='Wayfarers'&&t.sub==='(Beta)'&&!t.pre&&!/Project/.test(t.body));
 chk('title version line and browser tab: "Wayfarers (Beta) v..."',t.ver==='Wayfarers (Beta) '+t.gv.replace(/^Beta /,'')&&t.doc===t.ver);
