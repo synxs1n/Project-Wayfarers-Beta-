@@ -16,6 +16,7 @@ Read these before a big pass:
 - `v063-battle.md`: the v0.6.3 battle screen pass (one layout pass for every stage label, the battle start flash, detonator targeting, the new battle screen layout).
 - `v070-onboarding.md`: one short tip card the first time the player meets each system (`v3/onboard.js`), Guides > How it works, What next? "Not tried yet", Settings Tips and Reset tips, battle cards placed clear of sprites.
 - `v071-title.md`: the title pass (HD-2D camp title scene, the code-drawn wordmark and emblem in `logo.js`, app icons from `tools/mkicons.js`).
+- `v070-battle-info.md`: the v0.7.0 battle information and input pass (turn forecast bar, foe intents from planned actions, optional timed hits; `v3/battle5.js`).
 - `audio-notes-v045.md`: the orchestral audio (v0.4.5) and Android live updates (v0.4.6).
 - `v050-prompt.md`: the full spec for the Beta v0.5.0 pass. Rollback point: `rollback-v046.md`.
 

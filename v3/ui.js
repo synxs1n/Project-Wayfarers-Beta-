@@ -176,8 +176,8 @@ function heroCard(id,sel,act,extra){
 // ----- battle view (DOM half: overlay, menus, party) -----
 function renderBattle(stageOnly){
   const now=Date.now();
-  if(!stageOnly){const order=turnOrder(10);
-    const Wt=WEATHER[B.weather||'clear'];$('border').innerHTML=`<span class="ocs"><small>Next</small>${order.map((u,i)=>`<span class="oc ${u.side} ${i===0?'now':''}" style="--c:${ELC[u.el[0]]}" title="${esc(u.name)}"><img src="${u.heroArt?heroURL(u.heroArt):u.side==='p'?heroURL(u.id):monURL(u.art)}" alt=""></span>`).join('')}</span><span class="osky">${battleSkyTags()}${B.spec.kind==='daily'?`<span class="wchip d">Daily · wave ${B.wave}/${B.spec.waves} · ${B.pturns||0} turns</span>`:''}</span>`;}
+  if(!stageOnly){// v0.7.0: the turn forecast with foe intents (battle5.js)
+    const Wt=WEATHER[B.weather||'clear'];$('border').innerHTML=`${b5OrderHtml()}<span class="osky">${battleSkyTags()}${B.spec.kind==='daily'?`<span class="wchip d">Daily · wave ${B.wave}/${B.spec.waves} · ${B.pturns||0} turns</span>`:''}</span>`;}
   const pend=B.mode==='cmd'&&B.menu==='target'&&B.pend;
   let h='';
   B.en.forEach((e,i)=>{
