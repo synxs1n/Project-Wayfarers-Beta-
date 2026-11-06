@@ -9,10 +9,10 @@ const p=await ev(()=>{const A=__A,G=A.G,o={},c=G.roster.mira;
   // realm 1: never, whatever the battles
   G.stage=0;G.cleared=[false,false,false,false,false];c.bt=60;c.lv=3;
   o.r1=A.personalEligible(c);o.r1txt=A.personalLockText(c);
-  A.V.modal={type:'guild',tab:'personal'};A.render();const t1=document.querySelector('#modal').innerHTML;o.r1row=/data-act="personal"/.test(t1)||/Mira:/.test(t1);o.r1note=/open in the second realm/.test(document.querySelector('#modal').innerText);
+  A.V.modal={type:'guild',tab:'personal'};A.render();const t1=document.querySelector('#modal').innerHTML;o.r1row=/data-act="personal"/.test(t1)||/Mira:/.test(t1);o.r1note=/open in the third realm/.test(document.querySelector('#modal').innerText);
   A.V.modal={type:'char',id:'mira'};o.sheet1=A.mChar('mira',false).match(/Battles together:[^<]*/)[0];
   // second realm, not enough battles: still hidden
-  G.stage=1;c.bt=39;o.r2a=A.personalEligible(c);o.r2atxt=A.personalLockText(c);A.V.modal={type:'guild',tab:'personal'};A.render();o.r2arow=/data-arg="mira"/.test(document.querySelector('#modal').innerHTML);
+  G.stage=2;c.bt=39;o.r2a=A.personalEligible(c);o.r2atxt=A.personalLockText(c);A.V.modal={type:'guild',tab:'personal'};A.render();o.r2arow=/data-arg="mira"/.test(document.querySelector('#modal').innerHTML);
   // 40 battles at level 3: open (the old rule wanted level 20)
   c.bt=40;o.r2b=A.personalEligible(c);A.render();o.r2brow=/data-act="personal" data-arg="mira"/.test(document.querySelector('#modal').innerHTML);
   o.sheet2=A.mChar('mira',false).match(/Battles together:[^<]*/)[0];
@@ -21,10 +21,10 @@ const p=await ev(()=>{const A=__A,G=A.G,o={},c=G.roster.mira;
   const l=G.roster.lumen;delete l.bt;l.lv=11;o.est=A.btOf(l);A.saveGame();const raw=JSON.parse(localStorage.getItem('aurelis-wayfarers-v3'));o.savedBt=raw.roster.lumen.bt;
   A.V.modal=null;return o;});
 console.log(JSON.stringify(p));
-chk('personal quests need 40 battles (config) and the second realm',p.bt===40&&p.realm===1);
-chk('in the first realm a quest never opens, even with 60 battles',p.r1===false&&p.r1txt==='Unlocks in the second realm');
+chk('personal quests need 40 battles (config) and the third realm (v0.7.2)',p.bt===40&&p.realm===2);
+chk('in the first realm a quest never opens, even with 60 battles',p.r1===false&&p.r1txt==='Unlocks in the third realm');
 chk('in the first realm the Guild Hall shows no quest row, only a note',p.r1row===false&&p.r1note===true);
-chk('hero sheet: "Battles together: 60 of 40. Unlocks in the second realm"',/Battles together: 60 of 40\. Unlocks in the second realm/.test(p.sheet1));
+chk('hero sheet: "Battles together: 60 of 40. Unlocks in the third realm"',/Battles together: 60 of 40\. Unlocks in the third realm/.test(p.sheet1));
 chk('second realm with 39 battles: hidden, lock text counts battles',p.r2a===false&&p.r2atxt==='Battles together: 39 of 40'&&p.r2arow===false);
 chk('second realm with 40 battles at level 3: no level gate any more',p.r2b===true&&p.r2brow===true&&/ready at the Guild Hall/.test(p.sheet2));
 chk('accepting starts it as before',p.started==='active'&&p.roam===true);
@@ -63,9 +63,9 @@ const x=await ev(()=>{const A=__A,G=A.G,o={};const m=A.xpCatchMul;
   o.gain={};B.front.concat(B.back).forEach(c=>o.gain[c.id]=c.xp-xp0[c.id]);
   A.V.modal=null;A.finishBattle('win');A.V.modal=null;return o;});
 console.log(JSON.stringify(x));
-chk('catch up: v0.7.1 curve (+15%/level +2%/level², cap +300%), top level none, reserve half',JSON.stringify(x.mul)==='[1,1.17,1.63,2.25,3.97,1.19,2.485]');
-chk('the result lists who got it, not the top heroes',Array.isArray(x.rows)&&x.rows.some(r=>r.id==='lumen'&&r.pct===63)&&x.rows.some(r=>r.id==='brann'&&r.pct===81)&&!x.rows.some(r=>r.id==='mira'||r.id==='oren'));
-chk('the result screen shows a Catch up line',/Lumen \+63%/.test(x.line||'')&&/Brann \+81%/.test(x.line||''));
+chk('catch up: v0.7.1 curve (+15%/level +2%/level², cap +300%), top level none, rearguard the same (v0.7.2)',JSON.stringify(x.mul)==='[1,1.17,1.63,2.25,3.97,1.38,3.97]');
+chk('the result lists who got it, not the top heroes',Array.isArray(x.rows)&&x.rows.some(r=>r.id==='lumen'&&r.pct===63)&&x.rows.some(r=>r.id==='brann'&&r.pct===162)&&!x.rows.some(r=>r.id==='mira'||r.id==='oren'));
+chk('the result screen shows a Catch up line',/Lumen \+63%/.test(x.line||'')&&/Brann \+162%/.test(x.line||''));
 chk('XP really moves: lumen (3 behind) gets 1.63x the top hero',x.gain.mira>0&&Math.abs(x.gain.lumen/x.gain.mira-1.63)<.03);
 
 // ---------- 4.4 ----------

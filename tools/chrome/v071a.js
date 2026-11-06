@@ -13,11 +13,16 @@ const eq=await ev(([fn])=>{const A=__A,set=eval(fn);A.B=null;A.V.modal=null;set(
 chk('Best Party offers Equip best gear, then shows it as done instead of the button',eq.before&&!eq.after&&eq.note||JSON.stringify(eq));
 // catch up curve
 const cu=await ev(()=>{const x=__A.xpCatchMul;return [1,2,5,8,10,15].map(g=>+x(20-g,20,true).toFixed(2)).concat([+x(15,20,false).toFixed(3)]);});
-chk('catch up grows fast with the gap: 1:+17%, 2:+38%, 5:+125%, 8:+248%, 10+: +300% cap, rearguard half',JSON.stringify(cu)==='[1.17,1.38,2.25,3.48,4,4,1.625]'||JSON.stringify(cu));
+chk('catch up grows fast with the gap: 1:+17%, 2:+38%, 5:+125%, 8:+248%, 10+: +300% cap, rearguard the same',JSON.stringify(cu)==='[1.17,1.38,2.25,3.48,4,4,2.25]'||JSON.stringify(cu));
 // Vanguard wording
 const vg=await ev(()=>{const A=__A;A.V.modal={type:'menu',tab:'party'};A.render();const t=document.querySelector('#modal').textContent;A.V.modal=null;
   A.startBattle({stage:0,kind:'field',weather:'clear'});A.render();const b=(document.getElementById('bparty')||{}).textContent||'';return {menu:/Vanguard/.test(t)&&/Rearguard/.test(t)&&!/Front line/.test(t),battle:/Vanguard/.test(b)};});
 chk('Party menu and battle say Vanguard and Rearguard',vg.menu&&vg.battle||JSON.stringify(vg));
+// v0.7.2: the Rearguard earns the same battle XP as the Vanguard
+const rx=await ev(()=>{const A=__A,G=A.G;A.V.modal=null;G.roster={};['mira','lumen','oren','brann'].forEach(id=>{const c=A.newChar(id,8,0);c.S=A.calcStats(c);c.hp=c.S.mhp;G.roster[id]=c;});
+  G.party=['mira','lumen','oren','brann'];A.startBattle({stage:0,kind:'field',weather:'clear'});const tot=c=>c.lv*1e6+(c.xp||0);
+  const x0={};Object.values(G.roster).forEach(c=>x0[c.id]=tot(c));A.B.en.forEach(e=>e.hp=0);A.win();const g={};Object.values(G.roster).forEach(c=>g[c.id]=tot(c)-x0[c.id]);A.V.modal=null;A.B=null;return g;});
+chk('Rearguard hero (same level) gains the same XP as the Vanguard',rx.mira>0&&rx.brann===rx.mira||JSON.stringify(rx));
 // quest ordering on the board: ready, active, open, done
 const qo=await ev(()=>{const A=__A,G=A.G;A.V.modal={type:'board',sec:'all'};A.render();const Q=G.quests.filter(q=>q.stage<=G.stage);
   if(Q.length<3)return {few:Q.length};Q[Q.length-1].state='active';Q[Q.length-2].state='active';const rq=Q[Q.length-2];rq.type='hunt';rq.n=1;rq.have=1;

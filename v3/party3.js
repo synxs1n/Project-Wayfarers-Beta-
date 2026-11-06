@@ -54,7 +54,7 @@ function p6Why(set,X,mode,train){const base=p3Reasons(set,X.T),out={},tr=new Set
     if(r.tank&&seen.tank++&&!L.includes('tank'))L.push(i<3?'second tank':'backup tank for the swap');
     if(r.heal&&seen.heal++&&!L.includes('healer'))L.push(i<3?'second healer':'backup healer for the swap');
     if(!L.length)L.push(r.sup?'support: buffs and wards the vanguard':r.dmg?'damage dealer':'steady all rounder');
-    if(tr.has(c.id)){const gap=X.top-c.lv,pct=Math.round((xpCatchMul(c.lv,X.top,i<3)-1)*100);L.unshift(`training: Lv ${c.lv}, ${gap} behind your top wayfarer, +${pct}% catch up XP${i<3?'':' (rearguard share)'}`);}
+    if(tr.has(c.id)){const gap=X.top-c.lv,pct=Math.round((xpCatchMul(c.lv,X.top,i<3)-1)*100);L.unshift(`training: Lv ${c.lv}, ${gap} behind your top wayfarer, +${pct}% catch up XP`);}
     else if(mode==='train'&&(r.tank||r.heal)&&i<3)L.push('keeps the trainees safe');
     out[c.id]=L.slice(0,3);});
   return out;}

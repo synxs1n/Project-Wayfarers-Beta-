@@ -85,10 +85,12 @@ const econG=n=>(typeof G!=='undefined'&&G&&G.daily)?n:Math.round(n*ECON.gold);
 const PERSONAL_BT=40;
 // ===== Beta v0.5.0 phases 4 and 5 (p4xp.js, p4party.js, p5settings.js) =====
 // 4.1 personal quests: no level gate any more; PERSONAL_BT battles together and the party in this realm (0 based) or later.
-const PERSONAL_REALM=1;
+const PERSONAL_REALM=2;// v0.7.2: third realm (was the second), see pacing.js
 // 4.3 XP catch up: +per for each level a hero is below the party's highest, at most +max. Reserve heroes get bench x that bonus.
 // v0.7.1: much bigger for heroes far behind: bonus = per*gap + sq*gap^2, capped at max (gap 2: +38%, 5: +125%, 8: +248%, 10+: +300%)
-const XPCU={per:.15,sq:.02,max:3,bench:.5};
+const XPCU={per:.15,sq:.02,max:3,bench:1};
+// v0.7.2: the Rearguard earns the same battle XP as the Vanguard (was 0.6), so the six stay about the same level
+const XP_REAR=1;
 // 5.4 transitions, in ms of world screen time: time of day blends over tod, weather over wx (visuals and ambience beds).
 const TRANS={tod:11000,wx:6500,ambTod:10,ambWx:6};
 // 5.5 save indicator: show "Saving..." this long, then "Saved", hold, then fade. minGap = autosaves closer than this share one message.

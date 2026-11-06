@@ -2,7 +2,7 @@
 const {open,chk,done}=require('./pw');
 (async()=>{
 const H=await open({w:430,h:880,mobile:true});const {ev}=H;
-await ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;});
+await ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();try{(window.__A.G.cleared=window.__A.G.cleared||[])[0]=1;}catch(e){}A.V.modal=null;});
 const r=await ev(()=>{const A=__A,G=A.G,o={};G.gold=999999;
   // a warrior in the party and several warrior weapons of one tier in the pack: their tempers help the same hero by similar amounts
   G.roster.brann=A.newChar('brann',8,1);G.party[0]='brann';

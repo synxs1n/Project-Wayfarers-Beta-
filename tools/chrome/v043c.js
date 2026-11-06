@@ -2,7 +2,7 @@
 const {open,chk,done}=require('./pw');
 (async()=>{
 const H=await open({w:430,h:880,mobile:true});const {ev}=H;
-await ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;});
+await ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();try{(window.__A.G.cleared=window.__A.G.cleared||[])[0]=1;}catch(e){}A.V.modal=null;});
 const r=await ev(async()=>{const A=__A,G=A.G,o={};
   o.gold0=G.gold;o.autoRew=A.AUTO_REW;o.power=A.AUTO_NERF.power;o.econ=A.ECON.gold+'/'+A.ECON.gear;
   // the duel popup: no "either way", and the reward is a tavern seat

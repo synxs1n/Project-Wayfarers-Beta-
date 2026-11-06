@@ -2,9 +2,9 @@
 const {open,chk,done,shot}=require('./pw');
 (async()=>{
 const H=await open({w:430,h:800,mobile:true});
-const mk=`const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;`;
+const mk=`const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();try{(window.__A.G.cleared=window.__A.G.cleared||[])[0]=1;}catch(e){}A.V.modal=null;`;
 // ---- 7: weather ----
-const w=await H.ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;const o={};
+const w=await H.ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();try{(window.__A.G.cleared=window.__A.G.cleared||[])[0]=1;}catch(e){}A.V.modal=null;const o={};
   const sup=Object.keys(A.WEATHER).filter(k=>A.WEATHER[k].sup);o.sup=sup;
   // odds: roll many times for each realm and phase
   const odds={};['meadow','coast','cave','snow','heights','void'].forEach(th=>{['day','night'].forEach(ph=>{const L=A.wxList(th,ph),tot=L.reduce((a,b)=>a+b[1],0),sp=L.filter(x=>A.WEATHER[x[0]]&&A.WEATHER[x[0]].sup).reduce((a,b)=>a+b[1],0);odds[th+':'+ph]=+(sp/tot*100).toFixed(2);});});
@@ -37,7 +37,7 @@ for(const k of ['snow','bloodmoon','meteor']){await H.ev((k)=>{const A=__A;A.V.m
 const pop=await H.ev(()=>{const A=__A;A.G.weather[3]='bloodmoon';return A.wxInfoBody('weather');});
 chk('7.2 HUD popup explains a rare sky',/Blood Moon/.test(pop)&&/Rare sky/i.test(pop)&&/gold/i.test(pop));
 // ---- 8: chance encounters ----
-const c=await H.ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;const o={};
+const c=await H.ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();try{(window.__A.G.cleared=window.__A.G.cleared||[])[0]=1;}catch(e){}A.V.modal=null;const o={};
   const G=A.G;G.gold=2000;G.inv.potion=3;
   o.pool=A.cePool();o.legend=o.pool.filter(id=>{const s=A.TPL[id].src;return s==='L'||s==='x'}).length;o.owned=o.pool.filter(id=>G.roster[id]).length;
   A.placeAt('f0',...(A.getMap('f0').gates.start.arrive));A.V.modal=null;
@@ -61,7 +61,7 @@ chk('8.2 the pool never holds legendaries, owned heroes or challenge-only',c.leg
 chk('8.1 help / merchant / duel events open and resolve',c.m1==='cev'&&c.hired&&c.fr&&c.inBattle&&c.foe>=2);
 chk('8.1 merchant hire cost a discounted fee, a pack earns a hiring discount',c.paid>0&&c.cost>0);
 // probability sim: steps per event
-const sim=await H.ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;const G=A.G;
+const sim=await H.ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();try{(window.__A.G.cleared=window.__A.G.cleared||[])[0]=1;}catch(e){}A.V.modal=null;const G=A.G;
   A.placeAt('f0',...(A.getMap('f0').gates.start.arrive));A.V.modal=null;A.WS.lock=false;A.WS.x+=2;
   let hit=0,steps=0;const N=60000;A.ceInit();const types={};
   for(let i=0;i<N;i++){G.ce.cnt={};A.ceStep();steps++;if(A.V.modal&&A.V.modal.type==='cev'){hit++;types[A.V.modal.ev.type]=(types[A.V.modal.ev.type]||0)+1;A.V.modal=null;}}
@@ -69,7 +69,7 @@ const sim=await H.ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEac
 console.log(JSON.stringify(sim));
 chk('8.2 encounters average between 150 and 250 steps',sim.per>150&&sim.per<260);
 // ---- 9: factions ----
-const f=await H.ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;const o={};const G=A.G;
+const f=await H.ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();try{(window.__A.G.cleared=window.__A.G.cleared||[])[0]=1;}catch(e){}A.V.modal=null;const o={};const G=A.G;
   A.facInit();o.ranks=A.FAC.map(F=>A.facRank(F.id));
   o.ids=A.FAC.map(F=>F.id).join();
   // mission flow
@@ -92,7 +92,7 @@ chk('9 mission claim gives standing',f.gained>0);
 chk('9 counters raise ranks',f.smiths>=2&&f.alch>=2&&f.wardens>=2);
 chk('9 Factions screen (Records) and Guides tab render',f.screen&&f.guide);
 chk('9 perks are off in the Daily Trial',f.dailyMul===JSON.stringify({xp:1,gold:1}));
-const perk=await H.ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;const G=A.G,o={};G.gold=5000;A.facInit();
+const perk=await H.ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();try{(window.__A.G.cleared=window.__A.G.cleared||[])[0]=1;}catch(e){}A.V.modal=null;const G=A.G,o={};G.gold=5000;A.facInit();
   A.facCredit('forge',100);A.facCredit('temper',40);o.rank=A.facRank('smiths');
   const n0=G.gear.length;A.ACT.facPerk('smiths:5');A.ACT.facPerk('smiths:6');o.charms=G.gear.slice(n0).join();
   const c0=G.mats.core||0;A.ACT.facBuy('smiths:0');o.core=(G.mats.core||0)-c0;
@@ -105,7 +105,7 @@ chk('9 rank 6 gives the strong signature charm and the rank 5 charm, once',perk.
 chk('9 counter stock sells a Dread Core to a rank 4 Smiths member',perk.core===1);
 chk('9 the challenge wayfarer recruit can be claimed once',perk.recruit===1&&perk.once===1);
 // ---- old saves: no faction data, no encounter data, v0.3.5 world ----
-const old=await H.ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;const o={};const G=A.G;
+const old=await H.ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();try{(window.__A.G.cleared=window.__A.G.cleared||[])[0]=1;}catch(e){}A.V.modal=null;const o={};const G=A.G;
   delete G.fac;delete G.ce;G.wv=2;G.weather={};delete G.wx;A.resetMaps();
   A.saveGame();
   o.ranks=A.FAC.map(F=>A.facRank(F.id));

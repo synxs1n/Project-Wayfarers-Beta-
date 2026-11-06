@@ -886,7 +886,7 @@ function win(){
   const party=allParty(),maxLv=Math.max(...party.map(c=>c.lv));
   party.forEach(c=>{
     if(!G.daily&&B.front.includes(c))c.bt=btOf(c)+1;
-    let share=(B.front.includes(c)&&c.hp>0)?1:.6;if(c.lv<maxLv-3)share*=1.4;if(c.hp<=0)share=0;// v0.4.3: the fallen earn no XP
+    let share=(B.front.includes(c)&&c.hp>0)?1:(typeof XP_REAR==='number'?XP_REAR:.6);// v0.7.2: XP_REAR (config.js)if(c.lv<maxLv-3)share*=1.4;if(c.hp<=0)share=0;// v0.4.3: the fallen earn no XP
     const flv=B.en.reduce((q,e)=>q+e.lv,0)/Math.max(1,B.en.length);
     const ups=share>0?addXp(c,Math.round(txp*share*xpLvMul(c,flv))):[];
     if(ups.length)info.ups.push({name:c.name,lv:c.lv,learned:ups.flatMap(u=>u.learned),pts:c.pts});

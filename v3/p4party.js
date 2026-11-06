@@ -14,14 +14,14 @@ personalLockText=function(c){return !realmReached(PERSONAL_REALM)?'Unlocks in th
 function pqShown(c){const q=G.personal&&G.personal[c.id];return !!(q&&q.state&&q.state!=='open')||personalEligible(c);}
 vPersonal=function(){
   const list=Object.values(G.roster).filter(c=>!TPL[c.id].mon&&pqShown(c)).sort((a,b)=>b.lv-a.lv);
-  const intro=`<p>Every wayfarer has unfinished business. Once your party reaches the second realm, a hero who has fought ${PERSONAL_BT} battles beside you can take up their personal quest: accept it and a rival roams the current realm's field. Bring that hero in your six to face it and win their signature item: a weapon, armor or accessory bound to that hero, which changes how they look.</p>`;
-  if(!list.length)return intro+`<p class="note">${realmReached(PERSONAL_REALM)?`No wayfarer is ready yet. Each hero's sheet shows their battles together (${PERSONAL_BT} needed).`:'Personal quests open in the second realm.'}</p>`;
+  const intro=`<p>Every wayfarer has unfinished business. Once your party reaches the third realm, a hero who has fought ${PERSONAL_BT} battles beside you can take up their personal quest: accept it and a rival roams the current realm's field. Bring that hero in your six to face it and win their signature item: a weapon, armor or accessory bound to that hero, which changes how they look.</p>`;
+  if(!list.length)return intro+`<p class="note">${realmReached(PERSONAL_REALM)?`No wayfarer is ready yet. Each hero's sheet shows their battles together (${PERSONAL_BT} needed).`:'Personal quests open in the third realm.'}</p>`;
   return intro+`<div class="rows">${list.map(c=>{const q=G.personal[c.id],t=TPL[c.id],w=gearOf(sigGid(c.id))||gearOf('u_'+c.id);
     const st=!q||q.state==='open'?`<button class="btn sm gold" data-act="personal" data-arg="${c.id}">Accept</button>`:q.state==='active'?'<span class="m">Rival roaming</span>':'<span class="m up">Done</span>';
     return `<div class="row">${port(c.id)}<div class="grow"><b>${esc(t.n)}: ${esc(w.n)}</b><small>${q&&q.text?esc(q.text)+(q.state==='active'?` It prowls ${esc(ZS(q.stage).n)}.`:''):esc(gearDesc(w))}</small></div>${st}</div>`;}).join('')}</div>`;};
 function pqSheetLine(c){const q=G&&G.personal&&G.personal[c.id];let s=`Battles together: ${btOf(c)} of ${PERSONAL_BT}`;
   if(q&&q.state==='done')s+='. Personal quest done';else if(q&&q.state==='active')s+='. Personal quest under way';
-  else if(TPL[c.id]&&TPL[c.id].mon){}else if(!realmReached(PERSONAL_REALM))s+='. Unlocks in the second realm';else if(personalEligible(c))s+='. Personal quest ready at the Guild Hall';
+  else if(TPL[c.id]&&TPL[c.id].mon){}else if(!realmReached(PERSONAL_REALM))s+='. Unlocks in the '+(['first','second','third','fourth','fifth'][PERSONAL_REALM]||'later')+' realm';else if(personalEligible(c))s+='. Personal quest ready at the Guild Hall';
   return s;}
 {const mc0=mChar;mChar=function(id){let h=mc0.apply(this,arguments);try{const c=G&&G.roster[id];if(c&&typeof h==='string')h=h.replace(/(<p class="note nums">)Battles together: \d+ of \d+(<\/p>)/,(a,p1,p2)=>p1+esc(pqSheetLine(c))+p2);}catch(e){}return h;};}
 

@@ -140,3 +140,6 @@ Details in `v063-battle.md` (`v3/battle3.js`, `v3/battle3.css`, `B3` in config.j
 
 ## Beta v0.7.1: Vanguard, catch up curve, remembered toggles
 Front three are the Vanguard (all user facing "front line" text). XPCU {per:.15,sq:.02,max:3,bench:.5}: bonus = per*gap + sq*gap^2 (cap +300%); the top hero never gets it, so the journey pacing for the top hero is unchanged. `v3/remember.js` stores Auto and Run in META.cfg.autoOn/runOn. Quest lists sort claimable, active, open, done. Best Party's Equip best gear becomes a done note once used. Test `chrome/v071a.js`.
+
+## Beta v0.7.2: pacing spread and Rearguard XP
+Owner approved the v063-progression.md proposals: `v3/pacing.js` gates guild missions and Tempering behind the first Scourge (Tempering stays open with tempered gear), the Tamer's Stick quest moves to stage 1, PERSONAL_REALM=2. XP_REAR=1 and XPCU.bench=1: the Rearguard earns the same XP and catch up as the Vanguard. Test `chrome/v072a.js` (+ v050p4, v071a).
