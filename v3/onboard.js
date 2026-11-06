@@ -97,9 +97,9 @@ const TIPS=[
  {id:'reserves',n:'Reserves and Equip best',sec:'Party',go:['menuTab','party','Party'],
   t:()=>{if(!obWorld())return null;const r=obReserves();return r.length?`${p2Nm(G.roster[r[0]])} is a Reserve, outside the party. Swap heroes in town from the Party tab.`:null;},
   g:'Heroes outside the party are your Reserves. They still earn some XP. In town you can swap them into the party from the Party tab. Equip best: reserves hands them the best spare gear in the pack, never taking anything from your party.'},
- {id:'bestparty',n:'Best Party and Training team',sec:'Party',go:['bpOpen','','Best Party'],
-  t:()=>{if(!obModal('menu')||obTab()!=='party')return null;return obReserves().length?'Best Party suggests a party for this area. Training team helps heroes who fell behind.':null;},
-  g:'Best Party (Party tab) looks at your roster, the foes of this area and its boss, and suggests a Vanguard and Rearguard in formations: Balanced, Boss ready, Area answer, Fresh mix, Rotation. Training team puts heroes who fell behind beside a strong tank and healer, so the XP catch up bonus lifts them quickly.'},
+ {id:'bestparty',n:'Build Party and Training team',sec:'Party',go:['bpOpen','','Build Party'],
+  t:()=>{if(!obModal('menu')||obTab()!=='party')return null;return obReserves().length?'Build Party suggests parties for this area. Training team helps heroes who fell behind.':null;},
+  g:'Build Party (Party tab) looks at your roster, the foes of this area and its boss, and suggests a Vanguard and Rearguard in formations: Balanced, Boss ready, Area answer, Fresh mix, Rotation. Training team puts heroes who fell behind beside a strong tank and healer, so the XP catch up bonus lifts them quickly.'},
  // town
  {id:'guild',n:'Guilds and guild missions',sec:'Town',go:['menuTab','fmis','Guild missions'],
   t:()=>{if(!obWorld()||typeof facRank!=='function')return null;const F=FAC.find(f=>facRank(f.id)>=2);return F?`New rank with the ${F.n}! Guild missions in Quests earn rank even faster.`:null;},
@@ -246,7 +246,7 @@ function obUntried(){const out=[];if(!G||G.daily)return out;const add=(t,s)=>out
   try{if(tipSeen('limit')&&!tipUsed('limit'))add('Try a Limit move','When a hero\'s gold bar is full, the Limit button tops their commands.');}catch(e){}
   try{if(tipSeen('summon')&&!tipUsed('summon'))add('Try Summon in battle','A hero with a companion can call it in to fight for a few turns.');}catch(e){}
   try{if(tipSeen('guild')&&typeof facInit==='function'){const f=facInit();if(!Object.keys(f.acc||{}).length&&!Object.keys(f.done||{}).length)add('Try a guild mission','Quests > Guild missions: extra standing and the next perk sooner.');}}catch(e){}
-  try{if(tipSeen('bestparty')&&!tipUsed('bestparty'))add('Try Best Party','Party tab: it suggests a party for this area and a Training team for heroes who fell behind.');}catch(e){}
+  try{if(tipSeen('bestparty')&&!tipUsed('bestparty'))add('Try Build Party','Party tab: it suggests a party for this area and a Training team for heroes who fell behind.');}catch(e){}
   try{const R=obReserves();if(tipSeen('reserves')&&!tipUsed('reserves')&&R.length&&(G.gear||[]).some(id=>{const g=gearOf(id);return g&&!g.stick;}))add('Equip best: reserves','Party tab: your Reserves take the best spare gear from the pack.');}catch(e){}
   try{if(tipSeen('charm')){const c=(G.gear||[]).filter(obCharm);const empty=partyOf().filter(h=>!h.eq.c);if(c.length&&empty.length)add(`A charm is waiting in your pack`,`${empty.slice(0,3).map(h=>esc(p2Nm(h))).join(', ')} ${empty.length>1?'have':'has'} an empty charm slot. Backpack > Equipment.`);}}catch(e){}
   return out;}

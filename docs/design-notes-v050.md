@@ -167,3 +167,6 @@ Details in `v076-battle-layout.md` (battle3.js/css, B3.wideMin/wideStep in confi
 
 ## Beta v0.8.0: weather in layers, old visuals pass
 Details in `v077-weather.md` (`v3/weather7.js`, `v3/visuals7.js`, `WX7` in config.js, tests `chrome/v077wa.js`, `v077wb.js`). No game RNG used; lightning at most 2 flashes per strike, under 100 ms, peak 0.42. Victory crest, Arena backdrop and minimap upgraded.
+
+## Beta v0.8.1: Build Party
+Renamed Best Party to Build Party. p6Train: the lowest levels on the roster; a missing tank or healer is filled by the lowest level hero with that role (replacing the highest non unique member). p6Fly + BP6.fly: flying share of the area (seen foes, else the pool) and a flying boss reward ranged deliveries (one 1.2, two +0.35, an Archer +0.45), since piercing and magic only half answer flyers and Archers were never picked. Tests `chrome/v081a.js`, `v063pa.js` (training rule).

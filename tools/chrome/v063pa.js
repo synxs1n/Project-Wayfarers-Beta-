@@ -39,11 +39,13 @@ chk('four Lv 26 mages do not crowd out the Lv 19 archer and thief (at most 2 mag
 const tr=await ev(([fn])=>{const set=eval(fn);set({oren:25,lumen:25,mira:25,tess:24,thane:24,brann:25,sable:12,rill:14,aella:15,carol:16,glint:24});
   const P=__P6.bestParty(),o=P.opts.find(x=>x.key==='train');if(!o)return {none:true,keys:P.opts.map(x=>x.key)};
   const lv=id=>__A.G.roster[id].lv,trn=o.ids.filter(id=>lv(id)<=22),strong=o.ids.filter(id=>lv(id)>22);
-  return {ids:o.ids,trn,front:o.ids.slice(0,3),strongRoles:strong.map(id=>__P6.role(id)),why:o.why,sum:document.createElement('x')&&o.sum};},[setRoster]);
+  const R=__P6.role,asc=Object.keys(__A.G.roster).sort((a,b)=>lv(a)-lv(b)),cut=lv(asc[5]),base=asc.filter(id=>lv(id)<=cut),extra=o.ids.filter(id=>lv(id)>cut);
+  const extraOk=extra.every(id=>{const r=R(id);return ['tank','heal'].some(k=>r[k]&&!base.some(b=>o.ids.includes(b)&&R(b)[k])&&asc.filter(x=>!base.includes(x)&&R(x)[k])[0]===id);});
+  return {ids:o.ids,trn,front:o.ids.slice(0,3),roles:o.ids.map(id=>R(id)),extra,extraOk,why:o.why,sum:document.createElement('x')&&o.sum};},[setRoster]);
 console.log('training',JSON.stringify(tr));
 chk('Training team is offered when heroes are behind',!tr.none||JSON.stringify(tr));
 chk('it puts the under-leveled heroes in (the 4 furthest behind)',['sable','rill','aella','carol'].every(id=>(tr.ids||[]).includes(id))||JSON.stringify(tr.ids));
-chk('it still has a strong tank and a strong healer',(tr.strongRoles||[]).some(r=>r.tank)&&(tr.strongRoles||[]).some(r=>r.heal)||JSON.stringify(tr.strongRoles));
+chk('v0.8.1: lowest levels only; a higher hero comes along only to fill a missing tank or healer, and then the lowest such hero',tr.extraOk===true&&(tr.roles||[]).some(r=>r.tank)&&(tr.roles||[]).some(r=>r.heal)||JSON.stringify({extra:tr.extra,ids:tr.ids}));
 chk('it explains who is training',(tr.trn||[]).every(id=>/^training: Lv \d+, \d+ behind your top wayfarer/.test((tr.why[id]||[])[0]||''))&&/train/.test(tr.sum||'')||JSON.stringify(tr.why));
 const notr=await ev(([fn])=>{const set=eval(fn);set({oren:20,lumen:20,mira:19,tess:20,thane:19,brann:20,sable:19});const P=__P6.bestParty();return {keys:P.opts.map(o=>o.key),no:P.noTrain};},[setRoster]);
 chk('no Training team when nobody is behind (and the screen says why)',!notr.keys.includes('train')&&notr.no===true||JSON.stringify(notr));

@@ -13,9 +13,12 @@
 function p6Role(c){const k=p3Kit(c),t=TPL[c.id],cls=t.cls,sk=classSkills(t).filter(s=>skillKnown(c,s));
   const sup=cls==='bard'||!k.tank&&!k.heal&&sk.some(s=>s.k==='status'&&(s.t==='ally'||s.t==='allyAll'));
   return {k,cls,tank:k.tank,heal:k.heal,sup,dmg:!k.tank&&cls!=='healer'&&cls!=='bard',pr:k.pr,de:k.de};}
-// shared context for one Best Party pass: power, roles, threats
+// v0.8.1: how much of what lies ahead flies (seen foes of this area; the whole area pool when nothing is seen yet), 0..1, and a flying boss
+function p6Fly(T){try{let n=0,f=0;const pool=T.mons.length?T.mons:(ZS(T.s).pool||[]);pool.forEach(k=>{const d=MON[k];if(!d)return;n++;if(tyOf(d.art).includes('flying'))f++;});
+  return {share:n?f/n:0,boss:!!(T.boss&&(T.boss.ty||[]).includes('flying'))};}catch(e){return {share:0,boss:false};}}
+// shared context for one Build Party pass: power, roles, threats
 function p6Ctx(){const all=Object.values(G.roster),pw={},R={};all.forEach(c=>{pw[c.id]=Math.max(1,loadoutScore(c,c.S));R[c.id]=p6Role(c);});
-  return {all,pw,R,mx:Math.max(1,...Object.values(pw)),T:p3Threats(),top:Math.max(1,...all.map(c=>c.lv|0)),size:Math.min(6,all.length)};}
+  const T0=p3Threats();return {all,pw,R,mx:Math.max(1,...Object.values(pw)),T:T0,fly:p6Fly(T0),top:Math.max(1,...all.map(c=>c.lv|0)),size:Math.min(6,all.length)};}
 const p6Step=(arr,n)=>{let s=0;for(let i=0;i<n;i++)s+=arr[Math.min(i,arr.length-1)];return s;};
 // the formation score: roles first, then answers to what lies ahead, then a little strength
 function p6Score(set,X,mode,prev){const T=X.T,R=set.map(c=>X.R[c.id]),K=R.map(r=>r.k),cnt=f=>R.filter(f).length;let v=0;
@@ -25,6 +28,10 @@ function p6Score(set,X,mode,prev){const T=X.T,R=set.map(c=>X.R[c.id]),K=R.map(r=
   const cl={};R.forEach(r=>{cl[r.cls]=(cl[r.cls]||0)+1;});Object.values(cl).forEach(n=>{if(n>1)v-=BP6.dup*(n-1);});
   const els=new Set();set.forEach(c=>c.el.forEach(e=>els.add(e)));v+=BP6.el*els.size;
   const dls=new Set();K.forEach(k=>k.dl.forEach(d=>dls.add(d)));['piercing','blunt','ranged','magic'].forEach(d=>{if(dls.has(d))v+=BP6.dl;});
+  // v0.8.1: flyers want real ranged attackers (Archers first): a lance or a spell only half answers them, so the plain archetype answer above
+  // never brought an Archer in. One ranged hero is worth a lot when the area flies, a second a little more, an Archer a bit on top.
+  {const F=X.fly||{share:0},w=F.share+(F.boss&&mode==='boss'?BP6.fly.boss:0);if(w>0){const nr=K.filter(k=>k.dl.has('ranged')).length;
+    v+=w*(BP6.fly.one*(nr>=1?1:0)+BP6.fly.two*(nr>=2?1:0))+(R.some(r=>r.cls==='archer'||r.cls==='sniper')?w*BP6.fly.archer:0);}}
   const boss=mode==='boss',area=boss&&!T.boss,tot=Object.values(T.arch).reduce((a,b)=>a+b,0)||1;
   Object.keys(T.arch).forEach(a=>{if(!K.some(k=>p3Answer(k,a)))return;const mul=boss?(T.boss&&T.boss.ty.includes(a)?BP6.boss.arch:area?BP6.boss.area:1):1;v+=BP_AWARE.arch*Math.min(1.5,T.arch[a]/tot*2)*mul;});
   if(T.mons.length){const cov=T.mons.filter(k=>K.some(kit=>p3Beats(kit,MON[k].el))).length/T.mons.length;v+=BP_AWARE.el*cov*(area?BP6.boss.area:1);}
@@ -61,14 +68,17 @@ function p6Why(set,X,mode,train){const base=p3Reasons(set,X.T),out={},tr=new Set
 function p6Info(set,X){const R=set.map(c=>X.R[c.id]),els=new Set();set.forEach(c=>c.el.forEach(e=>els.add(e)));
   return {els:els.size,heal:R.filter(r=>r.heal).length,tank:R.filter(r=>r.tank).length,pr:R.filter(r=>r.pr).length,de:R.filter(r=>r.de).length,sup:R.filter(r=>r.sup).length,dmg:R.filter(r=>r.dmg).length,
     lv:set.length?Math.round(set.reduce((a,c)=>a+c.lv,0)/set.length):0,pw:set.reduce((a,c)=>a+X.pw[c.id],0)};}
-// the training team: the furthest behind train, the strongest tank and healer (not trainees) keep them alive
-function p6Train(X){const tr=X.all.filter(c=>X.top-c.lv>=BP6.train.gap).sort((a,b)=>a.lv-b.lv||X.pw[b.id]-X.pw[a.id]);if(!tr.length||X.size<3)return null;
-  const strong=X.all.filter(c=>!tr.includes(c)).sort((a,b)=>X.pw[b.id]-X.pw[a.id]),R=c=>X.R[c.id];
-  const tk=strong.find(c=>R(c).tank)||X.all.filter(c=>R(c).tank).sort((a,b)=>X.pw[b.id]-X.pw[a.id])[0];
-  const hl=strong.find(c=>R(c).heal&&c!==tk)||X.all.filter(c=>R(c).heal&&c!==tk).sort((a,b)=>X.pw[b.id]-X.pw[a.id])[0];
-  const anchors=[tk,hl].filter(Boolean),room=Math.max(1,X.size-anchors.length);
-  const trainees=tr.filter(c=>!anchors.includes(c)).slice(0,Math.min(BP6.train.max,room));if(!trainees.length)return null;
-  const fixed=anchors.concat(trainees),set=p6Search(X,s=>p6Score(s,X,'bal'),fixed);return {set,trainees,anchors};}
+// the training team (v0.8.1, the owner's rule): the lowest levels on the roster, full stop. The only exception is a role nobody that low
+// can fill (a tank, a healer): then the lowest level hero who has that role comes along. Everyone below the top by BP6.train.gap trains.
+function p6Train(X){if(X.size<3)return null;const R=c=>X.R[c.id],asc=X.all.slice().sort((a,b)=>a.lv-b.lv||X.pw[b.id]-X.pw[a.id]);
+  if(!asc.some(c=>X.top-c.lv>=BP6.train.gap))return null;
+  let set=asc.slice(0,X.size);const anchors=[];
+  ['tank','heal'].forEach(role=>{if(set.some(c=>R(c)[role]))return;const fill=asc.find(c=>R(c)[role]&&!set.includes(c));if(!fill)return;
+    // drop the highest level hero who is not the only holder of a role the team already has
+    const drop=set.slice().reverse().find(c=>!anchors.includes(c)&&!['tank','heal'].some(r=>R(c)[r]&&set.filter(x=>R(x)[r]).length===1));
+    if(!drop)return;set=set.filter(c=>c!==drop).concat(fill);anchors.push(fill);});
+  const trainees=set.filter(c=>!anchors.includes(c)&&X.top-c.lv>=BP6.train.gap);if(!trainees.length)return null;
+  return {set:set.sort((a,b)=>a.lv-b.lv),trainees,anchors};}
 const P6_NAMES={bal:'Balanced',boss:'Boss ready',area:'Area answer',mix:'Fresh mix',rot:'Rotation',train:'Training team'};
 function p6Summary(o,X,first){const T=X.T,nm=c=>esc(c.name);
   if(o.key==='bal')return 'One of every role first (tank, healer, damage, support, Primer and Detonator), every delivery and a spread of elements. Level and gear only settle ties.';
@@ -78,7 +88,7 @@ function p6Summary(o,X,first){const T=X.T,nm=c=>esc(c.name);
     return a.length?`Built for ${esc(ZS(T.s).n)}: answers to the ${a.map(k=>ARCH_PL[k]).join(', ')} here and their elements.`:`Built for ${esc(ZS(T.s).n)}. Little is known about its monsters yet: every fight fills the Bestiary and sharpens this pick.`;}
   if(o.key==='mix'){const sh=o.set.filter(c=>first.includes(c.id)).length;return `Different faces in the same roles, so more of your wayfarers see battle and grow. Shares ${sh} of 6 with Balanced.`;}
   if(o.key==='rot')return 'The same roles again with the heroes the other formations left in reserve, so everyone keeps up.';
-  if(o.key==='train')return `${o.trainees.map(c=>`${nm(c)} (Lv ${c.lv})`).join(', ')} ${o.trainees.length>1?'train':'trains'} behind ${o.anchors.map(nm).join(' and ')||'your strongest'}. Catch up XP is measured against your top wayfarer (Lv ${X.top}): the further behind, the more XP, up to +${Math.round(XPCU.max*100)}% in the vanguard and +${Math.round(XPCU.max*XPCU.bench*100)}% in the rearguard.`;
+  if(o.key==='train')return `Your lowest levels train together: ${o.trainees.map(c=>`${nm(c)} (Lv ${c.lv})`).join(', ')}${o.anchors.length?`, with ${o.anchors.map(c=>`${nm(c)} (Lv ${c.lv})`).join(' and ')} along to fill a role nobody lower can`:''}. Catch up XP is measured against your top wayfarer (Lv ${X.top}): the further behind, the more XP, up to +${Math.round(XPCU.max*100)}% in the vanguard and +${Math.round(XPCU.max*XPCU.bench*100)}% in the rearguard.`;
   return '';}
 function bestParty(){const keep=P3C;if(!P3C)P3C={why:{},kit:{}};
   try{const X=p6Ctx(),opts=[],sets=[];
@@ -100,7 +110,7 @@ function mBestParty(m){const P=m.plan,o=P.opts[P.pick]||{},cur=new Set(G.party),
   const row=(id,i)=>{const c=G.roster[id];return `<div class="row ${cur.has(id)?'':'upg'}">${port(id,'sm')}<div class="grow"><b>${esc(c.name)}</b> <small>Lv ${c.lv} ${CLS[TPL[id].cls].n}</small><span class="els">${c.el.map(ico).join('')}</span><small class="p3bpwhy">${esc(c.name)}: ${(W[id]||[]).join('; ')}</small></div><small>${cur.has(id)?(G.party.indexOf(id)<3)===(i<3)?'Keeps place':i<3?'<span class="up">To the front</span>':'To rearguard':'<span class="up">Joins</span>'}</small></div>`;};
   const chips=`<div class="chips bp6f" role="group" aria-label="Formations">${P.opts.map((x,j)=>`<button class="chip ${j===P.pick?'on':''}" data-act="bpPick" data-arg="${j}" aria-pressed="${j===P.pick}">${x.name}</button>`).join('')}</div>`;
   const out=G.party.filter(id=>!P.ids.includes(id));
-  return box('Best party',`<p class="note">Formations built on role balance first (tank, healer, damage, support, Primer, Detonator, every delivery and element) and on what your Bestiary knows about the road ahead. Level and gear count, but only a little. Pick one:</p>${chips}
+  return box('Build party',`<p class="note">Formations built on role balance first (tank, healer, damage, support, Primer, Detonator, every delivery and element) and on what your Bestiary knows about the road ahead. Level and gear count, but only a little. Pick one:</p>${chips}
     ${P.noTrain?`<p class="note"><small>Training team: nobody is ${BP6.train.gap} or more levels behind your top wayfarer right now.</small></p>`:''}
     <p class="note bp6sum"><b>${esc(o.name||'')}.</b> ${o.sum||''}${o.also?` <small>(${o.also.join(' and ')} would pick the same six.)</small>`:''}</p>${p3ThreatLine(T)}
     <p class="note nums">Average Lv ${I.lv} · Power ${o.rel||100}% of Balanced · Tanks ${I.tank} · Healers ${I.heal} · Damage ${I.dmg} · Support ${I.sup} · Primers ${I.pr} · Detonators ${I.de} · Elements ${I.els}/8</p>

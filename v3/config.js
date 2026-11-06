@@ -187,7 +187,8 @@ const READY={lvGap:2,potions:4,revives:2};
 //   overlap: cost per hero shared with earlier formations (Fresh mix: Balanced; Rotation: all; Boss ready: none, it says when it matches Balanced);
 //   train: a hero this many levels or more below the roster's top level is a trainee; at most max trainees in a Training team.
 const BP6={str:.5,weak:.55,weakPen:1.6,role:{tank:[1,.15,-.4],heal:[1,.3,-.3],sup:[.35,-.05,-.2],dmg:[.4,.35,.12,0]},pr:.4,de:.4,dup:.28,dl:.08,el:.05,
-  boss:{el:3,arch:2,area:2.5},overlap:{boss:0,mix:.32,rot:.32},train:{gap:3,max:4}};
+  boss:{el:3,arch:2,area:2.5},overlap:{boss:0,mix:.32,rot:.32},train:{gap:3,max:4},
+  fly:{one:1.2,two:.35,archer:.45,boss:.6}};// v0.8.1 fly: flying foes ahead want real ranged attackers (party3.js p6Fly)
 // Beta v0.6.3: Make camp (v063prog.js)
 // price: Camp Supplies (Alchemy, from stage fromStage, 0 based: 2 = the third realm, about level 15). heal: share of max HP and MP
 // standing heroes get back (an inn gives everything, a Tent 60%). cool: battles between camps. dur: battles a boon lasts.

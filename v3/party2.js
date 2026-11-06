@@ -112,7 +112,7 @@ Object.assign(ACT,{
   ldDone(){const m=V.modal;V.modal=m&&m.from||null;render();},
   bpOpen(){V.modal={type:'bp',plan:bestParty(),from:V.modal};render();},
   bpApply(){const m=V.modal,P=m.plan;if(!P)return;const cur=new Set(G.party),same=P.ids.length===G.party.length&&P.ids.every(id=>cur.has(id));if(!same&&!inTown())return;
-    const snap=snapAuto();G.party=P.ids.filter(id=>G.roster[id]).slice(0,6);saveGame();sfx('equip');V.modal={type:'ldRes',title:'Best party applied',msgs:{miss:[],fill:[],move:[]},snap,from:{type:'menu',tab:'party'}};render();},
+    const snap=snapAuto();G.party=P.ids.filter(id=>G.roster[id]).slice(0,6);saveGame();sfx('equip');V.modal={type:'ldRes',title:'Party built',msgs:{miss:[],fill:[],move:[]},snap,from:{type:'menu',tab:'party'}};render();},
   fsOpen(id){if(G.daily||B)return;V.modal={type:'field',hero:typeof id==='string'?id:null,sk:null,from:V.modal};render();},
   fsHero(id){V.modal.hero=id;V.modal.sk=null;V.modal.msg=null;render();},
   fsBack(){V.modal.sk=null;render();},

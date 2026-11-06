@@ -1784,7 +1784,7 @@ body:has(.battle.b3.m-wide){padding-bottom:4px}
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.8.0";const APP_BUILD="6040bdda6f08";
+(function(){const APP_VER="0.8.1";const APP_BUILD="82e870398a6a";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2054,7 +2054,8 @@ const READY={lvGap:2,potions:4,revives:2};
 //   overlap: cost per hero shared with earlier formations (Fresh mix: Balanced; Rotation: all; Boss ready: none, it says when it matches Balanced);
 //   train: a hero this many levels or more below the roster's top level is a trainee; at most max trainees in a Training team.
 const BP6={str:.5,weak:.55,weakPen:1.6,role:{tank:[1,.15,-.4],heal:[1,.3,-.3],sup:[.35,-.05,-.2],dmg:[.4,.35,.12,0]},pr:.4,de:.4,dup:.28,dl:.08,el:.05,
-  boss:{el:3,arch:2,area:2.5},overlap:{boss:0,mix:.32,rot:.32},train:{gap:3,max:4}};
+  boss:{el:3,arch:2,area:2.5},overlap:{boss:0,mix:.32,rot:.32},train:{gap:3,max:4},
+  fly:{one:1.2,two:.35,archer:.45,boss:.6}};// v0.8.1 fly: flying foes ahead want real ranged attackers (party3.js p6Fly)
 // Beta v0.6.3: Make camp (v063prog.js)
 // price: Camp Supplies (Alchemy, from stage fromStage, 0 based: 2 = the third realm, about level 15). heal: share of max HP and MP
 // standing heroes get back (an inn gives everything, a Tent 60%). cool: battles between camps. dur: battles a boon lasts.
@@ -2290,7 +2291,7 @@ const TWISTS={on:true,
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.8.0";const APP_BUILD="6040bdda6f08";
+const APP_VER="0.8.1";const APP_BUILD="82e870398a6a";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2298,6 +2299,7 @@ const APP_VER="0.8.0";const APP_BUILD="6040bdda6f08";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.8.1',['Best Party is now Build Party, since it offers several parties. The Training team now takes your lowest level heroes, and only brings a higher one when nobody lower can be the tank or healer (and then the lowest one who can). Areas with flying foes now bring a real ranged attacker, an Archer first: lances and spells only half answer flyers.']],
  ['Beta v0.8.0',['Weather overhaul: rain, storms, snow, blizzards, fog, gales, sandstorms, heat, ashfall, auroras and starfall now come in layers with depth in the world (2D and HD-2D) and in battle: puddles and splashes on wet ground, lightning that lights the scene (gently, never strobing), drifting fog banks that walls hide, settling snow and ash, heat shimmer. Old visuals updated: the Victory crest in the new lettering, a sunlit colosseum for the Arena, and a shaded minimap.']],
  ['Beta v0.7.9',['Wide battle screen (Galaxy Fold open, tablets, desktop): everything now fits without scrolling. Under the stage, the commands sit on top with the foes right below them, and the party sits beside them, Vanguard then Rearguard, one hero per row. Command buttons widen and wrap instead of cutting words, aim tags and foe cards no longer cut off text, and boss fights put the boss bar beside the turn order to save room.']],
  ['Beta v0.7.8',['Every wayfarer now has their own voice when they challenge you on the road: their own opening, a line if you decline, a shout at half health, a line when they lose and join, when you fall and when you run. Bonded heroes in your party answer them, personal quest rivals and the legends get their own lines too, and Guild Hall challengers say their piece.']],
@@ -10609,7 +10611,7 @@ function vSwap(where){
     const bad=[...new Set(Object.keys(c.st||{}).filter(k=>STS[k]&&STS[k].bad).concat(typeof ailOf==='function'?ailOf(c):[]))],mark=c.hp<=0?'<em class="swko">KO</em>':bad.length?`<em class="swst" aria-label="${bad.map(k=>STS[k].n).join(', ')}">${bad.map(k=>`<span class="ail" style="--c:${STS[k].c}" title="${STS[k].n}">${stSym(k)}</span>`).join('')}</em>`:'';
     return `<div class="swc ${grid?'':'row'} ${on?'sel':''} ${c.hp<=0?'ko':''}"><button class="swm" data-act="swapTap" data-arg="p:${i}" aria-pressed="${on}" aria-label="${esc(c.name)}, ${lab}${on?', selected':''}">${port(c.id,'noail')}<span class="swi"><span class="swn"><b>${esc(c.name)}</b><span class="els">${c.el.map(ico).join('')}</span></span>${mark?`<span class="swstrow">${mark}</span>`:''}<small>${grid?'':lab+' · '}Lv ${c.lv} ${CLS[TPL[c.id].cls].n}${c.pts?` · <span class="up">${c.pts} pts</span>`:''}</small><span class="swb"><span class="swbl">HP</span>${bar(c.hp,c.S.mhp,'var(--hp)')}<span class="nums">${c.hp}/${c.S.mhp}</span></span><span class="swb"><span class="swbl">MP</span>${bar(c.mp,c.S.mmp,'var(--mp)')}<span class="nums">${c.mp}/${c.S.mmp}</span></span>${grid?xpLine(c,true):xpLine(c)}</span></button><button class="btn sm swsheet" data-act="${openAct}" data-arg="${c.id}" aria-label="Open ${esc(c.name)}'s sheet">Sheet</button></div>`;};
   const bench=Object.values(G.roster).filter(c=>!G.party.includes(c.id)).filter(c=>lmatch('party',c));const benchS=lsort('party',bench,(a,b)=>b.lv-a.lv||a.name.localeCompare(b.name));
-  return `${grid?'<div class="swgridwrap">':''}<div class="btnrow ptools"><button class="btn sm" data-act="bpOpen">Best party</button><button class="btn sm" data-act="fsOpen">Field skills</button>${(G.talks||[]).length?`<button class="btn sm gold" data-act="campfire">Campfire talks (${G.talks.length})</button>`:''}</div>${ldStrip()}<p class="note swhint ${sel?'on':''}">${hint}</p>
+  return `${grid?'<div class="swgridwrap">':''}<div class="btnrow ptools"><button class="btn sm" data-act="bpOpen">Build party</button><button class="btn sm" data-act="fsOpen">Field skills</button>${(G.talks||[]).length?`<button class="btn sm gold" data-act="campfire">Campfire talks (${G.talks.length})</button>`:''}</div>${ldStrip()}<p class="note swhint ${sel?'on':''}">${hint}</p>
     <h4>Vanguard</h4><div class="swlist ${grid?'g3':''}">${[0,1,2].map(i=>card(P[i],i)).join('')}</div>
     <h4>Rearguard</h4><div class="swlist ${grid?'g3':''}">${[3,4,5].map(i=>card(P[i],i)).join('')}</div>
     ${sel&&sel.i!=null&&P[sel.i]?`<div class="btnrow">${town&&G.party.length>1?'<button class="btn sm" data-act="swapOut">Send to roster</button>':''}<button class="btn sm" data-act="swapCancel">Cancel</button></div>`:sel?'<div class="btnrow"><button class="btn sm" data-act="swapCancel">Cancel</button></div>':''}
@@ -11148,7 +11150,7 @@ Object.assign(ACT,{
   ldDone(){const m=V.modal;V.modal=m&&m.from||null;render();},
   bpOpen(){V.modal={type:'bp',plan:bestParty(),from:V.modal};render();},
   bpApply(){const m=V.modal,P=m.plan;if(!P)return;const cur=new Set(G.party),same=P.ids.length===G.party.length&&P.ids.every(id=>cur.has(id));if(!same&&!inTown())return;
-    const snap=snapAuto();G.party=P.ids.filter(id=>G.roster[id]).slice(0,6);saveGame();sfx('equip');V.modal={type:'ldRes',title:'Best party applied',msgs:{miss:[],fill:[],move:[]},snap,from:{type:'menu',tab:'party'}};render();},
+    const snap=snapAuto();G.party=P.ids.filter(id=>G.roster[id]).slice(0,6);saveGame();sfx('equip');V.modal={type:'ldRes',title:'Party built',msgs:{miss:[],fill:[],move:[]},snap,from:{type:'menu',tab:'party'}};render();},
   fsOpen(id){if(G.daily||B)return;V.modal={type:'field',hero:typeof id==='string'?id:null,sk:null,from:V.modal};render();},
   fsHero(id){V.modal.hero=id;V.modal.sk=null;V.modal.msg=null;render();},
   fsBack(){V.modal.sk=null;render();},
@@ -16437,9 +16439,12 @@ window.__M3={get MENU_GROUPS(){return MENU_GROUPS;},m3Norm,m3Tabs,m3Secs,shopFBa
 function p6Role(c){const k=p3Kit(c),t=TPL[c.id],cls=t.cls,sk=classSkills(t).filter(s=>skillKnown(c,s));
   const sup=cls==='bard'||!k.tank&&!k.heal&&sk.some(s=>s.k==='status'&&(s.t==='ally'||s.t==='allyAll'));
   return {k,cls,tank:k.tank,heal:k.heal,sup,dmg:!k.tank&&cls!=='healer'&&cls!=='bard',pr:k.pr,de:k.de};}
-// shared context for one Best Party pass: power, roles, threats
+// v0.8.1: how much of what lies ahead flies (seen foes of this area; the whole area pool when nothing is seen yet), 0..1, and a flying boss
+function p6Fly(T){try{let n=0,f=0;const pool=T.mons.length?T.mons:(ZS(T.s).pool||[]);pool.forEach(k=>{const d=MON[k];if(!d)return;n++;if(tyOf(d.art).includes('flying'))f++;});
+  return {share:n?f/n:0,boss:!!(T.boss&&(T.boss.ty||[]).includes('flying'))};}catch(e){return {share:0,boss:false};}}
+// shared context for one Build Party pass: power, roles, threats
 function p6Ctx(){const all=Object.values(G.roster),pw={},R={};all.forEach(c=>{pw[c.id]=Math.max(1,loadoutScore(c,c.S));R[c.id]=p6Role(c);});
-  return {all,pw,R,mx:Math.max(1,...Object.values(pw)),T:p3Threats(),top:Math.max(1,...all.map(c=>c.lv|0)),size:Math.min(6,all.length)};}
+  const T0=p3Threats();return {all,pw,R,mx:Math.max(1,...Object.values(pw)),T:T0,fly:p6Fly(T0),top:Math.max(1,...all.map(c=>c.lv|0)),size:Math.min(6,all.length)};}
 const p6Step=(arr,n)=>{let s=0;for(let i=0;i<n;i++)s+=arr[Math.min(i,arr.length-1)];return s;};
 // the formation score: roles first, then answers to what lies ahead, then a little strength
 function p6Score(set,X,mode,prev){const T=X.T,R=set.map(c=>X.R[c.id]),K=R.map(r=>r.k),cnt=f=>R.filter(f).length;let v=0;
@@ -16449,6 +16454,10 @@ function p6Score(set,X,mode,prev){const T=X.T,R=set.map(c=>X.R[c.id]),K=R.map(r=
   const cl={};R.forEach(r=>{cl[r.cls]=(cl[r.cls]||0)+1;});Object.values(cl).forEach(n=>{if(n>1)v-=BP6.dup*(n-1);});
   const els=new Set();set.forEach(c=>c.el.forEach(e=>els.add(e)));v+=BP6.el*els.size;
   const dls=new Set();K.forEach(k=>k.dl.forEach(d=>dls.add(d)));['piercing','blunt','ranged','magic'].forEach(d=>{if(dls.has(d))v+=BP6.dl;});
+  // v0.8.1: flyers want real ranged attackers (Archers first): a lance or a spell only half answers them, so the plain archetype answer above
+  // never brought an Archer in. One ranged hero is worth a lot when the area flies, a second a little more, an Archer a bit on top.
+  {const F=X.fly||{share:0},w=F.share+(F.boss&&mode==='boss'?BP6.fly.boss:0);if(w>0){const nr=K.filter(k=>k.dl.has('ranged')).length;
+    v+=w*(BP6.fly.one*(nr>=1?1:0)+BP6.fly.two*(nr>=2?1:0))+(R.some(r=>r.cls==='archer'||r.cls==='sniper')?w*BP6.fly.archer:0);}}
   const boss=mode==='boss',area=boss&&!T.boss,tot=Object.values(T.arch).reduce((a,b)=>a+b,0)||1;
   Object.keys(T.arch).forEach(a=>{if(!K.some(k=>p3Answer(k,a)))return;const mul=boss?(T.boss&&T.boss.ty.includes(a)?BP6.boss.arch:area?BP6.boss.area:1):1;v+=BP_AWARE.arch*Math.min(1.5,T.arch[a]/tot*2)*mul;});
   if(T.mons.length){const cov=T.mons.filter(k=>K.some(kit=>p3Beats(kit,MON[k].el))).length/T.mons.length;v+=BP_AWARE.el*cov*(area?BP6.boss.area:1);}
@@ -16485,14 +16494,17 @@ function p6Why(set,X,mode,train){const base=p3Reasons(set,X.T),out={},tr=new Set
 function p6Info(set,X){const R=set.map(c=>X.R[c.id]),els=new Set();set.forEach(c=>c.el.forEach(e=>els.add(e)));
   return {els:els.size,heal:R.filter(r=>r.heal).length,tank:R.filter(r=>r.tank).length,pr:R.filter(r=>r.pr).length,de:R.filter(r=>r.de).length,sup:R.filter(r=>r.sup).length,dmg:R.filter(r=>r.dmg).length,
     lv:set.length?Math.round(set.reduce((a,c)=>a+c.lv,0)/set.length):0,pw:set.reduce((a,c)=>a+X.pw[c.id],0)};}
-// the training team: the furthest behind train, the strongest tank and healer (not trainees) keep them alive
-function p6Train(X){const tr=X.all.filter(c=>X.top-c.lv>=BP6.train.gap).sort((a,b)=>a.lv-b.lv||X.pw[b.id]-X.pw[a.id]);if(!tr.length||X.size<3)return null;
-  const strong=X.all.filter(c=>!tr.includes(c)).sort((a,b)=>X.pw[b.id]-X.pw[a.id]),R=c=>X.R[c.id];
-  const tk=strong.find(c=>R(c).tank)||X.all.filter(c=>R(c).tank).sort((a,b)=>X.pw[b.id]-X.pw[a.id])[0];
-  const hl=strong.find(c=>R(c).heal&&c!==tk)||X.all.filter(c=>R(c).heal&&c!==tk).sort((a,b)=>X.pw[b.id]-X.pw[a.id])[0];
-  const anchors=[tk,hl].filter(Boolean),room=Math.max(1,X.size-anchors.length);
-  const trainees=tr.filter(c=>!anchors.includes(c)).slice(0,Math.min(BP6.train.max,room));if(!trainees.length)return null;
-  const fixed=anchors.concat(trainees),set=p6Search(X,s=>p6Score(s,X,'bal'),fixed);return {set,trainees,anchors};}
+// the training team (v0.8.1, the owner's rule): the lowest levels on the roster, full stop. The only exception is a role nobody that low
+// can fill (a tank, a healer): then the lowest level hero who has that role comes along. Everyone below the top by BP6.train.gap trains.
+function p6Train(X){if(X.size<3)return null;const R=c=>X.R[c.id],asc=X.all.slice().sort((a,b)=>a.lv-b.lv||X.pw[b.id]-X.pw[a.id]);
+  if(!asc.some(c=>X.top-c.lv>=BP6.train.gap))return null;
+  let set=asc.slice(0,X.size);const anchors=[];
+  ['tank','heal'].forEach(role=>{if(set.some(c=>R(c)[role]))return;const fill=asc.find(c=>R(c)[role]&&!set.includes(c));if(!fill)return;
+    // drop the highest level hero who is not the only holder of a role the team already has
+    const drop=set.slice().reverse().find(c=>!anchors.includes(c)&&!['tank','heal'].some(r=>R(c)[r]&&set.filter(x=>R(x)[r]).length===1));
+    if(!drop)return;set=set.filter(c=>c!==drop).concat(fill);anchors.push(fill);});
+  const trainees=set.filter(c=>!anchors.includes(c)&&X.top-c.lv>=BP6.train.gap);if(!trainees.length)return null;
+  return {set:set.sort((a,b)=>a.lv-b.lv),trainees,anchors};}
 const P6_NAMES={bal:'Balanced',boss:'Boss ready',area:'Area answer',mix:'Fresh mix',rot:'Rotation',train:'Training team'};
 function p6Summary(o,X,first){const T=X.T,nm=c=>esc(c.name);
   if(o.key==='bal')return 'One of every role first (tank, healer, damage, support, Primer and Detonator), every delivery and a spread of elements. Level and gear only settle ties.';
@@ -16502,7 +16514,7 @@ function p6Summary(o,X,first){const T=X.T,nm=c=>esc(c.name);
     return a.length?`Built for ${esc(ZS(T.s).n)}: answers to the ${a.map(k=>ARCH_PL[k]).join(', ')} here and their elements.`:`Built for ${esc(ZS(T.s).n)}. Little is known about its monsters yet: every fight fills the Bestiary and sharpens this pick.`;}
   if(o.key==='mix'){const sh=o.set.filter(c=>first.includes(c.id)).length;return `Different faces in the same roles, so more of your wayfarers see battle and grow. Shares ${sh} of 6 with Balanced.`;}
   if(o.key==='rot')return 'The same roles again with the heroes the other formations left in reserve, so everyone keeps up.';
-  if(o.key==='train')return `${o.trainees.map(c=>`${nm(c)} (Lv ${c.lv})`).join(', ')} ${o.trainees.length>1?'train':'trains'} behind ${o.anchors.map(nm).join(' and ')||'your strongest'}. Catch up XP is measured against your top wayfarer (Lv ${X.top}): the further behind, the more XP, up to +${Math.round(XPCU.max*100)}% in the vanguard and +${Math.round(XPCU.max*XPCU.bench*100)}% in the rearguard.`;
+  if(o.key==='train')return `Your lowest levels train together: ${o.trainees.map(c=>`${nm(c)} (Lv ${c.lv})`).join(', ')}${o.anchors.length?`, with ${o.anchors.map(c=>`${nm(c)} (Lv ${c.lv})`).join(' and ')} along to fill a role nobody lower can`:''}. Catch up XP is measured against your top wayfarer (Lv ${X.top}): the further behind, the more XP, up to +${Math.round(XPCU.max*100)}% in the vanguard and +${Math.round(XPCU.max*XPCU.bench*100)}% in the rearguard.`;
   return '';}
 function bestParty(){const keep=P3C;if(!P3C)P3C={why:{},kit:{}};
   try{const X=p6Ctx(),opts=[],sets=[];
@@ -16524,7 +16536,7 @@ function mBestParty(m){const P=m.plan,o=P.opts[P.pick]||{},cur=new Set(G.party),
   const row=(id,i)=>{const c=G.roster[id];return `<div class="row ${cur.has(id)?'':'upg'}">${port(id,'sm')}<div class="grow"><b>${esc(c.name)}</b> <small>Lv ${c.lv} ${CLS[TPL[id].cls].n}</small><span class="els">${c.el.map(ico).join('')}</span><small class="p3bpwhy">${esc(c.name)}: ${(W[id]||[]).join('; ')}</small></div><small>${cur.has(id)?(G.party.indexOf(id)<3)===(i<3)?'Keeps place':i<3?'<span class="up">To the front</span>':'To rearguard':'<span class="up">Joins</span>'}</small></div>`;};
   const chips=`<div class="chips bp6f" role="group" aria-label="Formations">${P.opts.map((x,j)=>`<button class="chip ${j===P.pick?'on':''}" data-act="bpPick" data-arg="${j}" aria-pressed="${j===P.pick}">${x.name}</button>`).join('')}</div>`;
   const out=G.party.filter(id=>!P.ids.includes(id));
-  return box('Best party',`<p class="note">Formations built on role balance first (tank, healer, damage, support, Primer, Detonator, every delivery and element) and on what your Bestiary knows about the road ahead. Level and gear count, but only a little. Pick one:</p>${chips}
+  return box('Build party',`<p class="note">Formations built on role balance first (tank, healer, damage, support, Primer, Detonator, every delivery and element) and on what your Bestiary knows about the road ahead. Level and gear count, but only a little. Pick one:</p>${chips}
     ${P.noTrain?`<p class="note"><small>Training team: nobody is ${BP6.train.gap} or more levels behind your top wayfarer right now.</small></p>`:''}
     <p class="note bp6sum"><b>${esc(o.name||'')}.</b> ${o.sum||''}${o.also?` <small>(${o.also.join(' and ')} would pick the same six.)</small>`:''}</p>${p3ThreatLine(T)}
     <p class="note nums">Average Lv ${I.lv} · Power ${o.rel||100}% of Balanced · Tanks ${I.tank} · Healers ${I.heal} · Damage ${I.dmg} · Support ${I.sup} · Primers ${I.pr} · Detonators ${I.de} · Elements ${I.els}/8</p>
@@ -18213,9 +18225,9 @@ const TIPS=[
  {id:'reserves',n:'Reserves and Equip best',sec:'Party',go:['menuTab','party','Party'],
   t:()=>{if(!obWorld())return null;const r=obReserves();return r.length?`${p2Nm(G.roster[r[0]])} is a Reserve, outside the party. Swap heroes in town from the Party tab.`:null;},
   g:'Heroes outside the party are your Reserves. They still earn some XP. In town you can swap them into the party from the Party tab. Equip best: reserves hands them the best spare gear in the pack, never taking anything from your party.'},
- {id:'bestparty',n:'Best Party and Training team',sec:'Party',go:['bpOpen','','Best Party'],
-  t:()=>{if(!obModal('menu')||obTab()!=='party')return null;return obReserves().length?'Best Party suggests a party for this area. Training team helps heroes who fell behind.':null;},
-  g:'Best Party (Party tab) looks at your roster, the foes of this area and its boss, and suggests a Vanguard and Rearguard in formations: Balanced, Boss ready, Area answer, Fresh mix, Rotation. Training team puts heroes who fell behind beside a strong tank and healer, so the XP catch up bonus lifts them quickly.'},
+ {id:'bestparty',n:'Build Party and Training team',sec:'Party',go:['bpOpen','','Build Party'],
+  t:()=>{if(!obModal('menu')||obTab()!=='party')return null;return obReserves().length?'Build Party suggests parties for this area. Training team helps heroes who fell behind.':null;},
+  g:'Build Party (Party tab) looks at your roster, the foes of this area and its boss, and suggests a Vanguard and Rearguard in formations: Balanced, Boss ready, Area answer, Fresh mix, Rotation. Training team puts heroes who fell behind beside a strong tank and healer, so the XP catch up bonus lifts them quickly.'},
  // town
  {id:'guild',n:'Guilds and guild missions',sec:'Town',go:['menuTab','fmis','Guild missions'],
   t:()=>{if(!obWorld()||typeof facRank!=='function')return null;const F=FAC.find(f=>facRank(f.id)>=2);return F?`New rank with the ${F.n}! Guild missions in Quests earn rank even faster.`:null;},
@@ -18362,7 +18374,7 @@ function obUntried(){const out=[];if(!G||G.daily)return out;const add=(t,s)=>out
   try{if(tipSeen('limit')&&!tipUsed('limit'))add('Try a Limit move','When a hero\'s gold bar is full, the Limit button tops their commands.');}catch(e){}
   try{if(tipSeen('summon')&&!tipUsed('summon'))add('Try Summon in battle','A hero with a companion can call it in to fight for a few turns.');}catch(e){}
   try{if(tipSeen('guild')&&typeof facInit==='function'){const f=facInit();if(!Object.keys(f.acc||{}).length&&!Object.keys(f.done||{}).length)add('Try a guild mission','Quests > Guild missions: extra standing and the next perk sooner.');}}catch(e){}
-  try{if(tipSeen('bestparty')&&!tipUsed('bestparty'))add('Try Best Party','Party tab: it suggests a party for this area and a Training team for heroes who fell behind.');}catch(e){}
+  try{if(tipSeen('bestparty')&&!tipUsed('bestparty'))add('Try Build Party','Party tab: it suggests a party for this area and a Training team for heroes who fell behind.');}catch(e){}
   try{const R=obReserves();if(tipSeen('reserves')&&!tipUsed('reserves')&&R.length&&(G.gear||[]).some(id=>{const g=gearOf(id);return g&&!g.stick;}))add('Equip best: reserves','Party tab: your Reserves take the best spare gear from the pack.');}catch(e){}
   try{if(tipSeen('charm')){const c=(G.gear||[]).filter(obCharm);const empty=partyOf().filter(h=>!h.eq.c);if(c.length&&empty.length)add(`A charm is waiting in your pack`,`${empty.slice(0,3).map(h=>esc(p2Nm(h))).join(', ')} ${empty.length>1?'have':'has'} an empty charm slot. Backpack > Equipment.`);}}catch(e){}
   return out;}
@@ -20362,7 +20374,7 @@ BG.arena=function(ctx,W,H,R){const gy=bgGY(H),S=(c,a)=>{const h=hx(c);return `rg
   for(let i=0;i<40;i++){const x=R()*W,y=gy+4+R()*(H-gy-6);ctx.fillStyle=R()<.5?'rgba(255,240,200,.35)':'rgba(120,90,50,.3)';ctx.fillRect(x,y,2+R()*3,1);}};
 
 window.__A={walkable,ceInit,tvSlots,genQuests,STARTERS,starterDraw,ECON,AUTO_NERF,rebuildBase,detLive,REACT,skEls,packContents,miniFor,AUTO_REW,ENC_RATE,ENC_MIN_STEPS,detNote,classSkills,stickCount,bestAll,calcStats,lookKey,vTemper,storyEchoUp,leaveDungeon,win,ldApply,genFort,caveOk,enterCave,siteHasMini,openChest,nextDlg,WS,mapIcoRects,roamSpawn,roamInterior,roamSees,mapTargets,DIRV,tileAt,STAGE_LV,autoBan,rollWeather,guardianDef,mapIssues,mapEntry,syncPools,bovAt,calFxAt,realmAt,REALMS,BOV,CAL_FX,overlayGuide,liftOverlay,drawGearIcon,gearIcon,itemIcon,RAW,sigKind,sigGid,personalDone,heroLook,hasSignature,LEGEND_IDS,facDirty,facCount,facRank,facRep,FACB,FAC,finishBattle,npcWords,npcHints,npcPool,titleMake,titleAdvance,TTS,placeAt,wkwUpdate,innSpot,getMap,monURL,enterVia,applyBossTheme,BTHEME,resetMaps,rebuildBase,shopStock,gearDesc,calcStats,gearMigrate,CLS_WPN,CLS_ARM,WPERK,WT_NAME,equipWhy,lootBase,GEAR,canEquip,gearOf,perkNote,FAM_MAT_V35,fbDraft,META:{get best(){return META.best},get codex(){return META.codex},get q(){return META.q}},saveMeta,OFF,offPending,offFlush,PROFILE,profileSync,codexSee,getMap,placeAt,interact,sanctumOpen,riftKeys,echoKeys,BONDS,bondKey,wkwUpdate,inTown,WS,LC,lsort,bestParty,fsCast,fsSkills,ldApply,MON,registerTamed,stickPower,stickCount,autoOne,planGear,bestTag,gainersFor,compGainFor,refresh,fitsFor,canEquip,gearOf,queueNewGear,ARENA,fxDur,banDur,stageTags,autoSwitchPick,layoutBattle,newChar,calcStats,limitSkill,limitTier,canStuck,dunReachable,LV_CAP,addXp,echoSpec,bossLvFor,fx,MON,log,effInfo,tierOf,perkOf,quirkDef,forgeCost,buyPlan,vJourney,modalBack,partySlots,limitOpen,town2Reached,skillKnown,known,classSkills,paceMigrate,unpackG,packG,makeEnemy,QUIRK,arrive,enterDungeon,wkwUpdate,useTravel,travelWhyNot,porkFlee,porkBlocked,encTile,campRest,buyPart,partLeft,alchStock,GAME_VERSION,CHANGELOG,ITEMS,tavernOffers,tavernPool,recruitFit,partyNeeds,vNext,CHALL,innSpot,RECIPES,MATS,FB,fbContext,REDEEM,legendJoin,legendQ,genQuests,dynActors,convInit,PROFILE,profileSync,checkArchive,GPOOL,FPOOL,guardianDef,saveMeta,archiveSkills,get G(){return G;},set G(v){G=v;},get B(){return B;},get V(){return V;},get META(){return META;},WS,ACT,render,newGame,placeAt,startBattle,autoTurn,advance,finishBattle,getMap,innSpot,setPause:p=>{PAUSE=p;},autoCfg,worldInputDir,inputSources,battleFrame,battleTheme,STS,MAPS,mapIssues,healMap,mimicReward,dropChest,interact,worldDraw,TPL,ZONES,ZS,newChar,recruit,saveGame,resetMaps,dynActors,tileAt,BV,refresh,genBounties,genQuests,vStarter,heroCard,heroURL,iconURL,masteryLine,AU,buildTrack,tone,noiseHit,MIDI,sfx,audioVol};
-['heroRoles','SOLID','WEATHER','WX_BASE','weatherFX','superGuide','recruitCost','ceStart','ceStep','ceInit','cePool','wxList','SUPER_TABLE','superOk','facRank','facRep','facInit','facCount','facCredit','FAC','FMIS','facMissionList','facProg','facSync','facMul','facBest','worldPlan','caveReward','enterCave','leaveCave','leaveDungeon','buildCaveMap','worldGraph','openWorldMap','sigReport','SIG_NAMES','starterDraw','ITEM_TIERS','gTierIdx','tierChip','gearIcon','starterSlots','STARTERS','CLK_LEN','CLK_PH','clockPhase','wxInfoBody','recipeOrder','recipeGain','recipeReady','recipeClose','effOf','calcDamage','healsUndead','storyEchoUp','riftKeys','echoDef','efCost','autoLocked','bossFightKey','learnScanAll','isSeen','mapMarks','genSub','subOK','subReq','ensureSub','inSub','tvSlots','tvInit','tvLeft','tvEvent','tvNextText','tvPool','tvDue','tvShuffle','mTavern','hireOK','TV_CAP','TV_CD','POOL_IDS','natPool','natOf','natRoll','NATURES','natInfo','natRerollCost','natChooseCost','NAT_CLASS','iconURL','seenOf','mapIcoDraw','drawMini','MAPCV','revealAround','fxLayer','numDur','compBonusText','compPerk','checkPhase','win','unitBox','LNQ','challVisible','challEligible','challState','isMimic','migrateCompanions','canSummon','summonComp','compOf','clockPhase','tickClock','isNight','rollWeather','wxStep','nightPool','encounterFoes','restAll','tameElite','openChest','rerollTavern','bestAll','gearTier','SV','svCheck','svFlush','svInit','svPush','svPull','svScan','svParse','svBackup','svPack','svUnpack','svProg','svCloudList','svDelDoc','svGet','svCap','slotState','slotKey','svDecode','SV_CH','svStatus','svSlotRaw','svLoad','loadRaw','svHash','svIdx'].forEach(k=>{try{Object.defineProperty(window.__A,k,{get:()=>eval(k)});}catch(e){}});
+['heroRoles','SOLID','WEATHER','WX_BASE','weatherFX','superGuide','recruitCost','ceStart','ceStep','ceInit','cePool','wxList','SUPER_TABLE','superOk','facRank','facRep','facInit','facCount','facCredit','FAC','FMIS','facMissionList','facProg','tyOf','facSync','facMul','facBest','worldPlan','caveReward','enterCave','leaveCave','leaveDungeon','buildCaveMap','worldGraph','openWorldMap','sigReport','SIG_NAMES','starterDraw','ITEM_TIERS','gTierIdx','tierChip','gearIcon','starterSlots','STARTERS','CLK_LEN','CLK_PH','clockPhase','wxInfoBody','recipeOrder','recipeGain','recipeReady','recipeClose','effOf','calcDamage','healsUndead','storyEchoUp','riftKeys','echoDef','efCost','autoLocked','bossFightKey','learnScanAll','isSeen','mapMarks','genSub','subOK','subReq','ensureSub','inSub','tvSlots','tvInit','tvLeft','tvEvent','tvNextText','tvPool','tvDue','tvShuffle','mTavern','hireOK','TV_CAP','TV_CD','POOL_IDS','natPool','natOf','natRoll','NATURES','natInfo','natRerollCost','natChooseCost','NAT_CLASS','iconURL','seenOf','mapIcoDraw','drawMini','MAPCV','revealAround','fxLayer','numDur','compBonusText','compPerk','checkPhase','win','unitBox','LNQ','challVisible','challEligible','challState','isMimic','migrateCompanions','canSummon','summonComp','compOf','clockPhase','tickClock','isNight','rollWeather','wxStep','nightPool','encounterFoes','restAll','tameElite','openChest','rerollTavern','bestAll','gearTier','SV','svCheck','svFlush','svInit','svPush','svPull','svScan','svParse','svBackup','svPack','svUnpack','svProg','svCloudList','svDelDoc','svGet','svCap','slotState','slotKey','svDecode','SV_CH','svStatus','svSlotRaw','svLoad','loadRaw','svHash','svIdx'].forEach(k=>{try{Object.defineProperty(window.__A,k,{get:()=>eval(k)});}catch(e){}});
 Object.assign(window.__A,{temperRank,forgeCost,hasMats,stSym,ST_SYM,pgSpot,pgGrid,pathAssets,guardPaths,pgCuts,worldTick,findPath,solidAt,diagOk,tileAt});Object.assign(window.__A,{btOf,personalEligible,craftOnly,shopSortIds,SHOPF,autoTurnSmart,allParty,useItemField,ailBadge,ailChips,ailOf,battleSkyTags,battleIndoors,autoReason,autoBan,itemStock,perform,cleanse,useItem,lose,endTurn});Object.defineProperty(window.__A,'BL',{get:()=>BL});Object.defineProperty(window.__A,'WXT',{get:()=>WX_TABLE});Object.defineProperty(window.__A,'GEAR',{get:()=>GEAR});
 // v0.5.3 sprites: live getters for the sprite builders and caches (tests and the sprite sheet)
 ['heroCanvas','monCanvas','walkerCanvas','heroGridView','MART','MON_SIZE','BIG_ART','IMG','URL_CACHE','spriteOf','imgOf','walkFrame','drawSprite','heroPal','SPRITE_HD','SPR','sprHD','paintHD','villagerLook','whiteOf','mountCanvas','petCanvas','halfCanvas'].forEach(k=>{try{Object.defineProperty(window.__A,k,{get:()=>eval(k),configurable:true});}catch(e){}});
