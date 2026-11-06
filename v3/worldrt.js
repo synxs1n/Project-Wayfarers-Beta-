@@ -368,18 +368,18 @@ function worldDraw(now){
   if(dun||T.dark){
     if(!WS.dark||WS.dark.width!==vw||WS.dark.height!==vh)WS.dark=mkCv(vw,vh);
     const dc=WS.dark.getContext('2d');dc.globalCompositeOperation='source-over';dc.clearRect(0,0,vw,vh);
-    dc.fillStyle=dun?'rgba(4,2,10,.8)':m.theme==='cave'?'rgba(14,4,2,.32)':'rgba(10,4,26,.36)';dc.fillRect(0,0,vw,vh);
+    dc.fillStyle=dun?(m.d8dark||'rgba(4,2,10,.8)'):m.theme==='cave'?'rgba(14,4,2,.32)':'rgba(10,4,26,.36)';dc.fillRect(0,0,vw,vh);
     dc.globalCompositeOperation='destination-out';
     const hole=(x,y,r)=>{const g=dc.createRadialGradient(x,y,1,x,y,r);g.addColorStop(0,'rgba(0,0,0,1)');g.addColorStop(.6,'rgba(0,0,0,.75)');g.addColorStop(1,'rgba(0,0,0,0)');dc.fillStyle=g;dc.fillRect(x-r,y-r,r*2,r*2);};
     hole(Math.round(WS.px)+8-cx,Math.round(WS.py)+4-cy,dun?74:84);
-    allL.forEach(L=>hole(L[0]-cx,L[1]-cy,L[2]*1.7*flick));
+    allL.forEach(L=>{const x=L[0]-cx,y=L[1]-cy,r=L[2]*1.7*flick;if(x+r<0||y+r<0||x-r>vw||y-r>vh)return;hole(x,y,r);});
     if(dun&&m.bossAt&&(!G.cleared[m.s]||(typeof storyEchoUp==='function'&&storyEchoUp(m.s))))hole(m.bossAt[0]*TS+8-cx,m.bossAt[1]*TS-cy,60);
     ctx.drawImage(WS.dark,0,0);
   }
   const glow=(x,y,r,col)=>{const g=ctx.createRadialGradient(x,y,1,x,y,r);g.addColorStop(0,col);g.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=g;ctx.fillRect(x-r,y-r,r*2,r*2);};
   ctx.globalCompositeOperation='lighter';
   allL.forEach(L=>{const x=L[0]-cx,y=L[1]-cy;if(x<-60||y<-60||x>vw+60||y>vh+60)return;glow(x,y,L[2]*flick,LIGHTC[L[3]]||LIGHTC.lamp);});
-  if(m.theme==='cave'||m.theme==='void'||dun)glow(Math.round(WS.px)+8-cx,Math.round(WS.py)-cy,56,dun?'rgba(255,190,120,.16)':m.theme==='cave'?'rgba(255,170,90,.2)':'rgba(170,140,255,.18)');
+  if(m.theme==='cave'||m.theme==='void'||dun)glow(Math.round(WS.px)+8-cx,Math.round(WS.py)-cy,56,dun?(m.d8hero||'rgba(255,190,120,.16)'):m.theme==='cave'?'rgba(255,170,90,.2)':'rgba(170,140,255,.18)');
   ctx.globalCompositeOperation='source-over';
   // relit fields glow warm and drift with motes of light. v0.6.3: every drifting particle lives in world space (worldfx.js), so it stays
   // put while the camera moves; weather and theme layers scroll with the world
