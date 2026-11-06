@@ -158,3 +158,6 @@ Details in `v071-world.md`. Root cause of the Hearthholm stuck spot: a bush on t
 
 ## Beta v0.7.7: mission progress, detonator symbols, no tap flash
 facProg counts the journey total (acc only marks a mission taken); detonator notes in the skill list are element symbols with the words in the tooltip (ui.js detNote, battle3.js detList); global -webkit-tap-highlight-color:transparent and no selection on the world and stage. Test `chrome/v077a.js`.
+
+## Beta v0.7.8: unique challenge lines
+Details in `v077-duel-lines.md` (`v3/duellines.js`, 736 lines, 8 per hero plus bond replies and Guild challengers; fallback built from name, class, element and trait; picks by journey seed, never the game RNG). Test `chrome/v077d.js`.
