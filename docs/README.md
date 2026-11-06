@@ -29,6 +29,7 @@ Read these before a big pass:
 - `v076-battle-layout.md`: the v0.7.6 wide battle layout (commands with the foes under them, the party column with one hero per row, the stage sized so the screen fits, no text cut, aim tags that always fit).
 - `v080-battle-phones.md`: the v0.8.0 battle screen on phones and the Galaxy Z Fold (sized from the visible viewport, the column arrangement and compaction on short wide screens, portrait commands always on screen, the compact foe list), the battle transition drawn at 4x on Medium and High, damage type symbols.
 - `v085-sync.md`: save sync between devices (v0.8.5): what was wrong, who wins (last matched version, then progress and server corrected time), leaving and coming back, Continue waits for the cloud, the newer save prompt, the two device tests.
+- `v095-bosses-pacing.md`: v0.9.5 fewer, better fights (lower encounter rate, roamers on fields with the realm's roles, ordinary fights pay more), a realm gimmick for every Scourge and Calamity, companion growth (second skill, evolution), depth unlocks by realm (`pcUnlocked`), with the journey and boss sim numbers.
 - `audio-notes-v045.md`: the orchestral audio (v0.4.5) and Android live updates (v0.4.6).
 - `v050-prompt.md`: the full spec for the Beta v0.5.0 pass. Rollback point: `rollback-v046.md`.
 
