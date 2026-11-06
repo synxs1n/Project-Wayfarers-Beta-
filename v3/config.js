@@ -214,6 +214,22 @@ const HD_SPR={sat:.86,con:.9,ao:.74,rim:.7};
 // bird: one flock crossing per period (ms) at height h. chestGone: opened chests vanish from the map and can be walked over.
 const WFX={ref:80000,cell:128,margin:96,maxN:120,hero:[10,30,3],n:{spark:14,snow:46,wind:8,fly:4,spray:5,mote:12,dust:10,lantern:7,firefly:12,dew:12},
   bird:{period:26000,dur:11000,h:64,span:560},chestGone:true,hdZ:[560,180]};
+// ===== v0.7.7 weather (weather7.js) =====
+// WX7: every weather drawn in layers. tier: per graphics tier. cap: most falling particles on the 2D canvas per frame (world 2D, the
+// HD-2D overlay, battle); rain/snow/sand/ash/wind: base counts per 2D view (far, mid, near layer); ground: puddles, ripples, splashes and
+// settling flakes (0 off, 1 on, 2 more); banks: fog and dust banks per layer; shimmer: heat haze distortion (0 off, 1 on); soft: soft
+// sprites for near particles (0: plain pixels); gl: weather particles inside the HD-2D scene; glN: their count scale; glCap: most GL
+// weather quads. par: parallax of the far, mid and near layers against the camera (1 = moves with the ground). bolt: storm strikes
+// (gap: shortest and longest time between strikes in ms; pulses: [start ms, length ms, peak] of each flash of a strike: two brief
+// flashes per strike at most and strikes at least 4 s apart, so never more than 2 flashes in any second; peak: the white over the
+// screen; light: how much a flash lights the HD-2D scene). gl: GL counts per glRef world area. heroPad: px kept clear around the hero.
+const WX7={on:true,
+  tier:{low:   {cap:90, rain:[46,24,0], snow:[40,22,0],sand:[34,16,0],ash:[22,10,0],wind:[12,6,0],ground:0,banks:[6,0,0],shimmer:0,soft:0,gl:0,glN:0,glCap:0,stars:10},
+        medium:{cap:260,rain:[70,48,12],snow:[60,40,10],sand:[56,34,8],ash:[34,20,6],wind:[16,10,4],ground:1,banks:[4,4,2],shimmer:1,soft:1,gl:1,glN:1,glCap:900,stars:24},
+        high:  {cap:460,rain:[110,80,20],snow:[96,64,16],sand:[90,56,12],ash:[56,32,10],wind:[24,16,6],ground:2,banks:[5,5,3],shimmer:1,soft:2,gl:1,glN:1.7,glCap:1800,stars:40}},
+  par:[.82,1,1.35],
+  bolt:{gap:[4200,9200],pulses:[[0,70,.42],[150,60,.24]],light:1.1,life:260},
+  gl:{rain:420,storm:540,snow:320,blizzard:420,sand:280,ash:120,ember:30,gale:70,leaf:24,heat:40,bank:1},glRef:420000,heroPad:4};
 // WMAP: the illustrated world map (map.js). vig: vignette size in cells.
 const WMAP={cell:[64,150,38],vig:.78,names:84};// cell: px per area (normal min, max, min on short landscape screens); names: written out from this cell size
 // ===== Beta v0.5.3: HD-2D world renderer (hd2d.js, hd2dgl.js) =====

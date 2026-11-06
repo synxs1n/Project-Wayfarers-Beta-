@@ -14,6 +14,7 @@ Read these before a big pass:
 - `v063-art.md`: v0.6.3 art pass: capes no longer drawn on heroes (only the weapon and the personal reward change the look) and one code-drawn icon per item (`icons.js`, `icons2.js`), with the before/after audit.
 - `v063-world.md`: the v0.6.3 world pass (fortress gatehouse in HD-2D, ambience in world space, the HD-2D overlay quarter bug, opened chests vanish, the illustrated world map, "Fortress").
 - `v071-world.md`: the v0.7.1 world pass (props HD-2D hides behind walls kept off those tiles, clear door aprons, no holes in buildings, the `drawAudit` sweep over every map kind; tap the full map or minimap to walk there).
+- `v077-weather.md`: the v0.7.7 weather and old visuals pass (every weather in layers in 2D, in the HD-2D scene and on the battle stage, safe lightning, tiers, the victory crest, minimap tiles, the arena backdrop).
 - `v063-battle.md`: the v0.6.3 battle screen pass (one layout pass for every stage label, the battle start flash, detonator targeting, the new battle screen layout).
 - `v070-onboarding.md`: one short tip card the first time the player meets each system (`v3/onboard.js`), Guides > How it works, What next? "Not tried yet", Settings Tips and Reset tips, battle cards placed clear of sprites.
 - `v071-title.md`: the title pass (HD-2D camp title scene, the code-drawn wordmark and emblem in `logo.js`, app icons from `tools/mkicons.js`).
