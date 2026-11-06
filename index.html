@@ -1908,7 +1908,7 @@ body:has(.battle.b3.m-wide),body:has(.battle.b3.m-tall){padding-bottom:max(4px,e
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.9.0";const APP_BUILD="d56e87ae526f";
+(function(){const APP_VER="0.9.1";const APP_BUILD="06487cc0d658";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2482,7 +2482,7 @@ const TWISTS={on:true,
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.9.0";const APP_BUILD="d56e87ae526f";
+const APP_VER="0.9.1";const APP_BUILD="06487cc0d658";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2490,6 +2490,7 @@ const APP_VER="0.9.0";const APP_BUILD="d56e87ae526f";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.9.1',['Title music plays again: the game used to wait for your first tap before starting any sound, and on the title that tap was usually Continue. Sound now starts at launch where the device allows it (the Android and Windows apps after installing the new APK or installer); in a browser the first tap starts it.']],
  ['Beta v0.9.0',['Title screen: the six wayfarers are now drawn like they look in the world, the same size and pixel look as the overworld, so the scene reads as a journey across each realm; every realm has a fuller foreground and the night scenes no longer show a flat dark band.']],
  ['Beta v0.8.9',['Battle screen on the Galaxy Fold: open, the battle view now fills the left side as large as the screen allows, with the foes moving beside the commands when there are few, and no empty space at the bottom. Closed (and other phones), the commands now come right under the battle view with every row on screen, the acting hero\'s HP and MP sit in the command header, and the party cards follow below. The last row is no longer hidden under the phone\'s navigation bar.']],
  ['Beta v0.8.8',['Dungeons now match their battle backdrops: ice caverns with icicles, crystals and frost, volcanic deeps with lava pools and glowing cracks, sea caves with tide pools, root grottos with glowing fungi, crypts, sandstone halls, keeps and astral vaults. Caves get natural cavern walls instead of square rooms. The Scourge lair entrance on the field is now unmistakable: a dark tower with a beacon and the Scourge\'s banner over a skull gate, with its own Lair icon on the map, and it turns gold once the realm is relit.']],
@@ -9574,6 +9575,10 @@ const KEYDIR={ArrowUp:'u',ArrowDown:'d',ArrowLeft:'l',ArrowRight:'r',w:'u',s:'d'
 function boot(){
   loadMeta();applyCfg();
   const unlock=()=>{audioInit();if(AU.ctx&&AU.ctx.state==='suspended')AU.ctx.resume();};
+  // v0.9.1: start the audio at launch so the title music plays where the system allows it (the Windows app, the Android app, browsers
+  // the player often uses); elsewhere the context waits suspended and the first tap resumes it. It used to wait for the first tap, which
+  // on the title is usually Continue, so the menu music was never heard.
+  try{setTimeout(()=>{try{audioInit();if(AU.ctx&&AU.ctx.state==='suspended')AU.ctx.resume().catch(()=>{});}catch(e){}},300);}catch(e){}
   document.addEventListener('pointerdown',unlock);document.addEventListener('keydown',unlock);
   document.addEventListener('click',e=>{const t=e.target.closest('[data-act]');if(!t||t.disabled)return;if(t.classList.contains('unit'))return;if(V._press&&Date.now()-V._press.t<350&&V._press.act===t.dataset.act&&V._press.arg===(t.dataset.arg||''))return;const f=ACT[t.dataset.act];if(f){e.preventDefault();f(t.dataset.arg,t);}});
   // Beta v0.3.1: if a re-render swaps the button out between press and release, the browser drops the click.
