@@ -29,6 +29,7 @@ evals any name), `window.__AU` (ambience.js), `__P2` (p2world.js), `__P3` (p3sho
 | battle effects and animation | `anim.js`, `fx2.js` (floating text), `gfx6battle.js`, `hdspell.js` |
 | battle backdrops, HD-2D battle stage | `bg.js`, `p2world.js` (backdrop from the terrain), `hdstage.js`, `visuals7.js` (arena) |
 | world maps (generation) | `worldgen.js`, `world4.js` (the connected world, caves, dungeons), `sites.js`, `realms.js`, `mapheal.js`, `pathguard.js` |
+| dungeon looks per realm, organic cave walls, the boss lair entrance | `dungeon8.js` (D8M materials, D8_REALM) |
 | world movement, gates, chests, encounters | `worldrt.js`, `roam.js`, `chance.js`, `mimic.js`, `stuck.js`, `travel.js` |
 | world drawing (2D) | `worldgfx.js`, `worldgfx2.js`, `towngfx.js`, `worldrt.js` (worldDraw), `gfx6world.js`, `worldfx.js`, `daylight.js` |
 | HD-2D world (Medium and High graphics) | `hd2d.js` (worldDraw replacement), `hd2dgl.js` (WebGL layer), `config.js` 8 (HD2D) |
@@ -103,6 +104,8 @@ v0.7
 
 v0.8
 - `roles.js` class roles: secondary role skills and charms, chi heals, roleOut / roleTable / heroRoleSet (built right after `sigskills.js`)
+- `hd2dgl.js` HD-2D WebGL layer · `hd2d.js` HD-2D world renderer · `weather7.js` layered weather · `pathguard.js` path protection · `dungeon8.js` themed dungeons (materials, organic caverns), the boss lair on the field
+- `sprhd2.js` HD sprite consumers · `logo.js` wordmark · `title7.js` HD-2D title · `visuals7.js` minimap tiles, victory crest, arena
 
 CSS: `fonts.css`, `style.css`, `ui3.css` (v0.5.3 Gilded Night), `menus3.css`, `battle3.css`, `battle5.css`, `battle4.css`.
 Shell: `shell.html` (page, `window.__A`), `liveboot.js` (Android live update boot), `sw.js` (service worker).
