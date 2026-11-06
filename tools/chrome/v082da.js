@@ -30,7 +30,7 @@ const run=(mat,P,N)=>ev(([mat,P,N])=>{const A=__A,G=A.G,D=__D8,o={n:0,mat:0,shap
     if(k%2===0){A.resetMaps();const f=A.getMap('f1');(f.caves||[]).filter(c=>c.kind!=="fort").forEach(c=>{const q=A.getMap(c.id);o.caves++;o.cmat[q.d8]=1;if(q.d8carved>0)o.caveShaped++;const a=A.mapIssues(q).length+A.pathAssets(q).length;if(a)o.issues.push('cave '+c.id+' seed'+G.run.seed+' '+a);});}}}
   finally{G.run.seed=seed0;G.run.order=ord;window.__D8OFF=false;A.resetMaps();}
   o.ms=Math.round(o.ms/Math.max(1,o.n));return o;},[mat,P,N]);
-for(const [mat,P] of Object.entries(plan)){const n=P.org||mat==='flood'||mat==='forge'?N:Math.max(20,Math.round(N/5));const r=await run(mat,P,n);
+for(const [mat,P] of Object.entries(plan)){if(process.env.LAIRONLY)break;const n=P.org||mat==='flood'||mat==='forge'?N:Math.max(20,Math.round(N/5));const r=await run(mat,P,n);
   const ratio=r.corner[0]?r.corner[1]/r.corner[0]:1;
   console.log(`${mat} (${P.key}, ${P.org?'organic':'built'}): ${r.n} dungeons, ${r.ms} ms each, carved ${Math.round(r.carved/Math.max(1,r.n))}/map, pools ${Math.round(r.pools/Math.max(1,r.n))}/map, corner density x${ratio.toFixed(2)}, caves ${r.caves} (${r.caveShaped} reshaped)`);
   chk(`${mat}: ${r.n} dungeons (>= ${n}), every one in its material`,r.n>=n&&r.mat===r.n||`${r.mat}/${r.n} ${r.err.slice(0,2)}`);
@@ -41,4 +41,18 @@ for(const [mat,P] of Object.entries(plan)){const n=P.org||mat==='flood'||mat==='
   else chk(`${mat}: built layout kept (no carving)`,r.carved===0||r.carved);
   chk(`${mat} realm: side caves reshaped (${r.caveShaped}/${r.caves}, materials ${Object.keys(r.cmat)})`,r.caves===0||r.caveShaped>=r.caves*.9);
   chk(`${mat}: no generation errors`,r.err.length===0||r.err.slice(0,3).join(' '));}
+// the lair mounds: every stage's field over N seeds
+{const r=await ev(N=>{const A=__A,G=A.G,D=__D8,o={n:0,mound:0,big:0,issues:[],hidden:[],out:0,face:{}};const seed0=G.run.seed;
+  try{for(let k=0;k<N;k++){G.run.seed=k*7919+101;G.sub=null;A.resetMaps();for(let s=1;s<5;s++){let f;try{A.resetMaps();f=A.getMap('f'+s);}catch(e){continue;}if(!f.ent)continue;o.n++;const L=f.d8lair;
+    if(L){o.mound++;if(L.tiles.length>=9)o.big++;o.face[String(L.fv)]=(o.face[String(L.fv)]||0)+1;}
+    const iss=A.mapIssues(f).length,pa=A.pathAssets(f).length;if(iss||pa){const keep=A.MAPS;window.__D8OFF=true;A.resetMaps();const f0=A.getMap('f'+s),i0=A.mapIssues(f0).length,p0=A.pathAssets(f0).length;window.__D8OFF=false;A.resetMaps();f=A.getMap('f'+s);
+      if(iss>i0||pa>p0)o.issues.push('seed'+G.run.seed+' f'+s+' '+iss+'/'+pa+' (without the mound '+i0+'/'+p0+')');else o.pre=(o.pre||0)+1;}
+    if(k%5===0){const sig=f.t.map(r=>r.join('')).join('/');A.resetMaps();const f2=A.getMap('f'+s);if(f2.t.map(r=>r.join('')).join('/')!==sig)o.nondet=(o.nondet||0)+1;f=f2;}
+    const h=D.lairHidden(f);if(h.length&&o.hidden.length<4)o.hidden.push('seed'+G.run.seed+' f'+s+' '+JSON.stringify(h[0]));if(h.length)o.out++;
+    const E=f.t[f.ent[1]][f.ent[0]];if(E!=='E')o.issues.push('entrance tile '+E);}}}finally{G.run.seed=seed0;A.resetMaps();}return o;},N);
+  console.log(`lair mounds: ${r.mound}/${r.n} fields, ${r.big} of 9+ tiles, facing ${JSON.stringify(r.face)}`);
+  chk(`lair: a mound around ${r.mound} of ${r.n} entrances (>= 95%), ${r.big} of at least 9 tiles (>= 85%)`,r.mound>=r.n*.95&&r.big>=r.n*.85);
+  chk(`lair: no field has more unreachable targets or path assets than without its mound (${r.pre||0} fields with the same ones as before), the entrance tile unchanged`,r.issues.length===0||r.issues.slice(0,4).join('; '));
+  chk('lair: the same seed builds the same mound',!r.nondet||r.nondet);
+  chk('lair: no prop north of a mound hidden by its real height',r.out===0||r.hidden.join('; '));}
 await done(H);})();

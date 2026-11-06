@@ -1,9 +1,10 @@
 // v0.8.2 themed dungeons, part 2: what is drawn (docs/v082-dungeons.md).
 // Low (2D) and Medium (HD-2D), 933x705: every material's dungeon draws its own tiles (render hook D8.n2d), props (D8P) and, in HD-2D, its
-// own block faces (D8.hd.struct); battles fought there use the material's backdrop (organic places on the cavern stage); the lair entrance is
-// its own structure (64x100 sprite, a LAIR plaque, the tower and the light column in HD-2D), its own map icon and legend entry, and the
-// relit lair looks different (gold beacon and plaque); nothing of the lair is drawn over the hero; a save inside a dungeon on a tile that is
-// now solid loads on the nearest open tile, other saved tiles load where they were. Usage: PWHTML=../../out/aurelis3.html node v082db.js
+// own block faces (D8.hd.struct); battles fought there use the material's backdrop (organic places on the cavern stage); the lair is a
+// mound raised from the field's own ground (solid rock tiles around the unchanged entrance, every target reachable), with no flat sprite
+// or lettering, geometry in HD-2D and a raised hill in 2D, its own map icon and legend entry; the relit lair looks different (gold light,
+// a cleared mouth); nothing of the lair is drawn over the hero; a save on a tile that is now solid (a dungeon liquid, a mound tile) loads
+// on the nearest open tile, other saved tiles load where they were. Usage: PWHTML=../../out/aurelis3.html node v082db.js
 const {open,chk,done}=require('./pw');
 const META=t=>`localStorage.clear();localStorage.setItem('aurelis-meta-v1',JSON.stringify({cfg:{speed:1,enc:'off',diff:'normal',music:0,sfx:0,autoStats:true,autoEquip:false,gfx:'${t}',rmotion:true,hints:false,minimap:true}}));`;
 const boot=async t=>{const H=await open({w:933,h:705,pre:META(t)});await H.ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;A.G.run.seed=424242;A.resetMaps();A.render();});await H.wait(400);return H;};
@@ -22,31 +23,38 @@ for(const tier of ['low','medium']){const H=await boot(tier);const {ev,wait}=H;
   // side caves: organic, in the material of their tileset
   const cv=await ev(()=>{const A=__A,out=[];for(let s=0;s<5;s++){const f=A.getMap('f'+s);(f.caves||[]).forEach(c=>{const m=A.getMap(c.id);out.push([c.id,c.kind,m.d8,m.d8org,m.d8carved]);});}return out;});
   chk(`${tier}: side caves and fortresses carry a material (${JSON.stringify(cv)})`,cv.length>0&&cv.every(q=>q[2]&&(q[1]==='fort'?q[2]==='keep'&&!q[3]:q[3]&&q[4]>0)));
-  // the lair
-  const L=await ev(()=>{const A=__A,D=__D8,G=A.G;G.run.order[1]=A.ZONES.findIndex(z=>z.key==='glacier');G.cleared[1]=0;A.resetMaps();const f=A.getMap('f1');let p=null;for(const dy of [5,4,6,3,2,7,8])for(const dx of [0,1,-1,2,-2])if(!p&&!A.solidAt(f,f.ent[0]+dx,f.ent[1]+dy))p=[f.ent[0]+dx,f.ent[1]+dy];
-    A.V.screen='world';A.V.modal=null;A.placeAt('f1',p[0],p[1],'u');A.render();return {ent:f.ent,p};});await wait(tier==='low'?300:1000);
-  const l1=await ev(()=>{const A=__A,D=__D8,f=A.WS.m;A.worldDraw(performance.now());const mk=A.mapMarks(f).filter(o=>o.x===f.ent[0]&&o.y===f.ent[1]).map(o=>o.k),html=D.mMap();
-    const st=D.lair(f).L,full=D.lairCanvas(st,'all'),px=(c,x,y)=>Array.from(c.getContext('2d').getImageData(x,y,1,1).data.slice(0,3));
-    const caves=(f.caves||[]).map(c=>c.kind);return {mk,legend:/Lair/.test(html),last:D.D8.lair.last,fx:D.D8.lair.fx2d,hd:D.D8.lair.hd,w:full.width,h:full.height,plaque:px(full,22,57-11+0),beacon:px(full,29,6),caves};});
+  // the lair: a mound raised from the field's own ground, the entrance dug into it (journey seed 1034, stage 3: the entrance faces south)
+  const L=await ev(()=>{const A=__A,G=A.G;G.run.seed=1034;G.run.order[3]=A.ZONES.findIndex(z=>z.key==='deeps');G.cleared[3]=0;A.resetMaps();const f=A.getMap('f3');let p=null;
+    const o=f.entOut||[f.ent[0],f.ent[1]+1],fv=[o[0]-f.ent[0],o[1]-f.ent[1]];for(const k of [4,3,5,2])if(!p&&!A.solidAt(f,f.ent[0]+fv[0]*k,f.ent[1]+fv[1]*k))p=[f.ent[0]+fv[0]*k,f.ent[1]+fv[1]*k];
+    A.V.screen='world';A.V.modal=null;A.placeAt('f3',p[0],p[1],fv[1]>0?'u':'d');A.render();return {ent:f.ent,p,fv};});await wait(tier==='low'?300:1000);
+  const l1=await ev(()=>{const A=__A,D=__D8,f=A.WS.m,Lr=f.d8lair;A.worldDraw(performance.now());const mk=A.mapMarks(f).filter(o=>o.x===f.ent[0]&&o.y===f.ent[1]).map(o=>o.k),html=D.mMap();
+    const solid=Lr?Lr.tiles.every(([x,y])=>f.t[y][x]==='#'&&A.solidAt(f,x,y)):false,E=A.tileAt(f,f.ent[0],f.ent[1]),out=f.entOut||[f.ent[0],f.ent[1]+1];
+    return {mk,legend:/Lair/.test(html),tiles:Lr?Lr.tiles.length:0,top:Lr?Lr.top:0,solid,E,outOpen:!A.solidAt(f,out[0],out[1]),issues:A.mapIssues(f).length+A.pathAssets(f).length,
+      facade:D.facade(f),last:D.D8.lair.last,fx:D.D8.lair.fx2d,hd:D.D8.lair.hd,n2d:D.D8.lair.n2d||0,south:Lr&&Lr.south};});
   chk(`${tier}: the lair is its own map icon ("lair") and legend entry`,l1.mk.includes('lair')&&l1.legend||JSON.stringify(l1));
-  chk(`${tier}: the lair sprite is a 64x100 structure (a cave mouth is 40x30, the gatehouse 48x40)`,l1.w===64&&l1.h===100&&l1.last&&l1.last.id==='f1'||JSON.stringify(l1));
-  if(tier==='low')chk('2D: the light column and braziers drawn over the lair',!!l1.fx&&l1.fx.lit===false||JSON.stringify(l1.fx));
-  else chk('HD-2D: the lair gate is a card (the tower and the column are billboards)',l1.last.part==='card'&&l1.hd&&l1.hd.beam===1||JSON.stringify([l1.last,l1.hd]));
-  // nothing over the hero: the hero right north of the lair (in front of the column in 2D, behind it in HD-2D)
-  const face=await ev(([ent])=>{const A=__A,D=__D8,f=A.WS.m;let p=null;for(const dy of [-2,-3,-4])if(!A.solidAt(f,ent[0],ent[1]+dy)){p=[ent[0],ent[1]+dy];break;}if(!p)return {skip:1};
-    A.placeAt('f1',p[0],p[1],'d');A.WS.cam=null;A.render();const t=performance.now();A.worldDraw(t);A.worldDraw(t);
-    if(A.HD.live)return {hd:1,front:D.D8.lair.hd&&D.D8.lair.hd.front,beam:D.D8.lair.hd&&D.D8.lair.hd.beam};
+  chk(`${tier}: the lair is a mound of ${l1.tiles} field rock tiles (solid like a cliff) around the unchanged entrance, its way in open, every target reachable`,
+    l1.tiles>=9&&l1.solid&&l1.E==='E'&&l1.outOpen&&l1.issues===0||JSON.stringify(l1));
+  chk(`${tier}: no flat sprite or lettering: the entrance prop draws nothing (${l1.facade}), the mound is drawn from its tiles`,l1.facade[0]===1&&l1.facade[1]===1&&l1.last&&l1.last.part==='mound'||JSON.stringify(l1));
+  if(tier==='low')chk('2D: the raised hill, the light from the mouth and the plume drawn',l1.n2d>0&&!!l1.fx&&l1.fx.lit===false||JSON.stringify(l1));
+  else chk(`HD-2D: the hill is geometry (${l1.hd&&l1.hd.geo} quads, ${l1.hd&&l1.hd.top} px tall) with the mouth in its south face`,!!l1.hd&&l1.hd.geo>=20&&l1.hd.top>=14&&l1.south===true||JSON.stringify(l1.hd));
+  // nothing over the hero: the hero right north of the lair (behind the plume)
+  const face=await ev(([ent])=>{const A=__A,D=__D8,f=A.WS.m;let p=null;for(const dy of [-3,-4,-5,-6,-7])for(const dx of [0,-1,1,-2,2])if(!p&&!A.solidAt(f,ent[0]+dx,ent[1]+dy))p=[ent[0]+dx,ent[1]+dy];if(!p)return {skip:true};
+    A.placeAt('f3',p[0],p[1],'d');A.WS.cam=null;A.render();const t=performance.now();A.worldDraw(t);A.worldDraw(t);
+    if(A.HD.live)return {hd:1,front:D.D8.lair.hd&&D.D8.lair.hd.front};
     const cv=A.WS.cv,sc=cv.width/A.WS.vw,cx=Math.round(A.WS.cam.x),cy=Math.round(A.WS.cam.y),hx=Math.round(A.WS.px)+8-cx,hy=Math.round(A.WS.py)-cy;
     const box=()=>Array.from(cv.getContext('2d').getImageData(Math.round((hx-7)*sc),Math.round((hy-6)*sc),Math.round(14*sc),Math.round(22*sc)).data).join(',');
-    window.__D8OFF=true;A.worldDraw(t);const a=box();window.__D8OFF=false;A.worldDraw(t);const b=box();return {same:a===b,fx:D.D8.lair.fx2d};},[L.ent]);
-  chk(`${tier}: no lair glow or column over the hero's face`,face.skip||(face.hd?face.front===true:face.same)||JSON.stringify(face));
-  // relit
-  const l2=await ev(([p])=>{const A=__A,D=__D8;A.G.cleared[1]=1;A.resetMaps();A.placeAt('f1',p[0],p[1],'u');A.render();A.worldDraw(performance.now());const f=A.WS.m,mk=A.mapMarks(f).filter(o=>o.x===f.ent[0]&&o.y===f.ent[1]).map(o=>o.k);
-    const st=D.lair(f).L,full=D.lairCanvas(st,'all'),px=(c,x,y)=>Array.from(c.getContext('2d').getImageData(x,y,1,1).data.slice(0,3)),html=D.mMap();const o={mk,lit:st.lit,last:D.D8.lair.last,legend:/Lair \(relit\)/.test(html),plaque:px(full,22,46),beacon:px(full,29,6)};
-    A.G.cleared[1]=0;A.resetMaps();return o;},[L.p]);
-  const unl={plaque:await ev(()=>{const D=__D8,A=__A,st=D.lair(A.getMap('f1')).L,c=D.lairCanvas(st,'all');return [Array.from(c.getContext('2d').getImageData(22,46,1,1).data.slice(0,3)),Array.from(c.getContext('2d').getImageData(29,6,1,1).data.slice(0,3))];})};
-  chk(`${tier}: the relit lair changes look (gold beacon ${l2.beacon} against ${unl.plaque[1]}, plaque ${l2.plaque} against ${unl.plaque[0]}) and icon (${l2.mk})`,
-    l2.lit&&l2.mk.includes('lairlit')&&l2.legend&&l2.beacon[0]>200&&l2.beacon[1]>180&&l2.beacon[2]<120&&unl.plaque[1][2]>150&&l2.plaque.join()!==unl.plaque[0].join()||JSON.stringify([l2,unl]));
+    window.__D8OFF=true;A.worldDraw(t);const a=box();window.__D8OFF=false;A.worldDraw(t);const b=box();return {same:a===b};},[L.ent]);
+  chk(`${tier}: no lair glow or plume over the hero's face`,face.skip||(face.hd?face.front===true:face.same)||JSON.stringify(face));
+  // relit: calm gold light, no bones, banner or rubble
+  const l2=await ev(([p])=>{const A=__A,D=__D8;const f0=A.getMap('f3'),s0=D.lairState(f0),t0=D.lairTex(s0);A.G.cleared[3]=1;A.resetMaps();A.placeAt('f3',p[0],p[1],'u');A.render();A.worldDraw(performance.now());
+    const f=A.WS.m,mk=A.mapMarks(f).filter(o=>o.x===f.ent[0]&&o.y===f.ent[1]).map(o=>o.k),st=D.lairState(f),t1=D.lairTex(st),html=D.mMap();
+    const px=(c,x,y)=>Array.from(c.getContext('2d').getImageData(x,y,1,1).data.slice(0,3));let diff=0;const a=t0.getContext('2d').getImageData(0,32,32,32).data,b=t1.getContext('2d').getImageData(0,32,32,32).data;for(let i=0;i<a.length;i+=4)if(a[i]!==b[i]||a[i+1]!==b[i+1]||a[i+2]!==b[i+2])diff++;
+    const o={mk,lit:st.lit,glow:[s0.glow,st.glow],legend:/Lair \(relit\)/.test(html),diff,fx:D.D8.lair.fx2d};A.G.cleared[3]=0;A.resetMaps();return o;},[L.p]);
+  chk(`${tier}: the relit lair changes look (light ${l2.glow[0]} -> ${l2.glow[1]}, ${l2.diff} mouth pixels differ) and icon (${l2.mk})`,l2.lit&&l2.glow[1]==='#ffd870'&&l2.glow[0]!=='#ffd870'&&l2.diff>40&&l2.mk.includes('lairlit')&&l2.legend||JSON.stringify(l2));
+  // a save on a tile the mound now covers loads beside it
+  const fs=await ev(()=>{const A=__A,D=__D8,G=A.G;A.resetMaps();const f=A.getMap('f3'),t=f.d8lair.tiles.find(([x,y])=>Math.abs(x-f.ent[0])===2)||f.d8lair.tiles[0];G.pos={m:'f3',x:t[0],y:t[1],f:'d'};A.saveGame();A.resetMaps();D.enterFromSave();
+    return {t,at:[A.WS.m.id,A.WS.x,A.WS.y],solid:A.solidAt(A.WS.m,A.WS.x,A.WS.y)};});
+  chk(`${tier}: a field save on a tile the mound now covers loads beside it (${JSON.stringify(fs.at)} from ${fs.t})`,fs.at[0]==='f3'&&!fs.solid&&Math.abs(fs.at[1]-fs.t[0])+Math.abs(fs.at[2]-fs.t[1])<=4);
   // saves inside a dungeon
   const sv=await ev(()=>{const A=__A,D=__D8,G=A.G;G.run.order[1]=A.ZONES.findIndex(z=>z.key==='strand');A.resetMaps();const d=A.getMap('d1');let pool=null,carved=null;
     for(let y=1;y<d.h-1&&!pool;y++)for(let x=1;x<d.w-1;x++)if(d.t[y][x]==='~'){pool=[x,y];break;}

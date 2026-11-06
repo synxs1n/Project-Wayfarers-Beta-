@@ -70,26 +70,55 @@ Organic materials reshape their walls once the map is built and the path guard h
 
 ## 3. The boss lair on the field
 
-The main dungeon's entrance (`E` with its `U` footprint, unchanged) is drawn as a lair (`d8LairCanvas`, 64x100) instead of the 2.5
-entrance styles: a dark tower with lit slits and a burning beacon cage on top, the Scourge's banner on the tower (the boss theme's cloth and
-emblem: thorn, tide, ember, frost, bolt, bone, comb, spore, gear, pearl, ash, grave, eclipse, scale, crown, feather), a skull-carved gate
-with horns and glowing eyes over the doorway, spiked pillars with braziers either side and a `LAIR` plaque over the skull. The gate
-stone and its touches (icicles, lava, roots, coral, sand) come from the dungeon's material.
-- A cave mouth is a 40x30 rock arch with a blue glow, the fortress a grey gatehouse with red banners; the lair is twice their height.
-- 2D: the whole sprite in the base layer; a light column over the beacon with a pulse and flickering brazier flames are drawn on top, and
-  never inside the hero's box (clipped out).
-- HD-2D: the gate, braziers and plaque are the prop card (cards are 58 px tall at most); the tower is a billboard behind it, the beacon glow
-  and the column are glowing billboards, skipped while the hero stands right in front of them; the beacon lights the ground (`hdLights`).
-- Relit (the boss beaten): a gold beacon and pennant, gold braziers and plaque, dark eyes, a softer gold column and a slower pulse.
-- Map: its own icon and legend entry, "Lair" (relit: "Lair (relit)"), on the full map and the minimap (`mapMarks` turns the field's
-  `dungeon` mark into `lair` / `lairlit`). The world map keeps its dark tower vignette with the gold beacon once relit (it already drew
-  dungeons that way).
+v0.8.9 redesign. The owner, with a Fold screenshot of Glacier Teeth in HD-2D: "Lair sprite is flat and I don't like its design. It should
+be more natural looking; can keep a special image on maps but it should be obviously a lair but doesn't need wording on it saying lair;
+make the entrance feel more like it's part of the land, as the boss would have dug it out / built it." The v0.8.8 lair (a flat 64x100
+card: a brick tower, a red LAIR plaque, a skull gate, a violet beacon whose light washed the snow pink) is gone. Now the entrance is dug
+into a mound raised from the field's own ground (`d8LairShape`, a `getMap` wrapper after the path guard):
+
+- Tiles: the entrance (`E`) and its approach are unchanged. Its `U` footprint and the open ground the generator always leaves around an
+  entrance (3 rows deep, 5 wide, on the side away from the way it faces) become field rock `'#'`, solid like a cliff, never the approach
+  lane (three tiles out of the mouth), an exit, a sign or a townsperson. The mound is kept only if `mapIssues` and `pathAssets` are no
+  worse than without it (otherwise only the old footprint, otherwise nothing and the old entrance look); a mound tile goes again if it would
+  hide a prop up to three rows north of it (`pgHides`). Over 800 fields (200 seeds, stages 1 to 4) 799 have a mound, 720 to 746 of at least 9
+  tiles; no field has a target the player cannot reach or an asset on a path that it did not have before; the same seed builds the same
+  mound.
+- Look, from the dungeon's material leaning a quarter toward the field's own cliff colours: frozen rock under a snow and ice cap with
+  icicles (ice cavern, ice vault), basalt with ash and a few ember cracks (volcanic, forge), earth with roots and grass (root cavern,
+  crypt), sandstone strata (sandstone), wet rock with weed and moss (sea cave, flooded halls), mountain rock (keep, mountain caves), dark
+  crystal rock (astral).
+- Heights (art px): facing the camera (south) the hill rises right behind the mouth (about 20 at the front, 36 behind the mouth, 30 at the
+  back), any other way it is a low hill with the mouth at its foot, rising away (18, 30, 26). Corner heights average the tiles around them
+  and fall off at the outer edge (a hill sloping into the ground, not a box); each tile's height is capped so a prop up to three rows north
+  of it still shows by the `pgHides` rule with the real height (`d8LairHidden`, checked in `v082da`).
+- HD-2D: real geometry, built like the fortress gatehouse (`hdBakeBuildings` gets a `d8lair` part, `hdBldKind` and `hdGateGeo` are wrapped):
+  a heightfield of sloped top quads (cap where it is flat, rock where it is steep), rock faces where it meets the ground, and the mouth's
+  face (a dark arch, claw gouges either side, rubble and bones at the sill, a gradient of the inner light) on the face toward the entrance.
+  The mound tiles are ground for the block pass (`hdKind` now gets the tile position). Billboards: two torches by the mouth, a broken
+  banner of the Scourge (its cloth and emblem) and a skull pile on top, a faint plume of the mouth's colour rising from the top (skipped
+  while the hero stands right in front of it), a small glow in the mouth. No point lights of its own and the 2D lights are left out of the
+  HD-2D bake, so nothing tints the field.
+- 2D: the mound tiles show only the ground; the hill is drawn once in the prop pass of its bottom row as a small heightfield seen from the
+  south and above (each ground pixel lifted by its height, painted north to south, lit from the north west, cap on the flat, rock on the
+  steep, a dark rim and a soft shadow on the ground), with the mouth cut into the face over the entrance, or, when the entrance faces away,
+  a dark hole with a rubble rim at the hill's foot. Torches, banner and skull pile, the mouth's glow and the plume are drawn over it each
+  frame, never inside the hero's box (clipped out).
+- Around it: a trampled lane out of the mouth with claw marks, bones and rubble on the ground nearby (ground art, so both renderers).
+- Relit (the boss beaten): gold light in the mouth and the plume, a slower pulse, gold torches, no banner, skull pile, bones or rubble,
+  a fainter lane.
+- No text anywhere. A cave mouth is still a small rock arch on flat ground with a blue glow and a fortress a grey gatehouse; the lair is a
+  hill about 5 x 3 tiles with a lit mouth, torches and the Scourge's marks.
+- Map: its own icon (a mound with a dark mouth and a red glow, gold when relit) and legend entry, "Lair" / "Lair (relit)", on the full
+  map and the minimap. The world map keeps its dark tower vignette with the gold beacon once relit.
+- Also fixed (`hd2d.js`): a v0.8.0 comment had swallowed the line that sets the scene shader's `uEmis` and `uAct` uniforms, so in HD-2D
+  the emissive pixels and the readability floor of characters stayed at whatever the GL program last held; snow fields read washed out.
 
 ## 4. Old saves
 
 Maps are rebuilt from the seed on every load, so an old save inside a reshaped dungeon finds the same chests, keys and levers. Carving only
 turns walls into floor, so a saved floor tile stays floor. A saved tile that became liquid (or anything solid) now loads on the nearest open
-tile of the same dungeon (`enterWorldFromSave` wrapper) instead of the town inn.
+tile of the same dungeon (`enterWorldFromSave` wrapper) instead of the town inn; a field save on a tile a lair mound now covers loads
+beside the mound.
 
 ## Tests
 - `v082da.js` (default 200 seeds per organic material and for the flooded and forge pools, 40 for the other built materials, with the side
@@ -98,11 +127,16 @@ tile of the same dungeon (`enterWorldFromSave` wrapper) instead of the town inn.
   `__D8OFF` build; the same seed builds the same tiles; built layouts not carved; no generation errors.
 - `v082db.js` (Low and Medium, 933x705): the 2D tiles drew in the material only (render hook `D8.n2d`), the props in the material, HD-2D live
   with the material's faces (`D8.hd`); battle backdrops in the material (cavern for organic places); side caves organic, fortresses keeps;
-  the lair: own icon and legend entry, the 64x100 structure, the 2D column, the HD-2D card and billboards, nothing of it over the hero's
-  face (2D: the pixels of the hero's box are the same with and without the lair effects; HD-2D: skipped in front), the relit look (gold
-  beacon and plaque, "lairlit" icon); a save on a now liquid tile loads next to it in the same dungeon, saves on carved floor and on the
-  start load where they were; no page errors.
+  the lair (journey 1034, stage 3, entrance facing south): own icon and legend entry; a mound of solid field rock around the unchanged
+  entrance with its way in open and every target reachable; no flat sprite or lettering (the entrance prop draws nothing); the raised 2D
+  hill, glow and plume; HD-2D geometry (27 quads, about 39 px tall) with the mouth in its south face; nothing of it over the hero's face
+  (2D: the pixels of the hero's box are the same with and without the lair effects; HD-2D: the plume is skipped in front); the relit look
+  (gold light, a cleared mouth, "lairlit" icon); a field save on a mound tile loads beside it; a save on a now liquid tile loads next to it
+  in the same dungeon, saves on carved floor and on the start load where they were; no page errors.
+- `v082da.js` also sweeps the lair fields (`LAIRONLY=1` runs only that part).
 - `v082dperf.js`: Low and Medium, an ice cavern, a volcanic cavern, a crypt and the lair field, in turns with the build before.
+  v0.8.9 lair (CPU x4, 390x844 at 2x, best of 3 against v0.8.9 main): Low lair field 60.2 -> 60.2, Medium lair field 58.8 -> 58.2,
+  Low volcanic dungeon 60.3 -> 60.1, Medium 58.8 -> 59.9.
 - Rerun and passing: v050p1c (550 dungeons), v050p2world, v071wa (400 dungeons, 309 caves, 320 fortresses: nothing hidden that blocks),
   v071wb, v071wt, v063wo, v041p1c, v051c, v080r, v050p2daily (against `git show HEAD:index.html`), liveupdate.
 
@@ -111,6 +145,9 @@ tile of the same dungeon (`enterWorldFromSave` wrapper) instead of the town inn.
   corners that hold chests stay square-ish because nothing is carved next to an asset.
 - HD-2D block heights are the same for every wall (`HD2D.wall.dungeon`), so the path guard's hiding rule holds unchanged; the organic look
   comes from the outline and the art.
-- The tower and beacon stand about 100 art px tall; on wide landscape views the camera, which looks north, cuts them while the hero is
-  close to the gate (the gate, plaque and braziers always show). From further south, and on phones, the whole lair and its column show.
+- The camera looks north. Of 798 mounds 107 face south (the mouth in the face toward the camera), 557 east or west (the mouth in a side
+  face, seen at an angle, plus the trampled lane) and 134 north: those have the mouth on the far side of the hill, shown as a dark hole with
+  a rubble rim at the hill's foot from the lane; from the south you see the hill and its marks.
+- In about 8% of fields a chest, a sign or the clearing's edge keeps the mound smaller than 9 tiles; in 1 of 800 none fitted and the old
+  entrance look stays.
 - The minimap and full map colour liquid tiles with the theme's water colour (`mapCol`), not the material's.
