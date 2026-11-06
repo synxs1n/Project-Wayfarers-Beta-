@@ -7,6 +7,7 @@
 const {open,chk,done}=require('./pw');const {META,battle,dress}=require('./v063lib');
 (async()=>{for(const [w,h] of [[390,844],[844,390],[933,705],[1280,800]]){const H=await open({w,h,mobile:w<1000,pre:META('medium')});const tag=w+'x'+h;
   await battle(H,{heroes:3,foes:3,seed:41,lv:22});await dress(H,{seed:42,maxSt:3,prime:.6,shield:.6});await H.wait(400);
+  // v0.8.10: on portrait phones the party cards follow the commands; the active hero's HP and MP are in the command header
   const r=await H.ev(()=>{const A=__A,B=A.B,a=B.cur,vis=e=>{if(!e)return false;const q=e.getBoundingClientRect();return q.width>0&&q.height>0&&q.top>=-1&&q.bottom<=innerHeight+1&&q.left>=-1&&q.right<=innerWidth+1;};
     const ac=[...document.querySelectorAll('#bparty .pc.turn')],acb=ac[0]&&ac[0].querySelectorAll('.ucr');
     const prim=[...document.querySelectorAll('#bcmd .menu.prim .mi')].map(e=>e.dataset.arg),sec=[...document.querySelectorAll('#bcmd .menu.sec .mi')].map(e=>e.dataset.arg||e.dataset.act);
@@ -14,7 +15,7 @@ const {open,chk,done}=require('./pw');const {META,battle,dress}=require('./v063l
     const head=document.querySelector('#bcmd .cmdhead'),blog=document.getElementById('blog'),wr=document.getElementById('bwrap').getBoundingClientRect(),bl=blog&&blog.getBoundingClientRect();
     // a foe whose statuses the stage shows in full has no status icons on its card
     const dup=!(A.b3Lay&&A.stItems)?['(no stage layout)']:B.en.filter(e=>e.hp>0&&A.stItems(e,{noPrime:true,noWx:true}).length&&(()=>{const o=A.b3Lay().tags.get(e);return o&&o.max>=A.stItems(e,{noPrime:true,noWx:true}).length;})()).filter(e=>{const c=document.querySelectorAll('#bparty .fcw')[B.en.indexOf(e)];return c&&c.querySelector('.ptags .sti');}).map(e=>e.name);
-    return {mode:A.BL.mode,cur:a&&a.name,acName:ac[0]&&ac[0].textContent.includes(a.name),acBars:acb?acb.length:0,acVis:vis(ac[0]),prim,sec,primVis:[...document.querySelectorAll('#bcmd .menu.prim .mi')].every(vis),secVis:[...document.querySelectorAll('#bcmd .menu.sec .mi')].every(vis),
+    return {mode:A.BL.mode,cur:a&&a.name,acName:ac[0]&&ac[0].textContent.includes(a.name),acBars:acb?acb.length:0,acVis:vis(ac[0])||vis(document.querySelector('#bcmd .cmdhead .b8hm')),prim,sec,primVis:[...document.querySelectorAll('#bcmd .menu.prim .mi')].every(vis),secVis:[...document.querySelectorAll('#bcmd .menu.sec .mi')].every(vis),
       back:vis(document.querySelector('#bcmd [data-act="back"]')),logVis:vis(document.querySelector('#bline .blogbtn')),logOff:!!bl&&bl.top>=wr.bottom-1,stageVis:vis(document.getElementById('bwrap')),
       headBars:head?head.querySelectorAll('.bar,.sti').length:-1,taps,dup,docW:document.documentElement.scrollWidth,vw:innerWidth,
       sym:!!document.querySelector('#bstage .sti svg.stsym,#bparty .sti svg.stsym'),pips:[...document.querySelectorAll('#bparty .spips')].length,prime:document.querySelectorAll('#bstage .primed').length,elb:document.querySelectorAll('#bparty .elb').length,
