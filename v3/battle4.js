@@ -7,7 +7,8 @@
 // 4) Foe roles (Shieldbearer, Hexer, Charger, Leech, Skirmisher): each punishes one mistake. Data in B4.roleOf (config.js), a role
 //    field on the monster; the role line shows on Scan and in the Bestiary.
 //    Intents (battle5.js): b4RolePlan(u) says, without touching the RNG, what the role makes the foe do on its next turn (null =
-//    its usual move). The role action itself runs inside the foe's action choice (the enemyTurn0 wrapper below) from that same plan,
+//    its usual move). With battle5.js loaded, foePlan (what the intents show) carries the role move too, and the outer enemyTurn0
+//    wrapper below executes it from that same plan,
 //    so a plan read in advance is what happens, unless the fight changes first (a hero guards, swaps, cleanses, stuns or strips it).
 // Every tunable lives in B4 (config.js). Nothing here reads the clock for game logic or calls Math.random: the Daily Trial stays
 // deterministic. New fields are battle-only (B.b4mo, B.b4swT, B.b4line, u.role, u.b4slot, u.st.hex, u.st.charge); nothing is saved.
@@ -116,8 +117,25 @@ function b4RoleDo(u,P){const live=B.front.filter(c=>c.hp>0);if(!live.length)retu
   else if(P.kind==='flank'){log(`${u.name} slips around the unchanged Vanguard!`);perform(u,{id:'b4flank',n:'Flanking Strike',k:'phys',pw:R.flankPw,t:'one',el,hits:1,cost:1,mp:0},P.tg);}
   endTurn(u,1);return true;}
 // the foe's action choice: a role move from the plan, otherwise its usual move
-{const et0=enemyTurn0;enemyTurn0=function(u){try{if(B&&!B.over&&u&&u.hp>0&&b4Role(u)){const P=b4RolePlan(u);if(P&&b4RoleDo(u,P))return;}}catch(e){try{wdLog('b4 role: '+(e&&e.message||e),u);}catch(_){}}
-  return et0.apply(this,arguments);};}
+// the role move as a skill, for the intents (battle5.js foePlan / b5Cat read sk.k, sk.t, sk.pw and sk.fx)
+function b4RoleSk(P,u){const R=B4.roles,el=(u&&u.el&&u.el[0])||null;
+  return {windup:{id:'b4wind',n:'Wind up',k:'buff',t:'self',pw:0,fx:[['charge',1]]},gather:{id:'b4gather',n:'Gather power',k:'buff',t:'self',pw:0,fx:[['charge',1]]},
+    unleash:{id:'b4charge',n:'Crushing Charge',k:'phys',pw:R.chargePw,t:'one',el},hex:{id:'b4hex',n:'Hex',k:'mag',pw:0,t:'one',fx:[['hex',1]]},
+    doom:{id:'b4doom',n:'Doom',k:'mag',pw:9,t:'one'},siphon:{id:'b4siphon',n:'Siphon',k:'mag',pw:R.leechPw,t:'all',el},
+    flank:{id:'b4flank',n:'Flanking Strike',k:'phys',pw:R.flankPw,t:'one',el},cataclysm:{id:'b4cata',n:'Cataclysm',k:'mag',pw:R.boss.pw,t:'all',el}}[P.kind]||null;}
+// battle5.js plans every foe's next action in advance (foePlan) and its enemyTurn0 executes that plan. The role move is folded into the
+// plan the intents read (recomputed on every call, so it follows guards, swaps and cleanses), and executed by the outer enemyTurn0
+// wrapper below from the same b4RolePlan. Both hooks are (re)installed at load and again at every battle start, so this works whether
+// battle5.js loads before or after this file (battle5.js replaces enemyTurn0 outright when it runs).
+function b4HookPlan(){if(typeof foePlan!=='function'||foePlan.__b4)return;const fp0=foePlan;
+  foePlan=function(u){const p=fp0.apply(this,arguments);try{const P=p&&b4RolePlan(u),sk=P&&b4RoleSk(P,u);if(sk)return Object.assign({},p,{sk,cat:typeof b5Cat==='function'?b5Cat(sk):p.cat,b4:P});}catch(e){}return p;};foePlan.__b4=1;}
+function b4HookTurn(){if(enemyTurn0.__b4)return;const et0=enemyTurn0;
+  enemyTurn0=function(u){try{if(B&&!B.over&&u&&u.hp>0&&b4Role(u)){const P=b4RolePlan(u);if(P){let tr=null;
+        try{if(typeof B5R!=='undefined'&&B5R.trace){const sk=b4RoleSk(P,u),cat=typeof b5Cat==='function'?b5Cat(sk):P.kind;tr={foe:u.name,turn:(u.turns||0)+1,plan:cat,did:cat,sk:sk.n,shown:typeof b5Shown==='function'?b5Shown(u):null,known:typeof b5Knows==='function'?b5Knows(u):false,role:P.kind};}}catch(_){}
+        if(b4RoleDo(u,P)){if(tr){B5R.trace.push(tr);if(B5R.trace.length>400)B5R.trace.shift();}return;}}}}
+    catch(e){try{wdLog('b4 role: '+(e&&e.message||e),u);}catch(_){}}
+    return et0.apply(this,arguments);};enemyTurn0.__b4=1;}
+b4HookPlan();b4HookTurn();
 // damage: momentum, Hex, Shieldbearer cover
 {const cd0=calcDamage;calcDamage=function(a,sk,t){const r=cd0.apply(this,arguments);
   try{if(!B||!r||!r.dmg||!a||!t)return r;let m=1;
@@ -160,7 +178,7 @@ function b4Smart(){const a=B.cur;if(!a||a.side!=='p')return false;const foes=B.e
   if(!B||B.over||B.mode!=='cmd')return;return ats0.apply(this,arguments);};}
 
 // ----- start of battle -----
-{const sb0=startBattle;startBattle=function(){const r=sb0.apply(this,arguments);try{if(r!==false&&B){B.b4mo=null;if(b4On('mo'))b4MoS();
+{const sb0=startBattle;startBattle=function(){try{b4HookPlan();b4HookTurn();}catch(e){}const r=sb0.apply(this,arguments);try{if(r!==false&&B){B.b4mo=null;if(b4On('mo'))b4MoS();
   const roles=[...new Set(B.en.filter(e=>b4Role(e)).map(e=>e.role))];if(roles.length)B.b4seen=roles;}}catch(e){}return r;};}
 
 // ----- UI: the momentum gauge in the log ticker under the stage -----
