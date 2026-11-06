@@ -68,7 +68,10 @@ const AIL={poisonSteps:5,poisonPct:.01,curseHeal:.6,woundMhp:.8,bossWound:.3,foe
 // daily: which systems run in the Daily Trial (all of them are deterministic: no clock, only the battle's seeded RNG).
 const B4={det:{on:true,mpPct:.1,mpMin:4,maxPerAct:2},
   swap:{on:true,cd:3,autoWhy:['hurt','debuffed','healer']},
-  mo:{on:true,start:20,lo:40,hi:75,max:100,rep:22,vary:14,guard:26,dmg:.1,taken:.1,pen:.05},
+  // v0.9.4 (the owner's simpler rule): a different kind of action than the last fills it (vary); the same kind again drains it (rep), and
+  // so does attacking after offN offensive actions in a row (off). Full (max): Surge, heroes deal dmg more and take taken less until it
+  // falls below fullOff. Empty (0): Drained, heroes deal pen less and take pen more until it climbs above emptyOff.
+  mo:{on:true,start:30,max:100,vary:16,rep:15,offN:3,off:10,fullOff:80,emptyOff:20,dmg:.15,taken:.1,pen:.1},
   roles:{on:true,cover:.4,pips:2,hexDmg:.08,hexMax:3,doom:.3,chargeEvery:3,chargePw:2.6,leechEvery:2,leechPw:.6,leechHeal:.07,flankAt:6,flankPw:1.9,
     boss:{on:true,every:4,pw:3}},
   roleOf:{shellguard:'guard',iceknight:'guard',huskguard:'guard',

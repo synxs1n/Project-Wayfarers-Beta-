@@ -206,3 +206,6 @@ dungeon8.js lair section: a rock mound of field rock tiles around the unchanged 
 
 ## Beta v0.9.3: phones and short landscape battle layout, hero size
 Details in `v080-battle-phones.md` (follow up 2; battle3.js/css, battle.js; tests `chrome/v080b.js`, `v063bd.js`). Portrait: 56 px main commands fill under the stage, party and foes scroll below. Every screen >= 560 px wide uses the fitting planner; short screens can put commands in the right column, header hidden under 430 px tall. Hero labels keep 5 px from foes. Battle heroes drawn at 5/6 (about 32 px, like humanoid foes). audio2.js skips the orchestra on file:// pages.
+
+## Beta v0.9.4: simpler Momentum
+B4.mo {start:30,max:100,vary:16,rep:15,offN:3,off:10,fullOff:80,emptyOff:20,dmg:.15,taken:.1,pen:.1}: a different move fills, the same move again drains, attacking after 3 offensive moves in a row drains; full = Surge until below 80, empty = Drained until above 20. States build/full/empty (battle4.js, battle4.css). Tests `chrome/v070m1.js`, `v070m2.js`.

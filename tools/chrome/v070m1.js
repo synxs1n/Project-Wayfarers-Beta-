@@ -52,26 +52,30 @@ chk('free swap: ready again after the cooldown',s.ready2===true);
 chk('free swap: a Rooted hero cannot step back',s.rooted===false);
 chk('free swap: not for the acting hero itself',s.self===false);
 chk(`free swap: a rooted acting hero can open Switch and swap someone else through the menu (${s.rows.join(' | ')})`,s.swBtn&&s.menu==='swap'&&s.rows[0].startsWith('x:')&&s.viaMenu||JSON.stringify(s));
-// ---------- 3) momentum ----------
-const m=await ev(()=>{const A=__A,B=window.__setup({foes:['mossling'],tough:1}),M=A.B4.cfg.mo,o={start:A.B4.mo().m,lo:M.lo,hi:M.hi};const T=(M.lo+M.hi)/2;
+// ---------- 3) momentum (v0.9.4 rule: different moves fill, repeats or only attacking drain; full Surge, empty Drained) ----------
+const m=await ev(()=>{const A=__A,B=window.__setup({foes:['mossling'],tough:1}),M=A.B4.cfg.mo,o={start:A.B4.mo().m};
   const act=f=>{B.cur=B.front[0];B.mode='cmd';f();return A.B4.mo().m;};const atk=()=>A.B4.exec(A.ATTACK||{id:'attack',n:'Attack',k:'phys',pw:1,mp:0,t:'one',cost:1,hits:1,el:null},[B.en[0]]);
   const fire={id:'tf',n:'Test Fire',k:'mag',pw:1,t:'one',el:'fire',mp:0,cost:1,hits:1},ice=Object.assign({},fire,{id:'ti',el:'ice'});
-  o.a1=act(atk);o.a2=act(atk);o.a3=act(atk);o.s3=A.B4.moState();o.a4=act(atk);o.a5=act(atk);o.s5=A.B4.moState();
-  o.g1=act(()=>A.B4.guard());o.s6=A.B4.moState();o.g2=act(()=>A.B4.guard());o.s7=A.B4.moState();
-  o.v1=act(()=>A.B4.exec(fire,[B.en[0]]));o.v2=act(()=>A.B4.exec(ice,[B.en[0]]));o.v3=act(atk);o.sv=A.B4.moState();o.T=T;
-  // damage: the zone bonus and the overheat penalty, hero to foe and foe to hero (fixed RNG: no spread, no crit)
-  const h=B.front[0],e=B.en[0],S=A.B4.mo(),dm=(x,y)=>A.B4.calc(x,{id:'attack',k:'phys',pw:1,t:'one'},y).dmg;
-  S.m=10;S.over=0;const c0=dm(h,e),t0=dm(e,h);S.m=T;const c1=dm(h,e),t1=dm(e,h);S.m=M.max;S.over=1;const c2=dm(h,e),t2=dm(e,h);S.m=10;S.over=0;
-  o.dmg=[c0,c1,c2,t0,t1,t2];o.gauge=document.getElementById('b4mo')?document.getElementById('b4mo').className:'';return o;});
+  o.a1=act(atk);o.a2=act(atk);                                     // first move fills, the same move again drains
+  o.v1=act(()=>A.B4.exec(fire,[B.en[0]]));o.v2=act(()=>A.B4.exec(ice,[B.en[0]]));o.v3=act(atk);o.v4=act(()=>A.B4.exec(fire,[B.en[0]])); // offense run: 2 (fire after atk... ) 
+  o.g1=act(()=>A.B4.guard());o.sg=A.B4.moState();                  // a non offensive move fills and resets the offense run
+  // fill to full with varied moves
+  const S=A.B4.mo();S.m=M.max-M.vary;S.last='guard';S.offRun=0;o.f1=act(atk);o.sf=A.B4.moState();
+  S.m=M.rep;S.last='atk';S.full=0;S.empty=0;o.e1=act(atk);o.se=A.B4.moState();
+  // damage: Surge bonus and Drained penalty, hero to foe and foe to hero
+  const h=B.front[0],e=B.en[0],dm=(x,y)=>A.B4.calc(x,{id:'attack',k:'phys',pw:1,t:'one'},y).dmg;
+  S.m=50;S.full=0;S.empty=0;const c0=dm(h,e),t0=dm(e,h);S.full=1;const c1=dm(h,e),t1=dm(e,h);S.full=0;S.empty=1;const c2=dm(h,e),t2=dm(e,h);S.empty=0;
+  o.dmg=[c0,c1,c2,t0,t1,t2];A.render();o.gauge=document.getElementById('b4mo')?document.getElementById('b4mo').className:'';o.offRun=S.offRun;return o;});
 const M=await ev(()=>__A.B4.cfg.mo);
 chk(`momentum: starts at ${M.start}`,m.start===M.start);
-chk(`momentum: the first move builds toward the zone (${m.start} -> ${m.a1}), repeats push it up by ${M.rep} (${m.a2}, ${m.a3}, ${m.a4}, ${m.a5})`,m.a1===m.start+M.vary&&m.a2===m.a1+M.rep&&m.a3===m.a2+M.rep&&m.a5===M.max||JSON.stringify(m));
-chk(`momentum: repeating overheats it (${m.s3} then ${m.s5})`,m.s3==='hot'&&m.s5==='over'||JSON.stringify(m));
-chk(`momentum: Guard cools it by ${M.guard} (${m.a5} -> ${m.g1}, ${m.s6}; then ${m.g2}, ${m.s7})`,m.g1===M.max-M.guard&&m.s6==='zone'&&m.s7==='zone'||JSON.stringify(m));
-chk(`momentum: varied moves keep it in the zone (${m.v1}, ${m.v2}, ${m.v3}: ${m.sv})`,m.sv==='zone'&&Math.abs(m.v3-m.T)<=M.vary||JSON.stringify(m));
+chk(`momentum: a different move fills it by ${M.vary} (${m.start} -> ${m.a1}), the same move again drains ${M.rep} (${m.a2})`,m.a1===m.start+M.vary&&m.a2===m.a1-M.rep||JSON.stringify(m));
+// the two opening attacks count: the fire spell is the 3rd offensive move in a row (fills), then every further attack drains
+chk(`momentum: varied attacks fill up to ${M.offN} offensive moves in a row, then attacking drains ${M.off} (${m.a2} -> ${m.v1}, ${m.v2}, ${m.v3}, ${m.v4})`,m.v1===m.a2+M.vary&&m.v2===m.v1-M.off&&m.v3===m.v2-M.off&&m.v4===m.v3-M.off||JSON.stringify(m));
+chk(`momentum: a non offensive move fills it and resets the run (${m.v4} -> ${m.g1})`,m.g1===m.v4+M.vary||JSON.stringify(m));
+chk(`momentum: full gives the Surge (${m.f1}: ${m.sf}), empty gives Drained (${m.e1}: ${m.se})`,m.f1===M.max&&m.sf==='full'&&m.e1===0&&m.se==='empty'||JSON.stringify(m));
 const [c0,c1,c2,t0,t1,t2]=m.dmg,near=(a,b)=>Math.abs(a-b)<=Math.max(1,b*.02);
-chk(`momentum: in the zone heroes deal +${M.dmg*100}% (${c0} -> ${c1}) and take -${M.taken*100}% (${t0} -> ${t1})`,near(c1,c0*(1+M.dmg))&&near(t1,t0*(1-M.taken))||JSON.stringify(m.dmg));
-chk(`momentum: overheated heroes deal -${M.pen*100}% (${c2}) and take +${M.pen*100}% (${t2})`,near(c2,c0*(1-M.pen))&&near(t2,t0*(1+M.pen))||JSON.stringify(m.dmg));
+chk(`momentum: Surge heroes deal +${M.dmg*100}% (${c0} -> ${c1}) and take -${M.taken*100}% (${t0} -> ${t1})`,near(c1,c0*(1+M.dmg))&&near(t1,t0*(1-M.taken))||JSON.stringify(m.dmg));
+chk(`momentum: Drained heroes deal -${M.pen*100}% (${c2}) and take +${M.pen*100}% (${t2})`,near(c2,c0*(1-M.pen))&&near(t2,t0*(1+M.pen))||JSON.stringify(m.dmg));
 chk('momentum: the gauge is on the screen',/b4mo/.test(m.gauge)||m.gauge);
 // ---------- 4) roles ----------
 const r=await ev(()=>{const A=__A,o={};const turn=e=>{A.B4.foeTurn(e);};

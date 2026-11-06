@@ -2,8 +2,8 @@
 // 1) Detonation reward: the hero who sets off a reaction gets MP back, shown in the floating reaction text ("+N MP").
 // 2) Free swap: on a hero's turn another Vanguard hero can trade places with a Rearguard hero without using the turn, once every
 //    B4.swap.cd party turns. Rooted heroes cannot step back. Auto battle uses it only where its own switch rules say it helps.
-// 3) Momentum: a party gauge with a sweet zone. Varied actions keep it in the zone (heroes deal more, take less); the same kind of
-//    action again and again overheats it (no bonus, a light penalty). Guard or a different action cools it. Shown in the log ticker.
+// 3) Momentum (v0.9.4, simpler): different moves fill the gauge, repeating a move or only attacking drains it. Full: a Surge (heroes deal
+//    more, take less). Empty: Drained (a light penalty). Shown in the log ticker; tap it for the rule in the log.
 // 4) Foe roles (Shieldbearer, Hexer, Charger, Leech, Skirmisher): each punishes one mistake. Data in B4.roleOf (config.js), a role
 //    field on the monster; the role line shows on Scan and in the Bestiary.
 //    Intents (battle5.js): b4RolePlan(u) says, without touching the RNG, what the role makes the foe do on its next turn (null =
@@ -36,14 +36,20 @@ function b4DetGain(a){const D=B4.det;return Math.max(D.mpMin,Math.round(((a.S&&a
 // ----- 3) momentum: the kind of an action, the gauge, its effect -----
 function b4Sig(sk){if(!sk)return 'atk';if(sk.limit)return 'limit';if(sk.id==='attack')return 'atk';if(sk.k==='heal'||sk.k==='revive'||sk.k==='mpself')return 'heal';
   if(sk.k==='phys'||sk.k==='mag')return 'd:'+(skEls(sk)[0]||'-')+':'+sk.k+':'+(sk.t==='all'||sk.t==='rand'?'all':'one');return 'sup:'+((sk.fx&&sk.fx[0]&&sk.fx[0][0])||sk.k);}
-function b4MoS(){return B.b4mo||(B.b4mo={m:B4.mo.start,last:null,over:0,n:0,hist:[]});}
-function b4MoState(){if(!b4On('mo'))return 'off';const S=b4MoS(),M=B4.mo;if(S.over)return 'over';return S.m<M.lo?'cold':S.m>M.hi?'hot':'zone';}
-function b4MoAct(sig){const S=b4MoS(),M=B4.mo,T=(M.lo+M.hi)/2,m0=S.m;let m=m0;
-  if(sig==='guard'&&m>T)m=Math.max(0,m-M.guard);
-  else if(sig!=='guard'&&sig===S.last)m=Math.min(M.max,m+M.rep);
-  else m=m>T?Math.max(T,m-M.vary):Math.min(T,m+M.vary);
-  S.m=m;S.last=sig;S.n++;if(m>=M.max&&!S.over){S.over=1;log('Momentum overheats: the same moves again and again. Vary them or Guard to cool it.');}
-  else if(S.over&&m<=M.hi){S.over=0;log('Momentum cools back down.');}
+function b4MoS(){return B.b4mo||(B.b4mo={m:B4.mo.start,last:null,full:0,empty:0,offRun:0,n:0,hist:[]});}
+// v0.9.4: states are build (in between), full (Surge, a bonus) and empty (Drained, a penalty)
+function b4MoState(){if(!b4On('mo'))return 'off';const S=b4MoS();return S.full?'full':S.empty?'empty':'build';}
+const b4Off=sig=>sig==='atk'||sig==='limit'||/^d:/.test(sig||'');
+function b4MoAct(sig){const S=b4MoS(),M=B4.mo,m0=S.m,off=b4Off(sig);let m=m0;
+  S.offRun=off?(S.offRun||0)+1:0;
+  if(sig===S.last)m-=M.rep;                         // the same kind of move again
+  else if(off&&S.offRun>M.offN)m-=M.off;            // only attacking for too long
+  else m+=M.vary;                                   // something different
+  m=Math.max(0,Math.min(M.max,m));S.m=m;S.last=sig;S.n++;
+  if(m>=M.max&&!S.full){S.full=1;S.empty=0;log(`Momentum Surge: heroes deal ${Math.round(M.dmg*100)}% more and take ${Math.round(M.taken*100)}% less.`);}
+  else if(S.full&&m<M.fullOff){S.full=0;log('The Surge fades.');}
+  if(m<=0&&!S.empty){S.empty=1;S.full=0;log(`Momentum drained: heroes deal ${Math.round(M.pen*100)}% less and take ${Math.round(M.pen*100)}% more. Mix up your moves.`);}
+  else if(S.empty&&m>M.emptyOff){S.empty=0;log('Momentum recovers.');}
   S.hist.push([sig,m0,m]);if(S.hist.length>40)S.hist.shift();}
 // every hero action: momentum, and how long the same three heroes have stood in the Vanguard (the Skirmisher reads it)
 function b4PartyAct(a,sig){if(!B||!a||a.side!=='p')return;
@@ -139,7 +145,7 @@ b4HookPlan();b4HookTurn();
 // damage: momentum, Hex, Shieldbearer cover
 {const cd0=calcDamage;calcDamage=function(a,sk,t){const r=cd0.apply(this,arguments);
   try{if(!B||!r||!r.dmg||!a||!t)return r;let m=1;
-    if(b4On('mo')&&(a.side==='p'||t.side==='p')){const s=b4MoState(),M=B4.mo;if(s==='zone')m*=a.side==='p'?1+M.dmg:1-M.taken;else if(s==='over')m*=a.side==='p'?1-M.pen:1+M.pen;}
+    if(b4On('mo')&&(a.side==='p'||t.side==='p')){const s=b4MoState(),M=B4.mo;if(s==='full')m*=a.side==='p'?1+M.dmg:1-M.taken;else if(s==='empty')m*=a.side==='p'?1-M.pen:1+M.pen;}
     if(a.side==='p'&&b4Hex(a))m*=Math.max(.5,1-B4.roles.hexDmg*b4Hex(a));
     if(a.side==='p'&&t.side==='e'&&t.hp>0&&b4Role(t)!=='guard'&&b4On('roles')){const sb=B.en.find(e=>e!==t&&e.hp>0&&b4Role(e)==='guard'&&e.shield>0&&!e.broken);
       if(sb){m*=1-B4.roles.cover;if(B.b4covAct!==B.actN){B.b4covAct=B.actN;fx(t,'Covered','stat');log(`${sb.name}'s shield covers ${t.name}.`);}}}
@@ -170,7 +176,7 @@ function b4Smart(){const a=B.cur;if(!a||a.side!=='p')return false;const foes=B.e
   const lc=foes.find(e=>b4Role(e)==='leech');
   if(lc&&foes.length>1){const s=dmg.filter(s=>s.t==='one').sort((x,y)=>y.pw*(y.hits||1)*bestMult(y,lc,a)-x.pw*(x.hits||1)*bestMult(x,lc,a))[0];if(s&&s.pw*bestMult(s,lc,a)>=1.1){exec(s,[lc]);return true;}}
   // momentum running hot: a different kind of action than the party's last
-  const st=b4MoState();if(st==='hot'||st==='over'){const last=b4MoS().last,opts=dmg.concat([ATTACK]).filter(s=>b4Sig(s)!==last);
+  const st=b4MoState(),MS=b4MoS();if(st!=='off'&&(MS.offRun>=B4.mo.offN||st==='empty'||MS.last==='atk')){const last=MS.last,opts=dmg.concat([ATTACK]).filter(s=>b4Sig(s)!==last);
     if(opts.length){let best=null,bv=0,bt=null;opts.forEach(s=>{const t=foes.slice().sort((x,y)=>bestMult(s,y,a)-bestMult(s,x,a)||x.hp-y.hp)[0];const v=s.pw*(s.hits||1)*bestMult(s,t,a)*(s.t==='all'?Math.min(3,foes.length)*.7:1);if(v>bv){bv=v;best=s;bt=t;}});
       if(best&&st==='over'||best&&b4Sig(best)!=='atk'){exec(best,best.t==='all'||best.t==='rand'?foes:[bt]);return true;}}}
   return false;}
@@ -183,10 +189,10 @@ function b4Smart(){const a=B.cur;if(!a||a.side!=='p')return false;const foes=B.e
 
 // ----- UI: the momentum gauge in the log ticker under the stage -----
 function b4MoHtml(){const S=b4MoS(),M=B4.mo,st=b4MoState(),pc=v=>Math.round(100*v/M.max);
-  const lab={cold:'Build',zone:'+'+Math.round(M.dmg*100)+'%',hot:'Hot',over:'Over'}[st];
-  return `<span class="b4mt"><b>Momentum</b><em>${lab}</em></span><span class="b4bar"><i class="z" style="left:${pc(M.lo)}%;width:${pc(M.hi-M.lo)}%"></i><i class="v" style="width:${pc(S.m)}%"></i></span>`;}
+  const lab={build:'',full:'Surge +'+Math.round(M.dmg*100)+'%',empty:'Drained'}[st]||'';
+  return `<span class="b4mt"><b>Momentum</b><em>${lab}</em></span><span class="b4bar"><i class="v" style="width:${pc(S.m)}%"></i></span>`;}
 function b4MoLabel(){const S=b4MoS(),M=B4.mo,st=b4MoState(),p=x=>Math.round(x*100)+'%';
-  return `Momentum ${Math.round(S.m)} of ${M.max}: `+{cold:`building. Vary your moves to reach the zone (${M.lo} to ${M.hi}).`,zone:`in the zone: heroes deal ${p(M.dmg)} more and take ${p(M.taken)} less.`,hot:'running hot: no bonus. Vary your moves or Guard.',over:`overheated: heroes deal ${p(M.pen)} less and take ${p(M.pen)} more until it cools to ${M.hi}.`}[st];}
+  return `Momentum ${Math.round(S.m)} of ${M.max}: `+{build:`different moves fill it, repeating a move or only attacking drains it. Full: a Surge (heroes deal ${p(M.dmg)} more, take ${p(M.taken)} less). Empty: Drained (deal ${p(M.pen)} less, take ${p(M.pen)} more).`,full:`Surge: heroes deal ${p(M.dmg)} more and take ${p(M.taken)} less while it stays above ${M.fullOff}.`,empty:`Drained: heroes deal ${p(M.pen)} less and take ${p(M.pen)} more until it climbs above ${M.emptyOff}. Mix up your moves.`}[st];}
 function b4MoDraw(){const bl=document.getElementById('bline');if(!bl)return;let el=document.getElementById('b4mo');
   if(!B||!b4On('mo')){if(el)el.remove();return;}
   if(!el){el=document.createElement('button');el.id='b4mo';el.type='button';el.dataset.act='b4mo';bl.insertBefore(el,bl.firstChild);}
