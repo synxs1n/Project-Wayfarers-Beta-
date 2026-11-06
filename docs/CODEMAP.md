@@ -84,7 +84,7 @@ Systems (v0.1 to v0.4)
 - `map.js` area map, minimap, world map · `anim.js` battle poses · `battleui.js` badges, cards, detail panel · `autoset.js` auto settings
 - `shopfx.js` purchase feedback · `daylight.js` dusk and dawn · `starter.js` starter sheets and draw · `tiers.js` tier chips, Craft only
 - `sigskills.js` signature skills · `npc2.js` NPC dialogue · `realms.js` realms logic · `roam.js` roamers · `sites.js` side sites, minibosses
-- `rivals.js` rivals · `sprites.js` item palettes · `capes.js` capes · `saves.js` save recovery and slots · `cloud.js` Firebase accounts
+- `rivals.js` rivals · `rivalghost.js` rivals waiting for a hero not in your six (see through, passable, the hint) · `sprites.js` item palettes · `capes.js` capes · `saves.js` save recovery and slots · `cloud.js` Firebase accounts
 - `update.js` update prompt · `allq.js` Accept all / Claim all · `economy.js` ECON price pass
 
 v0.4.5 to v0.6
