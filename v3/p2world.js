@@ -204,7 +204,12 @@ function laneFix(m){if(!m||m.kind!=='town'||m.laneDone)return;m.laneDone=1;m.lan
         gate.cells=mv.cells;r=mv.r;}}
     if(r)laneApply(m,gate,r.path);});
   // the arrival tile of a gate must be open ground
-  if(m.gates)Object.values(m.gates).forEach(q=>{if(q&&q.arrive){const [x,y]=q.arrive;if(m.t[y]&&SOLID.includes(m.t[y][x]))m.t[y][x]='=';}});
+  // v0.7.1: a moved gate's arrival tile (two tiles in) could land inside a building and was paved there, a walkable hole in a wall that is
+  // drawn whole; it steps back toward the gate instead
+  const inB=(x,y)=>m.bld.some(b=>x>=b.x&&x<b.x+b.w&&y>=b.y&&y<b.y+b.h);
+  if(m.gates)Object.values(m.gates).forEach(q=>{if(q&&q.arrive){let [x,y]=q.arrive;
+    if(inB(x,y)&&q.cells&&q.cells.length&&!window.__W71OFF){const md=q.cells[Math.floor(q.cells.length/2)];while(inB(x,y)&&Math.abs(md[0]-x)+Math.abs(md[1]-y)>1){x+=Math.sign(md[0]-x);y+=Math.sign(md[1]-y);}q.arrive=[x,y].concat(q.arrive.slice(2));}
+    if(m.t[y]&&SOLID.includes(m.t[y][x])&&(!inB(x,y)||window.__W71OFF))m.t[y][x]='=';}});
   laneEvict(m);}
 function laneEvict(m){if(!m.lane||!m.lane.size)return;const W=m.t[0].length,H=m.t.length;
   m.npcs.forEach(n=>{if(!m.lane.has(n.x+','+n.y))return;let best=null,bd=1e9;

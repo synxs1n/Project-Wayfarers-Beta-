@@ -7,7 +7,10 @@ const HEAL_PROPS=PROP_CH,HEAL_LOOSE='C'+PROP_CH;
 function mapEntry(m){
   if(m.gates&&m.gates.start&&m.gates.start.arrive)return m.gates.start.arrive;
   if(m.start)return m.start;
-  if(m.kind==='town'||m.kind==='field'){const e=(m.exits||[])[0];if(e)return [e.x===0?1:Math.max(0,e.x-1),e.y];}
+  // v0.7.1: a town whose first exit is a north or south gate used to start from the wall tile beside it (x-1 on row 0), so the reach was
+  // empty and nothing in that town was ever checked; any gate's arrival tile, else one step in from the exit's own edge
+  if(m.gates&&!window.__W71OFF){const q=Object.values(m.gates).find(g=>g&&g.arrive);if(q)return q.arrive;}
+  if(m.kind==='town'||m.kind==='field'){const e=(m.exits||[])[0];if(e&&window.__W71OFF)return [e.x===0?1:Math.max(0,e.x-1),e.y];if(e){const W=m.t[0].length,H=m.t.length;return e.x===0?[1,e.y]:e.x===W-1?[W-2,e.y]:e.y===0?[e.x,1]:e.y===H-1?[e.x,H-2]:[e.x,e.y];}}
   if(m.entOut)return m.entOut;
   return null;
 }
