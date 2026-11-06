@@ -34,9 +34,11 @@ const measure=H=>H.ev(()=>{const A=__A,WS=A.WS,HD=A.HD;A.worldDraw2(performance.
     chk(`${t}: no hard dark bar under the feet in town (worst row ratio ${day.worst})`,day.bar===0||JSON.stringify(day));
     // dungeon: next to a wall torch, then far from any light (the hero's own lantern stays)
     const dun=await ev(()=>{const A=__A;A.G.clock=120;A.enterDungeon(0);A.render();const m=A.WS.m,T=(m.lights||[]).filter(L=>L[3]==='torch');const tor=(m.lights||[]).map(L=>[L[0],L[1]]);let near=null,far=null,fd=0;
-      for(const L of T){const tx=Math.floor(L[0]/16),ty=Math.floor(L[1]/16)+1;if(!A.solidAt(m,tx,ty)&&A.tileAt(m,tx,ty)!=='E'){near=near||[tx,ty];}}
+      // v0.8.2 themed dungeons light their caves with crystals, fungi and lava too: take the torch with no other light close by
+      const other=(m.lights||[]).filter(L=>L[3]!=='torch'&&L[3]!=='day').concat(m.tl||[]);let nb=-1;
+      for(const L of T){const tx=Math.floor(L[0]/16),ty=Math.floor(L[1]/16)+1;if(ty<2||A.solidAt(m,tx,ty)||A.tileAt(m,tx,ty)==='E')continue;const d=other.length?Math.min(...other.map(o=>Math.hypot(o[0]-L[0],o[1]-L[1]))):999;if(d>nb){nb=d;near=[tx,ty];}}
       for(let y=1;y<m.h-1;y++)for(let x=1;x<m.w-1;x++){if(A.solidAt(m,x,y)||A.tileAt(m,x,y)!=='.')continue;const d=Math.min(...tor.map(p=>Math.hypot(p[0]-x*16-8,p[1]-y*16-8)));if(d>fd){fd=d;far=[x,y];}}
-      return {id:m.id,near,far,fd:Math.round(fd)};});
+      return {id:m.id,near,far,fd:Math.round(fd),d8:m.d8,nt:T.length};});
     await ev(d=>{__A.placeAt(d.id,d.far[0],d.far[1],'d');__A.render();},dun);await wait(300);const far=await measure(H);
     await ev(d=>{__A.placeAt(d.id,d.near[0],d.near[1],'d');__A.render();},dun);await wait(300);const near=await measure(H);
     // the same spot with the torches put out (the baked light list without them; the ground darkens too)

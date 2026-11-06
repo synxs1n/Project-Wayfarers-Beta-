@@ -43,7 +43,7 @@ for(const [mat,P] of Object.entries(plan)){if(process.env.LAIRONLY)break;const n
   chk(`${mat}: no generation errors`,r.err.length===0||r.err.slice(0,3).join(' '));}
 // the lair mounds: every stage's field over N seeds
 {const r=await ev(N=>{const A=__A,G=A.G,D=__D8,o={n:0,mound:0,big:0,issues:[],hidden:[],out:0,face:{}};const seed0=G.run.seed;
-  try{for(let k=0;k<N;k++){G.run.seed=k*7919+101;G.sub=null;A.resetMaps();for(let s=1;s<5;s++){let f;try{A.resetMaps();f=A.getMap('f'+s);}catch(e){continue;}if(!f.ent)continue;o.n++;const L=f.d8lair;
+  try{for(let k=0;k<N;k++){G.run.seed=k*7919+101;G.sub=null;A.resetMaps();for(let s=0;s<5;s++){let f;try{A.resetMaps();f=A.getMap('f'+s);}catch(e){continue;}if(!f.ent)continue;o.n++;const L=f.d8lair;
     if(L){o.mound++;if(L.tiles.length>=9)o.big++;o.face[String(L.fv)]=(o.face[String(L.fv)]||0)+1;}
     const iss=A.mapIssues(f).length,pa=A.pathAssets(f).length;if(iss||pa){const keep=A.MAPS;window.__D8OFF=true;A.resetMaps();const f0=A.getMap('f'+s),i0=A.mapIssues(f0).length,p0=A.pathAssets(f0).length;window.__D8OFF=false;A.resetMaps();f=A.getMap('f'+s);
       if(iss>i0||pa>p0)o.issues.push('seed'+G.run.seed+' f'+s+' '+iss+'/'+pa+' (without the mound '+i0+'/'+p0+')');else o.pre=(o.pre||0)+1;}

@@ -577,7 +577,9 @@ function hdFrame(now){const m=WS.m,gl=HD.gl,q=hdTierQ(),still=gfxStill(),ts=stil
   const R=HD.lmR;gl.uniform4f(u.uLR,R[0],R[1],1/R[2],1/R[3]);
   gl.uniform3f(u.uCam,HD.eye[0]-HD.cam.x,HD.eye[1],HD.eye[2]-HD.cam.z);gl.uniform3fv(u.uFogC,o.fog);
   {const f=HD.fogU||(HD.fogU=[0,0,0]);f[0]=HD.D*HD2D.fogStart*(o.fogS||1);f[1]=HD.D*HD2D.fogEnd*(.55+.45*(o.fogS||1));f[2]=o.fogA;gl.uniform3f(u.uFog,f[0],f[1],f[2]);}// v0.8.0: fog, blizzard and sand start nearer (fogN)
-  gl.uniform1f(u.uEmis,o.emis);gl.uniform1f(u.uAct,m.kind==='dungeon'?HD2D.spr.act.dun:HD2D.spr.act.out*Math.min(1,o.emis+.2));
+  // v0.9.2: uEmis is set again (a v0.8.0 comment had swallowed this line, so lamps and windows lost their night glow); the characters'
+  // readability floor (uAct) stays off as it has been since v0.8.0, the scene's character lighting is tuned that way (v062a)
+  gl.uniform1f(u.uEmis,o.emis);gl.uniform1f(u.uAct,0);
   // v0.5.8 characters: pre-grade softening, light map spread, rim strength and colour (the sun or moon; lamps add their own colour in the
   // shader), the ambient's hue for the readability floor, one atlas texel (the rim reads the neighbour toward the light)
   {const P=HD2D.spr,a=o.amb,al=Math.max(.05,a[0]*.3+a[1]*.59+a[2]*.11),sn=o.sun,sl=Math.max(.05,sn[0]*.3+sn[1]*.59+sn[2]*.11),rk=Math.min(1,sl*2.2);

@@ -110,8 +110,14 @@ into a mound raised from the field's own ground (`d8LairShape`, a `getMap` wrapp
   hill about 5 x 3 tiles with a lit mouth, torches and the Scourge's marks.
 - Map: its own icon (a mound with a dark mouth and a red glow, gold when relit) and legend entry, "Lair" / "Lair (relit)", on the full
   map and the minimap. The world map keeps its dark tower vignette with the gold beacon once relit.
-- Also fixed (`hd2d.js`): a v0.8.0 comment had swallowed the line that sets the scene shader's `uEmis` and `uAct` uniforms, so in HD-2D
-  the emissive pixels and the readability floor of characters stayed at whatever the GL program last held; snow fields read washed out.
+- Also fixed (`hd2d.js`): a v0.8.0 comment had swallowed the line that sets the scene shader's `uEmis` (lamps and windows glowing at
+  night) and the characters' `uAct` (a readability floor) uniforms, so both stayed 0. v0.9.2 set both again; v062a then failed (at night
+  the floor lifted the hero above his daylight brightness, and torch light counted for less), so `uEmis` stays set and `uAct` is set to 0,
+  the value the character lighting has been tuned with since v0.8.0.
+
+v0.9.2 follow ups: organic places carry a few torches too (every 14th face rather than every 7th, as in the built ones), so a hero by a
+torch is lit by it; a battle whose caller names its own backdrop (`spec.bg`) keeps it (only battles that pick their backdrop from the
+ground take the material).
 
 ## 4. Old saves
 
@@ -133,7 +139,12 @@ beside the mound.
   (2D: the pixels of the hero's box are the same with and without the lair effects; HD-2D: the plume is skipped in front); the relit look
   (gold light, a cleared mouth, "lairlit" icon); a field save on a mound tile loads beside it; a save on a now liquid tile loads next to it
   in the same dungeon, saves on carved floor and on the start load where they were; no page errors.
-- `v082da.js` also sweeps the lair fields (`LAIRONLY=1` runs only that part).
+- `v082da.js` also sweeps the lair fields, stages 0 to 4 (`LAIRONLY=1` runs only that part): 999 of 1000 have a mound, about 91% of
+  at least 9 tiles.
+- `v062a.js` (characters in the HD-2D scene) picks the torch with no other light close by for its "a torch close by lights the hero"
+  check: themed dungeons also light their caves with crystals, fungi and lava, and next to a lava pool a torch adds little.
+- Known, not from this pass: in snow realms journey seed 807839 puts a field chest on a path tile (f0, C@20,28), the same on the v0.8.2
+  build before any of this work and with the lair switched off; v050p1c meets it when the clock draws a snow realm for the first stage.
 - `v082dperf.js`: Low and Medium, an ice cavern, a volcanic cavern, a crypt and the lair field, in turns with the build before.
   v0.8.9 lair (CPU x4, 390x844 at 2x, best of 3 against v0.8.9 main): Low lair field 60.2 -> 60.2, Medium lair field 58.8 -> 58.2,
   Low volcanic dungeon 60.3 -> 60.1, Medium 58.8 -> 59.9.

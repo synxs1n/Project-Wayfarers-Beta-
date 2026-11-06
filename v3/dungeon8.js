@@ -170,7 +170,7 @@ function d8Tile(ctx,m,x,y,frame){const mat=m.d8,D=DTH(m),org=m.d8org,c=tileAt(m,
   const f=(col,a,b,w,h)=>{ctx.fillStyle=col;ctx.fillRect(px+a,py+b,w,h);};const isW=(dx,dy)=>tileAt(m,x+dx,y+dy)==='#';D8.n2d[mat]=(D8.n2d[mat]||0)+1;
   if(c==='#'){
     if(!isW(0,1)){d8FaceArt(f,R,mat,D,16,d8tv(x,y)>=2,org,(x*3+y*5)%(org?11:7)===3?L:null,px,py);
-      if(!org&&(x*3+y*5)%7===0&&tileAt(m,x,y+1)!=='~'){f('#3a2a1a',7,6,2,6);f('#5a4a3a',6,10,4,2);L.push([px+8,py+5,34,'torch']);m.torches=m.torches||[];m.torches.push([px+8,py+5]);}}
+      if((x*3+y*5)%(org?14:7)===0&&tileAt(m,x,y+1)!=='~'){f('#3a2a1a',7,6,2,6);f('#5a4a3a',6,10,4,2);L.push([px+8,py+5,34,'torch']);m.torches=m.torches||[];m.torches.push([px+8,py+5]);}}
     else{d8TopArt(f,R,mat,D,org);if(!isW(-1,0))f(D.w[1],0,0,2,16);if(!isW(1,0))f(D.w[1],14,0,2,16);if(!isW(0,-1))f(D.w[1],0,0,16,2);
       if(org){// rounded outer corners of the rock mass
         if(!isW(-1,0)&&!isW(0,-1)){f(D.f[1],0,0,3,1);f(D.f[1],0,0,1,3);}if(!isW(1,0)&&!isW(0,-1)){f(D.f[1],13,0,3,1);f(D.f[1],15,0,1,3);}}}
@@ -217,7 +217,7 @@ const D8_PGLOW={ice:'ice',icevault:'ice',lava:'lava',forge:'lava',root:'fungus',
     D8.hd.struct=m.d8;D8.hd.id=m.id;}}catch(e){}return cv;};}
 
 // =================== 1. battles fought here use the same material ===================
-{const sb0=startBattle;startBattle=function(spec){try{if(spec&&typeof spec==='object'&&!(G&&G.daily)&&spec.kind!=='daily'&&spec.kind!=='arena'&&V.screen==='world'&&WS.m&&WS.m.d8){spec.d8=WS.m.d8;spec.d8org=WS.m.d8org?1:0;}}catch(e){}
+{const sb0=startBattle;startBattle=function(spec){try{if(spec&&typeof spec==='object'&&!(G&&G.daily)&&spec.kind!=='daily'&&spec.kind!=='arena'&&!spec.bg&&V.screen==='world'&&WS.m&&WS.m.d8){spec.d8=WS.m.d8;spec.d8org=WS.m.d8org?1:0;}}catch(e){}
   return sb0.apply(this,arguments);};}
 function d8BgExtra(ctx,W,H,R,mat,pre){const gy=bgGY(H),D=DTHEME['d8'+mat],f=(c,x,y,w,h)=>{ctx.fillStyle=c;ctx.fillRect(Math.round(x),Math.round(y),w,h);};
   if(mat==='ice'||mat==='icevault'){for(let x=0;x<W;x+=3+Math.floor(R()*4)){const l=3+Math.floor(R()*10);f('#eefaff',x,0,2,2);f('#cfeeff',x,2,1,l);}for(let i=0;i<6;i++){const x=Math.floor(R()*W),y=gy+2+Math.floor(R()*(H-gy-4));f('#ffffff',x,y,4,1);f('#bfe6ff',x+1,y-1,2,1);}}
