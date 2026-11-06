@@ -1,4 +1,4 @@
-// =================== v0.5.3: HD-2D battle spells, impacts and camera (GL stage only) ===================
+// ===== hdspell.js (v0.5.3): HD-2D battle spells, impacts and camera =====
 // With the GL stage on (hdstage.js), element hits get their own set piece drawn into the unit layer (so they bloom), a point light on the
 // stage and, for some, a glowing circle on the floor: fire tongues, ice spikes, a lightning bolt from the sky, a water geyser with ripples,
 // earth spikes with dust, a wind funnel, a beam of light, a shadow vortex that darkens the stage. Casters get a floor circle and a light,

@@ -1,3 +1,4 @@
+// ===== starter.js (v0.4.0): starter hero sheets and the starter draw =====
 // ===== v0.4.0 3.8: starter hero sheets (and, in later phases, the starter draw rules) =====
 // The sheet shows a hero as they would begin: level 3, no nature bonus, no gear beyond the class kit.
 // It reads the same tables the game does, so it never drifts from the real numbers.

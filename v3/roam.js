@@ -1,4 +1,4 @@
-// ===== Beta v0.4.1 4.6: roaming enemies in dungeons =====
+// ===== roam.js (v0.4.1): roaming dungeon foes =====
 // Visible foes patrol the rooms of main dungeons. Touching one (or being caught) starts a battle; they can be avoided: they patrol
 // back and forth inside rooms, see only a short cone ahead (ROAM.sight tiles), and move slower than you even when they chase.
 // They spawn only on open room tiles (never corridors, never near the entrance, never on stairs, chests, levers or doors), so a

@@ -1,3 +1,4 @@
+// ===== p45hook.js (v0.5.0): test handles for phases 4 and 5 (added to window.__A) =====
 // Beta v0.5.0 phases 4 and 5: test handles, added to window.__A once the shell has made it (end of this script)
 queueMicrotask(()=>{try{const A=window.__A;if(!A)return;const X={realmReached,pqShown,pqSheetLine,guildText,xpCatchMul,bossEnergyText,cfgVol,p5Vol,p5Saved,p5Place,p5Anchor,gameTitleVer,trUpdate,trPhW,trEase,trAmbDur,p5FlushNow,
   XPCU,TRANS,SAVE_UI,PERSONAL_BT,PERSONAL_REALM,GAME_TITLE,P5S,TR,

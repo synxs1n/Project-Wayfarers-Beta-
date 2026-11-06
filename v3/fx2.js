@@ -1,4 +1,4 @@
-// =================== BATTLE TEXT (Beta v0.3.2) ===================
+// ===== fx2.js (v0.3.2): battle text: floating numbers in their own layer, banners =====
 // Every effect text floats over the unit it affects, in its own layer, clamped inside the stage. Texts on one unit
 // take stacked slots (oldest nearest the head) with a small stagger, so nothing overlaps. The top banner is only for
 // global events (boss intro, phase change, weather, Limit Breaks, swaps, waves), and it is a thin strip.

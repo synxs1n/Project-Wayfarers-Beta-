@@ -1,4 +1,4 @@
-// =================== Beta v0.5.0 Phase 6: graphics quality, shared sprites, parallax hook, menu depth of field ===================
+// ===== gfx6.js (v0.5.0): graphics quality tiers (GFX), shared sprites, parallax, menu depth of field =====
 // Tiers and every tunable are in config.js (GFX_Q, GFX_AUTO, GFX_PARA, GFX_CAM). META.cfg.gfx is optional ('auto' when missing),
 // META.cfg.gfxAuto remembers the last tier Auto settled on. Nothing here touches the save, the Daily Trial or game state.
 // World passes are in gfx6world.js, battle passes in gfx6battle.js. All new motion freezes under reduced motion (gfxStill()).

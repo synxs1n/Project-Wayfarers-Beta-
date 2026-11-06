@@ -1,3 +1,4 @@
+// ===== gearmig.js (v0.3.5): gear migration for old saves (per class weapon types and armor weights) =====
 // Beta v0.3.5: gear migration. Weapon types and armor weights are now per class, so an old save can hold gear its owner can no longer use.
 // Illegal pieces go back to the pack (never deleted), the best legal piece takes their place, and a hero with nothing legal is reissued a plain
 // piece of their class's default family at the same tier. Safe to run on every load: it does nothing when every hero is already legal.

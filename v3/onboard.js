@@ -1,4 +1,4 @@
-// =================== v0.7.x ONBOARDING: every system explains itself the first time you meet it ===================
+// ===== onboard.js (v0.7.0): onboarding: one tip card the first time each system appears =====
 // One short card (two lines at most, plain words) the first time the player really meets a system: the first primed foe, the
 // first shield, the first tame offer, the first time Alchemy sells Camp Supplies, and so on. It reuses the 2.7 hint card
 // (p2world.js: the #p2hint element, its look and hintPlace) with "Got it" and "More" (More opens Guides > How it works at that

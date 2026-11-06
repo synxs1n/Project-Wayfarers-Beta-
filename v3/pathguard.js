@@ -1,3 +1,4 @@
+// ===== pathguard.js (v0.5.0): paths are protected: path assets, guard passes, hidden props =====
 // =================== Beta v0.5.0 1.3: paths are protected (file: pathguard.js) ===================
 // Every walkable corridor and path tile, dead ends and alternate routes included, is protected. Stairs, chests, levers, key chests,
 // props, decor and standing NPCs may only sit in room interiors, corners, sides and alcoves that are not on a path tile.

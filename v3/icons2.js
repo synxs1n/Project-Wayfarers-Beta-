@@ -1,4 +1,4 @@
-// ===== Beta v0.6.3: icons part 2: charms, personal rewards, Echoforged, consumables, materials, and the hooks =====
+// ===== icons2.js (v0.6.3): icons part 2: charms, personal rewards, Echoforged, consumables, materials, the hooks =====
 // ----- small glyphs (5x5, '#' takes the glyph key) -----
 const IC_GLY={
  cross:['..#..','..#..','#####','..#..','..#..'],eye:['.....','.###.','#.#.#','.###.','.....'],flame:['..#..','.##..','.###.','#####','.###.'],

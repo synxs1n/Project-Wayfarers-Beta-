@@ -1,4 +1,4 @@
-// =================== Beta v0.6.1: the battle rewards screen (file: results.js) ===================
+// ===== results.js (v0.6.1): the battle rewards screen (mResult) =====
 // One screen, top to bottom by how much it needs the player:
 //   1. a beaten foe that can be tamed (it used to sit in the middle of the list and was easy to miss);
 //   2. new skills; 3. who joined (Legendary only for the legendary heroes; a wayfarer met on the road says so);

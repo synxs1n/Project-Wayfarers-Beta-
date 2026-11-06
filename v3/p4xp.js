@@ -1,4 +1,4 @@
-// =================== Beta v0.5.0 4.3: XP CATCH UP ===================
+// ===== p4xp.js (v0.5.0): XP catch up =====
 // A hero below the highest level on the whole roster (v0.6.3: party AND reserves, so a wayfarer who sat out a realm catches up
 // to your top hero, not only to the six in this fight) gets XPCU.per more battle XP per level of gap, at most XPCU.max (config.js). A vanguard hero
 // gets the whole bonus, a reserve (benched) hero XPCU.bench of it, the fallen still get nothing, and heroes at the top level get no bonus.

@@ -1,4 +1,4 @@
-// =================== SAVE RECOVERY AND ACCOUNT SAVES (Beta v0.3.4) ===================
+// ===== saves.js (v0.3.4): save recovery, slots, backups, import and export, account saves =====
 // Local keys are unchanged (aurelis-wayfarers-v3, -s1, -s2, aurelis-meta-v1). New and optional only:
 //   G.gv                       game version that last wrote the save (a missing value means an older build)
 //   aurelis-bak-<slot>-<0..2>  rolling raw backups per slot, written before a migration, an overwrite, a delete, a cloud pull or a restore

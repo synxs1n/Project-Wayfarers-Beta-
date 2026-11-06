@@ -1,4 +1,4 @@
-// =================== THE SCORE (v0.4.5) ===================
+// ===== musicdata.js (v0.4.5): the score: every track as data, MGAIN levels =====
 // Every track here is composed by hand around one motif, the Meridian:  G4q C5q. D5e E5q | D5q B4q C5h  (written in C).
 // It is hopeful on the title, warm in towns, heroic in victory and broken in the minor (E4q A4q. B4e C5q | B4q G#4q A4h) in dungeons,
 // boss fights and the Calamity, where it is bent again with a flat second.

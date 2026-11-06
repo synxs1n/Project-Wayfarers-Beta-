@@ -1,3 +1,4 @@
+// ===== world4.js (v0.4.0): the connected world: world graph, gates per side, v3 fields, caves and dungeons =====
 // =================== v0.4.0 PHASE 5: THE CONNECTED WORLD ===================
 // Journeys started on v0.4.0 (G.wv===3) get a world graph: t0 -> f0 -> t1 -> f1 ... Each link has a gate SIDE (n/s/e/w) on both of its maps,
 // and the two sides always match (leave north, arrive on the south edge). Fields are built facing west->east and then turned or mirrored

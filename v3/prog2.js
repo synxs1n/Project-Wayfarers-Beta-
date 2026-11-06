@@ -1,4 +1,4 @@
-// =================== AUTO RULES (Beta v0.3.2) ===================
+// ===== prog2.js (v0.3.2): auto rules: reduced rewards on auto wins, the boss auto lock =====
 // B2: a win where auto ran more than half of your heroes' turns pays 66% XP and gold (drops unchanged; not the Daily Trial).
 // B3: auto is off on a boss fight (Scourge, Calamity, echo, legend event) until that exact fight has been won manually
 // this journey. New optional field G.bossWon {key:1}; old saves count every Scourge or Calamity they already cleared.

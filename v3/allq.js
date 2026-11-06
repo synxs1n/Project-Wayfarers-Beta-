@@ -1,4 +1,4 @@
-// ===== Beta v0.4.3: Accept all and Claim all on every quest list (Quest Board, Guild bounties, faction missions) =====
+// ===== allq.js (v0.4.3): Accept all and Claim all on quest lists =====
 function qVisible(){return (G.quests||[]).filter(q=>q.stage<=G.stage);}
 function allBar(acc,cl,nA,nC){if(!nA&&!nC)return '';return `<div class="btnrow allq">${nA?`<button class="btn sm" data-act="${acc}">Accept all (${nA})</button>`:''}${nC?`<button class="btn sm gold" data-act="${cl}">Claim all (${nC})</button>`:''}</div>`;}
 Object.assign(ACT,{

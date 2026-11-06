@@ -1,4 +1,4 @@
-// =================== MUSIC WIRING, SETTINGS, MUSIC ROOM, CREDITS (v0.4.5) ===================
+// ===== music2.js (v0.4.5): music wiring, settings, the Music Room, credits =====
 // Picks the right track for wherever the party is and whatever it is fighting, sets the stems, and plays the jingles.
 function au2Tr(){let v=0;try{v=typeof bossMusicOff==='function'?bossMusicOff():0;}catch(e){}v=Math.round(v)||0;return ((v+5)%12+12)%12-5;}
 function au2Realm(s){try{return typeof realmAt==='function'?realmAt(s):null;}catch(e){return null;}}

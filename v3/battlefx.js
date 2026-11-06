@@ -1,4 +1,4 @@
-// =================== BATTLE READABILITY (Beta v0.2.0) ===================
+// ===== battlefx.js (v0.2.0): battle readability: the battle log, status icons and their popup =====
 // Floating numbers follow battle speed, a scrollable battle log, and tappable status icons with a details popup.
 const LOG_MAX=50;
 function log(m){if(!B)return;B.log.push(m);if(B.log.length>LOG_MAX)B.log.splice(0,B.log.length-LOG_MAX);B.logT=Date.now();}

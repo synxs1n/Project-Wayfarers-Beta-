@@ -1,4 +1,4 @@
-// =================== THE ECHO SANCTUM (Beta v0.3.3) ===================
+// ===== sanctum.js (v0.3.3): the Echo Sanctum =====
 // Replaces the menu style Echo Rift. Unlocks once all five of this journey's story Echoes (four Scourges and the Calamity)
 // are beaten (G.echoStory, unchanged). A safe, explorable hall reached from any waystone: sixteen gates, one for each
 // Scourge and Calamity Echo. Fights use riftSpec(): same scaling, drops, shards and Echoforge rules as v0.3.2.

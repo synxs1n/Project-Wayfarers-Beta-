@@ -1,4 +1,4 @@
-// =================== v0.7.7: the weather, drawn in layers (weather7.js) ===================
+// ===== weather7.js (v0.7.7): the weather drawn in layers (2D, HD-2D, battle stage) =====
 // Every weather of the game in the world view (2D renderer and the HD-2D overlay), inside the HD-2D scene, and on the battle stage:
 //  - far, mid and near layers: far particles are small, dim and slow and lag the camera (parallax), near ones are large, soft and fast and
 //    lead it; the layer that touches the ground (puddles, ripples, splashes, settling flakes and ash) moves exactly with the ground.

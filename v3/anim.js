@@ -1,4 +1,4 @@
-// =================== ANIMATION PASS (Beta v0.3.2) ===================
+// ===== anim.js (v0.3.2): battle animation poses and effects =====
 // Battle first. Every pose fits the old 520ms action window and lands its strike before the hit (IMPACT), so turns are
 // no slower at 1x; at higher speeds the recovery is cut short. With reduced motion, poses become simple flashes.
 const ANIM_CLS={warrior:'swing',knight:'thrust',monk:'jab',thief:'dash',archer:'bow',druid:'bow',sniper:'crossbow',mage:'cast',archmage:'cast',chronicler:'cast',healer:'channel',bard:'play'};

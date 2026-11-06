@@ -1,3 +1,4 @@
+// ===== p3shop.js (v0.5.0): shops, gear and items: Best for party sorting, Smithy plan, Best Party scoring, pack size =====
 // =================== Beta v0.5.0 PHASE 3: SHOPS, GEAR AND ITEMS ===================
 // 3.1 "Best for party" order in shops, Forge and Tempering, with a tradeoff line when two upgrades are close.
 // 3.2 an item one hero already wears is still suggested when it would help another party member (the second hero's gain is shown).

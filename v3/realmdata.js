@@ -1,4 +1,4 @@
-// ===== Beta v0.4.1 Phase 4 data: the sixteen realms, boss overlays and Calamity effects (logic in realms.js) =====
+// ===== realmdata.js (v0.4.1): the sixteen realms, boss overlays and Calamity effects (logic in realms.js) =====
 // ---------- the sixteen realms ----------
 // lean: palette pull (mix, k), roofs, decorations, ground motif, ambient particles, a faint tint. wx: weather shares (clear is always the largest).
 const REALMS=[

@@ -1,4 +1,4 @@
-// =================== Beta v0.7.1: remember Auto and Run ===================
+// ===== remember.js (v0.7.1): remember Auto and Run =====
 // The Auto battle toggle and the Run toggle used to live only in memory (V.auto, WS.run), so they reset on every launch and every update.
 // They are now stored in META.cfg (optional new fields autoOn, runOn; the meta key aurelis-meta-v1 is unchanged) and restored on boot.
 // Shift still runs while held; letting go returns to the saved Run choice. The Daily Trial still starts with Auto off (it does not change

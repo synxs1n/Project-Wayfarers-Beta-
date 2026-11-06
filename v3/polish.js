@@ -1,4 +1,4 @@
-// =================== POLISH (Beta v0.3.1) ===================
+// ===== polish.js (v0.3.1): inn rest fade, reduced motion, small polish =====
 // Inn rest: fade to black, a short lullaby, fade back with everyone restored. Reduced-motion players skip the fade.
 function fadeOverlay(){let o=document.getElementById('fadeov');if(!o){o=document.createElement('div');o.id='fadeov';o.setAttribute('aria-hidden','true');document.body.appendChild(o);}return o;}
 function reducedMotion(){try{const c=META&&META.cfg&&META.cfg.rmotion;if(c===true||c===false)return c;return matchMedia('(prefers-reduced-motion: reduce)').matches;}catch(e){return false;}}

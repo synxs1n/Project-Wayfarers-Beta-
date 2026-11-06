@@ -1,4 +1,4 @@
-// ===== Beta v0.4.3: capes, a fourth equipment slot ('k') =====
+// ===== capes.js (v0.4.3): capes, the fourth equipment slot =====
 // Every class can wear a cape. Capes add HP, resistance and a little speed, about a quarter of what armor gives at the same tier.
 // Sold at the Smithy beside armor, tempered like garb (logs and hide). v0.6.3: capes no longer show on the hero's sprite (only the
 // weapon and the hero's own personal reward change the look); a hero's own cape from their base look stays.

@@ -1,4 +1,4 @@
-// =================== ACCOUNT-BOUND PROGRESS (v4.8) ===================
+// ===== account.js (pre-beta): account-bound bestiary, codex and Archivist unlock =====
 // The bestiary, the hero codex and the Archivist unlock follow the claude.ai account, not the device.
 //   db doc profile/<uid> = {v:1, best:{<monster name>:{seen,kills,scan,hit?,known:{el:1}}}, codex:{<hero id>:{seen,rec,lv}}, flags:{archivist}, updatedAt}
 //   rules: profile read/write owner; profile/{self} read/write interact

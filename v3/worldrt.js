@@ -1,4 +1,4 @@
-// =================== OVERWORLD RUNTIME ===================
+// ===== worldrt.js (base): overworld runtime: movement and input, gates, chests, encounters, world drawing, weather overlays =====
 // v0.4.0 1.4: one place that stops every kind of overworld movement input (keys, pad, joystick, tap paths)
 const KEYS_DOWN=new Set();
 function haltInput(){WS.held=[];WS.padDir=null;WS.joyDir=null;WS.target=null;WS.path=null;WS.pathFor=null;WS.pathAt=null;WS.touchDir=null;WS.run=false;WS.swallow=new Set(KEYS_DOWN);WS.padHold=true;

@@ -1,4 +1,4 @@
-// ===== Beta v0.4.1 6.4: item and equipment sprite palettes =====
+// ===== sprites.js (v0.4.1): item and equipment sprite palettes =====
 // palettes follow the rarity borders (ITEM_TIERS): common iron, uncommon green steel, rare blue steel, epic violet, legendary gold, mythic crimson.
 // v0.6.3: the drawing moved to icons.js / icons2.js (one design per item: drawGearIcon, drawItemIcon, itemIcon, matIcon); these stay the
 // shared tier colours for metal, gems and trims.

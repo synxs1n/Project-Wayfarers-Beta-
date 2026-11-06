@@ -1,4 +1,4 @@
-// ===== Beta v0.5.3: HD sprites, the consumers (loads last) =====
+// ===== sprhd2.js (v0.5.3): HD sprites, the consumers: HD canvases, hit flashes, legend sprites =====
 // - The world and battle canvases render at SPR.k: their width/height still read and take logical sizes (ssCanvas), the context starts
 //   every resize with a SPR.k transform, so all drawing code keeps its logical numbers and HD sprites land pixel for pixel.
 // - Hit flashes (whiteOf), the mounted, pet and half size legend heroes are built as HD canvases too.

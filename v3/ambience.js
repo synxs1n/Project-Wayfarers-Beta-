@@ -1,4 +1,4 @@
-// =================== AMBIENCE (v0.4.5) ===================
+// ===== ambience.js (v0.4.5): ambience beds and window.__AU =====
 // A quiet bed under the music, built in code: wind, birds, crickets and the odd owl, waves, drips and rumble underground,
 // a town murmur, rain and thunder, cold wind, embers in the Ashen Expanse and a hum in Calamity realms. Settings > Ambience sets the level.
 const AMB={L:{},t:0,ctxKey:null,crowd:.5};

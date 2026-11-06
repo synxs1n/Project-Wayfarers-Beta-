@@ -1,3 +1,4 @@
+// ===== skills.js (v0.4.0): skill data: class skills, Limit Breaks, bonds (split out of data.js) =====
 // =================== SKILL DATA (skills, limit breaks, bonds). Split out of data.js ===================
 // =================== SKILLS ===================
 const SPELL={fire:['Ember','Inferno','Pyroclasm'],water:['Splash','Torrent','Deluge'],earth:['Rock Toss','Quake','Landslide'],wind:['Gust','Cyclone','Tempest'],

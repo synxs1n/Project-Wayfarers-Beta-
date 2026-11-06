@@ -1,4 +1,4 @@
-// =================== DAY AND NIGHT, WEATHER (Beta v0.3.1) ===================
+// ===== world3.js (v0.3.1): day and night, the weather tables and rolls =====
 // New save fields (defaulted on read): G.clock (0..CLK_LEN), G.wx {realm: steps left}, G.wxSave {realm: weather to restore}.
 // The clock moves with steps (+1) and battles (+6), never with real time. Dungeons and the Archive ignore it.
 const PH_LOOK={day:{i:'☀',n:'Day'},dusk:{i:'◐',n:'Dusk'},night:{i:'☾',n:'Night'},dawn:{i:'◑',n:'Dawn'}};

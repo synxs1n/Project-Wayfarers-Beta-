@@ -1,3 +1,4 @@
+// ===== zones.js (v0.4.0): zone data: realms, campaign stages, stage levels, quests and bounties (split out of data.js) =====
 // =================== ZONE DATA (realms, campaign, quests and bounties). Split out of data.js ===================
 // =================== REALMS & CAMPAIGN ===================
 // A campaign is 5 stages: Verdane first, three of the four middle realms in random order, the Hollow Star last.

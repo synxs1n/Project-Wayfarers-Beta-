@@ -1,3 +1,4 @@
+// ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
 // The one public version string. Patch (0.1.x) for fixes and balance, minor (0.x.0) for new systems.
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.

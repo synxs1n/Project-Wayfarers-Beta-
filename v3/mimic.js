@@ -1,4 +1,4 @@
-// =================== MIMICS (Beta v0.3.1) ===================
+// ===== mimic.js (v0.3.1): mimic chests =====
 // About 1 in 8 ordinary dungeon chests is a mimic, picked from the run seed so it is stable across reloads.
 // Never the Beacon Key chest or a vault chest, so a mimic can never block progress; the tile stays a chest either way,
 // so dungeon validation is unchanged. Beat it and you get the chest's loot plus a bonus.

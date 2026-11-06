@@ -1,4 +1,4 @@
-// =================== JOURNEY TAB (Beta v0.2.0) ===================
+// ===== journey.js (v0.2.0): the Journey tab and journey stats =====
 // New save fields, all defaulted on read: G.stats.steps, G.stats.won, G.stats.fled, G.stats.lost, G.stats.play (ms).
 {const ar0=arrive;arrive=function(){if(G&&G.stats)G.stats.steps=(G.stats.steps||0)+1;return ar0.apply(this,arguments);};}
 {const fb0=finishBattle;finishBattle=function(how){try{if(G&&G.stats&&!G.daily){const k=how==='win'?'won':how==='fled'?'fled':how==='lose'?'lost':null;if(k)G.stats[k]=(G.stats[k]||0)+1;}}catch(e){}return fb0.apply(this,arguments);};}

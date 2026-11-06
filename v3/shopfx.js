@@ -1,4 +1,4 @@
-// ===== v0.4.0 3.4: purchase feedback =====
+// ===== shopfx.js (v0.4.0): purchase feedback =====
 // Every real purchase (gold leaves the purse) plays a coin sound and a small coin pop over the button that was pressed.
 // Reduced motion: the pop does not move, it just shows the price for a moment. Sound still plays unless muted.
 const BUY_ACTS=['buyItem','buyGear','buyRelit','buyMat','buyPart','temperBuy'];

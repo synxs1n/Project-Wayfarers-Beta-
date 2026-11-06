@@ -1,4 +1,4 @@
-// =================== PER-JOURNEY SUBSET AND TAVERN RULES (file: tavern2.js) (Beta v0.3.5) ===================
+// ===== tavern2.js (v0.3.5): the per-journey roster (G.sub) and tavern tables (G.tv) =====
 // G.sub  = the wayfarers that exist in this journey (about 28 to 32), drawn once from the journey seed and saved with the run.
 // G.tv   = tavern state { sl: the 4 table slots (id or null once hired), sh: shuffles so far, at: battle count at the last shuffle, ev: a rest or stage clear
 //          happened since, n: {stage: tavern recruits made in that area, kept for records only} }. Old saves have neither field and get safe defaults on first read.

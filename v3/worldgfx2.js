@@ -1,3 +1,4 @@
+// ===== worldgfx2.js (base): dungeon tiles, objects and buildings, second pass =====
 // =================== DUNGEON TILES ===================
 const DTHEME={
  meadow:{f:['#6e5e48','#5e4e3a','#86745a','#46382a'],w:['#62503e','#4c3e30','#86705a','#241a12'],top:'#1a120c',acc:'#6aa04a',acc2:'#a8d070',name:'barrow'},

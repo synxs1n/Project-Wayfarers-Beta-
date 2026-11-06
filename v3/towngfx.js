@@ -1,4 +1,4 @@
-// =================== TOWN LOOK (Beta v0.3.1) ===================
+// ===== towngfx.js (v0.3.1): the town look: service roofs, signs, landmarks, the quest board mark =====
 // Every service has a fixed roof colour, a landmark prop by the door and a big labelled sign, in every town layout.
 // The quest board gets a label and a pulsing "!" when something new or finished is waiting.
 const SVC_LOOK={

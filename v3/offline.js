@@ -1,4 +1,4 @@
-// =================== OFFLINE PLAY (Beta v0.3.3) ===================
+// ===== offline.js (v0.3.3): offline play: queued feedback and the service worker =====
 // The page is fully self contained (fonts are embedded, no external scripts or images), so once loaded the game plays with no
 // connection. Saves, loadouts and the local bestiary/codex cache live in localStorage and never needed the network.
 // Account writes queue locally while offline and go out when the connection returns:

@@ -1,4 +1,4 @@
-// =================== INSIGHT: matchups, quirks, bestiary tiers (Beta v0.2.0) ===================
+// ===== insight.js (v0.2.0): matchups, foe quirks, bestiary tiers and mastery perks =====
 // Basic type matchups are always shown. Hidden quirks (an off-type resistance or a status immunity) and anything on a
 // Scourge or Calamity show "?" until you land a hit on that kind of foe or scan it. That knowledge is account-bound:
 // META.best[name].hit joins seen/kills/scan/known in profile/<uid>, merged by union like the rest.

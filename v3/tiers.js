@@ -1,3 +1,4 @@
+// ===== tiers.js (v0.4.0): item strength borders, tier chips, Craft only tags =====
 // ===== v0.4.0 3.10: item strength borders =====
 // Colours, names and pips come from ITEM_TIERS in data.js. Everything here only reads them.
 function gTierIdx(g){if(!g)return 0;if(g.stick)return Math.min(5,g.tier||0);if(g.id&&/_ef(\+\d)?$/.test(String(g.id))||g.base&&/_ef$/.test(String(g.base)))return 6;return Math.max(0,Math.min(5,g.tier||0));}

@@ -1,4 +1,4 @@
-// ===== Beta v0.5.3: HD sprites =====
+// ===== sprhd.js (v0.5.3): HD sprites: twice the detail, light ramps, rim light (SPRITE_HD in config.js) =====
 // Every hero, townsfolk and monster is still built from the same key grids (art.js, art2.js, art3.js, capes, realm and echo recolours), but
 // painted by paintHD at SPR.k times the detail:
 //  1. the key grid is doubled with Scale2x (EPX), which rounds corners and smooths diagonals without inventing colours;

@@ -1,4 +1,4 @@
-// =================== NEW SKILL NOTICES (Beta v0.3.2) ===================
+// ===== learn.js (v0.3.2): new skill notices =====
 // G.skSeen {hero: [skill ids already announced]} and G.skNew {hero: [skill ids not viewed yet]} are new optional fields.
 // A hero seen for the first time (old save, new recruit) is recorded silently, so nothing old is announced as new.
 function skIdsOf(c){try{return known(c).map(s=>s.id||s.n);}catch(e){return [];}}

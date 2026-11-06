@@ -1,4 +1,4 @@
-// =================== CHANCE ENCOUNTERS (Beta v0.4.0, Phase 8) ===================
+// ===== chance.js (v0.4.0): chance meetings with wandering wayfarers =====
 // Rare optional meetings with a wayfarer from THIS journey's subset (G.sub) who you do not own yet.
 //   help      : they need a potion, or they are being ambushed (a real fight, you win and they join)
 //   duel      : they challenge the party to a moderate fight (win and they are impressed enough to join)

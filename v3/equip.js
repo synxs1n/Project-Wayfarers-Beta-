@@ -1,4 +1,4 @@
-// =================== EQUIPMENT (Beta v0.3.1) ===================
+// ===== equip.js (v0.3.1): the equipment menu, gear pickers, Auto best gear, Equip this now?, the Tamer's Stick quest =====
 // Menu > Equipment, quick gear pickers, Auto best gear with undo, before/after previews in shops, and an
 // "Equip this now?" prompt for new gear. New META.cfg field: autoEquip (off by default).
 // ----- gear icons: one small pixel icon per family, tinted by tier; the Stick glows with its Bestiary colour -----

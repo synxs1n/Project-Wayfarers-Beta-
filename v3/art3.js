@@ -1,4 +1,4 @@
-// =================== NEW GUARDIANS (60x60, facing right) ===================
+// ===== art3.js (base): the 60x60 guardian sprites =====
 Object.assign(MART,{
  bonecolossus(g){
   g.ell(30,57,24,3,'D');

@@ -1,4 +1,4 @@
-// =================== BATTLE RENDERER (canvas, 60fps) ===================
+// ===== battle.js (base): battle renderer: stage layout (BL), unit drawing, particles, fx hooks, battleFrame =====
 const IMPACT=190; // ms between an action starting and its hit landing on screen
 const BV={P:[],shake:null,flash:null,lastBanner:0,last:0};
 let BL={W:316,H:150,sc:3};

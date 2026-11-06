@@ -1,4 +1,4 @@
-// =================== Beta v0.5.0 PHASE 5: SETTINGS, SAVING AND TITLE ===================
+// ===== p5settings.js (v0.5.0): settings, saving indicator and title =====
 // 5.1 Master, Music and Sound effects sliders with their own mutes. META.cfg.master (0..1, default 1), .music, .sfx (0..1, as before),
 //     .mute (master mute, the top bar button), .muteMusic, .muteSfx. Applied instantly through audioVol / au2Vol, saved with the settings.
 // 5.2 cloud sync stays automatic (saves.js svMark: debounced after each save, signed in players with write access only). Added here:

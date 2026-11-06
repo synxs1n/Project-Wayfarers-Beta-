@@ -1,4 +1,4 @@
-// =================== DESCRIPTORS (Beta v0.3.1) ===================
+// ===== describe.js (v0.3.1): stat and attribute descriptions, class role cards =====
 // Tap any stat or attribute on the hero sheet for what it does; every class has a role card on the sheet and in the Codex.
 const STAT_INFO={
   hp:['HP','Health. At 0 the hero is knocked out until revived.','Raised by Vitality, levels and armor.'],

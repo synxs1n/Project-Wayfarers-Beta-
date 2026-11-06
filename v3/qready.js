@@ -1,4 +1,4 @@
-// =================== Beta v0.5.1: quests ready to hand in (file: qready.js) ===================
+// ===== qready.js (v0.5.1): quests ready to hand in =====
 // When a Quest Board quest or a Guild mission is complete and waiting to be claimed, a toast says so once, the Menu button and the
 // Quests menu chip carry a "ready" count, and the quest rows show a "Ready to hand in" tag with where to claim it.
 // New optional save field: G.qNote {key: 1} (what has already been announced; a claimed quest drops out of it). Off in the Daily Trial.

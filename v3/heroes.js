@@ -1,3 +1,4 @@
+// ===== heroes.js (v0.4.0): hero data: RAW roster, TPL, starters, legends, gifts, signature traits (split out of data.js) =====
 // =================== HERO DATA (roster, single type wayfarers). Split out of data.js in v0.4.0 Phase 11; loads right after data.js, no code changed ===================
 // =================== ROSTER (36) ===================
 // [id, name, class, elements, trait, bio, how they join, look]

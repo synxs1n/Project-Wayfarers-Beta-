@@ -1,4 +1,4 @@
-// ===== Beta v0.7.7: every wayfarer who challenges you speaks in their own voice =====
+// ===== duellines.js (v0.7.7): every wayfarer who challenges you speaks in their own voice =====
 // Before this, a road duel used one line per class, so every fighter (or every mage) said the same thing. Now each of the 92
 // wayfarers has their own lines, keyed by hero id. Keys:
 //   o  the opening challenge on the road            m  a short shout at half health (the battle banner, keep it under 27 letters)

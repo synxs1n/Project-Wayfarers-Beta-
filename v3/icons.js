@@ -1,4 +1,4 @@
-// ===== Beta v0.6.3: one icon per item (gear, consumables, materials) =====
+// ===== icons.js (v0.6.3): one code-drawn icon per item (gear, consumables, materials) =====
 // Every icon is code-drawn on a 16x16 grid of material keys, then painted in one pass: a bevel from the upper left (light on the top and
 // left edges of each shape, shadow on the bottom and right), a coloured outline (the darkest tone of the part it touches), and for rare
 // pieces an aura ring and sparkles. Shapes change with the tier (not only the palette): tier 0 is plain, every tier adds a part or a new

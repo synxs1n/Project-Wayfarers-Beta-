@@ -1,4 +1,4 @@
-// =================== v0.6.3 world pass: ambience in world space, opened chests vanish ===================
+// ===== worldfx.js (v0.6.3): world pass: ambience in world space, opened chests vanish =====
 // Until v0.6.2 the drifting ambience of the world (relit field sparkles, snow, wind streaks, butterflies, sea spray, void motes, dungeon
 // dust, Phase 6 leaves, birds, dusk fireflies and dawn dew, festival lanterns) was drawn at screen positions: walking slid the whole lot
 // along with the hero, and on the HD-2D view it sat on the 2D canvas over the GL frame, so a butterfly could park on the hero's face.

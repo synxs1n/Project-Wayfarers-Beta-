@@ -1,4 +1,4 @@
-// =================== Beta v0.5.0 5.4: SMOOTH TIME OF DAY AND WEATHER ===================
+// ===== p5trans.js (v0.5.0): smooth time of day and weather transitions =====
 // The clock and the weather still change in one step (world3.js), but what you see and hear now blends:
 // - time of day: when the phase changes (day, dusk, night, dawn), the old look fades out and the new one fades in over TRANS.tod ms of
 //   world screen time. Night tint (world3 tintFor), the dusk and dawn grade, shadows, glow, windows and motes (daylight dayFxDraw) are scaled

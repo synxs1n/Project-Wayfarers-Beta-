@@ -1,4 +1,4 @@
-// =================== TOWN AND HUD (Beta v0.3.3) ===================
+// ===== town2.js (v0.3.3): the Inn, bonds on the hero sheet, weather and time info, the popup key guard =====
 // Inn: Rest first and focused, no bond list. Bonds live on the hero sheet (and the Codex entry), with every unlocked
 // campfire scene watchable there, so nothing the Inn used to trigger is unreachable. Bond progress (G.bonds, G.talks) is untouched.
 // Weather and day/night tags open a popup explaining their effect in this realm.

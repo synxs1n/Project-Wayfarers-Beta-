@@ -1,4 +1,4 @@
-// =================== Beta v0.5.0 Phase 6: battle presentation (6.1 glow, 6.4 poses, 6.5 camera, impact, elements, parallax) ===================
+// ===== gfx6battle.js (v0.5.0): battle presentation: glow, poses, camera, impact, elements, parallax =====
 // Everything wraps the existing renderer; backdrop choice, unit slots and the ground plane are untouched (Phase 2 owns those).
 //  - parallax: during battleFrame, PARA.on makes bgStatic() return the layered composite (gfx6.js); the sky and far bands drift a few
 //    pixels with a slow idle sway and with the camera, the ground band never moves.

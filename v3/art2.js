@@ -1,4 +1,4 @@
-// =================== HERO RACES, SIZES & NEW WEAPONS ===================
+// ===== art2.js (base): hero races, sizes and new weapons on the 36x40 hero canvas (heroCanvas, heroURL, walkerCanvas) =====
 // Heroes now render on a 36x40 canvas so big folk, wings, halos and ears fit. Feet sit on row 36.
 HP.hair.flame={ear:1,p:[[8,-2,["...H...H.H.....","..HH..HHHH.H...",".HHHH.HHHHHHH..","HHHHHHHHHHHHHH.",".HHHHHHHHHHHHHH","HHHHHHHHHHHHHH.",".HHHHH.HHH.H.HH",".HHHH..........","HHHHH..........",".HHH..........."]]]};
 HAIR_FB.flame={f:["..H..H","..HHHH",".HHHHH","HHHHHH",".HHHHH","HH.H.H","HH....","HH....","H....."],b:10,spike:1};

@@ -1,3 +1,4 @@
+// ===== hd2d.js (v0.5.3): HD-2D world renderer (worldDraw on Medium and High) =====
 // =================== Beta v0.5.3: HD-2D world renderer ===================
 // Towns, fields, dungeons, caves, forts, the Echo Sanctum and the Archive drawn as a lit diorama under a tilted perspective camera:
 // the map's own ground art is the floor, walls, cliffs and town walls are extruded into blocks with code drawn faces, buildings become

@@ -1,4 +1,4 @@
-// ===== Beta v0.4.1 4.7 and 4.8: side caves look like caves, side fortresses, minibosses =====
+// ===== sites.js (v0.4.1): side caves, side fortresses, minibosses =====
 // Side caves get their own look (mossy rock palette, damp green light, drips) and their own music, so they never read as a main dungeon.
 // Side fortresses are a second optional site type in new journeys (stages 1 to 4): bigger than a cave, smaller than a main dungeon,
 // built as a walled keep (stone walls, a courtyard, barracks rooms, banners and braziers, a keep holding the prize), with a gatehouse

@@ -1,4 +1,4 @@
-// =================== v0.5.3: HD-2D battle stage (WebGL1) ===================
+// ===== hdstage.js (v0.5.3): HD-2D battle stage (WebGL1) =====
 // Medium and High draw the battle stage in WebGL under the DOM unit layer (#bstage): the old canvas (#bcv) keeps drawing the units, bars,
 // particles and weather on a transparent background at the logical stage size, and this file composites it over a lit diorama:
 //  - the far backdrop is the baked 2D backdrop (bgStatic) above the ground line plus a few far props on the floor's back edge, blurred once

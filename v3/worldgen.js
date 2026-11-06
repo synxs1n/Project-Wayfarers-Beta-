@@ -1,3 +1,4 @@
+// ===== worldgen.js (base): world generation: towns, fields, dungeons, validation, map assembly, the Archive =====
 // =================== WORLD GENERATION ===================
 const TS=16;
 // Tiles: . ground , tall grass = road : plaza ~ water/lava/cloud/void # cliff/rock Z wall Y tower s stairs

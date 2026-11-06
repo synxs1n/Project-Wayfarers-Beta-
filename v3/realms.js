@@ -1,4 +1,4 @@
-// ===== Beta v0.4.1 Phase 4: sixteen realms, boss overlays, Calamity realms, realm weighting =====
+// ===== realms.js (v0.4.1): sixteen realms, boss overlays, Calamity realms, realm weighting =====
 // Data first: every realm is one entry in REALMS below, every boss overlay one entry in BOV, every Calamity effect one entry in CAL_FX.
 // New journeys (G.run.rv===2) draw 4 of the 12 standard realms and 1 of the 4 Calamity realms from the run seed, and draw their bosses
 // independently, so any Scourge can sit in any standard realm and any Calamity in any Calamity realm. Older journeys keep the six

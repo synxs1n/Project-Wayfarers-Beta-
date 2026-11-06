@@ -1,4 +1,4 @@
-// =================== LEGENDARY HEROES (v4.9) ===================
+// ===== legends.js (pre-beta): legendary heroes, redeem codes, mounts and pets =====
 // Real people, hand-built. Each has a unique class, a legendary trait, a redeem code and a recruit event.
 // Unlocks live in META.legends (local cache) and profile/<uid>.flags.legends (account), merged as a union.
 // Redeem codes are never stored in plain text: only SHA-256('aurelis-legend:' + CODE) is here.

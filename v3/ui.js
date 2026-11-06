@@ -1,3 +1,4 @@
+// ===== ui.js (base): render(), screens, battle view, modals (vModal), ACT actions, main loop and input, boot() =====
 // =================== UI ===================
 const esc=s=>String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 const $=id=>document.getElementById(id);

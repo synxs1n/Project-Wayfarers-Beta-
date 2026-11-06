@@ -1,4 +1,4 @@
-// =================== PROGRESSION (v5.1) ===================
+// ===== progression.js (pre-beta): recruit fit, playtime unlocks, Guild Hall challenges, the What next? guide =====
 // Tavern offers that complement the party, heroes unlocked by playtime, Guild Hall recruitment challenges, and the "What next?" guide.
 // New save fields (all optional, defaulted on read): G.tavRoll, G.chall, G.been.
 

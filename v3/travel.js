@@ -1,4 +1,4 @@
-// =================== TRAVEL ITEMS (Beta v0.1.0) ===================
+// ===== travel.js (v0.1.0): travel items: Pork Chop Sandwich, Holy Water, Tent, camp ambushes =====
 // Pork Chop Sandwich, Holy Water and Tent. New save fields (defaulted on read): G.ward (steps left), G.pbuy (parts bought since last rest).
 // The Daily Trial swaps in its own fixed inventory, so none of these can reach it; the checks below block them anyway.
 // TENT_HEAL, TENT_REVIVE, AMBUSH_RATE, AMBUSH_POW: in config.js

@@ -1,3 +1,4 @@
+// ===== art.js (base): pixel engine (PG grids, palettes, paint), hero and monster sprites, flair, front and back views =====
 // =================== PIXEL ENGINE ===================
 const OUTC='#150b17';
 function hx(h){return [parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];}

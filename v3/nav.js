@@ -1,3 +1,4 @@
+// ===== nav.js (v0.2.0): menu navigation: back and close, swaps from the menu =====
 // =================== MENU NAVIGATION (Beta v0.2.0) ===================
 // Back arrow next to the X on every popup that has a parent. Back goes up one level; X closes everything.
 // Esc and gamepad B go back (or close when there is nothing to go back to); gamepad X or Start closes all.

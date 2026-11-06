@@ -1,4 +1,4 @@
-// ===== v0.4.0 3.7: dusk and dawn =====
+// ===== daylight.js (v0.4.0): dusk and dawn light =====
 // Drawn over the world after the colour tint (world3.js). Dusk: amber glow from the low sun, slanting light shafts, fireflies.
 // Dawn: cool low mist, gold shafts, dew sparkles. Pure drawing, no game state, and a still frame under reduced motion.
 // Tune: DAYFX.shaft is the shaft strength, DAYFX.motes the ambient count.

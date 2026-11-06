@@ -1,4 +1,4 @@
-// =================== Beta v0.5.0 1.8: status symbols (file: stsym.js) ===================
+// ===== stsym.js (v0.5.0): status symbols =====
 // One symbol per status in place of the old three letter tags, which spilled out of their boxes on the battle stage.
 // Each has its own shape as well as its colour, so no two can be told apart by colour alone (colourblind safe):
 // drop, drips, flame, hourglass, star, crossed eye, roots, down arrow, cracked block, skull, torn cross, up arrow, shield,

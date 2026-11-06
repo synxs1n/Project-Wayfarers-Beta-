@@ -1,4 +1,4 @@
-// ===== v0.7.1: the title screen in the HD-2D look =====
+// ===== title7.js (v0.7.1): the title screen in the HD-2D look =====
 // A dusk camp on the road to a walled town: the HD hero sprites at their real 2x bitmap (integer scaled, nearest neighbour), lit like
 // the HD-2D scenes (dusk ambient, warm fire light on the side facing the fire, a rim on that edge, a cool sky rim on top, soft contact
 // and cast shadows, grade and vignette), a far town and hills with depth of field. Motion: fire flicker, breathing, rising embers,

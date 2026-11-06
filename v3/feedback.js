@@ -1,4 +1,4 @@
-// =================== HELP & FEEDBACK ===================
+// ===== feedback.js (pre-beta): help and feedback reports (artifact db) =====
 // Reports live in the artifact db, never in saves:
 //   feedback/<uid>                 index doc {uid,last}  (lets the owner list who has reported)
 //   feedback/<uid>/reports/<rid>   one doc per report

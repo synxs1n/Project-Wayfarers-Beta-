@@ -1,4 +1,4 @@
-// ===== Beta v0.4.1 5.2: wandering wayfarers each speak in their own voice =====
+// ===== ceword.js (v0.4.1): the wandering wayfarers' own voices =====
 // Every line is built from the wayfarer's own details: class (habit, gear, how they talk), element (what they carry in the air), trait
 // (a turn of phrase), the area they are met in, their name and their own bio. The tables are all here and editable.
 const CW_CLS={

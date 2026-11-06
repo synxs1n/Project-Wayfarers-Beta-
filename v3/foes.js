@@ -1,3 +1,4 @@
+// ===== foes.js (v0.4.0): foe data: monsters, bosses, guardians (split out of data.js) =====
 // =================== FOE DATA (monsters, bosses). Split out of data.js ===================
 // =================== FOES ===================
 // skills: [name, element, power, target, kind, effects]

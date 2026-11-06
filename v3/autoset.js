@@ -1,4 +1,4 @@
-// ===== v0.4.0 2.2: Auto battle settings =====
+// ===== autoset.js (v0.4.0): auto battle settings =====
 // One screen for every auto battle choice. It opens from Menu > Settings and from inside a battle (the gear next to the auto button).
 // The values live in META.cfg.auto (a new optional field; missing keys fall back to AUTO_DEF in engine.js).
 function mAutoSet(m){

@@ -1,4 +1,4 @@
-// =================== COMPANIONS (Beta v0.3.1) ===================
+// ===== comp.js (v0.3.1): companions: tamed monsters paired with heroes, Summon =====
 // Tamed monsters are no longer party members. Each is a Companion in G.tamed (same list as before), and o.with is the hero
 // it is paired with (one per hero). The hero gets a small stat bonus and +10% damage with the companion's first element.
 // In battle that hero can Summon it once: it takes the hero's place for 3 of its own turns (4 with Beastbond), using its

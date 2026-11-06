@@ -1,4 +1,4 @@
-// =================== Beta v0.7.0: BATTLE MECHANICS (battle4.js, after battle3.js) ===================
+// ===== battle4.js (v0.7.0): battle mechanics: detonation MP refund, free swap, Momentum, foe roles, the boss Cataclysm =====
 // 1) Detonation reward: the hero who sets off a reaction gets MP back, shown in the floating reaction text ("+N MP").
 // 2) Free swap: on a hero's turn another Vanguard hero can trade places with a Rearguard hero without using the turn, once every
 //    B4.swap.cd party turns. Rooted heroes cannot step back. Auto battle uses it only where its own switch rules say it helps.

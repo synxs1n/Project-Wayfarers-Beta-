@@ -1,4 +1,4 @@
-// =================== BATTLE SCREEN (Beta v0.3.3) ===================
+// ===== battleui.js (v0.3.3): battle screen: element badges, unit cards, the unit detail panel =====
 // Element badges with a colorblind safe silhouette per element, readable unit cards, lighter foe cards, and a unit detail panel.
 // Nothing here changes battle rules or saves. The detail panel is pure view state (B.uDet) and pauses the fight while it is open.
 // v0.3.5 2.2: ONE element icon set. Every icon is a different silhouette AND colour (flame, droplet, mountain, tornado, bolt, snowflake, sparkle, crescent),

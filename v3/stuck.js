@@ -1,4 +1,4 @@
-// =================== STUCK RESCUE (Beta v0.3.0) ===================
+// ===== stuck.js (v0.3.0): the Stuck? rescue back to a dungeon's entrance =====
 // Dungeon maps are rebuilt from the run seed on every load, so the generator fix (fixDungeon) already frees old saves.
 // On top of that: if the party lands somewhere it can't walk back to the entrance from, it is moved to the entrance,
 // and the menu offers a free "Stuck?" return to the entrance while in any dungeon.

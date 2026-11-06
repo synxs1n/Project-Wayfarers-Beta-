@@ -1,4 +1,4 @@
-// =================== ECHO CORE (Beta v0.3.2) ===================
+// ===== echocore.js (v0.3.2): echo rules: echo forms, shards, essence, Echoforged weapons =====
 // Pure rules shared by the game and the sims: echo forms of every Scourge and Calamity, story echo stats, the extra
 // phase, Echo Shards and Echo Essence, and the six Echoforged weapons.
 // Echo forms are their own Bestiary entries ("Echo <name>"): they never count toward the Archive or the Tamer's Stick.

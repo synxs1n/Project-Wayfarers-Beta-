@@ -1,3 +1,4 @@
+// ===== update.js (v0.4.6): the update prompt and window.__saveNow =====
 // Update prompt: when the live site has another version or build ID than the one running, offer a one tap reload.
 window.__saveNow=()=>{try{if(G&&!G.daily)saveGame();}catch(e){}};// the Android live update saves before it restarts (liveboot.js)
 (function(){

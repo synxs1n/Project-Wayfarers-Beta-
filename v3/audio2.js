@@ -1,4 +1,4 @@
-// =================== ORCHESTRAL AUDIO ENGINE (v0.4.5) ===================
+// ===== audio2.js (v0.4.5): orchestral audio engine: instruments, rooms, stems, jingles =====
 // A small mixer, sampler and sequencer on top of Web Audio. The classic chiptune engine in audio.js stays as the fallback
 // (Settings > Music style > Classic chiptune, or automatically when samples cannot load).
 //   buses   : music, ambience, sfx, ui -> master -> compressor -> limiter (peaks kept under -1 dBFS)

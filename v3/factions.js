@@ -1,4 +1,4 @@
-// =================== FACTIONS (Beta v0.4.0, Phase 9) ===================
+// ===== factions.js (v0.4.0): factions: reputation, ranks, missions and their perks =====
 // Five factions, six ranks each. Reputation = counters you already earn by playing (forging, potions, taming, wins, echoes, Scourges, helping wayfarers)
 // plus bonus from missions. Everything is per journey (G.fac, an optional save field). Only the highest rank reached per faction goes in the account
 // profile (META.facBest) and it is a title, nothing more. Nothing here is required to finish the game, Legendary heroes never come from factions,

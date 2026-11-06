@@ -1,4 +1,4 @@
-// ===== v0.4.0 2.3 and 2.4: enemy archetypes, delivery tags, Undead and healing =====
+// ===== archetype.js (v0.4.0): foe archetypes, delivery tags, Undead and healing =====
 // Rock paper scissors, FFX style. Every foe can carry archetype tags (ARCH). Every damaging skill has a delivery
 // (Slash, Blunt, Piercing, Ranged, Magic) and healing skills deliver Heal. archMult() turns the pair into a damage multiplier.
 // Everything tunable lives in the tables right below.

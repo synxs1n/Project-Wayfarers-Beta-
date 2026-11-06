@@ -1,4 +1,4 @@
-// =================== Beta v0.5.0 Phase 6: the world feels alive (6.1 lighting and depth, 6.3 life, 6.4 townsfolk) ===================
+// ===== gfx6world.js (v0.5.0): the world feels alive: lighting, depth, life, townsfolk =====
 // Three passes, all added around the existing renderer without changing it:
 //  1. baked once per map: soft contact shading (ambient occlusion) under cliffs, dungeon walls and building fronts (buildMapCanvas wrapper).
 //  2. inside the depth sort (townDecorActors hook, so they sit under the night tint and dusk grade): a ground layer (water glints, swaying

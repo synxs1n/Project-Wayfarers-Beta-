@@ -1,4 +1,4 @@
-// =================== Beta v0.6.3: BATTLE SCREEN PASS ===================
+// ===== battle3.js (v0.6.3): battle screen pass: stage labels, plates, the canvas HUD (unitHud), effect text placement =====
 // 1) One layout pass for every label on the battle stage (b3Lay): HP plates (HP, limit, shield pips and element badges, drawn on the
 //    canvas by unitHud), primed badges, the turn arrow, status rows, target tags (name, effectiveness, reaction) and the floating effect
 //    texts. Each label is placed on a free spot near its unit: never over any unit's visible sprite (real alpha bounds of the sprite

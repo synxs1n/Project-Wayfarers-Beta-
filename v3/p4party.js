@@ -1,4 +1,4 @@
-// =================== Beta v0.5.0 PHASE 4: PARTY, GUILDS AND QUESTS ===================
+// ===== p4party.js (v0.5.0): party, guilds and quests: personal quests by realm, guild text, the boss's lingering energy =====
 // 4.1 personal quests: no level gate. PERSONAL_BT battles together (per hero bt, old saves keep the estimate in btOf) and the party in the
 //     second realm (PERSONAL_REALM). Before both are met the quest stays out of sight: no row in the Guild Hall, no hint in What next?.
 //     Started or finished quests (G.personal) are never touched.

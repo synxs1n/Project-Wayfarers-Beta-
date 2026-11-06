@@ -1,4 +1,4 @@
-// ===== Beta v0.4.1 1.2: nothing may block a path =====
+// ===== mapheal.js (v0.4.1): nothing may block a path: map healing on load =====
 // Chests, props and standing NPCs are solid. mapIssues(m) floods from the map's entry twice: once treating them as walkable
 // (the optimistic reach) and once as solid (the strict reach). Any required tile (exit, gate, stairs, entrance, lever, boss door,
 // building door, cave mouth) that only the optimistic flood reaches is "blocked". healMap(m) clears or moves the blockers on the

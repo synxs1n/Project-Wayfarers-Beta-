@@ -1,3 +1,4 @@
+// ===== bosstheme.js (v0.3.5): each stage takes its look and music lean from the boss waiting at its end =====
 // Beta v0.3.5 6.1: every stage of a journey takes its look from the Scourge (or Calamity) waiting at the end of it, from the very first town.
 // The boss is never named. A theme is a palette lean (towards .mix), roof colours, a ground motif, ambient particles, a faint tint, a music
 // shift, and a few hints in the signs and townsfolk. Realm layouts (meadow, coast ...) stay; the boss decides the mood on top of them.

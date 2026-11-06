@@ -1,4 +1,4 @@
-// =================== ECHOES IN THE WORLD (Beta v0.3.2) ===================
+// ===== echo2.js (v0.3.2): echoes in the world: story echoes, the Rift, rewards =====
 // New optional fields: G.echoStory {stage:1} (story echoes beaten this journey), G.echoShard {key:1} (first shard taken).
 // Account: META.echoRift (synced as profile flags.echoRift) opens every Echo in the Rift once a journey's five story echoes fall.
 // ----- echo art: the boss repainted as a violet ghost -----

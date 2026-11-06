@@ -1,4 +1,4 @@
-// =================== Beta v0.6.3: PARTY SYSTEMS ===================
+// ===== party3.js (v0.6.3): party systems: Best Party formations, Training team, Equip best at camp =====
 // 1. Best Party suggests several formations instead of one: Balanced, Boss ready (Area answer once the boss is down), Fresh mix and a
 //    Training team. Role balance (tank, healer, damage, support, Primer, Detonator, deliveries, elements, answers to the area and its boss)
 //    outweighs raw level and gear (BP6 in config.js); each pick is explained and placed: the vanguard fights, the rearguard swaps in.

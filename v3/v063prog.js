@@ -1,4 +1,4 @@
-// =================== Beta v0.6.3: progression goals (file: v063prog.js) ===================
+// ===== v063prog.js (v0.6.3): progression goals: Taming log, bond goals, Make camp =====
 // 1. Taming log: a second view inside Records > Bestiary. Every foe that can join you (bounty beasts and Nikaris's wild friends,
 //    plus the lesser whelps of Scourges) is shown as Tamed, Seen (with where it roams) or unseen (a silhouette and "???"),
 //    with "Tamed X of Y" for this journey. Seen comes from the account Bestiary, tamed from this journey.

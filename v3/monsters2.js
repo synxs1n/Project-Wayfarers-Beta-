@@ -1,4 +1,4 @@
-// ===== v0.4.0 2.3 and 2.4: six new foes (Undead, Jelly, Swarm) with their own sprites =====
+// ===== monsters2.js (v0.4.0): six new foes (Undead, Jelly, Swarm) and their sprites =====
 // Register order matters: this file runs after data.js and art.js, so the shared tables exist.
 // Add a new monster by copying one block: MON entry, MART sprite, drops, family, and the realm pool at the bottom.
 

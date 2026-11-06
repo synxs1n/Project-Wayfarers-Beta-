@@ -1,4 +1,4 @@
-// =================== NATURE SERVICE (Beta v0.3.5) ===================
+// ===== natures.js (v0.3.5): natures and the nature service =====
 // Guild Hall, Nature tab: pay gold to reroll a hero's nature inside its pool, or pay more to pick one. Prices scale with level and rerolls.
 // Saved per hero as c.nat (nature id) and c.nrr (rerolls bought). Heroes without c.nat keep the nature of their template. Pools of one are fixed.
 const natRerollCost=c=>Math.round((80+c.lv*40)*(1+.5*(c.nrr||0)));

@@ -1,4 +1,4 @@
-// =================== EQUIPMENT LOGIC (Beta v0.3.3) ===================
+// ===== equip2.js (v0.3.3): equipment logic: the three Auto gear buttons, companion plans, undo =====
 // Three auto buttons, one rule set:
 //   Party    : party heroes first. May take gear and companions from heroes who are not in the party.
 //   Everyone : balances the whole roster (weaker heroes get a boost) while still favouring the party.

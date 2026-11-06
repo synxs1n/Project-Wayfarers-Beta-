@@ -1,4 +1,4 @@
-// ===== Beta v0.4.3: every wayfarer has their own rival =====
+// ===== rivals.js (v0.4.3): every wayfarer's rival =====
 // Each hero's personal quest now names a rival made for that hero alone: its own name, a base creature, a colour, and elements
 // picked to press that hero (one element the hero is weak to where possible). Built at load for every hero, so the same hero always
 // meets the same rival. Quests already accepted in an older save keep the rival they had.

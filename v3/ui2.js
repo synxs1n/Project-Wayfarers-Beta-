@@ -1,3 +1,4 @@
+// ===== ui2.js (base): Daily Trial screens, gamepad and touch input, crafting stations, shop sorting and filters =====
 // =================== UI: v4 additions ===================
 function townS(){return WS.m&&WS.m.kind==='town'?WS.m.s:-1;}
 const RELIT_STOCK=[['c_str',420],['c_int',420],['c_vit',420],['c_spi',420],['c_agi',420],['c_dex',480],['c_luk',480],['elixir',650],['plume',220]];

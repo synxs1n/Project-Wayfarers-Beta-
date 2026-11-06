@@ -1,3 +1,4 @@
+// ===== pacing.js (v0.7.2): pacing spread: when each system first unlocks =====
 // =================== Beta v0.7.2: pacing spread (owner approved the docs/v063-progression.md proposals) ===================
 // Realm 1 used to introduce almost every system at once, and levels 15 to 30 got little new. Four gates move later:
 //  1. Guild missions open after the first Scourge falls (ranks from other sources keep counting; accepted missions stay).

@@ -1,3 +1,4 @@
+// ===== engine2.js (base): weather, personal quests and signature weapons, taming, the Daily Trial, save slots and export =====
 // =================== WEATHER ===================
 // Each field rolls weather when you enter it (and it shifts every few minutes). Battles fought there inherit it.
 const WEATHER={

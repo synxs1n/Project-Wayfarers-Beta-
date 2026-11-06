@@ -1,4 +1,4 @@
-// =================== CONFIG: every tunable number in one place (Beta v0.4.0, Phase 11) ===================
+// ===== config.js (v0.4.0): every tunable number, in nine numbered sections (contents below) =====
 // This file loads FIRST. Changing a value here changes the game; nothing else in the code needs to be touched.
 // Rarity colours live with their tables (ITEM_TIERS in data.js, tier colours in tiers.js); heroes, skills, monsters, items, natures, the type chart,
 // weapon and armor rules, zone themes, factions, encounters and weather each have their own table, listed in the developer guide in the design notes.

@@ -1,4 +1,4 @@
-// =================== Beta v0.5.3: HD-2D world renderer, the WebGL layer ===================
+// ===== hd2dgl.js (v0.5.3): HD-2D world renderer, the WebGL layer =====
 // WebGL1 only (widest phone support). Shader programs, render targets, textures, a packed sprite atlas and a quad batch for hd2d.js.
 // Nothing here knows about the game. One vertex layout everywhere (28 bytes): position xyz (float), uv (float, u<0 = plain white),
 // colour rgba (bytes, multiplies the texel), normal xyz + flags (bytes). Flags: 1 receives the baked sun shadow, 2 may glow at night

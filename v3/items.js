@@ -1,3 +1,4 @@
+// ===== items.js (v0.4.0): item data: items, materials, gear, weapon and armor rules, recipes (split out of data.js) =====
 // =================== ITEM DATA (items, materials, gear, weapon and armor rules). Split out of data.js ===================
 // =================== ITEMS, MATERIALS & GEAR ===================
 const ITEMS={

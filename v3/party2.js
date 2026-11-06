@@ -1,4 +1,4 @@
-// =================== PARTY TOOLS (Beta v0.3.3) ===================
+// ===== party2.js (v0.3.3): party tools: sorting and filters, XP bars, loadouts, Best Party, field skills =====
 // Sorting and filters (remembered in META.cfg.lists), XP bars, team loadouts (G.loadouts, up to 8, optional save field),
 // Best Party suggestion, and field skills (heals, cures and revives outside battle).
 // Buffs are not offered as field skills: every statuses is cleared when a battle starts, so they could never carry over.

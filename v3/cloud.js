@@ -1,4 +1,4 @@
-// =================== ACCOUNTS OUTSIDE CLAUDE.AI (Firebase) ===================
+// ===== cloud.js (pre-beta): accounts outside claude.ai (Firebase auth and Firestore, FB_CFG) =====
 // The cloud save system (saves.js, account.js) talks to window.claude.use('db'|'user'). On claude.ai that is provided by the host.
 // Everywhere else (GitHub Pages, the Android app, the Windows app) this file provides the same two capabilities from Firebase
 // Auth (email and password) and Firestore. With FB_CFG null nothing here runs and the game stays local only.

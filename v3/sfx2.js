@@ -1,4 +1,4 @@
-// =================== LAYERED SOUND EFFECTS (v0.4.5) ===================
+// ===== sfx2.js (v0.4.5): layered sound effects =====
 // Every old sfx(k) name still works. In orchestral mode each one is built from shaped noise, tones and a few samples
 // (glockenspiel, celesta, harp, timpani, choir) through the sfx bus and its reverb send. Classic mode keeps the old bleeps.
 // Context from the battle hooks picks the weapon family for swings and hits, and the element for spells and impacts.

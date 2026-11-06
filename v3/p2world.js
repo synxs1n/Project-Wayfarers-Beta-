@@ -1,4 +1,4 @@
-// =================== Beta v0.5.0 PHASE 2: battle and world logic (file: p2world.js, loads last) ===================
+// ===== p2world.js (v0.5.0): battle and world logic: backdrops from the terrain, ground plane, surprise starts, single and dual types, hints =====
 // 2.1 battle backdrops from the terrain under the party, units always on a solid ground plane, flyers hover over a shadow
 // 2.2 surprise starts against roaming dungeon foes that have not seen the party
 // 2.3 gathering spots sit on or beside a matching terrain feature

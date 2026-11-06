@@ -1,4 +1,4 @@
-// =================== CHIPTUNE AUDIO ===================
+// ===== audio.js (base): the chiptune audio fallback, AU, sfx() and playMusic() =====
 // Everything is synthesized: pulse lead, triangle bass, noise drums. Tracks are generated from a seed per mood and realm.
 const AU={ctx:null,master:null,mus:null,fx:null,track:null,name:null,step:0,nextT:0,timer:null,noise:null};
 function audioInit(){

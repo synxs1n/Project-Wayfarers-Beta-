@@ -1,4 +1,4 @@
-// ===== v0.4.0 4.3: every wayfarer has a signature skill, and same-class heroes of different elements play differently =====
+// ===== sigskills.js (v0.4.0): signature skills per wayfarer =====
 // How it works (all data driven, nothing here changes combat rules):
 //  1. SIG_NAMES gives each of the 88 regular wayfarers a hand-named, hand-described signature skill (id sg_<hero>).
 //  2. The skill's mechanics come from SIG_T (two templates per class) and SIG_FOE / SIG_ALLY (one rider per element). Template = element order index % 2;

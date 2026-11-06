@@ -1,4 +1,4 @@
-// =================== TEMPERING (Beta v0.2.0, was the Forge) ===================
+// ===== temper.js (v0.2.0): tempering (+1 to +3, was the Forge) =====
 // Each +1 (up to +3) needs the item's raw material at its tier, a monster part for its family, this realm's relic,
 // and a Dread Core for +3. Gold is the old forge gold minus what the raw material costs at the Smithy, so buying the
 // raw material and tempering costs the same gold as before, and the monster parts are the new gate on top.

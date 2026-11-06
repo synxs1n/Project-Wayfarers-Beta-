@@ -1,4 +1,4 @@
-// =================== Beta v0.6.3: SHOPS AND MENUS (file: menus3.js) ===================
+// ===== menus3.js (v0.6.3): shops and menus: two-level tabs, dropdown filters, the menu groups =====
 // Every shop has the same two levels: main tabs (the gilt strip the Menu uses) and section chips under them (the Menu's
 // underlined sub tabs), and the first section is always "All". Filters and sorts are dropdowns (ddSel), remembered where they
 // were before: shops in META.cfg.shopF, lists in META.cfg.lists. New optional fields: shopF.who, shopF.rar, shopF.tsh, lists.*.sh, lists.*.rg.

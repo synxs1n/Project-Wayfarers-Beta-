@@ -1,3 +1,4 @@
+// ===== twists.js (v0.6.3): the Daily Trial weekly twist and New Game+ modifiers =====
 // =================== v0.6.3 TWISTS: weekly Daily Trial twist and New Game+ modifiers ===================
 // Tunables and texts live in config.js (TWISTS). Everything here wraps existing functions; nothing calls RNG(), so the
 // Daily Trial stays deterministic (same date + same build = same fights and same outcomes for the same inputs).

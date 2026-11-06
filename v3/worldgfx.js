@@ -1,3 +1,4 @@
+// ===== worldgfx.js (base): world tile themes and object sprites (THEME, drawObjects, buildings) =====
 const THEME={
  meadow:{g:['#5ea64c','#4f9441','#72bc5c','#3f8034'],tg:['#2f6a28','#4a9a3a','#9ad868'],p:['#b8955c','#9a7a48','#d2b07a'],cb:['#9a9488','#7a766c','#bab4a6','#5a564e'],w:['#3a80c4','#5aa0e0','#c8ecff','#2a609a'],cl:['#8a7a62','#6a5c48','#a8987c','#4a3e30'],stone:['#a8a090','#888070','#c8c0b0','#5e584c'],
    dec:['#f06a8a','#f6e06a','#ffffff','#b080ff'],mat:'timber',roof:['#b8483a','#9a6a3a','#c87a3a','#7a8a3a'],roofKind:'thatch',tree:'leafy',lip:'#6fb85a'},

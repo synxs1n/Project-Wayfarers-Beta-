@@ -1,3 +1,4 @@
+// ===== engine.js (base): core state (G, B, V, META), stats, saves, town services, quests, damage, the battle engine and auto battle =====
 // =================== CORE ===================
 const SAVEKEY='aurelis-wayfarers-v3',METAKEY='aurelis-meta-v1';
 let G=null,B=null,V={screen:'title',modal:null,pick:[],shopTab:'supplies',flt:'all',auto:false};

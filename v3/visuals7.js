@@ -1,4 +1,4 @@
-// =================== v0.7.7: lingering old visuals (visuals7.js) ===================
+// ===== visuals7.js (v0.7.7): lingering old visuals: minimap tiles, victory crest, arena backdrop =====
 // The worst offenders of the v0.7.7 review (docs/v077-weather.md), brought to the HD-2D look. Visual only: no game state, no save field.
 //  1. The victory crest: the blackletter "Victory" (Jacquard 24) is now set like the Wayfarers wordmark (logo.js): heavy capitals in the
 //     Nunito UI face, a gold bevel with a dark outline, a soft glow and compass stars either side. No blackletter is left on screen.

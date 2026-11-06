@@ -1,3 +1,4 @@
+// ===== map.js (v0.3.2): the area map, the minimap and the illustrated world map =====
 // =================== MAP AND MINIMAP (Beta v0.3.2) ===================
 // New optional field G.explored {mapId: base64 bitset, one bit per tile}. Dungeon tiles rebuild from the seed, so only
 // the seen bits are saved. Only seen tiles are drawn; markers show only once their tile has been seen. A mimic is a chest.

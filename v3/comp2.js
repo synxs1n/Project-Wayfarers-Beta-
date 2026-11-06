@@ -1,4 +1,4 @@
-// =================== COMPANION PERKS (Beta v0.3.2) ===================
+// ===== comp2.js (v0.3.2): companion family perks =====
 // Each monster family adds one small perk on top of the base companion bonus. Pure stat hooks so the sims can use them.
 const COMP_FAM={
   beast:{n:'Pack Instinct',d:'+5% crit chance',crit:.05},

@@ -1,4 +1,4 @@
-// =================== Beta v0.7.0: BATTLE INFORMATION AND INPUT ===================
+// ===== battle5.js (v0.7.0): battle information and input: turn forecast, foe intents, timed hits =====
 // 1) The turn order bar shows the next turns (B5.order) from the engine's own turn model: every live unit acts when its `next` time
 //    comes up (advance0 picks the smallest, heroes win ties), and after acting waits delayOf(u, cost). The forecast steps that model
 //    forward: it calls delayOf (so speed, tempo, weather, haste, slow and root all count, and any later wrapper of delayOf too), lets

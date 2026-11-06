@@ -1,4 +1,4 @@
-// ===== v0.7.1: the Wayfarers wordmark and emblem, drawn in code (SVG strings, crisp at any size, no font) =====
+// ===== logo.js (v0.7.1): the Wayfarers wordmark and emblem in code =====
 // Self contained (no game state): tools/mkicons.js loads this same file to render the app icons, so the logo in the game and the
 // icons on the phone, the desktop and the browser tab always match. Letters are polygons on a 100 unit cap height (y down);
 // each draws as a drop shadow, a dark outline, a gold gradient fill and a bevel highlight (a mask: the glyph minus itself shifted).

@@ -1,3 +1,4 @@
+// ===== ailments.js (v0.4.1): dead stay dead, persistent ailments (poison, curse, wound) =====
 // ===== Beta v0.4.1 2.1 and 2.2: dead stay dead, persistent ailments =====
 // Outside battle the truth lives in c.ail {poison,curse,wound} (saved per hero, optional). In battle the same ailments are ordinary statuses
 // (c.st); startBattle copies c.ail into c.st and finishBattle copies the survivors' statuses back.

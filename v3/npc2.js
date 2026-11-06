@@ -1,4 +1,4 @@
-// ===== Beta v0.4.1 5.3: NPC dialogue =====
+// ===== npc2.js (v0.4.1): NPC dialogue =====
 // Each NPC keeps their original line (and the re-lit town variant) and gains more: realm flavor, hints that adapt to the journey (no spoilers)
 // and lore tied to the realm and the boss waiting in it. Lines cycle through a per-NPC shuffled order and never repeat back to back.
 // Lore lines that are heard are saved in G.loreHeard and shown in Guides > Lore.
