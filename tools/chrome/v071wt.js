@@ -18,8 +18,10 @@ const follow=async(H,ms)=>{const t0=Date.now();
   while(Date.now()-t0<(ms||15000)){const s=await H.ev(()=>({auto:!!__A.W71.auto,mv:!!__A.WS.mv}));if(!s.auto&&!s.mv)break;await H.wait(60);}
   return H.ev(()=>{const t=window.__trail||[];window.__trail=[];return t;});};
 const trail=ev=>ev(()=>{window.__trail=[[__A.WS.x,__A.WS.y]];if(window.__trailOn)return;window.__trailOn=1;const f=()=>{const W=__A.WS,t=window.__trail,l=t[t.length-1];if(!l||l[0]!==W.x||l[1]!==W.y)t.push([W.x,W.y]);requestAnimationFrame(f);};requestAnimationFrame(f);});
-const pathOk=(ev,pos)=>ev(pos=>{const A=__A,m=A.WS.m;for(let i=0;i<pos.length;i++){const [x,y]=pos[i];if(i>0&&!A.W71.awPass(m,x,y)&&!(A.W71.last&&A.W71.last.goals.some(g=>g[0]===x&&g[1]===y)))return 'not open at '+x+','+y;
-  if(i>0){const [px,py]=pos[i-1],dx=x-px,dy=y-py;if(Math.abs(dx)>1||Math.abs(dy)>1)return 'jump '+px+','+py+' -> '+x+','+y;if(dx&&dy&&(A.solidAt(m,px+dx,py)||A.solidAt(m,px,py+dy)))return 'corner cut at '+x+','+y;}}return true;},pos);
+// tiles are checked against the map itself (a townsfolk may have wandered onto a tile after the hero left it)
+const pathOk=(ev,pos)=>ev(pos=>{const A=__A,m=A.WS.m,solid=(x,y)=>A.SOLID.includes(A.tileAt(m,x,y)),special=(x,y)=>m.exits.some(e=>e.x===x&&e.y===y)||m.bld.some(b=>b.door[0]===x&&b.door[1]===y)||'EXG'.includes(A.tileAt(m,x,y));
+  for(let i=0;i<pos.length;i++){const [x,y]=pos[i];if(i>0&&(solid(x,y)||special(x,y)))return 'not open at '+x+','+y;
+  if(i>0){const [px,py]=pos[i-1],dx=x-px,dy=y-py;if(Math.abs(dx)>1||Math.abs(dy)>1)return 'jump '+px+','+py+' -> '+x+','+y;if(dx&&dy&&(solid(px+dx,py)||solid(px,py+dy)))return 'corner cut at '+x+','+y;}}return true;},pos);
 const tapAt=async(H,touch,x,y)=>{if(touch)await H.page.touchscreen.tap(x,y);else await H.page.mouse.click(x,y);};
 (async()=>{
 for(const gfx of ['low','medium'])for(const [w,h,touch] of [[390,844,1],[844,390,1],[933,705,1],[1280,720,0]]){
@@ -80,15 +82,17 @@ for(const gfx of ['low','medium'])for(const [w,h,touch] of [[390,844,1],[844,390
     // ---- the world map: waystone travel offered only beside a waystone ----
     const wm=await ev(async()=>{const A=__A,G=A.G,m=A.WS.m;if(!G.visited.includes(1))G.visited.push(1);G.been=G.been||{};G.been.t1=1;G.been.f0=1;
       let wx=null;for(let y=0;y<m.h&&!wx;y++)for(let x=0;x<m.w;x++)if(m.t[y][x]==='W'){wx=[x,y];break;}
-      const near=[[0,1],[1,0],[-1,0],[0,-1]].map(([a,b])=>[wx[0]+a,wx[1]+b]).find(([x,y])=>A.W71.awPass(m,x,y));
+      if(!wx)return {err:'no waystone',id:m.id,rows:m.t.map(r=>r.join('')),g:JSON.stringify(m.guarded)};
+      const near=[[0,1],[1,0],[-1,0],[0,-1],[1,1],[-1,1],[1,-1],[-1,-1]].map(([a,b])=>[wx[0]+a,wx[1]+b]).find(([x,y])=>A.W71.awPass(m,x,y));if(!near)return {err:'no open tile by the waystone',wx,id:m.id,rows:m.t.map(r=>r.join('')),npcs:m.npcs.map(n=>n.x+','+n.y),ex:m.exits.map(e=>e.x+','+e.y)};
       const look=async()=>{A.ACT.worldMap();await new Promise(r=>setTimeout(r,250));A.W63.WM.sel='t1';A.W71.wmGo();const el=document.getElementById('wmgo');const r={html:el?el.innerHTML:null,btn:!!(el&&el.querySelector('[data-act="travel"]'))};A.V.modal=null;A.render();return r;};
       const far=await look();A.placeAt('t0',near[0],near[1],'d');A.render();const at=await look();return {far,at};});
+    if(wm.err){console.log(JSON.stringify(wm,null,1));wm.far=wm.at={html:wm.err};}
     chk(`${tag}: world map: away from a waystone a visited town only says a waystone can carry you there`,!wm.far.btn&&/waystone/i.test(wm.far.html||'')||JSON.stringify(wm.far));
     chk(`${tag}: world map: beside a waystone a visited town offers the waystone's own travel`,wm.at.btn||JSON.stringify(wm.at));
     // ---- a random encounter stops it (field, grass) ----
-    const R=await ev(()=>{const A=__A,m=A.getMap('f0');let s=null;for(let y=3;y<m.h-3&&!s;y++)for(let x=3;x<m.w-3;x++){if(A.tileAt(m,x,y)!==','||!A.W71.awPass(m,x,y))continue;let ok=0;for(let k=1;k<=6;k++)if(A.tileAt(m,x+k,y)===','&&A.W71.awPass(m,x+k,y))ok++;if(ok===6){s=[x,y];break;}}
+    const R=await ev(()=>{const A=__A,m=A.getMap('f0');let s=null;for(let y=3;y<m.h-3&&!s;y++)for(let x=3;x<m.w-3;x++){if(A.tileAt(m,x,y)!==','||!A.W71.awPass(m,x,y))continue;let ok=0;for(let k=1;k<=3;k++)if(A.tileAt(m,x+k,y)===','&&A.W71.awPass(m,x+k,y))ok++;if(ok===3){s=[x,y];break;}}
       A.placeAt('f0',s[0],s[1],'r');A.render();return s;});
-    await seeAll(ev);await ev(R=>{const A=__A;A.META.cfg.enc='high';A.WS.steps=50;window.__r0=Math.random;Math.random=()=>0;A.W71.awTap(A.WS.m,R[0]+6,R[1],'mini');},R);
+    await seeAll(ev);await ev(R=>{const A=__A;A.META.cfg.enc='high';A.WS.steps=50;window.__r0=Math.random;Math.random=()=>0;A.W71.awTap(A.WS.m,R[0]+3,R[1],'mini');},R);
     await wait(1400);st=await ev(()=>{Math.random=window.__r0;return {scr:__A.V.screen,auto:!!__A.W71.auto,why:__A.W71.last&&__A.W71.last.why,x:__A.WS.x};});
     chk(`${tag}: a random encounter on the way stops the walk (battle starts as normal)`,st.scr==='battle'&&!st.auto&&st.why==='halt'||JSON.stringify(st));
   }

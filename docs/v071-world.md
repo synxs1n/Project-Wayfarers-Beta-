@@ -88,7 +88,8 @@ open apron tiles is reachable, before and after.
   with the note; a minimap tap walks there. At 933x705 in both renderers: a key stops the walk short and it does not resume, a road gate
   tap stops in front of the gate in town, a dialog stops it, a random encounter stops it and the battle starts, the world map's waystone
   offer. No page errors.
-- Rerun: v050p1c, v050p2world, v063wo, v041p1c, v051c, wide, v050p1f, liveupdate (see the commit message for results).
+- Rerun, all pass: v050p1c (110 seeds; its raw scan now also counts hidden chests and levers as path assets), v050p2world, v063wo,
+  v041p1c, v051c, wide, v050p1f, liveupdate.
 
 ## Known limits
 - HD-2D still hides open floor on the row north of a wall (the hero shows through the x-ray circle and silhouette); only solid things are
