@@ -29,7 +29,7 @@ function uInfoBtn(u){return `<button class="uinfo" data-act="uInfo" data-arg="${
 // v0.3.5 2.1: the loud primed chip on every foe card, with turns left and a reaction hint while a detonator is being aimed
 // v0.6.3: compact (element, "Primed", turns left); while a detonator is aimed it names the reaction it will set off
 function primedChip(e){if(!(e.primed&&e.hp>0&&EL[e.primed.el]))return '';const sk=B.mode==='cmd'&&B.pend&&B.pend.sk,hit=detHits(sk,e),R=hit?(detTargets(sk).find(o=>o.e===e)||{}).R:null;
-  return `<span class="pchip ${hit?'hit':''}" style="--c:${ELC[e.primed.el]}" title="Primed with ${EL[e.primed.el]} for ${e.primed.t} more turn${e.primed.t===1?'':'s'}. A matching Detonator sets off a reaction.">${ico(e.primed.el)}<b>Primed</b><i>${e.primed.t}t</i>${R?`<u>✸ ${esc(R.n)}</u>`:''}</span>`;}
+  return `<span class="pchip ${hit?'hit':''} ${typeof b9Ready==='function'&&b9Ready(e)?'b9rdy':''}" style="--c:${ELC[e.primed.el]}" title="Primed with ${EL[e.primed.el]} for ${e.primed.t} more turn${e.primed.t===1?'':'s'}. A matching Detonator sets off a reaction.">${ico(e.primed.el)}<b>Primed</b><i>${e.primed.t}t</i>${R?`<u>✸ ${esc(R.n)}</u>`:''}</span>`;}
 // v0.6.3: the elements this foe is known to be weak to (and resists), from the Bestiary
 function foeWeak(e){try{const b=bestEntry(e),kn=Object.keys(b.known||{}).filter(el=>EL[el]),w=kn.filter(el=>effOf(el,e)>1),r=kn.filter(el=>effOf(el,e)<1);
   return (w.length?`<span class="fwk up" title="Weak to ${esc(w.map(el=>EL[el]).join(', '))}">Weak ${w.map(ico).join('')}</span>`:'')+(r.length?`<span class="fwk dn" title="Resists ${esc(r.map(el=>EL[el]).join(', '))}">Res ${r.map(ico).join('')}</span>`:'');}catch(x){return '';}}

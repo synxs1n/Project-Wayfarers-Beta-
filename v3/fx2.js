@@ -13,5 +13,7 @@ function fxScale(f){return /crit/.test(f.cls)?1.25:/effx|stat/.test(f.cls)?.82:/
 function fxLayer(now){if(!B)return '';try{const bw=document.getElementById('bwrap'),bn=B.banner,on=!!bn&&now-bn.t<banDur(bn)*1000;if(bw)bw.classList.toggle('banon',on);}catch(e){}
   const out=b3FxRects(now).map(({f,r,fs})=>{const age=now-f.t,dl=fxDelay(f)+f.stg-age,rx=f.cls==='react';
     return `<span class="fx2 b3fx ${f.cls}" style="left:${r.x}px;top:${r.y}px;width:${r.w}px;height:${r.h}px;font-size:${fs.toFixed(2)}px;animation-delay:${dl}ms;animation-duration:${fxDur(f)}s">${rx?`<b>${f.rp&&EL[f.rp]?ico(f.rp):''}${f.rd&&EL[f.rd]?ico(f.rd):''}✸ ${esc(f.txt)}</b>`:esc(f.txt)}</span>`;});
-  return `<div class="fxlayer">${out.join('')}</div>`;}
+  // v0.9.5: the reaction moment's flash and banner (battle3.js section 9) ride in the same layer
+  let rx='';try{rx=typeof b9RxHtml==='function'?b9RxHtml():'';}catch(e){}
+  return `<div class="fxlayer">${out.join('')}</div>${rx}`;}
 {const st0=stageTags;stageTags=function(){return st0.apply(this,arguments)+fxLayer(Date.now());};}

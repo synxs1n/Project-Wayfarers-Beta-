@@ -70,6 +70,12 @@ function sfx2(k){const g=sxG();if(!g)return false;const now=performance.now();if
     if(k==='crit'){sxTone(D,{f:60,f1:32,dur:.6,v:.5});sxNoise(D,{type:'lowpass',f:3000,f1:200,dur:.5,v:.35,a:.001});au2Duck(.35,.25);}return true;}
   case 'react':{const r=SFXC.react||{};const a=SXE[r.a]||SXE.arcane,b=SXE[r.b]||SXE.arcane;a.i(D);setTimeout(()=>{if(sxG())b.i(D);},60);
     sxNoise(D,{t:.08,type:'lowpass',f:4000,f1:300,dur:.7,v:.4,a:.002});sxTone(D,{t:.08,f:70,f1:35,dur:.7,v:.4});return true;}
+  // v0.9.5: the reaction moment (battle3.js b9React, at the hit): a timpani punch with a low drop, a short bright brass stab and the
+  // detonating element's impact, softened through its own gain; a light duck so it reads over the music without a jolt
+  case 'reaction':{const r=SFXC.react||{},E=SXE[r.a]||SXE.arcane,c=g.ctx,q=c.createGain();q.gain.value=.55;q.connect(D);au2Duck(.3,.35);
+    sxSmp(D,'timpani',40,{t:.01,v:.85,dur:.6})||sxTone(D,{f:84,f1:42,dur:.4,v:.36});sxTone(D,{f:64,f1:34,dur:.45,v:.3});
+    [60,67,72,76].forEach((m,i)=>sxSmp(D,'brass',m,{t:.02+i*.012,v:.26,dur:.26})||sxTone(D,{t:.02,type:'triangle',f:MIDI(m),dur:.24,v:.045,lp:2400}));
+    E.i(q);sxPings(D,.06,4,2200,4200,.035);return true;}
   case 'break':sxPings(D,0,12,2000,7000,.1);sxNoise(D,{type:'highpass',f:2500,dur:.4,v:.4,a:.001});sxTone(D,{f:90,f1:40,dur:.4,v:.35});return true;
   case 'heal':if(performance.now()-(SFXC.skipHeal||0)<40)return true;[79,83,86,91].forEach((m,i)=>sxSmp(D,'celesta',m,{t:i*.06,v:.35,dur:.4})||sxTone(D,{t:i*.06,f:MIDI(m),dur:.35,v:.06}));sxTone(D,{f:500,f1:1000,dur:.6,v:.05,a:.2});return true;
   case 'buff':sxTone(D,{f:660,f1:990,dur:.3,v:.07,a:.05});sxTone(D,{t:.08,f:990,f1:1320,dur:.3,v:.06,a:.05});return true;
@@ -95,6 +101,8 @@ function sfx2(k){const g=sxG();if(!g)return false;const now=performance.now();if
   return false;}
 const sfxClassic=sfx;
 sfx=function(k){try{if(AU2.on&&sfx2(k))return;}catch(e){}if(!AU2.on)return sfxClassic.apply(this,arguments);};
+// v0.9.5: a reaction in battle plays the new 'reaction' sound instead of the older 'react' one (both would land on the same hit)
+{const s1=sfx;sfx=function(k){try{if(k==='reaction')SFXC.nRx=(SFXC.nRx||0)+1;if(k==='react'&&V.screen==='battle'&&performance.now()<(SFXC.rxSkip||0))return;}catch(e){}return s1.apply(this,arguments);};}
 // ---------- context hooks ----------
 if(typeof onAction==='function'){const oa0=onAction;onAction=function(a,now){try{SFXC.wt=a&&a.side==='p'&&a.eq?(gearOf(a.eq.w)||{}).wt||null:null;SFXC.el=a&&(a.actEl||null);}catch(e){}return oa0.apply(this,arguments);};}
 if(typeof onFx==='function'){const of0=onFx;onFx=function(u,txt,cls){try{if(u)SFXC.hitEl=u.fxEl||null;if(cls==='react'&&u)SFXC.react={a:u.reactEl,b:u.reactP};if(/resist|immune|block|guard|null/i.test(String(txt)))SFXC.block=1;

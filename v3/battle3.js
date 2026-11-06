@@ -137,7 +137,7 @@ function b3Arrow(ctx,now){const L=b3Lay(),a=L&&L.arrow;if(!a)return;const x=a.x+
 // ----- DOM labels on the stage (status rows, primed badges, target tags) -----
 function b3StageHtml(){const L=b3Lay(true);if(!L)return '';const out=[],px=v=>v+'px';
   L.tags.forEach((o,u)=>{out.push(`<div class="utags b3l ${u.side}" style="left:${px(o.x)};top:${px(o.y)};width:${px(o.w)};height:${px(o.h)}">${stButtons(u,{max:o.max,noPrime:true,noWx:true})}</div>`);});
-  L.prim.forEach((o,u)=>{out.push(`<span class="primed pmin b3l" style="--c:${ELC[u.primed.el]};left:${px(o.x)};top:${px(o.y)};width:${px(o.w)};height:${px(o.h)}" aria-label="Primed with ${EL[u.primed.el]}, ${u.primed.t} turn${u.primed.t===1?'':'s'} left">${ico(u.primed.el)}<i>${u.primed.t}</i></span>`);});
+  L.prim.forEach((o,u)=>{out.push(`<span class="primed pmin b3l${b9Ready(u)?' b9rdy':''}" style="--c:${ELC[u.primed.el]};left:${px(o.x)};top:${px(o.y)};width:${px(o.w)};height:${px(o.h)}" aria-label="Primed with ${EL[u.primed.el]}, ${u.primed.t} turn${u.primed.t===1?'':'s'} left">${ico(u.primed.el)}<i>${u.primed.t}</i></span>`);});
   L.tgt.forEach((o,u)=>{const T=o.T,lab=(T.eff.replace(/<span class="eff [a-z]+ arch"[\s\S]*$/,'').match(/>([A-Za-z?]+)/)||[])[1]||'',cls=(T.eff.match(/class="eff ([a-z]+)/)||[])[1]||'';
     const l2=(lab?`<span class="eff ${cls}">${lab}</span>`:'')+(T.rx?`<span class="eff rx">${ico(T.rx.p)}${ico(T.rx.d)}✸ ${esc(T.rx.n)}</span>`:'')+(T.px?`<span class="eff px" title="Primes it with ${esc(EL[T.px]||'')}">⟐${ico(T.px)}</span>`:'')+(T.dl?`<span class="eff ${T.dl.up?'up':'dn'} arch" title="${esc(T.dl.tip||'')}">${T.dl.up?'▲':'▼'}${dlIco(T.dl.d)}</span>`:''),tk=b3TagKey(T),kf=B3TK[tk];
     out.push(`<div class="b3tg b3l ${u.side} ${T.rx?'det':''}" data-tk="${esc(tk)}" style="left:${px(o.x)};top:${px(o.y)};width:${px(o.w)};height:${px(o.h)};--f:${(B3.tagF*(kf||1)).toFixed(2)}px">${T.short?'':`<b class="ename">${esc(T.name)}</b>`}${l2?`<span class="l2">${l2}</span>`:''}</div>`);});
@@ -146,6 +146,7 @@ function b3StageHtml(){const L=b3Lay(true);if(!L)return '';const out=[],px=v=>v+
 // ----- floating effect texts, placed through the same pass -----
 function b3FxRects(now){if(!B)return [];const L=b3Lay();if(!L)return [];let top=1;try{const bn=B.banner;if(bn&&now-bn.t<banDur(bn)*1000)top=Math.ceil(26/(BL.sc||2));}catch(e){}
   const W=BL.W,H=BL.H,base=fxSize(),obs=L.obs.slice(),out=[];if(top>1)obs.push({x:0,y:0,w:W,h:top,body:1});
+  try{const bx=b9BanNow();if(bx)obs.push({x:bx.x,y:bx.y,w:bx.w,h:bx.h,body:1});}catch(e){}// v0.9.5: effect texts keep clear of the reaction banner
   B.en.concat(B.front).forEach(u=>{if(!u||!u.fx||!u.fx.length)return;const b=unitBox(u);if(!b)return;
     const live=u.fx.filter(f=>now-f.t<(fxDur(f)*1000+IMPACT+FX_STAG*6));if(!live.length)return;
     const used=new Set(live.filter(f=>f.slot!=null).map(f=>f.slot));live.forEach(f=>{if(f.slot==null){let s=0;while(used.has(s))s++;f.slot=s;used.add(s);f.stg=Math.min(s,5)*FX_STAG;}});
@@ -161,7 +162,8 @@ function b3FxRects(now){if(!B)return [];const L=b3Lay();if(!L)return [];let top=
 // which live foes a detonator sets off, and the reaction on each
 function detTargets(sk){if(!B||!sk||sk.role!=='det')return [];const els=skEls(sk);return B.en.filter(e=>e.hp>0&&e.primed).map(e=>{const el=els.find(x=>reactFor(e.primed.el,x));const R=el&&reactFor(e.primed.el,el);return R?{e,R,p:e.primed.el,d:el}:null;}).filter(Boolean);}
 // the reaction text floats with both element icons: note them on the effect entry when the reaction fires
-{const dr0=doReaction;doReaction=function(a,t,el){const p=t&&t.primed&&t.primed.el,R=dr0.apply(this,arguments);try{if(R&&t&&t.fx){for(let i=t.fx.length-1;i>=0;i--){const f=t.fx[i];if(f.cls==='react'&&f.txt===R.n){f.rp=p;f.rd=el;break;}}}}catch(e){}return R;};}
+{const dr0=doReaction;doReaction=function(a,t,el){const p=t&&t.primed&&t.primed.el,R=dr0.apply(this,arguments);try{if(R&&t&&t.fx){for(let i=t.fx.length-1;i>=0;i--){const f=t.fx[i];if(f.cls==='react'&&f.txt===R.n){f.rp=p;f.rd=el;break;}}}}catch(e){}
+  try{if(R&&t)b9React(a,t,p,el,R);}catch(e){}return R;};}// v0.9.5: the reaction moment (section 9)
 // in the skill list: every foe this detonator sets off right now, with the reaction and both element icons (else what it reacts with)
 function detList(s){if(!s||s.role!=='det'||!B)return '';const L=detTargets(s);if(!L.length)return detNote(s);
   // v0.7.7: symbols only: the primed element on each foe it sets off now (the reaction and foe names stay in the tooltip)
@@ -390,3 +392,107 @@ function b8Small(c){if(!c||!c.hd||c.hd<2||!(B8H.k<1))return c;let o=B8HC.get(c);
   x.setTransform(1,0,0,1,0,0);x.imageSmoothingEnabled=false;(x._hdDI||x.drawImage).call(x,c,0,0,RW,RH,Math.round((lw*k-tw)/2),lh*k-th,tw,th);// bitmap pixels (sprhd.js reads logical ones)x.setTransform(k,0,0,k,0,0);
   B8HC.set(c,o);return o;}
 {const so=spriteOf;spriteOf=function(u,walk){const c=so.apply(this,arguments);try{if(u&&(u.heroArt||u.side==='p'&&!(TPL[u.id]&&TPL[u.id].mon)))return b8Small(c);}catch(e){}return c;};}
+
+// ----- 9) v0.9.5: battle clarity (simple layer, damage groups, reaction moments) -----
+// Simple by default: each foe shows ONE key weakness (card and stage tag), the one that sets up a reaction for this party when there is
+// one; the full chips (at most two weak and two resist, highest multipliers first) on tap (the key chip, the i panel) or always with
+// Settings > Expert battle info (META.cfg.expertBattle, off when missing). Damage types read as three groups (Physical = slash, blunt and
+// piercing; Ranged; Magic; and Heal for the Undead) with one symbol each (the dlIco art); a foe's types are one plain line (i panel, Scan).
+// Reactions get a moment: one short flash in both element colours (never under reduced motion), a "✸ Melt!" banner placed clear of
+// every face, a punchy sound and a quick camera punch on the target; B.nReact counts them (for the rewards screen).
+const B9={flashMs:100,banMs:900,gap:400,sndGap:250,last:0,lastSnd:0,ev:[],seq:0};
+function b9Expert(){try{return META.cfg.expertBattle===true;}catch(e){return false;}}
+const DG_NAME={phys:'Physical',ranged:'Ranged',magic:'Magic',heal:'Heal'},DG_ART={phys:'slash',ranged:'ranged',magic:'magic',heal:'heal'},DG_OF={slash:'phys',blunt:'phys',piercing:'phys',ranged:'ranged',magic:'magic',heal:'heal'};
+function dgIco(g,cls){const d=DG_ART[g];if(!d)return '';return `<img class="ico dli dg ${g} ${cls||''}" src="${cvURL('dli:'+d,()=>dlShapeCv(d))}" alt="${DG_NAME[g]}" title="${DG_NAME[g]}">`;}
+// the group multipliers of a known foe type: Physical is the mean of slash, blunt and piercing (each clamped as archMult does)
+function foeDg(e){const out={};try{if(!e||!revealed(e))return out;const ty=(e.ty||[]).filter(k=>ARCH[k]&&ARCH[k].dl);
+  if(ty.length){const C=e.boss?ARCH_BOSS_CLAMP:ARCH_FOE_CLAMP,sub=d=>{let m=1;ty.forEach(k=>{const v=ARCH[k].dl[d];if(v!=null)m*=v;});return clamp(m,C[0],C[1]);};
+    out.phys=(sub('slash')+sub('blunt')+sub('piercing'))/3;out.ranged=sub('ranged');out.magic=sub('magic');}
+  if(isUndead(e))out.heal=1.5;}catch(x){}return out;}
+// every known weakness and resistance: {w:[{k:'el'|'dg',id,m}],r:[...]}, strongest first (elements before groups on a tie)
+function b9Weak(e){const w=[],r=[];try{const b=bestEntry(e);Object.keys(b.known||{}).filter(el=>EL[el]).forEach(el=>{const m=effOf(el,e);if(m>1)w.push({k:'el',id:el,m});else if(m<1)r.push({k:'el',id:el,m});});
+  const D=foeDg(e);for(const g in D){const m=D[g];if(m>=1.1)w.push({k:'dg',id:g,m});else if(m<=.9)r.push({k:'dg',id:g,m});}}catch(x){}
+  const el1=(a,b)=>(a.k==='el'?0:1)-(b.k==='el'?0:1);w.sort((a,b)=>b.m-a.m||el1(a,b));r.sort((a,b)=>a.m-b.m||el1(a,b));return {w,r};}
+// the party's primer and detonator elements (live Vanguard heroes), and the detonators the acting hero can cast now
+let B9P={k:'',P:null};
+function b9Party(){if(!B)return {pr:new Set(),dt:new Set(),now:new Set()};const k=(B.id||0)+'|'+(B.actN||0)+'|'+(B.cur&&B.mode==='cmd'?unitRef(B.cur)+B.cur.mp:'')+'|'+B.front.map(c=>c.id+(c.hp>0?1:0)).join();
+  if(B9P.k===k&&B9P.P)return B9P.P;const P={pr:new Set(),dt:new Set(),now:new Set()};
+  B.front.forEach(c=>{if(!c||c.hp<=0||c.side!=='p'||c.isComp)return;let ks=[];try{ks=known(c)||[];}catch(e){}
+    ks.forEach(s=>{const els=skEls(s);if(!els.length)return;if(s.role==='primer')P.pr.add(els[0]);else if(s.role==='det')els.forEach(x=>{P.dt.add(x);if(c===B.cur&&B.mode==='cmd'&&c.mp>=(s.mp||0))P.now.add(x);});});});
+  B9P={k,P};return P;}
+// how a weakness element sets up a reaction for this party: 3 it detonates the foe's current prime, 2 a hero primes with it and another
+// detonates it (or the reverse), 1 a hero uses it in a primer or detonator, 0 none. {s, R (the reaction), how}
+function b9Rx(e,el,P){try{if(e.primed&&e.hp>0&&P.dt.has(el)){const R=reactFor(e.primed.el,el);if(R)return {s:3,R,how:`detonates its ${EL[e.primed.el]} prime: ${R.n}`};}
+  if(P.pr.has(el))for(const d of P.dt){const R=reactFor(el,d);if(R)return {s:2,R,how:`prime it, then ${EL[d]} sets off ${R.n}`};}
+  if(P.dt.has(el))for(const p of P.pr){const R=reactFor(p,el);if(R)return {s:2,R,how:`detonates a ${EL[p]} prime: ${R.n}`};}
+  if(P.pr.has(el)||P.dt.has(el))return {s:1,R:null,how:'your heroes prime or detonate with it'};}catch(x){}return {s:0};}
+// the one weakness worth showing: a reaction setup first, then the strongest
+function b9Key(e){if(!e||e.side!=='e'||e.hp<=0)return null;const W=b9Weak(e);if(!W.w.length)return null;const P=b9Party();let best=null;
+  W.w.forEach((x,i)=>{const X=x.k==='el'?b9Rx(e,x.id,P):{s:0},v=X.s*10+x.m-i*.001;if(!best||v>best.v)best=Object.assign({},x,{s:X.s,R:X.R,how:X.how,v});});
+  best.more=W.w.length+W.r.length>1;return best;}
+const b9Name=x=>x.k==='el'?EL[x.id]:DG_NAME[x.id];
+const b9Ico=(x,res)=>x.k==='el'?ico(x.id):dgIco(x.id,res?'res':'');
+function b9KeyTip(e,k){return `Weak to ${b9Name(k)}`+(k.s>1&&k.how?` (${k.how})`:k.s===1?' (your heroes use it)':'')+'.';}
+// full chips: on tap (the key chip toggles the card, an open i panel), or always in Expert mode
+function b9Full(e){try{const r=unitRef(e);return b9Expert()||!!(B&&B.b9x&&B.b9x[r])||!!(B&&B.uDet&&B.uDet.ref===r);}catch(x){return false;}}
+function b9Chips(e){const W=b9Weak(e),w=W.w.slice(0,2),r=W.r.slice(0,2),nm=L=>L.map(b9Name).join(', ');
+  return (w.length?`<span class="fwk up" title="Weak to ${esc(nm(w))}"><b>Weak</b>${w.map(x=>b9Ico(x)).join('')}</span>`:'')+(r.length?`<span class="fwk dn" title="Resists ${esc(nm(r))}"><b>Res</b>${r.map(x=>b9Ico(x,1)).join('')}</span>`:'');}
+// foe cards: the key weakness (a button: tap for the full chips), or the capped chips
+foeWeak=function(e){try{if(b9Full(e)){const h=b9Chips(e);return h&&B&&B.b9x&&B.b9x[unitRef(e)]&&!b9Expert()?h+`<button class="fwk b9less" data-act="b9wx" data-arg="${unitRef(e)}" aria-label="Show less for ${esc(e.name)}" title="Show less">−</button>`:h;}
+  const k=b9Key(e);if(!k)return '';
+  return `<button class="fwk up b9key ${k.s>1?'rx':''}" data-act="b9wx" data-arg="${unitRef(e)}" data-k="${k.k}:${k.id}" data-s="${k.s}" title="${esc(b9KeyTip(e,k))} Tap for the rest." aria-label="${esc(e.name)}: ${esc(b9KeyTip(e,k))} Tap for the rest."><b>${k.s>1?'✸':'Weak'}</b>${b9Ico(k)}${k.more?'<i>+</i>':''}</button>`;}catch(x){return '';}};
+ACT.b9wx=function(ref){if(!B)return;B.b9x=B.b9x||{};B.b9x[ref]=!B.b9x[ref];renderBattle();};
+// foe types as one plain line (the i panel and Scan)
+const ARCH_LINE={flying:'Flying: ranged hits hard',armored:'Armored: magic and piercing cut through, other hits glance off',jelly:'Jelly: magic wrecks it, weapons sink in',
+  undead:'Undead: healing and Light burn it, blunt blows shatter it',swarm:'Swarm: hits on every foe shred it',beast:'Beast: blunt blows batter it',plant:'Plant: slashes and fire cut it down'};
+function b9TypeLine(e){try{if(!e||!e.ty||!e.ty.length||!revealed(e))return '';const L=e.ty.map(k=>ARCH_LINE[k]).filter(Boolean);return L.length?L.join('. ')+'.':'';}catch(x){return '';}}
+{const sc0=scan;scan=function(t){const r=sc0.apply(this,arguments);try{const ln=b9TypeLine(t);if(ln&&B)log(ln);}catch(e){}return r;};}
+// the i panel: the capped chips and the type line under "From the Bestiary"
+{const ud0=uDetHtml;uDetHtml=function(){let h=ud0.apply(this,arguments);try{const P=B&&B.uDet,u=P&&unitOf(P.ref);if(h&&u&&u.side==='e'){const c=b9Chips(u),ln=b9TypeLine(u);
+  if(c||ln){const add=`<div class="b9det">${c?`<div class="b9chips">${c}</div>`:''}${ln?`<p class="note b9ty">${esc(ln)}</p>`:''}</div>`;const k=h.indexOf('<div class="btnrow"><button class="btn gold" data-act="uClose"');h=k>=0?h.slice(0,k)+add+h.slice(k):h;}}}catch(e){}return h;};}
+// simple / expert on the battle screen (CSS: hero cards show only what matters in simple mode)
+{const rb=renderBattle;renderBattle=function(stageOnly){try{const bt=document.querySelector('.battle.b3');if(bt)bt.classList.toggle('b9x',b9Expert());}catch(e){}return rb.apply(this,arguments);};}
+// simple mode: a hero card's status row keeps to three icons ("+N" for the rest; the stage and the i panel show them all)
+{const pc0=pcard;pcard=function(c,rs){let h=pc0.apply(this,arguments);try{if(!rs&&!b9Expert()&&c.hp>0&&BL.mode!=='tall'&&!b3OnStage(c,'tags')&&stItems(c,{noWx:true}).length>3){const k=h.lastIndexOf('<div class="ptags">');if(k>=0)h=h.slice(0,k)+`<div class="ptags">${stButtons(c,{max:3,noWx:true})}</div></div>`;}}catch(e){}return h;};}
+// the setting
+{const sb0=settingsBody;settingsBody=function(){let h=sb0.apply(this,arguments);try{const on=b9Expert();
+  const row=`<div class="row b9set"><div><b>Expert battle info</b><small>Foe cards show every weakness and resistance (up to two of each) and hero cards their level, class and elements. Off: each foe shows its one key weakness; tap it for the rest.</small></div><div class="chips"><button class="chip ${on?'':'on'}" data-act="cfg" data-arg='["expertBattle",false]'>Off</button><button class="chip ${on?'on':''}" data-act="cfg" data-arg='["expertBattle",true]'>On</button></div></div>`;
+  const k=h.indexOf('<div class="btnrow"><button class="btn" data-act="autoOpen"');h=k>=0?h.slice(0,k)+`<div class="rows">${row}</div>`+h.slice(k):h+`<div class="rows">${row}</div>`;}catch(e){}return h;};}
+
+// ----- the reaction moment -----
+// does the acting hero hold a detonator (with the MP) that sets off this foe's prime? (its primed badge pulses)
+function b9Ready(e){try{if(!e||!e.primed||e.hp<=0||!B||B.mode!=='cmd'||!B.cur||B.cur.side!=='p')return false;const P=b9Party();for(const d of P.now)if(reactFor(e.primed.el,d))return true;}catch(x){}return false;}
+function b9Still(){try{return typeof gfxStill==='function'?gfxStill():reducedMotion();}catch(e){return false;}}
+function b9React(a,t,p,d,R){if(!B||!t)return;B.nReact=(B.nReact||0)+1;const now=Date.now(),bt=B;
+  const ev={id:++B9.seq,t:now,t0:now+IMPACT,n:R.n,p,d,u:t,flash:false,snd:false};
+  if(!b9Still()&&now-B9.last>B9.gap){ev.flash=true;B9.last=now;}
+  try{BV.flash=null;}catch(e){}// the canvas flash onFx set for this reaction: the one flash is ours
+  if(now-B9.lastSnd>B9.sndGap){ev.snd=true;B9.lastSnd=now;try{SFXC.rxSkip=performance.now()+IMPACT+400;}catch(e){}later(()=>{try{if(B===bt&&typeof sfx==='function')sfx('reaction');}catch(e){}},IMPACT);}
+  B.b9rx=ev;B9.ev.push({id:ev.id,n:R.n,flash:ev.flash,snd:ev.snd,t:now});if(B9.ev.length>60)B9.ev.shift();
+  b9Punch(t);later(()=>{try{if(B===bt&&V.screen==='battle')renderBattle(true);}catch(e){}},IMPACT);}
+// a quick camera punch on the target: both stage renderers follow the camera (the 2D canvas and the HD-2D GL stage, gfx6battle.js)
+function b9Punch(t){try{if(b9Still()||typeof CAM==='undefined'||!GFX.q.camera)return;const c=centerOf(t);if(!c)return;
+  CAM.on=true;CAM.t0=performance.now()+IMPACT;CAM.z=1.085;CAM.dur=320;CAM.fx=c.x;CAM.fy=c.y;CAM.pk=1;}catch(e){}}
+if(typeof g6CamEnv==='function'){const ce0=g6CamEnv;g6CamEnv=function(now){if(!(CAM.on&&CAM.pk))return ce0.apply(this,arguments);const t=(now-CAM.t0)/CAM.dur;if(t<0)return 0;if(t>=1){CAM.on=false;CAM.pk=0;return 0;}
+  return t<.18?t/.18:1-Math.pow((t-.18)/.82,.7);};}
+if(typeof gfxCamPush==='function'){const cp0=gfxCamPush;gfxCamPush=function(){const t0=CAM.t0;const r=cp0.apply(this,arguments);if(CAM.t0!==t0)CAM.pk=0;return r;};}
+// the banner's box: across the stage, clear of every face, label and the top banner strip (then of faces and plates, then of faces)
+function b9BanBox(ev){const L=b3Lay();if(!L)return null;const W=BL.W,H=BL.H,sc=BL.sc||2;
+  let top=1;try{const bn=B.banner;if(bn&&Date.now()-bn.t<banDur(bn)*1000)top=Math.ceil(26/sc);}catch(e){}
+  const faces=L.bodies.map(o=>Object.assign({},o.face,{body:1})),strip={x:0,y:0,w:W,h:top,body:1};
+  for(const k of [1,.8,.65]){const fs=Math.max(5,Math.min(10,20/sc))*k,w=Math.min(W-4,Math.ceil(b3TextW('✸ '+ev.n+'!',fs,900)*1.12+2*(fs+1)+fs*1.6)),h=Math.ceil(fs*1.55);
+    for(const obs of [L.obs.concat([strip]),faces.concat(L.all.filter(o=>o.kind==='plate'||o.kind==='intent'),[strip]),faces.concat([strip])]){
+      const C=[];for(let y=top+1;y+h<=H-1;y+=2)for(const f of [0,-1,1,-2,2,-3,3]){const x=Math.round(W/2-w/2+f*W/10);if(x<1||x+w>W-1)continue;C.push({x,y,c:Math.abs(y+h/2-H*.32)/2+Math.abs(f)*3});}
+      C.sort((a,b)=>a.c-b.c);for(const q of C){const r={x:q.x,y:q.y,w,h};if(!obs.some(o=>b3Hit(r,o,o.body?0:B3.pad)))return Object.assign(r,{fs});}}}
+  return null;}
+// the banner box of the reaction showing now (placed once, at its first render)
+function b9BanNow(){const ev=B&&B.b9rx;if(!ev)return null;const age=Date.now()-ev.t0;if(age<0||age>B9.banMs)return null;if(ev.r===undefined)ev.r=b9BanBox(ev);return ev.r;}
+// the flash and the banner, in the stage's own layer (fxLayer appends this); negative delays keep the animation running across re-renders
+function b9RxHtml(){const ev=B&&B.b9rx;if(!ev)return '';const age=Date.now()-ev.t0;if(age<0||age>B9.banMs){if(age>B9.banMs+200)B.b9rx=null;return '';}
+  const c1=ELC[ev.p]||'#d8b8ff',c2=ELC[ev.d]||'#ffd04a';let h='';
+  // the flash runs from its first render (a busy frame cannot skip it, and it is never longer than flashMs)
+  if(ev.flash&&!b9Still()){if(ev.fa==null)ev.fa=Date.now();const fa=Date.now()-ev.fa;if(fa<B9.flashMs){h+=`<div class="b9fl" data-id="${ev.id}" style="width:${BL.W}px;height:${BL.H}px;--c1:${c1};--c2:${c2};animation-duration:${B9.flashMs}ms;animation-delay:-${fa}ms" aria-hidden="true"></div>`;ev.flashShown=1;}}
+  const r=b9BanNow();
+  if(r){h+=`<div class="b9ban" data-id="${ev.id}" role="status" style="left:${r.x}px;top:${r.y}px;width:${r.w}px;height:${r.h}px;font-size:${r.fs.toFixed(2)}px;--c1:${c1};--c2:${c2};animation-duration:${B9.banMs}ms;animation-delay:-${age}ms">${EL[ev.p]?ico(ev.p):''}${EL[ev.d]?ico(ev.d):''}<b>✸ ${esc(ev.n)}!</b></div>`;ev.banShown=1;}
+  return h;}
+{const an0=animating;animating=function(){return an0.apply(this,arguments)||!!(B&&B.b9rx&&Date.now()-B.b9rx.t0<B9.banMs+150);};}

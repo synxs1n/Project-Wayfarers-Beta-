@@ -170,6 +170,7 @@ async function setup(H,kind,he,fo,seed){
       out.ico=urls.every(u=>u.startsWith('data:image')||u.startsWith('blob:'))&&new Set(urls).size===ds.length;
       // the symbol canvases are drawn (opaque pixels), each different
       // an armored foe (weak to piercing and magic, resists slash, blunt and ranged) and an undead one (weak to blunt and healing)
+      A.META.cfg.expertBattle=true;// v0.9.5: the full (capped) chips; the default shows one key weakness (v095b)
       const arm=B.en[0],und=B.en[1];arm.ty=['armored'];und.ty=['undead'];const M=A.META.best;[arm,und].forEach(e=>{const b=M[e.base]=M[e.base]||{};delete b.hit;delete b.scan;});A.render();
       const dls=i=>{const c=document.querySelectorAll('#bparty .pgroup.foes .fcw')[i];return c?{up:[...c.querySelectorAll('.fwk.up img.dli')].map(x=>x.alt),dn:[...c.querySelectorAll('.fwk.dn img.dli')].map(x=>x.alt)}:null;};
       out.hidden=dls(0);[arm,und].forEach(e=>{M[e.base].hit=1;});A.render();out.arm=dls(0);out.und=dls(1);
@@ -181,9 +182,10 @@ async function setup(H,kind,he,fo,seed){
       out.tags=tg;return out;});
     chk(`${tag}: six distinct code-drawn symbols`,r.ico===true);
     chk(`${tag}: hidden on the card until the foe type is hit or scanned`,r.hidden&&r.hidden.up.length===0&&r.hidden.dn.length===0||JSON.stringify(r.hidden));
-    chk(`${tag}: an armored foe's card: weak to Piercing and Magic, resists Slash, Blunt and Ranged (${JSON.stringify(r.arm)})`,!!r.arm&&r.arm.up.join()==='Piercing,Magic'&&r.arm.dn.join()==='Slash,Blunt,Ranged');
-    chk(`${tag}: an undead foe's card: weak to Blunt and Heal (${JSON.stringify(r.und)})`,!!r.und&&r.und.up.includes('Blunt')&&r.und.up.includes('Heal'));
-    chk(`${tag}: the names stay in the tooltip ("${r.title}")`,/Slash/.test(r.title)&&/Ranged/.test(r.title));
+    // v0.9.5: damage types read as three groups (Physical = slash, blunt, piercing; Ranged; Magic; Heal), two chips of each kind at most
+    chk(`${tag}: an armored foe's card: weak to Magic, resists Ranged and Physical (${JSON.stringify(r.arm)})`,!!r.arm&&r.arm.up.join()==='Magic'&&r.arm.dn.join()==='Ranged,Physical');
+    chk(`${tag}: an undead foe's card: weak to Heal (${JSON.stringify(r.und)})`,!!r.und&&r.und.up.includes('Heal'));
+    chk(`${tag}: the names stay in the tooltip ("${r.title}")`,/Physical/.test(r.title)&&/Ranged/.test(r.title));
     chk(`${tag}: the skill list's delivery chip is the symbol, named in its tooltip`,!!r.chip&&r.chip.img&&/Delivery: /.test(r.chip.title)&&r.chip.txt===''||JSON.stringify(r.chip));
     chk(`${tag}: the aim tag on the armored foe shows the archetype arrow with the delivery symbol`,r.tags.some(t=>t.arch)||JSON.stringify(r.tags));
     const m=await H.ev(()=>{const A=__A;A.B.menu='root';A.B.pend=null;A.render();return null;});await H.wait(300);const mm=await H.ev(MEASURE);
