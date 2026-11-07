@@ -40,7 +40,7 @@ function mStarterSheet(m){
     ${later.length?`<h4>Learned later</h4><div class="rows compact">${later.map(row).join('')}</div>`:''}`,
     `<button class="btn" data-act="closeModal">Back</button><button class="btn gold" data-act="sheetPick" data-arg="${id}" ${!picked&&full?'disabled':''}>${picked?'Remove from my three':full?'Your three are full':'Choose '+esc(t.n)}</button>`,true);
 }
-{const vm0=vModal;vModal=function(m){if(m&&m.type==='starterSheet')return mStarterSheet(m);return vm0.apply(this,arguments);};}
+HOOK.before('vModal','starter','starterSheet popup',function(m){if(m&&m.type==='starterSheet')return HOOK.stop(mStarterSheet(m));});
 Object.assign(ACT,{
   sheetS(id){if(!TPL[id])return;V.modal={type:'starterSheet',id};render();},
   sheetPick(id){ACT.pickS(id);V.modal=null;render();}

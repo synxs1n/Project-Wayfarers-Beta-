@@ -93,9 +93,9 @@ Object.assign(ACT,{
   bondsOpen(){V.modal={type:'bonds',from:V.modal};render();},
   bondsBack(){const f=V.modal&&V.modal.from;V.modal=f||null;render();},
   bview(v){V.bview=v==='tame'?'tame':'all';render();}});
-{const vm0=vModal;vModal=function(m){if(m&&m.type==='camp')return mCamp(m);
-  if(m&&m.type==='bonds')return box('Bonds',vBonds(),m.from?'<button class="btn gold" data-act="bondsBack">Back</button>':'<button class="btn gold" data-act="closeModal">Close</button>',true);
-  return vm0.apply(this,arguments);};}
+HOOK.before('vModal','v063prog','camp and bonds popups',function(m){if(m&&m.type==='camp')return HOOK.stop(mCamp(m));
+  if(m&&m.type==='bonds')return HOOK.stop(box('Bonds',vBonds(),m.from?'<button class="btn gold" data-act="bondsBack">Back</button>':'<button class="btn gold" data-act="closeModal">Close</button>',true));
+  });
 // the Party tab gets Bonds and Make camp next to Best party
 {const vs0=vSwap;vSwap=function(){let h=vs0.apply(this,arguments);try{if(G&&!G.daily){const c=campBuffNow();
     const add=`<button class="btn sm" data-act="bondsOpen">Bonds</button>${campOpen()?`<button class="btn sm" data-act="campOpen">Make camp</button>`:''}`;

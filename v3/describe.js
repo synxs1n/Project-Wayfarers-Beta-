@@ -30,5 +30,5 @@ function classCard(cls){const C=CLS[cls],D=CLASS_DESC[cls]||{};return `<div clas
 function mStatInfo(m){const k=m.k,A=ATTRN[k],S=STAT_INFO[k];
   if(A){const fans=prefersAttr(k);return box(`${A[0]} (${k.toUpperCase()})`,`<p>${esc(A[1])}.</p>${k==='fth'?'<p class="note">Faith adds more to healing than MAG does, a little less to spell damage, and a little resistance.</p>':''}<p class="note">${fans.length?'Classes that favor it: '+fans.join(', ')+'.':'No class leans on it first, but every hero gains from it.'}</p><p class="note">Each stat point you spend adds 1 (Agility 0.6).</p>`,'<button class="btn gold" data-act="xBack">Got it</button>');}
   if(S)return box(S[0],`<p>${esc(S[1])}</p><p class="note">${esc(S[2])}</p>`,'<button class="btn gold" data-act="xBack">Got it</button>');return '';}
-{const vm0=vModal;vModal=function(m){if(m&&m.type==='statInfo')return mStatInfo(m);return vm0.apply(this,arguments);};}
+HOOK.before('vModal','describe','statInfo popup',function(m){if(m&&m.type==='statInfo')return HOOK.stop(mStatInfo(m));});
 ACT.statInfo=function(k){V.modal={type:'statInfo',k,from:V.modal};render();};

@@ -19,7 +19,7 @@ function mEchoAsk(m){const s=m.s,k=bossKeyFor(s),d=guardianDef(k),lv=storyEchoLv
     <small>Level ${lv}. Tougher than the original, with a new move (<b>Resounding ${esc((d.sk.find(x=>x[4]!=='buff')||d.sk[0])[0])}</b>) and a second turning point near the end. Optional: the way east is already open.</small>
     <small>First win: its Echo Shard, Echo Essence and a Dread Core. Auto is locked until you win it by hand once.</small></div></div>`,
     `<button class="btn" data-act="closeModal">Leave it</button><button class="btn gold" data-act="echoStory" data-arg="${s}">Fight the Echo</button>`);}
-{const vm0=vModal;vModal=function(m){if(m&&m.type==='echoAsk')return mEchoAsk(m);return vm0.apply(this,arguments);};}
+HOOK.before('vModal','echo2','echoAsk popup',function(m){if(m&&m.type==='echoAsk')return HOOK.stop(mEchoAsk(m));});
 // ----- which Echoes answer (the Echo Sanctum, sanctum.js, is the place to fight them) -----
 function riftKeys(){if(!G)return [];const own=[0,1,2,3,4].filter(s=>(G.echoStory||{})[s]).map(s=>bossKeyFor(s));return META.echoRift?echoKeys():own;}
 Object.assign(ACT,{

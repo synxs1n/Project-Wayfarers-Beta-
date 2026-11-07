@@ -94,7 +94,7 @@ function drawFullMap(){const cv=document.getElementById('fmap'),m=WS.m;if(!cv||!
   const sc=Math.max(2,Math.floor(Math.min(maxW/m.w,maxH/m.h)));cv.width=m.w*sc;cv.height=m.h*sc;cv.style.width=cv.width+'px';cv.style.height=cv.height+'px';
   const x=cv.getContext('2d');x.imageSmoothingEnabled=false;x.fillStyle='#0a0710';x.fillRect(0,0,cv.width,cv.height);x.drawImage(mapBase(m),0,0,m.w*sc,m.h*sc);
   drawMarks(x,m,mapMarks(m),sc,0,0);drawPlayer(x,sc,(WS.x+.5)*sc,(WS.y+.5)*sc);}
-{const vm0=vModal;vModal=function(md){if(md&&md.type==='map')return mMap(md);if(md&&md.type==='worldmap')return mWorldMap(md);return vm0.apply(this,arguments);};}// the minimap's full map and (v0.6.3) the world map
+HOOK.before('vModal','map','map and worldmap popups',function(md){if(md&&md.type==='map')return HOOK.stop(mMap(md));if(md&&md.type==='worldmap')return HOOK.stop(mWorldMap(md));});// the minimap's full map and (v0.6.3) the world map
 ACT.map=function(){if(!G||V.screen!=='world'||!WS.m)return;if(V.modal&&V.modal.type==='map'){V.modal=null;render();return;}const prev=V.modal;V.modal={type:'map',from:prev&&prev.type!=='map'?prev:null};render();};
 ACT.miniT=function(){META.cfg.minimap=!miniOn();saveMeta();drawMini();render();};
 window.addEventListener('keydown',e=>{if((e.key==='n'||e.key==='N')&&V.screen==='world'&&!(e.target&&e.target.matches&&e.target.matches('input,textarea'))&&(!V.modal||V.modal.type==='map')){e.preventDefault();ACT.map();}});

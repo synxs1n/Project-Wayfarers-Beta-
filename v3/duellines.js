@@ -168,11 +168,11 @@ function dlBattleWho(spec){if(!spec)return null;if(spec.ce&&spec.ce.mode==='duel
 {const cs1=ceStart;ceStart=function(m,hero,type){const r=cs1.apply(this,arguments);try{const ev=V.modal&&V.modal.type==='cev'&&V.modal.ev;
   if(ev&&ev.hero===hero&&ev.type==='duel'){const intro=cwIntro(hero,cwTheme(m),!!m.cave);ev.text=`${intro}, steps into your path and sizes you up. "${dlLine(hero,'o')}"`;ev.reply=dlReply(hero);ev.dl=1;render();}}catch(e){}return r;};}
 function cwDecline(hero){return dlQuote(hero,'d');}
-{const vm1=vModal;vModal=function(m){let h=vm1.apply(this,arguments);try{
+HOOK.xform('vModal','duellines','duel lines on chance meetings, defeat and rival popups',function(h,m){try{
   if(m&&m.type==='cev'&&m.ev&&m.ev.reply&&typeof h==='string'){const R=m.ev.reply;h=h.replace('</p></div>',`</p></div><p class="dl-rep"><b>${esc(dlName(R.by))}:</b> "${esc(R.text)}"</p>`);}
   else if(m&&m.type==='lose'&&typeof h==='string'&&typeof B!=='undefined'&&B){const w=dlBattleWho(B.spec);if(w)h=h.replace('</p>','</p>'+dlSay(w.id,'l'));}
   else if(m&&m.type==='elite'&&m.b&&m.b.personal&&typeof h==='string'&&TPL[m.b.personal])h=h.replace('</p>','</p>'+dlSay(m.b.personal,'r','dl-rival'));
-}catch(e){}return h;};}
+}catch(e){}return h;});
 // ----- 2. in the duel: their own shout at half health (the banner and the log) -----
 {const ef1=encounterFoes;encounterFoes=function(spec){const out=ef1.apply(this,arguments);try{if(spec&&spec.kind==='duel'&&spec.hero&&out&&out[0]&&out[0].phase)out[0].phase.say=`${dlName(spec.hero)}: "${dlLine(spec.hero,'m')}"`;}catch(e){}return out;};}
 // ----- 3. the result: they lose (rewards screen), the rival falls -----

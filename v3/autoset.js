@@ -13,7 +13,7 @@ function mAutoSet(m){
     <h4>Pace</h4><div class="rows">${spd}</div>`,
     `<button class="btn" data-act="autoReset">Reset to default</button><button class="btn gold" data-act="xBack">Done</button>`,true);
 }
-{const vm0=vModal;vModal=function(m){if(m&&m.type==='autoset')return mAutoSet(m);return vm0.apply(this,arguments);};}
+HOOK.before('vModal','autoset','autoset popup',function(m){if(m&&m.type==='autoset')return HOOK.stop(mAutoSet(m));});
 Object.assign(ACT,{
   autoOpen(){V.modal={type:'autoset',from:V.modal||null};render();},
   autoCfg(a){const [k,v]=JSON.parse(a);META.cfg.auto=META.cfg.auto||{};META.cfg.auto[k]=v;if(G){G.auto=G.auto||Object.assign({},META.cfg.auto);G.auto[k]=v;saveGame();}saveMeta();render();},

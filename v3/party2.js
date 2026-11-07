@@ -100,7 +100,7 @@ function mField(m){const P=G.party.map(id=>G.roster[id]).filter(Boolean),casters
       <div class="rows">${P.map(t=>`<div class="row ${t.hp<=0?'ko':''}">${port(t.id,'sm')}<div class="grow"><b>${esc(t.name)}</b><span class="swb"><span class="swbl">HP</span>${bar(t.hp,t.S.mhp,'var(--hp)')}<span class="nums">${t.hp}/${t.S.mhp}</span></span></div></div>`).join('')}</div>`}`,
     '<button class="btn gold" data-act="xBack">Done</button>');}
 // ----- wiring -----
-{const vm0=vModal;vModal=function(m){if(m){if(m.type==='ldRes')return mLdRes(m);if(m.type==='ldMgr')return mLdMgr(m);if(m.type==='bp')return mBestParty(m);if(m.type==='field')return mField(m);}return vm0.apply(this,arguments);};}
+HOOK.before('vModal','party2','ldRes, ldMgr, bp, field popups',function(m){if(m){if(m.type==='ldRes')return HOOK.stop(mLdRes(m));if(m.type==='ldMgr')return HOOK.stop(mLdMgr(m));if(m.type==='bp')return HOOK.stop(mBestParty(m));if(m.type==='field')return HOOK.stop(mField(m));}});
 const lstore=(n,k,v)=>{LC(n)[k]=v;saveMeta();render();};
 Object.assign(ACT,{
   lSort(a){const [n,v]=a.split(':');lstore(n,'s',v);},lEl(a){const [n,v]=a.split(':');lstore(n,'el',v);},lCl(a){const [n,v]=a.split(':');lstore(n,'cl',v);},lSh(a){const [n,v]=a.split(':');lstore(n,'sh',v);},lRg(a){const [n,v]=a.split(':');lstore(n,'rg',v);},

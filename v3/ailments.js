@@ -72,4 +72,4 @@ function battleSkyTags(){if(!B)return '';
   const W=WEATHER[B.weather||'clear']||WEATHER.clear;let h=`<button class="wchip" data-act="wxInfo" data-arg="weather" title="${esc(W.d)}">${W.i} ${esc(W.n)}</button>`;
   if(B.spec.kind!=='daily'&&typeof clockPhase==='function'&&typeof PH_LOOK!=='undefined'){const ph=clockPhase(),P=PH_LOOK[ph];if(P)h+=`<button class="wchip ph ${ph}" data-act="wxInfo" data-arg="time" title="Time of day">${P.i} ${P.n}</button>`;}
   return h;}
-{const vm0=vModal;vModal=function(m){if(m&&m.type==='battlelore')return box('Lore',`<p class="note">Read only. The fight is paused while this is open.</p>${vLore()}`,`<button class="btn gold" data-act="closeModal">Back to the fight</button>`,true);return vm0.apply(this,arguments);};}
+HOOK.before('vModal','ailments','battlelore popup',function(m){if(m&&m.type==='battlelore')return HOOK.stop(box('Lore',`<p class="note">Read only. The fight is paused while this is open.</p>${vLore()}`,`<button class="btn gold" data-act="closeModal">Back to the fight</button>`,true));});

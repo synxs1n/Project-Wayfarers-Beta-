@@ -33,7 +33,7 @@ function guildText(s){if(typeof s!=='string'||!/faction/i.test(s))return s;// te
   MENU_SUB.factions='Guilds';MENU_SUB.fmis='Guilds';if(MJINGLE.rank)MJINGLE.rank.name='Guild rank up';}catch(e){}})();
 {const v0=vFactions;vFactions=function(){return guildText(v0.apply(this,arguments));};}
 {const v0=vFacMissions;vFacMissions=function(){return guildText(v0.apply(this,arguments));};}
-{const vm0=vModal;vModal=function(m){return guildText(vm0.apply(this,arguments));};}
+HOOK.xform('vModal','p4party','guild text on every popup above it',function(h){return guildText(h);});
 {const t0=toast;toast=function(m){return t0.apply(this,[guildText(m)].concat([].slice.call(arguments,1)));};}
 
 // ---------- 4.4 the boss's energy lingers ----------
@@ -47,6 +47,6 @@ HOOK.wrap('win','p4party','first boss energy',function(next,...a){let first=null
 HOOK.before('render','p4party',"the boss's lingering energy popup",function(){try{if(V.bossEnergy!=null&&!B&&V.screen==='world'&&G&&WS.m&&V.bossEnergyAt&&WS.m.id!==V.bossEnergyAt&&WS.m.kind!=='dungeon'){V.bossEnergy=null;}// left the place before it could show
   if(V.bossEnergy!=null&&!B&&V.screen==='world'&&G){if(!V.modal&&!(V.gearQueue&&V.gearQueue.length)){V.modal={type:'bossEnergy',s:V.bossEnergy};V.bossEnergy=null;}
   else if(V.modal.type==='legacy'){V.modal.energy=V.bossEnergy;V.bossEnergy=null;}}}catch(e){}});
-{const vm1=vModal;vModal=function(m){
+HOOK.wrap('vModal','p4party','bossEnergy popup, energy line on the Legacy choice',function(next,...a){let m=a[0];
   if(m&&m.type==='bossEnergy')return box('Its energy lingers',`<p class="story">${esc(bossEnergyText(m.s))}</p><p class="note">The Echo is optional. The way on is already open.</p>`,'<button class="btn gold" data-act="closeModal">Onward</button>');
-  let h=vm1.apply(this,arguments);try{if(m&&m.type==='legacy'&&m.energy!=null&&typeof h==='string'){const k=h.indexOf('</h2>');if(k>0)h=h.slice(0,k+5)+`<p class="story bossen">${esc(bossEnergyText(m.energy))}</p>`+h.slice(k+5);}}catch(e){}return h;};}
+  let h=next(...a);try{if(m&&m.type==='legacy'&&m.energy!=null&&typeof h==='string'){const k=h.indexOf('</h2>');if(k>0)h=h.slice(0,k+5)+`<p class="story bossen">${esc(bossEnergyText(m.energy))}</p>`+h.slice(k+5);}}catch(e){}return h;});

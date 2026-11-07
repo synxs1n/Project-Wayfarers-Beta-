@@ -201,7 +201,7 @@ function p3ThreatLine(T){const a=Object.keys(T.arch).filter(k=>T.mons.some(m=>ty
   const parts=[];if(a.length)parts.push(`Known in ${esc(ZS(T.s).n)}: ${a.map(k=>ARCH_PL[k]).join(', ')}`);
   if(T.boss)parts.push(`${p3BossName(T.boss)}: ${T.boss.el.map(e=>EL[e]).join('/')}${T.boss.ty.length?', '+T.boss.ty.map(k=>ARCH[k].n).join(', '):''}`);
   const t=parts.join(' · ');return t?`<p class="note p3thr">${t.charAt(0).toUpperCase()+t.slice(1)}.</p>`:'';}
-{const vm0=vModal;vModal=function(m){if(m){if(m.type==='bp')return mBestParty(m);if(m.type==='p3plan')return mP3Plan(m);}return vm0.apply(this,arguments);};}
+HOOK.before('vModal','p3shop','bp and p3plan popups',function(m){if(m){if(m.type==='bp')return HOOK.stop(mBestParty(m));if(m.type==='p3plan')return HOOK.stop(mP3Plan(m));}});
 // after Best Party: offer Auto best gear for the new six right away
 {const ba0=ACT.bpApply;ACT.bpApply=function(){const r=ba0.apply(this,arguments);if(V.modal&&V.modal.type==='ldRes'){V.modal.p3bp=1;render();}return r;};}
 {const lr0=mLdRes;mLdRes=function(m){let h=lr0.apply(this,arguments);if(m&&m.p3bp){const i=h.lastIndexOf('<div class="btnrow">');if(i>=0)h=h.slice(0,i)+(m.p3bpDone?'<p class="note p3eqb done">Best gear equipped for this party.</p>':'<div class="btnrow p3eqb"><button class="btn gold" data-act="autoEqParty">Equip best gear for this party</button></div>')+h.slice(i);}return h;};}
@@ -255,9 +255,9 @@ HOOK.wrap('win','p3shop','first boss Pork Chops',function(next,...a){const first
     const info=B&&B.result;if(info){for(let i=0;i<n;i++)info.drops.push('porkchop');const hint=` The innkeeper's lad runs up with ${PORK.firstBoss} Pork Chop Sandwiches "for the road". One walks you back to a dungeon's entrance; eat ${PORK.toTown} in a dungeon and you are back at the last town's Inn.`;
       if(info.story)info.story.text+=hint;else info.p3hint=hint;}saveGame();render();}}catch(e){}return r;});
 // Menu > Items: the Holy Water toggle and the two sandwich button
-{const vm1=vModal;vModal=function(m){let h=vm1.apply(this,arguments);try{if(!m||m.type!=='menu'||!G||G.daily||typeof h!=='string')return h;
+HOOK.xform('vModal','p3shop','menu: Holy Water and Pork Chop buttons',function(h,m){try{if(!m||m.type!=='menu'||!G||G.daily||typeof h!=='string')return h;
   h=h.replace(/(<button class="btn sm" data-act="useTravel" data-arg="holywater"[^>]*>Use<\/button>)/,(x)=>`<div class="btnrow tight col">${x}<button class="btn sm ${G.hwAuto?'gold':''}" data-act="p3HwAuto" aria-pressed="${!!G.hwAuto}" title="When the ward ends, use another Holy Water if you have one">Reapply automatically: ${G.hwAuto?'On':'Off'}</button></div>`);
-  if(WS.m&&WS.m.kind==='dungeon'&&(G.inv.porkchop||0)>0)h=h.replace(/(<button class="btn sm" data-act="useTravel" data-arg="porkchop"[^>]*>Use<\/button>)/,(x)=>`<div class="btnrow tight col">${x.replace('>Use<','>Use 1: dungeon entrance<')}<button class="btn sm" data-act="p3Pork2" ${p3PorkWhy()?'disabled':''} title="${esc(p3PorkWhy())}">Use ${PORK.toTown}: return to town</button></div>`);}catch(e){}return h;};}
+  if(WS.m&&WS.m.kind==='dungeon'&&(G.inv.porkchop||0)>0)h=h.replace(/(<button class="btn sm" data-act="useTravel" data-arg="porkchop"[^>]*>Use<\/button>)/,(x)=>`<div class="btnrow tight col">${x.replace('>Use<','>Use 1: dungeon entrance<')}<button class="btn sm" data-act="p3Pork2" ${p3PorkWhy()?'disabled':''} title="${esc(p3PorkWhy())}">Use ${PORK.toTown}: return to town</button></div>`);}catch(e){}return h;});
 
 // ===================== v0.9.5: one Upgrade button per gear slot =====================
 // For one hero and one slot, every single next step is listed (upgOpts): equip a better spare from the pack, buy a piece (Smithy, or
@@ -321,7 +321,7 @@ function upgBtn(c,sl,cls){if(!G||G.daily)return '';const o=upgBest(c,sl).best;
 function upgSlotsHtml(slots,noPlan){if(!G||G.daily)return '';const rows=slots.map(sl=>{let b=null;partyChars().forEach(c=>{const o=upgBest(c,sl).best;if(o&&(!b||o.pct>b.pct+1e-9||(Math.abs(o.pct-b.pct)<=1e-9&&o.gold<b.gold)))b=o;});return b;}).filter(Boolean);
   return `<div class="upgbest">${m3H('Best upgrade for each slot')}${rows.length?`<div class="rows">${rows.map(o=>{const c=G.roster[o.cid];
     return `<div class="row">${gearIcon(o.id)}<div class="grow"><small>${SLOTN[o.sl]} for ${esc(c.name)}</small><b>${upgWhat(o,1)}</b> <em class="up">${upgPct(o)}</em><small>${deltaHtml(c,o.id)}</small></div><button class="btn sm gold" data-act="upgDo" data-arg="${c.id},${o.sl},${o.key}">${o.gold?fmt(o.gold)+' gold':'Equip'}</button></div>`;}).join('')}</div>`:m3Empty('Your party already has the best you can pay for here.')}${noPlan?'':`<div class="btnrow p3smith"><button class="btn" data-act="p3Smith" title="Plans the best upgrade for each hero in your party, shows it, and only buys after you confirm">Upgrade whole party</button></div>`}</div>`;}
-{const vm0=vModal;vModal=function(m){if(m&&m.type==='upg')return mUpg(m);return vm0.apply(this,arguments);};}
+HOOK.before('vModal','p3shop','upg popup (the Upgrade button)',function(m){if(m&&m.type==='upg')return HOOK.stop(mUpg(m));});
 // the hero sheet: an Upgrade button on each slot
 {const mc0=mChar;mChar=function(id,edit){let h=mc0.apply(this,arguments);try{const c=G&&G.roster[id];if(!c||G.daily||typeof h!=='string')return h;
   h=h.replace(/<h4>Equipment<\/h4><div class="eq">[\s\S]*?<\/div>/,()=>`<h4>Equipment</h4><div class="eq upgeq">${EQSL.map(sl=>`<div class="upgslot">${edit?`<button class="btn sm" data-act="gearSlot" data-arg="${sl}"><small>${SLOTN[sl]}</small> ${c.eq[sl]?gearOf(c.eq[sl]).n:'Empty'}</button>`:`<span class="eqv"><small>${SLOTN[sl]}</small> ${c.eq[sl]?gearOf(c.eq[sl]).n:'Empty'}</span>`}${upgBtn(c,sl)}</div>`).join('')}</div>`);}catch(e){}return h;};}

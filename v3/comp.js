@@ -58,7 +58,7 @@ function vCompanions(){const L=G.tamed||[];
 function mCompPick(m){const o=(G.tamed||[]).find(x=>x.id===m.id);if(!o)return '';const H=G.party.concat(Object.keys(G.roster).filter(id=>!G.party.includes(id)));
   return box(`Pair ${esc(o.name)}`,`<div class="rows">${H.map(id=>{const c=G.roster[id],cur=compOf(c);return `<div class="row">${port(id,'sm')}<div class="grow"><b>${esc(c.name)}</b><small>Lv ${c.lv} ${CLS[TPL[id].cls].n}${cur&&cur!==o?` · has ${esc(cur.name)}`:''}</small></div><button class="btn sm ${o.with===id?'gold':''}" data-act="compSet" data-arg="${id}">${o.with===id?'Paired':'Pair'}</button></div>`;}).join('')}</div>`,
     `${o.with?'<button class="btn" data-act="compSet" data-arg="">Unpair</button>':''}<button class="btn gold" data-act="xBack">Done</button>`);}
-{const vm0=vModal;vModal=function(m){if(m&&m.type==='compPick')return mCompPick(m);return vm0.apply(this,arguments);};}
+HOOK.before('vModal','comp','compPick popup',function(m){if(m&&m.type==='compPick')return HOOK.stop(mCompPick(m));});
 Object.assign(ACT,{
   compPick(id){V.modal={type:'compPick',id,from:V.modal};render();},
   compSet(hid){const o=(G.tamed||[]).find(x=>x.id===V.modal.id);if(!o)return;if(hid){(G.tamed||[]).forEach(x=>{if(x.with===hid)x.with=null;});o.with=hid;}else o.with=null;

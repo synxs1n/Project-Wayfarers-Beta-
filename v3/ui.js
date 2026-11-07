@@ -290,6 +290,7 @@ function vModal(m){
   }
   return '';
 }
+vModal=HOOK.def('vModal',vModal);// v0.9.9: one definition; modules add hooks (hooks.js)
 function heroIdByName(n){const r=RAW.find(r=>r[1]===n);return r?r[0]:STARTERS[0];}
 function mBoss(s){
   const def=guardianDef(bossKeyFor(s)),final=s===4;

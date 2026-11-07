@@ -73,7 +73,7 @@ HOOK.wrap('win','equip','new gear watch (queues new gear)',function(next,...a){r
 {const oc=typeof openChest==='function'?openChest:null;if(oc)openChest=watchGear(oc);}
 {const cq=claimQuest;claimQuest=watchGear(cq);}
 HOOK.before('render','equip','open "Equip this now?" for queued new gear',function(){if(G&&!G.daily&&!V.modal&&V.screen==='world'&&!B&&V.gearQueue&&V.gearQueue.length&&!WS.dlg){const id=V.gearQueue.shift();if(G.gear.includes(id))V.modal={type:'equipNow',id};}});
-{const vm0=vModal;vModal=function(m){if(m){if(m.type==='eqPick')return mEquipPick(m);if(m.type==='autoEq')return mAutoEq(m);if(m.type==='equipNow')return mEquipNow(m);}return vm0.apply(this,arguments);};}
+HOOK.before('vModal','equip','eqPick, autoEq, equipNow popups',function(m){if(m){if(m.type==='eqPick')return HOOK.stop(mEquipPick(m));if(m.type==='autoEq')return HOOK.stop(mAutoEq(m));if(m.type==='equipNow')return HOOK.stop(mEquipNow(m));}});
 Object.assign(ACT,{
   eqPick(a){const [id,sl]=a.split(',');V.modal={type:'eqPick',char:id,slot:sl,list:(V.charList||[]).slice(),from:V.modal};render();},
   eqSlot(sl){V.modal.slot=sl;render();},

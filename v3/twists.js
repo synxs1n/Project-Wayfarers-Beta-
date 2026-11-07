@@ -114,7 +114,7 @@ function twBox(T,label){return T?`<div class="twbox"><span class="twk">${esc(lab
 {const de0=mDailyEnd;mDailyEnd=function(m){let h=de0.apply(this,arguments);try{const T=TW.forKey(m.key);if(T){const i=h.indexOf('<h4>');if(i>=0)h=h.slice(0,i)+`<p class="note">This week's twist: ${esc(T.n)}.</p>`+h.slice(i);}}catch(e){}return h;};}
 // the chip in the trial's battles; tapping it explains the twist (the wxinfo window pauses the fight)
 {const bs0=battleSkyTags;battleSkyTags=function(){let h=bs0.apply(this,arguments);try{if(TW.inTrial()){const T=TW.cur();if(T)h+=`<button class="wchip tw" data-act="wxInfo" data-arg="twist" title="${esc(T.n+': '+T.d)}">✦ ${esc(T.c)}</button>`;}}catch(e){}return h;};}
-{const vm0=vModal;vModal=function(m){if(m&&m.type==='wxinfo'&&m.kind==='twist'){const T=TW.cur();return box("This week's twist",T?`<p><b>${esc(T.n)}</b></p><p class="note">${esc(T.d)}</p><p class="note">The twist changes every Monday. Everyone playing the trial this week has it.</p>`:'<p class="note">No twist right now.</p>','<button class="btn gold" data-act="closeModal">OK</button>');}return vm0.apply(this,arguments);};}
+HOOK.before('vModal','twists','twist info popup',function(m){if(m&&m.type==='wxinfo'&&m.kind==='twist'){const T=TW.cur();return HOOK.stop(box("This week's twist",T?`<p><b>${esc(T.n)}</b></p><p class="note">${esc(T.d)}</p><p class="note">The twist changes every Monday. Everyone playing the trial this week has it.</p>`:'<p class="note">No twist right now.</p>','<button class="btn gold" data-act="closeModal">OK</button>'));}});
 // New Game+ modifier picker on the starter screen (only when starting a New Game+ cycle)
 function ngPicker(){
   const sel=V.ngMods||[],mx=TWISTS.ng.max;

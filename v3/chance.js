@@ -64,9 +64,9 @@ ACT.cevPick=function(a){
     const spec=ev.type==='duel'?{stage:s,kind:'duel',hero,ce:{hero,mode:'duel'},weather:(G.weather||{})[s]||'clear'}:{stage:s,kind:k,ce:{hero,mode:'ambush'}};
     if(!startBattle(spec)){toast('Your party needs rest first.');}render();return;}
 };
-{const vm0=vModal;vModal=function(m){if(m&&m.type==='cev'){const ev=m.ev;const btns=ev.ch.map((c,i)=>{const off=c.cost!=null&&G.gold<c.cost||c.a==='give'&&!(G.inv.potion>0);return `<button class="btn ${i?'':'gold'}" data-act="cevPick" data-arg="${c.a}" ${off?'disabled':''}>${esc(c.l)}</button>`;}).join('');
-  return box(esc(ev.title),`<div class="who"><img class="himg" src="${heroURL(ev.hero)}" alt="" style="width:64px;height:64px;float:left;margin:0 10px 6px 0;image-rendering:pixelated"><p>${esc(ev.text)}</p></div><p class="note" style="clear:both">${CE_TYPES[ev.type]}. Optional. Win and ${TPL[ev.hero].n} waits for you at the tavern, ready to hire. Decline and you may still meet them later.</p>`,btns);}
-  return vm0.apply(this,arguments);};}
+HOOK.before('vModal','chance','cev popup (chance meetings)',function(m){if(m&&m.type==='cev'){const ev=m.ev;const btns=ev.ch.map((c,i)=>{const off=c.cost!=null&&G.gold<c.cost||c.a==='give'&&!(G.inv.potion>0);return `<button class="btn ${i?'':'gold'}" data-act="cevPick" data-arg="${c.a}" ${off?'disabled':''}>${esc(c.l)}</button>`;}).join('');
+  return HOOK.stop(box(esc(ev.title),`<div class="who"><img class="himg" src="${heroURL(ev.hero)}" alt="" style="width:64px;height:64px;float:left;margin:0 10px 6px 0;image-rendering:pixelated"><p>${esc(ev.text)}</p></div><p class="note" style="clear:both">${CE_TYPES[ev.type]}. Optional. Win and ${TPL[ev.hero].n} waits for you at the tavern, ready to hire. Decline and you may still meet them later.</p>`,btns));}
+  });
 // ----- duel foes -----
 function duelFoes(spec){const s=spec.stage,lv=STAGE_LV[s][1],t=TPL[spec.hero],el=(t.el||['light'])[0],out=[];
   const tpl={n:t.n,art:'frostwolf',el:t.el||[el],hp:1,atk:1.1,def:1,mag:1.1,res:1,spd:1.1,
