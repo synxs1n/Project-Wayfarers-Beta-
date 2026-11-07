@@ -353,6 +353,7 @@ function encounterFoes(spec){
   const seen={};out.forEach(e=>{if(cnt[e.name]>1){seen[e.name]=(seen[e.name]||0)+1;e.name+=' '+String.fromCharCode(64+seen[e.name]);}});
   return out;
 }
+encounterFoes=HOOK.def('encounterFoes',encounterFoes);// v0.9.9: one definition; modules add hooks (hooks.js)
 function allParty(){return B.front.concat(B.back);}
 function WX(){return WEATHER[(B&&B.weather)||'clear']||WEATHER.clear;}
 function delayOf(u,cost){let d=cost*1000/(18+u.S.spd)*(u.S.tempo||1);if(B&&WX().spd)d/=WX().spd;if(has(u,'slow'))d*=1.5;if(has(u,'haste'))d*=.65;if(has(u,'root'))d*=1.25;return d;}

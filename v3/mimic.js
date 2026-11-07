@@ -16,7 +16,7 @@ function isMimic(m,x,y){if(!m||m.kind!=='dungeon'||m.archive||m.t[y][x]!=='C')re
   if(!G.chests[key]&&isMimic(m,x,y)&&!G.daily){haltInput();
     say(null,'The chest yawns open on its own. Teeth! It\'s a Mimic!',()=>{if(!startBattle({stage:m.s,kind:'dungeon',mimic:{x,y,map:m.id}})){toast('Your party needs rest first.');render();}});return;}
   return oc0.apply(this,arguments);};}
-{const ef0=encounterFoes;encounterFoes=function(spec){if(spec&&spec.mimic){const lv=STAGE_LV[spec.stage][1]+2+(typeof ngLvOff==='function'?ngLvOff():0);const e=makeEnemy(MON.mimic,lv,{hpM:1.5,powM:1.1,elite:true,name:'Mimic'});return [e];}return ef0.apply(this,arguments);};}
+HOOK.before('encounterFoes','mimic','the mimic',function(spec){if(spec&&spec.mimic){const lv=STAGE_LV[spec.stage][1]+2+(typeof ngLvOff==='function'?ngLvOff():0);const e=makeEnemy(MON.mimic,lv,{hpM:1.5,powM:1.1,elite:true,name:'Mimic'});return HOOK.stop([e]);}});
 HOOK.wrap('win','mimic','mimic bonus gold, loot on the map',function(next,...a){const sp=B&&B.spec,mm=sp&&sp.mimic;const r=next(...a);
   if(mm&&G){try{const bonus=150+120*sp.stage;G.gold+=bonus;V.mimicLoot={x:mm.x,y:mm.y,bonus};}catch(e){}}return r;});
 // after the result screen, back on the map: the chest opens normally (its loot), plus the bonus line

@@ -16,9 +16,9 @@ function porkFlee(){
 {const it0=ACT.item;ACT.item=function(id){const o=ITEMS[id];if(o&&(o.ward||o.tent))return;if(o&&o.flee)return porkFlee();return it0.apply(this,arguments);};}
 
 // ----- tent ambush: the area's normal pool, a little stronger -----
-{const ef0=encounterFoes;encounterFoes=function(spec){const out=ef0.apply(this,arguments);
+HOOK.after('encounterFoes','travel','ambush: foes hit harder',function(out,spec){
   if(spec&&spec.ambush)out.forEach(e=>{['atk','mag','def','res','mhp'].forEach(k=>{e.S[k]=k==='mhp'?Math.round(e.S[k]*AMBUSH_POW):e.S[k]*AMBUSH_POW;});e.hp=e.S.mhp;});
-  return out;};}
+  });
 HOOK.after('startBattle','travel','Ambush! banner',function(r,spec){if(r!==false&&B&&spec&&spec.ambush){banner('Ambush!','#ff8a5a');log('Monsters fall on your camp!');}});
 
 // ----- outside battle -----

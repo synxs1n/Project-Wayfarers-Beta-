@@ -53,12 +53,12 @@ function roamTick(m,now){
 function roamFight(m,r){haltInput();WS.lock=true;WS.flash=performance.now();if(typeof sfx==='function')sfx('encounter');
   later(()=>{WS.lock=false;startBattle({stage:m.s,kind:'dungeon',roam:{mid:m.id,i:r.i,mon:r.mon,elite:r.elite,mod:r.mod,name:r.name}});},420);}
 // battles: a tougher lead (an elite for some) with company from the realm
-{const ef0=encounterFoes;encounterFoes=function(spec){if(!spec||!spec.roam)return ef0.apply(this,arguments);
+HOOK.wrap('encounterFoes','roam','roamer fights',function(next,...a){let spec=a[0];if(!spec||!spec.roam)return next(...a);
   const s=spec.stage,ro=spec.roam,band=STAGE_LV[s],lv=band[1]+ROAM.lvUp+ngLvOff(),Z=ZS(s),out=[];
   out.push(ro.elite?makeEnemy(MON[ro.mon],lv,{elite:true,name:ro.name,mod:ro.mod,hpM:3,powM:1.35}):makeEnemy(MON[ro.mon],lv,{hpM:ROAM.hpM,powM:ROAM.powM}));
   const n=ro.elite?1:1+(RNG()<.5?1:0);for(let i=0;i<n;i++)out.push(makeEnemy(MON[pick(Z.pool)],lv-1));
   const cnt={};out.forEach(e=>{cnt[e.name]=(cnt[e.name]||0)+1;});const seen={};out.forEach(e=>{if(cnt[e.name]>1){seen[e.name]=(seen[e.name]||0)+1;e.name+=' '+String.fromCharCode(64+seen[e.name]);}});
-  return out;};}
+  return out;});
 {const ab0=autoBan;autoBan=function(spec){const r=ab0.apply(this,arguments);if(r)return r;if(spec&&spec.roam&&spec.roam.elite&&G&&!G.daily)return 'No auto in elite fights';return null;};}
 HOOK.wrap('finishBattle','roam','beaten roamers',function(next,...a){const how=a[0];const sp=B&&B.spec,ro=sp&&sp.roam;const r=next(...a);
   try{if(ro&&G){const m=MAPS[ro.mid],R=m&&m.roam&&m.roam.find(q=>q.i===ro.i);

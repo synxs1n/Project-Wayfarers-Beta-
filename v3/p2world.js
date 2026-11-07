@@ -276,7 +276,7 @@ const p2DualOK=()=>!G||!!G.daily||(G.stage|0)>=DUAL_FROM;
 function p2SingleFoes(spec,out){if(!spec||!Array.isArray(out)||(G&&G.daily))return out;const k=spec.kind;
   if(!(k==='field'||k==='dungeon')||(spec.stage|0)>=DUAL_FROM)return out;
   out.forEach(e=>{if(e&&!e.boss&&!e.elite&&e.art!=='mimic'&&Array.isArray(e.el)&&e.el.length>1){e.el=[e.el[0]];e.single=1;}});return out;}
-{const ef1=encounterFoes;encounterFoes=function(spec){return p2SingleFoes(spec,ef1.apply(this,arguments));};}
+HOOK.wrap('encounterFoes','p2world','single types in the first realm (p2SingleFoes)',function(next,...a){let spec=a[0];return p2SingleFoes(spec,next(...a));});
 // @sim-end
 // the Bestiary says so on a dual type foe's page
 {const mb0=typeof mBeast==='function'?mBeast:null;if(mb0)mBeast=function(m){const h=mb0.apply(this,arguments);try{const o=bestAll().find(x=>x.k===m.k);if(!o||o.g||!o.d||!o.d.el||o.d.el.length<2)return h;
@@ -347,5 +347,5 @@ try{const css=document.createElement('style');css.textContent=`#p2hint{position:
 try{window.__P2={P2,hintShow,hintPlace,bgGroundAt,bgPaintGround,BG_GROUNDS,BG_NATURAL,p2GroundY,p2Flying,nodeFits,laneFix,laneFind,laneMain,laneGates,laneStraight,laneMove,entStyleFor,entCanvas,ENT_STYLES,
   p2SingleFoes,p2Dual,p2DualOK,HINTS,hintFire,hintShow,vHints,
   get BG(){return BG},get BG_HAZ(){return BG_HAZ},bgGY,bgStatic,get BL(){return BL},get B(){return B},get G(){return G},get MAPS(){return MAPS},get WS(){return WS},get META(){return META},
-  getMap,tileAt,flood,SOLID,ZS,realmOf,unitBox,battleTheme,battleFrame,startBattle:HOOK.snap('startBattle'),encounterFoes,roamFight,roamSpawn,turnOrder,tvPool,challEligible,cePool,rarePool,ensureSub,genSub,subReq,TPL,MON,ZONES,TOWNGEN,
+  getMap,tileAt,flood,SOLID,ZS,realmOf,unitBox,battleTheme,battleFrame,startBattle:HOOK.snap('startBattle'),encounterFoes:HOOK.snap('encounterFoes'),roamFight,roamSpawn,turnOrder,tvPool,challEligible,cePool,rarePool,ensureSub,genSub,subReq,TPL,MON,ZONES,TOWNGEN,
   obj2,placeNodes,drawObjects,layoutBattle};}catch(e){}

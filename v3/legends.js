@@ -57,7 +57,7 @@ function legendFoes(spec){
   }
   return out;
 }
-{const ef0=encounterFoes;encounterFoes=function(spec){if(spec.kind==='legend')return legendFoes(spec);return ef0.apply(this,arguments);};}
+HOOK.before('encounterFoes','legends','legend fights',function(spec){if(spec.kind==='legend')return HOOK.stop(legendFoes(spec));});
 function legendJoin(id,info){
   if(!G||G.roster[id])return;
   const c=newChar(id,Math.max(3,avgLv()),gearTier());G.roster[id]=c;if(G.party.length<6)G.party.push(id);

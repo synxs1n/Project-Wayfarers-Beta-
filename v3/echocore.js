@@ -12,12 +12,12 @@ function echoDef(k){const d=guardianDef(k);if(!d)return null;const dmg=d.sk.filt
 {const cp0=checkPhase;checkPhase=function(e){cp0.apply(this,arguments);try{if(e&&e.phase2&&e.phaseDone&&!e.p2done&&e.hp>0&&e.hp<=e.S.mhp*e.phase2.at){e.p2done=1;const P1=e.phase;e.phase=e.phase2;e.phaseDone=false;cp0(e);e.phase=P1;e.phaseDone=true;}}catch(x){}};}
 function makeEcho(k,lv,o){const def=echoDef(k),e=makeEnemy(def,lv,Object.assign({boss:true,key:k,noBuff:1},o));e.echo=1;if(typeof MART!=='undefined'&&MART['echo_'+e.art])e.art='echo_'+e.art;e.echoKey=k;e.phase2=def.phase2;return e;}
 // story echo (in the boss's dungeon) and rift echo (post game, the strongest scaling from echoSpec). The Daily Trial's echo is untouched.
-{const ef0=encounterFoes;encounterFoes=function(spec){
+HOOK.before('encounterFoes','echocore','story Echo and Rift Echo fights',function(spec){
   if(spec&&spec.kind==='storyEcho'){const s=spec.stage,k=spec.key,final=s===4,lv=(spec.lv||storyEchoLv(s));
     const out=[makeEcho(k,lv,{final,stage:s,hpM:ECHO_STORY.hpM*((ECHO_STORY.hpS||[])[s]||1),powM:ECHO_STORY.powM})];
-    if(s>=2&&!final){const Z=ZS(s);out.push(makeEnemy(MON[pick(Z.pool)],STAGE_LV[s][1]+ngLvOff()));}return out;}
-  if(spec&&spec.kind==='echoBoss'&&spec.rift){return [makeEcho(spec.key,spec.lv,{final:!!FINALS[spec.key],stage:3,hpM:spec.hpM||1.7,powM:spec.powM||1.15})];}
-  return ef0.apply(this,arguments);};}
+    if(s>=2&&!final){const Z=ZS(s);out.push(makeEnemy(MON[pick(Z.pool)],STAGE_LV[s][1]+ngLvOff()));}return HOOK.stop(out);}
+  if(spec&&spec.kind==='echoBoss'&&spec.rift){return HOOK.stop([makeEcho(spec.key,spec.lv,{final:!!FINALS[spec.key],stage:3,hpM:spec.hpM||1.7,powM:spec.powM||1.15})]);}
+  });
 function riftSpec(k){return Object.assign(echoSpec(k),{rift:1});}
 // ----- shards, essence -----
 const ECHO_CAT={k:'echo',n:'Echo relics',c:'#b48aff',ids:[],d:'Left behind by Echoes. Shards are unique to each Echo; Essence comes from all of them. Used at the Smithy\'s Echoforge.'};

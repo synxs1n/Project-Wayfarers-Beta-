@@ -174,7 +174,7 @@ HOOK.xform('vModal','duellines','duel lines on chance meetings, defeat and rival
   else if(m&&m.type==='elite'&&m.b&&m.b.personal&&typeof h==='string'&&TPL[m.b.personal])h=h.replace('</p>','</p>'+dlSay(m.b.personal,'r','dl-rival'));
 }catch(e){}return h;});
 // ----- 2. in the duel: their own shout at half health (the banner and the log) -----
-{const ef1=encounterFoes;encounterFoes=function(spec){const out=ef1.apply(this,arguments);try{if(spec&&spec.kind==='duel'&&spec.hero&&out&&out[0]&&out[0].phase)out[0].phase.say=`${dlName(spec.hero)}: "${dlLine(spec.hero,'m')}"`;}catch(e){}return out;};}
+HOOK.after('encounterFoes','duellines','duel opening line',function(out,spec){try{if(spec&&spec.kind==='duel'&&spec.hero&&out&&out[0]&&out[0].phase)out[0].phase.say=`${dlName(spec.hero)}: "${dlLine(spec.hero,'m')}"`;}catch(e){}});
 // ----- 3. the result: they lose (rewards screen), the rival falls -----
 {const cw2=challengeWin;challengeWin=function(spec,info){const r=cw2.apply(this,arguments);try{
   if(spec&&spec.ce&&spec.ce.mode==='duel'&&info&&info.legendKind==='duel')info.legend=dlQuote(spec.ce.hero,'w');

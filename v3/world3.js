@@ -20,10 +20,10 @@ const NIGHT={meadow:[['gustimp','Duskwing Imp'],['cinderpup','Gloam Hound']],coa
 function nightTint(hex){const h=String(hex).replace('#','');if(h.length<6)return hex;const r=parseInt(h.slice(0,2),16),g=parseInt(h.slice(2,4),16),b=parseInt(h.slice(4,6),16);
   const R=Math.round(r*.55+20),G2=Math.round(g*.6+25),B2=Math.min(255,Math.round(b*.75+70));return '#'+[R,G2,B2].map(v=>Math.max(0,Math.min(255,v)).toString(16).padStart(2,'0')).join('');}
 function nightPool(s){const Z=ZS(s),L=NIGHT[Z.theme]||[];const swap={};L.forEach(([b])=>{swap[b]='n_'+b;});return Z.pool.map(k=>swap[k]||k);}
-{const ef0=encounterFoes;encounterFoes=function(spec){
-  if(spec&&spec.kind==='field'&&!spec.mimic&&isNight()&&!G.daily){const Z=ZS(spec.stage),save=Z.pool;Z.pool=nightPool(spec.stage);let out;try{out=ef0.apply(this,arguments);}finally{Z.pool=save;}
+HOOK.wrap('encounterFoes','world3','night pool and night power on fields',function(next,...a){let spec=a[0];
+  if(spec&&spec.kind==='field'&&!spec.mimic&&isNight()&&!G.daily){const Z=ZS(spec.stage),save=Z.pool;Z.pool=nightPool(spec.stage);let out;try{out=next(...a);}finally{Z.pool=save;}
     out.forEach(e=>{['atk','mag','def','res'].forEach(k=>{e.S[k]*=NIGHT_POW;});e.S.mhp=Math.round(e.S.mhp*NIGHT_POW);e.hp=e.S.mhp;e.night=1;});return out;}
-  return ef0.apply(this,arguments);};}
+  return next(...a);});
 // the Bestiary lists night variants under their realm
 {const ba0=bestAll;bestAll=function(){const out=ba0();const extra=[];ZONES.forEach((Z,zi)=>(NIGHT[Z.theme]||[]).forEach(([b])=>{const k='n_'+b;if(MON[k])extra.push({k,d:MON[k],zone:zi,night:1});}));
   const res=[];out.forEach(o=>{res.push(o);if(!o.g)return;});// keep guardians last

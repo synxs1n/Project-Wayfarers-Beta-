@@ -76,7 +76,7 @@ function duelFoes(spec){const s=spec.stage,lv=STAGE_LV[s][1],t=TPL[spec.hero],el
   const pm=ZS(s).pool||[];const mk=pm.length?pm[0]:Object.keys(MON)[0];
   for(let i=0;i<2;i++){const k=pm[(i+1)%Math.max(1,pm.length)]||mk;if(MON[k]){const h=makeEnemy(MON[k],Math.max(2,lv-3));h.name=`${t.n}'s ${MON[k].n}`;out.push(h);}}
   return out;}
-{const ef0=encounterFoes;encounterFoes=function(spec){if(spec.kind==='duel')return duelFoes(spec);return ef0.apply(this,arguments);};}
+HOOK.before('encounterFoes','chance','duel foes',function(spec){if(spec.kind==='duel')return HOOK.stop(duelFoes(spec));});
 {const cw=typeof challengeWin==='function'?challengeWin:null;if(cw)challengeWin=function(spec,info){const r=cw.apply(this,arguments);try{
   if(spec&&spec.ce&&!G.roster[spec.ce.hero]){const mode=spec.ce.mode,h=spec.ce.hero;
     if(mode==='duel'){const ce=ceInit();ce.duels++;ce.boost[h]=1;saveGame();info.legendKind='duel';info.legend=cwWin(h,'duel')+' '+cwPick(['Find me at the tavern when you want me. I will be waiting.','You won fair. I will keep a seat warm at the tavern.','Next tavern you walk into, look for me.'],h+':tail');}
