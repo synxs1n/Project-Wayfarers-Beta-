@@ -39,8 +39,9 @@ await H.ev(start);
 // v0.9.9: "fast" is what the page really measured. On a busy machine headless Chrome can fall under the 45 fps step-down line by itself;
 // then stepping down is the right answer, and the check says which case it saw (the measured window's fps is printed either way)
 const fr=await H.ev(()=>new Promise(res=>setTimeout(()=>res({t:__A.gfxTier(),fps:__A.GFX.fps,down:__A.TW.get('GFX_AUTO').down}),3800)));
-if(fr.fps===0||fr.fps>=fr.down)chk(`Auto keeps High while frames are fast (measured ${fr.fps} fps)`,fr.t==='high'||JSON.stringify(fr));
-else chk(`Auto keeps High while frames are fast: this machine measured ${fr.fps} fps (under ${fr.down}), so Auto stepped down as it should`,fr.t!=='high'||JSON.stringify(fr));
+// (GFX.fps is rounded: a window of 44.6 fps reads 45 and correctly steps down)
+if(fr.fps===0||fr.fps>fr.down)chk(`Auto keeps High while frames are fast (measured ${fr.fps} fps)`,fr.t==='high'||JSON.stringify(fr));
+else chk(`Auto keeps High while frames are fast: this machine measured ${fr.fps} fps (the line is ${fr.down}), so Auto ${fr.t==='high'?'kept High':'stepped down'}`,fr.t!=='high'||fr.fps===fr.down||JSON.stringify(fr));
 // make the main thread slow (about 20 fps) and wait two windows
 await H.ev(()=>{window.__busyOn=1;const f=()=>{const t=performance.now();while(performance.now()-t<40);if(window.__busyOn)requestAnimationFrame(f);};requestAnimationFrame(f);});
 const slow=await H.ev(()=>new Promise(res=>setTimeout(()=>{window.__busyOn=0;res({t:__A.gfxTier(),fps:__A.GFX.fps,mem:__A.META.cfg.gfxAuto});},7500)));
@@ -48,8 +49,10 @@ chk(`Auto steps down when frames are slow (now ${slow.t}, measured ${slow.fps} f
 await H.browser.close();
 // ---- 3. reduced motion freezes the new motion; full motion moves ----
 for(const rm of [true,false]){
-  H=await open({w:390,h:844,mobile:true,pre:meta({gfx:'high',rmotion:rm})});H.page.on('console',m=>{if(m.type()==='error')cons.push(m.text());});
-  await H.ev(start);
+  // v0.9.9: which decor the first town has (water, leaves, critters, or nothing that moves) comes with the journey's realm, drawn from
+  // Date.now: H.det pins the journey, so the "the same layers move" check looks at the same town every run
+  H=await open({w:390,h:844,mobile:true,pre:meta({gfx:'high',rmotion:rm}),freeze:true});H.page.on('console',m=>{if(m.type()==='error')cons.push(m.text());});
+  await H.det(start);
   r=await H.ev(()=>{const A=__A,WS=A.WS,G=A.G;G.clock=100;G.weather[0]='gale';A.render();
     const snap=now=>{const c=document.createElement('canvas');c.width=WS.vw;c.height=WS.vh;const save=WS.ctx;WS.ctx=c.getContext('2d');const acts=[];
       A.townDecorActors(acts,now,Math.round(WS.cam.x),Math.round(WS.cam.y));acts.filter(a=>/^gfx6/.test(a.deco||'')).forEach(a=>a.draw());WS.ctx=save;const d=c.getContext('2d').getImageData(0,0,c.width,c.height).data;let h=0,n=0;for(let i=0;i<d.length;i+=4){if(d[i+3]){n++;h=(h*31+d[i]+d[i+1]*7+d[i+2]*13+i)|0;}}return h+':'+n;};
@@ -60,7 +63,7 @@ for(const rm of [true,false]){
   if(rm)chk(`reduced motion: world layers (leaves, water, grass, critters) are a still frame (${r.a})`,same&&drawn||JSON.stringify(r));
   else chk('full motion: the same layers move',!same&&drawn||JSON.stringify(r));
   await H.ev(()=>{__A.startBattle({stage:0,kind:'field',weather:'clear'});});
-  await H.page.waitForFunction(()=>__A.B&&__A.B.mode==='cmd',{timeout:25000}).catch(()=>{});
+  await H.until(()=>__A.B&&__A.B.mode==='cmd',null,{timeout:25000});// (page.waitForFunction's polling throws in a page with the frozen clock)
   await H.wait(300);
   r=await H.ev(()=>new Promise(res=>{const A=__A,B=A.B,e=B.en[0];e.fxEl='fire';const n0=A.BV.P.filter(p=>p.g6).length;A.onFx(e,'99','dmg crit');const g6=A.BV.P.filter(p=>p.g6).length-n0;
     const cam=A.CAM.on;setTimeout(()=>{const cv=document.getElementById('bcv');res({g6,cam,mid:cv.style.transform,para:A.PARA.off,shake:!!A.BV.shake});},260);}));

@@ -1,8 +1,9 @@
 // Playwright harness (replaces puppeteer+sparticuz in this workspace). Usage: const {open,chk,done}=require('./pw');
 // Helpers for tests that must not depend on machine load (v0.9.9, docs/v099-tests.md):
-//   open({freeze:true}) installs a controllable clock before the game loads (Date.now and new Date() run from a fixed epoch,
-//                       2026-01-01, never backwards); needed by H.det.
-//   H.det(fn,arg,seed)  evaluate fn with Math.random seeded and Date.now / new Date() pinned to a fixed instant (the k-th call of a page
+//   open({freeze:true}) installs a controllable clock before the game loads (Date.now runs from a fixed epoch, 2026-01-01,
+//                       never backwards; new Date() keeps the real date); needed by H.det. With it, use H.until, not
+//                       page.waitForFunction (its polling throws in such a page).
+//   H.det(fn,arg,seed)  evaluate fn with Math.random seeded and Date.now pinned to a fixed instant (the k-th call of a page
 //                       gets the k-th instant), so journey (realm) draws, map picks and particles are the same on every run.
 //                       PWFREEZE=0 turns it into a plain evaluate (the real clock and Math.random), to run a test unfrozen.
 //   H.frames(n)         wait n animation frames of the page (real frames, not a fixed sleep)
@@ -17,11 +18,11 @@ const fs=require('fs');const path=require('path');
 const {chromium}=require('playwright');
 const MOCK=(()=>{const s=fs.readFileSync(__dirname+'/beta.js','utf8');const a=s.indexOf('const MOCK=`')+12;return s.slice(a,s.indexOf('`;',a));})();
 const FREEZE=process.env.PWFREEZE!=='0';
-// the frozen clock: Date.now and new Date() run from a fixed epoch (never backwards); a pin holds them at EPOCH + k x 10^7 ms (k = pin count)
+// the frozen clock: Date.now runs from a fixed epoch (never backwards); a pin holds it at EPOCH + k x 10^7 ms (k = pin count).
+// new Date() keeps the real clock
 const CLOCK=`(()=>{const RD=Date,rn=RD.now.bind(RD),pn=()=>performance.now(),EPOCH=1767225600000;let base=EPOCH,at=pn(),pinned=null,k=0;
   const now=()=>pinned!=null?pinned:Math.floor(base+pn()-at);
-  class FD extends RD{constructor(...a){if(a.length)super(...a);else super(now());}static now(){return now();}}
-  window.Date=FD;window.__pwClock={pin(){k++;pinned=EPOCH+k*1e7;return pinned;},unpin(){if(pinned==null)return;base=pinned;at=pn();pinned=null;},real:rn};})();`;
+  RD.now=now;window.__pwClock={pin(){k++;pinned=EPOCH+k*1e7;return pinned;},unpin(){if(pinned==null)return;base=pinned;at=pn();pinned=null;},real:rn};})();`;
 let fails=0,errs=[];
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
 // machine speed: the best of 3 runs of a fixed loop (ms) on this container when idle; H.cpu() divides by it
