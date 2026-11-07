@@ -30,10 +30,10 @@ ROLES.charms.forEach(c=>addGear(c.id,Object.assign({n:c.n,slot:'c',tier:2,price:
   EQSL.forEach(sl=>{const g=gearOf(c.eq&&c.eq[sl]);const P=g&&g.rl;if(!P)return;
     ['healUp','spellPow','buffT','debT','rngPow','tauntDef'].forEach(k=>{if(P[k])S[k]=(S[k]||0)+P[k];});if(P.status)S.status=(S.status||1)*P.status;});}catch(e){}return S;};}
 // spellPow is read by calcDamage only when a weapon is held (S.wp), which every hero has; Kunai Pouch and Warden's Badge need their own hook
-{const cd3=calcDamage;calcDamage=function(a,sk,t){const r=cd3.apply(this,arguments);try{if(!r||!r.dmg||!a||!t||(G&&G.daily))return r;let m=1;
+HOOK.after('calcDamage','roles','ranged power, taunt defence (roles)',function(r,a,sk,t){try{if(!r||!r.dmg||!a||!t||(G&&G.daily))return;let m=1;
   if(a.side==='p'&&a.S&&a.S.rngPow&&deliveryOf(a,sk)==='ranged')m*=1+a.S.rngPow;
   if(t.side==='p'&&t.S&&t.S.tauntDef&&has(t,'taunt'))m*=1-t.S.tauntDef;
-  if(m!==1)r.dmg=Math.max(1,Math.round(r.dmg*m));}catch(e){}return r;};}
+  if(m!==1)r.dmg=Math.max(1,Math.round(r.dmg*m));}catch(e){}});
 
 // ---- measuring a role (deterministic: no RNG draws, no battle state) ----
 // roleOut(c,role): what hero c delivers in that role, per action, from its known skills (see ROLES in config.js for the weights).

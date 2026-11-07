@@ -39,4 +39,4 @@ function efCost(f){const m={};ECHOFORGE[f].sh.forEach(k=>{m['es_'+k]=EF_SHARDS;}
 function efPerkOf(c){const g=c&&c.eq&&gearOf(c.eq.w);return g&&g.ef?ECHOFORGE[g.ef]:null;}
 {const cs0=calcStats;calcStats=function(c){const S=cs0.apply(this,arguments);try{const P=c&&c.side==='p'&&efPerkOf(c);if(P){if(P.crit)S.crit=(S.crit||0)+P.crit;if(P.critDmg)S.critDmg=(S.critDmg||1.5)+P.critDmg;if(P.eva)S.eva=(S.eva||0)+P.eva;if(P.spdP)S.spd*=1+P.spdP;
   if(P.elAll)ELK.forEach(el=>{S.elBoost[el]=(S.elBoost[el]||0)+P.elAll;});if(P.bossDmg)S.bossDmg=P.bossDmg;if(P.primeDmg)S.primeDmg=P.primeDmg;S.efPerk=P.n;}}catch(e){}return S;};}
-{const cd0=calcDamage;calcDamage=function(a,sk,t){const r=cd0.apply(this,arguments);try{if(a&&a.S&&r&&r.dmg>0){let m=1;if(a.S.bossDmg&&t&&t.boss)m*=1+a.S.bossDmg;if(a.S.primeDmg&&t&&t.primed)m*=1+a.S.primeDmg;if(m!==1)r.dmg=Math.round(r.dmg*m);}}catch(e){}return r;};}
+HOOK.after('calcDamage','echocore','Echoforged boss and primed damage',function(r,a,sk,t){try{if(a&&a.S&&r&&r.dmg>0){let m=1;if(a.S.bossDmg&&t&&t.boss)m*=1+a.S.bossDmg;if(a.S.primeDmg&&t&&t.primed)m*=1+a.S.primeDmg;if(m!==1)r.dmg=Math.round(r.dmg*m);}}catch(e){}});

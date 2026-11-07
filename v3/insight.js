@@ -62,6 +62,6 @@ function perkOf(name,boss){const b=(META.best||{})[name]||{},k=b.kills||0,M=boss
 function nextMilestone(b,boss){const k=(b||{}).kills||0,M=boss?PERK_KILLS_BOSS:PERK_KILLS;const n=M.find(x=>x>k);
   const t=tierOf(b,boss);const tierNext=t===1?(boss?'1 win or a scan for Studied':`${10-k>0?10-k+' more kills':''}${10-k>0?' or a scan':''} for Studied`):t===2?(boss?`${Math.max(0,3-k)} more wins${b.scan?'':' and a scan'} for Mastered`:`${Math.max(0,25-k)} more kills${b.scan?'':' and a scan'} for Mastered`):'';
   return {perk:n?`${k}/${n} for ${n===M[0]?'a':'the next'} mastery perk`:'All mastery perks earned',tier:tierNext};}
-{const cd0=calcDamage;calcDamage=function(a,sk,t,bonus){const r=cd0.apply(this,arguments);
-  if(a&&t&&a.side==='p'&&t.side==='e'&&!(G&&G.daily)){const p=perkOf(t.base,t.boss);if(p.dmg)r.dmg=Math.max(1,Math.round(r.dmg*(1+p.dmg)));}return r;};}
+HOOK.after('calcDamage','insight','bestiary perk damage',function(r,a,sk,t,bonus){
+  if(a&&t&&a.side==='p'&&t.side==='e'&&!(G&&G.daily)){const p=perkOf(t.base,t.boss);if(p.dmg)r.dmg=Math.max(1,Math.round(r.dmg*(1+p.dmg)));}});
 function perkDropMul(e){if(G&&G.daily)return 1;return 1+perkOf(e.base,e.boss).drop;}

@@ -96,10 +96,10 @@ function healsUndead(sk,u){return !!(sk&&(sk.k==='heal'||sk.k==='revive')&&(sk.t
 // Undead are weak to Light, whatever their own element is
 {const eo0=effOf;effOf=function(el,t){let m=eo0.apply(this,arguments);if(el==='light'&&isUndead(t))m=Math.max(m,UNDEAD_LIGHT);return m;};}
 // damage: archetype multiplier on top of the element multiplier
-{const cd0=calcDamage;calcDamage=function(a,sk,t,bonus){const r=cd0.apply(this,arguments);
+HOOK.after('calcDamage','archetype','archetype delivery multiplier and its tag',function(r,a,sk,t,bonus){
   if(a&&t&&a.side==='p'&&t.side==='e'&&t.ty&&t.ty.length){const m=archMult(a,sk,t);if(m!==1){r.dmg=Math.max(1,Math.round(r.dmg*m));r.am=m;
     try{if(B&&(m>=1.2||m<=.8)&&Date.now()-(t.amT||0)>350){t.amT=Date.now();const P=archParts(a,sk,t)[0];if(P)fx(t,(m>1?'▲ ':'▼ ')+DL_NAME[P.dl||'slash']+(m>1?'!':''),'stat effx '+(m>1?'up':'dn'));}}catch(x){}}}
-  return r;};}
+  });
 
 // ---- Undead take damage from healing ----
 function holyHit(a,sk,t,mult){

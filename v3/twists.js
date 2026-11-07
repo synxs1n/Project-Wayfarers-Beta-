@@ -40,7 +40,7 @@ TW.modNames=g=>TW.mods(g).map(m=>m.n).join(', ');
   const f=TW.on('fire2');if(f&&(R.p==='fire'||R.d==='fire'||el==='fire'))R.m*=f.m;
   const q=TW.ng('react');if(q)R.m*=q.m;}}catch(e){}return R;};}
 // super effective hits
-{const cd0=calcDamage;calcDamage=function(){const r=cd0.apply(this,arguments);try{const w=TW.on('weak');if(w&&r&&r.em>1)r.dmg=Math.max(1,Math.round(r.dmg*w.m));}catch(e){}return r;};}
+HOOK.after('calcDamage','twists','twist: weakness damage',function(r){try{const w=TW.on('weak');if(w&&r&&r.em>1)r.dmg=Math.max(1,Math.round(r.dmg*w.m));}catch(e){}});
 // statuses last one more turn (only a status this call actually set, not one it cancelled)
 {const as0=addSt;addSt=function(t,k){const L=TW.on('linger');if(!L||!t||!t.st)return as0.apply(this,arguments);
   const prev=t.st[k],ok=as0.apply(this,arguments);if(ok&&t.st[k]&&t.st[k]!==prev&&typeof t.st[k].t==='number')t.st[k].t+=L.add;return ok;};}

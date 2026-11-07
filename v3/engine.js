@@ -300,6 +300,7 @@ function calcDamage(a,sk,t,bonus){
   if(crit)d*=(a.S.critDmg||1.5);
   return {dmg:Math.max(1,Math.round(d)),crit,em};
 }
+calcDamage=HOOK.def('calcDamage',calcDamage);// v0.9.9: one definition; modules add hooks (hooks.js)
 
 // =================== BESTIARY ===================
 function bestOf(name){const b=META.best[name]=META.best[name]||{seen:0,kills:0,scan:0,known:{}};return b;}
@@ -713,7 +714,7 @@ function autoSwap(o){const a=B.cur,why={healer:'brings in a healer',detonator:'b
   B.autoSwapT=B.pturns||0;o.inn.swapInT=B.pturns||0;B.autoSwaps=(B.autoSwaps||0)+1;
   const r=doSwap(B.back.indexOf(o.inn));if(r){autoNote(a,`Switch: ${o.inn.name} in`);log(`Auto: ${a.name} ${why}.`);}return r;}
 // v0.4.1 2.5: auto fights at AUTO_NERF.power of normal strength (damage it deals), never in the Daily Trial
-{const cd0=calcDamage;calcDamage=function(a){const r=cd0.apply(this,arguments);try{if(r&&r.dmg&&B&&a&&a.side==='e'&&!a.boss&&!a.elite&&!(G&&G.daily)&&(B.stage||0)>=(PACK.fromStage||0)){const n=B.en.filter(e=>e.hp>0&&!e.boss&&!e.elite).length-1;if(n>0)r.dmg=Math.max(1,Math.round(r.dmg*(1+Math.min(PACK.maxFrenzy,PACK.frenzy*n))));}if(r&&r.dmg&&B&&B.nerfAct&&B.nerfAct===a&&!(G&&G.daily)&&AUTO_NERF.power<1)r.dmg=Math.max(1,Math.round(r.dmg*AUTO_NERF.power));}catch(e){}return r;};}
+HOOK.after('calcDamage','engine','pack frenzy, auto nerf on the acting hero',function(r,a){try{if(r&&r.dmg&&B&&a&&a.side==='e'&&!a.boss&&!a.elite&&!(G&&G.daily)&&(B.stage||0)>=(PACK.fromStage||0)){const n=B.en.filter(e=>e.hp>0&&!e.boss&&!e.elite).length-1;if(n>0)r.dmg=Math.max(1,Math.round(r.dmg*(1+Math.min(PACK.maxFrenzy,PACK.frenzy*n))));}if(r&&r.dmg&&B&&B.nerfAct&&B.nerfAct===a&&!(G&&G.daily)&&AUTO_NERF.power<1)r.dmg=Math.max(1,Math.round(r.dmg*AUTO_NERF.power));}catch(e){}});
 // v0.4.1 2.5: auto is a simple fighter now. It heals below AUTO_NERF.healAt percent, otherwise attacks the first foe in line, sometimes with a
 // plain damage skill. It never swaps, never uses items or Limit Breaks, never primes or detonates, and ignores weaknesses and buffs.
 // The old careful brain stays as autoTurnSmart: it is the "competent manual play" yardstick in the balance sims.

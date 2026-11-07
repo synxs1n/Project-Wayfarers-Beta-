@@ -143,14 +143,14 @@ function b4HookTurn(){if(enemyTurn0.__b4)return;const et0=enemyTurn0;
     return et0.apply(this,arguments);};enemyTurn0.__b4=1;}
 b4HookPlan();b4HookTurn();
 // damage: momentum, Hex, Shieldbearer cover
-{const cd0=calcDamage;calcDamage=function(a,sk,t){const r=cd0.apply(this,arguments);
-  try{if(!B||!r||!r.dmg||!a||!t)return r;let m=1;
+HOOK.after('calcDamage','battle4','Momentum, Hex, guard cover',function(r,a,sk,t){
+  try{if(!B||!r||!r.dmg||!a||!t)return;let m=1;
     if(b4On('mo')&&(a.side==='p'||t.side==='p')){const s=b4MoState(),M=B4.mo;if(s==='full')m*=a.side==='p'?1+M.dmg:1-M.taken;else if(s==='empty')m*=a.side==='p'?1-M.pen:1+M.pen;}
     if(a.side==='p'&&b4Hex(a))m*=Math.max(.5,1-B4.roles.hexDmg*b4Hex(a));
     if(a.side==='p'&&t.side==='e'&&t.hp>0&&b4Role(t)!=='guard'&&b4On('roles')){const sb=B.en.find(e=>e!==t&&e.hp>0&&b4Role(e)==='guard'&&e.shield>0&&!e.broken);
       if(sb){m*=1-B4.roles.cover;if(B.b4covAct!==B.actN){B.b4covAct=B.actN;fx(t,'Covered','stat');log(`${sb.name}'s shield covers ${t.name}.`);}}}
     if(m!==1)r.dmg=Math.max(1,Math.round(r.dmg*m));}catch(e){}
-  return r;};}
+  });
 
 // ----- 5) v0.9.5 boss gimmicks: one realm gimmick per Scourge and Calamity (BOSS_GIM in config.js) -----
 // Data driven: BOSS_GIM.def[boss key] = {t: type, ...tunables}. Each is telegraphed on the boss's turn (a log line, a "Telegraph" chip on
@@ -243,12 +243,12 @@ function b4HookGim(){if(enemyTurn0.__b4g)return;const et0=enemyTurn0;
   enemyTurn0=function(u){try{if(B&&!B.over&&B.b4g&&u===B.b4g.u&&u.hp>0){b4GimTurn(u);if(checkEnd())return;}}catch(e){try{wdLog('b4 gimmick: '+(e&&e.message||e),u);}catch(_){}}
     return et0.apply(this,arguments);};enemyTurn0.__b4g=1;if(et0.__b4)enemyTurn0.__b4=1;}
 // effects on damage and speed (tide, dark, mirror, veil, airborne, chill)
-{const cd1=calcDamage;calcDamage=function(a,sk,t){const r=cd1.apply(this,arguments);
-  try{const S=B&&B.b4g;if(!S||!r||!r.dmg||!a||!t||!sk)return r;const D=S.D,A=S.act;let m=1;
+HOOK.after('calcDamage','battle4','boss gimmick damage',function(r,a,sk,t){
+  try{const S=B&&B.b4g;if(!S||!r||!r.dmg||!a||!t||!sk)return;const D=S.D,A=S.act;let m=1;
     if(D.t==='tide'&&S.lvl&&skEls(sk).includes('water'))m*=1+D.dmg*S.lvl;
     if(D.t==='dark'&&S.lvl&&a.side==='p')m*=Math.max(.3,1-D.dmg*S.lvl);
     if(A&&a.side==='p'&&t===S.u){if(A.t==='mirror'&&sk.k===A.kind)m*=1-D.cut;else if(A.t==='veil')m*=1-D.cut;else if(A.t==='air'&&sk.k==='phys'&&deliveryOf(a,sk)!=='ranged')m*=1-D.cut;}
-    if(m!==1)r.dmg=Math.max(1,Math.round(r.dmg*m));}catch(e){}return r;};}
+    if(m!==1)r.dmg=Math.max(1,Math.round(r.dmg*m));}catch(e){}});
 {const dl0=delayOf;delayOf=function(u,cost){let d=dl0.apply(this,arguments);try{const S=B&&B.b4g;if(S&&u&&u.side==='p'){const D=S.D;
   if(D.t==='chill'&&u.st&&u.st.g_chill)d*=1+D.spd*(u.st.g_chill.v||1);if(D.t==='tide'&&S.lvl&&!(u.el||[]).includes('water'))d*=1+D.spd*S.lvl;}}catch(e){}return d;};}
 // the answers: element hits stop a readied move, Fire thaws, Earth dams the tide, Fire or Light lights a torch, Light reveals; a mirror splashes back
