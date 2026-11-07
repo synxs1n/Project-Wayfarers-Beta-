@@ -87,7 +87,7 @@ function vChallenges(){
     <p class="note">${done} of ${CHALL.length} challenge recruits have joined you this journey. Each board posts a few challenges at a time and rotates after an inn rest or a cleared Scourge; accepted ones stay up until you finish them, and every challenge comes around again.</p>`;
 }
 // ----- remember which maps the player has been to (for hints that must not spoil) -----
-{const pa=placeAt;placeAt=function(mid){const r=pa.apply(this,arguments);try{G.been=G.been||{};G.been[mid]=1;}catch(e){}return r;};}
+HOOK.after('placeAt','progression','places been',function(r,mid){try{G.been=G.been||{};G.been[mid]=1;}catch(e){}});
 HOOK.wrap('finishBattle','progression','tavern reroll on a stage clear',function(next,...a){const how=a[0];const was=G&&G.cleared?G.cleared.filter(Boolean).length:0;const r=next(...a);try{if(G&&G.cleared&&G.cleared.filter(Boolean).length>was)rerollTavern();}catch(e){}return r;});
 
 // ----- "What next?" -----

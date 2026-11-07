@@ -134,6 +134,7 @@ function newGame(ids,cycle,legacy){
   legIds.forEach(id=>{if(G.roster[id]||!TPL[id])return;const c=newChar(id,5,0);c.legacy=1;c.vet=Math.min(4,META.cycles);c.S=calcStats(c);c.hp=c.S.mhp;c.mp=c.S.mmp;G.roster[id]=c;if(G.party.length<6)G.party.push(id);});
   genQuests(0);
 }
+newGame=HOOK.def('newGame',newGame);// v0.9.9: one definition; modules add hooks (hooks.js)
 // Beta v0.3.0 level scaling. NG+ adds 3 foe levels per cycle (up to +10), so cycles push into the 41-50 range.
 // The Calamity rises with an overleveled party: 40, plus 80% of the party's average above 40.
 function ngLvOff(){return G&&G.run&&!G.daily?Math.min(10,3*(G.run.cycle||0)):0;}
@@ -224,6 +225,7 @@ function genQuests(s){
   G.quests.push({id:'v'+s,stage:s,type:'vault',state:'open',title:'The barred hoard',desc:`Old maps mark a vault behind iron bars in the ${Z.dungeon}. Find the lever and bring back what is inside.`,reward:{gold:150+s*150,item:'ether'}});
   if(s===1||s===2){const pool=RAW.filter(r=>r[6][0]==='t'&&+r[6].slice(1)<=s+1&&!G.roster[r[0]]&&!(typeof challIsPooled==='function'&&challIsPooled(r[0]))).map(r=>r[0]);if(pool.length&&!G.quests.some(q=>q.type==='wanderer'))G.quests.push({id:'w'+s,stage:s,type:'wanderer',hero:pool[Math.floor(R()*pool.length)],state:'open',title:'The lost wayfarer',desc:`Someone went into the ${Z.dungeon} and never came out. Find them.`,reward:{}});}
 }
+genQuests=HOOK.def('genQuests',genQuests);// v0.9.9: one definition; modules add hooks (hooks.js)
 function questReady(q){if(q.state!=='active')return false;if(q.type==='hunt')return q.have>=q.n;if(q.type==='gather')return (G.mats[q.mat]||0)>=q.n;if(q.type==='wanderer')return !!q.found;if(q.type==='vault')return !!(G.vaults&&G.vaults[q.stage]);return false;}
 function claimQuest(q){
   if(!questReady(q))return null;const out=[];

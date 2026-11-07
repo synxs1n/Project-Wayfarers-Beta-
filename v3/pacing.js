@@ -17,7 +17,7 @@ const PC_LOCK='opens after the first Scourge falls';
 function pcTemperOpen(){return pcFirstBoss()||pcHasTempered();}
 {const vt0=vTemper;vTemper=function(opt){if(G&&!G.daily&&!pcTemperOpen())return `<p class="note pclock">The smith will temper your gear once the first Scourge falls. Until then, forge and buy what you need.</p>`;return vt0.apply(this,arguments);};}
 // 3. the Tamer's Stick quest on the second realm's board
-{const gq0=genQuests;genQuests=function(s){const r=gq0.apply(this,arguments);try{const q=G&&G.quests&&G.quests.find(q=>q.id==='tamer');if(q&&q.state==='open'&&q.stage===0)q.stage=1;}catch(e){}return r;};}
+HOOK.after('genQuests','pacing','Tamer quest step for the pacing',function(r,s){try{const q=G&&G.quests&&G.quests.find(q=>q.id==='tamer');if(q&&q.state==='open'&&q.stage===0)q.stage=1;}catch(e){}});
 // 4. personal quests: the lock text follows PERSONAL_REALM
 {const ord=n=>['first','second','third','fourth','fifth'][n]||('realm '+(n+1));
   const lt0=personalLockText;personalLockText=function(c){return lt0.apply(this,arguments).replace('Unlocks in the second realm','Unlocks in the '+ord(PERSONAL_REALM)+' realm');};}
@@ -36,7 +36,7 @@ function pcUnlocked(sys){if(!G||!pcGated())return true;const at=PACE.at[sys];if(
 function pcOrd(n){return ['first','second','third','fourth','fifth'][n]||('realm '+(n+1));}
 function pcLockText(sys){return `opens in the ${pcOrd(PACE.at[sys]||0)} realm`;}
 // new journeys get the gates (an NG+ cycle does not)
-{const ng0=newGame;newGame=function(ids,cycle){const r=ng0.apply(this,arguments);try{if(G&&!cycle)G.pcV=1;}catch(e){}return r;};}
+HOOK.after('newGame','pacing','pacing version on a new journey',function(r,ids,cycle){try{if(G&&!cycle)G.pcV=1;}catch(e){}});
 // reactions: in a gated first realm a primer skill is a plain hit (it marks nothing, so nothing detonates)
 HOOK.wrap('perform','pacing','primers are plain hits until reactions open',function(next,...args){let a=args[0],sk=args[1],tgts=args[2];if(sk&&sk.role==='primer'&&a&&a.side==='p'&&!pcUnlocked('reactions')){
     try{G.pcN=G.pcN||{};if(!G.pcN.react){G.pcN.react=1;log('Elemental reactions awaken in the second realm. Until then a primer is a plain hit.');}}catch(e){}

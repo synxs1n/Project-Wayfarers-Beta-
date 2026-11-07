@@ -80,11 +80,11 @@ HOOK.wrap('startBattle','realms','sync pools, Calamity effects, stage cleared fl
   if(f.spd)B.front.concat(B.back,B.en).forEach(u=>{if(u&&u.S)u.S.spd=Math.round(u.S.spd*f.spd);});log(`${f.n}: ${f.d.split('.')[0]}.`);}}}catch(e){}return r;});
 HOOK.after('calcDamage','realms','Calamity element multipliers and burn',function(r,a,sk,t){try{const f=B&&B.calfx;if(f&&r&&r.dmg&&sk){const els=skEls(sk);let m=1;els.forEach(e=>{if(f.el[e])m=Math.max(m===1?0:m,f.el[e]);});if(els.length&&m&&m!==1)r.dmg=Math.max(1,Math.round(r.dmg*m));
   if(f.burn&&a&&a.side==='e'&&t&&t.side==='p'&&els.includes('fire')&&t.hp>0&&!(t.st&&t.st.burn)&&RNG()<f.burn&&!(t.S&&t.S.immune))try{addSt(t,'burn',a);}catch(_){}}}catch(e){}});
-{const gq0=genQuests;genQuests=function(s){syncPools();const had=G.quests.some(q=>q.stage===s);gq0.apply(this,arguments);if(had)return;try{const R=realmAt(s);if(!R||!isRv2())return;
+HOOK.wrap('genQuests','realms','realm quests (pools, rival)',function(next,...a){let s=a[0];syncPools();const had=G.quests.some(q=>q.stage===s);next(...a);if(had)return;try{const R=realmAt(s);if(!R||!isRv2())return;
   const add=(q,i)=>{if(q.type==='gather')G.quests.push({id:'rq'+s+i,stage:s,type:'gather',mat:q.mat,n:q.n,state:'open',title:q.t,desc:q.d,reward:{gold:200+s*180,item:'ether'}});
     else if(MON[q.mon])G.quests.push({id:'rq'+s+i,stage:s,type:'hunt',mon:q.mon,n:4+s,have:0,state:'open',title:q.t,desc:q.d,reward:{gold:160+s*170,item:'hipotion'}});};
   (R.quests||[R.quest]).filter(Boolean).forEach(add);
-  const o=bovAt(s);if(o&&MON[o.mon[0]])G.quests.push({id:'oq'+s,stage:s,type:'hunt',mon:o.mon[0],n:3+s,have:0,state:'open',title:`Strange ${MON[o.mon[0]].n}s`,desc:`${ZS(s).town} has seen ${MON[o.mon[0]].n}s on the roads since the trouble began. Thin them out.`,reward:{gold:220+s*200,item:'remedy'}});}catch(e){}};}
+  const o=bovAt(s);if(o&&MON[o.mon[0]])G.quests.push({id:'oq'+s,stage:s,type:'hunt',mon:o.mon[0],n:3+s,have:0,state:'open',title:`Strange ${MON[o.mon[0]].n}s`,desc:`${ZS(s).town} has seen ${MON[o.mon[0]].n}s on the roads since the trouble began. Thin them out.`,reward:{gold:220+s*200,item:'remedy'}});}catch(e){}});
 {const gb0=genBounties;genBounties=function(s){syncPools();return gb0.apply(this,arguments);};}
 
 // ---------- realm weighting (4.3): chance meetings and taverns lean toward the realm's and the overlay's elements ----------

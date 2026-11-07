@@ -94,10 +94,10 @@ function miniFor(m){G.miniPick=G.miniPick||{};let i=G.miniPick[m.id];
   if(i==null){const used=new Set(Object.values(G.miniPick)),R=seeded(((G.run&&G.run.seed)||1)^0x31415),order=MINIS.map((_,k)=>k).sort(()=>R()-.5);
     i=order.find(k=>!used.has(k));if(i==null)i=order[Object.keys(G.miniPick).length%order.length];G.miniPick[m.id]=i;}
   const D=MINIS[i];return {mon:D[0],name:D[2],mod:D[5]};}
-{const oc0=openChest;openChest=function(x,y){const m=WS.m;try{if(m&&m.cave&&G&&!G.daily&&(m.chests||[]).some(c=>c[0]===x&&c[1]===y&&c[2]==='reward')&&!G.chests[m.id+':'+x+','+y]){
-    G.miniDone=G.miniDone||{};if(siteHasMini(m.id)&&!G.miniDone[m.id]){const mb=miniFor(m);say(null,`Something heavy shifts in the dark. ${mb.name} rises to guard the prize!`,()=>{haltInput();startBattle({stage:m.s,kind:'mini',mini:{id:m.id,mon:mb.mon,name:mb.name,mod:mb.mod}});});return;}
-    if(m.fort){G.chests[m.id+':'+x+','+y]=1;if(typeof sfx==='function')sfx('chest');rebuildBase();const t=fortReward(m.s);saveGame();say(null,'You open the chest. '+t);return;}}}catch(e){}
-  return oc0.apply(this,arguments);};}
+HOOK.before('openChest','sites','cave reward chests',function(x,y){const m=WS.m;try{if(m&&m.cave&&G&&!G.daily&&(m.chests||[]).some(c=>c[0]===x&&c[1]===y&&c[2]==='reward')&&!G.chests[m.id+':'+x+','+y]){
+    G.miniDone=G.miniDone||{};if(siteHasMini(m.id)&&!G.miniDone[m.id]){const mb=miniFor(m);say(null,`Something heavy shifts in the dark. ${mb.name} rises to guard the prize!`,()=>{haltInput();startBattle({stage:m.s,kind:'mini',mini:{id:m.id,mon:mb.mon,name:mb.name,mod:mb.mod}});});return HOOK.stop(undefined);}
+    if(m.fort){G.chests[m.id+':'+x+','+y]=1;if(typeof sfx==='function')sfx('chest');rebuildBase();const t=fortReward(m.s);saveGame();say(null,'You open the chest. '+t);return HOOK.stop(undefined);}}}catch(e){}
+  });
 HOOK.wrap('encounterFoes','sites','miniboss fights',function(next,...a){let spec=a[0];if(!spec||!spec.mini||typeof spec.mini!=='object')return next(...a);
   const s=spec.stage,mi=spec.mini,lv=STAGE_LV[s][1]+SITES.miniLv+ngLvOff(),Z=ZS(s),out=[makeEnemy(MON[mi.mon],lv,{elite:true,name:mi.name,mod:mi.mod,hpM:SITES.miniHp,powM:SITES.miniPow})];
   out.push(makeEnemy(MON[pick(Z.pool)],lv-2));out.push(makeEnemy(MON[pick(Z.pool)],lv-3));return out;});

@@ -38,7 +38,7 @@ function ensureSub(g){
 }
 const inSub=id=>{const t=TPL[id];if(!t)return false;if(t.src==='L'||t.src==='x'||t.mon)return true;return !G||ensureSub(G).includes(id);};
 // ----- hooks -----
-{const ng=newGame;newGame=function(){const r=ng.apply(this,arguments);try{G.sub=null;ensureSub(G);G.tv=null;}catch(e){}return r;};}
+HOOK.after('newGame','tavern2','journey roster and tavern reset',function(){try{G.sub=null;ensureSub(G);G.tv=null;}catch(e){}});
 {const up=unpackG;unpackG=function(){const g=up.apply(this,arguments);try{ensureSub(g);}catch(e){}return g;};}
 {const rc=recruit;recruit=function(id){const r=rc.apply(this,arguments);try{if(r&&G.sub&&!G.sub.includes(id)&&!(TPL[id]&&(TPL[id].src==='L'||TPL[id].src==='x')))G.sub.push(id);}catch(e){}return r;};}
 // challenge board and rare visitors only draw from the subset

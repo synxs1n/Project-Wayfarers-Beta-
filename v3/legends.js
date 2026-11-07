@@ -92,8 +92,8 @@ function legendTalk(a){
     const mon=q.hero==='nikaris'&&(q.step||0)<2?((q.step||0)===0?'frostwolf':'thunderhawk'):null;
     out.push({type:'legend',q,x:p[0],y:p[1],mon});});
   return out;};}
-{const gq0=genQuests;genQuests=function(s){const r=gq0.apply(this,arguments);try{legendRoll(s);}catch(e){}return r;};}
-{const pa0=placeAt;placeAt=function(mid,x,y,f){const r=pa0.apply(this,arguments);const m=WS.m;if(m&&m.kind==='field'&&legendQ(m).some(q=>q.hero==='jaeson'))G.weather[m.s]='storm';return r;};}
+HOOK.after('genQuests','legends','legend quests',function(r,s){try{legendRoll(s);}catch(e){}});
+HOOK.after('placeAt','legends','Jaeson\'s storm',function(r,mid,x,y,f){const m=WS.m;if(m&&m.kind==='field'&&legendQ(m).some(q=>q.hero==='jaeson'))G.weather[m.s]='storm';});
 function drawLegendActor(ctx,a,cx,cy,now){
   const bob=Math.floor(now/450)%2,X=a.x*TS+8-cx,Y=a.y*TS;
   const g=.5+.5*Math.sin(now/240);ctx.fillStyle=`rgba(255,215,90,${.15+.2*g})`;ctx.beginPath();ctx.ellipse(X,Y+14-cy,13,5,0,0,7);ctx.fill();

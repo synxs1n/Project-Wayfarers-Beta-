@@ -13,6 +13,7 @@ function placeAt(mid,x,y,face){
   if((m.kind==='field'||m.kind==='town')&&!G.weather[m.s])rollWeather(m.s);WS.wT=performance.now();
   WS.steps=0;
 }
+placeAt=HOOK.def('placeAt',placeAt);// v0.9.9: one definition; modules add hooks (hooks.js)
 function scanLights(m){
   m.tl=[];for(let y=0;y<m.h;y++)for(let x=0;x<m.w;x++){const c=tileAt(m,x,y);
     if(c==='L')m.tl.push([x*TS+8,y*TS-6,24,'lamp']);else if(c==='v')m.tl.push([x*TS+8,y*TS+2,30,'fire']);else if(c==='W')m.tl.push([x*TS+8,y*TS,20,'cyan']);
@@ -251,6 +252,7 @@ function openChest(x,y){
   else{const cid=pick(['c_vital','c_mana','c_swift','c_clarity','c_'+pick(ELK)]);G.gear.push(cid);msg=`Inside: ${gearOf(cid).n} (${ITEM_TIERS[gTierIdx(gearOf(cid))].n})!`;}
   rebuildBase();saveGame();say(null,'You open the chest. '+msg);
 }
+openChest=HOOK.def('openChest',openChest);// v0.9.9: one definition; modules add hooks (hooks.js)
 function askBoss(){V.modal={type:'boss',s:WS.m.s};render();}
 function openService(k){V.modal={type:k,tab:null};render();}
 function openTravel(){V.modal={type:'travel'};render();}

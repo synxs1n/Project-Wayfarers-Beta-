@@ -11,9 +11,9 @@ function revealAround(){const m=WS.m;if(!G||!m||G.daily)return;const s=seenOf(m)
   for(let y=y0-R;y<=y0+R;y++)for(let x=x0-R;x<=x0+R;x++){if(x<0||y<0||x>=m.w||y>=m.h)continue;if((x-x0)*(x-x0)+(y-y0)*(y-y0)>R*R+1)continue;const i=y*m.w+x;if(!(s[i>>3]&(1<<(i&7)))){s[i>>3]|=1<<(i&7);ch++;}}
   if(ch){let b='';for(let i=0;i<s.length;i++)b+=String.fromCharCode(s[i]);G.explored=G.explored||{};G.explored[m.id]=btoa(b);MAPCV.dirty=1;}}
 {const ar0=arrive;arrive=function(){const r=ar0.apply(this,arguments);try{revealAround();drawMini();}catch(e){}return r;};}
-{const pa0=placeAt;placeAt=function(){const r=pa0.apply(this,arguments);try{MAPCV.dirty=1;revealAround();setTimeout(drawMini,0);}catch(e){}return r;};}
+HOOK.after('placeAt','map','reveal around, redraw the minimap',function(){try{MAPCV.dirty=1;revealAround();setTimeout(drawMini,0);}catch(e){}});
 // when a new journey starts the seen cache must not leak from the old one
-{const ng0=newGame;newGame=function(){Object.keys(SEEN).forEach(k=>delete SEEN[k]);MAPCV.id=null;return ng0.apply(this,arguments);};}
+HOOK.before('newGame','map','forget the explored map',function(){Object.keys(SEEN).forEach(k=>delete SEEN[k]);MAPCV.id=null;});
 {const up0=unpackG;unpackG=function(){Object.keys(SEEN).forEach(k=>delete SEEN[k]);MAPCV.id=null;return up0.apply(this,arguments);};}
 // ----- terrain colours -----
 function mapCol(m,c){const th=m.theme,dun=m.kind==='dungeon';
@@ -336,7 +336,7 @@ function awNext(){const A=WS.auto,m=WS.m;if(!A||!m||A.m!==m.id){awStop('map');re
   if(top!=='auto'){awStop('input');return wi0.apply(this,arguments);}return awNext();};}
 {const h0=haltInput;haltInput=function(){awStop('halt');return h0.apply(this,arguments);};}
 {const wt0=worldTick;worldTick=function(){if(WS.auto&&(V.modal||WS.dlg))awStop(WS.dlg?'dialog':'menu');return wt0.apply(this,arguments);};}
-{const pa1=placeAt;placeAt=function(){awStop('map');return pa1.apply(this,arguments);};}
+HOOK.before('placeAt','map','stop tap to walk',function(){awStop('map');});
 // any key, and any press in the world view that is not a map, stops the walk
 window.addEventListener('keydown',e=>{if(WS.auto&&V.screen==='world'&&!e.repeat)awStop('input');},true);
 document.addEventListener('pointerdown',e=>{if(!WS.auto||V.screen!=='world')return;const t=e.target;if(t&&t.closest&&t.closest('#mmap,#fmap'))return;awStop('input');},true);

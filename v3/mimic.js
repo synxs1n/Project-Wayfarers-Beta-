@@ -12,10 +12,10 @@ MON.mimic={n:'Mimic',art:'mimic',el:['shadow','earth'],hp:1.6,atk:1.35,def:1.3,m
 MON_DROPS.mimic=['core','ore*'];
 function chestHash(m,x,y){let h=hashS('mimic:'+(G.run.seed||1)+':'+m.s+':'+x+','+y);h=Math.imul(h^(h>>>16),2246822507);h=Math.imul(h^(h>>>13),3266489909);h^=h>>>16;return (h>>>0)/4294967296;}
 function isMimic(m,x,y){if(!m||m.kind!=='dungeon'||m.archive||m.t[y][x]!=='C')return false;const c=(m.chests||[]).find(q=>q[0]===x&&q[1]===y);if(!c||c[2]==='vault')return false;return chestHash(m,x,y)<MIMIC_RATE;}
-{const oc0=openChest;openChest=function(x,y){const m=WS.m,key=m.id+':'+x+','+y;
+HOOK.before('openChest','mimic','a mimic in the chest',function(x,y){const m=WS.m,key=m.id+':'+x+','+y;
   if(!G.chests[key]&&isMimic(m,x,y)&&!G.daily){haltInput();
-    say(null,'The chest yawns open on its own. Teeth! It\'s a Mimic!',()=>{if(!startBattle({stage:m.s,kind:'dungeon',mimic:{x,y,map:m.id}})){toast('Your party needs rest first.');render();}});return;}
-  return oc0.apply(this,arguments);};}
+    say(null,'The chest yawns open on its own. Teeth! It\'s a Mimic!',()=>{if(!startBattle({stage:m.s,kind:'dungeon',mimic:{x,y,map:m.id}})){toast('Your party needs rest first.');render();}});return HOOK.stop(undefined);}
+  });
 HOOK.before('encounterFoes','mimic','the mimic',function(spec){if(spec&&spec.mimic){const lv=STAGE_LV[spec.stage][1]+2+(typeof ngLvOff==='function'?ngLvOff():0);const e=makeEnemy(MON.mimic,lv,{hpM:1.5,powM:1.1,elite:true,name:'Mimic'});return HOOK.stop([e]);}});
 HOOK.wrap('win','mimic','mimic bonus gold, loot on the map',function(next,...a){const sp=B&&B.spec,mm=sp&&sp.mimic;const r=next(...a);
   if(mm&&G){try{const bonus=150+120*sp.stage;G.gold+=bonus;V.mimicLoot={x:mm.x,y:mm.y,bonus};}catch(e){}}return r;});

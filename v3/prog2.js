@@ -59,5 +59,5 @@ HOOK.wrap('win','prog2','boss won by hand, auto per foe type opens',function(nex
     if(fresh.length){B.result.autoNew=fresh;toast(`Auto unlocked against ${fresh.slice(0,2).join(' and ')}${fresh.length>2?' and more':''}.`);}}}catch(e){}
   return r;});
 {const sc0=scan;scan=function(t){const r=sc0.apply(this,arguments);try{if(t&&nzLive()&&autoTypeFoe(t)&&B&&B.spec&&B.spec.kind!=='daily'&&autoTypeOpen(t.base,'scan'))toast(`Scanned: auto unlocked against ${t.base}.`);}catch(e){}return r;};}
-{const ng0=newGame;newGame=function(){const r=ng0.apply(this,arguments);try{if(G&&!G.daily)G.autoOk={};}catch(e){}return r;};}
+HOOK.after('newGame','prog2','auto per foe type starts closed',function(){try{if(G&&!G.daily)G.autoOk={};}catch(e){}});
 {const up0=unpackG;unpackG=function(o){const g=up0.apply(this,arguments);try{if(!g.bossWon){g.bossWon={};(g.cleared||[]).forEach((c,s)=>{if(!c||!g.run)return;const k=s<4?(g.run.bosses||[])[s]:g.run.final;if(k)g.bossWon['b:'+k]=1;});}}catch(e){}return g;};}

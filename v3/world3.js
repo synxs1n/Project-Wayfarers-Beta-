@@ -58,10 +58,10 @@ function wxStep(){if(!G||G.daily||!WS.m||WS.m.archive)return;const s=WS.m.s;G.wx
   if(WEATHER[G.weather[s]]&&WEATHER[G.weather[s]].when&&!superOk(G.weather[s],clockPhase()))G.wx[s]=0;else G.wx[s]--;if(G.wx[s]<=0){const old=G.weather[s],w=rollWeather(s,old);if(w!==old&&WS.m.kind==='field'){toast(WEATHER[w].sup?`A rare sky: ${WEATHER[w].n}!`:`The weather turns: ${WEATHER[w].n}.`);if(typeof showLocation==='function')showLocation();}}}
 // entering a map no longer rerolls (worldrt.js only rolls when a realm has no weather yet)
 // forced weather holds still
-{const pa0=placeAt;placeAt=function(mid,x,y,f){const m0=G&&G.weather?Object.assign({},G.weather):null;const r=pa0.apply(this,arguments);
+HOOK.wrap('placeAt','world3','weather on arrival',function(next,...a){let mid=a[0],x=a[1],y=a[2],f=a[3];const m0=G&&G.weather?Object.assign({},G.weather):null;const r=next(...a);
   try{const m=WS.m;if(!m||!G)return r;const s=m.s;G.wxSave=G.wxSave||{};const forced=m.kind==='field'&&typeof legendQ==='function'&&legendQ(m).some(q=>q.hero==='jaeson');
     if(forced&&G.wxSave[s]==null){G.wxSave[s]=m0&&m0[s]!=null&&m0[s]!=='storm'?m0[s]:(m0&&m0[s])||'clear';G.weather[s]='storm';}
-    else if(!forced&&G.wxSave[s]!=null&&m.kind==='field'){G.weather[s]=G.wxSave[s];delete G.wxSave[s];}}catch(e){}return r;};}
+    else if(!forced&&G.wxSave[s]!=null&&m.kind==='field'){G.weather[s]=G.wxSave[s];delete G.wxSave[s];}}catch(e){}return r;});
 // ----- HUD chip and the tint -----
 {const wu0=wkwUpdate;wkwUpdate=function(){wu0();const wk=$('wkw');if(!wk||!G||!WS.m||WS.m.kind==='dungeon')return;const P=PH_LOOK[clockPhase()];
   const html=`<button class="wchip ph ${clockPhase()}" data-act="wxInfo" data-arg="time" title="Time of day (moves as you walk and fight)">${P.i} ${P.n}</button>`;if(!wk.innerHTML.includes('wchip ph '+clockPhase()))wk.insertAdjacentHTML('afterbegin',html);};}

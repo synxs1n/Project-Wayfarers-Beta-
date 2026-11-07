@@ -70,7 +70,7 @@ function gearDiffIds(before){const c={};before.forEach(id=>{c[id]=(c[id]||0)+1;}
 function watchGear(fn,now){return function(){const b=G?G.gear.slice():[];const r=fn.apply(this,arguments);try{if(G)queueNewGear(gearDiffIds(b),now);}catch(e){}return r;};}
 ['buyGear','craftR','buyRelit'].forEach(k=>{if(ACT[k])ACT[k]=watchGear(ACT[k],true);});['qClaim','chClaim'].forEach(k=>{if(ACT[k])ACT[k]=watchGear(ACT[k]);});
 HOOK.wrap('win','equip','new gear watch (queues new gear)',function(next,...a){return watchGear(next).apply(this,a);});
-{const oc=typeof openChest==='function'?openChest:null;if(oc)openChest=watchGear(oc);}
+HOOK.wrap('openChest','equip','new gear watch (queues new gear)',function(next,...a){return watchGear(next).apply(this,a);});
 {const cq=claimQuest;claimQuest=watchGear(cq);}
 HOOK.before('render','equip','open "Equip this now?" for queued new gear',function(){if(G&&!G.daily&&!V.modal&&V.screen==='world'&&!B&&V.gearQueue&&V.gearQueue.length&&!WS.dlg){const id=V.gearQueue.shift();if(G.gear.includes(id))V.modal={type:'equipNow',id};}});
 HOOK.before('vModal','equip','eqPick, autoEq, equipNow popups',function(m){if(m){if(m.type==='eqPick')return HOOK.stop(mEquipPick(m));if(m.type==='autoEq')return HOOK.stop(mAutoEq(m));if(m.type==='equipNow')return HOOK.stop(mEquipNow(m));}});
@@ -87,8 +87,8 @@ Object.assign(ACT,{
 });
 // ----- the Tamer's Stick quest (Beta v0.3.1): on the first town's board in every journey until claimed -----
 // STICK_Q: in config.js
-{const gq0=genQuests;genQuests=function(s){const r=gq0.apply(this,arguments);try{if(!G.quests.some(q=>q.id==='tamer')&&!G.gear.includes('w_stick')&&!Object.values(G.roster).some(c=>c.eq.w==='w_stick'))
-  G.quests.push({id:'tamer',stage:0,type:'tamer',n:STICK_Q,state:'open',title:"The Tamer's Stick",desc:`Old Wren the beast tamer swears her walking stick grows with what its owner knows about monsters. Log ${STICK_Q} creatures in your Bestiary and she will give it to you.`,reward:{}});}catch(e){}return r;};}
+HOOK.after('genQuests','equip','the Tamer\'s Stick quest',function(r,s){try{if(!G.quests.some(q=>q.id==='tamer')&&!G.gear.includes('w_stick')&&!Object.values(G.roster).some(c=>c.eq.w==='w_stick'))
+  G.quests.push({id:'tamer',stage:0,type:'tamer',n:STICK_Q,state:'open',title:"The Tamer's Stick",desc:`Old Wren the beast tamer swears her walking stick grows with what its owner knows about monsters. Log ${STICK_Q} creatures in your Bestiary and she will give it to you.`,reward:{}});}catch(e){}});
 {const qr0=questReady;questReady=function(q){if(q&&q.type==='tamer')return q.state==='active'&&stickCount().n>=q.n;return qr0.apply(this,arguments);};}
 {const cq0=claimQuest;claimQuest=function(q){if(q&&q.type==='tamer'){if(!questReady(q))return null;G.gear.push('w_stick');q.state='claimed';saveGame();
   setTimeout(()=>{V.modal={type:'story',title:"The Tamer's Stick",text:`Wren presses a plain wooden stick into your hands. "Looks like nothing, eh? It feeds on knowing. Every creature you log in your Bestiary makes it stronger, and when you know them all it will rival any blade." Any hero can wield it. Right now it is at ${stickPower().pow} power, with ${stickPower().n} of ${stickPower().all} creatures logged. Its glow goes from plain to green, blue, purple and finally gold as it grows.`,btn:'Thanks, Wren'};render();},50);

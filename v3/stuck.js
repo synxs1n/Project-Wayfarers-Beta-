@@ -6,10 +6,10 @@ function dunReachable(m,x,y){
   const H=m.t.length,W=m.t[0].length,S=m.t.map(r=>r.map(()=>false)),Q=[m.start.slice()];S[m.start[1]][m.start[0]]=true;
   for(let q=0;q<Q.length;q++){const [cx,cy]=Q[q];if(cx===x&&cy===y)return true;for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){const nx=cx+dx,ny=cy+dy;if(nx<0||ny<0||nx>=W||ny>=H||S[ny][nx])continue;if(solidAt(m,nx,ny)&&!(nx===x&&ny===y))continue;S[ny][nx]=true;Q.push([nx,ny]);}}
   return false;}
-{const pa0=placeAt;placeAt=function(mid,x,y,f){const r=pa0.apply(this,arguments);
+HOOK.wrap('placeAt','stuck','Stuck? return point',function(next,...a){let mid=a[0],x=a[1],y=a[2],f=a[3];const r=next(...a);
   try{const m=WS.m;if(m&&m.kind==='dungeon'&&m.start&&!(WS.x===m.start[0]&&WS.y===m.start[1])&&(solidAt(m,WS.x,WS.y)||!dunReachable(m,WS.x,WS.y))){
-    pa0.call(this,mid,m.start[0],m.start[1],'d');setTimeout(()=>toast('The way back was blocked, so the party found its way to the entrance.'),300);}}catch(e){}
-  return r;};}
+    next(mid,m.start[0],m.start[1],'d');setTimeout(()=>toast('The way back was blocked, so the party found its way to the entrance.'),300);}}catch(e){}
+  return r;});
 function canStuck(){return V.screen==='world'&&WS.m&&WS.m.kind==='dungeon'&&!WS.lock&&!B;}
 Object.assign(ACT,{
   stuckAsk(){if(!canStuck())return;V.modal={type:'stuck',from:V.modal};render();},

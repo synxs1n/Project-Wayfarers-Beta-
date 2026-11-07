@@ -104,7 +104,7 @@ function mCodex(id){
   const hc0=heroCard;heroCard=function(id){try{codexSee(id);}catch(e){}return hc0.apply(this,arguments);};
   const r0=recruit;recruit=function(id){const ok=r0.apply(this,arguments);if(ok&&G.roster[id])codexSee(id,{rec:1,lv:G.roster[id].lv});return ok;};
   HOOK.after('finishBattle','account','codex and Archive sync',function(){try{codexRoster();checkArchive();profileDirty();}catch(e){}});
-  const ng0=newGame;newGame=function(){const r=ng0.apply(this,arguments);try{codexRoster();}catch(e){}return r;};
+  HOOK.after('newGame','account','codex roster',function(){try{codexRoster();}catch(e){}});
 }
 Object.assign(ACT,{
   codex(id){V.modal={type:'codexEntry',id};render();},
