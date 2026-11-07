@@ -68,10 +68,15 @@ function pgStairsOnRoute(m,P,x,y){return !pgStairsFront(m,P,x,y);}
 function pgStairsFront(m,P,x,y){const open=[[1,0],[-1,0],[0,1],[0,-1]].map(([a,b])=>[x+a,y+b]).filter(([a,b])=>P.W8(a,b));return open.length===1?open[0]:null;}
 // the nearest allowed spot for a tile asset: a room tile on plain floor, not protected, not a cut, with no asset next to it
 const PG_NOPASS='D|XG';
-function pgSpot(m,P,x,y,floorOk,maxR,loose){
+// v0.9.9: a tile with road on two opposite sides is free while empty, but pgGrid protects it as soon as an asset stands on it (the "prop on a
+// road line" rule), so a chest moved there was moved off again on the next pass and could ping-pong between two such tiles and end on one
+// (v050p1c: f0, run seed 807839, realm 12 first, chest at 20,28). pgSpot never picks such a tile for an asset (c given)
+function pgRoadLine(m,x,y){const g=m.t,R=c=>!!c&&PG_PATH_CH.includes(c);return (R((g[y]||[])[x-1])&&R((g[y]||[])[x+1]))||(R((g[y-1]||[])[x])&&R((g[y+1]||[])[x]));}
+let PG_LEGACY=false,PG_DRY=false;   // the guard as it was before v0.9.9 (to find where it left a chest in an old save), and a run that writes no save state
+function pgSpot(m,P,x,y,floorOk,maxR,loose,asset){
   const H=P.H,W=P.W,seen=new Set([x+','+y]),q=[[x,y,0]];
   for(let i=0;i<q.length;i++){const [cx,cy,d]=q[i];if(d>(maxR||40))break;
-    if(!(cx===x&&cy===y)&&floorOk(m.t[cy][cx])&&(P.room[cy][cx]||loose)&&!P.prot[cy][cx]&&!pgCuts(P,cx,cy)&&cx>1&&cy>1&&cx<W-2&&cy<H-2&&!(typeof pgHides==='function'&&pgHides(m,cx,cy,'C'))){
+    if(!(cx===x&&cy===y)&&floorOk(m.t[cy][cx])&&(P.room[cy][cx]||loose)&&!P.prot[cy][cx]&&!pgCuts(P,cx,cy)&&cx>1&&cy>1&&cx<W-2&&cy<H-2&&!(typeof pgHides==='function'&&pgHides(m,cx,cy,'C'))&&!(asset&&!PG_LEGACY&&pgRoadLine(m,cx,cy))){
       let crowd=false;for(let j=-1;j<=1&&!crowd;j++)for(let k=-1;k<=1&&!crowd;k++){const c=(m.t[cy+j]||[])[cx+k];if((j||k)&&c&&pgIsAsset(m,c))crowd=true;}
       if(!crowd&&!pgNpcAt(m).some(n=>n.x===cx&&n.y===cy))return [cx,cy];}
     for(const [a,b] of [[1,0],[-1,0],[0,1],[0,-1]]){const nx=cx+a,ny=cy+b,k=nx+','+ny;if(seen.has(k)||!P.W8(nx,ny)||PG_NOPASS.includes(m.t[ny][nx]))continue;seen.add(k);q.push([nx,ny,d+1]);}}
@@ -106,18 +111,18 @@ function guardPaths(m){
       if(PG_ASSET_PROP.includes(b.c)){m.t[b.y][b.x]=pgFloorOf(m,b.x,b.y);if(m.tl)m.tl=null;log.push({x:b.x,y:b.y,what:'decor '+b.c});moved=true;continue;}
       // chests, key chests and levers move to the nearest allowed room tile
       const fl=m.kind==='dungeon'?(c=>c==='.'):(c=>c==='.'||c===',');
-      const R0=b.c!=='C'?10:m.kind==='dungeon'?24:60,sp=pgSpot(m,P,b.x,b.y,fl,R0)||pgSpot(m,P,b.x,b.y,fl,R0,true)||(b.c==='C'&&m.kind!=='dungeon'?pgSpot(m,P,b.x,b.y,c=>c==='.'||c===','||c==='f',999,true):null);if(!sp)continue;  // a room tile first, then any alcove off the paths
+      const R0=b.c!=='C'?10:m.kind==='dungeon'?24:60,sp=pgSpot(m,P,b.x,b.y,fl,R0,false,b.c)||pgSpot(m,P,b.x,b.y,fl,R0,true,b.c)||(b.c==='C'&&m.kind!=='dungeon'?pgSpot(m,P,b.x,b.y,c=>c==='.'||c===','||c==='f',999,true,b.c):null);if(!sp)continue;  // a room tile first, then any alcove off the paths
       const c=b.c,floor=pgFloorOf(m,b.x,b.y);m.t[b.y][b.x]=floor;m.t[sp[1]][sp[0]]=c;
       if(typeof mapIssues==='function'&&mapIssues(m).length){m.t[sp[1]][sp[0]]=floor==='.'||floor===','?(m.kind==='dungeon'?'.':','):floor;m.t[b.y][b.x]=c;continue;}
       if(c==='C'||c==='K'){const e=(m.chests||[]).find(q=>q[0]===b.x&&q[1]===b.y);
         if(e){const from=e.from||[b.x,b.y];e[0]=sp[0];e[1]=sp[1];e.from=from;}
-        try{if(G&&G.chests){const ok=m.id+':'+b.x+','+b.y,nk=m.id+':'+sp[0]+','+sp[1];if(G.chests[ok]&&!G.chests[nk])G.chests[nk]=G.chests[ok];}}catch(e2){}}
+        try{if(!PG_DRY&&G&&G.chests){const ok=m.id+':'+b.x+','+b.y,nk=m.id+':'+sp[0]+','+sp[1];if(G.chests[ok]&&!G.chests[nk])G.chests[nk]=G.chests[ok];}}catch(e2){}}
       if(c==='l'&&m.lever&&m.lever[0]===b.x&&m.lever[1]===b.y)m.lever=[sp[0],sp[1]];
       if(c==='K'&&m.key&&m.key[0]===b.x&&m.key[1]===b.y)m.key=[sp[0],sp[1]];
       if(m.tl)m.tl=null;log.push({x:b.x,y:b.y,what:c,to:sp});moved=true;}
     if(!moved)break;}
   // a defeated mimic leaves nothing behind (healMap checks this too, but it ran before the chest moved here)
-  try{if(G&&G.chests&&typeof isMimic==='function'&&m.chests)m.chests.slice().forEach(([x,y])=>{if(G.chests[m.id+':'+x+','+y]&&isMimic(m,x,y)){dropChest(m,x,y);log.push({x,y,what:'mimic gone'});}});}catch(e){}
+  try{if(!PG_DRY&&G&&G.chests&&typeof isMimic==='function'&&m.chests)m.chests.slice().forEach(([x,y])=>{if(G.chests[m.id+':'+x+','+y]&&isMimic(m,x,y)){dropChest(m,x,y);log.push({x,y,what:'mimic gone'});}});}catch(e){}
   m.guarded=log;return log;
 }
 // a moved chest keeps the mimic roll of the spot it was built on
@@ -185,6 +190,26 @@ function pgPlugHoles(m){const log=[];if(!m||!m.t||!m.bld)return log;
   if(log.length&&m.tl)m.tl=null;return log;}
 {const gp0=guardPaths;guardPaths=function(m){const pre=(m&&m.t&&!m.archive&&!m.sanctum)?pgPlugHoles(m).concat(pgClearAprons(m),pgDropHidden(m)):[];const log=gp0.apply(this,arguments);
   if(pre.length&&Array.isArray(log)){log.unshift(...pre);m.guarded=log;}return log;};}
+// v0.9.9 old saves: the guard before v0.9.9 could leave a chest on a road line tile (pgRoadLine) and the save keeps that chest's opened state
+// under the spot it was left on. When this map has an opened key no chest stands on after the guard, the old guard is run again on a copy
+// of the map as it was built (PG_LEGACY, PG_DRY: no save writes) and each chest's opened state moves from the old guard's spot to the new
+// one, the way guardPaths moves it (matched by the spot the chest was built on; contents and mimic roll follow that spot already)
+function pgSnap(m){const cp=a=>a?a.slice():a;return Object.assign({},m,{t:m.t.map(r=>r.slice()),tl:null,
+  chests:(m.chests||[]).map(c=>{const q=c.slice();if(c.from)q.from=c.from.slice();return q;}),npcs:(m.npcs||[]).map(n=>Object.assign({},n)),
+  signs:m.signs?Object.assign({},m.signs):m.signs,start:cp(m.start),wander:cp(m.wander),lever:cp(m.lever),key:cp(m.key),
+  gates:m.gates?Object.assign({},m.gates,{start:m.gates.start?Object.assign({},m.gates.start):m.gates.start}):m.gates});}
+function pgOldChests(m,snap,gp){if(!G||!G.chests||!m.chests)return [];const pre=m.id+':',at=new Set(m.chests.map(c=>pre+c[0]+','+c[1]));
+  if(!Object.keys(G.chests).some(k=>k.startsWith(pre)&&!at.has(k)))return [];
+  const l0=PG_LEGACY,d0=PG_DRY;PG_LEGACY=PG_DRY=true;try{gp(snap);}finally{PG_LEGACY=l0;PG_DRY=d0;}
+  const fromK=c=>{const f=c.from||c;return f[0]+','+f[1];},old={};(snap.chests||[]).forEach(c=>{old[fromK(c)]=c;});const log=[];
+  m.chests.slice().forEach(c=>{const o=old[fromK(c)];if(!o||(o[0]===c[0]&&o[1]===c[1]))return;const ok=pre+o[0]+','+o[1],nk=pre+c[0]+','+c[1];
+    if(G.chests[ok]&&!G.chests[nk]){G.chests[nk]=G.chests[ok];log.push({x:o[0],y:o[1],what:'old save chest',to:[c[0],c[1]]});
+      try{if(typeof isMimic==='function'&&isMimic(m,c[0],c[1])){dropChest(m,c[0],c[1]);log.push({x:c[0],y:c[1],what:'mimic gone'});}}catch(e){}}});
+  return log;}
+{const gp1=guardPaths;guardPaths=function(m){if(PG_DRY||PG_LEGACY||!m||!m.t||m.archive||m.sanctum)return gp1.apply(this,arguments);
+  let snap=null;try{if(G&&G.chests&&Object.keys(G.chests).some(k=>k.startsWith(m.id+':')))snap=pgSnap(m);}catch(e){}
+  const log=gp1.apply(this,arguments);
+  if(snap){try{const ol=pgOldChests(m,snap,gp1);if(ol.length&&Array.isArray(log)){log.push(...ol);m.guarded=log;}}catch(e){}}return log;};}
 // blocks movement because of the tile itself (characters are drawn, so they never count)
 function pgBlocksTile(m,x,y){const c=tileAt(m,x,y);if(c==='c')return !(typeof WFX!=='undefined'&&WFX.chestGone);return SOLID.includes(c);}
 let PG_ACV=null;

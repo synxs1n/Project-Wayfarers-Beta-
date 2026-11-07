@@ -22,4 +22,14 @@ chk(`dungeons scanned >= 500 (${r.maps.dungeon})`,r.maps.dungeon>=500);
 ['town','field','dungeon','cave','fort'].forEach(k=>chk(`${k}: ${r.maps[k]||0} maps, none with an asset on a path tile`,(r.maps[k]||0)>0&&!r.bad[k]||((r.bad[k]||0)+' bad: '+r.ex.join(' || '))));
 chk('every target still reachable after the guard',r.issues===0||r.issues);
 chk('no generation errors',r.err.length===0||r.err.slice(0,4).join(' '));
+// v0.9.9: the fix for the chest on a road line (pathguard pgRoadLine) moves that chest elsewhere; an old save that opened it on 20,28 keeps it opened
+const os=await ev(()=>{const A=__A,G=A.G,T=k=>A.TW.get(k),STD=T('REALM_STD'),CAL=T('REALM_CAL'),seeded=T('seeded'),seed0=G.run.seed,order0=G.run.order.slice(),ch0=Object.assign({},G.chests);
+  const k=102;G.run.seed=k*7919+101;G.sub=null;{const R=seeded((k*2654435761+97)>>>0),first=STD[k%STD.length];G.run.order=[first].concat(STD.filter(x=>x!==first).sort(()=>R()-.5).slice(0,3)).concat([CAL[Math.floor(R()*CAL.length)]]);}
+  G.chests={};A.resetMaps();let m=A.getMap('f0');const c=(m.chests||[]).find(q=>q.from&&q.from[0]===18&&q.from[1]===30),fresh=c&&[c[0],c[1]];
+  G.chests={'f0:20,28':1};A.resetMaps();m=A.getMap('f0');const c2=(m.chests||[]).find(q=>q.from&&q.from[0]===18&&q.from[1]===30);
+  const r={fresh,at:c2&&[c2[0],c2[1]],opened:!!(c2&&G.chests['f0:'+c2[0]+','+c2[1]]),tile:c2&&A.TW.get('tileAt')(m,c2[0],c2[1]),log:(m.guarded||[]).filter(q=>/old save/.test(q.what))};
+  G.chests=ch0;G.run.seed=seed0;G.run.order=order0;A.resetMaps();return r;});
+console.log('old save chest:',JSON.stringify(os));
+chk('the f0 seed 807839 chest (built on 18,30) is no longer left on 20,28',!!os.fresh&&!(os.fresh[0]===20&&os.fresh[1]===28)||JSON.stringify(os.fresh));
+chk('an old save that opened it on 20,28 keeps it opened on its new spot',os.opened&&os.tile==='c'&&os.at&&os.fresh&&os.at[0]===os.fresh[0]&&os.at[1]===os.fresh[1]&&os.log.length===1||JSON.stringify(os));
 await done(H);})();
