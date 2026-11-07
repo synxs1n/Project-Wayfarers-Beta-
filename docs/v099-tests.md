@@ -10,7 +10,8 @@ the same time (each row of the runner's report records the load average before a
 976c677; after = this pass. The container restarted twice during the measurement, so the runs came in pieces (each test has 3 runs, the
 first 25 alphabetically 4); load average over the "before" runs: median 4.2 on 4 CPUs (0.7 to 8.7), over the "after" runs: median 2.2
 (0.7 to 7.1). Because "after" happened to see less load, the formerly flaky and timing sensitive tests were also run 3 more times with six
-extra busy loops on the CPUs (load 8 to 10): STRESS_RESULT
+extra busy loops on the CPUs (load 7 to 9.5): v050p5c, v071wt, v050p6a, audioplay, smithy3, smithyfuzz, v077wb, v063ba, v053ua,
+v062a, v063wo, v041p46, v041p1b, v070m2 and v070ic all passed 3 of 3 (v070ic after its last change, below; that stress run is what found it).
 
 ### Flaky before (passed some runs, failed others)
 
@@ -136,7 +137,9 @@ Load and timing (the flaky ones):
 - `v041p1b`, `v070ia`, `v070ic`, `v070m2`: Auto per foe type (v0.9.8) kept Auto locked, so the battles stood at the first hero turn and
   the checks only passed when enough enemy moves came first (or timed out: v070ia ran 900 s). `AUTO_OK` marks the foes as beaten by
   hand; the battle watches are time based (until N moves or 20 to 40 s) instead of a count of short sleeps. v070ic waits for a timed
-  press's damage to land before reading it.
+  press's damage to land before reading it, and under heavy load (load 8 on 4 CPUs) its guard ring check met the game's turn watchdog
+  (engine.js `WD_MS`, 4 s), which replaces a stalled enemy turn with a plain attack that carries no timed result: only when the watchdog
+  fired during that turn is the guard tried again (3 at most); the failure message lists the watchdog entries.
 
 Old reasons (failed every run): `oldsave`, `v041old`, `v050p4b` (wait for the journey after Continue), `v041p47` (look key), `v095m2`
 (journey without the realm gates), listed above.
