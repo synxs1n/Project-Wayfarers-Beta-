@@ -250,10 +250,10 @@ function p3Pork2(){const why=p3PorkWhy();if(why){toast(why);sfx('deny');return f
   const m=WS.m,lt=G.lastTown||0;G.inv.porkchop-=PORK.toTown;try{if(G.echoReady&&G.cleared&&G.cleared[m.s])G.echoReady[m.s]=1;}catch(e){}
   V.modal=null;saveGame();render();toast(`Two sandwiches later, you follow the smell all the way back to the inn in ${ZS(lt).town}.`);
   fadeTo(()=>{const [ix,iy]=innSpot(lt);placeAt('t'+lt,ix,iy,'d');showLocation();saveGame();});return true;}
-{const w0=win;win=function(){const first=!!(B&&B.spec&&B.spec.kind==='boss'&&G&&!G.daily&&!G.p3pork&&!(G.cleared||[]).some(Boolean));const r=w0.apply(this,arguments);
+HOOK.wrap('win','p3shop','first boss Pork Chops',function(next,...a){const first=!!(B&&B.spec&&B.spec.kind==='boss'&&G&&!G.daily&&!G.p3pork&&!(G.cleared||[]).some(Boolean));const r=next(...a);
   try{if(first&&G.cleared.some(Boolean)){G.p3pork=1;const n=Math.max(0,Math.min(PORK.firstBoss,invCap()-(G.inv.porkchop||0)));G.inv.porkchop=(G.inv.porkchop||0)+n;
     const info=B&&B.result;if(info){for(let i=0;i<n;i++)info.drops.push('porkchop');const hint=` The innkeeper's lad runs up with ${PORK.firstBoss} Pork Chop Sandwiches "for the road". One walks you back to a dungeon's entrance; eat ${PORK.toTown} in a dungeon and you are back at the last town's Inn.`;
-      if(info.story)info.story.text+=hint;else info.p3hint=hint;}saveGame();render();}}catch(e){}return r;};}
+      if(info.story)info.story.text+=hint;else info.p3hint=hint;}saveGame();render();}}catch(e){}return r;});
 // Menu > Items: the Holy Water toggle and the two sandwich button
 {const vm1=vModal;vModal=function(m){let h=vm1.apply(this,arguments);try{if(!m||m.type!=='menu'||!G||G.daily||typeof h!=='string')return h;
   h=h.replace(/(<button class="btn sm" data-act="useTravel" data-arg="holywater"[^>]*>Use<\/button>)/,(x)=>`<div class="btnrow tight col">${x}<button class="btn sm ${G.hwAuto?'gold':''}" data-act="p3HwAuto" aria-pressed="${!!G.hwAuto}" title="When the ward ends, use another Holy Water if you have one">Reapply automatically: ${G.hwAuto?'On':'Off'}</button></div>`);

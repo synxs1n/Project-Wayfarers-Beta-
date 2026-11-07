@@ -896,6 +896,7 @@ function win(){
   B.result=info;V.modal={type:'result',info};
   B.over=true;saveGame();render();
 }
+win=HOOK.def('win',win);// v0.9.9: one definition; modules add hooks (hooks.js)
 function lose(){
   if(!B)return;
   if(B.spec.kind==='daily'){dailyLose();return;}

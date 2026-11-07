@@ -14,7 +14,7 @@ function learnLine(o){return `<b>${esc(o.name)} learned ${esc(o.sk.n)}!</b> <spa
 // heroes already on the roster are recorded when a save loads or a journey starts
 {const up0=unpackG;unpackG=function(){const g=up0.apply(this,arguments);try{const G0=G;G=g;Object.values(g.roster).forEach(c=>{g.skSeen=g.skSeen||{};if(!g.skSeen[c.id])learnScan(c);});G=G0;}catch(e){}return g;};}
 // battle results: one line per new skill, under the level ups
-{const w0=win;win=function(){const r=w0.apply(this,arguments);try{const L=learnScanAll();if(L.length&&V.modal&&V.modal.info){V.modal.info.learn=(V.modal.info.learn||[]).concat(L);render();}else if(L.length)lnQueue(L);}catch(e){}return r;};}
+HOOK.after('win','learn','new skills on the result',function(){try{const L=learnScanAll();if(L.length&&V.modal&&V.modal.info){V.modal.info.learn=(V.modal.info.learn||[]).concat(L);render();}else if(L.length)lnQueue(L);}catch(e){}});
 // outside battle (Archive moves, quest XP, recruits growing into skills): a small queued notice, tap to dismiss, never blocks
 const LNQ=[];let lnT=null;
 function lnQueue(L){L.forEach(o=>LNQ.push(o));lnShow();}

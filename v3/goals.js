@@ -74,9 +74,9 @@ function glCheck(pay){if(!glOn())return [];const st=glS(),paid=[];
 function glList(){if(!glOn())return [];const st=glS();return st.a.map(id=>{const d=glDef(id);if(!d)return null;const g=GLMAP[id];let p='';try{if(g&&g.k&&g.n>1)p=`${g.prog(st)}/${g.n}`;}catch(e){}
   return {id,t:d.t,sub:typeof d.sub==='function'?d.sub():d.sub,p,R:glReward(id),story:/^st/.test(id)};}).filter(Boolean);}
 // ----- counters from battles and actions -----
-{const w0=win;win=function(){const r=w0.apply(this,arguments);try{if(glOn()&&B&&B.result&&!B.result.glCount&&B.spec&&B.spec.kind!=='daily'){B.result.glCount=1;const z=B.nz||{};
+HOOK.after('win','goals','goal counters from the fight',function(){try{if(glOn()&&B&&B.result&&!B.result.glCount&&B.spec&&B.spec.kind!=='daily'){B.result.glCount=1;const z=B.nz||{};
     glAdd('react',z.react|0);glAdd('brk',z.brk|0);glAdd('guard',z.guard|0);glAdd('surge',z.surge?1:0);glAdd('tele',z.tele|0);glAdd('weak',B.hitWeak?1:0);glAdd('swap',(B.b4swN|0)>0?1:0);
-    glAdd(autoRewardMul()===1?'manWin':'autoWin',1);if(B.spec.kind==='elite'&&B.spec.bounty&&!B.spec.bounty.personal)glAdd('bounty',1);}}catch(e){}return r;};}
+    glAdd(autoRewardMul()===1?'manWin':'autoWin',1);if(B.spec.kind==='elite'&&B.spec.bounty&&!B.spec.bounty.personal)glAdd('bounty',1);}}catch(e){}});
 {const sc0=scan;scan=function(){const r=sc0.apply(this,arguments);try{if(B&&B.spec&&B.spec.kind!=='daily')glAdd('scan',1);}catch(e){}return r;};}
 if(typeof campMake==='function'){const cm0=campMake;campMake=function(){const r=cm0.apply(this,arguments);try{if(r&&typeof r!=='string')glAdd('camp',1);}catch(e){}return r;};}
 HOOK.after('finishBattle','goals','Next goals panel',function(){try{glCheck();glRender();}catch(e){}});

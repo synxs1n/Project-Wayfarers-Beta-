@@ -25,11 +25,11 @@ function compProgHtml(o){const b=compBt(o),st=compStage(o),goal=st===0?TAME.skil
   return `<span class="c3prog"><b>Bond ${st}</b> · ${b} battle${b===1?'':'s'} won together · ${esc(compNext(o))}<i class="c3bar" aria-hidden="true"><i style="width:${p}%"></i></i></span>`;}
 {const bt0=compBonusText;compBonusText=function(o){const h=bt0.apply(this,arguments);try{return h+`</small><small class="c3line">${compProgHtml(o)}`;}catch(e){return h;}};}
 // counting: every won battle with its hero anywhere in the six
-{const w0=win;win=function(){let ids=null;try{if(B&&G&&!G.daily&&(G.tamed||[]).length)ids=allParty().map(u=>u&&u.isComp&&u.owner?u.owner.id:u&&u.id).filter(Boolean);}catch(e){}
-  const r=w0.apply(this,arguments);
+HOOK.wrap('win','comp3','companion growth (second skill, evolution)',function(next,...a){let ids=null;try{if(B&&G&&!G.daily&&(G.tamed||[]).length)ids=allParty().map(u=>u&&u.isComp&&u.owner?u.owner.id:u&&u.id).filter(Boolean);}catch(e){}
+  const r=next(...a);
   try{if(ids)(G.tamed||[]).forEach(o=>{if(!o.with||!ids.includes(o.with))return;const s0=compStage(o),d0=MON[o.mon]||guardianDef(o.mon);o.bt=compBt(o)+1;const s1=compStage(o);
     if(s1>s0){if(s1===1)toast(`${o.name} learned ${compSkill2(o,d0)[0]}!`);else{toast(`${o.name} evolves into ${compEvoName(o,d0)}!`);if(TPL[o.id]){const d=compDef(o);if(d)TPL[o.id].art=d.art;}}
-      if(G.roster[o.with])refresh(G.roster[o.with]);}});}catch(e){}return r;};}
+      if(G.roster[o.with])refresh(G.roster[o.with]);}});}catch(e){}return r;});
 // Taming log: the companions you have and how far each has grown
 if(typeof vTameLog==='function'){const tl0=vTameLog;vTameLog=function(){const h=tl0.apply(this,arguments);try{const L=G&&G.tamed||[];if(!L.length)return h;
   const rows=L.map(o=>{const d=compDef(o);return `<div class="row comprow"><img class="mimg" src="${monURL(d.art)}" alt=""><div class="grow"><b>${esc(o.name)}</b> <small>${esc(d.n)}</small><small>${compProgHtml(o)}</small></div></div>`;}).join('');

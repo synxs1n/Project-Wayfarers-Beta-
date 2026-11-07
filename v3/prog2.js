@@ -51,13 +51,13 @@ HOOK.after('startBattle','prog2','auto counters, boss auto lock',function(r){try
 {const cs0=chipShield;chipShield=function(t){const was=t&&t.broken;const r=cs0.apply(this,arguments);try{if(B&&B.nz&&t&&t.side!=='p'&&!was&&t.broken===2)B.nz.brk++;}catch(e){}return r;};}
 {const at0=autoTurn;autoTurn=function(){if(autoLocked()){if(B)B.auto=false;return;}return at0.apply(this,arguments);};}
 {const a0=ACT.auto;ACT.auto=function(){if(autoLocked()){toast('Auto is locked here: '+(autoReason()||'win this fight manually once first').replace(/^./,c=>c.toLowerCase())+'.');if(typeof sfx==='function')sfx('deny');return;}return a0.apply(this,arguments);};}
-{const w0=win;win=function(){let man=false,kills=null;try{const k=B&&bossFightKey(B.spec);if(k&&!(B.tA>0)){G.bossWon=G.bossWon||{};G.bossWon[k]=1;}
+HOOK.wrap('win','prog2','boss won by hand, auto per foe type opens',function(next,...a){let man=false,kills=null;try{const k=B&&bossFightKey(B.spec);if(k&&!(B.tA>0)){G.bossWon=G.bossWon||{};G.bossWon[k]=1;}
     if(B&&nzLive()&&B.spec&&B.spec.kind!=='daily'){man=autoRewardMul()===1;kills=(B.kills&&B.kills.length?B.kills:B.en).filter(e=>autoTypeFoe(e)&&e.hp<=0);}}catch(e){}
-  const was=B,r=w0.apply(this,arguments);
+  const was=B,r=next(...a);
   // hand kills open auto per foe type (counted once the whole fight is won, not per wave)
   try{if(man&&kills&&B===was&&B&&B.result){const fresh=[];kills.forEach(e=>{if(autoTypeOpen(e.base)&&!fresh.includes(e.base))fresh.push(e.base);});
     if(fresh.length){B.result.autoNew=fresh;toast(`Auto unlocked against ${fresh.slice(0,2).join(' and ')}${fresh.length>2?' and more':''}.`);}}}catch(e){}
-  return r;};}
+  return r;});
 {const sc0=scan;scan=function(t){const r=sc0.apply(this,arguments);try{if(t&&nzLive()&&autoTypeFoe(t)&&B&&B.spec&&B.spec.kind!=='daily'&&autoTypeOpen(t.base,'scan'))toast(`Scanned: auto unlocked against ${t.base}.`);}catch(e){}return r;};}
 {const ng0=newGame;newGame=function(){const r=ng0.apply(this,arguments);try{if(G&&!G.daily)G.autoOk={};}catch(e){}return r;};}
 {const up0=unpackG;unpackG=function(o){const g=up0.apply(this,arguments);try{if(!g.bossWon){g.bossWon={};(g.cleared||[]).forEach((c,s)=>{if(!c||!g.run)return;const k=s<4?(g.run.bosses||[])[s]:g.run.final;if(k)g.bossWon['b:'+k]=1;});}}catch(e){}return g;};}

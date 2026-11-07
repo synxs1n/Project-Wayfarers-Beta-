@@ -10,12 +10,12 @@
 // and small system bonuses (reaction, shield broken, telegraph guarded, Momentum Surge, tame), each a share of the win's XP and gold, capped.
 // Per-hero XP is measured, not guessed: win() is wrapped to snapshot each hero's total XP before and after (info.xpBy).
 function rsTotXp(c){let t=c.xp||0;for(let l=1;l<c.lv;l++)t+=need(l);return t;}
-{const w0=win;win=function(){let snap=null;try{if(B&&G&&B.spec&&B.spec.kind!=='daily'){snap={};B.front.concat(B.back).forEach(c=>{if(c&&c.id&&G.roster[c.id])snap[c.id]={xp:rsTotXp(G.roster[c.id]),lv:G.roster[c.id].lv,front:B.front.includes(c),alive:c.hp>0};});}}catch(e){snap=null;}
-  const r=w0.apply(this,arguments);
+HOOK.wrap('win','results','reward screen data',function(next,...a){let snap=null;try{if(B&&G&&B.spec&&B.spec.kind!=='daily'){snap={};B.front.concat(B.back).forEach(c=>{if(c&&c.id&&G.roster[c.id])snap[c.id]={xp:rsTotXp(G.roster[c.id]),lv:G.roster[c.id].lv,front:B.front.includes(c),alive:c.hp>0};});}}catch(e){snap=null;}
+  const r=next(...a);
   try{const info=(B&&B.result)||(V.modal&&V.modal.info);if(snap&&info&&!info.nzDone)nzApply(info,snap);}catch(e){}
   try{const info=(B&&B.result)||(V.modal&&V.modal.info);if(snap&&info){info.xpBy=Object.keys(snap).map(id=>{const c=G.roster[id],s=snap[id];return {id,name:c.name,gain:Math.max(0,rsTotXp(c)-s.xp),lv0:s.lv,lv:c.lv,front:s.front,alive:s.alive};});}}catch(e){}
   try{if(V.modal&&V.modal.type==='result')render();}catch(e){}
-  return r;};}
+  return r;});
 function rsTame(i){if(!i.tame||i.tamed)return '';const t=i.tame,mo=MON[t.mon]||guardianDef(t.mon);
   return `<div class="rs-tame ${i.tameWarn?'warn':''}" role="group" aria-label="Tame ${esc(t.name)}"><img src="${monURL(mo.art)}" alt=""><div class="grow"><b>${esc(t.name)} is beaten but breathing</b>
     <small>${t.bb?'Nikaris kneels and whistles softly. Beastbond: it would join with +12% stats and keep its own move. ':''}Tame it and it travels with you as a Companion. ${i.tameWarn?'<strong>Leave now and it is gone for good.</strong>':''}</small>

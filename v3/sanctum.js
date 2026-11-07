@@ -40,6 +40,6 @@ Object.assign(ACT,{
   toSanctum(){if(!sanctumOpen())return;V.modal=null;fadeTo(()=>{getMap(SANCT_ID);placeAt(SANCT_ID,13,16,'u');showLocation();saveGame();});render();},
   riftFight(k){if(!riftKeys().includes(k))return;V.modal=null;if(!startBattle(riftSpec(k))){toast('Your party needs rest first.');render();}}});
 // the account flag follows the journey: once the five fall it is set, as before
-{const w0=win;win=function(){const r=w0.apply(this,arguments);try{if(sanctumOpen()&&!META.echoRift){META.echoRift=1;saveMeta();}}catch(e){}return r;};}
+HOOK.after('win','sanctum','opens the Rift',function(){try{if(sanctumOpen()&&!META.echoRift){META.echoRift=1;saveMeta();}}catch(e){}});
 // ----- map markers: every gate shows as an Echo marker once seen -----
 {const mm0=mapMarks;mapMarks=function(m){const o=mm0.apply(this,arguments);try{if(m&&m.sanctum)m.npcs.forEach(n=>{if(n.portal&&isSeen(m,n.x,n.y+(n.y<9?1:-1)))o.push({x:n.x,y:n.y,k:'echo'});});}catch(e){}return o;};}

@@ -25,7 +25,7 @@ function riftKeys(){if(!G)return [];const own=[0,1,2,3,4].filter(s=>(G.echoStory
 Object.assign(ACT,{
   echoStory(s){s=+s;V.modal=null;if(!startBattle({stage:s,kind:'storyEcho',key:bossKeyFor(s)})){toast('Your party needs rest first.');render();}}});
 // ----- rewards: shards, essence, more drops than a normal boss; the account unlock -----
-{const w0=win;win=function(){const sp=B&&B.spec;const r=w0.apply(this,arguments);try{if(!sp||G.daily)return r;const story=sp.kind==='storyEcho',rift=sp.kind==='echoBoss'&&sp.rift;if(!story&&!rift)return r;
+HOOK.wrap('win','echo2','Echo rewards (story Echo, Rift)',function(next,...a){const sp=B&&B.spec;const r=next(...a);try{if(!sp||G.daily)return r;const story=sp.kind==='storyEcho',rift=sp.kind==='echoBoss'&&sp.rift;if(!story&&!rift)return r;
   const k=sp.key,info=V.modal&&V.modal.info||{},add=(id,n)=>{G.mats[id]=(G.mats[id]||0)+n;info.mats=info.mats||{};info.mats[id]=(info.mats[id]||0)+n;};
   G.echoShard=G.echoShard||{};const first=!G.echoShard[k];if(first||RNG()<.65){add('es_'+k,1);G.echoShard[k]=1;}// v0.4.3: a little richer
   add('essence',first?4:2+(RNG()<.5?1:0));if(first||RNG()<.75)add('core',1);add(ZS(Math.min(4,sp.stage)).mat,3);
@@ -33,7 +33,7 @@ Object.assign(ACT,{
   info.notes=info.notes||[];
   if(story){G.echoStory=G.echoStory||{};G.echoStory[sp.stage]=1;G.echoes[k]=1;info.notes.push(`The Echo of ${guardianDef(k).n} fades. ${G.won?'It will answer again in the Echo Rift.':'Beat the Calamity and it will answer again in the Echo Rift at any waystone.'}`);
     if([0,1,2,3,4].every(s=>G.echoStory[s])&&!META.echoRift){META.echoRift=1;saveMeta();if(typeof profileDirty==='function')profileDirty();info.notes.push('The Echo Rift tears wide open: every Scourge and Calamity of Aurelis can now be fought in echo form, in this journey and every journey after.');}}
-  saveGame();render();}catch(e){}return r;};}
+  saveGame();render();}catch(e){}return r;});
 // the account flag rides along with the profile doc (flags is a free-form map; schema stays v:1)
 {const po0=profileOf;profileOf=function(meta){const p=po0.apply(this,arguments);p.flags.echoRift=meta.echoRift?1:0;return p;};}
 {const ar0=applyRemote;applyRemote=function(r){if(r&&r.flags&&r.flags.echoRift)META.echoRift=1;return ar0.apply(this,arguments);};}

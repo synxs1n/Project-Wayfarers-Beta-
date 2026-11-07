@@ -69,7 +69,7 @@ function eqNowNext(m){const r=(m&&m.rest||[]).filter(id=>G.gear.includes(id));V.
 function gearDiffIds(before){const c={};before.forEach(id=>{c[id]=(c[id]||0)+1;});const out=[];G.gear.forEach(id=>{if(c[id])c[id]--;else out.push(id);});return out;}
 function watchGear(fn,now){return function(){const b=G?G.gear.slice():[];const r=fn.apply(this,arguments);try{if(G)queueNewGear(gearDiffIds(b),now);}catch(e){}return r;};}
 ['buyGear','craftR','buyRelit'].forEach(k=>{if(ACT[k])ACT[k]=watchGear(ACT[k],true);});['qClaim','chClaim'].forEach(k=>{if(ACT[k])ACT[k]=watchGear(ACT[k]);});
-{const w0=win;win=watchGear(w0);}
+HOOK.wrap('win','equip','new gear watch (queues new gear)',function(next,...a){return watchGear(next).apply(this,a);});
 {const oc=typeof openChest==='function'?openChest:null;if(oc)openChest=watchGear(oc);}
 {const cq=claimQuest;claimQuest=watchGear(cq);}
 HOOK.before('render','equip','open "Equip this now?" for queued new gear',function(){if(G&&!G.daily&&!V.modal&&V.screen==='world'&&!B&&V.gearQueue&&V.gearQueue.length&&!WS.dlg){const id=V.gearQueue.shift();if(G.gear.includes(id))V.modal={type:'equipNow',id};}});

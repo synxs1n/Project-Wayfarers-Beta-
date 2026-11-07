@@ -43,8 +43,8 @@ function pcLockText(sys){return `opens in the ${pcOrd(PACE.at[sys]||0)} realm`;}
     return pf0.call(this,a,Object.assign({},sk,{role:null}),tgts);}
   return pf0.apply(this,arguments);};}
 // bonds: in a gated first realm wins side by side do not count yet
-{const w0=win;win=function(){if(!G||pcUnlocked('bonds'))return w0.apply(this,arguments);const b0=JSON.stringify(G.bonds||{}),t0=(G.talks||[]).length;const r=w0.apply(this,arguments);
-  try{G.bonds=JSON.parse(b0);if(G.talks)G.talks.length=Math.min(G.talks.length,t0);const i=V.modal&&V.modal.info;if(i&&i.bonds)i.bonds=[];}catch(e){}return r;};}
+HOOK.wrap('win','pacing','bonds stay closed until their realm',function(next,...a){if(!G||pcUnlocked('bonds'))return next(...a);const b0=JSON.stringify(G.bonds||{}),t0=(G.talks||[]).length;const r=next(...a);
+  try{G.bonds=JSON.parse(b0);if(G.talks)G.talks.length=Math.min(G.talks.length,t0);const i=V.modal&&V.modal.info;if(i&&i.bonds)i.bonds=[];}catch(e){}return r;});
 if(typeof bondSheet==='function'){const bs0=bondSheet;bondSheet=function(){if(!pcUnlocked('bonds'))return '';return bs0.apply(this,arguments);};}
 if(typeof vBonds==='function'){const vb0=vBonds;vBonds=function(){if(!pcUnlocked('bonds'))return `<p class="note pclock">Bonds ${pcLockText('bonds').replace('opens','open')}: from then on, heroes who win side by side in the Vanguard grow closer, with campfire talks and joint techs.</p>`;return vb0.apply(this,arguments);};}
 // guild missions: the third realm on a new journey (the v0.7.2 first Scourge rule above still holds for older journeys)

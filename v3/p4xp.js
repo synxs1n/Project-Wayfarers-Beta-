@@ -7,12 +7,12 @@
 // Pure engine code (no DOM) so the node sims can load it: SIMEXTRA=v3/p4xp.js node pacing.js ...
 let XPC=null;
 function xpCatchMul(lv,max,front){const gap=Math.max(0,(max|0)-(lv|0));if(!gap)return 1;return 1+Math.min(XPCU.max,XPCU.per*gap+(XPCU.sq||0)*gap*gap)*(front?1:XPCU.bench);}
-{const w0=win;win=function(){
+HOOK.wrap('win','p4xp','XP catch up (XPC)',function(next,...a){
   XPC=null;
   try{if(B&&G&&!G.daily&&B.spec&&B.spec.kind!=='daily'){const P=B.front.concat(B.back),pmax=Math.max(...P.map(c=>c.lv)),R=Object.values(G.roster||{}).map(c=>c.lv|0);
     XPC={max:Math.max(pmax,...R),pmax,front:B.front.slice(),all:P,rows:[]};}}catch(e){XPC=null;}
-  try{return w0.apply(this,arguments);}
-  finally{try{if(XPC&&XPC.rows.length&&B&&B.result)B.result.catchup=XPC.rows;}catch(e){}XPC=null;}};}
+  try{return next(...a);}
+  finally{try{if(XPC&&XPC.rows.length&&B&&B.result)B.result.catchup=XPC.rows;}catch(e){}XPC=null;}});
 {const ax0=addXp;addXp=function(c,x){
   if(XPC&&c&&x>0&&XPC.all.includes(c)){
     const front=XPC.front.includes(c),old=c.lv<XPC.pmax-3?1.4:1,m=xpCatchMul(c.lv,XPC.max,front),base=x/old;

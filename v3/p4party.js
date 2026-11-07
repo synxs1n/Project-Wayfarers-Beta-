@@ -41,8 +41,8 @@ function bossEnergyText(s){let n='The Scourge';try{const d=guardianDef(bossKeyFo
   const place=ZS(s).dungeon||'this place';
   return s>=4?`${n} is broken, but its energy lingers here... Something of it clings to ${place}. Leave, and when you return its Echo will be waiting, stronger than before.`
     :`${n} falls, but its energy lingers here... It clings to the rune circle in ${place}. Return after leaving this place to face the stronger Echo.`;}
-{const w0=win;win=function(){let first=null;try{if(B&&G&&!G.daily&&B.spec&&B.spec.kind==='boss'&&G.cleared&&!G.cleared[B.stage])first=B.stage;}catch(e){}
-  const r=w0.apply(this,arguments);try{if(first!=null&&G.cleared[first]){V.bossEnergy=first;V.bossEnergyAt=WS.m&&WS.m.id;}}catch(e){}return r;};}
+HOOK.wrap('win','p4party','first boss energy',function(next,...a){let first=null;try{if(B&&G&&!G.daily&&B.spec&&B.spec.kind==='boss'&&G.cleared&&!G.cleared[B.stage])first=B.stage;}catch(e){}
+  const r=next(...a);try{if(first!=null&&G.cleared[first]){V.bossEnergy=first;V.bossEnergyAt=WS.m&&WS.m.id;}}catch(e){}return r;});
 // shown in that dungeon as soon as the world has no other popup (new gear popups first); dropped once you have left it. Shown (the Calamity's Legacy choice carries it as a line instead)
 HOOK.before('render','p4party',"the boss's lingering energy popup",function(){try{if(V.bossEnergy!=null&&!B&&V.screen==='world'&&G&&WS.m&&V.bossEnergyAt&&WS.m.id!==V.bossEnergyAt&&WS.m.kind!=='dungeon'){V.bossEnergy=null;}// left the place before it could show
   if(V.bossEnergy!=null&&!B&&V.screen==='world'&&G){if(!V.modal&&!(V.gearQueue&&V.gearQueue.length)){V.modal={type:'bossEnergy',s:V.bossEnergy};V.bossEnergy=null;}
