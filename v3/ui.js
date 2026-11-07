@@ -74,8 +74,8 @@ function buildScreen(){
     scr.innerHTML=`<section class="title"><div class="tstage"><canvas id="tcv"></canvas><div class="lineup">${titleScene().ids.map((id,i)=>`<img src="${heroURL(id)}" style="--d:${i*.17}s" alt="">`).join('')}</div></div>
       <p class="pre">Project</p><h1 class="logo">Aurelis</h1><p class="sub">Wayfarers</p>
       <p class="tagline">${RAW.length} wayfarers. Five realms per journey, drawn from sixteen. Twelve Scourges, four Calamities. Every run is different.</p><p class="ver">${esc(GAME_VERSION)}</p>
-      ${(()=>{/* v0.6.0: Continue first when there are saves, then New journey and the Daily Trial; Settings and Help in a small row; save tools grouped */
-        const has=[0,1,2].some(s=>slotState(s)!=='empty'),nj=META.cycles?'New journey (NG+ '+META.cycles+')':'New journey';
+      ${(()=>{/* v0.6.0: Continue first when there are saves, then New Journey and the Daily Trial; Settings and Help in a small row; save tools grouped */
+        const has=[0,1,2].some(s=>slotState(s)!=='empty'),nj=META.cycles?'New Journey (NG+ '+META.cycles+')':'New Journey';
         return `<div class="tmenu"><div class="tmain">${has?'<button class="btn gold tbig" data-act="slots">Continue</button>':''}<button class="btn ${has?'':'gold tbig'}" data-act="new">${nj}</button><button class="btn daily" data-act="daily">Daily Trial</button></div>
         <div class="tmore"><button class="btn sm" data-act="settings">Settings</button><button class="btn sm" data-act="fbOpen">Help / Feedback</button></div>
         <details class="ttools"><summary>Saves and codes</summary><div class="tmore"><button class="btn sm" data-act="importOpen">Import save</button><button class="btn sm" data-act="recoverOpen">Recover saves</button><button class="btn sm" data-act="redeemOpen">Redeem code</button></div></details></div>`;})()}${svTitleNote()}
@@ -286,7 +286,7 @@ function vModal(m){
   case 'dailyEnd':return mDailyEnd(m);
   case 'dailyIntro':return mDailyIntro();
   case 'ngplus':return box('The Meridian returns',`<p class="story">Aurelis is bright again. ${esc(TPL[m.id].n)} will walk with you into every journey from now on.</p><p class="note">Start New Game+ now, or stay to explore: the arena, the Echoes in each dungeon, the Echo Rift at any waystone and any bounties you left are still waiting.</p>`,`<button class="btn" data-act="closeModal">Stay and explore</button><button class="btn gold" data-act="startNG">Begin New Game+</button>`);
-  case 'useitem':return box(ITEMS[m.id].n,`<p class="note">${ITEMS[m.id].d}. Carrying ${G.inv[m.id]||0}.</p><div class="rows">${partyChars().map(c=>`<div class="row">${port(c.id)}<div class="grow"><b>${esc(c.name)}</b>${bar(c.hp,c.S.mhp,'var(--hp)')}<small>${c.hp}/${c.S.mhp} HP, ${c.mp}/${c.S.mmp} MP</small></div><button class="btn sm" data-act="useOn" data-arg="${c.id}">Use</button></div>`).join('')}</div>`,'<button class="btn" data-act="menu">Back</button>');
+  case 'useitem':return box(ITEMS[m.id].n,`<p class="note">${ITEMS[m.id].d}. Carrying ${G.inv[m.id]||0}.</p>${m.last?`<p class="note" role="status"><b>${esc(m.last)}</b></p>`:''}<div class="rows">${partyChars().map(c=>`<div class="row">${port(c.id)}<div class="grow"><b>${esc(c.name)}</b>${ITEMS[m.id].mp&&!ITEMS[m.id].heal&&!ITEMS[m.id].revive?bar(c.mp,c.S.mmp,'var(--mp)'):bar(c.hp,c.S.mhp,'var(--hp)')}<small>${c.hp}/${c.S.mhp} HP, ${c.mp}/${c.S.mmp} MP</small></div><button class="btn sm" data-act="useOn" data-arg="${c.id}">Use</button></div>`).join('')}</div>`,'<button class="btn" data-act="menu">Back</button>');
   }
   return '';
 }
@@ -349,7 +349,7 @@ function mMenu(m){
     body=`<p class="note">${Object.keys(G.roster).length} of ${ensureSub(G).length} wayfarers in this journey. Tap a hero to equip gear and spend stat points${town?', or to put them in your six':''}.${town?'':' Swapping roster heroes into your six happens in town.'}</p>${chips}<div class="grid mini">${list.map(c=>`<button class="mini ${G.party.includes(c.id)?'in':''} ${c.el.length>1?'dual':''} ${isLeg(c.id)?'leg':''}" data-act="viewChar" data-arg="${c.id}">${isLeg(c.id)?legSeal(1)+'<span class="legtag">LEGENDARY</span>':''}<img src="${heroURL(c.id)}" alt=""><span class="miniail">${typeof ailBadge==='function'?ailBadge(c.id):''}</span><b>${esc(c.name)}${c.legacy?' ★':''}</b><small>Lv ${c.lv} ${CLS[TPL[c.id].cls].n}</small>${xpMini(c)}<span class="els">${c.el.map(ico).join('')}${G.party.includes(c.id)?'<em class="pts">In party</em>':''}</span></button>`).join('')}</div>`;}
   if(tab==='items'){const f=LC('items'),sh=f.sh||'all',kind=id=>{const o=ITEMS[id];return o.travel?'travel':(o.heal||o.mp||o.cure||o.revive)?'battle':'other';};
     let ids=Object.keys(ITEMS).filter(id=>!ITEMS[id].craft||(G.inv[id]||0)>0).filter(id=>sh==='all'||(sh==='own'?(G.inv[id]||0)>0:kind(id)===sh));
-    const ord={name:(a,b)=>ITEMS[a].n.localeCompare(ITEMS[b].n),count:(a,b)=>(G.inv[b]||0)-(G.inv[a]||0)||ITEMS[a].n.localeCompare(ITEMS[b].n),rar:(a,b)=>iTierIdx(b)-iTierIdx(a)||ITEMS[a].n.localeCompare(ITEMS[b].n)}[f.s];if(ord)ids=ids.slice().sort(ord);
+    const ord={name:(a,b)=>ITEMS[a].n.localeCompare(ITEMS[b].n),count:(a,b)=>(G.inv[b]||0)-(G.inv[a]||0)||ITEMS[a].n.localeCompare(ITEMS[b].n),rar:(a,b)=>iTierIdx(b)-iTierIdx(a)||ITEMS[a].n.localeCompare(ITEMS[b].n)}[f.s]||((a,b)=>iTierIdx(b)-iTierIdx(a)||ITEMS[a].n.localeCompare(ITEMS[b].n));/* Default: rarity then name, same rule as the shops; no item (Pork Chop Sandwich included) is pinned by definition order */ids=ids.slice().sort(ord);
     body=ddBar([ddSel('Show','lSh','items',[['all','All items'],['own','Carrying'],['battle','Healing and cures'],['travel','Travel gear']],sh),ddSel('Sort','lSort','items',[['def','Default'],['name','Name'],['count','Most carried'],['rar','Rarest first']],f.s)],'lfbar')
       +(ids.length?`<div class="rows">${ids.map(id=>`<div class="row tr" style="${tierVars(iTierIdx(id))}"><div><b>${itemIcon(id)} ${ITEMS[id].n}</b> ${itemChip(id)} x${G.inv[id]||0}<small>${ITEMS[id].d}</small>${ITEMS[id].travel&&(G.inv[id]||0)>0&&travelWhyNot(id)?`<small class="warn">${esc(travelWhyNot(id))}</small>`:''}</div>${ITEMS[id].cure?'<span class="m">Battle only</span>':ITEMS[id].travel?`<button class="btn sm" data-act="useTravel" data-arg="${id}" ${(G.inv[id]||0)>0&&!travelWhyNot(id)?'':'disabled'} title="${esc(travelWhyNot(id))}">Use</button>`:`<button class="btn sm" data-act="useItem" data-arg="${id}" ${(G.inv[id]||0)>0?'':'disabled'}>Use</button>`}</div>`).join('')}</div>`:'<p class="note empty">No items match. Try Show: All items.</p>')+'<p class="note">Materials have their own tab: Backpack, Materials.</p>';}
   if(tab==='pouch')body=`<p class="note">Herbs, ore, logs, monster parts and relics. Alchemy and the Smithy turn them into gear and brews.</p>${vPouch()}`;
@@ -469,7 +469,10 @@ const ACT={
     if(t==='talk'){V.modal=m.from||null;render();return;}
     V.modal=null;render();},
   useItem(id){V.modal={type:'useitem',id};render();},
-  useOn(cid){const id=V.modal.id;if(useItemField(id,G.roster[cid])){toast(`${ITEMS[id].n} used on ${TPL[cid].n}.`);sfx('heal');}else toast('That would have no effect.');render();},
+  useOn(cid){const id=V.modal.id,c=G.roster[cid],h0=c?c.hp:0,m0=c?c.mp:0;
+    if(useItemField(id,c)){const dh=c.hp-h0,dm=c.mp-m0,parts=[];if(h0<=0&&c.hp>0)parts.push('revived');if(dh>0)parts.push('+'+dh+' HP');if(dm>0)parts.push('+'+dm+' MP');
+      const msg=`${TPL[cid].n}: ${parts.join(', ')||'cured'} (${ITEMS[id].n}).`;toast(msg);if(V.modal&&V.modal.id===id)V.modal.last=msg;sfx('heal');}// the amount and the hero, for HP and MP items alike
+    else toast('That would have no effect.');render();},
   talk(){interact();},
   runT(){WS.run=!WS.run;render();},
   save(){toast(saveGame()?'Journey saved.':'Saving is not available here.');},

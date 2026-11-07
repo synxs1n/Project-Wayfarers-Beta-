@@ -19,6 +19,10 @@
 /* v0.7.7: no blue tap flash or text selection when tapping the world or the stage to move (Android draws a tinted box over anything with a click handler) */
 *{-webkit-tap-highlight-color:transparent}
 canvas,#world,#wv,#bstage,#bwrap,.joy{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+/* no native long-press feedback (Android vibrates on a long press / text selection): the game root, the stage and the pad never select or call out; text fields stay selectable. touch-action:none only where we handle the touch ourselves, never on scrollable menus */
+#app,#screen,.pad,.pad *,.abtn,#wcv{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+input,textarea,[contenteditable="true"],.selectable{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}
+#wcv,#joy,#knob,.pad,.pad .abtn{touch-action:none}
 /* Layout concept: a torchlit keep. Stone wall behind, oak plank panels bound in bronze, parchment for story, chunky pixel bevels. */
 :root{
   --stone:#1b1511;--wood:#4a2f18;--wood2:#5e3d1f;--wood3:#3a2412;--bronze:#a67c3d;--ink:#0e0804;
@@ -551,7 +555,7 @@ small.warn{color:#f0b060}
 #bover>*{pointer-events:auto}
 .blogp{position:absolute;left:6px;right:6px;top:6px;bottom:6px;display:flex;flex-direction:column;background:rgba(14,8,4,.95);border:3px solid var(--ink);box-shadow:inset 0 0 0 2px var(--bronze)}
 .blogp ol{margin:0;padding:6px 10px 8px 30px;overflow-y:auto;flex:1;font-size:.8rem;line-height:1.35}
-.blogp li{color:var(--mute);margin:1px 0}.blogp li:nth-last-child(-n+3){color:var(--text)}.blogp li.hi{color:#ffd88a}
+.blogp li{color:var(--mute);margin:1px 0}.blogp li:nth-child(-n+3){color:var(--text)}.blogp li.hi{color:#ffd88a}
 .sth{display:flex;align-items:center;gap:8px;padding:5px 8px;border-bottom:2px solid #3a2a1a}.sth b{flex:1}
 .stpop{position:absolute;left:50%;top:10px;transform:translateX(-50%);width:min(320px,92%);background:#150b17;border:3px solid var(--ink);box-shadow:inset 0 0 0 2px var(--bronze),0 6px 0 rgba(0,0,0,.4);padding-bottom:8px}
 .stpop h5{margin:6px 10px 2px;font-size:.95rem;color:var(--gold)}
@@ -2029,7 +2033,7 @@ html.rm .battle.b3 .cmd .mi.b9glow{animation:none}
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.9.9";const APP_BUILD="fca943a1ffaf";
+(function(){const APP_VER="0.10.0";const APP_BUILD="3d79b64f31c1";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2574,7 +2578,7 @@ const WMAP={cell:[64,150,38],vig:.78,names:84};// cell: px per area (normal min,
 // Medium and High graphics draw the world maps through WebGL as a lit diorama (Low, no WebGL or Settings > HD-2D world off: the 2D view).
 // pitch: camera tilt in degrees below the horizon; fov: vertical field of view (maxHfov caps the horizontal one on wide views); zoom: 1 =
 // sprites as big as in the 2D view; follow: camera glide time constant (ms); topSlack: how far past the map's top edge the camera may
-// look (share of the view); sway: idle camera drift (px, degrees, ms; off under reduced motion). wall: block heights in art pixels
+// look (share of the view); sway: idle camera drift (px, degrees, ms; off under reduced motion; v0.10.0: amp and pitch 0, the drift made the whole pixel scene jump a pixel at rest). wall: block heights in art pixels
 // (dungeon walls, field cliffs, town walls); water/deep: how far water and cloud seas sit below the ground. fogStart/fogEnd: distance
 // fog, in camera distances. xray: radius (art px) around the hero where props and walls in front of him thin out; actMin: the least
 // light characters get (dark places stay readable); heroLight: radius of the hero's lantern; shaft: light shaft strength.
@@ -2585,7 +2589,7 @@ const WMAP={cell:[64,150,38],vig:.78,names:84};// cell: px per area (normal min,
 // lmMax: most lights per frame; lightK: light strength; chunk: static geometry chunk size in tiles (culling).
 // look: lighting and grade per time of day and place; weather: how each weather scales ambient and sun and tints the fog.
 // fogN (v0.8.0): where the distance fog starts in that weather, as a share of fogStart (fog 0.3: it thickens smoothly from near the hero).
-const HD2D={pitch:40,fov:28,maxHfov:40,zoom:1,follow:85,topSlack:.2,sway:{amp:.7,pitch:.25,ms:11000},
+const HD2D={pitch:40,fov:28,maxHfov:40,zoom:1,follow:85,topSlack:.2,sway:{amp:0,pitch:0,ms:11000},
   wall:{dungeon:22,cliff:12,town:14},water:-3,deep:-14,fogStart:1.15,fogEnd:2.7,xray:{out:26,dun:40},actMin:{out:.62,dun:.58},heroLight:120,shaft:.09,
   dof:{shift:.06,band:.24,ramp:.5,max:.7},bloom:{thr:.86,med:.5,high:.55},
   tiers:{medium:{px:1,blur:2,lmap:128,bloom:1,dof:1,shafts:1,every:2},high:{px:1,blur:2,lmap:192,bloom:2,dof:1,shafts:1}},lmMax:96,lightK:.8,chunk:8,
@@ -2707,7 +2711,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.9.9";const APP_BUILD="fca943a1ffaf";
+const APP_VER="0.10.0";const APP_BUILD="3d79b64f31c1";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2715,6 +2719,7 @@ const APP_VER="0.9.9";const APP_BUILD="fca943a1ffaf";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.10.0',['Fixes from the testers: the forward gate is named by its real side and every north or south town gate now has a visible road to it (tapping any cell of a wide gate walks there); touching a roaming foe starts the fight once and at once (it used to restart the battle several times in a row, re-rolling the foes on screen, while the hero could still walk); a tap to walk carries on after a battle on the way; Stop auto always works and auto stops itself when a new arena wave brings foes it is locked for; the fallen earn no XP from goal rewards either; the Switch goal clears for every kind of swap; a party wipe no longer shows the heroes standing again before the Inn; mana items say who got how much; dungeons, caves, fortresses and the Sanctum ignore the weather in their light; the heat haze is gentler; the HD-2D camera no longer drifts at rest (the drift made the scene jump a pixel); no long press vibration on phones; the battle log reads newest first; New Journey and Starting skills on the title and starter screens.']],
  ['Beta v0.9.9',['Fixes: a chest could land on a path tile in some fields (old saves keep its opened state); rain ripples and splashes no longer cover the hero\'s face; dawn, day, dusk and night now blend smoothly in the HD-2D view and in Low graphics fog instead of jumping. Slightly less XP per fight so a journey ends around level 40 again (about 4.75 hours for a typical first run).']],
  ['Beta v0.9.8',['Playing it yourself pays: hand-played wins show their bonus (+52% XP and gold), and using the systems earns a little more (setting off reactions, breaking shields, guarding a telegraphed hit, reaching a Surge, taming). Auto now opens per foe type once you have beaten that foe by hand three times or scanned it; the Auto button says what is left. Tip cards are short invitations ("Primed with Fire: try Mira\'s Gale Burst") and the expert ones wait until you open that system. A Next goals panel on the map points the way: story goals plus small challenges that each pay a reward once.']],
  ['Beta v0.9.7',['Clearer battles: each foe shows its one key weakness (one your party can set up a reaction with, when there is one); tap it for the rest, or turn on Expert battle info in Settings to see everything. Damage types are now Physical, Ranged and Magic (plus Heal against undead), with at most two weaknesses and two resistances shown. Reactions hit harder on screen: a flash, a name banner, a new sound and a camera punch, and the primed badge pulses when your hero can set it off. Cues tell you what to do: Guard! before a telegraphed hit, Interrupt when a foe winds up, Cleanse when a hex stacks.']],
@@ -3832,9 +3837,9 @@ const STAGE_BOSS_LV=[8,16,24,32,40];
 const ORD=['first','second','third','fourth','last'];
 const ZONES=[
  {n:'Verdane Meadows',town:'Hollowmere',theme:'meadow',mat:'moss',dungeon:'Verdane Barrow',pool:['mossling','gustimp','dewtoad','cinderpup'],
-  intro:'The Meridian Light that keeps the sky of Aurelis bright has begun to gutter. In Hollowmere the lamp-keepers say the beacon in the old barrow beyond Verdane Meadows has gone dark, and a Scourge sealed the eastern gate. You and two companions set out with torches and borrowed swords.',
-  win:'The Scourge falls. In the barrow the beacon coughs, then catches, and the seal on the eastern gate cracks open. A gold thread of light points onward.',
-  npc:[['Lamp-keeper Odo','The barrow lies somewhere in Verdane Meadows. Find its door, beat what lives inside, and the east gate seal will break.'],['Farmer Bess','Stick to the dirt road if you want a quiet walk. The tall grass is where the critters hide.'],['Old Tamsin','Single-element folk master their one gift. Those born with two get strange, mixed arts instead. Rare as hen\'s teeth, they are.'],['Child','You can only swap heroes in from your roster while you are in town. My brother tried it in the field and got eaten. Sort of.']]},
+  intro:'The Meridian Light that keeps the sky of Aurelis bright has begun to gutter. In Hollowmere the lamp-keepers say the beacon in the old barrow beyond Verdane Meadows has gone dark, and a Scourge sealed the gate. You and two companions set out with torches and borrowed swords.',
+  win:'The Scourge falls. In the barrow the beacon coughs, then catches, and the seal on the gate cracks open. A gold thread of light points onward.',
+  npc:[['Lamp-keeper Odo','The barrow lies somewhere in Verdane Meadows. Find its door, beat what lives inside, and the gate seal will break.'],['Farmer Bess','Stick to the dirt road if you want a quiet walk. The tall grass is where the critters hide.'],['Old Tamsin','Single-element folk master their one gift. Those born with two get strange, mixed arts instead. Rare as hen\'s teeth, they are.'],['Child','You can only swap heroes in from your roster while you are in town. My brother tried it in the field and got eaten. Sort of.']]},
  {n:'Saltglass Coast',town:'Port Cerise',theme:'coast',mat:'shell',dungeon:'Drowned Grotto',pool:['crawler','gull','tidewisp','shellguard'],
   intro:'Port Cerise sits where the road meets the Saltglass Coast. The harbor lamps are out and the tide runs the wrong way. Past the glass dunes, the beacon sleeps in a drowned grotto.',
   win:'The grotto drains with a sigh. The beacon blooms underwater, and the coastal gate swings open.',
@@ -3877,6 +3882,22 @@ const ARENA=[
 // Scourge echoes hit harder than before (Beta v0.3.0): 2.0x HP and 1.3x power; Calamity echoes keep 1.7x and 1.15x
 function echoSpec(k){return {stage:4,kind:'echoBoss',key:k,lv:echoLv(k),hpM:FINALS[k]?1.7:2,powM:FINALS[k]?1.15:1.3};}
 function echoLv(k){return echoLvRule(FINALS[k]?ECHO_LV.sanctumFinal:ECHO_LV.sanctum,G&&partyChars().length?partyHi():0);}
+// ===== gateDirWord (v0.4.1 follow-up): towns have their forward exit on the north, east or south side =====
+// gateDirWord(stage) -> 'north' | 'east' | 'south': the side of the town of that stage whose exit leads forward (to field f<stage>), read from the real exit.
+// gateDirWord(stage,'field') -> the side of the field's far end, where the sealed gate stands (from the world plan; 'east' on older saves).
+// Never throws; 'east' is the fallback.
+function gateSideWord(m,e){const W=m.t[0].length,H=m.t.length;return e.x===W-1?'east':e.y===0?'north':e.y===H-1?'south':e.x===0?'west':'east';}
+function gateDirWord(stage,which){
+  try{
+    if(which==='field'){if(typeof worldV3==='function'&&worldV3()){const p=worldPlan()[stage];const w=p&&SIDE_NAME[p.fe];if(w)return w;}return 'east';}
+    const m=getMap('t'+stage),e=(m.exits||[]).find(x=>x.to&&x.to.m&&/^[fg]/.test(x.to.m)&&+x.to.m.slice(1)===stage);
+    const w=e?gateSideWord(m,e):'east';return w==='west'?'east':w;
+  }catch(err){return 'east';}
+}
+// The closed west gate of the first town says which way the road really goes (worldgen.js writes "east" for every journey).
+HOOK.after('getMap','zones','closed west gate names the real forward direction',function(m){
+  try{if(m&&m.kind==='town'&&!m._gdw){m._gdw=1;(m.exits||[]).forEach(e=>{if(!e.to&&e.msg&&/Your path runs east\./.test(e.msg)){const f=(m.exits||[]).find(x=>x.to&&x.to.m==='f'+m.s);if(f)e.msg=e.msg.replace('Your path runs east.',`Your path runs ${gateSideWord(m,f)}.`);}});}}catch(err){}
+});
 
 // ===== realmdata.js (v0.4.1): the sixteen realms, boss overlays and Calamity effects (logic in realms.js) =====
 // ---------- the sixteen realms ----------
@@ -5403,7 +5424,8 @@ function unpackG(o){
   return g;
 }
 const slotKey=s=>SAVEKEY+(s?'-s'+s:'');
-function saveGame(){if(!G||G.daily)return false;try{G.savedAt=Date.now();localStorage.setItem(slotKey(META.slot||0),JSON.stringify(packG()));return true;}catch(e){return false;}}
+function saveGame(){if(!G||G.daily)return false;
+  try{G.savedAt=Date.now();localStorage.setItem(slotKey(META.slot||0),JSON.stringify(packG()));return true;}catch(e){return false;}}
 function newGame(ids,cycle,legacy){
   G={ver:3,wv:3,dunRev:2,run:newRun(cycle||0),stage:0,cleared:[false,false,false,false,false],gold:400,roster:{},party:[],
      inv:{potion:4,hipotion:0,ether:1,remedy:2,plume:1,elixir:0},mats:{},gath:{},gear:[],won:false,
@@ -5954,7 +5976,7 @@ function useItem(id,t){
   if(it.revive){if(t.hp>0)return;t.hp=Math.max(1,Math.round(t.S.mhp*it.revive));t.st={};fx(t,'Revived','heal');log(`${a.name} uses ${it.n}. ${t.name} rises!`);}
   else{if(t.hp<=0)return;
     if(it.heal){const n=Math.min(Math.round(it.heal*curseMul(t)),t.S.mhp-t.hp);t.hp+=n;fx(t,'+'+n,'heal');log(`${a.name} uses ${it.n}. ${t.name} recovers ${n} HP.`);}
-    if(it.mp){const n=Math.min(it.mp,t.S.mmp-t.mp);t.mp+=n;if(!it.heal)fx(t,'+'+n+' MP','heal');}
+    if(it.mp){const n=Math.min(it.mp,t.S.mmp-t.mp);t.mp+=n;fx(t,'+'+n+' MP',it.heal?'stat good':'heal');log(`${a.name} uses ${it.n}. ${t.name} recovers ${n} MP.`);}
     if(it.cure){cleanse(t);fx(t,'Cured','heal');log(`${a.name} uses ${it.n}. ${t.name} is cured.`);}
   }
   t.healT=Date.now();G.inv[id]--;a.actT=Date.now();a.actKind='item';endTurn(a,.8);
@@ -6189,7 +6211,8 @@ function lose(){
   G.gold=Math.floor(G.gold*.9);
   allParty().forEach(c=>{c.hp=Math.max(1,Math.round(c.S.mhp*.3));c.st={};c.guard=false;});
   G.party=B.front.concat(B.back).map(c=>c.id);
-  saveGame();V.modal={type:'lose'};render();
+  B.wipe=1;saveGame();// v0.10.0: the heroes are revived in the state at once (no softlock); the battle view keeps them down until "Carry on" (B.wipe)
+  V.modal={type:'lose'};render();
 }
 function bondLv(a,b){const p=G.bonds[bondKey(a,b)]||0;return p>=BOND_LV[2]?3:p>=BOND_LV[1]?2:p>=BOND_LV[0]?1:0;}
 // campaign end: one hero becomes a permanent Legacy
@@ -7134,6 +7157,10 @@ function townCarve(m,side,R){
     const fx=vert?[[mid[0]-2,mid[1]],[mid[0]+2,mid[1]]]:[[mid[0],mid[1]-2],[mid[0],mid[1]+2]];
     fx.forEach(([x,y])=>{if(g[y]&&g[y][x]&&(g[y][x]==='Z'||g[y][x]==='#'))g[y][x]='Y';});
     const inn=cells[Math.min(2,cells.length-1)][1];
+    // v0.10.0: a visible path: the road tiles run from the gate to the first road or the town's main road, so the way out is never a
+    // bare gap behind the houses
+    try{if(vert){const dy=side==='n'?1:-1;for(let y=mid[1]+dy,n=0;y>=0&&y<H&&n<H;y+=dy,n++){const c=g[y][mid[0]];if(c==='=')break;if(c!=='.'||m.bld.some(b=>mid[0]>=b.x&&mid[0]<b.x+b.w&&y>=b.y&&y<b.y+b.h))break;g[y][mid[0]]='=';if(y===m.road)break;}}
+      else{const dx=side==='w'?1:-1;for(let x=mid[0]+dx,n=0;x>=0&&x<W&&n<W;x+=dx,n++){const c=g[mid[1]][x];if(c==='=')break;if(c!=='.'||m.bld.some(b=>x>=b.x&&x<b.x+b.w&&mid[1]>=b.y&&mid[1]<b.y+b.h))break;g[mid[1]][x]='=';}}}catch(e){}
     return {side,x:mid[0],y:mid[1],cells:e0,arrive:[inn[0],inn[1],SIDE_FACE[side]],label:gateLabel(side,mid[0],mid[1],W,H)};
   }
   return null;
@@ -7832,7 +7859,7 @@ function worldTick(dt,now){
   const m=WS.m;
   npcTick(m,now);
   // Beta v0.3.1: weather now changes by steps walked (world3.js wxStep), not by the real-time clock
-  if(WS.lock&&!V.modal&&WS.fade&&now-WS.fade>2500)WS.lock=false;// watchdog: no fade lasts this long
+  if(WS.lock&&!V.modal&&WS.fadeLock&&now-WS.fadeLock>2500){WS.lock=false;WS.fadeLock=0;}// watchdog: no fade lasts this long. v0.10.0: its own stamp, cleared when the fade ends (WS.fade stayed set, so the lock of an encounter flash was released on the next tick: the roamer started the fight again every tick and the hero could still walk)
   if(V.modal||WS.dlg||WS.lock)return;
   if(WS.mv){
     const p=Math.min(1,(now-WS.mv.t0)/WS.mv.dur);
@@ -7928,12 +7955,12 @@ function arrive(){
   const enc=encTile(m,WS.x,WS.y);
   if(G.ward>0&&m.kind!=='town'){G.ward--;if(!G.ward)toast('The Holy Water\'s ward fades.');if(typeof wkwUpdate==='function')wkwUpdate();}
   if(enc&&!(G.ward>0)&&WS.steps>=ENC_MIN_STEPS&&Math.random()<rate*(m.kind==='dungeon'?.6:1)*(WS.run?1.15:1)){
-    WS.steps=0;haltInput();WS.lock=true;WS.flash=performance.now();if(typeof sfx==='function')sfx('encounter');
-    later(()=>{WS.lock=false;startBattle({stage:m.s,kind:m.kind==='dungeon'?'dungeon':'field'});},460);
+    if(WS.encPend)return;WS.encPend=1;WS.steps=0;haltInput();WS.lock=true;WS.flash=performance.now();if(typeof sfx==='function')sfx('encounter');
+    later(()=>{WS.encPend=0;WS.lock=false;startBattle({stage:m.s,kind:m.kind==='dungeon'?'dungeon':'field'});},460);
   }
 }
 // v0.3.3: a thrown error inside fn used to leave WS.lock set forever, which freezes the whole world. Always release it.
-function fadeTo(fn){WS.lock=true;WS.fade=performance.now();later(()=>{try{fn();}catch(e){try{console.error(e);}catch(_){}}finally{WS.lock=false;WS.fadeIn=performance.now();}},230);}
+function fadeTo(fn){WS.lock=true;WS.fade=performance.now();WS.fadeLock=WS.fade;later(()=>{try{fn();}catch(e){try{console.error(e);}catch(_){}}finally{WS.lock=false;WS.fadeLock=0;WS.fadeIn=performance.now();}},230);}
 function facing(){const [dx,dy]=DIRV[WS.dir];return [WS.x+dx,WS.y+dy];}
 function interact(){
   if(V.screen!=='world'||V.modal||WS.lock)return;
@@ -8586,7 +8613,7 @@ function drawUnit(ctx,u,b,now,tgMode){
   let x=b.x,y=b.y,alpha=1,walk=false,white=0,lying=false;
   // death and knockouts
   if(!hero&&u.hp<=0){const d=T-(u.deathT||0)-IMPACT;if(u.deathT&&d>700)return;if(d>0){alpha=1-d/700;y+=Math.round(d/700*4);white=d<120?1:0;if(!u._dz){u._dz=1;const c=centerOf(u);for(let i=0;i<18;i++)part({k:'p',x:c.x+(Math.random()-.5)*b.w*.6,y:c.y+(Math.random()-.5)*b.h*.6,vx:(Math.random()-.5)*20,vy:-20-Math.random()*40,g:-10,t0:now,life:600+Math.random()*400,col:i%2?'#ffffff':'#c8a0ff',sz:1});if(typeof sfx==='function')sfx('ko');}}}
-  if(hero&&u.hp<=0)lying=true;
+  if(hero&&(u.hp<=0||B.wipe))lying=true;// v0.10.0: B.wipe: the party is revived in the state after a wipe but shown down until the popup closes
   // entrance slide
   const en=T-(u.enterT||0);if(en<450){const p=1-en/450;x+=Math.round(p*p*70)*-dir;}
   // action lunge or cast step
@@ -8603,7 +8630,7 @@ function drawUnit(ctx,u,b,now,tgMode){
   // break stagger
   if(u.broken&&u.hp>0)x+=Math.floor(now/90)%2;
   const c0=spriteOf(u,walk),c=BV.tint?BV.tint(c0):c0;// v0.5.3: the GL stage (Medium) tints sprites to the light of the scene
-  const breathe=!lying&&u.hp>0&&a>520&&Math.floor(now/(hero?620:760)+b.i*.5)%2===1;
+  const breathe=!lying&&u.hp>0&&!B.wipe&&a>520&&Math.floor(now/(hero?620:760)+b.i*.5)%2===1;
   // shadow
   // v0.5.0 2.1: the shadow always sits on the ground plane (b.gy); flying foes hover above theirs with a gentle bob
   if(b.hov&&u.hp>0)y+=Math.round(Math.sin(now/320+b.i)*1.5);
@@ -9353,8 +9380,8 @@ function buildScreen(){
     scr.innerHTML=`<section class="title"><div class="tstage"><canvas id="tcv"></canvas><div class="lineup">${titleScene().ids.map((id,i)=>`<img src="${heroURL(id)}" style="--d:${i*.17}s" alt="">`).join('')}</div></div>
       <p class="pre">Project</p><h1 class="logo">Aurelis</h1><p class="sub">Wayfarers</p>
       <p class="tagline">${RAW.length} wayfarers. Five realms per journey, drawn from sixteen. Twelve Scourges, four Calamities. Every run is different.</p><p class="ver">${esc(GAME_VERSION)}</p>
-      ${(()=>{/* v0.6.0: Continue first when there are saves, then New journey and the Daily Trial; Settings and Help in a small row; save tools grouped */
-        const has=[0,1,2].some(s=>slotState(s)!=='empty'),nj=META.cycles?'New journey (NG+ '+META.cycles+')':'New journey';
+      ${(()=>{/* v0.6.0: Continue first when there are saves, then New Journey and the Daily Trial; Settings and Help in a small row; save tools grouped */
+        const has=[0,1,2].some(s=>slotState(s)!=='empty'),nj=META.cycles?'New Journey (NG+ '+META.cycles+')':'New Journey';
         return `<div class="tmenu"><div class="tmain">${has?'<button class="btn gold tbig" data-act="slots">Continue</button>':''}<button class="btn ${has?'':'gold tbig'}" data-act="new">${nj}</button><button class="btn daily" data-act="daily">Daily Trial</button></div>
         <div class="tmore"><button class="btn sm" data-act="settings">Settings</button><button class="btn sm" data-act="fbOpen">Help / Feedback</button></div>
         <details class="ttools"><summary>Saves and codes</summary><div class="tmore"><button class="btn sm" data-act="importOpen">Import save</button><button class="btn sm" data-act="recoverOpen">Recover saves</button><button class="btn sm" data-act="redeemOpen">Redeem code</button></div></details></div>`;})()}${svTitleNote()}
@@ -9565,7 +9592,7 @@ function vModal(m){
   case 'dailyEnd':return mDailyEnd(m);
   case 'dailyIntro':return mDailyIntro();
   case 'ngplus':return box('The Meridian returns',`<p class="story">Aurelis is bright again. ${esc(TPL[m.id].n)} will walk with you into every journey from now on.</p><p class="note">Start New Game+ now, or stay to explore: the arena, the Echoes in each dungeon, the Echo Rift at any waystone and any bounties you left are still waiting.</p>`,`<button class="btn" data-act="closeModal">Stay and explore</button><button class="btn gold" data-act="startNG">Begin New Game+</button>`);
-  case 'useitem':return box(ITEMS[m.id].n,`<p class="note">${ITEMS[m.id].d}. Carrying ${G.inv[m.id]||0}.</p><div class="rows">${partyChars().map(c=>`<div class="row">${port(c.id)}<div class="grow"><b>${esc(c.name)}</b>${bar(c.hp,c.S.mhp,'var(--hp)')}<small>${c.hp}/${c.S.mhp} HP, ${c.mp}/${c.S.mmp} MP</small></div><button class="btn sm" data-act="useOn" data-arg="${c.id}">Use</button></div>`).join('')}</div>`,'<button class="btn" data-act="menu">Back</button>');
+  case 'useitem':return box(ITEMS[m.id].n,`<p class="note">${ITEMS[m.id].d}. Carrying ${G.inv[m.id]||0}.</p>${m.last?`<p class="note" role="status"><b>${esc(m.last)}</b></p>`:''}<div class="rows">${partyChars().map(c=>`<div class="row">${port(c.id)}<div class="grow"><b>${esc(c.name)}</b>${ITEMS[m.id].mp&&!ITEMS[m.id].heal&&!ITEMS[m.id].revive?bar(c.mp,c.S.mmp,'var(--mp)'):bar(c.hp,c.S.mhp,'var(--hp)')}<small>${c.hp}/${c.S.mhp} HP, ${c.mp}/${c.S.mmp} MP</small></div><button class="btn sm" data-act="useOn" data-arg="${c.id}">Use</button></div>`).join('')}</div>`,'<button class="btn" data-act="menu">Back</button>');
   }
   return '';
 }
@@ -9628,7 +9655,7 @@ function mMenu(m){
     body=`<p class="note">${Object.keys(G.roster).length} of ${ensureSub(G).length} wayfarers in this journey. Tap a hero to equip gear and spend stat points${town?', or to put them in your six':''}.${town?'':' Swapping roster heroes into your six happens in town.'}</p>${chips}<div class="grid mini">${list.map(c=>`<button class="mini ${G.party.includes(c.id)?'in':''} ${c.el.length>1?'dual':''} ${isLeg(c.id)?'leg':''}" data-act="viewChar" data-arg="${c.id}">${isLeg(c.id)?legSeal(1)+'<span class="legtag">LEGENDARY</span>':''}<img src="${heroURL(c.id)}" alt=""><span class="miniail">${typeof ailBadge==='function'?ailBadge(c.id):''}</span><b>${esc(c.name)}${c.legacy?' ★':''}</b><small>Lv ${c.lv} ${CLS[TPL[c.id].cls].n}</small>${xpMini(c)}<span class="els">${c.el.map(ico).join('')}${G.party.includes(c.id)?'<em class="pts">In party</em>':''}</span></button>`).join('')}</div>`;}
   if(tab==='items'){const f=LC('items'),sh=f.sh||'all',kind=id=>{const o=ITEMS[id];return o.travel?'travel':(o.heal||o.mp||o.cure||o.revive)?'battle':'other';};
     let ids=Object.keys(ITEMS).filter(id=>!ITEMS[id].craft||(G.inv[id]||0)>0).filter(id=>sh==='all'||(sh==='own'?(G.inv[id]||0)>0:kind(id)===sh));
-    const ord={name:(a,b)=>ITEMS[a].n.localeCompare(ITEMS[b].n),count:(a,b)=>(G.inv[b]||0)-(G.inv[a]||0)||ITEMS[a].n.localeCompare(ITEMS[b].n),rar:(a,b)=>iTierIdx(b)-iTierIdx(a)||ITEMS[a].n.localeCompare(ITEMS[b].n)}[f.s];if(ord)ids=ids.slice().sort(ord);
+    const ord={name:(a,b)=>ITEMS[a].n.localeCompare(ITEMS[b].n),count:(a,b)=>(G.inv[b]||0)-(G.inv[a]||0)||ITEMS[a].n.localeCompare(ITEMS[b].n),rar:(a,b)=>iTierIdx(b)-iTierIdx(a)||ITEMS[a].n.localeCompare(ITEMS[b].n)}[f.s]||((a,b)=>iTierIdx(b)-iTierIdx(a)||ITEMS[a].n.localeCompare(ITEMS[b].n));/* Default: rarity then name, same rule as the shops; no item (Pork Chop Sandwich included) is pinned by definition order */ids=ids.slice().sort(ord);
     body=ddBar([ddSel('Show','lSh','items',[['all','All items'],['own','Carrying'],['battle','Healing and cures'],['travel','Travel gear']],sh),ddSel('Sort','lSort','items',[['def','Default'],['name','Name'],['count','Most carried'],['rar','Rarest first']],f.s)],'lfbar')
       +(ids.length?`<div class="rows">${ids.map(id=>`<div class="row tr" style="${tierVars(iTierIdx(id))}"><div><b>${itemIcon(id)} ${ITEMS[id].n}</b> ${itemChip(id)} x${G.inv[id]||0}<small>${ITEMS[id].d}</small>${ITEMS[id].travel&&(G.inv[id]||0)>0&&travelWhyNot(id)?`<small class="warn">${esc(travelWhyNot(id))}</small>`:''}</div>${ITEMS[id].cure?'<span class="m">Battle only</span>':ITEMS[id].travel?`<button class="btn sm" data-act="useTravel" data-arg="${id}" ${(G.inv[id]||0)>0&&!travelWhyNot(id)?'':'disabled'} title="${esc(travelWhyNot(id))}">Use</button>`:`<button class="btn sm" data-act="useItem" data-arg="${id}" ${(G.inv[id]||0)>0?'':'disabled'}>Use</button>`}</div>`).join('')}</div>`:'<p class="note empty">No items match. Try Show: All items.</p>')+'<p class="note">Materials have their own tab: Backpack, Materials.</p>';}
   if(tab==='pouch')body=`<p class="note">Herbs, ore, logs, monster parts and relics. Alchemy and the Smithy turn them into gear and brews.</p>${vPouch()}`;
@@ -9748,7 +9775,10 @@ const ACT={
     if(t==='talk'){V.modal=m.from||null;render();return;}
     V.modal=null;render();},
   useItem(id){V.modal={type:'useitem',id};render();},
-  useOn(cid){const id=V.modal.id;if(useItemField(id,G.roster[cid])){toast(`${ITEMS[id].n} used on ${TPL[cid].n}.`);sfx('heal');}else toast('That would have no effect.');render();},
+  useOn(cid){const id=V.modal.id,c=G.roster[cid],h0=c?c.hp:0,m0=c?c.mp:0;
+    if(useItemField(id,c)){const dh=c.hp-h0,dm=c.mp-m0,parts=[];if(h0<=0&&c.hp>0)parts.push('revived');if(dh>0)parts.push('+'+dh+' HP');if(dm>0)parts.push('+'+dm+' MP');
+      const msg=`${TPL[cid].n}: ${parts.join(', ')||'cured'} (${ITEMS[id].n}).`;toast(msg);if(V.modal&&V.modal.id===id)V.modal.last=msg;sfx('heal');}// the amount and the hero, for HP and MP items alike
+    else toast('That would have no effect.');render();},
   talk(){interact();},
   runT(){WS.run=!WS.run;render();},
   save(){toast(saveGame()?'Journey saved.':'Saving is not available here.');},
@@ -10021,6 +10051,16 @@ function endTouch(e){
   }
 }
 document.addEventListener('pointerup',endTouch);document.addEventListener('pointercancel',endTouch);
+// Android (and the APK's WebView, v3/liveboot.js) vibrates on a long press: the native contextmenu / text-selection haptic. Hold-to-walk must
+// never trigger it. Installed once on document (guarded), so it covers the game root, the stick and the stage. Text fields keep their menu.
+if(!window.__noLongPress){window.__noLongPress=1;
+  const field=t=>!!(t&&t.closest&&t.closest('input,textarea,select,[contenteditable="true"],.selectable'));
+  let coarse=false;try{coarse=matchMedia('(pointer:coarse)').matches;}catch(_){}
+  document.addEventListener('contextmenu',e=>{if(field(e.target))return;if(coarse||e.pointerType==='touch'||(e.target&&e.target.closest&&e.target.closest('#joy,.pad,canvas')))e.preventDefault();},true);
+  document.addEventListener('selectstart',e=>{if(!field(e.target)&&e.target&&e.target.closest&&e.target.closest('#joy,.pad,canvas,.wview'))e.preventDefault();},true);
+  // the stick and the stage handle the touch themselves: stop the browser starting a long press on them (buttons keep their tap)
+  document.addEventListener('touchstart',e=>{const t=e.target;if(t&&t.closest&&t.closest('#joy,#wcv')&&e.cancelable)e.preventDefault();},{passive:false,capture:true});
+}
 
 // ----- v4.5: crafting stations (Smithy and Alchemy since Beta v0.1.0), materials pouch, party helpers -----
 function inTown(){return V.screen==='world'&&WS.m&&WS.m.kind==='town';}
@@ -10709,7 +10749,7 @@ function vNext(){
   if(!G.cleared[s]){if(!been[(worldV2()&&!worldV3()?'g':'f')+s])add(false,`Head out into ${esc(Z.n)}`,worldV3()?`Take the ${SIDE_NAME[worldPlan()[s].tn]} gate out of town.`:'The road east from town.');
     else if(!been['d'+s])add(false,`Find the ${esc(Z.dungeon)}`,`Its entrance is hidden somewhere off the road in ${esc(Z.n)}. Look for glowing stairs.`);
     else add(false,`Take on the ${s<4?bossClass(bossKeyFor(s)):'Calamity'} in the ${esc(Z.dungeon)}`,'See the readiness check below first.');}
-  else add(true,`${esc(Z.dungeon)} relit`,s<4?'The east gate is open.':'The journey is complete. Echoes linger in each dungeon, and the Echo Rift opens at every waystone.');
+  else add(true,`${esc(Z.dungeon)} relit`,s<4?`The ${gateDirWord(s,'field')} gate is open.`:'The journey is complete. Echoes linger in each dungeon, and the Echo Rift opens at every waystone.');
   // quests and bounties
   const qa=G.quests.filter(q=>q.state==='active'&&q.stage<=s),qo=G.quests.filter(q=>q.state==='open'&&q.stage<=s&&G.visited.includes(q.stage));
   qa.forEach(q=>add(false,`Quest: ${esc(q.title)}`,questReady(q)?'Ready to claim at a quest board.':q.type==='legend'?legendProg(q):''));
@@ -11033,7 +11073,7 @@ function blogPanel(){if(!B||!B.logOpen)return '';
 Object.assign(ACT,{
   stInfo(a){if(!B)return;const [ref,k]=String(a).split('|');B.stPop=B.stPop&&B.stPop.ref===ref&&B.stPop.k===k?null:{ref,k};renderBattle();const c=document.querySelector('.stpop [data-act="stClose"]');if(c&&document.activeElement&&document.activeElement.classList&&document.activeElement.classList.contains('sti'))c.focus();},
   stClose(){if(B){B.stPop=null;renderBattle();}},
-  blogT(){if(!B)return;B.logOpen=!B.logOpen;renderBattle();if(B.logOpen){const o=document.querySelector('.blogp ol');if(o)o.scrollTop=o.scrollHeight;}}
+  blogT(){if(!B)return;B.logOpen=!B.logOpen;renderBattle();if(B.logOpen){const o=document.querySelector('.blogp ol');if(o)o.scrollTop=0;}}
 });
 
 // ===== nav.js (v0.2.0): menu navigation: back and close, swaps from the menu =====
@@ -11257,6 +11297,8 @@ function reducedMotion(){try{const c=META&&META.cfg&&META.cfg.rmotion;if(c===tru
   const o=fadeOverlay();V._resting=1;o.classList.add('on');sfx('rest');
   setTimeout(()=>{r0.call(this);o.classList.add('zz');},500);
   setTimeout(()=>{o.classList.remove('on','zz');V._resting=0;},1500);};}
+// After a party wipe the world opens at the Inn through the same short fade-in as a town trip, so the first frame is never the old field.
+HOOK.after('finishBattle','polish','fade in at the Inn after a wipe',function(r,how){try{if(how==='lose'&&typeof WS!=='undefined'&&WS&&!reducedMotion())WS.fadeIn=performance.now();}catch(e){}});
 
 // ===== towngfx.js (v0.3.1): the town look: service roofs, signs, landmarks, the quest board mark =====
 // Every service has a fixed roof colour, a landmark prop by the door and a big labelled sign, in every town layout.
@@ -13028,7 +13070,7 @@ function autoRewardMul(){if(!B||!G||G.daily||B.spec.kind==='daily')return 1;cons
 // the bonus a hand played win shows over the auto level (the same totals as before: manual = auto x 1/AUTO_REW)
 function manualBonusPct(){return Math.round((1/AUTO_REW-1)*100);}
 // v0.9.8: the per foe type reason is long: it lives in the button's title and the toast on press, not as a line beside the commands
-function autoBtnHtml(){const why=autoReason();if(why)return `<button class="btn sm autolock" data-act="auto" aria-disabled="true" title="${why}">Auto locked</button>${/^Beat /.test(why)?'':`<small class="autowhy">${why}</small>`}`;
+function autoBtnHtml(){const why=B&&B.auto?null:autoReason();if(why)return `<button class="btn sm autolock" data-act="auto" aria-disabled="true" title="${why}">Auto locked</button>${/^Beat /.test(why)?'':`<small class="autowhy">${why}</small>`}`;
   return `<button class="btn sm ${B.auto?'gold':''}" data-act="auto" aria-pressed="${B.auto?'true':'false'}">${B.auto?'Stop auto':'Start auto'}</button>`;}
 HOOK.after('startBattle','prog2','auto counters, boss auto lock',function(r){try{if(r!==false&&B){B.tP=0;B.tA=0;B.nz={react:0,brk:0,guard:0,surge:0,tele:0};if(autoLocked()){B.auto=false;B.autoLock=1;}}}catch(e){}});
 HOOK.wrap('perform','prog2','hand and auto turn counters, goal counters',function(next,...args){let a=args[0],sk=args[1],tg=args[2];try{if(B&&a&&a.side==='p'&&!a.isComp){B.tP=(B.tP||0)+1;if(B.auto)B.tA=(B.tA||0)+1;}
@@ -13039,7 +13081,7 @@ HOOK.wrap('perform','prog2','hand and auto turn counters, goal counters',functio
 {const dr0=doReaction;doReaction=function(a,t,el){const r=dr0.apply(this,arguments);try{if(r&&B&&B.nz&&a&&a.side==='p')B.nz.react++;}catch(e){}return r;};}
 {const cs0=chipShield;chipShield=function(t){const was=t&&t.broken;const r=cs0.apply(this,arguments);try{if(B&&B.nz&&t&&t.side!=='p'&&!was&&t.broken===2)B.nz.brk++;}catch(e){}return r;};}
 {const at0=autoTurn;autoTurn=function(){if(autoLocked()){if(B)B.auto=false;return;}return at0.apply(this,arguments);};}
-{const a0=ACT.auto;ACT.auto=function(){if(autoLocked()){toast('Auto is locked here: '+(autoReason()||'win this fight manually once first').replace(/^./,c=>c.toLowerCase())+'.');if(typeof sfx==='function')sfx('deny');return;}return a0.apply(this,arguments);};}
+{const a0=ACT.auto;ACT.auto=function(){if(B&&B.auto)return a0.apply(this,arguments);/* v0.10.0: stopping auto is always allowed */if(autoLocked()){toast('Auto is locked here: '+(autoReason()||'win this fight manually once first').replace(/^./,c=>c.toLowerCase())+'.');if(typeof sfx==='function')sfx('deny');return;}return a0.apply(this,arguments);};}
 HOOK.wrap('win','prog2','boss won by hand, auto per foe type opens',function(next,...a){let man=false,kills=null;try{const k=B&&bossFightKey(B.spec);if(k&&!(B.tA>0)){G.bossWon=G.bossWon||{};G.bossWon[k]=1;}
     if(B&&nzLive()&&B.spec&&B.spec.kind!=='daily'){man=autoRewardMul()===1;kills=(B.kills&&B.kills.length?B.kills:B.en).filter(e=>autoTypeFoe(e)&&e.hp<=0);}}catch(e){}
   const was=B,r=next(...a);
@@ -13050,6 +13092,9 @@ HOOK.wrap('win','prog2','boss won by hand, auto per foe type opens',function(nex
 {const sc0=scan;scan=function(t){const r=sc0.apply(this,arguments);try{if(t&&nzLive()&&autoTypeFoe(t)&&B&&B.spec&&B.spec.kind!=='daily'&&autoTypeOpen(t.base,'scan'))toast(`Scanned: auto unlocked against ${t.base}.`);}catch(e){}return r;};}
 HOOK.after('newGame','prog2','auto per foe type starts closed',function(){try{if(G&&!G.daily)G.autoOk={};}catch(e){}});
 {const up0=unpackG;unpackG=function(o){const g=up0.apply(this,arguments);try{if(!g.bossWon){g.bossWon={};(g.cleared||[]).forEach((c,s)=>{if(!c||!g.run)return;const k=s<4?(g.run.bosses||[])[s]:g.run.final;if(k)g.bossWon['b:'+k]=1;});}}catch(e){}return g;};}
+
+// v0.10.0: a later arena or trial wave can bring foe types auto is still locked for: auto stops itself instead of leaving a Stop button that refuses
+{const nw0=nextWave;nextWave=function(){const r=nw0.apply(this,arguments);try{if(B&&B.auto&&autoLocked()){B.auto=false;V.auto=false;B.autoLock=1;toast('Auto stopped: '+(autoReason()||'').replace(/^./,c=>c.toLowerCase())+'.');render();}}catch(e){}return r;};}
 
 // ===== map.js (v0.3.2): the area map, the minimap and the illustrated world map =====
 // =================== MAP AND MINIMAP (Beta v0.3.2) ===================
@@ -13355,7 +13400,10 @@ function awGoal(m,tx,ty){const W=m.w,H=m.h,b=(m.bld||[]).find(b=>tx>=b.x&&tx<b.x
   if(b&&b.door)return {what:'door',b,c:[[b.door[0],b.door[1]+1,'u']]};
   const ex=(m.exits||[]).find(e=>e.x===tx&&e.y===ty);
   const around=(x,y)=>[[0,1],[0,-1],[1,0],[-1,0]].map(([a,c])=>[x+a,y+c,awFaceTo(x+a,y+c,x,y)]).filter(([x2,y2])=>awPass(m,x2,y2)||(x2===WS.x&&y2===WS.y));
-  if(ex){const v=ex.x===0?[1,0]:ex.x===W-1?[-1,0]:ex.y===0?[0,1]:ex.y===H-1?[0,-1]:[0,0],f=awFaceTo(tx+v[0],ty+v[1],tx,ty),c=[[tx+v[0],ty+v[1],f]].filter(([x,y])=>awPass(m,x,y)||(x===WS.x&&y===WS.y));
+  if(ex){const v=ex.x===0?[1,0]:ex.x===W-1?[-1,0]:ex.y===0?[0,1]:ex.y===H-1?[0,-1]:[0,0];
+    // v0.10.0: a wide gate (three exit cells) is one goal: the tile in front of any of its cells, so its corner cell plans a walk too
+    let cells=[[tx,ty]];try{const g=Object.values(m.gates||{}).find(g=>g&&g.cells&&g.cells.some(([x,y])=>x===tx&&y===ty));if(g)cells=g.cells;}catch(e){}
+    const c=cells.map(([x,y])=>[x+v[0],y+v[1],awFaceTo(x+v[0],y+v[1],x,y)]).filter(([x,y])=>awPass(m,x,y)||(x===WS.x&&y===WS.y));
     return {what:'exit',c:c.length?c:around(tx,ty)};}
   if(awPass(m,tx,ty)||(tx===WS.x&&ty===WS.y))return {what:'tile',c:[[tx,ty,null]]};
   return {what:'thing',c:around(tx,ty)};}
@@ -13416,6 +13464,14 @@ function wmAtStone(){const m=WS.m;if(!m)return false;for(let b=-1;b<=1;b++)for(l
 function wmGo(){const el=document.getElementById('wmgo');if(!el)return;const id=WMS.sel,s=id&&/^t\d$/.test(id)?+id.slice(1):null;
   if(s==null||!(G.visited||[]).includes(s)||G.daily||(WS.m&&WS.m.id==='t'+s)){el.innerHTML='';return;}
   el.innerHTML=wmAtStone()?`<button class="btn sm gold" data-act="travel" data-arg="${s}">Travel to ${esc(ZS(s).town)}</button>`:`<small class="note">A waystone can carry you to ${esc(ZS(s).town)}.</small>`;}
+
+// v0.10.0: a battle on the way (a random encounter, a roamer, an ambush) no longer ends a tap to walk: the plan is kept and the walk
+// goes on once the party is back on the same map with no popup open. A lost fight (the Inn) or a different map drops it.
+HOOK.before('startBattle','map','keep the tap to walk through the fight',function(){try{const A=WS.auto||(WS.autoLast&&WS.autoLast.why==='halt'&&performance.now()-(WS.autoT||0)<6e4?WS.autoLast:null);
+  WS.awResume=A&&A.m&&WS.m&&A.m===WS.m.id?{m:A.m,tx:A.tx,ty:A.ty,t:performance.now()}:null;if(WS.auto)awStop('battle');}catch(e){WS.awResume=null;}});
+HOOK.after('finishBattle','map','resume the tap to walk',function(){try{const R=WS.awResume;if(!R)return;WS.awResume=null;if(!G||!WS.m||WS.m.id!==R.m||B&&!B.over&&B.lost||V.screen!=='world'&&V.screen!=='battle')return;
+  const alive=partyChars().some(c=>c.hp>0);if(!alive)return;WS.awPend=R;}catch(e){WS.awResume=null;}});
+{const wt0=worldTick;worldTick=function(){try{const R=WS.awPend;if(R&&V.screen==='world'&&!V.modal&&!WS.dlg&&!WS.lock&&!B&&WS.m&&!WS.mv){WS.awPend=null;if(WS.m.id===R.m){const p=awPlan(WS.m,R.tx,R.ty);if(p.res==='ok')awGo(p.plan,'resume');}}}catch(e){WS.awPend=null;}return wt0.apply(this,arguments);};}
 
 // ===== anim.js (v0.3.2): battle animation poses and effects =====
 // Battle first. Every pose fits the old 520ms action window and lands its strike before the hit (IMPACT), so turns are
@@ -13531,7 +13587,7 @@ function foeCards(){
       <div class="ptags">${tags}</div></div>`;}).join('')}</div></div>`;
 }
 function pcard0(c,rs,turn,tg,lb){
-  const lim=!rs&&limitOpen(c),ko=c.hp<=0;
+  const lim=!rs&&limitOpen(c),ko=c.hp<=0||!!(B&&B.wipe);
   const sw=rs&&!ko&&B.mode==='cmd'&&!B.pend&&!B.auto&&canSwap();
   return `<button class="pc ${rs?'rs':''} ${turn?'turn':''} ${ko?'ko':''} ${tg?'tg':''} ${sw?'swapok':''}" data-act="tgtA" data-arg="${allParty().indexOf(c)}" ${tg||sw?'':'tabindex="-1"'} aria-label="${esc(c.name)}, level ${c.lv}${sw?'. Tap to switch in':''}" ${sw?'title="Tap to switch in"':''}>
     ${port(c.id)}<span class="pm"><span class="uct"><b>${esc(c.name)}</b><span class="ucl">Lv ${c.lv}</span>${elbs(c.el)}</span>
@@ -13542,7 +13598,7 @@ function pcard0(c,rs,turn,tg,lb){
 }
 function pcard(c,rs){
   const turn=B.mode==='cmd'&&B.cur===c,tg=allyTargetable(c),lb=c.lb||0;
-  const tags=rs?'':c.hp>0?(b3OnStage(c,'tags')?'':stButtons(c,{max:BL.mode==='tall'?3:6,noWx:true})):'<span class="swko">KO</span>';
+  const tags=rs?'':c.hp>0&&!(B&&B.wipe)?(b3OnStage(c,'tags')?'':stButtons(c,{max:BL.mode==='tall'?3:6,noWx:true})):'<span class="swko">KO</span>';
   return `<div class="pcw ${tags?'hastags':''}">`+pcard0(c,rs,turn,tg,lb)+uInfoBtn(c)+`<div class="ptags">${tags}</div></div>`;
 }
 // ----- unit detail panel -----
@@ -13719,7 +13775,7 @@ function mStarterSheet(m){
   return box(esc(t.n),`<div class="bdet"><div class="bimg">${port(id,'big')}</div><div class="grow"><div class="els">${elChips(t.el)}</div><p class="note"><b>${esc(cls.n)}.</b> ${esc(cls.role)}</p><p class="bio">${esc(t.bio)}</p><p class="mline">${masteryLine(id)}</p>${sigLine(id)}</div></div>
     <h4>Stats at level ${STARTER_LV}</h4><div class="stats">${stat('mhp','HP')}${stat('mmp','MP')}${stat('atk','ATK')}${stat('def','DEF')}${stat('mag','MAG')}${stat('res','RES')}${stat('spd','SPD')}</div>
     <h4>Gear</h4><div class="rows compact"><div class="row"><b>Weapons</b><span>${wpn.join(', ')}</span></div><div class="row"><b>Armor</b><span>${arm[0].toUpperCase()+arm.slice(1)}</span></div><div class="row"><b>Nature</b><span>${natPoolText(id)}</span></div></div>
-    <h4>Skills at the start</h4><div class="rows compact">${now.map(row).join('')||'<p class="note">None yet.</p>'}</div>
+    <h4>Starting skills</h4><div class="rows compact">${now.map(row).join('')||'<p class="note">None yet.</p>'}</div>
     ${later.length?`<h4>Learned later</h4><div class="rows compact">${later.map(row).join('')}</div>`:''}`,
     `<button class="btn" data-act="closeModal">Back</button><button class="btn gold" data-act="sheetPick" data-arg="${id}" ${!picked&&full?'disabled':''}>${picked?'Remove from my three':full?'Your three are full':'Choose '+esc(t.n)}</button>`,true);
 }
@@ -14164,6 +14220,8 @@ function roamTick(m,now){
   for(const r of L){if(r.dead||now<r.rest)continue;
     // contact: on the same tile, or where you are stepping
     if((r.x===px&&r.y===py)||(WS.mv&&r.x===WS.mv.tx&&r.y===WS.mv.ty)){roamFight(m,r);return;}
+    // v0.10.0: the roamer is drawn between tiles while it moves; touching the sprite starts the fight at once
+    if(r.t0&&r.fx!=null){const p=Math.min(1,(now-r.t0)/(r.mode==='chase'?ROAM.chaseMs:ROAM.patrolMs)),rx=r.fx+(r.x-r.fx)*p,ry=r.fy+(r.y-r.fy)*p;if(Math.abs(rx-WS.px/TS)<.75&&Math.abs(ry-WS.py/TS)<.75){roamFight(m,r);return;}}
     if(r.mode==='patrol'&&roamSees(m,r,px,py)){r.mode='chase';r.lost=0;if(typeof sfx==='function')sfx('encounter');}
     const ms=r.mode==='chase'?ROAM.chaseMs:ROAM.patrolMs;if(now-r.t<ms)continue;r.t=now;r.fx=r.x;r.fy=r.y;r.t0=now;
     if(r.mode==='chase'){const d=Math.abs(px-r.x)+Math.abs(py-r.y);if(d>ROAM.giveUp||++r.lost>40){r.mode='home';continue;}
@@ -14177,8 +14235,8 @@ function roamTick(m,now){
       if(roamInterior(m,nx,ny)&&Math.abs(nx-r.hx)+Math.abs(ny-r.hy)<=4){r.x=nx;r.y=ny;}
       else r.dir=Math.random()<.6?{u:'d',d:'u',l:'r',r:'l'}[r.dir]:['u','d','l','r'][Math.floor(Math.random()*4)];}
     if(r.x===px&&r.y===py){roamFight(m,r);return;}}}
-function roamFight(m,r){haltInput();WS.lock=true;WS.flash=performance.now();if(typeof sfx==='function')sfx('encounter');
-  later(()=>{WS.lock=false;startBattle({stage:m.s,kind:'dungeon',roam:{mid:m.id,i:r.i,mon:r.mon,elite:r.elite,mod:r.mod,name:r.name}});},420);}
+function roamFight(m,r){if(WS.encPend)return;WS.encPend=1;haltInput();WS.lock=true;WS.flash=performance.now();if(typeof sfx==='function')sfx('encounter');
+  later(()=>{WS.encPend=0;WS.lock=false;startBattle({stage:m.s,kind:'dungeon',roam:{mid:m.id,i:r.i,mon:r.mon,elite:r.elite,mod:r.mod,name:r.name}});},420);}
 // battles: a tougher lead (an elite for some) with company from the realm
 HOOK.wrap('encounterFoes','roam','roamer fights',function(next,...a){let spec=a[0];if(!spec||!spec.roam)return next(...a);
   const s=spec.stage,ro=spec.roam,band=STAGE_LV[s],lv=band[1]+ROAM.lvUp+ngLvOff(),Z=ZS(s),out=[];
@@ -18604,7 +18662,7 @@ function sprVB(c){if(!c)return null;if(c._vb)return c._vb;const k=c.hd||1,RW=c._
   const v=r<0?{l:0,t:0,r:0,b:0,empty:1}:{l:l/k,t:t/k,r:(r+1)/k,b:(b+1)/k};try{c._vb=v;}catch(e){}return v;}
 // where a unit's sprite is on the stage (static pose: no lunge, hit or entrance offsets), logical px
 function b3Body(u,b){b=b||unitBox(u);if(!b)return null;const c=spriteOf(u,false);if(!c)return null;const v=sprVB(c),w=c.width,h=c.height,m=B3.body;
-  if(u.side==='p'&&u.hp<=0){// knocked out heroes lie on their side (drawUnit rotates the sprite a quarter turn)
+  if(u.side==='p'&&(u.hp<=0||B.wipe)){// knocked out heroes lie on their side (drawUnit rotates the sprite a quarter turn)
     const cx=b.x-4,cy=b.y-2;return {x:cx-h+6+v.t-m,y:cy-w/2-m,w:(v.b-v.t)+2*m,h:w+2*m};}
   const dx=Math.round(b.x-w/2),dy=Math.round(b.y-h+1),hero=u.side==='p',l=hero?w-v.r:v.l,r=hero?w-v.l:v.r,bob=b.hov?2:0;
   return {x:dx+l-m,y:dy+v.t-m-bob,w:r-l+2*m,h:v.b-v.t+2*m+2*bob};}
@@ -20133,7 +20191,7 @@ function glSweep(st){try{GOALS.forEach(g=>{if(!g.k&&glDone(g.id,st))st.d[g.id]=1
 function glReward(id){const s=Math.min(4,G.stage|0),N=NUDGE.goals,g=GLMAP[id]||{};return {gold:N.gold[s]||N.gold[N.gold.length-1]||0,xp:N.xp||0,item:g.item&&ITEMS[g.item]?g.item:null};}
 function glRewardText(R){return `+${fmt(R.gold)} gold, XP${R.item?', '+ITEMS[R.item].n:''}`;}
 function glPay(id){const st=glS();if(st.d[id])return null;st.d[id]=1;const R=glReward(id);
-  G.gold+=R.gold;partyOf().forEach(c=>{try{addXp(c,Math.max(1,Math.round(need(c.lv)*R.xp)));}catch(e){}});
+  G.gold+=R.gold;partyOf().filter(c=>c.hp>0).forEach(c=>{try{addXp(c,Math.max(1,Math.round(need(c.lv)*R.xp)));}catch(e){}});
   if(R.item)G.inv[R.item]=Math.min(invCap(),(G.inv[R.item]||0)+1);
   try{const L=learnScanAll();if(L.length&&typeof lnQueue==='function')lnQueue(L);}catch(e){}
   return R;}
@@ -20151,8 +20209,13 @@ function glList(){if(!glOn())return [];const st=glS();return st.a.map(id=>{const
   return {id,t:d.t,sub:typeof d.sub==='function'?d.sub():d.sub,p,R:glReward(id),story:/^st/.test(id)};}).filter(Boolean);}
 // ----- counters from battles and actions -----
 HOOK.after('win','goals','goal counters from the fight',function(){try{if(glOn()&&B&&B.result&&!B.result.glCount&&B.spec&&B.spec.kind!=='daily'){B.result.glCount=1;const z=B.nz||{};
-    glAdd('react',z.react|0);glAdd('brk',z.brk|0);glAdd('guard',z.guard|0);glAdd('surge',z.surge?1:0);glAdd('tele',z.tele|0);glAdd('weak',B.hitWeak?1:0);glAdd('swap',(B.b4swN|0)>0?1:0);
+    glAdd('react',z.react|0);glAdd('brk',z.brk|0);glAdd('guard',z.guard|0);glAdd('surge',z.surge?1:0);glAdd('tele',z.tele|0);glAdd('weak',B.hitWeak?1:0);
     glAdd(autoRewardMul()===1?'manWin':'autoWin',1);if(B.spec.kind==='elite'&&B.spec.bounty&&!B.spec.bounty.personal)glAdd('bounty',1);}}catch(e){}});
+// v0.9.x: every way of swapping counts the moment it happens (a fight lost or fled still counts): the paid Switch command (doSwap, what the
+// goal text means), the free swap (b4FreeSwap) and the party menu swap (swapTap). Auto fights do not count, the goal is about doing it.
+if(typeof doSwap==='function'){const ds0=doSwap;doSwap=function(){const r=ds0.apply(this,arguments);try{if(r!==false&&r!==undefined&&B&&!B.auto)glAdd('swap',1);}catch(e){}return r;};}
+if(typeof b4FreeSwap==='function'){const fs0=b4FreeSwap;b4FreeSwap=function(){const r=fs0.apply(this,arguments);try{if(r&&B&&!B.auto)glAdd('swap',1);}catch(e){}return r;};}
+if(ACT&&typeof ACT.swapTap==='function'){const st0=ACT.swapTap;ACT.swapTap=function(){let k0='';try{k0=partySlots().join(',');}catch(e){}const r=st0.apply(this,arguments);try{if(k0&&partySlots().join(',')!==k0)glAdd('swap',1);}catch(e){}return r;};}
 {const sc0=scan;scan=function(){const r=sc0.apply(this,arguments);try{if(B&&B.spec&&B.spec.kind!=='daily')glAdd('scan',1);}catch(e){}return r;};}
 if(typeof campMake==='function'){const cm0=campMake;campMake=function(){const r=cm0.apply(this,arguments);try{if(r&&typeof r!=='string')glAdd('camp',1);}catch(e){}return r;};}
 HOOK.after('finishBattle','goals','Next goals panel',function(){try{glCheck();glRender();}catch(e){}});
@@ -20999,7 +21062,7 @@ function hdLook(m,now){const o=H2L,P=HD2D.look;hdZero(o);const dun=m.kind==='dun
     if(wsum<=0)hdMix(o,P.day,1);
     if(T&&T.dark){const k=P.darkRealm;for(let i=0;i<3;i++){o.amb[i]*=k.amb[i];o.sun[i]*=k.sun;}o.emis=Math.max(o.emis,.8);o.lamp=Math.max(o.lamp,1);o.pl=Math.max(o.pl,.6);}
     // weather (blended like the Phase 5 weather fade)
-    const X=typeof TR!=='undefined'?TR.wx:null,cur=G.weather?G.weather[m.s]||'clear':'clear';let wl=[[cur,1]];
+    const out=m.kind==='field'||m.kind==='town',X=out&&typeof TR!=='undefined'?TR.wx:null,cur=out&&G.weather?G.weather[m.s]||'clear':'clear';let wl=[[cur,1]];// v0.10.0: dungeons, caves, fortresses and the Sanctum are indoors: no weather in their light
     if(X&&X.from&&X.k<1){const e=trEase(X.k);wl=[[X.cur||cur,e],[X.from,1-e]];}
     // v0.8.0: a weather's fog colour is a daylight colour; by night and dusk it takes the scene's light (fl), so fog never glows grey over a night field
     const fl=Math.pow(Math.min(1,.15+(o.amb[0]+o.amb[1]+o.amb[2])/3+(o.sun[0]+o.sun[1]+o.sun[2])/3*.8),1.5);
@@ -21303,7 +21366,7 @@ function hdFrame(now){const m=WS.m,gl=HD.gl,q=hdTierQ(),still=gfxStill(),ts=stil
   gl.uniform4f(C.u.uDof,fy+dof.shift,dof.band*wide,dof.ramp*Math.sqrt(wide),q.dof?dof.max:0);
   gl.uniform4f(C.u.uBl,thr,(q.bloom>1?bl.high:bl.med)*(1+o.bloom),RT.e1?1:0,0);
   gl.uniform4f(C.u.uSh,q.shafts&&m.kind!=='dungeon'?o.shaft*HD2D.shaft:0,ts/1000,0,0);gl.uniform3fv(C.u.uShC,o.shC);gl.uniform2f(C.u.uAsp,sz.w/sz.h,1);gl.uniform1f(C.u.uVig,o.vig);
-  if(C.u.uHt){gl.activeTexture(gl.TEXTURE3);gl.bindTexture(gl.TEXTURE_2D,RT.cp.t);gl.uniform1i(C.u.uC,3);gl.activeTexture(gl.TEXTURE0);gl.uniform4f(C.u.uHt,ht,ts/1000,Math.min(.98,fy+.12),1/sz.w);}
+  if(C.u.uHt){gl.activeTexture(gl.TEXTURE3);gl.bindTexture(gl.TEXTURE_2D,RT.cp.t);gl.uniform1i(C.u.uC,3);gl.activeTexture(gl.TEXTURE0);gl.uniform4f(C.u.uHt,ht*.45/* v0.10.0: gentler haze */,ts/1000,Math.min(.98,fy+.12),1/sz.w);}
   gl.enable(gl.BLEND);gl.blendFunc(gl.ONE,gl.ONE_MINUS_SRC_ALPHA);hdFS(gl);gl.disable(gl.BLEND);
   HD.frames++;}
 // ----- the 2D canvas on top: weather, ambience particles, festival lanterns, battle flash and fades (all screen space) -----
@@ -21562,10 +21625,10 @@ function w7Paint(ctx,w,k,V){const q=V.q,t=V.t,W=V.W,H=V.H,nt=V.night,ov=V.mode==
       w7Banks(ctx,V,k*(.3+g*.9),[0,2,2],'rgb(222,180,116)',{flat:1,sc:[1,1.5,2.2],v:[0,200,380],a:[0,.6,.5],y0:bt?V.gy-50:null,y1:bt?H:null});}
     return;}
   if(w==='heat'){
-    if(V.gr&&!ov&&q.shimmer&&soft&&!V.still){const y0=bt?V.gy-34:0,y1=bt?V.gy+10:H*.42;w7Shimmer(ctx,V,y0,y1,1.4*k);}
+    if(V.gr&&!ov&&q.shimmer&&soft&&!V.still){const y0=bt?V.gy-34:0,y1=bt?V.gy+10:H*.42;w7Shimmer(ctx,V,y0,y1,.7*k);/* v0.10.0: half the sway, it was disorienting */}
     if(V.gr&&bt){ctx.globalAlpha=.16*k;ctx.fillStyle='rgba(255,236,200,1)';for(let i=0;i<3;i++){const y=V.gy-6-i*7;for(let x=0;x<W;x+=6)ctx.fillRect(x,Math.round(y+Math.sin(x*.09+t*3+i)*1.5),6,1);}}
     if(!air)return;
-    w7Grad(ctx,V,bt?V.gy-40:0,H,bt?'rgba(255,200,120,0)':'rgba(255,200,120,1)','rgba(255,140,60,1)',(ov?.06:.11)*k);// v0.8.0: in battle it fades in (was a hard line at gy-40)
+    w7Grad(ctx,V,bt?V.gy-40:0,H,bt?'rgba(255,200,120,0)':'rgba(255,200,120,1)','rgba(255,140,60,1)',(ov?.04:.07)*k);// v0.8.0: in battle it fades in (was a hard line at gy-40)
     w7Fall(ctx,V,c(soft?18:10),w7F({s:261,vx:0,vy:-14,par:1,w:1,h:3,col:'rgba(255,226,190,1)',a:.28,sway:2,swayF:3,top:bt?V.gy:0}),k,1);
     return;}
   if(w==='ashfall'){const A=q.ash;

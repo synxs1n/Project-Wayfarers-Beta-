@@ -42,5 +42,5 @@ function blogPanel(){if(!B||!B.logOpen)return '';
 Object.assign(ACT,{
   stInfo(a){if(!B)return;const [ref,k]=String(a).split('|');B.stPop=B.stPop&&B.stPop.ref===ref&&B.stPop.k===k?null:{ref,k};renderBattle();const c=document.querySelector('.stpop [data-act="stClose"]');if(c&&document.activeElement&&document.activeElement.classList&&document.activeElement.classList.contains('sti'))c.focus();},
   stClose(){if(B){B.stPop=null;renderBattle();}},
-  blogT(){if(!B)return;B.logOpen=!B.logOpen;renderBattle();if(B.logOpen){const o=document.querySelector('.blogp ol');if(o)o.scrollTop=o.scrollHeight;}}
+  blogT(){if(!B)return;B.logOpen=!B.logOpen;renderBattle();if(B.logOpen){const o=document.querySelector('.blogp ol');if(o)o.scrollTop=0;}}
 });

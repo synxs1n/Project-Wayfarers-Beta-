@@ -119,6 +119,10 @@ function townCarve(m,side,R){
     const fx=vert?[[mid[0]-2,mid[1]],[mid[0]+2,mid[1]]]:[[mid[0],mid[1]-2],[mid[0],mid[1]+2]];
     fx.forEach(([x,y])=>{if(g[y]&&g[y][x]&&(g[y][x]==='Z'||g[y][x]==='#'))g[y][x]='Y';});
     const inn=cells[Math.min(2,cells.length-1)][1];
+    // v0.10.0: a visible path: the road tiles run from the gate to the first road or the town's main road, so the way out is never a
+    // bare gap behind the houses
+    try{if(vert){const dy=side==='n'?1:-1;for(let y=mid[1]+dy,n=0;y>=0&&y<H&&n<H;y+=dy,n++){const c=g[y][mid[0]];if(c==='=')break;if(c!=='.'||m.bld.some(b=>mid[0]>=b.x&&mid[0]<b.x+b.w&&y>=b.y&&y<b.y+b.h))break;g[y][mid[0]]='=';if(y===m.road)break;}}
+      else{const dx=side==='w'?1:-1;for(let x=mid[0]+dx,n=0;x>=0&&x<W&&n<W;x+=dx,n++){const c=g[mid[1]][x];if(c==='=')break;if(c!=='.'||m.bld.some(b=>x>=b.x&&x<b.x+b.w&&mid[1]>=b.y&&mid[1]<b.y+b.h))break;g[mid[1]][x]='=';}}}catch(e){}
     return {side,x:mid[0],y:mid[1],cells:e0,arrive:[inn[0],inn[1],SIDE_FACE[side]],label:gateLabel(side,mid[0],mid[1],W,H)};
   }
   return null;

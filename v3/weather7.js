@@ -195,10 +195,10 @@ function w7Paint(ctx,w,k,V){const q=V.q,t=V.t,W=V.W,H=V.H,nt=V.night,ov=V.mode==
       w7Banks(ctx,V,k*(.3+g*.9),[0,2,2],'rgb(222,180,116)',{flat:1,sc:[1,1.5,2.2],v:[0,200,380],a:[0,.6,.5],y0:bt?V.gy-50:null,y1:bt?H:null});}
     return;}
   if(w==='heat'){
-    if(V.gr&&!ov&&q.shimmer&&soft&&!V.still){const y0=bt?V.gy-34:0,y1=bt?V.gy+10:H*.42;w7Shimmer(ctx,V,y0,y1,1.4*k);}
+    if(V.gr&&!ov&&q.shimmer&&soft&&!V.still){const y0=bt?V.gy-34:0,y1=bt?V.gy+10:H*.42;w7Shimmer(ctx,V,y0,y1,.7*k);/* v0.10.0: half the sway, it was disorienting */}
     if(V.gr&&bt){ctx.globalAlpha=.16*k;ctx.fillStyle='rgba(255,236,200,1)';for(let i=0;i<3;i++){const y=V.gy-6-i*7;for(let x=0;x<W;x+=6)ctx.fillRect(x,Math.round(y+Math.sin(x*.09+t*3+i)*1.5),6,1);}}
     if(!air)return;
-    w7Grad(ctx,V,bt?V.gy-40:0,H,bt?'rgba(255,200,120,0)':'rgba(255,200,120,1)','rgba(255,140,60,1)',(ov?.06:.11)*k);// v0.8.0: in battle it fades in (was a hard line at gy-40)
+    w7Grad(ctx,V,bt?V.gy-40:0,H,bt?'rgba(255,200,120,0)':'rgba(255,200,120,1)','rgba(255,140,60,1)',(ov?.04:.07)*k);// v0.8.0: in battle it fades in (was a hard line at gy-40)
     w7Fall(ctx,V,c(soft?18:10),w7F({s:261,vx:0,vy:-14,par:1,w:1,h:3,col:'rgba(255,226,190,1)',a:.28,sway:2,swayF:3,top:bt?V.gy:0}),k,1);
     return;}
   if(w==='ashfall'){const A=q.ash;

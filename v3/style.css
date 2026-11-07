@@ -1,6 +1,10 @@
 /* v0.7.7: no blue tap flash or text selection when tapping the world or the stage to move (Android draws a tinted box over anything with a click handler) */
 *{-webkit-tap-highlight-color:transparent}
 canvas,#world,#wv,#bstage,#bwrap,.joy{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+/* no native long-press feedback (Android vibrates on a long press / text selection): the game root, the stage and the pad never select or call out; text fields stay selectable. touch-action:none only where we handle the touch ourselves, never on scrollable menus */
+#app,#screen,.pad,.pad *,.abtn,#wcv{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+input,textarea,[contenteditable="true"],.selectable{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}
+#wcv,#joy,#knob,.pad,.pad .abtn{touch-action:none}
 /* Layout concept: a torchlit keep. Stone wall behind, oak plank panels bound in bronze, parchment for story, chunky pixel bevels. */
 :root{
   --stone:#1b1511;--wood:#4a2f18;--wood2:#5e3d1f;--wood3:#3a2412;--bronze:#a67c3d;--ink:#0e0804;
@@ -533,7 +537,7 @@ small.warn{color:#f0b060}
 #bover>*{pointer-events:auto}
 .blogp{position:absolute;left:6px;right:6px;top:6px;bottom:6px;display:flex;flex-direction:column;background:rgba(14,8,4,.95);border:3px solid var(--ink);box-shadow:inset 0 0 0 2px var(--bronze)}
 .blogp ol{margin:0;padding:6px 10px 8px 30px;overflow-y:auto;flex:1;font-size:.8rem;line-height:1.35}
-.blogp li{color:var(--mute);margin:1px 0}.blogp li:nth-last-child(-n+3){color:var(--text)}.blogp li.hi{color:#ffd88a}
+.blogp li{color:var(--mute);margin:1px 0}.blogp li:nth-child(-n+3){color:var(--text)}.blogp li.hi{color:#ffd88a}
 .sth{display:flex;align-items:center;gap:8px;padding:5px 8px;border-bottom:2px solid #3a2a1a}.sth b{flex:1}
 .stpop{position:absolute;left:50%;top:10px;transform:translateX(-50%);width:min(320px,92%);background:#150b17;border:3px solid var(--ink);box-shadow:inset 0 0 0 2px var(--bronze),0 6px 0 rgba(0,0,0,.4);padding-bottom:8px}
 .stpop h5{margin:6px 10px 2px;font-size:.95rem;color:var(--gold)}

@@ -302,7 +302,10 @@ function awGoal(m,tx,ty){const W=m.w,H=m.h,b=(m.bld||[]).find(b=>tx>=b.x&&tx<b.x
   if(b&&b.door)return {what:'door',b,c:[[b.door[0],b.door[1]+1,'u']]};
   const ex=(m.exits||[]).find(e=>e.x===tx&&e.y===ty);
   const around=(x,y)=>[[0,1],[0,-1],[1,0],[-1,0]].map(([a,c])=>[x+a,y+c,awFaceTo(x+a,y+c,x,y)]).filter(([x2,y2])=>awPass(m,x2,y2)||(x2===WS.x&&y2===WS.y));
-  if(ex){const v=ex.x===0?[1,0]:ex.x===W-1?[-1,0]:ex.y===0?[0,1]:ex.y===H-1?[0,-1]:[0,0],f=awFaceTo(tx+v[0],ty+v[1],tx,ty),c=[[tx+v[0],ty+v[1],f]].filter(([x,y])=>awPass(m,x,y)||(x===WS.x&&y===WS.y));
+  if(ex){const v=ex.x===0?[1,0]:ex.x===W-1?[-1,0]:ex.y===0?[0,1]:ex.y===H-1?[0,-1]:[0,0];
+    // v0.10.0: a wide gate (three exit cells) is one goal: the tile in front of any of its cells, so its corner cell plans a walk too
+    let cells=[[tx,ty]];try{const g=Object.values(m.gates||{}).find(g=>g&&g.cells&&g.cells.some(([x,y])=>x===tx&&y===ty));if(g)cells=g.cells;}catch(e){}
+    const c=cells.map(([x,y])=>[x+v[0],y+v[1],awFaceTo(x+v[0],y+v[1],x,y)]).filter(([x,y])=>awPass(m,x,y)||(x===WS.x&&y===WS.y));
     return {what:'exit',c:c.length?c:around(tx,ty)};}
   if(awPass(m,tx,ty)||(tx===WS.x&&ty===WS.y))return {what:'tile',c:[[tx,ty,null]]};
   return {what:'thing',c:around(tx,ty)};}
@@ -363,3 +366,11 @@ function wmAtStone(){const m=WS.m;if(!m)return false;for(let b=-1;b<=1;b++)for(l
 function wmGo(){const el=document.getElementById('wmgo');if(!el)return;const id=WMS.sel,s=id&&/^t\d$/.test(id)?+id.slice(1):null;
   if(s==null||!(G.visited||[]).includes(s)||G.daily||(WS.m&&WS.m.id==='t'+s)){el.innerHTML='';return;}
   el.innerHTML=wmAtStone()?`<button class="btn sm gold" data-act="travel" data-arg="${s}">Travel to ${esc(ZS(s).town)}</button>`:`<small class="note">A waystone can carry you to ${esc(ZS(s).town)}.</small>`;}
+
+// v0.10.0: a battle on the way (a random encounter, a roamer, an ambush) no longer ends a tap to walk: the plan is kept and the walk
+// goes on once the party is back on the same map with no popup open. A lost fight (the Inn) or a different map drops it.
+HOOK.before('startBattle','map','keep the tap to walk through the fight',function(){try{const A=WS.auto||(WS.autoLast&&WS.autoLast.why==='halt'&&performance.now()-(WS.autoT||0)<6e4?WS.autoLast:null);
+  WS.awResume=A&&A.m&&WS.m&&A.m===WS.m.id?{m:A.m,tx:A.tx,ty:A.ty,t:performance.now()}:null;if(WS.auto)awStop('battle');}catch(e){WS.awResume=null;}});
+HOOK.after('finishBattle','map','resume the tap to walk',function(){try{const R=WS.awResume;if(!R)return;WS.awResume=null;if(!G||!WS.m||WS.m.id!==R.m||B&&!B.over&&B.lost||V.screen!=='world'&&V.screen!=='battle')return;
+  const alive=partyChars().some(c=>c.hp>0);if(!alive)return;WS.awPend=R;}catch(e){WS.awResume=null;}});
+{const wt0=worldTick;worldTick=function(){try{const R=WS.awPend;if(R&&V.screen==='world'&&!V.modal&&!WS.dlg&&!WS.lock&&!B&&WS.m&&!WS.mv){WS.awPend=null;if(WS.m.id===R.m){const p=awPlan(WS.m,R.tx,R.ty);if(p.res==='ok')awGo(p.plan,'resume');}}}catch(e){WS.awPend=null;}return wt0.apply(this,arguments);};}

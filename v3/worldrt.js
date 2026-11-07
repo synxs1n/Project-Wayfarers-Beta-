@@ -98,7 +98,7 @@ function worldTick(dt,now){
   const m=WS.m;
   npcTick(m,now);
   // Beta v0.3.1: weather now changes by steps walked (world3.js wxStep), not by the real-time clock
-  if(WS.lock&&!V.modal&&WS.fade&&now-WS.fade>2500)WS.lock=false;// watchdog: no fade lasts this long
+  if(WS.lock&&!V.modal&&WS.fadeLock&&now-WS.fadeLock>2500){WS.lock=false;WS.fadeLock=0;}// watchdog: no fade lasts this long. v0.10.0: its own stamp, cleared when the fade ends (WS.fade stayed set, so the lock of an encounter flash was released on the next tick: the roamer started the fight again every tick and the hero could still walk)
   if(V.modal||WS.dlg||WS.lock)return;
   if(WS.mv){
     const p=Math.min(1,(now-WS.mv.t0)/WS.mv.dur);
@@ -194,12 +194,12 @@ function arrive(){
   const enc=encTile(m,WS.x,WS.y);
   if(G.ward>0&&m.kind!=='town'){G.ward--;if(!G.ward)toast('The Holy Water\'s ward fades.');if(typeof wkwUpdate==='function')wkwUpdate();}
   if(enc&&!(G.ward>0)&&WS.steps>=ENC_MIN_STEPS&&Math.random()<rate*(m.kind==='dungeon'?.6:1)*(WS.run?1.15:1)){
-    WS.steps=0;haltInput();WS.lock=true;WS.flash=performance.now();if(typeof sfx==='function')sfx('encounter');
-    later(()=>{WS.lock=false;startBattle({stage:m.s,kind:m.kind==='dungeon'?'dungeon':'field'});},460);
+    if(WS.encPend)return;WS.encPend=1;WS.steps=0;haltInput();WS.lock=true;WS.flash=performance.now();if(typeof sfx==='function')sfx('encounter');
+    later(()=>{WS.encPend=0;WS.lock=false;startBattle({stage:m.s,kind:m.kind==='dungeon'?'dungeon':'field'});},460);
   }
 }
 // v0.3.3: a thrown error inside fn used to leave WS.lock set forever, which freezes the whole world. Always release it.
-function fadeTo(fn){WS.lock=true;WS.fade=performance.now();later(()=>{try{fn();}catch(e){try{console.error(e);}catch(_){}}finally{WS.lock=false;WS.fadeIn=performance.now();}},230);}
+function fadeTo(fn){WS.lock=true;WS.fade=performance.now();WS.fadeLock=WS.fade;later(()=>{try{fn();}catch(e){try{console.error(e);}catch(_){}}finally{WS.lock=false;WS.fadeLock=0;WS.fadeIn=performance.now();}},230);}
 function facing(){const [dx,dy]=DIRV[WS.dir];return [WS.x+dx,WS.y+dy];}
 function interact(){
   if(V.screen!=='world'||V.modal||WS.lock)return;

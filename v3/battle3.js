@@ -28,7 +28,7 @@ function sprVB(c){if(!c)return null;if(c._vb)return c._vb;const k=c.hd||1,RW=c._
   const v=r<0?{l:0,t:0,r:0,b:0,empty:1}:{l:l/k,t:t/k,r:(r+1)/k,b:(b+1)/k};try{c._vb=v;}catch(e){}return v;}
 // where a unit's sprite is on the stage (static pose: no lunge, hit or entrance offsets), logical px
 function b3Body(u,b){b=b||unitBox(u);if(!b)return null;const c=spriteOf(u,false);if(!c)return null;const v=sprVB(c),w=c.width,h=c.height,m=B3.body;
-  if(u.side==='p'&&u.hp<=0){// knocked out heroes lie on their side (drawUnit rotates the sprite a quarter turn)
+  if(u.side==='p'&&(u.hp<=0||B.wipe)){// knocked out heroes lie on their side (drawUnit rotates the sprite a quarter turn)
     const cx=b.x-4,cy=b.y-2;return {x:cx-h+6+v.t-m,y:cy-w/2-m,w:(v.b-v.t)+2*m,h:w+2*m};}
   const dx=Math.round(b.x-w/2),dy=Math.round(b.y-h+1),hero=u.side==='p',l=hero?w-v.r:v.l,r=hero?w-v.l:v.r,bob=b.hov?2:0;
   return {x:dx+l-m,y:dy+v.t-m-bob,w:r-l+2*m,h:v.b-v.t+2*m+2*bob};}

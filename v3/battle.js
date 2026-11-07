@@ -162,7 +162,7 @@ function drawUnit(ctx,u,b,now,tgMode){
   let x=b.x,y=b.y,alpha=1,walk=false,white=0,lying=false;
   // death and knockouts
   if(!hero&&u.hp<=0){const d=T-(u.deathT||0)-IMPACT;if(u.deathT&&d>700)return;if(d>0){alpha=1-d/700;y+=Math.round(d/700*4);white=d<120?1:0;if(!u._dz){u._dz=1;const c=centerOf(u);for(let i=0;i<18;i++)part({k:'p',x:c.x+(Math.random()-.5)*b.w*.6,y:c.y+(Math.random()-.5)*b.h*.6,vx:(Math.random()-.5)*20,vy:-20-Math.random()*40,g:-10,t0:now,life:600+Math.random()*400,col:i%2?'#ffffff':'#c8a0ff',sz:1});if(typeof sfx==='function')sfx('ko');}}}
-  if(hero&&u.hp<=0)lying=true;
+  if(hero&&(u.hp<=0||B.wipe))lying=true;// v0.10.0: B.wipe: the party is revived in the state after a wipe but shown down until the popup closes
   // entrance slide
   const en=T-(u.enterT||0);if(en<450){const p=1-en/450;x+=Math.round(p*p*70)*-dir;}
   // action lunge or cast step
@@ -179,7 +179,7 @@ function drawUnit(ctx,u,b,now,tgMode){
   // break stagger
   if(u.broken&&u.hp>0)x+=Math.floor(now/90)%2;
   const c0=spriteOf(u,walk),c=BV.tint?BV.tint(c0):c0;// v0.5.3: the GL stage (Medium) tints sprites to the light of the scene
-  const breathe=!lying&&u.hp>0&&a>520&&Math.floor(now/(hero?620:760)+b.i*.5)%2===1;
+  const breathe=!lying&&u.hp>0&&!B.wipe&&a>520&&Math.floor(now/(hero?620:760)+b.i*.5)%2===1;
   // shadow
   // v0.5.0 2.1: the shadow always sits on the ground plane (b.gy); flying foes hover above theirs with a gentle bob
   if(b.hov&&u.hp>0)y+=Math.round(Math.sin(now/320+b.i)*1.5);

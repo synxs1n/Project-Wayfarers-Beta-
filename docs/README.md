@@ -34,6 +34,7 @@ Read these before a big pass:
 - `v095-bosses-pacing.md`: v0.9.5 fewer, better fights (lower encounter rate, roamers on fields with the realm's roles, ordinary fights pay more), a realm gimmick for every Scourge and Calamity, companion growth (second skill, evolution), depth unlocks by realm (`pcUnlocked`), with the journey and boss sim numbers.
 - `v095-nudges.md`: leading players into the systems (v0.9.5): the manual bonus line, system bonuses on the rewards screen, auto per foe type, tip cards as invitations (basic and expert), the Next goals panel; economy numbers and tests.
 - `v099-tests.md`: the v0.9.9 test hardening pass: the Chrome tests that were flaky under machine load and why, what changed per test, the frozen clock and wait helpers in `pw.js`, the runner `tools/chrome/runall.js` and its groups.
+- `v0100-phase1.md`: the v0.10.0 tester fixes (gates, tap to walk, roamers, arena auto, wipe view, weather indoors, phones) and the one report not reproduced.
 - `audio-notes-v045.md`: the orchestral audio (v0.4.5) and Android live updates (v0.4.6).
 - `v050-prompt.md`: the full spec for the Beta v0.5.0 pass. Rollback point: `rollback-v046.md`.
 

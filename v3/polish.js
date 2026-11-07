@@ -8,3 +8,5 @@ function reducedMotion(){try{const c=META&&META.cfg&&META.cfg.rmotion;if(c===tru
   const o=fadeOverlay();V._resting=1;o.classList.add('on');sfx('rest');
   setTimeout(()=>{r0.call(this);o.classList.add('zz');},500);
   setTimeout(()=>{o.classList.remove('on','zz');V._resting=0;},1500);};}
+// After a party wipe the world opens at the Inn through the same short fade-in as a town trip, so the first frame is never the old field.
+HOOK.after('finishBattle','polish','fade in at the Inn after a wipe',function(r,how){try{if(how==='lose'&&typeof WS!=='undefined'&&WS&&!reducedMotion())WS.fadeIn=performance.now();}catch(e){}});

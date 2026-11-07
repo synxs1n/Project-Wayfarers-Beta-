@@ -39,7 +39,7 @@ function autoRewardMul(){if(!B||!G||G.daily||B.spec.kind==='daily')return 1;cons
 // the bonus a hand played win shows over the auto level (the same totals as before: manual = auto x 1/AUTO_REW)
 function manualBonusPct(){return Math.round((1/AUTO_REW-1)*100);}
 // v0.9.8: the per foe type reason is long: it lives in the button's title and the toast on press, not as a line beside the commands
-function autoBtnHtml(){const why=autoReason();if(why)return `<button class="btn sm autolock" data-act="auto" aria-disabled="true" title="${why}">Auto locked</button>${/^Beat /.test(why)?'':`<small class="autowhy">${why}</small>`}`;
+function autoBtnHtml(){const why=B&&B.auto?null:autoReason();if(why)return `<button class="btn sm autolock" data-act="auto" aria-disabled="true" title="${why}">Auto locked</button>${/^Beat /.test(why)?'':`<small class="autowhy">${why}</small>`}`;
   return `<button class="btn sm ${B.auto?'gold':''}" data-act="auto" aria-pressed="${B.auto?'true':'false'}">${B.auto?'Stop auto':'Start auto'}</button>`;}
 HOOK.after('startBattle','prog2','auto counters, boss auto lock',function(r){try{if(r!==false&&B){B.tP=0;B.tA=0;B.nz={react:0,brk:0,guard:0,surge:0,tele:0};if(autoLocked()){B.auto=false;B.autoLock=1;}}}catch(e){}});
 HOOK.wrap('perform','prog2','hand and auto turn counters, goal counters',function(next,...args){let a=args[0],sk=args[1],tg=args[2];try{if(B&&a&&a.side==='p'&&!a.isComp){B.tP=(B.tP||0)+1;if(B.auto)B.tA=(B.tA||0)+1;}
@@ -50,7 +50,7 @@ HOOK.wrap('perform','prog2','hand and auto turn counters, goal counters',functio
 {const dr0=doReaction;doReaction=function(a,t,el){const r=dr0.apply(this,arguments);try{if(r&&B&&B.nz&&a&&a.side==='p')B.nz.react++;}catch(e){}return r;};}
 {const cs0=chipShield;chipShield=function(t){const was=t&&t.broken;const r=cs0.apply(this,arguments);try{if(B&&B.nz&&t&&t.side!=='p'&&!was&&t.broken===2)B.nz.brk++;}catch(e){}return r;};}
 {const at0=autoTurn;autoTurn=function(){if(autoLocked()){if(B)B.auto=false;return;}return at0.apply(this,arguments);};}
-{const a0=ACT.auto;ACT.auto=function(){if(autoLocked()){toast('Auto is locked here: '+(autoReason()||'win this fight manually once first').replace(/^./,c=>c.toLowerCase())+'.');if(typeof sfx==='function')sfx('deny');return;}return a0.apply(this,arguments);};}
+{const a0=ACT.auto;ACT.auto=function(){if(B&&B.auto)return a0.apply(this,arguments);/* v0.10.0: stopping auto is always allowed */if(autoLocked()){toast('Auto is locked here: '+(autoReason()||'win this fight manually once first').replace(/^./,c=>c.toLowerCase())+'.');if(typeof sfx==='function')sfx('deny');return;}return a0.apply(this,arguments);};}
 HOOK.wrap('win','prog2','boss won by hand, auto per foe type opens',function(next,...a){let man=false,kills=null;try{const k=B&&bossFightKey(B.spec);if(k&&!(B.tA>0)){G.bossWon=G.bossWon||{};G.bossWon[k]=1;}
     if(B&&nzLive()&&B.spec&&B.spec.kind!=='daily'){man=autoRewardMul()===1;kills=(B.kills&&B.kills.length?B.kills:B.en).filter(e=>autoTypeFoe(e)&&e.hp<=0);}}catch(e){}
   const was=B,r=next(...a);
@@ -61,3 +61,6 @@ HOOK.wrap('win','prog2','boss won by hand, auto per foe type opens',function(nex
 {const sc0=scan;scan=function(t){const r=sc0.apply(this,arguments);try{if(t&&nzLive()&&autoTypeFoe(t)&&B&&B.spec&&B.spec.kind!=='daily'&&autoTypeOpen(t.base,'scan'))toast(`Scanned: auto unlocked against ${t.base}.`);}catch(e){}return r;};}
 HOOK.after('newGame','prog2','auto per foe type starts closed',function(){try{if(G&&!G.daily)G.autoOk={};}catch(e){}});
 {const up0=unpackG;unpackG=function(o){const g=up0.apply(this,arguments);try{if(!g.bossWon){g.bossWon={};(g.cleared||[]).forEach((c,s)=>{if(!c||!g.run)return;const k=s<4?(g.run.bosses||[])[s]:g.run.final;if(k)g.bossWon['b:'+k]=1;});}}catch(e){}return g;};}
+
+// v0.10.0: a later arena or trial wave can bring foe types auto is still locked for: auto stops itself instead of leaving a Stop button that refuses
+{const nw0=nextWave;nextWave=function(){const r=nw0.apply(this,arguments);try{if(B&&B.auto&&autoLocked()){B.auto=false;V.auto=false;B.autoLock=1;toast('Auto stopped: '+(autoReason()||'').replace(/^./,c=>c.toLowerCase())+'.');render();}}catch(e){}return r;};}

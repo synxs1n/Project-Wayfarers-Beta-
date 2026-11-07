@@ -122,7 +122,8 @@ function unpackG(o){
   return g;
 }
 const slotKey=s=>SAVEKEY+(s?'-s'+s:'');
-function saveGame(){if(!G||G.daily)return false;try{G.savedAt=Date.now();localStorage.setItem(slotKey(META.slot||0),JSON.stringify(packG()));return true;}catch(e){return false;}}
+function saveGame(){if(!G||G.daily)return false;
+  try{G.savedAt=Date.now();localStorage.setItem(slotKey(META.slot||0),JSON.stringify(packG()));return true;}catch(e){return false;}}
 function newGame(ids,cycle,legacy){
   G={ver:3,wv:3,dunRev:2,run:newRun(cycle||0),stage:0,cleared:[false,false,false,false,false],gold:400,roster:{},party:[],
      inv:{potion:4,hipotion:0,ether:1,remedy:2,plume:1,elixir:0},mats:{},gath:{},gear:[],won:false,
@@ -673,7 +674,7 @@ function useItem(id,t){
   if(it.revive){if(t.hp>0)return;t.hp=Math.max(1,Math.round(t.S.mhp*it.revive));t.st={};fx(t,'Revived','heal');log(`${a.name} uses ${it.n}. ${t.name} rises!`);}
   else{if(t.hp<=0)return;
     if(it.heal){const n=Math.min(Math.round(it.heal*curseMul(t)),t.S.mhp-t.hp);t.hp+=n;fx(t,'+'+n,'heal');log(`${a.name} uses ${it.n}. ${t.name} recovers ${n} HP.`);}
-    if(it.mp){const n=Math.min(it.mp,t.S.mmp-t.mp);t.mp+=n;if(!it.heal)fx(t,'+'+n+' MP','heal');}
+    if(it.mp){const n=Math.min(it.mp,t.S.mmp-t.mp);t.mp+=n;fx(t,'+'+n+' MP',it.heal?'stat good':'heal');log(`${a.name} uses ${it.n}. ${t.name} recovers ${n} MP.`);}
     if(it.cure){cleanse(t);fx(t,'Cured','heal');log(`${a.name} uses ${it.n}. ${t.name} is cured.`);}
   }
   t.healT=Date.now();G.inv[id]--;a.actT=Date.now();a.actKind='item';endTurn(a,.8);
@@ -908,7 +909,8 @@ function lose(){
   G.gold=Math.floor(G.gold*.9);
   allParty().forEach(c=>{c.hp=Math.max(1,Math.round(c.S.mhp*.3));c.st={};c.guard=false;});
   G.party=B.front.concat(B.back).map(c=>c.id);
-  saveGame();V.modal={type:'lose'};render();
+  B.wipe=1;saveGame();// v0.10.0: the heroes are revived in the state at once (no softlock); the battle view keeps them down until "Carry on" (B.wipe)
+  V.modal={type:'lose'};render();
 }
 function bondLv(a,b){const p=G.bonds[bondKey(a,b)]||0;return p>=BOND_LV[2]?3:p>=BOND_LV[1]?2:p>=BOND_LV[0]?1:0;}
 // campaign end: one hero becomes a permanent Legacy

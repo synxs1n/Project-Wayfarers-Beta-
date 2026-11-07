@@ -37,6 +37,8 @@ function roamTick(m,now){
   for(const r of L){if(r.dead||now<r.rest)continue;
     // contact: on the same tile, or where you are stepping
     if((r.x===px&&r.y===py)||(WS.mv&&r.x===WS.mv.tx&&r.y===WS.mv.ty)){roamFight(m,r);return;}
+    // v0.10.0: the roamer is drawn between tiles while it moves; touching the sprite starts the fight at once
+    if(r.t0&&r.fx!=null){const p=Math.min(1,(now-r.t0)/(r.mode==='chase'?ROAM.chaseMs:ROAM.patrolMs)),rx=r.fx+(r.x-r.fx)*p,ry=r.fy+(r.y-r.fy)*p;if(Math.abs(rx-WS.px/TS)<.75&&Math.abs(ry-WS.py/TS)<.75){roamFight(m,r);return;}}
     if(r.mode==='patrol'&&roamSees(m,r,px,py)){r.mode='chase';r.lost=0;if(typeof sfx==='function')sfx('encounter');}
     const ms=r.mode==='chase'?ROAM.chaseMs:ROAM.patrolMs;if(now-r.t<ms)continue;r.t=now;r.fx=r.x;r.fy=r.y;r.t0=now;
     if(r.mode==='chase'){const d=Math.abs(px-r.x)+Math.abs(py-r.y);if(d>ROAM.giveUp||++r.lost>40){r.mode='home';continue;}
@@ -50,8 +52,8 @@ function roamTick(m,now){
       if(roamInterior(m,nx,ny)&&Math.abs(nx-r.hx)+Math.abs(ny-r.hy)<=4){r.x=nx;r.y=ny;}
       else r.dir=Math.random()<.6?{u:'d',d:'u',l:'r',r:'l'}[r.dir]:['u','d','l','r'][Math.floor(Math.random()*4)];}
     if(r.x===px&&r.y===py){roamFight(m,r);return;}}}
-function roamFight(m,r){haltInput();WS.lock=true;WS.flash=performance.now();if(typeof sfx==='function')sfx('encounter');
-  later(()=>{WS.lock=false;startBattle({stage:m.s,kind:'dungeon',roam:{mid:m.id,i:r.i,mon:r.mon,elite:r.elite,mod:r.mod,name:r.name}});},420);}
+function roamFight(m,r){if(WS.encPend)return;WS.encPend=1;haltInput();WS.lock=true;WS.flash=performance.now();if(typeof sfx==='function')sfx('encounter');
+  later(()=>{WS.encPend=0;WS.lock=false;startBattle({stage:m.s,kind:'dungeon',roam:{mid:m.id,i:r.i,mon:r.mon,elite:r.elite,mod:r.mod,name:r.name}});},420);}
 // battles: a tougher lead (an elite for some) with company from the realm
 HOOK.wrap('encounterFoes','roam','roamer fights',function(next,...a){let spec=a[0];if(!spec||!spec.roam)return next(...a);
   const s=spec.stage,ro=spec.roam,band=STAGE_LV[s],lv=band[1]+ROAM.lvUp+ngLvOff(),Z=ZS(s),out=[];

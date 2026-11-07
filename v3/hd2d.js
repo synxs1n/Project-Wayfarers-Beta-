@@ -324,7 +324,7 @@ function hdLook(m,now){const o=H2L,P=HD2D.look;hdZero(o);const dun=m.kind==='dun
     if(wsum<=0)hdMix(o,P.day,1);
     if(T&&T.dark){const k=P.darkRealm;for(let i=0;i<3;i++){o.amb[i]*=k.amb[i];o.sun[i]*=k.sun;}o.emis=Math.max(o.emis,.8);o.lamp=Math.max(o.lamp,1);o.pl=Math.max(o.pl,.6);}
     // weather (blended like the Phase 5 weather fade)
-    const X=typeof TR!=='undefined'?TR.wx:null,cur=G.weather?G.weather[m.s]||'clear':'clear';let wl=[[cur,1]];
+    const out=m.kind==='field'||m.kind==='town',X=out&&typeof TR!=='undefined'?TR.wx:null,cur=out&&G.weather?G.weather[m.s]||'clear':'clear';let wl=[[cur,1]];// v0.10.0: dungeons, caves, fortresses and the Sanctum are indoors: no weather in their light
     if(X&&X.from&&X.k<1){const e=trEase(X.k);wl=[[X.cur||cur,e],[X.from,1-e]];}
     // v0.8.0: a weather's fog colour is a daylight colour; by night and dusk it takes the scene's light (fl), so fog never glows grey over a night field
     const fl=Math.pow(Math.min(1,.15+(o.amb[0]+o.amb[1]+o.amb[2])/3+(o.sun[0]+o.sun[1]+o.sun[2])/3*.8),1.5);
@@ -628,7 +628,7 @@ function hdFrame(now){const m=WS.m,gl=HD.gl,q=hdTierQ(),still=gfxStill(),ts=stil
   gl.uniform4f(C.u.uDof,fy+dof.shift,dof.band*wide,dof.ramp*Math.sqrt(wide),q.dof?dof.max:0);
   gl.uniform4f(C.u.uBl,thr,(q.bloom>1?bl.high:bl.med)*(1+o.bloom),RT.e1?1:0,0);
   gl.uniform4f(C.u.uSh,q.shafts&&m.kind!=='dungeon'?o.shaft*HD2D.shaft:0,ts/1000,0,0);gl.uniform3fv(C.u.uShC,o.shC);gl.uniform2f(C.u.uAsp,sz.w/sz.h,1);gl.uniform1f(C.u.uVig,o.vig);
-  if(C.u.uHt){gl.activeTexture(gl.TEXTURE3);gl.bindTexture(gl.TEXTURE_2D,RT.cp.t);gl.uniform1i(C.u.uC,3);gl.activeTexture(gl.TEXTURE0);gl.uniform4f(C.u.uHt,ht,ts/1000,Math.min(.98,fy+.12),1/sz.w);}
+  if(C.u.uHt){gl.activeTexture(gl.TEXTURE3);gl.bindTexture(gl.TEXTURE_2D,RT.cp.t);gl.uniform1i(C.u.uC,3);gl.activeTexture(gl.TEXTURE0);gl.uniform4f(C.u.uHt,ht*.45/* v0.10.0: gentler haze */,ts/1000,Math.min(.98,fy+.12),1/sz.w);}
   gl.enable(gl.BLEND);gl.blendFunc(gl.ONE,gl.ONE_MINUS_SRC_ALPHA);hdFS(gl);gl.disable(gl.BLEND);
   HD.frames++;}
 // ----- the 2D canvas on top: weather, ambience particles, festival lanterns, battle flash and fades (all screen space) -----

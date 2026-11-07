@@ -462,7 +462,7 @@ const WMAP={cell:[64,150,38],vig:.78,names:84};// cell: px per area (normal min,
 // Medium and High graphics draw the world maps through WebGL as a lit diorama (Low, no WebGL or Settings > HD-2D world off: the 2D view).
 // pitch: camera tilt in degrees below the horizon; fov: vertical field of view (maxHfov caps the horizontal one on wide views); zoom: 1 =
 // sprites as big as in the 2D view; follow: camera glide time constant (ms); topSlack: how far past the map's top edge the camera may
-// look (share of the view); sway: idle camera drift (px, degrees, ms; off under reduced motion). wall: block heights in art pixels
+// look (share of the view); sway: idle camera drift (px, degrees, ms; off under reduced motion; v0.10.0: amp and pitch 0, the drift made the whole pixel scene jump a pixel at rest). wall: block heights in art pixels
 // (dungeon walls, field cliffs, town walls); water/deep: how far water and cloud seas sit below the ground. fogStart/fogEnd: distance
 // fog, in camera distances. xray: radius (art px) around the hero where props and walls in front of him thin out; actMin: the least
 // light characters get (dark places stay readable); heroLight: radius of the hero's lantern; shaft: light shaft strength.
@@ -473,7 +473,7 @@ const WMAP={cell:[64,150,38],vig:.78,names:84};// cell: px per area (normal min,
 // lmMax: most lights per frame; lightK: light strength; chunk: static geometry chunk size in tiles (culling).
 // look: lighting and grade per time of day and place; weather: how each weather scales ambient and sun and tints the fog.
 // fogN (v0.8.0): where the distance fog starts in that weather, as a share of fogStart (fog 0.3: it thickens smoothly from near the hero).
-const HD2D={pitch:40,fov:28,maxHfov:40,zoom:1,follow:85,topSlack:.2,sway:{amp:.7,pitch:.25,ms:11000},
+const HD2D={pitch:40,fov:28,maxHfov:40,zoom:1,follow:85,topSlack:.2,sway:{amp:0,pitch:0,ms:11000},
   wall:{dungeon:22,cliff:12,town:14},water:-3,deep:-14,fogStart:1.15,fogEnd:2.7,xray:{out:26,dun:40},actMin:{out:.62,dun:.58},heroLight:120,shaft:.09,
   dof:{shift:.06,band:.24,ramp:.5,max:.7},bloom:{thr:.86,med:.5,high:.55},
   tiers:{medium:{px:1,blur:2,lmap:128,bloom:1,dof:1,shafts:1,every:2},high:{px:1,blur:2,lmap:192,bloom:2,dof:1,shafts:1}},lmMax:96,lightK:.8,chunk:8,

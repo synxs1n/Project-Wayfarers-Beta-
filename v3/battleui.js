@@ -49,7 +49,7 @@ function foeCards(){
       <div class="ptags">${tags}</div></div>`;}).join('')}</div></div>`;
 }
 function pcard0(c,rs,turn,tg,lb){
-  const lim=!rs&&limitOpen(c),ko=c.hp<=0;
+  const lim=!rs&&limitOpen(c),ko=c.hp<=0||!!(B&&B.wipe);
   const sw=rs&&!ko&&B.mode==='cmd'&&!B.pend&&!B.auto&&canSwap();
   return `<button class="pc ${rs?'rs':''} ${turn?'turn':''} ${ko?'ko':''} ${tg?'tg':''} ${sw?'swapok':''}" data-act="tgtA" data-arg="${allParty().indexOf(c)}" ${tg||sw?'':'tabindex="-1"'} aria-label="${esc(c.name)}, level ${c.lv}${sw?'. Tap to switch in':''}" ${sw?'title="Tap to switch in"':''}>
     ${port(c.id)}<span class="pm"><span class="uct"><b>${esc(c.name)}</b><span class="ucl">Lv ${c.lv}</span>${elbs(c.el)}</span>
@@ -60,7 +60,7 @@ function pcard0(c,rs,turn,tg,lb){
 }
 function pcard(c,rs){
   const turn=B.mode==='cmd'&&B.cur===c,tg=allyTargetable(c),lb=c.lb||0;
-  const tags=rs?'':c.hp>0?(b3OnStage(c,'tags')?'':stButtons(c,{max:BL.mode==='tall'?3:6,noWx:true})):'<span class="swko">KO</span>';
+  const tags=rs?'':c.hp>0&&!(B&&B.wipe)?(b3OnStage(c,'tags')?'':stButtons(c,{max:BL.mode==='tall'?3:6,noWx:true})):'<span class="swko">KO</span>';
   return `<div class="pcw ${tags?'hastags':''}">`+pcard0(c,rs,turn,tg,lb)+uInfoBtn(c)+`<div class="ptags">${tags}</div></div>`;
 }
 // ----- unit detail panel -----

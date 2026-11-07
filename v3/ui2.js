@@ -152,6 +152,16 @@ function endTouch(e){
   }
 }
 document.addEventListener('pointerup',endTouch);document.addEventListener('pointercancel',endTouch);
+// Android (and the APK's WebView, v3/liveboot.js) vibrates on a long press: the native contextmenu / text-selection haptic. Hold-to-walk must
+// never trigger it. Installed once on document (guarded), so it covers the game root, the stick and the stage. Text fields keep their menu.
+if(!window.__noLongPress){window.__noLongPress=1;
+  const field=t=>!!(t&&t.closest&&t.closest('input,textarea,select,[contenteditable="true"],.selectable'));
+  let coarse=false;try{coarse=matchMedia('(pointer:coarse)').matches;}catch(_){}
+  document.addEventListener('contextmenu',e=>{if(field(e.target))return;if(coarse||e.pointerType==='touch'||(e.target&&e.target.closest&&e.target.closest('#joy,.pad,canvas')))e.preventDefault();},true);
+  document.addEventListener('selectstart',e=>{if(!field(e.target)&&e.target&&e.target.closest&&e.target.closest('#joy,.pad,canvas,.wview'))e.preventDefault();},true);
+  // the stick and the stage handle the touch themselves: stop the browser starting a long press on them (buttons keep their tap)
+  document.addEventListener('touchstart',e=>{const t=e.target;if(t&&t.closest&&t.closest('#joy,#wcv')&&e.cancelable)e.preventDefault();},{passive:false,capture:true});
+}
 
 // ----- v4.5: crafting stations (Smithy and Alchemy since Beta v0.1.0), materials pouch, party helpers -----
 function inTown(){return V.screen==='world'&&WS.m&&WS.m.kind==='town';}

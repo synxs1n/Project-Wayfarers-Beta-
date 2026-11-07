@@ -101,7 +101,7 @@ function vNext(){
   if(!G.cleared[s]){if(!been[(worldV2()&&!worldV3()?'g':'f')+s])add(false,`Head out into ${esc(Z.n)}`,worldV3()?`Take the ${SIDE_NAME[worldPlan()[s].tn]} gate out of town.`:'The road east from town.');
     else if(!been['d'+s])add(false,`Find the ${esc(Z.dungeon)}`,`Its entrance is hidden somewhere off the road in ${esc(Z.n)}. Look for glowing stairs.`);
     else add(false,`Take on the ${s<4?bossClass(bossKeyFor(s)):'Calamity'} in the ${esc(Z.dungeon)}`,'See the readiness check below first.');}
-  else add(true,`${esc(Z.dungeon)} relit`,s<4?'The east gate is open.':'The journey is complete. Echoes linger in each dungeon, and the Echo Rift opens at every waystone.');
+  else add(true,`${esc(Z.dungeon)} relit`,s<4?`The ${gateDirWord(s,'field')} gate is open.`:'The journey is complete. Echoes linger in each dungeon, and the Echo Rift opens at every waystone.');
   // quests and bounties
   const qa=G.quests.filter(q=>q.state==='active'&&q.stage<=s),qo=G.quests.filter(q=>q.state==='open'&&q.stage<=s&&G.visited.includes(q.stage));
   qa.forEach(q=>add(false,`Quest: ${esc(q.title)}`,questReady(q)?'Ready to claim at a quest board.':q.type==='legend'?legendProg(q):''));

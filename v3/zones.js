@@ -7,9 +7,9 @@ const STAGE_BOSS_LV=[8,16,24,32,40];
 const ORD=['first','second','third','fourth','last'];
 const ZONES=[
  {n:'Verdane Meadows',town:'Hollowmere',theme:'meadow',mat:'moss',dungeon:'Verdane Barrow',pool:['mossling','gustimp','dewtoad','cinderpup'],
-  intro:'The Meridian Light that keeps the sky of Aurelis bright has begun to gutter. In Hollowmere the lamp-keepers say the beacon in the old barrow beyond Verdane Meadows has gone dark, and a Scourge sealed the eastern gate. You and two companions set out with torches and borrowed swords.',
-  win:'The Scourge falls. In the barrow the beacon coughs, then catches, and the seal on the eastern gate cracks open. A gold thread of light points onward.',
-  npc:[['Lamp-keeper Odo','The barrow lies somewhere in Verdane Meadows. Find its door, beat what lives inside, and the east gate seal will break.'],['Farmer Bess','Stick to the dirt road if you want a quiet walk. The tall grass is where the critters hide.'],['Old Tamsin','Single-element folk master their one gift. Those born with two get strange, mixed arts instead. Rare as hen\'s teeth, they are.'],['Child','You can only swap heroes in from your roster while you are in town. My brother tried it in the field and got eaten. Sort of.']]},
+  intro:'The Meridian Light that keeps the sky of Aurelis bright has begun to gutter. In Hollowmere the lamp-keepers say the beacon in the old barrow beyond Verdane Meadows has gone dark, and a Scourge sealed the gate. You and two companions set out with torches and borrowed swords.',
+  win:'The Scourge falls. In the barrow the beacon coughs, then catches, and the seal on the gate cracks open. A gold thread of light points onward.',
+  npc:[['Lamp-keeper Odo','The barrow lies somewhere in Verdane Meadows. Find its door, beat what lives inside, and the gate seal will break.'],['Farmer Bess','Stick to the dirt road if you want a quiet walk. The tall grass is where the critters hide.'],['Old Tamsin','Single-element folk master their one gift. Those born with two get strange, mixed arts instead. Rare as hen\'s teeth, they are.'],['Child','You can only swap heroes in from your roster while you are in town. My brother tried it in the field and got eaten. Sort of.']]},
  {n:'Saltglass Coast',town:'Port Cerise',theme:'coast',mat:'shell',dungeon:'Drowned Grotto',pool:['crawler','gull','tidewisp','shellguard'],
   intro:'Port Cerise sits where the road meets the Saltglass Coast. The harbor lamps are out and the tide runs the wrong way. Past the glass dunes, the beacon sleeps in a drowned grotto.',
   win:'The grotto drains with a sigh. The beacon blooms underwater, and the coastal gate swings open.',
@@ -52,3 +52,19 @@ const ARENA=[
 // Scourge echoes hit harder than before (Beta v0.3.0): 2.0x HP and 1.3x power; Calamity echoes keep 1.7x and 1.15x
 function echoSpec(k){return {stage:4,kind:'echoBoss',key:k,lv:echoLv(k),hpM:FINALS[k]?1.7:2,powM:FINALS[k]?1.15:1.3};}
 function echoLv(k){return echoLvRule(FINALS[k]?ECHO_LV.sanctumFinal:ECHO_LV.sanctum,G&&partyChars().length?partyHi():0);}
+// ===== gateDirWord (v0.4.1 follow-up): towns have their forward exit on the north, east or south side =====
+// gateDirWord(stage) -> 'north' | 'east' | 'south': the side of the town of that stage whose exit leads forward (to field f<stage>), read from the real exit.
+// gateDirWord(stage,'field') -> the side of the field's far end, where the sealed gate stands (from the world plan; 'east' on older saves).
+// Never throws; 'east' is the fallback.
+function gateSideWord(m,e){const W=m.t[0].length,H=m.t.length;return e.x===W-1?'east':e.y===0?'north':e.y===H-1?'south':e.x===0?'west':'east';}
+function gateDirWord(stage,which){
+  try{
+    if(which==='field'){if(typeof worldV3==='function'&&worldV3()){const p=worldPlan()[stage];const w=p&&SIDE_NAME[p.fe];if(w)return w;}return 'east';}
+    const m=getMap('t'+stage),e=(m.exits||[]).find(x=>x.to&&x.to.m&&/^[fg]/.test(x.to.m)&&+x.to.m.slice(1)===stage);
+    const w=e?gateSideWord(m,e):'east';return w==='west'?'east':w;
+  }catch(err){return 'east';}
+}
+// The closed west gate of the first town says which way the road really goes (worldgen.js writes "east" for every journey).
+HOOK.after('getMap','zones','closed west gate names the real forward direction',function(m){
+  try{if(m&&m.kind==='town'&&!m._gdw){m._gdw=1;(m.exits||[]).forEach(e=>{if(!e.to&&e.msg&&/Your path runs east\./.test(e.msg)){const f=(m.exits||[]).find(x=>x.to&&x.to.m==='f'+m.s);if(f)e.msg=e.msg.replace('Your path runs east.',`Your path runs ${gateSideWord(m,f)}.`);}});}}catch(err){}
+});

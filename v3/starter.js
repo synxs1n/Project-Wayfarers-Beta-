@@ -36,7 +36,7 @@ function mStarterSheet(m){
   return box(esc(t.n),`<div class="bdet"><div class="bimg">${port(id,'big')}</div><div class="grow"><div class="els">${elChips(t.el)}</div><p class="note"><b>${esc(cls.n)}.</b> ${esc(cls.role)}</p><p class="bio">${esc(t.bio)}</p><p class="mline">${masteryLine(id)}</p>${sigLine(id)}</div></div>
     <h4>Stats at level ${STARTER_LV}</h4><div class="stats">${stat('mhp','HP')}${stat('mmp','MP')}${stat('atk','ATK')}${stat('def','DEF')}${stat('mag','MAG')}${stat('res','RES')}${stat('spd','SPD')}</div>
     <h4>Gear</h4><div class="rows compact"><div class="row"><b>Weapons</b><span>${wpn.join(', ')}</span></div><div class="row"><b>Armor</b><span>${arm[0].toUpperCase()+arm.slice(1)}</span></div><div class="row"><b>Nature</b><span>${natPoolText(id)}</span></div></div>
-    <h4>Skills at the start</h4><div class="rows compact">${now.map(row).join('')||'<p class="note">None yet.</p>'}</div>
+    <h4>Starting skills</h4><div class="rows compact">${now.map(row).join('')||'<p class="note">None yet.</p>'}</div>
     ${later.length?`<h4>Learned later</h4><div class="rows compact">${later.map(row).join('')}</div>`:''}`,
     `<button class="btn" data-act="closeModal">Back</button><button class="btn gold" data-act="sheetPick" data-arg="${id}" ${!picked&&full?'disabled':''}>${picked?'Remove from my three':full?'Your three are full':'Choose '+esc(t.n)}</button>`,true);
 }

@@ -57,7 +57,7 @@ function glSweep(st){try{GOALS.forEach(g=>{if(!g.k&&glDone(g.id,st))st.d[g.id]=1
 function glReward(id){const s=Math.min(4,G.stage|0),N=NUDGE.goals,g=GLMAP[id]||{};return {gold:N.gold[s]||N.gold[N.gold.length-1]||0,xp:N.xp||0,item:g.item&&ITEMS[g.item]?g.item:null};}
 function glRewardText(R){return `+${fmt(R.gold)} gold, XP${R.item?', '+ITEMS[R.item].n:''}`;}
 function glPay(id){const st=glS();if(st.d[id])return null;st.d[id]=1;const R=glReward(id);
-  G.gold+=R.gold;partyOf().forEach(c=>{try{addXp(c,Math.max(1,Math.round(need(c.lv)*R.xp)));}catch(e){}});
+  G.gold+=R.gold;partyOf().filter(c=>c.hp>0).forEach(c=>{try{addXp(c,Math.max(1,Math.round(need(c.lv)*R.xp)));}catch(e){}});
   if(R.item)G.inv[R.item]=Math.min(invCap(),(G.inv[R.item]||0)+1);
   try{const L=learnScanAll();if(L.length&&typeof lnQueue==='function')lnQueue(L);}catch(e){}
   return R;}
@@ -75,8 +75,13 @@ function glList(){if(!glOn())return [];const st=glS();return st.a.map(id=>{const
   return {id,t:d.t,sub:typeof d.sub==='function'?d.sub():d.sub,p,R:glReward(id),story:/^st/.test(id)};}).filter(Boolean);}
 // ----- counters from battles and actions -----
 HOOK.after('win','goals','goal counters from the fight',function(){try{if(glOn()&&B&&B.result&&!B.result.glCount&&B.spec&&B.spec.kind!=='daily'){B.result.glCount=1;const z=B.nz||{};
-    glAdd('react',z.react|0);glAdd('brk',z.brk|0);glAdd('guard',z.guard|0);glAdd('surge',z.surge?1:0);glAdd('tele',z.tele|0);glAdd('weak',B.hitWeak?1:0);glAdd('swap',(B.b4swN|0)>0?1:0);
+    glAdd('react',z.react|0);glAdd('brk',z.brk|0);glAdd('guard',z.guard|0);glAdd('surge',z.surge?1:0);glAdd('tele',z.tele|0);glAdd('weak',B.hitWeak?1:0);
     glAdd(autoRewardMul()===1?'manWin':'autoWin',1);if(B.spec.kind==='elite'&&B.spec.bounty&&!B.spec.bounty.personal)glAdd('bounty',1);}}catch(e){}});
+// v0.9.x: every way of swapping counts the moment it happens (a fight lost or fled still counts): the paid Switch command (doSwap, what the
+// goal text means), the free swap (b4FreeSwap) and the party menu swap (swapTap). Auto fights do not count, the goal is about doing it.
+if(typeof doSwap==='function'){const ds0=doSwap;doSwap=function(){const r=ds0.apply(this,arguments);try{if(r!==false&&r!==undefined&&B&&!B.auto)glAdd('swap',1);}catch(e){}return r;};}
+if(typeof b4FreeSwap==='function'){const fs0=b4FreeSwap;b4FreeSwap=function(){const r=fs0.apply(this,arguments);try{if(r&&B&&!B.auto)glAdd('swap',1);}catch(e){}return r;};}
+if(ACT&&typeof ACT.swapTap==='function'){const st0=ACT.swapTap;ACT.swapTap=function(){let k0='';try{k0=partySlots().join(',');}catch(e){}const r=st0.apply(this,arguments);try{if(k0&&partySlots().join(',')!==k0)glAdd('swap',1);}catch(e){}return r;};}
 {const sc0=scan;scan=function(){const r=sc0.apply(this,arguments);try{if(B&&B.spec&&B.spec.kind!=='daily')glAdd('scan',1);}catch(e){}return r;};}
 if(typeof campMake==='function'){const cm0=campMake;campMake=function(){const r=cm0.apply(this,arguments);try{if(r&&typeof r!=='string')glAdd('camp',1);}catch(e){}return r;};}
 HOOK.after('finishBattle','goals','Next goals panel',function(){try{glCheck();glRender();}catch(e){}});
