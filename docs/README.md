@@ -1,7 +1,8 @@
 # Docs
 
 Read these before a big pass:
-- `CODEMAP.md`: what every module owns, "to change X, look in Y", and the wrapper chains of the most wrapped functions (start here).
+- `CODEMAP.md`: what every module owns, "to change X, look in Y", and the ordered hook lists of the core functions (start here).
+- `v099-hooks.md`: the hook registry (`v3/hooks.js`): one definition per core function (render, startBattle, vModal, ...), how to add a hook, what was converted.
 - `design-notes-v033.md`: Beta v0.3.3 to v0.4.0 systems (saves, cloud sync, equipment, world, factions, developer guide).
 - `design-notes-v041.md`: Beta v0.4.1 to v0.4.3 (sixteen realms, roamers, sites, capes, balance numbers). Wins over v033 where they disagree.
 - `design-notes-v050.md`: Beta v0.5.0 (the big fix, logic, shops, party, settings and graphics pass). Wins over the older notes. Phase reports: `v050-phase2.md`, `v050-phase3.md`, `v050-phase45.md`.

@@ -2,9 +2,11 @@
 
 The game is ~140 files in `v3/`, joined by `v3build.py` in its `MODS` order into one strict-mode IIFE (`v3/shell.html`
 wraps it; `boot()` runs at the end). Everything shares one scope, so a later file can wrap or replace an earlier
-file's function: `{const f0=fn;fn=function(){...f0.apply(this,arguments)...};}`. Function declarations are hoisted,
-wrappers run in load order, and the last wrapper installed is the outermost (it runs first). Every module's first line
-says what it owns; this page indexes them.
+file's function. The most wrapped core functions (render, startBattle, finishBattle, win, vModal, worldDraw, ...) are defined
+once (`render=HOOK.def('render',render);` under the base body) and modules add ordered hooks to them (`v3/hooks.js`,
+`docs/v099-hooks.md`); their lists are below. Smaller chains still use the old wrapper form
+`{const f0=fn;fn=function(){...f0.apply(this,arguments)...};}`: wrappers run in load order, and the last one installed is the
+outermost (it runs first). Every module's first line says what it owns; this page indexes them.
 
 Tunables: `v3/config.js` (loads first) holds every gameplay number in nine numbered sections with a table of contents
 (search `// ==== 3.` to jump to section 3). Data tables (heroes, skills, items, foes, zones, music) live in their own
@@ -117,68 +119,282 @@ v0.8
 CSS: `fonts.css`, `style.css`, `ui3.css` (v0.5.3 Gilded Night), `menus3.css`, `battle3.css`, `battle5.css`, `battle4.css`.
 Shell: `shell.html` (page, `window.__A`), `liveboot.js` (Android live update boot), `sw.js` (service worker).
 
-## Wrapper chains (load order: 1 is the base, the last one runs first)
+## Core functions and their hooks
 
-Line numbers drift; search for the wrapper text (`render=function`, `startBattle=function`, ...) in the file.
+Generated: `sh build.sh && node tools/hooksmap.js --write` rewrites the lists between the markers from the running game.
+Each list is in registration (load) order, 1 next to the base; "Runs" is the order the parts run in (before parts from the
+last registered to the first, then the base, then after parts from the first registered to the last; an around hook has both).
+To add one see `docs/v099-hooks.md`.
 
-### render (17 wrappers)
-1. `ui.js` base: draws the header, the screen and the modal
-2. `feedback.js` logs screen and modal changes for bug reports
-3. `equip.js` per-render fit cache (FITC) · 4. `equip.js` opens "Equip this now?" for queued new gear
-5. `town2.js` focuses Rest in the Inn · 6. `town2.js` notes the key that opened a popup (key guard)
-7. `mimic.js` mimic loot popup after the fight · 8. `learn.js` queues new skill notices
-9. `map.js` makes sure the minimap exists (next frame) · 10. `anim.js` popup open fade
-11. `saves.js` save status icon · 12. `p3shop.js` per-render Best Party cache (P3C)
-13. `p4party.js` the boss's lingering energy popup · 14. `gfx6.js` menu depth of field class
-15. `menus3.js` keeps dropdown focus · 16. `v063prog.js` progression notes · 17. `onboard.js` keeps the tip card placed · 18. `qready.js` quests ready badge
+<!-- hooksmap:start -->
+### vModal (24 hooks)
+Registered (load order; 1 is next to the base):
+1. `stuck.js` before: Stuck? popup
+2. `equip.js` before: eqPick, autoEq, equipNow popups
+3. `party2.js` before: ldRes, ldMgr, bp, field popups
+4. `gearmig.js` before: gmig popup (old gear)
+5. `town2.js` before: wxinfo popup (weather, time of day)
+6. `describe.js` before: statInfo popup
+7. `chance.js` before: cev popup (chance meetings)
+8. `factions.js` result: faction rank row on the shop popups
+9. `ailments.js` before: battlelore popup
+10. `echo2.js` before: echoAsk popup
+11. `sanctum.js` before: portal popup
+12. `comp.js` before: compPick popup
+13. `map.js` before: map and worldmap popups
+14. `autoset.js` before: autoset popup
+15. `starter.js` before: starterSheet popup
+16. `saves.js` before: the save popups (slots, export, import, recover, sync)
+17. `p3shop.js` before: bp and p3plan popups
+18. `p3shop.js` result: menu: Holy Water and Pork Chop buttons
+19. `p3shop.js` before: upg popup (the Upgrade button)
+20. `p4party.js` result: guild text on every popup above it
+21. `p4party.js` around: bossEnergy popup, energy line on the Legacy choice
+22. `v063prog.js` before: camp and bonds popups
+23. `twists.js` before: twist info popup
+24. `duellines.js` result: duel lines on chance meetings, defeat and rival popups
 
-### startBattle (15 wrappers)
-1. `engine.js` base: builds B from the spec (foes, weather, seeded RNG)
-2. `feedback.js` logs the start · 3. `travel.js` Ambush! banner
-4. `ailments.js` carries hero ailments in · 5. `ailments.js` foe ailments (window.__ailFoes) first
-6. `prog2.js` auto counters, boss auto lock · 7. `realms.js` syncs pools, Calamity effects, stage cleared flag
-8. `p2world.js` backdrop from the terrain (spec.bg) · 9. `p2world.js` surprise start · 10. `p2world.js` battle hint
-11. `hdstage.js` resets the HD-2D stage lights · 12. `v063prog.js` camp boon · 13. `twists.js` twist waves, elites, Iron clamp
-14. `battle5.js` plans every foe (foePlan) · 15. `battle4.js` installs the role hooks, Momentum start · 16. `remember.js` remembered Auto
+Runs: 23 twists → 22 v063prog → 21 p4party (around) → 19 p3shop → 17 p3shop → 16 saves → 15 starter → 14 autoset → 13 map → 12 comp → 11 sanctum → 10 echo2 → 9 ailments → 7 chance → 6 describe → 5 town2 → 4 gearmig → 3 party2 → 2 equip → 1 stuck → **base** → 8 factions (result) → 18 p3shop (result) → 20 p4party (result) → 21 p4party (around) → 24 duellines (result)
 
-### finishBattle (17 wrappers)
-1. `engine.js` base · 2. `feedback.js` log · 3. `account.js` codex and Archive sync · 4. `progression.js` tavern reroll on a stage clear
-5. `tavern2.js` tavern event · 6. `battlefx.js` keeps the last log lines · 7. `journey.js` won/fled/lost stats · 8. `world3.js` clock ticks
-9. `factions.js` faction credit · 10. `ailments.js` ailments carried out · 11. `comp.js` companions step back · 12. `realms.js` overlay lifts
-13. `roam.js` beaten roamers · 14. `sites.js` miniboss prizes · 15. `music2.js` stage clear music · 16. `p2world.js` win hint
-17. `v063prog.js` camp boon countdown · 18. `duellines.js` duel flee lines
+### finishBattle (19 hooks)
+Registered (load order; 1 is next to the base):
+1. `feedback.js` before: log the end
+2. `account.js` after: codex and Archive sync
+3. `progression.js` around: tavern reroll on a stage clear
+4. `tavern2.js` around: tavern event on a stage clear
+5. `battlefx.js` before: keep the last log lines
+6. `journey.js` before: won/fled/lost stats
+7. `world3.js` before: clock ticks
+8. `factions.js` around: faction credit
+9. `ailments.js` before: ailments carried out
+10. `comp.js` before: companions step back
+11. `realms.js` around: overlay lifts on a first clear
+12. `roam.js` around: beaten roamers
+13. `sites.js` around: miniboss prizes
+14. `music2.js` around: stage clear music
+15. `results.js` before: when the last battle ended (V.endT)
+16. `p2world.js` after: win hint
+17. `v063prog.js` around: camp boon stats back
+18. `goals.js` after: Next goals panel
+19. `duellines.js` around: duel flee lines
 
-### win (11 wrappers)
-1. `engine.js` base: rewards and the result modal · 2. `equip.js` new gear watch · 3. `mimic.js` mimic bonus · 4. `echo2.js` echo rewards
-5. `sanctum.js` opens the Rift · 6. `comp.js` companions step back · 7. `learn.js` new skills on the result · 8. `prog2.js` boss won manually
-9. `p3shop.js` first boss Pork Chops · 10. `p4xp.js` XP catch up · 11. `p4party.js` first boss energy · 12. `results.js` reward screen data
+Runs: 19 duellines (around) → 17 v063prog (around) → 15 results → 14 music2 (around) → 13 sites (around) → 12 roam (around) → 11 realms (around) → 10 comp → 9 ailments → 8 factions (around) → 7 world3 → 6 journey → 5 battlefx → 4 tavern2 (around) → 3 progression (around) → 1 feedback → **base** → 2 account → 3 progression (around) → 4 tavern2 (around) → 8 factions (around) → 11 realms (around) → 12 roam (around) → 13 sites (around) → 14 music2 (around) → 16 p2world → 17 v063prog (around) → 18 goals → 19 duellines (around)
 
-### renderBattle (4 wrappers)
-1. `ui.js` base: the DOM half of the battle view · 2. `battleui.js` boss bar · 3. `battle3.js` target tags fit · 4. `battle5.js` forecast bar fit · 5. `battle4.js` Momentum bar
+### render (18 hooks)
+Registered (load order; 1 is next to the base):
+1. `feedback.js` before: log screen and popup changes for bug reports
+2. `equip.js` around: per-render fit cache (FITC)
+3. `equip.js` before: open "Equip this now?" for queued new gear
+4. `town2.js` after: focus Rest in the Inn
+5. `town2.js` before: note the key that opened a popup (key guard)
+6. `mimic.js` before: mimic loot after the fight, back on the map
+7. `learn.js` after: queue new skill notices
+8. `map.js` after: make sure the minimap exists (next frame)
+9. `anim.js` around: popup open fade
+10. `saves.js` after: save status icon
+11. `p3shop.js` around: per-render Best Party cache (P3C)
+12. `p4party.js` before: the boss's lingering energy popup
+13. `gfx6.js` after: menu depth of field class
+14. `menus3.js` after: keep dropdown focus
+15. `v063prog.js` after: progression notes
+16. `onboard.js` after: keep the tip card placed
+17. `goals.js` after: Next goals panel
+18. `qready.js` after: quests ready badge on the menu button
+
+Runs: 12 p4party → 11 p3shop (around) → 9 anim (around) → 6 mimic → 5 town2 → 3 equip → 2 equip (around) → 1 feedback → **base** → 2 equip (around) → 4 town2 → 7 learn → 8 map → 9 anim (around) → 10 saves → 11 p3shop (around) → 13 gfx6 → 14 menus3 → 15 v063prog → 16 onboard → 17 goals → 18 qready
+
+### startBattle (18 hooks)
+Registered (load order; 1 is next to the base):
+1. `feedback.js` after: log the start
+2. `travel.js` after: Ambush! banner
+3. `ailments.js` after: carry hero ailments in
+4. `ailments.js` before: foe ailments (window.__ailFoes) first
+5. `prog2.js` after: auto counters, boss auto lock
+6. `realms.js` around: sync pools, Calamity effects, stage cleared flag
+7. `p2world.js` before: backdrop from the terrain (spec.bg)
+8. `p2world.js` before: surprise start: was the roamer still on patrol
+9. `p2world.js` after: surprise start: the free round
+10. `p2world.js` after: battle hint
+11. `hdstage.js` before: reset the HD-2D stage lights
+12. `v063prog.js` after: camp boon
+13. `twists.js` after: twist waves, elites, Iron clamp
+14. `battle5.js` after: plan every foe (foePlan)
+15. `battle4.js` before: install the role, plan and gimmick hooks
+16. `battle4.js` after: Momentum start, gimmick start, roles seen
+17. `remember.js` before: remembered Auto
+18. `dungeon8.js` before: realm dungeon material for the backdrop (spec.d8)
+
+Runs: 18 dungeon8 → 17 remember → 15 battle4 → 11 hdstage → 8 p2world → 7 p2world → 6 realms (around) → 4 ailments → **base** → 1 feedback → 2 travel → 3 ailments → 5 prog2 → 6 realms (around) → 9 p2world → 10 p2world → 12 v063prog → 13 twists → 14 battle5 → 16 battle4
+
+### win (14 hooks)
+Registered (load order; 1 is next to the base):
+1. `equip.js` around: new gear watch (queues new gear)
+2. `mimic.js` around: mimic bonus gold, loot on the map
+3. `echo2.js` around: Echo rewards (story Echo, Rift)
+4. `sanctum.js` after: opens the Rift
+5. `comp.js` before: companions step back
+6. `learn.js` after: new skills on the result
+7. `prog2.js` around: boss won by hand, auto per foe type opens
+8. `p3shop.js` around: first boss Pork Chops
+9. `p4xp.js` around: XP catch up (XPC)
+10. `p4party.js` around: first boss energy
+11. `results.js` around: reward screen data
+12. `pacing.js` around: bonds stay closed until their realm
+13. `comp3.js` around: companion growth (second skill, evolution)
+14. `goals.js` after: goal counters from the fight
+
+Runs: 13 comp3 (around) → 12 pacing (around) → 11 results (around) → 10 p4party (around) → 9 p4xp (around) → 8 p3shop (around) → 7 prog2 (around) → 5 comp → 3 echo2 (around) → 2 mimic (around) → 1 equip (around) → **base** → 1 equip (around) → 2 mimic (around) → 3 echo2 (around) → 4 sanctum → 6 learn → 7 prog2 (around) → 8 p3shop (around) → 9 p4xp (around) → 10 p4party (around) → 11 results (around) → 12 pacing (around) → 13 comp3 (around) → 14 goals
+
+### worldDraw (11 hooks)
+Registered (load order; 1 is next to the base):
+1. `legends.js` after: legend markers
+2. `equip.js` after: the Tamer's Stick glow
+3. `world3.js` after: night tint
+4. `mimic.js` after: chest tells
+5. `daylight.js` after: dusk and dawn
+6. `roam.js` after: roamers
+7. `p5trans.js` around: smooth transitions (sets TR)
+8. `gfx6world.js` after: lighting and life
+9. `worldfx.js` after: world-space ambience
+10. `hd2d.js` around: Medium and High: the HD-2D scene instead of the 2D chain (falls back to it)
+11. `dungeon8.js` after: boss lair entrance effects (2D)
+
+Runs: 10 hd2d (around) → 7 p5trans (around) → **base** → 1 legends → 2 equip → 3 world3 → 4 mimic → 5 daylight → 6 roam → 7 p5trans (around) → 8 gfx6world → 9 worldfx → 10 hd2d (around) → 11 dungeon8
+
+### calcDamage (10 hooks)
+Registered (load order; 1 is next to the base):
+1. `engine.js` after: pack frenzy, auto nerf on the acting hero
+2. `insight.js` after: bestiary perk damage
+3. `echocore.js` after: Echoforged boss and primed damage
+4. `archetype.js` after: archetype delivery multiplier and its tag
+5. `roles.js` after: ranged power, taunt defence (roles)
+6. `realms.js` after: Calamity element multipliers and burn
+7. `twists.js` after: twist: weakness damage
+8. `battle5.js` after: timed hit multiplier
+9. `battle4.js` after: Momentum, Hex, guard cover
+10. `battle4.js` after: boss gimmick damage
+
+Runs: **base** → 1 engine → 2 insight → 3 echocore → 4 archetype → 5 roles → 6 realms → 7 twists → 8 battle5 → 9 battle4 → 10 battle4
+
+### encounterFoes (10 hooks)
+Registered (load order; 1 is next to the base):
+1. `legends.js` before: legend fights
+2. `travel.js` after: ambush: foes hit harder
+3. `world3.js` around: night pool and night power on fields
+4. `chance.js` before: duel foes
+5. `mimic.js` before: the mimic
+6. `echocore.js` before: story Echo and Rift Echo fights
+7. `roam.js` around: roamer fights
+8. `sites.js` around: miniboss fights
+9. `p2world.js` around: single types in the first realm (p2SingleFoes)
+10. `duellines.js` after: duel opening line
+
+Runs: 9 p2world (around) → 8 sites (around) → 7 roam (around) → 6 echocore → 5 mimic → 4 chance → 3 world3 (around) → 1 legends → **base** → 2 travel → 3 world3 (around) → 7 roam (around) → 8 sites (around) → 9 p2world (around) → 10 duellines
+
+### settingsBody (9 hooks)
+Registered (load order; 1 is next to the base):
+1. `saves.js` around: Main menu row
+2. `music2.js` around: Ambience, Music style, Credits rows
+3. `p5settings.js` result: volume sliders replace the sound rows
+4. `p2world.js` around: Hints row
+5. `gfx6.js` around: Graphics row
+6. `battle3.js` result: Expert battle info row
+7. `battle5.js` result: Timed hits row
+8. `onboard.js` around: Tips row
+9. `hd2d.js` around: HD-2D world row
+
+Runs: 9 hd2d (around) → 8 onboard (around) → 5 gfx6 (around) → 4 p2world (around) → 2 music2 (around) → 1 saves (around) → **base** → 1 saves (around) → 2 music2 (around) → 3 p5settings (result) → 4 p2world (around) → 5 gfx6 (around) → 6 battle3 (result) → 7 battle5 (result) → 8 onboard (around) → 9 hd2d (around)
+
+### getMap (8 hooks)
+Registered (load order; 1 is next to the base):
+1. `bosstheme.js` around: stage look from its boss (new maps)
+2. `mapheal.js` around: path healing (new maps)
+3. `realms.js` before: sync pools before a new map
+4. `sites.js` around: fortress maps; place the fortress on its field
+5. `p2world.js` around: town lanes, gathering spots on open tiles (new maps)
+6. `pathguard.js` around: path protection (new maps)
+7. `dungeon8.js` around: realm dungeon materials and organic caves (new maps)
+8. `dungeon8.js` around: boss lair on the field (new maps)
+
+Runs: 8 dungeon8 (around) → 7 dungeon8 (around) → 6 pathguard (around) → 5 p2world (around) → 4 sites (around) → 3 realms → 2 mapheal (around) → 1 bosstheme (around) → **base** → 1 bosstheme (around) → 2 mapheal (around) → 4 sites (around) → 5 p2world (around) → 6 pathguard (around) → 7 dungeon8 (around) → 8 dungeon8 (around)
+
+### perform (8 hooks)
+Registered (load order; 1 is next to the base):
+1. `ailments.js` around: hard cleanse flag for revive and cleanse skills
+2. `archetype.js` around: heals hurt the undead
+3. `prog2.js` around: hand and auto turn counters, goal counters
+4. `anim.js` before: Limit Break pose time
+5. `roles.js` around: chi heals use the role heal power
+6. `twists.js` around: Iron clamp after every action
+7. `battle4.js` around: boss gimmick answers
+8. `pacing.js` around: primers are plain hits until reactions open
+
+Runs: 8 pacing (around) → 7 battle4 (around) → 6 twists (around) → 5 roles (around) → 4 anim → 3 prog2 (around) → 2 archetype (around) → 1 ailments (around) → **base** → 1 ailments (around) → 2 archetype (around) → 3 prog2 (around) → 5 roles (around) → 6 twists (around) → 7 battle4 (around) → 8 pacing (around)
+
+### renderBattle (7 hooks)
+Registered (load order; 1 is next to the base):
+1. `battleui.js` after: boss bar
+2. `battle3.js` after: fit the target tags
+3. `battle3.js` after: tall layout: bottom panel back to the top on a new turn
+4. `battle3.js` after: fit check once the whole render has run (microtask)
+5. `battle3.js` before: Expert battle info class (b9x)
+6. `battle5.js` after: forecast bar fit
+7. `battle4.js` around: gimmick sync before, Momentum bar after
+
+Runs: 7 battle4 (around) → 5 battle3 → **base** → 1 battleui → 2 battle3 → 3 battle3 → 4 battle3 → 6 battle5 → 7 battle4 (around)
+
+### newGame (6 hooks)
+Registered (load order; 1 is next to the base):
+1. `account.js` after: codex roster
+2. `tavern2.js` after: journey roster and tavern reset
+3. `prog2.js` after: auto per foe type starts closed
+4. `map.js` before: forget the explored map
+5. `pacing.js` after: pacing version on a new journey
+6. `goals.js` after: goals start empty
+
+Runs: 4 map → **base** → 1 account → 2 tavern2 → 3 prog2 → 5 pacing → 6 goals
+
+### placeAt (6 hooks)
+Registered (load order; 1 is next to the base):
+1. `legends.js` after: Jaeson's storm
+2. `progression.js` after: places been
+3. `stuck.js` around: Stuck? return point
+4. `world3.js` around: weather on arrival
+5. `map.js` after: reveal around, redraw the minimap
+6. `map.js` before: stop tap to walk
+
+Runs: 6 map → 4 world3 (around) → 3 stuck (around) → **base** → 1 legends → 2 progression → 3 stuck (around) → 4 world3 (around) → 5 map
+
+### genQuests (4 hooks)
+Registered (load order; 1 is next to the base):
+1. `legends.js` after: legend quests
+2. `equip.js` after: the Tamer's Stick quest
+3. `realms.js` around: realm quests (pools, rival)
+4. `pacing.js` after: Tamer quest step for the pacing
+
+Runs: 3 realms (around) → **base** → 1 legends → 2 equip → 3 realms (around) → 4 pacing
+
+### openChest (4 hooks)
+Registered (load order; 1 is next to the base):
+1. `equip.js` around: new gear watch (queues new gear)
+2. `mimic.js` before: a mimic in the chest
+3. `sites.js` before: cave reward chests
+4. `worldfx.js` around: chest opening sparkle
+
+Runs: 4 worldfx (around) → 3 sites → 2 mimic → 1 equip (around) → **base** → 1 equip (around) → 4 worldfx (around)
+
+<!-- hooksmap:end -->
 
 ### enemyTurn0 and foePlan
 - `engine.js` enemyTurn calls `enemyTurn0(u)` inside the turn watchdog.
 - `battle5.js` defines `enemyTurn0` (the engine's original was removed as dead): it executes `foePlan(u)`, the plan the intents show.
-- `battle4.js` wraps both at the first battle start (`b4HookPlan`, `b4HookTurn`): role moves join the plan and the turn.
+- `battle4.js` wraps both at the first battle start (`b4HookPlan`, `b4HookTurn`, `b4HookGim`, still the wrapper form): role moves join the plan and the turn.
 
-### vModal (24 wrappers)
-1. `ui.js` base: the core popups by `m.type`. Dispatch wrappers (each adds types) in order: `stuck.js` stuck, `equip.js` eqPick/autoEq/equipNow,
-`party2.js` ldRes/ldMgr/bp/field, `gearmig.js` gmig, `town2.js` wxinfo, `describe.js` statInfo, `chance.js` cev.
-Then `factions.js` post-processes the shop popups (faction rows). `ailments.js` battlelore, `echo2.js` echoAsk, `sanctum.js` portal, `comp.js` compPick,
-`map.js` map and worldmap, `autoset.js` autoset, `starter.js` starterSheet, `saves.js` the save popups, `p3shop.js` bp/p3plan, then `p3shop.js` adds
-the menu's team check. `p4party.js` passes every popup above it through guildText, then adds bossEnergy; `v063prog.js` camp, `twists.js` the twist info,
-`duellines.js` duel lines (post-processing). Order matters: a popup added after `p4party.js` does not get guildText.
-
-### worldDraw (9 wrappers)
-1. `worldrt.js` base: the 2D world · 2. `legends.js` legend markers · 3. `equip.js` stick glow · 4. `world3.js` night tint · 5. `mimic.js` chest tells
-6. `daylight.js` dusk and dawn · 7. `roam.js` roamers · 8. `p5trans.js` smooth transitions (sets TR) · 9. `gfx6world.js` lighting and life
-10. `hd2d.js` Medium and High: draws the HD-2D scene and its overlay instead of the 2D chain; falls back to the chain when HD-2D is off, unavailable or fails
-
-Other well-wrapped functions (search for `name=function`): `encounterFoes` (10), `calcDamage` (8), `settingsBody` (8), `getMap` (6),
-`placeAt` (6), `drawObjects`, `battleFrame`, `mBeast`, `arrive`, `restAll`, `perform`, `unpackG` (5 each).
+Still wrapped the old way (search for `name=function`, 5 or fewer each): `unpackG`, `scan`, `restAll`, `mMenu`, `mBeast`, `battleFrame`, `arrive` (5),
+`vFacMissions`, `recruit`, `makeEnemy`, `mChar`, `drawObjects`, `doReaction`, `calcStats`, `bestAll`, `addSt` (4), and the `ACT.*` handlers (3 or fewer each).
 
 ## Notes for edits
-- Do not reorder `MODS` lightly: wrappers depend on what is already installed when they load.
+- Do not reorder `MODS` lightly: wrappers and hooks run in load order (a later module's before hook runs first, its after hook last).
 - A wrapper that never calls its captured original is a full replacement; the original's body is dead (the cleanup pass removed
   those; `SPRITE_HD=false` fallbacks in art.js/art2.js/legends.js/battle.js are kept on purpose).
 - Daily Trial and sims depend on the order of `Math.random` and seeded RNG calls: do not add or move random calls in battle or

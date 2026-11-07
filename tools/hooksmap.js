@@ -1,11 +1,13 @@
 // v0.9.9: prints the hook lists of the core functions (v3/hooks.js) as Markdown, read from the running game so the docs stay true.
-// Usage (repo root, after sh build.sh): node tools/hooksmap.js [build html] > list.md   (docs/CODEMAP.md "Hook lists" is this output)
+// Usage (repo root, after sh build.sh): node tools/hooksmap.js [build html]   prints the lists
+//        node tools/hooksmap.js --write   rewrites the part of docs/CODEMAP.md between the hooksmap markers with them
 // For each function: the hooks in registration (load) order, and the order they run in. Hooks compose like the old wrappers:
 // the last registered is the outermost, so before parts run from the last registered to the first, then the base, then the
 // after parts from the first registered to the last. A wrap (around) hook has both parts.
 const fs=require('fs'),path=require('path');const {chromium}=require('playwright');
 (async()=>{
-  const html=fs.readFileSync(process.argv[2]||path.join(__dirname,'..','out','aurelis3.html'),'utf8');
+  const args=process.argv.slice(2),WRITE=args.includes('--write'),file=args.find(a=>a!=='--write');
+  const html=fs.readFileSync(file||path.join(__dirname,'..','out','aurelis3.html'),'utf8');
   const P=path.join(require('os').tmpdir(),'hooksmap_'+process.pid+'.html');
   fs.writeFileSync(P,'<!doctype html><html><head><meta charset="utf-8"></head><body><script>localStorage.clear();</script>'+html+'</body></html>');
   const browser=await chromium.launch();const page=await browser.newPage();const errs=[];page.on('pageerror',e=>errs.push(e.message));
@@ -21,6 +23,9 @@ const fs=require('fs'),path=require('path');const {chromium}=require('playwright
     const pre=[],post=[];for(let i=L.length-1;i>=0;i--)if(L[i].kind==='before'||L[i].kind==='wrap')pre.push(`${i+1} ${L[i].mod}${L[i].kind==='wrap'?' (around)':''}`);
     for(let i=0;i<L.length;i++)if(L[i].kind!=='before')post.push(`${i+1} ${L[i].mod}${L[i].kind==='wrap'?' (around)':L[i].kind==='xform'?' (result)':''}`);
     out.push('','Runs: '+(pre.length?pre.join(' → ')+' → ':'')+'**base**'+(post.length?' → '+post.join(' → '):''),'');}
-  console.log(out.join('\n'));
   if(errs.length){console.error('page errors: '+errs.slice(0,3).join(' | '));process.exit(1);}
+  if(WRITE){const doc=path.join(__dirname,'..','docs','CODEMAP.md'),A='<!-- hooksmap:start -->',Z='<!-- hooksmap:end -->';let d=fs.readFileSync(doc,'utf8');
+    const i=d.indexOf(A),j=d.indexOf(Z);if(i<0||j<i){console.error('markers not found in docs/CODEMAP.md');process.exit(1);}
+    d=d.slice(0,i+A.length)+'\n'+out.join('\n')+'\n'+d.slice(j);fs.writeFileSync(doc,d);console.log('docs/CODEMAP.md: '+names.length+' functions');}
+  else console.log(out.join('\n'));
 })();
