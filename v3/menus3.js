@@ -135,7 +135,7 @@ function m3Smithy(m){const sec=m.sec,tab=m.tab;let body='';
 function m3Alchemy(m){const sec=m.sec,tab=m.tab;let body='';
   if(tab==='shop'){const S=alchStock(),one=sec!=='all';
     const items=k=>{const L=m3ItemSort(S.filter(id=>m3Kind(id)===k));return (one?'':m3H({potion:'Potions',cure:'Cures',travel:'Travel gear'}[k],L.length))+m3Rows(L.map(m3ItemRow).join(''),'Nothing here matches the filters.');};
-    const charms=()=>{const L=shopSortIds(shopStock('charms'));return (one?'':m3H('Charms',L.length))+m3Rows(L.map(m3GearRow).join(''),'No charms match the filters.');};
+    const charms=()=>{const L=shopSortIds(shopStock('charms'));return (one?'':m3H('Charms',L.length))+m3CharmBtn()+m3Rows(L.map(m3GearRow).join(''),'No charms match the filters.');};
     const herbs=()=>(one?'':m3H('Herbs'))+`<p class="note">Fresh herbs for brewing. Stock grows as you reach later realms.</p><div class="rows">${herbStock().map(id=>matBuyRow(id,MAT_PRICE[id])).join('')}</div>`;
     const relit=()=>{if(!G.cleared[townS()])return '';const P={};RELIT_STOCK.forEach(([id,p])=>P[id]=p);const ids=RELIT_STOCK.map(x=>x[0]);
       return (one?'':m3H('Festival wares',ids.length))+`<p class="note">The beacon is lit and the alchemist is in a generous mood: rare stock, only in relit towns.</p><div class="rows">${ids.map(id=>{const isItem=!!ITEMS[id],n=isItem?ITEMS[id].n:gearOf(id).n,d=isItem?ITEMS[id].d:gearDesc(id),price=P[id];return `<div class="row"><div class="grow"><b>${n}</b><small>${d}${isItem?'. Carrying '+(G.inv[id]||0):''}</small></div><button class="btn sm" data-act="buyRelit" data-arg="${id}" ${G.gold>=price?'':'disabled'}>${fmt(price)}</button></div>`;}).join('')}</div>`;};
@@ -236,6 +236,13 @@ try{const QG=MENU_GROUPS.find(g=>g[0]==='quests'),RG=MENU_GROUPS.find(g=>g[0]===
 function m3Vh(){try{const v=window.visualViewport,h=Math.round(v?v.height:innerHeight);document.documentElement.style.setProperty('--vvh',h+'px');}catch(e){}}
 m3Vh();addEventListener('resize',m3Vh);try{if(window.visualViewport)visualViewport.addEventListener('resize',m3Vh);}catch(e){}
 try{if(screen.orientation&&screen.orientation.addEventListener)screen.orientation.addEventListener('change',()=>setTimeout(m3Vh,200));}catch(e){}
+
+// ----- Alchemy Charms: "Equip best charms" (party, owned charms only, nothing bought) -----
+function m3CharmBtn(){if(!G||G.daily||!(G.gear||[]).some(id=>{const g=gearOf(id);return g&&g.slot==='c';}))return '';
+  return '<div class="btnrow m3charmeq"><button class="btn sm gold" data-act="autoEqCharms" title="Gives each hero in your party the best charm you already own. Buys nothing.">Equip best charms</button></div>';}
+// the Party tab's helper row: one "Equip Best" button (party only); the reserves button is gone
+{const sw0=vSwap;vSwap=function(){let h=sw0.apply(this,arguments);if(typeof h!=='string')return h;
+  h=h.replace(/<button class="btn sm" data-act="autoEqCamp"[^>]*>[^<]*<\/button>/,'').replace(/(<button class="btn sm" data-act="autoEqParty"[^>]*>)Equip best: party/,'$1Equip Best').replace('title="The best gear you own for your party. May take gear from your reserves."','title="Gears the six heroes in your party with the best gear you own."');return h;};}
 
 // ----- test hook -----
 window.__M3={get MENU_GROUPS(){return MENU_GROUPS;},m3Norm,m3Tabs,m3Secs,NB_TABS,NB_MENU,nbSecs,nbBody,shopFBar:c=>shopFBar(c),ddSel,M3_LEG,M3_HOME,m3Upg};

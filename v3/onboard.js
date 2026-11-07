@@ -111,9 +111,9 @@ const TIPS=[
    if(obModal('workshop')&&alchStock().includes('campkit'))return 'New here: Camp Supplies. In the field, Make camp from the Party tab for a heal and a boon.';
    return obWorld()&&have?'You carry Camp Supplies. In the field, Make camp from the Party tab for a heal and a boon.':null;},
   g:'Camp Supplies are sold at Alchemy from the third realm. In a field or dungeon (not in town or next to a guardian), Make camp from the Party tab: standing heroes get back a quarter of their HP and MP, and you pick one boon for the next 3 battles (Whetstone, Watch fire, Early rise or Forager\'s luck).'},
- {id:'reserves',n:'Reserves and Equip best',sec:'Party',go:['menuTab','party','Party'],
+ {id:'reserves',n:'Reserves and spare gear',sec:'Party',go:['menuTab','party','Party'],
   t:()=>{if(!obWorld())return null;const r=obReserves();return r.length?`${p2Nm(G.roster[r[0]])} is a Reserve, outside the party. Swap heroes in town from the Party tab.`:null;},
-  g:'Heroes outside the party are your Reserves. They still earn some XP. In town you can swap them into the party from the Party tab. Equip best: reserves hands them the best spare gear in the pack, never taking anything from your party.'},
+  g:'Heroes outside the party are your Reserves. They still earn some XP. In town you can swap them into the party from the Party tab, and a wayfarer met on the road can step in on the spot. Equip Best gears your six; a reserve\'s own sheet has an Auto button for spare gear.'},
  {id:'bestparty',n:'Build Party and Training team',sec:'Party',go:['bpOpen','','Build Party'],
   t:()=>{if(!obModal('menu')||obTab()!=='party')return null;return obReserves().length?'Build Party suggests parties for this area. Training team helps heroes who fell behind.':null;},
   g:'Build Party (Party tab) looks at your roster, the foes of this area and its boss, and suggests a Vanguard and Rearguard in formations: Balanced, Boss ready, Area answer, Fresh mix, Rotation. Training team puts heroes who fell behind beside a strong tank and healer, so the XP catch up bonus lifts them quickly.'},
@@ -272,7 +272,7 @@ function obUntried(){const out=[];if(!G||G.daily)return out;const add=(t,s)=>out
   try{if(tipSeen('summon')&&!tipUsed('summon'))add('Try Summon in battle','A hero with a companion can call it in to fight for a few turns.');}catch(e){}
   try{if(tipSeen('guild')&&obPc('guild')&&typeof facInit==='function'){const f=facInit();if(!Object.keys(f.acc||{}).length&&!Object.keys(f.done||{}).length)add('Try a guild mission','Notice Board > Guilds: extra standing and the next perk sooner.');}}catch(e){}
   try{if(tipSeen('bestparty')&&!tipUsed('bestparty'))add('Try Build Party','Party tab: it suggests a party for this area and a Training team for heroes who fell behind.');}catch(e){}
-  try{const R=obReserves();if(tipSeen('reserves')&&!tipUsed('reserves')&&R.length&&(G.gear||[]).some(id=>{const g=gearOf(id);return g&&!g.stick;}))add('Equip best: reserves','Party tab: your Reserves take the best spare gear from the pack.');}catch(e){}
+  try{const R=obReserves();if(tipSeen('reserves')&&!tipUsed('reserves')&&R.length&&(G.gear||[]).some(id=>{const g=gearOf(id);return g&&!g.stick;}))add('Spare gear for the reserves','Party tab: open a reserve\'s sheet and press Auto for the best spare gear.');}catch(e){}
   try{if(tipSeen('charm')){const c=(G.gear||[]).filter(obCharm);const empty=partyOf().filter(h=>!h.eq.c);if(c.length&&empty.length)add(`A charm is waiting in your pack`,`${empty.slice(0,3).map(h=>esc(p2Nm(h))).join(', ')} ${empty.length>1?'have':'has'} an empty charm slot. Backpack > Equipment.`);}}catch(e){}
   return out;}
 {const vn0=vNext;vNext=function(){let h=vn0.apply(this,arguments);try{const L=obUntried();if(L.length){

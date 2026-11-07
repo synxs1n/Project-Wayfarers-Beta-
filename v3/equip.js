@@ -31,15 +31,15 @@ function loadoutScore(c,S){const W=CLASS_W[TPL[c.id].cls]||{atk:1,mag:1};let v=0
 function gainFor(c,id){const g=gearOf(id);if(!g||!canEquip(c,id))return null;const a=loadoutScore(c,c.S),b=loadoutScore(c,statsWith(c,g.slot,id));return {d:b-a,pct:a>0?(b-a)/a:0};}
 // heroes who can use an item, best upgrade first
 let FITC=null;// per-render cache: shop rows ask about the same item for every hero, which was O(items x roster x stats)
-function fitsFor(id){if(FITC&&FITC[id])return FITC[id];const r=Object.values(G.roster).map(c=>({c,g:gainFor(c,id)})).filter(o=>o.g).sort((x,y)=>y.g.d-x.g.d||G.party.indexOf(y.c.id)-G.party.indexOf(x.c.id));if(FITC)FITC[id]=r;return r;}
+function fitsFor(id){if(FITC&&FITC[id])return FITC[id];const r=G.party.map(h=>G.roster[h]).filter(Boolean).map(c=>({c,g:gainFor(c,id)})).filter(o=>o.g).sort((x,y)=>y.g.d-x.g.d||G.party.indexOf(y.c.id)-G.party.indexOf(x.c.id));if(FITC)FITC[id]=r;return r;}
 HOOK.wrap('render','equip','per-render fit cache (FITC)',function(next,...a){FITC={};try{return next(...a);}finally{FITC=null;}});
 // ----- auto best gear -----
 // ----- the Equipment tab -----
-// v0.8.3: only the party (the owner's call); reserves are geared with Equip best: reserves or from their sheet in Party
+// v0.8.3: only the party (the owner's call); reserves are geared from their sheet in Party
 function vEquipTab(){const L=G.party.filter(id=>G.roster[id]);V.charList=L.slice();
-  // v0.9.5: the team helpers come first (Build party, Equip best for the party and the reserves); the note follows
-  return `<div class="btnrow eqtools">${G.daily?'':'<button class="btn" data-act="bpOpen">Build party</button>'}<button class="btn gold" data-act="autoEqParty" title="Party first. May take gear and companions from heroes outside the party.">Equip best: party</button><button class="btn" data-act="autoEqAll" title="Balances the whole roster, still favouring the party.">Equip best for everyone</button></div>
-  <p class="note">Every hero's weapon, armor and charm at a glance. Tap a slot to change it; works anywhere outside battle. A hero's sheet has an Upgrade button on each slot. <small>The per-hero Auto button only uses your pack and free companions. It never takes from another hero.</small></p>
+  // v0.9.5: the team helpers come first (Build party and the single Equip Best button, party only); the note follows
+  return `<div class="btnrow eqtools">${G.daily?'':'<button class="btn" data-act="bpOpen">Build party</button>'}<button class="btn gold" data-act="autoEqParty" title="Gears the six heroes in your party with the best gear you own. Heroes outside the party keep what they wear unless the party needs it.">Equip Best</button></div>
+  <p class="note">Every hero's weapon, armor and charm at a glance. Tap a slot to change it; works anywhere outside battle. A hero's sheet has an Upgrade button on each slot. <small>Equip Best gears your party of six. The per-hero Auto button only uses your pack and free companions. It never takes from another hero.</small></p>
   <div class="eqlist">${L.map((id,i)=>{const c=G.roster[id];return `${i===G.party.length&&i?'<h4>Roster</h4>':i===0?'<h4>Party</h4>':''}<div class="eqrow">${port(id)}<div class="grow"><b>${esc(c.name)}</b><small>Lv ${c.lv} ${CLS[TPL[id].cls].n}</small>${xpMini(c)}
     <div class="eqslots">${EQSL.map(sl=>{const g=gearOf(c.eq[sl]);return `<button class="eqs" data-act="eqPick" data-arg="${id},${sl}">${g?gearIcon(c.eq[sl]):'<span class="gico empty"></span>'}<span><small>${SLOTN[sl]}</small>${g?esc(g.n):'Empty'}</span></button>`;}).join('')}</div></div>
     <button class="btn sm" data-act="autoEqOne" data-arg="${id}" title="Equip the best spare gear for ${esc(c.name)}">Auto</button></div>`;}).join('')}</div>`;}

@@ -49,6 +49,7 @@ evals any name), `window.__AU` (ambience.js), `__P2` (p2world.js), `__P3` (p3sho
 | graphics tiers and settings | `gfx6.js` (GFX tiers; Low = Flat: `html.flat` keeps the style.css menus, ui3.css is scoped by the build), `p5settings.js`, `ui.js` settingsBody (wrapped by several modules) |
 | page zoom on computers, Screen size row | `deskscale.js` (CSS zoom on html; `dsZoom()` in worldrt.js divides viewport measures) |
 | keyboard mapping, the Keys screen | `keymap.js` (kmIs, kmLabel, META.keys), KEYDIR rebuilt from it |
+| a wild recruit asking where to stand (swap in or reserves) | `recruit3.js` (G.pendRecruit, the recruitAsk popup) |
 | account totals across journeys | `metastats.js` (META.stats, hooks on finishBattle, win, newGame, openChest), shown in `journey.js` |
 | onboarding, hints, What next? | `onboard.js` (tip cards), `goals.js` (Next goals panel), `p2world.js` (hints), `progression.js` (What next?), `pacing.js` (unlock timing; `pcUnlocked(system)`, PACE) |
 | boss realm gimmicks (telegraphs, landings, answers) | `battle4.js` (b4Gim*), `BOSS_GIM` in `config.js` 3 |

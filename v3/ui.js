@@ -21,7 +21,7 @@ const legBanner=()=>`<span class="legban">★ LEGENDARY ★</span>`;
 const natPoolText=id=>{const P=natPool(id);if(P.length<2){const k=P[0]||TPL[id].trait;return `Nature: ${esc(natInfo(k).n)}, ${esc(natInfo(k).d)}`;}return `Nature pool: ${P.map(k=>esc(natInfo(k).n)).join(', ')}`;};
 function natBlock(id,c){const k=natOf(c),I=natInfo(k),P=natPool(id),legacy=P.indexOf(k)<0;
   return `<span class="trait natb"><b>Nature: ${esc(I.n)}</b>${legacy?' <em class="cyc">Legacy</em>':''}<small>${esc(I.d)}</small>${P.length>1?`<span class="natpool">${P.map(p=>`<i class="${p===k?'cur':''}" title="${esc(natInfo(p).d)}">${esc(natInfo(p).n)}</i>`).join('')}</span><small>Change it at the Guild Hall, Nature tab.</small>`:'<small>Fixed nature.</small>'}</span>`;}
-const roleTag=s=>{const r=s.role&&skEls(s).length?`<em class="role ${s.role}" title="${s.role==='primer'?'Primes a foe with its element for 2 turns. A matching Detonator sets off a reaction.':'Sets off a reaction on a foe Primed with a matching element.'}">${s.role==='primer'?'⟐ Primer':'✸ Detonator'}</em>`:'';
+const roleTag=s=>{const r=s.role&&skEls(s).length?`<em class="role ${s.role}" title="${s.role==='primer'?'Primes a foe with its element for 2 turns. A matching Detonator sets off a reaction.':'Sets off a reaction on a foe Primed with a matching element.'}">${s.role==='primer'?'⟐':'✸'}</em>`:'';
   // v0.4.0 2.4: every damaging and healing skill shows how it is delivered (Slash, Blunt, Piercing, Ranged, Magic, Heal)
   const d=typeof dlChip==='function'&&(s.k==='phys'||s.k==='mag'||s.k==='heal'||s.k==='revive')?dlChip(s,(B&&B.mode==='cmd'&&B.cur&&TPL[B.cur.id])?TPL[B.cur.id].cls:null):'';return d+r;};
 // v0.4.3: a visible note on every detonator: which primed elements it sets off, and the reaction

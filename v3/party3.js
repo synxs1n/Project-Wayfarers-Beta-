@@ -88,29 +88,49 @@ function p6Train(X){if(X.size<3)return null;const R=c=>X.R[c.id],asc=X.all.slice
   return {set:set.sort((a,b)=>a.lv-b.lv),trainees,anchors};}
 const P6_NAMES={bal:'Balanced',boss:'Boss ready',area:'Area answer',mix:'Fresh mix',rot:'Rotation',train:'Training team'};
 function p6Summary(o,X,first){const T=X.T,nm=c=>esc(c.name);
-  if(o.key==='bal')return 'One of every role first (tank, healer, damage, support, Primer and Detonator), every delivery and a spread of elements. Level and gear only settle ties.';
+  if(o.key==='bal')return 'One of every role first (tank, healer, damage, support, Primer and Detonator), every delivery and a spread of elements. Level and gear only settle ties.'+(X.shuf&&X.shuf.bal?' (Another take: near-best heroes trade places.)':'');
   if(o.key==='boss'){const els=T.boss.el.length?ELK.filter(e=>matchup(e,T.boss.el)>1).map(e=>EL[e]):[];
     return `Built to bring down ${p3BossName(T.boss)}${els.length?`: ${els.slice(0,3).join(', ')} attacks hit it hard`:''}${T.boss.ty.length?`, with answers to its ${T.boss.ty.map(a=>ARCH[a].n.toLowerCase()).join(' and ')} side`:''}. The answer sits in the vanguard.`;}
   if(o.key==='area'){const a=Object.keys(T.arch).filter(k=>T.mons.some(m=>tyOf(MON[m].art).includes(k)));
     return a.length?`Built for ${esc(ZS(T.s).n)}: answers to the ${a.map(k=>ARCH_PL[k]).join(', ')} here and their elements.`:`Built for ${esc(ZS(T.s).n)}. Little is known about its monsters yet: every fight fills the Bestiary and sharpens this pick.`;}
-  if(o.key==='mix'){const sh=o.set.filter(c=>first.includes(c.id)).length;return `Different faces in the same roles, so more of your wayfarers see battle and grow. Shares ${sh} of 6 with Balanced.`;}
+  if(o.key==='mix'){const sh=o.set.filter(c=>first.includes(c.id)).length;return `Different faces in the same roles, so more of your wayfarers see battle and grow. Shares ${sh} of 6 with Balanced.${(X.shuf&&X.shuf.mix)?' (Another take.)':''}`;}
   if(o.key==='rot')return 'The same roles again with the heroes the other formations left in reserve, so everyone keeps up.';
   if(o.key==='train')return `Your lowest levels train together: ${o.trainees.map(c=>`${nm(c)} (Lv ${c.lv})`).join(', ')}${o.anchors.length?`, with ${o.anchors.map(c=>`${nm(c)} (Lv ${c.lv})`).join(' and ')} along to fill a role nobody lower can`:''}. Catch up XP is measured against your top wayfarer (Lv ${X.top}): the further behind, the more XP, up to +${Math.round(XPCU.max*100)}% in the vanguard and +${Math.round(XPCU.max*XPCU.bench*100)}% in the rearguard.`;
   return '';}
-function bestParty(){const keep=P3C;if(!P3C)P3C={why:{},kit:{}};
+// v0.8.x shuffle: pressing the selected Balanced or Fresh mix chip again asks for another take. P.shuf[key] counts the presses; counter 0
+// is exactly the plain suggestion. Counter n>0 re-runs the search with a small, seeded per hero jitter (so near-best heroes trade places,
+// deterministic for a given counter) and skips every six already shown by this key (P.hist) and the six it must differ from (avoid).
+const P6_SHUF={bal:.55,mix:.9};
+function p6Noise(id,k,a){let h=2166136261;const t=id+'|'+k+'|'+a;for(let i=0;i<t.length;i++){h^=t.charCodeAt(i);h=Math.imul(h,16777619)>>>0;}return (h>>>0)/4294967296-.5;}
+const p6Key=set=>set.map(c=>c.id).sort().join();
+function p6Variant(X,key,n,sc,hist,avoid){const seen=new Set((avoid||[]).concat(hist.slice(0,1)));let set=null;
+  for(let k=1;k<=n;k++){
+    if(hist[k]){seen.add(hist[k]);continue;}
+    let got=null;
+    for(let a=0;a<14&&!got;a++){const amp=P6_SHUF[key]*(1+a*.25),sj=s=>sc(s)+s.reduce((v,c)=>v+amp*p6Noise(c.id,key+k,a),0),t=p6Search(X,sj);if(t.length&&!seen.has(p6Key(t)))got=t;}
+    if(!got){// jitter found nothing new: the best unseen one hero swap of the plain suggestion
+      const base=p6Search(X,sc);let b=null;for(let i=0;i<base.length;i++)X.all.forEach(c=>{if(base.includes(c))return;const t=base.slice();t[i]=c;if(seen.has(p6Key(t)))return;const v=sc(t);if(!b||v>b.v)b={t,v};});
+      got=b?b.t:null;}
+    if(!got){hist.length=1;seen.clear();(avoid||[]).forEach(x=>seen.add(x));seen.add(hist[0]);return null;}// nothing else exists
+    hist[k]=p6Key(got);seen.add(hist[k]);set=got;}
+  return set||(hist[n]?hist[n].split(',').map(id=>G.roster[id]):null);}
+function bestParty(shuf,hist0){const keep=P3C;if(!P3C)P3C={why:{},kit:{}};
   try{const X=p6Ctx(),opts=[],sets=[];
     const add=(key,set,extra)=>{if(!set||!set.length)return;const ids0=set.map(c=>c.id).sort().join();
       const same=opts.find(o=>o.set.map(c=>c.id).sort().join()===ids0);if(same&&key!=='train'){same.also=(same.also||[]).concat(P6_NAMES[key]);return;}
       const mode=key==='area'?'boss':key,placed=p6Place(set,X,mode,extra&&extra.trainees),o=Object.assign({key,name:P6_NAMES[key],set:placed},extra||{});
       o.ids=placed.map(c=>c.id);o.why=p6Why(placed,X,mode,o.trainees);o.info=p6Info(placed,X);opts.push(o);sets.push(o.ids);};
-    add('bal',p6Search(X,s=>p6Score(s,X,'bal')));
+    shuf=shuf||{};X.shuf=shuf;const hist=hist0||{};
+    const vary=(key,sc,avoid)=>{const n=shuf[key]|0,h=hist[key]=hist[key]||[];if(!h.length)h[0]=p6Key(p6Search(X,sc));
+      if(n<1)return p6Search(X,sc);const v=p6Variant(X,key,n,sc,h,avoid);if(v)return v;shuf[key]=0;return p6Search(X,sc);};// no other six exists: back to the plain one
+    add('bal',vary('bal',s=>p6Score(s,X,'bal')));
     const bk=X.T.boss?'boss':'area';add(bk,p6Search(X,s=>p6Score(s,X,'boss',sets.slice(0,1))));
-    add('mix',p6Search(X,s=>p6Score(s,X,'mix',sets.slice(0,1))));
+    add('mix',vary('mix',s=>p6Score(s,X,'mix',sets.slice(0,1)),[sets[0].slice().sort().join()]));
     const tr=p6Train(X);if(tr)add('train',tr.set,{trainees:tr.trainees,anchors:tr.anchors});
     // fewer than three different sixes (Boss ready matched Balanced, nobody to train): a Rotation gives the heroes who sat out a turn
     if(opts.length<3&&X.all.length>X.size)add('rot',p6Search(X,s=>p6Score(s,X,'rot',sets.slice())));
     const first=opts[0]?opts[0].ids:[];opts.forEach(o=>{o.sum=p6Summary(o,X,first);o.rel=opts[0]&&opts[0].info.pw?Math.round(o.info.pw/opts[0].info.pw*100):100;delete o.set;});
-    const P={opts,pick:0,T:X.T,top:X.top,noTrain:!tr};return p6Sel(P,0);}
+    const P={opts,pick:0,T:X.T,top:X.top,noTrain:!tr,shuf,hist};return p6Sel(P,0);}
   finally{P3C=keep;}}
 function p6Sel(P,j){const o=P.opts[j]||P.opts[0];if(!o)return Object.assign(P,{ids:[],why:{},info:{els:0,heal:0,tank:0,pr:0,de:0,sup:0,dmg:0}});P.pick=P.opts.indexOf(o);P.ids=o.ids;P.why=o.why;P.info=o.info;P.key=o.key;return P;}
 function mBestParty(m){const P=m.plan,o=P.opts[P.pick]||{},cur=new Set(G.party),same=P.ids.length===G.party.length&&P.ids.every(id=>cur.has(id)),I=P.info,T=P.T||p3Threats(),W=P.why||{};
@@ -118,6 +138,7 @@ function mBestParty(m){const P=m.plan,o=P.opts[P.pick]||{},cur=new Set(G.party),
   const chips=`<div class="chips bp6f" role="group" aria-label="Formations">${P.opts.map((x,j)=>`<button class="chip ${j===P.pick?'on':''}" data-act="bpPick" data-arg="${j}" aria-pressed="${j===P.pick}">${x.name}</button>`).join('')}</div>`;
   const out=G.party.filter(id=>!P.ids.includes(id));
   return box('Build party',`<p class="note">Formations built on role balance first (tank, healer, damage, support, Primer, Detonator, every delivery and element) and on what your Bestiary knows about the road ahead. Level and gear count, but only a little. Pick one:</p>${chips}
+    <p class="note bp6hint"><small>Press the selected formation again for another take.</small></p>
     ${P.noTrain?`<p class="note"><small>Training team: nobody is ${BP6.train.gap} or more levels behind your top wayfarer right now.</small></p>`:''}
     <p class="note bp6sum"><b>${esc(o.name||'')}.</b> ${o.sum||''}${o.also?` <small>(${o.also.join(' and ')} would pick the same six.)</small>`:''}</p>${p3ThreatLine(T)}
     <p class="note nums">Average Lv ${I.lv} · Power ${o.rel||100}% of Balanced · Tanks ${I.tank} · Healers ${I.heal} · Damage ${I.dmg} · Support ${I.sup} · Primers ${I.pr} · Detonators ${I.de} · Elements ${I.els}/8</p>
@@ -155,7 +176,12 @@ function autoCamp(){if(!G||G.daily)return;const party=G.party.slice(),camp=Objec
   h=h.replace('<h4>Roster</h4>',`<h4>${P6_CAMP}</h4>`);
   const camp=Object.keys(G.roster).some(id=>!G.party.includes(id));
   h=h.replace(/(<button class="btn" data-act="autoEqAll"[^>]*>[^<]*<\/button>)/,`$1<button class="btn" data-act="autoEqCamp" ${camp?'':'disabled'} title="Your reserves (heroes not in your party) get the best spare gear from the pack. Never takes anything from your party.">Equip best: reserves</button>`);}catch(e){}return h;};}
-Object.assign(ACT,{bpPick(j){const m=V.modal;if(!m||m.type!=='bp'||!m.plan||!m.plan.opts)return;p6Sel(m.plan,+j||0);sfx('blip');render();},autoEqCamp(){autoCamp();}});
+Object.assign(ACT,{bpPick(j){const m=V.modal;if(!m||m.type!=='bp'||!m.plan||!m.plan.opts)return;j=+j||0;const P=m.plan,o=P.opts[j];
+    // the chip that is already selected: Balanced and Fresh mix give another take (P.shuf counter), the rest stay as they are
+    if(o&&j===P.pick&&(o.key==='bal'||o.key==='mix')){const shuf=Object.assign({},P.shuf),hist=Object.assign({},P.hist);shuf[o.key]=(shuf[o.key]|0)+1;
+      if(o.key==='bal'){shuf.mix=0;delete hist.mix;}// Fresh mix is built against Balanced: start it over
+      const N=bestParty(shuf,hist),k=N.opts.findIndex(x=>x.key===o.key);if(k>=0){p6Sel(N,k);m.plan=N;}sfx('blip');render();return;}
+    p6Sel(P,j);sfx('blip');render();},autoEqCamp(){autoCamp();}});
 
 // ----- styles: the Epic tag (ui.js isEpic/epicTag) and the formation chips -----
 try{const st=document.createElement('style');st.textContent=`.card.hero.epic,button.mini.epic,.btile.epic{position:relative;border-color:#b06aff;box-shadow:inset 0 0 0 2px #d2a8ff,0 0 8px rgba(176,106,255,.45);overflow:visible}
