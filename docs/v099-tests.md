@@ -5,12 +5,40 @@ Owner's goal: "A few tests fail under machine load and slow every release; harde
 ## How it was measured
 
 Every runnable Chrome test (149, stale ones included) ran three times, one test at a time, on the v0.9.8 build (`sh build.sh`,
-`PWHTML=../../out/aurelis3.html`), with `tools/chrome/runall.js`. The machine was shared: another helper ran its own builds and tests at
-the same time, so the 1 minute load average went from 1 to 8 on 4 CPUs (each row of the runner's report records it). That is the
-condition the owner described. Before = the tests as they were at 976c677; after = this pass. The container restarted during the first
-measurement, so "before" is round 1 of the first run plus rounds 1 and 2 of a second run of the same tests.
+`PWHTML=../../out/aurelis3.html`), with `tools/chrome/runall.js`. The machine was shared: other helpers ran their own builds and tests at
+the same time (each row of the runner's report records the load average before and after it). Before = the tests as they were at
+976c677; after = this pass. The container restarted twice during the measurement, so the runs came in pieces (each test has 3 runs, the
+first 25 alphabetically 4); load average over the "before" runs: median 4.2 on 4 CPUs (0.7 to 8.7), over the "after" runs: median 2.2
+(0.7 to 7.1). Because "after" happened to see less load, the formerly flaky and timing sensitive tests were also run 3 more times with six
+extra busy loops on the CPUs (load 8 to 10): STRESS_RESULT
 
-RESULTS_BEFORE_AFTER
+### Flaky before (passed some runs, failed others)
+
+| test | before | after | failing check before | cause |
+|---|---|---|---|---|
+| audio | 3/4 | 3/3 | cal2 seamless loop: seam step 0.726 vs 0.347 (and the -0.99 dBFS peak of the cleanup baseline) | percussion noise starts at a `Math.random` offset |
+| audioplay | 3/4 | 6/6 | p95 frame time 66.7 ms (limit 34) at load 4.7 | raw ms limit on a busy machine |
+| smithyfuzz | 3/4 | 3/3 | crash in `shopStock` (G null) | a random click quit to the title, the next Smithy opened with no game |
+| v050p1c | 2/3 | 0/3 | field: f0 seed 807839, chest on a path tile | realm draw from `Date.now`; a real game bug (below) |
+| v050p5c | 2/3 | 3/3 (+3 under stress) | time of day: dawn > day did not blend | clocks read by the draw moved between frames; realm and tier not fixed (below) |
+| v050p6a | 2/3 | 3/3 | Auto keeps High while frames are fast: medium | the machine itself under 45 fps |
+| v071wt | 2/3 | 3/3 | the road gate walk stopped with why "input" | walk started while the key's step was still under way (not reproduced since) |
+| v077wb | 1/3 | 3/3 | medium field rain / fog: at least 50 fps (45.3, 47.9) | raw fps line on a busy machine |
+| v077wa | 3/3 (cleanup baseline: flaky) | 0/3 | 2D medium storm: 1 weather particle on the hero's face (in a later "after" round of the old version) | realm draw and camera not at rest; a real game bug (below) |
+
+Also listed as flaky by the owner and passing every run here, hardened anyway: v063wo, v062a, v080b, v063ba, v053ua, smithy3, v041p46.
+
+### Failed every run before, for a reason this pass fixed in the test
+
+| test | before | after | why it failed |
+|---|---|---|---|
+| v041old, v050p4b | 0/3 | 3/3 | read `G` in the same tick as Continue (since v0.8.5 Continue waits for the save sync) |
+| v041p1b, v070ia, v070ic, v070m2 | 0/3 | 3/3 | Auto per foe type (v0.9.8) left Auto locked; v070ia timed out at 900 s |
+| v041p47 | 0/3 | 3/3 | look keys gained a `%material` suffix (v0.8.2) |
+| v095m2 | 0/3 | 3/3 | written before the realm gates were merged (missions open in the third realm) |
+
+After: 127 of the 129 non-stale tests passed 3 of 3. The two that fail every run fail on real game bugs (below); nothing is flaky in this
+measurement. Stale tests: 20, each failing its known check (run once).
 
 ## Stale tests (fail the same way on every run, for an old reason)
 
@@ -35,12 +63,22 @@ the same tick; oldsave then stops at its stale bond check), v041p47 (look keys e
 the realm gates were merged: its journey drops `G.pcV` like an old journey; the gates are checked in v095p3), v070ia, v070ic, v070m2 and
 v041p1b (Auto per foe type, v0.9.8: the foes of the test battle count as beaten by hand, see `AUTO_OK` below).
 
-## A real game bug found (reported, not fixed: v3/ is out of scope)
+## Real game issues found (reported, not fixed: v3/ is out of scope)
 
-`v050p1c` was "flaky" because each run scanned the maps of whatever realms the journey drew from `Date.now`. It now scans a fixed set of
-realm draws (the first realm goes round all twelve), and one of them fails every time: the first field `f0` with the run seed 807839
-(k = 102) and the realm 12 first puts a chest on a path tile at 20,28 (`pathAssets` reports `C@20,28 path`; any order with 12 first
-gives it). That is a map generation bug (worldgen / pathguard), so this test now fails 3 of 3 until the game is fixed.
+1. Chest on a path (`v050p1c`, fails 3 of 3 now). The test was "flaky" because each run scanned the maps of whatever realms the journey
+   drew from `Date.now`. It now scans a fixed set of realm draws (the first realm goes round all twelve), and one of them fails every time:
+   the first field `f0` with the run seed 807839 (k = 102) and realm 12 first puts a chest on a path tile at 20,28 (`pathAssets`:
+   `C@20,28 path`; any order with 12 first gives it). A map generation bug (worldgen / pathguard).
+2. Rain ripples over the hero's face (`v077wa`, fails 3 of 3 now). On the pinned journey, 2D Medium, rain and storm: the ripple rings of
+   a puddle just north of the hero land inside his face ellipse in 57 of 150 moments. `w7Puddles` (weather7.js) fades a puddle and its
+   rings by `w7HeroK` at the puddle's centre only, and the 2D weather layer is drawn after the actors (worldrt.js worldDraw), so the rings
+   paint over his face. Unpinned runs met it rarely (one hit in 124,623 once), which is why the test looked flaky.
+3. Surge weathers mostly jump at dawn > day (borderline, `v050p5c` passes on its pinned journey). With a surge weather, the mid blend
+   frame of dawn > day is already 85 to 90% of the way to day in every realm (the test wants each half above 15%: measured 13 to 22% for
+   the second half), so the outcome depended on the realm drawn. Not a test problem: part of that look follows the clock phase without the
+   blend.
+4. Fog at Low does not blend the time of day (`v050p5c` with gfx Low: dusk > night and dawn > day start from a different look, d0 15).
+   The test runs at Medium (Auto's start tier); before, a busy machine could drop Auto to Low and fail it.
 
 ## The helpers (tools/chrome/pw.js)
 
@@ -66,8 +104,9 @@ Load and timing (the flaky ones):
 - `v050p5c` (dawn > day and other blends): the frames are drawn by hand at a fixed `now`, but the draw also reads the location banner's
   fade (`Date.now`), the arrival fade-in and the chest animations (`performance.now`); on a busy machine more time passed between two
   frames and the banner's alpha moved the "start from the old look" difference over its line. Each hand drawn frame now holds both clocks
-  at the frame's moment (the test's stated intent: "only the blend moves"). The blend cost check alternates plain and blending batches
-  and keeps the best of each.
+  at the frame's moment (the test's stated intent: "only the blend moves"). The journey is pinned (`H.det`) and the tier is Medium, so
+  the scene is the same every run (issues 3 and 4 above). The blend cost check alternates plain and blending batches and keeps the best
+  of each.
 - `v071wt` (the road gate walk stopped with why "input"): the gate walk now starts from rest (no step under way, no key, drag, tap, pad
   or joystick held; `H.until`, 8 s), and when a walk stops early the check prints the input sources the walk saw (`inputSources()`), so
   a repeat names its cause. It could not be reproduced again in 8 runs (4 with extra CPU load); no game bug is known here.
@@ -102,9 +141,11 @@ Load and timing (the flaky ones):
 Old reasons (failed every run): `oldsave`, `v041old`, `v050p4b` (wait for the journey after Continue), `v041p47` (look key), `v095m2`
 (journey without the realm gates), listed above.
 
-Known flaky tests that passed every run of this measurement and were still hardened: `v080b` (its battle start check already measured
-layout boxes per frame; unchanged), `v077wa` (unchanged; its face checks are drawn at fixed times), `v063ba`, `v053ua`, `v062a`, `v063wo`,
-`smithy3`.
+- `v077wa` (particle on face counts): the journey is pinned and the 2D sweeps wait for the camera to rest (`H.settle` on the camera and
+  the hero's tile, 5 frames) after placing the hero, since the weather scrolls with the camera; this exposed issue 2 above.
+
+`v080b` (battle start shift) passed every run before and after and is unchanged: its check already reads layout boxes on every frame
+and waits for the first hero turn.
 
 ## The runner (tools/chrome/runall.js)
 
