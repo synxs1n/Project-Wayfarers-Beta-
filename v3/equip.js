@@ -32,7 +32,7 @@ function gainFor(c,id){const g=gearOf(id);if(!g||!canEquip(c,id))return null;con
 // heroes who can use an item, best upgrade first
 let FITC=null;// per-render cache: shop rows ask about the same item for every hero, which was O(items x roster x stats)
 function fitsFor(id){if(FITC&&FITC[id])return FITC[id];const r=Object.values(G.roster).map(c=>({c,g:gainFor(c,id)})).filter(o=>o.g).sort((x,y)=>y.g.d-x.g.d||G.party.indexOf(y.c.id)-G.party.indexOf(x.c.id));if(FITC)FITC[id]=r;return r;}
-{const r0=render;render=function(){FITC={};try{return r0.apply(this,arguments);}finally{FITC=null;}};}
+HOOK.wrap('render','equip','per-render fit cache (FITC)',function(next,...a){FITC={};try{return next(...a);}finally{FITC=null;}});
 // ----- auto best gear -----
 // ----- the Equipment tab -----
 // v0.8.3: only the party (the owner's call); reserves are geared with Equip best: reserves or from their sheet in Party
@@ -72,7 +72,7 @@ function watchGear(fn,now){return function(){const b=G?G.gear.slice():[];const r
 {const w0=win;win=watchGear(w0);}
 {const oc=typeof openChest==='function'?openChest:null;if(oc)openChest=watchGear(oc);}
 {const cq=claimQuest;claimQuest=watchGear(cq);}
-{const r0=render;render=function(){if(G&&!G.daily&&!V.modal&&V.screen==='world'&&!B&&V.gearQueue&&V.gearQueue.length&&!WS.dlg){const id=V.gearQueue.shift();if(G.gear.includes(id))V.modal={type:'equipNow',id};}return r0.apply(this,arguments);};}
+HOOK.before('render','equip','open "Equip this now?" for queued new gear',function(){if(G&&!G.daily&&!V.modal&&V.screen==='world'&&!B&&V.gearQueue&&V.gearQueue.length&&!WS.dlg){const id=V.gearQueue.shift();if(G.gear.includes(id))V.modal={type:'equipNow',id};}});
 {const vm0=vModal;vModal=function(m){if(m){if(m.type==='eqPick')return mEquipPick(m);if(m.type==='autoEq')return mAutoEq(m);if(m.type==='equipNow')return mEquipNow(m);}return vm0.apply(this,arguments);};}
 Object.assign(ACT,{
   eqPick(a){const [id,sl]=a.split(',');V.modal={type:'eqPick',char:id,slot:sl,list:(V.charList||[]).slice(),from:V.modal};render();},

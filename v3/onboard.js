@@ -255,7 +255,7 @@ function obTick(){try{obOpened();
 }catch(e){}}
 OB.tick=setInterval(obTick,OB_TICK);
 // keep the card in its window across re-renders, and on a free spot of the stage as the battle moves
-{const r0=render;render=function(){const r=r0.apply(this,arguments);try{if(OB.cur&&OB.el){if(V.modal||V.screen==='starter'||!OB.el.isConnected)obMount();else if(V.screen==='battle'){OB.el.classList.remove('inl');OB.el.classList.add('bat');hintPlace(OB.el);}}}catch(e){}return r;};}
+HOOK.after('render','onboard','keep the tip card placed',function(){try{if(OB.cur&&OB.el){if(V.modal||V.screen==='starter'||!OB.el.isConnected)obMount();else if(V.screen==='battle'){OB.el.classList.remove('inl');OB.el.classList.add('bat');hintPlace(OB.el);}}}catch(e){}});
 
 // ----- what counts as using a system (for What next?) -----
 {const c0=ACT.cmd;if(c0)ACT.cmd=function(a){try{if(B&&B.mode==='cmd'&&!G.daily){if(a==='scan')tipUse('scan');if(a==='lore')tipUse('lore');if(a==='swap'&&canSwap())tipUse('switch');if(a==='limit'&&B.cur&&lbReady(B.cur))tipUse('limit');}}catch(e){}return c0.apply(this,arguments);};}

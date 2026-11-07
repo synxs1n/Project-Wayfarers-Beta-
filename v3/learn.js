@@ -23,8 +23,8 @@ function lnShow(){let el=document.getElementById('lnq');if(!el){el=document.crea
   if(el.children.length||!LNQ.length)return;const o=LNQ.shift();const d=document.createElement('button');d.className='lnn';d.innerHTML=learnLine(o)+'<small>Tap to dismiss</small>';el.appendChild(d);
   if(typeof sfx==='function')sfx('blip');lnT=setTimeout(()=>{d.remove();lnT=null;lnShow();},4200);}
 let lnLast=0;
-{const r0=render;render=function(){const r=r0.apply(this,arguments);try{const now=Date.now();if(G&&!B&&!G.daily&&now-lnLast>400&&!(V.modal&&V.modal.type==='result')){lnLast=now;const L=learnScanAll();if(L.length)lnQueue(L);}
-  if(!(V.modal&&(V.modal.type==='char'||(V.modal.type==='guild'&&V.modal.char))))V._skShown={};}catch(e){}return r;};}
+HOOK.after('render','learn','queue new skill notices',function(){try{const now=Date.now();if(G&&!B&&!G.daily&&now-lnLast>400&&!(V.modal&&V.modal.type==='result')){lnLast=now;const L=learnScanAll();if(L.length)lnQueue(L);}
+  if(!(V.modal&&(V.modal.type==='char'||(V.modal.type==='guild'&&V.modal.char))))V._skShown={};}catch(e){}});
 // the hero sheet: "New" badges until the sheet has been opened
 {const mc0=mChar;mChar=function(id,edit){V._skShown=V._skShown||{};if(G&&G.skNew&&G.skNew[id]&&G.skNew[id].length&&!V._skShown[id]){V._skShown[id]=G.skNew[id].slice();delete G.skNew[id];}
   let h=mc0.apply(this,arguments);const ids=V._skShown[id];if(!ids||!ids.length||!G.roster[id])return h;const c=G.roster[id],i=h.indexOf('<h4>Skills</h4>');if(i<0)return h;

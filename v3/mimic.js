@@ -20,8 +20,8 @@ function isMimic(m,x,y){if(!m||m.kind!=='dungeon'||m.archive||m.t[y][x]!=='C')re
 {const w0=win;win=function(){const sp=B&&B.spec,mm=sp&&sp.mimic;const r=w0.apply(this,arguments);
   if(mm&&G){try{const bonus=150+120*sp.stage;G.gold+=bonus;V.mimicLoot={x:mm.x,y:mm.y,bonus};}catch(e){}}return r;};}
 // after the result screen, back on the map: the chest opens normally (its loot), plus the bonus line
-{const r0=render;render=function(){if(V.mimicLoot&&!B&&!V.modal&&V.screen==='world'&&WS.m&&!WS.dlg){const L=V.mimicLoot;V.mimicLoot=null;const key=WS.m.id+':'+L.x+','+L.y;
-    if(!G.chests[key]){mimicReward(L.x,L.y,L.bonus);}}return r0.apply(this,arguments);};}
+HOOK.before('render','mimic','mimic loot after the fight, back on the map',function(){if(V.mimicLoot&&!B&&!V.modal&&V.screen==='world'&&WS.m&&!WS.dlg){const L=V.mimicLoot;V.mimicLoot=null;const key=WS.m.id+':'+L.x+','+L.y;
+    if(!G.chests[key]){mimicReward(L.x,L.y,L.bonus);}}});
 // v0.4.1 1.2: a slain mimic and its chest vanish, and it drops a better reward than any ordinary chest (a tier above, plus a charm and gold)
 function mimicReward(x,y,bonus){const m=WS.m,key=m.id+':'+x+','+y;G.chests[key]=2;if(typeof sfx==='function')sfx('chest');
   const s=m.s,tier=Math.min(5,s+2),gid=lootBase()+'_'+tier+'+1',cid=pick(['c_vital','c_mana','c_swift','c_clarity','c_'+pick(ELK)]);

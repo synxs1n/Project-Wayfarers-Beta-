@@ -128,6 +128,7 @@ function render(){
   document.body.classList.toggle('noscroll',!!m);
   musicSync();
 }
+render=HOOK.def('render',render);// v0.9.9: one definition; modules add hooks (hooks.js, docs/v099-hooks.md)
 function musicSync(){
   if(V.screen==='title'||V.screen==='starter')return playMusic('title');
   if(V.screen==='battle'&&B){if(V.modal&&V.modal.type==='result')return playMusic('victory');return playMusic(B.boss||B.en.some(e=>e.elite)?'boss':'battle');}

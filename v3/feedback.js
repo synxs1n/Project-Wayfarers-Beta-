@@ -14,10 +14,9 @@ const fbStat=k=>(FB_STATUS.find(c=>c[0]===k)||[k,k])[1];
 function fbEvent(s){FB.events.push({t:Date.now(),e:String(s).slice(0,140)});if(FB.events.length>10)FB.events.shift();}
 // ----- hooks: record screen changes, locations, battles and toasts -----
 {
-  const r0=render;render=function(){const mt=V.modal?V.modal.type:null;
+  HOOK.before('render','feedback','log screen and popup changes for bug reports',function(){const mt=V.modal?V.modal.type:null;
     if(V.screen!==FB.lastScreen){FB.lastScreen=V.screen;fbEvent('screen: '+V.screen);}
-    if(mt!==FB.lastModal){FB.lastModal=mt;if(mt&&mt!=='feedback'&&mt!=='fbcopy')fbEvent('opened: '+mt+(V.modal.tab?' / '+V.modal.tab:''));}
-    return r0();};
+    if(mt!==FB.lastModal){FB.lastModal=mt;if(mt&&mt!=='feedback'&&mt!=='fbcopy')fbEvent('opened: '+mt+(V.modal.tab?' / '+V.modal.tab:''));}});
   const t0=toast;toast=function(m){fbEvent('toast: '+m);return t0(m);};
   const s0=showLocation;showLocation=function(){const r=s0.apply(this,arguments);if(WS.m)fbEvent('arrived: '+locName(WS.m)+' ('+WS.m.kind+')');return r;};
   const b0=startBattle;startBattle=function(spec){const r=b0.apply(this,arguments);if(r!==false&&B)fbEvent(`battle start: ${spec.kind}, stage ${spec.stage}, seed ${B.seed}`);return r;};

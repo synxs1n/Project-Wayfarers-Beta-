@@ -8,7 +8,7 @@ function mInn(){
     <p class="note">A warm bed for your wayfarers. Rest restores HP and MP, clears ailments and brings the morning.${ok?'':' You cannot afford a room right now.'}</p>`,
     '<button class="btn" data-act="closeModal">Leave</button>');
 }
-{const r0=render;render=function(){const r=r0.apply(this,arguments);try{if(V.modal&&V.modal.type==='inn'){const b=document.querySelector('#modal [data-act="rest"]');if(b&&!document.querySelector('#modal :focus')&&!b.disabled)b.focus({preventScroll:true});const p=document.querySelector('#modal .panel');if(p)p.scrollTop=0;}}catch(e){}return r;};}
+HOOK.after('render','town2','focus Rest in the Inn',function(){try{if(V.modal&&V.modal.type==='inn'){const b=document.querySelector('#modal [data-act="rest"]');if(b&&!document.querySelector('#modal :focus')&&!b.disabled)b.focus({preventScroll:true});const p=document.querySelector('#modal .panel');if(p)p.scrollTop=0;}}catch(e){}});
 // ----- bonds on the hero sheet -----
 function bondScenes(b){const S=[{lv:1,lines:b.talk,n:'Campfire talk'}];if(b.talk2)S.push({lv:3,lines:b.talk2,n:'Second talk'});return S;}
 const talkPending=(k,lv)=>(G.talks||[]).some(t=>t.k===k&&(t.lv===lv||(t.lv>=3&&lv===1&&!BONDMAP[k].talk2)));
@@ -38,6 +38,6 @@ Object.assign(ACT,{wxInfo(k){V.modal={type:'wxinfo',kind:k,from:V.modal};render(
 // Keyboard "clicks" (detail 0) are dropped while the key that opened the popup is still held.
 let MODAL_LAST=null;
 let MODAL_KEY=null;
-{const r1=render;render=function(){const was=MODAL_LAST,now=V.modal&&V.modal.type||null;if(now&&now!==was){try{MODAL_KEY=[...KEYS_DOWN].find(k=>k===' '||k==='Enter')||null;}catch(e){MODAL_KEY=null;}}MODAL_LAST=now;return r1.apply(this,arguments);};}
+HOOK.before('render','town2','note the key that opened a popup (key guard)',function(){const was=MODAL_LAST,now=V.modal&&V.modal.type||null;if(now&&now!==was){try{MODAL_KEY=[...KEYS_DOWN].find(k=>k===' '||k==='Enter')||null;}catch(e){MODAL_KEY=null;}}MODAL_LAST=now;});
 window.addEventListener('keyup',e=>{if(MODAL_KEY&&e.key===MODAL_KEY)setTimeout(()=>{MODAL_KEY=null;},0);},true);
 document.addEventListener('click',e=>{if(e.detail===0&&MODAL_KEY&&e.target&&e.target.closest&&e.target.closest('#modal')){e.stopPropagation();e.preventDefault();}},true);

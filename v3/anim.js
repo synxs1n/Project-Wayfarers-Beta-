@@ -59,4 +59,4 @@ function converge(x,y,col,start){for(let i=0;i<10;i++){const a=i/10*Math.PI*2,r=
 // reduced motion: no screen shake
 {const bf0=battleFrame;battleFrame=function(now){if(gfxStill())BV.shake=null;return bf0.apply(this,arguments);};}
 // menus and the map: a short fade when a window first opens (not on every refresh)
-{const r0=render;render=function(){const key=V.modal?V.modal.type+':'+(V.modal.tab||''):null;const r=r0.apply(this,arguments);try{if(key&&key!==V._animKey&&!gfxStill()){const el=document.querySelector('#modal .modal')||document.querySelector('#modal > *');if(el){el.classList.remove('menter');void el.offsetWidth;el.classList.add('menter');}}V._animKey=key;}catch(e){}return r;};}
+HOOK.wrap('render','anim','popup open fade',function(next,...a){const key=V.modal?V.modal.type+':'+(V.modal.tab||''):null;const r=next(...a);try{if(key&&key!==V._animKey&&!gfxStill()){const el=document.querySelector('#modal .modal')||document.querySelector('#modal > *');if(el){el.classList.remove('menter');void el.offsetWidth;el.classList.add('menter');}}V._animKey=key;}catch(e){}return r;});

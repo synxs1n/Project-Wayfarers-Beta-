@@ -108,7 +108,7 @@ function v063Notes(){if(!G||G.daily||B||V.screen!=='world'||V.modal)return;
   const n=(G.talks||[]).length;if(G.talkN==null||n<G.talkN)G.talkN=n;
   else if(n>G.talkN){G.talkN=n;const T=readyTalks(),o=T[T.length-1];if(o){toast(`Campfire talk ready: ${TPL[o.b.a].n} and ${TPL[o.b.b].n}. Make camp or open a sheet to listen.`);return;}}
   if(!G.campNote&&(G.stage|0)>=CAMP.fromStage&&WS.m&&WS.m.kind==='town'){G.campNote=1;toast('New at Alchemy: Camp Supplies. Make camp in the field to rest a little and pick a boon.');}}
-{const r0=render;render=function(){const r=r0.apply(this,arguments);try{v063Notes();}catch(e){}return r;};}
+HOOK.after('render','v063prog','progression notes',function(){try{v063Notes();}catch(e){}});
 
 // ----- taming log -----
 function tameName(o){const m=MON[o.mon]||guardianDef(o.mon);return m&&m.n;}

@@ -44,9 +44,9 @@ function bossEnergyText(s){let n='The Scourge';try{const d=guardianDef(bossKeyFo
 {const w0=win;win=function(){let first=null;try{if(B&&G&&!G.daily&&B.spec&&B.spec.kind==='boss'&&G.cleared&&!G.cleared[B.stage])first=B.stage;}catch(e){}
   const r=w0.apply(this,arguments);try{if(first!=null&&G.cleared[first]){V.bossEnergy=first;V.bossEnergyAt=WS.m&&WS.m.id;}}catch(e){}return r;};}
 // shown in that dungeon as soon as the world has no other popup (new gear popups first); dropped once you have left it. Shown (the Calamity's Legacy choice carries it as a line instead)
-{const r0=render;render=function(){try{if(V.bossEnergy!=null&&!B&&V.screen==='world'&&G&&WS.m&&V.bossEnergyAt&&WS.m.id!==V.bossEnergyAt&&WS.m.kind!=='dungeon'){V.bossEnergy=null;}// left the place before it could show
+HOOK.before('render','p4party',"the boss's lingering energy popup",function(){try{if(V.bossEnergy!=null&&!B&&V.screen==='world'&&G&&WS.m&&V.bossEnergyAt&&WS.m.id!==V.bossEnergyAt&&WS.m.kind!=='dungeon'){V.bossEnergy=null;}// left the place before it could show
   if(V.bossEnergy!=null&&!B&&V.screen==='world'&&G){if(!V.modal&&!(V.gearQueue&&V.gearQueue.length)){V.modal={type:'bossEnergy',s:V.bossEnergy};V.bossEnergy=null;}
-  else if(V.modal.type==='legacy'){V.modal.energy=V.bossEnergy;V.bossEnergy=null;}}}catch(e){}return r0.apply(this,arguments);};}
+  else if(V.modal.type==='legacy'){V.modal.energy=V.bossEnergy;V.bossEnergy=null;}}}catch(e){}});
 {const vm1=vModal;vModal=function(m){
   if(m&&m.type==='bossEnergy')return box('Its energy lingers',`<p class="story">${esc(bossEnergyText(m.s))}</p><p class="note">The Echo is optional. The way on is already open.</p>`,'<button class="btn gold" data-act="closeModal">Onward</button>');
   let h=vm1.apply(this,arguments);try{if(m&&m.type==='legacy'&&m.energy!=null&&typeof h==='string'){const k=h.indexOf('</h2>');if(k>0)h=h.slice(0,k+5)+`<p class="story bossen">${esc(bossEnergyText(m.energy))}</p>`+h.slice(k+5);}}catch(e){}return h;};}

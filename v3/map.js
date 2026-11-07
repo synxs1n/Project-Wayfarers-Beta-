@@ -79,7 +79,7 @@ function miniOn(){const c=META.cfg.minimap;if(c===true||c===false)return c;if(!M
 function ensureMini(){try{if(V.screen==='world'&&!document.getElementById('mmap')){const wv=document.querySelector('.wview');if(wv){wv.insertAdjacentHTML('beforeend','<canvas id="mmap" class="mmap" width="112" height="84" aria-hidden="true"></canvas>');}}drawMini();}catch(e){}}
 {const wu0=wkwUpdate;wkwUpdate=function(){try{wu0.apply(this,arguments);}catch(e){try{wdLog('wkwUpdate: '+e.message);}catch(_){}}ensureMini();};}
 // deferred to the next frame (and coalesced) so a render never pays for a forced layout here
-let miniRaf=0;{const r0=render;render=function(){const r=r0.apply(this,arguments);if(V.screen==='world'&&!miniRaf)miniRaf=requestAnimationFrame(()=>{miniRaf=0;ensureMini();});return r;};}
+let miniRaf=0;HOOK.after('render','map','make sure the minimap exists (next frame)',function(){if(V.screen==='world'&&!miniRaf)miniRaf=requestAnimationFrame(()=>{miniRaf=0;ensureMini();});});
 // ----- full map -----
 function legendKeys(L){const ks=[];L.forEach(o=>{const k=mapIcoKey(o);if((MAPICO_NAME[k]||MKN[k])&&!ks.includes(k))ks.push(k);});return ks;}
 function mMap(){const m=WS.m;if(!m)return '';const lbl=m.cave?m.name:m.archive?(m.hub||'The Archive'):m.kind==='town'?ZS(m.s).town:m.kind==='field'?ZS(m.s).n:ZS(m.s).dungeon;

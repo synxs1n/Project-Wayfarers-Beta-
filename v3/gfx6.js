@@ -57,7 +57,7 @@ const PARA_SPLIT={meadow:.3,coast:.5,cave:.3,snow:.18,heights:.5,void:.42};// sk
 // title screen: a slow drift of the backdrop layers (frozen under reduced motion)
 {const td0=titleDraw;titleDraw=function(ctx,W,H,now){PARA.on=!!GFX.q.parallax&&!GFX.off;PARA.off=gfxStill()?0:Math.sin(now/GFX_PARA.titleMs*Math.PI*2);try{return td0.apply(this,arguments);}finally{PARA.on=false;}};}
 // ----- menus: depth of field (the scene behind an open menu dims or blurs, by tier) -----
-{const r0=render;render=function(){const r=r0.apply(this,arguments);try{document.documentElement.classList.toggle('mopen',!!V.modal&&(V.screen==='world'||V.screen==='battle'));}catch(e){}return r;};}
+HOOK.after('render','gfx6','menu depth of field class',function(){try{document.documentElement.classList.toggle('mopen',!!V.modal&&(V.screen==='world'||V.screen==='battle'));}catch(e){}});
 // ----- Settings > Graphics -----
 function gfxRow(){const c=gfxCfg(),lab={auto:'Auto',low:'Low',medium:'Medium',high:'High'},T=gfxTier();
   const chips=['auto','low','medium','high'].map(k=>`<button class="chip ${c===k?'on':''}" data-act="cfg" data-arg='["gfx","${k}"]'>${lab[k]}</button>`).join('');

@@ -13,7 +13,7 @@
 
 // ----- per render cache (gains are asked for many times while one screen is drawn) -----
 let P3C=null;
-{const r0=render;render=function(){P3C={why:{},kit:{}};try{return r0.apply(this,arguments);}finally{P3C=null;}};}
+HOOK.wrap('render','p3shop','per-render Best Party cache (P3C)',function(next,...a){P3C={why:{},kit:{}};try{return next(...a);}finally{P3C=null;}});
 const p3c=()=>P3C||{why:{},kit:{}};
 
 // ===================== 3.1 / 3.2: best for party =====================

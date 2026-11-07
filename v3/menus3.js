@@ -13,7 +13,7 @@ function ddBar(parts,cls){parts=parts.filter(Boolean);return parts.length?`<div 
 document.addEventListener('change',e=>{const t=e.target;if(!t||!t.matches||!t.matches('select[data-chg]'))return;const f=ACT[t.dataset.chg];if(!f)return;
   V._ddFocus=[t.dataset.chg,t.dataset.pre];try{if(typeof sfx==='function')sfx('blip');}catch(x){}f(t.dataset.pre+':'+t.value,t);});
 // keep focus on the dropdown after the re-render it causes (keyboard and pad users)
-{const r0=render;render=function(){const r=r0.apply(this,arguments);try{const k=V._ddFocus;if(k){V._ddFocus=null;const s=[...document.querySelectorAll('#modal select[data-chg]')].find(x=>x.dataset.chg===k[0]&&x.dataset.pre===k[1]);if(s)s.focus({preventScroll:true});}}catch(e){}return r;};}
+HOOK.after('render','menus3','keep dropdown focus',function(){try{const k=V._ddFocus;if(k){V._ddFocus=null;const s=[...document.querySelectorAll('#modal select[data-chg]')].find(x=>x.dataset.chg===k[0]&&x.dataset.pre===k[1]);if(s)s.focus({preventScroll:true});}}catch(e){}});
 
 // ----- the shop filter state (META.cfg.shopF) -----
 const M3_SORT={best:'Best for party',rarity:'Rarest first',ready:'Ready first',price:'Cheapest first',name:'Name'};

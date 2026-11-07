@@ -472,7 +472,7 @@ document.addEventListener('change',e=>{const f=e.target&&e.target.id==='svfile'&
   if(f.size>4000000){toast('That file is too big to be a save.');return;}
   const r=new FileReader();r.onload=()=>{const t=$('impta');if(t)t.value=String(r.result||'');toast('File loaded. Tap Check it.');};r.onerror=()=>toast('Could not read that file.');r.readAsText(f);});
 // the status icon follows the screen
-{const r0=render;render=function(){const x=r0.apply(this,arguments);try{svIcon();}catch(e){}return x;};}
+HOOK.after('render','saves','save status icon',function(){try{svIcon();}catch(e){}});
 // old helpers keep working: importSave now reports through the same checks and never writes anything itself
 function importSave(code){const r=svDecode(code);if(!r.ok)return null;try{return unpackG(r.o);}catch(e){return null;}}
 ACT.doImport=function(){ACT.svImportGo();};

@@ -129,7 +129,7 @@ function glRender(){try{const e0=document.getElementById('glp');
   if(GL.sig!==sig){e.innerHTML=glHtml(L,mode,mode==='chip'&&!user);GL.sig=sig;}
   e.className='gl '+mode+(Date.now()-GL.flash<3000?' flash':'');
   e.style.left=at.x+'px';e.style.top=at.y+'px';GL.pos=at;}catch(err){}}
-{const r0=render;render=function(){const r=r0.apply(this,arguments);try{if(V.screen==='world'&&!B){glCheck();}glRender();}catch(e){}return r;};}
+HOOK.after('render','goals','Next goals panel',function(){try{if(V.screen==='world'&&!B){glCheck();}glRender();}catch(e){}});
 GL.tick=setInterval(()=>{try{if(V.screen==='world'&&!B)glRender();}catch(e){}},350);
 // the corner save note keeps clear of the panel
 if(typeof p5Avoid==='function'){const pa2=p5Avoid;p5Avoid=function(){const r=pa2.apply(this,arguments);try{const d=document.getElementById('glp');if(d&&d.style.display!=='none'){const b=d.getBoundingClientRect();if(b.width)r.push(b);}}catch(e){}return r;};}
