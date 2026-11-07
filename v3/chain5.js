@@ -25,12 +25,11 @@ function c5PlanTarget(u,p){try{if(!B||!p||!p.sk||!c5Single(p.sk)||p.sk.t==='self
 {const fp0=foePlan;foePlan=function(u){const p=fp0.apply(this,arguments);try{if(p&&!p.c5){p.c5=1;p.tgt=c5PlanTarget(u,p);}}catch(e){}return p;};}
 // the plan a foe is acting on (enemyTurn0 reads foePlan first thing, then bumps u.turns)
 {const et0=enemyTurn0;enemyTurn0=function(u){try{if(u&&u.side==='e')u._c5used=foePlan(u);}catch(e){}return et0.apply(this,arguments);};}
-HOOK.before('perform','chain5','aim at the planned hero',function(a,sk,tgts){try{if(!B||!a||a.side!=='e'||!tgts||tgts.length!==1)return;const p=a._c5used;if(!p||!p.tgt||p.n!==a.turns)return;
-  const same=p.sk===sk||(sk&&p.sk&&sk.id===p.sk.id)||(sk&&sk.id==='attack'&&p.sk===ATTACK);if(!same||!c5Single(sk))return;
-  const t=p.tgt,cur=tgts[0];if(!cur||cur.side!=='p')return;if(has(cur,'taunt')&&!has(t,'taunt'))return;if(t.hp<=0||!B.front.includes(t))return;
-  tgts[0]=t;
-  // the reward: a guard that caught the planned hit makes the hero quick
-  if(t.guard&&(sk.k==='phys'||sk.k==='mag')){t.c5q=1;fx(t,'Braced!','stat good');}}catch(e){}});
+function c5PlanAim(u,p,sk,tg,live){try{if(!p||!p.tgt||!tg||tg.length!==1||!c5Single(sk))return tg;const same=p.sk===sk||(sk&&p.sk&&sk.id===p.sk.id)||(sk&&sk.id==='attack'&&p.sk===ATTACK);if(!same)return tg;
+  const t=p.tgt,cur=tg[0];if(!cur||cur.side!=='p')return tg;if(has(cur,'taunt')&&!has(t,'taunt'))return tg;if(t.hp<=0||!(live||B.front).includes(t))return tg;return [t];}catch(e){return tg;}}
+// the reward: a guard that caught the planned hit makes the hero quick
+HOOK.before('perform','chain5','a guarded planned hit makes the hero quick',function(a,sk,tgts){try{if(!B||!a||a.side!=='e'||!tgts||tgts.length!==1)return;const p=a._c5used;if(!p||!p.tgt||p.n!==a.turns)return;const t=tgts[0];
+  if(t===p.tgt&&t.guard&&(sk.k==='phys'||sk.k==='mag')){t.c5q=1;fx(t,'Braced!','stat good');}}catch(e){}});
 {const en0=endTurn;endTurn=function(u,cost){try{if(u&&u.c5q&&u.side==='p'){u.c5q=0;cost=(cost==null?1:cost)*(G5.quick||.7);log(`${u.name} shrugs off the blow and moves quickly.`);}}catch(e){}return en0.call(this,u,cost);};}
 // ----- the cue -----
 function c5Est(u,sk,t){try{const r0=RNG;RNG=()=>.5;try{const r=calcDamage(u,sk,t);return (r&&r.dmg||0)*(sk.hits||1);}finally{RNG=r0;}}catch(e){return 0;}}

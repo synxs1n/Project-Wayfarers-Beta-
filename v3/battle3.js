@@ -150,12 +150,13 @@ function b3FxRects(now){if(!B)return [];const L=b3Lay();if(!L)return [];let top=
   B.en.concat(B.front).forEach(u=>{if(!u||!u.fx||!u.fx.length)return;const b=unitBox(u);if(!b)return;
     const live=u.fx.filter(f=>now-f.t<(fxDur(f)*1000+IMPACT+FX_STAG*6));if(!live.length)return;
     const used=new Set(live.filter(f=>f.slot!=null).map(f=>f.slot));live.forEach(f=>{if(f.slot==null){let s=0;while(used.has(s))s++;f.slot=s;used.add(s);f.stg=Math.min(s,5)*FX_STAG;}});
-    live.sort((a,b)=>a.slot-b.slot);const bd=(L.bodies.find(q=>q.u===u)||{}).r||{x:b.x-b.w/2,y:b.y-b.h,w:b.w,h:b.h};
+    live.sort((a,b)=>((b.cls==='react')-(a.cls==='react'))||a.slot-b.slot);/* v0.10.7: the reaction takes the spot over the head before any other text on that foe */const bd=(L.bodies.find(q=>q.u===u)||{}).r||{x:b.x-b.w/2,y:b.y-b.h,w:b.w,h:b.h};
     live.forEach(f=>{const rx=f.cls==='react',fs=base*fxScale(f),tw=(rx?b3TextW('✸ '+f.txt,fs,900)+2*(fs+1)+6:b3TextW(f.txt,fs,900)+3+(/crit/.test(f.cls)?fs*.45:0))*1.1+2,w=Math.ceil(tw),h=Math.ceil(fs*1.45+(rx?2:0))+B3.fxRise;
       // over the head, over (or under) the unit's own plate when that sits there, beside the body, under the feet; near first, then wider
       const A=[{x:b.x-w/2,y:bd.y-h-1,c:0},{x:bd.x+bd.w+1,y:bd.y,c:5},{x:bd.x-w-1,y:bd.y,c:5},{x:b.x-w/2,y:Math.max(b.y,bd.y+bd.h)+1,c:8}],p=L.plates.get(u);
       if(p)A.push({x:p.x+p.w/2-w/2,y:p.y<bd.y?p.y-h-1:p.y+p.h+1,c:1});
-      const r=b3Find(w,h,A,obs,W,H,B3.R*.7)||b3Find(w,h,A,obs,W,H,B3.R*1.6);if(!r){f._hid=1;return;}f._hid=0;obs.push({x:r.x,y:r.y,w:r.w,h:r.h,f});out.push({u,f,r,fs});});});
+      const obsU=rx?obs.filter(o=>!((o.kind==='plate'||o.kind==='intent'||o.kind==='prim')&&o.u===u)):obs;// v0.10.7: a reaction stays over its foe's head even when the HP plate sits there (it used to drift beside the body)
+      const r=b3Find(w,h,A,obsU,W,H,B3.R*.7)||b3Find(w,h,A,obs,W,H,B3.R*1.6);if(!r){f._hid=1;return;}f._hid=0;obs.push({x:r.x,y:r.y,w:r.w,h:r.h,f});out.push({u,f,r,fs});});});
   return out;}
 
 // ----- 3) detonators -----

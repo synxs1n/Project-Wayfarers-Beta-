@@ -57,6 +57,7 @@ function enemyTurn0(u){
       const packed=!u.boss&&!u.elite&&!(G&&G.daily)&&(B.stage||0)>=(PACK.fromStage||0)&&B.en.filter(e=>e.hp>0&&!e.boss&&!e.elite).length>1;
       if(packed&&B.packT&&B.packT.hp>0&&live.includes(B.packT)&&RNG()<PACK.focus)tg=[B.packT];
       else{tg=[RNG()<.3?low:pick(live)];if(packed)B.packT=tg[0];}}}
+  if(typeof c5PlanAim==='function')tg=c5PlanAim(u,plan,sk,tg,live);// v0.10.7: the planned hero (chain5.js) before the ring and the hit
   if(sk.hits===1&&u.multi>1&&sk.t==='one')sk=Object.assign({},sk,{hits:u.multi});
   B5R.trace.push({foe:u.name,turn:u.turns,plan:plan&&plan.cat,did:b5Cat(sk),sk:sk.n,shown,known:b5Knows(u)});if(B5R.trace.length>400)B5R.trace.shift();
   const go=m=>{B.b5m=m;try{perform(u,sk,tg);}finally{if(B)B.b5m=null;}endTurn(u,1);};
