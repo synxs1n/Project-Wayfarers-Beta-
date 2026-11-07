@@ -3,7 +3,7 @@
 // Usage (from tools/chrome, after `sh build.sh` at the repo root):
 //   PWHTML=../../out/aurelis3.html node runall.js [set ...] [--repeat N] [--timeout SEC] [--json FILE] [--stale] [--list]
 //   set = all (default: every runnable test that is not stale) | a group (battle, world, menus, party, saves, audio, title, app)
-//         | a test name (v063wo or v063wo.js) | stale (the tests that fail for old reasons, listed in STALE below)
+//         | a test name (v063wo or v063wo.js; audio.js is the test, audio the group) | stale (the tests that fail for old reasons, listed in STALE below)
 //   --repeat N   run the whole set N times (rounds, one test at a time) and report the pass rate per test
 //   --timeout S  per test timeout in seconds (default 600; a test can have its own in SLOW); a timed out test is killed with its browsers
 //   --json FILE  where the report goes (default: runall-report.json in the scratch dir given by RUNALL_OUT, else /tmp)
@@ -64,14 +64,15 @@ function parseArgs(argv){const o={sets:[],repeat:1,timeout:600,json:null,stale:f
   for(let i=0;i<argv.length;i++){const a=argv[i];
     if(a==='--repeat')o.repeat=+argv[++i];else if(a==='--timeout')o.timeout=+argv[++i];else if(a==='--json')o.json=argv[++i];
     else if(a==='--stale')o.stale=true;else if(a==='--list')o.list=true;else if(a.startsWith('--')){console.error('unknown option '+a);process.exit(2);}
-    else o.sets.push(a.replace(/\.js$/,''));}
+    else o.sets.push(a);}
   if(!o.sets.length)o.sets=['all'];return o;}
 
 function resolveSet(sets,withStale){const out=[];
-  for(const s of sets){let list;
+  // a name with .js is always a test (audio.js is the test, audio the group)
+  for(const s0 of sets){let list;const s=s0.replace(/\.js$/,''),file=s0.endsWith('.js');
     if(s==='all')list=allTests.filter(t=>withStale||!STALE[t]);
     else if(s==='stale')list=Object.keys(STALE);
-    else if(grp[s])list=grp[s].filter(t=>withStale||!STALE[t]||sets.includes(t));
+    else if(grp[s]&&!file)list=grp[s].filter(t=>withStale||!STALE[t]||sets.includes(t));
     else if(fs.existsSync(path.join(HERE,s+'.js')))list=[s];
     else{console.error('unknown test or group: '+s+' (groups: all, stale, '+Object.keys(GROUPS).join(', ')+')');process.exit(2);}
     for(const t of list)if(!out.includes(t))out.push(t);}

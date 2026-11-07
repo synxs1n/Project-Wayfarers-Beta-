@@ -2,8 +2,11 @@
 // and every weather fading in and out in every phase. Frames are drawn by hand with a frozen clock so particles stay put and only the blend moves.
 const {open,chk,done}=require('./pw');
 (async()=>{
-const H=await open({w:844,h:390,mobile:true});const {ev}=H;
-await ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;
+// v0.9.9: the frames are compared on one known scene: the journey (the realm, so the field's theme, which sets how strong each look is)
+// is pinned with H.det, and the tier is Medium (what Auto starts on; under load Auto could drop to Low before the sweep, and Low draws
+// fog differently, see docs/v099-tests.md)
+const H=await open({w:844,h:390,mobile:true,freeze:true,pre:`localStorage.clear();localStorage.setItem('aurelis-meta-v1',JSON.stringify({cfg:{gfx:'medium'}}));`});const {ev}=H;
+await H.det(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;
   const f=A.getMap('f0');A.placeAt('f0',f.gates.start.arrive[0],f.gates.start.arrive[1],'r');A.render();});
 await new Promise(r=>setTimeout(r,500));
 const R=await ev(()=>{const A=__A,G=A.G,TR=A.TR,WS=A.WS,o={tod:[],wx:[],fails:[]};
