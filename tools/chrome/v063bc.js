@@ -7,7 +7,7 @@ const {open,chk,done}=require('./pw');const {META,battle}=require('./v063lib');
 (async()=>{for(const [w,h] of [[390,844],[844,390],[933,705],[1280,800]]){const H=await open({w,h,mobile:w<1000,pre:META('medium')});const tag=w+'x'+h;
   await battle(H,{heroes:3,foes:3,seed:5,lv:22});
   const s=await H.ev(()=>{const A=__A,B=A.B;const m=B.front.find(c=>c.hp>0&&A.known(c).some(s=>s.role==='det'&&s.t==='one'));if(!m)return {err:'no detonator'};B.cur=m;
-    const sk=A.known(m).find(s=>s.role==='det'&&s.t==='one'),els=A.skEls(sk),R=Object.keys(A.REACT).map(k=>A.REACT[k]).find(R=>els.includes(R.d)),other=['fire','ice','water','lightning','earth','wind','light','shadow'].find(p=>!els.some(d=>{const q=A.REACT[[p,d].sort().join('+')];return q&&q.p===p&&q.d===d;}));
+    const sk=A.known(m).find(s=>s.role==='det'&&s.t==='one'),els=A.skEls(sk),R=Object.keys(A.REACT).map(k=>A.REACT[k]).find(R=>els.includes(R.d)),other=els[0];/* v0.10.5: every prime reacts with every other element, only its own does not */
     B.en[0].primed={el:R.p,t:2,by:'Mira'};B.en[1].primed={el:other,t:2,by:'Mira'};B.en[2].primed=null;m.mp=m.S.mmp;A.render();
     return {sk:sk.id,n:sk.n,R:R.n,p:R.p,d:R.d,a:B.en[0].name,b:B.en[1].name,c:B.en[2].name};});
   if(s.err){chk(tag+': setup',s.err);await H.browser.close();continue;}
