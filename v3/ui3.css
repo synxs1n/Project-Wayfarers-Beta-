@@ -27,7 +27,7 @@
   --ui-goldbtn:linear-gradient(180deg,#fbe8ac 0%,#ebc36c 42%,#c48d38 100%);
   /* the old wood tokens now mean the new surfaces, so every rule that reads them follows along */
   --wood:#171a2c;--wood2:#22273f;--wood3:#11131f;--bronze:#a8874c;--ink:#06070c;
-  --text:#f4ebd6;--mute:#cdbf9e;--gold:#e8bd5c;
+  --text:#f4ebd6;--mute:#d3c5a5;--gold:#e8bd5c;/* v0.10.1: --mute a shade lighter (was #cdbf9e: 4.49:1 over the lightest part of the menu backdrop) */
   --fd:'Nunito',system-ui,-apple-system,'Segoe UI',sans-serif;/* v0.6.0: clean type, no pixel font in the UI */
 }
 html,body{background:

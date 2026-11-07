@@ -16,7 +16,7 @@ r=await H.ev(()=>{const A=__A;A.V.modal={type:'settings'};A.render();const row=[
   const o={row,cfg:A.META.cfg.gfx,q:A.GFX.q===A.GFX_Q.high,cls:document.documentElement.className,saved:JSON.parse(localStorage.getItem('aurelis-meta-v1')).cfg.gfx,on:document.querySelector('#modal .gfxrows .chip.on').textContent};
   return o;});
 chk(`Settings shows Graphics: ${r.row.join(' ')}`,r.row.length===4&&r.row[0]==='Auto*'||JSON.stringify(r.row));
-chk('tapping High applies it',r.cfg==='high'&&r.q&&/gq-high/.test(r.cls)&&r.on==='High'||JSON.stringify(r));
+chk('tapping High applies it',r.cfg==='high'&&r.q&&/gq-high/.test(r.cls)&&r.on==='HD-2D High'||JSON.stringify(r));
 chk('the choice is saved in META.cfg',r.saved==='high'||r.saved);
 // particle cap per tier
 r=await H.ev(()=>{const A=__A,o={};for(const t of ['low','medium','high']){A.META.cfg.gfx=t;A.gfxApply();A.BV.P.length=0;for(let i=0;i<900;i++)A.part({k:'p',x:0,y:0,vx:0,vy:0,life:5000,col:'#fff'});o[t]=A.BV.P.length;}A.BV.P.length=0;return o;});

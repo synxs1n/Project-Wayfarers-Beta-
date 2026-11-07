@@ -18,9 +18,12 @@ def scope_css(css,pre='html:not(.flat)'):
         for p in txt.split(','):
             p=p.strip()
             if not p:continue
-            if p==':root' or p=='html':parts.append(pre)
-            elif p.startswith('html'):parts.append(pre+p[4:])
-            else:parts.append(pre+' '+p)
+            # specificity is kept as it was (the skin wins over style.css by source order, and later sheets win over it the same way):
+            # :root gets :root:not(.flat) (it must beat style.css's :root), html... keeps (0,0,1) with :where, the rest a zero weight prefix
+            if p==':root':parts.append(':root:not(.flat)')
+            elif p=='html':parts.append('html:where(:not(.flat))')
+            elif p.startswith('html'):parts.append('html:where(:not(.flat))'+p[4:])
+            else:parts.append(':where('+pre+') '+p)
         return ','.join(parts)
     while i<n:
         c=css[i]
