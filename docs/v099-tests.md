@@ -62,7 +62,49 @@ Nothing retries a whole test. Polls are used only where the thing tested is asyn
 
 ## What changed per test
 
-PER_TEST
+Load and timing (the flaky ones):
+- `v050p5c` (dawn > day and other blends): the frames are drawn by hand at a fixed `now`, but the draw also reads the location banner's
+  fade (`Date.now`), the arrival fade-in and the chest animations (`performance.now`); on a busy machine more time passed between two
+  frames and the banner's alpha moved the "start from the old look" difference over its line. Each hand drawn frame now holds both clocks
+  at the frame's moment (the test's stated intent: "only the blend moves"). The blend cost check alternates plain and blending batches
+  and keeps the best of each.
+- `v071wt` (the road gate walk stopped with why "input"): the gate walk now starts from rest (no step under way, no key, drag, tap, pad
+  or joystick held; `H.until`, 8 s), and when a walk stops early the check prints the input sources the walk saw (`inputSources()`), so
+  a repeat names its cause. It could not be reproduced again in 8 runs (4 with extra CPU load); no game bug is known here.
+- `v063ba` (label overlaps during the camera zoom) and every test using `v063lib.rects` (v063bb/bc/bd, v070ib, v070ob, v076b, v095b):
+  `rects` measures after `rest(H)`: the camera punch over and the stage boxes still for 3 frames, instead of a fixed 160 ms.
+- `v053ua` (touch targets): the battle and results buttons are measured once they exist and every finite animation has finished (as the
+  menu ones already were), instead of after a fixed 0.7 / 0.9 s.
+- `v063wo` (chest, ambience counts) and `v062a` (lighting): the journey is started inside `H.det`, so the realms, the meadow field, the
+  chest picked, the town's lamps and the first dungeon's theme are the same every run; the opened chest's fade is polled for up to 6 s
+  instead of one 1.4 s sleep.
+- `v050p1c`: the start is pinned and every seed gets its own fixed realm draw (see the bug above).
+- `v041p46` (roamer battle): the journey is pinned; the roamer used is one the hero can reach (one behind the locked door sent the hero
+  back to the entrance, so contact never happened on some journeys); contact gets 20 s of real time to turn into a battle.
+- `v050p6a`: "Auto keeps High while frames are fast" is checked against the frame rate the page really measured (a busy machine under
+  45 fps must step down; `GFX.fps` is rounded); the "layers move" check runs on a pinned journey (some towns have no moving decor);
+  `page.waitForFunction` became `H.until`.
+- `smithy3` (render time limits): `perfChk`, the 600 ms line times the load factor.
+- `audioplay` (p95 frame time): over 34 ms the line is scaled by the load factor, and the same battle is measured with the audio context
+  suspended as the run's own baseline: the music may not cost more than a quarter of the battle's own frame time.
+- `v077wb` (50 fps budget): without PWBASE the 50 fps line is divided by the load factor measured right after each sample (PWBASE, the
+  before/after comparison on the same machine, is unchanged).
+- `audio` (peak, seam): percussion started its noise at a `Math.random` offset, so the cal2 peak and its loop seam moved from run to run
+  (-0.99 dBFS once; seam 0.726 vs 0.347 once). The samples are loaded first, then the render runs with a seeded `Math.random`; every
+  track now renders the same on every run (cal2: peak -1.39 dBFS, seam 0.591 vs 0.362). `PWFREEZE=0` renders with the real one.
+- `smithyfuzz`: a random click can leave the journey (Menu > quit to title); the next Smithy was then drawn with no game at all and
+  crashed in `shopStock`. A fresh journey is started instead.
+- `v041p1b`, `v070ia`, `v070ic`, `v070m2`: Auto per foe type (v0.9.8) kept Auto locked, so the battles stood at the first hero turn and
+  the checks only passed when enough enemy moves came first (or timed out: v070ia ran 900 s). `AUTO_OK` marks the foes as beaten by
+  hand; the battle watches are time based (until N moves or 20 to 40 s) instead of a count of short sleeps. v070ic waits for a timed
+  press's damage to land before reading it.
+
+Old reasons (failed every run): `oldsave`, `v041old`, `v050p4b` (wait for the journey after Continue), `v041p47` (look key), `v095m2`
+(journey without the realm gates), listed above.
+
+Known flaky tests that passed every run of this measurement and were still hardened: `v080b` (its battle start check already measured
+layout boxes per frame; unchanged), `v077wa` (unchanged; its face checks are drawn at fixed times), `v063ba`, `v053ua`, `v062a`, `v063wo`,
+`smithy3`.
 
 ## The runner (tools/chrome/runall.js)
 
