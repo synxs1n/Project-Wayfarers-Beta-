@@ -79,7 +79,7 @@ function glList(){if(!glOn())return [];const st=glS();return st.a.map(id=>{const
     glAdd(autoRewardMul()===1?'manWin':'autoWin',1);if(B.spec.kind==='elite'&&B.spec.bounty&&!B.spec.bounty.personal)glAdd('bounty',1);}}catch(e){}return r;};}
 {const sc0=scan;scan=function(){const r=sc0.apply(this,arguments);try{if(B&&B.spec&&B.spec.kind!=='daily')glAdd('scan',1);}catch(e){}return r;};}
 if(typeof campMake==='function'){const cm0=campMake;campMake=function(){const r=cm0.apply(this,arguments);try{if(r&&typeof r!=='string')glAdd('camp',1);}catch(e){}return r;};}
-{const fb0=finishBattle;finishBattle=function(){const r=fb0.apply(this,arguments);try{glCheck();glRender();}catch(e){}return r;};}
+HOOK.after('finishBattle','goals','Next goals panel',function(){try{glCheck();glRender();}catch(e){}});
 {const ng0=newGame;newGame=function(){const r=ng0.apply(this,arguments);try{if(G&&!G.daily)G.goals={a:[],d:{},c:{},b:{}};}catch(e){}return r;};}
 
 // ----- the panel in the world view -----

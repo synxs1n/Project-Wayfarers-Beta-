@@ -20,7 +20,7 @@ function fbEvent(s){FB.events.push({t:Date.now(),e:String(s).slice(0,140)});if(F
   const t0=toast;toast=function(m){fbEvent('toast: '+m);return t0(m);};
   const s0=showLocation;showLocation=function(){const r=s0.apply(this,arguments);if(WS.m)fbEvent('arrived: '+locName(WS.m)+' ('+WS.m.kind+')');return r;};
   HOOK.after('startBattle','feedback','log the start',function(r,spec){if(r!==false&&B)fbEvent(`battle start: ${spec.kind}, stage ${spec.stage}, seed ${B.seed}`);});
-  const f0=finishBattle;finishBattle=function(how){fbEvent('battle end: '+how);return f0.apply(this,arguments);};
+  HOOK.before('finishBattle','feedback','log the end',function(how){fbEvent('battle end: '+how);});
 }
 function fbDevice(){
   let pad=false;try{const g=navigator.getGamepads?Array.from(navigator.getGamepads()).filter(Boolean):[];pad=g.length>0;}catch(e){}

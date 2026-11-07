@@ -88,7 +88,7 @@ function vChallenges(){
 }
 // ----- remember which maps the player has been to (for hints that must not spoil) -----
 {const pa=placeAt;placeAt=function(mid){const r=pa.apply(this,arguments);try{G.been=G.been||{};G.been[mid]=1;}catch(e){}return r;};}
-{const fb=finishBattle;finishBattle=function(how){const was=G&&G.cleared?G.cleared.filter(Boolean).length:0;const r=fb.apply(this,arguments);try{if(G&&G.cleared&&G.cleared.filter(Boolean).length>was)rerollTavern();}catch(e){}return r;};}
+HOOK.wrap('finishBattle','progression','tavern reroll on a stage clear',function(next,...a){const how=a[0];const was=G&&G.cleared?G.cleared.filter(Boolean).length:0;const r=next(...a);try{if(G&&G.cleared&&G.cleared.filter(Boolean).length>was)rerollTavern();}catch(e){}return r;});
 
 // ----- "What next?" -----
 function nodesLeft(mid){const m=MAPS[mid]||(G.been&&G.been[mid]?getMap(mid):null);if(!m)return 0;return (m.nodes||[]).filter(n=>!(G.gath||{})[mid+':'+n.x+','+n.y]).length;}

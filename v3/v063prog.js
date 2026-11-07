@@ -46,8 +46,8 @@ HOOK.after('startBattle','v063prog','camp boon',function(r){
     if(c.b==='fast')U.forEach(u=>{u.next=(u.next||0)*CAMP.first;});
     try{log(`Camp boon: ${CAMP_BUFFS[c.b].n}. ${c.left?`${c.left} more battle${c.left>1?'s':''} after this one.`:'This is its last battle.'}`);}catch(e){}
     saveGame();}}catch(e){}});
-{const fb0=finishBattle;finishBattle=function(){const k=B&&B._camp,U=B?B.front.concat(B.back):[];const r=fb0.apply(this,arguments);
-  try{if(k==='atk'||k==='def')U.forEach(u=>{if(G.roster[u.id])refresh(u);});}catch(e){}return r;};}
+HOOK.wrap('finishBattle','v063prog','camp boon stats back',function(next,...a){const k=B&&B._camp,U=B?B.front.concat(B.back):[];const r=next(...a);
+  try{if(k==='atk'||k==='def')U.forEach(u=>{if(G.roster[u.id])refresh(u);});}catch(e){}return r;});
 {const pd0=perkDropMul;perkDropMul=function(e){const m=pd0.apply(this,arguments);try{if(B&&B._camp==='luck'&&!G.daily)return m*(1+CAMP.drop);}catch(x){}return m;};}
 
 // ----- bonds: goals measured on the real counter -----

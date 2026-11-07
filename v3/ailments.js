@@ -44,7 +44,7 @@ function cleanse(t,opt){// with no opt, the battle's own calls choose: a revive-
 if(typeof campRest==='function'){const cr0=campRest;campRest=function(){const r=cr0.apply(this,arguments);try{Object.values(G.roster).forEach(c=>{if(c.ail&&c.ail.poison)delete c.ail.poison;});}catch(e){}return r;};}
 // battles: carry ailments in and out
 HOOK.after('startBattle','ailments','carry hero ailments in',function(r){try{if(r!==false&&B&&!(G&&G.daily)){allParty().forEach(c=>{ailOf(c).forEach(k=>{c.st[k]={t:STS[k].t,src:null};});});}}catch(e){}});
-{const fb0=finishBattle;finishBattle=function(how){try{if(B&&G&&!G.daily){allParty().forEach(c=>{const a={};if(c.hp>0)AIL_KEYS.forEach(k=>{if(c.st&&c.st[k])a[k]=1;});c.ail=a;c.S=calcStats(c);c.hp=Math.min(c.hp,c.S.mhp);});}}catch(e){}return fb0.apply(this,arguments);};}
+HOOK.before('finishBattle','ailments','ailments carried out',function(how){try{if(B&&G&&!G.daily){allParty().forEach(c=>{const a={};if(c.hp>0)AIL_KEYS.forEach(k=>{if(c.st&&c.st[k])a[k]=1;});c.ail=a;c.S=calcStats(c);c.hp=Math.min(c.hp,c.S.mhp);});}}catch(e){}});
 // a Wound landed in battle takes hold at once: max HP drops now
 {const as0=addSt;addSt=function(t,k,src,silent){const was=t&&t.st&&t.st[k];const r=as0.apply(this,arguments);try{if(r&&k==='wound'&&t.side==='p'&&!was){t.ail=t.ail||{};t.ail.wound=1;t.S=calcStats(t);t.hp=Math.min(t.hp,t.S.mhp);}
   if(k==='wound'&&t&&t.side==='e'&&t.st&&t.st.wound)delete t.st.wound;}catch(e){}return r;};}

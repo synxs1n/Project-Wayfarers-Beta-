@@ -1,7 +1,7 @@
 // ===== journey.js (v0.2.0): the Journey tab and journey stats =====
 // New save fields, all defaulted on read: G.stats.steps, G.stats.won, G.stats.fled, G.stats.lost, G.stats.play (ms).
 {const ar0=arrive;arrive=function(){if(G&&G.stats)G.stats.steps=(G.stats.steps||0)+1;return ar0.apply(this,arguments);};}
-{const fb0=finishBattle;finishBattle=function(how){try{if(G&&G.stats&&!G.daily){const k=how==='win'?'won':how==='fled'?'fled':how==='lose'?'lost':null;if(k)G.stats[k]=(G.stats[k]||0)+1;}}catch(e){}return fb0.apply(this,arguments);};}
+HOOK.before('finishBattle','journey','won/fled/lost stats',function(how){try{if(G&&G.stats&&!G.daily){const k=how==='win'?'won':how==='fled'?'fled':how==='lose'?'lost':null;if(k)G.stats[k]=(G.stats[k]||0)+1;}}catch(e){}});
 // play time: counted in 15 second ticks while the page is visible and a journey is open
 setInterval(()=>{try{if(G&&G.stats&&!G.daily&&document.visibilityState==='visible'&&(V.screen==='world'||V.screen==='battle'))G.stats.play=(G.stats.play||0)+15000;}catch(e){}},15000);
 function agoText(t){if(!t)return 'not yet this session';const s=Math.round((Date.now()-t)/1000);if(s<10)return 'just now';if(s<60)return s+' seconds ago';const m=Math.round(s/60);if(m<60)return m+' minute'+(m===1?'':'s')+' ago';const h=Math.round(m/60);if(h<48)return h+' hour'+(h===1?'':'s')+' ago';return new Date(t).toLocaleDateString();}

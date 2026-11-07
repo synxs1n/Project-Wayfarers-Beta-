@@ -30,7 +30,7 @@ function nightPool(s){const Z=ZS(s),L=NIGHT[Z.theme]||[];const swap={};L.forEach
   const fieldOnly=out.filter(o=>!o.g),bosses=out.filter(o=>o.g);return fieldOnly.concat(extra,bosses);};}
 // ----- clock ticks -----
 {const ar0=arrive;arrive=function(){if(G&&WS.m&&WS.m.kind!=='dungeon')tickClock(1);wxStep();return ar0.apply(this,arguments);};}
-{const fb0=finishBattle;finishBattle=function(how){try{if(G&&!G.daily)tickClock(6);}catch(e){}return fb0.apply(this,arguments);};}
+HOOK.before('finishBattle','world3','clock ticks',function(how){try{if(G&&!G.daily)tickClock(6);}catch(e){}});
 {const ra0=restAll;restAll=function(){const r=ra0.apply(this,arguments);if(r)setMorning();return r;};}
 {const ct0=campRest;campRest=function(){const r=ct0.apply(this,arguments);tickClock(60);return r;};}
 // ----- weather: lasts WX_MIN..WX_MAX steps per realm, follows you between that realm's town and field, mostly clear -----

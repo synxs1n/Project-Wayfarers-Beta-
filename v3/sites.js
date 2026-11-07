@@ -101,8 +101,8 @@ function miniFor(m){G.miniPick=G.miniPick||{};let i=G.miniPick[m.id];
 {const ef1=encounterFoes;encounterFoes=function(spec){if(!spec||!spec.mini||typeof spec.mini!=='object')return ef1.apply(this,arguments);
   const s=spec.stage,mi=spec.mini,lv=STAGE_LV[s][1]+SITES.miniLv+ngLvOff(),Z=ZS(s),out=[makeEnemy(MON[mi.mon],lv,{elite:true,name:mi.name,mod:mi.mod,hpM:SITES.miniHp,powM:SITES.miniPow})];
   out.push(makeEnemy(MON[pick(Z.pool)],lv-2));out.push(makeEnemy(MON[pick(Z.pool)],lv-3));return out;};}
-{const fb2=finishBattle;finishBattle=function(how){const sp=B&&B.spec,mi=sp&&sp.mini&&typeof sp.mini==='object'?sp.mini:null;const r=fb2.apply(this,arguments);
+HOOK.wrap('finishBattle','sites','miniboss prizes',function(next,...a){const how=a[0];const sp=B&&B.spec,mi=sp&&sp.mini&&typeof sp.mini==='object'?sp.mini:null;const r=next(...a);
   try{if(mi&&how==='win'&&G){G.miniDone=G.miniDone||{};G.miniDone[mi.id]=1;const s=sp.stage,g=econG(300+s*250);G.gold+=g;G.mats.core=(G.mats.core||0)+1;G.mats[ZS(s).mat]=(G.mats[ZS(s).mat]||0)+3;saveGame();
-    toast(`${mi.name} falls. Bonus: ${g} gold, a Dread Core and 3 ${MATS[ZS(s).mat]}. The prize chest is yours.`);}}catch(e){}return r;};}
+    toast(`${mi.name} falls. Bonus: ${g} gold, a Dread Core and 3 ${MATS[ZS(s).mat]}. The prize chest is yours.`);}}catch(e){}return r;});
 // map: fortresses get their own marker and name
 if(typeof MAPICO_X!=='undefined'){MAPICO_X.fort=[[0,3,10,7,'#7a7a86'],[0,1,3,9,'#5a5a66'],[7,1,3,9,'#5a5a66'],[1,4,1,3,'#c0392b'],[8,4,1,3,'#c0392b'],[4,6,2,4,'#120c10']];MAPICO_NAME.fort='Fortress';}// v0.6.3: player facing text says fortress, not side fortress (ids and save keys unchanged)

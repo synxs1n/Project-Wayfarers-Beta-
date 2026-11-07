@@ -95,7 +95,7 @@ function facSync(quiet){if(!G||G.daily)return;const f=facInit();FAC.forEach(F=>{
   if(r>was){f.seen[F.id]=r;const t=facTierOf(r);if(!quiet&&t>facTierOf(was))toast(`${F.n}: rank ${t}, ${facTierName(F.id,t)}! ${FAC3[F.id].t[t-1]}`);}});facBest();}
 // ---------- hooks that feed the counters ----------
 {const au=autoTurn;autoTurn=function(){const r=au.apply(this,arguments);try{if(B&&B.auto)B.autoUsed=1;}catch(e){}return r;};}
-{const fb=finishBattle;finishBattle=function(how){const sp=B&&B.spec,manual=!!(B&&!B.autoUsed&&!B.auto);const r=fb.apply(this,arguments);try{if(G&&!G.daily&&how==='win'&&sp){const k=sp.kind;if(k==='dungeon')facCredit('dwins');if(k==='elite')facCredit('elite');}if(G&&!G.daily&&how==='win'){facCredit('wins');if(manual)facCredit('manual');}facSync();}catch(e){}return r;};}
+HOOK.wrap('finishBattle','factions','faction credit',function(next,...a){const how=a[0];const sp=B&&B.spec,manual=!!(B&&!B.autoUsed&&!B.auto);const r=next(...a);try{if(G&&!G.daily&&how==='win'&&sp){const k=sp.kind;if(k==='dungeon')facCredit('dwins');if(k==='elite')facCredit('elite');}if(G&&!G.daily&&how==='win'){facCredit('wins');if(manual)facCredit('manual');}facSync();}catch(e){}return r;});
 {const fg=forge;forge=function(){const r=fg.apply(this,arguments);try{if(r&&!G.daily)facCredit('temper');}catch(e){}return r;};}
 {const cr=craft;craft=function(rcp){const g0=G.gold,r=cr.apply(this,arguments);try{if(r&&!G.daily){const spent=g0-G.gold;
   if(rcp.item){facCredit('potion');const rb=facSumAll('rebate');if(rb>0&&spent>0){const back=Math.round(spent*rb);if(back>0){G.gold+=back;toast(`Circle rebate: ${back} gold back.`);}}

@@ -182,8 +182,8 @@ function cwDecline(hero){return dlQuote(hero,'d');}
 {const rj=rsJoin;rsJoin=function(i){let h=rj.apply(this,arguments);try{if(i&&i.dlRival&&TPL[i.dlRival]){const row=`<div class="rs-join dl-rw"><b>${esc(dlName(i.dlRival))}</b><span>"${esc(dlLine(i.dlRival,'rw'))}"</span></div>`;
   h=h?h.replace(/<\/div>$/,row+'</div>'):`<div class="rs-sec">${row}</div>`;}}catch(e){}return h;};}
 // ----- 4. running from the duel (or from Kaevan's ride, or Nikaris's beasts) -----
-{const fb1=finishBattle;finishBattle=function(how){const w=(how==='fled'&&typeof B!=='undefined'&&B)?dlBattleWho(B.spec):null;const r=fb1.apply(this,arguments);
-  try{if(w){const pre=w.id==='nikaris'?'A voice in the dark: ':'';dlToast(pre+dlQuote(w.id,'f'));}}catch(e){}return r;};}
+HOOK.wrap('finishBattle','duellines','duel flee lines',function(next,...a){const how=a[0];const w=(how==='fled'&&typeof B!=='undefined'&&B)?dlBattleWho(B.spec):null;const r=next(...a);
+  try{if(w){const pre=w.id==='nikaris'?'A voice in the dark: ':'';dlToast(pre+dlQuote(w.id,'f'));}}catch(e){}return r;});
 // ----- 5. legends: Kaevan's ride opens with his own line, and every legend joins with theirs -----
 {const lt=legendTalk;legendTalk=function(a){const r=lt.apply(this,arguments);try{const m=V.modal;if(m&&m.type==='legendEvt'&&m.hero==='kaevan'&&!m.join){
   m.text=`Dusk turns the grass to copper. A rider on a black horse circles you once, crossbow resting on his knee, mustache magnificent against the storm. "${dlLine('kaevan','o')}" His hawks scream overhead.`;render();}}catch(e){}return r;};}

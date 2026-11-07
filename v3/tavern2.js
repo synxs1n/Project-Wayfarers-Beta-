@@ -50,7 +50,7 @@ function tvInit(){if(!G.tv||typeof G.tv!=='object')G.tv={sl:null,sh:0,at:0,ev:fa
 function tvLeft(){return Infinity;}
 function tvEvent(){tvInit().ev=true;}
 {const ra=restAll;restAll=function(){const r=ra.apply(this,arguments);if(r)try{tvEvent();}catch(e){}return r;};}
-{const fb=finishBattle;finishBattle=function(){const was=G&&G.cleared?G.cleared.filter(Boolean).length:0;const r=fb.apply(this,arguments);try{if(G&&G.cleared&&G.cleared.filter(Boolean).length>was)tvEvent();}catch(e){}return r;};}
+HOOK.wrap('finishBattle','tavern2','tavern event on a stage clear',function(next,...a){const was=G&&G.cleared?G.cleared.filter(Boolean).length:0;const r=next(...a);try{if(G&&G.cleared&&G.cleared.filter(Boolean).length>was)tvEvent();}catch(e){}return r;});
 // the pool for this town: subset wayfarers with a tavern source that have arrived by this area, not owned, not on the Guild board
 const ceBoosted=id=>!!(G&&G.ce&&G.ce.boost&&G.ce.boost[id]);
 function tvPool(){return tavernPool().filter(id=>inSub(id)||ceBoosted(id));}

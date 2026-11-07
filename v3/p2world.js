@@ -326,7 +326,7 @@ ACT.hintsReset=function(){META.hints={};META.cfg.hints=true;saveMeta();toast('Hi
 // triggers
 {const sl0=showLocation;showLocation=function(){const r=sl0.apply(this,arguments);try{const m=WS.m;hintFire(m&&m.kind==='town'&&(G.stats&&G.stats.battles)?'town':'world');}catch(e){}return r;};}
 HOOK.after('startBattle','p2world','battle hint',function(r){try{if(r!==false&&B&&!G.daily)hintFire('battle');}catch(e){}});
-{const fb0=finishBattle;finishBattle=function(how){const r=fb0.apply(this,arguments);try{if(how==='win')setTimeout(()=>hintFire('win'),600);}catch(e){}return r;};}
+HOOK.after('finishBattle','p2world','win hint',function(r,how){try{if(how==='win')setTimeout(()=>hintFire('win'),600);}catch(e){}});
 // Settings row and the Guides > Hints page
 {const st0=settingsBody;settingsBody=function(){const h=st0.apply(this,arguments),on=hintsOn();
   const row=`<div class="rows"><div class="row"><div><b>Hints</b><small>Short tips in the first realm. Each shows once; read them again in Guides > Hints.</small></div><div class="chips"><button class="chip ${on?'on':''}" data-act="cfg" data-arg='["hints",true]'>On</button><button class="chip ${on?'':'on'}" data-act="cfg" data-arg='["hints",false]'>Off</button></div></div></div>`;

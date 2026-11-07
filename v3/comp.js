@@ -48,7 +48,7 @@ function compTurn(u){if(!B||B.over)return;const foes=B.en.filter(e=>e.hp>0);if(!
 {const fl0=fallen;fallen=function(u){if(u&&u.isComp){u.deathT=Date.now();compReturn(u,'ko');return;}return fl0.apply(this,arguments);};}
 {const lb0=lbAdd;lbAdd=function(c,n){if(c&&c.isComp)return;return lb0.apply(this,arguments);};}
 // the hero always comes back before the fight ends, so results and saves only ever see real heroes
-{const fb0=finishBattle;finishBattle=function(){try{if(B)B.front.forEach((u,i)=>{if(u&&u.isComp){B.front[i]=u.owner;u.owner.hidden=0;}});}catch(e){}return fb0.apply(this,arguments);};}
+HOOK.before('finishBattle','comp','companions step back',function(){try{if(B)B.front.forEach((u,i)=>{if(u&&u.isComp){B.front[i]=u.owner;u.owner.hidden=0;}});}catch(e){}});
 {const w0=win;win=function(){try{if(B)B.front.forEach((u,i)=>{if(u&&u.isComp){B.front[i]=u.owner;u.owner.hidden=0;}});}catch(e){}return w0.apply(this,arguments);};}
 ACT.summon=function(){summonComp();};
 // ----- Companions menu -----

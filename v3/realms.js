@@ -63,9 +63,9 @@ function realmVariant(theme,R){const id=theme+'@'+R.key;if(THEME[id])return id;c
     m.thv=(!cleared&&m.bkey)?themeVariant(base,m.bkey):base;if(cleared||!m.bkey){m.motif=R.lean.motif;m.amb=R.lean.amb;m.btint=R.lean.tint;}}}catch(e){}};}
 // boss down: the overlay lifts from every map of that realm, and the realm says so
 function liftOverlay(s){try{Object.values(MAPS).forEach(m=>{if(m&&m.s===s&&!m.archive)applyBossTheme(m);});syncPools();}catch(e){}}
-{const fb0=finishBattle;finishBattle=function(how){const sp=B&&B.spec,s=sp&&sp.stage,c0=B?B.clr0:true;const r=fb0.apply(this,arguments);
+HOOK.wrap('finishBattle','realms','overlay lifts on a first clear',function(next,...a){const how=a[0];const sp=B&&B.spec,s=sp&&sp.stage,c0=B?B.clr0:true;const r=next(...a);
   try{if(G&&!G.daily&&c0===false&&typeof s==='number'&&G.cleared[s]){liftOverlay(s);const k=bossAtStage(s),d=guardianDef(k);
-    toast(`${ZS(s).n} breathes easier. The pall over the realm lifts.${d?` ${d.n}'s Echo waits in the Echo Sanctum.`:''}`);}}catch(e){}return r;};}
+    toast(`${ZS(s).n} breathes easier. The pall over the realm lifts.${d?` ${d.n}'s Echo waits in the Echo Sanctum.`:''}`);}}catch(e){}return r;});
 
 // ---------- weather: realm tables, overlay bias (clear always the largest single share) ----------
 function realmWxList(s){const Z=ZS(s),R=realmAt(s);const L=wxList(R&&isRv2()?R.wxk:Z.theme,clockPhase()).map(x=>x.slice());const o=bovAt(s);

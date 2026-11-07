@@ -2,7 +2,7 @@
 // Floating numbers follow battle speed, a scrollable battle log, and tappable status icons with a details popup.
 const LOG_MAX=50;
 function log(m){if(!B)return;B.log.push(m);if(B.log.length>LOG_MAX)B.log.splice(0,B.log.length-LOG_MAX);B.logT=Date.now();}
-{const fb0=finishBattle;finishBattle=function(){try{if(B)FB.lastLog=B.log.slice(-10);}catch(e){}return fb0.apply(this,arguments);};}
+HOOK.before('finishBattle','battlefx','keep the last log lines',function(){try{if(B)FB.lastLog=B.log.slice(-10);}catch(e){}});
 
 // ----- status icons -----
 // Every unit gets a row of small buttons: ailments and boons (with turns left), its Primed mark, and the weather.

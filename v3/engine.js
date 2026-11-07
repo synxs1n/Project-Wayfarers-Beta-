@@ -824,6 +824,7 @@ function finishBattle(how){
   if(typeof onBattleEnd==='function')onBattleEnd(how,spec);
   render();
 }
+finishBattle=HOOK.def('finishBattle',finishBattle);// v0.9.9: one definition; modules add hooks (hooks.js)
 function nextWave(){
   B.wave++;const spec=Object.assign({},B.spec,{wave:B.wave});
   const foes=encounterFoes(spec);B.en=foes;if(B.spec.kind==='daily')B.spec.wave=B.wave;foes.forEach(e=>{e.next=B.time+delayOf(e,1)*(.4+.5*RNG());e.enterT=Date.now();bestOf(e.base).seen++;});

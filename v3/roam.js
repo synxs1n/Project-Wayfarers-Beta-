@@ -60,10 +60,10 @@ function roamFight(m,r){haltInput();WS.lock=true;WS.flash=performance.now();if(t
   const cnt={};out.forEach(e=>{cnt[e.name]=(cnt[e.name]||0)+1;});const seen={};out.forEach(e=>{if(cnt[e.name]>1){seen[e.name]=(seen[e.name]||0)+1;e.name+=' '+String.fromCharCode(64+seen[e.name]);}});
   return out;};}
 {const ab0=autoBan;autoBan=function(spec){const r=ab0.apply(this,arguments);if(r)return r;if(spec&&spec.roam&&spec.roam.elite&&G&&!G.daily)return 'No auto in elite fights';return null;};}
-{const fb0=finishBattle;finishBattle=function(how){const sp=B&&B.spec,ro=sp&&sp.roam;const r=fb0.apply(this,arguments);
+HOOK.wrap('finishBattle','roam','beaten roamers',function(next,...a){const how=a[0];const sp=B&&B.spec,ro=sp&&sp.roam;const r=next(...a);
   try{if(ro&&G){const m=MAPS[ro.mid],R=m&&m.roam&&m.roam.find(q=>q.i===ro.i);
     if(how==='win'){G.roamDead=G.roamDead||{};const L=G.roamDead[ro.mid]=G.roamDead[ro.mid]||[];if(!L.includes(ro.i))L.push(ro.i);if(R)R.dead=true;}
-    else if(R){R.x=R.hx;R.y=R.hy;R.mode='patrol';R.rest=performance.now()+4000;}}}catch(e){}return r;};}
+    else if(R){R.x=R.hx;R.y=R.hy;R.mode='patrol';R.rest=performance.now()+4000;}}}catch(e){}return r;});
 {const wt0=worldTick;worldTick=function(dt,now){wt0.apply(this,arguments);try{const m=WS.m;if(V.screen==='world'&&m&&(m.kind==='dungeon'||m.kind==='field')){if(!m.roam)roamSpawn(m);if(m.roam)roamTick(m,now);}}catch(e){}};}
 // drawing: the foe's own sprite at small size, a gold ring for elites, a faint sight cone, a "!" while chasing
 {const wd0=worldDraw;worldDraw=function(now){wd0(now);try{const m=WS.m;if(!m||!m.roam||(m.kind!=='dungeon'&&m.kind!=='field'))return;const ctx=WS.ctx,cx=Math.round(WS.cam.x),cy=Math.round(WS.cam.y),still=typeof reducedMotion==='function'&&reducedMotion();

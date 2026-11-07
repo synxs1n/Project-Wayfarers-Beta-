@@ -49,8 +49,8 @@ function au2J(id,delay){if(!AU2.on||!AU2.ready)return false;setTimeout(()=>au2Ji
 if(typeof recruit==='function'){const r0=recruit;recruit=function(id,free){const ok=r0.apply(this,arguments);try{if(ok!==false&&V.screen==='world'&&G&&G.roster[id])au2J('recruit',120);}catch(e){}return ok;};}
 if(typeof claimQuest==='function'){const c0=claimQuest;claimQuest=function(q){const r=c0.apply(this,arguments);try{if(r&&q&&q.state==='claimed')au2J('quest',80);}catch(e){}return r;};}
 if(typeof ACT!=='undefined'&&ACT.facClaim){const f0=ACT.facClaim;ACT.facClaim=function(){const r=f0.apply(this,arguments);au2J('quest',80);return r;};}
-{const fb0=finishBattle;finishBattle=function(how){let n0=0;try{n0=G&&G.cleared?Object.keys(G.cleared).filter(k=>G.cleared[k]).length:0;}catch(e){}const r=fb0.apply(this,arguments);
-  try{const n1=G&&G.cleared?Object.keys(G.cleared).filter(k=>G.cleared[k]).length:0;if(how==='win'&&n1>n0)au2J('beacon',1400);}catch(e){}return r;};}
+HOOK.wrap('finishBattle','music2','stage clear music',function(next,...a){const how=a[0];let n0=0;try{n0=G&&G.cleared?Object.keys(G.cleared).filter(k=>G.cleared[k]).length:0;}catch(e){}const r=next(...a);
+  try{const n1=G&&G.cleared?Object.keys(G.cleared).filter(k=>G.cleared[k]).length:0;if(how==='win'&&n1>n0)au2J('beacon',1400);}catch(e){}return r;});
 // faction ranks are checked once a second
 function au2RankWatch(){try{if(!G||G.daily||typeof FAC==='undefined'||typeof facRank!=='function'){AU2.rk=null;return;}const n=FAC.reduce((a,F)=>a+facRank(F.id),0);
   if(AU2.rk&&AU2.rk.g===G&&n>AU2.rk.n)au2J('rank',300);AU2.rk={g:G,n};}catch(e){}}
