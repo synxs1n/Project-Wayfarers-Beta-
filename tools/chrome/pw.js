@@ -1,8 +1,7 @@
 // Playwright harness (replaces puppeteer+sparticuz in this workspace). Usage: const {open,chk,done}=require('./pw');
 // Helpers for tests that must not depend on machine load (v0.9.9, docs/v099-tests.md):
 //   open({freeze:true}) installs a controllable clock before the game loads (Date.now runs from a fixed epoch, 2026-01-01,
-//                       never backwards; new Date() keeps the real date); needed by H.det. With it, use H.until, not
-//                       page.waitForFunction (its polling throws in such a page).
+//                       never backwards; new Date() keeps the real date); needed by H.det.
 //   H.det(fn,arg,seed)  evaluate fn with Math.random seeded and Date.now pinned to a fixed instant (the k-th call of a page
 //                       gets the k-th instant), so journey (realm) draws, map picks and particles are the same on every run.
 //                       PWFREEZE=0 turns it into a plain evaluate (the real clock and Math.random), to run a test unfrozen.
@@ -22,7 +21,7 @@ const FREEZE=process.env.PWFREEZE!=='0';
 // new Date() keeps the real clock
 const CLOCK=`(()=>{const RD=Date,rn=RD.now.bind(RD),pn=()=>performance.now(),EPOCH=1767225600000;let base=EPOCH,at=pn(),pinned=null,k=0;
   const now=()=>pinned!=null?pinned:Math.floor(base+pn()-at);
-  RD.now=now;window.__pwClock={pin(){k++;pinned=EPOCH+k*1e7;return pinned;},unpin(){if(pinned==null)return;base=pinned;at=pn();pinned=null;},real:rn};})();`;
+  RD.now=now;/* not __pwClock: Playwright reads that name for its own fake clock, and page.waitForFunction then broke */window.__pwFreeze={pin(){k++;pinned=EPOCH+k*1e7;return pinned;},unpin(){if(pinned==null)return;base=pinned;at=pn();pinned=null;},real:rn};})();`;
 let fails=0,errs=[];
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
 // machine speed: the best of 3 runs of a fixed loop (ms) on this container when idle; H.cpu() divides by it
@@ -49,7 +48,7 @@ async function open(opt={}){
   await page.goto('file://'+P,{waitUntil:'load'});
   const ev=(f,a)=>page.evaluate(f,a);
   const shot=async n=>{await wait(250);await page.screenshot({path:(opt.out||'/tmp')+'/pw_'+n+'.png'});};
-  const det=(f,a,seed)=>page.evaluate(async([src,a,seed])=>{const c=window.__pwClock;if(!c)return (0,eval)('('+src+')')(a);
+  const det=(f,a,seed)=>page.evaluate(async([src,a,seed])=>{const c=window.__pwFreeze;if(!c)return (0,eval)('('+src+')')(a);
     const mr=Math.random;let s=(seed>>>0)||1;Math.random=()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296;};c.pin();
     try{return await (0,eval)('('+src+')')(a);}finally{Math.random=mr;c.unpin();}},[f.toString(),a,seed||1]);
   const frames=n=>page.evaluate(n=>new Promise(r=>{let k=0;const f=()=>{if(++k>=n)r(k);else requestAnimationFrame(f);};requestAnimationFrame(f);}),n||1);

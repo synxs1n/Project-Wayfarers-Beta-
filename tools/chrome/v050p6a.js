@@ -63,7 +63,7 @@ for(const rm of [true,false]){
   if(rm)chk(`reduced motion: world layers (leaves, water, grass, critters) are a still frame (${r.a})`,same&&drawn||JSON.stringify(r));
   else chk('full motion: the same layers move',!same&&drawn||JSON.stringify(r));
   await H.ev(()=>{__A.startBattle({stage:0,kind:'field',weather:'clear'});});
-  await H.until(()=>__A.B&&__A.B.mode==='cmd',null,{timeout:25000});// (page.waitForFunction's polling throws in a page with the frozen clock)
+  await H.until(()=>__A.B&&__A.B.mode==='cmd',null,{timeout:25000});
   await H.wait(300);
   r=await H.ev(()=>new Promise(res=>{const A=__A,B=A.B,e=B.en[0];e.fxEl='fire';const n0=A.BV.P.filter(p=>p.g6).length;A.onFx(e,'99','dmg crit');const g6=A.BV.P.filter(p=>p.g6).length-n0;
     const cam=A.CAM.on;setTimeout(()=>{const cv=document.getElementById('bcv');res({g6,cam,mid:cv.style.transform,para:A.PARA.off,shake:!!A.BV.shake});},260);}));
