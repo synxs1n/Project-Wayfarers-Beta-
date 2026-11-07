@@ -72,9 +72,9 @@ function tintFor(t){// smooth colour by clock position
   if(ph==='dusk')return null;// v0.4.1 4.5: dusk and dawn are graded in daylight.js, not washed
   if(ph==='night')return [20,26,72,.46];
   return null;}
-{const wd0=worldDraw;worldDraw=function(now){wd0(now);try{const m=WS.m;if(!m||m.kind==='dungeon'||m.archive||!G)return;const T=tintFor(G.clock||0);if(!T)return;const ctx=WS.ctx,cx=Math.round(WS.cam.x),cy=Math.round(WS.cam.y);
+HOOK.after('worldDraw','world3','night tint',function(_,now){try{const m=WS.m;if(!m||m.kind==='dungeon'||m.archive||!G)return;const T=tintFor(G.clock||0);if(!T)return;const ctx=WS.ctx,cx=Math.round(WS.cam.x),cy=Math.round(WS.cam.y);
   ctx.fillStyle=`rgba(${T[0]|0},${T[1]|0},${T[2]|0},${T[3].toFixed(3)})`;ctx.fillRect(0,0,WS.vw,WS.vh);
-  if(T[3]>.2){ctx.save();ctx.globalCompositeOperation='lighter';(m.lights||[]).forEach(L=>{const x=L[0]-cx,y=L[1]-cy,r=(L[2]||18)*1.6;if(x<-r||y<-r||x>WS.vw+r||y>WS.vh+r)return;const g=ctx.createRadialGradient(x,y,1,x,y,r);g.addColorStop(0,`rgba(255,200,120,${.35*T[3]/.46})`);g.addColorStop(1,'rgba(255,200,120,0)');ctx.fillStyle=g;ctx.fillRect(x-r,y-r,r*2,r*2);});ctx.restore();}}catch(e){}};}
+  if(T[3]>.2){ctx.save();ctx.globalCompositeOperation='lighter';(m.lights||[]).forEach(L=>{const x=L[0]-cx,y=L[1]-cy,r=(L[2]||18)*1.6;if(x<-r||y<-r||x>WS.vw+r||y>WS.vh+r)return;const g=ctx.createRadialGradient(x,y,1,x,y,r);g.addColorStop(0,`rgba(255,200,120,${.35*T[3]/.46})`);g.addColorStop(1,'rgba(255,200,120,0)');ctx.fillStyle=g;ctx.fillRect(x-r,y-r,r*2,r*2);});ctx.restore();}}catch(e){}});
 
 // ----- rare sky visuals -----
 function surgeGlow(ctx,C,W,H,a){const d=Math.max(6,Math.min(W,H)*.09);ctx.save();ctx.globalAlpha=1;

@@ -96,6 +96,6 @@ function g6Bloom(ctx,m,cx,cy,vw,vh,ts){const ph=m.kind==='dungeon'?'night':g6Day
   ctx.globalCompositeOperation='lighter';
   if(m.lights)m.lights.forEach(g6BloomOne);if(m.tl)m.tl.forEach(g6BloomOne);
   ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';}
-{const wd0=worldDraw;worldDraw=function(now){wd0(now);try{const m=WS.m,ctx=WS.ctx;if(!m||!ctx||!WS.cam||GFX.off)return;const q=GFX.q,still=gfxStill(),ts=still?0:now,cx=Math.round(WS.cam.x),cy=Math.round(WS.cam.y);
+HOOK.after('worldDraw','gfx6world','lighting and life',function(_,now){try{const m=WS.m,ctx=WS.ctx;if(!m||!ctx||!WS.cam||GFX.off)return;const q=GFX.q,still=gfxStill(),ts=still?0:now,cx=Math.round(WS.cam.x),cy=Math.round(WS.cam.y);
   if(q.bloom)g6Bloom(ctx,m,cx,cy,WS.vw,WS.vh,ts);
-  if(q.vignette){const ph=m.kind==='dungeon'?'night':g6Day(),a=m.kind==='dungeon'||m.cave?.5:Math.round(g6PhMix(p=>p==='night'?.42:p==='day'?.26:.34,ph)*50)/50;ctx.drawImage(g6Vignette(WS.vw,WS.vh,a),0,0);}}catch(e){}};}
+  if(q.vignette){const ph=m.kind==='dungeon'?'night':g6Day(),a=m.kind==='dungeon'||m.cave?.5:Math.round(g6PhMix(p=>p==='night'?.42:p==='day'?.26:.34,ph)*50)/50;ctx.drawImage(g6Vignette(WS.vw,WS.vh,a),0,0);}}catch(e){}});

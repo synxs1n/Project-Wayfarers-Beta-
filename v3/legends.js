@@ -102,9 +102,9 @@ function drawLegendActor(ctx,a,cx,cy,now){
   ctx.fillStyle='#ffd24a';ctx.fillRect(X-1,Y-24-cy-bob,3,3);ctx.fillRect(X-3,Y-22-cy-bob,7,1);
 }
 // dusk for the rider, night for the wildcaller
-{const wd0=worldDraw;worldDraw=function(now){wd0(now);const m=WS.m,ctx=WS.ctx;if(!m||!ctx||m.kind!=='field')return;const L=legendQ(m);if(!L.length)return;
+HOOK.after('worldDraw','legends','legend markers',function(_,now){const m=WS.m,ctx=WS.ctx;if(!m||!ctx||m.kind!=='field')return;const L=legendQ(m);if(!L.length)return;
   if(L.some(q=>q.hero==='nikaris')){ctx.fillStyle='rgba(8,6,30,.42)';ctx.fillRect(0,0,WS.vw,WS.vh);}
-  else if(L.some(q=>q.hero==='kaevan')){ctx.fillStyle='rgba(255,110,40,.13)';ctx.fillRect(0,0,WS.vw,WS.vh);ctx.fillStyle='rgba(60,20,80,.15)';ctx.fillRect(0,0,WS.vw,WS.vh);}};}
+  else if(L.some(q=>q.hero==='kaevan')){ctx.fillStyle='rgba(255,110,40,.13)';ctx.fillRect(0,0,WS.vw,WS.vh);ctx.fillStyle='rgba(60,20,80,.15)';ctx.fillRect(0,0,WS.vw,WS.vh);}});
 // ----- Convergence: a 3x3 ice and lightning puzzle (lights-out rules) -----
 function convInit(){const c=Array(9).fill(true);const R=Math.random;let n=0;while(n<4){const i=Math.floor(R()*9);convPress(c,i);n++;}if(c.every(Boolean))convPress(c,4);V.conv={c,moves:0,start:c.slice()};}
 function convPress(c,i){const x=i%3,y=Math.floor(i/3);[[0,0],[1,0],[-1,0],[0,1],[0,-1]].forEach(([dx,dy])=>{const nx=x+dx,ny=y+dy;if(nx>=0&&ny>=0&&nx<3&&ny<3)c[ny*3+nx]=!c[ny*3+nx];});}

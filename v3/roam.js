@@ -66,7 +66,7 @@ HOOK.wrap('finishBattle','roam','beaten roamers',function(next,...a){const how=a
     else if(R){R.x=R.hx;R.y=R.hy;R.mode='patrol';R.rest=performance.now()+4000;}}}catch(e){}return r;});
 {const wt0=worldTick;worldTick=function(dt,now){wt0.apply(this,arguments);try{const m=WS.m;if(V.screen==='world'&&m&&(m.kind==='dungeon'||m.kind==='field')){if(!m.roam)roamSpawn(m);if(m.roam)roamTick(m,now);}}catch(e){}};}
 // drawing: the foe's own sprite at small size, a gold ring for elites, a faint sight cone, a "!" while chasing
-{const wd0=worldDraw;worldDraw=function(now){wd0(now);try{const m=WS.m;if(!m||!m.roam||(m.kind!=='dungeon'&&m.kind!=='field'))return;const ctx=WS.ctx,cx=Math.round(WS.cam.x),cy=Math.round(WS.cam.y),still=typeof reducedMotion==='function'&&reducedMotion();
+HOOK.after('worldDraw','roam','roamers',function(_,now){try{const m=WS.m;if(!m||!m.roam||(m.kind!=='dungeon'&&m.kind!=='field'))return;const ctx=WS.ctx,cx=Math.round(WS.cam.x),cy=Math.round(WS.cam.y),still=typeof reducedMotion==='function'&&reducedMotion();
   m.roam.forEach(r=>{if(r.dead)return;let x=r.x*TS,y=r.y*TS;if(r.t0&&r.fx!=null){const p=Math.min(1,(now-r.t0)/(r.mode==='chase'?ROAM.chaseMs:ROAM.patrolMs));x=(r.fx+(r.x-r.fx)*p)*TS;y=(r.fy+(r.y-r.fy)*p)*TS;}
     x-=cx;y-=cy;if(x<-40||y<-40||x>WS.vw+40||y>WS.vh+40)return;
     const [a,b]=DIRV[r.dir],S=ROAM.sight*TS;ctx.save();ctx.fillStyle=r.mode==='chase'?'rgba(255,90,60,.16)':'rgba(255,230,150,.09)';ctx.beginPath();ctx.moveTo(x+8,y+8);
@@ -75,7 +75,7 @@ HOOK.wrap('finishBattle','roam','beaten roamers',function(next,...a){const how=a
     ctx.fillStyle='rgba(0,0,0,.3)';ctx.fillRect(x+2,y+13,12,3);
     if(r.elite){ctx.strokeStyle='#ffc83d';ctx.lineWidth=1;ctx.beginPath();ctx.ellipse(x+8,y+14,9,3,0,0,6.283);ctx.stroke();}
     ctx.drawImage(img,x+8-sz/2,y+14-sz-bob,sz,sz);
-    if(r.mode==='chase'){ctx.fillStyle='#ff5a3a';ctx.fillRect(x+7,y-16,2,5);ctx.fillRect(x+7,y-10,2,2);}});}catch(e){}};}
+    if(r.mode==='chase'){ctx.fillStyle='#ff5a3a';ctx.fillRect(x+7,y-16,2,5);ctx.fillRect(x+7,y-10,2,2);}});}catch(e){}});
 // v0.9.5: fewer random battles, so an ordinary fight pays more (ENC in config.js): random field and dungeon battles and roamers.
 // Read once per win through facMul, the same hook as the NG+ modifiers. Bosses, elites, minibosses, the arena and the Trial are untouched.
 function encRewMul(){try{if(!B||!G||G.daily||!B.spec)return null;const sp=B.spec;if((sp.kind!=='field'&&sp.kind!=='dungeon')||sp.mini||B.en.some(e=>e.boss))return null;

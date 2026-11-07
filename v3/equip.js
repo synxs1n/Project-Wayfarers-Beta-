@@ -95,5 +95,5 @@ Object.assign(ACT,{
   return ["The Tamer's Stick"];}return cq0.apply(this,arguments);};}
 // glow under a hero holding a grown Stick, in battle and in the world
 function stickGlowOf(c){if(!c||!c.eq||c.eq.w!=='w_stick')return null;const P=stickPower();return P.tier>0?P.col:null;}
-{const wd0=worldDraw;worldDraw=function(now){wd0(now);try{const m=WS.m;if(!m||!G)return;const lead=G.roster[G.party[0]],col=stickGlowOf(lead);if(!col)return;const ctx=WS.ctx,cx=Math.round(WS.cam.x),cy=Math.round(WS.cam.y),p=.5+.5*Math.sin(now/260);
-  ctx.save();ctx.globalAlpha=.25+.25*p;ctx.strokeStyle=col;ctx.lineWidth=1;ctx.beginPath();ctx.ellipse(Math.round(WS.px)+8-cx,Math.round(WS.py)+15-cy,8+p*2,3+p,0,0,7);ctx.stroke();ctx.restore();}catch(e){}};}
+HOOK.after('worldDraw','equip','the Tamer\'s Stick glow',function(_,now){try{const m=WS.m;if(!m||!G)return;const lead=G.roster[G.party[0]],col=stickGlowOf(lead);if(!col)return;const ctx=WS.ctx,cx=Math.round(WS.cam.x),cy=Math.round(WS.cam.y),p=.5+.5*Math.sin(now/260);
+  ctx.save();ctx.globalAlpha=.25+.25*p;ctx.strokeStyle=col;ctx.lineWidth=1;ctx.beginPath();ctx.ellipse(Math.round(WS.px)+8-cx,Math.round(WS.py)+15-cy,8+p*2,3+p,0,0,7);ctx.stroke();ctx.restore();}catch(e){}});

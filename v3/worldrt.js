@@ -396,6 +396,7 @@ function worldDraw(now){
   if(WS.fade&&now-WS.fade<230){ctx.fillStyle=`rgba(8,4,2,${(now-WS.fade)/230})`;ctx.fillRect(0,0,vw,vh);}
   else if(WS.fadeIn&&now-WS.fadeIn<280){ctx.fillStyle=`rgba(8,4,2,${1-(now-WS.fadeIn)/280})`;ctx.fillRect(0,0,vw,vh);}
 }
+worldDraw=HOOK.def('worldDraw',worldDraw);// v0.9.9: one definition; modules add hooks (hooks.js)
 function drawSprite(ctx,c,footX,footY,flip,squash){
   const x=Math.round(footX-c.width/2),y=Math.round(footY-c.height+1);
   if(squash){ // one-pixel breathing: shift the upper body down a pixel

@@ -422,7 +422,7 @@ const D8_EMPTY=mkCv(1,1);
 function d8LairFx(m){if(!m||m.kind!=='field'||!m.d8lair||window.__D8OFF)return null;const Lr=m.d8lair;return {L:d8LairState(m),Lr,x:Lr.ex*TS+8,y:(Lr.ey+1)*TS};}
 function d8Tint(cv,col){return imgOf('d8tint:'+col+cv.width+'x'+cv.height,()=>{const c=mkCv(cv.width,cv.height),x=c.getContext('2d');x.drawImage(cv,0,0);x.globalCompositeOperation='source-in';x.fillStyle=col;x.fillRect(0,0,c.width,c.height);return c;});}
 // 2D: the light from the mouth, the torch flames and the plume, never inside the hero's box
-{const wd0=worldDraw;worldDraw=function(now){wd0.apply(this,arguments);try{if(typeof hdActive==='function'&&hdActive())return;const m=WS.m,ctx=WS.ctx,o=d8LairFx(m);if(!o||!WS.cam)return;
+HOOK.after('worldDraw','dungeon8','boss lair entrance effects (2D)',function(_,now){try{if(typeof hdActive==='function'&&hdActive())return;const m=WS.m,ctx=WS.ctx,o=d8LairFx(m);if(!o||!WS.cam)return;
   const cx=Math.round(WS.cam.x),cy=Math.round(WS.cam.y),still=gfxStill(),t=still?0:now,X=o.x-cx,Y=o.y-cy;if(X<-80||X>WS.vw+80||Y<-60||Y>WS.vh+200)return;
   const hx=Math.round(WS.px)+8-cx,hy=Math.round(WS.py)-cy;ctx.save();ctx.beginPath();ctx.rect(0,0,WS.vw,WS.vh);ctx.rect(hx-10,hy-10,20,28);ctx.clip('evenodd');
   const p=.8+.2*Math.sin(t/(o.L.lit?1100:520)),gl=hx2(o.L.glow);ctx.globalCompositeOperation='lighter';
@@ -432,7 +432,7 @@ function d8Tint(cv,col){return imgOf('d8tint:'+col+cv.width+'x'+cv.height,()=>{c
   if(!o.L.lit){const ex2=d8LairExtras(o.L);if(Lr.deco[0]){const [a,b]=tile(...Lr.deco[0]);ctx.drawImage(ex2,0,0,16,24,a-8,b-24-4,16,24);}if(Lr.deco[1]){const [a,b]=tile(...Lr.deco[1]);ctx.drawImage(ex2,16,0,16,24,a-8,b-24-4,16,24);}}
   Lr.torches.forEach(([tx,ty],i)=>{let [a,b]=tile(tx,ty);a+=Lr.fv[0]*6;b=Lr.south?(ty+1)*TS-cy-4:b+Lr.fv[1]*5;ctx.fillStyle='#3a2a1a';ctx.fillRect(a-1,b-8,2,8);ctx.fillStyle='#5a4a3a';ctx.fillRect(a-2,b-5,4,2);
     ctx.fillStyle=o.L.lit?(fl^i?'#ffe08a':'#ffd04a'):(fl^i?'#ffb04a':'#ff7a2a');ctx.fillRect(a-2,b-12-(fl^i),4,4);ctx.fillStyle='#fff0b0';ctx.fillRect(a-1,b-11,2,2);});
-  ctx.restore();D8.lair.fx2d={x:X,y:Y,lit:o.L.lit,a:+p.toFixed(2)};}catch(e){}};}
+  ctx.restore();D8.lair.fx2d={x:X,y:Y,lit:o.L.lit,a:+p.toFixed(2)};}catch(e){}});
 function hx2(c){const h=hx(c);return h.join(',');}
 // the map: its own icon and legend entry
 MAPICO_X.lair=[[2,4,6,1,'#6a5a4c'],[1,5,8,5,'#5a4a3e'],[0,7,10,3,'#4a3c32'],[3,3,4,1,'#7a6a5a'],[4,6,2,4,'#0a0710'],[4,9,2,1,'#ff6a3a'],[3,2,1,1,'#e8e0d0'],[6,1,1,2,'#3a2a1a'],[7,1,2,1,'#c0392b']];

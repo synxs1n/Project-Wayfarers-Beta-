@@ -29,9 +29,9 @@ function mimicReward(x,y,bonus){const m=WS.m,key=m.id+':'+x+','+y;G.chests[key]=
   if(typeof dropChest==='function')dropChest(m,x,y);saveGame();
   say(null,`The Mimic collapses into splinters and the chest is gone. In the wreckage: ${gearOf(gid).n} (${ITEM_TIERS[gTierIdx(gearOf(gid))].n}), ${gearOf(cid).n} and ${bonus} gold!`);}
 // tells: a tiny breathing wiggle every few seconds and a red glint in the keyhole
-{const wd0=worldDraw;worldDraw=function(now){wd0(now);try{const m=WS.m;if(!m||m.kind!=='dungeon'||!m.chests)return;const ctx=WS.ctx,cx=Math.round(WS.cam.x),cy=Math.round(WS.cam.y);
+HOOK.after('worldDraw','mimic','chest tells',function(_,now){try{const m=WS.m;if(!m||m.kind!=='dungeon'||!m.chests)return;const ctx=WS.ctx,cx=Math.round(WS.cam.x),cy=Math.round(WS.cam.y);
   m.chests.forEach(([x,y])=>{if(G.chests[m.id+':'+x+','+y]||!isMimic(m,x,y))return;const px=x*TS-cx,py=y*TS-cy;if(px<-16||py<-16||px>WS.vw||py>WS.vh)return;
     const ph=(now/1000+x*.37)%3.4;if(ph<.35){ctx.fillStyle='rgba(10,6,20,.55)';ctx.fillRect(px+2,py+7,12,1);}
-    if(Math.floor(now/700+x)%5===0){ctx.fillStyle='#ff4a4a';ctx.fillRect(px+7,py+8,2,1);}});}catch(e){}};}
+    if(Math.floor(now/700+x)%5===0){ctx.fillStyle='#ff4a4a';ctx.fillRect(px+7,py+8,2,1);}});}catch(e){}});
 // the Bestiary lists Mimics with the dungeon oddities
 {const ba0=bestAll;bestAll=function(){const out=ba0();out.push({k:'mimic',d:MON.mimic,zone:-1,odd:1});return out;};}

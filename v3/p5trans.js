@@ -37,11 +37,11 @@ function trCanvas(W,H){let c=TR.cv;if(!c){c=TR.cv=document.createElement('canvas
   const layer=(wx,al)=>{if(!wx||wx==='clear'||al<=.002)return;o.setTransform(1,0,0,1,0,0);o.globalAlpha=1;o.globalCompositeOperation='source-over';o.clearRect(0,0,W,H);
     f0.call(this,o,wx,W,H,now,false);ctx.globalAlpha=a0*al;ctx.drawImage(c,0,0);};
   try{layer(X.from,1-e);layer(w,e);}finally{ctx.globalAlpha=a0;}};}
-{const wd=worldDraw;worldDraw=function(now){try{trUpdate(now);}catch(e){}TR.inDraw=1;
-  try{wd.apply(this,arguments);
+HOOK.wrap('worldDraw','p5trans','smooth transitions (sets TR)',function(next,...a){let now=a[0];try{trUpdate(now);}catch(e){}TR.inDraw=1;
+  try{next(...a);
     // the phase being left, when daylight.js no longer draws it (dusk into night, dawn into day)
     if(TR.from&&TR.k<1&&(TR.from==='dusk'||TR.from==='dawn')&&TR.from!==TR.ph&&trWorldOn()&&!G.daily)dayFxDraw(WS.ctx,WS.vw,WS.vh,now,WS.cam,TR.from,TR.fromP);
-  }finally{TR.inDraw=0;}};}
+  }finally{TR.inDraw=0;}});
 // ambience: weather and time of day changes ramp slower
 function trAmbDur(){let dur=2.5;try{const m=WS.m;if(G&&m&&V.screen==='world'){
     const w=G.weather?G.weather[m.s]||'clear':null,ph=clockPhase();

@@ -673,11 +673,11 @@ function hdActive(){return !!HD.live;}
 {const lp0=loop;loop=function(){HD.inLoop=1;try{return lp0.apply(this,arguments);}finally{HD.inLoop=0;}};}
 {const rb0=rebuildBase;rebuildBase=function(){const r=rb0.apply(this,arguments);HD.dirty=true;return r;};}
 {const mp0=mapPoint;mapPoint=function(e){if(!HD.live)return mp0.apply(this,arguments);try{return hdPick(e)||mp0.apply(this,arguments);}catch(_){return mp0.apply(this,arguments);}};}
-{const wd0=worldDraw;worldDraw=function(now){
-  const m=WS.m;if(!m||!WS.cv||!WS.ctx||!hdWant()||!hdInitGL()||HD.lost||!hdAttach()){if(HD.live||HD.cv&&HD.cv.parentElement)hdDetach();return wd0.apply(this,arguments);}
+HOOK.wrap('worldDraw','hd2d','Medium and High: the HD-2D scene instead of the 2D chain (falls back to it)',function(next,...a){let now=a[0];
+  const m=WS.m;if(!m||!WS.cv||!WS.ctx||!hdWant()||!hdInitGL()||HD.lost||!hdAttach()){if(HD.live||HD.cv&&HD.cv.parentElement)hdDetach();return next(...a);}
   try{try{trUpdate(now);}catch(e){}TR.inDraw=1;try{const t=performance.now(),sync=!HD.inLoop;HD.syncDraw=sync;
       hdFrame(now);HD.live=true;hdOverlay(now,sync);}finally{TR.inDraw=0;}}
-  catch(e){HD.broken=true;HD.why=String(e&&e.message||e);hdDetach();try{hdFreeMap();}catch(_){}return wd0.apply(this,arguments);}};}
+  catch(e){HD.broken=true;HD.why=String(e&&e.message||e);hdDetach();try{hdFreeMap();}catch(_){}return next(...a);}});
 // Settings > HD-2D world (META.cfg.hd2d: true or missing = on, false = off). Only Medium and High use it.
 function hdRow(){const on=hdCfgOn();if(!HD.gl&&!HD.broken){try{hdInitGL();}catch(e){}}
   const note=HD.broken?' Not available on this device, so the classic view is used.':(hdTierQ()?'':' Graphics is on Low, which keeps the classic view.');
