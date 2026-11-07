@@ -37,10 +37,14 @@ const nextHero=H=>H.ev(async()=>{const A=__A,B=A.B;A.setPause(40);for(let i=0;i<
   // no press at all: the attack still happens, normal damage
   {await nextHero(H);const a=await attack(H);const l=await after(H);chk('on: no press: the ring closes, the attack goes on at normal damage',a.ring&&l&&l.ok===false&&l.why==='none'||JSON.stringify({a,l}));}
   // a foe's single target attack on a hero: the guard ring, a timed press cuts the damage by 15%
+  // v0.9.9: the game's turn watchdog (engine.js WD_MS, 4 s) replaces an enemy turn that stalls with a plain attack; on a very busy machine
+  // it can fire while the guard ring waits, and the replaced attack carries no timed result. Only then the guard is tried again (3 at most)
+  for(let tryN=0;tryN<3;tryN++){const wd0=await H.ev(()=>(window.__WD||[]).length);
   {await nextHero(H);const g=await H.ev(async()=>{const A=__A,B=A.B,e=B.en.find(x=>x.hp>0);e.sk=[];e.role=null;e._b5p=null;e.S.acc=5;B.front.forEach(c=>{c.S.eva=0;c.S.mhp=c.hp=99999;if(c.st)delete c.st.ward;});e.next=B.time+.01;A.B5.R.last=null;
       A.setPause(30);A.ACT.cmd('guard');for(let i=0;i<200&&!A.B5.R.ring;i++)await new Promise(q=>setTimeout(q,10));const R=A.B5.R.ring;return R?{ring:true,kind:R.kind,wait:Math.round(R.t0+R.T-performance.now())}:{ring:false,mode:B.mode,cur:B.cur&&B.cur.name};});
     if(g.ring){await H.wait(Math.max(0,g.wait-25));await H.page.keyboard.press(' ');}const l=await after(H);
-    chk('on: a foe attacks a hero: the guard ring, a timed press takes 15% off',g.ring&&g.kind==='def'&&l&&l.ok&&l.base&&Math.abs(l.dmg/l.base-.85)<.02+1/l.base||JSON.stringify({g,l}));}
+    const wd=await H.ev(n=>(window.__WD||[]).slice(n).map(e=>e.msg),wd0);if(wd.length&&!(l&&l.base)&&tryN<2){console.log('  guard ring turn replaced by the watchdog ('+wd.join('; ')+'), again');continue;}
+    chk('on: a foe attacks a hero: the guard ring, a timed press takes 15% off',g.ring&&g.kind==='def'&&l&&l.ok&&l.base&&Math.abs(l.dmg/l.base-.85)<.02+1/l.base||JSON.stringify({g,l,wd}));}break;}
   // auto: no ring, the fight goes on
   // v0.9.9: these foe types count as beaten by hand (Auto per foe type, v0.9.8, would leave Auto locked and the fight standing still)
   {await nextHero(H);const r=await H.ev(async ok=>{const A=__A,B=A.B;(0,eval)('('+ok+')')();let rings=0;const t0=B.pturns||0;A.setPause(30);A.ACT.auto();for(const s0=performance.now();performance.now()-s0<20000&&!B.over&&(B.pturns||0)<t0+6;){if(A.B5.R.ring||document.querySelector('.b5ring'))rings++;await new Promise(q=>setTimeout(q,25));}
