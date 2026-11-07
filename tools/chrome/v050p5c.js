@@ -9,7 +9,9 @@ const H=await open({w:844,h:390,mobile:true,freeze:true,pre:`localStorage.clear(
 await H.det(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;
   const f=A.getMap('f0');A.placeAt('f0',f.gates.start.arrive[0],f.gates.start.arrive[1],'r');A.render();});
 await new Promise(r=>setTimeout(r,500));
-const R=await ev(()=>{const A=__A,G=A.G,TR=A.TR,WS=A.WS,o={tod:[],wx:[],fails:[]};
+// v0.9.9: the time of day and weather sweeps run at Medium and again at Low (fog on Low did not blend the time of day), and a time of day
+// blend's middle frame must be a real mix: each half at least 30% of the whole change (dawn > day was 94% of the way at its middle frame)
+const SWEEP=async lowOnly=>ev(lowOnly=>{const A=__A,G=A.G,TR=A.TR,WS=A.WS,o={tod:[],wx:[],fails:[],tier:A.GFX.tier,live:!!A.HD.live};
   const cv=WS.ctx.canvas,W=cv.width,Hh=cv.height,NOW=123456;
   // v0.9.9: the clocks the draw reads besides its own time (the location banner's Date.now fade, the arrival fade-in and chest animations on
   // performance.now) are held at the frame's moment too, so two frames differ only by the blend however long the machine takes between them
@@ -24,8 +26,8 @@ const R=await ev(()=>{const A=__A,G=A.G,TR=A.TR,WS=A.WS,o={tod:[],wx:[],fails:[]
     G.clock=b[1]%A.CLK_LEN;const F0=frame();const k0=TR.k,from=TR.from;TR.k=.5;const Fm=frame();TR.k=1;const Fb=frame();
     const dAB=diff(La,Fb),d0=diff(La,F0),dm=diff(La,Fm),dmb=diff(Fm,Fb);
     const r={w,pair:a[0]+'>'+b[0],k0,from,dAB:+dAB.toFixed(2),d0:+d0.toFixed(2),dm:+dm.toFixed(2),lum:[lum(La),lum(Fm),lum(Fb)].map(x=>+x.toFixed(1))};
-    r.ok=k0===0&&from===a[0]&&d0<=Math.max(.6,.2*dAB)&&(dAB<1.5||(dm>.15*dAB&&dmb>.15*dAB));
-    o.tod.push(r);if(!r.ok)o.fails.push(r);}
+    r.dmb=+dmb.toFixed(2);r.ok=k0===0&&from===a[0]&&d0<=Math.max(.6,.2*dAB)&&(dAB<1.5||(dm>.15*dAB&&dmb>.15*dAB));r.mix=dAB<1.5||(dm>=.3*dAB&&dmb>=.3*dAB);
+    o.tod.push(r);if(!r.ok||!r.mix)o.fails.push(r);}
   // ---- weather: fade in from clear and back out, in every phase ----
   for(const p of PH)for(const w of WX.filter(x=>x!=='clear')){
     G.clock=Math.floor((p[1]+p[2])/2);G.weather[0]='clear';TR.ph=null;TR.wx.key=null;const La=frame();
@@ -35,6 +37,7 @@ const R=await ev(()=>{const A=__A,G=A.G,TR=A.TR,WS=A.WS,o={tod:[],wx:[],fails:[]
     const r={ph:p[0],w,k0,from,dAB:+dAB.toFixed(2),d0:+d0.toFixed(2),dm:+dm.toFixed(2),dmb:+dmb.toFixed(2),dOut:+dOut.toFixed(2)};
     r.ok=k0===0&&from==='clear'&&d0<=Math.max(.6,.15*dAB)&&(dAB<1.5||(dm>.15*dAB&&dmb>.15*dAB))&&kOut===0&&fromOut===w&&dOut<=Math.max(.6,.15*dAB)&&dBack<.6;
     o.wx.push(r);if(!r.ok)o.fails.push(r);}
+  if(lowOnly)return o;
   // ---- timing: frames of 16 ms until done ----
   const run=(set,get)=>{set();let t=1000,n=0;TR.last=t;while(get()<1&&n<5000){t+=16;A.trUpdate(t);n++;}return n*16;};
   G.clock=10;G.weather[0]='clear';TR.ph=null;TR.wx.key=null;A.trUpdate(500);
@@ -50,12 +53,19 @@ const R=await ev(()=>{const A=__A,G=A.G,TR=A.TR,WS=A.WS,o={tod:[],wx:[],fails:[]
   const blend=()=>{G.weather[0]='rain';TR.wx.key=null;frame();G.weather[0]='blizzard';frame();const t2=performance.now();for(let i=0;i<10;i++){TR.wx.k=.5;TR.last=NOW;A.worldDraw(NOW+i*16);}return (performance.now()-t2)/10;};
   let bp=1e9,bb=1e9;for(let r=0;r<4;r++){bp=Math.min(bp,plain());bb=Math.min(bb,blend());}
   o.msPlain=+bp.toFixed(2);o.msBlend=+bb.toFixed(2);
-  return o;});
+  return o;},lowOnly);
+const R=await SWEEP(false);
+// the 2D camera eases by (now - WS.camT): the held NOW is behind the real clock the camera last saw, so it starts at rest on the hero
+await ev(()=>{const A=__A;A.META.cfg.gfx='low';A.gfxApply();A.WS.cam=null;A.WS.camT=0;});await new Promise(r=>setTimeout(r,300));
+const RL=await SWEEP(true);
 console.log('weathers',R.nWx,'durations',R.dur,'tod ms',R.todMs,'wx ms',R.wxMs,'frame ms plain/blend',R.msPlain,R.msBlend);
 R.tod.filter((r,i)=>i<8).forEach(r=>console.log('tod',JSON.stringify(r)));
 R.fails.slice(0,12).forEach(r=>console.log('FAILROW',JSON.stringify(r)));
-chk(`time of day: all ${R.tod.length} phase changes (4 phases x ${R.nWx} weathers) start from the old look and blend`,R.tod.length===4*R.nWx&&R.tod.every(r=>r.ok));
-chk(`weather: all ${R.wx.length} fades (4 phases x ${R.nWx-1} weathers, in and out) start from the old look and blend`,R.wx.length===4*(R.nWx-1)&&R.wx.every(r=>r.ok));
+RL.fails.slice(0,12).forEach(r=>console.log('FAILROW low',JSON.stringify(r)));
+for(const [T,X] of [['medium',R],['low',RL]]){
+  chk(`${T} (${X.tier}, HD-2D ${X.live}): time of day: all ${X.tod.length} phase changes (4 phases x ${X.nWx} weathers) start from the old look and blend`,X.tier===T&&X.tod.length===4*X.nWx&&X.tod.every(r=>r.ok));
+  const mx=X.tod.filter(r=>!r.mix);chk(`${T}: time of day: every blend's middle frame is a real mix (each half at least 30% of the change)`,!mx.length||mx.slice(0,6).map(r=>`${r.w} ${r.pair} ${r.dm}/${r.dmb} of ${r.dAB}`).join('; '));
+  chk(`${T}: weather: all ${X.wx.length} fades (4 phases x ${X.nWx-1} weathers, in and out) start from the old look and blend`,X.wx.length===4*(X.nWx-1)&&X.wx.every(r=>r.ok));}
 chk('durations: time of day 8 to 15 s, weather 5 to 8 s',R.todMs>=8000&&R.todMs<=15000&&R.wxMs>=5000&&R.wxMs<=8000);
 chk('reduced motion: both blends are instant',R.rmWx===1&&R.rmTod===1);
 chk('ambience beds ramp slower for weather and time changes',R.ambIdle===2.5&&R.ambWx===6&&R.ambTod===10);

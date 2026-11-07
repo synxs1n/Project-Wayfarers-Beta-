@@ -315,9 +315,12 @@ function hdZero(o){['amb','sun','fog','lift','gain','sd','shW','shC'].forEach(k=
 function hdLook(m,now){const o=H2L,P=HD2D.look;hdZero(o);const dun=m.kind==='dungeon',T=dun?null:THM(m);
   o.fogS=1;
   if(dun){const D=DTH(m),a=hdRgb(D.acc),base=m.archive?P.hall:m.cave?P.cave:P.dungeon;hdMix(o,base,1);for(let i=0;i<3;i++){o.amb[i]*=.8+.4*a[i];o.fog[i]=o.fog[i]*.6+hdRgb(D.top)[i]*.6;}}
-  else{let wsum=0;const pp=phaseProg();['day','dusk','night','dawn'].forEach(ph=>{const w=typeof trPhW==='function'?trPhW(ph):(pp.ph===ph?1:0);if(w<=0)return;wsum+=w;
+  else{let wsum=0;const pp=phaseProg(),sd0=[0,0,0];['day','dusk','night','dawn'].forEach(ph=>{const w=typeof trPhW==='function'?trPhW(ph):(pp.ph===ph?1:0);if(w<=0)return;wsum+=w;
+      sd0[0]=o.sd[0];sd0[1]=o.sd[1];sd0[2]=o.sd[2];
       let L=P[ph];if(ph==='dusk'||ph==='dawn'){// late dusk and early dawn lean toward night; a phase being blended out keeps the progress it had
-        const pr=ph===pp.ph?pp.p:(typeof TR!=='undefined'&&TR.from===ph?TR.fromP:1),q=ph==='dusk'?pr:1-pr,k=Math.max(0,q-.45)*.7;if(k>0){hdMix(o,L,w*(1-k));hdMix(o,P.night,w*k);return;}}hdMix(o,L,w);});
+        const pr=ph===pp.ph?pp.p:(typeof TR!=='undefined'&&TR.from===ph?TR.fromP:1),q=ph==='dusk'?pr:1-pr,k=Math.max(0,q-.45)*.7;if(k>0){hdMix(o,L,w*(1-k));hdMix(o,P.night,w*k);}else hdMix(o,L,w);}else hdMix(o,L,w);
+      // v0.9.9: each phase adds its own sun direction at unit length times its weight (see the sun direction below)
+      const dx=o.sd[0]-sd0[0],dy=o.sd[1]-sd0[1],dz=o.sd[2]-sd0[2],dl=Math.hypot(dx,dy,dz);if(dl>1e-6){o.sd[0]=sd0[0]+dx/dl*w;o.sd[1]=sd0[1]+dy/dl*w;o.sd[2]=sd0[2]+dz/dl*w;}});
     if(wsum<=0)hdMix(o,P.day,1);
     if(T&&T.dark){const k=P.darkRealm;for(let i=0;i<3;i++){o.amb[i]*=k.amb[i];o.sun[i]*=k.sun;}o.emis=Math.max(o.emis,.8);o.lamp=Math.max(o.lamp,1);o.pl=Math.max(o.pl,.6);}
     // weather (blended like the Phase 5 weather fade)
@@ -333,7 +336,10 @@ function hdLook(m,now){const o=H2L,P=HD2D.look;hdZero(o);const dun=m.kind==='dun
     try{const LQ=typeof legendQ==='function'&&m.kind==='field'?legendQ(m):[];if(LQ.some(q=>q.hero==='nikaris')){for(let i=0;i<3;i++){o.amb[i]*=.55;o.sun[i]*=.3;}o.emis=1;o.lamp=1;}
       else if(LQ.some(q=>q.hero==='kaevan')){o.gain[0]*=1.08;o.gain[2]*=.9;}}catch(e){}
     if(m.kind==='field'&&G.cleared[m.s]){o.gain[0]*=1.03;o.gain[1]*=1.02;}}
-  const l=Math.hypot(o.sd[0],o.sd[1],o.sd[2])||1;o.sd[0]/=l;o.sd[1]/=l;o.sd[2]/=l;o.shA=1;
+  // v0.9.9: while the time of day blends, the sun direction is the weighted sum of the two phases' (unit) directions, not renormalised:
+  // the sum of two unit vectors is shorter than either, and scaling it back to unit length lit the tops past the new phase's light halfway through
+  // (dawn > day mostly jumped: the middle frame was 94% of the way to day, v050p5c)
+  const l=Math.hypot(o.sd[0],o.sd[1],o.sd[2])||1,tb=!dun&&typeof TR!=='undefined'&&TR.from&&TR.k<1&&TR.from!==TR.ph;if(!tb){o.sd[0]/=l;o.sd[1]/=l;o.sd[2]/=l;}o.shA=1;
   return o;}
 // the grade as one affine map M*c+B (column major): exposure e, contrast k, saturation s, then gain g and lift l per channel
 function hdGrade(o){const e=o.exp,k=o.con,sa=o.sat,M=HD.gm,B=HD.gb,W=[.299,.587,.114];

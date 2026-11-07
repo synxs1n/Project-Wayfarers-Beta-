@@ -57,7 +57,10 @@ function w7List(m){W7L.length=0;if(!m||!G||!G.weather)return W7L;const cur=G.wea
   if(X&&X.from&&X.k<1&&X.cur===cur&&X.from!==cur){const e=trEase(X.k);if(X.from!=='clear')W7L.push([X.from,1-e]);if(cur!=='clear')W7L.push([cur,e]);}
   else if(cur!=='clear')W7L.push([cur,1]);return W7L;}
 const W7_OWN={rain:1,storm:1,snow:1,blizzard:1,fog:1,gale:1,sand:1,heat:1,ashfall:1,aurora:1,starfall:1,meteor:1};
-function w7Night(){try{const p=phaseProg();if(typeof trPhW==='function'&&TR.inDraw){return Math.min(1,trPhW('night')+trPhW('dusk')*.35*p.p+trPhW('dawn')*.3*(1-p.p));}
+// v0.9.9: a phase being blended out keeps the progress it had (TR.fromP, as hdLook does); with the new phase's progress the old dusk or dawn
+// jumped at the phase change (dusk > night started from no night at all, dawn > day from 0.3 night: fog and banks on Low, v050p5c)
+function w7Night(){try{const p=phaseProg();if(typeof trPhW==='function'&&TR.inDraw){const pr=ph=>ph===p.ph?p.p:TR.from===ph?TR.fromP:1;
+    return Math.min(1,trPhW('night')+trPhW('dusk')*.35*pr('dusk')+trPhW('dawn')*.3*(1-pr('dawn')));}
   return p.ph==='night'?1:p.ph==='dusk'?.35*p.p:p.ph==='dawn'?.3*(1-p.p):0;}catch(e){return 0;}}
 // a colour between day (c0) and night (c1), in 8 steps (tinted sprites are cached per colour)
 function w7Rgb(c0,c1,t){const q=Math.round(Math.max(0,Math.min(1,t))*8)/8;return `${Math.round(c0[0]+(c1[0]-c0[0])*q)},${Math.round(c0[1]+(c1[1]-c0[1])*q)},${Math.round(c0[2]+(c1[2]-c0[2])*q)}`;}
