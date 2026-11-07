@@ -39,13 +39,14 @@ Also listed as flaky by the owner and passing every run here, hardened anyway: v
 | v095m2 | 0/3 | 3/3 | written before the realm gates were merged (missions open in the third realm) |
 
 After: 127 of the 129 non-stale tests passed 3 of 3. The two that fail every run fail on real game bugs (below); nothing is flaky in this
-measurement. Stale tests: 20, each failing its known check (run once).
+measurement. Stale tests: 19, each failing its known check (run once).
 
 ## Stale tests (fail the same way on every run, for an old reason)
 
 They are listed in `STALE` in `runall.js` with the reason, are left out of `all` and run with `node runall.js stale` (or `--stale`).
 From the v0.8.0 cleanup baseline: liveboot-v046, p4b, sw, v040p1, v040p3, v041p1e, v041p1g, v041p5, v041p54, v041p6b, v050p5b, v053s.
-`v050p5` passes now and left the list. Found stale in this pass (a rule a later version changed on purpose; the test was not updated):
+`v050p5` passes now and left the list. v041p1g's reason is now known: its sanity check wants a moving meadow field backdrop, but the
+first field is not always a meadow since the realms, and no field backdrop moves in the band it samples any more. Found stale in this pass (a rule a later version changed on purpose; the test was not updated):
 
 | test | failing check | why |
 |---|---|---|
@@ -56,7 +57,6 @@ From the v0.8.0 cleanup baseline: liveboot-v046, p4b, sw, v040p1, v040p3, v041p1
 | v043c | Accept all on bounties and faction missions | the Notice Board replaced those lists in v0.9.5 |
 | v077a | a mission already done can be claimed after accepting | guild missions moved to the Notice Board in v0.9.5 |
 | v080cb | journey sim: top hero level 39 to 41 | v0.9.5 retuned encounters and rewards; the seeded sim reads 42.3 every run |
-| v041p1g | (sanity) the meadow field backdrop animates | the first field is not always a meadow since the realms, and no field backdrop moves in the sampled band any more |
 
 Tests that failed every run for an old reason and were cheap to bring up to date (the check itself unchanged):
 oldsave, v041old, v050p4b (Continue waits for the save sync since v0.8.5: the test now waits for the journey instead of reading `G` in
@@ -110,7 +110,7 @@ Load and timing (the flaky ones):
   of each.
 - `v071wt` (the road gate walk stopped with why "input"): the gate walk now starts from rest (no step under way, no key, drag, tap, pad
   or joystick held; `H.until`, 8 s), and when a walk stops early the check prints the input sources the walk saw (`inputSources()`), so
-  a repeat names its cause. It could not be reproduced again in 8 runs (4 with extra CPU load); no game bug is known here.
+  a repeat names its cause. It did not happen again in 10 runs since (4 of them with extra CPU load); no game bug is known here.
 - `v063ba` (label overlaps during the camera zoom) and every test using `v063lib.rects` (v063bb/bc/bd, v070ib, v070ob, v076b, v095b):
   `rects` measures after `rest(H)`: the camera punch over and the stage boxes still for 3 frames, instead of a fixed 160 ms.
 - `v053ua` (touch targets): the battle and results buttons are measured once they exist and every finite animation has finished (as the
