@@ -185,7 +185,7 @@ const MIMIC_RATE=.13;
 const MAT_PRICE={copper:18,iron:45,mythril:110,oak:14,ash:40,elder:95,healroot:10,bluecap:22,sunpetal:48,starbloom:120};
 // Beta v0.4.1 3.5 economy (all editable here)
 // gold/xp: multipliers on what the player earns (the Daily Trial is exempt). gear/items/forge: price multipliers. recruit: tavern hire price.
-const ECON={gold:.9,xp:.87,gear:1.6,items:1.6,recruit:3,rareRecruit:2.6,inn:{base:30,per:25}};// v0.4.3: gold easier, prices lower (was gold .75, gear and items x2, recruits x3.5) v0.8.2: xp .85 -> .87 with more encounters (ENC_RATE)
+const ECON={gold:.9,xp:.82,gear:1.6,items:1.6,recruit:3,rareRecruit:2.6,inn:{base:30,per:25}};// v0.4.3: gold easier, prices lower (was gold .75, gear and items x2, recruits x3.5) v0.8.2: xp .85 -> .87 with more encounters (ENC_RATE) v0.9.9: xp .87 -> .82 (journey sim top level 42.4 -> target 38 to 42)
 const econG=n=>(typeof G!=='undefined'&&G&&G.daily)?n:Math.round(n*ECON.gold);
 // Beta v0.5.0 Phase 3: shops, gear and items (p3shop.js)
 // 3.8 how many of one item the pack holds (was 9). The Daily Trial keeps its old cap so its runs stay exactly as before.
