@@ -28,8 +28,11 @@ const runPair=async html=>{const H=await open({w:390,h:844,mobile:true,pre:PRE,h
 const OLD=process.env.OLDHTML?fs.readFileSync(process.env.OLDHTML,'utf8'):null;
 const nw=await runPair(null);
 if(OLD){const od=await runPair(OLD);
-  chk(`a hand played win pays the same gold and XP as before (${od.man.gold} gold, ${od.man.xp.join('/')} XP)`,nw.man.gold===od.man.gold&&JSON.stringify(nw.man.xp)===JSON.stringify(od.man.xp)||JSON.stringify({old:[od.man.gold,od.man.xp],now:[nw.man.gold,nw.man.xp]}));
-  chk(`an auto win pays the same gold and XP as before (${od.aut.gold} gold, ${od.aut.xp.join('/')} XP)`,nw.aut.gold===od.aut.gold&&JSON.stringify(nw.aut.xp)===JSON.stringify(od.aut.xp)||JSON.stringify({old:[od.aut.gold,od.aut.xp],now:[nw.aut.gold,nw.aut.xp]}));}
+  // v0.9.9: ECON.xp changed between builds (a pacing retune): XP is compared after scaling by the two builds' rates, gold must match exactly
+  const xr=h=>{const m=/const ECON=\{gold:[\d.]+,xp:([\d.]+)/.exec(h||'');return m?+m[1]:1;},rN=xr(fs.readFileSync(process.env.PWHTML||'../../out/aurelis3.html','utf8')),rO=xr(OLD);
+  const xpOk=(a,b)=>a.length===b.length&&a.every((v,i)=>Math.abs(v-Math.round(b[i]*rN/rO))<=1);
+  chk(`a hand played win pays the same gold and XP as before (${od.man.gold} gold, ${od.man.xp.join('/')} XP)`,nw.man.gold===od.man.gold&&xpOk(nw.man.xp,od.man.xp)||JSON.stringify({old:[od.man.gold,od.man.xp],now:[nw.man.gold,nw.man.xp]}));
+  chk(`an auto win pays the same gold and XP as before (${od.aut.gold} gold, ${od.aut.xp.join('/')} XP)`,nw.aut.gold===od.aut.gold&&xpOk(nw.aut.xp,od.aut.xp)||JSON.stringify({old:[od.aut.gold,od.aut.xp],now:[nw.aut.gold,nw.aut.xp]}));}
 else chk('OLDHTML given for the old build comparison','set OLDHTML');
 chk('auto pays AUTO_REW of the hand played XP (rounding aside)',Math.abs(nw.aut.info.xp-nw.man.info.xp*.66)<=1.01||JSON.stringify([nw.man.info.xp,nw.aut.info.xp]));
 chk('the manual bonus is the gap to the auto level: base x (1/AUTO_REW) = the total',nw.man.info.manual&&nw.man.info.manual.pct===52&&nw.man.info.manual.xp===nw.man.info.xp-Math.round(nw.man.info.xp*.66)||JSON.stringify(nw.man.info));
