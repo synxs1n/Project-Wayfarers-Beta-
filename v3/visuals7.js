@@ -36,13 +36,14 @@ function mm7Base(m){const base=mapBase(m),key=m.id+':'+MM7.gen,now=performance.n
       const q=((y*T+py)*W+i*T+px)*4;d[q]=Math.min(255,R0*k);d[q+1]=Math.min(255,G0*k);d[q+2]=Math.min(255,B0*k);d[q+3]=a;}}
   x.putImageData(img,0,0);MM7.key=key;MM7.t=now;return c;}
 function mm7Vig(W,H){return MM7.vig&&MM7.vig.width===W?MM7.vig:(MM7.vig=(()=>{const v=mkCv(W,H),g=v.getContext('2d'),r=g.createRadialGradient(W/2,H/2,Math.min(W,H)*.32,W/2,H/2,Math.max(W,H)*.62);r.addColorStop(0,'rgba(6,4,14,0)');r.addColorStop(1,'rgba(6,4,14,.62)');g.fillStyle=r;g.fillRect(0,0,W,H);return v;})());}
-function drawMini(){const cv=document.getElementById('mmap');if(!cv)return;const m=WS.m;if(!m||!G||!miniOn()){cv.style.display='none';return;}cv.style.display='block';
+function drawMini(){const cv=document.getElementById('mmap'),bt=document.getElementById('mmbtn');if(!cv)return;const m=WS.m;if(!m||!G||!miniOn()){cv.style.display='none';if(bt)bt.style.display='none';return;}cv.style.display='block';if(bt)bt.style.display='';
+  {const nw=miniNarrow()?84:112;if(cv.width!==nw){cv.width=nw;cv.height=nw*3/4;}}// resizing clears the canvas, so only when the width class changed
   const W=cv.width,H=cv.height,x=cv.getContext('2d'),sc=4;x.imageSmoothingEnabled=false;
   {const g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,'#141026');g.addColorStop(1,'#0a0712');x.fillStyle=g;x.fillRect(0,0,W,H);}
   const ox=Math.round(W/2-(WS.x+.5)*sc),oy=Math.round(H/2-(WS.y+.5)*sc);let b=null;try{b=mm7Base(m);}catch(e){b=null;}
   if(b)x.drawImage(b,ox,oy);else x.drawImage(mapBase(m),ox,oy,m.w*sc,m.h*sc);
   x.drawImage(mm7Vig(W,H),0,0);
-  const vis=mapMarks(m).filter(o=>!MK_DONE[o.k]&&Math.abs(o.x-WS.x)<W/sc&&Math.abs(o.y-WS.y)<H/sc);drawMarks(x,m,vis,sc,ox,oy);
+  const vis=mapMarks(m).filter(o=>!MK_DONE[o.k]&&Math.abs(o.x-WS.x)<W/sc/2+2&&Math.abs(o.y-WS.y)<H/sc/2+2);drawMarks(x,m,vis,sc,ox,oy);
   {const g=x.createRadialGradient(W/2,H/2,0,W/2,H/2,9);g.addColorStop(0,'rgba(255,236,170,.5)');g.addColorStop(1,'rgba(255,236,170,0)');x.fillStyle=g;x.fillRect(W/2-9,H/2-9,18,18);}
   drawPlayer(x,sc,W/2,H/2);}
 // ----- 3. the arena backdrop -----

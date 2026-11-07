@@ -36,7 +36,7 @@ evals any name), `window.__AU` (ambience.js), `__P2` (p2world.js), `__P3` (p3sho
 | world drawing (2D) | `worldgfx.js`, `worldgfx2.js`, `towngfx.js`, `worldrt.js` (worldDraw), `gfx6world.js`, `worldfx.js`, `daylight.js` |
 | HD-2D world (Medium and High graphics) | `hd2d.js` (worldDraw replacement), `hd2dgl.js` (WebGL layer), `config.js` 8 (HD2D) |
 | weather and day/night | `world3.js` (tables, rolls, clock), `engine2.js` (WEATHER defs, battle weather), `p5trans.js` (blends), `weather7.js` (layers), `config.js` 6 and 8 |
-| minimap, area map, world map | `map.js`, `visuals7.js` (drawMini) |
+| minimap, area map, world map | `map.js`, `visuals7.js` (drawMini); the connected world map and routes across maps `bigmap.js` (bmLayout, bmRoute, WS.route) |
 | menus and shops | `menus3.js` (tabs, filters, Smithy, Alchemy, Tavern, Guild, Board), `ui.js` (vModal, mMenu, mChar), `ui2.js` (crafting, sort filters), `p3shop.js` (Best for party, Smithy plan "Upgrade whole party", the Upgrade button upgOpts/upgBest), `temper.js`, `equip.js`/`equip2.js`, CSS `menus3.css` |
 | party, Best Party, loadouts, roster | `party2.js`, `p3shop.js` (scoring), `party3.js` (formations, Training team), `nav.js` (swaps), `tavern2.js` (journey roster, tavern tables), `progression.js` |
 | companions and taming | `comp.js`, `comp2.js`, `engine2.js` (registerTamed), `v063prog.js` (Taming log) |

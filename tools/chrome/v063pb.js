@@ -38,7 +38,7 @@ const ce=await ev(()=>{const A=__A,G=A.G,GEAR=A.GEAR,o={};G.roster={};['mira','l
   const S=()=>JSON.stringify({gear:G.gear.slice().sort(),eq:Object.fromEntries(Object.keys(G.roster).sort().map(id=>[id,G.roster[id].eq])),w:G.tamed.map(t=>t.with)});
   const pe=()=>JSON.stringify(G.party.map(id=>G.roster[id].eq));
   o.s0=S();o.p0=pe();o.pack0=G.gear.length;o.comp0=G.tamed.map(t=>t.with);
-  A.V.modal={type:'menu',tab:'equip'};A.render();const btn=document.querySelector('#modal [data-act="autoEqCamp"]');o.btn=btn?btn.textContent:null;o.campH=/Reserves/.test(document.querySelector('#modal').textContent);
+  A.V.modal={type:'menu',tab:'equip'};A.render();const btn=document.querySelector('#modal [data-act="autoEqParty"]');o.btn=btn?btn.textContent.trim():null;o.campH=!!document.querySelector('#modal [data-act="autoEqCamp"],#modal [data-act="autoEqAll"]');
   if(btn)btn.click();else __P6.autoCamp();
   o.modal=A.V.modal&&A.V.modal.type;o.mode=A.V.modal&&A.V.modal.mode;A.render();const md=document.querySelector('#modal');o.txt=md?md.textContent:'';
   o.p1=pe();o.comp1=G.tamed.map(t=>t.with);o.camp=['brann','tess','sable'].map(id=>G.roster[id].eq);o.pack1=G.gear.length;
@@ -48,11 +48,11 @@ const ce=await ev(()=>{const A=__A,G=A.G,GEAR=A.GEAR,o={};G.roster={};['mira','l
   G.daily=1;const before=S();__P6.autoCamp();o.daily=S()===before&&!(A.V.modal&&A.V.modal.type==='autoEq');G.daily=0;A.V.modal=null;
   return o;});
 console.log(JSON.stringify({btn:ce.btn,mode:ce.mode,camp:ce.camp,rows:ce.rows,pack:[ce.pack0,ce.pack1],comp:[ce.comp0,ce.comp1]}));
-chk('Equipment tab has "Equip best: reserves" and lists only the party (v0.8.3)',ce.btn==='Equip best: reserves'&&!ce.campH||JSON.stringify({btn:ce.btn,h:ce.campH}));
+chk('Equipment tab has one Equip Best button and no reserves or everyone button (v0.10.2)',ce.btn==='Equip Best'&&!ce.campH||JSON.stringify({btn:ce.btn,h:ce.campH}));
 chk('it equips the heroes at camp from the pack',ce.mode==='camp'&&ce.camp.every(e=>e.w||e.a)&&ce.pack1<ce.pack0||JSON.stringify(ce.camp));
 chk('it never touches the party\'s gear',ce.p1===ce.p0);
 chk('it never moves a party hero\'s companion; a free one may go to camp',ce.comp1[0]==='mira'&&(ce.comp1[1]===null||['brann','tess','sable'].includes(ce.comp1[1]))||JSON.stringify(ce.comp1));
-chk('the summary only lists heroes at camp, titled for camp',ce.rows.length>0&&ce.rows.every(r=>!r.inParty)&&/Equip best: reserves/.test(ce.txt)&&/party's gear and companions were not touched/.test(ce.txt)||ce.txt.slice(0,300));
+chk('the summary only lists heroes at camp, titled for camp',ce.rows.length>0&&ce.rows.every(r=>!r.inParty)&&/reserves/i.test(ce.txt)&&/party's gear and companions were not touched/.test(ce.txt)||ce.txt.slice(0,300));
 chk('Undo restores gear, pack and companions exactly',ce.s2===ce.s0);
 chk('the Daily Trial is unaffected (auto equip stays off there)',ce.daily);
 await done(h);})();

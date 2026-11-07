@@ -654,6 +654,9 @@ b.up{color:#7aff8a}b.dn{color:#ff8a8a}
 
 /* Beta v0.3.2: map and minimap */
 .mmap{position:absolute;right:6px;top:6px;width:112px;height:84px;border:2px solid var(--bronze);box-shadow:2px 2px 0 #000;image-rendering:pixelated;pointer-events:none;opacity:.92;z-index:3}
+/* v0.10.x: narrow views get a smaller minimap, set below the top-centre area name banner; the Map button sits inside its bottom-right corner */
+.mmbtn{position:absolute;right:9px;top:61px;width:28px;height:28px;padding:0;border-radius:50%;border:2px solid var(--bronze);background:rgba(14,8,4,.82);display:flex;align-items:center;justify-content:center;pointer-events:auto;cursor:pointer;touch-action:manipulation;z-index:4;line-height:0}
+@media (max-width:559px){.mmap{width:84px;height:63px;top:58px}.mmbtn{top:88px}}
 .mapbox{max-width:min(940px,96vw)}
 .mapbox .mh{display:flex;justify-content:space-between;align-items:center}
 .fmap{display:block;margin:6px auto;image-rendering:pixelated;border:2px solid var(--bronze);background:#0a0710;max-width:100%}

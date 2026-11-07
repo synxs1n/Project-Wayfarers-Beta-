@@ -46,7 +46,7 @@ function mapMarks(m){const out=[],T=m.t;for(let y=0;y<m.h;y++)for(let x=0;x<m.w;
 const MK={chest:['#e8b04a','▪'],chestopen:['#6a5a3a','▫'],vault:['#c89aff','▪'],vaultopen:['#5a4a6a','▫'],key:['#ffd04a','⚿'],keyopen:['#6a5a3a','▫'],stairs:['#ffe08a','▲'],dungeon:['#ffe08a','▼'],waystone:['#5ad0ff','◆'],
   boss:['#ff4a4a','●'],bossdone:['#7a5a5a','○'],echo:['#c89aff','◎'],door:['#ff9a4a','■'],dooropen:['#8a6a4a','□'],bars:['#a8a8b8','#'],keybars:['#ffd04a','#'],barsopen:['#5a5a6a','·'],lever:['#ffd04a','┤'],leverdone:['#6a6a5a','┤'],
   cave:['#5ad0ff','◒'],gate:['#ff6a6a','║'],gateopen:['#6a8a6a','║'],board:['#e8c860','!'],town:['#ffe8a0','⌂'],exit:['#d8d8d8','➜'],svc:['#ffffff','•'],quest:['#5aff9a','★'],questghost:['#a8c8b8','☆']};
-const MKN={cave:'Side cave',chest:'Chest',chestopen:'Opened chest',vault:'Vault chest',key:'Beacon Key',stairs:'Stairs out',dungeon:'Dungeon entrance',waystone:'Waystone',boss:'Scourge or Calamity',echo:'Echo',door:'Boss door',bars:'Bars',keybars:'Bars over the key room',lever:'Lever',gate:'Sealed gate',town:'Town',exit:'Road on',board:'Quest board',svc:'Shop or service',quest:'Quest or bounty target',questghost:'Rival waiting for a wayfarer not in your party'};
+const MKN={cave:'Side cave',chest:'Chest',chestopen:'Opened chest',vault:'Vault chest',key:'Beacon Key',stairs:'Stairs out',dungeon:'Dungeon entrance',waystone:'Waystone',boss:'Scourge or Calamity',echo:'Echo',door:'Boss door',bars:'Bars',keybars:'Bars over the key room',lever:'Lever',gate:'Sealed gate',town:'Town',exit:'Road on',board:'Quest board',svc:'Shop or service',quest:'Quest or bounty target',questghost:'Rival waiting for a wayfarer not in your party',bossdone:'Boss defeated',dooropen:'Boss door (open)',vaultopen:'Opened vault chest',keyopen:'Key taken',barsopen:'Raised bars',leverdone:'Lever pulled',gateopen:'Open gate'};
 // ----- v0.3.5 1.4: one pixel-icon set shared by the map, minimap, legend and building signs (SVC_ICON in towngfx.js has the shop icons) -----
 const MAPICO_X={
   waystone:[[4,0,2,1,'#d8f6ff'],[3,1,4,2,'#5ad0ff'],[2,3,6,3,'#3aa8e8'],[3,6,4,2,'#3aa8e8'],[4,8,2,2,'#2a78b8'],[4,2,1,3,'#d8f6ff']],
@@ -55,7 +55,21 @@ const MAPICO_X={
   exit:[[1,2,2,8,'#d8d8e0'],[7,2,2,8,'#d8d8e0'],[1,1,8,2,'#d8d8e0'],[3,5,3,1,'#ffffff'],[5,4,1,3,'#ffffff'],[6,5,1,1,'#ffffff']],
   cave:[[1,4,8,6,'#8a8a98'],[2,3,6,1,'#8a8a98'],[3,5,4,5,'#07040a'],[4,4,2,1,'#07040a'],[3,9,4,1,'#5ad0ff']],
   dungeon:[[1,3,8,7,'#6a6278'],[2,2,6,1,'#6a6278'],[3,5,4,5,'#0a0710'],[4,3,2,2,'#0a0710'],[3,9,4,1,'#ffe08a']]};
-const MAPICO_NAME={inn:'Inn',tavern:'Tavern',smithy:'Smithy',workshop:'Alchemy',guild:'Guild Hall',board:'Quest board',waystone:'Waystone',town:'Town gate',exit:'Road gate',cave:'Side cave',dungeon:'Dungeon entrance'};
+Object.assign(MAPICO_X,{
+  chest:[[1,3,8,6,'#a8742a'],[1,3,8,2,'#e8b04a'],[1,5,8,1,'#5a3a1a'],[4,5,2,2,'#ffe08a'],[1,9,8,1,'#5a3a1a']],
+  chestopen:[[1,2,8,2,'#6a5a3a'],[1,5,8,4,'#6a5a3a'],[2,5,6,2,'#2a2018'],[1,9,8,1,'#4a3a2a']],
+  vault:[[1,3,8,6,'#7a4ac0'],[1,3,8,2,'#c89aff'],[1,5,8,1,'#3a1a6a'],[4,5,2,2,'#ffffff'],[1,9,8,1,'#3a1a6a']],
+  vaultopen:[[1,2,8,2,'#5a4a6a'],[1,5,8,4,'#5a4a6a'],[2,5,6,2,'#1a1224'],[1,9,8,1,'#3a2a4a']],
+  key:[[1,3,4,4,'#ffd04a'],[2,4,2,2,'#141026'],[5,4,4,2,'#ffd04a'],[7,6,1,2,'#ffd04a'],[9,6,1,2,'#ffd04a']],
+  keyopen:[[1,3,4,4,'#6a5a3a'],[2,4,2,2,'#141026'],[5,4,4,2,'#6a5a3a'],[7,6,1,2,'#6a5a3a']],
+  stairs:[[0,8,4,2,'#ffe08a'],[3,6,3,2,'#ffe08a'],[5,4,3,2,'#ffe08a'],[7,2,3,2,'#ffe08a'],[0,9,10,1,'#9a7a3a']],
+  boss:[[2,1,6,6,'#e8e0d0'],[1,3,8,3,'#e8e0d0'],[2,4,2,2,'#c02020'],[6,4,2,2,'#c02020'],[3,7,4,2,'#e8e0d0'],[4,7,1,2,'#3a2a2a'],[6,7,1,2,'#3a2a2a']],
+  bossdone:[[2,1,6,6,'#7a6a6a'],[1,3,8,3,'#7a6a6a'],[2,4,2,2,'#2a2020'],[6,4,2,2,'#2a2020'],[3,7,4,2,'#7a6a6a']],
+  door:[[2,1,6,9,'#ff9a4a'],[3,2,4,8,'#5a2a0a'],[6,5,1,1,'#ffe08a']],
+  dooropen:[[2,1,6,9,'#8a6a4a'],[3,2,4,8,'#0a0710'],[3,2,1,8,'#6a4a2a']],
+  quest:[[4,0,2,3,'#5aff9a'],[0,3,10,2,'#5aff9a'],[2,5,6,2,'#5aff9a'],[1,7,3,3,'#5aff9a'],[6,7,3,3,'#5aff9a'],[3,3,4,4,'#5aff9a']],
+  questghost:[[4,0,2,2,'#a8c8b8'],[0,3,10,1,'#a8c8b8'],[1,4,2,1,'#a8c8b8'],[7,4,2,1,'#a8c8b8'],[3,5,1,2,'#a8c8b8'],[6,5,1,2,'#a8c8b8'],[1,7,2,3,'#a8c8b8'],[7,7,2,3,'#a8c8b8']]});
+const MAPICO_NAME={chest:'Chest',chestopen:'Opened chest',vault:'Vault chest',vaultopen:'Opened vault chest',key:'Beacon Key',keyopen:'Key taken',stairs:'Stairs out',boss:'Scourge or Calamity',bossdone:'Boss defeated',door:'Boss door',dooropen:'Boss door (open)',quest:'Someone with a quest or bounty',questghost:'Rival waiting for a wayfarer not in your party',inn:'Inn',tavern:'Tavern',smithy:'Smithy',workshop:'Alchemy',guild:'Guild Hall',board:'Quest board',waystone:'Waystone',town:'Town gate (arrow: side it faces)',exit:'Road gate (arrow: side it faces)',cave:'Side cave',dungeon:'Dungeon entrance'};
 function mapIcoKey(o){return o.k==='svc'?o.svc:o.k;}
 function mapIcoRects(k){try{return (typeof SVC_ICON!=='undefined'&&SVC_ICON[k])||MAPICO_X[k]||null;}catch(e){return MAPICO_X[k]||null;}}
 // draws icon k centred at (cx,cy), size px square, with a dark outline so it reads on any terrain
@@ -65,7 +79,7 @@ function mapIcoDraw(x,k,cx,cy,size){const R=mapIcoRects(k);if(!R)return false;co
 function drawMarks(x,m,list,sc,ox,oy){x.textAlign='center';x.textBaseline='middle';x.font=`800 ${Math.max(7,Math.round(sc*1.15))}px sans-serif`;
   list.forEach(o=>{const M=MK[o.k]||['#fff','•'],px=ox+(o.x+.5)*sc,py=oy+(o.y+.5)*sc;
     if(o.dir){const v=SIDE_V[o.dir],ar={n:'▲',s:'▼',e:'▶',w:'◀'}[o.dir],d=Math.max(8,sc*1.8);x.fillStyle='rgba(0,0,0,.7)';x.fillText(ar,px-v[0]*d+1,py-v[1]*d+1);x.fillStyle='#ffe08a';x.fillText(ar,px-v[0]*d,py-v[1]*d);}
-    if(mapIcoDraw(x,mapIcoKey(o),px,py,Math.max(10,Math.round(sc*2.4))))return;const dim=MK_DONE[o.k]||MK_GHOST[o.k];if(dim)x.globalAlpha=.45;x.fillStyle='rgba(0,0,0,.6)';x.fillText(M[1],px+1,py+1);x.fillStyle=M[0];x.fillText(M[1],px,py);if(dim)x.globalAlpha=1;});}
+    const dim=MK_DONE[o.k]||MK_GHOST[o.k]||o.k==='bossdone'||o.k==='dooropen';if(dim)x.globalAlpha=.55;if(mapIcoDraw(x,mapIcoKey(o),px,py,Math.max(10,Math.round(sc*2.4)))){if(dim)x.globalAlpha=1;return;}x.fillStyle='rgba(0,0,0,.6)';x.fillText(M[1],px+1,py+1);x.fillStyle=M[0];x.fillText(M[1],px,py);if(dim)x.globalAlpha=1;});}
 // opened chests (the chest itself has vanished from the world): left off the minimap, dimmed on the full map
 const MK_DONE={chestopen:1,vaultopen:1,keyopen:1};
 // v0.8.0: a personal rival waiting for a wayfarer who is not in your six: hollow star, dimmed (rivalghost.js)
@@ -73,11 +87,16 @@ const MK_GHOST={questghost:1};
 function drawPlayer(x,sc,px,py){const d=WS.dir||'d';x.save();x.translate(px,py);x.rotate({u:-Math.PI/2,r:0,d:Math.PI/2,l:Math.PI}[d]||0);const s=Math.max(4,sc*.9);
   x.fillStyle='#000';x.beginPath();x.moveTo(s+1,0);x.lineTo(-s*.7,-s*.8);x.lineTo(-s*.7,s*.8);x.closePath();x.fill();x.fillStyle='#ffffff';x.beginPath();x.moveTo(s,0);x.lineTo(-s*.6,-s*.65);x.lineTo(-s*.6,s*.65);x.closePath();x.fill();x.restore();}
 // ----- minimap (HUD) -----
-let MINI_VW=0;window.addEventListener('resize',()=>{MINI_VW=0;});
-function miniOn(){const c=META.cfg.minimap;if(c===true||c===false)return c;if(!MINI_VW)MINI_VW=window.innerWidth||800;return MINI_VW>=560;}
+// v0.10.x: on by default at every width (Settings > Minimap: Auto/On show it, Off hides it). Narrow views (< 560 px wide) draw it smaller.
+function miniOn(){return META.cfg.minimap!==false;}
+function miniNarrow(){return (window.innerWidth||800)<560;}
+const MINI_BTN='<button id="mmbtn" class="mmbtn" data-act="map" aria-label="Open the map" title="Map"><svg viewBox="0 0 14 14" width="16" height="16" aria-hidden="true"><path d="M1 5V1h4M9 1h4v4M13 9v4H9M5 13H1V9" fill="none" stroke="#ffe3a0" stroke-width="2"/></svg></button>';
 // v0.5.0 1.6: the minimap no longer depends on the weather chip drawing cleanly (an unknown sky used to stop it), and every world render makes sure it is there
-function ensureMini(){try{if(V.screen==='world'&&!document.getElementById('mmap')){const wv=document.querySelector('.wview');if(wv){wv.insertAdjacentHTML('beforeend','<canvas id="mmap" class="mmap" width="112" height="84" aria-hidden="true"></canvas>');}}drawMini();}catch(e){}}
+function ensureMini(){try{if(V.screen==='world'){const wv=document.querySelector('.wview');if(wv){const nw=miniNarrow();
+  if(!document.getElementById('mmap'))wv.insertAdjacentHTML('beforeend','<canvas id="mmap" class="mmap" width="'+(nw?84:112)+'" height="'+(nw?63:84)+'" aria-hidden="true"></canvas>');
+  if(!document.getElementById('mmbtn'))wv.insertAdjacentHTML('beforeend',MINI_BTN);}}drawMini();}catch(e){}}
 {const wu0=wkwUpdate;wkwUpdate=function(){try{wu0.apply(this,arguments);}catch(e){try{wdLog('wkwUpdate: '+e.message);}catch(_){}}ensureMini();};}
+window.addEventListener('resize',()=>{try{drawMini();}catch(e){}});
 // deferred to the next frame (and coalesced) so a render never pays for a forced layout here
 let miniRaf=0;HOOK.after('render','map','make sure the minimap exists (next frame)',function(){if(V.screen==='world'&&!miniRaf)miniRaf=requestAnimationFrame(()=>{miniRaf=0;ensureMini();});});
 // ----- full map -----
@@ -374,4 +393,4 @@ HOOK.before('startBattle','map','keep the tap to walk through the fight',functio
   WS.awResume=A&&A.m&&WS.m&&A.m===WS.m.id?{m:A.m,tx:A.tx,ty:A.ty,t:performance.now()}:null;if(WS.auto)awStop('battle');}catch(e){WS.awResume=null;}});
 HOOK.after('finishBattle','map','resume the tap to walk',function(){try{const R=WS.awResume;if(!R)return;WS.awResume=null;if(!G||!WS.m||WS.m.id!==R.m||B&&!B.over&&B.lost||V.screen!=='world'&&V.screen!=='battle')return;
   const alive=partyChars().some(c=>c.hp>0);if(!alive)return;WS.awPend=R;}catch(e){WS.awResume=null;}});
-{const wt0=worldTick;worldTick=function(){try{const R=WS.awPend;if(R&&V.screen==='world'&&!V.modal&&!WS.dlg&&!WS.lock&&!B&&WS.m&&!WS.mv){WS.awPend=null;if(WS.m.id===R.m){const p=awPlan(WS.m,R.tx,R.ty);if(p.res==='ok')awGo(p.plan,'resume');}}}catch(e){WS.awPend=null;}return wt0.apply(this,arguments);};}
+{const wt0=worldTick;worldTick=function(){try{const R=WS.awPend;if(R&&V.screen==='world'&&!V.modal&&!WS.dlg&&!WS.lock&&!B&&WS.m&&!WS.mv){WS.awPend=null;if(WS.m.id===R.m){const p=awPlan(WS.m,R.tx,R.ty);if(p.res==='ok'){if(R.src==='route'){p.plan.route=R.route;p.plan.phase=R.phase;}awGo(p.plan,R.src==='route'?'route':'resume');}else if(R.src==='route')WS.route=null;}}}catch(e){WS.awPend=null;}return wt0.apply(this,arguments);};}

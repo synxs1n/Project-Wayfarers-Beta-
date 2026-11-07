@@ -99,3 +99,6 @@ details.facstock>summary{cursor:pointer;font:700 13px/1.3 var(--fb);color:var(--
 
 .m3charmeq{margin:6px 0}
 .bp6hint{margin:2px 0 4px;opacity:.8}
+/* bigmap.js: the connected world map scrolls inside its box */
+.bmscroll{max-height:62vh;overflow:auto;margin:6px 0;border:2px solid var(--bronze);background:#0a0710;touch-action:pan-x pan-y}
+.bmscroll .bmap{margin:0;border:0;max-width:none}

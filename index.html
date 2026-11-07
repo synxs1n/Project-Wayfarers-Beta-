@@ -672,6 +672,9 @@ b.up{color:#7aff8a}b.dn{color:#ff8a8a}
 
 /* Beta v0.3.2: map and minimap */
 .mmap{position:absolute;right:6px;top:6px;width:112px;height:84px;border:2px solid var(--bronze);box-shadow:2px 2px 0 #000;image-rendering:pixelated;pointer-events:none;opacity:.92;z-index:3}
+/* v0.10.x: narrow views get a smaller minimap, set below the top-centre area name banner; the Map button sits inside its bottom-right corner */
+.mmbtn{position:absolute;right:9px;top:61px;width:28px;height:28px;padding:0;border-radius:50%;border:2px solid var(--bronze);background:rgba(14,8,4,.82);display:flex;align-items:center;justify-content:center;pointer-events:auto;cursor:pointer;touch-action:manipulation;z-index:4;line-height:0}
+@media (max-width:559px){.mmap{width:84px;height:63px;top:58px}.mmbtn{top:88px}}
 .mapbox{max-width:min(940px,96vw)}
 .mapbox .mh{display:flex;justify-content:space-between;align-items:center}
 .fmap{display:block;margin:6px auto;image-rendering:pixelated;border:2px solid var(--bronze);background:#0a0710;max-width:100%}
@@ -1207,6 +1210,9 @@ details.facstock>summary{cursor:pointer;font:700 13px/1.3 var(--fb);color:var(--
 
 .m3charmeq{margin:6px 0}
 .bp6hint{margin:2px 0 4px;opacity:.8}
+/* bigmap.js: the connected world map scrolls inside its box */
+.bmscroll{max-height:62vh;overflow:auto;margin:6px 0;border:2px solid var(--bronze);background:#0a0710;touch-action:pan-x pan-y}
+.bmscroll .bmap{margin:0;border:0;max-width:none}
 /* =================== Beta v0.6.3: battle screen (battle3.js) =================== */
 /* ----- stage labels: every box is placed by the layout pass (b3Lay) at exactly these sizes, in logical stage px ----- */
 .bstage .b3l{position:absolute;box-sizing:border-box;margin:0;transform:none}
@@ -1798,7 +1804,7 @@ html.rm .battle.b3 .cmd .mi.b9glow{animation:none}
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.10.2";const APP_BUILD="3d2d7dec526c";
+(function(){const APP_VER="0.10.3";const APP_BUILD="6e67c941f326";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2476,7 +2482,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.10.2";const APP_BUILD="3d2d7dec526c";
+const APP_VER="0.10.3";const APP_BUILD="6e67c941f326";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2484,6 +2490,7 @@ const APP_VER="0.10.2";const APP_BUILD="3d2d7dec526c";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.10.3',['Map: the World map is now one connected picture of every town and field you have visited, joined at their real gates; tap anywhere you have been and the party walks there map to map, through the gates (tap a dungeon, cave or fortress door to go inside). The old parchment chart is behind its Chart button. The minimap now shows on phones too (smaller, under the area name) with a button that opens the area map. The area map and minimap use clear icons for every service, gate (with the side it faces), chest, stairs, door, boss, lair, cave, fortress and people with something to say, all in the legend.']],
  ['Beta v0.10.2',['Party: a wayfarer met on the road (a fortress cell, a chance meeting, a claimed challenge) now asks where to stand when your six are full: view their full sheet, swap them in for any party member on the spot, or keep them in the reserves. Build Party: pressing the selected Balanced or Fresh mix again gives another take. Equipment: one Equip Best button for the six (the for everyone and reserves buttons are gone; a reserve\'s sheet still has Auto), and Equip this now? only suggests party members. Alchemy: an Equip best charms button on the Charms tab. Skill lists show the ⟐ and ✸ symbols instead of the Primer and Detonator tags.']],
  ['Beta v0.10.1',['Computers: the page now zooms to fill the window (133%, 167% or 200% by screen size; Settings > Screen size to pin it), so the web and Windows versions are no longer phone sized. Keys: N opens the map and K mutes (they used to share N), and Settings > Keys lets you remap every key. Graphics: Flat is the original look, the plain 2D world with the classic menus; HD-2D and HD-2D High are the lit versions. Records > Journey shows account totals across every journey: play time, journeys and clears, battles won, fled and lost, bosses, Daily Trials, steps, gold, level ups, recruits and chests.']],
  ['Beta v0.10.0',['Fixes from the testers: the forward gate is named by its real side and every north or south town gate now has a visible road to it (tapping any cell of a wide gate walks there); touching a roaming foe starts the fight once and at once (it used to restart the battle several times in a row, re-rolling the foes on screen, while the hero could still walk); a tap to walk carries on after a battle on the way; Stop auto always works and auto stops itself when a new arena wave brings foes it is locked for; the fallen earn no XP from goal rewards either; the Switch goal clears for every kind of swap; a party wipe no longer shows the heroes standing again before the Inn; mana items say who got how much; dungeons, caves, fortresses and the Sanctum ignore the weather in their light; the heat haze is gentler; the HD-2D camera no longer drifts at rest (the drift made the scene jump a pixel); no long press vibration on phones; the battle log reads newest first; New Journey and Starting skills on the title and starter screens.']],
@@ -12973,7 +12980,7 @@ function mapMarks(m){const out=[],T=m.t;for(let y=0;y<m.h;y++)for(let x=0;x<m.w;
 const MK={chest:['#e8b04a','▪'],chestopen:['#6a5a3a','▫'],vault:['#c89aff','▪'],vaultopen:['#5a4a6a','▫'],key:['#ffd04a','⚿'],keyopen:['#6a5a3a','▫'],stairs:['#ffe08a','▲'],dungeon:['#ffe08a','▼'],waystone:['#5ad0ff','◆'],
   boss:['#ff4a4a','●'],bossdone:['#7a5a5a','○'],echo:['#c89aff','◎'],door:['#ff9a4a','■'],dooropen:['#8a6a4a','□'],bars:['#a8a8b8','#'],keybars:['#ffd04a','#'],barsopen:['#5a5a6a','·'],lever:['#ffd04a','┤'],leverdone:['#6a6a5a','┤'],
   cave:['#5ad0ff','◒'],gate:['#ff6a6a','║'],gateopen:['#6a8a6a','║'],board:['#e8c860','!'],town:['#ffe8a0','⌂'],exit:['#d8d8d8','➜'],svc:['#ffffff','•'],quest:['#5aff9a','★'],questghost:['#a8c8b8','☆']};
-const MKN={cave:'Side cave',chest:'Chest',chestopen:'Opened chest',vault:'Vault chest',key:'Beacon Key',stairs:'Stairs out',dungeon:'Dungeon entrance',waystone:'Waystone',boss:'Scourge or Calamity',echo:'Echo',door:'Boss door',bars:'Bars',keybars:'Bars over the key room',lever:'Lever',gate:'Sealed gate',town:'Town',exit:'Road on',board:'Quest board',svc:'Shop or service',quest:'Quest or bounty target',questghost:'Rival waiting for a wayfarer not in your party'};
+const MKN={cave:'Side cave',chest:'Chest',chestopen:'Opened chest',vault:'Vault chest',key:'Beacon Key',stairs:'Stairs out',dungeon:'Dungeon entrance',waystone:'Waystone',boss:'Scourge or Calamity',echo:'Echo',door:'Boss door',bars:'Bars',keybars:'Bars over the key room',lever:'Lever',gate:'Sealed gate',town:'Town',exit:'Road on',board:'Quest board',svc:'Shop or service',quest:'Quest or bounty target',questghost:'Rival waiting for a wayfarer not in your party',bossdone:'Boss defeated',dooropen:'Boss door (open)',vaultopen:'Opened vault chest',keyopen:'Key taken',barsopen:'Raised bars',leverdone:'Lever pulled',gateopen:'Open gate'};
 // ----- v0.3.5 1.4: one pixel-icon set shared by the map, minimap, legend and building signs (SVC_ICON in towngfx.js has the shop icons) -----
 const MAPICO_X={
   waystone:[[4,0,2,1,'#d8f6ff'],[3,1,4,2,'#5ad0ff'],[2,3,6,3,'#3aa8e8'],[3,6,4,2,'#3aa8e8'],[4,8,2,2,'#2a78b8'],[4,2,1,3,'#d8f6ff']],
@@ -12982,7 +12989,21 @@ const MAPICO_X={
   exit:[[1,2,2,8,'#d8d8e0'],[7,2,2,8,'#d8d8e0'],[1,1,8,2,'#d8d8e0'],[3,5,3,1,'#ffffff'],[5,4,1,3,'#ffffff'],[6,5,1,1,'#ffffff']],
   cave:[[1,4,8,6,'#8a8a98'],[2,3,6,1,'#8a8a98'],[3,5,4,5,'#07040a'],[4,4,2,1,'#07040a'],[3,9,4,1,'#5ad0ff']],
   dungeon:[[1,3,8,7,'#6a6278'],[2,2,6,1,'#6a6278'],[3,5,4,5,'#0a0710'],[4,3,2,2,'#0a0710'],[3,9,4,1,'#ffe08a']]};
-const MAPICO_NAME={inn:'Inn',tavern:'Tavern',smithy:'Smithy',workshop:'Alchemy',guild:'Guild Hall',board:'Quest board',waystone:'Waystone',town:'Town gate',exit:'Road gate',cave:'Side cave',dungeon:'Dungeon entrance'};
+Object.assign(MAPICO_X,{
+  chest:[[1,3,8,6,'#a8742a'],[1,3,8,2,'#e8b04a'],[1,5,8,1,'#5a3a1a'],[4,5,2,2,'#ffe08a'],[1,9,8,1,'#5a3a1a']],
+  chestopen:[[1,2,8,2,'#6a5a3a'],[1,5,8,4,'#6a5a3a'],[2,5,6,2,'#2a2018'],[1,9,8,1,'#4a3a2a']],
+  vault:[[1,3,8,6,'#7a4ac0'],[1,3,8,2,'#c89aff'],[1,5,8,1,'#3a1a6a'],[4,5,2,2,'#ffffff'],[1,9,8,1,'#3a1a6a']],
+  vaultopen:[[1,2,8,2,'#5a4a6a'],[1,5,8,4,'#5a4a6a'],[2,5,6,2,'#1a1224'],[1,9,8,1,'#3a2a4a']],
+  key:[[1,3,4,4,'#ffd04a'],[2,4,2,2,'#141026'],[5,4,4,2,'#ffd04a'],[7,6,1,2,'#ffd04a'],[9,6,1,2,'#ffd04a']],
+  keyopen:[[1,3,4,4,'#6a5a3a'],[2,4,2,2,'#141026'],[5,4,4,2,'#6a5a3a'],[7,6,1,2,'#6a5a3a']],
+  stairs:[[0,8,4,2,'#ffe08a'],[3,6,3,2,'#ffe08a'],[5,4,3,2,'#ffe08a'],[7,2,3,2,'#ffe08a'],[0,9,10,1,'#9a7a3a']],
+  boss:[[2,1,6,6,'#e8e0d0'],[1,3,8,3,'#e8e0d0'],[2,4,2,2,'#c02020'],[6,4,2,2,'#c02020'],[3,7,4,2,'#e8e0d0'],[4,7,1,2,'#3a2a2a'],[6,7,1,2,'#3a2a2a']],
+  bossdone:[[2,1,6,6,'#7a6a6a'],[1,3,8,3,'#7a6a6a'],[2,4,2,2,'#2a2020'],[6,4,2,2,'#2a2020'],[3,7,4,2,'#7a6a6a']],
+  door:[[2,1,6,9,'#ff9a4a'],[3,2,4,8,'#5a2a0a'],[6,5,1,1,'#ffe08a']],
+  dooropen:[[2,1,6,9,'#8a6a4a'],[3,2,4,8,'#0a0710'],[3,2,1,8,'#6a4a2a']],
+  quest:[[4,0,2,3,'#5aff9a'],[0,3,10,2,'#5aff9a'],[2,5,6,2,'#5aff9a'],[1,7,3,3,'#5aff9a'],[6,7,3,3,'#5aff9a'],[3,3,4,4,'#5aff9a']],
+  questghost:[[4,0,2,2,'#a8c8b8'],[0,3,10,1,'#a8c8b8'],[1,4,2,1,'#a8c8b8'],[7,4,2,1,'#a8c8b8'],[3,5,1,2,'#a8c8b8'],[6,5,1,2,'#a8c8b8'],[1,7,2,3,'#a8c8b8'],[7,7,2,3,'#a8c8b8']]});
+const MAPICO_NAME={chest:'Chest',chestopen:'Opened chest',vault:'Vault chest',vaultopen:'Opened vault chest',key:'Beacon Key',keyopen:'Key taken',stairs:'Stairs out',boss:'Scourge or Calamity',bossdone:'Boss defeated',door:'Boss door',dooropen:'Boss door (open)',quest:'Someone with a quest or bounty',questghost:'Rival waiting for a wayfarer not in your party',inn:'Inn',tavern:'Tavern',smithy:'Smithy',workshop:'Alchemy',guild:'Guild Hall',board:'Quest board',waystone:'Waystone',town:'Town gate (arrow: side it faces)',exit:'Road gate (arrow: side it faces)',cave:'Side cave',dungeon:'Dungeon entrance'};
 function mapIcoKey(o){return o.k==='svc'?o.svc:o.k;}
 function mapIcoRects(k){try{return (typeof SVC_ICON!=='undefined'&&SVC_ICON[k])||MAPICO_X[k]||null;}catch(e){return MAPICO_X[k]||null;}}
 // draws icon k centred at (cx,cy), size px square, with a dark outline so it reads on any terrain
@@ -12992,7 +13013,7 @@ function mapIcoDraw(x,k,cx,cy,size){const R=mapIcoRects(k);if(!R)return false;co
 function drawMarks(x,m,list,sc,ox,oy){x.textAlign='center';x.textBaseline='middle';x.font=`800 ${Math.max(7,Math.round(sc*1.15))}px sans-serif`;
   list.forEach(o=>{const M=MK[o.k]||['#fff','•'],px=ox+(o.x+.5)*sc,py=oy+(o.y+.5)*sc;
     if(o.dir){const v=SIDE_V[o.dir],ar={n:'▲',s:'▼',e:'▶',w:'◀'}[o.dir],d=Math.max(8,sc*1.8);x.fillStyle='rgba(0,0,0,.7)';x.fillText(ar,px-v[0]*d+1,py-v[1]*d+1);x.fillStyle='#ffe08a';x.fillText(ar,px-v[0]*d,py-v[1]*d);}
-    if(mapIcoDraw(x,mapIcoKey(o),px,py,Math.max(10,Math.round(sc*2.4))))return;const dim=MK_DONE[o.k]||MK_GHOST[o.k];if(dim)x.globalAlpha=.45;x.fillStyle='rgba(0,0,0,.6)';x.fillText(M[1],px+1,py+1);x.fillStyle=M[0];x.fillText(M[1],px,py);if(dim)x.globalAlpha=1;});}
+    const dim=MK_DONE[o.k]||MK_GHOST[o.k]||o.k==='bossdone'||o.k==='dooropen';if(dim)x.globalAlpha=.55;if(mapIcoDraw(x,mapIcoKey(o),px,py,Math.max(10,Math.round(sc*2.4)))){if(dim)x.globalAlpha=1;return;}x.fillStyle='rgba(0,0,0,.6)';x.fillText(M[1],px+1,py+1);x.fillStyle=M[0];x.fillText(M[1],px,py);if(dim)x.globalAlpha=1;});}
 // opened chests (the chest itself has vanished from the world): left off the minimap, dimmed on the full map
 const MK_DONE={chestopen:1,vaultopen:1,keyopen:1};
 // v0.8.0: a personal rival waiting for a wayfarer who is not in your six: hollow star, dimmed (rivalghost.js)
@@ -13000,11 +13021,16 @@ const MK_GHOST={questghost:1};
 function drawPlayer(x,sc,px,py){const d=WS.dir||'d';x.save();x.translate(px,py);x.rotate({u:-Math.PI/2,r:0,d:Math.PI/2,l:Math.PI}[d]||0);const s=Math.max(4,sc*.9);
   x.fillStyle='#000';x.beginPath();x.moveTo(s+1,0);x.lineTo(-s*.7,-s*.8);x.lineTo(-s*.7,s*.8);x.closePath();x.fill();x.fillStyle='#ffffff';x.beginPath();x.moveTo(s,0);x.lineTo(-s*.6,-s*.65);x.lineTo(-s*.6,s*.65);x.closePath();x.fill();x.restore();}
 // ----- minimap (HUD) -----
-let MINI_VW=0;window.addEventListener('resize',()=>{MINI_VW=0;});
-function miniOn(){const c=META.cfg.minimap;if(c===true||c===false)return c;if(!MINI_VW)MINI_VW=window.innerWidth||800;return MINI_VW>=560;}
+// v0.10.x: on by default at every width (Settings > Minimap: Auto/On show it, Off hides it). Narrow views (< 560 px wide) draw it smaller.
+function miniOn(){return META.cfg.minimap!==false;}
+function miniNarrow(){return (window.innerWidth||800)<560;}
+const MINI_BTN='<button id="mmbtn" class="mmbtn" data-act="map" aria-label="Open the map" title="Map"><svg viewBox="0 0 14 14" width="16" height="16" aria-hidden="true"><path d="M1 5V1h4M9 1h4v4M13 9v4H9M5 13H1V9" fill="none" stroke="#ffe3a0" stroke-width="2"/></svg></button>';
 // v0.5.0 1.6: the minimap no longer depends on the weather chip drawing cleanly (an unknown sky used to stop it), and every world render makes sure it is there
-function ensureMini(){try{if(V.screen==='world'&&!document.getElementById('mmap')){const wv=document.querySelector('.wview');if(wv){wv.insertAdjacentHTML('beforeend','<canvas id="mmap" class="mmap" width="112" height="84" aria-hidden="true"></canvas>');}}drawMini();}catch(e){}}
+function ensureMini(){try{if(V.screen==='world'){const wv=document.querySelector('.wview');if(wv){const nw=miniNarrow();
+  if(!document.getElementById('mmap'))wv.insertAdjacentHTML('beforeend','<canvas id="mmap" class="mmap" width="'+(nw?84:112)+'" height="'+(nw?63:84)+'" aria-hidden="true"></canvas>');
+  if(!document.getElementById('mmbtn'))wv.insertAdjacentHTML('beforeend',MINI_BTN);}}drawMini();}catch(e){}}
 {const wu0=wkwUpdate;wkwUpdate=function(){try{wu0.apply(this,arguments);}catch(e){try{wdLog('wkwUpdate: '+e.message);}catch(_){}}ensureMini();};}
+window.addEventListener('resize',()=>{try{drawMini();}catch(e){}});
 // deferred to the next frame (and coalesced) so a render never pays for a forced layout here
 let miniRaf=0;HOOK.after('render','map','make sure the minimap exists (next frame)',function(){if(V.screen==='world'&&!miniRaf)miniRaf=requestAnimationFrame(()=>{miniRaf=0;ensureMini();});});
 // ----- full map -----
@@ -13301,7 +13327,7 @@ HOOK.before('startBattle','map','keep the tap to walk through the fight',functio
   WS.awResume=A&&A.m&&WS.m&&A.m===WS.m.id?{m:A.m,tx:A.tx,ty:A.ty,t:performance.now()}:null;if(WS.auto)awStop('battle');}catch(e){WS.awResume=null;}});
 HOOK.after('finishBattle','map','resume the tap to walk',function(){try{const R=WS.awResume;if(!R)return;WS.awResume=null;if(!G||!WS.m||WS.m.id!==R.m||B&&!B.over&&B.lost||V.screen!=='world'&&V.screen!=='battle')return;
   const alive=partyChars().some(c=>c.hp>0);if(!alive)return;WS.awPend=R;}catch(e){WS.awResume=null;}});
-{const wt0=worldTick;worldTick=function(){try{const R=WS.awPend;if(R&&V.screen==='world'&&!V.modal&&!WS.dlg&&!WS.lock&&!B&&WS.m&&!WS.mv){WS.awPend=null;if(WS.m.id===R.m){const p=awPlan(WS.m,R.tx,R.ty);if(p.res==='ok')awGo(p.plan,'resume');}}}catch(e){WS.awPend=null;}return wt0.apply(this,arguments);};}
+{const wt0=worldTick;worldTick=function(){try{const R=WS.awPend;if(R&&V.screen==='world'&&!V.modal&&!WS.dlg&&!WS.lock&&!B&&WS.m&&!WS.mv){WS.awPend=null;if(WS.m.id===R.m){const p=awPlan(WS.m,R.tx,R.ty);if(p.res==='ok'){if(R.src==='route'){p.plan.route=R.route;p.plan.phase=R.phase;}awGo(p.plan,R.src==='route'?'route':'resume');}else if(R.src==='route')WS.route=null;}}}catch(e){WS.awPend=null;}return wt0.apply(this,arguments);};}
 
 // ===== anim.js (v0.3.2): battle animation poses and effects =====
 // Battle first. Every pose fits the old 520ms action window and lands its strike before the hit (IMPACT), so turns are
@@ -20258,6 +20284,118 @@ Object.assign(ACT,{
 {const mb0=modalBack;modalBack=function(m){if(m&&m.type==='char'&&m.recruitAsk&&!m.gear)return ()=>{V.modal={type:'recruitAsk',hero:m.recruitAsk};};return mb0.apply(this,arguments);};}
 // the toast for a reserve recruit no longer says to visit town first
 
+// ===== bigmap.js (v0.10.3): the connected world map: every visited town and field stitched at their gates =====
+// Opened from the area map's World map button (and ACT.worldMap) on connected-world journeys (worldV3). The maps the party has
+// been to are laid out by their real gates: a field's start gate sits one tile past the town's forward gate, the next town one tile
+// past the field's end gate (a map that would overlap another is pushed along the gate's axis and joined by a dashed line).
+// Only seen tiles are drawn (the same bits as the area map). Dungeon doors, caves and fortresses are marked at their field entrance.
+// Tap any seen tile on any visited map and the party walks there, map to map: a route of legs (walk to the gate or door, step
+// through, walk on) run on top of the tap to walk (WS.route, not saved). The old parchment chart stays behind the Chart button.
+const BM={sc:2,base:{},key:{},lay:null,pt:null};
+const BM_V={n:[0,-1],s:[0,1],e:[1,0],w:[-1,0]},BM_DIR={n:'u',s:'d',e:'r',w:'l'};
+function bmBase(m){const k=(G.explored&&G.explored[m.id])||'';if(BM.base[m.id]&&BM.key[m.id]===k)return BM.base[m.id];
+  const cv=mkCv(m.w,m.h),x=cv.getContext('2d');for(let y=0;y<m.h;y++)for(let i=0;i<m.w;i++){if(!isSeen(m,i,y))continue;const raw=m.t[y][i],c='CKEWXDlGq|SU'.includes(raw)?(m.kind==='dungeon'?'.':'='):raw;x.fillStyle=mapCol(m,c);x.fillRect(i,y,1,1);}
+  BM.base[m.id]=cv;BM.key[m.id]=k;return cv;}
+// a gate's real cells: towns keep them in m.gates; a field's gate record holds unscaled numbers, so its cells come from m.exits by target
+function bmGate(m,g){if(!m)return null;if(m.kind==='field'){const want=g==='start'?'next':'prev',cells=(m.exits||[]).filter(e=>e.to&&e.to.g===want).map(e=>[e.x,e.y]);if(!cells.length)return null;
+    cells.sort((a,b)=>a[0]-b[0]||a[1]-b[1]);const c=cells[cells.length>>1],side=c[1]===0?'n':c[1]===m.h-1?'s':c[0]===0?'w':'e';return {side,x:c[0],y:c[1],cells};}
+  const q=m.gates&&m.gates[g];return q&&q.x!=null&&q.side?q:null;}
+// the layout: [{id,m,ox,oy}] in world tile coordinates, plus the links between gates
+function bmLayout(){const out=[],links=[],at={};if(!G||!worldV3())return {maps:out,links};
+  const been=id=>!!((G.been||{})[id])||(WS.m&&WS.m.id===id);
+  const rect=(o)=>({x0:o.ox,y0:o.oy,x1:o.ox+o.m.w,y1:o.oy+o.m.h});
+  const overlaps=(r)=>out.some(o=>{const q=rect(o);return r.x0<q.x1-1&&r.x1>q.x0+1&&r.y0<q.y1-1&&r.y1>q.y0+1;});
+  const place=(id,m,ox,oy,side,from,fg,tg)=>{let push=0;const v=BM_V[side];while(overlaps({x0:ox,y0:oy,x1:ox+m.w,y1:oy+m.h})&&push<400){ox+=v[0];oy+=v[1];push++;}
+    const o={id,m,ox,oy};out.push(o);at[id]=o;if(from)links.push({a:from,b:o,fg,tg,gap:push});return o;};
+  const t0=getMap('t0');if(!t0)return {maps:out,links};place('t0',t0,0,0,'e');
+  for(let s=0;s<5;s++){const T=at['t'+s];if(!T)break;const fid='f'+s;if(!been(fid))break;const f=getMap(fid),gn=bmGate(T.m,'next'),gs=bmGate(f,'start');if(!gn||!gs)break;
+    const v=BM_V[gn.side];const F=place(fid,f,T.ox+gn.x-gs.x+v[0],T.oy+gn.y-gs.y+v[1],gn.side,T,gn,gs);
+    if(s<4){const tid='t'+(s+1);if(!been(tid))break;const t=getMap(tid),ge=bmGate(f,'end'),gp=bmGate(t,'prev');if(!ge||!gp)break;const v2=BM_V[ge.side];place(tid,t,F.ox+ge.x-gp.x+v2[0],F.oy+ge.y-gp.y+v2[1],ge.side,F,ge,gp);}}
+  return {maps:out,links};}
+// doors on the fields: the dungeon, caves and fortresses (once their tile has been seen)
+function bmDoors(L){const d=[];L.maps.forEach(o=>{const m=o.m;if(m.kind!=='field')return;
+  if(m.ent&&(isSeen(m,m.ent[0],m.ent[1])||(G.been||{})['d'+m.s]))d.push({o,x:m.ent[0],y:m.ent[1],k:G.cleared[m.s]?'dunlit':'dungeon',id:'d'+m.s,n:ZS(m.s).dungeon});
+  (m.caves||[]).forEach(c=>{if(!(isSeen(m,c.x,c.y)||(G.cavesSeen||{})[c.id]))return;d.push({o,x:c.x,y:c.y,k:c.kind==='fort'?'fort':'cave',id:c.id,n:c.kind==='fort'?(typeof FORT_NAMES!=='undefined'?FORT_NAMES[m.s]:'Fortress'):CAVE_NAMES[m.s]});});});return d;}
+function bmBounds(L){let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;L.maps.forEach(o=>{x0=Math.min(x0,o.ox);y0=Math.min(y0,o.oy);x1=Math.max(x1,o.ox+o.m.w);y1=Math.max(y1,o.oy+o.m.h);});return {x0:x0-2,y0:y0-2,x1:x1+2,y1:y1+2};}
+function drawBigMap(){const cv=document.getElementById('bmap');if(!cv||!G)return;const L=BM.lay=bmLayout();if(!L.maps.length)return;const B0=BM.bounds=bmBounds(L),W=B0.x1-B0.x0,H=B0.y1-B0.y0;
+  const box=cv.parentElement,maxW=Math.min(1200,(box.clientWidth||340)-8);let sc=Math.max(3,Math.min(5,Math.floor(maxW/W)));BM.sc=sc;// at least 3 px a tile: the box scrolls
+  cv.width=W*sc;cv.height=H*sc;cv.style.width=cv.width+'px';cv.style.height=cv.height+'px';
+  const x=cv.getContext('2d');x.imageSmoothingEnabled=false;x.fillStyle='#0a0710';x.fillRect(0,0,cv.width,cv.height);
+  const P=(wx,wy)=>[(wx-B0.x0)*sc,(wy-B0.y0)*sc];
+  // joins pushed apart
+  x.save();x.setLineDash([sc*2,sc*2]);x.strokeStyle='#c8a860';x.lineWidth=Math.max(1,sc*.6);L.links.forEach(l=>{if(!l.gap)return;const a=P(l.a.ox+l.fg.x+.5,l.a.oy+l.fg.y+.5),b=P(l.b.ox+l.tg.x+.5,l.b.oy+l.tg.y+.5);x.beginPath();x.moveTo(a[0],a[1]);x.lineTo(b[0],b[1]);x.stroke();});x.restore();
+  L.maps.forEach(o=>{const [px,py]=P(o.ox,o.oy);x.drawImage(bmBase(o.m),px,py,o.m.w*sc,o.m.h*sc);x.strokeStyle='rgba(255,230,170,.25)';x.lineWidth=1;x.strokeRect(px+.5,py+.5,o.m.w*sc-1,o.m.h*sc-1);});
+  // doors
+  BM.doors=bmDoors(L);x.font=`800 ${Math.max(8,sc*4)}px Nunito,sans-serif`;x.textAlign='center';x.textBaseline='middle';
+  BM.doors.forEach(d=>{const [px,py]=P(d.o.ox+d.x+.5,d.o.oy+d.y+.5);const col=d.k==='dunlit'?'#ffd04a':d.k==='dungeon'?'#ff6a5a':d.k==='fort'?'#c8c8e8':'#c89a6a',g=d.k==='fort'?'♜':d.k==='cave'?'◠':'▲';x.fillStyle='rgba(0,0,0,.6)';x.beginPath();x.arc(px,py,sc*2.6,0,Math.PI*2);x.fill();x.fillStyle=col;x.fillText(g,px,py+sc*.3);});
+  // names
+  x.font=`700 ${Math.max(9,sc*5)}px Nunito,sans-serif`;x.lineWidth=3;x.strokeStyle='rgba(0,0,0,.8)';x.fillStyle='#f4ebd6';
+  L.maps.forEach(o=>{const nm=o.m.kind==='town'?ZS(o.m.s).town:ZS(o.m.s).n;const [px,py]=P(o.ox+o.m.w/2,o.oy+1.5);x.strokeText(nm,px,py+sc*2);x.fillText(nm,px,py+sc*2);});
+  // the party
+  const cur=L.maps.find(o=>WS.m&&o.id===WS.m.id);if(cur){const [px,py]=P(cur.ox+WS.x+.5,cur.oy+WS.y+.5);drawPlayer(x,Math.max(3,sc*1.5),px,py);}
+  // scroll to the party once
+  try{if(cur&&!BM.scrolled){BM.scrolled=1;const [px,py]=P(cur.ox+WS.x,cur.oy+WS.y);const sb=cv.closest('.bmscroll');if(sb){sb.scrollLeft=px-sb.clientWidth/2;sb.scrollTop=py-sb.clientHeight/2;}}}catch(e){}}
+function mBigMap(){BM.scrolled=0;setTimeout(drawBigMap,0);
+  return `<div class="modal mapmodal" data-act="xClose"><div class="panel box mapbox wmbox"><div class="mh"><h2>World map</h2></div>
+    <div class="bmscroll"><canvas id="bmap" class="fmap bmap" data-act="bmTap" aria-label="World map"></canvas></div><p class="note fmnote" id="bmnote" aria-live="polite"></p>
+    <div class="maplegend"><span><b style="color:#fff">➤</b> You</span><span><b style="color:#ff6a5a">▲</b> Dungeon</span><span><b style="color:#ffd04a">▲</b> Relit dungeon</span><span><b style="color:#c89a6a">◠</b> Side cave</span><span><b style="color:#c8c8e8">♜</b> Fortress</span></div>
+    <div class="btnrow"><button class="btn sm" data-act="wmChart">Chart</button></div>
+    <p class="note">Every town and field you have visited, joined at their gates. Tap anywhere you have been and the party walks there, through the gates on the way (a dungeon or cave door takes you inside). Drag to scroll a big map. Tap outside the map to close.</p></div></div>`;}
+HOOK.before('vModal','bigmap','the connected world map',function(md){if(md&&md.type==='bigmap')return HOOK.stop(mBigMap(md));});
+document.addEventListener('pointerdown',e=>{if(e.target&&e.target.id==='bmap')BM.pt={x:e.clientX,y:e.clientY};},true);
+function bmTileAt(cv,cx,cy){const r=cv.getBoundingClientRect();if(!r.width||!BM.bounds)return null;const wx=Math.floor((cx-r.left)*cv.width/r.width/BM.sc)+BM.bounds.x0,wy=Math.floor((cy-r.top)*cv.height/r.height/BM.sc)+BM.bounds.y0;
+  const L=BM.lay;if(!L)return null;for(let i=L.maps.length-1;i>=0;i--){const o=L.maps[i];if(wx>=o.ox&&wy>=o.oy&&wx<o.ox+o.m.w&&wy<o.oy+o.m.h)return {o,x:wx-o.ox,y:wy-o.oy};}return null;}
+ACT.bmTap=function(arg,el){const cv=el||document.getElementById('bmap'),p=BM.pt;BM.pt=null;if(!cv||!p||!G)return;const note=document.getElementById('bmnote');
+  const t=bmTileAt(cv,p.x,p.y);if(!t){if(note)note.textContent='';return;}
+  // a door marker nearby takes you inside
+  const door=(BM.doors||[]).find(d=>d.o===t.o&&Math.abs(d.x-t.x)<=1&&Math.abs(d.y-t.y)<=1);
+  const r=bmRoute(t.o.id,door?door.x:t.x,door?door.y:t.y,door?door.id:null,true);
+  if(r.res!=='ok'){if(note)note.textContent=r.res==='unseen'?'Your party has not seen that spot yet.':r.res==='here'?'You are standing there.':r.res==='sealed'?'That way is still sealed.':'No known way there.';if(typeof sfx==='function')sfx('deny');return;}
+  V.modal=null;render();toast(door?`Walking to ${door.n}.`:`Walking to ${t.o.m.kind==='town'?ZS(t.o.m.s).town:ZS(t.o.m.s).n}.`);};
+ACT.wmChart=function(){V.modal={type:'worldmap',from:{type:'bigmap'}};render();};
+{const wm0=ACT.worldMap;ACT.worldMap=function(){if(!G||V.screen!=='world')return;if(!worldV3())return wm0.apply(this,arguments);const prev=V.modal;V.modal={type:'bigmap',from:prev&&prev.type==='map'?prev:{type:'map'}};render();};}
+{const mb0=modalBack;modalBack=function(m){if(m&&m.type==='bigmap')return ()=>{V.modal=m.from||{type:'map'};};if(m&&m.type==='worldmap'&&m.from&&m.from.type==='bigmap')return ()=>{V.modal={type:'bigmap',from:{type:'map'}};};return mb0.apply(this,arguments);};}
+// ----- routes across maps -----
+// edges: how to leave a map for a neighbour: {to, ex, ey, dir} (the exit tile and the step that goes through it)
+function bmEdges(id){const m=getMap(id);if(!m)return [];const E=[],s=m.s|0,been=k=>!!((G.been||{})[k]);
+  if(m.kind==='town'){const gn=bmGate(m,'next'),gp=bmGate(m,'prev');if(gn&&been('f'+s))E.push({to:'f'+s,ex:gn.x,ey:gn.y,dir:BM_DIR[gn.side]});if(gp&&s>0&&been('f'+(s-1)))E.push({to:'f'+(s-1),ex:gp.x,ey:gp.y,dir:BM_DIR[gp.side]});}
+  else if(m.kind==='field'){const gs=bmGate(m,'start'),ge=bmGate(m,'end');if(gs)E.push({to:'t'+s,ex:gs.x,ey:gs.y,dir:BM_DIR[gs.side]});if(ge&&s<4&&G.cleared[s]&&been('t'+(s+1)))E.push({to:'t'+(s+1),ex:ge.x,ey:ge.y,dir:BM_DIR[ge.side]});
+    if(m.ent&&m.entOut)E.push({to:'d'+s,ex:m.ent[0],ey:m.ent[1],dir:bmDirOf(m.entOut,m.ent)});(m.caves||[]).forEach(c=>{if(c.out)E.push({to:c.id,ex:c.x,ey:c.y,dir:bmDirOf(c.out,[c.x,c.y])});});}
+  else{// a dungeon or a cave: the stairs out
+    let ex=null;for(let y=0;y<m.h&&!ex;y++)for(let x=0;x<m.w;x++)if(m.t[y][x]==='E'){ex=[x,y];break;}
+    if(ex){const to=m.cave?'f'+s:m.archive?'t'+(G.lastTown||0):'f'+s;const f=[[0,1],[0,-1],[1,0],[-1,0]].find(([a,b])=>!solidAt(m,ex[0]+a,ex[1]+b)&&m.t[ex[1]+b]&&m.t[ex[1]+b][ex[0]+a]!=='E');E.push({to,ex:ex[0],ey:ex[1],dir:f?bmDirOf([ex[0]+f[0],ex[1]+f[1]],ex):'u'});}}
+  return E;}
+function bmDirOf(from,to){const dx=to[0]-from[0],dy=to[1]-from[1];return Math.abs(dx)>Math.abs(dy)?(dx>0?'r':'l'):(dy>0?'d':'u');}
+function bmRoute(mid,tx,ty,doorId,closeFirst){const m=WS.m;if(!m)return {res:'noway'};const tm=getMap(mid);if(!tm)return {res:'noway'};
+  if(!doorId&&!isSeen(tm,tx,ty))return {res:'unseen'};
+  // BFS over maps
+  const prev={[m.id]:null},q=[m.id];let found=false;while(q.length){const id=q.shift();if(id===mid){found=true;break;}bmEdges(id).forEach(e=>{if(prev[e.to]===undefined){prev[e.to]={from:id,e};q.push(e.to);}});}
+  if(!found)return {res:'noway'};
+  const chain=[];for(let id=mid;prev[id];id=prev[id].from)chain.unshift(prev[id]);
+  const legs=chain.map(c=>({m:c.from,ex:c.e.ex,ey:c.e.ey,dir:c.e.dir,to:c.e.to}));
+  if(doorId){const d=bmEdges(mid).find(e=>e.to===doorId);if(!d)return {res:'noway'};legs.push({m:mid,ex:d.ex,ey:d.ey,dir:d.dir,to:doorId});}
+  else legs.push({m:mid,tx,ty});
+  if(legs.length===1&&!legs[0].ex&&legs[0].m===m.id&&tx===WS.x&&ty===WS.y)return {res:'here'};
+  if(closeFirst){V.modal=null;}// the walk only runs with no popup open
+  WS.route={legs,k:0};const ok=bmRunLeg();if(!ok){WS.route=null;return {res:'noway'};}return {res:'ok'};}
+// run the current leg on the current map
+function bmRunLeg(){const R=WS.route,m=WS.m;if(!R||!m)return false;const L=R.legs[R.k];if(!L||L.m!==m.id){WS.route=null;return false;}
+  if(L.ex!=null){const p=awPlan(m,L.ex,L.ey);if(p.res==='here'){bmEnter(L);return true;}if(p.res!=='ok')return false;p.plan.route=R.k;p.plan.phase='walk';awGo(p.plan,'route');return true;}
+  const p=awPlan(m,L.tx,L.ty);if(p.res==='here'){WS.route=null;return true;}if(p.res!=='ok')return false;p.plan.route=R.k;p.plan.phase='last';awGo(p.plan,'route');return true;}
+// the one step through the gate or door
+function bmEnter(L){const [a,b]=DIRV[L.dir]||[0,0];if(WS.x+a!==L.ex||WS.y+b!==L.ey){// not in front of it after all: walk again
+    const p=awPlan(WS.m,L.ex,L.ey);if(p.res==='ok'){p.plan.route=WS.route.k;p.plan.phase='walk';awGo(p.plan,'route');}else WS.route=null;return;}
+  awGo({m:WS.m.id,tx:L.ex,ty:L.ey,goals:[[L.ex,L.ey,null]],what:'enter',dirs:[L.dir],end:[L.ex,L.ey,null],at:WS.x+','+WS.y,fails:0,route:WS.route.k,phase:'enter'},'route');}
+{const wt0=worldTick;worldTick=function(){try{const R=WS.route;if(R&&V.screen==='world'&&!V.modal&&!WS.dlg&&!WS.lock&&!B&&WS.m&&!WS.mv&&!WS.auto&&!WS.awPend&&!WS.awResume){const A=WS.autoLast;
+    if(R.pend){R.pend=0;if(!bmRunLeg())WS.route=null;}
+    else if(A&&A.src==='route'&&A.route===R.k&&A.why==='arrived'&&A.phase==='walk'){A.phase='done';bmEnter(R.legs[R.k]);}
+    else if(A&&A.src==='route'&&A.why==='arrived'&&A.phase==='last'){WS.route=null;}
+    else if(A&&A.src==='route'&&A.why&&A.why!=='map'&&A.why!=='halt'&&A.why!=='battle'&&A.why!=='arrived'){WS.route=null;}}}catch(e){WS.route=null;}return wt0.apply(this,arguments);};}
+HOOK.after('placeAt','bigmap','next leg of a route',function(){try{const R=WS.route;if(!R)return;const L=R.legs[R.k];if(L&&L.to&&WS.m&&WS.m.id===L.to){R.k++;R.pend=1;}else if(L&&L.to&&WS.m&&WS.m.id!==L.m)WS.route=null;}catch(e){WS.route=null;}});
+{const s0=awStop;awStop=function(why){const r=s0.apply(this,arguments);try{if(WS.route&&(why==='input'||why==='blocked'||why==='dialog'||why==='menu'))WS.route=null;}catch(e){}return r;};}
+// a battle on a leg: the resume keeps the leg's source and phase
+HOOK.before('startBattle','bigmap','keep the route through the fight',function(){try{const A=WS.auto||WS.autoLast;if(WS.awResume&&A&&A.src==='route'){WS.awResume.src='route';WS.awResume.route=A.route;WS.awResume.phase=A.phase;}}catch(e){}});
+
 // ===== duellines.js (v0.7.7): every wayfarer who challenges you speaks in their own voice =====
 // Before this, a road duel used one line per class, so every fighter (or every mage) said the same thing. Now each of the 92
 // wayfarers has their own lines, keyed by hero id. Keys:
@@ -22862,13 +23000,14 @@ function mm7Base(m){const base=mapBase(m),key=m.id+':'+MM7.gen,now=performance.n
       const q=((y*T+py)*W+i*T+px)*4;d[q]=Math.min(255,R0*k);d[q+1]=Math.min(255,G0*k);d[q+2]=Math.min(255,B0*k);d[q+3]=a;}}
   x.putImageData(img,0,0);MM7.key=key;MM7.t=now;return c;}
 function mm7Vig(W,H){return MM7.vig&&MM7.vig.width===W?MM7.vig:(MM7.vig=(()=>{const v=mkCv(W,H),g=v.getContext('2d'),r=g.createRadialGradient(W/2,H/2,Math.min(W,H)*.32,W/2,H/2,Math.max(W,H)*.62);r.addColorStop(0,'rgba(6,4,14,0)');r.addColorStop(1,'rgba(6,4,14,.62)');g.fillStyle=r;g.fillRect(0,0,W,H);return v;})());}
-function drawMini(){const cv=document.getElementById('mmap');if(!cv)return;const m=WS.m;if(!m||!G||!miniOn()){cv.style.display='none';return;}cv.style.display='block';
+function drawMini(){const cv=document.getElementById('mmap'),bt=document.getElementById('mmbtn');if(!cv)return;const m=WS.m;if(!m||!G||!miniOn()){cv.style.display='none';if(bt)bt.style.display='none';return;}cv.style.display='block';if(bt)bt.style.display='';
+  {const nw=miniNarrow()?84:112;if(cv.width!==nw){cv.width=nw;cv.height=nw*3/4;}}// resizing clears the canvas, so only when the width class changed
   const W=cv.width,H=cv.height,x=cv.getContext('2d'),sc=4;x.imageSmoothingEnabled=false;
   {const g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,'#141026');g.addColorStop(1,'#0a0712');x.fillStyle=g;x.fillRect(0,0,W,H);}
   const ox=Math.round(W/2-(WS.x+.5)*sc),oy=Math.round(H/2-(WS.y+.5)*sc);let b=null;try{b=mm7Base(m);}catch(e){b=null;}
   if(b)x.drawImage(b,ox,oy);else x.drawImage(mapBase(m),ox,oy,m.w*sc,m.h*sc);
   x.drawImage(mm7Vig(W,H),0,0);
-  const vis=mapMarks(m).filter(o=>!MK_DONE[o.k]&&Math.abs(o.x-WS.x)<W/sc&&Math.abs(o.y-WS.y)<H/sc);drawMarks(x,m,vis,sc,ox,oy);
+  const vis=mapMarks(m).filter(o=>!MK_DONE[o.k]&&Math.abs(o.x-WS.x)<W/sc/2+2&&Math.abs(o.y-WS.y)<H/sc/2+2);drawMarks(x,m,vis,sc,ox,oy);
   {const g=x.createRadialGradient(W/2,H/2,0,W/2,H/2,9);g.addColorStop(0,'rgba(255,236,170,.5)');g.addColorStop(1,'rgba(255,236,170,0)');x.fillStyle=g;x.fillRect(W/2-9,H/2-9,18,18);}
   drawPlayer(x,sc,W/2,H/2);}
 // ----- 3. the arena backdrop -----
