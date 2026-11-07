@@ -1,5 +1,5 @@
 const fs=require('fs');
-const load=dir=>{const src=['config.js','data.js','heroes.js','skills.js','items.js','foes.js','zones.js','art.js','engine.js','engine2.js','worldgen.js'].map(f=>fs.readFileSync(__dirname+'/'+dir+'/'+f,'utf8')).join('\n');return (new Function(src+`\nfunction render(){}\nreturn {get G(){return G},newGame,getMap,resetMaps};`))();};
+const load=dir=>{const src=['config.js','hooks.js','data.js','heroes.js','skills.js','items.js','foes.js','zones.js','art.js','engine.js','engine2.js','worldgen.js'].map(f=>fs.readFileSync(__dirname+'/'+dir+'/'+f,'utf8')).join('\n');return (new Function(src+`\nfunction render(){}\nreturn {get G(){return G},newGame,getMap,resetMaps};`))();};
 global.localStorage={getItem:()=>null,setItem:()=>{}};
 const A=load('v3_pre_030'),B=load('v3');let same=0,diff=0,decorOnly=0;const fx={};
 for(let seed=0;seed<120;seed++)for(let s=0;s<5;s++){[A,B].forEach(X=>{X.newGame(['brann','mira','sable']);X.G.run.seed=seed*7919+13;X.resetMaps();});

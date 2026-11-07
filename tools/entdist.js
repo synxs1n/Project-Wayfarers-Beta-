@@ -1,5 +1,5 @@
 const fs=require('fs');const DIR=__dirname+'/'+(process.env.V3DIR||'v3')+'/';
-const src=['config.js','data.js','heroes.js','skills.js','items.js','foes.js','zones.js','art.js','engine.js','engine2.js','worldgen.js'].map(f=>fs.readFileSync(DIR+f,'utf8')).join('\n');
+const src=['config.js','hooks.js','data.js','heroes.js','skills.js','items.js','foes.js','zones.js','art.js','engine.js','engine2.js','worldgen.js'].map(f=>fs.readFileSync(DIR+f,'utf8')).join('\n');
 global.localStorage={getItem:()=>null,setItem:()=>{}};
 const A=(new Function(src+`\nfunction render(){}\nreturn {get G(){return G},newGame,getMap,resetMaps,SOLID};`))();
 function bfs(m,sx,sy){const g=m.t,H=g.length,W=g[0].length,D=g.map(r=>r.map(()=>-1)),Q=[[sx,sy]];D[sy][sx]=0;for(let q=0;q<Q.length;q++){const [x,y]=Q[q];for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){const nx=x+dx,ny=y+dy;if(nx<0||ny<0||nx>=W||ny>=H||D[ny][nx]>=0)continue;if(A.SOLID.includes(g[ny][nx]))continue;D[ny][nx]=D[y][x]+1;Q.push([nx,ny]);}}return D;}

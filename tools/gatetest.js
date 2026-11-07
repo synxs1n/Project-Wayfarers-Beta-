@@ -1,6 +1,6 @@
 // v0.4.1 1.8: share of forward exits (town + field ends) facing east, per journey. node gatetest.js N [old]
 const fs=require('fs');const old=process.argv[3]==='old';
-const src=['config.js','data.js','heroes.js','skills.js','items.js','foes.js','zones.js','art.js','engine.js','engine2.js','worldgen.js','world4.js'].map(f=>fs.readFileSync(__dirname+'/v3/'+f,'utf8')).join('\n');
+const src=['config.js','hooks.js','data.js','heroes.js','skills.js','items.js','foes.js','zones.js','art.js','engine.js','engine2.js','worldgen.js','world4.js'].map(f=>fs.readFileSync(__dirname+'/v3/'+f,'utf8')).join('\n');
 global.localStorage={getItem:()=>null,setItem:()=>{}};
 const A=(new Function(src+`
 function render(){}

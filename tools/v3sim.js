@@ -1,6 +1,6 @@
 const fs=require('fs');
 const DIR=__dirname+'/'+(process.env.V3DIR||'v3')+'/';
-const src=['config.js','data.js','heroes.js','skills.js','items.js','foes.js','zones.js','art.js','engine.js','engine2.js','insight.js','monsters2.js','archetype.js','sigskills.js','economy.js','npc2.js','capes.js'].filter(f=>fs.existsSync(DIR+f)).map(f=>fs.readFileSync(DIR+f,'utf8')).join('\n')+(process.env.SIMEXTRA?'\n'+process.env.SIMEXTRA.split(',').map(f=>fs.readFileSync(f.startsWith('/')?f:__dirname+'/'+f,'utf8')).join('\n'):'');
+const src=['config.js','hooks.js','data.js','heroes.js','skills.js','items.js','foes.js','zones.js','art.js','engine.js','engine2.js','insight.js','monsters2.js','archetype.js','sigskills.js','economy.js','npc2.js','capes.js'].filter(f=>fs.existsSync(DIR+f)).map(f=>fs.readFileSync(DIR+f,'utf8')).join('\n')+(process.env.SIMEXTRA?'\n'+process.env.SIMEXTRA.split(',').map(f=>fs.readFileSync(f.startsWith('/')?f:__dirname+'/'+f,'utf8')).join('\n'):'');
 let q=[];
 global.setTimeout=(f)=>{q.push(f);return 1;};
 global.localStorage={getItem:()=>null,setItem:()=>{}};

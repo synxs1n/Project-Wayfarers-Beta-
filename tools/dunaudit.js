@@ -1,7 +1,7 @@
 // Runtime-accurate dungeon audit: 4-way BFS over what the player can actually walk on, with the lost wanderer standing
 // in place, every chest closed and opened, and the door and bars in each state. Usage: V3DIR=dir node dunaudit.js seeds
 const fs=require('fs');const DIR=__dirname+'/'+(process.env.V3DIR||'v3')+'/';
-const src=['config.js','data.js','heroes.js','skills.js','items.js','foes.js','zones.js','art.js','engine.js','engine2.js','worldgen.js'].map(f=>fs.readFileSync(DIR+f,'utf8')).join('\n');
+const src=['config.js','hooks.js','data.js','heroes.js','skills.js','items.js','foes.js','zones.js','art.js','engine.js','engine2.js','worldgen.js'].map(f=>fs.readFileSync(DIR+f,'utf8')).join('\n');
 global.localStorage={getItem:()=>null,setItem:()=>{}};
 const A=(new Function(src+`\nfunction render(){}\nreturn {get G(){return G},newGame,getMap,resetMaps,SOLID,tileAt,solidAt,dynActors,MAPS:()=>MAPS,validateDungeon:typeof validateDungeon==='function'?validateDungeon:null};`))();
 const DECOR="PvgLQNabx";
