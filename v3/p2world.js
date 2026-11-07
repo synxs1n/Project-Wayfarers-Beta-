@@ -217,7 +217,7 @@ function laneEvict(m){if(!m.lane||!m.lane.size)return;const W=m.t[0].length,H=m.
       const d=Math.abs(x-n.x)+Math.abs(y-n.y);if(d<bd){bd=d;best=[x,y];}}
     if(best){n.x=best[0];n.y=best[1];n.hx=best[0];n.hy=best[1];n.mv=null;}});}
 HOOK.wrap('getMap','p2world','town lanes, gathering spots on open tiles (new maps)',function(next,...a){let id=a[0];const had=!!MAPS[id];const m=next(...a);try{if(!had&&m&&m.kind==='town'&&!P2.noLane)laneFix(m);
-  // a gathering spot never survives on a tile a later step (fortress gatehouse, cave mouth) turned solid
+  // a gathering spot never survives on a tile a later step (sanctum gatehouse, cave mouth) turned solid
   if(!had&&m&&m.nodes&&m.kind!=='town')m.nodes=m.nodes.filter(n=>nodeFits(m,n.k,n.x,n.y));}catch(e){}return m;});
 // townsfolk never wander into a lane (a step into one is taken back), and festival visitors are moved out of them
 {const nt0=npcTick;npcTick=function(m,now){nt0.apply(this,arguments);try{if(m&&m.lane)m.npcs.forEach(n=>{if(n.mv&&m.lane.has(n.x+','+n.y)){n.x=n.mv.fx;n.y=n.mv.fy;n.mv=null;}});}catch(e){}};}
@@ -225,7 +225,7 @@ HOOK.wrap('getMap','p2world','town lanes, gathering spots on open tiles (new map
 
 // ---------------------------------------------------------------- 2.5 dungeon entrance variety ----------------------------------------------------------------
 // Each realm has its own entrance look, picked from its tileset's list by the realm index. All are drawn upright with a dark opening on the
-// entrance tile and two warm lights, so they read clearly. Side caves stay rock arches with a blue glow; fortresses stay grey gatehouses.
+// entrance tile and two warm lights, so they read clearly. Side caves stay rock arches with a blue glow; sanctums stay grey gatehouses.
 const ENT_STYLES={meadow:['roots','barrow','facade','well','trapdoor'],coast:['rockface','well','facade','trapdoor'],cave:['rockface','hole','facade','ruin'],
   snow:['hole','ruin','facade','barrow'],heights:['rockface','ruin','facade','hole'],void:['ruin','hole','facade','well']};
 function entStyleFor(s){const th=p2BaseTheme(s),L=ENT_STYLES[th]||ENT_STYLES.meadow;let zi=0;try{zi=realmOf(s)|0;}catch(e){zi=s|0;}return L[zi%L.length];}
@@ -303,7 +303,7 @@ const HINTS=[
  {id:'weapons',on:'win',t:()=>{const P=p2Party();if(!P.length)return null;const c=P[P.length>1?1:0],w=(CLS_WPN[TPL[c.id].cls]||[]).map(x=>WT_NAME[x]||x);
    return `Weapon types: each class uses its own weapons, and each weapon family has a perk. ${p2Nm(c)} can use ${p2List(w)}. Compare perks in the Smithy before you buy.`;}},
  {id:'armor',on:'town',t:()=>{const P=p2Party();if(!P.length)return null;const by={};P.forEach(c=>{const a=CLS_ARM[TPL[c.id].cls]||'medium';(by[a]=by[a]||[]).push(p2Nm(c));});
-   return 'Armor weights: Heavy for Warriors and Knights, Medium for Archers, Thieves and Monks, Light for Mages, Healers and Bards. '+Object.keys(by).map(a=>`${p2List(by[a])}: ${a[0].toUpperCase()+a.slice(1)}`).join('. ')+'.';}},
+   return 'Armor weights: Heavy for Warriors and Knights, Medium for Archers, Thieves and Monks, Light for Mages, Priests and Bards. '+Object.keys(by).map(a=>`${p2List(by[a])}: ${a[0].toUpperCase()+a.slice(1)}`).join('. ')+'.';}},
  {id:'rest',on:'win',t:()=>{const low=p2Party().filter(c=>c.hp>0&&c.hp<c.S.mhp*.4);if(!low.length)return null;return `${p2List(low.map(p2Nm))} ${low.length>1?'are':'is'} hurt. Rest at the inn in town to restore HP and MP, or use a Potion from Menu > Backpack.`;}}
 ];
 function hintsOn(){return !(META.cfg&&META.cfg.hints===false);}

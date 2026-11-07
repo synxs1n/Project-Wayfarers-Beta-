@@ -46,3 +46,7 @@ HOOK.after('renderBattle','chain5','planned targets on the intent tags and the p
     const tag=document.querySelector(`.b5it[data-u="${unitRef(u)}"]`);if(tag&&!tag.querySelector('.c5aim')){const s=document.createElement('i');s.className='c5aim';s.textContent='→ '+c5Short(p.tgt.name);tag.appendChild(s);tag.title=(tag.title||'')+` Aims at ${p.tgt.name}.`;}});
   const party=allParty();aimAt.forEach((foes,c)=>{const i=party.indexOf(c);if(i<0)return;const card=document.querySelector(`#bparty [data-act="tgtA"][data-arg="${i}"], #bparty .pc[data-arg="${i}"]`);if(!card||card.querySelector('.c5tgt'))return;
     const s=document.createElement('span');s.className='c5tgt';s.title=`${foes.map(f=>f.name).join(' and ')} aim${foes.length>1?'':'s'} at ${c.name}`;s.textContent='⚔'+(foes.length>1?foes.length:'');card.appendChild(s);});}catch(e){}});
+
+// the layout reserves room for the aim text on the intent tag, and a changed aim re-lays the stage
+{const iw0=b9IntW;b9IntW=function(u){let w=iw0.apply(this,arguments);try{const p=u&&u.hp>0&&foePlan(u);if(p&&p.tgt&&p.tgt.hp>0)w+=Math.ceil(b3TextW('→ '+c5Short(p.tgt.name),5,900)*1.1)+6;}catch(e){}return w;};}
+{const k0=b3Key;b3Key=function(units){let k=k0.apply(this,arguments);try{k+='|a'+B.en.map(e=>{if(e.hp<=0)return '-';const p=foePlan(e);return p&&p.tgt?unitRef(p.tgt):'';}).join(',');}catch(e){}return k;};}

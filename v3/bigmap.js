@@ -2,7 +2,7 @@
 // Opened from the area map's World map button (and ACT.worldMap) on connected-world journeys (worldV3). The maps the party has
 // been to are laid out by their real gates: a field's start gate sits one tile past the town's forward gate, the next town one tile
 // past the field's end gate (a map that would overlap another is pushed along the gate's axis and joined by a dashed line).
-// Only seen tiles are drawn (the same bits as the area map). Dungeon doors, caves and fortresses are marked at their field entrance.
+// Only seen tiles are drawn (the same bits as the area map). Dungeon doors, caves and sanctums are marked at their field entrance.
 // Tap any seen tile on any visited map and the party walks there, map to map: a route of legs (walk to the gate or door, step
 // through, walk on) run on top of the tap to walk (WS.route, not saved). The old parchment chart stays behind the Chart button.
 const BM={sc:2,base:{},key:{},lay:null,pt:null};
@@ -26,10 +26,10 @@ function bmLayout(){const out=[],links=[],at={};if(!G||!worldV3())return {maps:o
     const v=BM_V[gn.side];const F=place(fid,f,T.ox+gn.x-gs.x+v[0],T.oy+gn.y-gs.y+v[1],gn.side,T,gn,gs);
     if(s<4){const tid='t'+(s+1);if(!been(tid))break;const t=getMap(tid),ge=bmGate(f,'end'),gp=bmGate(t,'prev');if(!ge||!gp)break;const v2=BM_V[ge.side];place(tid,t,F.ox+ge.x-gp.x+v2[0],F.oy+ge.y-gp.y+v2[1],ge.side,F,ge,gp);}}
   return {maps:out,links};}
-// doors on the fields: the dungeon, caves and fortresses (once their tile has been seen)
+// doors on the fields: the dungeon, caves and sanctums (once their tile has been seen)
 function bmDoors(L){const d=[];L.maps.forEach(o=>{const m=o.m;if(m.kind!=='field')return;
   if(m.ent&&(isSeen(m,m.ent[0],m.ent[1])||(G.been||{})['d'+m.s]))d.push({o,x:m.ent[0],y:m.ent[1],k:G.cleared[m.s]?'dunlit':'dungeon',id:'d'+m.s,n:ZS(m.s).dungeon});
-  (m.caves||[]).forEach(c=>{if(!(isSeen(m,c.x,c.y)||(G.cavesSeen||{})[c.id]))return;d.push({o,x:c.x,y:c.y,k:c.kind==='fort'?'fort':'cave',id:c.id,n:c.kind==='fort'?(typeof FORT_NAMES!=='undefined'?FORT_NAMES[m.s]:'Fortress'):CAVE_NAMES[m.s]});});});return d;}
+  (m.caves||[]).forEach(c=>{if(!(isSeen(m,c.x,c.y)||(G.cavesSeen||{})[c.id]))return;d.push({o,x:c.x,y:c.y,k:c.kind==='fort'?'fort':'cave',id:c.id,n:c.kind==='fort'?(typeof FORT_NAMES!=='undefined'?FORT_NAMES[m.s]:'Sanctum'):CAVE_NAMES[m.s]});});});return d;}
 function bmBounds(L){let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;L.maps.forEach(o=>{x0=Math.min(x0,o.ox);y0=Math.min(y0,o.oy);x1=Math.max(x1,o.ox+o.m.w);y1=Math.max(y1,o.oy+o.m.h);});return {x0:x0-2,y0:y0-2,x1:x1+2,y1:y1+2};}
 function drawBigMap(){const cv=document.getElementById('bmap');if(!cv||!G)return;const L=BM.lay=bmLayout();if(!L.maps.length)return;const B0=BM.bounds=bmBounds(L),W=B0.x1-B0.x0,H=B0.y1-B0.y0;
   const box=cv.parentElement,maxW=Math.min(1200,(box.clientWidth||340)-8);let sc=Math.max(3,Math.min(5,Math.floor(maxW/W)));BM.sc=sc;// at least 3 px a tile: the box scrolls
@@ -52,7 +52,7 @@ function drawBigMap(){const cv=document.getElementById('bmap');if(!cv||!G)return
 function mBigMap(){BM.scrolled=0;setTimeout(drawBigMap,0);
   return `<div class="modal mapmodal" data-act="xClose"><div class="panel box mapbox wmbox"><div class="mh"><h2>World map</h2></div>
     <div class="bmscroll"><canvas id="bmap" class="fmap bmap" data-act="bmTap" aria-label="World map"></canvas></div><p class="note fmnote" id="bmnote" aria-live="polite"></p>
-    <div class="maplegend"><span><b style="color:#fff">➤</b> You</span><span><b style="color:#ff6a5a">▲</b> Dungeon</span><span><b style="color:#ffd04a">▲</b> Relit dungeon</span><span><b style="color:#c89a6a">◠</b> Side cave</span><span><b style="color:#c8c8e8">♜</b> Fortress</span></div>
+    <div class="maplegend"><span><b style="color:#fff">➤</b> You</span><span><b style="color:#ff6a5a">▲</b> Dungeon</span><span><b style="color:#ffd04a">▲</b> Relit dungeon</span><span><b style="color:#c89a6a">◠</b> Side cave</span><span><b style="color:#c8c8e8">♜</b> Sanctum</span></div>
     <div class="btnrow"><button class="btn sm" data-act="wmChart">Chart</button></div>
     <p class="note">Every town and field you have visited, joined at their gates. Tap anywhere you have been and the party walks there, through the gates on the way (a dungeon or cave door takes you inside). Drag to scroll a big map. Tap outside the map to close.</p></div></div>`;}
 HOOK.before('vModal','bigmap','the connected world map',function(md){if(md&&md.type==='bigmap')return HOOK.stop(mBigMap(md));});

@@ -34,6 +34,7 @@ Read these before a big pass:
 - `v095-bosses-pacing.md`: v0.9.5 fewer, better fights (lower encounter rate, roamers on fields with the realm's roles, ordinary fights pay more), a realm gimmick for every Scourge and Calamity, companion growth (second skill, evolution), depth unlocks by realm (`pcUnlocked`), with the journey and boss sim numbers.
 - `v095-nudges.md`: leading players into the systems (v0.9.5): the manual bonus line, system bonuses on the rewards screen, auto per foe type, tip cards as invitations (basic and expert), the Next goals panel; economy numbers and tests.
 - `v099-tests.md`: the v0.9.9 test hardening pass: the Chrome tests that were flaky under machine load and why, what changed per test, the frozen clock and wait helpers in `pw.js`, the runner `tools/chrome/runall.js` and its groups.
+- `v0107-sanctums.md`: Phase 8 (Sanctums, guardians as summons, Invoke and Spirit Call, Priest rename).
 - `v0106-guild.md`: Phase 7 (board and Guild Hall split, guild notices, town gated notices, Medals, Guides tabs, roamer grace).
 - `v0105-combat.md`: Phase 6 (56 reactions, early roles, prime refresh, typed attacks, natures as sub-roles, mastery perks).
 - `v0104-battle.md`: Phase 5 (Chain, planned foe targets and the Guard cue, skill rows with target type and numbers).

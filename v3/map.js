@@ -159,7 +159,7 @@ function worldGraph(){
       const dn=put('d'+s,'dungeon',Z.dungeon,F.x+GRID_V[q][0],F.y+GRID_V[q][1],{seen:true,stage:s,cleared:!!G.cleared[s]});link(F,dn,q,'n',false);}
     if(v3&&fm&&fm.caves&&fm.caves.length){fm.caves.forEach(c=>{if(!(isSeen(fm,c.x,c.y)||(G.cavesSeen||{})[c.id]))return;const pref=around(fm,c.x,c.y);
       const q=[pref,...['n','s','e','w'].filter(d=>d!==pref)].find(d=>free(F.x+GRID_V[d][0],F.y+GRID_V[d][1]));if(!q)return;
-      const kn=put(c.id,c.kind==='fort'?'fort':'cave',c.kind==='fort'?(typeof FORT_NAMES!=='undefined'?FORT_NAMES[s]:'Fortress'):CAVE_NAMES[s],F.x+GRID_V[q][0],F.y+GRID_V[q][1],{seen:true,stage:s,done:c.kind==='fort'?!!(G.fortWon||{})[s]:!!(G.caveWon||{})[s]});link(F,kn,q,'n',false);});}
+      const kn=put(c.id,c.kind==='fort'?'fort':'cave',c.kind==='fort'?(typeof FORT_NAMES!=='undefined'?FORT_NAMES[s]:'Sanctum'):CAVE_NAMES[s],F.x+GRID_V[q][0],F.y+GRID_V[q][1],{seen:true,stage:s,done:c.kind==='fort'?!!(G.fortWon||{})[s]:!!(G.caveWon||{})[s]});link(F,kn,q,'n',false);});}
     });
     // on to the next town
     if(s<4){const fe=v3?P[s].fe:'e',np=[F.x+GRID_V[fe][0],F.y+GRID_V[fe][1]];
@@ -174,8 +174,8 @@ function worldGraph(){
 // ----- v0.6.3: the world map as an illustrated, code drawn chart -----
 // A parchment sheet (grain, stains, burnt edge, compass rose); each area drawn as a little vignette in its realm's colours: towns as
 // clusters of roofs, fields as countryside with a road through it, dungeons as dark towers (a gold beacon once relit), caves as rock arches,
-// fortresses as gatehouses. Roads join the gates (dashed and red past a sealed gate), places not yet visited sit under clouds with a "?",
-// a red pin marks the party, a tick marks a looted cave or fortress. Names are written under the places when there is room; tapping a
+// sanctums as gatehouses. Roads join the gates (dashed and red past a sealed gate), places not yet visited sit under clouds with a "?",
+// a red pin marks the party, a tick marks a looted cave or sanctum. Names are written under the places when there is room; tapping a
 // place shows its name (on a phone they are often too small to write out). Everything is drawn in code from cached sprites, once per open,
 // resize or tap (no animation). State: WMS (not saved).
 const WMS={sel:null,hit:[],t:0,pt:null};
@@ -246,7 +246,7 @@ function wmLabel(x,txt,cx,cy,fs,col,bold){x.font=`${bold?800:700} ${fs}px Nunito
   x.fillStyle=col||'#3a2614';x.fillText(txt,cx,cy+.5);return w;}
 function wmShown(gr){const byId={};gr.nodes.forEach(n=>byId[n.id]=n);const show={};gr.nodes.forEach(n=>{if(n.seen)show[n.id]=2;});
   gr.edges.forEach(e=>{if(show[e.a]===2&&!show[e.b]&&byId[e.b].kind!=='dungeon'&&byId[e.b].kind!=='cave'&&byId[e.b].kind!=='fort')show[e.b]=1;});return {byId,show};}
-function wmName(n,full){if(!full)return n.locked?'Sealed: unexplored':'Unexplored';return n.label+(n.kind==='fort'?' (fortress)':n.kind==='cave'?' (cave)':n.kind==='dungeon'?(n.cleared?' (relit)':' (dungeon)'):'');}
+function wmName(n,full){if(!full)return n.locked?'Sealed: unexplored':'Unexplored';return n.label+(n.kind==='fort'?' (sanctum)':n.kind==='cave'?' (cave)':n.kind==='dungeon'?(n.cleared?' (relit)':' (dungeon)'):'');}
 function drawWorldMap(){
   const cv=document.getElementById('wmap');if(!cv||!G)return;
   const gr=worldGraph(),here=WS.m?(WS.m.id[0]==='g'?'f'+WS.m.s:WS.m.id):null;
@@ -285,12 +285,12 @@ function wmLegendDraw(){document.querySelectorAll('canvas.wml').forEach(c=>{cons
   const [kind,st]=k.split(':');x.drawImage(wmVignette(kind,'meadow',s,st||''),0,0);});}
 function mWorldMap(){
   setTimeout(()=>{drawWorldMap();wmLegendDraw();},0);
-  const L=[['town','Town'],['field','Field'],['dungeon','Dungeon'],['dungeon:lit','Relit dungeon'],['cave','Side cave'],['fort','Fortress'],['cave:done','Looted'],['you','You'],['fog','Not visited yet'],['sealed','Sealed gate']];
+  const L=[['town','Town'],['field','Field'],['dungeon','Dungeon'],['dungeon:lit','Relit dungeon'],['cave','Side cave'],['fort','Sanctum'],['cave:done','Looted'],['you','You'],['fog','Not visited yet'],['sealed','Sealed gate']];
   return `<div class="modal mapmodal" data-act="xClose"><div class="panel box mapbox wmbox"><div class="mh"><h2>World map</h2></div>
     <canvas id="wmap" class="fmap wmap" data-act="wmTap" aria-label="World map"></canvas>
     <div class="maplegend wmlegend">${L.map(([k,n])=>`<span><canvas class="wml" data-k="${k}" width="28" height="28"></canvas> ${n}</span>`).join('')}</div>
     <div class="btnrow" id="wmgo"></div>
-    <p class="note">Tap a place to see its name. Roads follow the gates, so a gate on the north edge leads up the map. Places appear as you find them; side caves and fortresses are optional. Tap outside the map to close.</p></div></div>`;
+    <p class="note">Tap a place to see its name. Roads follow the gates, so a gate on the north edge leads up the map. Places appear as you find them; side caves and sanctums are optional. Tap outside the map to close.</p></div></div>`;
 }
 // a tap on the map shows that place's name (and does not close the map); a tap on empty parchment hides it again
 document.addEventListener('pointerdown',e=>{if(e.target&&e.target.id==='wmap')WMS.pt={x:e.clientX,y:e.clientY,t:Date.now()};},true);

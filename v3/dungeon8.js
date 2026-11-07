@@ -1,5 +1,5 @@
 // ===== dungeon8.js (v0.8.2): themed dungeons that match their battle backdrops, organic caverns, the boss lair on the field =====
-// 1. Every main dungeon, side cave and fortress gets a material (D8M) picked by its realm (D8_REALM), its zone theme (D8_ZONE) or, for
+// 1. Every main dungeon, side cave and sanctum gets a material (D8M) picked by its realm (D8_REALM), its zone theme (D8_ZONE) or, for
 //    side caves, its tileset (D8_CAVE): ice cavern, ice vault, volcanic cavern, basalt forge, sea cave, flooded masonry, root cavern,
 //    crypt, sandstone, keep, astral halls, mountain rock. The material sets the wall and floor art (2D drawDTile, the HD-2D block faces
 //    and tops in hdStructCanvas), the decor props (P, g, r), liquids, lights and the dark tint, and the battle backdrop of fights started
@@ -242,7 +242,7 @@ function d8BgKey(pre,mat,base){const id='d8'+mat,M=D8M[mat];if(!DTHEME[id])DTHEM
 // target stays reachable and nothing ends up on a path (mapIssues, pathAssets), and a mound tile goes again if it would hide a prop north
 // of it (pgHides). Drawn from the dungeon's material (frozen rock, basalt, earth and roots, sandstone, wet rock, mountain rock, crystal),
 // leaning toward the field's own cliff colours:
-// - HD-2D: real geometry (hdBakeBuildings, like the fortress gatehouse): a heightfield hill over the mound tiles, highest at the back and
+// - HD-2D: real geometry (hdBakeBuildings, like the sanctum gatehouse): a heightfield hill over the mound tiles, highest at the back and
 //   the middle, a rock face at the front with the cave mouth in it (dark, claw gouged, lit from inside), sloping into the ground at the
 //   sides; heights are capped so a prop north of it still shows (the pgHides rule with the real heights). Torches on the front faces, a
 //   broken banner of the Scourge and a skull pile on top, a faint plume of the mouth's light rising from the top (not over the hero).

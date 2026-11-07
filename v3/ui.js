@@ -143,7 +143,7 @@ function vHeader(){
 }
 function wkwUpdate(){
   const wk=$('wkw');if(!wk||!G)return;const m=WS.m,indoor=!!m&&(m.kind==='dungeon'||m.archive);
-  // v0.4.1 2.8: the weather tag is always there: the realm's sky (Clear included) outdoors, "Indoors" in dungeons, caves, fortresses and the Archive
+  // v0.4.1 2.8: the weather tag is always there: the realm's sky (Clear included) outdoors, "Indoors" in dungeons, caves, sanctums and the Archive
   let w=m&&!indoor?(G.weather[m.s]||'clear'):null;if(w&&!WEATHER[w])w='clear';  // v0.5.0 1.6: an unknown sky shows as clear instead of breaking the HUD
   let html=indoor?`<button class="wchip" data-act="wxInfo" data-arg="indoors" title="Weather and time of day do not reach in here">⌂ Indoors</button>`:w?`<button class="wchip" data-act="wxInfo" data-arg="weather" title="${esc(WEATHER[w].d)}">${WEATHER[w].i} ${esc(WEATHER[w].n)}</button>`:'';
   if(G.ward>0)html+=`<span class="wchip hwchip" title="Holy Water: no random battles">✧ Ward <b class="nums">${G.ward}</b></span>`;

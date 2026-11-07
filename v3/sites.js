@@ -1,13 +1,13 @@
-// ===== sites.js (v0.4.1): side caves, side fortresses, minibosses =====
+// ===== sites.js (v0.4.1): side caves, side sanctums, minibosses =====
 // Side caves get their own look (mossy rock palette, damp green light, drips) and their own music, so they never read as a main dungeon.
-// Side fortresses are a second optional site type in new journeys (stages 1 to 4): bigger than a cave, smaller than a main dungeon,
+// Side sanctums are a second optional site type in new journeys (stages 1 to 4): bigger than a cave, smaller than a main dungeon,
 // built as a walled keep (stone walls, a courtyard, barracks rooms, banners and braziers, a keep holding the prize), with a gatehouse
 // entrance drawn on the field that looks unlike both a cave mouth and a dungeon facade. Both are marked on the map once found and are
 // never needed to progress. Legendaries never come from them.
-// Minibosses: about 90% of caves and fortresses (seeded per site) have a capstone fight guarding the prize. Opening the prize chest
+// Minibosses: about 90% of caves and sanctums (seeded per site) have a capstone fight guarding the prize. Opening the prize chest
 // wakes it; win and the prize is yours plus a bonus. Minibosses can never be auto battled.
 // SITES: in config.js
-const FORT_NAMES=['Briarwatch Keep','Saltmarch Bastion','Emberwall Hold','Frostcrag Redoubt','Duskspire Citadel'];
+const FORT_NAMES=['Briarwatch Sanctum','Saltmarch Sanctum','Emberwall Sanctum','Frostcrag Sanctum','Duskspire Sanctum'];
 const FORT_CHARMS={0:'c_ft0',1:'c_ft1',2:'c_ft2',3:'c_ft3',4:'c_ft4'};
 [['c_ft0','Briarwatch Sigil',{hp:150,atk:12,def:8}],['c_ft1','Saltmarch Seal',{mp:70,res:14,def:8}],['c_ft2','Emberwall Badge',{atk:18,spd:6}],['c_ft3','Frostcrag Token',{def:16,hp:110}],['c_ft4','Duskspire Crest',{mag:16,spd:8,mp:50}]]
   .forEach(([id,n,st],i)=>addGear(id,Object.assign({n,slot:'c',tier:3,price:900+i*80,unique:1},st)));
@@ -25,7 +25,7 @@ function siteVariant(theme,kind){const id=theme+'#'+kind;if(DTHEME[id])return id
 {const mf0=musicFor;musicFor=function(){const m=WS.m;if(m&&m.cave)return m.fort?'fort':'cave';return mf0.apply(this,arguments);};}
 if(typeof MOODS!=='undefined'){MOODS.cave={bpm:72,sc:'minor',prog:[0,5,0,3],lead:'triangle',dr:0,feel:.3,low:1};MOODS.fort={bpm:108,sc:'harm',prog:[0,4,5,4],lead:'square',dr:2,feel:.6};}
 
-// ---------- fortress map ----------
+// ---------- sanctum map ----------
 function buildFort(R,s){const W=SITES.fortW,H=SITES.fortH,D=new Gr(W,H,'#');
   const start={x:2,y:ri2(R,15,H-21),w:8,h:6},yard={x:16,y:12,w:26,h:16},keep={x:W-14,y:13,w:11,h:14};
   [start,yard,keep].forEach(r=>D.rect(r.x,r.y,r.w,r.h,'.'));
@@ -40,10 +40,10 @@ function buildFort(R,s){const W=SITES.fortW,H=SITES.fortH,D=new Gr(W,H,'#');
   const chests=[],pc=[keep.x+Math.floor(keep.w/2),keep.y+Math.floor(keep.h/2)];D.put(pc[0],pc[1],'C');chests.push([pc[0],pc[1],'reward']);
   bar.forEach((r,i)=>{if(R()<.6){const x=r.x+(i%2?r.w-1:0),y=r.y+(r.y<yard.y?0:r.h-1);if(D.get(x,y)==='.'){D.put(x,y,'C');chests.push([x,y]);}}});
   return {rows:D.g,start:[sc[0],sc[1]+1],chests,prize:pc};}
-function genFort(s){for(let a=0;a<40;a++){const R=mulberry(G.run.seed+7313+s*71+a*131),c=buildFort(R,s);if(caveOk(c))return c;}throw new Error('fortress generation failed');}
+function genFort(s){for(let a=0;a<40;a++){const R=mulberry(G.run.seed+7313+s*71+a*131),c=buildFort(R,s);if(caveOk(c))return c;}throw new Error('sanctum generation failed');}
 function buildFortMap(id){const s=+id.slice(1),c=genFort(s),Z=ZS(s);const m={id,z:s,s,kind:'dungeon',theme:Z.theme,exits:[],npcs:[],bld:[],signs:{},t:c.rows,start:c.start,bossAt:null,chests:c.chests,
   wander:[c.start[0],c.start[1]+1],cave:true,fort:true,name:FORT_NAMES[s],fixed:{},prize:c.prize};m.w=m.t[0].length;m.h=m.t.length;return m;}
-// fortress gatehouse on the field: a clearing far from the dungeon, the cave and the gates, reachable before the sealed gate
+// sanctum gatehouse on the field: a clearing far from the dungeon, the cave and the gates, reachable before the sealed gate
 function fortWanted(s){return isRv2()&&s>=1;}
 function placeFort(f,s){if(!f||f.kind!=='field'||f.fortDone||!fortWanted(s))return;f.fortDone=1;if((f.caves||[]).some(c=>c.kind==='fort'))return;
   const g=f.t,H=g.length,W=g[0].length,st=f.gates&&f.gates.start&&f.gates.start.arrive||[2,f.sy||2];
@@ -57,7 +57,7 @@ function placeFort(f,s){if(!f||f.kind!=='field'||f.fortDone||!fortWanted(s))retu
   f.caves=f.caves||[];f.caves.push({x,y,id:'o'+s,kind:'fort',face:[0,1],out:[x,y+1]});f.fortAt=[x,y];
   if(typeof mapIssues==='function'&&mapIssues(f).length){// undo if it blocks anything
     g[y-1][x-1]=g[y-1][x]=g[y-1][x+1]=g[y][x-1]=g[y][x+1]=g[y][x]=',';f.caves=f.caves.filter(c=>c.id!=='o'+s);f.fortAt=null;}}
-HOOK.wrap('getMap','sites','fortress maps; place the fortress on its field',function(next,...a){let id=a[0];if(id&&id[0]==='o'&&!MAPS[id]&&G&&G.run){const fm=MAPS[id]=buildFortMap(id);try{applyBossTheme(fm);if(typeof healMap==='function')healMap(fm);}catch(e){}try{if(typeof guardPaths==='function'&&!window.__PGOFF){fm.__guarded=true;guardPaths(fm);}}catch(e){}}const m=next(...a);
+HOOK.wrap('getMap','sites','sanctum maps; place the sanctum on its field',function(next,...a){let id=a[0];if(id&&id[0]==='o'&&!MAPS[id]&&G&&G.run){const fm=MAPS[id]=buildFortMap(id);try{applyBossTheme(fm);if(typeof healMap==='function')healMap(fm);}catch(e){}try{if(typeof guardPaths==='function'&&!window.__PGOFF){fm.__guarded=true;guardPaths(fm);}}catch(e){}}const m=next(...a);
   try{if(m&&m.kind==='field'&&m.part!==1&&!m.fortDone)placeFort(m,m.s);}catch(e){}return m;});
 // the gatehouse is painted into the field's base layer (so heroes and townsfolk always draw in front of it):
 // grey towers with red banners (a cave mouth is a rock arch, a dungeon a carved facade)
@@ -104,5 +104,5 @@ HOOK.wrap('encounterFoes','sites','miniboss fights',function(next,...a){let spec
 HOOK.wrap('finishBattle','sites','miniboss prizes',function(next,...a){const how=a[0];const sp=B&&B.spec,mi=sp&&sp.mini&&typeof sp.mini==='object'?sp.mini:null;const r=next(...a);
   try{if(mi&&how==='win'&&G){G.miniDone=G.miniDone||{};G.miniDone[mi.id]=1;const s=sp.stage,g=econG(300+s*250);G.gold+=g;G.mats.core=(G.mats.core||0)+1;G.mats[ZS(s).mat]=(G.mats[ZS(s).mat]||0)+3;saveGame();
     toast(`${mi.name} falls. Bonus: ${g} gold, a Dread Core and 3 ${MATS[ZS(s).mat]}. The prize chest is yours.`);}}catch(e){}return r;});
-// map: fortresses get their own marker and name
-if(typeof MAPICO_X!=='undefined'){MAPICO_X.fort=[[0,3,10,7,'#7a7a86'],[0,1,3,9,'#5a5a66'],[7,1,3,9,'#5a5a66'],[1,4,1,3,'#c0392b'],[8,4,1,3,'#c0392b'],[4,6,2,4,'#120c10']];MAPICO_NAME.fort='Fortress';}// v0.6.3: player facing text says fortress, not side fortress (ids and save keys unchanged)
+// map: sanctums get their own marker and name
+if(typeof MAPICO_X!=='undefined'){MAPICO_X.fort=[[0,3,10,7,'#7a7a86'],[0,1,3,9,'#5a5a66'],[7,1,3,9,'#5a5a66'],[1,4,1,3,'#c0392b'],[8,4,1,3,'#c0392b'],[4,6,2,4,'#120c10']];MAPICO_NAME.fort='Sanctum';}// v0.6.3: player facing text says sanctum, not side sanctum (ids and save keys unchanged)

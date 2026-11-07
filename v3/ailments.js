@@ -65,7 +65,7 @@ function ailBadge(id){const c=typeof G!=='undefined'&&G&&G.roster&&G.roster[id];
   return ko+(c.hp>0?ailChips(c).replace('class="ailrow"','class="ailrow dots"'):'');}
 
 // ===== v0.4.1 2.7 and 2.8: battle sky tags and the Lore entry =====
-// Fights below ground (dungeons, caves, fortresses, bosses and echoes) are Indoors; everything else shows the weather (Clear too) and, outside the Daily Trial, the time of day.
+// Fights below ground (dungeons, caves, sanctums, bosses and echoes) are Indoors; everything else shows the weather (Clear too) and, outside the Daily Trial, the time of day.
 function battleIndoors(){return !!B&&['dungeon','boss','echoBoss','storyEcho','mini'].includes(B.spec.kind);}
 function battleSkyTags(){if(!B)return '';
   if(battleIndoors())return `<button class="wchip" data-act="wxInfo" data-arg="indoors" title="Weather and time of day do not reach in here">⌂ Indoors</button>`;

@@ -16,7 +16,7 @@ const CLASS_DESC={
   warrior:{role:'Vanguard damage',str:'Big single hits, sweeps that hit every foe, War Cry to draw attacks.',wpn:'Blades and mail'},
   knight:{role:'Tank and protector',str:'Taunts, Wards and Bulwark for the line; the toughest body in the game.',wpn:'Blades and mail'},
   mage:{role:'Elemental caster',str:'The strongest spells, storms that hit every foe, Haste and Hex.',wpn:'Staves (cheaper spells, +10% elemental) or tomes (more raw power), and robes'},
-  healer:{role:'Healer',str:'Heals, cleanses, Regen and revives. Scales mostly on Faith.',wpn:'Staves and robes'},
+  healer:{role:'Priest',str:'Heals, cleanses, Regen and revives; invokes Sanctum guardians. Scales mostly on Faith.',wpn:'Staves and robes'},
   thief:{role:'Fast striker',str:'The fastest class: steals, poisons, blinds and crits.',wpn:'Daggers and light garb'},
   archer:{role:'Ranged damage',str:'Bleeds, roots and armor-piercing shots.',wpn:'Bows and light garb'},
   monk:{role:'Brawler',str:'Free multi-hit strikes, self-healing and stuns. A little Faith.',wpn:'Blades (fists wrapped in them) and garb'},

@@ -1789,6 +1789,9 @@ html.rm .battle.b3 .cmd .mi.b9glow{animation:none}
 /* chain5.js: planned targets */
 .b5it .c5aim{font-style:normal;margin-left:3px;opacity:.9}
 .c5tgt{position:absolute;right:4px;top:2px;font-size:.7rem;color:#ffb0a0;text-shadow:0 1px 0 #000;pointer-events:none}
+/* summon8.js */
+.s8pray{position:absolute;left:4px;bottom:2px;font-size:.66rem;color:#ffe9a8;text-shadow:0 1px 0 #000;pointer-events:none}
+.mi.summon.s8{border-color:rgba(255,220,120,.6)}
 /* ===== Beta v0.7.0 battle mechanics (battle4.js): the Momentum gauge in the log ticker, the switch menu ===== */
 .battle.b3 .bline .b4mo{flex:none;display:flex;flex-direction:column;justify-content:center;gap:3px;width:auto;min-width:98px;max-width:138px;min-height:40px;margin:0 0 0 -6px;padding:3px 6px;box-sizing:border-box;
   background:rgba(10,12,22,.7);border:1px solid rgba(217,180,106,.28);border-radius:3px;color:#f3e7cc;font:inherit;cursor:pointer;text-align:left}
@@ -1821,7 +1824,7 @@ html.rm .battle.b3 .cmd .mi.b9glow{animation:none}
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.10.6";const APP_BUILD="236343610c3e";
+(function(){const APP_VER="0.10.7";const APP_BUILD="4c9f265cd494";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2509,7 +2512,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.10.6";const APP_BUILD="236343610c3e";
+const APP_VER="0.10.7";const APP_BUILD="4c9f265cd494";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2517,6 +2520,7 @@ const APP_VER="0.10.6";const APP_BUILD="236343610c3e";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.10.7',['Sanctums and Summons: the side fortresses are now Sanctums, and every one ends in a unique guardian. Beat it and it is bound to you: Priests (the Healer class, renamed) can Invoke it in battle. The Priest prays for one turn; on their next turn the guardian takes the field in place of the whole Vanguard for three of its turns, fighting with its own moves, then the Vanguard steps back in as it was (if the guardian is driven off, no more summoning that fight). It costs 30% of the Priest\'s MP, once per Priest per battle, never in the Daily Trial, and auto battle never prays. Monks from level 10 get Spirit Call: two turns of stillness, then a lesser form takes the Monk\'s own place for two turns. Guardians beaten in earlier journeys on this save count.']],
  ['Beta v0.10.6',['Town: the Notice Board keeps Quests and Bounties; Guilds and the Arena live in the Guild Hall (with Recruits and Natures). Two notices from the first town send you there: Sign the guild ledger and First blood in the pit. A notice can only be accepted in the town of its realm (legend quests and the post-journey notices show everywhere; claiming stays open anywhere). The first win of each arena tier awards a Medal, a charm your wayfarers can wear. Guides now has Charts (the element chart and all 56 reactions), Ailments, Boons and Boss gimmicks as their own tabs; Lore keeps the story. Fix: after a fight in a dungeon or on a field, nearby roamers back off instead of starting the next battle at once.']],
  ['Beta v0.10.5',['Combat: every prime now reacts with every other element (56 reactions, all in the Lore guide); warriors, knights and monks learn a detonator first and the other classes a primer first, so reactions start in the first realm; priming a foe again with the same element refreshes the two turns instead of doing nothing. Basic attacks are typed by class: archers shoot (ranged, hardest), mages, healers and bards strike with magic, warriors, monks and thieves hit harder. Natures are now sub-roles: three per class (a tank, a damage and a tempo or support take) with 10 to 15% stat swings and one perk (Bulwark and Sentinel guard for 60%, Berserkers hit 12% harder below half HP, Sages cast for less, Stillwater monks heal more with chi, and so on); new wayfarers start on one, the Guild Hall still rerolls inside the class. Single element wayfarers: their element deals 25% more, they carry 10% more MP and take a quarter less from their own element; Light mastery\'s healing bonus became +15% against undead and shadow foes. Also: the Momentum bar\'s Surge label no longer sticks out of its box.']],
  ['Beta v0.10.4',['Battle clarity: foes now pick who they aim at a turn ahead and the telegraph shows it (an arrow on their intent tag, a ⚔ mark on the hero\'s card); the Guard button glows when the acting hero is about to take a heavy hit before their next turn, and a hero who guards a hit aimed at them moves again sooner. Skill rows show their target type with a coloured edge (red for foes, green for allies, both for heals that burn undead), an expected damage or healing number, the delivery symbol and status symbols in their text; when only one target is valid the skill, item or scan fires at once. New Chain targeting: Thunder Quarrel and Volt Lance start on one foe and may leap from foe to foe. The key weakness marker left the stage and lives on the foe card; hero levels show on every layout; the foe info panel no longer gets cut off on tall phones.']],
@@ -2787,7 +2791,7 @@ const CLS={
  warrior:{n:'Warrior',role:'Heavy melee. High HP and attack, hits groups, draws fire.',hp:[52,11],mp:[10,1.6],atk:[10,2.4],def:[8,1.9],mag:[3,.6],res:[4,1],spd:[8,.75],pref:['str','vit','dex']},
  knight:{n:'Knight',role:'Tank. Taunts, wards allies and raises party defense.',hp:[60,12.5],mp:[10,1.7],atk:[8,1.9],def:[11,2.4],mag:[3,.7],res:[7,1.5],spd:[6,.6],pref:['vit','spi','str']},
  mage:{n:'Mage',role:'Elemental caster. Big spells, hastes allies, fragile body.',hp:[36,7],mp:[28,3.8],atk:[4,.8],def:[4,1],mag:[12,2.7],res:[8,1.9],spd:[8,.75],pref:['int','spi','agi']},
- healer:{n:'Healer',role:'Heals, cleanses, grants Regen and revives.',hp:[40,8],mp:[30,4],atk:[4,.8],def:[5,1.2],mag:[11,2.4],res:[9,2],spd:[8,.7],pref:['fth','spi','vit']},
+ healer:{n:'Priest',role:'Heals, cleanses, grants Regen and revives. Invokes Sanctum guardians.',hp:[40,8],mp:[30,4],atk:[4,.8],def:[5,1.2],mag:[11,2.4],res:[9,2],spd:[8,.7],pref:['fth','spi','vit']},
  thief:{n:'Thief',role:'Fastest class. Steals, poisons and blinds.',hp:[40,8.5],mp:[14,2],atk:[8,1.9],def:[5,1.3],mag:[4,.8],res:[5,1.2],spd:[13,1.1],pref:['agi','dex','luk']},
  archer:{n:'Archer',role:'Ranged damage. Bleeds, roots and pierces armor.',hp:[42,8.5],mp:[16,2.2],atk:[9,2.1],def:[5,1.3],mag:[4,.8],res:[5,1.3],spd:[11,.95],pref:['dex','agi','str']},
  monk:{n:'Monk',role:'Bare-fisted bruiser. Multi-hits, stuns, self-sustains.',hp:[50,10.5],mp:[14,2],atk:[10,2.3],def:[6,1.5],mag:[5,1],res:[6,1.4],spd:[10,.9],pref:['str','agi','vit']},
@@ -9291,7 +9295,7 @@ function vHeader(){
 }
 function wkwUpdate(){
   const wk=$('wkw');if(!wk||!G)return;const m=WS.m,indoor=!!m&&(m.kind==='dungeon'||m.archive);
-  // v0.4.1 2.8: the weather tag is always there: the realm's sky (Clear included) outdoors, "Indoors" in dungeons, caves, fortresses and the Archive
+  // v0.4.1 2.8: the weather tag is always there: the realm's sky (Clear included) outdoors, "Indoors" in dungeons, caves, sanctums and the Archive
   let w=m&&!indoor?(G.weather[m.s]||'clear'):null;if(w&&!WEATHER[w])w='clear';  // v0.5.0 1.6: an unknown sky shows as clear instead of breaking the HUD
   let html=indoor?`<button class="wchip" data-act="wxInfo" data-arg="indoors" title="Weather and time of day do not reach in here">⌂ Indoors</button>`:w?`<button class="wchip" data-act="wxInfo" data-arg="weather" title="${esc(WEATHER[w].d)}">${WEATHER[w].i} ${esc(WEATHER[w].n)}</button>`:'';
   if(G.ward>0)html+=`<span class="wchip hwchip" title="Holy Water: no random battles">✧ Ward <b class="nums">${G.ward}</b></span>`;
@@ -11709,7 +11713,7 @@ ACT.talkNext=function(){const m=V.modal;if(m.i<m.lines.length-1){m.i++;render();
 // ----- weather and time popups -----
 const pc=v=>(v>1?'+':'-')+Math.round(Math.abs(v-1)*100)+'%';
 function wxInfoBody(kind){
-  if(kind==='indoors')return '<p><b>⌂ Indoors</b></p><p>Dungeons, caves, fortresses and the Archive have no sky. Weather, clouds and the time of day do not reach in here, and fights down here are never changed by them.</p><p class="note">Outside, the tag above shows the realm\'s weather (Clear included) and the time of day.</p>';
+  if(kind==='indoors')return '<p><b>⌂ Indoors</b></p><p>Dungeons, caves, sanctums and the Archive have no sky. Weather, clouds and the time of day do not reach in here, and fights down here are never changed by them.</p><p class="note">Outside, the tag above shows the realm\'s weather (Clear included) and the time of day.</p>';
   if(kind==='time'){const ph=clockPhase(),t=((G.clock||0)%CLK_LEN+CLK_LEN)%CLK_LEN,cur=CLK_PH.find(p=>t>=p[1]&&t<p[2])||CLK_PH[0],left=Math.max(1,Math.ceil(cur[2]-t)),nx=CLK_PH[(CLK_PH.indexOf(cur)+1)%CLK_PH.length][0];
     const fx={day:'Normal. Nothing changes.',dusk:'Only the light changes: amber light shafts slant through the air, fireflies come out and the windows glow. Night is coming.',night:`Two of each field\'s four foes are replaced by night variants (Shadow added to their elements) and every field foe is ${Math.round((NIGHT_POW-1)*100)}% stronger.`,dawn:'Only the light changes: a cool mist drifts low, gold shafts break through and the dew sparkles. Morning is coming.'}[ph];
     return `<p><b>${PH_LOOK[ph].i} ${PH_LOOK[ph].n}</b></p><p>${fx}</p><p class="note">The clock moves with you: 1 step per tile and 6 per battle, never with real time. About ${left} more before ${PH_LOOK[nx].n.toLowerCase()}. Resting at an inn brings morning. Dungeons, the Archive and the Daily Trial ignore it.</p>`;}
@@ -11792,7 +11796,7 @@ const CLASS_DESC={
   warrior:{role:'Vanguard damage',str:'Big single hits, sweeps that hit every foe, War Cry to draw attacks.',wpn:'Blades and mail'},
   knight:{role:'Tank and protector',str:'Taunts, Wards and Bulwark for the line; the toughest body in the game.',wpn:'Blades and mail'},
   mage:{role:'Elemental caster',str:'The strongest spells, storms that hit every foe, Haste and Hex.',wpn:'Staves (cheaper spells, +10% elemental) or tomes (more raw power), and robes'},
-  healer:{role:'Healer',str:'Heals, cleanses, Regen and revives. Scales mostly on Faith.',wpn:'Staves and robes'},
+  healer:{role:'Priest',str:'Heals, cleanses, Regen and revives; invokes Sanctum guardians. Scales mostly on Faith.',wpn:'Staves and robes'},
   thief:{role:'Fast striker',str:'The fastest class: steals, poisons, blinds and crits.',wpn:'Daggers and light garb'},
   archer:{role:'Ranged damage',str:'Bleeds, roots and armor-piercing shots.',wpn:'Bows and light garb'},
   monk:{role:'Brawler',str:'Free multi-hit strikes, self-healing and stuns. A little Faith.',wpn:'Blades (fists wrapped in them) and garb'},
@@ -12399,7 +12403,7 @@ function ailBadge(id){const c=typeof G!=='undefined'&&G&&G.roster&&G.roster[id];
   return ko+(c.hp>0?ailChips(c).replace('class="ailrow"','class="ailrow dots"'):'');}
 
 // ===== v0.4.1 2.7 and 2.8: battle sky tags and the Lore entry =====
-// Fights below ground (dungeons, caves, fortresses, bosses and echoes) are Indoors; everything else shows the weather (Clear too) and, outside the Daily Trial, the time of day.
+// Fights below ground (dungeons, caves, sanctums, bosses and echoes) are Indoors; everything else shows the weather (Clear too) and, outside the Daily Trial, the time of day.
 function battleIndoors(){return !!B&&['dungeon','boss','echoBoss','storyEcho','mini'].includes(B.spec.kind);}
 function battleSkyTags(){if(!B)return '';
   if(battleIndoors())return `<button class="wchip" data-act="wxInfo" data-arg="indoors" title="Weather and time of day do not reach in here">⌂ Indoors</button>`;
@@ -13216,7 +13220,7 @@ function worldGraph(){
       const dn=put('d'+s,'dungeon',Z.dungeon,F.x+GRID_V[q][0],F.y+GRID_V[q][1],{seen:true,stage:s,cleared:!!G.cleared[s]});link(F,dn,q,'n',false);}
     if(v3&&fm&&fm.caves&&fm.caves.length){fm.caves.forEach(c=>{if(!(isSeen(fm,c.x,c.y)||(G.cavesSeen||{})[c.id]))return;const pref=around(fm,c.x,c.y);
       const q=[pref,...['n','s','e','w'].filter(d=>d!==pref)].find(d=>free(F.x+GRID_V[d][0],F.y+GRID_V[d][1]));if(!q)return;
-      const kn=put(c.id,c.kind==='fort'?'fort':'cave',c.kind==='fort'?(typeof FORT_NAMES!=='undefined'?FORT_NAMES[s]:'Fortress'):CAVE_NAMES[s],F.x+GRID_V[q][0],F.y+GRID_V[q][1],{seen:true,stage:s,done:c.kind==='fort'?!!(G.fortWon||{})[s]:!!(G.caveWon||{})[s]});link(F,kn,q,'n',false);});}
+      const kn=put(c.id,c.kind==='fort'?'fort':'cave',c.kind==='fort'?(typeof FORT_NAMES!=='undefined'?FORT_NAMES[s]:'Sanctum'):CAVE_NAMES[s],F.x+GRID_V[q][0],F.y+GRID_V[q][1],{seen:true,stage:s,done:c.kind==='fort'?!!(G.fortWon||{})[s]:!!(G.caveWon||{})[s]});link(F,kn,q,'n',false);});}
     });
     // on to the next town
     if(s<4){const fe=v3?P[s].fe:'e',np=[F.x+GRID_V[fe][0],F.y+GRID_V[fe][1]];
@@ -13231,8 +13235,8 @@ function worldGraph(){
 // ----- v0.6.3: the world map as an illustrated, code drawn chart -----
 // A parchment sheet (grain, stains, burnt edge, compass rose); each area drawn as a little vignette in its realm's colours: towns as
 // clusters of roofs, fields as countryside with a road through it, dungeons as dark towers (a gold beacon once relit), caves as rock arches,
-// fortresses as gatehouses. Roads join the gates (dashed and red past a sealed gate), places not yet visited sit under clouds with a "?",
-// a red pin marks the party, a tick marks a looted cave or fortress. Names are written under the places when there is room; tapping a
+// sanctums as gatehouses. Roads join the gates (dashed and red past a sealed gate), places not yet visited sit under clouds with a "?",
+// a red pin marks the party, a tick marks a looted cave or sanctum. Names are written under the places when there is room; tapping a
 // place shows its name (on a phone they are often too small to write out). Everything is drawn in code from cached sprites, once per open,
 // resize or tap (no animation). State: WMS (not saved).
 const WMS={sel:null,hit:[],t:0,pt:null};
@@ -13303,7 +13307,7 @@ function wmLabel(x,txt,cx,cy,fs,col,bold){x.font=`${bold?800:700} ${fs}px Nunito
   x.fillStyle=col||'#3a2614';x.fillText(txt,cx,cy+.5);return w;}
 function wmShown(gr){const byId={};gr.nodes.forEach(n=>byId[n.id]=n);const show={};gr.nodes.forEach(n=>{if(n.seen)show[n.id]=2;});
   gr.edges.forEach(e=>{if(show[e.a]===2&&!show[e.b]&&byId[e.b].kind!=='dungeon'&&byId[e.b].kind!=='cave'&&byId[e.b].kind!=='fort')show[e.b]=1;});return {byId,show};}
-function wmName(n,full){if(!full)return n.locked?'Sealed: unexplored':'Unexplored';return n.label+(n.kind==='fort'?' (fortress)':n.kind==='cave'?' (cave)':n.kind==='dungeon'?(n.cleared?' (relit)':' (dungeon)'):'');}
+function wmName(n,full){if(!full)return n.locked?'Sealed: unexplored':'Unexplored';return n.label+(n.kind==='fort'?' (sanctum)':n.kind==='cave'?' (cave)':n.kind==='dungeon'?(n.cleared?' (relit)':' (dungeon)'):'');}
 function drawWorldMap(){
   const cv=document.getElementById('wmap');if(!cv||!G)return;
   const gr=worldGraph(),here=WS.m?(WS.m.id[0]==='g'?'f'+WS.m.s:WS.m.id):null;
@@ -13342,12 +13346,12 @@ function wmLegendDraw(){document.querySelectorAll('canvas.wml').forEach(c=>{cons
   const [kind,st]=k.split(':');x.drawImage(wmVignette(kind,'meadow',s,st||''),0,0);});}
 function mWorldMap(){
   setTimeout(()=>{drawWorldMap();wmLegendDraw();},0);
-  const L=[['town','Town'],['field','Field'],['dungeon','Dungeon'],['dungeon:lit','Relit dungeon'],['cave','Side cave'],['fort','Fortress'],['cave:done','Looted'],['you','You'],['fog','Not visited yet'],['sealed','Sealed gate']];
+  const L=[['town','Town'],['field','Field'],['dungeon','Dungeon'],['dungeon:lit','Relit dungeon'],['cave','Side cave'],['fort','Sanctum'],['cave:done','Looted'],['you','You'],['fog','Not visited yet'],['sealed','Sealed gate']];
   return `<div class="modal mapmodal" data-act="xClose"><div class="panel box mapbox wmbox"><div class="mh"><h2>World map</h2></div>
     <canvas id="wmap" class="fmap wmap" data-act="wmTap" aria-label="World map"></canvas>
     <div class="maplegend wmlegend">${L.map(([k,n])=>`<span><canvas class="wml" data-k="${k}" width="28" height="28"></canvas> ${n}</span>`).join('')}</div>
     <div class="btnrow" id="wmgo"></div>
-    <p class="note">Tap a place to see its name. Roads follow the gates, so a gate on the north edge leads up the map. Places appear as you find them; side caves and fortresses are optional. Tap outside the map to close.</p></div></div>`;
+    <p class="note">Tap a place to see its name. Roads follow the gates, so a gate on the north edge leads up the map. Places appear as you find them; side caves and sanctums are optional. Tap outside the map to close.</p></div></div>`;
 }
 // a tap on the map shows that place's name (and does not close the map); a tap on empty parchment hides it again
 document.addEventListener('pointerdown',e=>{if(e.target&&e.target.id==='wmap')WMS.pt={x:e.clientX,y:e.clientY,t:Date.now()};},true);
@@ -14325,16 +14329,16 @@ function encRewMul(){try{if(!B||!G||G.daily||!B.spec)return null;const sp=B.spec
   const r=ENC.rew,q=sp.roam?ENC.roam:{xp:1,gold:1},st=Math.min(4,(B.stage|0)),at=v=>Array.isArray(v)?v[st]:v;return {xp:at(r.xp)*q.xp,gold:at(r.gold)*q.gold};}catch(e){return null;}}
 if(typeof facMul==='function'){const fm1=facMul;facMul=function(){const r=Object.assign({},fm1.apply(this,arguments));const k=encRewMul();if(k){r.xp*=k.xp;r.gold*=k.gold;}return r;};}
 
-// ===== sites.js (v0.4.1): side caves, side fortresses, minibosses =====
+// ===== sites.js (v0.4.1): side caves, side sanctums, minibosses =====
 // Side caves get their own look (mossy rock palette, damp green light, drips) and their own music, so they never read as a main dungeon.
-// Side fortresses are a second optional site type in new journeys (stages 1 to 4): bigger than a cave, smaller than a main dungeon,
+// Side sanctums are a second optional site type in new journeys (stages 1 to 4): bigger than a cave, smaller than a main dungeon,
 // built as a walled keep (stone walls, a courtyard, barracks rooms, banners and braziers, a keep holding the prize), with a gatehouse
 // entrance drawn on the field that looks unlike both a cave mouth and a dungeon facade. Both are marked on the map once found and are
 // never needed to progress. Legendaries never come from them.
-// Minibosses: about 90% of caves and fortresses (seeded per site) have a capstone fight guarding the prize. Opening the prize chest
+// Minibosses: about 90% of caves and sanctums (seeded per site) have a capstone fight guarding the prize. Opening the prize chest
 // wakes it; win and the prize is yours plus a bonus. Minibosses can never be auto battled.
 // SITES: in config.js
-const FORT_NAMES=['Briarwatch Keep','Saltmarch Bastion','Emberwall Hold','Frostcrag Redoubt','Duskspire Citadel'];
+const FORT_NAMES=['Briarwatch Sanctum','Saltmarch Sanctum','Emberwall Sanctum','Frostcrag Sanctum','Duskspire Sanctum'];
 const FORT_CHARMS={0:'c_ft0',1:'c_ft1',2:'c_ft2',3:'c_ft3',4:'c_ft4'};
 [['c_ft0','Briarwatch Sigil',{hp:150,atk:12,def:8}],['c_ft1','Saltmarch Seal',{mp:70,res:14,def:8}],['c_ft2','Emberwall Badge',{atk:18,spd:6}],['c_ft3','Frostcrag Token',{def:16,hp:110}],['c_ft4','Duskspire Crest',{mag:16,spd:8,mp:50}]]
   .forEach(([id,n,st],i)=>addGear(id,Object.assign({n,slot:'c',tier:3,price:900+i*80,unique:1},st)));
@@ -14352,7 +14356,7 @@ function siteVariant(theme,kind){const id=theme+'#'+kind;if(DTHEME[id])return id
 {const mf0=musicFor;musicFor=function(){const m=WS.m;if(m&&m.cave)return m.fort?'fort':'cave';return mf0.apply(this,arguments);};}
 if(typeof MOODS!=='undefined'){MOODS.cave={bpm:72,sc:'minor',prog:[0,5,0,3],lead:'triangle',dr:0,feel:.3,low:1};MOODS.fort={bpm:108,sc:'harm',prog:[0,4,5,4],lead:'square',dr:2,feel:.6};}
 
-// ---------- fortress map ----------
+// ---------- sanctum map ----------
 function buildFort(R,s){const W=SITES.fortW,H=SITES.fortH,D=new Gr(W,H,'#');
   const start={x:2,y:ri2(R,15,H-21),w:8,h:6},yard={x:16,y:12,w:26,h:16},keep={x:W-14,y:13,w:11,h:14};
   [start,yard,keep].forEach(r=>D.rect(r.x,r.y,r.w,r.h,'.'));
@@ -14367,10 +14371,10 @@ function buildFort(R,s){const W=SITES.fortW,H=SITES.fortH,D=new Gr(W,H,'#');
   const chests=[],pc=[keep.x+Math.floor(keep.w/2),keep.y+Math.floor(keep.h/2)];D.put(pc[0],pc[1],'C');chests.push([pc[0],pc[1],'reward']);
   bar.forEach((r,i)=>{if(R()<.6){const x=r.x+(i%2?r.w-1:0),y=r.y+(r.y<yard.y?0:r.h-1);if(D.get(x,y)==='.'){D.put(x,y,'C');chests.push([x,y]);}}});
   return {rows:D.g,start:[sc[0],sc[1]+1],chests,prize:pc};}
-function genFort(s){for(let a=0;a<40;a++){const R=mulberry(G.run.seed+7313+s*71+a*131),c=buildFort(R,s);if(caveOk(c))return c;}throw new Error('fortress generation failed');}
+function genFort(s){for(let a=0;a<40;a++){const R=mulberry(G.run.seed+7313+s*71+a*131),c=buildFort(R,s);if(caveOk(c))return c;}throw new Error('sanctum generation failed');}
 function buildFortMap(id){const s=+id.slice(1),c=genFort(s),Z=ZS(s);const m={id,z:s,s,kind:'dungeon',theme:Z.theme,exits:[],npcs:[],bld:[],signs:{},t:c.rows,start:c.start,bossAt:null,chests:c.chests,
   wander:[c.start[0],c.start[1]+1],cave:true,fort:true,name:FORT_NAMES[s],fixed:{},prize:c.prize};m.w=m.t[0].length;m.h=m.t.length;return m;}
-// fortress gatehouse on the field: a clearing far from the dungeon, the cave and the gates, reachable before the sealed gate
+// sanctum gatehouse on the field: a clearing far from the dungeon, the cave and the gates, reachable before the sealed gate
 function fortWanted(s){return isRv2()&&s>=1;}
 function placeFort(f,s){if(!f||f.kind!=='field'||f.fortDone||!fortWanted(s))return;f.fortDone=1;if((f.caves||[]).some(c=>c.kind==='fort'))return;
   const g=f.t,H=g.length,W=g[0].length,st=f.gates&&f.gates.start&&f.gates.start.arrive||[2,f.sy||2];
@@ -14384,7 +14388,7 @@ function placeFort(f,s){if(!f||f.kind!=='field'||f.fortDone||!fortWanted(s))retu
   f.caves=f.caves||[];f.caves.push({x,y,id:'o'+s,kind:'fort',face:[0,1],out:[x,y+1]});f.fortAt=[x,y];
   if(typeof mapIssues==='function'&&mapIssues(f).length){// undo if it blocks anything
     g[y-1][x-1]=g[y-1][x]=g[y-1][x+1]=g[y][x-1]=g[y][x+1]=g[y][x]=',';f.caves=f.caves.filter(c=>c.id!=='o'+s);f.fortAt=null;}}
-HOOK.wrap('getMap','sites','fortress maps; place the fortress on its field',function(next,...a){let id=a[0];if(id&&id[0]==='o'&&!MAPS[id]&&G&&G.run){const fm=MAPS[id]=buildFortMap(id);try{applyBossTheme(fm);if(typeof healMap==='function')healMap(fm);}catch(e){}try{if(typeof guardPaths==='function'&&!window.__PGOFF){fm.__guarded=true;guardPaths(fm);}}catch(e){}}const m=next(...a);
+HOOK.wrap('getMap','sites','sanctum maps; place the sanctum on its field',function(next,...a){let id=a[0];if(id&&id[0]==='o'&&!MAPS[id]&&G&&G.run){const fm=MAPS[id]=buildFortMap(id);try{applyBossTheme(fm);if(typeof healMap==='function')healMap(fm);}catch(e){}try{if(typeof guardPaths==='function'&&!window.__PGOFF){fm.__guarded=true;guardPaths(fm);}}catch(e){}}const m=next(...a);
   try{if(m&&m.kind==='field'&&m.part!==1&&!m.fortDone)placeFort(m,m.s);}catch(e){}return m;});
 // the gatehouse is painted into the field's base layer (so heroes and townsfolk always draw in front of it):
 // grey towers with red banners (a cave mouth is a rock arch, a dungeon a carved facade)
@@ -14431,8 +14435,8 @@ HOOK.wrap('encounterFoes','sites','miniboss fights',function(next,...a){let spec
 HOOK.wrap('finishBattle','sites','miniboss prizes',function(next,...a){const how=a[0];const sp=B&&B.spec,mi=sp&&sp.mini&&typeof sp.mini==='object'?sp.mini:null;const r=next(...a);
   try{if(mi&&how==='win'&&G){G.miniDone=G.miniDone||{};G.miniDone[mi.id]=1;const s=sp.stage,g=econG(300+s*250);G.gold+=g;G.mats.core=(G.mats.core||0)+1;G.mats[ZS(s).mat]=(G.mats[ZS(s).mat]||0)+3;saveGame();
     toast(`${mi.name} falls. Bonus: ${g} gold, a Dread Core and 3 ${MATS[ZS(s).mat]}. The prize chest is yours.`);}}catch(e){}return r;});
-// map: fortresses get their own marker and name
-if(typeof MAPICO_X!=='undefined'){MAPICO_X.fort=[[0,3,10,7,'#7a7a86'],[0,1,3,9,'#5a5a66'],[7,1,3,9,'#5a5a66'],[1,4,1,3,'#c0392b'],[8,4,1,3,'#c0392b'],[4,6,2,4,'#120c10']];MAPICO_NAME.fort='Fortress';}// v0.6.3: player facing text says fortress, not side fortress (ids and save keys unchanged)
+// map: sanctums get their own marker and name
+if(typeof MAPICO_X!=='undefined'){MAPICO_X.fort=[[0,3,10,7,'#7a7a86'],[0,1,3,9,'#5a5a66'],[7,1,3,9,'#5a5a66'],[1,4,1,3,'#c0392b'],[8,4,1,3,'#c0392b'],[4,6,2,4,'#120c10']];MAPICO_NAME.fort='Sanctum';}// v0.6.3: player facing text says sanctum, not side sanctum (ids and save keys unchanged)
 
 // ===== rivals.js (v0.4.3): every wayfarer's rival =====
 // Each hero's personal quest now names a rival made for that hero alone: its own name, a base creature, a colour, and elements
@@ -16396,7 +16400,7 @@ function laneEvict(m){if(!m.lane||!m.lane.size)return;const W=m.t[0].length,H=m.
       const d=Math.abs(x-n.x)+Math.abs(y-n.y);if(d<bd){bd=d;best=[x,y];}}
     if(best){n.x=best[0];n.y=best[1];n.hx=best[0];n.hy=best[1];n.mv=null;}});}
 HOOK.wrap('getMap','p2world','town lanes, gathering spots on open tiles (new maps)',function(next,...a){let id=a[0];const had=!!MAPS[id];const m=next(...a);try{if(!had&&m&&m.kind==='town'&&!P2.noLane)laneFix(m);
-  // a gathering spot never survives on a tile a later step (fortress gatehouse, cave mouth) turned solid
+  // a gathering spot never survives on a tile a later step (sanctum gatehouse, cave mouth) turned solid
   if(!had&&m&&m.nodes&&m.kind!=='town')m.nodes=m.nodes.filter(n=>nodeFits(m,n.k,n.x,n.y));}catch(e){}return m;});
 // townsfolk never wander into a lane (a step into one is taken back), and festival visitors are moved out of them
 {const nt0=npcTick;npcTick=function(m,now){nt0.apply(this,arguments);try{if(m&&m.lane)m.npcs.forEach(n=>{if(n.mv&&m.lane.has(n.x+','+n.y)){n.x=n.mv.fx;n.y=n.mv.fy;n.mv=null;}});}catch(e){}};}
@@ -16404,7 +16408,7 @@ HOOK.wrap('getMap','p2world','town lanes, gathering spots on open tiles (new map
 
 // ---------------------------------------------------------------- 2.5 dungeon entrance variety ----------------------------------------------------------------
 // Each realm has its own entrance look, picked from its tileset's list by the realm index. All are drawn upright with a dark opening on the
-// entrance tile and two warm lights, so they read clearly. Side caves stay rock arches with a blue glow; fortresses stay grey gatehouses.
+// entrance tile and two warm lights, so they read clearly. Side caves stay rock arches with a blue glow; sanctums stay grey gatehouses.
 const ENT_STYLES={meadow:['roots','barrow','facade','well','trapdoor'],coast:['rockface','well','facade','trapdoor'],cave:['rockface','hole','facade','ruin'],
   snow:['hole','ruin','facade','barrow'],heights:['rockface','ruin','facade','hole'],void:['ruin','hole','facade','well']};
 function entStyleFor(s){const th=p2BaseTheme(s),L=ENT_STYLES[th]||ENT_STYLES.meadow;let zi=0;try{zi=realmOf(s)|0;}catch(e){zi=s|0;}return L[zi%L.length];}
@@ -16482,7 +16486,7 @@ const HINTS=[
  {id:'weapons',on:'win',t:()=>{const P=p2Party();if(!P.length)return null;const c=P[P.length>1?1:0],w=(CLS_WPN[TPL[c.id].cls]||[]).map(x=>WT_NAME[x]||x);
    return `Weapon types: each class uses its own weapons, and each weapon family has a perk. ${p2Nm(c)} can use ${p2List(w)}. Compare perks in the Smithy before you buy.`;}},
  {id:'armor',on:'town',t:()=>{const P=p2Party();if(!P.length)return null;const by={};P.forEach(c=>{const a=CLS_ARM[TPL[c.id].cls]||'medium';(by[a]=by[a]||[]).push(p2Nm(c));});
-   return 'Armor weights: Heavy for Warriors and Knights, Medium for Archers, Thieves and Monks, Light for Mages, Healers and Bards. '+Object.keys(by).map(a=>`${p2List(by[a])}: ${a[0].toUpperCase()+a.slice(1)}`).join('. ')+'.';}},
+   return 'Armor weights: Heavy for Warriors and Knights, Medium for Archers, Thieves and Monks, Light for Mages, Priests and Bards. '+Object.keys(by).map(a=>`${p2List(by[a])}: ${a[0].toUpperCase()+a.slice(1)}`).join('. ')+'.';}},
  {id:'rest',on:'win',t:()=>{const low=p2Party().filter(c=>c.hp>0&&c.hp<c.S.mhp*.4);if(!low.length)return null;return `${p2List(low.map(p2Nm))} ${low.length>1?'are':'is'} hurt. Rest at the inn in town to restore HP and MP, or use a Potion from Menu > Backpack.`;}}
 ];
 function hintsOn(){return !(META.cfg&&META.cfg.hints===false);}
@@ -19921,6 +19925,10 @@ HOOK.after('renderBattle','chain5','planned targets on the intent tags and the p
   const party=allParty();aimAt.forEach((foes,c)=>{const i=party.indexOf(c);if(i<0)return;const card=document.querySelector(`#bparty [data-act="tgtA"][data-arg="${i}"], #bparty .pc[data-arg="${i}"]`);if(!card||card.querySelector('.c5tgt'))return;
     const s=document.createElement('span');s.className='c5tgt';s.title=`${foes.map(f=>f.name).join(' and ')} aim${foes.length>1?'':'s'} at ${c.name}`;s.textContent='⚔'+(foes.length>1?foes.length:'');card.appendChild(s);});}catch(e){}});
 
+// the layout reserves room for the aim text on the intent tag, and a changed aim re-lays the stage
+{const iw0=b9IntW;b9IntW=function(u){let w=iw0.apply(this,arguments);try{const p=u&&u.hp>0&&foePlan(u);if(p&&p.tgt&&p.tgt.hp>0)w+=Math.ceil(b3TextW('→ '+c5Short(p.tgt.name),5,900)*1.1)+6;}catch(e){}return w;};}
+{const k0=b3Key;b3Key=function(units){let k=k0.apply(this,arguments);try{k+='|a'+B.en.map(e=>{if(e.hp<=0)return '-';const p=foePlan(e);return p&&p.tgt?unitRef(p.tgt):'';}).join(',');}catch(e){}return k;};}
+
 // ===== remember.js (v0.7.1): remember Auto and Run =====
 // The Auto battle toggle and the Run toggle used to live only in memory (V.auto, WS.run), so they reset on every launch and every update.
 // They are now stored in META.cfg (optional new fields autoOn, runOn; the meta key aurelis-meta-v1 is unchanged) and restored on boot.
@@ -20539,7 +20547,7 @@ Object.assign(ACT,{
 // Opened from the area map's World map button (and ACT.worldMap) on connected-world journeys (worldV3). The maps the party has
 // been to are laid out by their real gates: a field's start gate sits one tile past the town's forward gate, the next town one tile
 // past the field's end gate (a map that would overlap another is pushed along the gate's axis and joined by a dashed line).
-// Only seen tiles are drawn (the same bits as the area map). Dungeon doors, caves and fortresses are marked at their field entrance.
+// Only seen tiles are drawn (the same bits as the area map). Dungeon doors, caves and sanctums are marked at their field entrance.
 // Tap any seen tile on any visited map and the party walks there, map to map: a route of legs (walk to the gate or door, step
 // through, walk on) run on top of the tap to walk (WS.route, not saved). The old parchment chart stays behind the Chart button.
 const BM={sc:2,base:{},key:{},lay:null,pt:null};
@@ -20563,10 +20571,10 @@ function bmLayout(){const out=[],links=[],at={};if(!G||!worldV3())return {maps:o
     const v=BM_V[gn.side];const F=place(fid,f,T.ox+gn.x-gs.x+v[0],T.oy+gn.y-gs.y+v[1],gn.side,T,gn,gs);
     if(s<4){const tid='t'+(s+1);if(!been(tid))break;const t=getMap(tid),ge=bmGate(f,'end'),gp=bmGate(t,'prev');if(!ge||!gp)break;const v2=BM_V[ge.side];place(tid,t,F.ox+ge.x-gp.x+v2[0],F.oy+ge.y-gp.y+v2[1],ge.side,F,ge,gp);}}
   return {maps:out,links};}
-// doors on the fields: the dungeon, caves and fortresses (once their tile has been seen)
+// doors on the fields: the dungeon, caves and sanctums (once their tile has been seen)
 function bmDoors(L){const d=[];L.maps.forEach(o=>{const m=o.m;if(m.kind!=='field')return;
   if(m.ent&&(isSeen(m,m.ent[0],m.ent[1])||(G.been||{})['d'+m.s]))d.push({o,x:m.ent[0],y:m.ent[1],k:G.cleared[m.s]?'dunlit':'dungeon',id:'d'+m.s,n:ZS(m.s).dungeon});
-  (m.caves||[]).forEach(c=>{if(!(isSeen(m,c.x,c.y)||(G.cavesSeen||{})[c.id]))return;d.push({o,x:c.x,y:c.y,k:c.kind==='fort'?'fort':'cave',id:c.id,n:c.kind==='fort'?(typeof FORT_NAMES!=='undefined'?FORT_NAMES[m.s]:'Fortress'):CAVE_NAMES[m.s]});});});return d;}
+  (m.caves||[]).forEach(c=>{if(!(isSeen(m,c.x,c.y)||(G.cavesSeen||{})[c.id]))return;d.push({o,x:c.x,y:c.y,k:c.kind==='fort'?'fort':'cave',id:c.id,n:c.kind==='fort'?(typeof FORT_NAMES!=='undefined'?FORT_NAMES[m.s]:'Sanctum'):CAVE_NAMES[m.s]});});});return d;}
 function bmBounds(L){let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;L.maps.forEach(o=>{x0=Math.min(x0,o.ox);y0=Math.min(y0,o.oy);x1=Math.max(x1,o.ox+o.m.w);y1=Math.max(y1,o.oy+o.m.h);});return {x0:x0-2,y0:y0-2,x1:x1+2,y1:y1+2};}
 function drawBigMap(){const cv=document.getElementById('bmap');if(!cv||!G)return;const L=BM.lay=bmLayout();if(!L.maps.length)return;const B0=BM.bounds=bmBounds(L),W=B0.x1-B0.x0,H=B0.y1-B0.y0;
   const box=cv.parentElement,maxW=Math.min(1200,(box.clientWidth||340)-8);let sc=Math.max(3,Math.min(5,Math.floor(maxW/W)));BM.sc=sc;// at least 3 px a tile: the box scrolls
@@ -20589,7 +20597,7 @@ function drawBigMap(){const cv=document.getElementById('bmap');if(!cv||!G)return
 function mBigMap(){BM.scrolled=0;setTimeout(drawBigMap,0);
   return `<div class="modal mapmodal" data-act="xClose"><div class="panel box mapbox wmbox"><div class="mh"><h2>World map</h2></div>
     <div class="bmscroll"><canvas id="bmap" class="fmap bmap" data-act="bmTap" aria-label="World map"></canvas></div><p class="note fmnote" id="bmnote" aria-live="polite"></p>
-    <div class="maplegend"><span><b style="color:#fff">➤</b> You</span><span><b style="color:#ff6a5a">▲</b> Dungeon</span><span><b style="color:#ffd04a">▲</b> Relit dungeon</span><span><b style="color:#c89a6a">◠</b> Side cave</span><span><b style="color:#c8c8e8">♜</b> Fortress</span></div>
+    <div class="maplegend"><span><b style="color:#fff">➤</b> You</span><span><b style="color:#ff6a5a">▲</b> Dungeon</span><span><b style="color:#ffd04a">▲</b> Relit dungeon</span><span><b style="color:#c89a6a">◠</b> Side cave</span><span><b style="color:#c8c8e8">♜</b> Sanctum</span></div>
     <div class="btnrow"><button class="btn sm" data-act="wmChart">Chart</button></div>
     <p class="note">Every town and field you have visited, joined at their gates. Tap anywhere you have been and the party walks there, through the gates on the way (a dungeon or cave door takes you inside). Drag to scroll a big map. Tap outside the map to close.</p></div></div>`;}
 HOOK.before('vModal','bigmap','the connected world map',function(md){if(md&&md.type==='bigmap')return HOOK.stop(mBigMap(md));});
@@ -20693,6 +20701,80 @@ function g7Body(tab){if(tab==='charts')return g7Charts();if(tab==='ailments')ret
 {const mm0=mMenu;mMenu=function(m){const b=m&&g7Body(m.tab);let h=mm0.apply(this,arguments);if(b)h=h.replace('<div class="btnrow">',b+'<div class="btnrow">');return h;};}
 // Lore keeps the story: the charts and statuses moved to Guides
 {const vl0=vLore;vLore=function(){let h=vl0.apply(this,arguments);try{const i=h.indexOf('<h4>Element chart</h4>');if(i>=0)h=h.slice(0,i)+`<p class="note">The element chart, every reaction, the ailments, boons and boss gimmicks are in Guides.</p>`;}catch(e){}return h;};}
+
+// ===== summon8.js (v0.10.7): Sanctums and Summons =====
+// Sanctums (the side fortresses, renamed) always end in one unique guardian (MINIS in sites.js, one per journey per site). Beating
+// it adds the guardian to G.summons {mon:{mon,name,mod,lv}} (optional save field; old saves rebuild it from G.miniDone and
+// G.miniPick). Priests (the Healer class) can Invoke a summon in battle: the Priest spends a turn praying (B.pray), and on their
+// next turn the guardian takes the field in place of the WHOLE Vanguard (B.front becomes [the summon]) for SUM.turns of its own
+// turns, hitting with the guardian's skills. When it ends, or if it falls, the Vanguard returns as it was (HP untouched); a fallen
+// summon blocks summoning for the rest of the battle. Costs SUM.mp of the Priest's max MP, once per Priest per battle. Monks from
+// level SUM.monkLv get a lesser call: two turns of praying, a weaker (SUM.lesser) summon that takes only the Monk's own place for
+// SUM.lesserTurns turns. Never in the Daily Trial; auto battle never prays (the summon still acts if it is already out).
+const SUM={turns:3,mp:.3,mpMin:10,hpK:1.2,lvUp:2,powM:.95,lesser:.6,lesserTurns:2,monkLv:10,monkPray:2};
+function sumList(){try{return Object.values(G.summons||{});}catch(e){return [];}}
+function sumUnlock(mon,name,mod){if(!G||G.daily||!MON[mon])return false;G.summons=G.summons||{};if(G.summons[mon])return false;G.summons[mon]={mon,name:name||MON[mon].n,mod:mod||null,at:Date.now()};return true;}
+// old saves: guardians already beaten become summons
+{const up0=unpackG;unpackG=function(){const r=up0.apply(this,arguments);try{if(G&&!G.summons&&G.miniDone&&G.miniPick&&typeof MINIS!=='undefined'){G.summons={};Object.keys(G.miniDone).forEach(id=>{const i=G.miniPick[id];const D=i!=null&&MINIS[i];if(D)sumUnlock(D[0],D[2],D[5]);});}}catch(e){}return r;};}
+// every Sanctum has its guardian (caves keep their chance)
+{const sh0=siteHasMini;siteHasMini=function(id){if(typeof id==='string'&&id[0]==='o')return true;return sh0.apply(this,arguments);};}
+HOOK.after('win','summon8','a beaten guardian becomes a summon',function(){try{const sp=B&&B.spec,mi=sp&&sp.mini;if(!mi||typeof mi!=='object'||!G||G.daily)return;if(sumUnlock(mi.mon,mi.name,mi.mod)){const info=(B&&B.result)||(V.modal&&V.modal.info);if(info){info.notes=info.notes||[];info.notes.push(`${mi.name} is bound to your cause: a Priest can now Invoke it in battle (a Monk from level ${SUM.monkLv} can call a lesser form).`);}}}catch(e){}});
+// ----- who can summon -----
+function sumClassOf(a){try{const t=TPL[a.id];if(!t||!B||a.side!=='p'||a.isComp||a.isSum)return null;if(t.cls==='healer')return 'priest';if(t.cls==='monk'&&a.lv>=SUM.monkLv)return 'monk';}catch(e){}return null;}
+function sumCan(a){if(!B||!G||G.daily||B.auto||!a||a.hp<=0)return false;if(B.sum||B.sumDead||B.pray)return false;const k=sumClassOf(a);if(!k||!sumList().length)return false;if((B.summonedBy||{})[a.id])return false;return a.mp>=sumCost(a);}
+function sumCost(a){return Math.max(SUM.mpMin,Math.round(a.S.mmp*SUM.mp));}
+// ----- the unit -----
+function sumMake(o,lesser,owner){const m=MON[o.mon];const heroes=B.front.filter(c=>c.hp>0),lv=Math.round(heroes.reduce((q,c)=>q+c.lv,0)/Math.max(1,heroes.length))+SUM.lvUp;
+  const u=makeEnemy(m,lv,{elite:true,name:o.name,mod:o.mod,noField:1,noBuff:1,hpM:1,powM:SUM.powM*(lesser?SUM.lesser:1)});
+  u.side='p';u.isSum=1;u.id='sum_'+o.mon;u.base=o.name;u.lb=0;u.owner=owner||null;u.lesser=!!lesser;u.turnsLeft=lesser?SUM.lesserTurns:SUM.turns;
+  const pool=lesser?(owner?owner.S.mhp:0):B.front.reduce((q,c)=>q+(c.S?c.S.mhp:0),0);u.S.mhp=Math.max(u.S.mhp,Math.round(pool*SUM.hpK*(lesser?.8:1)));u.hp=u.S.mhp;u.S.mmp=999;u.mp=999;
+  if(!TPL[u.id])TPL[u.id]={id:u.id,n:o.name,cls:'warrior',el:m.el.slice(),trait:'brave',bio:`${o.name}, guardian of a Sanctum, bound to your cause.`,src:'sum',look:null,mon:o.mon,art:m.art,summon:1};
+  u.msk=(m.sk||[]).map(s=>({id:'s'+s[0],n:s[0],el:s[1],pw:+(s[2]*1.05).toFixed(2),t:s[3]==='all'?'all':s[3]==='self'?'self':'one',k:s[4]==='buff'?'buff':s[4],fx:s[5]||null,mp:0,cost:1,hits:1}));
+  return u;}
+function sumFire(a,o,lesser){const u=sumMake(o,lesser,lesser?a:null);
+  if(lesser){const i=B.front.indexOf(a);if(i<0)return false;B.sum={u,lesser:1,slot:i,owner:a,by:a};B.front[i]=u;a.hidden=1;}
+  else{B.sum={u,front:B.front,by:a};B.front=[u];}
+  B.summonedBy=B.summonedBy||{};B.summonedBy[a.id]=1;u.next=B.time;u.enterT=Date.now();
+  banner(`${o.name}!`,ELC[(MON[o.mon].el||[])[0]]||'#ffd04a');log(lesser?`${a.name}'s call is answered: a lesser ${o.name} takes ${a.name}'s place for ${u.turnsLeft} turns.`:`${a.name}'s prayer is answered: ${o.name} takes the field for ${u.turnsLeft} turns while the Vanguard steps back.`);
+  if(typeof sfx==='function')sfx('level');return true;}
+function sumEnd(why){const S=B&&B.sum;if(!S)return;const u=S.u;
+  if(S.lesser){const i=B.front.indexOf(u);if(i>=0)B.front[i]=S.owner;S.owner.hidden=0;S.owner.next=B.time+delayOf(S.owner,.4);S.owner.enterT=Date.now();}
+  else{B.front=S.front;B.front.forEach((c,i)=>{c.hidden=0;c.next=B.time+delayOf(c,.3+.15*i);c.enterT=Date.now();});}
+  B.sum=null;if(why==='ko')B.sumDead=1;
+  log(why==='ko'?`${u.name} is driven off. The Vanguard steps back in.`:`${u.name} returns to the Sanctum. The Vanguard steps back in.`);}
+function sumTurn(u){if(!B||B.over)return;const foes=B.en.filter(e=>e.hp>0);if(!foes.length){advance();return;}
+  u.turns=(u.turns||0)+1;let sk=null;const buffs=u.msk.filter(s=>s.k==='buff'&&!(s.fx||[]).every(([k])=>has(u,k))),dmg=u.msk.filter(s=>s.k!=='buff');
+  if(buffs.length&&RNG()<.15)sk=buffs[0];else if(dmg.length)sk=dmg.find(s=>s.t==='all'&&foes.length>1&&RNG()<.65)||pick(dmg);else sk=ATTACK;
+  let tg=sk.t==='self'?[u]:sk.t==='all'?foes:[foes.slice().sort((x,y)=>effOf(sk.el,y)-effOf(sk.el,x)||x.hp-y.hp)[0]];
+  B.cur=u;perform(u,sk,tg);u.turnsLeft--;
+  if(u.turnsLeft<=0&&u.hp>0){sumEnd('done');render();later(advance,PAUSE*.8);return;}
+  endTurn(u,1);}
+// ----- praying: the next turn of the one who prays fires the summon -----
+function sumPray(a,mon){const o=G.summons&&G.summons[mon];if(!o||!sumCan(a))return false;const k=sumClassOf(a);a.mp-=sumCost(a);
+  B.pray={by:a,mon,n:k==='monk'?SUM.monkPray:1,lesser:k==='monk'};autoNote(a,'Invoke '+o.name);
+  log(k==='monk'?`${a.name} sits in stillness, calling to ${o.name}.`:`${a.name} prays to ${o.name}. The answer comes next turn.`);fx(a,'Praying','stat good');B.menu='root';endTurn(a,1);return true;}
+{const ad0=advance;advance=function(){if(B&&!B.over){let u=null;liveUnits().forEach(x=>{if(!u||x.next<u.next||(x.next===u.next&&x.side==='p'))u=x;});
+    if(u&&u.isSum){if(checkEnd())return;B.cur=u;B.time=u.next;B.mode='enemy';render();later(()=>sumTurn(u),PAUSE*.8);return;}
+    if(u&&B.pray&&B.pray.by===u){const P=B.pray;if(u.hp<=0){B.pray=null;}else{B.cur=u;B.time=u.next;u.guard=false;P.n--;
+        if(P.n>0){log(`${u.name} keeps praying.`);fx(u,'Praying','stat good');B.mode='wait';render();later(()=>{if(B&&!B.over)endTurn(u,1);},PAUSE*.6);return;}
+        B.pray=null;const o=G.summons&&G.summons[P.mon];B.mode='wait';if(o&&sumFire(u,o,P.lesser)){u.next=B.time+delayOf(u,1);render();later(advance,PAUSE*.8);return;}}}}
+  return ad0.apply(this,arguments);};}
+{const fl0=fallen;fallen=function(u){if(u&&u.isSum){u.deathT=Date.now();fx(u,'Driven off','stat bad');sumEnd('ko');render();return;}if(u&&B&&B.pray&&B.pray.by===u)B.pray=null;return fl0.apply(this,arguments);};}
+{const lb0=lbAdd;lbAdd=function(c,n){if(c&&c.isSum)return;return lb0.apply(this,arguments);};}
+{const cs0=canSwap;canSwap=function(){if(B&&(B.sum||B.pray))return false;return cs0.apply(this,arguments);};}
+// the Vanguard always comes back before the fight ends
+HOOK.before('finishBattle','summon8','the summon leaves',function(){try{if(B&&B.sum)sumEnd('done');}catch(e){}});
+HOOK.before('win','summon8','the summon leaves',function(){try{if(B&&B.sum)sumEnd('done');}catch(e){}});
+HOOK.after('startBattle','summon8','fresh battle',function(r){try{if(r!==false&&B){B.sum=null;B.pray=null;B.sumDead=0;B.summonedBy={};}}catch(e){}});
+// ----- the command -----
+function sumMenuHtml(a){const L=sumList();return `<p class="hint">${sumClassOf(a)==='monk'?`A lesser form answers after two turns of stillness and takes ${esc(a.name)}'s place for ${SUM.lesserTurns} turns.`:`The guardian answers next turn and takes the whole Vanguard's place for ${SUM.turns} turns. Costs ${sumCost(a)} MP.`}</p><div class="menu list">${L.map(o=>`<button class="mi tk-ally" data-act="sumPick" data-arg="${o.mon}"><span class="n">${esc(o.name)}</span><span class="m">${(MON[o.mon].el||[]).map(ico).join('')}</span><small>${esc((MON[o.mon].sk||[]).map(s=>s[0]).join(', '))}</small></button>`).join('')}</div>`;}
+{const ch0=cmdHtml;cmdHtml=function(){if(B&&B.menu==='summons'&&B.cur){const h=ch0.apply(this,arguments);const i=h.indexOf('<div class="menu');return (i>=0?h.slice(0,i):h)+sumMenuHtml(B.cur)+'<button class="btn sm cmdback" data-act="back">‹ Back</button>';}
+  let h=ch0.apply(this,arguments);try{const a=B&&B.cur;if(a&&B.menu==='root'&&sumCan(a)){const k=sumClassOf(a),btn=`<button class="mi summon s8" data-act="sumAsk" title="${k==='monk'?'Call a lesser guardian to take your place after two turns of stillness':'Pray for a Sanctum guardian: next turn it takes the field in place of the Vanguard'}">${k==='monk'?'Spirit Call':'Invoke'}</button>`;h=h.replace('<div class="menu sec">','<div class="menu sec">'+btn);}}catch(e){}return h;};}
+Object.assign(ACT,{sumAsk(){if(!B||B.mode!=='cmd'||!sumCan(B.cur))return;const L=sumList();if(L.length===1){sumPray(B.cur,L[0].mon);render();return;}B.menu='summons';render();},
+  sumPick(mon){if(!B||B.mode!=='cmd'||!sumCan(B.cur))return;if(sumPray(B.cur,mon))render();}});
+// the praying hero's card says so
+HOOK.after('renderBattle','summon8','praying badge',function(){try{if(!B||!B.pray||V.screen!=='battle')return;const i=allParty().indexOf(B.pray.by);if(i<0)return;const card=document.querySelector(`#bparty [data-act="tgtA"][data-arg="${i}"], #bparty .pc[data-arg="${i}"]`);if(!card||card.querySelector('.s8pray'))return;
+  const o=G.summons[B.pray.mon];const s=document.createElement('span');s.className='s8pray';s.textContent='✦ '+(o?o.name:'Praying');s.title=`Praying: ${o?o.name:''} answers ${B.pray.n>1?'in '+B.pray.n+' turns':'next turn'}.`;card.appendChild(s);}catch(e){}});
 
 // ===== duellines.js (v0.7.7): every wayfarer who challenges you speaks in their own voice =====
 // Before this, a road duel used one line per class, so every fighter (or every mage) said the same thing. Now each of the 92
@@ -21259,7 +21341,7 @@ function hdBakeCards0(m,S,g0,g1){const W=m.w*TS,SH=64,UP=58,CW=8,st=mkCv(W,SH),s
   items.forEach(it=>{if(it.r.y+it.h>AH)return;ac.drawImage(it.cv,it.r.x,it.r.y);const u0=it.r.x,u1=it.r.x+it.w,v0=it.r.y,v1=it.r.y+it.h;// atlas pixels, scaled when the atlases merge
     const yt=(UP-it.t)*V,yb=(UP-it.t-it.h)*V;H2P.set([it.x0,yt,it.z,it.x0+it.w,yt,it.z,it.x0+it.w,yb,it.z,it.x0,yb,it.z]);bt.at(it.x0+it.w/2,it.z-8).quad(H2P,u0,v0,u1,v1,255,255,255,255,0,.45,.89,2|8);});
   return {cv:at,bt};}
-// v0.6.3: the fortress gatehouse in a field (sites.js) was painted flat into the ground art, with the cave mouth card standing in front
+// v0.6.3: the sanctum gatehouse in a field (sites.js) was painted flat into the ground art, with the cave mouth card standing in front
 // of it. In HD-2D it is now built like the buildings: two towers (front, sides, top, merlons) and a recessed curtain wall with the gate
 // arch and portcullis between them, over its 3 x 2 tile footprint (the 'U' tiles and the 'E' gate), textured from a small code drawn
 // sheet. The 2D view keeps its flat painting.
@@ -21301,7 +21383,7 @@ function hdGateGeo(m,S,b,Q,U,Vv,p,V,bt){const G2=H2G,x0=b.x*TS,x1=x0+b.w*TS,zb=b
 function hdBldKind(m,b){if(b.k==='gatehouse')return 'gate';if(b.k==='lighthouse')return 'card';const T=THM(m);let mat=T.mat;if(['guild','keep','chapel','tower','windmill'].includes(b.k))mat=m.theme==='void'?'tent':'stone';
   if(mat==='tent'||b.k==='bigtent')return 'card';if(b.k==='keep'||b.k==='tower')return 'keep';return 'roof';}
 function hdBakeBuildings(m,S,bsp,deco){const V=S.V,sin=Math.sin(HD2D.pitch*Math.PI/180),pk=new H2Pack(1024),parts=[];
-  {const g=hdGatePart(m);if(g)bsp=(bsp||[]).concat([g]);}// v0.6.3: the fortress gatehouse stands up as towers and a curtain wall
+  {const g=hdGatePart(m);if(g)bsp=(bsp||[]).concat([g]);}// v0.6.3: the sanctum gatehouse stands up as towers and a curtain wall
   (bsp||[]).forEach(q=>{parts.push({q,r:pk.add(q.cv.width,q.cv.height)});});
   const decoParts=[];if(deco){m.bld.forEach(b=>{if(!SVC_LOOK||!SVC_LOOK[b.k])return;const x=b.x*TS-28,y=(b.y+b.h)*TS-50,w=b.w*TS+56,h=56;decoParts.push({b,x,y,w,h,r:pk.add(w,h)});});
     (m._qb||[]).forEach(([qx,qy])=>{const x=qx*TS-12,y=qy*TS+14,w=40,h=16;decoParts.push({board:1,qx,qy,x,y,w,h,r:pk.add(w,h)});});}
@@ -21463,7 +21545,7 @@ function hdLook(m,now){const o=H2L,P=HD2D.look;hdZero(o);const dun=m.kind==='dun
     if(wsum<=0)hdMix(o,P.day,1);
     if(T&&T.dark){const k=P.darkRealm;for(let i=0;i<3;i++){o.amb[i]*=k.amb[i];o.sun[i]*=k.sun;}o.emis=Math.max(o.emis,.8);o.lamp=Math.max(o.lamp,1);o.pl=Math.max(o.pl,.6);}
     // weather (blended like the Phase 5 weather fade)
-    const out=m.kind==='field'||m.kind==='town',X=out&&typeof TR!=='undefined'?TR.wx:null,cur=out&&G.weather?G.weather[m.s]||'clear':'clear';let wl=[[cur,1]];// v0.10.0: dungeons, caves, fortresses and the Sanctum are indoors: no weather in their light
+    const out=m.kind==='field'||m.kind==='town',X=out&&typeof TR!=='undefined'?TR.wx:null,cur=out&&G.weather?G.weather[m.s]||'clear':'clear';let wl=[[cur,1]];// v0.10.0: dungeons, caves, sanctums and the Sanctum are indoors: no weather in their light
     if(X&&X.from&&X.k<1){const e=trEase(X.k);wl=[[X.cur||cur,e],[X.from,1-e]];}
     // v0.8.0: a weather's fog colour is a daylight colour; by night and dusk it takes the scene's light (fl), so fog never glows grey over a night field
     const fl=Math.pow(Math.min(1,.15+(o.amb[0]+o.amb[1]+o.amb[2])/3+(o.sun[0]+o.sun[1]+o.sun[2])/3*.8),1.5);
@@ -22403,7 +22485,7 @@ function drawAudit(m){const out={hidden:[],holes:[],apron:[],door:[],props:0,hei
   return out;}
 
 // ===== dungeon8.js (v0.8.2): themed dungeons that match their battle backdrops, organic caverns, the boss lair on the field =====
-// 1. Every main dungeon, side cave and fortress gets a material (D8M) picked by its realm (D8_REALM), its zone theme (D8_ZONE) or, for
+// 1. Every main dungeon, side cave and sanctum gets a material (D8M) picked by its realm (D8_REALM), its zone theme (D8_ZONE) or, for
 //    side caves, its tileset (D8_CAVE): ice cavern, ice vault, volcanic cavern, basalt forge, sea cave, flooded masonry, root cavern,
 //    crypt, sandstone, keep, astral halls, mountain rock. The material sets the wall and floor art (2D drawDTile, the HD-2D block faces
 //    and tops in hdStructCanvas), the decor props (P, g, r), liquids, lights and the dark tint, and the battle backdrop of fights started
@@ -22646,7 +22728,7 @@ function d8BgKey(pre,mat,base){const id='d8'+mat,M=D8M[mat];if(!DTHEME[id])DTHEM
 // target stays reachable and nothing ends up on a path (mapIssues, pathAssets), and a mound tile goes again if it would hide a prop north
 // of it (pgHides). Drawn from the dungeon's material (frozen rock, basalt, earth and roots, sandstone, wet rock, mountain rock, crystal),
 // leaning toward the field's own cliff colours:
-// - HD-2D: real geometry (hdBakeBuildings, like the fortress gatehouse): a heightfield hill over the mound tiles, highest at the back and
+// - HD-2D: real geometry (hdBakeBuildings, like the sanctum gatehouse): a heightfield hill over the mound tiles, highest at the back and
 //   the middle, a rock face at the front with the cave mouth in it (dark, claw gouged, lit from inside), sloping into the ground at the
 //   sides; heights are capped so a prop north of it still shows (the pgHides rule with the real heights). Torches on the front faces, a
 //   broken banner of the Scourge and a skull pile on top, a faint plume of the mouth's light rising from the top (not over the hero).

@@ -82,14 +82,14 @@ const REC=`(T)=>{const A=__A,ctx=A.WS.ctx,f0=ctx.fillRect,C=['#fff2a0','#ffd04a'
       return {w:Math.round(r.width),h:Math.round(r.height),vw:innerWidth,vh:innerHeight,edge:[...c].slice(0,3),mid:[...mid].slice(0,3),leg:[...document.querySelectorAll('.maplegend span')].map(e=>e.textContent.trim()),hit:__A.W63&&__A.W63.WM?__A.W63.WM.hit.length:0};});
     const parch=p=>p&&p[0]>140&&p[0]>p[2]+20;// warm paper, not the old near black #0a0710
     chk(`world map ${tag}: a parchment chart (${JSON.stringify(s&&s.edge)}), fits the screen width (${s&&s.w} of ${s&&s.vw} px)`,!!s&&parch(s.edge)&&s.w<=s.vw&&s.hit>=4||JSON.stringify(s));
-    chk(`world map ${tag}: legend lists towns, fields, dungeons, fortresses, you and unvisited places (${s&&s.leg.join(', ')})`,!!s&&['Town','Field','Dungeon','Fortress','You','Not visited yet'].every(k=>s.leg.includes(k))||JSON.stringify(s&&s.leg));
+    chk(`world map ${tag}: legend lists towns, fields, dungeons, fortresses, you and unvisited places (${s&&s.leg.join(', ')})`,!!s&&['Town','Field','Dungeon','Sanctum','You','Not visited yet'].every(k=>s.leg.includes(k))||JSON.stringify(s&&s.leg));
     if(tag==='landscape')chk(`world map landscape: the whole chart is in view (${s&&s.h} of ${s&&s.vh} px tall)`,!!s&&s.h<=s.vh*.8||JSON.stringify(s));
     const t=await ev(()=>{const W=__A.W63&&__A.W63.WM,cv=document.getElementById('wmap');if(!W||!cv)return null;const n=W.hit.find(o=>o.id==='t1')||W.hit[0],r=cv.getBoundingClientRect();return {id:n.id,label:n.label,x:r.left+n.x*r.width/cv.width,y:r.top+n.y*r.height/cv.height};});
     if(t){await page.mouse.click(t.x,t.y);await wait(300);}
     const after=await ev(()=>({open:!!(__A.V.modal&&__A.V.modal.type==='worldmap'),sel:__A.W63&&__A.W63.WM?__A.W63.WM.sel:null}));
     chk(`world map ${tag}: a tap on a place shows its name and keeps the map open (${t&&t.label}: ${JSON.stringify(after)})`,!!t&&after.open&&after.sel===t.id||JSON.stringify({t,after}));
-    if(tag==='portrait'){const nm=await ev(()=>({fort:(__A.W63&&__A.W63.MAPICO_NAME||{}).fort,txt:document.body.innerText.match(/side fortress/i)}));
-      chk(`naming: fortresses are "Fortress" (${nm.fort}), no "side fortress" on screen`,nm.fort==='Fortress'&&!nm.txt||JSON.stringify(nm));}
+    if(tag==='portrait'){const nm=await ev(()=>({fort:(__A.W63&&__A.W63.MAPICO_NAME||{}).fort,txt:document.body.innerText.match(/side (fortress|sanctum)/i)}));
+      chk(`naming: fortresses are "Fortress" (${nm.fort}), no "side fortress" on screen`,nm.fort==='Sanctum'&&!nm.txt||JSON.stringify(nm));}
     chk(`${tag}: no console errors (${H.errs.slice(0,2).join(' | ')})`,H.errs.length===0);
     if(tag==='landscape')await done(H);else await H.browser.close();}
 })();

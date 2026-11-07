@@ -43,9 +43,9 @@ await ev(()=>{__A.META.cfg.autoEquip=true;__A.V.modal=null;const r=__A.G.roster.
 chk('auto equip setting equips clear upgrades',await ev(()=>{const r=Object.values(__A.G.roster).some(c=>c.eq.w==='w_blade_2');__A.META.cfg.autoEquip=false;return r;}));
 // faith + descriptors
 await ev(()=>{__A.V.modal={type:'char',char:'lumen',list:['lumen']};__A.render();});await wait(100);
-chk('Faith on the sheet',await ev(()=>/FTH/.test(document.querySelector('#modal').innerText)&&/Healer: Healer/.test(document.querySelector('#modal').innerText)));
+chk('Faith on the sheet',await ev(()=>/FTH/.test(document.querySelector('#modal').innerText)&&/Priest: Healer|Priest/.test(document.querySelector('#modal').innerText)));
 await ev(()=>{document.querySelector('[data-act="statInfo"][data-arg="fth"]').click();});await wait(100);await shot('statinfo');
-chk('stat popup',await ev(()=>/Faith/.test(document.querySelector('#modal').innerText)&&/Healer/.test(document.querySelector('#modal').innerText)));
+chk('stat popup',await ev(()=>/Faith/.test(document.querySelector('#modal').innerText)&&/Priest|Healer/.test(document.querySelector('#modal').innerText)));
 await ev(()=>__A.ACT.xBack());chk('back to sheet',await ev(()=>__A.V.modal.type==='char'));
 // stick quest
 await ev(()=>{__A.V.modal={type:'board'};__A.render();});await wait(100);

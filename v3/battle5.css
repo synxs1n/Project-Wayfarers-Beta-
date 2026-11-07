@@ -39,3 +39,6 @@
 /* chain5.js: planned targets */
 .b5it .c5aim{font-style:normal;margin-left:3px;opacity:.9}
 .c5tgt{position:absolute;right:4px;top:2px;font-size:.7rem;color:#ffb0a0;text-shadow:0 1px 0 #000;pointer-events:none}
+/* summon8.js */
+.s8pray{position:absolute;left:4px;bottom:2px;font-size:.66rem;color:#ffe9a8;text-shadow:0 1px 0 #000;pointer-events:none}
+.mi.summon.s8{border-color:rgba(255,220,120,.6)}

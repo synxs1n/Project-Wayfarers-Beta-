@@ -120,7 +120,7 @@ function hdBakeCards0(m,S,g0,g1){const W=m.w*TS,SH=64,UP=58,CW=8,st=mkCv(W,SH),s
   items.forEach(it=>{if(it.r.y+it.h>AH)return;ac.drawImage(it.cv,it.r.x,it.r.y);const u0=it.r.x,u1=it.r.x+it.w,v0=it.r.y,v1=it.r.y+it.h;// atlas pixels, scaled when the atlases merge
     const yt=(UP-it.t)*V,yb=(UP-it.t-it.h)*V;H2P.set([it.x0,yt,it.z,it.x0+it.w,yt,it.z,it.x0+it.w,yb,it.z,it.x0,yb,it.z]);bt.at(it.x0+it.w/2,it.z-8).quad(H2P,u0,v0,u1,v1,255,255,255,255,0,.45,.89,2|8);});
   return {cv:at,bt};}
-// v0.6.3: the fortress gatehouse in a field (sites.js) was painted flat into the ground art, with the cave mouth card standing in front
+// v0.6.3: the sanctum gatehouse in a field (sites.js) was painted flat into the ground art, with the cave mouth card standing in front
 // of it. In HD-2D it is now built like the buildings: two towers (front, sides, top, merlons) and a recessed curtain wall with the gate
 // arch and portcullis between them, over its 3 x 2 tile footprint (the 'U' tiles and the 'E' gate), textured from a small code drawn
 // sheet. The 2D view keeps its flat painting.
@@ -162,7 +162,7 @@ function hdGateGeo(m,S,b,Q,U,Vv,p,V,bt){const G2=H2G,x0=b.x*TS,x1=x0+b.w*TS,zb=b
 function hdBldKind(m,b){if(b.k==='gatehouse')return 'gate';if(b.k==='lighthouse')return 'card';const T=THM(m);let mat=T.mat;if(['guild','keep','chapel','tower','windmill'].includes(b.k))mat=m.theme==='void'?'tent':'stone';
   if(mat==='tent'||b.k==='bigtent')return 'card';if(b.k==='keep'||b.k==='tower')return 'keep';return 'roof';}
 function hdBakeBuildings(m,S,bsp,deco){const V=S.V,sin=Math.sin(HD2D.pitch*Math.PI/180),pk=new H2Pack(1024),parts=[];
-  {const g=hdGatePart(m);if(g)bsp=(bsp||[]).concat([g]);}// v0.6.3: the fortress gatehouse stands up as towers and a curtain wall
+  {const g=hdGatePart(m);if(g)bsp=(bsp||[]).concat([g]);}// v0.6.3: the sanctum gatehouse stands up as towers and a curtain wall
   (bsp||[]).forEach(q=>{parts.push({q,r:pk.add(q.cv.width,q.cv.height)});});
   const decoParts=[];if(deco){m.bld.forEach(b=>{if(!SVC_LOOK||!SVC_LOOK[b.k])return;const x=b.x*TS-28,y=(b.y+b.h)*TS-50,w=b.w*TS+56,h=56;decoParts.push({b,x,y,w,h,r:pk.add(w,h)});});
     (m._qb||[]).forEach(([qx,qy])=>{const x=qx*TS-12,y=qy*TS+14,w=40,h=16;decoParts.push({board:1,qx,qy,x,y,w,h,r:pk.add(w,h)});});}
@@ -324,7 +324,7 @@ function hdLook(m,now){const o=H2L,P=HD2D.look;hdZero(o);const dun=m.kind==='dun
     if(wsum<=0)hdMix(o,P.day,1);
     if(T&&T.dark){const k=P.darkRealm;for(let i=0;i<3;i++){o.amb[i]*=k.amb[i];o.sun[i]*=k.sun;}o.emis=Math.max(o.emis,.8);o.lamp=Math.max(o.lamp,1);o.pl=Math.max(o.pl,.6);}
     // weather (blended like the Phase 5 weather fade)
-    const out=m.kind==='field'||m.kind==='town',X=out&&typeof TR!=='undefined'?TR.wx:null,cur=out&&G.weather?G.weather[m.s]||'clear':'clear';let wl=[[cur,1]];// v0.10.0: dungeons, caves, fortresses and the Sanctum are indoors: no weather in their light
+    const out=m.kind==='field'||m.kind==='town',X=out&&typeof TR!=='undefined'?TR.wx:null,cur=out&&G.weather?G.weather[m.s]||'clear':'clear';let wl=[[cur,1]];// v0.10.0: dungeons, caves, sanctums and the Sanctum are indoors: no weather in their light
     if(X&&X.from&&X.k<1){const e=trEase(X.k);wl=[[X.cur||cur,e],[X.from,1-e]];}
     // v0.8.0: a weather's fog colour is a daylight colour; by night and dusk it takes the scene's light (fl), so fog never glows grey over a night field
     const fl=Math.pow(Math.min(1,.15+(o.amb[0]+o.amb[1]+o.amb[2])/3+(o.sun[0]+o.sun[1]+o.sun[2])/3*.8),1.5);
