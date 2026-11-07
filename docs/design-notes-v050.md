@@ -218,3 +218,6 @@ Details in `v095-bosses-pacing.md` (ENC block, field roamers in roam.js, battle4
 
 ## Beta v0.9.7: battle clarity
 Details in `v095-battle-clarity.md` (battle3.js section 9, battle5.js, battleui.js, fx2.js, sfx2/audio reaction sound; META.cfg.expertBattle; test `chrome/v095b.js`).
+
+## Beta v0.9.8: nudges and goals
+Details in `v095-nudges.md` (prog2.js manual bonus line and system bonuses, auto per foe type with G.autoOk, onboard.js invitation and expert gating with pcUnlocked, goals.js Next goals; NUDGE in config.js; tests `chrome/v095na.js`, `v095nb.js`). The per foe type lock reason lives in the Auto button title and toast.

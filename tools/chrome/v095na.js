@@ -77,10 +77,11 @@ chk('auto wins earn the system bonus too',r.info.autoCut&&r.info.nz&&r.info.nz.l
 // ---------- 3) auto per foe type ----------
 r=await ev(async()=>{const A=__A,N=__NZ,G=A.G;G.autoOk={};A.META.best={};const k=Object.keys(A.MON).filter(k=>!A.MON[k].mimic)[2],nm=A.MON[k].n;A.setPause(99999);
   const o={nm};A.startBattle({stage:0,kind:'field',weather:'clear',foes:[A.makeEnemy(A.MON[k],4)]});o.lock=!!A.B.autoLock;o.why=N.autoReason();A.render();
-  const btn=document.querySelector('[data-act="auto"]');o.btn=btn?btn.textContent:'';o.small=(document.querySelector('.autowhy')||{}).textContent||'';
+  const btn=document.querySelector('[data-act="auto"]');o.btn=btn?btn.textContent:'';o.small=(document.querySelector('.autowhy')||{}).textContent||'';o.title=btn?btn.title:'';
   A.ACT.auto();o.toast=N.toast;o.auto=A.B.auto;A.V.modal=null;A.finishBattle('x');return o;});
 chk(`a new foe type locks auto: "${r.why}"`,r.lock&&r.why===`Beat ${/^[aeiou]/i.test(r.nm)?'an':'a'} ${r.nm} by hand 3 more times to auto it`||JSON.stringify(r));
-chk('the Auto button says why',r.btn==='Auto locked'&&r.small===r.why||JSON.stringify(r));
+// v0.9.8: the reason is in the button's title and the toast on press (the line beside the commands made the header too tall on phones)
+chk('the Auto button says why',r.btn==='Auto locked'&&r.title===r.why&&/beat a/i.test(r.toast||'')||JSON.stringify(r));
 chk('pressing Auto shows the reason in a toast and keeps auto off',/^Auto is locked here: beat /.test(r.toast)&&r.auto===false||JSON.stringify(r));
 r=await ev(async()=>{const A=__A,N=__NZ,G=A.G,k=Object.keys(A.MON).filter(k=>!A.MON[k].mimic)[2],nm=A.MON[k].n,out=[];A.setPause(99999);
   for(let i=0;i<3;i++){A.startBattle({stage:0,kind:'field',weather:'clear',foes:[A.makeEnemy(A.MON[k],4)]});const B=A.B;const why=N.autoReason();B.tP=5;B.tA=0;B.en.forEach(e=>{e.hp=0;B.kills.push(e);});A.win();
