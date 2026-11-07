@@ -97,7 +97,9 @@ function w7Splash(ctx,V,n,k){const rip=w7Ripple();let d=0;ctx.fillStyle='rgba(22
   for(let j=0;j<n;j++){const L=.36,ph=V.t/L+w7H(j,401),c=Math.floor(ph),a=ph-c;if(a>.62)continue;const P=w7Spot(V,w7H(c*13+j,402),w7H(c*17+j,403)),x=P[0],y=P[1],s=P[2];
     const rw=(3+a*13)*s,rh=rw*.38,hk=Math.min(w7HeroK(V,x-rw/2,y-6*s,rw,6*s+rh,1),w7Soft(V,x,y-4*s,0));if(hk<.03)continue;
     ctx.globalAlpha=(1-a/.62)*.55*k*hk;ctx.drawImage(rip,x-rw/2,y-rh/2,rw,rh);
-    if(a<.26){ctx.globalAlpha=(1-a/.26)*.8*k*hk;const u=a*30*s;ctx.fillRect(Math.round(x-1-u*.4),Math.round(y-u*.5),1,1);ctx.fillRect(Math.round(x+1+u*.4),Math.round(y-u*.45),1,1);ctx.fillRect(Math.round(x),Math.round(y-u*.7),1,1);}d++;}
+    // v0.9.9: each droplet fades by the face at its own place (they jump up to 9 px above the splash, into the face: v077wa)
+    if(a<.26){const u=a*30*s,ga=(1-a/.26)*.8*k*hk,dot=(px,py)=>{const f=w7Soft(V,px+.5,py+.5,0);if(f<.03)return;ctx.globalAlpha=ga*f;ctx.fillRect(px,py,1,1);};
+      dot(Math.round(x-1-u*.4),Math.round(y-u*.5));dot(Math.round(x+1+u*.4),Math.round(y-u*.45));dot(Math.round(x),Math.round(y-u*.7));}d++;}
   V.n+=d;W7.stats.ground+=d;}
 // puddles on open ground with rings from the drops (world 2D: cached per map cell; battle: a few on the floor)
 function w7PudAt(m,cx,cy){if(W7.pudMap!==m){W7.pud.clear();W7.pudMap=m;}const key=cx*4096+cy;let p=W7.pud.get(key);if(p!==undefined)return p;p=null;
@@ -106,7 +108,10 @@ function w7PudAt(m,cx,cy){if(W7.pudMap!==m){W7.pud.clear();W7.pudMap=m;}const ke
 function w7Puddles(ctx,V,k){const pd=w7Puddle(),rip=w7Ripple();let d=0;
   const one=(x,y,s,id)=>{const w=32*s,h=12*s;if(x<-w||y<-h||x>V.W+w||y>V.H+h)return;const hk=w7HeroK(V,x-w/2,y-h/2,w,h,1);if(hk<.03)return;ctx.globalAlpha=.8*k*hk;ctx.drawImage(pd,x-w/2,y-h/2,w,h);
     for(let r=0;r<2;r++){const L=.95,ph=V.t/L+w7H(id*3+r,415),a=ph-Math.floor(ph),c=Math.floor(ph),rx=x+(w7H(c*7+id+r,416)-.5)*w*.45,ry=y+(w7H(c*5+id+r,417)-.5)*h*.35,rw=(2+a*10)*s,rh=rw*.38;
-      ctx.globalAlpha=(1-a)*.5*k*hk;ctx.drawImage(rip,rx-rw/2,ry-rh/2,rw,rh);}d++;};
+      // v0.9.9: each ring fades by its own place too (the puddle's centre can sit outside the face while a ring lands on it; the 2D weather
+      // layer is drawn after the characters, so the ring painted over his face: v077wa)
+      const rk=Math.min(hk,w7HeroK(V,rx-rw/2,ry-rh/2,rw,rh,1));if(rk<.03)continue;
+      ctx.globalAlpha=(1-a)*.5*k*rk;ctx.drawImage(rip,rx-rw/2,ry-rh/2,rw,rh);}d++;};
   if(V.mode==='bt'){for(let j=0;j<5;j++){const y=V.gy+(.2+.75*w7H(j,422))*(V.H-V.gy),s=(.7+.9*(y-V.gy)/Math.max(1,V.H-V.gy))*(1+w7H(j,423)*.6);one((.06+.88*w7H(j,421))*V.W,y,s,j);}}
   else if(V.m){const C=44,x0=Math.floor(V.ox/C)-1,x1=Math.floor((V.ox+V.W)/C)+1,y0=Math.floor(V.oy/C)-1,y1=Math.floor((V.oy+V.H)/C)+1;
     for(let cy=y0;cy<=y1;cy++)for(let cx=x0;cx<=x1;cx++){const p=w7PudAt(V.m,cx,cy);if(p)one(p[0]-V.ox,p[1]-V.oy,p[2],cx*101+cy);}}
