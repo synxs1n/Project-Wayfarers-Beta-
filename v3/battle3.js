@@ -306,7 +306,7 @@ function b3FitTags(){try{const st=document.getElementById('bstage');if(!st)retur
   for(let it=0;it<3;it++){const R=t.getBoundingClientRect();if(!R.width)return;let w=0,h=0;[...t.children].forEach(c=>{const q=c.getBoundingClientRect();w=Math.max(w,q.width);h+=q.height;});
     const k=Math.min((R.width-1.2*(R.width/t.offsetWidth))/w,(R.height-.6*(R.height/t.offsetHeight))/h);if(!(k<1))break;
     const f=(B3TK[tk]||1)*k*.97;B3TK[tk]=Math.max(.45,f);t.style.setProperty('--f',(B3.tagF*B3TK[tk]).toFixed(2)+'px');}});}catch(e){}}
-{const rb=renderBattle;renderBattle=function(){const r=rb.apply(this,arguments);if(B&&B.menu==='target')b3FitTags();return r;};}
+HOOK.after('renderBattle','battle3','fit the target tags',function(){if(B&&B.menu==='target')b3FitTags();});
 
 // ----- 6) v0.8.0: portrait phones (the Fold closed, 344 to 412 px wide): stage, turn order, the acting hero and the commands on screen -----
 // The stage is fitted (fitBattle, B8.tallMin..tallMax logical px) so the party cards, the commands and the compact foe list fit under it.
@@ -341,13 +341,13 @@ function b8TallPlan(bat,room){try{const sc=BL.sc||2,ch0=b8CmdEst()||(document.ge
 function b8TallBot(bat){try{const bb=bat&&bat.querySelector('.bbottom');if(!bb)return;const padB=parseFloat(getComputedStyle(document.body).paddingBottom)||0;
   const bh=Math.max(120,Math.floor(b3Vh()-b3DocTop(bb)-padB-1));bat.style.setProperty('--b3bot',bh+'px');bat.style.setProperty('--b8cm',Math.max(0,bh-B8.peek-6-4)+'px');}catch(e){}}
 // each hero turn starts with the box under the stage at its top (the commands in view)
-{const rb=renderBattle;renderBattle=function(stageOnly){const r=rb.apply(this,arguments);try{if(!stageOnly&&B&&BL.mode==='tall'){const bb=document.querySelector('.battle.b3 .bbottom'),k=(B.mode==='cmd'&&B.cur?unitRef(B.cur):'')+'|'+B.menu+'|'+(B.id||0);
-    if(bb&&bb._b8k!==k){bb._b8k=k;bb.scrollTop=0;}}}catch(e){}return r;};}
+HOOK.after('renderBattle','battle3','tall layout: bottom panel back to the top on a new turn',function(r,stageOnly){try{if(!stageOnly&&B&&BL.mode==='tall'){const bb=document.querySelector('.battle.b3 .bbottom'),k=(B.mode==='cmd'&&B.cur?unitRef(B.cur):'')+'|'+B.menu+'|'+(B.id||0);
+    if(bb&&bb._b8k!==k){bb._b8k=k;bb.scrollTop=0;}}}catch(e){}});
 // the wrappers that run after the base render (the boss bar, the turn order fit, Momentum, intents) can still change a panel's height:
 // once the whole render has run (a microtask, so still before the frame is painted) the fit is checked again, so the stage settles in one
 // go and never leaves the columns short
-{let b8mq=0;const rb=renderBattle;renderBattle=function(stageOnly){const r=rb.apply(this,arguments);try{if(!stageOnly&&!b8mq){b8mq=1;queueMicrotask(()=>{b8mq=0;
-  try{if(V.screen==='battle'&&B&&$('bwrap')){if(BL.mode==='wide'){const o=BL.sc;layoutBattle();b3TagFit();if(typeof b5Fit==='function')b5Fit();if(Math.abs(BL.sc-o)>.01)renderBattle(true);}else if(BL.mode==='tall')fitBattle();}}catch(e){}});}}catch(e){}return r;};}
+{let b8mq=0;HOOK.after('renderBattle','battle3','fit check once the whole render has run (microtask)',function(r,stageOnly){try{if(!stageOnly&&!b8mq){b8mq=1;queueMicrotask(()=>{b8mq=0;
+  try{if(V.screen==='battle'&&B&&$('bwrap')){if(BL.mode==='wide'){const o=BL.sc;layoutBattle();b3TagFit();if(typeof b5Fit==='function')b5Fit();if(Math.abs(BL.sc-o)>.01)renderBattle(true);}else if(BL.mode==='tall')fitBattle();}}catch(e){}});}}catch(e){}});}
 // the visible viewport changes (the browser bar shows or hides, the Fold opens or closes, the keyboard): fit the battle again
 if(window.visualViewport){let b8q=0;visualViewport.addEventListener('resize',()=>{if(b8q)return;b8q=requestAnimationFrame(()=>{b8q=0;try{if(V.screen==='battle'&&B){BL.fitH=0;layoutBattle();render();}}catch(e){}});});}
 
@@ -451,7 +451,7 @@ function b9TypeLine(e){try{if(!e||!e.ty||!e.ty.length||!revealed(e))return '';co
 {const ud0=uDetHtml;uDetHtml=function(){let h=ud0.apply(this,arguments);try{const P=B&&B.uDet,u=P&&unitOf(P.ref);if(h&&u&&u.side==='e'){const c=b9Chips(u),ln=b9TypeLine(u);
   if(c||ln){const add=`<div class="b9det">${c?`<div class="b9chips">${c}</div>`:''}${ln?`<p class="note b9ty">${esc(ln)}</p>`:''}</div>`;const k=h.indexOf('<div class="btnrow"><button class="btn gold" data-act="uClose"');h=k>=0?h.slice(0,k)+add+h.slice(k):h;}}}catch(e){}return h;};}
 // simple / expert on the battle screen (CSS: hero cards show only what matters in simple mode)
-{const rb=renderBattle;renderBattle=function(stageOnly){try{const bt=document.querySelector('.battle.b3');if(bt)bt.classList.toggle('b9x',b9Expert());}catch(e){}return rb.apply(this,arguments);};}
+HOOK.before('renderBattle','battle3','Expert battle info class (b9x)',function(stageOnly){try{const bt=document.querySelector('.battle.b3');if(bt)bt.classList.toggle('b9x',b9Expert());}catch(e){}});
 // simple mode: a hero card's status row keeps to three icons ("+N" for the rest; the stage and the i panel show them all)
 {const pc0=pcard;pcard=function(c,rs){let h=pc0.apply(this,arguments);try{if(!rs&&!b9Expert()&&c.hp>0&&BL.mode!=='tall'&&!b3OnStage(c,'tags')&&stItems(c,{noWx:true}).length>3){const k=h.lastIndexOf('<div class="ptags">');if(k>=0)h=h.slice(0,k)+`<div class="ptags">${stButtons(c,{max:3,noWx:true})}</div></div>`;}}catch(e){}return h;};}
 // the setting

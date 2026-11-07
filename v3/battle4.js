@@ -332,7 +332,7 @@ function b4MoDraw(){const bl=document.getElementById('bline');if(!bl)return;let 
   if(!B||!b4On('mo')){if(el)el.remove();return;}
   if(!el){el=document.createElement('button');el.id='b4mo';el.type='button';el.dataset.act='b4mo';bl.insertBefore(el,bl.firstChild);}
   const st=b4MoState(),h=b4MoHtml(),lab=b4MoLabel();if(el.dataset.h!==h){el.dataset.h=h;el.innerHTML=h;el.className='b4mo '+st;el.setAttribute('aria-label',lab);el.title=lab;}}
-{const rb0=renderBattle;renderBattle=function(stageOnly){try{b4GimSync();}catch(e){}const r=rb0.apply(this,arguments);try{if(!stageOnly)b4MoDraw();}catch(e){}return r;};}
+HOOK.wrap('renderBattle','battle4','gimmick sync before, Momentum bar after',function(next,...a){const stageOnly=a[0];try{b4GimSync();}catch(e){}const r=next(...a);try{if(!stageOnly)b4MoDraw();}catch(e){}return r;});
 ACT.b4mo=function(){if(!B||!b4On('mo'))return;log(b4MoLabel());render();};
 
 // ----- UI: the switch menu (who steps back, then who comes in) -----

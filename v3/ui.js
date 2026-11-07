@@ -199,6 +199,7 @@ function renderBattle(stageOnly){
   $('bcmd').innerHTML=cmdHtml();
   fitBattle();
 }
+renderBattle=HOOK.def('renderBattle',renderBattle);// v0.9.9: one definition; modules add hooks (hooks.js)
 function fxDelay(f){return /poison|burn|bleed|heal|good/.test(f.cls)?0:IMPACT;}
 function animating(){if(!B)return false;const now=Date.now();return B.en.concat(B.front,B.back).some(u=>(u.fx||[]).some(f=>now-f.t<fxDur(f)*1000+100+IMPACT)||now-(u.deathT||0)<1500)||(B.banner&&now-B.banner.t<banDur(B.banner)*1000+100);}
 function allyTargetable(c){

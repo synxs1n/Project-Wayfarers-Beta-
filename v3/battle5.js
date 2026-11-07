@@ -159,7 +159,7 @@ function b5Fit(){try{const o=document.querySelector('#border .ocs');if(!o)return
   // v0.7.5: also drop entries whose box (intent badge included) pokes past the bar's edge, down to 3 entries
   const out=()=>{const R=o.getBoundingClientRect(),L=o.querySelectorAll(':scope>.oc,:scope>.b5oe');const l=L[L.length-1];if(!l)return false;const q=l.getBoundingClientRect();return q.right>R.right+.5;};
   while((o.scrollWidth>o.clientWidth+1||out())&&k++<10){const L=o.querySelectorAll(':scope>.oc,:scope>.b5oe');if(L.length<=3)break;L[L.length-1].remove();}}catch(e){}}
-{const rb0=renderBattle;renderBattle=function(stageOnly){const r=rb0.apply(this,arguments);if(!stageOnly)b5Fit();return r;};}
+HOOK.after('renderBattle','battle5','forecast bar fit',function(r,stageOnly){if(!stageOnly)b5Fit();});
 
 // ----- v0.9.5: battle clarity on the stage and the command panel -----
 // The key weakness tag: one small label per foe (battle3.js b9Key: a reaction setup first), placed after the intents, beside them or the
