@@ -57,8 +57,8 @@ function placeFort(f,s){if(!f||f.kind!=='field'||f.fortDone||!fortWanted(s))retu
   f.caves=f.caves||[];f.caves.push({x,y,id:'o'+s,kind:'fort',face:[0,1],out:[x,y+1]});f.fortAt=[x,y];
   if(typeof mapIssues==='function'&&mapIssues(f).length){// undo if it blocks anything
     g[y-1][x-1]=g[y-1][x]=g[y-1][x+1]=g[y][x-1]=g[y][x+1]=g[y][x]=',';f.caves=f.caves.filter(c=>c.id!=='o'+s);f.fortAt=null;}}
-{const gm1=getMap;getMap=function(id){if(id&&id[0]==='o'&&!MAPS[id]&&G&&G.run){const fm=MAPS[id]=buildFortMap(id);try{applyBossTheme(fm);if(typeof healMap==='function')healMap(fm);}catch(e){}try{if(typeof guardPaths==='function'&&!window.__PGOFF){fm.__guarded=true;guardPaths(fm);}}catch(e){}}const m=gm1.apply(this,arguments);
-  try{if(m&&m.kind==='field'&&m.part!==1&&!m.fortDone)placeFort(m,m.s);}catch(e){}return m;};}
+HOOK.wrap('getMap','sites','fortress maps; place the fortress on its field',function(next,...a){let id=a[0];if(id&&id[0]==='o'&&!MAPS[id]&&G&&G.run){const fm=MAPS[id]=buildFortMap(id);try{applyBossTheme(fm);if(typeof healMap==='function')healMap(fm);}catch(e){}try{if(typeof guardPaths==='function'&&!window.__PGOFF){fm.__guarded=true;guardPaths(fm);}}catch(e){}}const m=next(...a);
+  try{if(m&&m.kind==='field'&&m.part!==1&&!m.fortDone)placeFort(m,m.s);}catch(e){}return m;});
 // the gatehouse is painted into the field's base layer (so heroes and townsfolk always draw in front of it):
 // grey towers with red banners (a cave mouth is a rock arch, a dungeon a carved facade)
 function drawGatehouse(ctx,x,y){

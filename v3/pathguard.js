@@ -122,7 +122,7 @@ function guardPaths(m){
 }
 // a moved chest keeps the mimic roll of the spot it was built on
 {const im=isMimic;isMimic=function(m,x,y){try{const c=m&&(m.chests||[]).find(q=>q[0]===x&&q[1]===y);if(c&&c.from&&(c.from[0]!==x||c.from[1]!==y)){if(!m||m.kind!=='dungeon'||m.archive||m.t[y][x]!=='C'||c[2]==='vault')return false;return chestHash(m,c.from[0],c.from[1])<MIMIC_RATE;}}catch(e){}return im.apply(this,arguments);};}
-{const g0=getMap;getMap=function(id){const had=!!MAPS[id];const m=g0(id);if(!had&&m&&!m.__guarded&&!(typeof HEAL_OFF!=='undefined'&&HEAL_OFF)&&!window.__PGOFF){m.__guarded=true;try{guardPaths(m);}catch(e){try{wdLog('guardPaths '+id+': '+e.message);}catch(_){}}}return m;};}
+HOOK.wrap('getMap','pathguard','path protection (new maps)',function(next,...a){let id=a[0];const had=!!MAPS[id];const m=next(id);if(!had&&m&&!m.__guarded&&!(typeof HEAL_OFF!=='undefined'&&HEAL_OFF)&&!window.__PGOFF){m.__guarded=true;try{guardPaths(m);}catch(e){try{wdLog('guardPaths '+id+': '+e.message);}catch(_){}}}return m;});
 
 // =================== Beta v0.7.1: what is drawn and what blocks always agree ===================
 // The owner's report: in Hearthholm (snow) at night the hero could not walk left from the Alchemy shop's front right corner toward its

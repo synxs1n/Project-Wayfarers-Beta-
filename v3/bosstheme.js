@@ -62,7 +62,7 @@ function applyBossTheme(m){
     else if(m.kind==='field'&&m.part!==2){Object.keys(m.signs||{}).forEach(k=>{if(!m.signs[k].includes(B.omen))m.signs[k]+=' '+B.omen;});}
   }catch(e){}
 }
-{const g0=getMap;getMap=function(id){const had=MAPS[id],m=g0.apply(this,arguments);if(m&&!had)applyBossTheme(m);return m;};}
+HOOK.wrap('getMap','bosstheme','stage look from its boss (new maps)',function(next,...a){let id=a[0];const had=MAPS[id],m=next(...a);if(m&&!had)applyBossTheme(m);return m;});
 // ground motifs, painted over grass and floor tiles: a few marks per tile, seeded so they never shimmer
 const MOTIF={
  thorn:(f,R)=>{if(R()<.2){const x=2+Math.floor(R()*11),y=3+Math.floor(R()*9);f('#264420',x,y,1,4);f('#264420',x+1,y+1,1,1);f('#264420',x-1,y+2,1,1);if(R()<.4)f('#c05070',x,y-1,1,1);}},

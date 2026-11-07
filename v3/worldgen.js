@@ -600,6 +600,7 @@ function getMap(id){
   m.tone=valueNoise(mulberry(31+s*7+(kind==='town'?1:kind==='field'?2:3)),m.w,m.h,6);
   return MAPS[id]=m;
 }
+getMap=HOOK.def('getMap',getMap);// v0.9.9: one definition; modules add hooks (hooks.js)
 // gathering spots: herb patches, ore glints and fallen logs. Walk over one to collect it. They regrow when you rest at an inn.
 const NODE_MIX={meadow:['herb','herb','wood','wood','ore'],coast:['herb','herb','wood','ore'],cave:['ore','ore','ore','herb'],snow:['ore','ore','wood','herb'],heights:['wood','wood','ore','herb'],void:['herb','herb','ore','wood']};
 function placeNodes(m){

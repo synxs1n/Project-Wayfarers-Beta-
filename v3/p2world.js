@@ -216,9 +216,9 @@ function laneEvict(m){if(!m.lane||!m.lane.size)return;const W=m.t[0].length,H=m.
       if(m.bld.some(b=>b.door[0]===x&&Math.abs(b.door[1]+1-y)<=1))continue;if((m.exits||[]).some(e=>Math.abs(e.x-x)+Math.abs(e.y-y)<=3))continue;
       const d=Math.abs(x-n.x)+Math.abs(y-n.y);if(d<bd){bd=d;best=[x,y];}}
     if(best){n.x=best[0];n.y=best[1];n.hx=best[0];n.hy=best[1];n.mv=null;}});}
-{const gm0=getMap;getMap=function(id){const had=!!MAPS[id];const m=gm0.apply(this,arguments);try{if(!had&&m&&m.kind==='town'&&!P2.noLane)laneFix(m);
+HOOK.wrap('getMap','p2world','town lanes, gathering spots on open tiles (new maps)',function(next,...a){let id=a[0];const had=!!MAPS[id];const m=next(...a);try{if(!had&&m&&m.kind==='town'&&!P2.noLane)laneFix(m);
   // a gathering spot never survives on a tile a later step (fortress gatehouse, cave mouth) turned solid
-  if(!had&&m&&m.nodes&&m.kind!=='town')m.nodes=m.nodes.filter(n=>nodeFits(m,n.k,n.x,n.y));}catch(e){}return m;};}
+  if(!had&&m&&m.nodes&&m.kind!=='town')m.nodes=m.nodes.filter(n=>nodeFits(m,n.k,n.x,n.y));}catch(e){}return m;});
 // townsfolk never wander into a lane (a step into one is taken back), and festival visitors are moved out of them
 {const nt0=npcTick;npcTick=function(m,now){nt0.apply(this,arguments);try{if(m&&m.lane)m.npcs.forEach(n=>{if(n.mv&&m.lane.has(n.x+','+n.y)){n.x=n.mv.fx;n.y=n.mv.fy;n.mv=null;}});}catch(e){}};}
 {const fe0=festive;festive=function(m){const r=fe0.apply(this,arguments);try{if(m&&m.lane)laneEvict(m);}catch(e){}return r;};}
@@ -347,5 +347,5 @@ try{const css=document.createElement('style');css.textContent=`#p2hint{position:
 try{window.__P2={P2,hintShow,hintPlace,bgGroundAt,bgPaintGround,BG_GROUNDS,BG_NATURAL,p2GroundY,p2Flying,nodeFits,laneFix,laneFind,laneMain,laneGates,laneStraight,laneMove,entStyleFor,entCanvas,ENT_STYLES,
   p2SingleFoes,p2Dual,p2DualOK,HINTS,hintFire,hintShow,vHints,
   get BG(){return BG},get BG_HAZ(){return BG_HAZ},bgGY,bgStatic,get BL(){return BL},get B(){return B},get G(){return G},get MAPS(){return MAPS},get WS(){return WS},get META(){return META},
-  getMap,tileAt,flood,SOLID,ZS,realmOf,unitBox,battleTheme,battleFrame,startBattle:HOOK.snap('startBattle'),encounterFoes:HOOK.snap('encounterFoes'),roamFight,roamSpawn,turnOrder,tvPool,challEligible,cePool,rarePool,ensureSub,genSub,subReq,TPL,MON,ZONES,TOWNGEN,
+  getMap:HOOK.snap('getMap'),tileAt,flood,SOLID,ZS,realmOf,unitBox,battleTheme,battleFrame,startBattle:HOOK.snap('startBattle'),encounterFoes:HOOK.snap('encounterFoes'),roamFight,roamSpawn,turnOrder,tvPool,challEligible,cePool,rarePool,ensureSub,genSub,subReq,TPL,MON,ZONES,TOWNGEN,
   obj2,placeNodes,drawObjects,layoutBattle};}catch(e){}

@@ -82,9 +82,9 @@ function d8Shape(m){const M=D8M[m.d8];if(!m.d8org&&!(M.liq&&(m.d8==='flood'||m.d
   for(const [rad,carve,pools] of tries){reset();const nc=carve?d8Carve(m,rad):0,np=pools&&M.liq?d8Pools(m,rad):0;if(!nc&&!np)continue;
     if(d8Issues(m)<=i0&&pa()<=p0){m.d8carved=nc;m.d8pools=np;m.d8try=rad;if(nc)D8.stat.shaped++;if(np)D8.stat.pools++;if(pools===0&&M.liq)D8.stat.poolsDropped++;m.tl=null;return;}}
   reset();D8.stat.dropped++;m.d8carved=0;m.d8pools=0;}
-{const g0=getMap;getMap=function(id){const had=!!MAPS[id],m=g0.apply(this,arguments);
+HOOK.wrap('getMap','dungeon8','realm dungeon materials and organic caves (new maps)',function(next,...a){let id=a[0];const had=!!MAPS[id],m=next(...a);
   if(!had&&m&&!m.d8&&!window.__D8OFF){try{const st=d8StyleOf(m);if(st){m.d8=st.mat;m.d8org=st.org;D8.stat.maps++;if(!m.fort)d8Shape(m);d8Look(m);}}catch(e){try{wdLog('d8 '+id+': '+e.message);}catch(_){}}}
-  return m;};}
+  return m;});
 
 // =================== 1. the look, 2D ===================
 const d8tv=(x,y)=>((x*7+y*13)%4+4)%4;   // the block face variant HD-2D picks for a tile (hd2d.js tv); decorated faces are variants 2 and 3
@@ -292,7 +292,7 @@ function d8LairShape(m){if(m.kind!=='field'||!m.ent||m.d8lair!==undefined||windo
     cor[cx+','+cy]=Math.max(0,Math.min(cap,mean*f+(d8LH(cx,cy,5)-.5)*(n>=4?7:3)));}
   const torches=[[ex+sd[0],ey+sd[1]],[ex-sd[0],ey-sd[1]]].filter(([x,y])=>isM(x,y)),deco=[[ex+bk[0]-sd[0],ey+bk[1]-sd[1]],[ex+bk[0]+sd[0],ey+bk[1]+sd[1]]].map(t=>isM(t[0],t[1])?t:null);
   m.d8lair={tiles:tiles.map(t=>[t[0],t[1]]),mask,under,hh,cor,mouth,torches,deco,south,ex,ey,fv,lane:[...lane].map(k=>k.split(',').map(Number)),top:Math.max(...Object.values(hh))};m.tl=null;}
-{const g0=getMap;getMap=function(id){const had=!!MAPS[id],m=g0.apply(this,arguments);if(!had&&m&&m.kind==='field'){try{d8LairShape(m);}catch(e){try{wdLog('d8 lair '+id+': '+e.message);}catch(_){}}}return m;};}
+HOOK.wrap('getMap','dungeon8','boss lair on the field (new maps)',function(next,...a){let id=a[0];const had=!!MAPS[id],m=next(...a);if(!had&&m&&m.kind==='field'){try{d8LairShape(m);}catch(e){try{wdLog('d8 lair '+id+': '+e.message);}catch(_){}}}return m;});
 // ----- art: one 64x64 sheet per look (A rock face, B top, C the mouth's face, D side face) -----
 function d8LairTex(L){return imgOf('d8ltex:'+L.key,()=>{const c=mkCv(64,64),x=c.getContext('2d'),R=mulberry(hashS(L.key)),r=L.r;const f=(col,a,b,w,h)=>{x.fillStyle=col;x.fillRect(a,b,w,h);};
   const rock=(ox,oy,k)=>{f(shade(r[0],k),ox,oy,32,32);for(let i=0;i<26;i++){const w=3+Math.floor(R()*7),h=2+Math.floor(R()*4),a=ox+Math.floor(R()*30),b=oy+Math.floor(R()*30);f(shade(R()<.4?r[2]:R()<.6?r[1]:r[0],k*(.92+R()*.12)),a,b,Math.min(w,ox+32-a),Math.min(h,oy+32-b));f(shade(tint(r[0],.15),k),a,b,Math.min(w,ox+32-a),1);}

@@ -106,7 +106,7 @@ function overlayGuide(){if(!G||!G.run||G.daily)return '';const s=WS.m&&typeof WS
 {const nl0=npcLore;npcLore=function(m){const L=nl0.apply(this,arguments);try{const o=bovAt(m.s|0);if(!o)return G&&G.cleared&&G.cleared[m.s|0]?[]:L;return L.concat([o.say]);}catch(e){return L;}};}
 {const ba0=bestAll;bestAll=function(){const out=ba0();try{const have=new Set(out.map(o=>o.k));Object.keys(BOV).forEach(k=>{const id=BOV[k].mon[0];if(MON[id]&&!have.has(id))out.push({k:id,d:MON[id],odd:1});});}catch(e){}return out;};}
 // keep pools right after a load or a new journey
-{const gm0=getMap;getMap=function(id){if(!MAPS[id])syncPools();return gm0.apply(this,arguments);};}
+HOOK.before('getMap','realms','sync pools before a new map',function(id){if(!MAPS[id])syncPools();});
 // the opening story frames whichever realm the journey starts in
 const REALM_OPENING='The Meridian Light that keeps the sky of Aurelis bright has begun to gutter. One by one the beacons are going dark, and a Scourge sits at the end of every road. You and your companions set out to light them again.';
 {const bg0=ACT.begin;ACT.begin=function(){const r=bg0.apply(this,arguments);try{if(V.modal&&V.modal.type==='story'&&isRv2()&&V.modal.text===ZS(0).intro)V.modal.text=REALM_OPENING+' '+ZS(0).intro;}catch(e){}return r;};}

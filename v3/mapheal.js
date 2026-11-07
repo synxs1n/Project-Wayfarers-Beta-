@@ -94,4 +94,4 @@ function healMap(m){
   }
   m.healed=log;return log;
 }
-{const g0=getMap;getMap=function(id){const had=!!MAPS[id];const m=g0(id);if(!had&&m&&!m.__healed&&!(typeof HEAL_OFF!=='undefined'&&HEAL_OFF)){m.__healed=true;try{healMap(m);}catch(e){try{wdLog('healMap '+id+': '+e.message);}catch(_){}}}return m;};}
+HOOK.wrap('getMap','mapheal','path healing (new maps)',function(next,...a){let id=a[0];const had=!!MAPS[id];const m=next(id);if(!had&&m&&!m.__healed&&!(typeof HEAL_OFF!=='undefined'&&HEAL_OFF)){m.__healed=true;try{healMap(m);}catch(e){try{wdLog('healMap '+id+': '+e.message);}catch(_){}}}return m;});
