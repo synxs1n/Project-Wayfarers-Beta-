@@ -115,8 +115,11 @@ async function setup(H,kind,he,fo,seed){
       await H.browser.close();}}
   // the transition into battle: the encounter flash and swirl, drawn by the real game loop
   if(!ONLY||ONLY==='trans')for(const [gfx,hd] of [['low',true],['medium',true],['medium',false],['high',true]])for(const [w,h] of [[390,844],[344,882],[933,640],[1280,720]]){
-    const H=await open({w,h,mobile:w<1000,dpr:2,pre:META(gfx,{hd2d:hd})});
-    await H.ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;Object.keys(A.G.weather||{}).forEach(k=>A.G.weather[k]='clear');A.render();});
+    // v0.9.9 (second pass): the scene behind the swirl is pinned (H.det: the journey's realms, so the first town and what is dark in it);
+    // unpinned, a town whose lower half was already dark left too few newly dark pixels there and the centre read high (about 1 run in 6,
+    // the build before these fixes included)
+    const H=await open({w,h,mobile:w<1000,dpr:2,pre:META(gfx,{hd2d:hd}),freeze:true});
+    await H.det(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;Object.keys(A.G.weather||{}).forEach(k=>A.G.weather[k]='clear');A.render();});
     await H.wait(1800);
     const r=await H.ev(async()=>{const A=__A,WS=A.WS,cv=WS.cv,RW=cv._rw||cv.width,RH=cv._rh||cv.height,ctx=cv.getContext('2d');
       // the swirl's arms are near black: count the pixels that turned near black since the frame before the flash (the scene's own dark ones are left out)

@@ -6,8 +6,10 @@
 // same tiles. Usage: PWHTML=../../out/aurelis3.html node v082da.js [N]
 const {open,chk,done}=require('./pw');const N=+process.argv[2]||200;
 (async()=>{
-const H=await open({w:430,h:880,mobile:true});const {ev}=H;
-await ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;});
+// v0.9.9: the journey's realms (drawn from Date.now) decide the lair fields' themes: unpinned, the share of 9+ tile mounds moved from run
+// to run (816 to 931 of 1000 on the same build); H.det pins the draw so every run scans the same fields
+const H=await open({w:430,h:880,mobile:true,freeze:true});const {ev}=H;
+await H.det(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;});
 const plan=await ev(()=>{const A=__A,D=__D8,out={};A.ZONES.forEach((z,i)=>{const st=D.styleFor? null:null;});
   // one realm per material (first in ZONES order), old zones included
   A.ZONES.forEach((z,i)=>{const sv=A.G.run.order[1];A.G.run.order[1]=i;const st=D.styleFor(1,false,false);A.G.run.order[1]=sv;if(!out[st.mat])out[st.mat]={i,key:z.key||'zone'+i,org:st.org};});return out;});
