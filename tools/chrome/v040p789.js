@@ -73,6 +73,9 @@ const f=await H.ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(
   A.facInit();o.ranks=A.FAC.map(F=>A.facRank(F.id));
   o.ids=A.FAC.map(F=>F.id).join();
   // mission flow
+  // v0.9.9: since v0.9.5 a new journey (G.pcV) opens guild missions in the third realm (pacing.js PACE.at.guilds): refused before it,
+  // then the same flow as before once that realm is reached
+  const at=window.__P95.PACE.at.guilds;A.ACT.facAccept('g5');o.early=G.fac.acc.g5==null&&!!G.pcV&&at>=2;for(let i=0;i<at;i++)G.cleared[i]=1;
   const m=A.FMIS.find(x=>x.id==='g5');A.ACT.facAccept('g5');A.facCredit('road',1);const rep0=A.facRep('guild');A.ACT.facClaim('g5');o.gained=A.facRep('guild')-rep0;
   // counters and rank
   A.facCredit('forge',10);A.facCredit('temper',10);o.smiths=A.facRank('smiths');
@@ -88,6 +91,7 @@ const f=await H.ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(
   return o;});
 console.log(JSON.stringify(f));
 chk('9 six factions, old-style start at rank 1',f.ranks.every(r=>r===1)&&f.ids.split(',').length===6);
+chk('9 guild missions are refused before their realm on a new journey',f.early===true);
 chk('9 mission claim gives standing',f.gained>0);
 chk('9 counters raise ranks',f.smiths>=2&&f.alch>=2&&f.wardens>=2);
 chk('9 Factions screen (Records) and Guides tab render',f.screen&&f.guide);

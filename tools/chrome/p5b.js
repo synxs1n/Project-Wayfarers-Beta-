@@ -13,7 +13,13 @@ chk(name+': Rest is focused and near the top',inn.focus&&inn.restTop<140||JSON.s
 chk(name+': Inn needs no scrolling',inn.fits||inn.scroll);
 chk(name+': no bonds or campfire text in the Inn',!inn.hasBonds||inn.txt);
 await shot('p5_inn_'+w);
-// hero sheet bonds
+// hero sheet bonds. v0.9.9: since v0.9.5 a new journey (G.pcV) opens bonds in the second realm (pacing.js PACE.at.bonds): in the first
+// realm the sheet shows no bond scene button; with the first realm cleared it does, and the scene flow is checked as before
+const gate=await ev(()=>{const A=__A,G=A.G,id=A.BONDS[0].a;A.V.charList=[id];A.V.modal={type:'char',char:id,list:[id]};A.render();
+  const r={pcV:G.pcV,at:window.__P95.PACE.at.bonds,btn:document.querySelectorAll('[data-act="bondTalk"]').length};
+  if(!G.cleared)G.cleared=[];for(let i=0;i<r.at;i++)G.cleared[i]=true;r.open=window.__P95.pcUnlocked('bonds');return r;});
+console.log('bond gate',JSON.stringify(gate));
+chk(name+': first realm of a new journey: no bond scene on the hero sheet; bonds open once realm '+(gate.at+1)+' is reached',gate.pcV&&gate.at>=1&&gate.btn===0&&gate.open||JSON.stringify(gate));
 const hs=await ev(()=>{const A=__A;A.V.modal={type:'char',id:A.G.roster[A.G.party[0]]?A.G.party[0]:null};return 1;});
 const sheet=await ev(()=>{const A=__A,G=A.G,id=A.BONDS[0].a;A.V.charList=[id];A.V.modal={type:'char',char:id,list:[id]};A.render();const t=document.body.innerText;
   const btn=[...document.querySelectorAll('[data-act="bondTalk"]')].map(x=>x.innerText);return {btn,bar:document.querySelectorAll('.bondrow .bar').length,id};});

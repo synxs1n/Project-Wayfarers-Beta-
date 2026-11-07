@@ -19,9 +19,13 @@ const r=await ev(()=>{const A=__A,G=A.G,o={};A.facDirty();const b0=A.facCount('m
 console.log(JSON.stringify(r));
 chk('6.5 battles finished by hand count, auto battles do not',r.d1===2&&r.d2===0);
 chk('6.5 standing becomes ranks and the Factions screen lists it',r.rank>=4&&r.screen===true);
-const w=await ev(async()=>{const A=__A;A.startBattle({stage:0,kind:'field',weather:'clear'});const before=!!A.B.autoUsed;A.B.auto=true;A.V.auto=true;
-  A.autoTurn();
-  return {before,after:!!(A.B&&A.B.autoUsed)};});
+// v0.9.9: since v0.9.8 Auto is locked per foe type until it is beaten by hand (prog2.js): a locked Auto does nothing and marks nothing;
+// once the foes count as beaten by hand (G.autoOk, as v063lib AUTO_OK), the real autoTurn path marks the battle
+const w=await ev(async()=>{const A=__A,G=A.G;A.startBattle({stage:0,kind:'field',weather:'clear'});const before=!!A.B.autoUsed,lock=A.B.autoLock;A.B.auto=true;A.V.auto=true;
+  A.autoTurn();const locked=!!A.B.autoUsed;
+  if(!G.autoOk||typeof G.autoOk!=='object')G.autoOk={};A.B.en.forEach(e=>{if(e.base)G.autoOk[e.base]=99;});A.B.auto=true;A.autoTurn();
+  return {before,lock,locked,after:!!(A.B&&A.B.autoUsed)};});
 console.log(JSON.stringify(w));
+chk('6.5 Auto is locked against foes not yet beaten by hand, and a locked Auto does not mark the battle',w.lock===1&&w.locked===false||JSON.stringify(w));
 chk('6.5 using Auto in a battle marks it (real autoTurn path)',w.before===false&&w.after===true);
 await done(H);})();

@@ -40,14 +40,8 @@ const STALE={
   v041p6b:'personal quest unlock rules changed in v0.5.0 and v0.7.2',
   v050p5b:'save message overlap checks (fail on the v0.8.0 build too)',
   v053s:'title lineup squash check (the title changed in v0.8.0)',
-  // found stale in the v0.9.9 measurement (each fails the same way on every run, for a rule a later version changed on purpose)
-  oldsave:'"every new screen renders on the old save": the bond row is empty because bonds open in the second realm since v0.9.5 (pacing.js)',
-  p5b:'hero sheet bond button: bonds open in the second realm since v0.9.5 (pacing.js)',
-  v040p789:'"mission claim gives standing": guild standing became three ranks in v0.9.5 (factions.js)',
-  v041p65:'"using Auto marks the battle": Auto is locked per foe type until beaten by hand since v0.9.8 (prog2.js)',
-  v077a:'"a mission already done can be claimed right after accepting": guild missions moved to the Notice Board in v0.9.5 (no mission to accept in the old place)',
-  v080cb:'journey sim pacing band (top hero level 39 to 41 after a typical run): v0.9.5 retuned encounters and rewards (fewer, better fights); the sim is seeded (SEED 1), so it reads the same 42.3 every run',
-  v043c:'"Accept all on bounties and faction missions": the Notice Board replaced those lists in v0.9.5',
+  // the seven found stale in the v0.9.9 measurement (oldsave, p5b, v040p789, v041p65, v043c, v077a, v080cb) were brought up to date
+  // and are back in "all" (docs/v099-tests.md, "Game fixes and the stale tests")
 };
 // ---- tests that compare against an older build: the revision whose committed index.html is OLDHTML when OLDHTML is not set ----
 const OLD={v050p2daily:'fab13f2',v095na:'fab13f2',v080ca:'927e63e'};
