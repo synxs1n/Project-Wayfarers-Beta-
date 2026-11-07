@@ -87,7 +87,7 @@ function ironDowned(c){return !!(c&&TW.ng('iron')&&Array.isArray(G.ngDown)&&G.ng
 function ironClamp(){if(!TW.ng('iron')||!Array.isArray(G.ngDown))return;
   G.ngDown.forEach(id=>{const c=G.roster[id];if(c&&c.hp>0){c.hp=0;c.st={};if(B){c.fx=(c.fx||[]).filter(f=>f.txt!=='Revived');fx(c,'Stays down','stat bad');}}});}
 {const fl0=fallen;fallen=function(u){const r=fl0.apply(this,arguments);try{if(u&&u.side==='p'&&TW.ng('iron')&&G.roster[u.id]){G.ngDown=Array.isArray(G.ngDown)?G.ngDown:[];if(!G.ngDown.includes(u.id))G.ngDown.push(u.id);}}catch(e){}return r;};}
-{const pf0=perform;perform=function(){try{return pf0.apply(this,arguments);}finally{try{ironClamp();}catch(e){}}};}
+HOOK.wrap('perform','twists','Iron clamp after every action',function(next,...a){try{return next(...a);}finally{try{ironClamp();}catch(e){}}});
 {const uf0=useItemField;useItemField=function(id,c){if(ironDowned(c)&&ITEMS[id]&&ITEMS[id].revive)return false;return uf0.apply(this,arguments);};}
 {const fe0=fsEffect;fsEffect=function(s,t){if(ironDowned(t))return false;return fe0.apply(this,arguments);};}
 {const fc0=fsCast;fsCast=function(){try{return fc0.apply(this,arguments);}finally{try{ironClamp();}catch(e){}}};}

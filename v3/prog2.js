@@ -42,11 +42,11 @@ function manualBonusPct(){return Math.round((1/AUTO_REW-1)*100);}
 function autoBtnHtml(){const why=autoReason();if(why)return `<button class="btn sm autolock" data-act="auto" aria-disabled="true" title="${why}">Auto locked</button>${/^Beat /.test(why)?'':`<small class="autowhy">${why}</small>`}`;
   return `<button class="btn sm ${B.auto?'gold':''}" data-act="auto" aria-pressed="${B.auto?'true':'false'}">${B.auto?'Stop auto':'Start auto'}</button>`;}
 HOOK.after('startBattle','prog2','auto counters, boss auto lock',function(r){try{if(r!==false&&B){B.tP=0;B.tA=0;B.nz={react:0,brk:0,guard:0,surge:0,tele:0};if(autoLocked()){B.auto=false;B.autoLock=1;}}}catch(e){}});
-{const pf0=perform;perform=function(a,sk,tg){try{if(B&&a&&a.side==='p'&&!a.isComp){B.tP=(B.tP||0)+1;if(B.auto)B.tA=(B.tA||0)+1;}
+HOOK.wrap('perform','prog2','hand and auto turn counters, goal counters',function(next,...args){let a=args[0],sk=args[1],tg=args[2];try{if(B&&a&&a.side==='p'&&!a.isComp){B.tP=(B.tP||0)+1;if(B.auto)B.tA=(B.tA||0)+1;}
     if(B&&B.nz){if(B.b4mo&&B.b4mo.full)B.nz.surge=1;
       // a telegraphed hit (battle4.js: Crushing Charge, Cataclysm) landing on a guarded hero
       if(a&&a.side!=='p'&&sk&&(sk.id==='b4charge'||sk.id==='b4cata')){B.nz.tele++;if((tg||[]).some(c=>c&&c.side==='p'&&c.hp>0&&c.guard))B.nz.guard++;}}}catch(e){}
-  const r=pf0.apply(this,arguments);try{if(B&&B.nz&&B.b4mo&&B.b4mo.full)B.nz.surge=1;}catch(e){}return r;};}
+  const r=next(...args);try{if(B&&B.nz&&B.b4mo&&B.b4mo.full)B.nz.surge=1;}catch(e){}return r;});
 {const dr0=doReaction;doReaction=function(a,t,el){const r=dr0.apply(this,arguments);try{if(r&&B&&B.nz&&a&&a.side==='p')B.nz.react++;}catch(e){}return r;};}
 {const cs0=chipShield;chipShield=function(t){const was=t&&t.broken;const r=cs0.apply(this,arguments);try{if(B&&B.nz&&t&&t.side!=='p'&&!was&&t.broken===2)B.nz.brk++;}catch(e){}return r;};}
 {const at0=autoTurn;autoTurn=function(){if(autoLocked()){if(B)B.auto=false;return;}return at0.apply(this,arguments);};}

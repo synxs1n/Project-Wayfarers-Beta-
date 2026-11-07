@@ -49,7 +49,7 @@ function converge(x,y,col,start){for(let i=0;i<10;i++){const a=i/10*Math.PI*2,r=
   else{const y=p.y-q*16,x=p.x+Math.sin(q*6)*3;ctx.globalAlpha=1-q;ctx.fillStyle=p.col;ctx.fillRect(Math.round(x),Math.round(y),2,2);ctx.fillRect(Math.round(x)+1,Math.round(y)-4,1,4);ctx.fillRect(Math.round(x)+2,Math.round(y)-4,2,1);}});
   BV.P=BV.P.filter(p=>!p.dead);}catch(e){}ctx.globalAlpha=1;return dp0.apply(this,arguments);};}
 // Limit Breaks get their own pose; bosses flourish on phase changes
-{const pf0=perform;perform=function(a,sk){try{if(a&&sk&&sk.limit)a.actLimit=Date.now();}catch(e){}return pf0.apply(this,arguments);};}
+HOOK.before('perform','anim','Limit Break pose time',function(a,sk){try{if(a&&sk&&sk.limit)a.actLimit=Date.now();}catch(e){}});
 {const cp0=checkPhase;checkPhase=function(e){const was=e&&e.phaseDone,was2=e&&e.p2done;cp0.apply(this,arguments);try{if(e&&e.boss&&((!was&&e.phaseDone)||(!was2&&e.p2done))&&V.screen==='battle'&&!gfxStill()){const c=centerOf(e),now=performance.now();if(!c)return;
   part({k:'rays',x:c.x,y:c.y,t0:now,life:700,col:'#ff9a6a'});part({k:'ring',x:c.x,y:c.y,t0:now,life:600,col:'#ff6a3a',r:48});part({k:'ring',x:c.x,y:c.y,t0:now+120,life:520,col:'#ffffff',r:32});BV.shake={t:now,life:420,amp:3};BV.flash={t:now,life:180,col:'rgba(255,140,90,.3)'};}}catch(x){}};}
 // summons: a circle opens on the way in, a puff on the way out

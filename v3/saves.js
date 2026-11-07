@@ -477,8 +477,8 @@ HOOK.after('render','saves','save status icon',function(){try{svIcon();}catch(e)
 function importSave(code){const r=svDecode(code);if(!r.ok)return null;try{return unpackG(r.o);}catch(e){return null;}}
 ACT.doImport=function(){ACT.svImportGo();};
 // v0.4.3: Settings has a way back to the main menu (the journey is saved first)
-{const sb0=settingsBody;settingsBody=function(){const h=sb0.apply(this,arguments);if(!G||V.screen==='title')return h;
-  return h+`<div class="rows"><div class="row"><div><b>Main menu</b><small>${G.daily?'Leave the Daily Trial and go back to the title screen.':'Your journey is saved first. Continue picks it up again.'}</small></div><button class="btn sm" data-act="quitTitle">Back to the main menu</button></div></div>`;};}
+HOOK.wrap('settingsBody','saves','Main menu row',function(next,...a){const h=next(...a);if(!G||V.screen==='title')return h;
+  return h+`<div class="rows"><div class="row"><div><b>Main menu</b><small>${G.daily?'Leave the Daily Trial and go back to the title screen.':'Your journey is saved first. Continue picks it up again.'}</small></div><button class="btn sm" data-act="quitTitle">Back to the main menu</button></div></div>`;});
 ACT.quitTitle=function(){if(V.screen==='battle'){toast('Finish or flee the battle first.');return;}try{if(G&&!G.daily)saveGame();}catch(e){}V.modal=null;WS.held=[];V.screen='title';G=null;B=null;render();};
 // v0.8.5 test hook (tests reach the sync code here; window.__A is left alone)
 try{window.__SV85={get SV(){return SV;},svPush:(...a)=>svPush(...a),svPull:(...a)=>svPull(...a),svFlush:(...a)=>svFlush(...a),svCheck:(...a)=>svCheck(...a),svLeave:w=>svLeave(w),svBack:()=>svBack(),svHash:s=>svHash(s),svDecide:(...a)=>svDecide(...a),svDev:()=>svDev()};}catch(e){}

@@ -682,4 +682,4 @@ HOOK.wrap('worldDraw','hd2d','Medium and High: the HD-2D scene instead of the 2D
 function hdRow(){const on=hdCfgOn();if(!HD.gl&&!HD.broken){try{hdInitGL();}catch(e){}}
   const note=HD.broken?' Not available on this device, so the classic view is used.':(hdTierQ()?'':' Graphics is on Low, which keeps the classic view.');
   return `<div class="rows hdrows"><div class="row"><div><b>HD-2D world</b><small>Towns, fields and dungeons as a lit diorama: tilted camera, depth of field, glow and shadows. Medium and High graphics.${note}</small></div><div class="chips"><button class="chip ${on?'on':''}" data-act="cfg" data-arg='["hd2d",true]'>On</button><button class="chip ${on?'':'on'}" data-act="cfg" data-arg='["hd2d",false]'>Off</button></div></div></div>`;}
-{const sb0=settingsBody;settingsBody=function(){return sb0.apply(this,arguments)+hdRow();};}
+HOOK.wrap('settingsBody','hd2d','HD-2D world row',function(next,...a){return next(...a)+hdRow();});

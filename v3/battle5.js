@@ -146,10 +146,10 @@ window.addEventListener('keydown',e=>{const R=B5R.ring;if(!R||R.done)return;if([
   return ex0.apply(this,arguments);};}
 HOOK.after('calcDamage','battle5','timed hit multiplier',function(r,a,sk,t){try{const m=B&&B.b5m;if(m&&r&&m.a===a&&m.t===t&&(!m.sk||m.sk===sk)){const d0=r.dmg;r.dmg=Math.max(1,Math.round(d0*m.m));B5R.last=Object.assign({},B5R.last||{},{base:d0,dmg:r.dmg,m:m.m});}}catch(e){}});
 // the setting
-{const sb0=settingsBody;settingsBody=function(){let h=sb0.apply(this,arguments);try{const on=META.cfg.timedHits===true;
+HOOK.xform('settingsBody','battle5','Timed hits row',function(h){try{const on=META.cfg.timedHits===true;
   const row=`<div class="row b5set"><div><b>Timed hits</b><small>A ring closes over the target of your single target attacks: press as it closes for ${Math.round(B5.atkUp*100)}% more damage, or when a foe strikes a hero for ${Math.round(B5.defDown*100)}% less. Never on auto or in the Daily Trial.</small></div><div class="chips"><button class="chip ${on?'':'on'}" data-act="cfg" data-arg='["timedHits",false]'>Off</button><button class="chip ${on?'on':''}" data-act="cfg" data-arg='["timedHits",true]'>On</button></div></div>`;
   const k=h.indexOf('<div class="btnrow"><button class="btn" data-act="autoOpen"');
-  h=k>=0?h.slice(0,k)+`<div class="rows">${row}</div>`+h.slice(k):h+`<div class="rows">${row}</div>`;}catch(e){}return h;};}
+  h=k>=0?h.slice(0,k)+`<div class="rows">${row}</div>`+h.slice(k):h+`<div class="rows">${row}</div>`;}catch(e){}return h;});
 
 // plans exist from the first frame of a battle; a new wave (or a summon) gets one when it is first drawn
 HOOK.after('startBattle','battle5','plan every foe (foePlan)',function(r){try{if(r!==false&&B){B5R.ring=null;B.en.forEach(foePlan);}}catch(e){}});

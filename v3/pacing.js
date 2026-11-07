@@ -38,10 +38,10 @@ function pcLockText(sys){return `opens in the ${pcOrd(PACE.at[sys]||0)} realm`;}
 // new journeys get the gates (an NG+ cycle does not)
 {const ng0=newGame;newGame=function(ids,cycle){const r=ng0.apply(this,arguments);try{if(G&&!cycle)G.pcV=1;}catch(e){}return r;};}
 // reactions: in a gated first realm a primer skill is a plain hit (it marks nothing, so nothing detonates)
-{const pf0=perform;perform=function(a,sk,tgts){if(sk&&sk.role==='primer'&&a&&a.side==='p'&&!pcUnlocked('reactions')){
+HOOK.wrap('perform','pacing','primers are plain hits until reactions open',function(next,...args){let a=args[0],sk=args[1],tgts=args[2];if(sk&&sk.role==='primer'&&a&&a.side==='p'&&!pcUnlocked('reactions')){
     try{G.pcN=G.pcN||{};if(!G.pcN.react){G.pcN.react=1;log('Elemental reactions awaken in the second realm. Until then a primer is a plain hit.');}}catch(e){}
-    return pf0.call(this,a,Object.assign({},sk,{role:null}),tgts);}
-  return pf0.apply(this,arguments);};}
+    return next(a,Object.assign({},sk,{role:null}),tgts);}
+  return next(...args);});
 // bonds: in a gated first realm wins side by side do not count yet
 HOOK.wrap('win','pacing','bonds stay closed until their realm',function(next,...a){if(!G||pcUnlocked('bonds'))return next(...a);const b0=JSON.stringify(G.bonds||{}),t0=(G.talks||[]).length;const r=next(...a);
   try{G.bonds=JSON.parse(b0);if(G.talks)G.talks.length=Math.min(G.talks.length,t0);const i=V.modal&&V.modal.info;if(i&&i.bonds)i.bonds=[];}catch(e){}return r;});

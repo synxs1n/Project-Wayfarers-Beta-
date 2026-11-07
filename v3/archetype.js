@@ -114,18 +114,18 @@ function holyHit(a,sk,t,mult){
   if(t.hp<=0)fallen(t);else checkPhase(t);
   return n;
 }
-{const pf0=perform;perform=function(a,sk,tgts){
+HOOK.wrap('perform','archetype','heals hurt the undead',function(next,...args){let a=args[0],sk=args[1],tgts=args[2];
   if(a&&a.side==='p'&&sk&&(sk.k==='heal'||sk.k==='revive')&&B){
     const foes=tgts.filter(t=>t.side==='e'),allies=tgts.filter(t=>t.side!=='e');
     let hurt=[],mult=HEAL_HURT;
     if(foes.length)hurt=foes.filter(t=>isUndead(t)&&t.hp>0);
     else if(sk.t==='allyAll'||sk.t==='all'){hurt=B.en.filter(e=>e.hp>0&&isUndead(e));mult=HEAL_HURT_AOE;}
     if(foes.length||hurt.length){
-      const r=pf0.call(this,a,sk,allies);
+      const r=next(a,sk,allies);
       hurt.forEach(t=>{if(B)holyHit(a,sk,t,mult);});
       return r;}
   }
-  return pf0.apply(this,arguments);};}
+  return next(...args);});
 
 // ---- previews ----
 EFF_CLS['Damages undead']='up';

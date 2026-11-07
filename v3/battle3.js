@@ -455,9 +455,9 @@ HOOK.before('renderBattle','battle3','Expert battle info class (b9x)',function(s
 // simple mode: a hero card's status row keeps to three icons ("+N" for the rest; the stage and the i panel show them all)
 {const pc0=pcard;pcard=function(c,rs){let h=pc0.apply(this,arguments);try{if(!rs&&!b9Expert()&&c.hp>0&&BL.mode!=='tall'&&!b3OnStage(c,'tags')&&stItems(c,{noWx:true}).length>3){const k=h.lastIndexOf('<div class="ptags">');if(k>=0)h=h.slice(0,k)+`<div class="ptags">${stButtons(c,{max:3,noWx:true})}</div></div>`;}}catch(e){}return h;};}
 // the setting
-{const sb0=settingsBody;settingsBody=function(){let h=sb0.apply(this,arguments);try{const on=b9Expert();
+HOOK.xform('settingsBody','battle3','Expert battle info row',function(h){try{const on=b9Expert();
   const row=`<div class="row b9set"><div><b>Expert battle info</b><small>Foe cards show every weakness and resistance (up to two of each) and hero cards their level, class and elements. Off: each foe shows its one key weakness; tap it for the rest.</small></div><div class="chips"><button class="chip ${on?'':'on'}" data-act="cfg" data-arg='["expertBattle",false]'>Off</button><button class="chip ${on?'on':''}" data-act="cfg" data-arg='["expertBattle",true]'>On</button></div></div>`;
-  const k=h.indexOf('<div class="btnrow"><button class="btn" data-act="autoOpen"');h=k>=0?h.slice(0,k)+`<div class="rows">${row}</div>`+h.slice(k):h+`<div class="rows">${row}</div>`;}catch(e){}return h;};}
+  const k=h.indexOf('<div class="btnrow"><button class="btn" data-act="autoOpen"');h=k>=0?h.slice(0,k)+`<div class="rows">${row}</div>`+h.slice(k):h+`<div class="rows">${row}</div>`;}catch(e){}return h;});
 
 // ----- the reaction moment -----
 // does the acting hero hold a detonator (with the MP) that sets off this foe's prime? (its primed badge pulses)

@@ -428,6 +428,7 @@ function settingsBody(){
     ${opt('music',[[0,'Off'],[.25,'Low'],[.45,'Mid'],[.7,'High']],'Music')}${opt('sfx',[[0,'Off'],[.3,'Low'],[.6,'Mid'],[.9,'High']],'Sound effects')}${opt('autoStats',[[true,'Auto'],[false,'Manual']],'New stat points')}${opt('autoEquip',[[false,'Ask me'],[true,'Auto equip']],'New gear')}${opt('minimap',[[null,'Auto'],[true,'On'],[false,'Off']],'Minimap')}${opt('rmotion',[[null,'Follow device'],[true,'Reduced'],[false,'Full']],'Motion')}</div>
     <div class="btnrow"><button class="btn" data-act="autoOpen">Auto battle settings</button></div><p class="note">Encounters Off still lets Scourges, Calamities, elites and the arena fight you. Hard raises foe power 18% and rewards 25%.</p>`;
 }
+settingsBody=HOOK.def('settingsBody',settingsBody);// v0.9.9: one definition; modules add hooks (hooks.js)
 function mLegacy(){
   const ids=Object.keys(G.roster).filter(id=>!(META.legacy||[]).includes(id)&&!TPL[id].mon);
   return box('Choose a Legacy',`<p class="story">The Meridian burns again. One of your wayfarers will carry this journey into every journey after it: they join each new game at level 5 with veteran stats.</p><div class="grid mini">${ids.map(id=>{const c=G.roster[id];return `<button class="mini" data-act="legacy" data-arg="${id}"><img src="${heroURL(id)}" alt=""><b>${esc(c.name)}</b><small>Lv ${c.lv} ${CLS[TPL[id].cls].n}</small><span class="els">${c.el.map(ico).join('')}</span></button>`;}).join('')}</div>`,'<button class="btn" data-act="closeModal">Decide later</button>',true);

@@ -328,9 +328,9 @@ ACT.hintsReset=function(){META.hints={};META.cfg.hints=true;saveMeta();toast('Hi
 HOOK.after('startBattle','p2world','battle hint',function(r){try{if(r!==false&&B&&!G.daily)hintFire('battle');}catch(e){}});
 HOOK.after('finishBattle','p2world','win hint',function(r,how){try{if(how==='win')setTimeout(()=>hintFire('win'),600);}catch(e){}});
 // Settings row and the Guides > Hints page
-{const st0=settingsBody;settingsBody=function(){const h=st0.apply(this,arguments),on=hintsOn();
+HOOK.wrap('settingsBody','p2world','Hints row',function(next,...a){const h=next(...a),on=hintsOn();
   const row=`<div class="rows"><div class="row"><div><b>Hints</b><small>Short tips in the first realm. Each shows once; read them again in Guides > Hints.</small></div><div class="chips"><button class="chip ${on?'on':''}" data-act="cfg" data-arg='["hints",true]'>On</button><button class="chip ${on?'':'on'}" data-act="cfg" data-arg='["hints",false]'>Off</button></div></div></div>`;
-  return h+row;};}
+  return h+row;});
 try{const gd=MENU_GROUPS.find(g=>g[0]==='guides');if(gd&&!gd[2].includes('hints'))gd[2].splice(Math.max(0,gd[2].indexOf('help')),0,'hints');MENU_SUB.hints='Hints';}catch(e){}
 function vHints(){const H=META.hints||{},seen=HINTS.filter(h=>H[h.id]);
   return `<p class="note">Tips from your first steps, kept here once they have shown. ${seen.length} of ${HINTS.length} seen. Hints are ${hintsOn()?'on':'off'} (Settings).</p>`+

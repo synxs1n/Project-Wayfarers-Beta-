@@ -18,8 +18,8 @@ function rlSkills(t){const L=(ROLES.sk[t.cls]||[]),e1=t.el[0],n1=EL[e1]||'';
 
 // Monk chi heals (chi:1) draw on the better of healing power and ROLES.w.chiK x attack
 const rlHealP=(a,sk)=>{const h=a.S.healP||a.S.mag;return sk&&sk.chi?Math.max(h,ROLES.w.chiK*a.S.atk):h;};
-{const pf8=perform;perform=function(a,sk){if(!(sk&&sk.chi&&a&&a.S))return pf8.apply(this,arguments);const h0=a.S.healP;a.S.healP=rlHealP(a,sk);
-  try{return pf8.apply(this,arguments);}finally{a.S.healP=h0;}};}
+HOOK.wrap('perform','roles','chi heals use the role heal power',function(next,...args){let a=args[0],sk=args[1];if(!(sk&&sk.chi&&a&&a.S))return next(...args);const h0=a.S.healP;a.S.healP=rlHealP(a,sk);
+  try{return next(...args);}finally{a.S.healP=h0;}});
 
 // ---- role charms ----
 ROLES.charms.forEach(c=>addGear(c.id,Object.assign({n:c.n,slot:'c',tier:2,price:c.price,rl:c.perk,rlD:c.d},c.st,c.attr?{attr:c.attr}:{})));

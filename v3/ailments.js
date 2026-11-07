@@ -25,7 +25,7 @@ function cleanse(t,opt){// with no opt, the battle's own calls choose: a revive-
   if(t.ail){AIL_KEYS.forEach(k=>{if(!t.ail[k])return;if(k==='wound'&&!opt.hard)return;if(k==='curse'&&opt.item)return;if(k==='poison'&&opt.only&&opt.only!=='poison')return;delete t.ail[k];n++;});}
   if(n&&opt.hard){try{refresh(t);}catch(e){}}return n;}
 // the battle's cleanse calls: items are cure:1 (passing ailments only); skills with revive and cleanse also lift Wounds
-{const pf0=perform;perform=function(a,sk,tgts){if(sk&&sk.cleanse&&sk.revive)B.hardCleanse=1;try{return pf0.apply(this,arguments);}finally{B&&(B.hardCleanse=0);}};}
+HOOK.wrap('perform','ailments','hard cleanse flag for revive and cleanse skills',function(next,...args){let a=args[0],sk=args[1],tgts=args[2];if(sk&&sk.cleanse&&sk.revive)B.hardCleanse=1;try{return next(...args);}finally{B&&(B.hardCleanse=0);}});
 {const ui0=useItem;useItem=function(id,t){const it=ITEMS[id];if(typeof B!=='undefined'&&B)B.itemCure=!!(it&&it.cure);try{
     if(it&&(it.curse||it.wound)&&G.inv[id]&&t&&t.hp>0&&B){const key=it.curse?'curse':'wound';if(!t.st[key]){toast&&toast(t.name+' has no '+STS[key].n+'.');return;}
       delete t.st[key];if(t.ail)delete t.ail[key];if(key==='wound')refresh(t);fx(t,'Cured','heal');log(`${B.cur.name} uses ${it.n}. ${t.name} is cured.`);t.healT=Date.now();G.inv[id]--;B.cur.actT=Date.now();B.cur.actKind='item';endTurn(B.cur,.8);return;}

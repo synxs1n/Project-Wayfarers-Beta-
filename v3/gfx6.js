@@ -63,4 +63,4 @@ function gfxRow(){const c=gfxCfg(),lab={auto:'Auto',low:'Low',medium:'Medium',hi
   const chips=['auto','low','medium','high'].map(k=>`<button class="chip ${c===k?'on':''}" data-act="cfg" data-arg='["gfx","${k}"]'>${lab[k]}</button>`).join('');
   const now=c==='auto'?`Auto is using ${lab[T]}${GFX.fps?' ('+GFX.fps+' fps)':''}.`:'';
   return `<div class="rows gfxrows"><div class="row"><div><b>Graphics</b><small>Lighting, glow, drifting leaves, birds and battle camera. Auto picks by frame rate. ${now}</small></div><div class="chips">${chips}</div></div></div>`;}
-{const sb0=settingsBody;settingsBody=function(){return sb0.apply(this,arguments)+gfxRow();};}
+HOOK.wrap('settingsBody','gfx6','Graphics row',function(next,...a){return next(...a)+gfxRow();});

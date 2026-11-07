@@ -252,7 +252,7 @@ HOOK.after('calcDamage','battle4','boss gimmick damage',function(r,a,sk,t){
 {const dl0=delayOf;delayOf=function(u,cost){let d=dl0.apply(this,arguments);try{const S=B&&B.b4g;if(S&&u&&u.side==='p'){const D=S.D;
   if(D.t==='chill'&&u.st&&u.st.g_chill)d*=1+D.spd*(u.st.g_chill.v||1);if(D.t==='tide'&&S.lvl&&!(u.el||[]).includes('water'))d*=1+D.spd*S.lvl;}}catch(e){}return d;};}
 // the answers: element hits stop a readied move, Fire thaws, Earth dams the tide, Fire or Light lights a torch, Light reveals; a mirror splashes back
-{const pf1=perform;perform=function(a,sk,tgts){const S=B&&B.b4g;if(!S||!a||a.side!=='p'||!sk)return pf1.apply(this,arguments);const u=S.u,hp0=u.hp;const r=pf1.apply(this,arguments);
+HOOK.wrap('perform','battle4','boss gimmick answers',function(next,...args){let a=args[0],sk=args[1],tgts=args[2];const S=B&&B.b4g;if(!S||!a||a.side!=='p'||!sk)return next(...args);const u=S.u,hp0=u.hp;const r=next(...args);
   try{const D=S.D,els=skEls(sk),off=sk.k==='phys'||sk.k==='mag',hit=u.hp<hp0;
     if(S.pend&&S.pend.t==='sac'&&D.els&&hit&&els.some(e=>D.els.includes(e))&&!S.pend.stop){S.pend.stop=1;fx(u,'Interrupted','stat good');log(`${a.name}'s ${els.filter(e=>D.els.includes(e)).map(e=>EL[e]).join(' ')} hit stops the ${D.n}!`);}
     if(off&&D.t==='chill'&&els.includes('fire')&&a.st&&a.st.g_chill){delete a.st.g_chill;fx(a,'Thawed','stat good');log(`${a.name} burns off the chill.`);}
@@ -260,7 +260,7 @@ HOOK.after('calcDamage','battle4','boss gimmick damage',function(r,a,sk,t){
     if(off&&D.t==='dark'&&S.lvl>0&&(els.includes('fire')||els.includes('light'))){S.lvl=0;fx(a,'Torch!','stat good');log(`${a.name} lights a torch. The dark falls back.`);}
     if(off&&S.act&&S.act.t==='veil'&&els.includes('light')&&(tgts||[]).includes(u)){S.act=null;fx(u,'Revealed','stat good');log(`${a.name}'s light reveals ${u.name}.`);}
     if(S.act&&S.act.t==='mirror'&&hit&&sk.k===S.act.kind&&a.hp>0&&!a.isComp){const d=Math.max(1,Math.round((hp0-u.hp)*D.refl));fx(a,String(d),'dmg');log(`The mirror splashes ${d} back at ${a.name}.`);hurt(a,d);}
-    b4GimPhase(u);b4GimSync();}catch(e){}return r;};}
+    b4GimPhase(u);b4GimSync();}catch(e){}return r;});
 {const sc1=scan;scan=function(t){const S=B&&B.b4g;const r=sc1.apply(this,arguments);try{if(S&&S.u===t){if(S.act&&S.act.t==='veil'){S.act=null;fx(t,'Revealed','stat good');log(`The scan cuts through the mist: ${t.name} is revealed.`);}log(`Realm gimmick: ${b4GimLine(S.D)}`);b4GimSync();}}catch(e){}return r;};}
 {const hu1=hurt;hurt=function(t,d){const r=hu1.apply(this,arguments);try{if(B&&B.b4g&&t===B.b4g.u){b4GimPhase(t);b4GimSync();}}catch(e){}return r;};}
 // the i panel: the boss's gimmick and where it stands now

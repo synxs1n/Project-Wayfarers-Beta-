@@ -62,12 +62,12 @@ const AMB_LV=[[0,'Off'],[.3,'Low'],[.55,'Mid'],[.8,'High']];
 function au2SetStyle(st){META.cfg.mstyle=st;saveMeta();
   if(st==='chip'){if(AU2.on){au2Stop(.4);AU2.on=false;try{clearInterval(AU2.timer);}catch(e){}AU2.timer=null;if(typeof ambStop==='function')ambStop();}if(AU.ctx&&AU.want)playMusicClassic(AU.want,true);}
   else{AU2.dead=false;AU.track=null;AU.name=null;if(AU.ctx){if(AU2.g){AU2.on=true;if(!AU2.timer)AU2.timer=setInterval(()=>{au2Tick();if(typeof ambTick==='function')ambTick();},30);au2Sync(true);}else au2Start();}}}
-{const sb1=settingsBody;settingsBody=function(){const h=sb1.apply(this,arguments),c=META.cfg,amb=c.amb??.3,st=c.mstyle||'orch';
+HOOK.wrap('settingsBody','music2','Ambience, Music style, Credits rows',function(next,...a){const h=next(...a),c=META.cfg,amb=c.amb??.3,st=c.mstyle||'orch';
   const chips=(k,vals,cur)=>`<div class="chips">${vals.map(v=>`<button class="chip ${cur===v[0]?'on':''}" data-act="${k}" data-arg="${v[0]}">${v[1]}</button>`).join('')}</div>`;
   const extra=`<div class="rows"><div class="row"><div><b>Ambience</b><small>Wind, birds, rain, waves and the hum of each place, under the music.</small></div>${chips('ambSet',AMB_LV,amb)}</div>
     <div class="row"><div><b>Music style</b><small>Orchestral is the full soundtrack. Classic chiptune is the original pixel music.</small></div>${chips('mstyleSet',[['orch','Orchestral'],['chip','Classic chiptune']],st)}</div>
     <div class="row"><div><b>Credits</b><small>Who made the instruments and sounds.</small></div><button class="btn sm" data-act="creditsOpen">Credits</button></div></div>`;
-  return h+extra;};}
+  return h+extra;});
 ACT.ambSet=function(v){META.cfg.amb=+v;saveMeta();audioVol();render();};
 ACT.mstyleSet=function(v){au2SetStyle(v==='chip'?'chip':'orch');render();};
 const CREDITS_TEXT=`Music and sound

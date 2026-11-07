@@ -591,6 +591,7 @@ function perform(a,sk,tgts){
     a.buffT=Date.now();(sk.fx||[]).forEach(([k])=>addSt(a,k,a));
   }
 }
+perform=HOOK.def('perform',perform);// v0.9.9: one definition; modules add hooks (hooks.js)
 function autoNote(a,move){if(!B||!B.auto||a.side!=='p')return;B.autoLast={id:a.id,who:a.name,move,t:Date.now()};fx(a,move,'stat move');}
 function exec(sk,tgts){
   const a=B.cur;a.mp-=Math.round((sk.mp||0)*(1-((a.S&&a.S.mpEff)||0)));if(a.side==='p'&&(sk.k==='phys'||sk.k==='mag')){B.usedEls=B.usedEls||{};skEls(sk).forEach(e=>{B.usedEls[e]=1;});}autoNote(a,sk.limit?'Limit: '+sk.n:sk.id==='attack'?'Attack':sk.n);

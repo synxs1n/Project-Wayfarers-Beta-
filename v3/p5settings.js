@@ -19,11 +19,11 @@ function p5Vol(){const c=META.cfg||{},mv=c.mute?0:cfgVol('master',1);
 const VOLS=[['master','Master','Everything: music, effects and ambience.','mute',1],['music','Music','The soundtrack.','muteMusic',.45],['sfx','Sound effects','Battle, menu and footstep sounds.','muteSfx',.6]];
 function volRows(){const c=META.cfg;return VOLS.map(([k,lab,d,mk,def])=>{const v=Math.round(cfgVol(k,def)*100),mu=!!c[mk];
   return `<div class="row volrow"><div class="grow"><b>${lab}</b><small>${d}</small><div class="volc"><input type="range" min="0" max="100" step="1" value="${v}" data-vol="${k}" aria-label="${lab} volume" ${mu?'class="muted"':''}><span class="nums" data-volv="${k}">${v}%</span></div></div><button class="chip ${mu?'on':''}" data-act="p5Mute" data-arg="${mk}" aria-pressed="${mu}">${mu?'Muted':'Mute'}</button></div>`;}).join('');}
-{const sb0=settingsBody;settingsBody=function(){let h=sb0.apply(this,arguments);try{
+HOOK.xform('settingsBody','p5settings','volume sliders replace the sound rows',function(h){try{
   const rows=`<h4 class="volh">Volume</h4>${volRows()}`;let put=false;
   h=h.replace(/<div class="row"><div><b>Sound<\/b>[\s\S]*?<\/div><div class="chips">[\s\S]*?<\/div><\/div>/,()=>{put=true;return '</div><div class="rows">'+rows+'</div><div class="rows">';});
   h=h.replace(/<div class="row"><div><b>Music<\/b><\/div><div class="chips">[\s\S]*?<\/div><\/div>/,'').replace(/<div class="row"><div><b>Sound effects<\/b><\/div><div class="chips">[\s\S]*?<\/div><\/div>/,'');
-  if(!put)h=`<div class="rows">${rows}</div>`+h;h=h.replace(/<div class="rows"><\/div>/g,'');}catch(e){}return h;};}
+  if(!put)h=`<div class="rows">${rows}</div>`+h;h=h.replace(/<div class="rows"><\/div>/g,'');}catch(e){}return h;});
 ACT.p5Mute=function(k){if(!['mute','muteMusic','muteSfx'].includes(k))return;META.cfg[k]=!META.cfg[k];saveMeta();audioVol();render();};
 let volSaveT=null;
 document.addEventListener('input',e=>{const el=e.target,k=el&&el.dataset&&el.dataset.vol;if(!k||!VOLS.some(v=>v[0]===k))return;

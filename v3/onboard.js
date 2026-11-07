@@ -291,8 +291,8 @@ function vSysGuide(m){const at=m&&m.obAt,met=TIPS.filter(t=>t.always||tipSeen(t.
   const html=mm1.apply(this,arguments),tabs=menuTabsHtml(menuGroupOf('sysg'),'sysg'),k=html.indexOf(tabs);return k<0?html:html.slice(0,k+tabs.length)+vSysGuide(m)+html.slice(k+tabs.length);};}
 
 // ----- Settings: Tips on or off, Reset tips -----
-{const st0=settingsBody;settingsBody=function(){const h=st0.apply(this,arguments),on=tipsOn();
-  return h+`<div class="rows obset"><div class="row"><div class="grow"><b>Tips</b><small>A short card the first time you meet each part of the game. Read them again in Guides > How it works.</small></div><div class="chips"><button class="chip ${on?'on':''}" data-act="cfg" data-arg='["tips",true]'>On</button><button class="chip ${on?'':'on'}" data-act="cfg" data-arg='["tips",false]'>Off</button><button class="chip" data-act="tipsReset">Reset tips</button></div></div></div>`;};}
+HOOK.wrap('settingsBody','onboard','Tips row',function(next,...a){const h=next(...a),on=tipsOn();
+  return h+`<div class="rows obset"><div class="row"><div class="grow"><b>Tips</b><small>A short card the first time you meet each part of the game. Read them again in Guides > How it works.</small></div><div class="chips"><button class="chip ${on?'on':''}" data-act="cfg" data-arg='["tips",true]'>On</button><button class="chip ${on?'':'on'}" data-act="cfg" data-arg='["tips",false]'>Off</button><button class="chip" data-act="tipsReset">Reset tips</button></div></div></div>`;});
 
 try{const css=document.createElement('style');css.textContent=`#p2hint.ob{width:min(92vw,420px);display:flex;flex-wrap:wrap;align-items:center;gap:2px 8px}#p2hint.ob .obt{flex:1 1 270px;min-width:0;overflow-wrap:anywhere}
   #p2hint.ob .btnrow{margin:2px 0 0 auto;flex:0 0 auto}#p2hint.ob.bat{font-size:11.5px;padding:5px 8px}#p2hint.ob.slim{flex-wrap:nowrap;align-items:center;font-size:11px;padding:3px 8px;line-height:1.25}#p2hint.ob.slim .obt{flex:1 1 auto}#p2hint.ob.slim.tight{font-size:9.5px;line-height:1.15}#p2hint.ob.slim.tight .btn{padding:2px 7px;min-height:24px;font-size:10px}#p2hint.ob.slim .btnrow{margin:0}
