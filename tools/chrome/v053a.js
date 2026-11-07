@@ -86,7 +86,7 @@ const PROJ=`(x,y,z)=>{const M=__A.HD.mats.vp,X=M[0]*x+M[4]*y+M[8]*z+M[12],Y=M[1]
     chk('reduced motion: the camera holds still',r.same||JSON.stringify(r));
     chk('reduced motion: nothing drifts on the overlay in clear weather (the 2D canvas over the GL view stays empty)',r.ovPixels===0||JSON.stringify(r));
     const r2=await H.ev(()=>{const A=__A;A.META.cfg.rmotion=false;const e=[];A.worldDraw2(1000);e.push(A.HD.eye.slice());A.worldDraw2(6000);e.push(A.HD.eye.slice());A.META.cfg.rmotion=true;return e[0][0]!==e[1][0]||e[0][1]!==e[1][1];});
-    chk('without reduced motion the camera sways gently',r2===true);
+    chk('v0.10.0: the camera no longer drifts at rest (HD2D.sway amp 0: the drift made the pixel scene jump a pixel whenever it crossed a pixel boundary)',r2===false);
     await H.browser.close();}
   // ---- view size at phone, sideways, Fold open and desktop sizes, also after a battle and after rotating ----
   for(const [w,h] of [[390,844],[844,390],[933,705],[1280,800]]){const H=await open({w,h,mobile:w<1000,dpr:2,pre:META('medium')});const {ev,wait}=H;H.page.on('console',m=>{if(m.type()==='error'&&!/file:\/\/|ERR_FILE|net::/.test(m.text()))errs.push(w+': '+m.text());});

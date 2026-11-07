@@ -194,8 +194,8 @@ function arrive(){
   const enc=encTile(m,WS.x,WS.y);
   if(G.ward>0&&m.kind!=='town'){G.ward--;if(!G.ward)toast('The Holy Water\'s ward fades.');if(typeof wkwUpdate==='function')wkwUpdate();}
   if(enc&&!(G.ward>0)&&WS.steps>=ENC_MIN_STEPS&&Math.random()<rate*(m.kind==='dungeon'?.6:1)*(WS.run?1.15:1)){
-    if(WS.encPend)return;WS.encPend=1;WS.steps=0;haltInput();WS.lock=true;WS.flash=performance.now();if(typeof sfx==='function')sfx('encounter');
-    later(()=>{WS.encPend=0;WS.lock=false;startBattle({stage:m.s,kind:m.kind==='dungeon'?'dungeon':'field'});},460);
+    WS.steps=0;haltInput();WS.lock=true;WS.flash=performance.now();if(typeof sfx==='function')sfx('encounter');
+    later(()=>{WS.lock=false;startBattle({stage:m.s,kind:m.kind==='dungeon'?'dungeon':'field'});},460);
   }
 }
 // v0.3.3: a thrown error inside fn used to leave WS.lock set forever, which freezes the whole world. Always release it.

@@ -304,8 +304,9 @@ function awGoal(m,tx,ty){const W=m.w,H=m.h,b=(m.bld||[]).find(b=>tx>=b.x&&tx<b.x
   const around=(x,y)=>[[0,1],[0,-1],[1,0],[-1,0]].map(([a,c])=>[x+a,y+c,awFaceTo(x+a,y+c,x,y)]).filter(([x2,y2])=>awPass(m,x2,y2)||(x2===WS.x&&y2===WS.y));
   if(ex){const v=ex.x===0?[1,0]:ex.x===W-1?[-1,0]:ex.y===0?[0,1]:ex.y===H-1?[0,-1]:[0,0];
     // v0.10.0: a wide gate (three exit cells) is one goal: the tile in front of any of its cells, so its corner cell plans a walk too
-    let cells=[[tx,ty]];try{const g=Object.values(m.gates||{}).find(g=>g&&g.cells&&g.cells.some(([x,y])=>x===tx&&y===ty));if(g)cells=g.cells;}catch(e){}
-    const c=cells.map(([x,y])=>[x+v[0],y+v[1],awFaceTo(x+v[0],y+v[1],x,y)]).filter(([x,y])=>awPass(m,x,y)||(x===WS.x&&y===WS.y));
+    const front=cells=>cells.map(([x,y])=>[x+v[0],y+v[1],awFaceTo(x+v[0],y+v[1],x,y)]).filter(([x,y])=>awPass(m,x,y)||(x===WS.x&&y===WS.y));
+    let c=front([[tx,ty]]);
+    if(!c.length)try{const g=Object.values(m.gates||{}).find(g=>g&&g.cells&&g.cells.some(([x,y])=>x===tx&&y===ty));if(g)c=front(g.cells);}catch(e){}
     return {what:'exit',c:c.length?c:around(tx,ty)};}
   if(awPass(m,tx,ty)||(tx===WS.x&&ty===WS.y))return {what:'tile',c:[[tx,ty,null]]};
   return {what:'thing',c:around(tx,ty)};}

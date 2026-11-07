@@ -52,8 +52,8 @@ function roamTick(m,now){
       if(roamInterior(m,nx,ny)&&Math.abs(nx-r.hx)+Math.abs(ny-r.hy)<=4){r.x=nx;r.y=ny;}
       else r.dir=Math.random()<.6?{u:'d',d:'u',l:'r',r:'l'}[r.dir]:['u','d','l','r'][Math.floor(Math.random()*4)];}
     if(r.x===px&&r.y===py){roamFight(m,r);return;}}}
-function roamFight(m,r){if(WS.encPend)return;WS.encPend=1;haltInput();WS.lock=true;WS.flash=performance.now();if(typeof sfx==='function')sfx('encounter');
-  later(()=>{WS.encPend=0;WS.lock=false;startBattle({stage:m.s,kind:'dungeon',roam:{mid:m.id,i:r.i,mon:r.mon,elite:r.elite,mod:r.mod,name:r.name}});},420);}
+function roamFight(m,r){if(WS.lock)return;/* v0.10.0: one start per contact */haltInput();WS.lock=true;WS.flash=performance.now();if(typeof sfx==='function')sfx('encounter');
+  later(()=>{WS.lock=false;startBattle({stage:m.s,kind:'dungeon',roam:{mid:m.id,i:r.i,mon:r.mon,elite:r.elite,mod:r.mod,name:r.name}});},420);}
 // battles: a tougher lead (an elite for some) with company from the realm
 HOOK.wrap('encounterFoes','roam','roamer fights',function(next,...a){let spec=a[0];if(!spec||!spec.roam)return next(...a);
   const s=spec.stage,ro=spec.roam,band=STAGE_LV[s],lv=band[1]+ROAM.lvUp+ngLvOff(),Z=ZS(s),out=[];
