@@ -46,7 +46,10 @@ evals any name), `window.__AU` (ambience.js), `__P2` (p2world.js), `__P3` (p3sho
 | saves and slots | `engine.js` (packG/unpackG, saveGame), `saves.js` (slots, backups, import/export, loadRaw), `gearmig.js` (old gear), `cloud.js` + `account.js` (accounts). Keys: `aurelis-wayfarers-v3` (+`-s1`, `-s2`), `aurelis-meta-v1`. Sync between devices (svMark, svFlush, svCheck/svDecide, svLeave, svGate, the newer save prompt; `aurelis-sync-v1`): `saves.js`, see `docs/v085-sync.md` |
 | Daily Trial and twists | `engine2.js` (dailyGo, seeded RNG), `ui2.js` (screens), `twists.js`, `config.js` 9 |
 | audio | `audio.js` (chiptune fallback), `audio2.js` (orchestral engine), `musicdata.js` (score), `music2.js` (wiring), `sfx2.js`, `ambience.js` |
-| graphics tiers and settings | `gfx6.js` (GFX tiers), `p5settings.js`, `ui.js` settingsBody (wrapped by several modules) |
+| graphics tiers and settings | `gfx6.js` (GFX tiers; Low = Flat: `html.flat` keeps the style.css menus, ui3.css is scoped by the build), `p5settings.js`, `ui.js` settingsBody (wrapped by several modules) |
+| page zoom on computers, Screen size row | `deskscale.js` (CSS zoom on html; `dsZoom()` in worldrt.js divides viewport measures) |
+| keyboard mapping, the Keys screen | `keymap.js` (kmIs, kmLabel, META.keys), KEYDIR rebuilt from it |
+| account totals across journeys | `metastats.js` (META.stats, hooks on finishBattle, win, newGame, openChest), shown in `journey.js` |
 | onboarding, hints, What next? | `onboard.js` (tip cards), `goals.js` (Next goals panel), `p2world.js` (hints), `progression.js` (What next?), `pacing.js` (unlock timing; `pcUnlocked(system)`, PACE) |
 | boss realm gimmicks (telegraphs, landings, answers) | `battle4.js` (b4Gim*), `BOSS_GIM` in `config.js` 3 |
 | encounter rate, roamers on fields and in dungeons, ordinary fight rewards | `ENC_RATE`, `ENC`, `ROAM` in `config.js`; `worldrt.js` (arrive), `roam.js` |

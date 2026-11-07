@@ -25,6 +25,7 @@ function vJourney(){
     <h4>Exploration</h4><div class="rows compact">
       ${row('Steps walked',fmt(S.steps||0))}
       ${row('Places visited',Object.keys(G.been||{}).length||'?')}</div>
+    ${typeof metaBlock==='function'?metaBlock():''}
     <div class="btnrow"><button class="btn" data-act="exportOpen">Export save</button>${G.won&&!G.legacyChosen?'<button class="btn gold" data-act="pickLegacy">Choose a Legacy</button>':''}${G.won?'<button class="btn" data-act="startNG">Begin New Game+</button>':''}<button class="btn" data-act="toTitle">Quit to title</button></div>
     <p class="note">The game also saves on its own when you rest, travel and finish fights.</p>`;
 }

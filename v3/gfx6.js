@@ -10,7 +10,7 @@ function gfxAutoStart(){const r=META&&META.cfg&&META.cfg.gfxAuto;return GFX_TIER
 function gfxTier(){const c=gfxCfg();if(c!=='auto')return c;if(!GFX.auto)GFX.auto=gfxAutoStart();return GFX.auto;}
 function gfxStill(){return typeof reducedMotion==='function'&&reducedMotion();}
 function gfxApply(){const t=gfxTier(),prevAo=GFX.q&&GFX.q.ao,was=GFX.tier;GFX.tier=t;GFX.q=GFX_Q[t];
-  try{const h=document.documentElement;GFX_TIERS.forEach(k=>h.classList.toggle('gq-'+k,k===t));[0,1,2].forEach(k=>h.classList.toggle('gq-dof'+k,GFX.q.dof===k));}catch(e){}
+  try{const h=document.documentElement;GFX_TIERS.forEach(k=>h.classList.toggle('gq-'+k,k===t));[0,1,2].forEach(k=>h.classList.toggle('gq-dof'+k,GFX.q.dof===k));h.classList.toggle('flat',t==='low');/* v0.10.1: Flat = the Low tier plus the original menus (ui3.css is scoped under html:not(.flat) by the build) */}catch(e){}
   if(was!==t||prevAo!==GFX.q.ao){try{if(typeof WS!=='undefined'&&WS.m&&V.screen==='world')rebuildBase();}catch(e){}}
   return t;}
 // Auto: a pure decision from one measured window, so tests can drive it
@@ -59,8 +59,8 @@ const PARA_SPLIT={meadow:.3,coast:.5,cave:.3,snow:.18,heights:.5,void:.42};// sk
 // ----- menus: depth of field (the scene behind an open menu dims or blurs, by tier) -----
 HOOK.after('render','gfx6','menu depth of field class',function(){try{document.documentElement.classList.toggle('mopen',!!V.modal&&(V.screen==='world'||V.screen==='battle'));}catch(e){}});
 // ----- Settings > Graphics -----
-function gfxRow(){const c=gfxCfg(),lab={auto:'Auto',low:'Low',medium:'Medium',high:'High'},T=gfxTier();
+function gfxRow(){const c=gfxCfg(),lab={auto:'Auto',low:'Flat',medium:'HD-2D',high:'HD-2D High'},T=gfxTier();
   const chips=['auto','low','medium','high'].map(k=>`<button class="chip ${c===k?'on':''}" data-act="cfg" data-arg='["gfx","${k}"]'>${lab[k]}</button>`).join('');
   const now=c==='auto'?`Auto is using ${lab[T]}${GFX.fps?' ('+GFX.fps+' fps)':''}.`:'';
-  return `<div class="rows gfxrows"><div class="row"><div><b>Graphics</b><small>Lighting, glow, drifting leaves, birds and battle camera. Auto picks by frame rate. ${now}</small></div><div class="chips">${chips}</div></div></div>`;}
+  return `<div class="rows gfxrows"><div class="row"><div><b>Graphics</b><small>Flat is the original look: the plain 2D world and the classic menus. HD-2D adds lighting, glow, drifting leaves, birds and the battle camera (High: more of it). Auto picks by frame rate. ${now}</small></div><div class="chips">${chips}</div></div></div>`;}
 HOOK.wrap('settingsBody','gfx6','Graphics row',function(next,...a){return next(...a)+gfxRow();});

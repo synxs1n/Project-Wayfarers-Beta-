@@ -228,8 +228,8 @@ function b8HAt(kind,w){try{if(!B)return 0;const bat=document.querySelector('.bat
   return B._b8h[key]=Math.max(B._b8h[key]||0,h);}catch(e){return 0;}}
 // kept for the tests and older callers: what the two stacked columns need (L: commands and foes, P: the party column)
 function b3WideNeed(bat){try{const W=bat.clientWidth,L0=(W-B8.col)*1.42/2.42,f=b8HAt('foes',L0);return {L:b8HAt('cmd',L0)+(f?9+f:0),P:b8HAt('pty',W-B8.col-L0)};}catch(e){return {L:0,P:0};}}
-function b3DocTop(e){return e.getBoundingClientRect().top+(window.scrollY||0);}
-function b3Vh(){return window.visualViewport?window.visualViewport.height:window.innerHeight;}
+function b3DocTop(e){const z=typeof dsZoom==='function'?dsZoom():1;return (e.getBoundingClientRect().top+(window.scrollY||0))/z;}
+function b3Vh(){return (window.visualViewport?window.visualViewport.height:window.innerHeight)/(typeof dsZoom==='function'?dsZoom():1);}
 // the stage scale and where everything goes (v0.8.0, v0.8.7). The arrangements tried, the largest stage wins, then the least empty space
 // at the bottom, then the simpler one:
 // - stacked (v0.7.6): the boss bar and the turn order on one row over the stage, the log strip under it, then the two columns;

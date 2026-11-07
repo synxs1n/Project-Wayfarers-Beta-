@@ -10,5 +10,5 @@ function remSet(k,v){try{META.cfg[k]=!!v;saveMeta();}catch(e){}}
 {const a0=ACT.auto;ACT.auto=function(){const r=a0.apply(this,arguments);remSet('autoOn',V.auto);return r;};}
 {const r0=ACT.runT;ACT.runT=function(){const r=r0.apply(this,arguments);remSet('runOn',WS.run);return r;};}
 {const h0=haltInput;haltInput=function(){const r=h0.apply(this,arguments);try{WS.run=remOn('runOn');}catch(e){}return r;};}
-window.addEventListener('keyup',e=>{if(e.key==='Shift'&&remOn('runOn'))WS.run=true;});
+window.addEventListener('keyup',e=>{if((typeof kmIs==='function'?kmIs(e,'run'):e.key==='Shift')&&remOn('runOn'))WS.run=true;});
 HOOK.before('startBattle','remember','remembered Auto',function(spec){try{if(!(spec&&spec.kind==='daily')&&!(G&&G.daily))V.auto=remOn('autoOn');}catch(e){}});

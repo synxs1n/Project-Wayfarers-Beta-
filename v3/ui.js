@@ -84,7 +84,7 @@ function buildScreen(){
   }else if(s==='starter'){scr.innerHTML='<div id="starterBox"></div>';}
   else if(s==='world'){
     scr.innerHTML=`<div class="world"><div class="wview"><canvas id="wcv"></canvas><div id="wloc" class="wloc"></div><div id="wdlg"></div></div>
-      <div class="wbar"><div class="wkeys">Arrows or WASD to walk, Shift to run. Space to talk or open. M for menu, N for the map. Click the map to walk there.</div><div class="btnrow"><span id="wkw"></span><button class="btn sm ${WS.run?'gold':''}" data-act="runT" id="runb">Run</button><button class="btn sm" data-act="map" aria-label="Open the map (N)">Map</button><button class="btn sm" data-act="menu">Menu</button></div></div>
+      <div class="wbar"><div class="wkeys">${kmMoveLabel()} to walk, ${kmLabel('run')} to run. ${kmLabel('interact',1)} to talk or open. ${kmLabel('menu')} for menu, ${kmLabel('map')} for the map. Click the map to walk there.</div><div class="btnrow"><span id="wkw"></span><button class="btn sm ${WS.run?'gold':''}" data-act="runT" id="runb">Run</button><button class="btn sm" data-act="map" aria-label="Open the map (${kmLabel('map')})">Map</button><button class="btn sm" data-act="menu">Menu</button></div></div>
       <div class="pad" id="pad"><div class="joy" id="joy" aria-label="Movement stick"><i class="ja u">▲</i><i class="ja d">▼</i><i class="ja l">◀</i><i class="ja r">▶</i><span class="knob" id="knob"></span></div>
       <div class="abtns"><button class="abtn b" data-act="runT" aria-label="Run">B</button><button class="abtn" data-act="talk" aria-label="Talk">A</button></div></div></div>`;
     WS.cv=$('wcv');WS.ctx=WS.cv.getContext('2d');worldSizeCanvas();
@@ -134,7 +134,7 @@ function musicSync(){
   if(V.screen==='battle'&&B){if(V.modal&&V.modal.type==='result')return playMusic('victory');return playMusic(B.boss||B.en.some(e=>e.elite)?'boss':'battle');}
   if(V.screen==='world'&&WS.m)playMusic(musicFor());
 }
-function muteBtn(){return `<button class="btn sm" data-act="mute" aria-label="${META.cfg.mute?'Unmute':'Mute'}" title="${META.cfg.mute?'Unmute':'Mute'} (N)">${META.cfg.mute?'🔇':'🔊'}</button>`;}
+function muteBtn(){return `<button class="btn sm" data-act="mute" aria-label="${META.cfg.mute?'Unmute':'Mute'}" title="${META.cfg.mute?'Unmute':'Mute'} (${kmLabel('mute')})">${META.cfg.mute?'🔇':'🔊'}</button>`;}
 function vHeader(){
   if(V.screen==='title'||V.screen==='starter'||!G)return `<div class="hdr"><div class="brand"><b>Aurelis</b></div><div class="btnrow">${muteBtn()}<button class="btn sm" data-act="fbOpen" aria-label="Help and feedback">?</button><button class="btn sm" data-act="settings" aria-label="Settings">⚙</button></div></div>`;
   const loc=V.screen==='battle'&&B?(B.spec.kind==='arena'?'The Arena':ZS(B.stage).n):WS.m?locName(WS.m):'';
@@ -340,7 +340,7 @@ function mMenu(m){
   const tab=m.tab||'party';
   const grp=menuGroupOf(tab);
   let body='';
-  if(tab==='map')body=`<p class="note">The map shows every place your party has seen in ${esc(WS.m?(WS.m.archive?(WS.m.hub||'the Archive'):WS.m.kind==='town'?ZS(WS.m.s).town:WS.m.kind==='field'?ZS(WS.m.s).n:ZS(WS.m.s).dungeon):'this area')}. Press N, the Map button, or Y on a pad from anywhere in the world.</p><div class="btnrow"><button class="btn gold" data-act="map">Open the map</button><button class="btn" data-act="miniT">Minimap: ${miniOn()?'on':'off'}</button></div>`;
+  if(tab==='map')body=`<p class="note">The map shows every place your party has seen in ${esc(WS.m?(WS.m.archive?(WS.m.hub||'the Archive'):WS.m.kind==='town'?ZS(WS.m.s).town:WS.m.kind==='field'?ZS(WS.m.s).n:ZS(WS.m.s).dungeon):'this area')}. Press ${kmLabel('map')}, the Map button, or Y on a pad from anywhere in the world.</p><div class="btnrow"><button class="btn gold" data-act="map">Open the map</button><button class="btn" data-act="miniT">Minimap: ${miniOn()?'on':'off'}</button></div>`;
   if(tab==='party')body=vSwap('menu');
   if(tab==='equip')body=vEquipTab();
   if(tab==='comp')body=vCompanions();
@@ -568,19 +568,19 @@ function boot(){
   document.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.classList&&e.target.classList.contains('unit')&&e.target.classList.contains('tg')){e.preventDefault();ACT[e.target.dataset.act](e.target.dataset.arg);}});
   window.addEventListener('keydown',e=>{
     if(e.target&&/INPUT|TEXTAREA|SELECT/.test(e.target.tagName)&&!(e.key==='Escape'&&e.target.tagName==='SELECT'))return;
-    if(e.key==='Shift')WS.run=true;
-    if((e.key==='n'||e.key==='N')&&!(e.target&&/INPUT|TEXTAREA/.test(e.target.tagName))){ACT.mute();return;}
-    if(e.key==='Escape'&&V.modal){e.preventDefault();ACT.xBack();return;}
-    if(e.key==='Escape'&&!V.modal&&V.screen==='battle'&&B&&B.mode==='cmd'&&B.menu!=='root'){e.preventDefault();ACT.back();return;}
-    if(e.key==='Escape'&&!V.modal&&V.screen==='battle'&&B&&B.uDet){e.preventDefault();ACT.uClose();return;}
+    if(kmIs(e,'run'))WS.run=true;
+    if(kmIs(e,'mute')&&!(e.target&&/INPUT|TEXTAREA/.test(e.target.tagName))){ACT.mute();return;}
+    if(kmIs(e,'back')&&V.modal){e.preventDefault();ACT.xBack();return;}
+    if(kmIs(e,'back')&&!V.modal&&V.screen==='battle'&&B&&B.mode==='cmd'&&B.menu!=='root'){e.preventDefault();ACT.back();return;}
+    if(kmIs(e,'back')&&!V.modal&&V.screen==='battle'&&B&&B.uDet){e.preventDefault();ACT.uClose();return;}
     if(V.modal&&(V.modal.type==='char'||(V.modal.type==='guild'&&V.modal.char))&&!V.modal.gear&&(e.key==='ArrowLeft'||e.key==='ArrowRight')){e.preventDefault();ACT.charNav(e.key==='ArrowLeft'?-1:1);return;}
     if(V.screen!=='world')return;
-    const d=KEYDIR[e.key];
+    const d=kmDir(e);
     if(d&&!V.modal){e.preventDefault();if(WS.swallow&&WS.swallow.has(e.key))return;if(!WS.held.includes(d)){WS.held.push(d);inputTouch('kb');WS.target=null;WS.path=null;}return;}
-    if((e.key===' '||e.key==='Enter'||e.key==='z'||e.key==='Z')&&!V.modal){e.preventDefault();interact();return;}
-    if(e.key==='m'||e.key==='M'||(e.key==='Escape'&&!V.modal)){ACT.menu();}
+    if(kmIs(e,'interact')&&!V.modal){e.preventDefault();interact();return;}
+    if(kmIs(e,'menu')||(kmIs(e,'back')&&!V.modal)){ACT.menu();}
   });
-  window.addEventListener('keyup',e=>{KEYS_DOWN.delete(e.key);if(WS.swallow)WS.swallow.delete(e.key);if(e.key==='Shift')WS.run=false;const d=KEYDIR[e.key];if(d)WS.held=WS.held.filter(x=>x!==d);});
+  window.addEventListener('keyup',e=>{KEYS_DOWN.delete(e.key);if(WS.swallow)WS.swallow.delete(e.key);if(kmIs(e,'run'))WS.run=false;const d=kmDir(e);if(d)WS.held=WS.held.filter(x=>x!==d);});
   window.addEventListener('keydown',e=>{KEYS_DOWN.add(e.key);},true);
   window.addEventListener('blur',()=>{WS.held=[];WS.padDir=null;WS.joyDir=null;KEYS_DOWN.clear();WS.swallow=null;});
   window.addEventListener('resize',()=>{if(V.screen==='world')worldSizeCanvas();if(V.screen==='battle'){layoutBattle();render();}});

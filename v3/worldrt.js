@@ -259,21 +259,24 @@ function openTravel(){V.modal={type:'travel'};render();}
 function travelTo(s){V.modal=null;fadeTo(()=>{const [x,y]=innSpot(s);placeAt('t'+s,x,y,'d');showLocation();saveGame();});render();}
 
 // ----- drawing -----
+// v0.10.1: the page zoom on computers (deskscale.js). window and visualViewport sizes and client rects are in zoomed pixels, offsetHeight and
+// clientWidth are not: every measure here divides the zoomed ones by it so all numbers are layout pixels
+function dsZoom(){try{const z=parseFloat(document.documentElement.style.zoom);return z>0?z:1;}catch(e){return 1;}}
 function worldSizeCanvas(){
   const cv=WS.cv;if(!cv)return;
   // v0.5.0 1.2: never size from a canvas that is detached or hidden (a resize while the battle results are up used to shrink the view)
   if(!cv.isConnected||!cv.parentElement)return;
-  const box=cv.parentElement.getBoundingClientRect();if(box.width<40)return;
+  const zz=dsZoom(),box={width:cv.parentElement.getBoundingClientRect().width/zz};if(box.width<40)return;
   let sc=box.width>=720?3:2;
   // size the view so the whole world screen (header, view, bar, touch controls) fits the visible screen without scrolling
-  const vhPx=(window.visualViewport?window.visualViewport.height:window.innerHeight);
+  const vhPx=(window.visualViewport?window.visualViewport.height:window.innerHeight)/zz;
   const hdr=document.getElementById('hdr'),wbar=document.querySelector('.wbar'),pad=document.getElementById('pad');
   // v0.4.3: wide phones held sideways (and unfolded foldables) put the stick and A/B over the view instead of under it
-  const padOn=pad&&getComputedStyle(pad).display!=='none',vwPx=window.visualViewport?window.visualViewport.width:window.innerWidth,land=!!padOn&&vwPx>vhPx*1.15&&vhPx<=760;
+  const padOn=pad&&getComputedStyle(pad).display!=='none',vwPx=(window.visualViewport?window.visualViewport.width:window.innerWidth)/zz,land=!!padOn&&vwPx>vhPx*1.15&&vhPx<=760;
   const wr=cv.closest('.world');if(wr)wr.classList.toggle('land',land);
   const padH=padOn&&!land?pad.offsetHeight:0;
   const avail=vhPx-(hdr?hdr.offsetHeight:0)-(wbar?wbar.offsetHeight:0)-padH-(land?20:box.width<720?36:76);
-  const cssH=land?clamp(avail,160,900):clamp(avail,170,box.width<720?620:560);
+  const cssH=land?clamp(avail,160,900):clamp(avail,170,box.width<720?620:(zz>1?600:560));// v0.10.1: a little taller on a zoomed computer screen
   if(land)sc=cssH>=380?3:2;
   const vw=Math.floor(box.width/sc),vh=Math.floor(cssH/sc);
   // v0.5.1: also compare the canvas's own height and display size. A canvas rebuilt after a battle starts at 300x150 with no CSS size;

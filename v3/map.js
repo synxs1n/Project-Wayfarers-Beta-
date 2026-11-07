@@ -89,7 +89,7 @@ function mMap(){const m=WS.m;if(!m)return '';const lbl=m.cave?m.name:m.archive?(
     <canvas id="fmap" class="fmap" data-act="fmTap" aria-label="Map of ${esc(lbl)}"></canvas><p class="note fmnote" id="fmnote" aria-live="polite"></p>
     <div class="maplegend"><span><b style="color:#fff">➤</b> You</span>${legendKeys(L).map(k=>MAPICO_NAME[k]?`<span><canvas class="lgi" data-ico="${k}" width="20" height="20"></canvas> ${MAPICO_NAME[k]}</span>`:`<span><b style="color:${MK[k][0]}">${MK[k][1]}</b> ${MKN[k]}</span>`).join('')}</div>
     <div class="btnrow"><button class="btn sm" data-act="worldMap">World map</button></div>
-    <p class="note">Only places your party has seen are drawn. Tap a place you have been to and the party walks there. Tap outside the map, press N or Esc, or B on a pad to close.</p></div></div>`;}
+    <p class="note">Only places your party has seen are drawn. Tap a place you have been to and the party walks there. Tap outside the map, press ${kmLabel('map')} or ${kmLabel('back')}, or B on a pad to close.</p></div></div>`;}
 function drawFullMap(){const cv=document.getElementById('fmap'),m=WS.m;if(!cv||!m)return;const box=cv.parentElement,maxW=Math.min(900,(box.clientWidth||340)-8),maxH=Math.max(160,(window.innerHeight||600)*.62);
   const sc=Math.max(2,Math.floor(Math.min(maxW/m.w,maxH/m.h)));cv.width=m.w*sc;cv.height=m.h*sc;cv.style.width=cv.width+'px';cv.style.height=cv.height+'px';
   const x=cv.getContext('2d');x.imageSmoothingEnabled=false;x.fillStyle='#0a0710';x.fillRect(0,0,cv.width,cv.height);x.drawImage(mapBase(m),0,0,m.w*sc,m.h*sc);
@@ -97,7 +97,7 @@ function drawFullMap(){const cv=document.getElementById('fmap'),m=WS.m;if(!cv||!
 HOOK.before('vModal','map','map and worldmap popups',function(md){if(md&&md.type==='map')return HOOK.stop(mMap(md));if(md&&md.type==='worldmap')return HOOK.stop(mWorldMap(md));});// the minimap's full map and (v0.6.3) the world map
 ACT.map=function(){if(!G||V.screen!=='world'||!WS.m)return;if(V.modal&&V.modal.type==='map'){V.modal=null;render();return;}const prev=V.modal;V.modal={type:'map',from:prev&&prev.type!=='map'?prev:null};render();};
 ACT.miniT=function(){META.cfg.minimap=!miniOn();saveMeta();drawMini();render();};
-window.addEventListener('keydown',e=>{if((e.key==='n'||e.key==='N')&&V.screen==='world'&&!(e.target&&e.target.matches&&e.target.matches('input,textarea'))&&(!V.modal||V.modal.type==='map')){e.preventDefault();ACT.map();}});
+window.addEventListener('keydown',e=>{if(kmIs(e,'map')&&V.screen==='world'&&!(e.target&&e.target.matches&&e.target.matches('input,textarea'))&&(!V.modal||V.modal.type==='map')){e.preventDefault();ACT.map();}});
 window.addEventListener('resize',()=>{if(V.modal&&V.modal.type==='map')drawFullMap();});
 
 try{if(META.cfg.minimap===undefined)META.cfg.minimap=null;if(META.cfg.rmotion===undefined)META.cfg.rmotion=null;}catch(e){}

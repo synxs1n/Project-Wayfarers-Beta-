@@ -91,7 +91,7 @@ function vFbMyDetail(path){
 }
 function vFbHelp(){
   return `<h4>Controls</h4><div class="rows compact">
-    <div class="row"><div><b>Keyboard</b><small>Arrows or WASD to move, Shift to run, Space or Enter to talk and open, M or Esc for the menu, N to mute.</small></div></div>
+    <div class="row"><div><b>Keyboard</b><small>${kmMoveLabel()} to move, ${kmLabel('run')} to run, ${kmLabel('interact',2)} to talk and open, ${kmLabel('menu')} or ${kmLabel('back',1)} for the menu, ${kmLabel('mute')} to mute. Change them in Settings > Keys.</small></div></div>
     <div class="row"><div><b>Touch</b><small>Slide the joystick, tap a spot on the map to walk there, drag on the map to steer. Tap A to talk, B for the menu.</small></div></div>
     <div class="row"><div><b>Gamepad</b><small>D-pad or stick to move and to pick buttons in menus, A to confirm, B to back out or run, Start for the menu.</small></div></div></div>
     <h4>Saving</h4><p class="note">The game saves to this browser in three slots. Rest at an inn or use the menu's Journey tab to save. Export a save code from the Journey tab to move to another device.</p>

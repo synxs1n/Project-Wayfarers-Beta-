@@ -72,7 +72,7 @@ function padPoll(now){
   if(!AU.ctx&&(st.A||st.B||dir))audioInit();
   const inWorld=V.screen==='world'&&!V.modal&&!WS.dlg;
   if(WS.padHold){if(dir)st.B=false;else WS.padHold=false;}
-  if(inWorld){const pd=dir&&!WS.padHold?dir:null;if(pd!==WS.padDir){WS.padDir=pd;if(pd){inputTouch('pad');WS.target=null;WS.path=null;}}WS.run=st.B||KEYS_DOWN.has('Shift');if(edge('A'))interact();if(edge('S'))ACT.menu();if(edge('Y')&&ACT.map)ACT.map();}
+  if(inWorld){const pd=dir&&!WS.padHold?dir:null;if(pd!==WS.padDir){WS.padDir=pd;if(pd){inputTouch('pad');WS.target=null;WS.path=null;}}WS.run=st.B||kmHeld('run');if(edge('A'))interact();if(edge('S'))ACT.menu();if(edge('Y')&&ACT.map)ACT.map();}
   else{
     if(V.screen==='world'&&WS.dlg&&edge('A'))interact();
     else{

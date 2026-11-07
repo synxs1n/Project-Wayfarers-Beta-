@@ -37,7 +37,7 @@ function slotsFor(side,n,boss){const T=B3.slots[BL.W<260?'tall':'wide'],t=side==
 // Everything wider (tablets, desktops, landscape phones at 16:9, 19.5:9 or 21:9) uses ONE fixed 320x150 logical stage that is
 // scaled uniformly and centred (pillarbox or letterbox), never stretched. Landscape phones also put the command panel beside the scene.
 const WIDE_W=320,WIDE_H=150;
-function battleMode(){const vw=window.innerWidth,vh=window.visualViewport?window.visualViewport.height:window.innerHeight,sc=$('screen'),cont=sc?sc.clientWidth:vw-32;
+function battleMode(){const zz=typeof dsZoom==='function'?dsZoom():1,vw=window.innerWidth/zz,vh=(window.visualViewport?window.visualViewport.height:window.innerHeight)/zz,sc=$('screen'),cont=sc?sc.clientWidth:vw-32;
   // v0.8.10: short landscape screens use the wide planner too (it measures what fits: the commands may go beside the stage); the old
   // 'side' layout is no longer chosen
   if(cont<560)return 'tall';return 'wide';}
@@ -51,7 +51,7 @@ function layoutBattle(){
     const sc=2;BL={W:Math.floor(w/sc),H:BL.fitH?BL.fitH:(w<520?196:160),sc,fitH:BL.fitH,short:false,mode};
     cv.width=BL.W;cv.height=BL.H;cv.style.width=BL.W*sc+'px';cv.style.height=BL.H*sc+'px';wrap.style.height=BL.H*sc+'px';
     st.style.width=BL.W+'px';st.style.height=BL.H+'px';st.style.transform=`scale(${sc})`;return;}
-  const vh=window.visualViewport?window.visualViewport.height:window.innerHeight,hd=$('hdr')?$('hdr').offsetHeight:0,od=(mode==='side'?0:($('border')?$('border').offsetHeight:0))+b3Extra(mode),bb=document.querySelector('.bbottom');
+  const vh=(window.visualViewport?window.visualViewport.height:window.innerHeight)/(typeof dsZoom==='function'?dsZoom():1),hd=$('hdr')?$('hdr').offsetHeight:0,od=(mode==='side'?0:($('border')?$('border').offsetHeight:0))+b3Extra(mode),bb=document.querySelector('.bbottom');
   // v0.6.3: the wide stage leaves room for the commands (the cards beside them may run on and scroll)
   const cmdEl=$('bcmd'),budget=mode==='side'?vh-hd-od-34:vh-hd-od-(cmdEl&&cmdEl.offsetHeight?cmdEl.offsetHeight:(bb?bb.offsetHeight:0))-34;
   let sc=Math.min((w-8)/WIDE_W,Math.max(budget-8,0)/WIDE_H);sc=Math.max(mode==='side'?1.25:B3.minSc,Math.min(3,Math.floor(sc*4)/4));
