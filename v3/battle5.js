@@ -172,7 +172,7 @@ function b9TelePlan(u){if(!B||!u||u.side!=='e'||u.hp<=0)return null;let P=null;t
   if(P&&(P.kind==='unleash'||P.kind==='cataclysm'))return {u,n:P.n,tg:P.tg||[]};
   try{if(has(u,'charge')){const p=foePlan(u);if(p&&p.cat==='big')return {u,n:p.sk&&p.sk.n||'Big hit',tg:B.front.filter(c=>c.hp>0)};}}catch(e){}return null;}
 function b9IntW(u){return b9TelePlan(u)?B5.it.w+Math.ceil(b3TextW(B9W.g,5,900)*1.1)+3:B5.it.w;}
-function b9LayWeak(L){L.wk=new Map();const W=L.W,H=L.H,w=B9W.w,h=B9W.h;
+function b9LayWeak(L){L.wk=new Map();if(typeof B9_STAGE_WEAK==='undefined'||!B9_STAGE_WEAK)return;/* v0.10.4: the key weakness is on the foe card, not over the stage */const W=L.W,H=L.H,w=B9W.w,h=B9W.h;
   B.en.forEach(u=>{if(u.hp<=0)return;const k=b9Key(u);if(!k)return;const b=unitBox(u);if(!b)return;const bo=L.bodies.find(q=>q.u===u),bd=bo?bo.r:{x:b.x-b.w/2,y:b.y-b.h,w:b.w,h:b.h},p=L.plates.get(u),it=L.intent&&L.intent.get(u),A=[];
     if(it){const my=Math.round(it.y+it.h/2-h/2);A.push({x:it.x+it.w+1,y:my,c:0},{x:it.x-w-1,y:my,c:1});}
     if(p){const my=Math.round(p.y+p.h/2-h/2);A.push({x:p.x+p.w+1,y:my,c:1.5},{x:p.x-w-1,y:my,c:2},{x:Math.round(p.x+p.w/2-w/2),y:p.y-h-1,c:3},{x:Math.round(p.x+p.w/2-w/2),y:p.y+p.h+1,c:3.5});}

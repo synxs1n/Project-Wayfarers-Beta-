@@ -231,17 +231,17 @@ function cmdHtml(){
     const sw=canSwap(),rooted=has(a,'root'),lbOk=lbReady(a),L=LIMIT[TPL[a.id].cls],noFlee=B.boss||B.spec.kind==='elite'||B.spec.kind==='arena'||B.spec.kind==='daily';
     const bonds=ks.filter(s=>s.bond);
     body=`${lbOk?(()=>{const LS=limitSkill(a);return `<button class="mi limit ${LS.limit2?'l2':''}" data-act="cmd" data-arg="limit"><span class="n">${LS.tierN}: ${esc(LS.n)}</span><span class="m">Ready</span><small>${esc(LS.d)}${LS.limit2?'':' (Limit I: about 70% power.)'}</small></button>`;})():''}
-      <div class="menu prim"><button class="mi" data-act="cmd" data-arg="attack">Attack</button><button class="mi" data-act="cmd" data-arg="skills">Skills${bonds.length?' <em class="bondtag">Bond</em>':''}</button>
+      <div class="menu prim"><button class="mi" data-act="cmd" data-arg="attack">${dlIco(deliveryOf(a,ATTACK))}Attack</button><button class="mi" data-act="cmd" data-arg="skills">Skills${bonds.length?' <em class="bondtag">Bond</em>':''}</button>
       <button class="mi" data-act="cmd" data-arg="items">Items</button><button class="mi" data-act="cmd" data-arg="guard">Guard</button></div>
       <div class="menu sec">${canSummon(a)?`<button class="mi summon" data-act="summon" title="Your companion fights in this hero's place for a few turns">Summon ${esc(compOf(a).name)}</button>`:''}<button class="mi" data-act="cmd" data-arg="scan" title="Read a foe's exact stats and hidden quirks. Costs half a turn.">Scan</button><button class="mi" data-act="cmd" data-arg="lore" title="Elements, reactions and statuses. Read only, pauses the fight.">Lore</button>
       <button class="mi" data-act="cmd" data-arg="swap" ${sw?'':'disabled'} title="${rooted?'Rooted: cannot switch out':'Swap this hero for a rearguard hero'}">${rooted?'Rooted':'Switch'}</button>
       <button class="mi" data-act="cmd" data-arg="flee" ${noFlee?'disabled':''}>Flee</button></div><div class="btnrow autorow">${auto}</div>`;
   }else if(B.menu==='skills'){
-    body=`<div class="menu list">${ks.map(s=>`<button class="mi ${s.combo?'combo':''} ${s.bond?'bond':''}" data-act="sk" data-arg="${s.id}" ${a.mp<s.mp?'disabled':''}><span class="n">${skEls(s).map(ico).join('')}${esc(s.n)}${s.t==='all'||s.t==='allyAll'?' <em>All</em>':''}${s.combo?' <em class="c">Dual art</em>':''}${s.bond?' <em class="b">Bond</em>':''}${roleTag(s)}</span><span class="m">${s.mp} MP</span><small>${esc(s.d)}</small>${detList(s)}${perkNote(a,s)}${effChips(s,a)}</button>`).join('')}</div>`;
+    body=`<div class="menu list">${ks.map(s=>`<button class="mi ${skTgt(s).cls} ${s.combo?'combo':''} ${s.bond?'bond':''}" data-act="sk" data-arg="${s.id}" ${a.mp<s.mp?'disabled':''}><span class="n">${dlIco(deliveryOf(a,s))}${skEls(s).map(ico).join('')}${esc(s.n)}${skTgtLabel(s)}${s.combo?' <em class="c">Dual art</em>':''}${s.bond?' <em class="b">Bond</em>':''}${roleTag(s)}</span><span class="m">${(n=>n?`<span class="num ${s.k==='phys'||s.k==='mag'?'dmg':'heal'}">${n}</span> `:'')(skNum(a,s))}${s.mp} MP</span><small>${stDesc(s.d)}</small>${detList(s)}${perkNote(a,s)}${effChips(s,a)}</button>`).join('')}</div>`;
   }else if(B.menu==='items'){
     body=`<div class="menu list">${Object.keys(ITEMS).filter(id=>!ITEMS[id].ward&&!ITEMS[id].tent&&(!ITEMS[id].craft||(G.inv[id]||0)>0)&&(!ITEMS[id].flee||(G.inv[id]||0)>0)).map(id=>`<button class="mi" data-act="item" data-arg="${id}" ${(G.inv[id]||0)>0&&!(ITEMS[id].flee&&porkBlocked())?'':'disabled'}><span class="n">${itemIcon(id)} ${ITEMS[id].n}</span><span class="m">x${G.inv[id]||0}</span><small>${ITEMS[id].d}</small></button>`).join('')}</div>`;
   }else if(B.menu==='target'){
-    const one=(B.pend.sk&&B.pend.sk.t==='one')||B.pend.scan;
+    const one=(B.pend.sk&&(B.pend.sk.t==='one'||B.pend.sk.t==='chain'))||B.pend.scan;
     body=`<p class="hint">${B.pend.scan?'Tap a foe to scan.':one?'Tap a foe.':(B.pend.sk&&(B.pend.sk.k==='heal'||B.pend.sk.k==='revive')&&B.en.some(e=>healsUndead(B.pend.sk,e)))?'Tap a hero, or an undead foe to burn it with healing light.':'Tap a hero.'}</p>`;
   }else if(B.menu==='swap'){
     body=`<p class="hint">Who takes ${esc(a.name)}'s place? They act right away. ${esc(a.name)}'s ailments, buffs and mark are cleared.</p><div class="menu list">${B.back.map((c,i)=>`<button class="mi" data-act="sw" data-arg="${i}" ${c.hp>0?'':'disabled'}><span class="n">${port(c.id,'sm')}${esc(c.name)}</span><span class="m">${c.hp}/${c.S.mhp}</span><small>Lv ${c.lv} ${CLS[TPL[c.id].cls].n} ${c.el.map(ico).join('')}</small></button>`).join('')}</div>`;
@@ -514,13 +514,13 @@ const ACT={
     if(a==='attack')return chooseSkill(ATTACK);
     if(a==='limit'){if(!lbReady(B.cur))return;sfx('limit');return chooseSkill(limitSkill(B.cur));}
     if(a==='lore'){V.modal={type:'battlelore'};render();return;}if(a==='guard')return guard();if(a==='flee')return flee();
-    if(a==='scan'){B.pend={scan:1,sk:{t:'one'}};B.tgFrom='root';B.menu='target';render();return;}
+    if(a==='scan'){const lv=B.en.filter(e=>e.hp>0);if(lv.length===1)return scan(lv[0]);B.pend={scan:1,sk:{t:'one'}};B.tgFrom='root';B.menu='target';render();return;}
     if(a==='swap'&&!canSwap())return;
     B.menu=a;render();},
   back(){if(B){B.menu=B.menu==='target'&&B.tgFrom&&B.tgFrom!=='target'?B.tgFrom:'root';B.tgFrom=null;B.pend=null;render();}},
   sk(id){if(!B||B.mode!=='cmd')return;const s=known(B.cur).find(x=>x.id===id);if(!s||B.cur.mp<s.mp)return;chooseSkill(s);},
-  item(id){if(!B||B.mode!=='cmd'||!(G.inv[id]>0))return;B.pend={item:id};B.tgFrom='items';B.menu='target';render();},
-  tgtE(i){if(!B||B.mode!=='cmd'||!B.pend||!B.pend.sk)return;const e=B.en[+i];if(!e||e.hp<=0)return;if(B.pend.sk.t!=='one'&&!(typeof healsUndead==='function'&&healsUndead(B.pend.sk,e)))return;if(B.pend.scan){B.pend=null;return scan(e);}exec(B.pend.sk,[e]);},
+  item(id){if(!B||B.mode!=='cmd'||!(G.inv[id]>0))return;{const it=ITEMS[id],ok=allParty().filter(c=>it.revive?c.hp<=0:c.hp>0);if(ok.length===1){B.pend=null;useItem(id,ok[0]);return;}}B.pend={item:id};B.tgFrom='items';B.menu='target';render();},
+  tgtE(i){if(!B||B.mode!=='cmd'||!B.pend||!B.pend.sk)return;const e=B.en[+i];if(!e||e.hp<=0)return;if(B.pend.sk.t!=='one'&&B.pend.sk.t!=='chain'&&!(typeof healsUndead==='function'&&healsUndead(B.pend.sk,e)))return;if(B.pend.scan){B.pend=null;return scan(e);}exec(B.pend.sk,[e]);},
   tgtA(i){if(!B||B.mode!=='cmd'||!B.pend)return;const c=allParty()[+i];if(!c)return;
     if(B.pend.item){const it=ITEMS[B.pend.item];if(it.revive?c.hp<=0:c.hp>0)useItem(B.pend.item,c);return;}
     const s=B.pend.sk;if(!s)return;if(s.t==='ally'&&c.hp>0)exec(s,[c]);else if(s.t==='dead'&&c.hp<=0)exec(s,[c]);},
@@ -534,6 +534,11 @@ function chooseSkill(sk){
   if(t==='all'||t==='rand')return exec(sk,B.en.filter(e=>e.hp>0));
   if(t==='self')return exec(sk,[B.cur]);
   if(t==='allyAll')return exec(sk,B.front.filter(c=>c.hp>0));
+  // v0.9.x: exactly one valid target means no choice to make: act at once (never when more than one is valid)
+  if(t==='one'||t==='chain'){const lv=B.en.filter(e=>e.hp>0);if(lv.length===1)return exec(sk,[lv[0]]);}
+  else if(t==='ally'||t==='dead'){
+    const mine=allParty().filter(c=>t==='dead'?c.hp<=0:c.hp>0),und=B.en.filter(e=>typeof healsUndead==='function'&&healsUndead(sk,e));
+    if(mine.length===1&&!und.length)return exec(sk,[mine[0]]);}
   B.pend={sk};B.tgFrom=B.menu==='target'?'root':B.menu;B.menu='target';render();
 }
 

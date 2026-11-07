@@ -149,11 +149,9 @@ html.rm .fxlayer .fx2.b3fx{animation-name:fade2!important}
 .battle.b3.m-tall .pgroup.heroes .uinfo{top:3px;transform:none;right:3px;width:20px;height:20px;font-size:.7rem}
 .battle.b3.m-tall .pgroup.heroes .ucr{grid-template-columns:minmax(0,1fr) auto;gap:3px}
 .battle.b3.m-tall .pgroup.heroes .ucr>i{display:none}
-.battle.b3.m-tall .pgroup.heroes .uct .ucl{display:none}
 .battle.b3.m-tall .fcs{grid-template-columns:repeat(2,minmax(0,1fr));gap:4px}
 .battle.b3.m-tall .fcw .fc{padding:3px 28px 3px 4px;gap:4px;min-height:42px}
 .battle.b3.m-tall .fcw .fc .fci{width:24px;height:24px}
-.battle.b3.m-tall .fcw .fc .uct .ucl{display:none}
 .battle.b3.m-tall .fcw .fc .ucr>i{display:none}
 .battle.b3.m-tall .fcw .fc .ucr{grid-template-columns:minmax(0,1fr) auto}
 .battle.b3.m-tall .pgroup.rsv .pcs{grid-template-columns:repeat(3,minmax(0,1fr))}
@@ -280,8 +278,6 @@ body:has(.battle.b3.m-wide){padding-bottom:4px}
 /* compact foe cards: no type chips (as on phones; the i panel lists them), the level only where the card has room */
 .battle.b3.m-wide .fcw .ptags .aty{display:none}
 .battle.b3.m-wide .fcw{container-type:inline-size}
-.battle.b3.m-wide .fcw .fc .uct .ucl{display:none}
-@container (min-width:215px){.battle.b3.m-wide .fcw .fc .uct .ucl{display:inline}}
 .battle.b3.m-wide .pgroup.heroes .pcw .pc{min-height:42px}
 .battle.b3.m-wide .order .wchip{height:40px;min-height:40px;box-sizing:border-box}
 .battle.b3.m-wide .order .osky{height:40px;align-items:center}
@@ -485,7 +481,7 @@ body:has(.battle.b3.m-wide.b8short){padding-top:6px}
 .battle.b3.m-tall .fcw .fwk.b9key.rx b::before,.battle.b3.m-wide .fcw .fwk.b9key.rx b::before{content:none}
 .battle.b3 .fwk.b9less{color:#d8cfe6;border-color:rgba(200,190,220,.4);background:rgba(20,16,30,.6);padding:0 4px}
 /* simple mode: Vanguard cards keep the name, bars, elements and statuses (level and class in the i panel and Expert mode) */
-.battle.b3:not(.b9x) .pgroup.heroes .pc .ucl,.battle.b3:not(.b9x) .pgroup.heroes .pc .ucc{display:none}
+.battle.b3:not(.b9x) .pgroup.heroes .pc .ucc{display:none}
 /* the i panel: capped chips and the plain type line */
 .udet .b9det{margin:6px 0 2px}.udet .b9chips{display:flex;flex-wrap:wrap;gap:6px}
 .udet .fwk{display:inline-flex;align-items:center;gap:3px;font:800 .7rem/1 var(--fb);padding:3px 6px;border-radius:3px;border:1px solid}
@@ -520,3 +516,20 @@ html.rm .battle.b3 .cmd .mi.b9glow{animation:none}
 .battle.b3 .who.cmdhead .autowhy.inhead+.b9cue.inhead{margin-left:6px}
 .battle.b3 .who.cmdhead .b9cue.inhead+.cmdback{margin-left:6px}
 .battle.b3 .cmdhead .b9cue.it{color:#ffb0a0}.battle.b3 .cmdhead .b9cue.hx{color:#e6b8ff}
+
+/* levels (Lv N) show on every card in every layout: small, never wrapped, the name truncates first */
+.battle.b3 .pgroup.heroes .uct .ucl,.battle.b3 .fcw .fc .uct .ucl{display:inline;font-size:.58rem;line-height:1;opacity:.9}
+.battle.b3.m-tall .uct .ucl,.battle.b3.m-wide .uct .ucl{font-size:.56rem}
+/* skill rows: target kind border and label, number estimate, symbols in text */
+.battle.b3 .menu .mi.tk-foe,.mi.tk-foe{border-left:3px solid #d8453b}
+.battle.b3 .menu .mi.tk-ally,.mi.tk-ally{border-left:3px solid #4cb86a}
+.battle.b3 .menu .mi.tk-both,.mi.tk-both{border-left:3px solid transparent;border-image:linear-gradient(to bottom,#d8453b 50%,#4cb86a 50%) 1 1 1 3}
+.mi .n em.tk{font-size:.6rem;color:#e8dcc0;background:rgba(0,0,0,.35);letter-spacing:.02em}
+.mi.tk-foe .n em.tk{color:#ffb4aa}.mi.tk-ally .n em.tk{color:#a8e8b8}
+.mi .m .num{font-size:.72rem;font-weight:800;color:#ffd8a0;margin-right:2px}.mi .m .num.heal{color:#a8e8b8}
+.mi .n .dli,.menu.prim .mi .dli{width:14px;height:14px;vertical-align:-2px;margin-right:3px}
+.mi small .stw{display:inline-flex;align-items:center;gap:2px;font-weight:700;white-space:nowrap}.mi small .stw .stsym{width:10px;height:10px}
+/* target picking: effectiveness mark beside the foe name */
+.battle.b3 .uct .effa{flex:none;font-size:.7rem;font-weight:900;line-height:1}
+.battle.b3 .uct .effa.up{color:#6fe08a}.battle.b3 .uct .effa.dn{color:#ff6a5a}.battle.b3 .uct .effa.im{color:#ccc}
+.udbox,.udbox .b9det,.udbox .b9chips{min-width:0;max-width:100%}.udet .b9chips>*{max-width:100%;white-space:normal}

@@ -26,6 +26,7 @@ evals any name), `window.__AU` (ambience.js), `__P2` (p2world.js), `__P3` (p3sho
 | class roles (primary and secondary), role skills, role charms, roleOut | `roles.js`, `ROLES` in `config.js` 5; role weapon families in `items.js`, icons in `icons.js` |
 | monsters, bosses, archetypes | `foes.js`, `monsters2.js`, `art3.js` (guardians), `archetype.js`, `echocore.js` (echo forms) |
 | damage, statuses, reactions | `engine.js` (calcDamage, addSt, doReaction), `data.js` (REACT, STS), `ailments.js`, `archetype.js`, `battle4.js` (Momentum) |
+| Chain targeting, planned foe targets and telegraphs, the Guard cue and reward | `chain5.js` (CHAIN and G5 in `config.js` 2) |
 | battle flow (turn order, enemy AI, auto) | `engine.js` (startBattle, advance, enemyTurn, autoTurn), `battle5.js` (forecast order, foePlan, enemyTurn0), `battle4.js` (roles, free swap), `prog2.js` (auto lock) |
 | battle screen (stage, labels, HUD, commands, cards) | `battle.js` (BL layout, drawUnit), `battle3.js` (labels, unitHud, FX placement), `battle5.js`/`battle4.js` (forecast, Momentum bar), `battleui.js` (cards, badges), `ui.js` renderBattle, CSS `battle3.css`, `battle5.css`, `battle4.css`, `ui3.css` |
 | battle effects and animation | `anim.js`, `fx2.js` (floating text), `gfx6battle.js`, `hdspell.js` |

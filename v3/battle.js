@@ -154,7 +154,7 @@ function battleFrame(now){
 }
 function targetable(u){
   if(!(B.mode==='cmd'&&B.menu==='target'&&B.pend))return false;
-  if(u.side==='e')return !!(B.pend.sk&&u.hp>0&&(B.pend.sk.t==='one'||(typeof healsUndead==='function'&&healsUndead(B.pend.sk,u))));
+  if(u.side==='e')return !!(B.pend.sk&&u.hp>0&&(B.pend.sk.t==='one'||B.pend.sk.t==='chain'||(typeof healsUndead==='function'&&healsUndead(B.pend.sk,u))));
   return allyTargetable(u);
 }
 function drawUnit(ctx,u,b,now,tgMode){

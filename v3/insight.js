@@ -65,3 +65,56 @@ function nextMilestone(b,boss){const k=(b||{}).kills||0,M=boss?PERK_KILLS_BOSS:P
 HOOK.after('calcDamage','insight','bestiary perk damage',function(r,a,sk,t,bonus){
   if(a&&t&&a.side==='p'&&t.side==='e'&&!(G&&G.daily)){const p=perkOf(t.base,t.boss);if(p.dmg)r.dmg=Math.max(1,Math.round(r.dmg*(1+p.dmg)));}});
 function perkDropMul(e){if(G&&G.daily)return 1;return 1+perkOf(e.base,e.boss).drop;}
+
+// ----- battle menu row helpers (target kind, damage/heal estimate, status symbols in text) -----
+// skTgt(s): {cls,lab} for a skill's target type. cls is tk-foe, tk-ally or tk-both (a heal that can also burn an undead foe on the field), '' if unknown.
+const TK_FOE={one:'Single',all:'All foes',rand:'Random',chain:'Chain'},TK_ALLY={ally:'Ally',allyAll:'All allies',self:'Self',dead:'Fallen ally'};
+function skTgt(s){
+  if(!s)return {cls:'',lab:''};
+  if(TK_FOE[s.t])return {cls:'tk-foe',lab:TK_FOE[s.t]};
+  if(TK_ALLY[s.t]){
+    if(B&&B.en&&B.en.some(e=>healsUndead(s,e)))return {cls:'tk-both',lab:TK_ALLY[s.t]+' / undead'};
+    return {cls:'tk-ally',lab:TK_ALLY[s.t]};}
+  return {cls:'',lab:''};
+}
+function skTgtLabel(s){const k=skTgt(s);return k.lab?` <em class="tk">${k.lab}</em>`:'';}
+// skHealAmt(a,s,t): HP the heal skill restores on target t (a hero), the engine's formula with the random spread at its middle (1.0).
+function skHealAmt(a,s,t){
+  if(!s||!a||!a.S)return 0;
+  if(s.k==='revive')return Math.max(1,Math.round(((t&&t.S)||a.S).mhp*s.pw));
+  if(s.k!=='heal')return s.k==='status'&&s.heal?Math.round(((t&&t.S)||a.S).mhp*s.heal):0;
+  const cm=typeof curseMul==='function'&&t?curseMul(t):1;
+  return Math.round(s.pw*(a.S.healP||a.S.mag)*(WX().heal||1)*(1+(a.S.healUp||0))*cm);
+}
+// skNum(a,s): short estimate for a skill row ("~120", "~120 each", "" when there is nothing to show).
+// calcDamage rolls rnd(.92,1.08) and a crit; both read RNG, so it is called with RNG fixed at .5 (spread = 1.0, no crit roll) and any Focus
+// buff is put back afterwards (calcDamage consumes it). The result is the average over the live foes, times hits.
+function skNum(a,s){
+  if(!a||!s||!B)return '';
+  const each=s.t==='all'||s.t==='allyAll'||s.t==='rand'?' each':'';
+  if(s.k==='phys'||s.k==='mag'){
+    const foes=(B.en||[]).filter(e=>e.hp>0);if(!foes.length)return '';
+    const r0=RNG,foc=a.st&&a.st.focus;let tot=0,n=0;
+    try{RNG=()=>.5;foes.forEach(e=>{try{tot+=calcDamage(a,s,e).dmg;n++;}catch(x){}});}
+    finally{RNG=r0;if(foc&&a.st&&!a.st.focus)a.st.focus=foc;}
+    if(!n)return '';return '~'+Math.round(tot/n*(s.hits||1))+each;
+  }
+  if(s.k==='heal'||s.k==='revive'||(s.k==='status'&&s.heal)){
+    const live=(B.front||[]).filter(c=>c.hp>0),t=s.t==='self'?a:live.find(c=>c===a)||live[0]||a;
+    const v=skHealAmt(a,s,t);return v>0?(s.k==='revive'||s.t==='dead'?'':'~')+v+each:'';
+  }
+  return '';
+}
+// stDesc(txt): escaped description with each status name (Burn, Stun ...) given its symbol. Capitalised exact names only, so verbs stay words.
+function stDesc(txt){
+  const h=esc(txt||'');if(typeof stSym!=='function'||typeof STS==='undefined')return h;
+  return h.replace(/\b(Poison|Bleed|Burn|Slow|Stun|Blind|Root|Weaken|Break|Might|Bulwark|Haste|Regen|Ward|Taunt|Focus)\b/g,(m)=>{const k=m.toLowerCase();return STS[k]?`<span class="stw">${stSym(k)}${m}</span>`:m;});
+}
+// effArrow(sk,e): the matchup mark shown on a foe card while a damaging skill is being aimed (green up Weak, red down Resists, cross Immune, nothing for Neutral/unknown)
+function effArrow(sk,e){
+  if(!sk||(sk.k!=='phys'&&sk.k!=='mag')||!B)return '';
+  let I=null;try{I=effInfo(sk,e,B.cur);}catch(x){}
+  if(!I)return '';
+  const m={Weak:['up','▲','Weak'],Resists:['dn','▼','Resists'],Immune:['im','✕','Immune']}[I.lab];
+  return m?`<span class="effa ${m[0]}" role="img" aria-label="${m[2]}" title="${m[2]}">${m[1]}</span>`:'';
+}

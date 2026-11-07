@@ -44,7 +44,7 @@ function foeCards(){
     // v0.6.3: effects the stage already shows in full are not repeated here (b3OnStage); the reaction a detonator sets off always is
     const tags=dead?'':(b3OnStage(e,'prim')&&!detHits(B.pend&&B.pend.sk,e)?'':primedChip(e))+foeWeak(e)+(b3OnStage(e,'tags')?'':stButtons(e,{max:BL.mode==='tall'?3:5,noWx:true,noPrime:true}))+(BL.mode==='tall'||BL.mode==='wide'?'':archChips(e));
     return `<div class="pcw fcw ${tags?'hastags':''}"><button class="fc ${tg?'tg':''} ${dead?'ko':''} ${e.primed&&!dead?'isprimed':''} ${tg&&detHits(B.pend&&B.pend.sk,e)?'dethit':''}" style="--pc:${e.primed&&ELC[e.primed.el]||'#fff'}" data-x="1 ${B.mode==='cmd'&&B.menu==='target'&&!tg?'':''}" data-act="tgtE" data-arg="${i}" ${tg?'':'tabindex="-1"'} aria-label="${esc(e.name)}, level ${e.lv}">
-      <img class="fci" src="${art}" alt=""><span class="pm"><span class="uct"><b>${esc(e.name)}${e.elite?' ★':''}</b><span class="ucl">Lv ${e.lv}</span>${elbs(e.el)}</span>
+      <img class="fci" src="${art}" alt=""><span class="pm"><span class="uct"><b>${esc(e.name)}${e.elite?' ★':''}</b>${tg?effArrow(B.pend&&B.pend.sk,e):''}<span class="ucl">Lv ${e.lv}</span>${elbs(e.el)}</span>
       <span class="ucr"><i>HP</i>${bar(e.hp,e.S.mhp,'#e8504a')}<em class="nums">${dead?'KO':kn?hpText(e):pct+'%'}</em></span>${shPips(e)}</span></button>${uInfoBtn(e)}
       <div class="ptags">${tags}</div></div>`;}).join('')}</div></div>`;
 }

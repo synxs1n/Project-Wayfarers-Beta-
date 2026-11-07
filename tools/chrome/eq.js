@@ -52,8 +52,8 @@ const bf=await ev(()=>{const id=__A.G.gear[0];return {id,html:__A.bestTag?__A.be
 console.log(JSON.stringify(bf).slice(0,400));
 // equipment tab renders
 await ev(()=>{__A.V.modal={type:'menu',tab:'equip'};__A.render();});await wait(200);
-const tab=await ev(()=>document.body.innerText.includes('Equip best for everyone'));
-chk('equipment tab shows both auto buttons',tab||'missing');
+const tab=await ev(()=>document.body.innerText.includes('Equip Best'));
+chk('equipment tab shows the Equip Best button (v0.10.2: one button, party only)',tab||'missing');
 
 // companions: two free companions, party auto should attach them to party heroes; undo detaches
 const cs=await ev(()=>{const G=__A.G;const mons=Object.keys(__A.MON||{}).slice(0,2);if(!__A.registerTamed)return {skip:1};

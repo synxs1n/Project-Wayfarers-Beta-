@@ -124,7 +124,7 @@ function classSkills(t){
     add({id:'dragon',n:'Dragon Fist',k:'phys',pw:3.1,mp:16,el:e1,cost:1.3,lv:22,d:`Blazing ${n1} strike. Slow recovery.`});
     break;
   case 'sniper':
-    add({id:'s1a',n:'Thunder Quarrel',k:'phys',pw:1.45,mp:3,el:'lightning',lv:1,d:'A crossbow bolt crackling with Lightning.'});
+    add({id:'s1a',n:'Thunder Quarrel',k:'phys',pw:1.3,mp:3,t:'chain',el:'lightning',lv:1,d:'A crossbow bolt crackling with Lightning that may leap from foe to foe.'});
     add({id:'s1b',n:'Shadow Quarrel',k:'phys',pw:1.6,mp:4,el:'shadow',lv:3,d:'A black-fletched bolt that drinks the light.'});
     add({id:'charge',n:'Hoofbeat Charge',k:'phys',pw:1.8,mp:6,lv:6,fx:[['stun',.25]],d:'Rides a foe down. May Stun.'});
     add({id:'wheel',n:'Wheeling Volley',k:'phys',pw:.95,mp:9,t:'all',lv:9,fx:[['slow',.3]],d:'Circles the field, shooting every foe. May Slow.'});
@@ -144,7 +144,7 @@ function classSkills(t){
     break;
   case 'archmage':
     add({id:'s1a',n:'Frost Spark',k:'mag',pw:1.4,mp:3,el:'ice',lv:1,d:'A chip of living frost.'});
-    add({id:'s1b',n:'Volt Lance',k:'mag',pw:1.5,mp:3,el:'lightning',lv:3,d:'A spear of lightning.'});
+    add({id:'s1b',n:'Volt Lance',k:'mag',pw:1.35,mp:3,t:'chain',el:'lightning',lv:3,d:'A spear of lightning that may leap from foe to foe.'});
     add({id:'rime',n:'Rimebolt',k:'mag',pw:1.9,mp:7,el:['ice','lightning'],lv:6,fx:[['slow',.4]],d:'Frost-coated lightning. May Slow.'});
     add({id:'ward',n:'Prism Ward',k:'status',t:'ally',mp:4,lv:9,fx:[['ward',1]],d:'A lens of ice that blocks the next hit on an ally.'});
     add({id:'s2a',n:'Glacial Tempest',k:'mag',pw:1.05,mp:8,t:'all',el:['ice','lightning'],lv:12,d:'Hail and lightning on every foe.'});

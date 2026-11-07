@@ -745,8 +745,8 @@ html.rm .fx2{animation:fade2 2s linear both!important}
   .fcw .fc .uct b{flex:1 0 100%}.fcw .fc .elbs{margin-left:0}
   .fcw .fc .ucr{grid-template-columns:15px minmax(0,1fr) auto}
 }
-.udet{position:fixed;inset:0;z-index:70;display:grid;place-items:center;background:rgba(8,4,2,.72);padding:12px;line-height:1.35}
-.udbox{width:min(520px,100%);max-height:92vh;overflow:auto;background:var(--wood);border:4px solid var(--ink);box-shadow:inset 0 0 0 2px var(--bronze);padding:12px;display:grid;gap:8px;overscroll-behavior:contain}
+.udet{position:fixed;inset:0;z-index:70;display:grid;place-items:center;background:rgba(8,4,2,.72);padding:12px;padding-bottom:calc(12px + env(safe-area-inset-bottom,0px));box-sizing:border-box;line-height:1.35}
+.udbox{width:min(520px,100%);max-height:calc(100vh - 24px);max-height:calc(100dvh - 24px - env(safe-area-inset-bottom,0px));box-sizing:border-box;overflow:auto;background:var(--wood);border:4px solid var(--ink);box-shadow:inset 0 0 0 2px var(--bronze);padding:12px;display:grid;gap:8px;overscroll-behavior:contain}
 .udh{display:flex;gap:10px;align-items:flex-start}
 .udh h3{font-size:1.15rem;letter-spacing:.04em;color:#ffe3a0;margin-bottom:2px}
 .udi{width:72px;height:72px;object-fit:contain;image-rendering:pixelated;background:rgba(0,0,0,.3);border:3px solid var(--ink);flex:none}
@@ -1364,11 +1364,9 @@ html.rm .fxlayer .fx2.b3fx{animation-name:fade2!important}
 .battle.b3.m-tall .pgroup.heroes .uinfo{top:3px;transform:none;right:3px;width:20px;height:20px;font-size:.7rem}
 .battle.b3.m-tall .pgroup.heroes .ucr{grid-template-columns:minmax(0,1fr) auto;gap:3px}
 .battle.b3.m-tall .pgroup.heroes .ucr>i{display:none}
-.battle.b3.m-tall .pgroup.heroes .uct .ucl{display:none}
 .battle.b3.m-tall .fcs{grid-template-columns:repeat(2,minmax(0,1fr));gap:4px}
 .battle.b3.m-tall .fcw .fc{padding:3px 28px 3px 4px;gap:4px;min-height:42px}
 .battle.b3.m-tall .fcw .fc .fci{width:24px;height:24px}
-.battle.b3.m-tall .fcw .fc .uct .ucl{display:none}
 .battle.b3.m-tall .fcw .fc .ucr>i{display:none}
 .battle.b3.m-tall .fcw .fc .ucr{grid-template-columns:minmax(0,1fr) auto}
 .battle.b3.m-tall .pgroup.rsv .pcs{grid-template-columns:repeat(3,minmax(0,1fr))}
@@ -1495,8 +1493,6 @@ body:has(.battle.b3.m-wide){padding-bottom:4px}
 /* compact foe cards: no type chips (as on phones; the i panel lists them), the level only where the card has room */
 .battle.b3.m-wide .fcw .ptags .aty{display:none}
 .battle.b3.m-wide .fcw{container-type:inline-size}
-.battle.b3.m-wide .fcw .fc .uct .ucl{display:none}
-@container (min-width:215px){.battle.b3.m-wide .fcw .fc .uct .ucl{display:inline}}
 .battle.b3.m-wide .pgroup.heroes .pcw .pc{min-height:42px}
 .battle.b3.m-wide .order .wchip{height:40px;min-height:40px;box-sizing:border-box}
 .battle.b3.m-wide .order .osky{height:40px;align-items:center}
@@ -1700,7 +1696,7 @@ body:has(.battle.b3.m-wide.b8short){padding-top:6px}
 .battle.b3.m-tall .fcw .fwk.b9key.rx b::before,.battle.b3.m-wide .fcw .fwk.b9key.rx b::before{content:none}
 .battle.b3 .fwk.b9less{color:#d8cfe6;border-color:rgba(200,190,220,.4);background:rgba(20,16,30,.6);padding:0 4px}
 /* simple mode: Vanguard cards keep the name, bars, elements and statuses (level and class in the i panel and Expert mode) */
-.battle.b3:not(.b9x) .pgroup.heroes .pc .ucl,.battle.b3:not(.b9x) .pgroup.heroes .pc .ucc{display:none}
+.battle.b3:not(.b9x) .pgroup.heroes .pc .ucc{display:none}
 /* the i panel: capped chips and the plain type line */
 .udet .b9det{margin:6px 0 2px}.udet .b9chips{display:flex;flex-wrap:wrap;gap:6px}
 .udet .fwk{display:inline-flex;align-items:center;gap:3px;font:800 .7rem/1 var(--fb);padding:3px 6px;border-radius:3px;border:1px solid}
@@ -1735,6 +1731,23 @@ html.rm .battle.b3 .cmd .mi.b9glow{animation:none}
 .battle.b3 .who.cmdhead .autowhy.inhead+.b9cue.inhead{margin-left:6px}
 .battle.b3 .who.cmdhead .b9cue.inhead+.cmdback{margin-left:6px}
 .battle.b3 .cmdhead .b9cue.it{color:#ffb0a0}.battle.b3 .cmdhead .b9cue.hx{color:#e6b8ff}
+
+/* levels (Lv N) show on every card in every layout: small, never wrapped, the name truncates first */
+.battle.b3 .pgroup.heroes .uct .ucl,.battle.b3 .fcw .fc .uct .ucl{display:inline;font-size:.58rem;line-height:1;opacity:.9}
+.battle.b3.m-tall .uct .ucl,.battle.b3.m-wide .uct .ucl{font-size:.56rem}
+/* skill rows: target kind border and label, number estimate, symbols in text */
+.battle.b3 .menu .mi.tk-foe,.mi.tk-foe{border-left:3px solid #d8453b}
+.battle.b3 .menu .mi.tk-ally,.mi.tk-ally{border-left:3px solid #4cb86a}
+.battle.b3 .menu .mi.tk-both,.mi.tk-both{border-left:3px solid transparent;border-image:linear-gradient(to bottom,#d8453b 50%,#4cb86a 50%) 1 1 1 3}
+.mi .n em.tk{font-size:.6rem;color:#e8dcc0;background:rgba(0,0,0,.35);letter-spacing:.02em}
+.mi.tk-foe .n em.tk{color:#ffb4aa}.mi.tk-ally .n em.tk{color:#a8e8b8}
+.mi .m .num{font-size:.72rem;font-weight:800;color:#ffd8a0;margin-right:2px}.mi .m .num.heal{color:#a8e8b8}
+.mi .n .dli,.menu.prim .mi .dli{width:14px;height:14px;vertical-align:-2px;margin-right:3px}
+.mi small .stw{display:inline-flex;align-items:center;gap:2px;font-weight:700;white-space:nowrap}.mi small .stw .stsym{width:10px;height:10px}
+/* target picking: effectiveness mark beside the foe name */
+.battle.b3 .uct .effa{flex:none;font-size:.7rem;font-weight:900;line-height:1}
+.battle.b3 .uct .effa.up{color:#6fe08a}.battle.b3 .uct .effa.dn{color:#ff6a5a}.battle.b3 .uct .effa.im{color:#ccc}
+.udbox,.udbox .b9det,.udbox .b9chips{min-width:0;max-width:100%}.udet .b9chips>*{max-width:100%;white-space:normal}
 /* Beta v0.7.0 battle information and input (battle5.js) */
 /* stage intent label: a box laid out by b3Lay (logical stage px) */
 .bstage .b5it{display:grid;place-items:center;padding:0;border-radius:2px;border:.6px solid #150b17;background:rgba(21,11,23,.86);color:#ffd8c8;pointer-events:none;z-index:6;box-shadow:0 0 0 .5px rgba(255,255,255,.25);overflow:hidden}
@@ -1773,6 +1786,9 @@ html.rm .battle.b3 .cmd .mi.b9glow{animation:none}
 .bstage .b9wk{display:grid;place-items:center;padding:0;border-radius:2px;border:.6px solid #ffbe5a;background:rgba(60,34,8,.88);pointer-events:none;z-index:6;box-shadow:0 0 0 .4px rgba(21,11,23,.9);overflow:hidden}
 .bstage .b9wk .ico,.bstage .b9wk .dli{width:8px;height:8px;margin:0}
 .bstage .b9wk.rx{border-color:#e8c8ff;background:rgba(70,30,110,.9);box-shadow:0 0 0 .4px rgba(21,11,23,.9),0 0 3px rgba(200,150,255,.9)}
+/* chain5.js: planned targets */
+.b5it .c5aim{font-style:normal;margin-left:3px;opacity:.9}
+.c5tgt{position:absolute;right:4px;top:2px;font-size:.7rem;color:#ffb0a0;text-shadow:0 1px 0 #000;pointer-events:none}
 /* ===== Beta v0.7.0 battle mechanics (battle4.js): the Momentum gauge in the log ticker, the switch menu ===== */
 .battle.b3 .bline .b4mo{flex:none;display:flex;flex-direction:column;justify-content:center;gap:3px;width:98px;min-height:40px;margin:0 0 0 -6px;padding:3px 6px;box-sizing:border-box;
   background:rgba(10,12,22,.7);border:1px solid rgba(217,180,106,.28);border-radius:3px;color:#f3e7cc;font:inherit;cursor:pointer;text-align:left}
@@ -1804,7 +1820,7 @@ html.rm .battle.b3 .cmd .mi.b9glow{animation:none}
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.10.3";const APP_BUILD="6e67c941f326";
+(function(){const APP_VER="0.10.4";const APP_BUILD="f62dda11829a";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -1999,6 +2015,13 @@ const TAME={skillAt:12,evoAt:30,evoBonus:.03,k:.45,
   sk:{beast:['Feral Rush',1.35,'one','phys',[['bleed',.3]]],flyer:['Gale Sweep',1.0,'all','mag',[['slow',.25]]],spirit:['Spirit Flare',1.25,'one','mag',[['weaken',.3]]],
     shell:['Shell Bash',1.4,'one','phys',[['stun',.15]]],ooze:['Engulf',1.05,'all','mag',[['poison',.3]]],scourge:['Dread Roar',1.15,'all','mag',[['weaken',.3]]]}};
 
+// CHAIN (v0.10.4, chain5.js): a Chain skill starts on one foe and may leap to another live foe, one at a time (leap: chance per
+// leap, rolled again each time; max: foes hit at most). Single hits hardest, Chain a little less (its pw), All least.
+const CHAIN={leap:.55,max:4};
+// G5 (v0.10.4, chain5.js): the Guard cue and reward. Foes plan their target with their move (the telegraph shows it); the Guard button
+// glows when the acting hero is the planned target of a hit worth heavy of their HP or more (or of two foes). A hero who guards a
+// hit aimed at them acts again sooner: their next turn costs quick of the usual delay.
+const G5={heavy:.3,quick:.7};
 // ==== 3. Foes and bosses: boss levels and muscle, field packs, creep, echoes, roamers, side sites, mimics, surprise starts ====
 // SURPRISE: touching a roaming dungeon foe that has not seen you gives a free first round: every hero in the vanguard acts free times
 // before any foe moves. A "Surprise!" banner shows. Elite roamers keep their no auto rule.
@@ -2482,7 +2505,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.10.3";const APP_BUILD="6e67c941f326";
+const APP_VER="0.10.4";const APP_BUILD="f62dda11829a";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2490,6 +2513,7 @@ const APP_VER="0.10.3";const APP_BUILD="6e67c941f326";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.10.4',['Battle clarity: foes now pick who they aim at a turn ahead and the telegraph shows it (an arrow on their intent tag, a ⚔ mark on the hero\'s card); the Guard button glows when the acting hero is about to take a heavy hit before their next turn, and a hero who guards a hit aimed at them moves again sooner. Skill rows show their target type with a coloured edge (red for foes, green for allies, both for heals that burn undead), an expected damage or healing number, the delivery symbol and status symbols in their text; when only one target is valid the skill, item or scan fires at once. New Chain targeting: Thunder Quarrel and Volt Lance start on one foe and may leap from foe to foe. The key weakness marker left the stage and lives on the foe card; hero levels show on every layout; the foe info panel no longer gets cut off on tall phones.']],
  ['Beta v0.10.3',['Map: the World map is now one connected picture of every town and field you have visited, joined at their real gates; tap anywhere you have been and the party walks there map to map, through the gates (tap a dungeon, cave or fortress door to go inside). The old parchment chart is behind its Chart button. The minimap now shows on phones too (smaller, under the area name) with a button that opens the area map. The area map and minimap use clear icons for every service, gate (with the side it faces), chest, stairs, door, boss, lair, cave, fortress and people with something to say, all in the legend.']],
  ['Beta v0.10.2',['Party: a wayfarer met on the road (a fortress cell, a chance meeting, a claimed challenge) now asks where to stand when your six are full: view their full sheet, swap them in for any party member on the spot, or keep them in the reserves. Build Party: pressing the selected Balanced or Fresh mix again gives another take. Equipment: one Equip Best button for the six (the for everyone and reserves buttons are gone; a reserve\'s sheet still has Auto), and Equip this now? only suggests party members. Alchemy: an Equip best charms button on the Charms tab. Skill lists show the ⟐ and ✸ symbols instead of the Primer and Detonator tags.']],
  ['Beta v0.10.1',['Computers: the page now zooms to fill the window (133%, 167% or 200% by screen size; Settings > Screen size to pin it), so the web and Windows versions are no longer phone sized. Keys: N opens the map and K mutes (they used to share N), and Settings > Keys lets you remap every key. Graphics: Flat is the original look, the plain 2D world with the classic menus; HD-2D and HD-2D High are the lit versions. Records > Journey shows account totals across every journey: play time, journeys and clears, battles won, fled and lost, bosses, Daily Trials, steps, gold, level ups, recruits and chests.']],
@@ -3059,7 +3083,7 @@ function classSkills(t){
     add({id:'dragon',n:'Dragon Fist',k:'phys',pw:3.1,mp:16,el:e1,cost:1.3,lv:22,d:`Blazing ${n1} strike. Slow recovery.`});
     break;
   case 'sniper':
-    add({id:'s1a',n:'Thunder Quarrel',k:'phys',pw:1.45,mp:3,el:'lightning',lv:1,d:'A crossbow bolt crackling with Lightning.'});
+    add({id:'s1a',n:'Thunder Quarrel',k:'phys',pw:1.3,mp:3,t:'chain',el:'lightning',lv:1,d:'A crossbow bolt crackling with Lightning that may leap from foe to foe.'});
     add({id:'s1b',n:'Shadow Quarrel',k:'phys',pw:1.6,mp:4,el:'shadow',lv:3,d:'A black-fletched bolt that drinks the light.'});
     add({id:'charge',n:'Hoofbeat Charge',k:'phys',pw:1.8,mp:6,lv:6,fx:[['stun',.25]],d:'Rides a foe down. May Stun.'});
     add({id:'wheel',n:'Wheeling Volley',k:'phys',pw:.95,mp:9,t:'all',lv:9,fx:[['slow',.3]],d:'Circles the field, shooting every foe. May Slow.'});
@@ -3079,7 +3103,7 @@ function classSkills(t){
     break;
   case 'archmage':
     add({id:'s1a',n:'Frost Spark',k:'mag',pw:1.4,mp:3,el:'ice',lv:1,d:'A chip of living frost.'});
-    add({id:'s1b',n:'Volt Lance',k:'mag',pw:1.5,mp:3,el:'lightning',lv:3,d:'A spear of lightning.'});
+    add({id:'s1b',n:'Volt Lance',k:'mag',pw:1.35,mp:3,t:'chain',el:'lightning',lv:3,d:'A spear of lightning that may leap from foe to foe.'});
     add({id:'rime',n:'Rimebolt',k:'mag',pw:1.9,mp:7,el:['ice','lightning'],lv:6,fx:[['slow',.4]],d:'Frost-coated lightning. May Slow.'});
     add({id:'ward',n:'Prism Ward',k:'status',t:'ally',mp:4,lv:9,fx:[['ward',1]],d:'A lens of ice that blocks the next hit on an ally.'});
     add({id:'s2a',n:'Glacial Tempest',k:'mag',pw:1.05,mp:8,t:'all',el:['ice','lightning'],lv:12,d:'Hail and lightning on every foe.'});
@@ -8382,7 +8406,7 @@ function battleFrame(now){
 }
 function targetable(u){
   if(!(B.mode==='cmd'&&B.menu==='target'&&B.pend))return false;
-  if(u.side==='e')return !!(B.pend.sk&&u.hp>0&&(B.pend.sk.t==='one'||(typeof healsUndead==='function'&&healsUndead(B.pend.sk,u))));
+  if(u.side==='e')return !!(B.pend.sk&&u.hp>0&&(B.pend.sk.t==='one'||B.pend.sk.t==='chain'||(typeof healsUndead==='function'&&healsUndead(B.pend.sk,u))));
   return allyTargetable(u);
 }
 function drawUnit(ctx,u,b,now,tgMode){
@@ -9314,17 +9338,17 @@ function cmdHtml(){
     const sw=canSwap(),rooted=has(a,'root'),lbOk=lbReady(a),L=LIMIT[TPL[a.id].cls],noFlee=B.boss||B.spec.kind==='elite'||B.spec.kind==='arena'||B.spec.kind==='daily';
     const bonds=ks.filter(s=>s.bond);
     body=`${lbOk?(()=>{const LS=limitSkill(a);return `<button class="mi limit ${LS.limit2?'l2':''}" data-act="cmd" data-arg="limit"><span class="n">${LS.tierN}: ${esc(LS.n)}</span><span class="m">Ready</span><small>${esc(LS.d)}${LS.limit2?'':' (Limit I: about 70% power.)'}</small></button>`;})():''}
-      <div class="menu prim"><button class="mi" data-act="cmd" data-arg="attack">Attack</button><button class="mi" data-act="cmd" data-arg="skills">Skills${bonds.length?' <em class="bondtag">Bond</em>':''}</button>
+      <div class="menu prim"><button class="mi" data-act="cmd" data-arg="attack">${dlIco(deliveryOf(a,ATTACK))}Attack</button><button class="mi" data-act="cmd" data-arg="skills">Skills${bonds.length?' <em class="bondtag">Bond</em>':''}</button>
       <button class="mi" data-act="cmd" data-arg="items">Items</button><button class="mi" data-act="cmd" data-arg="guard">Guard</button></div>
       <div class="menu sec">${canSummon(a)?`<button class="mi summon" data-act="summon" title="Your companion fights in this hero's place for a few turns">Summon ${esc(compOf(a).name)}</button>`:''}<button class="mi" data-act="cmd" data-arg="scan" title="Read a foe's exact stats and hidden quirks. Costs half a turn.">Scan</button><button class="mi" data-act="cmd" data-arg="lore" title="Elements, reactions and statuses. Read only, pauses the fight.">Lore</button>
       <button class="mi" data-act="cmd" data-arg="swap" ${sw?'':'disabled'} title="${rooted?'Rooted: cannot switch out':'Swap this hero for a rearguard hero'}">${rooted?'Rooted':'Switch'}</button>
       <button class="mi" data-act="cmd" data-arg="flee" ${noFlee?'disabled':''}>Flee</button></div><div class="btnrow autorow">${auto}</div>`;
   }else if(B.menu==='skills'){
-    body=`<div class="menu list">${ks.map(s=>`<button class="mi ${s.combo?'combo':''} ${s.bond?'bond':''}" data-act="sk" data-arg="${s.id}" ${a.mp<s.mp?'disabled':''}><span class="n">${skEls(s).map(ico).join('')}${esc(s.n)}${s.t==='all'||s.t==='allyAll'?' <em>All</em>':''}${s.combo?' <em class="c">Dual art</em>':''}${s.bond?' <em class="b">Bond</em>':''}${roleTag(s)}</span><span class="m">${s.mp} MP</span><small>${esc(s.d)}</small>${detList(s)}${perkNote(a,s)}${effChips(s,a)}</button>`).join('')}</div>`;
+    body=`<div class="menu list">${ks.map(s=>`<button class="mi ${skTgt(s).cls} ${s.combo?'combo':''} ${s.bond?'bond':''}" data-act="sk" data-arg="${s.id}" ${a.mp<s.mp?'disabled':''}><span class="n">${dlIco(deliveryOf(a,s))}${skEls(s).map(ico).join('')}${esc(s.n)}${skTgtLabel(s)}${s.combo?' <em class="c">Dual art</em>':''}${s.bond?' <em class="b">Bond</em>':''}${roleTag(s)}</span><span class="m">${(n=>n?`<span class="num ${s.k==='phys'||s.k==='mag'?'dmg':'heal'}">${n}</span> `:'')(skNum(a,s))}${s.mp} MP</span><small>${stDesc(s.d)}</small>${detList(s)}${perkNote(a,s)}${effChips(s,a)}</button>`).join('')}</div>`;
   }else if(B.menu==='items'){
     body=`<div class="menu list">${Object.keys(ITEMS).filter(id=>!ITEMS[id].ward&&!ITEMS[id].tent&&(!ITEMS[id].craft||(G.inv[id]||0)>0)&&(!ITEMS[id].flee||(G.inv[id]||0)>0)).map(id=>`<button class="mi" data-act="item" data-arg="${id}" ${(G.inv[id]||0)>0&&!(ITEMS[id].flee&&porkBlocked())?'':'disabled'}><span class="n">${itemIcon(id)} ${ITEMS[id].n}</span><span class="m">x${G.inv[id]||0}</span><small>${ITEMS[id].d}</small></button>`).join('')}</div>`;
   }else if(B.menu==='target'){
-    const one=(B.pend.sk&&B.pend.sk.t==='one')||B.pend.scan;
+    const one=(B.pend.sk&&(B.pend.sk.t==='one'||B.pend.sk.t==='chain'))||B.pend.scan;
     body=`<p class="hint">${B.pend.scan?'Tap a foe to scan.':one?'Tap a foe.':(B.pend.sk&&(B.pend.sk.k==='heal'||B.pend.sk.k==='revive')&&B.en.some(e=>healsUndead(B.pend.sk,e)))?'Tap a hero, or an undead foe to burn it with healing light.':'Tap a hero.'}</p>`;
   }else if(B.menu==='swap'){
     body=`<p class="hint">Who takes ${esc(a.name)}'s place? They act right away. ${esc(a.name)}'s ailments, buffs and mark are cleared.</p><div class="menu list">${B.back.map((c,i)=>`<button class="mi" data-act="sw" data-arg="${i}" ${c.hp>0?'':'disabled'}><span class="n">${port(c.id,'sm')}${esc(c.name)}</span><span class="m">${c.hp}/${c.S.mhp}</span><small>Lv ${c.lv} ${CLS[TPL[c.id].cls].n} ${c.el.map(ico).join('')}</small></button>`).join('')}</div>`;
@@ -9597,13 +9621,13 @@ const ACT={
     if(a==='attack')return chooseSkill(ATTACK);
     if(a==='limit'){if(!lbReady(B.cur))return;sfx('limit');return chooseSkill(limitSkill(B.cur));}
     if(a==='lore'){V.modal={type:'battlelore'};render();return;}if(a==='guard')return guard();if(a==='flee')return flee();
-    if(a==='scan'){B.pend={scan:1,sk:{t:'one'}};B.tgFrom='root';B.menu='target';render();return;}
+    if(a==='scan'){const lv=B.en.filter(e=>e.hp>0);if(lv.length===1)return scan(lv[0]);B.pend={scan:1,sk:{t:'one'}};B.tgFrom='root';B.menu='target';render();return;}
     if(a==='swap'&&!canSwap())return;
     B.menu=a;render();},
   back(){if(B){B.menu=B.menu==='target'&&B.tgFrom&&B.tgFrom!=='target'?B.tgFrom:'root';B.tgFrom=null;B.pend=null;render();}},
   sk(id){if(!B||B.mode!=='cmd')return;const s=known(B.cur).find(x=>x.id===id);if(!s||B.cur.mp<s.mp)return;chooseSkill(s);},
-  item(id){if(!B||B.mode!=='cmd'||!(G.inv[id]>0))return;B.pend={item:id};B.tgFrom='items';B.menu='target';render();},
-  tgtE(i){if(!B||B.mode!=='cmd'||!B.pend||!B.pend.sk)return;const e=B.en[+i];if(!e||e.hp<=0)return;if(B.pend.sk.t!=='one'&&!(typeof healsUndead==='function'&&healsUndead(B.pend.sk,e)))return;if(B.pend.scan){B.pend=null;return scan(e);}exec(B.pend.sk,[e]);},
+  item(id){if(!B||B.mode!=='cmd'||!(G.inv[id]>0))return;{const it=ITEMS[id],ok=allParty().filter(c=>it.revive?c.hp<=0:c.hp>0);if(ok.length===1){B.pend=null;useItem(id,ok[0]);return;}}B.pend={item:id};B.tgFrom='items';B.menu='target';render();},
+  tgtE(i){if(!B||B.mode!=='cmd'||!B.pend||!B.pend.sk)return;const e=B.en[+i];if(!e||e.hp<=0)return;if(B.pend.sk.t!=='one'&&B.pend.sk.t!=='chain'&&!(typeof healsUndead==='function'&&healsUndead(B.pend.sk,e)))return;if(B.pend.scan){B.pend=null;return scan(e);}exec(B.pend.sk,[e]);},
   tgtA(i){if(!B||B.mode!=='cmd'||!B.pend)return;const c=allParty()[+i];if(!c)return;
     if(B.pend.item){const it=ITEMS[B.pend.item];if(it.revive?c.hp<=0:c.hp>0)useItem(B.pend.item,c);return;}
     const s=B.pend.sk;if(!s)return;if(s.t==='ally'&&c.hp>0)exec(s,[c]);else if(s.t==='dead'&&c.hp<=0)exec(s,[c]);},
@@ -9617,6 +9641,11 @@ function chooseSkill(sk){
   if(t==='all'||t==='rand')return exec(sk,B.en.filter(e=>e.hp>0));
   if(t==='self')return exec(sk,[B.cur]);
   if(t==='allyAll')return exec(sk,B.front.filter(c=>c.hp>0));
+  // v0.9.x: exactly one valid target means no choice to make: act at once (never when more than one is valid)
+  if(t==='one'||t==='chain'){const lv=B.en.filter(e=>e.hp>0);if(lv.length===1)return exec(sk,[lv[0]]);}
+  else if(t==='ally'||t==='dead'){
+    const mine=allParty().filter(c=>t==='dead'?c.hp<=0:c.hp>0),und=B.en.filter(e=>typeof healsUndead==='function'&&healsUndead(sk,e));
+    if(mine.length===1&&!und.length)return exec(sk,[mine[0]]);}
   B.pend={sk};B.tgFrom=B.menu==='target'?'root':B.menu;B.menu='target';render();
 }
 
@@ -10805,6 +10834,59 @@ function nextMilestone(b,boss){const k=(b||{}).kills||0,M=boss?PERK_KILLS_BOSS:P
 HOOK.after('calcDamage','insight','bestiary perk damage',function(r,a,sk,t,bonus){
   if(a&&t&&a.side==='p'&&t.side==='e'&&!(G&&G.daily)){const p=perkOf(t.base,t.boss);if(p.dmg)r.dmg=Math.max(1,Math.round(r.dmg*(1+p.dmg)));}});
 function perkDropMul(e){if(G&&G.daily)return 1;return 1+perkOf(e.base,e.boss).drop;}
+
+// ----- battle menu row helpers (target kind, damage/heal estimate, status symbols in text) -----
+// skTgt(s): {cls,lab} for a skill's target type. cls is tk-foe, tk-ally or tk-both (a heal that can also burn an undead foe on the field), '' if unknown.
+const TK_FOE={one:'Single',all:'All foes',rand:'Random',chain:'Chain'},TK_ALLY={ally:'Ally',allyAll:'All allies',self:'Self',dead:'Fallen ally'};
+function skTgt(s){
+  if(!s)return {cls:'',lab:''};
+  if(TK_FOE[s.t])return {cls:'tk-foe',lab:TK_FOE[s.t]};
+  if(TK_ALLY[s.t]){
+    if(B&&B.en&&B.en.some(e=>healsUndead(s,e)))return {cls:'tk-both',lab:TK_ALLY[s.t]+' / undead'};
+    return {cls:'tk-ally',lab:TK_ALLY[s.t]};}
+  return {cls:'',lab:''};
+}
+function skTgtLabel(s){const k=skTgt(s);return k.lab?` <em class="tk">${k.lab}</em>`:'';}
+// skHealAmt(a,s,t): HP the heal skill restores on target t (a hero), the engine's formula with the random spread at its middle (1.0).
+function skHealAmt(a,s,t){
+  if(!s||!a||!a.S)return 0;
+  if(s.k==='revive')return Math.max(1,Math.round(((t&&t.S)||a.S).mhp*s.pw));
+  if(s.k!=='heal')return s.k==='status'&&s.heal?Math.round(((t&&t.S)||a.S).mhp*s.heal):0;
+  const cm=typeof curseMul==='function'&&t?curseMul(t):1;
+  return Math.round(s.pw*(a.S.healP||a.S.mag)*(WX().heal||1)*(1+(a.S.healUp||0))*cm);
+}
+// skNum(a,s): short estimate for a skill row ("~120", "~120 each", "" when there is nothing to show).
+// calcDamage rolls rnd(.92,1.08) and a crit; both read RNG, so it is called with RNG fixed at .5 (spread = 1.0, no crit roll) and any Focus
+// buff is put back afterwards (calcDamage consumes it). The result is the average over the live foes, times hits.
+function skNum(a,s){
+  if(!a||!s||!B)return '';
+  const each=s.t==='all'||s.t==='allyAll'||s.t==='rand'?' each':'';
+  if(s.k==='phys'||s.k==='mag'){
+    const foes=(B.en||[]).filter(e=>e.hp>0);if(!foes.length)return '';
+    const r0=RNG,foc=a.st&&a.st.focus;let tot=0,n=0;
+    try{RNG=()=>.5;foes.forEach(e=>{try{tot+=calcDamage(a,s,e).dmg;n++;}catch(x){}});}
+    finally{RNG=r0;if(foc&&a.st&&!a.st.focus)a.st.focus=foc;}
+    if(!n)return '';return '~'+Math.round(tot/n*(s.hits||1))+each;
+  }
+  if(s.k==='heal'||s.k==='revive'||(s.k==='status'&&s.heal)){
+    const live=(B.front||[]).filter(c=>c.hp>0),t=s.t==='self'?a:live.find(c=>c===a)||live[0]||a;
+    const v=skHealAmt(a,s,t);return v>0?(s.k==='revive'||s.t==='dead'?'':'~')+v+each:'';
+  }
+  return '';
+}
+// stDesc(txt): escaped description with each status name (Burn, Stun ...) given its symbol. Capitalised exact names only, so verbs stay words.
+function stDesc(txt){
+  const h=esc(txt||'');if(typeof stSym!=='function'||typeof STS==='undefined')return h;
+  return h.replace(/\b(Poison|Bleed|Burn|Slow|Stun|Blind|Root|Weaken|Break|Might|Bulwark|Haste|Regen|Ward|Taunt|Focus)\b/g,(m)=>{const k=m.toLowerCase();return STS[k]?`<span class="stw">${stSym(k)}${m}</span>`:m;});
+}
+// effArrow(sk,e): the matchup mark shown on a foe card while a damaging skill is being aimed (green up Weak, red down Resists, cross Immune, nothing for Neutral/unknown)
+function effArrow(sk,e){
+  if(!sk||(sk.k!=='phys'&&sk.k!=='mag')||!B)return '';
+  let I=null;try{I=effInfo(sk,e,B.cur);}catch(x){}
+  if(!I)return '';
+  const m={Weak:['up','▲','Weak'],Resists:['dn','▼','Resists'],Immune:['im','✕','Immune']}[I.lab];
+  return m?`<span class="effa ${m[0]}" role="img" aria-label="${m[2]}" title="${m[2]}">${m[1]}</span>`:'';
+}
 
 // ===== battlefx.js (v0.2.0): battle readability: the battle log, status icons and their popup =====
 // Floating numbers follow battle speed, a scrollable battle log, and tappable status icons with a details popup.
@@ -13438,7 +13520,7 @@ function foeCards(){
     // v0.6.3: effects the stage already shows in full are not repeated here (b3OnStage); the reaction a detonator sets off always is
     const tags=dead?'':(b3OnStage(e,'prim')&&!detHits(B.pend&&B.pend.sk,e)?'':primedChip(e))+foeWeak(e)+(b3OnStage(e,'tags')?'':stButtons(e,{max:BL.mode==='tall'?3:5,noWx:true,noPrime:true}))+(BL.mode==='tall'||BL.mode==='wide'?'':archChips(e));
     return `<div class="pcw fcw ${tags?'hastags':''}"><button class="fc ${tg?'tg':''} ${dead?'ko':''} ${e.primed&&!dead?'isprimed':''} ${tg&&detHits(B.pend&&B.pend.sk,e)?'dethit':''}" style="--pc:${e.primed&&ELC[e.primed.el]||'#fff'}" data-x="1 ${B.mode==='cmd'&&B.menu==='target'&&!tg?'':''}" data-act="tgtE" data-arg="${i}" ${tg?'':'tabindex="-1"'} aria-label="${esc(e.name)}, level ${e.lv}">
-      <img class="fci" src="${art}" alt=""><span class="pm"><span class="uct"><b>${esc(e.name)}${e.elite?' ★':''}</b><span class="ucl">Lv ${e.lv}</span>${elbs(e.el)}</span>
+      <img class="fci" src="${art}" alt=""><span class="pm"><span class="uct"><b>${esc(e.name)}${e.elite?' ★':''}</b>${tg?effArrow(B.pend&&B.pend.sk,e):''}<span class="ucl">Lv ${e.lv}</span>${elbs(e.el)}</span>
       <span class="ucr"><i>HP</i>${bar(e.hp,e.S.mhp,'#e8504a')}<em class="nums">${dead?'KO':kn?hpText(e):pct+'%'}</em></span>${shPips(e)}</span></button>${uInfoBtn(e)}
       <div class="ptags">${tags}</div></div>`;}).join('')}</div></div>`;
 }
@@ -19272,7 +19354,7 @@ function b9TelePlan(u){if(!B||!u||u.side!=='e'||u.hp<=0)return null;let P=null;t
   if(P&&(P.kind==='unleash'||P.kind==='cataclysm'))return {u,n:P.n,tg:P.tg||[]};
   try{if(has(u,'charge')){const p=foePlan(u);if(p&&p.cat==='big')return {u,n:p.sk&&p.sk.n||'Big hit',tg:B.front.filter(c=>c.hp>0)};}}catch(e){}return null;}
 function b9IntW(u){return b9TelePlan(u)?B5.it.w+Math.ceil(b3TextW(B9W.g,5,900)*1.1)+3:B5.it.w;}
-function b9LayWeak(L){L.wk=new Map();const W=L.W,H=L.H,w=B9W.w,h=B9W.h;
+function b9LayWeak(L){L.wk=new Map();if(typeof B9_STAGE_WEAK==='undefined'||!B9_STAGE_WEAK)return;/* v0.10.4: the key weakness is on the foe card, not over the stage */const W=L.W,H=L.H,w=B9W.w,h=B9W.h;
   B.en.forEach(u=>{if(u.hp<=0)return;const k=b9Key(u);if(!k)return;const b=unitBox(u);if(!b)return;const bo=L.bodies.find(q=>q.u===u),bd=bo?bo.r:{x:b.x-b.w/2,y:b.y-b.h,w:b.w,h:b.h},p=L.plates.get(u),it=L.intent&&L.intent.get(u),A=[];
     if(it){const my=Math.round(it.y+it.h/2-h/2);A.push({x:it.x+it.w+1,y:my,c:0},{x:it.x-w-1,y:my,c:1});}
     if(p){const my=Math.round(p.y+p.h/2-h/2);A.push({x:p.x+p.w+1,y:my,c:1.5},{x:p.x-w-1,y:my,c:2},{x:Math.round(p.x+p.w/2-w/2),y:p.y-h-1,c:3},{x:Math.round(p.x+p.w/2-w/2),y:p.y+p.h+1,c:3.5});}
@@ -19669,6 +19751,55 @@ if(typeof mBeast==='function'){const mb0=mBeast;mBeast=function(m){let h=mb0.app
 const B4X={get cfg(){return B4;},plan:u=>b4RolePlan(u),roleLine:u=>b4RoleLine(u),roleOf:m=>b4RoleOfMon(m),ROLE:B4ROLE,freeSwap:(f,b)=>b4FreeSwap(f,b),freeReady:()=>b4FreeReady(),freeLeft:()=>b4FreeLeft(),
   mo:()=>B?b4MoS():null,gim:()=>B&&B.b4g,gimDef:k=>b4GimDefOf(k),gimTurn:u=>b4GimTurn(u),gimSync:()=>b4GimSync(),gimNow:()=>b4GimNow(),gimSmart:a=>b4GimSmart(a),get GIM(){return BOSS_GIM;},moState:()=>b4MoState(),sig:s=>b4Sig(s),hex:c=>b4Hex(c),smart:()=>b4Smart(),detGain:a=>b4DetGain(a),
   foeTurn:u=>{B.cur=u;B.mode='enemy';enemyTurn0(u);},exec:(s,t)=>exec(s,t),guard:()=>guard(),calc:(a,s,t,b)=>calcDamage(a,s,t,b),rng:f=>{RNG=f||Math.random;},doSwap:i=>doSwap(i)};
+
+// ===== chain5.js (v0.10.4): Chain targeting, planned foe targets (the telegraph names who), the Guard cue and reward =====
+// Chain (skills with t:'chain'): the player picks one foe; perform then rolls CHAIN.leap for a leap to another live foe not yet hit,
+// again after each leap, up to CHAIN.max foes. Auto battle treats it as a single target skill (the leaps still roll).
+// Planned targets: foePlan (battle5.js) decides a foe's move a turn ahead; now it also decides who it aims at, from the same seeded
+// stream, with the engine's own rule (a Taunt, else the weakest 30% of the time, else anyone; pack focus). enemyTurn0 keeps its own
+// roll (the RNG sequence does not move), and the perform hook redirects a single target hit to the planned hero when they still
+// stand and no Taunt took over. The intent tag on the stage and the hero's card show the aim.
+// Guard: the cue (battle5 b9Cue) also glows when the acting hero is the planned target of a hit worth G5.heavy of their HP, or of two
+// foes, before they act again. A hero who guards a hit aimed at them gets their next turn sooner (G5.quick).
+const B9_STAGE_WEAK=false;
+function c5Single(sk){return !sk||!sk.t||sk.t==='one'||sk.t==='chain';}
+// ----- Chain -----
+HOOK.before('perform','chain5','Chain leaps',function(a,sk,tgts){try{if(!B||!sk||sk.t!=='chain'||!tgts||tgts.length!==1||!a)return;const first=tgts[0];
+  const foesOf=a.side==='p'?B.en:B.front;const live=foesOf.filter(e=>e.hp>0&&e!==first);let n=0;
+  while(live.length&&tgts.length<(CHAIN.max||4)&&RNG()<(CHAIN.leap||.5)){const i=Math.floor(RNG()*live.length);tgts.push(live.splice(i,1)[0]);n++;}
+  if(n)log(`${sk.n} leaps to ${n} more foe${n>1?'s':''}!`);}catch(e){}});
+// ----- planned targets -----
+function c5PlanTarget(u,p){try{if(!B||!p||!p.sk||!c5Single(p.sk)||p.sk.t==='self')return null;const live=B.front.filter(c=>c.hp>0);if(!live.length)return null;
+  const i=Math.max(0,B.en.indexOf(u)),rand=seeded((B.seed^Math.imul(i+1,0x9E3779B1)^Math.imul(p.n,0x85EBCA77)^Math.imul(B.wave||1,0xC2B2AE35)^0x5bd1e995)>>>0);rand();
+  const taunt=live.filter(c=>has(c,'taunt'));if(taunt.length)return taunt[0];
+  const low=live.slice().sort((a,b)=>a.hp/a.S.mhp-b.hp/b.S.mhp)[0];
+  const packed=!u.boss&&!u.elite&&!(G&&G.daily)&&(B.stage||0)>=(PACK.fromStage||0)&&B.en.filter(e=>e.hp>0&&!e.boss&&!e.elite).length>1;
+  if(packed&&B.packT&&B.packT.hp>0&&live.includes(B.packT)&&rand()<PACK.focus)return B.packT;
+  return rand()<.3?low:live[Math.floor(rand()*live.length)];}catch(e){return null;}}
+{const fp0=foePlan;foePlan=function(u){const p=fp0.apply(this,arguments);try{if(p&&!p.c5){p.c5=1;p.tgt=c5PlanTarget(u,p);}}catch(e){}return p;};}
+// the plan a foe is acting on (enemyTurn0 reads foePlan first thing, then bumps u.turns)
+{const et0=enemyTurn0;enemyTurn0=function(u){try{if(u&&u.side==='e')u._c5used=foePlan(u);}catch(e){}return et0.apply(this,arguments);};}
+HOOK.before('perform','chain5','aim at the planned hero',function(a,sk,tgts){try{if(!B||!a||a.side!=='e'||!tgts||tgts.length!==1)return;const p=a._c5used;if(!p||!p.tgt||p.n!==a.turns)return;
+  const same=p.sk===sk||(sk&&p.sk&&sk.id===p.sk.id)||(sk&&sk.id==='attack'&&p.sk===ATTACK);if(!same||!c5Single(sk))return;
+  const t=p.tgt,cur=tgts[0];if(!cur||cur.side!=='p')return;if(has(cur,'taunt')&&!has(t,'taunt'))return;if(t.hp<=0||!B.front.includes(t))return;
+  tgts[0]=t;
+  // the reward: a guard that caught the planned hit makes the hero quick
+  if(t.guard&&(sk.k==='phys'||sk.k==='mag')){t.c5q=1;fx(t,'Braced!','stat good');}}catch(e){}});
+{const en0=endTurn;endTurn=function(u,cost){try{if(u&&u.c5q&&u.side==='p'){u.c5q=0;cost=(cost==null?1:cost)*(G5.quick||.7);log(`${u.name} shrugs off the blow and moves quickly.`);}}catch(e){}return en0.call(this,u,cost);};}
+// ----- the cue -----
+function c5Est(u,sk,t){try{const r0=RNG;RNG=()=>.5;try{const r=calcDamage(u,sk,t);return (r&&r.dmg||0)*(sk.hits||1);}finally{RNG=r0;}}catch(e){return 0;}}
+function c5Aim(a){const out=[];if(!B||!a)return out;B.en.forEach(u=>{if(u.hp<=0)return;const p=foePlan(u);if(!p||p.tgt!==a||!p.sk||!(p.sk.k==='phys'||p.sk.k==='mag'))return;out.push({u,sk:p.sk,dmg:c5Est(u,p.sk,a)});});return out;}
+{const cue0=b9Cue;b9Cue=function(){const r=cue0.apply(this,arguments);if(r)return r;try{const a=B&&B.cur;if(!a||a.side!=='p'||B.mode!=='cmd'||a.guard)return r;const aims=c5Aim(a);if(!aims.length)return r;
+    let ord=null;const before=u=>{ord=ord||b5Order(12);for(let i=1;i<ord.length;i++){const x=ord[i].u;if(x===a)return false;if(x===u)return true;}return false;};
+    const soon=aims.filter(o=>before(o.u));if(!soon.length)return r;const tot=soon.reduce((q,o)=>q+o.dmg,0),heavy=tot>=a.hp*(G5.heavy||.3)||soon.length>=2;if(!heavy)return r;
+    const who=soon.map(o=>o.u.name).join(' and ');return {k:'guard',u:soon[0].u,glow:'guard',txt:`Guard! ${who} aim${soon.length>1?'':'s'} at ${a.name}`,tip:`${who} ${soon.length>1?'are':'is'} about to hit ${a.name} for about ${Math.round(tot)} before ${a.name} acts again. Guard halves it, and a guarded hit makes ${a.name} quick.`};}catch(e){return r;}};}
+// ----- the telegraph on screen: the intent tag names the hero, the hero's card shows who aims at them -----
+function c5Short(n){try{return shortName(n);}catch(e){return n;}}
+HOOK.after('renderBattle','chain5','planned targets on the intent tags and the party cards',function(){try{if(!B||V.screen!=='battle')return;
+  const aimAt=new Map();B.en.forEach(u=>{if(u.hp<=0)return;const p=foePlan(u);if(!p||!p.tgt||p.tgt.hp<=0)return;aimAt.set(p.tgt,(aimAt.get(p.tgt)||[]).concat([u]));
+    const tag=document.querySelector(`.b5it[data-u="${unitRef(u)}"]`);if(tag&&!tag.querySelector('.c5aim')){const s=document.createElement('i');s.className='c5aim';s.textContent='→ '+c5Short(p.tgt.name);tag.appendChild(s);tag.title=(tag.title||'')+` Aims at ${p.tgt.name}.`;}});
+  const party=allParty();aimAt.forEach((foes,c)=>{const i=party.indexOf(c);if(i<0)return;const card=document.querySelector(`#bparty [data-act="tgtA"][data-arg="${i}"], #bparty .pc[data-arg="${i}"]`);if(!card||card.querySelector('.c5tgt'))return;
+    const s=document.createElement('span');s.className='c5tgt';s.title=`${foes.map(f=>f.name).join(' and ')} aim${foes.length>1?'':'s'} at ${c.name}`;s.textContent='⚔'+(foes.length>1?foes.length:'');card.appendChild(s);});}catch(e){}});
 
 // ===== remember.js (v0.7.1): remember Auto and Run =====
 // The Auto battle toggle and the Run toggle used to live only in memory (V.auto, WS.run), so they reset on every launch and every update.

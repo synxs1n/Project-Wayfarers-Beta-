@@ -112,6 +112,13 @@ const TAME={skillAt:12,evoAt:30,evoBonus:.03,k:.45,
   sk:{beast:['Feral Rush',1.35,'one','phys',[['bleed',.3]]],flyer:['Gale Sweep',1.0,'all','mag',[['slow',.25]]],spirit:['Spirit Flare',1.25,'one','mag',[['weaken',.3]]],
     shell:['Shell Bash',1.4,'one','phys',[['stun',.15]]],ooze:['Engulf',1.05,'all','mag',[['poison',.3]]],scourge:['Dread Roar',1.15,'all','mag',[['weaken',.3]]]}};
 
+// CHAIN (v0.10.4, chain5.js): a Chain skill starts on one foe and may leap to another live foe, one at a time (leap: chance per
+// leap, rolled again each time; max: foes hit at most). Single hits hardest, Chain a little less (its pw), All least.
+const CHAIN={leap:.55,max:4};
+// G5 (v0.10.4, chain5.js): the Guard cue and reward. Foes plan their target with their move (the telegraph shows it); the Guard button
+// glows when the acting hero is the planned target of a hit worth heavy of their HP or more (or of two foes). A hero who guards a
+// hit aimed at them acts again sooner: their next turn costs quick of the usual delay.
+const G5={heavy:.3,quick:.7};
 // ==== 3. Foes and bosses: boss levels and muscle, field packs, creep, echoes, roamers, side sites, mimics, surprise starts ====
 // SURPRISE: touching a roaming dungeon foe that has not seen you gives a free first round: every hero in the vanguard acts free times
 // before any foe moves. A "Surprise!" banner shows. Elite roamers keep their no auto rule.

@@ -1,0 +1,6 @@
+# Beta v0.10.4: Phase 5, battle UI and clarity
+
+- `chain5.js`: t:'chain' skills (Thunder Quarrel, Volt Lance) leap with CHAIN.leap per leap up to CHAIN.max foes (perform before hook; RNG rolls only when a chain skill fires). `foePlan` gains `tgt` (c5PlanTarget: the engine's rule from the plan's seeded stream); `enemyTurn0` keeps its own RNG rolls and the perform hook redirects a single target hit to the planned hero (Taunt still wins). The Guard cue (`b9Cue` wrapper) glows for a planned hit worth G5.heavy of the hero's HP or two foes; a guarded planned hit sets `c5q`, and that hero's next endTurn costs G5.quick. The renderBattle after hook appends `.c5aim` to the intent tags and `.c5tgt` to party cards. `B9_STAGE_WEAK=false` keeps the key weakness off the stage (foe card and the i panel still show it).
+- `ui.js`, `insight.js`, `battleui.js`: skTgt/skTgtLabel (tk-foe, tk-ally, tk-both), skNum/skHealAmt (RNG pinned to .5 for the estimate), stDesc (status symbols in descriptions), effArrow on foe cards while targeting, single valid target auto-use in chooseSkill, ACT.item and scan.
+- CSS: `.ucl` levels on every layout; `.udbox` max-height with dvh and safe area.
+- Daily Trial: outcomes differ from 0.10.3 (planned targets redirect hits) but the trial stays deterministic for everyone on the same day. tools/chrome/dailycmp.js against an older build will differ.

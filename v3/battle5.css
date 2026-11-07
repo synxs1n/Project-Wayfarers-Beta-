@@ -36,3 +36,6 @@
 .bstage .b9wk{display:grid;place-items:center;padding:0;border-radius:2px;border:.6px solid #ffbe5a;background:rgba(60,34,8,.88);pointer-events:none;z-index:6;box-shadow:0 0 0 .4px rgba(21,11,23,.9);overflow:hidden}
 .bstage .b9wk .ico,.bstage .b9wk .dli{width:8px;height:8px;margin:0}
 .bstage .b9wk.rx{border-color:#e8c8ff;background:rgba(70,30,110,.9);box-shadow:0 0 0 .4px rgba(21,11,23,.9),0 0 3px rgba(200,150,255,.9)}
+/* chain5.js: planned targets */
+.b5it .c5aim{font-style:normal;margin-left:3px;opacity:.9}
+.c5tgt{position:absolute;right:4px;top:2px;font-size:.7rem;color:#ffb0a0;text-shadow:0 1px 0 #000;pointer-events:none}
