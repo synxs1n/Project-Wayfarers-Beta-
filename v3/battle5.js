@@ -152,7 +152,7 @@ window.addEventListener('keydown',e=>{const R=B5R.ring;if(!R||R.done)return;if([
   h=k>=0?h.slice(0,k)+`<div class="rows">${row}</div>`+h.slice(k):h+`<div class="rows">${row}</div>`;}catch(e){}return h;};}
 
 // plans exist from the first frame of a battle; a new wave (or a summon) gets one when it is first drawn
-{const sb0=startBattle;startBattle=function(){const r=sb0.apply(this,arguments);try{if(r!==false&&B){B5R.ring=null;B.en.forEach(foePlan);}}catch(e){}return r;};}
+HOOK.after('startBattle','battle5','plan every foe (foePlan)',function(r){try{if(r!==false&&B){B5R.ring=null;B.en.forEach(foePlan);}}catch(e){}});
 
 // the bar never scrolls: entries that do not fit the row are dropped from the end (at least 4 stay)
 function b5Fit(){try{const o=document.querySelector('#border .ocs');if(!o)return;let k=0;

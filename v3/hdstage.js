@@ -472,4 +472,4 @@ function hbFrame(now){const gl=HB.gl,q=hbQ(),W=BL.W,H=BL.H,key=HB.force||battleT
   return r;};}
 // a new battle screen: the canvas is re-attached on the first frame; effect lights and circles from the last fight are dropped
 {const lb0=layoutBattle;layoutBattle=function(){const r=lb0.apply(this,arguments);try{if(HB.cv&&HB.on)hbPlace();}catch(e){}return r;};}
-{const sb0=startBattle;startBattle=function(){HB.L.length=0;HB.D.length=0;HB.spot=null;if(HB.lost&&HB.gl&&!HB.gl.isContextLost())HB.lost=false;return sb0.apply(this,arguments);};}
+HOOK.before('startBattle','hdstage','reset the HD-2D stage lights',function(){HB.L.length=0;HB.D.length=0;HB.spot=null;if(HB.lost&&HB.gl&&!HB.gl.isContextLost())HB.lost=false;});

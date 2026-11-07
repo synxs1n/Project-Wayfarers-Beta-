@@ -41,7 +41,7 @@ function manualBonusPct(){return Math.round((1/AUTO_REW-1)*100);}
 // v0.9.8: the per foe type reason is long: it lives in the button's title and the toast on press, not as a line beside the commands
 function autoBtnHtml(){const why=autoReason();if(why)return `<button class="btn sm autolock" data-act="auto" aria-disabled="true" title="${why}">Auto locked</button>${/^Beat /.test(why)?'':`<small class="autowhy">${why}</small>`}`;
   return `<button class="btn sm ${B.auto?'gold':''}" data-act="auto" aria-pressed="${B.auto?'true':'false'}">${B.auto?'Stop auto':'Start auto'}</button>`;}
-{const sb0=startBattle;startBattle=function(spec){const r=sb0.apply(this,arguments);try{if(r!==false&&B){B.tP=0;B.tA=0;B.nz={react:0,brk:0,guard:0,surge:0,tele:0};if(autoLocked()){B.auto=false;B.autoLock=1;}}}catch(e){}return r;};}
+HOOK.after('startBattle','prog2','auto counters, boss auto lock',function(r){try{if(r!==false&&B){B.tP=0;B.tA=0;B.nz={react:0,brk:0,guard:0,surge:0,tele:0};if(autoLocked()){B.auto=false;B.autoLock=1;}}}catch(e){}});
 {const pf0=perform;perform=function(a,sk,tg){try{if(B&&a&&a.side==='p'&&!a.isComp){B.tP=(B.tP||0)+1;if(B.auto)B.tA=(B.tA||0)+1;}
     if(B&&B.nz){if(B.b4mo&&B.b4mo.full)B.nz.surge=1;
       // a telegraphed hit (battle4.js: Crushing Charge, Cataclysm) landing on a guarded hero

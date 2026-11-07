@@ -97,7 +97,7 @@ function ironClamp(){if(!TW.ng('iron')||!Array.isArray(G.ngDown))return;
 {const lo0=lose;lose=function(){try{if(G&&!(B&&B.spec&&B.spec.kind==='daily')&&Array.isArray(G.ngDown))G.ngDown=[];}catch(e){}return lo0.apply(this,arguments);};}
 
 // ===== battle start and new waves =====
-{const sb0=startBattle;startBattle=function(){const r=sb0.apply(this,arguments);try{if(r!==false&&B){twWave(true);twElite();ironClamp();}}catch(e){}return r;};}
+HOOK.after('startBattle','twists','twist waves, elites, Iron clamp',function(r){try{if(r!==false&&B){twWave(true);twElite();ironClamp();}}catch(e){}});
 {const nw0=nextWave;nextWave=function(){const r=nw0.apply(this,arguments);try{twWave(false);}catch(e){}return r;};}
 
 // ===== UI =====

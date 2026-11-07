@@ -77,10 +77,9 @@ function bgPaintGround(ctx,W,H,R,th,g){
     const cx=Math.floor(W*.28),cy=gy+Math.floor((H-gy)*.55),rx=Math.floor(W*.18),ry=Math.floor((H-gy)*.28);ctx.strokeStyle=D.acc;ctx.globalAlpha=.55;ctx.lineWidth=1;ctx.beginPath();ctx.ellipse(cx,cy,rx,ry,0,0,7);ctx.stroke();ctx.beginPath();ctx.ellipse(cx,cy,rx-4,ry-2,0,0,7);ctx.stroke();ctx.globalAlpha=1;};
 });
 // 2.1: the backdrop comes from where the battle started. The terrain is noted when a battle starts in the world (never in the Daily Trial).
-{const sb0=startBattle;startBattle=function(spec){
+HOOK.before('startBattle','p2world','backdrop from the terrain (spec.bg)',function(spec){
   try{if(spec&&typeof spec==='object'&&!spec.bg&&spec.kind!=='daily'&&!(G&&G.daily)&&V.screen==='world'&&WS&&WS.m){const m=WS.m;
-    spec.bg={th:p2BaseTheme(m.s),k:m.kind==='field'?'field':m.kind==='town'?'field':m.cave?'cave':'dungeon',g:bgGroundAt(m,WS.x,WS.y)};}}catch(e){}
-  return sb0.apply(this,arguments);};}
+    spec.bg={th:p2BaseTheme(m.s),k:m.kind==='field'?'field':m.kind==='town'?'field':m.cave?'cave':'dungeon',g:bgGroundAt(m,WS.x,WS.y)};}}catch(e){}});
 const BOSS_STAGE_KINDS={boss:1,echoBoss:1,storyEcho:1,mini:1};
 {const bt0=battleTheme;battleTheme=function(){const base=bt0.apply(this,arguments);try{if(!B||!B.spec)return base;const sp=B.spec,k=sp.kind,th=p2BaseTheme(B.stage);
   if(k==='arena'||k==='daily')return base;
@@ -102,9 +101,9 @@ function p2Surprise(){if(!B)return;const P=B.front.filter(c=>c.hp>0),E=B.en.filt
   // foes wait until just before the earliest second action of any hero
   const t0=Math.min(...P.map(c=>c.next+free*delayOf(c,1)));E.forEach((e,k)=>{e.next=Math.max(e.next,t0-.01+k*.0001);});
   B.surprise=1;banner('Surprise!','#7affc8');log('Surprise! The foes have not seen you. Your party strikes first.');}
-{const sb1=startBattle;startBattle=function(spec){
-  try{if(spec&&spec.roam&&P2.sur&&P2.sur.mid===spec.roam.mid&&P2.sur.i===spec.roam.i&&Date.now()-P2.sur.t<5000)spec.surprise=1;}catch(e){}P2.sur=null;
-  const r=sb1.apply(this,arguments);try{if(r!==false&&B&&spec&&spec.surprise&&!G.daily)p2Surprise();}catch(e){}return r;};}
+HOOK.before('startBattle','p2world','surprise start: was the roamer still on patrol',function(spec){
+  try{if(spec&&spec.roam&&P2.sur&&P2.sur.mid===spec.roam.mid&&P2.sur.i===spec.roam.i&&Date.now()-P2.sur.t<5000)spec.surprise=1;}catch(e){}P2.sur=null;});
+HOOK.after('startBattle','p2world','surprise start: the free round',function(r,spec){try{if(r!==false&&B&&spec&&spec.surprise&&!G.daily)p2Surprise();}catch(e){}});
 
 // ---------------------------------------------------------------- 2.3 gathering spots ----------------------------------------------------------------
 // Wood only beside trees, ore beside rocks, cliffs and walls, herbs on grass or beside flowers. Never on roads, bridges, stairs or doors.
@@ -326,7 +325,7 @@ ACT.hintOff=function(){META.cfg.hints=false;saveMeta();ACT.hintOk();toast('Hints
 ACT.hintsReset=function(){META.hints={};META.cfg.hints=true;saveMeta();toast('Hints will show again in the first realm.');render();};
 // triggers
 {const sl0=showLocation;showLocation=function(){const r=sl0.apply(this,arguments);try{const m=WS.m;hintFire(m&&m.kind==='town'&&(G.stats&&G.stats.battles)?'town':'world');}catch(e){}return r;};}
-{const sb2=startBattle;startBattle=function(spec){const r=sb2.apply(this,arguments);try{if(r!==false&&B&&!G.daily)hintFire('battle');}catch(e){}return r;};}
+HOOK.after('startBattle','p2world','battle hint',function(r){try{if(r!==false&&B&&!G.daily)hintFire('battle');}catch(e){}});
 {const fb0=finishBattle;finishBattle=function(how){const r=fb0.apply(this,arguments);try{if(how==='win')setTimeout(()=>hintFire('win'),600);}catch(e){}return r;};}
 // Settings row and the Guides > Hints page
 {const st0=settingsBody;settingsBody=function(){const h=st0.apply(this,arguments),on=hintsOn();
@@ -348,5 +347,5 @@ try{const css=document.createElement('style');css.textContent=`#p2hint{position:
 try{window.__P2={P2,hintShow,hintPlace,bgGroundAt,bgPaintGround,BG_GROUNDS,BG_NATURAL,p2GroundY,p2Flying,nodeFits,laneFix,laneFind,laneMain,laneGates,laneStraight,laneMove,entStyleFor,entCanvas,ENT_STYLES,
   p2SingleFoes,p2Dual,p2DualOK,HINTS,hintFire,hintShow,vHints,
   get BG(){return BG},get BG_HAZ(){return BG_HAZ},bgGY,bgStatic,get BL(){return BL},get B(){return B},get G(){return G},get MAPS(){return MAPS},get WS(){return WS},get META(){return META},
-  getMap,tileAt,flood,SOLID,ZS,realmOf,unitBox,battleTheme,battleFrame,startBattle,encounterFoes,roamFight,roamSpawn,turnOrder,tvPool,challEligible,cePool,rarePool,ensureSub,genSub,subReq,TPL,MON,ZONES,TOWNGEN,
+  getMap,tileAt,flood,SOLID,ZS,realmOf,unitBox,battleTheme,battleFrame,startBattle:HOOK.snap('startBattle'),encounterFoes,roamFight,roamSpawn,turnOrder,tvPool,challEligible,cePool,rarePool,ensureSub,genSub,subReq,TPL,MON,ZONES,TOWNGEN,
   obj2,placeNodes,drawObjects,layoutBattle};}catch(e){}

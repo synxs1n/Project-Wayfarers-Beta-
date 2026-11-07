@@ -76,8 +76,8 @@ function realmWxList(s){const Z=ZS(s),R=realmAt(s);const L=wxList(R&&isRv2()?R.w
   G.weather[s]=w;G.wx=G.wx||{};G.wx[s]=WX_MIN+Math.floor(Math.random()*(WX_MAX-WX_MIN));return w;};}
 
 // ---------- battles: synced pools, Calamity effects ----------
-{const sb0=startBattle;startBattle=function(spec){syncPools();const c0=!!(G&&G.cleared&&spec&&G.cleared[spec.stage]);const r=sb0.apply(this,arguments);try{if(r!==false&&B)B.clr0=c0;if(r!==false&&B&&spec&&!G.daily){const f=calFxAt(spec.stage);if(f&&spec.kind!=='arena'){B.calfx=f;
-  if(f.spd)B.front.concat(B.back,B.en).forEach(u=>{if(u&&u.S)u.S.spd=Math.round(u.S.spd*f.spd);});log(`${f.n}: ${f.d.split('.')[0]}.`);}}}catch(e){}return r;};}
+HOOK.wrap('startBattle','realms','sync pools, Calamity effects, stage cleared flag',function(next,...a){const spec=a[0];syncPools();const c0=!!(G&&G.cleared&&spec&&G.cleared[spec.stage]);const r=next(...a);try{if(r!==false&&B)B.clr0=c0;if(r!==false&&B&&spec&&!G.daily){const f=calFxAt(spec.stage);if(f&&spec.kind!=='arena'){B.calfx=f;
+  if(f.spd)B.front.concat(B.back,B.en).forEach(u=>{if(u&&u.S)u.S.spd=Math.round(u.S.spd*f.spd);});log(`${f.n}: ${f.d.split('.')[0]}.`);}}}catch(e){}return r;});
 {const cd0=calcDamage;calcDamage=function(a,sk,t){const r=cd0.apply(this,arguments);try{const f=B&&B.calfx;if(f&&r&&r.dmg&&sk){const els=skEls(sk);let m=1;els.forEach(e=>{if(f.el[e])m=Math.max(m===1?0:m,f.el[e]);});if(els.length&&m&&m!==1)r.dmg=Math.max(1,Math.round(r.dmg*m));
   if(f.burn&&a&&a.side==='e'&&t&&t.side==='p'&&els.includes('fire')&&t.hp>0&&!(t.st&&t.st.burn)&&RNG()<f.burn&&!(t.S&&t.S.immune))try{addSt(t,'burn',a);}catch(_){}}}catch(e){}return r;};}
 {const gq0=genQuests;genQuests=function(s){syncPools();const had=G.quests.some(q=>q.stage===s);gq0.apply(this,arguments);if(had)return;try{const R=realmAt(s);if(!R||!isRv2())return;

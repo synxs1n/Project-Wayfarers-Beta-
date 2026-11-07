@@ -217,8 +217,7 @@ const D8_PGLOW={ice:'ice',icevault:'ice',lava:'lava',forge:'lava',root:'fungus',
     D8.hd.struct=m.d8;D8.hd.id=m.id;}}catch(e){}return cv;};}
 
 // =================== 1. battles fought here use the same material ===================
-{const sb0=startBattle;startBattle=function(spec){try{if(spec&&typeof spec==='object'&&!(G&&G.daily)&&spec.kind!=='daily'&&spec.kind!=='arena'&&!spec.bg&&V.screen==='world'&&WS.m&&WS.m.d8){spec.d8=WS.m.d8;spec.d8org=WS.m.d8org?1:0;}}catch(e){}
-  return sb0.apply(this,arguments);};}
+HOOK.before('startBattle','dungeon8','realm dungeon material for the backdrop (spec.d8)',function(spec){try{if(spec&&typeof spec==='object'&&!(G&&G.daily)&&spec.kind!=='daily'&&spec.kind!=='arena'&&!spec.bg&&V.screen==='world'&&WS.m&&WS.m.d8){spec.d8=WS.m.d8;spec.d8org=WS.m.d8org?1:0;}}catch(e){}});
 function d8BgExtra(ctx,W,H,R,mat,pre){const gy=bgGY(H),D=DTHEME['d8'+mat],f=(c,x,y,w,h)=>{ctx.fillStyle=c;ctx.fillRect(Math.round(x),Math.round(y),w,h);};
   if(mat==='ice'||mat==='icevault'){for(let x=0;x<W;x+=3+Math.floor(R()*4)){const l=3+Math.floor(R()*10);f('#eefaff',x,0,2,2);f('#cfeeff',x,2,1,l);}for(let i=0;i<6;i++){const x=Math.floor(R()*W),y=gy+2+Math.floor(R()*(H-gy-4));f('#ffffff',x,y,4,1);f('#bfe6ff',x+1,y-1,2,1);}}
   else if(mat==='lava'||mat==='forge'){f(D8_LIQ.lava[1],0,gy-3,W,2);f(D8_LIQ.lava[2],0,gy-3,W,1);for(let i=0;i<5;i++){const x=Math.floor(R()*W),y=gy+3+Math.floor(R()*(H-gy-5));f('#1a0a06',x,y,7,2);f('#ff6a1a',x+1,y,5,1);}}

@@ -386,6 +386,7 @@ function startBattle(spec){
   render();later(advance,PAUSE*1.4);
   return true;
 }
+startBattle=HOOK.def('startBattle',startBattle);// v0.9.9: one definition; modules add hooks (hooks.js)
 function liveUnits(){return B.front.filter(c=>c.hp>0).concat(B.en.filter(e=>e.hp>0));}
 function turnOrder(n){
   const arr=liveUnits().map(u=>({u,t:u.next})),out=[];

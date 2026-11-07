@@ -39,13 +39,13 @@ const campBuffNow=()=>{const c=G&&G.camp;return c&&c.b&&c.left>0&&CAMP_BUFFS[c.b
 const campBuffText=()=>{const c=campBuffNow();return c?`${CAMP_BUFFS[c.b].n}: ${CAMP_BUFFS[c.b].d()}, ${c.left} battle${c.left>1?'s':''} left`:'';};
 
 // ----- the boon in battle: applied as the battle starts, counted down per battle, gone when it runs out -----
-{const sb0=startBattle;startBattle=function(spec){const r=sb0.apply(this,arguments);
+HOOK.after('startBattle','v063prog','camp boon',function(r){
   try{const c=campBuffNow();if(r!==false&&B&&!G.daily&&c){B._camp=c.b;c.left--;const U=B.front.concat(B.back);
     if(c.b==='atk')U.forEach(u=>{u.S.atk*=1+CAMP.atk;u.S.mag*=1+CAMP.atk;});
     if(c.b==='def')U.forEach(u=>{u.S.def*=1+CAMP.def;u.S.res*=1+CAMP.def;});
     if(c.b==='fast')U.forEach(u=>{u.next=(u.next||0)*CAMP.first;});
     try{log(`Camp boon: ${CAMP_BUFFS[c.b].n}. ${c.left?`${c.left} more battle${c.left>1?'s':''} after this one.`:'This is its last battle.'}`);}catch(e){}
-    saveGame();}}catch(e){}return r;};}
+    saveGame();}}catch(e){}});
 {const fb0=finishBattle;finishBattle=function(){const k=B&&B._camp,U=B?B.front.concat(B.back):[];const r=fb0.apply(this,arguments);
   try{if(k==='atk'||k==='def')U.forEach(u=>{if(G.roster[u.id])refresh(u);});}catch(e){}return r;};}
 {const pd0=perkDropMul;perkDropMul=function(e){const m=pd0.apply(this,arguments);try{if(B&&B._camp==='luck'&&!G.daily)return m*(1+CAMP.drop);}catch(x){}return m;};}

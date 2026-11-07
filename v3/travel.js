@@ -19,7 +19,7 @@ function porkFlee(){
 {const ef0=encounterFoes;encounterFoes=function(spec){const out=ef0.apply(this,arguments);
   if(spec&&spec.ambush)out.forEach(e=>{['atk','mag','def','res','mhp'].forEach(k=>{e.S[k]=k==='mhp'?Math.round(e.S[k]*AMBUSH_POW):e.S[k]*AMBUSH_POW;});e.hp=e.S.mhp;});
   return out;};}
-{const sb0=startBattle;startBattle=function(spec){const r=sb0.apply(this,arguments);if(r!==false&&B&&spec&&spec.ambush){banner('Ambush!','#ff8a5a');log('Monsters fall on your camp!');}return r;};}
+HOOK.after('startBattle','travel','Ambush! banner',function(r,spec){if(r!==false&&B&&spec&&spec.ambush){banner('Ambush!','#ff8a5a');log('Monsters fall on your camp!');}});
 
 // ----- outside battle -----
 function nearBoss(m){return m.kind==='dungeon'&&m.bossAt&&!G.cleared[m.s]&&Math.abs(WS.x-m.bossAt[0])<6&&Math.abs(WS.y-m.bossAt[1])<6;}

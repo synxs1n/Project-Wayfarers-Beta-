@@ -318,8 +318,9 @@ function b4Smart(){const a=B.cur;if(!a||a.side!=='p')return false;const foes=B.e
   if(!B||B.over||B.mode!=='cmd')return;return ats0.apply(this,arguments);};}
 
 // ----- start of battle -----
-{const sb0=startBattle;startBattle=function(){try{b4HookPlan();b4HookTurn();b4HookGim();}catch(e){}const r=sb0.apply(this,arguments);try{if(r!==false&&B){B.b4mo=null;if(b4On('mo'))b4MoS();b4GimStart();
-  const roles=[...new Set(B.en.filter(e=>b4Role(e)).map(e=>e.role))];if(roles.length)B.b4seen=roles;}}catch(e){}return r;};}
+HOOK.before('startBattle','battle4','install the role, plan and gimmick hooks',function(){try{b4HookPlan();b4HookTurn();b4HookGim();}catch(e){}});
+HOOK.after('startBattle','battle4','Momentum start, gimmick start, roles seen',function(r){try{if(r!==false&&B){B.b4mo=null;if(b4On('mo'))b4MoS();b4GimStart();
+  const roles=[...new Set(B.en.filter(e=>b4Role(e)).map(e=>e.role))];if(roles.length)B.b4seen=roles;}}catch(e){}});
 
 // ----- UI: the momentum gauge in the log ticker under the stage -----
 function b4MoHtml(){const S=b4MoS(),M=B4.mo,st=b4MoState(),pc=v=>Math.round(100*v/M.max);
