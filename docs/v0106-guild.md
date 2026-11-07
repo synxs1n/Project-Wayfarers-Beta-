@@ -1,0 +1,4 @@
+# Beta v0.10.6: Phase 7, guild, quests, arena, lore
+
+- `guild7.js`: m3Tabs wrapper (board: quests, bounties; guild: guilds, arena, recruit, nature). `m3Quests` wrapper hides open notices from other realms (g7TownStage: the town you stand in, else G.lastTown); legend quests and `q.global` show everywhere. genQuests after hook adds `gh0` (type guild, ready once G.guildSeen is set by opening the Guild Hall's Guilds tab) and `ga0` (type arena, ready once G.arena[0]>0) at stage 0. Medals: GEAR c_medal0..4 (medal:1), granted by a win after hook on the first win of a tier (G.medals) with a note on the results screen. Guides: MENU_GROUPS guides gains charts, ailments, boons, gimmicks (g7Body injected by an mMenu wrapper before the button row); vLore keeps the story only.
+- `roam.js`: after any battle, roamers within 5 tiles go home and rest 3.5 s, others pause 1.5 s (a chaser next to the party used to re-trigger a fight at once).
