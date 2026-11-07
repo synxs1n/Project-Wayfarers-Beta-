@@ -102,4 +102,20 @@ Across `v3/`, the `name=function` reassignments went from 657 to 487.
 
 ## Verification
 
-See the end of this page (filled in with the test run).
+Baseline: the untouched v0.9.8 build (976c677, its `index.html` as OLDHTML), every runnable `tools/chrome` test (the list in
+`docs/cleanup-baseline.md` plus the v0.8 and v0.9 tests: 148), one at a time, on a copy of the repository.
+
+- New test `tools/chrome/v099hooks.js`: one synchronous script (seeded `Math.random` and engine RNG, frozen clocks) starts a journey,
+  opens 42 popup types (straight and through `render`), builds maps, places the party, makes quests, opens a chest, draws foes,
+  starts battles, runs `perform` and `calcDamage` for every hero, skill and foe, wins, flees, loses and starts a new game: all
+  111 results (HTML, state, numbers) are identical to the old build. A one character change in one hook makes it fail.
+  It passed on every commit of the pass (each build checked against the old one), together with `v050p2daily.js` and `v063wa.js`.
+- World frames: `worldDraw` on Low, Medium and High (2D), with and without the battle swirl, gives pixel-identical canvases in both builds.
+- Determinism: `v050p2daily.js` (OLDHTML = v0.9.8) and `v063wa.js` PASS after every commit; `SEED=4242 node tools/fullsim.js stage1 60`,
+  `SEED=77 ... xp 10` and `SEED=77 ... journey 4` print byte-identical results (only the header line differs: 135 modules instead of 134, and the seconds).
+- Full suite: 119 of 148 pass on the old build, 120 on the new one (plus `v099hooks.js`). The same 27 tests fail on both builds with the
+  same checks (they predate later changes). Flips, all timing or randomness: `audio` (peak level; failed on the old build, passed on the new),
+  `v077wb` (the same), `audioplay` (frame time), `v071wt` (HD-2D tap timing), `v077wa` and `v080wa` (a weather particle on the hero's face)
+  failed once on the new build and passed on rerun; `v080b` (the battle swirl pixel count on Medium 2D) failed 3 of 7 runs on the old
+  build and 3 of 8 on the new one, with world frames pixel-identical; `v050p5b` "the minimap is up" failed once in 4 runs (its two
+  other checks fail on both builds every time).
