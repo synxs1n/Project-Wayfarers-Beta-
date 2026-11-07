@@ -36,8 +36,11 @@ chk(`Auto feed: remembered High, 30 fps -> ${r.a}, 30 fps -> ${r.b}, 60 fps -> $
 await H.browser.close();
 H=await open({w:390,h:844,mobile:true,pre:meta({gfx:'auto',gfxAuto:'high'})});H.page.on('console',m=>{if(m.type()==='error')cons.push(m.text());});
 await H.ev(start);
-const fast=await H.ev(()=>new Promise(res=>setTimeout(()=>res(__A.gfxTier()),3800)));
-chk('Auto keeps High while frames are fast',fast==='high'||fast);
+// v0.9.9: "fast" is what the page really measured. On a busy machine headless Chrome can fall under the 45 fps step-down line by itself;
+// then stepping down is the right answer, and the check says which case it saw (the measured window's fps is printed either way)
+const fr=await H.ev(()=>new Promise(res=>setTimeout(()=>res({t:__A.gfxTier(),fps:__A.GFX.fps,down:__A.TW.get('GFX_AUTO').down}),3800)));
+if(fr.fps===0||fr.fps>=fr.down)chk(`Auto keeps High while frames are fast (measured ${fr.fps} fps)`,fr.t==='high'||JSON.stringify(fr));
+else chk(`Auto keeps High while frames are fast: this machine measured ${fr.fps} fps (under ${fr.down}), so Auto stepped down as it should`,fr.t!=='high'||JSON.stringify(fr));
 // make the main thread slow (about 20 fps) and wait two windows
 await H.ev(()=>{window.__busyOn=1;const f=()=>{const t=performance.now();while(performance.now()-t<40);if(window.__busyOn)requestAnimationFrame(f);};requestAnimationFrame(f);});
 const slow=await H.ev(()=>new Promise(res=>setTimeout(()=>{window.__busyOn=0;res({t:__A.gfxTier(),fps:__A.GFX.fps,mem:__A.META.cfg.gfxAuto});},7500)));

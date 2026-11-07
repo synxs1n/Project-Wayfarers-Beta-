@@ -71,8 +71,11 @@ for(const gfx of ['low','medium'])for(const [w,h,touch] of [[390,844,1],[844,390
     chk(`${tag}: and it does not start again by itself`,!st2.auto&&Math.abs(st2.x-st.x)+Math.abs(st2.y-st.y)<=1||JSON.stringify([st,st2]));
     // ---- an exit: stop in front of the gate, still in town ----
     const E=await ev(()=>{const A=__A,m=A.WS.m,e=m.exits.find(e=>e.to);return [e.x,e.y];});
+    // v0.9.9: the walk starts from rest: the step the key press began is over and no key, drag or tap is still held (on a busy machine the
+    // key's step could still be under way 0.5 s later and the new walk met it as fresh input)
+    const idle=await H.until(()=>{const W=__A.WS;return !W.mv&&!W.held.length&&!W.touchDir&&!W.target&&!W.padDir&&!W.joyDir&&!__A.W71.auto;},null,{timeout:8000});
     await trail(ev);await ev(E=>{__A.W71.awTap(__A.WS.m,E[0],E[1],'map');},E);pos=await follow(H,20000);
-    st=await ev(()=>({m:__A.WS.m.id,x:__A.WS.x,y:__A.WS.y,why:__A.W71.last&&__A.W71.last.why,scr:__A.V.screen}));
+    st=await ev(()=>({m:__A.WS.m.id,x:__A.WS.x,y:__A.WS.y,why:__A.W71.last&&__A.W71.last.why,scr:__A.V.screen}));if(idle&&idle.timeout)st.idle=idle;
     chk(`${tag}: a tap on the road gate walks to the tile in front of it and stays in town`,st.m==='t0'&&st.why==='arrived'&&Math.abs(st.x-E[0])+Math.abs(st.y-E[1])===1||JSON.stringify(st));
     // ---- a dialog stops it ----
     await ev(()=>{const A=__A,m=A.WS.m;let best=null;for(let y=1;y<m.h-1;y++)for(let x=1;x<m.w-1;x++){if(!A.W71.awPass(m,x,y))continue;const p=A.W71.awPlan(m,x,y);if(p.res==='ok'&&(!best||p.plan.dirs.length>best.n))best={x,y,n:p.plan.dirs.length};}A.W71.awTap(m,best.x,best.y,'map');});

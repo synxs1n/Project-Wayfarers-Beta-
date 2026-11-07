@@ -32,7 +32,12 @@ async function dress(H,opt){return H.ev(o=>{const A=__A,B=A.B;let s=o.seed||1;co
 async function aim(H,role){return H.ev(r=>{const A=__A,B=A.B,a=B.cur;if(!a||B.mode!=='cmd')return null;const ks=A.known(a);let s=ks.find(x=>r&&x.role===r)||ks.find(x=>x.t==='one');if(!s)return null;
   a.mp=Math.max(a.mp,s.mp);A.ACT.cmd('skills');A.ACT.sk(s.id);return {id:s.id,n:s.n,role:s.role,menu:B.menu};},role);}
 // every stage label and sprite box, in page px (DOM labels measured, canvas labels from the layout pass scaled by the stage)
-async function rects(H){return H.ev(()=>{const A=__A,L=A.b3Lay?A.b3Lay():null,st=document.getElementById('bstage').getBoundingClientRect(),sc=A.BL.sc,S=r=>({x:st.left+r.x*sc,y:st.top+r.y*sc,w:r.w*sc,h:r.h*sc});
+// v0.9.9: measure the resting layout. A hit's camera punch zooms the stage and the order bar for a moment (scripted, transformed boxes);
+// a fixed sleep was too short under load, so wait until the camera punch is over (CAM.on) and the stage, order bar and boss bar boxes hold still for 3 frames (at most 4 s)
+const REST=()=>['bstage','border','bbossbar'].map(id=>{const e=document.getElementById(id);if(!e)return 0;const r=e.getBoundingClientRect();return [r.left,r.top,r.width,r.height].map(v=>Math.round(v*4)/4);}).concat([window.__A&&__A.BL?__A.BL.sc:0]);
+const CAMOFF=()=>{try{const C=__A.TW.get('CAM');return !(C&&C.on);}catch(e){return true;}};
+async function rest(H){if(!H.settle)return;await H.until(CAMOFF,null,{timeout:3000});return H.settle(REST,null,{frames:3,timeout:4000});}
+async function rects(H){await rest(H);return H.ev(()=>{const A=__A,L=A.b3Lay?A.b3Lay():null,st=document.getElementById('bstage').getBoundingClientRect(),sc=A.BL.sc,S=r=>({x:st.left+r.x*sc,y:st.top+r.y*sc,w:r.w*sc,h:r.h*sc});
   const out={labels:[],bodies:[],faces:[],hidden:L?L.hidden.map(h=>h.kind+':'+h.u.name):[],sc,W:A.BL.W,H:A.BL.H,legacy:!L};
   // independent sprite boxes: alpha bounds of each unit's sprite canvas (not the layout's own numbers)
   const vb=c=>{const k=c.hd||1,RW=c._rw||c.width,RH=c._rh||c.height,d=c.getContext('2d').getImageData(0,0,RW,RH).data;let l=RW,t=RH,r=-1,b=-1;for(let y=0;y<RH;y++)for(let x=0;x<RW;x++)if(d[(y*RW+x)*4+3]>40){l=Math.min(l,x);r=Math.max(r,x);t=Math.min(t,y);b=y;}return {l:l/k,t:t/k,r:(r+1)/k,b:(b+1)/k};};
@@ -59,4 +64,8 @@ function overlaps(R,tol){tol=tol==null?.5:tol;const hitT=(a,b,t)=>a.x<b.x+b.w-t&
     if(a.k==='bbossbar'||a.k==='border')continue;
     R.bodies.forEach(b=>{if(hit(a,b))bad.push(`${a.k}(${a.n}) on sprite ${b.n}`);});}
   return bad;}
-module.exports={META,battle,dress,aim,rects,overlaps};
+// v0.9.8 locks Auto per foe type until it is beaten by hand (prog2.js): tests that run a battle on Auto mark the current foes as known
+// (G.autoOk, what NUDGE.autoKills hand wins would give) and a boss fight as won once by hand (G.bossWon). In the page: AUTO_OK().
+const AUTO_OK=()=>{const A=__A,G=A.G,B=A.B;if(!G||!B)return 0;if(!G.autoOk||typeof G.autoOk!=='object')G.autoOk={};B.en.forEach(e=>{if(e.base)G.autoOk[e.base]=99;});
+  try{const k=A.TW.get('bossFightKey')(B.spec);if(k){G.bossWon=G.bossWon||{};G.bossWon[k]=1;}}catch(e){}return 1;};
+module.exports={META,battle,dress,aim,rects,overlaps,rest,AUTO_OK};

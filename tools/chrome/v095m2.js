@@ -46,7 +46,9 @@ chk('perks of the old steps stay active (tempering 10% less, 10% back, inn 10% l
 chk('the claimed recruit stays claimed and cannot be claimed again',os.guClaim===0&&/Claimed/.test(os.gu)&&os.recruitAgain===0||JSON.stringify(os));
 chk('rank 3 offers only the charm not yet claimed, once',JSON.stringify(os.smClaim)==='["smiths:6"]'&&os.fb1===1&&os.fa1===0&&os.fb1b===1&&/"smiths:6":1/.test(os.claim)||JSON.stringify(os));
 // ---- a fresh climb: thresholds, the rank up toast, one Claim gives both charms, counter stock at rank 2
-const cl=await ev(()=>{const A=__A,o={};A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;const G=A.G;G.gold=9000;G.cleared[0]=1;G.stage=1;
+// v0.9.9: a journey without the realm gates (G.pcV, v0.9.6: new journeys open guild missions in the third realm), as this test was written
+// for; the gates themselves are checked in v095p3.js
+const cl=await ev(()=>{const A=__A,o={};A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;const G=A.G;delete G.pcV;G.gold=9000;G.cleared[0]=1;G.stage=1;
   const f=A.facInit();A.facSync(true);o.r0=A.TW.get('facTier')('smiths');
   f.bonus.smiths=39;A.TW.get('facDirty')();o.r39=A.TW.get('facTier')('smiths');f.bonus.smiths=40;A.TW.get('facDirty')();o.r40=A.TW.get('facTier')('smiths');
   let t='';const t0=A.TW.get('toast');A.facSync();o.toast=document.getElementById('toast').textContent;

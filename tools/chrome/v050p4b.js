@@ -12,7 +12,9 @@ const raw=await H0.ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEa
   return JSON.stringify(o);});
 await H0.browser.close();
 const H=await open({w:430,h:880,mobile:true,pre:`localStorage.clear();localStorage.setItem('aurelis-wayfarers-v3',${JSON.stringify(raw)});`});const {ev}=H;
-const r=await ev(()=>{const A=__A,o={};A.ACT.cont();const G=A.G;o.loaded=!!G&&A.V.screen==='world';
+// Continue may wait for the save sync first (v0.8.5): wait until the journey is loaded instead of reading it in the same tick
+await ev(()=>{__A.ACT.cont();});await H.until(()=>!!__A.G,null,{timeout:15000});
+const r=await ev(()=>{const A=__A,o={};const G=A.G;o.loaded=!!G&&A.V.screen==='world';
   o.pm=G.personal.mira&&G.personal.mira.state;o.pl=G.personal.lumen&&G.personal.lumen.state;o.name=G.personal.mira.name;
   o.btM=A.btOf(G.roster.mira);o.btL=A.btOf(G.roster.lumen);o.btO=A.btOf(G.roster.oren);
   A.V.modal={type:'guild',tab:'personal'};A.render();const t=document.querySelector('#modal').innerText;o.roam=/Rival roaming/.test(t);o.done=/Done/.test(t);o.oren=/Oren/.test(t);

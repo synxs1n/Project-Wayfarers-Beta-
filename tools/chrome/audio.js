@@ -29,7 +29,11 @@ let fails=0;const chk=(n,c)=>{console.log((c===true?'PASS ':'FAIL ')+n+(c===true
   const res=[];const only=(process.argv.find(a=>a.startsWith('--only='))||'').slice(7).split(',').filter(Boolean);
   for(const t of list){if(only.length&&!only.some(o=>(t.id+JSON.stringify(t.opt)).includes(o)))continue;const variant=Object.keys(t.stems).length||t.opt.night||t.opt.bright||t.opt.cal||(t.id==='boss'&&t.opt.boss!=='a');const full=!t.once&&!variant;
     const secs=t.once?t.loop+3:full?t.intro+t.loop+3:Math.min(25,t.intro+t.loop);
-    const r=await page.evaluate(async([id,opt,stems,secs,seam])=>{const R=await au2Render(id,secs,Object.assign({},opt,{stems}));const b=R.buf,sr=b.sampleRate;
+    // v0.9.9: percussion starts its noise at a Math.random offset, so a track's peak moved by a few hundredths of a dB from run to run;
+    // the samples are loaded first, then Math.random is seeded for the render (PWFREEZE=0 renders with the real Math.random)
+    const r=await page.evaluate(async([id,opt,stems,secs,seam,frz])=>{let R;const mr=Math.random;
+      if(frz){try{await __A.TW.get('au2LoadAll')((musicTrack(id,Object.assign({},opt,{stems}))||{}).inst||[]);}catch(e){}let s=12345;Math.random=()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296;};}
+      try{R=await au2Render(id,secs,Object.assign({},opt,{stems}));}finally{Math.random=mr;}const b=R.buf,sr=b.sampleRate;
       let pk=0,ss=0,n=0,nan=0,quiet=0,dmax=0;const win=Math.floor(sr*.5),chs=[b.getChannelData(0),b.getChannelData(1)];const deriv=[];
       for(let w=0;w+win<=b.length;w+=win){let s=0;for(let i=w;i<w+win;i++){const v=chs[0][i];s+=v*v;}if(Math.sqrt(s/win)<.0006&&w<b.length-sr*3)quiet++;}
       for(const d of chs)for(let i=0;i<d.length;i++){const v=d[i];if(!isFinite(v)){nan++;continue;}const a=Math.abs(v);if(a>pk)pk=a;if(i>sr*.3)ss+=v*v,n++;if(i){const dd=Math.abs(v-d[i-1]);if(dd>dmax)dmax=dd;}}
@@ -39,7 +43,7 @@ let fails=0;const chk=(n,c)=>{console.log((c===true?'PASS ':'FAIL ')+n+(c===true
         // the seam should be no rougher than the roughest bar line inside the loop (each one has notes starting on it too)
         const sec=60/R.def.bpm/4,bar=(R.def.loop.ev.some(e=>e.tk%12===0)&&!R.def.loop.ev.some(e=>e.tk%16===0&&e.tk%48!==0)?12:16)*sec,L0=R.def.intro.len*sec,w=Math.floor(sr*.03);
         for(let t=L0+bar;t<seam-bar/2;t+=bar){const i0=Math.floor(t*sr);for(const d of chs)for(let i=i0-w;i<i0+w;i++)ref=Math.max(ref,Math.abs(d[i]-d[i-1]));}}
-      return {pk,rms:Math.sqrt(ss/Math.max(1,n)),nan,quiet,seamD,ref,dmax,inst:R.def.inst.length,len:b.length/sr};},[t.id,t.opt,t.stems,secs,full&&!t.once?t.intro+t.loop:0]);
+      return {pk,rms:Math.sqrt(ss/Math.max(1,n)),nan,quiet,seamD,ref,dmax,inst:R.def.inst.length,len:b.length/sr};},[t.id,t.opt,t.stems,secs,full&&!t.once?t.intro+t.loop:0,process.env.PWFREEZE!=='0']);
     const db=20*Math.log10(r.rms||1e-9),pdb=20*Math.log10(r.pk||1e-9),name=t.id+(Object.keys(t.opt).length?JSON.stringify(t.opt):'')+(Object.keys(t.stems).length?'+'+Object.keys(t.stems).join(','):'');
     res.push({name,t,db,pdb,r});console.log(name.padEnd(48),'rms',db.toFixed(1),'dB peak',pdb.toFixed(2),'dBFS quiet',r.quiet,'seam',r.seamD.toFixed(3),'/',r.ref.toFixed(3));
     chk(name+' no NaN',r.nan===0||r.nan+' NaN');chk(name+' peak <= -1 dBFS',pdb<=-1||pdb.toFixed(2));chk(name+' not silent',db>-45&&(r.quiet<=(t.id==='cave'||t.id==='defeat'?6:2))||`rms ${db.toFixed(1)} quiet windows ${r.quiet}`);

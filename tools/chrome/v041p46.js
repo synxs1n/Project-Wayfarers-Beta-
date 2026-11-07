@@ -1,8 +1,10 @@
 // v0.4.1 4.6: roaming enemies in dungeons
 const {open,chk,done}=require('./pw');
 (async()=>{
-const H=await open({w:430,h:880,mobile:true});const {ev,wait}=H;
-await ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;});
+// v0.9.9: the journey (the realms, so the dungeons) is drawn from Date.now: H.det pins it, and contact is given 20 s of real time to
+// become a battle (the encounter flash and fade run in real time; 30 x 150 ms was not enough on a busy machine)
+const H=await open({w:430,h:880,mobile:true,freeze:true});const {ev,wait}=H;
+await H.det(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;});
 const r=await ev(()=>{const A=__A,G=A.G,o={n:0,bad:[],elite:0,cnt:[]};
   for(let s=0;s<5;s++){const d=A.getMap('d'+s);const L=A.roamSpawn(d);o.cnt.push(L.length);o.n+=L.length;
     const st=d.start;const T=A.mapTargets(d);
@@ -13,17 +15,20 @@ const r=await ev(()=>{const A=__A,G=A.G,o={n:0,bad:[],elite:0,cnt:[]};
     const S0=A.mapEntry(d);d.t=save;}
   return o;});
 console.log(JSON.stringify(r));
-chk('4.6 roamers spawn in every dungeon (more in later realms), a few elites',r.cnt.every(n=>n>=3)&&r.cnt[4]>r.cnt[0]&&r.n>=20);
+chk('4.6 roamers spawn in every dungeon (more in later realms), a few elites',r.cnt.every(n=>n>=3)&&r.cnt[4]>r.cnt[0]&&r.n>=20||JSON.stringify(r.cnt));
 chk('4.6 never near the entrance, only on open room tiles, never on stairs, levers, chests or doors, never blocking a route',r.bad.length===0);
 // patrol, sight and contact -> battle
 const b=await ev(async()=>{const A=__A,G=A.G,o={};const d=A.getMap('d1');A.placeAt('d1',d.start[0],d.start[1]-1,'d');A.V.screen='world';A.render();
-  const L=A.roamSpawn(d);const r=L.find(q=>!q.elite)||L[0];o.home=[r.x,r.y];
+  // v0.9.9: a roamer the hero can stand next to now: one behind the dungeon's locked door is out of reach (placeAt puts the hero back at the
+  // entrance), and which one comes first depended on the journey drawn
+  const L=A.roamSpawn(d),reach=q=>{A.placeAt('d1',q.x,q.y,'d');const ok=A.WS.x===q.x&&A.WS.y===q.y;return ok;};
+  const r=L.filter(q=>!q.elite).find(reach)||L.find(reach)||L[0];A.placeAt('d1',d.start[0],d.start[1]-1,'d');A.render();o.home=[r.x,r.y];
   // stand right in front of it, inside its cone
   const [dx,dy]=A.DIRV[r.dir];let tx=r.x+dx*2,ty=r.y+dy*2;if(A.tileAt(d,tx,ty)!=='.'){r.dir='r';tx=r.x+2;ty=r.y;}
   o.sees=A.roamSees(d,r,tx,ty)||A.tileAt(d,tx,ty)!=='.';
-  for(let k=0;k<30&&!A.B;k++){if(A.WS.x!==r.x||A.WS.y!==r.y)A.placeAt('d1',r.x,r.y,'d');await new Promise(q=>setTimeout(q,150));}o.dbg={scr:A.V.screen,modal:A.V.modal&&A.V.modal.type,lock:A.WS&&A.WS.lock,dlg:!!(A.WS&&A.WS.dlg),pos:A.WS&&[A.WS.x,A.WS.y],r:[r.x,r.y,r.dead,r.mode]};if(!A.B)return o;o.battle=A.V.screen==='battle'&&!!A.B&&!!A.B.spec.roam;o.lead=A.B&&A.B.en[0].lv;o.band=A.STAGE_LV[1][1];
+  for(const t0=performance.now();performance.now()-t0<20000&&!A.B;){if(A.WS.x!==r.x||A.WS.y!==r.y)A.placeAt('d1',r.x,r.y,'d');await new Promise(q=>setTimeout(q,150));}o.dbg={scr:A.V.screen,modal:A.V.modal&&A.V.modal.type,lock:A.WS&&A.WS.lock,dlg:!!(A.WS&&A.WS.dlg),pos:A.WS&&[A.WS.x,A.WS.y],r:[r.x,r.y,r.dead,r.mode]};if(!A.B)return o;o.battle=A.V.screen==='battle'&&!!A.B&&!!A.B.spec.roam;o.lead=A.B&&A.B.en[0].lv;o.band=A.STAGE_LV[1][1];
   o.auto=A.autoBan(A.B.spec);A.B.en.forEach(e=>e.hp=0);A.finishBattle('win');o.dead=(G.roamDead['d1']||[]).includes(r.i);return o;});
 console.log(JSON.stringify(b));
 chk('4.6 a roamer sees you in its cone',b.sees===true);
-chk('4.6 touching one starts a tougher battle; beaten ones stay beaten',b.battle&&b.lead>b.band&&b.dead);
+chk('4.6 touching one starts a tougher battle; beaten ones stay beaten',b.battle&&b.lead>b.band&&b.dead||JSON.stringify(b));
 await done(H);})();

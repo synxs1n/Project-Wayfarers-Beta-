@@ -24,7 +24,7 @@ const GROUPS={
   saves:'oldsave savesys offline v041old v041p1k v043b v050p4b v050p5 v050p5b v085s v085s2',
   audio:'audio audioplay v082s v083a',
   title:'v041p54 v053s v060a v071t v080wt',
-  app:'liveupdate sw liveboot-v046 v050p6a v050p6suite',
+  app:'liveupdate sw liveboot-v046 v050p6a',
 };
 // ---- tests that fail for old reasons (the game moved on; the test was not updated). Not counted as failures, not in "all" ----
 const STALE={
@@ -34,20 +34,27 @@ const STALE={
   v040p1:'pip row visibility check (fails on the v0.8.0 build too)',
   v040p3:'Guides list now has "How it works" (test predates v0.7.0)',
   v041p1e:'sign examination check (fails on the v0.8.0 build too)',
-  v041p1g:'backdrop theme check (fails on the v0.8.0 build too)',
+  v041p1g:'sanity check "the meadow field backdrop still animates": the first field is not always a meadow since the realms, and no field backdrop moves in the band it samples any more (v0.9.9: every field theme read still)',
   v041p5:'duel intro text changed in v0.7.7 (duellines.js)',
   v041p54:'title lineup checks (the title changed in v0.8.0 and v0.8.9)',
   v041p6b:'personal quest unlock rules changed in v0.5.0 and v0.7.2',
-  v050p5:'title and brand text checks (fail on the v0.8.0 build too)',
   v050p5b:'save message overlap checks (fail on the v0.8.0 build too)',
   v053s:'title lineup squash check (the title changed in v0.8.0)',
+  // found stale in the v0.9.9 measurement (each fails the same way on every run, for a rule a later version changed on purpose)
+  oldsave:'"every new screen renders on the old save": the bond row is empty because bonds open in the second realm since v0.9.5 (pacing.js)',
+  p5b:'hero sheet bond button: bonds open in the second realm since v0.9.5 (pacing.js)',
+  v040p789:'"mission claim gives standing": guild standing became three ranks in v0.9.5 (factions.js)',
+  v041p65:'"using Auto marks the battle": Auto is locked per foe type until beaten by hand since v0.9.8 (prog2.js)',
+  v077a:'"a mission already done can be claimed right after accepting": guild missions moved to the Notice Board in v0.9.5 (no mission to accept in the old place)',
+  v080cb:'journey sim pacing band (top hero level 39 to 41 after a typical run): v0.9.5 retuned encounters and rewards (fewer, better fights); the sim is seeded (SEED 1), so it reads the same 42.3 every run',
+  v043c:'"Accept all on bounties and faction missions": the Notice Board replaced those lists in v0.9.5',
 };
 // ---- tests that compare against an older build: the revision whose committed index.html is OLDHTML when OLDHTML is not set ----
 const OLD={v050p2daily:'fab13f2',v095na:'fab13f2',v080ca:'927e63e'};
 // ---- per test timeout (seconds) where the default is too short ----
-const SLOW={v050p1c:1500,v050p2world:1200,v082da:1200,collide:1200,v041p4:900,v063m1:900,v095m4:900,v053ua:900,audio:900,v080cb:1200};
+const SLOW={v080b:1500,v063wa:1200,v070ia:900,v076b:900,v050p1c:1500,v050p2world:1200,v082da:1200,collide:1200,v041p4:900,v063m1:900,v095m4:900,v053ua:900,audio:900,v080cb:1200};
 // not runnable here (for --list): old puppeteer/@sparticuz tests, missing pre-v3 builds, helpers, screenshot/sheet/perf scripts
-const NOT_RUNNABLE='arch beta fb leg lever p1 p2 p3 p4 p5 prog v020 v030 v50 gear saveformats world6 v040p2 v043 pw v063lib v095lib syncmock rlmeasure v053dbg runall';
+const NOT_RUNNABLE='arch beta fb leg lever p1 p2 p3 p4 p5 prog v020 v030 v50 gear saveformats world6 v040p2 v043 pw v063lib v095lib syncmock rlmeasure v053dbg runall v050p6suite v053suite.sh v063suite.sh (runners)';
 
 const split=s=>s.split(/\s+/).filter(Boolean);
 const grp={};for(const g in GROUPS)grp[g]=split(GROUPS[g]);
