@@ -1790,9 +1790,10 @@ html.rm .battle.b3 .cmd .mi.b9glow{animation:none}
 .b5it .c5aim{font-style:normal;margin-left:3px;opacity:.9}
 .c5tgt{position:absolute;right:4px;top:2px;font-size:.7rem;color:#ffb0a0;text-shadow:0 1px 0 #000;pointer-events:none}
 /* ===== Beta v0.7.0 battle mechanics (battle4.js): the Momentum gauge in the log ticker, the switch menu ===== */
-.battle.b3 .bline .b4mo{flex:none;display:flex;flex-direction:column;justify-content:center;gap:3px;width:98px;min-height:40px;margin:0 0 0 -6px;padding:3px 6px;box-sizing:border-box;
+.battle.b3 .bline .b4mo{flex:none;display:flex;flex-direction:column;justify-content:center;gap:3px;width:auto;min-width:98px;max-width:138px;min-height:40px;margin:0 0 0 -6px;padding:3px 6px;box-sizing:border-box;
   background:rgba(10,12,22,.7);border:1px solid rgba(217,180,106,.28);border-radius:3px;color:#f3e7cc;font:inherit;cursor:pointer;text-align:left}
-.battle.b3 .bline .b4mo .b4mt{display:flex;justify-content:space-between;align-items:baseline;gap:4px;line-height:1;white-space:nowrap}
+.battle.b3 .bline .b4mo .b4mt{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:2px 4px;line-height:1;white-space:normal;overflow:hidden;max-width:100%}/* v0.10.5: Surge +15% wraps under the word instead of sticking out of the box */
+.battle.b3 .bline .b4mo .b4mt b,.battle.b3 .bline .b4mo .b4mt em{white-space:nowrap}
 .battle.b3 .bline .b4mo .b4mt b{font-size:.6rem;font-weight:800;letter-spacing:0;color:#e9dcc0}
 .battle.b3 .bline .b4mo .b4mt em{font-style:normal;font-size:.66rem;font-weight:900;color:#c9c4d8}
 .battle.b3 .bline .b4mo .b4bar{position:relative;display:block;height:6px;border-radius:2px;background:#2a2638;box-shadow:inset 0 0 0 1px #000;overflow:hidden}
@@ -1820,7 +1821,7 @@ html.rm .battle.b3 .cmd .mi.b9glow{animation:none}
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.10.4";const APP_BUILD="f62dda11829a";
+(function(){const APP_VER="0.10.5";const APP_BUILD="e359d8112e56";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -1983,6 +1984,9 @@ const B4={det:{on:true,mpPct:.1,mpMin:4,maxPerAct:2},
     brinejelly:'leech',voidspawn:'leech',cavebat:'leech',
     frostwolf:'flank',thunderhawk:'flank',stareater:'flank',gull:'flank'},
   daily:{det:true,swap:true,mo:true,roles:true}};
+// CLS_ATK (v0.10.5, atk6.js): the basic Attack by class. pw: damage multiplier on ATTACK's pw 1; k:'mag' swings with magic (MAG vs RES).
+// Mages, healers and bards swing with magic; archers hit hardest as ranged; the front line trades a little less for staying power.
+const CLS_ATK={warrior:{pw:1.15},knight:{pw:1.05},monk:{pw:1.15,hits:1},thief:{pw:1.1},archer:{pw:1.2},mage:{k:'mag',pw:1.1},healer:{k:'mag',pw:.95},bard:{k:'mag',pw:1}};
 // DET_BONUS: detonations take two deliberate steps, so they hit harder than the old free reactions did.
 const DET_BONUS=1.3;
 // AUTO_SWAP_CD: auto battle brings in a reserve hero at most once every this many party turns, and a hero who just came in stays
@@ -2505,7 +2509,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.10.4";const APP_BUILD="f62dda11829a";
+const APP_VER="0.10.5";const APP_BUILD="e359d8112e56";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2513,6 +2517,7 @@ const APP_VER="0.10.4";const APP_BUILD="f62dda11829a";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.10.5',['Combat: every prime now reacts with every other element (56 reactions, all in the Lore guide); warriors, knights and monks learn a detonator first and the other classes a primer first, so reactions start in the first realm; priming a foe again with the same element refreshes the two turns instead of doing nothing. Basic attacks are typed by class: archers shoot (ranged, hardest), mages, healers and bards strike with magic, warriors, monks and thieves hit harder. Natures are now sub-roles: three per class (a tank, a damage and a tempo or support take) with 10 to 15% stat swings and one perk (Bulwark and Sentinel guard for 60%, Berserkers hit 12% harder below half HP, Sages cast for less, Stillwater monks heal more with chi, and so on); new wayfarers start on one, the Guild Hall still rerolls inside the class. Single element wayfarers: their element deals 25% more, they carry 10% more MP and take a quarter less from their own element; Light mastery\'s healing bonus became +15% against undead and shadow foes. Also: the Momentum bar\'s Surge label no longer sticks out of its box.']],
  ['Beta v0.10.4',['Battle clarity: foes now pick who they aim at a turn ahead and the telegraph shows it (an arrow on their intent tag, a ⚔ mark on the hero\'s card); the Guard button glows when the acting hero is about to take a heavy hit before their next turn, and a hero who guards a hit aimed at them moves again sooner. Skill rows show their target type with a coloured edge (red for foes, green for allies, both for heals that burn undead), an expected damage or healing number, the delivery symbol and status symbols in their text; when only one target is valid the skill, item or scan fires at once. New Chain targeting: Thunder Quarrel and Volt Lance start on one foe and may leap from foe to foe. The key weakness marker left the stage and lives on the foe card; hero levels show on every layout; the foe info panel no longer gets cut off on tall phones.']],
  ['Beta v0.10.3',['Map: the World map is now one connected picture of every town and field you have visited, joined at their real gates; tap anywhere you have been and the party walks there map to map, through the gates (tap a dungeon, cave or fortress door to go inside). The old parchment chart is behind its Chart button. The minimap now shows on phones too (smaller, under the area name) with a button that opens the area map. The area map and minimap use clear icons for every service, gate (with the side it faces), chest, stairs, door, boss, lair, cave, fortress and people with something to say, all in the legend.']],
  ['Beta v0.10.2',['Party: a wayfarer met on the road (a fortress cell, a chance meeting, a claimed challenge) now asks where to stand when your six are full: view their full sheet, swap them in for any party member on the spot, or keep them in the reserves. Build Party: pressing the selected Balanced or Fresh mix again gives another take. Equipment: one Equip Best button for the six (the for everyone and reserves buttons are gone; a reserve\'s sheet still has Auto), and Equip this now? only suggests party members. Alchemy: an Equip best charms button on the Charms tab. Skill lists show the ⟐ and ✸ symbols instead of the Primer and Detonator tags.']],
@@ -2712,14 +2717,43 @@ const REACT={
  'lightning+shadow':{n:'Blackout',p:'lightning',d:'shadow',m:1.3,fx:[['stun',.4],['blind',.4]]},
  'ice+light':{n:'Prism',p:'ice',d:'light',m:1.3,fx:[['blind',.4]],splash:.25},
  'ice+shadow':{n:'Deathchill',p:'shadow',d:'ice',m:1.4,fx:[['slow',.7],['weaken',.4]]},
- 'light+shadow':{n:'Eclipse',p:'light',d:'shadow',m:2.0}
+ 'light+shadow':{n:'Eclipse',p:'light',d:'shadow',m:2.0},
+ // v0.10.5 reverse directions: the same two elements, primed the other way round. Key 'primed>detonator' (the forward entries above keep their sorted 'a+b' key).
+ 'fire>ice':{n:'Thermal Shock',p:'fire',d:'ice',m:1.3,fx:[['break',.7]]},
+ 'fire>water':{n:'Scald',p:'fire',d:'water',m:1.3,fx:[['burn',.7],['weaken',.4]]},
+ 'wind>fire':{n:'Firestorm',p:'wind',d:'fire',m:1.3,fx:[['burn',.8]],splash:.4},
+ 'fire>earth':{n:'Cinderfall',p:'fire',d:'earth',m:1.25,fx:[['burn',.7],['break',.4]]},
+ 'lightning>fire':{n:'Ignition',p:'lightning',d:'fire',m:1.5,fx:[['burn',.5]],splash:.3},
+ 'light>fire':{n:'Sunfire',p:'light',d:'fire',m:1.4,fx:[['burn',.6],['blind',.4]]},
+ 'fire>shadow':{n:'Cinder Curse',p:'fire',d:'shadow',m:1.3,fx:[['weaken',.7],['burn',.4]]},
+ 'lightning>water':{n:'Static Rain',p:'lightning',d:'water',m:1.3,fx:[['stun',.5],['weaken',.4]]},
+ 'ice>water':{n:'Glaze',p:'ice',d:'water',m:1.2,fx:[['slow',.8],['stun',.35]]},
+ 'earth>water':{n:'Mudslide',p:'earth',d:'water',m:1.2,fx:[['slow',.8],['break',.4]]},
+ 'water>wind':{n:'Waterspout',p:'water',d:'wind',m:1.25,fx:[['slow',.5]],splash:.35},
+ 'water>light':{n:'Baptism',p:'water',d:'light',m:1.2,strip:1},
+ 'water>shadow':{n:'Undertow',p:'water',d:'shadow',m:1.3,fx:[['weaken',.6],['slow',.5]]},
+ 'wind>earth':{n:'Dust Devil',p:'wind',d:'earth',m:1.2,fx:[['blind',.7]],splash:.25},
+ 'earth>lightning':{n:'Fulgurite',p:'earth',d:'lightning',m:1.3,fx:[['break',.6],['stun',.4]]},
+ 'earth>ice':{n:'Frostheave',p:'earth',d:'ice',m:1.2,fx:[['root',.7],['slow',.5]]},
+ 'light>earth':{n:'Monolith',p:'light',d:'earth',m:1.3,fx:[['break',.6]],selfFx:[['ward',1]]},
+ 'shadow>earth':{n:'Entomb',p:'shadow',d:'earth',m:1.3,fx:[['root',.8],['weaken',.5]]},
+ 'lightning>wind':{n:'Thunderclap',p:'lightning',d:'wind',m:1.3,fx:[['stun',.4]],splash:.4},
+ 'ice>wind':{n:'Blizzard',p:'ice',d:'wind',m:1.3,fx:[['slow',.7],['bleed',.5]],splash:.3},
+ 'wind>light':{n:'Halo Gust',p:'wind',d:'light',m:1.2,allyFx:[['regen',1]]},
+ 'wind>shadow':{n:'Gloom Gale',p:'wind',d:'shadow',m:1.3,fx:[['blind',.6],['weaken',.5]]},
+ 'lightning>ice':{n:'Superconduct',p:'lightning',d:'ice',m:1.5,fx:[['stun',.5],['slow',.5]]},
+ 'light>lightning':{n:"Heaven's Bolt",p:'light',d:'lightning',m:1.5,fx:[['weaken',.5]]},
+ 'shadow>lightning':{n:'Voidshock',p:'shadow',d:'lightning',m:1.3,fx:[['break',.5],['stun',.35]]},
+ 'light>ice':{n:'Diamond Dust',p:'light',d:'ice',m:1.3,fx:[['blind',.5],['slow',.4]],splash:.3},
+ 'ice>shadow':{n:'Black Ice',p:'ice',d:'shadow',m:1.4,fx:[['slow',.7],['bleed',.4]]},
+ 'shadow>light':{n:'Dawnbreak',p:'shadow',d:'light',m:1.5,fx:[['weaken',.6]]}
 };
-const reactKey=(a,b)=>[a,b].sort().join('+');
+const reactKey=(a,b)=>{const k=[a,b].sort().join('+'),R=REACT[k];return R&&R.p===a?k:a+'>'+b;};// primed, detonator: forward pairs keep the sorted key, reverse pairs use 'primed>det'
 // v4.7: reactions need a PRIMER skill to set them up and a DETONATOR skill to set them off. Each reaction has one primer element and one detonator element.
-function reactFor(primed,det){const R=REACT[reactKey(primed,det)];return R&&R.p===primed&&R.d===det?R:null;}
-const SKILL_ROLE={annotate:null,edge1:'det',edge2:'primer',titan:'det',lance1:'primer',lance2:'det',judge:'det',s1a:'primer',s1b:'det',s2a:'primer',s2b:'primer',s3a:'det',
+function reactFor(primed,det){if(primed===det)return null;const R=REACT[reactKey(primed,det)];return R&&R.p===primed&&R.d===det?R:null;}
+const SKILL_ROLE={annotate:null,edge1:'det',edge2:'primer',titan:'det',lance1:'det',lance2:'primer',judge:'det',s1a:'primer',s1b:'det',s2a:'primer',s2b:'primer',s3a:'det',
  ray1:'primer',ray2:'det',shiv1:'det',shiv2:'primer',assn:'det',arrow1:'primer',arrow2:'det',chi1:'det',chi2:'primer',dragon:'det',tune1:'primer',tune2:'primer',combo:'det'};
-const MASTERY_BONUS=0.2;
+const MASTERY_BONUS=0.25;// v0.10.5: was .2
 const MASTERY={
  fire:{n:'Pyre Mastery',st:'burn',ch:.25,d:'Fire skills deal 20% more and may Burn.'},
  water:{n:'Tide Mastery',st:'weaken',ch:.25,d:'Water skills deal 20% more and may Weaken.'},
@@ -2995,10 +3029,11 @@ const COMBO={
 };
 const comboKey=els=>els.slice().sort().join('+');
 const SKC={};
+// v0.10.5 early band: front line (warrior, knight, monk) gets its DETONATOR first and a primer by lv 18; every other class gets its PRIMER first and a detonator later (SKILL_ROLE in data.js + these fills).
 // v5.1 role fills: added only when a class would otherwise miss a Primer or Detonator in that band
 const ROLE_FILL={
  warrior:{eP:n=>({id:'brand',n:'Branding Strike',k:'phys',pw:1.25,mp:4,lv:6,d:`A glancing blow that leaves ${n} clinging to the foe.`}),lP:n=>({id:'warbrand',n:'Warbrand Sweep',k:'phys',t:'all',pw:.85,mp:10,lv:18,d:`Sweeps every foe and brands them with ${n}.`})},
- knight:{eD:n=>({id:'sburst',n:'Shield Burst',k:'phys',pw:1.5,mp:5,lv:9,d:`Slams the shield home and bursts ${n} through the foe.`}),lP:n=>({id:'consec',n:'Consecrate',k:'phys',t:'all',pw:.8,mp:10,lv:18,d:`Hallows the ground under every foe with ${n}.`})},
+ knight:{eP:n=>({id:'sburst',n:'Shield Brand',k:'phys',pw:1.4,mp:5,lv:9,d:`Slams the shield home and leaves ${n} burning in the foe.`}),lP:n=>({id:'consec',n:'Consecrate',k:'phys',t:'all',pw:.8,mp:10,lv:18,d:`Hallows the ground under every foe with ${n}.`})},
  mage:{eD:n=>({id:'burst',n:`${n} Burst`,k:'mag',pw:1.7,mp:6,lv:6,d:`A focused blast of ${n} that sets off a prime.`}),lP:n=>({id:'rune',n:`${n} Rune`,k:'mag',pw:1.3,mp:9,lv:18,d:`Carves a ${n} rune into a foe.`})},
  healer:{eD:n=>({id:'smite',n:'Smite',k:'mag',pw:1.45,mp:5,lv:7,d:`A lance of ${n} from above.`}),lP:n=>({id:'halo',n:`Halo of ${n}`,k:'mag',t:'all',pw:.7,mp:10,lv:18,d:`Rings every foe with ${n}.`}),lD:n=>({id:'verdict',n:'Verdict',k:'mag',pw:2.4,mp:14,cost:1.2,lv:21,d:`Final judgement in ${n}. Slow recovery.`})},
  thief:{eP:n=>({id:'dart2',n:`${n} Dart`,k:'phys',pw:1.1,mp:3,cost:.8,lv:3,d:`A quick dart tipped with ${n}.`}),lP:n=>({id:'fan',n:`${n} Fan`,k:'phys',t:'all',pw:.8,mp:10,lv:18,d:`A fan of ${n} knives at every foe.`})},
@@ -3160,6 +3195,10 @@ function respaceSkills(S,t,T,n1,e1){
       const dst=S.filter(x=>band(x,'e')&&!x.role&&x.lv>1).sort((a,b)=>b.lv-a.lv)[0];
       if(src&&dst){const l=src.lv;src.lv=dst.lv;dst.lv=l;}}
   });
+  // v0.10.5: which role opens the elemental line. Front line (warrior, knight, monk) detonates first; the rest prime first.
+  {const first=['warrior','knight','monk'].includes(t.cls)?'det':(['mage','healer','thief','archer','bard'].includes(t.cls)?'primer':null);
+    if(first){const E=S.filter(x=>x.el&&x.role&&band(x,'e')).sort((a,b)=>a.lv-b.lv),F=E[0],D=E.find(x=>x.role===first);
+      if(F&&D&&F.role!==first&&D.lv>F.lv){const l=F.lv;F.lv=D.lv;D.lv=l;}}}
   ['primer','det'].forEach(role=>{
     if(S.some(x=>x.role===role&&band(x,'l')))return;
     const f=T&&T['l'+(role==='primer'?'P':'D')];
@@ -5663,6 +5702,7 @@ function perform(a,sk,tgts){
         if(a.id==='nyx'){const boon=Object.keys(t.st).find(k=>!STS[k].bad);if(boon){delete t.st[boon];fx(t,STS[boon].n+' stolen','stat bad');log(`Cold Hands: ${t.name} loses ${STS[boon].n}.`);}}
         if(a.id==='ciro'&&crit){addSt(t,'burn',a,true);tryFx(t,'blind',.75,a);}
         if(sk.id==='attack'&&a.S.basicStun)tryFx(t,'stun',a.S.basicStun,a);
+      else if(sk.role==='primer'&&els.length&&t.hp>0&&a.side==='p'&&t.side==='e'&&t.primed&&t.primed.el===els[0]){t.primed.t=2;t.primeT=Date.now();fx(t,'Primed again','stat prime');log(`${t.name} is Primed with ${EL[els[0]]} again.`);}
         (sk.fx||[]).forEach(([k,c])=>tryFx(t,k,c,a));
         if(a.S.mastery&&els.includes(a.S.mastery)){const M=MASTERY[a.S.mastery];tryFx(t,M.st,M.ch,a);}
       }
@@ -9187,7 +9227,7 @@ function buildScreen(){
         <div class="tmore"><button class="btn sm" data-act="settings">Settings</button><button class="btn sm" data-act="fbOpen">Help / Feedback</button></div>
         <details class="ttools"><summary>Saves and codes</summary><div class="tmore"><button class="btn sm" data-act="importOpen">Import save</button><button class="btn sm" data-act="recoverOpen">Recover saves</button><button class="btn sm" data-act="redeemOpen">Redeem code</button></div></details></div>`;})()}${svTitleNote()}
       ${leg.length?`<div class="legacy"><h3>Legacy heroes</h3><p class="note">Bring up to two of them on each new journey. They join at level 5 with veteran stats.</p><div class="els">${leg.map(id=>port(id,'sm')+`<b>${TPL[id].n}</b>`).join(' ')}</div></div>`:''}
-      <ul class="pitch"><li>Each journey: five realms, four Scourges drawn from twelve, and one of four Calamities at the end.</li><li>Mark a foe with one element, hit it with another: Melt, Conduct, Eclipse and 25 more reactions.</li><li>Break a Scourge's or Calamity's shield by hitting its weaknesses, then pile on.</li><li>Bonds, Limit Breaks, bounties, an arena, tempering and a legacy hero you keep forever.</li></ul></section>`;
+      <ul class="pitch"><li>Each journey: five realms, four Scourges drawn from twelve, and one of four Calamities at the end.</li><li>Mark a foe with one element, hit it with another: Melt, Conduct, Eclipse and 53 more reactions.</li><li>Break a Scourge's or Calamity's shield by hitting its weaknesses, then pile on.</li><li>Bonds, Limit Breaks, bounties, an arena, tempering and a legacy hero you keep forever.</li></ul></section>`;
   }else if(s==='starter'){scr.innerHTML='<div id="starterBox"></div>';}
   else if(s==='world'){
     scr.innerHTML=`<div class="world"><div class="wview"><canvas id="wcv"></canvas><div id="wloc" class="wloc"></div><div id="wdlg"></div></div>
@@ -9338,7 +9378,7 @@ function cmdHtml(){
     const sw=canSwap(),rooted=has(a,'root'),lbOk=lbReady(a),L=LIMIT[TPL[a.id].cls],noFlee=B.boss||B.spec.kind==='elite'||B.spec.kind==='arena'||B.spec.kind==='daily';
     const bonds=ks.filter(s=>s.bond);
     body=`${lbOk?(()=>{const LS=limitSkill(a);return `<button class="mi limit ${LS.limit2?'l2':''}" data-act="cmd" data-arg="limit"><span class="n">${LS.tierN}: ${esc(LS.n)}</span><span class="m">Ready</span><small>${esc(LS.d)}${LS.limit2?'':' (Limit I: about 70% power.)'}</small></button>`;})():''}
-      <div class="menu prim"><button class="mi" data-act="cmd" data-arg="attack">${dlIco(deliveryOf(a,ATTACK))}Attack</button><button class="mi" data-act="cmd" data-arg="skills">Skills${bonds.length?' <em class="bondtag">Bond</em>':''}</button>
+      <div class="menu prim"><button class="mi" data-act="cmd" data-arg="attack">${dlIco(deliveryOf(a,atkFor(a)))}Attack</button><button class="mi" data-act="cmd" data-arg="skills">Skills${bonds.length?' <em class="bondtag">Bond</em>':''}</button>
       <button class="mi" data-act="cmd" data-arg="items">Items</button><button class="mi" data-act="cmd" data-arg="guard">Guard</button></div>
       <div class="menu sec">${canSummon(a)?`<button class="mi summon" data-act="summon" title="Your companion fights in this hero's place for a few turns">Summon ${esc(compOf(a).name)}</button>`:''}<button class="mi" data-act="cmd" data-arg="scan" title="Read a foe's exact stats and hidden quirks. Costs half a turn.">Scan</button><button class="mi" data-act="cmd" data-arg="lore" title="Elements, reactions and statuses. Read only, pauses the fight.">Lore</button>
       <button class="mi" data-act="cmd" data-arg="swap" ${sw?'':'disabled'} title="${rooted?'Rooted: cannot switch out':'Swap this hero for a rearguard hero'}">${rooted?'Rooted':'Switch'}</button>
@@ -13955,6 +13995,82 @@ const roleName=r=>ROLES.names[r]||r;
 if(typeof classCard==='function'){const cc0=classCard;classCard=function(cls){const h=cc0.apply(this,arguments),R=ROLES.cls[cls];if(!R)return h;
   const line=`<small class="rlline"><b>Role</b> ${esc(roleName(R.p))} · <b>Also</b> ${R.s.map(r=>esc(roleName(r))).join(', ')}</small>`;
   return h.replace(/<\/div>\s*$/,line+'</div>');};}
+
+// ===== atk6.js (v0.10.5): typed basic attacks. The basic Attack follows the hero's class (CLS_ATK in config.js 2): a power tweak, and mages, healers and bards swing with magic =====
+// atkFor(a) returns the typed copy of ATTACK for a hero (the menu row uses it for its delivery icon). The skill keeps id 'attack', so logs, auto notes and Daily Trial counters still see an attack.
+function atkFor(a){try{const t=a&&a.side==='p'&&a.id&&TPL[a.id];const o=t&&CLS_ATK[t.cls];return o?Object.assign({},ATTACK,o):ATTACK;}catch(e){return ATTACK;}}
+HOOK.wrap('perform','atk6','typed basic attack by class',function(next,...args){const a=args[0],sk=args[1];if(sk&&sk.id==='attack'&&a&&a.side==='p'&&a.id&&TPL[a.id]){const o=CLS_ATK[TPL[a.id].cls];if(o){args[1]=Object.assign({},sk,o);}}return next(...args);});
+
+// ===== natures6.js (v0.10.6): natures as sub-roles, single element mastery rework =====
+// Natures: every class has three natures that push it into a sub-role (a tank-ish, a damage-ish and a tempo or support take) with
+// stat swings of about 10 to 15% in both directions and one small perk. The old natures stay defined (saves and templates keep
+// them, the Guild Hall still rerolls inside the class pool), the class pools now hold the three new ones. Perks beyond the stat keys
+// calcStats already reads (hp mp atk def mag res agi crit eva tempo heal) are applied by the calcStats wrapper below: critDmg
+// (added), acc (added), mpEff (spell MP cost cut), guardM (damage taken while guarding, a multiplier on the usual half), low (bonus
+// damage below half HP), chi (chi heals), lowHp... All are read off S by the battle code or by the small hooks here.
+// Mastery (single element heroes): every mastery now gives +25% damage with the element (MASTERY_BONUS), the status proc, 10% more
+// MP, and a quarter less damage taken from the hero's own element. Light's healing bonus (it did nothing for a Light warrior) is
+// replaced by +15% against undead and shadow foes; Shadow keeps its drain.
+const NAT6={
+ // warrior
+ bulwark6:{n:'Bulwark',sub:'Tank',d:'+15% defense, +10% max HP, -6% attack. Guarding cuts damage by 60% instead of 50%.',fx:{def:1.15,hp:1.1,atk:.94,guardM:.8}},
+ berserk6:{n:'Berserker',sub:'Damage',d:'+15% attack, +6% crit, -10% defense. +12% damage below half HP.',fx:{atk:1.15,crit:.06,def:.9,low:.12}},
+ vanguard6:{n:'Vanguard',sub:'Tempo',d:'+6% attack and defense, actions take 5% less time.',fx:{atk:1.06,def:1.06,tempo:.95}},
+ // knight
+ sentinel6:{n:'Sentinel',sub:'Tank',d:'+15% defense, +10% resistance, -8% attack. Guarding cuts damage by 60%.',fx:{def:1.15,res:1.1,atk:.92,guardM:.8}},
+ crusader6:{n:'Crusader',sub:'Damage',d:'+12% attack, +8% crit damage, -8% resistance.',fx:{atk:1.12,critDmg:.08,res:.92}},
+ warden6:{n:'Warden',sub:'Support',d:'+12% max HP, +12% resistance, -5% attack.',fx:{hp:1.12,res:1.12,atk:.95}},
+ // mage
+ evoker6:{n:'Evoker',sub:'Damage',d:'+15% magic, -8% resistance, -8% max HP.',fx:{mag:1.15,res:.92,hp:.92}},
+ sage6:{n:'Sage',sub:'Support',d:'+12% resistance, +15% MP, -4% magic. Spells cost 10% less MP.',fx:{res:1.12,mp:1.15,mag:.96,mpEff:.1}},
+ channeler6:{n:'Channeler',sub:'Tempo',d:'+8% magic, actions take 6% less time, -6% max HP.',fx:{mag:1.08,tempo:.94,hp:.94}},
+ // healer (priest)
+ mender6:{n:'Mender',sub:'Support',d:'+18% healing, -5% magic.',fx:{heal:1.18,mag:.95}},
+ oracle6:{n:'Oracle',sub:'Damage',d:'+12% magic, +10% resistance, -6% healing.',fx:{mag:1.12,res:1.1,heal:.94}},
+ devout6:{n:'Devout',sub:'Tank',d:'+12% max HP, +12% resistance, -4% magic.',fx:{hp:1.12,res:1.12,mag:.96}},
+ // thief
+ shadow6:{n:'Shadow',sub:'Damage',d:'+10% crit, +5% evasion, -8% max HP.',fx:{crit:.1,eva:.05,hp:.92}},
+ duelist6:{n:'Duelist',sub:'Tempo',d:'+12% attack, +6% agility, -3% evasion.',fx:{atk:1.12,agi:1.06,eva:-.03}},
+ trickster6:{n:'Trickster',sub:'Support',d:'+10% agility, actions take 6% less time, -5% attack.',fx:{agi:1.1,tempo:.94,atk:.95}},
+ // archer
+ marksman6:{n:'Marksman',sub:'Damage',d:'+8% crit, +15% crit damage, -6% max HP.',fx:{crit:.08,critDmg:.15,hp:.94}},
+ ranger6:{n:'Ranger',sub:'Tempo',d:'+10% attack, +8% agility.',fx:{atk:1.1,agi:1.08}},
+ hawk6:{n:'Hawk',sub:'Support',d:'+8% accuracy, actions take 5% less time, -4% attack.',fx:{acc:.08,tempo:.95,atk:.96}},
+ // monk
+ ironfist6:{n:'Ironfist',sub:'Damage',d:'+12% attack, +8% max HP, -8% resistance.',fx:{atk:1.12,hp:1.08,res:.92}},
+ stillwater6:{n:'Stillwater',sub:'Tank',d:'+12% defense and resistance, -6% attack. Chi heals 15% stronger.',fx:{def:1.12,res:1.12,atk:.94,chi:.15}},
+ tempest6:{n:'Tempest',sub:'Tempo',d:'+8% agility, actions take 10% less time, -6% defense.',fx:{agi:1.08,tempo:.9,def:.94}},
+ // bard
+ virtuoso6:{n:'Virtuoso',sub:'Damage',d:'+12% magic, +10% MP, -6% max HP.',fx:{mag:1.12,mp:1.1,hp:.94}},
+ herald6:{n:'Herald',sub:'Tank',d:'+10% resistance, +10% max HP.',fx:{res:1.1,hp:1.1}},
+ minstrel6:{n:'Minstrel',sub:'Tempo',d:'+8% agility, actions take 8% less time, -5% magic.',fx:{agi:1.08,tempo:.92,mag:.95}}};
+const NAT6_CLASS={warrior:['bulwark6','berserk6','vanguard6'],knight:['sentinel6','crusader6','warden6'],mage:['evoker6','sage6','channeler6'],
+ healer:['mender6','oracle6','devout6'],thief:['shadow6','duelist6','trickster6'],archer:['marksman6','ranger6','hawk6'],monk:['ironfist6','stillwater6','tempest6'],bard:['virtuoso6','herald6','minstrel6']};
+try{Object.assign(NATURES,NAT6);Object.keys(NAT6_CLASS).forEach(k=>{NAT_CLASS[k]=NAT6_CLASS[k];});}catch(e){}
+// the pool: the three sub-roles of the class (plus the hero's own trait while it is the current nature of an old save)
+{const np0=natPool;natPool=function(id){const t=TPL[id];if(!t||!NAT6_CLASS[t.cls]||t.src==='L'||t.src==='x'||t.mon)return np0.apply(this,arguments);
+  const P=NAT6_CLASS[t.cls].slice();try{const c=G&&G.roster&&G.roster[id],cur=c&&natOf(c);if(cur&&!P.includes(cur)&&NATURES[cur])P.push(cur);}catch(e){}return P;};}
+// new heroes start on a sub-role: the template's trait maps to the nearest of the three (by its stat keys), seeded by the hero id
+function nat6Default(id){const t=TPL[id];if(!t||!NAT6_CLASS[t.cls])return null;const P=NAT6_CLASS[t.cls],old=NATURES[t.trait],fx=old&&old.fx||{};
+  const score=k=>{const f=NATURES[k].fx;let s=0;Object.keys(fx).forEach(q=>{if(f[q]!=null)s+=(f[q]>1||(q==='crit'||q==='eva'))===(fx[q]>1||(q==='crit'||q==='eva'))?1:0;});return s;};
+  let best=P[0],bs=-1;P.forEach(k=>{const s=score(k);if(s>bs){bs=s;best=k;}});return best;}
+{const nc0=newChar;newChar=function(id){const c=nc0.apply(this,arguments);try{if(c&&!c.nat&&!(G&&G.daily)){const k=nat6Default(id);if(k){c.nat=k;c.S=calcStats(c);c.hp=c.S.mhp;c.mp=c.S.mmp;}}}catch(e){}return c;};}
+// the perks past the plain stat keys, and the mastery rework
+try{MASTERY.light.heal=0;MASTERY.light.vs=.15;MASTERY.light.d='Light skills deal 25% more and may Blind. +15% against undead and shadow foes.';
+  Object.keys(MASTERY).forEach(k=>{MASTERY[k].d=MASTERY[k].d.replace('20% more','25% more');});}catch(e){}
+const MAST6={mp:.1,res:.25};
+{const cs0=calcStats;calcStats=function(c){const S=cs0.apply(this,arguments);try{if(!c||!S)return S;const NF=natInfo(natOf(c)).fx||{};
+    if(NF.critDmg)S.critDmg=(S.critDmg||1.5)+NF.critDmg;if(NF.acc)S.acc=(S.acc||.97)+NF.acc;if(NF.mpEff)S.mpEff=Math.max(S.mpEff||0,NF.mpEff);
+    if(NF.guardM)S.guardM=NF.guardM;if(NF.low)S.low=NF.low;if(NF.chi)S.chi=NF.chi;
+    if(S.mastery&&!(G&&G.daily)){S.mmp=Math.round(S.mmp*(1+MAST6.mp));S.elRes[S.mastery]=Math.max(S.elRes[S.mastery]||0,MAST6.res);}}catch(e){}return S;};}
+HOOK.xform('calcDamage','natures6','nature and mastery perks on damage',function(r,a,sk,t){try{if(!r||!a||!t||!a.S)return r;let m=1;
+    if(a.S.low&&a.hp<=a.S.mhp*.5)m*=1+a.S.low;
+    if(t.guard&&t.S&&t.S.guardM)m*=t.S.guardM;
+    if(a.S.mastery==='light'&&MASTERY.light.vs&&skEls(sk).includes('light')&&((t.ty||[]).includes('undead')||(t.el||[]).includes('shadow')))m*=1+MASTERY.light.vs;
+    if(m!==1)r.dmg=Math.max(1,Math.round(r.dmg*m));}catch(e){}return r;});
+// Stillwater monks: chi heals 15% stronger (roles.js sets the chi heal power inside its own perform hook; this scales both inputs)
+HOOK.wrap('perform','natures6','chi heal nature perk',function(next,...args){const a=args[0],sk=args[1];if(!(sk&&sk.chi&&a&&a.S&&a.S.chi&&typeof ROLES!=='undefined'))return next(...args);
+  const k0=ROLES.w.chiK,h0=a.S.healP;try{ROLES.w.chiK=k0*(1+a.S.chi);if(h0)a.S.healP=h0*(1+a.S.chi);return next(...args);}finally{ROLES.w.chiK=k0;a.S.healP=h0;}});
 
 // ===== npc2.js (v0.4.1): NPC dialogue =====
 // Each NPC keeps their original line (and the re-lit town variant) and gains more: realm flavor, hints that adapt to the journey (no spoilers)

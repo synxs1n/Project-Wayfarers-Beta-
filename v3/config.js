@@ -80,6 +80,9 @@ const B4={det:{on:true,mpPct:.1,mpMin:4,maxPerAct:2},
     brinejelly:'leech',voidspawn:'leech',cavebat:'leech',
     frostwolf:'flank',thunderhawk:'flank',stareater:'flank',gull:'flank'},
   daily:{det:true,swap:true,mo:true,roles:true}};
+// CLS_ATK (v0.10.5, atk6.js): the basic Attack by class. pw: damage multiplier on ATTACK's pw 1; k:'mag' swings with magic (MAG vs RES).
+// Mages, healers and bards swing with magic; archers hit hardest as ranged; the front line trades a little less for staying power.
+const CLS_ATK={warrior:{pw:1.15},knight:{pw:1.05},monk:{pw:1.15,hits:1},thief:{pw:1.1},archer:{pw:1.2},mage:{k:'mag',pw:1.1},healer:{k:'mag',pw:.95},bard:{k:'mag',pw:1}};
 // DET_BONUS: detonations take two deliberate steps, so they hit harder than the old free reactions did.
 const DET_BONUS=1.3;
 // AUTO_SWAP_CD: auto battle brings in a reserve hero at most once every this many party turns, and a hero who just came in stays

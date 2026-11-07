@@ -36,10 +36,11 @@ const COMBO={
 };
 const comboKey=els=>els.slice().sort().join('+');
 const SKC={};
+// v0.10.5 early band: front line (warrior, knight, monk) gets its DETONATOR first and a primer by lv 18; every other class gets its PRIMER first and a detonator later (SKILL_ROLE in data.js + these fills).
 // v5.1 role fills: added only when a class would otherwise miss a Primer or Detonator in that band
 const ROLE_FILL={
  warrior:{eP:n=>({id:'brand',n:'Branding Strike',k:'phys',pw:1.25,mp:4,lv:6,d:`A glancing blow that leaves ${n} clinging to the foe.`}),lP:n=>({id:'warbrand',n:'Warbrand Sweep',k:'phys',t:'all',pw:.85,mp:10,lv:18,d:`Sweeps every foe and brands them with ${n}.`})},
- knight:{eD:n=>({id:'sburst',n:'Shield Burst',k:'phys',pw:1.5,mp:5,lv:9,d:`Slams the shield home and bursts ${n} through the foe.`}),lP:n=>({id:'consec',n:'Consecrate',k:'phys',t:'all',pw:.8,mp:10,lv:18,d:`Hallows the ground under every foe with ${n}.`})},
+ knight:{eP:n=>({id:'sburst',n:'Shield Brand',k:'phys',pw:1.4,mp:5,lv:9,d:`Slams the shield home and leaves ${n} burning in the foe.`}),lP:n=>({id:'consec',n:'Consecrate',k:'phys',t:'all',pw:.8,mp:10,lv:18,d:`Hallows the ground under every foe with ${n}.`})},
  mage:{eD:n=>({id:'burst',n:`${n} Burst`,k:'mag',pw:1.7,mp:6,lv:6,d:`A focused blast of ${n} that sets off a prime.`}),lP:n=>({id:'rune',n:`${n} Rune`,k:'mag',pw:1.3,mp:9,lv:18,d:`Carves a ${n} rune into a foe.`})},
  healer:{eD:n=>({id:'smite',n:'Smite',k:'mag',pw:1.45,mp:5,lv:7,d:`A lance of ${n} from above.`}),lP:n=>({id:'halo',n:`Halo of ${n}`,k:'mag',t:'all',pw:.7,mp:10,lv:18,d:`Rings every foe with ${n}.`}),lD:n=>({id:'verdict',n:'Verdict',k:'mag',pw:2.4,mp:14,cost:1.2,lv:21,d:`Final judgement in ${n}. Slow recovery.`})},
  thief:{eP:n=>({id:'dart2',n:`${n} Dart`,k:'phys',pw:1.1,mp:3,cost:.8,lv:3,d:`A quick dart tipped with ${n}.`}),lP:n=>({id:'fan',n:`${n} Fan`,k:'phys',t:'all',pw:.8,mp:10,lv:18,d:`A fan of ${n} knives at every foe.`})},
@@ -201,6 +202,10 @@ function respaceSkills(S,t,T,n1,e1){
       const dst=S.filter(x=>band(x,'e')&&!x.role&&x.lv>1).sort((a,b)=>b.lv-a.lv)[0];
       if(src&&dst){const l=src.lv;src.lv=dst.lv;dst.lv=l;}}
   });
+  // v0.10.5: which role opens the elemental line. Front line (warrior, knight, monk) detonates first; the rest prime first.
+  {const first=['warrior','knight','monk'].includes(t.cls)?'det':(['mage','healer','thief','archer','bard'].includes(t.cls)?'primer':null);
+    if(first){const E=S.filter(x=>x.el&&x.role&&band(x,'e')).sort((a,b)=>a.lv-b.lv),F=E[0],D=E.find(x=>x.role===first);
+      if(F&&D&&F.role!==first&&D.lv>F.lv){const l=F.lv;F.lv=D.lv;D.lv=l;}}}
   ['primer','det'].forEach(role=>{
     if(S.some(x=>x.role===role&&band(x,'l')))return;
     const f=T&&T['l'+(role==='primer'?'P':'D')];

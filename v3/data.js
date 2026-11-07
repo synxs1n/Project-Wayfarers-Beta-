@@ -4,6 +4,7 @@
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.10.5',['Combat: every prime now reacts with every other element (56 reactions, all in the Lore guide); warriors, knights and monks learn a detonator first and the other classes a primer first, so reactions start in the first realm; priming a foe again with the same element refreshes the two turns instead of doing nothing. Basic attacks are typed by class: archers shoot (ranged, hardest), mages, healers and bards strike with magic, warriors, monks and thieves hit harder. Natures are now sub-roles: three per class (a tank, a damage and a tempo or support take) with 10 to 15% stat swings and one perk (Bulwark and Sentinel guard for 60%, Berserkers hit 12% harder below half HP, Sages cast for less, Stillwater monks heal more with chi, and so on); new wayfarers start on one, the Guild Hall still rerolls inside the class. Single element wayfarers: their element deals 25% more, they carry 10% more MP and take a quarter less from their own element; Light mastery\'s healing bonus became +15% against undead and shadow foes. Also: the Momentum bar\'s Surge label no longer sticks out of its box.']],
  ['Beta v0.10.4',['Battle clarity: foes now pick who they aim at a turn ahead and the telegraph shows it (an arrow on their intent tag, a ⚔ mark on the hero\'s card); the Guard button glows when the acting hero is about to take a heavy hit before their next turn, and a hero who guards a hit aimed at them moves again sooner. Skill rows show their target type with a coloured edge (red for foes, green for allies, both for heals that burn undead), an expected damage or healing number, the delivery symbol and status symbols in their text; when only one target is valid the skill, item or scan fires at once. New Chain targeting: Thunder Quarrel and Volt Lance start on one foe and may leap from foe to foe. The key weakness marker left the stage and lives on the foe card; hero levels show on every layout; the foe info panel no longer gets cut off on tall phones.']],
  ['Beta v0.10.3',['Map: the World map is now one connected picture of every town and field you have visited, joined at their real gates; tap anywhere you have been and the party walks there map to map, through the gates (tap a dungeon, cave or fortress door to go inside). The old parchment chart is behind its Chart button. The minimap now shows on phones too (smaller, under the area name) with a button that opens the area map. The area map and minimap use clear icons for every service, gate (with the side it faces), chest, stairs, door, boss, lair, cave, fortress and people with something to say, all in the legend.']],
  ['Beta v0.10.2',['Party: a wayfarer met on the road (a fortress cell, a chance meeting, a claimed challenge) now asks where to stand when your six are full: view their full sheet, swap them in for any party member on the spot, or keep them in the reserves. Build Party: pressing the selected Balanced or Fresh mix again gives another take. Equipment: one Equip Best button for the six (the for everyone and reserves buttons are gone; a reserve\'s sheet still has Auto), and Equip this now? only suggests party members. Alchemy: an Equip best charms button on the Charms tab. Skill lists show the ⟐ and ✸ symbols instead of the Primer and Detonator tags.']],
@@ -203,14 +204,43 @@ const REACT={
  'lightning+shadow':{n:'Blackout',p:'lightning',d:'shadow',m:1.3,fx:[['stun',.4],['blind',.4]]},
  'ice+light':{n:'Prism',p:'ice',d:'light',m:1.3,fx:[['blind',.4]],splash:.25},
  'ice+shadow':{n:'Deathchill',p:'shadow',d:'ice',m:1.4,fx:[['slow',.7],['weaken',.4]]},
- 'light+shadow':{n:'Eclipse',p:'light',d:'shadow',m:2.0}
+ 'light+shadow':{n:'Eclipse',p:'light',d:'shadow',m:2.0},
+ // v0.10.5 reverse directions: the same two elements, primed the other way round. Key 'primed>detonator' (the forward entries above keep their sorted 'a+b' key).
+ 'fire>ice':{n:'Thermal Shock',p:'fire',d:'ice',m:1.3,fx:[['break',.7]]},
+ 'fire>water':{n:'Scald',p:'fire',d:'water',m:1.3,fx:[['burn',.7],['weaken',.4]]},
+ 'wind>fire':{n:'Firestorm',p:'wind',d:'fire',m:1.3,fx:[['burn',.8]],splash:.4},
+ 'fire>earth':{n:'Cinderfall',p:'fire',d:'earth',m:1.25,fx:[['burn',.7],['break',.4]]},
+ 'lightning>fire':{n:'Ignition',p:'lightning',d:'fire',m:1.5,fx:[['burn',.5]],splash:.3},
+ 'light>fire':{n:'Sunfire',p:'light',d:'fire',m:1.4,fx:[['burn',.6],['blind',.4]]},
+ 'fire>shadow':{n:'Cinder Curse',p:'fire',d:'shadow',m:1.3,fx:[['weaken',.7],['burn',.4]]},
+ 'lightning>water':{n:'Static Rain',p:'lightning',d:'water',m:1.3,fx:[['stun',.5],['weaken',.4]]},
+ 'ice>water':{n:'Glaze',p:'ice',d:'water',m:1.2,fx:[['slow',.8],['stun',.35]]},
+ 'earth>water':{n:'Mudslide',p:'earth',d:'water',m:1.2,fx:[['slow',.8],['break',.4]]},
+ 'water>wind':{n:'Waterspout',p:'water',d:'wind',m:1.25,fx:[['slow',.5]],splash:.35},
+ 'water>light':{n:'Baptism',p:'water',d:'light',m:1.2,strip:1},
+ 'water>shadow':{n:'Undertow',p:'water',d:'shadow',m:1.3,fx:[['weaken',.6],['slow',.5]]},
+ 'wind>earth':{n:'Dust Devil',p:'wind',d:'earth',m:1.2,fx:[['blind',.7]],splash:.25},
+ 'earth>lightning':{n:'Fulgurite',p:'earth',d:'lightning',m:1.3,fx:[['break',.6],['stun',.4]]},
+ 'earth>ice':{n:'Frostheave',p:'earth',d:'ice',m:1.2,fx:[['root',.7],['slow',.5]]},
+ 'light>earth':{n:'Monolith',p:'light',d:'earth',m:1.3,fx:[['break',.6]],selfFx:[['ward',1]]},
+ 'shadow>earth':{n:'Entomb',p:'shadow',d:'earth',m:1.3,fx:[['root',.8],['weaken',.5]]},
+ 'lightning>wind':{n:'Thunderclap',p:'lightning',d:'wind',m:1.3,fx:[['stun',.4]],splash:.4},
+ 'ice>wind':{n:'Blizzard',p:'ice',d:'wind',m:1.3,fx:[['slow',.7],['bleed',.5]],splash:.3},
+ 'wind>light':{n:'Halo Gust',p:'wind',d:'light',m:1.2,allyFx:[['regen',1]]},
+ 'wind>shadow':{n:'Gloom Gale',p:'wind',d:'shadow',m:1.3,fx:[['blind',.6],['weaken',.5]]},
+ 'lightning>ice':{n:'Superconduct',p:'lightning',d:'ice',m:1.5,fx:[['stun',.5],['slow',.5]]},
+ 'light>lightning':{n:"Heaven's Bolt",p:'light',d:'lightning',m:1.5,fx:[['weaken',.5]]},
+ 'shadow>lightning':{n:'Voidshock',p:'shadow',d:'lightning',m:1.3,fx:[['break',.5],['stun',.35]]},
+ 'light>ice':{n:'Diamond Dust',p:'light',d:'ice',m:1.3,fx:[['blind',.5],['slow',.4]],splash:.3},
+ 'ice>shadow':{n:'Black Ice',p:'ice',d:'shadow',m:1.4,fx:[['slow',.7],['bleed',.4]]},
+ 'shadow>light':{n:'Dawnbreak',p:'shadow',d:'light',m:1.5,fx:[['weaken',.6]]}
 };
-const reactKey=(a,b)=>[a,b].sort().join('+');
+const reactKey=(a,b)=>{const k=[a,b].sort().join('+'),R=REACT[k];return R&&R.p===a?k:a+'>'+b;};// primed, detonator: forward pairs keep the sorted key, reverse pairs use 'primed>det'
 // v4.7: reactions need a PRIMER skill to set them up and a DETONATOR skill to set them off. Each reaction has one primer element and one detonator element.
-function reactFor(primed,det){const R=REACT[reactKey(primed,det)];return R&&R.p===primed&&R.d===det?R:null;}
-const SKILL_ROLE={annotate:null,edge1:'det',edge2:'primer',titan:'det',lance1:'primer',lance2:'det',judge:'det',s1a:'primer',s1b:'det',s2a:'primer',s2b:'primer',s3a:'det',
+function reactFor(primed,det){if(primed===det)return null;const R=REACT[reactKey(primed,det)];return R&&R.p===primed&&R.d===det?R:null;}
+const SKILL_ROLE={annotate:null,edge1:'det',edge2:'primer',titan:'det',lance1:'det',lance2:'primer',judge:'det',s1a:'primer',s1b:'det',s2a:'primer',s2b:'primer',s3a:'det',
  ray1:'primer',ray2:'det',shiv1:'det',shiv2:'primer',assn:'det',arrow1:'primer',arrow2:'det',chi1:'det',chi2:'primer',dragon:'det',tune1:'primer',tune2:'primer',combo:'det'};
-const MASTERY_BONUS=0.2;
+const MASTERY_BONUS=0.25;// v0.10.5: was .2
 const MASTERY={
  fire:{n:'Pyre Mastery',st:'burn',ch:.25,d:'Fire skills deal 20% more and may Burn.'},
  water:{n:'Tide Mastery',st:'weaken',ch:.25,d:'Water skills deal 20% more and may Weaken.'},

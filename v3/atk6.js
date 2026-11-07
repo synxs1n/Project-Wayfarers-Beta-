@@ -1,0 +1,4 @@
+// ===== atk6.js (v0.10.5): typed basic attacks. The basic Attack follows the hero's class (CLS_ATK in config.js 2): a power tweak, and mages, healers and bards swing with magic =====
+// atkFor(a) returns the typed copy of ATTACK for a hero (the menu row uses it for its delivery icon). The skill keeps id 'attack', so logs, auto notes and Daily Trial counters still see an attack.
+function atkFor(a){try{const t=a&&a.side==='p'&&a.id&&TPL[a.id];const o=t&&CLS_ATK[t.cls];return o?Object.assign({},ATTACK,o):ATTACK;}catch(e){return ATTACK;}}
+HOOK.wrap('perform','atk6','typed basic attack by class',function(next,...args){const a=args[0],sk=args[1];if(sk&&sk.id==='attack'&&a&&a.side==='p'&&a.id&&TPL[a.id]){const o=CLS_ATK[TPL[a.id].cls];if(o){args[1]=Object.assign({},sk,o);}}return next(...args);});

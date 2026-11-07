@@ -563,6 +563,7 @@ function perform(a,sk,tgts){
         if(a.id==='nyx'){const boon=Object.keys(t.st).find(k=>!STS[k].bad);if(boon){delete t.st[boon];fx(t,STS[boon].n+' stolen','stat bad');log(`Cold Hands: ${t.name} loses ${STS[boon].n}.`);}}
         if(a.id==='ciro'&&crit){addSt(t,'burn',a,true);tryFx(t,'blind',.75,a);}
         if(sk.id==='attack'&&a.S.basicStun)tryFx(t,'stun',a.S.basicStun,a);
+      else if(sk.role==='primer'&&els.length&&t.hp>0&&a.side==='p'&&t.side==='e'&&t.primed&&t.primed.el===els[0]){t.primed.t=2;t.primeT=Date.now();fx(t,'Primed again','stat prime');log(`${t.name} is Primed with ${EL[els[0]]} again.`);}
         (sk.fx||[]).forEach(([k,c])=>tryFx(t,k,c,a));
         if(a.S.mastery&&els.includes(a.S.mastery)){const M=MASTERY[a.S.mastery];tryFx(t,M.st,M.ch,a);}
       }
