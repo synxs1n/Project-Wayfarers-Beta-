@@ -3,7 +3,7 @@
 // the switch menu with the free swap (who steps back, then who comes in) fits without sideways scroll or clipped text and keeps 40 px
 // tap targets, and a few seconds of auto battle against every foe role raise no page error.
 // Usage: PWHTML=../../out/aurelis3.html node v070m2.js
-const {open,chk,done}=require('./pw');
+const {open,chk,done}=require('./pw');const {AUTO_OK}=require('./v063lib');
 const PRE=`localStorage.clear();localStorage.setItem('aurelis-meta-v1',JSON.stringify({cfg:{speed:2,enc:'off',music:0,sfx:0,gfx:'medium',hints:false}}));`;
 let H;
 (async()=>{for(const [w,h] of [[390,844],[844,390],[933,705],[1280,720]]){const tag=w+'x'+h;
@@ -45,8 +45,11 @@ let H;
   chk(`${tag}: switch menu buttons are 40 px or more, inside the screen, text not clipped`,!g.small.length&&!g.out.length&&!g.clip.length||JSON.stringify({s:g.small,o:g.out,c:g.clip}));
   chk(`${tag}: picking another hero explains the free swap`,/Free swap/.test(g.hint)&&/keeps this turn/.test(g.hint)||g.hint);
   // a few seconds of auto battle against the roles (and a boss with its Cataclysm on the widest screen)
-  const a=await ev(async big=>{const A=__A;let B=A.B;A.setPause(30);B.mode='cmd';B.menu='root';A.V.auto=false;B.auto=false;A.ACT.auto();await new Promise(r=>setTimeout(r,big?5000:3000));const o={log:A.B?A.B.log.length:0,over:A.B?A.B.over:true};
-    return o;},w===1280);
+  // v0.9.9: these foe types count as beaten by hand (Auto per foe type, v0.9.8, would leave Auto locked), and the fight is watched until it
+  // has moved on (more than 3 log lines) or 20 s pass, instead of a fixed 3 or 5 s that a busy machine could spend on two turns
+  const a=await ev(async([big,ok])=>{const A=__A;let B=A.B;(0,eval)('('+ok+')')();A.setPause(30);B.mode='cmd';B.menu='root';A.V.auto=false;B.auto=false;A.ACT.auto();await new Promise(r=>setTimeout(r,big?5000:3000));
+    for(const t0=performance.now();performance.now()-t0<20000&&A.B&&!A.B.over&&A.B.log.length<=3;)await new Promise(r=>setTimeout(r,50));const o={log:A.B?A.B.log.length:0,over:A.B?A.B.over:true};
+    return o;},[w===1280,AUTO_OK.toString()]);
   chk(`${tag}: auto battle runs against the roles (${a.log} log lines)`,a.log>3||a.over||JSON.stringify(a));
   await H.browser.close();}
   await done({browser:{close:async()=>{}}});})();

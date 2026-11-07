@@ -2,13 +2,19 @@
 // and every weather fading in and out in every phase. Frames are drawn by hand with a frozen clock so particles stay put and only the blend moves.
 const {open,chk,done}=require('./pw');
 (async()=>{
-const H=await open({w:844,h:390,mobile:true});const {ev}=H;
-await ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;
+// v0.9.9: the frames are compared on one known scene: the journey (the realm, so the field's theme, which sets how strong each look is)
+// is pinned with H.det, and the tier is Medium (what Auto starts on; under load Auto could drop to Low before the sweep, and Low draws
+// fog differently, see docs/v099-tests.md)
+const H=await open({w:844,h:390,mobile:true,freeze:true,pre:`localStorage.clear();localStorage.setItem('aurelis-meta-v1',JSON.stringify({cfg:{gfx:'medium'}}));`});const {ev}=H;
+await H.det(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;
   const f=A.getMap('f0');A.placeAt('f0',f.gates.start.arrive[0],f.gates.start.arrive[1],'r');A.render();});
 await new Promise(r=>setTimeout(r,500));
 const R=await ev(()=>{const A=__A,G=A.G,TR=A.TR,WS=A.WS,o={tod:[],wx:[],fails:[]};
   const cv=WS.ctx.canvas,W=cv.width,Hh=cv.height,NOW=123456;
-  const frame=()=>{TR.last=NOW;A.worldDraw(NOW);return WS.ctx.getImageData(0,0,W,Hh).data;};
+  // v0.9.9: the clocks the draw reads besides its own time (the location banner's Date.now fade, the arrival fade-in and chest animations on
+  // performance.now) are held at the frame's moment too, so two frames differ only by the blend however long the machine takes between them
+  const held=f=>{const pn=performance.now,dn=Date.now;performance.now=()=>NOW;Date.now=()=>1.7e12+NOW;try{return f();}finally{performance.now=pn;Date.now=dn;}};
+  const frame=()=>held(()=>{TR.last=NOW;A.worldDraw(NOW);return WS.ctx.getImageData(0,0,W,Hh).data;});
   const lum=d=>{let s=0;for(let i=0;i<d.length;i+=16)s+=d[i]*.3+d[i+1]*.5+d[i+2]*.2;return s/(d.length/16);};
   const diff=(a,b)=>{let s=0;for(let i=0;i<a.length;i+=8)s+=Math.abs(a[i]-b[i])+Math.abs(a[i+1]-b[i+1])+Math.abs(a[i+2]-b[i+2]);return s/(a.length/8);};
   const PH=A.CLK_PH,WX=Object.keys(A.WEATHER);o.nWx=WX.length;o.dur=[A.TRANS.tod,A.TRANS.wx];
@@ -39,9 +45,11 @@ const R=await ev(()=>{const A=__A,G=A.G,TR=A.TR,WS=A.WS,o={tod:[],wx:[],fails:[]
   // ---- ambience ramps ----
   A.trUpdate(3000);TR.k=1;TR.wx.k=1;o.ambIdle=A.trAmbDur();G.weather[0]='storm';o.ambWx=A.trAmbDur();A.trUpdate(3001);TR.wx.k=1;G.clock=PH[3][1];o.ambTod=A.trAmbDur();
   // ---- cost: plain frames against blending frames ----
-  const t0=performance.now();for(let i=0;i<30;i++){TR.k=1;TR.wx.k=1;TR.last=NOW;A.worldDraw(NOW+i*16);}const t1=performance.now();
-  G.weather[0]='rain';TR.wx.key=null;frame();G.weather[0]='blizzard';frame();const t2=performance.now();for(let i=0;i<30;i++){TR.wx.k=.5;TR.last=NOW;A.worldDraw(NOW+i*16);}const t3=performance.now();
-  o.msPlain=+((t1-t0)/30).toFixed(2);o.msBlend=+((t3-t2)/30).toFixed(2);
+  // v0.9.9: plain and blending batches alternate and each keeps its best batch, so a busy moment of the machine hits both alike
+  const plain=()=>{G.weather[0]='blizzard';TR.wx.key=null;TR.wx.cur=null;frame();const t0=performance.now();for(let i=0;i<10;i++){TR.k=1;TR.wx.k=1;TR.last=NOW;A.worldDraw(NOW+i*16);}return (performance.now()-t0)/10;};
+  const blend=()=>{G.weather[0]='rain';TR.wx.key=null;frame();G.weather[0]='blizzard';frame();const t2=performance.now();for(let i=0;i<10;i++){TR.wx.k=.5;TR.last=NOW;A.worldDraw(NOW+i*16);}return (performance.now()-t2)/10;};
+  let bp=1e9,bb=1e9;for(let r=0;r<4;r++){bp=Math.min(bp,plain());bb=Math.min(bb,blend());}
+  o.msPlain=+bp.toFixed(2);o.msBlend=+bb.toFixed(2);
   return o;});
 console.log('weathers',R.nWx,'durations',R.dur,'tod ms',R.todMs,'wx ms',R.wxMs,'frame ms plain/blend',R.msPlain,R.msBlend);
 R.tod.filter((r,i)=>i<8).forEach(r=>console.log('tod',JSON.stringify(r)));

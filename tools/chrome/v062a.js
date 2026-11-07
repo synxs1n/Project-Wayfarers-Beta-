@@ -6,8 +6,9 @@
 // Usage (from tools/chrome): PWHTML=../../out/aurelis3.html node v058a.js
 const {open,chk,done}=require('./pw');
 const cfg=t=>`localStorage.clear();localStorage.setItem('aurelis-meta-v1',JSON.stringify({cfg:{speed:1,enc:'off',diff:'normal',music:0,sfx:0,autoStats:true,autoEquip:false,gfx:'${t}',rmotion:true,hints:false}}));(()=>{let s=5;Math.random=()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296;};})();`;
-async function boot(t){const H=await open({w:390,h:844,mobile:true,dpr:2,pre:cfg(t)});const errs=[];H.page.on('console',m=>{if(m.type()==='error'&&!/file:|ERR_FILE|Failed to load resource/.test(m.text()))errs.push(m.text());});H.errs=errs;
-  await H.ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;A.render();});await H.wait(400);return H;}
+// v0.9.9: the journey (its realms, so the town, its lamps and the first dungeon's theme) is drawn from Date.now: H.det pins it
+async function boot(t){const H=await open({w:390,h:844,mobile:true,dpr:2,pre:cfg(t),freeze:true});const errs=[];H.page.on('console',m=>{if(m.type()==='error'&&!/file:|ERR_FILE|Failed to load resource/.test(m.text()))errs.push(m.text());});H.errs=errs;
+  await H.det(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;A.render();});await H.wait(400);return H;}
 // draws one world frame outside the loop (the GL frame is copied into #wcv over its whole bitmap: v0.6.3 fixed the copy, which covered only the top left quarter of the 2x bitmap) and measures the hero: the mean luminance of his body box,
 // the rows just under his feet against the ground beside them, his quad size
 const measure=H=>H.ev(()=>{const A=__A,WS=A.WS,HD=A.HD;A.worldDraw2(performance.now());const M=HD.mats.vp,P=(x,y,z)=>{const X=M[0]*x+M[4]*y+M[8]*z+M[12],Y=M[1]*x+M[5]*y+M[9]*z+M[13],W=M[3]*x+M[7]*y+M[11]*z+M[15];return [(X/W+1)/2*WS.vw,(1-Y/W)/2*WS.vh];};

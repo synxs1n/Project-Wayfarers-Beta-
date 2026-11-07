@@ -14,7 +14,8 @@ const r=await ev(()=>{const A=__A,G=A.G,o={forts:0,bad:[],sizes:[],look:[],cave:
   return o;});
 console.log(JSON.stringify(r));
 chk('4.7 a side fortress in every realm from the second stage on, reachable, smaller than the dungeon, holding a prize',r.forts===4&&r.bad.length===0);
-chk('4.7 caves and fortresses have their own looks (not the dungeon palette)',/#fort$/.test(r.look[0])&&/#cave$/.test(r.cave||'#cave'));
+// v0.9.9: since v0.8.2 the look key ends in the material ("meadow#fort%keep", dungeon8.js), so the kind is followed by % or the end
+chk('4.7 caves and fortresses have their own looks (not the dungeon palette)',/#fort(%|$)/.test(r.look[0])&&/#cave(%|$)/.test(r.cave||'#cave')||JSON.stringify([r.look[0],r.cave]));
 // miniboss on the prize chest, no auto, then the prize
 const m=await ev(async()=>{const A=__A,G=A.G,o={};let n=0;for(let i=0;i<200;i++)if(A.siteHasMini('k'+i+'x'))n++;o.rate=n/200;
   let S=1;for(let s=1;s<5;s++){const ft0=A.getMap('f'+s).caves.find(c=>c.kind==='fort');if(ft0&&A.siteHasMini(ft0.id)){S=s;break;}}

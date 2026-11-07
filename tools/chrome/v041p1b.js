@@ -13,11 +13,16 @@ console.log(JSON.stringify(r).slice(0,300));
 chk('1.1b all enemy skill statuses exist',r.bad.length===0&&r.n>100);
 // watchdog: sabotage an enemy skill with an unknown status and a throwing perform, battle must still advance
 const w=await H.ev(async()=>{const A=__A;A.G.stage=3;A.V.modal=null;
-  const ok=A.startBattle({stage:3,kind:'field'});if(!ok)return {err:'nostart'};
-  A.B.en.forEach(e=>{e.sk=[{n:'Bad',k:'buff',t:'self',pw:0,mp:0,el:null,cost:1,fx:[['nonesuch',1]]}];});
+  // v0.9.9: a fixed battle seed, and foes too tough to fall in the window, so a short random battle cannot end before six moves are seen
+  const ok=A.startBattle({stage:3,kind:'field',seed:4242});if(!ok)return {err:'nostart'};
+  A.B.en.forEach(e=>{e.S.mhp*=30;e.hp=e.S.mhp;e.sk=[{n:'Bad',k:'buff',t:'self',pw:0,mp:0,el:null,cost:1,fx:[['nonesuch',1]]}];});
+  // v0.9.8 locks Auto per foe type until it is beaten by hand: these foes count as known, so the heroes' turns run on auto too (without it the
+  // battle stopped at the first hero turn and the check only passed when six enemy moves came before it)
+  A.G.autoOk=A.G.autoOk||{};A.B.en.forEach(e=>{A.G.autoOk[e.base||e.name]=99;A.G.autoOk[e.name]=99;});
   A.B.auto=true;A.V.auto=true;let lastLog=A.B.log.length,moved=0;
-  for(let i=0;i<600;i++){await new Promise(r=>setTimeout(r,10));if(!A.B||A.B.over)break;if(A.B.mode==='cmd')A.autoTurnSmart();if(A.B.log.length>lastLog){moved++;lastLog=A.B.log.length;}}
-  return {moved,over:!A.B||A.B.over,wd:(window.__WD||[]).length};});
+  // the battle runs in real time: watch it until six moves are seen or 40 s pass (was 600 x 10 ms, about 6 s idle, far less on a busy machine)
+  const t0=performance.now();while(performance.now()-t0<40000&&moved<=5){await new Promise(r=>setTimeout(r,10));if(!A.B||A.B.over)break;if(A.B.mode==='cmd')A.autoTurnSmart();if(A.B.log.length>lastLog){moved++;lastLog=A.B.log.length;}}
+  return {moved,over:!A.B||A.B.over,wd:(window.__WD||[]).length,s:Math.round((performance.now()-t0)/1000)};});
 console.log(JSON.stringify(w));
-chk('1.1b battle keeps moving with a broken enemy skill',w.moved>5&&!w.err);
+chk('1.1b battle keeps moving with a broken enemy skill',w.moved>5&&!w.err||JSON.stringify(w));
 await done(H);})();

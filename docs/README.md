@@ -33,10 +33,22 @@ Read these before a big pass:
 - `v085-sync.md`: save sync between devices (v0.8.5): what was wrong, who wins (last matched version, then progress and server corrected time), leaving and coming back, Continue waits for the cloud, the newer save prompt, the two device tests.
 - `v095-bosses-pacing.md`: v0.9.5 fewer, better fights (lower encounter rate, roamers on fields with the realm's roles, ordinary fights pay more), a realm gimmick for every Scourge and Calamity, companion growth (second skill, evolution), depth unlocks by realm (`pcUnlocked`), with the journey and boss sim numbers.
 - `v095-nudges.md`: leading players into the systems (v0.9.5): the manual bonus line, system bonuses on the rewards screen, auto per foe type, tip cards as invitations (basic and expert), the Next goals panel; economy numbers and tests.
+- `v099-tests.md`: the v0.9.9 test hardening pass: the Chrome tests that were flaky under machine load and why, what changed per test, the frozen clock and wait helpers in `pw.js`, the runner `tools/chrome/runall.js` and its groups.
 - `audio-notes-v045.md`: the orchestral audio (v0.4.5) and Android live updates (v0.4.6).
 - `v050-prompt.md`: the full spec for the Beta v0.5.0 pass. Rollback point: `rollback-v046.md`.
 
 Testing tips:
 - Chrome tests: `tools/chrome/*.js` (Playwright, `pw.js`). Run from `tools/chrome` with `PWHTML=../../out/aurelis3.html`. Audio and update tests serve the repo over http themselves: `audio.js`, `audioplay.js`, `liveupdate.js`.
+- Run many at once with the runner (one test at a time, a timeout per test, a summary table and a JSON report):
+  `cd tools/chrome && PWHTML=../../out/aurelis3.html node runall.js [set ...] [--repeat N] [--timeout SEC] [--json FILE] [--stale] [--list]`.
+  A set is `all` (every runnable test that is not stale; the default), a group, test names, or `stale`. `node runall.js --list` prints the groups:
+  - `battle`: battle screen, labels, order bar, timed hits, mechanics, roles, rewards screen (ucards, wide, v041p1a/b/d, v041p2, v041p26, v050p1d/g, v050p2b/bg, v051a, v053b, v058a to v063bd, v070*, v075a, v076b, v080b, v080ca, v095b, v095na, v095p2)
+  - `world`: maps, movement, HD-2D, weather, day and night, ambience, dungeons, tap to walk (collide, roof, nature, sanct, v040fs, v040p5/5b/6, v041p1c to v041p53, v050p1b/c/f, v050p2world, v050p5c, v051c, v053a, v056a, v062a, v063wo, v071wa/wb/wt, v077wa/wb, v080r, v080wa, v082da/db, v083a, v095p1)
+  - `menus`: shops, Smithy, menus, Notice Board, tip cards, text clipping (eq, eq2, smithy*, tavern, v041p6/64/67, v050p1a/e/h, v050p3a/b, v050p4, v051b, v053ua/ub, v063m1/m2, v063s, v070oa/ob, v072a, v095m1 to m4, v095nb)
+  - `party`: Best Party, Training team, Daily Trial and twists, duel lines, pacing sims (v063g, v063pa/pb, v063wa/wb, v071a, v077d, v080cb, v081a, v095p3, v050p2daily)
+  - `saves`: old saves, backups, offline, sync between devices (savesys, offline, v041old, v041p1k, v043b, v050p4b, v050p5, v085s, v085s2)
+  - `audio` (audio, audioplay, v082s, v083a), `title` (v060a, v071t, v080wt), `app` (liveupdate, v050p6a)
+  Tests that compare with an older build (v050p2daily, v095na, v080ca) get the committed index.html of a fixed revision by default, or the
+  file OLDHTML names. `PWFREEZE=0` runs the tests that freeze the clock on the real one. Details, stale tests and the helpers: `v099-tests.md`.
 - Node sims (worldtest, gatetest, healtest, levertest, phase3test, archtest, chainsim, balance10, bosswin, pacing...) expect `tools/v3`: run `ln -s ../v3 tools/v3`, run from the repo root, remove the link before committing.
 - The game is one IIFE in strict mode; tests reach it through `window.__A` (lazy getters for G, B, V, ACT and many functions) and `window.__AU` (audio).

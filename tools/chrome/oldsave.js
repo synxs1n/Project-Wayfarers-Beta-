@@ -11,7 +11,9 @@ const blob=await A1.ev(()=>{const A=__A,G=A.G;A.ACT.new();['mira','lumen','oren'
 await A1.browser.close();
 console.log('old save keys stripped, bytes',blob.save.length);
 const H=await open({w:430,h:800,mobile:true,pre:`localStorage.clear();localStorage.setItem(${JSON.stringify(blob.key)},${JSON.stringify(blob.save)});localStorage.setItem('aurelis-meta-v1',JSON.stringify({legacy:[],cycles:0,clears:0,best:{Slime:{seen:1,kills:2,scan:0,known:{}}},codex:{},archivist:0,legends:{},cfg:{speed:1,enc:'normal',diff:'normal',music:.45,sfx:.6,autoStats:true,autoEquip:false}}));`});
-const r=await H.ev(()=>{const A=__A;A.ACT.cont();const G=A.G;return {ok:!!G,party:G.party.slice(),bonds:JSON.stringify(G.bonds),talks:G.talks.length,w:JSON.stringify(G.tamed.map(t=>t.with)),loadouts:G.loadouts===undefined?'undef':G.loadouts.length,lists:A.LC('roster').s,best:A.META.best.Slime.kills,gear:G.gear.slice(),miraEq:JSON.stringify(G.roster.mira.eq)};});
+// Continue may wait for the save sync first (v0.8.5): wait until the journey is loaded instead of reading it in the same tick
+await H.ev(()=>{__A.ACT.cont();});await H.until(()=>!!__A.G,null,{timeout:15000});
+const r=await H.ev(()=>{const A=__A;const G=A.G;return {ok:!!G,party:G.party.slice(),bonds:JSON.stringify(G.bonds),talks:G.talks.length,w:JSON.stringify(G.tamed.map(t=>t.with)),loadouts:G.loadouts===undefined?'undef':G.loadouts.length,lists:A.LC('roster').s,best:A.META.best.Slime.kills,gear:G.gear.slice(),miraEq:JSON.stringify(G.roster.mira.eq)};});
 console.log(JSON.stringify(r));
 chk('old save loads',r.ok&&r.party.length>=3||JSON.stringify(r));
 chk('bond progress and pending talk carry over untouched',r.bonds===blob.bonds&&r.talks===1||JSON.stringify([r.bonds,blob.bonds]));

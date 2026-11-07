@@ -6,7 +6,7 @@
 //   (>= 95%); unknown foes show "?".
 // - The bar shows 6 (portrait) or 8 entries, the current unit is highlighted, the intent is in the bar too, no page errors.
 // N=<battles> (default 10). Usage: PWHTML=../../out/aurelis3.html node v070ia.js
-const {open,chk,done}=require('./pw');const {META,battle}=require('./v063lib');
+const {open,chk,done}=require('./pw');const {META,battle,AUTO_OK}=require('./v063lib');
 const N=+process.env.N||10;
 async function run(H,opt,know){await battle(H,opt);
   return H.ev(async o=>{const A=__A,B=A.B,X=A.B5;X.R.trace.length=0;
@@ -21,12 +21,13 @@ async function run(H,opt,know){await battle(H,opt);
       const f=X.order(8).map(q=>q.u.name);rec.push({cur:B.cur.name,f});firstN++;if(f[0]===B.cur.name)firstOk++;
       const chips=[...document.querySelectorAll('#border .oc')];barN++;const want=A.BL.mode==='tall'?X.cfg.order.tall:X.cfg.order.wide;shownN.push(chips.length);if(chips.length>=Math.min(4,f.length)&&chips.length<=want&&chips.map(c=>c.title.replace(/ \(acting now\)$/,'')).join('|')===f.slice(0,chips.length).join('|'))barOk++;
       curHiN++;const now=document.querySelector('#border .oc.now');if(now&&now.title.startsWith(B.cur.name))curHi++;};
+    (0,eval)('('+o.ok+')')();// v0.9.9: Auto per foe type (v0.9.8) would stop the heroes' turns: these foes count as beaten by hand
     A.setPause(30);B.auto=true;A.V.auto=true;A.render();if(B.mode==='cmd')A.autoTurn();
     const t0=Date.now();while(!B.over&&rec.length<o.turns&&Date.now()-t0<60000){snap();await new Promise(q=>setTimeout(q,4));}
     A.V.auto=false;B.auto=false;A.setPause(99999);
     // forecast vs what happened: entry k of the forecast made at turn i against the actor of turn i+k
     let m1=0,n1=0,mw=0,nw=0;for(let i=0;i<rec.length;i++){for(let k=1;k<8&&i+k<rec.length;k++){const ok=rec[i].f[k]===rec[i+k].cur;if(k===1){n1++;if(ok)m1++;}nw++;if(ok)mw++;}}
-    return {turns:rec.length,firstOk,firstN,barOk,barN,curHi,curHiN,m1,n1,mw,nw,trace:X.R.trace.slice(),shownN};},{know,turns:40});}
+    return {turns:rec.length,firstOk,firstN,barOk,barN,curHi,curHiN,m1,n1,mw,nw,trace:X.R.trace.slice(),shownN};},{know,turns:40,ok:AUTO_OK.toString()});}
 (async()=>{const res={};let T1=0,M1=0,TW=0,MW=0,F=0,FN=0,BO=0,BN=0,CH=0,CHN=0,turns=0;const kn={ok:0,n:0,bad:[]},un={ok:0,n:0};
 for(const [w,h] of [[390,844],[933,705]]){const H=await open({w,h,mobile:w<1000,pre:META('low')});
   for(let i=0;i<N;i++){const seed=300+i*17+w,know=i%3!==2,opt={seed,heroes:3+(i%4),foes:1+(i%5),boss:i%5===4,stage:i%5===4?1+(i%3):0,lv:20};

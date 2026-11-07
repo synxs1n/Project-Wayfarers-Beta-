@@ -9,8 +9,9 @@
 // Usage (from tools/chrome): PWHTML=../../out/aurelis3.html node v063wo.js
 const {open,chk,done}=require('./pw');
 const META=(t,rm)=>`localStorage.clear();localStorage.setItem('aurelis-meta-v1',JSON.stringify({cfg:{speed:1,enc:'off',diff:'normal',music:0,sfx:0,autoStats:true,autoEquip:false,gfx:'${t}',rmotion:${!!rm},hints:false}}));(()=>{let s=5;Math.random=()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296;};})();`;
-async function boot(t,w,h){const H=await open({w:w||390,h:h||844,mobile:true,dpr:2,pre:META(t)});const errs=[];H.page.on('console',m=>{if(m.type()==='error'&&!/file:|ERR_FILE|Failed to load resource/.test(m.text()))errs.push(m.text());});H.errs=errs;
-  await H.ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;A.render();});await H.wait(500);return H;}
+// v0.9.9: the journey (which chests, which field is a meadow) is drawn from Date.now: H.det pins it and seeds Math.random for the start
+async function boot(t,w,h){const H=await open({w:w||390,h:h||844,mobile:true,dpr:2,pre:META(t),freeze:true});const errs=[];H.page.on('console',m=>{if(m.type()==='error'&&!/file:|ERR_FILE|Failed to load resource/.test(m.text()))errs.push(m.text());});H.errs=errs;
+  await H.det(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;A.render();});await H.wait(500);return H;}
 // a relit field with room around the hero, clear weather, no realm ambience layer (so the overlay is idle)
 const FIELD=`(()=>{const A=__A,G=A.G;let id='f0';for(let s=0;s<5;s++){const m=A.getMap('f'+s);if(m.theme==='meadow'){id='f'+s;break;}}const m=A.getMap(id);G.cleared[m.s]=1;G.weather[m.s]='clear';G.clock=150;
   let best=null;for(let y=8;y<m.h-8&&!best;y++)for(let x=8;x<m.w-12;x++){let ok=true;for(let j=-1;j<=1&&ok;j++)for(let i=-1;i<=5&&ok;i++)if(A.solidAt(m,x+i,y+j))ok=false;if(ok){best=[x,y];break;}}
@@ -38,7 +39,8 @@ const REC=`(T)=>{const A=__A,ctx=A.WS.ctx,f0=ctx.fillRect,C=['#fff2a0','#ffd04a'
     const px=()=>ev(c=>{const A=__A,cv=A.WS.base&&A.WS.base[0];if(!cv)return null;const d=cv.getContext('2d').getImageData(c.x*16,c.y*16-8,16,24).data;let h=0;for(let i=0;i<d.length;i+=4)h=(h*31+d[i]*3+d[i+1]*5+d[i+2]*7)>>>0;return h;},c);
     const ref=await ev(c=>{const A=__A,m=A.getMap(c.id),r=m.t[c.y][c.x];m.t[c.y][c.x]=m.t[c.y+1][c.x];A.rebuildBase();return r;},c);const bare=await px();
     await ev(c=>{const A=__A,m=A.getMap(c.id);m.t[c.y][c.x]='C';A.rebuildBase();},c);const shut=await px();
-    await ev(c=>{const A=__A;A.openChest(c.x,c.y);A.V.modal=null;try{A.nextDlg();}catch(e){}A.V.modal=null;A.render();},c);await wait(1400);const opened=await px();// v0.8.3: the open animation plays and fades first
+    await ev(c=>{const A=__A;A.openChest(c.x,c.y);A.V.modal=null;try{A.nextDlg();}catch(e){}A.V.modal=null;A.render();},c);// v0.8.3: the open animation plays and fades first (v0.9.9: polled for up to 6 s instead of one fixed 1.4 s sleep, which a busy machine outran)
+    await wait(1400);let opened=await px();for(const t0=Date.now();opened!==bare&&Date.now()-t0<6000;opened=await px())await wait(150);
     const st=await ev(c=>{const A=__A,m=A.WS.m,k=m.id+':'+c.x+','+c.y;return {saved:!!A.G.chests[k],solid:A.solidAt(m,c.x,c.y),tile:A.tileAt(m,c.x,c.y),left:A.chestsLeft?A.chestsLeft(m.id):null,marks:A.mapMarks(m).filter(o=>o.x===c.x&&o.y===c.y).map(o=>o.k)};},c);
     chk(`chest: the ground where an opened chest stood looks like bare ground (closed ${shut!==bare}, opened = bare ${opened===bare})`,shut!==bare&&opened===bare||JSON.stringify({bare,shut,opened}));
     chk(`chest: opened stays opened in the save and can be walked over (${JSON.stringify(st)})`,st.saved&&st.solid===false&&st.tile==='c'&&st.marks.join()==='chestopen'||JSON.stringify(st));

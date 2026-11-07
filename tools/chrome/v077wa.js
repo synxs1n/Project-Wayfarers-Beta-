@@ -16,8 +16,11 @@ const {open,chk,done}=require('./pw');
 const META=(t,rm)=>`localStorage.clear();localStorage.setItem('aurelis-meta-v1',JSON.stringify({cfg:{speed:1,enc:'off',diff:'normal',music:0,sfx:0,autoStats:true,autoEquip:false,gfx:'${t}',rmotion:${!!rm},hints:false,hd2d:true}}));(()=>{let s=5;Math.random=()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296;};})();`;
 const ALL=['rain','storm','snow','blizzard','fog','gale','sand','heat','ashfall','aurora','starfall','meteor'];
 const RARE=['bloodmoon','eclipse','surge_fire'];
-async function boot(t,w,h,rm){const H=await open({w:w||933,h:h||705,mobile:true,dpr:2,pre:META(t,rm)});const errs=[];H.page.on('console',m=>{if(m.type()==='error'&&!/file:|ERR_FILE|Failed to load resource|net::/.test(m.text()))errs.push(m.text());});H.errs=errs;
-  await H.ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;A.render();});await H.wait(500);return H;}
+// v0.9.9: the first field (its realm, so the spot PLACE picks) comes with the journey drawn from Date.now: H.det pins it; and the 2D
+// sweeps wait for the camera to come to rest after PLACE (the weather scrolls with the camera, so where it stood moved the particles)
+async function boot(t,w,h,rm){const H=await open({w:w||933,h:h||705,mobile:true,dpr:2,pre:META(t,rm),freeze:true});const errs=[];H.page.on('console',m=>{if(m.type()==='error'&&!/file:|ERR_FILE|Failed to load resource|net::/.test(m.text()))errs.push(m.text());});H.errs=errs;
+  await H.det(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;A.render();});await H.wait(500);return H;}
+const CAMREST=H=>H.settle(()=>[Math.round(__A.WS.cam.x),Math.round(__A.WS.cam.y),__A.WS.x,__A.WS.y],null,{frames:5,timeout:5000});
 // an open meadowy spot in field 0, a weather, the blend reset
 const PLACE=`(w,clock)=>{const A=__A,m=A.getMap('f0');A.G.clock=clock==null?150:clock;A.G.weather[m.s]=w;let best=null;for(let y=8;y<m.h-8&&!best;y++)for(let x=8;x<m.w-8;x++){let ok=true;for(let j=-2;j<=2&&ok;j++)for(let i=-3;i<=3&&ok;i++)if(A.solidAt(m,x+i,y+j))ok=false;if(ok){best=[x,y];break;}}
   if(!best)best=Object.values(m.gates)[0].arrive;A.V.modal=null;A.placeAt('f0',best[0],best[1],'d');A.TR.ph=null;A.TR.wx.key=null;A.render();return best;}`;
@@ -47,7 +50,7 @@ const REC2D=`(T)=>{const A=__A,ctx=A.WS.ctx,P=CanvasRenderingContext2D.prototype
   // ---------- 2D world (Medium, HD-2D off) and Low ----------
   for(const [tier,hd] of [['medium',false],['low',false]]){const H=await boot(tier);const {ev,wait}=H;await ev(hd=>{__A.META.cfg.hd2d=hd;__A.gfxApply();},hd);await ev(`(${PLACE})('clear')`);await wait(300);
     const rows=[];let hits=0,tot=0;
-    for(const w of ALL){await ev(`(${PLACE})(${JSON.stringify(w)})`);await wait(120);
+    for(const w of ALL){await ev(`(${PLACE})(${JSON.stringify(w)})`);await wait(120);await CAMREST(H);
       const r=await ev(`(()=>{const rec=(${REC2D});let n=0,tot=0,st=null,mx=0;for(let i=0;i<150;i++){const q=rec(20000+i*397),hx=q.hero[0]-q.cam[0],hy=q.hero[1]-q.cam[1];st=st||q.st;mx=Math.max(mx,q.st.n);
         const F=q.st.face;q.r.forEach(r=>{tot++;if(F){const dx=(r[0]+r[2]/2-F[0])/F[2],dy=(r[1]+r[3]/2-F[1])/F[3];if(dx*dx+dy*dy<F[4]*.95)n++;}else n++;});}return {n,tot,st,mx,live:__A.HD.live};})()`);
       rows.push([w,r]);hits+=r.n;tot+=r.tot;}

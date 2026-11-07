@@ -36,8 +36,12 @@ SHOPS.push({type:'tavern'},{type:'inn'},{type:'board'});
     A.V.modal=null;A.render();meas('.wbar .btn,.abtn,.hdr .btn','world');
     A.V.modal={type:'menu',tab:'party'};A.render();await new Promise(r=>setTimeout(r,450));await Promise.all(document.getAnimations().filter(a=>a.effect&&a.effect.getComputedTiming&&a.effect.getComputedTiming().iterations!==Infinity).map(a=>a.finished.catch(()=>0)));/* v0.6.3: measure after the panel's entrance scale, not during it */meas('#modal .mclose,#modal .mback,#modal .chips.mgrp .chip,#modal .chips.msub .chip,#modal .ptools .btn','menu');
     A.V.modal={type:'smithy',tab:'weapons'};A.render();await new Promise(r=>setTimeout(r,450));await Promise.all(document.getAnimations().filter(a=>a.effect&&a.effect.getComputedTiming&&a.effect.getComputedTiming().iterations!==Infinity).map(a=>a.finished.catch(()=>0)));/* v0.6.3: measure after the panel's entrance scale, not during it */meas('#modal .mclose,#modal .mback','smithy');
-    A.V.modal=null;A.render();A.startBattle({stage:0,kind:'field'});await new Promise(r=>setTimeout(r,700));meas('#bcmd .mi,#bcmd .btnrow .btn','battle');
-    A.B.en.forEach(e=>e.hp=0);A.win();await new Promise(r=>setTimeout(r,900));meas('#modal .btn.gold','results');
+    // v0.9.9: the battle and results screens are measured once they are up and their entrance animations are over (a fixed 0.7 s and
+    // 0.9 s sleep could measure a button mid-scale on a busy machine): wait for the elements (up to 8 s), then for every finite animation
+    const settled=async(sel,ms)=>{await new Promise(r=>setTimeout(r,ms));for(let i=0;i<80&&!document.querySelector(sel);i++)await new Promise(r=>setTimeout(r,100));
+      await Promise.all(document.getAnimations().filter(a=>a.effect&&a.effect.getComputedTiming&&a.effect.getComputedTiming().iterations!==Infinity).map(a=>a.finished.catch(()=>0)));};
+    A.V.modal=null;A.render();A.startBattle({stage:0,kind:'field'});await settled('#bcmd .mi',700);meas('#bcmd .mi,#bcmd .btnrow .btn','battle');
+    A.B.en.forEach(e=>e.hp=0);A.win();await settled('#modal .btn.gold',900);meas('#modal .btn.gold','results');
     return o;});
     chk(`${tag}: touch targets at least 40 px tall`,small.length===0||small.slice(0,8).join(', '));
     const bt=await ev(()=>{const o=[];const de=document.documentElement;if(de.scrollWidth>innerWidth+1)o.push('page '+de.scrollWidth);return o.join(',');});

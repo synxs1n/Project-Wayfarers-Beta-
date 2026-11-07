@@ -1,4 +1,4 @@
-const {open,chk,done}=require('./pw');
+const {open,chk,done,perfChk}=require('./pw');
 (async()=>{const h=await open({mobile:true});const {ev,wait}=h;
 await ev(()=>{__A.ACT.new();['mira','lumen','oren'].forEach(id=>__A.ACT.pickS(id));__A.ACT.begin();__A.ACT.storyOk();try{(window.__A.G.cleared=window.__A.G.cleared||[])[0]=1;}catch(e){}});await wait(300);
 const info=await ev(()=>{const G=__A.G;G.gold=999999;for(const k of Object.keys(G.mats))G.mats[k]=99;G.stage=4;
@@ -9,5 +9,6 @@ const info=await ev(()=>{const G=__A.G;G.gold=999999;for(const k of Object.keys(
 console.log(JSON.stringify(info));
 for(const tab of ['weapons','armor','craft','forge','mats','sell','echo']){
   const ms=await ev(t=>{const t0=performance.now();__A.V.modal={type:'smithy',tab:t};__A.render();return Math.round(performance.now()-t0);},tab);
-  chk(`render ${tab} = ${ms}ms`,ms<600?true:'slow');}
+  // v0.9.9: the 600 ms limit is scaled by the machine's load measured at that moment (pw.js perfChk), the raw time is still printed
+  await perfChk(h,`render ${tab}`,ms,600);}
 await done(h);})();
