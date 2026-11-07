@@ -2029,7 +2029,7 @@ html.rm .battle.b3 .cmd .mi.b9glow{animation:none}
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.9.8";const APP_BUILD="33833fa01b08";
+(function(){const APP_VER="0.9.9";const APP_BUILD="fca943a1ffaf";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2297,7 +2297,7 @@ const MIMIC_RATE=.13;
 const MAT_PRICE={copper:18,iron:45,mythril:110,oak:14,ash:40,elder:95,healroot:10,bluecap:22,sunpetal:48,starbloom:120};
 // Beta v0.4.1 3.5 economy (all editable here)
 // gold/xp: multipliers on what the player earns (the Daily Trial is exempt). gear/items/forge: price multipliers. recruit: tavern hire price.
-const ECON={gold:.9,xp:.87,gear:1.6,items:1.6,recruit:3,rareRecruit:2.6,inn:{base:30,per:25}};// v0.4.3: gold easier, prices lower (was gold .75, gear and items x2, recruits x3.5) v0.8.2: xp .85 -> .87 with more encounters (ENC_RATE)
+const ECON={gold:.9,xp:.82,gear:1.6,items:1.6,recruit:3,rareRecruit:2.6,inn:{base:30,per:25}};// v0.4.3: gold easier, prices lower (was gold .75, gear and items x2, recruits x3.5) v0.8.2: xp .85 -> .87 with more encounters (ENC_RATE) v0.9.9: xp .87 -> .82 (journey sim top level 42.4 -> target 38 to 42)
 const econG=n=>(typeof G!=='undefined'&&G&&G.daily)?n:Math.round(n*ECON.gold);
 // Beta v0.5.0 Phase 3: shops, gear and items (p3shop.js)
 // 3.8 how many of one item the pack holds (was 9). The Daily Trial keeps its old cap so its runs stay exactly as before.
@@ -2707,7 +2707,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.9.8";const APP_BUILD="33833fa01b08";
+const APP_VER="0.9.9";const APP_BUILD="fca943a1ffaf";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2715,6 +2715,7 @@ const APP_VER="0.9.8";const APP_BUILD="33833fa01b08";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.9.9',['Fixes: a chest could land on a path tile in some fields (old saves keep its opened state); rain ripples and splashes no longer cover the hero\'s face; dawn, day, dusk and night now blend smoothly in the HD-2D view and in Low graphics fog instead of jumping. Slightly less XP per fight so a journey ends around level 40 again (about 4.75 hours for a typical first run).']],
  ['Beta v0.9.8',['Playing it yourself pays: hand-played wins show their bonus (+52% XP and gold), and using the systems earns a little more (setting off reactions, breaking shields, guarding a telegraphed hit, reaching a Surge, taming). Auto now opens per foe type once you have beaten that foe by hand three times or scanned it; the Auto button says what is left. Tip cards are short invitations ("Primed with Fire: try Mira\'s Gale Burst") and the expert ones wait until you open that system. A Next goals panel on the map points the way: story goals plus small challenges that each pay a reward once.']],
  ['Beta v0.9.7',['Clearer battles: each foe shows its one key weakness (one your party can set up a reaction with, when there is one); tap it for the rest, or turn on Expert battle info in Settings to see everything. Damage types are now Physical, Ranged and Magic (plus Heal against undead), with at most two weaknesses and two resistances shown. Reactions hit harder on screen: a flash, a name banner, a new sound and a camera punch, and the primed badge pulses when your hero can set it off. Cues tell you what to do: Guard! before a telegraphed hit, Interrupt when a foe winds up, Cleanse when a hex stacks.']],
  ['Beta v0.9.6',['Fewer, better fights: random battles are much rarer and fields now have visible roamers (including each realm\'s foe roles) you can choose to fight or sneak up on; fights pay more, so a journey still ends around level 40. Every Scourge and Calamity has its own realm gimmick that it telegraphs a turn ahead (rising tide, lava vents, a lightning rod, a blizzard, broods of adds, a phase change at half health and more) with a clear answer. Tamed companions grow: a second skill after 12 battles and an evolution after 30. New journeys unlock systems realm by realm (reactions and bonds in the second realm, camp and guild missions in the third, the Echoforge in the fourth); saves you already have keep everything.']],
@@ -20989,9 +20990,12 @@ function hdZero(o){['amb','sun','fog','lift','gain','sd','shW','shC'].forEach(k=
 function hdLook(m,now){const o=H2L,P=HD2D.look;hdZero(o);const dun=m.kind==='dungeon',T=dun?null:THM(m);
   o.fogS=1;
   if(dun){const D=DTH(m),a=hdRgb(D.acc),base=m.archive?P.hall:m.cave?P.cave:P.dungeon;hdMix(o,base,1);for(let i=0;i<3;i++){o.amb[i]*=.8+.4*a[i];o.fog[i]=o.fog[i]*.6+hdRgb(D.top)[i]*.6;}}
-  else{let wsum=0;const pp=phaseProg();['day','dusk','night','dawn'].forEach(ph=>{const w=typeof trPhW==='function'?trPhW(ph):(pp.ph===ph?1:0);if(w<=0)return;wsum+=w;
+  else{let wsum=0;const pp=phaseProg(),sd0=[0,0,0];['day','dusk','night','dawn'].forEach(ph=>{const w=typeof trPhW==='function'?trPhW(ph):(pp.ph===ph?1:0);if(w<=0)return;wsum+=w;
+      sd0[0]=o.sd[0];sd0[1]=o.sd[1];sd0[2]=o.sd[2];
       let L=P[ph];if(ph==='dusk'||ph==='dawn'){// late dusk and early dawn lean toward night; a phase being blended out keeps the progress it had
-        const pr=ph===pp.ph?pp.p:(typeof TR!=='undefined'&&TR.from===ph?TR.fromP:1),q=ph==='dusk'?pr:1-pr,k=Math.max(0,q-.45)*.7;if(k>0){hdMix(o,L,w*(1-k));hdMix(o,P.night,w*k);return;}}hdMix(o,L,w);});
+        const pr=ph===pp.ph?pp.p:(typeof TR!=='undefined'&&TR.from===ph?TR.fromP:1),q=ph==='dusk'?pr:1-pr,k=Math.max(0,q-.45)*.7;if(k>0){hdMix(o,L,w*(1-k));hdMix(o,P.night,w*k);}else hdMix(o,L,w);}else hdMix(o,L,w);
+      // v0.9.9: each phase adds its own sun direction at unit length times its weight (see the sun direction below)
+      const dx=o.sd[0]-sd0[0],dy=o.sd[1]-sd0[1],dz=o.sd[2]-sd0[2],dl=Math.hypot(dx,dy,dz);if(dl>1e-6){o.sd[0]=sd0[0]+dx/dl*w;o.sd[1]=sd0[1]+dy/dl*w;o.sd[2]=sd0[2]+dz/dl*w;}});
     if(wsum<=0)hdMix(o,P.day,1);
     if(T&&T.dark){const k=P.darkRealm;for(let i=0;i<3;i++){o.amb[i]*=k.amb[i];o.sun[i]*=k.sun;}o.emis=Math.max(o.emis,.8);o.lamp=Math.max(o.lamp,1);o.pl=Math.max(o.pl,.6);}
     // weather (blended like the Phase 5 weather fade)
@@ -21007,7 +21011,10 @@ function hdLook(m,now){const o=H2L,P=HD2D.look;hdZero(o);const dun=m.kind==='dun
     try{const LQ=typeof legendQ==='function'&&m.kind==='field'?legendQ(m):[];if(LQ.some(q=>q.hero==='nikaris')){for(let i=0;i<3;i++){o.amb[i]*=.55;o.sun[i]*=.3;}o.emis=1;o.lamp=1;}
       else if(LQ.some(q=>q.hero==='kaevan')){o.gain[0]*=1.08;o.gain[2]*=.9;}}catch(e){}
     if(m.kind==='field'&&G.cleared[m.s]){o.gain[0]*=1.03;o.gain[1]*=1.02;}}
-  const l=Math.hypot(o.sd[0],o.sd[1],o.sd[2])||1;o.sd[0]/=l;o.sd[1]/=l;o.sd[2]/=l;o.shA=1;
+  // v0.9.9: while the time of day blends, the sun direction is the weighted sum of the two phases' (unit) directions, not renormalised:
+  // the sum of two unit vectors is shorter than either, and scaling it back to unit length lit the tops past the new phase's light halfway through
+  // (dawn > day mostly jumped: the middle frame was 94% of the way to day, v050p5c)
+  const l=Math.hypot(o.sd[0],o.sd[1],o.sd[2])||1,tb=!dun&&typeof TR!=='undefined'&&TR.from&&TR.k<1&&TR.from!==TR.ph;if(!tb){o.sd[0]/=l;o.sd[1]/=l;o.sd[2]/=l;}o.shA=1;
   return o;}
 // the grade as one affine map M*c+B (column major): exposure e, contrast k, saturation s, then gain g and lift l per channel
 function hdGrade(o){const e=o.exp,k=o.con,sa=o.sat,M=HD.gm,B=HD.gb,W=[.299,.587,.114];
@@ -21417,7 +21424,10 @@ function w7List(m){W7L.length=0;if(!m||!G||!G.weather)return W7L;const cur=G.wea
   if(X&&X.from&&X.k<1&&X.cur===cur&&X.from!==cur){const e=trEase(X.k);if(X.from!=='clear')W7L.push([X.from,1-e]);if(cur!=='clear')W7L.push([cur,e]);}
   else if(cur!=='clear')W7L.push([cur,1]);return W7L;}
 const W7_OWN={rain:1,storm:1,snow:1,blizzard:1,fog:1,gale:1,sand:1,heat:1,ashfall:1,aurora:1,starfall:1,meteor:1};
-function w7Night(){try{const p=phaseProg();if(typeof trPhW==='function'&&TR.inDraw){return Math.min(1,trPhW('night')+trPhW('dusk')*.35*p.p+trPhW('dawn')*.3*(1-p.p));}
+// v0.9.9: a phase being blended out keeps the progress it had (TR.fromP, as hdLook does); with the new phase's progress the old dusk or dawn
+// jumped at the phase change (dusk > night started from no night at all, dawn > day from 0.3 night: fog and banks on Low, v050p5c)
+function w7Night(){try{const p=phaseProg();if(typeof trPhW==='function'&&TR.inDraw){const pr=ph=>ph===p.ph?p.p:TR.from===ph?TR.fromP:1;
+    return Math.min(1,trPhW('night')+trPhW('dusk')*.35*pr('dusk')+trPhW('dawn')*.3*(1-pr('dawn')));}
   return p.ph==='night'?1:p.ph==='dusk'?.35*p.p:p.ph==='dawn'?.3*(1-p.p):0;}catch(e){return 0;}}
 // a colour between day (c0) and night (c1), in 8 steps (tinted sprites are cached per colour)
 function w7Rgb(c0,c1,t){const q=Math.round(Math.max(0,Math.min(1,t))*8)/8;return `${Math.round(c0[0]+(c1[0]-c0[0])*q)},${Math.round(c0[1]+(c1[1]-c0[1])*q)},${Math.round(c0[2]+(c1[2]-c0[2])*q)}`;}
@@ -21457,7 +21467,9 @@ function w7Splash(ctx,V,n,k){const rip=w7Ripple();let d=0;ctx.fillStyle='rgba(22
   for(let j=0;j<n;j++){const L=.36,ph=V.t/L+w7H(j,401),c=Math.floor(ph),a=ph-c;if(a>.62)continue;const P=w7Spot(V,w7H(c*13+j,402),w7H(c*17+j,403)),x=P[0],y=P[1],s=P[2];
     const rw=(3+a*13)*s,rh=rw*.38,hk=Math.min(w7HeroK(V,x-rw/2,y-6*s,rw,6*s+rh,1),w7Soft(V,x,y-4*s,0));if(hk<.03)continue;
     ctx.globalAlpha=(1-a/.62)*.55*k*hk;ctx.drawImage(rip,x-rw/2,y-rh/2,rw,rh);
-    if(a<.26){ctx.globalAlpha=(1-a/.26)*.8*k*hk;const u=a*30*s;ctx.fillRect(Math.round(x-1-u*.4),Math.round(y-u*.5),1,1);ctx.fillRect(Math.round(x+1+u*.4),Math.round(y-u*.45),1,1);ctx.fillRect(Math.round(x),Math.round(y-u*.7),1,1);}d++;}
+    // v0.9.9: each droplet fades by the face at its own place (they jump up to 9 px above the splash, into the face: v077wa)
+    if(a<.26){const u=a*30*s,ga=(1-a/.26)*.8*k*hk,dot=(px,py)=>{const f=w7Soft(V,px+.5,py+.5,0);if(f<.03)return;ctx.globalAlpha=ga*f;ctx.fillRect(px,py,1,1);};
+      dot(Math.round(x-1-u*.4),Math.round(y-u*.5));dot(Math.round(x+1+u*.4),Math.round(y-u*.45));dot(Math.round(x),Math.round(y-u*.7));}d++;}
   V.n+=d;W7.stats.ground+=d;}
 // puddles on open ground with rings from the drops (world 2D: cached per map cell; battle: a few on the floor)
 function w7PudAt(m,cx,cy){if(W7.pudMap!==m){W7.pud.clear();W7.pudMap=m;}const key=cx*4096+cy;let p=W7.pud.get(key);if(p!==undefined)return p;p=null;
@@ -21466,7 +21478,10 @@ function w7PudAt(m,cx,cy){if(W7.pudMap!==m){W7.pud.clear();W7.pudMap=m;}const ke
 function w7Puddles(ctx,V,k){const pd=w7Puddle(),rip=w7Ripple();let d=0;
   const one=(x,y,s,id)=>{const w=32*s,h=12*s;if(x<-w||y<-h||x>V.W+w||y>V.H+h)return;const hk=w7HeroK(V,x-w/2,y-h/2,w,h,1);if(hk<.03)return;ctx.globalAlpha=.8*k*hk;ctx.drawImage(pd,x-w/2,y-h/2,w,h);
     for(let r=0;r<2;r++){const L=.95,ph=V.t/L+w7H(id*3+r,415),a=ph-Math.floor(ph),c=Math.floor(ph),rx=x+(w7H(c*7+id+r,416)-.5)*w*.45,ry=y+(w7H(c*5+id+r,417)-.5)*h*.35,rw=(2+a*10)*s,rh=rw*.38;
-      ctx.globalAlpha=(1-a)*.5*k*hk;ctx.drawImage(rip,rx-rw/2,ry-rh/2,rw,rh);}d++;};
+      // v0.9.9: each ring fades by its own place too (the puddle's centre can sit outside the face while a ring lands on it; the 2D weather
+      // layer is drawn after the characters, so the ring painted over his face: v077wa)
+      const rk=Math.min(hk,w7HeroK(V,rx-rw/2,ry-rh/2,rw,rh,1));if(rk<.03)continue;
+      ctx.globalAlpha=(1-a)*.5*k*rk;ctx.drawImage(rip,rx-rw/2,ry-rh/2,rw,rh);}d++;};
   if(V.mode==='bt'){for(let j=0;j<5;j++){const y=V.gy+(.2+.75*w7H(j,422))*(V.H-V.gy),s=(.7+.9*(y-V.gy)/Math.max(1,V.H-V.gy))*(1+w7H(j,423)*.6);one((.06+.88*w7H(j,421))*V.W,y,s,j);}}
   else if(V.m){const C=44,x0=Math.floor(V.ox/C)-1,x1=Math.floor((V.ox+V.W)/C)+1,y0=Math.floor(V.oy/C)-1,y1=Math.floor((V.oy+V.H)/C)+1;
     for(let cy=y0;cy<=y1;cy++)for(let cx=x0;cx<=x1;cx++){const p=w7PudAt(V.m,cx,cy);if(p)one(p[0]-V.ox,p[1]-V.oy,p[2],cx*101+cy);}}
@@ -21750,10 +21765,15 @@ function pgStairsOnRoute(m,P,x,y){return !pgStairsFront(m,P,x,y);}
 function pgStairsFront(m,P,x,y){const open=[[1,0],[-1,0],[0,1],[0,-1]].map(([a,b])=>[x+a,y+b]).filter(([a,b])=>P.W8(a,b));return open.length===1?open[0]:null;}
 // the nearest allowed spot for a tile asset: a room tile on plain floor, not protected, not a cut, with no asset next to it
 const PG_NOPASS='D|XG';
-function pgSpot(m,P,x,y,floorOk,maxR,loose){
+// v0.9.9: a tile with road on two opposite sides is free while empty, but pgGrid protects it as soon as an asset stands on it (the "prop on a
+// road line" rule), so a chest moved there was moved off again on the next pass and could ping-pong between two such tiles and end on one
+// (v050p1c: f0, run seed 807839, realm 12 first, chest at 20,28). pgSpot never picks such a tile for an asset (c given)
+function pgRoadLine(m,x,y){const g=m.t,R=c=>!!c&&PG_PATH_CH.includes(c);return (R((g[y]||[])[x-1])&&R((g[y]||[])[x+1]))||(R((g[y-1]||[])[x])&&R((g[y+1]||[])[x]));}
+let PG_LEGACY=false,PG_DRY=false;   // the guard as it was before v0.9.9 (to find where it left a chest in an old save), and a run that writes no save state
+function pgSpot(m,P,x,y,floorOk,maxR,loose,asset){
   const H=P.H,W=P.W,seen=new Set([x+','+y]),q=[[x,y,0]];
   for(let i=0;i<q.length;i++){const [cx,cy,d]=q[i];if(d>(maxR||40))break;
-    if(!(cx===x&&cy===y)&&floorOk(m.t[cy][cx])&&(P.room[cy][cx]||loose)&&!P.prot[cy][cx]&&!pgCuts(P,cx,cy)&&cx>1&&cy>1&&cx<W-2&&cy<H-2&&!(typeof pgHides==='function'&&pgHides(m,cx,cy,'C'))){
+    if(!(cx===x&&cy===y)&&floorOk(m.t[cy][cx])&&(P.room[cy][cx]||loose)&&!P.prot[cy][cx]&&!pgCuts(P,cx,cy)&&cx>1&&cy>1&&cx<W-2&&cy<H-2&&!(typeof pgHides==='function'&&pgHides(m,cx,cy,'C'))&&!(asset&&!PG_LEGACY&&pgRoadLine(m,cx,cy))){
       let crowd=false;for(let j=-1;j<=1&&!crowd;j++)for(let k=-1;k<=1&&!crowd;k++){const c=(m.t[cy+j]||[])[cx+k];if((j||k)&&c&&pgIsAsset(m,c))crowd=true;}
       if(!crowd&&!pgNpcAt(m).some(n=>n.x===cx&&n.y===cy))return [cx,cy];}
     for(const [a,b] of [[1,0],[-1,0],[0,1],[0,-1]]){const nx=cx+a,ny=cy+b,k=nx+','+ny;if(seen.has(k)||!P.W8(nx,ny)||PG_NOPASS.includes(m.t[ny][nx]))continue;seen.add(k);q.push([nx,ny,d+1]);}}
@@ -21788,18 +21808,18 @@ function guardPaths(m){
       if(PG_ASSET_PROP.includes(b.c)){m.t[b.y][b.x]=pgFloorOf(m,b.x,b.y);if(m.tl)m.tl=null;log.push({x:b.x,y:b.y,what:'decor '+b.c});moved=true;continue;}
       // chests, key chests and levers move to the nearest allowed room tile
       const fl=m.kind==='dungeon'?(c=>c==='.'):(c=>c==='.'||c===',');
-      const R0=b.c!=='C'?10:m.kind==='dungeon'?24:60,sp=pgSpot(m,P,b.x,b.y,fl,R0)||pgSpot(m,P,b.x,b.y,fl,R0,true)||(b.c==='C'&&m.kind!=='dungeon'?pgSpot(m,P,b.x,b.y,c=>c==='.'||c===','||c==='f',999,true):null);if(!sp)continue;  // a room tile first, then any alcove off the paths
+      const R0=b.c!=='C'?10:m.kind==='dungeon'?24:60,sp=pgSpot(m,P,b.x,b.y,fl,R0,false,b.c)||pgSpot(m,P,b.x,b.y,fl,R0,true,b.c)||(b.c==='C'&&m.kind!=='dungeon'?pgSpot(m,P,b.x,b.y,c=>c==='.'||c===','||c==='f',999,true,b.c):null);if(!sp)continue;  // a room tile first, then any alcove off the paths
       const c=b.c,floor=pgFloorOf(m,b.x,b.y);m.t[b.y][b.x]=floor;m.t[sp[1]][sp[0]]=c;
       if(typeof mapIssues==='function'&&mapIssues(m).length){m.t[sp[1]][sp[0]]=floor==='.'||floor===','?(m.kind==='dungeon'?'.':','):floor;m.t[b.y][b.x]=c;continue;}
       if(c==='C'||c==='K'){const e=(m.chests||[]).find(q=>q[0]===b.x&&q[1]===b.y);
         if(e){const from=e.from||[b.x,b.y];e[0]=sp[0];e[1]=sp[1];e.from=from;}
-        try{if(G&&G.chests){const ok=m.id+':'+b.x+','+b.y,nk=m.id+':'+sp[0]+','+sp[1];if(G.chests[ok]&&!G.chests[nk])G.chests[nk]=G.chests[ok];}}catch(e2){}}
+        try{if(!PG_DRY&&G&&G.chests){const ok=m.id+':'+b.x+','+b.y,nk=m.id+':'+sp[0]+','+sp[1];if(G.chests[ok]&&!G.chests[nk])G.chests[nk]=G.chests[ok];}}catch(e2){}}
       if(c==='l'&&m.lever&&m.lever[0]===b.x&&m.lever[1]===b.y)m.lever=[sp[0],sp[1]];
       if(c==='K'&&m.key&&m.key[0]===b.x&&m.key[1]===b.y)m.key=[sp[0],sp[1]];
       if(m.tl)m.tl=null;log.push({x:b.x,y:b.y,what:c,to:sp});moved=true;}
     if(!moved)break;}
   // a defeated mimic leaves nothing behind (healMap checks this too, but it ran before the chest moved here)
-  try{if(G&&G.chests&&typeof isMimic==='function'&&m.chests)m.chests.slice().forEach(([x,y])=>{if(G.chests[m.id+':'+x+','+y]&&isMimic(m,x,y)){dropChest(m,x,y);log.push({x,y,what:'mimic gone'});}});}catch(e){}
+  try{if(!PG_DRY&&G&&G.chests&&typeof isMimic==='function'&&m.chests)m.chests.slice().forEach(([x,y])=>{if(G.chests[m.id+':'+x+','+y]&&isMimic(m,x,y)){dropChest(m,x,y);log.push({x,y,what:'mimic gone'});}});}catch(e){}
   m.guarded=log;return log;
 }
 // a moved chest keeps the mimic roll of the spot it was built on
@@ -21867,6 +21887,26 @@ function pgPlugHoles(m){const log=[];if(!m||!m.t||!m.bld)return log;
   if(log.length&&m.tl)m.tl=null;return log;}
 {const gp0=guardPaths;guardPaths=function(m){const pre=(m&&m.t&&!m.archive&&!m.sanctum)?pgPlugHoles(m).concat(pgClearAprons(m),pgDropHidden(m)):[];const log=gp0.apply(this,arguments);
   if(pre.length&&Array.isArray(log)){log.unshift(...pre);m.guarded=log;}return log;};}
+// v0.9.9 old saves: the guard before v0.9.9 could leave a chest on a road line tile (pgRoadLine) and the save keeps that chest's opened state
+// under the spot it was left on. When this map has an opened key no chest stands on after the guard, the old guard is run again on a copy
+// of the map as it was built (PG_LEGACY, PG_DRY: no save writes) and each chest's opened state moves from the old guard's spot to the new
+// one, the way guardPaths moves it (matched by the spot the chest was built on; contents and mimic roll follow that spot already)
+function pgSnap(m){const cp=a=>a?a.slice():a;return Object.assign({},m,{t:m.t.map(r=>r.slice()),tl:null,
+  chests:(m.chests||[]).map(c=>{const q=c.slice();if(c.from)q.from=c.from.slice();return q;}),npcs:(m.npcs||[]).map(n=>Object.assign({},n)),
+  signs:m.signs?Object.assign({},m.signs):m.signs,start:cp(m.start),wander:cp(m.wander),lever:cp(m.lever),key:cp(m.key),
+  gates:m.gates?Object.assign({},m.gates,{start:m.gates.start?Object.assign({},m.gates.start):m.gates.start}):m.gates});}
+function pgOldChests(m,snap,gp){if(!G||!G.chests||!m.chests)return [];const pre=m.id+':',at=new Set(m.chests.map(c=>pre+c[0]+','+c[1]));
+  if(!Object.keys(G.chests).some(k=>k.startsWith(pre)&&!at.has(k)))return [];
+  const l0=PG_LEGACY,d0=PG_DRY;PG_LEGACY=PG_DRY=true;try{gp(snap);}finally{PG_LEGACY=l0;PG_DRY=d0;}
+  const fromK=c=>{const f=c.from||c;return f[0]+','+f[1];},old={};(snap.chests||[]).forEach(c=>{old[fromK(c)]=c;});const log=[];
+  m.chests.slice().forEach(c=>{const o=old[fromK(c)];if(!o||(o[0]===c[0]&&o[1]===c[1]))return;const ok=pre+o[0]+','+o[1],nk=pre+c[0]+','+c[1];
+    if(G.chests[ok]&&!G.chests[nk]){G.chests[nk]=G.chests[ok];log.push({x:o[0],y:o[1],what:'old save chest',to:[c[0],c[1]]});
+      try{if(typeof isMimic==='function'&&isMimic(m,c[0],c[1])){dropChest(m,c[0],c[1]);log.push({x:c[0],y:c[1],what:'mimic gone'});}}catch(e){}}});
+  return log;}
+{const gp1=guardPaths;guardPaths=function(m){if(PG_DRY||PG_LEGACY||!m||!m.t||m.archive||m.sanctum)return gp1.apply(this,arguments);
+  let snap=null;try{if(G&&G.chests&&Object.keys(G.chests).some(k=>k.startsWith(m.id+':')))snap=pgSnap(m);}catch(e){}
+  const log=gp1.apply(this,arguments);
+  if(snap){try{const ol=pgOldChests(m,snap,gp1);if(ol.length&&Array.isArray(log)){log.push(...ol);m.guarded=log;}}catch(e){}}return log;};}
 // blocks movement because of the tile itself (characters are drawn, so they never count)
 function pgBlocksTile(m,x,y){const c=tileAt(m,x,y);if(c==='c')return !(typeof WFX!=='undefined'&&WFX.chestGone);return SOLID.includes(c);}
 let PG_ACV=null;

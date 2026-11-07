@@ -221,3 +221,6 @@ Details in `v095-battle-clarity.md` (battle3.js section 9, battle5.js, battleui.
 
 ## Beta v0.9.8: nudges and goals
 Details in `v095-nudges.md` (prog2.js manual bonus line and system bonuses, auto per foe type with G.autoOk, onboard.js invitation and expert gating with pcUnlocked, goals.js Next goals; NUDGE in config.js; tests `chrome/v095na.js`, `v095nb.js`). The per foe type lock reason lives in the Auto button title and toast.
+
+## Beta v0.9.9: fixes from the hardened tests, XP retune
+Details in `v099-tests.md` (second pass): pathguard pgRoadLine (no asset on a road line tile; old saves map opened chests to the new spot), weather7 per ring and per droplet face fade, hd2d hdLook blends sun directions without rescaling, w7Night uses TR.fromP. ECON.xp .87 -> .82: journey sim SEED 1, 16 runs: top level 41.3 (39 to 45), 145 fights, 4.75 h typical.
