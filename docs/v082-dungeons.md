@@ -145,6 +145,7 @@ beside the mound.
   check: themed dungeons also light their caves with crystals, fungi and lava, and next to a lava pool a torch adds little.
 - Known, not from this pass: in snow realms journey seed 807839 puts a field chest on a path tile (f0, C@20,28), the same on the v0.8.2
   build before any of this work and with the lair switched off; v050p1c meets it when the clock draws a snow realm for the first stage.
+  Fixed in the v0.9.9 test pass (pathguard `pgRoadLine`, see `v099-tests.md`, "Game fixes and the stale tests").
 - `v082dperf.js`: Low and Medium, an ice cavern, a volcanic cavern, a crypt and the lair field, in turns with the build before.
   v0.8.9 lair (CPU x4, 390x844 at 2x, best of 3 against v0.8.9 main): Low lair field 60.2 -> 60.2, Medium lair field 58.8 -> 58.2,
   Low volcanic dungeon 60.3 -> 60.1, Medium 58.8 -> 59.9.

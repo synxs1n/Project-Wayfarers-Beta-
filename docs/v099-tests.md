@@ -46,7 +46,8 @@ measurement. Stale tests: 19, each failing its known check (run once).
 They are listed in `STALE` in `runall.js` with the reason, are left out of `all` and run with `node runall.js stale` (or `--stale`).
 From the v0.8.0 cleanup baseline: liveboot-v046, p4b, sw, v040p1, v040p3, v041p1e, v041p1g, v041p5, v041p54, v041p6b, v050p5b, v053s.
 `v050p5` passes now and left the list. v041p1g's reason is now known: its sanity check wants a moving meadow field backdrop, but the
-first field is not always a meadow since the realms, and no field backdrop moves in the band it samples any more. Found stale in this pass (a rule a later version changed on purpose; the test was not updated):
+first field is not always a meadow since the realms, and no field backdrop moves in the band it samples any more. Found stale in this pass (a rule a later version changed on purpose; the test was not updated; all seven were brought up to date in the
+second pass, below):
 
 | test | failing check | why |
 |---|---|---|
@@ -64,7 +65,7 @@ the same tick; oldsave then stops at its stale bond check), v041p47 (look keys e
 the realm gates were merged: its journey drops `G.pcV` like an old journey; the gates are checked in v095p3), v070ia, v070ic, v070m2 and
 v041p1b (Auto per foe type, v0.9.8: the foes of the test battle count as beaten by hand, see `AUTO_OK` below).
 
-## Real game issues found (reported, not fixed: v3/ is out of scope)
+## Real game issues found (reported here, fixed in the second pass: see "Game fixes and the stale tests" below)
 
 1. Chest on a path (`v050p1c`, fails 3 of 3 now). The test was "flaky" because each run scanned the maps of whatever realms the journey
    drew from `Date.now`. It now scans a fixed set of realm draws (the first realm goes round all twelve), and one of them fails every time:
@@ -172,3 +173,83 @@ node runall.js --list                                          # groups, stale t
 - Exit code 0 only when every non-stale test passed every round.
 - Not runnable here (listed by `--list`): the puppeteer/@sparticuz tests, the ones that need the pre-v3 build, helpers, the runners
   `v050p6suite.js`, `v053suite.sh`, `v063suite.sh`, and the `*shots*`, `*sheet*`, `*perf*` scripts.
+
+## Game fixes and the stale tests (second pass)
+
+The four issues above were fixed in `v3/` (same GAME_VERSION, no changelog entry; save keys unchanged) and the seven stale tests were
+brought up to the current design and put back into `all`. Daily Trial unchanged: `v050p2daily` against the committed index.html of the
+build before (OLDHTML) and `v063wa` pass.
+
+### 1. Chest on a path (pathguard.js)
+
+Root cause: `pgGrid` protects a tile that has road (`=` or `B`) on two opposite sides only while an asset stands on it (the "prop on a road
+line" rule), but `pgSpot` judged the empty tile. In f0 with run seed 807839 and realm 12 first, the chest built on 18,30 (hidden by the
+wall south of it in HD-2D) moved to 18,28, a tile between two road rows; the next pass found it on a path and moved it to 20,28 (the same
+kind of tile), then back, and the fourth pass left it on 20,28. Fix: `pgRoadLine(m,x,y)`; `pgSpot` refuses such a tile for an asset (the
+chest now goes to 16,31). Generation stays deterministic (the guard runs on every map as it is built).
+
+Old saves: a save keeps a chest's opened state under the spot the guard left it on (`G.chests['f0:20,28']`). When a map has an opened
+key that no chest stands on after the guard, the old guard is run again on a copy of the map as built (`PG_LEGACY`: without the new
+rule; `PG_DRY`: no save writes) and each chest's opened state moves from the old guard's spot to the new one (chests matched by the spot
+they were built on, `from`; contents and mimic roll already follow that spot; a defeated mimic is dropped as guardPaths does).
+`v050p1c` checks both: the chest is no longer left on 20,28, and a save that opened it there sees it opened on its new spot.
+
+### 2. Rain ripples over the hero's face (weather7.js)
+
+Root cause: the 2D weather layer is drawn after the characters, and `w7Puddles` faded a puddle's rings by the puddle's centre only; with
+the camera at rest (v077wa) the rings of a puddle north of the hero landed in his face ellipse. Fixing that exposed the same for splash
+droplets (`w7Splash`: faded by the splash point, they jump up to 9 px above it). Fix: each ring fades by `w7HeroK` at its own box and each
+droplet by `w7Soft` (face) at its own pixel. `v077wa`: 0 of about 133,000 on the face (was 57 per 150 moments for rain).
+
+### 3. Time of day blends (hd2d.js, weather7.js)
+
+- Dawn > day mostly jumped (HD-2D, every weather; surge weathers sat at the test's line): `hdLook` mixed the phases' sun directions
+  and renormalised the sum. Two unit vectors far apart sum to a short vector (0.66 for dawn and day); scaled back to unit length its
+  height was already past day's, so the tops were lit past the new phase halfway through and the middle frame was 94% of the way to day.
+  Now each phase adds its own unit direction times its weight (late dusk and early dawn lean toward night inside their phase as before)
+  and the sum is not renormalised while the time of day blends. Middle frame now 46 to 53% in every weather and in meadow, coast, snow,
+  heights and cave fields (each half of the change, measured with the test's pixel difference).
+- Fog on Low did not blend: `w7Night` (how much the weather takes the night colour) used the new phase's progress for the phase being
+  left, so at dusk > night the dusk share dropped to nothing and at dawn > day it rose to 0.3 at the first blend frame (the start frame
+  differed from the old look by 15 in the test). It now uses `TR.fromP`, as `hdLook` does.
+- `v050p5c` sweeps Medium (HD-2D) and Low (2D), and a new check wants each half of every time of day blend to be at least 30% of the
+  change (it fails on the build before: dawn > day at Medium, and Low's start frames). The test resets the 2D camera before the Low sweep
+  (its easing reads `now - WS.camT`, and the held clock is behind the real one the camera last saw).
+
+### 4. The stale tests
+
+| test | was stale because | now |
+|---|---|---|
+| oldsave | bonds open in the second realm since v0.9.5 | the old save it builds drops `G.pcV` like the other newer fields (a save from before v0.9.5 keeps every system open); checks it stays without `pcV` |
+| p5b | the same | first checks the gate (a new journey, first realm: no bond scene on the hero sheet), then clears the first realm and runs the bond scene flow as before |
+| v040p789 | guild missions open in the third realm since v0.9.5 (the claim gave nothing because the accept was refused) | checks the accept is refused before the third realm, then the same mission flow there |
+| v041p65 | Auto locked per foe type since v0.9.8 | checks a locked Auto marks nothing (`B.autoLock`), then marks the foes as beaten by hand and checks the real `autoTurn` path marks the battle |
+| v043c | bounties and guild missions moved to the Notice Board | Accept all on the board's Bounties tab; on its Guilds tab no Accept all before the third realm, then Accept all takes every mission listed |
+| v077a | the same, and guild missions open in the third realm | the journey stands in realm 3; the Claim button is looked for on the board's Guilds tab |
+| v080cb | journey pacing retuned in v0.9.5 / 0.9.6 / 0.9.8 | the level band is the owner's goal, 38 to 42 (was 39 to 41); hours 4.5 to 6, spread and boss wall checks unchanged |
+
+v080cb fails on the current game: the seeded sim (SEED 1, 16 runs) reads a mean top level of 42.3 (sd 1.5, 4.88 typical hours), and
+32 runs with SEED 2 and 3 read 42.5 and 42.4 (with boss tries means 17.3 and 17.5, over the 16 the test allows for SEED 1). The journey
+lands about half a level over the owner's band; retuning the pacing is a game change outside this pass, so the test reports it.
+
+### 5. Flaky in the full run, fixed in the test
+
+The first full `runall` after these fixes (136 tests, 94 min, load 1 to 2.8) failed four: v080cb (above) and three that also fail on
+the build before these fixes, for reasons in the tests:
+
+- `v071wt` (the road gate walk stopped with why "input", the open item of the first pass): the gate walk never started. The test
+  tapped the first exit tile with a destination; a town gate is three exit tiles wide, and in some realms' first town the corner tile
+  has wall in front of it, so `awPlan` answered "noway" and `W71.last` still held the key press walk before it (its "input"). The test
+  now taps the gate's road tile (`=` or `B`). It records, when a walk stops for "input", what stopped it at that moment (sources, held
+  keys, the caller), and a minimap walk that ends "blocked" because a townsperson stepped onto its target (townsfolk block like walls)
+  is asked again once the tile is free. Game note, not changed (behaviour change outside this pass): a tap on such a corner gate tile
+  plans no walk ("can't get there") instead of walking to the gate's road tile.
+- `v082da` (lair: 816 of 1000 mounds of 9+ tiles, the line is 850): the share moves with the journey's realm draw (886 to 931 on the
+  build before, 897 to 920 on this one, unpinned). The journey is pinned (H.det): 920 on both builds.
+- `v080b` (2D world transition: the swirl centre read 0.42 to 0.45 high): failed 1 of 6 runs on the build before as well; the newly
+  dark pixels depend on the town behind the swirl. The journey is pinned: 6 of 6 since.
+
+### The full run after the second pass
+
+`PWHTML=../../out/aurelis3.html node runall.js` (all: 136 tests, the seven formerly stale ones included), one round, 93 min, load
+about 1: 135 of 136 passed. The one failure is v080cb, on the game's pacing (mean top level 42.3 against the owner's 38 to 42), above.
