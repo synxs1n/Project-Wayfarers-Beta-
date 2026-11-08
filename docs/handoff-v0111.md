@@ -71,3 +71,13 @@ P5 0.11.8+ realms: realm order rises in fantasy with the most intricate final to
 - Realm order: tiered draw for new journeys. Tier 1 thistle, orchard, strand, lakes; tier 2 mire, grotto, tundra, peaks;
   tier 3 deeps, mines, glacier, mesa. Realms 1-2 from tiers 1-2, realms 3-4 from tiers 2-3, random within tiers.
 - Bonds: NO bond levels. Yes to more bond pairs, more scenes (camp, inn, after big fights), more bond techs, a Bonds screen.
+
+## 0.11.4 = batch 2 P1 done
+- map.js/visuals7.js/style.css minimap tap opens the map, flush top right; battleui.js boss bar hidden; battle3.js b9Chips shows all;
+  ui.js + ailments.js Guide (battleguide popup, guideFull opens menu charts, guideLore old lore); menus3.js Tavern one screen;
+  ui.js Backpack porkchop first; party3.js Training team reshuffles (p6Train jitter); town2.js innSure/innTalk; v063prog.js tents camp (campItem);
+  echo2.js respawn reverted; complete9.js siteKind first-entry tag (G.siteTag); hd2d.js lighthouse 'keep'; legends.js legMiss guarantee;
+  battle5.js timed hits default on (window.__PWTEST keeps them off in tools/chrome/pw.js and tools/fullsim.js), click eater, chain ring,
+  Auto/Pause/Speed on pointerdown while not in cmd mode.
+- Alchemy order was already potions then charms (the owner may have meant side by side; ask if it comes back).
+- Next: P2 (party and gear), then P3, P4, P5 as listed above.
