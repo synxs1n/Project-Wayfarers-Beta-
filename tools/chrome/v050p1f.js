@@ -1,4 +1,4 @@
-// Beta v0.5.0 1.6: the minimap shows in every field, town, dungeon, cave and fortress (phone default stays off, the toggle turns it on)
+// Beta v0.5.0 1.6: the minimap shows in every field, town, dungeon, cave and fortress (v0.10.3: on by default at every width, only the Off setting hides it)
 const {open,chk,done}=require('./pw');
 (async()=>{for(const [w,h,mob] of [[1280,800,false],[844,390,true],[390,844,true]]){
 const H=await open({w,h,mobile:mob});const {ev,wait}=H;
@@ -13,6 +13,7 @@ for(const id of ids){
 chk(`${w}x${h}: minimap visible in all ${ids.length} areas`,miss.length===0||miss.join(' '));
 {const r=await ev(()=>{const A=__A,m=A.getMap('f1');const e=A.mapEntry(m);A.G.weather[1]='no_such_sky';A.placeAt('f1',e[0],e[1],'d');A.render();A.wkwUpdate&&A.wkwUpdate();const c=document.getElementById('mmap');return c&&getComputedStyle(c).display!=='none'?true:'missing';});
  chk(`${w}x${h}: minimap still shows under a sky the HUD does not know`,r===true||r);}
-if(w<560){const r=await ev(()=>{const A=__A;A.META.cfg.minimap=null;A.render();const c=document.getElementById('mmap');return !c||getComputedStyle(c).display==='none';});chk(`${w}x${h}: small phone default stays off`,r===true);}
+{const r=await ev(()=>{const A=__A;A.META.cfg.minimap=null;A.render();A.wkwUpdate&&A.wkwUpdate();const c=document.getElementById('mmap');return !!c&&getComputedStyle(c).display!=='none';});chk(`${w}x${h}: minimap default (unset) is on`,r===true);
+ const off=await ev(()=>{const A=__A;A.META.cfg.minimap=false;A.render();A.wkwUpdate&&A.wkwUpdate();const c=document.getElementById('mmap');return !c||getComputedStyle(c).display==='none';});chk(`${w}x${h}: the Off setting hides the minimap`,off===true);}
 await H.browser.close();}
 const H=await open({});await done(H);})();

@@ -102,7 +102,7 @@ for(const gfx of ['low','medium'])for(const [w,h,touch] of [[390,844,1],[844,390
       let wx=null;for(let y=0;y<m.h&&!wx;y++)for(let x=0;x<m.w;x++)if(m.t[y][x]==='W'){wx=[x,y];break;}
       if(!wx)return {err:'no waystone',id:m.id,rows:m.t.map(r=>r.join('')),g:JSON.stringify(m.guarded)};
       const near=[[0,1],[1,0],[-1,0],[0,-1],[1,1],[-1,1],[1,-1],[-1,-1]].map(([a,b])=>[wx[0]+a,wx[1]+b]).find(([x,y])=>A.W71.awPass(m,x,y));if(!near)return {err:'no open tile by the waystone',wx,id:m.id,rows:m.t.map(r=>r.join('')),npcs:m.npcs.map(n=>n.x+','+n.y),ex:m.exits.map(e=>e.x+','+e.y)};
-      const look=async()=>{A.ACT.worldMap();await new Promise(r=>setTimeout(r,250));A.W63.WM.sel='t1';A.W71.wmGo();const el=document.getElementById('wmgo');const r={html:el?el.innerHTML:null,btn:!!(el&&el.querySelector('[data-act="travel"]'))};A.V.modal=null;A.render();return r;};
+      const look=async()=>{A.ACT.worldMap();await new Promise(r=>setTimeout(r,250));A.ACT.wmChart();await new Promise(r=>setTimeout(r,250));A.W63.WM.sel='t1';A.W71.wmGo();const el=document.getElementById('wmgo');const r={html:el?el.innerHTML:null,btn:!!(el&&el.querySelector('[data-act="travel"]'))};A.V.modal=null;A.render();return r;};
       const far=await look();A.placeAt('t0',near[0],near[1],'d');A.render();const at=await look();return {far,at};});
     if(wm.err){console.log(JSON.stringify(wm,null,1));wm.far=wm.at={html:wm.err};}
     chk(`${tag}: world map: away from a waystone a visited town only says a waystone can carry you there`,!wm.far.btn&&/waystone/i.test(wm.far.html||'')||JSON.stringify(wm.far));

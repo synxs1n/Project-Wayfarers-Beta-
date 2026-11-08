@@ -46,9 +46,16 @@ const REC=`(T)=>{const A=__A,ctx=A.WS.ctx,f0=ctx.fillRect,C=['#fff2a0','#ffd04a'
     chk(`chest: opened stays opened in the save and can be walked over (${JSON.stringify(st)})`,st.saved&&st.solid===false&&st.tile==='c'&&st.marks.join()==='chestopen'||JSON.stringify(st));
     const mm=await ev(c=>{const A=__A;let cv=document.getElementById('mmap');if(!cv)return null;if(cv.style.display==='none'){A.ACT.miniT();cv=document.getElementById('mmap');}if(cv.style.display==='none')return null;const x=cv.getContext('2d'),f0=x.fillText,t=[];x.fillText=function(s){t.push(s);return f0.apply(this,arguments);};try{A.drawMini();}finally{delete x.fillText;}return t;},c);
     chk(`minimap: no marker for the opened chest (glyphs drawn: ${mm&&mm.join('')})`,!!mm&&!mm.includes('▫')||JSON.stringify(mm));
-    const fm=await ev(()=>new Promise(res=>{const A=__A;A.ACT.map();setTimeout(()=>{const cv=document.getElementById('fmap');if(!cv)return res(null);const x=cv.getContext('2d'),f0=x.fillText,t=[];x.fillText=function(s){if(s==='▫')t.push(+x.globalAlpha.toFixed(2));return f0.apply(this,arguments);};
-      try{A.W63?A.W63.drawFullMap&&A.W63.drawFullMap():0;window.dispatchEvent(new Event('resize'));}finally{setTimeout(()=>{delete x.fillText;A.V.modal=null;A.render();res(t);},50);}},80);}));
-    chk(`full map: the opened chest is still shown, dimmed (alphas ${JSON.stringify(fm)})`,!!fm&&fm.length>0&&fm.every(a=>a<.9)||JSON.stringify(fm));
+    // v0.10.3: marks are code drawn icons (mapIcoDraw), not glyphs: sample the pixels of the opened chest's lid rect (#6a5a3a) on #fmap.
+    // Drawn at full alpha that spot would be exactly 106,90,58; dimmed (alpha .55) it is blended with the dark outline/terrain underneath.
+    const fm=await ev(c=>new Promise(res=>{const A=__A;A.ACT.map();setTimeout(()=>{const cv=document.getElementById('fmap');if(!cv)return res(null);
+      const m=A.WS.m,sc=cv.width/m.w,size=Math.max(10,Math.round(sc*2.4)),u=size/10,cx=(c.x+.5)*sc,cy=(c.y+.5)*sc,x=cv.getContext('2d');
+      const at=(px,py)=>Array.from(x.getImageData(Math.round(px),Math.round(py),1,1).data).slice(0,3);
+      const lid=at(cx,cy-size/2+3*u),away=at((c.x+.5)*sc+size,cy+size);// the lid centre, and a spot clear of the icon
+      const mk=A.mapMarks(m).filter(o=>o.x===c.x&&o.y===c.y).map(o=>o.k);
+      A.V.modal=null;A.render();res({lid,away,mk,sc,size});},200);}),c);
+    const fullLid=[106,90,58],dist=fm&&fm.lid?Math.abs(fm.lid[0]-106)+Math.abs(fm.lid[1]-90)+Math.abs(fm.lid[2]-58):0;
+    chk(`full map: the opened chest is still shown, dimmed (lid pixel ${JSON.stringify(fm&&fm.lid)}, full colour would be ${JSON.stringify(fullLid)}, marks ${fm&&fm.mk})`,!!fm&&fm.mk.join()==='chestopen'&&dist>=15&&JSON.stringify(fm.lid)!==JSON.stringify(fm.away)||JSON.stringify(fm));
     chk(`low: no console errors (${H.errs.slice(0,2).join(' | ')})`,H.errs.length===0);await H.browser.close();}
   // ---------- HD-2D (Medium) ----------
   {const H=await boot('medium',933,705);const {ev,wait}=H;const f=await ev(FIELD);await wait(600);
@@ -77,7 +84,7 @@ const REC=`(T)=>{const A=__A,ctx=A.WS.ctx,f0=ctx.fillRect,C=['#fff2a0','#ffd04a'
   // ---------- 5, 6. the world map, portrait and landscape ----------
   for(const [w,h,tag] of [[390,844,'portrait'],[844,390,'landscape']]){const H=await boot('low',w,h);const {ev,wait,page}=H;
     await ev(()=>{const A=__A,G=A.G;['t0','f0','d0','t1','f1'].forEach(id=>{G.been[id]=1;});G.cleared[0]=1;const m=A.getMap('f1');(m.caves||[]).forEach(c=>{G.cavesSeen=G.cavesSeen||{};G.cavesSeen[c.id]=1;});
-      const a=Object.values(m.gates)[0].arrive;A.placeAt('f1',a[0],a[1],'d');A.V.modal=null;A.render();A.ACT.map();A.ACT.worldMap();});await wait(500);
+      const a=Object.values(m.gates)[0].arrive;A.placeAt('f1',a[0],a[1],'d');A.V.modal=null;A.render();A.ACT.map();A.ACT.worldMap();A.ACT.wmChart();});await wait(500);
     const s=await ev(()=>{const cv=document.getElementById('wmap');if(!cv)return null;const r=cv.getBoundingClientRect(),x=cv.getContext('2d'),c=x.getImageData(4,Math.floor(cv.height/2),1,1).data,mid=x.getImageData(Math.floor(cv.width*.3),Math.floor(cv.height*.15),1,1).data;
       return {w:Math.round(r.width),h:Math.round(r.height),vw:innerWidth,vh:innerHeight,edge:[...c].slice(0,3),mid:[...mid].slice(0,3),leg:[...document.querySelectorAll('.maplegend span')].map(e=>e.textContent.trim()),hit:__A.W63&&__A.W63.WM?__A.W63.WM.hit.length:0};});
     const parch=p=>p&&p[0]>140&&p[0]>p[2]+20;// warm paper, not the old near black #0a0710
