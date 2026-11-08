@@ -38,7 +38,7 @@ const LEARN=()=>{const A=__A,B=A.B,M=A.META.best;B.en.forEach(e=>{const b=M[e.ba
       if(b){cases++;chk(`${w}x${h}: a foe primed for a detonator the party holds shows that element as its key weakness, marked as a reaction (${JSON.stringify(b)})`,b.k===b.want&&b.s===3&&b.card===b.want&&b.cardRx&&(b.stage==null||b.stage===b.want&&b.stRx));}
       await H.browser.close();}
     chk(`one key weakness per foe on its card (${one} of ${n} foes; none for a foe with nothing known)`,n>10&&one===n);
-    chk(`the stage shows no key weakness tag (v0.10.4: it lives on the foe card; ${stgN} on stage)`,stgN===0);
+    chk(`the stage shows no key weakness tag (v0.10.4: it lives on the foe card; ${stg} of ${stgN} on stage)`,stg===0);
     chk('the key weakness is a reaction setup whenever one of the known weaknesses is',rxBad.length===0||rxBad.slice(0,4).join(' | '));
     chk('the built reaction case ran',cases>0);}
   // ---------- 2: Expert battle info ----------
