@@ -93,7 +93,7 @@ async function setup(H,kind,he,fo,seed){
         const m=await H.ev(MEASURE),t=`${tag} turn ${turn+1} (${m.curName})`;
         if(turn===0)console.log(`LAYOUT ${w}x${h} ${kind} ${he}h/${fo}f: stage ${Math.round(m.stage.w)}x${Math.round(m.stage.h)}, document ${m.docH}/${m.vh}, bands ${m.band.join('/')}, ${m.cls}`);
         if(SHOTS&&turn===0)await H.page.screenshot({path:`${DIR}/${PFX}${w}x${h}_${kind}_${he}h${fo}f.png`});
-        if(turn===0&&kind==='mini')chk(`${t}: the scene has the boss bar, the summon button and the auto lock note`,m.boss&&m.summon&&!!m.autowhy||JSON.stringify({boss:m.boss,summon:m.summon,why:m.autowhy}));
+        if(turn===0&&kind==='mini')chk(`${t}: v0.11.4: no boss bar (removed); the summon button and the auto lock note are there`,!m.boss&&m.summon&&!!m.autowhy||JSON.stringify({boss:m.boss,summon:m.summon,why:m.autowhy}));
         chk(`${t}: the page does not scroll (document ${m.docH} <= ${m.vh}, ${m.docW} <= ${m.vw})`,m.docH<=m.vh+.5&&m.docW<=m.vw+1&&m.scrollY===0);
         chk(`${t}: Attack, Skills, Items and Guard fully on screen`,m.prim.length===4&&m.prim.every(p=>p.ok)||JSON.stringify(m.prim));
         chk(`${t}: the turn order bar, the stage and the acting hero's ${wide?'card':'HP and MP'} on screen`,m.orderOk&&m.stageOk&&(wide?m.curOk:m.hdrBars||m.curOk)||JSON.stringify({o:m.orderOk,s:m.stageOk,c:m.curOk,h:m.hdrBars}));

@@ -21,7 +21,7 @@ const {open,chk,done}=require('./pw');const {META,battle,dress}=require('./v063l
       sym:!!document.querySelector('#bstage .sti svg.stsym,#bparty .sti svg.stsym'),pips:[...document.querySelectorAll('#bparty .spips')].length,prime:document.querySelectorAll('#bstage .primed').length,elb:document.querySelectorAll('#bparty .elb').length,
       shields:B.en.filter(e=>e.hp>0&&e.maxShield).length,primed:B.en.filter(e=>e.hp>0&&e.primed).length};});
   chk(`${tag}: no sideways scroll`,r.docW<=r.vw+1||r.docW);
-  chk(`${tag}: commands grouped: Attack, Skills, Items, Guard, then Scan, Lore, Switch, Flee`,r.prim.join()==='attack,skills,items,guard'&&['scan','lore','swap','flee'].every(k=>r.sec.includes(k))||JSON.stringify([r.prim,r.sec]));
+  chk(`${tag}: commands grouped: Attack, Skills, Items, Guard, then Scan, Guide (v0.11.4, was Lore), Switch, Flee`,r.prim.join()==='attack,skills,items,guard'&&['scan','guide','swap','flee'].every(k=>r.sec.includes(k))||JSON.stringify([r.prim,r.sec]));
   chk(`${tag}: ${r.cur}'s card is marked as the active hero and shows its bars (${r.acBars})`,r.acName&&r.acBars>=2||JSON.stringify(r));
   chk(`${tag}: the command header repeats no bars or status icons`,r.headBars===0||r.headBars);
   chk(`${tag}: the log ticker sits under the stage, not on it`,r.logOff===true);
