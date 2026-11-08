@@ -270,7 +270,7 @@ const ROLES={
     sniper:{p:'ranged',s:['debuffer']},druid:{p:'ranged',s:['healer','debuffer']},archmage:{p:'magic',s:['buffer']},chronicler:{p:'magic',s:['debuffer','healer']}},
   ded:{tank:'knight',phys:'warrior',magic:'mage',ranged:'archer',healer:'healer',buffer:'bard',debuffer:'thief'},
   ref:{warrior:'brann',knight:'oren',archer:'tess',thief:'sable',monk:'dorn',mage:'mira',healer:'lumen',bard:'brook',sniper:'kaevan',druid:'nikaris',archmage:'jaeson',chronicler:'vaelith'},
-  band:[.55,.75],lv:30,tier:3,
+  band:[.55,.78],lv:30,tier:3,// v0.10.5: .75 -> .78 (the sub-role natures lift a few secondaries a hair, chronicler healer .755)
   names:{tank:'Tank',phys:'Physical damage',magic:'Magic damage',ranged:'Ranged',healer:'Healer',buffer:'Support',debuffer:'Debuffer'},
   w:{buff:{might:1,haste:1,bulwark:1,regen:.8,ward:.7,focus:.5,taunt:.2},debuff:{break:1,weaken:1,slow:.8,stun:1.4,blind:.7,poison:.6,bleed:.6,burn:.6,root:.4},
     area:2,self:.6,tauntless:.55,tankRef:1.12,top:2,chiK:1.25},
