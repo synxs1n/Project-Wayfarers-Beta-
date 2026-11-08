@@ -21,7 +21,8 @@ r=await ev(()=>{const A=__A,m=A.WS.m,W=m.w,Hh=m.h,seen=m.t.map(r=>r.map(()=>fals
   return {approach:approach.every(Boolean),n:approach.length,floorUnreach,exitOk};});
 console.log(JSON.stringify(r));chk('every gate reachable, exit reachable, no sealed floor',r.approach&&r.floorUnreach===0&&r.exitOk||JSON.stringify(r));
 // interact with a gate: north (face up) and south (face down)
-for(const [gx,gy,face] of [[3,1,'u'],[3,17,'d']]){
+// v0.11.0: Scourge gates on the north wall from x=2; the Calamity gates in their own row on the south wall (x 5, 9, 18, 22)
+for(const [gx,gy,face] of [[2,1,'u'],[5,17,'d']]){
   r=await ev(([gx,gy,face])=>{const A=__A;A.V.modal=null;A.placeAt('s0',gx,face==='u'?gy+1:gy-1,face);A.WS.lock=false;A.WS.dir=face;A.interact();return {modal:A.V.modal&&A.V.modal.type,key:A.V.modal&&A.V.modal.key,txt:document.querySelector('#modal .panel')?.innerText.replace(/\n+/g,' | ').slice(0,200)};},[gx,gy,face]);
   console.log(JSON.stringify(r));chk('gate at '+gx+','+gy+' opens its card',r.modal==='portal'&&!!r.key||JSON.stringify(r));
 }
