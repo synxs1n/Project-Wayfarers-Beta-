@@ -36,11 +36,16 @@ for(const [w,h,mob] of [[390,844,true],[933,705,false]]){const tag=` (${w}x${h})
     chk('the ghost is drawn see through in 2D (about 45%)'+tag,g.alpha>.35&&g.alpha<.55||JSON.stringify(g));
     chk('the ghost does not block the path'+tag,g.solid===false||JSON.stringify(g));
     // minimap: hollow star, dimmed
-    const mm=await ev(()=>{const A=__A,RG=window.__RG,P=CanvasRenderingContext2D.prototype,f0=P.fillText,seen=[];P.fillText=function(t,x,y){if(t==='☆'||t==='★')seen.push([t,this.globalAlpha,this.canvas.id]);return f0.apply(this,arguments);};
-      try{A.drawMini();}finally{P.fillText=f0;}return {marks:RG.marks().filter(o=>/quest/.test(o.k)).map(o=>o.k),seen};});
-    const gs=mm.seen.filter(x=>x[0]==='☆');
+    // v0.10.3: the star is a code drawn icon (mapIcoDraw questghost), not a glyph: draw the minimap, then sample the pixel in the middle of the
+    // icon's cross bar ([0,3,10,1] of #a8c8b8 = 168,200,184 at full alpha; dimmed at .55 it is blended with the dark outline and the ground)
+    const mm=await ev(()=>{const A=__A,RG=window.__RG;A.drawMini();const cv=document.getElementById('mmap'),x=cv.getContext('2d'),sc=4,W=cv.width,H=cv.height,
+      ox=Math.round(W/2-(A.WS.x+.5)*sc),oy=Math.round(H/2-(A.WS.y+.5)*sc),size=Math.max(10,Math.round(sc*2.4)),u=size/10;
+      const G2=RG.marks().filter(o=>o.k==='questghost'),seen=G2.map(o=>{const px=ox+(o.x+.5)*sc,py=oy+(o.y+.5)*sc;
+        if(px<0||py<0||px>=W||py>=H)return {off:1};const d=x.getImageData(Math.round(px),Math.round(py-size/2+3.5*u),1,1).data;return {rgb:[d[0],d[1],d[2]]};});
+      return {marks:RG.marks().filter(o=>/quest/.test(o.k)).map(o=>o.k),seen};});
+    const gs=mm.seen.filter(x=>x.rgb),gd=x=>Math.abs(x.rgb[0]-168)+Math.abs(x.rgb[1]-200)+Math.abs(x.rgb[2]-184);
     chk('the map marks the rival with the hollow ghost star'+tag,mm.marks.includes('questghost')&&!mm.marks.includes('quest')||JSON.stringify(mm));
-    chk('the minimap draws the ghost star dimmed'+tag,gs.length>0&&gs.every(x=>x[1]<.6)||JSON.stringify(mm));
+    chk('the minimap draws the ghost star dimmed'+tag,gs.length>0&&gs.every(x=>gd(x)>=25)||JSON.stringify(mm));
     // talk (A while facing): the line names the hero, with their portrait, and no battle
     const t=await ev(id=>{const A=__A;A.interact();const d=document.querySelector('#wdlg .dlg'),img=d&&d.querySelector('.dlgpor img');
       return {txt:d&&d.textContent,img:img&&img.getAttribute('src'),want:A.heroURL(id),modal:A.V.modal&&A.V.modal.type,B:!!A.B,name:A.TPL[id].n};},HERO);
@@ -64,7 +69,7 @@ for(const [w,h,mob] of [[390,844,true],[933,705,false]]){const tag=` (${w}x${h})
     // Quests tab, Personal quests row, What next?
     const tx=await ev(id=>{const A=__A,o={},n=A.TPL[id].n;A.V.modal={type:'menu',tab:'quests'};A.render();o.q=document.querySelector('#modal').innerText;o.cq=window.__clipF();
       A.V.modal={type:'menu',tab:'next'};A.render();o.n=document.querySelector('#modal').innerText;o.cn=window.__clipF();
-      A.V.modal={type:'guild',tab:'personal'};A.render();o.p=(document.querySelector('#modal')||{}).innerText||'';o.cp=window.__clipF();A.V.modal=null;A.render();o.want=`Needs ${n} in your party`;return o;},HERO).catch(e=>({err:String(e)}));
+      A.V.modal={type:'board',tab:'quests',sec:'personal'};A.render();o.p=(document.querySelector('#modal')||{}).innerText||'';o.cp=window.__clipF();A.V.modal=null;A.render();o.want=`Needs ${n} in your party`;return o;},HERO).catch(e=>({err:String(e)}));
     if(tx.err)chk('menus'+tag,tx.err);else{
       chk('Quests tab: the rival row says it needs the hero'+tag,tx.q.includes(tx.want)||tx.q.slice(0,300));
       chk('What next?: the rival row says it needs the hero'+tag,tx.n.includes(tx.want)||tx.n.slice(0,300));
