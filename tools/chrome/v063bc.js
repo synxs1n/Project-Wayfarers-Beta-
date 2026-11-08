@@ -14,7 +14,7 @@ const {open,chk,done}=require('./pw');const {META,battle}=require('./v063lib');
   // the skill list names the foe it sets off, the reaction and both element icons
   const L=await H.ev(s=>{const A=__A;A.ACT.cmd('skills');const b=document.querySelector(`#bcmd [data-act="sk"][data-arg="${s.sk}"]`);if(!b)return {err:'no skill button'};const f=[...b.querySelectorAll('.detf')];
     return {n:f.length,txt:f.map(e=>e.title||'').join(' | '),words:f.map(e=>e.textContent.replace(/[✸\s]/g,'')).join(''),icons:f.map(e=>e.querySelectorAll('.ico').length)};},s);
-  chk(`${tag}: the skill list shows "${s.n}" sets off ${s.R} on ${s.a}: symbols only, names in the tooltip (v0.7.7) (${L.txt||L.err})`,L.n===1&&L.txt.includes(s.R)&&L.txt.includes(s.a)&&!L.txt.includes(s.b)&&L.icons[0]===1&&L.words===''||JSON.stringify(L));
+  chk(`${tag}: v0.10.8: the skill list no longer lists what "${s.n}" sets off (the foe card and the aim tag show it) (${L.n} .detf)`,L.n===0||JSON.stringify(L));
   // aim it: tags on the stage, glow on the canvas, the foe cards
   const T=await H.ev(s=>{const A=__A,B=A.B;A.ACT.sk(s.sk);const tags=[...document.querySelectorAll('#bstage .b3tg')],det=tags.filter(e=>e.classList.contains('det'));
     const g=typeof A.detTargets==='function'?A.detTargets(B.pend&&B.pend.sk).map(o=>o.e.name):[];

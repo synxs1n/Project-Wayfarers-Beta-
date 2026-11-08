@@ -131,7 +131,7 @@ r=await ev(()=>{const A=__A,O=__OB,N=__NZ,G=A.G;O.obM().s={};O.obM().u={};A.setP
 chk(`basic: the primed card is an action with a reason: "${r.primed}"`,/^(Primed with Fire: try .+'s .+ on .+\.|.+ is primed with Fire\. Try a .+ Detonator on it\.)$/.test(r.primed||'')||r.primed);
 chk(`basic: the shield card says what to do: "${r.shield}"`,/Hit its weakness or set off a reaction on it to Break it\./.test(r.shield||''));
 chk('basic: the first reaction card shows for everyone',!!r.react);
-chk(`expert: "Reactions in depth" waits until Lore was opened, then: "${r.react2b}"`,r.react2===null&&/^Wildfire also burns\. .*Lore lists all 56\.$/.test(r.react2b||'')||JSON.stringify(r));
+chk(`expert: "Reactions in depth" waits until Lore was opened, then: "${r.react2b}"`,r.react2===null&&/^Wildfire also burns\. .*Lore lists all 28\.$/.test(r.react2b||'')||JSON.stringify(r));
 r=await ev(async()=>{const A=__A,O=__OB,N=__NZ,G=A.G,V=A.V;const c=G.roster[G.party[0]];G.gold=999999;G.cleared[0]=true;
   ['w','a'].forEach(sl=>{const f=c.eq[sl]&&A.forgeCost(c.eq[sl]);if(f)Object.keys(f.m).forEach(k=>{G.mats[k]=(G.mats[k]||0)+f.m[k];});});
   const o={};V.modal={type:'smithy'};o.raw=!!O.TIPMAP.temper.t();o.before=N.obEval(O.TIPMAP.temper);V.modal={type:'smithy',tab:'forge'};N.obOpened();V.modal={type:'smithy'};o.after=N.obEval(O.TIPMAP.temper);
