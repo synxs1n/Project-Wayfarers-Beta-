@@ -1832,7 +1832,7 @@ html.rm .battle.b3 .cmd .mi.b9glow{animation:none}
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.10.9";const APP_BUILD="21a23a854dbd";
+(function(){const APP_VER="0.11.0";const APP_BUILD="e5be7e1dd4f1";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2520,7 +2520,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.10.9";const APP_BUILD="21a23a854dbd";
+const APP_VER="0.11.0";const APP_BUILD="e5be7e1dd4f1";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2528,6 +2528,7 @@ const APP_VER="0.10.9";const APP_BUILD="21a23a854dbd";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.11.0',['Shops: a Sell junk button in the Smithy and Alchemy Sell tabs sells gear nobody in your roster can use, or that another piece you own beats on every stat (with enough copies for everyone who could wear it). It shows the list and the gold first. Worn gear, Medals, signature and unique pieces never go, and the new lock on each Sell row keeps anything you choose. Story Echoes come back: leave the dungeon and the Echo waits on its rune circle again, so its materials can be farmed (the first win\'s extras stay one time). The Echo Sanctum shows every gate: open ones glow, closed ones are locked and say what opens them, and the four Calamity Echoes have their own crimson row by the door.']],
  ['Beta v0.10.9',['Reactions: back to 28, one per pair of elements, and each pair reacts the same whichever element was primed (Grave from shadow on an earth prime or earth on a shadow prime). Rain now boosts Steam and Conduct both ways. Every skill shows what it is mainly for (Damage, Heal, Buff, Debuff, Cure, Revive, Guard, Taunt or Summon) in battle, on the character sheet and when learned. Reaching a roaming foe before it spots you now reads clearly as a Sneak attack. Six travel skills in Field skills: Haste and Shadowstep (Thieves, wind and shadow heroes), Ward (Priests, light), Lure (Archers and Druids, earth), Lantern (Mages, fire and light) and Marching Song (Bards).']],
  ['Beta v0.10.8',['Fixes: the "?" beside a foe\'s HP bar no longer turns into an empty black box. The quest board only shows "!" when this town has a notice to accept or a quest is ready to claim. Chest gear no longer says "Legendary" (that tier is now Heroic; Legendary is for legend heroes) and quest rewards no longer say "Craft only" unless a recipe makes them. Bard dual arts that buff the party are no longer Detonators. Warriors\' Rend keeps its Bleed again. The new recruit popup shows each hero\'s elements, class and level. The party screen says when you need a town to swap. The skill list no longer lists what a detonator sets off (the foe cards show it), and moves are tagged "⟐ Primer" and "✸ Detonator" in full again (Settings > Skill tags: Full or Symbols).']],
  ['Beta v0.10.7',['Sanctums and Summons: the side fortresses are now Sanctums, and every one ends in a unique guardian. Beat it and it is bound to you: Priests (the Healer class, renamed) can Invoke it in battle. The Priest prays for one turn; on their next turn the guardian takes the field in place of the whole Vanguard for three of its turns, fighting with its own moves, then the Vanguard steps back in as it was (if the guardian is driven off, no more summoning that fight). It costs 30% of the Priest\'s MP, once per Priest per battle, never in the Daily Trial, and auto battle never prays. Monks from level 10 get Spirit Call: two turns of stillness, then a lesser form takes the Monk\'s own place for two turns. Guardians beaten in earlier journeys on this save count.']],
@@ -12499,7 +12500,10 @@ function echoTint(hex){const h=String(hex).replace('#','');if(h.length<6)return 
   if(MEXTRA[a])MEXTRA[n]=(g,p)=>{MEXTRA[a](g,p);Object.keys(p).forEach(q=>{if(q!=='K')p[q]=echoTint(p[q]);});};
   if(BIG_ART.includes(a))BIG_ART.push(n);});})();
 // ----- story echoes in each cleared dungeon -----
-function storyEchoUp(s){return !!(G&&!G.daily&&G.cleared&&G.cleared[s]&&!(G.echoStory||{})[s]&&G.run&&(!G.echoReady||G.echoReady[s]));}
+// v0.11.0: a story Echo comes back. Beaten, it is held (echoReady[s]=0) until you leave the dungeon, then it waits on its rune circle
+// again, so its materials can be farmed. The first win's extras (shard for sure, more Essence and gold) stay one time (G.echoShard).
+function storyEchoUp(s){return !!(G&&!G.daily&&G.cleared&&G.cleared[s]&&G.run&&(!G.echoReady||G.echoReady[s]));}
+function echoAgain(s){try{return !!(G.echoStory||{})[s];}catch(e){return false;}}
 // v0.4.3: a story echo waits until you have left the dungeon once after beating its boss (older saves: always ready)
 function echoHold(s){if(!G)return;if(!G.echoReady){G.echoReady={};(G.cleared||[]).forEach((c,i)=>{if(c&&i!==s)G.echoReady[i]=1;});}G.echoReady[s]=0;}
 {const ld0=leaveDungeon;leaveDungeon=function(s){try{if(G&&G.echoReady&&G.cleared&&G.cleared[s])G.echoReady[s]=1;}catch(e){}return ld0.apply(this,arguments);};}
@@ -12507,7 +12511,7 @@ function askEcho(s){if(!storyEchoUp(s))return;V.modal={type:'echoAsk',s};render(
 function mEchoAsk(m){const s=m.s,k=bossKeyFor(s),d=guardianDef(k),lv=storyEchoLv(s);
   return box(`Echo of ${esc(d.n)}`,`<div class="row"><img class="mimg" src="${monURL('echo_'+d.art)}" alt=""><div class="grow"><p>A violet afterimage of the ${bossClass(k)} you felled still clings to the rune circle. It remembers how it lost.</p>
     <small>Level ${lv}. Tougher than the original, with a new move (<b>Resounding ${esc((d.sk.find(x=>x[4]!=='buff')||d.sk[0])[0])}</b>) and a second turning point near the end. Optional: the way east is already open.</small>
-    <small>First win: its Echo Shard, Echo Essence and a Dread Core. Auto is locked until you win it by hand once.</small></div></div>`,
+    ${echoAgain(s)?'<small>It came back. Again: Echo Essence, realm materials and gold, often its Shard and a Dread Core. It returns each time you leave and come back.</small>':'<small>First win: its Echo Shard, Echo Essence and a Dread Core. Auto is locked until you win it by hand once. It returns each time you leave the dungeon and come back.</small>'}</div></div>`,
     `<button class="btn" data-act="closeModal">Leave it</button><button class="btn gold" data-act="echoStory" data-arg="${s}">Fight the Echo</button>`);}
 HOOK.before('vModal','echo2','echoAsk popup',function(m){if(m&&m.type==='echoAsk')return HOOK.stop(mEchoAsk(m));});
 // ----- which Echoes answer (the Echo Sanctum, sanctum.js, is the place to fight them) -----
@@ -12521,7 +12525,7 @@ HOOK.wrap('win','echo2','Echo rewards (story Echo, Rift)',function(next,...a){co
   add('essence',first?4:2+(RNG()<.5?1:0));if(first||RNG()<.75)add('core',1);add(ZS(Math.min(4,sp.stage)).mat,3);
   {const g=econG(first?600+sp.stage*200:300+sp.stage*120);G.gold+=g;info.gold=(info.gold||0)+g;}
   info.notes=info.notes||[];
-  if(story){G.echoStory=G.echoStory||{};G.echoStory[sp.stage]=1;G.echoes[k]=1;info.notes.push(`The Echo of ${guardianDef(k).n} fades. ${G.won?'It will answer again in the Echo Rift.':'Beat the Calamity and it will answer again in the Echo Rift at any waystone.'}`);
+  if(story){const again=!!(G.echoStory||{})[sp.stage];G.echoStory=G.echoStory||{};G.echoStory[sp.stage]=1;G.echoes[k]=1;echoHold(sp.stage);if(again)info.notes.push(`The Echo of ${guardianDef(k).n} fades again. Leave the dungeon and it will gather itself once more.`);else info.notes.push(`The Echo of ${guardianDef(k).n} fades. Leave the dungeon and it will gather itself again. ${G.won?'It will answer again in the Echo Rift.':'Beat the Calamity and it will answer again in the Echo Rift at any waystone.'}`);
     if([0,1,2,3,4].every(s=>G.echoStory[s])&&!META.echoRift){META.echoRift=1;saveMeta();if(typeof profileDirty==='function')profileDirty();info.notes.push('The Echo Rift tears wide open: every Scourge and Calamity of Aurelis can now be fought in echo form, in this journey and every journey after.');}}
   saveGame();render();}catch(e){}return r;});
 // the account flag rides along with the profile doc (flags is a free-form map; schema stays v:1)
@@ -12566,23 +12570,32 @@ function buildSanctum(){
   [[5,6],[22,6],[5,12],[22,12]].forEach(([x,y])=>{t[y][x]='P';});
   const m={id:SANCT_ID,z:4,s:4,kind:'dungeon',theme:'void',safe:1,archive:1,sanctum:1,hub:'The Echo Sanctum',exits:[],npcs:[],bld:[],signs:{},t,start:[13,16],bossAt:null,chests:[],wander:[0,0],nodes:[]};
   m.w=W;m.h=H;m.tone=valueNoise(mulberry(7171),W,H,6);m.shelves=[];
-  const keys=echoKeys();
-  keys.forEach((k,i)=>{const north=i<8,j=north?i:i-8,x=3+3*j,y=north?1:H-2,d=guardianDef(k);
-    m.npcs.push({x,y,hx:x,hy:y,name:'Gate of Echo '+d.n,line:'',view:'front',face:'r',act:'portal',portal:1,key:k,look:null});});
+  // v0.11.0: every gate stands, open or not. Scourges along the north wall; the Calamities get their own row on the south wall,
+  // either side of the door, in crimson and gold frames (drawPortal)
+  const gp=GPOOL.slice(),fp=FPOOL.slice(),step=Math.max(2,Math.floor((W-4)/Math.max(1,gp.length-1)));
+  gp.forEach((k,j)=>{const x=Math.min(W-2,2+j*step),d=guardianDef(k);if(!d)return;m.npcs.push({x,y:1,hx:x,hy:1,name:'Gate of Echo '+d.n,line:'',view:'front',face:'r',act:'portal',portal:1,key:k,look:null});});
+  const fx=[5,9,18,22];fp.forEach((k,j)=>{const x=fx[j]!=null?fx[j]:3+j*3,d=guardianDef(k);if(!d)return;m.npcs.push({x,y:H-2,hx:x,hy:H-2,name:'Calamity Gate: Echo '+d.n,line:'',view:'front',face:'r',act:'portal',portal:1,cal:1,key:k,look:null});});
   m.npcs.push({x:13,y:9,hx:13,hy:9,name:'Echo Warden',line:'Every Scourge and Calamity you broke is still ringing in here. Stand before a gate and press Space to challenge its Echo. This hall is safe: nothing roams, and the way out is the south door.',look:villagerLook('Echo Warden'),view:'front',face:'r'});
   return m;
 }
 // ----- drawing: a small rune gate, dim until its Echo has answered, a gold pip once beaten -----
 function drawPortal(ctx,px,py,n,now){const d=guardianDef(n.key),open=riftKeys().includes(n.key),col=(typeof ELC!=='undefined'&&ELC[d.el[0]])||'#b48aff',won=(((META.best||{})['Echo '+d.n])||{}).kills>0,ph=now/320+n.x;
   const f=(c,x,y,w,h)=>{ctx.fillStyle=c;ctx.fillRect(px+x,py+y,w,h);};
-  f('#0e0a16',0,-3,16,19);f('#4a4068',1,-2,14,17);f('#1c1430',3,-1,10,13);f('#5a4a80',0,13,16,3);f('#0e0a16',0,15,16,1);
+  const cal=!!n.cal;if(cal){f('#2a0608',-1,-5,18,22);f(open?'#ffd04a':'#7a6a3a',-1,-5,18,1);f(open?'#ffd04a':'#7a6a3a',-1,-5,1,22);f(open?'#ffd04a':'#7a6a3a',16,-5,1,22);}
+  f('#0e0a16',0,-3,16,19);f(cal?'#7a1a22':'#4a4068',1,-2,14,17);f(cal?'#2a0810':'#1c1430',3,-1,10,13);f(cal?'#a0303a':'#5a4a80',0,13,16,3);f('#0e0a16',0,15,16,1);
+  if(!open){f('#0e0a16',5,6,6,5);f('#9a9aa8',6,7,4,3);f('#9a9aa8',6,4,1,3);f('#9a9aa8',9,4,1,3);f('#9a9aa8',7,3,2,1);ctx.globalAlpha=.55;}
   for(let i=0;i<5;i++){const a=ph+i*1.26,rx=Math.round(Math.cos(a)*3)+7,ry=Math.round(Math.sin(a)*4)+4;f(open?col:'#585868',rx,ry,2,2);}
   f(open?'#efe4ff':'#80808c',7,4,2,3);
-  if(won){f('#ffd04a',12,-2,2,2);f('#ffd04a',11,-1,4,1);}}
+  ctx.globalAlpha=1;if(won){f('#ffd04a',12,-2,2,2);f('#ffd04a',11,-1,4,1);}}
 function sanctumActor(actors,n,ctx,cx,cy,now){const px=n.x*TS-cx,py=n.y*TS-cy;if(px<-20||py<-24||px>ctx.canvas.width+4||py>ctx.canvas.height+4)return;actors.push({y:n.y*TS,draw:()=>drawPortal(ctx,px,py,n,now)});}
 // ----- the gate card -----
+// v0.11.0: what opens a closed gate
+function portalLockWhy(k){try{const st=[0,1,2,3,4].find(s=>bossKeyFor(s)===k);const n=sanctumProgress();
+  if(st!=null)return `Beat its Echo in ${ZS(st).dungeon||'its dungeon'} this journey. Or beat all five story Echoes of one journey (${n} of 5 so far) and every gate opens for good.`;
+  return `This Echo is not in this journey. Beat all five story Echoes of one journey (${n} of 5 so far) and every gate opens for good, in every journey.`;}catch(e){return 'Beat the story Echoes to open it.';}}
 function mPortal(m){const k=m.key,d=guardianDef(k);if(!d)return '';const b=(META.best||{})['Echo '+d.n]||{},open=riftKeys().includes(k);
   return box(`Echo of ${esc(d.n)}`,`<div class="row"><img class="mimg" src="${monURL('echo_'+d.art)}" alt=""><div class="grow"><b>Echo ${esc(d.n)}</b><small>${bossClass(k)} · Level ${echoLv(k)}${b.kills?` · beaten ${b.kills}x`:''}${(G.bossWon||{})['e:'+k]?' · auto allowed':' · auto locked until a manual win'}</small><small>Shard: ${G.mats['es_'+k]||0} held</small></div></div>
+    ${open?'':`<p class="note warn">Locked. ${esc(portalLockWhy(k))}</p>`}${FPOOL.includes(k)?'<p class="note"><b>Calamity Echo.</b> One of the four world-enders, harder than any Scourge.</p>':''}
     <p class="note">Echoes at full strength: Scourges at level 50 or your average +5, Calamities at 56 or your average +8. Every Echo drops Echo Essence; its Shard on the first win this journey, often after that. Shards feed the Smithy's Echoforge.</p>`,
     `<button class="btn" data-act="closeModal">Not yet</button><button class="btn gold" data-act="riftFight" data-arg="${k}" ${open?'':'disabled'}>Challenge</button>`);}
 HOOK.before('vModal','sanctum','portal popup',function(m){if(m&&m.type==='portal')return HOOK.stop(mPortal(m));});
@@ -17501,7 +17514,7 @@ function m3Smithy(m){const sec=m.sec,tab=m.tab;let body='';
   else if(tab==='forge')body=vTemper({slot:M3_SLOTSEC[sec]||null,show:SHOPF().tsh||'all',bar:true});
   else if(tab==='sell'){const g=(sl,lab)=>(sec==='all'?m3H(lab):'')+m3Rows(m3SellRows(sl),'No spare '+lab.toLowerCase()+' in your pack.');
     const mats=(sec==='all'?m3H('Materials'):'')+`<div class="rows">${matSellRows(['ore','wood','part','relic'])}</div>`;
-    body=(sec==='all'?g(['w'],'Weapons')+g(['a'],'Armor')+g(['k'],'Capes')+mats:sec==='mats'?mats:g([M3_SLOTSEC[sec]],{weapons:'Weapons',armor:'Armor',capes:'Capes'}[sec]))+'<p class="note">Charms and herbs sell at Alchemy.</p>';}
+    body=(typeof junkBar==='function'&&sec!=='mats'?junkBar(sec==='all'?['w','a','k']:[M3_SLOTSEC[sec]]):'')+(sec==='all'?g(['w'],'Weapons')+g(['a'],'Armor')+g(['k'],'Capes')+mats:sec==='mats'?mats:g([M3_SLOTSEC[sec]],{weapons:'Weapons',armor:'Armor',capes:'Capes'}[sec]))+'<p class="note">Charms and herbs sell at Alchemy.</p>';}
   else if(tab==='echo')body=vEchoforge();
   return m3Box('smithy',m,m3Nav('smithy',m)+body+'<p class="note">Equip gear from the menu anywhere. Potions, charms and travel gear are at Alchemy, the green-flask house in town.</p>');}
 // ----- Alchemy -----
@@ -17516,7 +17529,7 @@ function m3Alchemy(m){const sec=m.sec,tab=m.tab;let body='';
     body=(sec==='charm'&&typeof upgSlotsHtml==='function'?upgSlotsHtml(['c'],1):'')+(sec==='herb'||sec==='relit'?'':shopFBar(sec==='charm'?'buy':sec==='all'?'mixed':'items'))+(one?P[sec]():Object.keys(P).map(k=>P[k]()).join(''));
   }else if(tab==='craft')body=m3Recipes(ALCH_CATS,sec,sec==='potion'?'Brew draughts from herbs you pick in the fields. Cheaper than buying, and some brews are Alchemy-only.':sec==='charm'?'Charms need monster parts and your realm\'s relic.':sec==='item'?'Stitch your own tent from logs and hide.':'Brew draughts from herbs, make charms from monster parts and your realm\'s relic, and stitch your own tent.');
   else if(tab==='sell'){const ch=(sec==='all'?m3H('Charms'):'')+m3Rows(m3SellRows(['c']),'No spare charms. Weapons and armor sell at the Smithy.'),hb=(sec==='all'?m3H('Herbs'):'')+`<div class="rows">${matSellRows(['herb'])}</div>`;
-    body=sec==='charm'?ch:sec==='herb'?hb:ch+hb;}
+    body=(typeof junkBar==='function'&&sec!=='herb'?junkBar(['c']):'')+(sec==='charm'?ch:sec==='herb'?hb:ch+hb);}
   else body=`<p class="note">Everything you have gathered. Herbs brew here; ore, logs and parts go to the Smithy.</p>${vPouch()}`;
   return m3Box('workshop',m,m3Nav('workshop',m)+body);}
 // ----- the tavern -----
@@ -23510,6 +23523,46 @@ HOOK.after('placeAt','field9','Lantern ends on another map',function(){try{const
   const ch=[['haste','»','Haste'],['shadow','◐','Shadowstep'],['lure','◎','Lure'],['song','♪','Marching Song']].filter(([k])=>X[k]>0)
     .map(([k,i,n])=>`<span class="wchip fschip" title="${n}">${i} ${n} <b class="nums">${X[k]}</b></span>`).join('')+(X.lantern&&WS.m&&X.lantern===WS.m.id?'<span class="wchip fschip" title="Lantern: this map is lit">✦ Lantern</span>':'');
   wk.querySelectorAll('.fschip').forEach(e=>e.remove());if(ch)wk.insertAdjacentHTML('beforeend',ch);}catch(e){}return r;};}
+
+// ===== junk9.js (v0.11.0): "Sell junk" in the Smithy and Alchemy Sell tabs, and the keep toggle on gear =====
+// Junk is gear in the pack (equipped gear never is: it is not in G.gear) that is strictly useless:
+//  1) no hero in the roster can equip it, or
+//  2) another piece you own beats it on every stat (at least one higher), every hero who could wear this one can wear that one too,
+//     and you own as many copies of that piece (pack and worn) as there are heroes who could use this one.
+// Never junk: anything kept (G.keepG, the lock on the Sell rows), Medals, signature, unique, bound, Echoforged and legend gear, the
+// Tamer's Stick, and pieces with something beyond plain stats (an element, a tome, a role perk, immunities) unless nobody can wear them.
+const J9={stat:['atk','mag','def','res','hp','mp','spd','luk','mpEff','elDmg'],special:['tome','immune','el','only','rl','rlD','efPerk']};
+function j9Kept(id){try{return !!(G.keepG&&G.keepG[id]);}catch(e){return false;}}
+function j9Never(id){const g=gearOf(id);if(!g)return true;const s=String(id);
+  return j9Kept(id)||!!(g.medal||g.unique||g.bound||g.stick||g.ef||g.legend||g.sig)||/^(u_|ua_|uk_|sg_)/.test(s)||/_ef(\+\d)?$/.test(s);}
+function j9Stats(g){const o={};J9.stat.forEach(k=>{if(typeof g[k]==='number')o[k]=g[k];});if(g.attr)Object.keys(g.attr).forEach(k=>{o['a_'+k]=g.attr[k];});return o;}
+function j9Beats(y,x){const Y=j9Stats(y),X=j9Stats(x),K=new Set(Object.keys(Y).concat(Object.keys(X)));let up=false;
+  for(const k of K){const a=Y[k]||0,b=X[k]||0;if(a<b)return false;if(a>b)up=true;}return up;}
+function j9Owned(){const o={};(G.gear||[]).forEach(id=>{o[id]=(o[id]||0)+1;});Object.values(G.roster).forEach(c=>Object.values(c.eq||{}).forEach(id=>{if(id)o[id]=(o[id]||0)+1;}));return o;}
+// {id: {n: copies to sell, why}} for the given slots
+function junkList(slots){const out={};if(!G||G.daily)return out;const own=j9Owned(),R=Object.values(G.roster),pack={};
+  (G.gear||[]).forEach(id=>{const g=gearOf(id);if(g&&slots.includes(g.slot))pack[id]=(pack[id]||0)+1;});
+  Object.keys(pack).forEach(id=>{if(j9Never(id))return;const x=gearOf(id),H=R.filter(c=>{try{return canEquip(c,id);}catch(e){return false;}});
+    if(!H.length){out[id]={n:pack[id],why:'Nobody in your roster can use it'};return;}
+    if(J9.special.some(k=>x[k]!=null&&x[k]!==0&&x[k]!==''))return;
+    const y=Object.keys(own).find(yid=>{if(yid===id)return false;const yg=gearOf(yid);return yg&&yg.slot===x.slot&&own[yid]>=H.length&&j9Beats(yg,x)&&H.every(c=>{try{return canEquip(c,yid);}catch(e){return false;}});});
+    if(y)out[id]={n:pack[id],why:`${gearOf(y).n} beats it on every stat and you have enough`};});
+  return out;}
+function junkGold(L){return Object.keys(L).reduce((a,id)=>a+sellVal(gearOf(id))*L[id].n,0);}
+function junkBar(slots){const L=junkList(slots),n=Object.values(L).reduce((a,o)=>a+o.n,0);
+  return `<div class="btnrow j9bar"><button class="btn sm ${n?'gold':''}" data-act="junkAsk" data-arg="${slots.join('')}" ${n?'':'disabled'} title="Sells gear nobody can use or that you have something strictly better for. Kept gear (🔒) is never sold.">Sell junk${n?` <span class="nums">(${n})</span>`:''}</button></div>`;}
+// the lock on every Sell row
+{const sr0=m3SellRows;m3SellRows=function(slots){let h=sr0.apply(this,arguments);try{
+  h=h.replace(/<button class="btn sm" data-act="sell" data-arg="([^"]+)">/g,(m,id)=>{const k=j9Kept(id);return `<button class="btn sm j9keep ${k?'on':''}" data-act="keepT" data-arg="${id}" aria-pressed="${k}" title="${k?'Kept: Sell junk leaves it alone. Tap to unlock.':'Keep: Sell junk will never sell this.'}">${k?'🔒':'🔓'}</button>${m}`;});}catch(e){}return h;};}
+ACT.keepT=function(id){if(!G)return;G.keepG=G.keepG||{};if(G.keepG[id])delete G.keepG[id];else G.keepG[id]=1;saveGame();render();};
+ACT.junkAsk=function(a){const slots=String(a||'').split('').filter(Boolean);if(!slots.length)return;V.modal={type:'junk',slots,from:V.modal};render();};
+ACT.junkGo=function(){const m=V.modal;if(!m||m.type!=='junk')return;const L=junkList(m.slots);let gold=0,n=0;
+  Object.keys(L).forEach(id=>{for(let k=0;k<L[id].n;k++){const i=G.gear.indexOf(id);if(i<0)break;G.gear.splice(i,1);gold+=sellVal(gearOf(id));n++;}});
+  G.gold+=gold;saveGame();sfx('buy');V.modal=m.from||null;toast(`Sold ${n} piece${n===1?'':'s'} of junk for ${fmt(gold)} gold.`);render();};
+HOOK.before('vModal','junk9','Sell junk confirm',function(m){if(!m||m.type!=='junk')return;const L=junkList(m.slots),ids=Object.keys(L),gold=junkGold(L);
+  const rows=ids.map(id=>{const g=gearOf(id);return `<div class="row tr" style="${tierVars(gTierIdx(g),g)}">${gearIcon(id)}<div class="grow"><b>${esc(g.n)}</b> x${L[id].n}<small>${esc(L[id].why)}.</small></div><span class="m nums">${fmt(sellVal(g)*L[id].n)}</span></div>`;}).join('');
+  return HOOK.stop(box('Sell junk',ids.length?`<p class="note">These go for <b class="nums">${fmt(gold)}</b> gold. Worn gear and anything you kept (🔒) stay.</p><div class="rows">${rows}</div>`:'<p class="note">Nothing to sell: everything in your pack is useful to someone.</p>',
+    `${ids.length?`<button class="btn gold" data-act="junkGo">Sell all for ${fmt(gold)}</button>`:''}<button class="btn" data-act="xBack">Cancel</button>`));});
 
 window.__A={walkable,ceInit,tvSlots,genQuests,STARTERS,starterDraw,ECON,AUTO_NERF,rebuildBase,detLive,REACT,skEls,packContents,miniFor,AUTO_REW,ENC_RATE,ENC_MIN_STEPS,detNote,classSkills,stickCount,bestAll,calcStats,lookKey,vTemper,storyEchoUp,leaveDungeon,win,ldApply,genFort,caveOk,enterCave,siteHasMini,openChest,nextDlg,WS,mapIcoRects,roamSpawn,roamInterior,roamSees,mapTargets,DIRV,tileAt,STAGE_LV,autoBan,rollWeather,guardianDef,mapIssues,mapEntry,syncPools,bovAt,calFxAt,realmAt,REALMS,BOV,CAL_FX,overlayGuide,liftOverlay,drawGearIcon,gearIcon,itemIcon,RAW,sigKind,sigGid,personalDone,heroLook,hasSignature,LEGEND_IDS,facDirty,facCount,facRank,facRep,FACB,FAC,finishBattle,npcWords,npcHints,npcPool,titleMake,titleAdvance,TTS,placeAt,wkwUpdate,innSpot,getMap,monURL,enterVia,applyBossTheme,BTHEME,resetMaps,rebuildBase,shopStock,gearDesc,calcStats,gearMigrate,CLS_WPN,CLS_ARM,WPERK,WT_NAME,equipWhy,lootBase,GEAR,canEquip,gearOf,perkNote,FAM_MAT_V35,fbDraft,META:{get best(){return META.best},get codex(){return META.codex},get q(){return META.q}},saveMeta,OFF,offPending,offFlush,PROFILE,profileSync,codexSee,getMap,placeAt,interact,sanctumOpen,riftKeys,echoKeys,BONDS,bondKey,wkwUpdate,inTown,WS,LC,lsort,bestParty,fsCast,fsSkills,ldApply,MON,registerTamed,stickPower,stickCount,autoOne,planGear,bestTag,gainersFor,compGainFor,refresh,fitsFor,canEquip,gearOf,queueNewGear,ARENA,fxDur,banDur,stageTags,autoSwitchPick,layoutBattle,newChar,calcStats,limitSkill,limitTier,canStuck,dunReachable,LV_CAP,addXp,echoSpec,bossLvFor,fx,MON,log,effInfo,tierOf,perkOf,quirkDef,forgeCost,buyPlan,vJourney,modalBack,partySlots,limitOpen,town2Reached,skillKnown,known,classSkills,paceMigrate,unpackG,packG,makeEnemy,QUIRK,arrive,enterDungeon,wkwUpdate,useTravel,travelWhyNot,porkFlee,porkBlocked,encTile,campRest,buyPart,partLeft,alchStock,GAME_VERSION,CHANGELOG,ITEMS,tavernOffers,tavernPool,recruitFit,partyNeeds,vNext,CHALL,innSpot,RECIPES,MATS,FB,fbContext,REDEEM,legendJoin,legendQ,genQuests,dynActors,convInit,PROFILE,profileSync,checkArchive,GPOOL,FPOOL,guardianDef,saveMeta,archiveSkills,get G(){return G;},set G(v){G=v;},get B(){return B;},get V(){return V;},get META(){return META;},WS,ACT,render,newGame,placeAt,startBattle,autoTurn,advance,finishBattle,getMap,innSpot,setPause:p=>{PAUSE=p;},autoCfg,worldInputDir,inputSources,battleFrame,battleTheme,STS,MAPS,mapIssues,healMap,mimicReward,dropChest,interact,worldDraw,TPL,ZONES,ZS,newChar,recruit,saveGame,resetMaps,dynActors,tileAt,BV,refresh,genBounties,genQuests,vStarter,heroCard,heroURL,iconURL,masteryLine,AU,buildTrack,tone,noiseHit,MIDI,sfx,audioVol};
 ['heroRoles','SOLID','WEATHER','WX_BASE','weatherFX','superGuide','recruitCost','ceStart','ceStep','ceInit','cePool','wxList','SUPER_TABLE','superOk','facRank','facRep','facInit','facCount','facCredit','FAC','FMIS','facMissionList','facProg','tyOf','facSync','facMul','facBest','worldPlan','caveReward','enterCave','leaveCave','leaveDungeon','buildCaveMap','worldGraph','openWorldMap','sigReport','SIG_NAMES','starterDraw','ITEM_TIERS','gTierIdx','tierChip','gearIcon','starterSlots','STARTERS','CLK_LEN','CLK_PH','clockPhase','wxInfoBody','recipeOrder','recipeGain','recipeReady','recipeClose','effOf','calcDamage','healsUndead','storyEchoUp','riftKeys','echoDef','efCost','autoLocked','bossFightKey','learnScanAll','isSeen','mapMarks','genSub','subOK','subReq','ensureSub','inSub','tvSlots','tvInit','tvLeft','tvEvent','tvNextText','tvPool','tvDue','tvShuffle','mTavern','hireOK','TV_CAP','TV_CD','POOL_IDS','natPool','natOf','natRoll','NATURES','natInfo','natRerollCost','natChooseCost','NAT_CLASS','iconURL','seenOf','mapIcoDraw','drawMini','MAPCV','revealAround','fxLayer','numDur','compBonusText','compPerk','checkPhase','win','unitBox','LNQ','challVisible','challEligible','challState','isMimic','migrateCompanions','canSummon','summonComp','compOf','clockPhase','tickClock','isNight','rollWeather','wxStep','nightPool','encounterFoes','restAll','tameElite','openChest','rerollTavern','bestAll','gearTier','SV','svCheck','svFlush','svInit','svPush','svPull','svScan','svParse','svBackup','svPack','svUnpack','svProg','svCloudList','svDelDoc','svGet','svCap','slotState','slotKey','svDecode','SV_CH','svStatus','svSlotRaw','svLoad','loadRaw','svHash','svIdx'].forEach(k=>{try{Object.defineProperty(window.__A,k,{get:()=>eval(k)});}catch(e){}});

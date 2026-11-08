@@ -128,7 +128,7 @@ function m3Smithy(m){const sec=m.sec,tab=m.tab;let body='';
   else if(tab==='forge')body=vTemper({slot:M3_SLOTSEC[sec]||null,show:SHOPF().tsh||'all',bar:true});
   else if(tab==='sell'){const g=(sl,lab)=>(sec==='all'?m3H(lab):'')+m3Rows(m3SellRows(sl),'No spare '+lab.toLowerCase()+' in your pack.');
     const mats=(sec==='all'?m3H('Materials'):'')+`<div class="rows">${matSellRows(['ore','wood','part','relic'])}</div>`;
-    body=(sec==='all'?g(['w'],'Weapons')+g(['a'],'Armor')+g(['k'],'Capes')+mats:sec==='mats'?mats:g([M3_SLOTSEC[sec]],{weapons:'Weapons',armor:'Armor',capes:'Capes'}[sec]))+'<p class="note">Charms and herbs sell at Alchemy.</p>';}
+    body=(typeof junkBar==='function'&&sec!=='mats'?junkBar(sec==='all'?['w','a','k']:[M3_SLOTSEC[sec]]):'')+(sec==='all'?g(['w'],'Weapons')+g(['a'],'Armor')+g(['k'],'Capes')+mats:sec==='mats'?mats:g([M3_SLOTSEC[sec]],{weapons:'Weapons',armor:'Armor',capes:'Capes'}[sec]))+'<p class="note">Charms and herbs sell at Alchemy.</p>';}
   else if(tab==='echo')body=vEchoforge();
   return m3Box('smithy',m,m3Nav('smithy',m)+body+'<p class="note">Equip gear from the menu anywhere. Potions, charms and travel gear are at Alchemy, the green-flask house in town.</p>');}
 // ----- Alchemy -----
@@ -143,7 +143,7 @@ function m3Alchemy(m){const sec=m.sec,tab=m.tab;let body='';
     body=(sec==='charm'&&typeof upgSlotsHtml==='function'?upgSlotsHtml(['c'],1):'')+(sec==='herb'||sec==='relit'?'':shopFBar(sec==='charm'?'buy':sec==='all'?'mixed':'items'))+(one?P[sec]():Object.keys(P).map(k=>P[k]()).join(''));
   }else if(tab==='craft')body=m3Recipes(ALCH_CATS,sec,sec==='potion'?'Brew draughts from herbs you pick in the fields. Cheaper than buying, and some brews are Alchemy-only.':sec==='charm'?'Charms need monster parts and your realm\'s relic.':sec==='item'?'Stitch your own tent from logs and hide.':'Brew draughts from herbs, make charms from monster parts and your realm\'s relic, and stitch your own tent.');
   else if(tab==='sell'){const ch=(sec==='all'?m3H('Charms'):'')+m3Rows(m3SellRows(['c']),'No spare charms. Weapons and armor sell at the Smithy.'),hb=(sec==='all'?m3H('Herbs'):'')+`<div class="rows">${matSellRows(['herb'])}</div>`;
-    body=sec==='charm'?ch:sec==='herb'?hb:ch+hb;}
+    body=(typeof junkBar==='function'&&sec!=='herb'?junkBar(['c']):'')+(sec==='charm'?ch:sec==='herb'?hb:ch+hb);}
   else body=`<p class="note">Everything you have gathered. Herbs brew here; ore, logs and parts go to the Smithy.</p>${vPouch()}`;
   return m3Box('workshop',m,m3Nav('workshop',m)+body);}
 // ----- the tavern -----
