@@ -15,7 +15,13 @@ try{G7_MEDALS.forEach(([id,o])=>{if(!GEAR[id])addGear(id,o);});}catch(e){}
 {const t0=m3Tabs;m3Tabs=function(t){if(t==='board')return [['quests','Quests'],['bounties','Bounties']];if(t==='guild')return [['guilds','Guilds'],['arena','Arena'],['recruit','Recruits'],['nature','Natures']];return t0.apply(this,arguments);};}
 try{if(M3_LEG.guild)delete M3_LEG.guild.personal;}catch(e){}
 function g7TownStage(){try{if(WS.m&&WS.m.kind==='town')return WS.m.s|0;return (G.lastTown|0);}catch(e){return 0;}}
-{const mq0=m3Quests;m3Quests=function(){const L=mq0.apply(this,arguments);try{const here=g7TownStage();return L.filter(q=>q.state!=='open'||q.type==='legend'||q.global||q.stage===here);}catch(e){return L;}};}
+// v0.10.8: one rule for "this town's board shows it", shared by the board list and the board's "!" marker (towngfx.js boardState)
+function g7OnBoard(q,here){return q.state!=='open'||q.type==='legend'||q.global||q.stage===here;}
+{const mq0=m3Quests;m3Quests=function(){const L=mq0.apply(this,arguments);try{const here=g7TownStage();return L.filter(q=>g7OnBoard(q,here));}catch(e){return L;}};}
+// the board's marker: "ready" when a quest can be claimed (any board takes it), "new" only when THIS town's board has a notice to accept
+boardState=function(){if(!G)return null;try{const Q=G.quests.filter(q=>q.stage<=G.stage);
+  if(Q.some(q=>q.state==='active'&&questReady(q)))return 'ready';const here=g7TownStage();
+  if(Q.some(q=>q.state==='open'&&q.type!=='legend'&&g7OnBoard(q,here)))return 'new';}catch(e){}return null;};
 {const mg0=m3Guild;m3Guild=function(m){try{if(G&&m&&(m.tab==='guilds'||!m.tab)&&!G.guildSeen){G.guildSeen=1;saveGame();}}catch(e){}return mg0.apply(this,arguments);};}
 // ----- the guild notices -----
 HOOK.after('genQuests','guild7','notices that need the Guild Hall',function(r,s){try{if(s!==0||!G||G.daily)return;

@@ -71,7 +71,10 @@ const B5SVG={attack:'<path d="M3 13L13 3M4.5 8.5l3 3M3 13l-1 1" stroke-width="2.
   buff:'<path d="M8 2L14 9H10.5V14H5.5V9H2Z" fill="currentColor" stroke="none"/>',status:'<path d="M8 14L2 7H5.5V2H10.5V7H14Z" fill="currentColor" stroke="none"/>',
   heal:'<path d="M6 2h4v4h4v4h-4v4H6v-4H2V6h4z" fill="currentColor" stroke="none"/>',guard:'<path d="M8 1.5L14 3.5V8C14 11.3 11.3 13.6 8 14.8C4.7 13.6 2 11.3 2 8V3.5Z" fill="currentColor" stroke="none"/>',
   summon:'<circle cx="8" cy="8" r="5.6" fill="none" stroke-width="2"/><path d="M8 5v6M5 8h6" stroke-width="2"/>'};
-function b5Icon(cat){if(cat==='unknown'||!B5SVG[cat])return '<b>?</b>';return `<svg viewBox="0 0 16 16" aria-hidden="true" stroke="currentColor" fill="none" stroke-linecap="round">${B5SVG[cat]}</svg>`;}
+// v0.10.8: the unknown marker is drawn, not typed: a 7px "?" glyph in an 11x10 clipped box went blank wherever text was scaled
+// (Android text size and font boosting, a slow web font), which left an empty black box beside the HP plate
+const B5Q='<path d="M5 5.6C5 3.6 6.3 2.4 8.1 2.4C9.9 2.4 11.1 3.5 11.1 5.1C11.1 7.2 8.2 7.4 8.2 9.6" stroke-width="2.3" fill="none"/><circle cx="8.2" cy="13" r="1.5" fill="currentColor" stroke="none"/>';
+function b5Icon(cat){if(cat==='unknown'||!B5SVG[cat])return `<svg class="b5q" viewBox="0 0 16 16" aria-hidden="true" stroke="currentColor" fill="none" stroke-linecap="round">${B5Q}</svg>`;return `<svg viewBox="0 0 16 16" aria-hidden="true" stroke="currentColor" fill="none" stroke-linecap="round">${B5SVG[cat]}</svg>`;}
 
 // ----- the stage label, placed by the layout pass after everything else -----
 function b5LayIntents(L){L.intent=new Map();const W=L.W,H=L.H,h=B5.it.h;

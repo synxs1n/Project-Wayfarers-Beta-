@@ -50,7 +50,7 @@ const SIG_NAMES={
 };
 const SIG_NUDGE={swift:'cost',fleet:'cost',tempo:'cost',nimble:'cost',berserk:'pw',fierce:'pw',brave:'pw',arcane:'pwm',wise:'pwm',focused:'pwm',sturdy:'mp',hardy:'mp',bulwark:'mp',calm:'mp',mender:'heal',devout:'heal',keen:'crit',sharp:'crit',lucky:'crit'};
 const SIG_ST_N={burn:'Burn',weaken:'Weaken',slow:'Slow',poison:'Poison',blind:'Blind',root:'Root',break:'Break',stun:'Stun',might:'Might',regen:'Regen',ward:'Ward',focus:'Focus',haste:'Haste',bulwark:'Bulwark'};
-const SIG_FOE_V={burn:'burns',weaken:'weakens',slow:'slows',poison:'poisons',blind:'blinds',root:'roots',break:'breaks guard',stun:'may stun'};
+const SIG_FOE_V={burn:'burns',weaken:'weakens',slow:'slows',poison:'poisons',blind:'blinds',root:'roots',break:'breaks guard',stun:'may stun',bleed:'likely bleeds'};
 const sigFoeTxt=fx=>fx.map(f=>SIG_FOE_V[f[0]]||f[0]).join(' and ');
 function sigElIdx(t){return Math.max(0,SIG_EL.indexOf(t.el[0]));}
 function sigBuild(t){
@@ -78,8 +78,10 @@ function sigBuild(t){
 function sigFlavour(L,t){
   const id=SIG_SWAP[t.cls],s=L.find(x=>x.id===id);if(!s)return;const e=t.el[0],adj=SIG_ADJ[e];if(!adj||s.sigFl)return;
   const ally=SIG_T[t.cls]&&SIG_T[t.cls][0].rider==='ally'&&(t.cls==='healer'),rd=(ally?SIG_ALLY:SIG_FOE)[e];if(!rd)return;
-  s.sigFl=1;s.n=adj+' '+s.n;s.fx=rd.map(f=>f.slice());
-  const txt=ally?rd.map(f=>SIG_ST_N[f[0]]).join(' and '):sigFoeTxt(rd);
+  // v0.10.8: warriors keep Rend's Bleed and add the element rider on top (the swap used to replace the Bleed, so warriors lost it)
+  const keep=t.cls==='warrior'?(s.fx||[]).filter(f=>f[0]==='bleed').map(f=>f.slice()):[];
+  s.sigFl=1;s.n=adj+' '+s.n;s.fx=keep.concat(rd.map(f=>f.slice()));
+  const txt=ally?rd.map(f=>SIG_ST_N[f[0]]).join(' and '):sigFoeTxt(keep.concat(rd));
   s.d=(s.k==='phys'||s.k==='mag'?`${EL[e]} tinged. `:'')+(ally?`Gives ${txt}.`:txt[0].toUpperCase()+txt.slice(1)+'.')+(s.t==='all'?' Hits every foe.':'');
 }
 {const cs1=classSkills;classSkills=function(t){const L=cs1.apply(this,arguments);

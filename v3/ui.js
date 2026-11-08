@@ -21,7 +21,9 @@ const legBanner=()=>`<span class="legban">★ LEGENDARY ★</span>`;
 const natPoolText=id=>{const P=natPool(id);if(P.length<2){const k=P[0]||TPL[id].trait;return `Nature: ${esc(natInfo(k).n)}, ${esc(natInfo(k).d)}`;}return `Nature pool: ${P.map(k=>esc(natInfo(k).n)).join(', ')}`;};
 function natBlock(id,c){const k=natOf(c),I=natInfo(k),P=natPool(id),legacy=P.indexOf(k)<0;
   return `<span class="trait natb"><b>Nature: ${esc(I.n)}</b>${legacy?' <em class="cyc">Legacy</em>':''}<small>${esc(I.d)}</small>${P.length>1?`<span class="natpool">${P.map(p=>`<i class="${p===k?'cur':''}" title="${esc(natInfo(p).d)}">${esc(natInfo(p).n)}</i>`).join('')}</span><small>Change it at the Guild Hall, Nature tab.</small>`:'<small>Fixed nature.</small>'}</span>`;}
-const roleTag=s=>{const r=s.role&&skEls(s).length?`<em class="role ${s.role}" title="${s.role==='primer'?'Primes a foe with its element for 2 turns. A matching Detonator sets off a reaction.':'Sets off a reaction on a foe Primed with a matching element.'}">${s.role==='primer'?'⟐':'✸'}</em>`:'';
+// v0.10.8: Settings > Skill tags (META.cfg.skTags 'sym' = symbols only; Full when missing, as before v0.10.4)
+function skTagsFull(){try{return META.cfg.skTags!=='sym';}catch(e){return true;}}
+const roleTag=s=>{const r=s.role&&skEls(s).length?`<em class="role ${s.role}" title="${s.role==='primer'?'Primes a foe with its element for 2 turns. A matching Detonator sets off a reaction.':'Sets off a reaction on a foe Primed with a matching element.'}">${skTagsFull()?(s.role==='primer'?'⟐ Primer':'✸ Detonator'):(s.role==='primer'?'⟐':'✸')}</em>`:'';
   // v0.4.0 2.4: every damaging and healing skill shows how it is delivered (Slash, Blunt, Piercing, Ranged, Magic, Heal)
   const d=typeof dlChip==='function'&&(s.k==='phys'||s.k==='mag'||s.k==='heal'||s.k==='revive')?dlChip(s,(B&&B.mode==='cmd'&&B.cur&&TPL[B.cur.id])?TPL[B.cur.id].cls:null):'';return d+r;};
 // v0.4.3: a visible note on every detonator: which primed elements it sets off, and the reaction
@@ -237,7 +239,7 @@ function cmdHtml(){
       <button class="mi" data-act="cmd" data-arg="swap" ${sw?'':'disabled'} title="${rooted?'Rooted: cannot switch out':'Swap this hero for a rearguard hero'}">${rooted?'Rooted':'Switch'}</button>
       <button class="mi" data-act="cmd" data-arg="flee" ${noFlee?'disabled':''}>Flee</button></div><div class="btnrow autorow">${auto}</div>`;
   }else if(B.menu==='skills'){
-    body=`<div class="menu list">${ks.map(s=>`<button class="mi ${skTgt(s).cls} ${s.combo?'combo':''} ${s.bond?'bond':''}" data-act="sk" data-arg="${s.id}" ${a.mp<s.mp?'disabled':''}><span class="n">${dlIco(deliveryOf(a,s))}${skEls(s).map(ico).join('')}${esc(s.n)}${skTgtLabel(s)}${s.combo?' <em class="c">Dual art</em>':''}${s.bond?' <em class="b">Bond</em>':''}${roleTag(s)}</span><span class="m">${(n=>n?`<span class="num ${s.k==='phys'||s.k==='mag'?'dmg':'heal'}">${n}</span> `:'')(skNum(a,s))}${s.mp} MP</span><small>${stDesc(s.d)}</small>${detList(s)}${perkNote(a,s)}${effChips(s,a)}</button>`).join('')}</div>`;
+    body=`<div class="menu list">${ks.map(s=>`<button class="mi ${skTgt(s).cls} ${s.combo?'combo':''} ${s.bond?'bond':''}" data-act="sk" data-arg="${s.id}" ${a.mp<s.mp?'disabled':''}><span class="n">${dlIco(deliveryOf(a,s))}${skEls(s).map(ico).join('')}${esc(s.n)}${skTgtLabel(s)}${s.combo?' <em class="c">Dual art</em>':''}${s.bond?' <em class="b">Bond</em>':''}${roleTag(s)}</span><span class="m">${(n=>n?`<span class="num ${s.k==='phys'||s.k==='mag'?'dmg':'heal'}">${n}</span> `:'')(skNum(a,s))}${s.mp} MP</span><small>${stDesc(s.d)}</small>${perkNote(a,s)}${effChips(s,a)}</button>`).join('')}</div>`;
   }else if(B.menu==='items'){
     body=`<div class="menu list">${Object.keys(ITEMS).filter(id=>!ITEMS[id].ward&&!ITEMS[id].tent&&(!ITEMS[id].craft||(G.inv[id]||0)>0)&&(!ITEMS[id].flee||(G.inv[id]||0)>0)).map(id=>`<button class="mi" data-act="item" data-arg="${id}" ${(G.inv[id]||0)>0&&!(ITEMS[id].flee&&porkBlocked())?'':'disabled'}><span class="n">${itemIcon(id)} ${ITEMS[id].n}</span><span class="m">x${G.inv[id]||0}</span><small>${ITEMS[id].d}</small></button>`).join('')}</div>`;
   }else if(B.menu==='target'){
@@ -341,7 +343,9 @@ function mMenu(m){
   const grp=menuGroupOf(tab);
   let body='';
   if(tab==='map')body=`<p class="note">The map shows every place your party has seen in ${esc(WS.m?(WS.m.archive?(WS.m.hub||'the Archive'):WS.m.kind==='town'?ZS(WS.m.s).town:WS.m.kind==='field'?ZS(WS.m.s).n:ZS(WS.m.s).dungeon):'this area')}. Press ${kmLabel('map')}, the Map button, or Y on a pad from anywhere in the world.</p><div class="btnrow"><button class="btn gold" data-act="map">Open the map</button><button class="btn" data-act="miniT">Minimap: ${miniOn()?'on':'off'}</button></div>`;
-  if(tab==='party')body=vSwap('menu');
+  if(tab==='party'){body=vSwap('menu');
+    // outside town swaps are blocked, except the wild recruit swap (G.pendRecruit, v0.10.2)
+    try{if(G&&!G.daily&&!inTown())body+=G.pendRecruit&&G.roster[G.pendRecruit]?`<p class="note">${esc(G.roster[G.pendRecruit].name)} has just joined you, so they can be swapped in now. Other heroes can only be switched out in town.</p>`:'<p class="note">You must be in town to switch party members out.</p>';}catch(e){}}
   if(tab==='equip')body=vEquipTab();
   if(tab==='comp')body=vCompanions();
   if(tab==='roster'){const town=inTown(),list=lsort('roster',Object.values(G.roster).filter(c=>lmatch('roster',c)),(a,b)=>(G.party.includes(b.id)-G.party.includes(a.id))||b.lv-a.lv||a.name.localeCompare(b.name));V.charList=list.map(c=>c.id);

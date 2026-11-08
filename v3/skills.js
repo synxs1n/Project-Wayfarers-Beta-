@@ -173,12 +173,14 @@ function classSkills(t){
     break;
   }
   if(e2){const c=COMBO[comboKey(t.el)];add(Object.assign({id:'combo',lv:1,mp:16,cost:1.15,combo:1,el:t.el.slice()},c));}
-  S.forEach(s=>{if(SKILL_ROLE[s.id]&&s.el)s.role=SKILL_ROLE[s.id];});
+  // v0.10.8: a role only goes to a move that can hit a foe. The dual element art ('combo') is a party buff for some pairs
+  // (Aurora, wind and light, targets the party), and as a Detonator it could never set off a reaction.
+  S.forEach(s=>{if(SKILL_ROLE[s.id]&&s.el&&skHitsFoe(s))s.role=SKILL_ROLE[s.id];});
   // v5.1: every standard class gets at least one Primer and one Detonator early (lv 1-10) and again late (lv 18+)
   const T=ROLE_FILL[t.cls];
   if(T){const has=(band,role)=>S.some(x=>x.role===role&&(band==='e'?x.lv<=10:x.lv>=18));
     [['e','primer'],['e','det'],['l','primer'],['l','det']].forEach(([band,role])=>{if(has(band,role))return;const k=band+(role==='primer'?'P':'D'),f=T[k];if(!f)return;
-      if(f.retag){const x=S.find(q=>q.id===f.retag);if(x){x.el=x.el||e1;x.role=role;x.d+=` Carries ${n1}.`;}return;}
+      if(f.retag){const x=S.find(q=>q.id===f.retag);if(x&&skHitsFoe(x)){x.el=x.el||e1;x.role=role;x.d+=` Carries ${n1}.`;}return;}
       add(Object.assign({el:e1,role},f(n1,e1)));});}
   S.sort((a,b)=>a.lv-b.lv);
   S.forEach(x=>{x.lv0=x.lv;});
@@ -189,6 +191,8 @@ function classSkills(t){
 }
 // Beta v0.2.0 pacing: two skills at level 1, then one about every 3.3 levels. The big finishers stay last and the
 // dual-element art lands mid-game. lv0 keeps the old level so saves made before this keep what they already learned.
+// v0.10.8: target types that reach a foe (roles need one)
+const SK_FOE_T=new Set(['one','all','rand','chain']);function skHitsFoe(s){return !!s&&SK_FOE_T.has(s.t||'one')&&s.k!=='heal'&&s.k!=='revive';}
 const SKILL_STEP=3.3,BAND_E=10,BAND_L=18;
 function skillWeight(x){if(x.combo)return 9.5;if((x.cost||1)>=1.2&&(x.pw||0)>=2.4)return 40+(x.lv0||0);if(x.k==='revive'&&(x.mp||0)>=18)return 39;return x.lv0;}
 function respaceSkills(S,t,T,n1,e1){

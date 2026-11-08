@@ -32,7 +32,12 @@ function shopAllIds(){if(_shopAll)return _shopAll;const S=new Set(),fam=new Set(
   const g0=G&&G.stage;try{[0,1].forEach(st=>{if(G)G.stage=st;itemStock().forEach(i=>S.add(i));if(typeof alchStock==='function')alchStock().forEach(i=>S.add(i));});}catch(e){}finally{if(G)G.stage=g0;}
   ['potion','hipotion','ether','remedy','plume','tent','holywater','porkchop','salts','ash','bandage'].forEach(i=>S.add(i));
   return _shopAll=S;}
-function craftOnly(id){if(!id)return false;const m=String(id).match(/^(.*)\+(\d)$/);if(m)return craftOnly(m[1]);// a tempered piece can be bought and tempered, so it only counts when its base is craft only too
+// v0.10.8: the tag needs a recipe. Before, anything no shop sold was tagged, so personal quest rewards, Echoforged and other unique
+// gear (none of which has a recipe) said "Craft only".
+let _recOut=null;
+function recipeOuts(){if(_recOut)return _recOut;const S=new Set();try{RECIPES.forEach(r=>{const o=r.item||r.id;if(o)S.add(o);});}catch(e){}return _recOut=S;}
+function craftOnly(id){if(!id)return false;const m=String(id).match(/^(.*)\+(\d)$/);if(m&&!recipeOuts().has(String(id)))return craftOnly(m[1]);// a tempered piece can be bought and tempered, so it only counts when its base is craft only too
   if(String(id).startsWith('c_'))return false;// stat charms also turn up in vaults and chests
-  return (!!GEAR[id]||!!ITEMS[id])&&!shopAllIds().has(id)&&!(GEAR[id]&&GEAR[id].stick)&&!(GEAR[id]&&GEAR[id].legend);}
+  if(m&&shopAllIds().has(m[1]))return false;// a forged +N of a shop piece: buy the base and temper it
+  return recipeOuts().has(String(id))&&(!!GEAR[id]||!!ITEMS[id])&&!shopAllIds().has(id)&&!(GEAR[id]&&(GEAR[id].stick||GEAR[id].legend||GEAR[id].sig));}
 function craftTag(id){return craftOnly(id)?'<em class="tchip craftonly" title="No shop sells this. You can only craft it.">Craft only</em>':'';}

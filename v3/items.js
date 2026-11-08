@@ -130,10 +130,10 @@ const ITEM_TIERS=[
  {n:'Uncommon', c:'#5fcf6a',pip:'◆'},
  {n:'Rare',     c:'#4a9bff',pip:'▲'},
  {n:'Epic',     c:'#b06aff',pip:'■'},
- {n:'Legendary',c:'#ffc83d',pip:'★'},
+ {n:'Heroic',   c:'#ffc83d',pip:'★'},// v0.10.8: was 'Legendary'; that word belongs to the legend heroes only (ui.js)
  {n:'Mythic',   c:'#ff6a5a',pip:'✦'},
  {n:'Echoforged',c:'#ffd9a0',c2:'#b48aff',pip:'❂'}];
-const ITEM_TIER_OF={potion:0,remedy:0,porkchop:0,ether:1,hipotion:1,vigor:1,sage:1,tent:1,holywater:2,plume:3,elixir:4}; // consumables
+const ITEM_TIER_OF={potion:0,remedy:0,porkchop:0,ether:1,hipotion:1,vigor:1,sage:1,tent:1,holywater:2,plume:3,elixir:3};// v0.10.8: Elixir was tier 4 ('Legendary'), a chest staple // consumables
 const STN={hp:'HP',mp:'MP',atk:'ATK',def:'DEF',mag:'MAG',res:'RES',spd:'SPD'};
 // Tempered gear carries a +N suffix: each level adds 25% to its stats (FORGE_STEP).
 function gearOf(id){

@@ -460,6 +460,11 @@ HOOK.xform('settingsBody','battle3','Expert battle info row',function(h){try{con
   const row=`<div class="row b9set"><div><b>Expert battle info</b><small>Foe cards show every weakness and resistance (up to two of each) and hero cards their level, class and elements. Off: each foe shows its one key weakness; tap it for the rest.</small></div><div class="chips"><button class="chip ${on?'':'on'}" data-act="cfg" data-arg='["expertBattle",false]'>Off</button><button class="chip ${on?'on':''}" data-act="cfg" data-arg='["expertBattle",true]'>On</button></div></div>`;
   const k=h.indexOf('<div class="btnrow"><button class="btn" data-act="autoOpen"');h=k>=0?h.slice(0,k)+`<div class="rows">${row}</div>`+h.slice(k):h+`<div class="rows">${row}</div>`;}catch(e){}return h;});
 
+// v0.10.8: Skill tags: Full ("⟐ Primer", "✸ Detonator") or Symbols. Full by default.
+HOOK.xform('settingsBody','battle3','Skill tags row',function(h){try{const full=skTagsFull();
+  const row=`<div class="row sktset"><div><b>Skill tags</b><small>How Primer and Detonator moves are marked in skill lists.</small></div><div class="chips"><button class="chip ${full?'on':''}" data-act="cfg" data-arg='["skTags","full"]'>Full</button><button class="chip ${full?'':'on'}" data-act="cfg" data-arg='["skTags","sym"]'>Symbols</button></div></div>`;
+  const k=h.indexOf('<div class="rows"><div class="row b9set">');h=k>=0?h.slice(0,k)+`<div class="rows">${row}</div>`+h.slice(k):h+`<div class="rows">${row}</div>`;}catch(e){}return h;});
+
 // ----- the reaction moment -----
 // does the acting hero hold a detonator (with the MP) that sets off this foe's prime? (its primed badge pulses)
 function b9Ready(e){try{if(!e||!e.primed||e.hp<=0||!B||B.mode!=='cmd'||!B.cur||B.cur.side!=='p')return false;const P=b9Party();for(const d of P.now)if(reactFor(e.primed.el,d))return true;}catch(x){}return false;}
