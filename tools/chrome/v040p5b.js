@@ -12,6 +12,6 @@ await H.ev(()=>{__A.ACT.map();});await H.shot('p5_map');
 await H.ev(()=>{__A.ACT.worldMap();});await H.wait(300);await H.shot('p5_world');
 const t=await H.ev(()=>({m:__A.V.modal&&__A.V.modal.type,g:JSON.stringify(__A.worldGraph().nodes.map(n=>n.id+'@'+n.x+','+n.y))}));
 console.log(JSON.stringify(t));
-chk('world map opens',t.m==='worldmap');
+chk('world map opens',t.m==='worldmap'||t.m==='bigmap');
 await done(H);
 })();

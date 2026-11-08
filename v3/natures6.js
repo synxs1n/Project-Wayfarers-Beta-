@@ -46,7 +46,7 @@ const NAT6_CLASS={warrior:['bulwark6','berserk6','vanguard6'],knight:['sentinel6
 try{Object.assign(NATURES,NAT6);Object.keys(NAT6_CLASS).forEach(k=>{NAT_CLASS[k]=NAT6_CLASS[k];});}catch(e){}
 // the pool: the three sub-roles of the class (plus the hero's own trait while it is the current nature of an old save)
 {const np0=natPool;natPool=function(id){const t=TPL[id];if(!t||!NAT6_CLASS[t.cls]||t.src==='L'||t.src==='x'||t.mon)return np0.apply(this,arguments);
-  const P=NAT6_CLASS[t.cls].slice();try{const c=G&&G.roster&&G.roster[id],cur=c&&natOf(c);if(cur&&!P.includes(cur)&&NATURES[cur])P.push(cur);}catch(e){}return P;};}
+  const P=NAT6_CLASS[t.cls].slice();if(t.trait&&NATURES[t.trait]&&!P.includes(t.trait))P.push(t.trait);try{const c=G&&G.roster&&G.roster[id],cur=c&&natOf(c);if(cur&&!P.includes(cur)&&NATURES[cur])P.push(cur);}catch(e){}return P;};}
 // new heroes start on a sub-role: the template's trait maps to the nearest of the three (by its stat keys), seeded by the hero id
 function nat6Default(id){const t=TPL[id];if(!t||!NAT6_CLASS[t.cls])return null;const P=NAT6_CLASS[t.cls],old=NATURES[t.trait],fx=old&&old.fx||{};
   const score=k=>{const f=NATURES[k].fx;let s=0;Object.keys(fx).forEach(q=>{if(f[q]!=null)s+=(f[q]>1||(q==='crit'||q==='eva'))===(fx[q]>1||(q==='crit'||q==='eva'))?1:0;});return s;};
