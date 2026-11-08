@@ -46,3 +46,4 @@
 /* v0.10.8: the unknown "?" is an svg (b5Icon); no text boosting on the stage labels (Android font scale, autosizing) */
 .b5it.unknown,.b5oi.unknown{color:#e8dcc0}
 .bstage{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+#bbossbar{display:none!important}/* v0.11.4: the boss bar is gone (battleui.js); hidden from the first frame */
