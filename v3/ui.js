@@ -550,10 +550,12 @@ function chooseSkill(sk){
   if(t==='self')return exec(sk,[B.cur]);
   if(t==='allyAll')return exec(sk,B.front.filter(c=>c.hp>0));
   // v0.9.x: exactly one valid target means no choice to make: act at once (never when more than one is valid)
-  if(t==='one'||t==='chain'){const lv=B.en.filter(e=>e.hp>0);if(lv.length===1)return exec(sk,[lv[0]]);}
+  // v0.11.8: Settings > Single target skills: "Fire at once" (META.cfg.autoOne==='fire') skips the target step when only one target is valid; "Ask" always asks; Fire at once is the default (the old behaviour)
+  const fire=META.cfg.autoOne!=='ask';/* default Fire at once: the game always fired with one foe left */
+  if(t==='one'||t==='chain'){const lv=B.en.filter(e=>e.hp>0);if(fire&&lv.length===1)return exec(sk,[lv[0]]);}
   else if(t==='ally'||t==='dead'){
     const mine=allParty().filter(c=>t==='dead'?c.hp<=0:c.hp>0),und=B.en.filter(e=>typeof healsUndead==='function'&&healsUndead(sk,e));
-    if(mine.length===1&&!und.length)return exec(sk,[mine[0]]);}
+    if(fire&&mine.length===1&&!und.length)return exec(sk,[mine[0]]);}
   B.pend={sk};B.tgFrom=B.menu==='target'?'root':B.menu;B.menu='target';render();
 }
 

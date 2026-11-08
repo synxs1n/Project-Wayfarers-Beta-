@@ -112,3 +112,10 @@ function bossBarHtml(){if(!B||!B.en)return '';const b=B.en.find(e=>e.boss&&e.hp>
   return `<div class="bbn"><b>${esc(b.name)}</b> <small>Lv ${b.lv}</small>${sh}<span class="nums">${Math.ceil(b.hp)} / ${b.S.mhp}</span></div><div class="bbbar"><i style="width:${p.toFixed(1)}%"></i></div>`;}
 // the boss bar at the top of the battle is gone (the boss keeps its own HP plate): keep the empty strip hidden
 HOOK.after('renderBattle','battleui','boss bar removed',function(){try{const el=document.getElementById('bbossbar');if(el){if(el.innerHTML)el.innerHTML='';el.style.display='none';const bt=el.closest('.battle');if(bt)bt.classList.remove('hasboss');}}catch(e){}});
+
+// v0.11.8: Settings: single target skills and attacks ask for a target (default) or fire at once when only one target is valid
+HOOK.xform('settingsBody','battleui','Single target skills row',function(h){try{const fire=META.cfg.autoOne!=='ask';
+  const row=`<div class="row autoone"><div><b>Single target skills</b><small>Ask: you always pick the target. Fire at once: with only one valid target (one foe left, or one ally for a heal), the attack or skill goes off without asking.</small></div><div class="chips"><button class="chip ${fire?'':'on'}" data-act="cfg" data-arg='["autoOne","ask"]'>Ask</button><button class="chip ${fire?'on':''}" data-act="cfg" data-arg='["autoOne","fire"]'>Fire at once</button></div></div>`;
+  const k=h.indexOf('<div class="rows"><div class="row b5set">');
+  if(k>=0)h=h.slice(0,k)+`<div class="rows">${row}</div>`+h.slice(k);
+  else{const m=h.indexOf('<div class="btnrow"><button class="btn" data-act="autoOpen"');h=m>=0?h.slice(0,m)+`<div class="rows">${row}</div>`+h.slice(m):h+`<div class="rows">${row}</div>`;}}catch(e){}return h;});
