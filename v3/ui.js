@@ -23,13 +23,22 @@ function natBlock(id,c){const k=natOf(c),I=natInfo(k),P=natPool(id),legacy=P.ind
   return `<span class="trait natb"><b>Nature: ${esc(I.n)}</b>${legacy?' <em class="cyc">Legacy</em>':''}<small>${esc(I.d)}</small>${P.length>1?`<span class="natpool">${P.map(p=>`<i class="${p===k?'cur':''}" title="${esc(natInfo(p).d)}">${esc(natInfo(p).n)}</i>`).join('')}</span><small>Change it at the Guild Hall, Nature tab.</small>`:'<small>Fixed nature.</small>'}</span>`;}
 // v0.10.8: Settings > Skill tags (META.cfg.skTags 'sym' = symbols only; Full when missing, as before v0.10.4)
 function skTagsFull(){try{return META.cfg.skTags!=='sym';}catch(e){return true;}}
+// v0.10.9: what a skill is mainly for, read from its data (k, fx, t, cleanse, summon), never set by hand. One tag per skill.
+const PURPOSE={dmg:'Damage',heal:'Heal',buff:'Buff',debuff:'Debuff',cure:'Cure',revive:'Revive',guard:'Guard',taunt:'Taunt',summon:'Summon'};
+function skPurpose(s){if(!s)return null;const fx=(s.fx||[]).map(f=>f[0]),bad=k=>typeof STS!=='undefined'&&STS[k]&&STS[k].bad;
+  if(s.summon)return 'summon';if(s.k==='revive'||s.t==='dead')return 'revive';if(s.k==='heal')return 'heal';
+  if(s.k==='phys'||s.k==='mag')return 'dmg';if(s.cleanse&&!fx.length)return 'cure';
+  if(fx.includes('taunt'))return 'taunt';if(fx.some(k=>k==='bulwark'||k==='ward'||k==='guard'))return 'guard';
+  if(s.cleanse)return 'cure';if(s.k==='mpself')return 'buff';
+  const foe=s.t==='one'||s.t==='all'||s.t==='rand'||s.t==='chain';if(foe&&fx.some(bad))return 'debuff';if(fx.length&&!fx.every(bad))return 'buff';return fx.length?'debuff':null;}
+const purposeTag=s=>{const p=skPurpose(s);return p?`<em class="pur ${p}" title="Mainly for: ${PURPOSE[p]}">${PURPOSE[p]}</em>`:'';};
 const roleTag=s=>{const r=s.role&&skEls(s).length?`<em class="role ${s.role}" title="${s.role==='primer'?'Primes a foe with its element for 2 turns. A matching Detonator sets off a reaction.':'Sets off a reaction on a foe Primed with a matching element.'}">${skTagsFull()?(s.role==='primer'?'⟐ Primer':'✸ Detonator'):(s.role==='primer'?'⟐':'✸')}</em>`:'';
   // v0.4.0 2.4: every damaging and healing skill shows how it is delivered (Slash, Blunt, Piercing, Ranged, Magic, Heal)
-  const d=typeof dlChip==='function'&&(s.k==='phys'||s.k==='mag'||s.k==='heal'||s.k==='revive')?dlChip(s,(B&&B.mode==='cmd'&&B.cur&&TPL[B.cur.id])?TPL[B.cur.id].cls:null):'';return d+r;};
+  const d=typeof dlChip==='function'&&(s.k==='phys'||s.k==='mag'||s.k==='heal'||s.k==='revive')?dlChip(s,(B&&B.mode==='cmd'&&B.cur&&TPL[B.cur.id])?TPL[B.cur.id].cls:null):'';return purposeTag(s)+d+r;};
 // v0.4.3: a visible note on every detonator: which primed elements it sets off, and the reaction
 // v0.4.3: in battle, a detonator shows a hint only when it can set off a foe that is Primed right now
 const detLive=s=>{try{if(!s||s.role!=='det'||!B)return '';const els=skEls(s),hit=B.en.filter(e=>e.hp>0&&e.primed&&els.some(x=>reactFor(e.primed.el,x)));if(!hit.length)return '';const R=reactFor(hit[0].primed.el,els.find(x=>reactFor(hit[0].primed.el,x)));return `<small class="detn">✸ Can set off ${esc(R.n)} on ${esc(hit[0].name)}${hit.length>1?` (+${hit.length-1} more)`:''}</small>`;}catch(e){return '';}};
-const detNote=s=>{if(!s||s.role!=='det')return '';const els=skEls(s),L=Object.keys(REACT).map(k=>REACT[k]).filter(R=>els.includes(R.d));if(!L.length)return '';// v0.7.7: symbols only (the owner's call): ✸ then the primed elements it sets off; the words live in the tooltip
+const detNote=s=>{if(!s||s.role!=='det')return '';const els=skEls(s),L=Object.values(REACT_V).filter(R=>els.includes(R.d));if(!L.length)return '';// v0.7.7: symbols only (the owner's call): ✸ then the primed elements it sets off; the words live in the tooltip
   return `<small class="detn sym" title="Sets off: ${L.map(R=>`${EL[R.p]} primed: ${R.n} x${R.m}`).join(', ')}" aria-label="Detonates ${L.map(R=>EL[R.p]).join(', ')}">✸ ${[...new Set(L.map(R=>R.p))].map(p=>ico(p)).join('')}</small>`;};
 // v0.3.5 2.1: does the skill being aimed set off this foe's prime?
 const detHits=(sk,e)=>!!(sk&&sk.role==='det'&&e&&e.primed&&e.hp>0&&skEls(sk).some(x=>reactFor(e.primed.el,x)));
@@ -406,7 +415,7 @@ function mBeast(m){
     <h4>Mastery perks</h4><p class="note nums">${pk.lv?`Rank ${pk.lv}: +${Math.round(pk.dmg*100)}% damage against it${pk.drop?`, +${Math.round(pk.drop*100)}% drop chance`:''}. `:'None yet. '}${esc(nm.perk)}. Perks are off in the Daily Trial.</p>
     <h4>Matchups</h4><div class="rows compact"><div class="row"><b>Weak to</b><span>${weak.map(el=>show(el)?ico(el)+' '+EL[el]:'?').join(', ')||'Nothing'}</span></div><div class="row"><b>Resists</b><span>${res.map(el=>show(el)?ico(el)+' '+EL[el]:'?').join(', ')||'Nothing'}</span></div>
       ${o.g?'':`<div class="row"><b>Quirks</b><span>${T>=2||rev?(q?esc(quirkText(q)):'None'):'? Land a hit or scan one'}</span></div>`}
-      ${(()=>{const kw=weak.filter(show);if(!kw.length)return '';const L=Object.keys(REACT).map(k=>REACT[k]).filter(R=>kw.includes(R.d)).slice(0,4);return L.length?`<div class="row"><b>Best combos</b><span>${L.map(R=>`⟐${ico(R.p)} then ✸${ico(R.d)} ${R.n}`).join('<br>')}</span></div>`:'';})()}</div>
+      ${(()=>{const kw=weak.filter(show);if(!kw.length)return '';const L=Object.values(REACT_V).filter(R=>kw.includes(R.d)).slice(0,4);return L.length?`<div class="row"><b>Best combos</b><span>${L.map(R=>`⟐${ico(R.p)} then ✸${ico(R.d)} ${R.n}`).join('<br>')}</span></div>`:'';})()}</div>
     ${o.g?'':`<h4>Stats</h4>${T>=2?st:lock(2,'Exact stats and HP')}`}
     <h4>Skills</h4>${T>=2?`<div class="rows compact">${skl.map(skillLine).join('')}</div>`:lock(2,'The full skill list')}
     ${o.g?`<h4>Turning point and pattern</h4>${T>=3?`<p>${d.phase?`At ${Math.round(d.phase.at*100)}% HP: ${esc(d.phase.say)}${d.phase.summon?' It calls for help.':''}${d.phase.heal?` It heals ${Math.round(d.phase.heal*100)}%.`:''}`:'No turning point.'} It has a Break shield: hit its weaknesses and detonate reactions to crack it, then pile on while it reels.</p>`:lock(3,'Its turning point and attack pattern')}`:''}
@@ -415,7 +424,7 @@ function mBeast(m){
 function vLore(){
   const head=`<tr><th></th>${ELK.map(d=>`<th>${ico(d)}</th>`).join('')}</tr>`;
   const rows=ELK.map(a=>`<tr><th>${ico(a)}</th>${ELK.map(d=>{const v=CHART[a][d];return `<td class="${v>1?'s':v<1?'r':''}">${v>1?'2':v<1?'½':''}</td>`;}).join('')}</tr>`).join('');
-  const reacts=ELK.map(p=>{const L=Object.keys(REACT).map(k=>REACT[k]).filter(R=>R.p===p);if(!L.length)return '';return `<div class="row"><div class="grow"><b>${ico(p)} Prime with ${EL[p]}</b>${L.map(R=>`<small>✸ ${ico(R.d)} ${EL[R.d]} detonator: <b>${R.n}</b>, x${R.m} damage${R.splash?', splashes nearby foes':''}${R.fx?', may '+R.fx.map(f=>STS[f[0]].n).join(' or '):''}${R.strip?', strips boons':''}${R.selfFx?', grants Ward':''}${R.allyFx?', Regen for your line':''}.</small>`).join('')}</div></div>`;}).join('');
+  const reacts=ELK.map(p=>{const L=Object.values(REACT_V).filter(R=>R.p===p);if(!L.length)return '';return `<div class="row"><div class="grow"><b>${ico(p)} Prime with ${EL[p]}</b>${L.map(R=>`<small>✸ ${ico(R.d)} ${EL[R.d]} detonator: <b>${R.n}</b>, x${R.m} damage${R.splash?', splashes nearby foes':''}${R.fx?', may '+R.fx.map(f=>STS[f[0]].n).join(' or '):''}${R.strip?', strips boons':''}${R.selfFx?', grants Ward':''}${R.allyFx?', Regen for your line':''}.</small>`).join('')}</div></div>`;}).join('');
   const sts=Object.keys(STS).map(k=>`<div class="row"><i class="tag sttag ${STS[k].bad?'bad':'good'}" style="--c:${STS[k].c}">${stSym(k)}</i><div class="grow"><b>${STS[k].n}</b><small>${STS[k].d}</small></div></div>`).join('');
   const heard=(G&&G.loreHeard||[]);const lh=heard.length?`<h4>Heard in the realms</h4><div class="rows compact">${heard.map(x=>`<div class="row"><div class="grow"><small>${esc(ZS(x.s).n)}</small><b>${esc(x.t)}</b></div></div>`).join('')}</div>`:`<h4>Heard in the realms</h4><p class="note">Townsfolk drop hints about what waits in each realm. What you hear is written down here.</p>`;
   return (typeof overlayGuide==='function'?overlayGuide():'')+lh+`<h4>Element chart</h4><p class="note">Rows attack, columns defend. 2 means double damage, ½ means half. No element is immune to anything. Against two-element foes the matchups combine on a soft curve: two weaknesses deal x2.5 (never x4), a weakness plus a resist cancels out. Scourges, Calamities and heroes never take more than x2.</p>

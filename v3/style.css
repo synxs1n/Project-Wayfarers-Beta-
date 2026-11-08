@@ -448,6 +448,10 @@ em.role{display:inline-block;font-style:normal;font-size:.7rem;font-weight:800;p
 em.role.primer{background:#2a4a6a;color:#bfe2ff}
 em.role.det{background:#6a2a3a;color:#ffc8b0}
 .mi .n em.role{font-size:.68rem}
+/* v0.10.9: purpose tags (ui.js skPurpose) */
+em.pur{display:inline-block;font-style:normal;font-size:.62rem;font-weight:800;padding:0 4px;margin-left:5px;border-radius:3px;border:1px solid currentColor;vertical-align:1px;letter-spacing:.02em;background:rgba(0,0,0,.3)}
+em.pur.dmg{color:#ffb08a}em.pur.heal,em.pur.revive{color:#8aff9a}em.pur.cure{color:#9af0e0}em.pur.buff{color:#ffd86a}em.pur.debuff{color:#d0a0ff}
+em.pur.guard{color:#9ac0ff}em.pur.taunt{color:#ff8a8a}em.pur.summon{color:#7affc8}
 .primed{position:absolute;left:50%;top:-11px;transform:translateX(-50%);display:flex;align-items:center;gap:1px;font:800 4.5px/1 var(--fb);color:#fff;background:#150b17;border:1px solid var(--c);box-shadow:0 0 3px var(--c);padding:1px 2px;white-space:nowrap;animation:primepulse .9s steps(4) infinite alternate;pointer-events:none}
 .primed .ico{width:5px;height:5px;vertical-align:0}
 @keyframes primepulse{from{box-shadow:0 0 1px var(--c)}to{box-shadow:0 0 5px var(--c)}}

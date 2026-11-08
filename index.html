@@ -466,6 +466,10 @@ em.role{display:inline-block;font-style:normal;font-size:.7rem;font-weight:800;p
 em.role.primer{background:#2a4a6a;color:#bfe2ff}
 em.role.det{background:#6a2a3a;color:#ffc8b0}
 .mi .n em.role{font-size:.68rem}
+/* v0.10.9: purpose tags (ui.js skPurpose) */
+em.pur{display:inline-block;font-style:normal;font-size:.62rem;font-weight:800;padding:0 4px;margin-left:5px;border-radius:3px;border:1px solid currentColor;vertical-align:1px;letter-spacing:.02em;background:rgba(0,0,0,.3)}
+em.pur.dmg{color:#ffb08a}em.pur.heal,em.pur.revive{color:#8aff9a}em.pur.cure{color:#9af0e0}em.pur.buff{color:#ffd86a}em.pur.debuff{color:#d0a0ff}
+em.pur.guard{color:#9ac0ff}em.pur.taunt{color:#ff8a8a}em.pur.summon{color:#7affc8}
 .primed{position:absolute;left:50%;top:-11px;transform:translateX(-50%);display:flex;align-items:center;gap:1px;font:800 4.5px/1 var(--fb);color:#fff;background:#150b17;border:1px solid var(--c);box-shadow:0 0 3px var(--c);padding:1px 2px;white-space:nowrap;animation:primepulse .9s steps(4) infinite alternate;pointer-events:none}
 .primed .ico{width:5px;height:5px;vertical-align:0}
 @keyframes primepulse{from{box-shadow:0 0 1px var(--c)}to{box-shadow:0 0 5px var(--c)}}
@@ -1828,7 +1832,7 @@ html.rm .battle.b3 .cmd .mi.b9glow{animation:none}
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.10.8";const APP_BUILD="e05d7b7341cd";
+(function(){const APP_VER="0.10.9";const APP_BUILD="21a23a854dbd";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2516,7 +2520,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.10.8";const APP_BUILD="e05d7b7341cd";
+const APP_VER="0.10.9";const APP_BUILD="21a23a854dbd";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2524,6 +2528,7 @@ const APP_VER="0.10.8";const APP_BUILD="e05d7b7341cd";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.10.9',['Reactions: back to 28, one per pair of elements, and each pair reacts the same whichever element was primed (Grave from shadow on an earth prime or earth on a shadow prime). Rain now boosts Steam and Conduct both ways. Every skill shows what it is mainly for (Damage, Heal, Buff, Debuff, Cure, Revive, Guard, Taunt or Summon) in battle, on the character sheet and when learned. Reaching a roaming foe before it spots you now reads clearly as a Sneak attack. Six travel skills in Field skills: Haste and Shadowstep (Thieves, wind and shadow heroes), Ward (Priests, light), Lure (Archers and Druids, earth), Lantern (Mages, fire and light) and Marching Song (Bards).']],
  ['Beta v0.10.8',['Fixes: the "?" beside a foe\'s HP bar no longer turns into an empty black box. The quest board only shows "!" when this town has a notice to accept or a quest is ready to claim. Chest gear no longer says "Legendary" (that tier is now Heroic; Legendary is for legend heroes) and quest rewards no longer say "Craft only" unless a recipe makes them. Bard dual arts that buff the party are no longer Detonators. Warriors\' Rend keeps its Bleed again. The new recruit popup shows each hero\'s elements, class and level. The party screen says when you need a town to swap. The skill list no longer lists what a detonator sets off (the foe cards show it), and moves are tagged "⟐ Primer" and "✸ Detonator" in full again (Settings > Skill tags: Full or Symbols).']],
  ['Beta v0.10.7',['Sanctums and Summons: the side fortresses are now Sanctums, and every one ends in a unique guardian. Beat it and it is bound to you: Priests (the Healer class, renamed) can Invoke it in battle. The Priest prays for one turn; on their next turn the guardian takes the field in place of the whole Vanguard for three of its turns, fighting with its own moves, then the Vanguard steps back in as it was (if the guardian is driven off, no more summoning that fight). It costs 30% of the Priest\'s MP, once per Priest per battle, never in the Daily Trial, and auto battle never prays. Monks from level 10 get Spirit Call: two turns of stillness, then a lesser form takes the Monk\'s own place for two turns. Guardians beaten in earlier journeys on this save count.']],
  ['Beta v0.10.6',['Town: the Notice Board keeps Quests and Bounties; Guilds and the Arena live in the Guild Hall (with Recruits and Natures). Two notices from the first town send you there: Sign the guild ledger and First blood in the pit. A notice can only be accepted in the town of its realm (legend quests and the post-journey notices show everywhere; claiming stays open anywhere). The first win of each arena tier awards a Medal, a charm your wayfarers can wear. Guides now has Charts (the element chart and all 56 reactions), Ailments, Boons and Boss gimmicks as their own tabs; Lore keeps the story. Fix: after a fight in a dungeon or on a field, nearby roamers back off instead of starting the next battle at once.']],
@@ -2727,40 +2732,15 @@ const REACT={
  'lightning+shadow':{n:'Blackout',p:'lightning',d:'shadow',m:1.3,fx:[['stun',.4],['blind',.4]]},
  'ice+light':{n:'Prism',p:'ice',d:'light',m:1.3,fx:[['blind',.4]],splash:.25},
  'ice+shadow':{n:'Deathchill',p:'shadow',d:'ice',m:1.4,fx:[['slow',.7],['weaken',.4]]},
- 'light+shadow':{n:'Eclipse',p:'light',d:'shadow',m:2.0},
- // v0.10.5 reverse directions: the same two elements, primed the other way round. Key 'primed>detonator' (the forward entries above keep their sorted 'a+b' key).
- 'fire>ice':{n:'Thermal Shock',p:'fire',d:'ice',m:1.3,fx:[['break',.7]]},
- 'fire>water':{n:'Scald',p:'fire',d:'water',m:1.3,fx:[['burn',.7],['weaken',.4]]},
- 'wind>fire':{n:'Firestorm',p:'wind',d:'fire',m:1.3,fx:[['burn',.8]],splash:.4},
- 'fire>earth':{n:'Cinderfall',p:'fire',d:'earth',m:1.25,fx:[['burn',.7],['break',.4]]},
- 'lightning>fire':{n:'Ignition',p:'lightning',d:'fire',m:1.5,fx:[['burn',.5]],splash:.3},
- 'light>fire':{n:'Sunfire',p:'light',d:'fire',m:1.4,fx:[['burn',.6],['blind',.4]]},
- 'fire>shadow':{n:'Cinder Curse',p:'fire',d:'shadow',m:1.3,fx:[['weaken',.7],['burn',.4]]},
- 'lightning>water':{n:'Static Rain',p:'lightning',d:'water',m:1.3,fx:[['stun',.5],['weaken',.4]]},
- 'ice>water':{n:'Glaze',p:'ice',d:'water',m:1.2,fx:[['slow',.8],['stun',.35]]},
- 'earth>water':{n:'Mudslide',p:'earth',d:'water',m:1.2,fx:[['slow',.8],['break',.4]]},
- 'water>wind':{n:'Waterspout',p:'water',d:'wind',m:1.25,fx:[['slow',.5]],splash:.35},
- 'water>light':{n:'Baptism',p:'water',d:'light',m:1.2,strip:1},
- 'water>shadow':{n:'Undertow',p:'water',d:'shadow',m:1.3,fx:[['weaken',.6],['slow',.5]]},
- 'wind>earth':{n:'Dust Devil',p:'wind',d:'earth',m:1.2,fx:[['blind',.7]],splash:.25},
- 'earth>lightning':{n:'Fulgurite',p:'earth',d:'lightning',m:1.3,fx:[['break',.6],['stun',.4]]},
- 'earth>ice':{n:'Frostheave',p:'earth',d:'ice',m:1.2,fx:[['root',.7],['slow',.5]]},
- 'light>earth':{n:'Monolith',p:'light',d:'earth',m:1.3,fx:[['break',.6]],selfFx:[['ward',1]]},
- 'shadow>earth':{n:'Entomb',p:'shadow',d:'earth',m:1.3,fx:[['root',.8],['weaken',.5]]},
- 'lightning>wind':{n:'Thunderclap',p:'lightning',d:'wind',m:1.3,fx:[['stun',.4]],splash:.4},
- 'ice>wind':{n:'Blizzard',p:'ice',d:'wind',m:1.3,fx:[['slow',.7],['bleed',.5]],splash:.3},
- 'wind>light':{n:'Halo Gust',p:'wind',d:'light',m:1.2,allyFx:[['regen',1]]},
- 'wind>shadow':{n:'Gloom Gale',p:'wind',d:'shadow',m:1.3,fx:[['blind',.6],['weaken',.5]]},
- 'lightning>ice':{n:'Superconduct',p:'lightning',d:'ice',m:1.5,fx:[['stun',.5],['slow',.5]]},
- 'light>lightning':{n:"Heaven's Bolt",p:'light',d:'lightning',m:1.5,fx:[['weaken',.5]]},
- 'shadow>lightning':{n:'Voidshock',p:'shadow',d:'lightning',m:1.3,fx:[['break',.5],['stun',.35]]},
- 'light>ice':{n:'Diamond Dust',p:'light',d:'ice',m:1.3,fx:[['blind',.5],['slow',.4]],splash:.3},
- 'ice>shadow':{n:'Black Ice',p:'ice',d:'shadow',m:1.4,fx:[['slow',.7],['bleed',.4]]},
- 'shadow>light':{n:'Dawnbreak',p:'shadow',d:'light',m:1.5,fx:[['weaken',.6]]}
+ 'light+shadow':{n:'Eclipse',p:'light',d:'shadow',m:2.0}
 };
-const reactKey=(a,b)=>{const k=[a,b].sort().join('+'),R=REACT[k];return R&&R.p===a?k:a+'>'+b;};// primed, detonator: forward pairs keep the sorted key, reverse pairs use 'primed>det'
-// v4.7: reactions need a PRIMER skill to set them up and a DETONATOR skill to set them off. Each reaction has one primer element and one detonator element.
-function reactFor(primed,det){if(primed===det)return null;const R=REACT[reactKey(primed,det)];return R&&R.p===primed&&R.d===det?R:null;}
+// v0.10.9: 28 order-free reactions. A pair reacts the same whichever of its two elements is primed (56 directed reactions in
+// v0.10.5 to v0.10.8). The key is the sorted pair; p and d on an entry above are just its listing order.
+const reactKey=(a,b)=>[a,b].sort().join('+');
+// REACT_V: both orientations of every pair as views ({...pair, p: the primed element, d: the detonator}), for lists by prime
+const REACT_V={};Object.keys(REACT).forEach(k=>{const R=REACT[k],[x,y]=k.split('+');REACT_V[x+'>'+y]=Object.assign({},R,{p:x,d:y,key:k});REACT_V[y+'>'+x]=Object.assign({},R,{p:y,d:x,key:k});});
+// v4.7: reactions need a PRIMER skill to set them up and a DETONATOR skill to set them off.
+function reactFor(primed,det){if(!primed||!det||primed===det)return null;return REACT_V[primed+'>'+det]||null;}
 const SKILL_ROLE={annotate:null,edge1:'det',edge2:'primer',titan:'det',lance1:'det',lance2:'primer',judge:'det',s1a:'primer',s1b:'det',s2a:'primer',s2b:'primer',s3a:'det',
  ray1:'primer',ray2:'det',shiv1:'det',shiv2:'primer',assn:'det',arrow1:'primer',arrow2:'det',chi1:'det',chi2:'primer',dragon:'det',tune1:'primer',tune2:'primer',combo:'det'};
 const MASTERY_BONUS=0.25;// v0.10.5: was .2
@@ -9184,13 +9164,22 @@ function natBlock(id,c){const k=natOf(c),I=natInfo(k),P=natPool(id),legacy=P.ind
   return `<span class="trait natb"><b>Nature: ${esc(I.n)}</b>${legacy?' <em class="cyc">Legacy</em>':''}<small>${esc(I.d)}</small>${P.length>1?`<span class="natpool">${P.map(p=>`<i class="${p===k?'cur':''}" title="${esc(natInfo(p).d)}">${esc(natInfo(p).n)}</i>`).join('')}</span><small>Change it at the Guild Hall, Nature tab.</small>`:'<small>Fixed nature.</small>'}</span>`;}
 // v0.10.8: Settings > Skill tags (META.cfg.skTags 'sym' = symbols only; Full when missing, as before v0.10.4)
 function skTagsFull(){try{return META.cfg.skTags!=='sym';}catch(e){return true;}}
+// v0.10.9: what a skill is mainly for, read from its data (k, fx, t, cleanse, summon), never set by hand. One tag per skill.
+const PURPOSE={dmg:'Damage',heal:'Heal',buff:'Buff',debuff:'Debuff',cure:'Cure',revive:'Revive',guard:'Guard',taunt:'Taunt',summon:'Summon'};
+function skPurpose(s){if(!s)return null;const fx=(s.fx||[]).map(f=>f[0]),bad=k=>typeof STS!=='undefined'&&STS[k]&&STS[k].bad;
+  if(s.summon)return 'summon';if(s.k==='revive'||s.t==='dead')return 'revive';if(s.k==='heal')return 'heal';
+  if(s.k==='phys'||s.k==='mag')return 'dmg';if(s.cleanse&&!fx.length)return 'cure';
+  if(fx.includes('taunt'))return 'taunt';if(fx.some(k=>k==='bulwark'||k==='ward'||k==='guard'))return 'guard';
+  if(s.cleanse)return 'cure';if(s.k==='mpself')return 'buff';
+  const foe=s.t==='one'||s.t==='all'||s.t==='rand'||s.t==='chain';if(foe&&fx.some(bad))return 'debuff';if(fx.length&&!fx.every(bad))return 'buff';return fx.length?'debuff':null;}
+const purposeTag=s=>{const p=skPurpose(s);return p?`<em class="pur ${p}" title="Mainly for: ${PURPOSE[p]}">${PURPOSE[p]}</em>`:'';};
 const roleTag=s=>{const r=s.role&&skEls(s).length?`<em class="role ${s.role}" title="${s.role==='primer'?'Primes a foe with its element for 2 turns. A matching Detonator sets off a reaction.':'Sets off a reaction on a foe Primed with a matching element.'}">${skTagsFull()?(s.role==='primer'?'⟐ Primer':'✸ Detonator'):(s.role==='primer'?'⟐':'✸')}</em>`:'';
   // v0.4.0 2.4: every damaging and healing skill shows how it is delivered (Slash, Blunt, Piercing, Ranged, Magic, Heal)
-  const d=typeof dlChip==='function'&&(s.k==='phys'||s.k==='mag'||s.k==='heal'||s.k==='revive')?dlChip(s,(B&&B.mode==='cmd'&&B.cur&&TPL[B.cur.id])?TPL[B.cur.id].cls:null):'';return d+r;};
+  const d=typeof dlChip==='function'&&(s.k==='phys'||s.k==='mag'||s.k==='heal'||s.k==='revive')?dlChip(s,(B&&B.mode==='cmd'&&B.cur&&TPL[B.cur.id])?TPL[B.cur.id].cls:null):'';return purposeTag(s)+d+r;};
 // v0.4.3: a visible note on every detonator: which primed elements it sets off, and the reaction
 // v0.4.3: in battle, a detonator shows a hint only when it can set off a foe that is Primed right now
 const detLive=s=>{try{if(!s||s.role!=='det'||!B)return '';const els=skEls(s),hit=B.en.filter(e=>e.hp>0&&e.primed&&els.some(x=>reactFor(e.primed.el,x)));if(!hit.length)return '';const R=reactFor(hit[0].primed.el,els.find(x=>reactFor(hit[0].primed.el,x)));return `<small class="detn">✸ Can set off ${esc(R.n)} on ${esc(hit[0].name)}${hit.length>1?` (+${hit.length-1} more)`:''}</small>`;}catch(e){return '';}};
-const detNote=s=>{if(!s||s.role!=='det')return '';const els=skEls(s),L=Object.keys(REACT).map(k=>REACT[k]).filter(R=>els.includes(R.d));if(!L.length)return '';// v0.7.7: symbols only (the owner's call): ✸ then the primed elements it sets off; the words live in the tooltip
+const detNote=s=>{if(!s||s.role!=='det')return '';const els=skEls(s),L=Object.values(REACT_V).filter(R=>els.includes(R.d));if(!L.length)return '';// v0.7.7: symbols only (the owner's call): ✸ then the primed elements it sets off; the words live in the tooltip
   return `<small class="detn sym" title="Sets off: ${L.map(R=>`${EL[R.p]} primed: ${R.n} x${R.m}`).join(', ')}" aria-label="Detonates ${L.map(R=>EL[R.p]).join(', ')}">✸ ${[...new Set(L.map(R=>R.p))].map(p=>ico(p)).join('')}</small>`;};
 // v0.3.5 2.1: does the skill being aimed set off this foe's prime?
 const detHits=(sk,e)=>!!(sk&&sk.role==='det'&&e&&e.primed&&e.hp>0&&skEls(sk).some(x=>reactFor(e.primed.el,x)));
@@ -9567,7 +9556,7 @@ function mBeast(m){
     <h4>Mastery perks</h4><p class="note nums">${pk.lv?`Rank ${pk.lv}: +${Math.round(pk.dmg*100)}% damage against it${pk.drop?`, +${Math.round(pk.drop*100)}% drop chance`:''}. `:'None yet. '}${esc(nm.perk)}. Perks are off in the Daily Trial.</p>
     <h4>Matchups</h4><div class="rows compact"><div class="row"><b>Weak to</b><span>${weak.map(el=>show(el)?ico(el)+' '+EL[el]:'?').join(', ')||'Nothing'}</span></div><div class="row"><b>Resists</b><span>${res.map(el=>show(el)?ico(el)+' '+EL[el]:'?').join(', ')||'Nothing'}</span></div>
       ${o.g?'':`<div class="row"><b>Quirks</b><span>${T>=2||rev?(q?esc(quirkText(q)):'None'):'? Land a hit or scan one'}</span></div>`}
-      ${(()=>{const kw=weak.filter(show);if(!kw.length)return '';const L=Object.keys(REACT).map(k=>REACT[k]).filter(R=>kw.includes(R.d)).slice(0,4);return L.length?`<div class="row"><b>Best combos</b><span>${L.map(R=>`⟐${ico(R.p)} then ✸${ico(R.d)} ${R.n}`).join('<br>')}</span></div>`:'';})()}</div>
+      ${(()=>{const kw=weak.filter(show);if(!kw.length)return '';const L=Object.values(REACT_V).filter(R=>kw.includes(R.d)).slice(0,4);return L.length?`<div class="row"><b>Best combos</b><span>${L.map(R=>`⟐${ico(R.p)} then ✸${ico(R.d)} ${R.n}`).join('<br>')}</span></div>`:'';})()}</div>
     ${o.g?'':`<h4>Stats</h4>${T>=2?st:lock(2,'Exact stats and HP')}`}
     <h4>Skills</h4>${T>=2?`<div class="rows compact">${skl.map(skillLine).join('')}</div>`:lock(2,'The full skill list')}
     ${o.g?`<h4>Turning point and pattern</h4>${T>=3?`<p>${d.phase?`At ${Math.round(d.phase.at*100)}% HP: ${esc(d.phase.say)}${d.phase.summon?' It calls for help.':''}${d.phase.heal?` It heals ${Math.round(d.phase.heal*100)}%.`:''}`:'No turning point.'} It has a Break shield: hit its weaknesses and detonate reactions to crack it, then pile on while it reels.</p>`:lock(3,'Its turning point and attack pattern')}`:''}
@@ -9576,7 +9565,7 @@ function mBeast(m){
 function vLore(){
   const head=`<tr><th></th>${ELK.map(d=>`<th>${ico(d)}</th>`).join('')}</tr>`;
   const rows=ELK.map(a=>`<tr><th>${ico(a)}</th>${ELK.map(d=>{const v=CHART[a][d];return `<td class="${v>1?'s':v<1?'r':''}">${v>1?'2':v<1?'½':''}</td>`;}).join('')}</tr>`).join('');
-  const reacts=ELK.map(p=>{const L=Object.keys(REACT).map(k=>REACT[k]).filter(R=>R.p===p);if(!L.length)return '';return `<div class="row"><div class="grow"><b>${ico(p)} Prime with ${EL[p]}</b>${L.map(R=>`<small>✸ ${ico(R.d)} ${EL[R.d]} detonator: <b>${R.n}</b>, x${R.m} damage${R.splash?', splashes nearby foes':''}${R.fx?', may '+R.fx.map(f=>STS[f[0]].n).join(' or '):''}${R.strip?', strips boons':''}${R.selfFx?', grants Ward':''}${R.allyFx?', Regen for your line':''}.</small>`).join('')}</div></div>`;}).join('');
+  const reacts=ELK.map(p=>{const L=Object.values(REACT_V).filter(R=>R.p===p);if(!L.length)return '';return `<div class="row"><div class="grow"><b>${ico(p)} Prime with ${EL[p]}</b>${L.map(R=>`<small>✸ ${ico(R.d)} ${EL[R.d]} detonator: <b>${R.n}</b>, x${R.m} damage${R.splash?', splashes nearby foes':''}${R.fx?', may '+R.fx.map(f=>STS[f[0]].n).join(' or '):''}${R.strip?', strips boons':''}${R.selfFx?', grants Ward':''}${R.allyFx?', Regen for your line':''}.</small>`).join('')}</div></div>`;}).join('');
   const sts=Object.keys(STS).map(k=>`<div class="row"><i class="tag sttag ${STS[k].bad?'bad':'good'}" style="--c:${STS[k].c}">${stSym(k)}</i><div class="grow"><b>${STS[k].n}</b><small>${STS[k].d}</small></div></div>`).join('');
   const heard=(G&&G.loreHeard||[]);const lh=heard.length?`<h4>Heard in the realms</h4><div class="rows compact">${heard.map(x=>`<div class="row"><div class="grow"><small>${esc(ZS(x.s).n)}</small><b>${esc(x.t)}</b></div></div>`).join('')}</div>`:`<h4>Heard in the realms</h4><p class="note">Townsfolk drop hints about what waits in each realm. What you hear is written down here.</p>`;
   return (typeof overlayGuide==='function'?overlayGuide():'')+lh+`<h4>Element chart</h4><p class="note">Rows attack, columns defend. 2 means double damage, ½ means half. No element is immune to anything. Against two-element foes the matchups combine on a soft curve: two weaknesses deal x2.5 (never x4), a weakness plus a resist cancels out. Scourges, Calamities and heroes never take more than x2.</p>
@@ -10976,7 +10965,7 @@ function stPopHtml(){
   let title='',body='',src='',dur='';
   if(P.k==='all'){title='All effects';body=Object.keys(u.st||{}).filter(k=>STS[k]).map(k=>`<b>${stSym(k,"big")} ${STS[k].n}</b> (${u.st[k].t} turns): ${STS[k].d}`).join('<br>')+(u.primed?`<br><b>Primed: ${EL[u.primed.el]}</b> (${u.primed.t} turns)`:'')||'Nothing.';}
   else   if(P.k==='weather'){const W=WEATHER[B.weather]||WEATHER.clear;title=`${W.i} ${W.n}`;body=W.d;src='The weather over this battlefield.';dur='Lasts the whole fight.';}
-  else if(P.k==='primed'){if(!u.primed){B.stPop=null;return '';}const el=u.primed.el,L=Object.keys(REACT).map(k=>REACT[k]).filter(R=>R.p===el);
+  else if(P.k==='primed'){if(!u.primed){B.stPop=null;return '';}const el=u.primed.el,L=Object.values(REACT_V).filter(R=>R.p===el);
     title=`⟐ Primed: ${EL[el]}`;body=`A ✸ Detonator of a matching element sets off a reaction: ${L.map(R=>`${EL[R.d]} → ${R.n}`).join(', ')}. A primed foe can't be primed again until this fades or detonates.`;src=u.primed.by?`Primed by ${u.primed.by}.`:'';dur=`Fades after ${u.primed.t} more of its turn${u.primed.t===1?'':'s'}.`;}
   else if(P.k==='broken'){title='Broken';body='Its shield is shattered: it takes 50% more damage and loses its next turn.';dur='Recovers after it reels.';}
   else{const st=(u.st||{})[P.k],d=STS[P.k];if(!st||!d){B.stPop=null;return '';}title=d.n;body=d.d;
@@ -11637,9 +11626,9 @@ function fsCast(cid,sid,tid){const c=G.roster[cid],s=c&&fsSkills(c).find(x=>x.id
   if(s.revive&&s.t==='allyAll')G.party.forEach(id=>{const t=G.roster[id];if(t&&t.hp<=0&&!eff.includes(t)){t.hp=Math.max(1,Math.round(t.S.mhp*s.revive));t.st={};out.push(`${t.name} rises`);}});
   Object.values(G.roster).forEach(refresh);saveGame();sfx('blip');const msg=`${c.name} casts ${s.n}: ${out.join(', ')}.`;toast(msg);if(V.modal&&V.modal.type==='field')V.modal.msg=msg;}
 function mField(m){const P=G.party.map(id=>G.roster[id]).filter(Boolean),casters=P.filter(c=>fsSkills(c).length);
-  if(!casters.length)return box('Field skills','<p class="note">Nobody in your party knows a healing or reviving skill yet. Healers, Bards and a few others learn them as they level.</p>','<button class="btn gold" data-act="xBack">Back</button>');
+  if(!casters.length)return box('Field skills','<p class="note">Nobody in your party knows a healing, reviving or travel skill yet. Priests, Bards, Thieves, Mages and Archers learn them as they level.</p>','<button class="btn gold" data-act="xBack">Back</button>');
   const c=G.roster[m.hero]&&casters.includes(G.roster[m.hero])?G.roster[m.hero]:casters[0],sk=fsSkills(c),cur=sk.find(s=>s.id===m.sk);
-  return box('Field skills',`<p class="note">Heals, cures and revives cost MP. Buffs are not offered here: they fade when the next fight begins.</p>
+  return box('Field skills',`<p class="note">Heals, cures, revives and travel skills (Haste, Ward, Lantern and more) cost MP. Battle buffs are not offered here: they fade when the next fight begins.</p>
     <div class="chips">${casters.map(h=>`<button class="chip ${h.id===c.id?'on':''}" data-act="fsHero" data-arg="${h.id}">${esc(h.name)}</button>`).join('')}</div>
     <div class="row">${port(c.id,'sm')}<div class="grow"><b>${esc(c.name)}</b><span class="swb"><span class="swbl">MP</span>${bar(c.mp,c.S.mmp,'var(--mp)')}<span class="nums">${c.mp}/${c.S.mmp}</span></span></div></div>
     ${m.msg?`<p class="fsmsg" role="status">${esc(m.msg)}</p>`:''}
@@ -16303,7 +16292,10 @@ function p2Surprise(){if(!B)return;const P=B.front.filter(c=>c.hp>0),E=B.en.filt
   const free=Math.max(1,(SURPRISE&&SURPRISE.free)||1);P.forEach((c,k)=>{c.next=B.time+k*.001;});
   // foes wait until just before the earliest second action of any hero
   const t0=Math.min(...P.map(c=>c.next+free*delayOf(c,1)));E.forEach((e,k)=>{e.next=Math.max(e.next,t0-.01+k*.0001);});
-  B.surprise=1;banner('Surprise!','#7affc8');log('Surprise! The foes have not seen you. Your party strikes first.');}
+  // v0.10.9: named and shown as a sneak attack (banner, a float on every foe; the first one explains how it happened)
+  B.surprise=1;banner('Sneak attack!','#7affc8');log('Sneak attack! The foes never saw you coming. Your party strikes first.');
+  try{E.forEach(e=>fx(e,'Unaware','stat'));}catch(x){}
+  try{if(META&&META.cfg&&!META.cfg.sneakSeen){META.cfg.sneakSeen=1;saveMeta();log('Reach a roaming foe while it is still on patrol (no red "!" over it) and you get a free round like this one.');}}catch(x){}}
 HOOK.before('startBattle','p2world','surprise start: was the roamer still on patrol',function(spec){
   try{if(spec&&spec.roam&&P2.sur&&P2.sur.mid===spec.roam.mid&&P2.sur.i===spec.roam.i&&Date.now()-P2.sur.t<5000)spec.surprise=1;}catch(e){}P2.sur=null;});
 HOOK.after('startBattle','p2world','surprise start: the free round',function(r,spec){try{if(r!==false&&B&&spec&&spec.surprise&&!G.daily)p2Surprise();}catch(e){}});
@@ -20120,7 +20112,7 @@ function obReserves(){return G?Object.keys(G.roster).filter(id=>!G.party.include
 function obPrimedTip(e){const pe=e.primed.el;let best=null;
   try{obFront().forEach(c=>{if(best)return;known(c).forEach(s=>{if(best||s.role!=='det'||(s.mp||0)>c.mp)return;const x=skEls(s).find(el=>reactFor(pe,el));if(x)best={c,s,R:reactFor(pe,x)};});});}catch(err){}
   if(best)return `Primed with ${EL[pe]}: try ${p2Nm(best.c)}'s ${best.s.n} on ${e.name}.`;
-  const ds=Object.values(REACT).filter(R=>R.p===pe).map(R=>EL[R.d]);
+  const ds=Object.values(REACT_V).filter(R=>R.p===pe).map(R=>EL[R.d]);
   return `${e.name} is primed with ${EL[pe]}. Try a ${ds[0]} Detonator on it.`;}
 function obReactFx(R){const W={blind:'blinds',stun:'stuns',slow:'slows',burn:'burns',root:'roots',break:'breaks armor',weaken:'weakens',bleed:'makes it bleed'};
   const L=(R.fx||[]).map(f=>W[f[0]]).filter(Boolean);if(R.splash)L.push('splashes nearby foes');if(R.strip)L.push('strips buffs');if(R.selfFx)L.push('wards the caster');if(R.allyFx)L.push('heals your Vanguard over time');
@@ -20724,7 +20716,7 @@ try{const g=MENU_GROUPS.find(x=>x[0]==='guides');if(g){['charts','ailments','boo
   Object.assign(MENU_SUB,{charts:'Charts',ailments:'Ailments',boons:'Boons',gimmicks:'Boss gimmicks',fmis:'Guild missions'});}catch(e){}
 function g7Charts(){const head=`<tr><th></th>${ELK.map(d=>`<th>${ico(d)}</th>`).join('')}</tr>`;
   const rows=ELK.map(a=>`<tr><th>${ico(a)}</th>${ELK.map(d=>{const v=CHART[a][d];return `<td class="${v>1?'s':v<1?'r':''}">${v>1?'2':v<1?'½':''}</td>`;}).join('')}</tr>`).join('');
-  const reacts=ELK.map(p=>{const L=Object.keys(REACT).map(k=>REACT[k]).filter(R=>R.p===p);if(!L.length)return '';return `<div class="row"><div class="grow"><b>${ico(p)} Prime with ${EL[p]}</b>${L.map(R=>`<small>✸ ${ico(R.d)} ${EL[R.d]}: <b>${esc(R.n)}</b>, x${R.m} damage${R.splash?', splashes':''}${R.strip?', strips boons':''}${(R.fx||[]).length?', '+R.fx.map(f=>(STS[f[0]]?STS[f[0]].n:f[0])+(f[1]<1?' '+Math.round(f[1]*100)+'%':'')).join(', '):''}</small>`).join('')}</div></div>`;}).join('');
+  const reacts=ELK.map(p=>{const L=Object.values(REACT_V).filter(R=>R.p===p);if(!L.length)return '';return `<div class="row"><div class="grow"><b>${ico(p)} Prime with ${EL[p]}</b>${L.map(R=>`<small>✸ ${ico(R.d)} ${EL[R.d]}: <b>${esc(R.n)}</b>, x${R.m} damage${R.splash?', splashes':''}${R.strip?', strips boons':''}${(R.fx||[]).length?', '+R.fx.map(f=>(STS[f[0]]?STS[f[0]].n:f[0])+(f[1]<1?' '+Math.round(f[1]*100)+'%':'')).join(', '):''}</small>`).join('')}</div></div>`;}).join('');
   return `<h4>Element chart</h4><p class="note">Rows attack, columns defend. 2 means double damage, ½ means half. No element is immune to anything. Against two-element foes the matchups combine.</p><div class="chartw"><table class="chart">${head}${rows}</table></div>
     <h4>Reactions</h4><p class="note">⟐ A Primer marks a foe with its element for two turns. ✸ A Detonator of any other element sets off the reaction: every prime reacts with every other element.</p><div class="rows compact">${reacts}</div>`;}
 function g7Sts(bad){const ks=Object.keys(STS).filter(k=>!!STS[k].bad===bad);return `<div class="rows compact">${ks.map(k=>`<div class="row"><i class="tag sttag ${bad?'bad':'good'}" style="--c:${STS[k].c}">${stSym(k)}</i><div class="grow"><b>${esc(STS[k].n)}</b><small>${esc(STS[k].d)}</small></div></div>`).join('')}</div>`;}
@@ -23460,6 +23452,64 @@ BG.arena=function(ctx,W,H,R){const gy=bgGY(H),S=(c,a)=>{const h=hx(c);return `rg
   groundPlane(ctx,W,H,gy,['#e0c890','#d0b47a','#c0a068','#a88a58'],R,'#b89a68');
   {const g=ctx.createLinearGradient(0,gy,0,gy+H*.06);g.addColorStop(0,'rgba(60,40,20,.35)');g.addColorStop(1,'rgba(60,40,20,0)');ctx.fillStyle=g;ctx.fillRect(0,gy,W,H*.06);}
   for(let i=0;i<40;i++){const x=R()*W,y=gy+4+R()*(H-gy-6);ctx.fillStyle=R()<.5?'rgba(255,240,200,.35)':'rgba(120,90,50,.3)';ctx.fillRect(x,y,2+R()*3,1);}};
+
+// ===== field9.js (v0.10.9): travel field skills cast from the Field skills menu (party2.js) =====
+// Six skills that act on the overworld, not in battle. Each belongs to a class, and heroes of a matching element learn it too (lv FLD9.elLv).
+// The caster pays MP; the effect runs for a number of steps (G.fsx counters, ticked in arrive), or for the current map (Lantern).
+//   Haste (Thief, wind): the party walks faster.         Shadowstep (Thief, shadow): patrolling roamers do not notice you.
+//   Ward (Priest, light): no random battles (G.ward, the Holy Water counter; a chasing roamer still chases).
+//   Lure (Archer, Druid, earth): random battles twice as often.  Lantern (Mage, fire, light): wider map reveal and every chest marked.
+//   Marching Song (Bard): the party regains 2% HP every 10 steps.
+// Saved with the journey (G.fsx is a plain field: packG copies G; older saves start without it). Never in the Daily Trial.
+const FLD9={elLv:10,clsLv:5,
+  sk:[{id:'fld_haste',key:'haste',n:'Haste',mp:8,steps:120,cls:['thief'],els:['wind'],d:'The party walks half again as fast for 120 steps.'},
+      {id:'fld_shadow',key:'shadow',n:'Shadowstep',mp:8,steps:80,cls:['thief'],els:['shadow'],d:'Patrolling foes do not notice you for 80 steps. Walk into one for a sneak attack.'},
+      {id:'fld_ward',key:'ward',n:'Ward',mp:10,steps:60,cls:['healer'],els:['light'],d:'No random battles for 60 steps. A foe that is already chasing you still does.'},
+      {id:'fld_lure',key:'lure',n:'Lure',mp:4,steps:40,cls:['archer','druid'],els:['earth'],d:'Random battles come twice as often for 40 steps. Good for farming.'},
+      {id:'fld_lantern',key:'lantern',n:'Lantern',mp:6,cls:['mage'],els:['fire','light'],d:'Lights this map: you see farther and every chest on it is marked on the map.'},
+      {id:'fld_song',key:'song',n:'Marching Song',mp:10,steps:100,cls:['bard'],d:'The party regains 2% HP every 10 steps for 100 steps.'}],
+  hasteMul:.67,lureMul:2,lanternR:3,songEvery:10,songPct:.02};
+function fsx(){if(!G)return {};if(!G.fsx||typeof G.fsx!=='object')G.fsx={};return G.fsx;}
+function fld9Of(c){if(!c||!TPL[c.id]||G.daily)return [];const t=TPL[c.id],els=c.el||t.el||[];
+  return FLD9.sk.filter(f=>(f.cls.includes(t.cls)&&c.lv>=FLD9.clsLv)||((f.els||[]).some(e=>els.includes(e))&&c.lv>=FLD9.elLv))
+    .map(f=>({id:f.id,n:f.n,k:'field',t:'self',mp:f.mp,fld:f.key,d:f.d}));}
+// the Field skills menu lists them after the heals
+{const fs0=fsSkills;fsSkills=function(c){const L=fs0.apply(this,arguments);try{return L.concat(fld9Of(c));}catch(e){return L;}};}
+{const fc0=fsCast;fsCast=function(cid,sid,tid){const c=G&&G.roster[cid],s=c&&fld9Of(c).find(x=>x.id===sid);if(!s)return fc0.apply(this,arguments);
+  const say=t=>{toast(t);if(V.modal&&V.modal.type==='field')V.modal.msg=t;};
+  if(c.hp<=0)return say(`${c.name} is knocked out.`);if(c.mp<s.mp)return say(`${c.name} needs ${s.mp} MP.`);
+  const F=FLD9.sk.find(f=>f.key===s.fld),X=fsx(),m=WS.m;
+  if(s.fld==='lantern'){if(!m||m.kind==='town')return say('There is nothing to light in town.');X.lantern=m.id;fld9MarkChests(m);}
+  else if(s.fld==='ward'){if(G.ward>=F.steps)return say('A ward is already up.');G.ward=F.steps;}
+  else X[s.fld]=F.steps;
+  c.mp-=s.mp;saveGame();sfx('blip');try{wkwUpdate();}catch(e){}
+  say(`${c.name} casts ${s.n}. ${s.fld==='lantern'?'Every chest on this map is marked.':F.steps+' steps.'}`);};}
+// Lantern: chests count as seen (they show on the area map and minimap), and the reveal radius grows while on that map
+function fld9MarkChests(m){try{const s=seenOf(m);(m.chests||[]).forEach(([x,y])=>{const i=y*m.w+x;s[i>>3]|=1<<(i&7);});
+  for(let y=0;y<m.h;y++)for(let x=0;x<m.w;x++){const r=m.t[y][x];if(r==='C'||r==='K'){const i=y*m.w+x;s[i>>3]|=1<<(i&7);}}
+  let b='';for(let i=0;i<s.length;i++)b+=String.fromCharCode(s[i]);G.explored=G.explored||{};G.explored[m.id]=btoa(b);MAPCV.dirty=1;drawMini();}catch(e){}}
+{const ra0=revealAround;revealAround=function(){const m=WS.m,X=G&&G.fsx;if(!m||!X||X.lantern!==m.id)return ra0.apply(this,arguments);
+  const k=m.kind,R0=MAP_R[k];MAP_R[k]=(R0||6)+FLD9.lanternR;try{return ra0.apply(this,arguments);}finally{MAP_R[k]=R0;}};}
+// Haste: shorter steps
+{const sm0=stepMs;stepMs=function(){const v=sm0.apply(this,arguments);try{return G&&G.fsx&&G.fsx.haste>0&&!G.daily?Math.round(v*FLD9.hasteMul):v;}catch(e){return v;}};}
+// Shadowstep: a patrolling roamer's sight cone sees nothing
+{const rs0=roamSees;roamSees=function(){try{if(G&&G.fsx&&G.fsx.shadow>0&&!G.daily)return false;}catch(e){}return rs0.apply(this,arguments);};}
+// Lure: the encounter roll in arrive reads ENC_RATE; raise it for the step (same number of random calls)
+// step counters, the song's healing; Lantern ends when you leave its map
+{const ar0=arrive;arrive=function(){const X=G&&G.fsx,m=WS.m,lure=X&&X.lure>0&&m&&m.kind!=='town'&&!G.daily,k=META.cfg.enc,old=ENC_RATE[k];
+  if(lure)ENC_RATE[k]=(old??.11)*FLD9.lureMul;
+  let r;try{r=ar0.apply(this,arguments);}finally{if(lure)ENC_RATE[k]=old;}
+  try{if(X&&m&&m.kind!=='town'&&!G.daily){let ch=0;const ended=[],songOn=X.song>0;
+    ['haste','shadow','lure','song'].forEach(q=>{if(X[q]>0){X[q]--;ch=1;if(!X[q])ended.push(q);}});
+    if(songOn){X.songN=(X.songN|0)+1;if(X.songN%FLD9.songEvery===0)G.party.forEach(id=>{const c=G.roster[id];if(c&&c.hp>0)c.hp=Math.min(c.S.mhp,c.hp+Math.max(1,Math.round(c.S.mhp*FLD9.songPct)));});}
+    if(!(X.song>0))delete X.songN;
+    ended.forEach(q=>toast(`${FLD9.sk.find(f=>f.key===q).n} fades.`));if(ch)wkwUpdate();}}catch(e){}return r;};}
+HOOK.after('placeAt','field9','Lantern ends on another map',function(){try{const X=G&&G.fsx;if(X&&X.lantern&&WS.m&&X.lantern!==WS.m.id){delete X.lantern;wkwUpdate();}}catch(e){}});
+// HUD chips beside the weather (like the Holy Water ward)
+{const wk0=wkwUpdate;wkwUpdate=function(){const r=wk0.apply(this,arguments);try{const wk=$('wkw'),X=G&&G.fsx;if(!wk||!X)return r;
+  const ch=[['haste','»','Haste'],['shadow','◐','Shadowstep'],['lure','◎','Lure'],['song','♪','Marching Song']].filter(([k])=>X[k]>0)
+    .map(([k,i,n])=>`<span class="wchip fschip" title="${n}">${i} ${n} <b class="nums">${X[k]}</b></span>`).join('')+(X.lantern&&WS.m&&X.lantern===WS.m.id?'<span class="wchip fschip" title="Lantern: this map is lit">✦ Lantern</span>':'');
+  wk.querySelectorAll('.fschip').forEach(e=>e.remove());if(ch)wk.insertAdjacentHTML('beforeend',ch);}catch(e){}return r;};}
 
 window.__A={walkable,ceInit,tvSlots,genQuests,STARTERS,starterDraw,ECON,AUTO_NERF,rebuildBase,detLive,REACT,skEls,packContents,miniFor,AUTO_REW,ENC_RATE,ENC_MIN_STEPS,detNote,classSkills,stickCount,bestAll,calcStats,lookKey,vTemper,storyEchoUp,leaveDungeon,win,ldApply,genFort,caveOk,enterCave,siteHasMini,openChest,nextDlg,WS,mapIcoRects,roamSpawn,roamInterior,roamSees,mapTargets,DIRV,tileAt,STAGE_LV,autoBan,rollWeather,guardianDef,mapIssues,mapEntry,syncPools,bovAt,calFxAt,realmAt,REALMS,BOV,CAL_FX,overlayGuide,liftOverlay,drawGearIcon,gearIcon,itemIcon,RAW,sigKind,sigGid,personalDone,heroLook,hasSignature,LEGEND_IDS,facDirty,facCount,facRank,facRep,FACB,FAC,finishBattle,npcWords,npcHints,npcPool,titleMake,titleAdvance,TTS,placeAt,wkwUpdate,innSpot,getMap,monURL,enterVia,applyBossTheme,BTHEME,resetMaps,rebuildBase,shopStock,gearDesc,calcStats,gearMigrate,CLS_WPN,CLS_ARM,WPERK,WT_NAME,equipWhy,lootBase,GEAR,canEquip,gearOf,perkNote,FAM_MAT_V35,fbDraft,META:{get best(){return META.best},get codex(){return META.codex},get q(){return META.q}},saveMeta,OFF,offPending,offFlush,PROFILE,profileSync,codexSee,getMap,placeAt,interact,sanctumOpen,riftKeys,echoKeys,BONDS,bondKey,wkwUpdate,inTown,WS,LC,lsort,bestParty,fsCast,fsSkills,ldApply,MON,registerTamed,stickPower,stickCount,autoOne,planGear,bestTag,gainersFor,compGainFor,refresh,fitsFor,canEquip,gearOf,queueNewGear,ARENA,fxDur,banDur,stageTags,autoSwitchPick,layoutBattle,newChar,calcStats,limitSkill,limitTier,canStuck,dunReachable,LV_CAP,addXp,echoSpec,bossLvFor,fx,MON,log,effInfo,tierOf,perkOf,quirkDef,forgeCost,buyPlan,vJourney,modalBack,partySlots,limitOpen,town2Reached,skillKnown,known,classSkills,paceMigrate,unpackG,packG,makeEnemy,QUIRK,arrive,enterDungeon,wkwUpdate,useTravel,travelWhyNot,porkFlee,porkBlocked,encTile,campRest,buyPart,partLeft,alchStock,GAME_VERSION,CHANGELOG,ITEMS,tavernOffers,tavernPool,recruitFit,partyNeeds,vNext,CHALL,innSpot,RECIPES,MATS,FB,fbContext,REDEEM,legendJoin,legendQ,genQuests,dynActors,convInit,PROFILE,profileSync,checkArchive,GPOOL,FPOOL,guardianDef,saveMeta,archiveSkills,get G(){return G;},set G(v){G=v;},get B(){return B;},get V(){return V;},get META(){return META;},WS,ACT,render,newGame,placeAt,startBattle,autoTurn,advance,finishBattle,getMap,innSpot,setPause:p=>{PAUSE=p;},autoCfg,worldInputDir,inputSources,battleFrame,battleTheme,STS,MAPS,mapIssues,healMap,mimicReward,dropChest,interact,worldDraw,TPL,ZONES,ZS,newChar,recruit,saveGame,resetMaps,dynActors,tileAt,BV,refresh,genBounties,genQuests,vStarter,heroCard,heroURL,iconURL,masteryLine,AU,buildTrack,tone,noiseHit,MIDI,sfx,audioVol};
 ['heroRoles','SOLID','WEATHER','WX_BASE','weatherFX','superGuide','recruitCost','ceStart','ceStep','ceInit','cePool','wxList','SUPER_TABLE','superOk','facRank','facRep','facInit','facCount','facCredit','FAC','FMIS','facMissionList','facProg','tyOf','facSync','facMul','facBest','worldPlan','caveReward','enterCave','leaveCave','leaveDungeon','buildCaveMap','worldGraph','openWorldMap','sigReport','SIG_NAMES','starterDraw','ITEM_TIERS','gTierIdx','tierChip','gearIcon','starterSlots','STARTERS','CLK_LEN','CLK_PH','clockPhase','wxInfoBody','recipeOrder','recipeGain','recipeReady','recipeClose','effOf','calcDamage','healsUndead','storyEchoUp','riftKeys','echoDef','efCost','autoLocked','bossFightKey','learnScanAll','isSeen','mapMarks','genSub','subOK','subReq','ensureSub','inSub','tvSlots','tvInit','tvLeft','tvEvent','tvNextText','tvPool','tvDue','tvShuffle','mTavern','hireOK','TV_CAP','TV_CD','POOL_IDS','natPool','natOf','natRoll','NATURES','natInfo','natRerollCost','natChooseCost','NAT_CLASS','iconURL','seenOf','mapIcoDraw','drawMini','MAPCV','revealAround','fxLayer','numDur','compBonusText','compPerk','checkPhase','win','unitBox','LNQ','challVisible','challEligible','challState','isMimic','migrateCompanions','canSummon','summonComp','compOf','clockPhase','tickClock','isNight','rollWeather','wxStep','nightPool','encounterFoes','restAll','tameElite','openChest','rerollTavern','bestAll','gearTier','SV','svCheck','svFlush','svInit','svPush','svPull','svScan','svParse','svBackup','svPack','svUnpack','svProg','svCloudList','svDelDoc','svGet','svCap','slotState','slotKey','svDecode','SV_CH','svStatus','svSlotRaw','svLoad','loadRaw','svHash','svIdx'].forEach(k=>{try{Object.defineProperty(window.__A,k,{get:()=>eval(k)});}catch(e){}});

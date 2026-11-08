@@ -100,7 +100,10 @@ function p2Surprise(){if(!B)return;const P=B.front.filter(c=>c.hp>0),E=B.en.filt
   const free=Math.max(1,(SURPRISE&&SURPRISE.free)||1);P.forEach((c,k)=>{c.next=B.time+k*.001;});
   // foes wait until just before the earliest second action of any hero
   const t0=Math.min(...P.map(c=>c.next+free*delayOf(c,1)));E.forEach((e,k)=>{e.next=Math.max(e.next,t0-.01+k*.0001);});
-  B.surprise=1;banner('Surprise!','#7affc8');log('Surprise! The foes have not seen you. Your party strikes first.');}
+  // v0.10.9: named and shown as a sneak attack (banner, a float on every foe; the first one explains how it happened)
+  B.surprise=1;banner('Sneak attack!','#7affc8');log('Sneak attack! The foes never saw you coming. Your party strikes first.');
+  try{E.forEach(e=>fx(e,'Unaware','stat'));}catch(x){}
+  try{if(META&&META.cfg&&!META.cfg.sneakSeen){META.cfg.sneakSeen=1;saveMeta();log('Reach a roaming foe while it is still on patrol (no red "!" over it) and you get a free round like this one.');}}catch(x){}}
 HOOK.before('startBattle','p2world','surprise start: was the roamer still on patrol',function(spec){
   try{if(spec&&spec.roam&&P2.sur&&P2.sur.mid===spec.roam.mid&&P2.sur.i===spec.roam.i&&Date.now()-P2.sur.t<5000)spec.surprise=1;}catch(e){}P2.sur=null;});
 HOOK.after('startBattle','p2world','surprise start: the free round',function(r,spec){try{if(r!==false&&B&&spec&&spec.surprise&&!G.daily)p2Surprise();}catch(e){}});

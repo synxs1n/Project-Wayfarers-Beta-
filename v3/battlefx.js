@@ -28,7 +28,7 @@ function stPopHtml(){
   let title='',body='',src='',dur='';
   if(P.k==='all'){title='All effects';body=Object.keys(u.st||{}).filter(k=>STS[k]).map(k=>`<b>${stSym(k,"big")} ${STS[k].n}</b> (${u.st[k].t} turns): ${STS[k].d}`).join('<br>')+(u.primed?`<br><b>Primed: ${EL[u.primed.el]}</b> (${u.primed.t} turns)`:'')||'Nothing.';}
   else   if(P.k==='weather'){const W=WEATHER[B.weather]||WEATHER.clear;title=`${W.i} ${W.n}`;body=W.d;src='The weather over this battlefield.';dur='Lasts the whole fight.';}
-  else if(P.k==='primed'){if(!u.primed){B.stPop=null;return '';}const el=u.primed.el,L=Object.keys(REACT).map(k=>REACT[k]).filter(R=>R.p===el);
+  else if(P.k==='primed'){if(!u.primed){B.stPop=null;return '';}const el=u.primed.el,L=Object.values(REACT_V).filter(R=>R.p===el);
     title=`⟐ Primed: ${EL[el]}`;body=`A ✸ Detonator of a matching element sets off a reaction: ${L.map(R=>`${EL[R.d]} → ${R.n}`).join(', ')}. A primed foe can't be primed again until this fades or detonates.`;src=u.primed.by?`Primed by ${u.primed.by}.`:'';dur=`Fades after ${u.primed.t} more of its turn${u.primed.t===1?'':'s'}.`;}
   else if(P.k==='broken'){title='Broken';body='Its shield is shattered: it takes 50% more damage and loses its next turn.';dur='Recovers after it reels.';}
   else{const st=(u.st||{})[P.k],d=STS[P.k];if(!st||!d){B.stPop=null;return '';}title=d.n;body=d.d;

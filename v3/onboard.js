@@ -40,7 +40,7 @@ function obReserves(){return G?Object.keys(G.roster).filter(id=>!G.party.include
 function obPrimedTip(e){const pe=e.primed.el;let best=null;
   try{obFront().forEach(c=>{if(best)return;known(c).forEach(s=>{if(best||s.role!=='det'||(s.mp||0)>c.mp)return;const x=skEls(s).find(el=>reactFor(pe,el));if(x)best={c,s,R:reactFor(pe,x)};});});}catch(err){}
   if(best)return `Primed with ${EL[pe]}: try ${p2Nm(best.c)}'s ${best.s.n} on ${e.name}.`;
-  const ds=Object.values(REACT).filter(R=>R.p===pe).map(R=>EL[R.d]);
+  const ds=Object.values(REACT_V).filter(R=>R.p===pe).map(R=>EL[R.d]);
   return `${e.name} is primed with ${EL[pe]}. Try a ${ds[0]} Detonator on it.`;}
 function obReactFx(R){const W={blind:'blinds',stun:'stuns',slow:'slows',burn:'burns',root:'roots',break:'breaks armor',weaken:'weakens',bleed:'makes it bleed'};
   const L=(R.fx||[]).map(f=>W[f[0]]).filter(Boolean);if(R.splash)L.push('splashes nearby foes');if(R.strip)L.push('strips buffs');if(R.selfFx)L.push('wards the caster');if(R.allyFx)L.push('heals your Vanguard over time');

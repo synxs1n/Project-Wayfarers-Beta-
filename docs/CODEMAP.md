@@ -409,3 +409,9 @@ Still wrapped the old way (search for `name=function`, 5 or fewer each): `unpack
 - Daily Trial and sims depend on the order of `Math.random` and seeded RNG calls: do not add or move random calls in battle or
   generation code. Checks: `tools/chrome/v050p2daily.js` (OLDHTML = previous build), `tools/chrome/v063wa.js`, and
   `SEED=1 node tools/fullsim.js stage1` (and `xp`) before and after.
+
+## v0.10.8 to v0.11.x additions
+- `field9.js` (last in MODS) travel field skills: Haste, Shadowstep, Ward, Lure, Lantern, Marching Song (FLD9, G.fsx counters ticked in arrive)
+- `data.js` REACT is 28 order-free pairs (key = sorted pair); REACT_V holds both orientations as views for lists by prime; reactFor(primed,det) reads REACT_V
+- `ui.js` skPurpose / purposeTag (one purpose tag per skill, read from k, fx, t, cleanse, summon), skTagsFull (Settings > Skill tags)
+- `guild7.js` g7OnBoard: one rule for the board list and its "!" marker (boardState)

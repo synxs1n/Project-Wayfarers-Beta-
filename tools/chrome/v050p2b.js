@@ -45,9 +45,9 @@ const {open,chk,done}=require('./pw');
     const out={sur:!!B.surprise,banner:B.banner&&B.banner.txt,heroesFirst:ord.slice(0,P0.length).every(s=>s==='p')&&maxP<minE,ord:ord.join(''),ban:A.autoBan(B.spec),auto:B.auto,log:B.log.slice(-3).join(' / ')};
     A.finishBattle('x');A.V.modal=null;return out;},[mode,elite]);
   const s1=await sur('patrol');
-  chk(`2.2 touching an unaware roamer gives a surprise start (${s1.banner}, order ${s1.ord})`,s1.sur&&s1.banner==='Surprise!'&&s1.heroesFirst||JSON.stringify(s1));
+  chk(`2.2 touching an unaware roamer gives a surprise start (${s1.banner}, order ${s1.ord})`,s1.sur&&s1.banner==='Sneak attack!'&&s1.heroesFirst||JSON.stringify(s1));
   const s2=await sur('chase');
-  chk(`2.2 a roamer that saw you first fights normally (order ${s2.ord})`,!s2.sur&&s2.banner!=='Surprise!'||JSON.stringify(s2));
+  chk(`2.2 a roamer that saw you first fights normally (order ${s2.ord})`,!s2.sur&&s2.banner!=='Sneak attack!'||JSON.stringify(s2));
   const s3=await sur('patrol',true);
   chk(`2.2 an unaware elite still gives a surprise but keeps its no auto rule (${s3.ban})`,s3.sur&&/No auto/.test(s3.ban||'')||JSON.stringify(s3));
   // ---------- 2.6 dual types ----------

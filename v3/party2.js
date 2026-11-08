@@ -89,9 +89,9 @@ function fsCast(cid,sid,tid){const c=G.roster[cid],s=c&&fsSkills(c).find(x=>x.id
   if(s.revive&&s.t==='allyAll')G.party.forEach(id=>{const t=G.roster[id];if(t&&t.hp<=0&&!eff.includes(t)){t.hp=Math.max(1,Math.round(t.S.mhp*s.revive));t.st={};out.push(`${t.name} rises`);}});
   Object.values(G.roster).forEach(refresh);saveGame();sfx('blip');const msg=`${c.name} casts ${s.n}: ${out.join(', ')}.`;toast(msg);if(V.modal&&V.modal.type==='field')V.modal.msg=msg;}
 function mField(m){const P=G.party.map(id=>G.roster[id]).filter(Boolean),casters=P.filter(c=>fsSkills(c).length);
-  if(!casters.length)return box('Field skills','<p class="note">Nobody in your party knows a healing or reviving skill yet. Healers, Bards and a few others learn them as they level.</p>','<button class="btn gold" data-act="xBack">Back</button>');
+  if(!casters.length)return box('Field skills','<p class="note">Nobody in your party knows a healing, reviving or travel skill yet. Priests, Bards, Thieves, Mages and Archers learn them as they level.</p>','<button class="btn gold" data-act="xBack">Back</button>');
   const c=G.roster[m.hero]&&casters.includes(G.roster[m.hero])?G.roster[m.hero]:casters[0],sk=fsSkills(c),cur=sk.find(s=>s.id===m.sk);
-  return box('Field skills',`<p class="note">Heals, cures and revives cost MP. Buffs are not offered here: they fade when the next fight begins.</p>
+  return box('Field skills',`<p class="note">Heals, cures, revives and travel skills (Haste, Ward, Lantern and more) cost MP. Battle buffs are not offered here: they fade when the next fight begins.</p>
     <div class="chips">${casters.map(h=>`<button class="chip ${h.id===c.id?'on':''}" data-act="fsHero" data-arg="${h.id}">${esc(h.name)}</button>`).join('')}</div>
     <div class="row">${port(c.id,'sm')}<div class="grow"><b>${esc(c.name)}</b><span class="swb"><span class="swbl">MP</span>${bar(c.mp,c.S.mmp,'var(--mp)')}<span class="nums">${c.mp}/${c.S.mmp}</span></span></div></div>
     ${m.msg?`<p class="fsmsg" role="status">${esc(m.msg)}</p>`:''}

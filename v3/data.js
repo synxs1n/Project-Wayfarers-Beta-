@@ -4,6 +4,7 @@
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.10.9',['Reactions: back to 28, one per pair of elements, and each pair reacts the same whichever element was primed (Grave from shadow on an earth prime or earth on a shadow prime). Rain now boosts Steam and Conduct both ways. Every skill shows what it is mainly for (Damage, Heal, Buff, Debuff, Cure, Revive, Guard, Taunt or Summon) in battle, on the character sheet and when learned. Reaching a roaming foe before it spots you now reads clearly as a Sneak attack. Six travel skills in Field skills: Haste and Shadowstep (Thieves, wind and shadow heroes), Ward (Priests, light), Lure (Archers and Druids, earth), Lantern (Mages, fire and light) and Marching Song (Bards).']],
  ['Beta v0.10.8',['Fixes: the "?" beside a foe\'s HP bar no longer turns into an empty black box. The quest board only shows "!" when this town has a notice to accept or a quest is ready to claim. Chest gear no longer says "Legendary" (that tier is now Heroic; Legendary is for legend heroes) and quest rewards no longer say "Craft only" unless a recipe makes them. Bard dual arts that buff the party are no longer Detonators. Warriors\' Rend keeps its Bleed again. The new recruit popup shows each hero\'s elements, class and level. The party screen says when you need a town to swap. The skill list no longer lists what a detonator sets off (the foe cards show it), and moves are tagged "⟐ Primer" and "✸ Detonator" in full again (Settings > Skill tags: Full or Symbols).']],
  ['Beta v0.10.7',['Sanctums and Summons: the side fortresses are now Sanctums, and every one ends in a unique guardian. Beat it and it is bound to you: Priests (the Healer class, renamed) can Invoke it in battle. The Priest prays for one turn; on their next turn the guardian takes the field in place of the whole Vanguard for three of its turns, fighting with its own moves, then the Vanguard steps back in as it was (if the guardian is driven off, no more summoning that fight). It costs 30% of the Priest\'s MP, once per Priest per battle, never in the Daily Trial, and auto battle never prays. Monks from level 10 get Spirit Call: two turns of stillness, then a lesser form takes the Monk\'s own place for two turns. Guardians beaten in earlier journeys on this save count.']],
  ['Beta v0.10.6',['Town: the Notice Board keeps Quests and Bounties; Guilds and the Arena live in the Guild Hall (with Recruits and Natures). Two notices from the first town send you there: Sign the guild ledger and First blood in the pit. A notice can only be accepted in the town of its realm (legend quests and the post-journey notices show everywhere; claiming stays open anywhere). The first win of each arena tier awards a Medal, a charm your wayfarers can wear. Guides now has Charts (the element chart and all 56 reactions), Ailments, Boons and Boss gimmicks as their own tabs; Lore keeps the story. Fix: after a fight in a dungeon or on a field, nearby roamers back off instead of starting the next battle at once.']],
@@ -207,40 +208,15 @@ const REACT={
  'lightning+shadow':{n:'Blackout',p:'lightning',d:'shadow',m:1.3,fx:[['stun',.4],['blind',.4]]},
  'ice+light':{n:'Prism',p:'ice',d:'light',m:1.3,fx:[['blind',.4]],splash:.25},
  'ice+shadow':{n:'Deathchill',p:'shadow',d:'ice',m:1.4,fx:[['slow',.7],['weaken',.4]]},
- 'light+shadow':{n:'Eclipse',p:'light',d:'shadow',m:2.0},
- // v0.10.5 reverse directions: the same two elements, primed the other way round. Key 'primed>detonator' (the forward entries above keep their sorted 'a+b' key).
- 'fire>ice':{n:'Thermal Shock',p:'fire',d:'ice',m:1.3,fx:[['break',.7]]},
- 'fire>water':{n:'Scald',p:'fire',d:'water',m:1.3,fx:[['burn',.7],['weaken',.4]]},
- 'wind>fire':{n:'Firestorm',p:'wind',d:'fire',m:1.3,fx:[['burn',.8]],splash:.4},
- 'fire>earth':{n:'Cinderfall',p:'fire',d:'earth',m:1.25,fx:[['burn',.7],['break',.4]]},
- 'lightning>fire':{n:'Ignition',p:'lightning',d:'fire',m:1.5,fx:[['burn',.5]],splash:.3},
- 'light>fire':{n:'Sunfire',p:'light',d:'fire',m:1.4,fx:[['burn',.6],['blind',.4]]},
- 'fire>shadow':{n:'Cinder Curse',p:'fire',d:'shadow',m:1.3,fx:[['weaken',.7],['burn',.4]]},
- 'lightning>water':{n:'Static Rain',p:'lightning',d:'water',m:1.3,fx:[['stun',.5],['weaken',.4]]},
- 'ice>water':{n:'Glaze',p:'ice',d:'water',m:1.2,fx:[['slow',.8],['stun',.35]]},
- 'earth>water':{n:'Mudslide',p:'earth',d:'water',m:1.2,fx:[['slow',.8],['break',.4]]},
- 'water>wind':{n:'Waterspout',p:'water',d:'wind',m:1.25,fx:[['slow',.5]],splash:.35},
- 'water>light':{n:'Baptism',p:'water',d:'light',m:1.2,strip:1},
- 'water>shadow':{n:'Undertow',p:'water',d:'shadow',m:1.3,fx:[['weaken',.6],['slow',.5]]},
- 'wind>earth':{n:'Dust Devil',p:'wind',d:'earth',m:1.2,fx:[['blind',.7]],splash:.25},
- 'earth>lightning':{n:'Fulgurite',p:'earth',d:'lightning',m:1.3,fx:[['break',.6],['stun',.4]]},
- 'earth>ice':{n:'Frostheave',p:'earth',d:'ice',m:1.2,fx:[['root',.7],['slow',.5]]},
- 'light>earth':{n:'Monolith',p:'light',d:'earth',m:1.3,fx:[['break',.6]],selfFx:[['ward',1]]},
- 'shadow>earth':{n:'Entomb',p:'shadow',d:'earth',m:1.3,fx:[['root',.8],['weaken',.5]]},
- 'lightning>wind':{n:'Thunderclap',p:'lightning',d:'wind',m:1.3,fx:[['stun',.4]],splash:.4},
- 'ice>wind':{n:'Blizzard',p:'ice',d:'wind',m:1.3,fx:[['slow',.7],['bleed',.5]],splash:.3},
- 'wind>light':{n:'Halo Gust',p:'wind',d:'light',m:1.2,allyFx:[['regen',1]]},
- 'wind>shadow':{n:'Gloom Gale',p:'wind',d:'shadow',m:1.3,fx:[['blind',.6],['weaken',.5]]},
- 'lightning>ice':{n:'Superconduct',p:'lightning',d:'ice',m:1.5,fx:[['stun',.5],['slow',.5]]},
- 'light>lightning':{n:"Heaven's Bolt",p:'light',d:'lightning',m:1.5,fx:[['weaken',.5]]},
- 'shadow>lightning':{n:'Voidshock',p:'shadow',d:'lightning',m:1.3,fx:[['break',.5],['stun',.35]]},
- 'light>ice':{n:'Diamond Dust',p:'light',d:'ice',m:1.3,fx:[['blind',.5],['slow',.4]],splash:.3},
- 'ice>shadow':{n:'Black Ice',p:'ice',d:'shadow',m:1.4,fx:[['slow',.7],['bleed',.4]]},
- 'shadow>light':{n:'Dawnbreak',p:'shadow',d:'light',m:1.5,fx:[['weaken',.6]]}
+ 'light+shadow':{n:'Eclipse',p:'light',d:'shadow',m:2.0}
 };
-const reactKey=(a,b)=>{const k=[a,b].sort().join('+'),R=REACT[k];return R&&R.p===a?k:a+'>'+b;};// primed, detonator: forward pairs keep the sorted key, reverse pairs use 'primed>det'
-// v4.7: reactions need a PRIMER skill to set them up and a DETONATOR skill to set them off. Each reaction has one primer element and one detonator element.
-function reactFor(primed,det){if(primed===det)return null;const R=REACT[reactKey(primed,det)];return R&&R.p===primed&&R.d===det?R:null;}
+// v0.10.9: 28 order-free reactions. A pair reacts the same whichever of its two elements is primed (56 directed reactions in
+// v0.10.5 to v0.10.8). The key is the sorted pair; p and d on an entry above are just its listing order.
+const reactKey=(a,b)=>[a,b].sort().join('+');
+// REACT_V: both orientations of every pair as views ({...pair, p: the primed element, d: the detonator}), for lists by prime
+const REACT_V={};Object.keys(REACT).forEach(k=>{const R=REACT[k],[x,y]=k.split('+');REACT_V[x+'>'+y]=Object.assign({},R,{p:x,d:y,key:k});REACT_V[y+'>'+x]=Object.assign({},R,{p:y,d:x,key:k});});
+// v4.7: reactions need a PRIMER skill to set them up and a DETONATOR skill to set them off.
+function reactFor(primed,det){if(!primed||!det||primed===det)return null;return REACT_V[primed+'>'+det]||null;}
 const SKILL_ROLE={annotate:null,edge1:'det',edge2:'primer',titan:'det',lance1:'det',lance2:'primer',judge:'det',s1a:'primer',s1b:'det',s2a:'primer',s2b:'primer',s3a:'det',
  ray1:'primer',ray2:'det',shiv1:'det',shiv2:'primer',assn:'det',arrow1:'primer',arrow2:'det',chi1:'det',chi2:'primer',dragon:'det',tune1:'primer',tune2:'primer',combo:'det'};
 const MASTERY_BONUS=0.25;// v0.10.5: was .2
