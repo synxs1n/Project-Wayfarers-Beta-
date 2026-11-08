@@ -60,7 +60,7 @@ const LEARN=()=>{const A=__A,B=A.B,M=A.META.best;B.en.forEach(e=>{const b=M[e.ba
     chk(`simple: one key chip per card, no resist chips (${JSON.stringify(r.simple)})`,r.simple.every(c=>c.up<=1&&c.dn===0&&c.key<=1));
     chk(`expert: the chips are capped at two weak and two resist per foe (${JSON.stringify(r.expert)})`,r.expert.every(c=>c.up<=2&&c.dn<=2&&c.key===0)&&r.expert.some(c=>c.up+c.dn>1));
     chk('expert: strongest multipliers first',r.order);
-    chk(`hero cards: level shown in expert (${r.heroLv}), hidden in simple (${r.heroLvSimple})`,r.heroLv>0&&r.heroLvSimple===0);
+    chk(`hero cards: level shown in expert (${r.heroLv}) and in simple (${r.heroLvSimple}) (v0.10.4)`,r.heroLv>0&&r.heroLvSimple>0);
     chk(`a tap on the key chip shows that card's chips with a way back (${JSON.stringify(r.tap)})`,!!r.tap&&r.tap.up+r.tap.dn>=1&&r.tap.up<=2&&r.tap.dn<=2&&r.tap.less);
     chk(`the i panel shows the capped chips (${JSON.stringify(r.panel)})`,!!r.panel&&r.panel.up+r.panel.dn>=1&&r.panel.up<=2&&r.panel.dn<=2);
     await H.browser.close();}
