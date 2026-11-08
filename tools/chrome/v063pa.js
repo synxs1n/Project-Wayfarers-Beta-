@@ -65,13 +65,14 @@ const daily=await ev(()=>{const A=__A,G=A.G;G.daily=1;A.V.modal=null;A.ACT.bpOpe
 chk('Best Party stays off in the Daily Trial',daily===null||daily);
 
 // ---- Legendary only for LEGEND_IDS; Epic for the rare and epic tier wayfarers ----
+const __EPIC=await ev(()=>__A.TW.get('EPIC_IDS').filter(id=>!__A.LEGEND_IDS.includes(id)));
 const lg=await ev(()=>{const A=__A,ids=A.RAW?A.RAW.map(r=>r[0]):Object.keys(A.TPL);const L=A.LEGEND_IDS||['kaevan','nikaris','jaeson'];
   const bad=ids.filter(id=>/LEGENDARY/.test(__P6.heroTag(id))!==L.includes(id));
   const epic=ids.filter(id=>__P6.isEpic(id));const src=id=>A.TPL[id].src;
   return {bad,L,epic,epicSrc:[...new Set(epic.map(src))],legEpic:L.filter(id=>__P6.isEpic(id))};});
 console.log('tags',JSON.stringify(lg));
 chk('"Legendary" tag only on the legend heroes with legend quests',lg.bad.length===0&&lg.L.length===3||JSON.stringify(lg.bad));
-chk('rare tavern visitors and other epic tier wayfarers say "Epic" instead',lg.epic.includes('zephra')&&lg.epic.includes('vaelith')&&lg.legEpic.length===0&&lg.epicSrc.every(s=>/^(r|g)\d$|^x$/.test(s))||JSON.stringify(lg));
+chk('rare tavern visitors and other epic tier wayfarers say "Epic" instead',lg.epic.includes('zephra')&&lg.epic.includes('vaelith')&&lg.legEpic.length===0&&lg.epicSrc.every(s=>s!=='s'&&s!=='L')&&JSON.stringify(lg.epic.slice().sort())===JSON.stringify(__EPIC.slice().sort())||JSON.stringify(lg));
 const cards=await ev(([fn])=>{const A=__A,set=eval(fn);set({mira:10,lumen:10,oren:10,zephra:10,kaevan:10,brann:10,tess:10});A.G.party=['mira','lumen','oren'];
   A.V.modal={type:'menu',tab:'party'};A.render();const minis=[...document.querySelectorAll('#modal button.mini')].map(b=>({t:b.innerText,leg:b.classList.contains('leg'),epic:b.classList.contains('epic'),arg:b.dataset.arg}));
   const camp=[...document.querySelectorAll('#modal h4')].map(x=>x.textContent).find(t=>/Reserves/.test(t));A.V.modal=null;A.render();return {minis,camp};},[setRoster]);

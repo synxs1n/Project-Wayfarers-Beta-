@@ -110,6 +110,10 @@ const RAW=[
 const TPL={};RAW.forEach(r=>{TPL[r[0]]={id:r[0],n:r[1],cls:r[2],el:r[3],trait:r[4],bio:r[5],src:r[6],look:r[7]};});
 const STARTERS=RAW.filter(r=>r[6]==='s').map(r=>r[0]);
 const LEGEND_IDS=RAW.filter(r=>r[6]==='L').map(r=>r[0]);
+// v0.10.x: Epic is an explicit list (data, not derived from src or element count). Never a starter (src 's'), never Legendary. Mixed dual and single types.
+// Dual: guild gifts sylva dagna astra, Scourge/rare visitors zephra ember isolde nyx kessa solenne cyrene lysa skerry cadence prisma, and the Archive hero vaelith.
+// Single: kael (guild gift), plus borga ignar vael ione sleet hana helia (one per class, spread across elements).
+const EPIC_IDS=['kael','sylva','dagna','astra','vaelith','zephra','ember','isolde','nyx','kessa','solenne','cyrene','lysa','skerry','cadence','prisma','borga','ignar','vael','ione','sleet','hana','helia'];
 TPL.kaevan.title='Kaevan Temur, the Shadowstorm';TPL.nikaris.title='Nikaris Thornwhisper, the Beastwarden';TPL.jaeson.title='Jaeson Vael, the Stormfrost';TPL.vaelith.title='Vaelith Ashgrave, the Last Archivist';
 const GIFTS=['kael','sylva','gorm','dagna','astra'];
 const SIG={

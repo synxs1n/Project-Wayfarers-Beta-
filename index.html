@@ -104,7 +104,8 @@ small{font-size:.86rem;color:var(--mute)}
 .card.hero{text-align:left;display:grid;grid-template-columns:auto 1fr;gap:6px 12px;padding:12px;background:var(--wood);border:4px solid var(--ink);box-shadow:inset 0 0 0 2px #6a4a22;align-content:start}
 button.card.hero:hover{background:var(--wood2)}
 .card.sel{background:var(--wood2);box-shadow:inset 0 0 0 3px var(--gold)}
-.card.dual{box-shadow:inset 0 0 0 2px var(--dual)}
+.card.hero.dual,button.mini.dual{position:relative}
+.card.hero.dual::after,button.mini.dual::after{content:'';position:absolute;left:0;right:0;bottom:0;height:4px;pointer-events:none;background:linear-gradient(90deg,var(--d1,#c8a050) 50%,var(--d2,#7a8ac0) 50%)}
 .card .bio,.card .mline,.card>.btn{grid-column:1/-1}
 .card .bio{color:var(--mute);font-size:.88rem}
 .mline{font-size:.86rem}
@@ -248,7 +249,6 @@ ul.plain{padding-left:20px;display:grid;gap:6px}
 button.mini{display:grid;justify-items:center;gap:2px;padding:6px 4px;overflow:hidden;position:relative;background:rgba(0,0,0,.26);border:3px solid var(--ink);text-align:center}
 button.mini:hover{background:rgba(255,255,255,.07)}
 button.mini.in{border-color:var(--gold)}
-button.mini.dual{box-shadow:inset 0 0 0 2px var(--dual)}
 button.mini>img{width:68px;height:68px}
 .mh{display:flex;gap:14px;align-items:flex-start}
 .pbig{width:110px;height:110px;flex:none;background:radial-gradient(circle at 50% 70%,#6c5a3c,#2b2016);border:3px solid var(--ink);display:grid;place-items:center}
@@ -1090,7 +1090,7 @@ body.noscroll #p5save{top:auto!important;bottom:8px!important}
   box-shadow:inset 0 1px 0 rgba(255,200,180,.3),0 0 0 1px #000,0 3px 8px rgba(0,0,0,.45);font-size:1.1rem}:where(html:not(.flat)) .mclose:hover,:where(html:not(.flat)) .mclose:focus{background:linear-gradient(180deg,#983a30,#5e1c16);outline:2px solid var(--ui-gold-hi);outline-offset:1px}:where(html:not(.flat)) .mback{background:var(--ui-btn);border:1px solid rgba(246,214,150,.7);border-radius:4px;color:var(--ui-gold-hi);box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 0 0 1px #000,0 3px 8px rgba(0,0,0,.45)}:where(html:not(.flat)) .mback:hover,:where(html:not(.flat)) .mback:focus{background:var(--ui-btn-h);outline:2px solid var(--ui-gold-hi);outline-offset:1px}:where(html:not(.flat)) .btn{padding:11px 18px;background:var(--ui-btn);border:1px solid var(--ui-line);border-radius:4px;color:var(--text);font-weight:700;letter-spacing:.025em;
   box-shadow:inset 0 1px 0 rgba(255,240,210,.13),inset 0 -2px 0 rgba(0,0,0,.28),0 0 0 1px rgba(0,0,0,.7),0 3px 6px rgba(0,0,0,.32);text-shadow:0 1px 0 rgba(0,0,0,.6)}:where(html:not(.flat)) .btn.sm{padding:8px 12px}:where(html:not(.flat)) .btn:hover:not(:disabled){background:var(--ui-btn-h);border-color:var(--ui-gold-hi)}:where(html:not(.flat)) .btn.gold{background:var(--ui-goldbtn);color:#2a1700;border-color:#5f4115;text-shadow:0 1px 0 rgba(255,244,205,.55);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.65),inset 0 -2px 0 rgba(110,60,0,.35),0 0 0 1px #000,0 3px 8px rgba(0,0,0,.4),0 0 14px rgba(240,190,90,.2)}:where(html:not(.flat)) .btn.gold:hover:not(:disabled){background:linear-gradient(180deg,#fff0c0,#f3cf80 42%,#d29b45);border-color:#5f4115}:where(html:not(.flat)) .btn.daily{background:linear-gradient(180deg,#3b5f95,#22395f);border-color:rgba(170,205,255,.6);box-shadow:inset 0 1px 0 rgba(220,235,255,.25),inset 0 -2px 0 rgba(0,0,0,.3),0 0 0 1px #000,0 3px 6px rgba(0,0,0,.32)}:where(html:not(.flat)) .btn.daily:hover:not(:disabled){background:linear-gradient(180deg,#4a70aa,#2a4670);border-color:#cfe2ff}:where(html:not(.flat)) .btn:disabled{opacity:.42;box-shadow:0 0 0 1px rgba(0,0,0,.7)}:where(html:not(.flat)) .chip{padding:7px 12px;background:linear-gradient(180deg,#1f233a,#15182a);border:1px solid var(--ui-line-s);border-radius:4px;color:var(--text);box-shadow:0 0 0 1px rgba(0,0,0,.6)}:where(html:not(.flat)) .chip:hover:not(.on){border-color:var(--ui-line);background:linear-gradient(180deg,#282d4a,#1a1d33)}:where(html:not(.flat)) .chip.on{background:var(--ui-goldbtn);color:#2a1700;border-color:#5f4115;box-shadow:inset 0 1px 0 rgba(255,255,255,.6),0 0 0 1px #000,0 0 10px rgba(240,190,90,.22)}:where(html:not(.flat)) .chips.mgrp{gap:4px;padding:4px;background:rgba(5,6,12,.45);border:1px solid var(--ui-line-s);border-radius:5px}:where(html:not(.flat)) .chips.mgrp .chip{border-color:transparent;background:transparent;box-shadow:none;color:#e6dcc2;padding:8px 10px}:where(html:not(.flat)) .chips.mgrp .chip:hover:not(.on){background:rgba(255,255,255,.05);border-color:var(--ui-line-s)}:where(html:not(.flat)) .chips.mgrp .chip.on{background:var(--ui-goldbtn);color:#2a1700;border-color:#5f4115;box-shadow:inset 0 1px 0 rgba(255,255,255,.6),0 0 0 1px #000,0 2px 8px rgba(240,190,90,.25)}:where(html:not(.flat)) .chips.msub{padding:0 2px;gap:2px;background:none;border-radius:0;border-bottom:1px solid var(--ui-line-s)}:where(html:not(.flat)) .chips.msub .chip{background:transparent;border:0;border-bottom:2px solid transparent;border-radius:0;box-shadow:none;color:var(--mute);padding:8px 10px 6px;font-size:13px;font-weight:700}:where(html:not(.flat)) .chips.msub .chip:hover:not(.on){color:var(--text);border-bottom-color:var(--ui-line-s)}:where(html:not(.flat)) .chips.msub .chip.on{background:linear-gradient(180deg,rgba(238,198,112,0),rgba(238,198,112,.16));color:var(--ui-gold-hi);border-bottom-color:var(--ui-gold);box-shadow:none}:where(html:not(.flat)) .row{padding:9px 11px;background:linear-gradient(90deg,rgba(255,255,255,.05),rgba(255,255,255,.018));border:1px solid rgba(217,180,106,.2);border-radius:4px;
-  box-shadow:inset 0 1px 0 rgba(255,240,200,.05),0 1px 0 rgba(0,0,0,.4)}:where(html:not(.flat)) button.row:hover,:where(html:not(.flat)) .row[data-act]:hover{background:var(--ui-sel);border-color:var(--ui-line)}:where(html:not(.flat)) .panel.scroll .row{background:rgba(255,250,232,.45);border-color:rgba(90,59,23,.3);box-shadow:none}:where(html:not(.flat)) .row .m{color:var(--mute)}:where(html:not(.flat)) .card.hero{background:linear-gradient(180deg,#20253c,#151829);border:1px solid var(--ui-line-s);border-radius:5px;box-shadow:inset 0 1px 0 rgba(255,240,200,.06),0 0 0 1px rgba(0,0,0,.6),0 4px 12px rgba(0,0,0,.3)}:where(html:not(.flat)) button.card.hero:hover{background:linear-gradient(180deg,#282e4a,#1a1d31);border-color:var(--ui-line)}:where(html:not(.flat)) .card.sel{background:linear-gradient(180deg,#2c2a2a,#1d1b22);border-color:var(--ui-gold-hi);box-shadow:inset 0 0 0 1px var(--ui-gold),0 0 0 1px #000,0 0 16px rgba(240,190,90,.3)}:where(html:not(.flat)) .card.dual{border-color:rgba(200,154,255,.6)}:where(html:not(.flat)) .slot,:where(html:not(.flat)) button.mini,:where(html:not(.flat)) .eqrow,:where(html:not(.flat)) .swc{background:linear-gradient(180deg,#1e2238,#141729);border:1px solid var(--ui-line-s);border-radius:5px;box-shadow:inset 0 1px 0 rgba(255,240,200,.06),0 0 0 1px rgba(0,0,0,.55)}:where(html:not(.flat)) .slot:hover,:where(html:not(.flat)) button.mini:hover{background:linear-gradient(180deg,#272c48,#191c31);border-color:var(--ui-line)}:where(html:not(.flat)) button.mini.in{border-color:var(--ui-gold);box-shadow:inset 0 0 0 1px rgba(217,180,106,.5),0 0 0 1px #000}:where(html:not(.flat)) .slot.f{border-color:rgba(217,180,106,.55)}:where(html:not(.flat)) .swc.sel{border-color:var(--ui-gold-hi);box-shadow:0 0 0 1px var(--ui-gold),0 0 14px rgba(240,190,90,.35)}:where(html:not(.flat)) .swc.empty{background:linear-gradient(180deg,rgba(30,34,56,.5),rgba(20,23,41,.5));border-style:dashed}:where(html:not(.flat)) .eqs{background:linear-gradient(180deg,#1a1e33,#121426);border:1px solid var(--ui-line-s);border-radius:4px}:where(html:not(.flat)) .eqs:hover{border-color:var(--ui-line);background:linear-gradient(180deg,#232845,#171a2e)}:where(html:not(.flat)) .pc.rs.swapok:hover,:where(html:not(.flat)) .pc.rs.swapok:focus{background:linear-gradient(180deg,#2c2a2a,#1d1b22)}:where(html:not(.flat)) .stats span{border-radius:3px}:where(html:not(.flat)) .mast{border-radius:3px;border-width:1px}:where(html:not(.flat)) .trait{border-radius:3px;border-width:1px}:where(html:not(.flat)) .el{border-radius:10px;border-width:1px}:where(html:not(.flat)) .innb .big{border-radius:4px}:where(html:not(.flat)) .savebar{background:linear-gradient(180deg,#22273f,#181b2e);border:1px solid var(--ui-line);border-radius:4px;box-shadow:0 0 0 1px #000,0 6px 14px rgba(0,0,0,.4)}:where(html:not(.flat)) .savebar.ok{border-color:#7aff8a;box-shadow:0 0 0 1px #000,0 0 10px rgba(122,255,138,.25)}:where(html:not(.flat)) .tvbar{border:1px solid var(--ui-line-s);border-radius:4px;background:rgba(0,0,0,.2)}:where(html:not(.flat)) .chips.msub+.swgridwrap,:where(html:not(.flat)) .swgridwrap{gap:6px}:where(html:not(.flat)) .port{background:radial-gradient(circle at 50% 70%,#3e4670,#151827 75%);border:2px solid #a8874c;border-radius:3px;box-shadow:0 0 0 1px #000,inset 0 0 0 1px rgba(0,0,0,.65),inset 0 0 8px rgba(0,0,0,.5)}:where(html:not(.flat)) .pbig{background:radial-gradient(circle at 50% 70%,#3e4670,#151827 75%);border:2px solid #a8874c;border-radius:4px;box-shadow:0 0 0 1px #000,inset 0 0 0 1px rgba(0,0,0,.65),inset 0 0 14px rgba(0,0,0,.5),0 4px 12px rgba(0,0,0,.35)}:where(html:not(.flat)) .bar{background:#05060b;border:1px solid #000;border-radius:2px;box-shadow:0 0 0 1px rgba(217,180,106,.28);overflow:hidden}:where(html:not(.flat)) .bar>i{background:linear-gradient(180deg,rgba(255,255,255,.42),rgba(255,255,255,.08) 45%,rgba(0,0,0,.2)),var(--c);border-radius:1px}:where(html:not(.flat)) .hdr{padding:2px 0 7px;border-bottom:1px solid transparent;background:linear-gradient(90deg,rgba(217,180,106,0),rgba(217,180,106,.35) 30%,rgba(217,180,106,.35) 70%,rgba(217,180,106,0)) left bottom/100% 1px no-repeat;margin-bottom:4px}:where(html:not(.flat)) .brand b{color:#f6dc9a;text-shadow:0 2px 0 #000,0 0 14px rgba(240,190,90,.28)}:where(html:not(.flat)) .brand small{color:var(--mute);font-weight:600;letter-spacing:.02em}:where(html:not(.flat)) .wallet{background:linear-gradient(180deg,#151829,#0b0d17);border:1px solid var(--ui-line);border-radius:999px;padding:4px 12px 4px 6px;color:var(--ui-gold-hi);box-shadow:inset 0 1px 0 rgba(255,240,200,.08),0 0 0 1px #000}:where(html:not(.flat)) .hdr .btn.sm{min-width:40px;min-height:40px;padding:6px 10px}:where(html:not(.flat)) .title{gap:14px}:where(html:not(.flat)) .tstage{border:1px solid #6f5730;border-radius:4px;box-shadow:inset 0 0 0 3px #0b0d17,0 0 0 1px #000,0 0 0 4px rgba(217,180,106,.2),0 16px 40px rgba(0,0,0,.6)}:where(html:not(.flat)) .tstage::after{content:"";position:absolute;inset:0;pointer-events:none;
+  box-shadow:inset 0 1px 0 rgba(255,240,200,.05),0 1px 0 rgba(0,0,0,.4)}:where(html:not(.flat)) button.row:hover,:where(html:not(.flat)) .row[data-act]:hover{background:var(--ui-sel);border-color:var(--ui-line)}:where(html:not(.flat)) .panel.scroll .row{background:rgba(255,250,232,.45);border-color:rgba(90,59,23,.3);box-shadow:none}:where(html:not(.flat)) .row .m{color:var(--mute)}:where(html:not(.flat)) .card.hero{background:linear-gradient(180deg,#20253c,#151829);border:1px solid var(--ui-line-s);border-radius:5px;box-shadow:inset 0 1px 0 rgba(255,240,200,.06),0 0 0 1px rgba(0,0,0,.6),0 4px 12px rgba(0,0,0,.3)}:where(html:not(.flat)) button.card.hero:hover{background:linear-gradient(180deg,#282e4a,#1a1d31);border-color:var(--ui-line)}:where(html:not(.flat)) .card.sel{background:linear-gradient(180deg,#2c2a2a,#1d1b22);border-color:var(--ui-gold-hi);box-shadow:inset 0 0 0 1px var(--ui-gold),0 0 0 1px #000,0 0 16px rgba(240,190,90,.3)}:where(html:not(.flat)) .slot,:where(html:not(.flat)) button.mini,:where(html:not(.flat)) .eqrow,:where(html:not(.flat)) .swc{background:linear-gradient(180deg,#1e2238,#141729);border:1px solid var(--ui-line-s);border-radius:5px;box-shadow:inset 0 1px 0 rgba(255,240,200,.06),0 0 0 1px rgba(0,0,0,.55)}:where(html:not(.flat)) .slot:hover,:where(html:not(.flat)) button.mini:hover{background:linear-gradient(180deg,#272c48,#191c31);border-color:var(--ui-line)}:where(html:not(.flat)) button.mini.in{border-color:var(--ui-gold);box-shadow:inset 0 0 0 1px rgba(217,180,106,.5),0 0 0 1px #000}:where(html:not(.flat)) .slot.f{border-color:rgba(217,180,106,.55)}:where(html:not(.flat)) .swc.sel{border-color:var(--ui-gold-hi);box-shadow:0 0 0 1px var(--ui-gold),0 0 14px rgba(240,190,90,.35)}:where(html:not(.flat)) .swc.empty{background:linear-gradient(180deg,rgba(30,34,56,.5),rgba(20,23,41,.5));border-style:dashed}:where(html:not(.flat)) .eqs{background:linear-gradient(180deg,#1a1e33,#121426);border:1px solid var(--ui-line-s);border-radius:4px}:where(html:not(.flat)) .eqs:hover{border-color:var(--ui-line);background:linear-gradient(180deg,#232845,#171a2e)}:where(html:not(.flat)) .pc.rs.swapok:hover,:where(html:not(.flat)) .pc.rs.swapok:focus{background:linear-gradient(180deg,#2c2a2a,#1d1b22)}:where(html:not(.flat)) .stats span{border-radius:3px}:where(html:not(.flat)) .mast{border-radius:3px;border-width:1px}:where(html:not(.flat)) .trait{border-radius:3px;border-width:1px}:where(html:not(.flat)) .el{border-radius:10px;border-width:1px}:where(html:not(.flat)) .innb .big{border-radius:4px}:where(html:not(.flat)) .savebar{background:linear-gradient(180deg,#22273f,#181b2e);border:1px solid var(--ui-line);border-radius:4px;box-shadow:0 0 0 1px #000,0 6px 14px rgba(0,0,0,.4)}:where(html:not(.flat)) .savebar.ok{border-color:#7aff8a;box-shadow:0 0 0 1px #000,0 0 10px rgba(122,255,138,.25)}:where(html:not(.flat)) .tvbar{border:1px solid var(--ui-line-s);border-radius:4px;background:rgba(0,0,0,.2)}:where(html:not(.flat)) .chips.msub+.swgridwrap,:where(html:not(.flat)) .swgridwrap{gap:6px}:where(html:not(.flat)) .port{background:radial-gradient(circle at 50% 70%,#3e4670,#151827 75%);border:2px solid #a8874c;border-radius:3px;box-shadow:0 0 0 1px #000,inset 0 0 0 1px rgba(0,0,0,.65),inset 0 0 8px rgba(0,0,0,.5)}:where(html:not(.flat)) .pbig{background:radial-gradient(circle at 50% 70%,#3e4670,#151827 75%);border:2px solid #a8874c;border-radius:4px;box-shadow:0 0 0 1px #000,inset 0 0 0 1px rgba(0,0,0,.65),inset 0 0 14px rgba(0,0,0,.5),0 4px 12px rgba(0,0,0,.35)}:where(html:not(.flat)) .bar{background:#05060b;border:1px solid #000;border-radius:2px;box-shadow:0 0 0 1px rgba(217,180,106,.28);overflow:hidden}:where(html:not(.flat)) .bar>i{background:linear-gradient(180deg,rgba(255,255,255,.42),rgba(255,255,255,.08) 45%,rgba(0,0,0,.2)),var(--c);border-radius:1px}:where(html:not(.flat)) .hdr{padding:2px 0 7px;border-bottom:1px solid transparent;background:linear-gradient(90deg,rgba(217,180,106,0),rgba(217,180,106,.35) 30%,rgba(217,180,106,.35) 70%,rgba(217,180,106,0)) left bottom/100% 1px no-repeat;margin-bottom:4px}:where(html:not(.flat)) .brand b{color:#f6dc9a;text-shadow:0 2px 0 #000,0 0 14px rgba(240,190,90,.28)}:where(html:not(.flat)) .brand small{color:var(--mute);font-weight:600;letter-spacing:.02em}:where(html:not(.flat)) .wallet{background:linear-gradient(180deg,#151829,#0b0d17);border:1px solid var(--ui-line);border-radius:999px;padding:4px 12px 4px 6px;color:var(--ui-gold-hi);box-shadow:inset 0 1px 0 rgba(255,240,200,.08),0 0 0 1px #000}:where(html:not(.flat)) .hdr .btn.sm{min-width:40px;min-height:40px;padding:6px 10px}:where(html:not(.flat)) .title{gap:14px}:where(html:not(.flat)) .tstage{border:1px solid #6f5730;border-radius:4px;box-shadow:inset 0 0 0 3px #0b0d17,0 0 0 1px #000,0 0 0 4px rgba(217,180,106,.2),0 16px 40px rgba(0,0,0,.6)}:where(html:not(.flat)) .tstage::after{content:"";position:absolute;inset:0;pointer-events:none;
   background:var(--orn-g-tl) left 4px top 4px no-repeat,var(--orn-g-tr) right 4px top 4px no-repeat,var(--orn-g-bl) left 4px bottom 4px no-repeat,var(--orn-g-br) right 4px bottom 4px no-repeat,
     radial-gradient(ellipse at 50% 55%,rgba(0,0,0,0) 60%,rgba(0,0,0,.35));box-shadow:inset 0 0 0 1px rgba(217,180,106,.45)}:where(html:not(.flat)) .logo{color:#f8dd94;text-shadow:0 3px 0 #2a1406,0 5px 0 #000,0 0 28px rgba(240,180,80,.4);letter-spacing:.01em;margin-top:4px}:where(html:not(.flat)) .sub{display:flex;align-items:center;justify-content:center;gap:12px;font:500 1.05rem/1 var(--fd);color:var(--ui-gold);letter-spacing:.32em;text-transform:uppercase}:where(html:not(.flat)) .sub::before,:where(html:not(.flat)) .sub::after{content:"";width:min(18vw,90px);height:13px;background:var(--orn-div) center/120px 13px no-repeat}:where(html:not(.flat)) .sub::before{background-position:right center}:where(html:not(.flat)) .sub::after{background-position:left center}:where(html:not(.flat)) .tagline{color:#e6dbc0;max-width:560px;margin:0 auto}:where(html:not(.flat)) .title .ver{color:var(--mute);opacity:.85;font-size:.76rem;letter-spacing:.12em;text-transform:uppercase}:where(html:not(.flat)) .title>.btnrow.center{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;width:100%;max-width:460px;margin:0 auto}:where(html:not(.flat)) .title>.btnrow.center>.btn{width:100%;min-height:44px}:where(html:not(.flat)) .title>.btnrow.center>.btn:first-child{grid-column:1/-1;min-height:52px;font-size:1.1rem;letter-spacing:.06em}:where(html:not(.flat)) .title>.btnrow.center>.btn:last-child:nth-child(even){grid-column:1/-1}:where(html:not(.flat)) .pitch{padding:14px 16px 14px 18px;background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.01));border:1px solid var(--ui-line-s);border-radius:5px;box-shadow:inset 0 0 0 3px rgba(9,10,18,.6)}:where(html:not(.flat)) .pitch li{color:#e9dfc6}:where(html:not(.flat)) .pitch li::before{width:7px;height:7px;background:none;border:1px solid var(--ui-gold);box-shadow:inset 0 0 0 1.5px #0d0f1a,inset 0 0 0 3px var(--ui-gold)}:where(html:not(.flat)) .wview,:where(html:not(.flat)) .bwrap{border-color:#08090f;box-shadow:0 0 0 1px rgba(217,180,106,.7),0 0 0 2px #000,0 10px 26px rgba(0,0,0,.5)}:where(html:not(.flat)) .wloc{border:0;border-radius:0;padding:7px 30px 8px;color:#f8e2a4;letter-spacing:.06em;text-shadow:0 2px 0 #000;
   background:linear-gradient(90deg,rgba(217,180,106,0),rgba(217,180,106,.8) 25%,rgba(217,180,106,.8) 75%,rgba(217,180,106,0)) left top/100% 1px no-repeat,
@@ -1751,6 +1751,10 @@ html.rm .battle.b3 .cmd .mi.b9glow{animation:none}
 .battle.b3 .uct .effa{flex:none;font-size:.7rem;font-weight:900;line-height:1}
 .battle.b3 .uct .effa.up{color:#6fe08a}.battle.b3 .uct .effa.dn{color:#ff6a5a}.battle.b3 .uct .effa.im{color:#ccc}
 .udbox,.udbox .b9det,.udbox .b9chips{min-width:0;max-width:100%}.udet .b9chips>*{max-width:100%;white-space:normal}
+/* v0.11.8: reserve hero cards show MP too (a thin second bar under HP) */
+.battle.b3 .pgroup.rsv .pc.rs .ucr.ucrm .bar{height:5px}
+.battle.b3 .pgroup.rsv .pc.rs .ucr.ucrm .nums{color:#a8d0ff}
+.battle.b3.m-tall .pgroup.rsv .pcw .pc.rs{min-height:44px}
 /* Beta v0.7.0 battle information and input (battle5.js) */
 /* stage intent label: a box laid out by b3Lay (logical stage px) */
 .bstage .b5it{display:grid;place-items:center;padding:0;border-radius:2px;border:.6px solid #150b17;background:rgba(21,11,23,.86);color:#ffd8c8;pointer-events:none;z-index:6;box-shadow:0 0 0 .5px rgba(255,255,255,.25);overflow:hidden}
@@ -1832,7 +1836,7 @@ html.rm .battle.b3 .cmd .mi.b9glow{animation:none}
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.11.7";const APP_BUILD="6388b52136cd";
+(function(){const APP_VER="0.11.7";const APP_BUILD="65afcf1834ac";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2036,7 +2040,7 @@ const CHAIN={leap:.55,max:4};
 // G5 (v0.10.4, chain5.js): the Guard cue and reward. Foes plan their target with their move (the telegraph shows it); the Guard button
 // glows when the acting hero is the planned target of a hit worth heavy of their HP or more (or of two foes). A hero who guards a
 // hit aimed at them acts again sooner: their next turn costs quick of the usual delay.
-const G5={heavy:.3,quick:.7};
+const G5={heavy:.3,quick:.7,lb:12};// lb (v0.11.8): Limit gauge a hero gains for a hit taken while guarding
 // ==== 3. Foes and bosses: boss levels and muscle, field packs, creep, echoes, roamers, side sites, mimics, surprise starts ====
 // SURPRISE: touching a roaming dungeon foe that has not seen you gives a free first round: every hero in the vanguard acts free times
 // before any foe moves. A "Surprise!" banner shows. Elite roamers keep their no auto rule.
@@ -2156,7 +2160,9 @@ const READY={lvGap:2,potions:4,revives:2};
 //   boss: how much more the Boss ready formation values the boss's element and archetype (or the area's, once the boss is down);
 //   overlap: cost per hero shared with earlier formations (Fresh mix: Balanced; Rotation: all; Boss ready: none, it says when it matches Balanced);
 //   train: a hero this many levels or more below the roster's top level is a trainee; at most max trainees in a Training team.
-const BP6={str:.5,weak:.55,weakPen:1.6,role:{tank:[1,.15,-.4],heal:[1,.3,-.3],sup:[.35,-.05,-.2],dmg:[.4,.35,.12,0]},pr:.4,de:.4,dup:.28,dl:.08,el:.05,
+// v0.11.8: el per distinct element in the six (was .05, too small to matter), elDup per repeat of an element, rest: Fresh mix bonus for a hero
+// who has not fought lately (full after 20 battles out, or never fought)
+const BP6={str:.5,weak:.55,weakPen:1.6,role:{tank:[1,.15,-.4],heal:[1,.3,-.3],sup:[.35,-.05,-.2],dmg:[.4,.35,.12,0]},pr:.4,de:.4,dup:.28,dl:.08,el:.3,elDup:.2,rest:.6,
   boss:{el:3,arch:2,area:2.5},overlap:{boss:0,mix:.32,rot:.32},train:{gap:3,max:4},
   fly:{one:1.2,two:.35,archer:.45,boss:.6}};// v0.8.1 fly: flying foes ahead want real ranged attackers (party3.js p6Fly)
 // Beta v0.6.3: Make camp (v063prog.js)
@@ -2520,7 +2526,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.11.7";const APP_BUILD="6388b52136cd";
+const APP_VER="0.11.7";const APP_BUILD="65afcf1834ac";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2969,6 +2975,10 @@ const RAW=[
 const TPL={};RAW.forEach(r=>{TPL[r[0]]={id:r[0],n:r[1],cls:r[2],el:r[3],trait:r[4],bio:r[5],src:r[6],look:r[7]};});
 const STARTERS=RAW.filter(r=>r[6]==='s').map(r=>r[0]);
 const LEGEND_IDS=RAW.filter(r=>r[6]==='L').map(r=>r[0]);
+// v0.10.x: Epic is an explicit list (data, not derived from src or element count). Never a starter (src 's'), never Legendary. Mixed dual and single types.
+// Dual: guild gifts sylva dagna astra, Scourge/rare visitors zephra ember isolde nyx kessa solenne cyrene lysa skerry cadence prisma, and the Archive hero vaelith.
+// Single: kael (guild gift), plus borga ignar vael ione sleet hana helia (one per class, spread across elements).
+const EPIC_IDS=['kael','sylva','dagna','astra','vaelith','zephra','ember','isolde','nyx','kessa','solenne','cyrene','lysa','skerry','cadence','prisma','borga','ignar','vael','ione','sleet','hana','helia'];
 TPL.kaevan.title='Kaevan Temur, the Shadowstorm';TPL.nikaris.title='Nikaris Thornwhisper, the Beastwarden';TPL.jaeson.title='Jaeson Vael, the Stormfrost';TPL.vaelith.title='Vaelith Ashgrave, the Last Archivist';
 const GIFTS=['kael','sylva','gorm','dagna','astra'];
 const SIG={
@@ -5251,7 +5261,7 @@ function gearTier(){return Math.max(0,Math.min(5,G.stage));}
 
 // ----- save / load -----
 function packG(){
-  const r={};Object.keys(G.roster).forEach(id=>{const c=G.roster[id];r[id]={lv:c.lv,xp:c.xp,eq:c.eq,hp:c.hp,mp:c.mp,alloc:c.alloc,pts:c.pts,auto:c.auto,lb:c.lb||0,vet:c.vet||0,legacy:c.legacy||0,pace:c.pace||0,ail:c.ail&&Object.keys(c.ail).length?c.ail:undefined,bt:c.bt!=null?c.bt:undefined,keep:c.keep||undefined,nat:c.nat||undefined,nrr:c.nrr||undefined};});
+  const r={};Object.keys(G.roster).forEach(id=>{const c=G.roster[id];r[id]={lv:c.lv,xp:c.xp,eq:c.eq,hp:c.hp,mp:c.mp,alloc:c.alloc,pts:c.pts,auto:c.auto,lb:c.lb||0,lastB:c.lastB,vet:c.vet||0,legacy:c.legacy||0,pace:c.pace||0,ail:c.ail&&Object.keys(c.ail).length?c.ail:undefined,bt:c.bt!=null?c.bt:undefined,keep:c.keep||undefined,nat:c.nat||undefined,nrr:c.nrr||undefined};});
   return Object.assign({},G,{roster:r});
 }
 // Beta v0.2.0: saves made under the old skill pacing keep every skill the hero had already learned.
@@ -6004,6 +6014,7 @@ function win(){
   const party=allParty(),maxLv=Math.max(...party.map(c=>c.lv));
   party.forEach(c=>{
     if(!G.daily&&B.front.includes(c))c.bt=btOf(c)+1;
+    if(!G.daily&&(B.front.includes(c)||B.back.includes(c)))c.lastB=(G.stats&&G.stats.battles)||0;// v0.11.8: when this hero last fought (Fresh mix favours those who have not, party3.js)
     let share=(B.front.includes(c)&&c.hp>0)?1:(typeof XP_REAR==='number'?XP_REAR:.6);// v0.7.2: XP_REAR (config.js)if(c.lv<maxLv-3)share*=1.4;if(c.hp<=0)share=0;// v0.4.3: the fallen earn no XP
     const flv=B.en.reduce((q,e)=>q+e.lv,0)/Math.max(1,B.en.length);
     const ups=share>0?addXp(c,Math.round(txp*share*xpLvMul(c,flv))):[];
@@ -9178,8 +9189,10 @@ const port=(id,cls)=>`<span class="port ${cls||''} ${TPL[id]&&TPL[id].mon?'mon':
 // v0.6.3: "Legendary" belongs only to the legend heroes with their own legend quests (LEGEND_IDS). Rare tavern visitors (src r*),
 // Scourge gifts (g*) and the special Archive hero (x) are tagged "Epic" instead (isEpic, epicTag; styles in party3.js).
 const isLeg=id=>!!(TPL[id]&&LEGEND_IDS.includes(id));
-const isEpic=id=>{const s=String((TPL[id]||{}).src||'');return !isLeg(id)&&!(TPL[id]||{}).mon&&(s[0]==='r'||s[0]==='g'||s==='x');};
+const isEpic=id=>!!(TPL[id]&&!isLeg(id)&&!TPL[id].mon&&EPIC_IDS.includes(id));
 const epicTag=()=>'<span class="epictag">EPIC</span>';
+// dual type marker: a two-tone strip in the two element colours (the purple border is Epic only)
+const dualStyle=t=>t&&t.el&&t.el.length>1?`style="--d1:${ELC[t.el[0]]||'#c8a050'};--d2:${ELC[t.el[1]]||'#7a8ac0'}"`:'';
 const heroTag=id=>isLeg(id)?legSeal(1)+'<span class="legtag">LEGENDARY</span>':isEpic(id)?epicTag():'';
 const legSeal=(sm)=>`<span class="legseal ${sm?'sm':''}" role="img" aria-label="Legendary"><svg viewBox="0 0 32 32" width="100%" height="100%" shape-rendering="crispEdges"><path d="M16 1l3 3 4-1 2 4 4 1-1 4 3 3-3 3 1 4-4 1-2 4-4-1-3 3-3-3-4 1-2-4-4-1 1-4-3-3 3-3-1-4 4-1 2-4 4 1z" fill="#150b17"/><path d="M16 3l2.5 2.5 3.5-.8 1.7 3.3 3.5.9-.8 3.5 2.6 2.6-2.6 2.6.8 3.5-3.5.9-1.7 3.3-3.5-.8L16 29l-2.5-2.5-3.5.8-1.7-3.3-3.5-.9.8-3.5L2.9 16l2.6-2.6-.8-3.5 3.5-.9 1.7-3.3 3.5.8z" fill="#f0b848"/><circle cx="16" cy="16" r="9" fill="#a8741a"/><circle cx="16" cy="16" r="7.4" fill="#ffd96a"/><path d="M16 9.5l1.9 4.1 4.4.5-3.3 3 .9 4.4-3.9-2.2-3.9 2.2.9-4.4-3.3-3 4.4-.5z" fill="#8a4be0" stroke="#150b17" stroke-width=".6"/></svg></span>`;
 const legBanner=()=>`<span class="legban">★ LEGENDARY ★</span>`;
@@ -9342,7 +9355,7 @@ function vStarter(){
 }
 function heroCard(id,sel,act,extra){
   const t=TPL[id],cls=CLS[t.cls],dual=t.el.length>1;
-  return `<${act?'button':'div'} class="card hero ${sel?'sel':''} ${dual?'dual':''} ${isLeg(id)?'leg':isEpic(id)?'epic':''}" ${act?`data-act="${act}" data-arg="${id}"`:''}>
+  return `<${act?'button':'div'} class="card hero ${sel?'sel':''} ${dual?'dual':''} ${isLeg(id)?'leg':isEpic(id)?'epic':''}" ${dualStyle(t)} ${act?`data-act="${act}" data-arg="${id}"`:''}>
     ${heroTag(id)}${port(id,'big')}<div class="info"><b>${t.n}</b><small>${cls.n}</small><div class="els">${elChips(t.el)}</div>
     <span class="trait" title="Each journey rolls one of these natures">${natPoolText(id)}</span></div>
     <p class="bio">${esc(t.bio)}</p><p class="mline">${masteryLine(id)}</p>${sigLine(id)}${extra||''}</${act?'button':'div'}>`;
@@ -10581,7 +10594,19 @@ function challState(h){G.chall=G.chall||{};return G.chall[h]||{state:'open',have
 function challEligible(){return CHALL.filter(c=>c.stage<=G.stage&&TPL[c.hero]&&!G.roster[c.hero]);}
 // The board rotates after an inn rest or a stage clear (the same roll the tavern uses). Accepted challenges stay posted.
 // Draw weights: dual-type heroes x2, and +50% for every rotation a hero has been left off, so nobody stays hidden for long.
-function challVisible(){const E=challEligible();G.chSeen=G.chSeen||{};const roll=G.tavRoll||0,act=E.filter(c=>challState(c.hero).state==='active');
+// v0.10.x: Guild recruits are drawn per journey: 5 of the CHALL pool (G.run.gpick), recruit i unlocks once town i has been reached.
+// Old saves with no G.run.gpick keep the old board (all recruits, rotating).
+const gpickOn=()=>!!(G&&G.run&&Array.isArray(G.run.gpick)&&G.run.gpick.length);
+function gpickSeen(i){return !!(G&&((G.visited||[]).includes(i)||(G.stage|0)>=i||(G.been||{})['t'+i]));}
+function gpickOpen(h){const i=G.run.gpick.indexOf(h);return i>=0&&gpickSeen(i);}
+HOOK.after('newGame','progression','draw the 5 guild recruits for this journey',function(){try{
+  if(!G||G.daily||!G.run)return;const R=seeded(((G.run.seed|0)+4242)>>>0),pool=CHALL.map(c=>c.hero).filter(h=>TPL[h]&&!G.roster[h]);
+  for(let i=pool.length-1;i>0;i--){const j=Math.floor(R()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
+  const pick=pool.slice(0,5);const k=pick.findIndex(h=>TPL[h].el.length<2);if(k>0)[pick[0],pick[k]]=[pick[k],pick[0]];// the first one opens in realm 1, before dual types appear
+  G.run.gpick=pick;}catch(e){}});
+function challVisible(){if(gpickOn()){G.chall=G.chall||{};const dualOK=typeof p2DualOK==='function'?p2DualOK():true;
+  return G.run.gpick.filter(h=>challOf(h)&&!G.roster[h]&&gpickOpen(h)&&(dualOK||TPL[h].el.length<2)).map(h=>challOf(h));}
+  const E=challEligible();G.chSeen=G.chSeen||{};const roll=G.tavRoll||0,act=E.filter(c=>challState(c.hero).state==='active');
   const open=E.filter(c=>challState(c.hero).state!=='active');if(open.length<=CHALL_POST)return act.concat(open);
   G.chPost=G.chPost||{};if(G.chPost.roll===roll&&G.chPost.ids&&G.chPost.ids.every(h=>open.some(c=>c.hero===h)))return act.concat(G.chPost.ids.map(h=>challOf(h)));
   const R=seeded((G.run.seed||1)+roll*977+31),pool=open.slice(),pickd=[];
@@ -10611,7 +10636,8 @@ function vChallenges(){
       const prog=st.state!=='active'?'':c.type==='deliver'?`<div class="mats">${matChips(challMats(c,st))}</div>`:`<small class="nums">${st.have||0} / ${c.n}</small>`;
       return `<div class="row chrow ${ready?'ready':''}">${port(c.hero)}<div class="grow"><b>${esc(title)}</b><small>${esc(t.n)}, ${CLS[t.cls].n} · ${t.el.map(e=>EL[e]).join('/')}</small><small>${esc(desc)}</small>${prog}</div>
         ${st.state==='open'?`<button class="btn sm" data-act="chAccept" data-arg="${c.hero}">Accept</button>`:ready?`<button class="btn sm gold" data-act="chClaim" data-arg="${c.hero}">${c.type==='deliver'?'Deliver':'Recruit'}</button>`:'<span class="m">Active</span>'}</div>`;}).join('')}</div>`:'<p class="note">No challenges posted yet. More appear as your journey goes on.</p>'}
-    <p class="note">${done} of ${CHALL.length} challenge recruits have joined you this journey. Each board posts a few challenges at a time and rotates after an inn rest or a cleared Scourge; accepted ones stay up until you finish them, and every challenge comes around again.</p>`;
+    ${gpickOn()?G.run.gpick.map((h,i)=>({h,i})).filter(o=>!G.roster[o.h]&&!gpickSeen(o.i)).map(o=>`<div class="row chrow locked"><div class="grow"><b>Locked recruit</b><small>Unlocks in realm ${o.i+1}</small></div><span class="m">Locked</span></div>`).join(''):''}
+    <p class="note">${gpickOn()?`${done} of ${G.run.gpick.length} recruits of this journey have joined you.`:`${done} of ${CHALL.length} challenge recruits have joined you this journey. Each board posts a few challenges at a time and rotates after an inn rest or a cleared Scourge; accepted ones stay up until you finish them, and every challenge comes around again.`}</p>`;
 }
 // ----- remember which maps the player has been to (for hints that must not spoil) -----
 HOOK.after('placeAt','progression','places been',function(r,mid){try{G.been=G.been||{};G.been[mid]=1;}catch(e){}});
@@ -11077,7 +11103,7 @@ function vSwap(where){
     <h4>Vanguard</h4><div class="swlist ${grid?'g3':''}">${[0,1,2].map(i=>card(P[i],i)).join('')}</div>
     <h4>Rearguard</h4><div class="swlist ${grid?'g3':''}">${[3,4,5].map(i=>card(P[i],i)).join('')}</div>
     ${sel&&sel.i!=null&&P[sel.i]?`<div class="btnrow">${town&&G.party.length>1?'<button class="btn sm" data-act="swapOut">Send to roster</button>':''}<button class="btn sm" data-act="swapCancel">Cancel</button></div>`:sel?'<div class="btnrow"><button class="btn sm" data-act="swapCancel">Cancel</button></div>':''}
-    ${town?`<h4>Reserves <span class="cnt nums">${bench.length} waiting</span></h4>${filterBar('party')}<div class="grid mini">${benchS.map(c=>`<button class="mini ${sel&&sel.r===c.id?'sel':''} ${c.el.length>1?'dual':''} ${isLeg(c.id)?'leg':isEpic(c.id)?'epic':''}" data-act="swapTap" data-arg="r:${c.id}">${heroTag(c.id)}<img src="${heroURL(c.id)}" alt=""><b>${esc(c.name)}${c.legacy?' ★':''}</b><small>Lv ${c.lv} ${CLS[TPL[c.id].cls].n}</small><span class="els">${c.el.map(ico).join('')}</span></button>`).join('')||'<p class="note">Everyone you have recruited is already in your six.</p>'}</div>`
+    ${town?`<h4>Reserves <span class="cnt nums">${bench.length} waiting</span></h4>${filterBar('party')}<div class="grid mini">${benchS.map(c=>`<button class="mini ${sel&&sel.r===c.id?'sel':''} ${c.el.length>1?'dual':''} ${isLeg(c.id)?'leg':isEpic(c.id)?'epic':''}" ${dualStyle(TPL[c.id])} data-act="swapTap" data-arg="r:${c.id}">${heroTag(c.id)}<img src="${heroURL(c.id)}" alt=""><b>${esc(c.name)}${c.legacy?' ★':''}</b><small>Lv ${c.lv} ${CLS[TPL[c.id].cls].n}</small><span class="els">${c.el.map(ico).join('')}</span></button>`).join('')||'<p class="note">Everyone you have recruited is already in your six.</p>'}</div>`
       :where==='menu'?'<p class="note">Reordering works anywhere.</p>':'<p class="note">Reordering works anywhere. Swapping roster heroes into your six happens in town.</p>'}${grid?'</div>':''}`;
 }
 Object.assign(ACT,{
@@ -11373,7 +11399,11 @@ function deltaHtml(c,id){const g=gearOf(id);if(!g)return '';const a=c.S,b=statsW
 const CLASS_W={warrior:{atk:1,def:.4,mhp:.06,spd:.4},knight:{def:1,res:.6,mhp:.08,atk:.4},mage:{mag:1,res:.3,mmp:.06,spd:.3},healer:{healP:1,mag:.3,res:.4,mmp:.08},
   thief:{atk:.8,spd:1.2,def:.2},archer:{atk:1,spd:.6,def:.2},monk:{atk:1,spd:.5,def:.4,mhp:.04},bard:{mag:.6,spd:.8,res:.4,mhp:.04,healP:.4},
   sniper:{atk:1,spd:.6},druid:{atk:1,spd:.6,healP:.2},archmage:{mag:1,spd:.3,mmp:.05},chronicler:{mag:.8,healP:.4,res:.3}};
-function loadoutScore(c,S){const W=CLASS_W[TPL[c.id].cls]||{atk:1,mag:1};let v=0;Object.keys(W).forEach(k=>{v+=(S[k]||0)*W[k];});
+// v0.11.8: the hero's main role (roles.js) tilts the class weights: a tank role adds DEF, RES and HP, a healer role healing and MP, a ranged or
+// physical role ATK and SPD, a magic role MAG; buffers and debuffers SPD and MP
+const ROLE_W={tank:{def:.5,res:.3,mhp:.04},healer:{healP:.5,mmp:.04,res:.15},phys:{atk:.4,spd:.15},ranged:{atk:.4,spd:.2},magic:{mag:.5,mmp:.02},buffer:{spd:.3,mmp:.03},debuffer:{spd:.3,atk:.15,mag:.15}};
+function roleW(c){try{const R=typeof heroRoleSet==='function'&&heroRoleSet(c);return R&&R.primary&&ROLE_W[R.primary]||null;}catch(e){return null;}}
+function loadoutScore(c,S){const W0=CLASS_W[TPL[c.id].cls]||{atk:1,mag:1},RW=roleW(c),W=RW?Object.assign({},W0):W0;if(RW)Object.keys(RW).forEach(k=>{W[k]=(W[k]||0)+RW[k];});let v=0;Object.keys(W).forEach(k=>{v+=(S[k]||0)*W[k];});
   v+=((S.crit||0)*100)*.5;Object.keys(S.elBoost||{}).forEach(el=>{if(c.el.includes(el))v+=4+c.lv*.15;});if(S.immune)v+=3;return v;}
 function gainFor(c,id){const g=gearOf(id);if(!g||!canEquip(c,id))return null;const a=loadoutScore(c,c.S),b=loadoutScore(c,statsWith(c,g.slot,id));return {d:b-a,pct:a>0?(b-a)/a:0};}
 // heroes who can use an item, best upgrade first
@@ -11464,9 +11494,11 @@ function planGear(heroIds,takeIds,fair,slots){const SL=slots||GSLOTS;
   const eq={},cur={},memo={},used=[];heroes.forEach(c=>{eq[c.id]={};GSLOTS.forEach(sl=>{if(!SL.includes(sl)&&c.eq[sl])eq[c.id][sl]=c.eq[sl];});cur[c.id]=scoreEq(c,eq[c.id]);});
   const val=(c,sl,id)=>{const k=c.id+'|'+sl+'|'+id+'|'+GSLOTS.map(s=>eq[c.id][s]||'').join(',');return memo[k]!=null?memo[k]:(memo[k]=scoreEq(c,Object.assign({},eq[c.id],{[sl]:id}))-cur[c.id]);};
   for(let it=0;it<500;it++){
-    const ids=[...new Set(pool.map(e=>e.id))],mean=heroes.reduce((a,c)=>a+cur[c.id],0)/Math.max(1,heroes.length)||1;let best=null;
+    const ids=[...new Set(pool.map(e=>e.id))].sort(),mean=heroes.reduce((a,c)=>a+cur[c.id],0)/Math.max(1,heroes.length)||1;let best=null;
     heroes.forEach(c=>{const w=fair?(G.party.includes(c.id)?1.35:1)/(.35+cur[c.id]/mean):1;
-      SL.forEach(sl=>{if(eq[c.id][sl])return;ids.forEach(id=>{if(!slotOk(c,sl,id))return;const v=val(c,sl,id);if(v<=.01)return;const s=v*w;if(!best||s>best.s)best={c,sl,id,s};});});});
+      // v0.11.8: ties break the same way every time (hero order, slot order, then the gear id), not by the pack's current order, so pressing
+      // Equip best twice gives the same loadout
+      SL.forEach(sl=>{if(eq[c.id][sl])return;ids.forEach(id=>{if(!slotOk(c,sl,id))return;const v=val(c,sl,id);if(v<=.01)return;const s=v*w;if(!best||s>best.s+1e-6||(Math.abs(s-best.s)<=1e-6&&best.c===c&&best.sl===sl&&id<best.id))best={c,sl,id,s};});});});
     if(!best)break;
     const rk=e=>!e.from||hs.has(e.from)?0:1,pick=pool.map((e,i)=>({e,i})).filter(o=>o.e.id===best.id).sort((a,b)=>rk(a.e)-rk(b.e))[0];
     pool.splice(pick.i,1);used.push({hid:best.c.id,sl:best.sl,id:best.id,from:rk(pick.e)?pick.e.from:null,fromSl:pick.e.sl});
@@ -13636,7 +13668,7 @@ function pcard0(c,rs,turn,tg,lb){
   return `<button class="pc ${rs?'rs':''} ${turn?'turn':''} ${ko?'ko':''} ${tg?'tg':''} ${sw?'swapok':''}" data-act="tgtA" data-arg="${allParty().indexOf(c)}" ${tg||sw?'':'tabindex="-1"'} aria-label="${esc(c.name)}, level ${c.lv}${sw?'. Tap to switch in':''}" ${sw?'title="Tap to switch in"':''}>
     ${port(c.id)}<span class="pm"><span class="uct"><b>${esc(c.name)}</b><span class="ucl">Lv ${c.lv}</span>${elbs(c.el)}</span>
     <span class="ucr"><i>HP</i>${bar(c.hp,c.S.mhp,'var(--hp)')}<em class="nums">${Math.max(0,c.hp)}/${c.S.mhp}</em></span>
-    ${rs?'':`<span class="ucr"><i>MP</i>${bar(c.mp,c.S.mmp,'var(--mp)')}<em class="nums mpn">${c.mp}/${c.S.mmp}</em></span>`}
+    ${`<span class="ucr ${rs?'ucrm':''}"><i>MP</i>${bar(c.mp,c.S.mmp,'var(--mp)')}<em class="nums mpn">${c.mp}/${c.S.mmp}</em></span>`}
     ${lim?`<span class="ucr"><i>LB</i><span class="lbar ${lb>=100?'full':''}"><i style="width:${lb}%"></i></span><em class="nums">${Math.round(lb)}%</em></span>`:''}
     <small class="ucc">${esc(CLS[TPL[c.id].cls].n)}</small></span></button>`;
 }
@@ -15273,48 +15305,61 @@ function temperWhy(list){const out={},memo={};const R=list.map(o=>{const c=forge
 // ===================== 3.3: Smithy plan =====================
 const P3_SLOTS=['w','a','k'];
 function p3Recipes(){const o={};RECIPES.forEach(r=>{if(r.id&&SMITH_CATS.includes(r.cat)&&recipeOpen(r)&&!o[r.id])o[r.id]=r;});return o;}
-function p3SmithPlan(){
+// v0.11.8: the plan looks at where a piece can END: every base (pack, shop, forge) is also considered tempered +1, +2 and +3 (temper.js
+// forgeCost chain), with the gold and materials of the whole chain, so the pick is the best final stats you can afford, not the best
+// shelf price. slots: the Smithy plans weapons, armor and capes; Alchemy (p3Alch) plans charms the same way.
+function p3Chain(base){const out=[{id:base,k:0,gold:0,m:{}}];let id=base,gold=0;const m={};
+  for(let k=1;k<=3;k++){const fc=forgeCost(id);if(!fc)break;gold+=fc.gold;Object.keys(fc.m).forEach(q=>{m[q]=(m[q]||0)+fc.m[q];});id=fc.next;out.push({id,k,gold,m:Object.assign({},m)});}
+  return out;}
+function p3SmithPlan(slots){const SL=slots||P3_SLOTS;
   const party=partyChars();let gold=G.gold;const mats=Object.assign({},G.mats),pack={};G.gear.forEach(id=>{pack[id]=(pack[id]||0)+1;});
-  const shop=new Set(shopStock('weapons').concat(shopStock('armor')).filter(id=>GEAR[id])),rec=p3Recipes();
-  const cands=[...new Set([...shop,...Object.keys(rec),...Object.keys(pack)])].filter(id=>{const g=gearOf(id);return g&&!g.stick&&P3_SLOTS.includes(g.slot);});
+  const stock=SL.includes('c')?shopStock('charms'):shopStock('weapons').concat(shopStock('armor'));
+  const shop=new Set(stock.filter(id=>GEAR[id])),rec=p3Recipes();
+  const bases=[...new Set([...shop,...Object.keys(rec),...Object.keys(pack)])].filter(id=>{const g=gearOf(id);return g&&!g.stick&&SL.includes(g.slot);});
+  const temperOn=typeof pcTemperOpen!=='function'||pcTemperOpen();
+  const cands=[];bases.forEach(b=>(temperOn?p3Chain(b):[{id:b,k:0,gold:0,m:{}}]).forEach(ch=>cands.push(Object.assign({base:b},ch))));
   const ent=[];
-  party.forEach(c=>P3_SLOTS.forEach(sl=>{const opts=cands.filter(id=>slotOk(c,sl,id)).map(id=>({id,g:gainFor(c,id)})).filter(o=>o.g&&o.g.d>.01&&o.g.pct>=SMITH_PLAN.minPct).sort((a,b)=>b.g.pct-a.g.pct||b.g.d-a.g.d);
+  party.forEach(c=>SL.forEach(sl=>{const opts=cands.filter(o=>slotOk(c,sl,o.id)).map(o=>Object.assign({},o,{g:gainFor(c,o.id)})).filter(o=>o.g&&o.g.d>.01&&o.g.pct>=SMITH_PLAN.minPct).sort((a,b)=>b.g.pct-a.g.pct||b.g.d-a.g.d);
     if(opts.length)ent.push({c,sl,opts});}));
   ent.sort((a,b)=>b.opts[0].g.pct-a.opts[0].g.pct);
   const hasM=m=>Object.keys(m).every(k=>(mats[k]||0)>=m[k]);
   const picks=[],cant=[];
   ent.forEach(e=>{let missed=null;
-    for(const o of e.opts){const id=o.id,ways=[];
-      if((pack[id]||0)>0)ways.push({src:'pack',gold:0});
-      if(shop.has(id))ways.push({src:'buy',gold:GEAR[id].price});
-      if(rec[id]){const m=recipeMats(rec[id]);ways.push({src:'craft',gold:rec[id].g,m,mOk:hasM(m)});}
+    for(const o of e.opts){const id=o.id,base=o.base,ways=[],addT=(w)=>{const m=Object.assign({},w.m||{});Object.keys(o.m).forEach(q=>{m[q]=(m[q]||0)+o.m[q];});w.gold+=o.gold;w.m=Object.keys(m).length?m:w.m;w.mOk=!w.m||hasM(w.m);w.k=o.k;w.base=base;return w;};
+      if((pack[base]||0)>0)ways.push(addT({src:'pack',gold:0}));
+      if(shop.has(base))ways.push(addT({src:'buy',gold:GEAR[base].price}));
+      if(rec[base]){const m=recipeMats(rec[base]);ways.push(addT({src:'craft',gold:rec[base].g,m}));}
       if(!ways.length)continue;
-      const ok=ways.filter(w=>w.gold<=gold&&(w.src!=='craft'||w.mOk)).sort((a,b)=>a.gold-b.gold||(a.src==='buy'?-1:1));
-      if(!ok.length){if(!missed){const cheapest=ways.slice().sort((a,b)=>a.gold-b.gold)[0];missed={cid:e.c.id,sl:e.sl,id,gold:cheapest.gold,pct:o.g.pct,why:ways.some(w=>w.src==='craft'&&!w.mOk)&&!ways.some(w=>w.src!=='craft')?'mats':'gold'};}continue;}
+      const ok=ways.filter(w=>w.gold<=gold&&w.mOk).sort((a,b)=>a.gold-b.gold||(a.src==='buy'?-1:1));
+      if(!ok.length){if(!missed){const cheapest=ways.slice().sort((a,b)=>a.gold-b.gold)[0];missed={cid:e.c.id,sl:e.sl,id,gold:cheapest.gold,pct:o.g.pct,why:ways.every(w=>!w.mOk)?'mats':'gold'};}continue;}
       const w=ok[0],alt=ways.filter(x=>x!==w&&x.src!=='pack').map(x=>({src:x.src,gold:x.gold}));
-      if(w.src==='pack')pack[id]--;gold-=w.gold;if(w.src==='craft')Object.keys(w.m).forEach(k=>{mats[k]-=w.m[k];});
-      picks.push({cid:e.c.id,sl:e.sl,id,src:w.src,gold:w.gold,m:w.m||null,pct:o.g.pct,alt,from:e.c.eq[e.sl]||null});
+      if(w.src==='pack')pack[base]--;gold-=w.gold;if(w.m)Object.keys(w.m).forEach(k=>{mats[k]-=w.m[k];});
+      picks.push({cid:e.c.id,sl:e.sl,id,base,k:w.k||0,src:w.src,gold:w.gold,m:w.m||null,pct:o.g.pct,alt,from:e.c.eq[e.sl]||null});
       if(missed&&missed.pct>o.g.pct+.001)cant.push(missed);missed=null;break;}
     if(missed)cant.push(missed);});
   const total=picks.reduce((a,p)=>a+p.gold,0);return {picks,cant,total,gold0:G.gold};}
-const p3Src=p=>p.src==='pack'?'From your pack':p.src==='buy'?`Buy for <b class="nums">${fmt(p.gold)}</b> gold`:`Forge for <b class="nums">${fmt(p.gold)}</b> gold and materials you own`;
+const p3Src=p=>{const t=p.k?` and temper it to +${p.k}`:'',g=`<b class="nums">${fmt(p.gold)}</b> gold${p.m&&Object.keys(p.m).length?' and materials you own':''}`;return p.src==='pack'?(p.k?`From your pack${t} for ${g}`:'From your pack'):p.src==='buy'?`Buy${t} for ${g}`:`Forge${t} for ${g}`;};
 function mP3Plan(m){const P=m.plan,cn=id=>G.roster[id]?esc(G.roster[id].name):'?';
   const rows=P.picks.map(p=>{const c=G.roster[p.cid];if(!c)return '';const alt=p.alt.length?` <small class="mute">(${p.alt.map(a=>a.src==='buy'?'buying: '+fmt(a.gold):'forging: '+fmt(a.gold)+' and materials').join(', ')})</small>`:'';
     return `<div class="row p3pl">${port(p.cid,'sm')}<div class="grow"><b>${cn(p.cid)}</b> <em class="up">+${Math.max(1,Math.round(p.pct*100))}%</em><small>${SLOTN[p.sl]}: ${p.from?esc(gearOf(p.from).n):'nothing'} → <span class="up">${esc(gearOf(p.id).n)}</span> ${tierChip(gearOf(p.id))}</small><small>${p3Src(p)}${alt}</small><small>${deltaHtml(c,p.id)}</small></div></div>`;}).join('');
   const cant=P.cant.map(x=>`<div class="row"><div class="grow"><small><b>${cn(x.cid)}</b>: ${esc(gearOf(x.id).n)} (+${Math.max(1,Math.round(x.pct*100))}%) ${x.why==='mats'?'needs materials you do not have':`needs ${fmt(x.gold)} gold`}.</small></div></div>`).join('');
   const short=G.gold<P.total;
-  const body=P.picks.length?`<p class="note">For each hero in your party, the best piece the Smithy can sell or forge right now, or a spare from your pack. When both buying and forging work, the cheaper one is picked. Nothing happens until you confirm.</p>
+  const body=P.picks.length?`<p class="note">For each hero in your party, the piece that ends up best: ${m.charms?'a charm Alchemy sells':'what the Smithy sells or forges'}, or a spare from your pack, tempered as far as your gold and materials allow. When two ways reach the same piece, the cheaper one is picked. Nothing happens until you confirm.</p>
     <div class="rows">${rows}</div>${cant?`<h4>Out of reach for now</h4><div class="rows">${cant}</div>`:''}
     <p class="nums p3tot"><b>Total: ${fmt(P.total)} gold</b> · You have ${fmt(G.gold)} · Left after: ${fmt(Math.max(0,G.gold-P.total))}</p>${short?'<p class="warn">You no longer have enough gold for all of it. It will stop when the gold runs out.</p>':''}
     <p class="note"><small>Undo afterwards puts everyone's gear back as it was; what you bought or forged stays in your pack.</small></p>`
-    :`<p>Nothing to buy or forge: your party already has the best the Smithy can offer${P.cant.length?' for the gold and materials you have':''}.</p>${cant?`<h4>Out of reach for now</h4><div class="rows">${cant}</div>`:''}`;
+    :`<p>Nothing to buy or forge: your party already has the best ${m.charms?'Alchemy':'the Smithy'} can offer${P.cant.length?' for the gold and materials you have':''}.</p>${cant?`<h4>Out of reach for now</h4><div class="rows">${cant}</div>`:''}`;
   return box('Upgrade whole party',body,`<button class="btn" data-act="xBack">Cancel</button>${P.picks.length?`<button class="btn gold" data-act="p3SmithGo">Confirm: ${fmt(P.total)} gold</button>`:''}`,true);}
 function p3SmithRun(plan){
-  const got=[];let stop=null,spent=0,bought=0,forged=0;
+  const got=[];let stop=null,spent=0,bought=0,forged=0,tempered=0;
   for(const p of plan.picks){const c=G.roster[p.cid];if(!c)continue;
-    if(p.src==='pack'){if(!G.gear.includes(p.id))continue;}
-    else if(p.src==='buy'){const g=GEAR[p.id];if(G.gold<g.price){stop='gold';break;}G.gold-=g.price;G.gear.push(p.id);spent+=g.price;bought++;}
-    else{const r=p3Recipes()[p.id];if(!r)continue;if(G.gold<r.g){stop='gold';break;}if(!hasMats(recipeMats(r))){stop='mats';break;}const g0=G.gold;if(!craft(r)){stop='gold';break;}spent+=g0-G.gold;forged++;}
+    const base=p.base||p.id;
+    if(p.src==='pack'){if(!G.gear.includes(base))continue;}
+    else if(p.src==='buy'){const g=GEAR[base];if(G.gold<g.price){stop='gold';break;}G.gold-=g.price;G.gear.push(base);spent+=g.price;bought++;}
+    else{const r=p3Recipes()[base];if(!r)continue;if(G.gold<r.g){stop='gold';break;}if(!hasMats(recipeMats(r))){stop='mats';break;}const g0=G.gold;if(!craft(r)){stop='gold';break;}spent+=g0-G.gold;forged++;}
+    // v0.11.8: temper the piece up the chain in the pack
+    if(p.k){let id=base,fail=null;for(let k=0;k<p.k;k++){const i=G.gear.indexOf(id);if(i<0){fail='mats';break;}const fc=forgeCost(id);if(!fc){break;}if(G.gold<fc.gold){fail='gold';break;}if(!hasMats(fc.m)){fail='mats';break;}const g0=G.gold;const nx=forge('spare',i);if(!nx){fail='mats';break;}spent+=g0-G.gold;tempered++;id=nx;}
+      if(fail){p.id=id;got.push(p);stop=fail;break;}}
     got.push(p);}
   // the equips come after every purchase, so Undo only touches gear (bought items stay in the pack)
   const snap=snapAuto(),before={};Object.values(G.roster).forEach(c=>{before[c.id]={eq:Object.assign({},c.eq),pw:loadoutScore(c,c.S)};});
@@ -15322,9 +15367,9 @@ function p3SmithRun(plan){
   Object.values(G.roster).forEach(refresh);
   const rows=[];Object.values(G.roster).forEach(c=>{const b=before[c.id],ch=[];EQSL.forEach(sl=>{if((b.eq[sl]||null)!==(c.eq[sl]||null))ch.push({sl,from:b.eq[sl]||null,to:c.eq[sl]||null});});
     if(ch.length)rows.push({id:c.id,name:c.name,inParty:G.party.includes(c.id),ch,comp:null,pw0:b.pw,pw1:loadoutScore(c,c.S)});});
-  saveGame();return {rows,snap,stop,spent,bought,forged,done:got.length,of:plan.picks.length};}
+  saveGame();return {rows,snap,stop,spent,bought,forged,tempered,done:got.length,of:plan.picks.length};}
 {const ma0=mAutoEq;mAutoEq=function(m){let h=ma0.apply(this,arguments);if(!m||m.mode!=='smith')return h;const R=m.p3||{};
-  const note=`<p class="note p3res">${R.stop?`<b class="warn">Stopped: ${R.stop==='gold'?'the gold ran out':'materials ran out'} after ${R.done} of ${R.of}.</b> Everything bought before that is equipped. `:''}Spent ${fmt(R.spent||0)} gold: bought ${R.bought||0}, forged ${R.forged||0}. Undo puts the gear back; purchases stay in your pack.</p>`;
+  const note=`<p class="note p3res">${R.stop?`<b class="warn">Stopped: ${R.stop==='gold'?'the gold ran out':'materials ran out'} after ${R.done} of ${R.of}.</b> Everything bought before that is equipped. `:''}Spent ${fmt(R.spent||0)} gold: bought ${R.bought||0}, forged ${R.forged||0}, tempered ${R.tempered||0}. Undo puts the gear back; purchases stay in your pack.</p>`;
   return h.replace(/<h2>[^<]*<\/h2>/,`<h2>Best gear: bought, forged and equipped</h2>${note}`);};}
 
 // ===================== 3.4 / 3.5: Best Party and the team check =====================
@@ -15535,6 +15580,7 @@ Object.assign(ACT,{
 // ===================== actions =====================
 Object.assign(ACT,{
   p3Smith(){if(!G||G.daily)return;V.modal={type:'p3plan',plan:p3SmithPlan(),from:V.modal};render();},
+  p3Alch(){if(!G||G.daily)return;V.modal={type:'p3plan',charms:1,plan:p3SmithPlan(['c']),from:V.modal};render();},
   p3SmithGo(){const m=V.modal;if(!m||m.type!=='p3plan')return;const R=p3SmithRun(m.plan);sfx(R.done?'buy':'deny');
     V.modal={type:'autoEq',mode:'smith',rows:R.rows,snap:R.snap,from:m.from,p3:R};render();},
   p3Swap(a){if(!G||G.daily)return;if(!inTown()){toast('Swapping roster heroes into your six happens in town.');return;}const [inn,out]=String(a).split(',');if(!G.roster[inn]||G.party.includes(inn))return;
@@ -17677,7 +17723,7 @@ try{if(screen.orientation&&screen.orientation.addEventListener)screen.orientatio
 
 // ----- Alchemy Charms: "Equip best charms" (party, owned charms only, nothing bought) -----
 function m3CharmBtn(){if(!G||G.daily||!(G.gear||[]).some(id=>{const g=gearOf(id);return g&&g.slot==='c';}))return '';
-  return '<div class="btnrow m3charmeq"><button class="btn sm gold" data-act="autoEqCharms" title="Gives each hero in your party the best charm you already own. Buys nothing.">Equip best charms</button></div>';}
+  return '<div class="btnrow m3charmeq"><button class="btn sm gold" data-act="autoEqCharms" title="Gives each hero in your party the best charm you already own. Buys nothing.">Equip best charms</button><button class="btn sm" data-act="p3Alch" title="Plans the best charm each party hero can end up with: bought here or from your pack, tempered as far as you can afford. Confirm before anything happens.">Upgrade whole party</button></div>';}
 // the Party tab's helper row: one "Equip Best" button (party only); the reserves button is gone
 {const sw0=vSwap;vSwap=function(){let h=sw0.apply(this,arguments);if(typeof h!=='string')return h;
   h=h.replace(/<button class="btn sm" data-act="autoEqCamp"[^>]*>[^<]*<\/button>/,'').replace(/(<button class="btn sm" data-act="autoEqParty"[^>]*>)Equip best: party/,'$1Equip Best').replace('title="The best gear you own for your party. May take gear from your reserves."','title="Gears the six heroes in your party with the best gear you own."');return h;};}
@@ -17720,7 +17766,9 @@ function p6Score(set,X,mode,prev){const T=X.T,R=set.map(c=>X.R[c.id]),K=R.map(r=
   const half=f=>R.reduce((a,r)=>a+(r[f]||0),0);v+=p6StepF(BP6.role.tank,cnt(r=>r.tank)+half('tankH'))+p6StepF(BP6.role.heal,cnt(r=>r.heal)+half('healH'))+p6Step(BP6.role.sup,cnt(r=>r.sup&&!r.heal))+p6Step(BP6.role.dmg,cnt(r=>r.dmg));
   if(R.some(r=>r.pr))v+=BP6.pr;if(R.some(r=>r.de))v+=BP6.de;
   const cl={};R.forEach(r=>{cl[r.cls]=(cl[r.cls]||0)+1;});Object.values(cl).forEach(n=>{if(n>1)v-=BP6.dup*(n-1);});
-  const els=new Set();set.forEach(c=>c.el.forEach(e=>els.add(e)));v+=BP6.el*els.size;
+  const els=new Set(),ec={};set.forEach(c=>c.el.forEach(e=>{els.add(e);ec[e]=(ec[e]||0)+1;}));v+=BP6.el*els.size;Object.values(ec).forEach(n=>{if(n>1)v-=(BP6.elDup||0)*(n-1);});
+  // v0.11.8: Fresh mix favours heroes who have not fought lately
+  if(mode==='mix'&&BP6.rest){const nb=(G.stats&&G.stats.battles)||0;set.forEach(c=>{const away=c.lastB==null?99:nb-c.lastB;v+=BP6.rest*Math.min(1,away/20);});}
   const dls=new Set();K.forEach(k=>k.dl.forEach(d=>dls.add(d)));['piercing','blunt','ranged','magic'].forEach(d=>{if(dls.has(d))v+=BP6.dl;});
   // v0.8.1: flyers want real ranged attackers (Archers first): a lance or a spell only half answers them, so the plain archetype answer above
   // never brought an Archer in. One ranged hero is worth a lot when the area flies, a second a little more, an Archer a bit on top.
@@ -18931,12 +18979,14 @@ const B3OFF=(()=>{const L=[],R=B3.R,s=B3.step;for(let dy=-R;dy<=R;dy+=s)for(let 
 // v0.8.10: while b3Lay places a unit's labels (B3SG.u), they keep B3.sideGap px from the other side's sprites and labels and a hero's
 // labels stay on the heroes' half of the stage; when no spot allows that, the gap shrinks to 2 px, then the plain rules apply
 let B3SG=null;
+// v0.11.8: logical px at the stage bottom that the framed .bwrap clips (its border-box height is a little short of the stage); labels keep out of them
+let B3EB=0;
 function b3Find(w,h,anchors,obs,W,H,R){const sg=B3SG;if(sg&&sg.u){B3SG=null;try{const R0=R||B3.R;for(const [gap,half,rk] of [[B3.sideGap||5,true,1],[4,true,1],[4,false,1],[3,false,1],[2,false,1],[2,false,1.6]]){const r=b3Find0(w,h,anchors,obs,W,H,R0*rk,sg.u,gap,half);if(r)return r;}}finally{B3SG=sg;}}
   return b3Find0(w,h,anchors,obs,W,H,R);}
 function b3Find0(w,h,anchors,obs,W,H,R,su,sgap,half){R=R||B3.R;const K=anchors.length,ix=new Array(K).fill(0),pad=B3.pad,hero=su&&su.side==='p';
   for(let guard=0;guard<B3OFF.length*K;guard++){let bk=-1,bc=1e9;for(let k=0;k<K;k++){const o=B3OFF[ix[k]];if(!o)continue;const c=anchors[k].c+o[2];if(c<bc){bc=c;bk=k;}}
     if(bk<0)return null;const o=B3OFF[ix[bk]++],a=anchors[bk];if(o[2]>R*1.3)continue;
-    const r={x:Math.round(a.x+o[0]),y:Math.round(a.y+o[1]),w,h};if(r.x<1||r.y<1||r.x+w>W-1||r.y+h>H-1)continue;
+    const r={x:Math.round(a.x+o[0]),y:Math.round(a.y+o[1]),w,h};if(r.x<1||r.y<1||r.x+w>W-1||r.y+h>H-1-B3EB)continue;
     if(su&&half&&hero&&r.x+w/2<W*.5)continue;
     let ok=true;for(let i=0;i<obs.length;i++){const q=obs[i];if(b3Hit(r,q,su&&q.u&&q.u.side!==su.side?sgap:(q.body?0:pad))){ok=false;break;}}if(ok)return r;}
   return null;}
@@ -18967,6 +19017,7 @@ function b3Key(units){let k=BL.W+'x'+BL.H+'|'+(B.id||0)+'|'+(B.wave||0)+'|'+B.mo
 // (b3StageHtml) always checks the key, so a new turn, target mode or status is laid out at once
 function b3Lay(fresh){if(!B)return null;const now=performance.now();if(!fresh&&B3L.L&&B3L.bid===B.id&&now-B3L.t<B3.memo)return B3L.L;
   const units=b3Units(),key=b3Key(units);B3L.t=now;B3L.bid=B.id;if(B3L.key===key&&B3L.L)return B3L.L;
+  B3EB=0;try{const st=document.getElementById('bstage'),p=st&&st.parentElement;if(p&&BL.H){const k=st.getBoundingClientRect().height/BL.H;if(k>0)B3EB=Math.max(0,Math.min(8,Math.ceil((BL.H*k-p.clientHeight)/k)));}}catch(e){}
   const W=BL.W,H=BL.H,obs=[],L={W,H,bodies:[],plates:new Map(),prim:new Map(),tags:new Map(),tgt:new Map(),arrow:null,hidden:[],all:[]};
   units.forEach(({u,b})=>{const bd=b3Body(u,b);if(bd){bd.body=1;bd.u=u;obs.push(bd);L.bodies.push({u,r:bd,face:b3Face(bd),b});}});
   const live=units.filter(o=>o.u.hp>0).sort((a,b)=>b.b.y-a.b.y);
@@ -19591,7 +19642,8 @@ function b9LayWeak(L){L.wk=new Map();if(typeof B9_STAGE_WEAK==='undefined'||!B9_
 function b9CanStop(a){try{return known(a).find(s=>a.mp>=(s.mp||0)&&(s.k==='phys'||s.k==='mag')&&(s.strip||(s.fx||[]).some(([k])=>k==='stun')))||null;}catch(e){return null;}}
 function b9Cleanse(a){try{const s=known(a).find(s=>s.cleanse&&a.mp>=(s.mp||0)&&(s.t==='ally'||s.t==='allyAll'));if(s)return 'skills';if(G&&G.inv&&(G.inv.remedy||0)>0)return 'items';}catch(e){}return null;}
 function b9Cue(){if(!B||B.over||B.auto||B.mode!=='cmd'||!B.cur||B.cur.side!=='p'||B.cur.isComp)return null;const a=B.cur;let ord=null;
-  const before=u=>{ord=ord||b5Order(12);for(let i=1;i<ord.length;i++){const x=ord[i].u;if(x===a)return false;if(x===u)return true;}return false;};
+  // v0.11.8: a stunned foe skips its turn, so it never lights Guard; a foe that comes after the hero's next turn does not either
+  const before=u=>{if(u.hp<=0||has(u,'stun'))return false;ord=ord||b5Order(12);for(let i=1;i<ord.length;i++){const x=ord[i].u;if(x===a)return false;if(x===u)return true;}return false;};
   for(const u of B.en){const T=b9TelePlan(u);if(T&&T.tg.includes(a)&&before(u))return {k:'guard',u,glow:'guard',txt:`Guard! ${T.n} next`,tip:`${u.name}'s ${T.n} hits ${T.tg.length>1?'the whole Vanguard':a.name} before ${a.name} acts again. Guard halves it.`};}
   const wind=B.en.find(u=>u.hp>0&&has(u,'charge'));
   if(wind){const s=b9CanStop(a);return {k:'int',u:wind,glow:s?'skills':null,txt:'Interrupt: stun or strip buffs',tip:`${wind.name} is winding up. A stun or stripping its boons stops it.`+(s?` ${a.name} can: ${s.n}.`:'')};}
@@ -20009,13 +20061,13 @@ function c5PlanAim(u,p,sk,tg,live){try{if(!p||!p.tgt||!tg||tg.length!==1||!c5Sin
   const t=p.tgt,cur=tg[0];if(!cur||cur.side!=='p')return tg;if(has(cur,'taunt')&&!has(t,'taunt'))return tg;if(t.hp<=0||!(live||B.front).includes(t))return tg;return [t];}catch(e){return tg;}}
 // the reward: a guard that caught the planned hit makes the hero quick
 HOOK.before('perform','chain5','a guarded planned hit makes the hero quick',function(a,sk,tgts){try{if(!B||!a||a.side!=='e'||!tgts||tgts.length!==1)return;const p=a._c5used;if(!p||!p.tgt||p.n!==a.turns)return;const t=tgts[0];
-  if(t===p.tgt&&t.guard&&(sk.k==='phys'||sk.k==='mag')){t.c5q=1;fx(t,'Braced!','stat good');}}catch(e){}});
+  if(t===p.tgt&&t.guard&&(sk.k==='phys'||sk.k==='mag')){t.c5q=1;fx(t,'Braced!','stat good');try{if(typeof lbAdd==='function'&&G5.lb)lbAdd(t,G5.lb);}catch(x){}/* v0.11.8: a guarded hit fills some Limit */}}catch(e){}});
 {const en0=endTurn;endTurn=function(u,cost){try{if(u&&u.c5q&&u.side==='p'){u.c5q=0;cost=(cost==null?1:cost)*(G5.quick||.7);log(`${u.name} shrugs off the blow and moves quickly.`);}}catch(e){}return en0.call(this,u,cost);};}
 // ----- the cue -----
 function c5Est(u,sk,t){try{const r0=RNG;RNG=()=>.5;try{const r=calcDamage(u,sk,t);return (r&&r.dmg||0)*(sk.hits||1);}finally{RNG=r0;}}catch(e){return 0;}}
 function c5Aim(a){const out=[];if(!B||!a)return out;B.en.forEach(u=>{if(u.hp<=0)return;const p=foePlan(u);if(!p||p.tgt!==a||!p.sk||!(p.sk.k==='phys'||p.sk.k==='mag'))return;out.push({u,sk:p.sk,dmg:c5Est(u,p.sk,a)});});return out;}
 {const cue0=b9Cue;b9Cue=function(){const r=cue0.apply(this,arguments);if(r)return r;try{const a=B&&B.cur;if(!a||a.side!=='p'||B.mode!=='cmd'||a.guard)return r;const aims=c5Aim(a);if(!aims.length)return r;
-    let ord=null;const before=u=>{ord=ord||b5Order(12);for(let i=1;i<ord.length;i++){const x=ord[i].u;if(x===a)return false;if(x===u)return true;}return false;};
+    let ord=null;const before=u=>{if(u.hp<=0||has(u,'stun'))return false;ord=ord||b5Order(12);for(let i=1;i<ord.length;i++){const x=ord[i].u;if(x===a)return false;if(x===u)return true;}return false;};
     const soon=aims.filter(o=>before(o.u));if(!soon.length)return r;const tot=soon.reduce((q,o)=>q+o.dmg,0),heavy=tot>=a.hp*(G5.heavy||.3)||soon.length>=2;if(!heavy)return r;
     const who=soon.map(o=>o.u.name).join(' and ');return {k:'guard',u:soon[0].u,glow:'guard',txt:`Guard! ${who} aim${soon.length>1?'':'s'} at ${a.name}`,tip:`${who} ${soon.length>1?'are':'is'} about to hit ${a.name} for about ${Math.round(tot)} before ${a.name} acts again. Guard halves it, and a guarded hit makes ${a.name} quick.`};}catch(e){return r;}};}
 // ----- the telegraph on screen: the intent tag names the hero, the hero's card shows who aims at them -----

@@ -12,8 +12,10 @@ const port=(id,cls)=>`<span class="port ${cls||''} ${TPL[id]&&TPL[id].mon?'mon':
 // v0.6.3: "Legendary" belongs only to the legend heroes with their own legend quests (LEGEND_IDS). Rare tavern visitors (src r*),
 // Scourge gifts (g*) and the special Archive hero (x) are tagged "Epic" instead (isEpic, epicTag; styles in party3.js).
 const isLeg=id=>!!(TPL[id]&&LEGEND_IDS.includes(id));
-const isEpic=id=>{const s=String((TPL[id]||{}).src||'');return !isLeg(id)&&!(TPL[id]||{}).mon&&(s[0]==='r'||s[0]==='g'||s==='x');};
+const isEpic=id=>!!(TPL[id]&&!isLeg(id)&&!TPL[id].mon&&EPIC_IDS.includes(id));
 const epicTag=()=>'<span class="epictag">EPIC</span>';
+// dual type marker: a two-tone strip in the two element colours (the purple border is Epic only)
+const dualStyle=t=>t&&t.el&&t.el.length>1?`style="--d1:${ELC[t.el[0]]||'#c8a050'};--d2:${ELC[t.el[1]]||'#7a8ac0'}"`:'';
 const heroTag=id=>isLeg(id)?legSeal(1)+'<span class="legtag">LEGENDARY</span>':isEpic(id)?epicTag():'';
 const legSeal=(sm)=>`<span class="legseal ${sm?'sm':''}" role="img" aria-label="Legendary"><svg viewBox="0 0 32 32" width="100%" height="100%" shape-rendering="crispEdges"><path d="M16 1l3 3 4-1 2 4 4 1-1 4 3 3-3 3 1 4-4 1-2 4-4-1-3 3-3-3-4 1-2-4-4-1 1-4-3-3 3-3-1-4 4-1 2-4 4 1z" fill="#150b17"/><path d="M16 3l2.5 2.5 3.5-.8 1.7 3.3 3.5.9-.8 3.5 2.6 2.6-2.6 2.6.8 3.5-3.5.9-1.7 3.3-3.5-.8L16 29l-2.5-2.5-3.5.8-1.7-3.3-3.5-.9.8-3.5L2.9 16l2.6-2.6-.8-3.5 3.5-.9 1.7-3.3 3.5.8z" fill="#f0b848"/><circle cx="16" cy="16" r="9" fill="#a8741a"/><circle cx="16" cy="16" r="7.4" fill="#ffd96a"/><path d="M16 9.5l1.9 4.1 4.4.5-3.3 3 .9 4.4-3.9-2.2-3.9 2.2.9-4.4-3.3-3 4.4-.5z" fill="#8a4be0" stroke="#150b17" stroke-width=".6"/></svg></span>`;
 const legBanner=()=>`<span class="legban">★ LEGENDARY ★</span>`;
@@ -176,7 +178,7 @@ function vStarter(){
 }
 function heroCard(id,sel,act,extra){
   const t=TPL[id],cls=CLS[t.cls],dual=t.el.length>1;
-  return `<${act?'button':'div'} class="card hero ${sel?'sel':''} ${dual?'dual':''} ${isLeg(id)?'leg':isEpic(id)?'epic':''}" ${act?`data-act="${act}" data-arg="${id}"`:''}>
+  return `<${act?'button':'div'} class="card hero ${sel?'sel':''} ${dual?'dual':''} ${isLeg(id)?'leg':isEpic(id)?'epic':''}" ${dualStyle(t)} ${act?`data-act="${act}" data-arg="${id}"`:''}>
     ${heroTag(id)}${port(id,'big')}<div class="info"><b>${t.n}</b><small>${cls.n}</small><div class="els">${elChips(t.el)}</div>
     <span class="trait" title="Each journey rolls one of these natures">${natPoolText(id)}</span></div>
     <p class="bio">${esc(t.bio)}</p><p class="mline">${masteryLine(id)}</p>${sigLine(id)}${extra||''}</${act?'button':'div'}>`;

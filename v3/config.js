@@ -121,7 +121,7 @@ const CHAIN={leap:.55,max:4};
 // G5 (v0.10.4, chain5.js): the Guard cue and reward. Foes plan their target with their move (the telegraph shows it); the Guard button
 // glows when the acting hero is the planned target of a hit worth heavy of their HP or more (or of two foes). A hero who guards a
 // hit aimed at them acts again sooner: their next turn costs quick of the usual delay.
-const G5={heavy:.3,quick:.7};
+const G5={heavy:.3,quick:.7,lb:12};// lb (v0.11.8): Limit gauge a hero gains for a hit taken while guarding
 // ==== 3. Foes and bosses: boss levels and muscle, field packs, creep, echoes, roamers, side sites, mimics, surprise starts ====
 // SURPRISE: touching a roaming dungeon foe that has not seen you gives a free first round: every hero in the vanguard acts free times
 // before any foe moves. A "Surprise!" banner shows. Elite roamers keep their no auto rule.
@@ -241,7 +241,9 @@ const READY={lvGap:2,potions:4,revives:2};
 //   boss: how much more the Boss ready formation values the boss's element and archetype (or the area's, once the boss is down);
 //   overlap: cost per hero shared with earlier formations (Fresh mix: Balanced; Rotation: all; Boss ready: none, it says when it matches Balanced);
 //   train: a hero this many levels or more below the roster's top level is a trainee; at most max trainees in a Training team.
-const BP6={str:.5,weak:.55,weakPen:1.6,role:{tank:[1,.15,-.4],heal:[1,.3,-.3],sup:[.35,-.05,-.2],dmg:[.4,.35,.12,0]},pr:.4,de:.4,dup:.28,dl:.08,el:.05,
+// v0.11.8: el per distinct element in the six (was .05, too small to matter), elDup per repeat of an element, rest: Fresh mix bonus for a hero
+// who has not fought lately (full after 20 battles out, or never fought)
+const BP6={str:.5,weak:.55,weakPen:1.6,role:{tank:[1,.15,-.4],heal:[1,.3,-.3],sup:[.35,-.05,-.2],dmg:[.4,.35,.12,0]},pr:.4,de:.4,dup:.28,dl:.08,el:.3,elDup:.2,rest:.6,
   boss:{el:3,arch:2,area:2.5},overlap:{boss:0,mix:.32,rot:.32},train:{gap:3,max:4},
   fly:{one:1.2,two:.35,archer:.45,boss:.6}};// v0.8.1 fly: flying foes ahead want real ranged attackers (party3.js p6Fly)
 // Beta v0.6.3: Make camp (v063prog.js)

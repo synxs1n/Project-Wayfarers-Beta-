@@ -54,7 +54,7 @@ function pcard0(c,rs,turn,tg,lb){
   return `<button class="pc ${rs?'rs':''} ${turn?'turn':''} ${ko?'ko':''} ${tg?'tg':''} ${sw?'swapok':''}" data-act="tgtA" data-arg="${allParty().indexOf(c)}" ${tg||sw?'':'tabindex="-1"'} aria-label="${esc(c.name)}, level ${c.lv}${sw?'. Tap to switch in':''}" ${sw?'title="Tap to switch in"':''}>
     ${port(c.id)}<span class="pm"><span class="uct"><b>${esc(c.name)}</b><span class="ucl">Lv ${c.lv}</span>${elbs(c.el)}</span>
     <span class="ucr"><i>HP</i>${bar(c.hp,c.S.mhp,'var(--hp)')}<em class="nums">${Math.max(0,c.hp)}/${c.S.mhp}</em></span>
-    ${rs?'':`<span class="ucr"><i>MP</i>${bar(c.mp,c.S.mmp,'var(--mp)')}<em class="nums mpn">${c.mp}/${c.S.mmp}</em></span>`}
+    ${`<span class="ucr ${rs?'ucrm':''}"><i>MP</i>${bar(c.mp,c.S.mmp,'var(--mp)')}<em class="nums mpn">${c.mp}/${c.S.mmp}</em></span>`}
     ${lim?`<span class="ucr"><i>LB</i><span class="lbar ${lb>=100?'full':''}"><i style="width:${lb}%"></i></span><em class="nums">${Math.round(lb)}%</em></span>`:''}
     <small class="ucc">${esc(CLS[TPL[c.id].cls].n)}</small></span></button>`;
 }

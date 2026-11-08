@@ -29,13 +29,13 @@ function c5PlanAim(u,p,sk,tg,live){try{if(!p||!p.tgt||!tg||tg.length!==1||!c5Sin
   const t=p.tgt,cur=tg[0];if(!cur||cur.side!=='p')return tg;if(has(cur,'taunt')&&!has(t,'taunt'))return tg;if(t.hp<=0||!(live||B.front).includes(t))return tg;return [t];}catch(e){return tg;}}
 // the reward: a guard that caught the planned hit makes the hero quick
 HOOK.before('perform','chain5','a guarded planned hit makes the hero quick',function(a,sk,tgts){try{if(!B||!a||a.side!=='e'||!tgts||tgts.length!==1)return;const p=a._c5used;if(!p||!p.tgt||p.n!==a.turns)return;const t=tgts[0];
-  if(t===p.tgt&&t.guard&&(sk.k==='phys'||sk.k==='mag')){t.c5q=1;fx(t,'Braced!','stat good');}}catch(e){}});
+  if(t===p.tgt&&t.guard&&(sk.k==='phys'||sk.k==='mag')){t.c5q=1;fx(t,'Braced!','stat good');try{if(typeof lbAdd==='function'&&G5.lb)lbAdd(t,G5.lb);}catch(x){}/* v0.11.8: a guarded hit fills some Limit */}}catch(e){}});
 {const en0=endTurn;endTurn=function(u,cost){try{if(u&&u.c5q&&u.side==='p'){u.c5q=0;cost=(cost==null?1:cost)*(G5.quick||.7);log(`${u.name} shrugs off the blow and moves quickly.`);}}catch(e){}return en0.call(this,u,cost);};}
 // ----- the cue -----
 function c5Est(u,sk,t){try{const r0=RNG;RNG=()=>.5;try{const r=calcDamage(u,sk,t);return (r&&r.dmg||0)*(sk.hits||1);}finally{RNG=r0;}}catch(e){return 0;}}
 function c5Aim(a){const out=[];if(!B||!a)return out;B.en.forEach(u=>{if(u.hp<=0)return;const p=foePlan(u);if(!p||p.tgt!==a||!p.sk||!(p.sk.k==='phys'||p.sk.k==='mag'))return;out.push({u,sk:p.sk,dmg:c5Est(u,p.sk,a)});});return out;}
 {const cue0=b9Cue;b9Cue=function(){const r=cue0.apply(this,arguments);if(r)return r;try{const a=B&&B.cur;if(!a||a.side!=='p'||B.mode!=='cmd'||a.guard)return r;const aims=c5Aim(a);if(!aims.length)return r;
-    let ord=null;const before=u=>{ord=ord||b5Order(12);for(let i=1;i<ord.length;i++){const x=ord[i].u;if(x===a)return false;if(x===u)return true;}return false;};
+    let ord=null;const before=u=>{if(u.hp<=0||has(u,'stun'))return false;ord=ord||b5Order(12);for(let i=1;i<ord.length;i++){const x=ord[i].u;if(x===a)return false;if(x===u)return true;}return false;};
     const soon=aims.filter(o=>before(o.u));if(!soon.length)return r;const tot=soon.reduce((q,o)=>q+o.dmg,0),heavy=tot>=a.hp*(G5.heavy||.3)||soon.length>=2;if(!heavy)return r;
     const who=soon.map(o=>o.u.name).join(' and ');return {k:'guard',u:soon[0].u,glow:'guard',txt:`Guard! ${who} aim${soon.length>1?'':'s'} at ${a.name}`,tip:`${who} ${soon.length>1?'are':'is'} about to hit ${a.name} for about ${Math.round(tot)} before ${a.name} acts again. Guard halves it, and a guarded hit makes ${a.name} quick.`};}catch(e){return r;}};}
 // ----- the telegraph on screen: the intent tag names the hero, the hero's card shows who aims at them -----

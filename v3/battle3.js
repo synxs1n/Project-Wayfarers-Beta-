@@ -41,12 +41,14 @@ const B3OFF=(()=>{const L=[],R=B3.R,s=B3.step;for(let dy=-R;dy<=R;dy+=s)for(let 
 // v0.8.10: while b3Lay places a unit's labels (B3SG.u), they keep B3.sideGap px from the other side's sprites and labels and a hero's
 // labels stay on the heroes' half of the stage; when no spot allows that, the gap shrinks to 2 px, then the plain rules apply
 let B3SG=null;
+// v0.11.8: logical px at the stage bottom that the framed .bwrap clips (its border-box height is a little short of the stage); labels keep out of them
+let B3EB=0;
 function b3Find(w,h,anchors,obs,W,H,R){const sg=B3SG;if(sg&&sg.u){B3SG=null;try{const R0=R||B3.R;for(const [gap,half,rk] of [[B3.sideGap||5,true,1],[4,true,1],[4,false,1],[3,false,1],[2,false,1],[2,false,1.6]]){const r=b3Find0(w,h,anchors,obs,W,H,R0*rk,sg.u,gap,half);if(r)return r;}}finally{B3SG=sg;}}
   return b3Find0(w,h,anchors,obs,W,H,R);}
 function b3Find0(w,h,anchors,obs,W,H,R,su,sgap,half){R=R||B3.R;const K=anchors.length,ix=new Array(K).fill(0),pad=B3.pad,hero=su&&su.side==='p';
   for(let guard=0;guard<B3OFF.length*K;guard++){let bk=-1,bc=1e9;for(let k=0;k<K;k++){const o=B3OFF[ix[k]];if(!o)continue;const c=anchors[k].c+o[2];if(c<bc){bc=c;bk=k;}}
     if(bk<0)return null;const o=B3OFF[ix[bk]++],a=anchors[bk];if(o[2]>R*1.3)continue;
-    const r={x:Math.round(a.x+o[0]),y:Math.round(a.y+o[1]),w,h};if(r.x<1||r.y<1||r.x+w>W-1||r.y+h>H-1)continue;
+    const r={x:Math.round(a.x+o[0]),y:Math.round(a.y+o[1]),w,h};if(r.x<1||r.y<1||r.x+w>W-1||r.y+h>H-1-B3EB)continue;
     if(su&&half&&hero&&r.x+w/2<W*.5)continue;
     let ok=true;for(let i=0;i<obs.length;i++){const q=obs[i];if(b3Hit(r,q,su&&q.u&&q.u.side!==su.side?sgap:(q.body?0:pad))){ok=false;break;}}if(ok)return r;}
   return null;}
@@ -77,6 +79,7 @@ function b3Key(units){let k=BL.W+'x'+BL.H+'|'+(B.id||0)+'|'+(B.wave||0)+'|'+B.mo
 // (b3StageHtml) always checks the key, so a new turn, target mode or status is laid out at once
 function b3Lay(fresh){if(!B)return null;const now=performance.now();if(!fresh&&B3L.L&&B3L.bid===B.id&&now-B3L.t<B3.memo)return B3L.L;
   const units=b3Units(),key=b3Key(units);B3L.t=now;B3L.bid=B.id;if(B3L.key===key&&B3L.L)return B3L.L;
+  B3EB=0;try{const st=document.getElementById('bstage'),p=st&&st.parentElement;if(p&&BL.H){const k=st.getBoundingClientRect().height/BL.H;if(k>0)B3EB=Math.max(0,Math.min(8,Math.ceil((BL.H*k-p.clientHeight)/k)));}}catch(e){}
   const W=BL.W,H=BL.H,obs=[],L={W,H,bodies:[],plates:new Map(),prim:new Map(),tags:new Map(),tgt:new Map(),arrow:null,hidden:[],all:[]};
   units.forEach(({u,b})=>{const bd=b3Body(u,b);if(bd){bd.body=1;bd.u=u;obs.push(bd);L.bodies.push({u,r:bd,face:b3Face(bd),b});}});
   const live=units.filter(o=>o.u.hp>0).sort((a,b)=>b.b.y-a.b.y);

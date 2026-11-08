@@ -26,7 +26,11 @@ function deltaHtml(c,id){const g=gearOf(id);if(!g)return '';const a=c.S,b=statsW
 const CLASS_W={warrior:{atk:1,def:.4,mhp:.06,spd:.4},knight:{def:1,res:.6,mhp:.08,atk:.4},mage:{mag:1,res:.3,mmp:.06,spd:.3},healer:{healP:1,mag:.3,res:.4,mmp:.08},
   thief:{atk:.8,spd:1.2,def:.2},archer:{atk:1,spd:.6,def:.2},monk:{atk:1,spd:.5,def:.4,mhp:.04},bard:{mag:.6,spd:.8,res:.4,mhp:.04,healP:.4},
   sniper:{atk:1,spd:.6},druid:{atk:1,spd:.6,healP:.2},archmage:{mag:1,spd:.3,mmp:.05},chronicler:{mag:.8,healP:.4,res:.3}};
-function loadoutScore(c,S){const W=CLASS_W[TPL[c.id].cls]||{atk:1,mag:1};let v=0;Object.keys(W).forEach(k=>{v+=(S[k]||0)*W[k];});
+// v0.11.8: the hero's main role (roles.js) tilts the class weights: a tank role adds DEF, RES and HP, a healer role healing and MP, a ranged or
+// physical role ATK and SPD, a magic role MAG; buffers and debuffers SPD and MP
+const ROLE_W={tank:{def:.5,res:.3,mhp:.04},healer:{healP:.5,mmp:.04,res:.15},phys:{atk:.4,spd:.15},ranged:{atk:.4,spd:.2},magic:{mag:.5,mmp:.02},buffer:{spd:.3,mmp:.03},debuffer:{spd:.3,atk:.15,mag:.15}};
+function roleW(c){try{const R=typeof heroRoleSet==='function'&&heroRoleSet(c);return R&&R.primary&&ROLE_W[R.primary]||null;}catch(e){return null;}}
+function loadoutScore(c,S){const W0=CLASS_W[TPL[c.id].cls]||{atk:1,mag:1},RW=roleW(c),W=RW?Object.assign({},W0):W0;if(RW)Object.keys(RW).forEach(k=>{W[k]=(W[k]||0)+RW[k];});let v=0;Object.keys(W).forEach(k=>{v+=(S[k]||0)*W[k];});
   v+=((S.crit||0)*100)*.5;Object.keys(S.elBoost||{}).forEach(el=>{if(c.el.includes(el))v+=4+c.lv*.15;});if(S.immune)v+=3;return v;}
 function gainFor(c,id){const g=gearOf(id);if(!g||!canEquip(c,id))return null;const a=loadoutScore(c,c.S),b=loadoutScore(c,statsWith(c,g.slot,id));return {d:b-a,pct:a>0?(b-a)/a:0};}
 // heroes who can use an item, best upgrade first

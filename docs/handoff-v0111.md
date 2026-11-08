@@ -94,3 +94,11 @@ P5 0.11.8+ realms: realm order rises in fantasy with the most intricate final to
 - A successful guard grants some Limit gauge.
 - Purple (epic) card border without the Epic tag on some heroes; not every dual type is epic, some single types are (never starters).
 - Guild recruits: 5 of a possible 15 per playthrough, one unlocked per town.
+
+## 0.11.8 (in progress at the time of writing)
+- config.js BP6 el .3, elDup .2, rest .6; party3.js p6Score element dup penalty and Fresh mix recency (c.lastB set in engine.js finishBattle, saved in packG)
+- equip.js ROLE_W/roleW blend into loadoutScore; equip2.js planGear sorted ids and stable tie-break
+- p3shop.js p3Chain + p3SmithPlan(slots) temper chains, p3SmithRun tempers in the pack, ACT.p3Alch (charms) + Alchemy button in menus3.js m3CharmBtn
+- chain5.js guarded hit -> lbAdd(G5.lb=12); battle5.js/chain5.js Guard cue skips stunned foes
+- heroes.js EPIC_IDS (helper), progression.js G.run.gpick 5 of the 14 CHALL recruits, one per town (helper)
+- battleui.js/battle3.js: party MP on cards, single target preview fit, Settings "Single target skills: Ask / Fire at once" (META.cfg.autoOne) (helper)

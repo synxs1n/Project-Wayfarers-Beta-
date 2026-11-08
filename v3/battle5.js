@@ -196,7 +196,8 @@ function b9LayWeak(L){L.wk=new Map();if(typeof B9_STAGE_WEAK==='undefined'||!B9_
 function b9CanStop(a){try{return known(a).find(s=>a.mp>=(s.mp||0)&&(s.k==='phys'||s.k==='mag')&&(s.strip||(s.fx||[]).some(([k])=>k==='stun')))||null;}catch(e){return null;}}
 function b9Cleanse(a){try{const s=known(a).find(s=>s.cleanse&&a.mp>=(s.mp||0)&&(s.t==='ally'||s.t==='allyAll'));if(s)return 'skills';if(G&&G.inv&&(G.inv.remedy||0)>0)return 'items';}catch(e){}return null;}
 function b9Cue(){if(!B||B.over||B.auto||B.mode!=='cmd'||!B.cur||B.cur.side!=='p'||B.cur.isComp)return null;const a=B.cur;let ord=null;
-  const before=u=>{ord=ord||b5Order(12);for(let i=1;i<ord.length;i++){const x=ord[i].u;if(x===a)return false;if(x===u)return true;}return false;};
+  // v0.11.8: a stunned foe skips its turn, so it never lights Guard; a foe that comes after the hero's next turn does not either
+  const before=u=>{if(u.hp<=0||has(u,'stun'))return false;ord=ord||b5Order(12);for(let i=1;i<ord.length;i++){const x=ord[i].u;if(x===a)return false;if(x===u)return true;}return false;};
   for(const u of B.en){const T=b9TelePlan(u);if(T&&T.tg.includes(a)&&before(u))return {k:'guard',u,glow:'guard',txt:`Guard! ${T.n} next`,tip:`${u.name}'s ${T.n} hits ${T.tg.length>1?'the whole Vanguard':a.name} before ${a.name} acts again. Guard halves it.`};}
   const wind=B.en.find(u=>u.hp>0&&has(u,'charge'));
   if(wind){const s=b9CanStop(a);return {k:'int',u:wind,glow:s?'skills':null,txt:'Interrupt: stun or strip buffs',tip:`${wind.name} is winding up. A stun or stripping its boons stops it.`+(s?` ${a.name} can: ${s.n}.`:'')};}

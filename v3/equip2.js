@@ -17,9 +17,11 @@ function planGear(heroIds,takeIds,fair,slots){const SL=slots||GSLOTS;
   const eq={},cur={},memo={},used=[];heroes.forEach(c=>{eq[c.id]={};GSLOTS.forEach(sl=>{if(!SL.includes(sl)&&c.eq[sl])eq[c.id][sl]=c.eq[sl];});cur[c.id]=scoreEq(c,eq[c.id]);});
   const val=(c,sl,id)=>{const k=c.id+'|'+sl+'|'+id+'|'+GSLOTS.map(s=>eq[c.id][s]||'').join(',');return memo[k]!=null?memo[k]:(memo[k]=scoreEq(c,Object.assign({},eq[c.id],{[sl]:id}))-cur[c.id]);};
   for(let it=0;it<500;it++){
-    const ids=[...new Set(pool.map(e=>e.id))],mean=heroes.reduce((a,c)=>a+cur[c.id],0)/Math.max(1,heroes.length)||1;let best=null;
+    const ids=[...new Set(pool.map(e=>e.id))].sort(),mean=heroes.reduce((a,c)=>a+cur[c.id],0)/Math.max(1,heroes.length)||1;let best=null;
     heroes.forEach(c=>{const w=fair?(G.party.includes(c.id)?1.35:1)/(.35+cur[c.id]/mean):1;
-      SL.forEach(sl=>{if(eq[c.id][sl])return;ids.forEach(id=>{if(!slotOk(c,sl,id))return;const v=val(c,sl,id);if(v<=.01)return;const s=v*w;if(!best||s>best.s)best={c,sl,id,s};});});});
+      // v0.11.8: ties break the same way every time (hero order, slot order, then the gear id), not by the pack's current order, so pressing
+      // Equip best twice gives the same loadout
+      SL.forEach(sl=>{if(eq[c.id][sl])return;ids.forEach(id=>{if(!slotOk(c,sl,id))return;const v=val(c,sl,id);if(v<=.01)return;const s=v*w;if(!best||s>best.s+1e-6||(Math.abs(s-best.s)<=1e-6&&best.c===c&&best.sl===sl&&id<best.id))best={c,sl,id,s};});});});
     if(!best)break;
     const rk=e=>!e.from||hs.has(e.from)?0:1,pick=pool.map((e,i)=>({e,i})).filter(o=>o.e.id===best.id).sort((a,b)=>rk(a.e)-rk(b.e))[0];
     pool.splice(pick.i,1);used.push({hid:best.c.id,sl:best.sl,id:best.id,from:rk(pick.e)?pick.e.from:null,fromSl:pick.e.sl});

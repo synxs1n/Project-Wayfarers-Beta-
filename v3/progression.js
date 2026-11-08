@@ -54,7 +54,19 @@ function challState(h){G.chall=G.chall||{};return G.chall[h]||{state:'open',have
 function challEligible(){return CHALL.filter(c=>c.stage<=G.stage&&TPL[c.hero]&&!G.roster[c.hero]);}
 // The board rotates after an inn rest or a stage clear (the same roll the tavern uses). Accepted challenges stay posted.
 // Draw weights: dual-type heroes x2, and +50% for every rotation a hero has been left off, so nobody stays hidden for long.
-function challVisible(){const E=challEligible();G.chSeen=G.chSeen||{};const roll=G.tavRoll||0,act=E.filter(c=>challState(c.hero).state==='active');
+// v0.10.x: Guild recruits are drawn per journey: 5 of the CHALL pool (G.run.gpick), recruit i unlocks once town i has been reached.
+// Old saves with no G.run.gpick keep the old board (all recruits, rotating).
+const gpickOn=()=>!!(G&&G.run&&Array.isArray(G.run.gpick)&&G.run.gpick.length);
+function gpickSeen(i){return !!(G&&((G.visited||[]).includes(i)||(G.stage|0)>=i||(G.been||{})['t'+i]));}
+function gpickOpen(h){const i=G.run.gpick.indexOf(h);return i>=0&&gpickSeen(i);}
+HOOK.after('newGame','progression','draw the 5 guild recruits for this journey',function(){try{
+  if(!G||G.daily||!G.run)return;const R=seeded(((G.run.seed|0)+4242)>>>0),pool=CHALL.map(c=>c.hero).filter(h=>TPL[h]&&!G.roster[h]);
+  for(let i=pool.length-1;i>0;i--){const j=Math.floor(R()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
+  const pick=pool.slice(0,5);const k=pick.findIndex(h=>TPL[h].el.length<2);if(k>0)[pick[0],pick[k]]=[pick[k],pick[0]];// the first one opens in realm 1, before dual types appear
+  G.run.gpick=pick;}catch(e){}});
+function challVisible(){if(gpickOn()){G.chall=G.chall||{};const dualOK=typeof p2DualOK==='function'?p2DualOK():true;
+  return G.run.gpick.filter(h=>challOf(h)&&!G.roster[h]&&gpickOpen(h)&&(dualOK||TPL[h].el.length<2)).map(h=>challOf(h));}
+  const E=challEligible();G.chSeen=G.chSeen||{};const roll=G.tavRoll||0,act=E.filter(c=>challState(c.hero).state==='active');
   const open=E.filter(c=>challState(c.hero).state!=='active');if(open.length<=CHALL_POST)return act.concat(open);
   G.chPost=G.chPost||{};if(G.chPost.roll===roll&&G.chPost.ids&&G.chPost.ids.every(h=>open.some(c=>c.hero===h)))return act.concat(G.chPost.ids.map(h=>challOf(h)));
   const R=seeded((G.run.seed||1)+roll*977+31),pool=open.slice(),pickd=[];
@@ -84,7 +96,8 @@ function vChallenges(){
       const prog=st.state!=='active'?'':c.type==='deliver'?`<div class="mats">${matChips(challMats(c,st))}</div>`:`<small class="nums">${st.have||0} / ${c.n}</small>`;
       return `<div class="row chrow ${ready?'ready':''}">${port(c.hero)}<div class="grow"><b>${esc(title)}</b><small>${esc(t.n)}, ${CLS[t.cls].n} · ${t.el.map(e=>EL[e]).join('/')}</small><small>${esc(desc)}</small>${prog}</div>
         ${st.state==='open'?`<button class="btn sm" data-act="chAccept" data-arg="${c.hero}">Accept</button>`:ready?`<button class="btn sm gold" data-act="chClaim" data-arg="${c.hero}">${c.type==='deliver'?'Deliver':'Recruit'}</button>`:'<span class="m">Active</span>'}</div>`;}).join('')}</div>`:'<p class="note">No challenges posted yet. More appear as your journey goes on.</p>'}
-    <p class="note">${done} of ${CHALL.length} challenge recruits have joined you this journey. Each board posts a few challenges at a time and rotates after an inn rest or a cleared Scourge; accepted ones stay up until you finish them, and every challenge comes around again.</p>`;
+    ${gpickOn()?G.run.gpick.map((h,i)=>({h,i})).filter(o=>!G.roster[o.h]&&!gpickSeen(o.i)).map(o=>`<div class="row chrow locked"><div class="grow"><b>Locked recruit</b><small>Unlocks in realm ${o.i+1}</small></div><span class="m">Locked</span></div>`).join(''):''}
+    <p class="note">${gpickOn()?`${done} of ${G.run.gpick.length} recruits of this journey have joined you.`:`${done} of ${CHALL.length} challenge recruits have joined you this journey. Each board posts a few challenges at a time and rotates after an inn rest or a cleared Scourge; accepted ones stay up until you finish them, and every challenge comes around again.`}</p>`;
 }
 // ----- remember which maps the player has been to (for hints that must not spoil) -----
 HOOK.after('placeAt','progression','places been',function(r,mid){try{G.been=G.been||{};G.been[mid]=1;}catch(e){}});

@@ -83,48 +83,61 @@ function temperWhy(list){const out={},memo={};const R=list.map(o=>{const c=forge
 // ===================== 3.3: Smithy plan =====================
 const P3_SLOTS=['w','a','k'];
 function p3Recipes(){const o={};RECIPES.forEach(r=>{if(r.id&&SMITH_CATS.includes(r.cat)&&recipeOpen(r)&&!o[r.id])o[r.id]=r;});return o;}
-function p3SmithPlan(){
+// v0.11.8: the plan looks at where a piece can END: every base (pack, shop, forge) is also considered tempered +1, +2 and +3 (temper.js
+// forgeCost chain), with the gold and materials of the whole chain, so the pick is the best final stats you can afford, not the best
+// shelf price. slots: the Smithy plans weapons, armor and capes; Alchemy (p3Alch) plans charms the same way.
+function p3Chain(base){const out=[{id:base,k:0,gold:0,m:{}}];let id=base,gold=0;const m={};
+  for(let k=1;k<=3;k++){const fc=forgeCost(id);if(!fc)break;gold+=fc.gold;Object.keys(fc.m).forEach(q=>{m[q]=(m[q]||0)+fc.m[q];});id=fc.next;out.push({id,k,gold,m:Object.assign({},m)});}
+  return out;}
+function p3SmithPlan(slots){const SL=slots||P3_SLOTS;
   const party=partyChars();let gold=G.gold;const mats=Object.assign({},G.mats),pack={};G.gear.forEach(id=>{pack[id]=(pack[id]||0)+1;});
-  const shop=new Set(shopStock('weapons').concat(shopStock('armor')).filter(id=>GEAR[id])),rec=p3Recipes();
-  const cands=[...new Set([...shop,...Object.keys(rec),...Object.keys(pack)])].filter(id=>{const g=gearOf(id);return g&&!g.stick&&P3_SLOTS.includes(g.slot);});
+  const stock=SL.includes('c')?shopStock('charms'):shopStock('weapons').concat(shopStock('armor'));
+  const shop=new Set(stock.filter(id=>GEAR[id])),rec=p3Recipes();
+  const bases=[...new Set([...shop,...Object.keys(rec),...Object.keys(pack)])].filter(id=>{const g=gearOf(id);return g&&!g.stick&&SL.includes(g.slot);});
+  const temperOn=typeof pcTemperOpen!=='function'||pcTemperOpen();
+  const cands=[];bases.forEach(b=>(temperOn?p3Chain(b):[{id:b,k:0,gold:0,m:{}}]).forEach(ch=>cands.push(Object.assign({base:b},ch))));
   const ent=[];
-  party.forEach(c=>P3_SLOTS.forEach(sl=>{const opts=cands.filter(id=>slotOk(c,sl,id)).map(id=>({id,g:gainFor(c,id)})).filter(o=>o.g&&o.g.d>.01&&o.g.pct>=SMITH_PLAN.minPct).sort((a,b)=>b.g.pct-a.g.pct||b.g.d-a.g.d);
+  party.forEach(c=>SL.forEach(sl=>{const opts=cands.filter(o=>slotOk(c,sl,o.id)).map(o=>Object.assign({},o,{g:gainFor(c,o.id)})).filter(o=>o.g&&o.g.d>.01&&o.g.pct>=SMITH_PLAN.minPct).sort((a,b)=>b.g.pct-a.g.pct||b.g.d-a.g.d);
     if(opts.length)ent.push({c,sl,opts});}));
   ent.sort((a,b)=>b.opts[0].g.pct-a.opts[0].g.pct);
   const hasM=m=>Object.keys(m).every(k=>(mats[k]||0)>=m[k]);
   const picks=[],cant=[];
   ent.forEach(e=>{let missed=null;
-    for(const o of e.opts){const id=o.id,ways=[];
-      if((pack[id]||0)>0)ways.push({src:'pack',gold:0});
-      if(shop.has(id))ways.push({src:'buy',gold:GEAR[id].price});
-      if(rec[id]){const m=recipeMats(rec[id]);ways.push({src:'craft',gold:rec[id].g,m,mOk:hasM(m)});}
+    for(const o of e.opts){const id=o.id,base=o.base,ways=[],addT=(w)=>{const m=Object.assign({},w.m||{});Object.keys(o.m).forEach(q=>{m[q]=(m[q]||0)+o.m[q];});w.gold+=o.gold;w.m=Object.keys(m).length?m:w.m;w.mOk=!w.m||hasM(w.m);w.k=o.k;w.base=base;return w;};
+      if((pack[base]||0)>0)ways.push(addT({src:'pack',gold:0}));
+      if(shop.has(base))ways.push(addT({src:'buy',gold:GEAR[base].price}));
+      if(rec[base]){const m=recipeMats(rec[base]);ways.push(addT({src:'craft',gold:rec[base].g,m}));}
       if(!ways.length)continue;
-      const ok=ways.filter(w=>w.gold<=gold&&(w.src!=='craft'||w.mOk)).sort((a,b)=>a.gold-b.gold||(a.src==='buy'?-1:1));
-      if(!ok.length){if(!missed){const cheapest=ways.slice().sort((a,b)=>a.gold-b.gold)[0];missed={cid:e.c.id,sl:e.sl,id,gold:cheapest.gold,pct:o.g.pct,why:ways.some(w=>w.src==='craft'&&!w.mOk)&&!ways.some(w=>w.src!=='craft')?'mats':'gold'};}continue;}
+      const ok=ways.filter(w=>w.gold<=gold&&w.mOk).sort((a,b)=>a.gold-b.gold||(a.src==='buy'?-1:1));
+      if(!ok.length){if(!missed){const cheapest=ways.slice().sort((a,b)=>a.gold-b.gold)[0];missed={cid:e.c.id,sl:e.sl,id,gold:cheapest.gold,pct:o.g.pct,why:ways.every(w=>!w.mOk)?'mats':'gold'};}continue;}
       const w=ok[0],alt=ways.filter(x=>x!==w&&x.src!=='pack').map(x=>({src:x.src,gold:x.gold}));
-      if(w.src==='pack')pack[id]--;gold-=w.gold;if(w.src==='craft')Object.keys(w.m).forEach(k=>{mats[k]-=w.m[k];});
-      picks.push({cid:e.c.id,sl:e.sl,id,src:w.src,gold:w.gold,m:w.m||null,pct:o.g.pct,alt,from:e.c.eq[e.sl]||null});
+      if(w.src==='pack')pack[base]--;gold-=w.gold;if(w.m)Object.keys(w.m).forEach(k=>{mats[k]-=w.m[k];});
+      picks.push({cid:e.c.id,sl:e.sl,id,base,k:w.k||0,src:w.src,gold:w.gold,m:w.m||null,pct:o.g.pct,alt,from:e.c.eq[e.sl]||null});
       if(missed&&missed.pct>o.g.pct+.001)cant.push(missed);missed=null;break;}
     if(missed)cant.push(missed);});
   const total=picks.reduce((a,p)=>a+p.gold,0);return {picks,cant,total,gold0:G.gold};}
-const p3Src=p=>p.src==='pack'?'From your pack':p.src==='buy'?`Buy for <b class="nums">${fmt(p.gold)}</b> gold`:`Forge for <b class="nums">${fmt(p.gold)}</b> gold and materials you own`;
+const p3Src=p=>{const t=p.k?` and temper it to +${p.k}`:'',g=`<b class="nums">${fmt(p.gold)}</b> gold${p.m&&Object.keys(p.m).length?' and materials you own':''}`;return p.src==='pack'?(p.k?`From your pack${t} for ${g}`:'From your pack'):p.src==='buy'?`Buy${t} for ${g}`:`Forge${t} for ${g}`;};
 function mP3Plan(m){const P=m.plan,cn=id=>G.roster[id]?esc(G.roster[id].name):'?';
   const rows=P.picks.map(p=>{const c=G.roster[p.cid];if(!c)return '';const alt=p.alt.length?` <small class="mute">(${p.alt.map(a=>a.src==='buy'?'buying: '+fmt(a.gold):'forging: '+fmt(a.gold)+' and materials').join(', ')})</small>`:'';
     return `<div class="row p3pl">${port(p.cid,'sm')}<div class="grow"><b>${cn(p.cid)}</b> <em class="up">+${Math.max(1,Math.round(p.pct*100))}%</em><small>${SLOTN[p.sl]}: ${p.from?esc(gearOf(p.from).n):'nothing'} → <span class="up">${esc(gearOf(p.id).n)}</span> ${tierChip(gearOf(p.id))}</small><small>${p3Src(p)}${alt}</small><small>${deltaHtml(c,p.id)}</small></div></div>`;}).join('');
   const cant=P.cant.map(x=>`<div class="row"><div class="grow"><small><b>${cn(x.cid)}</b>: ${esc(gearOf(x.id).n)} (+${Math.max(1,Math.round(x.pct*100))}%) ${x.why==='mats'?'needs materials you do not have':`needs ${fmt(x.gold)} gold`}.</small></div></div>`).join('');
   const short=G.gold<P.total;
-  const body=P.picks.length?`<p class="note">For each hero in your party, the best piece the Smithy can sell or forge right now, or a spare from your pack. When both buying and forging work, the cheaper one is picked. Nothing happens until you confirm.</p>
+  const body=P.picks.length?`<p class="note">For each hero in your party, the piece that ends up best: ${m.charms?'a charm Alchemy sells':'what the Smithy sells or forges'}, or a spare from your pack, tempered as far as your gold and materials allow. When two ways reach the same piece, the cheaper one is picked. Nothing happens until you confirm.</p>
     <div class="rows">${rows}</div>${cant?`<h4>Out of reach for now</h4><div class="rows">${cant}</div>`:''}
     <p class="nums p3tot"><b>Total: ${fmt(P.total)} gold</b> · You have ${fmt(G.gold)} · Left after: ${fmt(Math.max(0,G.gold-P.total))}</p>${short?'<p class="warn">You no longer have enough gold for all of it. It will stop when the gold runs out.</p>':''}
     <p class="note"><small>Undo afterwards puts everyone's gear back as it was; what you bought or forged stays in your pack.</small></p>`
-    :`<p>Nothing to buy or forge: your party already has the best the Smithy can offer${P.cant.length?' for the gold and materials you have':''}.</p>${cant?`<h4>Out of reach for now</h4><div class="rows">${cant}</div>`:''}`;
+    :`<p>Nothing to buy or forge: your party already has the best ${m.charms?'Alchemy':'the Smithy'} can offer${P.cant.length?' for the gold and materials you have':''}.</p>${cant?`<h4>Out of reach for now</h4><div class="rows">${cant}</div>`:''}`;
   return box('Upgrade whole party',body,`<button class="btn" data-act="xBack">Cancel</button>${P.picks.length?`<button class="btn gold" data-act="p3SmithGo">Confirm: ${fmt(P.total)} gold</button>`:''}`,true);}
 function p3SmithRun(plan){
-  const got=[];let stop=null,spent=0,bought=0,forged=0;
+  const got=[];let stop=null,spent=0,bought=0,forged=0,tempered=0;
   for(const p of plan.picks){const c=G.roster[p.cid];if(!c)continue;
-    if(p.src==='pack'){if(!G.gear.includes(p.id))continue;}
-    else if(p.src==='buy'){const g=GEAR[p.id];if(G.gold<g.price){stop='gold';break;}G.gold-=g.price;G.gear.push(p.id);spent+=g.price;bought++;}
-    else{const r=p3Recipes()[p.id];if(!r)continue;if(G.gold<r.g){stop='gold';break;}if(!hasMats(recipeMats(r))){stop='mats';break;}const g0=G.gold;if(!craft(r)){stop='gold';break;}spent+=g0-G.gold;forged++;}
+    const base=p.base||p.id;
+    if(p.src==='pack'){if(!G.gear.includes(base))continue;}
+    else if(p.src==='buy'){const g=GEAR[base];if(G.gold<g.price){stop='gold';break;}G.gold-=g.price;G.gear.push(base);spent+=g.price;bought++;}
+    else{const r=p3Recipes()[base];if(!r)continue;if(G.gold<r.g){stop='gold';break;}if(!hasMats(recipeMats(r))){stop='mats';break;}const g0=G.gold;if(!craft(r)){stop='gold';break;}spent+=g0-G.gold;forged++;}
+    // v0.11.8: temper the piece up the chain in the pack
+    if(p.k){let id=base,fail=null;for(let k=0;k<p.k;k++){const i=G.gear.indexOf(id);if(i<0){fail='mats';break;}const fc=forgeCost(id);if(!fc){break;}if(G.gold<fc.gold){fail='gold';break;}if(!hasMats(fc.m)){fail='mats';break;}const g0=G.gold;const nx=forge('spare',i);if(!nx){fail='mats';break;}spent+=g0-G.gold;tempered++;id=nx;}
+      if(fail){p.id=id;got.push(p);stop=fail;break;}}
     got.push(p);}
   // the equips come after every purchase, so Undo only touches gear (bought items stay in the pack)
   const snap=snapAuto(),before={};Object.values(G.roster).forEach(c=>{before[c.id]={eq:Object.assign({},c.eq),pw:loadoutScore(c,c.S)};});
@@ -132,9 +145,9 @@ function p3SmithRun(plan){
   Object.values(G.roster).forEach(refresh);
   const rows=[];Object.values(G.roster).forEach(c=>{const b=before[c.id],ch=[];EQSL.forEach(sl=>{if((b.eq[sl]||null)!==(c.eq[sl]||null))ch.push({sl,from:b.eq[sl]||null,to:c.eq[sl]||null});});
     if(ch.length)rows.push({id:c.id,name:c.name,inParty:G.party.includes(c.id),ch,comp:null,pw0:b.pw,pw1:loadoutScore(c,c.S)});});
-  saveGame();return {rows,snap,stop,spent,bought,forged,done:got.length,of:plan.picks.length};}
+  saveGame();return {rows,snap,stop,spent,bought,forged,tempered,done:got.length,of:plan.picks.length};}
 {const ma0=mAutoEq;mAutoEq=function(m){let h=ma0.apply(this,arguments);if(!m||m.mode!=='smith')return h;const R=m.p3||{};
-  const note=`<p class="note p3res">${R.stop?`<b class="warn">Stopped: ${R.stop==='gold'?'the gold ran out':'materials ran out'} after ${R.done} of ${R.of}.</b> Everything bought before that is equipped. `:''}Spent ${fmt(R.spent||0)} gold: bought ${R.bought||0}, forged ${R.forged||0}. Undo puts the gear back; purchases stay in your pack.</p>`;
+  const note=`<p class="note p3res">${R.stop?`<b class="warn">Stopped: ${R.stop==='gold'?'the gold ran out':'materials ran out'} after ${R.done} of ${R.of}.</b> Everything bought before that is equipped. `:''}Spent ${fmt(R.spent||0)} gold: bought ${R.bought||0}, forged ${R.forged||0}, tempered ${R.tempered||0}. Undo puts the gear back; purchases stay in your pack.</p>`;
   return h.replace(/<h2>[^<]*<\/h2>/,`<h2>Best gear: bought, forged and equipped</h2>${note}`);};}
 
 // ===================== 3.4 / 3.5: Best Party and the team check =====================
@@ -345,6 +358,7 @@ Object.assign(ACT,{
 // ===================== actions =====================
 Object.assign(ACT,{
   p3Smith(){if(!G||G.daily)return;V.modal={type:'p3plan',plan:p3SmithPlan(),from:V.modal};render();},
+  p3Alch(){if(!G||G.daily)return;V.modal={type:'p3plan',charms:1,plan:p3SmithPlan(['c']),from:V.modal};render();},
   p3SmithGo(){const m=V.modal;if(!m||m.type!=='p3plan')return;const R=p3SmithRun(m.plan);sfx(R.done?'buy':'deny');
     V.modal={type:'autoEq',mode:'smith',rows:R.rows,snap:R.snap,from:m.from,p3:R};render();},
   p3Swap(a){if(!G||G.daily)return;if(!inTown()){toast('Swapping roster heroes into your six happens in town.');return;}const [inn,out]=String(a).split(',');if(!G.roster[inn]||G.party.includes(inn))return;

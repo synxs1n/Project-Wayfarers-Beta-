@@ -33,7 +33,9 @@ function p6Score(set,X,mode,prev){const T=X.T,R=set.map(c=>X.R[c.id]),K=R.map(r=
   const half=f=>R.reduce((a,r)=>a+(r[f]||0),0);v+=p6StepF(BP6.role.tank,cnt(r=>r.tank)+half('tankH'))+p6StepF(BP6.role.heal,cnt(r=>r.heal)+half('healH'))+p6Step(BP6.role.sup,cnt(r=>r.sup&&!r.heal))+p6Step(BP6.role.dmg,cnt(r=>r.dmg));
   if(R.some(r=>r.pr))v+=BP6.pr;if(R.some(r=>r.de))v+=BP6.de;
   const cl={};R.forEach(r=>{cl[r.cls]=(cl[r.cls]||0)+1;});Object.values(cl).forEach(n=>{if(n>1)v-=BP6.dup*(n-1);});
-  const els=new Set();set.forEach(c=>c.el.forEach(e=>els.add(e)));v+=BP6.el*els.size;
+  const els=new Set(),ec={};set.forEach(c=>c.el.forEach(e=>{els.add(e);ec[e]=(ec[e]||0)+1;}));v+=BP6.el*els.size;Object.values(ec).forEach(n=>{if(n>1)v-=(BP6.elDup||0)*(n-1);});
+  // v0.11.8: Fresh mix favours heroes who have not fought lately
+  if(mode==='mix'&&BP6.rest){const nb=(G.stats&&G.stats.battles)||0;set.forEach(c=>{const away=c.lastB==null?99:nb-c.lastB;v+=BP6.rest*Math.min(1,away/20);});}
   const dls=new Set();K.forEach(k=>k.dl.forEach(d=>dls.add(d)));['piercing','blunt','ranged','magic'].forEach(d=>{if(dls.has(d))v+=BP6.dl;});
   // v0.8.1: flyers want real ranged attackers (Archers first): a lance or a spell only half answers them, so the plain archetype answer above
   // never brought an Archer in. One ranged hero is worth a lot when the area flies, a second a little more, an Archer a bit on top.

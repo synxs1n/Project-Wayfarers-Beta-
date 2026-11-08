@@ -110,7 +110,7 @@ function gearTier(){return Math.max(0,Math.min(5,G.stage));}
 
 // ----- save / load -----
 function packG(){
-  const r={};Object.keys(G.roster).forEach(id=>{const c=G.roster[id];r[id]={lv:c.lv,xp:c.xp,eq:c.eq,hp:c.hp,mp:c.mp,alloc:c.alloc,pts:c.pts,auto:c.auto,lb:c.lb||0,vet:c.vet||0,legacy:c.legacy||0,pace:c.pace||0,ail:c.ail&&Object.keys(c.ail).length?c.ail:undefined,bt:c.bt!=null?c.bt:undefined,keep:c.keep||undefined,nat:c.nat||undefined,nrr:c.nrr||undefined};});
+  const r={};Object.keys(G.roster).forEach(id=>{const c=G.roster[id];r[id]={lv:c.lv,xp:c.xp,eq:c.eq,hp:c.hp,mp:c.mp,alloc:c.alloc,pts:c.pts,auto:c.auto,lb:c.lb||0,lastB:c.lastB,vet:c.vet||0,legacy:c.legacy||0,pace:c.pace||0,ail:c.ail&&Object.keys(c.ail).length?c.ail:undefined,bt:c.bt!=null?c.bt:undefined,keep:c.keep||undefined,nat:c.nat||undefined,nrr:c.nrr||undefined};});
   return Object.assign({},G,{roster:r});
 }
 // Beta v0.2.0: saves made under the old skill pacing keep every skill the hero had already learned.
@@ -863,6 +863,7 @@ function win(){
   const party=allParty(),maxLv=Math.max(...party.map(c=>c.lv));
   party.forEach(c=>{
     if(!G.daily&&B.front.includes(c))c.bt=btOf(c)+1;
+    if(!G.daily&&(B.front.includes(c)||B.back.includes(c)))c.lastB=(G.stats&&G.stats.battles)||0;// v0.11.8: when this hero last fought (Fresh mix favours those who have not, party3.js)
     let share=(B.front.includes(c)&&c.hp>0)?1:(typeof XP_REAR==='number'?XP_REAR:.6);// v0.7.2: XP_REAR (config.js)if(c.lv<maxLv-3)share*=1.4;if(c.hp<=0)share=0;// v0.4.3: the fallen earn no XP
     const flv=B.en.reduce((q,e)=>q+e.lv,0)/Math.max(1,B.en.length);
     const ups=share>0?addXp(c,Math.round(txp*share*xpLvMul(c,flv))):[];

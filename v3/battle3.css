@@ -533,3 +533,7 @@ html.rm .battle.b3 .cmd .mi.b9glow{animation:none}
 .battle.b3 .uct .effa{flex:none;font-size:.7rem;font-weight:900;line-height:1}
 .battle.b3 .uct .effa.up{color:#6fe08a}.battle.b3 .uct .effa.dn{color:#ff6a5a}.battle.b3 .uct .effa.im{color:#ccc}
 .udbox,.udbox .b9det,.udbox .b9chips{min-width:0;max-width:100%}.udet .b9chips>*{max-width:100%;white-space:normal}
+/* v0.11.8: reserve hero cards show MP too (a thin second bar under HP) */
+.battle.b3 .pgroup.rsv .pc.rs .ucr.ucrm .bar{height:5px}
+.battle.b3 .pgroup.rsv .pc.rs .ucr.ucrm .nums{color:#a8d0ff}
+.battle.b3.m-tall .pgroup.rsv .pcw .pc.rs{min-height:44px}
