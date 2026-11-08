@@ -67,7 +67,7 @@ chk('Throwing Stars, Kunai Volley and Fuma Shuriken are Ranged and catch flyers 
 chk('Monk chi heals use the better of healing power and chiK x attack',fly.chi[0]===1&&fly.chi[2]>fly.chi[1]||JSON.stringify(fly.chi));
 // ----- 5. a battle heal with Chi Mend actually heals by the chi power -----
 const heal=await ev(()=>{const A=__A,G=A.G;G.roster.oren=A.newChar('oren',40,3);G.party=['dorn','lumen','oren'];A.startBattle({stage:1,kind:'field'});const B=A.B,d=B.front.find(u=>u.id==='dorn'),o=B.front.find(u=>u.id==='oren');
-  o.hp=Math.max(1,Math.round(o.S.mhp*.2));const h0=o.hp;const sk=A.known(d).find(s=>s.id==='r_chimend');A.perform(d,sk,[o]);const got=o.hp-h0;const exp=sk.pw*Math.max(d.S.healP,A.ROLES.w.chiK*d.S.atk);
+  o.hp=Math.max(1,Math.round(o.S.mhp*.2));const h0=o.hp;const sk=A.known(d).find(s=>s.id==='r_chimend');A.perform(d,sk,[o]);const got=o.hp-h0;const chi=1+((d.S&&d.S.chi)||0);/* v0.10.5: a Stillwater monk heals 15% more with chi */const exp=sk.pw*Math.max(d.S.healP,A.ROLES.w.chiK*d.S.atk)*chi;
   A.V.modal=null;A.TW.get('finishBattle')('x');return {got,exp:Math.round(exp),hp:d.S.healP};});
 chk('Chi Mend in battle heals about pw x chi power ('+heal.got+' vs '+heal.exp+')',heal.got>=heal.exp*.9&&heal.got<=heal.exp*1.1||JSON.stringify(heal));
 // ----- 6. new gear icons are their own -----
