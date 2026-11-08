@@ -77,7 +77,7 @@ function p6Info(set,X){const R=set.map(c=>X.R[c.id]),els=new Set();set.forEach(c
     lv:set.length?Math.round(set.reduce((a,c)=>a+c.lv,0)/set.length):0,pw:set.reduce((a,c)=>a+X.pw[c.id],0)};}
 // the training team (v0.8.1, the owner's rule): the lowest levels on the roster, full stop. The only exception is a role nobody that low
 // can fill (a tank, a healer): then the lowest level hero who has that role comes along. Everyone below the top by BP6.train.gap trains.
-function p6Train(X){if(X.size<3)return null;const R=c=>X.R[c.id],asc=X.all.slice().sort((a,b)=>a.lv-b.lv||X.pw[b.id]-X.pw[a.id]);
+function p6Train(X,jit){if(X.size<3)return null;const R=c=>X.R[c.id],lvk=jit?c=>c.lv+jit.amp*p6Noise(c.id,'train'+jit.n,jit.a):c=>c.lv,asc=X.all.slice().sort((a,b)=>lvk(a)-lvk(b)||X.pw[b.id]-X.pw[a.id]);
   if(!asc.some(c=>X.top-c.lv>=BP6.train.gap))return null;
   let set=asc.slice(0,X.size);const anchors=[];
   ['tank','heal'].forEach(role=>{if(set.some(c=>R(c)[role]))return;const fill=asc.find(c=>R(c)[role]&&!set.includes(c));if(!fill)return;
@@ -126,7 +126,11 @@ function bestParty(shuf,hist0){const keep=P3C;if(!P3C)P3C={why:{},kit:{}};
     add('bal',vary('bal',s=>p6Score(s,X,'bal')));
     const bk=X.T.boss?'boss':'area';add(bk,p6Search(X,s=>p6Score(s,X,'boss',sets.slice(0,1))));
     add('mix',vary('mix',s=>p6Score(s,X,'mix',sets.slice(0,1)),[sets[0].slice().sort().join()]));
-    const tr=p6Train(X);if(tr)add('train',tr.set,{trainees:tr.trainees,anchors:tr.anchors});
+    let tr=p6Train(X);const tn=shuf.train|0,th=hist.train=hist.train||[];if(tr&&!th.length)th[0]=p6Key(tr.set);
+    if(tr&&tn>0){// Training team shuffle: the same rule (lowest levels plus a tank and healer anchor) with a seeded level jitter, skipping sixes already shown
+      const seen=new Set(th.slice(0,tn));let got=null;for(let a=0;a<14&&!got;a++){const t=p6Train(X,{n:tn,a,amp:1.5+a*.75});if(t&&!seen.has(p6Key(t.set)))got=t;}
+      if(got){th[tn]=p6Key(got.set);tr=got;}else{th.length=1;shuf.train=0;}}
+    if(tr)add('train',tr.set,{trainees:tr.trainees,anchors:tr.anchors});
     // fewer than three different sixes (Boss ready matched Balanced, nobody to train): a Rotation gives the heroes who sat out a turn
     if(opts.length<3&&X.all.length>X.size)add('rot',p6Search(X,s=>p6Score(s,X,'rot',sets.slice())));
     const first=opts[0]?opts[0].ids:[];opts.forEach(o=>{o.sum=p6Summary(o,X,first);o.rel=opts[0]&&opts[0].info.pw?Math.round(o.info.pw/opts[0].info.pw*100):100;delete o.set;});
@@ -177,8 +181,8 @@ function autoCamp(){if(!G||G.daily)return;const party=G.party.slice(),camp=Objec
   const camp=Object.keys(G.roster).some(id=>!G.party.includes(id));
   h=h.replace(/(<button class="btn" data-act="autoEqAll"[^>]*>[^<]*<\/button>)/,`$1<button class="btn" data-act="autoEqCamp" ${camp?'':'disabled'} title="Your reserves (heroes not in your party) get the best spare gear from the pack. Never takes anything from your party.">Equip best: reserves</button>`);}catch(e){}return h;};}
 Object.assign(ACT,{bpPick(j){const m=V.modal;if(!m||m.type!=='bp'||!m.plan||!m.plan.opts)return;j=+j||0;const P=m.plan,o=P.opts[j];
-    // the chip that is already selected: Balanced and Fresh mix give another take (P.shuf counter), the rest stay as they are
-    if(o&&j===P.pick&&(o.key==='bal'||o.key==='mix')){const shuf=Object.assign({},P.shuf),hist=Object.assign({},P.hist);shuf[o.key]=(shuf[o.key]|0)+1;
+    // the chip that is already selected: Balanced, Fresh mix and Training team give another take (P.shuf counter), the rest stay as they are
+    if(o&&j===P.pick&&(o.key==='bal'||o.key==='mix'||o.key==='train')){const shuf=Object.assign({},P.shuf),hist=Object.assign({},P.hist);shuf[o.key]=(shuf[o.key]|0)+1;
       if(o.key==='bal'){shuf.mix=0;delete hist.mix;}// Fresh mix is built against Balanced: start it over
       const N=bestParty(shuf,hist),k=N.opts.findIndex(x=>x.key===o.key);if(k>=0){p6Sel(N,k);m.plan=N;}sfx('blip');render();return;}
     p6Sel(P,j);sfx('blip');render();},autoEqCamp(){autoCamp();}});

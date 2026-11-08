@@ -9,9 +9,8 @@ function echoTint(hex){const h=String(hex).replace('#','');if(h.length<6)return 
   if(MEXTRA[a])MEXTRA[n]=(g,p)=>{MEXTRA[a](g,p);Object.keys(p).forEach(q=>{if(q!=='K')p[q]=echoTint(p[q]);});};
   if(BIG_ART.includes(a))BIG_ART.push(n);});})();
 // ----- story echoes in each cleared dungeon -----
-// v0.11.0: a story Echo comes back. Beaten, it is held (echoReady[s]=0) until you leave the dungeon, then it waits on its rune circle
-// again, so its materials can be farmed. The first win's extras (shard for sure, more Essence and gold) stay one time (G.echoShard).
-function storyEchoUp(s){return !!(G&&!G.daily&&G.cleared&&G.cleared[s]&&G.run&&(!G.echoReady||G.echoReady[s]));}
+// v0.11.4: back to one story Echo per dungeon (the owner preferred it): once beaten it is gone; the Echo Sanctum fights it again.
+function storyEchoUp(s){return !!(G&&!G.daily&&G.cleared&&G.cleared[s]&&!(G.echoStory||{})[s]&&G.run&&(!G.echoReady||G.echoReady[s]));}
 function echoAgain(s){try{return !!(G.echoStory||{})[s];}catch(e){return false;}}
 // v0.4.3: a story echo waits until you have left the dungeon once after beating its boss (older saves: always ready)
 function echoHold(s){if(!G)return;if(!G.echoReady){G.echoReady={};(G.cleared||[]).forEach((c,i)=>{if(c&&i!==s)G.echoReady[i]=1;});}G.echoReady[s]=0;}
@@ -20,7 +19,7 @@ function askEcho(s){if(!storyEchoUp(s))return;V.modal={type:'echoAsk',s};render(
 function mEchoAsk(m){const s=m.s,k=bossKeyFor(s),d=guardianDef(k),lv=storyEchoLv(s);
   return box(`Echo of ${esc(d.n)}`,`<div class="row"><img class="mimg" src="${monURL('echo_'+d.art)}" alt=""><div class="grow"><p>A violet afterimage of the ${bossClass(k)} you felled still clings to the rune circle. It remembers how it lost.</p>
     <small>Level ${lv}. Tougher than the original, with a new move (<b>Resounding ${esc((d.sk.find(x=>x[4]!=='buff')||d.sk[0])[0])}</b>) and a second turning point near the end. Optional: the way east is already open.</small>
-    ${echoAgain(s)?'<small>It came back. Again: Echo Essence, realm materials and gold, often its Shard and a Dread Core. It returns each time you leave and come back.</small>':'<small>First win: its Echo Shard, Echo Essence and a Dread Core. Auto is locked until you win it by hand once. It returns each time you leave the dungeon and come back.</small>'}</div></div>`,
+    <small>First win: its Echo Shard, Echo Essence and a Dread Core. Auto is locked until you win it by hand once.</small></div></div>`,
     `<button class="btn" data-act="closeModal">Leave it</button><button class="btn gold" data-act="echoStory" data-arg="${s}">Fight the Echo</button>`);}
 HOOK.before('vModal','echo2','echoAsk popup',function(m){if(m&&m.type==='echoAsk')return HOOK.stop(mEchoAsk(m));});
 // ----- which Echoes answer (the Echo Sanctum, sanctum.js, is the place to fight them) -----
@@ -34,7 +33,7 @@ HOOK.wrap('win','echo2','Echo rewards (story Echo, Rift)',function(next,...a){co
   add('essence',first?4:2+(RNG()<.5?1:0));if(first||RNG()<.75)add('core',1);add(ZS(Math.min(4,sp.stage)).mat,3);
   {const g=econG(first?600+sp.stage*200:300+sp.stage*120);G.gold+=g;info.gold=(info.gold||0)+g;}
   info.notes=info.notes||[];
-  if(story){const again=!!(G.echoStory||{})[sp.stage];G.echoStory=G.echoStory||{};G.echoStory[sp.stage]=1;G.echoes[k]=1;echoHold(sp.stage);if(again)info.notes.push(`The Echo of ${guardianDef(k).n} fades again. Leave the dungeon and it will gather itself once more.`);else info.notes.push(`The Echo of ${guardianDef(k).n} fades. Leave the dungeon and it will gather itself again. ${G.won?'It will answer again in the Echo Rift.':'Beat the Calamity and it will answer again in the Echo Rift at any waystone.'}`);
+  if(story){G.echoStory=G.echoStory||{};G.echoStory[sp.stage]=1;G.echoes[k]=1;info.notes.push(`The Echo of ${guardianDef(k).n} fades. ${G.won?'It will answer again in the Echo Rift.':'Beat the Calamity and it will answer again in the Echo Rift at any waystone.'}`);
     if([0,1,2,3,4].every(s=>G.echoStory[s])&&!META.echoRift){META.echoRift=1;saveMeta();if(typeof profileDirty==='function')profileDirty();info.notes.push('The Echo Rift tears wide open: every Scourge and Calamity of Aurelis can now be fought in echo form, in this journey and every journey after.');}}
   saveGame();render();}catch(e){}return r;});
 // the account flag rides along with the profile doc (flags is a free-form map; schema stays v:1)

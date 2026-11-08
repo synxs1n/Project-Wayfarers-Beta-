@@ -83,7 +83,7 @@ html.rm .fxlayer .fx2.b3fx{animation-name:fade2!important}
 .battle.b3 .pchip{font-size:.62rem;padding:1px 5px;gap:3px;border-width:1.5px;box-shadow:0 0 4px var(--c)}
 .battle.b3 .pchip .ico{width:12px;height:12px}
 .battle.b3 .pchip u{padding:0 3px}
-.battle.b3 .fwk{display:inline-flex;align-items:center;gap:2px;font:800 .58rem/1 var(--fb);padding:2px 4px;border-radius:3px;border:1px solid;letter-spacing:.02em}
+.battle.b3 .fwk{display:inline-flex;flex-wrap:wrap;align-items:center;gap:2px;font:800 .58rem/1 var(--fb);padding:2px 4px;border-radius:3px;border:1px solid;letter-spacing:.02em}
 .battle.b3 .fwk .ico{width:12px;height:12px}
 .battle.b3 .fwk.up{color:#ffcf6a;border-color:rgba(255,190,90,.6);background:rgba(70,40,10,.6)}
 .battle.b3 .fwk.dn{color:#b8c8dc;border-color:rgba(160,180,210,.5);background:rgba(20,28,44,.6)}

@@ -44,7 +44,8 @@ async function open(opt={}){
   const html=opt.html||fs.readFileSync(process.env.PWHTML||__dirname+'/../out/aurelis3.html','utf8');
   const P=path.join(opt.dir||'/tmp','pw_page_'+process.pid+(opt.tag?'_'+opt.tag:'')+'.html');
   const clock=FREEZE&&opt.freeze?'<script>'+CLOCK+'</script>':'';
-  fs.writeFileSync(P,'<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body>'+clock+'<script>'+(opt.pre||'localStorage.clear();')+'</script>'+(opt.mock!=null?'<script>'+opt.mock+'</script>':MOCK)+html+'</body></html>');
+  // v0.11.4: timed hits are on by default in the game; tests keep them off unless a test sets META.cfg.timedHits=true (battle5.js b5TimedOn)
+  fs.writeFileSync(P,'<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body><script>window.__PWTEST=1</script>'+clock+'<script>'+(opt.pre||'localStorage.clear();')+'</script>'+(opt.mock!=null?'<script>'+opt.mock+'</script>':MOCK)+html+'</body></html>');
   await page.goto('file://'+P,{waitUntil:'load'});
   const ev=(f,a)=>page.evaluate(f,a);
   const shot=async n=>{await wait(250);await page.screenshot({path:(opt.out||'/tmp')+'/pw_'+n+'.png'});};

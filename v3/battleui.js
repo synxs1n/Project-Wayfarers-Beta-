@@ -110,4 +110,5 @@ function uDetHtml(){
 function bossBarHtml(){if(!B||!B.en)return '';const b=B.en.find(e=>e.boss&&e.hp>0)||B.en.find(e=>e.elite&&e.hp>0&&B.spec&&(B.spec.mini||B.spec.kind==='elite'));if(!b)return '';
   const p=Math.max(0,Math.min(100,b.hp/b.S.mhp*100)),sh=b.maxShield?`<span class="bbsh">${'◆'.repeat(Math.max(0,b.shield||0))}${'◇'.repeat(Math.max(0,b.maxShield-(b.shield||0)))}</span>`:'';
   return `<div class="bbn"><b>${esc(b.name)}</b> <small>Lv ${b.lv}</small>${sh}<span class="nums">${Math.ceil(b.hp)} / ${b.S.mhp}</span></div><div class="bbbar"><i style="width:${p.toFixed(1)}%"></i></div>`;}
-HOOK.after('renderBattle','battleui','boss bar',function(){try{const el=document.getElementById('bbossbar');if(el){const h=bossBarHtml();if(el.innerHTML!==h)el.innerHTML=h;el.style.display=h?'':'none';const bt=el.closest('.battle');if(bt)bt.classList.toggle('hasboss',!!h);}}catch(e){}});
+// the boss bar at the top of the battle is gone (the boss keeps its own HP plate): keep the empty strip hidden
+HOOK.after('renderBattle','battleui','boss bar removed',function(){try{const el=document.getElementById('bbossbar');if(el){if(el.innerHTML)el.innerHTML='';el.style.display='none';const bt=el.closest('.battle');if(bt)bt.classList.remove('hasboss');}}catch(e){}});

@@ -1,4 +1,4 @@
-// v0.11.0: Sell junk (strictly useless gear only, kept gear never), the keep lock, story Echoes that come back after you leave.
+// v0.11.0: Sell junk (strictly useless gear only, kept gear never), the keep lock. v0.11.4: a beaten story Echo stays gone (respawn reverted).
 const {open,chk,done}=require('./pw');
 (async()=>{const H=await open({w:1280,h:800});
   const r=await H.ev(()=>{const A=__A,g=A.TW.get;A.ACT.new();['mira','lumen','oren'].forEach(i=>A.ACT.pickS(i));A.ACT.begin();A.ACT.storyOk();const G=g('G');
@@ -16,6 +16,6 @@ const {open,chk,done}=require('./pw');
   chk('not junk when the better piece has too few copies for everyone who could wear it',r.users<2||!r.L3.includes('w_blade_0'));
   chk(`Sell junk sells them for gold and keeps the better pieces (${r.gold} gold)`,r.sold===0&&r.gold>0&&r.left===r.users);
   // Echo respawn
-  const e=await H.ev(()=>{const g=__A.TW.get,G=g('G');G.cleared=[1,0,0,0,0];G.echoStory={0:1};G.echoReady={0:0};const a=g('storyEchoUp')(0);G.echoReady[0]=1;const b=g('storyEchoUp')(0);return {held:a,back:b,again:g('echoAgain')(0)};});
-  chk(`a beaten story Echo is held until you leave, then it is back (${JSON.stringify(e)})`,e.held===false&&e.back===true&&e.again===true);
+  const e=await H.ev(()=>{const g=__A.TW.get,G=g('G');G.cleared=[1,0,0,0,0];G.echoStory={0:1};G.echoReady={0:0};const a=g('storyEchoUp')(0);G.echoReady[0]=1;const b=g('storyEchoUp')(0);return {held:a,back:b};});
+  chk(`v0.11.4: a beaten story Echo stays gone, even after you leave (${JSON.stringify(e)})`,e.held===false&&e.back===false);
   await done(H);})();

@@ -41,3 +41,11 @@ let MODAL_KEY=null;
 HOOK.before('render','town2','note the key that opened a popup (key guard)',function(){const was=MODAL_LAST,now=V.modal&&V.modal.type||null;if(now&&now!==was){try{MODAL_KEY=[...KEYS_DOWN].find(k=>k===' '||k==='Enter')||null;}catch(e){MODAL_KEY=null;}}MODAL_LAST=now;});
 window.addEventListener('keyup',e=>{if(MODAL_KEY&&e.key===MODAL_KEY)setTimeout(()=>{MODAL_KEY=null;},0);},true);
 document.addEventListener('click',e=>{if(e.detail===0&&MODAL_KEY&&e.target&&e.target.closest&&e.target.closest('#modal')){e.stopPropagation();e.preventDefault();}},true);
+// v0.11.4: the Inn asks first when nobody needs rest, and a night's rest can bring a ready bond talk (like the campfire)
+function innNeedsRest(){try{return G.party.map(id=>G.roster[id]).some(c=>c&&(c.hp<c.S.mhp||c.mp<c.S.mmp||Object.keys(c.ail||{}).length));}catch(e){return true;}}
+{const r0=ACT.rest;ACT.rest=function(force){if(force!=='y'&&!innNeedsRest()){V.modal={type:'innSure',from:V.modal};render();return;}
+  if(V.modal&&V.modal.type==='innSure')V.modal=V.modal.from||null;const g0=G.gold;r0.apply(this,arguments);
+  try{if(G.gold<g0&&typeof readyTalks==='function'){const T=readyTalks();if(T.length)V.modal={type:'innTalk',T};render();}}catch(e){}};}
+HOOK.before('vModal','town2','Inn: rest anyway? and talks after a rest',function(m){
+  if(m&&m.type==='innSure')return HOOK.stop(box('Rest anyway?','<p>Everyone in your six is already at full HP and MP. Rest anyway? It still costs a room and brings the morning.</p>','<button class="btn" data-act="xBack">Not now</button><button class="btn gold" data-act="rest" data-arg="y">Rest anyway</button>'));
+  if(m&&m.type==='innTalk')return HOOK.stop(box('By the hearth',`<p class="note">Rested and warm, some of your wayfarers have something to say.</p><div class="rows">${m.T.map(o=>`<div class="row"><div class="grow"><b>${esc(TPL[o.b.a].n)} and ${esc(TPL[o.b.b].n)}</b><small>A talk is ready.</small></div><button class="btn sm gold" data-act="bondTalk" data-arg="${o.arg}">Listen</button></div>`).join('')}</div>`,'<button class="btn gold" data-act="closeModal">Good night</button>'));});

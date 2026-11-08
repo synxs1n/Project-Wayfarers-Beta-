@@ -36,7 +36,7 @@ function mm7Base(m){const base=mapBase(m),key=m.id+':'+MM7.gen,now=performance.n
       const q=((y*T+py)*W+i*T+px)*4;d[q]=Math.min(255,R0*k);d[q+1]=Math.min(255,G0*k);d[q+2]=Math.min(255,B0*k);d[q+3]=a;}}
   x.putImageData(img,0,0);MM7.key=key;MM7.t=now;return c;}
 function mm7Vig(W,H){return MM7.vig&&MM7.vig.width===W?MM7.vig:(MM7.vig=(()=>{const v=mkCv(W,H),g=v.getContext('2d'),r=g.createRadialGradient(W/2,H/2,Math.min(W,H)*.32,W/2,H/2,Math.max(W,H)*.62);r.addColorStop(0,'rgba(6,4,14,0)');r.addColorStop(1,'rgba(6,4,14,.62)');g.fillStyle=r;g.fillRect(0,0,W,H);return v;})());}
-function drawMini(){const cv=document.getElementById('mmap'),bt=document.getElementById('mmbtn');if(!cv)return;const m=WS.m;if(!m||!G||!miniOn()){cv.style.display='none';if(bt)bt.style.display='none';return;}cv.style.display='block';if(bt)bt.style.display='';
+function drawMini(){const cv=document.getElementById('mmap');if(!cv)return;const m=WS.m;if(!m||!G||!miniOn()){cv.style.display='none';return;}cv.style.display='block';
   {const nw=miniNarrow()?84:112;if(cv.width!==nw){cv.width=nw;cv.height=nw*3/4;}}// resizing clears the canvas, so only when the width class changed
   const W=cv.width,H=cv.height,x=cv.getContext('2d'),sc=4;x.imageSmoothingEnabled=false;
   {const g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,'#141026');g.addColorStop(1,'#0a0712');x.fillStyle=g;x.fillRect(0,0,W,H);}

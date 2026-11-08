@@ -14,10 +14,11 @@ const after=H=>H.ev(async()=>{for(let i=0;i<60&&__A.B5.R.ring;i++)await new Prom
 // back to a hero's command turn
 const nextHero=H=>H.ev(async()=>{const A=__A,B=A.B;A.setPause(40);for(let i=0;i<200&&!(B.mode==='cmd'&&B.cur&&B.cur.side==='p');i++)await new Promise(q=>setTimeout(q,25));A.setPause(99999);return B.mode;});
 (async()=>{
-// ---- off by default ----
+// ---- v0.11.4: ON by default (the owner's call). The test harness sets window.__PWTEST, which keeps rings off in other tests; drop it here ----
 {const H=await open({w:390,h:844,mobile:true,pre:META('low')});await battle(H,{seed:5,heroes:3,foes:2});
-  const s=await H.ev(()=>{const A=__A;A.V.modal={type:'settings'};A.render();const row=document.querySelector('.b5set');const on=row&&row.querySelector('.chip.on');const r={cfg:A.META.cfg.timedHits,on:A.B5.timedOn(),row:!!row,lab:on&&on.textContent};A.V.modal=null;A.render();return r;});
-  chk('timed hits are off by default (setting unset, the Settings row reads Off)',s.cfg===undefined&&s.on===false&&s.row&&s.lab==='Off'||JSON.stringify(s));
+  const s=await H.ev(()=>{const A=__A;delete window.__PWTEST;A.V.modal={type:'settings'};A.render();const row=document.querySelector('.b5set');const on=row&&row.querySelector('.chip.on');const r={cfg:A.META.cfg.timedHits,on:A.B5.timedOn(),row:!!row,lab:on&&on.textContent};A.V.modal=null;A.render();return r;});
+  chk('timed hits are on by default (setting unset, the Settings row reads On)',s.cfg===undefined&&s.on===true&&s.row&&s.lab==='On'||JSON.stringify(s));
+  await H.ev(()=>{window.__PWTEST=1;});
   const a=await attack(H),l=await after(H);
   chk('off: an attack shows no ring and deals normal damage',!a.ring&&(!l||l.m==null)||JSON.stringify({a,l}));
   await H.browser.close();}

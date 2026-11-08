@@ -162,8 +162,8 @@ function townGates3(m,s){
 // =================== SIDE CAVES (5.3) ===================
 // A cave is smaller than a main dungeon (48x34 against 60x40 or more) with no boss, no key and no lever. A chain of rooms leads to a prize room
 // at the far end; side rooms hold a few chests. The prize depends on the plan: +2 gear, a rare item, a challenge-only recruit or a unique charm.
-// v0.11.1: side caves are Dens (each ends in a miniboss); Sanctum stays the forts' name
-const CAVE_NAMES=['Mossback Den','Saltwhisper Den','Cinderseam Den','Rimefang Den','Starfall Den'];
+// side caves keep their own names; the first time you enter one the banner says what it is ("Den: Mossback Hollow", complete9.js)
+const CAVE_NAMES=['Mossback Hollow','Saltwhisper Cave','Cinderseam Cave','Rimefang Grotto','Starfall Hollow'];
 const CAVE_W=48,CAVE_H=34;
 function buildCave(R,th){
   const D=new Gr(CAVE_W,CAVE_H,'#'),rooms=[],ov=(r,o,p)=>r.x<o.x+o.w+p&&r.x+r.w+p>o.x&&r.y<o.y+o.h+p&&r.y+r.h+p>o.y;

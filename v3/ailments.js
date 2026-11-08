@@ -72,4 +72,17 @@ function battleSkyTags(){if(!B)return '';
   const W=WEATHER[B.weather||'clear']||WEATHER.clear;let h=`<button class="wchip" data-act="wxInfo" data-arg="weather" title="${esc(W.d)}">${W.i} ${esc(W.n)}</button>`;
   if(B.spec.kind!=='daily'&&typeof clockPhase==='function'&&typeof PH_LOOK!=='undefined'){const ph=clockPhase(),P=PH_LOOK[ph];if(P)h+=`<button class="wchip ph ${ph}" data-act="wxInfo" data-arg="time" title="Time of day">${P.i} ${P.n}</button>`;}
   return h;}
+// the battle Guide: a short summary of the battle system, with links to the full Guides pages and to foe lore
+HOOK.before('vModal','ailments','battle guide popup',function(m){if(m&&m.type==='battleguide')return HOOK.stop(box('Guide',`<p class="note">Read only. The fight is paused while this is open.</p>
+  <div class="rows compact">
+  <div class="row"><div class="grow"><b>Turn order</b><small>The order bar at the top shows who acts next. Faster fighters act more often.</small></div></div>
+  <div class="row"><div class="grow"><b>Attack, Skills, Items, Guard</b><small>Attack is free. Skills cost MP. Items use up your pack. Guard cuts the damage you take and helps you recover.</small></div></div>
+  <div class="row"><div class="grow"><b>Weaknesses and resistances</b><small>Hit a weakness for double damage. A resisted element does half. Scan a foe to learn what it is weak to.</small></div></div>
+  <div class="row"><div class="grow"><b>Primers, Detonators and reactions</b><small>A Primer marks a foe with its element for two turns. A Detonator of a different element sets off a reaction for big bonus damage.</small></div></div>
+  <div class="row"><div class="grow"><b>Momentum</b><small>Good plays build Momentum. A full bar unlocks a Limit Break.</small></div></div>
+  <div class="row"><div class="grow"><b>Timed hits</b><small>Tap at the right moment when a hit lands to deal more damage, or when a foe strikes to take less.</small></div></div>
+  <div class="row"><div class="grow"><b>Break shields</b><small>Some foes wear a shield. Hit its weak elements to wear it down. A broken shield leaves the foe stunned and takes extra damage.</small></div></div>
+  </div>`,`<button class="btn gold" data-act="guideFull">Open the full Guides</button><button class="btn" data-act="guideLore">Foe lore</button><button class="btn" data-act="closeModal">Back to the fight</button>`,true));});
+ACT.guideFull=function(){V.lastMenuTab='charts';V.modal={type:'menu',tab:'charts'};render();};
+ACT.guideLore=function(){V.modal={type:'battlelore'};render();};
 HOOK.before('vModal','ailments','battlelore popup',function(m){if(m&&m.type==='battlelore')return HOOK.stop(box('Lore',`<p class="note">Read only. The fight is paused while this is open.</p>${vLore()}`,`<button class="btn gold" data-act="closeModal">Back to the fight</button>`,true));});

@@ -114,10 +114,13 @@ function b5OrderHtml(){const n=BL.mode==='tall'?B5.order.tall:B5.order.wide,pc=b
   return `<span class="ocs b5o ${pv?'pv':''}" aria-label="Turn order"><small>${pv?'If used':'Next'}</small>${items.join('')}</span>`;}
 
 // ----- 3) timed hits -----
-function b5TimedOn(){try{return META.cfg.timedHits===true&&!(G&&G.daily)&&!(B&&B.spec&&B.spec.kind==='daily');}catch(e){return false;}}
+// v0.11.4: on unless turned off in Settings (the test harness keeps it off unless a test turns it on: window.__PWTEST)
+function b5TimedOn(){try{return (META.cfg.timedHits===true||(META.cfg.timedHits!==false&&!window.__PWTEST))&&!(G&&G.daily)&&!(B&&B.spec&&B.spec.kind==='daily');}catch(e){return false;}}
 // a hero's single target attack or skill on a foe, or a foe's single target attack on a hero; never on auto
-function b5TimedOk(a,sk,tg){if(!B||B.auto||!b5TimedOn()||!a||!sk||!tg||tg.length!==1||V.screen!=='battle')return false;const t=tg[0];
-  if(!t||t.hp<=0||sk.t!=='one'||!(sk.k==='phys'||sk.k==='mag'))return false;
+// v0.11.4: chain moves (one target, then it jumps) get the ring on their first target too; it used to be skipped (more than one target)
+function b5TimedOk(a,sk,tg){if(!B||B.auto||!b5TimedOn()||!a||!sk||!tg||!tg.length||V.screen!=='battle')return false;const t=tg[0];
+  if(tg.length>1&&sk.t!=='chain')return false;
+  if(!t||t.hp<=0||!(sk.t==='one'||sk.t==='chain'||sk.t==null)||!(sk.k==='phys'||sk.k==='mag'))return false;
   if(a.side==='p')return !a.isComp&&t.side==='e';return a.side==='e'&&t.side==='p';}
 // show the ring over unit t; done(true) on a press inside the window, done(false) on an early press or none
 function b5Ring(t,kind,done){const wrap=$('bwrap'),b=unitBox(t),sc=BL.sc||2;if(!wrap||!b){done(false);return;}
@@ -135,7 +138,9 @@ function b5Ring(t,kind,done){const wrap=$('bwrap'),b=unitBox(t),sc=BL.sc||2;if(!
     later(()=>done(ok),ok?120:60);};
   R0.press=()=>{const dt=performance.now()-t0;if(dt<B5.grace||R0.done)return false;const d=dt-T;end(Math.abs(d)<=win,d<-win?'early':d>win?'late':'timed');return true;};
   const miss=setTimeout(()=>end(false,'none'),T+win+20);}
-function b5Press(){const R=B5R.ring;return !!(R&&!R.done&&R.press());}
+function b5Press(){const R=B5R.ring;B5R.eatClick=performance.now();return !!(R&&!R.done&&R.press());}
+// v0.11.4: the tap that answers a ring never also clicks what sits under the finger (the click follows the pointerdown)
+document.addEventListener('click',e=>{if(B5R.eatClick&&performance.now()-B5R.eatClick<600){B5R.eatClick=0;e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();}},true);
 // input while a ring is up: any tap or click, a key (not Tab, Escape or a modifier), a gamepad face button; nothing else gets it
 document.addEventListener('pointerdown',e=>{const R=B5R.ring;if(!R||R.done)return;e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();b5Press();},true);
 window.addEventListener('keydown',e=>{const R=B5R.ring;if(!R||R.done)return;if(['Tab','Escape','Shift','Control','Alt','Meta'].includes(e.key))return;e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();if(!e.repeat)b5Press();},true);
@@ -150,7 +155,7 @@ window.addEventListener('keydown',e=>{const R=B5R.ring;if(!R||R.done)return;if([
   return ex0.apply(this,arguments);};}
 HOOK.after('calcDamage','battle5','timed hit multiplier',function(r,a,sk,t){try{const m=B&&B.b5m;if(m&&r&&m.a===a&&m.t===t&&(!m.sk||m.sk===sk||(sk&&m.sk.id&&m.sk.id===sk.id))){/* v0.10.5: the typed basic attack (atk6.js) is a copy of ATTACK */const d0=r.dmg;r.dmg=Math.max(1,Math.round(d0*m.m));B5R.last=Object.assign({},B5R.last||{},{base:d0,dmg:r.dmg,m:m.m});}}catch(e){}});
 // the setting
-HOOK.xform('settingsBody','battle5','Timed hits row',function(h){try{const on=META.cfg.timedHits===true;
+HOOK.xform('settingsBody','battle5','Timed hits row',function(h){try{const on=META.cfg.timedHits!==false;
   const row=`<div class="row b5set"><div><b>Timed hits</b><small>A ring closes over the target of your single target attacks: press as it closes for ${Math.round(B5.atkUp*100)}% more damage, or when a foe strikes a hero for ${Math.round(B5.defDown*100)}% less. Never on auto or in the Daily Trial.</small></div><div class="chips"><button class="chip ${on?'':'on'}" data-act="cfg" data-arg='["timedHits",false]'>Off</button><button class="chip ${on?'on':''}" data-act="cfg" data-arg='["timedHits",true]'>On</button></div></div>`;
   const k=h.indexOf('<div class="btnrow"><button class="btn" data-act="autoOpen"');
   h=k>=0?h.slice(0,k)+`<div class="rows">${row}</div>`+h.slice(k):h+`<div class="rows">${row}</div>`;}catch(e){}return h;});
@@ -207,3 +212,7 @@ function b9Cue(){if(!B||B.over||B.auto||B.mode!=='cmd'||!B.cur||B.cur.side!=='p'
 
 // tests: window.__A.B5
 const B5API={cfg:B5,R:B5R,order:(n,c)=>b5Order(n,c),plan:u=>foePlan(u),intent:u=>b5Intent(u),cat:sk=>b5Cat(sk),knows:u=>b5Knows(u),press:()=>b5Press(),timedOn:()=>b5TimedOn(),choose:(u,r,n)=>foeChoose(u,r,n)};
+// v0.11.4: while an action plays the panel re-renders often, so a click on Start auto (or Pause, Speed) could land on a button that was
+// replaced between press and release and do nothing. Those buttons act on the press itself while the battle is not waiting for a command.
+document.addEventListener('pointerdown',e=>{try{if(!B||B.mode==='cmd'||(B5R.ring&&!B5R.ring.done)||e.button>0)return;const b=e.target&&e.target.closest&&e.target.closest('#bcmd [data-act="auto"],#bcmd [data-act="pause"],#bcmd [data-act="speed"]');
+  if(!b||b.getAttribute('aria-disabled')==='true')return;const a=b.getAttribute('data-act');e.preventDefault();B5R.eatClick=performance.now();if(ACT[a])ACT[a](b.getAttribute('data-arg'));}catch(x){}},true);

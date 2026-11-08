@@ -205,7 +205,7 @@ journey:RUNS=>`RUNS=${RUNS||3};window.__DBG=${process.env.DBG?1:0};const out=[];
   fs.writeFileSync(P,'<!doctype html><html><head><meta charset="utf-8"></head><body><script>localStorage.clear();</script>'+MOCK+'<div id="app"><header id="hdr"></header><main id="screen"></main><div id="modal"></div></div></body></html>');
   await page.goto('file://'+P);
   const t0=Date.now();
-  const r=await page.evaluate(([SRC,HARNESS,LOOP,BODY,SEED])=>{if(SEED){let s=SEED>>>0;Math.random=()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296;};Date.now=()=>1700000000000;}window.__Q=[];const st=f=>{window.__Q.push(f);return 1;};
+  const r=await page.evaluate(([SRC,HARNESS,LOOP,BODY,SEED])=>{window.__PWTEST=1;/* v0.11.4: no timed-hit rings in sims */if(SEED){let s=SEED>>>0;Math.random=()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296;};Date.now=()=>1700000000000;}window.__Q=[];const st=f=>{window.__Q.push(f);return 1;};
     const A=(new Function('setTimeout',SRC+HARNESS))(st);window.__A2=A;A.setPause(0);
     return (new Function('A',LOOP+BODY))(A);},[SRC,HARNESS,LOOP,SIMS[which](arg),+process.env.SEED||0]);
   console.log(`${which} on the full game (${MODS.length} modules), ${((Date.now()-t0)/1000).toFixed(0)} s`);console.log(r);

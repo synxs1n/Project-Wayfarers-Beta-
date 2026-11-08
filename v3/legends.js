@@ -33,7 +33,8 @@ function legendRoll(s){
   LEGEND_IDS.forEach(id=>{
     if(!legendOn(id)||G.roster[id]||G.quests.some(q=>q.type==='legend'&&q.hero===id))return;
     const k=id+':'+s;if(G.legRoll[k])return;G.legRoll[k]=1;
-    const L=LEG_Q[id];if(!L.ok(s)||Math.random()>=L.ch)return;
+    // v0.11.4: an unlocked legend always shows up: after one missed roll on an eligible realm (or from the fourth realm) its quest posts for sure
+    const L=LEG_Q[id];if(!L.ok(s))return;G.legMiss=G.legMiss||{};if(Math.random()>=L.ch&&!(G.legMiss[id]>=1)&&s<3){G.legMiss[id]=(G.legMiss[id]||0)+1;return;}
     G.quests.push({id:'L'+id,stage:s,type:'legend',hero:id,state:'open',step:0,title:L.title,desc:L.desc(s),reward:{gold:0}});
   });
 }

@@ -436,7 +436,7 @@ const b9Ico=(x,res)=>x.k==='el'?ico(x.id):dgIco(x.id,res?'res':'');
 function b9KeyTip(e,k){return `Weak to ${b9Name(k)}`+(k.s>1&&k.how?` (${k.how})`:k.s===1?' (your heroes use it)':'')+'.';}
 // full chips: on tap (the key chip toggles the card, an open i panel), or always in Expert mode
 function b9Full(e){try{const r=unitRef(e);return b9Expert()||!!(B&&B.b9x&&B.b9x[r])||!!(B&&B.uDet&&B.uDet.ref===r);}catch(x){return false;}}
-function b9Chips(e){const W=b9Weak(e),w=W.w.slice(0,2),r=W.r.slice(0,2),nm=L=>L.map(b9Name).join(', ');
+function b9Chips(e){const W=b9Weak(e),w=W.w,r=W.r,nm=L=>L.map(b9Name).join(', ');
   return (w.length?`<span class="fwk up" title="Weak to ${esc(nm(w))}"><b>Weak</b>${w.map(x=>b9Ico(x)).join('')}</span>`:'')+(r.length?`<span class="fwk dn" title="Resists ${esc(nm(r))}"><b>Res</b>${r.map(x=>b9Ico(x,1)).join('')}</span>`:'');}
 // foe cards: the key weakness (a button: tap for the full chips), or the capped chips
 foeWeak=function(e){try{if(b9Full(e)){const h=b9Chips(e);return h&&B&&B.b9x&&B.b9x[unitRef(e)]&&!b9Expert()?h+`<button class="fwk b9less" data-act="b9wx" data-arg="${unitRef(e)}" aria-label="Show less for ${esc(e.name)}" title="Show less">−</button>`:h;}

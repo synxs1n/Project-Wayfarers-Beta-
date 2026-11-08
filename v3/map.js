@@ -90,11 +90,10 @@ function drawPlayer(x,sc,px,py){const d=WS.dir||'d';x.save();x.translate(px,py);
 // v0.10.x: on by default at every width (Settings > Minimap: Auto/On show it, Off hides it). Narrow views (< 560 px wide) draw it smaller.
 function miniOn(){return META.cfg.minimap!==false;}
 function miniNarrow(){return (window.innerWidth||800)<560;}
-const MINI_BTN='<button id="mmbtn" class="mmbtn" data-act="map" aria-label="Open the map" title="Map"><svg viewBox="0 0 14 14" width="16" height="16" aria-hidden="true"><path d="M1 5V1h4M9 1h4v4M13 9v4H9M5 13H1V9" fill="none" stroke="#ffe3a0" stroke-width="2"/></svg></button>';
 // v0.5.0 1.6: the minimap no longer depends on the weather chip drawing cleanly (an unknown sky used to stop it), and every world render makes sure it is there
 function ensureMini(){try{if(V.screen==='world'){const wv=document.querySelector('.wview');if(wv){const nw=miniNarrow();
   if(!document.getElementById('mmap'))wv.insertAdjacentHTML('beforeend','<canvas id="mmap" class="mmap" width="'+(nw?84:112)+'" height="'+(nw?63:84)+'" aria-hidden="true"></canvas>');
-  if(!document.getElementById('mmbtn'))wv.insertAdjacentHTML('beforeend',MINI_BTN);}}drawMini();}catch(e){}}
+  {const ob=document.getElementById('mmbtn');if(ob)ob.remove();}}}drawMini();}catch(e){}}
 {const wu0=wkwUpdate;wkwUpdate=function(){try{wu0.apply(this,arguments);}catch(e){try{wdLog('wkwUpdate: '+e.message);}catch(_){}}ensureMini();};}
 window.addEventListener('resize',()=>{try{drawMini();}catch(e){}});
 // deferred to the next frame (and coalesced) so a render never pays for a forced layout here
@@ -378,9 +377,8 @@ ACT.fmTap=function(arg,el){const cv=el||document.getElementById('fmap'),p=FMT.pt
 function mmTile(cv,cx,cy){const m=WS.m,r=cv.getBoundingClientRect();if(!m||!r.width)return null;const sc=4,px=(cx-r.left)*cv.width/r.width,py=(cy-r.top)*cv.height/r.height,
   ox=Math.round(cv.width/2-(WS.x+.5)*sc),oy=Math.round(cv.height/2-(WS.y+.5)*sc);return [Math.floor((px-ox)/sc),Math.floor((py-oy)/sc)];}
 document.addEventListener('pointerdown',e=>{const cv=e.target;if(!cv||cv.id!=='mmap'||V.screen!=='world')return;e.preventDefault();e.stopPropagation();
-  if(V.modal||WS.dlg||WS.lock||!WS.m)return;const t=mmTile(cv,e.clientX,e.clientY);if(!t)return;const r=awTap(WS.m,t[0],t[1],'mini');
-  if(r.res==='unseen'||r.res==='noway')toast(AW[r.res]);},{capture:true,passive:false});
-{const st=document.createElement('style');st.textContent='#mmap.mmap{pointer-events:auto;cursor:pointer;touch-action:none}.fmap[data-act]{cursor:pointer;touch-action:manipulation}.fmnote{min-height:1.2em;margin:2px 0 0;text-align:center;color:#ffd98a}.fmnote.on{animation:fmn .9s ease}@keyframes fmn{0%{opacity:0}20%{opacity:1}}';document.head.appendChild(st);}
+  if(V.modal||WS.dlg||WS.lock||!WS.m)return;ACT.map();},{capture:true,passive:false});// a tap anywhere on the minimap opens the area map (the old corner button is gone)
+{const st=document.createElement('style');st.textContent='#mmap.mmap{pointer-events:auto;cursor:pointer;touch-action:manipulation}.fmap[data-act]{cursor:pointer;touch-action:manipulation}.fmnote{min-height:1.2em;margin:2px 0 0;text-align:center;color:#ffd98a}.fmnote.on{animation:fmn .9s ease}@keyframes fmn{0%{opacity:0}20%{opacity:1}}';document.head.appendChild(st);}
 // the world map: a visited town offers the waystone's own travel when the party stands at a waystone (no new fast travel)
 function wmAtStone(){const m=WS.m;if(!m)return false;for(let b=-1;b<=1;b++)for(let a=-1;a<=1;a++)if(tileAt(m,WS.x+a,WS.y+b)==='W')return true;return false;}
 function wmGo(){const el=document.getElementById('wmgo');if(!el)return;const id=WMS.sel,s=id&&/^t\d$/.test(id)?+id.slice(1):null;

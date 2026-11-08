@@ -30,11 +30,13 @@ function campLeftCool(){const c=G&&G.camp;if(!c||c.at==null)return 0;return Math
   let w=tw0.apply(this,arguments);if(w==='You have none.')w='You need Camp Supplies. The alchemist sells them.';
   if(!w&&WS.m&&WS.m.archive)w='The Archive is no place to make camp.';
   if(w)return w;const n=campLeftCool();if(n)return `You made camp a moment ago. Fight ${n} more battle${n>1?'s':''} first.`;return '';};}
-{const ut0=useTravel;useTravel=function(id){const o=ITEMS[id];if(!o||!o.camp)return ut0.apply(this,arguments);ACT.campOpen();return true;};}
+{const ut0=useTravel;useTravel=function(id){const o=ITEMS[id];if(o&&o.tent&&G&&!G.daily){const w=travelWhyNot('tent');if(w){toast(w);return false;}V.modal={type:'camp',item:'tent'};render();return true;}if(!o||!o.camp)return ut0.apply(this,arguments);ACT.campOpen();return true;};}
 
 function campHeal(){let hp=0,mp=0;partyChars().forEach(c=>{if(c.hp<=0)return;const h=Math.min(c.S.mhp-c.hp,Math.round(c.S.mhp*CAMP.heal)),m=Math.min(c.S.mmp-c.mp,Math.round(c.S.mmp*CAMP.heal));c.hp+=h;c.mp+=m;hp+=h;mp+=m;});return {hp,mp};}
-function campMake(b){const why=travelWhyNot('campkit');if(why||!CAMP_BUFFS[b])return why||'Pick a boon.';
-  G.inv.campkit--;const got=campHeal();G.camp={b,left:CAMP.dur,at:G.stats&&G.stats.battles||0};saveGame();return got;}
+// v0.11.4: a Tent opens the same camp (boon and campfire talks) and is used up instead of Camp Supplies; it also gets KO'd heroes up at 30%
+function campItem(){const m=V.modal;return m&&m.type==='camp'&&m.item==='tent'?'tent':'campkit';}
+function campMake(b){const it=campItem(),why=travelWhyNot(it);if(why||!CAMP_BUFFS[b])return why||'Pick a boon.';
+  G.inv[it]--;if(it==='tent')G.party.forEach(id=>{const c=G.roster[id];if(c&&c.hp<=0){c.hp=Math.max(1,Math.round(c.S.mhp*.3));c.st={};}});const got=campHeal();G.camp={b,left:CAMP.dur,at:G.stats&&G.stats.battles||0};saveGame();return got;}
 const campBuffNow=()=>{const c=G&&G.camp;return c&&c.b&&c.left>0&&CAMP_BUFFS[c.b]?c:null;};
 const campBuffText=()=>{const c=campBuffNow();return c?`${CAMP_BUFFS[c.b].n}: ${CAMP_BUFFS[c.b].d()}, ${c.left} battle${c.left>1?'s':''} left`:'';};
 
@@ -77,19 +79,19 @@ function vBonds(){const L=BONDS.filter(b=>G.roster[b.a]&&G.roster[b.b]).map(b=>{
     :'<p class="note">No bonded pair has met yet. Some wayfarers share a history; recruit both and fight side by side.</p>')+(later?`<p class="note">${later} more bond${later>1?'s':''} wait${later>1?'':'s'} with heroes you have not recruited.</p>`:'');}
 
 // ----- the camp screen -----
-function mCamp(m){const why=travelWhyNot('campkit'),have=G.inv.campkit||0;
+function mCamp(m){const it=m.item==='tent'?'tent':'campkit',why=travelWhyNot(it),have=G.inv[it]||0;
   if(m.done){const T=readyTalks();
     return box('Camp',`<p>The fire crackles. Your six got back ${fmt(m.got.hp)} HP and ${fmt(m.got.mp)} MP.</p><p class="note up">${esc(campBuffText())}.</p>
       <h4>By the fire</h4>${T.length?`<div class="rows">${T.map(o=>`<div class="row"><div class="grow"><b>${esc(TPL[o.b.a].n)} and ${esc(TPL[o.b.b].n)}</b><small>A talk is ready.</small></div><button class="btn sm gold" data-act="bondTalk" data-arg="${o.arg}">Listen</button></div>`).join('')}</div>`:'<p class="note">No talks are ready. Bonds grow with wins side by side.</p>'}`,
       '<button class="btn" data-act="bondsOpen">Bonds</button><button class="btn gold" data-act="closeModal">Break camp</button>');}
   const cur=campBuffNow();
-  return box('Make camp',`<p class="note">Rest a while. Standing heroes in your six get back ${Math.round(CAMP.heal*100)}% HP and MP (an inn restores everything). Fallen heroes stay down. Then pick one boon for the next ${CAMP.dur} battles. Uses 1 Camp Supplies (you have ${have}).</p>
+  return box('Make camp',`<p class="note">Rest a while. Standing heroes in your six get back ${Math.round(CAMP.heal*100)}% HP and MP (an inn restores everything). Fallen heroes stay down. Then pick one boon for the next ${CAMP.dur} battles. Uses 1 ${it==='tent'?'Tent (fallen heroes get up at 30%)':'Camp Supplies'} (you have ${have}).</p>
     ${why?`<p class="warn campwhy">${esc(why)}</p>`:''}${cur?`<p class="note">Now: ${esc(campBuffText())}. A new boon replaces it.</p>`:''}
     <div class="campbuffs">${Object.keys(CAMP_BUFFS).map(k=>`<button class="btn campbuff" data-act="campPick" data-arg="${k}" ${why?'disabled':''}><b>${esc(CAMP_BUFFS[k].n)}</b><small>${esc(CAMP_BUFFS[k].d())}</small></button>`).join('')}</div>`,
     '<button class="btn" data-act="bondsOpen">Bonds</button><button class="btn gold" data-act="closeModal">Not now</button>');}
 Object.assign(ACT,{
   campOpen(){V.modal={type:'camp'};render();},
-  campPick(k){const r=campMake(k);if(typeof r==='string'){toast(r);try{sfx('deny');}catch(e){}render();return;}V.modal={type:'camp',done:1,got:r};try{sfx('heal');}catch(e){}render();},
+  campPick(k){const r=campMake(k);if(typeof r==='string'){toast(r);try{sfx('deny');}catch(e){}render();return;}V.modal={type:'camp',done:1,got:r,item:campItem()};try{sfx('heal');}catch(e){}render();},
   bondsOpen(){V.modal={type:'bonds',from:V.modal};render();},
   bondsBack(){const f=V.modal&&V.modal.from;V.modal=f||null;render();},
   bview(v){V.bview=v==='tame'?'tame':'all';render();}});

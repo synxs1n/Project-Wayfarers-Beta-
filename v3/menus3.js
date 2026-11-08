@@ -58,7 +58,7 @@ function m3Tabs(t){
   if(t==='workshop')return [['shop','Shop'],['craft','Brew &amp; craft'],['sell','Sell'],['pouch','Pouch']];
   if(t==='guild')return NB_TABS.concat([['recruit','Recruits'],['nature','Natures']]);
   if(t==='board')return NB_TABS;
-  if(t==='tavern')return [['hire','Hire'],['kitchen','Kitchen']];
+  if(t==='tavern')return [];
   return [];}
 // item kinds at Alchemy
 const m3Kind=id=>{const o=ITEMS[id];return o.travel?'travel':(o.cure||o.revive)?'cure':'potion';};
@@ -148,9 +148,8 @@ function m3Alchemy(m){const sec=m.sec,tab=m.tab;let body='';
   return m3Box('workshop',m,m3Nav('workshop',m)+body);}
 // ----- the tavern -----
 function m3Tavern(m){const tab=m.tab;let body='';
-  if(tab==='kitchen')body=`<p class="note">Hot food for the road.</p><div class="rows">${tavernFood().map(id=>m3ItemRow(id)).join('')}</div><p class="note">A Pork Chop Sandwich walks you back to a dungeon's entrance; in battle it is a sure escape from ordinary fights.</p>`;
-  else{const SL=tvSlots(),L=SL.filter(Boolean),rare=G.rare&&!G.roster[G.rare]?G.rare:null,later=tavernLater(),nu=nextTavernUnlock(),pool=tavernPool().length;
-    body=`<p class="note">Sellswords, singers and strays, all for hire. Recruits arrive near your party's level with fitting gear.</p>
+  {const SL=tvSlots(),L=SL.filter(Boolean),rare=G.rare&&!G.roster[G.rare]?G.rare:null,later=tavernLater(),nu=nextTavernUnlock(),pool=tavernPool().length;
+    body=`${m3H('Kitchen')}<div class="rows">${tavernFood().map(id=>m3ItemRow(id)).join('')}</div><p class="note">A Pork Chop Sandwich walks you back to a dungeon's entrance; in battle it is a sure escape from ordinary fights.</p>${m3H('Hire')}<p class="note">Sellswords, singers and strays, all for hire. Recruits arrive near your party's level with fitting gear.</p>
     ${rare?`<div class="rare"><h3>A rare wayfarer is drinking alone</h3>${heroCard(rare,false,null,`<button class="btn gold" data-act="hire" data-arg="${rare}" ${G.gold>=recruitCost(rare)?'':'disabled'}>Hire for ${fmt(recruitCost(rare))}</button>`)}</div>`:G.stage>=2?'<p class="note">No rare wayfarers tonight. They drift in after Scourge fights, bounties and nights at the inn.</p>':''}
     <div class="tvbar"><small>${esc(tvNextText())}</small>${pool>L.length?`<small>${pool} wayfarer${pool>1?'s':''} are in this town's pool; four tables, picked to suit your party.</small>`:''}</div>
     <div class="grid cards">${SL.map(id=>id?heroCard(id,false,null,`<div class="fits">${fitTags(id)}</div><button class="btn gold" data-act="hire" data-arg="${id}" ${G.gold>=recruitCost(id)?'':'disabled'}>Hire for ${fmt(recruitCost(id))}</button>`):`<div class="card hero emptyseat"><b>Empty seat</b><small>Fills at the next shuffle.</small></div>`).join('')||m3Empty('Nobody new at the tables.')}</div>
