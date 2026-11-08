@@ -377,7 +377,10 @@ ACT.fmTap=function(arg,el){const cv=el||document.getElementById('fmap'),p=FMT.pt
 function mmTile(cv,cx,cy){const m=WS.m,r=cv.getBoundingClientRect();if(!m||!r.width)return null;const sc=4,px=(cx-r.left)*cv.width/r.width,py=(cy-r.top)*cv.height/r.height,
   ox=Math.round(cv.width/2-(WS.x+.5)*sc),oy=Math.round(cv.height/2-(WS.y+.5)*sc);return [Math.floor((px-ox)/sc),Math.floor((py-oy)/sc)];}
 document.addEventListener('pointerdown',e=>{const cv=e.target;if(!cv||cv.id!=='mmap'||V.screen!=='world')return;e.preventDefault();e.stopPropagation();
-  if(V.modal||WS.dlg||WS.lock||!WS.m)return;ACT.map();},{capture:true,passive:false});// a tap anywhere on the minimap opens the area map (the old corner button is gone)
+},{capture:true,passive:false});
+// v0.11.5: open on the click, not the press: opened on the press, the click that followed landed on the new map's backdrop and closed it
+document.addEventListener('click',e=>{const cv=e.target;if(!cv||cv.id!=='mmap'||V.screen!=='world')return;e.preventDefault();e.stopPropagation();
+  if(V.modal||WS.dlg||WS.lock||!WS.m)return;ACT.map();},true);// a tap anywhere on the minimap opens the area map (the old corner button is gone)
 {const st=document.createElement('style');st.textContent='#mmap.mmap{pointer-events:auto;cursor:pointer;touch-action:manipulation}.fmap[data-act]{cursor:pointer;touch-action:manipulation}.fmnote{min-height:1.2em;margin:2px 0 0;text-align:center;color:#ffd98a}.fmnote.on{animation:fmn .9s ease}@keyframes fmn{0%{opacity:0}20%{opacity:1}}';document.head.appendChild(st);}
 // the world map: a visited town offers the waystone's own travel when the party stands at a waystone (no new fast travel)
 function wmAtStone(){const m=WS.m;if(!m)return false;for(let b=-1;b<=1;b++)for(let a=-1;a<=1;a++)if(tileAt(m,WS.x+a,WS.y+b)==='W')return true;return false;}
