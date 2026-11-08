@@ -1832,7 +1832,7 @@ html.rm .battle.b3 .cmd .mi.b9glow{animation:none}
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.11.0";const APP_BUILD="e5be7e1dd4f1";
+(function(){const APP_VER="0.11.1";const APP_BUILD="8a8061a5df5a";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2520,7 +2520,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.11.0";const APP_BUILD="e5be7e1dd4f1";
+const APP_VER="0.11.1";const APP_BUILD="8a8061a5df5a";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2528,6 +2528,7 @@ const APP_VER="0.11.0";const APP_BUILD="e5be7e1dd4f1";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.11.1',['Side caves are now Dens, and every Den ends in a miniboss. In journeys started from now on, each field puts its Den in the first third of the road, its Sanctum in the middle third and the boss lair in the final third (older journeys keep their maps). Finished Dens, Sanctums and lairs get a green checkmark on the area map, the minimap and the world maps. The Journey tab lists every realm you have reached with its quests, bounties, Den, Sanctum and boss, and shows it at 100% once all are done.']],
  ['Beta v0.11.0',['Shops: a Sell junk button in the Smithy and Alchemy Sell tabs sells gear nobody in your roster can use, or that another piece you own beats on every stat (with enough copies for everyone who could wear it). It shows the list and the gold first. Worn gear, Medals, signature and unique pieces never go, and the new lock on each Sell row keeps anything you choose. Story Echoes come back: leave the dungeon and the Echo waits on its rune circle again, so its materials can be farmed (the first win\'s extras stay one time). The Echo Sanctum shows every gate: open ones glow, closed ones are locked and say what opens them, and the four Calamity Echoes have their own crimson row by the door.']],
  ['Beta v0.10.9',['Reactions: back to 28, one per pair of elements, and each pair reacts the same whichever element was primed (Grave from shadow on an earth prime or earth on a shadow prime). Rain now boosts Steam and Conduct both ways. Every skill shows what it is mainly for (Damage, Heal, Buff, Debuff, Cure, Revive, Guard, Taunt or Summon) in battle, on the character sheet and when learned. Reaching a roaming foe before it spots you now reads clearly as a Sneak attack. Six travel skills in Field skills: Haste and Shadowstep (Thieves, wind and shadow heroes), Ward (Priests, light), Lure (Archers and Druids, earth), Lantern (Mages, fire and light) and Marching Song (Bards).']],
  ['Beta v0.10.8',['Fixes: the "?" beside a foe\'s HP bar no longer turns into an empty black box. The quest board only shows "!" when this town has a notice to accept or a quest is ready to claim. Chest gear no longer says "Legendary" (that tier is now Heroic; Legendary is for legend heroes) and quest rewards no longer say "Craft only" unless a recipe makes them. Bard dual arts that buff the party are no longer Detonators. Warriors\' Rend keeps its Bleed again. The new recruit popup shows each hero\'s elements, class and level. The party screen says when you need a town to swap. The skill list no longer lists what a detonator sets off (the foe cards show it), and moves are tagged "⟐ Primer" and "✸ Detonator" in full again (Settings > Skill tags: Full or Symbols).']],
@@ -6519,6 +6520,8 @@ function genFieldRaw(s,part){
   if(cands.length){const D=walkDist(F.g,2,sy,bx),dOf=([x,y])=>D[y+1]&&D[y+1][x]>=0?D[y+1][x]:-1,L=path.filter(([x])=>x<bx).length;
     let pool=cands.filter(c=>dOf(c)>=L*ENT_MIN);
     if(first3){const far=pool.filter(c=>dOf(c)>=L*.62);if(far.length>=4)pool=far;}
+    // v0.11.1 (new journeys): the lair sits in the final third of the route
+    if(typeof lay3On==='function'&&lay3On()){const dEnd=Math.max(1,...path.filter(([x])=>x<bx).map(c=>Math.max(0,dOf(c)))),fin=pool.filter(c=>dOf(c)>=dEnd*2/3);if(fin.length)pool=fin;}
     // narrow map: accept a tighter clearing (3x3 instead of 5x4) as long as it is far enough
     if(!pool.length)for(let y=4;y<=H-6;y++)for(let x=6;x<=bx-4;x++){if(!reach[y+1]||!reach[y+1][x]||dOf([x,y])<L*ENT_MIN)continue;
       let ok=true;for(let j=-1;j<=1&&ok;j++)for(let i=-1;i<=1&&ok;i++){const c=F.get(x+i,y+j);if(!'.,f'.includes(c)||nearPath(x+i,y+j,1))ok=false;}if(ok)pool.push([x,y]);}
@@ -6914,7 +6917,15 @@ const caveStage=s=>!!worldPlan()[s].cave;
 // a cave mouth in the field: a clearing off a branch trail, far from the dungeon entrance and from the start
 function placeCaveMouth(F,R,path,ent,bx,sy,H,nearPath){
   const reach=flood(F.g,2,sy,bx,c=>!SOLID.includes(c)),D=walkDist(F.g,2,sy,bx),L=path.filter(([x])=>x<bx).length,ends=path.ends||[];
+  // v0.11.1 (new journeys): the cave sits in the first third of the route (walking distance from the entry, over the road's far end)
+  const L3=typeof lay3On==='function'&&lay3On(),dEnd=L3?Math.max(1,...path.filter(([x])=>x<bx).map(([x,y])=>D[y]&&D[y][x]>=0?D[y][x]:0)):0;
   let cands=[];
+  if(L3)[[16,2,2],[12,1,1]].forEach(([dist,rx,ry])=>{if(cands.length)return;
+    for(let y=5;y<=H-6;y++)for(let x=8;x<=bx-5;x++){
+      if(!reach[y+1]||!reach[y+1][x]||!D[y+1]||D[y+1][x]<6||D[y+1][x]>dEnd/3)continue;
+      if(ent&&Math.abs(x-ent[0])+Math.abs(y-ent[1])<dist)continue;
+      let ok=true;for(let j=-ry;j<=1&&ok;j++)for(let i=-rx;i<=rx&&ok;i++){const c=F.get(x+i,y+j);if(!'.,f'.includes(c)||nearPath(x+i,y+j,1))ok=false;}
+      if(ok)cands.push([x,y]);}});
   // wide clearing and far away first; then looser rules so every planned cave finds a home
   [[24,.2,2,2],[16,.12,2,2],[12,.08,1,1]].forEach(([dist,dl,rx,ry])=>{if(cands.length)return;
     for(let y=5;y<=H-6;y++)for(let x=8;x<=bx-5;x++){
@@ -7025,7 +7036,8 @@ function townGates3(m,s){
 // =================== SIDE CAVES (5.3) ===================
 // A cave is smaller than a main dungeon (48x34 against 60x40 or more) with no boss, no key and no lever. A chain of rooms leads to a prize room
 // at the far end; side rooms hold a few chests. The prize depends on the plan: +2 gear, a rare item, a challenge-only recruit or a unique charm.
-const CAVE_NAMES=['Mossback Hollow','Saltwhisper Cave','Cinderseam Cave','Rimefang Grotto','Starfall Hollow'];
+// v0.11.1: side caves are Dens (each ends in a miniboss); Sanctum stays the forts' name
+const CAVE_NAMES=['Mossback Den','Saltwhisper Den','Cinderseam Den','Rimefang Den','Starfall Den'];
 const CAVE_W=48,CAVE_H=34;
 function buildCave(R,th){
   const D=new Gr(CAVE_W,CAVE_H,'#'),rooms=[],ov=(r,o,p)=>r.x<o.x+o.w+p&&r.x+r.w+p>o.x&&r.y<o.y+o.h+p&&r.y+r.h+p>o.y;
@@ -9039,7 +9051,7 @@ MTRACK.dungeon=o=>({name:'Dungeon: Below the Beacon',bpm:80,tr:o.tr||0,tonic:9,r
   B:{bars:8,ch:DU_B_CH,p:[['oboe',DU_B,{v:.62}],['tremolo','pad',{o:4,v:.2}],['pizz','ost8',{o:3,v:.42}],['bass','pedal',{o:2,v:.4}],['tremolo','ost16',{o:4,v:.22,st:'chase'}]],dr:{taiko:'o.......o.......',sn2:['o.o.o.o.o.o.o.o.',{st:'chase',v:.6}]}},
   A2:{bars:8,ch:DU_A_CH,p:[['cello',DU_A,{v:.8}],['clarinet',DU_A,{o:1,v:.45,from:4}],['pizz','ost8',{o:3,v:.4}],['bass','pedal',{o:2,v:.4}],['tremolo','ost16',{o:4,v:.22,st:'chase'}]],dr:{taiko:'o.......',bd2:[DR_8,{st:'chase',v:.5}]}},
   C:{bars:8,ch:MER_MINOR_CH,p:[['horn',MER_MINOR,{v:.6}],['harp','arp8',{o:3,v:.35}],['strings','pad',{o:3,v:.18}],['bass','pedal',{o:2,v:.4}],['tremolo','ost16',{o:4,v:.22,st:'chase'}]],dr:{timp:'o.......o.......',taiko2:[DR_8,{st:'chase',v:.6}]}}}});
-MTRACK.cave=o=>({name:'Side Cave: Dripstone',bpm:70,tr:o.tr||0,tonic:9,room:'cave',resume:1,form:['A','B','A2'],sec:{
+MTRACK.cave=o=>({name:'Den: Dripstone',bpm:70,tr:o.tr||0,tonic:9,room:'cave',resume:1,form:['A','B','A2'],sec:{
   A:{bars:8,ch:CV_A_CH,p:[['celesta',CV_A,{v:.7}],['strings','pad',{o:3,v:.16}],['bass','pedal',{o:2,v:.3}]],dr:{drip:'x......o...x.......o....x....o..'}},
   B:{bars:8,ch:CV_B_CH,p:[['flute',CV_B,{v:.5}],['harp','arp8',{o:3,v:.3}],['strings','pad',{o:3,v:.16}],['bass','pedal',{o:2,v:.3}]],dr:{drip:'...x.......o.......x..o.........'}},
   A2:{bars:8,ch:CV_A_CH,p:[['harp',CV_A,{v:.6}],['celesta',CV_A,{o:1,v:.35,from:4}],['choir','pad',{o:4,v:.12}],['bass','pedal',{o:2,v:.3}]],dr:{drip:'x.......o.....x.........o.......',tom:'o'+'.'.repeat(63)}}}});
@@ -10085,7 +10097,7 @@ function vFbHelp(){
     <h4>Saving</h4><p class="note">The game saves to this browser in three slots. Rest at an inn or use the menu's Journey tab to save. Export a save code from the Journey tab to move to another device.</p>
     <h4>Stuck?</h4><p class="note">Dungeon entrances are hidden in a different spot each journey. Look for the glowing stairs off the main road. Scourges and Calamities break when you hit their weak points; check the Lore tab for the element chart.</p>
     <h4>Dungeon order</h4><p class="note">In a main dungeon: first find the <b>lever</b>, which is far from the entrance down a side passage. It raises the iron bars on the <b>key room</b> (and on the vault). Take the <b>Beacon Key</b> from the key room, then open the <b>boss door</b> near the far end. Bars over the key room show a gold marker on the map once you have seen them.</p>
-    <h4>The world</h4><p class="note">Each realm has one long field between towns. Gates are on any side: leave through the north gate and you arrive on the south edge of the next map. Open the Map and tap <b>World map</b> to see how the areas connect. Optional side caves hide off the trails; each holds one prize (a +2 weapon or armor, rare items, a wayfarer who never visits taverns, or a unique charm).</p>
+    <h4>The world</h4><p class="note">Each realm has one long field between towns. Gates are on any side: leave through the north gate and you arrive on the south edge of the next map. Open the Map and tap <b>World map</b> to see how the areas connect. Optional Dens hide off the trails; each holds one prize (a +2 weapon or armor, rare items, a wayfarer who never visits taverns, or a unique charm).</p>
     <h4>Stuck in a dungeon?</h4><p class="note">Open the menu and tap <b>Stuck?</b> at the bottom. The party walks back to the dungeon's entrance for free, and keys, levers, chests and items stay as they are. If it ever happens, please send a bug report from this screen so we can fix the map.</p>
     <h4>Shops</h4><div class="rows compact">
     <div class="row"><div><b>The Smithy</b><small>Weapons and armor: buy, sell, Forge new pieces, and Tempering to make gear better. It also sells ore, logs and a few monster parts each rest.</small></div></div>
@@ -10613,7 +10625,7 @@ function vNext(){
   Object.values(G.personal||{}).filter(q=>q&&q.state==='active'&&TPL[q.personal]).forEach(q=>add(false,`Rival: ${esc(q.name)}`,`${esc(TPL[q.personal].n)}'s personal quest, roaming ${esc(ZS(q.stage).n)}. `+(typeof rivalNeed==='function'&&rivalNeed(q)?`<b class="rgneed">${esc(rivalNeedShort(q))}.</b>`:`${esc(TPL[q.personal].n)} is in your party: face it.`)));
   if(bo.length)add(false,`${bo.length} bount${bo.length>1?'ies':'y'} posted at the Guild Hall`,'Elite monsters with gold, a stat charm and materials.');
   // exploring
-  (worldV3()?[['f'+s,Z.n],['d'+s,Z.dungeon],['k'+s,typeof CAVE_NAMES!=='undefined'?CAVE_NAMES[s]:'Side cave']]:[['g'+s,Z.n+' (first field)'],['f'+s,worldV2()?Z.n+' (deeper fields)':Z.n],['d'+s,Z.dungeon]]).forEach(([mid,n])=>{if(!been[mid])return;const nl=nodesLeft(mid),cl=chestsLeft(mid);if(nl)add(false,`${nl} gathering spot${nl>1?'s':''} left in ${esc(n)}`,'Herbs, ore and logs. They regrow when you rest at an inn.');if(cl)add(false,`${cl} unopened chest${cl>1?'s':''} in ${esc(n)}`,'');});
+  (worldV3()?[['f'+s,Z.n],['d'+s,Z.dungeon],['k'+s,typeof CAVE_NAMES!=='undefined'?CAVE_NAMES[s]:'Den']]:[['g'+s,Z.n+' (first field)'],['f'+s,worldV2()?Z.n+' (deeper fields)':Z.n],['d'+s,Z.dungeon]]).forEach(([mid,n])=>{if(!been[mid])return;const nl=nodesLeft(mid),cl=chestsLeft(mid);if(nl)add(false,`${nl} gathering spot${nl>1?'s':''} left in ${esc(n)}`,'Herbs, ore and logs. They regrow when you rest at an inn.');if(cl)add(false,`${cl} unopened chest${cl>1?'s':''} in ${esc(n)}`,'');});
   if(been['d'+s]&&worldV3()&&!G.cleared[s]){const dm=MAPS['d'+s],pulled=dm&&(G.levers||{})['d'+s],haveKey=(G.keys||{})['d'+s];
     if(!pulled&&!haveKey)add(false,`Find the lever in the ${esc(Z.dungeon)}`,'It is far from the entrance, down a side passage. It raises the bars on the key room.');
     else if(pulled&&!haveKey)add(false,`Fetch the key from the barred key room`,'The lever has raised the bars. The key opens the boss door.');}
@@ -13122,7 +13134,7 @@ function mapMarks(m){const out=[],T=m.t;for(let y=0;y<m.h;y++)for(let x=0;x<m.w;
 const MK={chest:['#e8b04a','▪'],chestopen:['#6a5a3a','▫'],vault:['#c89aff','▪'],vaultopen:['#5a4a6a','▫'],key:['#ffd04a','⚿'],keyopen:['#6a5a3a','▫'],stairs:['#ffe08a','▲'],dungeon:['#ffe08a','▼'],waystone:['#5ad0ff','◆'],
   boss:['#ff4a4a','●'],bossdone:['#7a5a5a','○'],echo:['#c89aff','◎'],door:['#ff9a4a','■'],dooropen:['#8a6a4a','□'],bars:['#a8a8b8','#'],keybars:['#ffd04a','#'],barsopen:['#5a5a6a','·'],lever:['#ffd04a','┤'],leverdone:['#6a6a5a','┤'],
   cave:['#5ad0ff','◒'],gate:['#ff6a6a','║'],gateopen:['#6a8a6a','║'],board:['#e8c860','!'],town:['#ffe8a0','⌂'],exit:['#d8d8d8','➜'],svc:['#ffffff','•'],quest:['#5aff9a','★'],questghost:['#a8c8b8','☆']};
-const MKN={cave:'Side cave',chest:'Chest',chestopen:'Opened chest',vault:'Vault chest',key:'Beacon Key',stairs:'Stairs out',dungeon:'Dungeon entrance',waystone:'Waystone',boss:'Scourge or Calamity',echo:'Echo',door:'Boss door',bars:'Bars',keybars:'Bars over the key room',lever:'Lever',gate:'Sealed gate',town:'Town',exit:'Road on',board:'Quest board',svc:'Shop or service',quest:'Quest or bounty target',questghost:'Rival waiting for a wayfarer not in your party',bossdone:'Boss defeated',dooropen:'Boss door (open)',vaultopen:'Opened vault chest',keyopen:'Key taken',barsopen:'Raised bars',leverdone:'Lever pulled',gateopen:'Open gate'};
+const MKN={cave:'Den',chest:'Chest',chestopen:'Opened chest',vault:'Vault chest',key:'Beacon Key',stairs:'Stairs out',dungeon:'Dungeon entrance',waystone:'Waystone',boss:'Scourge or Calamity',echo:'Echo',door:'Boss door',bars:'Bars',keybars:'Bars over the key room',lever:'Lever',gate:'Sealed gate',town:'Town',exit:'Road on',board:'Quest board',svc:'Shop or service',quest:'Quest or bounty target',questghost:'Rival waiting for a wayfarer not in your party',bossdone:'Boss defeated',dooropen:'Boss door (open)',vaultopen:'Opened vault chest',keyopen:'Key taken',barsopen:'Raised bars',leverdone:'Lever pulled',gateopen:'Open gate'};
 // ----- v0.3.5 1.4: one pixel-icon set shared by the map, minimap, legend and building signs (SVC_ICON in towngfx.js has the shop icons) -----
 const MAPICO_X={
   waystone:[[4,0,2,1,'#d8f6ff'],[3,1,4,2,'#5ad0ff'],[2,3,6,3,'#3aa8e8'],[3,6,4,2,'#3aa8e8'],[4,8,2,2,'#2a78b8'],[4,2,1,3,'#d8f6ff']],
@@ -13145,7 +13157,7 @@ Object.assign(MAPICO_X,{
   dooropen:[[2,1,6,9,'#8a6a4a'],[3,2,4,8,'#0a0710'],[3,2,1,8,'#6a4a2a']],
   quest:[[4,0,2,3,'#5aff9a'],[0,3,10,2,'#5aff9a'],[2,5,6,2,'#5aff9a'],[1,7,3,3,'#5aff9a'],[6,7,3,3,'#5aff9a'],[3,3,4,4,'#5aff9a']],
   questghost:[[4,0,2,2,'#a8c8b8'],[0,3,10,1,'#a8c8b8'],[1,4,2,1,'#a8c8b8'],[7,4,2,1,'#a8c8b8'],[3,5,1,2,'#a8c8b8'],[6,5,1,2,'#a8c8b8'],[1,7,2,3,'#a8c8b8'],[7,7,2,3,'#a8c8b8']]});
-const MAPICO_NAME={chest:'Chest',chestopen:'Opened chest',vault:'Vault chest',vaultopen:'Opened vault chest',key:'Beacon Key',keyopen:'Key taken',stairs:'Stairs out',boss:'Scourge or Calamity',bossdone:'Boss defeated',door:'Boss door',dooropen:'Boss door (open)',quest:'Someone with a quest or bounty',questghost:'Rival waiting for a wayfarer not in your party',inn:'Inn',tavern:'Tavern',smithy:'Smithy',workshop:'Alchemy',guild:'Guild Hall',board:'Quest board',waystone:'Waystone',town:'Town gate (arrow: side it faces)',exit:'Road gate (arrow: side it faces)',cave:'Side cave',dungeon:'Dungeon entrance'};
+const MAPICO_NAME={chest:'Chest',chestopen:'Opened chest',vault:'Vault chest',vaultopen:'Opened vault chest',key:'Beacon Key',keyopen:'Key taken',stairs:'Stairs out',boss:'Scourge or Calamity',bossdone:'Boss defeated',door:'Boss door',dooropen:'Boss door (open)',quest:'Someone with a quest or bounty',questghost:'Rival waiting for a wayfarer not in your party',inn:'Inn',tavern:'Tavern',smithy:'Smithy',workshop:'Alchemy',guild:'Guild Hall',board:'Quest board',waystone:'Waystone',town:'Town gate (arrow: side it faces)',exit:'Road gate (arrow: side it faces)',cave:'Den',dungeon:'Dungeon entrance'};
 function mapIcoKey(o){return o.k==='svc'?o.svc:o.k;}
 function mapIcoRects(k){try{return (typeof SVC_ICON!=='undefined'&&SVC_ICON[k])||MAPICO_X[k]||null;}catch(e){return MAPICO_X[k]||null;}}
 // draws icon k centred at (cx,cy), size px square, with a dark outline so it reads on any terrain
@@ -13235,7 +13247,7 @@ function worldGraph(){
       const dn=put('d'+s,'dungeon',Z.dungeon,F.x+GRID_V[q][0],F.y+GRID_V[q][1],{seen:true,stage:s,cleared:!!G.cleared[s]});link(F,dn,q,'n',false);}
     if(v3&&fm&&fm.caves&&fm.caves.length){fm.caves.forEach(c=>{if(!(isSeen(fm,c.x,c.y)||(G.cavesSeen||{})[c.id]))return;const pref=around(fm,c.x,c.y);
       const q=[pref,...['n','s','e','w'].filter(d=>d!==pref)].find(d=>free(F.x+GRID_V[d][0],F.y+GRID_V[d][1]));if(!q)return;
-      const kn=put(c.id,c.kind==='fort'?'fort':'cave',c.kind==='fort'?(typeof FORT_NAMES!=='undefined'?FORT_NAMES[s]:'Sanctum'):CAVE_NAMES[s],F.x+GRID_V[q][0],F.y+GRID_V[q][1],{seen:true,stage:s,done:c.kind==='fort'?!!(G.fortWon||{})[s]:!!(G.caveWon||{})[s]});link(F,kn,q,'n',false);});}
+      const kn=put(c.id,c.kind==='fort'?'fort':'cave',c.kind==='fort'?(typeof FORT_NAMES!=='undefined'?FORT_NAMES[s]:'Sanctum'):CAVE_NAMES[s],F.x+GRID_V[q][0],F.y+GRID_V[q][1],{seen:true,stage:s,done:c.kind==='fort'?fortDoneS(s):denDone(s)});link(F,kn,q,'n',false);});}
     });
     // on to the next town
     if(s<4){const fe=v3?P[s].fe:'e',np=[F.x+GRID_V[fe][0],F.y+GRID_V[fe][1]];
@@ -13345,7 +13357,7 @@ function drawWorldMap(){
   // the places
   const vs=Math.round(c*WMAP.vig),showNames=cell>=WMAP.names,fs=Math.max(9,Math.min(15,Math.round(cell/8.5)))*dpr;WMS.hit=[];
   nodes.forEach(n=>{const [cx,cy]=ctr(n),full=show[n.id]===2,th=wmTheme(n.stage||0),st=n.kind==='dungeon'&&n.cleared?'lit':(n.kind==='cave'||n.kind==='fort')&&n.done?'done':'';
-    x.drawImage(wmVignette(n.kind,th,vs,st),Math.round(cx-vs/2),Math.round(cy-vs/2));
+    x.drawImage(wmVignette(n.kind,th,vs,st),Math.round(cx-vs/2),Math.round(cy-vs/2));if(st&&show[n.id]===2&&typeof drawCheck==='function')drawCheck(x,cx+vs*.32,cy-vs*.3,vs*.16);// v0.11.1 completion checkmark
     if(!full){const fg=wmFog(vs);x.drawImage(fg,Math.round(cx-vs/2),Math.round(cy-vs/2));x.fillStyle='#6a4a2a';x.font=`800 ${Math.round(vs*.34)}px Nunito,sans-serif`;x.textAlign='center';x.textBaseline='middle';x.fillText('?',cx,cy+vs*.02);}
     WMS.hit.push({id:n.id,x:cx,y:cy,r:vs*.5,label:wmName(n,full)});
     if(showNames&&full&&n.id!==WMS.sel)wmLabel(x,n.label,cx,cy+vs*.5+fs*.2,Math.round(fs*.9),'#3a2614',false);});
@@ -13361,12 +13373,12 @@ function wmLegendDraw(){document.querySelectorAll('canvas.wml').forEach(c=>{cons
   const [kind,st]=k.split(':');x.drawImage(wmVignette(kind,'meadow',s,st||''),0,0);});}
 function mWorldMap(){
   setTimeout(()=>{drawWorldMap();wmLegendDraw();},0);
-  const L=[['town','Town'],['field','Field'],['dungeon','Dungeon'],['dungeon:lit','Relit dungeon'],['cave','Side cave'],['fort','Sanctum'],['cave:done','Looted'],['you','You'],['fog','Not visited yet'],['sealed','Sealed gate']];
+  const L=[['town','Town'],['field','Field'],['dungeon','Dungeon'],['dungeon:lit','Relit dungeon'],['cave','Den'],['fort','Sanctum'],['cave:done','Looted'],['you','You'],['fog','Not visited yet'],['sealed','Sealed gate']];
   return `<div class="modal mapmodal" data-act="xClose"><div class="panel box mapbox wmbox"><div class="mh"><h2>World map</h2></div>
     <canvas id="wmap" class="fmap wmap" data-act="wmTap" aria-label="World map"></canvas>
     <div class="maplegend wmlegend">${L.map(([k,n])=>`<span><canvas class="wml" data-k="${k}" width="28" height="28"></canvas> ${n}</span>`).join('')}</div>
     <div class="btnrow" id="wmgo"></div>
-    <p class="note">Tap a place to see its name. Roads follow the gates, so a gate on the north edge leads up the map. Places appear as you find them; side caves and sanctums are optional. Tap outside the map to close.</p></div></div>`;
+    <p class="note">Tap a place to see its name. Roads follow the gates, so a gate on the north edge leads up the map. Places appear as you find them; Dens and Sanctums are optional. Tap outside the map to close.</p></div></div>`;
 }
 // a tap on the map shows that place's name (and does not close the map); a tap on empty parchment hides it again
 document.addEventListener('pointerdown',e=>{if(e.target&&e.target.id==='wmap')WMS.pt={x:e.clientX,y:e.clientY,t:Date.now()};},true);
@@ -14197,8 +14209,10 @@ function syncPools(){if(!G||!G.run)return;REALMS.forEach(R=>{let p=R.pool0.slice
   if(isRv2()&&s>=0){const o=bovAt(s);if(o)p[p.length-1]=o.mon[0];}R.pool=p;});}
 
 // ---------- new journeys draw the realms (seeded) ----------
+// v0.11.1: a journey started from now on lays its fields out by thirds (lay3On); older journeys keep their maps
+function lay3On(){try{return !!(G&&G.run&&G.run.lay3);}catch(e){return false;}}
 {const nr0=newRun;newRun=function(cycle){const r=nr0.apply(this,arguments);try{const R=seeded((r.seed^0x5eed)>>>0);
-  const std=REALM_STD.slice().sort(()=>R()-.5).slice(0,4),cal=REALM_CAL[Math.floor(R()*REALM_CAL.length)];r.order=std.concat([cal]);r.rv=2;}catch(e){}return r;};}
+  const std=REALM_STD.slice().sort(()=>R()-.5).slice(0,4),cal=REALM_CAL[Math.floor(R()*REALM_CAL.length)];r.order=std.concat([cal]);r.rv=2;r.lay3=1;/* v0.11.1: sites by thirds of the route (worldgen.js, sites.js) */}catch(e){}return r;};}
 
 // ---------- look: realm palette under the boss overlay; the overlay lifts when the boss falls ----------
 function realmVariant(theme,R){const id=theme+'@'+R.key;if(THEME[id])return id;const B=R.lean,T=THEME[theme],D=DTHEME[theme];
@@ -14405,7 +14419,10 @@ function placeFort(f,s){if(!f||f.kind!=='field'||f.fortDone||!fortWanted(s))retu
   for(let y=3;y<H-3;y++)for(let x=3;x<W-3;x++){let ok=true;for(let j=-1;j<=1&&ok;j++)for(let i=-1;i<=1&&ok;i++){if(!'.,f'.includes(g[y+j][x+i]))ok=false;}
     if(!ok||D[y+1]==null||D[y+2]==null||D[y+2][x]<0)continue;if(!'.,f'.includes(g[y+2][x]))continue;
     if(!far(x,y,f.ent,18)||(f.caves||[]).some(c=>!far(x,y,[c.x,c.y],14))||(f.exits||[]).some(e=>!far(x,y,[e.x,e.y],10))||(f.chests||[]).some(c=>!far(x,y,c,3)))continue;cands.push([x,y,D[y+2][x]]);}
-  if(!cands.length)return;cands.sort((a,b)=>b[2]-a[2]);const R=mulberry(G.run.seed+919+s*13),pick2=cands[Math.floor(R()*Math.min(12,cands.length))],[x,y]=pick2;
+  if(!cands.length)return;cands.sort((a,b)=>b[2]-a[2]);
+  // v0.11.1 (new journeys): the Sanctum sits in the middle third of the route (walking distance to the far gate)
+  if(typeof lay3On==='function'&&lay3On()){let dEnd=1;D.forEach(r=>r.forEach(v=>{if(v>dEnd)dEnd=v;}));/* the farthest walkable tile before the sealed gate: the route's end */
+    const mid=cands.filter(c=>c[2]>=dEnd/3&&c[2]<=dEnd*2/3).sort((a,b)=>Math.abs(a[2]-dEnd/2)-Math.abs(b[2]-dEnd/2));if(mid.length){cands.length=0;mid.forEach(c=>cands.push(c));}}const R=mulberry(G.run.seed+919+s*13),pick2=cands[Math.floor(R()*Math.min(12,cands.length))],[x,y]=pick2;
   g[y-1][x-1]='U';g[y-1][x]='U';g[y-1][x+1]='U';g[y][x-1]='U';g[y][x+1]='U';g[y][x]='E';
   f.caves=f.caves||[];f.caves.push({x,y,id:'o'+s,kind:'fort',face:[0,1],out:[x,y+1]});f.fortAt=[x,y];
   if(typeof mapIssues==='function'&&mapIssues(f).length){// undo if it blocks anything
@@ -14429,7 +14446,8 @@ function fortReward(s){const kinds=['gear','item','recruit','charm'],k0=kinds[ha
   if(kind==='item'){G.inv.elixir=Math.min(invCap(),(G.inv.elixir||0)+1);G.inv.holywater=Math.min(invCap(),(G.inv.holywater||0)+1);G.inv.plume=Math.min(invCap(),(G.inv.plume||0)+2);return `Inside: ${ITEMS.elixir.n}, ${ITEMS.holywater.n} and 2 x ${ITEMS.plume.n}.`;}
   const cid=FORT_CHARMS[s];G.gear.push(cid);const g=gearOf(cid);return `Inside: the ${g.n} (${ITEM_TIERS[gTierIdx(g)].n}). There is only one of it in the world.`;}
 // ---------- minibosses ----------
-function siteHasMini(id){return (hashS('mini'+id+((G.run&&G.run.seed)||0))%100)<SITES.mini*100;}
+// v0.11.1: every Den (side cave, id 'k'+stage) ends in a miniboss; Sanctums always did (summon8.js)
+function siteHasMini(id){if(String(id)[0]==='k')return true;return (hashS('mini'+id+((G.run&&G.run.seed)||0))%100)<SITES.mini*100;}
 // v0.4.3: twenty handmade miniboss designs (own name, look, elements and trait); a journey deals them out without repeats
 const MINIS=[
  ['mb_gorehorn','yeti','Gorehorn, Warden of the Drifts',['ice','earth'],'#9a6a5a','thorns'],['mb_mirequeen','dewtoad','The Mire Queen',['water','shadow'],'#4a6a3a','regen'],
@@ -20620,7 +20638,7 @@ function drawBigMap(){const cv=document.getElementById('bmap');if(!cv||!G)return
   L.maps.forEach(o=>{const [px,py]=P(o.ox,o.oy);x.drawImage(bmBase(o.m),px,py,o.m.w*sc,o.m.h*sc);x.strokeStyle='rgba(255,230,170,.25)';x.lineWidth=1;x.strokeRect(px+.5,py+.5,o.m.w*sc-1,o.m.h*sc-1);});
   // doors
   BM.doors=bmDoors(L);x.font=`800 ${Math.max(8,sc*4)}px Nunito,sans-serif`;x.textAlign='center';x.textBaseline='middle';
-  BM.doors.forEach(d=>{const [px,py]=P(d.o.ox+d.x+.5,d.o.oy+d.y+.5);const col=d.k==='dunlit'?'#ffd04a':d.k==='dungeon'?'#ff6a5a':d.k==='fort'?'#c8c8e8':'#c89a6a',g=d.k==='fort'?'♜':d.k==='cave'?'◠':'▲';x.fillStyle='rgba(0,0,0,.6)';x.beginPath();x.arc(px,py,sc*2.6,0,Math.PI*2);x.fill();x.fillStyle=col;x.fillText(g,px,py+sc*.3);});
+  BM.doors.forEach(d=>{const [px,py]=P(d.o.ox+d.x+.5,d.o.oy+d.y+.5);const col=d.k==='dunlit'?'#ffd04a':d.k==='dungeon'?'#ff6a5a':d.k==='fort'?'#c8c8e8':'#c89a6a',g=d.k==='fort'?'♜':d.k==='cave'?'◠':'▲';x.fillStyle='rgba(0,0,0,.6)';x.beginPath();x.arc(px,py,sc*2.6,0,Math.PI*2);x.fill();x.fillStyle=col;x.fillText(g,px,py+sc*.3);try{if(typeof siteDone==='function'&&siteDone(d.k==='dunlit'?'lair':d.k==='dungeon'?'lair':d.k,d.o.m.s))drawCheck(x,px+sc*2,py-sc*2,sc*1.3);}catch(e){}});
   // names
   x.font=`700 ${Math.max(9,sc*5)}px Nunito,sans-serif`;x.lineWidth=3;x.strokeStyle='rgba(0,0,0,.8)';x.fillStyle='#f4ebd6';
   L.maps.forEach(o=>{const nm=o.m.kind==='town'?ZS(o.m.s).town:ZS(o.m.s).n;const [px,py]=P(o.ox+o.m.w/2,o.oy+1.5);x.strokeText(nm,px,py+sc*2);x.fillText(nm,px,py+sc*2);});
@@ -20631,7 +20649,7 @@ function drawBigMap(){const cv=document.getElementById('bmap');if(!cv||!G)return
 function mBigMap(){BM.scrolled=0;setTimeout(drawBigMap,0);
   return `<div class="modal mapmodal" data-act="xClose"><div class="panel box mapbox wmbox"><div class="mh"><h2>World map</h2></div>
     <div class="bmscroll"><canvas id="bmap" class="fmap bmap" data-act="bmTap" aria-label="World map"></canvas></div><p class="note fmnote" id="bmnote" aria-live="polite"></p>
-    <div class="maplegend"><span><b style="color:#fff">➤</b> You</span><span><b style="color:#ff6a5a">▲</b> Dungeon</span><span><b style="color:#ffd04a">▲</b> Relit dungeon</span><span><b style="color:#c89a6a">◠</b> Side cave</span><span><b style="color:#c8c8e8">♜</b> Sanctum</span></div>
+    <div class="maplegend"><span><b style="color:#fff">➤</b> You</span><span><b style="color:#ff6a5a">▲</b> Dungeon</span><span><b style="color:#ffd04a">▲</b> Relit dungeon</span><span><b style="color:#c89a6a">◠</b> Den</span><span><b style="color:#c8c8e8">♜</b> Sanctum</span></div>
     <div class="btnrow"><button class="btn sm" data-act="wmChart">Chart</button></div>
     <p class="note">Every town and field you have visited, joined at their gates. Tap anywhere you have been and the party walks there, through the gates on the way (a dungeon or cave door takes you inside). Drag to scroll a big map. Tap outside the map to close.</p></div></div>`;}
 HOOK.before('vModal','bigmap','the connected world map',function(md){if(md&&md.type==='bigmap')return HOOK.stop(mBigMap(md));});
@@ -23563,6 +23581,40 @@ HOOK.before('vModal','junk9','Sell junk confirm',function(m){if(!m||m.type!=='ju
   const rows=ids.map(id=>{const g=gearOf(id);return `<div class="row tr" style="${tierVars(gTierIdx(g),g)}">${gearIcon(id)}<div class="grow"><b>${esc(g.n)}</b> x${L[id].n}<small>${esc(L[id].why)}.</small></div><span class="m nums">${fmt(sellVal(g)*L[id].n)}</span></div>`;}).join('');
   return HOOK.stop(box('Sell junk',ids.length?`<p class="note">These go for <b class="nums">${fmt(gold)}</b> gold. Worn gear and anything you kept (🔒) stay.</p><div class="rows">${rows}</div>`:'<p class="note">Nothing to sell: everything in your pack is useful to someone.</p>',
     `${ids.length?`<button class="btn gold" data-act="junkGo">Sell all for ${fmt(gold)}</button>`:''}<button class="btn" data-act="xBack">Cancel</button>`));});
+
+// ===== complete9.js (v0.11.1): completion checkmarks on the maps and per realm progress in the Journey tab =====
+// ONE place says what "done" means:
+//   Den (side cave 'k'+s): looted (G.caveWon[s]; its miniboss falls before the prize)   Sanctum ('o'+s): guardian beaten or prize taken
+//   Lair: the realm's boss is down (G.cleared[s])
+// REALM_DONE(s) lists everything unique to realm s: its quests (not legend, guild or global ones), its bounties, its Den, its Sanctum and
+// its boss. A realm is 100% when every entry is done.
+function denDone(s){try{return !!(G.caveWon||{})[s];}catch(e){return false;}}
+function fortDoneS(s){try{return !!((G.fortWon||{})[s]||(G.miniDone||{})['o'+s]);}catch(e){return false;}}
+function lairDone(s){try{return !!G.cleared[s];}catch(e){return false;}}
+function siteDone(k,s){return k==='cave'?denDone(s):k==='fort'?fortDoneS(s):(k==='dungeon'||k==='lair'||k==='lairlit'||k==='dunlit')?lairDone(s):false;}
+function REALM_DONE(s){const L=[];if(!G||G.daily)return L;
+  try{if(s<=G.stage)genQuests(s);}catch(e){}try{if(s<=G.stage)genBounties(s);}catch(e){}
+  (G.quests||[]).filter(q=>q.stage===s&&!q.global&&q.type!=='legend'&&q.type!=='guild'&&q.type!=='tamer').forEach(q=>L.push({k:'quest',n:q.title,done:q.state==='claimed'}));
+  (G.bounties||[]).filter(b=>b.stage===s).forEach(b=>L.push({k:'bounty',n:b.name,done:b.state==='done'}));
+  try{if(typeof caveStage==='function'&&caveStage(s))L.push({k:'den',n:CAVE_NAMES[s],done:denDone(s)});}catch(e){}
+  try{if(typeof fortWanted==='function'&&fortWanted(s))L.push({k:'sanctum',n:(typeof FORT_NAMES!=='undefined'&&FORT_NAMES[s])||'Sanctum',done:fortDoneS(s)});}catch(e){}
+  L.push({k:'boss',n:s<4?'Scourge':'Calamity',done:lairDone(s)});return L;}
+function realmProgress(s){const L=REALM_DONE(s),d=L.filter(x=>x.done).length;return {L,d,n:L.length,pct:L.length?Math.round(d*100/L.length):0};}
+// ----- map markers: a done flag, then a checkmark over the icon (area map and minimap share drawMarks) -----
+{const mm0=mapMarks;mapMarks=function(m){const o=mm0.apply(this,arguments);try{if(m&&m.kind==='field'&&!G.daily)o.forEach(q=>{if(['cave','fort','dungeon','lair','lairlit'].includes(q.k)){
+  const k=q.k==='cave'||q.k==='fort'?q.k:'lair';if(siteDone(k,m.s))q.done=1;}});}catch(e){}return o;};}
+function drawCheck(x,px,py,r){x.save();x.lineCap='round';x.lineJoin='round';x.strokeStyle='rgba(0,0,0,.75)';x.lineWidth=Math.max(2.5,r*.5);
+  const p=[[px-r*.55,py],[px-r*.1,py+r*.45],[px+r*.65,py-r*.5]];x.beginPath();x.moveTo(...p[0]);x.lineTo(...p[1]);x.lineTo(...p[2]);x.stroke();
+  x.strokeStyle='#7aff8a';x.lineWidth=Math.max(1.4,r*.28);x.beginPath();x.moveTo(...p[0]);x.lineTo(...p[1]);x.lineTo(...p[2]);x.stroke();x.restore();}
+{const dm0=drawMarks;drawMarks=function(x,m,list,sc,ox,oy){const r=dm0.apply(this,arguments);try{(list||[]).forEach(o=>{if(!o.done)return;const s=Math.max(10,Math.round(sc*2.4));
+  drawCheck(x,ox+(o.x+.5)*sc+s*.32,oy+(o.y+.5)*sc-s*.32,s*.32);});}catch(e){}return r;};}
+// ----- the Journey tab: per realm, which of its Den, Sanctum, boss, quests and bounties are done -----
+{const vj0=vJourney;vJourney=function(){let h=vj0.apply(this,arguments);try{if(!G||G.daily)return h;const rows=[];
+  for(let s=0;s<=Math.min(4,G.stage);s++){const P=realmProgress(s),Z=ZS(s),mk=k=>{const x=P.L.filter(o=>o.k===k);return x.length?`${x.filter(o=>o.done).length}/${x.length}`:'';},
+    bits=[['quest','Quests'],['bounty','Bounties'],['den','Den'],['sanctum','Sanctum'],['boss','Boss']].map(([k,n])=>{const v=mk(k);return v?`${n} ${v}`:'';}).filter(Boolean).join(' · ');
+    rows.push(`<div class="row ${P.d===P.n?'up':''}"><div class="grow"><b>Realm ${s+1}: ${esc(Z.n)}</b><small>${bits}</small></div><span class="m nums">${P.d===P.n?'100% ✓':`${P.d} of ${P.n}`}</span></div>`);}
+  const sec=`<h4>Realms</h4><div class="rows compact">${rows.join('')}</div>`,k=h.indexOf('<h4>Progress</h4>');
+  h=k>=0?h.slice(0,k)+sec+h.slice(k):h+sec;}catch(e){}return h;};}
 
 window.__A={walkable,ceInit,tvSlots,genQuests,STARTERS,starterDraw,ECON,AUTO_NERF,rebuildBase,detLive,REACT,skEls,packContents,miniFor,AUTO_REW,ENC_RATE,ENC_MIN_STEPS,detNote,classSkills,stickCount,bestAll,calcStats,lookKey,vTemper,storyEchoUp,leaveDungeon,win,ldApply,genFort,caveOk,enterCave,siteHasMini,openChest,nextDlg,WS,mapIcoRects,roamSpawn,roamInterior,roamSees,mapTargets,DIRV,tileAt,STAGE_LV,autoBan,rollWeather,guardianDef,mapIssues,mapEntry,syncPools,bovAt,calFxAt,realmAt,REALMS,BOV,CAL_FX,overlayGuide,liftOverlay,drawGearIcon,gearIcon,itemIcon,RAW,sigKind,sigGid,personalDone,heroLook,hasSignature,LEGEND_IDS,facDirty,facCount,facRank,facRep,FACB,FAC,finishBattle,npcWords,npcHints,npcPool,titleMake,titleAdvance,TTS,placeAt,wkwUpdate,innSpot,getMap,monURL,enterVia,applyBossTheme,BTHEME,resetMaps,rebuildBase,shopStock,gearDesc,calcStats,gearMigrate,CLS_WPN,CLS_ARM,WPERK,WT_NAME,equipWhy,lootBase,GEAR,canEquip,gearOf,perkNote,FAM_MAT_V35,fbDraft,META:{get best(){return META.best},get codex(){return META.codex},get q(){return META.q}},saveMeta,OFF,offPending,offFlush,PROFILE,profileSync,codexSee,getMap,placeAt,interact,sanctumOpen,riftKeys,echoKeys,BONDS,bondKey,wkwUpdate,inTown,WS,LC,lsort,bestParty,fsCast,fsSkills,ldApply,MON,registerTamed,stickPower,stickCount,autoOne,planGear,bestTag,gainersFor,compGainFor,refresh,fitsFor,canEquip,gearOf,queueNewGear,ARENA,fxDur,banDur,stageTags,autoSwitchPick,layoutBattle,newChar,calcStats,limitSkill,limitTier,canStuck,dunReachable,LV_CAP,addXp,echoSpec,bossLvFor,fx,MON,log,effInfo,tierOf,perkOf,quirkDef,forgeCost,buyPlan,vJourney,modalBack,partySlots,limitOpen,town2Reached,skillKnown,known,classSkills,paceMigrate,unpackG,packG,makeEnemy,QUIRK,arrive,enterDungeon,wkwUpdate,useTravel,travelWhyNot,porkFlee,porkBlocked,encTile,campRest,buyPart,partLeft,alchStock,GAME_VERSION,CHANGELOG,ITEMS,tavernOffers,tavernPool,recruitFit,partyNeeds,vNext,CHALL,innSpot,RECIPES,MATS,FB,fbContext,REDEEM,legendJoin,legendQ,genQuests,dynActors,convInit,PROFILE,profileSync,checkArchive,GPOOL,FPOOL,guardianDef,saveMeta,archiveSkills,get G(){return G;},set G(v){G=v;},get B(){return B;},get V(){return V;},get META(){return META;},WS,ACT,render,newGame,placeAt,startBattle,autoTurn,advance,finishBattle,getMap,innSpot,setPause:p=>{PAUSE=p;},autoCfg,worldInputDir,inputSources,battleFrame,battleTheme,STS,MAPS,mapIssues,healMap,mimicReward,dropChest,interact,worldDraw,TPL,ZONES,ZS,newChar,recruit,saveGame,resetMaps,dynActors,tileAt,BV,refresh,genBounties,genQuests,vStarter,heroCard,heroURL,iconURL,masteryLine,AU,buildTrack,tone,noiseHit,MIDI,sfx,audioVol};
 ['heroRoles','SOLID','WEATHER','WX_BASE','weatherFX','superGuide','recruitCost','ceStart','ceStep','ceInit','cePool','wxList','SUPER_TABLE','superOk','facRank','facRep','facInit','facCount','facCredit','FAC','FMIS','facMissionList','facProg','tyOf','facSync','facMul','facBest','worldPlan','caveReward','enterCave','leaveCave','leaveDungeon','buildCaveMap','worldGraph','openWorldMap','sigReport','SIG_NAMES','starterDraw','ITEM_TIERS','gTierIdx','tierChip','gearIcon','starterSlots','STARTERS','CLK_LEN','CLK_PH','clockPhase','wxInfoBody','recipeOrder','recipeGain','recipeReady','recipeClose','effOf','calcDamage','healsUndead','storyEchoUp','riftKeys','echoDef','efCost','autoLocked','bossFightKey','learnScanAll','isSeen','mapMarks','genSub','subOK','subReq','ensureSub','inSub','tvSlots','tvInit','tvLeft','tvEvent','tvNextText','tvPool','tvDue','tvShuffle','mTavern','hireOK','TV_CAP','TV_CD','POOL_IDS','natPool','natOf','natRoll','NATURES','natInfo','natRerollCost','natChooseCost','NAT_CLASS','iconURL','seenOf','mapIcoDraw','drawMini','MAPCV','revealAround','fxLayer','numDur','compBonusText','compPerk','checkPhase','win','unitBox','LNQ','challVisible','challEligible','challState','isMimic','migrateCompanions','canSummon','summonComp','compOf','clockPhase','tickClock','isNight','rollWeather','wxStep','nightPool','encounterFoes','restAll','tameElite','openChest','rerollTavern','bestAll','gearTier','SV','svCheck','svFlush','svInit','svPush','svPull','svScan','svParse','svBackup','svPack','svUnpack','svProg','svCloudList','svDelDoc','svGet','svCap','slotState','slotKey','svDecode','SV_CH','svStatus','svSlotRaw','svLoad','loadRaw','svHash','svIdx'].forEach(k=>{try{Object.defineProperty(window.__A,k,{get:()=>eval(k)});}catch(e){}});

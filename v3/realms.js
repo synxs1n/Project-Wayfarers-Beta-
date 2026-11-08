@@ -46,8 +46,10 @@ function syncPools(){if(!G||!G.run)return;REALMS.forEach(R=>{let p=R.pool0.slice
   if(isRv2()&&s>=0){const o=bovAt(s);if(o)p[p.length-1]=o.mon[0];}R.pool=p;});}
 
 // ---------- new journeys draw the realms (seeded) ----------
+// v0.11.1: a journey started from now on lays its fields out by thirds (lay3On); older journeys keep their maps
+function lay3On(){try{return !!(G&&G.run&&G.run.lay3);}catch(e){return false;}}
 {const nr0=newRun;newRun=function(cycle){const r=nr0.apply(this,arguments);try{const R=seeded((r.seed^0x5eed)>>>0);
-  const std=REALM_STD.slice().sort(()=>R()-.5).slice(0,4),cal=REALM_CAL[Math.floor(R()*REALM_CAL.length)];r.order=std.concat([cal]);r.rv=2;}catch(e){}return r;};}
+  const std=REALM_STD.slice().sort(()=>R()-.5).slice(0,4),cal=REALM_CAL[Math.floor(R()*REALM_CAL.length)];r.order=std.concat([cal]);r.rv=2;r.lay3=1;/* v0.11.1: sites by thirds of the route (worldgen.js, sites.js) */}catch(e){}return r;};}
 
 // ---------- look: realm palette under the boss overlay; the overlay lifts when the boss falls ----------
 function realmVariant(theme,R){const id=theme+'@'+R.key;if(THEME[id])return id;const B=R.lean,T=THEME[theme],D=DTHEME[theme];

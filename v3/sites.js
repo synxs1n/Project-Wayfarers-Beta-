@@ -52,7 +52,10 @@ function placeFort(f,s){if(!f||f.kind!=='field'||f.fortDone||!fortWanted(s))retu
   for(let y=3;y<H-3;y++)for(let x=3;x<W-3;x++){let ok=true;for(let j=-1;j<=1&&ok;j++)for(let i=-1;i<=1&&ok;i++){if(!'.,f'.includes(g[y+j][x+i]))ok=false;}
     if(!ok||D[y+1]==null||D[y+2]==null||D[y+2][x]<0)continue;if(!'.,f'.includes(g[y+2][x]))continue;
     if(!far(x,y,f.ent,18)||(f.caves||[]).some(c=>!far(x,y,[c.x,c.y],14))||(f.exits||[]).some(e=>!far(x,y,[e.x,e.y],10))||(f.chests||[]).some(c=>!far(x,y,c,3)))continue;cands.push([x,y,D[y+2][x]]);}
-  if(!cands.length)return;cands.sort((a,b)=>b[2]-a[2]);const R=mulberry(G.run.seed+919+s*13),pick2=cands[Math.floor(R()*Math.min(12,cands.length))],[x,y]=pick2;
+  if(!cands.length)return;cands.sort((a,b)=>b[2]-a[2]);
+  // v0.11.1 (new journeys): the Sanctum sits in the middle third of the route (walking distance to the far gate)
+  if(typeof lay3On==='function'&&lay3On()){let dEnd=1;D.forEach(r=>r.forEach(v=>{if(v>dEnd)dEnd=v;}));/* the farthest walkable tile before the sealed gate: the route's end */
+    const mid=cands.filter(c=>c[2]>=dEnd/3&&c[2]<=dEnd*2/3).sort((a,b)=>Math.abs(a[2]-dEnd/2)-Math.abs(b[2]-dEnd/2));if(mid.length){cands.length=0;mid.forEach(c=>cands.push(c));}}const R=mulberry(G.run.seed+919+s*13),pick2=cands[Math.floor(R()*Math.min(12,cands.length))],[x,y]=pick2;
   g[y-1][x-1]='U';g[y-1][x]='U';g[y-1][x+1]='U';g[y][x-1]='U';g[y][x+1]='U';g[y][x]='E';
   f.caves=f.caves||[];f.caves.push({x,y,id:'o'+s,kind:'fort',face:[0,1],out:[x,y+1]});f.fortAt=[x,y];
   if(typeof mapIssues==='function'&&mapIssues(f).length){// undo if it blocks anything
@@ -76,7 +79,8 @@ function fortReward(s){const kinds=['gear','item','recruit','charm'],k0=kinds[ha
   if(kind==='item'){G.inv.elixir=Math.min(invCap(),(G.inv.elixir||0)+1);G.inv.holywater=Math.min(invCap(),(G.inv.holywater||0)+1);G.inv.plume=Math.min(invCap(),(G.inv.plume||0)+2);return `Inside: ${ITEMS.elixir.n}, ${ITEMS.holywater.n} and 2 x ${ITEMS.plume.n}.`;}
   const cid=FORT_CHARMS[s];G.gear.push(cid);const g=gearOf(cid);return `Inside: the ${g.n} (${ITEM_TIERS[gTierIdx(g)].n}). There is only one of it in the world.`;}
 // ---------- minibosses ----------
-function siteHasMini(id){return (hashS('mini'+id+((G.run&&G.run.seed)||0))%100)<SITES.mini*100;}
+// v0.11.1: every Den (side cave, id 'k'+stage) ends in a miniboss; Sanctums always did (summon8.js)
+function siteHasMini(id){if(String(id)[0]==='k')return true;return (hashS('mini'+id+((G.run&&G.run.seed)||0))%100)<SITES.mini*100;}
 // v0.4.3: twenty handmade miniboss designs (own name, look, elements and trait); a journey deals them out without repeats
 const MINIS=[
  ['mb_gorehorn','yeti','Gorehorn, Warden of the Drifts',['ice','earth'],'#9a6a5a','thorns'],['mb_mirequeen','dewtoad','The Mire Queen',['water','shadow'],'#4a6a3a','regen'],

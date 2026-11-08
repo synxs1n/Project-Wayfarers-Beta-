@@ -332,6 +332,8 @@ function genFieldRaw(s,part){
   if(cands.length){const D=walkDist(F.g,2,sy,bx),dOf=([x,y])=>D[y+1]&&D[y+1][x]>=0?D[y+1][x]:-1,L=path.filter(([x])=>x<bx).length;
     let pool=cands.filter(c=>dOf(c)>=L*ENT_MIN);
     if(first3){const far=pool.filter(c=>dOf(c)>=L*.62);if(far.length>=4)pool=far;}
+    // v0.11.1 (new journeys): the lair sits in the final third of the route
+    if(typeof lay3On==='function'&&lay3On()){const dEnd=Math.max(1,...path.filter(([x])=>x<bx).map(c=>Math.max(0,dOf(c)))),fin=pool.filter(c=>dOf(c)>=dEnd*2/3);if(fin.length)pool=fin;}
     // narrow map: accept a tighter clearing (3x3 instead of 5x4) as long as it is far enough
     if(!pool.length)for(let y=4;y<=H-6;y++)for(let x=6;x<=bx-4;x++){if(!reach[y+1]||!reach[y+1][x]||dOf([x,y])<L*ENT_MIN)continue;
       let ok=true;for(let j=-1;j<=1&&ok;j++)for(let i=-1;i<=1&&ok;i++){const c=F.get(x+i,y+j);if(!'.,f'.includes(c)||nearPath(x+i,y+j,1))ok=false;}if(ok)pool.push([x,y]);}

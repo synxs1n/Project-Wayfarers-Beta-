@@ -43,7 +43,15 @@ const caveStage=s=>!!worldPlan()[s].cave;
 // a cave mouth in the field: a clearing off a branch trail, far from the dungeon entrance and from the start
 function placeCaveMouth(F,R,path,ent,bx,sy,H,nearPath){
   const reach=flood(F.g,2,sy,bx,c=>!SOLID.includes(c)),D=walkDist(F.g,2,sy,bx),L=path.filter(([x])=>x<bx).length,ends=path.ends||[];
+  // v0.11.1 (new journeys): the cave sits in the first third of the route (walking distance from the entry, over the road's far end)
+  const L3=typeof lay3On==='function'&&lay3On(),dEnd=L3?Math.max(1,...path.filter(([x])=>x<bx).map(([x,y])=>D[y]&&D[y][x]>=0?D[y][x]:0)):0;
   let cands=[];
+  if(L3)[[16,2,2],[12,1,1]].forEach(([dist,rx,ry])=>{if(cands.length)return;
+    for(let y=5;y<=H-6;y++)for(let x=8;x<=bx-5;x++){
+      if(!reach[y+1]||!reach[y+1][x]||!D[y+1]||D[y+1][x]<6||D[y+1][x]>dEnd/3)continue;
+      if(ent&&Math.abs(x-ent[0])+Math.abs(y-ent[1])<dist)continue;
+      let ok=true;for(let j=-ry;j<=1&&ok;j++)for(let i=-rx;i<=rx&&ok;i++){const c=F.get(x+i,y+j);if(!'.,f'.includes(c)||nearPath(x+i,y+j,1))ok=false;}
+      if(ok)cands.push([x,y]);}});
   // wide clearing and far away first; then looser rules so every planned cave finds a home
   [[24,.2,2,2],[16,.12,2,2],[12,.08,1,1]].forEach(([dist,dl,rx,ry])=>{if(cands.length)return;
     for(let y=5;y<=H-6;y++)for(let x=8;x<=bx-5;x++){
@@ -154,7 +162,8 @@ function townGates3(m,s){
 // =================== SIDE CAVES (5.3) ===================
 // A cave is smaller than a main dungeon (48x34 against 60x40 or more) with no boss, no key and no lever. A chain of rooms leads to a prize room
 // at the far end; side rooms hold a few chests. The prize depends on the plan: +2 gear, a rare item, a challenge-only recruit or a unique charm.
-const CAVE_NAMES=['Mossback Hollow','Saltwhisper Cave','Cinderseam Cave','Rimefang Grotto','Starfall Hollow'];
+// v0.11.1: side caves are Dens (each ends in a miniboss); Sanctum stays the forts' name
+const CAVE_NAMES=['Mossback Den','Saltwhisper Den','Cinderseam Den','Rimefang Den','Starfall Den'];
 const CAVE_W=48,CAVE_H=34;
 function buildCave(R,th){
   const D=new Gr(CAVE_W,CAVE_H,'#'),rooms=[],ov=(r,o,p)=>r.x<o.x+o.w+p&&r.x+r.w+p>o.x&&r.y<o.y+o.h+p&&r.y+r.h+p>o.y;

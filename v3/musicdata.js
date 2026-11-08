@@ -217,7 +217,7 @@ MTRACK.dungeon=o=>({name:'Dungeon: Below the Beacon',bpm:80,tr:o.tr||0,tonic:9,r
   B:{bars:8,ch:DU_B_CH,p:[['oboe',DU_B,{v:.62}],['tremolo','pad',{o:4,v:.2}],['pizz','ost8',{o:3,v:.42}],['bass','pedal',{o:2,v:.4}],['tremolo','ost16',{o:4,v:.22,st:'chase'}]],dr:{taiko:'o.......o.......',sn2:['o.o.o.o.o.o.o.o.',{st:'chase',v:.6}]}},
   A2:{bars:8,ch:DU_A_CH,p:[['cello',DU_A,{v:.8}],['clarinet',DU_A,{o:1,v:.45,from:4}],['pizz','ost8',{o:3,v:.4}],['bass','pedal',{o:2,v:.4}],['tremolo','ost16',{o:4,v:.22,st:'chase'}]],dr:{taiko:'o.......',bd2:[DR_8,{st:'chase',v:.5}]}},
   C:{bars:8,ch:MER_MINOR_CH,p:[['horn',MER_MINOR,{v:.6}],['harp','arp8',{o:3,v:.35}],['strings','pad',{o:3,v:.18}],['bass','pedal',{o:2,v:.4}],['tremolo','ost16',{o:4,v:.22,st:'chase'}]],dr:{timp:'o.......o.......',taiko2:[DR_8,{st:'chase',v:.6}]}}}});
-MTRACK.cave=o=>({name:'Side Cave: Dripstone',bpm:70,tr:o.tr||0,tonic:9,room:'cave',resume:1,form:['A','B','A2'],sec:{
+MTRACK.cave=o=>({name:'Den: Dripstone',bpm:70,tr:o.tr||0,tonic:9,room:'cave',resume:1,form:['A','B','A2'],sec:{
   A:{bars:8,ch:CV_A_CH,p:[['celesta',CV_A,{v:.7}],['strings','pad',{o:3,v:.16}],['bass','pedal',{o:2,v:.3}]],dr:{drip:'x......o...x.......o....x....o..'}},
   B:{bars:8,ch:CV_B_CH,p:[['flute',CV_B,{v:.5}],['harp','arp8',{o:3,v:.3}],['strings','pad',{o:3,v:.16}],['bass','pedal',{o:2,v:.3}]],dr:{drip:'...x.......o.......x..o.........'}},
   A2:{bars:8,ch:CV_A_CH,p:[['harp',CV_A,{v:.6}],['celesta',CV_A,{o:1,v:.35,from:4}],['choir','pad',{o:4,v:.12}],['bass','pedal',{o:2,v:.3}]],dr:{drip:'x.......o.....x.........o.......',tom:'o'+'.'.repeat(63)}}}});

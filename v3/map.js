@@ -46,7 +46,7 @@ function mapMarks(m){const out=[],T=m.t;for(let y=0;y<m.h;y++)for(let x=0;x<m.w;
 const MK={chest:['#e8b04a','▪'],chestopen:['#6a5a3a','▫'],vault:['#c89aff','▪'],vaultopen:['#5a4a6a','▫'],key:['#ffd04a','⚿'],keyopen:['#6a5a3a','▫'],stairs:['#ffe08a','▲'],dungeon:['#ffe08a','▼'],waystone:['#5ad0ff','◆'],
   boss:['#ff4a4a','●'],bossdone:['#7a5a5a','○'],echo:['#c89aff','◎'],door:['#ff9a4a','■'],dooropen:['#8a6a4a','□'],bars:['#a8a8b8','#'],keybars:['#ffd04a','#'],barsopen:['#5a5a6a','·'],lever:['#ffd04a','┤'],leverdone:['#6a6a5a','┤'],
   cave:['#5ad0ff','◒'],gate:['#ff6a6a','║'],gateopen:['#6a8a6a','║'],board:['#e8c860','!'],town:['#ffe8a0','⌂'],exit:['#d8d8d8','➜'],svc:['#ffffff','•'],quest:['#5aff9a','★'],questghost:['#a8c8b8','☆']};
-const MKN={cave:'Side cave',chest:'Chest',chestopen:'Opened chest',vault:'Vault chest',key:'Beacon Key',stairs:'Stairs out',dungeon:'Dungeon entrance',waystone:'Waystone',boss:'Scourge or Calamity',echo:'Echo',door:'Boss door',bars:'Bars',keybars:'Bars over the key room',lever:'Lever',gate:'Sealed gate',town:'Town',exit:'Road on',board:'Quest board',svc:'Shop or service',quest:'Quest or bounty target',questghost:'Rival waiting for a wayfarer not in your party',bossdone:'Boss defeated',dooropen:'Boss door (open)',vaultopen:'Opened vault chest',keyopen:'Key taken',barsopen:'Raised bars',leverdone:'Lever pulled',gateopen:'Open gate'};
+const MKN={cave:'Den',chest:'Chest',chestopen:'Opened chest',vault:'Vault chest',key:'Beacon Key',stairs:'Stairs out',dungeon:'Dungeon entrance',waystone:'Waystone',boss:'Scourge or Calamity',echo:'Echo',door:'Boss door',bars:'Bars',keybars:'Bars over the key room',lever:'Lever',gate:'Sealed gate',town:'Town',exit:'Road on',board:'Quest board',svc:'Shop or service',quest:'Quest or bounty target',questghost:'Rival waiting for a wayfarer not in your party',bossdone:'Boss defeated',dooropen:'Boss door (open)',vaultopen:'Opened vault chest',keyopen:'Key taken',barsopen:'Raised bars',leverdone:'Lever pulled',gateopen:'Open gate'};
 // ----- v0.3.5 1.4: one pixel-icon set shared by the map, minimap, legend and building signs (SVC_ICON in towngfx.js has the shop icons) -----
 const MAPICO_X={
   waystone:[[4,0,2,1,'#d8f6ff'],[3,1,4,2,'#5ad0ff'],[2,3,6,3,'#3aa8e8'],[3,6,4,2,'#3aa8e8'],[4,8,2,2,'#2a78b8'],[4,2,1,3,'#d8f6ff']],
@@ -69,7 +69,7 @@ Object.assign(MAPICO_X,{
   dooropen:[[2,1,6,9,'#8a6a4a'],[3,2,4,8,'#0a0710'],[3,2,1,8,'#6a4a2a']],
   quest:[[4,0,2,3,'#5aff9a'],[0,3,10,2,'#5aff9a'],[2,5,6,2,'#5aff9a'],[1,7,3,3,'#5aff9a'],[6,7,3,3,'#5aff9a'],[3,3,4,4,'#5aff9a']],
   questghost:[[4,0,2,2,'#a8c8b8'],[0,3,10,1,'#a8c8b8'],[1,4,2,1,'#a8c8b8'],[7,4,2,1,'#a8c8b8'],[3,5,1,2,'#a8c8b8'],[6,5,1,2,'#a8c8b8'],[1,7,2,3,'#a8c8b8'],[7,7,2,3,'#a8c8b8']]});
-const MAPICO_NAME={chest:'Chest',chestopen:'Opened chest',vault:'Vault chest',vaultopen:'Opened vault chest',key:'Beacon Key',keyopen:'Key taken',stairs:'Stairs out',boss:'Scourge or Calamity',bossdone:'Boss defeated',door:'Boss door',dooropen:'Boss door (open)',quest:'Someone with a quest or bounty',questghost:'Rival waiting for a wayfarer not in your party',inn:'Inn',tavern:'Tavern',smithy:'Smithy',workshop:'Alchemy',guild:'Guild Hall',board:'Quest board',waystone:'Waystone',town:'Town gate (arrow: side it faces)',exit:'Road gate (arrow: side it faces)',cave:'Side cave',dungeon:'Dungeon entrance'};
+const MAPICO_NAME={chest:'Chest',chestopen:'Opened chest',vault:'Vault chest',vaultopen:'Opened vault chest',key:'Beacon Key',keyopen:'Key taken',stairs:'Stairs out',boss:'Scourge or Calamity',bossdone:'Boss defeated',door:'Boss door',dooropen:'Boss door (open)',quest:'Someone with a quest or bounty',questghost:'Rival waiting for a wayfarer not in your party',inn:'Inn',tavern:'Tavern',smithy:'Smithy',workshop:'Alchemy',guild:'Guild Hall',board:'Quest board',waystone:'Waystone',town:'Town gate (arrow: side it faces)',exit:'Road gate (arrow: side it faces)',cave:'Den',dungeon:'Dungeon entrance'};
 function mapIcoKey(o){return o.k==='svc'?o.svc:o.k;}
 function mapIcoRects(k){try{return (typeof SVC_ICON!=='undefined'&&SVC_ICON[k])||MAPICO_X[k]||null;}catch(e){return MAPICO_X[k]||null;}}
 // draws icon k centred at (cx,cy), size px square, with a dark outline so it reads on any terrain
@@ -159,7 +159,7 @@ function worldGraph(){
       const dn=put('d'+s,'dungeon',Z.dungeon,F.x+GRID_V[q][0],F.y+GRID_V[q][1],{seen:true,stage:s,cleared:!!G.cleared[s]});link(F,dn,q,'n',false);}
     if(v3&&fm&&fm.caves&&fm.caves.length){fm.caves.forEach(c=>{if(!(isSeen(fm,c.x,c.y)||(G.cavesSeen||{})[c.id]))return;const pref=around(fm,c.x,c.y);
       const q=[pref,...['n','s','e','w'].filter(d=>d!==pref)].find(d=>free(F.x+GRID_V[d][0],F.y+GRID_V[d][1]));if(!q)return;
-      const kn=put(c.id,c.kind==='fort'?'fort':'cave',c.kind==='fort'?(typeof FORT_NAMES!=='undefined'?FORT_NAMES[s]:'Sanctum'):CAVE_NAMES[s],F.x+GRID_V[q][0],F.y+GRID_V[q][1],{seen:true,stage:s,done:c.kind==='fort'?!!(G.fortWon||{})[s]:!!(G.caveWon||{})[s]});link(F,kn,q,'n',false);});}
+      const kn=put(c.id,c.kind==='fort'?'fort':'cave',c.kind==='fort'?(typeof FORT_NAMES!=='undefined'?FORT_NAMES[s]:'Sanctum'):CAVE_NAMES[s],F.x+GRID_V[q][0],F.y+GRID_V[q][1],{seen:true,stage:s,done:c.kind==='fort'?fortDoneS(s):denDone(s)});link(F,kn,q,'n',false);});}
     });
     // on to the next town
     if(s<4){const fe=v3?P[s].fe:'e',np=[F.x+GRID_V[fe][0],F.y+GRID_V[fe][1]];
@@ -269,7 +269,7 @@ function drawWorldMap(){
   // the places
   const vs=Math.round(c*WMAP.vig),showNames=cell>=WMAP.names,fs=Math.max(9,Math.min(15,Math.round(cell/8.5)))*dpr;WMS.hit=[];
   nodes.forEach(n=>{const [cx,cy]=ctr(n),full=show[n.id]===2,th=wmTheme(n.stage||0),st=n.kind==='dungeon'&&n.cleared?'lit':(n.kind==='cave'||n.kind==='fort')&&n.done?'done':'';
-    x.drawImage(wmVignette(n.kind,th,vs,st),Math.round(cx-vs/2),Math.round(cy-vs/2));
+    x.drawImage(wmVignette(n.kind,th,vs,st),Math.round(cx-vs/2),Math.round(cy-vs/2));if(st&&show[n.id]===2&&typeof drawCheck==='function')drawCheck(x,cx+vs*.32,cy-vs*.3,vs*.16);// v0.11.1 completion checkmark
     if(!full){const fg=wmFog(vs);x.drawImage(fg,Math.round(cx-vs/2),Math.round(cy-vs/2));x.fillStyle='#6a4a2a';x.font=`800 ${Math.round(vs*.34)}px Nunito,sans-serif`;x.textAlign='center';x.textBaseline='middle';x.fillText('?',cx,cy+vs*.02);}
     WMS.hit.push({id:n.id,x:cx,y:cy,r:vs*.5,label:wmName(n,full)});
     if(showNames&&full&&n.id!==WMS.sel)wmLabel(x,n.label,cx,cy+vs*.5+fs*.2,Math.round(fs*.9),'#3a2614',false);});
@@ -285,12 +285,12 @@ function wmLegendDraw(){document.querySelectorAll('canvas.wml').forEach(c=>{cons
   const [kind,st]=k.split(':');x.drawImage(wmVignette(kind,'meadow',s,st||''),0,0);});}
 function mWorldMap(){
   setTimeout(()=>{drawWorldMap();wmLegendDraw();},0);
-  const L=[['town','Town'],['field','Field'],['dungeon','Dungeon'],['dungeon:lit','Relit dungeon'],['cave','Side cave'],['fort','Sanctum'],['cave:done','Looted'],['you','You'],['fog','Not visited yet'],['sealed','Sealed gate']];
+  const L=[['town','Town'],['field','Field'],['dungeon','Dungeon'],['dungeon:lit','Relit dungeon'],['cave','Den'],['fort','Sanctum'],['cave:done','Looted'],['you','You'],['fog','Not visited yet'],['sealed','Sealed gate']];
   return `<div class="modal mapmodal" data-act="xClose"><div class="panel box mapbox wmbox"><div class="mh"><h2>World map</h2></div>
     <canvas id="wmap" class="fmap wmap" data-act="wmTap" aria-label="World map"></canvas>
     <div class="maplegend wmlegend">${L.map(([k,n])=>`<span><canvas class="wml" data-k="${k}" width="28" height="28"></canvas> ${n}</span>`).join('')}</div>
     <div class="btnrow" id="wmgo"></div>
-    <p class="note">Tap a place to see its name. Roads follow the gates, so a gate on the north edge leads up the map. Places appear as you find them; side caves and sanctums are optional. Tap outside the map to close.</p></div></div>`;
+    <p class="note">Tap a place to see its name. Roads follow the gates, so a gate on the north edge leads up the map. Places appear as you find them; Dens and Sanctums are optional. Tap outside the map to close.</p></div></div>`;
 }
 // a tap on the map shows that place's name (and does not close the map); a tap on empty parchment hides it again
 document.addEventListener('pointerdown',e=>{if(e.target&&e.target.id==='wmap')WMS.pt={x:e.clientX,y:e.clientY,t:Date.now()};},true);

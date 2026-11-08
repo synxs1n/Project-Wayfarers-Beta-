@@ -41,7 +41,7 @@ function drawBigMap(){const cv=document.getElementById('bmap');if(!cv||!G)return
   L.maps.forEach(o=>{const [px,py]=P(o.ox,o.oy);x.drawImage(bmBase(o.m),px,py,o.m.w*sc,o.m.h*sc);x.strokeStyle='rgba(255,230,170,.25)';x.lineWidth=1;x.strokeRect(px+.5,py+.5,o.m.w*sc-1,o.m.h*sc-1);});
   // doors
   BM.doors=bmDoors(L);x.font=`800 ${Math.max(8,sc*4)}px Nunito,sans-serif`;x.textAlign='center';x.textBaseline='middle';
-  BM.doors.forEach(d=>{const [px,py]=P(d.o.ox+d.x+.5,d.o.oy+d.y+.5);const col=d.k==='dunlit'?'#ffd04a':d.k==='dungeon'?'#ff6a5a':d.k==='fort'?'#c8c8e8':'#c89a6a',g=d.k==='fort'?'♜':d.k==='cave'?'◠':'▲';x.fillStyle='rgba(0,0,0,.6)';x.beginPath();x.arc(px,py,sc*2.6,0,Math.PI*2);x.fill();x.fillStyle=col;x.fillText(g,px,py+sc*.3);});
+  BM.doors.forEach(d=>{const [px,py]=P(d.o.ox+d.x+.5,d.o.oy+d.y+.5);const col=d.k==='dunlit'?'#ffd04a':d.k==='dungeon'?'#ff6a5a':d.k==='fort'?'#c8c8e8':'#c89a6a',g=d.k==='fort'?'♜':d.k==='cave'?'◠':'▲';x.fillStyle='rgba(0,0,0,.6)';x.beginPath();x.arc(px,py,sc*2.6,0,Math.PI*2);x.fill();x.fillStyle=col;x.fillText(g,px,py+sc*.3);try{if(typeof siteDone==='function'&&siteDone(d.k==='dunlit'?'lair':d.k==='dungeon'?'lair':d.k,d.o.m.s))drawCheck(x,px+sc*2,py-sc*2,sc*1.3);}catch(e){}});
   // names
   x.font=`700 ${Math.max(9,sc*5)}px Nunito,sans-serif`;x.lineWidth=3;x.strokeStyle='rgba(0,0,0,.8)';x.fillStyle='#f4ebd6';
   L.maps.forEach(o=>{const nm=o.m.kind==='town'?ZS(o.m.s).town:ZS(o.m.s).n;const [px,py]=P(o.ox+o.m.w/2,o.oy+1.5);x.strokeText(nm,px,py+sc*2);x.fillText(nm,px,py+sc*2);});
@@ -52,7 +52,7 @@ function drawBigMap(){const cv=document.getElementById('bmap');if(!cv||!G)return
 function mBigMap(){BM.scrolled=0;setTimeout(drawBigMap,0);
   return `<div class="modal mapmodal" data-act="xClose"><div class="panel box mapbox wmbox"><div class="mh"><h2>World map</h2></div>
     <div class="bmscroll"><canvas id="bmap" class="fmap bmap" data-act="bmTap" aria-label="World map"></canvas></div><p class="note fmnote" id="bmnote" aria-live="polite"></p>
-    <div class="maplegend"><span><b style="color:#fff">➤</b> You</span><span><b style="color:#ff6a5a">▲</b> Dungeon</span><span><b style="color:#ffd04a">▲</b> Relit dungeon</span><span><b style="color:#c89a6a">◠</b> Side cave</span><span><b style="color:#c8c8e8">♜</b> Sanctum</span></div>
+    <div class="maplegend"><span><b style="color:#fff">➤</b> You</span><span><b style="color:#ff6a5a">▲</b> Dungeon</span><span><b style="color:#ffd04a">▲</b> Relit dungeon</span><span><b style="color:#c89a6a">◠</b> Den</span><span><b style="color:#c8c8e8">♜</b> Sanctum</span></div>
     <div class="btnrow"><button class="btn sm" data-act="wmChart">Chart</button></div>
     <p class="note">Every town and field you have visited, joined at their gates. Tap anywhere you have been and the party walks there, through the gates on the way (a dungeon or cave door takes you inside). Drag to scroll a big map. Tap outside the map to close.</p></div></div>`;}
 HOOK.before('vModal','bigmap','the connected world map',function(md){if(md&&md.type==='bigmap')return HOOK.stop(mBigMap(md));});
