@@ -62,7 +62,7 @@ const LEARN=()=>{const A=__A,B=A.B,M=A.META.best;B.en.forEach(e=>{const b=M[e.ba
     chk('expert: strongest multipliers first',r.order);
     chk(`hero cards: level shown in expert (${r.heroLv}) and in simple (${r.heroLvSimple}) (v0.10.4)`,r.heroLv>0&&r.heroLvSimple>0);
     chk(`a tap on the key chip shows that card's chips with a way back (${JSON.stringify(r.tap)})`,!!r.tap&&r.tap.up+r.tap.dn>=1&&r.tap.less/* v0.11.4: the full list, as in Expert mode */);
-    chk(`the i panel shows the capped chips (${JSON.stringify(r.panel)})`,!!r.panel&&r.panel.up+r.panel.dn>=1&&r.panel.up<=2&&r.panel.dn<=2);
+    chk(`the i panel shows the chips, the full list since v0.11.4 (${JSON.stringify(r.panel)})`,!!r.panel&&r.panel.up+r.panel.dn>=1);
     await H.browser.close();}
   // ---------- 3: damage groups and the type line ----------
   if(!ONLY||ONLY==='groups'){const H=await open({w:390,h:844,mobile:true,pre:META('medium',{expertBattle:true})});await battle(H,{heroes:3,foes:3,seed:5,lv:22});
