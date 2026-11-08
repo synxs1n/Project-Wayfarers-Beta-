@@ -35,3 +35,11 @@ Step 1 tilesets, step 2 town layouts. Old journeys keep their layout tileset (st
   the map's look variant (drawObjects passes the base theme); look9Terrain converts grass only where all eight neighbours are open grass.
 - worldgfx.js new tree kinds: canopy, fir, dead, cactus, basalt.
 - Not done yet from the approved table: per-realm weather tables, music moods, monster pool variants, town layouts (step 2).
+
+## 0.11.3 and the test pass after it
+- 0.11.3: look9 terrain only inside 7x7 open grass (keeps pathguard rooms/corridors); look variant ids use '%v2' (a '~' marks a boss overlay).
+- Groups run on 0.11.2/0.11.3: battle, menus, party, world. Everything that fails also fails on 0.10.7:
+  battle v063ba, v070ib (label overlaps), v050p1d (flaky in the runner); menus/party v043c, v050p4, v063m2, v072a, v077a, v095m1 (written for the
+  pre-0.10.6 board with Guilds and Arena tabs, never updated), v063pb (camp equip). Not run yet: saves, audio, title, app.
+- Sims: SEED=1 fullsim stage1 careful 97%, auto 92%; xp catch up unchanged.
+- Next: Phase 5 step 2 (town layouts per realm), realm weather tables, music moods, monster variants; update the six stale board tests.
