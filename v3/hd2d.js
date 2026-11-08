@@ -159,7 +159,7 @@ function hdGateGeo(m,S,b,Q,U,Vv,p,V,bt){const G2=H2G,x0=b.x*TS,x1=x0+b.w*TS,zb=b
   S.bh.push({b,h:hT});}
 // buildings: roofed houses become boxes with a gabled roof cut from their 2D sprite; keeps a box with battlements; tents, the lighthouse
 // and anything unusual stand up as one card. Signs and landmark props (towngfx) come from the town decor pass as a card on the facade.
-function hdBldKind(m,b){if(b.k==='gatehouse')return 'gate';if(b.k==='lighthouse')return 'keep';/* v0.11.4: was a flat card */const T=THM(m);let mat=T.mat;if(['guild','keep','chapel','tower','windmill'].includes(b.k))mat=m.theme==='void'?'tent':'stone';
+function hdBldKind(m,b){if(b.k==='gatehouse')return 'gate';if(b.k==='lighthouse')return 'tower';/* v0.11.7: a narrow round tower (v0.11.4 'keep' stretched the sprite over the footprint) */const T=THM(m);let mat=T.mat;if(['guild','keep','chapel','tower','windmill'].includes(b.k))mat=m.theme==='void'?'tent':'stone';
   if(mat==='tent'||b.k==='bigtent')return 'card';if(b.k==='keep'||b.k==='tower')return 'keep';return 'roof';}
 function hdBakeBuildings(m,S,bsp,deco){const V=S.V,sin=Math.sin(HD2D.pitch*Math.PI/180),pk=new H2Pack(1024),parts=[];
   {const g=hdGatePart(m);if(g)bsp=(bsp||[]).concat([g]);}// v0.6.3: the sanctum gatehouse stands up as towers and a curtain wall
@@ -178,6 +178,13 @@ function hdBakeBuildings(m,S,bsp,deco){const V=S.V,sin=Math.sin(HD2D.pitch*Math.
     if(k==='card'){const yb=-6*V,yt=(cv.height-6)*V,cx0=x0-BSP_X;Q([cx0,yt,zf+.2,cx0+cv.width,yt,zf+.2,cx0+cv.width,yb,zf+.2,cx0,yb,zf+.2],U(p,0),Vv(p,0),U(p,cv.width),Vv(p,cv.height),255,[0,.45,.89],2|8);
       S.bh.push({b,h:cv.height*.55*V});return;}
     if(k==='gate'){hdGateGeo(m,S,b,Q,U,Vv,p,V,bt);return;}
+    if(k==='tower'){// the lighthouse: its 48x96 sprite sits bottom-centred on the footprint (worldgfx2.js); body columns 14..34, lantern and roof rows 0..24
+      const L=h+BSP_TOP-96+1,sx=BSP_X+Math.round(w/2)-24,cx=x0+w/2,tx0=cx-10,tx1=cx+10,zt0=zm-9,zt1=zm+9,yb=72*V,yt=96*V;
+      Q([tx0,yb,zt1,tx1,yb,zt1,tx1,0,zt1,tx0,0,zt1],U(p,sx+14),Vv(p,L+24),U(p,sx+34),Vv(p,L+96),255,[0,0,1],2|8);// front
+      Q([tx0,yb,zt0,tx0,yb,zt1,tx0,0,zt1,tx0,0,zt0],U(p,sx+15),Vv(p,L+24),U(p,sx+21),Vv(p,L+96),255,[-1,0,0],8);// sides, a strip of the body
+      Q([tx1,yb,zt1,tx1,yb,zt0,tx1,0,zt0,tx1,0,zt1],U(p,sx+27),Vv(p,L+24),U(p,sx+33),Vv(p,L+96),255,[1,0,0],8);
+      Q([tx0-2,yt,zm,tx1+2,yt,zm,tx1+2,yb,zm,tx0-2,yb,zm],U(p,sx+12),Vv(p,L),U(p,sx+36),Vv(p,L+24),255,[0,.45,.89],2|8);// lantern and roof as a card
+      S.bh.push({b,h:yt});return;}
     const top=BSP_TOP;
     if(k==='keep'){const Hk=Math.max(22,Math.round(h+10-h*sin)),cr=9,yk=Hk*V,yc=(Hk-cr)*V;
       Q([x0,yc,zf,x1,yc,zf,x1,0,zf,x0,0,zf],U(p,BSP_X),Vv(p,top+h-(Hk-cr)),U(p,BSP_X+w),Vv(p,top+h),255,[0,0,1],2|8);

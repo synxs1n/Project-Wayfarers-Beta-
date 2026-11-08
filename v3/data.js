@@ -4,6 +4,7 @@
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.11.7',['The Tidegrave lighthouse is a proper narrow tower in HD-2D (it was stretched into a striped box).']],
  ['Beta v0.11.6',['The boss bar stays hidden from the first frame of a boss fight, so the stage no longer shifts as the fight opens.']],
  ['Beta v0.11.5',['Fix: tapping the minimap opens the area map and it stays open (it used to close again straight away).']],
  ['Beta v0.11.4',['Tap the minimap to open the area map (the button is gone), and the minimap sits in the top right corner. No boss HP bar across the top. Timed hits are on by default; the tap that answers a ring never clicks a button by accident, and chain moves get the ring too. Start auto, Pause and Speed work while an action plays. Lore in battle is now Guide: a short summary of how battles work, with a link to the full Guides. Expert battle info shows every weakness and resistance. The Tavern is one screen with Pork Chop sandwiches on top, and Pork Chops come first in the Backpack. The Inn asks before you rest at full health, and a night\'s rest can bring a bond talk. Tents make camp (boon and campfire talks). Training team reshuffles. Story Echoes are once only again. Dens, Sanctums and Lairs keep their own names and say what they are the first time you enter. The Tidegrave lighthouse stands up in HD-2D. An unlocked legend always gets its quest.']],
