@@ -81,3 +81,16 @@ P5 0.11.8+ realms: realm order rises in fantasy with the most intricate final to
   Auto/Pause/Speed on pointerdown while not in cmd mode.
 - Alchemy order was already potions then charms (the owner may have meant side by side; ask if it comes back).
 - Next: P2 (party and gear), then P3, P4, P5 as listed above.
+
+## Owner feedback batch 3 (after 0.11.6)
+- Lighthouse in Tidegrave rendered as a striped box with the top cut (the 'keep' box cuts the tall sprite); needs its own tall tower shape.
+- Massive sprite quality pass: overworld and battle sprites, animation and effects; skill effects when they go off; everything more distinct;
+  wayfarers unique beyond class and element; better boss designs and animations.
+- Reorganize the battle screen and menus by logic.
+- Single target preview is cut off when targeting one foe among many.
+- Toggle: skills with only one possible target fire at once (option).
+- Party MP visible in the battle window.
+- Guard cue only when the hero is about to be hit (not when the hero acts twice before the foe).
+- A successful guard grants some Limit gauge.
+- Purple (epic) card border without the Epic tag on some heroes; not every dual type is epic, some single types are (never starters).
+- Guild recruits: 5 of a possible 15 per playthrough, one unlocked per town.
