@@ -64,3 +64,10 @@ P4 0.11.7 world: roamers slightly stronger than random encounters; no weather in
   quest board and waystone near but not on top of each other, no anvils blocking the board; buildings hiding town exits;
   more varied chest and battle loot (bandage, tent, ash).
 P5 0.11.8+ realms: realm order rises in fantasy with the most intricate final towns; town layouts per realm; bond system expansion.
+
+### Owner decisions on batch 2
+- Hand-in: quests accepted before the update can still be claimed anywhere (flag on the quest at accept time); new ones follow the new rule.
+- Guilds: 5 ranks over the same mission count, one perk per rank; saves map their progress onto the matching rank.
+- Realm order: tiered draw for new journeys. Tier 1 thistle, orchard, strand, lakes; tier 2 mire, grotto, tundra, peaks;
+  tier 3 deeps, mines, glacier, mesa. Realms 1-2 from tiers 1-2, realms 3-4 from tiers 2-3, random within tiers.
+- Bonds: NO bond levels. Yes to more bond pairs, more scenes (camp, inn, after big fights), more bond techs, a Bonds screen.
