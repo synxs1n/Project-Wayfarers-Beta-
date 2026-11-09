@@ -4,6 +4,7 @@
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.12.11',['Guild rank 1 no longer adds battle XP for everyone from the first fight (the Beastwardens, Archivists and Steady Hand rank 1 perk is a 3% inn discount instead); XP perks start at rank 2.']],
  ['Beta v0.12.10',['Fix: on phones the battle stage frame no longer clips the bottom 8 pixels of the stage, so labels under the heroes have their room back and stop crowding the foes.']],
  ['Beta v0.12.9',['Sprites and effects: every wayfarer now has their own look on top of class and element (hair style and colour, skin tone, one or two accessories such as a scarf, eyepatch, satchel, shoulder plate or circlet, and a tinted weapon), in the overworld, in battle and on portraits; legends keep their hand made looks. Skills show their element as a shape, not just a colour: flame tongues, a wave arc, an ice shard fan, a jagged bolt, bursting rock, curved wind slashes, a light beam, a shadow burst; physical hits show a slash, pierce, impact or arrow; heals, buffs and debuffs have their own marks; Limit Breaks flash the screen (a still tint under reduced motion). Bosses and guardians breathe, and a foe winding up a big hit swells and glows.']],
  ['Beta v0.12.8',['Effects pass, first slice: new battle effect shapes and boss art frames are landing (more in the next updates).']],
