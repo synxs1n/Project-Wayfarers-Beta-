@@ -104,8 +104,8 @@ small{font-size:.86rem;color:var(--mute)}
 .card.hero{text-align:left;display:grid;grid-template-columns:auto 1fr;gap:6px 12px;padding:12px;background:var(--wood);border:4px solid var(--ink);box-shadow:inset 0 0 0 2px #6a4a22;align-content:start}
 button.card.hero:hover{background:var(--wood2)}
 .card.sel{background:var(--wood2);box-shadow:inset 0 0 0 3px var(--gold)}
-.card.hero.elstrip,button.mini.elstrip{position:relative}
-.card.hero.elstrip::after,button.mini.elstrip::after{content:'';position:absolute;left:0;right:0;bottom:0;height:4px;pointer-events:none;background:linear-gradient(90deg,var(--d1,#c8a050) 50%,var(--d2,#7a8ac0) 50%)}
+.card.hero.elstrip,button.mini.elstrip,.swc.elstrip{position:relative;overflow:hidden}
+.card.hero.elstrip::after,button.mini.elstrip::after,.swc.elstrip::after{content:'';position:absolute;left:0;right:0;bottom:0;height:4px;pointer-events:none;background:linear-gradient(90deg,var(--d1,#c8a050) 50%,var(--d2,#7a8ac0) 50%)}
 .card .bio,.card .mline,.card>.btn{grid-column:1/-1}
 .card .bio{color:var(--mute);font-size:.88rem}
 .mline{font-size:.86rem}
@@ -1840,7 +1840,7 @@ html.rm .battle.b3 .cmd .mi.b9glow{animation:none}
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.12.12";const APP_BUILD="14247caab20c";
+(function(){const APP_VER="0.12.12";const APP_BUILD="b56d982c15cc";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2533,7 +2533,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.12.12";const APP_BUILD="14247caab20c";
+const APP_VER="0.12.12";const APP_BUILD="b56d982c15cc";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -11313,13 +11313,13 @@ function vSwap(where){
     if(!c)return `<div class="swc ${grid?'':'row'} empty ${on?'sel':''}"><button class="swm" data-act="swapTap" data-arg="p:${i}" ${town||sel?'':'disabled'}><small>${lab}</small><span>Empty slot</span></button></div>`;
     // Beta v0.3.1: one readable row per hero: portrait, name, level and class, elements, HP and MP with numbers, KO or status marker
     const bad=[...new Set(Object.keys(c.st||{}).filter(k=>STS[k]&&STS[k].bad).concat(typeof ailOf==='function'?ailOf(c):[]))],mark=c.hp<=0?'<em class="swko">KO</em>':bad.length?`<em class="swst" aria-label="${bad.map(k=>STS[k].n).join(', ')}">${bad.map(k=>`<span class="ail" style="--c:${STS[k].c}" title="${STS[k].n}">${stSym(k)}</span>`).join('')}</em>`:'';
-    return `<div class="swc ${grid?'':'row'} ${on?'sel':''} ${c.hp<=0?'ko':''}"><button class="swm" data-act="swapTap" data-arg="p:${i}" aria-pressed="${on}" aria-label="${esc(c.name)}, ${lab}${on?', selected':''}">${port(c.id,'noail')}<span class="swi"><span class="swn"><b>${esc(c.name)}</b><span class="els">${c.el.map(ico).join('')}</span></span>${mark?`<span class="swstrow">${mark}</span>`:''}<small>${grid?'':lab+' · '}Lv ${c.lv} ${CLS[TPL[c.id].cls].n}${c.pts?` · <span class="up">${c.pts} pts</span>`:''}</small><span class="swb"><span class="swbl">HP</span>${bar(c.hp,c.S.mhp,'var(--hp)')}<span class="nums">${c.hp}/${c.S.mhp}</span></span><span class="swb"><span class="swbl">MP</span>${bar(c.mp,c.S.mmp,'var(--mp)')}<span class="nums">${c.mp}/${c.S.mmp}</span></span>${grid?xpLine(c,true):xpLine(c)}</span></button><button class="btn sm swsheet" data-act="${openAct}" data-arg="${c.id}" aria-label="Open ${esc(c.name)}'s sheet">Sheet</button></div>`;};
+    return `<div class="swc elstrip ${grid?'':'row'} ${on?'sel':''} ${c.hp<=0?'ko':''}" ${dualStyle(TPL[c.id])}><button class="swm" data-act="swapTap" data-arg="p:${i}" aria-pressed="${on}" aria-label="${esc(c.name)}, ${lab}${on?', selected':''}">${port(c.id,'noail')}<span class="swi"><span class="swn"><b>${esc(c.name)}</b><span class="els">${c.el.map(ico).join('')}</span></span>${mark?`<span class="swstrow">${mark}</span>`:''}<small>${grid?'':lab+' · '}Lv ${c.lv} ${CLS[TPL[c.id].cls].n}${c.pts?` · <span class="up">${c.pts} pts</span>`:''}</small><span class="swb"><span class="swbl">HP</span>${bar(c.hp,c.S.mhp,'var(--hp)')}<span class="nums">${c.hp}/${c.S.mhp}</span></span><span class="swb"><span class="swbl">MP</span>${bar(c.mp,c.S.mmp,'var(--mp)')}<span class="nums">${c.mp}/${c.S.mmp}</span></span>${grid?xpLine(c,true):xpLine(c)}</span></button><button class="btn sm swsheet" data-act="${openAct}" data-arg="${c.id}" aria-label="Open ${esc(c.name)}'s sheet">Sheet</button></div>`;};
   const bench=Object.values(G.roster).filter(c=>!G.party.includes(c.id)).filter(c=>lmatch('party',c));const benchS=lsort('party',bench,(a,b)=>b.lv-a.lv||a.name.localeCompare(b.name));
   return `${grid?'<div class="swgridwrap">':''}<div class="btnrow ptools"><button class="btn sm gold" data-act="bpOpen">Build party</button>${G.daily?'':`<button class="btn sm" data-act="autoEqParty" title="The best gear you own for your party. May take gear from your reserves.">Equip best: party</button><button class="btn sm" data-act="autoEqCamp" ${Object.keys(G.roster).some(id=>!G.party.includes(id))?'':'disabled'} title="Your reserves get the best spare gear from the pack. Never takes anything from your party.">Equip best: reserves</button>`}<button class="btn sm" data-act="fsOpen">Field skills</button>${(G.talks||[]).length?`<button class="btn sm gold" data-act="campfire">Campfire talks (${G.talks.length})</button>`:''}</div>${ldStrip()}<p class="note swhint ${sel?'on':''}">${hint}</p>
     <h4>Vanguard</h4><div class="swlist ${grid?'g3':''}">${[0,1,2].map(i=>card(P[i],i)).join('')}</div>
     <h4>Rearguard</h4><div class="swlist ${grid?'g3':''}">${[3,4,5].map(i=>card(P[i],i)).join('')}</div>
     ${sel&&sel.i!=null&&P[sel.i]?`<div class="btnrow">${town&&G.party.length>1?'<button class="btn sm" data-act="swapOut">Send to roster</button>':''}<button class="btn sm" data-act="swapCancel">Cancel</button></div>`:sel?'<div class="btnrow"><button class="btn sm" data-act="swapCancel">Cancel</button></div>':''}
-    ${town?`<h4>Reserves <span class="cnt nums">${bench.length} waiting</span></h4>${filterBar('party')}<div class="grid mini">${benchS.map(c=>`<button class="mini ${sel&&sel.r===c.id?'sel':''} ${c.el.length>1?'dual':''} ${isLeg(c.id)?'leg':isEpic(c.id)?'epic':''}" ${dualStyle(TPL[c.id])} data-act="swapTap" data-arg="r:${c.id}">${heroTag(c.id)}<img src="${heroURL(c.id)}" alt=""><b>${esc(c.name)}${c.legacy?' ★':''}</b><small>Lv ${c.lv} ${CLS[TPL[c.id].cls].n}</small><span class="els">${c.el.map(ico).join('')}</span></button>`).join('')||'<p class="note">Everyone you have recruited is already in your six.</p>'}</div>`
+    ${town?`<h4>Reserves <span class="cnt nums">${bench.length} waiting</span></h4>${filterBar('party')}<div class="grid mini">${benchS.map(c=>`<button class="mini ${sel&&sel.r===c.id?'sel':''} elstrip ${c.el.length>1?'dual':''} ${isLeg(c.id)?'leg':isEpic(c.id)?'epic':''}" ${dualStyle(TPL[c.id])} data-act="swapTap" data-arg="r:${c.id}">${heroTag(c.id)}<img src="${heroURL(c.id)}" alt=""><b>${esc(c.name)}${c.legacy?' ★':''}</b><small>Lv ${c.lv} ${CLS[TPL[c.id].cls].n}</small><span class="els">${c.el.map(ico).join('')}</span></button>`).join('')||'<p class="note">Everyone you have recruited is already in your six.</p>'}</div>`
       :where==='menu'?'<p class="note">Reordering works anywhere.</p>':'<p class="note">Reordering works anywhere. Swapping roster heroes into your six happens in town.</p>'}${grid?'</div>':''}`;
 }
 Object.assign(ACT,{
