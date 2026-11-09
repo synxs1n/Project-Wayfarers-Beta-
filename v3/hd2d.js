@@ -471,7 +471,7 @@ function hdActors(m,now,ts){const B=HD.dyn,BB=HD.dynB,BA=HD.dynA,V=HD.S.V,still=
   // v0.12: a Sanctum's guardian on its rune circle, with its name tag as the hero comes near
   {const sg=typeof sanctGuard==='function'?sanctGuard(m):null;if(sg){const c=imgOf('mapboss:'+sg.art,()=>monCanvas(sg.art)),bob=still?0:Math.sin(now/420)*1.5,gx=sg.x*TS+8,gz=sg.y*TS+12,ac=hdRgb('#8ae8ff');
     hdDecal(BA,'glow',hdGlowS(),gx,sg.y*TS+9,44*.8,26*.8,ac[0]*255,ac[1]*255,ac[2]*255,110);
-    hdChar(B,c,gx,(bob*.6-sp)*V,gz,true,255,16);hdShadowC(gx,gz+1);hdPickAdd(-1,gx,gz,Math.max(HD.chW,16),Math.max(HD.chH,22*V),sg.x,sg.y);
+    hdChar(B,c,gx,(bob*.6-sp)*V,gz,true,255,16);hdShadowC(gx,gz+1);
     const n=sanctNear(sg);if(n>0){const lab=hdSpr('gname:'+sg.name,Math.max(24,sg.name.length*5+8),11,(q,w,h)=>{q.font='bold 8px sans-serif';q.textAlign='center';q.lineWidth=2.5;q.strokeStyle='#0a0614';q.fillStyle='#ffe08a';q.strokeText(sg.name,w/2,8.5);q.fillText(sg.name,w/2,8.5);});
       hdBill(B,'gname:'+sg.name,lab,gx,HD.chH+2*V,gz,false,1,255,255,255,Math.round(n*255),4);}}}
   // roaming foes in dungeons and (v0.9.5) on fields: their sprite, an elite ring, a faint sight cone, "!" while chasing

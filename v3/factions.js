@@ -13,7 +13,7 @@ const FAC=[
  {id:'alch',n:"Alchemists' Circle",i:'⚗',col:'#5ac08a',desc:'Potions. Every potion, ether and elixir you brew earns standing.',
   ranks:['Initiate','Brewer','Distiller','Adept','Magister','Archmage of Vials'],
   perks:[{t:'4% of brewing gold comes back',k:'rebate',v:.04},{t:'8% of brewing gold comes back',k:'rebate',v:.08},{t:'15% of brewing gold comes back',k:'rebate',v:.15},{t:'Circle stock: Elixirs and herb bundles at the Circle counter',k:'stock'},{t:'Vialmark Charm, a unique charm',k:'charm',id:'c_fa2'},{t:'Signature: 15% chance every brew makes one extra, a strong unique charm (Archmage\'s Phial), and the title Archmage of Vials',k:'sig',id:'c_fb2',dbl:.15}]},
- {id:'wardens',n:'Beastwardens',i:'🐾',col:'#8ad04a',desc:'Taming and companions. Every creature that follows you counts.',
+ {id:'wardens',n:'Beastwardens',i:'🐾',col:'#8ad04a',desc:'Taming and pets. Every creature that follows you counts.',
   ranks:['Pup','Tracker','Handler','Warden','Beastmaster','Warden of Wilds'],
   perks:[{t:'XP +1%',k:'xp',v:.01},{t:'XP +3%',k:'xp',v:.03},{t:'XP +5%',k:'xp',v:.05},{t:'Warden stock: parts bundles at the Warden counter',k:'stock'},{t:'Wildcall Charm, a unique charm',k:'charm',id:'c_fa3'},{t:'Signature: Wild Heart, a strong unique charm, and the title Warden of Wilds',k:'sig',id:'c_fb3'}]},
  {id:'archive',n:'Archivists',i:'📖',col:'#9a8aff',desc:'Knowledge. Echoes beaten, Scourges brought down and every wayfarer you gather get written down.',

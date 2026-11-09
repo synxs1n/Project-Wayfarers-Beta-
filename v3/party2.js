@@ -44,7 +44,7 @@ function ldApply(i){
   const curSet=new Set(G.party);
   if(members.length<L.party.length){Object.values(G.roster).filter(c=>!members.includes(c.id)).sort((a,b)=>b.lv-a.lv).slice(0,L.party.length-members.length).forEach(c=>{members.push(c.id);msgs.fill.push(`${esc(c.name)} filled an empty place.`);});}
   const changed=members.some(id=>!curSet.has(id))||G.party.some(id=>!members.includes(id));
-  if(changed&&!inTown()){V.modal={type:'ldRes',title:'Switch loadout',msgs:{miss:['Changing who is in your six happens in town. Order, gear and companions can change anywhere.'],fill:[],move:[]},snap:null,from:V.modal};render();return;}
+  if(changed&&!inTown()){V.modal={type:'ldRes',title:'Switch loadout',msgs:{miss:['Changing who is in your six happens in town. Order, gear and pets can change anywhere.'],fill:[],move:[]},snap:null,from:V.modal};render();return;}
   const snap=snapAuto();
   // gear: every member hands their gear back, then each slot is filled from the pack with what the loadout had
   const pack=G.gear.slice();members.forEach(id=>GSLOTS.forEach(sl=>{const c=G.roster[id];if(c.eq[sl]){pack.push(c.eq[sl]);c.eq[sl]=null;}}));
@@ -58,7 +58,7 @@ function ldApply(i){
   G.gear=pack;
   // companions
   members.forEach(id=>{const oid=L.comp[id];if(!oid)return;const o=(G.tamed||[]).find(x=>x.id===oid);
-    if(!o){msgs.miss.push(`${esc(G.roster[id].name)}'s companion is no longer with you.`);return;}
+    if(!o){msgs.miss.push(`${esc(G.roster[id].name)}'s pet is no longer with you.`);return;}
     if(o.with&&o.with!==id&&G.roster[o.with]&&!members.includes(o.with))msgs.move.push(`${esc(o.name)} came over from ${esc(G.roster[o.with].name)}.`);
     G.tamed.forEach(x=>{if(x.with===id&&x!==o)x.with=null;});o.with=id;});
   G.party=members.slice(0,6);Object.values(G.roster).forEach(refresh);saveGame();sfx('equip');
@@ -69,7 +69,7 @@ function mLdRes(m){const M=m.msgs||{miss:[],fill:[],move:[]},all=M.miss.length+M
     ${M.fill.length?`<h4>Filled in</h4><div class="rows">${M.fill.map(x=>`<div class="row"><small>${x}</small></div>`).join('')}</div>`:''}${M.move.length?`<div class="rows">${M.move.map(x=>`<div class="row"><small>${x}</small></div>`).join('')}</div>`:''}${all?'':'<p class="note">Restored exactly as saved.</p>'}`,
     `${m.snap?'<button class="btn" data-act="ldUndo">Undo</button>':''}<button class="btn gold" data-act="ldDone">OK</button>`);}
 function mLdMgr(m){const L=LD();
-  return box('Team loadouts',`<p class="note">Each slot remembers who is in your six, their order, gear and companions. Tap a slot name in the Party menu to switch. If something is missing you will be told what could not be restored.</p><div class="rows">${Array.from({length:LOADMAX},(_,i)=>{const o=L[i];
+  return box('Team loadouts',`<p class="note">Each slot remembers who is in your six, their order, gear and pets. Tap a slot name in the Party menu to switch. If something is missing you will be told what could not be restored.</p><div class="rows">${Array.from({length:LOADMAX},(_,i)=>{const o=L[i];
     return `<div class="row ldrow"><b class="nums">${i+1}</b><div class="grow">${o?`<input class="lname" data-i="${i}" maxlength="16" value="${esc(o.name)}" aria-label="Loadout ${i+1} name"><div class="ldp">${o.party.map(id=>G.roster[id]?port(id,'sm'):'<span class="port sm"></span>').join('')}</div>`:'<small>Empty</small>'}</div>
       <div class="ldb">${o?`<button class="btn sm gold" data-act="ldApply" data-arg="${i}">Load</button><button class="btn sm" data-act="ldSave" data-arg="${i}">Overwrite</button><button class="btn sm" data-act="ldDel" data-arg="${i}">Delete</button>`:`<button class="btn sm gold" data-act="ldSave" data-arg="${i}">Save here</button>`}</div></div>`;}).join('')}</div>`,
     '<button class="btn gold" data-act="xBack">Done</button>');}
