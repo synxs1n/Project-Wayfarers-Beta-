@@ -142,7 +142,7 @@ function b5Press(){const R=B5R.ring;B5R.eatClick=performance.now();return !!(R&&
 // v0.11.4: the tap that answers a ring never also clicks what sits under the finger (the click follows the pointerdown)
 document.addEventListener('click',e=>{if(B5R.eatClick&&performance.now()-B5R.eatClick<600){B5R.eatClick=0;e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();}},true);
 // input while a ring is up: any tap or click, a key (not Tab, Escape or a modifier), a gamepad face button; nothing else gets it
-document.addEventListener('pointerdown',e=>{const R=B5R.ring;if(!R||R.done)return;e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();b5Press();},true);
+document.addEventListener('pointerdown',e=>{const R=B5R.ring;if(!R||R.done)return;if(e.target&&e.target.closest&&e.target.closest('#bcmd [data-act="auto"],#bcmd [data-act="pause"],#bcmd [data-act="speed"]'))return;/* v0.16.1: Auto, Pause and Speed are never read as a timed hit press (the owner could not stop auto mid action) */e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();b5Press();},true);
 window.addEventListener('keydown',e=>{const R=B5R.ring;if(!R||R.done)return;if(['Tab','Escape','Shift','Control','Alt','Meta'].includes(e.key))return;e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();if(!e.repeat)b5Press();},true);
 {const pp0=padPoll;padPoll=function(now){const R=B5R.ring;if(R&&!R.done){try{const gps=navigator.getGamepads?navigator.getGamepads():[],gp=gps&&Array.from(gps).find(Boolean);
   if(gp){const b=i=>!!(gp.buttons[i]&&gp.buttons[i].pressed),st={A:b(0),B:b(1),X:b(2),Y:b(3)},hit=['A','B','X','Y'].some(k=>st[k]&&!PAD.prev[k]);Object.assign(PAD.prev,st);if(hit)b5Press();}}catch(e){}return;}

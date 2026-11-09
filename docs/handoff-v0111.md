@@ -346,3 +346,9 @@ gates are beaten, cutscene on entering the gate, returns with a new look, rematc
 ## 0.16.0
 - art.js side view (rigSide): three-quarter profile head (nose, lip, chin, ear, near eye 3 px with iris/catchlight, far eye at the contour), face fields and hat side variants re-laid, wider torso with far-side shading, head layer composited 2 logical px back. Front/back untouched. New test v147a (battle group, 92 heroes at scales 1/.9/.8). v140a HERO_BASE hash 311b33ac.
 - Weak spots: art2.js raceTop/drawAcc (tusks, glasses, earrings) at old coordinates; weapons overlapping the head (Brann's axe); helm wearers show little face; strong lip/blush under HD light; spiky/wild/mohawk hair not re-centred; long hair over the back shoulder.
+
+## 0.16.1 (batch 7, owner fixes)
+- worldgfx.js door 16 px again. style.css #toast top:38%. p2world.js hint hide 30 s. battle5.js ring pointerdown skips #bcmd auto/pause/speed. handin9.js canHandIn: guild/arena quests only in the guild modal (checked before handFree). battle3.css .b3tg overflow visible, b3TagSize +7. zones.js Eclipse Gauntlet rec 50.
+- fixes11.js: p6Train wrapped: set = trainees (>= gap behind) + anchors, free slots filled by power (XP catch up untouched, the owner corrected me); arena results -> V.modal {type:'guild',tab:'arena'} via finishBattle flag + ACT.resultOk wrap.
+- Open from batch 7 (helpers / later): side heads pass 2 (art.js), selling, crafting +0 start, max-temper comparisons, personal quest BiS reward, temper cost display (econ helper); arena menu clear count + score, medals, journey record stat, Daily -> Weekly trials; material sprites in the overworld.
+- Side heads pass 2 (art.js hFace/hHair side branches, rigSide long hair behind torso; art2.js raceTop/drawAcc side coordinates). v140a HERO_BASE f74a4dfe. Weak: elf/fox/cat ears at old coords, Brann's axe over the head, mohawk a blob.

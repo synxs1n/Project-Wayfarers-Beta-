@@ -68,7 +68,7 @@ function b3TagInfo(u){const pend=B&&B.mode==='cmd'&&B.menu==='target'&&B.pend;if
     // v0.8.0: the archetype effectiveness (▲ / ▼ and the delivery symbol)
     try{const I=effInfo(sk,u,B.cur),A=I&&I.arch;if(A&&(A.lab==='up'||A.lab==='dn')&&DL_NAME[A.dl])out.dl={up:A.lab==='up',d:A.dl,tip:A.tip};}catch(e){}}
   return out;}
-function b3TagSize(T){const f=B3.tagF,w1=b3TextW(T.name,f,800)+4;let w2=0;const lab=(T.eff.replace(/<span class="eff [a-z]+ arch"[\s\S]*$/,'').match(/>([A-Za-z?]+)/)||[])[1]||'';if(lab)w2+=b3TextW(lab,f*.92,800)+5;if(T.rx)w2+=b3TextW('✸ '+T.rx.n,f*.92,900)+5+2*(f+1);if(T.px)w2+=b3TextW('⟐',f*.92,800)+f+6;if(T.dl)w2+=b3TextW('▲',f*.92,800)+f+6;
+function b3TagSize(T){const f=B3.tagF,w1=b3TextW(T.name,f,800)+7;/* v0.16.1: +7 (was +4): names were cut by a letter on tablets */let w2=0;const lab=(T.eff.replace(/<span class="eff [a-z]+ arch"[\s\S]*$/,'').match(/>([A-Za-z?]+)/)||[])[1]||'';if(lab)w2+=b3TextW(lab,f*.92,800)+5;if(T.rx)w2+=b3TextW('✸ '+T.rx.n,f*.92,900)+5+2*(f+1);if(T.px)w2+=b3TextW('⟐',f*.92,800)+f+6;if(T.dl)w2+=b3TextW('▲',f*.92,800)+f+6;
   const lines=w2?2:1;return {w:Math.ceil(Math.max(w1,w2)*1.08+3),h:Math.ceil(lines*(f*1.25)+2)};}
 // ----- the pass -----
 const B3L={key:'',L:null};

@@ -46,7 +46,7 @@ const ARENA=[
  {n:'Silver Ring',min:2,waves:3,lvs:[17,20],rec:20,reward:{gold:900,mat:3,charm:1}},
  {n:'Golden Coliseum',min:3,waves:4,lvs:[27,30],rec:30,reward:{gold:1800,mat:4,charm:1}},
  {n:'Champion of Aurelis',min:5,waves:5,lvs:[45,48],rec:48,reward:{gold:5000,mat:6,charm:1,core:2}},
- {n:'Eclipse Gauntlet',min:5,waves:5,lvs:[50,54],rec:52,reward:{gold:8000,mat:8,charm:1,core:3}}
+ {n:'Eclipse Gauntlet',min:5,waves:5,lvs:[50,54],rec:50,reward:{gold:8000,mat:8,charm:1,core:3}}
 ];
 // Nightmare Echoes: 50 for Scourges and 56 for Calamities, or the party's average +5 / +8 if that is higher (Beta v0.3.0)
 // Scourge echoes hit harder than before (Beta v0.3.0): 2.0x HP and 1.3x power; Calamity echoes keep 1.7x and 1.15x

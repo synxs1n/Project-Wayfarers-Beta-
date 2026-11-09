@@ -6,7 +6,7 @@
 // Markers: an active bounty beast, rival or legend shows on the area map and minimap even before that tile has been seen.
 function handFree(q){return !q||!q.hand||q.type==='legend'||q.type==='tamer'||!!q.global;}
 function atBoardOf(s){try{return !!(V.modal&&V.modal.type==='board')&&inTown()&&g7TownStage()===s;}catch(e){return false;}}
-function canHandIn(q){if(handFree(q))return true;if(q.type==='guild'||q.type==='arena')return !!(V.modal&&V.modal.type==='guild');return atBoardOf(q.stage);}
+function canHandIn(q){if(q&&(q.type==='guild'||q.type==='arena'))return !!(V.modal&&V.modal.type==='guild');/* v0.16.1: guild and arena quests are handed in at a Guild Hall, never from the Menu (even old quests without a hand field) */if(handFree(q))return true;return atBoardOf(q.stage);}
 function handWhere(q){if(q.type==='guild'||q.type==='arena')return 'Hand in at any Guild Hall.';try{return `Hand in at the ${ZS(q.stage).town} Notice Board.`;}catch(e){return 'Hand in at its Notice Board.';}}
 {const a0=ACT.qAccept;ACT.qAccept=function(id){const q=G&&G.quests.find(x=>x.id===id),was=q&&q.state;const r=a0.apply(this,arguments);try{if(q&&was==='open'&&q.state==='active'&&!handFree(Object.assign({},q,{hand:1})))q.hand='board';saveGame();}catch(e){}return r;};}
 {const b0=ACT.bounty;ACT.bounty=function(id){const b=G&&G.bounties.find(x=>x.id===id),was=b&&b.state;const r=b0.apply(this,arguments);try{if(b&&was==='open'&&b.state==='active'){b.hand='board';saveGame();}}catch(e){}return r;};}

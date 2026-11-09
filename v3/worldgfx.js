@@ -256,7 +256,7 @@ function drawBuilding(ctx,m,b){
   if(w>=64){win(6,wyy);win(w-14,wyy);if(w>=96){win(Math.floor(w/2)-20,wyy);win(Math.floor(w/2)+12,wyy);}}else win(w>48?8:4,wyy);
   // door
   /* v0.15.8: a taller door (22 px) wherever the wall below the roof can hold it, so a wayfarer (about 35 px) no longer towers over the doorway; two-tile houses keep the 16 px door */
-  const dh=(h-wy)>=24?22:16,dy=h-dh,hy=Math.round(dh*.4);f(OUTC,doorX+1,dy-1,14,dh+1);f(S[1],doorX+2,dy,12,dh);f('#4a2a14',doorX+3,dy+1,10,dh-1);f('#7a4a24',doorX+4,dy+3,8,dh-3);f('#5a3418',doorX+7,dy+3,1,dh-3);
+  const dh=16,dy=h-dh,hy=Math.round(dh*.4);/* v0.16.1: back to 16 px doors (the 22 px ones looked out of place) */f(OUTC,doorX+1,dy-1,14,dh+1);f(S[1],doorX+2,dy,12,dh);f('#4a2a14',doorX+3,dy+1,10,dh-1);f('#7a4a24',doorX+4,dy+3,8,dh-3);f('#5a3418',doorX+7,dy+3,1,dh-3);
   f('#7a4a24',doorX+5,dy+1,6,2);f('#c8c8d0',doorX+5,dy+hy,1,1);f('#c8c8d0',doorX+10,dy+hy,1,1);f('#f0c050',doorX+10,dy+hy+3,1,2);
   // lantern by the door
   f('#2a2a34',doorX+15,dy+2,1,4);f('#ffd870',doorX+15,dy+3,2,3);m.lights=m.lights||[];m.lights.push([x0+doorX+16,y0+dy+4,18]);

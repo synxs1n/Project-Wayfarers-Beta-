@@ -6,8 +6,9 @@ const {open,chk,done}=require('./pw');
 const PRE=`localStorage.clear();localStorage.setItem('aurelis-meta-v1',JSON.stringify({cfg:{speed:1,enc:'off',music:0,sfx:0,gfx:'low',hints:false}}));`;
 // hash of the hero walkers (mira, lumen, oren; front 0-2, back 0-2, side 0-1) measured on the build without npcart9.js
 // 0.15.9: the side view was redrawn (three-quarter profile, art.js), hash re-taken: 311b33ac.
+// 0.16.1: side head re-derived from the front head (face, hair, hat tops), hash re-taken: f74a4dfe.
 // 0.14.6: the hero sprites were redrawn (art.js, art2.js), so the expected hash of mira, lumen and oren walkers was re-taken (the check still means: npcart9.js changes no hero pixel)
-const HERO_BASE=process.env.HERO_BASE||'311b33ac';// re-taken for the .8 (32x45) overworld walker (v0.15.1)
+const HERO_BASE=process.env.HERO_BASE||'f74a4dfe';// re-taken for the .8 (32x45) overworld walker (v0.15.1)
 (async()=>{const H=await open({w:430,h:800,mobile:true,pre:PRE});const {ev,wait}=H;
 await ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(i=>A.ACT.pickS(i));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;});await wait(250);
 const VIEWS=[['front',0],['front',1],['front',2],['front',3],['back',0],['back',1],['back',2],['side',0],['side',1],['side',3]];

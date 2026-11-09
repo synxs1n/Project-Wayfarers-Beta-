@@ -12,7 +12,7 @@
 html.rm .bstage .primed.pmin.b3l{animation:none}
 @media (prefers-reduced-motion:reduce){.bstage .primed.pmin.b3l{animation:none}}
 .bstage .b3tg{display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;z-index:7;padding:0;border-radius:2px;
-  background:rgba(10,8,20,.62);box-shadow:0 0 0 .5px rgba(255,230,170,.35);overflow:hidden}
+  background:rgba(10,8,20,.62);box-shadow:0 0 0 .5px rgba(255,230,170,.35);overflow:visible}/* v0.16.1: a name a pixel wider than the measured box is not cut */
 .bstage .b3tg .ename{position:static;transform:none;opacity:1;display:block;font:800 var(--f)/1.2 var(--fb);color:#fff;white-space:nowrap;text-shadow:0 0 1.5px #000}
 .bstage .b3tg .l2{display:flex;gap:1px;justify-content:center;align-items:center;white-space:nowrap}
 .bstage .b3tg .eff{position:static;transform:none;display:inline-flex;align-items:center;gap:.4px;font:800 calc(var(--f)*.92)/1.15 var(--fb);padding:0 1.5px;border-width:.5px;border-radius:1.5px;top:auto;bottom:auto}

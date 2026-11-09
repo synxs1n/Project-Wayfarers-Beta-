@@ -338,7 +338,7 @@ function hintFire(ev){try{if(!hintEligible()||P2.hint||P2.hintT)return;for(const
 function hintShow(id,txt){META.hints=META.hints||{};META.hints[id]=txt;saveMeta();P2.hint=id;
   let d=document.getElementById('p2hint');if(!d){d=document.createElement('div');d.id='p2hint';d.setAttribute('role','status');document.body.appendChild(d);}
   d.innerHTML=`<b>Hint</b><span>${esc(txt)}</span><div class="btnrow"><button class="btn sm gold" data-act="hintOk">Got it</button><button class="btn sm" data-act="hintOff">Turn off hints</button></div>`;d.className='show'+(V.screen==='battle'?' bat':'');hintPlace(d);
-  clearTimeout(P2.hintHide);P2.hintHide=setTimeout(()=>{if(P2.hint===id)ACT.hintOk();},16000);}
+  clearTimeout(P2.hintHide);P2.hintHide=setTimeout(()=>{if(P2.hint===id)ACT.hintOk();},30000);}/* v0.16.1: hints stay 30 s (was 16) */
 // v0.5.1: in battle the hint sits in the sky at the top of the stage, never over the cards, shield pips or commands
 function hintPlace(d){d=d||document.getElementById('p2hint');if(!d)return;const w=V.screen==='battle'&&document.getElementById('bwrap');
   if(!w){d.style.top='';d.style.bottom='';d.style.left='';d.style.maxWidth='';return;}const r=w.getBoundingClientRect();

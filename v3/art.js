@@ -288,11 +288,11 @@ function hSkull(g,view){
 function hFace(g,L,view){
   const s=view==='side',F=L.face||[];
   if(view==='back'){return;}
-  const brow=s?[[21,11],[22,11],[23,11],[25,11]]:[[17,11],[18,11],[21,11],[22,11]];
+  const brow=s?[[21,11],[22,11],[25,11]]:[[17,11],[18,11],[21,11],[22,11]];
   g.px(brow,'l');
-  const ex=s?[22]:[17,21];
+  const ex=s?[21]:[17,21];
   ex.forEach(x=>{g.s(x,12,'9');g.s(x+1,12,'E');g.s(x,13,'E');g.s(x+1,13,'E');});
-  if(s){g.px([[25,12],[25,13]],'E');g.px([[21,12],[21,13]],'w');g.s(24,13,'e');g.s(24,15,'e');g.s(25,15,'m');}else{g.px([[19,14],[20,14]],'m');g.px([[19,13],[20,13]],'e');}
+  if(s){/* v0.16.1 three-quarter face from the front one: near eye 2 px like the front eyes, far eye 1 px at the contour, nose tip at the centre front, mouth under it */g.px([[25,12],[25,13]],'E');g.s(24,13,'e');g.s(26,14,'e');g.s(24,14,'e');g.s(25,14,'m');g.s(24,15,'e');}else{g.px([[19,14],[20,14]],'m');g.px([[19,13],[20,13]],'e');}
   F.forEach(f=>{
     if(f==='beard'){
       if(s){hspan(g,14,[[21,26],[19,26],[20,26],[21,25]],'H');g.px([[27,14],[26,13]],'H');g.px([[24,15],[25,15]],'l');g.rect(21,17,4,1,'l');}
@@ -300,12 +300,12 @@ function hFace(g,L,view){
     }
     else if(f==='mustache'){if(s)g.rect(23,14,4,1,'H');else g.rect(18,14,4,1,'H');}
     else if(f==='handlebar'){if(s){g.rect(23,14,4,1,'H');g.px([[27,14],[28,13]],'H');}else{g.rect(18,14,4,1,'H');g.px([[17,14],[16,13],[22,14],[23,13]],'H');}}
-    else if(f==='eyepatch'){if(s){g.rect(22,12,2,2,'K');g.line(21,11,17,10,'K');}else{g.rect(17,12,2,2,'K');g.line(16,11,23,10,'K');}}
+    else if(f==='eyepatch'){if(s){g.rect(21,12,2,2,'K');g.line(20,11,16,10,'K');}else{g.rect(17,12,2,2,'K');g.line(16,11,23,10,'K');}}
     else if(f==='mask'){if(s)hspan(g,14,[[19,27],[19,26],[20,25]],'K');else hspan(g,13,[[16,23],[17,22],[18,21]],'K');}
     else if(f==='scar'){if(s)g.px([[24,10],[24,11],[24,12],[24,13],[25,14]],'r');else g.px([[22,10],[22,11],[23,12],[23,13],[22,14]],'r');}
-    else if(f==='warpaint'){if(s)g.px([[22,14],[23,14],[25,14]],'C');else g.px([[16,14],[17,14],[22,14],[23,14]],'C');}
-    else if(f==='freckles'){if(s)g.px([[21,14],[22,14],[24,14],[26,14]],'e');else g.px([[16,14],[18,14],[21,14],[23,14],[16,13]],'e');}
-    else if(f==='blush'){if(s)g.px([[22,14],[23,14]],'r');else g.px([[16,14],[17,14],[22,14],[23,14]],'r');}
+    else if(f==='warpaint'){if(s)g.px([[21,14],[22,14],[26,14]],'C');else g.px([[16,14],[17,14],[22,14],[23,14]],'C');}
+    else if(f==='freckles'){if(s)g.px([[21,14],[22,14],[23,14],[26,12]],'e');else g.px([[16,14],[18,14],[21,14],[23,14],[16,13]],'e');}
+    else if(f==='blush'){if(s){g.s(22,14,'r');g.s(21,14,'e');}else g.px([[16,14],[17,14],[22,14],[23,14]],'r');}
     else if(f==='elfears'){if(s)g.px([[19,11],[18,10],[17,9],[16,8],[18,11]],'S');else g.px([[15,11],[14,10],[13,9],[24,11],[25,10],[26,9]],'S');}
   });
 }
@@ -326,10 +326,10 @@ const HAIR_STYLE={
  short(g,v){hairCap(g,v);},
  swept(g,v){hairCap(g,v);if(v==='side')hsh(g,t=>t.poly([[20,10],[26.4,10.4],[27.2,12.2],[24.6,11.4],[20,11.4]],'x'),HAIRK);else if(v==='front')hsh(g,t=>t.poly([[19,10.4],[24,10.2],[24.6,12.2],[22,11.2],[19,11]],'x'),HAIRK);},
  spiky(g,v){hairCap(g,v);
-   const sp=v==='side'?[[17,8,15,3.4,4],[19.6,7.6,19.4,2,4],[22.4,8,25,3,4],[24.6,9.4,28,6.4,3.6],[15.4,10,11.4,7.4,3.6]]:[[17,8,14.6,3.6,4],[19.4,7.4,19.4,2,4],[22.6,7.4,24.8,2.6,4],[24.6,9.2,27.6,6,3.6],[15,9.2,12.4,6,3.6]];
+   const sp=v==='side'?[[18,8,16,3.4,4],[20.6,7.6,20.4,2,4],[23.4,8,26,3,4],[25.4,9.4,28.6,6.4,3.6],[16.4,10,12.4,7.4,3.6]]:[[17,8,14.6,3.6,4],[19.4,7.4,19.4,2,4],[22.6,7.4,24.8,2.6,4],[24.6,9.2,27.6,6,3.6],[15,9.2,12.4,6,3.6]];
    hsh(g,t=>sp.forEach(q=>bspike(t,q[0],q[1],q[2],q[3],q[4],'x')),HAIRK,{cap:4});},
  wild(g,v){hairCap(g,v);
-   const sp=v==='side'?[[16.6,8,13,2.4,4.4],[19.6,7.4,19,1.2,4.4],[22.6,8,26,2.6,4],[25,9.6,29,6.6,3.8],[15,10,9.6,7,4],[15,12.4,9,14.4,4],[16,14,11,19,3.4]]:[[17,8,12.4,2.6,4.4],[19.6,7.4,19.6,1,4.4],[22.6,7.6,27,2.6,4.4],[25,9.6,29,6.6,3.8],[15,10,10,8,4],[15,12.6,10,15.6,4],[25,12.4,30,15,3.6]];
+   const sp=v==='side'?[[17.6,8,14,2.4,4.4],[20.6,7.4,20,1.2,4.4],[23.6,8,27,2.6,4],[25.6,9.6,29.4,6.6,3.8],[16,10,10.6,7,4],[16,12.4,10,14.4,4]]:[[17,8,12.4,2.6,4.4],[19.6,7.4,19.6,1,4.4],[22.6,7.6,27,2.6,4.4],[25,9.6,29,6.6,3.8],[15,10,10,8,4],[15,12.6,10,15.6,4],[25,12.4,30,15,3.6]];
    hsh(g,t=>sp.forEach(q=>bspike(t,q[0],q[1],q[2],q[3],q[4],'x')),HAIRK,{cap:4});},
  long(g,v){
    if(v==='side')hsh(g,t=>t.poly([[14.6,10],[17.6,11.4],[17.8,22],[17,32.6],[13,33.6],[12.4,24],[13.4,14]],'x'),HAIRK,{cap:5});
@@ -348,7 +348,7 @@ const HAIR_STYLE={
    hairCap(g,v);if(v==='side')g.px([[14,10],[14,11]],'A');else if(v==='back')g.rect(19,12,2,1,'A');},
  bun(g,v){hairCap(g,v);const c=v==='side'?[17.6,6]:[20,5.2];hsh(g,t=>t.ell(c[0],c[1],3.1,2.7,'x'),HAIRK,{cap:4});g.px([[Math.floor(c[0]),Math.floor(c[1])+3]],'A');},
  mohawk(g,v){
-   if(v==='side')hsh(g,t=>t.poly([[16.4,11],[15.4,6],[18,3.2],[21.4,2.4],[24.6,3.8],[24.8,7],[23,9]],'x'),HAIRK,{cap:5});
+   if(v==='side')hsh(g,t=>t.poly([[17.4,11],[16.6,6.4],[19.2,3.4],[22.4,2.4],[25.2,3.8],[25.6,7],[24,9.2]],'x'),HAIRK,{cap:5});
    else hsh(g,t=>t.poly([[18,10],[17.6,4.4],[19,2.2],[21,2.2],[22.4,4.4],[22,10]],'x'),HAIRK,{cap:3});},
  braid(g,v){hairCap(g,v);
    const P=v==='side'?[[15.4,10.6],[13.4,17],[14.8,23],[13.2,29],[14.6,35]]:v==='back'?[[20,15],[19.2,21],[20.8,27],[19.4,33],[20.2,39]]:[[24.6,12],[25.4,19],[24.2,25],[25.4,31]];
@@ -363,7 +363,10 @@ const HAIR_STYLE={
  flame(g,v){HAIR_STYLE.spiky(g,v);},
  bald(g,v){g.px(v==='side'?[[19,9],[20,9],[21,9]]:[[18,9],[19,9]],'h');}
 };
-function hHair(g,L,view){
+function hHair(g,L,view){hHair0(g,L,view);
+  if(view==='side'){/* v0.16.1 what hangs below the neck is set aside (g.hb) so rigSide can paint it behind the torso, not over the back shoulder */
+    const r0=Math.round(17*(g.sc?g.sc.f:1));g.hb=[];for(let i=r0*g.w;i<g.a.length;i++)if(g.a[i]){g.hb.push([i,g.a[i]]);g.a[i]=0;}}}
+function hHair0(g,L,view){
   const st=L.hair||'short',hat=L.hat,cov=hat==='hood'||hat==='greathelm'||hat==='helm'||hat==='plume'||hat==='horns';
   const f=HAIR_STYLE[st]||HAIR_STYLE.short;
   if(cov){// under a helm or hood only what hangs below is shown
@@ -409,7 +412,7 @@ function hatDraw(g,L,view,pass){
     return;}
   if(h==='greathelm'){
     poly([[-1.2,16.4],[-1.4,9],[-1,6],[-.4,4.8],[.5,4.8],[1.2,6],[1.4,9.2],[1.2,16.2],[.5,17]],HAT_MET);g.rect(Math.round(X(-1.2)),9,Math.round(X(1.2))-Math.round(X(-1.2))+1,1,'N');
-    if(s){g.rect(21,11,6,2,'K');g.px([[23,11],[25,11]],'C');g.px([[23,15],[25,15],[25,13],[26,16]],'N');g.rect(14,13,4,4,'N');g.px([[15,6],[16,5],[19,5]],'c');}
+    if(s){g.rect(21,11,6,2,'K');g.px([[22,11],[23,11],[25,11]],'C');g.s(22,11,'9');g.px([[23,15],[25,15],[25,13],[26,16]],'N');g.rect(14,13,4,4,'N');g.px([[15,6],[16,5],[19,5]],'c');}
     else if(fr){g.rect(15,11,10,2,'K');g.px([[17,11],[22,11]],'C');g.rect(19,5,2,12,'N');g.px([[17,15],[22,15],[17,13],[22,13]],'N');g.px([[16,6],[17,5]],'c');}
     else{g.rect(15,12,10,1,'N');g.rect(19,5,2,12,'N');g.px([[17,6],[16,7]],'c');}
     return;}
@@ -512,6 +515,8 @@ function hHandBlk(g,x,y,k){g.rect(x,y,2,2,k);}
 function rigSide(L,walk,id){
   const g=hnew(),B=HP.body[L.b]||HP.body.light,W=WPN[L.wpn||'none']||WPN.none,cls=heroCls(L,id),bare=HRIG.bare;
   hBackSide(g,L,walk,cls);
+  const hd=hHead(L,'side',id),bob=walk&&!L.vill?1:0,hsx=Math.round(2*HRS.f);/* v0.15.9 the profile is drawn facing the weapon column; the head layer sits two logical px back so the staff or bow never crosses the face */
+  if(hd.hb)hd.hb.forEach(q=>{const x=q[0]%g.w-hsx,y=Math.floor(q[0]/g.w)+bob;if(x>=0&&y<g.h)g.a[y*g.w+x]=q[1];});/* long hair hangs behind the torso */
   if(L.sh)hShieldSide(g,L);
   // the far arm swings with the stride
   const far=walk?[[19.6,20.8],[21,26.2],[22.8,30.2]]:[[19.6,20.8],[18.4,27],[18.8,31.4]];
@@ -525,8 +530,7 @@ function rigSide(L,walk,id){
   drawFlair(g,L,id,'side');drawAcc(g,L,id,'side','body');
   if(W.under&&!bare)hTint(g,t=>W.draw(t,B.H[0],B.H[1]));
   // the head layer lands on the body (one pixel lower on the stride frame)
-  const hd=hHead(L,'side',id),bob=walk&&!L.vill?1:0;raceTop(hd,L);drawAcc(hd,L,id,'side','head');
-  const hsx=Math.round(2*HRS.f);/* v0.15.9 the profile is drawn facing the weapon column; the head layer sits two logical px back so the staff or bow never crosses the face */
+  raceTop(hd,L);drawAcc(hd,L,id,'side','head');
   for(let y=0;y<g.h;y++)for(let x=hsx;x<g.w;x++){const k=hd.a[y*g.w+x];if(!k)continue;const ty=y+bob;if(ty<g.h)g.a[ty*g.w+x-hsx]=k;}
   const A=hArmPts(L,W);
   if(bare){g.s(Math.floor(A.S[0]),Math.floor(A.S[1]),'#');g.rect(A.H[0],A.H[1],2,2,'!');return g;}

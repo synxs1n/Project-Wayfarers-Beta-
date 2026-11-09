@@ -4,6 +4,10 @@
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.16.1',['House doors are back to their old size (the tall ones looked out of place). Toasts appear in the upper middle of the screen, clear of the buttons. Hints stay up 30 seconds.',
+  'Battle: Start/Stop auto, Pause and Speed work while actions play (a timed-hit ring no longer swallows the press). Target name tags are no longer cut off. After an arena fight the results return you to the Guild Hall\'s arena page.',
+  'Guild and arena quests are handed in at a Guild Hall only, never from the Menu. The Training team only takes wayfarers three or more levels below your top one (plus the anchors it needs); the other slots go to your strongest, not to whoever merely has levels left. The Eclipse Gauntlet recommends level 50, the cap.',
+  'Battle side view, second pass: heads re-derived from the front view (same eye row and size, same hairline and hat, a true three-quarter face), long hair behind the shoulder, glasses, tusks and earrings on the new face, eyes in the helm visor.']],
  ['Beta v0.16.0',['Battle sprites: the side view is now a three-quarter profile. Nose, lip, chin and ear, a clear near eye with iris and catchlight and a hinted far eye, hair and hats keeping their front-view shapes, a wider torso with a shaded far side, and the head set back so staffs and bows no longer cross the face. Every wayfarer reads at battle size again.']],
  ['Beta v0.15.9',['Roster and reserve cards show each wayfarer from the front (the side sprite stays for battle and the Codex).']],
  ['Beta v0.15.8',['Overworld scale: in HD-2D every character (wayfarers, townsfolk, roamers) stands a sixth smaller against the world, and house doors are taller wherever the wall can hold them, so a wayfarer now stands about door high instead of over it. The sprites keep their detail: they are sampled at twice the texel density.']],

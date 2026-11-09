@@ -17,8 +17,8 @@ function raceSide(g,L){
 }
 function raceTop(g,L){
   const hooded=L.hat==='hood'||L.hat==='greathelm';
-  if(L.tusks)g.px([[24,13],[24,14],[25,15]],'w');
-  if(L.glasses){g.px([[21,11],[22,11],[23,11],[24,11],[21,12],[21,13],[24,12],[24,13],[21,14],[22,14],[23,14],[24,14]],'M');g.line(21,12,16,12,'M');}
+  if(L.tusks)g.px([[25,15],[26,15],[26,14]],'w');
+  if(L.glasses){g.px([[20,11],[21,11],[22,11],[23,11],[20,12],[23,12],[20,13],[23,13],[20,14],[21,14],[22,14],[23,14],[24,11],[25,11],[26,11],[26,12],[26,13],[24,14],[25,14],[26,14]],'M');g.line(20,12,16,12,'M');}
   if(L.fur){g.rows(15,16,["..FFFFFFFF.","FFFFFFFFFFF","FFFFFFFFFFF"]);g.px([[16,19],[24,19]],'F');}
   if(L.marks){g.px([[19,21],[20,22],[21,23],[22,24],[23,10],[21,31],[22,32]],'X');}
   if(L.ears&&!hooded||L.ears==='long'||L.ears==='fin'){
@@ -193,12 +193,12 @@ function drawAcc(g,L,id,view,part){
     if(a==='scarf'){if(side){g.rect(18,16,6,2,'a');g.rect(18,18,5,1,'d');g.px([[17,17],[16,19],[16,20],[17,21]],'a');}
       else{g.rect(17,16,6,2,'a');g.rect(17,18,6,1,'d');g.px(front?[[21,19],[21,20],[21,21],[21,22]]:[[20,19],[20,20],[20,21],[20,22]],'a');}}
     else if(a==='clasp'){if(side)g.px([[18,18],[18,19]],'G');else if(front){g.px([[17,18],[22,18]],'G');g.rect(18,18,4,1,'d');}else g.rect(19,18,2,1,'G');}
-    else if(a==='headband'){g.rect(16,9,side?9:8,1,'a');g.px(side?[[15,10],[14,11],[14,12]]:[[15,10],[14,11],[14,12]],'a');}
-    else if(a==='bandana'){g.rect(16,8,side?9:8,2,'a');g.px([[18,8],[21,9],[24,8]],'d');g.px(side?[[15,10],[14,11],[14,12],[15,12]]:[[15,10],[14,11],[14,12]],'a');}
-    else if(a==='circlet'){g.rect(16,9,side?9:8,1,'G');if(!(view==='back'))g.s(side?24:19,9,'C');if(front)g.s(20,9,'C');}
-    else if(a==='goggles'){g.rect(16,9,side?9:8,1,'d');if(side)g.rows(22,7,["aaa","aCa"]);else g.rows(17,7,["aaa..aaa","aCa..aCa"]);}
-    else if(a==='eyepatch'){if(side){g.rect(22,12,2,2,'d');g.line(21,11,16,10,'d');}else if(front){g.rect(17,12,2,2,'d');g.line(16,11,23,10,'d');}else g.rect(16,10,8,1,'d');}
-    else if(a==='earrings'){if(side)g.px([[16,14]],'a');else g.px([[15,14],[24,14]],'a');}
+    else if(a==='headband'){g.rect(side?17:16,9,side?9:8,1,'a');g.px(side?[[16,10],[15,11],[15,12]]:[[15,10],[14,11],[14,12]],'a');}
+    else if(a==='bandana'){g.rect(side?17:16,8,side?9:8,2,'a');g.px([[18,8],[21,9],[24,8]],'d');g.px(side?[[16,10],[15,11],[15,12],[16,12]]:[[15,10],[14,11],[14,12]],'a');}
+    else if(a==='circlet'){g.rect(side?17:16,9,side?9:8,1,'G');if(!(view==='back'))g.s(side?24:19,9,'C');if(front)g.s(20,9,'C');}
+    else if(a==='goggles'){g.rect(side?17:16,9,side?9:8,1,'d');if(side)g.rows(22,7,["aaa","aCa"]);else g.rows(17,7,["aaa..aaa","aCa..aCa"]);}
+    else if(a==='eyepatch'){if(side){g.rect(21,12,2,2,'d');g.line(20,11,16,10,'d');}else if(front){g.rect(17,12,2,2,'d');g.line(16,11,23,10,'d');}else g.rect(16,10,8,1,'d');}
+    else if(a==='earrings'){if(side)g.px([[19,15]],'a');else g.px([[15,14],[24,14]],'a');}
     else if(a==='shoulder'){if(side){g.rect(17,19,6,2,'a');g.rect(18,21,4,1,'d');}else{g.rect(11,18,5,2,'a');g.rect(24,18,5,2,'a');g.rect(12,20,3,1,'d');g.rect(25,20,3,1,'d');}}
     else if(a==='satchel'){if(side){g.line(18,19,23,29,'d');g.rect(14,28,5,5,'a');g.rect(14,28,5,1,'d');g.s(15,29,'G');}
       else if(front){g.line(15,19,25,29,'d');g.rect(24,27,5,5,'a');g.rect(24,27,5,1,'d');g.s(25,28,'G');}
