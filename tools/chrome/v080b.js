@@ -56,7 +56,7 @@ const MEASURE=()=>{const out={bad:[]},vis=e=>{const q=e.getBoundingClientRect();
   document.querySelectorAll('#bparty .pcw.hastags').forEach(c=>{const t=c.querySelector('.ptags'),m=c.querySelector('.pm');if(!t||!m||!vis(t)||!vis(m)||!t.children.length)return;const a=t.getBoundingClientRect(),b=m.getBoundingClientRect();
     if(a.top<b.bottom-1&&a.bottom>b.top+1&&a.left<b.right-1&&a.right>b.left+1)out.bad.push('card row over the card: "'+c.textContent.trim().replace(/\s+/g,' ').slice(0,20)+'"');});
   // v0.8.7: the acting hero's HP and MP in the command header (portrait), the commands before the party cards (portrait)
-  out.hdrBars=shown(document.querySelector('#bcmd .cmdhead .b8hm'));const hg=R('#bparty .pgroup.heroes');out.cmdR=R('#bcmd');out.cmdFirst=!hg||!out.cmdR||hg.b<=out.cmdR.t+1;/* v0.12.7: the hero cards sit above the commands on phones */out.cardsOn=!hg||shown(document.querySelector('#bparty .pgroup.heroes'));
+  out.hdrBars=shown(document.querySelector('#bcmd .cmdhead .b8hm'));const hg=R('#bparty .pgroup.heroes');out.cmdR=R('#bcmd');out.cmdFirst=!hg||!out.cmdR||hg.t>=out.cmdR.b-1;/* v0.12.13: the commands come first again on phones, the cards after (the owner called cards-first a mistake) */
   out.cmdAll=[...document.querySelectorAll('#bcmd .mi,#bcmd .cmdhead .btn')].filter(vis).every(shown);/* v0.12.7: the action rows and Back; the Pause/Auto/Speed row may scroll */
   // wide: no empty band at the bottom of either column (the lowest panel of each column against the bottom of the visible screen)
   {const padB=parseFloat(getComputedStyle(document.body).paddingBottom)||0,bot=innerHeight-padB,c=out.cmdR,cols=[0,0];
@@ -100,7 +100,7 @@ async function setup(H,kind,he,fo,seed){
         chk(`${t}: the turn order bar's chips clear of NEXT and the entries`,m.orderOv.length===0||m.orderOv.join(' | '));
         if(wide)chk(`${t}: no empty band at the bottom of either column (${m.band.join(' / ')} px)`,m.band.every(b=>b<=24));
         if(wide)chk(`${t}: the stage keeps its whole width inside the screen and the right column too`,m.stage.r<=m.vw+1&&m.cmdR&&m.cmdR.r<=m.vw+1);
-        else{chk(`${t}: the hero cards sit above the commands and both are on screen (v0.12.7)`,m.cmdAll&&m.cmdFirst&&m.cardsOn!==false||JSON.stringify({all:m.cmdAll,first:m.cmdFirst,cards:m.cardsOn}));}
+        else{chk(`${t}: every command row on screen (the party cards come after the commands)`,m.cmdAll&&m.cmdFirst||JSON.stringify({all:m.cmdAll,first:m.cmdFirst}));}
         const minH=wide?165:240;chk(`${t}: the stage is at least ${minH} px tall (${Math.round(m.stage.h)}x${Math.round(m.stage.w)})`,m.stage.h>=minH-.5);
         const short=wide&&h<500;// short landscape screens: the party and the foes may scroll inside their panels, never off the page
         if(short){chk(`${t}: every live foe's card shown or reachable in its panel (${m.foeReach} of ${m.live})`,m.foeReach>=m.live);
