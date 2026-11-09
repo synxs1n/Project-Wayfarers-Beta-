@@ -133,3 +133,9 @@ P5 0.11.8+ realms: realm order rises in fantasy with the most intricate final to
    or a ... button on phones), hero cards on the right/bottom by layout, forecast bar above the stage, foe cards under it; menus: Party
    (party, roster, loadouts, pets), Gear (equipment, items, pouch), Quests (quests, guilds, bounties), Map, Records (journey, bestiary,
    guides), Settings. Update v063bd and the layout tests (v076b, v080b) to the new order.
+
+## Shipped: 0.12.3 Sanctum shrine look, visible Scourge-sized unique guardians, clear town exits; 0.12.4 Bonds lock note. Live = 0.12.4, CI green.
+Test state: menus+party on 0.11.9: 42 pass; the failures were fixed later (v070oa/ob, v063g, v095p3) or are old (v063pb, v080cb). Battle group
+last run on 0.11.4 (v063ba, v070ib old label overlaps; v050p1d flaky). World group last run on 0.11.3. Worth a full battle+world run on 0.12.4.
+Open: the sprite/effects pass and the battle screen/menu reorganization (plans above); HD-2D indoor checks for open Sanctums (hdstage.js
+hbLook, hd2d.js hdLook, daylight.js, gfx6world.js still treat every dungeon as indoor); a 15th guild recruit if the owner wants 15.
