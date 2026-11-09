@@ -121,3 +121,15 @@ P5 0.11.8+ realms: realm order rises in fantasy with the most intricate final to
   Scourge-sized and unique per journey + town exits kept clear.
 - Still open from batch 3: sprite/animation/effects quality pass (big), battle screen and menu reorganization (big), tests for the new world
   rules in battle (weather in an open Sanctum battle, hdstage/hd2d indoor checks).
+
+## Shipped since: 0.12.0 bonds + Pets, 0.12.1 hint queue order, 0.12.2 Camp Supplies fix (the Tent branch in v063prog useTravel skipped items with camp:1)
+## Plan for the two big batch 3 items (not started)
+1. Sprite and effects quality pass (several bumps): (a) hero sprites: a second idle frame and a 2 frame walk per class/race in art2.js, per hero
+   accents (hair, cape, weapon tint) read from TPL so wayfarers differ beyond class and element; (b) battle poses: anim.js adds cast, hit and
+   guard poses per class; (c) skill effects: hdspell.js/gfx6battle.js per element projectile, burst and lingering particle with a shape per
+   element (not just colour), and a screen flash for Limits; (d) boss art: art3.js 60x60 guardians get idle animation (breathing, glow pulse),
+   bosses a telegraph pose. Keep SPRITE_HD fallbacks. Test with tools/chrome/iconsheet.js and rostersheet.js screenshots.
+2. Battle screen and menu reorganization: group commands (Attack, Skills, Items, Guard first; Scan, Guide, Switch, Flee under a second row
+   or a ... button on phones), hero cards on the right/bottom by layout, forecast bar above the stage, foe cards under it; menus: Party
+   (party, roster, loadouts, pets), Gear (equipment, items, pouch), Quests (quests, guilds, bounties), Map, Records (journey, bestiary,
+   guides), Settings. Update v063bd and the layout tests (v076b, v080b) to the new order.
