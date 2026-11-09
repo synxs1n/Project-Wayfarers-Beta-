@@ -4,6 +4,7 @@
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.16.0',['Battle sprites: the side view is now a three-quarter profile. Nose, lip, chin and ear, a clear near eye with iris and catchlight and a hinted far eye, hair and hats keeping their front-view shapes, a wider torso with a shaded far side, and the head set back so staffs and bows no longer cross the face. Every wayfarer reads at battle size again.']],
  ['Beta v0.15.9',['Roster and reserve cards show each wayfarer from the front (the side sprite stays for battle and the Codex).']],
  ['Beta v0.15.8',['Overworld scale: in HD-2D every character (wayfarers, townsfolk, roamers) stands a sixth smaller against the world, and house doors are taller wherever the wall can hold them, so a wayfarer now stands about door high instead of over it. The sprites keep their detail: they are sampled at twice the texel density.']],
  ['Beta v0.15.7',['Graphics sweep, part two. Den mouths, Lair fronts and Sanctum gates are lit from the upper left like the sprites: five-step ramps, mortar and brick tones, outlines in the colour they border, a cast shadow on the ground, glow round embers and crystals, and the hero no longer dithers through the entrance in HD-2D.',

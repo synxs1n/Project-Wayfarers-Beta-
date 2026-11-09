@@ -342,3 +342,7 @@ gates are beaten, cutscene on entering the gate, returns with a new look, rematc
 
 ## 0.15.9
 - portrait10.js heroFrontURL(id): full front walker ('big:' key) as a data URL (cvURL 'fr10:'); used by the roster grid (ui.js tab 'roster', .mini cards) and the party tab's reserves grid (nav.js). The heroCard() starter/recruit card does not use heroURL directly and was left alone; the sheet's big image (pbig) is still the side view.
+
+## 0.16.0
+- art.js side view (rigSide): three-quarter profile head (nose, lip, chin, ear, near eye 3 px with iris/catchlight, far eye at the contour), face fields and hat side variants re-laid, wider torso with far-side shading, head layer composited 2 logical px back. Front/back untouched. New test v147a (battle group, 92 heroes at scales 1/.9/.8). v140a HERO_BASE hash 311b33ac.
+- Weak spots: art2.js raceTop/drawAcc (tusks, glasses, earrings) at old coordinates; weapons overlapping the head (Brann's axe); helm wearers show little face; strong lip/blush under HD light; spiky/wild/mohawk hair not re-centred; long hair over the back shoulder.
