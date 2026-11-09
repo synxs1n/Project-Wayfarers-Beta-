@@ -293,3 +293,16 @@ Batch 5 is complete with 0.14.4.
 - 0.15.0 compact overworld rig (helper): 28x40 canvas at scale 0.7 via HRS/rigScale and scale-aware PG methods; walkerCanvas wrapped at the end of
   sprhd.js (compact keys end in '|c'; 'big:' keys get the big rig, title7 uses it); npcart9 npcShift scales; v140a hash re-taken. v071wt (minimap tap
   walks) fails 15 checks on pre-rig builds too: stale, investigate separately. Versioning: 0.14.9 -> 0.15.0.
+
+## Owner batch 6 (2026-11-09) and 0.15.1
+Batch 6: (1) den entrances themed per interior; (2) Sanctum entrance less gate-like, interior symmetric with a straight shot to the guardian,
+oriented by the entrance facing; (3) dungeon entrances themed per realm (not tents); (4) battle heroes a bit big, overworld walkers lost detail;
+(5) the Breach walkable from the Calamity field's last gate; (6) Echo Warden = Riftkeeper in both forms, Rift Echoes lv 55, he vanishes when all
+gates are beaten, cutscene on entering the gate, returns with a new look, rematch via the gate.
+- 0.15.1 (mine): scale10.js (HB10 flag during spriteOf -> heroCanvas at rigScale .85; walkers .8 in sprhd.js key '|c8'; rigScale H=round(56f)),
+  rk10.js (RK10; riftSpec lv 55; buildSanctum renames the NPC, isRK; worldDraw before-hook hides him while rkUnlocked && !META.riftkeeper and
+  swaps look2 after; vModal xform renames rest popup/gate card and labels Rematch; interact wrap maps the name back for riftkeeper9's rest; ACT.rkFight
+  wrap plays a 4-line say() scene once), endgame10.js breachLinkField (f4 gateOut exit -> x0 g:'start'; f4.gates.breach; x0 start -> f4 g:'breach';
+  sign). Tests v145a (world group); v140a hash 5bc61619.
+- Helpers running: sitelook10.js (den mouths, lair facades, Sanctum gate per realm, 2D + HD) and the Sanctum interior rebuild (sites.js buildFort
+  axial/symmetric/oriented + sanctlook10 adaptation, v142a extended).

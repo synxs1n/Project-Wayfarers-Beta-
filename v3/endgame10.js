@@ -11,6 +11,8 @@ HOOK.wrap('getMap','endgame10','the Meridian Breach map',function(next,...a){con
   const keep=MAPS.f4,seed=G.run.seed;let m;try{delete MAPS.f4;G.run.seed=(seed+424242)>>>0;m=next('f4');}finally{delete MAPS.f4;G.run.seed=seed;if(keep)MAPS.f4=keep;}
   m.id='x0';m.breach=1;m.name=BREACH.n;m.theme='void';const to={m:'t'+Math.max(0,Math.min(4,G.lastTown|0)),g:'next'};
   (m.exits||[]).forEach(e=>{if(e.to)e.to=to;});Object.values(m.gates||{}).forEach(g=>{if(g&&g.to)g.to=to;});
+  // v0.15.1: the west gate of the Breach leads back through the Calamity field's broken seal (f4 gateOut), the other way round of the walk in
+  try{const f=getMap('f4');if(f&&f.gateOut&&m.gates&&m.gates.start){const back={m:'f4',g:'breach'};(m.exits||[]).filter(e=>(m.gates.start.cells||[]).some(c=>c[0]===e.x&&c[1]===e.y)).forEach(e=>{e.to=back;});m.gates.start.to=back;}}catch(e){}
   (m.caves||[]).forEach(c=>{for(let j=-1;j<=0;j++)for(let i=-1;i<=1;i++){const y=c.y+j,x=c.x+i;if(m.t[y]&&'UE'.includes(m.t[y][x]))m.t[y][x]=',';}});m.caves=[];m.fortAt=null;
   MAPS.x0=m;return m;});
 {const ln0=locName;locName=function(m){if(m&&m.breach)return BREACH.n;return ln0.apply(this,arguments);};}
@@ -33,3 +35,10 @@ HOOK.after('win','endgame10','Breach purse',function(){try{const sp=B&&B.spec;if
   info.notes.push(`The Breach gives up its hoard: ${got.join(', ')}.`);}catch(e){}});
 // the first time the Calamity falls, the Waystone's new door is announced
 HOOK.after('win','endgame10','Breach opens',function(){try{if(G&&G.won&&!G.breachSeen){const info=(B&&B.result)||(V.modal&&V.modal.info);if(info&&B.spec&&B.spec.kind==='boss'){G.breachSeen=1;info.notes=info.notes||[];info.notes.push(`${BREACH.n} has opened: every Waystone can take you there, where the foes of every realm you crossed wait at your own strength.`);}}}catch(e){}});
+
+// ----- v0.15.1: walk there. Once the Calamity falls, the broken seal at the end of its realm's field (the 'G' gate) opens onto the Breach -----
+function breachLinkField(f){try{if(!f||f.id!=='f4'||!f.gateOut||f._breachLink||!breachOpen())return;f._breachLink=1;const [gx,gy]=f.gateOut;
+  f.exits=f.exits||[];f.exits.push({x:gx,y:gy,to:{m:'x0',g:'start'}});f.gates=f.gates||{};f.gates.breach={side:'e',x:gx,y:gy,arrive:[Math.max(1,gx-1),gy,'l'],label:'e',cells:[[gx,gy]]};
+  f.signs=f.signs||{};f.signs[(gx-2)+','+(gy-1)]=f.signs[(gx-2)+','+(gy-1)]||`${BREACH.n}. The seal is broken; the Rift pours through. Every realm you crossed bleeds in there, and its foes are as strong as you are.`;}catch(e){}}
+HOOK.wrap('getMap','endgame10','the Calamity field opens onto the Breach',function(next,...a){const m=next(...a);try{if(m&&m.id==='f4')breachLinkField(m);}catch(e){}return m;});
+HOOK.after('win','endgame10','open the seal to the Breach',function(){try{if(G&&G.won&&MAPS.f4)breachLinkField(MAPS.f4);}catch(e){}});

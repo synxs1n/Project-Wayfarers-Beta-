@@ -1,0 +1,22 @@
+// v0.15.1 rk10.js (the Echo Warden is the Riftkeeper: level 55 Rift echoes, vanishes when every Echo is beaten, a scene before the first fight, back with a new look, rematch), endgame10 (walk to the Breach through the Calamity field's broken seal), scale10 (battle .85, walkers .8).
+const {open,chk,done}=require('./pw');
+(async()=>{const H=await open({w:1000,h:560});const r=await H.ev(()=>{const A=__A,g=A.TW.get;A.ACT.new();['mira','lumen','oren'].forEach(i=>A.ACT.pickS(i));A.ACT.begin();A.ACT.storyOk();const G=g('G'),M=A.META,o={};
+ const wc=g('walkerCanvas')('npc:t',A.TPL.mira.look,A.TPL.mira.el,'mira','front',0);o.walker=[wc.width,wc.height];
+ g('startBattle')({stage:0,kind:'field'});const B=g('B');g('spriteOf')(B.front[0]);g('HB10').on=1;const c=g('heroCanvas')('mira');g('HB10').on=0;/* the stage may shrink what spriteOf hands out (b8Small); measure the rig's battle canvas itself */o.battle=[c._rw||c.width,c._rh||c.height,c.hd||1];o.portrait=[g('heroCanvas')('mira').width,g('heroCanvas')('mira').height];try{g('finishBattle')('flee');}catch(e){}A.V.modal=null;A.V.screen='world';
+ const s=g('getMap')('s0');const n=s.npcs.find(q=>q.isRK);o.name=n&&n.name;o.home=n&&[n.hx,n.hy];g('placeAt')('s0',13,10,'u');g('worldDraw')(performance.now());o.visible=!!n&&n.x===n.hx;
+ o.riftLv=g('riftSpec')(g('echoKeys')()[0]).lv;
+ g('echoKeys')().forEach(k=>{const d=g('guardianDef')(k);M.best['Echo '+d.n]=Object.assign(M.best['Echo '+d.n]||{},{kills:1});});delete M.riftkeeper;o.unlocked=g('rkUnlocked')();g('worldDraw')(performance.now());o.gone=n.x<0;
+ A.V.modal={type:'portal',key:'__riftkeeper'};A.render();o.card=/keeper is gone/.test(document.querySelector('#modal').innerText);
+ A.ACT.rkFight();o.scene=!!(A.WS.dlg&&/opened every door/.test(A.WS.dlg.text));let k=0;while(A.WS.dlg&&k<8){g('nextDlg')();k++;}o.lines=k;o.fight=!!(g('B')&&g('B').spec&&g('B').spec.kind==='riftkeeper');
+ g('B').en.forEach(e=>e.hp=0);g('win')();o.beaten=!!M.riftkeeper;A.V.modal=null;A.V.screen='world';g('worldDraw')(performance.now());o.back=n.x===n.hx&&!!n.look2;
+ A.V.modal={type:'rkrest'};A.render();o.rest=document.querySelector('#modal h2').textContent.trim();A.V.modal={type:'portal',key:'__riftkeeper'};A.render();o.rematch=/Rematch/.test(document.querySelector('#modal').innerText);A.V.modal=null;
+ A.ACT.rkFight();o.noScene2=!A.WS.dlg&&!!(g('B')&&g('B').spec&&g('B').spec.kind==='riftkeeper');try{g('finishBattle')('flee');}catch(e){}A.V.modal=null;A.V.screen='world';
+ G.won=true;G.visited=[0,1,2,3,4];G.lastTown=4;const MP=g('MAPS');delete MP.f4;delete MP.x0;const f=g('getMap')('f4');o.link=(f.exits||[]).some(e=>e.to&&e.to.m==='x0'&&e.x===f.gateOut[0]&&e.y===f.gateOut[1]);o.sign=Object.values(f.signs||{}).some(t=>/Meridian Breach/.test(t));const x=g('getMap')('x0');o.back2=x.gates.start.to&&x.gates.start.to.m==='f4'&&x.gates.start.to.g==='breach';o.breachGate=!!f.gates.breach;
+ return o;});console.log(JSON.stringify(r));
+ chk('overworld walkers 32x45 (scale .8), battle heroes 34x48 (scale .85), portraits on the full 40x56 rig',r.walker[0]===32&&r.walker[1]===45&&Math.round(r.battle[0]/r.battle[2])===34&&Math.round(r.battle[1]/r.battle[2])===48&&r.portrait[0]===40&&r.portrait[1]===56||JSON.stringify([r.walker,r.battle,r.portrait]));
+ chk('the hall\'s keeper is the Riftkeeper, at his post, and Rift Echoes are level 55',r.name==='Riftkeeper'&&r.visible&&r.riftLv===55||JSON.stringify([r.name,r.visible,r.riftLv]));
+ chk('with every Echo beaten he leaves his post and the gate card says so',r.unlocked&&r.gone&&r.card);
+ chk('the first challenge plays a four-line scene, then the Riftkeeper fight starts',r.scene&&r.lines===4&&r.fight||JSON.stringify([r.scene,r.lines,r.fight]));
+ chk('after the win he is back at his post in his new look; the rest popup and the gate (Rematch) carry his name; a rematch skips the scene',r.beaten&&r.back&&r.rest==='Riftkeeper'&&r.rematch&&r.noScene2||JSON.stringify([r.beaten,r.back,r.rest,r.rematch,r.noScene2]));
+ chk('after the Calamity the field\'s broken seal opens onto the Breach and the Breach leads back through it',r.link&&r.sign&&r.back2&&r.breachGate||JSON.stringify([r.link,r.sign,r.back2,r.breachGate]));
+ await done(H);})();

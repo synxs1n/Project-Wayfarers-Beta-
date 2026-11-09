@@ -75,7 +75,7 @@ const HRIG={bare:false};
 // ----- the compact overworld rig: the same drawing calls, run on a grid whose .sc scales every operation (rects, ellipses, polygons, lines and single cells are
 // rasterised at the smaller geometry, never resampled). HRS is the size the next grid is made at: 1 = the 40x56 battle rig, .7 = the 28x40 walker. -----
 const HRS={f:1,W:40,H:56};
-function rigScale(f,fn){const o=[HRS.f,HRS.W,HRS.H];HRS.f=f;HRS.W=f===1?40:Math.round(40*f);HRS.H=f===1?56:40;try{return fn();}finally{HRS.f=o[0];HRS.W=o[1];HRS.H=o[2];}}
+function rigScale(f,fn){const o=[HRS.f,HRS.W,HRS.H];HRS.f=f;HRS.W=f===1?40:Math.round(40*f);HRS.H=f===1?56:Math.round(56*f);/* v0.15.1: any scale (.7 walker 28x39, .8 walker 32x45, .85 battle 34x48) */try{return fn();}finally{HRS.f=o[0];HRS.W=o[1];HRS.H=o[2];}}
 function hnew(){const t=new PG(HRS.W,HRS.H,0,0);if(HRS.f!==1)t.sc={f:HRS.f,dx:0,dy:0,sw:40};return t;}
 function hcopy(g){const t=new PG(g.w,g.h,g.ox,g.oy);if(g.sc)t.sc=g.sc;return t;}
 {const P=PG.prototype,o={s:P.s,rect:P.rect,ell:P.ell,poly:P.poly,line:P.line};

@@ -1843,7 +1843,7 @@ html.rm .battle.b3 .cmd .mi.b9glow{animation:none}
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.15.0";const APP_BUILD="2ce23b8caf60";
+(function(){const APP_VER="0.15.1";const APP_BUILD="e0ffff069d11";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2536,7 +2536,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.15.0";const APP_BUILD="2ce23b8caf60";
+const APP_VER="0.15.1";const APP_BUILD="e0ffff069d11";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2544,6 +2544,9 @@ const APP_VER="0.15.0";const APP_BUILD="2ce23b8caf60";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.15.1',['The Echo Warden is the Riftkeeper, and is called that in both forms. Rift Echoes are level 55. Once every Echo has been beaten he leaves his post and the middle gate opens; step through and he takes on the power of the rifts before your eyes, then the fight begins. Beaten, he returns to his spot in a new look, still offering the free rest, and the gate lets you rematch him any time.',
+  'The Meridian Breach can be walked to: when the Calamity falls, the broken seal at the end of its realm\'s field opens onto the Breach, and the Breach\'s west gate leads back the same way. The Waystone still lists it.',
+  'Sprites: battle heroes a touch smaller (level with the taller foes), overworld walkers a touch bigger so their faces and gear read again.']],
  ['Beta v0.15.0',['Overworld: the player, townsfolk and other walkers are drawn with a compact version of the new hero rig (about 30 px tall, drawn at the smaller geometry, not shrunk) so they stand at door-lintel height beside tents and lamp posts again. Battle sprites, poses, portraits and the Bestiary keep the big rig.']],
  ['Beta v0.14.9',['Wayfarers rebuilt from the ground up: a new hero rig about six heads tall (the figures were four) with a real skull, neck, shoulders, waist, knees and boots, drawn from shaded tubes and polygons like the bosses. Every class reads in silhouette: knights in plate with pauldrons, tabard and shield, warriors in plate and leather with greaves, mages in flared robes with bell sleeves, archers in tunics with quiver and strap, thieves hooded, monks bare-armed with wraps, priests in robes with a stole. All thirteen hair styles redrawn with volume and a parting, every hat refitted, faces with catchlit eyes, brows, nose and mouth, and the beards, scars, masks and paint that make each hero theirs. Front and back views share the rig, the stride swings the arms, the battle poses and the townsfolk props were ported to it, and portraits show the head and shoulders.']],
  ['Beta v0.14.8',['Party cards: the Sheet and Equip buttons sit in their own row under the bars on every screen size (they overlapped the bars on an open Galaxy Fold). Equipment: the pet is a slot like the weapon, armor and charm, tap it to choose, change or remove the pet, with no extra buttons; the per-hero Auto button wraps under the slots on phones instead of being cut off at the edge.']],
@@ -4093,7 +4096,7 @@ const HRIG={bare:false};
 // ----- the compact overworld rig: the same drawing calls, run on a grid whose .sc scales every operation (rects, ellipses, polygons, lines and single cells are
 // rasterised at the smaller geometry, never resampled). HRS is the size the next grid is made at: 1 = the 40x56 battle rig, .7 = the 28x40 walker. -----
 const HRS={f:1,W:40,H:56};
-function rigScale(f,fn){const o=[HRS.f,HRS.W,HRS.H];HRS.f=f;HRS.W=f===1?40:Math.round(40*f);HRS.H=f===1?56:40;try{return fn();}finally{HRS.f=o[0];HRS.W=o[1];HRS.H=o[2];}}
+function rigScale(f,fn){const o=[HRS.f,HRS.W,HRS.H];HRS.f=f;HRS.W=f===1?40:Math.round(40*f);HRS.H=f===1?56:Math.round(56*f);/* v0.15.1: any scale (.7 walker 28x39, .8 walker 32x45, .85 battle 34x48) */try{return fn();}finally{HRS.f=o[0];HRS.W=o[1];HRS.H=o[2];}}
 function hnew(){const t=new PG(HRS.W,HRS.H,0,0);if(HRS.f!==1)t.sc={f:HRS.f,dx:0,dy:0,sw:40};return t;}
 function hcopy(g){const t=new PG(g.w,g.h,g.ox,g.oy);if(g.sc)t.sc=g.sc;return t;}
 {const P=PG.prototype,o={s:P.s,rect:P.rect,ell:P.ell,poly:P.poly,line:P.line};
@@ -6674,7 +6677,7 @@ if(SPRITE_HD){
 {const wc0=walkerCanvas;walkerCanvas=function(key,L,els,id,view,frame){
   if(typeof key!=='string'||(id&&TPL[id]&&TPL[id].mon))return wc0.apply(this,arguments);
   if(key.slice(0,4)==='big:')return wc0.call(this,key.slice(4),L,els,id,view,frame);
-  return rigScale(.7,()=>wc0.call(this,key+'|c',L,els,id,view,frame));};}
+  return rigScale(.8,()=>wc0.call(this,key+"|c8",L,els,id,view,frame));};}
 
 // ===== engine.js (base): core state (G, B, V, META), stats, saves, town services, quests, damage, the battle engine and auto battle =====
 // =================== CORE ===================
@@ -16574,29 +16577,53 @@ function siteVariant(theme,kind){const id=theme+'#'+kind;if(DTHEME[id])return id
 if(typeof MOODS!=='undefined'){MOODS.cave={bpm:72,sc:'minor',prog:[0,5,0,3],lead:'triangle',dr:0,feel:.3,low:1};MOODS.fort={bpm:108,sc:'harm',prog:[0,4,5,4],lead:'square',dr:2,feel:.6};}
 
 // ---------- sanctum map ----------
-function buildFort(R,s){const W=SITES.fortW,H=SITES.fortH,D=new Gr(W,H,'#');
-  const start={x:2,y:ri2(R,15,H-21),w:8,h:6},yard={x:16,y:12,w:26,h:16},keep={x:W-14,y:13,w:11,h:14};
-  [start,yard,keep].forEach(r=>D.rect(r.x,r.y,r.w,r.h,'.'));
-  const bar=[];for(let i=0;i<3;i++){bar.push({x:17+i*9,y:2,w:7,h:6});bar.push({x:17+i*9,y:H-8,w:7,h:6});}bar.forEach(r=>D.rect(r.x,r.y,r.w,r.h,'.'));
-  const cy=start.y+3;D.hline(start.x+start.w,yard.x,cy,'.');D.hline(start.x+start.w,yard.x,cy+1,'.');// gate road, two wide
-  const ky=keep.y+7;D.hline(yard.x+yard.w,keep.x,ky,'.');// a single door into the keep
-  bar.forEach(r=>{const x=r.x+3;if(r.y<yard.y)D.vline(x,r.y+r.h,yard.y,'.');else D.vline(x,yard.y+yard.h,r.y,'.');});
-  // courtyard pillars and banners, braziers at the keep door
-  for(let i=0;i<3;i++){D.put(yard.x+4+i*8,yard.y+3,'P');D.put(yard.x+4+i*8,yard.y+yard.h-4,'P');}
-  D.put(keep.x-1,ky-1,'v');D.put(keep.x-1,ky+1,'v');D.put(keep.x+1,keep.y+1,'v');D.put(keep.x+keep.w-2,keep.y+1,'v');
-  const sc=[start.x+3,start.y];D.put(sc[0],sc[1],'E');
-  const chests=[],pc=[keep.x+Math.floor(keep.w/2),keep.y+Math.floor(keep.h/2)];D.put(pc[0],pc[1],'C');chests.push([pc[0],pc[1],'reward']);
-  bar.forEach((r,i)=>{if(R()<.6){const x=r.x+(i%2?r.w-1:0),y=r.y+(r.y<yard.y?0:r.h-1);if(D.get(x,y)==='.'){D.put(x,y,'C');chests.push([x,y]);}}});
-  // v0.12 (new journeys): the keep is a sacred hall. The guardian's spot is an 'X' tile (solid, drawn as a rune circle) just north of the
-  // prize chest; pillars ring it, braziers and more pillars line the aisle. Fixed positions (no random draws), the aisle row stays open.
-  let guard=null;if(typeof lay3On==='function'&&lay3On()){const gx=pc[0],gy=pc[1]-1;guard=[gx,gy];D.put(gx,gy,'X');
-    [[-3,0],[3,0]].forEach(([i,j])=>D.put(gx+i,gy+j,'P'));
-    [[-3,-3],[3,-3],[-3,4],[3,4]].forEach(([i,j])=>D.put(gx+i,gy+j,'v'));
-    [[-2,-5],[2,-5],[-2,6],[2,6],[-4,-1],[4,-1],[-4,3],[4,3]].forEach(([i,j])=>{if(D.get(gx+i,gy+j)==='.')D.put(gx+i,gy+j,'P');});}
-  return {rows:D.g,start:[sc[0],sc[1]+1],chests,prize:pc,guard};}
-function genFort(s){for(let a=0;a<40;a++){const R=mulberry(G.run.seed+7313+s*71+a*131),c=buildFort(R,s);if(caveOk(c))return c;}throw new Error('sanctum generation failed');}
-function buildFortMap(id){const s=+id.slice(1),c=genFort(s),Z=ZS(s);const m={id,z:s,s,kind:'dungeon',theme:Z.theme,exits:[],npcs:[],bld:[],signs:{},t:c.rows,start:c.start,bossAt:null,chests:c.chests,
-  wander:[c.start[0],c.start[1]+1],cave:true,fort:true,name:FORT_NAMES[s],fixed:{},prize:c.prize,guardAt:c.guard||null,hall:c.guard?1:0,open:(hashS(id+':'+G.run.seed)&1)?1:0};/* v0.12: about half of the Sanctums are open to the sky (weather and day/night show); the rest read Indoors */m.w=m.t[0].length;m.h=m.t.length;return m;}
+// v0.14.5: the Sanctum is a SYMMETRIC TEMPLE on one central axis. It is laid out once in a canonical frame and then turned to the way the
+// player walks in. Canonical frame: u runs across (0..B-1, the axis is u = cx), v runs along (0..L-1) and the player walks toward +v, i.e.
+// down the grid (this is also the layout caveOk checks: the 'E' stair is the tile above the start tile). In the frame:
+//   v 1..7    gate hall   u cx-4..cx+4   the stair 'E' at (cx,1), the start tile (cx,2)
+//   v 8..10   passage     3 wide (u cx-1..cx+1)
+//   v 11..36  nave        u cx-8..cx+8   cloister garden, a colonnade of pillars at cx-6 and cx+6, braziers where the passages open
+//   v 12..35  chapels     three barracks each side (u 2..8 and B-9..B-3, 7 wide, 6 deep), each joined to the nave by a corridor
+//   v 37..41  passage     3 wide, into the guardian hall
+//   v 42..L-3 hall        u cx-7..cx+7   pillars at cx-4 and cx+4, the guardian's rune circle 'X' at (cx,L-4), the prize chest 'C' at (cx,L-3)
+// Everything but the optional barracks chests mirrors across u = cx. Then fortTurn rotates it for the facing: the field gate is entered
+// walking NORTH (face [0,1]), so by default the start room is at the south edge and the hall at the north edge; a gate that faced
+// elsewhere would turn the interior with it (n: hall north, s: hall south, e: hall east, w: hall west).
+const FORT_FWD={n:[0,-1],s:[0,1],e:[1,0],w:[-1,0]},FORT_FACE={n:'u',s:'d',e:'r',w:'l'};
+function fortXf(dir,B,L){return dir==='n'?(u,v)=>[u,L-1-v]:dir==='e'?(u,v)=>[v,u]:dir==='w'?(u,v)=>[L-1-v,u]:(u,v)=>[u,v];}// canonical (u,v) to map (x,y)
+function fortInv(dir,B,L){return dir==='n'?(x,y)=>[x,L-1-y]:dir==='e'?(x,y)=>[y,x]:dir==='w'?(x,y)=>[y,L-1-x]:(x,y)=>[x,y];}// map (x,y) to canonical (u,v)
+function fortDims(dir,B,L){return dir==='e'||dir==='w'?[L,B]:[B,L];}
+function fortDirOf(face){const f=face||[0,1];return f[1]>0?'n':f[1]<0?'s':f[0]>0?'w':'e';}// the gate faces away from the Sanctum; the player walks the other way
+function fortDirFor(s){try{const f=getMap('f'+s),c=(f.caves||[]).find(q=>q.id==='o'+s&&q.kind==='fort');if(c&&c.face)return fortDirOf(c.face);}catch(e){}return 'n';}
+function buildFort(R,s,dir){const B=SITES.fortH|1,L=SITES.fortW,cx=(B-1)>>1,D=new Gr(B,L,'#');
+  const mr=(u,v,w,h)=>{D.rect(u,v,w,h,'.');D.rect(B-u-w,v,w,h,'.');},mp=(u,v,c)=>{D.put(u,v,c);D.put(B-1-u,v,c);};
+  const geo={B,L,cx,dir:'s',gate:{u0:cx-4,u1:cx+4,v0:1,v1:7},nave:{u0:cx-8,u1:cx+8,v0:11,v1:36},hall:{u0:cx-7,u1:cx+7,v0:42,v1:L-3},gv:L-4,pv:L-3,rows:[14,23,32]};
+  [geo.gate,geo.nave,geo.hall].forEach(r=>D.rect(r.u0,r.v0,r.u1-r.u0+1,r.v1-r.v0+1,'.'));
+  D.rect(cx-1,geo.gate.v1+1,3,geo.nave.v0-geo.gate.v1-1,'.');D.rect(cx-1,geo.nave.v1+1,3,geo.hall.v0-geo.nave.v1-1,'.');// the two passages
+  for(let k=0;k<3;k++){const v0=12+k*9;mr(2,v0,7,6);D.hline(9,geo.nave.u0-1,v0+2,'.');D.hline(geo.nave.u1+1,B-10,v0+2,'.');}// chapels and their corridors
+  [17,24,31].forEach(v=>mp(cx-6,v,'P'));// the colonnade
+  mp(cx-2,geo.nave.v0,'v');mp(cx-2,geo.nave.v1,'v');mp(cx-2,geo.hall.v0,'v');// braziers where the passages open
+  [45,49,53].forEach(v=>mp(cx-4,v,'P'));// the hall's pillars
+  D.put(cx,geo.gate.v0,'E');
+  const chests=[],pc=[cx,geo.pv];D.put(pc[0],pc[1],'C');chests.push([pc[0],pc[1],'reward']);
+  for(let k=0;k<3;k++)for(let sd=0;sd<2;sd++){if(R()<.6){const x=sd?B-3:2,y=12+k*9+((k+sd)%2?5:0);if(D.get(x,y)==='.'){D.put(x,y,'C');chests.push([x,y]);}}}
+  // the guardian's spot is an 'X' tile (solid, drawn as a rune circle) on the axis in front of the prize chest; pillars and braziers ring it
+  let guard=null;const gx=cx,gy=geo.gv;if(typeof lay3On==='function'&&lay3On()){guard=[gx,gy];D.put(gx,gy,'X');}
+  mp(gx-3,gy,'P');mp(gx-3,gy-3,'v');mp(gx-3,gy+1,'v');
+  const c={rows:D.g,start:[cx,geo.gate.v0+1],chests,prize:pc,guard,wander:[cx,geo.gate.v0+2],exit:[cx,geo.gate.v0],geo,dir:'s'};
+  return dir&&dir!=='s'?fortTurn(c,dir):c;}
+// turn a canonical (walking south) Sanctum so the player walks in the direction dir: the grid and every coordinate
+function fortTurn(c,dir){const g=c.geo,B=g.B,L=g.L,xf=fortXf(dir,B,L),[W,H]=fortDims(dir,B,L),rows=[];for(let y=0;y<H;y++)rows.push(Array(W).fill('#'));
+  for(let v=0;v<L;v++)for(let u=0;u<B;u++){const [x,y]=xf(u,v);rows[y][x]=c.rows[v][u];}
+  const P=p=>p&&xf(p[0],p[1]);
+  return {rows,start:P(c.start),chests:c.chests.map(q=>{const p=xf(q[0],q[1]);return q.length>2?[p[0],p[1],q[2]]:p;}),prize:P(c.prize),guard:P(c.guard),wander:P(c.wander),exit:P(c.exit),geo:Object.assign({},g,{dir}),dir};}
+function genFort(s,dir){for(let a=0;a<40;a++){const R=mulberry(G.run.seed+7313+s*71+a*131),c=buildFort(R,s);if(caveOk(c))return dir&&dir!=='s'?fortTurn(c,dir):c;}throw new Error('sanctum generation failed');}
+function buildFortMap(id){const s=+id.slice(1),dir=fortDirFor(s),c=genFort(s,dir),Z=ZS(s);const m={id,z:s,s,kind:'dungeon',theme:Z.theme,exits:[],npcs:[],bld:[],signs:{},t:c.rows,start:c.start,bossAt:null,chests:c.chests,
+  wander:c.wander,cave:true,fort:true,name:FORT_NAMES[s],fixed:{},prize:c.prize,guardAt:c.guard||null,hall:c.guard?1:0,open:(hashS(id+':'+G.run.seed)&1)?1:0,
+  fo:c.geo,enterDir:dir,exitAt:c.exit};/* v0.12: about half of the Sanctums are open to the sky (weather and day/night show); the rest read Indoors */m.w=m.t[0].length;m.h=m.t.length;
+  /* v0.14.5: the prize chest moved with the new layout; a Sanctum whose prize is already won must not offer it again */try{if(G.fortWon&&G.fortWon[s]){G.chests=G.chests||{};G.chests[id+':'+c.prize[0]+','+c.prize[1]]=1;}}catch(e){}return m;}
+// a Sanctum is entered on its stair, facing the way in (the old enterCave stood the hero on the tile above start, facing down)
+HOOK.wrap('enterCave','sites','Sanctum entry faces the way in',function(next,...a){const r=next(...a);try{const c=a[0],m=c&&c.kind==='fort'&&getMap(c.id);if(m&&m.exitAt&&m.enterDir&&m.enterDir!=='s')placeAt(c.id,m.exitAt[0],m.exitAt[1],FORT_FACE[m.enterDir]||'d');}catch(e){}return r;});
 // sanctum gatehouse on the field: a clearing far from the dungeon, the cave and the gates, reachable before the sealed gate
 function fortWanted(s){return isRv2()&&s>=1;}
 function placeFort(f,s){if(!f||f.kind!=='field'||f.fortDone||!fortWanted(s))return;f.fortDone=1;if((f.caves||[]).some(c=>c.kind==='fort'))return;
@@ -27333,6 +27360,8 @@ HOOK.wrap('getMap','endgame10','the Meridian Breach map',function(next,...a){con
   const keep=MAPS.f4,seed=G.run.seed;let m;try{delete MAPS.f4;G.run.seed=(seed+424242)>>>0;m=next('f4');}finally{delete MAPS.f4;G.run.seed=seed;if(keep)MAPS.f4=keep;}
   m.id='x0';m.breach=1;m.name=BREACH.n;m.theme='void';const to={m:'t'+Math.max(0,Math.min(4,G.lastTown|0)),g:'next'};
   (m.exits||[]).forEach(e=>{if(e.to)e.to=to;});Object.values(m.gates||{}).forEach(g=>{if(g&&g.to)g.to=to;});
+  // v0.15.1: the west gate of the Breach leads back through the Calamity field's broken seal (f4 gateOut), the other way round of the walk in
+  try{const f=getMap('f4');if(f&&f.gateOut&&m.gates&&m.gates.start){const back={m:'f4',g:'breach'};(m.exits||[]).filter(e=>(m.gates.start.cells||[]).some(c=>c[0]===e.x&&c[1]===e.y)).forEach(e=>{e.to=back;});m.gates.start.to=back;}}catch(e){}
   (m.caves||[]).forEach(c=>{for(let j=-1;j<=0;j++)for(let i=-1;i<=1;i++){const y=c.y+j,x=c.x+i;if(m.t[y]&&'UE'.includes(m.t[y][x]))m.t[y][x]=',';}});m.caves=[];m.fortAt=null;
   MAPS.x0=m;return m;});
 {const ln0=locName;locName=function(m){if(m&&m.breach)return BREACH.n;return ln0.apply(this,arguments);};}
@@ -27355,6 +27384,13 @@ HOOK.after('win','endgame10','Breach purse',function(){try{const sp=B&&B.spec;if
   info.notes.push(`The Breach gives up its hoard: ${got.join(', ')}.`);}catch(e){}});
 // the first time the Calamity falls, the Waystone's new door is announced
 HOOK.after('win','endgame10','Breach opens',function(){try{if(G&&G.won&&!G.breachSeen){const info=(B&&B.result)||(V.modal&&V.modal.info);if(info&&B.spec&&B.spec.kind==='boss'){G.breachSeen=1;info.notes=info.notes||[];info.notes.push(`${BREACH.n} has opened: every Waystone can take you there, where the foes of every realm you crossed wait at your own strength.`);}}}catch(e){}});
+
+// ----- v0.15.1: walk there. Once the Calamity falls, the broken seal at the end of its realm's field (the 'G' gate) opens onto the Breach -----
+function breachLinkField(f){try{if(!f||f.id!=='f4'||!f.gateOut||f._breachLink||!breachOpen())return;f._breachLink=1;const [gx,gy]=f.gateOut;
+  f.exits=f.exits||[];f.exits.push({x:gx,y:gy,to:{m:'x0',g:'start'}});f.gates=f.gates||{};f.gates.breach={side:'e',x:gx,y:gy,arrive:[Math.max(1,gx-1),gy,'l'],label:'e',cells:[[gx,gy]]};
+  f.signs=f.signs||{};f.signs[(gx-2)+','+(gy-1)]=f.signs[(gx-2)+','+(gy-1)]||`${BREACH.n}. The seal is broken; the Rift pours through. Every realm you crossed bleeds in there, and its foes are as strong as you are.`;}catch(e){}}
+HOOK.wrap('getMap','endgame10','the Calamity field opens onto the Breach',function(next,...a){const m=next(...a);try{if(m&&m.id==='f4')breachLinkField(m);}catch(e){}return m;});
+HOOK.after('win','endgame10','open the seal to the Breach',function(){try{if(G&&G.won&&MAPS.f4)breachLinkField(MAPS.f4);}catch(e){}});
 
 // ===== anim10.js (v0.14.1): animations that say what the skill did =====
 // The owner: "Some animations don't fit their names... Characters should spin when using physical attacks that hit all, add other effects
@@ -27424,15 +27460,20 @@ function sncApply(m){if(!m||!m.fort||!m.cave)return;const th=m.theme,P=SNC_P(th)
 {const ab1=applyBossTheme;applyBossTheme=function(m){ab1.apply(this,arguments);try{sncApply(m);}catch(e){}};}
 HOOK.wrap('getMap','sanctlook10','sanctum look (after the dungeon material is set)',function(next,...a){const m=next(...a);try{if(m&&m.fort&&!m.__snc){m.__snc=1;sncApply(m);}}catch(e){}return m;});
 
-// ---------- where things are in the Sanctum (derived from the unchanged layout of buildFort) ----------
-function sncGeo(m){if(m.__sg)return m.__sg;const p=m.prize,o={ok:false};
-  try{if(p&&m.start){const kx=p[0]-5,ky=p[1]-7,gx=p[0],gy=m.guardAt?m.guardAt[1]:p[1]-1;Object.assign(o,{keep:{x:kx,y:ky,w:11,h:14},yard:{x:16,y:12,w:26,h:16},ky:p[1],gx,gy,cy:m.start[1]+2});
-    o.ok=tileAt(m,kx,p[1])!=='#'&&tileAt(m,kx-1,p[1])!=='#'&&tileAt(m,16,p[1])!=='#'&&tileAt(m,16+13,12+8)!=='#';
-    if(o.ok){const C=new Set(),add=(x,y)=>{if(!'#Pv'.includes(tileAt(m,x,y)||'#'))C.add(x+','+y);};
-      for(let x=kx-1;x<=gx+1;x++)add(x,p[1]);for(let x=kx;x<=gx+1;x++)add(x,p[1]+1);for(let x=gx-1;x<=gx+1;x++)for(let y=gy-1;y<=p[1]+1;y++)add(x,y);o.carpet=C;
-      const cd=new Set();for(let x=kx;x<gx-1;x+=2){[p[1]-2,p[1]+2].forEach(y=>{if(tileAt(m,x,y)==='.')cd.add(x+','+y);});}o.candles=cd;}}}catch(e){o.ok=false;}
+// ---------- where things are in the Sanctum (v0.14.5: the layout is a symmetric temple on one axis, turned to the way in; sites.js buildFort) ----------
+// m.fo holds the canonical frame (u across, v along, the player walks toward +v) and its facing; sncGeo derives the converters, the carpet and the candles.
+function sncGeo(m){if(m.__sg)return m.__sg;const g=m.fo,o={ok:false};
+  try{if(g&&m.start&&m.prize){const dir=g.dir,inv=fortInv(dir,g.B,g.L),xf=fortXf(dir,g.B,g.L),cx=g.cx;
+    Object.assign(o,{g,dir,inv,xf,cx,gate:g.gate,yard:g.nave,hall:g.hall,gv:g.gv});o.ok=tileAt(m,m.start[0],m.start[1])!=='#';
+    if(o.ok){const C=new Set(),add=(u,v)=>{const p=xf(u,v);if(!'#PvXCE'.includes(tileAt(m,p[0],p[1])||'#'))C.add(p[0]+','+p[1]);};
+      for(let v=g.gate.v0+1;v<g.gv;v++)for(let u=cx-1;u<=cx+1;u++)add(u,v);o.carpet=C;// the runner: from the start tile straight up the axis to the rune circle
+      const cd=new Set();for(let v=g.hall.v0+2;v<g.gv-1;v+=2)[cx-2,cx+2].forEach(u=>{const p=xf(u,v);if(tileAt(m,p[0],p[1])==='.')cd.add(p[0]+','+p[1]);});o.candles=cd;}}}catch(e){o.ok=false;}
   return m.__sg=o;}
-const sncTv=(x,y)=>((x*7+y*13)%4+4)%4;// the wall face variant both renderers pick for a tile (hd2d.js tv): 2 = prayer cloth, 3 = window
+const sncTvRaw=(x,y)=>((x*7+y*13)%4+4)%4;
+// a map tile in the canonical frame, folded across the axis (so a tile and its mirror image give the same answer)
+function sncCanon(m,x,y){const o=m&&m.fo?sncGeo(m):null;if(!o||!o.ok)return [x,y];const p=o.inv(x,y);return [Math.min(p[0],o.g.B-1-p[0]),p[1]];}
+// the wall face variant: 2 = prayer cloth, 3 = window. In 2D it is symmetric about the axis; HD-2D picks it with its own hash (hd2d.js tv), so match that there
+function sncTv(x,y,m){try{if(typeof HD!=='undefined'&&HD.live&&HD.S&&HD.S.m===m)return sncTvRaw(x,y);}catch(e){}const p=sncCanon(m,x,y);return sncTvRaw(p[0],p[1]);}
 
 // the realm's weathering on a horizontal stone surface: a strip along y of width w (f paints relative to the tile or the sprite)
 function sncCap(f,x,y,w,P,R,thick){const k=P.cap;
@@ -27470,7 +27511,7 @@ function sncTop(f,R,D){f(D.top,0,0,16,16);for(let i=0;i<4;i++)f(shade(D.w[3],1.4
 // ---------- floors ----------
 const SNC_CAPCOL={moss:['#6a9a44','#8cc060'],salt:['#f0f6f2','#a8dcd0'],ember:['#3a2a22','#ff8a3a'],snow:['#ffffff','#cfe4f4'],gold:['#f2c93a','#fff0a0'],star:['#b080ff','#e8d8ff']};
 function sncFloor(f,R,D,P,x,y,m,L,px,py,ctx){const F=D.f,o=sncGeo(m);let reg='room';
-  if(o.ok){const k=o.keep,yd=o.yard;if(x>=k.x&&x<k.x+k.w&&y>=k.y&&y<k.y+k.h)reg='hall';else if(x>=yd.x&&x<yd.x+yd.w&&y>=yd.y&&y<yd.y+yd.h)reg='yard';}
+  if(o.ok){const q=o.inv(x,y),u=q[0],v=q[1],k=o.hall,yd=o.yard;if(u>=k.u0&&u<=k.u1&&v>=k.v0&&v<=k.v1)reg='hall';else if(u>=yd.u0&&u<=yd.u1&&v>=yd.v0&&v<=yd.v1)reg='yard';}
   // flagstones
   f(F[0],0,0,16,16);
   if(reg==='hall'){for(let j=0;j<2;j++){const off=((x+y+j)%2)?4:0;for(let i=-off;i<16;i+=12){const a=Math.max(0,i),w=Math.min(11,16-a),col=R()<.3?F[2]:R()<.5?F[0]:F[1];f(col,a,j*8,w,7);f(tint(col,.16),a,j*8,w,1);}f(F[3],0,j*8+7,16,1);}
@@ -27484,55 +27525,66 @@ function sncFloor(f,R,D,P,x,y,m,L,px,py,ctx){const F=D.f,o=sncGeo(m);let reg='ro
   if(R()<wet){const a=Math.floor(R()*12)+1;for(let i=0;i<3+Math.floor(R()*3);i++){f(R()<.5?cc[0]:cc[1],a+i,(i%2?7:15),1,1);}}
   if(reg==='yard')sncYard(f,R,D,P,x,y,m,o,L,px,py,cc);
   else if(reg==='hall')sncHall(f,R,D,P,x,y,m,o,L,px,py,ctx);
+  if(o.ok&&o.carpet.has(x+','+y))sncCarpet(f,D,o,x,y);// the runner lies over the flagstones, the garden path and the hall alike
   // light from a window above (the nearest wall north of this floor tile within three tiles is stained glass): a patch of coloured light
-  for(let k=1;k<=3;k++){const t=tileAt(m,x,y-k);if(t==='#'){if(sncTv(x,y-k)===3){const q=(4-k)/4;ctx.fillStyle='rgba('+hx(D.glass[1]).join(',')+','+(.2*q).toFixed(2)+')';ctx.fillRect(px+1,py,14,16);ctx.fillStyle='rgba('+hx(D.glass[0]).join(',')+','+(.16*q).toFixed(2)+')';ctx.fillRect(px+4,py+1,8,13);}break;}}
+  for(let k=1;k<=3;k++){const t=tileAt(m,x,y-k);if(t==='#'){if(sncTv(x,y-k,m)===3){const q=(4-k)/4;ctx.fillStyle='rgba('+hx(D.glass[1]).join(',')+','+(.2*q).toFixed(2)+')';ctx.fillRect(px+1,py,14,16);ctx.fillStyle='rgba('+hx(D.glass[0]).join(',')+','+(.16*q).toFixed(2)+')';ctx.fillRect(px+4,py+1,8,13);}break;}}
   if(wall(0,-1)){ctx.fillStyle='rgba(40,28,20,.30)';ctx.fillRect(px,py,16,3);}
   if(wall(-1,0)){ctx.fillStyle='rgba(40,28,20,.16)';ctx.fillRect(px,py,2,16);}
 }
-// the courtyard: a cloister garden between a colonnade north and south. kind of a tile: path, grass, gravel or walk (the covered walk)
-function sncYKind(o,x,y){const yd=o.yard;if(x<yd.x||x>=yd.x+yd.w||y<yd.y||y>=yd.y+yd.h)return 'out';
-  if(y===o.ky||((y===o.cy||y===o.cy+1)&&x<=yd.x+4)||(x===yd.x+4&&y>=Math.min(o.cy,o.ky)&&y<=Math.max(o.cy+1,o.ky)))return 'path';
-  if(x>=yd.x+2&&x<yd.x+yd.w-2&&y>=yd.y+4&&y<yd.y+yd.h-4)return y<o.ky?'grass':'gravel';return 'walk';}
-function sncYard(f,R,D,P,x,y,m,o,L,px,py,cc){if(!o.ok)return;const k=sncYKind(o,x,y),g=P.gr,F=D.f;
+// the nave: a cloister garden between a colonnade each side of the axis, in the canonical frame (u across, v along). kind: path, grass, gravel, walk (the covered walk) or out
+function sncYKind(o,u,v){const n=o.yard;if(u<n.u0||u>n.u1||v<n.v0||v>n.v1)return 'out';
+  if(Math.abs(u-o.cx)<=1||o.g.rows.includes(v))return 'path';
+  if(u<n.u0+2||u>n.u1-2||v<n.v0+2||v>n.v1-2)return 'walk';
+  return v<(n.v0+n.v1)/2?'grass':'gravel';}
+const sncYK=(o,x,y)=>{const q=o.inv(x,y);return sncYKind(o,q[0],q[1]);};
+function sncYard(f,R,D,P,x,y,m,o,L,px,py,cc){if(!o.ok)return;const k=sncYK(o,x,y),g=P.gr,F=D.f,cn=sncCanon(m,x,y),hx0=cn[0],hy0=cn[1];
   if(k==='grass'){f(g[0],0,0,16,16);for(let i=0;i<14;i++){const gx=Math.floor(R()*15),gy=Math.floor(R()*13)+2;f(R()<.5?g[1]:g[2],gx,gy,1,2+(R()<.3?1:0));}
     for(let i=0;i<3;i++)f(g[1],Math.floor(R()*13),Math.floor(R()*14),2,1);
-    const h=((x*29+y*53)%7);if(h<3){const bx=2+Math.floor(R()*10),by=3+Math.floor(R()*9);for(let i=0;i<3;i++){const c=P.bloom[(i+h)%2];f(c,bx+(i*3)%6,by+(i*2)%5,2,2);f('#ffffff',bx+(i*3)%6,by+(i*2)%5,1,1);}}}
-  else if(k==='gravel'){f(lerpHex(F[2],'#ffffff',.25),0,0,16,16);for(let j=0;j<4;j++){const yy=j*4+1,ph=(x*5+j*3)%6;f(F[3],0,yy,16,1);f(F[0],0,yy+1,16,1);for(let i=0;i<16;i+=1){const w=Math.round(Math.sin((i+ph)/2.2));if(w>0)f(F[1],i,yy+(w?0:0),1,1);}}
+    const h=((hx0*29+hy0*53)%7);if(h<3){const bx=2+Math.floor(R()*10),by=3+Math.floor(R()*9);for(let i=0;i<3;i++){const c=P.bloom[(i+h)%2];f(c,bx+(i*3)%6,by+(i*2)%5,2,2);f('#ffffff',bx+(i*3)%6,by+(i*2)%5,1,1);}}}
+  else if(k==='gravel'){f(lerpHex(F[2],'#ffffff',.25),0,0,16,16);for(let j=0;j<4;j++){const yy=j*4+1,ph=(hx0*5+j*3)%6;f(F[3],0,yy,16,1);f(F[0],0,yy+1,16,1);for(let i=0;i<16;i+=1){const w=Math.round(Math.sin((i+ph)/2.2));if(w>0)f(F[1],i,yy+(w?0:0),1,1);}}
     for(let i=0;i<6;i++)f(R()<.5?F[0]:F[3],Math.floor(R()*15),Math.floor(R()*15),1,1);
-    if((x*13+y*7)%9===0){const sx=3+Math.floor(R()*6),sy=4+Math.floor(R()*6);f('rgba(60,50,40,.28)',sx+1,sy+3,8,2);f(shade(F[0],.9),sx,sy,8,4);f(tint(F[0],.35),sx+1,sy,6,1);f(F[3],sx,sy+3,8,1);if(P.cap==='moss')f('#6aa044',sx+1,sy-1,4,1);}}
-  else if(k==='path'){f(lerpHex(F[1],P.gr[0],.18),0,0,16,16);for(let i=0;i<3;i++){const sx=((i*5+x*3+y)%7),sy=i*5;f('rgba(60,50,40,.3)',sx+1,sy+3,8,2);f(F[0],sx,sy+1,8,4);f(tint(F[2],.3),sx+1,sy+1,6,1);f(F[3],sx,sy+4,8,1);}}
+    if((hx0*13+hy0*7)%9===0){const sx=3+Math.floor(R()*6),sy=4+Math.floor(R()*6);f('rgba(60,50,40,.28)',sx+1,sy+3,8,2);f(shade(F[0],.9),sx,sy,8,4);f(tint(F[0],.35),sx+1,sy,6,1);f(F[3],sx,sy+3,8,1);if(P.cap==='moss')f('#6aa044',sx+1,sy-1,4,1);}}
+  else if(k==='path'){f(lerpHex(F[1],P.gr[0],.18),0,0,16,16);for(let i=0;i<3;i++){const sx=((i*5+hx0*3+hy0)%7),sy=i*5;f('rgba(60,50,40,.3)',sx+1,sy+3,8,2);f(F[0],sx,sy+1,8,4);f(tint(F[2],.3),sx+1,sy+1,6,1);f(F[3],sx,sy+4,8,1);}}
   // a curb where garden meets path or walk
-  if(k==='grass'||k==='gravel'){const nb=(dx,dy)=>{const q=sncYKind(o,x+dx,y+dy);return q==='path'||q==='walk'||q==='out';};
+  if(k==='grass'||k==='gravel'){const nb=(dx,dy)=>{const q=sncYK(o,x+dx,y+dy);return q==='path'||q==='walk'||q==='out';};
     if(nb(0,-1)){f(F[3],0,0,16,1);f(tint(F[2],.4),0,1,16,1);}if(nb(0,1)){f(F[3],0,15,16,1);}if(nb(-1,0)){f(F[3],0,0,1,16);}if(nb(1,0)){f(F[3],15,0,1,16);}}}
-// the hall: a polished floor, the runner carpet with gold trim and fringe, candles on the floor along the aisle, a pale dais under the rune circle
-function sncHall(f,R,D,P,x,y,m,o,L,px,py,ctx){if(!o.ok)return;const C=o.carpet,key=x+','+y;
-  const has=(dx,dy)=>C.has((x+dx)+','+(y+dy)),cl=D.cloth;
-  if(C.has(key)){const top=!has(0,-1),bot=!has(0,1),lf=!has(-1,0),rt=!has(1,0);
-    f(cl[0],0,0,16,16);f(shade(cl[0],.84),0,0,16,16);f(cl[0],1,1,14,14);
-    f(cl[1],7,5,2,6);f(cl[1],5,7,6,2);f(shade(cl[0],.7),7,7,2,2);// a diamond motif
-    if(top){f('#2a2018',0,0,16,1);f('#f0dc98',0,1,16,2);f('#8a7030',0,3,16,1);}else if(bot){f('#8a7030',0,12,16,1);f('#f0dc98',0,13,16,2);f('#2a2018',0,15,16,1);}
-    if(lf){f('#f0dc98',0,0,2,16);f('#f0dc98',-0,0,1,16);for(let j=0;j<16;j+=2)f('#e8c860',0,j,1,1);f('#8a7030',2,0,1,16);}
-    if(rt){f('#f0dc98',14,0,2,16);f('#8a7030',13,0,1,16);}
-    if(!top&&!bot){f(tint(cl[0],.12),3,0,1,16);f(tint(cl[0],.12),12,0,1,16);}}
-  else if(o.candles&&o.candles.has(key)){// a candle in a dish, lit
+// the runner carpet with gold trim and fringe: a long strip from the start tile up the axis to the rune circle (the edges of its set decide the trim)
+function sncCarpet(f,D,o,x,y){const C=o.carpet,has=(dx,dy)=>C.has((x+dx)+','+(y+dy)),cl=D.cloth,vert=o.dir==='n'||o.dir==='s';
+  const st=(e,d,t,col)=>e==='T'?f(col,0,d,16,t):e==='B'?f(col,0,16-d-t,16,t):e==='L'?f(col,d,0,t,16):f(col,16-d-t,0,t,16);
+  f(cl[0],0,0,16,16);f(shade(cl[0],.84),0,0,16,16);f(cl[0],1,1,14,14);
+  f(cl[1],7,5,2,6);f(cl[1],5,7,6,2);f(shade(cl[0],.7),7,7,2,2);// a diamond motif
+  const E={T:!has(0,-1),B:!has(0,1),L:!has(-1,0),R:!has(1,0)};
+  if(vert&&!E.T&&!E.B){f(tint(cl[0],.12),3,0,1,16);f(tint(cl[0],.12),12,0,1,16);}
+  if(!vert&&!E.L&&!E.R){f(tint(cl[0],.12),0,3,16,1);f(tint(cl[0],.12),0,12,16,1);}
+  Object.keys(E).forEach(e=>{if(!E[e])return;const end=vert?(e==='T'||e==='B'):(e==='L'||e==='R');
+    if(end){st(e,0,1,'#2a2018');st(e,1,2,'#f0dc98');st(e,3,1,'#8a7030');}
+    else{st(e,0,2,'#f0dc98');st(e,2,1,'#8a7030');for(let j=0;j<16;j+=2){if(e==='L')f('#e8c860',0,j,1,1);else if(e==='R')f('#e8c860',15,j,1,1);else if(e==='T')f('#e8c860',j,0,1,1);else f('#e8c860',j,15,1,1);}}});}
+// the hall: a polished floor, candles on the floor along the aisle, a pale dais under the rune circle
+function sncHall(f,R,D,P,x,y,m,o,L,px,py,ctx){if(!o.ok)return;const key=x+','+y;
+  if(!o.carpet.has(key)&&o.candles&&o.candles.has(key)){// a candle in a dish, lit
     const cx=5+Math.floor(R()*5);f('rgba(40,30,20,.3)',cx-1,12,6,2);f('#8a8070',cx-1,11,5,2);f('#cfc6b3',cx,11,3,1);f('#f6f0e0',cx+1,6,2,5);f('#fff6d0',cx+1,6,1,2);f('#ffd870',cx+1,4,2,2);f('#fff8e0',cx+1,4,1,1);
     L.push([px+cx+1,py+7,14,'lamp']);}
-  // the dais ring under the rune circle: a paler step around the guardian's tile
-  const gx=o.gx,gy=o.gy;if(Math.abs(x-gx)<=1&&y>=gy-1&&y<=gy+2){if(x===gx-1)f(tint(D.f[2],.3),0,0,1,16);if(x===gx+1)f(D.f[3],15,0,1,16);if(y===gy-1)f(tint(D.f[2],.3),0,0,16,1);}
+  // the dais ring under the rune circle: a paler step round the guardian's tile (its edges follow the axis, whichever way the hall faces)
+  const q=o.inv(x,y),u=q[0],v=q[1];
+  if(Math.abs(u-o.cx)<=1&&v>=o.gv&&v<=o.gv+2){const edge=(du,dv,col,th)=>{const a=o.xf(u,v),b=o.xf(u+du,v+dv),dx=b[0]-a[0],dy=b[1]-a[1];if(dx<0)f(col,0,0,th,16);else if(dx>0)f(col,16-th,0,th,16);else if(dy<0)f(col,0,0,16,th);else f(col,0,16-th,16,th);};
+    if(u===o.cx-1)edge(-1,0,tint(D.f[2],.3),1);if(u===o.cx+1)edge(1,0,tint(D.f[2],.3),1);if(v===o.gv)edge(0,-1,tint(D.f[2],.3),1);}
 }
-// the stairs out (the start room's door): three pale steps in warm light
-function sncDoor(f,D,L,px,py){f('#3a3028',0,0,16,16);for(let i=0;i<5;i++){const yy=12-i*3;f(tint(D.f[0],.3),1+i,yy,14-i*2,2);f(shade(D.f[0],.82),1+i,yy+2,14-i*2,1);}f('#fff6d0',4,0,8,3);f('#ffe9a0',1,0,1,16);f('#ffe9a0',14,0,1,16);L.push([px+8,py+2,46,'day']);}
+// the stairs out (the start room's door): three pale steps in warm light. The art is drawn with the way out at the top (you walk south in); turned for the other facings
+function sncDoor(f0,D,L,px,py,dir){dir=dir||'s';
+  const f=dir==='n'?(c,a,b,w,h)=>f0(c,a,16-b-h,w,h):dir==='e'?(c,a,b,w,h)=>f0(c,b,a,h,w):dir==='w'?(c,a,b,w,h)=>f0(c,16-b-h,a,h,w):f0;
+  f('#3a3028',0,0,16,16);for(let i=0;i<5;i++){const yy=12-i*3;f(tint(D.f[0],.3),1+i,yy,14-i*2,2);f(shade(D.f[0],.82),1+i,yy+2,14-i*2,1);}f('#fff6d0',4,0,8,3);f('#ffe9a0',1,0,1,16);f('#ffe9a0',14,0,1,16);
+  L.push(dir==='n'?[px+8,py+14,46,'day']:dir==='e'?[px+2,py+8,46,'day']:dir==='w'?[px+14,py+8,46,'day']:[px+8,py+2,46,'day']);}
 // the rune circle tile (X): a faint accent ring on the floor; sites.js drawHallRunes adds the big glow around it
 function sncRune(f,ctx,D){ctx.globalAlpha=.7;for(let a=0;a<24;a++){const t=a/24*Math.PI*2;f(D.acc,8+Math.round(Math.cos(t)*7),8+Math.round(Math.sin(t)*5),1,1);}ctx.globalAlpha=1;}
-function sncTile(ctx,m,x,y,frame){const D=DTH(m),P=SNC_P(m.theme),c=tileAt(m,x,y),px=x*TS,py=y*TS,R=mulberry(x*5113+y*2671+m.s*7),L=m.lights=m.lights||[];
+function sncTile(ctx,m,x,y,frame){const D=DTH(m),P=SNC_P(m.theme),c=tileAt(m,x,y),px=x*TS,py=y*TS,cn=sncCanon(m,x,y),R=mulberry(cn[0]*5113+cn[1]*2671+m.s*7),L=m.lights=m.lights||[];/* cn: the tile folded across the axis, so a tile and its mirror image are dressed alike */
   const f=(col,a,b,w,h)=>{ctx.fillStyle=col;ctx.fillRect(px+a,py+b,w,h);};const isW=(dx,dy)=>tileAt(m,x+dx,y+dy)==='#';
   if(c==='#'){
-    if(!isW(0,1)){sncFace(f,R,D,16,sncTv(x,y),x,y,m,L,px,py);
-      if(sncTv(x,y)===0&&(x*3+y*5)%11===0&&tileAt(m,x,y+1)!=='~'){f('#6a5a3a',7,5,2,1);f('#e8c860',6,6,4,5);f('#fff0b0',7,7,2,3);L.push([px+8,py+6,22,'torch']);m.torches=m.torches||[];m.torches.push([px+8,py+6]);}}// a wall lamp: a small gilt oil lamp
+    if(!isW(0,1)){sncFace(f,R,D,16,sncTv(x,y,m),cn[0],cn[1],m,L,px,py);
+      if(sncTv(x,y,m)===0&&(cn[0]*3+cn[1]*5)%11===0&&tileAt(m,x,y+1)!=='~'){f('#6a5a3a',7,5,2,1);f('#e8c860',6,6,4,5);f('#fff0b0',7,7,2,3);L.push([px+8,py+6,22,'torch']);m.torches=m.torches||[];m.torches.push([px+8,py+6]);}}// a wall lamp: a small gilt oil lamp
     else{sncTop(f,R,D);if(!isW(-1,0))f(D.w[1],0,0,2,16);if(!isW(1,0))f(D.w[1],14,0,2,16);if(!isW(0,-1))f(D.w[1],0,0,16,2);}
     return;}
   sncFloor(f,R,D,P,x,y,m,L,px,py,ctx);
-  if(c==='E')sncDoor(f,D,L,px,py);
+  if(c==='E')sncDoor(f,D,L,px,py,m.fo&&m.fo.dir);
   if(c==='X'||(c==='.'&&m.bossAt&&x===m.bossAt[0]&&y===m.bossAt[1]))sncRune(f,ctx,D);
 }
 {const dt0=drawDTile;drawDTile=function(ctx,m,x,y,frame){if(m&&m.fort&&m.kind==='dungeon'&&!m.archive)return sncTile(ctx,m,x,y,frame);return dt0.apply(this,arguments);};}
@@ -27780,6 +27832,48 @@ ACT.eqOpen=function(id){if(!G||!G.roster[id])return;V.eqFocus={id,t:Date.now()};
 // the pet slot is a slot like the others: tap it to choose, change or remove the pet (the picker has Remove)
 {const ps0=petSlotHtml;petSlotHtml=function(c,mini){try{if(!c||G.daily)return '';const o=compOf(c),any=(G.tamed||[]).length>0;if(!any&&!o)return ps0.apply(this,arguments);
   return `<div class="petslot"><button class="eqs petcur petbtn" data-act="petPick" data-arg="${c.id}" title="${o?'Change or remove the pet':'Choose a pet'}">${o?`<img class="gico" alt="" src="${monURL(compDef(o).art)}">`:'<span class="gico empty"></span>'}<span><small>Pet</small>${o?esc(o.name):'Choose a pet'}</span></button></div>`;}catch(e){return ps0.apply(this,arguments);}};}
+
+// ===== scale10.js (v0.15.1): battle heroes a little smaller, overworld walkers a little bigger =====
+// The owner after 0.15.0: "Sprites of heroes still look a little big in battle, also the small overworld sprites seem to have lost too much
+// detail." The rig draws at any scale (art.js rigScale): battle sprites are now drawn at .85 (34x48, about 38 px of figure, level with the
+// taller foes), walkers at .8 (sprhd.js, 32x45, about 35 px) instead of .7. Portraits, the Bestiary and the title scene keep the full rig.
+// spriteOf (battle) sets a flag for the duration of its call, so every canvas built inside it (idle, poses, hit frames) comes out at .85.
+const SC10={battle:.85};const HB10={on:0};
+{const hc0=heroCanvas;heroCanvas=function(id,walk){if(HB10.on&&HRS.f===1)return rigScale(SC10.battle,()=>hc0.call(this,id,walk));return hc0.apply(this,arguments);};}
+{const so0=spriteOf;spriteOf=function(u,walk){const was=HB10.on;HB10.on=1;try{return so0.apply(this,arguments);}finally{HB10.on=was;}};}
+
+// ===== rk10.js (v0.15.1): the Echo Warden IS the Riftkeeper =====
+// The owner: "echo warden IS the rift keeper, he should be called that (Riftkeeper) in both forms, then when you beat everyone he transforms
+// and becomes someone you have to fight. Have him disappear when the last gate unlocks, when you enter you have a cut scene where he takes on
+// the powers of the rifts and becomes the Riftkeeper before battle starts. He returns after to where he was before with his new look but you
+// can rematch him at any time by using that gate." Also: "Echo rift bosses set to level 55."
+// - The hall's keeper is named Riftkeeper in both forms (rest popup, gate card, dialogue).
+// - Rift Echo fights (riftSpec) are level 55.
+// - Once every Echo is beaten and he has not yet been fought (META.riftkeeper unset), the keeper leaves his spot; the gate is lit; entering
+//   it plays a short scene (the keeper takes on the rifts' power) and the fight starts. After the first win he stands at his spot again with
+//   a new look (rift-lit robe, key staff) and still offers the free rest; the gate stays open for a rematch (the usual card and Challenge).
+// No save fields: everything keys off META.riftkeeper and rkUnlocked().
+const RK10={name:'Riftkeeper',look2:null};
+{const rs0=riftSpec;riftSpec=function(k){const s=rs0.apply(this,arguments);try{s.lv=55;}catch(e){}return s;};}
+function rk10Vanished(){try{return rkUnlocked()&&!META.riftkeeper;}catch(e){return false;}}
+// the keeper's new look after the fight: a hooded robe woven with rift light and a key staff (villagerLook fields the rig understands)
+function rk10Look2(){if(RK10.look2)return RK10.look2;try{const L=Object.assign({},villagerLook('Echo Warden'));L.hat='hood';L.wpn='staff_sun';L.back=['cape'];L.cc='#4a2a8a';L.hc='#e8e0ff';L.face=(L.face||[]).filter(f=>f!=='eyepatch');RK10.look2=L;}catch(e){RK10.look2=villagerLook('Echo Warden');}return RK10.look2;}
+{const bs0=buildSanctum;buildSanctum=function(){const m=bs0.apply(this,arguments);try{const n=m.npcs.find(q=>q.name==='Echo Warden');if(n){n.name=RK10.name;n.isRK=1;n.hx=n.x;n.hy=n.y;
+  n.line='Every Scourge and Calamity you broke is still ringing in here. Stand before a gate and press A to challenge its Echo. I keep these doors; one day they may keep me. This hall is safe, and the way out is the south door.';}}catch(e){}return m;};}
+// he is gone from his spot while the challenge waits; back, in his new look, once beaten
+HOOK.before('worldDraw','rk10','the keeper leaves and returns',function(){try{const m=WS.m;if(!m||!m.sanctum)return;const n=m.npcs.find(q=>q.isRK);if(!n)return;const gone=rk10Vanished();
+  if(gone&&!n.hidden){n.hidden=1;n._x=n.x;n._y=n.y;n.x=-99;n.y=-99;}else if(!gone&&n.hidden){n.hidden=0;n.x=n.hx;n.y=n.hy;}
+  if(!gone&&META.riftkeeper&&!n.look2){n.look2=1;n.look=rk10Look2();n.line='"You broke every door and then you broke me. The Rift still calls me its keeper; I answer to you now. Rest here whenever you like, and the middle gate stands open if you want to try me again."';}}catch(e){}});
+// the rest popup and the gate card carry the name
+HOOK.xform('vModal','rk10','Riftkeeper naming',function(h,m){try{if(m&&m.type==='rkrest'){h=h.replace('<h2>Echo Warden</h2>','<h2>Riftkeeper</h2>');if(META.riftkeeper)h=h.replace('"The Rift never tires, but you do.','"Beaten or not, I keep this hall. The Rift never tires, but you do.');}
+  if(m&&m.type==='portal'&&m.key===RK_KEY){if(rk10Vanished())h=h.replace('The gate stands open. The keeper of every door waits behind it.','The keeper is gone from his post. The gate stands open, and the Rift is pouring through it.');
+    if(META.riftkeeper)h=h.replace('<button class="btn gold" data-act="rkFight"','<button class="btn gold" data-act="rkFight" title="A rematch; the keeper waits behind the gate again"').replace('Challenge</button>','Rematch</button>');}}catch(e){}return h;});
+{const in0=interact;interact=function(){try{const m=WS.m;if(V.screen==='world'&&!V.modal&&!WS.lock&&!WS.dlg&&!WS.mv&&m&&m.sanctum&&G&&!G.daily){const [fx,fy]=facing(),n=m.npcs.find(q=>q.x===fx&&q.y===fy&&q.isRK);
+  if(n){n.name='Echo Warden';try{return in0.apply(this,arguments);}finally{n.name=RK10.name;}}}}catch(e){}return in0.apply(this,arguments);};}// riftkeeper9 keys the rest popup on the old name
+// the first challenge: a short scene, then the fight
+{const rf0=ACT.rkFight;ACT.rkFight=function(){try{if(rkUnlocked()&&!META.riftkeeper&&G&&!G.daily&&!V._rkScene){V.modal=null;haltInput();V._rkScene=1;
+  const L=[['Riftkeeper','You opened every door. Do you know what waits when nothing is left behind them?'],['Riftkeeper','The Rift does not end. It wants a keeper. It has had one for a very long time.'],[null,'Light pours out of twenty-five gates at once and gathers in the figure standing in the middle of the hall. His lantern burns every colour in turn.'],['Riftkeeper','I kept the doors. Now the doors keep me. Come, Riftwalker: one last Echo, and it is mine.']];
+  const step=i=>{if(i>=L.length){V._rkScene=0;return rf0.apply(this,arguments);}say(L[i][0],L[i][1],()=>step(i+1));};step(0);render();return;}}catch(e){V._rkScene=0;}return rf0.apply(this,arguments);};}
 
 window.__A={walkable,ceInit,tvSlots,genQuests,STARTERS,starterDraw,ECON,AUTO_NERF,rebuildBase,detLive,REACT,skEls,packContents,miniFor,AUTO_REW,ENC_RATE,ENC_MIN_STEPS,detNote,classSkills,stickCount,bestAll,calcStats,lookKey,vTemper,storyEchoUp,leaveDungeon,win,ldApply,genFort,caveOk,enterCave,siteHasMini,openChest,nextDlg,WS,mapIcoRects,roamSpawn,roamInterior,roamSees,mapTargets,DIRV,tileAt,STAGE_LV,autoBan,rollWeather,guardianDef,mapIssues,mapEntry,syncPools,bovAt,calFxAt,realmAt,REALMS,BOV,CAL_FX,overlayGuide,liftOverlay,drawGearIcon,gearIcon,itemIcon,RAW,sigKind,sigGid,personalDone,heroLook,hasSignature,LEGEND_IDS,facDirty,facCount,facRank,facRep,FACB,FAC,finishBattle,npcWords,npcHints,npcPool,titleMake,titleAdvance,TTS,placeAt,wkwUpdate,innSpot,getMap,monURL,enterVia,applyBossTheme,BTHEME,resetMaps,rebuildBase,shopStock,gearDesc,calcStats,gearMigrate,CLS_WPN,CLS_ARM,WPERK,WT_NAME,equipWhy,lootBase,GEAR,canEquip,gearOf,perkNote,FAM_MAT_V35,fbDraft,META:{get best(){return META.best},get codex(){return META.codex},get q(){return META.q}},saveMeta,OFF,offPending,offFlush,PROFILE,profileSync,codexSee,getMap,placeAt,interact,sanctumOpen,riftKeys,echoKeys,BONDS,bondKey,wkwUpdate,inTown,WS,LC,lsort,bestParty,fsCast,fsSkills,ldApply,MON,registerTamed,stickPower,stickCount,autoOne,planGear,bestTag,gainersFor,compGainFor,refresh,fitsFor,canEquip,gearOf,queueNewGear,ARENA,fxDur,banDur,stageTags,autoSwitchPick,layoutBattle,newChar,calcStats,limitSkill,limitTier,canStuck,dunReachable,LV_CAP,addXp,echoSpec,bossLvFor,fx,MON,log,effInfo,tierOf,perkOf,quirkDef,forgeCost,buyPlan,vJourney,modalBack,partySlots,limitOpen,town2Reached,skillKnown,known,classSkills,paceMigrate,unpackG,packG,makeEnemy,QUIRK,arrive,enterDungeon,wkwUpdate,useTravel,travelWhyNot,porkFlee,porkBlocked,encTile,campRest,buyPart,partLeft,alchStock,GAME_VERSION,CHANGELOG,ITEMS,tavernOffers,tavernPool,recruitFit,partyNeeds,vNext,CHALL,innSpot,RECIPES,MATS,FB,fbContext,REDEEM,legendJoin,legendQ,genQuests,dynActors,convInit,PROFILE,profileSync,checkArchive,GPOOL,FPOOL,guardianDef,saveMeta,archiveSkills,get G(){return G;},set G(v){G=v;},get B(){return B;},get V(){return V;},get META(){return META;},WS,ACT,render,newGame,placeAt,startBattle,autoTurn,advance,finishBattle,getMap,innSpot,setPause:p=>{PAUSE=p;},autoCfg,worldInputDir,inputSources,battleFrame,battleTheme,STS,MAPS,mapIssues,healMap,mimicReward,dropChest,interact,worldDraw,TPL,ZONES,ZS,newChar,recruit,saveGame,resetMaps,dynActors,tileAt,BV,refresh,genBounties,genQuests,vStarter,heroCard,heroURL,iconURL,masteryLine,AU,buildTrack,tone,noiseHit,MIDI,sfx,audioVol};
 ['heroRoles','SOLID','WEATHER','WX_BASE','weatherFX','superGuide','recruitCost','ceStart','ceStep','ceInit','cePool','wxList','SUPER_TABLE','superOk','facRank','facRep','facInit','facCount','facCredit','FAC','FMIS','facMissionList','facProg','tyOf','facSync','facMul','facBest','worldPlan','caveReward','enterCave','leaveCave','leaveDungeon','buildCaveMap','worldGraph','openWorldMap','sigReport','SIG_NAMES','starterDraw','ITEM_TIERS','gTierIdx','tierChip','gearIcon','starterSlots','STARTERS','CLK_LEN','CLK_PH','clockPhase','wxInfoBody','recipeOrder','recipeGain','recipeReady','recipeClose','effOf','calcDamage','healsUndead','storyEchoUp','riftKeys','echoDef','efCost','autoLocked','bossFightKey','learnScanAll','isSeen','mapMarks','genSub','subOK','subReq','ensureSub','inSub','tvSlots','tvInit','tvLeft','tvEvent','tvNextText','tvPool','tvDue','tvShuffle','mTavern','hireOK','TV_CAP','TV_CD','POOL_IDS','natPool','natOf','natRoll','NATURES','natInfo','natRerollCost','natChooseCost','NAT_CLASS','iconURL','seenOf','mapIcoDraw','drawMini','MAPCV','revealAround','fxLayer','numDur','compBonusText','compPerk','checkPhase','win','unitBox','LNQ','challVisible','challEligible','challState','isMimic','migrateCompanions','canSummon','summonComp','compOf','clockPhase','tickClock','isNight','rollWeather','wxStep','nightPool','encounterFoes','restAll','tameElite','openChest','rerollTavern','bestAll','gearTier','SV','svCheck','svFlush','svInit','svPush','svPull','svScan','svParse','svBackup','svPack','svUnpack','svProg','svCloudList','svDelDoc','svGet','svCap','slotState','slotKey','svDecode','SV_CH','svStatus','svSlotRaw','svLoad','loadRaw','svHash','svIdx'].forEach(k=>{try{Object.defineProperty(window.__A,k,{get:()=>eval(k)});}catch(e){}});
