@@ -82,7 +82,7 @@ const ELFX={
  light:{c:['#fff6c8','#f6e7a8','#ffffff'],rays:1},shadow:{c:['#9a6ae0','#3a2a5a','#c8a0ff'],up:-20},hit:{c:['#ffffff','#ffe08a','#ffd04a'],slash:1},arcane:{c:['#c8a0ff','#ffffff','#8a6ad0'],g:0}
 };
 function burstAt(x,y,el,start,big){
-  const E=ELFX[el]||ELFX.hit,n=big?26:14;
+  const E=ELFX[el]||ELFX.hit,n=typeof anHasShape==='function'&&anHasShape(el)?(big?12:6):big?26:14;// v0.12.6: an element with its own shape (anim.js) needs fewer loose sparks
   if(E.slash){part({k:'slash',x,y,t0:start,life:180,col:'#ffffff'});}
   if(E.bolt){part({k:'bolt',x,y,t0:start,life:200,col:'#fff6a0',seed:Math.random()*1000});BV.flash={t:start,life:90,col:'rgba(255,255,220,.35)'};}
   if(E.rays)part({k:'rays',x,y,t0:start,life:320,col:'#fff6c8'});
@@ -178,8 +178,13 @@ function drawUnit(ctx,u,b,now,tgMode){
   if(h>=0&&h<320&&!lying){x+=Math.round((1-h/320)*4)*-dir+(Math.floor(h/40)%2?1:-1)*(h<200?1:0);white=white||(h<90?1:0);}
   // break stagger
   if(u.broken&&u.hp>0)x+=Math.floor(now/90)%2;
-  const c0=spriteOf(u,walk),c=BV.tint?BV.tint(c0):c0;// v0.5.3: the GL stage (Medium) tints sprites to the light of the scene
-  const breathe=!lying&&u.hp>0&&!B.wipe&&a>520&&Math.floor(now/(hero?620:760)+b.i*.5)%2===1;
+  let c0=spriteOf(u,walk),fk='';
+  // v0.12.6: bosses and guardians idle on two frames (art3.js bossIdle: an exhale and a soft glow); a winding up foe swells and glows (bossTele, anim.js)
+  const idle=!hero&&u.hp>0&&typeof bossHasIdle==='function'&&bossHasIdle(u)&&!gfxStill();
+  if(idle){const f=bossIdle(c0,b.i,now);if(f!==c0){c0=f;fk='f';}}
+  const tele=!hero&&u.hp>0&&!B.wipe&&typeof bossTele==='function'&&bossTele(u),tp=tele?(gfxStill()?.5:.5+.5*Math.sin(now/120)):0,tsc=tele?1.035+(gfxStill()?0:.02*Math.sin(now/130)):1;
+  const c=BV.tint?BV.tint(c0):c0;// v0.5.3: the GL stage (Medium) tints sprites to the light of the scene
+  const breathe=!lying&&u.hp>0&&!B.wipe&&a>520&&Math.floor(now/(hero?620:760)+b.i*.5)%2===1&&!idle;
   // shadow
   // v0.5.0 2.1: the shadow always sits on the ground plane (b.gy); flying foes hover above theirs with a gentle bob
   if(b.hov&&u.hp>0)y+=Math.round(Math.sin(now/320+b.i)*1.5);
@@ -191,17 +196,21 @@ function drawUnit(ctx,u,b,now,tgMode){
   if(a<520&&u.hp>0&&u.actKind&&u.actKind!=='phys'){const col=ELC[u.actEl]||(u.actKind==='heal'?'#7aff8a':'#fff6a0');const g=ctx.createRadialGradient(x,y-b.h*.45,2,x,y-b.h*.45,b.h*.7);g.addColorStop(0,col+'88');g.addColorStop(1,col+'00');ctx.fillStyle=g;ctx.fillRect(x-b.h,y-b.h*1.2,b.h*2,b.h*1.4);}
   if(lying){ctx.save();ctx.translate(x+(hero?-4:4),y-2);ctx.rotate(hero?-Math.PI/2:Math.PI/2);ctx.globalAlpha=.75;ctx.drawImage(whiteOf(c,'ko'+u.id,'#6a6a7a'),-c.width/2,-c.height+6);ctx.globalAlpha=.55;ctx.drawImage(c,-c.width/2,-c.height+6);ctx.restore();ctx.globalAlpha=1;return;}
   const flip=hero;
-  const draw=(img)=>{const dx=Math.round(x-img.width/2),dy=Math.round(y-img.height+1);
+  const draw0=(img)=>{const dx=Math.round(x-img.width/2),dy=Math.round(y-img.height+1);
     if(breathe){const cut=Math.floor(img.height*.55);
       if(flip){ctx.save();ctx.translate(dx+img.width,dy);ctx.scale(-1,1);ctx.drawImage(img,0,cut,img.width,img.height-cut,0,cut,img.width,img.height-cut);ctx.drawImage(img,0,0,img.width,cut,0,1,img.width,cut);ctx.restore();}
       else{ctx.drawImage(img,0,cut,img.width,img.height-cut,dx,dy+cut,img.width,img.height-cut);ctx.drawImage(img,0,0,img.width,cut,dx,dy+1,img.width,cut);}
       return;}
     if(flip){ctx.save();ctx.translate(dx+img.width,dy);ctx.scale(-1,1);ctx.drawImage(img,0,0);ctx.restore();}else ctx.drawImage(img,dx,dy);};
+  const draw=tsc===1?draw0:(img)=>{ctx.save();ctx.translate(x,y+1);ctx.scale(tsc,tsc);ctx.translate(-x,-(y+1));draw0(img);ctx.restore();};
+  if(tele){const gy=b.gy!=null?b.gy+(y-b.y)*(b.hov?0:1):y,rw=Math.max(10,Math.min(b.w,44)*.5+tp*3);ctx.globalAlpha=.25+.3*tp;ctx.strokeStyle='#ff8a4a';ctx.lineWidth=1;ctx.beginPath();ctx.ellipse(x,gy,rw,rw*.32,0,0,7);ctx.stroke();ctx.beginPath();ctx.ellipse(x,gy,rw*.6,rw*.2,0,0,7);ctx.stroke();
+    const g=ctx.createRadialGradient(x,y-b.h*.45,2,x,y-b.h*.45,b.h*.75);g.addColorStop(0,'rgba(255,140,80,'+(.22+.2*tp).toFixed(2)+')');g.addColorStop(1,'rgba(255,140,80,0)');ctx.globalAlpha=1;ctx.fillStyle=g;ctx.fillRect(x-b.h,y-b.h*1.3,b.h*2,b.h*1.5);ctx.globalAlpha=alpha;}
   if(hero&&typeof stickGlowOf==='function'){const gc=stickGlowOf(G.roster[u.id]);if(gc){const p=.5+.5*Math.sin(now/240);ctx.globalAlpha=.2+.25*p;ctx.fillStyle=gc;ctx.beginPath();ctx.ellipse(x,y-b.h*.45,b.w*.45+p*2,b.h*.5+p*2,0,0,7);ctx.fill();ctx.globalAlpha=alpha;}}
   draw(c);
-  if(white)draw(whiteOf(c,(hero?'h':'m')+(u.id||u.art)));
+  if(tele){ctx.globalAlpha=.16+.3*tp;draw(whiteOf(c,'t'+(u.id||u.art)+fk,'#ff9a5a'));ctx.globalAlpha=alpha;}
+  if(white)draw(whiteOf(c,(hero?'h':'m')+(u.id||u.art)+fk));
   // v0.6.3: a foe the aimed detonator sets off glows in the detonating element's colour, with a ring at its feet; other targets pulse white
-  if(tgMode&&targetable(u)){const dg=typeof detGlow==='function'?detGlow(u):null,k=(hero?'h':'m')+(u.id||u.art);
+  if(tgMode&&targetable(u)){const dg=typeof detGlow==='function'?detGlow(u):null,k=(hero?'h':'m')+(u.id||u.art)+fk;
     if(dg){const p=.5+.5*Math.sin(now/110);ctx.globalAlpha=.3+.3*p;draw(whiteOf(c,k,dg));ctx.globalAlpha=.55+.35*p;ctx.strokeStyle=dg;ctx.lineWidth=1;const gy=b.gy!=null?b.gy:b.y,rw=Math.max(8,Math.min(b.w,44)*.42+p*2);
       ctx.beginPath();ctx.ellipse(b.x,gy,rw,rw*.32,0,0,7);ctx.stroke();ctx.beginPath();ctx.ellipse(b.x,gy,rw*.62,rw*.2,0,0,7);ctx.stroke();ctx.globalAlpha=alpha;}
     else{ctx.globalAlpha=(B.pend&&B.pend.sk&&B.pend.sk.role==='det'?.12:.22)+.18*Math.sin(now/120);draw(whiteOf(c,k));ctx.globalAlpha=alpha;}}

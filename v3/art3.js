@@ -131,3 +131,17 @@ Object.assign(MEXTRA,{
  queenmantis(g,p){g.px([[16,40],[26,42]],'Y');p.Y='#c8e04a';},
  gloomcap(g,p){},ironsentinel(g,p){},siren(g,p){},ashwyvern(g,p){},frostlich(g,p){},nidhra(g,p){},hollowking(g,p){},seraph(g,p){}
 });
+// ===== v0.12.6: the frame API for guardians and bosses: a 2-frame idle =====
+// bossHasIdle(u): a foe that is a 60x60 guardian (BIG_ART, summons keep the '~s' suffix) or a boss. bossIdle(c,seed,now): frame 0 is the sprite
+// itself, frame 1 an exhale (the upper body one pixel lower) with a soft brightening, baked once per sprite (silhouette unchanged except the
+// breath). The frames alternate every 760 ms (battle, drawUnit) and 840 ms (the Sanctum guardian on the map, through imgOf 'mapboss:' keys).
+// Nothing changes under reduced motion.
+const BIDLE=new WeakMap();
+function bigArtOn(art){try{return typeof BIG_ART!=='undefined'&&BIG_ART.includes(String(art||'').replace(/~s$/,''));}catch(e){return false;}}
+function bossHasIdle(u){return !!u&&u.side!=='p'&&!!(u.boss||bigArtOn(u.art));}
+function bossFrame1(c){let f=BIDLE.get(c);if(f)return f;const w=c.width,h=c.height,cut=Math.floor(h*.55);
+  f=c.hd?hdCv(w,h,c.hd):mkCv(w,h);const x=f.getContext('2d');x.imageSmoothingEnabled=false;
+  x.drawImage(c,0,cut,w,h-cut,0,cut,w,h-cut);x.drawImage(c,0,0,w,cut,0,1,w,cut);
+  x.globalCompositeOperation='source-atop';x.globalAlpha=.2;x.fillStyle='#fff2d0';x.fillRect(0,0,w,h);BIDLE.set(c,f);return f;}
+function bossIdle(c,seed,now,ms){if(typeof gfxStill==='function'&&gfxStill())return c;return Math.floor(now/(ms||760)+(seed||0)*.5)%2?bossFrame1(c):c;}
+{const io0=imgOf;imgOf=function(key,fn){const c=io0.apply(this,arguments);try{if(typeof key==='string'&&key.charCodeAt(0)===109&&key.startsWith('mapboss:'))return bossIdle(c,0,performance.now(),840);}catch(e){}return c;};}

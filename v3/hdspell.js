@@ -28,6 +28,8 @@ function hbsHit(x,y,el,start,big,u){const m=hbQ().spell||1,R=Math.random,b=u&&un
     case 'shadow':hbLight({x,y,foot:gy,r:70,col:[1,1,1],int:-.75,t0:start,life:760,fade:'pulse'});L(.5,40,620,{col:[.62,.4,.9]});hbsP({k:'hbS',x,y:y+2,r:w*.75,t0:start,life:640});break;
     case 'arcane':L(.9,54,480);D(w*.75,.45,480);break;
     default:L(.7,34,180,{col:[1,.96,.86]});hbsP({k:'hbX',x,y,r:big?10:7,t0:start,life:170});}
+  // v0.12.6: the pieces the set pieces above lack (embers, a wave arc, a fan of shards, rock chunks, curved slashes, sparkles, sinking wisps), from anim.js, drawn additively
+  try{if(typeof anElem==='function'&&el!=='arcane')anElem(el,x,y,start,big,u,1);}catch(e){}
   if(big&&GFX.q.camera&&typeof HD_CAM!=='undefined')gfxCamPush(x,y,HD_CAM.big);}
 {const ba0=burstAt;burstAt=function(x,y,el,start,big){const r=ba0.apply(this,arguments);try{if(hbsOn())hbsHit(x,y,el,start,big,HBS.u);}catch(e){}return r;};}
 {const of0=onFx;onFx=function(u,txt,cls){HBS.u=u;try{return of0.apply(this,arguments);}finally{HBS.u=null;
