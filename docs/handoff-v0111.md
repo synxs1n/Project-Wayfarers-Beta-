@@ -279,3 +279,7 @@ after the Calamity with foes from every visited realm, the place to farm to leve
   ambience, D8M.sanct battle backdrop, MOODS.fort 62 bpm dorian + MTRACK.fort "Sanctum: Still Hours". Test v142a (world group). Weak spots: HD
   windows follow tile-hash variants; no real pool (layout untouched); boss stage keeps red banners; pale stone a bit hot by lanterns in HD.
 Batch 5 is complete with 0.14.4.
+- 0.14.5 menu group tabs 4+3 on phones (style.css). 0.14.6 equipbtn10.js (Equip beside Sheet on party cards -> Backpack > Equipment, row
+  data-hero + eqfocus via V.eqFocus; test v143a). 0.14.7 hero pass one (helper): heroTone shading pass in art2.js, heroPalD keys (p j z k q l h c 9),
+  faces/necks/knees/quivers/weapon edges in art.js tables, heropose9 recipes updated, sheets `heroes` mode; v140a hash re-taken. Geometry unchanged
+  (pose markers '#'/'!' and npcart9 props still valid). Owner wants a boss-level leap for heroes: pass two must re-proportion the rig.

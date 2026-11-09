@@ -1,13 +1,13 @@
 // npcs  : one walker per townsfolk role (NPC9.roles) plus a dozen random villagers, 11 columns (front 0,1,2,idleB; back 0,1; side 0,1,idleB), 3x; RND=12 sets the random rows, ZOOM scales
 // Contact sheets for the sprite overhaul (docs/art-style.md, Verification).
-// Usage: node tools/chrome/sheets.js <html> <out.png> foes|poses   [ONLY=art1,art2 limits the rows; CHUNK=24 splits into out_1.png, out_2.png...]
+// Usage: node tools/chrome/sheets.js <html> <out.png> foes|poses|heroes|npcs|bosses   [ONLY=art1,art2 limits the rows; CHUNK=24 splits into out_1.png, out_2.png...]
 //   foes  : every MON art as a row: idle 0, idle 1, atk, hit (monCanvas(art,{t,i})), each drawn at 3x on a dark ground with a 2px margin box
 //   poses : every hero (TPL with a class, not .mon) as a row: idle A, idle B, then swing thrust smash shoot cast pray guard cheer (frames 0 and 1), hit,
 //           (PS=swing,cast limits the columns, ZOOM=5 scales) via heroPoseCanvas (v3/heropose9.js), 3x on a dark ground. ONLY=id1,id2 limits the rows; CHUNK=8 heroes per file
 const fs=require('fs');const {open}=require('./pw');
 const [html,out,kind]=process.argv.slice(2);
 if(!html||!out||!kind){console.log('usage: node sheets.js <html> <out.png> foes|poses');process.exit(2);}
-if(kind!=='foes'&&kind!=='poses'&&kind!=='npcs'&&kind!=='bosses'){console.log('sheet kind "'+kind+'" is reserved');process.exit(2);}
+if(kind!=='foes'&&kind!=='poses'&&kind!=='npcs'&&kind!=='bosses'&&kind!=='heroes'){console.log('sheet kind "'+kind+'" is reserved');process.exit(2);}
 (async()=>{
   const H=await open({html:fs.readFileSync(html,'utf8'),dir:'/tmp',w:600,h:400});
   if(kind==='bosses'){
@@ -59,6 +59,37 @@ if(kind!=='foes'&&kind!=='poses'&&kind!=='npcs'&&kind!=='bosses'){console.log('s
     const b=d=>Buffer.from(d.split(',')[1],'base64');
     data.sheets.forEach((d,i)=>{fs.writeFileSync(data.sheets.length>1?out.replace(/\.png$/,'_'+(i+1)+'.png'):out,b(d));});
     console.log('sheets:',data.sheets.length,'rows of',data.n,'npcs ->',out);
+    await H.browser.close();return;
+  }
+  if(kind==='heroes'){
+    // heroes: every hero (TPL with a class, not .mon) as a row: side idle, side walk, front 0 1 2, back 0 1, then the portrait as the Party card crops it
+    // (heroURL at 72x80, offset -14,-12 in a 44x44 box) and a 1x silhouette-free copy; ZOOM (default 3), ONLY=id1,id2, CHUNK=8 heroes per file, VIEWS=side,front,back limits columns
+    const only=process.env.ONLY?process.env.ONLY.split(','):null,chunk=+process.env.CHUNK||8,vs=process.env.VIEWS?process.env.VIEWS.split(','):null;
+    const data=await H.ev(([only,chunk,vs,Z])=>{
+      const A=window.__A,T=A.TW.get,TPL=T('TPL'),hc=T('heroCanvas'),wc=T('walkerCanvas'),hl=T('heroLook'),hu=T('heroURL');
+      const ids=Object.keys(TPL).filter(i=>TPL[i].cls&&!TPL[i].mon&&TPL[i].look&&(!only||only.includes(i)));
+      const cols=[['side',0],['side',1],['front',0],['front',1],['front',2],['back',0],['back',1],['port',0]].filter(c=>!vs||vs.includes(c[0]));
+      const cw=44*Z,ch=56*Z,LAB=84,sheets=[];
+      const img=u=>new Promise(r=>{const i=new Image();i.onload=()=>r(i);i.src=u;});
+      return (async()=>{
+      for(let s=0;s<ids.length;s+=chunk){
+        const ks=ids.slice(s,s+chunk),W=LAB+cols.length*cw+8,Hh=ks.length*ch+22;
+        const cv=document.createElement('canvas');cv.width=W;cv.height=Hh;const x=cv.getContext('2d');x.imageSmoothingEnabled=false;
+        x.fillStyle='#2a2438';x.fillRect(0,0,W,Hh);x.fillStyle='#e8e0f0';x.font='11px monospace';
+        cols.forEach((c,j)=>x.fillText(c[0]+c[1],LAB+j*cw+4,14));
+        for(let n=0;n<ks.length;n++){const id=ks[n],oy=22+n*ch,L=hl(id);x.fillStyle='#e8e0f0';x.font='11px monospace';x.fillText(id,4,oy+14);x.fillStyle='#9a90b0';x.fillText(TPL[id].cls+' '+(L.b||'')+' '+(L.wpn||''),4,oy+27);
+          for(let j=0;j<cols.length;j++){const c=cols[j],fx=LAB+j*cw;x.fillStyle=j%2?'#322a44':'#2e2640';x.fillRect(fx,oy,cw-2,ch-2);
+            try{
+              if(c[0]==='port'){const im=await img(hu(id)),bx=fx+4,by=oy+4,S=Math.min(Z,3);x.save();x.beginPath();x.rect(bx,by,44*S*.9,44*S*.9);x.clip();x.fillStyle='#4a3c28';x.fillRect(bx,by,44*S,44*S);x.drawImage(im,bx-14*S*.9,by-12*S*.9,72*S*.9,80*S*.9);x.restore();continue;}
+              const cvs=c[0]==='side'?hc(id,!!c[1]):wc('hs:'+id,L,TPL[id].el,id,c[0],c[1]);
+              x.drawImage(cvs,fx+Math.round((cw-2-cvs.width*Z)/2),oy+ch-4-cvs.height*Z,cvs.width*Z,cvs.height*Z);
+            }catch(e){x.fillStyle='#f66';x.fillText('ERR '+String(e.message).slice(0,12),fx+2,oy+20);}}}
+        sheets.push(cv.toDataURL('image/png'));}
+      return {sheets,n:ids.length};})();
+    },[only,chunk,vs,+process.env.ZOOM||3]);
+    const b=d=>Buffer.from(d.split(',')[1],'base64');
+    data.sheets.forEach((d,i)=>{fs.writeFileSync(data.sheets.length>1?out.replace(/\.png$/,'_'+(i+1)+'.png'):out,b(d));});
+    console.log('sheets:',data.sheets.length,'rows of',data.n,'heroes ->',out);
     await H.browser.close();return;
   }
   if(kind==='poses'){

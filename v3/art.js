@@ -67,39 +67,39 @@ function cvURL(key,fn){if(URL_CACHE[key])return URL_CACHE[key];const c=fn();retu
 // =================== HEROES ===================
 // Characters are drawn facing right on a 32x32 grid (plus a 1px border for the outline).
 const HP={
- head:["..SSSSSS..",".SSSSSSSS.","SSSSSSSSSS","SSSSSSSSSS","SSSSSESSES","SSSSSESSES","SSSSSSSSSS",".SSSSSSmS.","..SSSSSS.."],
+ head:["..SSSSSS..",".SSSSSSSS.","SSSSSSSSSS","SSSSSSSSSS","SSSS9ES9ES","SSSSEESEES","SSSSSSSSSS",".SSSSSmmSS","..eSSSSSe."],
  body:{
   light:{
    backArm:[10,13,[".PP","PPP","PPP","PP.","PP.","SS."]],
-   legs:[12,21,[".KKK.KKK.",".KKK.KKK.",".KKK.KKK.",".KKK.KKK.",".BBB.BBB.",".BBB.BBB.",".BBB.BBB.",".BBBB.BBBB",".bbbb.bbbb"]],
-   walk:[11,21,["..KKKKKKK.",".KKK..KKK.",".KKK...KKK","KKK....KKK","BBB.....BBB","BBB.....BBB","BBB.....BBB","BBBB....BBBB","bbbb....bbbb"]],
-   torso:[11,12,["...QSSQ...",".PPPPPPPP.",".PPPPPPPP.",".PPPPPQPP.",".PPPPPQPP.",".LLLLLGLL.",".PPPPPPPP.","PPPPPPPPPP","QQQQQQQQQQ"]],
-   arm:[15,13,["PPP....","PPP....",".PPP...",".PPPP..","..PPPSS",".....SS"]],
-   armX:[15,13,["PPP......","PPPPPPP..",".PPPPPPSS","........."]],
+   legs:[12,21,[".KKK.KKK.",".KKK.KKK.",".KKK.KKK.",".kkk.kkk.",".BBB.BBB.",".BbB.BbB.",".BBB.BBB.",".BBBB.BBBB",".bbbb.bbbb"]],
+   walk:[11,21,["..KKKKKKK.",".KKK..KKK.",".KKK...KKK","kkk....kkk","BBB.....BBB","BbB.....BbB","BBB.....BBB","BBBB....BBBB","bbbb....bbbb"]],
+   torso:[11,12,["..PQeSQP..",".PPPPPPPP.",".PPPPPPPP.",".PPPPPQPP.",".PPPPPQPP.",".LLLLLGLL.",".PPPPPPPP.","PPPPPPPPPP","QQQQQQQQQQ"]],
+   arm:[15,13,["pPP....","pPP....",".pPP...",".pPPP..","..pPPSS",".....SS"]],
+   armX:[15,13,["pPP......","pPPPPPP..",".pPPPPPSS","........."]],
    hand:'S'},
   robe:{
    backArm:[9,13,[".PP","PPP","PPPP","PPPP","PPPP",".SS."]],
    legs:[12,28,["BBB..BBBB","bbb..bbbbb"]],
    walk:[11,28,["BBB....BBBB","bbb....bbbbb"]],
-   torso:[10,12,["....QSSQ.....","..PPPPPPPP...","..PPPPPQPP...","..PPPPPQPP...","..PPPPPQPP...","..LLLLLGLL...","..PPPPPQPP...","..PPPPPQPP...",".PPPPPPQPPP..",".PPPPPPQPPP..",".PPPPPPQPPP..",".PPPPPPPQPPP.","PPPPPPPPQPPP.","PPPPPPPPQPPPP","PPPPPPPPQPPPP","QQQQQQQQQQQQQ"]],
-   arm:[15,13,["PPP....","PPPP...",".PPPP..",".PPPPP.","..QPPSS",".....SS"]],
-   armX:[15,13,["PPP......","PPPPPPP..",".PPPPPQSS","........."]],
+   torso:[10,12,["...PQeSQ.....","..PPPPPPPP...","..PPPPPQPP...","..PPPPPQPP...","..PPPPPQPP...","..LLLLLGLL...","..PPPPPQPP...","..PPPPPQPP...",".PPpPPPQPPP..",".PPpPPPQPPP..",".PPpPPPQPPP..",".PPPpPPPQPPP.","PPPPpPPPQPPP.","PPPPPpPPQPPPP","PPPPPpPPQPPPP","QQQQQQQQQQQQQ"]],
+   arm:[15,13,["pPP....","pPPP...",".pPPP..",".pPPPP.","..QPPSS",".....SS"]],
+   armX:[15,13,["pPP......","pPPPPPP..",".pPPPPQSS","........."]],
    hand:'S'},
   heavy:{
    backArm:[10,13,["MMM","MMM","NMM",".MM",".MM",".NN"]],
-   legs:[12,21,[".KKK.KKK.",".KKK.KKK.",".MMM.MMM.",".MMM.MMM.",".MMM.MMM.",".MMM.MMM.",".MMM.MMM.",".MMMM.MMMM",".NNNN.NNNN"]],
-   walk:[11,21,["..KKKKKKK.",".KKK..KKK.",".MMM...MMM","MMM....MMM","MMM.....MMM","MMM.....MMM","MMM.....MMM","MMMM....MMMM","NNNN....NNNN"]],
-   torso:[11,12,["...NSSN...",".MMMMMMMM.","MMMMMMMMMM",".MMPPPPMM.",".MMPQQPMM.",".LLLLLGLL.",".PPPPPPPP.",".PMMPPMMP.","PMMMPPMMMP"]],
-   arm:[14,12,[".MMMM...","MMMMMM..","MMMMMM..",".NMMN...","..MMMM..","...MMMNN","......NN"]],
-   armX:[14,12,[".MMMM....","MMMMMM...","MMMMMMMM.",".NMMMMMNN","........."]],
+   legs:[12,21,[".KKK.KKK.",".KKK.KKK.",".McM.McM.",".MMM.MMM.",".NNN.NNN.",".MMM.MMM.",".MMM.MMM.",".MMMM.MMMM",".NNNN.NNNN"]],
+   walk:[11,21,["..KKKKKKK.",".KKK..KKK.",".McM...McM","MMM....MMM","NNN.....NNN","MMM.....MMM","MMM.....MMM","MMMM....MMMM","NNNN....NNNN"]],
+   torso:[11,12,["..MNeSNM..",".MMMMMMMM.","MMMMMMMMMM",".MMPPPPMM.",".MMPQQPMM.",".LLLLLGLL.",".PPPPPPPP.",".PMMPPMMP.","PMMMPPMMMP"]],
+   arm:[14,12,[".MMMM...","McMMMM..","MMMMMM..","NNMMN...","..MMMM..","...MMMNN","......NN"]],
+   armX:[14,12,[".MMMM....","McMMMM...","MMMMMMMM.","NNMMMMMNN","........."]],
    hand:'N'},
   monk:{
    backArm:[10,13,[".PP","SSS","SSS","SS.","ww.","SS."]],
    legs:[12,21,["PPPP.PPPP","PPPP.PPPP",".PPP..PPP",".PPP..PPP",".PPP..PPP",".www..www",".www..www",".SSSS.SSSS",".eeee.eeee"]],
    walk:[11,21,["..PPPPPPPP",".PPPP..PPP",".PPP...PPP","PPP....PPP","PPP.....PPP","www.....www","www.....www","SSSS....SSSS","eeee....eeee"]],
-   torso:[11,12,["...SSSS...",".PPSSSPPP.",".PPPSSPPP.",".PPPPSPPP.",".PPPPPPPP.",".QQQQQQQQ.",".PPPPPPQQ.","PPPPPPPPQ.","PPPPPPPPPP"]],
-   arm:[15,13,["PPP....","SSS....",".SSS...",".SSSS..","..wwwSS",".....SS"]],
-   armX:[15,13,["PPP......","SSSSSSS..",".SSSSwwSS","........."]],
+   torso:[11,12,["...SeSS...",".PPSSSPPP.",".PPPSSPPP.",".PPPPSPPP.",".PPPPPPPP.",".QQQQQQQQ.",".PPPPPPQQ.","PPPPPPPPQ.","PPPPPPPPPP"]],
+   arm:[15,13,["pPP....","eSS....",".eSS...",".eSSS..","..ewwSS",".....SS"]],
+   armX:[15,13,["pPP......","eSSSSSS..",".eSSSwwSS","........."]],
    hand:'S'}
  },
  hair:{
@@ -152,31 +152,32 @@ const HP={
  }
 };
 const WPN={
- sword:{draw(g){g.rect(21,5,2,11,'M');g.s(21,4,'M');g.rect(19,16,5,1,'G');g.rect(21,19,2,1,'G');}},
- greatsword:{draw(g){g.rect(21,0,3,16,'M');g.line(22,2,22,14,'N');g.s(22,-1,'M');g.rect(18,16,8,1,'G');g.rect(21,19,2,1,'G');}},
- axe:{draw(g){g.line(21,6,21,24,'W');g.poly([[22,5],[27,3],[29,8],[28,13],[22,11]],'M');g.line(23,4,23,12,'N');g.poly([[21,7],[18,8],[21,10]],'N');}},
- hammer:{draw(g){g.line(21,8,21,25,'W');g.rect(17,2,9,6,'M');g.rect(17,4,9,1,'G');g.rect(16,3,1,3,'N');g.rect(26,3,1,3,'N');}},
- spear:{draw(g){g.line(21,3,21,28,'W');g.rows(20,-1,[".M.","MMM","MMM",".M.",".N."]);g.rows(22,4,["JJJ","JJ.","J.."]);}},
- dagger:{draw(g){g.rect(22,16,1,3,'G');g.rect(23,16,3,1,'M');g.rect(23,17,4,1,'M');}},
- twindagger:{draw(g){g.rect(22,16,1,3,'G');g.rect(23,16,3,1,'M');g.rect(23,17,4,1,'M');g.rect(9,19,3,1,'G');g.line(10,20,8,23,'M');g.line(11,20,9,23,'M');},back:1},
- bow:{x:1,before:1,draw(g){g.path([[20,4],[22,7],[23,11],[24,15],[23,20],[22,24],[20,27]],'W');g.s(20,3,'G');g.s(20,28,'G');g.line(20,4,20,27,'w');g.line(14,15,24,15,'W');g.s(25,15,'M');g.px([[13,14],[13,16]],'R');}},
- staff_orb:{draw(g){g.line(21,5,21,29,'W');g.ell(21.5,2.5,2.6,2.6,'C');g.px([[19,5],[23,5],[19,4],[23,4]],'G');}},
- staff_crook:{draw(g){g.line(21,4,21,29,'W');g.path([[21,4],[21,1],[22,0],[24,0],[25,1],[25,3],[24,4]],'W');g.s(23,2,'C');}},
- staff_crystal:{draw(g){g.line(21,6,21,29,'W');g.poly([[21.5,-1.5],[24,3],[21.5,7.5],[19,3]],'C');g.px([[19,6],[24,6],[20,7],[23,7]],'G');}},
- staff_sun:{draw(g){g.line(21,7,21,29,'G');g.ell(21.5,3,3.2,3.2,'G');g.ell(21.5,3,1.7,1.7,'C');g.px([[21,-1],[17,3],[25,3],[18,0],[24,0]],'G');}},
- rod:{draw(g){g.line(21,11,21,21,'G');g.ell(21.5,9.5,1.9,1.9,'C');g.rect(20,11,3,1,'G');}},
- tome:{draw(g){g.rect(19,14,6,5,'J');g.rect(20,15,4,3,'w');g.line(22,15,22,17,'L');}},
- lute:{draw(g){g.line(19,17,25,10,'W');g.rect(25,9,2,2,'L');g.ell(16.5,19,4.2,3.2,'L');g.s(16,19,'K');g.s(17,19,'K');},under:1},
- harp:{draw(g){g.path([[22,8],[26,8],[27,11],[26,18],[22,21],[22,8]],'G');g.line(23,9,23,19,'w');g.line(25,9,25,17,'w');}},
- fists:{hand:'w',draw(g){g.rect(20,16,3,3,'w');g.px([[22,16],[22,18]],'G');}},
- claws:{draw(g){g.line(22,16,26,13,'M');g.line(22,17,27,17,'M');g.line(22,18,26,21,'M');}},
- longbow:{x:1,before:1,draw(g){g.path([[20,1],[22,4],[23,8],[24,12],[24,16],[24,19],[23,23],[22,27],[20,30]],'W');g.s(20,0,'G');g.s(20,31,'G');g.line(20,1,20,30,'w');g.line(14,15,24,15,'W');g.s(25,15,'M');g.px([[13,14],[13,16]],'Q');}},
- grimoire:{draw(g){g.rect(23,4,8,6,'J');g.rect(24,5,6,4,'w');g.line(27,5,27,8,'J');g.px([[23,4],[30,4],[23,9],[30,9]],'G');g.px([[25,6],[28,7],[25,8]],'C');g.px([[22,11],[31,2],[26,12]],'G');}},
+ // keys: M steel, N steel shade, c steel glint (flat), W wood, w bone, G gold, L leather, C element glow (flat), 9 white glint (flat). The hand sits at (20,17).
+ sword:{draw(g){g.rect(21,5,2,11,'M');g.rect(21,6,1,8,'c');g.s(21,4,'M');g.s(22,4,'c');g.rect(22,12,1,4,'N');g.rect(19,16,5,1,'G');g.s(19,16,'L');g.s(23,16,'L');g.rect(21,19,2,1,'L');g.rect(21,20,2,1,'G');}},
+ greatsword:{draw(g){g.rect(21,0,3,16,'M');g.line(22,2,22,14,'N');g.line(21,1,21,15,'c');g.s(22,-1,'M');g.s(23,15,'N');g.rect(18,16,8,1,'G');g.s(18,16,'L');g.s(25,16,'L');g.rect(21,19,2,1,'L');g.rect(21,20,3,1,'G');}},
+ axe:{draw(g){g.line(21,6,21,24,'W');g.s(20,10,'L');g.s(20,16,'L');g.poly([[22,5],[27,3],[29,8],[28,13],[22,11]],'M');g.line(23,4,23,12,'N');g.path([[27,3],[29,8],[28,13]],'c');g.poly([[21,7],[18,8],[21,10]],'N');g.s(18,8,'c');g.rect(21,25,1,1,'G');}},
+ hammer:{draw(g){g.line(21,8,21,25,'W');g.s(20,12,'L');g.s(20,18,'L');g.rect(17,2,9,6,'M');g.rect(17,2,9,1,'c');g.rect(17,4,9,1,'G');g.rect(16,3,1,3,'N');g.rect(26,3,1,3,'N');g.rect(17,7,9,1,'N');}},
+ spear:{draw(g){g.line(21,3,21,28,'W');g.rows(20,-1,[".c.","cMM","MMN",".M.",".N."]);g.rect(20,4,3,1,'G');g.rows(22,5,["JJJ","JJ.","J.."]);g.s(21,29,'G');}},
+ dagger:{draw(g){g.rect(22,16,1,3,'G');g.s(22,19,'L');g.rect(23,16,3,1,'c');g.rect(23,17,4,1,'M');g.s(26,16,'M');g.s(23,18,'N');}},
+ twindagger:{draw(g){g.rect(22,16,1,3,'G');g.s(22,19,'L');g.rect(23,16,3,1,'c');g.rect(23,17,4,1,'M');g.s(26,16,'M');g.rect(9,19,3,1,'G');g.line(10,20,8,23,'M');g.line(11,20,9,23,'N');g.s(8,23,'c');},back:1},
+ bow:{x:1,before:1,draw(g){g.path([[20,4],[22,7],[23,11],[24,15],[23,20],[22,24],[20,27]],'W');g.px([[22,8],[23,12],[23,18]],'L');g.s(20,3,'G');g.s(20,28,'G');g.line(20,4,20,27,'w');g.line(14,15,24,15,'W');g.s(25,15,'c');g.s(24,15,'M');g.px([[13,14],[13,16],[14,14]],'R');g.rect(23,14,2,3,'L');}},
+ staff_orb:{draw(g){g.line(21,5,21,29,'W');g.s(20,12,'L');g.s(20,18,'L');g.ell(21.5,2.5,2.6,2.6,'C');g.s(20,1,'9');g.px([[19,5],[23,5],[19,4],[23,4]],'G');g.rect(21,6,1,1,'G');}},
+ staff_crook:{draw(g){g.line(21,4,21,29,'W');g.s(20,14,'L');g.s(20,20,'L');g.path([[21,4],[21,1],[22,0],[24,0],[25,1],[25,3],[24,4]],'W');g.s(23,2,'C');g.s(24,1,'9');}},
+ staff_crystal:{draw(g){g.line(21,6,21,29,'W');g.s(20,14,'L');g.s(20,20,'L');g.poly([[21.5,-1.5],[24,3],[21.5,7.5],[19,3]],'C');g.s(21,1,'9');g.s(20,3,'9');g.px([[19,6],[24,6],[20,7],[23,7]],'G');}},
+ staff_sun:{draw(g){g.line(21,7,21,29,'G');g.ell(21.5,3,3.2,3.2,'G');g.ell(21.5,3,1.7,1.7,'C');g.s(21,2,'9');g.px([[21,-1],[17,3],[25,3],[18,0],[24,0]],'G');}},
+ rod:{draw(g){g.line(21,11,21,21,'G');g.ell(21.5,9.5,1.9,1.9,'C');g.s(21,9,'9');g.rect(20,11,3,1,'G');}},
+ tome:{draw(g){g.rect(19,14,6,5,'J');g.rect(20,15,4,3,'w');g.line(22,15,22,17,'L');g.rect(19,14,6,1,'j');g.s(24,18,'G');}},
+ lute:{draw(g){g.line(19,17,25,10,'W');g.rect(25,9,2,2,'L');g.ell(16.5,19,4.2,3.2,'L');g.s(16,19,'K');g.s(17,19,'K');g.line(14,18,18,16,'G');g.s(15,17,'9');},under:1},
+ harp:{draw(g){g.path([[22,8],[26,8],[27,11],[26,18],[22,21],[22,8]],'G');g.line(23,9,23,19,'w');g.line(25,9,25,17,'w');g.s(22,8,'9');}},
+ fists:{hand:'w',draw(g){g.rect(20,16,3,3,'w');g.px([[22,16],[22,18]],'G');g.s(20,16,'9');}},
+ claws:{draw(g){g.line(22,16,26,13,'M');g.line(22,17,27,17,'M');g.line(22,18,26,21,'M');g.px([[26,13],[27,17],[26,21]],'c');}},
+ longbow:{x:1,before:1,draw(g){g.path([[20,1],[22,4],[23,8],[24,12],[24,16],[24,19],[23,23],[22,27],[20,30]],'W');g.px([[23,9],[24,13],[24,18]],'L');g.s(20,0,'G');g.s(20,31,'G');g.line(20,1,20,30,'w');g.line(14,15,24,15,'W');g.s(25,15,'c');g.s(24,15,'M');g.px([[13,14],[13,16],[14,14]],'Q');g.rect(23,14,2,3,'L');}},
+ grimoire:{draw(g){g.rect(23,4,8,6,'J');g.rect(24,5,6,4,'w');g.line(27,5,27,8,'J');g.rect(23,4,8,1,'j');g.px([[23,4],[30,4],[23,9],[30,9]],'G');g.px([[25,6],[28,7],[25,8]],'C');g.px([[22,11],[31,2],[26,12]],'G');}},
  none:{draw(){}}
 };
 const SHIELD={
- kite:[[6,13,["MMMMMMM","MZZZZZM","MZZGZZM","MZGGGZM","MZZGZZM","MZZZZZM",".MZZZM.",".MZZZM.","..MZM..","...M..."]]],
- round:[[5,14,[".MMMMM.","MZZZZZM","MZZZZZM","MZZGZZM","MZZZZZM","MZZZZZM",".MMMMM."]]]
+ kite:[[6,13,["McMMMMM","MZZZZZM","MZZGZZN","MZGGGZN","MZZGZZN","MZZZZZN",".MZZZN.",".MZZZN.","..MZN..","...N..."]]],
+ round:[[5,14,[".McMMM.","MZZZZZM","MZZZZZN","MZZGZZN","MZZZZZN","MZZZZZN",".NNNNN."]]]
 };
 const SKINS=['#f6d1b0','#efc29a','#d9a074','#b07850','#7e4e30','#5a3620'];
 function heroPal(L,els){
@@ -186,30 +187,40 @@ function heroPal(L,els){
 }
 function heroGrid(L,walk){
   const g=new PG(34,34,1,1),B=HP.body[L.b],W=WPN[L.wpn||'none'],hair=HP.hair[L.hair||'short'];
-  const R=(p)=>g.rows(p[0],p[1],p[2]);
+  const hd=new PG(34,34,1,1);// the head layer (head, hair, face, hat) is built apart so a walking hero can bob it 1px
+  const R=(p)=>g.rows(p[0],p[1],p[2]),RH=(p)=>hd.rows(p[0],p[1],p[2]);
+  const bob=walk&&!L.vill?1:0;
+  // a quiver on the archer's back (the class reads in the silhouette): behind the shoulder, feathers above it
+  if((L.wpn==='bow'||L.wpn==='longbow')&&!L.vill&&!(L.back||[]).includes('pack')&&!(L.back||[]).includes('cape'))
+    {g.line(10,18,7,10,'L',2);g.px([[6,8],[7,8],[8,9],[6,9]],'w');g.px([[7,7],[5,9]],'C');g.px([[9,14],[8,12]],'G');}
   (L.back||[]).forEach(k=>HP.back[k].forEach(R));
   if(W.back)W.draw(g); // second dagger in the back hand
-  R(B.backArm);
+  // the far arm swings opposite the stride
+  if(walk&&!L.vill){const b=B.backArm;g.rows(b[0]-1,b[1]+1,b[2]);}else R(B.backArm);
   if(L.sh)SHIELD[L.sh].forEach(R);
   R(walk?B.walk:B.legs);
   R(B.torso);
   if(W.under)W.draw(g);
-  g.rows(11,3,HP.head);
-  hair.p&&hair.p.forEach(R);
-  if(hair.curly){g.ell(15.5,4,6.8,4.4,'H');g.ell(12,8,2.8,3.4,'H');g.ell(20,6,2,2,'H');g.rect(17,7,4,0,'H');g.px([[13,3],[16,2],[19,4],[12,7]],'h');}
-  if(hair.bun)g.ell(hair.bun[0]+.5,hair.bun[1]+1.5,2.6,2.1,'H');
-  if(hair.tie)g.px(hair.tie,'Q');
-  if(hair.ear&&!(L.hat==='hood'||L.hat==='greathelm'))g.px([[12,7],[12,8],[13,8]],'e');
-  (L.face||[]).forEach(f=>HP.face[f].forEach(R));
-  if(L.hat)HP.hat[L.hat].forEach(R);
-  if(L.hat==='greathelm')g.px([[16,7],[19,7]],'C');
+  hd.rows(11,3,HP.head);
+  hd.px([[15,6],[16,6],[18,6],[19,6]],'l');// brows
+  hair.p&&hair.p.forEach(RH);
+  if(hair.curly){hd.ell(15.5,4,6.8,4.4,'H');hd.ell(12,8,2.8,3.4,'H');hd.ell(20,6,2,2,'H');hd.px([[13,3],[16,2],[19,4],[12,7],[14,2],[18,3]],'h');hd.px([[12,9],[20,8]],'l');}
+  if(hair.bun){hd.ell(hair.bun[0]+.5,hair.bun[1]+1.5,2.6,2.1,'H');hd.px([[hair.bun[0],hair.bun[1]],[hair.bun[0]+1,hair.bun[1]]],'h');}
+  if(hair.tie)hd.px(hair.tie,'Q');
+  if(hair.ear&&!(L.hat==='hood'||L.hat==='greathelm'))hd.px([[12,7],[12,8],[13,8]],'e');
+  (L.face||[]).forEach(f=>HP.face[f].forEach(RH));
+  if(L.hat)HP.hat[L.hat].forEach(RH);
+  if(L.hat==='greathelm')hd.px([[16,7],[19,7]],'C');
+  // the head layer lands on the body (1px lower on the stride frame; the neck stays)
+  for(let y=0;y<hd.h;y++)for(let x=0;x<hd.w;x++){const k=hd.a[y*hd.w+x];if(!k)continue;const ty=y+bob;if(ty<g.h)g.a[ty*g.w+x]=k;}
   if(W.before&&!W.back)W.draw(g);
   R(W.x?B.armX:B.arm);
   if(!W.before&&!W.back&&!W.under)W.draw(g);
-  if(W.under&&!W.before){/* instrument held under arm */}
   const hk=W.hand||B.hand;
+  // the hand: a 2x2 block (the pose system looks for these four cells); with a real hand key it gets a thumb and a knuckle line
   if(W.x)g.rect(22,15,2,2,hk);else if(L.wpn!=='lute'&&L.wpn!=='tome'&&L.wpn!=='harp'&&L.wpn!=='grimoire')g.rect(20,17,2,2,hk);
   if(L.wpn==='twindagger')g.rect(20,17,2,2,hk);
+  if(hk==='S'&&!W.x&&W!==WPN.none)g.s(21,18,'e');
   return g;
 }
 
@@ -1024,9 +1035,11 @@ function legsFB(g,L,frame){
   [[12,frame===1?2:0],[17,frame===2?2:0]].forEach(([x,lift])=>{
     if(robe){g.rect(x,28-lift,3,1,'B');g.rect(x,29-lift,3,1,'b');return;}
     g.rect(x,21,3,4-(lift?1:0),P);
+    if(!heavy&&!monk&&!lift)g.rect(x,23,3,1,'k');
     if(heavy)g.rect(x,23,3,1,'M');
     if(monk)g.rect(x,25-lift,3,2,'w');
     g.rect(x,(monk?27:25)-lift,3,(monk?1:3),BT);
+    if(!monk)g.rect(x,25-lift,3,1,heavy?'N':'b');
     g.rect(x,28-lift,3,1,BT);g.rect(x,29-lift,3,1,SO);
   });
 }
@@ -1034,16 +1047,16 @@ function torsoFB(g,L,view){
   const b=L.b,front=view==='front';
   if(b==='light'){
     g.sym(11,12,["...QS",".PPPP","PPPPP",".PPP"+(front?'Q':'P'),".PPP"+(front?'Q':'P'),".LLL"+(front?'G':'L'),".PPPP","PPPPP","QQQQQ"]);
-    g.sym(9,13,[".P","PP","PP","PP","PP","SS"]);
+    g.sym(9,13,[".p","Pp","Pp","Pp","Pp","SS"]);
   }else if(b==='robe'){
     g.sym(10,12,["....QS","..PPPP",".PPPP"+(front?'Q':'P'),".PPPP"+(front?'Q':'P'),".PPPP"+(front?'Q':'P'),"..LLL"+(front?'G':'L'),"..PPP"+(front?'Q':'P'),"..PPP"+(front?'Q':'P'),".PPPP"+(front?'Q':'P'),".PPPP"+(front?'Q':'P'),".PPPPP","PPPPPP","PPPPPP","PPPPPP","PPPPPP","QQQQQQ"]);
-    g.sym(8,13,[".PP","PPP","PPP","PPP","PPP",".SS"]);
+    g.sym(8,13,[".Pp","PPp","PPp","PPp","PPp",".SS"]);
   }else if(b==='heavy'){
     g.sym(10,12,["....NS","..MMMM",".MMMMM","..MMP"+(front?'P':'M'),"..MMP"+(front?'Q':'M'),"..LLL"+(front?'G':'L'),"..PPPP","..MMPP",".MMMMP"]);
-    g.sym(7,12,["..MMM","MMMMM","MMMM.",".MM..",".MM..",".MM..",".NN.."]);
+    g.sym(7,12,["..McM","MMcMM","MMMM.",".MM..",".MM..",".MM..",".NN.."]);
   }else{
     g.sym(11,12,["...SS",front?".PPSS":".PPPP",front?"PPPPS":"PPPPP",".PPPP",".PPPP",".QQQQ",".PPPP","PPPPP","PPPPP"]);
-    g.sym(9,13,[".P","SS","SS","SS","ww","SS"]);
+    g.sym(9,13,[".p","Se","Se","Se","we","SS"]);
   }
 }
 const HAIR_FB={
@@ -1062,8 +1075,8 @@ const HAIR_FB={
 };
 function headFB(g,L,view){
   const front=view==='front',H=HAIR_FB[L.hair||'short'],hood=L.hat==='hood'||L.hat==='greathelm';
-  g.sym(11,3,["..SSS",".SSSS","SSSSS","SSSSS",front?"SSESS":"SSSSS",front?"SSESS":"SSSSS","SSSSS",".SSSS","..SSS"]);
-  if(front)g.px([[15,10],[16,10]],'m');
+  g.sym(11,3,["..SSS",".SSSS","SSSSS","SSSSS",front?"S9ESS":"SSSSS",front?"SEESS":"SSSSS",front?"SSSSe":"SSSSS",".SSSS","..eSS"]);
+  if(front){g.px([[15,10],[16,10]],'m');g.px([[12,6],[13,6],[18,6],[19,6]],'l');g.s(18,7,'9');g.s(19,7,'E');}
   if(!hood&&L.hair!=='long'&&L.hair!=='curly'&&L.hair!=='bob'){g.px([[10,7],[10,8]],'e');g.px([[21,7],[21,8]],'e');}
   if(front){
     if(H.f.length)g.sym(10,1,H.f);
@@ -1130,6 +1143,10 @@ function faceFB(g,L,view){
 function backItemsFB(g,L,view,pass){
   // pass 'under' = drawn behind body; 'over' = drawn on top of body
   const front=view==='front';
+  if((L.wpn==='bow'||L.wpn==='longbow')&&!L.vill&&!(L.back||[]).includes('pack')&&!(L.back||[]).includes('cape')){
+    if(front&&pass==='under'){g.px([[22,9],[23,8],[21,9]],'w');g.px([[23,9],[22,8]],'C');g.rect(21,10,2,4,'L');}
+    if(!front&&pass==='over'){g.line(12,11,20,20,'L');g.rect(19,9,4,9,'L');g.rect(19,9,4,1,'N');g.px([[20,8],[22,8],[21,7]],'w');g.px([[19,8],[23,8]],'C');g.px([[20,12],[22,15]],'G');}
+  }
   (L.back||[]).forEach(k=>{
     if(k==='cape'){if(front&&pass==='under'){g.rect(8,13,2,13,'Y');g.rect(22,13,2,13,'Y');}if(!front&&pass==='over'){g.sym(9,12,["..YYYY",".YYYYY",".YYYYY","YYYYYY","YYYYYY","YYYYYY","YYYYYY","YYYYYY","YYYYYY","YYYYYY","YYYYYY","YYYYYY","YYYYYY",".YYYYY"]);}}
     if(k==='scarf'&&pass==='over'){g.rect(12,12,8,2,'Y');if(front)g.rect(18,14,2,5,'Y');else g.rect(15,14,2,4,'Y');}

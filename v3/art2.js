@@ -3,10 +3,10 @@
 HP.hair.flame={ear:1,p:[[8,-2,["...H...H.H.....","..HH..HHHH.H...",".HHHH.HHHHHHH..","HHHHHHHHHHHHHH.",".HHHHHHHHHHHHHH","HHHHHHHHHHHHHH.",".HHHHH.HHH.H.HH",".HHHH..........","HHHHH..........",".HHH..........."]]]};
 HAIR_FB.flame={f:["..H..H","..HHHH",".HHHHH","HHHHHH",".HHHHH","HH.H.H","HH....","HH....","H....."],b:10,spike:1};
 // new weapons, side view (hand at 20,17; crossbow uses the extended arm at 22,15)
-WPN.katana={draw(g){g.path([[21,16],[21,9],[22,4],[24,0]],'M');g.path([[22,15],[22,9],[23,4]],'w');g.rect(19,16,5,1,'G');g.rect(21,19,1,2,'K');}};
-WPN.scythe={draw(g){g.line(21,0,21,29,'W');g.poly([[21,0],[13,-1],[6,2],[2,7],[8,4],[14,2],[21,2]],'M');g.path([[3,6],[8,3],[14,1]],'w');g.rect(20,1,3,1,'G');}};
-WPN.trident={draw(g){g.line(21,3,21,29,'W');g.rect(18,2,7,1,'G');g.rect(18,-2,1,4,'M');g.rect(21,-4,1,6,'M');g.rect(24,-2,1,4,'M');g.px([[18,-3],[21,-5],[24,-3]],'w');}};
-WPN.mace={draw(g){g.line(21,9,21,23,'W');g.ell(21.5,5.5,3.3,3.3,'M');g.px([[21,1],[16,5],[26,5],[21,10],[18,2],[25,2]],'N');g.rect(19,9,5,1,'G');}};
+WPN.katana={draw(g){g.path([[21,16],[21,9],[22,4],[24,0]],'M');g.path([[22,15],[22,9],[23,4]],'c');g.s(24,0,'c');g.rect(19,16,5,1,'G');g.rect(21,19,1,2,'K');g.s(22,19,'Q');g.s(22,21,'Q');}};
+WPN.scythe={draw(g){g.line(21,0,21,29,'W');g.poly([[21,0],[13,-1],[6,2],[2,7],[8,4],[14,2],[21,2]],'M');g.path([[3,6],[8,3],[14,1]],'c');g.s(20,10,'L');g.s(20,18,'L');g.rect(20,1,3,1,'G');}};
+WPN.trident={draw(g){g.line(21,3,21,29,'W');g.rect(18,2,7,1,'G');g.rect(18,-2,1,4,'M');g.rect(21,-4,1,6,'M');g.rect(24,-2,1,4,'M');g.px([[18,-3],[21,-5],[24,-3]],'c');g.s(20,12,'L');g.s(20,18,'L');}};
+WPN.mace={draw(g){g.line(21,9,21,23,'W');g.ell(21.5,5.5,3.3,3.3,'M');g.s(20,4,'c');g.s(21,3,'c');g.px([[21,1],[16,5],[26,5],[21,10],[18,2],[25,2]],'N');g.rect(19,9,5,1,'G');}};
 WPN.crossbow={x:1,draw(g){g.rect(17,15,10,2,'W');g.path([[26,9],[27,12],[27,19],[26,22]],'M');g.line(24,10,24,21,'w');g.rect(19,14,10,1,'M');g.s(29,14,'G');}};
 WPN.fan={draw(g){for(let a=-150;a<=-30;a+=4){const r=a*Math.PI/180;g.line(21,17,21+Math.cos(r)*8,17+Math.sin(r)*8,'Q');}for(let a=-150;a<=-30;a+=20){const r=a*Math.PI/180;g.line(21,17,21+Math.cos(r)*8,17+Math.sin(r)*8,'G');}}};
 const _weaponFB0=weaponFB;
@@ -131,7 +131,53 @@ heroPal=function(L,els,id){
   return p;
 };
 const HFLAT='EmeCrhOXD';
-function heroGridSide(L,walk,id){const g=_heroGrid0(L,walk);if(id)drawFlair(g,L,id,'side');raceSide(g,L);const o=toTall(g,6);const v=new PG(36,40,2,7);v.a=o.a;raceTop(v,L);applySize(o,L);return o;}
+// ===== the hero tone pass (0.14.6): hand-shaded looking garments from one rule, run on every finished side, front and back grid =====
+// Every garment gets two tones (light from the top left): in each row the last 1 or 2 cells of a run of cloth, trousers, hood or steel become the
+// shade key (P>p J>j Y>z K>k M>N); steel gets a glint pixel (c) on its top left corner; hair gets a sheen band under its top edge (h), a
+// parting (l) and a darker last cell (l). The pass only reads upper case keys and treats a key and its shade as one family, so running it
+// twice (the pose builder does) changes nothing. Villagers (look.vill) keep the two tone of npcart9.js.
+const HT_FAM={P:'P',p:'P',J:'J',j:'J',Y:'Y',z:'Y',K:'K',k:'K',M:'M',N:'M',H:'H',h:'H',l:'H'},HT_SH={P:'p',J:'j',Y:'z',K:'k',M:'N'};
+function heroTone(o,view){
+  const W=o.w,H=o.h,A=o.a,O=A.slice(),fam=k=>HT_FAM[k]||'';
+  let hairTop=1e9;
+  for(let y=0;y<H;y++){let x=0;while(x<W){const f=fam(A[y*W+x]);if(!f){x++;continue;}
+    let x1=x;while(x1+1<W&&fam(A[y*W+x1+1])===f)x1++;
+    const n=x1-x+1;
+    if(f==='H'){
+      if(n>=5){
+        // the cell above is not hair: this run starts a mass; the row under it gets the sheen over the left 60%
+        for(let i=x;i<=x1;i++){const free=y===0||!A[(y-1)*W+i];if(free&&i-x<=n*.6&&y+1<H&&A[(y+1)*W+i]==='H')O[(y+1)*W+i]='h';}
+        if(A[x1+(y*W)]==='H'&&n>=6&&y+1<H&&fam(A[(y+1)*W+x1])==='H')O[y*W+x1]='l';
+        if(y<hairTop&&(y===0||!A[(y-1)*W+x]))hairTop=y;
+      }
+    }else if(n>=4){
+      const band=n>=8?2:1,sh=HT_SH[f];
+      for(let i=0;i<band;i++){const c=x1-i;if(A[y*W+c]===f&&(c-x)>=2)O[y*W+c]=sh;}
+      // steel: a glint on the first cell of a run that has nothing above it
+      if(f==='M'&&n>=3&&A[y*W+x]==='M'&&(y===0||!A[(y-1)*W+x])&&(y+1<H&&A[(y+1)*W+x]==='M'))O[y*W+x]='c';
+    }
+    x=x1+1;}}
+  // a parting on the front and the side: a short dark line from the top of the hair mass, a little right of centre
+  if(view!=='back'&&hairTop<1e9){
+    for(let y=hairTop;y<hairTop+4&&y<H;y++){
+      let best=null;for(let x=0;x<W;){if(fam(A[y*W+x])!=='H'){x++;continue;}let x1=x;while(x1+1<W&&fam(A[y*W+x1+1])==='H')x1++;if(!best||x1-x>best[1]-best[0])best=[x,x1];x=x1+1;}
+      if(best&&best[1]-best[0]>=5&&y>hairTop){const px=best[0]+Math.floor((best[1]-best[0]+1)*.62)+((y-hairTop)>>1);if(A[y*W+px]==='H'||A[y*W+px]==='h')O[y*W+px]='l';}
+    }
+  }
+  for(let i=0;i<A.length;i++)A[i]=O[i];
+}
+// the derived keys of the hero palette: shades of cloth, hair and steel, the steel glint, the eye catchlight. Villager palettes already carry theirs.
+function heroPalD(p){
+  const T=(k,c,f)=>{if(!p[k]&&c)p[k]=f?f(c):c;};
+  const dk=(c,f)=>mix(shade(c,f),'#2c1458',.12);
+  T('p',p.P,c=>dk(c,.78));T('j',p.J,c=>dk(c,.76));T('z',p.Y,c=>dk(c,.78));T('k',p.K,c=>dk(c,.72));T('q',p.Q,c=>dk(c,.8));
+  T('l',p.H,c=>dk(c,.66));T('h',p.H,c=>tint(c,.34));
+  T('c',p.M,c=>tint(c,.78));T('9','#ffffff');
+  return p;
+}
+const HNOAO='SHepjkzlq',HFLAT9=HFLAT+'9';
+
+function heroGridSide(L,walk,id){const g=_heroGrid0(L,walk);if(id)drawFlair(g,L,id,'side');raceSide(g,L);const o=toTall(g,6);const v=new PG(36,40,2,7);v.a=o.a;raceTop(v,L);applySize(o,L);if(!L.vill)heroTone(o,'side');return o;}
 function heroGridView(L,view,frame,id){
   if(view==='side')return heroGridSide(L,frame>0,id);
   const g=new PG(34,38,1,5);
@@ -139,13 +185,13 @@ function heroGridView(L,view,frame,id){
   legsFB(g,L,frame);torsoFB(g,L,view);drawFlair(g,L,id,view);headFB(g,L,view);faceFB(g,L,view);
   if(L.hat)hatFB(g,L,view);
   backItemsFB(g,L,view,'over');raceFB(g,L,view,'over');weaponFB(g,L,view);
-  const o=toTall(g,2);applySize(o,L);return o;
+  const o=toTall(g,2);applySize(o,L);if(!L.vill)heroTone(o,view);return o;
 }
-function heroCanvas(id,walk){const t=TPL[id];if(t.mon)return monCanvas(t.art);const L=heroLook(id);return paint(heroGridSide(L,walk,id),heroPal(L,t.el,id),{flat:HFLAT,noAO:'SHe'});}
+function heroCanvas(id,walk){const t=TPL[id];if(t.mon)return monCanvas(t.art);const L=heroLook(id);return paint(heroGridSide(L,walk,id),heroPalD(heroPal(L,t.el,id)),{flat:HFLAT9,noAO:HNOAO});}
 function heroURL(id,walk){if(TPL[id]&&TPL[id].mon)return monURL(TPL[id].art);return cvURL('h3:'+id+(walk?':w':'')+lookKey(id),()=>heroCanvas(id,walk));}
 function walkerCanvas(key,L,els,id,view,frame){
   if(id&&TPL[id]&&TPL[id].mon)return imgOf('wkm:'+id,()=>monCanvas(TPL[id].art));
-  return imgOf('wk3:'+key+':'+view+':'+frame,()=>paint(heroGridView(L,view,frame,id),heroPal(L,els,id),{flat:HFLAT,noAO:'SHe'}));
+  return imgOf('wk3:'+key+':'+view+':'+frame,()=>paint(heroGridView(L,view,frame,id),heroPalD(heroPal(L,els,id)),{flat:HFLAT9,noAO:HNOAO}));
 }
 // a bust for portraits: top 26 rows of the side view
 

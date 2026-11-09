@@ -44,7 +44,7 @@ function hdRamp(c,mat){const key=c+mat;if(HDR[key])return HDR[key];let R;
 function hdSat(c){const [r,g,b]=hx(c),M=Math.max(r,g,b),m=Math.min(r,g,b);return M?(M-m)/M:0;}
 function hdLum(c){const [r,g,b]=hx(c);return .3*r+.59*g+.11*b;}
 // mat per key: s skin, h hair, m metal, c everything else. Heroes name their keys; monsters guess metal from grey M, N and G.
-const HD_HERO_MAT={S:'s',e:'s',H:'h',T:'h',M:'m',N:'m',G:'m',I:'m'};
+const HD_HERO_MAT={S:'s',e:'s',H:'h',T:'h',h:'h',l:'h',M:'m',N:'m',c:'m',G:'m',I:'m'};
 function hdMats(pal,hero){const o={};Object.keys(pal).forEach(k=>{if(!pal[k])return;if(hero)o[k]=HD_HERO_MAT[k]||'c';
   else o[k]=(k==='G'||((k==='M'||k==='N')&&hdSat(pal[k])<.32))?'m':'c';});return o;}
 // everything a pixel of this colour and material needs, built once per colour
@@ -120,6 +120,7 @@ function paintHD(g,pal,opt){
 // ----- heroes -----
 // eyes: a dark lid row, iris (hair coloured) with a catchlight, a lighter lower iris. Works on the doubled grid.
 function faceHD(K,W,H){
+  for(let i=0;i<K.length;i++)if(K[i]==='9')K[i]='E';// the catchlight marker of the logical grid is part of the eye here (the HD eye makes its own)
   for(let i=0;i<K.length;i++){if(K[i]!=='E')continue;const x=i%W,y=(i/W)|0;if(y>0&&K[i-W]==='E')continue;
     let n=0;while(y+n<H&&K[i+n*W]==='E')n++;if(n<3)continue;const left=!(x>0&&K[i-1]==='E');
     for(let j=1;j<n;j++){const p=i+j*W;K[p]=j===n-1?'2':(j===1&&left?'3':'1');}
@@ -136,7 +137,7 @@ function texHD(q,x,y,k,m,u,d,l,r){
 const IRIS=['#3a5aa0','#6a4428','#2e7058','#7a5a2a','#5a3a8a','#2a6a8a'];
 function heroPalHD(p){const o=Object.assign({},p);const E=p.E||'#1a1020',dark=hdLum(E)<60;
   const iris=dark?IRIS[hashS((p.H||'')+(p.S||'')+(p.P||''))%IRIS.length]:E;o.E=mix(E,'#140a18',.5);o['1']=iris;o['2']=tint(iris,.34);o['3']='#ffffff';o['4']=mix(p.S||'#f6d1b0','#ff7a8a',.38);o['5']=mix(shade(p.H||'#4a2c1a',.6),'#1a1020',.3);return o;}
-const HFLAT_HD=HFLAT+'12345';
+const HFLAT_HD=HFLAT9+'12345';
 // monster families (archetype.js types) get their own surface: fur, plates, feathers, leaf spots, a wet sheen, tattered folds
 function monFam(art){try{const b=String(art).replace(/^echo_/,'');const t=(MON_TY[art]||BOSS_TY[art]||MON_TY[b]||BOSS_TY[b]||[]);
   if(t.length)return t;const r=typeof REALMS!=='undefined'&&Object.keys(MON_TY).find(k=>b.endsWith('_'+k)||b.startsWith(k+'_'));return r?MON_TY[r]:[];}catch(e){return [];}}
@@ -158,15 +159,15 @@ function stretchHero(o,L){
   const n=rows.length-o.h,pad=Math.max(0,n0-n),H=o.h+n0,out=new PG(o.w,H,0,0);
   for(let j=0;j<rows.length&&j+pad<H;j++){const sy=rows[j];for(let x=0;x<o.w;x++)out.a[(j+pad)*o.w+x]=o.a[sy*o.w+x];}
   return out;}
-const HERO_OPT={flat:HFLAT_HD,noAO:'SHe',hero:1,detail:faceHD,tex:texHD};
+const HERO_OPT={flat:HFLAT_HD,noAO:HNOAO,hero:1,detail:faceHD,tex:texHD};
 if(SPRITE_HD){
   const hgs0=heroGridSide,hgv0=heroGridView;
   heroGridSide=function(L,walk,id){return stretchHero(hgs0(L,walk,id),L);};
   heroGridView=function(L,view,frame,id){const g=hgv0(L,view,frame,id);return view==='side'?g:stretchHero(g,L);};
-  heroCanvas=function(id,walk){const t=TPL[id];if(t.mon)return monCanvas(t.art);const L=heroLook(id);return paintHD(heroGridSide(L,walk,id),heroPalHD(heroPal(L,t.el,id)),HERO_OPT);};
+  heroCanvas=function(id,walk){const t=TPL[id];if(t.mon)return monCanvas(t.art);const L=heroLook(id);return paintHD(heroGridSide(L,walk,id),heroPalHD(heroPalD(heroPal(L,t.el,id))),HERO_OPT);};
   walkerCanvas=function(key,L,els,id,view,frame){
     if(id&&TPL[id]&&TPL[id].mon)return imgOf('wkm:'+id,()=>monCanvas(TPL[id].art));
-    return imgOf('wk3:'+key+':'+view+':'+frame,()=>paintHD(heroGridView(L,view,frame,id),heroPalHD(heroPal(L,els,id)),HERO_OPT));};
+    return imgOf('wk3:'+key+':'+view+':'+frame,()=>paintHD(heroGridView(L,view,frame,id),heroPalHD(heroPalD(heroPal(L,els,id))),HERO_OPT));};
   monCanvas=function(art,f){return monFramed(art,f,()=>{const s=MON_SIZE(art),g=new PG(s,s,0,0),o=MART[art](g,f);const pal=Object.assign({},o.pal);if(MEXTRA[art])MEXTRA[art](g,pal);
     return paintHD(g,pal,{flat:o.flat||'',rim:o.rim,glow:o.glow,tex:monTex(art)});});};
   monURL=function(art){return cvURL('m3:'+art,()=>monCanvas(art));};

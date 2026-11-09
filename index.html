@@ -1843,7 +1843,7 @@ html.rm .battle.b3 .cmd .mi.b9glow{animation:none}
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.14.6";const APP_BUILD="2d5b939cfaa2";
+(function(){const APP_VER="0.14.7";const APP_BUILD="48eae30f15b7";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2536,7 +2536,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.14.6";const APP_BUILD="2d5b939cfaa2";
+const APP_VER="0.14.7";const APP_BUILD="48eae30f15b7";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2544,6 +2544,7 @@ const APP_VER="0.14.6";const APP_BUILD="2d5b939cfaa2";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.14.7',['Wayfarers, pass one: every hero gets a real face (2x2 eyes with a highlight, brows, a mouth, nose and jaw shade), a neck, two-tone cloth and trousers lit from the left, sleeves that separate from the torso, hair with a sheen and a parting, knees and boot cuffs, steel glints, blades with a bright edge and a dark bevel, wrapped hafts, quivers on archers, and a 1px head bob on the stride. Portraits use the same sprite, so they read better too. A deeper rebuild of the body proportions follows.']],
  ['Beta v0.14.6',['Party cards have an Equip button beside Sheet: it opens Backpack > Equipment with that hero\'s row scrolled into view and lit.']],
  ['Beta v0.14.5',['Menu on phones: the seven group tabs sit four and three across two even rows instead of leaving Settings alone on a row of its own.']],
  ['Beta v0.14.4',['Sanctums are sacred places that belong to their land now. Outside: a stone shrine gate with two pillars and a stepped lintel, prayer ribbons and a bronze bell, a worn stair up to a door of light, two stone lanterns that glow at dusk, and a ring of lighter ground with a path of flat stones; moss and flowers, salt and kelp, ember cracks, snow and icicles, gilt or star dust on the stone by realm. Inside: pale bone and warm-grey stone with the realm\'s accent instead of crimson, carved columns, hanging prayer cloths, stained-glass windows with light on the floor, a cloister garden in the courtyard (flower beds, a raked gravel garden, stepping stones), stone lanterns, and a hall with a long runner carpet and candles up to the rune circle, with golden motes in the air and a calm new Sanctum theme (harp, choir and organ).']],
@@ -4081,39 +4082,39 @@ function cvURL(key,fn){if(URL_CACHE[key])return URL_CACHE[key];const c=fn();retu
 // =================== HEROES ===================
 // Characters are drawn facing right on a 32x32 grid (plus a 1px border for the outline).
 const HP={
- head:["..SSSSSS..",".SSSSSSSS.","SSSSSSSSSS","SSSSSSSSSS","SSSSSESSES","SSSSSESSES","SSSSSSSSSS",".SSSSSSmS.","..SSSSSS.."],
+ head:["..SSSSSS..",".SSSSSSSS.","SSSSSSSSSS","SSSSSSSSSS","SSSS9ES9ES","SSSSEESEES","SSSSSSSSSS",".SSSSSmmSS","..eSSSSSe."],
  body:{
   light:{
    backArm:[10,13,[".PP","PPP","PPP","PP.","PP.","SS."]],
-   legs:[12,21,[".KKK.KKK.",".KKK.KKK.",".KKK.KKK.",".KKK.KKK.",".BBB.BBB.",".BBB.BBB.",".BBB.BBB.",".BBBB.BBBB",".bbbb.bbbb"]],
-   walk:[11,21,["..KKKKKKK.",".KKK..KKK.",".KKK...KKK","KKK....KKK","BBB.....BBB","BBB.....BBB","BBB.....BBB","BBBB....BBBB","bbbb....bbbb"]],
-   torso:[11,12,["...QSSQ...",".PPPPPPPP.",".PPPPPPPP.",".PPPPPQPP.",".PPPPPQPP.",".LLLLLGLL.",".PPPPPPPP.","PPPPPPPPPP","QQQQQQQQQQ"]],
-   arm:[15,13,["PPP....","PPP....",".PPP...",".PPPP..","..PPPSS",".....SS"]],
-   armX:[15,13,["PPP......","PPPPPPP..",".PPPPPPSS","........."]],
+   legs:[12,21,[".KKK.KKK.",".KKK.KKK.",".KKK.KKK.",".kkk.kkk.",".BBB.BBB.",".BbB.BbB.",".BBB.BBB.",".BBBB.BBBB",".bbbb.bbbb"]],
+   walk:[11,21,["..KKKKKKK.",".KKK..KKK.",".KKK...KKK","kkk....kkk","BBB.....BBB","BbB.....BbB","BBB.....BBB","BBBB....BBBB","bbbb....bbbb"]],
+   torso:[11,12,["..PQeSQP..",".PPPPPPPP.",".PPPPPPPP.",".PPPPPQPP.",".PPPPPQPP.",".LLLLLGLL.",".PPPPPPPP.","PPPPPPPPPP","QQQQQQQQQQ"]],
+   arm:[15,13,["pPP....","pPP....",".pPP...",".pPPP..","..pPPSS",".....SS"]],
+   armX:[15,13,["pPP......","pPPPPPP..",".pPPPPPSS","........."]],
    hand:'S'},
   robe:{
    backArm:[9,13,[".PP","PPP","PPPP","PPPP","PPPP",".SS."]],
    legs:[12,28,["BBB..BBBB","bbb..bbbbb"]],
    walk:[11,28,["BBB....BBBB","bbb....bbbbb"]],
-   torso:[10,12,["....QSSQ.....","..PPPPPPPP...","..PPPPPQPP...","..PPPPPQPP...","..PPPPPQPP...","..LLLLLGLL...","..PPPPPQPP...","..PPPPPQPP...",".PPPPPPQPPP..",".PPPPPPQPPP..",".PPPPPPQPPP..",".PPPPPPPQPPP.","PPPPPPPPQPPP.","PPPPPPPPQPPPP","PPPPPPPPQPPPP","QQQQQQQQQQQQQ"]],
-   arm:[15,13,["PPP....","PPPP...",".PPPP..",".PPPPP.","..QPPSS",".....SS"]],
-   armX:[15,13,["PPP......","PPPPPPP..",".PPPPPQSS","........."]],
+   torso:[10,12,["...PQeSQ.....","..PPPPPPPP...","..PPPPPQPP...","..PPPPPQPP...","..PPPPPQPP...","..LLLLLGLL...","..PPPPPQPP...","..PPPPPQPP...",".PPpPPPQPPP..",".PPpPPPQPPP..",".PPpPPPQPPP..",".PPPpPPPQPPP.","PPPPpPPPQPPP.","PPPPPpPPQPPPP","PPPPPpPPQPPPP","QQQQQQQQQQQQQ"]],
+   arm:[15,13,["pPP....","pPPP...",".pPPP..",".pPPPP.","..QPPSS",".....SS"]],
+   armX:[15,13,["pPP......","pPPPPPP..",".pPPPPQSS","........."]],
    hand:'S'},
   heavy:{
    backArm:[10,13,["MMM","MMM","NMM",".MM",".MM",".NN"]],
-   legs:[12,21,[".KKK.KKK.",".KKK.KKK.",".MMM.MMM.",".MMM.MMM.",".MMM.MMM.",".MMM.MMM.",".MMM.MMM.",".MMMM.MMMM",".NNNN.NNNN"]],
-   walk:[11,21,["..KKKKKKK.",".KKK..KKK.",".MMM...MMM","MMM....MMM","MMM.....MMM","MMM.....MMM","MMM.....MMM","MMMM....MMMM","NNNN....NNNN"]],
-   torso:[11,12,["...NSSN...",".MMMMMMMM.","MMMMMMMMMM",".MMPPPPMM.",".MMPQQPMM.",".LLLLLGLL.",".PPPPPPPP.",".PMMPPMMP.","PMMMPPMMMP"]],
-   arm:[14,12,[".MMMM...","MMMMMM..","MMMMMM..",".NMMN...","..MMMM..","...MMMNN","......NN"]],
-   armX:[14,12,[".MMMM....","MMMMMM...","MMMMMMMM.",".NMMMMMNN","........."]],
+   legs:[12,21,[".KKK.KKK.",".KKK.KKK.",".McM.McM.",".MMM.MMM.",".NNN.NNN.",".MMM.MMM.",".MMM.MMM.",".MMMM.MMMM",".NNNN.NNNN"]],
+   walk:[11,21,["..KKKKKKK.",".KKK..KKK.",".McM...McM","MMM....MMM","NNN.....NNN","MMM.....MMM","MMM.....MMM","MMMM....MMMM","NNNN....NNNN"]],
+   torso:[11,12,["..MNeSNM..",".MMMMMMMM.","MMMMMMMMMM",".MMPPPPMM.",".MMPQQPMM.",".LLLLLGLL.",".PPPPPPPP.",".PMMPPMMP.","PMMMPPMMMP"]],
+   arm:[14,12,[".MMMM...","McMMMM..","MMMMMM..","NNMMN...","..MMMM..","...MMMNN","......NN"]],
+   armX:[14,12,[".MMMM....","McMMMM...","MMMMMMMM.","NNMMMMMNN","........."]],
    hand:'N'},
   monk:{
    backArm:[10,13,[".PP","SSS","SSS","SS.","ww.","SS."]],
    legs:[12,21,["PPPP.PPPP","PPPP.PPPP",".PPP..PPP",".PPP..PPP",".PPP..PPP",".www..www",".www..www",".SSSS.SSSS",".eeee.eeee"]],
    walk:[11,21,["..PPPPPPPP",".PPPP..PPP",".PPP...PPP","PPP....PPP","PPP.....PPP","www.....www","www.....www","SSSS....SSSS","eeee....eeee"]],
-   torso:[11,12,["...SSSS...",".PPSSSPPP.",".PPPSSPPP.",".PPPPSPPP.",".PPPPPPPP.",".QQQQQQQQ.",".PPPPPPQQ.","PPPPPPPPQ.","PPPPPPPPPP"]],
-   arm:[15,13,["PPP....","SSS....",".SSS...",".SSSS..","..wwwSS",".....SS"]],
-   armX:[15,13,["PPP......","SSSSSSS..",".SSSSwwSS","........."]],
+   torso:[11,12,["...SeSS...",".PPSSSPPP.",".PPPSSPPP.",".PPPPSPPP.",".PPPPPPPP.",".QQQQQQQQ.",".PPPPPPQQ.","PPPPPPPPQ.","PPPPPPPPPP"]],
+   arm:[15,13,["pPP....","eSS....",".eSS...",".eSSS..","..ewwSS",".....SS"]],
+   armX:[15,13,["pPP......","eSSSSSS..",".eSSSwwSS","........."]],
    hand:'S'}
  },
  hair:{
@@ -4166,31 +4167,32 @@ const HP={
  }
 };
 const WPN={
- sword:{draw(g){g.rect(21,5,2,11,'M');g.s(21,4,'M');g.rect(19,16,5,1,'G');g.rect(21,19,2,1,'G');}},
- greatsword:{draw(g){g.rect(21,0,3,16,'M');g.line(22,2,22,14,'N');g.s(22,-1,'M');g.rect(18,16,8,1,'G');g.rect(21,19,2,1,'G');}},
- axe:{draw(g){g.line(21,6,21,24,'W');g.poly([[22,5],[27,3],[29,8],[28,13],[22,11]],'M');g.line(23,4,23,12,'N');g.poly([[21,7],[18,8],[21,10]],'N');}},
- hammer:{draw(g){g.line(21,8,21,25,'W');g.rect(17,2,9,6,'M');g.rect(17,4,9,1,'G');g.rect(16,3,1,3,'N');g.rect(26,3,1,3,'N');}},
- spear:{draw(g){g.line(21,3,21,28,'W');g.rows(20,-1,[".M.","MMM","MMM",".M.",".N."]);g.rows(22,4,["JJJ","JJ.","J.."]);}},
- dagger:{draw(g){g.rect(22,16,1,3,'G');g.rect(23,16,3,1,'M');g.rect(23,17,4,1,'M');}},
- twindagger:{draw(g){g.rect(22,16,1,3,'G');g.rect(23,16,3,1,'M');g.rect(23,17,4,1,'M');g.rect(9,19,3,1,'G');g.line(10,20,8,23,'M');g.line(11,20,9,23,'M');},back:1},
- bow:{x:1,before:1,draw(g){g.path([[20,4],[22,7],[23,11],[24,15],[23,20],[22,24],[20,27]],'W');g.s(20,3,'G');g.s(20,28,'G');g.line(20,4,20,27,'w');g.line(14,15,24,15,'W');g.s(25,15,'M');g.px([[13,14],[13,16]],'R');}},
- staff_orb:{draw(g){g.line(21,5,21,29,'W');g.ell(21.5,2.5,2.6,2.6,'C');g.px([[19,5],[23,5],[19,4],[23,4]],'G');}},
- staff_crook:{draw(g){g.line(21,4,21,29,'W');g.path([[21,4],[21,1],[22,0],[24,0],[25,1],[25,3],[24,4]],'W');g.s(23,2,'C');}},
- staff_crystal:{draw(g){g.line(21,6,21,29,'W');g.poly([[21.5,-1.5],[24,3],[21.5,7.5],[19,3]],'C');g.px([[19,6],[24,6],[20,7],[23,7]],'G');}},
- staff_sun:{draw(g){g.line(21,7,21,29,'G');g.ell(21.5,3,3.2,3.2,'G');g.ell(21.5,3,1.7,1.7,'C');g.px([[21,-1],[17,3],[25,3],[18,0],[24,0]],'G');}},
- rod:{draw(g){g.line(21,11,21,21,'G');g.ell(21.5,9.5,1.9,1.9,'C');g.rect(20,11,3,1,'G');}},
- tome:{draw(g){g.rect(19,14,6,5,'J');g.rect(20,15,4,3,'w');g.line(22,15,22,17,'L');}},
- lute:{draw(g){g.line(19,17,25,10,'W');g.rect(25,9,2,2,'L');g.ell(16.5,19,4.2,3.2,'L');g.s(16,19,'K');g.s(17,19,'K');},under:1},
- harp:{draw(g){g.path([[22,8],[26,8],[27,11],[26,18],[22,21],[22,8]],'G');g.line(23,9,23,19,'w');g.line(25,9,25,17,'w');}},
- fists:{hand:'w',draw(g){g.rect(20,16,3,3,'w');g.px([[22,16],[22,18]],'G');}},
- claws:{draw(g){g.line(22,16,26,13,'M');g.line(22,17,27,17,'M');g.line(22,18,26,21,'M');}},
- longbow:{x:1,before:1,draw(g){g.path([[20,1],[22,4],[23,8],[24,12],[24,16],[24,19],[23,23],[22,27],[20,30]],'W');g.s(20,0,'G');g.s(20,31,'G');g.line(20,1,20,30,'w');g.line(14,15,24,15,'W');g.s(25,15,'M');g.px([[13,14],[13,16]],'Q');}},
- grimoire:{draw(g){g.rect(23,4,8,6,'J');g.rect(24,5,6,4,'w');g.line(27,5,27,8,'J');g.px([[23,4],[30,4],[23,9],[30,9]],'G');g.px([[25,6],[28,7],[25,8]],'C');g.px([[22,11],[31,2],[26,12]],'G');}},
+ // keys: M steel, N steel shade, c steel glint (flat), W wood, w bone, G gold, L leather, C element glow (flat), 9 white glint (flat). The hand sits at (20,17).
+ sword:{draw(g){g.rect(21,5,2,11,'M');g.rect(21,6,1,8,'c');g.s(21,4,'M');g.s(22,4,'c');g.rect(22,12,1,4,'N');g.rect(19,16,5,1,'G');g.s(19,16,'L');g.s(23,16,'L');g.rect(21,19,2,1,'L');g.rect(21,20,2,1,'G');}},
+ greatsword:{draw(g){g.rect(21,0,3,16,'M');g.line(22,2,22,14,'N');g.line(21,1,21,15,'c');g.s(22,-1,'M');g.s(23,15,'N');g.rect(18,16,8,1,'G');g.s(18,16,'L');g.s(25,16,'L');g.rect(21,19,2,1,'L');g.rect(21,20,3,1,'G');}},
+ axe:{draw(g){g.line(21,6,21,24,'W');g.s(20,10,'L');g.s(20,16,'L');g.poly([[22,5],[27,3],[29,8],[28,13],[22,11]],'M');g.line(23,4,23,12,'N');g.path([[27,3],[29,8],[28,13]],'c');g.poly([[21,7],[18,8],[21,10]],'N');g.s(18,8,'c');g.rect(21,25,1,1,'G');}},
+ hammer:{draw(g){g.line(21,8,21,25,'W');g.s(20,12,'L');g.s(20,18,'L');g.rect(17,2,9,6,'M');g.rect(17,2,9,1,'c');g.rect(17,4,9,1,'G');g.rect(16,3,1,3,'N');g.rect(26,3,1,3,'N');g.rect(17,7,9,1,'N');}},
+ spear:{draw(g){g.line(21,3,21,28,'W');g.rows(20,-1,[".c.","cMM","MMN",".M.",".N."]);g.rect(20,4,3,1,'G');g.rows(22,5,["JJJ","JJ.","J.."]);g.s(21,29,'G');}},
+ dagger:{draw(g){g.rect(22,16,1,3,'G');g.s(22,19,'L');g.rect(23,16,3,1,'c');g.rect(23,17,4,1,'M');g.s(26,16,'M');g.s(23,18,'N');}},
+ twindagger:{draw(g){g.rect(22,16,1,3,'G');g.s(22,19,'L');g.rect(23,16,3,1,'c');g.rect(23,17,4,1,'M');g.s(26,16,'M');g.rect(9,19,3,1,'G');g.line(10,20,8,23,'M');g.line(11,20,9,23,'N');g.s(8,23,'c');},back:1},
+ bow:{x:1,before:1,draw(g){g.path([[20,4],[22,7],[23,11],[24,15],[23,20],[22,24],[20,27]],'W');g.px([[22,8],[23,12],[23,18]],'L');g.s(20,3,'G');g.s(20,28,'G');g.line(20,4,20,27,'w');g.line(14,15,24,15,'W');g.s(25,15,'c');g.s(24,15,'M');g.px([[13,14],[13,16],[14,14]],'R');g.rect(23,14,2,3,'L');}},
+ staff_orb:{draw(g){g.line(21,5,21,29,'W');g.s(20,12,'L');g.s(20,18,'L');g.ell(21.5,2.5,2.6,2.6,'C');g.s(20,1,'9');g.px([[19,5],[23,5],[19,4],[23,4]],'G');g.rect(21,6,1,1,'G');}},
+ staff_crook:{draw(g){g.line(21,4,21,29,'W');g.s(20,14,'L');g.s(20,20,'L');g.path([[21,4],[21,1],[22,0],[24,0],[25,1],[25,3],[24,4]],'W');g.s(23,2,'C');g.s(24,1,'9');}},
+ staff_crystal:{draw(g){g.line(21,6,21,29,'W');g.s(20,14,'L');g.s(20,20,'L');g.poly([[21.5,-1.5],[24,3],[21.5,7.5],[19,3]],'C');g.s(21,1,'9');g.s(20,3,'9');g.px([[19,6],[24,6],[20,7],[23,7]],'G');}},
+ staff_sun:{draw(g){g.line(21,7,21,29,'G');g.ell(21.5,3,3.2,3.2,'G');g.ell(21.5,3,1.7,1.7,'C');g.s(21,2,'9');g.px([[21,-1],[17,3],[25,3],[18,0],[24,0]],'G');}},
+ rod:{draw(g){g.line(21,11,21,21,'G');g.ell(21.5,9.5,1.9,1.9,'C');g.s(21,9,'9');g.rect(20,11,3,1,'G');}},
+ tome:{draw(g){g.rect(19,14,6,5,'J');g.rect(20,15,4,3,'w');g.line(22,15,22,17,'L');g.rect(19,14,6,1,'j');g.s(24,18,'G');}},
+ lute:{draw(g){g.line(19,17,25,10,'W');g.rect(25,9,2,2,'L');g.ell(16.5,19,4.2,3.2,'L');g.s(16,19,'K');g.s(17,19,'K');g.line(14,18,18,16,'G');g.s(15,17,'9');},under:1},
+ harp:{draw(g){g.path([[22,8],[26,8],[27,11],[26,18],[22,21],[22,8]],'G');g.line(23,9,23,19,'w');g.line(25,9,25,17,'w');g.s(22,8,'9');}},
+ fists:{hand:'w',draw(g){g.rect(20,16,3,3,'w');g.px([[22,16],[22,18]],'G');g.s(20,16,'9');}},
+ claws:{draw(g){g.line(22,16,26,13,'M');g.line(22,17,27,17,'M');g.line(22,18,26,21,'M');g.px([[26,13],[27,17],[26,21]],'c');}},
+ longbow:{x:1,before:1,draw(g){g.path([[20,1],[22,4],[23,8],[24,12],[24,16],[24,19],[23,23],[22,27],[20,30]],'W');g.px([[23,9],[24,13],[24,18]],'L');g.s(20,0,'G');g.s(20,31,'G');g.line(20,1,20,30,'w');g.line(14,15,24,15,'W');g.s(25,15,'c');g.s(24,15,'M');g.px([[13,14],[13,16],[14,14]],'Q');g.rect(23,14,2,3,'L');}},
+ grimoire:{draw(g){g.rect(23,4,8,6,'J');g.rect(24,5,6,4,'w');g.line(27,5,27,8,'J');g.rect(23,4,8,1,'j');g.px([[23,4],[30,4],[23,9],[30,9]],'G');g.px([[25,6],[28,7],[25,8]],'C');g.px([[22,11],[31,2],[26,12]],'G');}},
  none:{draw(){}}
 };
 const SHIELD={
- kite:[[6,13,["MMMMMMM","MZZZZZM","MZZGZZM","MZGGGZM","MZZGZZM","MZZZZZM",".MZZZM.",".MZZZM.","..MZM..","...M..."]]],
- round:[[5,14,[".MMMMM.","MZZZZZM","MZZZZZM","MZZGZZM","MZZZZZM","MZZZZZM",".MMMMM."]]]
+ kite:[[6,13,["McMMMMM","MZZZZZM","MZZGZZN","MZGGGZN","MZZGZZN","MZZZZZN",".MZZZN.",".MZZZN.","..MZN..","...N..."]]],
+ round:[[5,14,[".McMMM.","MZZZZZM","MZZZZZN","MZZGZZN","MZZZZZN","MZZZZZN",".NNNNN."]]]
 };
 const SKINS=['#f6d1b0','#efc29a','#d9a074','#b07850','#7e4e30','#5a3620'];
 function heroPal(L,els){
@@ -4200,30 +4202,40 @@ function heroPal(L,els){
 }
 function heroGrid(L,walk){
   const g=new PG(34,34,1,1),B=HP.body[L.b],W=WPN[L.wpn||'none'],hair=HP.hair[L.hair||'short'];
-  const R=(p)=>g.rows(p[0],p[1],p[2]);
+  const hd=new PG(34,34,1,1);// the head layer (head, hair, face, hat) is built apart so a walking hero can bob it 1px
+  const R=(p)=>g.rows(p[0],p[1],p[2]),RH=(p)=>hd.rows(p[0],p[1],p[2]);
+  const bob=walk&&!L.vill?1:0;
+  // a quiver on the archer's back (the class reads in the silhouette): behind the shoulder, feathers above it
+  if((L.wpn==='bow'||L.wpn==='longbow')&&!L.vill&&!(L.back||[]).includes('pack')&&!(L.back||[]).includes('cape'))
+    {g.line(10,18,7,10,'L',2);g.px([[6,8],[7,8],[8,9],[6,9]],'w');g.px([[7,7],[5,9]],'C');g.px([[9,14],[8,12]],'G');}
   (L.back||[]).forEach(k=>HP.back[k].forEach(R));
   if(W.back)W.draw(g); // second dagger in the back hand
-  R(B.backArm);
+  // the far arm swings opposite the stride
+  if(walk&&!L.vill){const b=B.backArm;g.rows(b[0]-1,b[1]+1,b[2]);}else R(B.backArm);
   if(L.sh)SHIELD[L.sh].forEach(R);
   R(walk?B.walk:B.legs);
   R(B.torso);
   if(W.under)W.draw(g);
-  g.rows(11,3,HP.head);
-  hair.p&&hair.p.forEach(R);
-  if(hair.curly){g.ell(15.5,4,6.8,4.4,'H');g.ell(12,8,2.8,3.4,'H');g.ell(20,6,2,2,'H');g.rect(17,7,4,0,'H');g.px([[13,3],[16,2],[19,4],[12,7]],'h');}
-  if(hair.bun)g.ell(hair.bun[0]+.5,hair.bun[1]+1.5,2.6,2.1,'H');
-  if(hair.tie)g.px(hair.tie,'Q');
-  if(hair.ear&&!(L.hat==='hood'||L.hat==='greathelm'))g.px([[12,7],[12,8],[13,8]],'e');
-  (L.face||[]).forEach(f=>HP.face[f].forEach(R));
-  if(L.hat)HP.hat[L.hat].forEach(R);
-  if(L.hat==='greathelm')g.px([[16,7],[19,7]],'C');
+  hd.rows(11,3,HP.head);
+  hd.px([[15,6],[16,6],[18,6],[19,6]],'l');// brows
+  hair.p&&hair.p.forEach(RH);
+  if(hair.curly){hd.ell(15.5,4,6.8,4.4,'H');hd.ell(12,8,2.8,3.4,'H');hd.ell(20,6,2,2,'H');hd.px([[13,3],[16,2],[19,4],[12,7],[14,2],[18,3]],'h');hd.px([[12,9],[20,8]],'l');}
+  if(hair.bun){hd.ell(hair.bun[0]+.5,hair.bun[1]+1.5,2.6,2.1,'H');hd.px([[hair.bun[0],hair.bun[1]],[hair.bun[0]+1,hair.bun[1]]],'h');}
+  if(hair.tie)hd.px(hair.tie,'Q');
+  if(hair.ear&&!(L.hat==='hood'||L.hat==='greathelm'))hd.px([[12,7],[12,8],[13,8]],'e');
+  (L.face||[]).forEach(f=>HP.face[f].forEach(RH));
+  if(L.hat)HP.hat[L.hat].forEach(RH);
+  if(L.hat==='greathelm')hd.px([[16,7],[19,7]],'C');
+  // the head layer lands on the body (1px lower on the stride frame; the neck stays)
+  for(let y=0;y<hd.h;y++)for(let x=0;x<hd.w;x++){const k=hd.a[y*hd.w+x];if(!k)continue;const ty=y+bob;if(ty<g.h)g.a[ty*g.w+x]=k;}
   if(W.before&&!W.back)W.draw(g);
   R(W.x?B.armX:B.arm);
   if(!W.before&&!W.back&&!W.under)W.draw(g);
-  if(W.under&&!W.before){/* instrument held under arm */}
   const hk=W.hand||B.hand;
+  // the hand: a 2x2 block (the pose system looks for these four cells); with a real hand key it gets a thumb and a knuckle line
   if(W.x)g.rect(22,15,2,2,hk);else if(L.wpn!=='lute'&&L.wpn!=='tome'&&L.wpn!=='harp'&&L.wpn!=='grimoire')g.rect(20,17,2,2,hk);
   if(L.wpn==='twindagger')g.rect(20,17,2,2,hk);
+  if(hk==='S'&&!W.x&&W!==WPN.none)g.s(21,18,'e');
   return g;
 }
 
@@ -5038,9 +5050,11 @@ function legsFB(g,L,frame){
   [[12,frame===1?2:0],[17,frame===2?2:0]].forEach(([x,lift])=>{
     if(robe){g.rect(x,28-lift,3,1,'B');g.rect(x,29-lift,3,1,'b');return;}
     g.rect(x,21,3,4-(lift?1:0),P);
+    if(!heavy&&!monk&&!lift)g.rect(x,23,3,1,'k');
     if(heavy)g.rect(x,23,3,1,'M');
     if(monk)g.rect(x,25-lift,3,2,'w');
     g.rect(x,(monk?27:25)-lift,3,(monk?1:3),BT);
+    if(!monk)g.rect(x,25-lift,3,1,heavy?'N':'b');
     g.rect(x,28-lift,3,1,BT);g.rect(x,29-lift,3,1,SO);
   });
 }
@@ -5048,16 +5062,16 @@ function torsoFB(g,L,view){
   const b=L.b,front=view==='front';
   if(b==='light'){
     g.sym(11,12,["...QS",".PPPP","PPPPP",".PPP"+(front?'Q':'P'),".PPP"+(front?'Q':'P'),".LLL"+(front?'G':'L'),".PPPP","PPPPP","QQQQQ"]);
-    g.sym(9,13,[".P","PP","PP","PP","PP","SS"]);
+    g.sym(9,13,[".p","Pp","Pp","Pp","Pp","SS"]);
   }else if(b==='robe'){
     g.sym(10,12,["....QS","..PPPP",".PPPP"+(front?'Q':'P'),".PPPP"+(front?'Q':'P'),".PPPP"+(front?'Q':'P'),"..LLL"+(front?'G':'L'),"..PPP"+(front?'Q':'P'),"..PPP"+(front?'Q':'P'),".PPPP"+(front?'Q':'P'),".PPPP"+(front?'Q':'P'),".PPPPP","PPPPPP","PPPPPP","PPPPPP","PPPPPP","QQQQQQ"]);
-    g.sym(8,13,[".PP","PPP","PPP","PPP","PPP",".SS"]);
+    g.sym(8,13,[".Pp","PPp","PPp","PPp","PPp",".SS"]);
   }else if(b==='heavy'){
     g.sym(10,12,["....NS","..MMMM",".MMMMM","..MMP"+(front?'P':'M'),"..MMP"+(front?'Q':'M'),"..LLL"+(front?'G':'L'),"..PPPP","..MMPP",".MMMMP"]);
-    g.sym(7,12,["..MMM","MMMMM","MMMM.",".MM..",".MM..",".MM..",".NN.."]);
+    g.sym(7,12,["..McM","MMcMM","MMMM.",".MM..",".MM..",".MM..",".NN.."]);
   }else{
     g.sym(11,12,["...SS",front?".PPSS":".PPPP",front?"PPPPS":"PPPPP",".PPPP",".PPPP",".QQQQ",".PPPP","PPPPP","PPPPP"]);
-    g.sym(9,13,[".P","SS","SS","SS","ww","SS"]);
+    g.sym(9,13,[".p","Se","Se","Se","we","SS"]);
   }
 }
 const HAIR_FB={
@@ -5076,8 +5090,8 @@ const HAIR_FB={
 };
 function headFB(g,L,view){
   const front=view==='front',H=HAIR_FB[L.hair||'short'],hood=L.hat==='hood'||L.hat==='greathelm';
-  g.sym(11,3,["..SSS",".SSSS","SSSSS","SSSSS",front?"SSESS":"SSSSS",front?"SSESS":"SSSSS","SSSSS",".SSSS","..SSS"]);
-  if(front)g.px([[15,10],[16,10]],'m');
+  g.sym(11,3,["..SSS",".SSSS","SSSSS","SSSSS",front?"S9ESS":"SSSSS",front?"SEESS":"SSSSS",front?"SSSSe":"SSSSS",".SSSS","..eSS"]);
+  if(front){g.px([[15,10],[16,10]],'m');g.px([[12,6],[13,6],[18,6],[19,6]],'l');g.s(18,7,'9');g.s(19,7,'E');}
   if(!hood&&L.hair!=='long'&&L.hair!=='curly'&&L.hair!=='bob'){g.px([[10,7],[10,8]],'e');g.px([[21,7],[21,8]],'e');}
   if(front){
     if(H.f.length)g.sym(10,1,H.f);
@@ -5144,6 +5158,10 @@ function faceFB(g,L,view){
 function backItemsFB(g,L,view,pass){
   // pass 'under' = drawn behind body; 'over' = drawn on top of body
   const front=view==='front';
+  if((L.wpn==='bow'||L.wpn==='longbow')&&!L.vill&&!(L.back||[]).includes('pack')&&!(L.back||[]).includes('cape')){
+    if(front&&pass==='under'){g.px([[22,9],[23,8],[21,9]],'w');g.px([[23,9],[22,8]],'C');g.rect(21,10,2,4,'L');}
+    if(!front&&pass==='over'){g.line(12,11,20,20,'L');g.rect(19,9,4,9,'L');g.rect(19,9,4,1,'N');g.px([[20,8],[22,8],[21,7]],'w');g.px([[19,8],[23,8]],'C');g.px([[20,12],[22,15]],'G');}
+  }
   (L.back||[]).forEach(k=>{
     if(k==='cape'){if(front&&pass==='under'){g.rect(8,13,2,13,'Y');g.rect(22,13,2,13,'Y');}if(!front&&pass==='over'){g.sym(9,12,["..YYYY",".YYYYY",".YYYYY","YYYYYY","YYYYYY","YYYYYY","YYYYYY","YYYYYY","YYYYYY","YYYYYY","YYYYYY","YYYYYY","YYYYYY",".YYYYY"]);}}
     if(k==='scarf'&&pass==='over'){g.rect(12,12,8,2,'Y');if(front)g.rect(18,14,2,5,'Y');else g.rect(15,14,2,4,'Y');}
@@ -5206,10 +5224,10 @@ function monCanvas(art,f){return monFramed(art,f,()=>{const s=MON_SIZE(art),g=ne
 HP.hair.flame={ear:1,p:[[8,-2,["...H...H.H.....","..HH..HHHH.H...",".HHHH.HHHHHHH..","HHHHHHHHHHHHHH.",".HHHHHHHHHHHHHH","HHHHHHHHHHHHHH.",".HHHHH.HHH.H.HH",".HHHH..........","HHHHH..........",".HHH..........."]]]};
 HAIR_FB.flame={f:["..H..H","..HHHH",".HHHHH","HHHHHH",".HHHHH","HH.H.H","HH....","HH....","H....."],b:10,spike:1};
 // new weapons, side view (hand at 20,17; crossbow uses the extended arm at 22,15)
-WPN.katana={draw(g){g.path([[21,16],[21,9],[22,4],[24,0]],'M');g.path([[22,15],[22,9],[23,4]],'w');g.rect(19,16,5,1,'G');g.rect(21,19,1,2,'K');}};
-WPN.scythe={draw(g){g.line(21,0,21,29,'W');g.poly([[21,0],[13,-1],[6,2],[2,7],[8,4],[14,2],[21,2]],'M');g.path([[3,6],[8,3],[14,1]],'w');g.rect(20,1,3,1,'G');}};
-WPN.trident={draw(g){g.line(21,3,21,29,'W');g.rect(18,2,7,1,'G');g.rect(18,-2,1,4,'M');g.rect(21,-4,1,6,'M');g.rect(24,-2,1,4,'M');g.px([[18,-3],[21,-5],[24,-3]],'w');}};
-WPN.mace={draw(g){g.line(21,9,21,23,'W');g.ell(21.5,5.5,3.3,3.3,'M');g.px([[21,1],[16,5],[26,5],[21,10],[18,2],[25,2]],'N');g.rect(19,9,5,1,'G');}};
+WPN.katana={draw(g){g.path([[21,16],[21,9],[22,4],[24,0]],'M');g.path([[22,15],[22,9],[23,4]],'c');g.s(24,0,'c');g.rect(19,16,5,1,'G');g.rect(21,19,1,2,'K');g.s(22,19,'Q');g.s(22,21,'Q');}};
+WPN.scythe={draw(g){g.line(21,0,21,29,'W');g.poly([[21,0],[13,-1],[6,2],[2,7],[8,4],[14,2],[21,2]],'M');g.path([[3,6],[8,3],[14,1]],'c');g.s(20,10,'L');g.s(20,18,'L');g.rect(20,1,3,1,'G');}};
+WPN.trident={draw(g){g.line(21,3,21,29,'W');g.rect(18,2,7,1,'G');g.rect(18,-2,1,4,'M');g.rect(21,-4,1,6,'M');g.rect(24,-2,1,4,'M');g.px([[18,-3],[21,-5],[24,-3]],'c');g.s(20,12,'L');g.s(20,18,'L');}};
+WPN.mace={draw(g){g.line(21,9,21,23,'W');g.ell(21.5,5.5,3.3,3.3,'M');g.s(20,4,'c');g.s(21,3,'c');g.px([[21,1],[16,5],[26,5],[21,10],[18,2],[25,2]],'N');g.rect(19,9,5,1,'G');}};
 WPN.crossbow={x:1,draw(g){g.rect(17,15,10,2,'W');g.path([[26,9],[27,12],[27,19],[26,22]],'M');g.line(24,10,24,21,'w');g.rect(19,14,10,1,'M');g.s(29,14,'G');}};
 WPN.fan={draw(g){for(let a=-150;a<=-30;a+=4){const r=a*Math.PI/180;g.line(21,17,21+Math.cos(r)*8,17+Math.sin(r)*8,'Q');}for(let a=-150;a<=-30;a+=20){const r=a*Math.PI/180;g.line(21,17,21+Math.cos(r)*8,17+Math.sin(r)*8,'G');}}};
 const _weaponFB0=weaponFB;
@@ -5334,7 +5352,53 @@ heroPal=function(L,els,id){
   return p;
 };
 const HFLAT='EmeCrhOXD';
-function heroGridSide(L,walk,id){const g=_heroGrid0(L,walk);if(id)drawFlair(g,L,id,'side');raceSide(g,L);const o=toTall(g,6);const v=new PG(36,40,2,7);v.a=o.a;raceTop(v,L);applySize(o,L);return o;}
+// ===== the hero tone pass (0.14.6): hand-shaded looking garments from one rule, run on every finished side, front and back grid =====
+// Every garment gets two tones (light from the top left): in each row the last 1 or 2 cells of a run of cloth, trousers, hood or steel become the
+// shade key (P>p J>j Y>z K>k M>N); steel gets a glint pixel (c) on its top left corner; hair gets a sheen band under its top edge (h), a
+// parting (l) and a darker last cell (l). The pass only reads upper case keys and treats a key and its shade as one family, so running it
+// twice (the pose builder does) changes nothing. Villagers (look.vill) keep the two tone of npcart9.js.
+const HT_FAM={P:'P',p:'P',J:'J',j:'J',Y:'Y',z:'Y',K:'K',k:'K',M:'M',N:'M',H:'H',h:'H',l:'H'},HT_SH={P:'p',J:'j',Y:'z',K:'k',M:'N'};
+function heroTone(o,view){
+  const W=o.w,H=o.h,A=o.a,O=A.slice(),fam=k=>HT_FAM[k]||'';
+  let hairTop=1e9;
+  for(let y=0;y<H;y++){let x=0;while(x<W){const f=fam(A[y*W+x]);if(!f){x++;continue;}
+    let x1=x;while(x1+1<W&&fam(A[y*W+x1+1])===f)x1++;
+    const n=x1-x+1;
+    if(f==='H'){
+      if(n>=5){
+        // the cell above is not hair: this run starts a mass; the row under it gets the sheen over the left 60%
+        for(let i=x;i<=x1;i++){const free=y===0||!A[(y-1)*W+i];if(free&&i-x<=n*.6&&y+1<H&&A[(y+1)*W+i]==='H')O[(y+1)*W+i]='h';}
+        if(A[x1+(y*W)]==='H'&&n>=6&&y+1<H&&fam(A[(y+1)*W+x1])==='H')O[y*W+x1]='l';
+        if(y<hairTop&&(y===0||!A[(y-1)*W+x]))hairTop=y;
+      }
+    }else if(n>=4){
+      const band=n>=8?2:1,sh=HT_SH[f];
+      for(let i=0;i<band;i++){const c=x1-i;if(A[y*W+c]===f&&(c-x)>=2)O[y*W+c]=sh;}
+      // steel: a glint on the first cell of a run that has nothing above it
+      if(f==='M'&&n>=3&&A[y*W+x]==='M'&&(y===0||!A[(y-1)*W+x])&&(y+1<H&&A[(y+1)*W+x]==='M'))O[y*W+x]='c';
+    }
+    x=x1+1;}}
+  // a parting on the front and the side: a short dark line from the top of the hair mass, a little right of centre
+  if(view!=='back'&&hairTop<1e9){
+    for(let y=hairTop;y<hairTop+4&&y<H;y++){
+      let best=null;for(let x=0;x<W;){if(fam(A[y*W+x])!=='H'){x++;continue;}let x1=x;while(x1+1<W&&fam(A[y*W+x1+1])==='H')x1++;if(!best||x1-x>best[1]-best[0])best=[x,x1];x=x1+1;}
+      if(best&&best[1]-best[0]>=5&&y>hairTop){const px=best[0]+Math.floor((best[1]-best[0]+1)*.62)+((y-hairTop)>>1);if(A[y*W+px]==='H'||A[y*W+px]==='h')O[y*W+px]='l';}
+    }
+  }
+  for(let i=0;i<A.length;i++)A[i]=O[i];
+}
+// the derived keys of the hero palette: shades of cloth, hair and steel, the steel glint, the eye catchlight. Villager palettes already carry theirs.
+function heroPalD(p){
+  const T=(k,c,f)=>{if(!p[k]&&c)p[k]=f?f(c):c;};
+  const dk=(c,f)=>mix(shade(c,f),'#2c1458',.12);
+  T('p',p.P,c=>dk(c,.78));T('j',p.J,c=>dk(c,.76));T('z',p.Y,c=>dk(c,.78));T('k',p.K,c=>dk(c,.72));T('q',p.Q,c=>dk(c,.8));
+  T('l',p.H,c=>dk(c,.66));T('h',p.H,c=>tint(c,.34));
+  T('c',p.M,c=>tint(c,.78));T('9','#ffffff');
+  return p;
+}
+const HNOAO='SHepjkzlq',HFLAT9=HFLAT+'9';
+
+function heroGridSide(L,walk,id){const g=_heroGrid0(L,walk);if(id)drawFlair(g,L,id,'side');raceSide(g,L);const o=toTall(g,6);const v=new PG(36,40,2,7);v.a=o.a;raceTop(v,L);applySize(o,L);if(!L.vill)heroTone(o,'side');return o;}
 function heroGridView(L,view,frame,id){
   if(view==='side')return heroGridSide(L,frame>0,id);
   const g=new PG(34,38,1,5);
@@ -5342,13 +5406,13 @@ function heroGridView(L,view,frame,id){
   legsFB(g,L,frame);torsoFB(g,L,view);drawFlair(g,L,id,view);headFB(g,L,view);faceFB(g,L,view);
   if(L.hat)hatFB(g,L,view);
   backItemsFB(g,L,view,'over');raceFB(g,L,view,'over');weaponFB(g,L,view);
-  const o=toTall(g,2);applySize(o,L);return o;
+  const o=toTall(g,2);applySize(o,L);if(!L.vill)heroTone(o,view);return o;
 }
-function heroCanvas(id,walk){const t=TPL[id];if(t.mon)return monCanvas(t.art);const L=heroLook(id);return paint(heroGridSide(L,walk,id),heroPal(L,t.el,id),{flat:HFLAT,noAO:'SHe'});}
+function heroCanvas(id,walk){const t=TPL[id];if(t.mon)return monCanvas(t.art);const L=heroLook(id);return paint(heroGridSide(L,walk,id),heroPalD(heroPal(L,t.el,id)),{flat:HFLAT9,noAO:HNOAO});}
 function heroURL(id,walk){if(TPL[id]&&TPL[id].mon)return monURL(TPL[id].art);return cvURL('h3:'+id+(walk?':w':'')+lookKey(id),()=>heroCanvas(id,walk));}
 function walkerCanvas(key,L,els,id,view,frame){
   if(id&&TPL[id]&&TPL[id].mon)return imgOf('wkm:'+id,()=>monCanvas(TPL[id].art));
-  return imgOf('wk3:'+key+':'+view+':'+frame,()=>paint(heroGridView(L,view,frame,id),heroPal(L,els,id),{flat:HFLAT,noAO:'SHe'}));
+  return imgOf('wk3:'+key+':'+view+':'+frame,()=>paint(heroGridView(L,view,frame,id),heroPalD(heroPal(L,els,id)),{flat:HFLAT9,noAO:HNOAO}));
 }
 // a bust for portraits: top 26 rows of the side view
 
@@ -6265,7 +6329,7 @@ function hdRamp(c,mat){const key=c+mat;if(HDR[key])return HDR[key];let R;
 function hdSat(c){const [r,g,b]=hx(c),M=Math.max(r,g,b),m=Math.min(r,g,b);return M?(M-m)/M:0;}
 function hdLum(c){const [r,g,b]=hx(c);return .3*r+.59*g+.11*b;}
 // mat per key: s skin, h hair, m metal, c everything else. Heroes name their keys; monsters guess metal from grey M, N and G.
-const HD_HERO_MAT={S:'s',e:'s',H:'h',T:'h',M:'m',N:'m',G:'m',I:'m'};
+const HD_HERO_MAT={S:'s',e:'s',H:'h',T:'h',h:'h',l:'h',M:'m',N:'m',c:'m',G:'m',I:'m'};
 function hdMats(pal,hero){const o={};Object.keys(pal).forEach(k=>{if(!pal[k])return;if(hero)o[k]=HD_HERO_MAT[k]||'c';
   else o[k]=(k==='G'||((k==='M'||k==='N')&&hdSat(pal[k])<.32))?'m':'c';});return o;}
 // everything a pixel of this colour and material needs, built once per colour
@@ -6341,6 +6405,7 @@ function paintHD(g,pal,opt){
 // ----- heroes -----
 // eyes: a dark lid row, iris (hair coloured) with a catchlight, a lighter lower iris. Works on the doubled grid.
 function faceHD(K,W,H){
+  for(let i=0;i<K.length;i++)if(K[i]==='9')K[i]='E';// the catchlight marker of the logical grid is part of the eye here (the HD eye makes its own)
   for(let i=0;i<K.length;i++){if(K[i]!=='E')continue;const x=i%W,y=(i/W)|0;if(y>0&&K[i-W]==='E')continue;
     let n=0;while(y+n<H&&K[i+n*W]==='E')n++;if(n<3)continue;const left=!(x>0&&K[i-1]==='E');
     for(let j=1;j<n;j++){const p=i+j*W;K[p]=j===n-1?'2':(j===1&&left?'3':'1');}
@@ -6357,7 +6422,7 @@ function texHD(q,x,y,k,m,u,d,l,r){
 const IRIS=['#3a5aa0','#6a4428','#2e7058','#7a5a2a','#5a3a8a','#2a6a8a'];
 function heroPalHD(p){const o=Object.assign({},p);const E=p.E||'#1a1020',dark=hdLum(E)<60;
   const iris=dark?IRIS[hashS((p.H||'')+(p.S||'')+(p.P||''))%IRIS.length]:E;o.E=mix(E,'#140a18',.5);o['1']=iris;o['2']=tint(iris,.34);o['3']='#ffffff';o['4']=mix(p.S||'#f6d1b0','#ff7a8a',.38);o['5']=mix(shade(p.H||'#4a2c1a',.6),'#1a1020',.3);return o;}
-const HFLAT_HD=HFLAT+'12345';
+const HFLAT_HD=HFLAT9+'12345';
 // monster families (archetype.js types) get their own surface: fur, plates, feathers, leaf spots, a wet sheen, tattered folds
 function monFam(art){try{const b=String(art).replace(/^echo_/,'');const t=(MON_TY[art]||BOSS_TY[art]||MON_TY[b]||BOSS_TY[b]||[]);
   if(t.length)return t;const r=typeof REALMS!=='undefined'&&Object.keys(MON_TY).find(k=>b.endsWith('_'+k)||b.startsWith(k+'_'));return r?MON_TY[r]:[];}catch(e){return [];}}
@@ -6379,15 +6444,15 @@ function stretchHero(o,L){
   const n=rows.length-o.h,pad=Math.max(0,n0-n),H=o.h+n0,out=new PG(o.w,H,0,0);
   for(let j=0;j<rows.length&&j+pad<H;j++){const sy=rows[j];for(let x=0;x<o.w;x++)out.a[(j+pad)*o.w+x]=o.a[sy*o.w+x];}
   return out;}
-const HERO_OPT={flat:HFLAT_HD,noAO:'SHe',hero:1,detail:faceHD,tex:texHD};
+const HERO_OPT={flat:HFLAT_HD,noAO:HNOAO,hero:1,detail:faceHD,tex:texHD};
 if(SPRITE_HD){
   const hgs0=heroGridSide,hgv0=heroGridView;
   heroGridSide=function(L,walk,id){return stretchHero(hgs0(L,walk,id),L);};
   heroGridView=function(L,view,frame,id){const g=hgv0(L,view,frame,id);return view==='side'?g:stretchHero(g,L);};
-  heroCanvas=function(id,walk){const t=TPL[id];if(t.mon)return monCanvas(t.art);const L=heroLook(id);return paintHD(heroGridSide(L,walk,id),heroPalHD(heroPal(L,t.el,id)),HERO_OPT);};
+  heroCanvas=function(id,walk){const t=TPL[id];if(t.mon)return monCanvas(t.art);const L=heroLook(id);return paintHD(heroGridSide(L,walk,id),heroPalHD(heroPalD(heroPal(L,t.el,id))),HERO_OPT);};
   walkerCanvas=function(key,L,els,id,view,frame){
     if(id&&TPL[id]&&TPL[id].mon)return imgOf('wkm:'+id,()=>monCanvas(TPL[id].art));
-    return imgOf('wk3:'+key+':'+view+':'+frame,()=>paintHD(heroGridView(L,view,frame,id),heroPalHD(heroPal(L,els,id)),HERO_OPT));};
+    return imgOf('wk3:'+key+':'+view+':'+frame,()=>paintHD(heroGridView(L,view,frame,id),heroPalHD(heroPalD(heroPal(L,els,id))),HERO_OPT));};
   monCanvas=function(art,f){return monFramed(art,f,()=>{const s=MON_SIZE(art),g=new PG(s,s,0,0),o=MART[art](g,f);const pal=Object.assign({},o.pal);if(MEXTRA[art])MEXTRA[art](g,pal);
     return paintHD(g,pal,{flat:o.flat||'',rim:o.rim,glow:o.glow,tex:monTex(art)});});};
   monURL=function(art){return cvURL('m3:'+art,()=>monCanvas(art));};
@@ -26530,11 +26595,11 @@ function hpDropTop(g,y1){// move rows 0..y1 down one pixel; the row below only t
 }
 // ---------- weapon recipes: u runs along the weapon from the grip, v across it (v>0 is the cutting or front side) ----------
 const HPWD={
- sword(d){d.bar(1,13,0,2,'M');d.dot(14,-0.5,'M');d.cross(1,-3,3,'G');d.dot(-2,0,'G');},
- greatsword(d){d.bar(1,17,0,2,'M');d.bar(1,16,1,1,'M');d.bar(3,15,0,1,'N');d.dot(18,0,'M');d.cross(1,-4,4,'G');d.dot(-2,0,'G');},
- katana(d){d.bar(1,15,0,1,'M');d.bar(2,14,1,1,'w');d.cross(1,-2,2,'G');d.bar(-3,1,0,1,'K');},
- dagger(d){d.bar(1,6,0,2,'M');d.cross(1,-2,2,'G');},
- axe(d){d.bar(-4,13,0,1,'W');d.poly([[8,0],[8,6],[12,7],[13,3],[12,0]],'M');d.bar(12,13,3,1,'N');d.poly([[9,0],[9,-3],[7,0]],'N');},
+ sword(d){d.bar(1,13,0,2,'M');d.bar(2,12,-0.6,1,'c');d.dot(14,-0.5,'M');d.cross(1,-3,3,'G');d.dot(-2,0,'G');},
+ greatsword(d){d.bar(1,17,0,2,'M');d.bar(2,16,-0.6,1,'c');d.bar(1,16,1,1,'M');d.bar(3,15,0,1,'N');d.dot(18,0,'M');d.cross(1,-4,4,'G');d.dot(-2,0,'G');},
+ katana(d){d.bar(1,15,0,1,'M');d.bar(2,14,1,1,'c');d.cross(1,-2,2,'G');d.bar(-3,1,0,1,'K');},
+ dagger(d){d.bar(1,6,0,2,'M');d.bar(2,5,-0.6,1,'c');d.cross(1,-2,2,'G');},
+ axe(d){d.bar(-4,13,0,1,'W');d.poly([[8,0],[8,6],[12,7],[13,3],[12,0]],'M');d.bar(12,13,3,1,'N');d.bar(10,12,6.5,1,'c');d.poly([[9,0],[9,-3],[7,0]],'N');},
  hammer(d){d.bar(-5,12,0,1,'W');d.poly([[9,-4],[9,4],[15,4],[15,-4]],'M');d.cross(10,-4,4,'G');d.cross(14,-4,4,'N');},
  mace(d){d.bar(-4,9,0,1,'W');d.orb(11.5,0,3,'M');d.dot(11.5,-4,'N');d.dot(11.5,4,'N');d.dot(15.5,0,'N');d.cross(9,-2,2,'G');},
  spear(d){d.bar(-9,16,0,1,'W');d.poly([[16,-1.5],[21,0],[16,1.5]],'M');d.bar(16,19,0,1,'M');d.dot(14,1,'J');d.dot(13,2,'J');},
@@ -26564,7 +26629,7 @@ const HPWD={
 HPWD.longbow=HPWD.bow;
 const HPL={sword:14,greatsword:18,katana:15,dagger:7,axe:13,hammer:15,mace:15,spear:21,trident:20,scythe:16,staff:19,rod:11,tome:7,grimoire:9,lute:11,harp:8,fan:8,fists:2,claws:7,bow:10,longbow:12,crossbow:10};
 const HPA0={sword:-90,greatsword:-90,katana:-90,axe:-90,hammer:-90,mace:-90,spear:-90,trident:-90,scythe:-90,staff:-90,rod:-90,bow:0,longbow:0,crossbow:0,dagger:0,claws:0,fists:0,fan:0,harp:0,lute:-35,tome:0,grimoire:0};
-function hpFam(w){return HPWD[w]?w:(/^staff/.test(w)?'staff':w==='none'||!w?'none':'staff');}
+function hpFam(w){if(w==='twindagger')return 'dagger';return HPWD[w]?w:(/^staff/.test(w)?'staff':w==='none'||!w?'none':'staff');}
 function hpWeapon(c,w,gx,gy,ang,o){
   const f=hpFam(w);if(f==='none')return null;o=o||{};const g=c.g,tk=c.tk;
   let L=HPL[f]||14,sc=o.sc||1;
@@ -26596,7 +26661,7 @@ function hpBare(L,id,walk,keepShield){
 }
 function hpMarks(o){let S=null,H=null;for(let y=0;y<o.h;y++)for(let x=0;x<o.w;x++){const i=y*o.w+x,k=o.a[i];if(k==='#'){if(!S)S={x,y};o.a[i]=0;}else if(k==='!'){if(!H||y<H.y||(y===H.y&&x<H.x))H={x,y};o.a[i]=0;}}return {S,H};}
 function hpFeet(o){for(let y=o.h-1;y>=0;y--)for(let x=0;x<o.w;x++)if(o.a[y*o.w+x])return y;return o.h-1;}
-function hpEyes(o){for(let i=0;i<o.a.length;i++)if(o.a[i]==='E')o.a[i]='K';}
+function hpEyes(o){for(let i=0;i<o.a.length;i++)if(o.a[i]==='E'||o.a[i]==='9')o.a[i]='K';}
 const HPFAM_AIM={sword:1,greatsword:1,katana:1,axe:1,hammer:1,mace:1,spear:1,trident:1,scythe:1,staff:1,rod:1};
 // pose table: lean = sideways shift of everything above the hips, crouch = rows removed from the legs, drop = head sinks 1px
 const HPT={

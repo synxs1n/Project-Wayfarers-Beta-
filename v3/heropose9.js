@@ -25,11 +25,11 @@ function hpDropTop(g,y1){// move rows 0..y1 down one pixel; the row below only t
 }
 // ---------- weapon recipes: u runs along the weapon from the grip, v across it (v>0 is the cutting or front side) ----------
 const HPWD={
- sword(d){d.bar(1,13,0,2,'M');d.dot(14,-0.5,'M');d.cross(1,-3,3,'G');d.dot(-2,0,'G');},
- greatsword(d){d.bar(1,17,0,2,'M');d.bar(1,16,1,1,'M');d.bar(3,15,0,1,'N');d.dot(18,0,'M');d.cross(1,-4,4,'G');d.dot(-2,0,'G');},
- katana(d){d.bar(1,15,0,1,'M');d.bar(2,14,1,1,'w');d.cross(1,-2,2,'G');d.bar(-3,1,0,1,'K');},
- dagger(d){d.bar(1,6,0,2,'M');d.cross(1,-2,2,'G');},
- axe(d){d.bar(-4,13,0,1,'W');d.poly([[8,0],[8,6],[12,7],[13,3],[12,0]],'M');d.bar(12,13,3,1,'N');d.poly([[9,0],[9,-3],[7,0]],'N');},
+ sword(d){d.bar(1,13,0,2,'M');d.bar(2,12,-0.6,1,'c');d.dot(14,-0.5,'M');d.cross(1,-3,3,'G');d.dot(-2,0,'G');},
+ greatsword(d){d.bar(1,17,0,2,'M');d.bar(2,16,-0.6,1,'c');d.bar(1,16,1,1,'M');d.bar(3,15,0,1,'N');d.dot(18,0,'M');d.cross(1,-4,4,'G');d.dot(-2,0,'G');},
+ katana(d){d.bar(1,15,0,1,'M');d.bar(2,14,1,1,'c');d.cross(1,-2,2,'G');d.bar(-3,1,0,1,'K');},
+ dagger(d){d.bar(1,6,0,2,'M');d.bar(2,5,-0.6,1,'c');d.cross(1,-2,2,'G');},
+ axe(d){d.bar(-4,13,0,1,'W');d.poly([[8,0],[8,6],[12,7],[13,3],[12,0]],'M');d.bar(12,13,3,1,'N');d.bar(10,12,6.5,1,'c');d.poly([[9,0],[9,-3],[7,0]],'N');},
  hammer(d){d.bar(-5,12,0,1,'W');d.poly([[9,-4],[9,4],[15,4],[15,-4]],'M');d.cross(10,-4,4,'G');d.cross(14,-4,4,'N');},
  mace(d){d.bar(-4,9,0,1,'W');d.orb(11.5,0,3,'M');d.dot(11.5,-4,'N');d.dot(11.5,4,'N');d.dot(15.5,0,'N');d.cross(9,-2,2,'G');},
  spear(d){d.bar(-9,16,0,1,'W');d.poly([[16,-1.5],[21,0],[16,1.5]],'M');d.bar(16,19,0,1,'M');d.dot(14,1,'J');d.dot(13,2,'J');},
@@ -59,7 +59,7 @@ const HPWD={
 HPWD.longbow=HPWD.bow;
 const HPL={sword:14,greatsword:18,katana:15,dagger:7,axe:13,hammer:15,mace:15,spear:21,trident:20,scythe:16,staff:19,rod:11,tome:7,grimoire:9,lute:11,harp:8,fan:8,fists:2,claws:7,bow:10,longbow:12,crossbow:10};
 const HPA0={sword:-90,greatsword:-90,katana:-90,axe:-90,hammer:-90,mace:-90,spear:-90,trident:-90,scythe:-90,staff:-90,rod:-90,bow:0,longbow:0,crossbow:0,dagger:0,claws:0,fists:0,fan:0,harp:0,lute:-35,tome:0,grimoire:0};
-function hpFam(w){return HPWD[w]?w:(/^staff/.test(w)?'staff':w==='none'||!w?'none':'staff');}
+function hpFam(w){if(w==='twindagger')return 'dagger';return HPWD[w]?w:(/^staff/.test(w)?'staff':w==='none'||!w?'none':'staff');}
 function hpWeapon(c,w,gx,gy,ang,o){
   const f=hpFam(w);if(f==='none')return null;o=o||{};const g=c.g,tk=c.tk;
   let L=HPL[f]||14,sc=o.sc||1;
@@ -91,7 +91,7 @@ function hpBare(L,id,walk,keepShield){
 }
 function hpMarks(o){let S=null,H=null;for(let y=0;y<o.h;y++)for(let x=0;x<o.w;x++){const i=y*o.w+x,k=o.a[i];if(k==='#'){if(!S)S={x,y};o.a[i]=0;}else if(k==='!'){if(!H||y<H.y||(y===H.y&&x<H.x))H={x,y};o.a[i]=0;}}return {S,H};}
 function hpFeet(o){for(let y=o.h-1;y>=0;y--)for(let x=0;x<o.w;x++)if(o.a[y*o.w+x])return y;return o.h-1;}
-function hpEyes(o){for(let i=0;i<o.a.length;i++)if(o.a[i]==='E')o.a[i]='K';}
+function hpEyes(o){for(let i=0;i<o.a.length;i++)if(o.a[i]==='E'||o.a[i]==='9')o.a[i]='K';}
 const HPFAM_AIM={sword:1,greatsword:1,katana:1,axe:1,hammer:1,mace:1,spear:1,trident:1,scythe:1,staff:1,rod:1};
 // pose table: lean = sideways shift of everything above the hips, crouch = rows removed from the legs, drop = head sinks 1px
 const HPT={
