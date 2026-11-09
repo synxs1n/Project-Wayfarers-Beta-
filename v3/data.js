@@ -4,6 +4,7 @@
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.15.8',['Overworld scale: in HD-2D every character (wayfarers, townsfolk, roamers) stands a sixth smaller against the world, and house doors are taller wherever the wall can hold them, so a wayfarer now stands about door high instead of over it. The sprites keep their detail: they are sampled at twice the texel density.']],
  ['Beta v0.15.7',['Graphics sweep, part two. Den mouths, Lair fronts and Sanctum gates are lit from the upper left like the sprites: five-step ramps, mortar and brick tones, outlines in the colour they border, a cast shadow on the ground, glow round embers and crystals, and the hero no longer dithers through the entrance in HD-2D.',
   'World props got the same treatment: stalls with folded awnings and planked counters, a fountain with rippling three-tone water, lamps with glass heads, barrels, crates, hay, carts, banners, anvils, braziers, signs, the notice board, fences, boats, stones, ruins, tents and the town landmarks all have lit and shaded faces, outlines and base shadows.',
   'Overworld walkers are back at .8 of the rig (at .9 they stood taller than the doors again); battle sprites stay at .9. Walking north or south animates again: the body sways and bobs on the stride frames, which a robe used to hide.']],

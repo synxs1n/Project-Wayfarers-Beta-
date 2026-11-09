@@ -335,3 +335,7 @@ gates are beaten, cutscene on entering the gate, returns with a new look, rematc
 - worldgfx2.js wraps objCanvas (worldgfx.js) and redraws most prop kinds with lit/base/shade tones, rim light, contact shadows; towngfx.js landmark props shaded. New test v146a (world group): 396 canvases, sizes unchanged, min distinct colours.
 - Weak spots: Sanctum HD still pale/low contrast; lair fronts are south-facing cards whatever entFace says; 2D lair mound is dungeon8's slab with AO only; crate blotchy; stall goods small; keychest/lever/bars/door/facade/cavemouth untouched.
 - 0.15.7 also: walkers back to .8 (sprhd.js '|c8'), battle .9; walkanim10.js (new, last in MODS) sways the body 1px left/right and bobs 1px on front/back stride frames 1 and 2 (wraps walkerCanvas, caches in IMG 'wa10:'). v140a hero walker hash now c4672172 (changes whenever hero art or scale changes; update to the new value after checking the art).
+
+## 0.15.8
+- worldgfx.js drawBuilding: door height 22 when the wall below the roof is >= 24 px (3+ tile buildings), else 16; handles at 40% of the door. HD building fronts use the 2D canvas (m.bsp), so it carries over.
+- worldzoom10.js: WZ10.chars=1.2: HD character cards placed at spr.sc/1.2 (hero chH 39.2 -> 33.3 world px), px 2 sampling. Flat 2D view untouched (walkers .8).

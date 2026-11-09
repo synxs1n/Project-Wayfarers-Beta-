@@ -7,9 +7,12 @@
 // Only the HD-2D view changes. The Flat (2D) view keeps its integer pixel grid and its walker scale from scale10/sprhd.
 // v0.15.6: the owner found the zoomed world worse than before ("World resizing may have been a mistake"): k is back to 1. The two-texel
 // character sampling stays, it is pure detail.
-const WZ10={k:1,px:2};
+const WZ10={k:1,px:2,chars:1.2};
+// v0.15.8: the owner: "overworld sprites just look a little too big for the world that surrounds them." In HD-2D every character card
+// (hero, townsfolk, roamers, legends) is placed at 1/chars of the sprite scale; sampled at two texels per art pixel it keeps its detail.
+// The Flat (2D) view keeps the .8 walker: it has no fractional scaling without blur.
 HD2D.zoom=HD2D.zoom*WZ10.k;
 {const hc0=hdChar;hdChar=function(bt,cv,fx,fy,fz,flip,a,fl,sc){
   if(sc!=null)return hc0.apply(this,arguments);
   const p0=HD.px;HD.px=(p0||1)*WZ10.px;
-  try{return hc0.call(this,bt,cv,fx,fy,fz,flip,a,fl,HD2D.spr.sc/WZ10.k);}finally{HD.px=p0;}};}
+  try{return hc0.call(this,bt,cv,fx,fy,fz,flip,a,fl,HD2D.spr.sc/(WZ10.k*(WZ10.chars||1)));}finally{HD.px=p0;}};}
