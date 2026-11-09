@@ -153,3 +153,9 @@ B skill effect shapes per element + boss idle/telegraph (battle.js/anim.js/fx2.j
 - Known sprite caveat: an eyepatch strap shows across the back of a hooded head (Hollis). Hair/cape sway not done (needs a second sprite variant in battle.js).
 - v080b: re-running against the new phone layout with the updated rule (cards above commands, action rows on screen). The full battle group has not
   run since 0.11.4; run `runall.js battle` then `world` on 0.12.9 next.
+
+## 0.12.10 to 0.12.12
+- 0.12.10 battle.js layoutBattle tall: wrap height = canvas + 8 (border-box frame): B3EB is 0 again, labels have the bottom strip back.
+- 0.12.11/12 factions.js: rank 1 perks for wardens/archive/hand are inn 3% (were XP +1% at zero standing, which moved every fight's XP; v095na caught it).
+- Battle group on 0.12.10: 31 pass; v063ba old; v070m1 and v080b flaky under load (rerun alone pending). Everything the owner listed in batches 1 to 3
+  is shipped except: hair/cape sway on hero sprites (needs a second sprite variant in battle.js), HD physical-hit shapes were only seen at their tail.
