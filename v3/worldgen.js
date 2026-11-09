@@ -603,6 +603,68 @@ function getMap(id){
   return MAPS[id]=m;
 }
 getMap=HOOK.def('getMap',getMap);// v0.9.9: one definition; modules add hooks (hooks.js)
+// v0.12 (new journeys, new maps only): no building or tall decor hides a town gate. A building stands up in the picture (its roof is drawn
+// above its footprint), so one right south of a gate on the top edge covers it. For every exit cell the three tiles south of it must be free of
+// building footprints and tall decor (trees, lamps, pillars, standing stones): decor is removed, a building is moved one to three tiles
+// (down first, then sideways, smallest move first) onto open ground, its doorstep kept clear and the town still connected (mapIssues).
+// A building that cannot move is left as it is.
+const TOWN_TALL='TtLPNy';
+function townExitClear(m){if(!m||m.kind!=='town'||m.exitClear)return;m.exitClear=1;const g=m.t,H=g.length,W=g[0].length;
+  const inB=(x,y,skip)=>m.bld.some(b=>b!==skip&&x>=b.x&&x<b.x+b.w&&y>=b.y&&y<b.y+b.h);
+  const cells=(m.exits||[]).filter(e=>e.y<H-4);const front=[];cells.forEach(e=>{for(let j=1;j<=3;j++)front.push([e.x,e.y+j]);});
+  front.forEach(([x,y])=>{if(y<H&&x>=0&&x<W&&TOWN_TALL.includes(g[y][x])&&!inB(x,y))g[y][x]='.';});// tall decor in front: removed
+  const hit=()=>{const o=[];m.bld.forEach(b=>{if(front.some(([x,y])=>x>=b.x&&x<b.x+b.w&&y>=b.y&&y<b.y+b.h)&&!o.includes(b))o.push(b);});return o;};
+  const ok=(b,nx,ny)=>{if(nx<2||ny<2||nx+b.w>W-2||ny+b.h>H-3)return false;
+    for(let j=-1;j<=b.h;j++)for(let i=-1;i<=b.w;i++){const x=nx+i,y=ny+j,inOld=x>=b.x&&x<b.x+b.w&&y>=b.y&&y<b.y+b.h,inNew=i>=0&&i<b.w&&j>=0&&j<b.h;
+      if(inOld&&inNew)continue;const c=(g[y]||[])[x];if(c==null)return false;
+      if(inNew){if(inOld)continue;if(!(c==='.'||TOWN_DECOR.includes(c)))return false;if(inB(x,y,b)||m.npcs.some(n=>n.x===x&&n.y===y)||m.signs[x+','+y]!==undefined)return false;}
+      else if(j===b.h&&i>=0&&i<b.w){if(SOLID.includes(c)&&!TOWN_DECOR.includes(c)&&!(x>=b.x&&x<b.x+b.w&&y>=b.y&&y<b.y+b.h))return false;}// the doorstep row stays open
+      else if(inB(x,y,b))return false;}// no touching neighbours
+    if(front.some(([x,y])=>x>=nx&&x<nx+b.w&&y>=ny&&y<ny+b.h))return false;return true;};
+  hit().forEach(b=>{const base=(()=>{try{return typeof mapIssues==='function'?mapIssues(m).length:0;}catch(e){return 0;}})();
+    const tries=[[0,1],[0,2],[0,3],[-1,0],[1,0],[-2,0],[2,0],[-3,0],[3,0],[-1,1],[1,1],[-1,2],[1,2],[-2,1],[2,1],[-2,2],[2,2]];
+    for(const [dx,dy] of tries){const nx=b.x+dx,ny=b.y+dy;if(!ok(b,nx,ny))continue;
+      const old={x:b.x,y:b.y,door:b.door.slice()},snap=[];
+      for(let j=-1;j<=b.h+1;j++)for(let i=-1;i<=b.w+1;i++)for(const [bx,by] of [[old.x+i,old.y+j],[nx+i,ny+j]])if(g[by]&&g[by][bx]!=null&&!snap.some(q=>q[0]===bx&&q[1]===by))snap.push([bx,by,g[by][bx]]);
+      for(let j=0;j<b.h;j++)for(let i=0;i<b.w;i++)g[old.y+j][old.x+i]='.';
+      b.x=nx;b.y=ny;b.door=[old.door[0]+dx,old.door[1]+dy];for(let j=0;j<b.h;j++)for(let i=0;i<b.w;i++)g[ny+j][nx+i]='H';
+      const dy2=b.door[1]+1,dx2=b.door[0];if(g[dy2]&&TOWN_DECOR.includes(g[dy2][dx2]))g[dy2][dx2]='.';
+      let bad=false;try{if(typeof mapIssues==='function')bad=mapIssues(m).length>base;}catch(e){}
+      if(bad||hit().includes(b)){snap.forEach(([x,y,c])=>{g[y][x]=c;});b.x=old.x;b.y=old.y;b.door=old.door;continue;}
+      m.exitMoved=(m.exitMoved||0)+1;break;}});}
+// when no building can move, the top edge gate itself slides along the wall (smallest slide first) to columns whose three tiles south are clear
+// (decor removed), digging a short three wide lane down to open ground. The exits, the arrival tile and the gate record follow it.
+function townGateSlide(m){const g=m.t,H=g.length,W=g[0].length,top=(m.exits||[]).filter(e=>e.y===0);if(top.length<2)return;
+  const xs=top.map(e=>e.x).sort((p,q)=>p-q),mid=xs[Math.floor(xs.length/2)],rec=Object.values(m.gates||{}).find(q=>q&&q.cells&&q.cells.some(c=>c[1]===0&&xs.includes(c[0])));if(!rec)return;
+  const inB=(x,y)=>m.bld.some(b=>x>=b.x&&x<b.x+b.w&&y>=b.y&&y<b.y+b.h),npc=(x,y)=>m.npcs.some(n=>n.x===x&&n.y===y);
+  const walk=c=>!SOLID.includes(c)||TOWN_DECOR.includes(c)||TOWN_TALL.includes(c);
+  const base=(()=>{try{return mapIssues(m).length;}catch(e){return 0;}})();
+  const wallCh=(()=>{const cnt={};for(let x=0;x<W;x++){const c=g[0][x];if(SOLID.includes(c)&&c!=='Y')cnt[c]=(cnt[c]||0)+1;}return Object.keys(cnt).sort((p,q)=>cnt[q]-cnt[p])[0]||'Z';})();
+  const cand=[];for(let a=5;a<W-5;a++)if(a!==mid)cand.push(a);cand.sort((p,q)=>Math.abs(p-mid)-Math.abs(q-mid));
+  for(const a of cand.slice(0,24)){
+    // the lane: three columns, from the border down to the first row that is open road or ground (at most 8 rows), no building, no npc on it
+    let end=-1,bad=false;for(let d=1;d<=8&&!bad&&end<0;d++){for(let k=-1;k<=1;k++){const x=a+k,c=g[d][x];if(inB(x,d)||c==null||!walk(c)||npc(x,d)||m.signs[x+','+d]!==undefined){bad=true;break;}}
+      if(!bad&&d>=3){const row=[-1,0,1].map(k=>g[d][a+k]);if(row.every(c=>c==='='||c==='.'))end=d;}}
+    if(bad||end<0)continue;
+    // nothing tall or building in the three tiles south of it, and a flank on each side must be wall
+    if([-1,0,1].some(k=>[1,2,3].some(j=>inB(a+k,j))))continue;
+    const snap=[];const keep=(x,y)=>{if(g[y]&&!snap.some(q=>q[0]===x&&q[1]===y))snap.push([x,y,g[y][x]]);};
+    for(let y=0;y<=end;y++)for(let x=Math.min(a,mid)-3;x<=Math.max(a,mid)+3;x++)keep(x,y);
+    const exs=m.exits.slice(),old=rec.cells.map(c=>c.slice()),q0={x:rec.x,y:rec.y,arrive:rec.arrive&&rec.arrive.slice()};
+    xs.forEach(x=>{g[0][x]=wallCh;});
+    for(let d=0;d<=end;d++)for(let k=-1;k<=1;k++){const x=a+k,c=g[d][x];if(d===0||TOWN_TALL.includes(c)||TOWN_DECOR.includes(c)||SOLID.includes(c))g[d][x]='=';}
+    [a-2,a+2].forEach(x=>{if(g[0][x]!=null&&SOLID.includes(g[0][x]))g[0][x]='Y';});
+    const proto=top[0];m.exits=m.exits.filter(e=>e.y!==0||!xs.includes(e.x));[-1,0,1].forEach(k=>m.exits.push(Object.assign({},proto,{x:a+k,y:0})));
+    rec.cells=[-1,0,1].map(k=>[a+k,0]);if(rec.x!=null)rec.x=a;if(rec.arrive)rec.arrive=[a,2,rec.arrive[2]];
+    let ok=true;try{ok=mapIssues(m).length<=base;}catch(e){}
+    if(ok){m.gateSlid=a-mid;m.npcs=m.npcs.filter(n=>Math.abs(n.x-a)>2||n.y>3);return;}
+    snap.forEach(([x,y,c])=>{g[y][x]=c;});m.exits=exs;rec.cells=old;rec.x=q0.x;rec.y=q0.y;rec.arrive=q0.arrive;}}
+function townExitPass(m){townExitClear(m);const H=m.t.length;
+  const front=[];(m.exits||[]).filter(e=>e.y<H-4).forEach(e=>{for(let j=1;j<=3;j++)front.push([e.x,e.y+j]);});
+  if(front.some(([x,y])=>m.bld.some(b=>x>=b.x&&x<b.x+b.w&&y>=b.y&&y<b.y+b.h)))townGateSlide(m);}
+// registered after every other getMap hook (a microtask after this script ran): p2world's lane pass may move a gate, so the check is last
+queueMicrotask(()=>{try{HOOK.wrap('getMap','townexit','new towns: nothing hides a gate',function(next,...a){const id=a[0],fresh=typeof id==='string'&&id[0]==='t'&&!MAPS[id];const m=next(...a);
+  try{if(fresh&&m&&m.kind==='town'&&typeof lay3On==='function'&&lay3On()&&!(G&&G.daily))townExitPass(m);}catch(e){}return m;});}catch(e){}});
 // gathering spots: herb patches, ore glints and fallen logs. Walk over one to collect it. They regrow when you rest at an inn.
 const NODE_MIX={meadow:['herb','herb','wood','wood','ore'],coast:['herb','herb','wood','ore'],cave:['ore','ore','ore','herb'],snow:['ore','ore','wood','herb'],heights:['wood','wood','ore','herb'],void:['herb','herb','ore','wood']};
 function placeNodes(m){

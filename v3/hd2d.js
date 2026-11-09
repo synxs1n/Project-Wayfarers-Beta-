@@ -120,42 +120,48 @@ function hdBakeCards0(m,S,g0,g1){const W=m.w*TS,SH=64,UP=58,CW=8,st=mkCv(W,SH),s
   items.forEach(it=>{if(it.r.y+it.h>AH)return;ac.drawImage(it.cv,it.r.x,it.r.y);const u0=it.r.x,u1=it.r.x+it.w,v0=it.r.y,v1=it.r.y+it.h;// atlas pixels, scaled when the atlases merge
     const yt=(UP-it.t)*V,yb=(UP-it.t-it.h)*V;H2P.set([it.x0,yt,it.z,it.x0+it.w,yt,it.z,it.x0+it.w,yb,it.z,it.x0,yb,it.z]);bt.at(it.x0+it.w/2,it.z-8).quad(H2P,u0,v0,u1,v1,255,255,255,255,0,.45,.89,2|8);});
   return {cv:at,bt};}
-// v0.6.3: the sanctum gatehouse in a field (sites.js) was painted flat into the ground art, with the cave mouth card standing in front
-// of it. In HD-2D it is now built like the buildings: two towers (front, sides, top, merlons) and a recessed curtain wall with the gate
-// arch and portcullis between them, over its 3 x 2 tile footprint (the 'U' tiles and the 'E' gate), textured from a small code drawn
-// sheet. The 2D view keeps its flat painting.
-const H2G={W:96,H:48,tw:14,th:40,ch:28,rec:6};
+// v0.12: the Sanctum entrance in a field is a shrine (sites.js drawGatehouse paints the flat 2D version over the same 3 x 2 tile footprint:
+// the 'U' tiles and the 'E' door). In HD-2D it is geometry like the buildings: two slim marble pillars with glowing finials, a lintel
+// joining them, a recessed dark back wall holding the glowing rune arch, and a three step stone stair climbing to the door, all textured
+// from a small code drawn sheet (flag 2 lets the runes and lanterns glow at night; the lantern lights come from sites.js m.lights).
+// v0.6.3 had towers and a curtain wall here.
+const H2G={W:96,H:56,tw:9,th:34,ch:27,rec:9,lt:7,fh:9,steps:3};
 function hdGateTex(){return hdSpr('gatehouse',H2G.W,H2G.H,(c)=>{const f=(col,x,y,w,h)=>{c.fillStyle=col;c.fillRect(x,y,w,h);};
-  const brick=(x,y,w,h,base,dk,lt,sd)=>{f(base,x,y,w,h);let r=sd;for(let yy=y+4;yy<y+h;yy+=5){f(dk,x,yy,w,1);const off=((yy-y)/5)%2?0:3;for(let xx=x+off;xx<x+w;xx+=6)f(dk,xx,yy-4,1,4);}
-    for(let i=0;i<w*h/40;i++){r=(r*1103515245+12345)>>>0;f(lt,x+r%w,y+(r>>8)%h,2,1);}};
-  // tower front (0,0 14x40): bricks, an arrow slit, a red banner with a gold mark, dark edges
-  brick(0,0,14,40,'#6e6e7a','#4a4a54','#8a8a96',7);f('#3a3a44',0,0,1,40);f('#3a3a44',13,0,1,40);f('#9a9aa6',0,0,14,1);
-  f('#120c10',6,6,2,7);f('#2a2a34',3,14,8,1);f('#c0392b',4,15,6,14);f('#9a2a20',4,27,2,2);f('#9a2a20',8,27,2,2);f('#ffd04a',6,18,2,3);f('#ffd04a',5,19,4,1);
-  // tower side (14,0 32x40)
-  brick(14,0,32,40,'#5c5c68','#40404a','#74747e',11);f('#9a9aa6',14,0,32,1);f('#120c10',29,8,2,6);
-  // curtain front (46,0 20x28): bricks, the gate arch with its portcullis, a keystone
-  brick(46,0,20,28,'#7a7a86','#55555f','#9a9aa6',5);f('#9a9aa6',46,0,20,1);
-  c.fillStyle='#120c10';c.beginPath();c.ellipse(56,12,6,5,0,Math.PI,0);c.fill();f('#120c10',50,12,12,16);
-  f('#3a2a1a',50,10,12,1);for(let i=0;i<4;i++)f('#3a2a1a',51+i*3,10,1,18);f('#3a2a1a',50,17,12,1);f('#3a2a1a',50,23,12,1);
-  f('#b0b0bc',55,5,2,2);f('#4a4a54',49,9,1,19);f('#4a4a54',62,9,1,19);
-  // merlons: tower (66,0 14x6), curtain (66,8 20x5), tower side (0,42 32x6); transparent gaps (cut out by the depth pass)
-  const mer=(x,y,w,h,base,lt)=>{f(base,x,y+h-2,w,2);for(let xx=x;xx<x+w;xx+=5){f(base,xx,y,Math.min(3,x+w-xx),h);f(lt,xx,y,Math.min(3,x+w-xx),1);}};
-  mer(66,0,14,6,'#6e6e7a','#9a9aa6');mer(66,8,20,5,'#7a7a86','#a8a8b4');mer(0,42,32,6,'#5c5c68','#8a8a96');});}
+  const rune=(x,y)=>{f('#8ae8ff',x,y,2,1);f('#8ae8ff',x,y+1,1,2);};
+  // pillar front (0,0 9x34): marble with a lit left edge, a rune band, a lantern bracket and capital/base
+  f('#a8a4b6',0,0,9,34);f('#e4e0ee',1,0,3,34);f('#7a768a',6,0,3,34);f('#5a566a',8,0,1,34);f('#f4f0fa',0,0,9,2);f('#8a869a',0,2,9,1);f('#6a667a',0,30,9,4);f('#8a869a',0,30,9,1);
+  rune(2,8);f('#8ae8ff',5,9,1,3);rune(2,15);f('#8ae8ff',3,20,3,1);f('#2a2230',3,24,1,3);f('#ffd070',5,22,2,3);f('#fff6c8',5,23,1,1);
+  // pillar side (10,0 32x34)
+  f('#9a96aa',10,0,32,34);f('#b8b4c4',10,0,32,2);f('#7a768a',10,2,32,1);f('#6a667a',10,30,32,4);for(let i=0;i<32;i+=8)f('#8a869a',10+i,3,1,27);rune(24,12);f('#8ae8ff',26,16,3,1);
+  // back wall front (44,0 30x27): dark cool stone, the doorway and the glowing rune arch with sigils
+  f('#33344a',44,0,30,27);for(let y=4;y<27;y+=6){f('#26273a',44,y,30,1);for(let x=(y/6%2)?3:8;x<30;x+=10)f('#26273a',44+x,y-5,1,5);}
+  f('#4a4a62',44,0,30,1);c.fillStyle='#070914';c.beginPath();c.moveTo(51,27);c.lineTo(51,12);c.quadraticCurveTo(59,-3,67,12);c.lineTo(67,27);c.fill();
+  const g=c.createRadialGradient(59,26,1,59,26,14);g.addColorStop(0,'rgba(150,230,255,.75)');g.addColorStop(1,'rgba(150,230,255,0)');c.fillStyle=g;c.fillRect(46,10,26,17);
+  c.strokeStyle='#8ae8ff';c.lineWidth=2;c.beginPath();c.moveTo(51,27);c.lineTo(51,12);c.quadraticCurveTo(59,-3,67,12);c.lineTo(67,27);c.stroke();
+  c.strokeStyle='#f0fdff';c.lineWidth=1;c.beginPath();c.moveTo(52.5,27);c.lineTo(52.5,12.5);c.quadraticCurveTo(59,.5,65.5,12.5);c.lineTo(65.5,27);c.stroke();
+  [[46,6],[47,13],[46,20],[70,6],[69,13],[70,20]].forEach(([x,y])=>rune(x,y));f('#fff6c8',58,3,2,3);f('#ffe08a',57,4,4,1);
+  // lintel (44,28 30x7): pale stone with a sun rune; its underside shadow
+  f('#c8c4d4',44,28,30,7);f('#f0ecf6',44,28,30,2);f('#8a869a',44,33,30,2);f('#fff6c8',58,30,2,2);f('#ffe08a',57,31,4,1);rune(48,30);rune(68,30);
+  // stair riser (76,10 16x4)
+  f('#8a869a',76,10,16,4);f('#b8b4c4',76,10,16,1);f('#5a566a',76,13,16,1);f('#8ae8ff',82,12,1,1);f('#8ae8ff',85,12,1,1);
+  // finial (76,0 14x9): a cone base under a glowing orb, transparent around it
+  f('#8a869a',80,6,6,3);f('#d8d4e0',81,6,2,3);const o=c.createRadialGradient(83,3,0,83,3,6);o.addColorStop(0,'rgba(255,246,200,1)');o.addColorStop(.5,'rgba(255,224,138,.7)');o.addColorStop(1,'rgba(255,224,138,0)');c.fillStyle=o;c.fillRect(77,0,12,9);f('#fffbe8',82,2,3,3);});}
 function hdGatePart(m){if(!m||m.kind!=='field'||!m.fortAt)return null;const [fx,fy]=m.fortAt;return {b:{x:fx-1,y:fy-1,w:3,h:2,k:'gatehouse',door:[fx,fy]},cv:hdGateTex()};}
-function hdGateGeo(m,S,b,Q,U,Vv,p,V,bt){const G2=H2G,x0=b.x*TS,x1=x0+b.w*TS,zb=b.y*TS,zf=(b.y+b.h)*TS,tw=G2.tw,hT=G2.th*V,hC=G2.ch*V,zc=zf-G2.rec,xl=x0+tw,xr=x1-tw,mt=6*V,mc=5*V;
-  const top=hdRgb('#8a8a94').map(v=>Math.round(v*235)),ctop=hdRgb('#92929c').map(v=>Math.round(v*235)),flat=(a,c)=>{H2P.set(a);bt.quad(H2P,-1,0,-1,0,c[0],c[1],c[2],255,0,1,0,8);};
+function hdGateGeo(m,S,b,Q,U,Vv,p,V,bt){const G2=H2G,x0=b.x*TS,x1=x0+b.w*TS,zb=b.y*TS,zf=(b.y+b.h)*TS,tw=G2.tw,hT=G2.th*V,hC=G2.ch*V,zc=zf-G2.rec,xl=x0+tw,xr=x1-tw,fh=G2.fh*V,lt=G2.lt*V;
+  const top=hdRgb('#c4c0d0').map(v=>Math.round(v*235)),ctop=hdRgb('#6a6a80').map(v=>Math.round(v*235)),stp=hdRgb('#b0acbc').map(v=>Math.round(v*235)),flat=(a,c)=>{H2P.set(a);bt.quad(H2P,-1,0,-1,0,c[0],c[1],c[2],255,0,1,0,8);};
   [[x0,xl],[xr,x1]].forEach(([a,e])=>{
-    Q([a,hT,zf,e,hT,zf,e,0,zf,a,0,zf],U(p,0),Vv(p,0),U(p,tw),Vv(p,G2.th),255,[0,0,1],2|8);// front
-    Q([a,hT,zb,a,hT,zf,a,0,zf,a,0,zb],U(p,14),Vv(p,0),U(p,46),Vv(p,G2.th),255,[-1,0,0],8);// west side
-    Q([e,hT,zf,e,hT,zb,e,0,zb,e,0,zf],U(p,14),Vv(p,0),U(p,46),Vv(p,G2.th),255,[1,0,0],8);// east side
+    Q([a,hT,zf,e,hT,zf,e,0,zf,a,0,zf],U(p,0),Vv(p,0),U(p,9),Vv(p,34),255,[0,0,1],2|8);// front
+    Q([a,hT,zb,a,hT,zf,a,0,zf,a,0,zb],U(p,10),Vv(p,0),U(p,42),Vv(p,34),255,[-1,0,0],8);// west side
+    Q([e,hT,zf,e,hT,zb,e,0,zb,e,0,zf],U(p,10),Vv(p,0),U(p,42),Vv(p,34),255,[1,0,0],8);// east side
     flat([a,hT,zb,e,hT,zb,e,hT,zf,a,hT,zf],top);
-    Q([a,hT+mt,zf,e,hT+mt,zf,e,hT,zf,a,hT,zf],U(p,66),Vv(p,0),U(p,80),Vv(p,6),255,[0,0,1],2|8);// merlons, front and back
-    Q([a,hT+mt,zb+.5,e,hT+mt,zb+.5,e,hT,zb+.5,a,hT,zb+.5],U(p,66),Vv(p,0),U(p,80),Vv(p,6),255,[0,0,1],8);
-    Q([a+.5,hT+mt,zb,a+.5,hT+mt,zf,a+.5,hT,zf,a+.5,hT,zb],U(p,0),Vv(p,42),U(p,32),Vv(p,48),255,[-1,0,0],8);
-    Q([e-.5,hT+mt,zf,e-.5,hT+mt,zb,e-.5,hT,zb,e-.5,hT,zf],U(p,0),Vv(p,42),U(p,32),Vv(p,48),255,[1,0,0],8);});
-  Q([xl,hC,zc,xr,hC,zc,xr,0,zc,xl,0,zc],U(p,46),Vv(p,0),U(p,66),Vv(p,G2.ch),255,[0,0,1],2|8);// the curtain wall with the gate
+    const mx=(a+e)/2,fw=7;Q([mx-fw,hT+fh,zf-1,mx+fw,hT+fh,zf-1,mx+fw,hT,zf-1,mx-fw,hT,zf-1],U(p,76),Vv(p,0),U(p,90),Vv(p,9),255,[0,.45,.89],2|8);});// the glowing finial
+  Q([xl,hC,zc,xr,hC,zc,xr,0,zc,xl,0,zc],U(p,44),Vv(p,0),U(p,74),Vv(p,27),255,[0,0,1],2|8);// the dark back wall with the rune arch
   flat([xl,hC,zb,xr,hC,zb,xr,hC,zc,xl,hC,zc],ctop);
-  Q([xl,hC+mc,zc,xr,hC+mc,zc,xr,hC,zc,xl,hC,zc],U(p,66),Vv(p,8),U(p,86),Vv(p,13),255,[0,0,1],2|8);
+  Q([xl,hT,zf-1,xr,hT,zf-1,xr,hT-lt,zf-1,xl,hT-lt,zf-1],U(p,44),Vv(p,28),U(p,74),Vv(p,35),255,[0,0,1],2|8);// the lintel
+  flat([xl,hT,zb,xr,hT,zb,xr,hT,zf-1,xl,hT,zf-1],top);
+  const n=G2.steps,d=(zf-zc)/n;for(let j=0;j<n;j++){const h=(j+1)*2.4*V,zz=zf-j*d;
+    Q([xl,h,zz,xr,h,zz,xr,0,zz,xl,0,zz],U(p,76),Vv(p,10),U(p,92),Vv(p,14),255,[0,0,1],2|8);// the riser
+    flat([xl,h,zz-d,xr,h,zz-d,xr,h,zz,xl,h,zz],stp);}// the tread
   S.bh.push({b,h:hT});}
 // buildings: roofed houses become boxes with a gabled roof cut from their 2D sprite; keeps a box with battlements; tents, the lighthouse
 // and anything unusual stand up as one card. Signs and landmark props (towngfx) come from the town decor pass as a card on the facade.
@@ -271,6 +277,7 @@ function hdBake(m){const sig=hdSig(m);if(HD.S&&HD.S.m===m&&HD.S.sig===sig&&HD.ma
   let g0,g1,cards=null,blds=null,deco=null,sh=null;const d0=drawObjects;
   const fa=m.fortAt;// v0.6.3: the gatehouse is geometry in HD-2D (hdGateGeo), not paint on the ground
   try{drawObjects=function(){};try{m.fortAt=null;g0=buildMapCanvas(m,0);g1=buildMapCanvas(m,1);}finally{drawObjects=d0;m.fortAt=fa;}
+    if(fa&&typeof drawShrineRing==='function')[g0,g1].forEach(g=>{try{drawShrineRing(g.getContext('2d'),(fa[0]-1)*TS,(fa[1]-1)*TS);}catch(e){}});// the ring of stones and candles is ground paint
     m.lights=save.lights;m.smoke=save.smoke;m.bsp=save.bsp;
     const W=m.w,H=m.h,HT=new Float32Array(W*H),KD=new Uint8Array(W*H);S.HT=HT;S.KD=KD;
     const hOf=k=>k===1?HD2D.wall.dungeon*V:k===2?HD2D.wall.cliff*V:k===3?HD2D.wall.town*V:k===4?HD2D.water*V:k===5?HD2D.deep*V:k===6?HD2D.water*V:0;

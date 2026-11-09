@@ -1837,7 +1837,7 @@ html.rm .battle.b3 .cmd .mi.b9glow{animation:none}
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.12.0";const APP_BUILD="74458d46d556";
+(function(){const APP_VER="0.12.1";const APP_BUILD="116c5f3401b9";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2530,7 +2530,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.12.0";const APP_BUILD="74458d46d556";
+const APP_VER="0.12.1";const APP_BUILD="116c5f3401b9";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2538,6 +2538,7 @@ const APP_VER="0.12.0";const APP_BUILD="74458d46d556";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.12.1',['Hints: queued tips show in the order they came up (core battle tips still go first early on), and the battle tip card stays small (its Log button lives on the world card and in Settings).']],
  ['Beta v0.12.0',['Bonds: fifteen new bonded pairs, each with a joint tech and two talks; every pair now has an after-the-battle talk (level 3, once a Scourge or the Calamity falls with both in the Vanguard) and the new pairs talk at camp and at the Inn (level 2). The Bonds screen lists every pair, its level, what the next level unlocks and every scene with a Watch button. Companions are now Pets: a Pet slot sits under each hero\'s gear in the Equipment menu and on the hero sheet, with a picker, and Equip best pairs free pets too.']],
  ['Beta v0.11.9',['Quests: a quest or bounty you accept from now on is handed in at the Notice Board that posted it, and guild missions at any Guild Hall; a beaten bounty\'s reward waits at the board. Quests taken before this update still claim anywhere. Quest targets show on the field map before you reach them, and towns with a reward waiting say so on the world map. The Guild Hall gets its own "!" marker. Next goals lists your active quests under the main quest, and tapping any goal opens a step by step guide. Hints come slower early on, core battle tips first, and every tip you have seen is kept in a Hint log (Settings > Tips). Guilds have five ranks again, one perk each. New journeys draw their realms in rising order of strangeness. World: no weather inside lairs and Dens (some Sanctums are open to the sky), roaming foes are a little stronger than random ones, chests and drops can hold bandages, ash and tents, and new towns keep the Notice Board and waystone apart with nothing in front of them.']],
  ['Beta v0.11.8',['Party and gear: Build Party now weighs element coverage properly and dislikes doubled elements; Fresh mix favours heroes who have not fought lately. Equip best weighs each hero\'s main role and gives the same loadout every time (ties no longer follow the pack order). The Smithy\'s Upgrade whole party looks at where a piece can end up: it buys or forges the base and tempers it as far as your gold and materials allow, picking the best final stats; Alchemy gets the same button for charms. Battle: party MP shows on every hero card, the single target preview is no longer cut off, a new Settings option fires single target skills at once when only one target exists, Guard lights up only when a foe will really hit before your next turn, and a guarded hit fills some Limit. Heroes: the Epic tag and the purple border always agree, Epic is a hand picked set (dual and single types, never a starter), and dual types get a two tone element strip instead. Guild recruits: five per journey from the recruit pool, one unlocking in each town.']],
@@ -6815,6 +6816,68 @@ function getMap(id){
   return MAPS[id]=m;
 }
 getMap=HOOK.def('getMap',getMap);// v0.9.9: one definition; modules add hooks (hooks.js)
+// v0.12 (new journeys, new maps only): no building or tall decor hides a town gate. A building stands up in the picture (its roof is drawn
+// above its footprint), so one right south of a gate on the top edge covers it. For every exit cell the three tiles south of it must be free of
+// building footprints and tall decor (trees, lamps, pillars, standing stones): decor is removed, a building is moved one to three tiles
+// (down first, then sideways, smallest move first) onto open ground, its doorstep kept clear and the town still connected (mapIssues).
+// A building that cannot move is left as it is.
+const TOWN_TALL='TtLPNy';
+function townExitClear(m){if(!m||m.kind!=='town'||m.exitClear)return;m.exitClear=1;const g=m.t,H=g.length,W=g[0].length;
+  const inB=(x,y,skip)=>m.bld.some(b=>b!==skip&&x>=b.x&&x<b.x+b.w&&y>=b.y&&y<b.y+b.h);
+  const cells=(m.exits||[]).filter(e=>e.y<H-4);const front=[];cells.forEach(e=>{for(let j=1;j<=3;j++)front.push([e.x,e.y+j]);});
+  front.forEach(([x,y])=>{if(y<H&&x>=0&&x<W&&TOWN_TALL.includes(g[y][x])&&!inB(x,y))g[y][x]='.';});// tall decor in front: removed
+  const hit=()=>{const o=[];m.bld.forEach(b=>{if(front.some(([x,y])=>x>=b.x&&x<b.x+b.w&&y>=b.y&&y<b.y+b.h)&&!o.includes(b))o.push(b);});return o;};
+  const ok=(b,nx,ny)=>{if(nx<2||ny<2||nx+b.w>W-2||ny+b.h>H-3)return false;
+    for(let j=-1;j<=b.h;j++)for(let i=-1;i<=b.w;i++){const x=nx+i,y=ny+j,inOld=x>=b.x&&x<b.x+b.w&&y>=b.y&&y<b.y+b.h,inNew=i>=0&&i<b.w&&j>=0&&j<b.h;
+      if(inOld&&inNew)continue;const c=(g[y]||[])[x];if(c==null)return false;
+      if(inNew){if(inOld)continue;if(!(c==='.'||TOWN_DECOR.includes(c)))return false;if(inB(x,y,b)||m.npcs.some(n=>n.x===x&&n.y===y)||m.signs[x+','+y]!==undefined)return false;}
+      else if(j===b.h&&i>=0&&i<b.w){if(SOLID.includes(c)&&!TOWN_DECOR.includes(c)&&!(x>=b.x&&x<b.x+b.w&&y>=b.y&&y<b.y+b.h))return false;}// the doorstep row stays open
+      else if(inB(x,y,b))return false;}// no touching neighbours
+    if(front.some(([x,y])=>x>=nx&&x<nx+b.w&&y>=ny&&y<ny+b.h))return false;return true;};
+  hit().forEach(b=>{const base=(()=>{try{return typeof mapIssues==='function'?mapIssues(m).length:0;}catch(e){return 0;}})();
+    const tries=[[0,1],[0,2],[0,3],[-1,0],[1,0],[-2,0],[2,0],[-3,0],[3,0],[-1,1],[1,1],[-1,2],[1,2],[-2,1],[2,1],[-2,2],[2,2]];
+    for(const [dx,dy] of tries){const nx=b.x+dx,ny=b.y+dy;if(!ok(b,nx,ny))continue;
+      const old={x:b.x,y:b.y,door:b.door.slice()},snap=[];
+      for(let j=-1;j<=b.h+1;j++)for(let i=-1;i<=b.w+1;i++)for(const [bx,by] of [[old.x+i,old.y+j],[nx+i,ny+j]])if(g[by]&&g[by][bx]!=null&&!snap.some(q=>q[0]===bx&&q[1]===by))snap.push([bx,by,g[by][bx]]);
+      for(let j=0;j<b.h;j++)for(let i=0;i<b.w;i++)g[old.y+j][old.x+i]='.';
+      b.x=nx;b.y=ny;b.door=[old.door[0]+dx,old.door[1]+dy];for(let j=0;j<b.h;j++)for(let i=0;i<b.w;i++)g[ny+j][nx+i]='H';
+      const dy2=b.door[1]+1,dx2=b.door[0];if(g[dy2]&&TOWN_DECOR.includes(g[dy2][dx2]))g[dy2][dx2]='.';
+      let bad=false;try{if(typeof mapIssues==='function')bad=mapIssues(m).length>base;}catch(e){}
+      if(bad||hit().includes(b)){snap.forEach(([x,y,c])=>{g[y][x]=c;});b.x=old.x;b.y=old.y;b.door=old.door;continue;}
+      m.exitMoved=(m.exitMoved||0)+1;break;}});}
+// when no building can move, the top edge gate itself slides along the wall (smallest slide first) to columns whose three tiles south are clear
+// (decor removed), digging a short three wide lane down to open ground. The exits, the arrival tile and the gate record follow it.
+function townGateSlide(m){const g=m.t,H=g.length,W=g[0].length,top=(m.exits||[]).filter(e=>e.y===0);if(top.length<2)return;
+  const xs=top.map(e=>e.x).sort((p,q)=>p-q),mid=xs[Math.floor(xs.length/2)],rec=Object.values(m.gates||{}).find(q=>q&&q.cells&&q.cells.some(c=>c[1]===0&&xs.includes(c[0])));if(!rec)return;
+  const inB=(x,y)=>m.bld.some(b=>x>=b.x&&x<b.x+b.w&&y>=b.y&&y<b.y+b.h),npc=(x,y)=>m.npcs.some(n=>n.x===x&&n.y===y);
+  const walk=c=>!SOLID.includes(c)||TOWN_DECOR.includes(c)||TOWN_TALL.includes(c);
+  const base=(()=>{try{return mapIssues(m).length;}catch(e){return 0;}})();
+  const wallCh=(()=>{const cnt={};for(let x=0;x<W;x++){const c=g[0][x];if(SOLID.includes(c)&&c!=='Y')cnt[c]=(cnt[c]||0)+1;}return Object.keys(cnt).sort((p,q)=>cnt[q]-cnt[p])[0]||'Z';})();
+  const cand=[];for(let a=5;a<W-5;a++)if(a!==mid)cand.push(a);cand.sort((p,q)=>Math.abs(p-mid)-Math.abs(q-mid));
+  for(const a of cand.slice(0,24)){
+    // the lane: three columns, from the border down to the first row that is open road or ground (at most 8 rows), no building, no npc on it
+    let end=-1,bad=false;for(let d=1;d<=8&&!bad&&end<0;d++){for(let k=-1;k<=1;k++){const x=a+k,c=g[d][x];if(inB(x,d)||c==null||!walk(c)||npc(x,d)||m.signs[x+','+d]!==undefined){bad=true;break;}}
+      if(!bad&&d>=3){const row=[-1,0,1].map(k=>g[d][a+k]);if(row.every(c=>c==='='||c==='.'))end=d;}}
+    if(bad||end<0)continue;
+    // nothing tall or building in the three tiles south of it, and a flank on each side must be wall
+    if([-1,0,1].some(k=>[1,2,3].some(j=>inB(a+k,j))))continue;
+    const snap=[];const keep=(x,y)=>{if(g[y]&&!snap.some(q=>q[0]===x&&q[1]===y))snap.push([x,y,g[y][x]]);};
+    for(let y=0;y<=end;y++)for(let x=Math.min(a,mid)-3;x<=Math.max(a,mid)+3;x++)keep(x,y);
+    const exs=m.exits.slice(),old=rec.cells.map(c=>c.slice()),q0={x:rec.x,y:rec.y,arrive:rec.arrive&&rec.arrive.slice()};
+    xs.forEach(x=>{g[0][x]=wallCh;});
+    for(let d=0;d<=end;d++)for(let k=-1;k<=1;k++){const x=a+k,c=g[d][x];if(d===0||TOWN_TALL.includes(c)||TOWN_DECOR.includes(c)||SOLID.includes(c))g[d][x]='=';}
+    [a-2,a+2].forEach(x=>{if(g[0][x]!=null&&SOLID.includes(g[0][x]))g[0][x]='Y';});
+    const proto=top[0];m.exits=m.exits.filter(e=>e.y!==0||!xs.includes(e.x));[-1,0,1].forEach(k=>m.exits.push(Object.assign({},proto,{x:a+k,y:0})));
+    rec.cells=[-1,0,1].map(k=>[a+k,0]);if(rec.x!=null)rec.x=a;if(rec.arrive)rec.arrive=[a,2,rec.arrive[2]];
+    let ok=true;try{ok=mapIssues(m).length<=base;}catch(e){}
+    if(ok){m.gateSlid=a-mid;m.npcs=m.npcs.filter(n=>Math.abs(n.x-a)>2||n.y>3);return;}
+    snap.forEach(([x,y,c])=>{g[y][x]=c;});m.exits=exs;rec.cells=old;rec.x=q0.x;rec.y=q0.y;rec.arrive=q0.arrive;}}
+function townExitPass(m){townExitClear(m);const H=m.t.length;
+  const front=[];(m.exits||[]).filter(e=>e.y<H-4).forEach(e=>{for(let j=1;j<=3;j++)front.push([e.x,e.y+j]);});
+  if(front.some(([x,y])=>m.bld.some(b=>x>=b.x&&x<b.x+b.w&&y>=b.y&&y<b.y+b.h)))townGateSlide(m);}
+// registered after every other getMap hook (a microtask after this script ran): p2world's lane pass may move a gate, so the check is last
+queueMicrotask(()=>{try{HOOK.wrap('getMap','townexit','new towns: nothing hides a gate',function(next,...a){const id=a[0],fresh=typeof id==='string'&&id[0]==='t'&&!MAPS[id];const m=next(...a);
+  try{if(fresh&&m&&m.kind==='town'&&typeof lay3On==='function'&&lay3On()&&!(G&&G.daily))townExitPass(m);}catch(e){}return m;});}catch(e){}});
 // gathering spots: herb patches, ore glints and fallen logs. Walk over one to collect it. They regrow when you rest at an inn.
 const NODE_MIX={meadow:['herb','herb','wood','wood','ore'],coast:['herb','herb','wood','ore'],cave:['ore','ore','ore','herb'],snow:['ore','ore','wood','herb'],heights:['wood','wood','ore','herb'],void:['herb','herb','ore','wood']};
 function placeNodes(m){
@@ -14556,13 +14619,17 @@ HOOK.wrap('getMap','sites','sanctum maps; place the sanctum on its field',functi
 // footprint as before (the 'U' tiles and the 'E' door), so nothing about reachability changes. It is painted into the field's base layer
 // (so heroes and townsfolk always draw in front of it). A Den mouth is a mossy rock arch and a lair a clawed hill: neither has pillars,
 // stairs or this cold white-blue rune light.
-function drawGatehouse(ctx,x,y){
+function drawGatehouse(ctx,x,y){drawShrineRing(ctx,x,y);drawShrineFront(ctx,x,y);}
+function drawShrineRing(ctx,x,y){
   const f=(c,a,b,w,h)=>{ctx.fillStyle=c;ctx.fillRect(x+a,y+b,w,h);};
   // the ring of standing stones and candles on the ground in front (flat, walkable): drawn first, under everything
   ctx.fillStyle='rgba(20,24,40,.22)';ctx.beginPath();ctx.ellipse(x+24,y+36,31,9,0,0,7);ctx.fill();
   for(let i=0;i<12;i++){const t=Math.PI*(.12+i/11*.76),sx=Math.round(24+Math.cos(t)*30),sy=Math.round(36+Math.sin(t)*8);
     if(i%3===1){f('#2a2230',sx-1,sy-1,3,1);f('#ffd070',sx,sy-2,1,2);f('#fff6c8',sx,sy-3,1,1);ctx.fillStyle='rgba(255,208,112,.22)';ctx.beginPath();ctx.arc(x+sx+.5,y+sy-2,3.5,0,7);ctx.fill();}
     else{f('#4a4658',sx-1,sy-3,3,4);f('#8c889a',sx-1,sy-3,3,1);f('#6a667a',sx-1,sy-2,1,3);}}
+}
+function drawShrineFront(ctx,x,y){
+  const f=(c,a,b,w,h)=>{ctx.fillStyle=c;ctx.fillRect(x+a,y+b,w,h);};
   // the stone stair: four steps widening toward the front, rune notches on the risers
   for(let i=0;i<4;i++){const w=14+i*3,yy=TS+14+i*4;f('#6a6678',24-w/2-1,yy,w+2,5);f('#aaa6b4',24-w/2,yy,w,2);f('#7a7688',24-w/2,yy+2,w,2);f('#3a3648',24-w/2,yy+4,w,1);
     if(i>0){f('#8ae8ff',22,yy+3,1,1);f('#8ae8ff',25,yy+3,1,1);}}
@@ -14590,8 +14657,8 @@ function drawGatehouse(ctx,x,y){
     if(m&&m.fort&&m.hall&&c&&c.getContext)drawHallRunes(c.getContext('2d'),m);}catch(e){}return c;};}
 // the sacred hall inside (new journeys): a rune circle on the floor around the guardian's spot
 function drawHallRunes(ctx,m){const g=m.guardAt;if(!g)return;const cx=g[0]*TS+8,cy=g[1]*TS+9,D=DTH(m),col='#8ae8ff';
-  ctx.save();const gl=ctx.createRadialGradient(cx,cy,2,cx,cy,52);gl.addColorStop(0,'rgba(138,232,255,.28)');gl.addColorStop(1,'rgba(138,232,255,0)');ctx.fillStyle=gl;ctx.fillRect(cx-56,cy-48,112,96);
-  for(let ring=0;ring<2;ring++){const rx=ring?44:30,ry=ring?32:21,n=ring?60:40;ctx.globalAlpha=ring?.55:.85;
+  ctx.save();const gl=ctx.createRadialGradient(cx,cy,2,cx,cy,52);gl.addColorStop(0,'rgba(138,232,255,.4)');gl.addColorStop(1,'rgba(138,232,255,0)');ctx.fillStyle=gl;ctx.fillRect(cx-56,cy-48,112,96);
+  for(let ring=0;ring<2;ring++){const rx=ring?44:30,ry=ring?32:21,n=ring?60:40;ctx.globalAlpha=ring?.8:1;
     for(let a=0;a<n;a++){const t=a/n*Math.PI*2;ctx.fillStyle=(a%5===0)?'#e8fbff':col;ctx.fillRect(Math.round(cx+Math.cos(t)*rx),Math.round(cy+Math.sin(t)*ry),1,1);}}
   ctx.globalAlpha=.8;ctx.fillStyle=col;for(let a=0;a<8;a++){const t=a/8*Math.PI*2+.2,rx=37,ry=26.5,px=Math.round(cx+Math.cos(t)*rx),py=Math.round(cy+Math.sin(t)*ry);ctx.fillRect(px-1,py,3,1);ctx.fillRect(px,py-1,1,3);}// rune glyphs between the rings
   ctx.globalAlpha=.5;for(let a=0;a<4;a++){const t=a*Math.PI/2+Math.PI/4;for(let k=0;k<18;k++){const q=k/18;ctx.fillRect(Math.round(cx+Math.cos(t)*30*q*1.1),Math.round(cy+Math.sin(t)*21*q*1.1),1,1);}}// star lines
@@ -21638,42 +21705,48 @@ function hdBakeCards0(m,S,g0,g1){const W=m.w*TS,SH=64,UP=58,CW=8,st=mkCv(W,SH),s
   items.forEach(it=>{if(it.r.y+it.h>AH)return;ac.drawImage(it.cv,it.r.x,it.r.y);const u0=it.r.x,u1=it.r.x+it.w,v0=it.r.y,v1=it.r.y+it.h;// atlas pixels, scaled when the atlases merge
     const yt=(UP-it.t)*V,yb=(UP-it.t-it.h)*V;H2P.set([it.x0,yt,it.z,it.x0+it.w,yt,it.z,it.x0+it.w,yb,it.z,it.x0,yb,it.z]);bt.at(it.x0+it.w/2,it.z-8).quad(H2P,u0,v0,u1,v1,255,255,255,255,0,.45,.89,2|8);});
   return {cv:at,bt};}
-// v0.6.3: the sanctum gatehouse in a field (sites.js) was painted flat into the ground art, with the cave mouth card standing in front
-// of it. In HD-2D it is now built like the buildings: two towers (front, sides, top, merlons) and a recessed curtain wall with the gate
-// arch and portcullis between them, over its 3 x 2 tile footprint (the 'U' tiles and the 'E' gate), textured from a small code drawn
-// sheet. The 2D view keeps its flat painting.
-const H2G={W:96,H:48,tw:14,th:40,ch:28,rec:6};
+// v0.12: the Sanctum entrance in a field is a shrine (sites.js drawGatehouse paints the flat 2D version over the same 3 x 2 tile footprint:
+// the 'U' tiles and the 'E' door). In HD-2D it is geometry like the buildings: two slim marble pillars with glowing finials, a lintel
+// joining them, a recessed dark back wall holding the glowing rune arch, and a three step stone stair climbing to the door, all textured
+// from a small code drawn sheet (flag 2 lets the runes and lanterns glow at night; the lantern lights come from sites.js m.lights).
+// v0.6.3 had towers and a curtain wall here.
+const H2G={W:96,H:56,tw:9,th:34,ch:27,rec:9,lt:7,fh:9,steps:3};
 function hdGateTex(){return hdSpr('gatehouse',H2G.W,H2G.H,(c)=>{const f=(col,x,y,w,h)=>{c.fillStyle=col;c.fillRect(x,y,w,h);};
-  const brick=(x,y,w,h,base,dk,lt,sd)=>{f(base,x,y,w,h);let r=sd;for(let yy=y+4;yy<y+h;yy+=5){f(dk,x,yy,w,1);const off=((yy-y)/5)%2?0:3;for(let xx=x+off;xx<x+w;xx+=6)f(dk,xx,yy-4,1,4);}
-    for(let i=0;i<w*h/40;i++){r=(r*1103515245+12345)>>>0;f(lt,x+r%w,y+(r>>8)%h,2,1);}};
-  // tower front (0,0 14x40): bricks, an arrow slit, a red banner with a gold mark, dark edges
-  brick(0,0,14,40,'#6e6e7a','#4a4a54','#8a8a96',7);f('#3a3a44',0,0,1,40);f('#3a3a44',13,0,1,40);f('#9a9aa6',0,0,14,1);
-  f('#120c10',6,6,2,7);f('#2a2a34',3,14,8,1);f('#c0392b',4,15,6,14);f('#9a2a20',4,27,2,2);f('#9a2a20',8,27,2,2);f('#ffd04a',6,18,2,3);f('#ffd04a',5,19,4,1);
-  // tower side (14,0 32x40)
-  brick(14,0,32,40,'#5c5c68','#40404a','#74747e',11);f('#9a9aa6',14,0,32,1);f('#120c10',29,8,2,6);
-  // curtain front (46,0 20x28): bricks, the gate arch with its portcullis, a keystone
-  brick(46,0,20,28,'#7a7a86','#55555f','#9a9aa6',5);f('#9a9aa6',46,0,20,1);
-  c.fillStyle='#120c10';c.beginPath();c.ellipse(56,12,6,5,0,Math.PI,0);c.fill();f('#120c10',50,12,12,16);
-  f('#3a2a1a',50,10,12,1);for(let i=0;i<4;i++)f('#3a2a1a',51+i*3,10,1,18);f('#3a2a1a',50,17,12,1);f('#3a2a1a',50,23,12,1);
-  f('#b0b0bc',55,5,2,2);f('#4a4a54',49,9,1,19);f('#4a4a54',62,9,1,19);
-  // merlons: tower (66,0 14x6), curtain (66,8 20x5), tower side (0,42 32x6); transparent gaps (cut out by the depth pass)
-  const mer=(x,y,w,h,base,lt)=>{f(base,x,y+h-2,w,2);for(let xx=x;xx<x+w;xx+=5){f(base,xx,y,Math.min(3,x+w-xx),h);f(lt,xx,y,Math.min(3,x+w-xx),1);}};
-  mer(66,0,14,6,'#6e6e7a','#9a9aa6');mer(66,8,20,5,'#7a7a86','#a8a8b4');mer(0,42,32,6,'#5c5c68','#8a8a96');});}
+  const rune=(x,y)=>{f('#8ae8ff',x,y,2,1);f('#8ae8ff',x,y+1,1,2);};
+  // pillar front (0,0 9x34): marble with a lit left edge, a rune band, a lantern bracket and capital/base
+  f('#a8a4b6',0,0,9,34);f('#e4e0ee',1,0,3,34);f('#7a768a',6,0,3,34);f('#5a566a',8,0,1,34);f('#f4f0fa',0,0,9,2);f('#8a869a',0,2,9,1);f('#6a667a',0,30,9,4);f('#8a869a',0,30,9,1);
+  rune(2,8);f('#8ae8ff',5,9,1,3);rune(2,15);f('#8ae8ff',3,20,3,1);f('#2a2230',3,24,1,3);f('#ffd070',5,22,2,3);f('#fff6c8',5,23,1,1);
+  // pillar side (10,0 32x34)
+  f('#9a96aa',10,0,32,34);f('#b8b4c4',10,0,32,2);f('#7a768a',10,2,32,1);f('#6a667a',10,30,32,4);for(let i=0;i<32;i+=8)f('#8a869a',10+i,3,1,27);rune(24,12);f('#8ae8ff',26,16,3,1);
+  // back wall front (44,0 30x27): dark cool stone, the doorway and the glowing rune arch with sigils
+  f('#33344a',44,0,30,27);for(let y=4;y<27;y+=6){f('#26273a',44,y,30,1);for(let x=(y/6%2)?3:8;x<30;x+=10)f('#26273a',44+x,y-5,1,5);}
+  f('#4a4a62',44,0,30,1);c.fillStyle='#070914';c.beginPath();c.moveTo(51,27);c.lineTo(51,12);c.quadraticCurveTo(59,-3,67,12);c.lineTo(67,27);c.fill();
+  const g=c.createRadialGradient(59,26,1,59,26,14);g.addColorStop(0,'rgba(150,230,255,.75)');g.addColorStop(1,'rgba(150,230,255,0)');c.fillStyle=g;c.fillRect(46,10,26,17);
+  c.strokeStyle='#8ae8ff';c.lineWidth=2;c.beginPath();c.moveTo(51,27);c.lineTo(51,12);c.quadraticCurveTo(59,-3,67,12);c.lineTo(67,27);c.stroke();
+  c.strokeStyle='#f0fdff';c.lineWidth=1;c.beginPath();c.moveTo(52.5,27);c.lineTo(52.5,12.5);c.quadraticCurveTo(59,.5,65.5,12.5);c.lineTo(65.5,27);c.stroke();
+  [[46,6],[47,13],[46,20],[70,6],[69,13],[70,20]].forEach(([x,y])=>rune(x,y));f('#fff6c8',58,3,2,3);f('#ffe08a',57,4,4,1);
+  // lintel (44,28 30x7): pale stone with a sun rune; its underside shadow
+  f('#c8c4d4',44,28,30,7);f('#f0ecf6',44,28,30,2);f('#8a869a',44,33,30,2);f('#fff6c8',58,30,2,2);f('#ffe08a',57,31,4,1);rune(48,30);rune(68,30);
+  // stair riser (76,10 16x4)
+  f('#8a869a',76,10,16,4);f('#b8b4c4',76,10,16,1);f('#5a566a',76,13,16,1);f('#8ae8ff',82,12,1,1);f('#8ae8ff',85,12,1,1);
+  // finial (76,0 14x9): a cone base under a glowing orb, transparent around it
+  f('#8a869a',80,6,6,3);f('#d8d4e0',81,6,2,3);const o=c.createRadialGradient(83,3,0,83,3,6);o.addColorStop(0,'rgba(255,246,200,1)');o.addColorStop(.5,'rgba(255,224,138,.7)');o.addColorStop(1,'rgba(255,224,138,0)');c.fillStyle=o;c.fillRect(77,0,12,9);f('#fffbe8',82,2,3,3);});}
 function hdGatePart(m){if(!m||m.kind!=='field'||!m.fortAt)return null;const [fx,fy]=m.fortAt;return {b:{x:fx-1,y:fy-1,w:3,h:2,k:'gatehouse',door:[fx,fy]},cv:hdGateTex()};}
-function hdGateGeo(m,S,b,Q,U,Vv,p,V,bt){const G2=H2G,x0=b.x*TS,x1=x0+b.w*TS,zb=b.y*TS,zf=(b.y+b.h)*TS,tw=G2.tw,hT=G2.th*V,hC=G2.ch*V,zc=zf-G2.rec,xl=x0+tw,xr=x1-tw,mt=6*V,mc=5*V;
-  const top=hdRgb('#8a8a94').map(v=>Math.round(v*235)),ctop=hdRgb('#92929c').map(v=>Math.round(v*235)),flat=(a,c)=>{H2P.set(a);bt.quad(H2P,-1,0,-1,0,c[0],c[1],c[2],255,0,1,0,8);};
+function hdGateGeo(m,S,b,Q,U,Vv,p,V,bt){const G2=H2G,x0=b.x*TS,x1=x0+b.w*TS,zb=b.y*TS,zf=(b.y+b.h)*TS,tw=G2.tw,hT=G2.th*V,hC=G2.ch*V,zc=zf-G2.rec,xl=x0+tw,xr=x1-tw,fh=G2.fh*V,lt=G2.lt*V;
+  const top=hdRgb('#c4c0d0').map(v=>Math.round(v*235)),ctop=hdRgb('#6a6a80').map(v=>Math.round(v*235)),stp=hdRgb('#b0acbc').map(v=>Math.round(v*235)),flat=(a,c)=>{H2P.set(a);bt.quad(H2P,-1,0,-1,0,c[0],c[1],c[2],255,0,1,0,8);};
   [[x0,xl],[xr,x1]].forEach(([a,e])=>{
-    Q([a,hT,zf,e,hT,zf,e,0,zf,a,0,zf],U(p,0),Vv(p,0),U(p,tw),Vv(p,G2.th),255,[0,0,1],2|8);// front
-    Q([a,hT,zb,a,hT,zf,a,0,zf,a,0,zb],U(p,14),Vv(p,0),U(p,46),Vv(p,G2.th),255,[-1,0,0],8);// west side
-    Q([e,hT,zf,e,hT,zb,e,0,zb,e,0,zf],U(p,14),Vv(p,0),U(p,46),Vv(p,G2.th),255,[1,0,0],8);// east side
+    Q([a,hT,zf,e,hT,zf,e,0,zf,a,0,zf],U(p,0),Vv(p,0),U(p,9),Vv(p,34),255,[0,0,1],2|8);// front
+    Q([a,hT,zb,a,hT,zf,a,0,zf,a,0,zb],U(p,10),Vv(p,0),U(p,42),Vv(p,34),255,[-1,0,0],8);// west side
+    Q([e,hT,zf,e,hT,zb,e,0,zb,e,0,zf],U(p,10),Vv(p,0),U(p,42),Vv(p,34),255,[1,0,0],8);// east side
     flat([a,hT,zb,e,hT,zb,e,hT,zf,a,hT,zf],top);
-    Q([a,hT+mt,zf,e,hT+mt,zf,e,hT,zf,a,hT,zf],U(p,66),Vv(p,0),U(p,80),Vv(p,6),255,[0,0,1],2|8);// merlons, front and back
-    Q([a,hT+mt,zb+.5,e,hT+mt,zb+.5,e,hT,zb+.5,a,hT,zb+.5],U(p,66),Vv(p,0),U(p,80),Vv(p,6),255,[0,0,1],8);
-    Q([a+.5,hT+mt,zb,a+.5,hT+mt,zf,a+.5,hT,zf,a+.5,hT,zb],U(p,0),Vv(p,42),U(p,32),Vv(p,48),255,[-1,0,0],8);
-    Q([e-.5,hT+mt,zf,e-.5,hT+mt,zb,e-.5,hT,zb,e-.5,hT,zf],U(p,0),Vv(p,42),U(p,32),Vv(p,48),255,[1,0,0],8);});
-  Q([xl,hC,zc,xr,hC,zc,xr,0,zc,xl,0,zc],U(p,46),Vv(p,0),U(p,66),Vv(p,G2.ch),255,[0,0,1],2|8);// the curtain wall with the gate
+    const mx=(a+e)/2,fw=7;Q([mx-fw,hT+fh,zf-1,mx+fw,hT+fh,zf-1,mx+fw,hT,zf-1,mx-fw,hT,zf-1],U(p,76),Vv(p,0),U(p,90),Vv(p,9),255,[0,.45,.89],2|8);});// the glowing finial
+  Q([xl,hC,zc,xr,hC,zc,xr,0,zc,xl,0,zc],U(p,44),Vv(p,0),U(p,74),Vv(p,27),255,[0,0,1],2|8);// the dark back wall with the rune arch
   flat([xl,hC,zb,xr,hC,zb,xr,hC,zc,xl,hC,zc],ctop);
-  Q([xl,hC+mc,zc,xr,hC+mc,zc,xr,hC,zc,xl,hC,zc],U(p,66),Vv(p,8),U(p,86),Vv(p,13),255,[0,0,1],2|8);
+  Q([xl,hT,zf-1,xr,hT,zf-1,xr,hT-lt,zf-1,xl,hT-lt,zf-1],U(p,44),Vv(p,28),U(p,74),Vv(p,35),255,[0,0,1],2|8);// the lintel
+  flat([xl,hT,zb,xr,hT,zb,xr,hT,zf-1,xl,hT,zf-1],top);
+  const n=G2.steps,d=(zf-zc)/n;for(let j=0;j<n;j++){const h=(j+1)*2.4*V,zz=zf-j*d;
+    Q([xl,h,zz,xr,h,zz,xr,0,zz,xl,0,zz],U(p,76),Vv(p,10),U(p,92),Vv(p,14),255,[0,0,1],2|8);// the riser
+    flat([xl,h,zz-d,xr,h,zz-d,xr,h,zz,xl,h,zz],stp);}// the tread
   S.bh.push({b,h:hT});}
 // buildings: roofed houses become boxes with a gabled roof cut from their 2D sprite; keeps a box with battlements; tents, the lighthouse
 // and anything unusual stand up as one card. Signs and landmark props (towngfx) come from the town decor pass as a card on the facade.
@@ -21789,6 +21862,7 @@ function hdBake(m){const sig=hdSig(m);if(HD.S&&HD.S.m===m&&HD.S.sig===sig&&HD.ma
   let g0,g1,cards=null,blds=null,deco=null,sh=null;const d0=drawObjects;
   const fa=m.fortAt;// v0.6.3: the gatehouse is geometry in HD-2D (hdGateGeo), not paint on the ground
   try{drawObjects=function(){};try{m.fortAt=null;g0=buildMapCanvas(m,0);g1=buildMapCanvas(m,1);}finally{drawObjects=d0;m.fortAt=fa;}
+    if(fa&&typeof drawShrineRing==='function')[g0,g1].forEach(g=>{try{drawShrineRing(g.getContext('2d'),(fa[0]-1)*TS,(fa[1]-1)*TS);}catch(e){}});// the ring of stones and candles is ground paint
     m.lights=save.lights;m.smoke=save.smoke;m.bsp=save.bsp;
     const W=m.w,H=m.h,HT=new Float32Array(W*H),KD=new Uint8Array(W*H);S.HT=HT;S.KD=KD;
     const hOf=k=>k===1?HD2D.wall.dungeon*V:k===2?HD2D.wall.cliff*V:k===3?HD2D.wall.town*V:k===4?HD2D.water*V:k===5?HD2D.deep*V:k===6?HD2D.water*V:0;
@@ -24023,10 +24097,10 @@ function obEarly(){try{return ((G.stats&&G.stats.battles)|0)<12&&(G.stage|0)===0
 // the gap between two tips: 25 s early on, 12 s later; never a second tip in the same battle early on
 function obGap(){try{if(!G||G.daily)return OB_GAP;const early=obEarly();if(early&&B&&OB.lastBid===B.id)return 1e9;return early?25000:12000;}catch(e){return OB_GAP;}}
 // which queued tip shows next: early on a core battle tip first (the rest wait), later the oldest
-function obPickNext(){try{if(obEarly()){const i=OB.q.findIndex(id=>OB_CORE.includes(id));if(i>=0)return OB.q.splice(i,1)[0];const j=OB.q.findIndex(id=>{const t=TIPMAP[id];return t&&t.sec==='Town';});if(j>=0)return OB.q.splice(j,1)[0];return OB.q.shift();}}catch(e){}return OB.q.shift();}
+function obPickNext(){try{if(obEarly()){const i=OB.q.findIndex(id=>OB_CORE.includes(id));if(i>=0)return OB.q.splice(i,1)[0];return OB.q.shift();}}catch(e){}return OB.q.shift();}
 {const os0=obShow;obShow=function(id,txt){const r=os0.apply(this,arguments);try{OB.lastBid=B&&B.id;const L=META.tipLog=Array.isArray(META.tipLog)?META.tipLog:[];if(!L.some(x=>x.id===id)){L.push({id,t:Date.now()});if(L.length>80)L.splice(0,L.length-80);saveMeta();}}catch(e){}return r;};}
 // the tip card gets a Log button; Settings > Tips gets one too
-HOOK.after('render','guidance9','Log button on the tip card',function(){try{const d=OB.el;if(!d||!OB.cur)return;const row=d.querySelector('.btnrow');if(row&&!row.querySelector('[data-act="hintLog"]'))row.insertAdjacentHTML('beforeend','<button class="btn sm" data-act="hintLog" title="Every tip you have seen">Log</button>');}catch(e){}});
+HOOK.after('render','guidance9','Log button on the tip card',function(){try{const d=OB.el;if(!d||!OB.cur||V.screen==='battle')return;/* not on the battle card: it must stay small */const row=d.querySelector('.btnrow');if(row&&!row.querySelector('[data-act="hintLog"]'))row.insertAdjacentHTML('beforeend','<button class="btn sm" data-act="hintLog" title="Every tip you have seen">Log</button>');}catch(e){}});
 HOOK.xform('settingsBody','guidance9','Hint log button',function(h){try{const k=h.indexOf('data-act="cfg" data-arg=\'["tips"');if(k<0)return h;const end=h.indexOf('</div></div>',k);if(end<0)return h;return h.slice(0,end)+'<button class="chip" data-act="hintLog">Hint log</button>'+h.slice(end);}catch(e){return h;}});
 ACT.hintLog=function(a){const m=V.modal&&V.modal.type==='hintlog'?V.modal:{type:'hintlog',sort:'time',from:V.modal};if(a==='time'||a==='type')m.sort=a;V.modal=m;render();};
 HOOK.before('vModal','guidance9','Hint log',function(m){if(!m||m.type!=='hintlog')return;const L=(META.tipLog||[]).slice(),byT=m.sort==='type';

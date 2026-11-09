@@ -90,8 +90,9 @@ chk(`two moments at once: one card (${r.cur}), the other waits (${r.q})`,r.vis==
 r=await ev(()=>{__OB.obTick();return __OB.OB.cur;});chk('while a card shows, no second card replaces it',r==='comp'||r);
 r=await ev(()=>{__A.ACT.tipOk();__OB.obTick();return {cur:__OB.OB.cur,vis:document.querySelectorAll('#p2hint.show').length};});
 chk('after Got it the next waits a short gap',!r.cur&&r.vis===0||JSON.stringify(r));
-await wait(1300);r=await ev(()=>{__OB.obTick();return {cur:__OB.OB.cur,vis:document.querySelectorAll('#p2hint.show').length};});
-chk('then the queued card shows, alone',r.cur==='charm'&&r.vis===1||JSON.stringify(r));
+// v0.11.9: early in a journey tips come 25 s apart (guidance9.js obGap); the test moves the clock on instead of waiting
+await wait(300);r=await ev(()=>{__OB.OB.last=Date.now()-30000;__OB.obTick();return {cur:__OB.OB.cur,vis:document.querySelectorAll('#p2hint.show').length};});
+chk('then, once the gap has passed, the queued card shows, alone',r.cur==='charm'&&r.vis===1||JSON.stringify(r));
 await ev(()=>{__A.ACT.tipOk();});
 // a moment that passes leaves the queue unseen and comes back next time
 r=await ev(()=>{const A=__A,O=__OB,G=A.G;G.inv.campkit=0;O.OB.cur=null;

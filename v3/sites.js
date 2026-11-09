@@ -73,13 +73,17 @@ HOOK.wrap('getMap','sites','sanctum maps; place the sanctum on its field',functi
 // footprint as before (the 'U' tiles and the 'E' door), so nothing about reachability changes. It is painted into the field's base layer
 // (so heroes and townsfolk always draw in front of it). A Den mouth is a mossy rock arch and a lair a clawed hill: neither has pillars,
 // stairs or this cold white-blue rune light.
-function drawGatehouse(ctx,x,y){
+function drawGatehouse(ctx,x,y){drawShrineRing(ctx,x,y);drawShrineFront(ctx,x,y);}
+function drawShrineRing(ctx,x,y){
   const f=(c,a,b,w,h)=>{ctx.fillStyle=c;ctx.fillRect(x+a,y+b,w,h);};
   // the ring of standing stones and candles on the ground in front (flat, walkable): drawn first, under everything
   ctx.fillStyle='rgba(20,24,40,.22)';ctx.beginPath();ctx.ellipse(x+24,y+36,31,9,0,0,7);ctx.fill();
   for(let i=0;i<12;i++){const t=Math.PI*(.12+i/11*.76),sx=Math.round(24+Math.cos(t)*30),sy=Math.round(36+Math.sin(t)*8);
     if(i%3===1){f('#2a2230',sx-1,sy-1,3,1);f('#ffd070',sx,sy-2,1,2);f('#fff6c8',sx,sy-3,1,1);ctx.fillStyle='rgba(255,208,112,.22)';ctx.beginPath();ctx.arc(x+sx+.5,y+sy-2,3.5,0,7);ctx.fill();}
     else{f('#4a4658',sx-1,sy-3,3,4);f('#8c889a',sx-1,sy-3,3,1);f('#6a667a',sx-1,sy-2,1,3);}}
+}
+function drawShrineFront(ctx,x,y){
+  const f=(c,a,b,w,h)=>{ctx.fillStyle=c;ctx.fillRect(x+a,y+b,w,h);};
   // the stone stair: four steps widening toward the front, rune notches on the risers
   for(let i=0;i<4;i++){const w=14+i*3,yy=TS+14+i*4;f('#6a6678',24-w/2-1,yy,w+2,5);f('#aaa6b4',24-w/2,yy,w,2);f('#7a7688',24-w/2,yy+2,w,2);f('#3a3648',24-w/2,yy+4,w,1);
     if(i>0){f('#8ae8ff',22,yy+3,1,1);f('#8ae8ff',25,yy+3,1,1);}}
@@ -107,8 +111,8 @@ function drawGatehouse(ctx,x,y){
     if(m&&m.fort&&m.hall&&c&&c.getContext)drawHallRunes(c.getContext('2d'),m);}catch(e){}return c;};}
 // the sacred hall inside (new journeys): a rune circle on the floor around the guardian's spot
 function drawHallRunes(ctx,m){const g=m.guardAt;if(!g)return;const cx=g[0]*TS+8,cy=g[1]*TS+9,D=DTH(m),col='#8ae8ff';
-  ctx.save();const gl=ctx.createRadialGradient(cx,cy,2,cx,cy,52);gl.addColorStop(0,'rgba(138,232,255,.28)');gl.addColorStop(1,'rgba(138,232,255,0)');ctx.fillStyle=gl;ctx.fillRect(cx-56,cy-48,112,96);
-  for(let ring=0;ring<2;ring++){const rx=ring?44:30,ry=ring?32:21,n=ring?60:40;ctx.globalAlpha=ring?.55:.85;
+  ctx.save();const gl=ctx.createRadialGradient(cx,cy,2,cx,cy,52);gl.addColorStop(0,'rgba(138,232,255,.4)');gl.addColorStop(1,'rgba(138,232,255,0)');ctx.fillStyle=gl;ctx.fillRect(cx-56,cy-48,112,96);
+  for(let ring=0;ring<2;ring++){const rx=ring?44:30,ry=ring?32:21,n=ring?60:40;ctx.globalAlpha=ring?.8:1;
     for(let a=0;a<n;a++){const t=a/n*Math.PI*2;ctx.fillStyle=(a%5===0)?'#e8fbff':col;ctx.fillRect(Math.round(cx+Math.cos(t)*rx),Math.round(cy+Math.sin(t)*ry),1,1);}}
   ctx.globalAlpha=.8;ctx.fillStyle=col;for(let a=0;a<8;a++){const t=a/8*Math.PI*2+.2,rx=37,ry=26.5,px=Math.round(cx+Math.cos(t)*rx),py=Math.round(cy+Math.sin(t)*ry);ctx.fillRect(px-1,py,3,1);ctx.fillRect(px,py-1,1,3);}// rune glyphs between the rings
   ctx.globalAlpha=.5;for(let a=0;a<4;a++){const t=a*Math.PI/2+Math.PI/4;for(let k=0;k<18;k++){const q=k/18;ctx.fillRect(Math.round(cx+Math.cos(t)*30*q*1.1),Math.round(cy+Math.sin(t)*21*q*1.1),1,1);}}// star lines
