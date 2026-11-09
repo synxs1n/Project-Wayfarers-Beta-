@@ -102,7 +102,11 @@ jobs:
         run: |
           for i in 1 2 3 4; do npm install && break; echo "attempt $i failed, retrying in 60 s"; sleep 60; done
           test -d node_modules/electron/dist
-      - run: npm run dist:win
+      - name: Build the installer (electron-builder fetches nsis from GitHub releases; retry on 504s)
+        shell: bash
+        run: |
+          for i in 1 2 3 4; do npm run dist:win && break; echo "attempt $i failed, retrying in 60 s"; sleep 60; done
+          ls dist/*.exe
       - uses: actions/upload-artifact@v7
         with: { name: windows, path: dist/*.exe }
   release:
