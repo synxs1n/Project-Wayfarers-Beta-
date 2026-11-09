@@ -7,7 +7,7 @@ const elChips=arr=>arr.map(k=>`<span class="el" style="--c:${ELC[k]}">${ico(k)}$
 const bar=(v,m,c)=>`<span class="bar" style="--c:${c}"><i style="width:${m?clamp(v/m*100,0,100):0}%"></i></span>`;
 const coin=()=>`<img class="ico coin" src="${coinURL()}" alt="">`;
 const sellVal=g=>Math.round((g.price0||g.price)*.4);
-const port=(id,cls)=>`<span class="port ${cls||''} ${TPL[id]&&TPL[id].mon?'mon':''}"><img src="${heroURL(id)}" alt="">${typeof ailBadge==='function'&&!/noail/.test(cls||'')?ailBadge(id):''}</span>`;
+const port=(id,cls)=>`<span class="port ${cls||''} ${TPL[id]&&TPL[id].mon?'mon':'pt10'}"><img src="${TPL[id]&&TPL[id].mon?heroURL(id):portraitURL(id)}" alt="">${typeof ailBadge==='function'&&!/noail/.test(cls||'')?ailBadge(id):''}</span>`;
 // v0.3.5 2.4: legendary stamp = gold seal + LEGENDARY banner, used on the sheet, roster card, codex entry and battle detail panel
 // v0.6.3: "Legendary" belongs only to the legend heroes with their own legend quests (LEGEND_IDS). Rare tavern visitors (src r*),
 // Scourge gifts (g*) and the special Archive hero (x) are tagged "Epic" instead (isEpic, epicTag; styles in party3.js).

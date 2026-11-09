@@ -38,7 +38,7 @@ HOOK.after('win','endgame10','Breach opens',function(){try{if(G&&G.won&&!G.breac
 
 // ----- v0.15.1: walk there. Once the Calamity falls, the broken seal at the end of its realm's field (the 'G' gate) opens onto the Breach -----
 function breachLinkField(f){try{if(!f||f.id!=='f4'||!f.gateOut||f._breachLink||!breachOpen())return;f._breachLink=1;const [gx,gy]=f.gateOut;
-  f.exits=f.exits||[];f.exits.push({x:gx,y:gy,to:{m:'x0',g:'start'}});f.gates=f.gates||{};f.gates.breach={side:'e',x:gx,y:gy,arrive:[Math.max(1,gx-1),gy,'l'],label:'e',cells:[[gx,gy]]};
+  f.exits=f.exits||[];f.exits.push({x:gx,y:gy,to:{m:'x0',g:'start'}});f.gates=f.gates||{};const ga=f.gateAt||[gx-1,gy],gi=f.gateIn||[gx-2,gy],bdx=gi[0]-ga[0],bdy=gi[1]-ga[1],bf=Math.abs(bdx)>=Math.abs(bdy)?(bdx>=0?'r':'l'):(bdy>0?'d':'u'),bs={r:'w',l:'e',d:'n',u:'s'}[bf];/* v0.15.5: land on the open gate tile facing back into the field (a turned field had you beside the road) */f.gates.breach={side:bs,x:gx,y:gy,arrive:[ga[0],ga[1],bf],label:bs,cells:[[gx,gy]]};
   f.signs=f.signs||{};f.signs[(gx-2)+','+(gy-1)]=f.signs[(gx-2)+','+(gy-1)]||`${BREACH.n}. The seal is broken; the Rift pours through. Every realm you crossed bleeds in there, and its foes are as strong as you are.`;}catch(e){}}
 HOOK.wrap('getMap','endgame10','the Calamity field opens onto the Breach',function(next,...a){const m=next(...a);try{if(m&&m.id==='f4')breachLinkField(m);}catch(e){}return m;});
 HOOK.after('win','endgame10','open the seal to the Breach',function(){try{if(G&&G.won&&MAPS.f4)breachLinkField(MAPS.f4);}catch(e){}});

@@ -16,7 +16,7 @@ function buildBreach(){
   const at=(x,y)=>y>=0&&y<H&&x>=0&&x<W?g[y][x]:'~',put=(x,y,c)=>{if(y>=0&&y<H&&x>=0&&x<W)g[y][x]=c;};
   // an island: an ellipse with a frayed edge, tall grass in a loose ring inside the shore
   const island=(cx,cy,rx,ry,grass)=>{const cells=[];for(let y=cy-ry-1;y<=cy+ry+1;y++)for(let x=cx-rx-1;x<=cx+rx+1;x++){const d=Math.hypot((x-cx)/rx,(y-cy)/ry);
-      if(d<=.82||(d<=1&&R()<.75)){put(x,y,grass&&d>.42&&d<.8&&R()<.55?',':'.');cells.push([x,y]);}}return cells;};
+      if(d<=.82||(d<=1&&R()<.75)){put(x,y,grass&&d>.3&&R()<.82?',':'.');cells.push([x,y]);}}return cells;};// v0.15.5: a training ground, so most of an island is grass
   const land=island(6,22,4,3,false),hub=island(42,22,11,8,true),N=island(42,7,8,4,true),S=island(42,37,8,4,true),E=island(72,22,7,6,true),NW=island(20,8,6,4,true),SW=island(20,36,6,4,true);
   // bridges: straight planks over the void, the tiles they land on cleared
   const bridge=(x0,y0,x1,y1)=>{const dx=Math.sign(x1-x0),dy=Math.sign(y1-y0);let x=x0,y=y0;for(;;){if(at(x,y)==='~')put(x,y,'B');else if(at(x,y)===',')put(x,y,'.');if(x===x1&&y===y1)break;x+=dx;y+=dy;}};
@@ -42,5 +42,15 @@ function buildBreach(){
   // open spots for legends, nodes and roamers: ground or grass well away from the gate, the Waystone and the bridges
   const free=[];for(let y=2;y<H-2;y++)for(let x=12;x<W-2;x++){const c=g[y][x];if(c!=='.'&&c!==',')continue;if(Math.abs(x-42)<=2&&Math.abs(y-19)<=2)continue;
     if([[1,0],[-1,0],[0,1],[0,-1]].some(([a,b])=>at(x+a,y+b)==='B'))continue;if((x+y)%2===0)free.push([x,y]);}
-  m.free=free;try{placeNodes(m);}catch(e){}m.tone=valueNoise(mulberry(31+4*7+2+424242),m.w,m.h,6);return m;}
+  m.free=free;breachTurn(m);try{placeNodes(m);}catch(e){}m.tone=valueNoise(mulberry(31+4*7+2+424242),m.w,m.h,6);return m;}
+// v0.15.5: the way in matches the way you walked. The canonical Breach is entered from the west walking east; if the Calamity field's
+// seal is walked through northward, the whole Breach is turned so its landing is on the south edge and you arrive walking north.
+function breachWalkDir(){try{const f=getMap('f4');if(f&&f.gateAt&&f.gateOut){const dx=f.gateOut[0]-f.gateAt[0],dy=f.gateOut[1]-f.gateAt[1];return Math.abs(dx)>=Math.abs(dy)?(dx>=0?'r':'l'):(dy>0?'d':'u');}}catch(e){}return 'r';}
+function breachTurn(m){const want=breachWalkDir(),k={r:0,d:1,l:2,u:3}[want]||0;if(!k)return;const FACE=['r','d','l','u'];
+  for(let i=0;i<k;i++){const W=m.w,H=m.h,T=([x,y])=>[H-1-y,x];// one quarter turn clockwise
+    const g=Array.from({length:W},()=>Array(H).fill('~'));for(let y=0;y<H;y++)for(let x=0;x<W;x++){const [nx,ny]=T([x,y]);g[ny][nx]=m.t[y][x];}
+    m.t=g;m.w=H;m.h=W;m.exits.forEach(e=>{const p=T([e.x,e.y]);e.x=p[0];e.y=p[1];});
+    const s=m.gates.start,p=T([s.x,s.y]),a=T([s.arrive[0],s.arrive[1]]);s.x=p[0];s.y=p[1];s.arrive=[a[0],a[1],FACE[(FACE.indexOf(s.arrive[2])+1)%4]];s.cells=s.cells.map(T);s.side={w:'n',n:'e',e:'s',s:'w'}[s.side];s.label=s.side;
+    const sg={};Object.keys(m.signs).forEach(key=>{const q=T(key.split(',').map(Number));sg[q.join()]=m.signs[key];});m.signs=sg;m.free=m.free.map(T);}
+  m.bld=stampBuildings(m.t);}
 HOOK.wrap('getMap','breach10','the Meridian Breach, its own islands in the void',function(next,...a){if(a[0]!=='x0')return next(...a);if(MAPS.x0)return MAPS.x0;return MAPS.x0=buildBreach();});

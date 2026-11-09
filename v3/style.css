@@ -1025,3 +1025,6 @@ body.noscroll #p5save{top:auto!important;bottom:8px!important}
 /* v0.14.5: the Menu's group tabs fill their rows on phones (4 + 3) instead of leaving one tab alone on a row of its own */
 @media (max-width:760px){.chips.mgrp:not(.stabs) .chip{flex:1 1 20%;min-width:0;padding-left:4px;padding-right:4px}}
 @media (max-width:400px){.chips.mgrp:not(.stabs) .chip{font-size:13px}}
+
+/* v0.15.5 portrait10.js: the portrait is its own square bust canvas, drawn edge to edge in every .port box */
+.port.pt10 img,.pc .port.pt10 img,.pc.rs .port.pt10 img,html.sprhd .port.pt10 img{width:100%!important;height:100%!important;left:0!important;top:0!important;object-fit:fill;image-rendering:pixelated}

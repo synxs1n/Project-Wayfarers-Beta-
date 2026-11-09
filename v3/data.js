@@ -4,6 +4,8 @@
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.15.5',['Portraits are proper busts: the front view of each wayfarer from the hat to the shoulders, both eyes showing, on party cards, battle cards and the command head (they used to be a crop of the side sprite that cut the face at the chin).',
+  'The Meridian Breach: most of every island is tall grass now (it is a training ground), the Breach turns to match the way you walked through the seal (a seal walked north lands you on the Breach\'s south edge, walking north), and coming back from the Breach lands you on the open gate tile, so you can step straight back in. That fixes the field you could not re-enter the Breach from.']],
  ['Beta v0.15.4',['Battle: the vanguard\'s floating plates on the stage now show an MP bar under the HP bar.',
   'The Meridian Breach is its own place: islands of broken ground afloat in the void sea, joined by bridges, with the Breach Waystone in a ring of standing stones at the heart and a landmark from each realm you crossed on the outer islands. The broken seal still lets you in from the west, and the grass hides the fights.']],
  ['Beta v0.15.3',['HD-2D world: the camera sits a fifth closer, so houses, doors, trees and tents fill more of the screen, while every character keeps the size it had. Wayfarers now stand about door high instead of towering over the street. Character cards are sampled at twice the detail to make up for the smaller card.']],
