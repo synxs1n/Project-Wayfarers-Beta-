@@ -4,6 +4,8 @@
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.15.4',['Battle: the vanguard\'s floating plates on the stage now show an MP bar under the HP bar.',
+  'The Meridian Breach is its own place: islands of broken ground afloat in the void sea, joined by bridges, with the Breach Waystone in a ring of standing stones at the heart and a landmark from each realm you crossed on the outer islands. The broken seal still lets you in from the west, and the grass hides the fights.']],
  ['Beta v0.15.3',['HD-2D world: the camera sits a fifth closer, so houses, doors, trees and tents fill more of the screen, while every character keeps the size it had. Wayfarers now stand about door high instead of towering over the street. Character cards are sampled at twice the detail to make up for the smaller card.']],
  ['Beta v0.15.2',['Sanctums rebuilt inside: one symmetric temple on a single axis with a straight carpet from the door to the guardian, and the whole hall turns to face the way you walked in.',
   'Sanctum gates are a proper facade now instead of a bare gate, and Den mouths and Lair entrances are themed to the realm they sit in and to what lives inside, in both the 2D and HD views.']],

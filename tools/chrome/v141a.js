@@ -28,7 +28,7 @@ const {open,chk,done}=require('./pw');
   chk('a Den\'s miniboss waits at the end as an actor on an open tile; the Sanctum\'s stands on its rune circle (no double guard)',r.pending&&r.miniActor===1&&r.spotOpen&&r.fortActor===1&&r.fortGuardAt&&r.sg===null||JSON.stringify(r));
   chk('the prize chest refuses while the miniboss stands; A on it asks the miniboss, not the Scourge',r.chestKept&&r.refusal&&r.askModal==='miniask');
   chk('once the miniboss is down the actor is gone and the chest opens',r.gone===0&&r.chestOpen);
-  chk('the Waystone offers the Meridian Breach only after the Calamity; the map is a Breach field with no dens, gates back to the last town',r.rowBefore===false&&r.rowAfter===true&&r.breach&&r.exits==='t4'||JSON.stringify([r.rowBefore,r.rowAfter,r.breach,r.exits]));
+  chk('the Waystone offers the Meridian Breach only after the Calamity; the map is a Breach field with no dens, gates back through the Calamity field\'s broken seal (v0.15.4)',r.rowBefore===false&&r.rowAfter===true&&r.breach&&r.exits==='f4'||JSON.stringify([r.rowBefore,r.rowAfter,r.breach,r.exits]));
   chk('travelling there lands on the Breach',r2.at==='x0');
   chk('Breach fights draw from every visited realm at the party\'s level + 2 (3 to 4 foes, some elites), capped at 50',r2.pool>=15&&r2.lo>=41&&r2.hi<=46&&r2.elite>0&&r2.T>=60&&r2.capHi<=50&&!r2.strange||JSON.stringify(r2));
   chk('an all-foe physical skill spins the hero sprite (same canvas size)',r2.spinDiff&&r2.sameSize);

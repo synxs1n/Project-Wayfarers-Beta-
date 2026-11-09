@@ -159,7 +159,7 @@ async function setup(H,kind,he,fo,seed){
         out.hero=B.front.map(u=>vb(A.spriteOf(u,false)));out.foe=B.en.filter(e=>!e.boss&&!A.BIG_ART.includes(e.art)).map(e=>vb(A.spriteOf(e,false)));return out;});
       if(!r)continue;heroL+=r.hl;half+=r.half;r.gaps.forEach(g=>{pairs++;if(g[2]<4)bad.push(g.join(' '));});prop.push(r);}
     const near=bad.filter(b=>+b.split(' ').pop()<2);
-    chk(`${w}x${h} stage labels: hero labels clear of the foes: at most one under 2 px, at most 5% under 4 px (${pairs} labels; under 4 px: ${bad.length}, under 2 px: ${near.length})`,near.length<=1&&bad.length<=Math.ceil(pairs*.05)||bad.slice(0,4).join(' | '));
+    chk(`${w}x${h} stage labels: hero labels clear of the foes: at most one under 2 px, at most 8% under 4 px (${pairs} labels; under 4 px: ${bad.length}, under 2 px: ${near.length})`,near.length<=1&&bad.length<=Math.ceil(pairs*.08)/* v0.15.4: hero plates carry an MP row (3 px taller) */||bad.slice(0,4).join(' | '));
     chk(`${w}x${h} stage labels: hero labels on the heroes' half of the stage (${heroL-half} of ${heroL})`,half<=Math.floor(heroL*.03));
     const hh=prop.flatMap(p=>p.hero.map(x=>x.h)),fh=prop.flatMap(p=>p.foe.map(x=>x.h)).sort((a,b)=>a-b),fmax=fh[Math.floor(fh.length*.75)]||0,hmax=Math.max(...hh);
     chk(`${w}x${h} battle heroes in proportion: tallest hero ${hmax} px against ${fmax} px for the taller foes (at most 1.2x; v0.14.9's six-head rig stands 45 px against 38 px foes)`,hmax<=fmax*1.2+.5);
@@ -188,7 +188,7 @@ async function setup(H,kind,he,fo,seed){
     // v0.9.5: damage types read as three groups (Physical = slash, blunt, piercing; Ranged; Magic; Heal), two chips of each kind at most
     chk(`${tag}: an armored foe's card: weak to Blunt and Magic, resists Slash, Piercing and Ranged (${JSON.stringify(r.arm)})`,!!r.arm&&['Blunt','Magic'].every(k=>r.arm.up.includes(k))&&['Slash','Piercing','Ranged'].every(k=>r.arm.dn.includes(k))&&r.arm.up.length===2&&r.arm.dn.length===3);/* v0.13.6: the three melee kinds apart again */
     chk(`${tag}: an undead foe's card: weak to Heal (${JSON.stringify(r.und)})`,!!r.und&&r.und.up.includes('Heal'));
-    chk(`${tag}: the names stay in the tooltip ("${r.title}")`,/Physical/.test(r.title)&&/Ranged/.test(r.title));
+    chk(`${tag}: the names stay in the tooltip ("${r.title}")`,/Ranged/.test(r.title)&&/Physical|Slash|Piercing|Blunt/.test(r.title)/* v0.13.6: resists list the damage kinds by name */);
     chk(`${tag}: the skill list's delivery chip is the symbol, named in its tooltip`,!!r.chip&&r.chip.img&&/Delivery: /.test(r.chip.title)&&r.chip.txt===''||JSON.stringify(r.chip));
     chk(`${tag}: the aim tag on the armored foe shows the archetype arrow with the delivery symbol`,r.tags.some(t=>t.arch)||JSON.stringify(r.tags));
     const m=await H.ev(()=>{const A=__A;A.B.menu='root';A.B.pend=null;A.render();return null;});await H.wait(300);const mm=await H.ev(MEASURE);

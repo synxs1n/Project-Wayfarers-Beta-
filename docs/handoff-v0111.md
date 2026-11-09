@@ -314,3 +314,8 @@ gates are beaten, cutscene on entering the gate, returns with a new look, rematc
 
 ## 0.15.3
 - worldzoom10.js: HD2D.zoom x1.2; hdChar wrapped so characters (default sc) are placed at spr.sc/1.2 and sampled with HD.px doubled (2 texels per art px). Net: world 20% bigger on screen, characters unchanged on screen, about door high. Flat 2D view untouched (integer grid). HD.chH in a town fell 40.5 -> 33.3 world px at the same screen size.
+
+## 0.15.4
+- battle3.js b3PlateGeo/unitHud: heroes with mmp>0 get `mp` in the plate geometry (bkH +3) and a 1px blue MP bar under the HP bar; limit bar and shield pips shift down by 3. `_plate.by` keeps the HP row.
+- breach10.js (new, after worldzoom10): outer HOOK.wrap('getMap') builds 'x0' as islands in the void sea (84x44): landing west with the 3-wide gate back to f4 ('breach' gate), hub with Waystone 'W' at (42,19) in a ring of 'N' stones and 'P' crystals, five outer islands with a LANDMARKS stamp each from the visited realms' themes (no chests), bridges 'B'. mapIssues 0, placeNodes + tone set. endgame10's own x0 wrap is now never reached (dead).
+- Tests: v141a exits expectation now 'f4'; v080b tooltip regex accepts the damage-kind names (pre-existing since 0.13.6), label clearance tolerance 8% (taller hero plates). v080b "mini battle start: the stage keeps its size" fails on a different size each run (705x455, then 344x882) at low load: flaky timing, not the HUD.

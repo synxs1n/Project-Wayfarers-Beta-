@@ -54,8 +54,9 @@ function b3Find0(w,h,anchors,obs,W,H,R,su,sgap,half){R=R||B3.R;const K=anchors.l
   return null;}
 // ----- label sizes (logical px; battle3.css gives the DOM labels exactly these boxes) -----
 function b3PlateGeo(u,b){const hero=u.side==='p',n=(u.el||[]).length,bw=hero?B3.barW.hero:Math.min(B3.barW.foe,Math.max(18,Math.round(b.w*.66))),lim=hero&&limitOpen(u),ms=u.maxShield||0;
-  const bkW=Math.max(bw+2,ms?ms*5+1:0),bkH=4+(lim?3:0)+(ms?6:0),tw=n?n*10+1:0;
-  return {bw,lim,ms,n,bkW,bkH,tw,row:{w:tw+(n?1:0)+bkW,h:Math.max(n?11:0,bkH)},col:{w:Math.max(tw,bkW),h:(n?12:0)+bkH}};}
+  const mp=hero&&u.S.mmp>0?1:0;// v0.15.4: heroes show MP under HP on the stage
+  const bkW=Math.max(bw+2,ms?ms*5+1:0),bkH=4+(mp?3:0)+(lim?3:0)+(ms?6:0),tw=n?n*10+1:0;
+  return {bw,lim,ms,mp,n,bkW,bkH,tw,row:{w:tw+(n?1:0)+bkW,h:Math.max(n?11:0,bkH)},col:{w:Math.max(tw,bkW),h:(n?12:0)+bkH}};}
 let B3MC=null;const B3TW={};
 function b3TextW(t,px,wt){const k=wt+'|'+px+'|'+t;if(B3TW[k])return B3TW[k];if(!B3MC)B3MC=document.createElement('canvas').getContext('2d');
   B3MC.font=`${wt} ${px*10}px Nunito, system-ui, sans-serif`;const w=B3MC.measureText(String(t)).width/10;return B3TW[k]=w;}
@@ -127,12 +128,13 @@ function unitHud(ctx,u,b,now){if(!u||u.hp<=0)return;const L=b3Lay(),p=L&&L.plate
   const bw=g.bw;ctx.fillStyle='#150b17';ctx.fillRect(bx-1,by-1,bw+2,4);ctx.fillStyle='#3a2a3a';ctx.fillRect(bx,by,bw,2);
   ctx.fillStyle='#ffffff';ctx.fillRect(bx,by,Math.round(bw*u._lag/u.S.mhp),2);
   const pct=u._dh/u.S.mhp;ctx.fillStyle=hero?(pct<.25?'#e8504a':pct<.5?'#f2c93a':'#5ad06a'):'#e8504a';ctx.fillRect(bx,by,Math.round(bw*pct),2);
+  if(g.mp){u._dm=u._dm==null?u.mp:u._dm+(u.mp-u._dm)*Math.min(1,.18);if(Math.abs(u._dm-u.mp)<.5)u._dm=u.mp;const mpct=Math.max(0,Math.min(1,u._dm/u.S.mmp));ctx.fillStyle='#150b17';ctx.fillRect(bx-1,by+3,bw+2,3);ctx.fillStyle='#24345a';ctx.fillRect(bx,by+4,bw,1);ctx.fillStyle='#5aa8ff';ctx.fillRect(bx,by+4,Math.round(bw*mpct),1);by+=3;}
   if(g.lim){const lp=(u.lb||0)/100;ctx.fillStyle='#150b17';ctx.fillRect(bx-1,by+3,bw+2,3);ctx.fillStyle=lp>=1?(Math.floor(now/150)%2?'#c79bff':'#f1e4ff'):'#8a4be0';ctx.fillRect(bx,by+4,Math.round(bw*lp),1);}
   if(g.ms){const py=by+4+(g.lim?3:0);for(let i=0;i<g.ms;i++){const px=bx-1+i*5;ctx.fillStyle='#150b17';ctx.fillRect(px,py,4,4);ctx.fillStyle=u.broken?'#5a3a3a':i<u.shield?'#ffd04a':'#4a4a5a';ctx.fillRect(px+1,py+1,2,2);}}
   // v0.5.3: alpha 254 marks HUD pixels, so the GL stage (High) leaves them unlit and out of the bloom
-  if(BV.glFull){ctx.save();ctx.globalCompositeOperation='destination-out';ctx.globalAlpha=1/255;ctx.fillRect(bx-1,by-1,g.bkW,g.bkH);ctx.restore();}
+  if(BV.glFull){ctx.save();ctx.globalCompositeOperation='destination-out';ctx.globalAlpha=1/255;ctx.fillRect(bx-1,by-1-(g.mp?3:0),g.bkW,g.bkH);ctx.restore();}
   (u.el||[]).forEach((el,i)=>ctx.drawImage(elShapeCv(el),ix+i*10,iy));
-  u._plate={ix,iy,bx,by};}
+  u._plate={ix,iy,bx,by:by-(g.mp?3:0)};}
 // the turn arrow (battleFrame calls this instead of drawing over the head)
 function b3Arrow(ctx,now){const L=b3Lay(),a=L&&L.arrow;if(!a)return;const x=a.x+4,y=a.y+Math.round(Math.sin(now/140)*.5);
   ctx.fillStyle='#150b17';ctx.fillRect(x-4,y,9,5);ctx.fillStyle=a.u.side==='p'?'#ffd04a':'#ff6a6a';ctx.fillRect(x-3,y+1,7,1);ctx.fillRect(x-2,y+2,5,1);ctx.fillRect(x-1,y+3,3,1);}
