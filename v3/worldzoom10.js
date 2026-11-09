@@ -5,7 +5,9 @@
 // is placed in the world at 1/k of its old size. On screen a character is as tall as before; the door beside him is a fifth taller.
 // The cards are also sampled at two texels per art pixel (hdSmall's px), so the smaller card keeps the detail of the HD paint.
 // Only the HD-2D view changes. The Flat (2D) view keeps its integer pixel grid and its walker scale from scale10/sprhd.
-const WZ10={k:1.2,px:2};
+// v0.15.6: the owner found the zoomed world worse than before ("World resizing may have been a mistake"): k is back to 1. The two-texel
+// character sampling stays, it is pure detail.
+const WZ10={k:1,px:2};
 HD2D.zoom=HD2D.zoom*WZ10.k;
 {const hc0=hdChar;hdChar=function(bt,cv,fx,fy,fz,flip,a,fl,sc){
   if(sc!=null)return hc0.apply(this,arguments);

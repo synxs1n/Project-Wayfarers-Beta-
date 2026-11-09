@@ -172,4 +172,4 @@ if(SPRITE_HD){
 {const wc0=walkerCanvas;walkerCanvas=function(key,L,els,id,view,frame){
   if(typeof key!=='string'||(id&&TPL[id]&&TPL[id].mon))return wc0.apply(this,arguments);
   if(key.slice(0,4)==='big:')return wc0.call(this,key.slice(4),L,els,id,view,frame);
-  return rigScale(.8,()=>wc0.call(this,key+"|c8",L,els,id,view,frame));};}
+  return rigScale(.9,()=>wc0.call(this,key+"|c9",L,els,id,view,frame));};}// v0.15.6: .9 (36x50): the owner found .8 too soft and the full rig too tall

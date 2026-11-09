@@ -4,6 +4,7 @@
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.15.6',['Graphics sweep, part one. The HD-2D camera is back where it was before 0.15.3 (the zoomed world looked worse). Wayfarers are drawn at .9 of the full rig in the overworld and in battle (36x50), the middle between the full rig that stood too tall and the .8 and .85 that went soft. Part two (depth on entrances and world props) follows.']],
  ['Beta v0.15.5',['Portraits are proper busts: the front view of each wayfarer from the hat to the shoulders, both eyes showing, on party cards, battle cards and the command head (they used to be a crop of the side sprite that cut the face at the chin).',
   'The Meridian Breach: most of every island is tall grass now (it is a training ground), the Breach turns to match the way you walked through the seal (a seal walked north lands you on the Breach\'s south edge, walking north), and coming back from the Breach lands you on the open gate tile, so you can step straight back in. That fixes the field you could not re-enter the Breach from.']],
  ['Beta v0.15.4',['Battle: the vanguard\'s floating plates on the stage now show an MP bar under the HP bar.',

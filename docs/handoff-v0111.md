@@ -324,3 +324,8 @@ gates are beaten, cutscene on entering the gate, returns with a new look, rematc
 - portrait10.js: portraitCanvas(id) crops the full-size front walker ('big:' key) to a 24-logical-px square from the first painted row (hat) centred on the head; cvURL cache 'pt10:'+id+lookKey. ui.js port() uses it (class .pt10; monsters keep heroURL); style.css forces .port.pt10 img to fill the box. Note: an HD canvas's drawImage takes SOURCE coords in logical px (sprhd patch multiplies by k).
 - breach10.js: islands mostly grass (d>.3, 82%); breachTurn(m) rotates the canonical west-landing Breach by quarter turns so the landing is opposite the walk direction through f4's seal (breachWalkDir from gateAt->gateOut); exits, gate, signs, free rotated; bld restamped.
 - endgame10.js breachLinkField: the 'breach' gate's arrive is the gateAt tile facing back toward gateIn (was hard-coded one tile west, which on a turned field put you beside the road: the "can't re-enter" glitch).
+
+## 0.15.6 (graphics sweep)
+- worldzoom10.js: WZ10.k back to 1 (owner: the zoomed world looked worse); character cards still sampled at 2 texels per art px.
+- sprhd.js walker wrapper rigScale .9 (key '|c9'), scale10.js SC10.battle .9. v145a expects 36x50 for both. HD town walker chH 43.7 at zoom 1.
+- Gotcha repeated: a // comment appended to a line swallows the rest of the line (scale10 HB10 vanished once; use /* */).
