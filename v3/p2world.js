@@ -239,7 +239,7 @@ function townBoardFix(m){try{
   [].concat(boards,stones).forEach(([x,y])=>{const cl=[];for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++)if(dx||dy)cl.push([x+dx,y+dy]);cl.push([x,y+2],[x,y+3]);
     cl.forEach(([cx,cy])=>{if(BOARD_DECOR.includes((t[cy]||[])[cx]))t[cy][cx]=[[1,0],[-1,0],[0,1],[0,-1]].some(([a,b])=>(t[cy+b]||[])[cx+a]===':')?':':'.';});});
   m._qb=null;
-}catch(e){if(window.__TBDBG)console.log("townBoardFix",e.message);}}
+}catch(e){}}
 HOOK.wrap('getMap','p2world','town lanes, gathering spots on open tiles (new maps)',function(next,...a){let id=a[0];const had=!!MAPS[id];const m=next(...a);try{if(!had&&m&&m.kind==='town'&&!P2.noLane)laneFix(m);if(!had&&m&&m.kind==='town'&&!P2.noBoard)townBoardFix(m);
   // a gathering spot never survives on a tile a later step (sanctum gatehouse, cave mouth) turned solid
   if(!had&&m&&m.nodes&&m.kind!=='town')m.nodes=m.nodes.filter(n=>nodeFits(m,n.k,n.x,n.y));}catch(e){}return m;});
