@@ -143,3 +143,13 @@ hbLook, hd2d.js hdLook, daylight.js, gfx6world.js still treat every dungeon as i
 ## 0.12.6 menus regrouped (menus9.js: Party/Backpack/Quests/World/Records/Guides/Settings, Bonds tab); 0.12.7 (pending): phone battle layout puts
 the hero cards above the commands (battle3.css m-tall order). Sprite pass helpers in flight: A hero accents + idle (art.js/art2.js/sprhd.js/anim.js),
 B skill effect shapes per element + boss idle/telegraph (battle.js/anim.js/fx2.js/gfx6battle.js/hdspell.js/art3.js).
+
+## 0.12.9 sprite and effects pass shipped
+- art2.js "per-hero accents" section (hashS('acc:'+id); hair style/colour, skin shift, 1-2 accessories, weapon tint via palette keys v/x/y; wraps
+  heroGridSide/heroGridView/heroPal/drawFlair/backItemsFB/weaponFB and WPN draws; legends, Vaelith, mounts untouched).
+- anim.js appended: anElem (8 element shapes), anPhys (by attacker pose), heal/buff/debuff marks, Limit flash (BV.flash, ANX.tint under reduced
+  motion), bossTele (charge status or B.b4g pending); battle.js drawUnit: boss idle frames (art3.js bossHasIdle/bossIdle), telegraph swell/glow;
+  hdspell.js hbsHit calls anElem(...,lit=1) for the HD extras. Effects use Math.random like burstAt (no battle logic touched).
+- Known sprite caveat: an eyepatch strap shows across the back of a hooded head (Hollis). Hair/cape sway not done (needs a second sprite variant in battle.js).
+- v080b: re-running against the new phone layout with the updated rule (cards above commands, action rows on screen). The full battle group has not
+  run since 0.11.4; run `runall.js battle` then `world` on 0.12.9 next.
