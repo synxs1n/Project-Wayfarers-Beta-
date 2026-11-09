@@ -661,7 +661,8 @@ function townGateSlide(m){const g=m.t,H=g.length,W=g[0].length,top=(m.exits||[])
     snap.forEach(([x,y,c])=>{g[y][x]=c;});m.exits=exs;rec.cells=old;rec.x=q0.x;rec.y=q0.y;rec.arrive=q0.arrive;}}
 function townExitPass(m){townExitClear(m);const H=m.t.length;
   const front=[];(m.exits||[]).filter(e=>e.y<H-4).forEach(e=>{for(let j=1;j<=3;j++)front.push([e.x,e.y+j]);});
-  if(front.some(([x,y])=>m.bld.some(b=>x>=b.x&&x<b.x+b.w&&y>=b.y&&y<b.y+b.h)))townGateSlide(m);}
+  if(front.some(([x,y])=>m.bld.some(b=>x>=b.x&&x<b.x+b.w&&y>=b.y&&y<b.y+b.h)))townGateSlide(m);
+  if(m.exitMoved||m.gateSlid){try{if(typeof guardPaths==='function'&&!window.__PGOFF)guardPaths(m);}catch(e){}}}// paths changed: pathguard clears assets off the new ones
 // registered after every other getMap hook (a microtask after this script ran): p2world's lane pass may move a gate, so the check is last
 queueMicrotask(()=>{try{HOOK.wrap('getMap','townexit','new towns: nothing hides a gate',function(next,...a){const id=a[0],fresh=typeof id==='string'&&id[0]==='t'&&!MAPS[id];const m=next(...a);
   try{if(fresh&&m&&m.kind==='town'&&typeof lay3On==='function'&&lay3On()&&!(G&&G.daily))townExitPass(m);}catch(e){}return m;});}catch(e){}});

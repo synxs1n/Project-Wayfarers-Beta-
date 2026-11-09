@@ -30,7 +30,7 @@ function campLeftCool(){const c=G&&G.camp;if(!c||c.at==null)return 0;return Math
   let w=tw0.apply(this,arguments);if(w==='You have none.')w='You need Camp Supplies. The alchemist sells them.';
   if(!w&&WS.m&&WS.m.archive)w='The Archive is no place to make camp.';
   if(w)return w;const n=campLeftCool();if(n)return `You made camp a moment ago. Fight ${n} more battle${n>1?'s':''} first.`;return '';};}
-{const ut0=useTravel;useTravel=function(id){const o=ITEMS[id];if(o&&o.tent&&G&&!G.daily){const w=travelWhyNot('tent');if(w){toast(w);return false;}V.modal={type:'camp',item:'tent'};render();return true;}if(!o||!o.camp)return ut0.apply(this,arguments);ACT.campOpen();return true;};}
+{const ut0=useTravel;useTravel=function(id){const o=ITEMS[id];if(o&&o.tent&&!o.camp&&G&&!G.daily){const w=travelWhyNot('tent');if(w){toast(w);return false;}V.modal={type:'camp',item:'tent'};render();return true;}if(!o||!o.camp)return ut0.apply(this,arguments);ACT.campOpen();return true;};}
 
 function campHeal(){let hp=0,mp=0;partyChars().forEach(c=>{if(c.hp<=0)return;const h=Math.min(c.S.mhp-c.hp,Math.round(c.S.mhp*CAMP.heal)),m=Math.min(c.S.mmp-c.mp,Math.round(c.S.mmp*CAMP.heal));c.hp+=h;c.mp+=m;hp+=h;mp+=m;});return {hp,mp};}
 // v0.11.4: a Tent opens the same camp (boon and campfire talks) and is used up instead of Camp Supplies; it also gets KO'd heroes up at 30%

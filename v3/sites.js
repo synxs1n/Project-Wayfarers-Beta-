@@ -40,9 +40,9 @@ function buildFort(R,s){const W=SITES.fortW,H=SITES.fortH,D=new Gr(W,H,'#');
   const chests=[],pc=[keep.x+Math.floor(keep.w/2),keep.y+Math.floor(keep.h/2)];D.put(pc[0],pc[1],'C');chests.push([pc[0],pc[1],'reward']);
   bar.forEach((r,i)=>{if(R()<.6){const x=r.x+(i%2?r.w-1:0),y=r.y+(r.y<yard.y?0:r.h-1);if(D.get(x,y)==='.'){D.put(x,y,'C');chests.push([x,y]);}}});
   // v0.12 (new journeys): the keep is a sacred hall. The guardian's spot is an 'X' tile (solid, drawn as a rune circle) just north of the
-  // prize chest; standing stones ring it, braziers and pillars line the aisle. Fixed positions (no random draws), the aisle row stays open.
+  // prize chest; pillars ring it, braziers and more pillars line the aisle. Fixed positions (no random draws), the aisle row stays open.
   let guard=null;if(typeof lay3On==='function'&&lay3On()){const gx=pc[0],gy=pc[1]-1;guard=[gx,gy];D.put(gx,gy,'X');
-    [[-3,0],[3,0]].forEach(([i,j])=>D.put(gx+i,gy+j,'N'));
+    [[-3,0],[3,0]].forEach(([i,j])=>D.put(gx+i,gy+j,'P'));
     [[-3,-3],[3,-3],[-3,4],[3,4]].forEach(([i,j])=>D.put(gx+i,gy+j,'v'));
     [[-2,-5],[2,-5],[-2,6],[2,6],[-4,-1],[4,-1],[-4,3],[4,3]].forEach(([i,j])=>{if(D.get(gx+i,gy+j)==='.')D.put(gx+i,gy+j,'P');});}
   return {rows:D.g,start:[sc[0],sc[1]+1],chests,prize:pc,guard};}
@@ -107,7 +107,7 @@ function drawShrineFront(ctx,x,y){
     ctx.fillStyle='rgba(255,208,112,.26)';ctx.beginPath();ctx.arc(x+a+1.5,y+11,6,0,7);ctx.fill();});
 }
 {const bm0=buildMapCanvas;buildMapCanvas=function(m,fr){const c=bm0.apply(this,arguments);try{if(m&&m.kind==='field'&&m.fortAt&&c&&c.getContext){const [fx,fy]=m.fortAt;drawGatehouse(c.getContext('2d'),(fx-1)*TS,(fy-1)*TS);
-    m.lights=m.lights||[];/* soft light at night: the two lanterns and the rune arch (also baked as lights in HD-2D) */m.lights.push([fx*TS-2,fy*TS-3,17,'lamp'],[fx*TS+18,fy*TS-3,17,'lamp'],[fx*TS+8,fy*TS+4,30,'cyan']);}
+    m.lights=m.lights||[];/* soft light at night: the two lanterns and the rune arch (also baked as lights in HD-2D) */m.lights.push([fx*TS-2,fy*TS-3,12,'lamp'],[fx*TS+18,fy*TS-3,12,'lamp'],[fx*TS+8,fy*TS+4,16,'cyan']);}
     if(m&&m.fort&&m.hall&&c&&c.getContext)drawHallRunes(c.getContext('2d'),m);}catch(e){}return c;};}
 // the sacred hall inside (new journeys): a rune circle on the floor around the guardian's spot
 function drawHallRunes(ctx,m){const g=m.guardAt;if(!g)return;const cx=g[0]*TS+8,cy=g[1]*TS+9,D=DTH(m),col='#8ae8ff';
