@@ -174,3 +174,14 @@ P3 world/content: arena only from the Guild Hall and the main gold/rare-material
 P4 big design: battle rebalance (roles: 1 main + 2 sub per hero, supported by skills, natures, equipment; stats rework incl. faith scaling for e.g. monk
   and invoke strength; 3 weapon types per class; RPS slash/blunt/piercing back instead of "physical"; swarms resist single target; role switching in the
   party menu drives suggested gear and auto stats; subrole skills weaker than primary); 20 Scourges (one a swarm) and a 5th Calamity.
+### Owner decisions on batch 4 (all approved as proposed)
+- Roles: 8 roles {Striker, Marksman, Caster, Guardian, Healer, Support, Saboteur, Summoner}; 1 main + 2 sub per hero by class (Warrior Str/Gua/Sab, Knight
+  Gua/Str/Sup, Archer Mar/Sab/Str, Thief Sab/Str/Mar, Monk Str/Hea/Sup, Mage Cas/Sab/Sup, Priest Hea/Sum/Sup, Bard Sup/Cas/Hea); main role swappable in
+  the Party menu in town; natures and gear tilt sub roles; sub role skills ~80%; 3 weapon types per class follow the 3 roles; one free stat reset for old saves.
+- Stats: STR slash/blunt/piercing (+HP a little), DEX ranged+crit, INT magic, FAITH healing/Invoke/Summon/light+shadow dmg/ailment resist (Monk, Priest),
+  VIT HP+phys def, SPIRIT MP+magic res, AGI speed+evasion. Damage kinds slash/blunt/piercing/ranged/magic; RPS per archetype (armored weak blunt, resists
+  slash/piercing; swarm resists single target, weak to area; flyers weak to ranged).
+- Bosses: Scourges The Locust Choir (swarm, wind/earth), Ironmaw Tortoise (armored, earth/water), Candleking Moth (fire/light flyer), Brinehag Matriarch
+  (water/shadow summoner); 5th Calamity The Hollow Sun (light/fire) with realm The Ashglass Reach (scorched salt flat).
+- Riftkeeper: opens when every Rift gate is beaten; 3 phases (element cycle; two Echo shades; 3-turn Unmaking, break the shield); lv 60, no auto; rewards
+  Riftkeeper charm, title Riftwalker, NG+ Rift modifier; free rest at its shrine.
