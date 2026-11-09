@@ -167,3 +167,11 @@ const CAL_FX={
  hollowsun:{n:'Hollow glare',el:{light:1.12,fire:1.12,ice:.9},d:'Light and Fire hit 12% harder and Ice 10% softer, for everyone. Water and Shadow gear and resistances blunt it.'}
 };
 
+
+// v0.14.x: overlays for the four Scourges added after the Hollow Sun (the foes they bring to the realms they rule; see bosses10.js)
+Object.assign(BOV,{
+ hollowshepherd:{mon:['o_hollowshepherd','mossling','Fold Lamb',['earth','light'],'#c8d890'],wx:['fog',8],el:['earth','light'],say:'A bell tolls somewhere in the pasture. There are no bells in the pasture.',guide:'Fold lambs graze the verges at dusk, and fog comes more often.'},
+ paleweaver:{mon:['o_paleweaver','crawler','Rimesilk Crawler',['ice','lightning'],'#c0d8f0'],wx:['snow',8],el:['ice','lightning'],say:'Frost threads across the doorways in patterns. Straight lines, and always eight.',guide:'Rimesilk crawlers spin the hedges white, and snow falls more often.'},
+ crowregent:{mon:['o_crowregent','cavebat','Carrion Crow',['wind','shadow'],'#3a3a4c'],wx:['gale',8],el:['wind','shadow'],say:'Every roof in town has a crow on it, and every crow faces the same way.',guide:'Carrion crows wheel over the roads, and gales come more often.'},
+ geysermatron:{mon:['o_geysermatron','magmaslime','Steam Slime',['fire','water'],'#e0a070'],wx:['heat',8],el:['fire','water'],say:'The wells run hot, and the kettles sing before anyone lights the fire.',guide:'Steam slimes bubble out of the vents, and heat waves come more often.'}
+});

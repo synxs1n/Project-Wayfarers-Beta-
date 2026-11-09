@@ -15,12 +15,15 @@ function buildSanctum(){
   m.w=W;m.h=H;m.tone=valueNoise(mulberry(7171),W,H,6);m.shelves=[];
   // v0.11.0: every gate stands, open or not. Scourges along the north wall; the Calamities get their own row on the south wall,
   // either side of the door, in crimson and gold frames (drawPortal)
-  // v0.13.7: sixteen Scourge gates do not fit one row of a 28 wide hall, so they take two (y 1 and y 3, the second row keeping clear of the
-  // Riftkeeper's gate at x 13); the five Calamity gates stand either side of the south door (x 13)
+  // v0.13.7: sixteen Scourge gates do not fit one row of a 28 wide hall, so they take two (y 1 and y 3, keeping clear of the Riftkeeper's gate at
+  // x 13); the five Calamity gates now stand in a centred row at y 14. v0.14.x: twenty Scourges, two rows of ten on the same ten columns
+  // (x 2 to 10 and 16 to 24, the middle five columns stay open for the Riftkeeper's gate at 13,4 and the Echoforge at 13,6; y 2 is a walkway)
   const gp=GPOOL.slice(),fp=FPOOL.slice(),rowA=Math.ceil(gp.length/2),xB=[2,4,6,8,10,16,18,20,22,24];
-  const gx=j=>j<rowA?{x:Math.min(W-2,2+j*3),y:1}:{x:xB[j-rowA]!=null?xB[j-rowA]:Math.min(W-2,2+(j-rowA)*2),y:3};
+  const gx=j=>{const i=j%rowA;return {x:xB[i]!=null?xB[i]:Math.min(W-2,2+i*2),y:j<rowA?1:3};};
   gp.forEach((k,j)=>{const {x,y}=gx(j),d=guardianDef(k);if(!d)return;m.npcs.push({x,y,hx:x,hy:y,name:'Gate of Echo '+d.n,line:'',view:'front',face:'r',act:'portal',portal:1,key:k,look:null});});
-  const fx=[5,9,17,20,23];fp.forEach((k,j)=>{const x=fx[j]!=null?fx[j]:3+j*3,d=guardianDef(k);if(!d)return;m.npcs.push({x,y:H-2,hx:x,hy:H-2,name:'Calamity Gate: Echo '+d.n,line:'',view:'front',face:'r',act:'portal',portal:1,cal:1,key:k,look:null});});
+  // v0.14.x: the Calamity arches stand free on open floor in a centred row at y 14 (never against the south wall, where the HD-2D wall front hides them):
+  // clear floor south of each, the start tile (13,16) and the door below it kept open
+  const fx=[7,10,13,16,19],CY=14;fp.forEach((k,j)=>{const x=fx[j]!=null?fx[j]:7+j*3,d=guardianDef(k);if(!d)return;m.npcs.push({x,y:CY,hx:x,hy:CY,name:'Calamity Gate: Echo '+d.n,line:'',view:'front',face:'r',act:'portal',portal:1,cal:1,key:k,look:null});});
   m.npcs.push({x:13,y:9,hx:13,hy:9,name:'Echo Warden',line:'Every Scourge and Calamity you broke is still ringing in here. Stand before a gate and press Space to challenge its Echo. This hall is safe: nothing roams, and the way out is the south door.',look:villagerLook('Echo Warden'),view:'front',face:'r'});
   return m;
 }

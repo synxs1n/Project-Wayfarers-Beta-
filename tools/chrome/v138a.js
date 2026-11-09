@@ -1,10 +1,12 @@
+// v0.14.x: four more Scourges (The Hollow Shepherd, The Pale Weaver, The Crow Regent, The Geyser Matron: bosses10.js) make 20 Scourges and 5 Calamities,
+// 25 bosses, 25 Echoes and 25 Sanctum gates; they are covered here like the first four.
 // v0.13.7: four new Scourges (The Locust Choir, Ironmaw Tortoise, Candleking Moth, Brinehag Matriarch), the fifth Calamity (The Hollow Sun)
 // and its realm (The Ashglass Reach). Data and sprites (foes.js, art3.js, realmdata.js, bosstheme.js, lore9.js), wiring (bosses9.js), the
 // Sanctum's two rows of gates (sanctum.js) and the Riftkeeper's count of every Echo (riftkeeper9.js, dynamic through echoKeys()).
 // Usage: PWHTML=../../out/aurelis3.html node v138a.js
 const {open,chk,done}=require('./pw');
 const PRE=`localStorage.clear();localStorage.setItem('aurelis-meta-v1',JSON.stringify({cfg:{speed:1,enc:'off',music:0,sfx:0,gfx:'low',hints:false}}));`;
-const NEWG=['locustchoir','ironmaw','candlemoth','brinehag'],NEWF=['hollowsun'],NEW=NEWG.concat(NEWF);
+const NEWG=['locustchoir','ironmaw','candlemoth','brinehag','hollowshepherd','paleweaver','crowregent','geysermatron'],NEWF=['hollowsun'],NEW=NEWG.concat(NEWF);
 (async()=>{const H=await open({w:430,h:800,mobile:true,pre:PRE});const {ev,wait}=H;
 await ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(i=>A.ACT.pickS(i));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;});await wait(250);
 
@@ -24,13 +26,14 @@ let r=await ev(([G4,F1])=>{const A=__A,T=A.TW.get,GU=T('GUARDIANS'),FI=T('FINALS
     if(T('bossClass')(k)!==(F1.includes(k)?'Calamity':'Scourge'))bad.push(k+' class');
     if(T('MATS')['es_'+k]==null)bad.push(k+' shard');});
   o.bad=bad;o.fx=!!T('CAL_FX').hollowsun&&!!T('CAL_FX').hollowsun.el;
-  o.types={locustchoir:T('BOSS_TY').locustchoir,ironmaw:T('BOSS_TY').ironmaw,candlemoth:T('BOSS_TY').candlemoth};
+  o.types={locustchoir:T('BOSS_TY').locustchoir,ironmaw:T('BOSS_TY').ironmaw,candlemoth:T('BOSS_TY').candlemoth,hollowshepherd:T('BOSS_TY').hollowshepherd,paleweaver:T('BOSS_TY').paleweaver,crowregent:T('BOSS_TY').crowregent,geysermatron:T('BOSS_TY').geysermatron};
   o.elems=[...G4,...F1].map(k=>k+':'+T('guardianDef')(k).el.join('/'));
   o.gim=[...G4,...F1].map(k=>k+':'+T('BOSS_GIM').def[k].t);return o;},[NEWG,NEWF]);
 console.log(JSON.stringify(r));
-chk('16 Scourges and 5 Calamities, the new ones in GUARDIANS/GPOOL and FINALS/FPOOL',r.gp===16&&r.fp===5&&r.gk&&r.fk||JSON.stringify(r));
+chk('20 Scourges and 5 Calamities (25 bosses), the new ones in GUARDIANS/GPOOL and FINALS/FPOOL',r.gp===20&&r.fp===5&&r.gk&&r.fk||JSON.stringify(r));
 chk('every new boss: stats, 3 to 4 skills in the usual shape, a phase, intro, sprite and Echo sprite, archetype, gimmick, overlay, theme, shard',r.bad.length===0||JSON.stringify(r.bad));
-chk('archetypes: Locust Choir swarm, Ironmaw armored, Candleking flying; Calamity effect Hollow glare',r.types.locustchoir[0]==='swarm'&&r.types.ironmaw[0]==='armored'&&r.types.candlemoth[0]==='flying'&&r.fx||JSON.stringify(r));
+chk('archetypes: Locust Choir swarm, Ironmaw armored, Candleking flying, Hollow Shepherd plant, Pale Weaver beast, Crow Regent flying, Geyser Matron jelly; Calamity effect Hollow glare',r.types.locustchoir[0]==='swarm'&&r.types.ironmaw[0]==='armored'&&r.types.candlemoth[0]==='flying'&&r.types.hollowshepherd[0]==='plant'&&r.types.paleweaver[0]==='beast'&&r.types.crowregent[0]==='flying'&&r.types.geysermatron[0]==='jelly'&&r.fx||JSON.stringify(r));
+chk('the new Scourges use gimmick types the roster was short of: veil, slot (two spots), phase2, tide',JSON.stringify(r.gim.filter(x=>/^(hollowshepherd|paleweaver|crowregent|geysermatron):/.test(x)))===JSON.stringify(['hollowshepherd:veil','paleweaver:slot','crowregent:phase2','geysermatron:tide'])||JSON.stringify(r.gim));
 
 // ---- 2. the sprites ----
 r=await ev(([NEW])=>{const A=__A,T=A.TW.get,o={};const mask=c=>{const x=c.getContext('2d').getImageData(0,0,c.width,c.height).data,m=[];for(let i=3;i<x.length;i+=4)m.push(x[i]>20?1:0);return m;};
@@ -69,8 +72,8 @@ r=await ev(([NEW])=>{const A=__A,T=A.TW.get,STD=T('REALM_STD'),CAL=T('REALM_CAL'
     r.bosses.concat([r.final]).forEach(b=>{if(b in o.boss)o.boss[b]++;});o.cal[r.order[4]]++;}}finally{Date.now=dn;}
   o.asIdx=asIdx;return o;},[NEW]);
 console.log(JSON.stringify(r));
-chk(`${r.n} seeded journeys: every one valid (5 distinct realms, 4 standard then 1 Calamity realm, 4 Scourges, 1 Calamity)`,!r.bad.length||JSON.stringify(r));
-chk('each new Scourge and the Hollow Sun is drawn at least once, and every Calamity realm including The Ashglass Reach',NEW.every(k=>r.boss[k]>0)&&Object.values(r.cal).every(n=>n>0)&&r.cal[r.asIdx]>0||JSON.stringify(r));
+chk(`${r.n} seeded journeys: every one valid (5 distinct realms, 4 standard then 1 Calamity realm, 4 distinct Scourges drawn from 20, 1 Calamity)`,!r.bad.length||JSON.stringify(r));
+chk('each new Scourge (all eight) and the Hollow Sun is drawn at least once, and every Calamity realm including The Ashglass Reach',NEW.every(k=>r.boss[k]>0)&&Object.values(r.cal).every(n=>n>0)&&r.cal[r.asIdx]>0||JSON.stringify(r));
 
 // ---- 5. old saves and gates that count Scourges ----
 r=await ev(()=>{const A=__A,T=A.TW.get,G=A.G,o={},run0=JSON.parse(JSON.stringify(G.run)),st0=G.stage;
@@ -116,8 +119,8 @@ r=await ev(()=>{const A=__A,T=A.TW.get,G=A.G,META=A.META,o={};G.won=true;G.echoS
   o.have2=T('rkUnlocked')();o.txt2=T('mRiftkeeper')().replace(/<[^>]+>/g,' ');o.dis2=/disabled/.test(T('mRiftkeeper')());
   META.best=JSON.parse(b0);return o;});
 console.log(JSON.stringify(r).slice(0,700));
-chk(`the Sanctum has one gate per Echo (${r.total}): ${r.gates} gates, ${r.keys} distinct, every Scourge and Calamity present, none overlapping, all reachable`,r.total===21&&r.gates===21&&r.keys===21&&r.all&&r.cal===5&&r.overlap===0&&r.reach&&r.rk||JSON.stringify(r));
-chk('the Riftkeeper gate counts every Echo dynamically: sealed at 20 of 21, open at 21 of 21',!r.have1&&/20 of 21 Echoes beaten/.test(r.txt1)&&r.have2&&!r.dis2||JSON.stringify([r.have1,r.have2,r.dis2,r.txt1.slice(0,300)]));
+chk(`the Sanctum has one gate per Echo (${r.total}): ${r.gates} gates, ${r.keys} distinct, every Scourge and Calamity present, none overlapping, all reachable`,r.total===25&&r.gates===25&&r.keys===25&&r.all&&r.cal===5&&r.overlap===0&&r.reach&&r.rk||JSON.stringify(r));
+chk('the Riftkeeper gate counts every Echo dynamically: sealed at 24 of 25, open at 25 of 25',!r.have1&&/24 of 25 Echoes beaten/.test(r.txt1)&&r.have2&&!r.dis2||JSON.stringify([r.have1,r.have2,r.dis2,r.txt1.slice(0,300)]));
 
 // ---- 8. every new boss can be fought (story spec, then the Echo spec) ----
 for(const k of NEW){

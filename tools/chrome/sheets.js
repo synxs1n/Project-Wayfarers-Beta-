@@ -7,9 +7,36 @@
 const fs=require('fs');const {open}=require('./pw');
 const [html,out,kind]=process.argv.slice(2);
 if(!html||!out||!kind){console.log('usage: node sheets.js <html> <out.png> foes|poses');process.exit(2);}
-if(kind!=='foes'&&kind!=='poses'&&kind!=='npcs'){console.log('sheet kind "'+kind+'" is reserved');process.exit(2);}
+if(kind!=='foes'&&kind!=='poses'&&kind!=='npcs'&&kind!=='bosses'){console.log('sheet kind "'+kind+'" is reserved');process.exit(2);}
 (async()=>{
   const H=await open({html:fs.readFileSync(html,'utf8'),dir:'/tmp',w:600,h:400});
+  if(kind==='bosses'){
+    // bosses: every Scourge (GUARDIANS), Calamity (FINALS) and the Riftkeeper as a row: idle A, idle B (bossIdle), the black silhouette, and a ~100 px
+    // Bestiary-size copy. ZOOM (default 3) scales the first three; ONLY=id1,id2 limits the rows; CHUNK=6 rows per file
+    const only=process.env.ONLY?process.env.ONLY.split(','):null,chunk=+process.env.CHUNK||6;
+    const data=await H.ev(([only,chunk,Z])=>{
+      const A=window.__A,T=A.TW.get,GU=T('GUARDIANS'),FI=T('FINALS'),bi=T('bossIdle');
+      const ids=Object.keys(GU).concat(Object.keys(FI)).filter(k=>!only||only.includes(k)).map(k=>({k,n:(GU[k]||FI[k]).n,art:(GU[k]||FI[k]).art}));
+      if(!only||only.includes('riftkeeper'))ids.push({k:'riftkeeper',n:'The Riftkeeper',art:'riftkeeper'});
+      const cw=60*Z+6,LAB=104,MINI=100,sheets=[];
+      for(let s=0;s<ids.length;s+=chunk){
+        const rs=ids.slice(s,s+chunk),W=LAB+3*cw+MINI+16,Hh=rs.length*cw+22,cv=document.createElement('canvas');cv.width=W;cv.height=Hh;
+        const x=cv.getContext('2d');x.imageSmoothingEnabled=false;x.fillStyle='#2a2438';x.fillRect(0,0,W,Hh);x.font='11px monospace';x.fillStyle='#e8e0f0';
+        ['idle A','idle B','silhouette','100px'].forEach((t,j)=>x.fillText(t,LAB+j*cw+4,14));
+        rs.forEach((r,n)=>{const oy=22+n*cw;x.fillStyle='#e8e0f0';x.fillText(r.k,4,oy+14);x.fillStyle='#9a90b0';x.fillText(r.n.slice(0,16),4,oy+27);
+          let c,f1;try{c=A.monCanvas(r.art);f1=bi(c,0,760,760);}catch(e){x.fillText('ERR '+e.message.slice(0,12),LAB,oy+20);return;}
+          [c,f1].forEach((f,j)=>{const fx=LAB+j*cw;x.fillStyle=j%2?'#322a44':'#2e2640';x.fillRect(fx,oy,cw-2,cw-2);x.drawImage(f,fx+3,oy+3,60*Z,60*Z);});
+          const sx=LAB+2*cw,sc=document.createElement('canvas');sc.width=60*Z;sc.height=60*Z;const q=sc.getContext('2d');q.imageSmoothingEnabled=false;q.drawImage(c,0,0,60*Z,60*Z);
+          q.globalCompositeOperation='source-in';q.fillStyle='#000';q.fillRect(0,0,60*Z,60*Z);x.fillStyle='#8a8aa0';x.fillRect(sx,oy,cw-2,cw-2);x.drawImage(sc,sx+3,oy+3);
+          const mx=LAB+3*cw+4;x.fillStyle='#1a1426';x.fillRect(mx,oy,MINI+2,MINI+2);x.drawImage(c,mx+1,oy+1,MINI,MINI);});
+        sheets.push(cv.toDataURL('image/png'));}
+      return {sheets,n:ids.length};
+    },[only,chunk,+process.env.ZOOM||3]);
+    const b=d=>Buffer.from(d.split(',')[1],'base64');
+    data.sheets.forEach((d,i)=>{fs.writeFileSync(data.sheets.length>1?out.replace(/\.png$/,'_'+(i+1)+'.png'):out,b(d));});
+    console.log('sheets:',data.sheets.length,'rows of',data.n,'bosses ->',out);
+    await H.browser.close();return;
+  }
   if(kind==='npcs'){
     const Z0=+process.env.ZOOM||3,rnd=process.env.RND!=null?+process.env.RND:12,only=process.env.ONLY?process.env.ONLY.split(','):null;
     const data=await H.ev(([Z,rnd,only])=>{

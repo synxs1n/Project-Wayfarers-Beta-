@@ -28,7 +28,7 @@ const MON={
  stareater:{n:'Star Eater',art:'stareater',el:['shadow','fire'],hp:1.1,atk:1.3,def:1,mag:.9,res:1,spd:1.1,sk:[['Starbite','shadow',1.7,'one','phys',[['bleed',.5]]]]},
  huskguard:{n:'Husk Watcher',art:'huskguard',el:['light','shadow'],hp:1.6,atk:1.3,def:1.5,mag:.8,res:1.1,spd:.6,sk:[['Hollow Slam','light',1.6,'one','phys'],['Vigil','light',0,'self','buff',[['bulwark',1]]]]}
 };
-// Scourges (GUARDIANS, 16, four drawn per run) and Calamities (FINALS, 5, one per run).
+// Scourges (GUARDIANS, 20, four drawn per run) and Calamities (FINALS, 5, one per run).
 // phase: triggers once when HP falls below 'at'.
 const GUARDIANS={
  thornwarden:{n:'Thornback Warden',art:'thornwarden',el:['earth','water'],hp:5.2,atk:1.2,def:1.25,mag:1,res:1.1,spd:.95,sk:[['Bramble Lash','earth',1.5,'one','phys',[['bleed',.6]]],['Rainroot Surge','water',1.1,'all','mag',[['slow',.4]]],['Bark Skin','earth',0,'self','buff',[['bulwark',1]]]],
@@ -62,7 +62,15 @@ const GUARDIANS={
  candlemoth:{n:'Candleking Moth',art:'candlemoth',el:['fire','light'],hp:5,atk:1,def:1,mag:1.3,res:1.2,spd:1.15,sk:[['Wax Drip','fire',1.5,'one','mag',[['burn',.5]]],['Lantern Dust','light',1.1,'all','mag',[['blind',.4]]],['Flicker Dive','fire',1.5,'one','phys',[['burn',.3]]]],
    phase:{at:.5,say:'The Moth gutters, flares, and drinks every flame in the room!',self:[['haste',1]],party:[['blind',.5]],heal:.08},intro:'Every candle in the chamber leans the same way. The Candleking Moth unfolds from the dark, a crown of burning tapers on its brow and ten thousand dusty wings behind it.'},
  brinehag:{n:'Brinehag Matriarch',art:'brinehag',el:['water','shadow'],hp:5.0,atk:1,def:1.05,mag:1.15,res:1.1,spd:.95,sk:[['Brine Curse','shadow',1.1,'all','mag',[['weaken',.35]]],['Drowning Hex','water',1.4,'one','mag',[['slow',.45]]],['Tide Mother','water',0,'self','buff',[['regen',1]]]],
-   phase:{at:.5,say:'The Matriarch whistles up the drowned!',summon:'brinejelly',self:[['regen',1]]},intro:'Seaweed hair drips on the stones. The Brinehag Matriarch rises from the tide pool, a barnacled hat on her head and a drowned crew at her back.'}
+   phase:{at:.5,say:'The Matriarch whistles up the drowned!',summon:'brinejelly',self:[['regen',1]]},intro:'Seaweed hair drips on the stones. The Brinehag Matriarch rises from the tide pool, a barnacled hat on her head and a drowned crew at her back.'},
+ hollowshepherd:{n:'The Hollow Shepherd',art:'hollowshepherd',el:['earth','light'],hp:5.9,atk:1.2,def:1.2,mag:1.15,res:1.15,spd:.9,sk:[['Crook Sweep','earth',1.5,'one','phys',[['slow',.4]]],['Lantern Lull','light',1.1,'all','mag',[['blind',.35]]],['Vigil of the Fold','earth',0,'self','buff',[['bulwark',1]]]],
+   phase:{at:.5,say:'The Shepherd rings its bell and the fold answers!',summon:'mossling',self:[['regen',1]]},intro:'A bell tolls under the moss. The Hollow Shepherd rises from the pasture, a thing of root and lantern light, and every lamb it ever lost comes trotting out of the grass.'},
+ paleweaver:{n:'The Pale Weaver',art:'paleweaver',el:['ice','lightning'],hp:4.0,atk:1.05,def:.95,mag:1.05,res:1,spd:1.1,sk:[['Rime Fang','ice',1.6,'one','phys',[['poison',.5]]],['Static Web','lightning',1.1,'all','mag',[['root',.3]]],['Cocoon Silk','ice',1.4,'one','mag',[['root',.6]]]],
+   phase:{at:.5,say:'The Weaver spins a web across the whole room!',self:[['haste',1]],party:[['slow',.8]]},intro:'Frost lines the corners in a pattern too neat to be frost. The Pale Weaver lets itself down from the dark on a thread of cold lightning, eight legs tapping out the beat of the web.'},
+ crowregent:{n:'The Crow Regent',art:'crowregent',el:['wind','shadow'],hp:4.7,atk:1.1,def:.95,mag:1,res:1,spd:1.1,sk:[['Carrion Dive','wind',1.5,'one','phys',[['bleed',.5]]],['Murder Wing','shadow',1.1,'all','mag',[['blind',.4]]],['Ill Omen','shadow',1.4,'one','mag',[['weaken',.5]]]],
+   phase:{at:.7,say:'The Regent caws and the murder comes down from the rafters!',summon:'cavebat',self:[['haste',1]]},intro:'Every crow in the county sits on the same roof, facing the same way. The Crow Regent unfolds on the ridgepole in a coat of black feathers and a crown of bones, and the whole roof lifts at once.'},
+ geysermatron:{n:'The Geyser Matron',art:'geysermatron',el:['fire','water'],hp:5.4,atk:1.1,def:1,mag:1.25,res:1.1,spd:.9,sk:[['Scald','water',1.5,'one','mag',[['burn',.5]]],['Boil Over','fire',1.15,'all','mag',[['burn',.35]]],['Pressure Seal','water',0,'self','buff',[['ward',1]]]],
+   phase:{at:.5,say:'The Matron boils over and the vents scream!',summon:'magmaslime',party:[['burn',.5]]},intro:'The pool is not supposed to be this hot. The Geyser Matron bulges out of the vents, a kettle-bellied mass of wet glass and boiling light, and every chimney in the cavern starts to sing.'}
 };
 // v0.8.2: the Frost Lich (mag 1.4, ward every 3 turns), Ysolde (mag 1.35, spd 1.15), the Iron Sentinel (def 1.45) and the Siren (mag 1.35)
 // were eased: in fullsim.js bossgrid they won 0 to 40% where the other Scourges won 50 to 90% (docs/v080-roles-balance.md)
@@ -79,9 +87,9 @@ const FINALS={
    phase:{at:.5,say:'The Hollow Sun turns its dark side to you and the glass screams!',self:[['might',1],['ward',1]],party:[['blind',.5]]},intro:'Over the salt flat hangs a ring of fire with nothing inside it. The Hollow Sun, the sun that was spent and never set, turns its empty middle toward you.'}
 };
 const GPOOL=Object.keys(GUARDIANS),FPOOL=Object.keys(FINALS);
-// v4.8: the 16 lesser bosses are SCOURGES, the 5 world-eaters are CALAMITIES
+// v4.8: the 20 lesser bosses are SCOURGES, the 5 world-eaters are CALAMITIES
 const bossClass=k=>String(k)==='riftkeeper'?'Ultimate':FINALS[String(k).replace(/^echo_/,'')]?'Calamity':'Scourge';
-const BOSS_CLASS_D={Scourge:'A Scourge: one of the sixteen beast-lords that seized the beacons.',Calamity:'A Calamity: a world-eater that drinks the Meridian itself.'};
+const BOSS_CLASS_D={Scourge:'A Scourge: one of the twenty beast-lords that seized the beacons.',Calamity:'A Calamity: a world-eater that drinks the Meridian itself.'};
 // v0.12.13: the Riftkeeper, the ultimate boss behind the Echo Sanctum (riftkeeper9.js). Not in GUARDIANS or FINALS, so it is no gate, no Echo
 // and no Archive entry; guardianDef finds it by key. Its skill elements change every turn (riftkeeper9.js sets them); the element here is the base.
 const RIFTKEEPER={n:'The Riftkeeper',art:'riftkeeper',el:['light','shadow'],hp:7,atk:1.35,def:1.35,mag:1.4,res:1.35,spd:1.05,

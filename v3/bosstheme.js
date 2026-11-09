@@ -117,3 +117,15 @@ function themeFX(ctx,m,vw,vh,now){
 }
 function bossMusicOff(){try{const s=WS.m&&typeof WS.m.s==='number'?WS.m.s:B&&B.stage;const k=bossAtStage(s);return (BTHEME[k]||{}).mus||0;}catch(e){return 0;}}
 function bossMusicKey(){try{const s=WS.m&&typeof WS.m.s==='number'?WS.m.s:B&&B.stage;return bossAtStage(s)||'';}catch(e){return '';}}
+
+// v0.14.x: the four Scourges added after the Hollow Sun (bosses10.js)
+Object.assign(BTHEME,{
+ hollowshepherd:{label:'Fold-lit',mix:'#8a9a5a',k:.36,roof:['#7a8a4a','#a89a5a','#5a7a4a','#c8c090'],dec:['#fff0b0','#c8e890','#ffffff','#a8c070'],motif:'thorn',amb:'motes',tint:'rgba(150,170,80,.07)',mus:-1,
+  omen:'A bell tolls at dusk from the east pasture, and the sheep file toward it without a shepherd.',npc:['I counted the flock twice. Both times there was one more than I own.','The lanterns on the hill never go out. Nobody lit them.']},
+ paleweaver:{label:'Rime-spun',mix:'#a8b8d8',k:.38,roof:['#7a8ab0','#c0d0e8','#5a6a98','#e0e8f8'],dec:['#ffffff','#d8e8ff','#fff6a0','#a8c0e8'],motif:'frost',amb:'flecks',tint:'rgba(160,190,240,.08)',mus:-2,
+  omen:'Frost has strung itself across the lanes in long white lines, and the threads hum when the wind is still.',npc:['The hedges are wrapped in something finer than cobweb. It does not melt.','A fly stopped in midair at my window. I did not dare look closer.']},
+ crowregent:{label:'Carrion-crowned',mix:'#3a3a4c',k:.40,roof:['#2a2a3a','#4a4a5c','#1a1a28','#5a5a6c'],dec:['#8a8aa0','#c8c8d8','#ff5a5a','#40405a'],motif:'feather',amb:'ash',tint:'rgba(30,30,50,.12)',mus:-3,
+  omen:'The crows have stopped arguing. They sit on every roof in a long row, and they are all looking at one house.',npc:['One of them tipped its head at me like a person would.','I left a coin on the sill as a joke. It was gone by morning, and a bone was there instead.']},
+ geysermatron:{label:'Steam-bound',mix:'#c88a6a',k:.36,roof:['#a8503a','#c8805a','#8a3a2a','#d8a07a'],dec:['#fff0e0','#ffb070','#a8e0f0','#ffffff'],motif:'ember',amb:'bubbles',tint:'rgba(220,130,90,.08)',mus:1,
+  omen:'The pump handle turns by itself, and the water that comes up is hot enough to scald.',npc:['Every kettle in the house whistles at once, around midnight.','The ground by the old spring is warm, and getting wider.']}
+});

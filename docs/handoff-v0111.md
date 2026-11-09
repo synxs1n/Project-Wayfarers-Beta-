@@ -267,3 +267,9 @@ after the Calamity with foes from every visited realm, the place to farm to leve
   heals/buffs, triple rings for songs). Tests v141a (world group); v041p47 updated to the waiting-miniboss flow.
 - Helpers running: boss sprite redesign (art3.js in place) and four more Scourges (foes.js/bosses10.js/art3.js append/sanctum gates 25).
 - Still open from batch 5: (2) Sanctum look rework outside and inside.
+- 0.14.2: four more Scourges (hollowshepherd earth/light plant veil; paleweaver ice/lightning beast slot; crowregent wind/shadow flying phase2;
+  geysermatron fire/water jelly tide; bosses10.js wiring), 25 Sanctum gates (two Scourge rows y=1/y=3 x=2..10,16..24; Calamity row y=14 free on the
+  floor; sanct.js checks no gate in the bottom 3 rows and no solid tile south of a gate), every boss sprite redrawn from scratch in art3.js
+  (BOSSART-A toolkit bsh/btube/bT4; the six old art.js boss arts overridden from art3.js; bossFrame1 starts from frame B via monFramed/BART;
+  an 'atk' roar pose exists but is not wired to the telegraph). Journey sim SEED=1 with the 25-boss pool: 12.9 boss tries, top level 41.3 sd 1.9.
+  v141a's "chest opens after the miniboss" check flaked once under load; passes alone.
