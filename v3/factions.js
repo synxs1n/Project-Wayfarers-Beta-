@@ -38,7 +38,7 @@ const FAC3={
  alch:{n:['Initiate','Brewer','Distiller','Adept','Archmage of Vials'],t:['4% of brewing gold back.','8% of brewing gold back.','15% of brewing gold back.','The Circle counter (Elixirs, herb bundles).','A 15% chance of one extra from every brew, two unique charms (Vialmark Charm, Archmage\'s Phial) and the title Archmage of Vials.']},
  wardens:{n:['Pup','Tracker','Handler','Warden','Warden of Wilds'],t:['Inn rooms cost 3% less.','All XP gained +3%.','All XP gained +5%.','The Warden counter (parts bundles).','Two unique charms (Wildcall Charm, Wild Heart) and the title Warden of Wilds.']},
  archive:{n:['Reader','Scribe','Cataloguer','Lorekeeper','Keeper of the Last Page'],t:['Inn rooms cost 3% less.','All XP gained +3%.','The Archive counter (relic bundles).','A challenge only wayfarer joins you.','Two unique charms (Inkmark Charm, The Last Page) and the title Keeper of the Last Page.']},
- hand:{n:['Onlooker','Steady','Sure Hand','Cool Head','The Steady Hand'],t:['All XP gained +1%.','All XP gained +2%.','Battle gold +3%.','Inn rooms 5% less.','Two unique charms (Steady Knot, The Steady Hand) and the title The Steady Hand.']}};
+ hand:{n:['Onlooker','Steady','Sure Hand','Cool Head','The Steady Hand'],t:['Inn rooms cost 3% less.','All XP gained +2%.','Battle gold +3%.','Inn rooms 5% less.','Two unique charms (Steady Knot, The Steady Hand) and the title The Steady Hand.']}};
 function facTier(id){return facTierOf(facRank(id));}
 const facTierName=(id,t)=>FAC3[id].n[(t||facTier(id))-1];
 // the old steps whose perks a rank holds, and its claimable perks (charms and the recruit), each claimed under its old key
