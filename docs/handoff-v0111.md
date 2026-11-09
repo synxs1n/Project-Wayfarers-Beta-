@@ -159,3 +159,18 @@ B skill effect shapes per element + boss idle/telegraph (battle.js/anim.js/fx2.j
 - 0.12.11/12 factions.js: rank 1 perks for wardens/archive/hand are inn 3% (were XP +1% at zero standing, which moved every fight's XP; v095na caught it).
 - Battle group on 0.12.10: 31 pass; v063ba old; v070m1 and v080b flaky under load (rerun alone pending). Everything the owner listed in batches 1 to 3
   is shipped except: hair/cape sway on hero sprites (needs a second sprite variant in battle.js), HD physical-hit shapes were only seen at their tail.
+
+## Owner feedback batch 4 (after 0.12.12), grouped
+P1 quick/UI: phones: REVERT cards-above-commands; action menu takes the bottom half, info (cards, foes) below it, scrollable; fix the scroll bug in the
+  battle skills list (cannot scroll to the end); Invoke and Summon become one command; action menu organization/split pass; World menu group -> "Map"
+  (area map with a world map button); Records opens on the 100% realm tracker, account stats under Journey; dual element strip colours on single types
+  too; "!" over NPCs who have a quest when talked to; bond menus only show bonds workable with heroes you have; unique tame names (no "X the old" repeats).
+P2 shops/rift: Upgrade whole party must temper to the highest forge level and the per-slot "best upgrade" should be empty after it unless it is a good
+  upgrade you could not afford (then show the goal: gold and materials needed, clickable in "Out of reach"); same for charms; charms rarer than Rare should
+  drop/sell; guild shop section listing every unlocked counter + an Arena guild; Echoforge only inside the Echo Rift; Rift: beaten echo gates glow,
+  Calamity gates look different and sit apart, a rest option at the Riftkeeper, Riftkeeper = ultimate final boss after all echoes are beaten.
+P3 world/content: arena only from the Guild Hall and the main gold/rare-material farm by tier; Lore = world book (history, customs, per realm visited);
+  healing on undead stronger than normal skills most of the time; skills menu filters (heal, prime, ranged, blunt...); graphics sweep for smoother look.
+P4 big design: battle rebalance (roles: 1 main + 2 sub per hero, supported by skills, natures, equipment; stats rework incl. faith scaling for e.g. monk
+  and invoke strength; 3 weapon types per class; RPS slash/blunt/piercing back instead of "physical"; swarms resist single target; role switching in the
+  party menu drives suggested gear and auto stats; subrole skills weaker than primary); 20 Scourges (one a swarm) and a 5th Calamity.
