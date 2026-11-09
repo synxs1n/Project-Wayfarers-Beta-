@@ -326,7 +326,7 @@ function hdMix(o,a,w){o.amb[0]+=a.amb[0]*w;o.amb[1]+=a.amb[1]*w;o.amb[2]+=a.amb[
   for(let i=0;i<3;i++){o.lift[i]+=a.lift[i]*w;o.gain[i]+=a.gain[i]*w;o.sd[i]+=a.sd[i]*w;o.shW[i]+=(a.sh||[0,0,0])[i]*w;o.shC[i]+=(a.shC||[1,.9,.7])[i]*w;}
   o.emis+=a.emis*w;o.lamp+=a.lamp*w;o.shaft+=(a.shaft||0)*w;o.pl+=(a.pl||0)*w;o.bloom+=(a.bloom||0)*w;}
 function hdZero(o){['amb','sun','fog','lift','gain','sd','shW','shC'].forEach(k=>{o[k][0]=o[k][1]=o[k][2]=0;});o.fogA=o.exp=o.con=o.sat=o.vig=o.emis=o.lamp=o.shaft=o.pl=o.bloom=0;}
-function hdLook(m,now){const o=H2L,P=HD2D.look;hdZero(o);const dun=m.kind==='dungeon',T=dun?null:THM(m);
+function hdLook(m,now){const o=H2L,P=HD2D.look;hdZero(o);const dun=typeof mapIndoor==='function'?mapIndoor(m):m.kind==='dungeon',T=dun?null:THM(m);/* v0.12.5: an open Sanctum takes the sky */
   o.fogS=1;
   if(dun){const D=DTH(m),a=hdRgb(D.acc),base=m.archive?P.hall:m.cave?P.cave:P.dungeon;hdMix(o,base,1);for(let i=0;i<3;i++){o.amb[i]*=.8+.4*a[i];o.fog[i]=o.fog[i]*.6+hdRgb(D.top)[i]*.6;}}
   else{let wsum=0;const pp=phaseProg(),sd0=[0,0,0];['day','dusk','night','dawn'].forEach(ph=>{const w=typeof trPhW==='function'?trPhW(ph):(pp.ph===ph?1:0);if(w<=0)return;wsum+=w;
@@ -540,7 +540,7 @@ function hdLmAdd(x,z,r,cr,cg,cb){if(HD.lmn>=HD2D.lmMax)return;const R=HD.lmR,v=H
   v[o]=X0;v[o+1]=Z0;v[o+2]=-1;v[o+3]=-1;v[o+7]=X1;v[o+8]=Z0;v[o+9]=1;v[o+10]=-1;v[o+14]=X1;v[o+15]=Z1;v[o+16]=1;v[o+17]=1;v[o+21]=X0;v[o+22]=Z1;v[o+23]=-1;v[o+24]=1;
   for(let k=0;k<4;k++){v[o+k*7+4]=cr*.5;v[o+k*7+5]=cg*.5;v[o+k*7+6]=cb*.5;}}// v0.5.8: stored at half (headroom), the scene shader reads it x2
 const H2_FL=[.06,.14,.03,.05,.04,.08,.14,0];
-function hdLights(m,ts,q,o){const L=HD.S.L,n=L?L.length/8:0,R=HD.lmR,still=gfxStill(),dun=m.kind==='dungeon';HD.lmn=0;
+function hdLights(m,ts,q,o){const L=HD.S.L,n=L?L.length/8:0,R=HD.lmR,still=gfxStill(),dun=typeof mapIndoor==='function'?mapIndoor(m):m.kind==='dungeon';HD.lmn=0;
   for(let i=0;i<n;i++){const o8=i*8,x=L[o8],z=L[o8+2],r=L[o8+3];if(x+r<R[0]||x-r>R[0]+R[2]||z+r<R[1]||z-r>R[1]+R[3])continue;
     const type=L[o8+7];let w=(type===0||type===7)&&!dun?o.lamp:1;if(w<=.01)continue;
     const fl=H2_FL[type]||.05;if(!still)w*=1+fl*(Math.sin(ts/(70+(x%23))+L[o8+1])+.6*Math.sin(ts/31+x));

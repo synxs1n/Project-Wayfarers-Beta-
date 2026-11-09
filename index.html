@@ -1837,7 +1837,7 @@ html.rm .battle.b3 .cmd .mi.b9glow{animation:none}
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.12.4";const APP_BUILD="44a454f2090d";
+(function(){const APP_VER="0.12.5";const APP_BUILD="58f3100b35ee";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2530,7 +2530,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.12.4";const APP_BUILD="44a454f2090d";
+const APP_VER="0.12.5";const APP_BUILD="58f3100b35ee";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2538,6 +2538,7 @@ const APP_VER="0.12.4";const APP_BUILD="44a454f2090d";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.12.5',['Open Sanctums are lit by the sky in HD-2D too: time of day, dusk and dawn tints and the weather reach in, lamps dim by day, and a guardian fight inside one happens under that weather. Closed Sanctums, lairs and Dens stay indoors.']],
  ['Beta v0.12.4',['Fix: in the first realm the Bonds screen says again when bonds open, instead of listing locked pairs.']],
  ['Beta v0.12.3',['Sanctums look sacred: the field entrance is a shrine with a stair, pillars, a glowing rune arch, lanterns and a ring of stones, in 2D and HD-2D. Inside (new journeys), the guardian stands on a rune circle ringed by pillars and braziers, visible before the fight with its name on approach. Guardians are Scourge-sized in battle, and no two Sanctums or Dens in a journey share one; the Priest\'s Invoke summon stays smaller. New towns keep the three tiles in front of every exit clear of buildings and tall decor.']],
  ['Beta v0.12.2',['Fix: Camp Supplies make camp again (they were treated as a Tent since 0.11.4). The Bonds screen shows each pair\'s wins-together goal and bar again next to what the next level unlocks.']],
@@ -6103,7 +6104,7 @@ const WEATHER={
  ashfall:{n:'Ashfall',i:'☁',el:{fire:1.15,shadow:1.1},dot:1.25,d:'Fire +15%, Shadow +10%. Poison and Burn deal 25% more.'}
 };
 const WX_BASE=Object.keys(WEATHER); // v0.4.0: the Daily Trial only ever picks from these (rare skies are added later and must not shift its seeded pick)
-function battleWeather(spec){if((spec.kind==='field'||spec.kind==='elite')&&!(typeof mapIndoor==='function'&&V.screen==='world'&&mapIndoor(WS.m)))return (G.weather||{})[spec.stage]||'clear';return 'clear';}
+function battleWeather(spec){const open=typeof mapIndoor==='function'&&WS.m&&WS.m.cave&&WS.m.fort&&!mapIndoor(WS.m);/* v0.12.5: an open Sanctum has weather */if(((spec.kind==='field'||spec.kind==='elite')&&!(typeof mapIndoor==='function'&&V.screen==='world'&&mapIndoor(WS.m)))||(open&&(spec.kind==='mini'||spec.kind==='dungeon')))return (G.weather||{})[spec.stage]||'clear';return 'clear';}
 function weatherStart(front,en){
   const W=WX();
   if(W.regenStart)front.forEach(c=>{if(c.hp>0)c.st.regen={t:STS.regen.t};});
@@ -12560,7 +12561,7 @@ function ailBadge(id){const c=typeof G!=='undefined'&&G&&G.roster&&G.roster[id];
 
 // ===== v0.4.1 2.7 and 2.8: battle sky tags and the Lore entry =====
 // Fights below ground (dungeons, caves, sanctums, bosses and echoes) are Indoors; everything else shows the weather (Clear too) and, outside the Daily Trial, the time of day.
-function battleIndoors(){return !!B&&['dungeon','boss','echoBoss','storyEcho','mini'].includes(B.spec.kind);}
+function battleIndoors(){if(!B)return false;try{const m=WS.m;if(m&&m.cave&&m.fort&&m.open&&(B.spec.kind==='mini'||B.spec.kind==='dungeon'))return false;/* v0.12.5: an open Sanctum */}catch(e){}return ['dungeon','boss','echoBoss','storyEcho','mini'].includes(B.spec.kind);}
 function battleSkyTags(){if(!B)return '';
   if(battleIndoors())return `<button class="wchip" data-act="wxInfo" data-arg="indoors" title="Weather and time of day do not reach in here">⌂ Indoors</button>`;
   const W=WEATHER[B.weather||'clear']||WEATHER.clear;let h=`<button class="wchip" data-act="wxInfo" data-arg="weather" title="${esc(W.d)}">${W.i} ${esc(W.n)}</button>`;
@@ -13923,7 +13924,7 @@ function dayFxDraw(ctx,vw,vh,now,cam,ph,p){
   }
   ctx.restore();
 }
-HOOK.after('worldDraw','daylight','dusk and dawn',function(_,now){try{const m=WS.m;if(!m||m.kind==='dungeon'||m.archive||!G||G.daily)return;const {ph,p}=phaseProg();if(ph!=='dusk'&&ph!=='dawn')return;
+HOOK.after('worldDraw','daylight','dusk and dawn',function(_,now){try{const m=WS.m;if(!m||(typeof mapIndoor==='function'?mapIndoor(m):m.kind==='dungeon'||m.archive)||!G||G.daily)return;const {ph,p}=phaseProg();if(ph!=='dusk'&&ph!=='dawn')return;
   dayFxDraw(WS.ctx,WS.vw,WS.vh,now,WS.cam,ph,p);}catch(e){}});
 
 // ===== starter.js (v0.4.0): starter hero sheets and the starter draw =====
@@ -16930,7 +16931,7 @@ HOOK.wrap('settingsBody','gfx6','Graphics row',function(next,...a){return next(.
 const WX_WIND={clear:.35,rain:.8,storm:1.7,fog:.15,snow:.45,blizzard:1.9,gale:2.4,sand:1.5,heat:.2,ashfall:.4,aurora:.3,starfall:.3};
 const G6W={amb:{meadow:['#e8a23a','#c8642a','#9ac850'],heights:['#b8d070','#e0c060','#ffffff'],coast:['#f0e0b0','#e8d4a0','#ffffff'],cave:['#ffb070','#d0a090','#ff8a3a'],void:['#c8a0ff','#7fe0c0','#ffffff'],snow:['#ffffff','#e0f0ff','#c8dcf0'],dun:['#e6d6c0','#c8b8a8','#a89888']},
   bubbles:['dots','note','bang','heart']};
-function g6WindNow(m){if(!m||m.kind==='dungeon'||m.cave)return .1;const w=G.weather&&G.weather[m.s];return WX_WIND[w]!=null?WX_WIND[w]:.35;}
+function g6WindNow(m){if(!m||(typeof mapIndoor==='function'?mapIndoor(m):m.kind==='dungeon'))return .1;const w=G.weather&&G.weather[m.s];return WX_WIND[w]!=null?WX_WIND[w]:.35;}
 // the weight of a time of day right now (blending while the 5.4 transition runs), and a value mixed across the phases by those weights
 function g6PhW(p,ph){try{if(typeof trPhW==='function'&&typeof trWorldOn==='function'&&trWorldOn())return trPhW(p);}catch(e){}return p===ph?1:0;}
 function g6PhMix(f,ph){let t=0,v=0;for(const p of ['day','dusk','night','dawn']){const w=g6PhW(p,ph);if(w>0){t+=w;v+=w*f(p);}}return t>0?v/t:f(ph);}
@@ -16975,7 +16976,7 @@ function g6Critters(ctx,m,cx,cy,vw,vh,ts){const sp=g6CritterSpots(m),n=Math.min(
 // ----- birds: a small flock crosses now and then by day; their shadows slide over the ground -----
 function g6BirdsOn(m){if(m.kind==='dungeon'||m.cave||m.archive||m.theme==='cave'||m.theme==='void')return false;const w=G.weather&&G.weather[m.s];if(w&&/rain|storm|blizzard|sand|ashfall/.test(w))return false;const d=g6Day();return d==='day'||d==='dawn';}
 // ----- 2b. sky layer: drifting leaves or dust, birds, townsfolk gestures -----
-function g6Sky(ctx,m,cx,cy,vw,vh,ts,still){const q=GFX.q,wind=g6WindNow(m),dun=m.kind==='dungeon';
+function g6Sky(ctx,m,cx,cy,vw,vh,ts,still){const q=GFX.q,wind=g6WindNow(m),dun=typeof mapIndoor==='function'?mapIndoor(m):m.kind==='dungeon';
   // v0.6.3: leaves and dust drift in world space (worldfx.js), so they stay where they are when the camera moves
   if(q.amb)wfxDraw2D(ctx,'leaf',m,cx,cy,vw,vh,ts);
   if(q.birds&&g6BirdsOn(m))wfxBirds2D(ctx,m,cx,cy,vw,vh,ts,false);
@@ -17012,14 +17013,14 @@ const G6B={ctx:null,cx:0,cy:0,vw:0,vh:0,ts:0,base:0,day:false,big:2};
 function g6BloomOne(L){const B6=G6B,k=L[3]||'lamp';if(B6.day&&(k==='lamp'||k==='day'))return;const ctx=B6.ctx,x=L[0]-B6.cx,y=L[1]-B6.cy,fl=G6FLK[k]!=null?G6FLK[k]:.05;
   const w=Math.sin(B6.ts/(70+(L[0]%23))+L[1])+.6*Math.sin(B6.ts/31+L[0]),f=1+fl*w,r=Math.min(L[2]||18,30)*B6.big*f;
   if(x<-r||y<-r||x>B6.vw+r||y>B6.vh+r)return;ctx.globalAlpha=Math.max(0,Math.min(1,B6.base*(k==='day'?.3:1)*((k==='lamp'||k==='day')?B6.lampW:1)*(1+.25*w*(fl>0?1:0))));ctx.drawImage(g6Glow(LIGHTC[k]||LIGHTC.lamp),x-r,y-r,r*2,r*2);}
-function g6Bloom(ctx,m,cx,cy,vw,vh,ts){const ph=m.kind==='dungeon'?'night':g6Day(),T=m.kind==='dungeon'?null:THM(m),dark=m.kind==='dungeon'||m.cave||!!(T&&T.dark);
+function g6Bloom(ctx,m,cx,cy,vw,vh,ts){const ind=typeof mapIndoor==='function'?mapIndoor(m):m.kind==='dungeon',ph=ind?'night':g6Day(),T=ind?null:THM(m),dark=ind||!!(T&&T.dark);
   G6B.ctx=ctx;G6B.cx=cx;G6B.cy=cy;G6B.vw=vw;G6B.vh=vh;G6B.ts=ts;const bOf=p=>p==='night'?.45:p==='dusk'||p==='dawn'?.36:.18;/* v0.5.1: follow the 5.4 time of day blend (p5trans trPhW) instead of jumping */const mix=g6PhMix(bOf,ph);G6B.lampW=dark?1:1-g6PhW('day',ph);G6B.day=G6B.lampW<=.001;G6B.base=dark?.45:mix;G6B.big=GFX.q.bloom>1?2:1.6;
   ctx.globalCompositeOperation='lighter';
   if(m.lights)m.lights.forEach(g6BloomOne);if(m.tl)m.tl.forEach(g6BloomOne);
   ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';}
 HOOK.after('worldDraw','gfx6world','lighting and life',function(_,now){try{const m=WS.m,ctx=WS.ctx;if(!m||!ctx||!WS.cam||GFX.off)return;const q=GFX.q,still=gfxStill(),ts=still?0:now,cx=Math.round(WS.cam.x),cy=Math.round(WS.cam.y);
   if(q.bloom)g6Bloom(ctx,m,cx,cy,WS.vw,WS.vh,ts);
-  if(q.vignette){const ph=m.kind==='dungeon'?'night':g6Day(),a=m.kind==='dungeon'||m.cave?.5:Math.round(g6PhMix(p=>p==='night'?.42:p==='day'?.26:.34,ph)*50)/50;ctx.drawImage(g6Vignette(WS.vw,WS.vh,a),0,0);}}catch(e){}});
+  if(q.vignette){const ind=typeof mapIndoor==='function'?mapIndoor(m):m.kind==='dungeon',ph=ind?'night':g6Day(),a=ind?.5:Math.round(g6PhMix(p=>p==='night'?.42:p==='day'?.26:.34,ph)*50)/50;ctx.drawImage(g6Vignette(WS.vw,WS.vh,a),0,0);}}catch(e){}});
 
 // ===== gfx6battle.js (v0.5.0): battle presentation: glow, poses, camera, impact, elements, parallax =====
 // Everything wraps the existing renderer; backdrop choice, unit slots and the ground plane are untouched (Phase 2 owns those).
@@ -21915,7 +21916,7 @@ function hdMix(o,a,w){o.amb[0]+=a.amb[0]*w;o.amb[1]+=a.amb[1]*w;o.amb[2]+=a.amb[
   for(let i=0;i<3;i++){o.lift[i]+=a.lift[i]*w;o.gain[i]+=a.gain[i]*w;o.sd[i]+=a.sd[i]*w;o.shW[i]+=(a.sh||[0,0,0])[i]*w;o.shC[i]+=(a.shC||[1,.9,.7])[i]*w;}
   o.emis+=a.emis*w;o.lamp+=a.lamp*w;o.shaft+=(a.shaft||0)*w;o.pl+=(a.pl||0)*w;o.bloom+=(a.bloom||0)*w;}
 function hdZero(o){['amb','sun','fog','lift','gain','sd','shW','shC'].forEach(k=>{o[k][0]=o[k][1]=o[k][2]=0;});o.fogA=o.exp=o.con=o.sat=o.vig=o.emis=o.lamp=o.shaft=o.pl=o.bloom=0;}
-function hdLook(m,now){const o=H2L,P=HD2D.look;hdZero(o);const dun=m.kind==='dungeon',T=dun?null:THM(m);
+function hdLook(m,now){const o=H2L,P=HD2D.look;hdZero(o);const dun=typeof mapIndoor==='function'?mapIndoor(m):m.kind==='dungeon',T=dun?null:THM(m);/* v0.12.5: an open Sanctum takes the sky */
   o.fogS=1;
   if(dun){const D=DTH(m),a=hdRgb(D.acc),base=m.archive?P.hall:m.cave?P.cave:P.dungeon;hdMix(o,base,1);for(let i=0;i<3;i++){o.amb[i]*=.8+.4*a[i];o.fog[i]=o.fog[i]*.6+hdRgb(D.top)[i]*.6;}}
   else{let wsum=0;const pp=phaseProg(),sd0=[0,0,0];['day','dusk','night','dawn'].forEach(ph=>{const w=typeof trPhW==='function'?trPhW(ph):(pp.ph===ph?1:0);if(w<=0)return;wsum+=w;
@@ -22129,7 +22130,7 @@ function hdLmAdd(x,z,r,cr,cg,cb){if(HD.lmn>=HD2D.lmMax)return;const R=HD.lmR,v=H
   v[o]=X0;v[o+1]=Z0;v[o+2]=-1;v[o+3]=-1;v[o+7]=X1;v[o+8]=Z0;v[o+9]=1;v[o+10]=-1;v[o+14]=X1;v[o+15]=Z1;v[o+16]=1;v[o+17]=1;v[o+21]=X0;v[o+22]=Z1;v[o+23]=-1;v[o+24]=1;
   for(let k=0;k<4;k++){v[o+k*7+4]=cr*.5;v[o+k*7+5]=cg*.5;v[o+k*7+6]=cb*.5;}}// v0.5.8: stored at half (headroom), the scene shader reads it x2
 const H2_FL=[.06,.14,.03,.05,.04,.08,.14,0];
-function hdLights(m,ts,q,o){const L=HD.S.L,n=L?L.length/8:0,R=HD.lmR,still=gfxStill(),dun=m.kind==='dungeon';HD.lmn=0;
+function hdLights(m,ts,q,o){const L=HD.S.L,n=L?L.length/8:0,R=HD.lmR,still=gfxStill(),dun=typeof mapIndoor==='function'?mapIndoor(m):m.kind==='dungeon';HD.lmn=0;
   for(let i=0;i<n;i++){const o8=i*8,x=L[o8],z=L[o8+2],r=L[o8+3];if(x+r<R[0]||x-r>R[0]+R[2]||z+r<R[1]||z-r>R[1]+R[3])continue;
     const type=L[o8+7];let w=(type===0||type===7)&&!dun?o.lamp:1;if(w<=.01)continue;
     const fl=H2_FL[type]||.05;if(!still)w*=1+fl*(Math.sin(ts/(70+(x%23))+L[o8+1])+.6*Math.sin(ts/31+x));

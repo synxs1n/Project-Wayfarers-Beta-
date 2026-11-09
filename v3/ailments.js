@@ -66,7 +66,7 @@ function ailBadge(id){const c=typeof G!=='undefined'&&G&&G.roster&&G.roster[id];
 
 // ===== v0.4.1 2.7 and 2.8: battle sky tags and the Lore entry =====
 // Fights below ground (dungeons, caves, sanctums, bosses and echoes) are Indoors; everything else shows the weather (Clear too) and, outside the Daily Trial, the time of day.
-function battleIndoors(){return !!B&&['dungeon','boss','echoBoss','storyEcho','mini'].includes(B.spec.kind);}
+function battleIndoors(){if(!B)return false;try{const m=WS.m;if(m&&m.cave&&m.fort&&m.open&&(B.spec.kind==='mini'||B.spec.kind==='dungeon'))return false;/* v0.12.5: an open Sanctum */}catch(e){}return ['dungeon','boss','echoBoss','storyEcho','mini'].includes(B.spec.kind);}
 function battleSkyTags(){if(!B)return '';
   if(battleIndoors())return `<button class="wchip" data-act="wxInfo" data-arg="indoors" title="Weather and time of day do not reach in here">⌂ Indoors</button>`;
   const W=WEATHER[B.weather||'clear']||WEATHER.clear;let h=`<button class="wchip" data-act="wxInfo" data-arg="weather" title="${esc(W.d)}">${W.i} ${esc(W.n)}</button>`;

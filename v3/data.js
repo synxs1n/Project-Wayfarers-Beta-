@@ -4,6 +4,7 @@
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.12.5',['Open Sanctums are lit by the sky in HD-2D too: time of day, dusk and dawn tints and the weather reach in, lamps dim by day, and a guardian fight inside one happens under that weather. Closed Sanctums, lairs and Dens stay indoors.']],
  ['Beta v0.12.4',['Fix: in the first realm the Bonds screen says again when bonds open, instead of listing locked pairs.']],
  ['Beta v0.12.3',['Sanctums look sacred: the field entrance is a shrine with a stair, pillars, a glowing rune arch, lanterns and a ring of stones, in 2D and HD-2D. Inside (new journeys), the guardian stands on a rune circle ringed by pillars and braziers, visible before the fight with its name on approach. Guardians are Scourge-sized in battle, and no two Sanctums or Dens in a journey share one; the Priest\'s Invoke summon stays smaller. New towns keep the three tiles in front of every exit clear of buildings and tall decor.']],
  ['Beta v0.12.2',['Fix: Camp Supplies make camp again (they were treated as a Tent since 0.11.4). The Bonds screen shows each pair\'s wins-together goal and bar again next to what the next level unlocks.']],

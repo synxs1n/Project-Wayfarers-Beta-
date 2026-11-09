@@ -41,5 +41,5 @@ function dayFxDraw(ctx,vw,vh,now,cam,ph,p){
   }
   ctx.restore();
 }
-HOOK.after('worldDraw','daylight','dusk and dawn',function(_,now){try{const m=WS.m;if(!m||m.kind==='dungeon'||m.archive||!G||G.daily)return;const {ph,p}=phaseProg();if(ph!=='dusk'&&ph!=='dawn')return;
+HOOK.after('worldDraw','daylight','dusk and dawn',function(_,now){try{const m=WS.m;if(!m||(typeof mapIndoor==='function'?mapIndoor(m):m.kind==='dungeon'||m.archive)||!G||G.daily)return;const {ph,p}=phaseProg();if(ph!=='dusk'&&ph!=='dawn')return;
   dayFxDraw(WS.ctx,WS.vw,WS.vh,now,WS.cam,ph,p);}catch(e){}});

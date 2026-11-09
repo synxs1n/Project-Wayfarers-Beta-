@@ -9,7 +9,7 @@
 const WX_WIND={clear:.35,rain:.8,storm:1.7,fog:.15,snow:.45,blizzard:1.9,gale:2.4,sand:1.5,heat:.2,ashfall:.4,aurora:.3,starfall:.3};
 const G6W={amb:{meadow:['#e8a23a','#c8642a','#9ac850'],heights:['#b8d070','#e0c060','#ffffff'],coast:['#f0e0b0','#e8d4a0','#ffffff'],cave:['#ffb070','#d0a090','#ff8a3a'],void:['#c8a0ff','#7fe0c0','#ffffff'],snow:['#ffffff','#e0f0ff','#c8dcf0'],dun:['#e6d6c0','#c8b8a8','#a89888']},
   bubbles:['dots','note','bang','heart']};
-function g6WindNow(m){if(!m||m.kind==='dungeon'||m.cave)return .1;const w=G.weather&&G.weather[m.s];return WX_WIND[w]!=null?WX_WIND[w]:.35;}
+function g6WindNow(m){if(!m||(typeof mapIndoor==='function'?mapIndoor(m):m.kind==='dungeon'))return .1;const w=G.weather&&G.weather[m.s];return WX_WIND[w]!=null?WX_WIND[w]:.35;}
 // the weight of a time of day right now (blending while the 5.4 transition runs), and a value mixed across the phases by those weights
 function g6PhW(p,ph){try{if(typeof trPhW==='function'&&typeof trWorldOn==='function'&&trWorldOn())return trPhW(p);}catch(e){}return p===ph?1:0;}
 function g6PhMix(f,ph){let t=0,v=0;for(const p of ['day','dusk','night','dawn']){const w=g6PhW(p,ph);if(w>0){t+=w;v+=w*f(p);}}return t>0?v/t:f(ph);}
@@ -54,7 +54,7 @@ function g6Critters(ctx,m,cx,cy,vw,vh,ts){const sp=g6CritterSpots(m),n=Math.min(
 // ----- birds: a small flock crosses now and then by day; their shadows slide over the ground -----
 function g6BirdsOn(m){if(m.kind==='dungeon'||m.cave||m.archive||m.theme==='cave'||m.theme==='void')return false;const w=G.weather&&G.weather[m.s];if(w&&/rain|storm|blizzard|sand|ashfall/.test(w))return false;const d=g6Day();return d==='day'||d==='dawn';}
 // ----- 2b. sky layer: drifting leaves or dust, birds, townsfolk gestures -----
-function g6Sky(ctx,m,cx,cy,vw,vh,ts,still){const q=GFX.q,wind=g6WindNow(m),dun=m.kind==='dungeon';
+function g6Sky(ctx,m,cx,cy,vw,vh,ts,still){const q=GFX.q,wind=g6WindNow(m),dun=typeof mapIndoor==='function'?mapIndoor(m):m.kind==='dungeon';
   // v0.6.3: leaves and dust drift in world space (worldfx.js), so they stay where they are when the camera moves
   if(q.amb)wfxDraw2D(ctx,'leaf',m,cx,cy,vw,vh,ts);
   if(q.birds&&g6BirdsOn(m))wfxBirds2D(ctx,m,cx,cy,vw,vh,ts,false);
@@ -91,11 +91,11 @@ const G6B={ctx:null,cx:0,cy:0,vw:0,vh:0,ts:0,base:0,day:false,big:2};
 function g6BloomOne(L){const B6=G6B,k=L[3]||'lamp';if(B6.day&&(k==='lamp'||k==='day'))return;const ctx=B6.ctx,x=L[0]-B6.cx,y=L[1]-B6.cy,fl=G6FLK[k]!=null?G6FLK[k]:.05;
   const w=Math.sin(B6.ts/(70+(L[0]%23))+L[1])+.6*Math.sin(B6.ts/31+L[0]),f=1+fl*w,r=Math.min(L[2]||18,30)*B6.big*f;
   if(x<-r||y<-r||x>B6.vw+r||y>B6.vh+r)return;ctx.globalAlpha=Math.max(0,Math.min(1,B6.base*(k==='day'?.3:1)*((k==='lamp'||k==='day')?B6.lampW:1)*(1+.25*w*(fl>0?1:0))));ctx.drawImage(g6Glow(LIGHTC[k]||LIGHTC.lamp),x-r,y-r,r*2,r*2);}
-function g6Bloom(ctx,m,cx,cy,vw,vh,ts){const ph=m.kind==='dungeon'?'night':g6Day(),T=m.kind==='dungeon'?null:THM(m),dark=m.kind==='dungeon'||m.cave||!!(T&&T.dark);
+function g6Bloom(ctx,m,cx,cy,vw,vh,ts){const ind=typeof mapIndoor==='function'?mapIndoor(m):m.kind==='dungeon',ph=ind?'night':g6Day(),T=ind?null:THM(m),dark=ind||!!(T&&T.dark);
   G6B.ctx=ctx;G6B.cx=cx;G6B.cy=cy;G6B.vw=vw;G6B.vh=vh;G6B.ts=ts;const bOf=p=>p==='night'?.45:p==='dusk'||p==='dawn'?.36:.18;/* v0.5.1: follow the 5.4 time of day blend (p5trans trPhW) instead of jumping */const mix=g6PhMix(bOf,ph);G6B.lampW=dark?1:1-g6PhW('day',ph);G6B.day=G6B.lampW<=.001;G6B.base=dark?.45:mix;G6B.big=GFX.q.bloom>1?2:1.6;
   ctx.globalCompositeOperation='lighter';
   if(m.lights)m.lights.forEach(g6BloomOne);if(m.tl)m.tl.forEach(g6BloomOne);
   ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';}
 HOOK.after('worldDraw','gfx6world','lighting and life',function(_,now){try{const m=WS.m,ctx=WS.ctx;if(!m||!ctx||!WS.cam||GFX.off)return;const q=GFX.q,still=gfxStill(),ts=still?0:now,cx=Math.round(WS.cam.x),cy=Math.round(WS.cam.y);
   if(q.bloom)g6Bloom(ctx,m,cx,cy,WS.vw,WS.vh,ts);
-  if(q.vignette){const ph=m.kind==='dungeon'?'night':g6Day(),a=m.kind==='dungeon'||m.cave?.5:Math.round(g6PhMix(p=>p==='night'?.42:p==='day'?.26:.34,ph)*50)/50;ctx.drawImage(g6Vignette(WS.vw,WS.vh,a),0,0);}}catch(e){}});
+  if(q.vignette){const ind=typeof mapIndoor==='function'?mapIndoor(m):m.kind==='dungeon',ph=ind?'night':g6Day(),a=ind?.5:Math.round(g6PhMix(p=>p==='night'?.42:p==='day'?.26:.34,ph)*50)/50;ctx.drawImage(g6Vignette(WS.vw,WS.vh,a),0,0);}}catch(e){}});
