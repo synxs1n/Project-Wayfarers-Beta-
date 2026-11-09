@@ -1849,7 +1849,7 @@ html.rm .battle.b3 .cmd .mi.b9glow{animation:none}
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.16.5";const APP_BUILD="e70fde1726d0";
+(function(){const APP_VER="0.16.6";const APP_BUILD="e0a9eb212b81";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2542,7 +2542,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.16.5";const APP_BUILD="e70fde1726d0";
+const APP_VER="0.16.6";const APP_BUILD="e0a9eb212b81";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2550,6 +2550,11 @@ const APP_VER="0.16.5";const APP_BUILD="e70fde1726d0";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.16.6',['Materials have their own icons (every ore, log, herb and part looks different, and every guardian shard too), and gather nodes in the field show the material they hold: ore glinting on a rock, a stack of logs, the herb\'s own plant, in both views. A herb node now yields exactly the herb it shows.',
+  'Selling: Alchemy buys back potions, tonics, cures and travel gear (40% of list) alongside the spare gear, materials and charms the Sell tabs already took; tempered gear returns part of its tempering cost; rare, tempered and Echoforged pieces ask before selling; keepsakes (personal relics, bound, legend, signature and Medal gear, the Stick) cannot be sold.',
+  'Crafting: forging makes the +0 piece, priced so gold plus counter-bought materials come to 85% of the shop price (it was 72% for a +1 piece).',
+  'Upgrades think in tempering: a purchase or forge counts as an upgrade when the piece at max temper beats what you wear at max temper, and the shop tags, Tempering rows and Upgrade popup say so ("+24 ATK at max temper"). Equip best still equips by current stats and lists pack pieces worth tempering. The Tempering rows show the gold and materials under the title and the button reads "Temper · Ng".',
+  'Personal quest relics are best in slot for their hero: the top piece of the hero\'s preferred weapon or armour family at the current realm\'s tier, fully tempered, with the relic\'s own edge, and they refresh as you progress.']],
  ['Beta v0.16.5',['Reactions show one marker: the banner, which now carries the MP returned to the detonator (the separate floating text is gone; the target tag still previews the reaction before you hit).',
   'HD-2D overworld: monsters, bosses and the Riftkeeper keep their full size; only walkers took the smaller scale of 0.15.8.',
   'Echo Rift gates: colour always means beaten. An open gate you have not won stays grey (runes included); a won gate glows in its element and keeps its gold pip. Echoes that change form mid fight now light their gate when beaten. The record is per account, so a gate won in an earlier journey glows too.']],
@@ -12960,7 +12965,7 @@ const FAM_PART=Object.assign(Object.fromEntries(Object.entries(FAM_MAT_V35).map(
 function gearFam(id){const b=baseIdOf(id);if(b.startsWith('c_'))return 'charm';const p=b.split('_');return p[1]||'blade';}
 function temperRaw(id){const g=gearOf(baseIdOf(id)),f=FAM_RAW[gearFam(id)]||'ore',t=g?(g.tier<=1?0:g.tier<=3?1:2):0;return TIERED[f][t];}
 function forgeCost(id){
-  const n=plusOf(id),g=gearOf(baseIdOf(id));if(!g||n>=3||g.stick)return null;
+  const n=plusOf(id),g=gearOf(baseIdOf(id));if(!g||n>=3||g.stick||g.relic)return null;/* v0.16.1: a personal relic is already at its top */
   const raw=temperRaw(id),part=FAM_PART[gearFam(id)],rel=ZS(G.stage).mat,m={};
   const add=(k,v)=>{if(v)m[k]=(m[k]||0)+v;};
   add(raw,TEMPER.raw[n]);add(part,TEMPER.part[n]);add(rel,TEMPER.relic[n]);add('core',TEMPER.core[n]);
@@ -13001,10 +13006,9 @@ function vTemper(opt){opt=opt||{};
     if(!c)return `<div class="row rec tr" style="${tierVars(gTierIdx(g),g)}">${gearIcon(o.id)}<div class="grow"><b>${g.n}</b> ${tierChip(g)}<small>${esc(o.who)}. ${gearDesc(g)}</small><small class="up">${g.stick?'The Stick grows with your Bestiary, not the anvil.':'Fully tempered.'}</small></div></div>`;
     const have=hasMats(c.m),ok=have&&G.gold>=c.gold,P=have?null:buyPlan(c.m),nx=gearOf(c.next);
     const herbNote=P&&P.cant.some(k=>MAT_OF[k]&&MAT_OF[k].k==='herb')?' Herbs are at Alchemy.':'';
-    return `<div class="row rec tr ${ok?'ready':''}" style="${tierVars(gTierIdx(g),g)}">${gearIcon(o.id)}<div class="grow"><b>${g.n} → +${plusOf(c.next)}</b> ${tierChip(g)}<small>${o.where==='eq'?vsMark(G.roster[o.ref.cid],c.next):vsParty(c.next)}</small>${why[ti]?`<small class="p3why">⇄ ${why[ti]}</small>`:''}<small>${esc(o.who)}. Now: ${gearDesc(g)}</small><small>Next: ${gearDesc(nx)}</small>${o.where==='eq'?`<small>${esc(o.who)}: ${deltaHtml(G.roster[o.ref.cid],c.next)}</small>`:bestTag(c.next)}
-      <div class="mats">${matChips(c.m)}<span class="matc gold ${G.gold>=c.gold?'':'short'}"><i></i><b class="nums">${fmt(c.gold)}</b> gold</span></div>
+    return `<div class="row rec tr ${ok?'ready':''}" style="${tierVars(gTierIdx(g),g)}">${gearIcon(o.id)}<div class="grow"><b>${g.n} → +${plusOf(c.next)}</b> ${tierChip(g)}<div class="mats tcost" aria-label="Cost of this temper">${matChips(c.m)}<span class="matc gold ${G.gold>=c.gold?'':'short'}"><i></i><b class="nums">${fmt(c.gold)}</b> gold</span></div><small>${o.where==='eq'?vsMark(G.roster[o.ref.cid],c.next):vsParty(c.next)}</small>${maxTemperLine(o,c)}${why[ti]?`<small class="p3why">⇄ ${why[ti]}</small>`:''}<small>${esc(o.who)}. Now: ${gearDesc(g)}</small><small>Next: ${gearDesc(nx)}</small>${o.where==='eq'?`<small>${esc(o.who)}: ${deltaHtml(G.roster[o.ref.cid],c.next)}</small>`:bestTag(c.next)}
       ${P&&P.cant.length?`<small class="warn">Still need ${P.cant.map(k=>MATS[k]).join(', ')}: ${P.cant.some(k=>MAT_OF[k]&&(MAT_OF[k].k==='relic'))?'relics and Dread Cores come from foes. ':''}${P.cant.some(k=>PART_PRICE[k])?'the counter is out of that part until you rest. ':''}${herbNote}</small>`:''}</div>
-      <div class="btnrow tight col">${P&&P.any?`<button class="btn sm" data-act="temperBuy" data-arg='${JSON.stringify({w:o.where,r:o.ref})}' ${G.gold>=P.gold?'':'disabled'} title="Buy the missing ore, logs and parts here">Buy missing <span class="nums">${fmt(P.gold)}</span></button>`:''}<button class="btn sm ${ok?'gold':''}" data-act="forge" data-arg='${JSON.stringify({w:o.where,r:o.ref})}' ${ok?'':'disabled'}>Temper</button></div></div>`;};
+      <div class="btnrow tight col">${P&&P.any?`<button class="btn sm" data-act="temperBuy" data-arg='${JSON.stringify({w:o.where,r:o.ref})}' ${G.gold>=P.gold?'':'disabled'} title="Buy the missing ore, logs and parts here">Buy missing <span class="nums">${fmt(P.gold)}</span></button>`:''}<button class="btn sm ${ok?'gold':''}" data-act="forge" data-arg='${JSON.stringify({w:o.where,r:o.ref})}' ${ok?'':'disabled'} title="${ok?'Temper for '+fmt(c.gold)+' gold and the materials shown':'Missing gold or materials: '+fmt(c.gold)+' gold needed'}">Temper · <span class="nums">${fmt(c.gold)}g</span></button></div></div>`;};
   const rows=tl.map(rowOf).join('');
   const bar=opt.bar&&typeof ddBar==='function'?ddBar([ddSel('Show','tShow','t',[['all','Everything'],['ready','Ready to temper'],['eq','Worn by the party'],['spare','Spares in the pack']],opt.show||'all')],'shopf'):'';
   const empty=n0&&(opt.slot||(opt.show&&opt.show!=='all'))?'<p class="note empty">Nothing here matches. Try another section or Show: Everything.</p>':'<p class="note empty">Nothing to temper right now. Fully tempered gear and the Tamer\'s Stick are not listed.</p>';
@@ -13015,6 +13019,29 @@ Object.assign(ACT,{
     if(doBuyPlan(buyPlan(c.m))){sfx('buy');toast('Bought what the Smithy had.');}else sfx('deny');render();}
 });
 ACT.forge=function(a){const o=JSON.parse(a);const r=forge(o.w,o.r);if(r){toast('Tempered: '+gearOf(r).n);sfx('chest');}else sfx('deny');render();};
+
+// ===== v0.16.1: max-temper projection =====
+// The top of the ladder for a piece is its +3 form (TEMPER arrays have three steps). Gear is judged at that ceiling when asking "is it worth
+// tempering" and "is this really an upgrade": a candidate beats the worn piece only if its +3 value beats the worn piece's +3 value (ties
+// stay with the worn one). Equip best still equips by what the pieces give TODAY.
+const TEMPER_TOP=TEMPER.raw.length;
+function maxTemperId(id){if(!id)return id;const b=baseIdOf(id),g=gearOf(b);if(!g||g.stick||g.relic)return id;return b+'+'+TEMPER_TOP;}
+function maxStats(c,sl,id){return statsWith(c,sl,maxTemperId(id));}
+function maxScoreOf(c,sl,id){const k='ms'+c.id+'|'+sl+'|'+(id||'');if(typeof FITC!=='undefined'&&FITC&&FITC[k]!=null)return FITC[k];
+  const v=loadoutScore(c,id?maxStats(c,sl,id):statsWith(c,sl,null));if(typeof FITC!=='undefined'&&FITC)FITC[k]=v;return v;}
+// {d,pct} : candidate id at +3 against what the hero wears in its slot at +3 (nothing worn: against an empty slot)
+function maxGainFor(c,id){const g=gearOf(id);if(!g||!canEquip(c,id))return null;const sl=g.slot,w=c.eq[sl]||null,a=maxScoreOf(c,sl,w),b=maxScoreOf(c,sl,id);return {d:b-a,pct:a>0?(b-a)/a:0,sl};}
+const maxBeats=g=>!!g&&g.d>.01&&g.pct>=.005;
+function ceilOk(c,id){const g=maxGainFor(c,id);return !!g&&maxBeats(g);}
+// "+14 ATK, +30 HP" : the biggest gains (weighted by what the class values) of candidate +3 over the worn +3; vs 'now' compares to today's stats
+function maxDeltaTxt(c,id,vsNow){const g=gearOf(id);if(!g)return '';const sl=g.slot,w=c.eq[sl]||null,A=vsNow?c.S:(w?maxStats(c,sl,w):statsWith(c,sl,null)),B=maxStats(c,sl,id),W=CLASS_W[TPL[c.id].cls]||{atk:1,mag:1};
+  return DSTAT.map(([k,n])=>({n,d:Math.round((B[k]||0)-(A[k]||0)),k})).filter(x=>x.d>0).sort((x,y)=>y.d*(W[y.k]||.1)-x.d*(W[x.k]||.1)).slice(0,3).map(x=>'+'+x.d+' '+x.n).join(', ');}
+// a line for a Tempering row: the piece at +3 against what the hero wears now, or against the best party member for a pack spare
+function maxTemperLine(o,c){try{if(!G)return '';const mid=maxTemperId(c.next);if(plusOf(c.next)>=TEMPER_TOP)return '';
+  let h=o.where==='eq'?G.roster[o.ref.cid]:null,t='';
+  if(h){t=maxDeltaTxt(h,o.id,true);return t?`<small class="mxt">At max temper (+${TEMPER_TOP}): ${t} over now</small>`:'';}
+  const L=partyChars().filter(x=>canEquip(x,o.id)).map(x=>({x,g:maxGainFor(x,o.id)})).filter(q=>q.g&&maxBeats(q.g)).sort((a,b)=>b.g.pct-a.g.pct);
+  if(!L.length)return '';t=maxDeltaTxt(L[0].x,o.id,false);return `<small class="mxt">At max temper (+${TEMPER_TOP}): ${esc(L[0].x.name)} ${t||'gains'} over what they wear at max</small>`;}catch(e){return '';}}
 
 // ===== journey.js (v0.2.0): the Journey tab and journey stats =====
 // New save fields, all defaulted on read: G.stats.steps, G.stats.won, G.stats.fled, G.stats.lost, G.stats.play (ms).
@@ -17678,7 +17705,7 @@ function p3SmithPlan(slots){const SL=slots||P3_SLOTS;
   const temperOn=typeof pcTemperOpen!=='function'||pcTemperOpen();
   const cands=[];bases.forEach(b=>(temperOn?p3Chain(b):[{id:b,k:0,gold:0,m:{}}]).forEach(ch=>cands.push(Object.assign({base:b},ch))));
   const ent=[];
-  party.forEach(c=>SL.forEach(sl=>{const opts=cands.filter(o=>slotOk(c,sl,o.id)).map(o=>Object.assign({},o,{g:gainFor(c,o.id)})).filter(o=>o.g&&o.g.d>.01&&o.g.pct>=SMITH_PLAN.minPct).sort((a,b)=>b.g.pct-a.g.pct||b.g.d-a.g.d);
+  party.forEach(c=>SL.forEach(sl=>{const opts=cands.filter(o=>slotOk(c,sl,o.id)&&(ceilOk(c,o.id)||(o.k===0&&(pack[o.base]||0)>0))).map(o=>Object.assign({},o,{g:gainFor(c,o.id)})).filter(o=>o.g&&o.g.d>.01&&o.g.pct>=SMITH_PLAN.minPct).sort((a,b)=>b.g.pct-a.g.pct||b.g.d-a.g.d);
     if(opts.length)ent.push({c,sl,opts});}));
   ent.sort((a,b)=>b.opts[0].g.pct-a.opts[0].g.pct);
   const hasM=m=>Object.keys(m).every(k=>(mats[k]||0)>=m[k]);
@@ -17864,14 +17891,18 @@ const UPG_LBL={pack:'Equip from your pack',buy:'Buy',forge:'Forge',temper:'Tempe
 function upgTown(){try{return inTown();}catch(e){return false;}}
 function upgShop(sl){if(sl==='c')return shopStock('charms');if(sl==='w')return shopStock('weapons');return shopStock('armor').filter(id=>gearOf(id)&&gearOf(id).slot===sl);}
 function upgOpts(c,sl){const out=[];if(!G||G.daily||!c)return out;const cur=c.eq[sl]||null,town=upgTown();
-  const add=o=>{if(!gearOf(o.id))return;const g=gainFor(c,o.id);if(!g||g.d<=.01)return;o.d=g.d;o.pct=g.pct;o.cid=c.id;o.sl=sl;o.key=o.k+':'+(o.k==='forge'?o.ri:o.k==='ef'?o.f:o.k==='chain'?o.base+'>'+o.steps:o.id);out.push(o);};
-  [...new Set(G.gear)].forEach(id=>{if(slotOk(c,sl,id))add({k:'pack',id,gold:0,ok:true});});
-  upgShop(sl).forEach(id=>{if(GEAR[id]&&slotOk(c,sl,id))add({k:'buy',id,gold:GEAR[id].price,ok:town&&G.gold>=GEAR[id].price,town:1});});
-  RECIPES.forEach((r,i)=>{if(!r.id||!recipeOpen(r)||!slotOk(c,sl,r.id))return;const m=recipeMats(r);add({k:'forge',id:r.id,ri:i,gold:r.g,m,ok:town&&G.gold>=r.g&&hasMats(m),town:1});});
-  // v0.12.13: every base (pack, shop, forge) also as a chain tempered to +1..+3 (p3Chain), so the per-slot view offers the same end states as
+  // v0.16.1: pieces are judged at their ceiling. A purchase or a forged piece must beat the worn one at max temper (+3 against +3; a tie stays
+  // with the worn piece); a spare already in the pack is free, so it only has to be better today. A piece that is weaker today but better at
+  // the top still gets its chains (buy or forge, then temper to +1..+3), which used to be skipped because only today's stats were compared.
+  const add=o=>{if(!gearOf(o.id))return;const g=gainFor(c,o.id);if(!g||g.d<=.01)return;o.d=g.d;o.pct=g.pct;o.cid=c.id;o.sl=sl;o.mx=o.k==='temper'?upgMaxNow(c,cur):upgMax(c,o.id);o.key=o.k+':'+(o.k==='forge'?o.ri:o.k==='ef'?o.f:o.k==='chain'?o.base+'>'+o.steps:o.id);out.push(o);};
+  const bases=[];
+  [...new Set(G.gear)].forEach(id=>{if(slotOk(c,sl,id)){add({k:'pack',id,gold:0,ok:true});bases.push({id,k:'pack',gold:0,m:{}});}});
+  upgShop(sl).forEach(id=>{if(GEAR[id]&&slotOk(c,sl,id)&&ceilOk(c,id)){const o={k:'buy',id,gold:GEAR[id].price,ok:town&&G.gold>=GEAR[id].price,town:1};add(o);bases.push({id,k:'buy',gold:o.gold,m:{}});}});
+  RECIPES.forEach((r,i)=>{if(!r.id||!recipeOpen(r)||!slotOk(c,sl,r.id)||!ceilOk(c,r.id))return;const m=recipeMats(r),o={k:'forge',id:r.id,ri:i,gold:r.g,m,ok:town&&G.gold>=r.g&&hasMats(m),town:1};add(o);bases.push({id:r.id,k:'forge',gold:r.g,m,ri:i});});
+  // every base (pack, shop, forge) also as a chain tempered to +1..+3 (p3Chain), so the per-slot view offers the same end states as
   // Upgrade whole party; the gold and materials of the whole chain count
-  if(typeof pcTemperOpen!=='function'||pcTemperOpen()){const bases=out.filter(o=>o.k==='pack'||o.k==='buy'||o.k==='forge').map(o=>({id:o.id,k:o.k,gold:o.gold,m:o.m||{},ri:o.ri}));
-    bases.forEach(b=>{p3Chain(b.id).slice(1).forEach(ch=>{const m=Object.assign({},b.m);Object.keys(ch.m).forEach(q=>{m[q]=(m[q]||0)+ch.m[q];});const gold=b.gold+ch.gold;
+  if(typeof pcTemperOpen!=='function'||pcTemperOpen()){
+    bases.forEach(b=>{if(b.k==='pack'&&!ceilOk(c,b.id))return;p3Chain(b.id).slice(1).forEach(ch=>{const m=Object.assign({},b.m);Object.keys(ch.m).forEach(q=>{m[q]=(m[q]||0)+ch.m[q];});const gold=b.gold+ch.gold;
       add({k:'chain',base:b.id,src:b.k,ri:b.ri,steps:ch.k,id:ch.id,gold,m,ok:town&&G.gold>=gold&&hasMats(m),town:1});});});}
   if(cur&&(typeof pcTemperOpen!=='function'||pcTemperOpen())){const fc=forgeCost(cur);if(fc){const have=hasMats(fc.m),P=have?null:buyPlan(fc.m),buy=P&&P.ok&&P.any?P:null;
     add({k:'temper',id:fc.next,gold:fc.gold+(buy?buy.gold:0),m:fc.m,buy,cant:P&&!P.ok?P.cant:null,ok:town&&(have||!!buy)&&G.gold>=fc.gold+(buy?buy.gold:0),town:1});}}
@@ -17879,6 +17910,10 @@ function upgOpts(c,sl){const out=[];if(!G||G.daily||!c)return out;const cur=c.eq
     let plus=-1,src=null;if(base){plus=base.plus;src='pack';}if(worn>plus){plus=worn;src='eq';}if(!src)return;const m=efCost(f);
     add({k:'ef',f,src,id:'w_'+f+'_ef'+(plus?'+'+plus:''),gold:EF_GOLD,m,ok:town&&hasMats(m)&&G.gold>=EF_GOLD,town:1});});
   return out;}
+// the "+14 ATK at max temper" text for an option (what the piece gives at +3 over what the hero would have at +3 with the worn piece)
+function upgMax(c,id){try{const g=maxGainFor(c,id);if(!g||!maxBeats(g))return '';const t=maxDeltaTxt(c,id,false);return t?t+' at max temper':'better at max temper';}catch(e){return '';}}
+function upgMaxNow(c,id){try{const t=maxDeltaTxt(c,id,true);return t?t+' at max temper (+'+TEMPER_TOP+')':'';}catch(e){return '';}}
+const upgMaxHtml=o=>o&&o.mx?`<small class="mxt">${esc(o.mx)}</small>`:'';
 // the order: most gain, then less gold, then fewer materials, then pack before buying before forging
 const upgCmp=(a,b)=>(b.d-a.d)||(a.gold-b.gold)||(upgMatN(a)-upgMatN(b))||(UPG_KIND.indexOf(a.k)-UPG_KIND.indexOf(b.k));
 function upgMatN(o){return o.m?Object.values(o.m).reduce((s,v)=>s+v,0):0;}
@@ -17911,12 +17946,12 @@ function upgOpenM(cid,sl){V.modal={type:'upg',cid,sl,from:V.modal&&V.modal.type!
 function mUpg(m){const c=G.roster[m.cid];if(!c)return box('Upgrade','<p>That hero is not here.</p>','<button class="btn gold" data-act="xBack">Back</button>');
   const sl=m.sl,cur=c.eq[sl],R=upgBest(c,sl),o=R.best,town=upgTown();
   const curRow=`<div class="row eqcur">${cur?gearIcon(cur):'<span class="gico empty"></span>'}<div class="grow"><small>Now</small><b>${cur?esc(gearOf(cur).n):'Nothing'}</b> ${cur?tierChip(gearOf(cur)):''}<small>${cur?gearDesc(cur):''}</small></div></div>`;
-  const card=o?`<div class="upgcard"><span class="upgk">Best next step</span><div class="row">${gearIcon(o.id)}<div class="grow"><b>${upgWhat(o)}</b> ${tierChip(gearOf(o.id))} <em class="up">${upgPct(o)}</em><small>${gearDesc(o.id)}</small>${upgBA(c,o)}<div class="mats">${upgCost(o)}</div></div></div></div>`
+  const card=o?`<div class="upgcard"><span class="upgk">Best next step</span><div class="row">${gearIcon(o.id)}<div class="grow"><b>${upgWhat(o)}</b> ${tierChip(gearOf(o.id))} <em class="up">${upgPct(o)}</em><small>${gearDesc(o.id)}</small>${upgMaxHtml(o)}${upgBA(c,o)}<div class="mats">${upgCost(o)}</div></div></div></div>`
     :`<p class="note empty">Nothing better for this slot that you can pay for right now.</p>`;
   const goal=R.goal?`<p class="note upggoal"><b>Save up for:</b> ${upgWhat(R.goal)} (${upgPct(R.goal)}), ${R.goal.town&&!town?'in town':R.goal.cant?'needs '+R.goal.cant.map(k=>esc(MATS[k])).join(', '):R.goal.m&&!hasMats(R.goal.m)?'needs materials':fmt(R.goal.gold)+' gold'}. <button class="btn sm" data-act="p3Need" data-arg="${c.id}|${sl}|${esc(R.goal.key)}">What I need</button></p>`:'';
   const far=!town&&R.all.some(x=>x.town)?'<p class="note">Buying, forging and tempering happen in town. Here only spares in your pack count.</p>':'';
   return box(`Upgrade: ${SLOTN[sl]} for ${esc(c.name)}`,curRow+card+goal+far,
-    `<button class="btn" data-act="upgAll">Show all options</button>${o?`<button class="btn gold" data-act="upgDo" data-arg="${c.id},${sl},${o.key}">Upgrade${o.gold?': '+fmt(o.gold)+' gold':''}</button>`:''}<button class="btn" data-act="xBack">Back</button>`,true);}
+    `<button class="btn" data-act="upgAll">Show all options</button>${o?`<button class="btn gold" data-act="upgDo" data-arg="${c.id},${sl},${o.key}">${o.k==='temper'?'Temper'+(o.gold?' · '+fmt(o.gold)+'g':''):'Upgrade'+(o.gold?': '+fmt(o.gold)+' gold':'')}</button>`:''}<button class="btn" data-act="xBack">Back</button>`,true);}
 // v0.12.13: what an out of reach step needs: gold and every material, have/need, and where each kind comes from
 const MAT_WHERE={herb:'herb patches on the fields; Alchemy sells some',ore:'the Smithy counter and rock gathering spots',wood:'the Smithy counter and tree gathering spots',part:'dropped by monsters (each kind leaves its own); the Beastwardens counter sells bundles',relic:'this realm\'s gathering spots, chests and Dens; Dread Cores from Scourges, Calamities and elites'};
 function needHtml(o){const rows=[];const g=o.gold||0;if(g)rows.push(`<div class="row"><div class="grow"><b>Gold</b></div><span class="m nums ${G.gold>=g?'up':'warn'}">${fmt(G.gold)} / ${fmt(g)}</span></div>`);
@@ -17932,7 +17967,7 @@ function upgBtn(c,sl,cls){if(!G||G.daily)return '';const o=upgBest(c,sl).best;
 // shops: the best step for each slot first (the hero it helps most), one tap each
 function upgSlotsHtml(slots,noPlan){if(!G||G.daily)return '';const rows=slots.map(sl=>{let b=null;partyChars().forEach(c=>{const o=upgBest(c,sl).best;if(o&&(!b||o.pct>b.pct+1e-9||(Math.abs(o.pct-b.pct)<=1e-9&&o.gold<b.gold)))b=o;});return b;}).filter(Boolean);
   return `<div class="upgbest">${m3H('Best upgrade for each slot')}${rows.length?`<div class="rows">${rows.map(o=>{const c=G.roster[o.cid];
-    return `<div class="row">${gearIcon(o.id)}<div class="grow"><small>${SLOTN[o.sl]} for ${esc(c.name)}</small><b>${upgWhat(o,1)}</b> <em class="up">${upgPct(o)}</em><small>${deltaHtml(c,o.id)}</small></div><button class="btn sm gold" data-act="upgDo" data-arg="${c.id},${o.sl},${o.key}">${o.gold?fmt(o.gold)+' gold':'Equip'}</button></div>`;}).join('')}</div>`:m3Empty('Your party already has the best you can pay for here.')}${noPlan?'':`<div class="btnrow p3smith"><button class="btn" data-act="p3Smith" title="Plans the best upgrade for each hero in your party, shows it, and only buys after you confirm">Upgrade whole party</button></div>`}</div>`;}
+    return `<div class="row">${gearIcon(o.id)}<div class="grow"><small>${SLOTN[o.sl]} for ${esc(c.name)}</small><b>${upgWhat(o,1)}</b> <em class="up">${upgPct(o)}</em><small>${deltaHtml(c,o.id)}</small>${upgMaxHtml(o)}</div><button class="btn sm gold" data-act="upgDo" data-arg="${c.id},${o.sl},${o.key}">${o.k==='temper'?'Temper · '+fmt(o.gold)+'g':o.gold?fmt(o.gold)+' gold':'Equip'}</button></div>`;}).join('')}</div>`:m3Empty('Your party already has the best you can pay for here.')}${noPlan?'':`<div class="btnrow p3smith"><button class="btn" data-act="p3Smith" title="Plans the best upgrade for each hero in your party, shows it, and only buys after you confirm">Upgrade whole party</button></div>`}</div>`;}
 HOOK.before('vModal','p3shop','upg popup (the Upgrade button)',function(m){if(m&&m.type==='upg')return HOOK.stop(mUpg(m));});
 // the hero sheet: an Upgrade button on each slot
 {const mc0=mChar;mChar=function(id,edit){let h=mc0.apply(this,arguments);try{const c=G&&G.roster[id];if(!c||G.daily||typeof h!=='string')return h;
@@ -28628,6 +28663,95 @@ const WA10={sway:1,bob:1,hip:.6};
     x.drawImage(c,0,0,W,hip,dx,dy,W,hip);                 // the body sways and bobs
     return IMG[ck]=o;}catch(e){return c;}};}
 
+// ===== econ11.js (v0.16.x): owner economy pass: forging starts at +0, selling consumables and safer gear sales, personal relics =====
+// Runs last in MODS (after walkanim10.js). Everything here wraps or rewrites at load; no new save fields.
+//  1) Forged gear starts at +0 (it used to come out at +1, +2 late), same temper ladder as bought gear. Gold is re-priced so that gold plus the ore,
+//     logs and herbs bought at the counter is ECON11.craftK (85%) of the shop price: cheaper than buying by a modest margin, with the monster
+//     parts and the realm relic as the real gate (those are drops).
+//  2) Selling: Alchemy's Sell tab gets an Items section (potions, tonics, cures, travel gear) at 40% of the list price (the same rule as gear:
+//     0.4 x the pre-multiplier price, which is ECON11.sellK of what the shop charges today); tempered gear sells for its base value plus a quarter
+//     of what the tempering added to its price; a confirm for Rare or better, tempered or unique gear; never worn gear (it is not in the pack),
+//     the Stick, personal relics, bound, legend, signature and Medal gear, nor Camp Supplies.
+//  3) Personal quest rewards (u_, ua_, uc_) are relics: they follow the best piece the shops can sell (tier = realm progress + 1, max 5) for the
+//     hero's preferred weapon or armour type, at +3, plus the old 8% edge. Stats are computed from G, never saved, so old saves upgrade by themselves.
+//  4) Best-in-slot thinking: bestTag shows what a piece gives at max temper (+3) and flags "worth tempering"; Equip best lists pack pieces that are
+//     weaker today but beat the worn piece at max temper. Equip best itself still equips by today's stats.
+const ECON11={craftK:.85,sellK:.4,itemSell:.4,tempBonus:.25,confirmTier:2,relicEdge:1.08,relicTemper:1+FORGE_STEP*3};
+
+// ----- 1) forged gear starts at +0 -----
+(function(){const buy=m=>Object.keys(m).reduce((s,k)=>s+(MAT_PRICE[k]||0)*m[k],0);/* relics ($rel...) are not in MAT_PRICE: not counted */
+  RECIPES.forEach(r=>{if(!r.id||!SMITH_CATS.includes(r.cat))return;const q=String(r.id).match(/^(.*)\+(\d)$/);if(!q)return;const g0=GEAR[q[1]];if(!g0)return;
+    r.id=q[1];r.g=Math.max(Math.round(g0.price*.15),Math.round(g0.price*ECON11.craftK-buy(r.m)));r.plus0=1;});
+  _recOut=null;})();
+{const mr0=m3Recipes;m3Recipes=function(cats,sec,blurb){if(/^Smithy gear comes out already tempered/.test(blurb||''))blurb='Forged gear starts at +0, just like a shop piece, and is tempered at the same price afterwards. It costs a little less in gold and ore than buying, and every piece wants monster parts. Metal wants ore, wooden gear wants logs.';return mr0.call(this,cats,sec,blurb);};}
+
+// ----- 3) personal relics -----
+const REL_RE=/^u[ac]?_/;
+const relicCache={};
+function relicTierNow(){if(!G)return 4;const S=Math.max(G.stage||0,(G.cleared||[]).filter(Boolean).length);return Math.min(5,S+1);}
+function relicBuild(id,t){const b=GEAR[id],hero=b.only,tp=TPL[hero];if(!tp)return b;const cls=tp.cls,k=ECON11.relicEdge*ECON11.relicTemper,o=Object.assign({},b);
+  const name=String(b.n).replace(/^(.*?)'s\s+/,(m,n)=>n+"'s Relic ");
+  if(b.slot==='c'){const f=Math.max(1,WP[t]/WP[4]*ECON11.relicTemper);ST.forEach(s=>{if(b[s]>0)o[s]=Math.round(b[s]*f);});}
+  else{const fam=b.slot==='w'?'w_'+CF[cls][0]+'_'+t:'a_'+ARM_FAM[CLS_ARM[cls]||'medium']+'_'+t,base=GEAR[fam];
+    if(base)ST.forEach(s=>{if(base[s]>0){o[s]=Math.max(b[s]||0,Math.round(base[s]*k));}else if(base[s]&&b[s]==null)o[s]=base[s];});}/* penalties (armour SPD and MP) stay as they were */
+  if(b.attr)o.attr=Object.assign({},b.attr,Object.fromEntries(Object.keys(b.attr).map(a=>[a,b.attr[a]+(t>=4?6:t>=3?4:2)])));
+  o.n=name;o.tier=Math.max(b.tier||0,Math.min(5,t));o.relic=1;o.plus=0;return o;}
+function relicGear(id){const t=relicTierNow(),key=id+'|'+t;return relicCache[key]||(relicCache[key]=relicBuild(id,t));}
+Object.keys(GEAR).forEach(id=>{const g=GEAR[id];if(REL_RE.test(id)&&g.only&&TPL[g.only]&&id.endsWith('_'+g.only)){g.relic=1;g.bound=1;}});
+{const go0=gearOf;gearOf=function(id){if(typeof id==='string'&&id.charCodeAt(0)===117&&G){const g=GEAR[id];if(g&&g.relic)return relicGear(id);}return go0.apply(this,arguments);};}
+
+// ----- selling -----
+// who never goes over the counter
+function sellBlocked(id){const g=gearOf(id);return !g||!!(g.stick||g.only||g.bound||g.relic||g.medal||g.legend||g.sig||/^(u_|ua_|uc_|uk_|sg_)/.test(String(id)));}
+function sellConfirm(id){const g=gearOf(id);return !!g&&(gTierIdx(g)>=ECON11.confirmTier||plusOf(id)>0||!!g.unique||!!g.ef);}
+// base value (sellVal: 0.4 x the pre-multiplier price) plus a quarter of what tempering added to the price
+function sellGold(id){const g=gearOf(id);if(!g)return 0;const b=GEAR[baseIdOf(id)]||g,sc=(b.price0&&b.price)?b.price0/b.price:1,add=Math.max(0,(g.price||0)-(b.price||0))*sc;return Math.max(1,sellVal(b)+Math.round(add*ECON11.tempBonus));}
+{const sr0=m3SellRows;m3SellRows=function(slots){if(E11.item)return '';let h=sr0.apply(this,arguments);
+  try{h=h.replace(/<button class="btn sm" data-act="sell" data-arg="([^"]+)">Sell \d+<\/button>/g,(m,id)=>sellBlocked(id)?`<span class="sellno nums" title="Keepsakes and relics are never bought">Keepsake</span>`:`<button class="btn sm" data-act="sellAsk" data-arg="${id}">Sell ${fmt(sellGold(id))}</button>`);}catch(e){}return h;};}
+ACT.sell=function(id){const i=G.gear.indexOf(id);if(i>=0&&!sellBlocked(id)){G.gear.splice(i,1);G.gold+=sellGold(id);saveGame();sfx('buy');}else if(i>=0){sfx('deny');toast('That one is not for sale.');}render();};
+ACT.sellAsk=function(id){if(!G||sellBlocked(id)||!G.gear.includes(id)){sfx('deny');render();return;}
+  if(sellConfirm(id)){V.modal={type:'sellask',id,from:V.modal};render();}else ACT.sell(id);};
+ACT.sellGo=function(id){const m=V.modal,from=m&&m.type==='sellask'?m.from:null;if(from)V.modal=from;ACT.sell(id);};
+HOOK.before('vModal','econ11','confirm selling good gear',function(m){if(!m||m.type!=='sellask')return;const id=m.id,g=gearOf(id);if(!g||!G.gear.includes(id))return HOOK.stop(box('Sell this?','<p>That piece is no longer in your pack.</p>','<button class="btn gold" data-act="xBack">OK</button>'));
+  return HOOK.stop(box('Sell this?',`<div class="row tr" style="${tierVars(gTierIdx(g),g)}">${gearIcon(id)}<div class="grow"><b>${esc(g.n)}</b> ${tierChip(g)}<small>${gearDesc(g)}</small></div></div><p class="note">The counter pays <b class="nums">${fmt(sellGold(id))}</b> gold. Buying it back costs ${fmt(GEAR[baseIdOf(id)].price)} gold or more.</p>`,
+    `<button class="btn" data-act="xBack">Keep it</button><button class="btn gold" data-act="sellGo" data-arg="${id}">Sell for ${fmt(sellGold(id))}</button>`));});
+// consumables at Alchemy
+function itemBuyValue(id){const o=ITEMS[id];if(!o)return 0;if(o.price0||o.price)return o.price0||o.price;
+  const r=RECIPES.find(x=>x.item===id);if(!r)return 0;return r.g+Object.keys(recipeMats(r)).reduce((s,k)=>s+(MAT_PRICE[k]||PART_PRICE[k]||12)*recipeMats(r)[k],0);}
+const ITEM_NOSELL=['campkit'];
+function itemSellGold(id){return Math.max(1,Math.round(itemBuyValue(id)*ECON11.itemSell));}
+function sellableItems(){return Object.keys(G.inv||{}).filter(id=>ITEMS[id]&&(G.inv[id]||0)>0&&!ITEM_NOSELL.includes(id)&&!ITEMS[id].key&&!ITEMS[id].quest);}
+function itemSellRows(){const L=sellableItems().sort((a,b)=>iTierIdx(b)-iTierIdx(a)||ITEMS[a].n.localeCompare(ITEMS[b].n));
+  return L.map(id=>{const o=ITEMS[id],n=G.inv[id];return `<div class="row tr" style="${tierVars(iTierIdx(id))}"><div class="grow"><b>${itemIcon(id)} ${o.n}</b> ${itemChip(id)}<small class="nums">You have ${n}. ${itemSellGold(id)} gold each.</small></div><div class="btnrow tight"><button class="btn sm" data-act="sellItem" data-arg="${id},1">Sell 1 · ${fmt(itemSellGold(id))}</button>${n>=5?`<button class="btn sm" data-act="sellItem" data-arg="${id},5">Sell 5</button>`:''}</div></div>`;}).join('')||'<p class="note">No potions, tonics or travel gear to sell.</p>';}
+ACT.sellItem=function(a){const [id,n0]=String(a).split(','),n=Math.max(1,Math.min(+n0||1,G.inv[id]||0));if(!G||!ITEMS[id]||ITEM_NOSELL.includes(id)||(G.inv[id]||0)<n){sfx('deny');render();return;}
+  G.inv[id]-=n;if(G.inv[id]<=0)delete G.inv[id];G.gold+=itemSellGold(id)*n;saveGame();sfx('buy');render();};
+const E11={item:false,on:false,all:false};
+{const ms0=m3Secs;m3Secs=function(t,tab){const S=ms0.apply(this,arguments);try{if(t==='workshop'&&tab==='sell'&&G)return S.concat([['item','Items',sellableItems().length]]);}catch(e){}return S;};}
+{const mh0=matSellRows;matSellRows=function(kinds){const h=mh0.apply(this,arguments);if(!E11.on||!(kinds.length===1&&kinds[0]==='herb'))return h;
+  return E11.item?itemSellRows():!E11.all?h:h+'</div>'+m3H('Items')+'<div class="rows">'+itemSellRows();};}
+{const jb0=junkBar;junkBar=function(){return E11.item?'':jb0.apply(this,arguments);};}
+{const ma0=m3Alchemy;m3Alchemy=function(m){if(!m||m.tab!=='sell')return ma0.apply(this,arguments);E11.on=true;E11.item=m.sec==='item';E11.all=m.sec==='all';
+  try{let h=ma0.apply(this,arguments);if(E11.item)h=h.replace('<p class="note empty">No spare charms. Weapons and armor sell at the Smithy.</p>','');return h;}finally{E11.on=false;E11.item=false;E11.all=false;}};}
+{const sm0=m3Smithy;m3Smithy=function(m){let h=sm0.apply(this,arguments);try{h=h.replace('Charms and herbs sell at Alchemy.','Charms, herbs, potions and tonics sell at Alchemy.');}catch(e){}return h;};}
+
+// ----- 4) best in slot at max temper -----
+{const bt1=bestTag;bestTag=function(id){let h=bt1.apply(this,arguments);try{if(!G||G.daily)return h;const g=gearOf(id);if(!g||g.stick||g.relic)return h;
+  const L=partyChars().filter(c=>canEquip(c,id)).map(c=>({c,g:maxGainFor(c,id)})).filter(o=>maxBeats(o.g)).sort((a,b)=>b.g.pct-a.g.pct);if(!L.length)return h;
+  if(!gainersFor(id).length)h=h.replace('Would not help anyone in your active party.','Not better today, but worth tempering.');
+  h+=`<small class="mxt"><b>At max temper (+${TEMPER_TOP}):</b> ${L.slice(0,3).map(o=>`${esc(o.c.name)} ${esc(maxDeltaTxt(o.c,id,false)||'better')} <em class="up">+${Math.max(1,Math.round(o.g.pct*100))}%</em>`).join('; ')}</small>`;}catch(e){}return h;};}
+{const vm0=vsMark;vsMark=function(c,id){let h=vm0.apply(this,arguments);try{const g=gainFor(c,id);if(g&&!(g.d>.01&&g.pct>=.005)&&maxBeats(maxGainFor(c,id)))h+=' <span class="vs better mx">▲ Better at max temper</span>';}catch(e){}return h;};}
+{const vp0=vsParty;vsParty=function(id){let h=vp0.apply(this,arguments);try{if(/vs worse|vs same/.test(h)&&partyChars().some(c=>canEquip(c,id)&&maxBeats(maxGainFor(c,id))))h+=' <span class="vs better mx">▲ Better at max temper</span>';}catch(e){}return h;};}
+// Equip best: by today's stats (unchanged), then a note for pack pieces that need tempering to beat what is worn
+function worthTempering(){const out=[];if(!G)return out;partyChars().forEach(c=>EQSL.forEach(sl=>{let best=null;
+  [...new Set(G.gear)].forEach(id=>{if(!slotOk(c,sl,id)||!forgeCost(id))return;const g=gainFor(c,id);if(g&&g.d>.01)return;const mg=maxGainFor(c,id);if(!maxBeats(mg))return;if(!best||mg.d>best.mg.d)best={id,mg};});
+  if(best)out.push({c,sl,id:best.id,mg:best.mg});}));return out.sort((a,b)=>b.mg.pct-a.mg.pct);}
+{const ma1=mAutoEq;mAutoEq=function(m){let h=ma1.apply(this,arguments);try{if(!m||!G||m.mode==='smith')return h;const W=worthTempering().slice(0,5);if(!W.length)return h;
+  const i=h.lastIndexOf('<div class="btnrow">');if(i<0)return h;
+  const blk=`<div class="e11worth"><h4>Worth tempering</h4><p class="note">Weaker than what they wear today, so Equip best left them in the pack, but better at max temper (+${TEMPER_TOP}).</p><div class="rows">${W.map(o=>`<div class="row tr" style="${tierVars(gTierIdx(gearOf(o.id)),gearOf(o.id))}">${gearIcon(o.id)}<div class="grow"><b>${esc(gearOf(o.id).n)}</b> for ${esc(o.c.name)}<small class="mxt">${esc(maxDeltaTxt(o.c,o.id,false)||'better')} at max temper <em class="up">+${Math.max(1,Math.round(o.mg.pct*100))}%</em></small></div></div>`).join('')}</div></div>`;
+  h=h.slice(0,i)+blk+h.slice(i);}catch(e){}return h;};}
+try{const st=document.createElement('style');st.textContent=`.mxt{display:block;color:#9fe0b0}.mxt b{color:inherit}.vs.mx{margin-left:4px}.sellno{opacity:.6;font-size:.82rem;padding:2px 6px;border:1px dashed currentColor}.tcost{margin:4px 0}.e11worth{margin-top:.5em}`;document.head.appendChild(st);}catch(e){}
+window.__E11={ECON11,sellGold,sellBlocked,sellConfirm,itemSellGold,sellableItems,relicGear,relicTierNow,worthTempering,maxGainFor:(c,id)=>maxGainFor(c,id),maxTemperId,ceilOk:(c,id)=>ceilOk(c,id),get G(){return G}};
+
 // ===== fixes11.js (v0.16.1): small fixes from the owner's seventh batch =====
 // 1. The Training team (party3.js p6Train) is the heroes three or more levels below the roster's top plus the anchors a team needs; it no
 //    longer fills its remaining slots with the next lowest levels (heroes a level or two behind, who merely have levels left). The free
@@ -28645,7 +28769,8 @@ HOOK.before('finishBattle','fixes11','remember an arena fight',function(){try{if
 // stays (it is a preview before the hit, not a notice).
 {const dr0=doReaction;doReaction=function(a,t,el){const R=dr0.apply(this,arguments);try{if(R&&t&&t.fx&&B&&B.b9rx&&Date.now()-B.b9rx.t0<B9.banMs){for(let i=t.fx.length-1;i>=0;i--){const f=t.fx[i];if(f.cls==='react'){if(f.b4mp)B.b9rx.mp=f.b4mp;t.fx.splice(i,1);break;}}}}catch(e){}return R;};}
 {const rx0=b9RxHtml;b9RxHtml=function(){let h=rx0.apply(this,arguments);try{const ev=B&&B.b9rx;if(ev&&ev.mp&&h)h=h.replace('!</b>',`!</b><small class="b9mp">+${ev.mp} MP</small>`);}catch(e){}return h;};}
-try{const st=document.createElement('style');st.textContent='.bstage .b9ban .b9mp{display:block;font-size:.72em;opacity:.9;color:#8ad0ff;line-height:1.1}';document.head.appendChild(st);}catch(e){}
+{const bb0=b9BanBox;b9BanBox=function(ev){if(!ev||!ev.mp)return bb0.apply(this,arguments);const n0=ev.n;ev.n=n0+' +'+ev.mp+' MP';try{return bb0.call(this,ev);}finally{ev.n=n0;}};}// the box is measured with the MP text, so nothing is cut (v095b)
+try{const st=document.createElement('style');st.textContent='.bstage .b9ban .b9mp{display:inline;font-size:.78em;opacity:.95;color:#8ad0ff;margin-left:.35em;font-weight:800}';document.head.appendChild(st);}catch(e){}
 // ----- v0.16.5: a won rift gate always lights -----
 // Gates glow from META.best['Echo '+name].kills, which engine.js counts per unit base name. An Echo that changes form (phase 2) or dies
 // as another unit left the record on the other name, so its gate stayed dark. A rift win now marks the gate's own Echo record too.
@@ -28718,6 +28843,146 @@ try{TIPS.forEach(t=>{['n','g'].forEach(f=>{if(typeof t[f]==='string')t[f]=wk11(t
 try{if(ITEMS.porkchop&&ITEMS.porkchop.d)ITEMS.porkchop.d=wk11(ITEMS.porkchop.d);}catch(e){}
 try{TWISTS.daily.forEach(t=>{['n','c','d'].forEach(f=>{if(typeof t[f]==='string')t[f]=wk11(t[f]);});});}catch(e){}
 try{if(typeof MTRACK!=='undefined'&&MTRACK.arena){const a0=MTRACK.arena;MTRACK.arena=function(){const o=a0.apply(this,arguments);if(o&&o.name)o.name=wk11(o.name);return o;};}}catch(e){}
+
+// ===== mats11.js (v0.16.x): distinct material sprites =====
+// 1) Menu icons (16x16): every crafting material has its own colour and silhouette (each ore, log, herb and monster part), drawn with the
+//    PG grid + icPaint pipeline of icons.js (bevel from the upper left, outline, glint). icMatDraw is wrapped; the realm relics keep their
+//    older icons except Ember Ore and Verdant Moss. Guardian shards (es_*) are untouched.
+// 2) Overworld gather nodes show the material they hold: the node's material is fixed per spot (hash of seed, stage, tile) with the same
+//    odds gatherAt always used (healroot 40%, bluecap 30%, the tier herb 30%; ore and wood follow the stage tier), gatherAt is wrapped so the
+//    first Math.random() it draws selects exactly that herb, and drawNode (2D) and hdBill (HD-2D, the node card) swap the generic bush/rock/log
+//    for a small lit pile: ore glints on a rock, a stack of logs, the herb's own plant. Footprint, position and gather logic are unchanged.
+// Keys in the grids: R rock, M/C ore tones, B bark, W wood end, G leaf, E glow, S white glint, X dark inset; lowercase = darker step.
+const M11={art:{},node:{},pal:{},IDS:[]};
+{
+  const A=(id,pal,rows,x,y)=>{M11.art[id]={pal,rows,x:x||0,y:y||0};};
+  // ---------------------------------------------------------------- menu icons ----------------------------------------------------------------
+  A('copper',{R:'#8a7468',C:'#e8894a',V:'#4fb894'},[
+    '.....RRRR.......','...RRRRRRRR.....','..RRRRCCRRRR....','.RRRRCCCCCRRRR..','.RRRRRCCCRRRRRR.','RRCCRRRRRRRRCCR.',
+    'RRCCCRRRRRRCCCRR','RRRCRRRRRRRRCRRR','RRRRRRRVVRRRRRRR','.RRRRRRVVVRRRRR.','..RRRRRRVRRRRR..','...RRRRRRRRRR...'],0,2);
+  A('iron',{R:'#4a5266',M:'#c0ccdf',T:'#b0562c'},[
+    '..........MM....','....RR...MMMM...','...RRRR.MMMMMM..','..RRRRRRMMMMMMM.','.RRRRRRRRMMMMMM.','.RRRTRRRRRMMMMR.',
+    'RRRRTTRRRRRRRRRR','RRRRRRRRRTRRRRRR','RRTRRRRRRTTRRRRR','.RRRRRRRRRRRRRR.','..RRRRRRRRRRRR..'],0,3);
+  A('mythril',{R:'#6d7690',C:'#6fd0ff',W:'#e4f8ff'},[
+    '......C.........','.....CWC....C...','.....CWCC..CWC..','....CCWCC.CCWCC.','.C..CCCCCCCCCCC.','.CWCCCCCCCCCCCC.',
+    '.CCCCCCCCCCCCCC.','CCCCCCCCCCCCCCCC','RRRRRRRRRRRRRRRR','.RRRRRRRRRRRRRR.','..RRRRRRRRRRRR..'],0,3);
+  A('oak',{B:'#8a5a2c',W:'#e2bc80',G:'#58b04a'},[
+    '..........GG....','.........GGGG...','....BBBBBBBGG...','..BBBBBBBBBBWWW.','.BBBBBBBBBBWWbWW','.BBBBBBBBBBWbWbW',
+    '.BBBBBBBBBBWWbWW','..BBBBBBBBBBWWW.','...BBBBBBBBBBB..'],0,3);
+  A('ash',{B:'#c4bdae',W:'#f6ecd2',X:'#4a463a'},[
+    '..BBBBBBBBBBWWW.','..BXBBBBBXBBWXW.','..BBBBBBBBBBWWW.','...BBBBBBBBBBWWW','...BXBBBBBXBBWXW','...BBBBBBBBBBWWW',
+    '..BBBBBBBBBBWWW.','..BBXBBBBBBBWXW.','..BBBBBBBBBBWWW.'],0,4);
+  A('elder',{B:'#4c3a56',W:'#7a5a96',E:'#c8a2ff',G:'#4c9a54'},[
+    '..G.........G...','..GG..BBBB.GG...','...BBBBBBBBBB...','..BBBEBBBBBBBWW.','.BBBBEEBBBBBWEWW','.BBBBBBBBBBBWEEW',
+    '.BBBBBBBEBBBWEWW','..BBBBBBBBBBBWW.','..GGBBBBBBBBGG..','...GGGGBBBGGG...'],0,3);
+  A('healroot',{R:'#e8c49c',G:'#58b84a',T:'#c8503c'},[
+    '....G..G..G.....','...GGG.GG.GG....','....GGGGGGG.....','.....GGGGG......','....RRRRRR......','...RRRRRRRR.....',
+    '...RRTRRRRR.....','....RRRTRRR.....','....RRRRRR......','.....RRRRR......','....R.RR.R......','...R...R..R.....'],0,2);
+  A('bluecap',{C:'#4f84ee',W:'#f2ecd8',G:'#58b84a'},[
+    '................','....CCCCCCC.....','..CCCCWCCCCCC...','.CCCWWCCCCWCCC..','CCCCWWCCCCCCCCC.','CCCCCCCCCCCCCCC.',
+    '.WWWWWWWWWWWWW..','.....WWWWW......','.....WWWWW......','....WWWWWWW.....','..GG.WWWWW.GG...','...GGGGGGGGG....'],0,2);
+  A('sunpetal',{Y:'#ffd23c',C:'#8a5a20',G:'#58b84a'},[
+    '.....YY..YY.....','....YYYYYYYY....','...YYYYCCYYYY...','..YYYYCCCCYYYY..','..YYYYCCCCYYYY..','...YYYYCCYYYY...',
+    '....YYYYYYYY....','.....YY.GY......','........G.......','....GG..G.......','...GGGG.GG......','.....G..G.......'],0,2);
+  A('starbloom',{V:'#e2cfff',Y:'#fff0a8',G:'#4aa86a'},[
+    '.......V........','.......V........','......VVV.......','VV....VVV....VV.','.VVVVVVYVVVVVV..','..VVVVYYYVVVV...',
+    '....VVVYVVV.....','....VVV.VVV.....','...VV..G..VV....','.......G........','....GG.G.GG.....','.....GGGGG......'],0,2);
+  A('hide',{C:'#a8784a',T:'#e8d2a8'},[
+    '..CC......CC....','.CCCC....CCCC...','.CCCCCCCCCCCC...','CCCCCCCCCCCCCC..','.CCCCCCTCCCCCC..','.CCCCTCCCTCCCC..',
+    'CCCCCCCCCCCCCCC.','.CCCCCTCCTCCCC..','..CCCCCCCCCCC...','.CCCCC..CCCCC...','.CC..C..C..CC...','CC..........CC..'],0,2);
+  A('ichor',{G:'#6ff0d0',V:'#bfeedd',X:'#3a4a58'},[
+    '.....XXXX.......','.....XVVX.......','......VV........','.....XVVX.......','....XGGGGX......','...XGGGSGGX.....',
+    '..XGGGGGGGGX....','..XGGGGGGGGX....','..XGGGGGGGGX....','...XGGGGGGX.....','....XXXXXX......'],0,2);
+  A('grit',{R:'#b09c78',D:'#7a6a52',W:'#e2d4b0'},[
+    '................','.......RR.......','......RRRR......','.....RRWRRR.....','..RR.RRRRRRR....','.RRRRRRRRRRRRR..',
+    'RRRWRRRRRRRRRR..','RRRRRRRDRRRRRRR.','RRRRRDDRRRRWRRR.','.RRRRRRRRRRRRR..','..RRRRRRRRRR....'],0,3);
+  A('ore',{R:'#4a3a3c',E:'#ff8a3a',Y:'#ffd070'},[
+    '....RRRRRR......','..RRRRRRRRRR....','.RRRERRRRRERR...','.RRRERRRRREERR..','RRRRREERRRERRRR.','RRERRREERREERRR.',
+    'RRERRRRYERRRRRR.','RREERRRREEERRRR.','.RRERRRRRERRRR..','.RRRRRRRRRRRR...','..RRRRRRRRRR....'],0,2);
+  A('moss',{G:'#5aa840',D:'#3a7a2c',R:'#7a6a58'},[
+    '................','....G.......G...','...GGG..G..GG...','..GGGGGGGGGGG...','.GGGGDGGGGGDGG..','GGGDGGGGGGGGGGG.',
+    'GGGGGGGGDGGGGGG.','.GGGGGGGGGGGGG..','..RRRRRRRRRRRR..','...RRRRRRRRRR...'],0,3);
+  M11.IDS=Object.keys(M11.art);
+  // ---------------------------------------------------------------- overworld node piles ----------------------------------------------------------------
+  // each is a 16x16 tile; the shadow and sparkle are drawn by the code below
+  const N=(id,pal,rows,sp)=>{M11.node[id]={pal,rows,sp};};
+  N('copper',{R:'#86706a',C:'#f09450',V:'#4fb894'},[
+    '................','................','................','......RRRR......','....RRRRRRRR....','...RRCCRRRRRR...','..RRRCCCRRRCCR..',
+    '.RRRRRCRRRRCCCR.','.RRRRRRRRRRRCRRR','RRCCRRRRVVRRRRRR','RRCCCRRRVVVRRRR.','.RRRRRRRRRRRRR..'],[[5,6],[12,8]]);
+  N('iron',{R:'#4e566c',M:'#d4dce8',T:'#b0562c'},[
+    '................','................','................','.........MM.....','....RR..MMMM....','...RRRRRMMMMM...','..RRRRRRRMMMMM..',
+    '.RRRRTRRRRMMMR..','RRRRRTTRRRRRRRR.','RRRRRRRRRTRRRRRR','RRTRRRRRRRTRRRR.','.RRRRRRRRRRRRR..'],[[10,4],[12,6]]);
+  N('mythril',{R:'#646c86',C:'#70d2ff',W:'#eafaff'},[
+    '................','................','.....C..........','....CWC....C....','....CWCC..CWC...','...CCWCC.CCWCC..','..CCCCCCCCCCCC..',
+    '.CCCCCCCCCCCCC..','.RRRRRRRRRRRRRR.','RRRRRRRRRRRRRRR.','.RRRRRRRRRRRR...','................'],[[6,3],[11,3]]);
+  N('sunpetal',{Y:'#ffd23c',C:'#8a5a20',G:'#58b84a'},[
+    '................','................','...YY.......YY..','..YYYY.....YYYY.','.YYYCCY...YYCCYY','.YYCCCY...YCCCYY','..YYYY.....YYYY.',
+    '...G.GG....G....','...GG.G...GG....','..GGGGGGGGGGGG..','...GGGGGGGGGG...','................'],[[4,2],[12,2]]);
+  N('starbloom',{V:'#e2cfff',Y:'#fff0a8',G:'#4aa86a'},[
+    '................','................','......V.........','.....VVV....V...','..V.VVYVV..VVV..','.VVVVYYYVVVVYVV.','..VVVVYVVV.VVV..',
+    '...VV.VVV...V...','....G..G....G...','..G.GGGG.GGG....','...GGGGGGGGG....','................'],[[7,2],[11,3],[3,5]]);
+  // log stacks seen end on: bark ring, pale wood, dark core (E glow for elder)
+  const logs=(ck)=>{const g=Array.from({length:16},()=>Array(16).fill('.'));
+    [[7.5,4.5],[4.5,9],[10.5,9]].forEach(([cx,cy])=>{for(let y=0;y<16;y++)for(let x=0;x<16;x++){const d=Math.hypot(x+.5-cx-.5,y+.5-cy-.5);if(d<=3.1)g[y][x]=d<=.9?ck:d<=1.7?'W':'B';}});
+    return g.map(r=>r.join(''));};
+  N('oak',{B:'#8a5a2c',W:'#e2bc80',X:'#a8743a'},logs('X'),[[7,3]]);
+  N('ash',{B:'#c4bdae',W:'#f6ecd2',X:'#6a6454'},logs('X'),[[7,3]]);
+  N('elder',{B:'#4c3a56',W:'#6a4a86',E:'#d2b2ff',G:'#4c9a54'},logs('E').map((r,j)=>j===8||j===3?r.replace(/B(?=.{0,0}$)/,'B'):r),[[7,3],[3,8]]);
+  N('healroot',{R:'#e8c49c',G:'#58b84a',T:'#c8503c'},[
+    '................','................','.....G...G......','..G..GG..GG.G...','..GG.GGG.GG.GG..','...GGGGGGGGGG...','....GGGGGGGG....',
+    '....GRRRRRRG....','...GRRRTRRRRG...','....RRRRTRRR....','.....RRRRRR.....','......R..R......'],[[12,4]]);
+  N('bluecap',{C:'#4f84ee',W:'#f2ecd8',G:'#58b84a'},[
+    '................','................','.....CCCCC......','...CCCCWWCCC....','..CCWWCCCCCCC...','..CCCCCCCCCCC...','...WWWWWWWWW....',
+    '......WWW.......','......WWW..CCC..','.CCC..WWW.CWCCC.','CCWCC.WWW.WWWWW.','.WWW..WWW...WW..','GGGGGGGGGGGGGGG.'],[[8,3],[13,9]]);
+  // node palettes for every other material: a crate (parts) or a plinth (relics) holding the material colour
+  M11.crate=['................','................','................','................','................','................','................',
+    '....CCCCCCCC....','...CCCCCCCCCC...','..BBBBBBBBBBBB..','..BKKBBBBBBKKB..','..BBBKKBBKKBBB..','..BBBBBBBBBBBB..','..BKKBBBBBBKKB..','..BBBBBBBBBBBB..'];
+}
+const m11PartCol={hide:'#a8784a',fang:'#ece2c8',scale:'#4aa08a',ichor:'#6ff0d0',grit:'#b09c78'};
+// ---------------------------------------------------------------- painting ----------------------------------------------------------------
+function m11Pal(pal){const P=icPal(1);Object.keys(pal).forEach(k=>{P[k]=pal[k];});return P;}
+function m11Buf(spec){const b=icBuf();spec.rows.forEach((s,j)=>{for(let i=0;i<s.length;i++){const c=s[i];if(c!=='.'&&c!==' ')icSet(b,(spec.x||0)+i,(spec.y||0)+j,c);}});return b;}
+function m11IconDraw(x,id){const sp=M11.art[id],P=m11Pal(sp.pal),b=m11Buf(sp);P.S='#ffffff';
+  // a white glint on the upper left of the main mass
+  const g={copper:[5,6],iron:[11,5],mythril:[7,6],oak:[4,6],ash:[4,6],elder:[5,7],healroot:[5,10],bluecap:[5,6],sunpetal:[8,6],starbloom:[8,7],hide:[4,6],ichor:[6,9],grit:[4,10],ore:[6,5],moss:[4,6]}[id];
+  const o={};if(id==='ore'){o.aura='#ff7a2a';o.auraA=.3;}if(id==='mythril'){o.aura='#7ad8ff';o.auraA=.25;}if(id==='starbloom'){o.aura='#e2cfff';o.auraA=.25;}if(id==='elder'){o.aura='#b48aff';o.auraA=.18;}
+  if(id==='ichor'){o.aura='#7af0d0';o.auraA=.22;}
+  icPaint(x,b,P,o);if(g){x.fillStyle='#ffffff';x.fillRect(g[0],g[1],1,1);}}
+function m11Canvas(id){const c=mkCv(16,16);icMatDraw(c.getContext('2d'),id);return c;}
+// the 24 guardian shards share 16 (shape, glyph) pairs and some differ by only a few pixels: from the 9th on a white bar on a dark base along the bottom edge keeps them apart
+{const f0=icMatDraw;icMatDraw=function(x,id){if(M11.art[id]){try{return m11IconDraw(x,id);}catch(e){}}
+  const r=f0.apply(this,arguments);try{if(/^es_/.test(id)&&typeof IC_ESI!=='undefined'&&IC_ESI){const i=IC_ESI[id]||0,k=Math.floor(i/8);if(k>0){x.fillStyle='#150b17';x.fillRect(3,k>1?12:13,10,k>1?4:3);x.fillStyle='#ffffff';x.fillRect(4,14,8,1);if(k>1)x.fillRect(4,13,8,1);}}}catch(e){}return r;};}
+// node sprite for any material id (gatherable ones have a pile, the rest a crate with the material's colour on top)
+function m11NodeDraw(ctx,id,px,py,tw){
+  ctx.fillStyle='rgba(0,0,0,.28)';ctx.fillRect(px+2,py+13,12,2);ctx.fillStyle='rgba(0,0,0,.16)';ctx.fillRect(px+1,py+13,14,1);
+  let sp=M11.node[id];
+  if(!sp){const fam=MAT_OF[id]||{},col=m11PartCol[id]||fam.c||'#c4b28c';sp={pal:{C:col,B:'#7a4a24',K:'#5a3418'},rows:M11.crate,sp:[[7,6]]};}
+  const P=m11Pal(sp.pal),b=icBuf();sp.rows.forEach((s,j)=>{for(let i=0;i<s.length;i++){const c=s[i];if(c!=='.'&&c!==' ')icSet(b,i,j,c);}});
+  const cv=mkCv(16,16),cx=cv.getContext('2d');icPaint(cx,b,P,{});ctx.drawImage(cv,px,py);
+  const s=(sp.sp||[[7,6]])[Math.abs(Math.floor(tw||0))%((sp.sp||[[1]]).length)||0]||[7,6];
+  if(tw===0){ctx.fillStyle='#ffffff';ctx.fillRect(px+s[0],py+s[1]-1,1,3);ctx.fillRect(px+s[0]-1,py+s[1],3,1);}else if(tw===1){ctx.fillStyle='#fff6c0';ctx.fillRect(px+s[0],py+s[1],1,1);}}
+// ---------------------------------------------------------------- which material a node holds ----------------------------------------------------------------
+function m11Hash(m,n){let h=(Math.imul(n.x+1,73856093)^Math.imul(n.y+7,19349663)^Math.imul((m.s|0)+3,83492791)^Math.imul((G&&G.run&&G.run.seed|0)+11,2654435761))>>>0;h=Math.imul(h^(h>>>15),2246822519)>>>0;h=(h^(h>>>13))>>>0;return (h%1000)/1000;}
+function m11NodeMat(m,n){if(n.mat)return n.mat;const t=matTier(m.s|0);let id;
+  if(n.k==='herb'){const r=m11Hash(m,n);id=r<.4?'healroot':r<.7?'bluecap':TIERED.herb[t];n.mr=r<.4?.2:r<.7?.55:.85;}else id=(TIERED[n.k]||[])[t];
+  if(id)n.mat=id;return n.mat;}
+{const p0=placeNodes;placeNodes=function(m){const r=p0.apply(this,arguments);try{(m.nodes||[]).forEach(n=>m11NodeMat(m,n));}catch(e){}return r;};}
+{const g0=gatherAt;gatherAt=function(m,x,y){const n=(m&&m.nodes||[]).find(q=>q.x===x&&q.y===y);
+  if(!n||n.k!=='herb'||!m11NodeMat(m,n)||(G.gath&&G.gath[m.id+':'+x+','+y]))return g0.apply(this,arguments);
+  const real=Math.random;let first=true;Math.random=function(){if(first){first=false;return n.mr;}return real.apply(Math,arguments);};
+  try{return g0.apply(this,arguments);}finally{Math.random=real;}};}
+{const d0=drawNode;drawNode=function(ctx,n,px,py,now){let id=n&&n.mat;
+  if(!id&&n&&n.k&&typeof WS!=='undefined'&&WS.m&&(WS.m.nodes||[]).includes(n)){try{id=m11NodeMat(WS.m,n);}catch(e){}}
+  if(id&&M11.node[id]){const tw=Math.floor(now/260+n.x*3+n.y)%9;m11NodeDraw(ctx,id,px,py,tw<2?tw:2);return;}
+  return d0.apply(this,arguments);};}
+// HD-2D: the node card is built once per kind and twinkle step; swap it for the material's card (found by its position)
+const M11HD={};
+{const b0=hdBill;hdBill=function(bt,key,cv,fx,fy,fz,flip,sc,r,g,b,a,fl){
+  if(typeof key==='string'&&key.charCodeAt(0)===110&&/^node:(wood|ore|herb):(\d)$/.test(key)){try{const m=WS.m,tx=Math.round((fx-8)/TS),ty=Math.round((fz-14)/TS),n=m&&(m.nodes||[]).find(q=>q.x===tx&&q.y===ty),id=n&&m11NodeMat(m,n);
+    if(id&&M11.node[id]){const st=+key.slice(-1),k2='node11:'+id+':'+st;let c=M11HD[k2];if(!c){c=M11HD[k2]=mkCv(16,16);m11NodeDraw(c.getContext('2d'),id,0,0,st);}key=k2;cv=c;}}catch(e){}}
+  return b0.call(this,bt,key,cv,fx,fy,fz,flip,sc,r,g,b,a,fl);};}
+// test hooks
+try{window.__M11={M11,M11HD,iconCanvas:m11Canvas,nodeCanvas:(id,st)=>{const c=mkCv(16,16);m11NodeDraw(c.getContext('2d'),id,0,0,st==null?2:st);return c;},nodeMat:m11NodeMat};}catch(e){}
 
 window.__A={walkable,ceInit,tvSlots,genQuests,STARTERS,starterDraw,ECON,AUTO_NERF,rebuildBase,detLive,REACT,skEls,packContents,miniFor,AUTO_REW,ENC_RATE,ENC_MIN_STEPS,detNote,classSkills,stickCount,bestAll,calcStats,lookKey,vTemper,storyEchoUp,leaveDungeon,win,ldApply,genFort,caveOk,enterCave,siteHasMini,openChest,nextDlg,WS,mapIcoRects,roamSpawn,roamInterior,roamSees,mapTargets,DIRV,tileAt,STAGE_LV,autoBan,rollWeather,guardianDef,mapIssues,mapEntry,syncPools,bovAt,calFxAt,realmAt,REALMS,BOV,CAL_FX,overlayGuide,liftOverlay,drawGearIcon,gearIcon,itemIcon,RAW,sigKind,sigGid,personalDone,heroLook,hasSignature,LEGEND_IDS,facDirty,facCount,facRank,facRep,FACB,FAC,finishBattle,npcWords,npcHints,npcPool,titleMake,titleAdvance,TTS,placeAt,wkwUpdate,innSpot,getMap,monURL,enterVia,applyBossTheme,BTHEME,resetMaps,rebuildBase,shopStock,gearDesc,calcStats,gearMigrate,CLS_WPN,CLS_ARM,WPERK,WT_NAME,equipWhy,lootBase,GEAR,canEquip,gearOf,perkNote,FAM_MAT_V35,fbDraft,META:{get best(){return META.best},get codex(){return META.codex},get q(){return META.q}},saveMeta,OFF,offPending,offFlush,PROFILE,profileSync,codexSee,getMap,placeAt,interact,sanctumOpen,riftKeys,echoKeys,BONDS,bondKey,wkwUpdate,inTown,WS,LC,lsort,bestParty,fsCast,fsSkills,ldApply,MON,registerTamed,stickPower,stickCount,autoOne,planGear,bestTag,gainersFor,compGainFor,refresh,fitsFor,canEquip,gearOf,queueNewGear,ARENA,fxDur,banDur,stageTags,autoSwitchPick,layoutBattle,newChar,calcStats,limitSkill,limitTier,canStuck,dunReachable,LV_CAP,addXp,echoSpec,bossLvFor,fx,MON,log,effInfo,tierOf,perkOf,quirkDef,forgeCost,buyPlan,vJourney,modalBack,partySlots,limitOpen,town2Reached,skillKnown,known,classSkills,paceMigrate,unpackG,packG,makeEnemy,QUIRK,arrive,enterDungeon,wkwUpdate,useTravel,travelWhyNot,porkFlee,porkBlocked,encTile,campRest,buyPart,partLeft,alchStock,GAME_VERSION,CHANGELOG,ITEMS,tavernOffers,tavernPool,recruitFit,partyNeeds,vNext,CHALL,innSpot,RECIPES,MATS,FB,fbContext,REDEEM,legendJoin,legendQ,genQuests,dynActors,convInit,PROFILE,profileSync,checkArchive,GPOOL,FPOOL,guardianDef,saveMeta,archiveSkills,get G(){return G;},set G(v){G=v;},get B(){return B;},get V(){return V;},get META(){return META;},WS,ACT,render,newGame,placeAt,startBattle,autoTurn,advance,finishBattle,getMap,innSpot,setPause:p=>{PAUSE=p;},autoCfg,worldInputDir,inputSources,battleFrame,battleTheme,STS,MAPS,mapIssues,healMap,mimicReward,dropChest,interact,worldDraw,TPL,ZONES,ZS,newChar,recruit,saveGame,resetMaps,dynActors,tileAt,BV,refresh,genBounties,genQuests,vStarter,heroCard,heroURL,iconURL,masteryLine,AU,buildTrack,tone,noiseHit,MIDI,sfx,audioVol};
 ['heroRoles','SOLID','WEATHER','WX_BASE','weatherFX','superGuide','recruitCost','ceStart','ceStep','ceInit','cePool','wxList','SUPER_TABLE','superOk','facRank','facRep','facInit','facCount','facCredit','FAC','FMIS','facMissionList','facProg','tyOf','facSync','facMul','facBest','worldPlan','caveReward','enterCave','leaveCave','leaveDungeon','buildCaveMap','worldGraph','openWorldMap','sigReport','SIG_NAMES','starterDraw','ITEM_TIERS','gTierIdx','tierChip','gearIcon','starterSlots','STARTERS','CLK_LEN','CLK_PH','clockPhase','wxInfoBody','recipeOrder','recipeGain','recipeReady','recipeClose','effOf','calcDamage','healsUndead','storyEchoUp','riftKeys','echoDef','efCost','autoLocked','bossFightKey','learnScanAll','isSeen','mapMarks','genSub','subOK','subReq','ensureSub','inSub','tvSlots','tvInit','tvLeft','tvEvent','tvNextText','tvPool','tvDue','tvShuffle','mTavern','hireOK','TV_CAP','TV_CD','POOL_IDS','natPool','natOf','natRoll','NATURES','natInfo','natRerollCost','natChooseCost','NAT_CLASS','iconURL','seenOf','mapIcoDraw','drawMini','MAPCV','revealAround','fxLayer','numDur','compBonusText','compPerk','checkPhase','win','unitBox','LNQ','challVisible','challEligible','challState','isMimic','migrateCompanions','canSummon','summonComp','compOf','clockPhase','tickClock','isNight','rollWeather','wxStep','nightPool','encounterFoes','restAll','tameElite','openChest','rerollTavern','bestAll','gearTier','SV','svCheck','svFlush','svInit','svPush','svPull','svScan','svParse','svBackup','svPack','svUnpack','svProg','svCloudList','svDelDoc','svGet','svCap','slotState','slotKey','svDecode','SV_CH','svStatus','svSlotRaw','svLoad','loadRaw','svHash','svIdx'].forEach(k=>{try{Object.defineProperty(window.__A,k,{get:()=>eval(k)});}catch(e){}});

@@ -97,7 +97,7 @@ function p3SmithPlan(slots){const SL=slots||P3_SLOTS;
   const temperOn=typeof pcTemperOpen!=='function'||pcTemperOpen();
   const cands=[];bases.forEach(b=>(temperOn?p3Chain(b):[{id:b,k:0,gold:0,m:{}}]).forEach(ch=>cands.push(Object.assign({base:b},ch))));
   const ent=[];
-  party.forEach(c=>SL.forEach(sl=>{const opts=cands.filter(o=>slotOk(c,sl,o.id)).map(o=>Object.assign({},o,{g:gainFor(c,o.id)})).filter(o=>o.g&&o.g.d>.01&&o.g.pct>=SMITH_PLAN.minPct).sort((a,b)=>b.g.pct-a.g.pct||b.g.d-a.g.d);
+  party.forEach(c=>SL.forEach(sl=>{const opts=cands.filter(o=>slotOk(c,sl,o.id)&&(ceilOk(c,o.id)||(o.k===0&&(pack[o.base]||0)>0))).map(o=>Object.assign({},o,{g:gainFor(c,o.id)})).filter(o=>o.g&&o.g.d>.01&&o.g.pct>=SMITH_PLAN.minPct).sort((a,b)=>b.g.pct-a.g.pct||b.g.d-a.g.d);
     if(opts.length)ent.push({c,sl,opts});}));
   ent.sort((a,b)=>b.opts[0].g.pct-a.opts[0].g.pct);
   const hasM=m=>Object.keys(m).every(k=>(mats[k]||0)>=m[k]);
@@ -283,14 +283,18 @@ const UPG_LBL={pack:'Equip from your pack',buy:'Buy',forge:'Forge',temper:'Tempe
 function upgTown(){try{return inTown();}catch(e){return false;}}
 function upgShop(sl){if(sl==='c')return shopStock('charms');if(sl==='w')return shopStock('weapons');return shopStock('armor').filter(id=>gearOf(id)&&gearOf(id).slot===sl);}
 function upgOpts(c,sl){const out=[];if(!G||G.daily||!c)return out;const cur=c.eq[sl]||null,town=upgTown();
-  const add=o=>{if(!gearOf(o.id))return;const g=gainFor(c,o.id);if(!g||g.d<=.01)return;o.d=g.d;o.pct=g.pct;o.cid=c.id;o.sl=sl;o.key=o.k+':'+(o.k==='forge'?o.ri:o.k==='ef'?o.f:o.k==='chain'?o.base+'>'+o.steps:o.id);out.push(o);};
-  [...new Set(G.gear)].forEach(id=>{if(slotOk(c,sl,id))add({k:'pack',id,gold:0,ok:true});});
-  upgShop(sl).forEach(id=>{if(GEAR[id]&&slotOk(c,sl,id))add({k:'buy',id,gold:GEAR[id].price,ok:town&&G.gold>=GEAR[id].price,town:1});});
-  RECIPES.forEach((r,i)=>{if(!r.id||!recipeOpen(r)||!slotOk(c,sl,r.id))return;const m=recipeMats(r);add({k:'forge',id:r.id,ri:i,gold:r.g,m,ok:town&&G.gold>=r.g&&hasMats(m),town:1});});
-  // v0.12.13: every base (pack, shop, forge) also as a chain tempered to +1..+3 (p3Chain), so the per-slot view offers the same end states as
+  // v0.16.1: pieces are judged at their ceiling. A purchase or a forged piece must beat the worn one at max temper (+3 against +3; a tie stays
+  // with the worn piece); a spare already in the pack is free, so it only has to be better today. A piece that is weaker today but better at
+  // the top still gets its chains (buy or forge, then temper to +1..+3), which used to be skipped because only today's stats were compared.
+  const add=o=>{if(!gearOf(o.id))return;const g=gainFor(c,o.id);if(!g||g.d<=.01)return;o.d=g.d;o.pct=g.pct;o.cid=c.id;o.sl=sl;o.mx=o.k==='temper'?upgMaxNow(c,cur):upgMax(c,o.id);o.key=o.k+':'+(o.k==='forge'?o.ri:o.k==='ef'?o.f:o.k==='chain'?o.base+'>'+o.steps:o.id);out.push(o);};
+  const bases=[];
+  [...new Set(G.gear)].forEach(id=>{if(slotOk(c,sl,id)){add({k:'pack',id,gold:0,ok:true});bases.push({id,k:'pack',gold:0,m:{}});}});
+  upgShop(sl).forEach(id=>{if(GEAR[id]&&slotOk(c,sl,id)&&ceilOk(c,id)){const o={k:'buy',id,gold:GEAR[id].price,ok:town&&G.gold>=GEAR[id].price,town:1};add(o);bases.push({id,k:'buy',gold:o.gold,m:{}});}});
+  RECIPES.forEach((r,i)=>{if(!r.id||!recipeOpen(r)||!slotOk(c,sl,r.id)||!ceilOk(c,r.id))return;const m=recipeMats(r),o={k:'forge',id:r.id,ri:i,gold:r.g,m,ok:town&&G.gold>=r.g&&hasMats(m),town:1};add(o);bases.push({id:r.id,k:'forge',gold:r.g,m,ri:i});});
+  // every base (pack, shop, forge) also as a chain tempered to +1..+3 (p3Chain), so the per-slot view offers the same end states as
   // Upgrade whole party; the gold and materials of the whole chain count
-  if(typeof pcTemperOpen!=='function'||pcTemperOpen()){const bases=out.filter(o=>o.k==='pack'||o.k==='buy'||o.k==='forge').map(o=>({id:o.id,k:o.k,gold:o.gold,m:o.m||{},ri:o.ri}));
-    bases.forEach(b=>{p3Chain(b.id).slice(1).forEach(ch=>{const m=Object.assign({},b.m);Object.keys(ch.m).forEach(q=>{m[q]=(m[q]||0)+ch.m[q];});const gold=b.gold+ch.gold;
+  if(typeof pcTemperOpen!=='function'||pcTemperOpen()){
+    bases.forEach(b=>{if(b.k==='pack'&&!ceilOk(c,b.id))return;p3Chain(b.id).slice(1).forEach(ch=>{const m=Object.assign({},b.m);Object.keys(ch.m).forEach(q=>{m[q]=(m[q]||0)+ch.m[q];});const gold=b.gold+ch.gold;
       add({k:'chain',base:b.id,src:b.k,ri:b.ri,steps:ch.k,id:ch.id,gold,m,ok:town&&G.gold>=gold&&hasMats(m),town:1});});});}
   if(cur&&(typeof pcTemperOpen!=='function'||pcTemperOpen())){const fc=forgeCost(cur);if(fc){const have=hasMats(fc.m),P=have?null:buyPlan(fc.m),buy=P&&P.ok&&P.any?P:null;
     add({k:'temper',id:fc.next,gold:fc.gold+(buy?buy.gold:0),m:fc.m,buy,cant:P&&!P.ok?P.cant:null,ok:town&&(have||!!buy)&&G.gold>=fc.gold+(buy?buy.gold:0),town:1});}}
@@ -298,6 +302,10 @@ function upgOpts(c,sl){const out=[];if(!G||G.daily||!c)return out;const cur=c.eq
     let plus=-1,src=null;if(base){plus=base.plus;src='pack';}if(worn>plus){plus=worn;src='eq';}if(!src)return;const m=efCost(f);
     add({k:'ef',f,src,id:'w_'+f+'_ef'+(plus?'+'+plus:''),gold:EF_GOLD,m,ok:town&&hasMats(m)&&G.gold>=EF_GOLD,town:1});});
   return out;}
+// the "+14 ATK at max temper" text for an option (what the piece gives at +3 over what the hero would have at +3 with the worn piece)
+function upgMax(c,id){try{const g=maxGainFor(c,id);if(!g||!maxBeats(g))return '';const t=maxDeltaTxt(c,id,false);return t?t+' at max temper':'better at max temper';}catch(e){return '';}}
+function upgMaxNow(c,id){try{const t=maxDeltaTxt(c,id,true);return t?t+' at max temper (+'+TEMPER_TOP+')':'';}catch(e){return '';}}
+const upgMaxHtml=o=>o&&o.mx?`<small class="mxt">${esc(o.mx)}</small>`:'';
 // the order: most gain, then less gold, then fewer materials, then pack before buying before forging
 const upgCmp=(a,b)=>(b.d-a.d)||(a.gold-b.gold)||(upgMatN(a)-upgMatN(b))||(UPG_KIND.indexOf(a.k)-UPG_KIND.indexOf(b.k));
 function upgMatN(o){return o.m?Object.values(o.m).reduce((s,v)=>s+v,0):0;}
@@ -330,12 +338,12 @@ function upgOpenM(cid,sl){V.modal={type:'upg',cid,sl,from:V.modal&&V.modal.type!
 function mUpg(m){const c=G.roster[m.cid];if(!c)return box('Upgrade','<p>That hero is not here.</p>','<button class="btn gold" data-act="xBack">Back</button>');
   const sl=m.sl,cur=c.eq[sl],R=upgBest(c,sl),o=R.best,town=upgTown();
   const curRow=`<div class="row eqcur">${cur?gearIcon(cur):'<span class="gico empty"></span>'}<div class="grow"><small>Now</small><b>${cur?esc(gearOf(cur).n):'Nothing'}</b> ${cur?tierChip(gearOf(cur)):''}<small>${cur?gearDesc(cur):''}</small></div></div>`;
-  const card=o?`<div class="upgcard"><span class="upgk">Best next step</span><div class="row">${gearIcon(o.id)}<div class="grow"><b>${upgWhat(o)}</b> ${tierChip(gearOf(o.id))} <em class="up">${upgPct(o)}</em><small>${gearDesc(o.id)}</small>${upgBA(c,o)}<div class="mats">${upgCost(o)}</div></div></div></div>`
+  const card=o?`<div class="upgcard"><span class="upgk">Best next step</span><div class="row">${gearIcon(o.id)}<div class="grow"><b>${upgWhat(o)}</b> ${tierChip(gearOf(o.id))} <em class="up">${upgPct(o)}</em><small>${gearDesc(o.id)}</small>${upgMaxHtml(o)}${upgBA(c,o)}<div class="mats">${upgCost(o)}</div></div></div></div>`
     :`<p class="note empty">Nothing better for this slot that you can pay for right now.</p>`;
   const goal=R.goal?`<p class="note upggoal"><b>Save up for:</b> ${upgWhat(R.goal)} (${upgPct(R.goal)}), ${R.goal.town&&!town?'in town':R.goal.cant?'needs '+R.goal.cant.map(k=>esc(MATS[k])).join(', '):R.goal.m&&!hasMats(R.goal.m)?'needs materials':fmt(R.goal.gold)+' gold'}. <button class="btn sm" data-act="p3Need" data-arg="${c.id}|${sl}|${esc(R.goal.key)}">What I need</button></p>`:'';
   const far=!town&&R.all.some(x=>x.town)?'<p class="note">Buying, forging and tempering happen in town. Here only spares in your pack count.</p>':'';
   return box(`Upgrade: ${SLOTN[sl]} for ${esc(c.name)}`,curRow+card+goal+far,
-    `<button class="btn" data-act="upgAll">Show all options</button>${o?`<button class="btn gold" data-act="upgDo" data-arg="${c.id},${sl},${o.key}">Upgrade${o.gold?': '+fmt(o.gold)+' gold':''}</button>`:''}<button class="btn" data-act="xBack">Back</button>`,true);}
+    `<button class="btn" data-act="upgAll">Show all options</button>${o?`<button class="btn gold" data-act="upgDo" data-arg="${c.id},${sl},${o.key}">${o.k==='temper'?'Temper'+(o.gold?' · '+fmt(o.gold)+'g':''):'Upgrade'+(o.gold?': '+fmt(o.gold)+' gold':'')}</button>`:''}<button class="btn" data-act="xBack">Back</button>`,true);}
 // v0.12.13: what an out of reach step needs: gold and every material, have/need, and where each kind comes from
 const MAT_WHERE={herb:'herb patches on the fields; Alchemy sells some',ore:'the Smithy counter and rock gathering spots',wood:'the Smithy counter and tree gathering spots',part:'dropped by monsters (each kind leaves its own); the Beastwardens counter sells bundles',relic:'this realm\'s gathering spots, chests and Dens; Dread Cores from Scourges, Calamities and elites'};
 function needHtml(o){const rows=[];const g=o.gold||0;if(g)rows.push(`<div class="row"><div class="grow"><b>Gold</b></div><span class="m nums ${G.gold>=g?'up':'warn'}">${fmt(G.gold)} / ${fmt(g)}</span></div>`);
@@ -351,7 +359,7 @@ function upgBtn(c,sl,cls){if(!G||G.daily)return '';const o=upgBest(c,sl).best;
 // shops: the best step for each slot first (the hero it helps most), one tap each
 function upgSlotsHtml(slots,noPlan){if(!G||G.daily)return '';const rows=slots.map(sl=>{let b=null;partyChars().forEach(c=>{const o=upgBest(c,sl).best;if(o&&(!b||o.pct>b.pct+1e-9||(Math.abs(o.pct-b.pct)<=1e-9&&o.gold<b.gold)))b=o;});return b;}).filter(Boolean);
   return `<div class="upgbest">${m3H('Best upgrade for each slot')}${rows.length?`<div class="rows">${rows.map(o=>{const c=G.roster[o.cid];
-    return `<div class="row">${gearIcon(o.id)}<div class="grow"><small>${SLOTN[o.sl]} for ${esc(c.name)}</small><b>${upgWhat(o,1)}</b> <em class="up">${upgPct(o)}</em><small>${deltaHtml(c,o.id)}</small></div><button class="btn sm gold" data-act="upgDo" data-arg="${c.id},${o.sl},${o.key}">${o.gold?fmt(o.gold)+' gold':'Equip'}</button></div>`;}).join('')}</div>`:m3Empty('Your party already has the best you can pay for here.')}${noPlan?'':`<div class="btnrow p3smith"><button class="btn" data-act="p3Smith" title="Plans the best upgrade for each hero in your party, shows it, and only buys after you confirm">Upgrade whole party</button></div>`}</div>`;}
+    return `<div class="row">${gearIcon(o.id)}<div class="grow"><small>${SLOTN[o.sl]} for ${esc(c.name)}</small><b>${upgWhat(o,1)}</b> <em class="up">${upgPct(o)}</em><small>${deltaHtml(c,o.id)}</small>${upgMaxHtml(o)}</div><button class="btn sm gold" data-act="upgDo" data-arg="${c.id},${o.sl},${o.key}">${o.k==='temper'?'Temper · '+fmt(o.gold)+'g':o.gold?fmt(o.gold)+' gold':'Equip'}</button></div>`;}).join('')}</div>`:m3Empty('Your party already has the best you can pay for here.')}${noPlan?'':`<div class="btnrow p3smith"><button class="btn" data-act="p3Smith" title="Plans the best upgrade for each hero in your party, shows it, and only buys after you confirm">Upgrade whole party</button></div>`}</div>`;}
 HOOK.before('vModal','p3shop','upg popup (the Upgrade button)',function(m){if(m&&m.type==='upg')return HOOK.stop(mUpg(m));});
 // the hero sheet: an Upgrade button on each slot
 {const mc0=mChar;mChar=function(id,edit){let h=mc0.apply(this,arguments);try{const c=G&&G.roster[id];if(!c||G.daily||typeof h!=='string')return h;

@@ -25,7 +25,7 @@ chk('1: Alchemy > Shop > Charms lists only charms',ch.on==='charm'&&ch.g.length>
 const po=await ev(()=>{__A.ACT.sSec('potion');return {g:document.querySelectorAll('#modal [data-act="buyGear"]').length,it:[...document.querySelectorAll('#modal [data-act="buyItem"]')].map(b=>b.dataset.arg)};});
 chk('Alchemy > Potions has no charms and no travel gear',po.g===0&&po.it.length>0&&!po.it.includes('tent')&&!po.it.includes('holywater')||JSON.stringify(po));
 await show({type:'workshop',tab:'craft'});n=await nav();chk('Alchemy craft sections: All, Potions, Charms, Travel',JSON.stringify(n.secs)===JSON.stringify(['All','Potions','Charms','Travel'])||JSON.stringify(n.secs));
-await show({type:'workshop',tab:'sell'});n=await nav();chk('Alchemy Sell sections: All, Charms, Herbs',JSON.stringify(n.secs)===JSON.stringify(['All','Charms','Herbs'])||JSON.stringify(n.secs));
+await show({type:'workshop',tab:'sell'});n=await nav();chk('Alchemy Sell sections: All, Charms, Herbs, Items',JSON.stringify(n.secs)===JSON.stringify(['All','Charms','Herbs','Items'])||JSON.stringify(n.secs));
 // v0.11.4: the Rusty Flagon is one page (no tabs): the wayfarers to hire, then a Kitchen heading with the sandwiches
 await show({type:'tavern'});n=await nav();chk('Tavern is one page with a Kitchen section (no tabs)',n.tabs.length===0&&n.h4.includes('Kitchen')||JSON.stringify(n));
 const kit=await ev(()=>!!document.querySelector('#modal [data-act="buyItem"][data-arg="porkchop"]'));chk('Tavern > Kitchen sells the sandwiches',kit);

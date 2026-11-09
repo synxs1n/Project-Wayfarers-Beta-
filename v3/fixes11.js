@@ -15,7 +15,8 @@ HOOK.before('finishBattle','fixes11','remember an arena fight',function(){try{if
 // stays (it is a preview before the hit, not a notice).
 {const dr0=doReaction;doReaction=function(a,t,el){const R=dr0.apply(this,arguments);try{if(R&&t&&t.fx&&B&&B.b9rx&&Date.now()-B.b9rx.t0<B9.banMs){for(let i=t.fx.length-1;i>=0;i--){const f=t.fx[i];if(f.cls==='react'){if(f.b4mp)B.b9rx.mp=f.b4mp;t.fx.splice(i,1);break;}}}}catch(e){}return R;};}
 {const rx0=b9RxHtml;b9RxHtml=function(){let h=rx0.apply(this,arguments);try{const ev=B&&B.b9rx;if(ev&&ev.mp&&h)h=h.replace('!</b>',`!</b><small class="b9mp">+${ev.mp} MP</small>`);}catch(e){}return h;};}
-try{const st=document.createElement('style');st.textContent='.bstage .b9ban .b9mp{display:block;font-size:.72em;opacity:.9;color:#8ad0ff;line-height:1.1}';document.head.appendChild(st);}catch(e){}
+{const bb0=b9BanBox;b9BanBox=function(ev){if(!ev||!ev.mp)return bb0.apply(this,arguments);const n0=ev.n;ev.n=n0+' +'+ev.mp+' MP';try{return bb0.call(this,ev);}finally{ev.n=n0;}};}// the box is measured with the MP text, so nothing is cut (v095b)
+try{const st=document.createElement('style');st.textContent='.bstage .b9ban .b9mp{display:inline;font-size:.78em;opacity:.95;color:#8ad0ff;margin-left:.35em;font-weight:800}';document.head.appendChild(st);}catch(e){}
 // ----- v0.16.5: a won rift gate always lights -----
 // Gates glow from META.best['Echo '+name].kills, which engine.js counts per unit base name. An Echo that changes form (phase 2) or dies
 // as another unit left the record on the other name, so its gate stayed dark. A rift win now marks the gate's own Echo record too.

@@ -4,6 +4,11 @@
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.16.6',['Materials have their own icons (every ore, log, herb and part looks different, and every guardian shard too), and gather nodes in the field show the material they hold: ore glinting on a rock, a stack of logs, the herb\'s own plant, in both views. A herb node now yields exactly the herb it shows.',
+  'Selling: Alchemy buys back potions, tonics, cures and travel gear (40% of list) alongside the spare gear, materials and charms the Sell tabs already took; tempered gear returns part of its tempering cost; rare, tempered and Echoforged pieces ask before selling; keepsakes (personal relics, bound, legend, signature and Medal gear, the Stick) cannot be sold.',
+  'Crafting: forging makes the +0 piece, priced so gold plus counter-bought materials come to 85% of the shop price (it was 72% for a +1 piece).',
+  'Upgrades think in tempering: a purchase or forge counts as an upgrade when the piece at max temper beats what you wear at max temper, and the shop tags, Tempering rows and Upgrade popup say so ("+24 ATK at max temper"). Equip best still equips by current stats and lists pack pieces worth tempering. The Tempering rows show the gold and materials under the title and the button reads "Temper · Ng".',
+  'Personal quest relics are best in slot for their hero: the top piece of the hero\'s preferred weapon or armour family at the current realm\'s tier, fully tempered, with the relic\'s own edge, and they refresh as you progress.']],
  ['Beta v0.16.5',['Reactions show one marker: the banner, which now carries the MP returned to the detonator (the separate floating text is gone; the target tag still previews the reaction before you hit).',
   'HD-2D overworld: monsters, bosses and the Riftkeeper keep their full size; only walkers took the smaller scale of 0.15.8.',
   'Echo Rift gates: colour always means beaten. An open gate you have not won stays grey (runes included); a won gate glows in its element and keeps its gold pip. Echoes that change form mid fight now light their gate when beaten. The record is per account, so a gate won in an earlier journey glows too.']],
