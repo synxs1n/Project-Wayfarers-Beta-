@@ -86,8 +86,8 @@ small{font-size:.86rem;color:var(--mute)}
 .card.hero{text-align:left;display:grid;grid-template-columns:auto 1fr;gap:6px 12px;padding:12px;background:var(--wood);border:4px solid var(--ink);box-shadow:inset 0 0 0 2px #6a4a22;align-content:start}
 button.card.hero:hover{background:var(--wood2)}
 .card.sel{background:var(--wood2);box-shadow:inset 0 0 0 3px var(--gold)}
-.card.hero.elstrip,button.mini.elstrip,.swc.elstrip{position:relative;overflow:hidden}
-.card.hero.elstrip::after,button.mini.elstrip::after,.swc.elstrip::after{content:'';position:absolute;left:0;right:0;bottom:0;height:4px;pointer-events:none;background:linear-gradient(90deg,var(--d1,#c8a050) 50%,var(--d2,#7a8ac0) 50%)}
+.card.hero.elstrip,button.mini.elstrip{position:relative;overflow:hidden}
+.card.hero.elstrip::after,button.mini.elstrip::after{content:'';position:absolute;left:0;right:0;bottom:0;height:4px;pointer-events:none;background:linear-gradient(90deg,var(--d1,#c8a050) 50%,var(--d2,#7a8ac0) 50%)}
 .card .bio,.card .mline,.card>.btn{grid-column:1/-1}
 .card .bio{color:var(--mute);font-size:.88rem}
 .mline{font-size:.86rem}

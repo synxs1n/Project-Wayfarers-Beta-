@@ -192,7 +192,7 @@ massive presentation and animation upgrade; characters move in skill-specific wa
 hero bases per class+race (art2.js) with pose set {idle, walk, swing, thrust, shoot, cast, pray, guard, hit, down}; foes by archetype (art.js MART)
 with idle+attack+hit; bosses (art3.js) with idle, telegraph, attack; townsfolk (npc2/villagerLook). Verify every step with sheets.
 
-## 0.12.13 (shipped from this session): batch 4 P1 + P2 (part), Riftkeeper, foe sprite family 1, tents
+## 0.13.3 (was going to be 0.12.13; the owner: after .9 the middle digit bumps, so 0.12.10..12 = 0.13.0..2) shipped from this session: batch 4 P1 + P2 (part), Riftkeeper, foe sprite family 1, tents
 - menus9 (Map group, Records opens on Realms, Journey holds the account stats), complete9 vRealms, element strips everywhere (nav.js .elstrip),
   bonds9 filtered to recruited pairs, p3shop chains + "What I need" (ACT.p3Need, popup p3need, SMITH_PLAN.minPct .03), battle9 one Summon
   command (sumChoices / ACT.sumOne), battle3.css commands-first on phones + single scroller for the skills list, npcmark9 "!" markers,
@@ -212,3 +212,5 @@ with idle+attack+hit; bosses (art3.js) with idle, telegraph, attack; townsfolk (
 from the Guild Hall and tiered as the gold/rare-mat farm; Lore world book per realm; undead healing stronger; skills menu filters; graphics sweep;
 P4 rebalance (roles/sub roles, FAITH, 3 weapon types, RPS, swarms, subrole 80%, one free stat reset); 4 Scourges + 5th Calamity + The Ashglass Reach.
 Sprite overhaul next families: toads/gulls/hawks/bats/rays, wisps/jellies/wraiths, golems/husks/knights, then bosses, heroes (pose set), NPCs.
+
+- Versioning rule (owner, 0.13.3): the last digit never passes 9; 0.12.9 -> 0.13.0. Party slot cards carry no element strip (only reserve minis and roster cards do).

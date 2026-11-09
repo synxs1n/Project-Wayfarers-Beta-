@@ -104,8 +104,8 @@ small{font-size:.86rem;color:var(--mute)}
 .card.hero{text-align:left;display:grid;grid-template-columns:auto 1fr;gap:6px 12px;padding:12px;background:var(--wood);border:4px solid var(--ink);box-shadow:inset 0 0 0 2px #6a4a22;align-content:start}
 button.card.hero:hover{background:var(--wood2)}
 .card.sel{background:var(--wood2);box-shadow:inset 0 0 0 3px var(--gold)}
-.card.hero.elstrip,button.mini.elstrip,.swc.elstrip{position:relative;overflow:hidden}
-.card.hero.elstrip::after,button.mini.elstrip::after,.swc.elstrip::after{content:'';position:absolute;left:0;right:0;bottom:0;height:4px;pointer-events:none;background:linear-gradient(90deg,var(--d1,#c8a050) 50%,var(--d2,#7a8ac0) 50%)}
+.card.hero.elstrip,button.mini.elstrip{position:relative;overflow:hidden}
+.card.hero.elstrip::after,button.mini.elstrip::after{content:'';position:absolute;left:0;right:0;bottom:0;height:4px;pointer-events:none;background:linear-gradient(90deg,var(--d1,#c8a050) 50%,var(--d2,#7a8ac0) 50%)}
 .card .bio,.card .mline,.card>.btn{grid-column:1/-1}
 .card .bio{color:var(--mute);font-size:.88rem}
 .mline{font-size:.86rem}
@@ -1840,7 +1840,7 @@ html.rm .battle.b3 .cmd .mi.b9glow{animation:none}
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.12.13";const APP_BUILD="b53d1a04857a";
+(function(){const APP_VER="0.13.3";const APP_BUILD="7d68a183f2b7";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2533,7 +2533,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.12.13";const APP_BUILD="b53d1a04857a";
+const APP_VER="0.13.3";const APP_BUILD="7d68a183f2b7";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2541,15 +2541,15 @@ const APP_VER="0.12.13";const APP_BUILD="b53d1a04857a";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
- ['Beta v0.12.13',['Menu: the World group is now Map (the area map with a World map button); Records opens on the Realms tracker (per realm: quests, bounties, Den, Sanctum, boss) and the account stats live under Journey; element strips on every party card and reserve mini, single types too; the Bonds tab only lists pairs you can work on.',
+ ['Beta v0.13.3',['Menu: the World group is now Map (the area map with a World map button); Records opens on the Realms tracker (per realm: quests, bounties, Den, Sanctum, boss) and the account stats live under Journey; element strips on every party card and reserve mini, single types too; the Bonds tab only lists pairs you can work on.',
   'Smithy and Alchemy: Upgrade whole party tempers to the highest forge level and per slot "best upgrade" now chains buy and temper steps; anything out of reach shows a "What I need" popup (gold, materials, where to get them) from the goal line and the Out of reach rows; upgrades under 3% are not suggested.',
   'Battle: Invoke, Spirit Call and the pet are one Summon command (a chooser when there is more than one); phones: the commands come first again and the skills list scrolls to its end.',
   'Towns: "!" over NPCs who have a quest for you; tamed beasts get unique names; the Echoforge is an anvil inside the Echo Rift (no Smithy tab in town); beaten Echo gates glow in their element colour, Calamity gates are taller crimson and gold arches.',
   'The Riftkeeper: an ultimate boss behind a sealed gate in the Sanctum, open once all 16 Echoes are beaten: level 60, cycles through the eight elements, raises Echo shades at 40% HP and winds up an Unmaking that only Guard survives. First win: the Riftkeeper charm (+10% every element, MP costs +10%), the Riftwalker title and a New Game+ Rift modifier. The Echo Warden now offers a free full rest.',
   'Sprites: the first foe families are redrawn with real animation frames (idle A/B, attack lunge, hit flinch): mossling, dewtoad, cinderpup, frostwolf, crawler, shellguard, magmaslime and the gnat swarm, plus 21 realm, night and boss variants with their own shapes (horns, crowns, fins, collars), not recolours.',
   'Tents (Last Ember, Wick\'s End and camps) are no longer flat triangles: lit and shaded faces, cloth panels, a sagging hem, guy ropes and a base shadow; in HD-2D they stand as round cones instead of upright cards.']],
- ['Beta v0.12.12',['Guild rank 1 no longer adds battle XP for everyone from the first fight (the Beastwardens, Archivists and Steady Hand rank 1 perk is a 3% inn discount instead); XP perks start at rank 2. The Guilds page text matches.']],
- ['Beta v0.12.10',['Fix: on phones the battle stage frame no longer clips the bottom 8 pixels of the stage, so labels under the heroes have their room back and stop crowding the foes.']],
+ ['Beta v0.13.2',['Guild rank 1 no longer adds battle XP for everyone from the first fight (the Beastwardens, Archivists and Steady Hand rank 1 perk is a 3% inn discount instead); XP perks start at rank 2. The Guilds page text matches.']],
+ ['Beta v0.13.0',['Fix: on phones the battle stage frame no longer clips the bottom 8 pixels of the stage, so labels under the heroes have their room back and stop crowding the foes.']],
  ['Beta v0.12.9',['Sprites and effects: every wayfarer now has their own look on top of class and element (hair style and colour, skin tone, one or two accessories such as a scarf, eyepatch, satchel, shoulder plate or circlet, and a tinted weapon), in the overworld, in battle and on portraits; legends keep their hand made looks. Skills show their element as a shape, not just a colour: flame tongues, a wave arc, an ice shard fan, a jagged bolt, bursting rock, curved wind slashes, a light beam, a shadow burst; physical hits show a slash, pierce, impact or arrow; heals, buffs and debuffs have their own marks; Limit Breaks flash the screen (a still tint under reduced motion). Bosses and guardians breathe, and a foe winding up a big hit swells and glows.']],
  ['Beta v0.12.8',['Effects pass, first slice: new battle effect shapes and boss art frames are landing (more in the next updates).']],
  ['Beta v0.12.7',['Battle on phones: your heroes\' cards (HP, MP, turn marker) sit right under the stage with the commands below them, so nothing falls off the bottom of the screen.']],
@@ -11495,7 +11495,7 @@ function vSwap(where){
     if(!c)return `<div class="swc ${grid?'':'row'} empty ${on?'sel':''}"><button class="swm" data-act="swapTap" data-arg="p:${i}" ${town||sel?'':'disabled'}><small>${lab}</small><span>Empty slot</span></button></div>`;
     // Beta v0.3.1: one readable row per hero: portrait, name, level and class, elements, HP and MP with numbers, KO or status marker
     const bad=[...new Set(Object.keys(c.st||{}).filter(k=>STS[k]&&STS[k].bad).concat(typeof ailOf==='function'?ailOf(c):[]))],mark=c.hp<=0?'<em class="swko">KO</em>':bad.length?`<em class="swst" aria-label="${bad.map(k=>STS[k].n).join(', ')}">${bad.map(k=>`<span class="ail" style="--c:${STS[k].c}" title="${STS[k].n}">${stSym(k)}</span>`).join('')}</em>`:'';
-    return `<div class="swc elstrip ${grid?'':'row'} ${on?'sel':''} ${c.hp<=0?'ko':''}" ${dualStyle(TPL[c.id])}><button class="swm" data-act="swapTap" data-arg="p:${i}" aria-pressed="${on}" aria-label="${esc(c.name)}, ${lab}${on?', selected':''}">${port(c.id,'noail')}<span class="swi"><span class="swn"><b>${esc(c.name)}</b><span class="els">${c.el.map(ico).join('')}</span></span>${mark?`<span class="swstrow">${mark}</span>`:''}<small>${grid?'':lab+' · '}Lv ${c.lv} ${CLS[TPL[c.id].cls].n}${c.pts?` · <span class="up">${c.pts} pts</span>`:''}</small><span class="swb"><span class="swbl">HP</span>${bar(c.hp,c.S.mhp,'var(--hp)')}<span class="nums">${c.hp}/${c.S.mhp}</span></span><span class="swb"><span class="swbl">MP</span>${bar(c.mp,c.S.mmp,'var(--mp)')}<span class="nums">${c.mp}/${c.S.mmp}</span></span>${grid?xpLine(c,true):xpLine(c)}</span></button><button class="btn sm swsheet" data-act="${openAct}" data-arg="${c.id}" aria-label="Open ${esc(c.name)}'s sheet">Sheet</button></div>`;};
+    return `<div class="swc ${grid?'':'row'} ${on?'sel':''} ${c.hp<=0?'ko':''}" ${dualStyle(TPL[c.id])}><button class="swm" data-act="swapTap" data-arg="p:${i}" aria-pressed="${on}" aria-label="${esc(c.name)}, ${lab}${on?', selected':''}">${port(c.id,'noail')}<span class="swi"><span class="swn"><b>${esc(c.name)}</b><span class="els">${c.el.map(ico).join('')}</span></span>${mark?`<span class="swstrow">${mark}</span>`:''}<small>${grid?'':lab+' · '}Lv ${c.lv} ${CLS[TPL[c.id].cls].n}${c.pts?` · <span class="up">${c.pts} pts</span>`:''}</small><span class="swb"><span class="swbl">HP</span>${bar(c.hp,c.S.mhp,'var(--hp)')}<span class="nums">${c.hp}/${c.S.mhp}</span></span><span class="swb"><span class="swbl">MP</span>${bar(c.mp,c.S.mmp,'var(--mp)')}<span class="nums">${c.mp}/${c.S.mmp}</span></span>${grid?xpLine(c,true):xpLine(c)}</span></button><button class="btn sm swsheet" data-act="${openAct}" data-arg="${c.id}" aria-label="Open ${esc(c.name)}'s sheet">Sheet</button></div>`;};
   const bench=Object.values(G.roster).filter(c=>!G.party.includes(c.id)).filter(c=>lmatch('party',c));const benchS=lsort('party',bench,(a,b)=>b.lv-a.lv||a.name.localeCompare(b.name));
   return `${grid?'<div class="swgridwrap">':''}<div class="btnrow ptools"><button class="btn sm gold" data-act="bpOpen">Build party</button>${G.daily?'':`<button class="btn sm" data-act="autoEqParty" title="The best gear you own for your party. May take gear from your reserves.">Equip best: party</button><button class="btn sm" data-act="autoEqCamp" ${Object.keys(G.roster).some(id=>!G.party.includes(id))?'':'disabled'} title="Your reserves get the best spare gear from the pack. Never takes anything from your party.">Equip best: reserves</button>`}<button class="btn sm" data-act="fsOpen">Field skills</button>${(G.talks||[]).length?`<button class="btn sm gold" data-act="campfire">Campfire talks (${G.talks.length})</button>`:''}</div>${ldStrip()}<p class="note swhint ${sel?'on':''}">${hint}</p>
     <h4>Vanguard</h4><div class="swlist ${grid?'g3':''}">${[0,1,2].map(i=>card(P[i],i)).join('')}</div>
@@ -24837,7 +24837,7 @@ function sumChoices(a){const out=[];try{if(typeof canSummon==='function'&&canSum
 ACT.sumOne=function(){if(!B||B.mode!=='cmd'||!B.cur)return;const C=sumChoices(B.cur);if(!C.length)return;
   if(C.length===1){const c=C[0];if(c.k==='pet')return ACT.summon();return ACT.sumPick(c.arg);}
   if(C.some(c=>c.k==='guard')){B.menu='summons';render();return;}ACT.summon();};
-{const st=document.createElement('style');st.textContent='.battle.b3 .mi.b9sum{overflow:hidden}.battle.b3 .mi.b9sum small{display:block;font-size:.58em;opacity:.8;font-weight:600;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;letter-spacing:0}';/* v0.12.13: a long pet name is clipped with an ellipsis on the 344 px cover screen, never pushed out of the button */document.head.appendChild(st);}
+{const st=document.createElement('style');st.textContent='.battle.b3 .mi.b9sum{overflow:hidden}.battle.b3 .mi.b9sum small{display:block;font-size:.58em;opacity:.8;font-weight:600;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;letter-spacing:0}@media (max-width:359px){.battle.b3 .mi.b9sum small{display:none}}';/* v0.12.13: on a cover screen the button says only Summon;: a long pet name is clipped with an ellipsis on the 344 px cover screen, never pushed out of the button */document.head.appendChild(st);}
 
 // ===== npcmark9.js: a pulsing "!" over NPCs and field actors who have a quest for you =====
 // npcQuestState(actor) -> 'new' | 'ready' | null.
