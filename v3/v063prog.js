@@ -126,7 +126,7 @@ function vTameLog(){const L=tameList(),T=tamedSet(),C=tameCounts(),grp=[];L.forE
   const tile=x=>{const t=T.has(x.n),s=(META.best[x.n]||{}).seen;
     if(!s&&!t)return `<div class="btile unk tl"><img class="tlsil" src="${monURL(x.o.d.art)}" alt=""><b>???</b><small class="tlw">Not seen yet</small></div>`;
     return `<div class="btile tl ${t?'tlt':'tls'}"><img src="${monURL(x.o.d.art)}" alt=""><b>${esc(x.n)}</b><span class="els">${(x.o.d.el||[]).map(ico).join('')}</span><em class="tlst">${t?'Tamed':'Seen'}</em>${t?'':`<small class="tlw">${esc(x.where)}</small>`}</div>`;};
-  return `<p class="note tlhead"><b class="nums">Tamed ${C.tamed} of ${C.all}</b> this journey, ${C.seen} seen. Beaten bounty beasts can be tamed. With Nikaris in the party, any beaten monster may ask to join, and a fallen Scourge may leave a lesser whelp. Up to 8 companions travel with you.</p>
+  return `<p class="note tlhead"><b class="nums">Tamed ${C.tamed} of ${C.all}</b> this journey, ${C.seen} seen. Beaten bounty beasts can be tamed. With Nikaris in the party, any beaten monster may ask to join, and a fallen Scourge may leave a lesser whelp. Up to 8 pets travel with you.</p>
     ${grp.map(g=>`<h4>${esc(g.n)} <span class="cnt nums">${g.l.filter(x=>T.has(x.n)).length}/${g.l.length}</span></h4><div class="btiles">${g.l.map(tile).join('')}</div>`).join('')}`;}
 {const vb0=vBestiary;vBestiary=function(){const tame=V.bview==='tame';
   const chips=`<div class="chips bview" role="tablist"><button role="tab" aria-selected="${!tame}" class="chip sm ${tame?'':'on'}" data-act="bview" data-arg="all">All creatures</button><button role="tab" aria-selected="${tame}" class="chip sm ${tame?'on':''}" data-act="bview" data-arg="tame">Taming log</button></div>`;

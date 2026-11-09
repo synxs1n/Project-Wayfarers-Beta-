@@ -359,6 +359,10 @@ function worldDraw(now){
   // the Scourge or Calamity waits on its rune circle
   const echoUp=dun&&m.bossAt&&!m.safe&&G.cleared[m.s]&&typeof storyEchoUp==='function'&&storyEchoUp(m.s);
   if(dun&&m.bossAt&&!m.safe&&(!G.cleared[m.s]||echoUp)){const def=guardianDef(bossKeyFor(m.s)),[bx,by]=m.bossAt;actors.push({y:by*TS,draw:()=>{const c=echoUp?imgOf('mapecho:'+def.art,()=>monCanvas(MART['echo_'+def.art]?'echo_'+def.art:def.art)):imgOf('mapboss:'+def.art,()=>monCanvas(def.art));const bob=Math.round(Math.sin(now/420)*1.5);if(echoUp){ctx.save();ctx.globalAlpha=.72+.18*Math.sin(now/300);}drawSprite(ctx,c,bx*TS+8-cx,by*TS+16-cy+bob,true);if(echoUp)ctx.restore();}});}
+  // v0.12: a Sanctum's guardian stands on its rune circle (name shown as the hero approaches)
+  {const sg=typeof sanctGuard==='function'?sanctGuard(m):null;if(sg)actors.push({y:sg.y*TS,draw:()=>{const c=imgOf('mapboss:'+sg.art,()=>monCanvas(sg.art)),bob=Math.round(Math.sin(now/420)*1.5),X=sg.x*TS+8-cx,Y=sg.y*TS+16-cy+bob,n=sanctNear(sg);
+    ctx.fillStyle='rgba(138,232,255,.18)';ctx.beginPath();ctx.ellipse(X,Y-2,16,6,0,0,7);ctx.fill();drawSprite(ctx,c,X,Y,true);
+    if(n>0){ctx.save();ctx.globalAlpha=n;ctx.font='bold 7px sans-serif';ctx.textAlign='center';ctx.lineWidth=2;ctx.strokeStyle='#0a0614';ctx.fillStyle='#ffe08a';const ty=Y-c.height-3;ctx.strokeText(sg.name,X,ty);ctx.fillText(sg.name,X,ty);ctx.restore();}}});}
   // the hero
   const lid=leaderId(),t=TPL[lid],view=WS.dir==='u'?'back':WS.dir==='d'?'front':'side',lk=heroLook(lid);
   const frame=walkFrame(view,!!WS.mv,now),idleBob=!WS.mv&&Math.floor(now/650)%2?1:0;

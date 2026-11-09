@@ -12,6 +12,20 @@ function sumList(){try{return Object.values(G.summons||{});}catch(e){return [];}
 function sumUnlock(mon,name,mod){if(!G||G.daily||!MON[mon])return false;G.summons=G.summons||{};if(G.summons[mon])return false;G.summons[mon]={mon,name:name||MON[mon].n,mod:mod||null,at:Date.now()};return true;}
 // old saves: guardians already beaten become summons
 {const up0=unpackG;unpackG=function(){const r=up0.apply(this,arguments);try{if(G&&!G.summons&&G.miniDone&&G.miniPick&&typeof MINIS!=='undefined'){G.summons={};Object.keys(G.miniDone).forEach(id=>{const i=G.miniPick[id];const D=i!=null&&MINIS[i];if(D)sumUnlock(D[0],D[2],D[5]);});}}catch(e){}return r;};}
+// v0.12: one guardian per site, drawn WITHOUT replacement per journey. A seeded Fisher-Yates shuffle of all guardians (seed: G.run.seed)
+// is dealt out by site slot (Sanctum of stage s: slot s, Den of stage s: slot 5+s), so the pick does not depend on the order the sites are
+// visited, and no two sites ever share one. A slot whose guardian is already held by another site (old saves, which picked by visit order)
+// takes the next free one along the shuffle. Picks are stored in G.miniPick as before.
+function miniOrder(){const seed=((G&&G.run&&G.run.seed)||1),R=seeded((seed^0x31415)>>>0),o=MINIS.map((_,k)=>k);for(let i=o.length-1;i>0;i--){const j=Math.floor(R()*(i+1));[o[i],o[j]]=[o[j],o[i]];}return o;}
+function miniSlot(id){const t=String(id),s=parseInt(t.slice(1),10)||0;return t[0]==='o'?s:t[0]==='k'?5+s:10+(hashS(t)%10);}
+miniFor=function(m){G.miniPick=G.miniPick||{};let i=G.miniPick[m.id];
+  if(i==null){const used=new Set(Object.values(G.miniPick)),order=miniOrder(),n=order.length,s0=miniSlot(m.id);
+    for(let k=0;k<n&&i==null;k++){const c=order[(s0+k)%n];if(!used.has(c))i=c;}
+    if(i==null)i=order[s0%n];G.miniPick[m.id]=i;}
+  const D=MINIS[i];return {mon:D[0],name:D[2],mod:D[5]};};
+// small art for the summoned guardian: the unit's art key without the BIG_ART entry (40 px), same drawing
+function sumArt(a){if(typeof BIG_ART==='undefined'||!BIG_ART.includes(a))return a;const k=a+'~s';
+  if(!MART[k]){MART[k]=MART[a];if(MEXTRA[a])MEXTRA[k]=MEXTRA[a];if(typeof MON_TY!=='undefined'&&MON_TY[a])MON_TY[k]=MON_TY[a];if(typeof FAM_OF!=='undefined'&&FAM_OF[a])FAM_OF[k]=FAM_OF[a];}return k;}
 // every Sanctum has its guardian (caves keep their chance)
 {const sh0=siteHasMini;siteHasMini=function(id){if(typeof id==='string'&&id[0]==='o')return true;return sh0.apply(this,arguments);};}
 HOOK.after('win','summon8','a beaten guardian becomes a summon',function(){try{const sp=B&&B.spec,mi=sp&&sp.mini;if(!mi||typeof mi!=='object'||!G||G.daily)return;if(sumUnlock(mi.mon,mi.name,mi.mod)){const info=(B&&B.result)||(V.modal&&V.modal.info);if(info){info.notes=info.notes||[];info.notes.push(`${mi.name} is bound to your cause: a Priest can now Invoke it in battle (a Monk from level ${SUM.monkLv} can call a lesser form).`);}}}catch(e){}});
@@ -22,9 +36,9 @@ function sumCost(a){return Math.max(SUM.mpMin,Math.round(a.S.mmp*SUM.mp));}
 // ----- the unit -----
 function sumMake(o,lesser,owner){const m=MON[o.mon];const heroes=B.front.filter(c=>c.hp>0),lv=Math.round(heroes.reduce((q,c)=>q+c.lv,0)/Math.max(1,heroes.length))+SUM.lvUp;
   const u=makeEnemy(m,lv,{elite:true,name:o.name,mod:o.mod,noField:1,noBuff:1,hpM:1,powM:SUM.powM*(lesser?SUM.lesser:1)});
-  u.side='p';u.isSum=1;u.id='sum_'+o.mon;u.base=o.name;u.lb=0;u.owner=owner||null;u.lesser=!!lesser;u.turnsLeft=lesser?SUM.lesserTurns:SUM.turns;
+  u.art=sumArt(u.art);u.side='p';u.isSum=1;u.id='sum_'+o.mon;u.base=o.name;u.lb=0;u.owner=owner||null;u.lesser=!!lesser;u.turnsLeft=lesser?SUM.lesserTurns:SUM.turns;
   const pool=lesser?(owner?owner.S.mhp:0):B.front.reduce((q,c)=>q+(c.S?c.S.mhp:0),0);u.S.mhp=Math.max(u.S.mhp,Math.round(pool*SUM.hpK*(lesser?.8:1)));u.hp=u.S.mhp;u.S.mmp=999;u.mp=999;
-  if(!TPL[u.id])TPL[u.id]={id:u.id,n:o.name,cls:'warrior',el:m.el.slice(),trait:'brave',bio:`${o.name}, guardian of a Sanctum, bound to your cause.`,src:'sum',look:null,mon:o.mon,art:m.art,summon:1};
+  if(!TPL[u.id])TPL[u.id]={id:u.id,n:o.name,cls:'warrior',el:m.el.slice(),trait:'brave',bio:`${o.name}, guardian of a Sanctum, bound to your cause.`,src:'sum',look:null,mon:o.mon,art:sumArt(m.art),summon:1};
   u.msk=(m.sk||[]).map(s=>({id:'s'+s[0],n:s[0],el:s[1],pw:+(s[2]*1.05).toFixed(2),t:s[3]==='all'?'all':s[3]==='self'?'self':'one',k:s[4]==='buff'?'buff':s[4],fx:s[5]||null,mp:0,cost:1,hits:1}));
   return u;}
 function sumFire(a,o,lesser){const u=sumMake(o,lesser,lesser?a:null);

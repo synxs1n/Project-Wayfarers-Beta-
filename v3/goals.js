@@ -33,7 +33,7 @@ const GOALS=[
  {id:'bounty',t:'Beat a bounty',sub:()=>'Notice Board > Bounties: accept one, then find the beast on the map.',ok:()=>glTop()>=5&&(G.bounties||[]).some(b=>b.state==='open'||b.state==='active'),...glCnt('bounty',1)},
  {id:'guard',t:'Guard against a big hit',sub:()=>'When a foe winds up or gathers power, Guard the hero it aims at.',ok:()=>glC('tele')>=1,...glCnt('guard',1),item:'potion'},
  {id:'surge',t:'Reach a Momentum Surge',sub:()=>'Mix different moves: the Momentum bar fills and your heroes surge.',ok:()=>glBattles()>=8,...glCnt('surge',1)},
- {id:'comp',t:'Pair a companion with a hero',sub:()=>'Party > Companions: a stat bonus and a Summon in battle.',ok:()=>glPc('taming')&&(G.tamed||[]).length>0,done:()=>(G.tamed||[]).some(o=>o.with)},
+ {id:'comp',t:'Pair a pet with a hero',sub:()=>'Party > Pets: a stat bonus and a Summon in battle.',ok:()=>glPc('taming')&&(G.tamed||[]).length>0,done:()=>(G.tamed||[]).some(o=>o.with)},
  {id:'temper',t:'Temper a piece of gear',sub:()=>'Smithy > Tempering: +1 for parts and gold.',ok:()=>glPc('gear')&&(typeof pcTemperOpen!=='function'||pcTemperOpen()),done:()=>typeof pcHasTempered==='function'&&pcHasTempered()},
  {id:'guildm',t:'Take on a guild mission',sub:()=>'Notice Board > Guilds: missions raise your rank and its perks sooner.',ok:()=>glPc('guilds')&&(typeof pcGuildOpen==='function'?pcGuildOpen():typeof pcFirstBoss!=='function'||pcFirstBoss()),
   done:()=>{try{const f=facInit();return Object.keys(f.acc||{}).length+Object.keys(f.done||{}).length>0;}catch(e){return false;}}},

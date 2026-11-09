@@ -83,8 +83,8 @@ function mAutoEq(m){const rows=m.rows||[],ttl={party:'Equip Best',all:'Equip bes
   const body=rows.length?`<p class="note">${rows.length} hero${rows.length>1?'es':''} changed, combined gear power ${pct>=0?'+':''}${pct}%. Undo puts everything back exactly.</p><div class="rows">${rows.map(r=>{const d=r.pw0>0?Math.round((r.pw1-r.pw0)/r.pw0*100):0;
     return `<div class="row">${port(r.id,'sm')}<div class="grow"><b>${esc(r.name)}</b>${r.inParty?'':' <small>(roster)</small>'} <span class="${d>=0?'up':'dn'}">${d>=0?'▲':'▼'} ${Math.abs(d)}%</span>
       ${r.ch.map(x=>`<small>${SLOTN[x.sl]}: ${x.from?esc(gearOf(x.from).n):'nothing'} → <span class="${x.to?'up':'dn'}">${x.to?esc(gearOf(x.to).n):'nothing'}</span></small>`).join('')}
-      ${r.comp?`<small>Companion: ${compName(r.comp.from)} → <span class="up">${compName(r.comp.to)}</span></small>`:''}</div></div>`;}).join('')}</div>`
-    :'<p>Everyone already has the best gear and companion you own for their class.</p>';
+      ${r.comp?`<small>Pet: ${compName(r.comp.from)} → <span class="up">${compName(r.comp.to)}</span></small>`:''}</div></div>`;}).join('')}</div>`
+    :'<p>Everyone already has the best gear and pet you own for their class.</p>';
   return box(ttl,body,`${rows.length?'<button class="btn" data-act="autoEqUndo">Undo</button>':''}<button class="btn gold" data-act="xBack">OK</button>`);}
 // ----- "Best for": every party member who would gain, ranked, with arrows for each -----
 function gainersFor(id,all){const k='g'+(all?'a':'p')+id;if(FITC&&FITC[k])return FITC[k];

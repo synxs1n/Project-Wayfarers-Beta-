@@ -112,3 +112,12 @@ P5 0.11.8+ realms: realm order rises in fantasy with the most intricate final to
   META.tipLog + Hint log popup (type 'hintlog', Settings Tips row button, Log button on the tip card). Test v119b.
 - Helpers (in flight at the time of writing): factions.js 5 ranks + guild mission hand-in at a Guild Hall + the six stale board tests;
   world: mapIndoor (no weather in lairs/Dens, open Sanctums), ROAM.boost, loot variety (bandage/tent/ash), board/waystone spacing.
+
+## 0.12.0 (in progress)
+- bonds9.js: 15 new pairs (BONDS9), after-the-battle lines for the 19 old pairs (BONDS9_BOSS), scenes camp/inn (lv 2) and boss (lv 3),
+  ctxOffer at campMake / ACT.rest / win (boss), G.ctxTalks once-only, readyTalks wrap (talkArg is a const: never reassign it), ACT.bondTalk
+  'k:lv:ctx' args, vBonds -> vBondsAll (every pair, next unlock, scene buttons). Test v120a (party group).
+- Helpers in flight: Pets (companions renamed, Pet row in the Equipment menu, Equip party pairs pets); Sanctum shrine look + guardians visible,
+  Scourge-sized and unique per journey + town exits kept clear.
+- Still open from batch 3: sprite/animation/effects quality pass (big), battle screen and menu reorganization (big), tests for the new world
+  rules in battle (weather in an open Sanctum battle, hdstage/hd2d indoor checks).

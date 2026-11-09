@@ -39,10 +39,16 @@ function buildFort(R,s){const W=SITES.fortW,H=SITES.fortH,D=new Gr(W,H,'#');
   const sc=[start.x+3,start.y];D.put(sc[0],sc[1],'E');
   const chests=[],pc=[keep.x+Math.floor(keep.w/2),keep.y+Math.floor(keep.h/2)];D.put(pc[0],pc[1],'C');chests.push([pc[0],pc[1],'reward']);
   bar.forEach((r,i)=>{if(R()<.6){const x=r.x+(i%2?r.w-1:0),y=r.y+(r.y<yard.y?0:r.h-1);if(D.get(x,y)==='.'){D.put(x,y,'C');chests.push([x,y]);}}});
-  return {rows:D.g,start:[sc[0],sc[1]+1],chests,prize:pc};}
+  // v0.12 (new journeys): the keep is a sacred hall. The guardian's spot is an 'X' tile (solid, drawn as a rune circle) just north of the
+  // prize chest; standing stones ring it, braziers and pillars line the aisle. Fixed positions (no random draws), the aisle row stays open.
+  let guard=null;if(typeof lay3On==='function'&&lay3On()){const gx=pc[0],gy=pc[1]-1;guard=[gx,gy];D.put(gx,gy,'X');
+    [[-3,0],[3,0]].forEach(([i,j])=>D.put(gx+i,gy+j,'N'));
+    [[-3,-3],[3,-3],[-3,4],[3,4]].forEach(([i,j])=>D.put(gx+i,gy+j,'v'));
+    [[-2,-5],[2,-5],[-2,6],[2,6],[-4,-1],[4,-1],[-4,3],[4,3]].forEach(([i,j])=>{if(D.get(gx+i,gy+j)==='.')D.put(gx+i,gy+j,'P');});}
+  return {rows:D.g,start:[sc[0],sc[1]+1],chests,prize:pc,guard};}
 function genFort(s){for(let a=0;a<40;a++){const R=mulberry(G.run.seed+7313+s*71+a*131),c=buildFort(R,s);if(caveOk(c))return c;}throw new Error('sanctum generation failed');}
 function buildFortMap(id){const s=+id.slice(1),c=genFort(s),Z=ZS(s);const m={id,z:s,s,kind:'dungeon',theme:Z.theme,exits:[],npcs:[],bld:[],signs:{},t:c.rows,start:c.start,bossAt:null,chests:c.chests,
-  wander:[c.start[0],c.start[1]+1],cave:true,fort:true,name:FORT_NAMES[s],fixed:{},prize:c.prize,open:(hashS(id+':'+G.run.seed)&1)?1:0};/* v0.12: about half of the Sanctums are open to the sky (weather and day/night show); the rest read Indoors */m.w=m.t[0].length;m.h=m.t.length;return m;}
+  wander:[c.start[0],c.start[1]+1],cave:true,fort:true,name:FORT_NAMES[s],fixed:{},prize:c.prize,guardAt:c.guard||null,hall:c.guard?1:0,open:(hashS(id+':'+G.run.seed)&1)?1:0};/* v0.12: about half of the Sanctums are open to the sky (weather and day/night show); the rest read Indoors */m.w=m.t[0].length;m.h=m.t.length;return m;}
 // sanctum gatehouse on the field: a clearing far from the dungeon, the cave and the gates, reachable before the sealed gate
 function fortWanted(s){return isRv2()&&s>=1;}
 function placeFort(f,s){if(!f||f.kind!=='field'||f.fortDone||!fortWanted(s))return;f.fortDone=1;if((f.caves||[]).some(c=>c.kind==='fort'))return;
@@ -62,15 +68,51 @@ function placeFort(f,s){if(!f||f.kind!=='field'||f.fortDone||!fortWanted(s))retu
     g[y-1][x-1]=g[y-1][x]=g[y-1][x+1]=g[y][x-1]=g[y][x+1]=g[y][x]=',';f.caves=f.caves.filter(c=>c.id!=='o'+s);f.fortAt=null;}}
 HOOK.wrap('getMap','sites','sanctum maps; place the sanctum on its field',function(next,...a){let id=a[0];if(id&&id[0]==='o'&&!MAPS[id]&&G&&G.run){const fm=MAPS[id]=buildFortMap(id);try{applyBossTheme(fm);if(typeof healMap==='function')healMap(fm);}catch(e){}try{if(typeof guardPaths==='function'&&!window.__PGOFF){fm.__guarded=true;guardPaths(fm);}}catch(e){}}const m=next(...a);
   try{if(m&&m.kind==='field'&&m.part!==1&&!m.fortDone)placeFort(m,m.s);}catch(e){}return m;});
-// the gatehouse is painted into the field's base layer (so heroes and townsfolk always draw in front of it):
-// grey towers with red banners (a cave mouth is a rock arch, a dungeon a carved facade)
+// v0.12: the Sanctum entrance on the field is a SHRINE, not a keep: a stone stair climbing to a pillared gate with a glowing rune arch,
+// hanging lanterns, a pediment with a sun rune, and a ring of low standing stones and candles on the ground in front. Same 3 x 2 tile
+// footprint as before (the 'U' tiles and the 'E' door), so nothing about reachability changes. It is painted into the field's base layer
+// (so heroes and townsfolk always draw in front of it). A Den mouth is a mossy rock arch and a lair a clawed hill: neither has pillars,
+// stairs or this cold white-blue rune light.
 function drawGatehouse(ctx,x,y){
-  ctx.fillStyle='#4a4a54';ctx.fillRect(x,y-8,TS*3,TS*2+8);ctx.fillStyle='#7a7a86';ctx.fillRect(x+1,y-7,TS*3-2,TS*2+6);
-  ctx.fillStyle='#9a9aa6';for(let i=0;i<6;i++)ctx.fillRect(x+2+i*8,y-12,5,5);
-  ctx.fillStyle='#5a5a66';ctx.fillRect(x,y-14,9,TS*2+14);ctx.fillRect(x+TS*3-9,y-14,9,TS*2+14);
-  ctx.fillStyle='#c0392b';ctx.fillRect(x+2,y-4,5,12);ctx.fillRect(x+TS*3-7,y-4,5,12);ctx.fillStyle='#ffd04a';ctx.fillRect(x+3,y-2,3,2);ctx.fillRect(x+TS*3-6,y-2,3,2);
-  ctx.fillStyle='#120c10';ctx.fillRect(x+TS+2,y+TS-2,TS-4,TS+2);ctx.fillStyle='#3a2a1a';for(let i=0;i<3;i++)ctx.fillRect(x+TS+3+i*4,y+TS-2,1,TS+2);}
-{const bm0=buildMapCanvas;buildMapCanvas=function(m,fr){const c=bm0.apply(this,arguments);try{if(m&&m.kind==='field'&&m.fortAt&&c&&c.getContext){const [fx,fy]=m.fortAt;drawGatehouse(c.getContext('2d'),(fx-1)*TS,(fy-1)*TS);}}catch(e){}return c;};}
+  const f=(c,a,b,w,h)=>{ctx.fillStyle=c;ctx.fillRect(x+a,y+b,w,h);};
+  // the ring of standing stones and candles on the ground in front (flat, walkable): drawn first, under everything
+  ctx.fillStyle='rgba(20,24,40,.22)';ctx.beginPath();ctx.ellipse(x+24,y+36,31,9,0,0,7);ctx.fill();
+  for(let i=0;i<12;i++){const t=Math.PI*(.12+i/11*.76),sx=Math.round(24+Math.cos(t)*30),sy=Math.round(36+Math.sin(t)*8);
+    if(i%3===1){f('#2a2230',sx-1,sy-1,3,1);f('#ffd070',sx,sy-2,1,2);f('#fff6c8',sx,sy-3,1,1);ctx.fillStyle='rgba(255,208,112,.22)';ctx.beginPath();ctx.arc(x+sx+.5,y+sy-2,3.5,0,7);ctx.fill();}
+    else{f('#4a4658',sx-1,sy-3,3,4);f('#8c889a',sx-1,sy-3,3,1);f('#6a667a',sx-1,sy-2,1,3);}}
+  // the stone stair: four steps widening toward the front, rune notches on the risers
+  for(let i=0;i<4;i++){const w=14+i*3,yy=TS+14+i*4;f('#6a6678',24-w/2-1,yy,w+2,5);f('#aaa6b4',24-w/2,yy,w,2);f('#7a7688',24-w/2,yy+2,w,2);f('#3a3648',24-w/2,yy+4,w,1);
+    if(i>0){f('#8ae8ff',22,yy+3,1,1);f('#8ae8ff',25,yy+3,1,1);}}
+  // the back wall (dark, cool) and the doorway with the glowing arch
+  f('#3a3a4e',9,-2,30,TS*2-2);f('#4a4a60',10,-1,28,2);f('#26263a',11,2,26,TS*2-8);
+  ctx.fillStyle='#0a0c1a';ctx.beginPath();ctx.moveTo(x+16,y+TS+14);ctx.lineTo(x+16,y+11);ctx.quadraticCurveTo(x+24,y-2,x+32,y+11);ctx.lineTo(x+32,y+TS+14);ctx.fill();
+  const gl=ctx.createRadialGradient(x+24,y+TS+4,1,x+24,y+TS+4,16);gl.addColorStop(0,'rgba(150,230,255,.5)');gl.addColorStop(1,'rgba(150,230,255,0)');ctx.fillStyle=gl;ctx.fillRect(x+14,y+8,20,TS+8);
+  ctx.strokeStyle='#8ae8ff';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x+16,y+TS+14);ctx.lineTo(x+16,y+11);ctx.quadraticCurveTo(x+24,y-2,x+32,y+11);ctx.lineTo(x+32,y+TS+14);ctx.stroke();
+  ctx.strokeStyle='#e8fbff';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x+17.5,y+TS+10);ctx.lineTo(x+17.5,y+11);ctx.quadraticCurveTo(x+24,y+.5,x+30.5,y+11);ctx.lineTo(x+30.5,y+TS+10);ctx.stroke();
+  [[13,16],[11,22],[10,28],[34,16],[36,22],[37,28],[24,0]].forEach(([a,b])=>{f('#8ae8ff',a,b,2,1);f('#8ae8ff',a+(a<24?0:1),b+1,1,2);});// runes on the wall and the keystone sigil
+  // the pediment over the gate with its sun rune
+  ctx.fillStyle='#5a566a';ctx.beginPath();ctx.moveTo(x+1,y-6);ctx.lineTo(x+24,y-17);ctx.lineTo(x+47,y-6);ctx.fill();
+  ctx.fillStyle='#b8b4c4';ctx.beginPath();ctx.moveTo(x+4,y-7);ctx.lineTo(x+24,y-15);ctx.lineTo(x+44,y-7);ctx.lineTo(x+44,y-6);ctx.lineTo(x+4,y-6);ctx.fill();
+  f('#d8d4e0',1,-6,46,3);f('#8a869a',1,-3,46,1);f('#fff6c8',23,-12,2,2);f('#ffe08a',22,-11,4,1);f('#ffe08a',23,-13,2,4);
+  // two marble pillars with capitals, bases and a rune band, a lantern hung from each side of the arch
+  [[2],[38]].forEach(([a])=>{f('#7a768a',a,-8,8,TS*2+6);f('#d8d4e0',a+1,-8,3,TS*2+6);f('#a8a4b6',a+4,-8,2,TS*2+6);f('#5a566a',a+6,-8,2,TS*2+6);
+    f('#e8e4f0',a-1,-10,10,3);f('#8a869a',a-1,-7,10,1);f('#5a566a',a-1,TS*2-2,10,4);f('#8a869a',a-1,TS*2-3,10,1);
+    f('#8ae8ff',a+2,6,1,3);f('#8ae8ff',a+4,6,1,3);f('#8ae8ff',a+3,10,1,2);f('#8ae8ff',a+2,14,3,1);
+    f('#fff6c8',a+3,-12,2,2);ctx.fillStyle='rgba(255,246,200,.28)';ctx.beginPath();ctx.arc(x+a+4,y-11,4,0,7);ctx.fill();});
+  [[13],[33]].forEach(([a])=>{f('#2a2230',a+1,3,1,5);f('#2a2230',a-1,8,5,1);f('#ffd070',a,9,3,4);f('#fff6c8',a+1,10,1,2);f('#2a2230',a-1,13,5,1);
+    ctx.fillStyle='rgba(255,208,112,.26)';ctx.beginPath();ctx.arc(x+a+1.5,y+11,6,0,7);ctx.fill();});
+}
+{const bm0=buildMapCanvas;buildMapCanvas=function(m,fr){const c=bm0.apply(this,arguments);try{if(m&&m.kind==='field'&&m.fortAt&&c&&c.getContext){const [fx,fy]=m.fortAt;drawGatehouse(c.getContext('2d'),(fx-1)*TS,(fy-1)*TS);
+    m.lights=m.lights||[];/* soft light at night: the two lanterns and the rune arch (also baked as lights in HD-2D) */m.lights.push([fx*TS-2,fy*TS-3,17,'lamp'],[fx*TS+18,fy*TS-3,17,'lamp'],[fx*TS+8,fy*TS+4,30,'cyan']);}
+    if(m&&m.fort&&m.hall&&c&&c.getContext)drawHallRunes(c.getContext('2d'),m);}catch(e){}return c;};}
+// the sacred hall inside (new journeys): a rune circle on the floor around the guardian's spot
+function drawHallRunes(ctx,m){const g=m.guardAt;if(!g)return;const cx=g[0]*TS+8,cy=g[1]*TS+9,D=DTH(m),col='#8ae8ff';
+  ctx.save();const gl=ctx.createRadialGradient(cx,cy,2,cx,cy,52);gl.addColorStop(0,'rgba(138,232,255,.28)');gl.addColorStop(1,'rgba(138,232,255,0)');ctx.fillStyle=gl;ctx.fillRect(cx-56,cy-48,112,96);
+  for(let ring=0;ring<2;ring++){const rx=ring?44:30,ry=ring?32:21,n=ring?60:40;ctx.globalAlpha=ring?.55:.85;
+    for(let a=0;a<n;a++){const t=a/n*Math.PI*2;ctx.fillStyle=(a%5===0)?'#e8fbff':col;ctx.fillRect(Math.round(cx+Math.cos(t)*rx),Math.round(cy+Math.sin(t)*ry),1,1);}}
+  ctx.globalAlpha=.8;ctx.fillStyle=col;for(let a=0;a<8;a++){const t=a/8*Math.PI*2+.2,rx=37,ry=26.5,px=Math.round(cx+Math.cos(t)*rx),py=Math.round(cy+Math.sin(t)*ry);ctx.fillRect(px-1,py,3,1);ctx.fillRect(px,py-1,1,3);}// rune glyphs between the rings
+  ctx.globalAlpha=.5;for(let a=0;a<4;a++){const t=a*Math.PI/2+Math.PI/4;for(let k=0;k<18;k++){const q=k/18;ctx.fillRect(Math.round(cx+Math.cos(t)*30*q*1.1),Math.round(cy+Math.sin(t)*21*q*1.1),1,1);}}// star lines
+  ctx.restore();}
 // ---------- prizes ----------
 function fortReward(s){const kinds=['gear','item','recruit','charm'],k0=kinds[hashS(G.run.seed+'ft'+s)%4];let kind=k0;G.fortWon=G.fortWon||{};
   if(kind==='recruit'){const pool=caveRecruitPool(s).filter(h=>!(LEGEND_IDS||[]).includes(h));if(!pool.length)kind='charm';else{const h=pool[hashS(G.run.seed+'fr'+s)%pool.length];recruit(h,true);G.fortWon[s]='recruit';return `${TPL[h].n} was held in the keep's cells, and asks to join you.`;}}
@@ -94,10 +136,22 @@ const MINIS=[
  ['mb_gloomray','cloudray','The Gloom Ray',['wind','shadow'],'#4a4a7a','frenzy'],['mb_brinehag','crawler','The Brine Hag',['water','shadow'],'#3a6a5a','regen'],
  ['mb_sunscorch','magmaslime','Sunscorch Ooze',['fire','light'],'#ffb040','warded'],['mb_voidcantor','voidspawn','The Void Cantor',['shadow','lightning'],'#5a3a8a','thorns']];
 MINIS.forEach(([id,b,n,e,c])=>makeMonVariant(id,b,n,e,c,{mini:1,hp:+((MON[b]||{hp:1}).hp*1.1).toFixed(2)}));
+// v0.12: guardians are Scourge sized. Every guardian art joins BIG_ART (battle.js unitBox and monCanvas read MON_SIZE: 60 like a Scourge);
+// their code drawn art is the 40 px base monster with a new colour, so monCanvas draws it at its own size and enlarges it 1.5x (nearest
+// neighbour) into the 60 px box. The Priest's Invoke summon uses a small alias art (summon8.js sumArt), so it stays the old size.
+MINIS.forEach(D=>{if(!BIG_ART.includes(D[0]))BIG_ART.push(D[0]);});
+const MINI_BIG=new Set(MINIS.map(D=>D[0]));
+{const mc0=monCanvas;monCanvas=function(art){if(!MINI_BIG.has(art))return mc0.apply(this,arguments);
+  const i=BIG_ART.indexOf(art);if(i>=0)BIG_ART.splice(i,1);let c;try{c=mc0.call(this,art);}finally{if(i>=0)BIG_ART.splice(i,0,art);}
+  const w=Math.round(c.width*1.5),h=Math.round(c.height*1.5),o=mkCv(w,h),x=o.getContext('2d');x.imageSmoothingEnabled=false;x.drawImage(c,0,0,w,h);return o;};}
 function miniFor(m){G.miniPick=G.miniPick||{};let i=G.miniPick[m.id];
   if(i==null){const used=new Set(Object.values(G.miniPick)),R=seeded(((G.run&&G.run.seed)||1)^0x31415),order=MINIS.map((_,k)=>k).sort(()=>R()-.5);
     i=order.find(k=>!used.has(k));if(i==null)i=order[Object.keys(G.miniPick).length%order.length];G.miniPick[m.id]=i;}
   const D=MINIS[i];return {mon:D[0],name:D[2],mod:D[5]};}
+// the Sanctum's guardian waits on its rune circle until it is beaten: who it is, and how close the hero stands (0..1) for the name tag
+function sanctGuard(m){try{if(!m||!m.fort||!m.guardAt||!G||!G.run||G.daily||(G.miniDone&&G.miniDone[m.id])||!siteHasMini(m.id))return null;
+  const mb=m._gd||(m._gd=miniFor(m));return {mon:mb.mon,name:mb.name,art:MON[mb.mon].art,x:m.guardAt[0],y:m.guardAt[1]};}catch(e){return null;}}
+function sanctNear(g){const d=Math.max(Math.abs(WS.x-g.x),Math.abs(WS.y-g.y));return Math.max(0,Math.min(1,(8-d)/3));}
 HOOK.before('openChest','sites','cave reward chests',function(x,y){const m=WS.m;try{if(m&&m.cave&&G&&!G.daily&&(m.chests||[]).some(c=>c[0]===x&&c[1]===y&&c[2]==='reward')&&!G.chests[m.id+':'+x+','+y]){
     G.miniDone=G.miniDone||{};if(siteHasMini(m.id)&&!G.miniDone[m.id]){const mb=miniFor(m);say(null,`Something heavy shifts in the dark. ${mb.name} rises to guard the prize!`,()=>{haltInput();startBattle({stage:m.s,kind:'mini',mini:{id:m.id,mon:mb.mon,name:mb.name,mod:mb.mod}});});return HOOK.stop(undefined);}
     if(m.fort){G.chests[m.id+':'+x+','+y]=1;if(typeof sfx==='function')sfx('chest');rebuildBase();const t=fortReward(m.s);saveGame();say(null,'You open the chest. '+t);return HOOK.stop(undefined);}}}catch(e){}

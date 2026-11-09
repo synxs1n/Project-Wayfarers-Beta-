@@ -468,6 +468,12 @@ function hdActors(m,now,ts){const B=HD.dyn,BB=HD.dynB,BA=HD.dynA,V=HD.S.V,still=
     const c=echoUp?imgOf('mapecho:'+def.art,()=>monCanvas(MART['echo_'+def.art]?'echo_'+def.art:def.art)):imgOf('mapboss:'+def.art,()=>monCanvas(def.art)),bob=still?0:Math.sin(now/420)*1.5;
     const D=DTH(m),ac=hdRgb(D.acc);hdDecal(BA,'glow',hdGlowS(),bx*TS+8,by*TS+9,44*.8,26*.8,ac[0]*255,ac[1]*255,ac[2]*255,110);
     hdChar(echoUp?BB:B,c,bx*TS+8,(bob*.6-sp)*V,by*TS+12,true,echoUp?Math.round((.72+.18*Math.sin(ts/300))*255):255,16);hdShadowC(bx*TS+8,by*TS+13);hdPickAdd(-1,bx*TS+8,by*TS+12,Math.max(HD.chH,22*V),Math.max(HD.chW,16),bx,by);}
+  // v0.12: a Sanctum's guardian on its rune circle, with its name tag as the hero comes near
+  {const sg=typeof sanctGuard==='function'?sanctGuard(m):null;if(sg){const c=imgOf('mapboss:'+sg.art,()=>monCanvas(sg.art)),bob=still?0:Math.sin(now/420)*1.5,gx=sg.x*TS+8,gz=sg.y*TS+12,ac=hdRgb('#8ae8ff');
+    hdDecal(BA,'glow',hdGlowS(),gx,sg.y*TS+9,44*.8,26*.8,ac[0]*255,ac[1]*255,ac[2]*255,110);
+    hdChar(B,c,gx,(bob*.6-sp)*V,gz,true,255,16);hdShadowC(gx,gz+1);hdPickAdd(-1,gx,gz,Math.max(HD.chW,16),Math.max(HD.chH,22*V),sg.x,sg.y);
+    const n=sanctNear(sg);if(n>0){const lab=hdSpr('gname:'+sg.name,Math.max(24,sg.name.length*5+8),11,(q,w,h)=>{q.font='bold 8px sans-serif';q.textAlign='center';q.lineWidth=2.5;q.strokeStyle='#0a0614';q.fillStyle='#ffe08a';q.strokeText(sg.name,w/2,8.5);q.fillText(sg.name,w/2,8.5);});
+      hdBill(B,'gname:'+sg.name,lab,gx,HD.chH+2*V,gz,false,1,255,255,255,Math.round(n*255),4);}}}
   // roaming foes in dungeons and (v0.9.5) on fields: their sprite, an elite ring, a faint sight cone, "!" while chasing
   if(m.roam&&(dun||m.kind==='field')&&typeof ROAM!=='undefined')m.roam.forEach(r=>{if(r.dead)return;let x=r.x*TS,y=r.y*TS;if(r.t0&&r.fx!=null){const p=Math.min(1,(now-r.t0)/(r.mode==='chase'?ROAM.chaseMs:ROAM.patrolMs));x=(r.fx+(r.x-r.fx)*p)*TS;y=(r.fy+(r.y-r.fy)*p)*TS;}
     if(Math.abs(x-HD.cam.x)>420||Math.abs(y-HD.cam.z)>520)return;const img=imgOf('rm:'+MON[r.mon].art,()=>monCanvas(MON[r.mon].art)),bob=still?0:Math.floor(now/300+r.i)%2;

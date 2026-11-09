@@ -1021,3 +1021,4 @@ html.rm .primed.pmin{animation:none}
 
 /* v0.6.1: with a panel open, the save note and cloud icon move to the bottom corner so they never sit on the logo */
 body.noscroll #p5save{top:auto!important;bottom:8px!important}
+.petslot{display:flex;align-items:center;gap:6px;margin-top:4px}.petslot .petcur{flex:1;cursor:default}.petslot .btn{flex:none}

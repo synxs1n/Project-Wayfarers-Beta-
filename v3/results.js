@@ -18,10 +18,10 @@ HOOK.wrap('win','results','reward screen data',function(next,...a){let snap=null
   return r;});
 function rsTame(i){if(!i.tame||i.tamed)return '';const t=i.tame,mo=MON[t.mon]||guardianDef(t.mon);
   return `<div class="rs-tame ${i.tameWarn?'warn':''}" role="group" aria-label="Tame ${esc(t.name)}"><img src="${monURL(mo.art)}" alt=""><div class="grow"><b>${esc(t.name)} is beaten but breathing</b>
-    <small>${t.bb?'Nikaris kneels and whistles softly. Beastbond: it would join with +12% stats and keep its own move. ':''}Tame it and it travels with you as a Companion. ${i.tameWarn?'<strong>Leave now and it is gone for good.</strong>':''}</small>
+    <small>${t.bb?'Nikaris kneels and whistles softly. Beastbond: it would join with +12% stats and keep its own move. ':''}Tame it and it travels with you as a Pet. ${i.tameWarn?'<strong>Leave now and it is gone for good.</strong>':''}</small>
     <div class="btnrow"><button class="btn sm gold" data-act="tame">Tame it</button><button class="btn sm" data-act="untame">Let it go</button></div></div></div>`;}
 function rsJoin(i){const out=[];
-  if(i.tamed)out.push(`<div class="rs-join"><b>${esc(i.tamed)}</b><span>Tamed, now a Companion</span></div>`);
+  if(i.tamed)out.push(`<div class="rs-join"><b>${esc(i.tamed)}</b><span>Tamed, now a Pet</span></div>`);
   if(i.gift)out.push(`<div class="rs-join">${port(i.gift,'sm')}<b>${TPL[i.gift].n} joins you</b><span>${elChips(TPL[i.gift].el)}</span></div>`);
   if(i.legend){const lab=i.legendKind==='duel'?'Duel won':i.legendKind==='wayfarer'?'A wayfarer joins':'Legendary';
     out.push(`<div class="rs-join ${lab==='Legendary'?'leg':''}"><b>${lab}</b><span>${esc(i.legend)}</span></div>`);}

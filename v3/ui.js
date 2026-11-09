@@ -246,7 +246,7 @@ function cmdHtml(){
     body=`${lbOk?(()=>{const LS=limitSkill(a);return `<button class="mi limit ${LS.limit2?'l2':''}" data-act="cmd" data-arg="limit"><span class="n">${LS.tierN}: ${esc(LS.n)}</span><span class="m">Ready</span><small>${esc(LS.d)}${LS.limit2?'':' (Limit I: about 70% power.)'}</small></button>`;})():''}
       <div class="menu prim"><button class="mi" data-act="cmd" data-arg="attack" title="${esc(DL_NAME[deliveryOf(a,atkFor(a))]||'')}">Attack</button><button class="mi" data-act="cmd" data-arg="skills">Skills${bonds.length?' <em class="bondtag">Bond</em>':''}</button>
       <button class="mi" data-act="cmd" data-arg="items">Items</button><button class="mi" data-act="cmd" data-arg="guard">Guard</button></div>
-      <div class="menu sec">${canSummon(a)?`<button class="mi summon" data-act="summon" title="Your companion fights in this hero's place for a few turns">Summon ${esc(compOf(a).name)}</button>`:''}<button class="mi" data-act="cmd" data-arg="scan" title="Read a foe's exact stats and hidden quirks. Costs half a turn.">Scan</button><button class="mi" data-act="cmd" data-arg="guide" title="A short guide to the battle system. Read only, pauses the fight.">Guide</button>
+      <div class="menu sec">${canSummon(a)?`<button class="mi summon" data-act="summon" title="Your pet fights in this hero's place for a few turns">Summon ${esc(compOf(a).name)}</button>`:''}<button class="mi" data-act="cmd" data-arg="scan" title="Read a foe's exact stats and hidden quirks. Costs half a turn.">Scan</button><button class="mi" data-act="cmd" data-arg="guide" title="A short guide to the battle system. Read only, pauses the fight.">Guide</button>
       <button class="mi" data-act="cmd" data-arg="swap" ${sw?'':'disabled'} title="${rooted?'Rooted: cannot switch out':'Swap this hero for a rearguard hero'}">${rooted?'Rooted':'Switch'}</button>
       <button class="mi" data-act="cmd" data-arg="flee" ${noFlee?'disabled':''}>Flee</button></div><div class="btnrow autorow">${auto}</div>`;
   }else if(B.menu==='skills'){
@@ -345,7 +345,7 @@ function mChar(id,edit){
 // v0.6.3: regrouped so each group holds one kind of page: Quests has the guild missions, Backpack has Materials, Records has Lore
 // (the story so far), Guides keeps only the how-to pages. Ids are unchanged; 'pouch' is new (Materials, was the end of Items).
 const MENU_GROUPS=[['party','Party',['party','roster','loadouts','comp']],['gear','Backpack',['equip','items','pouch']],['quests','Quests',['quests','fmis']],['map','Map',['map']],['records','Records',['system','lore','beasts','codex','factions']],['guides','Guides',['next','types','help']],['settings','Settings',['settings']]];
-const MENU_SUB={pouch:'Materials',party:'Party',roster:'Roster',loadouts:'Loadouts',comp:'Companions',equip:'Equipment',items:'Items',next:'What next?',lore:'Lore',types:'Foe types',help:'Help',beasts:'Bestiary',codex:'Codex',factions:'Factions',fmis:'Factions',system:'Journey',quests:'Quests',map:'Map',settings:'Settings'};
+const MENU_SUB={pouch:'Materials',party:'Party',roster:'Roster',loadouts:'Loadouts',comp:'Pets',equip:'Equipment',items:'Items',next:'What next?',lore:'Lore',types:'Foe types',help:'Help',beasts:'Bestiary',codex:'Codex',factions:'Factions',fmis:'Factions',system:'Journey',quests:'Quests',map:'Map',settings:'Settings'};
 function menuGroupOf(tab){return MENU_GROUPS.find(g=>g[2].includes(tab))||MENU_GROUPS[0];}
 function menuTabsHtml(grp,tab){const top=`<div class="chips mgrp" role="tablist">${MENU_GROUPS.map(g=>`<button role="tab" aria-selected="${g===grp}" class="chip ${g===grp?'on':''}" data-act="menuGrp" data-arg="${g[0]}">${g[1]}</button>`).join('')}</div>`;
   const subs=grp[2].filter(t=>MENU_SUB[t]);return top+(subs.length>1?`<div class="chips msub" role="tablist">${subs.map(t=>`<button role="tab" aria-selected="${t===tab}" class="chip sm ${t===tab?'on':''}" data-act="menuTab" data-arg="${t}">${MENU_SUB[t]}</button>`).join('')}</div>`:'');}
@@ -375,7 +375,7 @@ function mMenu(m){
   if(tab==='system')body=vJourney();
   if(tab==='factions'&&typeof vFactions==='function')body=vFactions();
   if(tab==='fmis'&&typeof vFacMissions==='function')body=vFacMissions();
-  if(tab==='loadouts')body=(typeof ldStrip==='function'?`<p class="note">Loadouts remember who is in your six, their order, gear and companions. Tap one to switch${inTown()?'':' (switching your six happens in town)'}.</p>${ldStrip()}<div class="btnrow"><button class="btn gold" data-act="ldMgr">Manage loadouts</button></div>`:'');
+  if(tab==='loadouts')body=(typeof ldStrip==='function'?`<p class="note">Loadouts remember who is in your six, their order, gear and pets. Tap one to switch${inTown()?'':' (switching your six happens in town)'}.</p>${ldStrip()}<div class="btnrow"><button class="btn gold" data-act="ldMgr">Manage loadouts</button></div>`:'');
   if(tab==='types'&&typeof vTypes==='function')body=vTypes();
   if(tab==='help')body=`<p class="note">Stuck, confused or found a bug? Everything here is also in the other Guides tabs: What next? points at your next goal, Lore tells the story so far, and Foe types explains who is weak to what.</p><div class="btnrow"><button class="btn gold" data-act="fbOpen">Help / Feedback</button></div>`;
   if(tab==='settings')body=settingsBody();

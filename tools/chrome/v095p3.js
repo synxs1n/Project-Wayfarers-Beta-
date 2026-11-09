@@ -28,7 +28,7 @@ const c=await ev(async()=>{const A=__A,T=A.TW.get,G=A.G,C=window.__C3,o={};A.set
 console.log(JSON.stringify(Object.assign({},c,{log0:undefined,menu:undefined,sheet:undefined,log2:undefined,url0:undefined,url2:undefined})));
 chk('a tamed companion is paired and starts with its monster skills',c.paired&&c.sk0>=1&&c.stage1!==undefined||JSON.stringify(c));
 chk(`progress text from the start: "${c.next0}"`,/Learns .+ after 12 more battles, evolves after 30 more battles/.test(c.next0)||c.next0);
-chk('the Taming log lists your companions with their progress',/Your companions/.test(c.log0)&&/more battles/.test(c.log0)||'no');
+chk('the Taming log lists your companions with their progress',/Your pets/.test(c.log0)&&/more battles/.test(c.log0)||'no');
 chk(`one battle before the skill: "${c.next1}"`,/after 1 more battle,/.test(c.next1)||c.next1);
 chk(`a won battle with its hero in the six counts (${c.bt1}) and teaches the second skill (${c.sk1.join(', ')})`,c.bt1===12&&c.stage1===1&&c.sk1.length===c.sk0+1||JSON.stringify(c));
 chk(`at ${30} battles it evolves: ${c.n2}, a recoloured sprite (${c.art2}) from the variant repaint, a bigger bonus (${c.bonus0} -> ${c.bonus2})`,c.stage2===2&&/^Grand /.test(c.n2)&&/^ev_/.test(c.art2)&&c.tplArt===c.art2&&c.mart&&c.url2&&c.url2!==c.url0&&c.bonus2>c.bonus0||JSON.stringify(c));

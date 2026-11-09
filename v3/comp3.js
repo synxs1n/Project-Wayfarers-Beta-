@@ -33,6 +33,6 @@ HOOK.wrap('win','comp3','companion growth (second skill, evolution)',function(ne
 // Taming log: the companions you have and how far each has grown
 if(typeof vTameLog==='function'){const tl0=vTameLog;vTameLog=function(){const h=tl0.apply(this,arguments);try{const L=G&&G.tamed||[];if(!L.length)return h;
   const rows=L.map(o=>{const d=compDef(o);return `<div class="row comprow"><img class="mimg" src="${monURL(d.art)}" alt=""><div class="grow"><b>${esc(o.name)}</b> <small>${esc(d.n)}</small><small>${compProgHtml(o)}</small></div></div>`;}).join('');
-  return `<h4>Your companions</h4><div class="rows c3log">${rows}</div>`+h;}catch(e){return h;}};}
+  return `<h4>Your pets</h4><div class="rows c3log">${rows}</div>`+h;}catch(e){return h;}};}
 try{const css=document.createElement('style');css.textContent=`.c3prog{display:block;line-height:1.3}.c3bar{display:block;height:4px;margin-top:3px;background:rgba(255,255,255,.12);border-radius:2px;overflow:hidden;max-width:220px}.c3bar>i{display:block;height:100%;background:#ffd04a}`;document.head.appendChild(css);}catch(e){}
 try{window.__C3={compBt,compStage,compNext,compEvoArt,compSkill2,compEvoName,get TAME(){return TAME;}};}catch(e){}
