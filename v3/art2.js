@@ -192,7 +192,7 @@ function _accBuild(){
     const pick=(start,not)=>{for(let i=0;i<ACC_LIST.length;i++){const a=ACC_LIST[(start+i)%ACC_LIST.length];if(ok(a)&&ACC_SLOT[a]!==not)return a;}return null;};
     const a1=pick(h%ACC_LIST.length);if(a1){o.acc=[a1];
       if((h>>>17)%4!==0){const a2=pick((h>>>3)%ACC_LIST.length,ACC_SLOT[a1]);if(a2&&a2!==a1)o.acc.push(a2);}}
-    o.ac=ACC_COL[(h>>>7)%ACC_COL.length];o.wt=WT_COL[(h>>>15)%WT_COL.length];o.ws=.28+((h>>>19)%5)*.06;
+    o.ac=ACC_COL[(h>>>7)%ACC_COL.length];o.wt=WT_COL[(h>>>15)%WT_COL.length];o.ws=.2+((h>>>19)%5)*.05;
     _accMap[id]=o;});
 }
 function accOf(id){if(!_accMap){try{_accBuild();}catch(e){_accMap={};}}return id&&_accMap[id]||null;}
@@ -245,5 +245,5 @@ heroPal=function(L,els,id){const p=_heroPal2(L,els,id),o=accOf(id);if(!o)return 
   if(o.hc){const oh=p.H;p.H=o.hc;if(p.T===oh)p.T=o.hc;}
   if(o.sf&&!(L&&L.skin)){p.S=shade(p.S,o.sf);p.e=shade(p.S,.82);}
   p.a=o.ac;p.d=shade(o.ac,.62);
-  p.v=mix(p.M,o.wt,o.ws+.12);p.x=shade(p.v,.68);p.y=mix(p.W,o.wt,o.ws*.6);
+  p.v=mix(p.M,o.wt,.12+o.ws*.7);p.x=shade(p.v,.68);p.y=mix(p.W,o.wt,o.ws*.6);
   return p;};
