@@ -4,6 +4,7 @@
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.14.8',['Party cards: the Sheet and Equip buttons sit in their own row under the bars on every screen size (they overlapped the bars on an open Galaxy Fold). Equipment: the pet is a slot like the weapon, armor and charm, tap it to choose, change or remove the pet, with no extra buttons; the per-hero Auto button wraps under the slots on phones instead of being cut off at the edge.']],
  ['Beta v0.14.7',['Wayfarers, pass one: every hero gets a real face (2x2 eyes with a highlight, brows, a mouth, nose and jaw shade), a neck, two-tone cloth and trousers lit from the left, sleeves that separate from the torso, hair with a sheen and a parting, knees and boot cuffs, steel glints, blades with a bright edge and a dark bevel, wrapped hafts, quivers on archers, and a 1px head bob on the stride. Portraits use the same sprite, so they read better too. A deeper rebuild of the body proportions follows.']],
  ['Beta v0.14.6',['Party cards have an Equip button beside Sheet: it opens Backpack > Equipment with that hero\'s row scrolled into view and lit.']],
  ['Beta v0.14.5',['Menu on phones: the seven group tabs sit four and three across two even rows instead of leaving Settings alone on a row of its own.']],

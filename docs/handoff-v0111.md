@@ -283,3 +283,6 @@ Batch 5 is complete with 0.14.4.
   data-hero + eqfocus via V.eqFocus; test v143a). 0.14.7 hero pass one (helper): heroTone shading pass in art2.js, heroPalD keys (p j z k q l h c 9),
   faces/necks/knees/quivers/weapon edges in art.js tables, heropose9 recipes updated, sheets `heroes` mode; v140a hash re-taken. Geometry unchanged
   (pose markers '#'/'!' and npcart9 props still valid). Owner wants a boss-level leap for heroes: pass two must re-proportion the rig.
+- 0.14.8 equipbtn10.js: card buttons are a grid row under .swm (no overlay on the Fold), stack under 480px; pet slot is one .eqs button (petPick;
+  the picker has Remove); .eqrow wraps so Auto is not cut on phones. v143a updated. KNOWN STALE: v063pb (camp equip from the pack via __P6.autoCamp)
+  fails on 0.14.6 too (camp heroes get no gear, companions moved); predates this session's menu work; investigate separately.

@@ -8,6 +8,15 @@
 ACT.eqOpen=function(id){if(!G||!G.roster[id])return;V.eqFocus={id,t:Date.now()};V.modal={type:'menu',tab:'equip',from:V.modal&&V.modal.type!=='menu'?V.modal:undefined};render();
   setTimeout(()=>{try{const el=document.querySelector(`#modal .eqrow[data-hero="${id}"]`);if(el)el.scrollIntoView({block:'center',behavior:'smooth'});}catch(e){}},30);
   setTimeout(()=>{try{const el=document.querySelector(`#modal .eqrow[data-hero="${id}"]`);if(el)el.classList.remove('eqfocus');V.eqFocus=null;}catch(e){}},2200);};
-{const st=document.createElement('style');st.textContent=`.swc .swbtns{position:absolute;left:50%;bottom:4px;transform:translateX(-50%);display:flex;gap:4px;z-index:2}.swc .swbtns .swsheet,.swc .swbtns .sweq{position:static;transform:none;white-space:nowrap}
-.swc.row .swbtns{position:static;transform:none;align-self:center;margin:0 8px 0 0;flex-direction:column;gap:4px}.swc.row .swbtns .swsheet{margin:0}.swlist.g3 .swbtns .btn{min-height:30px;padding:2px 8px}
-.eqrow.eqfocus{box-shadow:0 0 0 3px var(--gold),0 0 18px var(--gold);transition:box-shadow .3s}`;document.head.appendChild(st);}
+// v0.14.8: the button row is part of the card's flow (a grid row under the hero), never laid over the HP/MP/XP bars (the open Galaxy Fold showed that)
+{const st=document.createElement('style');st.textContent=`.swc:not(.row) .swbtns{position:static;transform:none;display:flex;gap:4px;justify-content:center;padding:2px 4px 6px;z-index:2}.swc:not(.row) .swm,.swlist.g3 .swc:not(.row) .swm{padding-bottom:4px}
+.swc .swbtns .swsheet,.swc .swbtns .sweq{position:static;transform:none;white-space:nowrap;min-height:32px;padding:3px 10px}
+.swc.row .swbtns{position:static;transform:none;align-self:center;margin:0 8px 0 0;display:flex;flex-direction:column;gap:4px}.swc.row .swbtns .swsheet{margin:0}
+.eqrow.eqfocus{box-shadow:0 0 0 3px var(--gold),0 0 18px var(--gold);transition:box-shadow .3s}
+@media (max-width:720px){.eqrow{flex-wrap:wrap}.eqrow>.btn{margin-left:auto}}
+.swlist.g3 .swbtns .btn{padding:3px 6px;font-size:.74rem;min-width:0;flex:1 1 auto}.swc:not(.row) .swbtns{flex-wrap:wrap;min-width:0}
+@media (max-width:480px){.swlist.g3 .swc:not(.row) .swbtns{flex-direction:column;align-items:stretch;gap:3px}}
+.petslot .eqs.petbtn{cursor:pointer}`;document.head.appendChild(st);}
+// the pet slot is a slot like the others: tap it to choose, change or remove the pet (the picker has Remove)
+{const ps0=petSlotHtml;petSlotHtml=function(c,mini){try{if(!c||G.daily)return '';const o=compOf(c),any=(G.tamed||[]).length>0;if(!any&&!o)return ps0.apply(this,arguments);
+  return `<div class="petslot"><button class="eqs petcur petbtn" data-act="petPick" data-arg="${c.id}" title="${o?'Change or remove the pet':'Choose a pet'}">${o?`<img class="gico" alt="" src="${monURL(compDef(o).art)}">`:'<span class="gico empty"></span>'}<span><small>Pet</small>${o?esc(o.name):'Choose a pet'}</span></button></div>`;}catch(e){return ps0.apply(this,arguments);}};}
