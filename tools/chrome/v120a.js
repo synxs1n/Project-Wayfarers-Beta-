@@ -8,7 +8,7 @@ const {open,chk,done}=require('./pw');
  o.scenes=g('bondScenes')(g('BONDMAP')[k]).map(s=>s.n+(s.ctx?'('+s.ctx+')':'')+s.lv).join(',');
  const n=g('ctxOffer')('camp',g('pairsIn')(G.party));o.offered=n;o.talk=(G.talks||[]).find(t=>t.ctx==='camp');o.ready=g('readyTalks')().map(t=>t.arg);
  const n2=g('ctxOffer')('camp',g('pairsIn')(G.party));o.offeredAgain=n2;
- const html=g('vBonds')();o.screen=/Zia and Thane/.test(html)&&/Camp talk/.test(html)&&/Level 2 at/.test(html)===false&&/Level 3 at/.test(html);
+ G.stage=1;/* bonds open in the second realm (pacing.js) */const html=g('vBonds')();o.screen=/Zia and Thane/.test(html)&&/Camp talk/.test(html)&&/Level 2 at/.test(html)===false&&/Level 3 at/.test(html);
  A.ACT.bondTalk(o.ready[0]);o.modal=A.V.modal&&A.V.modal.type;o.lines=A.V.modal&&A.V.modal.lines&&A.V.modal.lines.length;o.talksLeft=(G.talks||[]).length;
  return o;});console.log(JSON.stringify(r));
   chk('34 bond pairs, no duplicates, every pair has a tech and a campfire talk',r.pairs===34&&r.dupes===0&&r.allHaveTech||JSON.stringify([r.pairs,r.dupes,r.allHaveTech]));
