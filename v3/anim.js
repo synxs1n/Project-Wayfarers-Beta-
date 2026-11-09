@@ -71,13 +71,13 @@ HOOK.wrap('render','anim','popup open fade',function(next,...a){const key=V.moda
 const ANX={u:null,st:'swing',k:'phys',dir:-1,lim:0,tint:null};
 const AN_EL=['fire','water','ice','lightning','earth','wind','light','shadow'];
 function anHasShape(el){return AN_EL.includes(el)&&!gfxStill();}
-function anN(n){const q=(GFX&&GFX.q&&GFX.q.parts)||280;return Math.max(1,Math.round(n*(q<=140?.55:q>=500?1.25:1)));}
+function anN(n){const q=(GFX&&GFX.q&&GFX.q.parts)||280;return Math.max(1,Math.round(n*(q<=140?.7:q>=500?1.25:1)));}
 function anP(o){o.k='an';part(o);}
 function anBig(){return ANX.lim&&Date.now()<ANX.lim;}
 // the eight element shapes at a target: x,y its centre. lit=1 (HD-2D): only the pieces hdspell.js does not draw itself, drawn additively
 function anElem(el,x,y,start,big,u,lit){if(gfxStill())return;const R=Math.random,b=u&&unitBox(u),h=b?b.h:24,w=b?Math.min(b.w,40):20,gy=b&&b.gy!=null?b.gy:b?b.y:y+10,L=anBig(),s=(big?1.15:1)*(L?1.5:1),n=k=>anN(k*(L?1.6:1)),l=lit?1:0;
   switch(el){
-    case 'fire':{if(!l){const c=n(4);for(let i=0;i<c;i++)anP({s:'flame',x:x+(i-(c-1)/2)*w*.26+(R()-.5)*3,y:gy-1,hm:(h*.7+R()*h*.3)*s,wd:Math.round((3+R()*2)*s),ph:R()*9,t0:start+i*28+R()*40,life:400+R()*100});}
+    case 'fire':{if(!l){const c=n(4);for(let i=0;i<c;i++)anP({s:'flame',x:x+(i-(c-1)/2)*w*.26+(R()-.5)*3,y:gy-1,hm:(h*.7+R()*h*.3)*s,wd:Math.round((4+R()*2)*s),ph:R()*9,t0:start+i*28+R()*40,life:400+R()*100});}
       for(let i=0;i<n(6);i++)part({k:'p',x:x+(R()-.5)*w*.6,y:gy-R()*h*.5,vx:(R()-.5)*14,vy:-34-R()*34,g:-12,t0:start+R()*140,life:380+R()*180,col:R()<.5?'#ffb04a':'#ff5a1a',sz:R()<.3?2:1});break;}
     case 'water':{anP({s:'wave',x,y:gy-h*.15,r:w*.7*s+6,hm:h*.6*s,t0:start,life:430,lit:l});
       for(let i=0;i<n(7);i++){const a=-Math.PI*(.12+.76*R()),v=40+R()*50;part({k:'p',x:x+(R()-.5)*w*.4,y:y-h*.2,vx:Math.cos(a)*v,vy:Math.sin(a)*v*1.2,g:300,t0:start+60+R()*100,life:380+R()*180,col:R()<.5?'#8ad0ff':'#ffffff',sz:R()<.3?2:1});}
@@ -85,13 +85,13 @@ function anElem(el,x,y,start,big,u,lit){if(gfxStill())return;const R=Math.random
     case 'ice':{const c=n(5);for(let i=0;i<c;i++)anP({s:'shard',x,y:y+h*.2,a:-Math.PI/2+(i-(c-1)/2)*.45+(R()-.5)*.12,len:(11+R()*8)*s,wd:2+(s>1.3?1:0),t0:start+i*16,life:420,lit:l});
       if(!l){part({k:'ring',x,y:gy,t0:start,life:440,col:'#e8faff',r:20*s,flat:1});part({k:'ring',x,y:gy,t0:start+80,life:380,col:'#bfefff',r:13*s,flat:1});}
       for(let i=0;i<n(4);i++)part({k:'p',x:x+(R()-.5)*w,y:y-h*.3+R()*h*.4,vx:(R()-.5)*20,vy:-6-R()*10,g:30,t0:start+R()*160,life:420,col:'#ffffff',sz:1});break;}
-    case 'lightning':{if(!l)anP({s:'jag',x,y,t0:start,life:260,seed:R()*1e4,w:s>1.3?2:1});
+    case 'lightning':{if(!l)anP({s:'jag',x,y,t0:start,life:260,seed:R()*1e4,w:s>1.3?3:2});
       for(let i=0;i<n(6);i++){const a=-Math.PI*R(),v=40+R()*40;part({k:'p',x,y:gy-2,vx:Math.cos(a)*v,vy:Math.sin(a)*v,g:200,t0:start+(l?60:0),life:240+R()*160,col:R()<.5?'#ffffff':'#fff6a0',sz:1});}
       anP({s:'spk',x:x+(R()-.5)*w*.6,y:y+(R()-.5)*h*.5,t0:start+30,life:200,col:'#fff6a0',lit:l});break;}
-    case 'earth':{for(let i=0;i<n(6);i++)anP({s:'rock',x:x+(R()-.5)*w*.5,y:gy-2,vx:(R()-.5)*60,vy:-(70+R()*70),g:380,floor:gy+R()*3,sz:2+(R()<.4?1:0)+(s>1.3?1:0),t0:start+R()*40,life:480+R()*80});
+    case 'earth':{for(let i=0;i<n(7);i++)anP({s:'rock',x:x+(R()-.5)*w*.5,y:gy-2,vx:(R()-.5)*60,vy:-(70+R()*70),g:380,floor:gy+R()*3,sz:3+(R()<.4?1:0)+(s>1.3?1:0),t0:start+R()*40,life:480+R()*80});
       if(!l)for(let i=0;i<n(3);i++)anP({s:'dust',x:x+(R()-.5)*w,y:gy-1,r1:6+R()*7,t0:start+R()*80,life:420});
       if(!BV.shake||BV.shake.t<start-200)BV.shake={t:start,life:200,amp:2};break;}
-    case 'wind':{const c=n(3);for(let i=0;i<c;i++)anP({s:'crv',x:x+(R()-.5)*6,y:y+(i-(c-1)/2)*h*.18,a:(i-(c-1)/2)*.35-.45+(R()-.5)*.2,len:(w*.5+8)*s,bend:(6+R()*3)*(i%2?-1:1),t0:start+i*45,life:340,lit:l});
+    case 'wind':{const c=n(3);for(let i=0;i<c;i++)anP({s:'crv',x:x+(R()-.5)*6,y:y+(i-(c-1)/2)*h*.18,a:(i-(c-1)/2)*.35-.45+(R()-.5)*.2,len:(w*.7+10)*s,bend:(7+R()*3)*(i%2?-1:1),t0:start+i*45,life:340,lit:l});
       for(let i=0;i<n(5);i++)part({k:'p',x,y,vx:26+R()*22,vy:0,swirl:i%2?1:-1,g:0,t0:start+R()*120,life:380+R()*160,col:R()<.5?'#7ae8b8':'#c8f0e0',sz:R()<.3?2:1});break;}
     case 'light':{if(!l)anP({s:'beam',x,y,w:7*s,t0:start,life:400});
       for(let i=0;i<n(6);i++)anP({s:'spk',x:x+(R()-.5)*w,y:y+(R()-.5)*h*.8,t0:start+R()*180,life:260+R()*80,col:i%2?'#ffffff':'#ffe9a0',lit:l});break;}
@@ -102,18 +102,18 @@ function anElem(el,x,y,start,big,u,lit){if(gfxStill())return;const R=Math.random
 function anPhys(x,y,start,big,u){const R=Math.random,b=u&&unitBox(u),h=b?b.h:24,s=(big?1.15:1)*(anBig()?1.4:1),st=ANX.st,dir=ANX.dir||-1,sp=anN(4);
   const spark=()=>{for(let i=0;i<sp;i++)part({k:'p',x,y,vx:Math.cos(R()*6.3)*50,vy:Math.sin(R()*6.3)*40,g:80,t0:start,life:200+R()*120,col:i%2?'#ffffff':'#ffe08a',sz:1});};
   if(st==='thrust'){anP({s:'pierce',x,y,dir,len:34*s,t0:start-60,life:220});spark();}
-  else if(st==='jab'){anP({s:'star',x,y,r:13*s,t0:start,life:240});part({k:'ring',x,y,t0:start,life:260,col:'#ffffff',r:18*s});spark();}
+  else if(st==='jab'){anP({s:'star',x,y,r:18*s,t0:start,life:240});part({k:'ring',x,y,t0:start,life:260,col:'#ffffff',r:18*s});spark();}
   else if(st==='bow'||st==='crossbow'){anP({s:'stuck',x,y,dir,t0:start,life:440});spark();}
-  else if(st==='foe'){const m=Math.min(1.6,Math.max(.9,h/34));anP({s:'claw',x,y,dir,len:h*.5*m,t0:start,life:280});}
-  else if(st==='dash'){anP({s:'slashc',x,y,dir,a:-.7,len:15*s,bend:3,t0:start-30,life:200});anP({s:'slashc',x,y,dir,a:.7,len:13*s,bend:3,t0:start+40,life:200});}
-  else{anP({s:'slashc',x,y,dir,a:-.6,len:(16+h*.18)*s,bend:5*s,t0:start-40,life:240});spark();}}
+  else if(st==='foe'){const m=Math.min(1.6,Math.max(.9,h/34));anP({s:'claw',x,y,dir,len:h*.75*m,t0:start,life:280});}
+  else if(st==='dash'){anP({s:'slashc',x,y,dir,a:-.7,len:20*s,bend:5,t0:start-30,life:200});anP({s:'slashc',x,y,dir,a:.7,len:18*s,bend:5,t0:start+40,life:200});}
+  else{anP({s:'slashc',x,y,dir,a:-.6,len:(22+h*.3)*s,bend:8*s,t0:start-40,life:240});spark();}}
 function anHit(x,y,el,start,big,u){if(el==='hit')anPhys(x,y,start,big,u);else if(AN_EL.includes(el))anElem(el,x,y,start,big,u,0);}
 // drawing
 function anDraw(ctx,p,now){const t=now-p.t0;if(t<0)return;const q=t/p.life;if(q>=1)return;const R=Math.round,s=t/1000;
   if(p.lit)ctx.globalCompositeOperation='lighter';
   switch(p.s){
     case 'flame':{const hh=p.hm*Math.sin(Math.min(1,q*1.6)*Math.PI*.5)*(1-q*.55),n=Math.max(2,R(hh/2));
-      for(let i=0;i<n;i++){const k=i/n,wv=Math.sin(now/55+p.ph+i*.7)*1.5*k,wd=Math.max(1,R((1-k)*p.wd*(1-q*.4)));ctx.globalAlpha=(1-q)*(1-k*.5);
+      for(let i=0;i<n;i++){const k=i/n,wv=Math.sin(now/55+p.ph+i*.7)*1.5*k,wd=Math.max(1,R((1-k)*p.wd*(1-q*.4)));ctx.globalAlpha=(1-q*q)*(1-k*.4);
         ctx.fillStyle=k<.25?'#fff4b0':k<.55?'#ffb04a':k<.8?'#ff6a1a':'#c83a1a';ctx.fillRect(R(p.x+wv-wd/2),R(p.y-i*2-2),wd,2);}break;}
     case 'wave':{const r=p.r*(.45+.55*Math.sqrt(q)),hh=p.hm*(.35+.65*Math.sin(Math.min(1,q*1.5)*Math.PI*.5));ctx.globalAlpha=(1-q)*.95;
       for(let i=-R(r);i<=R(r);i++){const k=i/r,y=p.y-Math.sqrt(Math.max(0,1-k*k))*hh;ctx.fillStyle='#3f8fe0';ctx.fillRect(R(p.x+i),R(y)+2,1,2);ctx.fillStyle=Math.abs(k)<.55?'#ffffff':'#8ad0ff';ctx.fillRect(R(p.x+i),R(y),1,2);}break;}
@@ -125,10 +125,10 @@ function anDraw(ctx,p,now){const t=now-p.t0;if(t<0)return;const q=t/p.life;if(q>
       ctx.globalAlpha=1-q*.5;ctx.lineCap='butt';[[p.w+2,'#c8a020'],[p.w+1,'#fff6a0'],[Math.max(1,p.w-1),'#ffffff']].forEach(([lw,c])=>{ctx.strokeStyle=c;ctx.lineWidth=lw;ctx.beginPath();pts.forEach(([a,b],i)=>i?ctx.lineTo(a,b):ctx.moveTo(a,b));ctx.stroke();});
       const fk=pts[Math.floor(pts.length*.5)];if(fk){ctx.strokeStyle='#fff6a0';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(fk[0],fk[1]);ctx.lineTo(fk[0]+(Rr()-.5)*24,fk[1]+8+Rr()*8);ctx.stroke();}break;}
     case 'rock':{const x=p.x+p.vx*s;let y=p.y+p.vy*s+.5*p.g*s*s;if(y>p.floor)y=p.floor-Math.abs(Math.sin(s*14))*2*(1-q);ctx.globalAlpha=1-q*q*q;ctx.fillStyle='#5a4a2a';ctx.fillRect(R(x),R(y),p.sz,p.sz);ctx.fillStyle='#b08a4a';ctx.fillRect(R(x),R(y),Math.max(1,p.sz-1),Math.max(1,p.sz-1));break;}
-    case 'dust':{const r=3+(p.r1-3)*Math.sqrt(q);ctx.globalAlpha=(1-q)*.45;ctx.fillStyle='#c8b08a';ctx.beginPath();ctx.ellipse(p.x,p.y-r*.4-q*4,r,r*.55,0,0,7);ctx.fill();break;}
+    case 'dust':{const r=3+(p.r1-3)*Math.sqrt(q);ctx.globalAlpha=(1-q)*.6;ctx.fillStyle='#c8b08a';ctx.beginPath();ctx.ellipse(p.x,p.y-r*.4-q*4,r,r*.55,0,0,7);ctx.fill();break;}
     case 'crv':{const ca=Math.cos(p.a),sa=Math.sin(p.a),u=Math.min(1,q*1.5),L=p.len;
       for(let j=0;j<16;j++){const v=u-j*.025;if(v<0)break;const al=(1-j/16)*(1-Math.max(0,q-.6)/.4),lx=(v*2-1)*L,ly=-Math.sin(v*Math.PI)*p.bend;ctx.globalAlpha=al;ctx.fillStyle=j<2?'#ffffff':j<9?'#c8f0e0':'#5fc9a0';
-        ctx.fillRect(R(p.x+lx*ca-ly*sa),R(p.y+lx*sa+ly*ca),j<9?2:1,1);}break;}
+        ctx.fillRect(R(p.x+lx*ca-ly*sa),R(p.y+lx*sa+ly*ca),j<9?3:2,j<9?2:1);}break;}
     case 'beam':{const k=q<.2?q/.2:1-(q-.2)/.8,wd=p.w*k;[[wd,.22,'#ffc850'],[wd*.6,.4,'#fff0c0'],[Math.max(1,wd*.22),.8,'#ffffff']].forEach(([ww,a,c])=>{ctx.globalAlpha=a*k;ctx.fillStyle=c;ctx.fillRect(R(p.x-ww/2),0,Math.max(1,R(ww)),R(p.y));});
       ctx.globalAlpha=k*.8;ctx.fillStyle='#fff6d0';ctx.beginPath();ctx.ellipse(p.x,p.y,wd*1.1,wd*.4,0,0,7);ctx.fill();break;}
     case 'spk':{const r=Math.round(1+3*Math.sin(q*Math.PI)),x=R(p.x),y=R(p.y);ctx.globalAlpha=1-q;ctx.fillStyle=p.col;ctx.fillRect(x-r,y,r*2+1,1);ctx.fillRect(x,y-r,1,r*2+1);if(r>2){ctx.fillStyle='#ffffff';ctx.fillRect(x-1,y-1,3,3);}break;}
@@ -136,10 +136,10 @@ function anDraw(ctx,p,now){const t=now-p.t0;if(t<0)return;const q=t/p.life;if(q>
       ctx.globalAlpha=(1-q)*.9;ctx.strokeStyle='#a070e0';ctx.lineWidth=1;ctx.beginPath();ctx.ellipse(p.x,p.y,r,r*.8,0,0,7);ctx.stroke();break;}
     case 'wisp':{const y=p.y+p.vy*s,x=p.x+Math.sin(s*6+p.ph)*3;ctx.globalAlpha=Math.min(1,q*5)*(1-q)*.9;ctx.fillStyle=p.col;ctx.fillRect(R(x),R(y),2,3);ctx.fillRect(R(x)+1,R(y)-2,1,2);ctx.globalAlpha*=.5;ctx.fillRect(R(x)-1,R(y)-4,1,2);break;}
     case 'slashc':{const rv=Math.min(1,q*2.6),ca=Math.cos(p.a),sa=Math.sin(p.a);
-      for(let pass=0;pass<2;pass++)for(let u=Math.max(0,rv-.55);u<=rv;u+=1/(p.len*1.3)){const k=(u-Math.max(0,rv-.55))/.55,lx=(u*2-1)*p.len*p.dir,ly=-Math.sin(u*Math.PI)*p.bend,th=Math.max(1,R((pass?2:3)*Math.sin(u*Math.PI)));
+      for(let pass=0;pass<2;pass++)for(let u=Math.max(0,rv-.55);u<=rv;u+=1/(p.len*1.3)){const k=(u-Math.max(0,rv-.55))/.55,lx=(u*2-1)*p.len*p.dir,ly=-Math.sin(u*Math.PI)*p.bend,th=Math.max(1,R((pass?3:5)*Math.sin(u*Math.PI)));
         ctx.globalAlpha=(q<.5?1:1-(q-.5)/.5)*Math.min(1,.3+k);ctx.fillStyle=pass?'#ffffff':'#9ab8e0';ctx.fillRect(R(p.x+lx*ca-ly*sa),R(p.y+lx*sa+ly*ca)-(th>>1),1,th);}break;}
     case 'pierce':{const hd=-p.len+p.len*2*Math.min(1,q*1.8),al=q<.55?1:1-(q-.55)/.45;ctx.fillStyle='#ffffff';
-      for(let i=0;i<22;i++){const px=p.x+(hd-i)*p.dir;ctx.globalAlpha=al*(1-i/22);ctx.fillRect(R(px),R(p.y),1,i<3?2:1);}
+      for(let i=0;i<22;i++){const px=p.x+(hd-i)*p.dir;ctx.globalAlpha=al*(1-i/22);ctx.fillRect(R(px),R(p.y)-1,1,i<4?3:2);}
       ctx.globalAlpha=al*.5;ctx.fillStyle='#c8d8ff';ctx.fillRect(R(p.x+(hd-6)*p.dir),R(p.y)+2,10,1);
       if(q>.25&&q<.6){const r=R(2+3*Math.sin((q-.25)/.35*Math.PI));ctx.globalAlpha=1-q;ctx.fillStyle='#ffffff';ctx.fillRect(R(p.x)-r,R(p.y),r*2+1,1);ctx.fillRect(R(p.x),R(p.y)-r,1,r*2+1);}break;}
     case 'star':{const r1=p.r*Math.sqrt(Math.min(1,q*1.6)),r0=r1*.35;ctx.globalAlpha=1-q;for(let i=0;i<8;i++){const a=i*Math.PI/4+.2,len=i%2?r1*.65:r1;ctx.fillStyle=i%2?'#ffe08a':'#ffffff';
@@ -147,8 +147,8 @@ function anDraw(ctx,p,now){const t=now-p.t0;if(t<0)return;const q=t/p.life;if(q>
     case 'stuck':{const jig=R(Math.sin(t/30)*(1-q)*1.2),al=q<.6?1:1-(q-.6)/.4;ctx.globalAlpha=al;ctx.fillStyle='#d8c8a0';for(let i=0;i<8;i++)ctx.fillRect(R(p.x-p.dir*i),R(p.y)+jig,1,1);
       ctx.fillStyle='#ffffff';ctx.fillRect(R(p.x),R(p.y)+jig,1,1);ctx.fillStyle='#e8e8f0';ctx.fillRect(R(p.x-p.dir*8),R(p.y)+jig-1,1,3);ctx.fillRect(R(p.x-p.dir*7),R(p.y)+jig-1,1,1);ctx.fillRect(R(p.x-p.dir*7),R(p.y)+jig+1,1,1);break;}
     case 'claw':{const rv=Math.min(1,q*2.4),al=q<.5?1:1-(q-.5)/.5;for(let c=0;c<3;c++){const ox=(c-1)*5*p.dir,m=Math.max(0,Math.min(1,rv*1.4-c*.18));ctx.globalAlpha=al;
-      for(let i=0;i<p.len*m;i++){const k=i/p.len;ctx.fillStyle=k<.15?'#ffffff':'#ff9a8a';ctx.fillRect(R(p.x+ox-p.dir*(p.len*.35)+p.dir*i*.7),R(p.y-p.len*.5+i),1,k>.7?1:2);}}break;}
-    case 'chev':{const al=Math.min(1,q*6)*(1-q),dy=p.d*q*14;for(let i=0;i<p.n;i++){const a=i/p.n*Math.PI*2+q*.9,sn=Math.sin(a),cx=R(p.x+Math.cos(a)*p.rx),cy=R(p.y+sn*p.ry+dy);ctx.globalAlpha=al*(sn>0?.6:1);ctx.fillStyle=p.col;
+      for(let i=0;i<p.len*m;i++){const k=i/p.len;ctx.fillStyle=k<.15?'#ffffff':'#ff9a8a';ctx.fillRect(R(p.x+ox-p.dir*(p.len*.35)+p.dir*i*.7),R(p.y-p.len*.5+i),2,k>.7?1:2);}}break;}
+    case 'chev':{const al=Math.min(1,q*6)*(1-q),dy=p.d*q*14;for(let i=0;i<p.n;i++){const a=i/p.n*Math.PI*2+q*.9,sn=Math.sin(a),cx=R(p.x+Math.cos(a)*p.rx),cy=R(p.y+sn*p.ry+dy);ctx.globalAlpha=al*(sn>0?.85:1);ctx.fillStyle=p.col;
       const dd=p.d<0?1:-1;// buff (d<0): the chevron points up
       ctx.fillRect(cx-2,cy+dd*1,1,1);ctx.fillRect(cx-1,cy,1,1);ctx.fillRect(cx,cy-dd*1,1,1);ctx.fillRect(cx+1,cy,1,1);ctx.fillRect(cx+2,cy+dd*1,1,1);
       ctx.globalAlpha*=.5;ctx.fillRect(cx-2,cy+dd*2,1,1);ctx.fillRect(cx-1,cy+dd*1,1,1);ctx.fillRect(cx,cy,1,1);ctx.fillRect(cx+1,cy+dd*1,1,1);ctx.fillRect(cx+2,cy+dd*2,1,1);}break;}
