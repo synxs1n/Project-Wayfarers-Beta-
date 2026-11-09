@@ -25,12 +25,12 @@ function drawCheck(x,px,py,r){x.save();x.lineCap='round';x.lineJoin='round';x.st
 {const dm0=drawMarks;drawMarks=function(x,m,list,sc,ox,oy){const r=dm0.apply(this,arguments);try{(list||[]).forEach(o=>{if(!o.done)return;const s=Math.max(10,Math.round(sc*2.4));
   drawCheck(x,ox+(o.x+.5)*sc+s*.32,oy+(o.y+.5)*sc-s*.32,s*.32);});}catch(e){}return r;};}
 // ----- the Journey tab: per realm, which of its Den, Sanctum, boss, quests and bounties are done -----
-{const vj0=vJourney;vJourney=function(){let h=vj0.apply(this,arguments);try{if(!G||G.daily)return h;const rows=[];
+function vRealms(){try{if(!G||G.daily)return '';const rows=[];
   for(let s=0;s<=Math.min(4,G.stage);s++){const P=realmProgress(s),Z=ZS(s),mk=k=>{const x=P.L.filter(o=>o.k===k);return x.length?`${x.filter(o=>o.done).length}/${x.length}`:'';},
     bits=[['quest','Quests'],['bounty','Bounties'],['den','Den'],['sanctum','Sanctum'],['boss','Boss']].map(([k,n])=>{const v=mk(k);return v?`${n} ${v}`:'';}).filter(Boolean).join(' · ');
     rows.push(`<div class="row ${P.d===P.n?'up':''}"><div class="grow"><b>Realm ${s+1}: ${esc(Z.n)}</b><small>${bits}</small></div><span class="m nums">${P.d===P.n?'100% ✓':`${P.d} of ${P.n}`}</span></div>`);}
-  const sec=`<h4>Realms</h4><div class="rows compact">${rows.join('')}</div>`,k=h.indexOf('<h4>Progress</h4>');
-  h=k>=0?h.slice(0,k)+sec+h.slice(k):h+sec;}catch(e){}return h;};}
+  return `<h4>Realms</h4><div class="rows compact">${rows.join('')}</div>`;}catch(e){return '';}}
+{const vj0=vJourney;vJourney=function(){let h=vj0.apply(this,arguments);try{const sec=vRealms(),k=h.indexOf('<h4>Progress</h4>');if(sec)h=k>=0?h.slice(0,k)+sec+h.slice(k):h+sec;}catch(e){}return h;};}
 // v0.11.4: the first visit to a special place tags its name with what it is: "Den: Mossback Hollow", "Sanctum: ...", "Lair: ...".
 // Later visits show the plain name. G.siteTag remembers which have been tagged (optional field, journey bound).
 function siteKind(m){if(!m)return '';if(m.cave&&m.fort)return 'Sanctum';if(m.cave)return 'Den';if(m.kind==='dungeon'&&!m.archive&&!m.sanctum)return 'Lair';return '';}

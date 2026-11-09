@@ -17,9 +17,19 @@ function migrateCompanions(g){if(g.compV)return;const back=[],ids={};
   const free=g.party.slice();(g.tamed||[]).forEach(o=>{if(o.with&&g.roster[o.with])return;const h=free.find(id=>!(g.tamed||[]).some(x=>x.with===id));o.with=h||null;});g.compV=1;}
 {const up0=unpackG;unpackG=function(o){const g=up0.apply(this,arguments);try{migrateCompanions(g);}catch(e){}return g;};}
 // taming no longer adds a party member
+// unique pet names per journey: keep the chosen name when it is free; otherwise draw another epithet (seeded by monster, run seed and pet count),
+// and when every epithet is taken append a numeral. Existing pets keep their names. No Math.random here.
+const TAME_EPI=['the Old','the Scarred','Ironhide','the Hungry','Bloodmoon','the Unbroken','Grimtooth','the Roamer','Stormborn','the Patient','the Wary','Emberhide','the Quiet','Frostmane','the Bold','Thornback','the Swift','Duskwing','the Gaunt','Ashfang','the Restless','Moonscar','the Loyal','Gildedclaw','the Lone','Stonehoof','the Cunning','Wildheart','the Faded','Nightbloom','the Humble','Rustmane','the Keen','Sunscorch','the Weary','Hollowbone','the Gentle','Mistveil','the Brave','Cinderpaw'];
+function tameUniqueName(o,m){try{const used=new Set(Object.keys(G.tameLog||{}));(G.tamed||[]).forEach(x=>{if(x&&x.name)used.add(x.name);});
+  if(!used.has(o.name))return o.name;
+  const n=(G.tamed||[]).length,seed=String((G.run&&G.run.seed)||0),base=hashS(o.mon+':'+seed+':'+n),L=TAME_EPI.length;
+  for(let i=0;i<L;i++){const c=m.n+' '+TAME_EPI[(base+i)%L];if(!used.has(c))return c;}
+  const b0=m.n+' '+TAME_EPI[base%L],R=['II','III','IV','V','VI','VII','VIII','IX','X'];
+  for(let k=0;k<400;k++){const c=b0+' '+(k<R.length?R[k]:(k+2));if(!used.has(c))return c;}
+  return o.name;}catch(e){return o.name;}}
 function tameElite(t){const m=MON[t.mon]||guardianDef(t.mon);if(!m)return null;
   const o={id:'tm'+Date.now().toString(36)+Math.floor(Math.random()*1296).toString(36),mon:t.mon,name:t.bb?t.name:t.name.replace(m.n+' ',''),cls:tameClass(m),trait:tameTrait(m),bb:t.bb?1:0,scourge:t.scourge?1:0,with:null};
-  if(o.name.startsWith('the '))o.name=m.n+' '+o.name;registerTamed(o);G.tamed.push(o);G.compV=1;
+  if(o.name.startsWith('the '))o.name=m.n+' '+o.name;o.name=tameUniqueName(o,m);registerTamed(o);G.tamed.push(o);G.compV=1;
   const free=partyChars().find(c=>!compOf(c));if(free){o.with=free.id;}saveGame();
   setTimeout(()=>toast(`${o.name} is now a Pet${o.with?' of '+G.roster[o.with].name:''}. Manage it in Menu > Pets.`),400);return o;}
 // stat bonus for the paired hero (not in the Daily Trial, which has no companions)

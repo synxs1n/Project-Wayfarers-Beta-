@@ -176,9 +176,11 @@ html.rm .fxlayer .fx2.b3fx{animation-name:fade2!important}
 .battle.b3.m-tall .pgroup.heroes .pcw.hastags .pc,.battle.b3.m-tall .fcw.hastags .fc{padding-bottom:27px}
 /* portrait: the party right over the commands (the active hero's numbers next to its commands), the foes and the rearguard under them */
 .battle.b3.m-tall .bbottom .bparty{display:contents}
-/* v0.12.7: on phones the party's HP and MP sit right under the stage, the commands under them (the cards used to fall under the fold) */
-.battle.b3.m-tall .bbottom .pgroup.heroes{order:1}
-.battle.b3.m-tall .bbottom .cmd{order:2}
+/* v0.12.13 (owner): on phones the action menu takes the space under the stage; the party cards, foes and reserves follow below and scroll */
+.battle.b3.m-tall .bbottom .pgroup.heroes{order:2}
+.battle.b3.m-tall .bbottom .cmd{order:1}
+/* one scroller only: the skill and item lists grow to their content and the whole bottom panel scrolls (nested scrollers could not reach the end) */
+.battle.b3.m-tall .menu.list{max-height:none;overflow:visible}
 .battle.b3.m-tall .bbottom .pgroup.foes{order:3}
 .battle.b3.m-tall .bbottom .pgroup.rsv{order:4}
 .battle.b3 .bline .blog p{display:block;max-width:100%}

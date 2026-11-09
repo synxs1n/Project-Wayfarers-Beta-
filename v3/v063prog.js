@@ -62,13 +62,13 @@ function bondGoal(k){const b=BONDMAP[k];if(!b)return null;const p=(G.bonds||{})[
 const BOND_HOW='A win counts when both stand in the vanguard at the end of the fight.';
 const talkArg=t=>t.k+':'+(t.lv>=3&&BONDMAP[t.k]&&BONDMAP[t.k].talk2?3:1);
 function readyTalks(){const seen={},out=[];(G.talks||[]).forEach(t=>{const b=BONDMAP[t.k];if(!b||!G.roster[b.a]||!G.roster[b.b])return;const a=talkArg(t);if(seen[a])return;seen[a]=1;out.push({arg:a,b});});return out;}
-function bondSheet(id){const L=BONDS.filter(b=>b.a===id||b.b===id);if(!L.length)return '';
+function bondSheet(id){const L0=BONDS.filter(b=>b.a===id||b.b===id);if(!L0.length)return '';const L=L0.filter(b=>G.roster[b.a===id?b.b:b.a]),rest=L0.length-L.length;
   return `<h4>Bonds</h4><p class="note">${BOND_HOW}</p><div class="rows">${L.map(b=>{const o=b.a===id?b.b:b.a,k=bondKey(b.a,b.b),here=!!G.roster[o];
     if(!here)return `<div class="row lock"><div class="grow"><b>${esc(TPL[o].n)}: ${esc(b.tech.n)}</b><small>${esc(b.tech.d)} Not recruited yet.</small></div></div>`;
     const lv=bondLv(b.a,b.b),g=bondGoal(k);
     return `<div class="row bondrow">${port(o,'sm')}<div class="grow"><b>${esc(TPL[o].n)}: ${esc(b.tech.n)}</b><small>${esc(b.tech.d)}</small>
       <small class="nums">Bond level ${lv}${lv<2?', joint tech unlocks at 2':lv<3?', tech powers up at 3':', maxed'}</small>${g.done?'':`<small class="bgoal nums">${esc(g.text)}</small>${bar(g.p,g.at,'var(--gold)')}`}
-      <div class="btnrow">${bondScenes(b).map(s=>{const un=lv>=Math.min(s.lv,3);return un?`<button class="btn sm ${talkPending(k,s.lv)?'gold':''}" data-act="bondTalk" data-arg="${k}:${s.lv}">${s.n}${talkPending(k,s.lv)?' (new)':''}</button>`:`<button class="btn sm" disabled>${s.n}: level ${s.lv}</button>`;}).join('')}</div></div></div>`;}).join('')}</div>`;}
+      <div class="btnrow">${bondScenes(b).map(s=>{const un=lv>=Math.min(s.lv,3);return un?`<button class="btn sm ${talkPending(k,s.lv)?'gold':''}" data-act="bondTalk" data-arg="${k}:${s.lv}">${s.n}${talkPending(k,s.lv)?' (new)':''}</button>`:`<button class="btn sm" disabled>${s.n}: level ${s.lv}</button>`;}).join('')}</div></div></div>`;}).join('')}</div>${rest?`<p class="note">${rest} more bond${rest>1?'s':''} wait${rest>1?'':'s'} with wayfarers you have not met.</p>`:''}`;}
 function vBonds(){const L=BONDS.filter(b=>G.roster[b.a]&&G.roster[b.b]).map(b=>{const k=bondKey(b.a,b.b);return {b,k,g:bondGoal(k),lv:bondLv(b.a,b.b),pend:talkPending(k,1)||talkPending(k,3)};})
     .sort((x,y)=>(y.pend-x.pend)||((x.g.done?999:x.g.n)-(y.g.done?999:y.g.n)));
   const later=BONDS.length-L.length;
