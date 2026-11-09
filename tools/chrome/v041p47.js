@@ -21,11 +21,11 @@ const m=await ev(async()=>{const A=__A,G=A.G,o={};let n=0;for(let i=0;i<200;i++)
   let S=1;for(let s=1;s<5;s++){const ft0=A.getMap('f'+s).caves.find(c=>c.kind==='fort');if(ft0&&A.siteHasMini(ft0.id)){S=s;break;}}
   const f=A.getMap('f'+S),ft=f.caves.find(c=>c.kind==='fort');A.enterCave(ft,S);const fm=A.getMap(ft.id);
   o.hasMini=A.siteHasMini(fm.id);G.miniDone={};const pc=fm.prize;A.placeAt(fm.id,pc[0],pc[1]+1,'u');
-  A.openChest(pc[0],pc[1]);o.dlg=!!A.WS.dlg;A.nextDlg();for(let k=0;k<20&&!A.B;k++)await new Promise(q=>setTimeout(q,100));
+  A.openChest(pc[0],pc[1]);o.dlg=!!A.WS.dlg&&/stands between you/.test(A.WS.dlg.text);A.WS.dlg=null;/* v0.14.1: the chest refuses; the miniboss waits at the end as an actor, and A on it asks to fight */o.actor=A.TW.get('dynActors')(fm).filter(a=>a.mini).length;A.V.modal=null;A.TW.get('ACT').miniGo();for(let k=0;k<20&&!A.B;k++)await new Promise(q=>setTimeout(q,100));
   o.battle=!!A.B&&!!A.B.spec.mini;o.noAuto=A.autoBan(A.B.spec);o.lead=A.B.en[0].name;A.B.en.forEach(e=>e.hp=0);A.finishBattle('win');o.done=!!G.miniDone[fm.id];
   A.V.screen='world';A.placeAt(fm.id,pc[0],pc[1]+1,'u');const g0=G.gear.length,r0=Object.keys(G.roster).length,i0=JSON.stringify(G.inv);A.openChest(pc[0],pc[1]);o.prize=G.gear.length>g0||Object.keys(G.roster).length>r0||JSON.stringify(G.inv)!==i0;return o;});
 console.log(JSON.stringify(m));
-chk('4.8 opening the prize wakes a miniboss; no auto; win and the prize opens',m.hasMini&&m.battle&&!!m.noAuto&&m.done&&m.prize);
+chk('4.8 the miniboss waits at the end (v0.14.1): the chest refuses until it falls, fighting it has no auto, win and the prize opens',m.hasMini&&m.dlg&&m.actor===1&&m.battle&&!!m.noAuto&&m.done&&m.prize||JSON.stringify(m));
 chk('4.8 about 90% of other sites have a miniboss',m.rate>.8&&m.rate<.97);
 chk('v0.11.1: every Den (side cave) ends in a miniboss',m.den===1||m.den);
 const v=await ev(()=>{const A=__A,G=A.G,o={n:0,ok:0};const s0=G.run.seed;for(let k=0;k<130;k++){G.run.seed=1000+k*7919;for(let s=1;s<5;s++){o.n++;try{const c=A.genFort(s);if(A.caveOk(c))o.ok++;}catch(e){}}}G.run.seed=s0;return o;});

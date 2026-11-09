@@ -252,3 +252,18 @@ Sprite overhaul next families: toads/gulls/hawks/bats/rays, wisps/jellies/wraith
   the old 1px hop for idle canvases; sheets `npcs` mode (ONLY, RND, ZOOM); test v140a (world group). CI: release.yml retries npm install, dist:win and
   gradlew (GitHub release/gradle.org downloads 504'd for an hour on 2026-11-09).
 - Versioning: 0.13.9 -> 0.14.0 (last digit never passes 9).
+
+## Owner batch 5 (2026-11-09 morning) and 0.14.1
+Batch 5: (1) NPC behind a Sanctum gatehouse unreachable; (2) Sanctums should look sacred, outside and inside; (3) Dens: no chest-triggered boss, the
+miniboss waits at the end; (4) boss sprites redesigned from the ground up (Thornback, Drake worst); (5) 20 Scourges + 5 Calamities; (6) hero features
+too common (eye patches); (7) animations should match the skill (Water Storm Song too small; spin on all-foe physical; more tells); (8) endgame area
+after the Calamity with foes from every visited realm, the place to farm to level 50.
+- 0.14.1 (mine): fixes10.js (dynActors relocates actors off solid/site-mouth tiles; mini actor type 'elite' with .mini at miniSpot(m) = guardAt or
+  the tile below the prize; sanctGuard() returns null; actorTalk -> modal 'miniask' -> ACT.miniGo; askBoss in a den asks the mini; openChest refuses
+  the prize while miniPending; accOf trims eye patches to 1 in 5 carriers, a third of scarves/earrings), endgame10.js (BREACH 'x0': getMap wrap builds
+  f4 from seed+424242 and relabels; gates -> last town; Waystone row when G.won; encounterFoes before-hook: union pool of visited realms, lv partyHi+2
+  capped 50, hpM 1.3 powM 1.15, elite 20%; roamers remapped; win hook: gold +60% +20+3*lv, 50% rare mat, 8% Epic/Heroic charm), anim10.js (spin via
+  rotated spriteOf canvases for all-foe phys skills, onAction wrap adds rays/rings/bolts/slashes + BV.shake for big spells, rings+motes for party
+  heals/buffs, triple rings for songs). Tests v141a (world group); v041p47 updated to the waiting-miniboss flow.
+- Helpers running: boss sprite redesign (art3.js in place) and four more Scourges (foes.js/bosses10.js/art3.js append/sanctum gates 25).
+- Still open from batch 5: (2) Sanctum look rework outside and inside.
