@@ -148,3 +148,102 @@ function walkerCanvas(key,L,els,id,view,frame){
   return imgOf('wk3:'+key+':'+view+':'+frame,()=>paint(heroGridView(L,view,frame,id),heroPal(L,els,id),{flat:HFLAT,noAO:'SHe'}));
 }
 // a bust for portraits: top 26 rows of the side view
+
+// ===== v0.12.x per-hero accents: every wayfarer (not Legendary, not Vaelith) gets a few personal details chosen from the hero id (hashS) =====
+// hair colour tweak, skin tone tweak, hair style (only when two heroes of a class would share hair and hat), 1 or 2 accessories from a set of 12,
+// and a tint on the weapon. Nothing here uses Math.random. A hero's own look fields (hair, hat, face, back, skin, pal) are never replaced, only added to.
+// Both the plain and HD paths go through heroGridSide / heroGridView / heroPal, so wrapping those three covers overworld, battle, portraits.
+const ACC_SLOT={scarf:'neck',clasp:'neck',headband:'head',bandana:'head',circlet:'head',goggles:'head',eyepatch:'face',earrings:'face',shoulder:'body',satchel:'body',pouch:'body'};
+const ACC_LIST=['scarf','headband','eyepatch','earrings','shoulder','satchel','clasp','pouch','bandana','circlet','goggles','earrings'];
+const ACC_COL=['#c8453c','#3f8fe0','#4aa05a','#e8b840','#b06ad0','#e8e0d0','#2a2a3a','#e07a2a','#3fc0b0','#d0507a'];
+const HAIR_NAT=['#2a1a12','#4a2c1a','#6b3f22','#8a5a2a','#c8a050','#e8d090','#a8402a','#1e1620','#8a8a98','#d8d0c0'];
+const HAIR_DYE=['#3fb0d0','#d0507a','#4aa05a','#b06ad0','#e8b840','#e8e8f0','#e07a2a'];
+const WT_COL=['#7ac8ff','#ffb060','#c8f0a0','#e0a0ff','#ff8a8a','#a0f0e0','#f0e08a','#9aa8ff'];
+const HAIR_POOL=['short','spiky','wild','long','ponytail','bun','braid','curly','bob','swept'];
+const HAIR_COVER=['hood','helm','greathelm'];
+let _accMap=null;
+function _accBuild(){
+  _accMap={};const seen={};
+  RAW.forEach(r=>{const id=r[0],t=TPL[id],L=t&&t.look;if(!L||t.src==='L'||t.src==='x'||L.mount||L.pets||L.scourge)return;
+    const h=hashS('acc:'+id),o={};
+    // hair style: keep it, unless the same class already has this exact hair and hat; then step through the pool to a free one
+    const covered=HAIR_COVER.includes(L.hat);let hair=L.hair||'short';
+    if(!covered&&HAIR_POOL.includes(hair)){let k=cl=>t.cls+'|'+cl+'|'+(L.hat||'');let n=0;
+      while(seen[k(hair)]&&n<HAIR_POOL.length){hair=HAIR_POOL[(HAIR_POOL.indexOf(hair)+1+(h>>>5)%3)%HAIR_POOL.length];n++;}
+      seen[k(hair)]=1;if(hair!==(L.hair||'short'))o.hair=hair;}
+    // hair colour: heroes without one get a natural colour; the rest are nudged toward a dye now and then
+    const H=L.pal&&L.pal.H;
+    if(!H&&hair!=='bald')o.hc=HAIR_NAT[(h>>>2)%HAIR_NAT.length];
+    else if(H&&(h>>>9)%3===0)o.hc=mix(H,HAIR_DYE[(h>>>11)%HAIR_DYE.length],.3);
+    // skin: a small shift in depth and warmth; heroes with their own skin colour (race) keep it exactly
+    if(!L.skin)o.sf=.93+((h>>>13)%9)*.015;
+    // accessories: one head/face/neck/body piece, plus a second from a different slot for most heroes
+    const hat=L.hat&&L.hat!=='none',back=L.back||[],face=L.face||[];
+    const ok=a=>{
+      if((ACC_SLOT[a]==='head')&&(hat||L.halo||L.ears==='fox'||L.ears==='cat'||L.ears==='wolf'||L.antlers||L.crest||L.hair==='flame'||L.hair==='mohawk'))return false;
+      if(a==='eyepatch'&&(face.includes('mask')||face.includes('scar')||L.glasses||face.includes('eyepatch')))return false;
+      if(a==='scarf'&&back.includes('scarf'))return false;
+      if(a==='clasp'&&!back.includes('cape'))return false;
+      if(a==='satchel'&&(back.includes('pack')||back.includes('cape')))return false;
+      if(a==='shoulder'&&(L.b==='heavy'||(FLAIR[id]&&(FLAIR[id].f||[]).includes('pauldron'))))return false;
+      if(a==='pouch'&&L.b==='monk')return false;
+      if(a==='earrings'&&(L.hair==='long'||L.hair==='bob'||L.hair==='curly'||L.hair==='wild'||HAIR_COVER.includes(L.hat)))return false;
+      return true;};
+    const pick=(start,not)=>{for(let i=0;i<ACC_LIST.length;i++){const a=ACC_LIST[(start+i)%ACC_LIST.length];if(ok(a)&&ACC_SLOT[a]!==not)return a;}return null;};
+    const a1=pick(h%ACC_LIST.length);if(a1){o.acc=[a1];
+      if((h>>>17)%4!==0){const a2=pick((h>>>3)%ACC_LIST.length,ACC_SLOT[a1]);if(a2&&a2!==a1)o.acc.push(a2);}}
+    o.ac=ACC_COL[(h>>>7)%ACC_COL.length];o.wt=WT_COL[(h>>>15)%WT_COL.length];o.ws=.28+((h>>>19)%5)*.06;
+    _accMap[id]=o;});
+}
+function accOf(id){if(!_accMap){try{_accBuild();}catch(e){_accMap={};}}return id&&_accMap[id]||null;}
+function accLook(L,id){const o=L&&accOf(id);if(!o)return L;if(L._acc===id)return L;const n=Object.assign({},L);if(o.hair)n.hair=o.hair;n._acc=id;return n;}
+// accessories drawn over the finished body. Coordinates are the 32x32 grid used by the side, front and back painters. a = accessory colour, d = its shade.
+function drawAcc(g,L,id,view){
+  const o=accOf(id);if(!o||!o.acc)return;const front=view==='front',side=view==='side';
+  o.acc.forEach(a=>{
+    if(a==='scarf'){if(side){g.rect(12,12,8,1,'a');g.rect(12,13,7,1,'d');g.px([[11,13],[10,14],[10,15],[11,15]],'a');}
+      else{g.rect(12,12,8,1,'a');g.rect(12,13,8,1,'d');g.px(front?[[13,14],[13,15]]:[[18,14],[18,15],[18,16]],'a');}}
+    else if(a==='clasp'){if(side)g.px([[13,12],[13,13]],'G');else if(front){g.px([[13,12],[18,12]],'G');g.rect(14,12,4,1,'d');}else g.rect(15,12,2,1,'G');}
+    else if(a==='headband'){g.rect(11,5,10,1,'a');if(side)g.px([[9,6],[8,7],[9,7]],'a');else g.px([[10,6],[9,7]],'a');}
+    else if(a==='bandana'){g.rect(11,4,10,2,'a');g.px([[13,4],[16,5],[19,4]],'d');g.px(side?[[9,5],[8,6],[9,7]]:[[10,6],[10,7]],'a');}
+    else if(a==='circlet'){g.rect(11,5,10,1,'G');g.s(side?19:15,5,'C');if(!side)g.s(16,5,'C');}
+    else if(a==='goggles'){g.rect(11,4,10,1,'d');if(side)g.rows(17,3,["aa.","aCa"]);else g.rows(12,3,["aaa..aaa","aCa..aCa"]);}
+    else if(a==='eyepatch'){if(side){g.rect(18,6,3,3,'d');g.px([[17,5],[15,5],[13,4],[12,4]],'d');}else if(front){g.rect(12,6,3,3,'d');g.line(14,6,20,4,'d');}else g.rect(11,5,10,1,'d');}
+    else if(a==='earrings'){if(side)g.px([[12,9]],'a');else g.px([[10,9],[21,9]],'a');}
+    else if(a==='shoulder'){if(side)g.rows(14,12,[".aaaa","aaaaaa",".dddd"]);else g.rows(8,12,[".aaa","aaaa",".dd."]);}
+    else if(a==='satchel'){if(side){g.line(12,13,19,20,'d');g.rect(10,18,4,4,'a');g.rect(10,18,4,1,'d');g.s(11,19,'G');}
+      else if(front){g.line(11,12,20,21,'d');g.rect(20,19,4,4,'a');g.rect(20,19,4,1,'d');g.s(21,20,'G');}
+      else{g.line(11,13,20,20,'d');g.rect(14,15,5,5,'a');g.rect(14,15,5,1,'d');}}
+    else if(a==='pouch'){if(side){g.rect(13,18,3,3,'a');g.rect(13,18,3,1,'d');g.s(14,19,'G');}else if(front){g.rect(19,18,3,3,'a');g.rect(19,18,3,1,'d');g.s(20,19,'G');}else g.rect(20,18,3,3,'a');}
+  });
+}
+// weapon tint: the weapon is drawn into a scratch grid, its metal and haft recoloured (keys v x y), then composited. Active only inside our wrappers.
+let _wtOn=false;
+Object.keys(WPN).forEach(k=>{const d0=WPN[k].draw;if(!d0)return;WPN[k].draw=function(g){
+  if(!_wtOn)return d0.apply(this,arguments);
+  const t=new PG(g.w,g.h,g.ox,g.oy);d0.call(this,t);const R={M:'v',N:'x',W:'y'};
+  for(let i=0;i<t.a.length;i++)if(t.a[i])g.a[i]=R[t.a[i]]||t.a[i];};});
+const _weaponFB1=weaponFB;
+weaponFB=function(g,L,view){if(!_wtOn)return _weaponFB1(g,L,view);
+  const t=new PG(g.w,g.h,g.ox,g.oy);_weaponFB1(t,L,view);const R={M:'v',N:'x',W:'y'};
+  for(let i=0;i<t.a.length;i++)if(t.a[i])g.a[i]=R[t.a[i]]||t.a[i];};
+let _accId=null;
+function _withAcc(id,fn){_wtOn=!!accOf(id);_accId=id;try{return fn();}finally{_wtOn=false;_accId=null;}}
+const _hgs2=heroGridSide,_hgv2=heroGridView;
+heroGridSide=function(L,walk,id){const o=accOf(id);if(!o)return _hgs2(L,walk,id);L=accLook(L,id);
+  return _withAcc(id,()=>_hgs2(L,walk,id));};
+heroGridView=function(L,view,frame,id){const o=accOf(id);if(!o)return _hgv2(L,view,frame,id);L=accLook(L,id);
+  return _withAcc(id,()=>_hgv2(L,view,frame,id));};
+// the accessory pass has to run before toTall/applySize, so hook it into drawFlair, which runs at that point in both painters
+const _drawFlair2=drawFlair;
+drawFlair=function(g,L,id,view){_drawFlair2(g,L,id,view);try{if(view==='side')drawAcc(g,L,id,'side');}catch(e){}};
+// front and back painters draw the head before the hat and back items; the accessories go on once those are down
+const _backItems2=backItemsFB;
+backItemsFB=function(g,L,view,pass){_backItems2(g,L,view,pass);try{if(pass==='over')drawAcc(g,L,_accId,view);}catch(e){}};
+const _heroPal2=heroPal;
+heroPal=function(L,els,id){const p=_heroPal2(L,els,id),o=accOf(id);if(!o)return p;
+  if(o.hc){const oh=p.H;p.H=o.hc;if(p.T===oh)p.T=o.hc;}
+  if(o.sf&&!(L&&L.skin)){p.S=shade(p.S,o.sf);p.e=shade(p.S,.82);}
+  p.a=o.ac;p.d=shade(o.ac,.62);
+  p.v=mix(p.M,o.wt,o.ws+.12);p.x=shade(p.v,.68);p.y=mix(p.W,o.wt,o.ws*.6);
+  return p;};

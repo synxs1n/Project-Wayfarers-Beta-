@@ -25,7 +25,7 @@ await ev(()=>__A.ACT.sTab('guilds'));
 chk('Guild Hall Guilds tab: missions and ranks',await ev(()=>/Ranks and perks/.test(document.querySelector('#modal').innerText)&&!!document.querySelector('#modal .facc')&&!!document.querySelector('#modal [data-act="facAccept"],#modal [data-act="facClaim"]')));
 // ---- Menu > Quests
 await ev(()=>{__A.V.modal=null;__A.ACT.menu();__A.ACT.menuGrp('quests');});n=await nav();
-chk('Menu > Quests: Quests, Guilds, Bounties, Arena',JSON.stringify(n.sub)===JSON.stringify(['Quests','Guilds','Bounties','Arena'])||JSON.stringify(n.sub));
+chk('Menu > Quests (v0.12.6, board then hall): Quests, Bounties, Guilds, Arena',JSON.stringify(n.sub)===JSON.stringify(['Quests','Bounties','Guilds','Arena'])||JSON.stringify(n.sub));
 chk('Menu > Quests shows the board (sections and Accept all)',JSON.stringify(n.secs)===JSON.stringify(SEC.quests)&&await ev(()=>!!document.querySelector('#modal [data-act="qAcceptAll"]'))||JSON.stringify(n));
 chk('Records no longer holds Guilds (it is on the board)',await ev(()=>!__M3.MENU_GROUPS.find(g=>g[0]==='records')[2].includes('factions')));
 // ---- old ids

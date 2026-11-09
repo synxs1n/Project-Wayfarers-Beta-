@@ -87,10 +87,10 @@ await ev(()=>__A.ACT.lSh('beasts:all'));
 // ---- item 4: the regrouped menu
 await ev(()=>{__A.V.modal=null;__A.ACT.menu();});await wait(150);
 const top=await ev(()=>[...document.querySelectorAll('#modal .mgrp .chip')].map(x=>x.textContent.replace(/\s*\d+ ready$/,'').trim()));
-chk('menu groups: Party, Backpack, Quests, Map, Records, Guides, Settings',JSON.stringify(top)===JSON.stringify(['Party','Backpack','Quests','Map','Records','Guides','Settings'])||JSON.stringify(top));
+chk('menu groups (v0.12.6): Party, Backpack, Quests, World, Records, Guides, Settings',JSON.stringify(top)===JSON.stringify(['Party','Backpack','Quests','World','Records','Guides','Settings'])||JSON.stringify(top));
 const sub=await ev(()=>{const o={};for(const g of ['gear','quests','records','guides']){__A.ACT.menuGrp(g);o[g]=[...document.querySelectorAll('#modal .msub .chip')].map(x=>x.textContent.trim());}return o;});
 chk('Backpack: Equipment, Items, Materials',JSON.stringify(sub.gear)===JSON.stringify(['Equipment','Items','Materials'])||JSON.stringify(sub.gear));
-chk('Quests: Quests, Guilds, Bounties, Arena (v0.9.5 Notice Board)',JSON.stringify(sub.quests.map(x=>x.replace(/\s*\d+$/,'')))===JSON.stringify(['Quests','Guilds','Bounties','Arena'])||JSON.stringify(sub.quests));
+chk('Quests (v0.12.6, board then hall): Quests, Bounties, Guilds, Arena',JSON.stringify(sub.quests.map(x=>x.replace(/\s*\d+$/,'')))===JSON.stringify(['Quests','Bounties','Guilds','Arena'])||JSON.stringify(sub.quests));
 chk('Records holds Lore',sub.records.includes('Lore')&&!sub.guides.includes('Lore')||JSON.stringify(sub));
 chk('the pinned Save button is still in the menu title',await ev(()=>!!document.querySelector('#modal h2 .savepin [data-act="p5Save"]')));
 // ---- Daily Trial: shops still open and no plan button

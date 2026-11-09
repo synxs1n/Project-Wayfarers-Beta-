@@ -1837,7 +1837,7 @@ html.rm .battle.b3 .cmd .mi.b9glow{animation:none}
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.12.5";const APP_BUILD="58f3100b35ee";
+(function(){const APP_VER="0.12.6";const APP_BUILD="6bbe8bf500f7";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2530,7 +2530,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.12.5";const APP_BUILD="58f3100b35ee";
+const APP_VER="0.12.6";const APP_BUILD="6bbe8bf500f7";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2538,6 +2538,7 @@ const APP_VER="0.12.5";const APP_BUILD="58f3100b35ee";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.12.6',['The main menu is grouped by what you do: Party (Party, Roster, Loadouts, Pets and a new Bonds tab), Backpack (Equipment, Items, Materials), Quests (Quests, Bounties, Guilds, Arena, in the order of the board and the hall), World (Map, Journey), Records (Bestiary, Codex, Lore, Music Room), Guides and Settings.']],
  ['Beta v0.12.5',['Open Sanctums are lit by the sky in HD-2D too: time of day, dusk and dawn tints and the weather reach in, lamps dim by day, and a guardian fight inside one happens under that weather. Closed Sanctums, lairs and Dens stay indoors.']],
  ['Beta v0.12.4',['Fix: in the first realm the Bonds screen says again when bonds open, instead of listing locked pairs.']],
  ['Beta v0.12.3',['Sanctums look sacred: the field entrance is a shrine with a stair, pillars, a glowing rune arch, lanterns and a ring of stones, in 2D and HD-2D. Inside (new journeys), the guardian stands on a rune circle ringed by pillars and braziers, visible before the fight with its name on approach. Guardians are Scourge-sized in battle, and no two Sanctums or Dens in a journey share one; the Priest\'s Invoke summon stays smaller. New towns keep the three tiles in front of every exit clear of buildings and tall decor.']],
@@ -4852,6 +4853,105 @@ function walkerCanvas(key,L,els,id,view,frame){
   return imgOf('wk3:'+key+':'+view+':'+frame,()=>paint(heroGridView(L,view,frame,id),heroPal(L,els,id),{flat:HFLAT,noAO:'SHe'}));
 }
 // a bust for portraits: top 26 rows of the side view
+
+// ===== v0.12.x per-hero accents: every wayfarer (not Legendary, not Vaelith) gets a few personal details chosen from the hero id (hashS) =====
+// hair colour tweak, skin tone tweak, hair style (only when two heroes of a class would share hair and hat), 1 or 2 accessories from a set of 12,
+// and a tint on the weapon. Nothing here uses Math.random. A hero's own look fields (hair, hat, face, back, skin, pal) are never replaced, only added to.
+// Both the plain and HD paths go through heroGridSide / heroGridView / heroPal, so wrapping those three covers overworld, battle, portraits.
+const ACC_SLOT={scarf:'neck',clasp:'neck',headband:'head',bandana:'head',circlet:'head',goggles:'head',eyepatch:'face',earrings:'face',shoulder:'body',satchel:'body',pouch:'body'};
+const ACC_LIST=['scarf','headband','eyepatch','earrings','shoulder','satchel','clasp','pouch','bandana','circlet','goggles','earrings'];
+const ACC_COL=['#c8453c','#3f8fe0','#4aa05a','#e8b840','#b06ad0','#e8e0d0','#2a2a3a','#e07a2a','#3fc0b0','#d0507a'];
+const HAIR_NAT=['#2a1a12','#4a2c1a','#6b3f22','#8a5a2a','#c8a050','#e8d090','#a8402a','#1e1620','#8a8a98','#d8d0c0'];
+const HAIR_DYE=['#3fb0d0','#d0507a','#4aa05a','#b06ad0','#e8b840','#e8e8f0','#e07a2a'];
+const WT_COL=['#7ac8ff','#ffb060','#c8f0a0','#e0a0ff','#ff8a8a','#a0f0e0','#f0e08a','#9aa8ff'];
+const HAIR_POOL=['short','spiky','wild','long','ponytail','bun','braid','curly','bob','swept'];
+const HAIR_COVER=['hood','helm','greathelm'];
+let _accMap=null;
+function _accBuild(){
+  _accMap={};const seen={};
+  RAW.forEach(r=>{const id=r[0],t=TPL[id],L=t&&t.look;if(!L||t.src==='L'||t.src==='x'||L.mount||L.pets||L.scourge)return;
+    const h=hashS('acc:'+id),o={};
+    // hair style: keep it, unless the same class already has this exact hair and hat; then step through the pool to a free one
+    const covered=HAIR_COVER.includes(L.hat);let hair=L.hair||'short';
+    if(!covered&&HAIR_POOL.includes(hair)){let k=cl=>t.cls+'|'+cl+'|'+(L.hat||'');let n=0;
+      while(seen[k(hair)]&&n<HAIR_POOL.length){hair=HAIR_POOL[(HAIR_POOL.indexOf(hair)+1+(h>>>5)%3)%HAIR_POOL.length];n++;}
+      seen[k(hair)]=1;if(hair!==(L.hair||'short'))o.hair=hair;}
+    // hair colour: heroes without one get a natural colour; the rest are nudged toward a dye now and then
+    const H=L.pal&&L.pal.H;
+    if(!H&&hair!=='bald')o.hc=HAIR_NAT[(h>>>2)%HAIR_NAT.length];
+    else if(H&&(h>>>9)%3===0)o.hc=mix(H,HAIR_DYE[(h>>>11)%HAIR_DYE.length],.3);
+    // skin: a small shift in depth and warmth; heroes with their own skin colour (race) keep it exactly
+    if(!L.skin)o.sf=.93+((h>>>13)%9)*.015;
+    // accessories: one head/face/neck/body piece, plus a second from a different slot for most heroes
+    const hat=L.hat&&L.hat!=='none',back=L.back||[],face=L.face||[];
+    const ok=a=>{
+      if((ACC_SLOT[a]==='head')&&(hat||L.halo||L.ears==='fox'||L.ears==='cat'||L.ears==='wolf'||L.antlers||L.crest||L.hair==='flame'||L.hair==='mohawk'))return false;
+      if(a==='eyepatch'&&(face.includes('mask')||face.includes('scar')||L.glasses||face.includes('eyepatch')))return false;
+      if(a==='scarf'&&back.includes('scarf'))return false;
+      if(a==='clasp'&&!back.includes('cape'))return false;
+      if(a==='satchel'&&(back.includes('pack')||back.includes('cape')))return false;
+      if(a==='shoulder'&&(L.b==='heavy'||(FLAIR[id]&&(FLAIR[id].f||[]).includes('pauldron'))))return false;
+      if(a==='pouch'&&L.b==='monk')return false;
+      if(a==='earrings'&&(L.hair==='long'||L.hair==='bob'||L.hair==='curly'||L.hair==='wild'||HAIR_COVER.includes(L.hat)))return false;
+      return true;};
+    const pick=(start,not)=>{for(let i=0;i<ACC_LIST.length;i++){const a=ACC_LIST[(start+i)%ACC_LIST.length];if(ok(a)&&ACC_SLOT[a]!==not)return a;}return null;};
+    const a1=pick(h%ACC_LIST.length);if(a1){o.acc=[a1];
+      if((h>>>17)%4!==0){const a2=pick((h>>>3)%ACC_LIST.length,ACC_SLOT[a1]);if(a2&&a2!==a1)o.acc.push(a2);}}
+    o.ac=ACC_COL[(h>>>7)%ACC_COL.length];o.wt=WT_COL[(h>>>15)%WT_COL.length];o.ws=.28+((h>>>19)%5)*.06;
+    _accMap[id]=o;});
+}
+function accOf(id){if(!_accMap){try{_accBuild();}catch(e){_accMap={};}}return id&&_accMap[id]||null;}
+function accLook(L,id){const o=L&&accOf(id);if(!o)return L;if(L._acc===id)return L;const n=Object.assign({},L);if(o.hair)n.hair=o.hair;n._acc=id;return n;}
+// accessories drawn over the finished body. Coordinates are the 32x32 grid used by the side, front and back painters. a = accessory colour, d = its shade.
+function drawAcc(g,L,id,view){
+  const o=accOf(id);if(!o||!o.acc)return;const front=view==='front',side=view==='side';
+  o.acc.forEach(a=>{
+    if(a==='scarf'){if(side){g.rect(12,12,8,1,'a');g.rect(12,13,7,1,'d');g.px([[11,13],[10,14],[10,15],[11,15]],'a');}
+      else{g.rect(12,12,8,1,'a');g.rect(12,13,8,1,'d');g.px(front?[[13,14],[13,15]]:[[18,14],[18,15],[18,16]],'a');}}
+    else if(a==='clasp'){if(side)g.px([[13,12],[13,13]],'G');else if(front){g.px([[13,12],[18,12]],'G');g.rect(14,12,4,1,'d');}else g.rect(15,12,2,1,'G');}
+    else if(a==='headband'){g.rect(11,5,10,1,'a');if(side)g.px([[9,6],[8,7],[9,7]],'a');else g.px([[10,6],[9,7]],'a');}
+    else if(a==='bandana'){g.rect(11,4,10,2,'a');g.px([[13,4],[16,5],[19,4]],'d');g.px(side?[[9,5],[8,6],[9,7]]:[[10,6],[10,7]],'a');}
+    else if(a==='circlet'){g.rect(11,5,10,1,'G');g.s(side?19:15,5,'C');if(!side)g.s(16,5,'C');}
+    else if(a==='goggles'){g.rect(11,4,10,1,'d');if(side)g.rows(17,3,["aa.","aCa"]);else g.rows(12,3,["aaa..aaa","aCa..aCa"]);}
+    else if(a==='eyepatch'){if(side){g.rect(18,6,3,3,'d');g.px([[17,5],[15,5],[13,4],[12,4]],'d');}else if(front){g.rect(12,6,3,3,'d');g.line(14,6,20,4,'d');}else g.rect(11,5,10,1,'d');}
+    else if(a==='earrings'){if(side)g.px([[12,9]],'a');else g.px([[10,9],[21,9]],'a');}
+    else if(a==='shoulder'){if(side)g.rows(14,12,[".aaaa","aaaaaa",".dddd"]);else g.rows(8,12,[".aaa","aaaa",".dd."]);}
+    else if(a==='satchel'){if(side){g.line(12,13,19,20,'d');g.rect(10,18,4,4,'a');g.rect(10,18,4,1,'d');g.s(11,19,'G');}
+      else if(front){g.line(11,12,20,21,'d');g.rect(20,19,4,4,'a');g.rect(20,19,4,1,'d');g.s(21,20,'G');}
+      else{g.line(11,13,20,20,'d');g.rect(14,15,5,5,'a');g.rect(14,15,5,1,'d');}}
+    else if(a==='pouch'){if(side){g.rect(13,18,3,3,'a');g.rect(13,18,3,1,'d');g.s(14,19,'G');}else if(front){g.rect(19,18,3,3,'a');g.rect(19,18,3,1,'d');g.s(20,19,'G');}else g.rect(20,18,3,3,'a');}
+  });
+}
+// weapon tint: the weapon is drawn into a scratch grid, its metal and haft recoloured (keys v x y), then composited. Active only inside our wrappers.
+let _wtOn=false;
+Object.keys(WPN).forEach(k=>{const d0=WPN[k].draw;if(!d0)return;WPN[k].draw=function(g){
+  if(!_wtOn)return d0.apply(this,arguments);
+  const t=new PG(g.w,g.h,g.ox,g.oy);d0.call(this,t);const R={M:'v',N:'x',W:'y'};
+  for(let i=0;i<t.a.length;i++)if(t.a[i])g.a[i]=R[t.a[i]]||t.a[i];};});
+const _weaponFB1=weaponFB;
+weaponFB=function(g,L,view){if(!_wtOn)return _weaponFB1(g,L,view);
+  const t=new PG(g.w,g.h,g.ox,g.oy);_weaponFB1(t,L,view);const R={M:'v',N:'x',W:'y'};
+  for(let i=0;i<t.a.length;i++)if(t.a[i])g.a[i]=R[t.a[i]]||t.a[i];};
+let _accId=null;
+function _withAcc(id,fn){_wtOn=!!accOf(id);_accId=id;try{return fn();}finally{_wtOn=false;_accId=null;}}
+const _hgs2=heroGridSide,_hgv2=heroGridView;
+heroGridSide=function(L,walk,id){const o=accOf(id);if(!o)return _hgs2(L,walk,id);L=accLook(L,id);
+  return _withAcc(id,()=>_hgs2(L,walk,id));};
+heroGridView=function(L,view,frame,id){const o=accOf(id);if(!o)return _hgv2(L,view,frame,id);L=accLook(L,id);
+  return _withAcc(id,()=>_hgv2(L,view,frame,id));};
+// the accessory pass has to run before toTall/applySize, so hook it into drawFlair, which runs at that point in both painters
+const _drawFlair2=drawFlair;
+drawFlair=function(g,L,id,view){_drawFlair2(g,L,id,view);try{if(view==='side')drawAcc(g,L,id,'side');}catch(e){}};
+// front and back painters draw the head before the hat and back items; the accessories go on once those are down
+const _backItems2=backItemsFB;
+backItemsFB=function(g,L,view,pass){_backItems2(g,L,view,pass);try{if(pass==='over')drawAcc(g,L,_accId,view);}catch(e){}};
+const _heroPal2=heroPal;
+heroPal=function(L,els,id){const p=_heroPal2(L,els,id),o=accOf(id);if(!o)return p;
+  if(o.hc){const oh=p.H;p.H=o.hc;if(p.T===oh)p.T=o.hc;}
+  if(o.sf&&!(L&&L.skin)){p.S=shade(p.S,o.sf);p.e=shade(p.S,.82);}
+  p.a=o.ac;p.d=shade(o.ac,.62);
+  p.v=mix(p.M,o.wt,o.ws+.12);p.x=shade(p.v,.68);p.y=mix(p.W,o.wt,o.ws*.6);
+  return p;};
 
 // ===== art3.js (base): the 60x60 guardian sprites =====
 Object.assign(MART,{
@@ -24247,6 +24347,23 @@ function vBondsAll(){const L=BONDS.map(b=>{const k=bondKey(b.a,b.b),here=!!(G.ro
   return `<p class="note">${BOND_HOW} Camp and inn talks open at level 2, the after-the-battle talk at level 3 (after a Scourge or the Calamity falls with both in the Vanguard).</p><div class="rows">${rows}</div>`;}
 {const vb0=vBonds;vBonds=function(){try{if(typeof pcUnlocked==='function'&&!pcUnlocked('bonds'))return vb0.apply(this,arguments);/* pacing.js: the lock note until bonds open */return vBondsAll();}catch(e){return vb0.apply(this,arguments);}};}
 {const st=document.createElement('style');st.textContent='.bscs{display:flex;flex-wrap:wrap;gap:4px;margin-top:3px}.bsc small{opacity:.6}.bondrow.lock{opacity:.7}';document.head.appendChild(st);}
+
+// ===== menus9.js (v0.12.6): the main menu regrouped by what you do, plus a Bonds tab =====
+// Party: Party, Roster, Loadouts, Pets, Bonds. Backpack: Equipment, Items, Materials. Quests: Quests, Bounties, Guilds, Arena.
+// World: Map, Journey (realm progress, time, stats). Records: Bestiary, Codex, Lore, Music Room. Guides: What next?, How it works, the
+// Charts, Ailments, Boons, Boss gimmicks, Foe types, Hints, Help. Settings. Runs last in MODS, after every module that spliced its own tab in.
+(function(){try{
+  const G9=[['party','Party',['party','roster','loadouts','comp','bonds']],['gear','Backpack',['equip','items','pouch']],['quests','Quests',['quests','qbounty','factions','qarena']],
+    ['world','World',['map','system']],['records','Records',['beasts','codex','lore','music']],['guides','Guides',['next','sysg','charts','ailments','boons','gimmicks','types','hints','help']],['settings','Settings',['settings']]];
+  const have=new Set(MENU_GROUPS.flatMap(g=>g[2]));// a tab another module added that is not placed above keeps its old group's slot: Records
+  const placed=new Set(G9.flatMap(g=>g[2]));have.forEach(t=>{if(!placed.has(t)){const old=MENU_GROUPS.find(g=>g[2].includes(t)),dst=G9.find(g=>g[0]===(old&&old[0]))||G9.find(g=>g[0]==='records');dst[2].push(t);}});
+  G9.forEach(g=>{g[2]=g[2].filter(t=>have.has(t)||t==='bonds');});
+  MENU_GROUPS.splice(0,MENU_GROUPS.length,...G9.filter(g=>g[2].length));MENU_SUB.bonds='Bonds';MENU_SUB.system='Journey';
+}catch(e){}})();
+// the Bonds tab body (vBonds from v063prog.js / bonds9.js)
+{const nb0=typeof nbMenuBody==='function'?nbMenuBody:null;nbMenuBody=function(m){if(m&&m.tab==='bonds'&&G)return `<p class="note">Who grows closer to whom, and what each bond unlocks.</p>${vBonds()}`;return nb0?nb0.apply(this,arguments):null;};}
+// Records opens on the Bestiary now that Journey lives under World
+{const mg0=ACT.menuGrp;ACT.menuGrp=function(g){if(g==='records'){const G0=MENU_GROUPS.find(x=>x[0]==='records');const t=(V.menuSub||{}).records;ACT.menuTab(t&&G0&&G0[2].includes(t)?t:'beasts');return;}return mg0.apply(this,arguments);};}
 
 window.__A={walkable,ceInit,tvSlots,genQuests,STARTERS,starterDraw,ECON,AUTO_NERF,rebuildBase,detLive,REACT,skEls,packContents,miniFor,AUTO_REW,ENC_RATE,ENC_MIN_STEPS,detNote,classSkills,stickCount,bestAll,calcStats,lookKey,vTemper,storyEchoUp,leaveDungeon,win,ldApply,genFort,caveOk,enterCave,siteHasMini,openChest,nextDlg,WS,mapIcoRects,roamSpawn,roamInterior,roamSees,mapTargets,DIRV,tileAt,STAGE_LV,autoBan,rollWeather,guardianDef,mapIssues,mapEntry,syncPools,bovAt,calFxAt,realmAt,REALMS,BOV,CAL_FX,overlayGuide,liftOverlay,drawGearIcon,gearIcon,itemIcon,RAW,sigKind,sigGid,personalDone,heroLook,hasSignature,LEGEND_IDS,facDirty,facCount,facRank,facRep,FACB,FAC,finishBattle,npcWords,npcHints,npcPool,titleMake,titleAdvance,TTS,placeAt,wkwUpdate,innSpot,getMap,monURL,enterVia,applyBossTheme,BTHEME,resetMaps,rebuildBase,shopStock,gearDesc,calcStats,gearMigrate,CLS_WPN,CLS_ARM,WPERK,WT_NAME,equipWhy,lootBase,GEAR,canEquip,gearOf,perkNote,FAM_MAT_V35,fbDraft,META:{get best(){return META.best},get codex(){return META.codex},get q(){return META.q}},saveMeta,OFF,offPending,offFlush,PROFILE,profileSync,codexSee,getMap,placeAt,interact,sanctumOpen,riftKeys,echoKeys,BONDS,bondKey,wkwUpdate,inTown,WS,LC,lsort,bestParty,fsCast,fsSkills,ldApply,MON,registerTamed,stickPower,stickCount,autoOne,planGear,bestTag,gainersFor,compGainFor,refresh,fitsFor,canEquip,gearOf,queueNewGear,ARENA,fxDur,banDur,stageTags,autoSwitchPick,layoutBattle,newChar,calcStats,limitSkill,limitTier,canStuck,dunReachable,LV_CAP,addXp,echoSpec,bossLvFor,fx,MON,log,effInfo,tierOf,perkOf,quirkDef,forgeCost,buyPlan,vJourney,modalBack,partySlots,limitOpen,town2Reached,skillKnown,known,classSkills,paceMigrate,unpackG,packG,makeEnemy,QUIRK,arrive,enterDungeon,wkwUpdate,useTravel,travelWhyNot,porkFlee,porkBlocked,encTile,campRest,buyPart,partLeft,alchStock,GAME_VERSION,CHANGELOG,ITEMS,tavernOffers,tavernPool,recruitFit,partyNeeds,vNext,CHALL,innSpot,RECIPES,MATS,FB,fbContext,REDEEM,legendJoin,legendQ,genQuests,dynActors,convInit,PROFILE,profileSync,checkArchive,GPOOL,FPOOL,guardianDef,saveMeta,archiveSkills,get G(){return G;},set G(v){G=v;},get B(){return B;},get V(){return V;},get META(){return META;},WS,ACT,render,newGame,placeAt,startBattle,autoTurn,advance,finishBattle,getMap,innSpot,setPause:p=>{PAUSE=p;},autoCfg,worldInputDir,inputSources,battleFrame,battleTheme,STS,MAPS,mapIssues,healMap,mimicReward,dropChest,interact,worldDraw,TPL,ZONES,ZS,newChar,recruit,saveGame,resetMaps,dynActors,tileAt,BV,refresh,genBounties,genQuests,vStarter,heroCard,heroURL,iconURL,masteryLine,AU,buildTrack,tone,noiseHit,MIDI,sfx,audioVol};
 ['heroRoles','SOLID','WEATHER','WX_BASE','weatherFX','superGuide','recruitCost','ceStart','ceStep','ceInit','cePool','wxList','SUPER_TABLE','superOk','facRank','facRep','facInit','facCount','facCredit','FAC','FMIS','facMissionList','facProg','tyOf','facSync','facMul','facBest','worldPlan','caveReward','enterCave','leaveCave','leaveDungeon','buildCaveMap','worldGraph','openWorldMap','sigReport','SIG_NAMES','starterDraw','ITEM_TIERS','gTierIdx','tierChip','gearIcon','starterSlots','STARTERS','CLK_LEN','CLK_PH','clockPhase','wxInfoBody','recipeOrder','recipeGain','recipeReady','recipeClose','effOf','calcDamage','healsUndead','storyEchoUp','riftKeys','echoDef','efCost','autoLocked','bossFightKey','learnScanAll','isSeen','mapMarks','genSub','subOK','subReq','ensureSub','inSub','tvSlots','tvInit','tvLeft','tvEvent','tvNextText','tvPool','tvDue','tvShuffle','mTavern','hireOK','TV_CAP','TV_CD','POOL_IDS','natPool','natOf','natRoll','NATURES','natInfo','natRerollCost','natChooseCost','NAT_CLASS','iconURL','seenOf','mapIcoDraw','drawMini','MAPCV','revealAround','fxLayer','numDur','compBonusText','compPerk','checkPhase','win','unitBox','LNQ','challVisible','challEligible','challState','isMimic','migrateCompanions','canSummon','summonComp','compOf','clockPhase','tickClock','isNight','rollWeather','wxStep','nightPool','encounterFoes','restAll','tameElite','openChest','rerollTavern','bestAll','gearTier','SV','svCheck','svFlush','svInit','svPush','svPull','svScan','svParse','svBackup','svPack','svUnpack','svProg','svCloudList','svDelDoc','svGet','svCap','slotState','slotKey','svDecode','SV_CH','svStatus','svSlotRaw','svLoad','loadRaw','svHash','svIdx'].forEach(k=>{try{Object.defineProperty(window.__A,k,{get:()=>eval(k)});}catch(e){}});
