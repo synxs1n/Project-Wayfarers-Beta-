@@ -4,6 +4,7 @@
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.15.3',['HD-2D world: the camera sits a fifth closer, so houses, doors, trees and tents fill more of the screen, while every character keeps the size it had. Wayfarers now stand about door high instead of towering over the street. Character cards are sampled at twice the detail to make up for the smaller card.']],
  ['Beta v0.15.2',['Sanctums rebuilt inside: one symmetric temple on a single axis with a straight carpet from the door to the guardian, and the whole hall turns to face the way you walked in.',
   'Sanctum gates are a proper facade now instead of a bare gate, and Den mouths and Lair entrances are themed to the realm they sit in and to what lives inside, in both the 2D and HD views.']],
  ['Beta v0.15.1',['The Echo Warden is the Riftkeeper, and is called that in both forms. Rift Echoes are level 55. Once every Echo has been beaten he leaves his post and the middle gate opens; step through and he takes on the power of the rifts before your eyes, then the fight begins. Beaten, he returns to his spot in a new look, still offering the free rest, and the gate lets you rematch him any time.',
