@@ -358,3 +358,6 @@ gates are beaten, cutscene on entering the gate, returns with a new look, rematc
 
 ## 0.16.4
 - arena11.js (new, after fixes11): G.arenaBest[tier]={score,turns,kos} (score = waves*1500 - turns*18 - KOs*250 + avg HP frac*2000, win only); nbArena rows "Cleared Nx · Best score"; SVG medals per tier before the title when G.arena[i]>0; Records > Journey "Arena medals collected n of 5"; dailyKey() -> Monday of the local week (trial, twist, leaderboard key); META.trialBest[key]; player text Daily -> Weekly via vModal xform; "Weekly Terror". Test v149a (menus group). Weak: medals tiny (18px); pre-change daily board entries show only on their own date.
+
+## 0.16.5
+- fixes11.js: doReaction wrap drops the floating 'react' fx while the b9 banner shows and moves battle4's +MP into B.b9rx.mp (b9RxHtml wrap adds .b9mp); HOOK.after('win') marks bestOf('Echo '+d.n).kills for rift echoBoss fights (phase-2 bosses recorded kills under the second form's base). worldzoom10 hdChar: the chars divisor applies only to canvases < 40 px wide (walkers), so map monsters/bosses keep size. sanctum.js drawPortal runes coloured only when won. Note: the Echo Rift beaten state is account-wide (META.best), by design.

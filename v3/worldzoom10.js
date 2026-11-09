@@ -15,4 +15,4 @@ HD2D.zoom=HD2D.zoom*WZ10.k;
 {const hc0=hdChar;hdChar=function(bt,cv,fx,fy,fz,flip,a,fl,sc){
   if(sc!=null)return hc0.apply(this,arguments);
   const p0=HD.px;HD.px=(p0||1)*WZ10.px;
-  try{return hc0.call(this,bt,cv,fx,fy,fz,flip,a,fl,HD2D.spr.sc/(WZ10.k*(WZ10.chars||1)));}finally{HD.px=p0;}};}
+  const ch=cv.width>=40?1:(WZ10.chars||1);/* v0.16.5: only walkers (32 px wide) shrink; monsters, bosses and the Riftkeeper (40+ px canvases) keep their size (the owner: bosses looked too small) */try{return hc0.call(this,bt,cv,fx,fy,fz,flip,a,fl,HD2D.spr.sc/(WZ10.k*ch));}finally{HD.px=p0;}};}

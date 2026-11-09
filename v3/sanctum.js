@@ -33,7 +33,7 @@ function drawPortal(ctx,px,py,n,now){const d=guardianDef(n.key),open=riftKeys().
   const cal=!!n.cal;if(cal){f('#2a0608',-1,-5,18,22);f(open?'#ffd04a':'#7a6a3a',-1,-5,18,1);f(open?'#ffd04a':'#7a6a3a',-1,-5,1,22);f(open?'#ffd04a':'#7a6a3a',16,-5,1,22);}
   f('#0e0a16',0,-3,16,19);f(cal?'#7a1a22':'#4a4068',1,-2,14,17);f(cal?'#2a0810':'#1c1430',3,-1,10,13);f(cal?'#a0303a':'#5a4a80',0,13,16,3);f('#0e0a16',0,15,16,1);
   if(!open){f('#0e0a16',5,6,6,5);f('#9a9aa8',6,7,4,3);f('#9a9aa8',6,4,1,3);f('#9a9aa8',9,4,1,3);f('#9a9aa8',7,3,2,1);ctx.globalAlpha=.55;}
-  for(let i=0;i<5;i++){const a=ph+i*1.26,rx=Math.round(Math.cos(a)*3)+7,ry=Math.round(Math.sin(a)*4)+4;f(open?col:'#585868',rx,ry,2,2);}
+  for(let i=0;i<5;i++){const a=ph+i*1.26,rx=Math.round(Math.cos(a)*3)+7,ry=Math.round(Math.sin(a)*4)+4;f(won?col:'#585868',rx,ry,2,2);}/* v0.16.5: the runes take the element colour only once the Echo is beaten (open but unbeaten: grey), so colour always means beaten */
   f(open?'#efe4ff':'#80808c',7,4,2,3);
   ctx.globalAlpha=1;if(won){f('#ffd04a',12,-2,2,2);f('#ffd04a',11,-1,4,1);}}
 function sanctumActor(actors,n,ctx,cx,cy,now){const px=n.x*TS-cx,py=n.y*TS-cy;if(px<-20||py<-24||px>ctx.canvas.width+4||py>ctx.canvas.height+4)return;actors.push({y:n.y*TS,draw:()=>drawPortal(ctx,px,py,n,now)});}
