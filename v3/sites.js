@@ -26,29 +26,53 @@ function siteVariant(theme,kind){const id=theme+'#'+kind;if(DTHEME[id])return id
 if(typeof MOODS!=='undefined'){MOODS.cave={bpm:72,sc:'minor',prog:[0,5,0,3],lead:'triangle',dr:0,feel:.3,low:1};MOODS.fort={bpm:108,sc:'harm',prog:[0,4,5,4],lead:'square',dr:2,feel:.6};}
 
 // ---------- sanctum map ----------
-function buildFort(R,s){const W=SITES.fortW,H=SITES.fortH,D=new Gr(W,H,'#');
-  const start={x:2,y:ri2(R,15,H-21),w:8,h:6},yard={x:16,y:12,w:26,h:16},keep={x:W-14,y:13,w:11,h:14};
-  [start,yard,keep].forEach(r=>D.rect(r.x,r.y,r.w,r.h,'.'));
-  const bar=[];for(let i=0;i<3;i++){bar.push({x:17+i*9,y:2,w:7,h:6});bar.push({x:17+i*9,y:H-8,w:7,h:6});}bar.forEach(r=>D.rect(r.x,r.y,r.w,r.h,'.'));
-  const cy=start.y+3;D.hline(start.x+start.w,yard.x,cy,'.');D.hline(start.x+start.w,yard.x,cy+1,'.');// gate road, two wide
-  const ky=keep.y+7;D.hline(yard.x+yard.w,keep.x,ky,'.');// a single door into the keep
-  bar.forEach(r=>{const x=r.x+3;if(r.y<yard.y)D.vline(x,r.y+r.h,yard.y,'.');else D.vline(x,yard.y+yard.h,r.y,'.');});
-  // courtyard pillars and banners, braziers at the keep door
-  for(let i=0;i<3;i++){D.put(yard.x+4+i*8,yard.y+3,'P');D.put(yard.x+4+i*8,yard.y+yard.h-4,'P');}
-  D.put(keep.x-1,ky-1,'v');D.put(keep.x-1,ky+1,'v');D.put(keep.x+1,keep.y+1,'v');D.put(keep.x+keep.w-2,keep.y+1,'v');
-  const sc=[start.x+3,start.y];D.put(sc[0],sc[1],'E');
-  const chests=[],pc=[keep.x+Math.floor(keep.w/2),keep.y+Math.floor(keep.h/2)];D.put(pc[0],pc[1],'C');chests.push([pc[0],pc[1],'reward']);
-  bar.forEach((r,i)=>{if(R()<.6){const x=r.x+(i%2?r.w-1:0),y=r.y+(r.y<yard.y?0:r.h-1);if(D.get(x,y)==='.'){D.put(x,y,'C');chests.push([x,y]);}}});
-  // v0.12 (new journeys): the keep is a sacred hall. The guardian's spot is an 'X' tile (solid, drawn as a rune circle) just north of the
-  // prize chest; pillars ring it, braziers and more pillars line the aisle. Fixed positions (no random draws), the aisle row stays open.
-  let guard=null;if(typeof lay3On==='function'&&lay3On()){const gx=pc[0],gy=pc[1]-1;guard=[gx,gy];D.put(gx,gy,'X');
-    [[-3,0],[3,0]].forEach(([i,j])=>D.put(gx+i,gy+j,'P'));
-    [[-3,-3],[3,-3],[-3,4],[3,4]].forEach(([i,j])=>D.put(gx+i,gy+j,'v'));
-    [[-2,-5],[2,-5],[-2,6],[2,6],[-4,-1],[4,-1],[-4,3],[4,3]].forEach(([i,j])=>{if(D.get(gx+i,gy+j)==='.')D.put(gx+i,gy+j,'P');});}
-  return {rows:D.g,start:[sc[0],sc[1]+1],chests,prize:pc,guard};}
-function genFort(s){for(let a=0;a<40;a++){const R=mulberry(G.run.seed+7313+s*71+a*131),c=buildFort(R,s);if(caveOk(c))return c;}throw new Error('sanctum generation failed');}
-function buildFortMap(id){const s=+id.slice(1),c=genFort(s),Z=ZS(s);const m={id,z:s,s,kind:'dungeon',theme:Z.theme,exits:[],npcs:[],bld:[],signs:{},t:c.rows,start:c.start,bossAt:null,chests:c.chests,
-  wander:[c.start[0],c.start[1]+1],cave:true,fort:true,name:FORT_NAMES[s],fixed:{},prize:c.prize,guardAt:c.guard||null,hall:c.guard?1:0,open:(hashS(id+':'+G.run.seed)&1)?1:0};/* v0.12: about half of the Sanctums are open to the sky (weather and day/night show); the rest read Indoors */m.w=m.t[0].length;m.h=m.t.length;return m;}
+// v0.14.5: the Sanctum is a SYMMETRIC TEMPLE on one central axis. It is laid out once in a canonical frame and then turned to the way the
+// player walks in. Canonical frame: u runs across (0..B-1, the axis is u = cx), v runs along (0..L-1) and the player walks toward +v, i.e.
+// down the grid (this is also the layout caveOk checks: the 'E' stair is the tile above the start tile). In the frame:
+//   v 1..7    gate hall   u cx-4..cx+4   the stair 'E' at (cx,1), the start tile (cx,2)
+//   v 8..10   passage     3 wide (u cx-1..cx+1)
+//   v 11..36  nave        u cx-8..cx+8   cloister garden, a colonnade of pillars at cx-6 and cx+6, braziers where the passages open
+//   v 12..35  chapels     three barracks each side (u 2..8 and B-9..B-3, 7 wide, 6 deep), each joined to the nave by a corridor
+//   v 37..41  passage     3 wide, into the guardian hall
+//   v 42..L-3 hall        u cx-7..cx+7   pillars at cx-4 and cx+4, the guardian's rune circle 'X' at (cx,L-4), the prize chest 'C' at (cx,L-3)
+// Everything but the optional barracks chests mirrors across u = cx. Then fortTurn rotates it for the facing: the field gate is entered
+// walking NORTH (face [0,1]), so by default the start room is at the south edge and the hall at the north edge; a gate that faced
+// elsewhere would turn the interior with it (n: hall north, s: hall south, e: hall east, w: hall west).
+const FORT_FWD={n:[0,-1],s:[0,1],e:[1,0],w:[-1,0]},FORT_FACE={n:'u',s:'d',e:'r',w:'l'};
+function fortXf(dir,B,L){return dir==='n'?(u,v)=>[u,L-1-v]:dir==='e'?(u,v)=>[v,u]:dir==='w'?(u,v)=>[L-1-v,u]:(u,v)=>[u,v];}// canonical (u,v) to map (x,y)
+function fortInv(dir,B,L){return dir==='n'?(x,y)=>[x,L-1-y]:dir==='e'?(x,y)=>[y,x]:dir==='w'?(x,y)=>[y,L-1-x]:(x,y)=>[x,y];}// map (x,y) to canonical (u,v)
+function fortDims(dir,B,L){return dir==='e'||dir==='w'?[L,B]:[B,L];}
+function fortDirOf(face){const f=face||[0,1];return f[1]>0?'n':f[1]<0?'s':f[0]>0?'w':'e';}// the gate faces away from the Sanctum; the player walks the other way
+function fortDirFor(s){try{const f=getMap('f'+s),c=(f.caves||[]).find(q=>q.id==='o'+s&&q.kind==='fort');if(c&&c.face)return fortDirOf(c.face);}catch(e){}return 'n';}
+function buildFort(R,s,dir){const B=SITES.fortH|1,L=SITES.fortW,cx=(B-1)>>1,D=new Gr(B,L,'#');
+  const mr=(u,v,w,h)=>{D.rect(u,v,w,h,'.');D.rect(B-u-w,v,w,h,'.');},mp=(u,v,c)=>{D.put(u,v,c);D.put(B-1-u,v,c);};
+  const geo={B,L,cx,dir:'s',gate:{u0:cx-4,u1:cx+4,v0:1,v1:7},nave:{u0:cx-8,u1:cx+8,v0:11,v1:36},hall:{u0:cx-7,u1:cx+7,v0:42,v1:L-3},gv:L-4,pv:L-3,rows:[14,23,32]};
+  [geo.gate,geo.nave,geo.hall].forEach(r=>D.rect(r.u0,r.v0,r.u1-r.u0+1,r.v1-r.v0+1,'.'));
+  D.rect(cx-1,geo.gate.v1+1,3,geo.nave.v0-geo.gate.v1-1,'.');D.rect(cx-1,geo.nave.v1+1,3,geo.hall.v0-geo.nave.v1-1,'.');// the two passages
+  for(let k=0;k<3;k++){const v0=12+k*9;mr(2,v0,7,6);D.hline(9,geo.nave.u0-1,v0+2,'.');D.hline(geo.nave.u1+1,B-10,v0+2,'.');}// chapels and their corridors
+  [17,24,31].forEach(v=>mp(cx-6,v,'P'));// the colonnade
+  mp(cx-2,geo.nave.v0,'v');mp(cx-2,geo.nave.v1,'v');mp(cx-2,geo.hall.v0,'v');// braziers where the passages open
+  [45,49,53].forEach(v=>mp(cx-4,v,'P'));// the hall's pillars
+  D.put(cx,geo.gate.v0,'E');
+  const chests=[],pc=[cx,geo.pv];D.put(pc[0],pc[1],'C');chests.push([pc[0],pc[1],'reward']);
+  for(let k=0;k<3;k++)for(let sd=0;sd<2;sd++){if(R()<.6){const x=sd?B-3:2,y=12+k*9+((k+sd)%2?5:0);if(D.get(x,y)==='.'){D.put(x,y,'C');chests.push([x,y]);}}}
+  // the guardian's spot is an 'X' tile (solid, drawn as a rune circle) on the axis in front of the prize chest; pillars and braziers ring it
+  let guard=null;const gx=cx,gy=geo.gv;if(typeof lay3On==='function'&&lay3On()){guard=[gx,gy];D.put(gx,gy,'X');}
+  mp(gx-3,gy,'P');mp(gx-3,gy-3,'v');mp(gx-3,gy+1,'v');
+  const c={rows:D.g,start:[cx,geo.gate.v0+1],chests,prize:pc,guard,wander:[cx,geo.gate.v0+2],exit:[cx,geo.gate.v0],geo,dir:'s'};
+  return dir&&dir!=='s'?fortTurn(c,dir):c;}
+// turn a canonical (walking south) Sanctum so the player walks in the direction dir: the grid and every coordinate
+function fortTurn(c,dir){const g=c.geo,B=g.B,L=g.L,xf=fortXf(dir,B,L),[W,H]=fortDims(dir,B,L),rows=[];for(let y=0;y<H;y++)rows.push(Array(W).fill('#'));
+  for(let v=0;v<L;v++)for(let u=0;u<B;u++){const [x,y]=xf(u,v);rows[y][x]=c.rows[v][u];}
+  const P=p=>p&&xf(p[0],p[1]);
+  return {rows,start:P(c.start),chests:c.chests.map(q=>{const p=xf(q[0],q[1]);return q.length>2?[p[0],p[1],q[2]]:p;}),prize:P(c.prize),guard:P(c.guard),wander:P(c.wander),exit:P(c.exit),geo:Object.assign({},g,{dir}),dir};}
+function genFort(s,dir){for(let a=0;a<40;a++){const R=mulberry(G.run.seed+7313+s*71+a*131),c=buildFort(R,s);if(caveOk(c))return dir&&dir!=='s'?fortTurn(c,dir):c;}throw new Error('sanctum generation failed');}
+function buildFortMap(id){const s=+id.slice(1),dir=fortDirFor(s),c=genFort(s,dir),Z=ZS(s);const m={id,z:s,s,kind:'dungeon',theme:Z.theme,exits:[],npcs:[],bld:[],signs:{},t:c.rows,start:c.start,bossAt:null,chests:c.chests,
+  wander:c.wander,cave:true,fort:true,name:FORT_NAMES[s],fixed:{},prize:c.prize,guardAt:c.guard||null,hall:c.guard?1:0,open:(hashS(id+':'+G.run.seed)&1)?1:0,
+  fo:c.geo,enterDir:dir,exitAt:c.exit};/* v0.12: about half of the Sanctums are open to the sky (weather and day/night show); the rest read Indoors */m.w=m.t[0].length;m.h=m.t.length;
+  /* v0.14.5: the prize chest moved with the new layout; a Sanctum whose prize is already won must not offer it again */try{if(G.fortWon&&G.fortWon[s]){G.chests=G.chests||{};G.chests[id+':'+c.prize[0]+','+c.prize[1]]=1;}}catch(e){}return m;}
+// a Sanctum is entered on its stair, facing the way in (the old enterCave stood the hero on the tile above start, facing down)
+{const ec0=enterCave;enterCave=function(c,s){const r=ec0.apply(this,arguments);try{const m=c&&c.kind==='fort'&&getMap(c.id);if(m&&m.exitAt&&m.enterDir&&m.enterDir!=='s')placeAt(c.id,m.exitAt[0],m.exitAt[1],FORT_FACE[m.enterDir]||'d');}catch(e){}return r;};}
 // sanctum gatehouse on the field: a clearing far from the dungeon, the cave and the gates, reachable before the sealed gate
 function fortWanted(s){return isRv2()&&s>=1;}
 function placeFort(f,s){if(!f||f.kind!=='field'||f.fortDone||!fortWanted(s))return;f.fortDone=1;if((f.caves||[]).some(c=>c.kind==='fort'))return;

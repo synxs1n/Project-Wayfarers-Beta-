@@ -306,3 +306,8 @@ gates are beaten, cutscene on entering the gate, returns with a new look, rematc
   sign). Tests v145a (world group); v140a hash 5bc61619.
 - Helpers running: sitelook10.js (den mouths, lair facades, Sanctum gate per realm, 2D + HD) and the Sanctum interior rebuild (sites.js buildFort
   axial/symmetric/oriented + sanctlook10 adaptation, v142a extended).
+
+## 0.15.2
+- Sanctum interiors (sites.js buildFort/genFort, sanctlook10.js adapted): one symmetric 41x62 temple on a single axis, carpet from the door to the guardian, turned by the entrance facing (map fields fo/enterDir/exitAt). Test v142a extended.
+- Site entrances (sitelook10.js, new, last in MODS): den mouths per realm preview the interior palette; lair fronts per realm (plus Calamity realms) with a lit cleared variant; Sanctum shrine approach with realm guardians. Fixes an HD bug where sanctlook10's hdGateGeo caught the lair mound. Lair mound heights scaled to .32. Test v144a (world group).
+- Weak spots: lair fronts are upright cards whatever the door faces; dungeon8 torch/bone extras still sit beside the new doors; 2D view clipped at top far from the gate.

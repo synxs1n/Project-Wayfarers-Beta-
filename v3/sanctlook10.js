@@ -41,15 +41,20 @@ function sncApply(m){if(!m||!m.fort||!m.cave)return;const th=m.theme,P=SNC_P(th)
 {const ab1=applyBossTheme;applyBossTheme=function(m){ab1.apply(this,arguments);try{sncApply(m);}catch(e){}};}
 HOOK.wrap('getMap','sanctlook10','sanctum look (after the dungeon material is set)',function(next,...a){const m=next(...a);try{if(m&&m.fort&&!m.__snc){m.__snc=1;sncApply(m);}}catch(e){}return m;});
 
-// ---------- where things are in the Sanctum (derived from the unchanged layout of buildFort) ----------
-function sncGeo(m){if(m.__sg)return m.__sg;const p=m.prize,o={ok:false};
-  try{if(p&&m.start){const kx=p[0]-5,ky=p[1]-7,gx=p[0],gy=m.guardAt?m.guardAt[1]:p[1]-1;Object.assign(o,{keep:{x:kx,y:ky,w:11,h:14},yard:{x:16,y:12,w:26,h:16},ky:p[1],gx,gy,cy:m.start[1]+2});
-    o.ok=tileAt(m,kx,p[1])!=='#'&&tileAt(m,kx-1,p[1])!=='#'&&tileAt(m,16,p[1])!=='#'&&tileAt(m,16+13,12+8)!=='#';
-    if(o.ok){const C=new Set(),add=(x,y)=>{if(!'#Pv'.includes(tileAt(m,x,y)||'#'))C.add(x+','+y);};
-      for(let x=kx-1;x<=gx+1;x++)add(x,p[1]);for(let x=kx;x<=gx+1;x++)add(x,p[1]+1);for(let x=gx-1;x<=gx+1;x++)for(let y=gy-1;y<=p[1]+1;y++)add(x,y);o.carpet=C;
-      const cd=new Set();for(let x=kx;x<gx-1;x+=2){[p[1]-2,p[1]+2].forEach(y=>{if(tileAt(m,x,y)==='.')cd.add(x+','+y);});}o.candles=cd;}}}catch(e){o.ok=false;}
+// ---------- where things are in the Sanctum (v0.14.5: the layout is a symmetric temple on one axis, turned to the way in; sites.js buildFort) ----------
+// m.fo holds the canonical frame (u across, v along, the player walks toward +v) and its facing; sncGeo derives the converters, the carpet and the candles.
+function sncGeo(m){if(m.__sg)return m.__sg;const g=m.fo,o={ok:false};
+  try{if(g&&m.start&&m.prize){const dir=g.dir,inv=fortInv(dir,g.B,g.L),xf=fortXf(dir,g.B,g.L),cx=g.cx;
+    Object.assign(o,{g,dir,inv,xf,cx,gate:g.gate,yard:g.nave,hall:g.hall,gv:g.gv});o.ok=tileAt(m,m.start[0],m.start[1])!=='#';
+    if(o.ok){const C=new Set(),add=(u,v)=>{const p=xf(u,v);if(!'#PvXCE'.includes(tileAt(m,p[0],p[1])||'#'))C.add(p[0]+','+p[1]);};
+      for(let v=g.gate.v0+1;v<g.gv;v++)for(let u=cx-1;u<=cx+1;u++)add(u,v);o.carpet=C;// the runner: from the start tile straight up the axis to the rune circle
+      const cd=new Set();for(let v=g.hall.v0+2;v<g.gv-1;v+=2)[cx-2,cx+2].forEach(u=>{const p=xf(u,v);if(tileAt(m,p[0],p[1])==='.')cd.add(p[0]+','+p[1]);});o.candles=cd;}}}catch(e){o.ok=false;}
   return m.__sg=o;}
-const sncTv=(x,y)=>((x*7+y*13)%4+4)%4;// the wall face variant both renderers pick for a tile (hd2d.js tv): 2 = prayer cloth, 3 = window
+const sncTvRaw=(x,y)=>((x*7+y*13)%4+4)%4;
+// a map tile in the canonical frame, folded across the axis (so a tile and its mirror image give the same answer)
+function sncCanon(m,x,y){const o=m&&m.fo?sncGeo(m):null;if(!o||!o.ok)return [x,y];const p=o.inv(x,y);return [Math.min(p[0],o.g.B-1-p[0]),p[1]];}
+// the wall face variant: 2 = prayer cloth, 3 = window. In 2D it is symmetric about the axis; HD-2D picks it with its own hash (hd2d.js tv), so match that there
+function sncTv(x,y,m){try{if(typeof HD!=='undefined'&&HD.live&&HD.S&&HD.S.m===m)return sncTvRaw(x,y);}catch(e){}const p=sncCanon(m,x,y);return sncTvRaw(p[0],p[1]);}
 
 // the realm's weathering on a horizontal stone surface: a strip along y of width w (f paints relative to the tile or the sprite)
 function sncCap(f,x,y,w,P,R,thick){const k=P.cap;
@@ -87,7 +92,7 @@ function sncTop(f,R,D){f(D.top,0,0,16,16);for(let i=0;i<4;i++)f(shade(D.w[3],1.4
 // ---------- floors ----------
 const SNC_CAPCOL={moss:['#6a9a44','#8cc060'],salt:['#f0f6f2','#a8dcd0'],ember:['#3a2a22','#ff8a3a'],snow:['#ffffff','#cfe4f4'],gold:['#f2c93a','#fff0a0'],star:['#b080ff','#e8d8ff']};
 function sncFloor(f,R,D,P,x,y,m,L,px,py,ctx){const F=D.f,o=sncGeo(m);let reg='room';
-  if(o.ok){const k=o.keep,yd=o.yard;if(x>=k.x&&x<k.x+k.w&&y>=k.y&&y<k.y+k.h)reg='hall';else if(x>=yd.x&&x<yd.x+yd.w&&y>=yd.y&&y<yd.y+yd.h)reg='yard';}
+  if(o.ok){const q=o.inv(x,y),u=q[0],v=q[1],k=o.hall,yd=o.yard;if(u>=k.u0&&u<=k.u1&&v>=k.v0&&v<=k.v1)reg='hall';else if(u>=yd.u0&&u<=yd.u1&&v>=yd.v0&&v<=yd.v1)reg='yard';}
   // flagstones
   f(F[0],0,0,16,16);
   if(reg==='hall'){for(let j=0;j<2;j++){const off=((x+y+j)%2)?4:0;for(let i=-off;i<16;i+=12){const a=Math.max(0,i),w=Math.min(11,16-a),col=R()<.3?F[2]:R()<.5?F[0]:F[1];f(col,a,j*8,w,7);f(tint(col,.16),a,j*8,w,1);}f(F[3],0,j*8+7,16,1);}
@@ -101,55 +106,66 @@ function sncFloor(f,R,D,P,x,y,m,L,px,py,ctx){const F=D.f,o=sncGeo(m);let reg='ro
   if(R()<wet){const a=Math.floor(R()*12)+1;for(let i=0;i<3+Math.floor(R()*3);i++){f(R()<.5?cc[0]:cc[1],a+i,(i%2?7:15),1,1);}}
   if(reg==='yard')sncYard(f,R,D,P,x,y,m,o,L,px,py,cc);
   else if(reg==='hall')sncHall(f,R,D,P,x,y,m,o,L,px,py,ctx);
+  if(o.ok&&o.carpet.has(x+','+y))sncCarpet(f,D,o,x,y);// the runner lies over the flagstones, the garden path and the hall alike
   // light from a window above (the nearest wall north of this floor tile within three tiles is stained glass): a patch of coloured light
-  for(let k=1;k<=3;k++){const t=tileAt(m,x,y-k);if(t==='#'){if(sncTv(x,y-k)===3){const q=(4-k)/4;ctx.fillStyle='rgba('+hx(D.glass[1]).join(',')+','+(.2*q).toFixed(2)+')';ctx.fillRect(px+1,py,14,16);ctx.fillStyle='rgba('+hx(D.glass[0]).join(',')+','+(.16*q).toFixed(2)+')';ctx.fillRect(px+4,py+1,8,13);}break;}}
+  for(let k=1;k<=3;k++){const t=tileAt(m,x,y-k);if(t==='#'){if(sncTv(x,y-k,m)===3){const q=(4-k)/4;ctx.fillStyle='rgba('+hx(D.glass[1]).join(',')+','+(.2*q).toFixed(2)+')';ctx.fillRect(px+1,py,14,16);ctx.fillStyle='rgba('+hx(D.glass[0]).join(',')+','+(.16*q).toFixed(2)+')';ctx.fillRect(px+4,py+1,8,13);}break;}}
   if(wall(0,-1)){ctx.fillStyle='rgba(40,28,20,.30)';ctx.fillRect(px,py,16,3);}
   if(wall(-1,0)){ctx.fillStyle='rgba(40,28,20,.16)';ctx.fillRect(px,py,2,16);}
 }
-// the courtyard: a cloister garden between a colonnade north and south. kind of a tile: path, grass, gravel or walk (the covered walk)
-function sncYKind(o,x,y){const yd=o.yard;if(x<yd.x||x>=yd.x+yd.w||y<yd.y||y>=yd.y+yd.h)return 'out';
-  if(y===o.ky||((y===o.cy||y===o.cy+1)&&x<=yd.x+4)||(x===yd.x+4&&y>=Math.min(o.cy,o.ky)&&y<=Math.max(o.cy+1,o.ky)))return 'path';
-  if(x>=yd.x+2&&x<yd.x+yd.w-2&&y>=yd.y+4&&y<yd.y+yd.h-4)return y<o.ky?'grass':'gravel';return 'walk';}
-function sncYard(f,R,D,P,x,y,m,o,L,px,py,cc){if(!o.ok)return;const k=sncYKind(o,x,y),g=P.gr,F=D.f;
+// the nave: a cloister garden between a colonnade each side of the axis, in the canonical frame (u across, v along). kind: path, grass, gravel, walk (the covered walk) or out
+function sncYKind(o,u,v){const n=o.yard;if(u<n.u0||u>n.u1||v<n.v0||v>n.v1)return 'out';
+  if(Math.abs(u-o.cx)<=1||o.g.rows.includes(v))return 'path';
+  if(u<n.u0+2||u>n.u1-2||v<n.v0+2||v>n.v1-2)return 'walk';
+  return v<(n.v0+n.v1)/2?'grass':'gravel';}
+const sncYK=(o,x,y)=>{const q=o.inv(x,y);return sncYKind(o,q[0],q[1]);};
+function sncYard(f,R,D,P,x,y,m,o,L,px,py,cc){if(!o.ok)return;const k=sncYK(o,x,y),g=P.gr,F=D.f,cn=sncCanon(m,x,y),hx0=cn[0],hy0=cn[1];
   if(k==='grass'){f(g[0],0,0,16,16);for(let i=0;i<14;i++){const gx=Math.floor(R()*15),gy=Math.floor(R()*13)+2;f(R()<.5?g[1]:g[2],gx,gy,1,2+(R()<.3?1:0));}
     for(let i=0;i<3;i++)f(g[1],Math.floor(R()*13),Math.floor(R()*14),2,1);
-    const h=((x*29+y*53)%7);if(h<3){const bx=2+Math.floor(R()*10),by=3+Math.floor(R()*9);for(let i=0;i<3;i++){const c=P.bloom[(i+h)%2];f(c,bx+(i*3)%6,by+(i*2)%5,2,2);f('#ffffff',bx+(i*3)%6,by+(i*2)%5,1,1);}}}
-  else if(k==='gravel'){f(lerpHex(F[2],'#ffffff',.25),0,0,16,16);for(let j=0;j<4;j++){const yy=j*4+1,ph=(x*5+j*3)%6;f(F[3],0,yy,16,1);f(F[0],0,yy+1,16,1);for(let i=0;i<16;i+=1){const w=Math.round(Math.sin((i+ph)/2.2));if(w>0)f(F[1],i,yy+(w?0:0),1,1);}}
+    const h=((hx0*29+hy0*53)%7);if(h<3){const bx=2+Math.floor(R()*10),by=3+Math.floor(R()*9);for(let i=0;i<3;i++){const c=P.bloom[(i+h)%2];f(c,bx+(i*3)%6,by+(i*2)%5,2,2);f('#ffffff',bx+(i*3)%6,by+(i*2)%5,1,1);}}}
+  else if(k==='gravel'){f(lerpHex(F[2],'#ffffff',.25),0,0,16,16);for(let j=0;j<4;j++){const yy=j*4+1,ph=(hx0*5+j*3)%6;f(F[3],0,yy,16,1);f(F[0],0,yy+1,16,1);for(let i=0;i<16;i+=1){const w=Math.round(Math.sin((i+ph)/2.2));if(w>0)f(F[1],i,yy+(w?0:0),1,1);}}
     for(let i=0;i<6;i++)f(R()<.5?F[0]:F[3],Math.floor(R()*15),Math.floor(R()*15),1,1);
-    if((x*13+y*7)%9===0){const sx=3+Math.floor(R()*6),sy=4+Math.floor(R()*6);f('rgba(60,50,40,.28)',sx+1,sy+3,8,2);f(shade(F[0],.9),sx,sy,8,4);f(tint(F[0],.35),sx+1,sy,6,1);f(F[3],sx,sy+3,8,1);if(P.cap==='moss')f('#6aa044',sx+1,sy-1,4,1);}}
-  else if(k==='path'){f(lerpHex(F[1],P.gr[0],.18),0,0,16,16);for(let i=0;i<3;i++){const sx=((i*5+x*3+y)%7),sy=i*5;f('rgba(60,50,40,.3)',sx+1,sy+3,8,2);f(F[0],sx,sy+1,8,4);f(tint(F[2],.3),sx+1,sy+1,6,1);f(F[3],sx,sy+4,8,1);}}
+    if((hx0*13+hy0*7)%9===0){const sx=3+Math.floor(R()*6),sy=4+Math.floor(R()*6);f('rgba(60,50,40,.28)',sx+1,sy+3,8,2);f(shade(F[0],.9),sx,sy,8,4);f(tint(F[0],.35),sx+1,sy,6,1);f(F[3],sx,sy+3,8,1);if(P.cap==='moss')f('#6aa044',sx+1,sy-1,4,1);}}
+  else if(k==='path'){f(lerpHex(F[1],P.gr[0],.18),0,0,16,16);for(let i=0;i<3;i++){const sx=((i*5+hx0*3+hy0)%7),sy=i*5;f('rgba(60,50,40,.3)',sx+1,sy+3,8,2);f(F[0],sx,sy+1,8,4);f(tint(F[2],.3),sx+1,sy+1,6,1);f(F[3],sx,sy+4,8,1);}}
   // a curb where garden meets path or walk
-  if(k==='grass'||k==='gravel'){const nb=(dx,dy)=>{const q=sncYKind(o,x+dx,y+dy);return q==='path'||q==='walk'||q==='out';};
+  if(k==='grass'||k==='gravel'){const nb=(dx,dy)=>{const q=sncYK(o,x+dx,y+dy);return q==='path'||q==='walk'||q==='out';};
     if(nb(0,-1)){f(F[3],0,0,16,1);f(tint(F[2],.4),0,1,16,1);}if(nb(0,1)){f(F[3],0,15,16,1);}if(nb(-1,0)){f(F[3],0,0,1,16);}if(nb(1,0)){f(F[3],15,0,1,16);}}}
-// the hall: a polished floor, the runner carpet with gold trim and fringe, candles on the floor along the aisle, a pale dais under the rune circle
-function sncHall(f,R,D,P,x,y,m,o,L,px,py,ctx){if(!o.ok)return;const C=o.carpet,key=x+','+y;
-  const has=(dx,dy)=>C.has((x+dx)+','+(y+dy)),cl=D.cloth;
-  if(C.has(key)){const top=!has(0,-1),bot=!has(0,1),lf=!has(-1,0),rt=!has(1,0);
-    f(cl[0],0,0,16,16);f(shade(cl[0],.84),0,0,16,16);f(cl[0],1,1,14,14);
-    f(cl[1],7,5,2,6);f(cl[1],5,7,6,2);f(shade(cl[0],.7),7,7,2,2);// a diamond motif
-    if(top){f('#2a2018',0,0,16,1);f('#f0dc98',0,1,16,2);f('#8a7030',0,3,16,1);}else if(bot){f('#8a7030',0,12,16,1);f('#f0dc98',0,13,16,2);f('#2a2018',0,15,16,1);}
-    if(lf){f('#f0dc98',0,0,2,16);f('#f0dc98',-0,0,1,16);for(let j=0;j<16;j+=2)f('#e8c860',0,j,1,1);f('#8a7030',2,0,1,16);}
-    if(rt){f('#f0dc98',14,0,2,16);f('#8a7030',13,0,1,16);}
-    if(!top&&!bot){f(tint(cl[0],.12),3,0,1,16);f(tint(cl[0],.12),12,0,1,16);}}
-  else if(o.candles&&o.candles.has(key)){// a candle in a dish, lit
+// the runner carpet with gold trim and fringe: a long strip from the start tile up the axis to the rune circle (the edges of its set decide the trim)
+function sncCarpet(f,D,o,x,y){const C=o.carpet,has=(dx,dy)=>C.has((x+dx)+','+(y+dy)),cl=D.cloth,vert=o.dir==='n'||o.dir==='s';
+  const st=(e,d,t,col)=>e==='T'?f(col,0,d,16,t):e==='B'?f(col,0,16-d-t,16,t):e==='L'?f(col,d,0,t,16):f(col,16-d-t,0,t,16);
+  f(cl[0],0,0,16,16);f(shade(cl[0],.9),0,0,16,16);f(cl[0],1,1,14,14);
+  f(cl[1],7,5,2,6);f(cl[1],5,7,6,2);f(shade(cl[0],.7),7,7,2,2);// a diamond motif
+  const E={T:!has(0,-1),B:!has(0,1),L:!has(-1,0),R:!has(1,0)};
+  if(vert&&!E.T&&!E.B){f(tint(cl[0],.12),3,0,1,16);f(tint(cl[0],.12),12,0,1,16);}
+  if(!vert&&!E.L&&!E.R){f(tint(cl[0],.12),0,3,16,1);f(tint(cl[0],.12),0,12,16,1);}
+  Object.keys(E).forEach(e=>{if(!E[e])return;const end=vert?(e==='T'||e==='B'):(e==='L'||e==='R');
+    if(end){st(e,0,1,'#2a2018');st(e,1,2,'#f0dc98');st(e,3,1,'#8a7030');}
+    else{st(e,0,2,'#f0dc98');st(e,2,1,'#8a7030');for(let j=0;j<16;j+=2){if(e==='L')f('#e8c860',0,j,1,1);else if(e==='R')f('#e8c860',15,j,1,1);else if(e==='T')f('#e8c860',j,0,1,1);else f('#e8c860',j,15,1,1);}}});}
+// the hall: a polished floor, candles on the floor along the aisle, a pale dais under the rune circle
+function sncHall(f,R,D,P,x,y,m,o,L,px,py,ctx){if(!o.ok)return;const key=x+','+y;
+  if(!o.carpet.has(key)&&o.candles&&o.candles.has(key)){// a candle in a dish, lit
     const cx=5+Math.floor(R()*5);f('rgba(40,30,20,.3)',cx-1,12,6,2);f('#8a8070',cx-1,11,5,2);f('#cfc6b3',cx,11,3,1);f('#f6f0e0',cx+1,6,2,5);f('#fff6d0',cx+1,6,1,2);f('#ffd870',cx+1,4,2,2);f('#fff8e0',cx+1,4,1,1);
     L.push([px+cx+1,py+7,14,'lamp']);}
-  // the dais ring under the rune circle: a paler step around the guardian's tile
-  const gx=o.gx,gy=o.gy;if(Math.abs(x-gx)<=1&&y>=gy-1&&y<=gy+2){if(x===gx-1)f(tint(D.f[2],.3),0,0,1,16);if(x===gx+1)f(D.f[3],15,0,1,16);if(y===gy-1)f(tint(D.f[2],.3),0,0,16,1);}
+  // the dais ring under the rune circle: a paler step round the guardian's tile (its edges follow the axis, whichever way the hall faces)
+  const q=o.inv(x,y),u=q[0],v=q[1];
+  if(Math.abs(u-o.cx)<=1&&v>=o.gv&&v<=o.gv+2){const edge=(du,dv,col,th)=>{const a=o.xf(u,v),b=o.xf(u+du,v+dv),dx=b[0]-a[0],dy=b[1]-a[1];if(dx<0)f(col,0,0,th,16);else if(dx>0)f(col,16-th,0,th,16);else if(dy<0)f(col,0,0,16,th);else f(col,0,16-th,16,th);};
+    if(u===o.cx-1)edge(-1,0,tint(D.f[2],.3),1);if(u===o.cx+1)edge(1,0,tint(D.f[2],.3),1);if(v===o.gv)edge(0,-1,tint(D.f[2],.3),1);}
 }
-// the stairs out (the start room's door): three pale steps in warm light
-function sncDoor(f,D,L,px,py){f('#3a3028',0,0,16,16);for(let i=0;i<5;i++){const yy=12-i*3;f(tint(D.f[0],.3),1+i,yy,14-i*2,2);f(shade(D.f[0],.82),1+i,yy+2,14-i*2,1);}f('#fff6d0',4,0,8,3);f('#ffe9a0',1,0,1,16);f('#ffe9a0',14,0,1,16);L.push([px+8,py+2,46,'day']);}
+// the stairs out (the start room's door): three pale steps in warm light. The art is drawn with the way out at the top (you walk south in); turned for the other facings
+function sncDoor(f0,D,L,px,py,dir){dir=dir||'s';
+  const f=dir==='n'?(c,a,b,w,h)=>f0(c,a,16-b-h,w,h):dir==='e'?(c,a,b,w,h)=>f0(c,b,a,h,w):dir==='w'?(c,a,b,w,h)=>f0(c,16-b-h,a,h,w):f0;
+  f('#3a3028',0,0,16,16);for(let i=0;i<5;i++){const yy=12-i*3;f(tint(D.f[0],.3),1+i,yy,14-i*2,2);f(shade(D.f[0],.82),1+i,yy+2,14-i*2,1);}f('#fff6d0',4,0,8,3);f('#ffe9a0',1,0,1,16);f('#ffe9a0',14,0,1,16);
+  L.push(dir==='n'?[px+8,py+14,46,'day']:dir==='e'?[px+2,py+8,46,'day']:dir==='w'?[px+14,py+8,46,'day']:[px+8,py+2,46,'day']);}
 // the rune circle tile (X): a faint accent ring on the floor; sites.js drawHallRunes adds the big glow around it
 function sncRune(f,ctx,D){ctx.globalAlpha=.7;for(let a=0;a<24;a++){const t=a/24*Math.PI*2;f(D.acc,8+Math.round(Math.cos(t)*7),8+Math.round(Math.sin(t)*5),1,1);}ctx.globalAlpha=1;}
-function sncTile(ctx,m,x,y,frame){const D=DTH(m),P=SNC_P(m.theme),c=tileAt(m,x,y),px=x*TS,py=y*TS,R=mulberry(x*5113+y*2671+m.s*7),L=m.lights=m.lights||[];
+function sncTile(ctx,m,x,y,frame){const D=DTH(m),P=SNC_P(m.theme),c=tileAt(m,x,y),px=x*TS,py=y*TS,cn=sncCanon(m,x,y),R=mulberry(cn[0]*5113+cn[1]*2671+m.s*7),L=m.lights=m.lights||[];/* cn: the tile folded across the axis, so a tile and its mirror image are dressed alike */
   const f=(col,a,b,w,h)=>{ctx.fillStyle=col;ctx.fillRect(px+a,py+b,w,h);};const isW=(dx,dy)=>tileAt(m,x+dx,y+dy)==='#';
   if(c==='#'){
-    if(!isW(0,1)){sncFace(f,R,D,16,sncTv(x,y),x,y,m,L,px,py);
-      if(sncTv(x,y)===0&&(x*3+y*5)%11===0&&tileAt(m,x,y+1)!=='~'){f('#6a5a3a',7,5,2,1);f('#e8c860',6,6,4,5);f('#fff0b0',7,7,2,3);L.push([px+8,py+6,22,'torch']);m.torches=m.torches||[];m.torches.push([px+8,py+6]);}}// a wall lamp: a small gilt oil lamp
+    if(!isW(0,1)){sncFace(f,R,D,16,sncTv(x,y,m),cn[0],cn[1],m,L,px,py);
+      if(sncTv(x,y,m)===0&&(cn[0]*3+cn[1]*5)%11===0&&tileAt(m,x,y+1)!=='~'){f('#6a5a3a',7,5,2,1);f('#e8c860',6,6,4,5);f('#fff0b0',7,7,2,3);L.push([px+8,py+6,22,'torch']);m.torches=m.torches||[];m.torches.push([px+8,py+6]);}}// a wall lamp: a small gilt oil lamp
     else{sncTop(f,R,D);if(!isW(-1,0))f(D.w[1],0,0,2,16);if(!isW(1,0))f(D.w[1],14,0,2,16);if(!isW(0,-1))f(D.w[1],0,0,16,2);}
     return;}
   sncFloor(f,R,D,P,x,y,m,L,px,py,ctx);
-  if(c==='E')sncDoor(f,D,L,px,py);
+  if(c==='E')sncDoor(f,D,L,px,py,m.fo&&m.fo.dir);
   if(c==='X'||(c==='.'&&m.bossAt&&x===m.bossAt[0]&&y===m.bossAt[1]))sncRune(f,ctx,D);
 }
 {const dt0=drawDTile;drawDTile=function(ctx,m,x,y,frame){if(m&&m.fort&&m.kind==='dungeon'&&!m.archive)return sncTile(ctx,m,x,y,frame);return dt0.apply(this,arguments);};}
