@@ -15,3 +15,5 @@ function portraitCanvas(id){const t=TPL[id],L=heroLook(id);if(!t||!L||t.mon)retu
   const S=PT10.size*k,sx=Math.round(Math.max(0,Math.min(W-S,cx-S/2))),sy=Math.round(Math.max(0,top-PT10.top*k));
   const o=mkCv(S,S),x=o.getContext('2d');x.imageSmoothingEnabled=false;const hh=Math.min(S,H-sy);x.drawImage(c,sx/k,sy/k,S/k,hh/k,0,0,S,hh);/* an HD canvas's drawImage takes source coordinates in logical px (sprhd.js) */return o;}
 function portraitURL(id){try{if(TPL[id]&&TPL[id].mon)return heroURL(id);return cvURL('pt10:'+id+lookKey(id),()=>portraitCanvas(id)||heroCanvas(id));}catch(e){return heroURL(id);}}
+// v0.15.9: roster, reserve and recruit cards show the full front view (the side sprite stays for battle and the Codex)
+function heroFrontURL(id){try{const t=TPL[id];if(!t||t.mon)return heroURL(id);const L=heroLook(id);if(!L)return heroURL(id);return cvURL('fr10:'+id+lookKey(id),()=>walkerCanvas('big:fr10:'+id+lookKey(id),L,t.el,id,'front',0));}catch(e){return heroURL(id);}}

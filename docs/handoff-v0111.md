@@ -339,3 +339,6 @@ gates are beaten, cutscene on entering the gate, returns with a new look, rematc
 ## 0.15.8
 - worldgfx.js drawBuilding: door height 22 when the wall below the roof is >= 24 px (3+ tile buildings), else 16; handles at 40% of the door. HD building fronts use the 2D canvas (m.bsp), so it carries over.
 - worldzoom10.js: WZ10.chars=1.2: HD character cards placed at spr.sc/1.2 (hero chH 39.2 -> 33.3 world px), px 2 sampling. Flat 2D view untouched (walkers .8).
+
+## 0.15.9
+- portrait10.js heroFrontURL(id): full front walker ('big:' key) as a data URL (cvURL 'fr10:'); used by the roster grid (ui.js tab 'roster', .mini cards) and the party tab's reserves grid (nav.js). The heroCard() starter/recruit card does not use heroURL directly and was left alone; the sheet's big image (pbig) is still the side view.
