@@ -273,3 +273,9 @@ after the Calamity with foes from every visited realm, the place to farm to leve
   (BOSSART-A toolkit bsh/btube/bT4; the six old art.js boss arts overridden from art3.js; bossFrame1 starts from frame B via monFramed/BART;
   an 'atk' roar pose exists but is not wired to the telegraph). Journey sim SEED=1 with the 25-boss pool: 12.9 boss tries, top level 41.3 sd 1.9.
   v141a's "chest opens after the miniboss" check flaked once under load; passes alone.
+- 0.14.3 voidsky10.js (dark/stars realms: hdLook fog = T.cl[1], fogA >= .62; worldDraw after-hook twinkles stars over the band above the map).
+- 0.14.4 sanctlook10.js (helper): shrine gate on the 3x2 U/E footprint (2D paint + HD geometry via hdGatePart/hdGateGeo wraps), inside palette variant
+  'theme#fort%sanct' (pale stone + realm accent), prayer cloths, stained glass, cloister garden, columns, carpet to the rune circle, 'sanctmotes'
+  ambience, D8M.sanct battle backdrop, MOODS.fort 62 bpm dorian + MTRACK.fort "Sanctum: Still Hours". Test v142a (world group). Weak spots: HD
+  windows follow tile-hash variants; no real pool (layout untouched); boss stage keeps red banners; pale stone a bit hot by lanterns in HD.
+Batch 5 is complete with 0.14.4.

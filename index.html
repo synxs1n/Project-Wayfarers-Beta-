@@ -1840,7 +1840,7 @@ html.rm .battle.b3 .cmd .mi.b9glow{animation:none}
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.14.0";const APP_BUILD="0c9719231fed";
+(function(){const APP_VER="0.14.4";const APP_BUILD="10fd9ff91d49";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2533,7 +2533,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.14.0";const APP_BUILD="0c9719231fed";
+const APP_VER="0.14.4";const APP_BUILD="10fd9ff91d49";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2541,6 +2541,16 @@ const APP_VER="0.14.0";const APP_BUILD="0c9719231fed";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.14.4',['Sanctums are sacred places that belong to their land now. Outside: a stone shrine gate with two pillars and a stepped lintel, prayer ribbons and a bronze bell, a worn stair up to a door of light, two stone lanterns that glow at dusk, and a ring of lighter ground with a path of flat stones; moss and flowers, salt and kelp, ember cracks, snow and icicles, gilt or star dust on the stone by realm. Inside: pale bone and warm-grey stone with the realm\'s accent instead of crimson, carved columns, hanging prayer cloths, stained-glass windows with light on the floor, a cloister garden in the courtyard (flower beds, a raked gravel garden, stepping stones), stone lanterns, and a hall with a long runner carpet and candles up to the rune circle, with golden motes in the air and a calm new Sanctum theme (harp, choir and organ).']],
+ ['Beta v0.14.3',['Void realms (The Ashen Expanse, Wick\'s End and the other dark lands): the sky past the edge of the map is a star-dark void now instead of pale grey cloud, in both views; on tall phone screens stars twinkle over the band above the map.']],
+ ['Beta v0.14.2',['Four more Scourges, twenty in all: The Hollow Shepherd (earth and light, hides in lantern fog until a Scan or a Light skill finds it), The Pale Weaver (ice and lightning, a spider whose webs snare and root), The Crow Regent (wind and shadow, takes a second form at half health) and The Geyser Matron (fire and water, rising steam that Water skills ride and an Earth skill dams). Twenty-five bosses, twenty-five Echoes.',
+  'The Echo Sanctum has 25 gates: two rows of Scourge gates along the north wall and the five Calamity arches in a free row in the middle of the hall, all fully visible, none against the south wall where the walls used to hide them.',
+  'Every boss redrawn from the ground up: all twenty Scourges, the five Calamities and the Riftkeeper have new 60x60 sprites with real silhouettes, three materials lit from the top left and a part that moves on idle (the Thornback Warden is a hulking thorn-bark treant with a bramble crown and a glowing sap heart; the Maelstrom Drake a coiled sea serpent with a storm crest and lightning in its jaws; the Cinderking a slag colossus with a furnace chest; the Hoarwyrm a glass-winged frost wyrm, and so on). The Bestiary, the lairs and the battles all show them.']],
+ ['Beta v0.14.1',['The Meridian Breach: after the Calamity falls, every Waystone can take you to a field where all the realms you crossed bleed through. Its foes come from every one of those realms at your strongest hero\'s level plus two (up to the cap of 50), tougher than usual, with Breach elites in one fight in five; every win pays extra gold and sometimes top-tier materials or an Epic or Heroic charm. Auto battle works there, so it is the place to bring a party to level 50.',
+  'Dens and Sanctums: the miniboss no longer wakes when you open the chest. It waits at the end, at the back of the den or on the rune circle of the keep, like a Scourge in its lair; walk up to it and fight. The prize chest stays shut until it falls.',
+  'Fixed: a bounty beast or legend challenger could be placed inside the Sanctum gatehouse or a den mouth on the field, where nobody could reach or talk to it. They now stand on open ground, and a challenger always answers.',
+  'Heroes: eye patches were on a quarter of the roster; now a handful keep them, and a third of the scarves and earrings are gone, so each mark stays distinct.',
+  'Animations say what the skill did: all-foe physical skills spin the hero through a full turn with slashes on every foe; big spells (every-foe or very powerful) throw rays from the caster, a ring and an element flourish on every target (bolts, gusts, fire rays, water and ice rings) and shake the screen; party-wide heals and buffs ring every ally with rising motes; songs ring three times around the singer.']],
  ['Beta v0.14.0',['Townsfolk: every service NPC has a silhouette and a prop you can read at a glance (innkeeper with a tray and keys, smith with a leather apron and hammer, alchemist in a long coat with goggles and a vial, guild clerk with a ledger and quill, tavern keeper with a mug, archivist with spectacles and a book, beastwarden with a fur collar and a pup on a leash, guards in helm with spear and shield, priests with a censer, shepherds, fishers, farmers, miners, pickers, lamplighters, stooped elders with a cane, small children). Cloth is quieter so the props and faces read, every garment is lit from the left, the walk cycle swings the arms and bobs, and a standing villager breathes on two frames.']],
  ['Beta v0.13.9',['Sprites, family 4: the last eleven foe families are redrawn with idle, attack and hit frames: gust imp, snow harpy, yeti, stormling, gargoyle, voidspawn, star eater, mimic (the lid gapes on the bite), drowned sailor (an anchor), rime wight (a frost blade) and gale phantom (a war horn), plus 22 of their variants with their own shapes. Every foe in the game now animates.']],
  ['Beta v0.13.8',['Heroes move the way they fight: every hero has real battle poses now, picked by the skill. Slashes swing the weapon over the head, piercing strikes thrust with the body leaning in, blunt blows smash two-handed, bows and crossbows draw and release, spells raise a hand with an orb in the element\'s colour, heals and revives are a prayer with hands together, Guard crouches behind the shield or the weapon, buffs raise the weapon in a cheer, and a hit flinches. Idle breathes on two frames.',
@@ -3679,7 +3689,7 @@ const MON={
  stareater:{n:'Star Eater',art:'stareater',el:['shadow','fire'],hp:1.1,atk:1.3,def:1,mag:.9,res:1,spd:1.1,sk:[['Starbite','shadow',1.7,'one','phys',[['bleed',.5]]]]},
  huskguard:{n:'Husk Watcher',art:'huskguard',el:['light','shadow'],hp:1.6,atk:1.3,def:1.5,mag:.8,res:1.1,spd:.6,sk:[['Hollow Slam','light',1.6,'one','phys'],['Vigil','light',0,'self','buff',[['bulwark',1]]]]}
 };
-// Scourges (GUARDIANS, 16, four drawn per run) and Calamities (FINALS, 5, one per run).
+// Scourges (GUARDIANS, 20, four drawn per run) and Calamities (FINALS, 5, one per run).
 // phase: triggers once when HP falls below 'at'.
 const GUARDIANS={
  thornwarden:{n:'Thornback Warden',art:'thornwarden',el:['earth','water'],hp:5.2,atk:1.2,def:1.25,mag:1,res:1.1,spd:.95,sk:[['Bramble Lash','earth',1.5,'one','phys',[['bleed',.6]]],['Rainroot Surge','water',1.1,'all','mag',[['slow',.4]]],['Bark Skin','earth',0,'self','buff',[['bulwark',1]]]],
@@ -3713,7 +3723,15 @@ const GUARDIANS={
  candlemoth:{n:'Candleking Moth',art:'candlemoth',el:['fire','light'],hp:5,atk:1,def:1,mag:1.3,res:1.2,spd:1.15,sk:[['Wax Drip','fire',1.5,'one','mag',[['burn',.5]]],['Lantern Dust','light',1.1,'all','mag',[['blind',.4]]],['Flicker Dive','fire',1.5,'one','phys',[['burn',.3]]]],
    phase:{at:.5,say:'The Moth gutters, flares, and drinks every flame in the room!',self:[['haste',1]],party:[['blind',.5]],heal:.08},intro:'Every candle in the chamber leans the same way. The Candleking Moth unfolds from the dark, a crown of burning tapers on its brow and ten thousand dusty wings behind it.'},
  brinehag:{n:'Brinehag Matriarch',art:'brinehag',el:['water','shadow'],hp:5.0,atk:1,def:1.05,mag:1.15,res:1.1,spd:.95,sk:[['Brine Curse','shadow',1.1,'all','mag',[['weaken',.35]]],['Drowning Hex','water',1.4,'one','mag',[['slow',.45]]],['Tide Mother','water',0,'self','buff',[['regen',1]]]],
-   phase:{at:.5,say:'The Matriarch whistles up the drowned!',summon:'brinejelly',self:[['regen',1]]},intro:'Seaweed hair drips on the stones. The Brinehag Matriarch rises from the tide pool, a barnacled hat on her head and a drowned crew at her back.'}
+   phase:{at:.5,say:'The Matriarch whistles up the drowned!',summon:'brinejelly',self:[['regen',1]]},intro:'Seaweed hair drips on the stones. The Brinehag Matriarch rises from the tide pool, a barnacled hat on her head and a drowned crew at her back.'},
+ hollowshepherd:{n:'The Hollow Shepherd',art:'hollowshepherd',el:['earth','light'],hp:5.9,atk:1.2,def:1.2,mag:1.15,res:1.15,spd:.9,sk:[['Crook Sweep','earth',1.5,'one','phys',[['slow',.4]]],['Lantern Lull','light',1.1,'all','mag',[['blind',.35]]],['Vigil of the Fold','earth',0,'self','buff',[['bulwark',1]]]],
+   phase:{at:.5,say:'The Shepherd rings its bell and the fold answers!',summon:'mossling',self:[['regen',1]]},intro:'A bell tolls under the moss. The Hollow Shepherd rises from the pasture, a thing of root and lantern light, and every lamb it ever lost comes trotting out of the grass.'},
+ paleweaver:{n:'The Pale Weaver',art:'paleweaver',el:['ice','lightning'],hp:4.0,atk:1.05,def:.95,mag:1.05,res:1,spd:1.1,sk:[['Rime Fang','ice',1.6,'one','phys',[['poison',.5]]],['Static Web','lightning',1.1,'all','mag',[['root',.3]]],['Cocoon Silk','ice',1.4,'one','mag',[['root',.6]]]],
+   phase:{at:.5,say:'The Weaver spins a web across the whole room!',self:[['haste',1]],party:[['slow',.8]]},intro:'Frost lines the corners in a pattern too neat to be frost. The Pale Weaver lets itself down from the dark on a thread of cold lightning, eight legs tapping out the beat of the web.'},
+ crowregent:{n:'The Crow Regent',art:'crowregent',el:['wind','shadow'],hp:4.7,atk:1.1,def:.95,mag:1,res:1,spd:1.1,sk:[['Carrion Dive','wind',1.5,'one','phys',[['bleed',.5]]],['Murder Wing','shadow',1.1,'all','mag',[['blind',.4]]],['Ill Omen','shadow',1.4,'one','mag',[['weaken',.5]]]],
+   phase:{at:.7,say:'The Regent caws and the murder comes down from the rafters!',summon:'cavebat',self:[['haste',1]]},intro:'Every crow in the county sits on the same roof, facing the same way. The Crow Regent unfolds on the ridgepole in a coat of black feathers and a crown of bones, and the whole roof lifts at once.'},
+ geysermatron:{n:'The Geyser Matron',art:'geysermatron',el:['fire','water'],hp:5.4,atk:1.1,def:1,mag:1.25,res:1.1,spd:.9,sk:[['Scald','water',1.5,'one','mag',[['burn',.5]]],['Boil Over','fire',1.15,'all','mag',[['burn',.35]]],['Pressure Seal','water',0,'self','buff',[['ward',1]]]],
+   phase:{at:.5,say:'The Matron boils over and the vents scream!',summon:'magmaslime',party:[['burn',.5]]},intro:'The pool is not supposed to be this hot. The Geyser Matron bulges out of the vents, a kettle-bellied mass of wet glass and boiling light, and every chimney in the cavern starts to sing.'}
 };
 // v0.8.2: the Frost Lich (mag 1.4, ward every 3 turns), Ysolde (mag 1.35, spd 1.15), the Iron Sentinel (def 1.45) and the Siren (mag 1.35)
 // were eased: in fullsim.js bossgrid they won 0 to 40% where the other Scourges won 50 to 90% (docs/v080-roles-balance.md)
@@ -3730,9 +3748,9 @@ const FINALS={
    phase:{at:.5,say:'The Hollow Sun turns its dark side to you and the glass screams!',self:[['might',1],['ward',1]],party:[['blind',.5]]},intro:'Over the salt flat hangs a ring of fire with nothing inside it. The Hollow Sun, the sun that was spent and never set, turns its empty middle toward you.'}
 };
 const GPOOL=Object.keys(GUARDIANS),FPOOL=Object.keys(FINALS);
-// v4.8: the 16 lesser bosses are SCOURGES, the 5 world-eaters are CALAMITIES
+// v4.8: the 20 lesser bosses are SCOURGES, the 5 world-eaters are CALAMITIES
 const bossClass=k=>String(k)==='riftkeeper'?'Ultimate':FINALS[String(k).replace(/^echo_/,'')]?'Calamity':'Scourge';
-const BOSS_CLASS_D={Scourge:'A Scourge: one of the sixteen beast-lords that seized the beacons.',Calamity:'A Calamity: a world-eater that drinks the Meridian itself.'};
+const BOSS_CLASS_D={Scourge:'A Scourge: one of the twenty beast-lords that seized the beacons.',Calamity:'A Calamity: a world-eater that drinks the Meridian itself.'};
 // v0.12.13: the Riftkeeper, the ultimate boss behind the Echo Sanctum (riftkeeper9.js). Not in GUARDIANS or FINALS, so it is no gate, no Echo
 // and no Archive entry; guardianDef finds it by key. Its skill elements change every turn (riftkeeper9.js sets them); the element here is the base.
 const RIFTKEEPER={n:'The Riftkeeper',art:'riftkeeper',el:['light','shadow'],hp:7,atk:1.35,def:1.35,mag:1.4,res:1.35,spd:1.05,
@@ -3980,6 +3998,14 @@ const CAL_FX={
  hollowsun:{n:'Hollow glare',el:{light:1.12,fire:1.12,ice:.9},d:'Light and Fire hit 12% harder and Ice 10% softer, for everyone. Water and Shadow gear and resistances blunt it.'}
 };
 
+
+// v0.14.x: overlays for the four Scourges added after the Hollow Sun (the foes they bring to the realms they rule; see bosses10.js)
+Object.assign(BOV,{
+ hollowshepherd:{mon:['o_hollowshepherd','mossling','Fold Lamb',['earth','light'],'#c8d890'],wx:['fog',8],el:['earth','light'],say:'A bell tolls somewhere in the pasture. There are no bells in the pasture.',guide:'Fold lambs graze the verges at dusk, and fog comes more often.'},
+ paleweaver:{mon:['o_paleweaver','crawler','Rimesilk Crawler',['ice','lightning'],'#c0d8f0'],wx:['snow',8],el:['ice','lightning'],say:'Frost threads across the doorways in patterns. Straight lines, and always eight.',guide:'Rimesilk crawlers spin the hedges white, and snow falls more often.'},
+ crowregent:{mon:['o_crowregent','cavebat','Carrion Crow',['wind','shadow'],'#3a3a4c'],wx:['gale',8],el:['wind','shadow'],say:'Every roof in town has a crow on it, and every crow faces the same way.',guide:'Carrion crows wheel over the roads, and gales come more often.'},
+ geysermatron:{mon:['o_geysermatron','magmaslime','Steam Slime',['fire','water'],'#e0a070'],wx:['heat',8],el:['fire','water'],say:'The wells run hot, and the kettles sing before anyone lights the fire.',guide:'Steam slimes bubble out of the vents, and heat waves come more often.'}
+});
 
 // ===== art.js (base): pixel engine (PG grids, palettes, paint), hero and monster sprites, flair, front and back views =====
 // =================== PIXEL ENGINE ===================
@@ -5421,138 +5447,641 @@ heroPal=function(L,els,id){const p=_heroPal2(L,els,id),o=accOf(id);if(!o)return 
   return p;};
 
 // ===== art3.js (base): the 60x60 guardian sprites =====
+// BOSSART-A-BEGIN
+// ===== v0.14.1: the boss redesign toolkit (every Scourge, Calamity and the Riftkeeper are drawn from scratch with it) =====
+// bT4 gives one material four tones under four keys (highlight, base, shade, deep); bsh paints a mask of shape ops with those four keys, lit from the top left
+// (each pixel's tone comes from how far it sits from the upper left and the lower right edge of its own shape, so any shape gets a rounded, lit look);
+// bpath/btube/bbands are smooth tapering tubes (necks, tails, limbs, tentacles) and the cross bands that wrap them. All pure functions of the frame f:
+// F.b is idle frame B (the tell part moves: crown, maw, core, wings), F.atk the roar pose (monCanvas(art,{t:'atk'})); battle.js does not draw it yet.
+function bT4(k,c,o){o=o||{};const w=o.warm||'#fff0c8',cl=o.cool||'#2a1450',r={};r[k[0]]=mix(tint(c,.34),w,.2);r[k[1]]=c;r[k[2]]=mix(shade(c,.7),cl,.16);r[k[3]]=mix(shade(c,.46),cl,.3);return r;}
+function bpath(P,r0,r1,step){const n=P.length,rs=Array.isArray(r0)?r0:P.map((_,i)=>r0+(r1-r0)*(n>1?i/(n-1):0)),at=i=>P[Math.max(0,Math.min(n-1,i))],out=[];step=step||.5;
+  for(let i=0;i<n-1;i++){const p0=at(i-1),p1=at(i),p2=at(i+1),p3=at(i+2),len=Math.hypot(p2[0]-p1[0],p2[1]-p1[1]),N=Math.max(2,Math.ceil(len/step));
+    for(let j=(i?1:0);j<=N;j++){const u=j/N,u2=u*u,u3=u2*u,f=(a,b,c,d)=>.5*(2*b+(-a+c)*u+(2*a-5*b+4*c-d)*u2+(-a+3*b-3*c+d)*u3);
+      const x=f(p0[0],p1[0],p2[0],p3[0]),y=f(p0[1],p1[1],p2[1],p3[1]),dx=f(p0[0],p1[0],p2[0],p3[0]+.01)-x||p2[0]-p1[0],dy=p2[1]-p1[1];
+      const l=Math.hypot(p2[0]-p1[0],p2[1]-p1[1])||1;out.push({x,y,r:rs[i]+(rs[i+1]-rs[i])*u,dx:(p2[0]-p1[0])/l,dy:(p2[1]-p1[1])/l});}}
+  return out;}
+function btube(t,P,r0,r1,k){bpath(P,r0,r1,.5).forEach(s=>t.ell(s.x,s.y,Math.max(.9,s.r),Math.max(.9,s.r),k||1));}
+// spike: a triangle from base centre (x0,y0) to tip (x1,y1), width w at the base
+function bspike(t,x0,y0,x1,y1,w,k){const dx=x1-x0,dy=y1-y0,l=Math.hypot(dx,dy)||1,px=-dy/l*w/2,py=dx/l*w/2;t.poly([[x0+px,y0+py],[x1,y1],[x0-px,y0-py]],k||1);}
+function bop(t,o){const c=o[0];
+  if(c==='e')t.ell(o[1],o[2],o[3],o[4],1);else if(c==='p')t.poly(o[1],1);else if(c==='r')t.rect(o[1],o[2],o[3],o[4],1);
+  else if(c==='l')t.line(o[1],o[2],o[3],o[4],1,o[5]);else if(c==='t')btube(t,o[1],o[2],o[3]);else if(c==='k')bspike(t,o[1],o[2],o[3],o[4],o[5]);
+  else if(c==='c')o[1].forEach(q=>t.ell(q[0],q[1],q[2],q[2],1));}
+// bsh(g, ops, K, opt): ops are ['e',cx,cy,rx,ry] ellipse, ['p',[[x,y]..]] polygon, ['r',x,y,w,h], ['l',x0,y0,x1,y1,thick], ['t',pts,r0,r1] tube, ['k',x0,y0,x1,y1,w] spike,
+// ['c',[[x,y,r]..]] circles; K the four keys (hi, base, shade, deep); opt.bias shifts the light, opt.cap the probe length.
+function bsh(g,ops,K,o){o=o||{};const W=g.w,H=g.h,t=new PG(W,H,0,0),cap=o.cap||12,bias=o.bias||0;ops.forEach(p=>bop(t,p));const A=t.a;
+  const dep=(x,y,dx,dy)=>{let n=0;while(n<cap&&t.g(x+dx*(n+1),y+dy*(n+1)))n++;return n;};
+  for(let y=0;y<H;y++)for(let x=0;x<W;x++){if(!A[y*W+x])continue;const u=dep(x,y,-1,-1),d=dep(x,y,1,1),s=(u+.5)/(u+d+1)+bias;
+    g.s(x,y,s<.2?K[0]:s<.6?K[1]:s<.84?K[2]:K[3]);}
+  return g;}
+// bbands: short cross bands over a tube (key k only where the grid already holds one of the keys in `over`), every `step` px along the path, on the lit or shaded side
+function bbands(g,P,r0,r1,step,k,over,side){const S=bpath(P,r0,r1,step);S.forEach((s,i)=>{const nx=-s.dy,ny=s.dx;
+  for(let a=-s.r*.9;a<=s.r*.9;a+=.6){if(side&&(side>0?a<0:a>0))continue;const x=Math.round(s.x+nx*a),y=Math.round(s.y+ny*a);if(over.includes(g.g(x,y)))g.s(x,y,k);}});}
+function bpts(g,L,k){L.forEach(p=>g.s(p[0],p[1],k));}
+function beye(g,x,y,k,w){g.rect(x,y,2,2,k);g.s(x,y,w||'W');}
 Object.assign(MART,{
- bonecolossus(g){
-  g.ell(30,57,24,3,'D');
-  g.path([[22,40],[20,48],[18,57]],'A',5);g.path([[36,40],[38,48],[40,57]],'A',5);g.ell(20,48,3,2.5,'B');g.ell(38,48,3,2.5,'B');
-  g.rect(14,55,9,3,'A');g.rect(36,55,9,3,'A');
-  g.ell(29,39,11,4.5,'A');g.ell(29,39,6,2,'K');
-  g.path([[29,39],[30,28],[31,18]],'A',3);
-  for(let i=0;i<5;i++){const y=21+i*3.6,w=11-i*.8;g.path([[31-w,y+3],[30-w*.5,y],[31,y-1],[32+w*.5,y],[32+w,y+3]],'A',2);}
-  g.path([[20,20],[14,30],[10,40]],'A',4);g.ell(10,41,3,3,'A');
-  g.path([[40,20],[47,27],[50,19]],'A',4);g.path([[50,22],[54,2]],'S',5);g.ell(54,4,5,4,'S');g.px([[52,2],[56,5],[53,7]],'M');
-  g.ell(32,18,11,3,'A');
-  g.ell(37,10,9.5,8.5,'A');g.rect(32,15,12,5,'A');g.rect(33,18,10,1,'K');for(let x=33;x<44;x+=2)g.s(x,17,'B');
-  g.ell(34,9,2.6,2.6,'K');g.ell(41,9,2.6,2.6,'K');g.rect(34,9,1,1,'E');g.rect(41,9,1,1,'E');g.poly([[37,12],[38,15],[36,15]],'K');
-  g.px([[30,4],[44,6],[18,26],[44,32]],'M');g.ell(26,44,2,1.5,'M');
-  return {pal:{A:'#e8dcc0',B:'#b8a888',K:'#1a1020',E:'#c890ff',S:'#7a6a5a',M:'#5a8a3a',D:'#3a2a3a'},flat:'KE',rim:'#2a1a2a'};
- },
- queenmantis(g){
-  g.ell(30,57,20,3,'D');
-  g.path([[24,44],[18,52],[14,57]],'B',2);g.path([[30,44],[30,52],[28,57]],'B',2);g.path([[34,42],[40,50],[44,57]],'B',2);
-  g.ell(22,40,13,6,'A');g.poly([[10,38],[2,44],[8,40]],'A');for(let i=0;i<4;i++)g.line(14+i*5,36,14+i*5,45,'B');
-  g.poly([[22,34],[2,12],[6,8],[24,30]],'W');g.poly([[26,34],[12,6],[18,4],[28,30]],'W');g.line(4,11,22,32,'w');g.line(15,6,26,30,'w');
-  g.path([[30,38],[34,26],[36,18]],'A',5);
-  g.path([[36,22],[44,26],[48,18]],'A',3);g.poly([[48,18],[52,4],[56,2],[50,20]],'M');g.path([[49,16],[53,5]],'w');
-  g.path([[34,24],[40,32],[46,30]],'B',3);g.poly([[46,30],[56,24],[58,26],[47,33]],'M');
-  g.poly([[32,16],[38,4],[46,8],[44,16],[38,19]],'A');g.ell(42,9,3.2,3.6,'E');g.ell(35,10,2.6,3,'E');g.px([[43,8],[36,9]],'K');
-  g.path([[38,4],[34,-2]],'B');g.path([[42,5],[46,-2]],'B');g.rows(36,2,["G.G.G","GGGGG"]);
-  g.poly([[44,15],[47,17],[44,18]],'B');
-  return {pal:{A:'#6ab84a',B:'#3a7a34',W:'#c8f0a0',w:'#8ac870',M:'#e8f0d0',E:'#f2d43a',K:'#1a1020',G:'#f0c050',D:'#1e3a1e'},flat:'EKG'};
- },
- gloomcap(g){
-  g.ell(30,57,24,3,'D');
-  g.poly([[22,56],[22,34],[38,34],[39,56]],'S');g.ell(30,56,10,2,'S');g.line(25,36,25,54,'s');g.line(35,36,35,54,'s');
-  g.ell(26,44,2,2.5,'E');g.ell(34,44,2,2.5,'E');g.ell(30,50,3,1.4,'K');
-  g.ell(30,22,27,15,'C');g.rect(3,26,54,8,'C');g.ell(30,34,26,3,'I');for(let x=6;x<56;x+=3)g.line(x,32,30+(x-30)*.6,36,'i');
-  [[14,16,4],[30,10,5],[44,18,4],[22,26,3],[40,28,3],[8,28,2.5],[52,27,2.5],[36,20,2]].forEach(([x,y,r])=>g.ell(x,y,r,r*.8,'Y'));
-  g.ell(8,52,4,3,'C');g.rect(7,52,3,5,'S');g.ell(51,53,3.5,2.5,'C');g.rect(50,53,2,4,'S');g.px([[7,51],[50,52]],'Y');
-  g.px([[4,8],[56,6],[12,2],[48,0],[2,40],[58,42]],'Y');
-  return {pal:{C:'#5a3a8a',I:'#8a6aa8',i:'#6a4a88',S:'#d8c8b0',s:'#b8a890',E:'#7af0d0',K:'#2a1a2a',Y:'#7af0d0',D:'#1e1430'},flat:'EYK',glow:'#3ad0b0'};
- },
- ironsentinel(g){
-  g.ell(30,57,22,3,'D');
-  g.rect(18,44,8,12,'A');g.rect(34,44,8,12,'A');g.rect(16,54,12,4,'B');g.rect(32,54,12,4,'B');g.rect(19,46,6,2,'C');g.rect(35,46,6,2,'C');
-  g.rect(14,20,32,26,'A');g.rect(14,20,32,3,'L');g.rect(14,43,32,3,'B');
-  g.rect(22,27,16,12,'B');g.rect(24,29,12,8,'F');g.rect(26,31,8,4,'Y');for(let x=24;x<36;x+=3)g.rect(x,29,1,8,'B');
-  [[16,23],[43,23],[16,41],[43,41],[30,24]].forEach(([x,y])=>g.s(x,y,'L'));
-  g.rect(4,22,10,10,'A');g.rect(2,32,9,14,'A');g.rect(0,44,12,7,'B');g.rect(3,46,6,3,'C');
-  g.rect(46,22,10,10,'A');g.rect(48,32,9,14,'A');g.rect(46,44,13,7,'B');g.rect(49,46,7,3,'C');
-  g.path([[10,20],[8,12],[12,8]],'C',2);g.path([[50,20],[52,12],[48,8]],'C',2);g.ell(12,7,2,2,'Z');g.ell(48,7,2,2,'Z');
-  g.rect(24,9,14,11,'A');g.rect(24,9,14,2,'L');g.rect(27,13,11,3,'K');g.rect(32,14,5,1,'Z');g.rect(28,5,2,4,'C');g.ell(29,4,2,1.5,'Z');
-  g.px([[6,12],[4,16],[54,13],[56,17],[30,0]],'Z');
-  return {pal:{A:'#6a6a7a',B:'#3e3e4c',L:'#9a9aaa',C:'#c87a3a',F:'#ff6a1a',Y:'#ffe08a',K:'#141018',Z:'#7af0ff',D:'#24202c'},flat:'FYZK'};
- },
- siren(g){
-  g.ell(30,57,20,3,'D');
-  g.path([[24,40],[22,48],[28,54],[40,55],[48,50]],'T',8);g.path([[48,50],[52,44]],'T',5);g.poly([[50,46],[58,38],[56,46],[59,52],[51,50]],'F');
-  for(let i=0;i<5;i++)g.ell(25+i*4,46+i*1.5,1.6,1,'t');
-  g.poly([[18,24],[30,22],[30,42],[20,42]],'S');g.ell(26,32,4,3,'P');
-  g.path([[20,26],[12,34],[14,42]],'S',3);g.path([[30,26],[38,30],[42,24]],'S',3);
-  g.line(42,30,46,4,'G');g.ell(46.5,4,3,3,'P');
-  g.ell(26,16,7,8,'S');g.ell(23,14,8,10,'H');g.poly([[18,10],[10,30],[14,40],[20,24]],'H');g.rect(26,14,7,10,'S');
-  g.rect(29,16,2,1,'E');g.s(31,20,'m');g.rows(20,5,["P.P.P.P","PPPPPPP"]);
-  g.px([[6,10],[10,4],[52,8],[56,20]],'P');
-  return {pal:{S:'#a8d8d0',H:'#3a6ac8',T:'#2b8a9a',t:'#5ac0c0',F:'#7ae0f0',P:'#f4f0ff',G:'#f0c050',E:'#f4f0ff',m:'#3a6a7a',D:'#16324a'},flat:'EP'};
- },
- ashwyvern(g){
-  g.ell(30,57,24,3,'D');
-  g.poly([[24,26],[2,6],[4,18],[0,28],[8,30],[6,38],[20,34]],'W');g.path([[24,26],[2,6]],'A',2);g.line(4,18,20,30,'w');g.line(6,32,20,32,'w');
-  g.path([[14,40],[8,46],[2,44]],'A',4);g.poly([[2,44],[0,40],[4,42]],'E');
-  g.ell(24,38,12,8,'A');g.ell(26,42,8,4,'B');
-  g.path([[20,44],[18,52],[16,57]],'A',4);g.path([[30,44],[32,52],[34,57]],'A',4);g.rect(12,55,7,3,'B');g.rect(31,55,7,3,'B');
-  g.path([[30,32],[38,22],[42,14]],'A',6);
-  g.poly([[36,26],[58,4],[56,16],[60,26],[52,28],[54,36],[40,32]],'W');g.path([[36,26],[58,4]],'A',2);g.line(56,16,40,30,'w');
-  g.ell(46,12,7,5,'A');g.poly([[48,10],[60,13],[59,16],[49,17]],'A');g.px([[52,15],[55,15],[58,15]],'K');g.rect(47,10,2,2,'E');g.poly([[40,9],[36,2],[43,7]],'B');
-  [[22,36],[28,40],[18,40],[34,24],[44,16],[24,46]].forEach(([x,y])=>{g.s(x,y,'E');g.s(x+1,y,'Y');});
-  g.px([[10,4],[20,2],[54,40],[50,46]],'Y');
-  return {pal:{A:'#5a5058',B:'#3a343c',W:'#8a5a4a',w:'#6a443a',E:'#ff6a2a',Y:'#ffd04a',K:'#140c10',D:'#24181a'},flat:'EYK'};
- },
- frostlich(g){
-  g.ell(30,57,16,2.5,'D');
-  g.poly([[18,24],[42,24],[46,52],[38,48],[30,54],[22,48],[14,52]],'R');g.poly([[22,24],[30,22],[38,24],[34,50],[30,52],[26,50]],'r');g.line(30,26,30,50,'T');g.line(18,24,14,52,'T');g.line(42,24,46,52,'T');
-  g.path([[20,28],[12,36],[14,42]],'R',4);g.ell(14,43,2.5,2,'B');
-  g.path([[40,28],[46,34],[48,30]],'R',4);g.rect(44,24,9,7,'K');g.rect(45,25,7,5,'P');g.line(48,25,48,29,'K');
-  g.ell(30,15,7,7.5,'B');g.rect(26,19,8,4,'B');g.ell(27,14,2,2,'K');g.ell(33,14,2,2,'K');g.s(27,14,'E');g.s(33,14,'E');g.rect(27,21,6,1,'K');
-  g.poly([[22,9],[24,0],[26,7],[28,-2],[30,6],[32,-1],[34,7],[36,0],[38,9]],'I');
-  g.poly([[23,12],[30,6],[37,12],[38,20],[22,20]],'R');g.ell(30,15,6,6.5,'B');g.ell(27,14,2,2,'K');g.ell(33,14,2,2,'K');g.s(27,14,'E');g.s(33,14,'E');
-  [[6,14],[54,10],[8,48],[52,46],[4,30]].forEach(([x,y])=>g.poly([[x,y-3],[x+2,y],[x,y+3],[x-2,y]],'I'));
-  return {pal:{R:'#2a3a5a',r:'#1e2a44',T:'#8fdcf0',B:'#e8eef8',K:'#0c1424',E:'#7af0ff',P:'#d8e4f0',I:'#bfefff',D:'#0c1830'},flat:'EK',glow:'#5ab0e0'};
- },
- nidhra(g){
-  g.ell(28,22,20,20,'O');g.ell(28,22,17,17,0);
-  g.ell(30,57,26,3,'D');
-  g.poly([[22,30],[0,8],[4,22],[0,34],[10,34],[8,44],[22,40]],'W');g.path([[22,30],[0,8]],'A',2);g.line(4,22,20,36,'w');g.line(8,40,20,38,'w');
-  g.path([[8,52],[14,48],[24,50],[36,54],[50,52]],'A',6);g.poly([[50,52],[58,48],[56,54]],'F');
-  g.ell(28,42,13,9,'A');g.ell(30,46,9,4,'B');for(let i=0;i<4;i++)g.rect(24+i*3,44,2,5,'b');
-  g.path([[22,48],[20,57]],'A',4);g.path([[34,48],[36,57]],'A',4);g.rect(16,55,7,3,'b');g.rect(33,55,7,3,'b');
-  g.path([[34,36],[42,26],[46,16]],'A',7);
-  g.ell(48,12,8,6,'A');g.poly([[50,10],[60,13],[59,18],[50,18]],'A');g.px([[53,17],[56,17],[59,17]],'w');
-  g.ell(49,10,2.2,2.2,'E');g.s(50,10,'K');g.poly([[42,8],[38,0],[46,5]],'B');g.poly([[46,6],[48,-1],[50,5]],'B');
-  [[26,38],[30,42],[34,40],[20,44],[40,30],[44,20]].forEach(([x,y])=>g.s(x,y,'F'));
-  g.px([[56,4],[4,50],[58,30]],'F');
-  return {pal:{A:'#2a1e38',B:'#3e2a5a',b:'#1a1226',W:'#4a2a5a',w:'#6a3a7a',F:'#ff5a2a',E:'#ffd04a',K:'#140810',O:'#f6e7a8',D:'#120a1a'},flat:'FEKO',rim:'#140a1e'};
- },
- hollowking(g){
-  g.ell(30,57,20,3,'D');
-  g.poly([[18,20],[8,56],[50,56],[40,20]],'C');g.poly([[22,20],[16,56],[24,56],[26,24]],'c');
-  g.rect(20,40,7,16,'A');g.rect(32,40,7,16,'A');g.rect(18,53,10,4,'B');g.rect(31,53,10,4,'B');
-  g.rect(18,22,22,20,'A');g.rect(18,22,22,3,'L');g.rect(24,26,10,10,'K');g.rect(18,38,22,3,'G');g.px([[28,30],[30,32]],'Z');
-  g.ell(16,23,5,4,'A');g.ell(42,23,5,4,'A');g.rect(12,26,6,14,'A');g.rect(40,26,6,10,'A');
-  g.path([[44,34],[48,30]],'A',4);g.rect(46,-2,4,36,'M');g.rect(47,0,2,30,'m');g.rect(42,32,12,3,'G');g.rect(46,35,4,6,'B');g.poly([[46,-2],[48,-6],[50,-2]],'M');
-  g.ell(29,13,8,8,'A');g.rect(21,13,16,7,'A');g.rect(24,12,11,3,'K');g.rect(28,15,2,6,'K');
-  g.rows(21,1,["G..G..G..G..G..G","GG.GG.GG.GG.GG.G","GGGGGGGGGGGGGGGG","GGZGGGGZGGGGZGGG"]);
-  g.px([[2,10],[6,4],[4,20],[56,48],[58,40]],'Z');g.path([[4,4],[8,10],[5,14],[9,20]],'Z');
-  return {pal:{A:'#3a3a4a',B:'#242430',L:'#5a5a6e',K:'#05030a',C:'#5a1a2a',c:'#3a0e1a',G:'#c8a050',M:'#9a9aaa',m:'#d8d8e8',Z:'#f2c93a',D:'#140e18'},flat:'KZ',rim:'#0a0610'};
- },
- seraph(g){
-  g.ell(30,57,18,3,'D');
-  const wing=(pts,k)=>g.poly(pts,k);
-  wing([[26,24],[2,2],[6,14],[0,20],[10,24]],'W');wing([[26,28],[0,22],[4,32],[0,38],[14,34]],'X');wing([[26,32],[4,42],[10,46],[8,52],[20,42]],'Y');
-  wing([[34,24],[58,2],[54,14],[60,20],[50,24]],'W');wing([[34,28],[60,22],[56,32],[60,38],[46,34]],'X');wing([[34,32],[56,42],[50,46],[52,52],[40,42]],'Y');
-  g.poly([[24,22],[36,22],[42,56],[18,56]],'R');g.poly([[28,22],[32,22],[34,56],[26,56]],'r');g.rect(22,34,16,2,'G');
-  g.path([[24,24],[18,32],[20,38]],'S',3);g.path([[36,24],[42,30],[46,26]],'S',3);g.line(46,58,46,0,'G');g.poly([[44,4],[46,-4],[48,4],[46,8]],'L');
-  g.ell(30,15,6,7,'S');g.ell(29,12,7,6,'H');g.rect(31,13,5,6,'S');g.rect(33,15,2,1,'E');g.poly([[22,12],[18,26],[24,20]],'H');
-  g.ell(30,5,10,3,'O');g.ell(30,5,7,1.6,0);
-  [[8,8],[52,6],[4,30],[56,30],[10,50],[50,50]].forEach(([x,y])=>g.s(x,y,'L'));
-  return {pal:{W:'#e8c060',X:'#c89048',Y:'#5a5050',R:'#f2ead2',r:'#d8ccb0',G:'#f0c050',S:'#f0d8c0',H:'#f4ecd4',E:'#ff8a2a',O:'#ffe27a',L:'#fff6c8',D:'#2a1e14'},flat:'EOL',glow:'#ffcf70'};
+ thornwarden(g,f){const F=mfr(f),B=F.b?1:0,R=F.atk?1:0,sw=B?1:0;
+  const bk='abcd',lf='efgh',th='ijkl';
+  g.ell(30,57,25,2.6,'D');
+  // root legs flaring into toes along the ground
+  bsh(g,[['t',[[23,36],[20,46],[17,54]],6.5,5.5],['t',[[19,52],[10,55],[3,57]],2.6,1],['t',[[17,54],[13,57]],2,1],['t',[[20,55],[27,57]],2,1]],bk);
+  bsh(g,[['t',[[37,36],[40,46],[43,54]],6.5,5.5],['t',[[41,52],[50,55],[57,57]],2.6,1],['t',[[43,54],[47,57]],2,1],['t',[[40,55],[33,57]],2,1]],bk);
+  // trunk: a broad hunched mass, shoulders wider than the waist
+  bsh(g,[['p',[[10,20],[16,12],[44,12],[50,20],[46,34],[40,44],[20,44],[14,34]]],['e',30,30,16,13]],bk,{cap:14});
+  // bark grooves and knots
+  [[18,22,16,40],[23,16,21,42],[37,16,39,42],[42,22,44,38]].forEach(q=>g.line(q[0],q[1],q[2],q[3],'c'));
+  [[26,24,22,34],[34,22,36,32],[30,34,29,42],[14,30,16,36],[46,28,45,34]].forEach(q=>g.line(q[0],q[1],q[2],q[3],'d'));
+  g.ell(21,37,2.4,3.4,'d');g.ell(21,37,1.4,2.2,'K');g.ell(40,36,2,3,'d');g.ell(40,36,1,2,'K');
+  // moss across the shoulders and a green mantle on the left
+  bsh(g,[['e',20,15,9,4],['e',38,14,8,3.4],['e',13,22,4,3],['e',47,22,4,3]],lf);
+  g.px([[12,24],[13,26],[47,24],[46,26],[24,19],[34,18]],'g');
+  // glowing sap: a crack down the chest into a heart-knot, drips
+  g.path([[30,24],[28,28],[31,32],[29,37]],'x',1);g.path([[30,24],[33,27]],'x');g.path([[28,28],[24,30]],'x');
+  g.ell(30,33,3.6,3.6,'c');g.ell(30,33,2.6,2.6,'x');g.ell(29.5,32.5,1.2,1.2,'y');
+  g.px([[29,39],[29,41],[22,40],[40,38]],'x');
+  // hanging arm on the left, dragging a thorn-knuckled fist
+  bsh(g,[['t',[[13,18],[6,27],[5,37],[8,45]],5.5,4.2],['e',9,47,6.2,5.4]],bk);
+  g.line(7,24,5,36,'c');g.line(8,38,8,42,'d');
+  [[5,44,0,40],[3,48,-1,51],[7,52,4,57],[13,46,16,41],[11,51,13,56]].forEach(q=>{const t=new PG(60,60,0,0);bspike(t,q[0],q[1],q[2],q[3],3.4,1);t.a.forEach((v,i)=>{if(v)g.s(i%60,Math.floor(i/60),'j');});});
+  // the raised arm on the right: a club of root and thorn
+  bsh(g,[['t',[[47,18],[55,23],[57,16],[55,12]],5.5,4.4],['e',54,10,6,5.4]],bk);
+  g.line(54,22,56,16,'c');
+  [[52,6,48,2],[56,5,57,2],[59,10,60,8],[56,15,59,18],[50,10,47,8]].forEach(q=>{const t=new PG(60,60,0,0);bspike(t,q[0],q[1],q[2],q[3],3.2,1);t.a.forEach((v,i)=>{if(v)g.s(i%60,Math.floor(i/60),'j');});});
+  // shoulder thorns (bone pale, lit tips)
+  bsh(g,[['k',17,15,10,5,5],['k',24,12,20,3,4.5],['k',36,12,40,3,4.5],['k',43,15,49,8,4.5]],th);
+  // head: a low, scowling bark mask under the crown
+  bsh(g,[['e',30,19,9,7.4],['r',22,22,16,4]],bk);
+  g.rect(22,15,16,2,'c');g.rect(23,14,5,1,'d');g.rect(33,14,5,1,'d');
+  g.rect(24,17,3,3,'K');g.rect(33,17,3,3,'K');g.rect(25,18,2,2,'x');g.rect(34,18,2,2,'x');g.s(25,18,'y');g.s(34,18,'y');
+  g.rect(25,23,10,3,'K');for(let x=25;x<35;x+=2)g.poly([[x,23],[x+1.6,23],[x+.8,25.4]],'i');for(let x=26;x<35;x+=3)g.poly([[x,26],[x+1.6,26],[x+.8,24]],'j');
+  g.path([[27,27],[25,32]],'g',1);g.path([[33,27],[35,33]],'g',1);
+  // the bramble crown: thorn branches rising and curling, roses at the tips
+  const tip=(a,b)=>[a+sw*b,0];
+  [[[24,12],[18,8],[13+sw,3.5]],[[27,11],[23,6],[21+sw,2.5]],[[30,10],[30,5],[31+sw,2.2]],[[33,11],[38,6],[40-sw,2.5]],[[36,12],[43,8],[47-sw,4]],[[21,13],[14,12],[8+sw,8]]].forEach(P=>{
+    bsh(g,[['t',P,2.2,.9]],bk);const e=P[2];g.ell(e[0],e[1],1.8,1.6,'r');g.s(e[0],e[1],'y');});
+  bsh(g,[['e',30,11,8,2.4]],lf);
+  [[17,7],[24,5],[37,5],[44,9],[12,11]].forEach(p=>g.s(p[0],p[1],'j'));
+  return {pal:Object.assign({},bT4(bk,'#6a4a2c'),bT4(lf,'#5f9440'),bT4(th,'#d8c698'),{x:'#ffb22e',y:'#fff0b0',r:'#e8506e',g:'#7fae4e',D:'#160d08',K:'#0c0604'}),flat:'xyrKg',rim:'#1a0e08'};
  }
 });
-Object.assign(MEXTRA,{
- bonecolossus(g,p){g.px([[24,30],[36,28],[22,22]],'E');},
- queenmantis(g,p){g.px([[16,40],[26,42]],'Y');p.Y='#c8e04a';},
- gloomcap(g,p){},ironsentinel(g,p){},siren(g,p){},ashwyvern(g,p){},frostlich(g,p){},nidhra(g,p){},hollowking(g,p){},seraph(g,p){}
+Object.assign(MART,{
+ drake(g,f){const F=mfr(f),B=F.b?1:0,R=F.atk?1:0,sc='abcd',fn='efgh',cr='ijkl',wt='mnop',hy=3;
+  // the swell it coils out of
+  bsh(g,[['e',28,56,23,3.4],['e',11,54,7,3],['e',46,54,7,3.2]],wt);
+  g.px([[8,52],[12,51],[19,55],[38,55],[45,52],[49,53],[26,56],[33,55]],'w');
+  const P=[[4,41],[6,50],[15,56],[27,54],[38,48],[42,37],[37,27],[29,23],[26,15],[29,11]],r=[1.2,3,5.2,6.6,7,6.4,5.8,5.4,5.2,4.8];
+  // dorsal fin: a sail of spikes on the outer edge of every bend
+  bpath(P,r,0,3.2).forEach((s,i)=>{if(i<2||i>bpath(P,r,0,3.2).length-3)return;let nx=-s.dy,ny=s.dx;const ox=s.x-30,oy=s.y-38;if(nx*ox+ny*oy<0){nx=-nx;ny=-ny;}
+    const L=3+((i*7)%3)+s.r*.3+B*(i%2?1:0);bsh(g,[['k',s.x+nx*s.r*.5,s.y+ny*s.r*.5,s.x+nx*(s.r+L),s.y+ny*(s.r+L)-1,3.4]],fn);});
+  bsh(g,[['t',P,r,0]],sc,{cap:10});
+  bbands(g,P,r,0,2.6,'c','bcd',1);
+  // lit belly scutes on the inside of the coil
+  bbands(g,P,r.map(v=>v*.55),0,2.6,'f','abcd',-1);
+  // fins on the tail
+  bsh(g,[['p',[[4,41],[2,34],[7,38],[5,31],[10,39],[7,45]]]],fn);
+  // scale rows on the flank
+  [[38,50,44,43],[40,36,36,29],[22,52,30,50]].forEach(q=>g.line(q[0],q[1],q[2],q[3],'d'));
+  // head: a long jaw, wide open, lightning held between the teeth
+  const j=B?1:0,X=x=>Math.round((28+(x-28)*.86)*10)/10;
+  g.poly([[X(30),10+hy],[X(52),10+hy],[X(53),15+hy+j],[X(40),13+hy],[X(30),13+hy]],'K');
+  bsh(g,[['p',[[X(27),4+hy],[X(36),2+hy],[X(47),4+hy],[X(55),8+hy],[X(53),10.5+hy],[X(40),10.5+hy],[X(29),11+hy]]],['e',X(35),6+hy,4.2,3.4]],sc);
+  bsh(g,[['p',[[X(29),12+hy],[X(40),13+hy],[X(52),16+hy+j],[X(50),19+hy+j],[X(38),17.5+hy],[X(29),16+hy]]]],sc);
+  g.px([[X(37),11+hy],[X(41),11+hy],[X(45),11+hy],[X(49),11+hy],[X(39),13+hy],[X(44),14+hy+j],[X(48),15+hy+j]],'W');
+  g.line(48,10+hy,53,9+hy,'c');g.px([[X(53),9+hy],[X(52),9+hy]],'K');
+  g.path(B?[[X(38),11+hy],[X(41),14+hy],[X(44),11.5+hy],[X(48),15+hy+j]]:[[X(39),11+hy],[X(42),13.5+hy],[X(45),12+hy],[X(48),14+hy+j]],'x',1);g.px([[X(44),11+hy],[X(46),15+hy+j]],'y');
+  g.rect(Math.round(X(35)),5+hy,3,2,'x');g.s(Math.round(X(36)),6+hy,'K');g.s(Math.round(X(35)),5+hy,'y');g.line(32,3+hy,Math.round(X(38)),3+hy,'c');
+  // the storm crest: three gold horns swept back, a barbel off the chin
+  [[[X(31),5+hy],[25,2+hy+B],[18,3+hy+B]],[[X(34),4+hy],[X(30),1+hy+B],[25,.5+hy+B]],[[X(28),8+hy],[22,7+hy],[17,10+hy-B]]].forEach(Q=>bsh(g,[['t',Q,2.2,.7]],cr));
+  g.path([[X(34),19+hy],[X(30),23+hy],[26,22+hy+B]],'j',1);
+  // lightning crackling off the coils
+  bolt(g,10,12,16,3,'x',1);bolt(g,50,22,16,-3,'x',1);bolt(g,8,28,10,2,'x',1);
+  g.px(B?[[14,10],[5,20],[56,20],[54,34],[12,26]]:[[4,16],[13,22],[58,26],[50,32],[10,10]],'y');
+  return {pal:Object.assign({},bT4(sc,'#2f6cb0'),bT4(fn,'#a8e4f0'),bT4(cr,'#e8bc3c'),bT4(wt,'#3aa0c4'),{x:'#ffe84a',y:'#fffbd0',w:'#f4ffff',W:'#f4f0e0',K:'#0a1020'}),flat:'xywWK',glow:'#6ad0ff',rim:'#0e1a3a'};
+ },
+ cinderking(g,f){const F=mfr(f),B=F.b?1:0,sl='abcd',fe='efgh';
+  g.ell(30,57,24,2.6,'D');
+  // legs and heavy boots of cooling slag
+  bsh(g,[['p',[[17,38],[27,38],[26,53],[28,57],[13,57],[15,53]]],['p',[[33,38],[43,38],[45,53],[47,57],[32,57],[34,53]]]],sl);
+  g.line(21,42,22,50,'x');g.line(39,41,38,49,'x');g.px([[20,43],[23,47],[40,44],[37,50]],'y');
+  g.rect(14,54,13,2,'f');g.rect(33,54,13,2,'f');
+  // the great torso, wide at the shoulders
+  bsh(g,[['p',[[9,21],[16,13],[44,13],[51,21],[47,33],[42,43],[18,43],[13,33]]]],sl,{cap:14});
+  [[16,22,20,40],[44,22,40,40],[24,16,23,30],[36,16,37,30]].forEach(q=>g.line(q[0],q[1],q[2],q[3],'c'));
+  // magma veins
+  g.path([[16,22],[20,27],[18,34],[22,40]],'x');g.path([[44,22],[39,26],[42,33],[37,40]],'x');g.path([[24,17],[26,22]],'x');g.path([[36,17],[34,23]],'x');
+  // belt of iron and the furnace behind a grate
+  bsh(g,[['r',17,38,26,4]],fe);
+  bsh(g,[['e',30,29,7.4,7.4]],fe);g.ell(30,29,5.4,5.4,'K');g.ell(30,29,4.6,4.6,B?'y':'x');g.ell(30,29,2.6,2.6,B?'W':'y');
+  for(let i=-1;i<=1;i++)g.line(30+i*3,24,30+i*3,34,'e');g.line(25,29,35,29,'f');
+  // pauldrons: iron domes with horns, one each side
+  bsh(g,[['e',11,20,9,7.4],['k',7,15,3,6,5],['k',13,14,12,5,5]],fe);bsh(g,[['e',49,20,9,7.4],['k',53,15,57,6,5],['k',47,14,48,5,5]],fe);
+  g.px([[8,19],[14,22],[46,22],[52,19]],'f');g.s(7,20,'x');g.s(53,20,'x');
+  // left arm hangs to a slag fist
+  bsh(g,[['t',[[10,25],[6,34],[7,43]],5.4,4.6],['e',8,46,6.4,5.6]],sl);
+  g.line(7,48,12,47,'c');g.px([[4,44],[10,49]],'x');
+  // right arm raised: a maul of slag and iron
+  bsh(g,[['t',[[50,25],[56,28],[54,25]],4.6,4.6],['e',54,25,4.6,4.4]],sl);
+  bsh(g,[['r',52,8,4,32]],fe);bsh(g,[['p',[[43,1],[59,1],[60,12],[42,12]]]],fe);g.rect(44,6,15,1,'x');g.rect(43,11,17,1,'f');g.px([[46,3],[51,3],[56,3]],'f');
+  // the head: a black iron helm with two ember eyes, and a crown of cooling spikes
+  bsh(g,[['r',23,6,14,10],['p',[[23,15],[37,15],[34,20],[26,20]]]],fe);
+  g.rect(25,10,10,3,'K');g.rect(26,10,3,2,B?'y':'x');g.rect(31,10,3,2,B?'y':'x');g.line(25,17,35,17,'f');g.px([[27,18],[30,18],[33,18]],'K');
+  bsh(g,[['k',24,6,21,-1,4.4],['k',28,6,27,-2,4.4],['k',32,6,33,-3,4.4],['k',36,6,40,-2,4.4]].map(o=>o),fe);
+  g.rect(23,6,14,1,'x');g.px([[22,3],[27,0],[33,-1],[39,1]].map(p=>[p[0],p[1]+3+B]),'y');
+  // embers
+  g.px(B?[[4,12],[56,40],[2,36],[44,52]]:[[3,14],[57,42],[1,38],[46,50]],'x');
+  return {pal:Object.assign({},bT4(sl,'#5a4640',{cool:'#2a1020'}),bT4(fe,'#7a8094'),{x:'#ff7a1e',y:'#ffd860',W:'#fff4c8',K:'#0e0608',D:'#1a0e0c'}),flat:'xyWK',glow:'#ff7a2a',rim:'#1a0a08'};
+ },
+ hoarwyrm(g,f){const F=mfr(f),B=F.b?1:0,ic='abcd',gl='efgh',bn='ijkl',m=x=>60-x;
+  g.ell(30,57,22,2,'D');
+  // ice crags at the foot
+  bsh(g,[['p',[[2,57],[6,46],[11,57]]],['p',[[9,57],[14,49],[19,57]]],['p',[[m(2),57],[m(6),46],[m(11),57]]],['p',[[m(9),57],[m(14),49],[m(19),57]]],['p',[[19,57],[23,51],[26,57]]],['p',[[m(19),57],[m(23),51],[m(26),57]]]],gl);
+  // wings of glass: bone arm, fingers, a pane between them and an icicle fringe
+  [1,-1].forEach(sd=>{const X=x=>sd>0?x:m(x),w=B?1:0;
+    bsh(g,[['p',[[X(25),28],[X(15),18],[X(5),7-w],[X(3),19],[X(6),27],[X(9),34],[X(14),37],[X(20),34]]]],gl);
+    [[X(15),18,X(3),19],[X(15),18,X(6),27],[X(15),18,X(9),34],[X(18),20,X(14),37]].forEach(q=>g.line(q[0],q[1],q[2],q[3],'f'));
+    g.line(X(24),27,X(14),19,'h');g.line(X(21),30,X(11),24,'h');
+    bsh(g,[['k',X(3),19,X(0),26,3.4],['k',X(6),27,X(3),35,3.4],['k',X(9),34,X(7),42,3.4],['k',X(14),37,X(13),44,3.4]],gl);
+    bsh(g,[['t',[[X(25),28],[X(15),18],[X(5),7-w]],1.8,1]],gl);g.s(X(5),6-w,'y');});
+  // the coil: a thick neck, a ridge of ice along it, the tail curling under
+  const P=[[30,20],[30,28],[30,36],[27,44],[21,49],[25,55],[35,55],[41,51]],r=[4.6,6.4,6.4,5.6,4.6,3.8,3,1.4];
+  bsh(g,[['t',P,r,0]],ic,{cap:10});
+  bbands(g,P,r.map(v=>v*.5),0,2.4,'b','abcd',0);bbands(g,P,r,0,2.4,'c','bcd',1);
+  [[24,26],[36,26],[24,34],[36,34],[25,42],[34,42]].forEach(([x,y],i)=>bsh(g,[['k',x,y,x+(x<30?-4:4),y-3,4]],gl));
+  bsh(g,[['k',41,51,47,46,4],['k',41,51,48,52,3.4],['k',40,52,44,57,3.4]],gl);
+  // the head: a pale wedge of a skull under branching antlers of ice
+  [1,-1].forEach(sd=>{const X=x=>sd>0?x:m(x);
+    bsh(g,[['t',[[X(25),9],[X(19),5],[X(14),3]],2.2,.8],['t',[[X(21),6],[X(18),2.5]],1.4,.6],['t',[[X(19),5],[X(13),7]],1.4,.6]],gl);});
+  bsh(g,[['p',[[23,9],[30,5],[37,9],[35,17],[30,22],[25,17]]],['e',30,10,7,4]],ic);
+  g.rect(25,11,3,2,'E');g.rect(33,11,3,2,'E');g.s(25,11,'w');g.s(33,11,'w');g.line(26,9,29,10,'c');g.line(35,9,32,10,'c');
+  g.px([[29,15],[31,15]],'K');g.rect(27,18,6,2,'K');g.px([[27,20],[29,20],[31,20],[33,20]],'W');g.px([[28,17],[32,17]],'W');
+  // frost breath rolling off the jaw
+  g.ell(30,24+B,2,1.2,'w');g.px(B?[[24,24],[36,25],[21,28],[39,29],[28,27],[33,28]]:[[25,23],[35,24],[22,27],[38,28],[29,27],[32,29]],'w');
+  g.px([[7,13],[50,12],[3,30],[56,30],[13,8],[46,6]],'w');
+  return {pal:Object.assign({},bT4(ic,'#a6cfe8',{cool:'#1a2e66'}),bT4(gl,'#cfeefa',{cool:'#2a3e88'}),bT4(bn,'#6a86b4'),{E:'#3ce6ff',w:'#ffffff',W:'#e8f8ff',y:'#e8fbff',K:'#08122a',D:'#14284a'}),flat:'EwWyK',glow:'#8ae0ff',rim:'#1c3868'};
+ }
 });
+['thornwarden','drake','cinderking','hoarwyrm'].forEach(k=>{MEXTRA[k]=()=>{};});
+Object.assign(MART,{
+ ysolde(g,f){const F=mfr(f),B=F.b?1:0,rb='abcd',sk='efgh',hr='ijkl',cl='mnop',m=x=>60-x;
+  // a thundercloud she hangs above; the robe frays into it
+  bsh(g,[['e',13,52,9,4.6],['e',26,54,10,3.8],['e',40,53,10,4.4],['e',50,50,6.5,4],['e',31,50,12,4.2]],cl);
+  g.px([[11,55],[20,57],[34,57],[44,56],[8,51]],'o');
+  // a long robe: narrow at the shoulders, flaring into trumpet folds, hem torn into points
+  bsh(g,[['p',[[24,23],[36,23],[41,36],[47,50],[40,47],[36,52],[31,47],[26,53],[22,47],[14,51],[19,36]]]],rb,{cap:14});
+  [[28,26,24,46],[32,26,34,46],[30,30,30,48],[24,28,19,46],[36,28,41,46]].forEach(q=>g.line(q[0],q[1],q[2],q[3],'c'));
+  g.line(26,36,34,36,'x');g.rect(26,34,8,2,'x');g.px([[30,35]],'y');g.path([[19,47],[24,44],[31,46],[37,44],[42,47]],'x');
+  g.px([[26,40],[34,41],[29,44],[22,43],[38,43]],'y');
+  // sleeves thrown wide: one hand cups a ball of lightning, the other draws down a bolt
+  bsh(g,[['t',[[26,25],[17,24],[11,17],[9,11]],4.2,2.6],['p',[[10,10],[6,18],[14,22],[15,16]]]],rb);
+  bsh(g,[['t',[[34,25],[43,24],[49,17],[51,12]],4.2,2.6],['p',[[50,11],[54,19],[46,23],[45,17]]]],rb);
+  g.ell(9.5,9,2.4,2.4,'f');g.ell(51,10,2.4,2.4,'f');
+  g.ell(51,6+B*0,3.6+B*.6,3.6+B*.6,'x');g.ell(51,6,2.2,2.2,'y');
+  bolt(g,7,0,10,2,'x',1);g.path(B?[[10,2],[7,6],[11,8]]:[[9,2],[12,5],[8,8]],'x');
+  // hair: a mane of forked lightning flaring up and out, long strands behind the shoulders
+  [[[27,10],[21,6],[16,2+B]],[[29,8],[26,3],[25,1+B]],[[31,8],[34,3],[37,1+B]],[[33,10],[39,6],[44,2+B]],[[25,13],[18,12],[12,9]],[[35,13],[42,12],[48,9]]].forEach(Q=>bsh(g,[['t',Q,2.4,.8]],hr));
+  bsh(g,[['t',[[25,13],[21,22],[23,30],[21,36]],3.2,1],['t',[[35,13],[39,22],[37,30],[39,36]],3.2,1]],hr);
+  // collar, face, circlet
+  bsh(g,[['p',[[22,24],[38,24],[41,15],[30,18],[19,15]]]],rb);
+  bsh(g,[['e',30,14.5,5.4,6.4]],sk);g.line(25,9,35,9,'x');g.px([[30,8]],'y');
+  g.rect(26,13,3,1,'W');g.rect(32,13,3,1,'W');g.px([[26,12],[34,12]],'E');g.px([[29,12],[31,12]],'o');
+  g.line(29,18,31,18,'e');g.px([[30,15]],'f');
+  g.px(B?[[4,24],[56,32],[3,40],[57,18],[14,6],[48,5]]:[[3,28],[57,26],[4,36],[56,14],[12,4],[45,3]],'y');
+  return {pal:Object.assign({},bT4(rb,'#38407e'),bT4(sk,'#f0d8c8',{cool:'#6a4a7a'}),bT4(hr,'#fff0a0'),bT4(cl,'#7a7ab0',{cool:'#241a5a'}),{x:'#ffd83a',y:'#fffbe0',W:'#ffffff',E:'#4ae0ff',o:'#cfe8ff',K:'#0a0820',D:'#1a1840'}),flat:'xyWEoK',glow:'#fff2a8',rim:'#14123a'};
+ },
+ dimmer(g,f){const F=mfr(f),B=F.b?1:0,rb='abcd',m=x=>60-x;
+  // a tattered hem that bleeds into the floor
+  bsh(g,[['p',[[22,21],[38,21],[43,34],[52,57],[46,53],[43,58],[38,54],[34,58],[30,53],[25,58],[21,54],[16,58],[13,53],[8,57],[17,34]]]],rb,{cap:16});
+  [[28,22,22,50],[32,22,34,50],[25,26,16,52],[36,26,45,52],[30,24,30,52]].forEach(q=>g.line(q[0],q[1],q[2],q[3],'c'));
+  // the hollow: a figure shaped void with every swallowed light still inside it
+  bsh(g,[['p',[[26,22],[34,22],[37,32],[35,46],[30,52],[25,46],[23,32]]]],'KKKK');
+  g.px([[28,28],[32,30],[29,36],[33,40],[27,43],[31,47],[30,26],[34,35]],'A');
+  g.px([[28,32],[31,38],[29,48],[32,44]],B?'D':'F');g.px([[30,33],[28,40]],B?'F':'C');g.px([[32,27],[26,36]],'H');
+  // arms: long, thin, dragging past the hem, the hands spidery
+  [1,-1].forEach(sd=>{const X=x=>sd>0?x:m(x);
+    bsh(g,[['t',[[X(23),20],[X(14),30],[X(9),42],[X(8),53]],3.6,1.3]],rb);
+    [[8,53,4,57],[8,53,8,58],[8,53,12,57],[9,50,13,53]].forEach(q=>g.line(X(q[0]),q[1],X(q[2]),q[3],'b'));g.line(X(8),53,X(5),50,'b');});
+  // shoulders hunched, a hood without a face
+  bsh(g,[['e',30,22,10,4.4],['p',[[21,20],[24,9],[30,5],[36,9],[39,20]]]],rb);
+  bsh(g,[['e',30,14,6,8.4]],rb);
+  g.ell(30,14,4.4,6.4,'K');g.rect(27,13,1,1,'W');g.rect(33,13,1,1,'W');g.px([[26,13],[28,13],[32,13],[34,13]],B?'A':'K');
+  // the stolen lights: a broken halo of five lanterns
+  [[15,14,'C'],[19,7,'D'],[30,3.5,'F'],[41,7,'H'],[45,14,'I']].forEach(([x,y,k],i)=>{g.ell(x,y,2.2,2.2,k);g.s(x,y,'W');if((i+B)%2)g.px([[x-3,y],[x+3,y],[x,y-3]],k);});
+  g.px([[10,22],[50,24],[12,40],[48,42],[5,34],[55,34]],'A');
+  return {pal:Object.assign({},bT4(rb,'#241c44'),{K:'#05030a',W:'#ffffff',A:'#e8e0ff',C:'#e8553a',D:'#5fc9a0',F:'#f6e7a8',H:'#3f8fe0',I:'#f2c93a',b:'#38306a'}),flat:'KWACDFHI',rim:'#6a4aa8',glow:'#8b5fd0'};
+ },
+ bonecolossus(g,f){const F=mfr(f),B=F.b?1:0,bn='abcd',ir='efgh';
+  g.ell(30,57,24,2.6,'D');
+  // legs: two columns of leg bones with kneecaps, wide flat feet
+  bsh(g,[['t',[[24,38],[21,47],[20,54]],4.2,3.6],['e',21,47,3.8,3.4],['r',14,54,13,3]],bn);bsh(g,[['t',[[36,38],[39,47],[40,54]],4.2,3.6],['e',39,47,3.8,3.4],['r',33,54,13,3]],bn);
+  g.line(19,56,26,56,'c');g.line(34,56,41,56,'c');
+  // pelvis and the spine up through a barrel of ribs
+  bsh(g,[['e',30,39,11,4.4]],bn);g.ell(30,39,3,2.4,'K');
+  g.ell(30,28,13.5,11.5,'K');g.ell(30,27,6,7,'x');g.ell(30,27,3,4,B?'W':'y');
+  bsh(g,[['t',[[30,40],[30,16]],2.4,2.4]],bn);
+  for(let i=0;i<5;i++){const y=19.5+i*3.7,w=13-i*.9;[1,-1].forEach(sd=>bsh(g,[['t',[[30,y],[30+sd*w*.6,y-1.6],[30+sd*w,y+2.6]],1.5,1.1]],bn));}
+  // a broken sword still lodged in the ribs
+  bsh(g,[['l',20,38,38,16,2]],ir);g.rect(36,13,6,2,'f');g.line(37,12,41,15,'e');
+  // great skulls for pauldrons
+  [[12,18],[48,18]].forEach(([x,y],i)=>{bsh(g,[['e',x,y,6.4,5.6],['r',x-3,y+3,6,4]],bn);g.ell(x-2,y-.5,1.8,2,'K');g.ell(x+2,y-.5,1.8,2,'K');g.s(x-2,y,'x');g.s(x+2,y,'x');g.line(x-2,y+5,x+2,y+5,'K');g.px([[x-1,y+3],[x+1,y+3],[x,y+3]],'K');});
+  // left arm: bone, resting on a knuckled fist
+  bsh(g,[['t',[[14,23],[9,33],[8,42]],3.6,3],['e',8,46,6,5],['e',3.5,43,1.8,2.2]],bn);g.line(5,47,11,47,'c');g.px([[6,45],[9,45]],'c');
+  // right arm: raised, swinging a femur
+  bsh(g,[['t',[[46,23],[52,19],[53,12]],3.6,3],['e',53,15,3.8,3.6]],bn);
+  bsh(g,[['t',[[53,16],[53,6]],2.6,2.4],['e',51,4.4,2.4,2.4],['e',55.4,4.4,2.4,2.4],['e',51,19,2.2,2.2],['e',55,19,2.2,2.2]],bn);
+  // the head: a horned skull, jaw hung open, two violet lamps
+  bsh(g,[['e',30,10,9,8],['p',[[23,14],[37,14],[35,22],[25,22]]]],bn);
+  bsh(g,[['t',[[22,8],[16,5+B],[15,11]],2.6,1],['t',[[38,8],[44,5+B],[45,11]],2.6,1]],ir);
+  g.ell(26,9,2.8,3,'K');g.ell(34,9,2.8,3,'K');g.rect(25,8,2,2,B?'y':'x');g.rect(33,8,2,2,B?'y':'x');g.poly([[29,12],[31,12],[30,15]],'K');
+  g.rect(25,17,11,3,'K');for(let x=26;x<36;x+=2)g.rect(x,17,1,3,'a');g.line(27,22,34,22,'c');
+  g.px([[20,24],[40,26],[36,36],[24,36]],'e');g.px([[10,2],[50,2],[3,30],[57,34]],'x');
+  return {pal:Object.assign({},bT4(bn,'#d8c8a2',{cool:'#3a2a50'}),bT4(ir,'#8a6a58'),{x:'#b070ff',y:'#f0d0ff',W:'#ffffff',K:'#120a1c',D:'#2a1c34'}),flat:'xyWK',glow:'#8a50d0',rim:'#2a1a30'};
+ },
+ queenmantis(g,f){const F=mfr(f),B=F.b?1:0,ch='abcd',bl='efgh',gd='ijkl',wg='mnop';
+  g.ell(28,57,19,2.4,'D');
+  // gauze wings spread behind her like a train
+  bsh(g,[['p',[[26,30],[6,12],[2,28],[7,42],[22,46]]],['p',[[28,28],[14,8],[22,6],[36,22]]]],wg);
+  [[26,30,6,12],[26,32,3,28],[25,36,7,42],[28,28,14,8],[24,31,10,18]].forEach(q=>g.line(q[0],q[1],q[2],q[3],'n'));
+  // abdomen: long and segmented, curling down behind
+  const A=[[30,36],[24,43],[17,50],[13,56]],ar=[5.6,5.4,4,1.6];bsh(g,[['t',A,ar,0]],ch);bbands(g,A,ar,0,2.2,'c','abcd',1);bbands(g,A,ar.map(v=>v*.5),0,2.2,'b','abcd',-1);
+  bsh(g,[['k',13,56,8,59,2.6],['k',14,55,18,59,2.6]],ch);
+  // hind legs
+  bsh(g,[['t',[[28,42],[35,47],[38,56]],2.2,1.4],['t',[[25,45],[22,51],[24,57]],2.2,1.4]],ch);g.px([[38,57],[24,58]],'c');
+  // thorax and a spiked collar
+  bsh(g,[['t',[[30,38],[32,30],[34,22]],5,3.4]],ch);bbands(g,[[30,38],[32,30],[34,22]],5,3.4,2.5,'c','abcd',1);
+  bsh(g,[['p',[[26,24],[42,24],[44,20],[37,26],[34,29],[28,26],[24,20]]],['k',25,24,21,20,3],['k',43,24,47,20,3]],gd);
+  // the far scythe, behind the head; the near scythe, swept out in front
+  const sc=(P,r0)=>{bsh(g,[['t',P,r0,1]],bl);bpath(P,r0,1,2.4).forEach((s,i)=>{if(i>1)bsh(g,[['k',s.x-s.dy*s.r*.6,s.y+s.dx*s.r*.6,s.x+s.dy*3.6-s.dx*1.4,s.y-s.dx*3.6-s.dy*1.4,2.6]],bl);});};
+  sc([[36,25],[44,19],[49,9],[47,3-B]],2.8);
+  sc([[32,27],[38,32],[48,30],[54,20],[55,9-B]],3.2);
+  bsh(g,[['e',33,27,3.4,3.2]],ch);
+  // the head: an inverted triangle with two great eyes, a gold tiara and long antennae
+  bsh(g,[['p',[[31,10],[47,10],[44,17],[40,23],[35,17]]]],ch);
+  bsh(g,[['e',34.5,13.5,3.4,4],['e',44,13.5,3,3.8]],bl);g.ell(34.5,13.5,2.4,3,'E');g.ell(44,13.5,2,2.8,'E');g.s(34,12,'W');g.s(43,12,'W');g.px([[35,14],[44,14]],'K');
+  g.line(37,19,41,19,'K');g.px([[36,21],[40,21]],'c');
+  bsh(g,[['k',33,10,31,3,2.8],['k',37,9,37,1.5,2.8],['k',41,9,42,1.5,2.8],['k',45,10,48,3,2.8]],gd);g.rect(32,9,15,2,'i');
+  bsh(g,[['t',[[35,9],[30,5],[24,3+B]],1.4,.6],['t',[[43,9],[48,5],[54,4-B]],1.4,.6]],ch);
+  g.px([[3,20],[56,38],[8,52],[50,50]],'y');
+  return {pal:Object.assign({},bT4(ch,'#52ac3c'),bT4(bl,'#d8f0a8',{cool:'#2a6a34'}),bT4(gd,'#f0c850'),bT4(wg,'#b8e8a0',{cool:'#2a7a50'}),{E:'#f6dc3a',y:'#f0e8a0',W:'#fff8d0',K:'#10160a',D:'#18331a'}),flat:'EyWK',rim:'#12301a'};
+ }
+});
+['ysolde','dimmer','bonecolossus','queenmantis'].forEach(k=>{MEXTRA[k]=()=>{};});
+Object.assign(MART,{
+ gloomcap(g,f){const F=mfr(f),B=F.b?1:0,cp='abcd',gl='efgh',st='ijkl';
+  g.ell(30,57,25,2.4,'D');
+  // mycelium roots creeping out of the stem, tipped with buds
+  [[[24,53],[15,56],[6,55]],[[36,53],[45,56],[54,55]],[[22,48],[12,52],[5,49]]].forEach(Q=>bsh(g,[['t',Q,2.6,.8]],st));
+  g.px([[5,48],[6,54],[54,54]],'x');
+  // two small caps at its feet
+  [[8,52,3.4],[52,53,3]].forEach(([x,y,r])=>{bsh(g,[['e',x,y,r,r*.7],['r',x-1,y,2,4]],st);bsh(g,[['e',x,y-1,r,r*.7]],cp);g.s(x-1,y-2,'x');});
+  // the stem, with a torn skirt hanging from its ring
+  bsh(g,[['p',[[23,30],[37,30],[39,42],[42,56],[18,56],[21,42]]]],st,{cap:14});
+  [[26,34,25,52],[34,34,36,52],[30,36,30,54]].forEach(q=>g.line(q[0],q[1],q[2],q[3],'k'));
+  bsh(g,[['e',30,42,14,3.2],['p',[[16,43],[44,43],[47,50],[43,48],[40,52],[36,48],[31,52],[26,48],[21,52],[18,48],[14,50]]]],gl,{cap:8});
+  g.line(18,43,42,43,'g');g.px([[20,46],[26,46],[32,47],[38,46]],'h');
+  // gill dark under the cap with two old eyes in it
+  bsh(g,[['e',30,31,26,4.6]],'ijkl'.replace(/./g,'q'));
+  g.ell(30,32,24.6,3.8,'K');
+  for(let x=7;x<54;x+=3)g.line(x,29,30+(x-30)*.78,34,'j');
+  g.ell(23,33,2.8,2,'x');g.ell(37,33,2.8,2,'x');g.rect(22,32,2,2,'y');g.rect(36,32,2,2,'y');g.px([[23,33],[37,33]],'K');
+  // the great cap: a purple dome, lit left, with glowing spots
+  bsh(g,[['p',[[3,30],[4,23],[9,14],[17,8],[30,4],[43,8],[51,14],[56,23],[57,28],[44,29],[30,29.5],[16,29],[3,28]]]],cp,{cap:16});
+  [[14,15,4,1],[30,10,5,1],[44,16,4,1],[21,24,3,1],[39,25,3,0],[9,25,2.4,0],[51,24,2.4,0],[35,17,2,0],[24,15,1.6,0]].forEach(([x,y,r,s],i)=>{const rr=r+(B&&i%2?.6:0);g.ell(x,y,rr,rr*.8,'x');g.ell(x-.5,y-.4,rr*.5,rr*.4,'y');});
+  // spores drifting up
+  g.px(B?[[4,6],[56,5],[11,2],[49,2],[2,40],[58,42],[30,1]]:[[4,9],[56,8],[12,4],[48,4],[2,36],[58,38],[28,2]],'x');
+  return {pal:Object.assign({},bT4(cp,'#68409a'),bT4(gl,'#c8b0d8',{cool:'#3a2060'}),bT4(st,'#d6c6b0',{cool:'#4a3a50'}),{q:'#2a1a40',x:'#7af0d0',y:'#e8fff8',K:'#0a0614',D:'#160c24'}),flat:'xyK',glow:'#3ad0b0',rim:'#1c1030'};
+ },
+ ironsentinel(g,f){const F=mfr(f),B=F.b?1:0,st='abcd',cu='efgh',dk='ijkl';
+  g.ell(30,57,24,2.6,'D');
+  // a cogwheel behind the shoulders
+  const ct=B?Math.PI/12:0;bsh(g,[['e',30,23,16.5,16.5]].concat([...Array(10)].map((_,i)=>{const a=i*Math.PI/5+ct,x=30+Math.cos(a)*17.5,y=23+Math.sin(a)*17.5;return ['e',x,y,3,3];})),dk);g.ell(30,23,11,11,'K');
+  // legs: pistons and flat feet
+  bsh(g,[['r',17,44,10,10],['r',33,44,10,10],['r',12,54,18,4],['r',30,54,18,4]],st);g.rect(20,46,4,6,'j');g.rect(36,46,4,6,'j');g.line(19,45,19,53,'d');g.line(41,45,41,53,'d');
+  // torso: riveted plate with the furnace window
+  bsh(g,[['p',[[11,20],[49,20],[47,44],[13,44]]]],st);g.rect(11,20,38,3,'a');g.rect(13,41,34,3,'c');
+  bsh(g,[['r',23,26,14,12]],dk);g.rect(24,27,12,10,'K');g.rect(25,28,10,8,B?'y':'x');g.rect(27,31,6,4,B?'W':'y');for(let x=26;x<35;x+=3)g.rect(x,27,1,10,'j');
+  [[13,23],[46,23],[14,41],[45,41],[30,24],[24,40],[36,40]].forEach(p=>g.s(p[0],p[1],'a'));
+  bsh(g,[['r',17,38,26,2]],cu);
+  // shoulder blocks with chimneys venting steam
+  bsh(g,[['r',2,16,12,12],['r',46,16,12,12],['r',4,3,6,14],['r',50,3,6,14]],st);g.rect(3,3,8,2,'f');g.rect(49,3,8,2,'f');g.rect(5,17,4,10,'j');g.rect(51,17,4,10,'j');
+  g.px([[3,19],[12,19],[3,26],[12,26],[47,19],[56,19],[47,26],[56,26]],'a');
+  g.px(B?[[6,1],[4,0],[53,1],[56,0]]:[[7,1],[8,0],[52,1],[50,0]],'w');
+  // arms: piston upper arms and crusher claws
+  bsh(g,[['r',4,28,8,12],['r',48,28,8,12],['p',[[1,40],[14,40],[13,52],[9,52],[8,46],[7,52],[2,52]]],['p',[[46,40],[59,40],[58,52],[53,52],[52,46],[51,52],[47,52]]]],st);
+  g.line(8,29,8,39,'j');g.line(52,29,52,39,'j');g.rect(2,40,12,2,'a');g.rect(46,40,13,2,'a');
+  // head: a blocky helm, one cyan slit, two lightning rods
+  bsh(g,[['r',23,7,14,13],['r',21,18,18,3]],st);g.rect(25,12,10,3,'K');g.rect(26,12,8,2,B?'W':'z');g.rect(23,7,14,2,'a');
+  bsh(g,[['r',28,0,1,7],['r',32,1,1,6]],dk);g.px([[28,0],[32,1]],B?'W':'z');
+  g.px(B?[[24,2],[38,3],[16,12],[44,10]]:[[26,3],[36,2],[15,10],[45,12]],'z');
+  return {pal:Object.assign({},bT4(st,'#6a7288',{cool:'#1a2040'}),bT4(cu,'#c4783a'),bT4(dk,'#3a3e50'),{x:'#ff6a1a',y:'#ffd060',W:'#ffffff',z:'#6af4ff',w:'#e8eef4',K:'#0a0810',D:'#201c28'}),flat:'xyWzwK',rim:'#10101c'};
+ },
+ siren(g,f){const F=mfr(f),B=F.b?1:0,tl='abcd',hr='efgh',sk='ijkl',sh='mnop',wv='qrst';
+  // the swell around her
+  bsh(g,[['e',30,56,26,3.4],['e',10,54,8,3],['e',50,53,8,3.4]],wv);g.px([[7,52],[14,54],[46,52],[53,51],[24,55],[38,56]],'w');
+  // tail: an S of scales, a crescent fan on the right
+  const P=[[24,34],[31,38],[40,42],[43,49],[36,54],[27,54]],r=[6.4,6.8,6.4,5.4,4,2.4];
+  bsh(g,[['t',P,r,0]],tl);bbands(g,P,r,0,2.2,'c','bcd',1);bbands(g,P,r.map(v=>v*.5),0,2.2,'a','abcd',-1);
+  bsh(g,[['p',[[28,55],[20,50],[12,50],[8,44],[16,44],[12,38],[22,42],[26,48]]],['p',[[26,55],[18,58],[10,57],[17,54]]]],sh);
+  [[12,48,19,52],[11,43,16,47],[14,40,20,45]].forEach(q=>g.line(q[0],q[1],q[2],q[3],'o'));
+  // hair: one long drowned-blue sweep to the left, a mass behind the head
+  bsh(g,[['e',27,13,8,9.4],['t',[[23,8],[14,10],[8,20],[8,32],[12,41]],5.4,1.2],['t',[[22,14],[16,22],[15,32]],3,1]],hr);
+  g.line(17,12,10,22,'g');g.line(24,8,15,11,'h');g.line(11,34,10,28,'g');
+  // torso and the lifted arm with a pearl
+  bsh(g,[['p',[[20,24],[31,24],[30,36],[21,36]]]],sk);g.px([[24,30],[28,31]],'j');g.line(21,26,29,26,'i');
+  bsh(g,[['t',[[30,26],[38,21],[44,13]],3.4,2.2],['t',[[21,27],[17,32],[22,35]],3,2.2]],sk);
+  g.ell(46.5,9,4.4,4.4,'p');g.ell(45,7.6,1.6,1.6,'W');g.s(48,12,'o');
+  // face, pearl eyes, a mouth open in song, a shell crown
+  bsh(g,[['e',26,15,6,7.2]],sk);g.rect(23,14,3,2,'W');g.rect(28,14,3,2,'W');g.px([[24,15],[29,15]],'o');g.ell(27,20,1.6,1.8+B*.6,'K');
+  bsh(g,[['k',21,9,18,3,4],['k',24,8,23,2.4,4],['k',28,8,29,2.4,4],['k',32,9,35,3,4]],sh);g.rect(21,9,12,2,'m');g.px([[19,4],[23,3],[29,3]],'W');
+  // the song as rings of foam
+  [9,14].forEach(R=>{for(let a=-.8;a<=.8;a+=.22){const x=Math.round(30+Math.cos(a)*(R+B*2)),y=Math.round(20+Math.sin(a)*(R+B*2));if(x<58&&y>1)g.s(x,y,'w');}});
+  return {pal:Object.assign({},bT4(tl,'#2c9aa8'),bT4(hr,'#2f56b8'),bT4(sk,'#c8ecea',{cool:'#2a4a7a'}),bT4(sh,'#f0c8d8'),bT4(wv,'#3a82b8'),{p:'#f8f4ff',o:'#bfe0ff',W:'#ffffff',w:'#e8f8ff',K:'#10243a',D:'#10304a'}),flat:'pWowK',glow:'#7ae0f0',rim:'#0e2a46'};
+ },
+ ashwyvern(g,f){const F=mfr(f),B=F.b?1:0,bd='abcd',wg='efgh',bl='ijkl',rk='mnop',wb=B?2:0;
+  // the perch: a scorched rock with ember cracks
+  bsh(g,[['p',[[6,57],[11,50],[22,46],[38,47],[48,52],[52,57]]]],rk);g.path([[16,52],[22,49],[27,52]],'x');g.path([[36,50],[42,54]],'x');
+  // wing: a huge bat wing lifted behind, fingers splayed, ember at the edge
+  bsh(g,[['p',[[30,31],[24,21],[15,11],[6,5],[3,17],[5,28+wb],[11,38+wb],[21,39]]]],wg);
+  [[15,11,3,17],[15,11,5,28+wb],[15,11,11,38+wb],[20,20,12,36+wb]].forEach(q=>g.line(q[0],q[1],q[2],q[3],'h'));
+  g.path([[3,17],[5,28+wb],[11,38+wb]],'x');
+  bsh(g,[['t',[[30,31],[24,21],[15,11],[6,5]],3,1.4]],bd);g.px([[6,4]],'y');
+  bsh(g,[['k',5,28+wb,1,34+wb,3],['k',3,17,0,22,3]],bd);
+  // tail with a barbed tip curling up
+  bsh(g,[['t',[[19,42],[12,49],[6,50],[3,44],[5,39]],4.6,1]],bd);bsh(g,[['p',[[5,39],[1,36],[5,34],[9,37]]]],wg);g.px([[5,36]],'y');
+  // body, a sloped chest rising into the neck; the lit belly
+  const P=[[16,44],[24,40],[31,33],[36,25],[40,18],[42,12]],r=[3.6,6.6,7,6,4.4,3.6];
+  bsh(g,[['t',P,r,0]],bd,{cap:10});bsh(g,[['t',[[22,42],[28,38],[33,31],[36,25]],3,2.4]],bl);bbands(g,P,r.map(v=>v*.7),0,2.4,'j','ijkl',1);
+  [[22,36],[28,30],[34,24],[40,14]].forEach(([x,y])=>g.px([[x,y],[x+1,y+1]],'x'));
+  // legs gripping the rock
+  bsh(g,[['t',[[24,42],[23,47],[19,50]],3.4,2],['t',[[30,40],[32,45],[34,48]],3.2,2]],bd);g.px([[16,50],[17,51],[20,51],[34,49],[36,49],[35,50]],'W');
+  // the head thrown back, jaw wide with a furnace inside
+  g.poly([[42,12],[54,12],[56,19],[44,19]],'K');
+  bsh(g,[['p',[[39,10],[45,5],[54,6],[57,9],[55,12],[47,12],[41,13]]],['e',44,8,5,4]],bd);
+  bsh(g,[['p',[[42,14],[50,15],[56,19],[51,21],[44,18]]]],bd);
+  g.rect(47,12,6,3,B?'y':'x');g.px([[49,12],[52,12],[51,17],[54,18]],'W');
+  g.rect(43,6,2,2,'E');g.s(43,6,'y');
+  bsh(g,[['t',[[41,7],[38,4],[33,6]],2.4,.8],['t',[[43,5],[40,2],[37,2]],1.8,.7]],bl);
+  g.px(B?[[58,22],[54,24],[2,10],[52,40],[56,30],[24,3]]:[[56,23],[59,25],[3,12],[54,38],[58,32],[26,4]],'x');
+  g.px([[60-3,26],[55,27],[8,2]],'y');
+  return {pal:Object.assign({},bT4(bd,'#5a4e58',{cool:'#2a1020'}),bT4(wg,'#8c5a4a',{cool:'#3a1018'}),bT4(bl,'#b09a86'),bT4(rk,'#403840'),{x:'#ff6a2a',y:'#ffd860',E:'#ffb02a',W:'#f0e8d8',K:'#140a0c',D:'#201416'}),flat:'xyEWK',glow:'#ff7a30',rim:'#1c1014'};
+ }
+});
+['gloomcap','ironsentinel','siren','ashwyvern'].forEach(k=>{MEXTRA[k]=()=>{};});
+function bloc(g,x,y,s,L){// one locust facing left, about 7 px long: a banded body, a round head with a red eye, a folded wing, a jumper leg
+  g.line(x-2*s,y,x+2*s,y+.6,'q',2);g.ell(x-3.4*s,y-.4,1.6*s,1.5*s,'q');g.s(x-4*s,y-1,'E');g.line(x-1.4*s,y-1.6*s,x+4*s,y-2*s,L?'v':'W',2);g.line(x+1*s,y+1,x+3.4*s,y+3.2*s,'r');g.line(x-1*s,y+1,x-1.6*s,y+3*s,'r');}
+Object.assign(MART,{
+ frostlich(g,f){const F=mfr(f),B=F.b?1:0,rb='abcd',ic='efgh',bn='ijkl',wd='mnop';
+  g.ell(30,57,17,2.2,'D');
+  // the robe: a tall narrow shroud, hem torn and rimed
+  bsh(g,[['p',[[24,20],[36,20],[41,34],[47,52],[41,49],[37,56],[32,50],[27,56],[22,49],[17,55],[13,52],[19,34]]]],rb,{cap:14});
+  [[28,26,24,50],[32,26,35,50],[30,30,30,52],[25,28,17,50],[36,28,43,50]].forEach(q=>g.line(q[0],q[1],q[2],q[3],'c'));
+  bsh(g,[['k',14,52,12,57,4],['k',20,54,19,58,4],['k',41,52,43,57,4],['k',35,55,36,58,4]],ic);g.px([[18,46],[24,52],[38,50],[44,48]],'f');
+  // a high, jagged collar
+  bsh(g,[['p',[[19,24],[18,11],[24,17],[26,22]]],['p',[[41,24],[42,11],[36,17],[34,22]]]],rb);bsh(g,[['k',18,12,15,6,3.4],['k',42,12,45,6,3.4]],ic);
+  // sleeves and bony hands: one holding a rimed book open, the other a staff
+  bsh(g,[['p',[[22,24],[14,28],[9,38],[17,38],[23,32]]]],rb);bsh(g,[['t',[[12,36],[11,40]],1.6,1.4]],bn);
+  bsh(g,[['p',[[38,24],[46,26],[50,34],[43,34],[37,30]]]],rb);
+  bsh(g,[['p',[[3,34],[17,32],[19,41],[5,43]]]],wd);g.poly([[5,35],[16,34],[17,40],[6,41]],B?'W':'o');g.line(11,34,12,41,'m');g.px([[7,37],[9,38],[13,36],[15,38]],'x');
+  bsh(g,[['t',[[46,34],[47,8]],1.8,1.6],['t',[[46,56],[46,34]],1.8,1.8]],wd);
+  bsh(g,[['p',[[46,2],[50,7],[46,13],[42,7]]]],ic);g.px([[46,5],[46,7],[45,8]],B?'W':'x');
+  bsh(g,[['e',46,36,3,3]],bn);g.px([[46,36]],'K');
+  // the phylactery: a gem on a chain, the ward
+  g.path([[26,22],[28,29],[30,31]],'i');g.path([[34,22],[32,29],[30,31]],'i');bsh(g,[['p',[[30,29],[33,33],[30,38],[27,33]]]],ic);g.poly([[30,30],[32,33],[30,36],[28,33]],B?'W':'x');g.s(30,32,'W');
+  // the skull, hollow and grinning, under a crown of icicles
+  bsh(g,[['e',30,14,6.4,7],['r',25,18,10,5]],bn);g.rect(24,13,4,4,'K');g.rect(32,13,4,4,'K');g.rect(25,14,2,2,B?'W':'E');g.rect(33,14,2,2,B?'W':'E');g.px([[29,17],[31,17]],'K');
+  g.rect(26,20,8,2,'K');for(let x=27;x<34;x+=2)g.rect(x,20,1,2,'i');g.line(26,23,34,23,'k');
+  bsh(g,[['p',[[23,9],[37,9],[36,7],[24,7]]],['k',24,8,22,0,3.6],['k',27,8,27,-2,3.6],['k',30,7,30,-3,3.8],['k',33,8,33,-2,3.6],['k',36,8,38,0,3.6]],ic);g.rect(23,8,14,2,'g');
+  [[6,14],[54,12],[7,44],[53,42],[4,28]].forEach(([x,y],i)=>bsh(g,[['p',[[x,y-3+(i%2?B:0)],[x+2,y],[x,y+3],[x-2,y]]]],ic));
+  return {pal:Object.assign({},bT4(rb,'#33487a',{cool:'#0a1430'}),bT4(ic,'#bfeaf8',{cool:'#2a4a8a'}),bT4(bn,'#e8eef4',{cool:'#304060'}),bT4(wd,'#8a6a4a'),{x:'#6af0ff',E:'#7af4ff',W:'#ffffff',o:'#d8f4ff',K:'#08101e',D:'#0c1830'}),flat:'xEWoK',glow:'#5ab0e0',rim:'#0e1a38'};
+ },
+ locustchoir(g,f){const F=mfr(f),B=F.b?1:0,bd='abcd',wg='efgh',lg='ijkl',m=x=>60-x;
+  g.ell(30,57,15,2.2,'D');
+  // the cloud: small locusts in an hourglass (wide top and bottom, narrow in the middle), the ring turning a pixel each beat
+  [[9,6,1],[24,4,.9],[38,5,1],[51,8,.9],[9,17,.9],[48,20,1],[16,26,.9],[44,30,.9],[10,38,1],[50,41,1],[8,50,1.1],[22,54,1],[40,53,1.1],[53,54,.9],[3,29,.8],[56,29,.8]].forEach(([x,y,s],i)=>bloc(g,x+(B&&i%2?1:0),y+(B&&i%3?1:0),s,i%2));
+  // the conductor: spread wings like two spires of glass
+  bsh(g,[['p',[[27,26],[15,8],[10,14],[11,26],[17,35],[26,36]]],['p',[[33,26],[45,8],[50,14],[49,26],[43,35],[34,36]]]],wg);
+  [[27,26,15,8],[27,28,11,16],[26,31,12,26],[25,34,17,35],[33,26,45,8],[33,28,49,16],[34,31,48,26],[35,34,43,35]].forEach(q=>g.line(q[0],q[1],q[2],q[3],'h'));
+  bsh(g,[['t',[[27,26],[19,15],[15,8+B]],2,1],['t',[[33,26],[41,15],[45,8+B]],2,1]],bd);
+  // jumper legs folded under it, front legs lifted to conduct
+  [1,-1].forEach(sd=>{const X=x=>sd>0?x:m(x);bsh(g,[['t',[[X(26),44],[X(17),40],[X(12),50],[X(14),56]],3.2,1.4]],bd);bsh(g,[['t',[[X(26),28],[X(19),24],[X(16),14+B]],1.8,1]],bd);g.px([[X(15),13+B],[X(16),12+B]],'W');});
+  // body: thorax and a banded abdomen
+  const P=[[30,24],[30,34],[30,44],[30,52]],r=[5,6,6,3.4];bsh(g,[['t',P,r,0]],bd);bbands(g,P,r,0,2.4,'c','bcd',1);bsh(g,[['t',[[28,26],[28,38]],2,1.6]],lg);
+  // head: great red eyes, a singing maw
+  bsh(g,[['e',30,17,6.4,7]],bd);g.ell(26,16,2.6,3.2,'E');g.ell(34,16,2.6,3.2,'E');g.s(25,15,'W');g.s(33,15,'W');g.px([[26,17],[34,17]],'K');
+  g.ell(30,22,2.8,1.4+B,'K');g.rect(29,21,2,1,'M');
+  bsh(g,[['t',[[26,11],[20,5],[15,2]],1.4,.6],['t',[[34,11],[40,5],[45,2]],1.4,.6]],bd);
+  // the song as gold notes
+  g.px([[4,28],[5,26],[6,24],[55,22],[56,20],[57,18],[3,52],[57,44],[30,1]].map(p=>[p[0],p[1]-B]),'y');
+  return {pal:Object.assign({},bT4(bd,'#8a9c3a',{cool:'#1a2a08'}),bT4(wg,'#dccf90',{cool:'#4a4010'}),bT4(lg,'#c8d868'),{q:'#a8742a',r:'#6a4a1e',E:'#ff5a30',y:'#ffe27a',v:'#e8b040',W:'#f4ecc0',M:'#8a2a1a',K:'#1a1008',D:'#2a2814'}),flat:'EyvWMK',rim:'#1a2008'};
+ },
+ ironmaw(g,f){const F=mfr(f),B=F.b?1:0,sh='abcd',ir='efgh',sk='ijkl',cr='mnop';
+  g.ell(30,57,26,2.6,'D');
+  // stumpy legs and a short spiked tail
+  bsh(g,[['r',15,44,13,12],['r',37,44,14,12],['r',12,54,17,3],['r',35,54,19,3]],sk);g.px([[14,56],[17,56],[20,56],[37,56],[41,56],[45,56]],'W');
+  bsh(g,[['p',[[52,42],[60,50],[54,52]]]],sk);
+  // the shell: a green dome ribbed with ship iron
+  bsh(g,[['p',[[10,44],[9,31],[14,20],[23,13],[35,12],[45,17],[53,26],[57,44]]]],sh,{cap:16});
+  [[16,44,24,17],[28,44,34,15],[40,44,44,18],[52,44,52,26]].forEach((q,i)=>{g.line(q[0],q[1],q[2],q[3],'e');g.line(q[0]+1,q[1],q[2]+1,q[3],'f');});
+  bsh(g,[['t',[[10,36],[24,31],[36,30],[48,33],[57,39]],2.6,2.2]],ir);g.rect(10,41,47,3,'g');
+  [[15,28],[22,21],[34,18],[43,22],[48,29],[19,38],[30,38],[41,38],[52,41],[28,26],[16,34]].forEach(([x,y])=>{g.s(x,y,'x');g.s(x+1,y,'y');});
+  g.px([[18,22],[40,17],[46,26],[24,43],[44,43],[51,36],[12,30],[56,34]],'W');
+  // a lighthouse grown out of the shell
+  bsh(g,[['r',24,8,7,9]],cr);g.rect(24,10,7,2,'x');g.rect(24,14,7,2,'x');bsh(g,[['r',22,6,11,2]],ir);bsh(g,[['r',25,3,5,3]],ir);g.rect(26,4,3,2,B?'W':'y');g.px([[27,4]],'W');
+  g.px(B?[[19,5],[35,4],[37,6],[17,3]]:[[20,4],[34,5],[36,3],[18,6]],'y');
+  // the head: low and wide, an iron jaw hung with teeth
+  bsh(g,[['e',8,41,9,7],['e',6,37,5,3]],sk);
+  g.poly([[1,44],[15,44],[15,47+B],[1,46]],'K');
+  bsh(g,[['p',[[1,47+B],[15,47+B],[15,53+B],[3,54+B]]],['r',0,45,2,5]],ir);
+  for(let x=2;x<15;x+=3)g.poly([[x,44],[x+1.6,44],[x+.8,47]],'W');for(let x=3;x<14;x+=4)g.poly([[x,47+B],[x+1.4,47+B],[x+.7,45]],'W');
+  g.px([[3,50+B],[7,50+B],[11,50+B]],'x');
+  g.rect(6,34,3,3,'y');g.rect(7,35,1,1,'K');g.line(3,34,10,32,'c');
+  return {pal:Object.assign({},bT4(sh,'#5e7050'),bT4(ir,'#8a92a6',{cool:'#202840'}),bT4(sk,'#788a62'),bT4(cr,'#e8e0c8',{cool:'#4a3a2a'}),{x:'#c8a85a',y:'#ffd860',W:'#eee8d4',K:'#140a0a',D:'#1a2018'}),flat:'xyWK',rim:'#101810'};
+ },
+ candlemoth(g,f){const F=mfr(f),B=F.b?1:0,wg='abcd',lw='efgh',fu='ijkl',wx='mnop',m=x=>60-x,fl=B?2:0;
+  g.ell(30,57,12,2,'D');
+  // wings: broad dusty fans, a burning eyespot on each, wax drips along the hem
+  [1,-1].forEach(sd=>{const X=x=>sd>0?x:m(x);
+    bsh(g,[['p',[[X(26),22],[X(2),4-fl],[X(0),22],[X(6),38],[X(24),34]]]],wg);
+    bsh(g,[['p',[[X(26),30],[X(6),42+fl],[X(10),56],[X(24),46]]]],lw);
+    [[6,12],[3,22],[8,34]].forEach(([x,y])=>g.line(X(25),26,X(x+1),y,'f'));g.line(X(24),34,X(10),50,'g');
+    g.ell(X(13),24,6,6,'x');g.ell(X(13),24,4,4,'y');g.ell(X(13),24,1.8,2.4,'K');g.s(X(13)-1,23,'W');
+    [[10,36],[8,44]].forEach(([x,y])=>{g.line(X(x),y,X(x),y+4,'n');g.s(X(x),y+5,'n');});
+    g.px([[X(8),10],[X(4),18],[X(6),28],[X(16),14],[X(20),40]],'W');});
+  // furred body, legs
+  const P=[[30,22],[30,34],[30,46]],r=[5.2,5.8,3.6];bsh(g,[['t',P,r,0]],fu);bbands(g,P,r,0,2.2,'k','jkl',1);
+  bsh(g,[['t',[[27,46],[22,52],[20,57]],1.8,1.2],['t',[[33,46],[38,52],[40,57]],1.8,1.2],['t',[[30,48],[30,57]],1.8,1.2]],fu);
+  // head with ember eyes and feathered antennae
+  bsh(g,[['e',30,18,5.2,5.6]],fu);g.ell(27,19,1.8,2.4,'E');g.ell(33,19,1.8,2.4,'E');g.s(26,18,'W');g.s(32,18,'W');
+  bsh(g,[['t',[[27,15],[20,9],[13,5+B]],1.6,.6],['t',[[33,15],[40,9],[47,5+B]],1.6,.6]],fu);
+  g.px([[18,8],[16,7],[15,5],[42,8],[44,7],[45,5],[20,10],[40,10]],'j');
+  // the crown: three burning tapers on a ring of wax
+  [[24,11],[30,8],[36,11]].forEach(([x,y],i)=>{bsh(g,[['r',x-1,y,3,7]],wx);g.ell(x+.5,y-2.4-(i===1?B:1-B)*.0,1.7,2.7+((i+B)%2?.6:0),'x');g.ell(x+.5,y-1.8,.9,1.6,'y');g.s(x+.5,y-1,'W');});
+  bsh(g,[['r',23,16,14,2]],wx);
+  g.px([[4,2],[56,2],[2,32],[58,34],[16,50],[44,52],[30,2]],'y');
+  return {pal:Object.assign({},bT4(wg,'#cdbb98',{cool:'#3a2a18'}),bT4(lw,'#a8906a',{cool:'#3a2a18'}),bT4(fu,'#f0e8d0',{cool:'#5a4a3a'}),bT4(wx,'#f4ecd2'),{x:'#ff9a30',y:'#fff0a0',E:'#ff6a2a',W:'#fffbe8',K:'#2a1008',D:'#2a2018'}),flat:'xyEWK',glow:'#ffcf70',rim:'#2a1c10'};
+ }
+});
+['frostlich','locustchoir','ironmaw','candlemoth'].forEach(k=>{MEXTRA[k]=()=>{};});
+Object.assign(MART,{
+ brinehag(g,f){const F=mfr(f),B=F.b?1:0,kp='abcd',cl='efgh',sk='ijkl',ht='mnop';
+  g.ell(30,57,26,2.4,'D');
+  // the mound she rises from: kelp, a torn net and a coil of tentacle
+  bsh(g,[['e',30,51,25,8],['p',[[3,56],[8,45],[17,50],[10,58]]],['p',[[57,56],[52,45],[43,50],[50,58]]]],kp);
+  bsh(g,[['t',[[7,53],[3,46],[7,41],[6,36]],3,1.4],['t',[[53,53],[57,46],[53,41],[55,36]],3,1.4]],sk);g.px([[5,45],[56,45],[6,37],[55,37]],'W');
+  for(let i=0;i<5;i++)g.line(8+i*10,57,12+i*10,46,'n');for(let i=0;i<3;i++)g.line(5,49+i*3,55,48+i*3,'n');
+  // the cloak: a hunched wet bell with a hump on her back
+  bsh(g,[['p',[[19,24],[41,24],[48,52],[12,52]]],['e',35,27,9,6]],cl,{cap:14});
+  g.path([[14,52],[18,47],[23,53],[29,47],[35,53],[41,47],[46,52]],'g',2);
+  [[22,34],[34,41],[26,45],[40,34],[18,44],[30,36]].forEach(([x,y])=>{g.ell(x,y,1.6,1.2,'W');g.s(x-1,y-1,'W');});
+  g.line(24,30,20,48,'g');g.line(36,30,40,48,'g');
+  // the staff with a hooked top and a drowned lantern
+  bsh(g,[['t',[[51,57],[50,12]],1.6,1.6],['t',[[50,12],[48,6],[53,3],[56,7]],1.6,1.2]],ht);
+  bsh(g,[['r',47,9,6,8]],ht);g.rect(48,10,4,6,'K');g.rect(48,11,4,4,B?'y':'x');g.s(49,12,'W');
+  // a reaching hand with claws
+  bsh(g,[['t',[[21,28],[13,32],[7,34]],3.8,2.6],['e',6,34,3,2.6]],cl);g.line(4,33,1,30,'W');g.line(4,35,1,37,'W');g.line(3,34,0,34,'W');
+  // seaweed hair hanging under the brim, the long face
+  bsh(g,[['t',[[22,18],[16,27],[18,42]],3.2,1],['t',[[38,18],[44,27],[41,42]],3.2,1]],kp);
+  bsh(g,[['e',30,22,5.8,6.4],['p',[[26,25],[34,25],[31,31],[28,30]]]],sk);bsh(g,[['p',[[26,20],[22,27],[27,26]]]],sk);
+  g.rect(28,27,4,1,'K');g.px([[28,28],[30,28]],'W');
+  g.rect(25,20,3,2,'E');g.rect(32,20,3,2,'E');g.px([[25,20],[32,20]],'W');
+  // the wide barnacled hat
+  bsh(g,[['p',[[30,1],[40,13],[49,17],[11,17],[20,13]]],['e',30,17,20,3.4]],ht);g.rect(10,16,40,2,'n');g.line(11,18,49,18,'p');
+  [[22,12],[32,8],[38,14],[26,5],[16,16],[44,16],[30,16]].forEach(([x,y])=>{g.ell(x,y,1.6,1.3,'W');g.s(x,y-1,'W');});
+  g.px(B?[[3,18],[57,24],[8,8],[52,5]]:[[2,20],[58,22],[9,10],[53,7]],'x');
+  return {pal:Object.assign({},bT4(kp,'#3e6a34',{cool:'#0a2018'}),bT4(cl,'#2e5668',{cool:'#08141e'}),bT4(sk,'#8cae9c',{cool:'#203a4a'}),bT4(ht,'#5a5a4c'),{n:'#1a2a20',g:'#1a303e',p:'#2a2a22',W:'#f4f0e0',x:'#6affd0',y:'#e8fff4',E:'#c890ff',K:'#0a1418',D:'#101c20'}),flat:'xyWEK',glow:'#5ad0b0',rim:'#0a1418'};
+ },
+ hollowsun(g,f){const F=mfr(f),B=F.b?1:0,fr='abcd',gl='efgh',sl='ijkl',cx=30,cy=28;
+  g.ell(30,57,20,2.2,'D');
+  // salt spikes at the foot
+  bsh(g,[['k',8,57,6,45,6],['k',15,57,15,50,4.5],['k',23,58,22,53,3.4],['k',37,58,38,52,3.6],['k',45,57,45,48,4.6],['k',52,57,54,43,6]],sl);
+  // the corona: twelve flame prongs, the ring itself a disc of fire
+  const prongs=[];for(let i=0;i<12;i++){const a=i*Math.PI/6+.2,r1=(i%2?23:28)+(B&&i%2===0?1.5:0)+(B&&i%2?-1:0),dx=Math.cos(a),dy=Math.sin(a),px=-dy,py=dx;
+    prongs.push(['p',[[cx+dx*15+px*3.6,cy+dy*15+py*3.6],[cx+dx*r1,cy+dy*r1],[cx+dx*15-px*3.6,cy+dy*15-py*3.6]]]);}
+  bsh(g,prongs,fr,{bias:-.05});
+  bsh(g,[['e',cx,cy,19.5,19.5]],fr,{cap:16});
+  [0,1,2,3,4,5,6,7].forEach(i=>{const a=i*Math.PI/4+.4;g.line(cx+Math.cos(a)*14.5,cy+Math.sin(a)*14.5,cx+Math.cos(a+.2)*19,cy+Math.sin(a+.2)*19,'c');});
+  // the hollow: black, with a bright lip on the lit side and a slit of light like a pupil
+  g.ell(cx,cy,14.5,14.5,'K');for(let a=Math.PI*.7;a<Math.PI*1.45;a+=.05)g.s(Math.round(cx+Math.cos(a)*14.2),Math.round(cy+Math.sin(a)*14.2),'W');
+  g.ell(cx+1,cy+1,11.5,11.5,'V');g.ell(cx+2,cy+2,10.5,10.5,'K');
+  const h=B?10:8;g.poly([[cx,cy-h],[cx+2.4+B,cy],[cx,cy+h],[cx-2.4-B,cy]],'y');g.poly([[cx,cy-h+3],[cx+1,cy],[cx,cy+h-3],[cx-1,cy]],'W');
+  // glass shards in orbit
+  [[3,10,4],[56,8,3],[2,40,3],[57,38,4],[10,52,3],[50,52,3]].forEach(([x,y,r])=>bsh(g,[['p',[[x,y-r],[x+r*.6,y],[x,y+r*1.4],[x-r*.6,y]]]],gl));
+  g.px(B?[[14,3],[46,2],[0,26],[59,22],[29,0]]:[[14,2],[46,3],[0,28],[59,24],[28,1]],'W');
+  return {pal:Object.assign({},bT4(fr,'#ff8a2a',{cool:'#4a0a1a'}),bT4(gl,'#cfeaf0',{cool:'#304878'}),bT4(sl,'#f0e8e8',{cool:'#6a4a6a'}),{c:'#b8401a',V:'#5a1a3a',y:'#fff0a0',W:'#fff6d0',K:'#07030a',D:'#241410'}),flat:'yWKV',glow:'#ffb040',rim:'#1a0a0a'};
+ },
+ nidhra(g,f){const F=mfr(f),B=F.b?1:0,bd='abcd',wg='efgh',bl='ijkl',co='mnop',wb=B?2:0;
+  // the eclipse behind her: a black disc in a gold corona
+  bsh(g,[['e',24,23,22,22]],co);g.ell(24,23,17.5,17.5,'K');for(let a=0;a<6.28;a+=.16)g.px([[Math.round(24+Math.cos(a)*19.5),Math.round(23+Math.sin(a)*19.5)]],'y');
+  g.ell(24,23,16,16,'D');
+  g.ell(30,57,26,2.4,'D');
+  // wings: the far one raised over the neck, the near one a vast sail over the eclipse
+  bsh(g,[['p',[[34,36],[44,18],[48,6],[56,12],[55,22],[48,30]]]],wg);g.line(48,8,50,28,'f');g.line(46,14,40,32,'f');g.path([[34,36],[44,18],[48,6]],'x');
+  bsh(g,[['p',[[30,36],[18,22],[8,8-wb],[4,22],[7,34],[13,42],[20,42]]]],wg);
+  [[8,8-wb,5,24],[8,8-wb,10,36],[8,8-wb,16,44],[18,22,14,44]].forEach(q=>g.line(q[0],q[1],q[2],q[3],'f'));
+  g.path([[30,36],[18,22],[8,8-wb]],'x',1);g.px([[5,22],[7,34],[13,44]],'x');
+  bsh(g,[['t',[[30,36],[18,22],[8,8-wb]],3.2,1.4]],bd);
+  // tail, a long curl with a spade tip
+  bsh(g,[['t',[[16,48],[9,53],[4,50],[3,43],[6,39]],4.4,1]],bd);bsh(g,[['p',[[6,39],[2,36],[6,33],[10,36]]]],wg);g.px([[6,36]],'x');
+  // body: a crouched barrel of a chest rising into the neck; the ember belly
+  const P=[[14,48],[24,45],[33,40],[39,33],[44,27],[47,21]],r=[3.6,8.6,9.4,7.4,5.4,4.4];
+  bsh(g,[['t',P,r,0]],bd,{cap:10});bsh(g,[['t',[[22,48],[30,45],[36,39]],3.4,2.6]],bl);bbands(g,P,r,0,2.8,'c','bcd',1);
+  g.path([[20,48],[27,45],[33,40]],'x');[[18,44],[26,40],[32,36],[36,30],[42,22]].forEach(([x,y])=>bsh(g,[['k',x,y,x-1,y-5,3.4]],wg));
+  // legs: a forearm planted, claws splayed; the haunch behind
+  bsh(g,[['t',[[38,42],[41,50],[41,55]],4.6,3],['t',[[22,48],[18,54],[14,56]],4.6,2.4]],bd);g.px([[38,56],[41,57],[44,56],[11,57],[14,58],[17,57]],'W');
+  // the head: an armoured wedge, a swept pair of horns, one eye burning
+  g.poly([[45,24],[56,24],[58,31],[48,31]],'K');
+  bsh(g,[['p',[[42,20],[49,15],[56,17],[59,22],[57,25],[48,25],[44,27]]],['e',47,20,5,4.4]],bd);
+  bsh(g,[['p',[[45,27],[53,28],[58,33],[53,35],[47,32]]]],bd);
+  g.px([[49,25],[52,25],[55,25],[51,29],[54,31]],'W');g.rect(48,25,6,3,B?'y':'x');
+  g.ell(46,19,2.4,2.2,'x');g.rect(45,18,2,2,'y');g.s(45,18,'W');
+  bsh(g,[['t',[[43,16],[38,10],[31,8+B]],2.8,.8],['t',[[47,14],[44,7],[39,4+B]],2.4,.8]],bl);
+  g.px(B?[[56,14],[58,42],[2,24],[30,6],[34,52]]:[[57,12],[57,40],[3,26],[28,4],[32,53]],'x');
+  return {pal:Object.assign({},bT4(bd,'#38284e',{cool:'#0a0412'}),bT4(wg,'#8a4a9c',{cool:'#14061a'}),bT4(bl,'#9a5a4a',{cool:'#2a0a10'}),bT4(co,'#f6e7a8'),{x:'#ff5a2a',y:'#ffd04a',W:'#fff0d0',K:'#06030a',D:'#18101e'}),flat:'xyWK',glow:'#ff8a3a',rim:'#140a1e'};
+ }
+});
+['brinehag','hollowsun','nidhra'].forEach(k=>{MEXTRA[k]=()=>{};});
+Object.assign(MART,{
+ hollowking(g,f){const F=mfr(f),B=F.b?1:0,rb='abcd',st='efgh',cp='ijkl',gd='mnop',bl='qrst';
+  g.ell(30,57,22,2.4,'D');
+  // the throne behind him: a tall pointed arch of violet stone, hollow, with two horns
+  bsh(g,[['p',[[16,57],[14,40],[9,29],[14,16],[23,7],[30,2],[37,7],[46,16],[51,29],[46,40],[44,57]]],['k',10,30,5,14,5],['k',50,30,55,14,5],['k',23,9,19,3,4],['k',37,9,41,3,4]],bl,{cap:16});
+  g.poly([[19,57],[18,32],[21,21],[30,12],[39,21],[42,32],[41,57]],'K');
+  g.line(11,30,13,38,'t');g.line(14,26,19,14,'t');g.line(23,9,30,4,'t');g.line(18,50,18,34,'r');
+    // a torn crimson cloak around the shoulders and down to the floor
+  bsh(g,[['p',[[19,24],[41,24],[47,56],[42,52],[39,57],[34,53],[26,57],[21,53],[17,57],[13,56]]]],cp,{cap:14});
+  [[22,28,16,54],[38,28,44,54],[30,34,30,54]].forEach(q=>g.line(q[0],q[1],q[2],q[3],'k'));
+  // empty armour: greaves and sabatons, a cuirass with nothing inside
+  bsh(g,[['r',22,40,7,15],['r',31,40,7,15],['p',[[20,54],[29,54],[29,58],[19,58]]],['p',[[31,54],[40,54],[41,58],[31,58]]]],st);
+  g.rect(22,44,7,2,'g');g.rect(31,44,7,2,'g');g.rect(22,40,7,1,'h');g.rect(31,40,7,1,'h');
+  bsh(g,[['p',[[19,23],[41,23],[39,40],[21,40]]]],st);g.rect(19,23,22,3,'e');g.rect(21,37,18,3,'g');
+  g.poly([[26,27],[34,27],[36,36],[24,36]],'K');g.px([[28,30],[31,33],[29,34],[32,29]],'Z');g.line(24,40,36,40,'n');
+  // pauldrons with spikes
+  bsh(g,[['e',16,24,6.4,5],['e',44,24,6.4,5],['k',13,20,9,11,4],['k',47,20,51,11,4],['k',16,19,15,12,3.4],['k',44,19,45,12,3.4]],st);
+  // the greatsword planted point down, both hands on the pommel
+  bsh(g,[['r',28.5,34,3,23],['p',[[28.5,57],[31.5,57],[30,59]]]],gd.replace(/./g,m=>m));
+  bsh(g,[['r',22,32,16,3],['r',29,24,2,8],['e',30,23,2.4,2.4]],gd);g.rect(29,36,1,20,'o');
+  bsh(g,[['t',[[20,26],[20,34],[28,29]],4,3],['t',[[40,26],[40,34],[32,29]],4,3]],st);g.px([[28,28],[32,28]],'g');
+  // the helm: an empty bucket with a cross visor, two small embers, a crown hung above it
+  bsh(g,[['e',30,16,7.4,8],['r',23,16,14,6]],st);g.rect(24,15,12,2,'K');g.rect(29,15,2,6,'K');g.rect(25,15,2,2,'Z');g.rect(33,15,2,2,'Z');g.rect(23,22,14,1,'g');
+  const cy=3+B*-0;bsh(g,[['r',23,5+B,14,3],['k',24,5+B,22,1+B,4],['k',27,5+B,27,0.5+B,4],['k',30,5+B,30,0+B,4],['k',33,5+B,33,0.5+B,4],['k',36,5+B,38,1+B,4]],gd);g.rect(23,6+B,14,1,'o');g.px([[27,6+B],[30,6+B],[33,6+B]],'Z');
+  g.px(B?[[3,10],[56,50],[4,22],[57,36]]:[[2,12],[57,48],[3,24],[56,38]],'Z');
+  return {pal:Object.assign({},bT4(rb,'#3a3a4a'),bT4(st,'#72778e',{cool:'#0a0a18'}),bT4(cp,'#6a1a2e',{cool:'#14040a'}),bT4(gd,'#d0a850'),bT4(bl,'#4a3e62',{cool:'#08060c'}),{s:'#241c34',t:'#8a7aa8',r:'#2a2040',n:'#c8a050',o:'#fff0b0',Z:'#f2c93a',K:'#05030a',D:'#140e18'}),flat:'ZnoK',rim:'#0a0610'};
+ },
+ seraph(g,f){const F=mfr(f),B=F.b?1:0,wu='abcd',wm='efgh',wl='ijkl',rb='mnop',sk='qrst',m=x=>60-x,wb=B?2:0;
+  g.ell(30,57,18,2.4,'D');
+  // six wings of cinder: the top pair flung up, the middle pair spread, the lowest folded under
+  [1,-1].forEach(sd=>{const X=x=>sd>0?x:m(x);
+    bsh(g,[['p',[[X(26),34],[X(7),44],[X(12),48],[X(10),54],[X(21),44]]]],wl);
+    bsh(g,[['p',[[X(26),28],[X(1),24+wb],[X(5),32],[X(2),38],[X(15),35]]]],wm);
+    bsh(g,[['p',[[X(26),24],[X(3),3-wb],[X(7),14],[X(1),19],[X(12),23]]]],wu);
+    [[X(26),24,X(3),3-wb],[X(26),28,X(1),24+wb]].forEach(q=>g.line(q[0],q[1],q[2],q[3],'c'));
+    g.px([[X(3),3-wb],[X(1),24+wb],[X(7),44],[X(2),38],[X(1),19]],'x');g.path([[X(7),14],[X(1),19],[X(12),23]],'x');});
+  // the gown: ash white, belted in gold, the hem burnt to embers
+  bsh(g,[['p',[[24,23],[36,23],[42,56],[18,56]]]],rb);bsh(g,[['p',[[28,26],[32,26],[34,56],[26,56]]]],rb,{bias:.1});
+  g.rect(22,34,16,2,'G');g.line(30,36,30,56,'m');g.px([[20,54],[25,56],[34,55],[40,54],[22,50],[38,50]],'x');
+  // one arm lifts the lamplighter's pole with a burning lamp; the other opens, palm out
+  g.line(47,58,47,8,'G');g.line(48,12,48,56,'g');bsh(g,[['r',44,5,7,6],['p',[[43,5],[51,5],[47,2]]]],wl);g.rect(45,6,5,4,'K');g.ell(47.5,8,1.8,2.6+B*.4,'x');g.s(47,8,'y');
+  bsh(g,[['t',[[35,26],[42,26],[46,19],[47,14]],3.2,2.2],['t',[[25,26],[19,31],[15,29]],3.2,2.2]],sk);bsh(g,[['e',47,12,2.4,2.4],['e',13,28,2.4,2.4]],sk);
+  // the face under a ring of fire, ash hair swept back
+  bsh(g,[['e',29,11,8.4,8],['p',[[22,12],[18,28],[24,20]]],['p',[[38,12],[42,28],[36,20]]]],wl);
+  bsh(g,[['e',30,16,6,7]],sk);g.rect(26,15,3,2,'E');g.rect(32,15,3,2,'E');g.px([[26,15],[32,15]],'y');g.line(29,20,32,20,'j');
+  g.ell(30,5.5,10,3.2,'x');g.ell(30,5.5,7.6,1.8,0);g.ell(30,5.5,10,3.2,'x');g.ell(30,5.5,7.6,1.8,0);g.line(22,5,38,5,'y');
+  g.px(B?[[4,28],[56,36],[8,50],[52,52],[16,2],[44,3]]:[[3,30],[57,34],[10,52],[50,54],[14,3],[46,2]],'x');
+  return {pal:Object.assign({},bT4(wu,'#8a7a78',{cool:'#2a1018'}),bT4(wm,'#5e4e52',{cool:'#1a0a10'}),bT4(wl,'#3a3036',{cool:'#100408'}),bT4(rb,'#e8dcc4',{cool:'#4a2a30'}),bT4(sk,'#e8c8b0',{cool:'#6a3a40'}),{G:'#f0c050',g:'#a07a28',c:'#c8604a',x:'#ff7a2a',y:'#fff2b0',E:'#ff8a2a',K:'#14080a',D:'#2a1e14'}),flat:'xyEK',glow:'#ffcf70',rim:'#1a0c0c'};
+ }
+});
+function rkArt(g,core,f){const F=mfr(f),B=F.b?1:0,rb='abcd',hd='efgh',gd='ijkl';
+  g.ell(30,57,19,2.6,'D');
+  // robe: flares from the shoulders to the hem, woven with threads of rift light
+  bsh(g,[['p',[[21,21],[39,21],[47,56],[13,56]]]],rb,{cap:14});
+  for(let i=0;i<5;i++){const y=26+i*6;g.line(21-i*1.6,y+4,38+i*1.6,y-2,'w');}
+  for(let i=0;i<4;i++){const y=30+i*6;g.line(38+i*1.7,y+4,22-i*1.7,y-1,'v');}
+  g.px([[15,57],[19,58],[24,57],[29,58],[34,57],[39,58],[44,57]],'W');
+  // belt, the keys on it
+  g.rect(19,43,22,2,'B');g.rect(29,43,2,2,'N');
+  [[20,45],[23,45],[37,45],[40,45]].forEach(([x,y])=>{bsh(g,[['r',x,y,2,6]],gd);g.s(x,y+7,'j');g.s(x+2,y+4,'k');});
+  // mantle and arms
+  bsh(g,[['e',30,23,12,4],['r',19,23,22,3]],hd);
+  bsh(g,[['t',[[20,24],[14,32],[12,39]],4,3],['t',[[40,24],[45,29],[47,25]],4,3]],hd);
+  bsh(g,[['e',12,41,3,3]],'FFFF');
+  // the ring of keys
+  bsh(g,[['e',10,47,4.8,4.8]],gd);g.ell(10,47,2.4,2.4,0);
+  [[7,52],[10,53],[13,52]].forEach(([x,y])=>{bsh(g,[['r',x,y,2,5]],gd);g.s(x+2,y+3,'j');});
+  // the giant key: bow, shaft and a bit with teeth
+  bsh(g,[['e',49.5,7,5.2,5.2],['r',48,11,3,45],['r',51,14,5,2],['r',51,18,3,2],['r',51,22,5,2],['r',46,52,7,4]],gd);g.ell(49.5,7,2.4,2.4,0);g.px([[45,5],[46,3]],'S');
+  g.ell(49.5,27,3.2,3.2,'F');
+  // the hood: a tall peak over a dark face with two narrow eyes
+  bsh(g,[['p',[[30,1],[38,12],[41,23],[19,23],[22,12]]]],hd);
+  g.ell(30,15,5.2,6.5,'K');g.rect(27,13,2,2,'E');g.rect(32,13,2,2,'E');g.s(27,13,'W');g.s(32,13,'W');
+  g.px(B?[[41,16],[42,20],[18,17],[17,23],[30,0]]:[[41,15],[42,19],[18,18],[17,22],[30,0]],'W');
+  // the lantern cage: gold frame, a glass of dark, the flame in the element's colour
+  g.rect(29,26,2,3,'G');bsh(g,[['p',[[25,29],[35,29],[34,27],[26,27]]],['r',25,29,10,14]],gd);g.rect(26,30,8,11,'K');
+  g.ell(30,35.5,3.2+B*.4,3.8+B*.4,'C');g.ell(30,35.5,1.4,1.8,'c');g.rect(28,30,1,11,'j');g.rect(32,30,1,11,'j');g.rect(25,35,10,1,'k');
+  // two doors drifting beside it
+  [[4,4],[52,36]].forEach(([x,y],i)=>{const h=i?7:9;bsh(g,[['p',[[x,y+h],[x,y+2],[x+2,y],[x+6,y],[x+8,y+2],[x+8,y+h]]]],gd);g.poly([[x+2,y+h],[x+2,y+3],[x+3.5,y+2],[x+4.5,y+2],[x+6,y+3],[x+6,y+h]],'c');g.rect(x+3,y+4,2,h-4,'C');});
+  g.px([[3,17],[14,2],[56,34],[58,46],[55,3]],'W');
+  return {pal:Object.assign({},bT4(rb,'#34306a',{cool:'#0a0620'}),bT4(hd,'#463e8c',{cool:'#0a0620'}),bT4(gd,'#d8b866',{cool:'#3a2a10'}),{K:'#06030e',E:'#eef6ff',C:core,c:mix(core,'#ffffff',.55),G:'#d4b464',S:'#fff0b8',W:'#a9e6ff',w:'#7ab0e0',v:'#5a7ec8',F:'#9a92c4',B:'#6a5230',N:'#d4b464',D:'#0c0816'}),flat:'KECcWG',glow:core,rim:'#0a0618'};}
+['hollowking','seraph'].forEach(k=>{MEXTRA[k]=()=>{};});
+// BOSSART-A-END
 // ===== v0.12.6: the frame API for guardians and bosses: a 2-frame idle =====
 // bossHasIdle(u): a foe that is a 60x60 guardian (BIG_ART, summons keep the '~s' suffix) or a boss. bossIdle(c,seed,now): frame 0 is the sprite
 // itself, frame 1 an exhale (the upper body one pixel lower) with a soft brightening, baked once per sprite (silhouette unchanged except the
@@ -5561,9 +6090,14 @@ Object.assign(MEXTRA,{
 const BIDLE=new WeakMap();
 function bigArtOn(art){try{return typeof BIG_ART!=='undefined'&&BIG_ART.includes(String(art||'').replace(/~s$/,''));}catch(e){return false;}}
 function bossHasIdle(u){return !!u&&u.side!=='p'&&!!(u.boss||bigArtOn(u.art));}
-function bossFrame1(c){let f=BIDLE.get(c);if(f)return f;const w=c.width,h=c.height,cut=Math.floor(h*.55);
+// v0.14.1: the boss sprites (the BOSSART block above) draw their own frame B (the crown, maw, core, wings or flame moves: mfr(f).b). monFramed remembers
+// which art a boss canvas came from, and bossFrame1 starts from that frame B and then adds the same exhale and glow; any other canvas gets the plain exhale.
+const BART=new WeakMap();
+{const mf0=monFramed;monFramed=function(art,f,make){const c=mf0.apply(this,arguments);try{if(c&&!(f&&(f.t==='atk'||f.t==='hit'||f.i))&&bigArtOn(art))BART.set(c,art);}catch(e){}return c;};}
+function bossFrameSrc(c){const a=BART.get(c);if(a&&MART[a]){try{const s=monCanvas(a,{t:'idle',i:1});if(s&&s!==c&&s.width===c.width&&s.height===c.height)return s;}catch(e){}}return c;}
+function bossFrame1(c){let f=BIDLE.get(c);if(f)return f;const w=c.width,h=c.height,cut=Math.floor(h*.55),src=bossFrameSrc(c);
   f=c.hd?hdCv(w,h,c.hd):mkCv(w,h);const x=f.getContext('2d');x.imageSmoothingEnabled=false;
-  x.drawImage(c,0,cut,w,h-cut,0,cut,w,h-cut);x.drawImage(c,0,0,w,cut,0,1,w,cut);
+  x.drawImage(src,0,cut,w,h-cut,0,cut,w,h-cut);x.drawImage(src,0,0,w,cut,0,1,w,cut);
   x.globalCompositeOperation='source-atop';x.globalAlpha=.2;x.fillStyle='#fff2d0';x.fillRect(0,0,w,h);BIDLE.set(c,f);return f;}
 function bossIdle(c,seed,now,ms){if(typeof gfxStill==='function'&&gfxStill())return c;return Math.floor(now/(ms||760)+(seed||0)*.5)%2?bossFrame1(c):c;}
 {const io0=imgOf;imgOf=function(key,fn){const c=io0.apply(this,arguments);try{if(typeof key==='string'&&key.charCodeAt(0)===109&&key.startsWith('mapboss:'))return bossIdle(c,0,performance.now(),840);}catch(e){}return c;};}
@@ -5573,40 +6107,7 @@ function bossIdle(c,seed,now,ms){if(typeof gfxStill==='function'&&gfxStill())ret
 // wide mantle, flaring to the hem. The lantern core is the one flat accent colour: the battle swaps the sprite for riftkeeper_<element>
 // so the flame shows the element it burns this turn (riftkeeper9.js). Idle: the shared 2 frame bossIdle (an exhale and a soft glow) applies
 // to every boss sprite; the telegraph pose is the existing swell (anim.js bossTele).
-function rkArt(g,core){
-  g.ell(30,57,19,2.6,'D');
-  // robe: flares from the shoulders to the hem; lit left, shaded right, thin woven threads across it
-  g.poly([[21,21],[39,21],[47,56],[13,56]],'R');g.poly([[21,21],[26,21],[19,56],[13,56]],'L');g.poly([[36,23],[39,21],[47,56],[38,56]],'r');
-  for(let i=0;i<5;i++){const y=26+i*6;g.line(21-i*1.6,y+4,38+i*1.6,y-2,'W');}
-  for(let i=0;i<4;i++){const y=30+i*6;g.line(38+i*1.7,y+4,22-i*1.7,y-1,'w');}
-  g.px([[15,57],[19,58],[24,57],[29,58],[34,57],[39,58],[44,57]],'W');
-  // belt and the keys on it
-  g.rect(19,43,22,2,'B');g.rect(29,43,2,2,'G');
-  [[20,45],[23,45],[37,45],[40,45]].forEach(([x,y],i)=>{g.line(x,y,x,y+6,'G');g.px([[x+1,y+5],[x+1,y+3]],'g');g.s(x,y+7,'g');});
-  // mantle and arms
-  g.ell(30,23,12,4,'M');g.rect(19,23,22,3,'M');
-  g.path([[20,24],[14,32],[12,39]],'M',4);g.path([[40,24],[45,29],[47,25]],'M',4);
-  // left hand with a ring of keys
-  g.ell(12,41,3,3,'F');g.ell(10,47,4.5,4.5,'G');g.ell(10,47,2.4,2.4,0);
-  [[7,52],[10,53],[13,52]].forEach(([x,y])=>{g.line(x,y,x,y+5,'G');g.px([[x+1,y+4],[x+1,y+2]],'g');});
-  // the giant key: bow (ring) on top, shaft, bit with teeth; held in the right hand
-  g.ell(49.5,7,5,5,'G');g.ell(49.5,7,2.4,2.4,0);g.px([[45,5],[46,3]],'S');
-  g.rect(48,11,3,45,'S');g.rect(48,11,1,45,'G');
-  g.rect(51,14,5,2,'G');g.rect(51,18,3,2,'G');g.rect(51,22,5,2,'G');g.rect(46,52,7,4,'G');
-  g.ell(49.5,27,3.2,3.2,'F');
-  // hood: a tall peak, a dark face with two narrow eyes, thread fray along the edge
-  g.poly([[30,1],[38,12],[41,23],[19,23],[22,12]],'H');g.poly([[30,1],[26,10],[21,23],[19,23],[22,12]],'L');
-  g.ell(30,15,5.2,6.5,'K');g.rect(27,13,2,2,'E');g.rect(32,13,2,2,'E');g.s(27,13,'W');g.s(32,13,'W');
-  g.px([[41,15],[42,19],[18,18],[17,22],[30,0]],'W');
-  // lantern cage at the chest: gold frame, glass, the flame, bars across it
-  g.rect(29,26,2,3,'G');g.poly([[25,29],[35,29],[34,27],[26,27]],'G');
-  g.rect(25,29,10,13,'G');g.rect(26,30,8,11,'K');g.ell(30,35.5,3.2,3.8,'C');g.ell(30,35.5,1.4,1.8,'c');
-  g.rect(28,30,1,11,'G');g.rect(32,30,1,11,'G');g.rect(25,35,10,1,'g');g.rect(25,41,10,2,'G');
-  // two doors drifting beside it (arch frames with a glow inside)
-  g.rows(4,4,[".GGGGGG.","GGccccGG","Gcc..ccG","Gc....cG","Gc....cG","Gc....cG","Gc....cG","Gc....cG","GGGGGGGG"]);
-  g.rows(52,36,["..GGGG..",".GccccG.","Gcc..ccG","Gc....cG","Gc....cG","Gc....cG","GGGGGGGG"]);
-  g.px([[3,17],[14,2],[56,34],[58,46],[55,3]],'W');
-  return {pal:{R:'#2c2556',r:'#1a1538',L:'#4a4390',H:'#38326e',M:'#473f84',K:'#06030e',E:'#eef6ff',C:core,c:mix(core,'#ffffff',.55),G:'#d4b464',g:'#8e7034',S:'#b9a266',W:'#a9e6ff',w:'#6fa6d8',F:'#9a92c4',B:'#5a4a30',D:'#0c0816'},flat:'KECcW',glow:core,rim:'#0a0618'};}
+// (rkArt, the Riftkeeper drawing, lives in the BOSSART block at the top of this file; MART.riftkeeper and the riftkeeper_<element> lantern swaps below use it)
 MART.riftkeeper=g=>rkArt(g,'#c9a8ff');
 BIG_ART.push('riftkeeper');
 ELK.forEach(el=>{MART['riftkeeper_'+el]=g=>rkArt(g,ELC[el]);BIG_ART.push('riftkeeper_'+el);});
@@ -5616,114 +6117,102 @@ MEXTRA.riftkeeper=(g,p)=>{};
 // Tortoise a wide iron-plated dome with a heavy jaw low on the left, the Candleking Moth a pair of huge dusty wings under a crown of
 // three burning tapers, the Brinehag Matriarch a hunched hag under a wide barnacled hat rising from a mound of kelp and net, and the
 // Hollow Sun a ring of fire around a black hollow, with glass shards in orbit and salt spikes below. Idle is the shared bossIdle.
-function locust(g,x,y,s,B,b,W,E){// one small locust facing left: body, head, folded wing, two legs
-  g.ell(x,y,2.4*s,1.1*s,B);g.ell(x-2.6*s,y-.2*s,1.1*s,1*s,B);g.line(x-.5*s,y-1*s,x+3.4*s,y-2.4*s,W,Math.max(1,Math.round(s*.8)));
-  g.s(x-3.2*s,y-.6*s,E);g.line(x+.6*s,y+.8*s,x+2.4*s,y+3*s,b);g.line(x-1*s,y+.8*s,x-1.8*s,y+3*s,b);}
+// (the five sprites of this release are drawn in the BOSSART block at the top of this file)
+['locustchoir','ironmaw','candlemoth','brinehag','hollowsun'].forEach(k=>{BIG_ART.push(k);});
+// v0.14.x: the four Scourges added after the Hollow Sun (bosses10.js). Silhouettes: the Hollow Shepherd a tall hooded robe with a crook and a lit
+// lantern (the tell) and two lambs at its hem; the Pale Weaver a spider hanging on a thread, legs fanned wide; the Crow Regent a huge crow in
+// profile on a bone perch with one wing mantled; the Geyser Matron a kettle-bellied jelly with three smoking chimneys. Idle is the shared bossIdle.
 Object.assign(MART,{
- locustchoir(g){
-  g.ell(30,57,15,2.4,'D');
-  // the cloud: an hourglass of small locusts (wide at the top and bottom, narrow in the middle), lit ones on the left
-  [[8,6,.8],[20,3,.7],[34,4,.8],[47,7,.7],[14,12,.7],[27,9,.6],[41,13,.8],[52,16,.6],[7,20,.7],[17,22,.8],[44,24,.7],[51,30,.8],[12,33,.7],[46,38,.6],[8,44,.8],[19,47,.7],
-   [41,45,.8],[50,50,.7],[12,54,.7],[30,53,.8],[46,56,.6],[22,38,.6]].forEach(([x,y,s])=>locust(g,x,y,s,'A','B','W','E'));
-  // the conductor: one great locust, upright, wings spread and mouth open mid-note
-  g.poly([[24,26],[8,10],[12,22],[6,32],[20,36]],'W');g.poly([[36,26],[52,10],[48,22],[54,32],[40,36]],'W');
-  g.line(24,26,8,10,'w');g.line(36,26,52,10,'w');g.line(22,30,10,30,'w');g.line(38,30,50,30,'w');g.line(24,33,12,36,'w');g.line(36,33,48,36,'w');
-  g.ell(30,38,6,12,'A');g.ell(30,42,4,8,'B');for(let i=0;i<5;i++)g.rect(26,32+i*4,8,1,'b');
-  g.path([[26,48],[20,52],[16,57]],'B',2);g.path([[34,48],[40,52],[44,57]],'B',2);g.rect(12,56,6,2,'b');g.rect(42,56,6,2,'b');
-  g.ell(30,20,6.5,7,'A');g.ell(28,17,3,3,'L');g.ell(26,20,2.5,2.5,'E');g.ell(34,20,2.5,2.5,'E');g.s(25,19,'W');g.s(33,19,'W');
-  g.rect(27,25,6,4,'K');g.rect(28,26,4,2,'M');g.px([[27,25],[29,25],[31,25]],'W');
-  g.path([[26,14],[20,6],[16,2]],'B',1);g.path([[34,14],[40,6],[44,2]],'B',1);
-  // the song, drifting up as flat gold marks
-  g.px([[4,30],[5,28],[6,26],[54,24],[55,22],[56,20],[3,52],[57,44],[30,0]],'Y');
-  return {pal:{A:'#8a9a3a',B:'#566a26',b:'#3a4a1a',L:'#c0d060',W:'#d8cc8a',w:'#9a8a50',E:'#ff5a30',K:'#1a1008',M:'#8a2a1a',Y:'#ffe27a',D:'#2a2814'},flat:'EYM',rim:'#1a2008'};
+ hollowshepherd(g){
+  g.ell(30,57,24,3,'D');
+  // two lambs of moss and wool at its hem
+  g.ell(9,51,6,4.5,'W');g.ell(8,49,3,2,'V');g.ell(3,52,2.6,2.4,'K');g.s(2,51,'E');g.rect(6,54,2,3,'K');g.rect(11,54,2,3,'K');g.px([[5,48],[9,47],[12,50]],'V');
+  g.ell(51,54,5,3.6,'W');g.ell(55,55,2.2,2,'K');g.s(56,54,'E');g.rect(48,56,2,2,'K');g.rect(52,56,2,2,'K');
+  // the robe: a tall wet bell of moss, lit on the left, hem knotted with roots
+  g.poly([[22,16],[38,16],[47,53],[13,53]],'M');g.poly([[22,16],[28,16],[21,53],[13,53]],'L');g.poly([[38,16],[41,22],[47,53],[40,53]],'m');
+  for(let i=0;i<5;i++)g.line(22+i*4,24+i,20+i*6,52,'m');
+  for(let i=0;i<8;i++)g.path([[15+i*4.3,51],[13+i*4.6,57]],'R',2);g.rect(14,49,32,2,'r');
+  g.px([[24,30],[34,36],[28,44],[40,42],[19,40],[31,26]],'L');
+  // the wool scarf
+  g.ell(30,19,11,3.4,'W');g.ell(27,18,5,1.6,'V');g.px([[22,21],[27,22],[33,22],[38,21]],'w');
+  // arms: the left holds a brass bell, the right the crook
+  g.path([[22,22],[14,29],[12,34]],'M',4);g.ell(12,35,2.6,2.6,'R');g.poly([[8,37],[16,37],[17,44],[7,44]],'B');g.rect(7,43,11,2,'N');g.rect(11,45,2,2,'K');g.px([[9,39],[9,41]],'Y');
+  g.path([[38,22],[44,28],[47,31]],'M',4);g.ell(47,31,2.6,2.6,'R');
+  g.line(47,56,47,9,'R',2);g.line(46,56,46,10,'r');g.path([[47,9],[47,4],[52,2],[56,6]],'R',2);
+  // the lantern on the hook: the tell
+  g.rect(53,7,6,9,'N');g.rect(54,8,4,7,'Y');g.rect(55,9,2,4,'W');g.rect(52,6,8,2,'N');g.rect(55,15,2,2,'N');
+  // the hood and the hollow under it, a crown of twigs
+  g.poly([[20,17],[23,7],[30,2],[37,7],[40,17]],'M');g.poly([[20,17],[23,7],[28,4],[26,12],[24,17]],'L');
+  g.ell(30,13,6,7,'K');g.rect(26,11,2,3,'E');g.rect(33,11,2,3,'E');g.s(26,11,'W');g.s(33,11,'W');g.rect(28,18,4,1,'m');
+  g.path([[25,5],[21,1],[18,2]],'R',1);g.path([[35,5],[39,1],[42,2]],'R',1);g.path([[30,3],[30,0]],'R',1);g.px([[21,0],[40,0],[18,3],[43,3]],'L');
+  g.px([[4,38],[56,40],[2,26],[58,22],[14,6]],'Y');
+  return {pal:{M:'#5a7a3a',m:'#3a5228',L:'#8aa85a',R:'#6a4a2a',r:'#4a3220',K:'#0e0a14',E:'#fff0a0',Y:'#ffe27a',W:'#ece8d4',w:'#a8a490',V:'#c8c8b4',B:'#c8a85a',N:'#6a5230',D:'#1a2414'},flat:'EYK',glow:'#ffe08a',rim:'#10180c'};
  },
- ironmaw(g){
-  g.ell(30,57,26,3,'D');
-  // legs and tail
-  g.poly([[52,42],[60,50],[54,52]],'F');
-  // the dome: a green-brown shell banded with ship iron
-  g.ell(33,32,22,19,'S');g.rect(11,32,45,12,'S');g.ell(33,32,22,19,'S');g.poly([[10,44],[56,44],[54,48],[12,48]],'s');
-  g.ell(26,26,12,10,'H');g.ell(33,32,22,19,0);g.ell(33,32,22,19,'S');g.ell(25,25,11,9,'H');g.rect(11,40,45,4,'s');
-  g.poly([[14,42],[16,30],[24,18],[33,14],[33,20],[28,30],[24,42]],'H');
-  for(let i=0;i<4;i++){const x=15+i*12;g.line(x,43,x+6-i*2,17,'I',2);g.line(x+1,43,x+7-i*2,17,'J');}
-  g.path([[11,36],[24,32],[34,31],[48,34],[55,38]],'I',3);g.path([[12,37],[24,33],[34,32],[48,35],[55,39]],'J');
-  [[15,27],[24,20],[34,17],[43,22],[48,30],[18,38],[30,38],[42,38],[52,40]].forEach(([x,y])=>{g.s(x,y,'R');g.s(x+1,y,'r');});
-  g.rect(16,46,11,10,'F');g.rect(16,46,3,10,'L');g.rect(38,46,12,10,'F');g.rect(47,48,3,8,'f');g.rect(14,54,14,3,'f');g.rect(36,54,16,3,'f');g.rect(18,51,7,1,'f');g.rect(40,51,8,1,'f');
-  // a lighthouse growing out of the shell and a wet fringe of barnacles
-  g.rect(31,3,6,13,'I');g.rect(31,3,2,13,'J');g.rect(30,2,8,2,'i');g.rect(32,0,4,3,'Y');g.px([[33,1]],'W');g.rect(31,7,6,1,'i');
-  g.px([[17,22],[40,16],[46,26],[22,44],[44,44],[50,36]],'N');g.px([[13,34],[53,36]],'Q');
-  // the head: low, wide, with an iron-plated lower jaw and teeth
-  g.ell(8,41,9,7,'F');g.ell(6,38,5,3,'L');g.poly([[1,44],[15,44],[15,52],[3,53]],'I');g.rect(0,45,2,5,'I');g.poly([[0,43],[14,44],[14,46],[1,46]],'J');
-  g.rect(1,45,13,3,'K');for(let x=2;x<13;x+=3){g.poly([[x,45],[x+1,45],[x+.5,48]],'W');}
-  g.poly([[1,52],[13,52],[11,56],[3,56]],'i');g.rect(7,34,3,3,'Y');g.rect(8,35,1,1,'K');g.px([[2,43],[3,43]],'K');
-  return {pal:{S:'#5a6a4a',s:'#3a4636',H:'#7a8a62',F:'#6a7a58',f:'#4a583e',L:'#8a9a70',I:'#8a92a0',J:'#c2cad6',i:'#4c5262',R:'#c8a85a',r:'#8a6a30',K:'#140a0a',W:'#e8e4d0',Y:'#ffd860',N:'#c8d0c0',Q:'#6ab8e8',D:'#1a2018'},flat:'YKW',rim:'#101810'};
+ paleweaver(g){
+  g.ell(30,58,14,2,'D');
+  // the thread it hangs from and corner webs
+  g.line(30,0,30,19,'V');g.path([[0,0],[14,10],[24,12]],'V');g.path([[0,8],[10,12]],'V');g.path([[60,0],[46,10],[36,12]],'V');g.path([[60,8],[50,12]],'V');
+  g.path([[0,2],[3,12],[8,20]],'V');g.path([[59,2],[56,12],[52,20]],'V');
+  // eight jointed legs, four a side, fanned wide
+  [[[25,23],[16,7],[6,9],[3,24]],[[24,26],[10,18],[3,29],[4,45]],[[24,29],[9,33],[4,45],[6,57]],[[26,33],[16,44],[11,52],[14,59]]].forEach(L=>{
+    g.path(L,'F',2);g.path(L.map(([x,y])=>[60-x,y]),'F',2);
+    L.slice(1,3).forEach(([x,y])=>{g.s(x,y,'W');g.s(60-x,y,'W');});g.s(L[3][0],L[3][1],'f');g.s(60-L[3][0],L[3][1],'f');});
+  // the abdomen hanging below, a hoarfrost body marked with a bolt
+  g.ell(30,40,12,14,'B');g.ell(25,34,6,8,'W');g.ell(30,40,12,14,'B');g.ell(26,35,6,8,'W');g.poly([[36,30],[40,40],[36,50],[32,52],[38,40]],'b');
+  g.path([[31,28],[27,35],[33,39],[28,47],[31,52]],'Y',2);
+  // cephalothorax, a cluster of eyes and two fangs
+  g.ell(30,24,8,6.5,'F');g.ell(27,22,4,3,'W');
+  g.rect(26,20,2,2,'E');g.rect(32,20,2,2,'E');g.rect(29,19,2,2,'E');g.s(27,24,'E');g.s(32,24,'E');g.s(24,22,'E');g.s(35,22,'E');
+  g.poly([[26,28],[27,34],[29,28]],'N');g.poly([[31,28],[33,34],[34,28]],'N');
+  g.px([[16,36],[44,34],[8,50],[52,48],[30,2]],'Y');
+  return {pal:{F:'#aebfd8',f:'#6a7a98',W:'#eaf2ff',B:'#8a9cc0',b:'#5a6a90',V:'#d8e8ff',Y:'#ffe94a',E:'#ff4a6a',N:'#2a2a40',D:'#1a1e2c'},flat:'EYN',glow:'#bfe0ff',rim:'#141a2a'};
  },
- candlemoth(g){
-  g.ell(30,57,12,2,'D');
-  // wings: broad dusty fans with veins, wax drips and a burning eyespot on each
-  g.poly([[26,22],[2,4],[0,22],[6,38],[24,34]],'W');g.poly([[26,30],[6,42],[10,54],[24,44]],'X');
-  g.poly([[34,22],[58,4],[60,22],[54,38],[36,34]],'W');g.poly([[34,30],[54,42],[50,54],[36,44]],'X');
-  g.poly([[26,22],[2,4],[6,14],[24,26]],'w');g.poly([[34,22],[58,4],[54,14],[36,26]],'w');
-  [[6,12],[3,22],[8,34]].forEach(([x,y])=>{g.line(25,26,x+1,y,'v');g.line(35,26,59-x,y,'v');});
-  [[13,24],[47,24]].forEach(([x,y])=>{g.ell(x,y,6,6,'O');g.ell(x,y,4,4,'Y');g.ell(x,y,1.8,2.4,'K');g.s(x-1,y-1,'W');});
-  [[10,36],[48,36],[8,44],[52,46]].forEach(([x,y])=>{g.line(x,y,x,y+5,'U');g.s(x,y+6,'U');});
-  // furred body, legs, feathered antennae
-  g.ell(30,36,5.5,13,'F');g.ell(28,32,2.5,8,'G');for(let i=0;i<5;i++)g.rect(26,38+i*3,8,1,'f');
-  g.path([[27,46],[22,52],[20,57]],'f',2);g.path([[33,46],[38,52],[40,57]],'f',2);g.path([[30,48],[30,57]],'f',2);
-  g.ell(30,20,5,5.5,'F');g.ell(28,18,2.5,2.5,'G');g.ell(27,20,1.8,2.4,'E');g.ell(33,20,1.8,2.4,'E');g.s(26,19,'W');g.s(32,19,'W');
-  g.path([[27,16],[20,10],[14,6]],'f',1);g.path([[33,16],[40,10],[46,6]],'f',1);
-  g.px([[18,8],[16,7],[15,5],[42,8],[44,7],[45,5]],'f');
-  // the crown of three burning tapers
-  [[25,10],[30,7],[35,10]].forEach(([x,y])=>{g.rect(x-1,y,3,7,'C');g.rect(x-1,y,1,7,'X');g.ell(x+.5,y-2.4,1.6,2.6,'O');g.ell(x+.5,y-1.8,.9,1.6,'Y');});
-  g.rect(24,16,12,2,'U');
-  g.px([[4,2],[56,2],[2,30],[58,32],[16,48],[44,50],[30,2]],'Y');
-  return {pal:{W:'#cdbb98',w:'#e8dcc0',X:'#a8906a',v:'#8a6a4a',F:'#f0e8d0',f:'#b8a888',G:'#fff8e8',E:'#ff6a2a',C:'#f4ecd2',U:'#d8c890',O:'#ff9a30',Y:'#fff0a0',K:'#2a1008',D:'#2a2018'},flat:'EOYK',glow:'#ffcf70',rim:'#2a1c10'};
+ crowregent(g){
+  g.ell(30,58,22,2,'D');
+  // the bone perch with knuckle ends
+  g.rect(5,50,50,3,'P');g.rect(5,50,50,1,'p');g.ell(5,51,3.4,3.4,'P');g.ell(55,51,3.4,3.4,'P');g.rect(28,53,4,5,'P');g.rect(24,57,12,2,'P');
+  // tail and the folded wing at the back, ragged flight feathers
+  g.poly([[40,44],[46,58],[42,59],[38,50]],'a');g.poly([[44,42],[52,57],[48,58],[41,48]],'A');
+  g.poly([[36,20],[50,24],[58,40],[56,52],[50,48],[48,54],[43,46],[40,50],[38,36]],'A');
+  g.poly([[40,24],[50,27],[56,38],[50,36],[44,40]],'L');
+  for(let i=0;i<4;i++)g.line(42+i*3,30+i*2,46+i*3,50-i,'a');
+  // the near wing mantled up and out on the left
+  g.poly([[26,26],[14,14],[3,12],[6,20],[1,26],[8,28],[6,34],[16,34],[22,38]],'A');g.poly([[26,26],[14,14],[8,14],[18,26]],'L');
+  g.line(24,28,6,16,'a');g.line(22,31,4,26,'a');g.line(20,34,8,32,'a');
+  // the body: a deep chest, a pale breast feather patch, talons on the bar
+  g.ell(31,37,12,14,'A');g.ell(26,32,6,8,'L');g.poly([[24,36],[28,48],[34,46],[30,34]],'a');
+  g.path([[28,48],[28,52]],'Q',2);g.path([[35,47],[36,52]],'Q',2);g.line(24,51,31,51,'Q',2);g.line(33,51,40,51,'Q',2);
+  // the head: heavy, with a hooked beak and a bone crown
+  g.ell(22,20,9,8,'A');g.ell(19,17,4.5,3.4,'L');g.poly([[14,17],[1,22],[14,26]],'Q');g.poly([[14,24],[3,24],[14,27]],'q');g.line(2,22,13,19,'W');
+  g.ell(20,19,2.6,2.6,'E');g.s(19,18,'W');g.s(21,20,'K');
+  g.poly([[14,11],[15,2],[19,10]],'C');g.poly([[19,10],[22,0],[26,10]],'C');g.poly([[26,10],[30,3],[31,12]],'C');g.rect(14,10,18,2,'C');g.px([[22,2],[15,4],[30,5]],'W');
+  // the murder: small crows around it
+  [[6,5],[52,5],[56,18],[8,42],[48,10]].forEach(([x,y])=>g.px([[x-2,y-1],[x-1,y],[x,y+1],[x+1,y],[x+2,y-1]],'A'));
+  g.px([[3,2],[57,2],[1,36],[58,30]],'E');
+  return {pal:{A:'#34344c',a:'#1c1c2c',L:'#5a5a7c',Q:'#d0b878',q:'#8a7848',E:'#ff4a4a',K:'#0a0a12',W:'#f4eed8',C:'#e8e0c8',P:'#8a7a60',p:'#b0a080',D:'#12121c'},flat:'EKW',glow:'#8a8ac0',rim:'#0a0a14'};
  },
- brinehag(g){
-  g.ell(30,57,26,3,'D');
-  // the mound she rises from: kelp, net and a coil of tentacle
-  g.ell(30,50,25,9,'G');g.ell(26,48,16,6,'g');g.poly([[4,56],[10,44],[18,50],[10,58]],'G');g.poly([[56,56],[50,44],[42,50],[50,58]],'G');
-  g.path([[8,52],[4,46],[8,42],[6,38]],'T',3);g.path([[52,52],[57,46],[52,42],[55,38]],'T',3);g.px([[6,38],[55,38],[4,46],[56,46]],'S');
-  for(let i=0;i<5;i++){g.line(8+i*10,56,12+i*10,46,'n');}for(let i=0;i<4;i++)g.line(6,48+i*3,54,47+i*3,'n');
-  // the cloak: a hunched wet bell, lit left
-  g.poly([[18,20],[40,22],[48,52],[12,52]],'C');g.poly([[18,20],[24,20],[18,52],[12,52]],'L');g.poly([[40,22],[44,26],[48,52],[40,52]],'c');
-  g.path([[14,52],[18,48],[22,53],[28,48],[34,53],[40,48],[46,52]],'c',2);
-  [[22,34],[34,40],[26,44],[40,32],[18,44]].forEach(([x,y])=>{g.ell(x,y,1.6,1.2,'B');g.s(x,y-1,'W');});
-  // the staff with a hooked top and a drowned lantern
-  g.line(51,56,50,10,'P',2);g.path([[50,10],[48,4],[54,2],[56,6]],'P',2);g.rect(50,8,5,7,'K');g.rect(51,9,3,5,'Z');g.s(52,11,'W');
-  // reaching hand with claws
-  g.path([[20,26],[12,32],[6,34]],'C',4);g.ell(5,34,3,2.4,'S');g.line(2,33,0,31,'S');g.line(2,35,0,36,'S');g.line(3,32,2,30,'S');
-  // head: a long face under a wide barnacled hat, seaweed hair hanging
-  g.path([[22,22],[17,32],[19,46]],'G',3);g.path([[38,22],[44,32],[41,46]],'G',3);g.path([[21,24],[16,36]],'g',2);g.path([[39,24],[45,36]],'g',2);
-  g.ell(30,20,6,6.5,'S');g.rect(26,24,8,3,'S');g.poly([[27,26],[33,26],[31,31],[28,30]],'S');g.rect(28,27,4,1,'K');g.poly([[27,20],[22,26],[27,25]],'S');g.px([[22,26],[23,26]],'s');
-  g.ell(27,19,1.8,1.4,'E');g.ell(34,19,1.8,1.4,'E');g.s(26,18,'W');g.s(33,18,'W');
-  g.poly([[30,0],[40,13],[48,16],[12,16],[20,13]],'H');g.poly([[30,0],[20,13],[12,16],[26,16]],'h');g.rect(14,15,32,3,'H');g.rect(14,17,32,1,'k');
-  [[22,12],[32,8],[38,14],[26,5],[16,15],[44,15]].forEach(([x,y])=>{g.ell(x,y,1.6,1.3,'B');g.s(x,y-1,'W');});
-  g.px([[2,18],[58,22],[8,8],[52,6]],'Z');
-  return {pal:{C:'#2e4e5e',L:'#4a7088',c:'#1a303e',S:'#86a898',s:'#5a7a6c',G:'#3e6030',g:'#26401e',T:'#4a7a58',n:'#1a2a20',H:'#4a4a42',h:'#6a6a5e',k:'#22221e',B:'#d0c8ae',W:'#f4f0e0',P:'#6a5a44',K:'#0c1418',Z:'#6affd0',E:'#c890ff',D:'#101c20'},flat:'KZEW',glow:'#5ad0b0',rim:'#0a1418'};
- },
- hollowsun(g){
-  g.ell(30,57,20,2.4,'D');
-  // salt spikes and glass shards at the foot
-  [[8,57,5,10],[16,57,3,6],[44,57,4,7],[52,57,3,11],[24,58,2,4],[36,58,2,5]].forEach(([x,y,w,h])=>{g.poly([[x-w/2,y],[x,y-h],[x+w/2,y]],'S');g.poly([[x-w/2,y],[x,y-h],[x,y]],'s');});
-  // the corona: twelve flame prongs around the ring
-  const cx=30,cy=28;
-  for(let i=0;i<12;i++){const a=i*Math.PI/6+.2,r0=17,r1=i%2?24:29,dx=Math.cos(a),dy=Math.sin(a),px=-dy,py=dx;
-    g.poly([[cx+dx*r0+px*3.4,cy+dy*r0+py*3.4],[cx+dx*r1,cy+dy*r1],[cx+dx*r0-px*3.4,cy+dy*r0-py*3.4]],i%3===0?'G':'F');}
-  g.ell(cx,cy,19,19,'F');g.ell(cx,cy,19,19,'F');g.ell(cx-2,cy-2,16,16,'G');g.ell(cx,cy,19,19,0);g.ell(cx,cy,19,19,'F');
-  g.poly([[10,22],[16,12],[26,8],[30,10],[20,16],[14,26]],'G');g.poly([[12,20],[18,13],[26,10],[22,15],[16,24]],'W');
-  g.poly([[44,36],[40,44],[32,48],[38,40]],'f');
-  // the hollow: a black disc with a thin bright rim and a slit of light, like a pupil
-  g.ell(cx,cy,15,15,'K');g.ell(cx+1,cy+1,13.5,13.5,'V');g.ell(cx+2,cy+2,12,12,'K');
-  g.line(cx-14,cy-4,cx-10,cy-10,'W');g.line(cx-10,cy-10,cx-4,cy-14,'W');
-  g.poly([[cx,cy-8],[cx+2,cy],[cx,cy+8],[cx-2,cy]],'Y');g.poly([[cx,cy-5],[cx+1,cy],[cx,cy+5],[cx-1,cy]],'W');
-  // glass shards in orbit
-  [[3,10,4],[56,8,3],[2,40,3],[57,38,4],[10,52,3],[50,52,3]].forEach(([x,y,r])=>{g.poly([[x,y-r],[x+r*.6,y],[x,y+r*1.4],[x-r*.6,y]],'S');g.poly([[x,y-r],[x,y+r*1.4],[x-r*.6,y]],'s');});
-  g.px([[14,2],[46,3],[0,28],[59,24],[28,0]],'W');
-  return {pal:{F:'#ff8a2a',f:'#b8401a',G:'#ffd860',W:'#fff6d0',K:'#07030a',V:'#5a1a3a',Y:'#fff0a0',S:'#cfeaf0',s:'#6a9aa8',D:'#241410'},flat:'KGWY',glow:'#ffb040',rim:'#1a0a0a'};
+ geysermatron(g){
+  g.ell(30,57,25,3,'D');
+  // the hot pool she sits in, ringed with stones
+  g.ell(30,52,27,7,'T');g.ell(26,50,16,3,'B');[[4,52],[10,57],[50,57],[56,52],[22,58],[38,58]].forEach(([x,y])=>{g.ell(x,y,3.4,2.4,'S');g.s(x-1,y-1,'s');});
+  // the body: a kettle-bellied dome of orange glass lit from the upper left, with a glowing core
+  g.rect(8,34,44,16,'J');g.ell(30,34,22,19,'J');g.ell(30,34,22,19,'J');g.poly([[8,40],[52,40],[50,52],[10,52]],'j');
+  g.ell(24,28,12,10,'H');g.ell(30,38,13,11,'G');g.ell(28,36,8,7,'Y');
+  [[17,38],[44,32],[40,46],[14,46],[34,24]].forEach(([x,y])=>{g.ell(x,y,2.4,2.4,'B');g.s(x-1,y-1,'W');});
+  // three chimneys on top, venting steam
+  [[13,10,6,13],[27,3,6,19],[41,10,6,13]].forEach(([x,y,w,h])=>{g.rect(x,y,w,h,'S');g.rect(x,y,2,h,'U');g.rect(x-1,y-1,w+2,2,'s');});
+  [[16,6,3],[13,2,2.4],[31,0,3.4],[44,6,3],[47,2,2.4]].forEach(([x,y,r])=>g.ell(x,y,r,r*.8,'W'));
+  // the face: two round eyes and a wide mouth full of bubbles
+  g.ell(23,33,4,4.5,'W');g.ell(24,34,1.8,2.4,'K');g.ell(37,33,4,4.5,'W');g.ell(38,34,1.8,2.4,'K');
+  g.rect(22,43,17,3,'K');g.px([[24,43],[28,43],[32,43],[36,43]],'W');
+  // pseudopod arms and a dripping skirt
+  g.path([[9,40],[3,44],[2,51]],'J',5);g.ell(2,51,3.4,3,'J');g.path([[51,40],[57,44],[58,51]],'J',5);g.ell(58,51,3.4,3,'J');
+  for(let i=0;i<6;i++)g.path([[13+i*7,50],[13+i*7,56]],'j',3);
+  g.px([[2,24],[58,26],[4,10],[56,12],[30,1]],'W');
+  return {pal:{J:'#e0803a',j:'#a8481a',H:'#ffc890',G:'#ffb040',Y:'#fff0a0',B:'#bfe8f0',W:'#f4fcff',K:'#1a0a0a',T:'#3a9ab0',S:'#8a8a96',s:'#4a4a58',U:'#b4b4c0',D:'#201410'},flat:'GYKW',glow:'#ffb060',rim:'#1a0a08'};
  }
 });
-['locustchoir','ironmaw','candlemoth','brinehag','hollowsun'].forEach(k=>{BIG_ART.push(k);});
+['hollowshepherd','paleweaver','crowregent','geysermatron'].forEach(k=>{BIG_ART.push(k);});
 
 // ===== sprhd.js (v0.5.3): HD sprites: twice the detail, light ramps, rim light (SPRITE_HD in config.js) =====
 // Every hero, townsfolk and monster is still built from the same key grids (art.js, art2.js, art3.js, capes, realm and echo recolours), but
@@ -9049,6 +9538,18 @@ function themeFX(ctx,m,vw,vh,now){
 function bossMusicOff(){try{const s=WS.m&&typeof WS.m.s==='number'?WS.m.s:B&&B.stage;const k=bossAtStage(s);return (BTHEME[k]||{}).mus||0;}catch(e){return 0;}}
 function bossMusicKey(){try{const s=WS.m&&typeof WS.m.s==='number'?WS.m.s:B&&B.stage;return bossAtStage(s)||'';}catch(e){return '';}}
 
+// v0.14.x: the four Scourges added after the Hollow Sun (bosses10.js)
+Object.assign(BTHEME,{
+ hollowshepherd:{label:'Fold-lit',mix:'#8a9a5a',k:.36,roof:['#7a8a4a','#a89a5a','#5a7a4a','#c8c090'],dec:['#fff0b0','#c8e890','#ffffff','#a8c070'],motif:'thorn',amb:'motes',tint:'rgba(150,170,80,.07)',mus:-1,
+  omen:'A bell tolls at dusk from the east pasture, and the sheep file toward it without a shepherd.',npc:['I counted the flock twice. Both times there was one more than I own.','The lanterns on the hill never go out. Nobody lit them.']},
+ paleweaver:{label:'Rime-spun',mix:'#a8b8d8',k:.38,roof:['#7a8ab0','#c0d0e8','#5a6a98','#e0e8f8'],dec:['#ffffff','#d8e8ff','#fff6a0','#a8c0e8'],motif:'frost',amb:'flecks',tint:'rgba(160,190,240,.08)',mus:-2,
+  omen:'Frost has strung itself across the lanes in long white lines, and the threads hum when the wind is still.',npc:['The hedges are wrapped in something finer than cobweb. It does not melt.','A fly stopped in midair at my window. I did not dare look closer.']},
+ crowregent:{label:'Carrion-crowned',mix:'#3a3a4c',k:.40,roof:['#2a2a3a','#4a4a5c','#1a1a28','#5a5a6c'],dec:['#8a8aa0','#c8c8d8','#ff5a5a','#40405a'],motif:'feather',amb:'ash',tint:'rgba(30,30,50,.12)',mus:-3,
+  omen:'The crows have stopped arguing. They sit on every roof in a long row, and they are all looking at one house.',npc:['One of them tipped its head at me like a person would.','I left a coin on the sill as a joke. It was gone by morning, and a bone was there instead.']},
+ geysermatron:{label:'Steam-bound',mix:'#c88a6a',k:.36,roof:['#a8503a','#c8805a','#8a3a2a','#d8a07a'],dec:['#fff0e0','#ffb070','#a8e0f0','#ffffff'],motif:'ember',amb:'bubbles',tint:'rgba(220,130,90,.08)',mus:1,
+  omen:'The pump handle turns by itself, and the water that comes up is hot enough to scald.',npc:['Every kettle in the house whistles at once, around midnight.','The ground by the old spring is warm, and getting wider.']}
+});
+
 // ===== bg.js (base): battle backdrops (2D, per theme) =====
 const BAYER=[[0,8,2,10],[12,4,14,6],[3,11,1,9],[15,7,13,5]];
 function gradBands(ctx,x0,y0,w,h,stops){
@@ -10133,7 +10634,7 @@ function buildScreen(){
         <div class="tmore"><button class="btn sm" data-act="settings">Settings</button><button class="btn sm" data-act="fbOpen">Help / Feedback</button></div>
         <details class="ttools"><summary>Saves and codes</summary><div class="tmore"><button class="btn sm" data-act="importOpen">Import save</button><button class="btn sm" data-act="recoverOpen">Recover saves</button><button class="btn sm" data-act="redeemOpen">Redeem code</button></div></details></div>`;})()}${svTitleNote()}
       ${leg.length?`<div class="legacy"><h3>Legacy heroes</h3><p class="note">Bring up to two of them on each new journey. They join at level 5 with veteran stats.</p><div class="els">${leg.map(id=>port(id,'sm')+`<b>${TPL[id].n}</b>`).join(' ')}</div></div>`:''}
-      <ul class="pitch"><li>Each journey: five realms, four Scourges drawn from sixteen, and one of five Calamities at the end.</li><li>Mark a foe with one element, hit it with another: Melt, Conduct, Eclipse and 53 more reactions.</li><li>Break a Scourge's or Calamity's shield by hitting its weaknesses, then pile on.</li><li>Bonds, Limit Breaks, bounties, an arena, tempering and a legacy hero you keep forever.</li></ul></section>`;
+      <ul class="pitch"><li>Each journey: five realms, four Scourges drawn from twenty, and one of five Calamities at the end.</li><li>Mark a foe with one element, hit it with another: Melt, Conduct, Eclipse and 53 more reactions.</li><li>Break a Scourge's or Calamity's shield by hitting its weaknesses, then pile on.</li><li>Bonds, Limit Breaks, bounties, an arena, tempering and a legacy hero you keep forever.</li></ul></section>`;
   }else if(s==='starter'){scr.innerHTML='<div id="starterBox"></div>';}
   else if(s==='world'){
     scr.innerHTML=`<div class="world"><div class="wview"><canvas id="wcv"></canvas><div id="wloc" class="wloc"></div><div id="wdlg"></div></div>
@@ -13519,12 +14020,15 @@ function buildSanctum(){
   m.w=W;m.h=H;m.tone=valueNoise(mulberry(7171),W,H,6);m.shelves=[];
   // v0.11.0: every gate stands, open or not. Scourges along the north wall; the Calamities get their own row on the south wall,
   // either side of the door, in crimson and gold frames (drawPortal)
-  // v0.13.7: sixteen Scourge gates do not fit one row of a 28 wide hall, so they take two (y 1 and y 3, the second row keeping clear of the
-  // Riftkeeper's gate at x 13); the five Calamity gates stand either side of the south door (x 13)
+  // v0.13.7: sixteen Scourge gates do not fit one row of a 28 wide hall, so they take two (y 1 and y 3, keeping clear of the Riftkeeper's gate at
+  // x 13); the five Calamity gates now stand in a centred row at y 14. v0.14.x: twenty Scourges, two rows of ten on the same ten columns
+  // (x 2 to 10 and 16 to 24, the middle five columns stay open for the Riftkeeper's gate at 13,4 and the Echoforge at 13,6; y 2 is a walkway)
   const gp=GPOOL.slice(),fp=FPOOL.slice(),rowA=Math.ceil(gp.length/2),xB=[2,4,6,8,10,16,18,20,22,24];
-  const gx=j=>j<rowA?{x:Math.min(W-2,2+j*3),y:1}:{x:xB[j-rowA]!=null?xB[j-rowA]:Math.min(W-2,2+(j-rowA)*2),y:3};
+  const gx=j=>{const i=j%rowA;return {x:xB[i]!=null?xB[i]:Math.min(W-2,2+i*2),y:j<rowA?1:3};};
   gp.forEach((k,j)=>{const {x,y}=gx(j),d=guardianDef(k);if(!d)return;m.npcs.push({x,y,hx:x,hy:y,name:'Gate of Echo '+d.n,line:'',view:'front',face:'r',act:'portal',portal:1,key:k,look:null});});
-  const fx=[5,9,17,20,23];fp.forEach((k,j)=>{const x=fx[j]!=null?fx[j]:3+j*3,d=guardianDef(k);if(!d)return;m.npcs.push({x,y:H-2,hx:x,hy:H-2,name:'Calamity Gate: Echo '+d.n,line:'',view:'front',face:'r',act:'portal',portal:1,cal:1,key:k,look:null});});
+  // v0.14.x: the Calamity arches stand free on open floor in a centred row at y 14 (never against the south wall, where the HD-2D wall front hides them):
+  // clear floor south of each, the start tile (13,16) and the door below it kept open
+  const fx=[7,10,13,16,19],CY=14;fp.forEach((k,j)=>{const x=fx[j]!=null?fx[j]:7+j*3,d=guardianDef(k);if(!d)return;m.npcs.push({x,y:CY,hx:x,hy:CY,name:'Calamity Gate: Echo '+d.n,line:'',view:'front',face:'r',act:'portal',portal:1,cal:1,key:k,look:null});});
   m.npcs.push({x:13,y:9,hx:13,hy:9,name:'Echo Warden',line:'Every Scourge and Calamity you broke is still ringing in here. Stand before a gate and press Space to challenge its Echo. This hall is safe: nothing roams, and the way out is the south door.',look:villagerLook('Echo Warden'),view:'front',face:'r'});
   return m;
 }
@@ -26477,6 +26981,494 @@ function npcOf(key){try{const m=WS&&WS.m;if(!m||!m.npcs)return null;return m.npc
 HOOK.before('worldDraw','npcart9','record the world clock for the idle frames',function(now){NP9.now=now;});
 {const ha0=hdActors;hdActors=function(m,now,ts){NP9.now=now;return ha0.apply(this,arguments);};}
 const NPC9={roles:NPC9_ROLES.map(r=>({role:r[0],name:r[2]})),roleOf:npcRoleOf,props:NPC9_PROP,rd:NPC9_RD,act:NPC9_ACT};
+
+// ===== bosses10.js (v0.14.x): four more Scourges, so the roster is twenty Scourges and five Calamities (25 bosses) =====
+// Data lives where the others' does (foes.js GUARDIANS, art3.js sprites and BIG_ART, realmdata.js BOV, bosstheme.js BTHEME); the Sanctum grows
+// to twenty Scourge gates (sanctum.js) and the Riftkeeper counts echoKeys(), so it needs no wiring. This module adds the archetype tags and
+// the realm gimmicks (the roster had seven 'sac' gimmicks and no second use of veil, tide or phase2 among the Scourges, so the new four take those).
+//   The Hollow Shepherd  earth/light, plant     Fold Mist (veil): it hides in a pasture fog until a Scan or a Light skill reveals it
+//   The Pale Weaver      ice/lightning, beast   Web Snare (slot): two Vanguard spots are webbed and rooted
+//   The Crow Regent      wind/shadow, flying    Murder Form (phase2): at half HP it bursts into a murder with a new move set
+//   The Geyser Matron    fire/water, jelly      Rising Steam (tide): the vents fill the cavern; Earth dams it
+Object.assign(BOSS_TY,{hollowshepherd:['plant'],paleweaver:['beast'],crowregent:['flying'],geysermatron:['jelly']});
+Object.assign(BOSS_GIM.def,{
+  hollowshepherd:{t:'veil',n:'Fold Mist',every:5,cut:.45,d:'Every few turns a pasture fog rolls over the Shepherd and it takes far less damage, until a Scan or a Light skill burns the fog off',tell:'Lantern fog gathers around the Shepherd',hit:'The Shepherd vanishes into the fold of fog'},
+  paleweaver:{t:'slot',n:'Web Snare',n2:2,pct:.1,el:'ice',st:'root',d:'Silk drops on two Vanguard spots on its next turn; Guard halves the hit and stops the root, or swap a sturdier hero in',tell:'Silk threads drop toward {who}',hit:'Webs snap tight around {who}'},
+  crowregent:{t:'phase2',n:'Murder Form',warn:.6,at:.5,sk:[['Black Squall','wind',1.3,'all','mag',[['blind',.5]]],['Beak Storm','shadow',1.9,'one','phys',[['bleed',.6]]],['Carrion Call','shadow',1.1,'all','phys',[['weaken',.4]]]],d:'At half HP the Regent bursts into a murder of crows: new moves and its shield back. Save a weakness hit for after',tell:'The Regent\'s coat begins to come apart in black feathers',hit:'The Regent bursts into a murder of crows'},
+  geysermatron:{t:'tide',n:'Rising Steam',every:3,max:3,spd:.05,dmg:.08,d:'Steam fills the cavern every few turns: heroes without Water slow down and Water skills hit harder. An Earth skill caps the vents',tell:'The vents begin to shriek',hit:'The steam thickens'}});
+
+// ===== fixes10.js (v0.14.1): field actors on open ground, Den and Sanctum minibosses wait at the end, rarer eye patches =====
+// 1) Bounty beasts, legend challengers and quest wanderers placed on a field could land on a tile the Sanctum gatehouse or a den mouth
+//    later covered, so they stood inside a wall where nobody could talk to them. dynActors now moves any actor on a solid tile, or
+//    within one tile of a site mouth, exit or dungeon door, to the nearest open spot. Talking to a legend challenger always answers.
+// 2) The owner: "Get rid of chest to activate boss fight in dens, the miniboss or duel opponent should be waiting at the end of the den
+//    like scourges in dungeons do." The miniboss stands at the end (the Sanctum's rune circle, or the tile before a Den's prize chest),
+//    drawn like a bounty beast with a red marker; walk into it or face it and press A to be asked to fight. The prize chest will not
+//    open while it stands. Saves: G.miniDone as before.
+// 3) Eye patches went to 23 of 92 heroes; now about one in five of those keeps it, the rest swap it for a pouch or satchel, and a third
+//    of the scarves and earrings go too, so each piece stays a distinguishing mark.
+function f10Bad(m,x,y){try{const c=m.t[y]&&m.t[y][x];if(c==null||SOLID.includes(c))return true;if((m.caves||[]).some(s=>Math.abs(s.x-x)<=1&&Math.abs(s.y-y)<=1))return true;
+  if(m.ent&&Math.abs(m.ent[0]-x)<=1&&Math.abs(m.ent[1]-y)<=2)return true;if((m.exits||[]).some(e=>Math.abs(e.x-x)<=1&&Math.abs(e.y-y)<=1))return true;}catch(e){}return false;}
+function miniPending(m){try{return !!(m&&m.cave&&G&&!G.daily&&siteHasMini(m.id)&&!(G.miniDone&&G.miniDone[m.id]));}catch(e){return false;}}
+function miniSpot(m){if(m._ms!==undefined)return m._ms;let p=null;try{if(m.fort&&m.guardAt)p=m.guardAt.slice();else if(m.prize){const [px,py]=m.prize;
+  const c=[[px,py+1],[px,py-1],[px-1,py],[px+1,py],[px,py+2],[px-1,py+1],[px+1,py+1],[px,py-2]].find(([x,y])=>m.t[y]&&m.t[y][x]&&!SOLID.includes(m.t[y][x]));p=c||null;}}catch(e){}return m._ms=p;}
+{const da0=dynActors;dynActors=function(m){const out=da0.apply(this,arguments);try{if(!m||!m.t)return out;
+  out.forEach(a=>{if(a.mini||!f10Bad(m,a.x,a.y))return;const free=(m.free||[]).filter(p=>!f10Bad(m,p[0],p[1])&&!out.some(o=>o!==a&&o.x===p[0]&&o.y===p[1]));if(!free.length)return;
+    let best=null,bd=1e9;free.forEach(p=>{const d=Math.abs(p[0]-a.x)+Math.abs(p[1]-a.y);if(d<bd){bd=d;best=p;}});if(best){a.x=best[0];a.y=best[1];}});
+  if(miniPending(m)){const p=miniSpot(m);if(p){const mb=m._gd||(m._gd=miniFor(m));out.push({type:'elite',mini:1,x:p[0],y:p[1],b:{mon:mb.mon,name:mb.name,mod:mb.mod,mini:m.id,lv:STAGE_LV[m.s][1]+SITES.miniLv+ngLvOff()}});}}}catch(e){}return out;};}
+{const sg0=sanctGuard;sanctGuard=function(m){return null;};}// the actor above stands in for the old standing guard
+{const at0=actorTalk;actorTalk=function(a){if(a&&a.mini){V.modal={type:'miniask',id:a.b.mini,b:a.b};render();return;}
+  if(a&&a.type==='legend'&&a.q&&!['kaevan','nikaris','jaeson'].includes(a.q.hero)){const t=TPL[a.q.hero];say(t?t.n:'Wayfarer',`"Not yet. Come back when you have what this road asks of you." (A legend's challenge: see Quests for what it wants.)`);return;}
+  return at0.apply(this,arguments);};}
+HOOK.before('vModal','fixes10','miniboss ask',function(m){if(!m||m.type!=='miniask')return;const b=m.b||{},mo=MON[b.mon]||{},md=(typeof ELITE_MODS!=='undefined'?ELITE_MODS:[]).find(x=>x.k===b.mod),here=WS.m;
+  return HOOK.stop(box(esc(b.name||mo.n||'Guardian'),`<div class="bossv"><img src="${monURL(mo.art)}" alt=""></div><div class="els">${elChips(mo.el||[])}</div><p>${here&&here.fort?'It stands on the rune circle of the keep\'s hall, between you and the prize.':'It waits at the back of the den, between you and the prize.'}</p><p class="note">Level ${b.lv||'?'}, with a pack. ${md?`<b>${md.n}:</b> ${md.d}`:''} No auto battle. Win and the chest is yours, plus a Dread Core, gold and materials.</p>`,
+    `<button class="btn" data-act="closeModal">Not yet</button><button class="btn gold" data-act="miniGo">Fight</button>`));});
+ACT.miniGo=function(){const m=WS.m;if(!m||!miniPending(m))return;const mb=m._gd||(m._gd=miniFor(m));V.modal=null;haltInput();startBattle({stage:m.s,kind:'mini',mini:{id:m.id,mon:mb.mon,name:mb.name,mod:mb.mod}});};
+{const ab0=askBoss;askBoss=function(){const m=WS.m;if(m&&m.cave){if(miniPending(m)){const a=dynActors(m).find(x=>x.mini);if(a)return actorTalk(a);}return;}return ab0.apply(this,arguments);};}
+{const oc0=openChest;openChest=function(x,y){try{const m=WS.m;if(m&&miniPending(m)&&m.prize&&m.prize[0]===x&&m.prize[1]===y){const mb=m._gd||(m._gd=miniFor(m));say(null,`${mb.name} stands between you and the prize. Beat it first.`);return;}}catch(e){}return oc0.apply(this,arguments);};}
+// ---- accessories ----
+{const ao0=accOf;accOf=function(id){const o=ao0.apply(this,arguments);try{if(o&&o.acc&&!o._f10){o._f10=1;const h=hashS(String(id)+'acc10'),L=(TPL[id]&&TPL[id].look)||{};
+  if(o.acc.includes('eyepatch')&&h%5!==0){o.acc=o.acc.filter(a=>a!=='eyepatch');if(!o.acc.length)o.acc.push(L.b==='monk'?'satchel':'pouch');}
+  if(o.acc.includes('earrings')&&(h>>>3)%3===0&&o.acc.length>1)o.acc=o.acc.filter(a=>a!=='earrings');
+  if(o.acc.includes('scarf')&&(h>>>5)%3===0&&o.acc.length>1)o.acc=o.acc.filter(a=>a!=='scarf');}}catch(e){}return o;};}
+
+// ===== endgame10.js (v0.14.1): the Meridian Breach, the endgame hunting ground =====
+// After the Calamity falls (G.won) the Waystone offers The Meridian Breach: a field where every realm bleeds through. Its foes are drawn
+// from the pools of every realm you visited, at your strongest hero's level plus two (to the cap of 50), with more HP and power; one
+// fight in five has a Breach elite. Every win pays extra gold, and sometimes an Epic or Heroic charm or top-tier materials. Auto battle
+// works there as on any field. The map is the Calamity realm's field laid out again from another seed (map id 'x0'); its gates all lead
+// back to the last town. Save fields: none new (G.pos may hold 'x0', rebuilt from the journey seed on load).
+const BREACH={id:'x0',n:'The Meridian Breach',lvUp:2,hpM:1.3,powM:1.15,eliteCh:.2,goldM:.6,charmCh:.08,matCh:.5};
+function breachOpen(){return !!(G&&!G.daily&&G.won);}
+function breachPool(){try{const s=new Set();(G.visited||[]).forEach(st=>{const Z=ZS(st);if(Z&&Z.pool)Z.pool.forEach(k=>{if(MON[k])s.add(k);});});if(!s.size)(ZS(4).pool||[]).forEach(k=>s.add(k));return [...s];}catch(e){return ZS(4).pool.slice();}}
+HOOK.wrap('getMap','endgame10','the Meridian Breach map',function(next,...a){const id=a[0];if(id!=='x0')return next(...a);if(MAPS.x0)return MAPS.x0;
+  const keep=MAPS.f4,seed=G.run.seed;let m;try{delete MAPS.f4;G.run.seed=(seed+424242)>>>0;m=next('f4');}finally{delete MAPS.f4;G.run.seed=seed;if(keep)MAPS.f4=keep;}
+  m.id='x0';m.breach=1;m.name=BREACH.n;m.theme='void';const to={m:'t'+Math.max(0,Math.min(4,G.lastTown|0)),g:'next'};
+  (m.exits||[]).forEach(e=>{if(e.to)e.to=to;});Object.values(m.gates||{}).forEach(g=>{if(g&&g.to)g.to=to;});
+  (m.caves||[]).forEach(c=>{for(let j=-1;j<=0;j++)for(let i=-1;i<=1;i++){const y=c.y+j,x=c.x+i;if(m.t[y]&&'UE'.includes(m.t[y][x]))m.t[y][x]=',';}});m.caves=[];m.fortAt=null;
+  MAPS.x0=m;return m;});
+{const ln0=locName;locName=function(m){if(m&&m.breach)return BREACH.n;return ln0.apply(this,arguments);};}
+HOOK.xform('vModal','endgame10','Breach row on the Waystone',function(h,m){try{if(m&&m.type==='travel'&&breachOpen()){const here=WS.m&&WS.m.id==='x0';
+  const row=`<div class="row archrow breachrow"><div><b>✶ ${BREACH.n}</b><small>Where every realm bleeds through. Foes from all the lands you crossed, at your own strength (to level 50), richer purses and rare drops.</small></div><button class="btn sm gold" data-act="toBreach" ${here?'disabled':''}>Go</button></div>`;
+  h=h.replace('<div class="rows">','<div class="rows">'+row);}}catch(e){}return h;});
+ACT.toBreach=function(){if(!breachOpen())return;V.modal=null;fadeTo(()=>{const m=getMap('x0');const g=m.gates&&m.gates.start&&m.gates.start.arrive,x=g?g[0]:2,y=g?g[1]:(m.sy||2),f=g&&g[2]||'r';placeAt('x0',x,y,f);showLocation();saveGame();});render();};
+HOOK.before('encounterFoes','endgame10','Breach fights',function(spec){try{const m=WS.m;if(!spec||!m||!m.breach||spec.kind!=='field'||spec.roam)return;spec.breach=1;
+  const pool=breachPool(),hi=Math.min(LV_CAP,partyHi()+BREACH.lvUp),lo=Math.max(1,hi-3),n=RNG()<.5?3:4,out=[];
+  for(let i=0;i<n;i++){const k=pick(pool),mo=MON[k],lv=ri(lo,hi);if(i===0&&RNG()<BREACH.eliteCh)out.push(makeEnemy(mo,lv,{elite:true,name:'Breach '+mo.n,mod:pick(ELITE_MODS).k,hpM:3.2,powM:1.35}));else out.push(makeEnemy(mo,lv,{hpM:BREACH.hpM,powM:BREACH.powM}));}
+  const cnt={};out.forEach(e=>{cnt[e.name]=(cnt[e.name]||0)+1;});const seen={};out.forEach(e=>{if(cnt[e.name]>1){seen[e.name]=(seen[e.name]||0)+1;e.name+=' '+String.fromCharCode(64+seen[e.name]);}});
+  return HOOK.stop(out);}catch(e){}});
+// roamers in the Breach come from every realm too, at the party's level
+{const rs0=roamSpawn;roamSpawn=function(m){const out=rs0.apply(this,arguments);try{if(m&&m.breach&&out&&!m._bro){m._bro=1;const pool=breachPool();out.forEach((r,i)=>{const k=pool[(hashS('br'+i+m.id)+((G.run&&G.run.seed)||0))%pool.length];r.mon=k;r.name=r.elite?`${MON[k].n} ${r.name.split(' ').slice(-1)[0]}`:MON[k].n;});}}catch(e){}return out;};}
+HOOK.wrap('encounterFoes','endgame10','Breach roamer level',function(next,...a){const spec=a[0];const out=next(...a);try{const m=WS.m;if(spec&&spec.roam&&m&&m.breach){const hi=Math.min(LV_CAP,partyHi()+BREACH.lvUp);out.forEach(e=>{const lv=Math.max(1,hi-(e.elite?0:2));if(e.lv<lv){const k=lv/e.lv;e.lv=lv;e.S.mhp=Math.round(e.S.mhp*k*BREACH.hpM);e.hp=e.S.mhp;e.S.atk*=k*BREACH.powM;e.S.mag*=k*BREACH.powM;e.S.def*=k;e.S.res*=k;}});spec.breach=1;}}catch(e){}return out;});
+HOOK.after('win','endgame10','Breach purse',function(){try{const sp=B&&B.spec;if(!sp||!sp.breach||!G||G.daily)return;const info=(B&&B.result)||(V.modal&&V.modal.info)||{};info.notes=info.notes||[];const got=[];
+  const g=Math.round((info.gold||0)*BREACH.goldM)+Math.round(20+partyHi()*3);G.gold+=g;info.gold=(info.gold||0)+g;got.push(`${fmt(g)} gold more`);
+  if(Math.random()<BREACH.matCh){const mt=pick(['mythril','elder','starbloom','core','grit','ichor']);G.mats[mt]=(G.mats[mt]||0)+1;got.push(`1 ${MATS[mt]}`);}
+  if(Math.random()<BREACH.charmCh&&typeof CH9_EPIC!=='undefined'){const id=pick(Math.random()<.35?CH9_HEROIC:CH9_EPIC);G.gear.push(id);got.push(gearOf(id).n);}
+  info.notes.push(`The Breach gives up its hoard: ${got.join(', ')}.`);}catch(e){}});
+// the first time the Calamity falls, the Waystone's new door is announced
+HOOK.after('win','endgame10','Breach opens',function(){try{if(G&&G.won&&!G.breachSeen){const info=(B&&B.result)||(V.modal&&V.modal.info);if(info&&B.spec&&B.spec.kind==='boss'){G.breachSeen=1;info.notes=info.notes||[];info.notes.push(`${BREACH.n} has opened: every Waystone can take you there, where the foes of every realm you crossed wait at your own strength.`);}}}catch(e){}});
+
+// ===== anim10.js (v0.14.1): animations that say what the skill did =====
+// The owner: "Some animations don't fit their names... Characters should spin when using physical attacks that hit all, add other effects
+// like this." 1) A hero's all-foe physical skill spins the sprite through a full turn during the action. 2) Big spells (every-foe or power
+// 1.8 and up) get a wide show: rays from the caster, a ring and element flourish on every target (lightning bolts, wind slashes, fire rays,
+// water and ice rings) and a screen shake at impact; party-wide heals and buffs put a ring and rising motes on every ally; songs ring
+// three times around the bard. Reduced motion keeps the old quiet effects. Runs after heropose9.js (it reads u.actSk recorded there).
+const ANIM10={spinMs:[60,420],bigPw:1.8};
+function a10Rot(c,deg){const w=c.width,h=c.height,o=document.createElement('canvas');o.width=w;o.height=h;const x=o.getContext('2d');x.imageSmoothingEnabled=false;x.translate(w/2,h/2);x.rotate(deg*Math.PI/180);x.drawImage(c,-w/2,-h/2);return o;}
+{const so=spriteOf;spriteOf=function(u,walk){const c=so.apply(this,arguments);try{if(!c||!u||u.side!=='p'||!B||B.wipe||u.hp<=0||u.heroArt||gfxStill())return c;const a=Date.now()-(u.actT||0),sk=u.actSk;
+  if(!sk||Math.abs((u.actSkT||0)-u.actT)>80||a<ANIM10.spinMs[0]||a>ANIM10.spinMs[1])return c;if(!(sk.k==='phys'&&(sk.t==='all'||sk.t==='rand')&&sk.id!=='attack'))return c;
+  const q=(a-ANIM10.spinMs[0])/(ANIM10.spinMs[1]-ANIM10.spinMs[0]),step=Math.round(q*12)%12;if(!step)return c;return a10Rot(c,step*30);}catch(e){return c;}};}
+{const oa0=onAction;onAction=function(a,now){oa0.apply(this,arguments);try{if(!B||gfxStill()||a.side!=='p')return;const sk=a.actSk;if(!sk||Math.abs((a.actSkT||0)-a.actT)>80)return;const c=centerOf(a);if(!c)return;
+  const el=skEls(sk)[0]||null,col=(el&&ELC[el])||(sk.k==='heal'?'#7aff8a':'#c8a0ff'),foes=B.en.filter(e=>e.hp>0),allies=B.front.filter(x=>x.hp>0);
+  const big=sk.k==='mag'&&(sk.t==='all'||(sk.pw||0)>=ANIM10.bigPw);
+  if(big){part({k:'rays',x:c.x,y:c.y-10,t0:now,life:500,col});const tg=sk.t==='all'?foes:foes.filter(e=>e.fxT&&Math.abs(e.fxT-a.actT)<60);
+    tg.forEach((e,i)=>{const d=centerOf(e);if(!d)return;part({k:'ring',x:d.x,y:d.y+6,t0:now+IMPACT-40,life:520,col,r:sk.t==='all'?46:34,flat:el==='water'||el==='ice'});
+      if(el==='lightning')part({k:'bolt',x:d.x,y:d.y+8,t0:now+IMPACT-60,life:260,col,seed:i*31});else if(el==='wind')part({k:'slash',x:d.x,y:d.y,t0:now+IMPACT-30,life:260,col});
+      else if(el==='fire'||el==='light')part({k:'rays',x:d.x,y:d.y,t0:now+IMPACT-20,life:420,col});else part({k:'orb',x:c.x,y:c.y-14,x2:d.x,y2:d.y-8,t0:now+60,life:IMPACT-60,col});});
+    BV.shake={t:now+IMPACT,life:sk.t==='all'?240:180,amp:sk.t==='all'?3:2};}
+  if((sk.k==='heal'||sk.k==='status')&&(sk.t==='allyAll'||sk.t==='all'&&sk.k==='heal')){allies.forEach(h=>{const d=centerOf(h);if(!d)return;part({k:'ring',x:d.x,y:d.y+8,t0:now+120,life:560,col,r:30,flat:1});
+      for(let i=0;i<5;i++)part({k:'p',x:d.x+(Math.random()-.5)*20,y:d.y+10,vx:(Math.random()-.5)*6,vy:-18-Math.random()*22,g:0,t0:now+80+i*40,life:600,col,sz:1});});}
+  if(/song|hymn|chant|ballad|allegro|tune/i.test(sk.id+' '+(sk.n||''))){for(let i=0;i<3;i++)part({k:'ring',x:c.x,y:c.y-6,t0:now+i*130,life:520,col,r:40+i*8});}
+  if(sk.k==='phys'&&(sk.t==='all'||sk.t==='rand')&&sk.id!=='attack'){part({k:'ring',x:c.x,y:c.y+10,t0:now+60,life:380,col:'#ffffff',r:28,flat:1});foes.forEach(e=>{const d=centerOf(e);if(d)part({k:'slash',x:d.x,y:d.y,t0:now+IMPACT-20,life:220,col:'#ffffff'});});}
+}catch(e){}};}
+
+// ===== sanctlook10.js (v0.14.x): the side Sanctums become sacred places, rooted in their realm =====
+// The owner: "Sanctums need a rework of their look outside and inside, they should look more like sacred places that are part of the land."
+// Before: a grey walled keep with crimson banners, a squat white gatehouse on the field. Now (look only; rooms, start, prize, guardAt, chests, the 'U' and
+// 'E' tiles of the 3 x 2 gate and every collision are exactly as sites.js lays them out; this module only wraps drawing):
+//  OUTSIDE  a shrine gate of the realm: two stone pillars under a stepped lintel, a tie beam with a rope, cloth ribbons and a bell, a plaque with the
+//           sanctum sigil, a glowing door of light behind a worn stair of three steps, two stone lanterns that light at dusk, a ring of lighter ground and a
+//           path of flat stones. The realm shows on the stone: moss and flowers (meadow), salt crust (coast), ember cracks (caves), snow caps and icicles
+//           (snow), gilt (heights), star dust (void). 2D paints it into the base layer; HD-2D stands it up as geometry (two pillars, a lintel, a beam,
+//           the door, three treads, two lanterns, ribbons and a bell as cards) from a small code drawn sheet.
+//  INSIDE   pale bone and warm grey stone (DTHEME 'theme#fort%sanct') with the realm's accent instead of crimson: moss green, kelp teal, ember orange, frost
+//           blue, gold, violet. The courtyard is a cloister garden (colonnade, grass and flowers, a raked gravel garden, stepping stones, flagstone
+//           paths), pillars are carved columns with capitals, banners are hanging prayer cloths and some walls hold stained glass (with a light shaft and
+//           a patch of coloured light on the floor), braziers are stone lanterns, the keep is a hall with a long runner carpet up to the rune circle,
+//           candles along the aisle, and slow golden motes drift ('sanctmotes' replaces the 'flecks' ambience). The rune circle keeps its glow.
+//  MUSIC    MOODS.fort and MTRACK.fort are a slow, sacred piece (harp, choir, organ, celesta) instead of the Iron Muster march. The key stays 'fort'.
+// Same single wrap style as the other look modules: siteVariant/applyBossTheme/getMap set the palette, drawDTile and hdStructCanvas paint walls and floors,
+// objCanvas swaps the pillar and the brazier, themeFX draws the motes, drawShrineRing/drawShrineFront/hdGatePart/hdGateGeo make the gate.
+const SNC_ST={f:['#d0c7b5','#c3baa7','#ded6c6','#a0978a'],w:['#b4aa97','#9f9684','#cfc6b4','#3f382f'],top:'#3a342d',s:['#f1ebdb','#d8cfbb','#b3a995','#857c69','#5a5346']};
+const SNC={
+ meadow:{acc:'#78b840',acc2:'#d2ec92',cloth:['#4f8a38','#86c458'],glass:['#8fe07a','#f6eb8e'],lg:'#c4e892',gr:['#6aa048','#7cb858','#4e8a38'],bloom:['#fff4c8','#f2a8c8'],cap:'moss',tone:'#d8e8b0'},
+ coast:{acc:'#3fc0ae',acc2:'#b0f4e4',cloth:['#2b9488','#68d6c6'],glass:['#5fe0d0','#c4f6ff'],lg:'#eadfb4',gr:['#7ab89a','#92ccae','#5e9c80'],bloom:['#fff0e8','#f4a8b8'],cap:'salt',tone:'#c8e4dc'},
+ cave:{acc:'#ff8a3a',acc2:'#ffd070',cloth:['#b8501c','#ff8a3a'],glass:['#ff9a40','#ffdc80'],lg:'#bba48c',gr:['#6a5a44','#7e6a50','#524436'],bloom:['#ff8a3a','#ffd070'],cap:'ember',tone:'#e8d0b0'},
+ snow:{acc:'#8fd0ff',acc2:'#e8f8ff',cloth:['#4a86cc','#8fd0ff'],glass:['#8fd0ff','#eaf8ff'],lg:'#f4faff',gr:['#c9d9e8','#e2edf6','#9fb6cc'],bloom:['#bfe6ff','#ffffff'],cap:'snow',tone:'#d4e6f6'},
+ heights:{acc:'#f2c93a',acc2:'#fff2a8',cloth:['#bd9020','#f2c93a'],glass:['#ffd860','#fff6c8'],lg:'#e8e0a8',gr:['#a8a068','#bcb27a','#8c8452'],bloom:['#fff2a8','#f2c93a'],cap:'gold',tone:'#f0e4b8'},
+ void:{acc:'#b080ff',acc2:'#e2ccff',cloth:['#7444bc','#b080ff'],glass:['#b080ff','#8ae6d4'],lg:'#d6c8ff',gr:['#5a4c8a','#6e5ea0','#463a70'],bloom:['#e2ccff','#8ae6d4'],cap:'star',tone:'#d8ccf0'}};
+const SNC_P=th=>SNC[th]||SNC.meadow;
+const SNCX={dm:null,fm:null};
+// the realm tinted stone ramp (light .. dark) used by the gate, the columns and the lanterns
+function sncStone(P){return SNC_ST.s.map(c=>lerpHex(c,P.acc,.07));}
+// the key keeps the '#fort' kind and ends in the material ('%sanct'), like every site look since v0.8.2 (dungeon8.js d8Var makes the same id)
+function sncVariant(theme){const id=theme+'#fort%sanct';if(DTHEME[id]&&DTHEME[id].cloth)return id;const P=SNC_P(theme);
+  DTHEME[id]={f:SNC_ST.f.map(c=>lerpHex(c,P.acc,.06)),w:SNC_ST.w.map(c=>lerpHex(c,P.acc,.07)),top:lerpHex(SNC_ST.top,P.acc,.05),acc:P.acc,acc2:P.acc2,name:'sanct',
+    cloth:P.cloth,glass:P.glass,lg:P.lg,gr:P.gr,bloom:P.bloom,cap:P.cap};
+  if(!THEME[id])THEME[id]=THEME[theme]||THEME.meadow;return id;}
+// a neutral entry so the battle backdrop of a fight in the Sanctum (spec.d8) is pale stone, not the keep's crimson banners
+if(typeof D8M!=='undefined'&&!D8M.sanct)D8M.sanct={n:'Sanctum',f:SNC_ST.f.slice(),w:SNC_ST.w.slice(),top:SNC_ST.top,acc:'#f2c93a',acc2:'#fff0a0',lt:'torch',dark:'rgba(34,26,30,.5)',hero:'rgba(255,226,170,.2)'};
+function sncApply(m){if(!m||!m.fort||!m.cave)return;const th=m.theme,P=SNC_P(th);
+  m.thv=sncVariant(th);m.amb='sanctmotes';m.btint='rgba('+hx(P.acc).join(',')+',.035)';m.motif=null;
+  if(typeof D8M!=='undefined'&&D8M.sanct){m.d8='sanct';m.d8org=0;}
+  m.d8dark='rgba(30,24,30,.46)';m.d8hero='rgba(255,230,180,.22)';}
+{const ab1=applyBossTheme;applyBossTheme=function(m){ab1.apply(this,arguments);try{sncApply(m);}catch(e){}};}
+HOOK.wrap('getMap','sanctlook10','sanctum look (after the dungeon material is set)',function(next,...a){const m=next(...a);try{if(m&&m.fort&&!m.__snc){m.__snc=1;sncApply(m);}}catch(e){}return m;});
+
+// ---------- where things are in the Sanctum (derived from the unchanged layout of buildFort) ----------
+function sncGeo(m){if(m.__sg)return m.__sg;const p=m.prize,o={ok:false};
+  try{if(p&&m.start){const kx=p[0]-5,ky=p[1]-7,gx=p[0],gy=m.guardAt?m.guardAt[1]:p[1]-1;Object.assign(o,{keep:{x:kx,y:ky,w:11,h:14},yard:{x:16,y:12,w:26,h:16},ky:p[1],gx,gy,cy:m.start[1]+2});
+    o.ok=tileAt(m,kx,p[1])!=='#'&&tileAt(m,kx-1,p[1])!=='#'&&tileAt(m,16,p[1])!=='#'&&tileAt(m,16+13,12+8)!=='#';
+    if(o.ok){const C=new Set(),add=(x,y)=>{if(!'#Pv'.includes(tileAt(m,x,y)||'#'))C.add(x+','+y);};
+      for(let x=kx-1;x<=gx+1;x++)add(x,p[1]);for(let x=kx;x<=gx+1;x++)add(x,p[1]+1);for(let x=gx-1;x<=gx+1;x++)for(let y=gy-1;y<=p[1]+1;y++)add(x,y);o.carpet=C;
+      const cd=new Set();for(let x=kx;x<gx-1;x+=2){[p[1]-2,p[1]+2].forEach(y=>{if(tileAt(m,x,y)==='.')cd.add(x+','+y);});}o.candles=cd;}}}catch(e){o.ok=false;}
+  return m.__sg=o;}
+const sncTv=(x,y)=>((x*7+y*13)%4+4)%4;// the wall face variant both renderers pick for a tile (hd2d.js tv): 2 = prayer cloth, 3 = window
+
+// the realm's weathering on a horizontal stone surface: a strip along y of width w (f paints relative to the tile or the sprite)
+function sncCap(f,x,y,w,P,R,thick){const k=P.cap;
+  for(let i=0;i<w;i++){const r=R();
+    if(k==='moss'){if(r<.75){f(r<.45?'#4e8a34':'#76b44c',x+i,y-1-(r<.2?1:0),1,2);}if(r>.96)f('#fff4c8',x+i,y-2,1,1);}
+    else if(k==='snow'){f('#ffffff',x+i,y-1-((i>>1)%3===0?1:0),1,2);if(i%3===1)f('#c6dcee',x+i,y+1,1,1);if(i%6===2)f('#e4f4ff',x+i,y+2,1,1+(r<.5?2:1));}
+    else if(k==='salt'){if(r<.6)f(r<.3?'#f4f8f4':'#bfe8e0',x+i,y-1,1,1);if(r>.9)f('#d8d0c0',x+i,y-1,2,1);if(i%7===3)f('#5cc8b8',x+i,y+1,1,2);}
+    else if(k==='ember'){if(r<.5)f('#2a2420',x+i,y-1,1,1);if(i%6===2){f('#ff8a3a',x+i,y,1,1);f('#ffd070',x+i,y,1,1);}}
+    else if(k==='gold'){f('#f2c93a',x+i,y,1,1);if(r>.8)f('#fff6c0',x+i,y,1,1);}
+    else{if(r<.4)f(r<.15?'#ffffff':r<.28?'#e2ccff':'#b080ff',x+i,y-1,1,1);}}}
+
+// ---------- walls: a pale ashlar face with a cornice, a plinth, prayer cloths and stained glass ----------
+function sncFace(f,R,D,H,v,x,y,m,L,px,py){const W=D.w;
+  f(W[0],0,0,16,H);
+  for(let r=2;r<H-2;r+=4){const off=(r/4+x)%2?0:4;for(let i=-off;i<16;i+=8){const col=R()<.22?W[2]:R()<.5?W[0]:shade(W[0],.96),a=Math.max(0,i),w=Math.min(7,16-a);f(col,a,r,w,3);f(tint(col,.22),a,r,w,1);}f(W[1],0,r+3,16,1);}
+  f(tint(W[0],.4),0,0,16,2);f(W[2],0,2,16,1);f('rgba(60,48,36,.35)',0,3,16,1);// cornice
+  f(W[1],0,H-4,16,3);f(W[2],0,H-4,16,1);f(W[3],0,H-1,16,1);f('rgba(0,0,0,.14)',0,H-3,16,2);// plinth
+  const t0=4,t1=H-6;
+  if(v===2&&(x*3+y*5)%7!==0){// a prayer cloth on a rod: the realm's cloth, a gold sigil, a swallow tail and fringe
+    f('#6a5a3a',3,t0-1,10,1);f('#e8c860',3,t0-1,1,1);f('#e8c860',12,t0-1,1,1);f(D.cloth[0],4,t0,8,t1-t0-2);f(D.cloth[1],5,t0,2,t1-t0-2);f(shade(D.cloth[0],.78),10,t0,2,t1-t0-2);
+    f('#f0dc98',4,t0+1,8,1);const sy=t0+Math.max(3,Math.floor((t1-t0)*.35));f('#f6e8b0',7,sy,2,2);f('#f6e8b0',6,sy+1,4,1);f('#f6e8b0',7,sy+3,2,1);
+    f(D.cloth[0],4,t1-2,3,2);f(D.cloth[0],9,t1-2,3,2);f(shade(D.cloth[0],.7),7,t1-2,2,1);for(let i=4;i<12;i+=2)f('#e8c860',i,t1,1,1);}
+  else if(v===3){// stained glass in an arched window, lead lines, a deep reveal and a sill; the light is added by the caller
+    const wy=Math.max(2,t0-1),wh=Math.max(10,t1-wy-1);f(W[3],4,wy,8,wh);f(W[1],3,wy+1,10,wh);f(W[3],4,wy+1,8,wh-1);
+    const g=D.glass;for(let j=0;j<wh-2;j++){const k=j/(wh-2);f(lerpHex(g[1],g[0],k*.85),5,wy+1+j,6,1);}
+    f(lerpHex(g[0],'#ffffff',.5),6,wy+3,2,3);f(g[1],8,wy+wh-6,2,3);
+    f(W[3],4,wy,2,1);f(W[3],10,wy,2,1);f('#3a3024',7,wy+1,2,wh-2);f('#3a3024',5,wy+Math.floor(wh/2),6,1);
+    f(W[2],3,wy+wh,10,1);f(W[1],3,wy+wh+1,10,1);
+    if(L&&(x+y)%2===0)L.push([px+8,py+Math.floor(wy+wh/2),22,'day']);}
+  else if((x*5+y*3)%9===0){// a carved sigil in a shallow roundel
+    f(W[1],5,t0+1,6,6);f(W[0],6,t0+2,4,4);f(D.acc,7,t0+3,2,2);f(D.acc2,7,t0+3,1,1);}
+}
+function sncTop(f,R,D){f(D.top,0,0,16,16);for(let i=0;i<4;i++)f(shade(D.w[3],1.4),Math.floor(R()*14),Math.floor(R()*14),2,1);for(let i=0;i<2;i++)f(tint(D.top,.07),Math.floor(R()*13),Math.floor(R()*13),3,1);}
+
+// ---------- floors ----------
+const SNC_CAPCOL={moss:['#6a9a44','#8cc060'],salt:['#f0f6f2','#a8dcd0'],ember:['#3a2a22','#ff8a3a'],snow:['#ffffff','#cfe4f4'],gold:['#f2c93a','#fff0a0'],star:['#b080ff','#e8d8ff']};
+function sncFloor(f,R,D,P,x,y,m,L,px,py,ctx){const F=D.f,o=sncGeo(m);let reg='room';
+  if(o.ok){const k=o.keep,yd=o.yard;if(x>=k.x&&x<k.x+k.w&&y>=k.y&&y<k.y+k.h)reg='hall';else if(x>=yd.x&&x<yd.x+yd.w&&y>=yd.y&&y<yd.y+yd.h)reg='yard';}
+  // flagstones
+  f(F[0],0,0,16,16);
+  if(reg==='hall'){for(let j=0;j<2;j++){const off=((x+y+j)%2)?4:0;for(let i=-off;i<16;i+=12){const a=Math.max(0,i),w=Math.min(11,16-a),col=R()<.3?F[2]:R()<.5?F[0]:F[1];f(col,a,j*8,w,7);f(tint(col,.16),a,j*8,w,1);}f(F[3],0,j*8+7,16,1);}
+    for(let j=0;j<2;j++){const off=((x+y+j)%2)?4:0;f(F[3],(off+11)%16,j*8,1,8);}}
+  else{for(let j=0;j<2;j++)for(let i=0;i<2;i++){const col=R()<.3?F[2]:R()<.5?F[0]:F[1];f(col,i*8,j*8,7,7);f(tint(col,.14),i*8,j*8,7,1);}
+    f(F[3],7,0,1,16);f(F[3],15,0,1,16);f(F[3],0,7,16,1);f(F[3],0,15,16,1);if(R()<.18){const cx=Math.floor(R()*12)+2,cy=Math.floor(R()*12)+2;f(F[3],cx,cy,3,1);f(F[3],cx+2,cy+1,1,2);}}
+  const cc=SNC_CAPCOL[P.cap]||SNC_CAPCOL.moss;
+  const wall=(dx,dy)=>tileAt(m,x+dx,y+dy)==='#';
+  // the realm settles into the joints, more where it is wet and old (by walls and in the yard)
+  const wet=(wall(0,-1)||wall(-1,0)||wall(1,0)||wall(0,1))?.22:.07;
+  if(R()<wet){const a=Math.floor(R()*12)+1;for(let i=0;i<3+Math.floor(R()*3);i++){f(R()<.5?cc[0]:cc[1],a+i,(i%2?7:15),1,1);}}
+  if(reg==='yard')sncYard(f,R,D,P,x,y,m,o,L,px,py,cc);
+  else if(reg==='hall')sncHall(f,R,D,P,x,y,m,o,L,px,py,ctx);
+  // light from a window above (the nearest wall north of this floor tile within three tiles is stained glass): a patch of coloured light
+  for(let k=1;k<=3;k++){const t=tileAt(m,x,y-k);if(t==='#'){if(sncTv(x,y-k)===3){const q=(4-k)/4;ctx.fillStyle='rgba('+hx(D.glass[1]).join(',')+','+(.2*q).toFixed(2)+')';ctx.fillRect(px+1,py,14,16);ctx.fillStyle='rgba('+hx(D.glass[0]).join(',')+','+(.16*q).toFixed(2)+')';ctx.fillRect(px+4,py+1,8,13);}break;}}
+  if(wall(0,-1)){ctx.fillStyle='rgba(40,28,20,.30)';ctx.fillRect(px,py,16,3);}
+  if(wall(-1,0)){ctx.fillStyle='rgba(40,28,20,.16)';ctx.fillRect(px,py,2,16);}
+}
+// the courtyard: a cloister garden between a colonnade north and south. kind of a tile: path, grass, gravel or walk (the covered walk)
+function sncYKind(o,x,y){const yd=o.yard;if(x<yd.x||x>=yd.x+yd.w||y<yd.y||y>=yd.y+yd.h)return 'out';
+  if(y===o.ky||((y===o.cy||y===o.cy+1)&&x<=yd.x+4)||(x===yd.x+4&&y>=Math.min(o.cy,o.ky)&&y<=Math.max(o.cy+1,o.ky)))return 'path';
+  if(x>=yd.x+2&&x<yd.x+yd.w-2&&y>=yd.y+4&&y<yd.y+yd.h-4)return y<o.ky?'grass':'gravel';return 'walk';}
+function sncYard(f,R,D,P,x,y,m,o,L,px,py,cc){if(!o.ok)return;const k=sncYKind(o,x,y),g=P.gr,F=D.f;
+  if(k==='grass'){f(g[0],0,0,16,16);for(let i=0;i<14;i++){const gx=Math.floor(R()*15),gy=Math.floor(R()*13)+2;f(R()<.5?g[1]:g[2],gx,gy,1,2+(R()<.3?1:0));}
+    for(let i=0;i<3;i++)f(g[1],Math.floor(R()*13),Math.floor(R()*14),2,1);
+    const h=((x*29+y*53)%7);if(h<3){const bx=2+Math.floor(R()*10),by=3+Math.floor(R()*9);for(let i=0;i<3;i++){const c=P.bloom[(i+h)%2];f(c,bx+(i*3)%6,by+(i*2)%5,2,2);f('#ffffff',bx+(i*3)%6,by+(i*2)%5,1,1);}}}
+  else if(k==='gravel'){f(lerpHex(F[2],'#ffffff',.25),0,0,16,16);for(let j=0;j<4;j++){const yy=j*4+1,ph=(x*5+j*3)%6;f(F[3],0,yy,16,1);f(F[0],0,yy+1,16,1);for(let i=0;i<16;i+=1){const w=Math.round(Math.sin((i+ph)/2.2));if(w>0)f(F[1],i,yy+(w?0:0),1,1);}}
+    for(let i=0;i<6;i++)f(R()<.5?F[0]:F[3],Math.floor(R()*15),Math.floor(R()*15),1,1);
+    if((x*13+y*7)%9===0){const sx=3+Math.floor(R()*6),sy=4+Math.floor(R()*6);f('rgba(60,50,40,.28)',sx+1,sy+3,8,2);f(shade(F[0],.9),sx,sy,8,4);f(tint(F[0],.35),sx+1,sy,6,1);f(F[3],sx,sy+3,8,1);if(P.cap==='moss')f('#6aa044',sx+1,sy-1,4,1);}}
+  else if(k==='path'){f(lerpHex(F[1],P.gr[0],.18),0,0,16,16);for(let i=0;i<3;i++){const sx=((i*5+x*3+y)%7),sy=i*5;f('rgba(60,50,40,.3)',sx+1,sy+3,8,2);f(F[0],sx,sy+1,8,4);f(tint(F[2],.3),sx+1,sy+1,6,1);f(F[3],sx,sy+4,8,1);}}
+  // a curb where garden meets path or walk
+  if(k==='grass'||k==='gravel'){const nb=(dx,dy)=>{const q=sncYKind(o,x+dx,y+dy);return q==='path'||q==='walk'||q==='out';};
+    if(nb(0,-1)){f(F[3],0,0,16,1);f(tint(F[2],.4),0,1,16,1);}if(nb(0,1)){f(F[3],0,15,16,1);}if(nb(-1,0)){f(F[3],0,0,1,16);}if(nb(1,0)){f(F[3],15,0,1,16);}}}
+// the hall: a polished floor, the runner carpet with gold trim and fringe, candles on the floor along the aisle, a pale dais under the rune circle
+function sncHall(f,R,D,P,x,y,m,o,L,px,py,ctx){if(!o.ok)return;const C=o.carpet,key=x+','+y;
+  const has=(dx,dy)=>C.has((x+dx)+','+(y+dy)),cl=D.cloth;
+  if(C.has(key)){const top=!has(0,-1),bot=!has(0,1),lf=!has(-1,0),rt=!has(1,0);
+    f(cl[0],0,0,16,16);f(shade(cl[0],.84),0,0,16,16);f(cl[0],1,1,14,14);
+    f(cl[1],7,5,2,6);f(cl[1],5,7,6,2);f(shade(cl[0],.7),7,7,2,2);// a diamond motif
+    if(top){f('#2a2018',0,0,16,1);f('#f0dc98',0,1,16,2);f('#8a7030',0,3,16,1);}else if(bot){f('#8a7030',0,12,16,1);f('#f0dc98',0,13,16,2);f('#2a2018',0,15,16,1);}
+    if(lf){f('#f0dc98',0,0,2,16);f('#f0dc98',-0,0,1,16);for(let j=0;j<16;j+=2)f('#e8c860',0,j,1,1);f('#8a7030',2,0,1,16);}
+    if(rt){f('#f0dc98',14,0,2,16);f('#8a7030',13,0,1,16);}
+    if(!top&&!bot){f(tint(cl[0],.12),3,0,1,16);f(tint(cl[0],.12),12,0,1,16);}}
+  else if(o.candles&&o.candles.has(key)){// a candle in a dish, lit
+    const cx=5+Math.floor(R()*5);f('rgba(40,30,20,.3)',cx-1,12,6,2);f('#8a8070',cx-1,11,5,2);f('#cfc6b3',cx,11,3,1);f('#f6f0e0',cx+1,6,2,5);f('#fff6d0',cx+1,6,1,2);f('#ffd870',cx+1,4,2,2);f('#fff8e0',cx+1,4,1,1);
+    L.push([px+cx+1,py+7,14,'lamp']);}
+  // the dais ring under the rune circle: a paler step around the guardian's tile
+  const gx=o.gx,gy=o.gy;if(Math.abs(x-gx)<=1&&y>=gy-1&&y<=gy+2){if(x===gx-1)f(tint(D.f[2],.3),0,0,1,16);if(x===gx+1)f(D.f[3],15,0,1,16);if(y===gy-1)f(tint(D.f[2],.3),0,0,16,1);}
+}
+// the stairs out (the start room's door): three pale steps in warm light
+function sncDoor(f,D,L,px,py){f('#3a3028',0,0,16,16);for(let i=0;i<5;i++){const yy=12-i*3;f(tint(D.f[0],.3),1+i,yy,14-i*2,2);f(shade(D.f[0],.82),1+i,yy+2,14-i*2,1);}f('#fff6d0',4,0,8,3);f('#ffe9a0',1,0,1,16);f('#ffe9a0',14,0,1,16);L.push([px+8,py+2,46,'day']);}
+// the rune circle tile (X): a faint accent ring on the floor; sites.js drawHallRunes adds the big glow around it
+function sncRune(f,ctx,D){ctx.globalAlpha=.7;for(let a=0;a<24;a++){const t=a/24*Math.PI*2;f(D.acc,8+Math.round(Math.cos(t)*7),8+Math.round(Math.sin(t)*5),1,1);}ctx.globalAlpha=1;}
+function sncTile(ctx,m,x,y,frame){const D=DTH(m),P=SNC_P(m.theme),c=tileAt(m,x,y),px=x*TS,py=y*TS,R=mulberry(x*5113+y*2671+m.s*7),L=m.lights=m.lights||[];
+  const f=(col,a,b,w,h)=>{ctx.fillStyle=col;ctx.fillRect(px+a,py+b,w,h);};const isW=(dx,dy)=>tileAt(m,x+dx,y+dy)==='#';
+  if(c==='#'){
+    if(!isW(0,1)){sncFace(f,R,D,16,sncTv(x,y),x,y,m,L,px,py);
+      if(sncTv(x,y)===0&&(x*3+y*5)%11===0&&tileAt(m,x,y+1)!=='~'){f('#6a5a3a',7,5,2,1);f('#e8c860',6,6,4,5);f('#fff0b0',7,7,2,3);L.push([px+8,py+6,22,'torch']);m.torches=m.torches||[];m.torches.push([px+8,py+6]);}}// a wall lamp: a small gilt oil lamp
+    else{sncTop(f,R,D);if(!isW(-1,0))f(D.w[1],0,0,2,16);if(!isW(1,0))f(D.w[1],14,0,2,16);if(!isW(0,-1))f(D.w[1],0,0,16,2);}
+    return;}
+  sncFloor(f,R,D,P,x,y,m,L,px,py,ctx);
+  if(c==='E')sncDoor(f,D,L,px,py);
+  if(c==='X'||(c==='.'&&m.bossAt&&x===m.bossAt[0]&&y===m.bossAt[1]))sncRune(f,ctx,D);
+}
+{const dt0=drawDTile;drawDTile=function(ctx,m,x,y,frame){if(m&&m.fort&&m.kind==='dungeon'&&!m.archive)return sncTile(ctx,m,x,y,frame);return dt0.apply(this,arguments);};}
+// HD-2D: the block faces (band A) and tops (band C) of the struct strip, redrawn after the dungeon material has painted them
+{const hs0=hdStructCanvas;hdStructCanvas=function(m,S){const cv=hs0.apply(this,arguments);try{if(m&&m.kind==='dungeon'&&m.fort&&!m.archive){const c=cv.getContext('2d'),D=DTH(m),HA=S.hArt;
+    for(let v=0;v<4;v++){const x0=v*16,R=mulberry(v*997+m.s*31+7),f=(col,x,y,w,h)=>{c.fillStyle=col;c.fillRect(x0+x,y,w,h);};c.clearRect(x0,0,16,HA);sncFace(f,R,D,HA,v,v+3,v*2+1,m,null,0,0);f('rgba(0,0,0,.14)',0,HA-4,16,3);
+      const R2=mulberry(v*71+m.s+3),g=(col,x,y,w,h)=>{c.fillStyle=col;c.fillRect(x0+x,80+y,w,h);};c.clearRect(x0,80,16,16);sncTop(g,R2,D);}}}catch(e){}return cv;};}
+
+// ---------- props: carved columns and stone lanterns ----------
+function sncPillarCv(D){const key='pil'+D.acc+D.w[0];if(SNCX[key])return SNCX[key];const P=Object.values(SNC).find(p=>p.acc===D.acc)||SNC.meadow,S=sncStone(P),cv=mkCv(14,30),c=cv.getContext('2d'),f=(col,x,y,w,h)=>{c.fillStyle=col;c.fillRect(x,y,w,h);},R=mulberry(77);
+  f(S[3],1,29,12,1);f(S[1],1,27,12,2);f(S[0],1,27,12,1);f(S[3],2,28,11,1);f(S[2],2,25,10,2);f(S[0],2,25,9,1);// plinth and torus
+  f(S[1],3,6,8,19);f(S[0],3,6,2,19);f(S[2],9,6,2,19);f(S[3],10,6,1,19);f(S[2],6,6,1,19);f(S[2],8,6,1,19);// shaft with flutes
+  f(S[3],3,24,8,1);f(S[3],3,6,8,1);
+  f(P.acc,3,22,8,1);f(P.acc2,4,22,2,1);// a glowing band
+  f(S[2],3,5,8,1);f(S[1],2,3,10,2);f(S[0],2,3,10,1);f(S[3],2,5,10,1);// necking and echinus
+  f(S[1],1,0,12,3);f(S[0],1,0,12,1);f(S[3],1,2,12,1);// abacus
+  f(S[2],1,3,2,3);f(S[3],1,3,1,3);f(S[2],11,3,2,3);f(S[3],12,3,1,3);f(S[0],2,3,1,1);f(S[0],11,3,1,1);// volutes
+  f(P.acc,6,3,2,2);f(P.acc2,6,3,1,1);
+  sncCap((col,x,y,w,h)=>f(col,x,y,w,h),1,0,12,P,R);
+  if(P.cap==='moss'||P.cap==='salt')sncCap((col,x,y,w,h)=>f(col,x,y,w,h),1,28,12,P,R);
+  return SNCX[key]=cv;}
+function sncLanternCv(D,v){const key='lan'+D.acc+D.w[0]+v;if(SNCX[key])return SNCX[key];const P=Object.values(SNC).find(p=>p.acc===D.acc)||SNC.meadow,S=sncStone(P),cv=mkCv(16,22),c=cv.getContext('2d'),f=(col,x,y,w,h)=>{c.fillStyle=col;c.fillRect(x,y,w,h);},R=mulberry(91);
+  const g=c.createRadialGradient(8,10,1,8,10,8);g.addColorStop(0,'rgba(255,214,120,.5)');g.addColorStop(1,'rgba(255,214,120,0)');c.fillStyle=g;c.fillRect(0,2,16,16);
+  f(S[3],4,21,8,1);f(S[1],4,18,8,3);f(S[0],4,18,8,1);f(S[3],4,20,8,1);// foot
+  f(S[1],6,12,4,6);f(S[0],6,12,1,6);f(S[3],9,12,1,6);// post
+  f(S[2],4,11,8,2);f(S[0],4,11,8,1);// ring
+  f(S[1],4,6,8,5);f(S[0],4,6,8,1);f(S[3],4,10,8,1);f(S[2],4,6,1,5);f(S[3],11,6,1,5);// firebox
+  f('#3a2c1c',6,7,4,3);f('#ff9a30',6+(v?0:1),8-(v?1:0),3,2+(v?1:0));f('#ffd870',7,8-(v?1:0),2,2);f('#fffbe6',7+(v?0:0),9,1,1);// the flame in the window
+  f(S[3],3,5,10,1);f(S[1],2,4,12,1);f(S[0],3,3,10,1);f(S[1],4,2,8,1);f(S[0],5,1,6,1);f(S[2],2,5,12,1);// roof
+  f(S[3],7,0,2,1);f(P.acc,7,0,2,1);f(P.acc2,7,0,1,1);
+  sncCap((col,x,y,w,h)=>f(col,x,y,w,h),4,1,8,P,R);
+  return SNCX[key]=cv;}
+{const oc0=objCanvas;objCanvas=function(theme,kind,v){try{const m=SNCX.dm||(kind==='brazier'&&typeof WS!=='undefined'?WS.m:null);
+  if(m&&m.fort&&m.kind==='dungeon'&&!m.archive){const D=DTH(m);if(D&&D.cloth){if(kind==='pillar')return sncPillarCv(D);if(kind==='brazier')return sncLanternCv(D,v?1:0);}}}catch(e){}return oc0.apply(this,arguments);};}
+{const do0=drawObjects;drawObjects=function(ctx,m,y){const was=SNCX.dm;SNCX.dm=m&&m.fort&&m.kind==='dungeon'?m:null;try{return do0.apply(this,arguments);}finally{SNCX.dm=was;}};}
+
+// ---------- the air: slow golden motes and a soft light tint ('sanctmotes' replaces the old 'flecks') ----------
+{const tf0=themeFX;themeFX=function(ctx,m,vw,vh,now){if(!m||m.amb!=='sanctmotes')return tf0.apply(this,arguments);
+  const still=typeof reducedMotion==='function'&&reducedMotion(),t=still?0:now/1000,P=SNC_P(m.theme);
+  if(m.btint){ctx.fillStyle=m.btint;ctx.fillRect(0,0,vw,vh);}
+  // two slanted shafts of soft light, swaying very slowly
+  for(let i=0;i<3;i++){const x0=((i*0.37+0.12)*vw+Math.sin(t*.12+i*2)*14)%vw,w=24+i*8,g=ctx.createLinearGradient(x0,0,x0+vh*.35,vh);g.addColorStop(0,'rgba(255,238,190,.07)');g.addColorStop(1,'rgba(255,238,190,0)');
+    ctx.fillStyle=g;ctx.beginPath();ctx.moveTo(x0,0);ctx.lineTo(x0+w,0);ctx.lineTo(x0+w+vh*.35,vh);ctx.lineTo(x0+vh*.35,vh);ctx.fill();}
+  const gl=hx(P.acc2);
+  for(let i=0;i<20;i++){const sx0=(i*97+13)%vw,sy0=(i*61+7)%vh,x=(sx0+Math.sin(t*.35+i*1.7)*10+vw)%vw,y=(sy0-t*(3+i%4)+vh*4)%vh,tw=.55+.45*Math.sin(t*1.1+i*2.3),a=(.35+.5*tw).toFixed(2);
+    ctx.fillStyle='rgba(255,226,140,'+(.08*tw).toFixed(3)+')';ctx.fillRect(Math.floor(x)-1,Math.floor(y)-1,3,3);
+    ctx.fillStyle=i%5===0?'rgba('+gl.join(',')+','+a+')':'rgba(255,230,150,'+a+')';ctx.fillRect(Math.floor(x),Math.floor(y),1,1);}};}
+
+// ---------- the rune circle keeps its glow (warm gold and the realm's accent now) ----------
+{const hr0=drawHallRunes;drawHallRunes=function(ctx,m){if(!m||!m.fort)return hr0.apply(this,arguments);const g=m.guardAt;if(!g)return;const cx=g[0]*TS+8,cy=g[1]*TS+9,D=DTH(m),col=D.acc;
+  ctx.save();const gl=ctx.createRadialGradient(cx,cy,2,cx,cy,54);gl.addColorStop(0,'rgba('+hx(D.acc2).join(',')+',.42)');gl.addColorStop(.55,'rgba('+hx(col).join(',')+',.16)');gl.addColorStop(1,'rgba('+hx(col).join(',')+',0)');ctx.fillStyle=gl;ctx.fillRect(cx-58,cy-50,116,100);
+  for(let ring=0;ring<2;ring++){const rx=ring?44:30,ry=ring?32:21,n=ring?60:40;ctx.globalAlpha=ring?.8:1;
+    for(let a=0;a<n;a++){const t=a/n*Math.PI*2;ctx.fillStyle=(a%5===0)?'#fff8dc':col;ctx.fillRect(Math.round(cx+Math.cos(t)*rx),Math.round(cy+Math.sin(t)*ry),1,1);}}
+  ctx.globalAlpha=.85;ctx.fillStyle=D.acc2;for(let a=0;a<8;a++){const t=a/8*Math.PI*2+.2,px=Math.round(cx+Math.cos(t)*37),py=Math.round(cy+Math.sin(t)*26.5);ctx.fillRect(px-1,py,3,1);ctx.fillRect(px,py-1,1,3);}
+  ctx.globalAlpha=.5;ctx.fillStyle=col;for(let a=0;a<4;a++){const t=a*Math.PI/2+Math.PI/4;for(let k=0;k<18;k++){const q=k/18;ctx.fillRect(Math.round(cx+Math.cos(t)*30*q*1.1),Math.round(cy+Math.sin(t)*21*q*1.1),1,1);}}
+  ctx.restore();};}
+
+// ---------- music: slow and sacred (the key stays 'fort') ----------
+if(typeof MOODS!=='undefined')MOODS.fort={bpm:62,sc:'dorian',prog:[0,5,3,4],lead:'triangle',dr:0,feel:.3,low:0};
+if(typeof MTRACK!=='undefined'){const SA_A='E5h. D5q | C5h A4h | B4h. C5q | E5w | D5h. A4q | C5h A4h | A4h G#4h | A4w',SA_A_CH='Am | F | C | Am | Dm | Am | F:2 E:2 | Am',
+  SA_B='C5h E5h | F5h. E5q | D5h B4h | C5w | A5h. G5q | F5h E5h | D5h. E5q | C5w',SA_B_CH='C | F | G | Am | F | Dm | E | Am';
+  MTRACK.fort=o=>({name:'Sanctum: Still Hours',bpm:62,tr:o.tr||0,tonic:9,room:'cathedral',resume:1,form:['A','B','A2'],sec:{
+    A:{bars:8,ch:SA_A_CH,p:[['harp',SA_A,{v:.75}],['choir','pad',{o:4,v:.2}],['organ','pedal',{o:2,v:.3}]],dr:{tri:'x'+'.'.repeat(63)}},
+    B:{bars:8,ch:SA_B_CH,p:[['flute',SA_B,{v:.55}],['celesta','arp8',{o:4,v:.3}],['strings','pad',{o:3,v:.18}],['organ','pedal',{o:2,v:.3}]]},
+    A2:{bars:8,ch:SA_A_CH,p:[['celesta',SA_A,{v:.6}],['harp',SA_A,{o:1,v:.3,from:4}],['choir','pad',{o:4,v:.24}],['organ','pedal',{o:2,v:.3}]],dr:{tri:'x'+'.'.repeat(63)}}}});
+  if(typeof MGAIN!=='undefined')MGAIN.fort=1.15;}
+// the map marker: a little shrine gate in pale stone with a lit door
+if(typeof MAPICO_X!=='undefined')MAPICO_X.fort=[[0,1,10,2,'#efe8d6'],[1,3,8,1,'#b3a995'],[1,3,2,7,'#d8cfbb'],[7,3,2,7,'#d8cfbb'],[3,4,4,6,'#ffe9a0'],[4,6,2,4,'#fff8dc']];
+
+// ---------- HD-2D light: pale stone takes a gentler grade and softer point lights than the dark dungeons ----------
+{const hl0=hdLook;hdLook=function(m,now){const o=hl0.apply(this,arguments);try{if(m&&m.fort&&m.kind==='dungeon'){
+  if(typeof mapIndoor==='function'&&mapIndoor(m)){o.exp=1.1;o.lamp*=.6;o.pl*=.5;o.bloom*=.5;o.vig*=.8;{const mu=(o.amb[0]+o.amb[1]+o.amb[2])/3;for(let i=0;i<3;i++)o.amb[i]=Math.min(.8,(mu+(o.amb[i]-mu)*.5)*1.85+.06);}o.gain[0]*=1.01;o.gain[2]*=.99;}
+  else{o.exp=Math.min(o.exp,.97);o.bloom*=.6;}}}catch(e){}return o;};}
+{const hb0=hdBakeLights;hdBakeLights=function(m,S,lights){let add=null;try{if(m&&m.kind==='field'&&m.fortAt)add=sncGateLights(m);}catch(e){}
+  const L=hb0.call(this,m,S,add?sncOldGateLights(m,lights||[]).concat(add):lights);try{if(m&&m.fort&&m.kind==='dungeon'){for(let i=0;i+7<L.length;i+=8){L[i+3]*=.85;const t=L[i+7],k=Math.max(L[i+4],L[i+5],L[i+6])*(t===7?.6:.2);/* every flame glows a soft gold (pale stone turns saturated orange into pink); the window beams stay neutral */if(t===7){L[i+4]*=.6;L[i+5]*=.6;L[i+6]*=.6;}else{L[i+4]=k;L[i+5]=k*.86;L[i+6]=k*.58;}}}}catch(e){}return L;};}
+
+// ---------- OUTSIDE: the shrine gate on the field ----------
+// geometry (px, relative to the top left of the 3 x 2 footprint, 48 x 32): pillars x 7..15 and 33..41 (the 'U' columns), the door of light between
+// them (x 16..32; the 'E' tile is its lower half, a stair of three steps), lanterns on the front 'U' tiles x 0..7 and 40..47, lintel above y -17..-8.
+function sncOldGateLights(m,arr){const fa=m.fortAt;if(!fa||!arr)return arr;return arr.filter(L=>!(L[3]==='cyan'&&Math.abs(L[0]-(fa[0]*TS+8))<2&&Math.abs(L[1]-(fa[1]*TS+4))<2)&&!(L[3]==='lamp'&&L[2]===12&&Math.abs(L[1]-(fa[1]*TS-3))<2));}
+function sncGateLights(m){const [fx,fy]=m.fortAt,x=(fx-1)*TS,y=(fy-1)*TS;return [[x+4,y+22,11,'lamp'],[x+44,y+22,11,'lamp']];}
+function sncFieldM(){return SNCX.fm||(typeof WS!=='undefined'?WS.m:null);}
+function sncGroundPal(P){return {lg:P.lg,path:P.cap==='snow'?'#c8d8e6':P.cap==='coast'?'#d0c8b0':'#b9b2a4'};}
+// ground paint: a ring of lighter ground and a path of flat stones leading to the stair (drawn in 2D and in the HD ground texture)
+function drawShrineRing(ctx,x,y){const m=sncFieldM(),P=SNC_P(m&&m.theme),S=sncStone(P),R=mulberry(((x*31+y*17)|0)+5);
+  ctx.save();
+  ctx.fillStyle='rgba(20,18,30,.16)';ctx.beginPath();ctx.ellipse(x+24,y+34,34,12,0,0,7);ctx.fill();
+  ctx.globalAlpha=.34;ctx.fillStyle=P.lg;ctx.beginPath();ctx.ellipse(x+24,y+36,40,17,0,0,7);ctx.fill();
+  ctx.globalAlpha=.3;ctx.beginPath();ctx.ellipse(x+24,y+36,29,12,0,0,7);ctx.fill();ctx.globalAlpha=1;
+  // the realm's small signs round the ring: flowers, salt stones, embers, frost, dust, stars
+  for(let i=0;i<16;i++){const t=Math.PI*(.05+i/15*.9),sx=Math.round(24+Math.cos(t)*38+R()*3),sy=Math.round(36+Math.sin(t)*16+R()*2);
+    const k=P.cap,col=k==='moss'?(i%3?P.bloom[0]:P.bloom[1]):k==='salt'?(i%2?'#f4f8f4':'#8adccc'):k==='ember'?(i%3?'#ff8a3a':'#ffd070'):k==='snow'?(i%2?'#ffffff':'#bfe6ff'):k==='gold'?'#f2c93a':(i%2?'#e2ccff':'#b080ff');
+    ctx.fillStyle=col;ctx.fillRect(x+sx,y+sy,1+(i%3===0?1:0),1);if(k==='moss'&&i%3===0){ctx.fillStyle='#4e8a34';ctx.fillRect(x+sx,y+sy+1,1,2);}}
+  // flat stones in a path, narrowing toward the stair
+  for(let k=0;k<6;k++){const sy=33+k*5.4,w=10-Math.min(3,k>>1)*0+0,sx=24-w/2+((k*7)%5-2)*1.2;
+    ctx.fillStyle='rgba(30,26,34,.28)';ctx.fillRect(x+sx+1,y+sy+3,w,2);ctx.fillStyle=S[3];ctx.fillRect(x+sx-.5,y+sy-.5,w+1,5);ctx.fillStyle=S[1];ctx.fillRect(x+sx,y+sy,w,4);ctx.fillStyle=S[0];ctx.fillRect(x+sx+1,y+sy,w-2,1);ctx.fillStyle=S[2];ctx.fillRect(x+sx+2,y+sy+2,w-4,1);
+    if(P.cap==='moss'&&k%2===0){ctx.fillStyle='#6aa044';ctx.fillRect(x+sx+w-3,y+sy+3,3,1);}if(P.cap==='snow'){ctx.fillStyle='#ffffff';ctx.fillRect(x+sx+1,y+sy-1,w-2,1);}}
+  ctx.restore();}
+function drawShrineFront(ctx,x,y){const m=sncFieldM(),P=SNC_P(m&&m.theme),S=sncStone(P),R=mulberry(((x*13+y*7)|0)+3),f=(c,a,b,w,h)=>{ctx.fillStyle=c;ctx.fillRect(x+a,y+b,w,h);};
+  const cap=(a,b,w)=>sncCap(f,a,b,w,P,R);
+  ctx.save();
+  // the door of light between the pillars: a pale recess, an arched veil of the realm's light, a bright sigil over it
+  f(S[3],15,-1,18,23);f(S[2],16,0,16,22);f('#5a4c3c',17,2,14,20);
+  ctx.save();
+  const dv=ctx.createLinearGradient(0,y+3,0,y+24);dv.addColorStop(0,'#fff8dc');dv.addColorStop(.55,P.acc2);dv.addColorStop(1,P.acc);
+  ctx.fillStyle=dv;ctx.beginPath();ctx.moveTo(x+18,y+23);ctx.lineTo(x+18,y+9);ctx.quadraticCurveTo(x+24,y+1,x+30,y+9);ctx.lineTo(x+30,y+23);ctx.fill();
+  const gl=ctx.createRadialGradient(x+24,y+16,1,x+24,y+16,15);gl.addColorStop(0,'rgba(255,248,214,.55)');gl.addColorStop(1,'rgba(255,248,214,0)');ctx.fillStyle=gl;ctx.fillRect(x+12,y+2,24,28);
+  f('rgba(90,70,40,.5)',24,6,1,17);// where the two leaves meet
+  f('#fff8dc',23,4,2,2);f('#fff8dc',22,5,4,1);f('#fff8dc',23,7,2,1);
+  ctx.restore();
+  // ground shadow under the gate
+  ctx.fillStyle='rgba(20,18,30,.2)';ctx.beginPath();ctx.ellipse(x+24,y+32,25,4,0,0,7);ctx.fill();
+  // the three worn steps (the lowest one widest), wear in the middle, the realm at the edges
+  for(let i=0;i<3;i++){const w=20+i*4,sx=24-w/2,yy=21+i*4;f(S[3],sx-1,yy,w+2,5);f(S[0],sx,yy,w,1);f(S[1],sx,yy+1,w,2);f(S[2],sx+5,yy+1,w-10,2);f(S[3],sx,yy+3,w,1);for(let k=0;k<3;k++)f(S[2],sx+2+((k*9+i*5)%(w-4)),yy+1,1,1);
+    if(P.cap==='moss'){f('#5e9a3c',sx,yy+3,3,1);f('#5e9a3c',sx+w-4,yy+3,4,1);}else if(P.cap==='snow'){f('#ffffff',sx,yy,w,1);f('#c6dcee',sx+1,yy+3,w-2,1);}else if(P.cap==='ember'){f('#ff8a3a',sx+3,yy+3,2,1);}else if(P.cap==='salt'){f('#bfe8e0',sx+2,yy+3,4,1);}}
+  // two pillars (hashira): lit left, shaded right, a base, a band of the realm's colour, the realm settling on the foot
+  [[7],[33]].forEach(([a])=>{f(S[3],a-1,-9,10,36);f(S[1],a,-9,8,35);f(S[0],a,-9,3,35);f(S[2],a+5,-9,3,35);f(S[3],a+7,-9,1,35);f(S[2],a+3,-9,1,35);
+    f(S[3],a-2,24,12,3);f(S[1],a-2,24,12,2);f(S[0],a-2,24,12,1);f(S[3],a-2,26,12,1);// base
+    f(P.acc,a,3,8,1);f(P.acc2,a+1,3,2,1);f(P.acc,a,14,8,1);f(S[3],a,-9,8,1);
+    f(S[2],a-1,-9,10,2);f(S[0],a-1,-9,10,1);// the cap block under the lintel
+    if(P.cap==='moss'||P.cap==='salt'||P.cap==='snow')sncCap(f,a-2,24,12,P,R);if(P.cap==='moss'){f('#4e8a34',a,18,2,6);f('#76b44c',a,18,1,6);f('#4e8a34',a+6,20,2,4);}if(P.cap==='ember'){f('#ff8a3a',a+2,10,1,3);f('#ffd070',a+2,11,1,1);f('#ff8a3a',a+5,19,1,3);}});
+  // the lintel (kasagi), a stepped crown that reaches past the pillars: top slab with the realm on it, a thin second beam under it
+  f(S[3],-5,-18,58,10);f(S[0],-4,-17,56,2);f(S[1],-4,-15,56,4);f(S[2],-4,-11,56,2);// slab front
+  f(S[3],-6,-19,3,3);f(S[0],-5,-19,2,2);f(S[3],51,-19,3,3);f(S[0],51,-19,2,2);f(S[0],-3,-18,2,1);f(S[0],49,-18,2,1);// upswept ends
+  cap(-3,-18,52);
+  f(S[3],-1,-8,50,4);f(S[1],0,-8,48,3);f(S[2],0,-6,48,1);f(S[3],0,-5,48,1);// the second beam (shimaki)
+  // the tie beam (nuki) between the pillars with an inlaid band, and the plaque with the sanctum's sigil
+  f(S[3],14,-2,20,5);f(S[1],15,-2,18,3);f(S[0],15,-2,18,1);f(S[2],15,0,18,1);f(P.acc,16,0,16,1);
+  f(S[3],19,-7,10,6);f(S[1],20,-6,8,4);f(P.acc2,22,-5,4,2);f('#fff8dc',23,-5,2,1);f(P.acc,22,-3,4,1);
+  // a rope across the door with cloth ribbons and a bell
+  ctx.strokeStyle='#b89a5c';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x+15,y+3);ctx.quadraticCurveTo(x+24,y+7,x+33,y+3);ctx.stroke();
+  [[17,P.cloth[0]],[20,P.cloth[1]],[28,P.cloth[1]],[31,P.cloth[0]]].forEach(([a,c],i)=>{const h=i%2?7:9,t=Math.floor(4+(a<24?(a-15)/3:(33-a)/3));f(c,a,t,2,h);f(shade(c,.7),a+1,t,1,h);f('#f6eccb',a,t+h,1,1);f(c,a+1,t+h,1,1);});
+  f('#7a5a20',24,5,1,3);f('#d8a838',22,8,5,4);f('#f6d878',22,8,2,3);f('#8a6a20',22,11,5,1);f('#fff0b0',24,12,1,1);
+  // two stone lanterns on the front 'U' tiles, lit
+  [[0],[40]].forEach(([a])=>{const lx=a;ctx.fillStyle='rgba(255,214,120,.22)';ctx.beginPath();ctx.arc(x+lx+4,y+20,9,0,7);ctx.fill();
+    f(S[3],lx,30,8,2);f(S[1],lx+1,27,6,3);f(S[0],lx+1,27,6,1);f(S[1],lx+3,20,2,7);f(S[0],lx+3,20,1,7);f(S[2],lx+1,19,6,1);// foot, post, ring
+    f(S[3],lx,14,8,5);f(S[1],lx+1,14,6,5);f(S[0],lx+1,14,6,1);f('#3a2c1c',lx+2,15,4,3);f('#ffb040',lx+3,16,2,2);f('#fff4c0',lx+3,16,1,1);// firebox and flame
+    f(S[3],lx-1,13,10,1);f(S[1],lx-1,12,10,1);f(S[0],lx,11,8,1);f(S[1],lx+1,10,6,1);f(S[0],lx+2,9,4,1);f(P.acc,lx+3,8,2,1);cap(lx-1,11,10);});
+  ctx.restore();}
+function drawGatehouse(ctx,x,y){drawShrineRing(ctx,x,y);drawShrineFront(ctx,x,y);}
+// remember the map being painted (the ring and the front take no map argument), swap the E tile for a U tile so no cave mouth is painted under the
+// gate, and replace the lights sites.js adds with ones that match the lanterns
+{const bm0=buildMapCanvas;buildMapCanvas=function(m,fr){SNCX.fm=m;let fa=null,fc=null;
+  try{if(m&&m.kind==='field'&&m.fortAt&&m.t[m.fortAt[1]]){fa=m.fortAt;fc=m.t[fa[1]][fa[0]];m.t[fa[1]][fa[0]]='U';}}catch(e){fa=null;}
+  let c;try{c=bm0.apply(this,arguments);}finally{if(fa)m.t[fa[1]][fa[0]]=fc;}
+  try{if(fa&&m.lights){m.lights=sncOldGateLights(m,m.lights);sncGateLights(m).forEach(L=>m.lights.push(L));}}catch(e){}
+  return c;};}
+
+// ---------- OUTSIDE in HD-2D: two pillars, a lintel and a beam, the door of light, three treads, two lanterns, ribbons and a bell ----------
+// sheet regions (px): pillar front 0,0 8x40 | pillar side 10,0 8x40 | lintel front 20,0 58x10 | shimaki 20,12 50x4 | nuki 20,18 20x5 | plaque 44,18 10x8
+// lantern head 58,18 8x8 | lantern roof 68,18 12x4 | lantern stone 82,18 4x8 | riser 60,30 20x3 | ribbons 24,28 (4 strips of 3x12) | bell 44,30 6x9 | door 0,44 20x28
+function sncGateSheet(m){const th=m&&m.theme||'meadow',P=SNC_P(th),S=sncStone(P).map(c=>shade(c,.93));return hdSpr('sgate_'+th,96,72,(c)=>{const R=mulberry(11),f=(col,x,y,w,h)=>{c.fillStyle=col;c.fillRect(x,y,w,h);};
+  // pillars
+  f(S[1],0,0,8,40);f(S[0],0,0,3,40);f(S[2],5,0,3,40);f(S[3],7,0,1,40);f(S[2],3,0,1,40);f(S[3],0,36,8,4);f(S[1],0,36,8,1);f(P.acc,0,8,8,1);f(P.acc2,1,8,2,1);f(P.acc,0,20,8,1);f(S[2],0,0,8,2);
+  f(S[2],10,0,8,40);f(S[1],10,0,3,40);f(S[3],17,0,1,40);f(S[3],10,36,8,4);f(P.acc,10,8,8,1);f(P.acc,10,20,8,1);
+  if(P.cap==='moss'){f('#4e8a34',0,30,2,6);f('#76b44c',0,30,1,6);f('#4e8a34',6,32,2,4);f('#4e8a34',10,30,3,6);}else if(P.cap==='ember'){f('#ff8a3a',3,12,1,3);f('#ffd070',3,13,1,1);f('#ff8a3a',5,28,1,3);}else if(P.cap==='salt'){f('#f0f6f2',0,34,8,2);f('#8adccc',2,35,1,1);}else if(P.cap==='snow'){f('#ffffff',0,34,8,2);f('#c6dcee',0,36,8,1);}
+  // lintel, shimaki, nuki, plaque
+  f(S[3],20,0,58,10);f(S[0],20,0,58,2);f(S[1],20,2,58,5);f(S[2],20,7,58,3);f(S[0],21,1,2,1);f(S[0],75,1,2,1);
+  sncCap((col,x,y,w,h)=>f(col,x,y,w,h),20,2,58,P,R);
+  f(S[3],20,12,50,4);f(S[1],20,12,50,3);f(S[2],20,14,50,1);
+  f(S[3],20,18,20,5);f(S[1],20,18,20,4);f(S[0],20,18,20,1);f(P.acc,21,20,18,1);
+  f(S[3],44,18,10,8);f(S[1],45,19,8,6);f(P.acc2,47,20,4,3);f('#fff8dc',48,21,2,1);f(P.acc,47,23,4,1);
+  // lantern head (with flame), roof, stone
+  f(S[3],58,18,8,8);f(S[1],59,19,6,6);f(S[0],59,19,6,1);f('#3a2c1c',60,20,4,4);f('#ffb040',61,21,2,3);f('#fff4c0',61,21,1,1);
+  f(S[3],68,18,12,4);f(S[1],69,18,10,3);f(S[0],70,18,8,1);f(P.acc,73,18,2,1);sncCap((col,x,y,w,h)=>f(col,x,y,w,h),69,19,10,P,R);
+  f(S[1],82,18,4,8);f(S[0],82,18,1,8);f(S[3],85,18,1,8);
+  // riser, ribbons, bell
+  f(S[3],60,30,20,3);f(S[1],60,30,20,2);f(S[0],60,30,20,1);for(let i=0;i<4;i++)f(S[2],62+i*5,31,2,1);
+  [[P.cloth[0],10],[P.cloth[1],8],[P.cloth[1],8],[P.cloth[0],10]].forEach(([c0,h],i)=>{const x=24+i*4;f(c0,x,28,2,h);f(shade(c0,.7),x+1,28,1,h);f('#f6eccb',x,28+h,1,1);f(c0,x+1,28+h,1,1);});
+  f('#7a5a20',46,30,1,2);f('#d8a838',44,32,5,5);f('#f6d878',44,32,2,4);f('#8a6a20',44,36,5,1);f('#fff0b0',46,37,1,1);
+  // the door of light: stone jambs and lintel round an arched veil
+  f(S[3],0,44,20,28);f(S[2],1,45,18,27);f('#5a4c3c',2,47,16,25);
+  const dv=c.createLinearGradient(0,50,0,70);dv.addColorStop(0,'#fff8dc');dv.addColorStop(.55,P.acc2);dv.addColorStop(1,P.acc);c.fillStyle=dv;c.beginPath();c.moveTo(3,72);c.lineTo(3,56);c.quadraticCurveTo(10,46,17,56);c.lineTo(17,72);c.fill();
+  const gl=c.createRadialGradient(10,64,1,10,64,10);gl.addColorStop(0,'rgba(255,248,214,.6)');gl.addColorStop(1,'rgba(255,248,214,0)');c.fillStyle=gl;c.fillRect(2,52,16,20);
+  f('rgba(90,70,40,.5)',10,53,1,19);f('#fff8dc',9,50,2,2);f('#fff8dc',8,51,4,1);f('#fff8dc',9,53,2,1);});}
+function sncFlat(bt,a,c,n){H2P.set(a);bt.quad(H2P,-1,0,-1,0,c[0],c[1],c[2],255,n[0],n[1],n[2],8);}
+function sncGateGeo(m,S,b,Q,U,Vv,p,V,bt){const th=m&&m.theme||'meadow',P=SNC_P(th),St=sncStone(P),rgb=h=>hdRgb(h).map(v=>Math.round(v*235)),top=rgb(St[0]),side=rgb(St[2]),dark=rgb(St[3]);
+  const x0=b.x*TS,x1=x0+b.w*TS,zf=(b.y+b.h)*TS,F=(sx,sy,sw,sh)=>[U(p,sx),Vv(p,sy),U(p,sx+sw),Vv(p,sy+sh)];
+  // a box with a textured front; sides and top flat
+  const box=(xa,xb,za,zb,ya,yb,fr,sc,tc,fl)=>{
+    if(fr)Q([xa,yb,zb,xb,yb,zb,xb,ya,zb,xa,ya,zb],fr[0],fr[1],fr[2],fr[3],255,[0,0,1],fl==null?2|8:fl);
+    sncFlat(bt,[xa,yb,za,xa,yb,zb,xa,ya,zb,xa,ya,za],sc,[-1,0,0]);sncFlat(bt,[xb,yb,zb,xb,yb,za,xb,ya,za,xb,ya,zb],sc,[1,0,0]);sncFlat(bt,[xa,yb,za,xb,yb,za,xb,yb,zb,xa,yb,zb],tc,[0,1,0]);};
+  const hP=36*V,hS=40*V,hK=49*V,hN0=24*V,hN1=29*V;
+  // the door of light, set back, with its stone jambs
+  Q([x0+16,26*V,zf-17,x1-16,26*V,zf-17,x1-16,0,zf-17,x0+16,0,zf-17],...F(0,44,20,28),255,[0,0,1],2|8);
+  sncFlat(bt,[x0+16,26*V,zf-17,x0+16,26*V,zf-9,x0+16,0,zf-9,x0+16,0,zf-17],dark,[1,0,0]);sncFlat(bt,[x1-16,26*V,zf-9,x1-16,26*V,zf-17,x1-16,0,zf-17,x1-16,0,zf-9],dark,[-1,0,0]);
+  // three treads climbing to the door
+  for(let j=0;j<3;j++){const h=(j+1)*2.2*V,za=zf-6*(j+1),zb=zf-6*j,xa=x0+11+j*2,xb=x1-11-j*2;
+    Q([xa,h,zb,xb,h,zb,xb,0,zb,xa,0,zb],...F(60,30,20,3),255,[0,0,1],8);sncFlat(bt,[xa,h,za,xb,h,za,xb,h,zb,xa,h,zb],top,[0,1,0]);}
+  // pillars, the tie beam, the plaque, the shimaki and the lintel
+  [[x0+7,x0+15],[x1-15,x1-7]].forEach(([xa,xb])=>{const zb=zf-6,za=zf-14;
+    Q([xa,hP,zb,xb,hP,zb,xb,0,zb,xa,0,zb],...F(0,0,8,40),255,[0,0,1],8);Q([xa,hP,za,xa,hP,zb,xa,0,zb,xa,0,za],...F(10,0,8,40),255,[-1,0,0],8);Q([xb,hP,zb,xb,hP,za,xb,0,za,xb,0,zb],...F(10,0,8,40),255,[1,0,0],8);
+    sncFlat(bt,[xa,hP,za,xb,hP,za,xb,hP,zb,xa,hP,zb],top,[0,1,0]);});
+  box(x0+15,x1-15,zf-12,zf-8,hN0,hN1,F(20,18,20,5),side,top,8);
+  Q([x0+19,36*V,zf-8.2,x0+29,36*V,zf-8.2,x0+29,hN1,zf-8.2,x0+19,hN1,zf-8.2],...F(44,18,10,8),255,[0,0,1],2|8);
+  box(x0-1,x1+1,zf-16,zf-6,hP,hS,F(20,12,50,4),side,top,8);
+  box(x0-5,x1+5,zf-20,zf-4,hS,hK,F(20,0,58,10),side,top,8);
+  [[x0-5,x0-1],[x1+1,x1+5]].forEach(([xa,xb])=>box(xa,xb,zf-20,zf-4,hK,hK+2.6*V,null,side,top));// the upswept ends of the lintel
+  // ribbons and the bell hang from the rope under the beam
+  [[x0+17,0],[x0+20,1],[x0+28,2],[x0+31,3]].forEach(([xa,i])=>Q([xa,hN0,zf-7.5,xa+2.6,hN0,zf-7.5,xa+2.6,hN0-11*V,zf-7.5,xa,hN0-11*V,zf-7.5],...F(24+i*4,28,3,11),255,[0,0,1],8));
+  Q([x0+21.5,hN0-3*V,zf-7.4,x0+26.5,hN0-3*V,zf-7.4,x0+26.5,hN0-12*V,zf-7.4,x0+21.5,hN0-12*V,zf-7.4],...F(44,30,6,9),255,[0,0,1],2|8);
+  // two stone lanterns on the front tiles: foot, post, firebox with its flame, a roof
+  [x0+1,x1-7].forEach(xa=>{const cx=xa+3,zb=zf-3,za=zf-9;box(cx-3,cx+3,za,zb,0,3*V,null,side,top);box(cx-1,cx+1,zf-7,zf-5,3*V,12*V,null,side,top);
+    box(cx-3,cx+3,za,zb,12*V,19*V,F(58,18,8,8),side,top);box(cx-4.5,cx+4.5,za-1.5,zb+1.5,19*V,21.5*V,F(68,18,12,4),side,top,8);});
+  S.bh.push({b,h:hK});}
+{const gp0=hdGatePart;hdGatePart=function(m){const r=gp0.apply(this,arguments);try{if(r&&m&&m.kind==='field')r.cv=sncGateSheet(m);}catch(e){}return r;};}
+{const gg0=hdGateGeo;hdGateGeo=function(m,S,b,Q,U,Vv,p,V,bt){try{return sncGateGeo(m,S,b,Q,U,Vv,p,V,bt);}catch(e){return gg0.apply(this,arguments);}};}
+
+// the lights the tile scan adds (lanterns, and the violet glow cave and void realms put on pillars) are softer and gold in a Sanctum
+{const sl0=scanLights;scanLights=function(m){const r=sl0.apply(this,arguments);try{if(m&&m.fort&&m.tl)m.tl=m.tl.filter(L=>L[3]!=='violet').map(L=>L[3]==='fire'?[L[0],L[1]+2,22,'lamp']:L);}catch(e){}return r;};}
+
+// ===== voidsky10.js (v0.14.3): the void realms' sky is a starfield, not grey cloud =====
+// The owner (Ashen Expanse on a phone): "Stars not filling entire map, some space shows a background that looks kind of like clouds." In the
+// HD-2D view the world past the map's edge is a flat skirt lost in the daylight fog colour, so above a void field the horizon read as pale
+// grey cloud. In a dark realm (THEME.dark / stars) the fog is now the void's own deep colour and thicker, so the skirt sinks into the same
+// star-dark as the deep tiles, and the 2D overlay sprinkles stars over the sky band above the map. No save fields.
+{const hl0=hdLook;hdLook=function(m,now){const o=hl0.apply(this,arguments);try{const dun=typeof mapIndoor==='function'?mapIndoor(m):m.kind==='dungeon';if(dun)return o;const T=THM(m);
+  if(T&&(T.stars||T.dark)){const C=T.cl&&T.cl[1]?hdRgb(T.cl[1]):[.05,.04,.1];for(let i=0;i<3;i++)o.fog[i]=C[i]*.9;o.fogA=Math.max(o.fogA,.62);o.fogS=Math.min(o.fogS,1);}}catch(e){}return o;};}
+// 2D and HD overlay: stars in the sky band above the map's top edge (the camera shows it on tall phone screens)
+HOOK.after('worldDraw','voidsky10','stars over the void sky band',function(){try{const m=WS.m,ctx=WS.ctx;if(!m||m.kind==='dungeon'||!ctx)return;const T=THM(m);if(!T||!T.stars)return;
+  const vw=WS.vw,vh=WS.vh,cy=WS.cam?WS.cam.y:0;const top=Math.min(vh,Math.max(0,Math.round(-cy)));if(top<4)return;
+  const still=typeof gfxStill==='function'&&gfxStill(),t=still?0:performance.now()/1000;ctx.save();ctx.setTransform(1,0,0,1,0,0);
+  for(let i=0;i<70;i++){const h1=hashS('vs'+i),x=(h1%997)/997*vw,y=((h1>>>10)%883)/883*top,tw=.45+.55*Math.abs(Math.sin(t*(.6+(i%5)*.2)+i));ctx.globalAlpha=tw*.9;ctx.fillStyle=i%7===0?'#b48aff':'#f6f0ff';ctx.fillRect(Math.round(x),Math.round(y),i%9===0?2:1,i%9===0?2:1);}
+  ctx.restore();}catch(e){}});
 
 window.__A={walkable,ceInit,tvSlots,genQuests,STARTERS,starterDraw,ECON,AUTO_NERF,rebuildBase,detLive,REACT,skEls,packContents,miniFor,AUTO_REW,ENC_RATE,ENC_MIN_STEPS,detNote,classSkills,stickCount,bestAll,calcStats,lookKey,vTemper,storyEchoUp,leaveDungeon,win,ldApply,genFort,caveOk,enterCave,siteHasMini,openChest,nextDlg,WS,mapIcoRects,roamSpawn,roamInterior,roamSees,mapTargets,DIRV,tileAt,STAGE_LV,autoBan,rollWeather,guardianDef,mapIssues,mapEntry,syncPools,bovAt,calFxAt,realmAt,REALMS,BOV,CAL_FX,overlayGuide,liftOverlay,drawGearIcon,gearIcon,itemIcon,RAW,sigKind,sigGid,personalDone,heroLook,hasSignature,LEGEND_IDS,facDirty,facCount,facRank,facRep,FACB,FAC,finishBattle,npcWords,npcHints,npcPool,titleMake,titleAdvance,TTS,placeAt,wkwUpdate,innSpot,getMap,monURL,enterVia,applyBossTheme,BTHEME,resetMaps,rebuildBase,shopStock,gearDesc,calcStats,gearMigrate,CLS_WPN,CLS_ARM,WPERK,WT_NAME,equipWhy,lootBase,GEAR,canEquip,gearOf,perkNote,FAM_MAT_V35,fbDraft,META:{get best(){return META.best},get codex(){return META.codex},get q(){return META.q}},saveMeta,OFF,offPending,offFlush,PROFILE,profileSync,codexSee,getMap,placeAt,interact,sanctumOpen,riftKeys,echoKeys,BONDS,bondKey,wkwUpdate,inTown,WS,LC,lsort,bestParty,fsCast,fsSkills,ldApply,MON,registerTamed,stickPower,stickCount,autoOne,planGear,bestTag,gainersFor,compGainFor,refresh,fitsFor,canEquip,gearOf,queueNewGear,ARENA,fxDur,banDur,stageTags,autoSwitchPick,layoutBattle,newChar,calcStats,limitSkill,limitTier,canStuck,dunReachable,LV_CAP,addXp,echoSpec,bossLvFor,fx,MON,log,effInfo,tierOf,perkOf,quirkDef,forgeCost,buyPlan,vJourney,modalBack,partySlots,limitOpen,town2Reached,skillKnown,known,classSkills,paceMigrate,unpackG,packG,makeEnemy,QUIRK,arrive,enterDungeon,wkwUpdate,useTravel,travelWhyNot,porkFlee,porkBlocked,encTile,campRest,buyPart,partLeft,alchStock,GAME_VERSION,CHANGELOG,ITEMS,tavernOffers,tavernPool,recruitFit,partyNeeds,vNext,CHALL,innSpot,RECIPES,MATS,FB,fbContext,REDEEM,legendJoin,legendQ,genQuests,dynActors,convInit,PROFILE,profileSync,checkArchive,GPOOL,FPOOL,guardianDef,saveMeta,archiveSkills,get G(){return G;},set G(v){G=v;},get B(){return B;},get V(){return V;},get META(){return META;},WS,ACT,render,newGame,placeAt,startBattle,autoTurn,advance,finishBattle,getMap,innSpot,setPause:p=>{PAUSE=p;},autoCfg,worldInputDir,inputSources,battleFrame,battleTheme,STS,MAPS,mapIssues,healMap,mimicReward,dropChest,interact,worldDraw,TPL,ZONES,ZS,newChar,recruit,saveGame,resetMaps,dynActors,tileAt,BV,refresh,genBounties,genQuests,vStarter,heroCard,heroURL,iconURL,masteryLine,AU,buildTrack,tone,noiseHit,MIDI,sfx,audioVol};
 ['heroRoles','SOLID','WEATHER','WX_BASE','weatherFX','superGuide','recruitCost','ceStart','ceStep','ceInit','cePool','wxList','SUPER_TABLE','superOk','facRank','facRep','facInit','facCount','facCredit','FAC','FMIS','facMissionList','facProg','tyOf','facSync','facMul','facBest','worldPlan','caveReward','enterCave','leaveCave','leaveDungeon','buildCaveMap','worldGraph','openWorldMap','sigReport','SIG_NAMES','starterDraw','ITEM_TIERS','gTierIdx','tierChip','gearIcon','starterSlots','STARTERS','CLK_LEN','CLK_PH','clockPhase','wxInfoBody','recipeOrder','recipeGain','recipeReady','recipeClose','effOf','calcDamage','healsUndead','storyEchoUp','riftKeys','echoDef','efCost','autoLocked','bossFightKey','learnScanAll','isSeen','mapMarks','genSub','subOK','subReq','ensureSub','inSub','tvSlots','tvInit','tvLeft','tvEvent','tvNextText','tvPool','tvDue','tvShuffle','mTavern','hireOK','TV_CAP','TV_CD','POOL_IDS','natPool','natOf','natRoll','NATURES','natInfo','natRerollCost','natChooseCost','NAT_CLASS','iconURL','seenOf','mapIcoDraw','drawMini','MAPCV','revealAround','fxLayer','numDur','compBonusText','compPerk','checkPhase','win','unitBox','LNQ','challVisible','challEligible','challState','isMimic','migrateCompanions','canSummon','summonComp','compOf','clockPhase','tickClock','isNight','rollWeather','wxStep','nightPool','encounterFoes','restAll','tameElite','openChest','rerollTavern','bestAll','gearTier','SV','svCheck','svFlush','svInit','svPush','svPull','svScan','svParse','svBackup','svPack','svUnpack','svProg','svCloudList','svDelDoc','svGet','svCap','slotState','slotKey','svDecode','SV_CH','svStatus','svSlotRaw','svLoad','loadRaw','svHash','svIdx'].forEach(k=>{try{Object.defineProperty(window.__A,k,{get:()=>eval(k)});}catch(e){}});
