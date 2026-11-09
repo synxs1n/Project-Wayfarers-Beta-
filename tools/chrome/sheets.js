@@ -1,3 +1,4 @@
+// npcs  : one walker per townsfolk role (NPC9.roles) plus a dozen random villagers, 11 columns (front 0,1,2,idleB; back 0,1; side 0,1,idleB), 3x; RND=12 sets the random rows, ZOOM scales
 // Contact sheets for the sprite overhaul (docs/art-style.md, Verification).
 // Usage: node tools/chrome/sheets.js <html> <out.png> foes|poses   [ONLY=art1,art2 limits the rows; CHUNK=24 splits into out_1.png, out_2.png...]
 //   foes  : every MON art as a row: idle 0, idle 1, atk, hit (monCanvas(art,{t,i})), each drawn at 3x on a dark ground with a 2px margin box
@@ -6,9 +7,33 @@
 const fs=require('fs');const {open}=require('./pw');
 const [html,out,kind]=process.argv.slice(2);
 if(!html||!out||!kind){console.log('usage: node sheets.js <html> <out.png> foes|poses');process.exit(2);}
-if(kind!=='foes'&&kind!=='poses'){console.log('sheet kind "'+kind+'" is reserved');process.exit(2);}
+if(kind!=='foes'&&kind!=='poses'&&kind!=='npcs'){console.log('sheet kind "'+kind+'" is reserved');process.exit(2);}
 (async()=>{
   const H=await open({html:fs.readFileSync(html,'utf8'),dir:'/tmp',w:600,h:400});
+  if(kind==='npcs'){
+    const Z0=+process.env.ZOOM||3,rnd=process.env.RND!=null?+process.env.RND:12,only=process.env.ONLY?process.env.ONLY.split(','):null;
+    const data=await H.ev(([Z,rnd,only])=>{
+      const T=__A.TW.get,wc=T('walkerCanvas'),vl=T('villagerLook'),N9=T('NPC9');
+      const rows=N9.roles.filter(r=>!only||only.includes(r.role)).map(r=>({lab:r.role,name:r.name}));
+      if(!only)for(let i=0;i<rnd;i++)rows.push({lab:'rnd'+i,name:'Villager '+(i*7+3)+'x'});
+      const cols=[['front',0],['front',1],['front',2],['front',3],['back',0],['back',1],['side',0],['side',1],['side',3]];
+      const cw=40*Z,ch=50*Z,LAB=96,W=LAB+cols.length*cw+8,per=8,sheets=[];
+      for(let s=0;s<rows.length;s+=per){const rs=rows.slice(s,s+per),Hh=rs.length*ch+22,cv=document.createElement('canvas');cv.width=W;cv.height=Hh;
+        const x=cv.getContext('2d');x.imageSmoothingEnabled=false;x.fillStyle='#2a2438';x.fillRect(0,0,W,Hh);x.font='11px monospace';
+        cols.forEach((c,j)=>{x.fillStyle='#e8e0f0';x.fillText(c[0]+(c[1]===3?'B':c[1]),LAB+j*cw+4,14);});
+        rs.forEach((r,n)=>{const oy=22+n*ch;x.fillStyle='#e8e0f0';x.fillText(r.lab,4,oy+14);x.fillStyle='#9a90b0';x.fillText(r.name.slice(0,14),4,oy+27);
+          const L=vl(r.name);
+          cols.forEach((c,j)=>{const fx=LAB+j*cw;x.fillStyle=j%2?'#322a44':'#2e2640';x.fillRect(fx,oy,cw-2,ch-2);
+            let cvs;try{cvs=wc('sheet:'+r.name,L,['light'],null,c[0],c[1]);}catch(e){x.fillStyle='#f66';x.fillText('ERR '+String(e.message).slice(0,10),fx+2,oy+20);return;}
+            x.drawImage(cvs,fx+Math.round((cw-2-cvs.width*Z)/2),oy+ch-4-cvs.height*Z,cvs.width*Z,cvs.height*Z);});});
+        sheets.push(cv.toDataURL('image/png'));}
+      return {sheets,n:rows.length};
+    },[Z0,rnd,only]);
+    const b=d=>Buffer.from(d.split(',')[1],'base64');
+    data.sheets.forEach((d,i)=>{fs.writeFileSync(data.sheets.length>1?out.replace(/\.png$/,'_'+(i+1)+'.png'):out,b(d));});
+    console.log('sheets:',data.sheets.length,'rows of',data.n,'npcs ->',out);
+    await H.browser.close();return;
+  }
   if(kind==='poses'){
     const only=process.env.ONLY?process.env.ONLY.split(','):null,chunk=+process.env.CHUNK||8,ps=process.env.PS?process.env.PS.split(','):null;
     const data=await H.ev(([only,chunk,ps,zoom])=>{

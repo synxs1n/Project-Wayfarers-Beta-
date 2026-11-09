@@ -245,3 +245,10 @@ Sprite overhaul next families: toads/gulls/hawks/bats/rays, wisps/jellies/wraith
   shows 21 boss tries per journey (old bosses in hard slots; the draw changed with the bigger pool), so v080cb's pacing thresholds are not met on that
   seed. Not retuned further this session; revisit the slot scaling of Scourge multipliers (engine.js makeEnemy BOSS_HP by stage; power is flat).
   CI: the windows (Electron download) and android (gradle.org download) jobs timed out repeatedly on 0.13.7; the web job (the site) succeeded each time.
+- 0.13.9: foe sprite family 4 (gustimp, snowharpy, yeti, stormling, gargoyle, voidspawn, stareater, mimic, drownedsailor, rimewight, galephantom + 22
+  variant shapes; mimic.js MART.mimic removed). Every MON base art now has .fr.
+- 0.14.0: npcart9.js (helper): villagerLook adds vill/role from the NPC's name (NPC9_ACT maps act kinds), heroPal mutes cloth 50%, weaponFB/raceSide
+  finishing pass draws role garments + props + lit/shade split, walkerCanvas frame 3 = idle B (world clock floor(now/700+hx)%2), drawSprite wrap cancels
+  the old 1px hop for idle canvases; sheets `npcs` mode (ONLY, RND, ZOOM); test v140a (world group). CI: release.yml retries npm install, dist:win and
+  gradlew (GitHub release/gradle.org downloads 504'd for an hour on 2026-11-09).
+- Versioning: 0.13.9 -> 0.14.0 (last digit never passes 9).
