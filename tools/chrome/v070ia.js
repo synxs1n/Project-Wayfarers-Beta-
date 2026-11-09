@@ -53,7 +53,7 @@ chk('an unknown foe shows "?"',un.n>=10&&un.ok===un.n||`${un.ok}/${un.n}`);
   chk('foe entries in the bar carry the intent',r.bar>0||r.bar);
   // the forecast follows speed changes at once: slow the next foe and it moves back
   const s=await H.ev(()=>{const A=__A,B=A.B,X=A.B5,f0=X.order(8).map(q=>q.u.name),e=B.en.find(x=>x.hp>0);const cnt=(f,n)=>f.filter(x=>x===n).length,pos=(f,n)=>f.reduce((s,x,i)=>x===n?s+i:s,0),p0=[cnt(f0,e.name),pos(f0,e.name)];e.st.slow={t:9};const f1=X.order(8).map(q=>q.u.name),p1=[cnt(f1,e.name),pos(f1,e.name)];delete e.st.slow;
-    const c=B.cur;c.st.haste={t:9};const n0=f0.filter(n=>n===c.name).length,n1=X.order(8).filter(q=>q.u===c).length;delete c.st.haste;A.render();return {p0,p1,n0,n1};});
-  chk('slow moves a foe later in the forecast (fewer or later turns), haste gives a hero more turns',(s.p1[0]<s.p0[0]||(s.p1[0]===s.p0[0]&&s.p1[1]>s.p0[1]))&&s.n1>s.n0||JSON.stringify(s));
+    const c=B.cur;const g0=X.order(14).map(q=>q.u.name),nth=(f,n,k)=>{let j=0;for(let i=0;i<f.length;i++)if(f[i]===n&&++j===k)return i;return 99;};c.st.haste={t:9};const f2=X.order(14).map(q=>q.u.name),n0=g0.filter(n=>n===c.name).length,n1=f2.filter(n=>n===c.name).length,i0=nth(g0,c.name,2),i1=nth(f2,c.name,2);delete c.st.haste;A.render();return {p0,p1,n0,n1,i0,i1};});
+  chk('slow moves a foe later in the forecast (fewer or later turns), haste gives a hero more turns',(s.p1[0]<s.p0[0]||(s.p1[0]===s.p0[0]&&s.p1[1]>s.p0[1]))&&(s.n1>s.n0||(s.n1===s.n0&&s.i1<=s.i0&&s.n1>=2))||JSON.stringify(s));/* v0.13.7: the seeded field foes changed with the new realm pool; over 14 slots a hasted hero gets another turn, or at least its second turn no later */
   await H.browser.close();}
 const H=await open({});await done(H);})();

@@ -233,3 +233,15 @@ Sprite overhaul next families: toads/gulls/hawks/bats/rays, wisps/jellies/wraith
   block, monsters2.js, realms.js SHP/SHAPE_OF). Known stale/flaky: v040p2 (Auto settings swap toggle locator) fails on 0.13.5 too; v063ba label overlaps.
 - Still open: 3 weapon types per class are only named per role (ROLE9.wpn) and not enforced; swarms resist single target (already in ARCH); 4 new Scourges
   + 5th Calamity + The Ashglass Reach; sprite families 3+ (golems/husks/knights incl. barrowbones, toads done, bosses, heroes pose set, NPCs); graphics sweep.
+- 0.13.7 (helper): GUARDIANS +4 (locustchoir swarm wind/earth, ironmaw armored earth/water, candlemoth flying fire/light, brinehag water/shadow), FINALS +1
+  (hollowsun light/fire), REALMS 'ashglass' cal:1 theme heights (Saltwick, The Glass Cathedral, dust), bosses9.js wires BOSS_TY, BOSS_GIM.def, native foes
+  v_saltcrawler/v_glasswisp, D8_REALM/LOOK9; sanctum.js 2 rows of 8 Scourge gates + 5 Calamity arches (21 gates; Riftkeeper counts echoKeys()). Tests v138a;
+  sanct 21 gates; v095p2 21 gimmicks; p4.js 21. Flaky: v095p2 "Guard halves a marked hit" (random roll).
+- Running helpers after 0.13.7: sprite family 3 (golems/husks/knights/barrowbones) and heropose9.js (hero pose frames per skill kind: swing/thrust/smash/
+  shoot/cast/pray/guard/cheer/hit/idle A-B, wired through spriteOf; sheets `poses` mode; test v139a).
+- 0.13.8: heropose9.js (hero pose frames per skill kind, wired through spriteOf; `perform` wrapped to record u.actSk/actDl; sheets `poses` mode; test
+  v139a), sprite family 3 (slaggolem, iceknight, huskguard, barrowbones + 9 variant shapes), balance: brinehag hp 5.0 mag 1.15 res 1.1 (was 8% to 42%
+  careful win rate in `fullsim gim`), ironmaw up a notch (was 92 to 100%). Journey sim (v080cb) on 0.13.7 draws siren/frostlich/seraph with SEED=1 and
+  shows 21 boss tries per journey (old bosses in hard slots; the draw changed with the bigger pool), so v080cb's pacing thresholds are not met on that
+  seed. Not retuned further this session; revisit the slot scaling of Scourge multipliers (engine.js makeEnemy BOSS_HP by stage; power is flat).
+  CI: the windows (Electron download) and android (gradle.org download) jobs timed out repeatedly on 0.13.7; the web job (the site) succeeded each time.

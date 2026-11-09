@@ -138,6 +138,54 @@ Object.assign(SHAPE_OF,{n_gull:'crescent',v_moorgull:'gullcowl',mb_gallowcrow:'n
   v_emberbat:'emberhorns',n_cavebat:'furruff',mb_cinderbat:'emberlantern',v_lakeray:'lakesail',v_galeghost:'galeribbons',mb_gloomray:'gloomspines',
   v_marshwisp:'marshlantern',n_tidewisp:'moonfrill',o_siren:'sirencrown',mb_glasswidow:'widowlegs',n_ashwraith:'ashhorns',o_nidhra:'bonecrown',mb_bellwraith:'bellprop',
   v_starwraith:'starcrown',o_seraph:'wingset'});
+// ---- family 3 flourishes (slag golem, icebound knight, husk watcher, barrow bones). Anchors: hx,hy,top = head; cx,cy = core or gem; L,dy = lunge and breath shift.
+Object.assign(SHP,{
+ // Dune Golem: a wrapped sandcloth turban with a trailing tail, a red sash at the waist and sand drifting off the fist
+ dunewrap(g,F,a,p){p.T='#e8d8b0';p.t='#b09868';p.F='#c05a3a';g.ell(a.hx,a.hy-2.4,6.6,3.3,'t');g.ell(a.hx-.5,a.hy-3,5.6,2.4,'T');g.line(a.hx-4,a.hy-1,a.hx+3,a.hy-4,'t');g.line(a.hx-5,a.hy-3,a.hx+1,a.hy-5,'t');
+  g.path([[a.hx+5,a.hy-1],[a.hx+8,a.hy+3+F.i],[a.hx+7,a.hy+7+F.i]],'F',2);g.rect(13+a.L/2,26,15,2,'F');g.px([[14+a.L/2,28],[26+a.L/2,28]],'F');g.px([[a.fx-3,a.fy+a.fr+1],[a.fx+1,a.fy+a.fr+2]],'T');},
+ // Slagjaw the Unquenched: two black horns, an iron-toothed molten jaw hanging open and a bigger core ringed in slag
+ jawhorns(g,F,a,p){p.H='#241a1c';p.h='#4a3a3c';
+  g.poly([[a.hx-5,a.hy],[a.hx-10,a.hy-3],[a.hx-10,a.hy-6],[a.hx-6,a.hy-3],[a.hx-4,a.hy-3]],'H');g.poly([[a.hx+5,a.hy],[a.hx+10,a.hy-3],[a.hx+10,a.hy-6],[a.hx+6,a.hy-3],[a.hx+4,a.hy-3]],'h');
+  g.rect(a.hx-4,a.hy+4,9,3,'C');g.px([[a.hx-3,a.hy+7],[a.hx-1,a.hy+8],[a.hx+1,a.hy+7],[a.hx+3,a.hy+8]],'H');g.px([[a.hx-3,a.hy+4],[a.hx,a.hy+4],[a.hx+3,a.hy+4]],'A');
+  g.ell(a.cx,a.cy,5.2,5.2,'C');g.ell(a.cx,a.cy,3,3,F.hit?'W':'A');g.px([[a.cx-6,a.cy-6],[a.cx+6,a.cy-6],[a.cx-6,a.cy+6],[a.cx+6,a.cy+6]],'C');},
+ // Quarry Knight: a flat stone block for a crest, a pickaxe slung behind the shoulder and rubble in place of the ice spikes
+ pickaxe(g,F,a,p){p.X='#7a5a3a';p.I='#aab0b8';p.i='#6a7078';clr(g,a.hx-6,a.hy-14,13,9);
+  g.rect(a.hx-3,a.hy-8,7,3,'N');g.rect(a.hx-3,a.hy-8,6,2,'M');g.px([[a.hx-1,a.hy-6]],'D');
+  g.path([[a.cx-7,a.cy+9],[a.cx-11,a.cy-9]],'X',2);g.poly([[a.cx-15,a.cy-11],[a.cx-11,a.cy-13],[a.cx-6,a.cy-10],[a.cx-11,a.cy-10.5]],'I');g.px([[a.cx-15,a.cy-10],[a.cx-6,a.cy-9]],'i');
+  g.px([[a.cx+9,a.cy+5],[a.cx-9,a.cy+7],[a.cx+3,a.cy+8]],'D');},
+ // The Rusted Knight: two long straight horns, rust over the plate and a rusted chain hanging from the pauldron
+ rustchain(g,F,a,p){p.O='#a8582a';p.Q='#6a3a22';p.H='#8a8a96';clr(g,a.hx-6,a.hy-14,13,9);
+  g.poly([[a.hx-4,a.hy-2],[a.hx-9,a.hy-3],[a.hx-11,a.hy-9],[a.hx-8,a.hy-6],[a.hx-5,a.hy-5]],'H');g.poly([[a.hx+2,a.hy-4],[a.hx+6,a.hy-5],[a.hx+8,a.hy-10],[a.hx+5,a.hy-8],[a.hx+3,a.hy-6]],'H');g.px([[a.hx-11,a.hy-9],[a.hx+8,a.hy-10]],'O');
+  g.px([[a.hx-2,a.hy-2],[a.hx+2,a.hy+3],[a.cx-6,a.cy-3],[a.cx-5,a.cy+4],[a.cx+5,a.cy-2],[a.cx+4,a.cy+4],[a.cx-3,a.cy+8],[a.cx+3,a.cy+9],[14,31],[24,30]],'O');g.px([[a.cx-4,a.cy+2],[a.cx+6,a.cy+6],[a.hx+3,a.hy-1]],'Q');
+  for(let k=0;k<8;k++)g.s(Math.round(a.sx+3+(k%2)),a.sy+3+k,k%2?'Q':'H');},
+ // Drowned Watcher: kelp hanging from the helm and shoulders and barnacles crusting the plate
+ drowned(g,F,a,p){p.S='#3a8a5a';p.s='#245a3c';p.B='#d8d0b8';
+  tend(g,a.hx-9,a.sy+4,15,1.8,F.i*2,'S',2,-1);tend(g,a.hx+10,a.sy+4,12,1.6,F.i*2+1,'s',2,1);tend(g,a.hx-3,a.top+1,6,1.2,F.i*2+2,'S',2,-2);
+  g.poly([[a.hx-1,a.top],[a.hx-3,a.top-3],[a.hx+1,a.top-1],[a.hx+3,a.top-3],[a.hx+3,a.top]],'S');
+  [[a.hx-6,a.sy+2],[a.hx+6,a.sy+3],[a.cx-6,a.cy+6],[a.cx+7,a.cy+4],[a.cx-2,a.cy+9]].forEach(([x,y])=>{g.rect(x,y,2,2,'B');g.s(x,y,'W');});},
+ // Ashen Husk: ember flames licking up from both pauldrons, glowing cracks through the plate and an ember ring round the core
+ ashfire(g,F,a,p){p.F='#ff8a3a';p.Y='#ffd060';p.A='#8a7a72';
+  [[a.hx-10,a.sy+1],[a.hx+10,a.sy+1]].forEach(([x,y],n)=>{const h=F.i?7:5;g.poly([[x-2,y],[x+(n?1:-1)*(F.i?1:0),y-h-1],[x+2,y]],'F');g.poly([[x-1,y],[x,y-h+2],[x+1,y]],'Y');});
+  g.path([[a.hx-3,a.top],[a.hx-2,a.top+3],[a.hx-4,a.top+5]],'F');g.path([[a.cx-9,a.cy+3],[a.cx-6,a.cy+5],[a.cx-7,a.cy+8]],'F');g.path([[a.cx+8,a.cy-3],[a.cx+6,a.cy+1],[a.cx+8,a.cy+4]],'F');g.path([[13,31],[15,33]],'F');
+  g.ell(a.cx,a.cy+1,6,6.8,'F');g.ell(a.cx,a.cy+1,4.6,5.6,'K');g.ell(a.cx,a.cy+1,2.4,2.4,F.hit?'W':'Y');g.px([[a.hx-8,a.top+10],[a.hx+9,a.top+13],[a.hx+3,a.top-1]],'A');},
+ // The Hollow Abbot: a pointed cowl over the helm, a rope belt with tassels and a smoking censer swinging from the belt
+ abbothood(g,F,a,p){p.V='#4a3a2e';p.v='#2e241c';p.R='#a89870';p.G='#d8b050';p.Y='#ffb040';clr(g,a.hx-6,a.top,12,4);
+  g.poly([[a.hx-6,a.top+4],[a.hx-4,a.top+1],[a.hx,a.top-1],[a.hx+4,a.top+1],[a.hx+6,a.top+4]],'V');g.poly([[a.hx+1,a.top],[a.hx+4,a.top+1],[a.hx+6,a.top+4],[a.hx+2,a.top+4]],'v');
+  g.poly([[a.hx-11,a.sy+4],[a.hx-7,a.sy+2],[a.hx+7,a.sy+2],[a.hx+11,a.sy+4],[a.hx+12,a.sy+7],[a.hx-12,a.sy+7]],'V');
+  g.rect(11+a.L/2,25,17,1,'R');g.path([[a.cx+3,26],[a.cx+4,31]],'R');g.path([[a.cx-5,26],[a.cx-6,30]],'R');
+  const sw=F.i?1:0,cx=12+a.L/2+sw;g.line(cx,26,cx,31,'G');g.ell(cx,33,2.4,2.2,'G');g.s(cx,33,'Y');g.px([[cx+2,29-sw],[cx+3,27],[cx+1,25-sw]],'R');},
+ // Hollow Herald: a gold crown of five spikes on the helm and a gold ring round the chest core with storm sparks
+ hollowcrown(g,F,a,p){p.Z='#f0c050';p.z='#b88a28';p.Y='#ffe14a';p.R='#e04848';clr(g,a.hx-5,a.top,11,3);
+  g.rect(a.hx-5,a.top+3,11,2,'Z');g.rect(a.hx-5,a.top+4,11,1,'z');[-4,-2,0,2,4].forEach((o,n)=>{g.poly([[a.hx+o-1,a.top+3],[a.hx+o,a.top+(n%2?1:-1)],[a.hx+o+1,a.top+3]],'Z');});g.px([[a.hx-3,a.top+4],[a.hx+1,a.top+4]],'R');
+  g.ell(a.cx,a.cy+1,6.6,7.2,'Z');g.ell(a.cx,a.cy+1,4.6,5.6,'K');g.ell(a.cx,a.cy+1,3,3,F.hit?'W':'E');g.s(a.cx-1,a.cy,'W');
+  g.px(F.i?[[a.hx-10,a.top+8],[a.hx+10,a.top+12],[a.hx-9,a.top+17]]:[[a.hx-9,a.top+9],[a.hx+11,a.top+11],[a.hx+10,a.top+17]],'Y');},
+ // Ossuary Walker: a small skull on each shoulder, bone horns off the helm and a ring of rib spikes down the hips
+ ossuary(g,F,a,p){p.U='#e0d8c0';p.u='#9a9078';
+  [-1,1].forEach(s=>{const x=a.hx+s*9,y=a.top+8;g.ell(x,y,3,2.7,'U');g.ell(x+.6,y+1,2.6,2.1,'u');g.ell(x-.4,y-.4,2.2,1.8,'U');g.px([[x-2,y],[x+1,y]],'K');g.px([[x-2,y-.4],[x+1,y-.4]],'E');g.s(x,y+2,'K');});
+  g.poly([[a.hx-5,a.top+4],[a.hx-9,a.top+2],[a.hx-10,a.top],[a.hx-6,a.top+2],[a.hx-4,a.top+2]],'U');g.poly([[a.hx+5,a.top+4],[a.hx+9,a.top+2],[a.hx+10,a.top],[a.hx+6,a.top+2],[a.hx+4,a.top+2]],'u');
+  [[16,30],[19,31],[22,31],[25,30]].forEach(([x,y])=>g.poly([[x-1,y-1],[x,y+3],[x+1,y-1]],'U'));}
+});
+Object.assign(SHAPE_OF,{v_dunegolem:'dunewrap',mb_slagjaw:'jawhorns',v_quarryknight:'pickaxe',mb_rustknight:'rustchain',v_drownwatch:'drowned',v_ashhusk:'ashfire',mb_hollowabbot:'abbothood',o_hollowking:'hollowcrown',o_bonecolossus:'ossuary'});
 // the same flourish over a night variant (world3.js builds those before this file loads): wrap its drawing and keep the frame flag
 function shapeWrap(id,name){const f0=MART[id],sh=SHP[name];if(!f0||!sh||f0.shaped)return;
   const w=(g,f)=>{const o=f0(g,f);if(o&&o.a){const pal=Object.assign({},o.pal);sh(g,mfr(f),o.a,pal);return Object.assign({},o,{pal});}return o;};w.fr=f0.fr||(MON[id]&&MART[MON[id].base]&&MART[MON[id].base].fr);w.shaped=1;MART[id]=w;}

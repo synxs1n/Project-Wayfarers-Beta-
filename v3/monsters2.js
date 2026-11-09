@@ -25,14 +25,31 @@ Object.assign(MART,{
   gnat(Math.round(cx-3+(F.atk?3:0)),Math.round(cy-2+(F.i?1:0)),true,F.i===0);gnat(Math.round(cx+2+(F.atk?3:0)),Math.round(cy+(F.i?-1:1)),false,F.i===1);
   return {pal:{B:'#7a7a50',L:'#c0c080',b:'#4a4a30',W:'#e3f4e6',w:'#9aa89a',S:'#ff8a3a',D:'#5a5a42'},flat:'WwSD',a:{cx,cy,rx,ry}};
  },
- barrowbones(g){
-  g.ell(20,8,6,6,'B');g.rect(16,11,9,5,'B');g.rect(17,7,3,3,'K');g.rect(22,7,3,3,'K');g.px([[18,8],[23,8]],'E');
-  g.rect(19,11,3,2,'K');g.px([[17,15],[19,15],[21,15],[23,15]],'K');
-  g.rect(19,17,3,10,'b');for(let y=18;y<=25;y+=2){g.rect(14,y,13,1,'B');g.px([[14,y+1],[26,y+1]],'B');}
-  g.rect(16,27,9,3,'B');g.rect(16,30,2,8,'B');g.rect(23,30,2,8,'B');g.rect(14,37,5,2,'b');g.rect(22,37,5,2,'b');
-  g.line(14,19,9,27,'B',2);g.ell(7,28,5,6,'S');g.ell(7,28,2,2,'M');g.rect(6,23,3,1,'M');
-  g.line(27,19,31,23,'B',2);g.rect(31,9,2,14,'R');g.rect(30,23,4,2,'S');g.px([[32,8]],'R');
-  return {pal:{B:'#d8d0b0',b:'#a09878',K:'#1a1020',E:'#7aff9a',S:'#6a4a2a',M:'#b0a070',R:'#9a8a7a'},flat:'EK'};
+ // v0.13 (family 3): an armoured skeleton, facing right: a rusted kettle helm over the skull, a rusted breastplate over the lower ribs, a round wooden shield behind,
+ // a short spear in front (angled up, thrust level in the lunge, knocked back on a hit). Idle B breathes the upper body 1px; the lunge opens the jaw. Frames come from f.
+ barrowbones(g,f){const F=mfr(f);
+  let L=0,dy=F.b?-1:0,lg=0;if(F.atk){L=2;lg=1;}if(F.hit){L=-2;dy=1;}
+  const hx=20+L,hy=8+dy,H=L/2,sx=Math.round(9+H);
+  g.ell(sx,26,6,7.2,'i');g.ell(sx-.4,25.6,4.8,6,'S');g.line(sx-.4,20,sx-.4,31,'s');g.line(sx+2,21,sx+2,30,'s');g.ell(sx,26,1.6,1.6,'I');
+  slab(g,16-lg,29,3,8,'B','b');slab(g,23+lg,29,3,8,'B','b');slab(g,14-lg,36,6,2,'b','b');slab(g,22+lg,36,7,2,'b','b');
+  slab(g,15+H,26,11,4,'B','b');g.px([[18+H,28],[22+H,28]],'K');
+  slab(g,19+L,15+dy,3,12,'b','b');
+  for(let j=0;j<3;j++)g.rect(15+L,16+dy+j*2,11,1,'B');
+  slab(g,15+L,21+dy,11,6,'I','i');g.px([[17+L,23+dy],[23+L,22+dy],[21+L,25+dy]],'O');g.rect(15+L,26,11,1,'i');g.px([[16+L,22+dy],[24+L,25+dy]],'K');
+  g.path([[14+L,17+dy],[sx+3,23]],'B',2);g.ell(14+L,16+dy,2.4,2,'B');
+  sph(g,hx,hy+3,5.2,5,'B','b');
+  g.rect(hx-4,hy+2,3,3,'K');g.rect(hx+1,hy+2,3,3,'K');
+  if(F.hit){g.rect(hx-3,hy+3,2,1,'W');g.rect(hx+1,hy+3,2,1,'W');g.path([[hx+2,hy-1],[hx+4,hy+4]],'K');}
+  else{g.px([[hx-3,hy+2],[hx-3,hy+3],[hx+2,hy+2],[hx+2,hy+3]],'E');}
+  if(F.atk){g.rect(hx-3,hy+5,7,3,'K');g.px([[hx-3,hy+5],[hx-1,hy+5],[hx+1,hy+5],[hx+3,hy+5],[hx-2,hy+7],[hx+2,hy+7]],'B');}
+  else{g.rect(hx-3,hy+5,7,2,'B');g.px([[hx-1,hy+6],[hx+1,hy+6]],'K');}
+  g.poly([[hx-6,hy-1],[hx-5,hy-4],[hx-2,hy-6],[hx+2,hy-6],[hx+5,hy-4],[hx+6,hy-1]],'I');g.poly([[hx+1,hy-6],[hx+5,hy-4],[hx+6,hy-1],[hx+2,hy-1]],'i');
+  g.rect(hx-7,hy-1,14,2,'I');g.rect(hx-7,hy,14,1,'i');g.rect(hx-1,hy+1,2,3,'i');g.s(hx-3,hy-4,'O');g.s(hx+2,hy-2,'O');
+  let tip;
+  if(F.atk){g.path([[26+L,18],[30,22]],'B',2);tip=spear(g,19+L,22,33,21,'S','I',5);g.rect(29,21,3,2,'B');}
+  else if(F.hit){g.path([[26+L,18+dy],[28+L,23]],'B',2);tip=spear(g,22+L,35,30+L,13,'S','I',5);g.rect(27+L,22,3,2,'B');}
+  else{const tx=F.b?35:34;g.path([[26+L,17+dy],[29,23]],'B',2);tip=spear(g,24,34,tx,10,'S','I',5);g.rect(28,22,3,2,'B');}
+  return {pal:{B:'#d8d0b0',b:'#a09878',K:'#1a1020',E:'#7aff9a',S:'#6a4a2a',s:'#4a3018',I:'#8a8a94',i:'#585864',O:'#a8582a',W:'#ffffff'},flat:'EKW',a:{hx,hy,cx:20+L,cy:22+dy,top:2+dy,sx,tip,by:37,L,dy}};
  },
  drownedsailor(g){
   g.ell(20,10,6,6,'B');g.poly([[13,9],[27,9],[24,3],[16,3]],'H');g.rect(12,8,17,2,'H');g.rect(12,9,17,1,'h');
@@ -74,7 +91,7 @@ Object.assign(MART,{
   return {pal:{B:'#7a7aa8',b:'#54547e',K:'#0e0e22',E:'#c8a8ff',W:'#cfe8ff'},flat:'EKW'};
  }
 });
-MART.gnatswarm.fr=1;MART.brinejelly.fr=1;
+MART.gnatswarm.fr=1;MART.brinejelly.fr=1;MART.barrowbones.fr=1;
 
 // companion families for taming
 if(typeof FAM_OF!=='undefined')Object.assign(FAM_OF,{gnatswarm:'flyer',barrowbones:'spirit',drownedsailor:'spirit',brinejelly:'ooze',rimewight:'spirit',galephantom:'spirit'});
