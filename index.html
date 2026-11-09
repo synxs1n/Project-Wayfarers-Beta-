@@ -1838,7 +1838,7 @@ html.rm .battle.b3 .cmd .mi.b9glow{animation:none}
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.12.7";const APP_BUILD="4ccd7563a770";
+(function(){const APP_VER="0.12.8";const APP_BUILD="16a2824c2f51";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2531,7 +2531,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.12.7";const APP_BUILD="4ccd7563a770";
+const APP_VER="0.12.8";const APP_BUILD="16a2824c2f51";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2539,6 +2539,7 @@ const APP_VER="0.12.7";const APP_BUILD="4ccd7563a770";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.12.8',['Effects pass, first slice: new battle effect shapes and boss art frames are landing (more in the next updates).']],
  ['Beta v0.12.7',['Battle on phones: your heroes\' cards (HP, MP, turn marker) sit right under the stage with the commands below them, so nothing falls off the bottom of the screen.']],
  ['Beta v0.12.6',['The main menu is grouped by what you do: Party (Party, Roster, Loadouts, Pets and a new Bonds tab), Backpack (Equipment, Items, Materials), Quests (Quests, Bounties, Guilds, Arena, in the order of the board and the hall), World (Map, Journey), Records (Bestiary, Codex, Lore, Music Room), Guides and Settings.']],
  ['Beta v0.12.5',['Open Sanctums are lit by the sky in HD-2D too: time of day, dusk and dawn tints and the weather reach in, lamps dim by day, and a guardian fight inside one happens under that weather. Closed Sanctums, lairs and Dens stay indoors.']],
@@ -5088,6 +5089,20 @@ Object.assign(MEXTRA,{
  queenmantis(g,p){g.px([[16,40],[26,42]],'Y');p.Y='#c8e04a';},
  gloomcap(g,p){},ironsentinel(g,p){},siren(g,p){},ashwyvern(g,p){},frostlich(g,p){},nidhra(g,p){},hollowking(g,p){},seraph(g,p){}
 });
+// ===== v0.12.6: the frame API for guardians and bosses: a 2-frame idle =====
+// bossHasIdle(u): a foe that is a 60x60 guardian (BIG_ART, summons keep the '~s' suffix) or a boss. bossIdle(c,seed,now): frame 0 is the sprite
+// itself, frame 1 an exhale (the upper body one pixel lower) with a soft brightening, baked once per sprite (silhouette unchanged except the
+// breath). The frames alternate every 760 ms (battle, drawUnit) and 840 ms (the Sanctum guardian on the map, through imgOf 'mapboss:' keys).
+// Nothing changes under reduced motion.
+const BIDLE=new WeakMap();
+function bigArtOn(art){try{return typeof BIG_ART!=='undefined'&&BIG_ART.includes(String(art||'').replace(/~s$/,''));}catch(e){return false;}}
+function bossHasIdle(u){return !!u&&u.side!=='p'&&!!(u.boss||bigArtOn(u.art));}
+function bossFrame1(c){let f=BIDLE.get(c);if(f)return f;const w=c.width,h=c.height,cut=Math.floor(h*.55);
+  f=c.hd?hdCv(w,h,c.hd):mkCv(w,h);const x=f.getContext('2d');x.imageSmoothingEnabled=false;
+  x.drawImage(c,0,cut,w,h-cut,0,cut,w,h-cut);x.drawImage(c,0,0,w,cut,0,1,w,cut);
+  x.globalCompositeOperation='source-atop';x.globalAlpha=.2;x.fillStyle='#fff2d0';x.fillRect(0,0,w,h);BIDLE.set(c,f);return f;}
+function bossIdle(c,seed,now,ms){if(typeof gfxStill==='function'&&gfxStill())return c;return Math.floor(now/(ms||760)+(seed||0)*.5)%2?bossFrame1(c):c;}
+{const io0=imgOf;imgOf=function(key,fn){const c=io0.apply(this,arguments);try{if(typeof key==='string'&&key.charCodeAt(0)===109&&key.startsWith('mapboss:'))return bossIdle(c,0,performance.now(),840);}catch(e){}return c;};}
 
 // ===== sprhd.js (v0.5.3): HD sprites: twice the detail, light ramps, rim light (SPRITE_HD in config.js) =====
 // Every hero, townsfolk and monster is still built from the same key grids (art.js, art2.js, art3.js, capes, realm and echo recolours), but
@@ -8587,7 +8602,7 @@ const ELFX={
  light:{c:['#fff6c8','#f6e7a8','#ffffff'],rays:1},shadow:{c:['#9a6ae0','#3a2a5a','#c8a0ff'],up:-20},hit:{c:['#ffffff','#ffe08a','#ffd04a'],slash:1},arcane:{c:['#c8a0ff','#ffffff','#8a6ad0'],g:0}
 };
 function burstAt(x,y,el,start,big){
-  const E=ELFX[el]||ELFX.hit,n=big?26:14;
+  const E=ELFX[el]||ELFX.hit,n=typeof anHasShape==='function'&&anHasShape(el)?(big?12:6):big?26:14;// v0.12.6: an element with its own shape (anim.js) needs fewer loose sparks
   if(E.slash){part({k:'slash',x,y,t0:start,life:180,col:'#ffffff'});}
   if(E.bolt){part({k:'bolt',x,y,t0:start,life:200,col:'#fff6a0',seed:Math.random()*1000});BV.flash={t:start,life:90,col:'rgba(255,255,220,.35)'};}
   if(E.rays)part({k:'rays',x,y,t0:start,life:320,col:'#fff6c8'});
@@ -8683,8 +8698,13 @@ function drawUnit(ctx,u,b,now,tgMode){
   if(h>=0&&h<320&&!lying){x+=Math.round((1-h/320)*4)*-dir+(Math.floor(h/40)%2?1:-1)*(h<200?1:0);white=white||(h<90?1:0);}
   // break stagger
   if(u.broken&&u.hp>0)x+=Math.floor(now/90)%2;
-  const c0=spriteOf(u,walk),c=BV.tint?BV.tint(c0):c0;// v0.5.3: the GL stage (Medium) tints sprites to the light of the scene
-  const breathe=!lying&&u.hp>0&&!B.wipe&&a>520&&Math.floor(now/(hero?620:760)+b.i*.5)%2===1;
+  let c0=spriteOf(u,walk),fk='';
+  // v0.12.6: bosses and guardians idle on two frames (art3.js bossIdle: an exhale and a soft glow); a winding up foe swells and glows (bossTele, anim.js)
+  const idle=!hero&&u.hp>0&&typeof bossHasIdle==='function'&&bossHasIdle(u)&&!gfxStill();
+  if(idle){const f=bossIdle(c0,b.i,now);if(f!==c0){c0=f;fk='f';}}
+  const tele=!hero&&u.hp>0&&!B.wipe&&typeof bossTele==='function'&&bossTele(u),tp=tele?(gfxStill()?.5:.5+.5*Math.sin(now/120)):0,tsc=tele?1.035+(gfxStill()?0:.02*Math.sin(now/130)):1;
+  const c=BV.tint?BV.tint(c0):c0;// v0.5.3: the GL stage (Medium) tints sprites to the light of the scene
+  const breathe=!lying&&u.hp>0&&!B.wipe&&a>520&&Math.floor(now/(hero?620:760)+b.i*.5)%2===1&&!idle;
   // shadow
   // v0.5.0 2.1: the shadow always sits on the ground plane (b.gy); flying foes hover above theirs with a gentle bob
   if(b.hov&&u.hp>0)y+=Math.round(Math.sin(now/320+b.i)*1.5);
@@ -8696,17 +8716,21 @@ function drawUnit(ctx,u,b,now,tgMode){
   if(a<520&&u.hp>0&&u.actKind&&u.actKind!=='phys'){const col=ELC[u.actEl]||(u.actKind==='heal'?'#7aff8a':'#fff6a0');const g=ctx.createRadialGradient(x,y-b.h*.45,2,x,y-b.h*.45,b.h*.7);g.addColorStop(0,col+'88');g.addColorStop(1,col+'00');ctx.fillStyle=g;ctx.fillRect(x-b.h,y-b.h*1.2,b.h*2,b.h*1.4);}
   if(lying){ctx.save();ctx.translate(x+(hero?-4:4),y-2);ctx.rotate(hero?-Math.PI/2:Math.PI/2);ctx.globalAlpha=.75;ctx.drawImage(whiteOf(c,'ko'+u.id,'#6a6a7a'),-c.width/2,-c.height+6);ctx.globalAlpha=.55;ctx.drawImage(c,-c.width/2,-c.height+6);ctx.restore();ctx.globalAlpha=1;return;}
   const flip=hero;
-  const draw=(img)=>{const dx=Math.round(x-img.width/2),dy=Math.round(y-img.height+1);
+  const draw0=(img)=>{const dx=Math.round(x-img.width/2),dy=Math.round(y-img.height+1);
     if(breathe){const cut=Math.floor(img.height*.55);
       if(flip){ctx.save();ctx.translate(dx+img.width,dy);ctx.scale(-1,1);ctx.drawImage(img,0,cut,img.width,img.height-cut,0,cut,img.width,img.height-cut);ctx.drawImage(img,0,0,img.width,cut,0,1,img.width,cut);ctx.restore();}
       else{ctx.drawImage(img,0,cut,img.width,img.height-cut,dx,dy+cut,img.width,img.height-cut);ctx.drawImage(img,0,0,img.width,cut,dx,dy+1,img.width,cut);}
       return;}
     if(flip){ctx.save();ctx.translate(dx+img.width,dy);ctx.scale(-1,1);ctx.drawImage(img,0,0);ctx.restore();}else ctx.drawImage(img,dx,dy);};
+  const draw=tsc===1?draw0:(img)=>{ctx.save();ctx.translate(x,y+1);ctx.scale(tsc,tsc);ctx.translate(-x,-(y+1));draw0(img);ctx.restore();};
+  if(tele){const gy=b.gy!=null?b.gy+(y-b.y)*(b.hov?0:1):y,rw=Math.max(10,Math.min(b.w,44)*.5+tp*3);ctx.globalAlpha=.25+.3*tp;ctx.strokeStyle='#ff8a4a';ctx.lineWidth=1;ctx.beginPath();ctx.ellipse(x,gy,rw,rw*.32,0,0,7);ctx.stroke();ctx.beginPath();ctx.ellipse(x,gy,rw*.6,rw*.2,0,0,7);ctx.stroke();
+    const g=ctx.createRadialGradient(x,y-b.h*.45,2,x,y-b.h*.45,b.h*.75);g.addColorStop(0,'rgba(255,140,80,'+(.22+.2*tp).toFixed(2)+')');g.addColorStop(1,'rgba(255,140,80,0)');ctx.globalAlpha=1;ctx.fillStyle=g;ctx.fillRect(x-b.h,y-b.h*1.3,b.h*2,b.h*1.5);ctx.globalAlpha=alpha;}
   if(hero&&typeof stickGlowOf==='function'){const gc=stickGlowOf(G.roster[u.id]);if(gc){const p=.5+.5*Math.sin(now/240);ctx.globalAlpha=.2+.25*p;ctx.fillStyle=gc;ctx.beginPath();ctx.ellipse(x,y-b.h*.45,b.w*.45+p*2,b.h*.5+p*2,0,0,7);ctx.fill();ctx.globalAlpha=alpha;}}
   draw(c);
-  if(white)draw(whiteOf(c,(hero?'h':'m')+(u.id||u.art)));
+  if(tele){ctx.globalAlpha=.16+.3*tp;draw(whiteOf(c,'t'+(u.id||u.art)+fk,'#ff9a5a'));ctx.globalAlpha=alpha;}
+  if(white)draw(whiteOf(c,(hero?'h':'m')+(u.id||u.art)+fk));
   // v0.6.3: a foe the aimed detonator sets off glows in the detonating element's colour, with a ring at its feet; other targets pulse white
-  if(tgMode&&targetable(u)){const dg=typeof detGlow==='function'?detGlow(u):null,k=(hero?'h':'m')+(u.id||u.art);
+  if(tgMode&&targetable(u)){const dg=typeof detGlow==='function'?detGlow(u):null,k=(hero?'h':'m')+(u.id||u.art)+fk;
     if(dg){const p=.5+.5*Math.sin(now/110);ctx.globalAlpha=.3+.3*p;draw(whiteOf(c,k,dg));ctx.globalAlpha=.55+.35*p;ctx.strokeStyle=dg;ctx.lineWidth=1;const gy=b.gy!=null?b.gy:b.y,rw=Math.max(8,Math.min(b.w,44)*.42+p*2);
       ctx.beginPath();ctx.ellipse(b.x,gy,rw,rw*.32,0,0,7);ctx.stroke();ctx.beginPath();ctx.ellipse(b.x,gy,rw*.62,rw*.2,0,0,7);ctx.stroke();ctx.globalAlpha=alpha;}
     else{ctx.globalAlpha=(B.pend&&B.pend.sk&&B.pend.sk.role==='det'?.12:.22)+.18*Math.sin(now/120);draw(whiteOf(c,k));ctx.globalAlpha=alpha;}}
@@ -17823,6 +17847,8 @@ function hbsHit(x,y,el,start,big,u){const m=hbQ().spell||1,R=Math.random,b=u&&un
     case 'shadow':hbLight({x,y,foot:gy,r:70,col:[1,1,1],int:-.75,t0:start,life:760,fade:'pulse'});L(.5,40,620,{col:[.62,.4,.9]});hbsP({k:'hbS',x,y:y+2,r:w*.75,t0:start,life:640});break;
     case 'arcane':L(.9,54,480);D(w*.75,.45,480);break;
     default:L(.7,34,180,{col:[1,.96,.86]});hbsP({k:'hbX',x,y,r:big?10:7,t0:start,life:170});}
+  // v0.12.6: the pieces the set pieces above lack (embers, a wave arc, a fan of shards, rock chunks, curved slashes, sparkles, sinking wisps), from anim.js, drawn additively
+  try{if(typeof anElem==='function'&&el!=='arcane')anElem(el,x,y,start,big,u,1);}catch(e){}
   if(big&&GFX.q.camera&&typeof HD_CAM!=='undefined')gfxCamPush(x,y,HD_CAM.big);}
 {const ba0=burstAt;burstAt=function(x,y,el,start,big){const r=ba0.apply(this,arguments);try{if(hbsOn())hbsHit(x,y,el,start,big,HBS.u);}catch(e){}return r;};}
 {const of0=onFx;onFx=function(u,txt,cls){HBS.u=u;try{return of0.apply(this,arguments);}finally{HBS.u=null;

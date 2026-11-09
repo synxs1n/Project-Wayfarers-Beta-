@@ -4,6 +4,7 @@
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.12.8',['Effects pass, first slice: new battle effect shapes and boss art frames are landing (more in the next updates).']],
  ['Beta v0.12.7',['Battle on phones: your heroes\' cards (HP, MP, turn marker) sit right under the stage with the commands below them, so nothing falls off the bottom of the screen.']],
  ['Beta v0.12.6',['The main menu is grouped by what you do: Party (Party, Roster, Loadouts, Pets and a new Bonds tab), Backpack (Equipment, Items, Materials), Quests (Quests, Bounties, Guilds, Arena, in the order of the board and the hall), World (Map, Journey), Records (Bestiary, Codex, Lore, Music Room), Guides and Settings.']],
  ['Beta v0.12.5',['Open Sanctums are lit by the sky in HD-2D too: time of day, dusk and dawn tints and the weather reach in, lamps dim by day, and a guardian fight inside one happens under that weather. Closed Sanctums, lairs and Dens stay indoors.']],
