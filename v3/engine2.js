@@ -16,7 +16,7 @@ const WEATHER={
  ashfall:{n:'Ashfall',i:'☁',el:{fire:1.15,shadow:1.1},dot:1.25,d:'Fire +15%, Shadow +10%. Poison and Burn deal 25% more.'}
 };
 const WX_BASE=Object.keys(WEATHER); // v0.4.0: the Daily Trial only ever picks from these (rare skies are added later and must not shift its seeded pick)
-function battleWeather(spec){if(spec.kind==='field'||spec.kind==='elite')return (G.weather||{})[spec.stage]||'clear';return 'clear';}
+function battleWeather(spec){if((spec.kind==='field'||spec.kind==='elite')&&!(typeof mapIndoor==='function'&&V.screen==='world'&&mapIndoor(WS.m)))return (G.weather||{})[spec.stage]||'clear';return 'clear';}
 function weatherStart(front,en){
   const W=WX();
   if(W.regenStart)front.forEach(c=>{if(c.hp>0)c.st.regen={t:STS.regen.t};});

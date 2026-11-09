@@ -155,7 +155,7 @@ function vHeader(){
   return `<div class="hdr"><div class="brand"><b>Aurelis</b><small>${esc(loc)}</small>${cyc}</div><div class="btnrow"><div class="wallet">${coin()}<b>${fmt(G.gold)}</b></div>${muteBtn()}<button class="btn sm" data-act="fbOpen" aria-label="Help and feedback">?</button><button class="btn sm" data-act="settings" aria-label="Settings">⚙</button></div></div>`;
 }
 function wkwUpdate(){
-  const wk=$('wkw');if(!wk||!G)return;const m=WS.m,indoor=!!m&&(m.kind==='dungeon'||m.archive);
+  const wk=$('wkw');if(!wk||!G)return;const m=WS.m,indoor=typeof mapIndoor==='function'?mapIndoor(m):!!m&&(m.kind==='dungeon'||m.archive);
   // v0.4.1 2.8: the weather tag is always there: the realm's sky (Clear included) outdoors, "Indoors" in dungeons, caves, sanctums and the Archive
   let w=m&&!indoor?(G.weather[m.s]||'clear'):null;if(w&&!WEATHER[w])w='clear';  // v0.5.0 1.6: an unknown sky shows as clear instead of breaking the HUD
   let html=indoor?`<button class="wchip" data-act="wxInfo" data-arg="indoors" title="Weather and time of day do not reach in here">⌂ Indoors</button>`:w?`<button class="wchip" data-act="wxInfo" data-arg="weather" title="${esc(WEATHER[w].d)}">${WEATHER[w].i} ${esc(WEATHER[w].n)}</button>`:'';

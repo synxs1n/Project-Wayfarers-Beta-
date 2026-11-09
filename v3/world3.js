@@ -3,9 +3,12 @@
 // The clock moves with steps (+1) and battles (+6), never with real time. Dungeons and the Archive ignore it.
 const PH_LOOK={day:{i:'☀',n:'Day'},dusk:{i:'◐',n:'Dusk'},night:{i:'☾',n:'Night'},dawn:{i:'◑',n:'Dawn'}};
 function clockPhase(t){t=((t==null?(G&&G.clock)||0:t)%CLK_LEN+CLK_LEN)%CLK_LEN;return (CLK_PH.find(p=>t>=p[1]&&t<p[2])||CLK_PH[0])[0];}
+// v0.12: the one rule for "does the sky reach in here": lairs, Dens, closed Sanctums and the Archive are indoors; fields, towns and open
+// Sanctums (m.open=1, set from the run seed in sites.js) show the realm's weather and the time of day.
+function mapIndoor(m){if(!m)return false;if(m.archive)return true;if(m.kind!=='dungeon')return false;return !(m.cave&&m.fort&&m.open);}
 function isNight(){return !!G&&clockPhase()==='night';}
 function tickClock(n){if(!G||G.daily)return;const was=clockPhase();G.clock=(((G.clock||0)+n)%CLK_LEN+CLK_LEN)%CLK_LEN;const now=clockPhase();
-  if(was!==now&&V.screen==='world'&&WS.m&&WS.m.kind!=='dungeon'){toast(now==='night'?'Night falls. Stranger things prowl the fields.':now==='dawn'?'Dawn breaks.':now==='dusk'?'The sun sets.':'Morning.');}
+  if(was!==now&&V.screen==='world'&&WS.m&&!mapIndoor(WS.m)){toast(now==='night'?'Night falls. Stranger things prowl the fields.':now==='dawn'?'Dawn breaks.':now==='dusk'?'The sun sets.':'Morning.');}
   if(typeof wkwUpdate==='function')wkwUpdate();}
 function setMorning(){if(G){G.clock=0;if(typeof wkwUpdate==='function')wkwUpdate();}}
 // ----- night monsters: two of each field's four foes become night variants; every field foe is 10% stronger at night -----
@@ -29,7 +32,7 @@ HOOK.wrap('encounterFoes','world3','night pool and night power on fields',functi
   const res=[];out.forEach(o=>{res.push(o);if(!o.g)return;});// keep guardians last
   const fieldOnly=out.filter(o=>!o.g),bosses=out.filter(o=>o.g);return fieldOnly.concat(extra,bosses);};}
 // ----- clock ticks -----
-{const ar0=arrive;arrive=function(){if(G&&WS.m&&WS.m.kind!=='dungeon')tickClock(1);wxStep();return ar0.apply(this,arguments);};}
+{const ar0=arrive;arrive=function(){if(G&&WS.m&&!mapIndoor(WS.m))tickClock(1);wxStep();return ar0.apply(this,arguments);};}
 HOOK.before('finishBattle','world3','clock ticks',function(how){try{if(G&&!G.daily)tickClock(6);}catch(e){}});
 {const ra0=restAll;restAll=function(){const r=ra0.apply(this,arguments);if(r)setMorning();return r;};}
 {const ct0=campRest;campRest=function(){const r=ct0.apply(this,arguments);tickClock(60);return r;};}
@@ -53,7 +56,7 @@ function rollWeather(s,avoid){const L=wxList(ZS(s).theme,clockPhase());const tot
 function superGuide(){const ph=k=>WEATHER[k].when?` <i>(${WEATHER[k].when} only)</i>`:'';
   const rows=Object.keys(WEATHER).filter(k=>WEATHER[k].sup&&!WEATHER[k].surge).concat(['surge_fire']).map(k=>{const W=WEATHER[k];return `<div class="row"><div><b>${W.i} ${k==='surge_fire'?'Elemental Surge (one per realm)':W.n}</b>${k==='surge_fire'?'':ph(k)}<small>${k==='surge_fire'?'Each realm has its own: Verdant (Meadow, Earth), Tidal (Coast, Water), Ember (Caves, Fire), Frost (Frostmere, Ice), Gust (Heights, Wind), Void (Void, Shadow). That element +30%, its opposite -10%, +5% XP.':W.d}</small></div></div>`;}).join('');
   return `<h4>Rare skies</h4><p class="note">A few percent of weather rolls turn into one of these (clear skies stay the majority). They last as long as any weather, bring a strong visual, and every effect cuts both ways, so foes feel them too. Some only come at night or by day, and they end when that part of the day does. The Daily Trial never uses them.</p><div class="rows compact">${rows}</div>`;}
-function wxStep(){if(!G||G.daily||!WS.m||WS.m.archive)return;const s=WS.m.s;G.wx=G.wx||{};if(G.weather[s]==null){rollWeather(s);return;}
+function wxStep(){if(!G||G.daily||!WS.m||mapIndoor(WS.m))return;const s=WS.m.s;G.wx=G.wx||{};if(G.weather[s]==null){rollWeather(s);return;}
   if(G.wx[s]==null)G.wx[s]=WX_MIN;if((G.wxSave||{})[s]!=null)return;// forced weather holds still
   if(WEATHER[G.weather[s]]&&WEATHER[G.weather[s]].when&&!superOk(G.weather[s],clockPhase()))G.wx[s]=0;else G.wx[s]--;if(G.wx[s]<=0){const old=G.weather[s],w=rollWeather(s,old);if(w!==old&&WS.m.kind==='field'){toast(WEATHER[w].sup?`A rare sky: ${WEATHER[w].n}!`:`The weather turns: ${WEATHER[w].n}.`);if(typeof showLocation==='function')showLocation();}}}
 // entering a map no longer rerolls (worldrt.js only rolls when a realm has no weather yet)
@@ -63,7 +66,7 @@ HOOK.wrap('placeAt','world3','weather on arrival',function(next,...a){let mid=a[
     if(forced&&G.wxSave[s]==null){G.wxSave[s]=m0&&m0[s]!=null&&m0[s]!=='storm'?m0[s]:(m0&&m0[s])||'clear';G.weather[s]='storm';}
     else if(!forced&&G.wxSave[s]!=null&&m.kind==='field'){G.weather[s]=G.wxSave[s];delete G.wxSave[s];}}catch(e){}return r;});
 // ----- HUD chip and the tint -----
-{const wu0=wkwUpdate;wkwUpdate=function(){wu0();const wk=$('wkw');if(!wk||!G||!WS.m||WS.m.kind==='dungeon')return;const P=PH_LOOK[clockPhase()];
+{const wu0=wkwUpdate;wkwUpdate=function(){wu0();const wk=$('wkw');if(!wk||!G||!WS.m||mapIndoor(WS.m))return;const P=PH_LOOK[clockPhase()];
   const html=`<button class="wchip ph ${clockPhase()}" data-act="wxInfo" data-arg="time" title="Time of day (moves as you walk and fight)">${P.i} ${P.n}</button>`;if(!wk.innerHTML.includes('wchip ph '+clockPhase()))wk.insertAdjacentHTML('afterbegin',html);};}
 function tintFor(t){// smooth colour by clock position
   const k=(a,b,p)=>a+(b-a)*p,ph=clockPhase(t);t=((t%CLK_LEN)+CLK_LEN)%CLK_LEN;
@@ -72,7 +75,7 @@ function tintFor(t){// smooth colour by clock position
   if(ph==='dusk')return null;// v0.4.1 4.5: dusk and dawn are graded in daylight.js, not washed
   if(ph==='night')return [20,26,72,.46];
   return null;}
-HOOK.after('worldDraw','world3','night tint',function(_,now){try{const m=WS.m;if(!m||m.kind==='dungeon'||m.archive||!G)return;const T=tintFor(G.clock||0);if(!T)return;const ctx=WS.ctx,cx=Math.round(WS.cam.x),cy=Math.round(WS.cam.y);
+HOOK.after('worldDraw','world3','night tint',function(_,now){try{const m=WS.m;if(!m||mapIndoor(m)||!G)return;const T=tintFor(G.clock||0);if(!T)return;const ctx=WS.ctx,cx=Math.round(WS.cam.x),cy=Math.round(WS.cam.y);
   ctx.fillStyle=`rgba(${T[0]|0},${T[1]|0},${T[2]|0},${T[3].toFixed(3)})`;ctx.fillRect(0,0,WS.vw,WS.vh);
   if(T[3]>.2){ctx.save();ctx.globalCompositeOperation='lighter';(m.lights||[]).forEach(L=>{const x=L[0]-cx,y=L[1]-cy,r=(L[2]||18)*1.6;if(x<-r||y<-r||x>WS.vw+r||y>WS.vh+r)return;const g=ctx.createRadialGradient(x,y,1,x,y,r);g.addColorStop(0,`rgba(255,200,120,${.35*T[3]/.46})`);g.addColorStop(1,'rgba(255,200,120,0)');ctx.fillStyle=g;ctx.fillRect(x-r,y-r,r*2,r*2);});ctx.restore();}}catch(e){}});
 

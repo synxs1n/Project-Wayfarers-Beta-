@@ -219,7 +219,28 @@ function laneEvict(m){if(!m.lane||!m.lane.size)return;const W=m.t[0].length,H=m.
       if(m.bld.some(b=>b.door[0]===x&&Math.abs(b.door[1]+1-y)<=1))continue;if((m.exits||[]).some(e=>Math.abs(e.x-x)+Math.abs(e.y-y)<=3))continue;
       const d=Math.abs(x-n.x)+Math.abs(y-n.y);if(d<bd){bd=d;best=[x,y];}}
     if(best){n.x=best[0];n.y=best[1];n.hx=best[0];n.hy=best[1];n.mv=null;}});}
-HOOK.wrap('getMap','p2world','town lanes, gathering spots on open tiles (new maps)',function(next,...a){let id=a[0];const had=!!MAPS[id];const m=next(...a);try{if(!had&&m&&m.kind==='town'&&!P2.noLane)laneFix(m);
+// v0.12: the quest board ('q') and the waystone ('W') stand at least 3 tiles apart (Chebyshev), and no decor ('a','b','x','h','k','m','v','g','N')
+// stands next to either or on the 3 tiles south of it. The waystone moves to the nearest open plaza/ground tile that keeps the town connected.
+// Only newly generated towns (getMap hook below); saved towns keep their maps. No RNG.
+const BOARD_DECOR='abxhkmvgN',BOARD_NEAR=3;
+function townBoardFix(m){try{
+  const t=m.t,H=t.length,W=t[0].length,find=c=>{const o=[];for(let y=0;y<H;y++)for(let x=0;x<W;x++)if(t[y][x]===c)o.push([x,y]);return o;};
+  const cheb=(a,b)=>Math.max(Math.abs(a[0]-b[0]),Math.abs(a[1]-b[1])),boards=find('q'),stones=find('W');if(!boards.length)return;
+  const seedY=m.road!=null?m.road:Math.floor(H/2),reach=()=>{const f=flood(t,2,seedY);let n=0;f.forEach(r=>r.forEach(v=>{if(v)n++;}));return {f,n};};
+  stones.forEach(st=>{if(!boards.some(b=>cheb(b,st)<BOARD_NEAR))return;
+    const base=reach(),open=(x,y)=>'.:,'.includes((t[y]||[])[x]),ground=(x,y)=>!SOLID.includes((t[y]||[])[x]);let best=null,bd=1e9;
+    for(let y=2;y<H-2;y++)for(let x=2;x<W-2;x++){if(!open(x,y)||!base.f[y][x]||y===m.road||(m.lane&&m.lane.has(x+','+y)))continue;
+      const p=[x,y];if(boards.some(b=>cheb(b,p)<BOARD_NEAR)||stones.some(o=>o!==st&&cheb(o,p)<BOARD_NEAR))continue;
+      if(m.npcs.some(o=>cheb([o.x,o.y],p)<1)||m.bld.some(b=>b.door&&Math.abs(b.door[0]-x)<=1&&Math.abs(b.door[1]+1-y)<=1)||(m.exits||[]).some(e=>Math.abs(e.x-x)+Math.abs(e.y-y)<=4))continue;
+      if(!ground(x,y+1))continue;const d=Math.abs(x-st[0])+Math.abs(y-st[1]);if(d>=bd)continue;
+      const keep=t[y][x];t[y][x]='W';const r=reach();t[y][x]=keep;if(r.n!==base.n-1)continue;best=p;bd=d;}
+    if(!best)return;const nb=[[1,0],[-1,0],[0,1],[0,-1]].some(([a,b])=>(t[st[1]+b]||[])[st[0]+a]===':');
+    t[st[1]][st[0]]=nb?':':'.';t[best[1]][best[0]]='W';st[0]=best[0];st[1]=best[1];});
+  [].concat(boards,stones).forEach(([x,y])=>{const cl=[];for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++)if(dx||dy)cl.push([x+dx,y+dy]);cl.push([x,y+2],[x,y+3]);
+    cl.forEach(([cx,cy])=>{if(BOARD_DECOR.includes((t[cy]||[])[cx]))t[cy][cx]=[[1,0],[-1,0],[0,1],[0,-1]].some(([a,b])=>(t[cy+b]||[])[cx+a]===':')?':':'.';});});
+  m._qb=null;
+}catch(e){if(window.__TBDBG)console.log("townBoardFix",e.message);}}
+HOOK.wrap('getMap','p2world','town lanes, gathering spots on open tiles (new maps)',function(next,...a){let id=a[0];const had=!!MAPS[id];const m=next(...a);try{if(!had&&m&&m.kind==='town'&&!P2.noLane)laneFix(m);if(!had&&m&&m.kind==='town'&&!P2.noBoard)townBoardFix(m);
   // a gathering spot never survives on a tile a later step (sanctum gatehouse, cave mouth) turned solid
   if(!had&&m&&m.nodes&&m.kind!=='town')m.nodes=m.nodes.filter(n=>nodeFits(m,n.k,n.x,n.y));}catch(e){}return m;});
 // townsfolk never wander into a lane (a step into one is taken back), and festival visitors are moved out of them

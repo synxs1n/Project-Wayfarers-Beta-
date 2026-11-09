@@ -42,7 +42,7 @@ function buildFort(R,s){const W=SITES.fortW,H=SITES.fortH,D=new Gr(W,H,'#');
   return {rows:D.g,start:[sc[0],sc[1]+1],chests,prize:pc};}
 function genFort(s){for(let a=0;a<40;a++){const R=mulberry(G.run.seed+7313+s*71+a*131),c=buildFort(R,s);if(caveOk(c))return c;}throw new Error('sanctum generation failed');}
 function buildFortMap(id){const s=+id.slice(1),c=genFort(s),Z=ZS(s);const m={id,z:s,s,kind:'dungeon',theme:Z.theme,exits:[],npcs:[],bld:[],signs:{},t:c.rows,start:c.start,bossAt:null,chests:c.chests,
-  wander:[c.start[0],c.start[1]+1],cave:true,fort:true,name:FORT_NAMES[s],fixed:{},prize:c.prize};m.w=m.t[0].length;m.h=m.t.length;return m;}
+  wander:[c.start[0],c.start[1]+1],cave:true,fort:true,name:FORT_NAMES[s],fixed:{},prize:c.prize,open:(hashS(id+':'+G.run.seed)&1)?1:0};/* v0.12: about half of the Sanctums are open to the sky (weather and day/night show); the rest read Indoors */m.w=m.t[0].length;m.h=m.t.length;return m;}
 // sanctum gatehouse on the field: a clearing far from the dungeon, the cave and the gates, reachable before the sealed gate
 function fortWanted(s){return isRv2()&&s>=1;}
 function placeFort(f,s){if(!f||f.kind!=='field'||f.fortDone||!fortWanted(s))return;f.fortDone=1;if((f.caves||[]).some(c=>c.kind==='fort'))return;

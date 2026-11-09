@@ -852,7 +852,7 @@ function win(){
     {const Wx=WEATHER[B.weather]||{};if(Wx.mat&&!e.boss&&RNG()<Wx.mat)info.mats[ZS(s).mat]=(info.mats[ZS(s).mat]||0)+1;if(Wx.core&&!e.boss&&RNG()<Wx.core)info.mats.core=(info.mats.core||0)+1;}
     if(RNG()<DROP.potion*luck)info.drops.push('potion');
     if(RNG()<DROP.ether*luck)info.drops.push('ether');
-    if(RNG()<DROP.remedy*luck)info.drops.push('remedy');
+    {const rs=DROP_MIX,rt=rs.remedy+rs.bandage+rs.ash+rs.tent,rr=RNG()/(DROP.remedy*luck*rt/rs.remedy);if(rr<1){let q=rr*rt,k='remedy';for(const n of ['remedy','bandage','ash','tent']){if((q-=rs[n])<0){k=n;break;}}info.drops.push(k);}}// v0.12: same single roll as before (remedy keeps its rate); the roll's own position picks remedy, bandage, ash or tent (no extra RNG call)
     if(G.stage>=1&&RNG()<DROP.hipotion*luck)info.drops.push('hipotion');
     // quest progress
     G.quests.forEach(q=>{if(q.state==='active'&&q.type==='hunt'&&MON[q.mon]&&MON[q.mon].n===e.base){q.have=Math.min(q.n,(q.have||0)+1);if(q.have===q.n)info.quests.push(q.title);}});

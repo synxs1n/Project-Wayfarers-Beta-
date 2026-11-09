@@ -4,15 +4,16 @@ const {open,chk,done}=require('./pw');
 const H=await open({w:430,h:880,mobile:true});const {ev}=H;
 await ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;});
 // ---------- 4.1 ----------
+// v0.10.6: personal quests are the Personal section of the town Notice Board's Quests tab (the Guild Hall keeps Guilds, Arena, Recruits, Natures)
 const p=await ev(()=>{const A=__A,G=A.G,o={},c=G.roster.mira;
   o.bt=A.PERSONAL_BT;o.realm=A.PERSONAL_REALM;
   // realm 1: never, whatever the battles
   G.stage=0;G.cleared=[false,false,false,false,false];c.bt=60;c.lv=3;
   o.r1=A.personalEligible(c);o.r1txt=A.personalLockText(c);
-  A.V.modal={type:'guild',tab:'personal'};A.render();const t1=document.querySelector('#modal').innerHTML;o.r1row=/data-act="personal"/.test(t1)||/Mira:/.test(t1);o.r1note=/open in the third realm/.test(document.querySelector('#modal').innerText);
+  A.V.modal={type:'board',tab:'quests',sec:'personal'};A.render();const t1=document.querySelector('#modal').innerHTML;o.r1row=/data-act="personal"/.test(t1)||/Mira:/.test(t1);o.r1note=/open in the third realm/.test(document.querySelector('#modal').innerText);
   A.V.modal={type:'char',id:'mira'};o.sheet1=A.mChar('mira',false).match(/Battles together:[^<]*/)[0];
   // second realm, not enough battles: still hidden
-  G.stage=2;c.bt=39;o.r2a=A.personalEligible(c);o.r2atxt=A.personalLockText(c);A.V.modal={type:'guild',tab:'personal'};A.render();o.r2arow=/data-arg="mira"/.test(document.querySelector('#modal').innerHTML);
+  G.stage=2;c.bt=39;o.r2a=A.personalEligible(c);o.r2atxt=A.personalLockText(c);A.V.modal={type:'board',tab:'quests',sec:'personal'};A.render();o.r2arow=/data-arg="mira"/.test(document.querySelector('#modal').innerHTML);
   // 40 battles at level 3: open (the old rule wanted level 20)
   c.bt=40;o.r2b=A.personalEligible(c);A.render();o.r2brow=/data-act="personal" data-arg="mira"/.test(document.querySelector('#modal').innerHTML);
   o.sheet2=A.mChar('mira',false).match(/Battles together:[^<]*/)[0];
@@ -23,7 +24,7 @@ const p=await ev(()=>{const A=__A,G=A.G,o={},c=G.roster.mira;
 console.log(JSON.stringify(p));
 chk('personal quests need 40 battles (config) and the third realm (v0.7.2)',p.bt===40&&p.realm===2);
 chk('in the first realm a quest never opens, even with 60 battles',p.r1===false&&p.r1txt==='Unlocks in the third realm');
-chk('in the first realm the Guild Hall shows no quest row, only a note',p.r1row===false&&p.r1note===true);
+chk('in the first realm the Notice Board Personal section shows no quest row, only a note',p.r1row===false&&p.r1note===true);
 chk('hero sheet: "Battles together: 60 of 40. Unlocks in the third realm"',/Battles together: 60 of 40\. Unlocks in the third realm/.test(p.sheet1));
 chk('second realm with 39 battles: hidden, lock text counts battles',p.r2a===false&&p.r2atxt==='Battles together: 39 of 40'&&p.r2arow===false);
 chk('second realm with 40 battles at level 3: no level gate any more',p.r2b===true&&p.r2brow===true&&/ready at the Guild Hall/.test(p.sheet2));
@@ -47,7 +48,7 @@ chk('no "faction" left in the Guilds pages',!/faction/i.test(g.txt)&&!/faction/i
 chk('tab ids and save keys unchanged (data-arg factions, G.fac)',/data-arg="factions"/.test(g.html)||g.strip!==null);
 chk('the shop rank strip button says Guilds and still opens the factions tab',g.strip==='Guilds');
 chk('the Steady Hand is the Steady Hand Guild',g.steady==='The Steady Hand Guild'&&/The Steady Hand Guild/i.test(g.txt));
-chk('Guild Hall has a Guilds tab with ranks and missions',g.hallTab&&g.hallOn==='Guilds'&&/Missions|Perks/.test(g.hallTxt)&&/Wayfarers. Guild/i.test(g.hallTxt)&&g.hallOthers>=5);// v0.6.3: five hall tabs (Personal quests and Bounties are sections of Quests)
+chk('Guild Hall has a Guilds tab with ranks and missions',g.hallTab&&g.hallOn==='Guilds'&&/Missions|Perks/.test(g.hallTxt)&&/Wayfarers. Guild/i.test(g.hallTxt)&&g.hallOthers===4);// v0.10.6: four hall tabs (Guilds, Arena, Recruits, Natures); quests and bounties are on the town Notice Board
 chk('the save still writes G.fac',g.fac===true);
 chk('toasts and the Music Room say guild',g.toast==='No one is left to send, so the guild pays 400+ gold instead.'&&g.jingle==='Guild rank up');
 

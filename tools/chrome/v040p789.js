@@ -76,7 +76,7 @@ const f=await H.ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(
   // v0.9.9: since v0.9.5 a new journey (G.pcV) opens guild missions in the third realm (pacing.js PACE.at.guilds): refused before it,
   // then the same flow as before once that realm is reached
   const at=window.__P95.PACE.at.guilds;A.ACT.facAccept('g5');o.early=G.fac.acc.g5==null&&!!G.pcV&&at>=2;for(let i=0;i<at;i++)G.cleared[i]=1;
-  const m=A.FMIS.find(x=>x.id==='g5');A.ACT.facAccept('g5');A.facCredit('road',1);const rep0=A.facRep('guild');A.ACT.facClaim('g5');o.gained=A.facRep('guild')-rep0;
+  const m=A.FMIS.find(x=>x.id==='g5');A.ACT.facAccept('g5');A.facCredit('road',1);const rep0=A.facRep('guild');A.V.modal={type:'guild',tab:'guilds'};/* missions accepted now are handed in at a Guild Hall */A.ACT.facClaim('g5');A.V.modal=null;o.gained=A.facRep('guild')-rep0;
   // counters and rank
   A.facCredit('forge',10);A.facCredit('temper',10);o.smiths=A.facRank('smiths');
   A.facCredit('potion',30);o.alch=A.facRank('alch');

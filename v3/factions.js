@@ -1,50 +1,50 @@
 // ===== factions.js (v0.4.0): factions: reputation, ranks, missions and their perks =====
-// Six factions (shown as guilds), six standing steps each, shown as three ranks since v0.9.5 (FAC3 below). Reputation = counters you already earn by playing (forging, potions, taming, wins, echoes, Scourges, helping wayfarers)
+// Six factions (shown as guilds), six standing steps each, shown as five ranks (FAC3 below; three in v0.9.5 to v0.10.x, five again now). Reputation = counters you already earn by playing (forging, potions, taming, wins, echoes, Scourges, helping wayfarers)
 // plus bonus from missions. Everything is per journey (G.fac, an optional save field). Only the highest rank reached per faction goes in the account
 // profile (META.facBest) and it is a title, nothing more. Nothing here is required to finish the game, Legendary heroes never come from factions,
 // and the Daily Trial ignores all of it (no counters, no discounts, no bonuses).
 const FAC=[
  {id:'guild',n:"Wayfarers' Guild",i:'⚑',col:'#e0b04a',desc:'General work for the road. Wins, marked beasts, cleared Scourges and the wayfarers you help earn its trust.',
   ranks:['Recruit','Wayfarer','Pathfinder','Trailwarden','Captain','Guildmaster'],
-  perks:[null,{t:'Inn rooms cost 10% less',k:'inn',v:.10},{t:'Battle gold +5%',k:'gold',v:.05},{t:'A challenge only wayfarer joins you (pick up at the Factions page)',k:'recruit'},{t:'Guildmark Pin, a unique charm',k:'charm',id:'c_fa0'},{t:"Signature: Guildmaster's Seal, a strong unique charm, and the title Guildmaster",k:'sig',id:'c_fb0'}]},
+  perks:[{t:'Inn rooms cost 3% less',k:'inn',v:.03},{t:'Inn rooms cost 10% less',k:'inn',v:.10},{t:'Battle gold +5%',k:'gold',v:.05},{t:'A challenge only wayfarer joins you (pick up at the Factions page)',k:'recruit'},{t:'Guildmark Pin, a unique charm',k:'charm',id:'c_fa0'},{t:"Signature: Guildmaster's Seal, a strong unique charm, and the title Guildmaster",k:'sig',id:'c_fb0'}]},
  {id:'smiths',n:"Smiths' Union",i:'⚒',col:'#d8743a',desc:'Forging and tempering. Every forged piece and every temper counts.',
   ranks:['Apprentice','Hammerhand','Journeyman','Foreman','Master Smith','Grandsmith'],
-  perks:[null,{t:'Tempering costs 5% less gold',k:'forge',v:.05},{t:'Tempering costs 10% less; 10% of forging gold comes back',k:'forge',v:.10,rebate:.10},{t:'Union stock: Dread Core and ore bundles at the Union counter',k:'stock'},{t:'Anvilmark Charm, a unique charm',k:'charm',id:'c_fa1'},{t:'Signature: Grandsmith\'s Hammerpin, a strong unique charm, and the title Grandsmith',k:'sig',id:'c_fb1'}]},
+  perks:[{t:'Tempering costs 3% less gold',k:'forge',v:.03},{t:'Tempering costs 5% less gold',k:'forge',v:.05},{t:'Tempering costs 10% less; 10% of forging gold comes back',k:'forge',v:.10,rebate:.10},{t:'Union stock: Dread Core and ore bundles at the Union counter',k:'stock'},{t:'Anvilmark Charm, a unique charm',k:'charm',id:'c_fa1'},{t:'Signature: Grandsmith\'s Hammerpin, a strong unique charm, and the title Grandsmith',k:'sig',id:'c_fb1'}]},
  {id:'alch',n:"Alchemists' Circle",i:'⚗',col:'#5ac08a',desc:'Potions. Every potion, ether and elixir you brew earns standing.',
   ranks:['Initiate','Brewer','Distiller','Adept','Magister','Archmage of Vials'],
-  perks:[null,{t:'8% of brewing gold comes back',k:'rebate',v:.08},{t:'15% of brewing gold comes back',k:'rebate',v:.15},{t:'Circle stock: Elixirs and herb bundles at the Circle counter',k:'stock'},{t:'Vialmark Charm, a unique charm',k:'charm',id:'c_fa2'},{t:'Signature: 15% chance every brew makes one extra, a strong unique charm (Archmage\'s Phial), and the title Archmage of Vials',k:'sig',id:'c_fb2',dbl:.15}]},
+  perks:[{t:'4% of brewing gold comes back',k:'rebate',v:.04},{t:'8% of brewing gold comes back',k:'rebate',v:.08},{t:'15% of brewing gold comes back',k:'rebate',v:.15},{t:'Circle stock: Elixirs and herb bundles at the Circle counter',k:'stock'},{t:'Vialmark Charm, a unique charm',k:'charm',id:'c_fa2'},{t:'Signature: 15% chance every brew makes one extra, a strong unique charm (Archmage\'s Phial), and the title Archmage of Vials',k:'sig',id:'c_fb2',dbl:.15}]},
  {id:'wardens',n:'Beastwardens',i:'🐾',col:'#8ad04a',desc:'Taming and companions. Every creature that follows you counts.',
   ranks:['Pup','Tracker','Handler','Warden','Beastmaster','Warden of Wilds'],
-  perks:[null,{t:'XP +3%',k:'xp',v:.03},{t:'XP +5%',k:'xp',v:.05},{t:'Warden stock: parts bundles at the Warden counter',k:'stock'},{t:'Wildcall Charm, a unique charm',k:'charm',id:'c_fa3'},{t:'Signature: Wild Heart, a strong unique charm, and the title Warden of Wilds',k:'sig',id:'c_fb3'}]},
+  perks:[{t:'XP +1%',k:'xp',v:.01},{t:'XP +3%',k:'xp',v:.03},{t:'XP +5%',k:'xp',v:.05},{t:'Warden stock: parts bundles at the Warden counter',k:'stock'},{t:'Wildcall Charm, a unique charm',k:'charm',id:'c_fa3'},{t:'Signature: Wild Heart, a strong unique charm, and the title Warden of Wilds',k:'sig',id:'c_fb3'}]},
  {id:'archive',n:'Archivists',i:'📖',col:'#9a8aff',desc:'Knowledge. Echoes beaten, Scourges brought down and every wayfarer you gather get written down.',
   ranks:['Reader','Scribe','Cataloguer','Lorekeeper','Curator','Keeper of the Last Page'],
-  perks:[null,{t:'XP +3%',k:'xp',v:.03},{t:'Archive stock: relic bundles at the Archivist counter',k:'stock'},{t:'A challenge only wayfarer joins you (pick up at the Factions page)',k:'recruit'},{t:'Inkmark Charm, a unique charm',k:'charm',id:'c_fa4'},{t:'Signature: The Last Page, a strong unique charm, and the title Keeper of the Last Page',k:'sig',id:'c_fb4'}]},
+  perks:[{t:'XP +1%',k:'xp',v:.01},{t:'XP +3%',k:'xp',v:.03},{t:'Archive stock: relic bundles at the Archivist counter',k:'stock'},{t:'A challenge only wayfarer joins you (pick up at the Factions page)',k:'recruit'},{t:'Inkmark Charm, a unique charm',k:'charm',id:'c_fa4'},{t:'Signature: The Last Page, a strong unique charm, and the title Keeper of the Last Page',k:'sig',id:'c_fb4'}]},
  {id:'hand',n:'The Steady Hand',i:'✋',col:'#c8a070',desc:'Fights you take yourself. Every battle finished without Auto earns its respect.',
   ranks:['Onlooker','Steady','Sure Hand','Cool Head','Hand of Iron','The Steady Hand'],
-  perks:[null,{t:'XP +2%',k:'xp',v:.02},{t:'Battle gold +3%',k:'gold',v:.03},{t:'Inn rooms cost 5% less',k:'inn',v:.05},{t:'Steady Knot, a unique charm',k:'charm',id:'c_fa5'},{t:'Signature: The Steady Hand, a strong unique charm, and the title The Steady Hand',k:'sig',id:'c_fb5'}]}
+  perks:[{t:'XP +1%',k:'xp',v:.01},{t:'XP +2%',k:'xp',v:.02},{t:'Battle gold +3%',k:'gold',v:.03},{t:'Inn rooms cost 5% less',k:'inn',v:.05},{t:'Steady Knot, a unique charm',k:'charm',id:'c_fa5'},{t:'Signature: The Steady Hand, a strong unique charm, and the title The Steady Hand',k:'sig',id:'c_fb5'}]}
 ];
 const FACB=Object.fromEntries(FAC.map(f=>[f.id,f]));
-// ---------- v0.9.5: three ranks per guild ----------
+// ---------- five ranks per guild (v0.9.5 had three) ----------
 // Standing still climbs the six old steps (facRank, REP_AT, META.facBest, G.fac.seen and the claim keys 'id:step' keep their meaning),
-// but the player sees three ranks. Step 1 is rank 1, steps 2 to 4 are rank 2 (at REP_AT[1], 40 standing), steps 5 and 6 are rank 3
-// (at REP_AT[4], 400 standing). Every old perk moves to the rank that holds its step, so each perk now opens at the same standing or
-// earlier: nobody loses a perk they had, and a claimed charm or recruit stays claimed (same keys). Same kind perks merge (the best counts).
-const FAC3_STEP=[0,1,2,2,2,3,3];// step -> rank
+// but the player sees five ranks, one perk step each: steps 1 to 4 are ranks 1 to 4 (0, 40, 110, 230 standing) and steps 5 and 6 are
+// rank 5 (400 standing, the old top rank). Rank is always recomputed from standing, so old saves keep all progress; every perk opens at the
+// same standing as before or earlier, a claimed charm or recruit stays claimed (same keys). Rank 1 gets a new small perk. Same kind perks merge (the best counts).
+const FAC3_STEP=[0,1,2,3,4,5,5];// step -> rank
 const facTierOf=step=>FAC3_STEP[Math.max(1,Math.min(6,step|0))];
-const FAC3_AT=()=>[0,REP_AT[1],REP_AT[4]];
+const FAC3_AT=()=>[0,REP_AT[1],REP_AT[2],REP_AT[3],REP_AT[4]];
 const FAC3={
- guild:{n:['Recruit','Pathfinder','Guildmaster'],t:['Take the guild\'s missions and earn standing.','Inn rooms 10% less, battle gold +5%, and a challenge only wayfarer joins you.','Two unique charms (Guildmark Pin, Guildmaster\'s Seal) and the title Guildmaster.']},
- smiths:{n:['Apprentice','Journeyman','Grandsmith'],t:['Take the guild\'s missions and earn standing.','Tempering 10% less, 10% of forging gold back, and the Union counter (Dread Cores, ore and wood).','Two unique charms (Anvilmark Charm, Grandsmith\'s Hammerpin) and the title Grandsmith.']},
- alch:{n:['Initiate','Distiller','Archmage of Vials'],t:['Take the guild\'s missions and earn standing.','15% of brewing gold back, and the Circle counter (Elixirs, herb bundles).','A 15% chance of one extra from every brew, two unique charms (Vialmark Charm, Archmage\'s Phial) and the title Archmage of Vials.']},
- wardens:{n:['Pup','Handler','Warden of Wilds'],t:['Take the guild\'s missions and earn standing.','XP +5%, and the Warden counter (parts bundles).','Two unique charms (Wildcall Charm, Wild Heart) and the title Warden of Wilds.']},
- archive:{n:['Reader','Cataloguer','Keeper of the Last Page'],t:['Take the guild\'s missions and earn standing.','XP +3%, the Archive counter (relic bundles), and a challenge only wayfarer joins you.','Two unique charms (Inkmark Charm, The Last Page) and the title Keeper of the Last Page.']},
- hand:{n:['Onlooker','Sure Hand','The Steady Hand'],t:['Take the guild\'s missions and earn standing.','XP +2%, battle gold +3%, and inn rooms 5% less.','Two unique charms (Steady Knot, The Steady Hand) and the title The Steady Hand.']}};
+ guild:{n:['Recruit','Wayfarer','Pathfinder','Trailwarden','Guildmaster'],t:['Inn rooms 3% less.','Inn rooms 10% less.','Battle gold +5%.','A challenge only wayfarer joins you.','Two unique charms (Guildmark Pin, Guildmaster\'s Seal) and the title Guildmaster.']},
+ smiths:{n:['Apprentice','Hammerhand','Journeyman','Foreman','Grandsmith'],t:['Tempering 3% less.','Tempering 5% less.','Tempering 10% less, and 10% of forging gold back.','The Union counter (Dread Cores, ore and wood).','Two unique charms (Anvilmark Charm, Grandsmith\'s Hammerpin) and the title Grandsmith.']},
+ alch:{n:['Initiate','Brewer','Distiller','Adept','Archmage of Vials'],t:['4% of brewing gold back.','8% of brewing gold back.','15% of brewing gold back.','The Circle counter (Elixirs, herb bundles).','A 15% chance of one extra from every brew, two unique charms (Vialmark Charm, Archmage\'s Phial) and the title Archmage of Vials.']},
+ wardens:{n:['Pup','Tracker','Handler','Warden','Warden of Wilds'],t:['XP +1%.','XP +3%.','XP +5%.','The Warden counter (parts bundles).','Two unique charms (Wildcall Charm, Wild Heart) and the title Warden of Wilds.']},
+ archive:{n:['Reader','Scribe','Cataloguer','Lorekeeper','Keeper of the Last Page'],t:['XP +1%.','XP +3%.','The Archive counter (relic bundles).','A challenge only wayfarer joins you.','Two unique charms (Inkmark Charm, The Last Page) and the title Keeper of the Last Page.']},
+ hand:{n:['Onlooker','Steady','Sure Hand','Cool Head','The Steady Hand'],t:['XP +1%.','XP +2%.','Battle gold +3%.','Inn rooms 5% less.','Two unique charms (Steady Knot, The Steady Hand) and the title The Steady Hand.']}};
 function facTier(id){return facTierOf(facRank(id));}
 const facTierName=(id,t)=>FAC3[id].n[(t||facTier(id))-1];
 // the old steps whose perks a rank holds, and its claimable perks (charms and the recruit), each claimed under its old key
 function facTierSteps(t){const o=[];for(let s=1;s<=6;s++)if(FAC3_STEP[s]===t)o.push(s);return o;}
 function facTierClaims(id,t){return facTierSteps(t).map(s=>({s,p:FACB[id].perks[s-1],key:id+':'+s})).filter(o=>o.p&&(o.p.k==='charm'||o.p.k==='sig'||o.p.k==='recruit'));}
-function facTierNeed(id){const t=facTier(id);return t>=3?null:FAC3_AT()[t];}
+function facTierNeed(id){const t=facTier(id);return t>=5?null:FAC3_AT()[t];}
 // missions: count-based, tracked from the moment you accept. {k} is a counter, n the goal, rep the reward, r the rank needed to see it
 const FMIS=[
  ['g1','guild','Clear the roads','Win 10 battles.','wins',10,12,1],['g2','guild','A good week','Win 25 battles.','wins',25,24,1],['g3','guild','Underground work','Win 8 dungeon battles.','dwins',8,20,1],
@@ -59,7 +59,7 @@ const FMIS=[
 // special stock a rank unlocks. [mat or item id, label, price, perk rank, isItem]
 const FSTOCK={smiths:[['core','Dread Core',480],['ore*','Ore bundle (3)',160,3],['wood*','Wood bundle (3)',140,3]],alch:[['elixir','Elixir',420,1,1],['herb*','Herb bundle (3)',150,3]],wardens:[['hide','Beast Hide (3)',120,3],['fang','Sharp Fang (3)',120,3],['scale','Tough Scale (3)',120,3]],archive:[['$rel','Realm relic (3)',150,3]]};
 // ---------- state ----------
-function facInit(){if(!G)return null;const f=G.fac=G.fac||{};f.ctr=f.ctr||{};f.bonus=f.bonus||{};f.acc=f.acc||{};f.done=f.done||{};f.claim=f.claim||{};f.seen=f.seen||{};return f;}
+function facInit(){if(!G)return null;const f=G.fac=G.fac||{};f.ctr=f.ctr||{};f.bonus=f.bonus||{};f.acc=f.acc||{};f.done=f.done||{};f.claim=f.claim||{};f.seen=f.seen||{};f.hand=f.hand||{};return f;}
 function facCredit(k,n){if(!G||G.daily)return;const f=facInit();f.ctr[k]=(f.ctr[k]||0)+(n||1);facDirty();}
 function facDerived(k){if(!G)return 0;
   if(k==='wins')return (G.stats&&G.stats.won)||0;
@@ -99,7 +99,7 @@ HOOK.wrap('finishBattle','factions','faction credit',function(next,...a){const h
 {const fg=forge;forge=function(){const r=fg.apply(this,arguments);try{if(r&&!G.daily)facCredit('temper');}catch(e){}return r;};}
 {const cr=craft;craft=function(rcp){const g0=G.gold,r=cr.apply(this,arguments);try{if(r&&!G.daily){const spent=g0-G.gold;
   if(rcp.item){facCredit('potion');const rb=facSumAll('rebate');if(rb>0&&spent>0){const back=Math.round(spent*rb);if(back>0){G.gold+=back;toast(`Circle rebate: ${back} gold back.`);}}
-    const dbl=facTier('alch')>=3?.15:0;if(dbl&&Math.random()<dbl&&(G.inv[rcp.item]||0)<invCap()){G.inv[rcp.item]++;toast('The Archmage\'s touch: one extra!');}}
+    const dbl=facTier('alch')>=5?.15:0;if(dbl&&Math.random()<dbl&&(G.inv[rcp.item]||0)<invCap()){G.inv[rcp.item]++;toast('The Archmage\'s touch: one extra!');}}
   else{facCredit('forge');const rb=facSmithRebate();if(rb>0&&spent>0){const back=Math.round(spent*rb);if(back>0){G.gold+=back;toast(`Union rebate: ${back} gold back.`);}}}}}catch(e){}return r;};}
 {const rt=registerTamed;registerTamed=function(o){const r=rt.apply(this,arguments);try{if(G&&!G.daily&&o&&!o._fc){o._fc=1;facCredit('tame');}}catch(e){}return r;};}
 {const fc=forgeCost;forgeCost=function(){const c=fc.apply(this,arguments);try{if(c&&G&&!G.daily){const d=facSmithDisc();if(d>0)c.gold=Math.max(1,Math.round(c.gold*(1-d)));}}catch(e){}return c;};}
@@ -111,9 +111,12 @@ function facMissionList(id){const f=facInit(),t=facTier(id),pool=FMIS.filter(m=>
   const acc=pool.filter(m=>f.acc[m.id]!=null),rest=pool.filter(m=>f.acc[m.id]==null);if(rest.length<=2)return acc.concat(rest);
   const R=seeded(hashS((G.run.seed||1)+':fm:'+id+':'+(G.tavRoll||0))),left=rest.slice(),pk=[];while(pk.length<2&&left.length){pk.push(left.splice(Math.floor(R()*left.length),1)[0]);}return acc.concat(pk);}
 // v0.7.7: progress counts everything done on this journey, also before the mission was accepted (the owner's call); acc only marks it taken
+// v0.10.x: missions taken from now on are handed in at a Guild Hall (any town's); older ones (no hand flag) still claim anywhere
+function facAtHall(){return !!(V&&V.modal&&V.modal.type==='guild');}
+function facCanHand(id){const f=facInit();return !f.hand[id]||facAtHall();}
 function facProg(m){return Math.max(0,Math.min(m.n,facCount(m.k)));}
-ACT.facAccept=function(id){const m=FMIS.find(x=>x.id===id);if(!m||!G||G.daily)return;const f=facInit();if(f.acc[id]!=null)return;f.acc[id]=facCount(m.k);saveGame();toast(`Mission taken: ${m.t}.`);render();};
-ACT.facClaim=function(id){const m=FMIS.find(x=>x.id===id);if(!m)return;const f=facInit();if(f.acc[id]==null||f.done[id]||facProg(m)<m.n)return;f.done[id]=1;f.bonus[m.f]=(f.bonus[m.f]||0)+m.rep;facDirty();const g=Math.round(m.rep*7*(1+.25*G.stage));G.gold+=g;facSync();saveGame();sfx('chest');toast(`${m.t} done: +${m.rep} standing, ${g} gold.`);render();};
+ACT.facAccept=function(id){const m=FMIS.find(x=>x.id===id);if(!m||!G||G.daily)return;const f=facInit();if(f.acc[id]!=null)return;f.acc[id]=facCount(m.k);f.hand[id]='guild';saveGame();toast(`Mission taken: ${m.t}.`);render();};
+ACT.facClaim=function(id){const m=FMIS.find(x=>x.id===id);if(!m)return;const f=facInit();if(f.acc[id]==null||f.done[id]||facProg(m)<m.n)return;if(!facCanHand(id)){toast('Hand in at any Guild Hall.');return;}f.done[id]=1;f.bonus[m.f]=(f.bonus[m.f]||0)+m.rep;facDirty();const g=Math.round(m.rep*7*(1+.25*G.stage));G.gold+=g;facSync();saveGame();sfx('chest');toast(`${m.t} done: +${m.rep} standing, ${g} gold.`);render();};
 ACT.facPerk=function(a){const [id,rk]=String(a).split(':'),r=+rk,F=FACB[id];if(!F||!G||G.daily)return;const f=facInit(),key=id+':'+r,t=facTierOf(r);if(f.claim[key]||facTier(id)<t)return;const p=F.perks[r-1];if(!p)return;
   // v0.9.5: one Claim per rank hands over every charm of that rank not yet claimed (the old keys are marked, so old saves stay claimed)
   if(p.k==='charm'||p.k==='sig'){const got=[];facTierClaims(id,t).forEach(o=>{if((o.p.k==='charm'||o.p.k==='sig')&&!f.claim[o.key]){G.gear.push(o.p.id);f.claim[o.key]=1;got.push(gearOf(o.p.id).n);}});toast(`${got.join(' and ')} added to your gear.`);}
@@ -126,20 +129,20 @@ ACT.facBuy=function(a){const [id,i]=String(a).split(':'),S=(FSTOCK[id]||[])[+i];
   G.gold-=S[2];if(item)G.inv[key]=(G.inv[key]||0)+1;else{const q=/\(3\)/.test(S[1])?3:1;if(S[0]==='hide'||S[0]==='fang'||S[0]==='scale'||S[0]==='$rel'||/bundle/.test(S[1]))G.mats[key]=(G.mats[key]||0)+3;else G.mats[key]=(G.mats[key]||0)+q;}
   saveGame();sfx('chest');toast(`Bought ${S[1]}.`);render();};
 // ---------- screens ----------
-// v0.9.5: three ranks, one line each. The missions are a list of their own on the Notice Board's Guilds tab (board in menus3.js).
+// five ranks, one line each. The missions are a list of their own on the Notice Board's Guilds tab (board in menus3.js).
 function facBar(id){const t=facTier(id),rep=facRep(id),nx=facTierNeed(id),lo=FAC3_AT()[t-1];const pc=nx==null?100:Math.max(0,Math.min(100,Math.round((rep-lo)/(nx-lo)*100)));
   return `<div class="facbar"><i style="width:${pc}%;background:${FACB[id].col}"></i></div>`;}
 function facMisState(m){const f=facInit(),acc=f.acc[m.id]!=null,pr=facProg(m);return f.done[m.id]?'done':acc?(pr>=m.n?'ready':'active'):'open';}
 function facMisRow(m){const f=facInit(),acc=f.acc[m.id]!=null,pr=facProg(m),ready=acc&&pr>=m.n,F=FACB[m.f];
-  const btn=ready?`<button class="btn sm gold" data-act="facClaim" data-arg="${m.id}">Claim</button>`:acc?`<span class="m nums">${pr}/${m.n}</span>`:`<button class="btn sm ${pr>=m.n?'gold':''}" data-act="facAccept" data-arg="${m.id}">Accept</button>`;
-  return `<div class="row facm"><div class="grow"><b>${esc(m.t)}</b>${ready?' <em class="qtag">Ready</em>':''} <small class="facg" style="--fc:${F.col}">${F.i} ${esc(F.n)}</small><small>${esc(m.d)} Reward: +${m.rep} standing and gold.${!ready?` Progress ${pr}/${m.n}${!acc&&pr>=m.n?', done already: accept to claim':''}.`:''}</small></div>${btn}</div>`;}
+  const away=ready&&!facCanHand(m.id),btn=ready?(away?`<button class="btn sm gold" disabled title="Hand in at any Guild Hall">Claim</button>`:`<button class="btn sm gold" data-act="facClaim" data-arg="${m.id}">Claim</button>`):acc?`<span class="m nums">${pr}/${m.n}</span>`:`<button class="btn sm ${pr>=m.n?'gold':''}" data-act="facAccept" data-arg="${m.id}">Accept</button>`;
+  return `<div class="row facm"><div class="grow"><b>${esc(m.t)}</b>${ready?' <em class="qtag">Ready</em>':''} <small class="facg" style="--fc:${F.col}">${F.i} ${esc(F.n)}</small><small>${esc(m.d)} Reward: +${m.rep} standing and gold.${away?' Hand in at any Guild Hall.':''}${!ready?` Progress ${pr}/${m.n}${!acc&&pr>=m.n?', done already: accept to claim':''}.`:''}</small></div>${btn}</div>`;}
 function facRankRows(F){const f=facInit(),t=facTier(F.id),D=FAC3[F.id],at=FAC3_AT();
   return D.n.map((nm,i)=>{const rk=i+1,on=t>=rk,C=facTierClaims(F.id,rk),open=C.filter(o=>!f.claim[o.key]);
     const act=!on?`<span class="m nums">${fmt(at[i])}</span>`:C.length?(open.length?`<button class="btn sm gold" data-act="facPerk" data-arg="${open[0].key}">Claim</button>`:'<span class="m up">Claimed</span>'):'<span class="m up">Active</span>';
     return `<div class="row ${on?'':'lock'}"><div class="grow"><b>${rk}. ${esc(nm)}</b><small>${esc(D.t[i])}</small></div>${act}</div>`;}).join('');}
 function vFactions(){if(!G)return '';facSync(true);const best=META.facBest||{};
-  const tt=FAC.filter(F=>facTierOf(best[F.id]||1)>=3).map(F=>FAC3[F.id].n[2]);
-  return `${tt.length?`<p class="note"><b>Account titles:</b> ${tt.map(esc).join(', ')}</p>`:''}<p class="note">Each guild has three ranks. Standing comes from what you already do on the road, and missions add more. Ranks and perks belong to this journey; the top rank you reach is kept on your account as a title. Nothing here is needed to finish the game.</p>`+FAC.map(F=>{
+  const tt=FAC.filter(F=>facTierOf(best[F.id]||1)>=5).map(F=>FAC3[F.id].n[4]);
+  return `${tt.length?`<p class="note"><b>Account titles:</b> ${tt.map(esc).join(', ')}</p>`:''}<p class="note">Each guild has five ranks, one perk step each. Standing comes from what you already do on the road, and missions add more. Ranks and perks belong to this journey; the top rank you reach is kept on your account as a title. Nothing here is needed to finish the game.</p>`+FAC.map(F=>{
     const t=facTier(F.id),rep=facRep(F.id),nx=facTierNeed(F.id),si=F.perks.findIndex(p=>p&&p.k==='stock')+1;
     const stock=si&&t>=facTierOf(si)?`<details class="facstock"><summary>Counter stock</summary><div class="rows compact">${(FSTOCK[F.id]||[]).map((S,i)=>`<div class="row"><div class="grow"><b>${esc(S[1])}</b></div><button class="btn sm" data-act="facBuy" data-arg="${F.id}:${i}" ${G.gold<S[2]?'disabled':''}>${fmt(S[2])}g</button></div>`).join('')}</div></details>`:'';
     return `<div class="facc" style="--fc:${F.col}"><h4>${F.i} ${esc(F.n)} <small class="m">Rank ${t}: ${esc(facTierName(F.id,t))}</small></h4><small>${esc(F.desc)}</small>${facBar(F.id)}<small class="nums">${nx==null?`${fmt(rep)} standing. Top rank.`:`${fmt(rep)} / ${fmt(nx)} standing for ${esc(facTierName(F.id,t+1))}`}</small>

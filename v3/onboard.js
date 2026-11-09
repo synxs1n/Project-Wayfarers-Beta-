@@ -250,8 +250,8 @@ function obTick(){try{obOpened();
   // new moments join the queue in the order they happen; moments that passed leave it (not seen, so they come back)
   for(const t of TIPS){if(tipSeen(t.id)||OB.q.includes(t.id)||t.always)continue;if(obEval(t))OB.q.push(t.id);}
   OB.q=OB.q.filter(id=>!tipSeen(id)&&obEval(TIPMAP[id]));
-  if(!OB.q.length||P2.hint||P2.hintT||obHold()||Date.now()-OB.last<OB_GAP)return;
-  const id=OB.q.shift(),txt=obEval(TIPMAP[id]);if(txt)obShow(id,txt);
+  if(!OB.q.length||P2.hint||P2.hintT||obHold()||Date.now()-OB.last<obGap())return;
+  const id=obPickNext(),txt=obEval(TIPMAP[id]);if(txt)obShow(id,txt);
 }catch(e){}}
 OB.tick=setInterval(obTick,OB_TICK);
 // keep the card in its window across re-renders, and on a free spot of the stage as the battle moves

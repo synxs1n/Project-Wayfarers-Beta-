@@ -10,14 +10,14 @@ const r=await ev(async()=>{const A=__A,G=A.G,o={};
   A.V.modal={type:'cev',ev:{type:'duel',hero:h,title:'A challenge',text:'x',ch:[]}};A.render();const txt=document.body.innerText;o.either=/either way/.test(txt);o.seatTxt=/waits for you at the tavern/.test(txt);A.V.modal=null;
   A.ceInit();G.ce.boost=G.ce.boost||{};G.ce.boost[h]=1;o.seat=A.tvSlots().includes(h);
   // Inn closes after a rest
-  G.gold=999;A.V.modal={type:'inn'};A.ACT.rest();await new Promise(q=>setTimeout(q,900));o.innClosed=A.V.modal===null;
+  G.gold=999;Object.values(G.roster)[0].hp=1;/* since v0.9.x an unhurt party is asked first (innSure), so someone needs the rest */A.V.modal={type:'inn'};A.ACT.rest();await new Promise(q=>setTimeout(q,900));o.innClosed=A.V.modal===null;
   // Accept all / Claim all on the board
   for(let s=0;s<=G.stage;s++)A.genQuests(s);A.V.modal={type:'board'};A.render();o.accBtn=!!document.querySelector('[data-act="qAcceptAll"]');A.ACT.qAcceptAll();o.allActive=G.quests.filter(q=>q.stage<=G.stage).every(q=>q.state!=='open');
   const hq=G.quests.find(q=>q.type==='hunt'&&q.state==='active');if(hq)hq.have=hq.n;const g0=G.gold;A.render();o.claimBtn=!!document.querySelector('[data-act="qClaimAll"]');A.ACT.qClaimAll();o.claimed=G.gold>g0;
-  // bounties and faction missions. v0.9.9: since v0.9.5 both lists are on the Notice Board (bounties and guilds tabs), and a new journey
+  // bounties and faction missions. v0.9.9: since v0.10.6 the bounties are on the town Notice Board and the guild missions on the Guild Hall's Guilds tab, and a new journey
   // opens guild missions in the third realm (pacing.js PACE.at.guilds): no Accept all for them before it, then Accept all takes every one
   A.V.modal={type:'board',tab:'bounties'};A.render();o.bountyBtn=!!document.querySelector('#modal [data-act="bountyAll"]');A.ACT.bountyAll();o.bountyAll=G.bounties.filter(b=>b.stage<=G.stage).every(b=>b.state!=='open');
-  A.V.modal={type:'board',tab:'guilds'};A.render();o.facEarly=!document.querySelector('#modal [data-act="facAcceptAll"]')&&!!G.pcV;
+  A.V.modal={type:'guild',tab:'guilds'};A.render();o.facEarly=!document.querySelector('#modal [data-act="facAcceptAll"]')&&!!G.pcV;
   for(let i=0;i<window.__P95.PACE.at.guilds;i++)G.cleared[i]=1;A.render();o.facBtn=!!document.querySelector('#modal [data-act="facAcceptAll"]');
   const ML=A.TW.get('facMisAll')();A.ACT.facAcceptAll();o.facN=ML.length;o.facAll=ML.length>0&&ML.every(m=>A.TW.get('facMisState')(m)!=='open');
   o.facOpen=A.TW.get('facMisAll')().filter(m=>A.TW.get('facMisState')(m)==='open').map(m=>m.id).join();
@@ -35,7 +35,7 @@ chk('the duel popup promises a tavern seat and never says "either way"',!r.eithe
 chk('a beaten duelist waits in the tavern',r.seat===true);
 chk('the Inn closes after a rest',r.innClosed===true);
 chk('Accept all and Claim all on the quest board',r.accBtn&&r.allActive&&r.claimBtn&&r.claimed);
-chk('Accept all on bounties and faction missions (Notice Board)',r.bountyBtn&&r.bountyAll&&r.facBtn&&r.facAll||JSON.stringify(r));
+chk('Accept all on bounties and faction missions (Notice Board bounties, Guild Hall guilds)',r.bountyBtn&&r.bountyAll&&r.facBtn&&r.facAll||JSON.stringify(r));
 chk('no guild mission Accept all before the guilds open on a new journey',r.facEarly===true);
 chk('24 starters, 3 per class and 3 per element, many different draws',r.st===24&&r.cls&&r.el&&r.draws>=30);
 chk('every town gate lands on a road',r.towns>0&&r.linked===r.towns);

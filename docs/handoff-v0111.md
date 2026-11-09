@@ -102,3 +102,13 @@ P5 0.11.8+ realms: realm order rises in fantasy with the most intricate final to
 - chain5.js guarded hit -> lbAdd(G5.lb=12); battle5.js/chain5.js Guard cue skips stunned foes
 - heroes.js EPIC_IDS (helper), progression.js G.run.gpick 5 of the 14 CHALL recruits, one per town (helper)
 - battleui.js/battle3.js: party MP on cards, single target preview fit, Settings "Single target skills: Ask / Fire at once" (META.cfg.autoOne) (helper)
+
+## 0.11.9 (in progress)
+- handin9.js: quests/bounties accepted from now on carry hand:'board' and claim only at their realm's Notice Board (canHandIn, atBoardOf);
+  bounty rewards wait at the board (state 'ready', ACT.bountyClaim, Ready section); win hook takes the reward back out; boardState
+  redefined here; far markers for active quest targets (mapMarks far:1); world map town label " · hand in!". Test v119a.
+- guidance9.js: guildState + Guild Hall marker (2D townDecorActors wrap, HD hdActors wrap); quest goals in Next goals (glList wrap) with
+  goal rows -> ACT.goalGuide popup (type 'goalguide'); hint pacing (obGap/obPickNext used by onboard.js obTick, OB_CORE first early) and
+  META.tipLog + Hint log popup (type 'hintlog', Settings Tips row button, Log button on the tip card). Test v119b.
+- Helpers (in flight at the time of writing): factions.js 5 ranks + guild mission hand-in at a Guild Hall + the six stale board tests;
+  world: mapIndoor (no weather in lairs/Dens, open Sanctums), ROAM.boost, loot variety (bandage/tent/ash), board/waystone spacing.

@@ -275,7 +275,7 @@ function w7Bill(key,cv,x,h,z,sc,r,g,b,a){const R=HD.lmR;if(x<R[0]-120||x>R[0]+R[
 function w7BankFade(x,h,z,bw,bh){if(z<HW.hz-2)return 1;const p=HW.p,Bx=HW.b,V=HD.S.V,yc=(h+bh*.5)*V;h2Proj(p,HD.mats.vp,x,yc,z);const px=p[0],py=p[1];h2Proj(p,HD.mats.vp,x+bw*.5,yc,z);
   const rx=Math.max(.02,Math.abs(p[0]-px)*.8),ry=rx*(HD.asp||1)*(bh/bw)*1.1,fx=(Bx[0]+Bx[2])/2,fy=Bx[3]-(Bx[3]-Bx[1])*WX7.face.y,dx=(fx-px)/rx,dy=(fy-py)/ry,dd=dx*dx+dy*dy;
   if(dd>=1)return 1;const u=1-dd;return 1-(1-WX7.face.bank)*u*u*(3-2*u);}
-function w7Gl(m,ts){const q=w7Q();W7.stats.gl=0;W7.stats.glG=0;W7.heat=0;if(!WX7.on||!q.gl||!m||m.archive||(m.kind!=='field'&&m.kind!=='town'))return;const L=w7List(m);if(!L.length)return;
+function w7Gl(m,ts){const q=w7Q();W7.stats.gl=0;W7.stats.glG=0;W7.heat=0;if(!WX7.on||!q.gl||!m||mapIndoor(m))return;const L=w7List(m);if(!L.length)return;
   const R=HD.lmR,C=WFX.cell,Px=Math.ceil(R[2]/C)*C+C,Pz=Math.ceil((WFX.hdZ[0]+WFX.hdZ[1])/C)*C,cx=HD.cam.x,cz=HD.cam.z-(WFX.hdZ[0]-WFX.hdZ[1])/2,t=ts/1000,A=Px*Pz/WX7.glRef*q.glN,G7=WX7.gl,o=H2L;
   const lum=Math.min(1,.3+((o.amb[0]+o.amb[1]+o.amb[2])/3+(o.sun[0]+o.sun[1]+o.sun[2])/3)*.75),n0=HW.n;let budget=q.glCap;
   const cnt=v=>{const n=Math.min(budget,Math.round(v*A));budget-=n;return n;};
@@ -320,7 +320,7 @@ function w7Gl(m,ts){const q=w7Q();W7.stats.gl=0;W7.stats.glG=0;W7.heat=0;if(!WX7
   W7.stats.gl+=HW.n-n0;}
 {const w0=hdWfx;hdWfx=function(m,ts){w0.apply(this,arguments);try{w7Gl(m,ts);}catch(e){W7.err=String(e&&e.stack||e).slice(0,300);}};}
 // the wet grade (rain), the lightning light (storm) on the HD-2D scene
-function w7Look(o,m,now){if(!WX7.on||!m||(m.kind!=='field'&&m.kind!=='town'))return;const L=w7List(m);let wet=0,f=0;
+function w7Look(o,m,now){if(!WX7.on||!m||mapIndoor(m))return;const L=w7List(m);let wet=0,f=0;
   for(const [w,k] of L){if(w==='rain'||w==='storm')wet+=k*(w==='storm'?1.2:1);if(w==='storm'){const S=w7Strike(w7Still()?0:now);f=Math.max(f,S.f*k);}}
   if(wet>0){o.sat*=1-.1*wet;o.con*=1+.07*wet;o.exp*=1-.05*wet;o.bloom+=.15*wet;}
   if(f>0){const b=WX7.bolt.light*f;o.amb[0]+=b*.85;o.amb[1]+=b*.9;o.amb[2]+=b;o.exp*=1+f*.25;}W7.stats.hdFlash=f;}

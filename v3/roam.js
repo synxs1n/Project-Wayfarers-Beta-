@@ -59,6 +59,7 @@ HOOK.wrap('encounterFoes','roam','roamer fights',function(next,...a){let spec=a[
   const s=spec.stage,ro=spec.roam,band=STAGE_LV[s],lv=band[1]+ROAM.lvUp+ngLvOff(),Z=ZS(s),out=[];
   out.push(ro.elite?makeEnemy(MON[ro.mon],lv,{elite:true,name:ro.name,mod:ro.mod,hpM:3,powM:1.35}):makeEnemy(MON[ro.mon],lv,{hpM:ROAM.hpM,powM:ROAM.powM}));
   const n=ro.elite?1:1+(RNG()<.5?1:0);for(let i=0;i<n;i++)out.push(makeEnemy(MON[pick(Z.pool)],lv-1));
+  if(!ro.elite&&ROAM.boost)out.forEach(e=>{e.S.atk*=ROAM.boost.pow;e.S.mag*=ROAM.boost.pow;e.S.mhp=Math.round(e.S.mhp*ROAM.boost.hp);e.hp=e.S.mhp;});// roamers hit a little harder than random foes (ROAM.boost)
   const cnt={};out.forEach(e=>{cnt[e.name]=(cnt[e.name]||0)+1;});const seen={};out.forEach(e=>{if(cnt[e.name]>1){seen[e.name]=(seen[e.name]||0)+1;e.name+=' '+String.fromCharCode(64+seen[e.name]);}});
   return out;});
 {const ab0=autoBan;autoBan=function(spec){const r=ab0.apply(this,arguments);if(r)return r;if(spec&&spec.roam&&spec.roam.elite&&G&&!G.daily)return 'No auto in elite fights';return null;};}

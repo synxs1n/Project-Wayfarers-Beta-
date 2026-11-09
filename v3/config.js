@@ -40,6 +40,8 @@ const STARTER_LV=3;
 // ==== 2. Battle rules: drops, auto battle, ailments, reactions, archetypes, companions, Momentum and foe roles (B4) ====
 // battle drops: chance per beaten foe, multiplied by the party's luck bonus
 const DROP={realm:.38,part:.55,potion:.15,ether:.07,remedy:.07,hipotion:.05};
+// DROP_MIX: weights inside the remedy-slot drop roll (engine.js win): remedy keeps its DROP.remedy rate, the others are extra on top, picked from the same roll
+const DROP_MIX={remedy:1,bandage:.22,ash:.16,tent:.05};
 // Beta v0.4.1 2.5: the auto battle brain. healAt: heal an ally below this percent of max HP. skillChance: how often a turn uses a plain damage skill
 // instead of a basic attack. power: damage multiplier for everything auto does outside the Trial. spread: how often a single target attack picks a random foe instead of the first in line. dailySmart: keep the careful old brain inside the Daily Trial (the Trial must stay identical).
 const AUTO_NERF={healAt:40,skillChance:1,spread:0,power:.85,aware:.6,potion:0,smart:.6,limit:.5,det:.5,dailySmart:true};
@@ -183,7 +185,8 @@ const SMALL_PARTY={stages:2,hp:[.55,.85],pow:[.6,.88]};
 // v0.9.5: field: roamers on each realm's field too (base + perStage), never within minFromExit tiles of an exit, cave, dungeon or town gate.
 // roles: each realm's roamers include at least one of every foe role in its pool (B4.roleOf), so the fights teach the roles.
 const ROAM={base:4,perStage:1,elite:.2,sight:4,patrolMs:620,chaseMs:330,giveUp:7,minFromStart:9,lvUp:2,hpM:1.3,powM:1.12,// v0.9.5: base 3 -> 4
-  field:{base:2,perStage:1,minFromExit:7},roles:true};
+  field:{base:2,perStage:1,minFromExit:7},roles:true,
+  boost:{hp:1.1,pow:1.06}};// boost: every non-elite foe in a roamer fight (lead and company) on top of hpM/powM: HP and ATK/MAG multipliers; elites keep their own mod boost
 // SITES: side fortresses (fortW x fortH tiles) and minibosses (sites.js): mini = share of caves and fortresses with one, miniHp,
 // miniPow and miniLv: its HP, power and level over the area.
 const SITES={fortW:62,fortH:40,mini:.9,miniHp:6,miniPow:1.55,miniLv:4};

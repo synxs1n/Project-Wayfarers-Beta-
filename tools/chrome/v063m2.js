@@ -26,17 +26,19 @@ const po=await ev(()=>{__A.ACT.sSec('potion');return {g:document.querySelectorAl
 chk('Alchemy > Potions has no charms and no travel gear',po.g===0&&po.it.length>0&&!po.it.includes('tent')&&!po.it.includes('holywater')||JSON.stringify(po));
 await show({type:'workshop',tab:'craft'});n=await nav();chk('Alchemy craft sections: All, Potions, Charms, Travel',JSON.stringify(n.secs)===JSON.stringify(['All','Potions','Charms','Travel'])||JSON.stringify(n.secs));
 await show({type:'workshop',tab:'sell'});n=await nav();chk('Alchemy Sell sections: All, Charms, Herbs',JSON.stringify(n.secs)===JSON.stringify(['All','Charms','Herbs'])||JSON.stringify(n.secs));
-await show({type:'tavern'});n=await nav();chk('Tavern tabs: Hire, Kitchen',JSON.stringify(n.tabs)===JSON.stringify(['Hire','Kitchen'])||JSON.stringify(n.tabs));
-const kit=await ev(()=>{__A.ACT.sTab('kitchen');return !!document.querySelector('#modal [data-act="buyItem"][data-arg="porkchop"]');});chk('Tavern > Kitchen sells the sandwiches',kit);
-// v0.9.5: the Guild Hall holds the Notice Board's tabs (Quests, Guilds, Bounties, Arena) plus Recruits and Natures; the board has the same four
-await show({type:'guild'});n=await nav();chk('Guild Hall tabs: Quests, Guilds, Bounties, Arena, Recruits, Natures',JSON.stringify(n.tabs)===JSON.stringify(['Quests','Guilds','Bounties','Arena','Recruits','Natures'])||JSON.stringify(n.tabs));
-await show({type:'guild',tab:'quests'});n=await nav();chk('Guild Hall > Quests sections: All, Ready, Active, Open, Done, Personal',JSON.stringify(n.secs)===JSON.stringify(['All','Ready','Active','Open','Done','Personal'])||JSON.stringify(n.secs));
+// v0.11.4: the Rusty Flagon is one page (no tabs): the wayfarers to hire, then a Kitchen heading with the sandwiches
+await show({type:'tavern'});n=await nav();chk('Tavern is one page with a Kitchen section (no tabs)',n.tabs.length===0&&n.h4.includes('Kitchen')||JSON.stringify(n));
+const kit=await ev(()=>!!document.querySelector('#modal [data-act="buyItem"][data-arg="porkchop"]'));chk('Tavern > Kitchen sells the sandwiches',kit);
+// v0.10.6: the town Notice Board has Quests and Bounties; the Guild Hall has Guilds, Arena, Recruits and Natures
+await show({type:'guild'});n=await nav();chk('Guild Hall tabs: Guilds, Arena, Recruits, Natures',JSON.stringify(n.tabs)===JSON.stringify(['Guilds','Arena','Recruits','Natures'])||JSON.stringify(n.tabs));
+await show({type:'guild',tab:'guilds'});n=await nav();chk('Guild Hall > Guilds sections: All, Ready, Active, Open',JSON.stringify(n.secs)===JSON.stringify(['All','Ready','Active','Open'])||JSON.stringify(n.secs));
+await show({type:'board'});n=await nav();chk('Notice Board tabs: Quests, Bounties',JSON.stringify(n.tabs)===JSON.stringify(['Quests','Bounties'])||JSON.stringify(n.tabs));
 await show({type:'board'});n=await nav();chk('Notice Board sections: All, Ready, Active, Open, Done, Personal',JSON.stringify(n.secs)===JSON.stringify(['All','Ready','Active','Open','Done','Personal'])||JSON.stringify(n.secs));
 const hg=await ev(()=>{const o={};for(const t of ['smithy','workshop','tavern','guild','board']){__A.V.modal={type:t};__A.render();o[t]=!!document.querySelector('#modal h2 .hgold');}return o;});
 chk('every shop title carries the purse',Object.values(hg).every(Boolean)||JSON.stringify(hg));
 // ---- old ids still land
 const leg=await ev(()=>{const o={};const t=(m)=>{__A.V.modal=m;__A.render();return __A.V.modal.tab+'/'+__A.V.modal.sec;};
-  o.w=t({type:'smithy',tab:'weapons'});o.m=t({type:'smithy',tab:'mats'});o.c=t({type:'smithy',tab:'craft',cat:'armor'});o.r=t({type:'workshop',tab:'herbs'});o.p=t({type:'guild',tab:'personal'});o.b=t({type:'guild',tab:'bounties'});
+  o.w=t({type:'smithy',tab:'weapons'});o.m=t({type:'smithy',tab:'mats'});o.c=t({type:'smithy',tab:'craft',cat:'armor'});o.r=t({type:'workshop',tab:'herbs'});o.p=t({type:'board',tab:'personal'});o.b=t({type:'board',tab:'bounties'});
   o.wOnly=(__A.V.modal={type:'smithy',tab:'weapons'},__A.render(),[...document.querySelectorAll('#modal [data-act="buyGear"]')].every(b=>__A.GEAR[b.dataset.arg].slot==='w'));return o;});
 chk('old tab ids map to the new tab and section',leg.w==='shop/weapons'&&leg.m==='shop/mats'&&leg.c==='craft/armor'&&leg.r==='shop/herb'&&leg.p==='quests/personal'&&leg.b==='bounties/all'&&leg.wOnly||JSON.stringify(leg));
 // ---- back: one level at a time
