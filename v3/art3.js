@@ -145,3 +145,47 @@ function bossFrame1(c){let f=BIDLE.get(c);if(f)return f;const w=c.width,h=c.heig
   x.globalCompositeOperation='source-atop';x.globalAlpha=.2;x.fillStyle='#fff2d0';x.fillRect(0,0,w,h);BIDLE.set(c,f);return f;}
 function bossIdle(c,seed,now,ms){if(typeof gfxStill==='function'&&gfxStill())return c;return Math.floor(now/(ms||760)+(seed||0)*.5)%2?bossFrame1(c):c;}
 {const io0=imgOf;imgOf=function(key,fn){const c=io0.apply(this,arguments);try{if(typeof key==='string'&&key.charCodeAt(0)===109&&key.startsWith('mapboss:'))return bossIdle(c,0,performance.now(),840);}catch(e){}return c;};}
+// ===== v0.12.13: the Riftkeeper, the ultimate boss (60x60; foes.js RIFTKEEPER, riftkeeper9.js) =====
+// A tall hooded keeper: a peaked hood over a robe woven of rift light, a lantern cage at the chest, keys at the belt and on a ring in one
+// hand, a giant key for a staff in the other, and two small doors drifting beside it. Silhouette: a narrow spire (hood and staff) over a
+// wide mantle, flaring to the hem. The lantern core is the one flat accent colour: the battle swaps the sprite for riftkeeper_<element>
+// so the flame shows the element it burns this turn (riftkeeper9.js). Idle: the shared 2 frame bossIdle (an exhale and a soft glow) applies
+// to every boss sprite; the telegraph pose is the existing swell (anim.js bossTele).
+function rkArt(g,core){
+  g.ell(30,57,19,2.6,'D');
+  // robe: flares from the shoulders to the hem; lit left, shaded right, thin woven threads across it
+  g.poly([[21,21],[39,21],[47,56],[13,56]],'R');g.poly([[21,21],[26,21],[19,56],[13,56]],'L');g.poly([[36,23],[39,21],[47,56],[38,56]],'r');
+  for(let i=0;i<5;i++){const y=26+i*6;g.line(21-i*1.6,y+4,38+i*1.6,y-2,'W');}
+  for(let i=0;i<4;i++){const y=30+i*6;g.line(38+i*1.7,y+4,22-i*1.7,y-1,'w');}
+  g.px([[15,57],[19,58],[24,57],[29,58],[34,57],[39,58],[44,57]],'W');
+  // belt and the keys on it
+  g.rect(19,43,22,2,'B');g.rect(29,43,2,2,'G');
+  [[20,45],[23,45],[37,45],[40,45]].forEach(([x,y],i)=>{g.line(x,y,x,y+6,'G');g.px([[x+1,y+5],[x+1,y+3]],'g');g.s(x,y+7,'g');});
+  // mantle and arms
+  g.ell(30,23,12,4,'M');g.rect(19,23,22,3,'M');
+  g.path([[20,24],[14,32],[12,39]],'M',4);g.path([[40,24],[45,29],[47,25]],'M',4);
+  // left hand with a ring of keys
+  g.ell(12,41,3,3,'F');g.ell(10,47,4.5,4.5,'G');g.ell(10,47,2.4,2.4,0);
+  [[7,52],[10,53],[13,52]].forEach(([x,y])=>{g.line(x,y,x,y+5,'G');g.px([[x+1,y+4],[x+1,y+2]],'g');});
+  // the giant key: bow (ring) on top, shaft, bit with teeth; held in the right hand
+  g.ell(49.5,7,5,5,'G');g.ell(49.5,7,2.4,2.4,0);g.px([[45,5],[46,3]],'S');
+  g.rect(48,11,3,45,'S');g.rect(48,11,1,45,'G');
+  g.rect(51,14,5,2,'G');g.rect(51,18,3,2,'G');g.rect(51,22,5,2,'G');g.rect(46,52,7,4,'G');
+  g.ell(49.5,27,3.2,3.2,'F');
+  // hood: a tall peak, a dark face with two narrow eyes, thread fray along the edge
+  g.poly([[30,1],[38,12],[41,23],[19,23],[22,12]],'H');g.poly([[30,1],[26,10],[21,23],[19,23],[22,12]],'L');
+  g.ell(30,15,5.2,6.5,'K');g.rect(27,13,2,2,'E');g.rect(32,13,2,2,'E');g.s(27,13,'W');g.s(32,13,'W');
+  g.px([[41,15],[42,19],[18,18],[17,22],[30,0]],'W');
+  // lantern cage at the chest: gold frame, glass, the flame, bars across it
+  g.rect(29,26,2,3,'G');g.poly([[25,29],[35,29],[34,27],[26,27]],'G');
+  g.rect(25,29,10,13,'G');g.rect(26,30,8,11,'K');g.ell(30,35.5,3.2,3.8,'C');g.ell(30,35.5,1.4,1.8,'c');
+  g.rect(28,30,1,11,'G');g.rect(32,30,1,11,'G');g.rect(25,35,10,1,'g');g.rect(25,41,10,2,'G');
+  // two doors drifting beside it (arch frames with a glow inside)
+  g.rows(4,4,[".GGGGGG.","GGccccGG","Gcc..ccG","Gc....cG","Gc....cG","Gc....cG","Gc....cG","Gc....cG","GGGGGGGG"]);
+  g.rows(52,36,["..GGGG..",".GccccG.","Gcc..ccG","Gc....cG","Gc....cG","Gc....cG","GGGGGGGG"]);
+  g.px([[3,17],[14,2],[56,34],[58,46],[55,3]],'W');
+  return {pal:{R:'#2c2556',r:'#1a1538',L:'#4a4390',H:'#38326e',M:'#473f84',K:'#06030e',E:'#eef6ff',C:core,c:mix(core,'#ffffff',.55),G:'#d4b464',g:'#8e7034',S:'#b9a266',W:'#a9e6ff',w:'#6fa6d8',F:'#9a92c4',B:'#5a4a30',D:'#0c0816'},flat:'KECcW',glow:core,rim:'#0a0618'};}
+MART.riftkeeper=g=>rkArt(g,'#c9a8ff');
+BIG_ART.push('riftkeeper');
+ELK.forEach(el=>{MART['riftkeeper_'+el]=g=>rkArt(g,ELC[el]);BIG_ART.push('riftkeeper_'+el);});
+MEXTRA.riftkeeper=(g,p)=>{};

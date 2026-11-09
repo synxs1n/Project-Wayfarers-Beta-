@@ -25,6 +25,10 @@ TW.mod=id=>TWISTS.ng.mods.find(m=>m.id===id)||null;
 TW.mods=g=>{g=g||(typeof G!=='undefined'?G:null);return g&&Array.isArray(g.ngMods)?g.ngMods.map(TW.mod).filter(Boolean):[];};
 TW.ng=function(id){if(typeof G==='undefined'||!G||G.daily||!Array.isArray(G.ngMods)||!G.ngMods.includes(id))return null;return TW.mod(id);};
 TW.modNames=g=>TW.mods(g).map(m=>m.n).join(', ');
+// v0.12.13: the Rift modifier, unlocked on the account by beating the Riftkeeper (META.riftkeeper, riftkeeper9.js). A locked modifier is not offered.
+TWISTS.ng.mods.push({id:'rift',n:'Rift',risk:'Foes cycle through the elements every 3 turns.',gain:'+35% XP and gold.',xp:1.35,gold:1.35,lock:'riftkeeper'});
+const twUnlocked=m=>!!m&&(!m.lock||!!(typeof META!=='undefined'&&META&&META[m.lock]));
+const TW_RIFT=['fire','water','ice','lightning','earth','wind','light','shadow'];
 
 // ===== Daily twist effects =====
 // weather multipliers carry Healing halved and Sharp eyes (WX() feeds heal skills and crit chance)
@@ -68,6 +72,10 @@ function twElite(){
   const e=B.en.reduce((a,x)=>x.lv>a.lv?x:a,B.en[0]);if(!e)return;
   e.maxShield=m.pips;e.shield=m.pips;e.broken=0;e.S.mhp=Math.round(e.S.mhp*m.hp);e.hp=e.S.mhp;e.ngElite=1;e.name='Elite '+e.name;
 }
+// Rift: every third turn a foe's element (and its damaging skills) shifts to the next one in the cycle (never the Riftkeeper, which cycles on its own)
+function twRift(u){const cur=u.el&&u.el[0],i=TW_RIFT.indexOf(cur),nx=TW_RIFT[(i+1)%TW_RIFT.length];u.el=[nx];u.sk.forEach(k=>{if(k.k!=='buff'&&k.el)k.el=nx;});
+  fx(u,EL[nx],'stat');log(`${u.name} shifts to ${EL[nx]}.`);}
+{const et0=endTurn;endTurn=function(u){const r=et0.apply(this,arguments);try{if(B&&u&&u.side==='e'&&!u.rk&&u.hp>0&&u.turns>0&&u.turns%3===0&&TW.ng('rift'))twRift(u);}catch(e){}return r;};}
 // Reactions only: weak hits and skills stop chipping foe shields
 {const cs0=chipShield;chipShield=function(t,n,why){if(TW.ng('react')&&t&&t.side==='e'&&why!=='reaction')return;return cs0.apply(this,arguments);};}
 // rewards: every chosen modifier multiplies battle XP and gold (win() reads facMul once per fight)
@@ -118,16 +126,16 @@ HOOK.before('vModal','twists','twist info popup',function(m){if(m&&m.type==='wxi
 // New Game+ modifier picker on the starter screen (only when starting a New Game+ cycle)
 function ngPicker(){
   const sel=V.ngMods||[],mx=TWISTS.ng.max;
-  return `<div class="panel ngpick"><h3>Modifiers <small>(optional, up to ${mx})</small></h3><p class="note">Extra risk for extra reward, for this whole cycle. You can start without any.</p><div class="ngmods">${TWISTS.ng.mods.map(m=>
+  return `<div class="panel ngpick"><h3>Modifiers <small>(optional, up to ${mx})</small></h3><p class="note">Extra risk for extra reward, for this whole cycle. You can start without any.</p><div class="ngmods">${TWISTS.ng.mods.filter(twUnlocked).map(m=>
     `<button class="btn ngmod ${sel.includes(m.id)?'in':''}" data-act="ngMod" data-arg="${m.id}" aria-pressed="${sel.includes(m.id)}"><b>${sel.includes(m.id)?'✓ ':''}${esc(m.n)}</b><small class="ngr">${esc(m.risk)}</small><small class="ngg">${esc(m.gain)}</small></button>`).join('')}</div></div>`;
 }
 {const vs0=vStarter;vStarter=function(){let h=vs0.apply(this,arguments);try{if((V.ngCycle||0)>0&&TWISTS.on){const i=h.indexOf('<div class="grid cards">');if(i>=0)h=h.slice(0,i)+ngPicker()+h.slice(i);}}catch(e){}return h;};}
 {const n0=ACT.new,s0=ACT.startNG,b0=ACT.begin;
   ACT.new=function(){V.ngMods=[];return n0.apply(this,arguments);};
   ACT.startNG=function(){V.ngMods=[];return s0.apply(this,arguments);};
-  ACT.begin=function(){const pick=(V.ngMods||[]).filter(id=>TW.mod(id)).slice(0,TWISTS.ng.max),cyc=V.ngCycle||0;const g0=G;const r=b0.apply(this,arguments);
+  ACT.begin=function(){const pick=(V.ngMods||[]).filter(id=>twUnlocked(TW.mod(id))).slice(0,TWISTS.ng.max),cyc=V.ngCycle||0;const g0=G;const r=b0.apply(this,arguments);
     try{if(G&&G!==g0&&G.run&&cyc>0&&pick.length){G.ngMods=pick;saveGame();}}catch(e){}return r;};}
-ACT.ngMod=function(id){if(!TW.mod(id))return;const L=V.ngMods=V.ngMods||[];const i=L.indexOf(id);
+ACT.ngMod=function(id){if(!twUnlocked(TW.mod(id)))return;const L=V.ngMods=V.ngMods||[];const i=L.indexOf(id);
   if(i>=0)L.splice(i,1);else if(L.length>=TWISTS.ng.max){toast(`Up to ${TWISTS.ng.max}. Drop one first.`);return;}else L.push(id);render();};
 // shown on the save cards, in the header next to NG+ and in Menu > Journey
 {const ms0=mSlots;mSlots=function(m){let h=ms0.apply(this,arguments);try{[0,1,2].forEach(s=>{const o=loadRaw(s);const n=o&&TW.modNames(o);if(!n)return;

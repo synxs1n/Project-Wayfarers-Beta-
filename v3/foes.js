@@ -70,6 +70,11 @@ const FINALS={
 };
 const GPOOL=Object.keys(GUARDIANS),FPOOL=Object.keys(FINALS);
 // v4.8: the 12 lesser bosses are SCOURGES, the 4 world-eaters are CALAMITIES
-const bossClass=k=>FINALS[String(k).replace(/^echo_/,'')]?'Calamity':'Scourge';
+const bossClass=k=>String(k)==='riftkeeper'?'Ultimate':FINALS[String(k).replace(/^echo_/,'')]?'Calamity':'Scourge';
 const BOSS_CLASS_D={Scourge:'A Scourge: one of the twelve beast-lords that seized the beacons.',Calamity:'A Calamity: a world-eater that drinks the Meridian itself.'};
-function guardianDef(key){return GUARDIANS[key]||FINALS[key];}
+// v0.12.13: the Riftkeeper, the ultimate boss behind the Echo Sanctum (riftkeeper9.js). Not in GUARDIANS or FINALS, so it is no gate, no Echo
+// and no Archive entry; guardianDef finds it by key. Its skill elements change every turn (riftkeeper9.js sets them); the element here is the base.
+const RIFTKEEPER={n:'The Riftkeeper',art:'riftkeeper',el:['light','shadow'],hp:7,atk:1.35,def:1.35,mag:1.4,res:1.35,spd:1.05,
+  sk:[['Key-Lash','light',1.7,'one','phys',[['weaken',.35]]],['Doorfall','light',1.15,'all','mag',[['slow',.3]]],['Lantern Flare','light',2.0,'one','mag']],
+  intro:'A hooded keeper of woven rift light stands before every door the Echoes ever came through. A cage of glass at its heart holds one small flame, and the flame changes colour as it watches you.'};
+function guardianDef(key){return GUARDIANS[key]||FINALS[key]||(key==='riftkeeper'?RIFTKEEPER:undefined);}
