@@ -355,3 +355,6 @@ gates are beaten, cutscene on entering the gate, returns with a new look, rematc
 
 ## 0.16.2 / 0.16.3
 - style.css #toast bottom 112px (owner: middle was worse). worldgen.js genFieldRaw: for a bending field the rows ey-1..ey+1 east of ex+1 become '#'/'~'; for s>=4 the lane past the seal ends at bx+2.
+
+## 0.16.4
+- arena11.js (new, after fixes11): G.arenaBest[tier]={score,turns,kos} (score = waves*1500 - turns*18 - KOs*250 + avg HP frac*2000, win only); nbArena rows "Cleared Nx · Best score"; SVG medals per tier before the title when G.arena[i]>0; Records > Journey "Arena medals collected n of 5"; dailyKey() -> Monday of the local week (trial, twist, leaderboard key); META.trialBest[key]; player text Daily -> Weekly via vModal xform; "Weekly Terror". Test v149a (menus group). Weak: medals tiny (18px); pre-change daily board entries show only on their own date.

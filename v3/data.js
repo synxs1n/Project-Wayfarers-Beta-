@@ -4,6 +4,8 @@
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.16.4',['Arena: every tier shows how many times you have cleared it and your best score (waves, turns, KOs and the health you kept), a medal sits beside the title once you have won it, and the rewards screen shows the run\'s score against your best. Journey records count your arena medals.',
+  'The Daily Trial is now the Weekly Trial: the same trial and twist last from Monday to Sunday, with your best for the week kept and the leaderboard per week.']],
  ['Beta v0.16.3',['Fields whose road bends north or south after the sealed gate no longer keep an open lane running east past the bend; the only way on is the road to the next town.']],
  ['Beta v0.16.2',['Toasts sit a little above the bottom button row instead of in the middle of the screen.']],
  ['Beta v0.16.1',['House doors are back to their old size (the tall ones looked out of place). Toasts appear in the upper middle of the screen, clear of the buttons. Hints stay up 30 seconds.',
