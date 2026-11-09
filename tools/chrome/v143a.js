@@ -1,0 +1,11 @@
+// v0.14.6 equipbtn10.js: an Equip button beside Sheet on every party card opens Backpack > Equipment at that hero.
+const {open,chk,done}=require('./pw');
+(async()=>{const H=await open({w:412,h:915,mobile:true});const r=await H.ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(i=>A.ACT.pickS(i));A.ACT.begin();A.ACT.storyOk();A.V.modal={type:'menu',tab:'party'};A.render();
+ const eq=[...document.querySelectorAll('#modal [data-act=eqOpen]')],sh=[...document.querySelectorAll('#modal .swsheet')],o={eq:eq.length,sh:sh.length,party:A.TW.get('G').party.length};
+ o.cut=eq.filter(b=>b.scrollWidth>b.clientWidth+1).length;o.sameRow=eq.every((b,i)=>Math.abs(b.getBoundingClientRect().top-sh[i].getBoundingClientRect().top)<3);const M=document.querySelector('#modal').getBoundingClientRect();o.inside=eq.every(b=>b.getBoundingClientRect().right<=M.right&&b.getBoundingClientRect().left>=M.left);
+ A.ACT.eqOpen('lumen');o.tab=A.V.modal.tab;return o;});await H.wait(300);
+ const r2=await H.ev(()=>{const el=document.querySelector('#modal .eqrow[data-hero=lumen]');return {row:!!el,focus:!!el&&el.classList.contains('eqfocus'),rows:document.querySelectorAll('#modal .eqrow[data-hero]').length};});
+ console.log(JSON.stringify(r),JSON.stringify(r2));
+ chk('every party card has an Equip button beside Sheet, on the same row, not clipped',r.eq===r.party&&r.eq===r.sh&&r.cut===0&&r.sameRow&&r.inside||JSON.stringify(r));
+ chk('Equip opens Backpack > Equipment with that hero\'s row marked',r.tab==='equip'&&r2.row&&r2.focus&&r2.rows===r.party||JSON.stringify(r2));
+ await done(H);})();
