@@ -352,3 +352,6 @@ gates are beaten, cutscene on entering the gate, returns with a new look, rematc
 - fixes11.js: p6Train wrapped: set = trainees (>= gap behind) + anchors, free slots filled by power (XP catch up untouched, the owner corrected me); arena results -> V.modal {type:'guild',tab:'arena'} via finishBattle flag + ACT.resultOk wrap.
 - Open from batch 7 (helpers / later): side heads pass 2 (art.js), selling, crafting +0 start, max-temper comparisons, personal quest BiS reward, temper cost display (econ helper); arena menu clear count + score, medals, journey record stat, Daily -> Weekly trials; material sprites in the overworld.
 - Side heads pass 2 (art.js hFace/hHair side branches, rigSide long hair behind torso; art2.js raceTop/drawAcc side coordinates). v140a HERO_BASE f74a4dfe. Weak: elf/fox/cat ears at old coords, Brann's axe over the head, mohawk a blob.
+
+## 0.16.2 / 0.16.3
+- style.css #toast bottom 112px (owner: middle was worse). worldgen.js genFieldRaw: for a bending field the rows ey-1..ey+1 east of ex+1 become '#'/'~'; for s>=4 the lane past the seal ends at bx+2.

@@ -4,6 +4,7 @@
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.16.3',['Fields whose road bends north or south after the sealed gate no longer keep an open lane running east past the bend; the only way on is the road to the next town.']],
  ['Beta v0.16.2',['Toasts sit a little above the bottom button row instead of in the middle of the screen.']],
  ['Beta v0.16.1',['House doors are back to their old size (the tall ones looked out of place). Toasts appear in the upper middle of the screen, clear of the buttons. Hints stay up 30 seconds.',
   'Battle: Start/Stop auto, Pause and Speed work while actions play (a timed-hit ring no longer swallows the press). Target name tags are no longer cut off. After an arena fight the results return you to the Guild Hall\'s arena page.',

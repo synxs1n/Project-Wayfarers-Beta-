@@ -316,7 +316,10 @@ function genFieldRaw(s,part){
     else{const ex=bx+4,top=bend==='n';
       for(let y=top?0:ey;y<=(top?ey:H-1);y++)for(let x=ex-1;x<=ex+1;x++)F.g[y][x]=x===ex?'=':'.';
       for(let x=bx+2;x<=ex+1;x++){F.g[ey][x]='=';}
+      // v0.16.3: the lane past the bend is closed off, so the only way on is the road north or south (the owner saw "two roads" after the gate)
+      for(let x=ex+2;x<W;x++)for(let y=ey-1;y<=ey+1;y++)if(F.g[y]&&!'~'.includes(F.g[y][x]))F.g[y][x]=th==='heights'||th==='void'?'~':'#';
       ctx.endAt=[ex,top?0:H-1];}
+    if(s>=4)for(let x=bx+3;x<W;x++)for(let y=ey-1;y<=ey+1;y++)if(F.g[y]&&!'~'.includes(F.g[y][x]))F.g[y][x]=th==='heights'||th==='void'?'~':'#';// v0.16.3: the Calamity field's lane ends two tiles past the seal
   }else if(s<4){F.g[ey][W-1]='=';F.g[ey][W-2]='=';}else{F.g[ey][W-1]='#';F.g[ey][W-2]='#';}
   }
   // the dungeon entrance hides somewhere off the road; its spot changes every playthrough
