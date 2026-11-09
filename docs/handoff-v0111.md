@@ -329,3 +329,9 @@ gates are beaten, cutscene on entering the gate, returns with a new look, rematc
 - worldzoom10.js: WZ10.k back to 1 (owner: the zoomed world looked worse); character cards still sampled at 2 texels per art px.
 - sprhd.js walker wrapper rigScale .9 (key '|c9'), scale10.js SC10.battle .9. v145a expects 36x50 for both. HD town walker chH 43.7 at zoom 1.
 - Gotcha repeated: a // comment appended to a line swallows the rest of the line (scale10 HB10 vanished once; use /* */).
+
+## 0.15.7 (graphics sweep, part two)
+- sitelook10.js: light() ramp pass + outline2() per sprite; ground contact shadow via the drawTile wrapper; mound AO and HD face shading by normal; hdBakeCards wrapped to clear x-ray flag 8 on entrance quads. v144a extended (tone count, lit upper-left, shadow present, flag cleared).
+- worldgfx2.js wraps objCanvas (worldgfx.js) and redraws most prop kinds with lit/base/shade tones, rim light, contact shadows; towngfx.js landmark props shaded. New test v146a (world group): 396 canvases, sizes unchanged, min distinct colours.
+- Weak spots: Sanctum HD still pale/low contrast; lair fronts are south-facing cards whatever entFace says; 2D lair mound is dungeon8's slab with AO only; crate blotchy; stall goods small; keychest/lever/bars/door/facade/cavemouth untouched.
+- 0.15.7 also: walkers back to .8 (sprhd.js '|c8'), battle .9; walkanim10.js (new, last in MODS) sways the body 1px left/right and bobs 1px on front/back stride frames 1 and 2 (wraps walkerCanvas, caches in IMG 'wa10:'). v140a hero walker hash now c4672172 (changes whenever hero art or scale changes; update to the new value after checking the art).

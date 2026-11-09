@@ -30,7 +30,8 @@ function slPix(w,h){const cv=mkCv(w,h),c=cv.getContext('2d');c.imageSmoothingEna
     mass(shape,rk,o){o=o||{};const M=slPix(w,h);shape(M);const d=M.c.getImageData(0,0,w,h).data,at=(x,y)=>x>=0&&y>=0&&x<w&&y<h&&d[(y*w+x)*4+3]>100,R=mulberry(o.seed||7);
       for(let y=0;y<h;y++)for(let x=0;x<w;x++){if(!at(x,y))continue;const up=at(x,y-1),lf=at(x-1,y),dn=at(x,y+1),rt=at(x+1,y),n=(x*7+y*13+((x*y)%5))%11;
         let col=rk[1];if(n<1)col=rk[2];else if(n===5&&(x+y)%2)col=rk[0];
-        if(o.brick){const ry=y%o.brick;if(ry===o.brick-1)col=rk[2];else if(((x+(Math.floor(y/o.brick)%2)*4)%8)===0)col=rk[2];else if(ry===0&&n>3)col=rk[0];}
+        if(o.brick){const ry=y%o.brick,row=Math.floor(y/o.brick),bx=Math.floor((x+(row%2)*4)/8),bn=(bx*7+row*13+(o.seed||0))%9,mort=lerpHex(rk[2],rk[3],.45);
+          if(ry===o.brick-1||((x+(row%2)*4)%8)===0)col=mort;else{if(bn<2)col=rk[0];else if(bn===4||bn===5)col=lerpHex(rk[1],rk[2],.55);if(ry===0)col=lerpHex(col,rk[0],.5);}}
         if(!up||!at(x,y-2)&&R()<.5)col=rk[0];if(!lf&&up)col=rk[0];if(!rt||!dn)col=rk[2];if(!dn&&!rt)col=rk[3];
         if(o.fall&&y>h*.72&&col===rk[1])col=rk[2];
         c.fillStyle=col;c.fillRect(x,y,1,1);}
@@ -39,8 +40,27 @@ function slPix(w,h){const cv=mkCv(w,h),c=cv.getContext('2d');c.imageSmoothingEna
     outline(col){const d=c.getImageData(0,0,w,h),a=d.data,add=[];for(let y=0;y<h;y++)for(let x=0;x<w;x++){if(a[(y*w+x)*4+3]>0)continue;
         const n=[[1,0],[-1,0],[0,1],[0,-1]].some(([i,j])=>{const X=x+i,Y=y+j;return X>=0&&Y>=0&&X<w&&Y<h&&a[(Y*w+X)*4+3]>120;});if(n)add.push([x,y]);}
       c.fillStyle=col;add.forEach(([x,y])=>c.fillRect(x,y,1,1));return P;},
+    // form light (upper left): a five step ramp across every part from the distance to its silhouette edges (lit left and top, shaded right and bottom) and a
+    // diagonal gradient over the whole sprite, a cool rim on the shadow edge, a darker contact band at the foot, a halo on emissive pixels
+    light(o){o=o||{};const k=o.k==null?1:o.k,d=c.getImageData(0,0,w,h),a=d.data,src=new Uint8ClampedArray(a),A=(x,y)=>x>=0&&x<w&&y>=0&&y<h?src[(y*w+x)*4+3]>100:(x>=0&&x<w&&y>=h),
+      E=(x,y)=>{const i=(y*w+x)*4;return src[i+3]>100&&slEm(src[i],src[i+1],src[i+2]);},dd=(x,y,dx,dy)=>{let n=0;while(n<4&&A(x+dx*(n+1),y+dy*(n+1)))n++;return n;},
+      mx=(i,t,r,g,b)=>{a[i]=a[i]+(r-a[i])*t;a[i+1]=a[i+1]+(g-a[i+1])*t;a[i+2]=a[i+2]+(b-a[i+2])*t;},ed=n=>n===0?1:n<3?.5:0;
+      for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;if(src[i+3]<=100||E(x,y))continue;const lum=src[i]*.3+src[i+1]*.59+src[i+2]*.11;
+        let L=ed(dd(x,y,0,-1))+ed(dd(x,y,-1,0))-ed(dd(x,y,1,0))-ed(dd(x,y,0,1))-(x/w+y/h-1)*2.1;const s=Math.max(-2,Math.min(2,Math.round(L*k)));
+        if(s>0&&lum>46)mx(i,.12*s,255,244,214);else if(s<0)mx(i,.15*-s,22,16,52);
+        if(!A(x+1,y)&&y<h-3&&lum>46&&s<=0)mx(i,.22,110,150,230);
+        if(o.base!==0&&y>=h-3&&lum>30)mx(i,y===h-1?.42:y===h-2?.26:.12,22,16,44);}
+      for(let y=0;y<h;y++)for(let x=0;x<w;x++)if(E(x,y)){const i=(y*w+x)*4;[[1,0],[-1,0],[0,1],[0,-1]].forEach(([p,q])=>{const X=x+p,Y=y+q;if(X<0||Y<0||X>=w||Y>=h||src[(Y*w+X)*4+3]<=100||E(X,Y))return;mx((Y*w+X)*4,.26,src[i],src[i+1],src[i+2]);});}
+      c.putImageData(d,0,0);return P;},
+    // a line round whatever is drawn so far in a darker shade of the colour it borders (glowing parts keep a warm edge)
+    outline2(col){const d=c.getImageData(0,0,w,h),a=d.data,add=[],B=hx(col),at=(x,y)=>x>=0&&y>=0&&x<w&&y<h&&a[(y*w+x)*4+3]>120;
+      for(let y=0;y<h;y++)for(let x=0;x<w;x++){if(a[(y*w+x)*4+3]>0)continue;let r=0,g=0,b=0,n=0,em=0;
+        [[1,0],[-1,0],[0,1],[0,-1]].forEach(([i,j])=>{const X=x+i,Y=y+j;if(!at(X,Y))return;const o=(Y*w+X)*4;r+=a[o];g+=a[o+1];b+=a[o+2];n++;if(slEm(a[o],a[o+1],a[o+2]))em++;});
+        if(!n)continue;r/=n;g/=n;b/=n;const t=em?.45:.72,T=em?[70,18,10]:B;add.push([x,y,'rgb('+Math.round(r+(T[0]-r)*t)+','+Math.round(g+(T[1]-g)*t)+','+Math.round(b+(T[2]-b)*t)+')']);}
+      add.forEach(([x,y,col])=>{c.fillStyle=col;c.fillRect(x,y,1,1);});return P;},
     glow(col,cx,cy,r,al){const g=c.createRadialGradient(cx,cy,0,cx,cy,r);const q=hx(col);g.addColorStop(0,'rgba('+q.join(',')+','+al+')');g.addColorStop(1,'rgba('+q.join(',')+',0)');c.fillStyle=g;c.fillRect(cx-r,cy-r,r*2,r*2);return P;}};
   return P;}
+function slEm(r,g,b){const mx=Math.max(r,g,b),mn=Math.min(r,g,b);return mx>185&&(mx-mn)/mx>.42;}
 // an arch cut into a face: dark above, the interior's colour glowing at the sill
 function slOpen(P,cx,by,w,h,inner,o){o=o||{};const r=w/2,top=by-h;
   for(let y=top;y<=by;y++){const t=(y-top)/h,hw=y<top+r?Math.sqrt(Math.max(0,r*r-(top+r-y-.5)*(top+r-y-.5))):r;const col=lerpHex('#06040a',inner,Math.pow(t,2)*(o.k||.6));P.f(col,Math.round(cx-hw),y,Math.round(hw*2),1);}
@@ -94,7 +114,7 @@ function slDenByKey(key){const L=SL_DEN[key];const id='den:'+key;if(SL_DENC[id])
   slDrip(P,mass,6,58,L.cap,L.cap2,L.shape==='ice'?2:3,hashS(id)+1);
   for(let x=0;x<64;x++){let y=0;while(y<48&&!mass.at(x,y))y++;if(y<48&&((x*5+y)%3)){P.px(L.cap,x,y);P.px(L.cap2,x,y+1);}}
   const D={P,rk,L,cx,by,oh,ow,mass,R};L.deco.forEach(d=>{const f=SL_DECO[d];if(f)f(D);});
-  P.outline('#120c14');
+  P.light();P.outline2('#120c14');
   // soft light from the opening (a glow over the sill) after the outline so it stays soft
   P.glow(L.acc,cx,by-3,13,.22);
   return SL_DENC[id]=P.cv;}
@@ -127,11 +147,15 @@ const SL_DECO={
  salt:D=>{const {P,L}=D;for(let i=0;i<18;i++){const x=6+((i*17)%52),y=18+((i*11)%26);if(x>22&&x<42&&y>28)continue;P.f(i%3?L.cap:L.acc2,x,y,2,1);}[[9,46],[14,47],[48,46],[54,47]].forEach(([x,y])=>{P.poly('#f4f8f4',[[x,y],[x+1,y-5],[x+3,y]]);P.px('#8adccc',x+1,y-3);});P.f('#bfe8e0',5,47,54,1);},
  stars:D=>{const {P,L}=D;for(let i=0;i<14;i++)P.px(i%3?'#ffffff':L.acc2,6+((i*19)%52),8+((i*13)%34));[[10,45],[53,44],[16,46]].forEach(([x,y])=>{P.poly(L.acc,[[x,y],[x+1.5,y-6],[x+3,y]]);P.px('#e8d8ff',x+1,y-4);});[[44,16],[18,14]].forEach(([x,y])=>{P.px('#ffffff',x,y);P.px(L.acc2,x-1,y);P.px(L.acc2,x+1,y);P.px(L.acc2,x,y-1);P.px(L.acc2,x,y+1);});}};
 // ---------- the ground in front of a den mouth (tile local): worn path stones, a pool of the accent colour, the interior's small signs ----------
-function slSites(m){if(!m||m.kind!=='field')return null;if(m.__sls&&m.__sls.s===(m.caves||[]).length+':'+(m.ent||[]).join())return m.__sls;
-  const o={s:(m.caves||[]).length+':'+(m.ent||[]).join(),tiles:{},dens:[],lair:null};
+function slSites(m){if(!m||m.kind!=='field')return null;const key=(m.caves||[]).length+':'+(m.ent||[]).join()+':'+(m.d8lair?1:0)+':'+(m.fortAt||[]).join();if(m.__sls&&m.__sls.s===key)return m.__sls;
+  const o={s:key,tiles:{},dens:[],lair:null,sh:[]};
   (m.caves||[]).forEach(c=>{if(c.kind==='fort')return;const fv=c.face||[0,1];o.dens.push(c);for(let k=0;k<=3;k++){const x=c.x+fv[0]*k,y=c.y+fv[1]*k;o.tiles[x+','+y]={den:c,k,fv};}
     [[-1,1],[1,1],[-1,2],[1,2],[0,1]].forEach(([a,b])=>{const x=c.x+(fv[1]?a:b*fv[0]),y=c.y+(fv[0]?a:b*fv[1]);const kk=x+','+y;if(!o.tiles[kk])o.tiles[kk]={den:c,k:-1,fv,side:1};});});
   if(m.ent){const fv=m.entFace||[0,1];o.lair={x:m.ent[0],y:m.ent[1],fv};for(let k=1;k<=4;k++){const x=m.ent[0]+fv[0]*k,y=m.ent[1]+fv[1]*k;o.tiles[x+','+y]={lair:o.lair,k,fv};}}
+  // cast shadows on the ground (light from the upper left: the shadow falls to the lower right): [x, y, rx, ry] in map px
+  (m.caves||[]).forEach(c=>{if(c.kind!=='fort')o.sh.push([c.x*TS+11,c.y*TS+10,31,4,1]);});
+  if(m.ent&&!m.d8lair)o.sh.push([m.ent[0]*TS+11,m.ent[1]*TS+10,31,4,1]);
+  if(m.fortAt)o.sh.push([m.fortAt[0]*TS+11,(m.fortAt[1]+1)*TS+1,28,4]);
   m.__sls=o;return o;}
 const SL_PATHOK='.,f=';
 function slStones(ctx,px,py,fv,rk,R,wet){const hz=!!fv[0];for(let i=0;i<3;i++){const t=2+i*5,l=((i*3+R(2))%3)-1,w=hz?4:6,h=hz?6:4,x=hz?t:(5+l*2),y=hz?(5+l*2):t;
@@ -158,7 +182,21 @@ function slDenGround(ctx,m,x,y,T){const L=SL_DEN[slRealmKey(m)],rk=SL_ROCK[L.rk]
   ctx.restore();}
 // ---------- hooks: 2D tiles and the HD ground share drawTile ----------
 {const dt0=drawTile;drawTile=function(ctx,m,x,y,frame){const r=dt0.apply(this,arguments);
-  try{if(m&&m.kind==='field'&&!m.fort){const S=slSites(m),T=S&&S.tiles[x+','+y];if(T){if(T.den)slDenGround(ctx,m,x,y,T);else if(T.lair)slLairGround(ctx,m,x,y,T);}}}catch(e){slErr('tile',e);}return r;};}
+  try{if(m&&m.kind==='field'&&!m.fort){const S=slSites(m),T=S&&S.tiles[x+','+y];if(T){if(T.den)slDenGround(ctx,m,x,y,T);else if(T.lair)slLairGround(ctx,m,x,y,T);}
+    if(S&&!SLX.noAO){slCast(ctx,m,S,x,y);if(m.d8lair)slMoundAO(ctx,m,x,y);}}}catch(e){slErr('tile',e);}return r;};}
+// the contact shadow of a front on the ground (a wide soft one and a dark core under the foot, thrown to the lower right) and the ambient occlusion where a lair mound meets
+// the ground (dark at the foot of its right and lower sides, a faint one on the left): drawn into the ground tiles, so 2D and the HD-2D ground bake share it
+function slCast(ctx,m,S,x,y){if(!S.sh.length||'~#'.includes(tileAt(m,x,y)))return;const px=x*TS,py=y*TS;
+  const hd=typeof hdActive==='function'&&hdActive();// the HD-2D card stands on the line at the foot of its row: the shadow goes in front of it
+  S.sh.forEach(([ax,ay,rx,ry,card])=>{if(card&&hd)ay+=7;if(ax+rx<px||ax-rx>px+TS||ay+ry<py||ay-ry>py+TS)return;ctx.save();ctx.beginPath();ctx.rect(px,py,TS,TS);ctx.clip();
+    ctx.fillStyle='rgba(24,16,40,'+(hd?.4:.28)+')';ctx.beginPath();ctx.ellipse(ax,ay,rx,ry,0,0,7);ctx.fill();ctx.fillStyle='rgba(18,10,32,'+(hd?.55:.38)+')';ctx.beginPath();ctx.ellipse(ax+1,ay-1,rx*.8,ry*.62,0,0,7);ctx.fill();
+    ctx.fillStyle='rgba(14,8,26,.28)';ctx.fillRect(Math.max(px,ax-rx*.78),Math.max(py,ay-2),Math.min(rx*1.56,TS),2);ctx.restore();});}
+function slMoundAO(ctx,m,x,y){const mk=m.d8lair.mask;if(mk.has(x+','+y))return;const px=x*TS,py=y*TS,has=(a,b)=>mk.has((x+a)+','+(y+b)),n=[has(-1,0),has(1,0),has(0,-1),has(0,1)];if(!n.some(Boolean)&&!has(-1,-1)&&!has(1,-1))return;
+  ctx.save();ctx.beginPath();ctx.rect(px,py,TS,TS);ctx.clip();
+  const band=(x0,y0,x1,y1,a)=>{const g=ctx.createLinearGradient(x0,y0,x1,y1);g.addColorStop(0,'rgba(14,8,26,'+a+')');g.addColorStop(1,'rgba(14,8,26,0)');ctx.fillStyle=g;ctx.fillRect(px,py,TS,TS);};
+  if(n[0])band(px,py,px+9,py,.46);if(n[1])band(px+TS,py,px+TS-6,py,.2);if(n[2])band(px,py,px,py+8,.34);if(n[3])band(px,py+TS,px,py+TS-6,.18);
+  if(!n[0]&&!n[2]&&has(-1,-1))band(px,py,px+8,py+8,.3);
+  ctx.restore();}
 const SLE=[];function slErr(w,e){if(SLE.length<20)SLE.push(w+': '+(e&&e.message||e));}
 // objects: the den mouth replaces the old rock arch, the lair front replaces the old facade. A lair with a mound (dungeon8) draws its front after the hill in 2D
 // (drawObjects below) and as a card in HD-2D (the cards bake sets D8.card); a lair without a mound draws it in the old facade slot.
@@ -333,7 +371,7 @@ function slLairByKit(K,lit){const id='lair:'+K.id+':'+(lit?1:0);if(SL_LAIRC[id])
   const P=slPix(64,60);SL_LD[K.id](P);
   if(lit){// relit: gold in the doorway, a lamp each side, flowers at the sill
     P.c.globalCompositeOperation='source-over';slLamp(P,12,48,1,'#ffe08a');slLamp(P,52,48,1,'#ffe08a');P.glow('#ffd870',32,56,12,.3);[[22,58],[42,58],[26,59]].forEach(([x,y],i)=>{P.f('#fff6a0',x,y,2,1);P.px(i%2?'#ff8a8a':'#ffd040',x+1,y-1);});}
-  P.outline('#120c14');P.glow(K.lt==='fire'?'#ff7a2a':K.lt==='cyan'||K.lt==='ice'?'#8ad0ff':K.lt==='violet'?'#b080ff':K.lt==='fungus'?'#7af0d0':'#ffd070',32,57,12,.2);
+  P.light();P.outline2('#120c14');P.glow(K.lt==='fire'?'#ff7a2a':K.lt==='cyan'||K.lt==='ice'?'#8ad0ff':K.lt==='violet'?'#b080ff':K.lt==='fungus'?'#7af0d0':'#ffd070',32,57,12,.2);
   return SL_LAIRC[id]=P.cv;}
 // the lane in front of the door: worn stones and the realm's signs
 function slLairGround(ctx,m,x,y,T){const K=slLairKit(m),rk=SL_ROCK[K.rk],px=x*TS,py=y*TS,R=mulberry(x*97+y*31+m.s*7),ch=tileAt(m,x,y);if(!SL_PATHOK.includes(ch)||T.k>3)return;
@@ -354,12 +392,12 @@ function slSaParts(th){if(SL_SAC[th])return SL_SAC[th];const P0=SNC_P(th),S=sncS
     cap(P,0,5,20);cap(P,3,2,14);
     P.f(S[3],5,11,10,15);slOpen(P,10,26,8,14,P0.acc,{k:1});const dv=P.c.createLinearGradient(0,14,0,26);dv.addColorStop(0,P0.acc2);dv.addColorStop(1,'#fff8dc');P.c.fillStyle=dv;
     for(let y=15;y<26;y++){const hw=y<18?2+(y-15):4;P.f(lerpHex(P0.acc2,'#fff8dc',(y-15)/11),10-hw,y,hw*2,1);}
-    P.f('#fff8dc',9,21,2,5);P.f(P0.acc2,9,11,2,2);P.f('#fff8dc',9,11,1,1);P.f(S[2],2,25,16,1);o.niche=P.outline('#16101a').cv;}
+    P.f('#fff8dc',9,21,2,5);P.f(P0.acc2,9,11,2,2);P.f('#fff8dc',9,11,1,1);P.f(S[2],2,25,16,1);o.niche=P.light().outline2('#16101a').cv;}
   // the guardians
   const mkG=(kind)=>{const P=slPix(14,22);
     if(kind==='lamp'){// a shell lantern pillar: a stone post, a lit firebox and a scalloped cap
-      P.mass(M=>{M.f('#fff',5,14,4,8);M.f('#fff',3,20,8,2);},rk,{seed:2});P.mass(M=>{M.f('#fff',3,8,8,7);},rk,{seed:4});P.f('#3a2c1c',4,9,6,5);P.f(P0.acc,5,10,4,3);P.f('#fff8dc',6,10,2,2);P.mass(M=>{M.f('#fff',1,5,12,4);M.f('#fff',4,3,6,3);},[S[0],S[0],S[2],S[3]],{seed:6});cap(P,1,5,12);P.f(P0.acc2,6,1,2,2);return P.outline('#16101a').cv;}
-    if(kind==='obel'){P.mass(M=>{M.poly('#fff',[[3,22],[4,6],[7,0],[10,6],[11,22]]);},rk,{seed:2});P.f('#2a1a4a',5,7,4,10);P.f(P0.acc,6,8,2,8);P.f(P0.acc2,6,9,1,3);P.f('#ffffff',6,9,1,1);P.f(P0.acc,3,19,8,1);cap(P,3,20,8);return P.outline('#16101a').cv;}
+      P.mass(M=>{M.f('#fff',5,14,4,8);M.f('#fff',3,20,8,2);},rk,{seed:2});P.mass(M=>{M.f('#fff',3,8,8,7);},rk,{seed:4});P.f('#3a2c1c',4,9,6,5);P.f(P0.acc,5,10,4,3);P.f('#fff8dc',6,10,2,2);P.mass(M=>{M.f('#fff',1,5,12,4);M.f('#fff',4,3,6,3);},[S[0],S[0],S[2],S[3]],{seed:6});cap(P,1,5,12);P.f(P0.acc2,6,1,2,2);return P.light().outline2('#16101a').cv;}
+    if(kind==='obel'){P.mass(M=>{M.poly('#fff',[[3,22],[4,6],[7,0],[10,6],[11,22]]);},rk,{seed:2});P.f('#2a1a4a',5,7,4,10);P.f(P0.acc,6,8,2,8);P.f(P0.acc2,6,9,1,3);P.f('#ffffff',6,9,1,1);P.f(P0.acc,3,19,8,1);cap(P,3,20,8);return P.light().outline2('#16101a').cv;}
     const body=M=>{M.ell('#fff',7,14,4.2,5.5);M.ell('#fff',7,7,4.2,3.6);M.f('#fff',3,14,2,6);M.f('#fff',9,14,2,6);M.f('#fff',1,19,12,3);
       if(kind==='hawk'){M.f('#fff',5,2,4,3);M.poly('#fff',[[2,10],[1,18],[4,18]]);M.poly('#fff',[[12,10],[13,18],[10,18]]);}
       else{M.poly('#fff',[[3,6],[3,1],[6,4]]);M.poly('#fff',[[11,6],[11,1],[8,4]]);M.ell('#fff',12,16,1.6,3.2);}};
@@ -367,12 +405,12 @@ function slSaParts(th){if(SL_SAC[th])return SL_SAC[th];const P0=SNC_P(th),S=sncS
     if(kind==='hawk'){P.poly('#d8a838',[[6,8],[8,8],[7,11]]);P.px(P0.acc2,5,6);P.px(P0.acc2,9,6);P.f(P0.acc,4,13,6,1);P.f(P0.acc,5,14,1,3);P.f(P0.acc,8,14,1,3);}
     else{P.px(kind==='lion'?'#ff8a3a':kind==='wolf'?'#bfe6ff':P0.acc2,5,6);P.px(kind==='lion'?'#ff8a3a':kind==='wolf'?'#bfe6ff':P0.acc2,9,6);P.f(S[3],6,9,2,1);P.f(P0.acc,4,12,6,1);if(kind==='wolf'){P.px('#ffffff',6,10);P.px('#ffffff',8,10);}
       if(kind==='lion'){P.f('#ff8a3a',6,15,1,3);P.px('#ffd070',6,15);P.f('#ff8a3a',9,16,1,2);}}
-    cap(P,3,3,8);cap(P,1,19,12);return P.outline('#16101a').cv;};
+    cap(P,3,3,8);cap(P,1,19,12);return P.light().outline2('#16101a').cv;};
   o.guard=mkG(cfg.g);
   // the torii posts and lintel (only where the realm suggests it)
-  if(cfg.torii){const Pp=slPix(5,38);Pp.mass(M=>{M.f('#fff',0,0,5,38);},rk,{seed:7});Pp.f(P0.acc,0,9,5,1);Pp.f(P0.acc,0,22,5,1);Pp.f(S[3],0,34,5,4);cap(Pp,0,33,5);o.post=Pp.outline('#16101a').cv;
+  if(cfg.torii){const Pp=slPix(5,38);Pp.mass(M=>{M.f('#fff',0,0,5,38);},rk,{seed:7});Pp.f(P0.acc,0,9,5,1);Pp.f(P0.acc,0,22,5,1);Pp.f(S[3],0,34,5,4);cap(Pp,0,33,5);o.post=Pp.light().outline2('#16101a').cv;
     const Pl=slPix(60,12);Pl.mass(M=>{M.poly('#fff',[[0,2],[4,5],[56,5],[60,2],[58,9],[2,9]]);M.f('#fff',6,5,48,6);},[S[0],S[1],S[2],S[3]],{seed:9});Pl.f(P0.acc,6,9,48,1);cap(Pl,4,4,52);
-    Pl.f(S[3],26,2,8,1);Pl.f(P0.acc2,28,5,4,3);Pl.f('#fff8dc',29,6,2,1);o.lintel=Pl.outline('#16101a').cv;}
+    Pl.f(S[3],26,2,8,1);Pl.f(P0.acc2,28,5,4,3);Pl.f('#fff8dc',29,6,2,1);o.lintel=Pl.light().outline2('#16101a').cv;}
   // prayer ribbons: four cloth strips with a swallow tail and fringe
   {const P=slPix(16,12);[[P0.cloth[0]],[P0.cloth[1]],[P0.cloth[1]],[P0.cloth[0]]].forEach(([c],i)=>{const x=i*4,h=9+(i%2)*2;P.f(c,x,0,3,h);P.f(shade(c,.7),x+2,0,1,h);P.f('#f6eccb',x,0,3,1);P.px('#f6eccb',x+1,h);P.f(shade(c,.8),x,h,1,1);P.f(c,x+2,h,1,1);});o.rib=P.cv;}
   return SL_SAC[th]=o;}
@@ -397,7 +435,7 @@ function slShrineFront(ctx,x,y){const m=sncFieldM(),th=slSaKey(m),P0=SNC_P(th),S
   if(cfg.torii)[[9,-2],[12,-2],[35,-2],[38,-2]].forEach(([a,b],i)=>ctx.drawImage(o.rib,(i+1)%4*4,0,3,9,x+a,y+b,3,9));
   ctx.restore();}
 drawShrineFront=slShrineFront;
-function sncGateLights(m){const [fx,fy]=m.fortAt,x=(fx-1)*TS,y=(fy-1)*TS;return [[x+24,y+15,11,'lamp'],[x+9,y+21,6,'lamp'],[x+39,y+21,6,'lamp']];}
+function sncGateLights(m){const [fx,fy]=m.fortAt,x=(fx-1)*TS,y=(fy-1)*TS;return [[x+24,y+17,7,'lamp'],[x+9,y+22,4,'lamp'],[x+39,y+22,4,'lamp']];}
 // ---------- HD-2D: stair, shrine, wings, posts and lintel as geometry; guardians and ribbons as cards ----------
 // sheet (px): niche 0,0 20x26 | guard 24,0 14x22 | post 40,0 5x38 | rib 48,0 16x12 | lintel 0,28 60x12 | tread 0,42 20x3 | wing 22,42 12x9 | roof cap 36,42 22x4
 function slSaSheet(m){const th=slSaKey(m),P0=SNC_P(th),S=sncStone(P0).map(c=>shade(c,.93));return hdSpr('sasheet_'+th,96,56,(c)=>{const o=slSaParts(th),R=mulberry(11),f=(col,x,y,w,h)=>{c.fillStyle=col;c.fillRect(x,y,w,h);};
@@ -405,7 +443,7 @@ function slSaSheet(m){const th=slSaKey(m),P0=SNC_P(th),S=sncStone(P0).map(c=>sha
   f(S[3],0,42,20,3);f(S[1],0,42,20,2);f(S[0],0,42,20,1);for(let i=0;i<4;i++)f(S[2],2+i*5,43,2,1);
   f(S[3],22,42,12,9);f(S[1],23,43,10,7);f(S[0],23,43,10,1);f(S[2],23,49,10,2);sncCap((col,a,b,w,h)=>f(col,a,b,w,h),22,43,12,P0,R);
   f(S[3],36,42,22,4);f(S[0],36,42,22,1);f(S[1],36,43,22,2);});}
-function slSaGeo(m,S,b,Q,U,Vv,p,V,bt){const th=slSaKey(m),P0=SNC_P(th),St=sncStone(P0),cfg=SL_SA[th],rgb=h=>hdRgb(h).map(v=>Math.round(v*235)),top=rgb(St[0]),side=rgb(St[2]);
+function slSaGeo(m,S,b,Q,U,Vv,p,V,bt){const th=slSaKey(m),P0=SNC_P(th),St=sncStone(P0),cfg=SL_SA[th],rgb=h=>hdRgb(h).map(v=>Math.round(v*235)),top=rgb(shade(St[0],.9)),side=rgb(shade(St[2],.72));
   const x0=b.x*TS,x1=x0+b.w*TS,zf=(b.y+b.h)*TS,F=(sx,sy,sw,sh)=>[U(p,sx),Vv(p,sy),U(p,sx+sw),Vv(p,sy+sh)];
   const box=(xa,xb,za,zb,ya,yb,fr,sc,tc,fl)=>{
     if(fr)Q([xa,yb,zb,xb,yb,zb,xb,ya,zb,xa,ya,zb],fr[0],fr[1],fr[2],fr[3],255,[0,0,1],fl==null?2|8:fl);
@@ -428,5 +466,11 @@ function slSaGeo(m,S,b,Q,U,Vv,p,V,bt){const th=slSaKey(m),P0=SNC_P(th),St=sncSto
   S.bh.push({b,h:(cfg.torii?39.5:base/V+24.6)*V});}
 {const gp0=hdGatePart;hdGatePart=function(m){const r=gp0.apply(this,arguments);try{if(r&&m&&m.kind==='field')r.cv=slSaSheet(m);}catch(e){slErr('sasheet',e);}return r;};}
 // HD-2D: the lair's mound goes straight to dungeon8's geometry (sanctlook10's gate wrap used to catch it too); the Sanctum shrine is mine
-{const gg0=hdGateGeo;hdGateGeo=function(m,S,b,Q,U,Vv,p,V,bt){if(b&&b.k==='d8lair')return d8LairGeo(m,S,b,Q,U,Vv,p,V);
+// the mound is lit from the upper left too: every face's shade follows its normal (top lightest, left lit, front mid, right darkest), so the hill reads as a form
+const slLQ=Q=>(a,u0,v0,u1,v1,sh,n,fl)=>{const L=Math.max(0,-n[0]*.5+n[1]*.8+n[2]*.3);return Q(a,u0,v0,u1,v1,Math.round(sh*(.58+.42*Math.min(1,L/.85))),n,fl);};
+// HD-2D x-ray: the entrance cards (den mouth, lair front) never thin out round the hero (doors and buildings are exempt the same way); flag 8 is cleared on those quads
+{const bc0=hdBakeCards;hdBakeCards=function(m,S,g0,g1){const r=bc0.apply(this,arguments);try{if(r&&r.bt&&r.bt.b&&m&&m.kind==='field'){const src=[];(m.caves||[]).forEach(c=>{if(c.kind!=='fort')src.push([c.x*TS+8,(c.y+1)*TS+.5]);});if(m.ent)src.push([m.ent[0]*TS+8,(m.ent[1]+1)*TS+.5]);
+  if(src.length)r.bt.b.forEach(bt=>{if(!bt)return;const f=bt.f,B=bt.b;for(let q=0;q<bt.n;q++){let x0=1e9,x1=-1e9;for(let k=0;k<4;k++){const x=f[(q*4+k)*7];x0=Math.min(x0,x);x1=Math.max(x1,x);}const z=f[(q*4)*7+2];
+    if(src.some(([sx,sz])=>Math.abs(z-sz)<.6&&x1>sx-33&&x0<sx+33))for(let k=0;k<4;k++){const o=(q*4+k)*28+27;B[o]&=~8;}}});}}catch(e){slErr('xray',e);}return r;};}
+{const gg0=hdGateGeo;hdGateGeo=function(m,S,b,Q,U,Vv,p,V,bt){if(b&&b.k==='d8lair')return d8LairGeo(m,S,b,slLQ(Q),U,Vv,p,V);
   if(b&&b.k==='gatehouse'){try{SLX.n.sanct++;return slSaGeo(m,S,b,Q,U,Vv,p,V,bt);}catch(e){slErr('sageo',e);}}return gg0.apply(this,arguments);};}

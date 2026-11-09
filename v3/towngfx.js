@@ -20,7 +20,7 @@ const SVC_ICON={
   const saved=T.roof,rk=T.roofKind;T.roof=[L.roof,L.roof,L.roof,L.roof];if(rk==='thatch')T.roofKind='tile';try{db0.apply(this,arguments);}finally{T.roof=saved;T.roofKind=rk;}
   const x0=b.x*TS,y0=b.y*TS,w=b.w*TS,h=b.h*TS,f=(c,x,y,ww,hh)=>{ctx.fillStyle=c;ctx.fillRect(x0+x,y0+y,ww,hh);},dx=(b.door[0]-b.x)*TS,dy=h-16;
   if(b.k==='smithy'){// a fat forge chimney with an ember glow
-    const cx=4;f(OUTC,cx-1,-20,12,16);f('#3a3a42',cx,-19,10,15);f('#5a5a66',cx,-19,10,2);f('#ff7a2a',cx+2,-21,6,2);f('#ffd04a',cx+3,-22,4,1);}
+    const cx=4;f(OUTC,cx-1,-20,12,16);f('#3a3a42',cx,-19,10,15);f('#52525e',cx,-19,3,15);f('#26262e',cx+7,-19,3,15);f('#5a5a66',cx,-19,10,2);f('#7a7a88',cx,-19,10,1);f('#2e2e36',cx,-12,10,1);f('#2e2e36',cx,-6,10,1);f('#ff7a2a',cx+2,-21,6,2);f('#ffd04a',cx+3,-22,4,1);f('#fff0a8',cx+4,-22,2,1);}
   if(b.k==='inn'){f('#3a2a1a',dx-2,dy-6,20,1);}
 };}
 // v0.4.1 1.4: props, signs and the quest board label are now y-sorted actors (base = the building's front edge / the board tile), so
@@ -35,14 +35,14 @@ function townDecorActors(actors,now,cx,cy){
     const px=dx+18<=w-14?dx+18:dx-16,py=h-14;
     // v0.3.5: a soft ground shadow under the landmark prop so it reads as standing on the paving, hard against the wall base
     if(b.k!=='guild')f('rgba(0,0,0,.30)',px-2,py+11,16,3);
-    if(b.k==='smithy'){f(OUTC,px-1,py+3,14,9);f('#5a5a66',px,py+4,12,3);f('#7a7a88',px+3,py+7,6,2);f('#4a4a54',px+4,py+9,4,3);const g=Math.floor(now/180)%2;f(g?'#ffb04a':'#ff7a2a',px+5,py+2,2,2);}
-    if(b.k==='workshop'){f(OUTC,px-1,py+3,13,10);f('#3a3a42',px,py+4,11,8);f('#2f8a4a',px+1,py+4,9,3);for(let i=0;i<3;i++){const t=(now/600+i*.33)%1;f('#9affb8',px+2+i*3,py+3-Math.round(t*8),2,2);}}
-    if(b.k==='tavern'){f(OUTC,px-1,py+1,11,12);f('#8a5a2a',px,py+2,9,10);f('#5a3a1a',px,py+4,9,1);f('#5a3a1a',px,py+9,9,1);f('#e0a030',px+3,py-4,4,5);f('#ffffff',px+3,py-4,4,1);}
-    if(b.k==='inn'){f(OUTC,px,py-8,2,12);f('#2a2a34',px,py-8,2,12);const p=.6+.4*Math.sin(now/300);ctx.fillStyle=`rgba(255,216,112,${p})`;ctx.fillRect(x0+px-2,y0+py-6,6,5);}
-    if(b.k==='guild'){const s=Math.sin(now/400);f('#a82a2a',w/2-14,-14+Math.round(s),6,9);f('#a82a2a',w/2+8,-14-Math.round(s),6,9);f('#f0c050',w/2-12,-12,2,2);f('#f0c050',w/2+10,-12,2,2);}
+    if(b.k==='smithy'){f(OUTC,px-1,py+3,14,9);f('#5a5a66',px,py+4,12,3);f('#8e8e9e',px,py+4,12,1);f('#3c3c46',px+8,py+5,4,2);f('#7a7a88',px+3,py+7,6,2);f('#a8a8b8',px+3,py+7,6,1);f('#4a4a54',px+4,py+9,4,3);f('#32323c',px+7,py+9,1,3);f('#e8e8f6',px+1,py+4,2,1);const g=Math.floor(now/180)%2;f(g?'#ffb04a':'#ff7a2a',px+5,py+2,2,2);}
+    if(b.k==='workshop'){f(OUTC,px-1,py+3,13,10);f('#3a3a42',px,py+4,11,8);f('#52525e',px,py+4,2,8);f('#26262e',px+9,py+4,2,8);f('#2f8a4a',px+1,py+4,9,3);f('#5ad07a',px+1,py+4,5,1);f('#1e6a34',px+1,py+6,9,1);f('#c8c8d0',px,py+4,11,1);for(let i=0;i<3;i++){const t=(now/600+i*.33)%1;f('#9affb8',px+2+i*3,py+3-Math.round(t*8),2,2);}}
+    if(b.k==='tavern'){f(OUTC,px-1,py+1,11,12);f('#8a5a2a',px,py+2,9,10);f('#b0804a',px,py+2,2,10);f('#5e3a1a',px+7,py+2,2,10);f('#5a3a1a',px,py+4,9,1);f('#5a3a1a',px,py+9,9,1);f('#9aa0aa',px,py+4,9,1);f('#6a7078',px+7,py+4,2,1);f('#9aa0aa',px,py+9,9,1);f('#d0a068',px,py+2,9,1);f('#e0a030',px+3,py-4,4,5);f('#f6d070',px+3,py-3,1,4);f('#b07818',px+6,py-3,1,4);f('#ffffff',px+3,py-4,4,1);f('rgba(0,0,0,.2)',px+9,py+3,1,9);}
+    if(b.k==='inn'){f(OUTC,px-1,py-9,4,13);f('#2a2a34',px,py-8,2,12);f('#6a6a7a',px,py-8,1,12);f('#1a1a22',px+1,py-8,1,12);f('#4a4a58',px-1,py-9,4,2);f('#6a6a7a',px-1,py-9,4,1);const p=.6+.4*Math.sin(now/300);ctx.fillStyle=`rgba(255,216,112,${p})`;ctx.fillRect(x0+px-2,y0+py-6,6,5);ctx.fillStyle=`rgba(255,250,214,${p})`;ctx.fillRect(x0+px-1,y0+py-5,2,2);ctx.fillStyle='rgba(120,70,10,.55)';ctx.fillRect(x0+px+2,y0+py-4,2,3);}
+    if(b.k==='guild'){const s=Math.sin(now/400);[[w/2-14,Math.round(s)],[w/2+8,-Math.round(s)]].forEach(([bx,o])=>{f(OUTC,bx-1,-15+o,8,12);f('#a82a2a',bx,-14+o,6,9);f('#c84444',bx,-14+o,2,9);f('#6e1818',bx+4,-14+o,2,9);f('#f0c050',bx,-14+o,6,1);f('#8a1c1c',bx+3,-10+o,1,5);});f('#f0c050',w/2-12,-12,2,2);f('#f0c050',w/2+10,-12,2,2);f('#fff0a0',w/2-12,-12,1,1);f('#fff0a0',w/2+10,-12,1,1);}
     // the sign: a plank with an icon and a label, centred over the door
     ctx.font='bold 8px "Trebuchet MS",Verdana,sans-serif';const tw=Math.ceil(ctx.measureText(L.label).width),sw=tw+18,sh=13,sx=Math.round(x0+dx+8-sw/2),sy=Math.round(y0+h-34);
-    ctx.fillStyle='#150b17';ctx.fillRect(sx-1,sy-1,sw+2,sh+2);ctx.fillStyle='#5a3a1e';ctx.fillRect(sx,sy,sw,sh);ctx.fillStyle='#7a5228';ctx.fillRect(sx,sy,sw,2);
+    ctx.fillStyle='rgba(10,6,24,.3)';ctx.fillRect(sx+1,sy+sh+1,sw,2);ctx.fillStyle='#150b17';ctx.fillRect(sx-1,sy-1,sw+2,sh+2);ctx.fillStyle='#5a3a1e';ctx.fillRect(sx,sy,sw,sh);ctx.fillStyle='#7a5228';ctx.fillRect(sx,sy,sw,2);ctx.fillStyle='#9a6a38';ctx.fillRect(sx,sy,sw,1);ctx.fillStyle='#8a5e30';ctx.fillRect(sx,sy,1,sh);ctx.fillStyle='#3e2612';ctx.fillRect(sx+sw-1,sy+1,1,sh-1);ctx.fillRect(sx,sy+sh-1,sw,1);ctx.fillStyle='#e8d8b0';ctx.fillRect(sx+1,sy+2,1,1);ctx.fillRect(sx+sw-2,sy+2,1,1);
     (SVC_ICON[b.k]||[]).forEach(([a,bb,ww,hh,c])=>{ctx.fillStyle=c;ctx.fillRect(sx+3+Math.round(a*.9),sy+2+Math.round(bb*.9),Math.max(1,Math.round(ww*.9)),Math.max(1,Math.round(hh*.9)));});
     ctx.fillStyle='#000';ctx.fillText(L.label,sx+14+1,sy+10);ctx.fillStyle=L.col;ctx.fillText(L.label,sx+14,sy+9);}});});
   // quest board: label, plus a pulsing marker when there is something new or ready to hand in

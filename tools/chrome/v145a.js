@@ -13,7 +13,7 @@ const {open,chk,done}=require('./pw');
  A.ACT.rkFight();o.noScene2=!A.WS.dlg&&!!(g('B')&&g('B').spec&&g('B').spec.kind==='riftkeeper');try{g('finishBattle')('flee');}catch(e){}A.V.modal=null;A.V.screen='world';
  G.won=true;G.visited=[0,1,2,3,4];G.lastTown=4;const MP=g('MAPS');delete MP.f4;delete MP.x0;const f=g('getMap')('f4');o.link=(f.exits||[]).some(e=>e.to&&e.to.m==='x0'&&e.x===f.gateOut[0]&&e.y===f.gateOut[1]);o.sign=Object.values(f.signs||{}).some(t=>/Meridian Breach/.test(t));const x=g('getMap')('x0');o.back2=x.gates.start.to&&x.gates.start.to.m==='f4'&&x.gates.start.to.g==='breach';o.breachGate=!!f.gates.breach;
  return o;});console.log(JSON.stringify(r));
- chk('overworld walkers 36x50 (scale .9), battle heroes 36x50 (scale .9; v0.15.6), portraits on the full 40x56 rig',r.walker[0]===36&&r.walker[1]===50&&Math.round(r.battle[0]/r.battle[2])===36&&Math.round(r.battle[1]/r.battle[2])===50&&r.portrait[0]===40&&r.portrait[1]===56||JSON.stringify([r.walker,r.battle,r.portrait]));
+ chk('overworld walkers 32x45 (scale .8), battle heroes 36x50 (scale .9; v0.15.8), portraits on the full 40x56 rig',r.walker[0]===32&&r.walker[1]===45&&Math.round(r.battle[0]/r.battle[2])===36&&Math.round(r.battle[1]/r.battle[2])===50&&r.portrait[0]===40&&r.portrait[1]===56||JSON.stringify([r.walker,r.battle,r.portrait]));
  chk('the hall\'s keeper is the Riftkeeper, at his post, and Rift Echoes are level 55',r.name==='Riftkeeper'&&r.visible&&r.riftLv===55||JSON.stringify([r.name,r.visible,r.riftLv]));
  chk('with every Echo beaten he leaves his post and the gate card says so',r.unlocked&&r.gone&&r.card);
  chk('the first challenge plays a four-line scene, then the Riftkeeper fight starts',r.scene&&r.lines===4&&r.fight||JSON.stringify([r.scene,r.lines,r.fight]));
