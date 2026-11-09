@@ -208,7 +208,7 @@ const invCap=()=>(typeof G!=='undefined'&&G&&G.daily)?ITEM_MAX_DAILY:ITEM_MAX;
 // closeAbs (absolute share of the hero's gear score) or closeRel (relative), and then get a short tradeoff line.
 const SHOP_BEST={closeAbs:.02,closeRel:.2,minPct:.005};
 // 3.3 Smithy plan: the smallest gain worth buying or crafting for (share of the hero's gear score)
-const SMITH_PLAN={minPct:.01};
+const SMITH_PLAN={minPct:.03};// v0.12.13: a step must gain 3% (was 1%: tiny upgrades kept showing after Upgrade whole party)
 // 3.9 Pork Chop Sandwiches handed over after the first boss victory, and how many it takes to walk back to town from a dungeon
 const PORK={firstBoss:2,toTown:2};
 // TEMPER: tempering costs for +1, +2, +3 (temper.js): raw material, monster parts, realm relics, Dread Cores, gold factor, floor.

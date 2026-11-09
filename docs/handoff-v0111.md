@@ -185,3 +185,9 @@ P4 big design: battle rebalance (roles: 1 main + 2 sub per hero, supported by sk
   (water/shadow summoner); 5th Calamity The Hollow Sun (light/fire) with realm The Ashglass Reach (scorched salt flat).
 - Riftkeeper: opens when every Rift gate is beaten; 3 phases (element cycle; two Echo shades; 3-turn Unmaking, break the shield); lv 60, no auto; rewards
   Riftkeeper charm, title Riftwalker, NG+ Rift modifier; free rest at its shrine.
+
+### Owner (after batch 4): DEEP SPRITE OVERHAUL. All sprites (heroes, NPCs, foes, bosses) clean, cool, distinct, interesting, fitting the world;
+massive presentation and animation upgrade; characters move in skill-specific ways. Rework as needed. Plan: a written style guide
+(docs/art-style.md: 4-shade ramps, one light direction, 1px dark outline, silhouettes per class/archetype, proportions), then rebuild in order:
+hero bases per class+race (art2.js) with pose set {idle, walk, swing, thrust, shoot, cast, pray, guard, hit, down}; foes by archetype (art.js MART)
+with idle+attack+hit; bosses (art3.js) with idle, telegraph, attack; townsfolk (npc2/villagerLook). Verify every step with sheets.

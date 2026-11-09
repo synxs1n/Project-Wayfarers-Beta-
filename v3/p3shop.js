@@ -120,7 +120,7 @@ const p3Src=p=>{const t=p.k?` and temper it to +${p.k}`:'',g=`<b class="nums">${
 function mP3Plan(m){const P=m.plan,cn=id=>G.roster[id]?esc(G.roster[id].name):'?';
   const rows=P.picks.map(p=>{const c=G.roster[p.cid];if(!c)return '';const alt=p.alt.length?` <small class="mute">(${p.alt.map(a=>a.src==='buy'?'buying: '+fmt(a.gold):'forging: '+fmt(a.gold)+' and materials').join(', ')})</small>`:'';
     return `<div class="row p3pl">${port(p.cid,'sm')}<div class="grow"><b>${cn(p.cid)}</b> <em class="up">+${Math.max(1,Math.round(p.pct*100))}%</em><small>${SLOTN[p.sl]}: ${p.from?esc(gearOf(p.from).n):'nothing'} → <span class="up">${esc(gearOf(p.id).n)}</span> ${tierChip(gearOf(p.id))}</small><small>${p3Src(p)}${alt}</small><small>${deltaHtml(c,p.id)}</small></div></div>`;}).join('');
-  const cant=P.cant.map(x=>`<div class="row"><div class="grow"><small><b>${cn(x.cid)}</b>: ${esc(gearOf(x.id).n)} (+${Math.max(1,Math.round(x.pct*100))}%) ${x.why==='mats'?'needs materials you do not have':`needs ${fmt(x.gold)} gold`}.</small></div></div>`).join('');
+  const cant=P.cant.map(x=>`<div class="row"><div class="grow"><small><b>${cn(x.cid)}</b>: ${esc(gearOf(x.id).n)} (+${Math.max(1,Math.round(x.pct*100))}%) ${x.why==='mats'?'needs materials you do not have':`needs ${fmt(x.gold)} gold`}.</small></div><button class="btn sm" data-act="p3Need" data-arg="${x.cid}|${x.sl}|#${esc(x.id)}">What I need</button></div>`).join('');
   const short=G.gold<P.total;
   const body=P.picks.length?`<p class="note">For each hero in your party, the piece that ends up best: ${m.charms?'a charm Alchemy sells':'what the Smithy sells or forges'}, or a spare from your pack, tempered as far as your gold and materials allow. When two ways reach the same piece, the cheaper one is picked. Nothing happens until you confirm.</p>
     <div class="rows">${rows}</div>${cant?`<h4>Out of reach for now</h4><div class="rows">${cant}</div>`:''}
@@ -283,10 +283,15 @@ const UPG_LBL={pack:'Equip from your pack',buy:'Buy',forge:'Forge',temper:'Tempe
 function upgTown(){try{return inTown();}catch(e){return false;}}
 function upgShop(sl){if(sl==='c')return shopStock('charms');if(sl==='w')return shopStock('weapons');return shopStock('armor').filter(id=>gearOf(id)&&gearOf(id).slot===sl);}
 function upgOpts(c,sl){const out=[];if(!G||G.daily||!c)return out;const cur=c.eq[sl]||null,town=upgTown();
-  const add=o=>{if(!gearOf(o.id))return;const g=gainFor(c,o.id);if(!g||g.d<=.01)return;o.d=g.d;o.pct=g.pct;o.cid=c.id;o.sl=sl;o.key=o.k+':'+(o.k==='forge'?o.ri:o.k==='ef'?o.f:o.id);out.push(o);};
+  const add=o=>{if(!gearOf(o.id))return;const g=gainFor(c,o.id);if(!g||g.d<=.01)return;o.d=g.d;o.pct=g.pct;o.cid=c.id;o.sl=sl;o.key=o.k+':'+(o.k==='forge'?o.ri:o.k==='ef'?o.f:o.k==='chain'?o.base+'>'+o.steps:o.id);out.push(o);};
   [...new Set(G.gear)].forEach(id=>{if(slotOk(c,sl,id))add({k:'pack',id,gold:0,ok:true});});
   upgShop(sl).forEach(id=>{if(GEAR[id]&&slotOk(c,sl,id))add({k:'buy',id,gold:GEAR[id].price,ok:town&&G.gold>=GEAR[id].price,town:1});});
   RECIPES.forEach((r,i)=>{if(!r.id||!recipeOpen(r)||!slotOk(c,sl,r.id))return;const m=recipeMats(r);add({k:'forge',id:r.id,ri:i,gold:r.g,m,ok:town&&G.gold>=r.g&&hasMats(m),town:1});});
+  // v0.12.13: every base (pack, shop, forge) also as a chain tempered to +1..+3 (p3Chain), so the per-slot view offers the same end states as
+  // Upgrade whole party; the gold and materials of the whole chain count
+  if(typeof pcTemperOpen!=='function'||pcTemperOpen()){const bases=out.filter(o=>o.k==='pack'||o.k==='buy'||o.k==='forge').map(o=>({id:o.id,k:o.k,gold:o.gold,m:o.m||{},ri:o.ri}));
+    bases.forEach(b=>{p3Chain(b.id).slice(1).forEach(ch=>{const m=Object.assign({},b.m);Object.keys(ch.m).forEach(q=>{m[q]=(m[q]||0)+ch.m[q];});const gold=b.gold+ch.gold;
+      add({k:'chain',base:b.id,src:b.k,ri:b.ri,steps:ch.k,id:ch.id,gold,m,ok:town&&G.gold>=gold&&hasMats(m),town:1});});});}
   if(cur&&(typeof pcTemperOpen!=='function'||pcTemperOpen())){const fc=forgeCost(cur);if(fc){const have=hasMats(fc.m),P=have?null:buyPlan(fc.m),buy=P&&P.ok&&P.any?P:null;
     add({k:'temper',id:fc.next,gold:fc.gold+(buy?buy.gold:0),m:fc.m,buy,cant:P&&!P.ok?P.cant:null,ok:town&&(have||!!buy)&&G.gold>=fc.gold+(buy?buy.gold:0),town:1});}}
   if(sl==='w'&&typeof ECHOFORGE!=='undefined'&&typeof efBaseIn==='function')Object.keys(ECHOFORGE).forEach(f=>{const base=efBaseIn(f),worn=cur&&baseIdOf(cur)==='w_'+f+'_5'?plusOf(cur):-1;
@@ -296,12 +301,12 @@ function upgOpts(c,sl){const out=[];if(!G||G.daily||!c)return out;const cur=c.eq
 // the order: most gain, then less gold, then fewer materials, then pack before buying before forging
 const upgCmp=(a,b)=>(b.d-a.d)||(a.gold-b.gold)||(upgMatN(a)-upgMatN(b))||(UPG_KIND.indexOf(a.k)-UPG_KIND.indexOf(b.k));
 function upgMatN(o){return o.m?Object.values(o.m).reduce((s,v)=>s+v,0):0;}
-function upgBest(c,sl){const L=upgOpts(c,sl).sort(upgCmp),best=L.find(o=>o.ok)||null;
+function upgBest(c,sl){const L=upgOpts(c,sl).filter(o=>o.pct>=(SMITH_PLAN.minPct||0)).sort(upgCmp),best=L.find(o=>o.ok)||null;/* v0.12.13: the same 3% floor as Upgrade whole party */
   // what to save up for: the best step overall when it beats what can be done now
   const goal=L.find(o=>!o.ok&&(!best||o.d>best.d+.01))||null;return {best,goal,all:L};}
 function upgWhat(o,here){const g=gearOf(o.id),n=g?g.n:'?';
   if(o.k==='pack')return `Equip ${esc(n)} from your pack`;if(o.k==='buy')return here?`Buy ${esc(n)}`:`Buy ${esc(n)} at ${gearOf(o.id).slot==='c'?'Alchemy':'the Smithy'}`;
-  if(o.k==='forge')return `Forge ${esc(n)}`;if(o.k==='temper')return `Temper to ${esc(n)}`;return `Echoforge ${esc(n)}`;}
+  if(o.k==='forge')return `Forge ${esc(n)}`;if(o.k==='temper')return `Temper to ${esc(n)}`;if(o.k==='chain'){const b=gearOf(o.base);return `${o.src==='pack'?'Take':o.src==='buy'?'Buy':'Forge'} ${esc(b?b.n:o.base)} and temper it to +${o.steps}`;}return `Echoforge ${esc(n)}`;}
 function upgCost(o){if(!o.gold&&!o.m)return 'Free';return `${o.m?matChips(o.m):''}<span class="matc gold ${G.gold>=o.gold?'':'short'}"><i></i><b class="nums">${fmt(o.gold)}</b> gold</span>${o.buy?`<small class="note">Includes ${fmt(o.buy.gold)} gold for ${o.buy.buy.map(([k,n])=>n+' '+esc(MATS[k])).join(', ')} from the Smithy.</small>`:''}`;}
 // before and after for the stats that change
 function upgBA(c,o){const a=c.S,b=statsWith(c,o.sl,o.id),p=[];DSTAT.forEach(([k,n])=>{const x=Math.round(a[k]||0),y=Math.round(b[k]||0);if(x!==y)p.push(`<span>${n} <b class="nums">${x}</b> → <b class="nums ${y>x?'up':'dn'}">${y}</b></span>`);});return p.length?`<div class="upgba">${p.join('')}</div>`:'';}
@@ -312,6 +317,10 @@ function upgApply(o){const c=G.roster[o.cid];if(!c)return false;const sl=o.sl;
   else if(o.k==='buy'){const g=GEAR[o.id];if(!g||G.gold<g.price)return false;G.gold-=g.price;G.gear.push(o.id);}
   else if(o.k==='forge'){const r=RECIPES[o.ri];if(!r||!craft(r))return false;}
   else if(o.k==='temper'){if(o.buy&&!doBuyPlan(buyPlan(forgeCost(c.eq[sl]).m)))return false;const r=forge('eq',{cid:c.id,slot:sl});if(!r)return false;saveGame();return r;}
+  else if(o.k==='chain'){if(o.src==='buy'){const g=GEAR[o.base];if(!g||G.gold<g.price)return false;G.gold-=g.price;G.gear.push(o.base);}
+    else if(o.src==='forge'){const r=RECIPES[o.ri];if(!r||!craft(r))return false;}else if(!G.gear.includes(o.base))return false;
+    let id=o.base;for(let k=0;k<o.steps;k++){const i=G.gear.indexOf(id);if(i<0)return false;const nx=forge('spare',i);if(!nx)break;id=nx;}
+    if(!G.gear.includes(id))return false;equipGear(c,id);saveGame();return id;}
   else if(o.k==='ef'){const m=efCost(o.f);if(!hasMats(m)||G.gold<EF_GOLD)return false;
     if(o.src==='eq'){if(baseIdOf(c.eq.w||'')!=='w_'+o.f+'_5')return false;G.gold-=EF_GOLD;payMats(m);c.eq.w=o.id;refresh(c);saveGame();return o.id;}
     const base=efBaseIn(o.f);if(!base)return false;G.gold-=EF_GOLD;payMats(m);G.gear.splice(base.i,1);G.gear.push(o.id);}
@@ -323,10 +332,19 @@ function mUpg(m){const c=G.roster[m.cid];if(!c)return box('Upgrade','<p>That her
   const curRow=`<div class="row eqcur">${cur?gearIcon(cur):'<span class="gico empty"></span>'}<div class="grow"><small>Now</small><b>${cur?esc(gearOf(cur).n):'Nothing'}</b> ${cur?tierChip(gearOf(cur)):''}<small>${cur?gearDesc(cur):''}</small></div></div>`;
   const card=o?`<div class="upgcard"><span class="upgk">Best next step</span><div class="row">${gearIcon(o.id)}<div class="grow"><b>${upgWhat(o)}</b> ${tierChip(gearOf(o.id))} <em class="up">${upgPct(o)}</em><small>${gearDesc(o.id)}</small>${upgBA(c,o)}<div class="mats">${upgCost(o)}</div></div></div></div>`
     :`<p class="note empty">Nothing better for this slot that you can pay for right now.</p>`;
-  const goal=R.goal?`<p class="note upggoal"><b>Save up for:</b> ${upgWhat(R.goal)} (${upgPct(R.goal)}), ${R.goal.town&&!town?'in town':R.goal.cant?'needs '+R.goal.cant.map(k=>esc(MATS[k])).join(', '):R.goal.m&&!hasMats(R.goal.m)?'needs materials':fmt(R.goal.gold)+' gold'}.</p>`:'';
+  const goal=R.goal?`<p class="note upggoal"><b>Save up for:</b> ${upgWhat(R.goal)} (${upgPct(R.goal)}), ${R.goal.town&&!town?'in town':R.goal.cant?'needs '+R.goal.cant.map(k=>esc(MATS[k])).join(', '):R.goal.m&&!hasMats(R.goal.m)?'needs materials':fmt(R.goal.gold)+' gold'}. <button class="btn sm" data-act="p3Need" data-arg="${c.id}|${sl}|${esc(R.goal.key)}">What I need</button></p>`:'';
   const far=!town&&R.all.some(x=>x.town)?'<p class="note">Buying, forging and tempering happen in town. Here only spares in your pack count.</p>':'';
   return box(`Upgrade: ${SLOTN[sl]} for ${esc(c.name)}`,curRow+card+goal+far,
     `<button class="btn" data-act="upgAll">Show all options</button>${o?`<button class="btn gold" data-act="upgDo" data-arg="${c.id},${sl},${o.key}">Upgrade${o.gold?': '+fmt(o.gold)+' gold':''}</button>`:''}<button class="btn" data-act="xBack">Back</button>`,true);}
+// v0.12.13: what an out of reach step needs: gold and every material, have/need, and where each kind comes from
+const MAT_WHERE={herb:'herb patches on the fields; Alchemy sells some',ore:'the Smithy counter and rock gathering spots',wood:'the Smithy counter and tree gathering spots',part:'dropped by monsters (each kind leaves its own); the Beastwardens counter sells bundles',relic:'this realm\'s gathering spots, chests and Dens; Dread Cores from Scourges, Calamities and elites'};
+function needHtml(o){const rows=[];const g=o.gold||0;if(g)rows.push(`<div class="row"><div class="grow"><b>Gold</b></div><span class="m nums ${G.gold>=g?'up':'warn'}">${fmt(G.gold)} / ${fmt(g)}</span></div>`);
+  Object.keys(o.m||{}).forEach(k=>{const need=o.m[k],have=G.mats[k]||0,cat=MAT_OF[k]||{};rows.push(`<div class="row"><div class="grow"><b style="color:${cat.c||'#c4b28c'}">${esc(MATS[k]||k)}</b><small>${esc(MAT_WHERE[cat.k]||'')}</small></div><span class="m nums ${have>=need?'up':'warn'}">${have} / ${need}</span></div>`);});
+  if(o.town&&!upgTown())rows.push('<div class="row"><div class="grow"><small>Buying, forging and tempering happen in town.</small></div></div>');
+  return `<div class="rows">${rows.join('')||'<div class="row"><small>Nothing missing: it can be done now.</small></div>'}</div>`;}
+ACT.p3Need=function(a){const [cid,sl,key]=String(a).split('|');const c=G.roster[cid];if(!c)return;const L=upgOpts(c,sl),o=key[0]==='#'?L.filter(x=>x.id===key.slice(1)).sort((a,b)=>a.gold-b.gold)[0]:L.find(x=>x.key===key);if(!o)return;V.modal={type:'p3need',cid,sl,o,from:V.modal};render();};
+HOOK.before('vModal','p3shop','what you need popup',function(m){if(!m||m.type!=='p3need')return;const c=G.roster[m.cid],o=m.o;
+  return HOOK.stop(box(`To get there: ${esc(gearOf(o.id)?gearOf(o.id).n:o.id)}`,`<p class="note">${upgWhat(o)} for ${esc(c.name)} (${upgPct(o)}).</p>${needHtml(o)}`,`<button class="btn gold" data-act="xBack">Back</button>`));});
 // the button on a slot: shows the gain when there is a step to take
 function upgBtn(c,sl,cls){if(!G||G.daily)return '';const o=upgBest(c,sl).best;
   return `<button class="btn sm upgb ${o?'gold':''} ${cls||''}" data-act="upgOpen" data-arg="${c.id},${sl}" title="${o?esc(upgWhat(o).replace(/<[^>]*>/g,''))+' '+upgPct(o):'Nothing better to buy, forge or temper right now'}">Upgrade${o?` <em>${upgPct(o)}</em>`:''}</button>`;}
