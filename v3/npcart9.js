@@ -82,6 +82,8 @@ function npcMute(c,t){const v=hx(c),l=v[0]*.3+v[1]*.59+v[2]*.11;return rh(v.map(
 const NPC9_SH={P:'p',Q:'q',J:'j',K:'k',Y:'z',i:'6',g:'7',f:'8'};
 // move a block (x0..x1, y0..y1) by (dx,dy); only non-empty cells land, vacated cells go empty. fill: copy the edge row left behind
 function npcShift(g,x0,x1,y0,y1,dx,dy,fill){
+  // the compact walker (g.sc, art.js) scales the ranges and the distances here, the one place the base-size numbers meet the smaller grid
+  const sc=g.sc;if(sc){const R=v=>Math.round(v*sc.f),S=d=>d?Math.sign(d)*Math.max(1,Math.round(Math.abs(d)*sc.f)):0;x0=R(x0);x1=Math.min(g.w-1,R(x1));y0=R(y0);y1=R(y1);dx=S(dx);dy=S(dy);}
   const W=g.w,ox=g.ox,oy=g.oy,A=g.a,t=[];
   for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++){const i=(y+oy)*W+x+ox;if(x+ox<0||x+ox>=W||y+oy<0||y+oy>=g.h)continue;t.push([x,y,A[i]]);A[i]=0;}
   t.forEach(([x,y,k])=>{if(!k)return;const nx=x+dx+ox,ny=y+dy+oy;if(nx>=0&&ny>=0&&nx<W&&ny<g.h)A[ny*W+nx]=k;});
@@ -129,8 +131,8 @@ function npcGarb(g,L,view){
   if(L.bigHead){
     // children: a head one pixel taller (a forehead row is repeated) and two wider (two columns inside the head are repeated)
     npcShift(g,0,39,0,13,0,-1,true);
-    const W=g.w,A=g.a,cL=S?19:18,cR=S?22:21;
-    for(let y=7;y<=16;y++){const row=y*W,out=[];
+    const W=g.w,A=g.a,Sc=v=>g.sc?Math.round(v*g.sc.f):v,cL=Sc(S?19:18),cR=Sc(S?22:21);
+    for(let y=Sc(7);y<=Sc(16);y++){const row=y*W,out=[];
       for(let x=0;x<W;x++){out.push(A[row+x]);if(x===cL||x===cR)out.push(A[row+x]);}
       for(let x=0;x<W;x++)A[row+x]=out[x+1]||0;}
   }

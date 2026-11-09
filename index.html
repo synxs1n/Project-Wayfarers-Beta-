@@ -1843,7 +1843,7 @@ html.rm .battle.b3 .cmd .mi.b9glow{animation:none}
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.14.9";const APP_BUILD="aafb84fe99cc";
+(function(){const APP_VER="0.15.0";const APP_BUILD="2ce23b8caf60";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2536,7 +2536,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.14.9";const APP_BUILD="aafb84fe99cc";
+const APP_VER="0.15.0";const APP_BUILD="2ce23b8caf60";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2544,6 +2544,7 @@ const APP_VER="0.14.9";const APP_BUILD="aafb84fe99cc";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.15.0',['Overworld: the player, townsfolk and other walkers are drawn with a compact version of the new hero rig (about 30 px tall, drawn at the smaller geometry, not shrunk) so they stand at door-lintel height beside tents and lamp posts again. Battle sprites, poses, portraits and the Bestiary keep the big rig.']],
  ['Beta v0.14.9',['Wayfarers rebuilt from the ground up: a new hero rig about six heads tall (the figures were four) with a real skull, neck, shoulders, waist, knees and boots, drawn from shaded tubes and polygons like the bosses. Every class reads in silhouette: knights in plate with pauldrons, tabard and shield, warriors in plate and leather with greaves, mages in flared robes with bell sleeves, archers in tunics with quiver and strap, thieves hooded, monks bare-armed with wraps, priests in robes with a stole. All thirteen hair styles redrawn with volume and a parting, every hat refitted, faces with catchlit eyes, brows, nose and mouth, and the beards, scars, masks and paint that make each hero theirs. Front and back views share the rig, the stride swings the arms, the battle poses and the townsfolk props were ported to it, and portraits show the head and shoulders.']],
  ['Beta v0.14.8',['Party cards: the Sheet and Equip buttons sit in their own row under the bars on every screen size (they overlapped the bars on an open Galaxy Fold). Equipment: the pet is a slot like the weapon, armor and charm, tap it to choose, change or remove the pet, with no extra buttons; the per-hero Auto button wraps under the slots on phones instead of being cut off at the edge.']],
  ['Beta v0.14.7',['Wayfarers, pass one: every hero gets a real face (2x2 eyes with a highlight, brows, a mouth, nose and jaw shade), a neck, two-tone cloth and trousers lit from the left, sleeves that separate from the torso, hair with a sheen and a parting, knees and boot cuffs, steel glints, blades with a bright edge and a dark bevel, wrapped hafts, quivers on archers, and a 1px head bob on the stride. Portraits use the same sprite, so they read better too. A deeper rebuild of the body proportions follows.']],
@@ -4089,8 +4090,25 @@ function cvURL(key,fn){if(URL_CACHE[key])return URL_CACHE[key];const c=fn();retu
 // paint / paintHD the light. Poses (heropose9.js) ask for the figure with markers: '#' at the shoulder joint, '!' for the 2x2 resting hand.
 const RIGW=40,RIGH=56;
 const HRIG={bare:false};
+// ----- the compact overworld rig: the same drawing calls, run on a grid whose .sc scales every operation (rects, ellipses, polygons, lines and single cells are
+// rasterised at the smaller geometry, never resampled). HRS is the size the next grid is made at: 1 = the 40x56 battle rig, .7 = the 28x40 walker. -----
+const HRS={f:1,W:40,H:56};
+function rigScale(f,fn){const o=[HRS.f,HRS.W,HRS.H];HRS.f=f;HRS.W=f===1?40:Math.round(40*f);HRS.H=f===1?56:40;try{return fn();}finally{HRS.f=o[0];HRS.W=o[1];HRS.H=o[2];}}
+function hnew(){const t=new PG(HRS.W,HRS.H,0,0);if(HRS.f!==1)t.sc={f:HRS.f,dx:0,dy:0,sw:40};return t;}
+function hcopy(g){const t=new PG(g.w,g.h,g.ox,g.oy);if(g.sc)t.sc=g.sc;return t;}
+{const P=PG.prototype,o={s:P.s,rect:P.rect,ell:P.ell,poly:P.poly,line:P.line};
+  const raw=(t,fn)=>{const c=t.sc;t.sc=null;try{return fn();}finally{t.sc=c;}};
+  P.s=function(x,y,k){const c=this.sc;if(!c)return o.s.call(this,x,y,k);return o.s.call(this,Math.floor((x+.5)*c.f)+c.dx,Math.floor((y+.5)*c.f)+c.dy,k);};
+  P.rect=function(x,y,w,h,k){const c=this.sc;if(!c)return o.rect.call(this,x,y,w,h,k);
+    let x0=Math.round(x*c.f)+c.dx,x1=Math.round((x+w)*c.f)+c.dx,y0=Math.round(y*c.f)+c.dy,y1=Math.round((y+h)*c.f)+c.dy;if(x1<=x0)x1=x0+1;if(y1<=y0)y1=y0+1;
+    for(let j=y0;j<y1;j++)for(let i=x0;i<x1;i++)o.s.call(this,i,j,k);return this;};
+  P.ell=function(cx,cy,rx,ry,k){const c=this.sc;if(!c)return o.ell.call(this,cx,cy,rx,ry,k);return raw(this,()=>o.ell.call(this,cx*c.f+c.dx,cy*c.f+c.dy,Math.max(.55,rx*c.f),Math.max(.55,ry*c.f),k));};
+  P.poly=function(Q,k){const c=this.sc;if(!c)return o.poly.call(this,Q,k);return raw(this,()=>o.poly.call(this,Q.map(p=>[p[0]*c.f+c.dx,p[1]*c.f+c.dy]),k));};
+  P.line=function(x0,y0,x1,y1,k,t){const c=this.sc;if(!c)return o.line.call(this,x0,y0,x1,y1,k,t);const m=(v,d)=>(v+.5)*c.f-.5+d;
+    return raw(this,()=>o.line.call(this,m(x0,c.dx),m(y0,c.dy),m(x1,c.dx),m(y1,c.dy),k,(t||1)<=1?1:Math.max(1,t*c.f)));};
+}
 const HWT={on:false};// weapon tint (art2.js accessories): metal M N and haft W are drawn as v x y
-function hTint(g,fn){if(!HWT.on)return fn(g);const t=new PG(g.w,g.h,0,0);fn(t);const R={M:'v',N:'x',W:'y'};for(let i=0;i<t.a.length;i++)if(t.a[i])g.a[i]=R[t.a[i]]||t.a[i];return g;}// bare: the arm and the weapon are left out and the markers drawn instead (heropose9.js hpBare)
+function hTint(g,fn){if(!HWT.on)return fn(g);const t=hcopy(g);fn(t);const R={M:'v',N:'x',W:'y'};for(let i=0;i<t.a.length;i++)if(t.a[i])g.a[i]=R[t.a[i]]||t.a[i];return g;}// bare: the arm and the weapon are left out and the markers drawn instead (heropose9.js hpBare)
 // a smooth tube along a path (Catmull-Rom), radius r0 to r1: [{x,y,r}]
 function hpath(P,r0,r1,step){const n=P.length,rs=P.map((_,i)=>r0+(r1-r0)*(n>1?i/(n-1):0)),at=i=>P[Math.max(0,Math.min(n-1,i))],out=[];step=step||.5;
   for(let i=0;i<n-1;i++){const p0=at(i-1),p1=at(i),p2=at(i+1),p3=at(i+2),len=Math.hypot(p2[0]-p1[0],p2[1]-p1[1]),N=Math.max(2,Math.ceil(len/step));
@@ -4100,15 +4118,18 @@ function hpath(P,r0,r1,step){const n=P.length,rs=P.map((_,i)=>r0+(r1-r0)*(n>1?i/
 function hlimb(g,P,r0,r1,k){hpath(P,r0,r1,.5).forEach(s=>g.ell(s.x,s.y,Math.max(.9,s.r),Math.max(.9,s.r),k));return g;}
 // spans: rows from y0, each [x0,x1]; sym: rows from y0, each the left edge (the right one mirrors)
 function hspan(g,y0,S,k){S.forEach((s,i)=>{if(!s)return;for(let x=s[0];x<=s[1];x++)g.s(x,y0+i,k);});return g;}
-function hsym(g,y0,X,k){X.forEach((x0,i)=>{if(x0==null)return;for(let x=x0;x<=RIGW-1-x0;x++)g.s(x,y0+i,k);});return g;}
+function hsym(g,y0,X,k){const c=g.sc;X.forEach((x0,i)=>{if(x0==null)return;
+  if(!c){for(let x=x0;x<=RIGW-1-x0;x++)g.s(x,y0+i,k);return;}
+  const a=Math.round(x0*c.f),b=Math.round((RIGW-x0)*c.f),yy=Math.floor((y0+i+.5)*c.f)+c.dy;
+  if(yy<0||yy>=g.h)return;for(let x=a;x<b&&x<g.w;x++)if(x>=0)g.a[yy*g.w+x]=k;});return g;}
 // paint a mask shape by shape with three tones from the top left (keys K[0] lit, K[1] base, K[2] shade), like the boss toolkit
-function hsh(g,fn,K,o){o=o||{};const t=new PG(g.w,g.h,0,0);fn(t);const A=t.a,W=g.w,H=g.h,cap=o.cap||9,bias=o.bias||0;
+function hsh(g,fn,K,o){o=o||{};const t=hcopy(g);fn(t);const A=t.a,W=g.w,H=g.h,cap=o.cap||9,bias=o.bias||0;
   const dep=(x,y,dx,dy)=>{let n=0;while(n<cap&&t.g(x+dx*(n+1),y+dy*(n+1)))n++;return n;};
-  for(let y=0;y<H;y++)for(let x=0;x<W;x++){if(!A[y*W+x])continue;const u=dep(x,y,-1,-1),d=dep(x,y,1,1),s=(u+.5)/(u+d+1)+bias;g.s(x,y,s<.22?K[0]:s<.66?K[1]:K[2]);}
+  for(let y=0;y<H;y++)for(let x=0;x<W;x++){if(!A[y*W+x])continue;const u=dep(x,y,-1,-1),d=dep(x,y,1,1),s=(u+.5)/(u+d+1)+bias;g.a[y*W+x]=s<.22?K[0]:s<.66?K[1]:K[2];}
   return g;}
-PG.prototype.sym=function(x0,y0,R){R.forEach((r,j)=>{for(let i=0;i<r.length;i++){const c=r[i];if(c==='.'||c===' ')continue;const x=x0+i;this.s(x,y0+j,c);this.s(this.w-1-x,y0+j,c);}});return this;};
+PG.prototype.sym=function(x0,y0,R){R.forEach((r,j)=>{for(let i=0;i<r.length;i++){const c=r[i];if(c==='.'||c===' ')continue;const x=x0+i;this.s(x,y0+j,c);this.s((this.sc?this.sc.sw:this.w)-1-x,y0+j,c);}});return this;};
 // mirror what a drawing function paints into g about the centre line (the right half is a copy of the left)
-function hmirror(g,fn,k){const t=new PG(g.w,g.h,0,0);fn(t);for(let y=0;y<g.h;y++)for(let x=0;x<g.w;x++){const c=t.a[y*g.w+x];if(!c)continue;g.s(x,y,c);g.s(g.w-1-x,y,c);}return g;}
+function hmirror(g,fn,k){const t=hcopy(g);fn(t);for(let y=0;y<g.h;y++)for(let x=0;x<g.w;x++){const c=t.a[y*g.w+x];if(!c)continue;g.a[y*g.w+x]=c;g.a[y*g.w+g.w-1-x]=c;}return g;}
 
 // the hero's class, for the garments: from the template when the id is known, else guessed from the look (walkers of heroes pass the id)
 function heroCls(L,id){
@@ -4362,7 +4383,7 @@ function hHair(g,L,view){
   const st=L.hair||'short',hat=L.hat,cov=hat==='hood'||hat==='greathelm'||hat==='helm'||hat==='plume'||hat==='horns';
   const f=HAIR_STYLE[st]||HAIR_STYLE.short;
   if(cov){// under a helm or hood only what hangs below is shown
-    if(st==='long'||st==='bob'||st==='ponytail'||st==='braid'){const t=new PG(g.w,g.h,0,0);f(t,view);for(let i=0;i<t.a.length;i++)if(t.a[i]&&Math.floor(i/g.w)>=15)g.a[i]=t.a[i];}
+    if(st==='long'||st==='bob'||st==='ponytail'||st==='braid'){const t=hcopy(g),r0=g.sc?Math.round(15*g.sc.f):15;f(t,view);for(let i=0;i<t.a.length;i++)if(t.a[i]&&Math.floor(i/g.w)>=r0)g.a[i]=t.a[i];}
     return;}
   f(g,view);
 }
@@ -4493,7 +4514,7 @@ const WPN={
 
 // ---------- the side figure ----------
 function hHead(L,view,id){
-  const g=new PG(RIGW,RIGH,0,0),curly=(L.hair==='curly')&&!(L.hat==='hood'||L.hat==='helm'||L.hat==='greathelm'||L.hat==='plume'||L.hat==='horns');
+  const g=hnew(),curly=(L.hair==='curly')&&!(L.hat==='hood'||L.hat==='helm'||L.hat==='greathelm'||L.hat==='plume'||L.hat==='horns');
   hatDraw(g,L,view,'back');
   if(curly){hHair(g,L,view);hSkull(g,view);}
   else{hSkull(g,view);hHair(g,L,view);}
@@ -4504,7 +4525,7 @@ function hHead(L,view,id){
 function hNeck(g,view){if(view==='side'){g.rect(19,15,4,4,'S');g.px([[19,16],[19,17]],'e');}else{g.rect(18,15,4,4,'S');g.px([[18,17],[18,16],[19,18]],'e');}}
 function hHandBlk(g,x,y,k){g.rect(x,y,2,2,k);}
 function rigSide(L,walk,id){
-  const g=new PG(RIGW,RIGH,0,0),B=HP.body[L.b]||HP.body.light,W=WPN[L.wpn||'none']||WPN.none,cls=heroCls(L,id),bare=HRIG.bare;
+  const g=hnew(),B=HP.body[L.b]||HP.body.light,W=WPN[L.wpn||'none']||WPN.none,cls=heroCls(L,id),bare=HRIG.bare;
   hBackSide(g,L,walk,cls);
   if(L.sh)hShieldSide(g,L);
   // the far arm swings with the stride
@@ -4520,7 +4541,7 @@ function rigSide(L,walk,id){
   if(W.under&&!bare)hTint(g,t=>W.draw(t,B.H[0],B.H[1]));
   // the head layer lands on the body (one pixel lower on the stride frame)
   const hd=hHead(L,'side',id),bob=walk&&!L.vill?1:0;raceTop(hd,L);drawAcc(hd,L,id,'side','head');
-  for(let y=0;y<RIGH;y++)for(let x=0;x<RIGW;x++){const k=hd.a[y*RIGW+x];if(!k)continue;const ty=y+bob;if(ty<RIGH)g.a[ty*RIGW+x]=k;}
+  for(let y=0;y<g.h;y++)for(let x=0;x<g.w;x++){const k=hd.a[y*g.w+x];if(!k)continue;const ty=y+bob;if(ty<g.h)g.a[ty*g.w+x]=k;}
   const A=hArmPts(L,W);
   if(bare){g.s(Math.floor(A.S[0]),Math.floor(A.S[1]),'#');g.rect(A.H[0],A.H[1],2,2,'!');return g;}
   if(W.before)hTint(g,t=>W.draw(t,A.H[0],A.H[1]));
@@ -4542,7 +4563,7 @@ const HF_TORSO={
 const HF_SKIRT=[14,14,14,13,13,13,13,12,12,12,12,12,11,11,11,11,11,11,11];
 function hLegFront(g,L,lift,left){
   const b=L.b,heavy=b==='heavy',monk=b==='monk';
-  const t=new PG(RIGW,RIGH,0,0),ay=49-lift;
+  const t=hnew(),ay=49-lift;
   const hip=[16.8,32],kn=[16.6,40-lift*.4],an=[16.9,ay];
   const T=monk?'P':'K',Bt=heavy?'M':monk?'S':'B',Bs=heavy?'N':monk?'e':'b';
   hlimb(t,[hip,kn,an],monk?3.2:heavy?2.8:2.6,monk?2.2:heavy?2.3:1.9,T);
@@ -4551,7 +4572,7 @@ function hLegFront(g,L,lift,left){
   else{const c=[kn[0]+(an[0]-kn[0])*.38,kn[1]+(an[1]-kn[1])*.38];hlimb(t,[c,[an[0],an[1]-1],[an[0],an[1]+.6]],2.3,1.9,Bt);t.rect(Math.round(c[0]-2),Math.round(c[1]),5,1,'L');}
   hspan(t,50-lift,[[15,18],[14,18],[14,18]],Bt);t.rect(14,52-lift,5,1,Bs);
   if(heavy)t.px([[16,50-lift]],'c');
-  for(let y=0;y<RIGH;y++)for(let x=0;x<RIGW;x++){const c=t.a[y*RIGW+x];if(c)g.s(left?x:RIGW-1-x,y,c);}
+  for(let y=0;y<t.h;y++)for(let x=0;x<t.w;x++){const c=t.a[y*t.w+x];if(c)g.a[y*g.w+(left?x:g.w-1-x)]=c;}
 }
 function hLegsFront(g,L,frame){
   if(L.b==='robe'){
@@ -4562,7 +4583,7 @@ function hLegsFront(g,L,frame){
 }
 function hArmFront(g,L,left,swing,dx){dx=dx||0;
   const b=L.b,heavy=b==='heavy',monk=b==='monk',robe=b==='robe';
-  const t=new PG(RIGW,RIGH,0,0),k=heavy?'M':monk?'S':'P';
+  const t=hnew(),k=heavy?'M':monk?'S':'P';
   const P=[[12.4,20.6],[11.6+dx,26.6+swing],[12+dx,31.4+swing]];
   hlimb(t,P,2.1,1.6,k);
   if(heavy){t.ell(12,19.8,4.4,3.3,'M');t.rect(8,21,9,1,'N');t.px([[10,18],[11,18]],'c');hlimb(t,[[11.8,28.6+swing],[12,31.2+swing]],1.9,1.7,'M');}
@@ -4570,7 +4591,7 @@ function hArmFront(g,L,left,swing,dx){dx=dx||0;
   else if(monk){for(let i=0;i<3;i++)t.rect(10,26+swing+i*2,4,1,'w');}
   else t.ell(12,31.6+swing,1.9,1.3,'Q');
   t.rect(10+dx,32+swing+(robe?1:0),3,3,heavy?'N':'S');
-  for(let y=0;y<RIGH;y++)for(let x=0;x<RIGW;x++){const c=t.a[y*RIGW+x];if(c)g.s(left?x:RIGW-1-x,y,c);}
+  for(let y=0;y<t.h;y++)for(let x=0;x<t.w;x++){const c=t.a[y*t.w+x];if(c)g.a[y*g.w+(left?x:g.w-1-x)]=c;}
 }
 function hTorsoFront(g,L,view,cls){
   const b=L.b,F=view==='front';
@@ -4651,7 +4672,7 @@ function weaponFB(g,L,view){
   }
 }
 function rigFB(L,view,frame,id){
-  const g=new PG(RIGW,RIGH,0,0),F=view==='front',cls=heroCls(L,id);
+  const g=hnew(),F=view==='front',cls=heroCls(L,id);
   hBackFront(g,L,view,'under');
   const sw=frame===1?1:frame===2?-1:0;
   if(!F&&L.sh)hShieldFront(g,L,view);
@@ -4661,7 +4682,7 @@ function rigFB(L,view,frame,id){
   hNeck(g,view);
   drawFlair(g,L,id,view);drawAcc(g,L,id,view,'body');
   const hd=hHead(L,view,id),bob=frame>0&&!L.vill?1:0;drawAcc(hd,L,id,view,'head');
-  for(let y=0;y<RIGH;y++)for(let x=0;x<RIGW;x++){const k=hd.a[y*RIGW+x];if(!k)continue;const ty=y+bob;if(ty<RIGH)g.a[ty*RIGW+x]=k;}
+  for(let y=0;y<g.h;y++)for(let x=0;x<g.w;x++){const k=hd.a[y*g.w+x];if(!k)continue;const ty=y+bob;if(ty<g.h)g.a[ty*g.w+x]=k;}
   hBackFront(g,L,view,'over');
   if(F&&L.sh)hShieldFront(g,L,view);
   hTint(g,t=>weaponFB(t,L,view));
@@ -5490,7 +5511,7 @@ function monCanvas(art,f){return monFramed(art,f,()=>{const s=MON_SIZE(art),g=ne
 // ===== art2.js (base): hero races, body sizes, the tone pass and the grid builders on the 40x56 hero canvas (heroCanvas, heroURL, walkerCanvas) =====
 // The hero rig lives in art.js (rigSide, rigFB). Heroes render on a 40x56 canvas (feet on row 52) so big folk, wings, halos and ears fit.
 // draw a part only into empty cells, so it sits behind what is already there
-function behind(g,fn){const t=new PG(g.w,g.h,g.ox,g.oy);fn(t);for(let i=0;i<g.a.length;i++)if(!g.a[i]&&t.a[i])g.a[i]=t.a[i];}
+function behind(g,fn){const t=new PG(g.w,g.h,g.ox,g.oy);if(g.sc)t.sc=g.sc;fn(t);for(let i=0;i<g.a.length;i++)if(!g.a[i]&&t.a[i])g.a[i]=t.a[i];}
 function tailKind(L){return L.ears==='cat'?'cat':L.ears==='fox'?'fox':L.ears==='wolf'?'wolf':L.crest?'lizard':'cat';}
 // ----- race, side view (the head and the face are at x 16..24, rows 9..15; the hips at (16,32)) -----
 function raceSide(g,L){
@@ -5566,10 +5587,11 @@ function widen(o,col,y0,y1,n){ // duplicate a column for rows y0..y1, pushing th
   const W=o.w,sh=n>>1;for(let y=y0;y<=y1;y++){const row=o.a.slice(y*W,(y+1)*W);const out=row.slice(0,col+1);for(let k=0;k<n;k++)out.push(row[col]);out.push(...row.slice(col+1));for(let x=0;x<W;x++)o.a[y*W+x]=out[x+sh]||0;}
 }
 function applySize(o,L){
-  // rows: head 9-15, torso 18-31, thighs 32-39, knee 40, feet 52
-  if(L.size==='small'){cutRows(o,42,5);cutRows(o,26,2);}
-  else if(L.size==='stout'){cutRows(o,42,4);widen(o,20,19,52,2);}
-  else if(L.size==='big'){addRows(o,26,1);addRows(o,40,1);widen(o,20,19,52,1);}
+  // rows: head 9-15, torso 18-31, thighs 32-39, knee 40, feet 52 (the compact rig scales them by o.sc.f)
+  const f=o.sc?o.sc.f:1,R=v=>Math.max(1,Math.round(v*f)),Y=v=>Math.round(v*f);
+  if(L.size==='small'){cutRows(o,Y(42),R(5));cutRows(o,Y(26),R(2));}
+  else if(L.size==='stout'){cutRows(o,Y(42),R(4));widen(o,Y(20),Y(19),Y(52),R(2));}
+  else if(L.size==='big'){addRows(o,Y(26),1);addRows(o,Y(40),1);widen(o,Y(20),Y(19),Y(52),1);}
 }
 const RACEPAL={T:null,U:'#efe8d8',u:'#c8bca8',O:'#ffe27a',I:'#c8a070',V:'#6ad0c8',F:'#d8c8a8',X:'#ffd04a',D:'#ffe08a'};
 const _heroPal1=heroPal;
@@ -6646,6 +6668,13 @@ if(SPRITE_HD){
     return paintHD(g,pal,{flat:o.flat||'',rim:o.rim,glow:o.glow,tex:monTex(art)});});};
   monURL=function(art){return cvURL('m3:'+art,()=>monCanvas(art));};
 }
+
+// ===== overworld walkers use the compact rig (28x40, the rig drawn at scale .7: art.js HRS / rigScale); a 'big:' key keeps the 40x56 rig (title scene, sheets) =====
+// every walker consumer (the player, townsfolk, legend actors, wanderers, the HD-2D billboards) goes through walkerCanvas, so this one wrapper covers them. Caches stay per size: compact keys end in '|c'.
+{const wc0=walkerCanvas;walkerCanvas=function(key,L,els,id,view,frame){
+  if(typeof key!=='string'||(id&&TPL[id]&&TPL[id].mon))return wc0.apply(this,arguments);
+  if(key.slice(0,4)==='big:')return wc0.call(this,key.slice(4),L,els,id,view,frame);
+  return rigScale(.7,()=>wc0.call(this,key+'|c',L,els,id,view,frame));};}
 
 // ===== engine.js (base): core state (G, B, V, META), stats, saves, town services, quests, damage, the battle engine and auto battle =====
 // =================== CORE ===================
@@ -25485,7 +25514,7 @@ const t7Rgb=(c,a)=>`rgba(${c[0]},${c[1]},${c[2]},${a==null?1:a})`;
 // then drawn at a whole number of device pixels per texel, so the party has the proportions and pixel density of the heroes in the world
 function t7Sprite(id){const k=id+(typeof lookKey==='function'?lookKey(id):'');if(T7.spr[k])return T7.spr[k];
   const sc=(typeof HD2D!=='undefined'&&HD2D.spr&&HD2D.spr.sc)||2/3,L=heroLook(id),el=TPL[id].el,key=id+(typeof lookKey==='function'?lookKey(id):'');
-  const grab=fr=>{const c=walkerCanvas(key,L,el,id,'side',fr),sm=typeof hdSmall==='function'?hdSmall(c,sc,1):c,b=t7Cv(sm.width,sm.height);b.getContext('2d').drawImage(sm,0,0);return {b,c};};
+  const grab=fr=>{const c=walkerCanvas('big:'+key,L,el,id,'side',fr),sm=typeof hdSmall==='function'?hdSmall(c,sc,1):c,b=t7Cv(sm.width,sm.height);b.getContext('2d').drawImage(sm,0,0);return {b,c};};
   const s0=grab(0);let s1=null;try{s1=grab(1);if(s1.b.width!==s0.b.width||s1.b.height!==s0.b.height)s1=null;}catch(e){s1=null;}
   const rw=s0.b.width,rh=s0.b.height,d=s0.b.getContext('2d').getImageData(0,0,rw,rh).data;let x0=rw,x1=0,y0=rh,y1=0;for(let y=0;y<rh;y++)for(let i=0;i<rw;i++)if(d[(y*rw+i)*4+3]>40){if(i<x0)x0=i;if(i>x1)x1=i;if(y<y0)y0=y;if(y>y1)y1=y;}
   return T7.spr[k]={id,c:s0.b,cw:s1?s1.b:s0.b,rw,rh,lw:s0.c.width,lh:s0.c.height,wsc:sc,box:{x0,x1,y0,y1}};}
@@ -27081,6 +27110,8 @@ function npcMute(c,t){const v=hx(c),l=v[0]*.3+v[1]*.59+v[2]*.11;return rh(v.map(
 const NPC9_SH={P:'p',Q:'q',J:'j',K:'k',Y:'z',i:'6',g:'7',f:'8'};
 // move a block (x0..x1, y0..y1) by (dx,dy); only non-empty cells land, vacated cells go empty. fill: copy the edge row left behind
 function npcShift(g,x0,x1,y0,y1,dx,dy,fill){
+  // the compact walker (g.sc, art.js) scales the ranges and the distances here, the one place the base-size numbers meet the smaller grid
+  const sc=g.sc;if(sc){const R=v=>Math.round(v*sc.f),S=d=>d?Math.sign(d)*Math.max(1,Math.round(Math.abs(d)*sc.f)):0;x0=R(x0);x1=Math.min(g.w-1,R(x1));y0=R(y0);y1=R(y1);dx=S(dx);dy=S(dy);}
   const W=g.w,ox=g.ox,oy=g.oy,A=g.a,t=[];
   for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++){const i=(y+oy)*W+x+ox;if(x+ox<0||x+ox>=W||y+oy<0||y+oy>=g.h)continue;t.push([x,y,A[i]]);A[i]=0;}
   t.forEach(([x,y,k])=>{if(!k)return;const nx=x+dx+ox,ny=y+dy+oy;if(nx>=0&&ny>=0&&nx<W&&ny<g.h)A[ny*W+nx]=k;});
@@ -27128,8 +27159,8 @@ function npcGarb(g,L,view){
   if(L.bigHead){
     // children: a head one pixel taller (a forehead row is repeated) and two wider (two columns inside the head are repeated)
     npcShift(g,0,39,0,13,0,-1,true);
-    const W=g.w,A=g.a,cL=S?19:18,cR=S?22:21;
-    for(let y=7;y<=16;y++){const row=y*W,out=[];
+    const W=g.w,A=g.a,Sc=v=>g.sc?Math.round(v*g.sc.f):v,cL=Sc(S?19:18),cR=Sc(S?22:21);
+    for(let y=Sc(7);y<=Sc(16);y++){const row=y*W,out=[];
       for(let x=0;x<W;x++){out.push(A[row+x]);if(x===cL||x===cR)out.push(A[row+x]);}
       for(let x=0;x<W;x++)A[row+x]=out[x+1]||0;}
   }

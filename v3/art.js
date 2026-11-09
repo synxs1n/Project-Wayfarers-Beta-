@@ -72,8 +72,25 @@ function cvURL(key,fn){if(URL_CACHE[key])return URL_CACHE[key];const c=fn();retu
 // paint / paintHD the light. Poses (heropose9.js) ask for the figure with markers: '#' at the shoulder joint, '!' for the 2x2 resting hand.
 const RIGW=40,RIGH=56;
 const HRIG={bare:false};
+// ----- the compact overworld rig: the same drawing calls, run on a grid whose .sc scales every operation (rects, ellipses, polygons, lines and single cells are
+// rasterised at the smaller geometry, never resampled). HRS is the size the next grid is made at: 1 = the 40x56 battle rig, .7 = the 28x40 walker. -----
+const HRS={f:1,W:40,H:56};
+function rigScale(f,fn){const o=[HRS.f,HRS.W,HRS.H];HRS.f=f;HRS.W=f===1?40:Math.round(40*f);HRS.H=f===1?56:40;try{return fn();}finally{HRS.f=o[0];HRS.W=o[1];HRS.H=o[2];}}
+function hnew(){const t=new PG(HRS.W,HRS.H,0,0);if(HRS.f!==1)t.sc={f:HRS.f,dx:0,dy:0,sw:40};return t;}
+function hcopy(g){const t=new PG(g.w,g.h,g.ox,g.oy);if(g.sc)t.sc=g.sc;return t;}
+{const P=PG.prototype,o={s:P.s,rect:P.rect,ell:P.ell,poly:P.poly,line:P.line};
+  const raw=(t,fn)=>{const c=t.sc;t.sc=null;try{return fn();}finally{t.sc=c;}};
+  P.s=function(x,y,k){const c=this.sc;if(!c)return o.s.call(this,x,y,k);return o.s.call(this,Math.floor((x+.5)*c.f)+c.dx,Math.floor((y+.5)*c.f)+c.dy,k);};
+  P.rect=function(x,y,w,h,k){const c=this.sc;if(!c)return o.rect.call(this,x,y,w,h,k);
+    let x0=Math.round(x*c.f)+c.dx,x1=Math.round((x+w)*c.f)+c.dx,y0=Math.round(y*c.f)+c.dy,y1=Math.round((y+h)*c.f)+c.dy;if(x1<=x0)x1=x0+1;if(y1<=y0)y1=y0+1;
+    for(let j=y0;j<y1;j++)for(let i=x0;i<x1;i++)o.s.call(this,i,j,k);return this;};
+  P.ell=function(cx,cy,rx,ry,k){const c=this.sc;if(!c)return o.ell.call(this,cx,cy,rx,ry,k);return raw(this,()=>o.ell.call(this,cx*c.f+c.dx,cy*c.f+c.dy,Math.max(.55,rx*c.f),Math.max(.55,ry*c.f),k));};
+  P.poly=function(Q,k){const c=this.sc;if(!c)return o.poly.call(this,Q,k);return raw(this,()=>o.poly.call(this,Q.map(p=>[p[0]*c.f+c.dx,p[1]*c.f+c.dy]),k));};
+  P.line=function(x0,y0,x1,y1,k,t){const c=this.sc;if(!c)return o.line.call(this,x0,y0,x1,y1,k,t);const m=(v,d)=>(v+.5)*c.f-.5+d;
+    return raw(this,()=>o.line.call(this,m(x0,c.dx),m(y0,c.dy),m(x1,c.dx),m(y1,c.dy),k,(t||1)<=1?1:Math.max(1,t*c.f)));};
+}
 const HWT={on:false};// weapon tint (art2.js accessories): metal M N and haft W are drawn as v x y
-function hTint(g,fn){if(!HWT.on)return fn(g);const t=new PG(g.w,g.h,0,0);fn(t);const R={M:'v',N:'x',W:'y'};for(let i=0;i<t.a.length;i++)if(t.a[i])g.a[i]=R[t.a[i]]||t.a[i];return g;}// bare: the arm and the weapon are left out and the markers drawn instead (heropose9.js hpBare)
+function hTint(g,fn){if(!HWT.on)return fn(g);const t=hcopy(g);fn(t);const R={M:'v',N:'x',W:'y'};for(let i=0;i<t.a.length;i++)if(t.a[i])g.a[i]=R[t.a[i]]||t.a[i];return g;}// bare: the arm and the weapon are left out and the markers drawn instead (heropose9.js hpBare)
 // a smooth tube along a path (Catmull-Rom), radius r0 to r1: [{x,y,r}]
 function hpath(P,r0,r1,step){const n=P.length,rs=P.map((_,i)=>r0+(r1-r0)*(n>1?i/(n-1):0)),at=i=>P[Math.max(0,Math.min(n-1,i))],out=[];step=step||.5;
   for(let i=0;i<n-1;i++){const p0=at(i-1),p1=at(i),p2=at(i+1),p3=at(i+2),len=Math.hypot(p2[0]-p1[0],p2[1]-p1[1]),N=Math.max(2,Math.ceil(len/step));
@@ -83,15 +100,18 @@ function hpath(P,r0,r1,step){const n=P.length,rs=P.map((_,i)=>r0+(r1-r0)*(n>1?i/
 function hlimb(g,P,r0,r1,k){hpath(P,r0,r1,.5).forEach(s=>g.ell(s.x,s.y,Math.max(.9,s.r),Math.max(.9,s.r),k));return g;}
 // spans: rows from y0, each [x0,x1]; sym: rows from y0, each the left edge (the right one mirrors)
 function hspan(g,y0,S,k){S.forEach((s,i)=>{if(!s)return;for(let x=s[0];x<=s[1];x++)g.s(x,y0+i,k);});return g;}
-function hsym(g,y0,X,k){X.forEach((x0,i)=>{if(x0==null)return;for(let x=x0;x<=RIGW-1-x0;x++)g.s(x,y0+i,k);});return g;}
+function hsym(g,y0,X,k){const c=g.sc;X.forEach((x0,i)=>{if(x0==null)return;
+  if(!c){for(let x=x0;x<=RIGW-1-x0;x++)g.s(x,y0+i,k);return;}
+  const a=Math.round(x0*c.f),b=Math.round((RIGW-x0)*c.f),yy=Math.floor((y0+i+.5)*c.f)+c.dy;
+  if(yy<0||yy>=g.h)return;for(let x=a;x<b&&x<g.w;x++)if(x>=0)g.a[yy*g.w+x]=k;});return g;}
 // paint a mask shape by shape with three tones from the top left (keys K[0] lit, K[1] base, K[2] shade), like the boss toolkit
-function hsh(g,fn,K,o){o=o||{};const t=new PG(g.w,g.h,0,0);fn(t);const A=t.a,W=g.w,H=g.h,cap=o.cap||9,bias=o.bias||0;
+function hsh(g,fn,K,o){o=o||{};const t=hcopy(g);fn(t);const A=t.a,W=g.w,H=g.h,cap=o.cap||9,bias=o.bias||0;
   const dep=(x,y,dx,dy)=>{let n=0;while(n<cap&&t.g(x+dx*(n+1),y+dy*(n+1)))n++;return n;};
-  for(let y=0;y<H;y++)for(let x=0;x<W;x++){if(!A[y*W+x])continue;const u=dep(x,y,-1,-1),d=dep(x,y,1,1),s=(u+.5)/(u+d+1)+bias;g.s(x,y,s<.22?K[0]:s<.66?K[1]:K[2]);}
+  for(let y=0;y<H;y++)for(let x=0;x<W;x++){if(!A[y*W+x])continue;const u=dep(x,y,-1,-1),d=dep(x,y,1,1),s=(u+.5)/(u+d+1)+bias;g.a[y*W+x]=s<.22?K[0]:s<.66?K[1]:K[2];}
   return g;}
-PG.prototype.sym=function(x0,y0,R){R.forEach((r,j)=>{for(let i=0;i<r.length;i++){const c=r[i];if(c==='.'||c===' ')continue;const x=x0+i;this.s(x,y0+j,c);this.s(this.w-1-x,y0+j,c);}});return this;};
+PG.prototype.sym=function(x0,y0,R){R.forEach((r,j)=>{for(let i=0;i<r.length;i++){const c=r[i];if(c==='.'||c===' ')continue;const x=x0+i;this.s(x,y0+j,c);this.s((this.sc?this.sc.sw:this.w)-1-x,y0+j,c);}});return this;};
 // mirror what a drawing function paints into g about the centre line (the right half is a copy of the left)
-function hmirror(g,fn,k){const t=new PG(g.w,g.h,0,0);fn(t);for(let y=0;y<g.h;y++)for(let x=0;x<g.w;x++){const c=t.a[y*g.w+x];if(!c)continue;g.s(x,y,c);g.s(g.w-1-x,y,c);}return g;}
+function hmirror(g,fn,k){const t=hcopy(g);fn(t);for(let y=0;y<g.h;y++)for(let x=0;x<g.w;x++){const c=t.a[y*g.w+x];if(!c)continue;g.a[y*g.w+x]=c;g.a[y*g.w+g.w-1-x]=c;}return g;}
 
 // the hero's class, for the garments: from the template when the id is known, else guessed from the look (walkers of heroes pass the id)
 function heroCls(L,id){
@@ -345,7 +365,7 @@ function hHair(g,L,view){
   const st=L.hair||'short',hat=L.hat,cov=hat==='hood'||hat==='greathelm'||hat==='helm'||hat==='plume'||hat==='horns';
   const f=HAIR_STYLE[st]||HAIR_STYLE.short;
   if(cov){// under a helm or hood only what hangs below is shown
-    if(st==='long'||st==='bob'||st==='ponytail'||st==='braid'){const t=new PG(g.w,g.h,0,0);f(t,view);for(let i=0;i<t.a.length;i++)if(t.a[i]&&Math.floor(i/g.w)>=15)g.a[i]=t.a[i];}
+    if(st==='long'||st==='bob'||st==='ponytail'||st==='braid'){const t=hcopy(g),r0=g.sc?Math.round(15*g.sc.f):15;f(t,view);for(let i=0;i<t.a.length;i++)if(t.a[i]&&Math.floor(i/g.w)>=r0)g.a[i]=t.a[i];}
     return;}
   f(g,view);
 }
@@ -476,7 +496,7 @@ const WPN={
 
 // ---------- the side figure ----------
 function hHead(L,view,id){
-  const g=new PG(RIGW,RIGH,0,0),curly=(L.hair==='curly')&&!(L.hat==='hood'||L.hat==='helm'||L.hat==='greathelm'||L.hat==='plume'||L.hat==='horns');
+  const g=hnew(),curly=(L.hair==='curly')&&!(L.hat==='hood'||L.hat==='helm'||L.hat==='greathelm'||L.hat==='plume'||L.hat==='horns');
   hatDraw(g,L,view,'back');
   if(curly){hHair(g,L,view);hSkull(g,view);}
   else{hSkull(g,view);hHair(g,L,view);}
@@ -487,7 +507,7 @@ function hHead(L,view,id){
 function hNeck(g,view){if(view==='side'){g.rect(19,15,4,4,'S');g.px([[19,16],[19,17]],'e');}else{g.rect(18,15,4,4,'S');g.px([[18,17],[18,16],[19,18]],'e');}}
 function hHandBlk(g,x,y,k){g.rect(x,y,2,2,k);}
 function rigSide(L,walk,id){
-  const g=new PG(RIGW,RIGH,0,0),B=HP.body[L.b]||HP.body.light,W=WPN[L.wpn||'none']||WPN.none,cls=heroCls(L,id),bare=HRIG.bare;
+  const g=hnew(),B=HP.body[L.b]||HP.body.light,W=WPN[L.wpn||'none']||WPN.none,cls=heroCls(L,id),bare=HRIG.bare;
   hBackSide(g,L,walk,cls);
   if(L.sh)hShieldSide(g,L);
   // the far arm swings with the stride
@@ -503,7 +523,7 @@ function rigSide(L,walk,id){
   if(W.under&&!bare)hTint(g,t=>W.draw(t,B.H[0],B.H[1]));
   // the head layer lands on the body (one pixel lower on the stride frame)
   const hd=hHead(L,'side',id),bob=walk&&!L.vill?1:0;raceTop(hd,L);drawAcc(hd,L,id,'side','head');
-  for(let y=0;y<RIGH;y++)for(let x=0;x<RIGW;x++){const k=hd.a[y*RIGW+x];if(!k)continue;const ty=y+bob;if(ty<RIGH)g.a[ty*RIGW+x]=k;}
+  for(let y=0;y<g.h;y++)for(let x=0;x<g.w;x++){const k=hd.a[y*g.w+x];if(!k)continue;const ty=y+bob;if(ty<g.h)g.a[ty*g.w+x]=k;}
   const A=hArmPts(L,W);
   if(bare){g.s(Math.floor(A.S[0]),Math.floor(A.S[1]),'#');g.rect(A.H[0],A.H[1],2,2,'!');return g;}
   if(W.before)hTint(g,t=>W.draw(t,A.H[0],A.H[1]));
@@ -525,7 +545,7 @@ const HF_TORSO={
 const HF_SKIRT=[14,14,14,13,13,13,13,12,12,12,12,12,11,11,11,11,11,11,11];
 function hLegFront(g,L,lift,left){
   const b=L.b,heavy=b==='heavy',monk=b==='monk';
-  const t=new PG(RIGW,RIGH,0,0),ay=49-lift;
+  const t=hnew(),ay=49-lift;
   const hip=[16.8,32],kn=[16.6,40-lift*.4],an=[16.9,ay];
   const T=monk?'P':'K',Bt=heavy?'M':monk?'S':'B',Bs=heavy?'N':monk?'e':'b';
   hlimb(t,[hip,kn,an],monk?3.2:heavy?2.8:2.6,monk?2.2:heavy?2.3:1.9,T);
@@ -534,7 +554,7 @@ function hLegFront(g,L,lift,left){
   else{const c=[kn[0]+(an[0]-kn[0])*.38,kn[1]+(an[1]-kn[1])*.38];hlimb(t,[c,[an[0],an[1]-1],[an[0],an[1]+.6]],2.3,1.9,Bt);t.rect(Math.round(c[0]-2),Math.round(c[1]),5,1,'L');}
   hspan(t,50-lift,[[15,18],[14,18],[14,18]],Bt);t.rect(14,52-lift,5,1,Bs);
   if(heavy)t.px([[16,50-lift]],'c');
-  for(let y=0;y<RIGH;y++)for(let x=0;x<RIGW;x++){const c=t.a[y*RIGW+x];if(c)g.s(left?x:RIGW-1-x,y,c);}
+  for(let y=0;y<t.h;y++)for(let x=0;x<t.w;x++){const c=t.a[y*t.w+x];if(c)g.a[y*g.w+(left?x:g.w-1-x)]=c;}
 }
 function hLegsFront(g,L,frame){
   if(L.b==='robe'){
@@ -545,7 +565,7 @@ function hLegsFront(g,L,frame){
 }
 function hArmFront(g,L,left,swing,dx){dx=dx||0;
   const b=L.b,heavy=b==='heavy',monk=b==='monk',robe=b==='robe';
-  const t=new PG(RIGW,RIGH,0,0),k=heavy?'M':monk?'S':'P';
+  const t=hnew(),k=heavy?'M':monk?'S':'P';
   const P=[[12.4,20.6],[11.6+dx,26.6+swing],[12+dx,31.4+swing]];
   hlimb(t,P,2.1,1.6,k);
   if(heavy){t.ell(12,19.8,4.4,3.3,'M');t.rect(8,21,9,1,'N');t.px([[10,18],[11,18]],'c');hlimb(t,[[11.8,28.6+swing],[12,31.2+swing]],1.9,1.7,'M');}
@@ -553,7 +573,7 @@ function hArmFront(g,L,left,swing,dx){dx=dx||0;
   else if(monk){for(let i=0;i<3;i++)t.rect(10,26+swing+i*2,4,1,'w');}
   else t.ell(12,31.6+swing,1.9,1.3,'Q');
   t.rect(10+dx,32+swing+(robe?1:0),3,3,heavy?'N':'S');
-  for(let y=0;y<RIGH;y++)for(let x=0;x<RIGW;x++){const c=t.a[y*RIGW+x];if(c)g.s(left?x:RIGW-1-x,y,c);}
+  for(let y=0;y<t.h;y++)for(let x=0;x<t.w;x++){const c=t.a[y*t.w+x];if(c)g.a[y*g.w+(left?x:g.w-1-x)]=c;}
 }
 function hTorsoFront(g,L,view,cls){
   const b=L.b,F=view==='front';
@@ -634,7 +654,7 @@ function weaponFB(g,L,view){
   }
 }
 function rigFB(L,view,frame,id){
-  const g=new PG(RIGW,RIGH,0,0),F=view==='front',cls=heroCls(L,id);
+  const g=hnew(),F=view==='front',cls=heroCls(L,id);
   hBackFront(g,L,view,'under');
   const sw=frame===1?1:frame===2?-1:0;
   if(!F&&L.sh)hShieldFront(g,L,view);
@@ -644,7 +664,7 @@ function rigFB(L,view,frame,id){
   hNeck(g,view);
   drawFlair(g,L,id,view);drawAcc(g,L,id,view,'body');
   const hd=hHead(L,view,id),bob=frame>0&&!L.vill?1:0;drawAcc(hd,L,id,view,'head');
-  for(let y=0;y<RIGH;y++)for(let x=0;x<RIGW;x++){const k=hd.a[y*RIGW+x];if(!k)continue;const ty=y+bob;if(ty<RIGH)g.a[ty*RIGW+x]=k;}
+  for(let y=0;y<g.h;y++)for(let x=0;x<g.w;x++){const k=hd.a[y*g.w+x];if(!k)continue;const ty=y+bob;if(ty<g.h)g.a[ty*g.w+x]=k;}
   hBackFront(g,L,view,'over');
   if(F&&L.sh)hShieldFront(g,L,view);
   hTint(g,t=>weaponFB(t,L,view));

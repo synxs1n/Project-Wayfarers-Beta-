@@ -166,3 +166,10 @@ if(SPRITE_HD){
     return paintHD(g,pal,{flat:o.flat||'',rim:o.rim,glow:o.glow,tex:monTex(art)});});};
   monURL=function(art){return cvURL('m3:'+art,()=>monCanvas(art));};
 }
+
+// ===== overworld walkers use the compact rig (28x40, the rig drawn at scale .7: art.js HRS / rigScale); a 'big:' key keeps the 40x56 rig (title scene, sheets) =====
+// every walker consumer (the player, townsfolk, legend actors, wanderers, the HD-2D billboards) goes through walkerCanvas, so this one wrapper covers them. Caches stay per size: compact keys end in '|c'.
+{const wc0=walkerCanvas;walkerCanvas=function(key,L,els,id,view,frame){
+  if(typeof key!=='string'||(id&&TPL[id]&&TPL[id].mon))return wc0.apply(this,arguments);
+  if(key.slice(0,4)==='big:')return wc0.call(this,key.slice(4),L,els,id,view,frame);
+  return rigScale(.7,()=>wc0.call(this,key+'|c',L,els,id,view,frame));};}

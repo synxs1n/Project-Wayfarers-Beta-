@@ -29,7 +29,7 @@ const t7Rgb=(c,a)=>`rgba(${c[0]},${c[1]},${c[2]},${a==null?1:a})`;
 // then drawn at a whole number of device pixels per texel, so the party has the proportions and pixel density of the heroes in the world
 function t7Sprite(id){const k=id+(typeof lookKey==='function'?lookKey(id):'');if(T7.spr[k])return T7.spr[k];
   const sc=(typeof HD2D!=='undefined'&&HD2D.spr&&HD2D.spr.sc)||2/3,L=heroLook(id),el=TPL[id].el,key=id+(typeof lookKey==='function'?lookKey(id):'');
-  const grab=fr=>{const c=walkerCanvas(key,L,el,id,'side',fr),sm=typeof hdSmall==='function'?hdSmall(c,sc,1):c,b=t7Cv(sm.width,sm.height);b.getContext('2d').drawImage(sm,0,0);return {b,c};};
+  const grab=fr=>{const c=walkerCanvas('big:'+key,L,el,id,'side',fr),sm=typeof hdSmall==='function'?hdSmall(c,sc,1):c,b=t7Cv(sm.width,sm.height);b.getContext('2d').drawImage(sm,0,0);return {b,c};};
   const s0=grab(0);let s1=null;try{s1=grab(1);if(s1.b.width!==s0.b.width||s1.b.height!==s0.b.height)s1=null;}catch(e){s1=null;}
   const rw=s0.b.width,rh=s0.b.height,d=s0.b.getContext('2d').getImageData(0,0,rw,rh).data;let x0=rw,x1=0,y0=rh,y1=0;for(let y=0;y<rh;y++)for(let i=0;i<rw;i++)if(d[(y*rw+i)*4+3]>40){if(i<x0)x0=i;if(i>x1)x1=i;if(y<y0)y0=y;if(y>y1)y1=y;}
   return T7.spr[k]={id,c:s0.b,cw:s1?s1.b:s0.b,rw,rh,lw:s0.c.width,lh:s0.c.height,wsc:sc,box:{x0,x1,y0,y1}};}

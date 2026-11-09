@@ -290,3 +290,6 @@ Batch 5 is complete with 0.14.4.
   toTall/stretchHero pass-through, applySize refit; heropose9 anchors scaled (HPS_K/HPS_W 1.3), npcart9 anchors front (11,32) back (28,32) side (26,29);
   legends.js mount/pet canvases resized; portrait crop .port img 93x130 at -25,0 (style.css 291/294). v080b proportion rule relaxed 1.1x -> 1.2x
   (heroes 45 px vs 38 px foes). Weak spots per helper: monk side torso thin, Kaevan small on the horse, knights/warriors a little blotchy.
+- 0.15.0 compact overworld rig (helper): 28x40 canvas at scale 0.7 via HRS/rigScale and scale-aware PG methods; walkerCanvas wrapped at the end of
+  sprhd.js (compact keys end in '|c'; 'big:' keys get the big rig, title7 uses it); npcart9 npcShift scales; v140a hash re-taken. v071wt (minimap tap
+  walks) fails 15 checks on pre-rig builds too: stale, investigate separately. Versioning: 0.14.9 -> 0.15.0.

@@ -1,7 +1,7 @@
 // ===== art2.js (base): hero races, body sizes, the tone pass and the grid builders on the 40x56 hero canvas (heroCanvas, heroURL, walkerCanvas) =====
 // The hero rig lives in art.js (rigSide, rigFB). Heroes render on a 40x56 canvas (feet on row 52) so big folk, wings, halos and ears fit.
 // draw a part only into empty cells, so it sits behind what is already there
-function behind(g,fn){const t=new PG(g.w,g.h,g.ox,g.oy);fn(t);for(let i=0;i<g.a.length;i++)if(!g.a[i]&&t.a[i])g.a[i]=t.a[i];}
+function behind(g,fn){const t=new PG(g.w,g.h,g.ox,g.oy);if(g.sc)t.sc=g.sc;fn(t);for(let i=0;i<g.a.length;i++)if(!g.a[i]&&t.a[i])g.a[i]=t.a[i];}
 function tailKind(L){return L.ears==='cat'?'cat':L.ears==='fox'?'fox':L.ears==='wolf'?'wolf':L.crest?'lizard':'cat';}
 // ----- race, side view (the head and the face are at x 16..24, rows 9..15; the hips at (16,32)) -----
 function raceSide(g,L){
@@ -77,10 +77,11 @@ function widen(o,col,y0,y1,n){ // duplicate a column for rows y0..y1, pushing th
   const W=o.w,sh=n>>1;for(let y=y0;y<=y1;y++){const row=o.a.slice(y*W,(y+1)*W);const out=row.slice(0,col+1);for(let k=0;k<n;k++)out.push(row[col]);out.push(...row.slice(col+1));for(let x=0;x<W;x++)o.a[y*W+x]=out[x+sh]||0;}
 }
 function applySize(o,L){
-  // rows: head 9-15, torso 18-31, thighs 32-39, knee 40, feet 52
-  if(L.size==='small'){cutRows(o,42,5);cutRows(o,26,2);}
-  else if(L.size==='stout'){cutRows(o,42,4);widen(o,20,19,52,2);}
-  else if(L.size==='big'){addRows(o,26,1);addRows(o,40,1);widen(o,20,19,52,1);}
+  // rows: head 9-15, torso 18-31, thighs 32-39, knee 40, feet 52 (the compact rig scales them by o.sc.f)
+  const f=o.sc?o.sc.f:1,R=v=>Math.max(1,Math.round(v*f)),Y=v=>Math.round(v*f);
+  if(L.size==='small'){cutRows(o,Y(42),R(5));cutRows(o,Y(26),R(2));}
+  else if(L.size==='stout'){cutRows(o,Y(42),R(4));widen(o,Y(20),Y(19),Y(52),R(2));}
+  else if(L.size==='big'){addRows(o,Y(26),1);addRows(o,Y(40),1);widen(o,Y(20),Y(19),Y(52),1);}
 }
 const RACEPAL={T:null,U:'#efe8d8',u:'#c8bca8',O:'#ffe27a',I:'#c8a070',V:'#6ad0c8',F:'#d8c8a8',X:'#ffd04a',D:'#ffe08a'};
 const _heroPal1=heroPal;
