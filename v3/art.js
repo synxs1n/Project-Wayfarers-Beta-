@@ -229,42 +229,6 @@ const MART={
   g.path([[3,31],[7,29],[10,31],[8,33]],'C');g.path([[30,32],[34,30],[37,32]],'C');g.path([[2,4],[6,3],[8,5]],'C');
   return {pal:{B:'#5fc9a0',b:'#2f7a74',A:'#c8f4dc',E:'#fff06a',K:'#1a1020',W:'#ffffff',C:'#e4fff6'},flat:'EKWC'};
  },
- gull(g){
-  g.poly([[18,21],[22,8],[27,12],[25,21]],'X');
-  g.poly([[11,21],[3,17],[4,25],[12,24]],'b');
-  g.ell(20,22,9.5,5,'B');g.ell(22,24,7,3,'A');
-  g.ell(29,18,4.5,4,'B');g.poly([[32,17],[39,19],[32,20]],'G');g.s(30,17,'K');
-  g.poly([[13,20],[8,4],[14,8],[19,3],[21,12],[26,20]],'b');
-  g.px([[11,8],[15,6],[17,10],[22,9]],'C');
-  g.px([[19,27],[21,27],[20,28],[22,28]],'K');
-  return {pal:{B:'#e8eef4',b:'#9ec0dc',X:'#6a8aac',A:'#ffffff',G:'#ffc24d',K:'#1a1020',C:'#fff6b0'},flat:'KC'};
- },
- tidewisp(g){
-  [[12,17,11,30],[16,17,17,35],[21,17,20,36],[25,17,27,32],[29,16,31,28]].forEach(l=>g.path([[l[0],l[1]],[l[0]-1,(l[1]+l[3])/2],[l[2],l[3]]],'b'));
-  g.ell(20,13,11,9,'B');g.rect(8,16,24,7,0);
-  g.ell(20,11,6.5,4,'A');g.rect(9,16,23,1,'b');g.px([[10,17],[14,17],[18,17],[22,17],[26,17],[30,17]],'b');
-  g.rect(22,12,2,2,'K');g.rect(27,12,2,2,'K');
-  g.px([[11,25],[16,29],[21,31],[26,27],[30,24],[12,30],[19,35]],'C');
-  return {pal:{B:'#7ab8f0',A:'#d8eeff',b:'#4a7ac8',K:'#1a1040',C:'#f2e04a'},flat:'KC',glow:'#b8e0ff'};
- },
- cavebat(g){
-  g.poly([[17,18],[2,9],[5,16],[0,21],[8,22],[5,28],[16,24]],'b');
-  g.path([[17,18],[4,11]],'B');g.path([[16,22],[3,21]],'B');
-  g.poly([[23,18],[37,8],[35,15],[40,19],[32,21],[35,27],[24,24]],'b');
-  g.ell(20,21,5.5,6.5,'B');g.ell(24,14,4.5,4.5,'B');
-  g.poly([[21,12],[20,3],[25,10]],'B');g.poly([[25,11],[28,4],[29,12]],'B');g.px([[21,8],[21,9],[27,8],[27,9]],'R');
-  g.rect(25,13,2,2,'E');g.px([[26,18],[28,18]],'W');g.line(25,17,29,17,'K');
-  g.px([[18,28],[22,28]],'K');
-  return {pal:{B:'#5a4a6a',b:'#2e2440',R:'#c86a8a',E:'#ff5050',W:'#ffffff',K:'#140a1a'},flat:'EWKR'};
- },
- ashwraith(g){
-  g.poly([[20,5],[28,9],[30,19],[33,34],[28,30],[24,37],[19,31],[13,36],[12,25],[14,11]],'B');
-  g.poly([[14,20],[12,30],[17,26]],'b');g.poly([[24,22],[27,32],[22,28]],'b');
-  g.ell(23,12,5,5,'K');g.rect(22,11,2,2,'E');g.rect(26,11,2,2,'E');
-  g.line(26,18,34,23,'b',2);g.px([[35,22],[35,24],[34,25]],'W');
-  g.px([[30,34],[24,36],[13,35],[33,30]],'C');g.px([[7,12],[9,7],[33,6],[36,14]],'C');
-  return {pal:{B:'#544046',b:'#3a2c32',K:'#120a10',E:'#ff8a3a',C:'#ff8a3a',W:'#e8d8d0'},flat:'KEC'};
- },
  slaggolem(g){
   g.rect(6,16,5,11,'b');g.ell(8.5,28,3.5,2.5,'b');
   g.rect(12,28,6,9,'B');g.rect(22,28,6,9,'B');
@@ -307,18 +271,6 @@ const MART={
   g.line(30,3,30,30,'W',3);g.s(30,2,'W');g.rect(26,24,9,2,'G');g.rect(29,26,3,4,'L');
   return {pal:{M:'#8aa8c0',N:'#5a7894',b:'#4a6a88',C:'#c8f0ff',K:'#10141f',E:'#5ad0ff',W:'#e8f8ff',G:'#c8a050',L:'#5a3a22'},flat:'KE'};
  },
- thunderhawk(g){
-  g.poly([[12,22],[3,26],[5,29],[12,27]],'b');
-  g.poly([[17,20],[22,8],[27,12],[26,20]],'X');
-  g.ell(19,23,8.5,5,'B');g.ell(21,25,6,2.5,'A');
-  g.ell(28,18,4.5,4.5,'B');g.poly([[31,17],[37,19],[31,21]],'K');
-  g.poly([[25,15],[19,9],[23,11],[20,5],[27,12]],'C');
-  g.rect(29,16,2,2,'E');
-  g.poly([[14,21],[7,4],[13,8],[17,2],[21,10],[25,20]],'B');g.poly([[7,4],[10,8],[13,8]],'b');g.poly([[17,2],[19,7],[21,10]],'b');
-  g.path([[18,28],[17,32],[15,33]],'K');g.path([[22,28],[23,32],[25,33]],'K');
-  g.px([[4,14],[33,8],[36,26],[2,31]],'C');
-  return {pal:{B:'#f2c93a',b:'#a8822a',X:'#c89a28',A:'#fff2b8',C:'#ffffff',K:'#2a2a3a',E:'#3ad0ff'},flat:'KE'};
- },
  stormling(g){
   g.path([[11,22],[6,27],[9,29],[3,35]],'C',2);g.path([[28,22],[33,26],[30,28],[37,34]],'C',2);
   g.ell(13,18,7.5,6,'B');g.ell(21,14,8.5,7.5,'B');g.ell(27,19,7,6,'B');g.ell(19,23,9,6,'B');
@@ -337,14 +289,6 @@ const MART={
   g.path([[15,22],[18,25],[16,29]],'C');g.path([[21,20],[23,24]],'C');
   return {pal:{B:'#7a7a8c',b:'#555566',E:'#f2c93a',W:'#ece6d8',K:'#1a1020',C:'#f2c93a'},flat:'EWKC'};
  },
- cloudray(g){
-  g.path([[7,22],[3,27],[1,33]],'b');g.s(1,34,'C');
-  g.poly([[5,21],[19,10],[33,17],[20,28]],'B');g.poly([[9,22],[20,25],[30,19],[20,26]],'A');
-  g.ell(33,17,2.5,2,'B');g.poly([[33,15],[37,12],[36,16]],'b');g.poly([[33,19],[37,21],[35,19]],'b');
-  g.rect(30,16,2,2,'K');g.px([[16,15],[22,14],[13,18]],'b');
-  g.path([[2,12],[9,11],[13,12]],'C');g.path([[24,31],[31,30],[36,31]],'C');g.path([[24,6],[30,5]],'C');
-  return {pal:{B:'#6ac8b8',b:'#3a8a84',A:'#d4f6ee',K:'#10241f',C:'#eafffa'},flat:'KC'};
- },
  voidspawn(g){
   [[9,32,7,37],[14,34,13,38],[24,34,26,38],[30,32,33,37]].forEach(l=>g.path([[l[0],l[1]],[l[2],l[3]]],'b',2));
   g.ell(20,26,13.5,10,'B');g.ell(13,18,5,4,'B');g.ell(25,17,5.5,4.5,'B');
@@ -352,15 +296,6 @@ const MART={
   g.ell(26,31,4,1.8,'K');g.px([[24,30],[27,30],[25,32],[28,32]],'W');
   g.px([[9,26],[18,24],[33,27],[11,33],[30,14],[8,20]],'A');
   return {pal:{B:'#2c1c40',b:'#1a1028',E:'#ff6ad0',K:'#080410',W:'#f4e8ff',A:'#d8c0ff'},flat:'EKWA',rim:'#5a3a8a'};
- },
- eclipsewraith(g){
-  g.poly([[20,6],[27,10],[29,22],[32,37],[8,37],[11,22],[13,10]],'B');
-  g.poly([[20,6],[27,10],[29,22],[32,37],[20,37]],'L');
-  g.ell(20,4,7,2.4,'G');g.ell(20,4,5,1.2,0);
-  g.ell(21,12,4.5,4.5,'K');g.s(19,12,'E');g.s(23,12,'F');
-  g.ell(31,23,2.5,2.5,'A');g.ell(9,23,2.5,2.5,'C');
-  g.line(27,20,30,22,'L',2);g.line(13,20,10,22,'B',2);
-  return {pal:{B:'#2a1f40',L:'#d8d0f0',G:'#f6e7a8',K:'#0a0614',E:'#f6e7a8',F:'#b080ff',A:'#fff6c8',C:'#9a6ae0'},flat:'KEFAC',glow:'#f6e7a8'};
  },
  stareater(g){
   g.path([[8,23],[3,16],[2,12]],'B',2);g.ell(2.5,11,2.6,2.6,'C');
@@ -484,6 +419,16 @@ function maw(g,x,y,L,op,kU,kL){
 }
 function clr(g,x,y,w,h){return g.rect(x,y,w,h,0);}
 function limb(g,x0,y0,x1,y1,k,t,paw){g.path([[x0,y0],[x1,y1]],k,t);if(paw)g.rect(Math.round(x1)-1,Math.round(y1),3,1,paw);}
+// family 2 helpers: wing() is a feathered or membrane wing (shoulder S, tip T, rear root R, n feathers, lit leading edge kl); returns the feather tips.
+// tend() is a wavy tendril from (x,y) hanging len px, swaying amp with phase ph and drifting by dr, thick t0 then 1.
+function lerp2(a,b,t){return [a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t];}
+function wing(g,S,T,R,k,kl,n,notch){n=n||4;notch=notch===undefined?2.4:notch;
+  if(typeof R==='number'){const dx=T[0]-S[0],dy=T[1]-S[1],l=Math.hypot(dx,dy)||1;let px=-dy/l,py=dx/l;if(py<0){px=-px;py=-py;}R=[S[0]+px*R,S[1]+py*R];}// a number = wing width: the root sits that far from S, perpendicular to S-T on the lower side
+  const mid=[(S[0]+T[0])/2+(T[1]-S[1])*.08,(S[1]+T[1])/2-1.5],P=[S,mid,T],tips=[T];
+  for(let j=1;j<=n;j++){const q=lerp2(T,R,(j-.5)/n),dx=S[0]-q[0],dy=S[1]-q[1],l=Math.hypot(dx,dy)||1;P.push([q[0]+dx/l*notch,q[1]+dy/l*notch]);const t=lerp2(T,R,j/n);P.push(t);tips.push(t);}
+  g.poly(P,k);g.path([S,mid,T],kl,1.5);return tips;}
+function tend(g,x,y,len,amp,ph,k,t0,dr){const P=[];for(let i=0;i<=5;i++){const u=i/5;P.push([x+(dr||0)*u+Math.sin(u*4.2+ph)*amp*u,y+len*u]);}
+  for(let i=0;i<5;i++)g.line(P[i][0],P[i][1],P[i+1][0],P[i+1][1],k,i<2?t0:1);return P[5];}
 Object.assign(MART,{
  // ---- Mossling: a mossy boulder slime with a sprout. Squash and stretch: A wide, B tall; lunge stretches forward and opens its mouth
  mossling(g,f){const F=mfr(f);
@@ -635,6 +580,148 @@ Object.assign(MART,{
 });
 ['mossling','dewtoad','cinderpup','frostwolf','crawler','shellguard','magmaslime'].forEach(n=>{MART[n].fr=1;});
 // FAMILY1-END
+// FAMILY2-BEGIN
+// =================== FAMILY 2 (v0.13 art pass): gull, thunderhawk, cave bat, cloud ray, tide wisp, ash wraith, eclipse wraith ===================
+// Flyers show both wings (far wing dark, near wing lit) with a span wider than the body; the ray undulates; wisps and wraiths carry a flat glow core
+// and trailing tendrils, wraiths one prop. All frames come from f (idle A/B, atk, hit); variants add a shape through SHP in realms.js.
+Object.assign(MART,{
+ // ---- Glass Gull: white seabird, wings in a V (idle A up, B spread level), lunge dives beak open with talons out, a hit throws the wings down
+ gull(g,f){const F=mfr(f);
+  let bx=17,by=24,hx=27,hy=18.5,nT=[7,4],fT=[30,3],op=0;
+  if(F.b){by=24.8;hy=19.3;nT=[2,14];fT=[37,11];}
+  if(F.atk){bx=18;by=23;hx=29.5;hy=21.5;nT=[2,8];fT=[17,2];op=1;}
+  if(F.hit){bx=15;by=25;hx=24;hy=20;nT=[3,26];fT=[34,22];}
+  const nS=[bx-1,by-4],fS=[bx+4,by-5];
+  wing(g,fS,fT,8,'m','l',4,3);
+  g.poly([[bx-7,by-2.5],[bx-16,by-.5],[bx-15.5,by+3],[bx-7,by+3]],'b');g.px([[bx-16,by+1],[bx-15,by+2],[bx-14,by+3]],'K');
+  if(F.atk){limb(g,bx+5,by+4,bx+11,by+9,'F',1);g.px([[bx+12,by+9],[bx+12,by+10],[bx+10,by+10]],'K');}
+  else if(F.hit){limb(g,bx+1,by+5,bx,by+9,'F',1);limb(g,bx+4,by+5,bx+5,by+9,'F',1);}
+  else g.px([[bx+1,by+6],[bx+1,by+7],[bx+4,by+6],[bx+4,by+7]],'F');
+  sph(g,bx,by,9.6,5.6,'B','b');g.ell(bx+1.5,by+3.2,7,2.3,'A');
+  sph(g,hx,hy,4.4,4.1,'B','b');
+  if(op){g.poly([[hx+3,hy-1.6],[hx+8.8,hy-.2],[hx+3,hy+.6]],'G');g.poly([[hx+3,hy+.4],[hx+8,hy+.8],[hx+3,hy+3.6]],'K');g.rect(Math.round(hx+4),Math.round(hy+2.6),3,1,'R');g.poly([[hx+3,hy+3],[hx+7.5,hy+4.6],[hx+3,hy+4.4]],'G');}
+  else{g.poly([[hx+3.2,hy-1.4],[hx+10,hy+.8],[hx+3.4,hy+2.4]],'G');g.px([[hx+9,hy+1],[hx+9,hy+2]],'R');}
+  const ex=Math.round(hx+.5),ey=Math.round(hy-2.6);
+  if(F.hit){g.rect(ex,ey+1,3,1,'K');}else{g.rect(ex,ey,2,2,'K');g.s(ex,ey,'W');}
+  const tips=wing(g,nS,nT,10,'M','L',4,3);tips.slice(0,3).forEach(t=>g.s(Math.round(t[0]),Math.round(t[1]),'K'));
+  if(F.hit)g.px([[bx-12,by-8],[bx+10,by-9],[bx+6,by-12]],'W');
+  return {pal:{B:'#eef2f6',b:'#a8bed4',A:'#ffffff',M:'#8fb0d0',L:'#d4e6f6',m:'#5c7a9c',l:'#7d9cc0',G:'#ffb83d',R:'#e0506a',F:'#e8863a',K:'#1a1020',W:'#ffffff'},flat:'KWGRF',a:{bx,by,hx,hy,tx:bx-15,ty:by+1,nT,fT,sx:nS[0],sy:nS[1]}};
+ },
+ // ---- Thunder Hawk: gold raptor, crest of three blades, hooked steel beak, blue lightning on the pinions. Same poses as the gull, harder edges
+ thunderhawk(g,f){const F=mfr(f);
+  let bx=17,by=23,hx=28,hy=18,nT=[6,2],fT=[28,1],op=0;
+  if(F.b){by=23.8;hy=18.8;nT=[1,15];fT=[37,10];}
+  if(F.atk){bx=17.5;by=22.5;hx=29.5;hy=21;nT=[2,8];fT=[18,2];op=1;}
+  if(F.hit){bx=15;by=24;hx=25;hy=19.5;nT=[2,27];fT=[34,23];}
+  const nS=[bx-1,by-4],fS=[bx+4,by-5];
+  wing(g,fS,fT,9,'m','l',5,3.2);
+  [[-16,-3,'m'],[-17,1,'b'],[-15,5,'m']].forEach(([dx,dy,k])=>{g.poly([[bx-6,by-1.5],[bx+dx,by+dy-1],[bx+dx+1,by+dy+1.5],[bx-6,by+2]],k);g.s(bx+dx,by+dy,'C');});
+  if(F.atk){limb(g,bx+5,by+4,bx+12,by+9,'K',1);g.px([[bx+13,by+10],[bx+12,by+10],[bx+11,by+10]],'K');limb(g,bx+3,by+4,bx+9,by+10,'K',1);}
+  else if(F.hit){limb(g,bx+1,by+5,bx-1,by+9,'K',1);limb(g,bx+4,by+5,bx+5,by+9,'K',1);}
+  else g.px([[bx+1,by+6],[bx+1,by+7],[bx+4,by+6],[bx+4,by+7],[bx,by+8],[bx+3,by+8]],'K');
+  sph(g,bx,by,10.4,6,'B','b');g.ell(bx+2,by+3.4,7,2.4,'A');g.poly([[bx+4,by-5],[bx+9,by-3],[bx+7,by-1]],'M');
+  sph(g,hx,hy,4.6,4.3,'B','b');
+  g.poly([[hx-2,hy-3.5],[hx-6,hy-11],[hx-.5,hy-5]],'B');g.poly([[hx-.5,hy-4],[hx-1.5,hy-12],[hx+2.5,hy-4]],'M');g.poly([[hx+2,hy-3.5],[hx+4,hy-10],[hx+5.5,hy-2.5]],'b');
+  if(op){g.poly([[hx+3.4,hy-2],[hx+9.5,hy-.4],[hx+8.5,hy+1],[hx+3.4,hy+.6]],'S');g.poly([[hx+3.2,hy+.6],[hx+8,hy+1.2],[hx+3,hy+3.8]],'K');g.rect(Math.round(hx+4),Math.round(hy+2.6),3,1,'R');g.poly([[hx+3,hy+3],[hx+7.5,hy+4.4],[hx+3,hy+4.8]],'S');}
+  else{g.poly([[hx+3.4,hy-2],[hx+10,hy+.4],[hx+9.4,hy+2.6],[hx+7,hy+1.6],[hx+3.4,hy+2.8]],'S');}
+  const ex=Math.round(hx+1),ey=Math.round(hy-2);
+  if(F.hit)g.rect(ex,ey+1,3,1,'K');else{g.rect(ex,ey,2,2,'E');g.s(ex,ey,'W');g.rect(ex-1,ey-1,4,1,'K');}
+  const tips=wing(g,nS,nT,11,'M','L',5,3.2);tips.slice(0,3).forEach(t=>g.s(Math.round(t[0]),Math.round(t[1]),'C'));
+  return {pal:{B:'#f2c93a',b:'#a8822a',A:'#fff2b8',M:'#c4902a',L:'#ffe27a',m:'#7a5a1a',l:'#b08a2a',S:'#7a8398',K:'#2a2a3a',E:'#3ad0ff',C:'#3ad0ff',R:'#e0506a',W:'#ffffff'},flat:'KECRW',a:{bx,by,hx,hy,tx:bx-14,ty:by+2,nT,fT,sx:nS[0],sy:nS[1]}};
+ },
+ // ---- Cave Bat: front view, the span is three times the body. Wings up on A, down on B; the lunge flares the wings and opens the jaw; a hit folds them in
+ cavebat(g,f){const F=mfr(f);
+  let wy=0,sp=0,hy=14,by=24,op=0;
+  if(F.b){wy=7;}if(F.atk){wy=-3;sp=0;hy=16;by=25;op=1;}if(F.hit){wy=5;sp=-6;by=25;hy=15;}
+  const side=s=>{const cl=s<0,k=cl?'M':'m',kb=cl?'O':'o',W=[20+s*(10+sp),9+wy],A=[20+s*(18+sp),15+wy*1.1],Bt=[20+s*(14+sp),25+wy*.9],C=[20+s*(9),28+wy*.5];
+   const n1=lerp2(A,Bt,.5),n2=lerp2(Bt,C,.5),sh=[20+s*3,17];
+   [n1,n2].forEach(n=>{n[0]+=(20-n[0])*.25;n[1]-=2;});
+   g.poly([sh,W,A,n1,Bt,n2,C,[20+s*3,25]],k);g.path([sh,W],kb,2);[A,Bt,C].forEach(t=>g.line(W[0],W[1],t[0],t[1],kb,1));g.px([[W[0],W[1]-1]],'D');};
+  side(1);side(-1);
+  sph(g,20,by,5.2,6.4,'B','b');g.ell(20.5,by+1.5,3,3.8,'A');g.px([[18,by+7],[22,by+7]],'D');
+  g.poly([[16,hy-2],[14.5,hy-11],[19.5,hy-4]],'B');g.poly([[24,hy-2],[26,hy-11],[20.5,hy-4]],'b');g.poly([[16.4,hy-3],[15.6,hy-8],[18.4,hy-4]],'R');g.poly([[23.6,hy-3],[24.6,hy-8],[21.6,hy-4]],'r');
+  sph(g,20,hy,4.8,4.4,'B','b');g.ell(20.5,hy+2,2.6,1.8,'A');
+  if(F.hit){g.rect(17,hy-1,2,1,'K');g.rect(22,hy-1,2,1,'K');}
+  else{g.rect(17,hy-1,1,2,'E');g.rect(23,hy-1,1,2,'E');g.s(17,hy-1,'W');}
+  if(op){g.rect(18,hy+2,5,3,'K');g.rect(19,hy+4,3,1,'R');g.px([[18,hy+2],[22,hy+2],[19,hy+4]],'W');}
+  else g.px([[19,hy+3],[21,hy+3]],'W');
+  return {pal:{B:'#6a5a7c',b:'#3a2e50',A:'#9a8ab0',M:'#7a4a7a',m:'#3e2646',O:'#c08ab8',o:'#6a3e6a',R:'#c86a8a',r:'#8a4a6a',E:'#ff5050',W:'#ffffff',D:'#241a2c',K:'#140a1a'},flat:'EWK',a:{hx:20,hy,by,wy,sp}};
+ },
+ // ---- Cloud Ray: the wing is the body. A wave runs through the fins (idle A and B in opposite phase), the head leads, a long tail streams behind and whips over the back in the lunge
+ cloudray(g,f){const F=mfr(f);
+  let ph=F.i?3.14:0,amp=2.4,cy=22,sq=1,x0=9,x1=33;
+  if(F.atk){amp=3.4;ph=1.6;cy=24;x0=10;x1=34;}if(F.hit){amp=.7;ph=0;sq=.7;cy=25;x0=8;x1=32;}
+  const prof=u=>Math.pow(u<.4?u/.4:(1-u)/.6,.85),wv=u=>Math.sin(u*5.2+ph)*amp*prof(u),L=x1-x0;
+  const tail=[];for(let i=0;i<=6;i++){const u=i/6;tail.push(F.atk?[[x0,cy],[x0-3,cy-3],[x0-5,cy-8],[x0-2,cy-13],[x0+4,cy-15],[x0+9,cy-14],[x0+11,cy-11]][Math.min(i,6)]:[x0-u*(x0-1.5),cy+1+u*8+Math.sin(u*5+ph)*2.4]);}
+  g.path(tail,'b',2);const te=tail[6];
+  if(F.atk)g.poly([[te[0]-1,te[1]-3],[te[0]+3,te[1]+4],[te[0]+1.5,te[1]-1]],'K');else g.ell(te[0],te[1],1.6,1.4,'C');
+  const edge=[];
+  for(let x=x0;x<=x1;x++){const u=(x-x0)/L,h=prof(u),w=wv(u),top=Math.round(cy-8.8*h*sq+w),bot=Math.round(cy+6*h*sq+w),mid=top+(bot-top)*.5;edge.push([x,top,bot]);
+   for(let y=top;y<=bot;y++)g.s(x,y,y>=bot&&bot-top>2?'A':y<=top+1&&u<.7?'L':y<mid?'B':'b');}
+  [[.2,.4],[.34,.25],[.5,.5],[.62,.34],[.3,.7],[.46,.78]].forEach(([u,v])=>{const e=edge[Math.round(u*L)];if(e)g.s(e[0],Math.round(e[1]+(e[2]-e[1])*v),'d');});
+  const hx=x1+.5,hy=cy-1+wv(.96);
+  sph(g,hx,hy,3.6,3.2*sq+.4,'B','b');g.poly([[hx+2,hy-2],[hx+4.5,hy-4.5],[hx+4,hy-.5]],'b');g.poly([[hx+1.5,hy+2],[hx+4.5,hy+3.5],[hx+3.5,hy+.5]],'b');
+  const ex=Math.round(hx-.5),ey=Math.round(hy-2);
+  if(F.hit)g.rect(ex,ey+1,3,1,'K');else{g.rect(ex,ey,2,2,'K');g.s(ex,ey,'W');}
+  g.px(F.atk?[[Math.round(hx+1),Math.round(hy+2)],[Math.round(hx+3),Math.round(hy+3)]]:[[Math.round(hx+1),Math.round(hy+2.5)]],'K');
+  const dx=F.i?1:0;[[14+dx,cy+11,2.6],[27-dx,cy+9,2.4],[20+dx,cy+13,1.6]].forEach(([x,y,r])=>{if(y<37)g.ell(x,y,r,r*.4+.5,'C');});
+  if(F.hit)g.px([[16,cy-12],[24,cy-13]],'C');
+  return {pal:{B:'#62c4b2',b:'#36807f',A:'#d4f6ee',L:'#9ae6d4',d:'#2a6a68',K:'#10241f',W:'#ffffff',C:'#eafffa'},flat:'KWC',a:{cx:21,cy,hx,hy,x0,x1,L,edge}};
+ },
+ // ---- Tide Wisp: a glass bell with one flat glow core and an eye in it, five tendrils with bright beads; the lunge throws a bolt, a hit flattens the bell and flashes the core
+ tidewisp(g,f){const F=mfr(f);
+  let cx=19,cy=13,rx=11,ry=9,ph=F.i?3.14:0,spread=0;
+  if(F.b){rx=10;ry=10;}if(F.atk){cx=18;rx=11.5;ry=7.8;}if(F.hit){rx=12.5;ry=6.5;cx=18;spread=3;ph=2;}
+  const by=Math.round(cy+ry*.55),tp=[];
+  sph(g,cx,cy,rx,ry,'A','B');g.ell(cx-rx*.35,cy-ry*.5,rx*.38,ry*.22,'W');clr(g,0,by,40,40);
+  for(let x=Math.round(cx-rx+1);x<=cx+rx-1;x++){g.s(x,by-1,'b');if((x+F.i)%2===0)g.s(x,by,'b');}
+  for(let n=0;n<5;n++){const x=cx-8+n*4,t=tend(g,x,by,13+(n%2?3:0)+(F.b?2:0),2.2,ph+n*1.3,'T',2,(n-2)*spread*.7+(F.atk?-3:0));tp.push(t);g.s(Math.round(t[0]),Math.round(t[1]),'C');g.s(Math.round(t[0]),Math.round(t[1])-3,'C');}
+  const kx=Math.round(cx+1),ky=Math.round(cy+1);
+  g.ell(kx,ky,5.8,4.4,'Y');g.ell(kx,ky,4.2,3,F.hit?'W':'G');
+  if(F.hit)g.rect(kx-2,ky,3,1,'K');else{g.rect(kx,ky-1,2,2,'K');g.s(kx,ky-1,'W');}
+  if(F.atk){g.poly([[cx+rx-1,cy-5],[cx+rx+4,cy-6],[cx+rx+2.5,cy-2.5],[cx+rx+7,cy-3],[cx+rx+1,cy+4],[cx+rx+2.5,cy-.5],[cx+rx-1,cy-1]],'Y');g.px([[cx+rx+1,cy-4],[cx+rx+3,cy-4]],'W');}
+  return {pal:{B:'#7ab8f0',A:'#b8dcff',b:'#4a7ac8',T:'#4a7ac8',K:'#1a1040',W:'#ffffff',Y:'#fff09a',G:'#fffbe0',C:'#f2e04a'},flat:'KWYGC',glow:'#b8e0ff',a:{cx,cy,rx,ry,by,kx,ky,tp}};
+ },
+ // ---- Ash Wraith: a tattered hooded cloak that tapers to ribbons, an ember core in the chest, a staff with a hanging lantern. Lunge: leans in, lantern thrust; hit: reels back
+ ashwraith(g,f){const F=mfr(f);
+  let lean=0,sw=F.i?1:0,rise=F.b?-1:0;if(F.atk)lean=2;if(F.hit)lean=-3;
+  const hx=21+lean,hy=11+rise,cx=20+lean*.4;
+  const body=(k,l,r)=>g.poly([[hx-1,4+rise],[hx+7,8+rise],[30+lean*.5,19],[28,28],[26+sw,36],[24,33],[21-sw,39],[18,34],[15+sw,38],[13,31],[10,23],[11+lean*.4,15],[hx-7,8+rise]],k);
+  body('b');g.poly([[hx-1,4+rise],[hx-7,8+rise],[11+lean*.4,15],[10,23],[13,31],[15+sw,38],[18,34],[20,20],[hx+1,9+rise]],'B');
+  g.ell(hx,hy+.5,5,5.4,'K');g.rect(hx-3,hy-1,1,2,'E');g.rect(hx+2,hy-1,1,2,'E');g.s(hx-3,hy-1,'W');
+  g.px([[hx-1,hy+3],[hx+1,hy+3]],'q');
+  const kx=Math.round(cx),ky=24;g.ell(kx,ky,3.8+(F.atk?1:0),4.4+(F.atk?1:0),F.hit?'W':'R');g.ell(kx,ky,2,2.6,F.hit?'W':'Y');
+  [[14,31],[20,35],[26,32]].forEach(([x,y],n)=>tend(g,x,y+2,4,1.6,sw*2+n,'b',2,(n-1)*(F.hit?2:0)));
+  const sx=30+(F.atk?1:F.hit?-2:0);
+  g.path([[27+lean,16],[sx-1,20]],'b',3.4);g.ell(sx,21,1.8,1.6,'H');
+  g.line(sx,7,sx,37,'S',2);g.path([[sx,8],[sx,5],[sx+2,3.5],[sx+4,5]],'S',1.5);
+  const lx=sx+2+(F.i?1:0)+(F.atk?1:0),ly=7+(F.hit?2:0);g.px([[sx+4,5],[sx+4,6]],'n');
+  g.rect(lx,ly,5,6,'N');g.rect(lx,ly,5,1,'n');g.rect(lx,ly+5,5,1,'n');g.rect(lx+1,ly+1,3,4,'L');g.s(lx+2,ly+2,'Y');
+  g.px(F.i?[[8,15],[34,9],[9,28],[36,22]]:[[8,14],[34,10],[10,27],[36,23]],'Y');
+  return {pal:{B:'#5a4e52',b:'#352c32',q:'#2a2024',K:'#0e0c12',E:'#8aeaff',W:'#ffffff',R:'#ff8a3a',Y:'#ffe08a',H:'#d8cfc0',S:'#6a4a2a',N:'#8a7a6a',n:'#4a4038',L:'#ffb040'},flat:'KEWRYL',a:{hx,hy,cx,top:4+rise,lean,sx,lx,ly,by:34}};
+ },
+ // ---- Eclipse Wraith: a cloak split into a night half and a day half, a halo above the hood, an eclipse in the chest, a scythe. Same poses as the ash wraith
+ eclipsewraith(g,f){const F=mfr(f);
+  let lean=0,sw=F.i?1:0,rise=F.b?-1:0;if(F.atk)lean=2;if(F.hit)lean=-3;
+  const hx=20+lean,hy=12+rise,cx=20+lean*.4;
+  const shape=()=>[[hx,6+rise],[hx+7,10+rise],[29+lean*.4,22],[27,32],[28,36+sw],[24,34],[20,38-sw],[16,34],[12,36+sw],[13,32],[11,22],[hx-7,10+rise]];
+  g.poly(shape(),'P');g.poly([[hx,6+rise],[hx-7,10+rise],[11,22],[13,32],[12,36+sw],[16,34],[20,38-sw],[hx,20]],'D');
+  g.poly([[hx,6+rise],[hx+7,10+rise],[29+lean*.4,22],[hx+2,22],[hx,11]],'L');
+  g.path([[hx+1,22],[hx+1,36]],'d');g.px([[13,26],[15,31],[12,33]],'V');g.px([[26,26],[28,31],[24,33]],'p');
+  g.ell(hx+.5,hy+.5,4.6,4.6,'K');g.rect(hx-2,hy,1,2,'E');g.rect(hx+2,hy,1,2,'F');g.s(hx-2,hy,'W');
+  g.ell(hx,4.4+rise,6.6,2,'G');g.ell(hx,4.4+rise,4.8,.9,0);
+  const kx=Math.round(cx),ky=24,gr=F.atk?1:0;g.ell(kx,ky,4.8+gr,4.8+gr,F.hit?'W':'C');g.ell(kx,ky,3,3,'K');
+  [[14,34],[20,37],[26,34]].forEach(([x,y],n)=>tend(g,x,y+1,3,1.4,sw*2+n,n===0?'D':n===1?'d':'p',2,(n-1)*(F.hit?2:0)));
+  const sx=30+(F.atk?1:F.hit?-2:0),ty=F.hit?9:7;
+  g.path([[27+lean,16],[sx-1,20]],'d',3.4);g.ell(sx,21,1.8,1.6,'H');
+  g.line(sx,ty,sx,37,'S',2);
+  g.poly([[sx-1,ty+1],[sx+2,ty-3],[sx+5.5,ty-2],[sx+7,ty+3],[sx+6,ty+8],[sx+5,ty+3],[sx+3,ty+1]],'N');g.path([[sx+2,ty-2],[sx+5.5,ty-1],[sx+6,ty+4]],'W',1);
+  g.px(F.i?[[7,12],[33,16],[6,28]]:[[7,13],[33,15],[6,27]],'C');
+  return {pal:{D:'#3a2a60',d:'#241a40',V:'#8a6ad0',P:'#d8d0f0',L:'#f4f0ff',p:'#a89cd0',K:'#0c0818',E:'#b48aff',F:'#fff0a0',W:'#ffffff',G:'#f0d060',C:'#fff0a0',S:'#5a4a38',N:'#b8c0d0',H:'#d8cfc0'},flat:'KEFWGC',glow:'#d8c8ff',a:{hx,hy,cx,top:6+rise,lean,sx,ty,by:36}};
+ }
+});
+['gull','thunderhawk','cavebat','cloudray','tidewisp','ashwraith','eclipsewraith'].forEach(n=>{MART[n].fr=1;});
+// FAMILY2-END
 const BIG_ART=['thornwarden','drake','cinderking','hoarwyrm','ysolde','dimmer','bonecolossus','queenmantis','gloomcap','ironsentinel','siren','ashwyvern','frostlich','nidhra','hollowking','seraph'];
 const MON_SIZE=n=>BIG_ART.includes(n)?60:40;
 
@@ -858,20 +945,13 @@ heroGrid=function(L,walk,id){const g=_heroGrid0(L,walk);if(id)drawFlair(g,L,id,'
 // Extra color and pattern drawn over each base design.
 const MEXTRA={
  gustimp(g,p){g.poly([[16,17],[7,10],[9,14],[5,17],[10,18],[7,22],[15,21]],'M');g.rect(29,15,2,2,'R');g.px([[18,20],[20,22],[22,20]],'C');Object.assign(p,{M:'#8a6ad0',R:'#e04a6a'});},
- gull(g,p){g.px([[10,10],[13,7],[16,9],[19,12],[12,13]],'C');g.px([[11,11],[14,8],[17,11]],'P');g.rect(3,19,3,2,'K');Object.assign(p,{P:'#5ad0ff'});},
- tidewisp(g,p){g.ell(20,12,3.5,2,'P');g.px([[14,22],[18,27],[23,29],[27,25]],'P');Object.assign(p,{P:'#ff8ad8'});},
- cavebat(g,p){g.path([[16,20],[6,14]],'M');g.path([[16,23],[6,23]],'M');g.path([[24,20],[33,13]],'M');g.path([[24,22],[34,22]],'M');g.ell(20,24,2.5,3,'A');Object.assign(p,{M:'#c86aa8',A:'#8a6aa8'});},
- ashwraith(g,p){g.rows(20,9,["WWWW","W..W"]);g.px([[15,32],[19,34],[23,33],[27,31]],'C');g.px([[12,28],[29,26]],'R');Object.assign(p,{W:'#e8d8c8',R:'#ffd04a'});},
  slaggolem(g,p){g.ell(14,24,1.5,1.2,'G');g.ell(26,18,1.5,1.2,'G');g.ell(18,10,1,1,'G');g.px([[24,33],[15,33]],'G');Object.assign(p,{G:'#ffd04a'});},
  snowharpy(g,p){g.px([[4,7],[3,13],[2,18],[5,24],[35,9],[38,16]],'P');g.path([[6,9],[3,13]],'P');g.path([[6,22],[3,25]],'P');g.px([[20,18],[22,18]],'G');Object.assign(p,{P:'#b080ff'});},
  yeti(g,p){g.poly([[22,12],[24,7],[25,12]],'H');g.poly([[27,12],[30,8],[30,13]],'H');g.px([[25,17],[26,18]],'S');Object.assign(p,{H:'#c8b090',S:'#3a6aa8'});},
  iceknight(g,p){g.rect(13,15,12,1,'G');g.rect(13,27,12,1,'G');g.rect(18,18,3,3,'C');g.px([[19,19]],'E');},
- thunderhawk(g,p){g.poly([[7,4],[9,7],[11,6]],'S');g.poly([[17,2],[18,5],[20,4]],'S');g.px([[19,25],[21,26],[23,25]],'S');Object.assign(p,{S:'#3a8ae0'});},
  stormling(g,p){g.ell(14,20,3,2,'P');g.ell(27,21,2.5,1.6,'P');g.ell(21,10,2,1,'P');Object.assign(p,{P:'#7a6aa8'});},
  gargoyle(g,p){g.ell(14,29,2.5,1.5,'M');g.ell(23,26,1.6,1,'M');g.px([[18,22],[19,23]],'C');Object.assign(p,{M:'#6a9a4a'});},
- cloudray(g,p){[[14,16],[18,19],[23,17],[26,20],[11,20]].forEach(q=>g.ell(q[0],q[1],1.2,1,'S'));g.ell(20,24,4,1,'Y');Object.assign(p,{S:'#2a6a6a',Y:'#f6e7a8'});},
  voidspawn(g,p){g.ell(9,30,2,1.5,'T');g.ell(31,30,2,1.5,'T');g.px([[12,18],[26,14],[30,22]],'T');Object.assign(p,{T:'#3ad0c0'});},
- eclipsewraith(g,p){g.rect(16,26,8,2,'G');g.px([[14,30],[25,30],[19,34]],'C');},
  stareater(g,p){g.ell(14,24,3,2,'N');g.ell(20,27,2.5,1.5,'N');g.ell(9,25,2,1.5,'P');Object.assign(p,{N:'#5a2a8a',P:'#c04a9a'});},
  huskguard(g,p){g.rect(18,14,4,2,'T');g.rect(13,30,3,1,'T');g.rect(23,30,3,1,'T');g.px([[8,20],[8,22]],'T');Object.assign(p,{T:'#3ad0c0'});},
  thornwarden(g,p){[[18,22],[40,20],[24,46],[44,40]].forEach(q=>{g.ell(q[0],q[1],1.6,1.6,'F');g.s(q[0],q[1],'Y');});g.ell(13,16,2.5,2,'M');g.rect(12,17,3,3,'W');Object.assign(p,{F:'#f06a8a',Y:'#ffe08a',M:'#d8403a'});},

@@ -214,3 +214,22 @@ P4 rebalance (roles/sub roles, FAITH, 3 weapon types, RPS, swarms, subrole 80%, 
 Sprite overhaul next families: toads/gulls/hawks/bats/rays, wisps/jellies/wraiths, golems/husks/knights, then bosses, heroes (pose set), NPCs.
 
 - Versioning rule (owner, 0.13.3): the last digit never passes 9; 0.12.9 -> 0.13.0. Party slot cards carry no element strip (only reserve minis and roster cards do).
+
+## 0.13.4 to 0.13.6 (this session, owner asleep: "push through all changes")
+- 0.13.4 arena9.js: arena enterable only from the Guild Hall (Menu tab reads), ARENA rewards raised + ARENA9_RARE tiered purse on every win (win hook),
+  the Pit Masters guild (FAC 'pit', standing 8+6*tier per win, perks agold/amat/stock/charm c_fa6/sig c_fb6, FSTOCK.pit, FMIS p1..p5, facDerived
+  'arena'/'arenaHi'), vGuildShop() section before "Ranks and perks" on the Guilds tab. Tests: v134a; v041p65/v095m2/v077a now expect 7 guilds; v095m1 arena.
+- 0.13.5 charms9.js (c_ep0..5 Epic tier 3, c_hr0..3 Heroic tier 4; shopStock charms from stage 2/4; RECIPES t:1/t:2 since matTier caps at 2; genBounties
+  re-rolls charm rewards from stage 2; win hook: Echo first fall 50% Heroic, arena tier 3/4 40%/30%), holy9.js (holyHit redefined: 135%/100%, cap 3.2,
+  Light weakness x1.3), skillfilt9.js (SKF chips over the Skills list for 6+ skills, V.skF, ACT.skF), lore9.js (helper: LORE_WORLD 7 chapters, LORE_REALM
+  16 + LORE_LEGACY 6, vLoreBook via nbMenuBody; g7Charts wrapped to carry overlayGuide, weather, superGuide). Tests v135a, v136a.
+- 0.13.6 roles9.js: ROLE9 (names Striker/Marksman/Caster/Guardian/Healer/Support/Saboteur/Summoner over the old keys phys/ranged/magic/tank/healer/
+  buffer/debuffer + 'summoner'), ROLES.cls per approved table, heroMain(c)/c.role (optional save field) with ACT.rolePick/roleSet/roleBack and a
+  'rolepick' modal, known() returns cached copies of sub-role skills at pw x.85 (fx chance x.9, .sub=1), autoAlloc follows ROLE9.stat of the main role,
+  FAITH: elBoost light/shadow +.003/pt (cap .25), S.fthRes shrug chance .006/pt (cap .35) in addSt, summons x(1+.008*fth) via sumFire/sumMake,
+  ARCH.armored = blunt 1.25 / magic 1.1 / slash .6 / piercing .7 / ranged .6, foe cards split slash/blunt/piercing (DG_* extended, foeDg wrapped),
+  respecCost 0 until G.rs9. Tests v137a; v080b/v095b armored expectations updated; v095p3 Echoforge expectation updated (tab never in town).
+  Sprite family 2 (helper): gull, thunderhawk, cavebat, cloudray, tidewisp, brinejelly, ashwraith, eclipsewraith + 22 variant shapes (art.js FAMILY2
+  block, monsters2.js, realms.js SHP/SHAPE_OF). Known stale/flaky: v040p2 (Auto settings swap toggle locator) fails on 0.13.5 too; v063ba label overlaps.
+- Still open: 3 weapon types per class are only named per role (ROLE9.wpn) and not enforced; swarms resist single target (already in ARCH); 4 new Scourges
+  + 5th Calamity + The Ashglass Reach; sprite families 3+ (golems/husks/knights incl. barrowbones, toads done, bosses, heroes pose set, NPCs); graphics sweep.

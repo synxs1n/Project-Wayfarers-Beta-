@@ -69,7 +69,7 @@ chk(`realm 4 adds the endgame extras (${g.u3.join(', ')})`,['echoforge','arenaGo
 chk('a primer marks nothing in realm 1 and primes in realm 2',g.prime0===false&&g.prime1===true||JSON.stringify(g));
 chk(`bonds: no growth in realm 1 (${g.bond0}), growth in realm 2 (${g.bond1}); the Bonds page says when it opens`,g.bond0===0&&g.bond1===1&&/open in the second realm/.test(g.bondPage0)&&!/open in the second realm/.test(g.bondPage1)||JSON.stringify(g));
 chk(`guild missions open in realm 3 (${g.mis1} in realm 2, ${g.mis2} in realm 3)`,g.mis1===0&&g.mis2>0||JSON.stringify(g));
-chk('the Echoforge tab opens in realm 4',g.ef2===false&&g.ef3===true||JSON.stringify(g));
+chk('the Echoforge tab never opens in town (since 0.13.3 the Echoforge is an anvil inside the Echo Rift)',g.ef2===false&&g.ef3===false||JSON.stringify(g));
 chk('one notice when a realm opens something new',g.news1.includes('r1')&&g.toast===true||JSON.stringify(g));
 chk(`an old journey keeps everything: systems (${g.old.length}), primers in realm 1, guild missions in realm 2 (${g.oldMis})`,g.old.length===10&&g.oldPrime===true&&g.oldMis>0&&g.oldLoad===true||JSON.stringify(g));
 chk('the Daily Trial has everything open',g.daily.length===10||g.daily.join());

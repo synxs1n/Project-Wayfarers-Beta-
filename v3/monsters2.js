@@ -42,12 +42,21 @@ Object.assign(MART,{
   g.px([[16,20],[24,22],[19,27],[26,29],[14,24]],'N');g.path([[17,17],[15,24],[18,31]],'W');g.path([[24,17],[26,25],[23,31]],'W');
   return {pal:{B:'#8aa89a',H:'#3a4a5a',h:'#c8b060',K:'#101a20',E:'#9affe8',C:'#3a5a6a',D:'#2a3a48',S:'#9a9aa8',N:'#d8d4b8',W:'#3a8a4a'},flat:'EKN'};
  },
- brinejelly(g){
-  g.ell(20,27,14,10,'B');g.ell(20,22,11,6,'b');g.ell(15,19,4,2,'L');g.ell(26,30,3,2,'b');
-  g.rect(15,25,3,4,'K');g.rect(23,25,3,4,'K');g.px([[16,26],[24,26]],'E');g.line(17,32,24,32,'K');
-  [[10,28],[29,26],[20,35],[24,20],[12,33]].forEach(([x,y])=>{g.ell(x,y,1.6,1.6,'L');});
-  g.path([[8,34],[6,38]],'B',2);g.path([[32,33],[35,38]],'B',2);g.path([[20,36],[20,39]],'B',2);
-  return {pal:{B:'#4aa8b8',b:'#2f7f94',L:'#c8f4ff',K:'#10242c',E:'#e8ffff'},flat:'LEK'};
+ // v0.13: a wide glass bell with a flat glow core and two eyes in it, a frilled skirt, thick oral arms and thin stingers with beads. Idle B swells the bell tall and
+ // swings the arms; the lunge lashes the arms forward to wrap; a hit flattens the bell and flashes the core. Frames come from f (art.js frame API).
+ brinejelly(g,f){const F=mfr(f);
+  let cx=20,cy=14,rx=14,ry=9.5,ph=F.i?3.14:0,ln=0;
+  if(F.b){rx=12.8;ry=10.8;cy=13;ln=2;}if(F.atk){cx=18;rx=14;ry=8.2;cy=15;}if(F.hit){rx=15;ry=7;cy=17;ph=2;}
+  const by=Math.round(cy+ry*.62);
+  sph(g,cx,cy,rx,ry,'A','B');g.ell(cx-rx*.4,cy-ry*.52,rx*.34,ry*.2,'W');clr(g,0,by,40,40);
+  g.ell(cx,by-1,rx+.6,2.2,'b');for(let x=Math.round(cx-rx-1);x<=cx+rx;x++)if((x+F.i)%3===0)g.rect(x,by+1,1,2,'B');
+  [[-11,'b',17],[-4,'b',19],[4,'b',18],[11,'b',16]].forEach(([o,k,l],n)=>{const t=tend(g,cx+o,by+1,l-5+ln,2,ph+n*1.7,k,1,F.hit?o*.25:F.atk?-2:0);g.s(Math.round(t[0]),Math.round(t[1]),'C');g.s(Math.round(t[0]),Math.round(t[1])-4,'C');});
+  [[-6,0],[0,1],[6,2]].forEach(([o,n])=>{const fwd=F.atk&&n>0;const t=tend(g,cx+o,by,fwd?7:12+ln,fwd?-3:2.4,ph+n,'O',2,fwd?9+n*2:F.hit?-o*.3:0);g.px([[Math.round(t[0])-1,Math.round(t[1])],[Math.round(t[0])+1,Math.round(t[1])-2]],'A');});
+  const kx=Math.round(cx+2),ky=Math.round(cy+1);
+  g.ell(kx,ky,6.4,4.6,'Y');g.ell(kx,ky,4.8,3.2,F.hit?'W':'G');
+  if(F.hit)g.rect(kx-3,ky,2,1,'K'),g.rect(kx+1,ky,2,1,'K');else{g.rect(kx-2,ky-1,1,2,'K');g.rect(kx+2,ky-1,1,2,'K');g.s(kx-2,ky-1,'W');}
+  [[-9,-2],[9,-3],[-5,5],[12,2]].forEach(([dx,dy])=>g.s(cx+dx,cy+dy,'L'));
+  return {pal:{B:'#4aa8b8',A:'#8ad8e4',b:'#2f7f94',O:'#3a96a8',L:'#c8f4ff',K:'#10242c',W:'#ffffff',Y:'#a8f0ff',G:'#f0ffff',C:'#e8ffff'},flat:'LKWYGC',glow:'#a0e8f0',a:{cx,cy,rx,ry,by,kx,ky}};
  },
  rimewight(g){
   g.poly([[20,10],[30,14],[33,38],[26,34],[20,39],[14,34],[7,38],[10,14]],'B');g.poly([[12,22],[9,34],[15,30]],'b');g.poly([[28,22],[31,34],[25,30]],'b');
@@ -65,7 +74,7 @@ Object.assign(MART,{
   return {pal:{B:'#7a7aa8',b:'#54547e',K:'#0e0e22',E:'#c8a8ff',W:'#cfe8ff'},flat:'EKW'};
  }
 });
-MART.gnatswarm.fr=1;
+MART.gnatswarm.fr=1;MART.brinejelly.fr=1;
 
 // companion families for taming
 if(typeof FAM_OF!=='undefined')Object.assign(FAM_OF,{gnatswarm:'flyer',barrowbones:'spirit',drownedsailor:'spirit',brinejelly:'ooze',rimewight:'spirit',galephantom:'spirit'});

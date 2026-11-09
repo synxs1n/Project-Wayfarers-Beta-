@@ -74,10 +74,10 @@ const LEARN=()=>{const A=__A,B=A.B,M=A.META.best;B.en.forEach(e=>{const b=M[e.ba
       A.ACT.uInfo('e:2');out.panel=((document.querySelector('.udet .b9ty')||{}).textContent||'');A.ACT.uClose();
       const n0=B.log.length;const mb=A.META.best[f.base];delete mb.hit;delete mb.scan;A.TW.get('scan')(f);out.scan=B.log.slice(n0);return out;});
     chk(`hidden until the foe type is hit or scanned (${JSON.stringify(r.hidden)})`,!!r.hidden&&!r.hidden.up.length&&!r.hidden.dn.length);
-    chk(`armored: weak to Magic, resists Ranged and Physical (${JSON.stringify(r.arm)})`,!!r.arm&&r.arm.up.join()==='Magic'&&r.arm.dn.join()==='Ranged,Physical');
+    chk(`armored: weak to Blunt and Magic, resists Slash, Piercing and Ranged (${JSON.stringify(r.arm)})`,!!r.arm&&['Blunt','Magic'].every(k=>r.arm.up.includes(k))&&['Slash','Piercing','Ranged'].every(k=>r.arm.dn.includes(k)));/* v0.13.6 */
     chk(`undead: weak to Heal (${JSON.stringify(r.und)})`,!!r.und&&r.und.up.includes('Heal'));
     chk(`flying: weak to Ranged (${JSON.stringify(r.fly)})`,!!r.fly&&r.fly.up.includes('Ranged'));
-    chk(`only the group symbols on the cards (${[...new Set(r.all)].join(',')})`,r.all.length>0&&r.all.every(x=>['Physical','Ranged','Magic','Heal'].includes(x)));
+    chk(`only the group symbols on the cards (${[...new Set(r.all)].join(',')})`,r.all.length>0&&r.all.every(x=>['Slash','Blunt','Piercing','Ranged','Magic','Heal'].includes(x)));/* v0.13.6: the three melee kinds apart */
     chk(`one plain type line ("${r.lines[2]}")`,r.lines[2]==='Flying: ranged hits hard.'&&r.lines.every(l=>/^[A-Z][a-z]+: [^.]+\.$/.test(l)));
     chk(`the i panel carries it ("${r.panel}")`,r.panel==='Flying: ranged hits hard.');
     chk(`Scan logs it (${JSON.stringify(r.scan)})`,r.scan.includes('Flying: ranged hits hard.'));

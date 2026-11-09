@@ -1,0 +1,25 @@
+// v0.13.6 roles9.js: eight role names, main role swap (sub role skills at 85%), FAITH effects, armored RPS, one free stat reset.
+const {open,chk,done}=require('./pw');
+(async()=>{const H=await open({w:1280,h:800});const r=await H.ev(()=>{const A=__A,g=A.TW.get;A.ACT.new();['mira','lumen','oren'].forEach(i=>A.ACT.pickS(i));A.ACT.begin();A.ACT.storyOk();const G=g('G'),o={};o.town=g('inTown')();
+ const R=g('ROLES');o.names=[R.names.phys,R.names.ranged,R.names.magic,R.names.tank,R.names.healer,R.names.buffer,R.names.debuffer,R.names.summoner].join(',');
+ o.cls=['warrior','knight','archer','thief','monk','mage','healer','bard'].map(k=>[R.cls[k].p].concat(R.cls[k].s).join('/')).join(' ');
+ o.arm=g('ARCH').armored.dl;
+ const or=G.roster.oren;or.lv=25;g('refresh')(or);const k0=g('known')(or);const base=k0.find(s=>s.id==='r_banner');o.bannerSub=!!(base&&base.sub);o.bannerPw0=base&&base.pw;o.main0=g('heroMain')(or);
+ o.attackPlain=g('rl9Factor')(or,g('ATTACK'))===1;
+ A.ACT.roleSet('oren:buffer');o.main1=g('heroMain')(or);o.saved=or.role;const k1=g('known')(or);const bn=k1.find(s=>s.id==='r_banner'),bash=k1.find(s=>s.k==='phys'&&s.id!=='attack'&&!s.bond);
+ o.bannerFull=!!bn&&!bn.sub;o.bashSub=!!bash&&bash.sub===1;const bash0=k0.find(s=>s.id===bash.id);o.bashRatio=bash0&&bash.pw&&+(bash.pw/bash0.pw).toFixed(2);
+ A.ACT.roleSet('oren:tank');o.backRole=or.role===undefined&&g('heroMain')(or)==='tank';
+ o.rs0=g('respecCost')(or);or.alloc={vit:3};or.pts=0;A.V.modal={type:'char',char:'oren'};A.render();o.label=/free this once/.test(document.querySelector('#modal').innerText);A.ACT.respec();o.rs9=G.rs9;o.pts=or.pts;o.rs1=g('respecCost')(or)>0;
+ const lu=G.roster.lumen;lu.alloc={fth:20};g('refresh')(lu);o.fth=lu.S.attr.fth;o.light=+(lu.S.elBoost.light||0).toFixed(3);o.res=+(lu.S.fthRes||0).toFixed(3);
+ A.V.modal={type:'char',char:'oren'};A.render();o.sheet=/Guardian/.test(document.querySelector('#modal').innerText);A.ACT.rolePick('oren');A.render();o.pick=document.querySelectorAll('#modal [data-act=roleSet]').length;A.ACT.roleBack();o.back=A.V.modal&&A.V.modal.type;
+ return o;});console.log(JSON.stringify(r));
+  chk('eight role names',r.names==='Striker,Marksman,Caster,Guardian,Healer,Support,Saboteur,Summoner'||r.names);
+  chk('class roles as approved',r.cls==='phys/tank/debuffer tank/phys/buffer ranged/debuffer/phys debuffer/phys/ranged phys/healer/buffer magic/debuffer/buffer healer/summoner/buffer buffer/magic/healer'||r.cls);
+  chk('armored: weak to Blunt and Magic, resists Slash, Piercing and Ranged',r.arm.blunt>1&&r.arm.magic>1&&r.arm.slash<1&&r.arm.piercing<1&&r.arm.ranged<1);
+  chk('a Knight\'s Support skill is a sub-role skill (85%) while Guardian leads; Attack is never scaled',r.main0==='tank'&&r.bannerSub&&r.attackPlain);
+  chk('leading as Support flips it: the banner at full power, the Guardian\'s own blows at 85%',r.main1==='buffer'&&r.saved==='buffer'&&r.bannerFull&&r.bashSub&&r.bashRatio===.85||JSON.stringify([r.main1,r.saved,r.bannerFull,r.bashSub,r.bashRatio]));
+  chk('back to the class role clears the save field',r.backRole===true);
+  chk('one free stat reset, then it costs gold',r.rs0===0&&r.label&&r.rs9===1&&r.pts===3&&r.rs1||JSON.stringify([r.rs0,r.label,r.rs9,r.pts,r.rs1]));
+  chk('Faith: +0.3% Light and Shadow per point, 0.6% ailment shrug per point',Math.abs(r.light-Math.min(.25,r.fth*.003))<.002&&Math.abs(r.res-Math.min(.35,r.fth*.006))<.002||JSON.stringify([r.fth,r.light,r.res]));
+  chk('the hero sheet shows the role row and the picker lists the two other roles',r.sheet&&r.pick===2&&r.back==='char');
+  await done(H);})();
