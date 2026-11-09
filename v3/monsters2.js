@@ -51,14 +51,6 @@ Object.assign(MART,{
   else{const tx=F.b?35:34;g.path([[26+L,17+dy],[29,23]],'B',2);tip=spear(g,24,34,tx,10,'S','I',5);g.rect(28,22,3,2,'B');}
   return {pal:{B:'#d8d0b0',b:'#a09878',K:'#1a1020',E:'#7aff9a',S:'#6a4a2a',s:'#4a3018',I:'#8a8a94',i:'#585864',O:'#a8582a',W:'#ffffff'},flat:'EKW',a:{hx,hy,cx:20+L,cy:22+dy,top:2+dy,sx,tip,by:37,L,dy}};
  },
- drownedsailor(g){
-  g.ell(20,10,6,6,'B');g.poly([[13,9],[27,9],[24,3],[16,3]],'H');g.rect(12,8,17,2,'H');g.rect(12,9,17,1,'h');
-  g.rect(17,10,3,2,'K');g.rect(22,10,3,2,'K');g.px([[18,10],[23,10]],'E');g.line(18,15,23,15,'K');
-  g.ell(20,23,8,9,'C');g.rect(13,28,15,5,'C');g.rect(16,33,3,6,'D');g.rect(22,33,3,6,'D');g.rect(14,38,5,2,'K');g.rect(21,38,5,2,'K');
-  g.line(13,17,8,27,'B',2);g.line(28,17,33,23,'B',2);g.path([[33,23],[35,14],[32,10]],'S',2);g.px([[31,9],[30,10]],'S');
-  g.px([[16,20],[24,22],[19,27],[26,29],[14,24]],'N');g.path([[17,17],[15,24],[18,31]],'W');g.path([[24,17],[26,25],[23,31]],'W');
-  return {pal:{B:'#8aa89a',H:'#3a4a5a',h:'#c8b060',K:'#101a20',E:'#9affe8',C:'#3a5a6a',D:'#2a3a48',S:'#9a9aa8',N:'#d8d4b8',W:'#3a8a4a'},flat:'EKN'};
- },
  // v0.13: a wide glass bell with a flat glow core and two eyes in it, a frilled skirt, thick oral arms and thin stingers with beads. Idle B swells the bell tall and
  // swings the arms; the lunge lashes the arms forward to wrap; a hit flattens the bell and flashes the core. Frames come from f (art.js frame API).
  brinejelly(g,f){const F=mfr(f);
@@ -74,21 +66,6 @@ Object.assign(MART,{
   if(F.hit)g.rect(kx-3,ky,2,1,'K'),g.rect(kx+1,ky,2,1,'K');else{g.rect(kx-2,ky-1,1,2,'K');g.rect(kx+2,ky-1,1,2,'K');g.s(kx-2,ky-1,'W');}
   [[-9,-2],[9,-3],[-5,5],[12,2]].forEach(([dx,dy])=>g.s(cx+dx,cy+dy,'L'));
   return {pal:{B:'#4aa8b8',A:'#8ad8e4',b:'#2f7f94',O:'#3a96a8',L:'#c8f4ff',K:'#10242c',W:'#ffffff',Y:'#a8f0ff',G:'#f0ffff',C:'#e8ffff'},flat:'LKWYGC',glow:'#a0e8f0',a:{cx,cy,rx,ry,by,kx,ky}};
- },
- rimewight(g){
-  g.poly([[20,10],[30,14],[33,38],[26,34],[20,39],[14,34],[7,38],[10,14]],'B');g.poly([[12,22],[9,34],[15,30]],'b');g.poly([[28,22],[31,34],[25,30]],'b');
-  g.ell(20,12,6,6,'K');g.rect(17,11,3,2,'E');g.rect(22,11,3,2,'E');
-  g.poly([[13,8],[14,1],[17,6],[20,0],[23,6],[26,1],[27,8]],'C');
-  g.line(8,18,4,28,'b',2);g.line(32,18,36,28,'b',2);g.px([[3,29],[4,30],[36,29],[37,30]],'C');
-  g.path([[20,16],[20,34]],'b');g.px([[16,24],[24,26],[20,30],[12,30],[28,32]],'C');
-  return {pal:{B:'#6a86b0',b:'#46608a',K:'#0c1424',E:'#aaf4ff',C:'#d4f0ff'},flat:'EKC'};
- },
- galephantom(g){
-  g.poly([[20,6],[28,10],[30,20],[27,28],[31,38],[22,32],[18,39],[14,31],[8,36],[11,26],[10,16],[13,9]],'B');
-  g.poly([[14,18],[10,28],[16,24]],'b');g.poly([[26,18],[30,28],[24,24]],'b');
-  g.ell(20,14,5,5,'K');g.rect(17,13,2,2,'E');g.rect(22,13,2,2,'E');g.line(18,19,23,19,'K');
-  g.path([[4,12],[10,10],[8,15]],'W');g.path([[36,20],[31,18],[33,24]],'W');g.path([[3,26],[9,28]],'W');g.path([[37,32],[32,31]],'W');
-  return {pal:{B:'#7a7aa8',b:'#54547e',K:'#0e0e22',E:'#c8a8ff',W:'#cfe8ff'},flat:'EKW'};
  }
 });
 MART.gnatswarm.fr=1;MART.brinejelly.fr=1;MART.barrowbones.fr=1;

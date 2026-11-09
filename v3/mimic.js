@@ -3,10 +3,7 @@
 // Never the Beacon Key chest or a vault chest, so a mimic can never block progress; the tile stays a chest either way,
 // so dungeon validation is unchanged. Beat it and you get the chest's loot plus a bonus.
 // MIMIC_RATE: in config.js
-MART.mimic=g=>{g.rect(6,16,28,18,'W');g.rect(6,10,28,7,'L');g.rect(6,16,28,2,'G');g.rect(18,15,4,6,'G');g.rect(19,17,2,2,'K');
-  for(let i=0;i<6;i++){g.s(9+i*4,18,'T');g.s(10+i*4,19,'T');}for(let i=0;i<6;i++){g.s(9+i*4,16,'T');}
-  g.rect(12,21,16,7,'M');g.ell(14,12,2,1.5,'E');g.ell(26,12,2,1.5,'E');g.rect(4,32,4,4,'W');g.rect(32,32,4,4,'W');
-  return {pal:{W:'#8a5a2a',L:'#a8743a',G:'#e0b84a',K:'#2a1a0e',T:'#f4efe0',M:'#7a1a2a',E:'#ff4a4a'}};};
+// the Mimic drawing (a chest that opens on the lunge) lives in art.js, FAMILY4
 MON.mimic={n:'Mimic',art:'mimic',el:['shadow','earth'],hp:1.6,atk:1.35,def:1.3,mag:.9,res:1.1,spd:.9,mimic:1,
   sk:[['Lid Snap','shadow',1.5,'one','phys',[['bleed',.4]]],['Greedy Gulp','earth',1.1,'one','phys',[['weaken',.4]]],['Gilded Lure','earth',0,'self','buff',[['bulwark',1]]]]};
 MON_DROPS.mimic=['core','ore*'];

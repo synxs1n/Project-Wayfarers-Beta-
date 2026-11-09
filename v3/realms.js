@@ -186,6 +186,104 @@ Object.assign(SHP,{
   [[16,30],[19,31],[22,31],[25,30]].forEach(([x,y])=>g.poly([[x-1,y-1],[x,y+3],[x+1,y-1]],'U'));}
 });
 Object.assign(SHAPE_OF,{v_dunegolem:'dunewrap',mb_slagjaw:'jawhorns',v_quarryknight:'pickaxe',mb_rustknight:'rustchain',v_drownwatch:'drowned',v_ashhusk:'ashfire',mb_hollowabbot:'abbothood',o_hollowking:'hollowcrown',o_bonecolossus:'ossuary'});
+// ---- family 4 flourishes (gust imp, snow harpy, yeti, stormling, gargoyle, void spawn, star eater, rime wight, drowned sailor). Appended: the tables above are unchanged.
+Object.assign(SHP,{
+ // Sunflick Imp: a ring of sun rays round the head and a little sun where the barb was
+ sunhalo(g,F,a,p){p.Y='#ffe08a';p.y='#f0a830';for(let k=0;k<9;k++){const t=k*.7+(F.i?.17:0),ox=Math.cos(t),oy=Math.sin(t),r0=6.8,r1=k%2?9.4:11;
+  g.poly([[a.hx+ox*r0-oy*1.2,a.hy+oy*r0+ox*1.2],[a.hx+ox*r1,a.hy+oy*r1],[a.hx+ox*r0+oy*1.2,a.hy+oy*r0-ox*1.2]],k%2?'y':'Y');}
+  g.ell(a.tx,a.ty-5,2.6,2.6,'Y');g.ell(a.tx-.5,a.ty-5.5,1.4,1.4,'W');},
+ // Orchard Sprite: a crown of leaves between the horns and an apple in the claw
+ leafcap(g,F,a,p){p.G='#6fb04a';p.g='#3f7a32';p.Q='#d8403a';p.q='#5a3a1a';clr(g,a.hx-7,a.hy-13,14,8);
+  [[-3,-8,-2],[0,-11,0],[3,-8,2]].forEach(([dx,dy,s])=>{g.poly([[a.hx+dx*.3,a.hy-5],[a.hx+dx-1.6+s*.3,a.hy+dy+2],[a.hx+dx+.5,a.hy+dy],[a.hx+dx+2,a.hy+dy+3]],'G');g.line(a.hx+dx*.3,a.hy-5,a.hx+dx,a.hy+dy+1,'g');});
+  g.ell(a.ar[0]+2,a.ar[1]+1.5,2.8,2.8,'Q');g.px([[a.ar[0]+3,a.ar[1]-1],[a.ar[0]+4,a.ar[1]-2]],'q');g.s(a.ar[0]+1,a.ar[1],'W');},
+ // Duskwing Imp: long sickle horns swept back and a scatter of stars
+ moonhorn(g,F,a,p){p.H='#e8e0f0';p.h='#8a80a8';p.Y='#fff0a0';clr(g,a.hx-7,a.hy-13,14,8);
+  g.path([[a.hx-2,a.hy-4],[a.hx-5,a.hy-8],[a.hx-10,a.hy-8],[a.hx-11,a.hy-3]],'h',2);g.path([[a.hx+2,a.hy-4],[a.hx,a.hy-9],[a.hx-4,a.hy-11]],'H',2);
+  g.px(F.i?[[a.hx+8,a.hy-10],[a.hx-10,a.hy-14],[a.bx+9,a.by+6]]:[[a.hx+9,a.hy-9],[a.hx-9,a.hy-15],[a.bx+10,a.by+7]],'Y');},
+ // Taper Moth: a lit candle between the horns and feathered moth antennae
+ candle(g,F,a,p){p.U='#f4ecd0';p.u='#b8a880';p.Y='#ffd04a';p.F='#ff8a3a';clr(g,a.hx-7,a.hy-13,14,8);
+  g.rect(a.hx-1,a.hy-11,3,7,'U');g.rect(a.hx-1,a.hy-11,1,7,'W');g.px([[a.hx+2,a.hy-9],[a.hx+2,a.hy-8]],'u');g.line(a.hx,a.hy-12,a.hx,a.hy-13,'K');
+  const fl=F.i?1:0;g.poly([[a.hx-1.6,a.hy-13],[a.hx+.5+fl,a.hy-18-fl],[a.hx+2.6,a.hy-13]],'F');g.poly([[a.hx-.6,a.hy-13],[a.hx+.5+fl*.5,a.hy-16],[a.hx+1.6,a.hy-13]],'Y');
+  g.path([[a.hx-3,a.hy-4],[a.hx-6,a.hy-8],[a.hx-9,a.hy-8]],'u');g.path([[a.hx+3,a.hy-4],[a.hx+6,a.hy-7],[a.hx+9,a.hy-6]],'u');g.px([[a.hx-9,a.hy-7],[a.hx+9,a.hy-5],[a.hx-7,a.hy-7],[a.hx+7,a.hy-6]],'U');},
+ // Gale Harpy: a swept crest of three blade feathers and lightning streamers off the tail
+ galecrest(g,F,a,p){p.Y='#ffe14a';p.Z='#7a68d0';p.z='#c8bcff';
+  [[-9,-11,0],[-12,-6,1],[-11,-1,0]].forEach(([dx,dy,n])=>g.poly([[a.hx-2,a.hy-4],[a.hx+dx,a.hy+dy],[a.hx+dx+1.5,a.hy+dy+2.5],[a.hx-1,a.hy-1]],n?'Z':'z'));
+  bolt(g,a.tx,a.ty,7,2+(F.i?1:0),'Y',1);bolt(g,a.tx+3,a.ty-1,5,-2,'z',1);},
+ // Nightfrost Harpy: a crescent moon over the brow, an icicle crown and icicles hanging from the wing tips
+ frostveil(g,F,a,p){p.Y='#fff0a0';p.C='#bfe6ff';p.c='#6aa8d8';g.ell(a.hx-2,a.hy-10,3.2,3.2,'Y');g.ell(a.hx-.6,a.hy-10.8,2.6,2.6,0);
+  [[-3,5],[0,7],[3,5]].forEach(([o,h])=>g.poly([[a.hx+o-1.3,a.hy-4.4],[a.hx+o,a.hy-4.4-h*.6],[a.hx+o+1.3,a.hy-4.4]],'C'));
+  [a.nT,a.fT].forEach(t=>{g.poly([[t[0]-1,t[1]+1],[t[0]+1,t[1]+1],[t[0],t[1]+6]],'C');g.s(t[0],t[1]+2,'c');});
+  g.poly([[a.tx-1,a.ty+2],[a.tx+1,a.ty+2],[a.tx,a.ty+7]],'C');},
+ // Gorehorn: two huge curved bull horns, blood-red war slashes on the chest and a stained fist
+ gorehorns(g,F,a,p){p.O='#ece4cc';p.o='#a89c84';p.Q='#b82a2a';clr(g,a.hx-8,a.hy-12,17,5);
+  g.path([[a.hx-3,a.hy-5],[a.hx-8,a.hy-7],[a.hx-11,a.hy-13]],'o',3);g.path([[a.hx+3,a.hy-5],[a.hx+8,a.hy-7],[a.hx+10,a.hy-14]],'O',3);g.px([[a.hx-11,a.hy-14],[a.hx+10,a.hy-15]],'W');
+  [[-5,-4],[-1,-5],[3,-4]].forEach(([dx,dy])=>g.line(a.cx+dx,a.cy+dy,a.cx+dx+3,a.cy+dy+7,'Q'));g.px([[a.fx-2,a.fy+2],[a.fx+1,a.fy+3],[a.fx,a.fy+1]],'Q');},
+ // Ironling: a riveted iron helm over the cloud and a riveted band across the chest
+ ironplate(g,F,a,p){p.I='#9aa0ae';p.i='#5a6070';p.J='#c8ccd8';const t=a.cy-5;
+  g.poly([[a.cx-8,t-2],[a.cx-6,t-8],[a.cx,t-11],[a.cx+6,t-8],[a.cx+8,t-2]],'I');g.rect(a.cx-9,t-3,18,2,'i');g.px([[a.cx-5,t-7],[a.cx-3,t-9],[a.cx-7,t-4],[a.cx+1,t-4],[a.cx+7,t-4]],'J');
+  g.rect(a.cx-9,Math.round(a.ky+3.4),19,2,'i');g.px([[a.cx-7,Math.round(a.ky+3.4)],[a.cx-1,Math.round(a.ky+3.4)],[a.cx+5,Math.round(a.ky+3.4)]],'J');},
+ // Bellstruck Stormling: a brass bell slung under the cloud and three small bells on top
+ bellcrown(g,F,a,p){p.N='#e8c050';p.n='#a88828';const bx=a.cx+(F.i?1:0),by=Math.min(30,a.by+3);
+  g.rect(bx,by-4,1,3,'n');g.poly([[bx-2,by-1],[bx-3.4,by+3],[bx-4.6,by+5.4],[bx+5.6,by+5.4],[bx+4.4,by+3],[bx+3,by-1]],'N');g.rect(bx-4,by+5,10,1,'n');g.s(bx+1,by+7,'n');g.px([[bx-1,by+1],[bx-2,by+3]],'W');
+  [[-7,-8],[0,-10],[7,-8]].forEach(([dx,dy])=>{const x=a.cx+dx,y=a.cy+dy+(a.sq<1?3:0);g.poly([[x-1,y],[x-1.8,y+3],[x+2.8,y+3],[x+2,y]],'N');g.s(x,y+4,'n');g.s(x,y,'W');});},
+ // Witchlight: a crooked witch hat with a gold buckle and a wisp of will-o-light
+ witchhat(g,F,a,p){p.V='#4a3a7a';p.v='#2a1e50';p.Y='#fff0a0';const t=a.cy-8.6*a.sq;
+  g.ell(a.cx-1,t,9.6,2,'v');g.poly([[a.cx-5,t],[a.cx-1,t-6],[a.cx+3,t-12],[a.cx+7,t-12.6],[a.cx+8,t-10],[a.cx+5,t-6],[a.cx+5,t]],'V');g.poly([[a.cx+3,t-12],[a.cx+7,t-12.6],[a.cx+8,t-10],[a.cx+5,t-8]],'v');g.rect(a.cx-5,t-3,10,2,'v');g.rect(a.cx-1,t-3,3,2,'Y');
+  g.px(F.i?[[a.cx+13,t-2],[a.cx+14,t-3]]:[[a.cx+13,t-3],[a.cx+14,t-2]],'Y');},
+ // Sky Shard: glass crystals for horns, along the back and on the tail
+ shards(g,F,a,p){p.Z='#d8ecff';p.z='#7aa8e8';clr(g,a.hx-9,a.hy-12,16,8);
+  [[-4,8],[-1,11],[2,7]].forEach(([o,h],n)=>{g.poly([[a.hx+o-1.6,a.hy-5],[a.hx+o+(n-1)*.6,a.hy-5-h],[a.hx+o+1.6,a.hy-5]],n%2?'Z':'z');g.s(a.hx+o,a.hy-6-h*.5,'W');});
+  [[-8,6],[-4,8],[0,6]].forEach(([o,h],n)=>g.poly([[a.bx+o-1.6,a.by-6.4],[a.bx+o-.6,a.by-6.4-h],[a.bx+o+1.4,a.by-6.4]],n%2?'z':'Z'));
+  g.poly([[a.tx-1,a.ty+3],[a.tx-5,a.ty+1],[a.tx,a.ty+6]],'Z');},
+ // Rivet Sentry: a lightning rod on the brow with a spark, a toothed gear on the chest and rivets
+ sentryrod(g,F,a,p){p.I='#aab0bc';p.Q='#c07a3a';p.Y='#ffe14a';
+  g.line(a.hx,a.hy-5,a.hx,a.hy-14,'I');g.ell(a.hx,a.hy-15,1.6,1.6,'Y');if(F.i)g.px([[a.hx-3,a.hy-16],[a.hx+3,a.hy-14]],'Y');else g.px([[a.hx+3,a.hy-17],[a.hx-3,a.hy-14]],'Y');
+  g.ell(a.cx,a.cy,3.6,3.6,'Q');g.ell(a.cx,a.cy,1.4,1.4,0);for(let k=0;k<8;k++){const t=k*Math.PI/4;g.s(Math.round(a.cx+Math.cos(t)*4.4),Math.round(a.cy+Math.sin(t)*4.4),'Q');}
+  g.px([[a.hx-5,a.hy-4],[a.hx+5,a.hy-4],[a.cx-6,a.cy-4],[a.cx+7,a.cy+3]],'W');},
+ // Skullbell Sentinel: a bronze bell hung from the neck and a skull on the shoulder
+ skullbell(g,F,a,p){p.U='#e0d8c0';p.u='#9a9078';p.N='#c8963a';p.n='#6a4a1a';const sw=F.i?1:0,bx=a.bx+1+sw,by=a.by+4;
+  g.path([[a.hx-3,a.hy+5],[bx,by]],'n');g.poly([[bx-2,by],[bx-3.6,by+4],[bx-5,by+7],[bx+6,by+7],[bx+4.6,by+4],[bx+3,by]],'N');g.rect(bx-5,by+6,11,1,'n');g.s(bx+1,by+8,'n');g.px([[bx-1,by+2],[bx-2,by+4]],'W');
+  g.ell(a.bx-6,a.by-9,3,2.8,'U');g.ell(a.bx-5.4,a.by-8.2,2.6,2.2,'u');g.ell(a.bx-6.4,a.by-9.4,2.2,1.8,'U');g.px([[a.bx-8,a.by-9],[a.bx-5,a.by-9]],'K');g.s(a.bx-6,a.by-7,'K');},
+ // Ash Spawn: flames licking up from the two humps and glowing cracks through the dome
+ embercrest(g,F,a,p){p.F='#ff8a3a';p.Y='#ffd060';const h=F.i?7:5;
+  [[a.cx-6,a.cy-a.ry*.62-3],[a.cx+4,a.cy-a.ry*.7-3],[a.cx-1,a.cy-a.ry+1]].forEach(([x,y],n)=>{const hh=h+(n===1?2:0);g.poly([[x-2.4,y],[x+(n-1)*.8,y-hh-1],[x+2.4,y]],'F');g.poly([[x-1,y],[x+(n-1)*.4,y-hh+2],[x+1,y]],'Y');});
+  g.path([[a.cx-8,a.cy+4],[a.cx-6,a.cy+7],[a.cx-9,a.cy+9]],'F');g.path([[a.cx+6,a.cy-2],[a.cx+8,a.cy+2],[a.cx+7,a.cy+5]],'F');},
+ // Dimling: a dim brass lantern hanging from a tendril and a faint ring round the core
+ dimlamp(g,F,a,p){p.N='#8a7a6a';p.L='#ffe8a0';const t=a.tp[4],x=Math.round(t[0]),y=Math.round(t[1])-2;
+  g.line(x,y-5,x,y,'N');g.rect(x-2,y,5,6,'N');g.rect(x-1,y+1,3,4,'L');g.s(x,y+2,'W');g.rect(x-2,y,5,1,'K');g.px([[x-1,y-6],[x+1,y-6]],'N');
+  g.path([[a.kx-7,a.ky],[a.kx-6,a.ky-4],[a.kx-3,a.ky-6]],'G');g.path([[a.kx+7,a.ky+1],[a.kx+6,a.ky+4]],'G');},
+ // The Void Cantor: a tall mitre with a gold eye, and two gold stole bands hanging down the dome
+ cantor(g,F,a,p){p.V='#7a4ab0';p.v='#3a1a5a';p.Y='#e8c050';const t=a.top+3;
+  g.poly([[a.cx-6,t+2],[a.cx-4,t-4],[a.cx-1,t-8],[a.cx+1,t-10],[a.cx+4,t-5],[a.cx+7,t+2]],'V');g.poly([[a.cx+1,t-10],[a.cx+4,t-5],[a.cx+7,t+2],[a.cx+2,t+2]],'v');g.rect(a.cx-6,t,13,2,'Y');
+  g.ell(a.cx,t-4,1.8,1.4,'Y');g.rect(a.cx,t-5,1,2,'K');g.px([[a.cx-1,t-9]],'W');
+  [[-9,a.cy-3],[10,a.cy-3]].forEach(([dx,y])=>g.rect(a.cx+dx,y,2,10,'Y'));},
+ // Abyss Spawn: small slit eyes along the dome and a halo of stars
+ abysseyes(g,F,a,p){p.Y='#fff0a0';[[-10,-1],[-7,-6],[5,-8],[10,-3]].forEach(([dx,dy],n)=>{const x=a.cx+dx,y=a.cy+dy;g.rect(x,y,1,2,n%2?'E':'Y');});
+  [[-12,-10],[0,-14],[12,-10],[-6,-13]].forEach(([dx,dy],n)=>{const x=a.cx+dx,y=Math.max(1,a.cy+dy+(F.i&&n%2?1:0));g.px([[x,y],[x-1,y],[x+1,y],[x,y-1],[x,y+1]],'Y');});},
+ // Cinder Eater: flames on the back ridge, glowing coal cracks and a trail of smoke
+ cinderback(g,F,a,p){p.F='#ff8a3a';p.Y='#ffd060';p.O='#5a4a58';const h=F.i?5:4;
+  for(let k=0;k<4;k++){const x=a.bx-7+k*4.6,y=a.by-6.5;g.poly([[x-1.6,y+1],[x+.5,y-h-(k%2)-1],[x+2.6,y+1]],'F');g.poly([[x-.4,y+1],[x+.6,y-h+1-(k%2)],[x+1.6,y+1]],'Y');}
+  g.path([[a.bx-4,a.by-1],[a.bx-2,a.by+2],[a.bx-5,a.by+4]],'F');g.path([[a.bx+4,a.by-2],[a.bx+6,a.by+1]],'F');g.px(F.i?[[a.bx-9,a.by-14],[a.bx-7,a.by-17]]:[[a.bx-10,a.by-13],[a.bx-8,a.by-16]],'O');},
+ // Lanternmaw: an angler stalk arching over the brow with a glowing lantern bulb
+ lantern(g,F,a,p){p.L='#fff0a0';p.N='#8a7a4a';p.Y='#ffe08a';const sw=F.i?1:0;
+  g.path([[a.hx+1,a.hy-4],[a.hx+2,a.hy-11],[a.hx+6,a.hy-12+sw],[a.hx+7,a.hy-8+sw]],'N',1.6);g.ell(a.hx+7,a.hy-6.5+sw,3.2,3.2,'Y');g.ell(a.hx+7,a.hy-6.5+sw,2.2,2.2,'L');g.s(a.hx+6,a.hy-7+sw,'W');},
+ // Blackstar Eater: a crescent moon over the brow, longer fangs and drifting stars
+ starhalo(g,F,a,p){p.Y='#fff0a0';g.ell(a.hx-1,a.hy-11,3.4,3.4,'Y');g.ell(a.hx+.5,a.hy-11.8,2.8,2.8,0);
+  g.rect(a.hx+5,a.hy+2,1,3,'W');g.rect(a.hx+8,a.hy+2,1,3,'W');
+  g.px(F.i?[[a.bx-4,a.by-12],[a.bx+9,a.by-11],[a.bx-12,a.by-4]]:[[a.bx-3,a.by-13],[a.bx+10,a.by-10],[a.bx-12,a.by-5]],'Y');},
+ // Lichbound Wight: a dark circlet with a violet gem, hanging chains and a phylactery gem circling at its side
+ lichcrown(g,F,a,p){p.Z='#8a7ab0';p.z='#3a2a60';p.V='#c06aff';const y=a.top+4;
+  g.rect(a.hx-5,y,11,2,'Z');g.rect(a.hx-5,y+1,11,1,'z');[-4,0,4].forEach(o=>g.poly([[a.hx+o-1,y],[a.hx+o,y-3],[a.hx+o+1,y]],'Z'));g.s(a.hx,y+1,'V');
+  g.path([[a.hx-6,y+3],[a.hx-9,y+10]],'z');g.path([[a.hx+6,y+3],[a.hx+9,y+10]],'z');
+  const px=7,py=16+(F.i?1:-1);g.ell(px,py,2.8,3.4,'Z');g.ell(px,py,1.6,2.2,'V');g.s(px-1,py-1,'W');g.path([[px,py+3],[px+2,py+8],[a.cx-6,28]],'z');},
+ // Brinehag Thrall: kelp hair streaming from the hat, a pearl necklace and a pink shell on the brim
+ brinehair(g,F,a,p){p.T='#2f7a5a';p.t='#1f5a40';p.P='#e8f0ff';p.Q='#f08aa0';
+  tend(g,a.hx-6,a.hy-1,14,2,F.i*2,'T',2,-2);tend(g,a.hx-4,a.hy+1,11,1.8,F.i*2+1.5,'t',2,-1);tend(g,a.hx+5,a.hy+1,8,1.4,F.i*2+3,'T',1,1);
+  [[-5,0],[-3,1],[-1,2],[1,2],[3,1],[5,0]].forEach(([dx,dy])=>g.s(a.hx+dx,a.hy+7+dy,'P'));g.ell(a.hx+.5,a.hy-6.4,1.8,1.5,'Q');g.s(a.hx,a.hy-7,'W');}
+});
+Object.assign(SHAPE_OF,{v_sunimp:'sunhalo',v_orchardimp:'leafcap',n_gustimp:'moonhorn',o_candlemoth:'candle',v_galeharpy:'galecrest',n_snowharpy:'frostveil',mb_gorehorn:'gorehorns',
+  v_ironling:'ironplate',o_ysolde:'bellcrown',n_stormling:'witchhat',v_skyshard:'shards',o_ironsentinel:'sentryrod',mb_skullbell:'skullbell',v_ashspawn:'embercrest',o_dimmer:'dimlamp',
+  mb_voidcantor:'cantor',n_voidspawn:'abysseyes',v_cindereater:'cinderback',mb_lanternmaw:'lantern',n_stareater:'starhalo',o_frostlich:'lichcrown',o_brinehag:'brinehair'});
 // the same flourish over a night variant (world3.js builds those before this file loads): wrap its drawing and keep the frame flag
 function shapeWrap(id,name){const f0=MART[id],sh=SHP[name];if(!f0||!sh||f0.shaped)return;
   const w=(g,f)=>{const o=f0(g,f);if(o&&o.a){const pal=Object.assign({},o.pal);sh(g,mfr(f),o.a,pal);return Object.assign({},o,{pal});}return o;};w.fr=f0.fr||(MON[id]&&MART[MON[id].base]&&MART[MON[id].base].fr);w.shaped=1;MART[id]=w;}
@@ -221,6 +319,7 @@ function makeMonVariant(id,base,name,els,col,extra,shape){const m=MON[base];if(!
 MONV.forEach(([id,b,n,e,c,sh])=>makeMonVariant(id,b,n,e,c,undefined,sh));
 ['n_cinderpup','n_frostwolf'].forEach(id=>shapeWrap(id,SHAPE_OF[id]));
 ['n_gull','n_thunderhawk','n_cavebat','n_tidewisp','n_ashwraith'].forEach(id=>shapeWrap(id,SHAPE_OF[id]));
+['n_gustimp','n_snowharpy','n_stormling','n_voidspawn','n_stareater'].forEach(id=>shapeWrap(id,SHAPE_OF[id]));
 
 Object.keys(BOV).forEach(k=>{const [id,b,n,e,c]=BOV[k].mon;makeMonVariant(id,b,n,e,c,{ov:k});});
 // ---------- helpers ----------
