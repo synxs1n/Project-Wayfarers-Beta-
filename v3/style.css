@@ -1029,5 +1029,5 @@ body.noscroll #p5save{top:auto!important;bottom:8px!important}
 /* v0.15.5 portrait10.js: the portrait is its own square bust canvas, drawn edge to edge in every .port box */
 .port.pt10 img,.pc .port.pt10 img,.pc.rs .port.pt10 img,html.sprhd .port.pt10 img{width:100%!important;height:100%!important;left:0!important;top:0!important;object-fit:fill;image-rendering:pixelated}
 
-/* v0.16.1: toasts sit in the upper middle of the screen, clear of the buttons along the bottom (owner) */
-#toast{top:38%;bottom:auto;transform:translate(-50%,-10px)}#toast.show{transform:translate(-50%,0)}
+/* v0.16.2: toasts sit a little higher than before (the middle of the screen was worse), clear of the Run/Map/Menu row */
+#toast{bottom:calc(112px + env(safe-area-inset-bottom,0px))}
