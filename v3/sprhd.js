@@ -151,14 +151,8 @@ function monTex(art){const T=monFam(art),f=T.includes('jelly')?'jelly':T.include
     if(f==='jelly'){if(t<.2&&u+l<6)return 0;if(t>.3&&t<.55&&q>=3)return 2;return q;}
     if(f==='cloth'){const s=(x*5+k.charCodeAt(0)+(y>>3))%9;if(s===0&&q>=3&&u>=3)return Math.min(5,q+1);if(s===1&&q===3)return 2;return q;}
     return q;};}
-// longer legs and torso: repeat rows (relative to the feet on row 36), pad the top so the feet always land on row 36+SPR.addH
-function stretchHero(o,L){
-  const F=36,n0=SPR.addH,sz=L&&L.size;
-  const ins=sz==='small'?[[F-5,1],[F-2,1]]:sz==='stout'?[[F-5,2],[F-2,1]]:[[F-15,1],[F-14,1],[F-11,1],[F-7,1],[F-5,1],[F-3,1]];
-  const rows=[];for(let y=0;y<o.h;y++){rows.push(y);const e=ins.find(r=>r[0]===y);if(e)for(let c=0;c<e[1];c++)rows.push(y);}
-  const n=rows.length-o.h,pad=Math.max(0,n0-n),H=o.h+n0,out=new PG(o.w,H,0,0);
-  for(let j=0;j<rows.length&&j+pad<H;j++){const sy=rows[j];for(let x=0;x<o.w;x++)out.a[(j+pad)*o.w+x]=o.a[sy*o.w+x];}
-  return out;}
+// the rig (art.js) is already drawn at its final height, so the old HD stretch is gone: this keeps the name and returns the grid as it is
+function stretchHero(o,L){return o;}
 const HERO_OPT={flat:HFLAT_HD,noAO:HNOAO,hero:1,detail:faceHD,tex:texHD};
 if(SPRITE_HD){
   const hgs0=heroGridSide,hgv0=heroGridView;

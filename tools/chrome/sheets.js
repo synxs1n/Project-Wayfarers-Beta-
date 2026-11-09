@@ -44,7 +44,7 @@ if(kind!=='foes'&&kind!=='poses'&&kind!=='npcs'&&kind!=='bosses'&&kind!=='heroes
       const rows=N9.roles.filter(r=>!only||only.includes(r.role)).map(r=>({lab:r.role,name:r.name}));
       if(!only)for(let i=0;i<rnd;i++)rows.push({lab:'rnd'+i,name:'Villager '+(i*7+3)+'x'});
       const cols=[['front',0],['front',1],['front',2],['front',3],['back',0],['back',1],['side',0],['side',1],['side',3]];
-      const cw=40*Z,ch=50*Z,LAB=96,W=LAB+cols.length*cw+8,per=8,sheets=[];
+      const cw=44*Z,ch=60*Z,LAB=96,W=LAB+cols.length*cw+8,per=8,sheets=[];
       for(let s=0;s<rows.length;s+=per){const rs=rows.slice(s,s+per),Hh=rs.length*ch+22,cv=document.createElement('canvas');cv.width=W;cv.height=Hh;
         const x=cv.getContext('2d');x.imageSmoothingEnabled=false;x.fillStyle='#2a2438';x.fillRect(0,0,W,Hh);x.font='11px monospace';
         cols.forEach((c,j)=>{x.fillStyle='#e8e0f0';x.fillText(c[0]+(c[1]===3?'B':c[1]),LAB+j*cw+4,14);});
@@ -63,13 +63,13 @@ if(kind!=='foes'&&kind!=='poses'&&kind!=='npcs'&&kind!=='bosses'&&kind!=='heroes
   }
   if(kind==='heroes'){
     // heroes: every hero (TPL with a class, not .mon) as a row: side idle, side walk, front 0 1 2, back 0 1, then the portrait as the Party card crops it
-    // (heroURL at 72x80, offset -14,-12 in a 44x44 box) and a 1x silhouette-free copy; ZOOM (default 3), ONLY=id1,id2, CHUNK=8 heroes per file, VIEWS=side,front,back limits columns
+    // (heroURL at 103x144, offset -30,-18 in a 44x44 box: the 40x56 rig, head and shoulders) and a 1x silhouette-free copy; ZOOM (default 3), ONLY=id1,id2, CHUNK=8 heroes per file, VIEWS=side,front,back limits columns
     const only=process.env.ONLY?process.env.ONLY.split(','):null,chunk=+process.env.CHUNK||8,vs=process.env.VIEWS?process.env.VIEWS.split(','):null;
     const data=await H.ev(([only,chunk,vs,Z])=>{
       const A=window.__A,T=A.TW.get,TPL=T('TPL'),hc=T('heroCanvas'),wc=T('walkerCanvas'),hl=T('heroLook'),hu=T('heroURL');
       const ids=Object.keys(TPL).filter(i=>TPL[i].cls&&!TPL[i].mon&&TPL[i].look&&(!only||only.includes(i)));
       const cols=[['side',0],['side',1],['front',0],['front',1],['front',2],['back',0],['back',1],['port',0]].filter(c=>!vs||vs.includes(c[0]));
-      const cw=44*Z,ch=56*Z,LAB=84,sheets=[];
+      const cw=44*Z,ch=60*Z,LAB=84,sheets=[];
       const img=u=>new Promise(r=>{const i=new Image();i.onload=()=>r(i);i.src=u;});
       return (async()=>{
       for(let s=0;s<ids.length;s+=chunk){
@@ -80,7 +80,7 @@ if(kind!=='foes'&&kind!=='poses'&&kind!=='npcs'&&kind!=='bosses'&&kind!=='heroes
         for(let n=0;n<ks.length;n++){const id=ks[n],oy=22+n*ch,L=hl(id);x.fillStyle='#e8e0f0';x.font='11px monospace';x.fillText(id,4,oy+14);x.fillStyle='#9a90b0';x.fillText(TPL[id].cls+' '+(L.b||'')+' '+(L.wpn||''),4,oy+27);
           for(let j=0;j<cols.length;j++){const c=cols[j],fx=LAB+j*cw;x.fillStyle=j%2?'#322a44':'#2e2640';x.fillRect(fx,oy,cw-2,ch-2);
             try{
-              if(c[0]==='port'){const im=await img(hu(id)),bx=fx+4,by=oy+4,S=Math.min(Z,3);x.save();x.beginPath();x.rect(bx,by,44*S*.9,44*S*.9);x.clip();x.fillStyle='#4a3c28';x.fillRect(bx,by,44*S,44*S);x.drawImage(im,bx-14*S*.9,by-12*S*.9,72*S*.9,80*S*.9);x.restore();continue;}
+              if(c[0]==='port'){const im=await img(hu(id)),bx=fx+4,by=oy+4,S=Math.min(Z,3);x.save();x.beginPath();x.rect(bx,by,44*S*.9,44*S*.9);x.clip();x.fillStyle='#4a3c28';x.fillRect(bx,by,44*S,44*S);x.drawImage(im,bx-30*S*.9,by-18*S*.9,103*S*.9,144*S*.9);x.restore();continue;}
               const cvs=c[0]==='side'?hc(id,!!c[1]):wc('hs:'+id,L,TPL[id].el,id,c[0],c[1]);
               x.drawImage(cvs,fx+Math.round((cw-2-cvs.width*Z)/2),oy+ch-4-cvs.height*Z,cvs.width*Z,cvs.height*Z);
             }catch(e){x.fillStyle='#f66';x.fillText('ERR '+String(e.message).slice(0,12),fx+2,oy+20);}}}

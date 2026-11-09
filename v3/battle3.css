@@ -62,7 +62,7 @@ html.rm .fxlayer .fx2.b3fx{animation-name:fade2!important}
 .battle.b3 .pcw{position:relative;display:grid;gap:2px;min-width:0;align-content:start}
 .battle.b3 .pcw .pc,.battle.b3 .fcw .fc{width:100%;display:flex;flex-direction:row;align-items:center;gap:6px;text-align:left;padding:4px 30px 4px 6px;min-height:44px;box-sizing:border-box}
 .battle.b3 .pcw .pc .port,.battle.b3 .fcw .fc .fci{width:30px;height:30px;flex:none}
-.battle.b3 .pcw .pc .port img{width:50px;height:56px;left:-10px;top:-8px}
+.battle.b3 .pcw .pc .port img{width:72px;height:101px;left:-21px;top:-13px}
 .battle.b3 .pc .pm,.battle.b3 .fc .pm{display:grid;gap:2px;min-width:0;flex:1;width:auto}
 .battle.b3 .uct{display:flex;flex-wrap:nowrap;align-items:center;justify-content:flex-start;gap:4px;padding:0;min-width:0}
 .battle.b3 .uct b{font-size:.86rem;line-height:1.15;flex:0 1 auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
@@ -96,7 +96,7 @@ html.rm .fxlayer .fx2.b3fx{animation-name:fade2!important}
 .battle.b3 .pgroup.rsv .pcs{grid-template-columns:repeat(auto-fill,minmax(110px,1fr))}
 .battle.b3 .pgroup.rsv .pcw .pc.rs{min-height:40px;padding:3px 28px 3px 5px;gap:5px}
 .battle.b3 .pgroup.rsv .pcw .pc.rs .port{width:26px;height:26px}
-.battle.b3 .pgroup.rsv .pcw .pc.rs .port img{width:44px;height:50px;left:-9px;top:-8px}
+.battle.b3 .pgroup.rsv .pcw .pc.rs .port img{width:64px;height:90px;left:-20px;top:-11px}
 .battle.b3 .pgroup.rsv .uct b{font-size:.76rem}
 .battle.b3 .pgroup.rsv .uct .ucl,.battle.b3 .pgroup.rsv .uct .elbs{display:none}
 .battle.b3 .pgroup.rsv .uinfo{width:22px;height:22px}
@@ -106,7 +106,7 @@ html.rm .fxlayer .fx2.b3fx{animation-name:fade2!important}
 .battle.b3 .cmd{padding:8px 9px 9px;gap:6px}
 .battle.b3 .who.cmdhead{gap:8px;padding:2px 0 6px;margin:0;flex-wrap:nowrap}
 .battle.b3 .who.cmdhead .port{width:32px;height:32px}
-.battle.b3 .who.cmdhead .port img{width:52px;height:58px;left:-10px;top:-8px}
+.battle.b3 .who.cmdhead .port img{width:74px;height:104px;left:-21px;top:-13px}
 .battle.b3 .who.cmdhead>div{min-width:0}
 .battle.b3 .who.cmdhead b{font-size:1rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .battle.b3 .who.cmdhead b .turnl{font-style:normal;font-weight:600;color:var(--mute);font-size:.82rem}

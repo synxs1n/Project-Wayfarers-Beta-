@@ -288,10 +288,10 @@ button.mini>img{width:68px;height:68px}
 .who>div{line-height:1.2}
 
 /* ===== v3 ===== */
-.port img{width:72px;height:80px;left:-14px;top:-12px}
-.port.big img{width:108px;height:120px;left:-18px;top:-14px}
-.port.sm img{width:54px;height:60px;left:-11px;top:-8px}
-.pc.rs .port img{width:72px;height:80px;left:-14px;top:-12px}
+.port img{width:93px;height:130px;left:-25px;top:0}
+.port.big img{width:154px;height:216px;left:-41px;top:-27px}
+.port.sm img{width:77px;height:108px;left:-22px;top:-14px}
+.pc.rs .port img{width:93px;height:130px;left:-25px;top:0}
 .slot>img,button.mini>img{width:72px;height:80px;margin-top:0;max-width:100%}
 .pbig{height:126px}.pbig img{width:108px;height:120px}
 .lineup img{width:72px;height:80px}
@@ -398,9 +398,9 @@ html,body{overscroll-behavior-y:none}
   .menu{grid-template-columns:repeat(3,1fr);gap:5px}
   .mi{padding:8px 8px 6px;font-size:.9rem}
   .menu.list{max-height:34vh}
-  .pc{padding:3px}.pc .port{width:30px;height:30px}.pc .port img{width:54px;height:60px;left:-12px;top:-9px}
+  .pc{padding:3px}.pc .port{width:30px;height:30px}.pc .port img{width:77px;height:108px;left:-24px;top:-14px}
   .pc .pm small{display:none}.pc .nums{font-size:.66rem}
-  .pgroup.rsv{padding:5px}.pgroup.rsv .pc.rs .port{width:26px;height:26px}.pgroup.rsv .pc.rs .port img{width:45px;height:50px;left:-10px;top:-8px}
+  .pgroup.rsv{padding:5px}.pgroup.rsv .pc.rs .port{width:26px;height:26px}.pgroup.rsv .pc.rs .port img{width:64px;height:90px;left:-20px;top:-11px}
   .blog p{font-size:.72rem}
 }
 @media (max-height:700px) and (max-width:720px){.joy{width:124px;height:124px}.joy .knob{width:46px;height:46px;margin:-23px 0 0 -23px}}
@@ -715,7 +715,7 @@ html.rm .fx2{animation:fade2 2s linear both!important}
   .pgroup.foes{grid-template-columns:1fr}
   .pgroup.rsv{grid-template-columns:repeat(3,minmax(0,1fr))}
   .pcw .pc,.pgroup.rsv .pcw .pc.rs{flex-direction:column;text-align:center;gap:2px;padding:5px 4px}
-  .pcw .pc .port{width:34px;height:34px}.pcw .pc .port img{width:58px;height:64px;left:-12px;top:-9px}
+  .pcw .pc .port{width:34px;height:34px}.pcw .pc .port img{width:82px;height:115px;left:-24px;top:-14px}
   .pgroup.rsv .pcw .pc.rs .port{width:30px;height:30px}
   .pc .pm{width:100%}
   .uct{flex-wrap:wrap;justify-content:center;padding-right:0;gap:2px 5px}
@@ -747,7 +747,7 @@ html.rm .fx2{animation:fade2 2s linear both!important}
 .udk1 .nt{color:var(--mute)}.udk1 .im{color:#fff}
 .battle.bside .pcw .pc{flex-direction:row;text-align:left}
 .battle.bside .pgroup:not(.rsv),.battle.bside .pgroup.rsv,.battle.bside .pgroup.foes{grid-template-columns:1fr}
-.battle.bside .pcw .pc .port{width:44px;height:44px}.battle.bside .pcw .pc .port img{width:72px;height:80px;left:-14px;top:-12px}
+.battle.bside .pcw .pc .port{width:44px;height:44px}.battle.bside .pcw .pc .port img{width:103px;height:144px;left:-30px;top:-18px}
 .battle.bside .uct{flex-wrap:nowrap;justify-content:flex-start;padding-right:26px}.battle.bside .elbs{margin-left:auto}
 .battle.bside .ucr{grid-template-columns:20px minmax(0,1fr) auto}.battle.bside .ucr>i{display:block}
 .battle.bside .pc .pm small.ucc{display:block}

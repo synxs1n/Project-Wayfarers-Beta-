@@ -97,7 +97,7 @@ function npcSplit(g){
 }
 // a drawing surface in the hand's own frame: origin at the hand's top-left pixel, x grows outward (away from the body), y grows downward
 function npcHand(g,view,sw){
-  const m=view==='front'?-1:1,ax=view==='front'?9:view==='back'?22:20,ay=view==='side'?17:18,X=x=>ax+m*x,Y=y=>ay+y+sw;
+  const m=view==='front'?-1:1,ax=view==='front'?11:view==='back'?28:26,ay=view==='side'?29:32,X=x=>ax+m*x,Y=y=>ay+y+sw;
   return {s:(x,y,k)=>g.s(X(x),Y(y),k),
     r:(x,y,w,h,k)=>{for(let j=0;j<h;j++)for(let i=0;i<w;i++)g.s(X(x+i),Y(y+j),k);},
     l:(x0,y0,x1,y1,k)=>g.line(X(x0),Y(y0),X(x1),Y(y1),k),
@@ -128,77 +128,71 @@ function npcGarb(g,L,view){
   const r=L.role,F=view==='front',B=view==='back',S=view==='side';
   if(L.bigHead){
     // children: a head one pixel taller (a forehead row is repeated) and two wider (two columns inside the head are repeated)
-    npcShift(g,0,40,-8,5,0,-1,true);
-    const W=g.w,A=g.a,oy=g.oy,ox=g.ox,cL=(S?14:13)+ox,cR=(S?17:18)+ox;
-    for(let y=-8;y<=11;y++){const row=(y+oy)*W;if(y+oy<0)continue;const out=[];
+    npcShift(g,0,39,0,13,0,-1,true);
+    const W=g.w,A=g.a,cL=S?19:18,cR=S?22:21;
+    for(let y=7;y<=16;y++){const row=y*W,out=[];
       for(let x=0;x<W;x++){out.push(A[row+x]);if(x===cL||x===cR)out.push(A[row+x]);}
       for(let x=0;x<W;x++)A[row+x]=out[x+1]||0;}
   }
   if(r==='innkeeper'||r==='tavern'||r==='shopkeeper'){
-    if(F){const half=r==='tavern'?[[13,19,6,5]]:[[14,14,4,2],[13,16,6,8]];half.forEach(q=>g.rect(q[0],q[1],q[2],q[3],'i'));if(r!=='tavern'){g.rect(13,23,6,1,'X');g.px([[12,13],[19,13]],'i');}
-      if(r==='innkeeper')g.px([[20,20],[21,21],[20,22],[21,23]],'X');
-      if(r==='tavern'){g.rect(9,15,2,1,'i');g.rect(21,15,2,1,'i');g.px([[9,16],[10,16],[9,17],[10,17],[21,16],[22,16],[21,17],[22,17]],'S');}
-      if(r==='shopkeeper')g.px([[19,19],[20,19],[19,20],[20,20]],'f');}
-    else if(B){g.rect(12,17,8,1,'i');g.px([[16,18],[15,19],[17,19]],'i');}
-    else{g.rect(17,15,4,8,'i');g.rect(17,22,4,1,'X');if(r==='tavern')g.rect(17,15,4,4,0);}
+    if(F){if(r!=='tavern')g.rect(16,20,8,5,'i');g.rect(15,r==='tavern'?27:28,10,r==='tavern'?7:9,'i');if(r!=='tavern')g.rect(15,36,10,1,'X');
+      if(r==='innkeeper')g.px([[26,24],[27,25],[26,26],[27,27]],'X');
+      if(r==='tavern'){g.rect(10,22,3,2,'i');g.rect(27,22,3,2,'i');}}
+    else if(B){g.rect(15,27,10,1,'i');g.px([[19,28],[20,29],[21,29]],'i');}
+    else{g.rect(22,27,4,10,'i');g.rect(22,36,4,1,'X');}
   }
   if(r==='smith'){
-    if(F){g.rect(14,13,4,2,'g');g.rect(12,15,8,9,'g');g.px([[12,13],[13,13],[19,13],[18,13]],'g');
-      g.rect(8,14,3,5,'S');g.rect(21,14,3,5,'S');g.px([[8,19],[23,19]],'e');g.px([[14,17],[17,20],[13,22],[16,23]],'n');g.px([[12,9],[19,10]],'n');g.px([[9,16],[22,17]],'n');}
-    else if(B){g.rect(12,13,8,1,'g');g.line(12,14,19,20,'g');g.line(19,14,12,20,'g');g.rect(8,14,3,5,'S');g.rect(21,14,3,5,'S');}
-    else{g.rect(17,14,4,10,'g');g.rect(15,14,2,2,'S');g.px([[19,17],[18,21]],'n');g.px([[19,9]],'n');}
+    if(F){g.rect(15,20,10,16,'g');g.px([[18,24],[21,28],[17,31],[20,33]],'n');g.rect(10,22,3,9,'S');g.rect(27,22,3,9,'S');g.px([[11,26],[28,27]],'n');}
+    else if(B){g.rect(15,19,10,1,'g');g.line(15,20,24,30,'g');g.line(24,20,15,30,'g');g.rect(10,22,3,9,'S');g.rect(27,22,3,9,'S');}
+    else{g.rect(21,20,4,16,'g');g.px([[23,26],[22,31]],'n');}
   }
   if(r==='alchemist'){
-    if(F){g.rect(15,13,2,12,'Q');g.line(11,13,19,19,'g');g.px([[13,14],[15,16],[17,18]],'X');g.px([[12,18],[13,18]],'X');g.rect(13,12,6,1,'Q');}
-    else if(B){g.rect(15,13,2,12,'Q');g.rect(12,12,8,1,'Q');}
-    else{g.rect(17,13,3,12,'Q');g.px([[18,17],[19,19]],'X');g.rect(14,12,5,1,'Q');}
+    if(F){g.rect(19,18,2,29,'Q');g.line(14,19,25,30,'g');g.px([[16,22],[19,25],[22,28]],'X');g.px([[15,29],[16,29]],'X');}
+    else if(B){g.rect(19,18,2,29,'Q');g.rect(15,18,10,1,'Q');}
+    else{g.rect(21,18,3,29,'Q');g.px([[22,24],[23,27]],'X');}
   }
   if(r==='clerk'){
-    if(F){g.line(11,13,19,20,'o');g.line(12,13,20,20,'o');g.px([[20,21],[19,22]],'o');g.px([[19,19],[20,19]],'g');}
-    else if(B){g.line(12,13,19,20,'o');g.line(11,13,18,20,'o');}
-    else{g.line(13,13,19,20,'o');g.line(14,13,20,20,'o');}
+    if(F){g.path([[15,19],[25,30]],'o',2);g.px([[24,31],[23,32]],'o');g.px([[22,27],[23,27]],'g');}
+    else if(B){g.path([[25,19],[15,30]],'o',2);}
+    else{g.path([[18,19],[24,30]],'o',2);}
   }
   if(r==='archivist'){
-    if(F){g.rect(15,12,2,12,'g');g.px([[14,19],[17,19],[15,25],[16,25]],'X');g.px([[15,26],[16,26]],'X');}
-    else if(B||S){g.rect(B?15:17,12,2,12,'g');}
+    if(F){g.rect(19,18,2,29,'g');g.px([[18,28],[21,28],[19,47],[20,47]],'X');}
+    else if(B||S){g.rect(B?19:21,18,2,29,'g');}
   }
   if(r==='beastwarden'){
-    if(F||B){g.rect(9,16,2,2,'f');g.rect(21,16,2,2,'f');g.rect(12,13,1,4,'f');g.rect(19,13,1,4,'f');}
-    else g.rect(18,13,1,4,'f');
+    if(F||B){g.rect(11,19,3,3,'f');g.rect(26,19,3,3,'f');g.rect(15,19,1,9,'f');g.rect(24,19,1,9,'f');}
+    else g.rect(22,19,1,8,'f');
   }
   if(r==='priest'){
-    if(F){g.rect(13,12,1,13,'Q');g.rect(18,12,1,13,'Q');g.rect(13,24,6,1,'Q');}
-    else if(B){g.rect(13,12,6,1,'Q');g.rect(15,13,2,12,'Q');g.rect(13,24,6,1,'Q');}
-    else{g.rect(17,12,2,13,'Q');g.rect(14,12,3,1,'Q');g.rect(13,24,7,1,'Q');}
+    if(F){g.rect(17,18,1,29,'Q');g.rect(22,18,1,29,'Q');g.rect(12,46,16,1,'Q');}
+    else if(B){g.rect(15,18,10,1,'Q');g.rect(19,19,2,28,'Q');g.rect(12,46,16,1,'Q');}
+    else{g.rect(21,18,2,29,'Q');g.rect(14,46,12,1,'Q');}
   }
   if(r==='farmer'||r==='picker'){
-    if(F){g.rect(13,13,1,6,'f');g.rect(18,13,1,6,'f');g.rect(13,17,6,3,'f');g.px([[13,17],[18,17]],'G');}
-    else if(B){g.line(12,13,19,20,'f');g.line(19,13,12,20,'f');}
-    else{g.rect(17,13,1,6,'f');g.rect(16,17,4,3,'f');}
+    if(F){g.rect(16,19,1,8,'f');g.rect(23,19,1,8,'f');g.rect(16,26,8,7,'f');g.px([[16,26],[23,26]],'G');}
+    else if(B){g.line(15,19,24,29,'f');g.line(24,19,15,29,'f');}
+    else{g.rect(22,19,1,8,'f');g.rect(20,26,5,7,'f');}
   }
   if(r==='fisher'){
-    if(F){g.rect(12,15,8,4,'f');g.px([[13,16],[15,16],[17,16]],'g');g.rect(12,25,3,4,'g');g.rect(17,25,3,4,'g');}
-    else if(B){g.rect(12,15,8,4,'f');g.rect(12,25,3,4,'g');g.rect(17,25,3,4,'g');}
-    else{g.rect(15,15,5,4,'f');g.rect(12,25,3,4,'g');g.rect(17,25,3,4,'g');}
+    if(F){g.rect(14,20,12,7,'f');g.px([[16,22],[19,22],[22,22]],'g');g.rect(14,44,5,8,'g');g.rect(21,44,5,8,'g');}
+    else if(B){g.rect(14,20,12,7,'f');g.rect(14,44,5,8,'g');g.rect(21,44,5,8,'g');}
+    else{g.rect(19,20,6,7,'f');g.rect(19,44,6,8,'g');}
   }
   if(r==='miner'){
-    if(F||B){g.rect(15,2,2,2,'D');g.rect(12,13,8,1,'f');g.rect(11,18,10,1,'f');g.px([[13,14],[18,14],[13,15],[18,15]],'n');}
-    else{g.rect(19,3,2,2,'D');g.rect(14,13,6,1,'f');g.px([[17,15],[18,17]],'n');}
+    if(F||B){g.rect(19,6,2,2,'D');g.rect(14,20,12,1,'f');g.rect(13,30,14,1,'f');g.px([[16,21],[23,21],[16,22],[23,22]],'n');}
+    else{g.rect(25,7,2,2,'D');g.rect(17,20,8,1,'f');g.px([[22,22],[22,24]],'n');}
   }
   if(r==='shepherd'){
-    if(F)g.rect(13,13,6,2,'i');else if(B)g.rect(12,12,8,2,'i');else g.rect(14,12,6,2,'i');
+    if(F)g.rect(15,18,10,2,'i');else if(B)g.rect(14,18,12,2,'i');else g.rect(17,18,8,2,'i');
   }
-  if(r==='lamplighter'){
-    if(F)g.rect(12,18,8,1,'g');
-  }
-  if(r==='pilgrim'){
-    if(F)g.line(11,13,19,19,'f');
-  }
-  if(r==='elder'&&F)g.px([[14,25],[17,25]],'i');
+  if(r==='lamplighter'){if(F)g.rect(15,29,10,1,'g');}
+  if(r==='pilgrim'){if(F)g.line(15,19,25,29,'f');}
+  if(r==='elder'&&F)g.px([[17,34],[22,34]],'i');
 }
 function npcPups(g,view){
   // the beastwarden's pup, on the ground beside the walker (the leash runs to it): faces the walker, a mirrored sprite in the back view
-  const R=[".....t..","t...sss.","tsssssns","ssssss..","t.t.t.t.","t.t.t.t."],x0=view==='front'?0:24,y0=24,flip=view==='back';
+  const R=[".....t..","t...sss.","tsssssns","ssssss..","t.t.t.t.","t.t.t.t."],x0=view==='front'?1:31,y0=46,flip=view==='back';
   R.forEach((r,j)=>{for(let i=0;i<8;i++){const c=r[flip?7-i:i];if(c!=='.')g.s(x0+i,y0+j,c);}});
 }
 // ---------- the whole pass ----------
@@ -209,17 +203,17 @@ function npcFinish(g,L,view){
   // hat extras that depend on the role (after the hat so they sit on top)
   // body bob: stride frames sit one pixel low (head and shoulders), idle B lifts head and shoulders by one pixel
   const stride=side?f>0:f>0;
-  if(stride)npcShift(g,0,40,-8,20,0,1,false);
-  if(b)npcShift(g,0,40,-8,15,0,-1,true);
+  if(stride)npcShift(g,0,39,0,22,0,1,false);
+  if(b)npcShift(g,0,39,0,19,0,-1,true);
   // elders stoop: head and shoulders drop two pixels (and lean forward in the side view)
-  if(L.stoop){npcShift(g,0,40,-8,11,side?1:0,2,false);}
+  if(L.stoop){npcShift(g,0,39,0,17,side?1:0,2,false);}
   // arm swing: the prop arm and the other arm go opposite ways
   let sw=0,sw2=0;
   if(f===1){sw=-1;sw2=1;}else if(f===2){sw=1;sw2=-1;}else if(side&&f>0){sw=-1;}
   if(b){sw=0;}
   const dyb=stride?1:0;
-  if(!side){if(sw)npcShift(g,front?6:21,front?10:25,12+dyb,19+dyb,0,sw,true);if(sw2)npcShift(g,front?21:6,front?25:10,12+dyb,19+dyb,0,sw2,true);}
-  else if(sw)npcShift(g,17,22,13+dyb,19+dyb,0,sw,true);
+  if(!side){if(sw)npcShift(g,front?8:26,front?13:31,20+dyb,35+dyb,0,sw,true);if(sw2)npcShift(g,front?26:8,front?31:13,20+dyb,35+dyb,0,sw2,true);}
+  else if(sw)npcShift(g,20,28,21+dyb,32+dyb,0,sw,true);
   if(prop&&!(L.wpn&&L.wpn!=='none')){prop(npcHand(g,view,sw+dyb+(L.stoop?1:0)+(b?-1:0)));}
   if(role==='beastwarden')npcPups(g,view);
   npcSplit(g);

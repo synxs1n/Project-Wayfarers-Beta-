@@ -8,10 +8,12 @@
 // Weapons are drawn from small local-coordinate recipes (u along the weapon, v across), so one recipe serves every angle.
 // Painting goes through heroCanvas(), so the HD painter, legends mounts and pets are all honoured. Walkers, portraits and the sheet never call this.
 const HPO={list:['swing','thrust','smash','shoot','cast','pray','guard','cheer','hit'],n:0};
+const HPS_K=1.3,HPS_W=1.3;// the rig is about 1.7 times the old figure's arm length: pose offsets are written in the old units and scaled in the helpers
 let HPW=null;// {pose,frame,walk} read once by the heroGridSide wrapper below
 // ---------- pixel helpers (corner-space points: cell i spans [i,i+1)) ----------
 function hpStamp(g,x,y,k,t){
-  if(t>=2){const x0=Math.round(x)-1,y0=Math.round(y)-1;for(let j=0;j<2;j++)for(let i=0;i<2;i++)hpPut(g,x0+i,y0+j,k);}
+  if(t>=3){const x0=Math.round(x)-1,y0=Math.round(y)-1;for(let j=0;j<3;j++)for(let i=0;i<3;i++)hpPut(g,x0+i,y0+j,k);}
+  else if(t>=2){const x0=Math.round(x)-1,y0=Math.round(y)-1;for(let j=0;j<2;j++)for(let i=0;i<2;i++)hpPut(g,x0+i,y0+j,k);}
   else hpPut(g,Math.floor(x),Math.floor(y),k);
 }
 function hpPut(g,x,y,k,soft){if(x<0||y<0||x>=g.w||y>=g.h)return;const i=y*g.w+x;if(soft&&g.a[i])return;g.a[i]=k;}
@@ -62,7 +64,7 @@ const HPA0={sword:-90,greatsword:-90,katana:-90,axe:-90,hammer:-90,mace:-90,spea
 function hpFam(w){if(w==='twindagger')return 'dagger';return HPWD[w]?w:(/^staff/.test(w)?'staff':w==='none'||!w?'none':'staff');}
 function hpWeapon(c,w,gx,gy,ang,o){
   const f=hpFam(w);if(f==='none')return null;o=o||{};const g=c.g,tk=c.tk;
-  let L=HPL[f]||14,sc=o.sc||1;
+  let L=(HPL[f]||14)*HPS_W,sc=(o.sc||1)*HPS_W;
   // keep the tip on the canvas: shrink the weapon along its axis when the pose would push it off
   const r0=ang*Math.PI/180,tx=gx+L*Math.cos(r0),ty=gy+L*Math.sin(r0);
   if(!o.free){const lim=(v,lo,hi,from,dv)=>dv>0&&v>hi?(hi-from)/dv:dv<0&&v<lo?(lo-from)/dv:1;
@@ -80,13 +82,11 @@ function hpWeapon(c,w,gx,gy,ang,o){
   return {P,tip:P(L,0),sc,dx,dy};
 }
 // ---------- the pose builder ----------
-function hpSleeve(B){const cnt={},hk=B.hand;B.arm[2].forEach(r=>{for(const ch of r)if(ch!=='.'&&ch!==' '&&ch!==hk)cnt[ch]=(cnt[ch]||0)+1;});let best=hk,n=0;for(const k in cnt)if(cnt[k]>n){n=cnt[k];best=k;}return best;}
+function hpSleeve(B){return B.slv||'P';}
 function hpBare(L,id,walk,keepShield){
-  const B=HP.body[L.b],ar=B.arm,ax=B.armX,hk=B.hand;
   const L2=Object.assign({},L,{wpn:'none'});if(!keepShield)L2.sh=undefined;
-  let o;
-  B.arm=[ar[0],ar[1],['#']];B.armX=B.arm;B.hand='!';
-  try{o=heroGridSide(L2,walk,id);}finally{B.arm=ar;B.armX=ax;B.hand=hk;}
+  let o;HRIG.bare=true;
+  try{o=heroGridSide(L2,walk,id);}finally{HRIG.bare=false;}
   return o;
 }
 function hpMarks(o){let S=null,H=null;for(let y=0;y<o.h;y++)for(let x=0;x<o.w;x++){const i=y*o.w+x,k=o.a[i];if(k==='#'){if(!S)S={x,y};o.a[i]=0;}else if(k==='!'){if(!H||y<H.y||(y===H.y&&x<H.x))H={x,y};o.a[i]=0;}}return {S,H};}
@@ -100,41 +100,41 @@ const HPT={
 function heroPoseGrid(L,pose,frame,id,walk){
   frame=frame?1:0;walk=!!walk;
   if(pose==='idle'){const o=heroGridSide(L,false,id);if(frame){// B: cloth, tail and hair below the chin hang 1px longer
-      const src=o.a.slice(),W=o.w,top=hpFeet(o)-22;
+      const src=o.a.slice(),W=o.w,top=hpFeet(o)-40;
       for(let y=Math.max(0,top);y<o.h-1;y++)for(let x=0;x<W;x++){const k=src[y*W+x];if((k==='Y'||k==='T'||k==='U'||k==='u'||(k==='H'&&y>=top+4))&&!src[(y+1)*W+x]&&!o.a[(y+1)*W+x])o.a[(y+1)*W+x]=k;}}
     return o;}
   const spec=(HPT[pose]||HPT.cast)[frame]||HPT[pose][0],w=L.wpn||'none',fam=hpFam(w);
   const o=hpBare(L,id,walk,pose!=='guard');
   const F=hpFeet(o);
-  if(spec.crouch)for(let n=0;n<spec.crouch;n++)hpCut(o,F-4);
-  if(spec.lean)hpRows(o,0,F-10,spec.lean);
+  if(spec.crouch)for(let n=0;n<spec.crouch;n++)hpCut(o,F-9);
+  if(spec.lean)hpRows(o,0,F-20,spec.lean);
   if(spec.eyes)hpEyes(o);
   // markers: after the body is bent
   const m=hpMarks(o);let S=m.S,H=m.H;
-  if(!S&&H){const ar=HP.body[L.b].arm;S={x:H.x-(20-ar[0]),y:H.y-(17-ar[1])};}// a later pass painted over the marker: place the shoulder from the hand
+  if(!S&&H){const B0=HP.body[L.b];S={x:H.x-(B0.H[0]-Math.floor(B0.S[0])),y:H.y-(B0.H[1]-Math.floor(B0.S[1]))};}// a later pass painted over the marker: place the shoulder from the hand
   if(!S)return heroGridSide(L,walk,id);// no arm marker (an odd body): fall back to the plain grid
   if(spec.drop)hpDropTop(o,Math.round(S.y)-2);
-  const J=[S.x+1.5,S.y+1.5],R=H?[H.x+1-J[0],H.y+1-J[1]]:[5,4];
+  const J=[S.x+.5,S.y+.5],R=H?[H.x+1-J[0],H.y+1-J[1]]:[6.5,9.5];
   const B=HP.body[L.b],sl=hpSleeve(B);
-  const wh=(w==='fists')?'w':B.hand;
+  const wh=(w==='fists')?'w':B.hand;const K=HPS_K;
   const tintOn=typeof accOf==='function'&&!!accOf(id),TK={M:'v',N:'x',W:'y'};
   const c={g:o,tk:k=>tintOn&&TK[k]?TK[k]:k,J,R,sl};
   const a0=HPA0[fam]!==undefined?HPA0[fam]:-90;
   // arm: shoulder -> elbow -> hand centre (all relative to J); the hand is a 2x2 block (3x3 glove for fists)
-  c.arm=(ex,ey,hx,hy,col)=>{const e=[J[0]+ex,J[1]+ey],h=[J[0]+hx,J[1]+hy];hpLine(o,[J[0],J[1]],e,col||sl,2);hpLine(o,e,h,col||sl,2);};
-  c.hand=(hx,hy)=>{const x=Math.round(J[0]+hx),y=Math.round(J[1]+hy);if(w==='fists'){for(let j=-1;j<=1;j++)for(let i=-1;i<=1;i++)hpPut(o,x+i,y+j,'w');hpPut(o,x+1,y,'G');hpPut(o,x+1,y-1,'G');}else for(let j=-1;j<=0;j++)for(let i=-1;i<=0;i++)hpPut(o,x+i,y+j,wh);};
-  c.wp=(hx,hy,ang,opt)=>hpWeapon(c,w,J[0]+hx,J[1]+hy,ang,opt);
-  c.px=(x,y,k)=>hpPut(o,Math.round(J[0]+x),Math.round(J[1]+y),k,true);
-  c.orb=(x,y,r,k)=>o.ell(J[0]+x,J[1]+y,r,r,k);
-  c.glint=(x,y)=>{c.px(x,y,'D');c.px(x-1,y,'D');c.px(x+1,y,'D');c.px(x,y-1,'D');c.px(x,y+1,'D');};
+  c.arm=(ex,ey,hx,hy,col)=>{ex*=K;ey*=K;hx*=K;hy*=K;const e=[J[0]+ex,J[1]+ey],h=[J[0]+hx,J[1]+hy];hpLine(o,[J[0],J[1]],e,col||sl,3);hpLine(o,e,h,col||sl,3);};
+  c.hand=(hx,hy)=>{hx*=K;hy*=K;const x=Math.round(J[0]+hx),y=Math.round(J[1]+hy);if(w==='fists'){for(let j=-1;j<=1;j++)for(let i=-1;i<=1;i++)hpPut(o,x+i,y+j,'w');hpPut(o,x+1,y,'G');hpPut(o,x+1,y-1,'G');}else for(let j=-1;j<=0;j++)for(let i=-1;i<=0;i++)hpPut(o,x+i,y+j,wh);};
+  c.wp=(hx,hy,ang,opt)=>hpWeapon(c,w,J[0]+hx*K,J[1]+hy*K,ang,opt);
+  c.px=(x,y,k)=>hpPut(o,Math.round(J[0]+x*K),Math.round(J[1]+y*K),k,true);
+  c.orb=(x,y,r,k)=>o.ell(J[0]+x*K,J[1]+y*K,r*1.3,r*1.3,k);
+  c.glint=(x,y)=>{c.px(x,y,'D');c.px(x-.6,y,'D');c.px(x+.6,y,'D');c.px(x,y-.6,'D');c.px(x,y+.6,'D');};
   hpPose(c,pose,frame,w,fam,a0,L);
   return o;
 }
 function hpCut(o,from){const W=o.w;for(let y=from;y>=1;y--)for(let x=0;x<W;x++)o.a[y*W+x]=o.a[(y-1)*W+x];for(let x=0;x<W;x++)o.a[x]=0;}
 // smear: dots in the air where the weapon just passed (only on empty cells)
-function hpTrail(c,hx,hy,a0,a1,len){const g=c.g;for(let a=a0;a<=a1;a+=5){const r=a*Math.PI/180;hpPut(g,Math.floor(c.J[0]+hx+Math.cos(r)*len),Math.floor(c.J[1]+hy+Math.sin(r)*len),'D',true);}}
+function hpTrail(c,hx,hy,a0,a1,len){const g=c.g;for(let a=a0;a<=a1;a+=4){const r=a*Math.PI/180;hpPut(g,Math.floor(c.J[0]+hx*HPS_K+Math.cos(r)*len*HPS_W),Math.floor(c.J[1]+hy*HPS_K+Math.sin(r)*len*HPS_W),'D',true);}}
 function hpPose(c,pose,f,w,fam,a0,L){
-  const R=c.R,g=c.g,aim=!!HPFAM_AIM[fam],ln=HPL[fam]||12;
+  const R=[c.R[0]/HPS_K,c.R[1]/HPS_K],g=c.g,aim=!!HPFAM_AIM[fam],ln=HPL[fam]||12;
   const rest=()=>{c.arm(R[0]*.5-1,R[1]*.6,R[0],R[1]);c.wp(R[0],R[1],a0);c.hand(R[0],R[1]);};
   if(pose==='swing'){
     if(f===0){c.arm(-5,-6,-5,-12);c.wp(-5,-12,-150);c.hand(-5,-12);}
@@ -173,11 +173,12 @@ function hpPose(c,pose,f,w,fam,a0,L){
     c.arm(3,3,7,-1);c.arm(1,2,5,1);c.hand(5,1);c.hand(7,-1);
     if(f)c.glint(11,-5);else c.px(10,-4,'D');
   }else if(pose==='guard'){
-    const sh=L.sh&&SHIELD[L.sh];
+    const sh=L.sh;
     if(sh){
       const hx=5,hy=-2;c.arm(3,2,hx,hy);c.wp(hx-1,hy-2,-88,{free:1});c.hand(hx,hy);
-      const rows=sh[0][2],x0=Math.round(c.J[0])+2+f,y0=Math.round(c.J[1])-4;
-      g.rows(x0,y0,rows);
+      const x0=Math.round(c.J[0])+3+f,y0=Math.round(c.J[1])-5;
+      if(L.sh==='kite'){g.poly([[x0,y0],[x0+10,y0],[x0+10,y0+11],[x0+5,y0+20],[x0,y0+11]],'M');g.poly([[x0+1.4,y0+1.4],[x0+8.6,y0+1.4],[x0+8.6,y0+10],[x0+5,y0+16],[x0+1.4,y0+10]],'Z');g.line(x0+5,y0+2,x0+5,y0+15,'G');g.rect(x0+2,y0+7,7,1,'G');}
+      else{g.ell(x0+5,y0+7,6,6,'M');g.ell(x0+5,y0+7,4.6,4.6,'Z');g.ell(x0+5,y0+7,1.8,1.8,'G');}
     }else if(fam==='fists'){c.arm(3,-1,6,-5);c.hand(6,-5);c.arm(1,0,4,-2);c.hand(4,-2);}
     else{const hx=f?5:4,hy=f?1:2,ang=f?-62:-48;c.arm(2,2,hx,hy);c.wp(hx,hy,HPFAM_AIM[fam]||fam==='dagger'?ang:(fam==='bow'||fam==='longbow'||fam==='crossbow'?-30:a0));c.hand(hx,hy);}
   }else if(pose==='cheer'){

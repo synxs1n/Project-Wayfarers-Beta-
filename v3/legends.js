@@ -144,15 +144,18 @@ function drawHorse(x,ox,oy){
   // saddle blanket with lightning trim
   f(O,13,-1,16,8);f('#2a2638',14,0,14,6);f(L,14,5,14,1);f(L,18,1,1,2);f(L,19,2,1,2);f(L,20,3,1,2);f('#3a2a5c',16,1,10,3);
 }
-function mountCanvas(c){const o=mkCv(54,48),x=o.getContext('2d');x.imageSmoothingEnabled=false;drawHorse(x,2,22);x.drawImage(c,0,0,36,30,9,0,36,30);
-  x.fillStyle='#0e0804';x.fillRect(19,27,14,3);x.fillStyle='#2a2638';x.fillRect(20,27,12,2);x.fillStyle='#f2d24a';x.fillRect(20,29,12,1);return o;}
-function petCanvas(c){const o=mkCv(46,40),x=o.getContext('2d');x.imageSmoothingEnabled=false;x.drawImage(c,8,0);
+// the hero canvas is 40x56 (art.js rig): the rider is its top 42 rows, seated on a horse drawn 36 rows down
+function mountCanvas(c){const o=mkCv(66,64),x=o.getContext('2d');x.imageSmoothingEnabled=false;drawHorse(x,2,36);x.drawImage(c,0,0,40,42,7,0,40,42);
+  x.fillStyle='#0e0804';x.fillRect(21,40,16,3);x.fillStyle='#2a2638';x.fillRect(22,40,14,2);x.fillStyle='#f2d24a';x.fillRect(22,42,14,1);return o;}
+function petCanvas(c){const o=mkCv(52,56),x=o.getContext('2d');x.imageSmoothingEnabled=false;x.drawImage(c,12,0);
   const f=(col,a,b,w,h)=>{x.fillStyle=col;x.fillRect(a,b,w,h);};
+  x.save();x.translate(0,16);
   // wolf pup sitting at his feet
   f('#0e0804',0,29,12,11);f('#6a6a7a',1,31,9,8);f('#4a4a58',1,36,9,3);f('#6a6a7a',7,27,5,5);f('#0e0804',7,26,2,2);f('#0e0804',10,26,2,2);f('#b48ae0',9,29,1,1);f('#1a1420',11,30,1,1);f('#6a6a7a',0,33,2,4);
+  x.restore();x.save();x.translate(14,4);
   // hawk perched above his shoulder
   f('#0e0804',9,8,8,8);f('#5a4030',10,9,6,6);f('#3a2a20',10,12,6,3);f('#e8d8c0',12,10,3,2);f('#f2d24a',16,10,2,1);f('#0e0804',14,9,1,1);f('#2a1f18',9,10,2,5);
-  return o;}
+  x.restore();return o;}
 function halfCanvas(c){if(c.width<=44)return c;const o=mkCv(Math.ceil(c.width/2),Math.ceil(c.height/2)),x=o.getContext('2d');x.imageSmoothingEnabled=false;x.drawImage(c,0,0,o.width,o.height);return o;}
 {const hc1=heroCanvas;heroCanvas=function(id,walk){const c=hc1(id,walk),t=TPL[id];if(!t)return c;if(t.scourge)return halfCanvas(c);if(t.look&&t.look.mount)return mountCanvas(c);if(t.look&&t.look.pets)return petCanvas(c);return c;};}
 {const wfb=weaponFB;weaponFB=function(g,L,view){if(L&&L.wpn==='longbow')return wfb(g,Object.assign({},L,{wpn:'bow'}),view);return wfb(g,L,view);};}

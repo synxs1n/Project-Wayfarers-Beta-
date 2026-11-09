@@ -286,3 +286,7 @@ Batch 5 is complete with 0.14.4.
 - 0.14.8 equipbtn10.js: card buttons are a grid row under .swm (no overlay on the Fold), stack under 480px; pet slot is one .eqs button (petPick;
   the picker has Remove); .eqrow wraps so Auto is not cut on phones. v143a updated. KNOWN STALE: v063pb (camp equip from the pack via __P6.autoCamp)
   fails on 0.14.6 too (camp heroes get no gear, companions moved); predates this session's menu work; investigate separately.
+- 0.14.9 hero rig pass two (helper): 40x56 canvas, ~6.3 heads, rigSide/rigFB in art.js with the hsh 3-tone shader, HP.body[b]={S,H,slv,hand},
+  toTall/stretchHero pass-through, applySize refit; heropose9 anchors scaled (HPS_K/HPS_W 1.3), npcart9 anchors front (11,32) back (28,32) side (26,29);
+  legends.js mount/pet canvases resized; portrait crop .port img 93x130 at -25,0 (style.css 291/294). v080b proportion rule relaxed 1.1x -> 1.2x
+  (heroes 45 px vs 38 px foes). Weak spots per helper: monk side torso thin, Kaevan small on the horse, knights/warriors a little blotchy.
