@@ -60,7 +60,7 @@ chk('C3 first win drops its shard and essence',ef.story===1&&ef.shard===1&&ef.es
 await shot('echo_result');
 const rift=await ev(()=>{const A=__A,G=A.G;A.ACT.resultOk&&A.ACT.resultOk();A.V.modal=null;G.won=true;A.V.modal={type:'travel'};A.render();const t=document.querySelector('#modal').innerText;const k0=A.riftKeys().length;A.META.echoRift=1;const k1=A.riftKeys().length;A.META.echoRift=0;
   const t2=t;return {row:/Echo Sanctum/.test(t),k0,k1,list:/\(1\/5\)|Go/.test(t2)};});
-console.log('rift',JSON.stringify(rift));chk('C2 (v0.3.3) Echo Sanctum row on the waystone; 1 echo now, all 16 after the account unlock',rift.row&&rift.k0===1&&rift.k1===16&&rift.list);
+console.log('rift',JSON.stringify(rift));chk('C2 (v0.3.3) Echo Sanctum row on the waystone; 1 echo now, all 21 after the account unlock',rift.row&&rift.k0===1&&rift.k1===21&&rift.list);
 await shot('rift');
 const fo=await ev(()=>{const A=__A,G=A.G;A.efCost('blade');Object.keys(A.efCost('blade')).forEach(k=>{G.mats[k]=10;});G.gold=99999;G.gear.push('w_blade_5+2');A.V.modal={type:'smithy',tab:'echo'};A.render();const t=document.querySelector('#modal').innerText;
   A.ACT.efForge('blade');const ok=G.gear.some(g=>g==='w_blade_ef+2')||Object.values(G.roster).some(c=>c.eq.w==='w_blade_ef+2');const g=A.gearOf('w_blade_ef'),b=A.gearOf('w_blade_5');return {tab:/Echoforged Ruinsong/.test(t),ok,atk:g.atk,base:b.atk};});

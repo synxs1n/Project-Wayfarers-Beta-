@@ -28,7 +28,7 @@ const MON={
  stareater:{n:'Star Eater',art:'stareater',el:['shadow','fire'],hp:1.1,atk:1.3,def:1,mag:.9,res:1,spd:1.1,sk:[['Starbite','shadow',1.7,'one','phys',[['bleed',.5]]]]},
  huskguard:{n:'Husk Watcher',art:'huskguard',el:['light','shadow'],hp:1.6,atk:1.3,def:1.5,mag:.8,res:1.1,spd:.6,sk:[['Hollow Slam','light',1.6,'one','phys'],['Vigil','light',0,'self','buff',[['bulwark',1]]]]}
 };
-// Scourges (GUARDIANS, 12, four drawn per run) and Calamities (FINALS, 4, one per run).
+// Scourges (GUARDIANS, 16, four drawn per run) and Calamities (FINALS, 5, one per run).
 // phase: triggers once when HP falls below 'at'.
 const GUARDIANS={
  thornwarden:{n:'Thornback Warden',art:'thornwarden',el:['earth','water'],hp:5.2,atk:1.2,def:1.25,mag:1,res:1.1,spd:.95,sk:[['Bramble Lash','earth',1.5,'one','phys',[['bleed',.6]]],['Rainroot Surge','water',1.1,'all','mag',[['slow',.4]]],['Bark Skin','earth',0,'self','buff',[['bulwark',1]]]],
@@ -54,7 +54,15 @@ const GUARDIANS={
  ashwyvern:{n:'Ashen Wyvern',art:'ashwyvern',el:['fire','wind'],hp:5.2,atk:1.3,def:1.1,mag:1.15,res:1,spd:1.15,sk:[['Cinder Dive','fire',1.6,'one','phys',[['burn',.5]]],['Ash Gale','wind',1.1,'all','mag',[['blind',.35]]]],
    phase:{at:.5,say:'The Wyvern takes to the air!',self:[['haste',1],['bulwark',1]]},intro:'Ash rains from the rafters. An Ashen Wyvern lands on the beacon and screams.'},
  frostlich:{n:'Frost Lich',art:'frostlich',el:['ice','shadow'],hp:5,atk:.9,def:1,mag:1.25,res:1.35,spd:1,sk:[['Soul Frost','ice',1.6,'one','mag',[['slow',.6]]],['Grave Chill','shadow',1.15,'all','mag',[['weaken',.4]]]],
-   phase:{at:.5,say:'The Lich hides behind its phylactery ward!',self:[['ward',1]],wardEvery:4},intro:'Frost crawls up the walls in the shape of letters. The Frost Lich turns a page of its book and smiles.'}
+   phase:{at:.5,say:'The Lich hides behind its phylactery ward!',self:[['ward',1]],wardEvery:4},intro:'Frost crawls up the walls in the shape of letters. The Frost Lich turns a page of its book and smiles.'},
+ locustchoir:{n:'The Locust Choir',art:'locustchoir',el:['wind','earth'],hp:5,atk:1.15,def:1,mag:1.05,res:1,spd:1.25,sk:[['Droning Chorus','wind',1.1,'all','mag',[['blind',.35]]],['Gnawing Tide','earth',1.2,'all','phys',[['bleed',.4]]],['Cicada Pitch','wind',1.4,'one','mag',[['stun',.2]]]],
+   phase:{at:.5,say:'The Choir swells into a roar and the swarm quickens!',self:[['haste',1]],party:[['weaken',.6]]},intro:'A hum rises from the barley, then a pitch, then a whole hymn: the Locust Choir lifts off the fields in a single glittering cloud, singing the beacon dry.'},
+ ironmaw:{n:'Ironmaw Tortoise',art:'ironmaw',el:['earth','water'],hp:5.8,atk:1.3,def:1.4,mag:.9,res:1.05,spd:.75,sk:[['Maw Crush','earth',1.7,'one','phys',[['break',.35]]],['Tidal Shell','water',1.1,'all','mag',[['slow',.35]]],['Iron Withdraw','earth',0,'self','buff',[['bulwark',1]]]],
+   phase:{at:.5,say:'The Tortoise draws into its shell and the plates lock!',self:[['bulwark',1],['ward',1]],heal:.08},intro:'The ground rises and keeps rising. Ironmaw Tortoise lifts its shell out of the shallows, plated in old ship iron, a lighthouse growing on its back.'},
+ candlemoth:{n:'Candleking Moth',art:'candlemoth',el:['fire','light'],hp:5,atk:1,def:1,mag:1.3,res:1.2,spd:1.15,sk:[['Wax Drip','fire',1.5,'one','mag',[['burn',.5]]],['Lantern Dust','light',1.1,'all','mag',[['blind',.4]]],['Flicker Dive','fire',1.5,'one','phys',[['burn',.3]]]],
+   phase:{at:.5,say:'The Moth gutters, flares, and drinks every flame in the room!',self:[['haste',1]],party:[['blind',.5]],heal:.08},intro:'Every candle in the chamber leans the same way. The Candleking Moth unfolds from the dark, a crown of burning tapers on its brow and ten thousand dusty wings behind it.'},
+ brinehag:{n:'Brinehag Matriarch',art:'brinehag',el:['water','shadow'],hp:5.4,atk:1,def:1.1,mag:1.3,res:1.25,spd:.95,sk:[['Brine Curse','shadow',1.2,'all','mag',[['weaken',.4]]],['Drowning Hex','water',1.6,'one','mag',[['slow',.5]]],['Tide Mother','water',0,'self','buff',[['regen',1]]]],
+   phase:{at:.5,say:'The Matriarch whistles up the drowned!',summon:'brinejelly',self:[['regen',1]]},intro:'Seaweed hair drips on the stones. The Brinehag Matriarch rises from the tide pool, a barnacled hat on her head and a drowned crew at her back.'}
 };
 // v0.8.2: the Frost Lich (mag 1.4, ward every 3 turns), Ysolde (mag 1.35, spd 1.15), the Iron Sentinel (def 1.45) and the Siren (mag 1.35)
 // were eased: in fullsim.js bossgrid they won 0 to 40% where the other Scourges won 50 to 90% (docs/v080-roles-balance.md)
@@ -66,12 +74,14 @@ const FINALS={
  hollowking:{n:'The Hollow King',art:'hollowking',el:['shadow','lightning'],hp:6.2,atk:1.4,def:1.4,mag:1.2,res:1.3,spd:1,sk:[['Regicide','shadow',2.0,'one','phys',[['break',.6]]],['Crown of Storms','lightning',1.25,'all','mag',[['stun',.15]]]],
    phase:{at:.5,say:'The King calls his last loyal knight!',summon:'huskguard'},intro:'An empty throne. An empty crown. An empty king, rising from both, still giving orders to a kingdom that is gone.'},
  seraph:{n:'Seraph of Ash',art:'seraph',el:['light','fire'],hp:6,atk:1.15,def:1.2,mag:1.45,res:1.4,spd:1.15,sk:[['Ashen Halo','fire',1.25,'all','mag',[['burn',.5]]],['Fallen Spear','light',1.9,'one','phys',[['blind',.4]]],['Last Prayer','light',0,'self','buff',[['regen',1]]]],
-   phase:{at:.5,say:'The Seraph burns its own wings to rise again!',heal:.2,self:[['might',1]]},intro:'Six wings of cinder unfold. The Seraph of Ash, once the first lamplighter, has decided the world is better dark.'}
+   phase:{at:.5,say:'The Seraph burns its own wings to rise again!',heal:.2,self:[['might',1]]},intro:'Six wings of cinder unfold. The Seraph of Ash, once the first lamplighter, has decided the world is better dark.'},
+ hollowsun:{n:'The Hollow Sun',art:'hollowsun',el:['light','fire'],hp:6.2,atk:1.2,def:1.25,mag:1.45,res:1.4,spd:1.05,sk:[['Corona Lash','light',1.3,'all','mag',[['burn',.4]]],['Sunless Beam','light',1.9,'one','mag',[['blind',.5]]],['Hollow Flare','fire',1.25,'all','mag',[['weaken',.4]]]],
+   phase:{at:.5,say:'The Hollow Sun turns its dark side to you and the glass screams!',self:[['might',1],['ward',1]],party:[['blind',.5]]},intro:'Over the salt flat hangs a ring of fire with nothing inside it. The Hollow Sun, the sun that was spent and never set, turns its empty middle toward you.'}
 };
 const GPOOL=Object.keys(GUARDIANS),FPOOL=Object.keys(FINALS);
-// v4.8: the 12 lesser bosses are SCOURGES, the 4 world-eaters are CALAMITIES
+// v4.8: the 16 lesser bosses are SCOURGES, the 5 world-eaters are CALAMITIES
 const bossClass=k=>String(k)==='riftkeeper'?'Ultimate':FINALS[String(k).replace(/^echo_/,'')]?'Calamity':'Scourge';
-const BOSS_CLASS_D={Scourge:'A Scourge: one of the twelve beast-lords that seized the beacons.',Calamity:'A Calamity: a world-eater that drinks the Meridian itself.'};
+const BOSS_CLASS_D={Scourge:'A Scourge: one of the sixteen beast-lords that seized the beacons.',Calamity:'A Calamity: a world-eater that drinks the Meridian itself.'};
 // v0.12.13: the Riftkeeper, the ultimate boss behind the Echo Sanctum (riftkeeper9.js). Not in GUARDIANS or FINALS, so it is no gate, no Echo
 // and no Archive entry; guardianDef finds it by key. Its skill elements change every turn (riftkeeper9.js sets them); the element here is the base.
 const RIFTKEEPER={n:'The Riftkeeper',art:'riftkeeper',el:['light','shadow'],hp:7,atk:1.35,def:1.35,mag:1.4,res:1.35,spd:1.05,

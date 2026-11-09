@@ -1,5 +1,5 @@
-// ===== realmdata.js (v0.4.1): the sixteen realms, boss overlays and Calamity effects (logic in realms.js) =====
-// ---------- the sixteen realms ----------
+// ===== realmdata.js (v0.4.1): the seventeen realms, boss overlays and Calamity effects (logic in realms.js) =====
+// ---------- the seventeen realms ----------
 // lean: palette pull (mix, k), roofs, decorations, ground motif, ambient particles, a faint tint. wx: weather shares (clear is always the largest).
 const REALMS=[
  {key:'thistle',std:1,theme:'meadow',n:'Thistlewold Downs',town:'Brackenford',dungeon:'Thistlewold Barrow',mat:'moss',els:['earth','wind'],mus:-1,
@@ -86,7 +86,7 @@ const REALMS=[
   win:'The great bellows sigh to a stop, then start again, slow and even. The beacon in the foundry burns clean, and the far tunnels open.',
   npc:[['Foreman Grell','Ironlings spark when you hit them. Rubber boots. Trust me.'],['Bellows-boy Tik','Lightning hates earth. The golems know it too.'],['Assayer Mira','There is iron here older than the mountain. Do not ask me how.']],
   quest:{t:'Ironlings in the rails',d:'The foreman wants the ironlings cleared from the cart rails.',mon:'v_ironling'}},
- // ----- the four Calamity realms: handcrafted mood, quests and wayfarers; whichever Calamity is here adds its own effect (CAL_FX) -----
+ // ----- the five Calamity realms: handcrafted mood, quests and wayfarers; whichever Calamity is here adds its own effect (CAL_FX) -----
  {key:'ashen',cal:1,theme:'void',n:'The Ashen Expanse',town:'Last Ember',dungeon:'The Cinder Throne',mat:'dust',els:['fire','shadow'],mus:-4,
   pool:['v_ashspawn','v_cindereater','ashwraith','v_ashhusk','stareater'],lean:{mix:'#6a3a2a',k:.34,roof:['#3a2a2a','#5a2a1a','#2a1a1a','#6a3a2a'],dec:['#ff6a2a','#ffd04a','#8a2a1a','#c0b0a0'],motif:'ash',amb:'ash',tint:'rgba(120,50,30,.07)'},
   wx:[['clear',46],['ashfall',22],['heat',16],['starfall',8],['fog',8]],
@@ -118,7 +118,15 @@ const REALMS=[
   win:'The Broken Zenith mends with a sound like a struck bell and the sky knits closed. The stolen light pours down, and every beacon in Aurelis blazes.',
   npc:[['Aerie Warden Tol','Mind the shards. They cut on the way down and the way up.'],['Rope-weaver Ilka','Earth grounds lightning. Bring a heavy friend.'],['Fallen Pilgrim','I climbed here to touch the sky. Now I have, and I wish I had not.']],
   quests:[{t:'Feathers for the ropes',d:'Rope-weaver Ilka needs feathers from the broken sky to weave new bridges.',type:'gather',mat:'feather',n:8},{t:'Shards on the bridges',d:'The wardens want the sky shards cleared from the bridges.',mon:'v_skyshard'}],
-  favor:['earth','light']}
+  favor:['earth','light']},
+ {key:'ashglass',cal:1,theme:'heights',n:'The Ashglass Reach',town:'Saltwick',dungeon:'The Glass Cathedral',mat:'dust',els:['light','fire'],mus:-4,
+  pool:['v_saltcrawler','v_glasswisp','v_cindereater','cinderpup','v_ashhusk'],lean:{mix:'#d8c8b0',k:.34,roof:['#c8b8a0','#8a6a58','#e8dcc8','#a8826a'],dec:['#ffffff','#ffd878','#f0a060','#bfe8f0'],motif:'frost',amb:'dust',tint:'rgba(255,220,170,.08)'},
+  wx:[['clear',46],['heat',24],['sand',16],['starfall',6],['fog',8]],
+  intro:'Saltwick is a camp of white tents on the rim of the Ashglass Reach, a flat so bright and so scorched that the ground has turned to salt and the sand to glass. Out in the middle stands the Glass Cathedral, and above it hangs a sun with nothing in the middle of it.',
+  win:'The Hollow Sun cracks along its ring and the Glass Cathedral rings like a struck bell. Every stolen light pours out of it at once, and across Aurelis the beacons blaze.',
+  npc:[['Salt-boss Marra','Do not look straight up at noon. There is a hole in the sun, and it looks back.'],['Glass-cutter Dev','The sand fuses in a single night. I sell the shards to people who miss windows.'],['Pilgrim Ansel','I walked here to see the sun go out. It did not go out. It went hollow. I think that is worse.']],
+  quests:[{t:'Dust for the lamp-wicks',d:'Salt-boss Marra wants dust from the Reach to make wicks that burn clean.',type:'gather',mat:'dust',n:8},{t:'Crawlers in the salt pans',d:'The salt-cutters want the salt crawlers kept out of the pans.',mon:'v_saltcrawler'}],
+  favor:['earth','shadow']}
 ];
 const REALM_BASE=ZONES.length;// 6: indices REALM_BASE.. are the new realms
 REALMS.forEach((R,i)=>{R.idx=REALM_BASE+i;R.pool0=R.pool.slice();R.wxk='rlm_'+R.key;WX_TABLE[R.wxk]=R.wx;SUPER_TABLE[R.wxk]=(SUPER_TABLE[R.theme]||[]).slice();ZONES.push(R);});
@@ -143,13 +151,19 @@ const BOV={
  dimmer:{mon:['o_dimmer','voidspawn','Dimling',['shadow','light'],'#3a3a5a'],wx:['fog',8],el:['shadow','light'],say:'Lanterns burn dimmer here. Twice the oil, half the light.',guide:'Dimlings drink the light, and fog comes more often.'},
  nidhra:{mon:['o_nidhra','ashwraith','Eclipse Cinder',['shadow','fire'],'#4a2a3a'],wx:['ashfall',8],el:['shadow','fire'],say:'The sun goes dark for a moment every noon. Just a moment.',guide:'Eclipse-touched cinders burn in the dark, and ash falls more often.'},
  hollowking:{mon:['o_hollowking','huskguard','Hollow Herald',['shadow','lightning'],'#5a4a7a'],wx:['storm',8],el:['shadow','lightning'],say:'Every crown in town has gone missing. Even the paper ones.',guide:'Hollow heralds march the roads, and storms come more often.'},
- seraph:{mon:['o_seraph','eclipsewraith','Ash Seraphling',['light','fire'],'#f0d090'],wx:['aurora',8],el:['light','fire'],say:'Feathers of warm ash on the doorsteps every morning.',guide:'Ash-winged seraphlings shine over the fields, and the sky glows more often.'}
+ seraph:{mon:['o_seraph','eclipsewraith','Ash Seraphling',['light','fire'],'#f0d090'],wx:['aurora',8],el:['light','fire'],say:'Feathers of warm ash on the doorsteps every morning.',guide:'Ash-winged seraphlings shine over the fields, and the sky glows more often.'},
+ locustchoir:{mon:['o_locustchoir','gnatswarm','Choir Locust',['wind','earth'],'#9a9a3a'],wx:['gale',8],el:['wind','earth'],say:'The barley stands, and the ears are empty. The hum comes from nowhere in particular.',guide:'Choir locusts drone over the fields, and gales come more often.'},
+ ironmaw:{mon:['o_ironmaw','crawler','Ironback Crab',['earth','water'],'#6a7080'],wx:['rain',8],el:['earth','water'],say:'The shoreline moved overnight. Slowly. It had a shape.',guide:'Ironback crabs scuttle the shallows, and rain comes more often.'},
+ candlemoth:{mon:['o_candlemoth','gustimp','Taper Moth',['fire','light'],'#e8c070'],wx:['heat',6],el:['fire','light'],say:'Moths at every window, and every one is a little bit on fire.',guide:'Taper moths flutter at every light, and heat comes more often.'},
+ brinehag:{mon:['o_brinehag','drownedsailor','Brinehag Thrall',['water','shadow'],'#3a6a5a'],wx:['fog',8],el:['water','shadow'],say:'Wet footprints on the dry flagstones. Lots of them, going inland.',guide:'Drowned thralls trudge up from the water, and fog comes more often.'},
+ hollowsun:{mon:['o_hollowsun','ashwraith','Hollow Cinder',['light','fire'],'#e8c050'],wx:['heat',8],el:['light','fire'],say:'The noon shadows point the wrong way. Some do not have a shadow at all.',guide:'Hollow cinders drift in the glare, and heat waves come more often.'}
 };
 // ---------- Calamity effects (4.2): fair and counterable, both sides feel the element shifts ----------
 const CAL_FX={
  dimmer:{n:'Dimming sky',el:{shadow:1.15,light:.88},d:'Shadow hits 15% harder and Light 12% softer, for everyone. Light gear and Light skills still land well; Shadow resistance blunts it.'},
  nidhra:{n:'Drifting ash',el:{fire:1.15},burn:.1,d:'Fire hits 15% harder for everyone, and foe Fire hits have a 10% extra chance to Burn. Remedies, Purify and a Clarity Charm (immunity) answer it.'},
  hollowking:{n:'Pressure',el:{lightning:1.12},spd:.92,d:'Everyone moves 8% slower and Lightning hits 12% harder. Haste and fast gear make up the difference.'},
- seraph:{n:'Corrupted dawn',el:{light:1.15,fire:1.08},d:'Light hits 15% harder and Fire 8% harder, for everyone. Shadow and Water gear and resistances blunt it.'}
+ seraph:{n:'Corrupted dawn',el:{light:1.15,fire:1.08},d:'Light hits 15% harder and Fire 8% harder, for everyone. Shadow and Water gear and resistances blunt it.'},
+ hollowsun:{n:'Hollow glare',el:{light:1.12,fire:1.12,ice:.9},d:'Light and Fire hit 12% harder and Ice 10% softer, for everyone. Water and Shadow gear and resistances blunt it.'}
 };
 

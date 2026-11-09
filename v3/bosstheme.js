@@ -34,7 +34,17 @@ const BTHEME={
  hollowking:{label:'Hollow crown',mix:'#4a2a70',k:.40,roof:['#5a3a8a','#3a2a5a','#6a4a98','#2a1a4a'],dec:['#b080ff','#f6e7a8','#5fc9a0','#ff8ad0'],motif:'crown',amb:'motes',tint:'rgba(70,30,110,.10)',mus:-1,
   omen:'People talk about an empty throne out there. Nobody agrees which direction it is.',npc:['I dreamed I wore a crown made of nothing. It was heavy.','There is a gap in the stars shaped like a seat.']},
  seraph:{label:'Gilded ash',mix:'#e8d8b8',k:.36,roof:['#d8c8a0','#c8a860','#f0e8d0','#a89870'],dec:['#fff6d0','#ffffff','#ffd878','#f0b090'],motif:'feather',amb:'feathers',tint:'rgba(255,230,180,.08)',mus:2,
-  omen:'White ash falls on the shrines in the shape of feathers. It is warm to the touch.',npc:['The bells ring by themselves at dawn. Nobody pulls the ropes.','Everything glows a little at the edges lately. It is beautiful, and it frightens me.']}
+  omen:'White ash falls on the shrines in the shape of feathers. It is warm to the touch.',npc:['The bells ring by themselves at dawn. Nobody pulls the ropes.','Everything glows a little at the edges lately. It is beautiful, and it frightens me.']},
+ locustchoir:{label:'Barley-hum',mix:'#a8a04a',k:.34,roof:['#b0a040','#8a7a2a','#c8b858','#6a6a2a'],dec:['#e8dc80','#a8b050','#ffffff','#d0a040'],motif:'comb',amb:'motes',tint:'rgba(170,160,60,.07)',mus:1,
+  omen:'The barley is standing, but the ears are empty, and a hum with no source sits over every field.',npc:['Something sings at dusk. A whole choir of something.','I swept the porch twice. Wings. Always wings.']},
+ ironmaw:{label:'Shell and tide',mix:'#6a7a7a',k:.36,roof:['#5a6a70','#7a7a82','#4a5a60','#8a8a90'],dec:['#a8b8c0','#6a8a9a','#c8c0a8','#ffffff'],motif:'tide',amb:'bubbles',tint:'rgba(80,100,110,.08)',mus:-2,
+  omen:'A hill by the shore has been moving a few feet every night, slowly, toward the town.',npc:['That rock was not there on Tuesday.','The tide goes out and something enormous breathes in.']},
+ candlemoth:{label:'Taper-lit',mix:'#e0b868',k:.34,roof:['#d0a050','#e8d4a0','#b88a40','#f0e0b8'],dec:['#fff0a0','#ffb040','#ffffff','#f0d890'],motif:'ember',amb:'motes',tint:'rgba(255,200,110,.08)',mus:2,
+  omen:'Every candle in town leans the same way at night, as if toward a very small, very patient door.',npc:['Moths in the lamp-oil. Dusty, and warm to the touch.','The tapers burn twice as fast this month. Nobody sold us bad wax.']},
+ brinehag:{label:'Tide-witched',mix:'#3a5a58',k:.38,roof:['#2a4a4a','#4a5a4a','#3a4a5a','#5a6a58'],dec:['#7affd0','#c8c0a8','#3a6a5a','#9ab0a0'],motif:'pearl',amb:'wisps',tint:'rgba(30,70,70,.10)',mus:-3,
+  omen:'Wet footprints cross the dry cobbles at night, many of them, all headed the same way.',npc:['My grandmother left a bowl of brine on the step. She never said why.','I heard my name from the well. In a very old voice.']},
+ hollowsun:{label:'Glare-bleached',mix:'#e8d8b8',k:.42,roof:['#d8c8a8','#b8a088','#f0e4cc','#a88a70'],dec:['#fff8d8','#ffd060','#ff9a4a','#bfe8f0'],motif:'frost',amb:'dust',tint:'rgba(255,230,170,.12)',mus:-4,
+  omen:'The noon light has a hole in it. Nobody can point to where, but all the shadows lean away.',npc:['Colours are washing out by midday. Everything goes the shade of bone.','The sun feels hollow. I know that is not a thing. It feels hollow.']}
 };
 const lerpHex=(a,b,t)=>{const A=hx(a),B=hx(b);return rh(A.map((v,i)=>v+(B[i]-v)*t));};
 const lerpArr=(arr,b,t)=>arr.map(c=>lerpHex(c,b,t));

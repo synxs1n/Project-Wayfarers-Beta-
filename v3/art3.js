@@ -189,3 +189,116 @@ MART.riftkeeper=g=>rkArt(g,'#c9a8ff');
 BIG_ART.push('riftkeeper');
 ELK.forEach(el=>{MART['riftkeeper_'+el]=g=>rkArt(g,ELC[el]);BIG_ART.push('riftkeeper_'+el);});
 MEXTRA.riftkeeper=(g,p)=>{};
+// ===== v0.13.7: four new Scourges and the fifth Calamity (60x60; foes.js, bosses9.js) =====
+// Silhouettes, each its own: the Locust Choir is a pillar of insects (a tall hourglass cloud around one great singing locust), Ironmaw
+// Tortoise a wide iron-plated dome with a heavy jaw low on the left, the Candleking Moth a pair of huge dusty wings under a crown of
+// three burning tapers, the Brinehag Matriarch a hunched hag under a wide barnacled hat rising from a mound of kelp and net, and the
+// Hollow Sun a ring of fire around a black hollow, with glass shards in orbit and salt spikes below. Idle is the shared bossIdle.
+function locust(g,x,y,s,B,b,W,E){// one small locust facing left: body, head, folded wing, two legs
+  g.ell(x,y,2.4*s,1.1*s,B);g.ell(x-2.6*s,y-.2*s,1.1*s,1*s,B);g.line(x-.5*s,y-1*s,x+3.4*s,y-2.4*s,W,Math.max(1,Math.round(s*.8)));
+  g.s(x-3.2*s,y-.6*s,E);g.line(x+.6*s,y+.8*s,x+2.4*s,y+3*s,b);g.line(x-1*s,y+.8*s,x-1.8*s,y+3*s,b);}
+Object.assign(MART,{
+ locustchoir(g){
+  g.ell(30,57,15,2.4,'D');
+  // the cloud: an hourglass of small locusts (wide at the top and bottom, narrow in the middle), lit ones on the left
+  [[8,6,.8],[20,3,.7],[34,4,.8],[47,7,.7],[14,12,.7],[27,9,.6],[41,13,.8],[52,16,.6],[7,20,.7],[17,22,.8],[44,24,.7],[51,30,.8],[12,33,.7],[46,38,.6],[8,44,.8],[19,47,.7],
+   [41,45,.8],[50,50,.7],[12,54,.7],[30,53,.8],[46,56,.6],[22,38,.6]].forEach(([x,y,s])=>locust(g,x,y,s,'A','B','W','E'));
+  // the conductor: one great locust, upright, wings spread and mouth open mid-note
+  g.poly([[24,26],[8,10],[12,22],[6,32],[20,36]],'W');g.poly([[36,26],[52,10],[48,22],[54,32],[40,36]],'W');
+  g.line(24,26,8,10,'w');g.line(36,26,52,10,'w');g.line(22,30,10,30,'w');g.line(38,30,50,30,'w');g.line(24,33,12,36,'w');g.line(36,33,48,36,'w');
+  g.ell(30,38,6,12,'A');g.ell(30,42,4,8,'B');for(let i=0;i<5;i++)g.rect(26,32+i*4,8,1,'b');
+  g.path([[26,48],[20,52],[16,57]],'B',2);g.path([[34,48],[40,52],[44,57]],'B',2);g.rect(12,56,6,2,'b');g.rect(42,56,6,2,'b');
+  g.ell(30,20,6.5,7,'A');g.ell(28,17,3,3,'L');g.ell(26,20,2.5,2.5,'E');g.ell(34,20,2.5,2.5,'E');g.s(25,19,'W');g.s(33,19,'W');
+  g.rect(27,25,6,4,'K');g.rect(28,26,4,2,'M');g.px([[27,25],[29,25],[31,25]],'W');
+  g.path([[26,14],[20,6],[16,2]],'B',1);g.path([[34,14],[40,6],[44,2]],'B',1);
+  // the song, drifting up as flat gold marks
+  g.px([[4,30],[5,28],[6,26],[54,24],[55,22],[56,20],[3,52],[57,44],[30,0]],'Y');
+  return {pal:{A:'#8a9a3a',B:'#566a26',b:'#3a4a1a',L:'#c0d060',W:'#d8cc8a',w:'#9a8a50',E:'#ff5a30',K:'#1a1008',M:'#8a2a1a',Y:'#ffe27a',D:'#2a2814'},flat:'EYM',rim:'#1a2008'};
+ },
+ ironmaw(g){
+  g.ell(30,57,26,3,'D');
+  // legs and tail
+  g.poly([[52,42],[60,50],[54,52]],'F');
+  // the dome: a green-brown shell banded with ship iron
+  g.ell(33,32,22,19,'S');g.rect(11,32,45,12,'S');g.ell(33,32,22,19,'S');g.poly([[10,44],[56,44],[54,48],[12,48]],'s');
+  g.ell(26,26,12,10,'H');g.ell(33,32,22,19,0);g.ell(33,32,22,19,'S');g.ell(25,25,11,9,'H');g.rect(11,40,45,4,'s');
+  g.poly([[14,42],[16,30],[24,18],[33,14],[33,20],[28,30],[24,42]],'H');
+  for(let i=0;i<4;i++){const x=15+i*12;g.line(x,43,x+6-i*2,17,'I',2);g.line(x+1,43,x+7-i*2,17,'J');}
+  g.path([[11,36],[24,32],[34,31],[48,34],[55,38]],'I',3);g.path([[12,37],[24,33],[34,32],[48,35],[55,39]],'J');
+  [[15,27],[24,20],[34,17],[43,22],[48,30],[18,38],[30,38],[42,38],[52,40]].forEach(([x,y])=>{g.s(x,y,'R');g.s(x+1,y,'r');});
+  g.rect(16,46,11,10,'F');g.rect(16,46,3,10,'L');g.rect(38,46,12,10,'F');g.rect(47,48,3,8,'f');g.rect(14,54,14,3,'f');g.rect(36,54,16,3,'f');g.rect(18,51,7,1,'f');g.rect(40,51,8,1,'f');
+  // a lighthouse growing out of the shell and a wet fringe of barnacles
+  g.rect(31,3,6,13,'I');g.rect(31,3,2,13,'J');g.rect(30,2,8,2,'i');g.rect(32,0,4,3,'Y');g.px([[33,1]],'W');g.rect(31,7,6,1,'i');
+  g.px([[17,22],[40,16],[46,26],[22,44],[44,44],[50,36]],'N');g.px([[13,34],[53,36]],'Q');
+  // the head: low, wide, with an iron-plated lower jaw and teeth
+  g.ell(8,41,9,7,'F');g.ell(6,38,5,3,'L');g.poly([[1,44],[15,44],[15,52],[3,53]],'I');g.rect(0,45,2,5,'I');g.poly([[0,43],[14,44],[14,46],[1,46]],'J');
+  g.rect(1,45,13,3,'K');for(let x=2;x<13;x+=3){g.poly([[x,45],[x+1,45],[x+.5,48]],'W');}
+  g.poly([[1,52],[13,52],[11,56],[3,56]],'i');g.rect(7,34,3,3,'Y');g.rect(8,35,1,1,'K');g.px([[2,43],[3,43]],'K');
+  return {pal:{S:'#5a6a4a',s:'#3a4636',H:'#7a8a62',F:'#6a7a58',f:'#4a583e',L:'#8a9a70',I:'#8a92a0',J:'#c2cad6',i:'#4c5262',R:'#c8a85a',r:'#8a6a30',K:'#140a0a',W:'#e8e4d0',Y:'#ffd860',N:'#c8d0c0',Q:'#6ab8e8',D:'#1a2018'},flat:'YKW',rim:'#101810'};
+ },
+ candlemoth(g){
+  g.ell(30,57,12,2,'D');
+  // wings: broad dusty fans with veins, wax drips and a burning eyespot on each
+  g.poly([[26,22],[2,4],[0,22],[6,38],[24,34]],'W');g.poly([[26,30],[6,42],[10,54],[24,44]],'X');
+  g.poly([[34,22],[58,4],[60,22],[54,38],[36,34]],'W');g.poly([[34,30],[54,42],[50,54],[36,44]],'X');
+  g.poly([[26,22],[2,4],[6,14],[24,26]],'w');g.poly([[34,22],[58,4],[54,14],[36,26]],'w');
+  [[6,12],[3,22],[8,34]].forEach(([x,y])=>{g.line(25,26,x+1,y,'v');g.line(35,26,59-x,y,'v');});
+  [[13,24],[47,24]].forEach(([x,y])=>{g.ell(x,y,6,6,'O');g.ell(x,y,4,4,'Y');g.ell(x,y,1.8,2.4,'K');g.s(x-1,y-1,'W');});
+  [[10,36],[48,36],[8,44],[52,46]].forEach(([x,y])=>{g.line(x,y,x,y+5,'U');g.s(x,y+6,'U');});
+  // furred body, legs, feathered antennae
+  g.ell(30,36,5.5,13,'F');g.ell(28,32,2.5,8,'G');for(let i=0;i<5;i++)g.rect(26,38+i*3,8,1,'f');
+  g.path([[27,46],[22,52],[20,57]],'f',2);g.path([[33,46],[38,52],[40,57]],'f',2);g.path([[30,48],[30,57]],'f',2);
+  g.ell(30,20,5,5.5,'F');g.ell(28,18,2.5,2.5,'G');g.ell(27,20,1.8,2.4,'E');g.ell(33,20,1.8,2.4,'E');g.s(26,19,'W');g.s(32,19,'W');
+  g.path([[27,16],[20,10],[14,6]],'f',1);g.path([[33,16],[40,10],[46,6]],'f',1);
+  g.px([[18,8],[16,7],[15,5],[42,8],[44,7],[45,5]],'f');
+  // the crown of three burning tapers
+  [[25,10],[30,7],[35,10]].forEach(([x,y])=>{g.rect(x-1,y,3,7,'C');g.rect(x-1,y,1,7,'X');g.ell(x+.5,y-2.4,1.6,2.6,'O');g.ell(x+.5,y-1.8,.9,1.6,'Y');});
+  g.rect(24,16,12,2,'U');
+  g.px([[4,2],[56,2],[2,30],[58,32],[16,48],[44,50],[30,2]],'Y');
+  return {pal:{W:'#cdbb98',w:'#e8dcc0',X:'#a8906a',v:'#8a6a4a',F:'#f0e8d0',f:'#b8a888',G:'#fff8e8',E:'#ff6a2a',C:'#f4ecd2',U:'#d8c890',O:'#ff9a30',Y:'#fff0a0',K:'#2a1008',D:'#2a2018'},flat:'EOYK',glow:'#ffcf70',rim:'#2a1c10'};
+ },
+ brinehag(g){
+  g.ell(30,57,26,3,'D');
+  // the mound she rises from: kelp, net and a coil of tentacle
+  g.ell(30,50,25,9,'G');g.ell(26,48,16,6,'g');g.poly([[4,56],[10,44],[18,50],[10,58]],'G');g.poly([[56,56],[50,44],[42,50],[50,58]],'G');
+  g.path([[8,52],[4,46],[8,42],[6,38]],'T',3);g.path([[52,52],[57,46],[52,42],[55,38]],'T',3);g.px([[6,38],[55,38],[4,46],[56,46]],'S');
+  for(let i=0;i<5;i++){g.line(8+i*10,56,12+i*10,46,'n');}for(let i=0;i<4;i++)g.line(6,48+i*3,54,47+i*3,'n');
+  // the cloak: a hunched wet bell, lit left
+  g.poly([[18,20],[40,22],[48,52],[12,52]],'C');g.poly([[18,20],[24,20],[18,52],[12,52]],'L');g.poly([[40,22],[44,26],[48,52],[40,52]],'c');
+  g.path([[14,52],[18,48],[22,53],[28,48],[34,53],[40,48],[46,52]],'c',2);
+  [[22,34],[34,40],[26,44],[40,32],[18,44]].forEach(([x,y])=>{g.ell(x,y,1.6,1.2,'B');g.s(x,y-1,'W');});
+  // the staff with a hooked top and a drowned lantern
+  g.line(51,56,50,10,'P',2);g.path([[50,10],[48,4],[54,2],[56,6]],'P',2);g.rect(50,8,5,7,'K');g.rect(51,9,3,5,'Z');g.s(52,11,'W');
+  // reaching hand with claws
+  g.path([[20,26],[12,32],[6,34]],'C',4);g.ell(5,34,3,2.4,'S');g.line(2,33,0,31,'S');g.line(2,35,0,36,'S');g.line(3,32,2,30,'S');
+  // head: a long face under a wide barnacled hat, seaweed hair hanging
+  g.path([[22,22],[17,32],[19,46]],'G',3);g.path([[38,22],[44,32],[41,46]],'G',3);g.path([[21,24],[16,36]],'g',2);g.path([[39,24],[45,36]],'g',2);
+  g.ell(30,20,6,6.5,'S');g.rect(26,24,8,3,'S');g.poly([[27,26],[33,26],[31,31],[28,30]],'S');g.rect(28,27,4,1,'K');g.poly([[27,20],[22,26],[27,25]],'S');g.px([[22,26],[23,26]],'s');
+  g.ell(27,19,1.8,1.4,'E');g.ell(34,19,1.8,1.4,'E');g.s(26,18,'W');g.s(33,18,'W');
+  g.poly([[30,0],[40,13],[48,16],[12,16],[20,13]],'H');g.poly([[30,0],[20,13],[12,16],[26,16]],'h');g.rect(14,15,32,3,'H');g.rect(14,17,32,1,'k');
+  [[22,12],[32,8],[38,14],[26,5],[16,15],[44,15]].forEach(([x,y])=>{g.ell(x,y,1.6,1.3,'B');g.s(x,y-1,'W');});
+  g.px([[2,18],[58,22],[8,8],[52,6]],'Z');
+  return {pal:{C:'#2e4e5e',L:'#4a7088',c:'#1a303e',S:'#86a898',s:'#5a7a6c',G:'#3e6030',g:'#26401e',T:'#4a7a58',n:'#1a2a20',H:'#4a4a42',h:'#6a6a5e',k:'#22221e',B:'#d0c8ae',W:'#f4f0e0',P:'#6a5a44',K:'#0c1418',Z:'#6affd0',E:'#c890ff',D:'#101c20'},flat:'KZEW',glow:'#5ad0b0',rim:'#0a1418'};
+ },
+ hollowsun(g){
+  g.ell(30,57,20,2.4,'D');
+  // salt spikes and glass shards at the foot
+  [[8,57,5,10],[16,57,3,6],[44,57,4,7],[52,57,3,11],[24,58,2,4],[36,58,2,5]].forEach(([x,y,w,h])=>{g.poly([[x-w/2,y],[x,y-h],[x+w/2,y]],'S');g.poly([[x-w/2,y],[x,y-h],[x,y]],'s');});
+  // the corona: twelve flame prongs around the ring
+  const cx=30,cy=28;
+  for(let i=0;i<12;i++){const a=i*Math.PI/6+.2,r0=17,r1=i%2?24:29,dx=Math.cos(a),dy=Math.sin(a),px=-dy,py=dx;
+    g.poly([[cx+dx*r0+px*3.4,cy+dy*r0+py*3.4],[cx+dx*r1,cy+dy*r1],[cx+dx*r0-px*3.4,cy+dy*r0-py*3.4]],i%3===0?'G':'F');}
+  g.ell(cx,cy,19,19,'F');g.ell(cx,cy,19,19,'F');g.ell(cx-2,cy-2,16,16,'G');g.ell(cx,cy,19,19,0);g.ell(cx,cy,19,19,'F');
+  g.poly([[10,22],[16,12],[26,8],[30,10],[20,16],[14,26]],'G');g.poly([[12,20],[18,13],[26,10],[22,15],[16,24]],'W');
+  g.poly([[44,36],[40,44],[32,48],[38,40]],'f');
+  // the hollow: a black disc with a thin bright rim and a slit of light, like a pupil
+  g.ell(cx,cy,15,15,'K');g.ell(cx+1,cy+1,13.5,13.5,'V');g.ell(cx+2,cy+2,12,12,'K');
+  g.line(cx-14,cy-4,cx-10,cy-10,'W');g.line(cx-10,cy-10,cx-4,cy-14,'W');
+  g.poly([[cx,cy-8],[cx+2,cy],[cx,cy+8],[cx-2,cy]],'Y');g.poly([[cx,cy-5],[cx+1,cy],[cx,cy+5],[cx-1,cy]],'W');
+  // glass shards in orbit
+  [[3,10,4],[56,8,3],[2,40,3],[57,38,4],[10,52,3],[50,52,3]].forEach(([x,y,r])=>{g.poly([[x,y-r],[x+r*.6,y],[x,y+r*1.4],[x-r*.6,y]],'S');g.poly([[x,y-r],[x,y+r*1.4],[x-r*.6,y]],'s');});
+  g.px([[14,2],[46,3],[0,28],[59,24],[28,0]],'W');
+  return {pal:{F:'#ff8a2a',f:'#b8401a',G:'#ffd860',W:'#fff6d0',K:'#07030a',V:'#5a1a3a',Y:'#fff0a0',S:'#cfeaf0',s:'#6a9aa8',D:'#241410'},flat:'KGWY',glow:'#ffb040',rim:'#1a0a0a'};
+ }
+});
+['locustchoir','ironmaw','candlemoth','brinehag','hollowsun'].forEach(k=>{BIG_ART.push(k);});

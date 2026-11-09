@@ -1,6 +1,6 @@
 // ===== sanctum.js (v0.3.3): the Echo Sanctum =====
 // Replaces the menu style Echo Rift. Unlocks once all five of this journey's story Echoes (four Scourges and the Calamity)
-// are beaten (G.echoStory, unchanged). A safe, explorable hall reached from any waystone: sixteen gates, one for each
+// are beaten (G.echoStory, unchanged). A safe, explorable hall reached from any waystone: a gate for each
 // Scourge and Calamity Echo. Fights use riftSpec(): same scaling, drops, shards and Echoforge rules as v0.3.2.
 // No new save fields. The map is built in code (id 's0'), safe (no random battles), and its exit leads back to the last town.
 const SANCT_ID='s0';
@@ -15,9 +15,12 @@ function buildSanctum(){
   m.w=W;m.h=H;m.tone=valueNoise(mulberry(7171),W,H,6);m.shelves=[];
   // v0.11.0: every gate stands, open or not. Scourges along the north wall; the Calamities get their own row on the south wall,
   // either side of the door, in crimson and gold frames (drawPortal)
-  const gp=GPOOL.slice(),fp=FPOOL.slice(),step=Math.max(2,Math.floor((W-4)/Math.max(1,gp.length-1)));
-  gp.forEach((k,j)=>{const x=Math.min(W-2,2+j*step),d=guardianDef(k);if(!d)return;m.npcs.push({x,y:1,hx:x,hy:1,name:'Gate of Echo '+d.n,line:'',view:'front',face:'r',act:'portal',portal:1,key:k,look:null});});
-  const fx=[5,9,18,22];fp.forEach((k,j)=>{const x=fx[j]!=null?fx[j]:3+j*3,d=guardianDef(k);if(!d)return;m.npcs.push({x,y:H-2,hx:x,hy:H-2,name:'Calamity Gate: Echo '+d.n,line:'',view:'front',face:'r',act:'portal',portal:1,cal:1,key:k,look:null});});
+  // v0.13.7: sixteen Scourge gates do not fit one row of a 28 wide hall, so they take two (y 1 and y 3, the second row keeping clear of the
+  // Riftkeeper's gate at x 13); the five Calamity gates stand either side of the south door (x 13)
+  const gp=GPOOL.slice(),fp=FPOOL.slice(),rowA=Math.ceil(gp.length/2),xB=[2,4,6,8,10,16,18,20,22,24];
+  const gx=j=>j<rowA?{x:Math.min(W-2,2+j*3),y:1}:{x:xB[j-rowA]!=null?xB[j-rowA]:Math.min(W-2,2+(j-rowA)*2),y:3};
+  gp.forEach((k,j)=>{const {x,y}=gx(j),d=guardianDef(k);if(!d)return;m.npcs.push({x,y,hx:x,hy:y,name:'Gate of Echo '+d.n,line:'',view:'front',face:'r',act:'portal',portal:1,key:k,look:null});});
+  const fx=[5,9,17,20,23];fp.forEach((k,j)=>{const x=fx[j]!=null?fx[j]:3+j*3,d=guardianDef(k);if(!d)return;m.npcs.push({x,y:H-2,hx:x,hy:H-2,name:'Calamity Gate: Echo '+d.n,line:'',view:'front',face:'r',act:'portal',portal:1,cal:1,key:k,look:null});});
   m.npcs.push({x:13,y:9,hx:13,hy:9,name:'Echo Warden',line:'Every Scourge and Calamity you broke is still ringing in here. Stand before a gate and press Space to challenge its Echo. This hall is safe: nothing roams, and the way out is the south door.',look:villagerLook('Echo Warden'),view:'front',face:'r'});
   return m;
 }
@@ -38,7 +41,7 @@ function portalLockWhy(k){try{const st=[0,1,2,3,4].find(s=>bossKeyFor(s)===k);co
   return `This Echo is not in this journey. Beat all five story Echoes of one journey (${n} of 5 so far) and every gate opens for good, in every journey.`;}catch(e){return 'Beat the story Echoes to open it.';}}
 function mPortal(m){const k=m.key,d=guardianDef(k);if(!d)return '';const b=(META.best||{})['Echo '+d.n]||{},open=riftKeys().includes(k);
   return box(`Echo of ${esc(d.n)}`,`<div class="row"><img class="mimg" src="${monURL('echo_'+d.art)}" alt=""><div class="grow"><b>Echo ${esc(d.n)}</b><small>${bossClass(k)} · Level ${echoLv(k)}${b.kills?` · beaten ${b.kills}x`:''}${(G.bossWon||{})['e:'+k]?' · auto allowed':' · auto locked until a manual win'}</small><small>Shard: ${G.mats['es_'+k]||0} held</small></div></div>
-    ${open?'':`<p class="note warn">Locked. ${esc(portalLockWhy(k))}</p>`}${FPOOL.includes(k)?'<p class="note"><b>Calamity Echo.</b> One of the four world-enders, harder than any Scourge.</p>':''}
+    ${open?'':`<p class="note warn">Locked. ${esc(portalLockWhy(k))}</p>`}${FPOOL.includes(k)?'<p class="note"><b>Calamity Echo.</b> One of the five world-enders, harder than any Scourge.</p>':''}
     <p class="note">Echoes at full strength: Scourges at level 50 or your average +5, Calamities at 56 or your average +8. Every Echo drops Echo Essence; its Shard on the first win this journey, often after that. Shards feed the Smithy's Echoforge.</p>`,
     `<button class="btn" data-act="closeModal">Not yet</button><button class="btn gold" data-act="riftFight" data-arg="${k}" ${open?'':'disabled'}>Challenge</button>`);}
 HOOK.before('vModal','sanctum','portal popup',function(m){if(m&&m.type==='portal')return HOOK.stop(mPortal(m));});

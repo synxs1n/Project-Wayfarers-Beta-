@@ -10,7 +10,7 @@ r=await ev(()=>{const A=__A,G=A.G;G.echoStory={0:1,1:1,2:1,3:1,4:1};A.V.modal={t
 chk('Sanctum opens with all five',r.open&&r.dis===false||JSON.stringify(r));
 await ev(()=>__A.ACT.toSanctum());await wait(700);
 r=await ev(()=>{const A=__A,m=A.WS.m;return {id:m.id,hub:m.hub,loc:document.body.innerText.includes('Echo Sanctum'),portals:m.npcs.filter(n=>n.portal&&!n.forge&&n.key!=='__riftkeeper').length,safe:m.safe,pos:[A.WS.x,A.WS.y]};});
-console.log(JSON.stringify(r));chk('travel lands in the Sanctum with 16 Echo gates (the Echoforge anvil and the Riftkeeper gate aside, v0.12.13)',!!(r.id==='s0'&&r.portals===16&&r.safe)||JSON.stringify(r));
+console.log(JSON.stringify(r));chk('travel lands in the Sanctum with 21 Echo gates (16 Scourges and 5 Calamities, v0.13.7) (the Echoforge anvil and the Riftkeeper gate aside, v0.12.13)',!!(r.id==='s0'&&r.portals===21&&r.safe)||JSON.stringify(r));
 await shot('sanct_hall');
 // reachability + collision: every gate has a reachable approach tile, exit reachable, every walkable tile reachable
 r=await ev(()=>{const A=__A,m=A.WS.m,W=m.w,Hh=m.h,seen=m.t.map(r=>r.map(()=>false)),Q=[m.start.slice()];seen[m.start[1]][m.start[0]]=true;

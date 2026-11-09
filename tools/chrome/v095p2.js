@@ -1,4 +1,4 @@
-// Beta v0.9.5 boss realm gimmicks (battle4.js, BOSS_GIM in config.js): every Scourge (12) and Calamity (4) has one. Each is announced at
+// Beta v0.9.5 boss realm gimmicks (battle4.js, BOSS_GIM in config.js): every Scourge (16) and Calamity (5) has one. Each is announced at
 // the start ("Realm gimmick: ..."), telegraphed on the boss's turn (a log line, the Telegraph chip, marks on the heroes it will hit) and
 // lands on its next turn with its effect; the i panel explains it and where it stands; answers work (Guard halves a marked hit, swapping
 // grounds the rod, heavy damage or the right element stops a readied move, Scan reveals the veil); the telegraph does not touch the RNG;
@@ -16,9 +16,9 @@ const SETUP=`window.__setup=function(k,stage){const A=__A;if(!window.__began){A.
   window.__turn=function(u){const B=__A.B;__A.B4.foeTurn(u);B.cur=B.front.find(c=>c.hp>0);B.mode='cmd';};`;
 (async()=>{const H=await open({w:390,h:844,mobile:true,pre:PRE});const {ev,wait}=H;await ev(SETUP);
 const keys=await ev(()=>Object.keys(__A.B4.GIM.def));
-chk(`every Scourge and Calamity has a gimmick (${keys.length})`,keys.length===16&&['thornwarden','drake','cinderking','hoarwyrm','ysolde','bonecolossus','queenmantis','gloomcap','ironsentinel','siren','ashwyvern','frostlich','dimmer','nidhra','hollowking','seraph'].every(k=>keys.includes(k))||keys.join(','));
+chk(`every Scourge and Calamity has a gimmick (${keys.length})`,keys.length===21&&['locustchoir','ironmaw','candlemoth','brinehag','hollowsun','thornwarden','drake','cinderking','hoarwyrm','ysolde','bonecolossus','queenmantis','gloomcap','ironsentinel','siren','ashwyvern','frostlich','dimmer','nidhra','hollowking','seraph'].every(k=>keys.includes(k))||keys.join(','));
 const R=await ev(keys=>{const A=__A,T=A.TW.get,out={};
-  for(const k of keys){const final=['dimmer','nidhra','hollowking','seraph'].includes(k),B=window.__setup(k,final?4:1),u=B.en[0],S=A.B4.gim(),D=S&&S.D,o={k,t:D&&D.t};out[k]=o;
+  for(const k of keys){const final=['dimmer','nidhra','hollowking','seraph','hollowsun'].includes(k),B=window.__setup(k,final?4:1),u=B.en[0],S=A.B4.gim(),D=S&&S.D,o={k,t:D&&D.t};out[k]=o;
     o.intro=B.log.some(l=>/Realm gimmick:/.test(typeof l==='string'?l:(l&&l.t)||''));
     const logTxt=()=>B.log.map(l=>typeof l==='string'?l:(l&&l.t)||'').join(' | ');
     if(D.t==='phase2'){u.hp=Math.round(u.S.mhp*.6);T('hurt')(u,1);o.tele=!!(u.st.g_tele)&&S.warned===1;const sk0=u.sk.map(s=>s.n).join(',');u.shield=0;u.broken=1;T('hurt')(u,Math.round(u.S.mhp*.15));
