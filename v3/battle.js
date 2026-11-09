@@ -157,6 +157,10 @@ function targetable(u){
   if(u.side==='e')return !!(B.pend.sk&&u.hp>0&&(B.pend.sk.t==='one'||B.pend.sk.t==='chain'||(typeof healsUndead==='function'&&healsUndead(B.pend.sk,u))));
   return allyTargetable(u);
 }
+function foeFrame(u,a,h,now,i){
+  if(h>=0&&h<180)return {t:'hit',i:0};
+  if(u.actKind&&a>=60&&a<380)return {t:'atk',i:0};
+  return {t:'idle',i:typeof gfxStill==='function'&&gfxStill()?0:Math.floor(now/700+(i||0)*.5)%2};}
 function drawUnit(ctx,u,b,now,tgMode){
   const hero=u.side==='p',dir=hero?-1:1,T=Date.now();
   let x=b.x,y=b.y,alpha=1,walk=false,white=0,lying=false;
@@ -179,12 +183,15 @@ function drawUnit(ctx,u,b,now,tgMode){
   // break stagger
   if(u.broken&&u.hp>0)x+=Math.floor(now/90)%2;
   let c0=spriteOf(u,walk),fk='';
+  // v0.13: foes whose art has frames (art.js frame API, MART[art].fr) swap idle 0/1 (700 ms), atk (while acting) and hit (180 ms after the blow lands)
+  const ff=!hero&&!u.heroArt&&u.hp>0&&!B.wipe&&typeof monHasFrames==='function'&&monHasFrames(u.art)&&!(typeof bossHasIdle==='function'&&bossHasIdle(u));
+  if(ff){const fr=foeFrame(u,a,h,now,b.i);c0=imgOf('bm:'+u.art+'#'+fr.t+fr.i,()=>monCanvas(u.art,fr));fk=fr.t+fr.i;}
   // v0.12.6: bosses and guardians idle on two frames (art3.js bossIdle: an exhale and a soft glow); a winding up foe swells and glows (bossTele, anim.js)
   const idle=!hero&&u.hp>0&&typeof bossHasIdle==='function'&&bossHasIdle(u)&&!gfxStill();
   if(idle){const f=bossIdle(c0,b.i,now);if(f!==c0){c0=f;fk='f';}}
   const tele=!hero&&u.hp>0&&!B.wipe&&typeof bossTele==='function'&&bossTele(u),tp=tele?(gfxStill()?.5:.5+.5*Math.sin(now/120)):0,tsc=tele?1.035+(gfxStill()?0:.02*Math.sin(now/130)):1;
   const c=BV.tint?BV.tint(c0):c0;// v0.5.3: the GL stage (Medium) tints sprites to the light of the scene
-  const breathe=!lying&&u.hp>0&&!B.wipe&&a>520&&Math.floor(now/(hero?620:760)+b.i*.5)%2===1&&!idle;
+  const breathe=!lying&&u.hp>0&&!B.wipe&&a>520&&Math.floor(now/(hero?620:760)+b.i*.5)%2===1&&!idle&&!ff;
   // shadow
   // v0.5.0 2.1: the shadow always sits on the ground plane (b.gy); flying foes hover above theirs with a gentle bob
   if(b.hov&&u.hp>0)y+=Math.round(Math.sin(now/320+b.i)*1.5);

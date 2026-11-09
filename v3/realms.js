@@ -7,33 +7,98 @@
 // a palette lean, roofs and decorations, a ground motif, ambient particles, its own monster mix (with realm variants), weather table,
 // townsfolk, quests and a music shift. The boss overlay sits on top while the boss lives and lifts when it falls.
 
+// ---------- v0.13 variant shapes (docs/art-style.md rule 7: a variant is not a recolour) ----------
+// A variant names a flourish from SHP: a small function (g, F, a, pal) drawn over the base art AFTER its frame, so it follows idle A/B, atk and hit.
+// F = the frame (art.js mfr), a = the anchors the base drawing returns (head, body, tail positions), pal = the palette, where a flourish may add keys.
+// MONV entries take the name as their 6th field; the variants made elsewhere (o_ overlay, mb_ mini, n_ night) are named in SHAPE_OF by id.
+// Ids, names, elements and drops are untouched: only the drawing differs.
+const SHP={
+ // Bramble Pup: leaf collar and a leaf fan where the flame was
+ leaffan(g,F,a,p){p.M='#6fb04a';p.m='#3f7a32';clr(g,Math.round(a.tx-5),Math.round(a.ty-14),13,13);
+  [[-5,-8],[-1,-11],[3,-8]].forEach(([dx,dy])=>{g.poly([[a.tx,a.ty],[a.tx+dx-1,a.ty+dy+2],[a.tx+dx+.5,a.ty+dy],[a.tx+dx+2,a.ty+dy+3]],'M');g.line(a.tx,a.ty,a.tx+dx,a.ty+dy+1,'m');});
+  for(let k=0;k<5;k++){const t=k/4,x=a.bx+4+(a.hx-3-a.bx-4)*t,y=a.by-5+(a.hy+3-a.by+5)*t;g.poly([[x,y],[x+3,y+1],[x+1.5,y+5]],'M');g.s(x+1,y+1,'m');}},
+ // Gloam Hound: bat ears, a spiked ruff, violet eyes
+ hound(g,F,a,p){p.q='#2a2038';p.E='#b080ff';g.poly([[a.hx-4.5,a.hy-11],[a.hx-3.5,a.hy-17],[a.hx-.5,a.hy-11.5]],'q');
+  for(let k=0;k<4;k++){const t=k/3,x=a.bx+4+(a.hx-3-a.bx-4)*t,y=a.by-5+(a.hy+1-a.by+5)*t;g.poly([[x+1,y+2],[x-3,y-3],[x+3,y+.5]],'q');}},
+ // Kingsfire Hound: a gold crown between the ears
+ crown(g,F,a,p){p.G='#f0c050';p.g='#b88a28';g.rect(Math.round(a.hx-3),Math.round(a.hy-7),8,2,'G');g.rect(Math.round(a.hx-3),Math.round(a.hy-5),8,1,'g');
+  [[-3,-10],[0,-11],[3,-10],[-1.5,-9],[1.5,-9]].forEach(([x,y])=>g.rect(Math.round(a.hx+x),Math.round(a.hy+y),1,Math.round(-y-7)+1,'G'));g.s(Math.round(a.hx),Math.round(a.hy-6),'R');},
+ // Pyreclaw, Kennelmaster: a spiked iron collar and a chain
+ collar(g,F,a,p){p.N='#8a8ea0';p.n='#4a4e60';g.path([[a.hx-4,a.hy+4],[a.hx+2,a.hy+7]],'N',2.4);g.px([[a.hx-3,a.hy+2],[a.hx-1,a.hy+3],[a.hx+1,a.hy+4],[a.hx+3,a.hy+5]],'W');g.path([[a.hx-1,a.hy+7],[a.hx-2,a.hy+13]],'n',1);g.rect(Math.round(a.hx-3),Math.round(a.hy+13),3,2,'N');},
+ // Rime Stalker: a tall ice horn on the brow and crystals on the tail
+ icehorn(g,F,a,p){g.poly([[a.hx+1,a.hy-4],[a.hx+3.5,a.hy-14],[a.hx+5.5,a.hy-4]],'c');g.poly([[a.hx+1.6,a.hy-4.4],[a.hx+3.2,a.hy-12],[a.hx+3.8,a.hy-4.4]],'C');
+  [[-11,1,-5],[-13,4,-6]].forEach(([dx,dy,h])=>g.poly([[a.bx+dx-1.5,a.by+dy+1.5],[a.bx+dx-2+(h<-5?-1:0),a.by+dy+h],[a.bx+dx+1.5,a.by+dy+1.5]],'c'));},
+ // Moonfang Wolf: a crescent on the brow and one long fang
+ moonfang(g,F,a,p){p.Y='#fff0a0';g.ell(a.hx+1.5,a.hy-8,3.4,3.4,'Y');g.ell(a.hx+3.2,a.hy-8.8,2.7,2.7,0);g.rect(Math.round(a.hx+7),Math.round(a.hy+4),1,3,'W');},
+ // Hoarfang Wolf: curled ram horns
+ ramhorns(g,F,a,p){p.H='#f0e8d4';p.h='#a89c84';g.ell(a.hx-5.5,a.hy-6,3.6,3.6,'h');g.ell(a.hx-6,a.hy-6.4,2.2,2.2,0);g.ell(a.hx-6.4,a.hy-7,1.2,1.2,'H');g.rect(Math.round(a.hx-4),Math.round(a.hy-4),3,2,'h');g.px([[a.hx-8,a.hy-8],[a.hx-7,a.hy-9]],'H');},
+ // Frostmother: icicle antlers and an icicle beard
+ antlers(g,F,a,p){g.path([[a.hx,a.hy-5],[a.hx-1,a.hy-11],[a.hx+1,a.hy-16]],'C',2);g.path([[a.hx-1,a.hy-11],[a.hx-5,a.hy-13]],'C',1.5);g.path([[a.hx,a.hy-8],[a.hx+4,a.hy-11]],'C',1.5);g.path([[a.hx+1,a.hy-14],[a.hx+4,a.hy-16]],'c',1);
+  [[0,7],[2,8],[4,7]].forEach(([x,y])=>g.poly([[a.hx+x-1,a.hy+y-3],[a.hx+x+1.4,a.hy+y-3],[a.hx+x+.2,a.hy+y+3]],'C'));},
+ // Bog Toad: cattail reeds growing from the back
+ reeds(g,F,a,p){p.S='#4a7a3a';p.q='#6a4a2a';[[-6,10],[-1,8]].forEach(([dx,h])=>{const x=Math.round(a.bx+dx),y=Math.round(a.by-a.bh+2);g.line(x,y,x,y-h,'S');g.ell(x+.5,y-h-1,1.3,2.8,'q');g.poly([[x,y-3],[x+4,y-8],[x+1,y-3]],'S');});},
+ // Gloomspore Toad: glowing mushroom caps on the back
+ capback(g,F,a,p){p.U='#a07ae0';p.u='#6a4aa8';[[-5,0,3.4],[3,1,2.6]].forEach(([dx,dy,r])=>{const x=a.bx+dx,y=a.by-a.bh+dy;g.rect(Math.round(x),Math.round(y-3),2,4,'W');g.ell(x+1,y-4.5,r,r*.7,'u');g.ell(x+.4,y-5,r*.75,r*.5,'U');g.px([[x-1,y-5],[x+2,y-4]],'W');});},
+ // Mire Queen: a crown of lily petals
+ lilycrown(g,F,a,p){p.P='#f08ab8';p.G='#f0c050';[-4,-2,0,2,4].forEach((o,n)=>{const x=a.hx-1.5+o,y=a.hy-10-(n%2?0:1);g.poly([[x-1.5,y+3.2],[x+.2,y-2],[x+1.8,y+3.2]],'P');});g.rect(Math.round(a.hx-4),Math.round(a.hy-8),5,1,'G');g.s(Math.round(a.hx-2),Math.round(a.hy-12),'G');},
+ // Reed Crawler: reeds standing on the shell
+ reedback(g,F,a,p){p.S='#6a9a3a';p.q='#6a4a2a';[[-8,9],[-5,12],[-2,8]].forEach(([dx,h])=>{const x=Math.round(a.bx+dx),y=Math.round(a.by-4);g.line(x,y,x+(h>10?-1:0),y-h,'S');g.poly([[x,y-4],[x+4,y-9],[x+1,y-4]],'S');if(h>10)g.ell(x-.5,y-h-1,1.2,2.4,'q');});},
+ // Stormtide Crawler: a tall dorsal fin with a lightning mark
+ tidefin(g,F,a,p){p.F='#4aa8ff';p.f='#2a6ab8';p.Y='#ffe14a';g.poly([[a.bx-9,a.by-4],[a.bx-7,a.by-12],[a.bx-4,a.by-6],[a.bx-2,a.by-14],[a.bx+1,a.by-6]],'f');g.poly([[a.bx-8,a.by-4],[a.bx-7,a.by-10],[a.bx-4.5,a.by-5.5]],'F');g.px([[a.bx-3,a.by-11],[a.bx-2,a.by-9],[a.bx-3,a.by-8]],'Y');},
+ // Brine Hag: seaweed hair and barnacles
+ seaweed(g,F,a,p){p.S='#2f7a5a';p.s='#1f5a40';g.path([[a.bx-3,a.by-5],[a.bx-8,a.by-9],[a.bx-12,a.by-5],[a.bx-13,a.by+1]],'S',2);g.path([[a.bx,a.by-5],[a.bx-4,a.by-11],[a.bx-9,a.by-11]],'s',1.6);g.px([[a.bx-6,a.by-2],[a.bx-2,a.by-1],[a.bx+3,a.by-3]],'W');},
+ // Crownshell: a coral crown over the shell
+ coralcrown(g,F,a,p){p.P='#f08a7a';p.p='#b8584c';p.G='#f0c050';[-9,-5,-1,3,7].forEach((o,n)=>{const x=a.cx+o,top=a.cy-10.8*Math.sqrt(1-Math.min(1,(o/13.5)**2)),h=[5,8,6,9,6][n];g.poly([[x-2,top+2.5],[x,top-h],[x+2,top+2.5]],'p');g.poly([[x-1.4,top+2.5],[x-.4,top-h+1],[x+.6,top+2.5]],'P');});g.ell(a.cx-1,a.cy-12.5,1.8,1.8,'W');},
+ // Old Shellking: two curved tusks
+ tusks(g,F,a,p){p.T='#f2ecd6';p.t='#b8b098';g.poly([[a.hx+2.5,a.hy+2.5],[a.hx+9,a.hy-4.5],[a.hx+6.5,a.hy+4.5]],'T');g.poly([[a.hx+3,a.hy+3.2],[a.hx+8,a.hy-3],[a.hx+6,a.hy+3.6]],'t');g.poly([[a.hx-1,a.hy+3],[a.hx+2,a.hy-3],[a.hx+3,a.hy+3.5]],'T');},
+ // Glowcap Slime: glowing mushroom caps instead of a crater
+ glowcaps(g,F,a,p){p.U='#8affd8';p.u='#3ab898';[[-5,1.5,4],[3,-1,3.2],[9,4,2.2]].forEach(([dx,dy,r])=>{const x=a.cx+dx,y=a.ty+dy;g.rect(Math.round(x),Math.round(y-2),2,3,'W');g.ell(x+1,y-3,r,r*.7,'u');g.ell(x+.4,y-3.6,r*.75,r*.5,'U');g.px([[x-1,y-3],[x+2,y-4]],'W');});},
+ // Sunscorch Ooze: rays all round the crown
+ sunflare(g,F,a,p){p.Y='#ffe08a';p.C='#ffb040';for(let k=0;k<7;k++){const t=-2.75+k*.4,x=a.cx+Math.cos(t)*(a.w+.5),y=a.cy+Math.sin(t)*(a.h+.5),ox=Math.cos(t),oy=Math.sin(t);g.poly([[x-oy*1.3,y+ox*1.3],[x+ox*5.5,y+oy*5.5],[x+oy*1.3,y-ox*1.3]],k%2?'C':'Y');}},
+ // Thornbound Creeper: thorn spikes round the dome
+ thorns(g,F,a,p){p.q='#3a2a1a';p.k='#c8a860';for(let k=0;k<6;k++){const t=-2.7+k*.45,x=a.x+Math.cos(t)*(a.w-1),y=a.y+Math.sin(t)*(a.h-1),ox=Math.cos(t),oy=Math.sin(t);g.poly([[x-oy*1.4,y+ox*1.4],[x+ox*5.5,y+oy*5.5],[x+oy*1.4,y-ox*1.4]],'q');g.s(Math.round(x+ox*4.6),Math.round(y+oy*4.6),'k');}},
+ // Rootmother: roots creeping out at the feet and a branch crown
+ roots(g,F,a,p){p.q='#5a3a22';p.S='#3f7f32';g.path([[a.x-6,35],[a.x-12,36.5],[a.x-16,35]],'q',2.2);g.path([[a.x+6,35],[a.x+12,36.5],[a.x+16,35]],'q',2.2);g.path([[a.x-3,36],[a.x-5,38]],'q',1.5);
+  g.path([[a.sx-1,a.sy],[a.sx-5,a.sy-7],[a.sx-7,a.sy-8]],'q',1.6);g.path([[a.sx+1,a.sy],[a.sx+5,a.sy-6],[a.sx+7,a.sy-8]],'q',1.6);g.px([[a.sx-7,a.sy-9],[a.sx+7,a.sy-9]],'S');},
+ // Mantis Brood: two small scythes on the front of the ring
+ blades(g,F,a,p){p.V='#c8e04a';p.v='#6a8a20';[-1,1].forEach(d=>{const x=a.cx+a.rx-1,y=a.cy+d*3;g.path([[x,y],[x+3,y+d*-3],[x+6,y+d*-2],[x+6,y+d*1]],'V',1.4);g.s(Math.round(x+6),Math.round(y+d),'v');});}
+};
+const SHAPE_OF={o_thornwarden:'thorns',mb_rootmother:'roots',o_drake:'tidefin',mb_brinehag:'seaweed',o_cinderking:'crown',mb_pyreclaw:'collar',n_cinderpup:'hound',
+  o_hoarwyrm:'ramhorns',mb_frostmother:'antlers',n_frostwolf:'moonfang',o_gloomcap:'capback',mb_mirequeen:'lilycrown',mb_shellking:'tusks',mb_sunscorch:'sunflare',o_queenmantis:'blades'};
+// the same flourish over a night variant (world3.js builds those before this file loads): wrap its drawing and keep the frame flag
+function shapeWrap(id,name){const f0=MART[id],sh=SHP[name];if(!f0||!sh||f0.shaped)return;
+  const w=(g,f)=>{const o=f0(g,f);if(o&&o.a){const pal=Object.assign({},o.pal);sh(g,mfr(f),o.a,pal);return Object.assign({},o,{pal});}return o;};w.fr=f0.fr||(MON[id]&&MART[MON[id].base]&&MART[MON[id].base].fr);w.shaped=1;MART[id]=w;}
+
 // ---------- realm monster variants: a base sprite repainted toward a colour, with its own name and elements ----------
 const MONV=[
- // id, base, name, elements, colour
- ['v_bramblepup','cinderpup','Bramble Pup',['earth'],'#5a8a3a'],['v_sunimp','gustimp','Sunflick Imp',['light','wind'],'#f0c040'],
- ['v_bogtoad','dewtoad','Bog Toad',['water','shadow'],'#3a5a3a'],['v_marshwisp','tidewisp','Marsh Wisp',['water','shadow'],'#5a7a6a'],
- ['v_glowslime','magmaslime','Glowcap Slime',['earth','light'],'#5ad0b0'],['v_emberbat','cavebat','Ember Bat',['fire','shadow'],'#c0502a'],
- ['v_rimewolf','frostwolf','Rime Stalker',['ice','shadow'],'#4a5a8a'],['v_galeharpy','snowharpy','Gale Harpy',['wind','lightning'],'#a8a0e0'],
+ // id, base, name, elements, colour, shape (a flourish of SHP, drawn over the base art: see above; only for variants of the redrawn foe arts so far)
+ ['v_bramblepup','cinderpup','Bramble Pup',['earth'],'#5a8a3a','leaffan'],['v_sunimp','gustimp','Sunflick Imp',['light','wind'],'#f0c040'],
+ ['v_bogtoad','dewtoad','Bog Toad',['water','shadow'],'#3a5a3a','reeds'],['v_marshwisp','tidewisp','Marsh Wisp',['water','shadow'],'#5a7a6a'],
+ ['v_glowslime','magmaslime','Glowcap Slime',['earth','light'],'#5ad0b0','glowcaps'],['v_emberbat','cavebat','Ember Bat',['fire','shadow'],'#c0502a'],
+ ['v_rimewolf','frostwolf','Rime Stalker',['ice','shadow'],'#4a5a8a','icehorn'],['v_galeharpy','snowharpy','Gale Harpy',['wind','lightning'],'#a8a0e0'],
  ['v_sunhawk','thunderhawk','Sun Hawk',['fire','wind'],'#e8a040'],['v_dunegolem','slaggolem','Dune Golem',['earth','wind'],'#d8b070'],
  ['v_lakeray','cloudray','Lake Ray',['water'],'#4a90c0'],['v_ironling','stormling','Ironling',['lightning','earth'],'#8a8a9a'],
- ['v_reedcrawler','crawler','Reed Crawler',['earth','water'],'#7a8a4a'],['v_moorgull','gull','Moor Gull',['wind','shadow'],'#6a6a7a'],
+ ['v_reedcrawler','crawler','Reed Crawler',['earth','water'],'#7a8a4a','reedback'],['v_moorgull','gull','Moor Gull',['wind','shadow'],'#6a6a7a'],
  ['v_orchardimp','gustimp','Orchard Sprite',['earth','light'],'#c0d060'],['v_quarryknight','iceknight','Quarry Knight',['earth'],'#8a7a6a'],
  // Calamity realm natives
  ['v_ashspawn','voidspawn','Ash Spawn',['fire','shadow'],'#8a4a3a'],['v_drownwatch','huskguard','Drowned Watcher',['water','shadow'],'#3a6a7a'],
  ['v_starwraith','eclipsewraith','Starless Wraith',['shadow'],'#2a2a5a'],['v_skyshard','gargoyle','Sky Shard',['light','lightning'],'#d8e0ff'],
- ['v_tidecrown','shellguard','Crownshell',['water','light'],'#5ab0c0'],['v_cindereater','stareater','Cinder Eater',['fire'],'#c0602a'],
+ ['v_tidecrown','shellguard','Crownshell',['water','light'],'#5ab0c0','coralcrown'],['v_cindereater','stareater','Cinder Eater',['fire'],'#c0602a'],
  ['v_galeghost','cloudray','Shatterwind Ray',['wind','light'],'#e0e0ff'],['v_ashhusk','huskguard','Ashen Husk',['fire','shadow'],'#6a4a40']
 ];
 function recol(hex,to,k){if(!/^#[0-9a-f]{6}$/i.test(String(hex)))return hex;return lerpHex(hex,to,k);}
-function makeMonVariant(id,base,name,els,col,extra){const m=MON[base];if(!m||MON[id])return;
+function makeMonVariant(id,base,name,els,col,extra,shape){const m=MON[base];if(!m||MON[id])return;
   const map={};m.el.forEach((e,i)=>{map[e]=els[Math.min(i,els.length-1)];});
   MON[id]=Object.assign({},m,{n:name,art:id,el:els.slice(),base,variant:1},extra||{},{sk:(m.sk||[]).map(s=>{const c=s.slice();if(map[c[1]])c[1]=map[c[1]];return c;})});
   if(typeof MON_DROPS!=='undefined')MON_DROPS[id]=(MON_DROPS[base]||[]).slice();
   if(typeof MON_TY!=='undefined'&&MON_TY[base])MON_TY[id]=MON_TY[base].slice();
   if(typeof FAM_OF!=='undefined'&&FAM_OF[base])FAM_OF[id]=FAM_OF[base];
-  MART[id]=g=>{const o=MART[m.art](g);const pal={};Object.keys(o.pal).forEach(q=>{pal[q]='KEW'.includes(q)?o.pal[q]:recol(o.pal[q],col,.5);});return Object.assign({},o,{pal});};
+  const sh=SHP[shape||SHAPE_OF[id]];
+  MART[id]=(g,f)=>{const o=MART[m.art](g,f);const p0=Object.assign({},o.pal);if(sh&&o.a)sh(g,mfr(f),o.a,p0);const pal={};Object.keys(p0).forEach(q=>{pal[q]='KEW'.includes(q)||!(q in o.pal)?p0[q]:recol(p0[q],col,.5);});return Object.assign({},o,{pal});};
+  MART[id].fr=MART[m.art].fr;// frames follow the base art (art.js frame API)
   if(MEXTRA[m.art])MEXTRA[id]=(g,p)=>{MEXTRA[m.art](g,p);Object.keys(p).forEach(q=>{if(!'KEW'.includes(q))p[q]=recol(p[q],col,.5);});};}
-MONV.forEach(([id,b,n,e,c])=>makeMonVariant(id,b,n,e,c));
+MONV.forEach(([id,b,n,e,c,sh])=>makeMonVariant(id,b,n,e,c,undefined,sh));
+['n_cinderpup','n_frostwolf'].forEach(id=>shapeWrap(id,SHAPE_OF[id]));
 
 Object.keys(BOV).forEach(k=>{const [id,b,n,e,c]=BOV[k].mon;makeMonVariant(id,b,n,e,c,{ov:k});});
 // ---------- helpers ----------

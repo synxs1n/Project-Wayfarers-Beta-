@@ -167,7 +167,7 @@ if(SPRITE_HD){
   walkerCanvas=function(key,L,els,id,view,frame){
     if(id&&TPL[id]&&TPL[id].mon)return imgOf('wkm:'+id,()=>monCanvas(TPL[id].art));
     return imgOf('wk3:'+key+':'+view+':'+frame,()=>paintHD(heroGridView(L,view,frame,id),heroPalHD(heroPal(L,els,id)),HERO_OPT));};
-  monCanvas=function(art){const s=MON_SIZE(art),g=new PG(s,s,0,0),o=MART[art](g);const pal=Object.assign({},o.pal);if(MEXTRA[art])MEXTRA[art](g,pal);
-    return paintHD(g,pal,{flat:o.flat||'',rim:o.rim,glow:o.glow,tex:monTex(art)});};
+  monCanvas=function(art,f){return monFramed(art,f,()=>{const s=MON_SIZE(art),g=new PG(s,s,0,0),o=MART[art](g,f);const pal=Object.assign({},o.pal);if(MEXTRA[art])MEXTRA[art](g,pal);
+    return paintHD(g,pal,{flat:o.flat||'',rim:o.rim,glow:o.glow,tex:monTex(art)});});};
   monURL=function(art){return cvURL('m3:'+art,()=>monCanvas(art));};
 }

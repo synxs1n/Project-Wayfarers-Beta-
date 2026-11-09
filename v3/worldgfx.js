@@ -160,7 +160,7 @@ function objCanvas(theme,kind,v){
   else if(kind==='pillar'){g=P(12,28);
     if(theme==='cave'||theme==='void'){g.poly([[3,27],[6,2],[9,27]],'A');g.poly([[6,27],[8,10],[11,27]],'B');g.px([[6,8],[8,16]],'C');pal={A:theme==='cave'?'#c890ff':'#8a5fd0',B:theme==='cave'?'#8a5ad0':'#5a3a9a',C:'#ffffff'};opt.flat='C';opt.glow=theme==='cave'?'#c890ff':'#8b5fd0';}
     else{g.rect(3,6,6,20,'A');g.rect(2,4,8,3,'B');g.rect(2,25,8,2,'B');g.rect(5,6,1,20,'D');g.poly([[3,4],[6,0],[9,4]],'A');pal={A:T.stone[0],B:T.stone[2],D:T.stone[1]};}}
-  else if(kind==='tent'){g=P(20,18);g.poly([[10,0],[19,16],[1,16]],'A');g.poly([[10,0],[13,16],[7,16]],'B');g.poly([[10,7],[12,16],[8,16]],'K');g.line(10,0,10,-2,'W');pal={A:['#c8a87a','#a85a5a','#5a7aa8'][v%3],B:shade(['#c8a87a','#a85a5a','#5a7aa8'][v%3],.8),K:'#2a1a12',W:'#6a4424'};}
+  else if(kind==='tent'){const tc=['#c8a87a','#a85a5a','#5a7aa8'][v%3];g=P(20,18);g.poly([[10,0],[19,16],[1,16]],'A');g.poly([[10,0],[5,16],[1,16]],'L');g.poly([[10,0],[19,16],[14,16]],'B');g.poly([[10,0],[13,16],[7,16]],'B');g.poly([[10,7],[12,16],[8,16]],'K');g.rect(1,15,18,1,'H');g.line(10,0,10,-2,'W');g.px([[10,-2]],'F');pal={A:tc,L:tint(tc,.22),B:shade(tc,.78),H:shade(tc,.55),K:'#2a1a12',W:'#6a4424',F:'#f6e7a8'};opt.flat='F';}
   else if(kind==='fence'){g=P(16,14);pal={W:'#9a7448',L:'#b89058'};}
   else if(kind==='tower'){g=P(22,34);g.rect(2,12,18,21,'A');for(let r=14;r<33;r+=4)g.rect(2,r,18,1,'D');g.rect(1,8,20,5,'B');for(let i=1;i<21;i+=5)g.rect(i,4,3,4,'B');g.rect(9,18,4,7,'K');g.rect(10,19,2,5,'Y');g.line(11,4,11,-3,'W');g.rect(12,-3,6,4,'F');pal={A:T.stone[0],B:T.stone[2],D:T.stone[1],K:OUTC,Y:'#ffd98a',W:'#3a2a1a',F:['#a82a2a','#2a5aa8','#c8a02a','#6a2a8a','#2a8a6a','#4a2a6a'][0]};opt.flat='YK';}
   return OBJ_CACHE[key]=paint(g,pal,opt);
@@ -281,18 +281,36 @@ function drawKeep(ctx,m,b){
   m.lights=m.lights||[];m.lights.push([x0+dx+8,y0+dy+10,20]);
 }
 function drawTent(ctx,m,b){
+  // v0.12.13: a tent is a cone of cloth, not a flat triangle: panels that converge on the pole, the left face lit and the right in shade,
+  // a darker hem that sags between pegs, guy ropes to pegs, a shadow at the base and a brighter cap under the pennant. The 2D town and
+  // the HD-2D billboard both draw from this canvas.
   const x0=b.x*TS,y0=b.y*TS,w=b.w*TS,h=b.h*TS,R=mulberry(b.x*7+b.y*5);
   const f=(c,x,y,ww,hh)=>{ctx.fillStyle=c;ctx.fillRect(x0+x,y0+y,ww,hh);};
-  const col={inn:'#4a72b8',tavern:'#b84a4a',smithy:'#5a5a66',guild:'#7a4ab0',bigtent:'#3a9a6a',workshop:'#3a8a5a'}[b.k]||['#c8a87a','#b89a6a','#a8987a'][Math.floor(R()*3)],dk=shade(col,.75);
-  const top=-10;
-  for(let yy=top;yy<h;yy++){const p=(yy-top)/(h-top),half=Math.round(4+p*(w/2+2));f(OUTC,Math.floor(w/2)-half-1,yy,half*2+2,1);}
-  for(let yy=top+1;yy<h-1;yy++){const p=(yy-top)/(h-top),half=Math.round(3+p*(w/2+1));f(col,Math.floor(w/2)-half,yy,half*2,1);f(dk,Math.floor(w/2)+Math.floor(half*.35),yy,Math.ceil(half*.65),1);for(let s=-half;s<half;s+=8)f(tint(col,.25),Math.floor(w/2)+s,yy,2,1);}
-  f('#3a2a1a',Math.floor(w/2),top-6,1,7);f('#f6e7a8',Math.floor(w/2)+1,top-6,6,3);
-  const dx=(b.door[0]-b.x)*TS;for(let yy=0;yy<14;yy++){const hw=Math.round(2+yy*.45);f('#1a1010',dx+8-hw,h-14+yy,hw*2,1);}f('#ffd98a',dx+6,h-6,4,4);
+  const col={inn:'#4a72b8',tavern:'#b84a4a',smithy:'#5a5a66',guild:'#7a4ab0',bigtent:'#3a9a6a',workshop:'#3a8a5a'}[b.k]||['#c8a87a','#b89a6a','#a8987a'][Math.floor(R()*3)];
+  const lit=tint(col,.22),lit2=tint(col,.42),dk=shade(col,.78),dk2=shade(col,.58),seam=shade(col,.45),alt=tint(col,.10),altdk=shade(alt,.78);
+  const top=-10,cx=Math.floor(w/2),H=h-top,N=Math.max(4,Math.round(w/14)*2);// N panels, even, so a seam runs down the middle
+  const halfAt=yy=>Math.round(3+((yy-top)/H)*(w/2+1));
+  for(let yy=top;yy<h;yy++){const half=halfAt(yy)+1;f(OUTC,cx-half-1,yy,half*2+2,1);}
+  for(let yy=top+1;yy<h-1;yy++){const half=halfAt(yy),p=(yy-top)/H;
+    for(let x=-half;x<half;x++){const u=x/half;// -1 left edge .. 1 right edge
+      const k=Math.floor((u+1)/2*N),ab=k%2===0;let c=ab?col:alt;
+      if(u<-.72)c=ab?lit2:tint(alt,.3);else if(u<-.3)c=ab?lit:tint(alt,.12);else if(u>.74)c=dk2;else if(u>.28)c=ab?dk:altdk;
+      if(p>.86)c=shade(c,.86);if(p<.12)c=tint(c,.15);
+      f(c,cx+x,yy,1,1);}
+    for(let k=1;k<N;k++){const sx=cx-half+Math.round(k/N*half*2);if(sx>cx-half&&sx<cx+half)f(seam,sx,yy,1,1);}}
+  // the hem: a darker band that sags between the pegs, and the cloth's shadow on the ground
+  {const half=halfAt(h-1);for(let x=-half;x<half;x++){const sag=Math.abs(((x+half)%12)-6)<2?1:0;f(shade(col,.62),cx+x,h-2-sag,1,1+sag);}f('rgba(0,0,0,.35)',cx-half-3,h-1,half*2+6,2);}
+  // guy ropes from the mid height to pegs on the ground, left and right
+  {const ym=Math.round(top+H*.55),hm=halfAt(ym),hb=halfAt(h-1);[[-1,hm,hb],[1,hm,hb]].forEach(([s,a,bb])=>{const x1=cx+s*a,y1=ym,x2=cx+s*(bb+7),y2=h-2;const n=Math.max(Math.abs(x2-x1),Math.abs(y2-y1));
+    for(let i=0;i<=n;i++)f('#d8c8a0',Math.round(x1+(x2-x1)*i/n),Math.round(y1+(y2-y1)*i/n),1,1);f('#6a4a2a',x2-1,y2-1,2,3);});}
+  // the pole, a brighter cap and the pennant
+  f(lit2,cx-1,top+1,3,3);f('#3a2a1a',cx,top-6,1,7);f('#f6e7a8',cx+1,top-6,6,3);f('#d8c080',cx+1,top-4,6,1);
+  const dx=(b.door[0]-b.x)*TS;for(let yy=0;yy<14;yy++){const hw=Math.round(2+yy*.45);f('#1a1010',dx+8-hw,h-14+yy,hw*2,1);}
+  for(let yy=0;yy<14;yy++){const hw=Math.round(2+yy*.45);f(lit,dx+8-hw-1,h-14+yy,1,1);f(dk2,dx+8+hw,h-14+yy,1,1);}f('#ffd98a',dx+6,h-6,4,4);
   m.lights=m.lights||[];m.lights.push([x0+dx+8,y0+h-4,22]);
   const ic={inn:[[2,4,8,2,'#5a6ab0'],[2,3,3,1,'#ffffff']],tavern:[[3,2,5,5,'#e0a030'],[3,2,5,1,'#ffffff'],[8,3,2,3,'#c08020']],smithy:[[2,5,8,2,'#6a6a7a'],[4,3,4,2,'#8a8a9a'],[5,1,1,4,'#c0c0d0']],workshop:[[4,1,4,1,'#8a8a9a'],[5,2,2,2,'#c8c8d0'],[3,4,6,4,'#3aa860'],[4,5,2,1,'#b8f0c8'],[9,1,2,3,'#5a3a1a'],[8,1,3,1,'#9a9aa8']],guild:[[3,1,6,6,'#b8483a'],[5,2,2,4,'#f0c050']]}[b.k];
-  if(ic){const sx=dx+18,sy=h-22;f('#3a2a1a',sx+5,sy-4,1,4);f(OUTC,sx-1,sy-1,14,11);f('#d8c090',sx,sy,12,9);ic.forEach(([a,bb,ww,hh,c])=>f(c,sx+a,sy+bb,ww,hh));}
-  if(b.k==='guild'){f('#3a2a1a',Math.floor(w/2)-1,top-14,1,10);f('#b8483a',Math.floor(w/2),top-14,8,5);f('#f0c050',Math.floor(w/2)+3,top-13,2,2);}
+  if(ic){const sx=dx+18,sy=h-22;f('#3a2a1a',sx+5,sy-4,1,4);f(OUTC,sx-1,sy-1,14,11);f('#d8c090',sx,sy,12,9);f('#b8a070',sx,sy+8,12,1);ic.forEach(([a,bb,ww,hh,c])=>f(c,sx+a,sy+bb,ww,hh));}
+  if(b.k==='guild'){f('#3a2a1a',cx-1,top-14,1,10);f('#b8483a',cx,top-14,8,5);f('#f0c050',cx+3,top-13,2,2);}
 }
 function buildMapCanvas(m,frame){
   m.lights=[];m.smoke=[];m.bsp=[];

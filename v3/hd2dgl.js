@@ -121,6 +121,9 @@ H2Batch.prototype.v=function(i,x,y,z,u,w,r,g,b,a,nx,ny,nz,fl){const o=i*7,f=this
 // a quad from 4 corners (12 numbers), a uv box, a colour (0..255) and a normal (-1..1, packed) with flags
 H2Batch.prototype.quad=function(P,u0,v0,u1,v1,r,g,b,a,nx,ny,nz,fl){if(this.n>=this.max)this.grow();const i=this.n*4,X=Math.round((nx*.5+.5)*255),Y=Math.round((ny*.5+.5)*255),Z=Math.round((nz*.5+.5)*255);
   this.v(i,P[0],P[1],P[2],u0,v0,r,g,b,a,X,Y,Z,fl);this.v(i+1,P[3],P[4],P[5],u1,v0,r,g,b,a,X,Y,Z,fl);this.v(i+2,P[6],P[7],P[8],u1,v1,r,g,b,a,X,Y,Z,fl);this.v(i+3,P[9],P[10],P[11],u0,v1,r,g,b,a,X,Y,Z,fl);this.n++;};
+// v0.12.13: a quad with its own texture coordinate at every corner (TL, TR, BR, BL), for the tent cones
+H2Batch.prototype.quad4=function(P,T,r,g,b,a,nx,ny,nz,fl){if(this.n>=this.max)this.grow();const i=this.n*4,X=Math.round((nx*.5+.5)*255),Y=Math.round((ny*.5+.5)*255),Z=Math.round((nz*.5+.5)*255);
+  for(let k=0;k<4;k++)this.v(i+k,P[k*3],P[k*3+1],P[k*3+2],T[k*2],T[k*2+1],r,g,b,a,X,Y,Z,fl);this.n++;};
 // static mesh: the batch split into GPU buffers of at most H2_QMAX quads (16 bit indices)
 function h2Mesh(gl,bt){const out=[];for(let q=0;q<bt.n;q+=H2_QMAX){const n=Math.min(H2_QMAX,bt.n-q),vb=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,vb);
   gl.bufferData(gl.ARRAY_BUFFER,new Uint8Array(bt.buf,q*4*H2V_STRIDE,n*4*H2V_STRIDE),gl.STATIC_DRAW);out.push({vb,n});}return out;}

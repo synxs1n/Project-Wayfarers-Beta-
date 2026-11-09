@@ -1840,7 +1840,7 @@ html.rm .battle.b3 .cmd .mi.b9glow{animation:none}
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.12.12";const APP_BUILD="b56d982c15cc";
+(function(){const APP_VER="0.12.13";const APP_BUILD="b53d1a04857a";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2533,7 +2533,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.12.12";const APP_BUILD="b56d982c15cc";
+const APP_VER="0.12.13";const APP_BUILD="b53d1a04857a";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2541,6 +2541,13 @@ const APP_VER="0.12.12";const APP_BUILD="b56d982c15cc";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.12.13',['Menu: the World group is now Map (the area map with a World map button); Records opens on the Realms tracker (per realm: quests, bounties, Den, Sanctum, boss) and the account stats live under Journey; element strips on every party card and reserve mini, single types too; the Bonds tab only lists pairs you can work on.',
+  'Smithy and Alchemy: Upgrade whole party tempers to the highest forge level and per slot "best upgrade" now chains buy and temper steps; anything out of reach shows a "What I need" popup (gold, materials, where to get them) from the goal line and the Out of reach rows; upgrades under 3% are not suggested.',
+  'Battle: Invoke, Spirit Call and the pet are one Summon command (a chooser when there is more than one); phones: the commands come first again and the skills list scrolls to its end.',
+  'Towns: "!" over NPCs who have a quest for you; tamed beasts get unique names; the Echoforge is an anvil inside the Echo Rift (no Smithy tab in town); beaten Echo gates glow in their element colour, Calamity gates are taller crimson and gold arches.',
+  'The Riftkeeper: an ultimate boss behind a sealed gate in the Sanctum, open once all 16 Echoes are beaten: level 60, cycles through the eight elements, raises Echo shades at 40% HP and winds up an Unmaking that only Guard survives. First win: the Riftkeeper charm (+10% every element, MP costs +10%), the Riftwalker title and a New Game+ Rift modifier. The Echo Warden now offers a free full rest.',
+  'Sprites: the first foe families are redrawn with real animation frames (idle A/B, attack lunge, hit flinch): mossling, dewtoad, cinderpup, frostwolf, crawler, shellguard, magmaslime and the gnat swarm, plus 21 realm, night and boss variants with their own shapes (horns, crowns, fins, collars), not recolours.',
+  'Tents (Last Ember, Wick\'s End and camps) are no longer flat triangles: lit and shaded faces, cloth panels, a sagging hem, guy ropes and a base shadow; in HD-2D they stand as round cones instead of upright cards.']],
  ['Beta v0.12.12',['Guild rank 1 no longer adds battle XP for everyone from the first fight (the Beastwardens, Archivists and Steady Hand rank 1 perk is a 3% inn discount instead); XP perks start at rank 2. The Guilds page text matches.']],
  ['Beta v0.12.10',['Fix: on phones the battle stage frame no longer clips the bottom 8 pixels of the stage, so labels under the heroes have their room back and stop crowding the foes.']],
  ['Beta v0.12.9',['Sprites and effects: every wayfarer now has their own look on top of class and element (hair style and colour, skin tone, one or two accessories such as a scarf, eyepatch, satchel, shoulder plate or circlet, and a tinted weapon), in the overworld, in battle and on portraits; legends keep their hand made looks. Skills show their element as a shape, not just a colour: flame tongues, a wave arc, an ice shard fan, a jagged bolt, bursting rock, curved wind slashes, a light beam, a shadow burst; physical hits show a slash, pierce, impact or arrow; heals, buffs and debuffs have their own marks; Limit Breaks flash the screen (a still tint under reduced motion). Bosses and guardians breathe, and a foe winding up a big hit swells and glows.']],
@@ -3694,9 +3701,14 @@ const FINALS={
 };
 const GPOOL=Object.keys(GUARDIANS),FPOOL=Object.keys(FINALS);
 // v4.8: the 12 lesser bosses are SCOURGES, the 4 world-eaters are CALAMITIES
-const bossClass=k=>FINALS[String(k).replace(/^echo_/,'')]?'Calamity':'Scourge';
+const bossClass=k=>String(k)==='riftkeeper'?'Ultimate':FINALS[String(k).replace(/^echo_/,'')]?'Calamity':'Scourge';
 const BOSS_CLASS_D={Scourge:'A Scourge: one of the twelve beast-lords that seized the beacons.',Calamity:'A Calamity: a world-eater that drinks the Meridian itself.'};
-function guardianDef(key){return GUARDIANS[key]||FINALS[key];}
+// v0.12.13: the Riftkeeper, the ultimate boss behind the Echo Sanctum (riftkeeper9.js). Not in GUARDIANS or FINALS, so it is no gate, no Echo
+// and no Archive entry; guardianDef finds it by key. Its skill elements change every turn (riftkeeper9.js sets them); the element here is the base.
+const RIFTKEEPER={n:'The Riftkeeper',art:'riftkeeper',el:['light','shadow'],hp:7,atk:1.35,def:1.35,mag:1.4,res:1.35,spd:1.05,
+  sk:[['Key-Lash','light',1.7,'one','phys',[['weaken',.35]]],['Doorfall','light',1.15,'all','mag',[['slow',.3]]],['Lantern Flare','light',2.0,'one','mag']],
+  intro:'A hooded keeper of woven rift light stands before every door the Echoes ever came through. A cage of glass at its heart holds one small flame, and the flame changes colour as it watches you.'};
+function guardianDef(key){return GUARDIANS[key]||FINALS[key]||(key==='riftkeeper'?RIFTKEEPER:undefined);}
 
 // ===== zones.js (v0.4.0): zone data: realms, campaign stages, stage levels, quests and bounties (split out of data.js) =====
 // =================== ZONE DATA (realms, campaign, quests and bounties). Split out of data.js ===================
@@ -4143,15 +4155,6 @@ function heroGrid(L,walk){
 // =================== MONSTERS ===================
 // Every foe is drawn facing right. Normal foes on a 40x40 grid, guardians on 60x60.
 const MART={
- mossling(g){
-  g.ell(20,29,13,8.5,'B');g.ell(19,23,11.5,5,'b');
-  g.rect(9,24,2,4,'b');g.rect(15,26,2,3,'b');g.rect(24,25,2,3,'b');g.rect(29,24,2,2,'b');
-  g.ell(14,21,3.5,2,'A');g.ell(24,21,2.5,1.5,'A');
-  g.line(22,19,22,14,'S');g.px([[21,12],[23,12],[22,11],[22,13],[21,13],[23,13]],'F');g.s(22,12,'Y');
-  g.rect(24,27,3,4,'W');g.rect(29,27,3,4,'W');g.rect(25,28,2,3,'K');g.rect(30,28,2,3,'K');
-  g.line(25,34,30,34,'K');g.px([[12,31],[16,34],[10,33],[19,35]],'D');
-  return {pal:{B:'#a07c4c',b:'#5aa04a',A:'#9ad874',S:'#3f7f32',F:'#f08ab0',Y:'#ffe08a',W:'#f4efe0',K:'#1a1020',D:'#7a5c34'}};
- },
  gustimp(g){
   g.poly([[18,17],[4,7],[7,13],[1,17],[9,19],[4,24],[16,23]],'b');
   g.poly([[22,15],[33,5],[31,11],[37,11],[29,17]],'b');
@@ -4164,38 +4167,6 @@ const MART={
   g.rect(26,11,3,3,'E');g.s(28,12,'K');g.line(24,17,30,16,'K');g.px([[25,17],[28,17]],'W');
   g.path([[3,31],[7,29],[10,31],[8,33]],'C');g.path([[30,32],[34,30],[37,32]],'C');g.path([[2,4],[6,3],[8,5]],'C');
   return {pal:{B:'#5fc9a0',b:'#2f7a74',A:'#c8f4dc',E:'#fff06a',K:'#1a1020',W:'#ffffff',C:'#e4fff6'},flat:'EKWC'};
- },
- dewtoad(g){
-  g.ell(11,32,6.5,5,'b');g.rect(5,35,10,2,'b');
-  g.ell(19,28,13,8,'B');g.ell(22,31,9,5,'A');
-  g.ell(27,22,8,6.5,'B');g.ell(27,16,3.5,3.5,'B');g.ell(20,18,2.5,2.5,'B');
-  g.rect(27,14,3,3,'W');g.rect(28,15,2,2,'K');
-  g.line(28,27,36,25,'K');g.ell(32,29,3,2,'A');
-  g.line(28,30,31,37,'b',2);g.px([[32,37],[30,37],[33,36]],'b');
-  g.ell(12,24,2,1.5,'D');g.ell(18,21,1.8,1.4,'D');g.ell(22,25,1.5,1.2,'D');
-  return {pal:{B:'#3aa0b0',b:'#28707e',A:'#c8ecd8',W:'#f4efe0',K:'#1a1020',D:'#1f5a72'},flat:'WK'};
- },
- cinderpup(g){
-  g.poly([[11,24],[3,14],[6,21],[1,20],[5,27],[11,28]],'C');g.poly([[10,25],[5,18],[7,24],[5,26],[10,27]],'R');
-  g.rect(12,29,3,8,'b');g.rect(22,29,3,8,'b');
-  g.ell(18,26,9,5,'B');g.ell(25,27,3,4,'A');
-  g.rect(16,30,3,7,'B');g.rect(25,30,3,7,'B');g.rect(15,36,4,1,'D');g.rect(24,36,4,1,'D');
-  g.ell(27,19,5.5,5,'B');g.poly([[30,18],[37,21],[30,24]],'B');g.ell(33,22,2.5,1.5,'A');g.s(37,21,'K');
-  g.poly([[23,16],[24,7],[28,14]],'B');g.poly([[24,14],[25,10],[27,14]],'R');
-  g.rect(29,18,2,2,'E');g.s(30,18,'K');
-  g.px([[4,10],[8,8],[2,6],[34,12]],'C');
-  return {pal:{B:'#e8743a',b:'#b04a22',A:'#fbe0b8',C:'#ffd23a',R:'#ff5a2a',E:'#fff6c8',K:'#1a1020',D:'#6a2a14'},flat:'EKCR'};
- },
- crawler(g){
-  [[10,31,5,37],[14,33,11,37],[22,33,25,37],[27,31,31,37]].forEach(l=>g.path([[l[0],l[1]],[(l[0]+l[2])/2,l[1]-2],[l[2],l[3]]],'b',2));
-  g.ell(9,24,3.5,2.5,'B');
-  g.ell(18,27,12,7,'B');g.ell(18,30,9,3,'A');
-  g.line(23,21,23,15,'b',2);g.line(27,21,28,15,'b',2);
-  g.rect(22,13,3,3,'W');g.rect(27,13,3,3,'W');g.s(24,14,'K');g.s(29,14,'K');
-  g.line(29,26,32,21,'B',3);
-  g.ell(34,16,4.5,3.5,'B');g.ell(35,22,3.5,2.2,'B');g.rect(33,19,6,1,0);
-  g.px([[13,24],[17,23],[21,24]],'A');
-  return {pal:{B:'#2f7fb0',b:'#1f5480',A:'#a8e0f0',W:'#f4efe0',K:'#1a1020'},flat:'WK'};
  },
  gull(g){
   g.poly([[18,21],[22,8],[27,12],[25,21]],'X');
@@ -4214,23 +4185,6 @@ const MART={
   g.rect(22,12,2,2,'K');g.rect(27,12,2,2,'K');
   g.px([[11,25],[16,29],[21,31],[26,27],[30,24],[12,30],[19,35]],'C');
   return {pal:{B:'#7ab8f0',A:'#d8eeff',b:'#4a7ac8',K:'#1a1040',C:'#f2e04a'},flat:'KC',glow:'#b8e0ff'};
- },
- shellguard(g){
-  g.ell(18,22,13,10,'B');g.rect(4,27,28,6,0);g.rect(5,26,26,2,'A');
-  g.rect(9,28,5,8,'X');g.rect(24,28,5,8,'X');g.rect(8,35,7,2,'X');g.rect(23,35,7,2,'X');
-  g.rect(28,22,5,5,'X');g.ell(34,23,5,4,'X');g.s(36,22,'K');g.line(36,25,39,24,'K');
-  [[12,18],[19,15],[25,19],[16,23],[23,24]].forEach(p=>g.ell(p[0],p[1],3,2.4,'b'));
-  [[11,12],[18,10],[25,13]].forEach(p=>g.poly([[p[0]-2,p[1]+1],[p[0],p[1]-4],[p[0]+2,p[1]+1]],'W'));
-  return {pal:{B:'#7a6a3a',b:'#a08c52',A:'#d8c890',X:'#4a9a8a',W:'#e8e0c8',K:'#1a1020'},flat:'K'};
- },
- magmaslime(g){
-  g.ell(20,28,13.5,9.5,'B');g.ell(20,20,8,3,'C');g.ell(20,20,5,1.6,'A');
-  g.path([[10,26],[14,29],[12,33]],'C');g.path([[28,24],[31,29]],'C');g.path([[18,30],[22,33],[20,36]],'C');
-  g.rect(8,33,2,4,'C');g.rect(30,33,2,3,'C');
-  g.ell(11,23,2.5,2,'b');g.ell(29,30,2,1.6,'b');
-  g.rect(23,25,3,3,'E');g.rect(29,25,3,3,'E');g.s(25,26,'K');g.s(31,26,'K');g.line(25,31,30,31,'C');
-  g.px([[16,15],[23,14],[19,13]],'A');
-  return {pal:{B:'#3a2a26',b:'#5a4234',C:'#ff7a2a',A:'#ffe08a',E:'#ffe08a',K:'#1a1020'},flat:'CAEK'};
  },
  cavebat(g){
   g.poly([[17,18],[2,9],[5,16],[0,21],[8,22],[5,28],[16,24]],'b');
@@ -4259,17 +4213,6 @@ const MART={
   g.path([[13,17],[18,20],[16,25]],'C');g.path([[24,15],[22,21],[27,24]],'C');g.line(14,32,16,36,'C');
   g.ell(20,20,2,2,'A');
   return {pal:{B:'#5e4c44',b:'#463830',C:'#ff7a2a',A:'#ffe08a',E:'#ffb040'},flat:'CAE'};
- },
- frostwolf(g){
-  g.poly([[9,22],[1,17],[3,24],[9,26]],'B');
-  g.rect(10,27,3,10,'b');g.rect(21,27,3,10,'b');
-  g.ell(17,24,10.5,5,'B');g.ell(19,27,6,2,'A');
-  g.rect(14,27,3,10,'B');g.rect(25,27,3,10,'B');
-  g.ell(28,19,5.5,4.5,'B');g.poly([[31,18],[39,21],[31,23]],'B');g.s(38,21,'K');
-  g.poly([[25,16],[25,9],[29,15]],'B');
-  [[9,20,11,14,14,20],[13,19,16,13,18,19],[18,19,20,14,23,20],[22,19,25,15,26,18]].forEach(t=>g.poly([[t[0],t[1]],[t[2],t[3]],[t[4],t[5]]],'C'));
-  g.rect(30,18,2,2,'E');g.px([[34,23],[36,23]],'W');
-  return {pal:{B:'#d4e2ec',b:'#9ab4c8',A:'#ffffff',C:'#8fdcf0',E:'#3ad0ff',K:'#1a1020',W:'#ffffff'},flat:'EKW'};
  },
  snowharpy(g){
   g.poly([[18,16],[2,5],[6,12],[1,17],[8,19],[3,25],[16,24]],'B');
@@ -4454,6 +4397,183 @@ const MART={
   return {pal:{B:'#16102a',K:'#05030a',W:'#ffffff',A:'#e8e0ff',C:'#e8553a',D:'#5fc9a0',F:'#f6e7a8',H:'#3f8fe0',I:'#f2c93a'},flat:'KWACDFHI',rim:'#6a4aa8',glow:'#8b5fd0'};
  }
 };
+// FAMILY1-BEGIN
+// =================== FOE FRAME API + FAMILY 1 (v0.13 art pass, docs/art-style.md) ===================
+// A MART drawing may take a second argument f = {t:'idle'|'atk'|'hit', i:0|1}; monCanvas(art,f) paints that frame and caches it per art+frame
+// (key art+'#'+t+i). No f means idle 0, the old look. Wrappers that call MART[base](g) without f (night, realm, echo, pet recolours) still get the
+// right frame: monCanvas sets MFR while it draws, and mfr() falls back to it. A drawing marked .fr (MFRAME below) has real frames; battle.js
+// drawUnit only swaps frames for those. Frames are functions of f only: no Math.random in sprite code.
+let MFR=null;
+const MFRAME=new Set();
+function mfr(f){f=f||MFR||{};const t=f.t==='atk'||f.t==='hit'?f.t:'idle',i=f.i?1:0;return {t,i,atk:t==='atk',hit:t==='hit',b:t==='idle'&&i===1};}
+function monHasFrames(art){return MFRAME.has(art)||!!(MART[art]&&MART[art].fr);}
+const MFCACHE={};
+function monFrameKey(art,f){f=f||{};return art+'#'+(f.t==='atk'||f.t==='hit'?f.t:'idle')+(f.i?1:0);}
+function monFramed(art,f,make){const k=monFrameKey(art,f);if(MFCACHE[k])return MFCACHE[k];const was=MFR;MFR=f||null;try{return MFCACHE[k]=make();}finally{MFR=was;}}
+// a body mass in two hand blocked tones: shade key k everywhere, light key K on the top left (rule 2)
+function sph(g,cx,cy,rx,ry,K,k){g.ell(cx,cy,rx,ry,k);g.ell(cx-rx*.2,cy-ry*.24,rx*.76,ry*.68,K);}
+// an ellipse k drawn only where it is also inside the ellipse b (moss, plates, caps that follow a body's contour)
+function ellIn(g,cx,cy,rx,ry,bx,by,brx,bry,k){for(let y=Math.floor(cy-ry-1);y<=Math.ceil(cy+ry+1);y++)for(let x=Math.floor(cx-rx-1);x<=Math.ceil(cx+rx+1);x++){const dx=(x+.5-cx)/rx,dy=(y+.5-cy)/ry,ex=(x+.5-bx)/brx,ey=(y+.5-by)/bry;if(dx*dx+dy*dy<=1&&ex*ex+ey*ey<=.97)g.s(x,y,k);}}
+// a muzzle: upper jaw, lower jaw (drops by op in a lunge, over a dark gape with tongue and fangs). x,y = top of the snout base, L = length
+function maw(g,x,y,L,op,kU,kL){
+  if(op){g.poly([[x,y+3.2],[x+L,y+3],[x+L-.6,y+3.4+op],[x,y+5.4]],'K');g.rect(Math.round(x+1),Math.round(y+3.6+op*.5),Math.round(L-3),1,'R');}
+  g.poly([[x,y+3.4+(op?op*.2:0)],[x+L-.7,y+3.6+op],[x+L-1.8,y+5+op],[x,y+5.6+(op?op*.2:0)]],kL);
+  g.poly([[x,y],[x+L,y+1.3],[x+L-.6,y+3.4],[x,y+3.6]],kU);g.rect(Math.round(x+L-1.4),Math.round(y+.4),2,2,'K');
+  if(op){g.px([[x+L-3,y+3.8],[x+L-5,y+3.8],[x+L-3.5,y+2.6+op]],'W');}
+}
+function clr(g,x,y,w,h){return g.rect(x,y,w,h,0);}
+function limb(g,x0,y0,x1,y1,k,t,paw){g.path([[x0,y0],[x1,y1]],k,t);if(paw)g.rect(Math.round(x1)-1,Math.round(y1),3,1,paw);}
+Object.assign(MART,{
+ // ---- Mossling: a mossy boulder slime with a sprout. Squash and stretch: A wide, B tall; lunge stretches forward and opens its mouth
+ mossling(g,f){const F=mfr(f);
+  let w=12,h=10,cx=19;if(F.b){w=10.8;h=11.6;}if(F.atk){w=13.4;h=9.2;cx=20.5;}if(F.hit){w=13.6;h=7.8;cx=17.5;}
+  const cy=37-h,top=cy-h,my=cy-h*.38;
+  sph(g,cx,cy,w,h,'D','d');
+  g.px([[cx-w*.55,cy+h*.5],[cx-w*.15,cy+h*.62],[cx+w*.4,cy+h*.64],[cx-w*.75,cy+h*.2]],'r');
+  ellIn(g,cx-.5,my-1,w*.98,h*.62,cx,cy,w,h,'m');ellIn(g,cx-w*.2-.5,my-h*.14-1,w*.74,h*.46,cx,cy,w,h,'M');
+  [[-.78,2],[-.4,3],[.05,2],[.5,3],[.82,2]].forEach(([o,n])=>g.rect(Math.round(cx+o*w*.86),Math.round(my+h*.4)-1,2,n,'m'));
+  const sx=Math.round(cx+1+(F.hit?-3:F.b?1:F.atk?2:0)),sy=Math.round(top+3),lean=F.hit?-2:F.atk?1:0;
+  g.line(sx,sy,sx+lean,sy-5,'S');g.poly([[sx+lean,sy-3],[sx+lean-4,sy-5],[sx+lean-1,sy-6]],'M');g.poly([[sx+lean,sy-4],[sx+lean+4,sy-6],[sx+lean+1,sy-7]],'M');
+  g.rect(sx+lean-1,sy-8,3,2,'F');g.s(sx+lean,sy-9,'F');g.s(sx+lean,sy-8,'Y');
+  const mx=Math.round(cx-w*.64),my2=Math.round(cy-h*.52);
+  g.rect(mx,my2,2,3,'W');g.ell(mx+1,my2-.5,3,2,'X');g.px([[mx,my2-1],[mx+2,my2-1]],'W');
+  const ex=Math.round(cx+w*.3),ey=Math.round(cy+h*.02);g.ell(ex+3.5,ey+1.6,6,3.6,'f');
+  if(F.hit){g.rect(ex,ey+1,3,1,'K');g.rect(ex+5,ey+1,3,1,'K');g.rect(ex+2,ey+4,3,1,'r');}
+  else{g.rect(ex,ey,2,2,'K');g.s(ex,ey,'W');g.rect(ex+5,ey,2,2,'K');g.s(ex+5,ey,'W');
+   if(F.atk){g.rect(ex,ey+3,8,3,'K');g.rect(ex+1,ey+5,6,1,'F');g.px([[ex+1,ey+3],[ex+6,ey+3]],'W');g.px([[ex+10,ey+2],[ex+11,ey+5],[ex+9,ey+7]],'Y');}
+   else g.rect(ex+2,ey+4,3,1,'r');}
+  return {pal:{f:'#c9a46a',D:'#a8824e',d:'#6a4e30',r:'#4a361e',M:'#8ccf62',m:'#4a8a3a',S:'#3f7f32',F:'#f08ab0',Y:'#ffe08a',X:'#d8403a',W:'#f4efe0',K:'#1a1020'},flat:'KWFY',a:{x:cx,y:cy,w,h,top,sx,sy,ex,ey}};
+ },
+ // ---- Dewtoad / Bog Toad family: wide squat toad, eye turret, throat sac. Wide A, tall B; the lunge lashes the tongue
+ dewtoad(g,f){const F=mfr(f);
+  let bw=13,bh=8,by=29,hx=27,hy=22,sac=1.6;
+  if(F.b){bw=12.4;bh=8.9;by=28.1;hx=27;hy=20.8;sac=2.5;}if(F.atk){bw=13.8;bh=7.4;by=29.6;hx=29.4;hy=22.6;sac=.4;}if(F.hit){bw=13.8;bh=7;by=30;hx=25.6;hy=23.8;sac=.8;}
+  const bx=F.hit?18:19;
+  // hind leg: folded haunch, long foot (pushed out in the lunge)
+  if(F.atk){limb(g,10,31,5,36,'b',4,'D');g.rect(2,36,5,1,'D');}
+  sph(g,11,by+1,6.5,5.5,'B','b');g.rect(4,35,11,2,'b');g.px([[4,36],[6,36],[8,36]],'D');
+  sph(g,bx,by,bw,bh,'B','b');
+  g.ell(bx+3,by+3.4,8.5,4,'A');
+  limb(g,hx-3,by+2,hx-1,36,'B',3);g.px([[hx-3,36],[hx-1,36],[hx+1,36]],'D');
+  g.ell(hx+2.5,hy+5.4,3+sac*.6,sac+.9,'A');
+  sph(g,hx,hy,8,6.5,'B','b');
+  sph(g,hx-1.5,hy-6,3.7,3.4,'B','b');
+  const ex=Math.round(hx-3.5),ey=Math.round(hy-8.5);
+  if(F.hit){g.rect(ex,ey+1,4,1,'K');g.rect(ex,ey,4,1,'b');}
+  else{g.rect(ex,ey,4,3,'W');g.rect(ex+1,ey+1,2,2,'K');g.s(ex+1,ey+1,'W');if(F.atk)g.rect(ex,ey-1,4,1,'b');}
+  if(F.atk){g.poly([[hx+1,hy+2],[hx+9.5,hy-1.5],[hx+9.5,hy+6.5],[hx+1,hy+5]],'K');g.rect(hx+1,hy+4,8,1,'F');g.px([[hx+4,hy+2],[hx+7,hy+1]],'W');
+   g.path([[hx+6,hy+4],[hx+9,hy+3]],'T',2);}
+  else if(F.hit){g.path([[hx+1,hy+4],[hx+4,hy+3],[hx+7.5,hy+5]],'K');}
+  else g.path([[hx+1,hy+3],[hx+4,hy+4],[hx+7.5,hy+2.5]],'K');
+  g.ell(bx-7,by-4.5,2.1,1.5,'D');g.ell(bx-1,by-6,1.8,1.3,'D');g.ell(bx+5,by-4,1.6,1.2,'D');g.ell(bx-5,by+1,1.7,1.3,'D');
+  [[-9,-4],[-3,-7],[3,-6],[8,-3]].forEach(([ox,oy])=>{g.s(bx+ox,by+oy,'Q');g.s(bx+ox,by+oy-1,'W');});
+  return {pal:{B:'#4fa6a4',b:'#2f747c',A:'#cfe8d4',D:'#1f5a72',T:'#e9788a',F:'#e9788a',Q:'#4aa8ff',W:'#f4efe0',K:'#1a1020'},flat:'WKQTF',a:{bx,by,bw,bh,hx,hy,ex,ey}};
+ },
+ // ---- Cinder Pup: small body, big head, tall pointed ears, flame tail held up. Idle B lifts chest and head; lunge reaches the forelegs and opens the jaws
+ cinderpup(g,f){const F=mfr(f),u=F.b?-1:0;
+  let hx=27.5,hy=20+u,bx=16.5,by=27+(F.b?-.4:0);if(F.atk){hx=29.5,hy=22,bx=18,by=28;}if(F.hit){hx=25.5,hy=18.5,bx=16,by=27.5;}
+  const r=F.atk?3:0,bk=F.atk?-2:0;
+  g.path([[bx-8,by-1],[bx-12,by-5],[bx-13,by-10]],'B',3.4);g.path([[bx-7,by+.5],[bx-11,by-3]],'b',1);
+  const tx=bx-13,ty=by-10,fl=F.i?[[-2,0],[0,-6],[.8,-3],[3,-8],[4.5,-2.5],[4.5,0]]:[[-3,0],[-2,-6],[-.5,-3],[1.5,-9],[3.5,-3],[4.5,0]];
+  g.poly(fl.map(p=>[tx+p[0]+(F.hit?-1:0),ty+p[1]-(F.atk?1:0)]),'C');g.poly([[tx-1,ty],[tx+.5,ty-4],[tx+2,ty]],'R');g.s(tx+.5,ty-1,'Y');
+  limb(g,bx-5,by+3,bx-8+bk,36,'b',3,'D');limb(g,bx+3,by+3,bx+3+r,36,'b',3,'D');
+  sph(g,bx,by,8.8,5.3,'B','b');sph(g,bx+6.5,by+1,4.8,4.6,'B','b');g.ell(bx+7.5,by+2.2,2.4,2.8,'A');
+  g.poly([[bx+4,by-4.5],[hx-3,hy-3.5],[hx+2.5,hy+3.5],[bx+9,by+3]],'B');
+  g.px([[bx-3,by-3],[bx+1,by-4],[bx-6,by],[bx+3,by+1]],'b');
+  limb(g,bx-4,by+3,bx-3+bk,36,'B',3,'D');limb(g,bx+6,by+3,bx+7+r,36,'B',3,'D');
+  if(F.hit)g.poly([[hx+1,hy-4],[hx-3,hy-9],[hx+4,hy-4.5]],'b');else g.poly([[hx+1.5,hy-4.5],[hx+5.5,hy-11],[hx+6,hy-3.5]],'b');
+  sph(g,hx,hy,6.2,5.6,'B','b');maw(g,hx+3,hy-1.8,6.4,F.atk?4:0,'B','b');g.ell(hx+4.5,hy+2.8,2.4,1.5,'A');
+  if(F.hit){g.poly([[hx-4,hy-3.5],[hx-10,hy-5.5],[hx-3.5,hy]],'B');g.poly([[hx-4,hy-3.5],[hx-8,hy-5],[hx-3.5,hy-1.5]],'R');}
+  else{g.poly([[hx-4.5,hy-3.5],[hx-4,hy-12.5],[hx+1.5,hy-4.5]],'B');g.poly([[hx-3.6,hy-4.5],[hx-3.2,hy-9.5],[hx-.2,hy-5]],'R');}
+  const ex=Math.round(hx+1.5),ey=Math.round(hy-2.5);
+  if(F.hit){g.rect(ex,ey+1,3,1,'K');g.s(ex+3,ey,'K');}else{g.rect(ex,ey,2,2,'E');g.s(ex+1,ey+1,'K');g.s(ex,ey,'W');}
+  g.px(F.i?[[tx-1,ty-10],[tx+5,ty-7],[tx+7,ty-12]]:[[tx+1,ty-12],[tx-3,ty-8],[tx+6,ty-9]],'C');
+  return {pal:{B:'#d9824c',b:'#a8522e',A:'#f2d9b0',C:'#ffd23a',R:'#ff6a2a',Y:'#fff0b0',E:'#ffc83a',K:'#1a1020',D:'#5a2a14',W:'#ffffff'},flat:'EKCRYW',a:{bx,by,hx,hy,ex,ey,tx,ty}};
+ },
+ // ---- Frost Wolf: long legged, lean, crystal mane along the back, bushy low tail. Lunge: jaws wide, mane flared
+ frostwolf(g,f){const F=mfr(f),u=F.b?-1:0;
+  let hx=28,hy=17+u,bx=16.5,by=24+(F.b?-.4:0);if(F.atk){hx=30.5,hy=19.5,bx=18,by=25;}if(F.hit){hx=26,hy=15.5,bx=15.5,by=24.5;}
+  const r=F.atk?3:0,bk=F.atk?-2:0;
+  g.path([[bx-9,by-1],[bx-13,by+2],[bx-14,by+8]],'B',4);g.ell(bx-14,by+9,2.2,2.6,'A');g.px([[bx-12,by+3],[bx-13,by+5]],'b');
+  limb(g,bx-6,by+3,bx-8+bk,36,'b',3,'b');limb(g,bx+4,by+3,bx+4+r,36,'b',3,'b');
+  g.rect(Math.round(bx-9+bk),35,4,1,'D');g.rect(Math.round(bx+3+r),35,4,1,'D');
+  sph(g,bx,by,11,5.2,'B','b');sph(g,bx+8,by+1,4.6,4.8,'B','b');g.ell(bx+9.5,by+2.4,2.4,3.2,'A');g.px([[bx+10,by+1],[bx+9,by+4],[bx+11,by+5]],'A');
+  g.poly([[bx+6,by-4.5],[hx-3,hy-3],[hx+2,hy+3.5],[bx+10,by+3]],'B');
+  limb(g,bx-5,by+3,bx-5+bk,36,'B',3);limb(g,bx+7,by+3,bx+8+r,36,'B',3);
+  g.px([[bx-5+bk,34],[bx+8+r,34]],'A');g.rect(Math.round(bx-6+bk),36,4,1,'D');g.rect(Math.round(bx+7+r),36,4,1,'D');
+  [-7,-3.5,0,3.5,7].forEach((o,n)=>{const x=bx+o,top=by-5.2*Math.sqrt(1-(o/11)**2),hh=[4.5,6,7,6.5,5][n]+(F.hit?-2:F.atk?1:0)+(F.i&&n%2?1:0);
+   g.poly([[x-2,top+1.8],[x+.5+(F.atk?-1.5:0)+(F.hit?-2:0),top-hh],[x+2.5,top+1.8]],'c');g.poly([[x-1.2,top+1.5],[x+.3+(F.atk?-1.2:0)+(F.hit?-1.5:0),top-hh+1],[x+.8,top+1.5]],'C');});
+  if(F.hit)g.poly([[hx+1,hy-3.5],[hx-4,hy-7],[hx+4,hy-4]],'b');else g.poly([[hx+1,hy-3.5],[hx+4,hy-9],[hx+5.5,hy-3.5]],'b');
+  sph(g,hx,hy,5.9,5.1,'B','b');maw(g,hx+3,hy-1.8,6.4,F.atk?4:0,'B','b');g.ell(hx+5,hy+2.2,2.8,1.2,'A');
+  g.poly([[hx+.5,hy+3.5],[hx+3,hy+7.5],[hx+5.5,hy+3.5]],'A');
+  if(F.hit){g.poly([[hx-3.5,hy-3],[hx-9.5,hy-4],[hx-3,hy+.5]],'B');g.poly([[hx-3.5,hy-3],[hx-7.5,hy-3.5],[hx-3,hy-1]],'c');}
+  else{g.poly([[hx-3.5,hy-3],[hx-3,hy-10],[hx+1,hy-3.5]],'B');g.poly([[hx-2.6,hy-4],[hx-2.4,hy-8],[hx,hy-4]],'c');}
+  const ex=Math.round(hx+1.5),ey=Math.round(hy-1.8);
+  if(F.hit){g.rect(ex,ey+1,3,1,'K');}else{g.rect(ex,ey,2,2,'E');g.s(ex+1,ey+1,'K');g.s(ex,ey,'W');}
+  return {pal:{B:'#d4e2ec',b:'#9ab4c8',A:'#ffffff',C:'#cfeeff',c:'#7fbcdc',E:'#3ad0ff',K:'#1a1020',W:'#ffffff',D:'#6a7e92',R:'#c0586a'},flat:'EKWC',a:{bx,by,hx,hy,ex,ey}};
+ },
+ // ---- Brine Crawler: wide and low, six legs in near and far pairs, eyestalks, two claws forward. Idle B shifts every other leg; lunge thrusts the claws open
+ crawler(g,f){const F=mfr(f),u=F.b?-1:0;
+  let bx=18,by=28.5+u,r=0,cy=0;if(F.atk){bx=19,by=29.5,r=3;}if(F.hit){bx=17,by=30,r=-3,cy=3;}
+  const leg=(x,d,k,n)=>{const o=F.b&&n%2?1:0,kx=x+d*4,ky=by+.5,fx=x+d*7+o;limb(g,x,by+2.5,kx,ky,k,2);limb(g,kx,ky,fx,36,k,2);g.rect(Math.round(fx)-1,36,3,1,'D');};
+  leg(bx-7,-1,'b',0);leg(bx+3,1,'b',1);leg(bx+8,1,'b',2);
+  sph(g,bx,by,11,6,'B','b');g.ell(bx+.5,by+3.4,8.5,2.4,'A');
+  g.poly([[bx-10.5,by-1],[bx-14,by-4.5],[bx-9.5,by-3.5]],'B');
+  g.px([[bx-8,by-3],[bx-3,by-5],[bx+2,by-5],[bx-5,by-.5],[bx+4,by-.5]],'b');g.px([[bx-6,by-2],[bx,by-3],[bx+5,by-2]],'A');
+  leg(bx-9,-1,'B',1);leg(bx-4,-1,'B',2);leg(bx+6,1,'B',0);
+  const sh=F.hit?2:5;[[bx+3,0],[bx+6.5,1]].forEach(([x,d])=>{x=Math.round(x);g.line(x,by-5,x,by-5-sh+d,'b',1);const ey=by-7-sh+d;
+   if(F.hit)g.rect(x-1,ey+1,3,1,'K');else{g.rect(x-1,ey,2,2,'K');g.s(x-1,ey,'W');}});
+  const qx=Math.round(bx+12+r*.7),qy=Math.round(by-9+(F.b?-1:0)+cy*.6),op=F.atk?3.4:F.hit?0:1.4;
+  const claw=(x,y,s,K,k,o)=>{g.poly([[x+1,y-1.5*s],[x+7*s,y-1.6*s-o],[x+7*s,y-.2*s-o*.7],[x+2*s,y+.9*s]],K);g.poly([[x+1,y+1.2*s],[x+7*s,y+1.3*s+o*.3],[x+6*s,y+3.2*s+o*.3],[x+1,y+3.4*s]],k);sph(g,x,y+1.2*s,3.6*s,3*s,K,k);};
+  g.path([[bx+9,by+1],[qx-5,qy+8]],'b',2);claw(qx-7,qy+8,.8,'b','b',op*.5);
+  g.path([[bx+8,by-1],[bx+10+r*.3,by-5+cy*.4],[qx-1,qy+2]],'B',3);
+  claw(qx,qy,1.1,'B','b',op);
+  g.px([[qx+8,qy-2-op],[qx+8,qy+2]],'A');
+  return {pal:{B:'#3d86b8',b:'#25587f',A:'#a8e0f0',W:'#f4efe0',K:'#1a1020',D:'#173a58'},flat:'WK',a:{bx,by,qx,qy}};
+ },
+ // ---- Shellguard: domed plated shell with bone spikes, stout legs, a long neck. Idle B lifts the shell and the head; lunge stretches the neck and bites; a hit pulls the head in
+ shellguard(g,f){const F=mfr(f);
+  let cx=15.5,cy=22.5,hx=31.5,hy=24,r=0;if(F.b){cy=21.5;hy=23;}if(F.atk){cx=16.5;hx=34.2;hy=24.6;r=2;}if(F.hit){cx=14.8;cy=23;hx=28.3;hy=25.6;r=-1;}
+  // head and neck first: the shell closes over the back of the neck
+  sph(g,hx-3.4,hy+1.4,4.2,3.6,'X','x');sph(g,hx,hy,4.6,4,'X','x');g.poly([[hx+3,hy-1.5],[hx+7,hy+.5],[hx+6.5,hy+3.2],[hx+3,hy+3.5]],'X');
+  const ex=Math.round(hx+1.5),ey=Math.round(hy-2);
+  if(F.hit){g.rect(ex,ey+1,3,1,'K');}else{g.rect(ex,ey,2,2,'K');g.s(ex,ey,'W');g.rect(ex-1,ey-1,4,1,'x');}
+  if(F.atk){g.poly([[hx+2,hy+1],[hx+8,hy-.5],[hx+8,hy+5.5],[hx+2.5,hy+4.5]],'K');g.rect(hx+3,hy+4,5,1,'F');g.px([[hx+4,hy+1],[hx+7,hy+.5],[hx+5,hy+4]],'W');}
+  else g.path([[hx+3,hy+2.6],[hx+6.5,hy+2.2]],'K');
+  g.poly([[cx-12.5,27],[cx-16,30],[cx-12,30.5]],'X');
+  // shell
+  sph(g,cx,cy,13.5,10.8,'B','b');clr(g,0,29,40,10);
+  g.path([[cx-7,cy-7],[cx-5.5,cy+1],[cx-6.5,cy+6]],'r');g.path([[cx-.5,cy-10],[cx+.5,cy-2],[cx-1.5,cy+6]],'r');g.path([[cx+7,cy-6],[cx+5.5,cy+1],[cx+6.5,cy+6]],'r');
+  g.path([[cx-11,cy-1],[cx-5.5,cy+1]],'r');g.path([[cx+.5,cy-2],[cx+5.5,cy+1],[cx+11,cy]],'r');g.path([[cx-4,cy-8],[cx+.5,cy-6],[cx+6,cy-6]],'r');
+  g.ell(cx-4,cy-4,2.2,1.5,'M');g.ell(cx+3.5,cy+3,1.8,1.3,'M');g.ell(cx-8.5,cy+4,1.6,1.1,'M');g.px([[cx+9,cy-3],[cx+10,cy+3]],'L');
+  [-6,0,6].forEach((o,n)=>{const x=cx+o,top=cy-10.8*Math.sqrt(1-(o/13.5)**2),hh=[4,5.5,4.5][n];g.poly([[x-2.2,top+1.8],[x+.2,top-hh],[x+2.4,top+1.8]],'w');g.poly([[x-1.4,top+1.6],[x,top-hh+1],[x+.6,top+1.6]],'W');});
+  g.rect(Math.round(cx-12),28,25,2,'A');g.rect(Math.round(cx-12),30,25,1,'a');
+  // legs (far pair dark), drawn over the rim
+  [[cx-5,'x'],[cx+8+r,'x']].forEach(([x,k])=>{g.rect(Math.round(x),30,5,6,k);g.rect(Math.round(x)-1,35,7,2,k);});
+  [[cx-10,0],[cx+5+r,r]].forEach(([x])=>{x=Math.round(x);g.rect(x,29,6,8,'x');g.rect(x,29,4,7,'X');g.rect(x-1,35,8,2,'x');g.rect(x-1,35,4,1,'X');g.px([[x,36],[x+3,36],[x+6,36]],'W');});
+  return {pal:{B:'#9a8a54',b:'#5e5230',r:'#43391f',L:'#c2ae72',A:'#d8c890',a:'#a89a64',M:'#6aa04a',W:'#f2ecd6',w:'#b8b098',X:'#4f9c8c',x:'#2f6a62',F:'#e9788a',K:'#1a1020'},flat:'KWF',a:{cx,cy,hx,hy,top:cy-10.8}};
+ },
+ // ---- Magma Slime: an obsidian crust with a molten crater and glowing cracks. Idle A wide, B tall with a rising bubble; lunge stretches forward and erupts; a hit squashes it and flashes the cracks
+ magmaslime(g,f){const F=mfr(f);
+  let w=12.5,h=9.5,cx=19;if(F.b){w=11.2;h=11;}if(F.atk){w=13.6;h=8.6;cx=20.5;}if(F.hit){w=14;h=7.2;cx=18;}
+  const cy=37-h,ty=cy-h+1,hot=F.hit?'W':'Y';
+  sph(g,cx,cy,w,h,'B','b');
+  g.px([[cx-8,cy-2],[cx-6,cy+4],[cx+6,cy+5],[cx+8,cy-3],[cx-3,cy+7]],'n');
+  if(F.atk){g.poly([[cx-4,ty+2],[cx-5.5,ty-5],[cx-2,ty-1],[cx-.5,ty-8],[cx+2,ty-1],[cx+5,ty-5],[cx+4.5,ty+2]],'C');g.poly([[cx-2,ty+1],[cx-.5,ty-4],[cx+1.5,ty+1]],'Y');}
+  g.ell(cx-1,ty+2,w*.55,3.1,'b');g.ell(cx-1,ty+2,w*.46,2.3,'C');g.ell(cx-1.5,ty+2,w*.28,1.3,hot);
+  g.path([[cx-3,ty+4],[cx-5,cy-1],[cx-4,cy+3],[cx-7,cy+7]],F.atk||F.hit?'Y':'C');g.path([[cx+1,ty+4],[cx+2.5,cy-1],[cx+1,cy+4],[cx+3,cy+7]],F.atk||F.hit?'Y':'C');
+  g.path([[cx+.5,cy+3],[cx+1,cy+8]],'R');g.px([[cx-5,cy-1],[cx+2,cy-1]],hot);
+  g.rect(Math.round(cx-w*.5),Math.round(cy+h*.5),2,3,'R');g.s(Math.round(cx-w*.5),Math.round(cy+h*.5)+3,'C');
+  const ex=Math.round(cx+w*.34),ey=Math.round(cy-.5);
+  if(F.hit){g.rect(ex,ey+1,3,1,'W');g.rect(ex+5,ey+1,3,1,'W');}
+  else{g.rect(ex,ey,2,2,'Y');g.s(ex,ey,'W');g.rect(ex+5,ey,2,2,'Y');g.s(ex+5,ey,'W');}
+  if(F.atk){g.rect(ex-1,ey+3,9,3,'C');g.rect(ex,ey+4,7,1,'Y');g.px([[ex+1,ey+3],[ex+6,ey+3]],'K');}
+  g.px(F.i?[[cx+1,ty-2],[cx+4,ty-5],[cx-5,ty-3]]:[[cx-2,ty-1],[cx+3,ty-3]],'Y');
+  return {pal:{B:'#5a4e68',b:'#2e2538',n:'#6e6280',C:'#ff8a3a',R:'#e0501a',Y:'#ffe08a',W:'#ffffff',K:'#1a1020'},flat:'CRYWK',a:{cx,cy,w,h,ty}};
+ }
+});
+['mossling','dewtoad','cinderpup','frostwolf','crawler','shellguard','magmaslime'].forEach(n=>{MART[n].fr=1;});
+// FAMILY1-END
 const BIG_ART=['thornwarden','drake','cinderking','hoarwyrm','ysolde','dimmer','bonecolossus','queenmantis','gloomcap','ironsentinel','siren','ashwyvern','frostlich','nidhra','hollowking','seraph'];
 const MON_SIZE=n=>BIG_ART.includes(n)?60:40;
 
@@ -4676,19 +4796,12 @@ heroGrid=function(L,walk,id){const g=_heroGrid0(L,walk);if(id)drawFlair(g,L,id,'
 // =================== MONSTER DETAIL PASS ===================
 // Extra color and pattern drawn over each base design.
 const MEXTRA={
- mossling(g,p){g.ell(10,24,3,2,'X');g.rect(9,25,3,3,'W');g.px([[9,23],[11,24]],'W');g.px([[17,20],[26,20]],'Y');g.px([[16,19],[27,19]],'F');Object.assign(p,{X:'#d8403a',F:'#f6a0d0'});},
  gustimp(g,p){g.poly([[16,17],[7,10],[9,14],[5,17],[10,18],[7,22],[15,21]],'M');g.rect(29,15,2,2,'R');g.px([[18,20],[20,22],[22,20]],'C');Object.assign(p,{M:'#8a6ad0',R:'#e04a6a'});},
- dewtoad(g,p){[[12,24],[18,21],[22,25],[15,28]].forEach(q=>g.ell(q[0],q[1],1.8,1.4,'O'));g.line(14,32,28,32,'Y');Object.assign(p,{O:'#f08a3a',Y:'#f2e070'});},
- cinderpup(g,p){g.px([[2,20],[1,21]],'W');g.rect(12,35,3,2,'K');g.rect(22,35,3,2,'K');g.rect(16,35,3,2,'K');g.rect(25,35,3,2,'K');g.px([[20,22],[16,23]],'D');Object.assign(p,{W:'#ffffff'});},
- crawler(g,p){g.px([[12,22],[16,21],[20,22],[24,23]],'W');g.ell(14,23,1.3,1,'Y');g.ell(22,22,1.3,1,'Y');g.rect(37,15,2,2,'O');g.rect(37,22,2,1,'O');Object.assign(p,{Y:'#f2e070',O:'#f08a3a'});},
  gull(g,p){g.px([[10,10],[13,7],[16,9],[19,12],[12,13]],'C');g.px([[11,11],[14,8],[17,11]],'P');g.rect(3,19,3,2,'K');Object.assign(p,{P:'#5ad0ff'});},
  tidewisp(g,p){g.ell(20,12,3.5,2,'P');g.px([[14,22],[18,27],[23,29],[27,25]],'P');Object.assign(p,{P:'#ff8ad8'});},
- shellguard(g,p){g.ell(14,17,2.5,1.5,'M');g.ell(23,20,2,1.4,'M');g.px([[8,22],[9,21],[29,22],[30,21]],'R');Object.assign(p,{M:'#5aa04a',R:'#f06a6a'});},
- magmaslime(g,p){g.poly([[11,26],[14,23],[15,27]],'O');g.poly([[27,31],[30,28],[31,32]],'O');g.px([[12,24],[28,29]],'W');Object.assign(p,{O:'#2a1e2e',W:'#c8b8ff'});},
  cavebat(g,p){g.path([[16,20],[6,14]],'M');g.path([[16,23],[6,23]],'M');g.path([[24,20],[33,13]],'M');g.path([[24,22],[34,22]],'M');g.ell(20,24,2.5,3,'A');Object.assign(p,{M:'#c86aa8',A:'#8a6aa8'});},
  ashwraith(g,p){g.rows(20,9,["WWWW","W..W"]);g.px([[15,32],[19,34],[23,33],[27,31]],'C');g.px([[12,28],[29,26]],'R');Object.assign(p,{W:'#e8d8c8',R:'#ffd04a'});},
  slaggolem(g,p){g.ell(14,24,1.5,1.2,'G');g.ell(26,18,1.5,1.2,'G');g.ell(18,10,1,1,'G');g.px([[24,33],[15,33]],'G');Object.assign(p,{G:'#ffd04a'});},
- frostwolf(g,p){g.line(12,22,13,26,'S');g.line(17,21,18,26,'S');g.line(22,21,22,25,'S');g.px([[27,17],[28,17]],'S');Object.assign(p,{S:'#5a8ac8'});},
  snowharpy(g,p){g.px([[4,7],[3,13],[2,18],[5,24],[35,9],[38,16]],'P');g.path([[6,9],[3,13]],'P');g.path([[6,22],[3,25]],'P');g.px([[20,18],[22,18]],'G');Object.assign(p,{P:'#b080ff'});},
  yeti(g,p){g.poly([[22,12],[24,7],[25,12]],'H');g.poly([[27,12],[30,8],[30,13]],'H');g.px([[25,17],[26,18]],'S');Object.assign(p,{H:'#c8b090',S:'#3a6aa8'});},
  iceknight(g,p){g.rect(13,15,12,1,'G');g.rect(13,27,12,1,'G');g.rect(18,18,3,3,'C');g.px([[19,19]],'E');},
@@ -4709,7 +4822,7 @@ const MEXTRA={
 };
 function monURL(art){return monURL2(art);}
 const monURL2=function(art){return cvURL('m2:'+art,()=>{const s=MON_SIZE(art),g=new PG(s,s,0,0),o=MART[art](g);const pal=Object.assign({},o.pal);if(MEXTRA[art])MEXTRA[art](g,pal);return paint(g,pal,{flat:(o.flat||'')+'YFWCPRSTO'.split('').filter(k=>!o.pal[k]).join(''),rim:o.rim,glow:o.glow});});};
-function monCanvas(art){const s=MON_SIZE(art),g=new PG(s,s,0,0),o=MART[art](g);const pal=Object.assign({},o.pal);if(MEXTRA[art])MEXTRA[art](g,pal);return paint(g,pal,{flat:o.flat||'',rim:o.rim,glow:o.glow});}
+function monCanvas(art,f){return monFramed(art,f,()=>{const s=MON_SIZE(art),g=new PG(s,s,0,0),o=MART[art](g,f);const pal=Object.assign({},o.pal);if(MEXTRA[art])MEXTRA[art](g,pal);return paint(g,pal,{flat:o.flat||'',rim:o.rim,glow:o.glow});});}
 
 // ===== art2.js (base): hero races, sizes and new weapons on the 36x40 hero canvas (heroCanvas, heroURL, walkerCanvas) =====
 // Heroes now render on a 36x40 canvas so big folk, wings, halos and ears fit. Feet sit on row 36.
@@ -5108,6 +5221,50 @@ function bossFrame1(c){let f=BIDLE.get(c);if(f)return f;const w=c.width,h=c.heig
   x.globalCompositeOperation='source-atop';x.globalAlpha=.2;x.fillStyle='#fff2d0';x.fillRect(0,0,w,h);BIDLE.set(c,f);return f;}
 function bossIdle(c,seed,now,ms){if(typeof gfxStill==='function'&&gfxStill())return c;return Math.floor(now/(ms||760)+(seed||0)*.5)%2?bossFrame1(c):c;}
 {const io0=imgOf;imgOf=function(key,fn){const c=io0.apply(this,arguments);try{if(typeof key==='string'&&key.charCodeAt(0)===109&&key.startsWith('mapboss:'))return bossIdle(c,0,performance.now(),840);}catch(e){}return c;};}
+// ===== v0.12.13: the Riftkeeper, the ultimate boss (60x60; foes.js RIFTKEEPER, riftkeeper9.js) =====
+// A tall hooded keeper: a peaked hood over a robe woven of rift light, a lantern cage at the chest, keys at the belt and on a ring in one
+// hand, a giant key for a staff in the other, and two small doors drifting beside it. Silhouette: a narrow spire (hood and staff) over a
+// wide mantle, flaring to the hem. The lantern core is the one flat accent colour: the battle swaps the sprite for riftkeeper_<element>
+// so the flame shows the element it burns this turn (riftkeeper9.js). Idle: the shared 2 frame bossIdle (an exhale and a soft glow) applies
+// to every boss sprite; the telegraph pose is the existing swell (anim.js bossTele).
+function rkArt(g,core){
+  g.ell(30,57,19,2.6,'D');
+  // robe: flares from the shoulders to the hem; lit left, shaded right, thin woven threads across it
+  g.poly([[21,21],[39,21],[47,56],[13,56]],'R');g.poly([[21,21],[26,21],[19,56],[13,56]],'L');g.poly([[36,23],[39,21],[47,56],[38,56]],'r');
+  for(let i=0;i<5;i++){const y=26+i*6;g.line(21-i*1.6,y+4,38+i*1.6,y-2,'W');}
+  for(let i=0;i<4;i++){const y=30+i*6;g.line(38+i*1.7,y+4,22-i*1.7,y-1,'w');}
+  g.px([[15,57],[19,58],[24,57],[29,58],[34,57],[39,58],[44,57]],'W');
+  // belt and the keys on it
+  g.rect(19,43,22,2,'B');g.rect(29,43,2,2,'G');
+  [[20,45],[23,45],[37,45],[40,45]].forEach(([x,y],i)=>{g.line(x,y,x,y+6,'G');g.px([[x+1,y+5],[x+1,y+3]],'g');g.s(x,y+7,'g');});
+  // mantle and arms
+  g.ell(30,23,12,4,'M');g.rect(19,23,22,3,'M');
+  g.path([[20,24],[14,32],[12,39]],'M',4);g.path([[40,24],[45,29],[47,25]],'M',4);
+  // left hand with a ring of keys
+  g.ell(12,41,3,3,'F');g.ell(10,47,4.5,4.5,'G');g.ell(10,47,2.4,2.4,0);
+  [[7,52],[10,53],[13,52]].forEach(([x,y])=>{g.line(x,y,x,y+5,'G');g.px([[x+1,y+4],[x+1,y+2]],'g');});
+  // the giant key: bow (ring) on top, shaft, bit with teeth; held in the right hand
+  g.ell(49.5,7,5,5,'G');g.ell(49.5,7,2.4,2.4,0);g.px([[45,5],[46,3]],'S');
+  g.rect(48,11,3,45,'S');g.rect(48,11,1,45,'G');
+  g.rect(51,14,5,2,'G');g.rect(51,18,3,2,'G');g.rect(51,22,5,2,'G');g.rect(46,52,7,4,'G');
+  g.ell(49.5,27,3.2,3.2,'F');
+  // hood: a tall peak, a dark face with two narrow eyes, thread fray along the edge
+  g.poly([[30,1],[38,12],[41,23],[19,23],[22,12]],'H');g.poly([[30,1],[26,10],[21,23],[19,23],[22,12]],'L');
+  g.ell(30,15,5.2,6.5,'K');g.rect(27,13,2,2,'E');g.rect(32,13,2,2,'E');g.s(27,13,'W');g.s(32,13,'W');
+  g.px([[41,15],[42,19],[18,18],[17,22],[30,0]],'W');
+  // lantern cage at the chest: gold frame, glass, the flame, bars across it
+  g.rect(29,26,2,3,'G');g.poly([[25,29],[35,29],[34,27],[26,27]],'G');
+  g.rect(25,29,10,13,'G');g.rect(26,30,8,11,'K');g.ell(30,35.5,3.2,3.8,'C');g.ell(30,35.5,1.4,1.8,'c');
+  g.rect(28,30,1,11,'G');g.rect(32,30,1,11,'G');g.rect(25,35,10,1,'g');g.rect(25,41,10,2,'G');
+  // two doors drifting beside it (arch frames with a glow inside)
+  g.rows(4,4,[".GGGGGG.","GGccccGG","Gcc..ccG","Gc....cG","Gc....cG","Gc....cG","Gc....cG","Gc....cG","GGGGGGGG"]);
+  g.rows(52,36,["..GGGG..",".GccccG.","Gcc..ccG","Gc....cG","Gc....cG","Gc....cG","GGGGGGGG"]);
+  g.px([[3,17],[14,2],[56,34],[58,46],[55,3]],'W');
+  return {pal:{R:'#2c2556',r:'#1a1538',L:'#4a4390',H:'#38326e',M:'#473f84',K:'#06030e',E:'#eef6ff',C:core,c:mix(core,'#ffffff',.55),G:'#d4b464',g:'#8e7034',S:'#b9a266',W:'#a9e6ff',w:'#6fa6d8',F:'#9a92c4',B:'#5a4a30',D:'#0c0816'},flat:'KECcW',glow:core,rim:'#0a0618'};}
+MART.riftkeeper=g=>rkArt(g,'#c9a8ff');
+BIG_ART.push('riftkeeper');
+ELK.forEach(el=>{MART['riftkeeper_'+el]=g=>rkArt(g,ELC[el]);BIG_ART.push('riftkeeper_'+el);});
+MEXTRA.riftkeeper=(g,p)=>{};
 
 // ===== sprhd.js (v0.5.3): HD sprites: twice the detail, light ramps, rim light (SPRITE_HD in config.js) =====
 // Every hero, townsfolk and monster is still built from the same key grids (art.js, art2.js, art3.js, capes, realm and echo recolours), but
@@ -5278,8 +5435,8 @@ if(SPRITE_HD){
   walkerCanvas=function(key,L,els,id,view,frame){
     if(id&&TPL[id]&&TPL[id].mon)return imgOf('wkm:'+id,()=>monCanvas(TPL[id].art));
     return imgOf('wk3:'+key+':'+view+':'+frame,()=>paintHD(heroGridView(L,view,frame,id),heroPalHD(heroPal(L,els,id)),HERO_OPT));};
-  monCanvas=function(art){const s=MON_SIZE(art),g=new PG(s,s,0,0),o=MART[art](g);const pal=Object.assign({},o.pal);if(MEXTRA[art])MEXTRA[art](g,pal);
-    return paintHD(g,pal,{flat:o.flat||'',rim:o.rim,glow:o.glow,tex:monTex(art)});};
+  monCanvas=function(art,f){return monFramed(art,f,()=>{const s=MON_SIZE(art),g=new PG(s,s,0,0),o=MART[art](g,f);const pal=Object.assign({},o.pal);if(MEXTRA[art])MEXTRA[art](g,pal);
+    return paintHD(g,pal,{flat:o.flat||'',rim:o.rim,glow:o.glow,tex:monTex(art)});});};
   monURL=function(art){return cvURL('m3:'+art,()=>monCanvas(art));};
 }
 
@@ -7562,7 +7719,7 @@ function objCanvas(theme,kind,v){
   else if(kind==='pillar'){g=P(12,28);
     if(theme==='cave'||theme==='void'){g.poly([[3,27],[6,2],[9,27]],'A');g.poly([[6,27],[8,10],[11,27]],'B');g.px([[6,8],[8,16]],'C');pal={A:theme==='cave'?'#c890ff':'#8a5fd0',B:theme==='cave'?'#8a5ad0':'#5a3a9a',C:'#ffffff'};opt.flat='C';opt.glow=theme==='cave'?'#c890ff':'#8b5fd0';}
     else{g.rect(3,6,6,20,'A');g.rect(2,4,8,3,'B');g.rect(2,25,8,2,'B');g.rect(5,6,1,20,'D');g.poly([[3,4],[6,0],[9,4]],'A');pal={A:T.stone[0],B:T.stone[2],D:T.stone[1]};}}
-  else if(kind==='tent'){g=P(20,18);g.poly([[10,0],[19,16],[1,16]],'A');g.poly([[10,0],[13,16],[7,16]],'B');g.poly([[10,7],[12,16],[8,16]],'K');g.line(10,0,10,-2,'W');pal={A:['#c8a87a','#a85a5a','#5a7aa8'][v%3],B:shade(['#c8a87a','#a85a5a','#5a7aa8'][v%3],.8),K:'#2a1a12',W:'#6a4424'};}
+  else if(kind==='tent'){const tc=['#c8a87a','#a85a5a','#5a7aa8'][v%3];g=P(20,18);g.poly([[10,0],[19,16],[1,16]],'A');g.poly([[10,0],[5,16],[1,16]],'L');g.poly([[10,0],[19,16],[14,16]],'B');g.poly([[10,0],[13,16],[7,16]],'B');g.poly([[10,7],[12,16],[8,16]],'K');g.rect(1,15,18,1,'H');g.line(10,0,10,-2,'W');g.px([[10,-2]],'F');pal={A:tc,L:tint(tc,.22),B:shade(tc,.78),H:shade(tc,.55),K:'#2a1a12',W:'#6a4424',F:'#f6e7a8'};opt.flat='F';}
   else if(kind==='fence'){g=P(16,14);pal={W:'#9a7448',L:'#b89058'};}
   else if(kind==='tower'){g=P(22,34);g.rect(2,12,18,21,'A');for(let r=14;r<33;r+=4)g.rect(2,r,18,1,'D');g.rect(1,8,20,5,'B');for(let i=1;i<21;i+=5)g.rect(i,4,3,4,'B');g.rect(9,18,4,7,'K');g.rect(10,19,2,5,'Y');g.line(11,4,11,-3,'W');g.rect(12,-3,6,4,'F');pal={A:T.stone[0],B:T.stone[2],D:T.stone[1],K:OUTC,Y:'#ffd98a',W:'#3a2a1a',F:['#a82a2a','#2a5aa8','#c8a02a','#6a2a8a','#2a8a6a','#4a2a6a'][0]};opt.flat='YK';}
   return OBJ_CACHE[key]=paint(g,pal,opt);
@@ -7683,18 +7840,36 @@ function drawKeep(ctx,m,b){
   m.lights=m.lights||[];m.lights.push([x0+dx+8,y0+dy+10,20]);
 }
 function drawTent(ctx,m,b){
+  // v0.12.13: a tent is a cone of cloth, not a flat triangle: panels that converge on the pole, the left face lit and the right in shade,
+  // a darker hem that sags between pegs, guy ropes to pegs, a shadow at the base and a brighter cap under the pennant. The 2D town and
+  // the HD-2D billboard both draw from this canvas.
   const x0=b.x*TS,y0=b.y*TS,w=b.w*TS,h=b.h*TS,R=mulberry(b.x*7+b.y*5);
   const f=(c,x,y,ww,hh)=>{ctx.fillStyle=c;ctx.fillRect(x0+x,y0+y,ww,hh);};
-  const col={inn:'#4a72b8',tavern:'#b84a4a',smithy:'#5a5a66',guild:'#7a4ab0',bigtent:'#3a9a6a',workshop:'#3a8a5a'}[b.k]||['#c8a87a','#b89a6a','#a8987a'][Math.floor(R()*3)],dk=shade(col,.75);
-  const top=-10;
-  for(let yy=top;yy<h;yy++){const p=(yy-top)/(h-top),half=Math.round(4+p*(w/2+2));f(OUTC,Math.floor(w/2)-half-1,yy,half*2+2,1);}
-  for(let yy=top+1;yy<h-1;yy++){const p=(yy-top)/(h-top),half=Math.round(3+p*(w/2+1));f(col,Math.floor(w/2)-half,yy,half*2,1);f(dk,Math.floor(w/2)+Math.floor(half*.35),yy,Math.ceil(half*.65),1);for(let s=-half;s<half;s+=8)f(tint(col,.25),Math.floor(w/2)+s,yy,2,1);}
-  f('#3a2a1a',Math.floor(w/2),top-6,1,7);f('#f6e7a8',Math.floor(w/2)+1,top-6,6,3);
-  const dx=(b.door[0]-b.x)*TS;for(let yy=0;yy<14;yy++){const hw=Math.round(2+yy*.45);f('#1a1010',dx+8-hw,h-14+yy,hw*2,1);}f('#ffd98a',dx+6,h-6,4,4);
+  const col={inn:'#4a72b8',tavern:'#b84a4a',smithy:'#5a5a66',guild:'#7a4ab0',bigtent:'#3a9a6a',workshop:'#3a8a5a'}[b.k]||['#c8a87a','#b89a6a','#a8987a'][Math.floor(R()*3)];
+  const lit=tint(col,.22),lit2=tint(col,.42),dk=shade(col,.78),dk2=shade(col,.58),seam=shade(col,.45),alt=tint(col,.10),altdk=shade(alt,.78);
+  const top=-10,cx=Math.floor(w/2),H=h-top,N=Math.max(4,Math.round(w/14)*2);// N panels, even, so a seam runs down the middle
+  const halfAt=yy=>Math.round(3+((yy-top)/H)*(w/2+1));
+  for(let yy=top;yy<h;yy++){const half=halfAt(yy)+1;f(OUTC,cx-half-1,yy,half*2+2,1);}
+  for(let yy=top+1;yy<h-1;yy++){const half=halfAt(yy),p=(yy-top)/H;
+    for(let x=-half;x<half;x++){const u=x/half;// -1 left edge .. 1 right edge
+      const k=Math.floor((u+1)/2*N),ab=k%2===0;let c=ab?col:alt;
+      if(u<-.72)c=ab?lit2:tint(alt,.3);else if(u<-.3)c=ab?lit:tint(alt,.12);else if(u>.74)c=dk2;else if(u>.28)c=ab?dk:altdk;
+      if(p>.86)c=shade(c,.86);if(p<.12)c=tint(c,.15);
+      f(c,cx+x,yy,1,1);}
+    for(let k=1;k<N;k++){const sx=cx-half+Math.round(k/N*half*2);if(sx>cx-half&&sx<cx+half)f(seam,sx,yy,1,1);}}
+  // the hem: a darker band that sags between the pegs, and the cloth's shadow on the ground
+  {const half=halfAt(h-1);for(let x=-half;x<half;x++){const sag=Math.abs(((x+half)%12)-6)<2?1:0;f(shade(col,.62),cx+x,h-2-sag,1,1+sag);}f('rgba(0,0,0,.35)',cx-half-3,h-1,half*2+6,2);}
+  // guy ropes from the mid height to pegs on the ground, left and right
+  {const ym=Math.round(top+H*.55),hm=halfAt(ym),hb=halfAt(h-1);[[-1,hm,hb],[1,hm,hb]].forEach(([s,a,bb])=>{const x1=cx+s*a,y1=ym,x2=cx+s*(bb+7),y2=h-2;const n=Math.max(Math.abs(x2-x1),Math.abs(y2-y1));
+    for(let i=0;i<=n;i++)f('#d8c8a0',Math.round(x1+(x2-x1)*i/n),Math.round(y1+(y2-y1)*i/n),1,1);f('#6a4a2a',x2-1,y2-1,2,3);});}
+  // the pole, a brighter cap and the pennant
+  f(lit2,cx-1,top+1,3,3);f('#3a2a1a',cx,top-6,1,7);f('#f6e7a8',cx+1,top-6,6,3);f('#d8c080',cx+1,top-4,6,1);
+  const dx=(b.door[0]-b.x)*TS;for(let yy=0;yy<14;yy++){const hw=Math.round(2+yy*.45);f('#1a1010',dx+8-hw,h-14+yy,hw*2,1);}
+  for(let yy=0;yy<14;yy++){const hw=Math.round(2+yy*.45);f(lit,dx+8-hw-1,h-14+yy,1,1);f(dk2,dx+8+hw,h-14+yy,1,1);}f('#ffd98a',dx+6,h-6,4,4);
   m.lights=m.lights||[];m.lights.push([x0+dx+8,y0+h-4,22]);
   const ic={inn:[[2,4,8,2,'#5a6ab0'],[2,3,3,1,'#ffffff']],tavern:[[3,2,5,5,'#e0a030'],[3,2,5,1,'#ffffff'],[8,3,2,3,'#c08020']],smithy:[[2,5,8,2,'#6a6a7a'],[4,3,4,2,'#8a8a9a'],[5,1,1,4,'#c0c0d0']],workshop:[[4,1,4,1,'#8a8a9a'],[5,2,2,2,'#c8c8d0'],[3,4,6,4,'#3aa860'],[4,5,2,1,'#b8f0c8'],[9,1,2,3,'#5a3a1a'],[8,1,3,1,'#9a9aa8']],guild:[[3,1,6,6,'#b8483a'],[5,2,2,4,'#f0c050']]}[b.k];
-  if(ic){const sx=dx+18,sy=h-22;f('#3a2a1a',sx+5,sy-4,1,4);f(OUTC,sx-1,sy-1,14,11);f('#d8c090',sx,sy,12,9);ic.forEach(([a,bb,ww,hh,c])=>f(c,sx+a,sy+bb,ww,hh));}
-  if(b.k==='guild'){f('#3a2a1a',Math.floor(w/2)-1,top-14,1,10);f('#b8483a',Math.floor(w/2),top-14,8,5);f('#f0c050',Math.floor(w/2)+3,top-13,2,2);}
+  if(ic){const sx=dx+18,sy=h-22;f('#3a2a1a',sx+5,sy-4,1,4);f(OUTC,sx-1,sy-1,14,11);f('#d8c090',sx,sy,12,9);f('#b8a070',sx,sy+8,12,1);ic.forEach(([a,bb,ww,hh,c])=>f(c,sx+a,sy+bb,ww,hh));}
+  if(b.k==='guild'){f('#3a2a1a',cx-1,top-14,1,10);f('#b8483a',cx,top-14,8,5);f('#f0c050',cx+3,top-13,2,2);}
 }
 function buildMapCanvas(m,frame){
   m.lights=[];m.smoke=[];m.bsp=[];
@@ -8682,6 +8857,10 @@ function targetable(u){
   if(u.side==='e')return !!(B.pend.sk&&u.hp>0&&(B.pend.sk.t==='one'||B.pend.sk.t==='chain'||(typeof healsUndead==='function'&&healsUndead(B.pend.sk,u))));
   return allyTargetable(u);
 }
+function foeFrame(u,a,h,now,i){
+  if(h>=0&&h<180)return {t:'hit',i:0};
+  if(u.actKind&&a>=60&&a<380)return {t:'atk',i:0};
+  return {t:'idle',i:typeof gfxStill==='function'&&gfxStill()?0:Math.floor(now/700+(i||0)*.5)%2};}
 function drawUnit(ctx,u,b,now,tgMode){
   const hero=u.side==='p',dir=hero?-1:1,T=Date.now();
   let x=b.x,y=b.y,alpha=1,walk=false,white=0,lying=false;
@@ -8704,12 +8883,15 @@ function drawUnit(ctx,u,b,now,tgMode){
   // break stagger
   if(u.broken&&u.hp>0)x+=Math.floor(now/90)%2;
   let c0=spriteOf(u,walk),fk='';
+  // v0.13: foes whose art has frames (art.js frame API, MART[art].fr) swap idle 0/1 (700 ms), atk (while acting) and hit (180 ms after the blow lands)
+  const ff=!hero&&!u.heroArt&&u.hp>0&&!B.wipe&&typeof monHasFrames==='function'&&monHasFrames(u.art)&&!(typeof bossHasIdle==='function'&&bossHasIdle(u));
+  if(ff){const fr=foeFrame(u,a,h,now,b.i);c0=imgOf('bm:'+u.art+'#'+fr.t+fr.i,()=>monCanvas(u.art,fr));fk=fr.t+fr.i;}
   // v0.12.6: bosses and guardians idle on two frames (art3.js bossIdle: an exhale and a soft glow); a winding up foe swells and glows (bossTele, anim.js)
   const idle=!hero&&u.hp>0&&typeof bossHasIdle==='function'&&bossHasIdle(u)&&!gfxStill();
   if(idle){const f=bossIdle(c0,b.i,now);if(f!==c0){c0=f;fk='f';}}
   const tele=!hero&&u.hp>0&&!B.wipe&&typeof bossTele==='function'&&bossTele(u),tp=tele?(gfxStill()?.5:.5+.5*Math.sin(now/120)):0,tsc=tele?1.035+(gfxStill()?0:.02*Math.sin(now/130)):1;
   const c=BV.tint?BV.tint(c0):c0;// v0.5.3: the GL stage (Medium) tints sprites to the light of the scene
-  const breathe=!lying&&u.hp>0&&!B.wipe&&a>520&&Math.floor(now/(hero?620:760)+b.i*.5)%2===1&&!idle;
+  const breathe=!lying&&u.hp>0&&!B.wipe&&a>520&&Math.floor(now/(hero?620:760)+b.i*.5)%2===1&&!idle&&!ff;
   // shadow
   // v0.5.0 2.1: the shadow always sits on the ground plane (b.gy); flying foes hover above theirs with a gentle bob
   if(b.hov&&u.hp>0)y+=Math.round(Math.sin(now/320+b.i)*1.5);
@@ -13044,12 +13226,17 @@ Object.assign(MON,{
 Object.assign(MON_DROPS,{gnatswarm:['ichor','healroot'],barrowbones:['grit','ichor'],drownedsailor:['scale','ichor'],brinejelly:['scale','bluecap'],rimewight:['ichor','bluecap'],galephantom:['ichor','bluecap']});
 
 Object.assign(MART,{
- gnatswarm(g){
-  // a drifting cloud: a loose ring of specks with a few bigger bodies and wings
-  let s=7;const r=()=>{s=(s*1103515245+12345)&0x7fffffff;return s/0x7fffffff;};
-  for(let i=0;i<46;i++){const a=r()*6.283,d=Math.sqrt(r())*13;g.s(20+Math.cos(a)*d*1.15,20+Math.sin(a)*d*.9,i%7===0?'W':'B');}
-  [[14,15],[24,13],[19,22],[27,24],[12,26],[21,29],[30,17]].forEach(([x,y])=>{g.rect(x,y,2,2,'K');g.px([[x-1,y-1],[x+2,y-1]],'W');g.s(x,y,'E');});
-  return {pal:{B:'#6a6a4a',K:'#2a2418',W:'#e8e4c8',E:'#ff6a4a'},flat:'WEK'};
+ // v0.13: ten gnats on a drifting ring (two in the middle), near ones bright, far ones dim. Idle B turns the ring half a step with the wings flipped;
+ // the lunge pulls the ring forward and tight with stingers out; a hit scatters it. Frames come from f (art.js frame API), never from Math.random.
+ gnatswarm(g,f){const F=mfr(f),N=10,ph=F.i?.314:0;
+  let cx=19,cy=21,rx=12.5,ry=9.5;if(F.atk){cx=22,rx=10,ry=8;}if(F.hit){cx=17,rx=15,ry=11.5;}
+  const gnat=(x,y,far,up)=>{const B=far?'b':'B',Wg=far?'w':'W';g.rect(x,y,2,2,B);if(!far)g.s(x,y,'L');
+   g.px(up?[[x-1,y-1],[x+2,y-1]]:[[x-1,y],[x+2,y]],Wg);if(F.atk&&!far)g.s(x+2,y+1,'S');};
+  for(let k=0;k<N;k++){const a=k/N*6.2832+ph-(F.atk?.4:0),sn=Math.sin(a);if(!F.hit)g.s(Math.round(cx+Math.cos(a+.31)*(rx+1)),Math.round(cy+Math.sin(a+.31)*(ry+1)),'D');}
+  const ord=[];for(let k=0;k<N;k++){const a=k/N*6.2832+ph-(F.atk?.4:0);ord.push([Math.sin(a),Math.round(cx+Math.cos(a)*rx),Math.round(cy+Math.sin(a)*ry),k]);}
+  ord.sort((p,q)=>p[0]-q[0]).forEach(([sn,x,y,k])=>gnat(x,y,sn<-.25,(k+F.i)%2===0));
+  gnat(Math.round(cx-3+(F.atk?3:0)),Math.round(cy-2+(F.i?1:0)),true,F.i===0);gnat(Math.round(cx+2+(F.atk?3:0)),Math.round(cy+(F.i?-1:1)),false,F.i===1);
+  return {pal:{B:'#7a7a50',L:'#c0c080',b:'#4a4a30',W:'#e3f4e6',w:'#9aa89a',S:'#ff8a3a',D:'#5a5a42'},flat:'WwSD',a:{cx,cy,rx,ry}};
  },
  barrowbones(g){
   g.ell(20,8,6,6,'B');g.rect(16,11,9,5,'B');g.rect(17,7,3,3,'K');g.rect(22,7,3,3,'K');g.px([[18,8],[23,8]],'E');
@@ -13091,6 +13278,7 @@ Object.assign(MART,{
   return {pal:{B:'#7a7aa8',b:'#54547e',K:'#0e0e22',E:'#c8a8ff',W:'#cfe8ff'},flat:'EKW'};
  }
 });
+MART.gnatswarm.fr=1;
 
 // companion families for taming
 if(typeof FAM_OF!=='undefined')Object.assign(FAM_OF,{gnatswarm:'flyer',barrowbones:'spirit',drownedsailor:'spirit',brinejelly:'ooze',rimewight:'spirit',galephantom:'spirit'});
@@ -14606,33 +14794,98 @@ function npcWords(n,m){
 // a palette lean, roofs and decorations, a ground motif, ambient particles, its own monster mix (with realm variants), weather table,
 // townsfolk, quests and a music shift. The boss overlay sits on top while the boss lives and lifts when it falls.
 
+// ---------- v0.13 variant shapes (docs/art-style.md rule 7: a variant is not a recolour) ----------
+// A variant names a flourish from SHP: a small function (g, F, a, pal) drawn over the base art AFTER its frame, so it follows idle A/B, atk and hit.
+// F = the frame (art.js mfr), a = the anchors the base drawing returns (head, body, tail positions), pal = the palette, where a flourish may add keys.
+// MONV entries take the name as their 6th field; the variants made elsewhere (o_ overlay, mb_ mini, n_ night) are named in SHAPE_OF by id.
+// Ids, names, elements and drops are untouched: only the drawing differs.
+const SHP={
+ // Bramble Pup: leaf collar and a leaf fan where the flame was
+ leaffan(g,F,a,p){p.M='#6fb04a';p.m='#3f7a32';clr(g,Math.round(a.tx-5),Math.round(a.ty-14),13,13);
+  [[-5,-8],[-1,-11],[3,-8]].forEach(([dx,dy])=>{g.poly([[a.tx,a.ty],[a.tx+dx-1,a.ty+dy+2],[a.tx+dx+.5,a.ty+dy],[a.tx+dx+2,a.ty+dy+3]],'M');g.line(a.tx,a.ty,a.tx+dx,a.ty+dy+1,'m');});
+  for(let k=0;k<5;k++){const t=k/4,x=a.bx+4+(a.hx-3-a.bx-4)*t,y=a.by-5+(a.hy+3-a.by+5)*t;g.poly([[x,y],[x+3,y+1],[x+1.5,y+5]],'M');g.s(x+1,y+1,'m');}},
+ // Gloam Hound: bat ears, a spiked ruff, violet eyes
+ hound(g,F,a,p){p.q='#2a2038';p.E='#b080ff';g.poly([[a.hx-4.5,a.hy-11],[a.hx-3.5,a.hy-17],[a.hx-.5,a.hy-11.5]],'q');
+  for(let k=0;k<4;k++){const t=k/3,x=a.bx+4+(a.hx-3-a.bx-4)*t,y=a.by-5+(a.hy+1-a.by+5)*t;g.poly([[x+1,y+2],[x-3,y-3],[x+3,y+.5]],'q');}},
+ // Kingsfire Hound: a gold crown between the ears
+ crown(g,F,a,p){p.G='#f0c050';p.g='#b88a28';g.rect(Math.round(a.hx-3),Math.round(a.hy-7),8,2,'G');g.rect(Math.round(a.hx-3),Math.round(a.hy-5),8,1,'g');
+  [[-3,-10],[0,-11],[3,-10],[-1.5,-9],[1.5,-9]].forEach(([x,y])=>g.rect(Math.round(a.hx+x),Math.round(a.hy+y),1,Math.round(-y-7)+1,'G'));g.s(Math.round(a.hx),Math.round(a.hy-6),'R');},
+ // Pyreclaw, Kennelmaster: a spiked iron collar and a chain
+ collar(g,F,a,p){p.N='#8a8ea0';p.n='#4a4e60';g.path([[a.hx-4,a.hy+4],[a.hx+2,a.hy+7]],'N',2.4);g.px([[a.hx-3,a.hy+2],[a.hx-1,a.hy+3],[a.hx+1,a.hy+4],[a.hx+3,a.hy+5]],'W');g.path([[a.hx-1,a.hy+7],[a.hx-2,a.hy+13]],'n',1);g.rect(Math.round(a.hx-3),Math.round(a.hy+13),3,2,'N');},
+ // Rime Stalker: a tall ice horn on the brow and crystals on the tail
+ icehorn(g,F,a,p){g.poly([[a.hx+1,a.hy-4],[a.hx+3.5,a.hy-14],[a.hx+5.5,a.hy-4]],'c');g.poly([[a.hx+1.6,a.hy-4.4],[a.hx+3.2,a.hy-12],[a.hx+3.8,a.hy-4.4]],'C');
+  [[-11,1,-5],[-13,4,-6]].forEach(([dx,dy,h])=>g.poly([[a.bx+dx-1.5,a.by+dy+1.5],[a.bx+dx-2+(h<-5?-1:0),a.by+dy+h],[a.bx+dx+1.5,a.by+dy+1.5]],'c'));},
+ // Moonfang Wolf: a crescent on the brow and one long fang
+ moonfang(g,F,a,p){p.Y='#fff0a0';g.ell(a.hx+1.5,a.hy-8,3.4,3.4,'Y');g.ell(a.hx+3.2,a.hy-8.8,2.7,2.7,0);g.rect(Math.round(a.hx+7),Math.round(a.hy+4),1,3,'W');},
+ // Hoarfang Wolf: curled ram horns
+ ramhorns(g,F,a,p){p.H='#f0e8d4';p.h='#a89c84';g.ell(a.hx-5.5,a.hy-6,3.6,3.6,'h');g.ell(a.hx-6,a.hy-6.4,2.2,2.2,0);g.ell(a.hx-6.4,a.hy-7,1.2,1.2,'H');g.rect(Math.round(a.hx-4),Math.round(a.hy-4),3,2,'h');g.px([[a.hx-8,a.hy-8],[a.hx-7,a.hy-9]],'H');},
+ // Frostmother: icicle antlers and an icicle beard
+ antlers(g,F,a,p){g.path([[a.hx,a.hy-5],[a.hx-1,a.hy-11],[a.hx+1,a.hy-16]],'C',2);g.path([[a.hx-1,a.hy-11],[a.hx-5,a.hy-13]],'C',1.5);g.path([[a.hx,a.hy-8],[a.hx+4,a.hy-11]],'C',1.5);g.path([[a.hx+1,a.hy-14],[a.hx+4,a.hy-16]],'c',1);
+  [[0,7],[2,8],[4,7]].forEach(([x,y])=>g.poly([[a.hx+x-1,a.hy+y-3],[a.hx+x+1.4,a.hy+y-3],[a.hx+x+.2,a.hy+y+3]],'C'));},
+ // Bog Toad: cattail reeds growing from the back
+ reeds(g,F,a,p){p.S='#4a7a3a';p.q='#6a4a2a';[[-6,10],[-1,8]].forEach(([dx,h])=>{const x=Math.round(a.bx+dx),y=Math.round(a.by-a.bh+2);g.line(x,y,x,y-h,'S');g.ell(x+.5,y-h-1,1.3,2.8,'q');g.poly([[x,y-3],[x+4,y-8],[x+1,y-3]],'S');});},
+ // Gloomspore Toad: glowing mushroom caps on the back
+ capback(g,F,a,p){p.U='#a07ae0';p.u='#6a4aa8';[[-5,0,3.4],[3,1,2.6]].forEach(([dx,dy,r])=>{const x=a.bx+dx,y=a.by-a.bh+dy;g.rect(Math.round(x),Math.round(y-3),2,4,'W');g.ell(x+1,y-4.5,r,r*.7,'u');g.ell(x+.4,y-5,r*.75,r*.5,'U');g.px([[x-1,y-5],[x+2,y-4]],'W');});},
+ // Mire Queen: a crown of lily petals
+ lilycrown(g,F,a,p){p.P='#f08ab8';p.G='#f0c050';[-4,-2,0,2,4].forEach((o,n)=>{const x=a.hx-1.5+o,y=a.hy-10-(n%2?0:1);g.poly([[x-1.5,y+3.2],[x+.2,y-2],[x+1.8,y+3.2]],'P');});g.rect(Math.round(a.hx-4),Math.round(a.hy-8),5,1,'G');g.s(Math.round(a.hx-2),Math.round(a.hy-12),'G');},
+ // Reed Crawler: reeds standing on the shell
+ reedback(g,F,a,p){p.S='#6a9a3a';p.q='#6a4a2a';[[-8,9],[-5,12],[-2,8]].forEach(([dx,h])=>{const x=Math.round(a.bx+dx),y=Math.round(a.by-4);g.line(x,y,x+(h>10?-1:0),y-h,'S');g.poly([[x,y-4],[x+4,y-9],[x+1,y-4]],'S');if(h>10)g.ell(x-.5,y-h-1,1.2,2.4,'q');});},
+ // Stormtide Crawler: a tall dorsal fin with a lightning mark
+ tidefin(g,F,a,p){p.F='#4aa8ff';p.f='#2a6ab8';p.Y='#ffe14a';g.poly([[a.bx-9,a.by-4],[a.bx-7,a.by-12],[a.bx-4,a.by-6],[a.bx-2,a.by-14],[a.bx+1,a.by-6]],'f');g.poly([[a.bx-8,a.by-4],[a.bx-7,a.by-10],[a.bx-4.5,a.by-5.5]],'F');g.px([[a.bx-3,a.by-11],[a.bx-2,a.by-9],[a.bx-3,a.by-8]],'Y');},
+ // Brine Hag: seaweed hair and barnacles
+ seaweed(g,F,a,p){p.S='#2f7a5a';p.s='#1f5a40';g.path([[a.bx-3,a.by-5],[a.bx-8,a.by-9],[a.bx-12,a.by-5],[a.bx-13,a.by+1]],'S',2);g.path([[a.bx,a.by-5],[a.bx-4,a.by-11],[a.bx-9,a.by-11]],'s',1.6);g.px([[a.bx-6,a.by-2],[a.bx-2,a.by-1],[a.bx+3,a.by-3]],'W');},
+ // Crownshell: a coral crown over the shell
+ coralcrown(g,F,a,p){p.P='#f08a7a';p.p='#b8584c';p.G='#f0c050';[-9,-5,-1,3,7].forEach((o,n)=>{const x=a.cx+o,top=a.cy-10.8*Math.sqrt(1-Math.min(1,(o/13.5)**2)),h=[5,8,6,9,6][n];g.poly([[x-2,top+2.5],[x,top-h],[x+2,top+2.5]],'p');g.poly([[x-1.4,top+2.5],[x-.4,top-h+1],[x+.6,top+2.5]],'P');});g.ell(a.cx-1,a.cy-12.5,1.8,1.8,'W');},
+ // Old Shellking: two curved tusks
+ tusks(g,F,a,p){p.T='#f2ecd6';p.t='#b8b098';g.poly([[a.hx+2.5,a.hy+2.5],[a.hx+9,a.hy-4.5],[a.hx+6.5,a.hy+4.5]],'T');g.poly([[a.hx+3,a.hy+3.2],[a.hx+8,a.hy-3],[a.hx+6,a.hy+3.6]],'t');g.poly([[a.hx-1,a.hy+3],[a.hx+2,a.hy-3],[a.hx+3,a.hy+3.5]],'T');},
+ // Glowcap Slime: glowing mushroom caps instead of a crater
+ glowcaps(g,F,a,p){p.U='#8affd8';p.u='#3ab898';[[-5,1.5,4],[3,-1,3.2],[9,4,2.2]].forEach(([dx,dy,r])=>{const x=a.cx+dx,y=a.ty+dy;g.rect(Math.round(x),Math.round(y-2),2,3,'W');g.ell(x+1,y-3,r,r*.7,'u');g.ell(x+.4,y-3.6,r*.75,r*.5,'U');g.px([[x-1,y-3],[x+2,y-4]],'W');});},
+ // Sunscorch Ooze: rays all round the crown
+ sunflare(g,F,a,p){p.Y='#ffe08a';p.C='#ffb040';for(let k=0;k<7;k++){const t=-2.75+k*.4,x=a.cx+Math.cos(t)*(a.w+.5),y=a.cy+Math.sin(t)*(a.h+.5),ox=Math.cos(t),oy=Math.sin(t);g.poly([[x-oy*1.3,y+ox*1.3],[x+ox*5.5,y+oy*5.5],[x+oy*1.3,y-ox*1.3]],k%2?'C':'Y');}},
+ // Thornbound Creeper: thorn spikes round the dome
+ thorns(g,F,a,p){p.q='#3a2a1a';p.k='#c8a860';for(let k=0;k<6;k++){const t=-2.7+k*.45,x=a.x+Math.cos(t)*(a.w-1),y=a.y+Math.sin(t)*(a.h-1),ox=Math.cos(t),oy=Math.sin(t);g.poly([[x-oy*1.4,y+ox*1.4],[x+ox*5.5,y+oy*5.5],[x+oy*1.4,y-ox*1.4]],'q');g.s(Math.round(x+ox*4.6),Math.round(y+oy*4.6),'k');}},
+ // Rootmother: roots creeping out at the feet and a branch crown
+ roots(g,F,a,p){p.q='#5a3a22';p.S='#3f7f32';g.path([[a.x-6,35],[a.x-12,36.5],[a.x-16,35]],'q',2.2);g.path([[a.x+6,35],[a.x+12,36.5],[a.x+16,35]],'q',2.2);g.path([[a.x-3,36],[a.x-5,38]],'q',1.5);
+  g.path([[a.sx-1,a.sy],[a.sx-5,a.sy-7],[a.sx-7,a.sy-8]],'q',1.6);g.path([[a.sx+1,a.sy],[a.sx+5,a.sy-6],[a.sx+7,a.sy-8]],'q',1.6);g.px([[a.sx-7,a.sy-9],[a.sx+7,a.sy-9]],'S');},
+ // Mantis Brood: two small scythes on the front of the ring
+ blades(g,F,a,p){p.V='#c8e04a';p.v='#6a8a20';[-1,1].forEach(d=>{const x=a.cx+a.rx-1,y=a.cy+d*3;g.path([[x,y],[x+3,y+d*-3],[x+6,y+d*-2],[x+6,y+d*1]],'V',1.4);g.s(Math.round(x+6),Math.round(y+d),'v');});}
+};
+const SHAPE_OF={o_thornwarden:'thorns',mb_rootmother:'roots',o_drake:'tidefin',mb_brinehag:'seaweed',o_cinderking:'crown',mb_pyreclaw:'collar',n_cinderpup:'hound',
+  o_hoarwyrm:'ramhorns',mb_frostmother:'antlers',n_frostwolf:'moonfang',o_gloomcap:'capback',mb_mirequeen:'lilycrown',mb_shellking:'tusks',mb_sunscorch:'sunflare',o_queenmantis:'blades'};
+// the same flourish over a night variant (world3.js builds those before this file loads): wrap its drawing and keep the frame flag
+function shapeWrap(id,name){const f0=MART[id],sh=SHP[name];if(!f0||!sh||f0.shaped)return;
+  const w=(g,f)=>{const o=f0(g,f);if(o&&o.a){const pal=Object.assign({},o.pal);sh(g,mfr(f),o.a,pal);return Object.assign({},o,{pal});}return o;};w.fr=f0.fr||(MON[id]&&MART[MON[id].base]&&MART[MON[id].base].fr);w.shaped=1;MART[id]=w;}
+
 // ---------- realm monster variants: a base sprite repainted toward a colour, with its own name and elements ----------
 const MONV=[
- // id, base, name, elements, colour
- ['v_bramblepup','cinderpup','Bramble Pup',['earth'],'#5a8a3a'],['v_sunimp','gustimp','Sunflick Imp',['light','wind'],'#f0c040'],
- ['v_bogtoad','dewtoad','Bog Toad',['water','shadow'],'#3a5a3a'],['v_marshwisp','tidewisp','Marsh Wisp',['water','shadow'],'#5a7a6a'],
- ['v_glowslime','magmaslime','Glowcap Slime',['earth','light'],'#5ad0b0'],['v_emberbat','cavebat','Ember Bat',['fire','shadow'],'#c0502a'],
- ['v_rimewolf','frostwolf','Rime Stalker',['ice','shadow'],'#4a5a8a'],['v_galeharpy','snowharpy','Gale Harpy',['wind','lightning'],'#a8a0e0'],
+ // id, base, name, elements, colour, shape (a flourish of SHP, drawn over the base art: see above; only for variants of the redrawn foe arts so far)
+ ['v_bramblepup','cinderpup','Bramble Pup',['earth'],'#5a8a3a','leaffan'],['v_sunimp','gustimp','Sunflick Imp',['light','wind'],'#f0c040'],
+ ['v_bogtoad','dewtoad','Bog Toad',['water','shadow'],'#3a5a3a','reeds'],['v_marshwisp','tidewisp','Marsh Wisp',['water','shadow'],'#5a7a6a'],
+ ['v_glowslime','magmaslime','Glowcap Slime',['earth','light'],'#5ad0b0','glowcaps'],['v_emberbat','cavebat','Ember Bat',['fire','shadow'],'#c0502a'],
+ ['v_rimewolf','frostwolf','Rime Stalker',['ice','shadow'],'#4a5a8a','icehorn'],['v_galeharpy','snowharpy','Gale Harpy',['wind','lightning'],'#a8a0e0'],
  ['v_sunhawk','thunderhawk','Sun Hawk',['fire','wind'],'#e8a040'],['v_dunegolem','slaggolem','Dune Golem',['earth','wind'],'#d8b070'],
  ['v_lakeray','cloudray','Lake Ray',['water'],'#4a90c0'],['v_ironling','stormling','Ironling',['lightning','earth'],'#8a8a9a'],
- ['v_reedcrawler','crawler','Reed Crawler',['earth','water'],'#7a8a4a'],['v_moorgull','gull','Moor Gull',['wind','shadow'],'#6a6a7a'],
+ ['v_reedcrawler','crawler','Reed Crawler',['earth','water'],'#7a8a4a','reedback'],['v_moorgull','gull','Moor Gull',['wind','shadow'],'#6a6a7a'],
  ['v_orchardimp','gustimp','Orchard Sprite',['earth','light'],'#c0d060'],['v_quarryknight','iceknight','Quarry Knight',['earth'],'#8a7a6a'],
  // Calamity realm natives
  ['v_ashspawn','voidspawn','Ash Spawn',['fire','shadow'],'#8a4a3a'],['v_drownwatch','huskguard','Drowned Watcher',['water','shadow'],'#3a6a7a'],
  ['v_starwraith','eclipsewraith','Starless Wraith',['shadow'],'#2a2a5a'],['v_skyshard','gargoyle','Sky Shard',['light','lightning'],'#d8e0ff'],
- ['v_tidecrown','shellguard','Crownshell',['water','light'],'#5ab0c0'],['v_cindereater','stareater','Cinder Eater',['fire'],'#c0602a'],
+ ['v_tidecrown','shellguard','Crownshell',['water','light'],'#5ab0c0','coralcrown'],['v_cindereater','stareater','Cinder Eater',['fire'],'#c0602a'],
  ['v_galeghost','cloudray','Shatterwind Ray',['wind','light'],'#e0e0ff'],['v_ashhusk','huskguard','Ashen Husk',['fire','shadow'],'#6a4a40']
 ];
 function recol(hex,to,k){if(!/^#[0-9a-f]{6}$/i.test(String(hex)))return hex;return lerpHex(hex,to,k);}
-function makeMonVariant(id,base,name,els,col,extra){const m=MON[base];if(!m||MON[id])return;
+function makeMonVariant(id,base,name,els,col,extra,shape){const m=MON[base];if(!m||MON[id])return;
   const map={};m.el.forEach((e,i)=>{map[e]=els[Math.min(i,els.length-1)];});
   MON[id]=Object.assign({},m,{n:name,art:id,el:els.slice(),base,variant:1},extra||{},{sk:(m.sk||[]).map(s=>{const c=s.slice();if(map[c[1]])c[1]=map[c[1]];return c;})});
   if(typeof MON_DROPS!=='undefined')MON_DROPS[id]=(MON_DROPS[base]||[]).slice();
   if(typeof MON_TY!=='undefined'&&MON_TY[base])MON_TY[id]=MON_TY[base].slice();
   if(typeof FAM_OF!=='undefined'&&FAM_OF[base])FAM_OF[id]=FAM_OF[base];
-  MART[id]=g=>{const o=MART[m.art](g);const pal={};Object.keys(o.pal).forEach(q=>{pal[q]='KEW'.includes(q)?o.pal[q]:recol(o.pal[q],col,.5);});return Object.assign({},o,{pal});};
+  const sh=SHP[shape||SHAPE_OF[id]];
+  MART[id]=(g,f)=>{const o=MART[m.art](g,f);const p0=Object.assign({},o.pal);if(sh&&o.a)sh(g,mfr(f),o.a,p0);const pal={};Object.keys(p0).forEach(q=>{pal[q]='KEW'.includes(q)||!(q in o.pal)?p0[q]:recol(p0[q],col,.5);});return Object.assign({},o,{pal});};
+  MART[id].fr=MART[m.art].fr;// frames follow the base art (art.js frame API)
   if(MEXTRA[m.art])MEXTRA[id]=(g,p)=>{MEXTRA[m.art](g,p);Object.keys(p).forEach(q=>{if(!'KEW'.includes(q))p[q]=recol(p[q],col,.5);});};}
-MONV.forEach(([id,b,n,e,c])=>makeMonVariant(id,b,n,e,c));
+MONV.forEach(([id,b,n,e,c,sh])=>makeMonVariant(id,b,n,e,c,undefined,sh));
+['n_cinderpup','n_frostwolf'].forEach(id=>shapeWrap(id,SHAPE_OF[id]));
 
 Object.keys(BOV).forEach(k=>{const [id,b,n,e,c]=BOV[k].mon;makeMonVariant(id,b,n,e,c,{ov:k});});
 // ---------- helpers ----------
@@ -14952,8 +15205,8 @@ MINIS.forEach(([id,b,n,e,c])=>makeMonVariant(id,b,n,e,c,{mini:1,hp:+((MON[b]||{h
 // neighbour) into the 60 px box. The Priest's Invoke summon uses a small alias art (summon8.js sumArt), so it stays the old size.
 MINIS.forEach(D=>{if(!BIG_ART.includes(D[0]))BIG_ART.push(D[0]);});
 const MINI_BIG=new Set(MINIS.map(D=>D[0]));
-{const mc0=monCanvas;monCanvas=function(art){if(!MINI_BIG.has(art))return mc0.apply(this,arguments);
-  const i=BIG_ART.indexOf(art);if(i>=0)BIG_ART.splice(i,1);let c;try{c=mc0.call(this,art);}finally{if(i>=0)BIG_ART.splice(i,0,art);}
+{const mc0=monCanvas;monCanvas=function(art,f){if(!MINI_BIG.has(art))return mc0.apply(this,arguments);
+  const i=BIG_ART.indexOf(art);if(i>=0)BIG_ART.splice(i,1);let c;try{c=mc0.call(this,art,f);}finally{if(i>=0)BIG_ART.splice(i,0,art);}
   const w=Math.round(c.width*1.5),h=Math.round(c.height*1.5),o=mkCv(w,h),x=o.getContext('2d');x.imageSmoothingEnabled=false;x.drawImage(c,0,0,w,h);return o;};}
 function miniFor(m){G.miniPick=G.miniPick||{};let i=G.miniPick[m.id];
   if(i==null){const used=new Set(Object.values(G.miniPick)),R=seeded(((G.run&&G.run.seed)||1)^0x31415),order=MINIS.map((_,k)=>k).sort(()=>R()-.5);
@@ -18581,6 +18834,10 @@ TW.mod=id=>TWISTS.ng.mods.find(m=>m.id===id)||null;
 TW.mods=g=>{g=g||(typeof G!=='undefined'?G:null);return g&&Array.isArray(g.ngMods)?g.ngMods.map(TW.mod).filter(Boolean):[];};
 TW.ng=function(id){if(typeof G==='undefined'||!G||G.daily||!Array.isArray(G.ngMods)||!G.ngMods.includes(id))return null;return TW.mod(id);};
 TW.modNames=g=>TW.mods(g).map(m=>m.n).join(', ');
+// v0.12.13: the Rift modifier, unlocked on the account by beating the Riftkeeper (META.riftkeeper, riftkeeper9.js). A locked modifier is not offered.
+TWISTS.ng.mods.push({id:'rift',n:'Rift',risk:'Foes cycle through the elements every 3 turns.',gain:'+35% XP and gold.',xp:1.35,gold:1.35,lock:'riftkeeper'});
+const twUnlocked=m=>!!m&&(!m.lock||!!(typeof META!=='undefined'&&META&&META[m.lock]));
+const TW_RIFT=['fire','water','ice','lightning','earth','wind','light','shadow'];
 
 // ===== Daily twist effects =====
 // weather multipliers carry Healing halved and Sharp eyes (WX() feeds heal skills and crit chance)
@@ -18624,6 +18881,10 @@ function twElite(){
   const e=B.en.reduce((a,x)=>x.lv>a.lv?x:a,B.en[0]);if(!e)return;
   e.maxShield=m.pips;e.shield=m.pips;e.broken=0;e.S.mhp=Math.round(e.S.mhp*m.hp);e.hp=e.S.mhp;e.ngElite=1;e.name='Elite '+e.name;
 }
+// Rift: every third turn a foe's element (and its damaging skills) shifts to the next one in the cycle (never the Riftkeeper, which cycles on its own)
+function twRift(u){const cur=u.el&&u.el[0],i=TW_RIFT.indexOf(cur),nx=TW_RIFT[(i+1)%TW_RIFT.length];u.el=[nx];u.sk.forEach(k=>{if(k.k!=='buff'&&k.el)k.el=nx;});
+  fx(u,EL[nx],'stat');log(`${u.name} shifts to ${EL[nx]}.`);}
+{const et0=endTurn;endTurn=function(u){const r=et0.apply(this,arguments);try{if(B&&u&&u.side==='e'&&!u.rk&&u.hp>0&&u.turns>0&&u.turns%3===0&&TW.ng('rift'))twRift(u);}catch(e){}return r;};}
 // Reactions only: weak hits and skills stop chipping foe shields
 {const cs0=chipShield;chipShield=function(t,n,why){if(TW.ng('react')&&t&&t.side==='e'&&why!=='reaction')return;return cs0.apply(this,arguments);};}
 // rewards: every chosen modifier multiplies battle XP and gold (win() reads facMul once per fight)
@@ -18674,16 +18935,16 @@ HOOK.before('vModal','twists','twist info popup',function(m){if(m&&m.type==='wxi
 // New Game+ modifier picker on the starter screen (only when starting a New Game+ cycle)
 function ngPicker(){
   const sel=V.ngMods||[],mx=TWISTS.ng.max;
-  return `<div class="panel ngpick"><h3>Modifiers <small>(optional, up to ${mx})</small></h3><p class="note">Extra risk for extra reward, for this whole cycle. You can start without any.</p><div class="ngmods">${TWISTS.ng.mods.map(m=>
+  return `<div class="panel ngpick"><h3>Modifiers <small>(optional, up to ${mx})</small></h3><p class="note">Extra risk for extra reward, for this whole cycle. You can start without any.</p><div class="ngmods">${TWISTS.ng.mods.filter(twUnlocked).map(m=>
     `<button class="btn ngmod ${sel.includes(m.id)?'in':''}" data-act="ngMod" data-arg="${m.id}" aria-pressed="${sel.includes(m.id)}"><b>${sel.includes(m.id)?'✓ ':''}${esc(m.n)}</b><small class="ngr">${esc(m.risk)}</small><small class="ngg">${esc(m.gain)}</small></button>`).join('')}</div></div>`;
 }
 {const vs0=vStarter;vStarter=function(){let h=vs0.apply(this,arguments);try{if((V.ngCycle||0)>0&&TWISTS.on){const i=h.indexOf('<div class="grid cards">');if(i>=0)h=h.slice(0,i)+ngPicker()+h.slice(i);}}catch(e){}return h;};}
 {const n0=ACT.new,s0=ACT.startNG,b0=ACT.begin;
   ACT.new=function(){V.ngMods=[];return n0.apply(this,arguments);};
   ACT.startNG=function(){V.ngMods=[];return s0.apply(this,arguments);};
-  ACT.begin=function(){const pick=(V.ngMods||[]).filter(id=>TW.mod(id)).slice(0,TWISTS.ng.max),cyc=V.ngCycle||0;const g0=G;const r=b0.apply(this,arguments);
+  ACT.begin=function(){const pick=(V.ngMods||[]).filter(id=>twUnlocked(TW.mod(id))).slice(0,TWISTS.ng.max),cyc=V.ngCycle||0;const g0=G;const r=b0.apply(this,arguments);
     try{if(G&&G!==g0&&G.run&&cyc>0&&pick.length){G.ngMods=pick;saveGame();}}catch(e){}return r;};}
-ACT.ngMod=function(id){if(!TW.mod(id))return;const L=V.ngMods=V.ngMods||[];const i=L.indexOf(id);
+ACT.ngMod=function(id){if(!twUnlocked(TW.mod(id)))return;const L=V.ngMods=V.ngMods||[];const i=L.indexOf(id);
   if(i>=0)L.splice(i,1);else if(L.length>=TWISTS.ng.max){toast(`Up to ${TWISTS.ng.max}. Drop one first.`);return;}else L.push(id);render();};
 // shown on the save cards, in the header next to NG+ and in Menu > Journey
 {const ms0=mSlots;mSlots=function(m){let h=ms0.apply(this,arguments);try{[0,1,2].forEach(s=>{const o=loadRaw(s);const n=o&&TW.modNames(o);if(!n)return;
@@ -21814,6 +22075,9 @@ H2Batch.prototype.v=function(i,x,y,z,u,w,r,g,b,a,nx,ny,nz,fl){const o=i*7,f=this
 // a quad from 4 corners (12 numbers), a uv box, a colour (0..255) and a normal (-1..1, packed) with flags
 H2Batch.prototype.quad=function(P,u0,v0,u1,v1,r,g,b,a,nx,ny,nz,fl){if(this.n>=this.max)this.grow();const i=this.n*4,X=Math.round((nx*.5+.5)*255),Y=Math.round((ny*.5+.5)*255),Z=Math.round((nz*.5+.5)*255);
   this.v(i,P[0],P[1],P[2],u0,v0,r,g,b,a,X,Y,Z,fl);this.v(i+1,P[3],P[4],P[5],u1,v0,r,g,b,a,X,Y,Z,fl);this.v(i+2,P[6],P[7],P[8],u1,v1,r,g,b,a,X,Y,Z,fl);this.v(i+3,P[9],P[10],P[11],u0,v1,r,g,b,a,X,Y,Z,fl);this.n++;};
+// v0.12.13: a quad with its own texture coordinate at every corner (TL, TR, BR, BL), for the tent cones
+H2Batch.prototype.quad4=function(P,T,r,g,b,a,nx,ny,nz,fl){if(this.n>=this.max)this.grow();const i=this.n*4,X=Math.round((nx*.5+.5)*255),Y=Math.round((ny*.5+.5)*255),Z=Math.round((nz*.5+.5)*255);
+  for(let k=0;k<4;k++)this.v(i+k,P[k*3],P[k*3+1],P[k*3+2],T[k*2],T[k*2+1],r,g,b,a,X,Y,Z,fl);this.n++;};
 // static mesh: the batch split into GPU buffers of at most H2_QMAX quads (16 bit indices)
 function h2Mesh(gl,bt){const out=[];for(let q=0;q<bt.n;q+=H2_QMAX){const n=Math.min(H2_QMAX,bt.n-q),vb=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,vb);
   gl.bufferData(gl.ARRAY_BUFFER,new Uint8Array(bt.buf,q*4*H2V_STRIDE,n*4*H2V_STRIDE),gl.STATIC_DRAW);out.push({vb,n});}return out;}
@@ -22033,6 +22297,18 @@ function hdGateGeo(m,S,b,Q,U,Vv,p,V,bt){const G2=H2G,x0=b.x*TS,x1=x0+b.w*TS,zb=b
 // and anything unusual stand up as one card. Signs and landmark props (towngfx) come from the town decor pass as a card on the facade.
 function hdBldKind(m,b){if(b.k==='gatehouse')return 'gate';if(b.k==='lighthouse')return 'tower';/* v0.11.7: a narrow round tower (v0.11.4 'keep' stretched the sprite over the footprint) */const T=THM(m);let mat=T.mat;if(['guild','keep','chapel','tower','windmill'].includes(b.k))mat=m.theme==='void'?'tent':'stone';
   if(mat==='tent'||b.k==='bigtent')return 'card';if(b.k==='keep'||b.k==='tower')return 'keep';return 'roof';}
+// v0.12.13: a tent stands as a cone of cloth, not a flat card: 18 slices round an ellipse on the footprint, each slice mapped to its
+// own wedge of the 2D tent sprite (quad4 takes a texture coordinate per corner), so the lit left face, the seams and the hem wrap round;
+// the pole and pennant are a small card at the apex. The back half shows the front's wedges mirrored, which the camera only sees at the top.
+function hdTentCone(S,b,p,cv,Q,U,Vv,V,bt){const w=b.w*TS,h=b.h*TS,x0=b.x*TS,zf=(b.y+b.h)*TS,zb=b.y*TS,zm=(zf+zb)/2,cx=x0+w/2,cxs=BSP_X+w/2;
+  const apexRow=BSP_TOP-10,baseRow=BSP_TOP+h-1,ya=(baseRow-apexRow)*V,rx=w/2+2,rz=Math.max(6,(zf-zb)/2),N=18;
+  for(let i=0;i<N;i++){const t0=-Math.PI+i/N*2*Math.PI,t1=-Math.PI+(i+1)/N*2*Math.PI,tm=(t0+t1)/2;
+    const bx0=cx+rx*Math.sin(t0),bz0=zm+rz*Math.cos(t0),bx1=cx+rx*Math.sin(t1),bz1=zm+rz*Math.cos(t1);
+    const u0=U(p,cxs+(w/2+1)*Math.sin(t0)),u1=U(p,cxs+(w/2+1)*Math.sin(t1)),ua=U(p,cxs),va=Vv(p,apexRow),vb=Vv(p,baseRow);
+    const nx=Math.sin(tm)*.7,nz=Math.cos(tm)*.7,ny=.55;H2P.set([cx,ya,zm,cx,ya,zm,bx1,0,bz1,bx0,0,bz0]);
+    bt.quad4(H2P,[ua,va,ua,va,u1,vb,u0,vb],255,255,255,255,nx,ny,nz,2|8);}
+  {const r0=apexRow-8,sx=cxs-2,sw=11,yt=ya+8*V;Q([cx-2,yt,zm,cx+sw-2,yt,zm,cx+sw-2,ya-1*V,zm,cx-2,ya-1*V,zm],U(p,sx),Vv(p,r0),U(p,sx+sw),Vv(p,apexRow+1),255,[0,.45,.89],2|8);}
+  S.bh.push({b,h:ya});}
 function hdBakeBuildings(m,S,bsp,deco){const V=S.V,sin=Math.sin(HD2D.pitch*Math.PI/180),pk=new H2Pack(1024),parts=[];
   {const g=hdGatePart(m);if(g)bsp=(bsp||[]).concat([g]);}// v0.6.3: the sanctum gatehouse stands up as towers and a curtain wall
   (bsp||[]).forEach(q=>{parts.push({q,r:pk.add(q.cv.width,q.cv.height)});});
@@ -22047,8 +22323,7 @@ function hdBakeBuildings(m,S,bsp,deco){const V=S.V,sin=Math.sin(HD2D.pitch*Math.
   S.bh=[];S.mills=[];S.smoke=[];
   parts.forEach(p=>{const b=p.q.b,cv=p.q.cv,k=hdBldKind(m,b),w=b.w*TS,h=b.h*TS,x0=b.x*TS,x1=x0+w,zf=(b.y+b.h)*TS,zb=b.y*TS,zm=(zf+zb)/2;
     if(p.r.y+cv.height>AH)return;bt=CB.at(x0+w/2,zm);
-    if(k==='card'){const yb=-6*V,yt=(cv.height-6)*V,cx0=x0-BSP_X;Q([cx0,yt,zf+.2,cx0+cv.width,yt,zf+.2,cx0+cv.width,yb,zf+.2,cx0,yb,zf+.2],U(p,0),Vv(p,0),U(p,cv.width),Vv(p,cv.height),255,[0,.45,.89],2|8);
-      S.bh.push({b,h:cv.height*.55*V});return;}
+    if(k==='card'){hdTentCone(S,b,p,cv,Q,U,Vv,V,bt);return;}
     if(k==='gate'){hdGateGeo(m,S,b,Q,U,Vv,p,V,bt);return;}
     if(k==='tower'){// the lighthouse: its 48x96 sprite sits bottom-centred on the footprint (worldgfx2.js); body columns 14..34, lantern and roof rows 0..24
       const L=h+BSP_TOP-96+1,sx=BSP_X+Math.round(w/2)-24,cx=x0+w/2,tx0=cx-10,tx1=cx+10,zt0=zm-9,zt1=zm+9,yb=72*V,yt=96*V;
@@ -24562,7 +24837,7 @@ function sumChoices(a){const out=[];try{if(typeof canSummon==='function'&&canSum
 ACT.sumOne=function(){if(!B||B.mode!=='cmd'||!B.cur)return;const C=sumChoices(B.cur);if(!C.length)return;
   if(C.length===1){const c=C[0];if(c.k==='pet')return ACT.summon();return ACT.sumPick(c.arg);}
   if(C.some(c=>c.k==='guard')){B.menu='summons';render();return;}ACT.summon();};
-{const st=document.createElement('style');st.textContent='.battle.b3 .mi.b9sum small{display:block;font-size:.62em;opacity:.8;font-weight:600}';document.head.appendChild(st);}
+{const st=document.createElement('style');st.textContent='.battle.b3 .mi.b9sum{overflow:hidden}.battle.b3 .mi.b9sum small{display:block;font-size:.58em;opacity:.8;font-weight:600;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;letter-spacing:0}';/* v0.12.13: a long pet name is clipped with an ellipsis on the 344 px cover screen, never pushed out of the button */document.head.appendChild(st);}
 
 // ===== npcmark9.js: a pulsing "!" over NPCs and field actors who have a quest for you =====
 // npcQuestState(actor) -> 'new' | 'ready' | null.
@@ -24594,6 +24869,181 @@ function nqPos(o,now){const a=o.a;let x=a.x*TS,y=a.y*TS;if(o.n&&o.n.mv){const p=
     const col=st==='ready'?'#7aff8a':'#ffd04a',p=still?.8:.55+.45*Math.sin(ts/180+nx),bob=still?0:Math.round(Math.sin(ts/220+nx)*1.5),fx=nx+8,fz=ny+12.5,h=(HD.heroH||22*V)+((o.n?-3:5)+bob)*V;
     hdBill(HD.dynA,'glow',hdGlowS(),fx,h-4*V,fz,false,.5,st==='ready'?150:255,st==='ready'?255:240,st==='ready'?170:160,Math.round(110*p),4);
     hdBill(HD.dyn,'mk'+col,hdMark(col),fx,h,fz,false,1,255,255,255,255,4);});}catch(e){}return r;};}
+
+// ===== rift9.js (v0.12.13): the Echo Rift: Echoforge inside the Rift only, gates that show their state, Calamity gates apart =====
+// The Echoforge (echo gear from Echo Shards) is no longer a Smithy tab in town: an Echoforge anvil stands in the Sanctum hall. A beaten
+// gate glows in its element colour (the whole arch, not a pip); a Calamity gate is a taller pointed arch in crimson and gold on the south
+// row, clearly another kind of door. No save fields.
+const RIFT_FORGE_KEY='__forge';
+{const ef0=efTabOn;efTabOn=function(){try{return !!(WS.m&&WS.m.sanctum)&&ef0.apply(this,arguments);}catch(e){return false;}};}
+{const bs0=buildSanctum;buildSanctum=function(){const m=bs0.apply(this,arguments);try{
+  m.npcs.push({x:13,y:6,hx:13,hy:6,name:'Echoforge',line:'',view:'front',face:'r',act:'portal',portal:1,forge:1,key:RIFT_FORGE_KEY,look:null});}catch(e){}return m;};}
+// the anvil opens the Smithy's Echoforge page; the Warden's rest is wired by riftkeeper9.js (ACT.riftRest)
+HOOK.before('vModal','rift9','Echoforge anvil in the Rift',function(m){if(m&&m.type==='portal'&&m.key===RIFT_FORGE_KEY){const mm={type:'smithy',tab:'echo',from:null};V.modal=mm;return HOOK.stop(mShop(mm));}});
+// drawing: the anvil, the won glow, the Calamity arch
+{const dp0=drawPortal;drawPortal=function(ctx,px,py,n,now){
+  if(n.key===RIFT_FORGE_KEY){const f=(c,x,y,w,h)=>{ctx.fillStyle=c;ctx.fillRect(px+x,py+y,w,h);};const p=.5+.5*Math.sin(now/260);
+    f('#0e0a16',1,4,14,12);f('#3a3a48',2,5,12,10);f('#5a5a6c',3,5,10,2);f('#2a2a34',6,9,4,6);f('#6a6a7c',1,13,14,2);
+    ctx.fillStyle=`rgba(180,140,255,${.25+.35*p})`;ctx.fillRect(px+5,py+3,6,2);f('#e8d8ff',7,3,2,1);
+    ctx.fillStyle=`rgba(120,80,200,${.12*p})`;ctx.beginPath();ctx.arc(px+8,py+9,13,0,7);ctx.fill();return;}
+  const d=guardianDef(n.key),open=riftKeys().includes(n.key),won=!!d&&(((META.best||{})['Echo '+d.n])||{}).kills>0,col=(d&&typeof ELC!=='undefined'&&ELC[d.el[0]])||'#b48aff';
+  if(n.cal){// a taller pointed arch, crimson with a gold edge, drawn under the gate
+    const f=(c,x,y,w,h)=>{ctx.fillStyle=c;ctx.fillRect(px+x,py+y,w,h);};const e=open?'#ffd04a':'#6a5a30';
+    f('#2a0608',-2,-9,20,27);for(let i=0;i<5;i++){f('#2a0608',6-i*2+1,-11-i*-1,2+i*4,1);}f(e,-2,-9,1,27);f(e,17,-9,1,27);f(e,-2,17,20,1);f(e,5,-13,6,1);f(e,3,-12,2,1);f(e,11,-12,2,1);f(e,1,-11,2,1);f(e,13,-11,2,1);f(e,-1,-10,2,1);f(e,15,-10,2,1);
+    if(open){ctx.fillStyle='rgba(255,60,60,.10)';ctx.fillRect(px-2,py-9,20,27);}}
+  dp0.apply(this,arguments);
+  if(won){const p=.6+.4*Math.sin(now/420+n.x);ctx.save();ctx.globalAlpha=.28*p;ctx.fillStyle=col;ctx.fillRect(px-1,py-4,18,21);ctx.globalAlpha=.9;ctx.fillStyle=col;ctx.fillRect(px+1,py-3,14,1);ctx.fillRect(px+1,py+14,14,1);ctx.fillRect(px+1,py-3,1,18);ctx.fillRect(px+14,py-3,1,18);ctx.restore();}};}
+// the gate card says it plainly
+{const mp0=mPortal;mPortal=function(m){let h=mp0.apply(this,arguments);try{const d=guardianDef(m.key);const won=d&&(((META.best||{})['Echo '+d.n])||{}).kills>0;if(won)h=h.replace('<p class="note">','<p class="note up"><b>Beaten.</b> Its gate glows; fight it again for Essence and a chance at its Shard.</p><p class="note">');}catch(e){}return h;};}
+// the map legend marker for the anvil
+{const mm0=mapMarks;mapMarks=function(m){const o=mm0.apply(this,arguments);try{if(m&&m.sanctum)o.forEach(q=>{const n=m.npcs.find(x=>x.portal&&x.x===q.x&&x.y===q.y);if(n&&n.forge)q.k='svc';});}catch(e){}return o;};}
+
+// ===== riftkeeper9.js (v0.12.13): the Riftkeeper, the ultimate boss behind the Echo Sanctum =====
+// Unlock (account wide): every Rift gate's Echo beaten at least once (META.best['Echo <name>'].kills > 0 for every key in echoKeys()). Its gate
+// stands in the middle of the Sanctum hall (13,4), sealed until then ("N of M Echoes beaten"), then lit. Fight: startBattle({kind:'riftkeeper',
+// stage:4,lv:60}); no auto (autoBan), no fleeing (a boss). Data: foes.js RIFTKEEPER, art: art3.js rkArt (riftkeeper_<element> swaps the
+// lantern colour), gate card and Warden rest in this file, NG+ modifier 'rift' in twists.js.
+//   Phase 1 (100 to 66% HP): its element cycles every turn (fire, water, ice, lightning, earth, wind, light, shadow); its skills take that
+//     element and it stands Primed with the partner element of the reaction, so a detonator of the CURRENT element reacts (Melt, Shatter...).
+//     The intent names the element ("Fire Key-Lash"); the sprite's lantern burns that colour.
+//   Phase 2 (66 to 33%): two Echo shades (40% HP copies of two beaten Echoes) join; while one lives and its shield holds it takes 40% less.
+//   Phase 3 (33 to 0%): every 3rd turn it telegraphs Unmaking, a 3 turn countdown (chip, swell, intent); on the 3rd turn it lands for
+//     150% of each hero's max HP (Guard halves it) unless its shield was broken in the meantime: then it fizzles (the Break itself costs it
+//     its next turn). Each telegraph sets its shield to RKC.ward3 pips so the Break is a fair race.
+// Rewards, once per account (META.riftkeeper): the charm c_riftkeeper, the title Riftwalker (META.titles.riftwalker), the NG+ modifier Rift.
+// Later wins: Echo Essence x RKC.essence. Also here: ACT.riftRest (the Echo Warden's free rest). No Math.random; battle code uses RNG().
+// New save fields: none in the game save; account fields META.riftkeeper and META.titles (synced as profile flags.riftkeeper).
+const RKC={lv:60,hpM:1.9,powM:1.15,shield:8,ward3:6,every:3,count:3,unmakePct:1.5,wardCut:.4,shadeHp:.4,shadePow:.7,essence:6,elUp:.1,mpUp:.1};
+const RK_KEY='__riftkeeper';
+const RK_ELS=['fire','water','ice','lightning','earth','wind','light','shadow'];
+// the element it stands Primed with while it burns the key: any partner that reacts with it (all pairs exist in REACT)
+const RK_PRIME={fire:'ice',water:'lightning',ice:'lightning',lightning:'ice',earth:'lightning',wind:'lightning',light:'shadow',shadow:'light'};
+const RK_BASE=['Key-Lash','Doorfall','Lantern Flare'];
+const RK_UNMAKE={id:'rkUnmake',n:'Unmaking',k:'mag',pw:9,t:'all',el:'shadow',mp:0,cost:1,hits:1};
+// ----- account state -----
+function rkBeaten(){try{return echoKeys().filter(k=>{const d=guardianDef(k);return d&&(((META.best||{})['Echo '+d.n])||{}).kills>0;});}catch(e){return [];}}
+function rkUnlocked(){try{return rkBeaten().length>=echoKeys().length;}catch(e){return false;}}
+const rkTitle=()=>!!(META.titles&&META.titles.riftwalker);
+// ----- statuses -----
+STS.rk_unmake={n:'Unmaking',a:'UNM',bad:1,t:99,c:'#ff4a6a',d:'The Riftkeeper unmakes the party when the count reaches zero: 150% of every hero\'s max HP. Guard halves it. Break its shield before then and it fizzles.'};
+ST_SYM.rk_unmake='<circle cx="5" cy="5" r="3.6" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M5 2.4V5l1.8 1.2" fill="none" stroke="currentColor" stroke-width="1.1"/>';
+// ----- the gate in the Sanctum hall -----
+{const bs0=buildSanctum;buildSanctum=function(){const m=bs0.apply(this,arguments);try{
+  m.npcs.push({x:13,y:4,hx:13,hy:4,name:"The Riftkeeper's Gate",line:'',view:'front',face:'r',act:'riftkeeper',portal:1,key:RK_KEY,look:null});}catch(e){}return m;};}
+{const dp0=drawPortal;drawPortal=function(ctx,px,py,n,now){
+  if(n&&n.key===RK_KEY){const open=rkUnlocked(),f=(c,x,y,w,h)=>{ctx.fillStyle=c;ctx.fillRect(px+x,py+y,w,h);},ph=now/900,el=RK_ELS[Math.floor(ph)%8],col=open?ELC[el]:'#6a6a7c',edge=open?'#d4b464':'#5a5a68';
+    f('#0e0a16',0,-3,16,19);f(edge,0,-3,16,1);f(edge,0,-3,1,19);f(edge,15,-3,1,19);f(edge,0,15,16,1);f(open?'#2a1f58':'#22202c',2,-1,12,15);f(open?'#4a4390':'#3a3844',2,-1,1,15);
+    f(edge,7,-2,2,2);f(edge,3,1,1,10);f(edge,12,1,1,10);
+    if(open){ctx.save();ctx.globalAlpha=.25+.2*Math.sin(now/260);ctx.fillStyle=col;ctx.fillRect(px+2,py-1,12,15);ctx.restore();}
+    f('#06030e',5,3,6,8);f(col,6,5,4,4);f(open?'#ffffff':'#8a8a98',7,6,2,2);f(edge,5,3,6,1);f(edge,5,10,6,1);f(edge,5,3,1,8);f(edge,10,3,1,8);
+    if(!open){f('#0e0a16',6,11,4,3);f('#9a9aa8',7,12,2,2);f('#9a9aa8',7,10,1,2);f('#9a9aa8',8,9,1,1);}
+    return;}
+  return dp0.apply(this,arguments);};}
+function mRiftkeeper(){const d=guardianDef('riftkeeper'),have=rkBeaten().length,all=echoKeys().length,open=rkUnlocked(),first=!META.riftkeeper;
+  return box('The Riftkeeper',`<div class="row"><img class="mimg" src="${monURL('riftkeeper')}" alt=""><div class="grow"><b>${esc(d.n)}</b><small>Ultimate boss · Level ${RKC.lv} · no auto · no fleeing${META.riftkeeper?' · beaten':''}</small>
+      <small>${open?'The gate stands open. The keeper of every door waits behind it.':`${have} of ${all} Echoes beaten.`}</small></div></div>
+    ${open?'':`<p class="note warn">Sealed. Beat every Echo in the Sanctum at least once (the gates glow once their Echo has answered). ${have} of ${all} Echoes beaten.</p>`}
+    <p class="note"><b>Phase 1:</b> its element changes every turn; set off a detonator of that element while it stands Primed. <b>Phase 2:</b> two Echo shades join and shield it while they live. <b>Phase 3:</b> every third turn it readies the Unmaking: guard, or break its shield before the count ends.</p>
+    <p class="note">${first?'First win: Riftwalker\'s Key (all elements +10% damage, skills cost 10% more MP), the title Riftwalker, and the New Game+ modifier Rift.':`Each win: Echo Essence x${RKC.essence}.`}${rkTitle()?' You are a <b>Riftwalker</b>.':''}</p>`,
+    `<button class="btn" data-act="closeModal">Not yet</button><button class="btn gold" data-act="rkFight" ${open?'':'disabled'}>Challenge</button>`);}
+HOOK.before('vModal','riftkeeper9','Riftkeeper gate card, Warden rest',function(m){
+  if(m&&m.type==='portal'&&m.key===RK_KEY)return HOOK.stop(mRiftkeeper());
+  if(m&&m.type==='rkrest')return HOOK.stop(box('Echo Warden',`<p>"The Rift never tires, but you do. Sit a while by the gates: the Echoes will keep. No charge in here."</p><p class="note">Restores everyone's HP and MP and clears every ailment. Free.</p>${rkTitle()?'<p class="note">The Warden bows to a <b>Riftwalker</b>.</p>':''}`,
+    '<button class="btn" data-act="closeModal">Not now</button><button class="btn gold" data-act="riftRest">Rest</button>'));});
+Object.assign(ACT,{
+  rkFight(){if(!rkUnlocked()||(G&&G.daily))return;V.modal=null;if(!startBattle({kind:'riftkeeper',stage:4,lv:RKC.lv})){toast('Your party needs rest first.');render();}},
+  // the Echo Warden's rest: restAll without the gold (and without refreshing the shops); an Ironman hero who fell stays down until an inn
+  riftRest(){if(!G||G.daily||!(WS.m&&WS.m.sanctum))return;V.modal=null;
+    Object.values(G.roster).forEach(c=>{if(typeof ironDowned==='function'&&ironDowned(c))return;if(!c.S)refresh(c);c.hp=c.S.mhp;c.mp=c.S.mmp;c.st={};});
+    try{sfx('heal');}catch(e){}toast('The Warden\'s light mends the whole party.');saveGame();render();}});
+// the Warden's talk opens the rest popup instead of a line of dialogue
+{const in0=interact;interact=function(){try{if(V.screen==='world'&&!V.modal&&!WS.lock&&!WS.dlg&&!WS.mv&&WS.m&&WS.m.sanctum&&G&&!G.daily){
+  const [fx,fy]=facing(),n=WS.m.npcs.find(q=>q.x===fx&&q.y===fy);
+  if(n&&n.name==='Echo Warden'){n.mv=null;n.view=WS.dir==='u'?'front':WS.dir==='d'?'back':'side';n.face=WS.dir==='l'?'r':'l';V.modal={type:'rkrest'};render();return;}}}catch(e){}
+  return in0.apply(this,arguments);};}
+// ----- the fight -----
+function rkOf(){return B&&B.rk&&B.rk.u&&B.rk.u.hp>0?B.rk:null;}
+const rkShades=()=>B?B.en.filter(e=>e.shade&&e.hp>0):[];
+function rkPhaseOf(u){const r=u.hp/u.S.mhp;return r>2/3?1:r>1/3?2:3;}
+HOOK.before('encounterFoes','riftkeeper9','the Riftkeeper fight',function(spec){
+  if(spec&&spec.kind==='riftkeeper'){const def=guardianDef('riftkeeper'),e=makeEnemy(def,spec.lv||RKC.lv,{boss:true,final:true,stage:4,key:'riftkeeper',noBuff:1,hpM:RKC.hpM,powM:RKC.powM});
+    e.rk=1;e.maxShield=RKC.shield;e.shield=RKC.shield;e.broken=0;return HOOK.stop([e]);}});
+// the element of its next turn: its body, its skills (and their names), the sprite's lantern
+function rkSetEl(u){const S=B&&B.rk;if(!S||u!==S.u)return;const el=S.phase===1?RK_ELS[u.turns%8]:S.phase===2?'shadow':['light','shadow'][u.turns%2];
+  if(S.el===el&&S.at===u.turns)return;const was=S.el;S.el=el;S.at=u.turns;u.el=[el];u.art='riftkeeper_'+el;
+  u.sk.forEach((s,i)=>{if(s.k!=='buff'){s.el=el;s.n=EL[el]+' '+(RK_BASE[i]||s.n);}});u._b5p=null;
+  if(S.phase===1&&was!==el){u.primed={el:RK_PRIME[el],t:3,by:'the Rift'};u.primeT=Date.now();
+    log(`The Riftkeeper's lantern burns ${EL[el]}. It stands Primed with ${EL[RK_PRIME[el]]}: set it off with a ${EL[el]} detonator.`);}}
+function rkChip(u,S){if(S.count>0)u.st.rk_unmake={t:S.count};else delete u.st.rk_unmake;}
+function rkEnter(u,S,ph){S.phase=ph;const now=Date.now();
+  if(ph===2){u.primed=null;u.shield=u.maxShield;u.broken=0;u.recover=0;banner('PHASE 2: THE ECHOES ANSWER','#c89aff');
+    const live=B.en.filter(e=>e.hp>0).length,pool=rkBeaten().map(k=>[RNG(),k]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]);const names=[];
+    for(let i=0;i<pool.length&&i<2&&live+names.length<3;i++){const k=pool[i],sp=echoSpec(k);
+      const s=makeEcho(k,Math.min(RKC.lv,sp.lv),{final:!!FINALS[k],stage:3,hpM:(sp.hpM||1.7)*RKC.shadeHp,powM:(sp.powM||1.15)*RKC.shadePow});
+      s.name='Shade of '+guardianDef(k).n;s.shade=1;s.boss=false;s.maxShield=3;s.shield=3;s.broken=0;s.next=B.time+300+i*200;s.enterT=now;B.en.push(s);names.push(s.name);S.shadeN++;}
+    log(`The Riftkeeper opens two doors: ${names.join(' and ')||'no one'} step${names.length===1?'s':''} through. While a shade lives its Break shield takes ${Math.round(RKC.wardCut*100)}% off every hit.`);}
+  else if(ph===3){u.primed=null;S.count=0;S.t3=0;banner('PHASE 3: THE UNMAKING','#ff4a6a');
+    log(`The Riftkeeper's lantern flares. Every ${RKC.every}rd turn it readies the Unmaking: Guard, or break its shield before the count ends.`);}
+}
+// keeps phase, element, countdown chip and sprite in step with the state (after every turn of the boss and every hit on it)
+function rkSync(){const S=rkOf();if(!S||B.over)return;const u=S.u,ph=rkPhaseOf(u);
+  if(ph>S.phase)rkEnter(u,S,ph);rkSetEl(u);rkChip(u,S);}
+{const cp0=checkPhase;checkPhase=function(e){const r=cp0.apply(this,arguments);try{if(e&&B&&B.rk&&e===B.rk.u)rkSync();}catch(x){}return r;};}
+{const et0=endTurn;endTurn=function(u){const r=et0.apply(this,arguments);try{if(B&&B.rk&&u===B.rk.u&&!B.over){if(u.primed&&B.rk.phase!==1)u.primed=null;B.rk.at=-1;rkSync();}}catch(e){}return r;};}
+// the boss's turn: a countdown ticks; the third tick lands the Unmaking instead of a move; every 3rd phase 3 turn it begins a new one
+function rkTurnStart(u){const S=B.rk;rkSync();if(S.phase!==3)return false;S.t3++;
+  if(S.count>0){S.count--;if(S.count>0){rkChip(u,S);return false;}
+    u.turns++;u.actT=Date.now();u.actKind='mag';u.actEl='shadow';u.actName='Unmaking';delete u.st.rk_unmake;S.lands++;
+    banner('UNMAKING','#ff4a6a');log('The Riftkeeper unmakes the party!');const hs=B.front.filter(c=>c.hp>0);
+    hs.forEach(c=>{const d=Math.max(1,Math.round(c.S.mhp*RKC.unmakePct*(c.guard?.5:1)));c.fxEl='shadow';c.fxT=Date.now();c.hitT=c.fxT;fx(c,String(d),'dmg');log(`${c.name} takes ${d}${c.guard?' (guarded)':''}.`);hurt(c,d);});
+    endTurn(u,1);return true;}
+  if(S.t3%RKC.every===0){S.count=RKC.count;S.tells++;u.shield=Math.min(u.maxShield,RKC.ward3);u.broken=0;u.recover=0;fx(u,'Unmaking','stat bad');banner('UNMAKING IN '+RKC.count,'#ff4a6a');
+    log(`The Riftkeeper raises the lantern: the Unmaking lands in ${RKC.count} of its turns. Break its shield (${u.shield} pips) before then, or Guard.`);rkChip(u,S);}
+  return false;}
+function rkHookTurn(){if(enemyTurn0.__rk)return;const et0=enemyTurn0;
+  enemyTurn0=function(u){try{if(B&&!B.over&&B.rk&&u===B.rk.u&&u.hp>0&&rkTurnStart(u))return;}catch(e){try{wdLog('riftkeeper: '+(e&&e.message||e),u);}catch(_){}}
+    return et0.apply(this,arguments);};enemyTurn0.__rk=1;if(et0.__b4)enemyTurn0.__b4=1;if(et0.__b4g)enemyTurn0.__b4g=1;}
+rkHookTurn();
+// the intent: the element in the move's name, and the Unmaking when it lands next turn (the boss is always "known": its moves are the lesson)
+{const fp0=foePlan;foePlan=function(u){const p=fp0.apply(this,arguments);try{const S=B&&B.rk;if(S&&u===S.u&&u.hp>0){rkSetEl(u);if(S.phase===3&&S.count===1)return Object.assign({},p,{sk:RK_UNMAKE,cat:'big'});
+    if(p&&p.sk&&p.sk.id==='attack'){const sk=u.sk[0];return Object.assign({},p,{sk,cat:typeof b5Cat==='function'?b5Cat(sk):p.cat});}}}catch(e){}return p;};
+  if(fp0.__b4)foePlan.__b4=1;}
+{const bk0=b5Knows;b5Knows=function(u){try{if(u&&u.rk)return true;}catch(e){}return bk0.apply(this,arguments);};}
+// no generic boss Cataclysm on top of the Unmaking; the swell while it counts down
+{const br0=b4Role;b4Role=function(u){if(u&&u.rk)return null;return br0.apply(this,arguments);};}
+{const bt0=bossTele;bossTele=function(u){try{if(B&&B.rk&&u===B.rk.u&&u.hp>0&&B.rk.count>0)return true;}catch(e){}return bt0.apply(this,arguments);};}
+// a Break during the countdown: it fizzles (and the Break itself costs it its next turn)
+{const cs0=chipShield;chipShield=function(t,n,why){const r=cs0.apply(this,arguments);try{const S=B&&B.rk;if(S&&t===S.u&&t.broken&&S.count>0){S.count=0;S.fizz++;delete t.st.rk_unmake;banner('THE UNMAKING FIZZLES','#7affc8');fx(t,'Fizzles','stat good');
+  log('The shield shatters and the Unmaking fizzles! The Riftkeeper reels and loses its next turn.');}}catch(e){}return r;};}
+// the Break shield of phase 2: while a shade lives and the shield holds, hits on it are cut
+HOOK.after('calcDamage','riftkeeper9','phase 2 shield while shades live',function(r,a,sk,t){try{const S=B&&B.rk;if(S&&r&&r.dmg>0&&a&&a.side==='p'&&t===S.u&&S.phase===2&&!t.broken&&rkShades().length)r.dmg=Math.max(1,Math.round(r.dmg*(1-RKC.wardCut)));}catch(e){}});
+// shades are no Echo kills; when the keeper falls its shades unravel with it
+{const fl0=fallen;fallen=function(u){const sh=u&&u.shade&&u.base?bestOf(u.base):null,k0=sh?sh.kills:0;const r=fl0.apply(this,arguments);
+  try{if(sh)sh.kills=k0;if(u&&B&&B.rk&&u===B.rk.u)B.en.forEach(e=>{if(e.shade&&e.hp>0){e.hp=0;e.st={};e.deathT=Date.now();log(`${e.name} unravels.`);}});}catch(e){}return r;};}
+// no auto, no pork chops, the Rift's own music
+{const ab0=autoBan;autoBan=function(spec){const r=ab0.apply(this,arguments);if(r)return r;if(spec&&spec.kind==='riftkeeper'&&G&&!G.daily)return 'No auto against the Riftkeeper';return null;};}
+{const pb0=porkBlocked;porkBlocked=function(){if(B&&B.spec&&B.spec.kind==='riftkeeper')return true;return pb0.apply(this,arguments);};}
+{const bt0=battleTheme;battleTheme=function(){if(B&&B.spec&&B.spec.kind==='riftkeeper')return 'd_'+ZS(4).theme;return bt0.apply(this,arguments);};}
+HOOK.after('startBattle','riftkeeper9','Riftkeeper fight state',function(r){try{if(r===false||!B||!B.spec||B.spec.kind!=='riftkeeper')return;const u=B.en.find(e=>e.rk);if(!u)return;
+  B.rk={u,phase:1,el:null,at:-1,count:0,t3:0,shadeN:0,tells:0,lands:0,fizz:0};B.auto=false;rkSetEl(u);rkChip(u,B.rk);
+  log(`Phase 1: its element changes every turn. Phase 2 brings two Echo shades; phase 3 the Unmaking.`);render();}catch(e){}});
+// ----- rewards -----
+HOOK.wrap('win','riftkeeper9','Riftkeeper rewards',function(next,...a){const sp=B&&B.spec;const r=next(...a);try{if(!sp||sp.kind!=='riftkeeper'||G.daily)return r;
+  const info=V.modal&&V.modal.info||{};info.notes=info.notes||[];const first=!META.riftkeeper;
+  if(first){META.riftkeeper=1;META.titles=META.titles||{};META.titles.riftwalker='Riftwalker';G.gear.push('c_riftkeeper');info.gear='c_riftkeeper';
+    info.notes.push("The Riftkeeper lays down its key. You carry Riftwalker's Key now: all elements +10% damage, skills cost 10% more MP.");
+    info.notes.push('Title earned: Riftwalker.');info.notes.push('New Game+ modifier unlocked: Rift (foes cycle elements every 3 turns, +35% XP and gold).');}
+  else{G.mats.essence=(G.mats.essence||0)+RKC.essence;info.mats=info.mats||{};info.mats.essence=(info.mats.essence||0)+RKC.essence;info.notes.push(`The Rift gives up ${RKC.essence} Echo Essence.`);}
+  try{saveMeta();if(typeof profileDirty==='function')profileDirty();}catch(e){}saveGame();render();}catch(e){}return r;});
+{const po0=profileOf;profileOf=function(meta){const p=po0.apply(this,arguments);p.flags.riftkeeper=meta.riftkeeper?1:0;return p;};}
+{const ar0=applyRemote;applyRemote=function(rm){if(rm&&rm.flags&&rm.flags.riftkeeper){META.riftkeeper=1;META.titles=META.titles||{};META.titles.riftwalker='Riftwalker';}return ar0.apply(this,arguments);};}
+// ----- the charm: Riftwalker's Key -----
+addGear('c_riftkeeper',{n:"Riftwalker's Key",slot:'c',tier:5,hp:100,price:1500,unique:1,rk:1});
+IC_CHARM.c_riftkeeper={body:'seal',G:'#2a1f58',gly:'star',gk:'E',E:'#c9a8ff',cord:'chain',rim:'T',aura:1};
+{const cs0=calcStats;calcStats=function(c){const S=cs0.apply(this,arguments);try{if(c&&c.eq&&c.eq.c==='c_riftkeeper'&&!(G&&G.daily)){ELK.forEach(el=>{S.elBoost[el]=(S.elBoost[el]||0)+RKC.elUp;});S.mpEff=(S.mpEff||0)-RKC.mpUp;}}catch(e){}return S;};}
+{const gd0=gearDesc;gearDesc=function(id){let h=gd0.apply(this,arguments);try{const g=typeof id==='string'?gearOf(id):id;if(g&&g.rk)h+=(h?', ':'')+`+${Math.round(RKC.elUp*100)}% damage with every element, skills cost ${Math.round(RKC.mpUp*100)}% more MP`;}catch(e){}return h;};}
+// ----- tests -----
+window.__RK={RKC,rkSync:()=>rkSync(),unlocked:()=>rkUnlocked(),beaten:()=>rkBeaten().length,get S(){return B&&B.rk;},turnStart:u=>rkTurnStart(u),shades:()=>rkShades(),intent:u=>b5Intent(u),turn:u=>enemyTurn0(u),idle:(k,n)=>{const c=monCanvas(k);return {w:c.width,h:c.height,diff:bossIdle(c,0,0,760)!==bossIdle(c,0,760,760),c0:bossIdle(c,0,0,760).toDataURL(),c1:bossIdle(c,0,760,760).toDataURL()};},hurtB:d=>{hurt(B.rk.u,d);},guard:()=>guard(),end:()=>checkEnd(),dmg:(a,sk,t)=>calcDamage(a,sk,t),react:(p,d)=>!!reactFor(p,d),chip:n=>chipShield(B.rk.u,n,'test'),mk:k=>{const sp=echoSpec(k);return makeEcho(k,56,{final:!!FINALS[k],stage:3,hpM:sp.hpM,powM:sp.powM}).S.mhp;}};
 
 window.__A={walkable,ceInit,tvSlots,genQuests,STARTERS,starterDraw,ECON,AUTO_NERF,rebuildBase,detLive,REACT,skEls,packContents,miniFor,AUTO_REW,ENC_RATE,ENC_MIN_STEPS,detNote,classSkills,stickCount,bestAll,calcStats,lookKey,vTemper,storyEchoUp,leaveDungeon,win,ldApply,genFort,caveOk,enterCave,siteHasMini,openChest,nextDlg,WS,mapIcoRects,roamSpawn,roamInterior,roamSees,mapTargets,DIRV,tileAt,STAGE_LV,autoBan,rollWeather,guardianDef,mapIssues,mapEntry,syncPools,bovAt,calFxAt,realmAt,REALMS,BOV,CAL_FX,overlayGuide,liftOverlay,drawGearIcon,gearIcon,itemIcon,RAW,sigKind,sigGid,personalDone,heroLook,hasSignature,LEGEND_IDS,facDirty,facCount,facRank,facRep,FACB,FAC,finishBattle,npcWords,npcHints,npcPool,titleMake,titleAdvance,TTS,placeAt,wkwUpdate,innSpot,getMap,monURL,enterVia,applyBossTheme,BTHEME,resetMaps,rebuildBase,shopStock,gearDesc,calcStats,gearMigrate,CLS_WPN,CLS_ARM,WPERK,WT_NAME,equipWhy,lootBase,GEAR,canEquip,gearOf,perkNote,FAM_MAT_V35,fbDraft,META:{get best(){return META.best},get codex(){return META.codex},get q(){return META.q}},saveMeta,OFF,offPending,offFlush,PROFILE,profileSync,codexSee,getMap,placeAt,interact,sanctumOpen,riftKeys,echoKeys,BONDS,bondKey,wkwUpdate,inTown,WS,LC,lsort,bestParty,fsCast,fsSkills,ldApply,MON,registerTamed,stickPower,stickCount,autoOne,planGear,bestTag,gainersFor,compGainFor,refresh,fitsFor,canEquip,gearOf,queueNewGear,ARENA,fxDur,banDur,stageTags,autoSwitchPick,layoutBattle,newChar,calcStats,limitSkill,limitTier,canStuck,dunReachable,LV_CAP,addXp,echoSpec,bossLvFor,fx,MON,log,effInfo,tierOf,perkOf,quirkDef,forgeCost,buyPlan,vJourney,modalBack,partySlots,limitOpen,town2Reached,skillKnown,known,classSkills,paceMigrate,unpackG,packG,makeEnemy,QUIRK,arrive,enterDungeon,wkwUpdate,useTravel,travelWhyNot,porkFlee,porkBlocked,encTile,campRest,buyPart,partLeft,alchStock,GAME_VERSION,CHANGELOG,ITEMS,tavernOffers,tavernPool,recruitFit,partyNeeds,vNext,CHALL,innSpot,RECIPES,MATS,FB,fbContext,REDEEM,legendJoin,legendQ,genQuests,dynActors,convInit,PROFILE,profileSync,checkArchive,GPOOL,FPOOL,guardianDef,saveMeta,archiveSkills,get G(){return G;},set G(v){G=v;},get B(){return B;},get V(){return V;},get META(){return META;},WS,ACT,render,newGame,placeAt,startBattle,autoTurn,advance,finishBattle,getMap,innSpot,setPause:p=>{PAUSE=p;},autoCfg,worldInputDir,inputSources,battleFrame,battleTheme,STS,MAPS,mapIssues,healMap,mimicReward,dropChest,interact,worldDraw,TPL,ZONES,ZS,newChar,recruit,saveGame,resetMaps,dynActors,tileAt,BV,refresh,genBounties,genQuests,vStarter,heroCard,heroURL,iconURL,masteryLine,AU,buildTrack,tone,noiseHit,MIDI,sfx,audioVol};
 ['heroRoles','SOLID','WEATHER','WX_BASE','weatherFX','superGuide','recruitCost','ceStart','ceStep','ceInit','cePool','wxList','SUPER_TABLE','superOk','facRank','facRep','facInit','facCount','facCredit','FAC','FMIS','facMissionList','facProg','tyOf','facSync','facMul','facBest','worldPlan','caveReward','enterCave','leaveCave','leaveDungeon','buildCaveMap','worldGraph','openWorldMap','sigReport','SIG_NAMES','starterDraw','ITEM_TIERS','gTierIdx','tierChip','gearIcon','starterSlots','STARTERS','CLK_LEN','CLK_PH','clockPhase','wxInfoBody','recipeOrder','recipeGain','recipeReady','recipeClose','effOf','calcDamage','healsUndead','storyEchoUp','riftKeys','echoDef','efCost','autoLocked','bossFightKey','learnScanAll','isSeen','mapMarks','genSub','subOK','subReq','ensureSub','inSub','tvSlots','tvInit','tvLeft','tvEvent','tvNextText','tvPool','tvDue','tvShuffle','mTavern','hireOK','TV_CAP','TV_CD','POOL_IDS','natPool','natOf','natRoll','NATURES','natInfo','natRerollCost','natChooseCost','NAT_CLASS','iconURL','seenOf','mapIcoDraw','drawMini','MAPCV','revealAround','fxLayer','numDur','compBonusText','compPerk','checkPhase','win','unitBox','LNQ','challVisible','challEligible','challState','isMimic','migrateCompanions','canSummon','summonComp','compOf','clockPhase','tickClock','isNight','rollWeather','wxStep','nightPool','encounterFoes','restAll','tameElite','openChest','rerollTavern','bestAll','gearTier','SV','svCheck','svFlush','svInit','svPush','svPull','svScan','svParse','svBackup','svPack','svUnpack','svProg','svCloudList','svDelDoc','svGet','svCap','slotState','slotKey','svDecode','SV_CH','svStatus','svSlotRaw','svLoad','loadRaw','svHash','svIdx'].forEach(k=>{try{Object.defineProperty(window.__A,k,{get:()=>eval(k)});}catch(e){}});

@@ -167,6 +167,18 @@ function hdGateGeo(m,S,b,Q,U,Vv,p,V,bt){const G2=H2G,x0=b.x*TS,x1=x0+b.w*TS,zb=b
 // and anything unusual stand up as one card. Signs and landmark props (towngfx) come from the town decor pass as a card on the facade.
 function hdBldKind(m,b){if(b.k==='gatehouse')return 'gate';if(b.k==='lighthouse')return 'tower';/* v0.11.7: a narrow round tower (v0.11.4 'keep' stretched the sprite over the footprint) */const T=THM(m);let mat=T.mat;if(['guild','keep','chapel','tower','windmill'].includes(b.k))mat=m.theme==='void'?'tent':'stone';
   if(mat==='tent'||b.k==='bigtent')return 'card';if(b.k==='keep'||b.k==='tower')return 'keep';return 'roof';}
+// v0.12.13: a tent stands as a cone of cloth, not a flat card: 18 slices round an ellipse on the footprint, each slice mapped to its
+// own wedge of the 2D tent sprite (quad4 takes a texture coordinate per corner), so the lit left face, the seams and the hem wrap round;
+// the pole and pennant are a small card at the apex. The back half shows the front's wedges mirrored, which the camera only sees at the top.
+function hdTentCone(S,b,p,cv,Q,U,Vv,V,bt){const w=b.w*TS,h=b.h*TS,x0=b.x*TS,zf=(b.y+b.h)*TS,zb=b.y*TS,zm=(zf+zb)/2,cx=x0+w/2,cxs=BSP_X+w/2;
+  const apexRow=BSP_TOP-10,baseRow=BSP_TOP+h-1,ya=(baseRow-apexRow)*V,rx=w/2+2,rz=Math.max(6,(zf-zb)/2),N=18;
+  for(let i=0;i<N;i++){const t0=-Math.PI+i/N*2*Math.PI,t1=-Math.PI+(i+1)/N*2*Math.PI,tm=(t0+t1)/2;
+    const bx0=cx+rx*Math.sin(t0),bz0=zm+rz*Math.cos(t0),bx1=cx+rx*Math.sin(t1),bz1=zm+rz*Math.cos(t1);
+    const u0=U(p,cxs+(w/2+1)*Math.sin(t0)),u1=U(p,cxs+(w/2+1)*Math.sin(t1)),ua=U(p,cxs),va=Vv(p,apexRow),vb=Vv(p,baseRow);
+    const nx=Math.sin(tm)*.7,nz=Math.cos(tm)*.7,ny=.55;H2P.set([cx,ya,zm,cx,ya,zm,bx1,0,bz1,bx0,0,bz0]);
+    bt.quad4(H2P,[ua,va,ua,va,u1,vb,u0,vb],255,255,255,255,nx,ny,nz,2|8);}
+  {const r0=apexRow-8,sx=cxs-2,sw=11,yt=ya+8*V;Q([cx-2,yt,zm,cx+sw-2,yt,zm,cx+sw-2,ya-1*V,zm,cx-2,ya-1*V,zm],U(p,sx),Vv(p,r0),U(p,sx+sw),Vv(p,apexRow+1),255,[0,.45,.89],2|8);}
+  S.bh.push({b,h:ya});}
 function hdBakeBuildings(m,S,bsp,deco){const V=S.V,sin=Math.sin(HD2D.pitch*Math.PI/180),pk=new H2Pack(1024),parts=[];
   {const g=hdGatePart(m);if(g)bsp=(bsp||[]).concat([g]);}// v0.6.3: the sanctum gatehouse stands up as towers and a curtain wall
   (bsp||[]).forEach(q=>{parts.push({q,r:pk.add(q.cv.width,q.cv.height)});});
@@ -181,8 +193,7 @@ function hdBakeBuildings(m,S,bsp,deco){const V=S.V,sin=Math.sin(HD2D.pitch*Math.
   S.bh=[];S.mills=[];S.smoke=[];
   parts.forEach(p=>{const b=p.q.b,cv=p.q.cv,k=hdBldKind(m,b),w=b.w*TS,h=b.h*TS,x0=b.x*TS,x1=x0+w,zf=(b.y+b.h)*TS,zb=b.y*TS,zm=(zf+zb)/2;
     if(p.r.y+cv.height>AH)return;bt=CB.at(x0+w/2,zm);
-    if(k==='card'){const yb=-6*V,yt=(cv.height-6)*V,cx0=x0-BSP_X;Q([cx0,yt,zf+.2,cx0+cv.width,yt,zf+.2,cx0+cv.width,yb,zf+.2,cx0,yb,zf+.2],U(p,0),Vv(p,0),U(p,cv.width),Vv(p,cv.height),255,[0,.45,.89],2|8);
-      S.bh.push({b,h:cv.height*.55*V});return;}
+    if(k==='card'){hdTentCone(S,b,p,cv,Q,U,Vv,V,bt);return;}
     if(k==='gate'){hdGateGeo(m,S,b,Q,U,Vv,p,V,bt);return;}
     if(k==='tower'){// the lighthouse: its 48x96 sprite sits bottom-centred on the footprint (worldgfx2.js); body columns 14..34, lantern and roof rows 0..24
       const L=h+BSP_TOP-96+1,sx=BSP_X+Math.round(w/2)-24,cx=x0+w/2,tx0=cx-10,tx1=cx+10,zt0=zm-9,zt1=zm+9,yb=72*V,yt=96*V;

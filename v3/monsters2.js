@@ -13,12 +13,17 @@ Object.assign(MON,{
 Object.assign(MON_DROPS,{gnatswarm:['ichor','healroot'],barrowbones:['grit','ichor'],drownedsailor:['scale','ichor'],brinejelly:['scale','bluecap'],rimewight:['ichor','bluecap'],galephantom:['ichor','bluecap']});
 
 Object.assign(MART,{
- gnatswarm(g){
-  // a drifting cloud: a loose ring of specks with a few bigger bodies and wings
-  let s=7;const r=()=>{s=(s*1103515245+12345)&0x7fffffff;return s/0x7fffffff;};
-  for(let i=0;i<46;i++){const a=r()*6.283,d=Math.sqrt(r())*13;g.s(20+Math.cos(a)*d*1.15,20+Math.sin(a)*d*.9,i%7===0?'W':'B');}
-  [[14,15],[24,13],[19,22],[27,24],[12,26],[21,29],[30,17]].forEach(([x,y])=>{g.rect(x,y,2,2,'K');g.px([[x-1,y-1],[x+2,y-1]],'W');g.s(x,y,'E');});
-  return {pal:{B:'#6a6a4a',K:'#2a2418',W:'#e8e4c8',E:'#ff6a4a'},flat:'WEK'};
+ // v0.13: ten gnats on a drifting ring (two in the middle), near ones bright, far ones dim. Idle B turns the ring half a step with the wings flipped;
+ // the lunge pulls the ring forward and tight with stingers out; a hit scatters it. Frames come from f (art.js frame API), never from Math.random.
+ gnatswarm(g,f){const F=mfr(f),N=10,ph=F.i?.314:0;
+  let cx=19,cy=21,rx=12.5,ry=9.5;if(F.atk){cx=22,rx=10,ry=8;}if(F.hit){cx=17,rx=15,ry=11.5;}
+  const gnat=(x,y,far,up)=>{const B=far?'b':'B',Wg=far?'w':'W';g.rect(x,y,2,2,B);if(!far)g.s(x,y,'L');
+   g.px(up?[[x-1,y-1],[x+2,y-1]]:[[x-1,y],[x+2,y]],Wg);if(F.atk&&!far)g.s(x+2,y+1,'S');};
+  for(let k=0;k<N;k++){const a=k/N*6.2832+ph-(F.atk?.4:0),sn=Math.sin(a);if(!F.hit)g.s(Math.round(cx+Math.cos(a+.31)*(rx+1)),Math.round(cy+Math.sin(a+.31)*(ry+1)),'D');}
+  const ord=[];for(let k=0;k<N;k++){const a=k/N*6.2832+ph-(F.atk?.4:0);ord.push([Math.sin(a),Math.round(cx+Math.cos(a)*rx),Math.round(cy+Math.sin(a)*ry),k]);}
+  ord.sort((p,q)=>p[0]-q[0]).forEach(([sn,x,y,k])=>gnat(x,y,sn<-.25,(k+F.i)%2===0));
+  gnat(Math.round(cx-3+(F.atk?3:0)),Math.round(cy-2+(F.i?1:0)),true,F.i===0);gnat(Math.round(cx+2+(F.atk?3:0)),Math.round(cy+(F.i?-1:1)),false,F.i===1);
+  return {pal:{B:'#7a7a50',L:'#c0c080',b:'#4a4a30',W:'#e3f4e6',w:'#9aa89a',S:'#ff8a3a',D:'#5a5a42'},flat:'WwSD',a:{cx,cy,rx,ry}};
  },
  barrowbones(g){
   g.ell(20,8,6,6,'B');g.rect(16,11,9,5,'B');g.rect(17,7,3,3,'K');g.rect(22,7,3,3,'K');g.px([[18,8],[23,8]],'E');
@@ -60,6 +65,7 @@ Object.assign(MART,{
   return {pal:{B:'#7a7aa8',b:'#54547e',K:'#0e0e22',E:'#c8a8ff',W:'#cfe8ff'},flat:'EKW'};
  }
 });
+MART.gnatswarm.fr=1;
 
 // companion families for taming
 if(typeof FAM_OF!=='undefined')Object.assign(FAM_OF,{gnatswarm:'flyer',barrowbones:'spirit',drownedsailor:'spirit',brinejelly:'ooze',rimewight:'spirit',galephantom:'spirit'});

@@ -191,3 +191,24 @@ massive presentation and animation upgrade; characters move in skill-specific wa
 (docs/art-style.md: 4-shade ramps, one light direction, 1px dark outline, silhouettes per class/archetype, proportions), then rebuild in order:
 hero bases per class+race (art2.js) with pose set {idle, walk, swing, thrust, shoot, cast, pray, guard, hit, down}; foes by archetype (art.js MART)
 with idle+attack+hit; bosses (art3.js) with idle, telegraph, attack; townsfolk (npc2/villagerLook). Verify every step with sheets.
+
+## 0.12.13 (shipped from this session): batch 4 P1 + P2 (part), Riftkeeper, foe sprite family 1, tents
+- menus9 (Map group, Records opens on Realms, Journey holds the account stats), complete9 vRealms, element strips everywhere (nav.js .elstrip),
+  bonds9 filtered to recruited pairs, p3shop chains + "What I need" (ACT.p3Need, popup p3need, SMITH_PLAN.minPct .03), battle9 one Summon
+  command (sumChoices / ACT.sumOne), battle3.css commands-first on phones + single scroller for the skills list, npcmark9 "!" markers,
+  comp.js unique tame names (TAME_EPI), rift9 (Echoforge anvil key '__forge' in the Sanctum, efTabOn only inside the Rift, won glow, Calamity arch),
+  riftkeeper9 (gate at 13,4 key '__riftkeeper', RKC tunables, META.riftkeeper, c_riftkeeper, title riftwalker, TWISTS.ng rift modifier from twists.js,
+  ACT.riftRest on the Echo Warden; test hooks window.__RK), foes.js RIFTKEEPER (bossClass 'Ultimate', guardianDef('riftkeeper')), art3 rkArt + 9 sprites.
+- Sprite frame API (art helper 1): MART arts may take (g,f) with f={t:'idle'|'atk'|'hit',i:0|1}; monCanvas(art,f) caches per frame ('art#ti');
+  MFR global + mfr(f) for wrappers; .fr marks framed arts (56); battle.js foeFrame() (hit 180 ms from hitT+IMPACT, atk 60..380 ms into an action,
+  idle alternates every 700 ms; reduced motion freezes idle 0); redrawn mossling, dewtoad, cinderpup, frostwolf, crawler, shellguard, magmaslime,
+  gnatswarm (monsters2.js); realms.js SHP shape library + SHAPE_OF + shapeWrap (variants get a shape, not a recolour); sprhd.js/sites.js pass f.
+  Sheets: node tools/chrome/sheets.js <html> <out.png> foes (CHUNK, ONLY=a,b, ZOOM). Weak spots to revisit: crawler claws same blue as body,
+  magmaslime eyes.
+- Tents: worldgfx.js drawTent is a shaded cone (lit left, shade right, N panels with seams, hem sag, guy ropes, base shadow); the small camp tent
+  object got a lit face and hem; hd2d.js hdTentCone builds 18 textured slices (hd2dgl.js H2Batch.quad4 = per-corner UVs) instead of a card.
+- Tests: sanct counts gates without the anvil and the Riftkeeper gate; v080b back on the commands-first rule.
+### Still open from batch 4 (next): guild shop section listing every unlocked counter + an Arena guild; charms rarer than Rare drop/sell; arena only
+from the Guild Hall and tiered as the gold/rare-mat farm; Lore world book per realm; undead healing stronger; skills menu filters; graphics sweep;
+P4 rebalance (roles/sub roles, FAITH, 3 weapon types, RPS, swarms, subrole 80%, one free stat reset); 4 Scourges + 5th Calamity + The Ashglass Reach.
+Sprite overhaul next families: toads/gulls/hawks/bats/rays, wisps/jellies/wraiths, golems/husks/knights, then bosses, heroes (pose set), NPCs.

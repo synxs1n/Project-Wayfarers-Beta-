@@ -145,8 +145,8 @@ MINIS.forEach(([id,b,n,e,c])=>makeMonVariant(id,b,n,e,c,{mini:1,hp:+((MON[b]||{h
 // neighbour) into the 60 px box. The Priest's Invoke summon uses a small alias art (summon8.js sumArt), so it stays the old size.
 MINIS.forEach(D=>{if(!BIG_ART.includes(D[0]))BIG_ART.push(D[0]);});
 const MINI_BIG=new Set(MINIS.map(D=>D[0]));
-{const mc0=monCanvas;monCanvas=function(art){if(!MINI_BIG.has(art))return mc0.apply(this,arguments);
-  const i=BIG_ART.indexOf(art);if(i>=0)BIG_ART.splice(i,1);let c;try{c=mc0.call(this,art);}finally{if(i>=0)BIG_ART.splice(i,0,art);}
+{const mc0=monCanvas;monCanvas=function(art,f){if(!MINI_BIG.has(art))return mc0.apply(this,arguments);
+  const i=BIG_ART.indexOf(art);if(i>=0)BIG_ART.splice(i,1);let c;try{c=mc0.call(this,art,f);}finally{if(i>=0)BIG_ART.splice(i,0,art);}
   const w=Math.round(c.width*1.5),h=Math.round(c.height*1.5),o=mkCv(w,h),x=o.getContext('2d');x.imageSmoothingEnabled=false;x.drawImage(c,0,0,w,h);return o;};}
 function miniFor(m){G.miniPick=G.miniPick||{};let i=G.miniPick[m.id];
   if(i==null){const used=new Set(Object.values(G.miniPick)),R=seeded(((G.run&&G.run.seed)||1)^0x31415),order=MINIS.map((_,k)=>k).sort(()=>R()-.5);
