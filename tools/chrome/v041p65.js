@@ -9,7 +9,7 @@ const fight=async(useAuto)=>ev(async(useAuto)=>{const A=__A;A.startBattle({stage
    if(A.B.mode==='cmd'){if(useAuto){A.B.auto=true;A.autoTurn();}else{A.B.auto=false;A.autoTurnSmart&&(A.B.auto=true,A.autoTurnSmart(),A.B.auto=false);}}}
   const o=A.B&&A.B.over; if(A.B&&A.B.over&&A.finishBattle)A.finishBattle('win'); return {over:!!o,man:A.facCount('manual'),used:A.B?A.B.autoUsed:0};},useAuto);
 const a=await ev(()=>{const A=__A;return {has:!!A.FACB.hand,n:A.FAC.length,rank:A.facRank('hand'),perks:A.FACB.hand.perks.length,charm:!!A.GEAR.c_fa5&&!!A.GEAR.c_fb5};});
-chk('6.5 the faction exists with 6 ranks, a charm and a signature charm',a.has&&a.n===6&&a.perks===6&&a.charm);
+chk('6.5 the faction exists (7 guilds since 0.13.4) with 6 ranks, a charm and a signature charm',a.has&&a.n===7&&a.perks===6&&a.charm);
 const r=await ev(()=>{const A=__A,G=A.G,o={};A.facDirty();const b0=A.facCount('manual');
   const fin=(auto)=>{A.startBattle({stage:0,kind:'field',weather:'clear'});A.B.autoUsed=!!auto;A.B.auto=false;A.B.en.forEach(e=>e.hp=0);A.finishBattle('win');};
   fin(false);fin(false);const b1=A.facCount('manual');fin(true);const b2=A.facCount('manual');

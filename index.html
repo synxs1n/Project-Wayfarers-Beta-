@@ -1840,7 +1840,7 @@ html.rm .battle.b3 .cmd .mi.b9glow{animation:none}
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.13.3";const APP_BUILD="7d68a183f2b7";
+(function(){const APP_VER="0.13.4";const APP_BUILD="802b36e9cbb4";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2533,7 +2533,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.13.3";const APP_BUILD="7d68a183f2b7";
+const APP_VER="0.13.4";const APP_BUILD="802b36e9cbb4";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2541,6 +2541,9 @@ const APP_VER="0.13.3";const APP_BUILD="7d68a183f2b7";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.13.4',['The arena is the Guild Hall\'s: enter it only there (the Menu\'s Arena tab just reads). It is now the place to farm gold and rare materials: every tier pays its purse again on every win, with tiered ore, wood and herbs, and from the Golden Coliseum up Dread Cores, Wisp Ichor and Golem Grit.',
+  'A seventh guild, the Pit Masters: standing from arena wins (more for higher tiers), perks for a bigger arena purse and an extra material, a Pit counter (Dread Cores, relic bundles, Elixirs), the Pitmark Charm, Champion\'s Belt and the title Pit Master. Five missions.',
+  'The Guild Hall\'s Guilds tab opens with a Guild shop section: every counter you have unlocked, with buy buttons, and the rank that opens the others.']],
  ['Beta v0.13.3',['Menu: the World group is now Map (the area map with a World map button); Records opens on the Realms tracker (per realm: quests, bounties, Den, Sanctum, boss) and the account stats live under Journey; element strips on every party card and reserve mini, single types too; the Bonds tab only lists pairs you can work on.',
   'Smithy and Alchemy: Upgrade whole party tempers to the highest forge level and per slot "best upgrade" now chains buy and temper steps; anything out of reach shows a "What I need" popup (gold, materials, where to get them) from the goal line and the Out of reach rows; upgrades under 3% are not suggested.',
   'Battle: Invoke, Spirit Call and the pet are one Summon command (a chooser when there is more than one); phones: the commands come first again and the skills list scrolls to its end.',
@@ -25044,6 +25047,54 @@ IC_CHARM.c_riftkeeper={body:'seal',G:'#2a1f58',gly:'star',gk:'E',E:'#c9a8ff',cor
 {const gd0=gearDesc;gearDesc=function(id){let h=gd0.apply(this,arguments);try{const g=typeof id==='string'?gearOf(id):id;if(g&&g.rk)h+=(h?', ':'')+`+${Math.round(RKC.elUp*100)}% damage with every element, skills cost ${Math.round(RKC.mpUp*100)}% more MP`;}catch(e){}return h;};}
 // ----- tests -----
 window.__RK={RKC,rkSync:()=>rkSync(),unlocked:()=>rkUnlocked(),beaten:()=>rkBeaten().length,get S(){return B&&B.rk;},turnStart:u=>rkTurnStart(u),shades:()=>rkShades(),intent:u=>b5Intent(u),turn:u=>enemyTurn0(u),idle:(k,n)=>{const c=monCanvas(k);return {w:c.width,h:c.height,diff:bossIdle(c,0,0,760)!==bossIdle(c,0,760,760),c0:bossIdle(c,0,0,760).toDataURL(),c1:bossIdle(c,0,760,760).toDataURL()};},hurtB:d=>{hurt(B.rk.u,d);},guard:()=>guard(),end:()=>checkEnd(),dmg:(a,sk,t)=>calcDamage(a,sk,t),react:(p,d)=>!!reactFor(p,d),chip:n=>chipShield(B.rk.u,n,'test'),mk:k=>{const sp=echoSpec(k);return makeEcho(k,56,{final:!!FINALS[k],stage:3,hpM:sp.hpM,powM:sp.powM}).S.mhp;}};
+
+// ===== arena9.js (v0.13.4): the arena is the Guild Hall's farm, and the Pit Masters are its guild =====
+// 1) The arena is entered only from the Guild Hall (the Menu's Arena tab only reads). Each tier pays gold, the realm's material and a
+//    tiered "rare" purse (ore, wood, herb of the tier; Dread Cores, Wisp Ichor and Golem Grit from the Golden Coliseum up) on every win,
+//    so it is the place to farm gold and the rare materials tempering wants. 2) A seventh guild, the Pit Masters: standing from arena wins
+//    (8 + 6 x tier per win), perks: arena purse +5% / +10%, one more material per win, the Pit counter (Dread Cores, relic bundles, Elixirs),
+//    the Pitmark Charm, Champion's Belt and the title Pit Master. 3) The Guild Hall's Guilds tab opens with a Guild shop section listing
+//    every counter you have unlocked (and which rank opens the others). No save fields: wins live in G.arena, claims in G.fac.claim.
+const ARENA9_REWARD=[{gold:600,mat:3},{gold:1300,mat:4,charm:1},{gold:2600,mat:6,charm:1,core:1},{gold:6000,mat:8,charm:1,core:2},{gold:9500,mat:10,charm:1,core:3}];
+const ARENA9_RARE=[[['copper',2],['oak',2],['bluecap',2]],[['iron',2],['ash',2],['sunpetal',2]],[['mythril',1],['elder',1],['starbloom',1],['ichor',2]],[['mythril',2],['elder',2],['starbloom',2],['ichor',2],['grit',2]],[['mythril',3],['elder',3],['starbloom',3],['grit',3],['ichor',3]]];
+try{ARENA.forEach((A,i)=>{if(ARENA9_REWARD[i])A.reward=Object.assign({},A.reward,ARENA9_REWARD[i]);});}catch(e){}
+// ----- the Pit Masters -----
+try{
+  const P={id:'pit',n:'Pit Masters',i:'⚔',col:'#d05050',desc:'The arena crowd. Every bout you win in the pit earns its respect, the higher the tier the more.',
+    ranks:['Challenger','Brawler','Gladiator','Champion','Crowd Favourite','Pit Master'],
+    perks:[{t:'Arena purse +5%',k:'agold',v:.05},{t:'Arena purse +10%',k:'agold',v:.10},{t:'One more material from every arena win',k:'amat',v:1},{t:'Pit counter: Dread Cores, relic bundles and Elixirs at the Pit counter',k:'stock'},
+      {t:'Pitmark Charm, a unique charm',k:'charm',id:'c_fa6'},{t:"Signature: Champion's Belt, a strong unique charm, and the title Pit Master",k:'sig',id:'c_fb6'}]};
+  FAC.push(P);FACB.pit=P;
+  FAC3.pit={n:['Challenger','Brawler','Gladiator','Champion','Pit Master'],t:['Arena purse +5%.','Arena purse +10%.','One more material from every arena win.','The Pit counter (Dread Cores, relic bundles, Elixirs).',"Two unique charms (Pitmark Charm, Champion's Belt) and the title Pit Master."]};
+  FSTOCK.pit=[['core','Dread Core',400],['$rel','Realm relic (3)',150,3],['elixir','Elixir',420,1,1]];
+  addGear('c_fa6',{n:'Pitmark Charm',slot:'c',tier:3,price:1300,unique:1,hp:100,atk:10,def:8,spd:4});
+  addGear('c_fb6',{n:"Champion's Belt",slot:'c',tier:4,price:2000,unique:1,hp:160,atk:16,def:12,spd:6});
+  [['p1','pit','First blood','Win 1 arena bout.','arena',1,14,1],['p2','pit','A regular','Win 3 arena bouts.','arena',3,24,1],['p3','pit','Crowd favourite','Win 6 arena bouts.','arena',6,36,2],['p4','pit','Silver and up','Win 3 bouts in the Silver Ring or higher.','arenaHi',3,40,2],['p5','pit','Legend of the pit','Win 12 arena bouts.','arena',12,60,3]]
+    .forEach(a=>FMIS.push({id:a[0],f:a[1],t:a[2],d:a[3],k:a[4],n:a[5],rep:a[6],r:a[7]}));
+}catch(e){}
+function arenaWins(){try{return (G.arena||[]).reduce((a,n)=>a+(n|0),0);}catch(e){return 0;}}
+{const fd0=facDerived;facDerived=function(k){if(k==='arena')return arenaWins();if(k==='arenaHi'){try{return (G.arena||[]).reduce((a,n,i)=>a+(i>=1?(n|0):0),0);}catch(e){return 0;}}return fd0.apply(this,arguments);};}
+{const fr0=facRaw;facRaw=function(id){if(id==='pit'){try{return (G.arena||[]).reduce((a,n,i)=>a+(n|0)*(8+6*i),0);}catch(e){return 0;}}return fr0.apply(this,arguments);};}
+// ----- the win: the rare purse and the Pit Masters' perks -----
+HOOK.after('win','arena9','arena rare purse and Pit perks',function(){try{const sp=B&&B.spec;if(!sp||sp.kind!=='arena'||!G||G.daily)return;const t=sp.tier|0,A=ARENA[t];if(!A)return;
+  const info=(B&&B.result)||(V.modal&&V.modal.info)||{};info.notes=info.notes||[];const got=[];
+  (ARENA9_RARE[t]||[]).forEach(([m,n])=>{G.mats[m]=(G.mats[m]||0)+n;got.push(`${n} ${MATS[m]||m}`);});
+  const ag=facSum('agold'),am=facSum('amat');if(ag>0){const g=Math.round(econG(A.reward.gold)*ag);G.gold+=g;info.gold=(info.gold||0)+g;got.push(`${fmt(g)} gold from the Pit Masters`);}
+  if(am>0){const mt=ZS(Math.min(G.stage,4)).mat;G.mats[mt]=(G.mats[mt]||0)+am;got.push(`${am} ${MATS[mt]||mt} from the Pit Masters`);}
+  if(got.length)info.notes.push(`The pit's purse: ${got.join(', ')}.`);facDirty();}catch(e){}});
+// ----- the arena card: enter only from the Guild Hall; the tiers list their rare purse -----
+function arena9Rare(t){return (ARENA9_RARE[t]||[]).map(([m,n])=>`${n} ${MATS[m]||m}`).join(', ');}
+{const na0=nbArena;nbArena=function(menu){let h=na0.apply(this,arguments);try{
+  if(menu){h=h.replace(/<button class="btn sm gold" data-act="arena"[^>]*>Enter<\/button>/g,'');h=h.replace(' Enter it from any town.','').replace('<p class="note">The guild\'s fighting pit.','<p class="note"><b>Enter from the Guild Hall in any town.</b> The guild\'s fighting pit.');}
+  h=h.replace('no rest between waves.','no rest between waves. The pit is where gold and rare materials are farmed: every win pays its purse again, and the Pit Masters guild adds to it.');
+  ARENA.forEach((A,i)=>{const r=arena9Rare(i);if(r)h=h.replace(`${fmt(A.reward.gold)} gold, ${A.reward.mat} materials`,`${fmt(A.reward.gold)} gold, ${A.reward.mat} materials, ${r}`);});}catch(e){}return h;};}
+// ----- the Guild shop section on the Guilds tab -----
+function vGuildShop(){try{if(!G||G.daily)return '';const here=inTown();const rows=FAC.map(F=>{const si=F.perks.findIndex(p=>p&&p.k==='stock')+1;if(!si)return '';const open=facTier(F.id)>=facTierOf(si),S=FSTOCK[F.id]||[];
+    if(!open)return `<div class="row dim"><div class="grow"><b>${F.i} ${esc(F.n)} counter</b><small>Opens at rank ${facTierOf(si)}, ${esc(facTierName(F.id,facTierOf(si)))}.</small></div></div>`;
+    return `<div class="row"><div class="grow"><b>${F.i} ${esc(F.n)} counter</b><small>${S.map(x=>esc(x[1])).join(' · ')}</small></div><div class="btns">${S.map((x,i)=>`<button class="btn sm" data-act="facBuy" data-arg="${F.id}:${i}" title="${esc(x[1])}" ${!here||G.gold<x[2]?'disabled':''}>${esc(x[1].replace(/ \(3\)| bundle/g,''))} ${fmt(x[2])}g</button>`).join('')}</div></div>`;}).filter(Boolean);
+  return `${m3H('Guild shop')}<p class="note">Every guild counter you have unlocked, in one place.${here?'':' Buy in town, at the Guild Hall.'}</p><div class="rows compact gshop">${rows.join('')}</div>`;}catch(e){return '';}}
+{const ng0=nbGuilds;nbGuilds=function(sec){const h=ng0.apply(this,arguments);try{if(sec==='all'){const k=h.indexOf(m3H('Ranks and perks'));const s=vGuildShop();return k>=0?h.slice(0,k)+s+h.slice(k):h+s;}}catch(e){}return h;};}
+{const st=document.createElement('style');st.textContent='.gshop .row.dim{opacity:.6}.gshop .btns{display:flex;flex-wrap:wrap;gap:4px;justify-content:flex-end;max-width:60%}.gshop .btns .btn.sm{font-size:.72em;padding:4px 7px}';document.head.appendChild(st);}
 
 window.__A={walkable,ceInit,tvSlots,genQuests,STARTERS,starterDraw,ECON,AUTO_NERF,rebuildBase,detLive,REACT,skEls,packContents,miniFor,AUTO_REW,ENC_RATE,ENC_MIN_STEPS,detNote,classSkills,stickCount,bestAll,calcStats,lookKey,vTemper,storyEchoUp,leaveDungeon,win,ldApply,genFort,caveOk,enterCave,siteHasMini,openChest,nextDlg,WS,mapIcoRects,roamSpawn,roamInterior,roamSees,mapTargets,DIRV,tileAt,STAGE_LV,autoBan,rollWeather,guardianDef,mapIssues,mapEntry,syncPools,bovAt,calFxAt,realmAt,REALMS,BOV,CAL_FX,overlayGuide,liftOverlay,drawGearIcon,gearIcon,itemIcon,RAW,sigKind,sigGid,personalDone,heroLook,hasSignature,LEGEND_IDS,facDirty,facCount,facRank,facRep,FACB,FAC,finishBattle,npcWords,npcHints,npcPool,titleMake,titleAdvance,TTS,placeAt,wkwUpdate,innSpot,getMap,monURL,enterVia,applyBossTheme,BTHEME,resetMaps,rebuildBase,shopStock,gearDesc,calcStats,gearMigrate,CLS_WPN,CLS_ARM,WPERK,WT_NAME,equipWhy,lootBase,GEAR,canEquip,gearOf,perkNote,FAM_MAT_V35,fbDraft,META:{get best(){return META.best},get codex(){return META.codex},get q(){return META.q}},saveMeta,OFF,offPending,offFlush,PROFILE,profileSync,codexSee,getMap,placeAt,interact,sanctumOpen,riftKeys,echoKeys,BONDS,bondKey,wkwUpdate,inTown,WS,LC,lsort,bestParty,fsCast,fsSkills,ldApply,MON,registerTamed,stickPower,stickCount,autoOne,planGear,bestTag,gainersFor,compGainFor,refresh,fitsFor,canEquip,gearOf,queueNewGear,ARENA,fxDur,banDur,stageTags,autoSwitchPick,layoutBattle,newChar,calcStats,limitSkill,limitTier,canStuck,dunReachable,LV_CAP,addXp,echoSpec,bossLvFor,fx,MON,log,effInfo,tierOf,perkOf,quirkDef,forgeCost,buyPlan,vJourney,modalBack,partySlots,limitOpen,town2Reached,skillKnown,known,classSkills,paceMigrate,unpackG,packG,makeEnemy,QUIRK,arrive,enterDungeon,wkwUpdate,useTravel,travelWhyNot,porkFlee,porkBlocked,encTile,campRest,buyPart,partLeft,alchStock,GAME_VERSION,CHANGELOG,ITEMS,tavernOffers,tavernPool,recruitFit,partyNeeds,vNext,CHALL,innSpot,RECIPES,MATS,FB,fbContext,REDEEM,legendJoin,legendQ,genQuests,dynActors,convInit,PROFILE,profileSync,checkArchive,GPOOL,FPOOL,guardianDef,saveMeta,archiveSkills,get G(){return G;},set G(v){G=v;},get B(){return B;},get V(){return V;},get META(){return META;},WS,ACT,render,newGame,placeAt,startBattle,autoTurn,advance,finishBattle,getMap,innSpot,setPause:p=>{PAUSE=p;},autoCfg,worldInputDir,inputSources,battleFrame,battleTheme,STS,MAPS,mapIssues,healMap,mimicReward,dropChest,interact,worldDraw,TPL,ZONES,ZS,newChar,recruit,saveGame,resetMaps,dynActors,tileAt,BV,refresh,genBounties,genQuests,vStarter,heroCard,heroURL,iconURL,masteryLine,AU,buildTrack,tone,noiseHit,MIDI,sfx,audioVol};
 ['heroRoles','SOLID','WEATHER','WX_BASE','weatherFX','superGuide','recruitCost','ceStart','ceStep','ceInit','cePool','wxList','SUPER_TABLE','superOk','facRank','facRep','facInit','facCount','facCredit','FAC','FMIS','facMissionList','facProg','tyOf','facSync','facMul','facBest','worldPlan','caveReward','enterCave','leaveCave','leaveDungeon','buildCaveMap','worldGraph','openWorldMap','sigReport','SIG_NAMES','starterDraw','ITEM_TIERS','gTierIdx','tierChip','gearIcon','starterSlots','STARTERS','CLK_LEN','CLK_PH','clockPhase','wxInfoBody','recipeOrder','recipeGain','recipeReady','recipeClose','effOf','calcDamage','healsUndead','storyEchoUp','riftKeys','echoDef','efCost','autoLocked','bossFightKey','learnScanAll','isSeen','mapMarks','genSub','subOK','subReq','ensureSub','inSub','tvSlots','tvInit','tvLeft','tvEvent','tvNextText','tvPool','tvDue','tvShuffle','mTavern','hireOK','TV_CAP','TV_CD','POOL_IDS','natPool','natOf','natRoll','NATURES','natInfo','natRerollCost','natChooseCost','NAT_CLASS','iconURL','seenOf','mapIcoDraw','drawMini','MAPCV','revealAround','fxLayer','numDur','compBonusText','compPerk','checkPhase','win','unitBox','LNQ','challVisible','challEligible','challState','isMimic','migrateCompanions','canSummon','summonComp','compOf','clockPhase','tickClock','isNight','rollWeather','wxStep','nightPool','encounterFoes','restAll','tameElite','openChest','rerollTavern','bestAll','gearTier','SV','svCheck','svFlush','svInit','svPush','svPull','svScan','svParse','svBackup','svPack','svUnpack','svProg','svCloudList','svDelDoc','svGet','svCap','slotState','slotKey','svDecode','SV_CH','svStatus','svSlotRaw','svLoad','loadRaw','svHash','svIdx'].forEach(k=>{try{Object.defineProperty(window.__A,k,{get:()=>eval(k)});}catch(e){}});

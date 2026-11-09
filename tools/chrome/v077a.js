@@ -19,7 +19,7 @@ const rk=await ev(()=>{const A=__A,G=A.G,T=A.TW,o={};const F3=T.get('FAC3'),tOf=
   A.FAC.forEach(F=>{f.bonus[F.id]=0;});A.TW.get('facDirty')();A.V.modal=null;return o;});
 chk('every guild has five ranks with a perk line each',rk.five===true||JSON.stringify(rk));
 chk('the six standing steps fold into five ranks (steps 5 and 6 are the top rank)',rk.map==='1,2,3,4,5,5'||JSON.stringify(rk));
-chk('rank follows standing 0, 40, 110, 230, 400, 640 as 1,2,3,4,5,5',rk.tiers==='111111|222222|333333|444444|555555|555555'||JSON.stringify(rk));
+chk('rank follows standing 0, 40, 110, 230, 400, 640 as 1,2,3,4,5,5',rk.tiers==='1111111|2222222|3333333|4444444|5555555|5555555'||JSON.stringify(rk));
 chk('the Guild Hall lists five rank rows per guild',rk.rows===5||JSON.stringify(rk));
 // hand-in: a mission accepted now is handed in at a Guild Hall; one from an older save (no hand flag) still claims anywhere
 const hi=await ev(()=>{const A=__A,G=A.G,f=A.facInit(),o={};const m=A.FMIS.find(x=>A.facMissionList(x.f).includes(x)&&f.acc[x.id]==null);if(!m)return {none:1};

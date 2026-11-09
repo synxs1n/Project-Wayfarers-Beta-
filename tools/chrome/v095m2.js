@@ -10,8 +10,8 @@ await ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.
 const st=await ev(()=>{const A=__A,T=A.TW.get('FAC3'),o={};o.ids=A.FAC.map(F=>F.id);o.three=A.FAC.every(F=>T[F.id]&&T[F.id].n.length===5&&T[F.id].t.length===5&&T[F.id].t.every(t=>t.length>10&&t.length<150&&!/\n/.test(t)));
   A.V.modal={type:'menu',tab:'factions'};A.render();o.cards=document.querySelectorAll('#modal .facc').length;o.rows=[...document.querySelectorAll('#modal .facc .facr')].map(r=>r.querySelectorAll('.row').length);
   o.txt=document.querySelector('#modal').innerText;A.V.modal=null;return o;});
-chk('six guilds with five ranks and one line each',st.three&&st.ids.length===6||JSON.stringify(st));
-chk('the Guilds tab shows a card per guild with five rank rows',st.cards===6&&st.rows.every(n=>n===5)||JSON.stringify(st.rows));
+chk('seven guilds (the Pit Masters since 0.13.4) with five ranks and one line each',st.three&&st.ids.length===7||JSON.stringify(st));
+chk('the Guilds tab shows a card per guild with five rank rows',st.cards===7&&st.rows.every(n=>n===5)||JSON.stringify(st.rows));
 chk('no "faction" in the guild pages',!/faction/i.test(st.txt));
 // ---- no lost perk: at every standing the new perk set holds the old one (old: every perk of steps up to the rank)
 const np=await ev(()=>{const A=__A,G=A.G,R=A.TW.get('REP_AT'),f=A.facInit(),bad=[],o={};const reps=[];R.forEach(r=>{reps.push(r,r+1);if(r>0)reps.push(r-1);});reps.push(1000);

@@ -4,6 +4,9 @@
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.13.4',['The arena is the Guild Hall\'s: enter it only there (the Menu\'s Arena tab just reads). It is now the place to farm gold and rare materials: every tier pays its purse again on every win, with tiered ore, wood and herbs, and from the Golden Coliseum up Dread Cores, Wisp Ichor and Golem Grit.',
+  'A seventh guild, the Pit Masters: standing from arena wins (more for higher tiers), perks for a bigger arena purse and an extra material, a Pit counter (Dread Cores, relic bundles, Elixirs), the Pitmark Charm, Champion\'s Belt and the title Pit Master. Five missions.',
+  'The Guild Hall\'s Guilds tab opens with a Guild shop section: every counter you have unlocked, with buy buttons, and the rank that opens the others.']],
  ['Beta v0.13.3',['Menu: the World group is now Map (the area map with a World map button); Records opens on the Realms tracker (per realm: quests, bounties, Den, Sanctum, boss) and the account stats live under Journey; element strips on every party card and reserve mini, single types too; the Bonds tab only lists pairs you can work on.',
   'Smithy and Alchemy: Upgrade whole party tempers to the highest forge level and per slot "best upgrade" now chains buy and temper steps; anything out of reach shows a "What I need" popup (gold, materials, where to get them) from the goal line and the Out of reach rows; upgrades under 3% are not suggested.',
   'Battle: Invoke, Spirit Call and the pet are one Summon command (a chooser when there is more than one); phones: the commands come first again and the skills list scrolls to its end.',

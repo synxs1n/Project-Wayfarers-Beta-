@@ -69,10 +69,10 @@ const bk=await ev(()=>{const A=__A,o=[],st=()=>A.V.modal?A.V.modal.type+':'+A.V.
   A.V.modal=null;A.TW.get('openService')('guild');A.ACT.gtab('recruit');o.push(st());A.ACT.xBack();o.push(st());A.ACT.xBack();o.push(st());return o;});
 chk('back: section, tab, then leave (board and Guild Hall)',JSON.stringify(bk)===JSON.stringify(['board:bounties/active','board:bounties/all','board:quests/all','closed','guild:recruit/all','guild:guilds/all','closed'])||JSON.stringify(bk));
 // ---- arena: Enter only in town from the menu
-const ar=await ev(()=>{const A=__A,o={};A.V.modal={type:'menu',tab:'qarena'};A.render();o.townOn=[...document.querySelectorAll('#modal [data-act="arena"]')].some(b=>!b.disabled);
-  const m=A.WS.m,k=m.kind;m.kind='field';A.render();o.fieldOff=[...document.querySelectorAll('#modal [data-act="arena"]')].every(b=>b.disabled)&&/from any town/.test(document.querySelector('#modal').innerText);m.kind=k;
+const ar=await ev(()=>{const A=__A,o={};A.V.modal={type:'menu',tab:'qarena'};A.render();o.townOn=document.querySelectorAll('#modal [data-act="arena"]').length===0&&/Enter from the Guild Hall/.test(document.querySelector('#modal').innerText);/* v0.13.4: the Menu's Arena tab never enters; the Guild Hall does */A.V.modal={type:'guild',tab:'arena'};A.render();o.hallOn=[...document.querySelectorAll('#modal [data-act="arena"]')].some(b=>!b.disabled);A.V.modal={type:'menu',tab:'qarena'};A.render();
+  const m=A.WS.m,k=m.kind;m.kind='field';A.render();o.fieldOff=document.querySelectorAll('#modal [data-act="arena"]').length===0;m.kind=k;
   A.V.modal={type:'guild',tab:'arena'};A.render();o.board=document.querySelectorAll('#modal [data-act="arena"]').length>0;A.V.modal=null;A.render();return o;});
-chk('Arena tab (Guild Hall): enter in town, not from the field menu',ar.townOn&&ar.fieldOff&&ar.board||JSON.stringify(ar));
+chk('Arena: the Menu tab only reads (town or field), the Guild Hall enters (v0.13.4)',ar.townOn&&ar.hallOn&&ar.fieldOff&&ar.board||JSON.stringify(ar));
 // ---- quests ready count on the menu and its tabs
 const qc=await ev(()=>{const A=__A,G=A.G;const q=G.quests.find(q=>q.stage<=G.stage&&q.type==='hunt'&&q.state!=='claimed')||G.quests.find(q=>q.type==='hunt');q.state='active';q.have=q.n;q.stage=Math.min(q.stage,G.stage);
   A.V.modal=null;A.ACT.menu();A.ACT.menuGrp('quests');const sub=[...document.querySelectorAll('#modal .msub .chip')].map(x=>x.textContent.trim());return {sub,grp:(document.querySelector('#modal .mgrp .chip.on')||{}).textContent};});
