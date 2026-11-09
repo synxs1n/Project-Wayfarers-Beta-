@@ -4,6 +4,10 @@
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.13.5',['Charms above Rare: six Epic and four Heroic charms. Alchemy sells Epic from the third realm and Heroic from the fifth, both have recipes (Dread Cores and tiered materials), later bounties sometimes post one, the first fall of an Echo may leave one, and the top two arena tiers add one to their purse now and then.',
+  'Healing light burns the undead harder: a heal on an undead foe now deals 135% of its amount (party-wide heals 100%), revives count as strong heals, and Light weakness adds on top. It beats a plain hit by a wide margin.',
+  'Battle: a hero with six or more skills gets filter chips over the Skills list (Damage, Heal, Buff, Debuff, Prime, Detonate, and the damage kinds); the pick is kept for the fight.',
+  'Records > Lore is a world book: seven chapters on Aurelis (the Meridian and the dark, Scourges and Calamities, Echoes and the Sanctum, the wayfarers and their guilds, customs of the road, beasts and taming, the elements) and a chapter per realm you have reached with its history, customs, a saying and the lore you heard there. The element chart, weather and rare skies live under Guides > Charts.']],
  ['Beta v0.13.4',['The arena is the Guild Hall\'s: enter it only there (the Menu\'s Arena tab just reads). It is now the place to farm gold and rare materials: every tier pays its purse again on every win, with tiered ore, wood and herbs, and from the Golden Coliseum up Dread Cores, Wisp Ichor and Golem Grit.',
   'A seventh guild, the Pit Masters: standing from arena wins (more for higher tiers), perks for a bigger arena purse and an extra material, a Pit counter (Dread Cores, relic bundles, Elixirs), the Pitmark Charm, Champion\'s Belt and the title Pit Master. Five missions.',
   'The Guild Hall\'s Guilds tab opens with a Guild shop section: every counter you have unlocked, with buy buttons, and the rank that opens the others.']],
