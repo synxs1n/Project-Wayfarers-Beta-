@@ -100,3 +100,20 @@ function hbsDraw(ctx,p,now){const t=now-p.t0;if(t<0)return;const q=t/p.life;if(q
       ctx.fillRect(R(p.x-r),R(p.y),r*2+1,1);ctx.fillRect(R(p.x),R(p.y-r),1,r*2+1);ctx.globalAlpha=(1-q)*.6;ctx.fillStyle='#ffe08a';ctx.fillRect(R(p.x-r*.6),R(p.y-r*.6),2,2);ctx.fillRect(R(p.x+r*.6-1),R(p.y+r*.6-1),2,2);ctx.globalCompositeOperation='source-over';break;}
     case 'hbC':{const e=1-q*q,x=p.x+p.dx*e,y=p.y+p.dy*e;ctx.globalCompositeOperation='lighter';ctx.globalAlpha=Math.min(1,q*3);ctx.fillStyle=p.col;ctx.fillRect(R(x),R(y),1,1);ctx.globalCompositeOperation='source-over';break;}}}
 {const dp0=drawParts;drawParts=function(ctx,now){const r=dp0.apply(this,arguments);if(!HB.on)return r;try{const P=BV.P;for(let i=0;i<P.length;i++)if(P[i].hb)hbsDraw(ctx,P[i],now);}catch(e){}ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';ctx.lineCap='butt';return r;};}
+
+// ----- v0.17.7: the kind vocabulary on the HD stage (fxkind11.js calls hbsKind): a light and a floor decal per kind of skill, so slash, blunt, pierce,
+// ranged, heal, buff, debuff, song and a summon each read on the lit stage as they do on the 2D one (the particles themselves draw on both) -----
+const HBS_KIND={slash:'#dfe9ff',blunt:'#ffc880',pierce:'#ffffff',ranged:'#f0e0b0',heal:'#7aff8a',buff:'#7affd0',debuff:'#a070e0',song:'#ffd04a',summon:'#ffe9a0'};
+function hbsKind(fx,x,y,gy,start,o){if(!hbsOn()||fx==='mag')return;o=o||{};const col=HBS_KIND[fx];if(!col)return;const C=hbRGB(col),w=o.w||20,big=o.big?1.25:1;
+  const L=(int,r,life,e)=>hbLight(Object.assign({x,y,foot:gy,r,col:C,int:int*big,t0:start,life},e||{}));
+  const D=(r,a,life,e)=>hbDecal(Object.assign({x,y:gy,r,col:C,a,t0:start,life,grow:1,spin:.1},e||{}));
+  switch(fx){
+    case 'slash':L(1.3,46,260,{fade:'pulse'});D(w*.7,.3,300,{spin:.3});break;
+    case 'blunt':L(1.6,64,400);D(w*1.45,.62,540,{spin:.02});if(o.big&&GFX.q.camera&&typeof HD_CAM!=='undefined')gfxCamPush(x,y,HD_CAM.big);break;
+    case 'pierce':L(2.2,28,200,{fade:'pulse'});break;
+    case 'ranged':L(1,32,220);break;
+    case 'heal':L(.9,52,640,{fade:'pulse'});D(w*.9,.5,640,{spin:.1});break;
+    case 'buff':L(.8,46,600);D(w*1.05,.5,660,{spin:.3});break;
+    case 'debuff':hbLight({x,y,foot:gy,r:54,col:[1,1,1],int:-.55,t0:start,life:560,fade:'pulse'});D(w*.9,.5,620,{col:[.55,.3,.8],spin:-.2});break;
+    case 'song':L(.8,50,620,{fade:'pulse'});D(w*1.1,.45,640,{spin:.2});break;
+    case 'summon':L(1.8,100,800);D(w*1.3,.8,800,{spin:.2});if(GFX.q.camera&&typeof HD_CAM!=='undefined')gfxCamPush(x,y,HD_CAM.big);break;}}

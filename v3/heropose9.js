@@ -214,7 +214,8 @@ function heroPoseOf(u,a){
   if(u.actT&&a>=0&&a<520){
     const known=u.actSk&&Math.abs((u.actSkT||0)-u.actT)<80,st=typeof animStyle==='function'?animStyle(u):'swing';
     const p=known?heroPoseFor(u.actSk,u.actDl,st):heroPoseFor(null,null,st,u.actKind);
-    if(p)return {pose:p,frame:a<IMPACT?0:1};
+    if(p){let fr=a<IMPACT?0:1;if(known&&u.actSk.hits>1&&u.actSk.t!=='rand'&&a>=IMPACT&&['swing','thrust','smash'].includes(p))fr=Math.floor((a-IMPACT)/70)%2;// v0.17.7: a multi-hit skill alternates its release and wind-up frames, one beat per blow
+      return {pose:p,frame:fr};}
   }
   if(u.guard&&u.hp>0)return {pose:'guard',frame:1};
   return null;

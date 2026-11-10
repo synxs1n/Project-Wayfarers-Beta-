@@ -1042,3 +1042,6 @@ body.noscroll #p5save{top:auto!important;bottom:8px!important}
    item icons, element marks, the map) use nearest neighbour when the browser scales them; img has had it since the start. The GL layers keep it. ===== */
 #tcv,#t7cv,.tstage canvas,.t7stage canvas{image-rendering:pixelated}
 .port img,.gico,.elb,.fci,.udi,.mimg,.bimg img,.btile>img,.lineup img,.tame img,.bossv img{image-rendering:pixelated}
+
+/* v0.17.9: wide windows use more of the screen (the app was capped at 1000 layout px, leaving dark margins on a desktop); the world view grows with it */
+@media (min-width:1200px){#app{max-width:min(1400px,calc(100vw - 32px))}#app:has(section.title){max-width:1000px}/* the title scene keeps its 1000 px lineup */}
