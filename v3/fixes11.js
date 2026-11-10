@@ -52,3 +52,11 @@ function legendClsOn(cls){try{return Object.keys(TPL).some(id=>TPL[id].cls===cls
 function hideLegendNames(h){try{Object.keys(CLS).forEach(k=>{if(!CLS[k].legend||legendClsOn(k))return;const n=CLS[k].n.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
   h=h.replace(new RegExp(', '+n+'s?(?=[,. <])','g'),'').replace(new RegExp(' and '+n+'s?(?=[,. <])','g'),'').replace(new RegExp(n+'s?, ','g'),'').replace(new RegExp(n+'s? and ','g'),'');});}catch(e){}return h;}
 HOOK.xform('vModal','fixes11','hide legendary class names',function(h){return hideLegendNames(h);});
+// ----- v0.17.4: Make camp offers the Tent too -----
+// Make camp used Camp Supplies only; a Tent had to be used from the Items list. The camp popup now has a "Use" row to pick Camp Supplies
+// or a Tent (with counts and what each does), and opening camp with no Supplies but a Tent in the pack picks the Tent on its own.
+{const co0=ACT.campOpen;ACT.campOpen=function(){const r=co0.apply(this,arguments);try{if(V.modal&&V.modal.type==='camp'&&!V.modal.item&&!(G.inv.campkit>0)&&G.inv.tent>0){V.modal.item='tent';render();}}catch(e){}return r;};}
+ACT.campUse=function(it){if(!V.modal||V.modal.type!=='camp')return;V.modal.item=it==='tent'?'tent':'campkit';render();};
+{const mc0=mCamp;mCamp=function(m){let h=mc0.apply(this,arguments);try{const ck=G.inv.campkit||0,tn=G.inv.tent||0;if(!(ck||tn))return h;const cur=m.item==='tent'?'tent':'campkit';
+  const row=`<div class="row camppick"><div class="grow"><small>Use</small></div><button class="btn sm ${cur==='campkit'?'gold':''}" data-act="campUse" data-arg="campkit" ${ck?'':'disabled'} title="60% HP and MP back and a boon">Camp Supplies <span class="nums">${ck}</span></button><button class="btn sm ${cur==='tent'?'gold':''}" data-act="campUse" data-arg="tent" ${tn?'':'disabled'} title="60% HP and MP back, KO'd heroes up at 30%, and a boon">Tent <span class="nums">${tn}</span></button></div>`;
+  const i=h.indexOf('</h2>');h=i>=0?h.slice(0,i+5)+row+h.slice(i+5):row+h;}catch(e){}return h;};}
