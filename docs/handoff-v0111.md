@@ -373,3 +373,6 @@ gates are beaten, cutscene on entering the gate, returns with a new look, rematc
 
 ## 0.16.8
 - echo11.js (new, after mats11): Echoforged = 2.0x tier-5 shop base (shop +3 is 1.75x), untemperable, old 'w_x_ef+N' ids read as plain ef; ECON11.relicEdge 1.08 -> 1.25 and relicBuild wrapped so relics clear Echoforged by >= 5% at tier 5; ECHOFORGE 25 weapon recipes + ECHOARM (mail/robe/vest); gold 1.6x tier-5 shop; anvil landmark (42px plinth, brazier, banner, rune ring, shards, motes; lights via scanLights wrap). rift9.js anvil draw delegates to echo11. Tests v151a (menus), v063s accepts >= 6 ef icons, p4.js accepts the unplussed forge result. Weak: a relic only beats the Echoforged piece of its own family; forging a tempered base loses its tempering.
+
+## 0.16.9
+- battle11.js (new, after mats11/echo11): foe sprites resampled 1.35x (BIG_ART, 81x81) / 1.1x (44x44) during battleFrame only (monCanvas flag), unitBox follows, head kept >= 4 px from the stage top; cmdhead .b8hm removed (aria-label keeps the numbers); double tap (350 ms) or hold (450 ms) on a foe box/plate/tag opens ACT.uInfo; a single aiming tap now fires on release. Test v152a (battle group); v080b portrait check no longer needs the head bars. Weak: uneven pixels at 1.35x; boss-fight slots may overlap on tall stages; shadow width capped at 40.

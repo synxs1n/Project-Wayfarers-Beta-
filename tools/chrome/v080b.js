@@ -96,7 +96,7 @@ async function setup(H,kind,he,fo,seed){
         if(turn===0&&kind==='mini')chk(`${t}: v0.11.4: no boss bar (removed); the summon button and the auto lock note are there`,!m.boss&&m.summon&&!!m.autowhy||JSON.stringify({boss:m.boss,summon:m.summon,why:m.autowhy}));
         chk(`${t}: the page does not scroll (document ${m.docH} <= ${m.vh}, ${m.docW} <= ${m.vw})`,m.docH<=m.vh+.5&&m.docW<=m.vw+1&&m.scrollY===0);
         chk(`${t}: Attack, Skills, Items and Guard fully on screen`,m.prim.length===4&&m.prim.every(p=>p.ok)||JSON.stringify(m.prim));
-        chk(`${t}: the turn order bar, the stage and the acting hero's ${wide?'card':'HP and MP'} on screen`,m.orderOk&&m.stageOk&&(wide?m.curOk:m.hdrBars||m.curOk)||JSON.stringify({o:m.orderOk,s:m.stageOk,c:m.curOk,h:m.hdrBars}));
+        chk(`${t}: the turn order bar, the stage and the acting hero's ${wide?'card':'name'} on screen`,m.orderOk&&m.stageOk&&(wide?m.curOk:!m.hdrBars)||JSON.stringify({o:m.orderOk,s:m.stageOk,c:m.curOk,h:m.hdrBars}));
         chk(`${t}: the turn order bar's chips clear of NEXT and the entries`,m.orderOv.length===0||m.orderOv.join(' | '));
         if(wide)chk(`${t}: no empty band at the bottom of either column (${m.band.join(' / ')} px)`,m.band.every(b=>b<=24));
         if(wide)chk(`${t}: the stage keeps its whole width inside the screen and the right column too`,m.stage.r<=m.vw+1&&m.cmdR&&m.cmdR.r<=m.vw+1);

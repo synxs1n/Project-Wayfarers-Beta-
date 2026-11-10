@@ -4,6 +4,7 @@
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.16.9',['Battle: bosses and guardians are drawn a third larger on the stage and ordinary foes a tenth larger, with their plates, intents and tap areas following. The HP and MP bars under "<Hero>\'s turn" in the action menu are gone. Double tap a foe, or press and hold it, to open its card.']],
  ['Beta v0.16.8',['Echoforged gear is the best in the game short of a personal relic: every piece sits 14% or more above the shop\'s tier-5 piece at max temper in every stat, cannot be tempered (it starts where tempering would end), and relics stay above it. The Echoforge now has a recipe for every weapon family and for mail, robe and vest, and asks 1.6x the tier-5 shop price in gold on top of the shards.',
   'The Echoforge in the Sanctum hall is a landmark: a stone plinth with the anvil, an echo-crystal brazier, a banner, a rune ring and drifting shards, lit in both views.']],
  ['Beta v0.16.7',['Echo Rift gates glow for this journey\'s wins only (the Codex keeps the account record). The Riftkeeper tells you that breaking every Echo opens the centre gate, and warns about what waits there.',
