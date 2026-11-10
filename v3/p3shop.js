@@ -221,7 +221,7 @@ HOOK.before('vModal','p3shop','bp and p3plan popups',function(m){if(m){if(m.type
 // v0.7.1: once used from this screen the button is replaced by a done note (it used to stay after equipping)
 {const ae0=ACT.autoEqParty;ACT.autoEqParty=function(){const m=V.modal;if(m&&m.type==='ldRes'&&m.p3bp)m.p3bpDone=1;return ae0.apply(this,arguments);};}
 // the Party tab gets the team check under the grid
-{const vs0=vSwap;vSwap=function(where){const h=vs0.apply(this,arguments);try{if(!G||G.daily||where!=='menu')return h;return h+p3GapsHtml(G.party.slice(),null,false);}catch(e){return h;}};}
+HOOK.xform('vSwap','p3shop','team check under the Party grid',function(h,where){try{if(!G||G.daily||where!=='menu')return h;return h+p3GapsHtml(G.party.slice(),null,false);}catch(e){return h;}});
 
 // ===================== 3.6: boss readiness =====================
 // Uses only what the boss prompt already shows (level, element) and its archetype, which its theme gives away. No skills, no turning point.
@@ -246,15 +246,15 @@ function p3ReadyHtml(s,lv){try{if(!G||G.daily)return '';const R=p3Ready(s,lv),n=
 const p3Ins=(h,x)=>{const i=h.lastIndexOf('<div class="btnrow">');return i>=0?h.slice(0,i)+x+h.slice(i):h+x;};
 {const mb0=mBoss;mBoss=function(s){const h=mb0.apply(this,arguments);return p3Ins(h,p3ReadyHtml(s,bossLvFor(s)));};}
 {const me0=mEchoAsk;mEchoAsk=function(m){const h=me0.apply(this,arguments);return m?p3Ins(h,p3ReadyHtml(m.s,storyEchoLv(m.s))):h;};}
-{const mbe0=mBeast;mBeast=function(m){const h=mbe0.apply(this,arguments);try{if(!h||!m||!G||!G.run||G.daily)return h;const k=String(m.k);const bs=(G.run.bosses||[]).indexOf(k),sg=bs>=0?bs:(G.run.final===k?4:-1);
-  if(sg<0||(G.cleared||[])[sg])return h;return p3Ins(h,p3ReadyHtml(sg,bossLvFor(sg)));}catch(e){return h;}};}
+HOOK.xform('mBeast','p3shop','Ready check on boss entries',function(h,m){try{if(!h||!m||!G||!G.run||G.daily)return h;const k=String(m.k);const bs=(G.run.bosses||[]).indexOf(k),sg=bs>=0?bs:(G.run.final===k?4:-1);
+  if(sg<0||(G.cleared||[])[sg])return h;return p3Ins(h,p3ReadyHtml(sg,bossLvFor(sg)));}catch(e){return h;}});
 
 // ===================== 3.7: Holy Water, reapply automatically =====================
 let P3HW={g:null,w:0};
-{const wu0=wkwUpdate;wkwUpdate=function(){try{if(G&&!G.daily){const was=P3HW.g===G?P3HW.w:0;
+HOOK.before('wkwUpdate','p3shop','Holy Water reapply',function(){try{if(G&&!G.daily){const was=P3HW.g===G?P3HW.w:0;
     if(was>0&&!(G.ward>0)){if(G.hwAuto&&(G.inv.holywater||0)>0){G.inv.holywater--;G.ward=ITEMS.holywater.ward;saveGame();toast(`The ward fades, and you uncork another Holy Water. ${G.inv.holywater} left.`);}
       else if(G.hwAuto)toast('The Holy Water\'s ward fades. No Holy Water left to reapply.');}
-    P3HW={g:G,w:G.ward||0};}}catch(e){}return wu0.apply(this,arguments);};}
+    P3HW={g:G,w:G.ward||0};}}catch(e){}});
 
 // ===================== 3.9: Pork Chop Sandwiches =====================
 ITEMS.porkchop.d+=`. In a dungeon you can also eat ${PORK.toTown} at once to walk all the way back to the last town's Inn`;
@@ -362,8 +362,8 @@ function upgSlotsHtml(slots,noPlan){if(!G||G.daily)return '';const rows=slots.ma
     return `<div class="row">${gearIcon(o.id)}<div class="grow"><small>${SLOTN[o.sl]} for ${esc(c.name)}</small><b>${upgWhat(o,1)}</b> <em class="up">${upgPct(o)}</em><small>${deltaHtml(c,o.id)}</small>${upgMaxHtml(o)}</div><button class="btn sm gold" data-act="upgDo" data-arg="${c.id},${o.sl},${o.key}">${o.k==='temper'?'Temper · '+fmt(o.gold)+'g':o.gold?fmt(o.gold)+' gold':'Equip'}</button></div>`;}).join('')}</div>`:m3Empty('Your party already has the best you can pay for here.')}${noPlan?'':`<div class="btnrow p3smith"><button class="btn" data-act="p3Smith" title="Plans the best upgrade for each hero in your party, shows it, and only buys after you confirm">Upgrade whole party</button></div>`}</div>`;}
 HOOK.before('vModal','p3shop','upg popup (the Upgrade button)',function(m){if(m&&m.type==='upg')return HOOK.stop(mUpg(m));});
 // the hero sheet: an Upgrade button on each slot
-{const mc0=mChar;mChar=function(id,edit){let h=mc0.apply(this,arguments);try{const c=G&&G.roster[id];if(!c||G.daily||typeof h!=='string')return h;
-  h=h.replace(/<h4>Equipment<\/h4><div class="eq">[\s\S]*?<\/div>/,()=>`<h4>Equipment</h4><div class="eq upgeq">${EQSL.map(sl=>`<div class="upgslot">${edit?`<button class="btn sm" data-act="gearSlot" data-arg="${sl}"><small>${SLOTN[sl]}</small> ${c.eq[sl]?gearOf(c.eq[sl]).n:'Empty'}</button>`:`<span class="eqv"><small>${SLOTN[sl]}</small> ${c.eq[sl]?gearOf(c.eq[sl]).n:'Empty'}</span>`}${upgBtn(c,sl)}</div>`).join('')}</div>`);}catch(e){}return h;};}
+HOOK.xform('mChar','p3shop','Upgrade button on each equipment slot',function(h,id,edit){try{const c=G&&G.roster[id];if(!c||G.daily||typeof h!=='string')return h;
+  h=h.replace(/<h4>Equipment<\/h4><div class="eq">[\s\S]*?<\/div>/,()=>`<h4>Equipment</h4><div class="eq upgeq">${EQSL.map(sl=>`<div class="upgslot">${edit?`<button class="btn sm" data-act="gearSlot" data-arg="${sl}"><small>${SLOTN[sl]}</small> ${c.eq[sl]?gearOf(c.eq[sl]).n:'Empty'}</button>`:`<span class="eqv"><small>${SLOTN[sl]}</small> ${c.eq[sl]?gearOf(c.eq[sl]).n:'Empty'}</span>`}${upgBtn(c,sl)}</div>`).join('')}</div>`);}catch(e){}return h;});
 Object.assign(ACT,{
   upgOpen(a){const [cid,sl]=String(a).split(',');if(!G||G.daily||!G.roster[cid]||!EQSL.includes(sl))return;upgOpenM(cid,sl);},
   upgDo(a){const [cid,sl,key]=String(a).split(',');const c=G&&G.roster[cid];if(!c||G.daily)return;const o=upgBest(c,sl).best;

@@ -324,6 +324,6 @@ function w7Look(o,m,now){if(!WX7.on||!m||mapIndoor(m))return;const L=w7List(m);l
   for(const [w,k] of L){if(w==='rain'||w==='storm')wet+=k*(w==='storm'?1.2:1);if(w==='storm'){const S=w7Strike(w7Still()?0:now);f=Math.max(f,S.f*k);}}
   if(wet>0){o.sat*=1-.1*wet;o.con*=1+.07*wet;o.exp*=1-.05*wet;o.bloom+=.15*wet;}
   if(f>0){const b=WX7.bolt.light*f;o.amb[0]+=b*.85;o.amb[1]+=b*.9;o.amb[2]+=b;o.exp*=1+f*.25;}W7.stats.hdFlash=f;}
-{const l0=hdLook;hdLook=function(m,now){const o=l0.apply(this,arguments);try{w7Look(o,m,now);}catch(e){}return o;};}
+HOOK.after('hdLook','weather7','weather grade',function(o,m,now){try{w7Look(o,m,now);}catch(e){}});
 // heat shimmer in the composite pass (hd2d.js reads it): strength, and where it starts (above the hero's head, toward the far ground)
 function w7HeatGL(){return WX7.on&&!w7Still()?W7.heat:0;}

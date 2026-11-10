@@ -15,4 +15,4 @@
 // Records opens on the Realms tab (the 100% tracker); Map is its own group with a World map button
 {const mg0=ACT.menuGrp;ACT.menuGrp=function(g){if(g==='records'){const G0=MENU_GROUPS.find(x=>x[0]==='records');const t=(V.menuSub||{}).records;ACT.menuTab(t&&G0&&G0[2].includes(t)?t:'realms');return;}return mg0.apply(this,arguments);};}
 ACT.mapWorld=function(){if(!G||V.screen!=='world')return;V.modal={type:'worldmap',from:{type:'menu',tab:'map'}};render();};
-{const mb0=modalBack;modalBack=function(m){if(m&&m.type==='worldmap'&&m.from&&m.from.type==='menu')return ()=>{V.modal={type:'menu',tab:'map'};};return mb0.apply(this,arguments);};}
+HOOK.before('modalBack','menus9','world map opened from the menu goes back to it',function(m){if(m&&m.type==='worldmap'&&m.from&&m.from.type==='menu')return HOOK.stop(()=>{V.modal={type:'menu',tab:'map'};});});

@@ -65,6 +65,7 @@ function calcStats(c){
   if(!daily)gears.forEach(g=>{if(g.mpEff)S.mpEff=Math.max(S.mpEff||0,g.mpEff);if(g.elDmg)S.elDmg=Math.max(S.elDmg||0,g.elDmg);});
   return S;
 }
+calcStats=HOOK.def('calcStats',calcStats);// one definition; modules add hooks (hooks.js)
 const curseMul=t=>t&&t.st&&t.st.curse?AIL.curseHeal:1;   // v0.4.1 2.2: a Cursed hero receives less healing
 function refresh(c){c.S=calcStats(c);c.hp=Math.min(c.hp,c.S.mhp);c.mp=Math.min(c.mp,c.S.mmp);return c;}
 function autoAlloc(c){
@@ -121,6 +122,7 @@ function unpackG(o){
   g.party=g.party.filter(id=>g.roster[id]);g.tamed=g.tamed||[];g.personal=g.personal||{};g.weather=g.weather||{};g.vaults=g.vaults||{};g.gath=g.gath||{};Object.keys(MATS).forEach(k=>{g.mats[k]=g.mats[k]||0;});g.talks=g.talks||[];
   return g;
 }
+unpackG=HOOK.def('unpackG',unpackG);// one definition; modules add hooks (hooks.js)
 const slotKey=s=>SAVEKEY+(s?'-s'+s:'');
 function saveGame(){if(!G||G.daily)return false;
   try{G.savedAt=Date.now();localStorage.setItem(slotKey(META.slot||0),JSON.stringify(packG()));return true;}catch(e){return false;}}
@@ -164,11 +166,13 @@ function recruit(id,free){
   if(G.rare===id)G.rare=null;
   saveGame();return true;
 }
+recruit=HOOK.def('recruit',recruit);// one definition; modules add hooks (hooks.js)
 function innCost(s){const b=ECON.inn.base+ECON.inn.per*G.stage;return s!=null&&G.cleared[s]?Math.round(b/2):b;}
 function restAll(s){
   if(G.gold<innCost(s))return false;G.gold-=innCost(s);
   Object.values(G.roster).forEach(c=>{c.hp=c.S.mhp;c.mp=c.S.mmp;c.st={};});G.gath={};G.pbuy={};rollRare(s!=null&&G.cleared[s]?.5:.3);saveGame();return true;
 }
+restAll=HOOK.def('restAll',restAll);// one definition; modules add hooks (hooks.js)
 function shopStock(tab){
   const tiers=[Math.min(5,G.stage)];if(G.stage>0)tiers.unshift(G.stage-1);
   if(tab==='weapons'){const cl=new Set(Object.values(G.roster).map(c=>TPL[c.id]&&TPL[c.id].cls).filter(Boolean)),fams=new Set(['blade','staff','bow','dagger']);cl.forEach(k=>(CLS_WPN[k]||[]).forEach(f=>fams.add(f)));return tiers.flatMap(t=>[...fams].filter(f=>GEAR['w_'+f+'_'+t]).map(f=>'w_'+f+'_'+t));}
@@ -262,6 +266,7 @@ function addSt(t,k,src,silent){
   fx(t,def.n,def.bad?'stat bad':'stat good');
   return true;
 }
+addSt=HOOK.def('addSt',addSt);// one definition; modules add hooks (hooks.js)
 function tryFx(t,k,ch,src){
   if(t.hp<=0)return;
   let c=ch;
@@ -328,6 +333,7 @@ function makeEnemy(m,lv,opt){
   if(opt.echo){e.name='Echo '+e.name;e.echo=1;}
   return e;
 }
+makeEnemy=HOOK.def('makeEnemy',makeEnemy);// one definition; modules add hooks (hooks.js)
 function encounterFoes(spec){
   // spec: {stage, kind:'field'|'dungeon'|'boss'|'elite'|'arena'|'echoBoss', ...}
   if(spec.kind==='daily'){const w=spec.waveSpecs[(spec.wave||1)-1];return encounterFoes(Object.assign({},w,{stage:spec.stage}));}
@@ -409,6 +415,7 @@ function fallen(u){
   const r=B.back[bi];B.front[i]=r;B.back[bi]=u;r.next=B.time+delayOf(r,.5);r.enterT=Date.now();
   log(`${r.name} steps in for ${u.name}.`);
 }
+fallen=HOOK.def('fallen',fallen);// one definition; modules add hooks (hooks.js)
 function checkEnd(){
   if(B.over)return true;
   if(B.en.every(e=>e.hp<=0)){B.over=true;later(win,PAUSE);return true;}
@@ -427,6 +434,7 @@ function checkPhase(e){
   if(P.summon&&B.en.filter(x=>x.hp>0).length<3){const m=MON[P.summon];const s=makeEnemy(m,Math.max(1,e.lv-3));s.next=B.time+300;s.enterT=Date.now();B.en.push(s);log(`${s.name} joins the fight!`);}
   if(P.wardEvery)e.wardEvery=P.wardEvery;
 }
+checkPhase=HOOK.def('checkPhase',checkPhase);// one definition; modules add hooks (hooks.js)
 function advance(){
   const bt=B;
   try{advance0();}
@@ -502,6 +510,7 @@ function doReaction(a,t,el){
   t.reactT=Date.now();t.reactN=R.n;t.reactEl=el;t.reactP=R.p;
   return R;
 }
+doReaction=HOOK.def('doReaction',doReaction);// one definition; modules add hooks (hooks.js)
 function applyReactionAfter(R,a,t,dealt){
   (R.fx||[]).forEach(([k,c])=>tryFx(t,k,c,a));
   if(R.strip)Object.keys(t.st).forEach(k=>{if(!STS[k].bad)delete t.st[k];});
@@ -669,6 +678,7 @@ function scan(t){
   if(typeof profileDirty==='function')try{profileDirty();}catch(x){}
   fx(t,'Scanned','stat');endTurn(a,.5);
 }
+scan=HOOK.def('scan',scan);// one definition; modules add hooks (hooks.js)
 function useItem(id,t){
   const it=ITEMS[id],a=B.cur;autoNote(a,it.n+(t&&t!==a?' on '+t.name:''));
   if(!G.inv[id])return;

@@ -82,7 +82,7 @@ HOOK.after('win','goals','goal counters from the fight',function(){try{if(glOn()
 if(typeof doSwap==='function'){const ds0=doSwap;doSwap=function(){const r=ds0.apply(this,arguments);try{if(r!==false&&r!==undefined&&B&&!B.auto)glAdd('swap',1);}catch(e){}return r;};}
 if(typeof b4FreeSwap==='function'){const fs0=b4FreeSwap;b4FreeSwap=function(){const r=fs0.apply(this,arguments);try{if(r&&B&&!B.auto)glAdd('swap',1);}catch(e){}return r;};}
 if(ACT&&typeof ACT.swapTap==='function'){const st0=ACT.swapTap;ACT.swapTap=function(){let k0='';try{k0=partySlots().join(',');}catch(e){}const r=st0.apply(this,arguments);try{if(k0&&partySlots().join(',')!==k0)glAdd('swap',1);}catch(e){}return r;};}
-{const sc0=scan;scan=function(){const r=sc0.apply(this,arguments);try{if(B&&B.spec&&B.spec.kind!=='daily')glAdd('scan',1);}catch(e){}return r;};}
+HOOK.after('scan','goals','scan goal',function(r){try{if(B&&B.spec&&B.spec.kind!=='daily')glAdd('scan',1);}catch(e){}});
 if(typeof campMake==='function'){const cm0=campMake;campMake=function(){const r=cm0.apply(this,arguments);try{if(r&&typeof r!=='string')glAdd('camp',1);}catch(e){}return r;};}
 HOOK.after('finishBattle','goals','Next goals panel',function(){try{glCheck();glRender();}catch(e){}});
 HOOK.after('newGame','goals','goals start empty',function(){try{if(G&&!G.daily)G.goals={a:[],d:{},c:{},b:{}};}catch(e){}});

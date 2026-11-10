@@ -24,7 +24,7 @@ function c5PlanTarget(u,p){try{if(!B||!p||!p.sk||!c5Single(p.sk)||p.sk.t==='self
   return rand()<.3?low:live[Math.floor(rand()*live.length)];}catch(e){return null;}}
 {const fp0=foePlan;foePlan=function(u){const p=fp0.apply(this,arguments);try{if(p&&!p.c5){p.c5=1;p.tgt=c5PlanTarget(u,p);}}catch(e){}return p;};}
 // the plan a foe is acting on (enemyTurn0 reads foePlan first thing, then bumps u.turns)
-{const et0=enemyTurn0;enemyTurn0=function(u){try{if(u&&u.side==='e')u._c5used=foePlan(u);}catch(e){}return et0.apply(this,arguments);};}
+HOOK.before('enemyTurn0','chain5','remember the plan a foe acts on',function(u){try{if(u&&u.side==='e')u._c5used=foePlan(u);}catch(e){}});
 function c5PlanAim(u,p,sk,tg,live){try{if(!p||!p.tgt||!tg||tg.length!==1||!c5Single(sk))return tg;const same=p.sk===sk||(sk&&p.sk&&sk.id===p.sk.id)||(sk&&sk.id==='attack'&&p.sk===ATTACK);if(!same)return tg;
   const t=p.tgt,cur=tg[0];if(!cur||cur.side!=='p')return tg;if(has(cur,'taunt')&&!has(t,'taunt'))return tg;if(t.hp<=0||!(live||B.front).includes(t))return tg;return [t];}catch(e){return tg;}}
 // the reward: a guard that caught the planned hit makes the hero quick

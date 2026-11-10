@@ -297,7 +297,7 @@ function hdBake(m){const sig=hdSig(m);if(HD.S&&HD.S.m===m&&HD.S.sig===sig&&HD.ma
   const save={lights:m.lights,smoke:m.smoke,bsp:m.bsp,torches:m.torches&&m.torches.slice(),mills:m.mills&&m.mills.slice()};
   let g0,g1,cards=null,blds=null,deco=null,sh=null;const d0=drawObjects;
   const fa=m.fortAt;// v0.6.3: the gatehouse is geometry in HD-2D (hdGateGeo), not paint on the ground
-  try{drawObjects=function(){};try{m.fortAt=null;g0=buildMapCanvas(m,0);g1=buildMapCanvas(m,1);}finally{drawObjects=d0;m.fortAt=fa;}
+  try{drawObjects=()=>{};try{m.fortAt=null;g0=buildMapCanvas(m,0);g1=buildMapCanvas(m,1);}finally{drawObjects=d0;m.fortAt=fa;}
     if(fa&&typeof drawShrineRing==='function')[g0,g1].forEach(g=>{try{drawShrineRing(g.getContext('2d'),(fa[0]-1)*TS,(fa[1]-1)*TS);}catch(e){}});// the ring of stones and candles is ground paint
     m.lights=save.lights;m.smoke=save.smoke;m.bsp=save.bsp;
     const W=m.w,H=m.h,HT=new Float32Array(W*H),KD=new Uint8Array(W*H);S.HT=HT;S.KD=KD;
@@ -376,6 +376,7 @@ function hdLook(m,now){const o=H2L,P=HD2D.look;hdZero(o);const dun=typeof mapInd
   // (dawn > day mostly jumped: the middle frame was 94% of the way to day, v050p5c)
   const l=Math.hypot(o.sd[0],o.sd[1],o.sd[2])||1,tb=!dun&&typeof TR!=='undefined'&&TR.from&&TR.k<1&&TR.from!==TR.ph;if(!tb){o.sd[0]/=l;o.sd[1]/=l;o.sd[2]/=l;}o.shA=1;
   return o;}
+hdLook=HOOK.def('hdLook',hdLook);
 // the grade as one affine map M*c+B (column major): exposure e, contrast k, saturation s, then gain g and lift l per channel
 function hdGrade(o){const e=o.exp,k=o.con,sa=o.sat,M=HD.gm,B=HD.gb,W=[.299,.587,.114];
   for(let i=0;i<3;i++){const g=o.gain[i]-o.lift[i];for(let j=0;j<3;j++){const sat=(i===j?sa:0)+(1-sa)*W[j];M[j*3+i]=g*k*e*sat;}
@@ -531,6 +532,7 @@ function hdActors(m,now,ts){const B=HD.dyn,BB=HD.dynB,BA=HD.dynA,V=HD.S.V,still=
   // chimney smoke
   (HD.S.smoke||[]).forEach((s,i)=>{for(let k=0;k<4;k++){const p=still?(k/4+.1):((ts/1600+k/4+i*.37)%1),r=1+Math.floor(p*3),dx=Math.sin(p*6+i)*3+p*6;
     H2P.set([s[0]+dx-r,s[1]+(p*26+r)*V,s[2],s[0]+dx+r,s[1]+(p*26+r)*V,s[2],s[0]+dx+r,s[1]+(p*26-r)*V,s[2],s[0]+dx-r,s[1]+(p*26-r)*V,s[2]]);BB.quad(H2P,-1,0,-1,0,225,225,235,Math.round(120*(1-p)),0,.45,.89,0);}});}
+hdActors=HOOK.def('hdActors',hdActors);
 // ----- v0.6.3: the world's drifting ambience (worldfx.js) as part of the scene -----
 // Relit field sparkles, snow, wind streaks, butterflies, spray, motes, dungeon dust, festival lanterns, Phase 6 leaves, dusk fireflies,
 // dawn dew and the passing flock: the same world positions as the 2D view, placed in the scene as small upright quads (blended, depth

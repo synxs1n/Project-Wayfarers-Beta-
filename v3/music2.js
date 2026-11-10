@@ -46,7 +46,7 @@ function au2Stinger(){const g=AU2.g;if(!g)return;const ctx=g.ctx,t=ctx.currentTi
   if(AU2.inst.brass||AU2.inst.horn){const I=AU2.inst.brass?'brass':'horn';[45,52,57].forEach(m=>au2Note(ctx,d,I,m,t+.45,.35,.8));}au2Hit(ctx,d,'crash',t+.45,.7);}
 // jingles from game events
 function au2J(id,delay){if(!AU2.on||!AU2.ready)return false;setTimeout(()=>au2Jingle(id),delay||0);return true;}
-if(typeof recruit==='function'){const r0=recruit;recruit=function(id,free){const ok=r0.apply(this,arguments);try{if(ok!==false&&V.screen==='world'&&G&&G.roster[id])au2J('recruit',120);}catch(e){}return ok;};}
+HOOK.after('recruit','music2','recruit jingle',function(ok,id,free){try{if(ok!==false&&V.screen==='world'&&G&&G.roster[id])au2J('recruit',120);}catch(e){}});
 if(typeof claimQuest==='function'){const c0=claimQuest;claimQuest=function(q){const r=c0.apply(this,arguments);try{if(r&&q&&q.state==='claimed')au2J('quest',80);}catch(e){}return r;};}
 if(typeof ACT!=='undefined'&&ACT.facClaim){const f0=ACT.facClaim;ACT.facClaim=function(){const r=f0.apply(this,arguments);au2J('quest',80);return r;};}
 HOOK.wrap('finishBattle','music2','stage clear music',function(next,...a){const how=a[0];let n0=0;try{n0=G&&G.cleared?Object.keys(G.cleared).filter(k=>G.cleared[k]).length:0;}catch(e){}const r=next(...a);
@@ -91,8 +91,8 @@ ACT.mrPlay=function(i){i=+i;const r=MUSIC_ROOM[i];if(!r||!AU2.on)return;audioIni
   AU2.preview={i,id:musicRoomId(r),opt:r[1],stems:{}};au2Sync(true);render();};
 ACT.mrStem=function(i){const P=AU2.preview,r=MUSIC_ROOM[+i];if(!P||!r||!r[3])return;P.stems=P.stems||{};P.stems[r[3]]=!P.stems[r[3]];au2Sync(true);render();};
 ACT.mrStop=function(){AU2.preview=null;au2Stop(.6);render();setTimeout(()=>au2Sync(true),700);};
-{const mm0=mMenu;mMenu=function(m){const tab=m&&m.tab;if(tab!=='music'){if(AU2.preview){AU2.preview=null;setTimeout(()=>au2Sync(true),0);}return mm0.apply(this,arguments);}
-  const html=mm0.apply(this,arguments),grp=menuGroupOf('music'),tabs=menuTabsHtml(grp,'music'),k=html.indexOf(tabs);return k<0?html:html.slice(0,k+tabs.length)+vMusicRoom()+html.slice(k+tabs.length);};}
+HOOK.wrap('mMenu','music2','Music Room tab',function(next,...args){const m=args[0];const tab=m&&m.tab;if(tab!=='music'){if(AU2.preview){AU2.preview=null;setTimeout(()=>au2Sync(true),0);}return next(...args);}
+  const html=next(...args),grp=menuGroupOf('music'),tabs=menuTabsHtml(grp,'music'),k=html.indexOf(tabs);return k<0?html:html.slice(0,k+tabs.length)+vMusicRoom()+html.slice(k+tabs.length);});
 // the Music Room unlocks: remember the field arrangement heard as its own entry
 {const h0=au2Heard;au2Heard=function(id){h0(id);try{const C=AU2.cur;if(C&&C.id==='field'&&!AU2.preview){const k=C.key.split('|');if(k[3]==='1')h0('field_cal');else if(k[2]==='1')h0('field_night');else h0('field_'+k[1]);}
   if(C&&C.id==='town'&&C.key.split('|')[2]==='1')h0('town_n');}catch(e){}};}

@@ -124,7 +124,7 @@ function fkDraw(ctx,p,now){const t=now-p.t0;if(t<0)return;const q=t/p.life;if(q>
     default:fkDraw2(ctx,p,now,t,q);
   }
   if(p.add)ctx.globalCompositeOperation='source-over';}
-{const dp0=drawParts;drawParts=function(ctx,now){const r=dp0.apply(this,arguments);try{const P=BV.P;for(let i=0;i<P.length;i++)if(P[i].k==='fk')fkDraw(ctx,P[i],now);}catch(e){}ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';ctx.lineWidth=1;return r;};}
+HOOK.after('drawParts','fxkind11','kind particles',function(r,ctx,now){try{const P=BV.P;for(let i=0;i<P.length;i++)if(P[i].k==='fk')fkDraw(ctx,P[i],now);}catch(e){}ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';ctx.lineWidth=1;});
 // ============================================================================================================================================
 // v0.17.10: a shape of its own for every status (STS, plus the boss gimmick marks). One particle, s:'st', sh:<shape>: the apply burst when the status
 // lands (about 520 to 760 ms), a lighter loop while it lasts (poison drips, burn embers, a curse sigil, a hex star...) and a tint pulse on a tick.
@@ -265,8 +265,8 @@ function fkLinger(now){if(!B||B.over||gfxStill()||V.screen!=='battle')return;let
     for(let j=0;j<keys.length&&n<2;j++){const k=keys[j];if(!FK_LINGER[k]||!FK_SH[k])continue;n++;u._fkL=u._fkL||{};if(now-(u._fkL[k]||0)<(k==='charge'?800:1500))continue;u._fkL[k]=now+((i*131+j*53)%400);
       try{fkStatus(u,k,!STS[k].bad,STS[k].n,{lg:1});live++;}catch(e){}}}}
 // a tick of poison, burn or bleed: a loop pulse and a tint on the sprite
-{const o0=onFx;onFx=function(u,txt,cls){const r=o0.apply(this,arguments);try{if(u&&B&&V.screen==='battle'&&!gfxStill()&&/dmg (poison|burn|bleed)/.test(cls||'')){const k=String(cls).split(' ')[1];
-  u._fkTint={col:k==='poison'?'#8a3ad0':k==='burn'?'#ff7a2a':'#e03030',t0:Date.now(),life:320,a:.75};fkStatus(u,k,false,txt,{lg:1,life:.8});}}catch(e){}return r;};}
+HOOK.after('onFx','fxkind11','poison, burn and bleed tick looks',function(r,u,txt,cls){try{if(u&&B&&V.screen==='battle'&&!gfxStill()&&/dmg (poison|burn|bleed)/.test(cls||'')){const k=String(cls).split(' ')[1];
+  u._fkTint={col:k==='poison'?'#8a3ad0':k==='burn'?'#ff7a2a':'#e03030',t0:Date.now(),life:320,a:.75};fkStatus(u,k,false,txt,{lg:1,life:.8});}}catch(e){}});
 // ---------- a real tint pass on the sprite (element hits, ticks, knock-outs): BV.tint is the hook drawUnit already reads, so both renderers take it ----------
 const FKT=new WeakMap();
 function fkTintImg(img,col,lv){if(!img||!img.width)return img;let m=FKT.get(img);if(!m){m={};try{FKT.set(img,m);}catch(e){return img;}}const key=col+lv;if(m[key])return m[key];
@@ -364,20 +364,20 @@ function fkMagHit(I,H,x,y,gy,start,s,h,w){const el=I.fx,col=ELC[el]||FK_COL.arca
     default:fkP({s:'glow',x,y,r:(14+w*.4)*s,col:'#c8a0ff',t0:start,life:320});}
   if(I.big&&el!=='earth')fkShake(start,I.area?220:180,2);}
 // ---------- hits: replace the class look of a physical blow, add the signature to a spell ----------
-{const b0=burstAt;burstAt=function(x,y,el,start,big){const H=FK.hit;
-  if(!H||!H.I||H.sup||gfxStill())return b0.apply(this,arguments);
+HOOK.wrap('burstAt','fxkind11','class look of a blow, spell signature',function(next,x,y,el,start,big){const H=FK.hit;
+  if(!H||!H.I||H.sup||gfxStill())return next(x,y,el,start,big);
   const I=H.I;let r;
-  if(I.k==='phys'||I.k==='slash'||I.k==='blunt'||I.k==='pierce'||I.k==='ranged'){FK.muteHit++;try{r=b0.call(this,x,y,'hit',start+fkStag(H,I),big);}finally{FK.muteHit--;}}
-  else r=b0.apply(this,arguments);
-  try{fk11Hit(I,H,x,y,start,big);}catch(e){}return r;};}
+  if(I.k==='phys'||I.k==='slash'||I.k==='blunt'||I.k==='pierce'||I.k==='ranged'){FK.muteHit++;try{r=next(x,y,'hit',start+fkStag(H,I),big);}finally{FK.muteHit--;}}
+  else r=next(x,y,el,start,big);
+  try{fk11Hit(I,H,x,y,start,big);}catch(e){}return r;});
 // how many blows really landed on each target (combo extra hits, an elite's multi, misses and Wards included): the engine calls calcDamage once per landed blow
 {const cd0=calcDamage;calcDamage=function(a,sk,t){const r=cd0.apply(this,arguments);try{const I=FK.cur;if(I&&a===I.a&&t&&sk&&I.sk&&sk.id===I.sk.id){(I.cd||(I.cd=new Map())).set(t,(I.cd.get(t)||0)+1);}}catch(e){}return r;};}
 // the hit state: which action's blow this popup is (damage popups of the current perform; heals and status popups of a support skill)
-{const o0=onFx;onFx=function(u,txt,cls){const I=FK.cur;let set=false;
+HOOK.wrap('onFx','fxkind11','which blow this popup is',function(next,u,txt,cls){const I=FK.cur;let set=false;
   try{if(I&&u&&B&&V.screen==='battle'){
     if(/dmg/.test(cls)&&!/poison|burn|bleed/.test(cls)){const nh=Math.max(1,(I.cd&&I.cd.get(u))||I.hits||1);I.landed=Math.max(I.landed||0,nh);u.fk11r={k:I.k,el:I.el,fx:I.fx,t:Date.now(),lim:I.lim};FK.hit={u,I,i:I.n++,hits:nh,crit:/crit/.test(cls)};set=true;}
     else if(cls==='heal'||/good|bad/.test(cls||'')){FK.hit={u,I,i:I.n++,sup:1,txt};set=true;}}}catch(e){}
-  try{return o0.apply(this,arguments);}finally{if(set)FK.hit=null;}};}
+  try{return next(u,txt,cls);}finally{if(set)FK.hit=null;}});
 // support effects: replace anim.js's one-size chevrons for the skill kinds they were made for
 {const af0=anFxText;anFxText=function(u,txt,cls){const I=FK.cur;
   if(gfxStill()||!B||V.screen!=='battle'||!u)return af0.apply(this,arguments);
@@ -453,11 +453,11 @@ function fkCast(a,I,now,hand,tg,col,dir,s,hand1){const el=I.fx,R=Math.random,hx=
     else if(el==='arcane')fkP({s:'proj',gl:'stone',x:H1.x,y:H1.y,x2:d.x,y2:d.y,arc:8,trail:5,col:'#ffffff',col2:'#c8a0ff',t0:now+50+i*20,life:L});
   });
   function gy0(u){const b=unitBox(u);return b&&b.gy!=null?b.gy:b?b.y:hy+20;}}
-{const oa0=onAction;onAction=function(a,now){let I=null;try{I=fk11Of(a);if(gfxStill()||!B||V.screen!=='battle'||!a||a.hp<=0)I=null;}catch(e){I=null;}
-  if(!I)return oa0.apply(this,arguments);
-  const n0=BV.P.length;FK.mute++;try{oa0.apply(this,arguments);}finally{FK.mute--;}
+HOOK.wrap('onAction','fxkind11','kind looks of an action',function(next,a,now){let I=null;try{I=fk11Of(a);if(gfxStill()||!B||V.screen!=='battle'||!a||a.hp<=0)I=null;}catch(e){I=null;}
+  if(!I)return next(a,now);
+  const n0=BV.P.length;FK.mute++;try{next(a,now);}finally{FK.mute--;}
   try{if(I.k==='mag'&&I.fx!=='arcane')BV.P=BV.P.filter((p,i)=>i<n0||p.k!=='orb');// the plain orb from battle.js: the element has its own delivery now
-    fkAct(a,I,now);}catch(e){}};}
+    fkAct(a,I,now);}catch(e){}});
 // summons: a pillar and a shock ring where the guardian lands
 {const sc0=summonComp;summonComp=function(){const r=sc0.apply(this,arguments);try{const a=B&&B.cur,u=B.front.find(x=>x.isComp&&x.owner===a)||B.front.find(x=>x.isSummon);if(u&&!gfxStill()){const b=unitBox(u),now=performance.now(),gy=b.gy!=null?b.gy:b.y;FK.key='summon';
   fkP({s:'pillar',x:b.x,y:gy,w:10,col:'#ffe9a0',t0:now,life:520});fkP({s:'shock',x:b.x,y:gy,r:34,col:'#ffe9a0',noCrack:1,seed:0,t0:now+140,life:460});fkShake(now+140,200,2);if(typeof hbsKind==='function')hbsKind('summon',b.x,b.y-b.h*.5,gy,now,{w:b.w,big:1});}}catch(e){}return r;};}
@@ -498,7 +498,7 @@ function fk11Recoil(u,b,T){if(gfxStill()||!u||u.hp<=0||!u.fk11r||(B&&B.wipe))ret
     else du0.apply(self,args);
   }finally{BV.tint=bt;ctx.restore();}};}
 // ---------- hit-stop and the status loops ride the frame ----------
-{const bf0=battleFrame;battleFrame=function(now){try{if(FK.stop&&now>=FK.stop.t0&&now<FK.stop.t0+FK.stop.d&&!gfxStill()&&B&&V.screen==='battle')return;if(FK.stop&&now>=FK.stop.t0+FK.stop.d)FK.stop=null;fkLinger(now);}catch(e){}return bf0.apply(this,arguments);};}
+HOOK.before('battleFrame','fxkind11','hit stop and lingering looks',function(now){try{if(FK.stop&&now>=FK.stop.t0&&now<FK.stop.t0+FK.stop.d&&!gfxStill()&&B&&V.screen==='battle')return HOOK.stop();if(FK.stop&&now>=FK.stop.t0+FK.stop.d)FK.stop=null;fkLinger(now);}catch(e){}});
 function fkHitStop(t0,d){if(gfxStill()||(META.cfg&&META.cfg.hitstop===false))return;if(!FK.stop||FK.stop.t0+FK.stop.d<t0)FK.stop={t0,d};}
 
 // ============================================================================================================================================
@@ -653,12 +653,12 @@ function fkGimLand(u,P,D){if(gfxStill()||!P||!D)return;const ec=(D.el&&ELC[D.el]
 {const gl0=typeof b4GimLand==='function'?b4GimLand:null;if(gl0){b4GimLand=function(u){const S=B&&B.b4g,P=S&&S.pend,D=S&&S.D;const r=gl0.apply(this,arguments);try{if(P&&D&&B&&!B.over)fkGimLand(u,P,D);}catch(e){}return r;};}}
 {const ge0=typeof b4GimExpire==='function'?b4GimExpire:null;if(ge0){b4GimExpire=function(u){const S=B&&B.b4g,A=S&&S.act;const r=ge0.apply(this,arguments);try{if(A&&A.t==='air'&&!gfxStill()){const now=performance.now(),ec=(S.D.el&&ELC[S.D.el])||'#d0e0ff';FK.key='gimland_dive';(A.slots||[]).forEach((i,j)=>{const h=B.front[i];if(h&&h.hp>0){const c=centerOf(h),b=unitBox(h);if(c&&b){fkP({s:'shock',x:c.x,y:b.gy!=null?b.gy:b.y,r:28,col:ec,noCrack:1,seed:0,t0:now+j*70,life:420});fkP({s:'streak',x:c.x,y:4,dir:1,n:3,sp:3,len:40,col:ec,t0:now+j*70,life:300});}}});}}catch(e){}return r;};}}
 // the boss telegraphs and windups ride the status popup
-{const o1=onFx;onFx=function(u,txt,cls){const r=o1.apply(this,arguments);try{if(u&&B&&V.screen==='battle'&&!gfxStill()&&u.side==='e'&&/stat bad/.test(cls||'')){
+HOOK.after('onFx','fxkind11','foe telegraph and wind-up looks',function(r,u,txt,cls){try{if(u&&B&&V.screen==='battle'&&!gfxStill()&&u.side==='e'&&/stat bad/.test(cls||'')){
   if(txt==='Telegraph'&&B.b4g&&u===B.b4g.u)fkGimTell(u,B.b4g.pend,B.b4g.D);
   else if(/^(Winding up|Gathering power)!?$/.test(String(txt))){const c=centerOf(u),b=unitBox(u),now=performance.now(),gy=b&&(b.gy!=null?b.gy:b.y);FK.key='tell_'+(/Wind/.test(txt)?'windup':'gather');
     if(c&&b){fkP({s:'seal',x:c.x,y:gy,r:Math.max(30,b.w*.75),n:/Wind/.test(txt)?4:8,rot:0,col:'#ff8a3a',t0:now,life:880});
       if(/Wind/.test(txt)&&u.b4slot!=null&&B.front[u.b4slot]){const t=centerOf(B.front[u.b4slot]);if(t)fkP({s:'line',x:c.x,y:c.y,x2:t.x,y2:t.y,col:'#ff5a3a',gap:1,t0:now+200,life:600});}
-      else if(!/Wind/.test(txt)){fkShake(now,500,2);if(!BV.flash||BV.flash.t<now-400)BV.flash={t:now,life:520,col:'rgba(40,0,10,.3)'};}}}}}catch(e){}return r;};}
+      else if(!/Wind/.test(txt)){fkShake(now,500,2);if(!BV.flash||BV.flash.t<now-400)BV.flash={t:now,life:520,col:'rgba(40,0,10,.3)'};}}}}}catch(e){}});
 
 // ---------- for the tests and the audit ----------
 function fk11Rows(list){return list.map(r=>{const I=fk11Info(r.a,r.sk);return {id:r.sk.id,k:I.k,fx:I.fx,el:I.el,dl:I.dl,hits:I.hits,area:I.area,lim:I.lim,song:I.song};});}

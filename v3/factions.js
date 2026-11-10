@@ -152,6 +152,7 @@ function facMisAll(){return FAC.flatMap(F=>facMissionList(F.id));}
 function vFacMissions(sec){if(!G)return '';facSync(true);sec=sec||'all';const o={ready:0,active:1,open:2};
   const L=facMisAll().filter(m=>sec==='all'||facMisState(m)===sec).sort((a,b)=>o[facMisState(a)]-o[facMisState(b)]);
   return `<p class="note">Missions rotate after an inn rest. Accepted ones stay until done, and everything you did before accepting counts.</p>${L.length?`<div class="rows">${L.map(facMisRow).join('')}</div>`:`<p class="note empty">${{ready:'No mission is ready to claim yet.',active:'No missions under way.',open:'No new missions posted. Rank up for more.'}[sec]||'No missions posted yet. Rank up for more.'}</p>`}`;}
+vFacMissions=HOOK.def('vFacMissions',vFacMissions);
 // rank strip on the matching shop screens
 HOOK.xform('vModal','factions','faction rank row on the shop popups',function(h,m){try{const map={smithy:'smiths',workshop:'alch',beast:'wardens',archivist:'archive'};const id=m&&map[m.type];
   if(id&&G&&!G.daily&&typeof h==='string'){const F=FACB[id],t=facTier(id);const strip=`<p class="note facrank" style="border-left:3px solid ${F.col};padding-left:6px">${F.i} ${esc(F.n)}: ${esc(facTierName(id,t))}. ${esc(FAC3[id].t[t-1])} <button class="btn sm" data-act="menuTab" data-arg="factions">Guilds</button></p>`;

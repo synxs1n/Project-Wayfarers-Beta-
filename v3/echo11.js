@@ -71,7 +71,7 @@ function efCostOf(f){const E=efEntry(f),m={};E.sh.forEach(k=>{m['es_'+k]=EF_SHAR
 {const fc0=forgeCost;forgeCost=function(id){if(typeof id==='string'&&/_ef(\+\d)?$/.test(id))return null;return fc0.apply(this,arguments);};}
 
 // ----- perks (calcStats): echocore.js reads crit, critDmg, eva, spdP, elAll, bossDmg and primeDmg off ECHOFORGE; the rest is read here -----
-{const cs0=calcStats;calcStats=function(c){const S=cs0.apply(this,arguments);try{if(!c||c.side!=='p'||(G&&G.daily))return S;
+HOOK.after('calcStats','echo11','Echoforged weapon and armour perks',function(S,c){try{if(!c||c.side!=='p'||(G&&G.daily))return;
   const w=gearOf(c.eq&&c.eq.w),a=gearOf(c.eq&&c.eq.a),add=(P)=>{if(!P)return;
     if(P.acc)S.acc=(S.acc||.97)+P.acc;
     ['cleave','heavy','charge','pierce','combo','healUp','spellPow','bleed','status','debT','buffT'].forEach(k=>{if(P[k])S[k]=(S[k]||0)+P[k];});
@@ -79,7 +79,7 @@ function efCostOf(f){const E=efEntry(f),m={};E.sh.forEach(k=>{m['es_'+k]=EF_SHAR
   if(w&&w.ef&&ECHOFORGE[w.ef])add(ECHOFORGE[w.ef]);
   if(a&&a.ef&&ECHOARM[a.ef]){const P=ECHOARM[a.ef];add(P);
     if(P.hpP)S.mhp=Math.round(S.mhp*(1+P.hpP));if(P.mpP)S.mmp=Math.round(S.mmp*(1+P.mpP));
-    if(P.eva)S.eva=Math.min(.3,(S.eva||0)+P.eva);if(P.spdP)S.spd*=1+P.spdP;S.efArmPerk=P.n;}}catch(e){}return S;};}
+    if(P.eva)S.eva=Math.min(.3,(S.eva||0)+P.eva);if(P.spdP)S.spd*=1+P.spdP;S.efArmPerk=P.n;}}catch(e){}});
 
 // ----- the Echoforge page -----
 const EF_USERS=(()=>{const o={};Object.keys(CLS_WPN).forEach(c=>CLS_WPN[c].forEach(f=>{(o[f]=o[f]||[]).push(CLS[c].n);}));
@@ -164,16 +164,16 @@ const forgeStill=()=>{try{return typeof gfxStill==='function'&&gfxStill();}catch
   const px=n.x*TS-cx,py=n.y*TS-cy;if(px<-60||py<-60||px>ctx.canvas.width+60||py>ctx.canvas.height+60)return;const t=forgeStill()?.2:(now%FG.loop)/FG.loop;
   actors.push({y:-1e6,draw:()=>forgeDraw(ctx,px,py,t,{floor:1})});actors.push({y:n.y*TS,draw:()=>forgeDraw(ctx,px,py,t,{glow:1})});};}
 // the old portal draw call: HD hands over a 16 x 20 card, which stays empty here (hdActors below draws the real one)
-{const dp0=drawPortal;drawPortal=function(ctx,px,py,n,now){if(n&&n.key===RIFT_FORGE_KEY){if(ctx.canvas.width>FG.cw/2)forgeDraw(ctx,px,py,(now%FG.loop)/FG.loop,{glow:1});return;}return dp0.apply(this,arguments);};}
+HOOK.wrap('drawPortal','echo11','the Echoforge landmark',function(next,ctx,px,py,n,now){if(n&&n.key===RIFT_FORGE_KEY){if(ctx.canvas.width>FG.cw/2)forgeDraw(ctx,px,py,(now%FG.loop)/FG.loop,{glow:1});return;}return next(ctx,px,py,n,now);});
 // HD-2D: a standing card for the body, a floor decal for the rune ring, shadow and glow
 function hdForgeRing(){return hdSpr('forge11ring',64,32,c=>{c.strokeStyle='#fff';c.lineWidth=1.4;c.beginPath();c.ellipse(32,16,30,14,0,0,7);c.stroke();c.lineWidth=1;c.globalAlpha=.6;c.beginPath();c.ellipse(32,16,22,10,0,0,7);c.stroke();c.globalAlpha=1;
   for(let i=0;i<12;i++){const a=i/12*Math.PI*2;c.fillStyle='#fff';c.fillRect(Math.round(32+Math.cos(a)*26)-1,Math.round(16+Math.sin(a)*12)-1,3,2);}});}
-{const ha0=hdActors;hdActors=function(m,now,ts){const r=ha0.apply(this,arguments);try{if(!m||!m.sanctum)return r;const n=m.npcs.find(q=>q.forge);if(!n)return r;
+HOOK.after('hdActors','echo11','the Echoforge in HD-2D',function(r,m,now,ts){try{if(!m||!m.sanctum)return r;const n=m.npcs.find(q=>q.forge);if(!n)return r;
   const V=HD.S.V,B=HD.dyn,BB=HD.dynB,BA=HD.dynA,ph=gfxStill()?.2:(ts%FG.loop)/FG.loop,st=Math.floor(ph*FG.steps)%FG.steps,nx=n.x*TS+8,nz=n.y*TS+14,p=.5+.5*Math.sin(Math.PI*4*ph);
   hdDecal(BB,'blob2',hdBlob2(),nx,nz+1,50,15,8,5,20,200);
   hdDecal(BA,'glow',hdGlowS(),nx,nz-1,84,40,150,100,235,(.18+.14*p)*255);
   hdDecal(BB,'forge11ring',hdForgeRing(),nx,nz-2,66,28,190,150,255,(.45+.3*p)*255);
-  hdBill(B,'forge11:'+st,forgeCard(st),nx,-1*V,nz,false,1,255,255,255,255,2);}catch(e){HD.forgeErr=String(e&&e.message||e);}return r;};}
+  hdBill(B,'forge11:'+st,forgeCard(st),nx,-1*V,nz,false,1,255,255,255,255,2);}catch(e){HD.forgeErr=String(e&&e.message||e);}return r;});
 // the light: two soft violet lights (crystal and anvil), baked into the 2D night glow and into the HD-2D lights
 // (m.tl is rebuilt by scanLights, m.lights is reset by every map bake, so the tile lights are the stable place; 2D night glow and HD-2D both read m.tl)
 {const sl0=scanLights;scanLights=function(m){const r=sl0.apply(this,arguments);try{const n=m&&m.sanctum&&m.npcs.find(q=>q.forge);if(n){m.tl=m.tl||[];

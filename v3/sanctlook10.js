@@ -38,7 +38,7 @@ function sncApply(m){if(!m||!m.fort||!m.cave)return;const th=m.theme,P=SNC_P(th)
   m.thv=sncVariant(th);m.amb='sanctmotes';m.btint='rgba('+hx(P.acc).join(',')+',.035)';m.motif=null;
   if(typeof D8M!=='undefined'&&D8M.sanct){m.d8='sanct';m.d8org=0;}
   m.d8dark='rgba(30,24,30,.46)';m.d8hero='rgba(255,230,180,.22)';}
-{const ab1=applyBossTheme;applyBossTheme=function(m){ab1.apply(this,arguments);try{sncApply(m);}catch(e){}};}
+HOOK.after('applyBossTheme','sanctlook10','sanctum look',function(r,m){try{sncApply(m);}catch(e){}});
 HOOK.wrap('getMap','sanctlook10','sanctum look (after the dungeon material is set)',function(next,...a){const m=next(...a);try{if(m&&m.fort&&!m.__snc){m.__snc=1;sncApply(m);}}catch(e){}return m;});
 
 // ---------- where things are in the Sanctum (v0.14.5: the layout is a symmetric temple on one axis, turned to the way in; sites.js buildFort) ----------
@@ -198,9 +198,9 @@ function sncLanternCv(D,v){const key='lan'+D.acc+D.w[0]+v;if(SNCX[key])return SN
   f(S[3],7,0,2,1);f(P.acc,7,0,2,1);f(P.acc2,7,0,1,1);
   sncCap((col,x,y,w,h)=>f(col,x,y,w,h),4,1,8,P,R);
   return SNCX[key]=cv;}
-{const oc0=objCanvas;objCanvas=function(theme,kind,v){try{const m=SNCX.dm||(kind==='brazier'&&typeof WS!=='undefined'?WS.m:null);
-  if(m&&m.fort&&m.kind==='dungeon'&&!m.archive){const D=DTH(m);if(D&&D.cloth){if(kind==='pillar')return sncPillarCv(D);if(kind==='brazier')return sncLanternCv(D,v?1:0);}}}catch(e){}return oc0.apply(this,arguments);};}
-{const do0=drawObjects;drawObjects=function(ctx,m,y){const was=SNCX.dm;SNCX.dm=m&&m.fort&&m.kind==='dungeon'?m:null;try{return do0.apply(this,arguments);}finally{SNCX.dm=was;}};}
+HOOK.before('objCanvas','sanctlook10','sanctum pillars and lanterns',function(theme,kind,v){try{const m=SNCX.dm||(kind==='brazier'&&typeof WS!=='undefined'?WS.m:null);
+  if(m&&m.fort&&m.kind==='dungeon'&&!m.archive){const D=DTH(m);if(D&&D.cloth){if(kind==='pillar')return HOOK.stop(sncPillarCv(D));if(kind==='brazier')return HOOK.stop(sncLanternCv(D,v?1:0));}}}catch(e){}});
+HOOK.wrap('drawObjects','sanctlook10','sanctum prop context (SNCX.dm)',function(next,ctx,m,y){const was=SNCX.dm;SNCX.dm=m&&m.fort&&m.kind==='dungeon'?m:null;try{return next(ctx,m,y);}finally{SNCX.dm=was;}});
 
 // ---------- the air: slow golden motes and a soft light tint ('sanctmotes' replaces the old 'flecks') ----------
 {const tf0=themeFX;themeFX=function(ctx,m,vw,vh,now){if(!m||m.amb!=='sanctmotes')return tf0.apply(this,arguments);
@@ -236,9 +236,9 @@ if(typeof MTRACK!=='undefined'){const SA_A='E5h. D5q | C5h A4h | B4h. C5q | E5w 
 if(typeof MAPICO_X!=='undefined')MAPICO_X.fort=[[0,1,10,2,'#efe8d6'],[1,3,8,1,'#b3a995'],[1,3,2,7,'#d8cfbb'],[7,3,2,7,'#d8cfbb'],[3,4,4,6,'#ffe9a0'],[4,6,2,4,'#fff8dc']];
 
 // ---------- HD-2D light: pale stone takes a gentler grade and softer point lights than the dark dungeons ----------
-{const hl0=hdLook;hdLook=function(m,now){const o=hl0.apply(this,arguments);try{if(m&&m.fort&&m.kind==='dungeon'){
+HOOK.after('hdLook','sanctlook10','pale stone grade',function(o,m,now){try{if(m&&m.fort&&m.kind==='dungeon'){
   if(typeof mapIndoor==='function'&&mapIndoor(m)){o.exp=1.1;o.lamp*=.6;o.pl*=.5;o.bloom*=.5;o.vig*=.8;{const mu=(o.amb[0]+o.amb[1]+o.amb[2])/3;for(let i=0;i<3;i++)o.amb[i]=Math.min(.8,(mu+(o.amb[i]-mu)*.5)*1.85+.06);}o.gain[0]*=1.01;o.gain[2]*=.99;}
-  else{o.exp=Math.min(o.exp,.97);o.bloom*=.6;}}}catch(e){}return o;};}
+  else{o.exp=Math.min(o.exp,.97);o.bloom*=.6;}}}catch(e){}});
 {const hb0=hdBakeLights;hdBakeLights=function(m,S,lights){let add=null;try{if(m&&m.kind==='field'&&m.fortAt)add=sncGateLights(m);}catch(e){}
   const L=hb0.call(this,m,S,add?sncOldGateLights(m,lights||[]).concat(add):lights);try{if(m&&m.fort&&m.kind==='dungeon'){for(let i=0;i+7<L.length;i+=8){L[i+3]*=.85;const t=L[i+7],k=Math.max(L[i+4],L[i+5],L[i+6])*(t===7?.6:.2);/* every flame glows a soft gold (pale stone turns saturated orange into pink); the window beams stay neutral */if(t===7){L[i+4]*=.6;L[i+5]*=.6;L[i+6]*=.6;}else{L[i+4]=k;L[i+5]=k*.86;L[i+6]=k*.58;}}}}catch(e){}return L;};}
 

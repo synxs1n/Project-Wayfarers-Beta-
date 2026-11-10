@@ -31,4 +31,4 @@ HOOK.after('worldDraw','mimic','chest tells',function(_,now){try{const m=WS.m;if
     const ph=(now/1000+x*.37)%3.4;if(ph<.35){ctx.fillStyle='rgba(10,6,20,.55)';ctx.fillRect(px+2,py+7,12,1);}
     if(Math.floor(now/700+x)%5===0){ctx.fillStyle='#ff4a4a';ctx.fillRect(px+7,py+8,2,1);}});}catch(e){}});
 // the Bestiary lists Mimics with the dungeon oddities
-{const ba0=bestAll;bestAll=function(){const out=ba0();out.push({k:'mimic',d:MON.mimic,zone:-1,odd:1});return out;};}
+HOOK.xform('bestAll','mimic','Mimics with the dungeon oddities',function(out){out.push({k:'mimic',d:MON.mimic,zone:-1,odd:1});return out;});

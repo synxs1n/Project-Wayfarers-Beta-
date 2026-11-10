@@ -12,7 +12,7 @@ function learnScanAll(){if(!G)return [];return Object.values(G.roster).flatMap(l
 function learnTag(s){const els=skEls(s);return `${els.map(ico).join('')}${roleTag(s)}`;}
 function learnLine(o){return `<b>${esc(o.name)} learned ${esc(o.sk.n)}!</b> <span class="lrn">${learnTag(o.sk)}</span>`;}
 // heroes already on the roster are recorded when a save loads or a journey starts
-{const up0=unpackG;unpackG=function(){const g=up0.apply(this,arguments);try{const G0=G;G=g;Object.values(g.roster).forEach(c=>{g.skSeen=g.skSeen||{};if(!g.skSeen[c.id])learnScan(c);});G=G0;}catch(e){}return g;};}
+HOOK.after('unpackG','learn','record skills of loaded heroes',function(g){try{const G0=G;G=g;Object.values(g.roster).forEach(c=>{g.skSeen=g.skSeen||{};if(!g.skSeen[c.id])learnScan(c);});G=G0;}catch(e){}});
 // battle results: one line per new skill, under the level ups
 HOOK.after('win','learn','new skills on the result',function(){try{const L=learnScanAll();if(L.length&&V.modal&&V.modal.info){V.modal.info.learn=(V.modal.info.learn||[]).concat(L);render();}else if(L.length)lnQueue(L);}catch(e){}});
 // outside battle (Archive moves, quest XP, recruits growing into skills): a small queued notice, tap to dismiss, never blocks
@@ -26,6 +26,6 @@ let lnLast=0;
 HOOK.after('render','learn','queue new skill notices',function(){try{const now=Date.now();if(G&&!B&&!G.daily&&now-lnLast>400&&!(V.modal&&V.modal.type==='result')){lnLast=now;const L=learnScanAll();if(L.length)lnQueue(L);}
   if(!(V.modal&&(V.modal.type==='char'||(V.modal.type==='guild'&&V.modal.char))))V._skShown={};}catch(e){}});
 // the hero sheet: "New" badges until the sheet has been opened
-{const mc0=mChar;mChar=function(id,edit){V._skShown=V._skShown||{};if(G&&G.skNew&&G.skNew[id]&&G.skNew[id].length&&!V._skShown[id]){V._skShown[id]=G.skNew[id].slice();delete G.skNew[id];}
-  let h=mc0.apply(this,arguments);const ids=V._skShown[id];if(!ids||!ids.length||!G.roster[id])return h;const c=G.roster[id],i=h.indexOf('<h4>Skills</h4>');if(i<0)return h;
-  let tail=h.slice(i);ids.forEach(sid=>{const s=skById(c,sid);if(!s)return;const k=esc(s.n)+'</b>';const j=tail.indexOf(k);if(j>=0)tail=tail.slice(0,j)+esc(s.n)+' <em class="newb">New</em></b>'+tail.slice(j+k.length);});return h.slice(0,i)+tail;};}
+HOOK.wrap('mChar','learn','New badges on the hero sheet skills',function(next,...args){const id=args[0];V._skShown=V._skShown||{};if(G&&G.skNew&&G.skNew[id]&&G.skNew[id].length&&!V._skShown[id]){V._skShown[id]=G.skNew[id].slice();delete G.skNew[id];}
+  let h=next(...args);const ids=V._skShown[id];if(!ids||!ids.length||!G.roster[id])return h;const c=G.roster[id],i=h.indexOf('<h4>Skills</h4>');if(i<0)return h;
+  let tail=h.slice(i);ids.forEach(sid=>{const s=skById(c,sid);if(!s)return;const k=esc(s.n)+'</b>';const j=tail.indexOf(k);if(j>=0)tail=tail.slice(0,j)+esc(s.n)+' <em class="newb">New</em></b>'+tail.slice(j+k.length);});return h.slice(0,i)+tail;});

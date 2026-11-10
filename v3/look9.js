@@ -41,5 +41,5 @@ function look9Terrain(m){const R=realmAt(m.s),L=R&&LOOK9[R.key];if(!L||!L.dens||
   if(n&&typeof MAPCV!=='undefined')MAPCV.dirty=1;}
 HOOK.wrap('getMap','look9','realm look terrain on new fields',function(next,...a){const m=next(...a);try{if(m&&m.kind==='field'&&lookOn()&&!G.daily&&typeof m.s==='number')look9Terrain(m);}catch(e){}return m;});
 // props are drawn with the map's base tileset (worldgfx.js drawObjects passes m.theme): trees and bushes take the look's sprite instead
-{const oc0=objCanvas;objCanvas=function(theme,kind,v){try{if((kind==='tree'||kind==='bush')&&lookOn()){const m=(typeof P2!=='undefined'&&P2.dm)||WS.m;
-  if(m&&m.theme===theme&&m.thv&&m.thv.indexOf('%v2')>0&&THEME[m.thv]&&THEME[m.thv].tree!==THEME[theme].tree)return oc0.call(this,m.thv,kind,v);}}catch(e){}return oc0.apply(this,arguments);};}
+HOOK.wrap('objCanvas','look9','look sprites for trees and bushes',function(next,theme,kind,v){try{if((kind==='tree'||kind==='bush')&&lookOn()){const m=(typeof P2!=='undefined'&&P2.dm)||WS.m;
+  if(m&&m.theme===theme&&m.thv&&m.thv.indexOf('%v2')>0&&THEME[m.thv]&&THEME[m.thv].tree!==THEME[theme].tree)return next(m.thv,kind,v);}}catch(e){}return next(theme,kind,v);});

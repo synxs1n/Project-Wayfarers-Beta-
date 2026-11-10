@@ -24,11 +24,11 @@ HOOK.wrap('perform','roles','chi heals use the role heal power',function(next,..
 // ---- role charms ----
 ROLES.charms.forEach(c=>addGear(c.id,Object.assign({n:c.n,slot:'c',tier:2,price:c.price,rl:c.perk,rlD:c.d},c.st,c.attr?{attr:c.attr}:{})));
 {const ss0=shopStock;shopStock=function(tab){const o=ss0.apply(this,arguments);try{if(tab==='charms'&&G&&!G.daily&&G.stage>=ROLES.shopFrom)ROLES.charms.forEach(c=>{if(!o.includes(c.id))o.push(c.id);});}catch(e){}return o;};}
-{const gd1=gearDesc;gearDesc=function(id){const s=gd1.apply(this,arguments),g=typeof id==='string'?gearOf(id):id;return g&&g.rlD?s+(s?', ':'')+g.rlD:s;};}
+HOOK.xform('gearDesc','roles','charm role text',function(s,id){const g=typeof id==='string'?gearOf(id):id;return g&&g.rlD?s+(s?', ':'')+g.rlD:s;});
 // charm perks join the weapon perks (never in the Daily Trial, which ignores perks)
-{const cs0=calcStats;calcStats=function(c){const S=cs0.apply(this,arguments);try{if(G&&G.daily)return S;
+HOOK.after('calcStats','roles','charm perks',function(S,c){try{if(G&&G.daily)return;
   EQSL.forEach(sl=>{const g=gearOf(c.eq&&c.eq[sl]);const P=g&&g.rl;if(!P)return;
-    ['healUp','spellPow','buffT','debT','rngPow','tauntDef'].forEach(k=>{if(P[k])S[k]=(S[k]||0)+P[k];});if(P.status)S.status=(S.status||1)*P.status;});}catch(e){}return S;};}
+    ['healUp','spellPow','buffT','debT','rngPow','tauntDef'].forEach(k=>{if(P[k])S[k]=(S[k]||0)+P[k];});if(P.status)S.status=(S.status||1)*P.status;});}catch(e){}});
 // spellPow is read by calcDamage only when a weapon is held (S.wp), which every hero has; Kunai Pouch and Warden's Badge need their own hook
 HOOK.after('calcDamage','roles','ranged power, taunt defence (roles)',function(r,a,sk,t){try{if(!r||!r.dmg||!a||!t||(G&&G.daily))return;let m=1;
   if(a.side==='p'&&a.S&&a.S.rngPow&&deliveryOf(a,sk)==='ranged')m*=1+a.S.rngPow;

@@ -53,6 +53,7 @@ function drawPortal(ctx,px,py,n,now){const d=guardianDef(n.key),open=riftKeys().
   for(let i=0;i<5;i++){const a=ph+i*1.26,rx=Math.round(Math.cos(a)*3)+7,ry=Math.round(Math.sin(a)*4)+4;f(won?col:'#585868',rx,ry,2,2);}/* v0.16.5: the runes take the element colour only once the Echo is beaten (open but unbeaten: grey), so colour always means beaten */
   f(open?'#efe4ff':'#80808c',7,4,2,3);
   ctx.globalAlpha=1;if(won){f('#ffd04a',12,-2,2,2);f('#ffd04a',11,-1,4,1);}}
+drawPortal=HOOK.def('drawPortal',drawPortal);
 function sanctumActor(actors,n,ctx,cx,cy,now){const px=n.x*TS-cx,py=n.y*TS-cy;if(px<-20||py<-24||px>ctx.canvas.width+4||py>ctx.canvas.height+4)return;actors.push({y:n.y*TS,draw:()=>drawPortal(ctx,px,py,n,now)});}
 // ----- the gate card -----
 // v0.11.0: what opens a closed gate
@@ -74,4 +75,4 @@ Object.assign(ACT,{
 // the account flag follows the journey: once the five fall it is set, as before
 HOOK.after('win','sanctum','opens the Rift',function(){try{if(sanctumOpen()&&!META.echoRift){META.echoRift=1;saveMeta();}}catch(e){}});
 // ----- map markers: every gate shows as an Echo marker once seen -----
-{const mm0=mapMarks;mapMarks=function(m){const o=mm0.apply(this,arguments);try{if(m&&m.sanctum)m.npcs.forEach(n=>{if(n.portal&&[[0,0],[0,1],[0,-1],[1,0],[-1,0]].some(([a,b])=>isSeen(m,n.x+a,n.y+b)))o.push({x:n.x,y:n.y,k:'echo'});});}catch(e){}return o;};}
+HOOK.after('mapMarks','sanctum','Echo gate markers',function(o,m){try{if(m&&m.sanctum)m.npcs.forEach(n=>{if(n.portal&&[[0,0],[0,1],[0,-1],[1,0],[-1,0]].some(([a,b])=>isSeen(m,n.x+a,n.y+b)))o.push({x:n.x,y:n.y,k:'echo'});});}catch(e){}});

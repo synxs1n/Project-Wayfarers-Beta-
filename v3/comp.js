@@ -15,7 +15,7 @@ function migrateCompanions(g){if(g.compV)return;const back=[],ids={};
   if(!g.party.length){g.party=Object.keys(g.roster).sort((a,b)=>g.roster[b].lv-g.roster[a].lv).slice(0,3);}
   // pair each companion with the hero it fought beside the most: the party leaders, in order, one each
   const free=g.party.slice();(g.tamed||[]).forEach(o=>{if(o.with&&g.roster[o.with])return;const h=free.find(id=>!(g.tamed||[]).some(x=>x.with===id));o.with=h||null;});g.compV=1;}
-{const up0=unpackG;unpackG=function(o){const g=up0.apply(this,arguments);try{migrateCompanions(g);}catch(e){}return g;};}
+HOOK.after('unpackG','comp','migrate companions',function(g,o){try{migrateCompanions(g);}catch(e){}});
 // taming no longer adds a party member
 // unique pet names per journey: keep the chosen name when it is free; otherwise draw another epithet (seeded by monster, run seed and pet count),
 // and when every epithet is taken append a numeral. Existing pets keep their names. No Math.random here.
@@ -33,8 +33,8 @@ function tameElite(t){const m=MON[t.mon]||guardianDef(t.mon);if(!m)return null;
   const free=partyChars().find(c=>!compOf(c));if(free){o.with=free.id;}saveGame();
   setTimeout(()=>toast(`${o.name} is now a Pet${o.with?' of '+G.roster[o.with].name:''}. Manage it in Menu > Pets.`),400);return o;}
 // stat bonus for the paired hero (not in the Daily Trial, which has no companions)
-{const cs0=calcStats;calcStats=function(c){const S=cs0.apply(this,arguments);try{if(c&&c.side==='p'&&G&&!G.daily&&!c.isComp){const o=compOf(c);if(o){const k=compBonus(o),d=compDef(o);
-  S.mhp=Math.round(S.mhp*(1+k));S.atk*=1+k;S.mag*=1+k;S.def*=1+k;S.res*=1+k;const el=d&&d.el&&d.el[0];if(el)S.elBoost[el]=(S.elBoost[el]||0)+.1;S.comp=o.id;applyCompPerk(S,o);}}}catch(e){}return S;};}
+HOOK.after('calcStats','comp','paired pet stat bonus',function(S,c){try{if(c&&c.side==='p'&&G&&!G.daily&&!c.isComp){const o=compOf(c);if(o){const k=compBonus(o),d=compDef(o);
+  S.mhp=Math.round(S.mhp*(1+k));S.atk*=1+k;S.mag*=1+k;S.def*=1+k;S.res*=1+k;const el=d&&d.el&&d.el[0];if(el)S.elBoost[el]=(S.elBoost[el]||0)+.1;S.comp=o.id;applyCompPerk(S,o);}}}catch(e){}});
 // ----- summoning -----
 function canSummon(a){return !!(B&&a&&a.side==='p'&&!a.isComp&&compOf(a)&&!(B.summoned||{})[a.id]&&!G.daily&&a.hp>0);}
 function summonComp(){const a=B.cur;if(!canSummon(a))return;const o=compOf(a),d=compDef(o);B.summoned=B.summoned||{};B.summoned[a.id]=1;
@@ -55,7 +55,7 @@ function compTurn(u){if(!B||B.over)return;const foes=B.en.filter(e=>e.hp>0);if(!
   endTurn(u,1);}
 {const ad0=advance;advance=function(){if(B&&!B.over){let u=null;liveUnits().forEach(x=>{if(!u||x.next<u.next||(x.next===u.next&&x.side==='p'))u=x;});
   if(u&&u.isComp){if(checkEnd())return;B.cur=u;B.time=u.next;B.mode='enemy';render();later(()=>compTurn(u),PAUSE*.8);return;}}return ad0.apply(this,arguments);};}
-{const fl0=fallen;fallen=function(u){if(u&&u.isComp){u.deathT=Date.now();compReturn(u,'ko');return;}return fl0.apply(this,arguments);};}
+HOOK.before('fallen','comp','a pet leaves instead of falling',function(u){if(u&&u.isComp){u.deathT=Date.now();compReturn(u,'ko');return HOOK.stop();}});
 {const lb0=lbAdd;lbAdd=function(c,n){if(c&&c.isComp)return;return lb0.apply(this,arguments);};}
 // the hero always comes back before the fight ends, so results and saves only ever see real heroes
 HOOK.before('finishBattle','comp','companions step back',function(){try{if(B)B.front.forEach((u,i)=>{if(u&&u.isComp){B.front[i]=u.owner;u.owner.hidden=0;}});}catch(e){}});
@@ -94,7 +94,7 @@ Object.assign(ACT,{
     Object.values(G.roster).forEach(refresh);saveGame();sfx('blip');render();}
 });
 // Done/back from a pet popup returns to wherever it was opened (Equipment, hero sheet), not always the Pets tab
-{const mb0=modalBack;modalBack=function(m){if(m&&(m.type==='petPick'||m.type==='compPick')&&m.from&&m.from.type&&m.from.type!=='petPick'&&m.from.type!=='compPick')return ()=>{V.modal=m.from;};return mb0.apply(this,arguments);};}
-{const mc0=mChar;mChar=function(id,edit){let h=mc0.apply(this,arguments);try{const c=G.roster[id],o=c&&compOf(c);const i=h.indexOf('<h4>Limit Break</h4>');if(i<0||!c)return h;
+HOOK.wrap('modalBack','comp','pet popups go back to where they were opened',function(next,m){if(m&&(m.type==='petPick'||m.type==='compPick')&&m.from&&m.from.type&&m.from.type!=='petPick'&&m.from.type!=='compPick')return ()=>{V.modal=m.from;};return next(m);});
+HOOK.xform('mChar','comp','Pet row on the hero sheet',function(h,id,edit){try{const c=G.roster[id],o=c&&compOf(c);const i=h.indexOf('<h4>Limit Break</h4>');if(i<0||!c)return h;
   const row=`<h4>Pet</h4>${edit&&!G.daily?petSlotHtml(c):''}${o?`<div class="row comprow"><img class="mimg" src="${monURL(compDef(o).art)}" alt=""><div class="grow"><b>${esc(o.name)}</b><small class="up">${compBonusText(o)}</small></div></div>`:`<p class="note">No pet paired.${edit?'':' Pair one in Menu &gt; Pets.'}</p>`}`;
-  return h.slice(0,i)+row+h.slice(i);}catch(e){return h;}};}
+  return h.slice(0,i)+row+h.slice(i);}catch(e){return h;}});

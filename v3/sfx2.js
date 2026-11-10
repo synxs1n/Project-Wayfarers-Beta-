@@ -104,11 +104,11 @@ sfx=function(k){try{if(AU2.on&&sfx2(k))return;}catch(e){}if(!AU2.on)return sfxCl
 // v0.9.5: a reaction in battle plays the new 'reaction' sound instead of the older 'react' one (both would land on the same hit)
 {const s1=sfx;sfx=function(k){try{if(k==='reaction')SFXC.nRx=(SFXC.nRx||0)+1;if(k==='react'&&V.screen==='battle'&&performance.now()<(SFXC.rxSkip||0))return;}catch(e){}return s1.apply(this,arguments);};}
 // ---------- context hooks ----------
-if(typeof onAction==='function'){const oa0=onAction;onAction=function(a,now){try{SFXC.wt=a&&a.side==='p'&&a.eq?(gearOf(a.eq.w)||{}).wt||null:null;SFXC.el=a&&(a.actEl||null);}catch(e){}return oa0.apply(this,arguments);};}
-if(typeof onFx==='function'){const of0=onFx;onFx=function(u,txt,cls){try{if(u)SFXC.hitEl=u.fxEl||null;if(cls==='react'&&u)SFXC.react={a:u.reactEl,b:u.reactP};if(/resist|immune|block|guard|null/i.test(String(txt)))SFXC.block=1;
+HOOK.before('onAction','sfx2','weapon and element context',function(a,now){try{SFXC.wt=a&&a.side==='p'&&a.eq?(gearOf(a.eq.w)||{}).wt||null:null;SFXC.el=a&&(a.actEl||null);}catch(e){}});
+HOOK.before('onFx','sfx2','hit element and popup sounds',function(u,txt,cls){try{if(u)SFXC.hitEl=u.fxEl||null;if(cls==='react'&&u)SFXC.react={a:u.reactEl,b:u.reactP};if(/resist|immune|block|guard|null/i.test(String(txt)))SFXC.block=1;
     if(txt==='Revived'){sfx('revive');SFXC.skipHeal=performance.now();}else if(/good/.test(cls||''))sfx('buff');else if(/bad/.test(cls||''))sfx('debuff');}catch(e){}
-  return of0.apply(this,arguments);};}
-if(typeof checkPhase==='function'){const cp0=checkPhase;checkPhase=function(e){const was=e&&e.phaseDone;const r=cp0.apply(this,arguments);try{if(e&&!was&&e.phaseDone)sfx('phase');}catch(x){}return r;};}
+});
+HOOK.wrap('checkPhase','sfx2','phase sound',function(next,...args){const e=args[0];const was=e&&e.phaseDone;const r=next(...args);try{if(e&&!was&&e.phaseDone)sfx('phase');}catch(x){}return r;});
 if(typeof summonComp==='function'){const sc0=summonComp;summonComp=function(){const n0=B&&B.summoned?Object.keys(B.summoned).length:0;const r=sc0.apply(this,arguments);try{if(B&&B.summoned&&Object.keys(B.summoned).length>n0)sfx('summon');}catch(e){}return r;};}
 // companions leaving the field, and menus opening and closing, are checked as the screen renders
 {let lastComp=0,lastModal=null;const ms0=musicSync;musicSync=function(){try{if(AU2.on){const nc=B&&B.front?B.front.filter(u=>u.isComp&&u.hp>0).length:0;if(nc<lastComp)sfx('unsummon');lastComp=nc;

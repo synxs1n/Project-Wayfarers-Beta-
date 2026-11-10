@@ -239,5 +239,5 @@ function npcOf(key){try{const m=WS&&WS.m;if(!m||!m.npcs)return null;return m.npc
   NP9.cv=c;NP9.cb=ph;return c;};}
 {const ds0=drawSprite;drawSprite=function(ctx,c,fx,fy,flip,squash){if(NP9.cv&&c===NP9.cv){fy+=NP9.cb;NP9.cv=null;}return ds0.call(this,ctx,c,fx,fy,flip,squash);};}
 HOOK.before('worldDraw','npcart9','record the world clock for the idle frames',function(now){NP9.now=now;});
-{const ha0=hdActors;hdActors=function(m,now,ts){NP9.now=now;return ha0.apply(this,arguments);};}
+HOOK.before('hdActors','npcart9','record the clock for the idle frames',function(m,now,ts){NP9.now=now;});
 const NPC9={roles:NPC9_ROLES.map(r=>({role:r[0],name:r[2]})),roleOf:npcRoleOf,props:NPC9_PROP,rd:NPC9_RD,act:NPC9_ACT};

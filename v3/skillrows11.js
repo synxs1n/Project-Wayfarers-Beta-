@@ -15,19 +15,19 @@ function sr11Strip(s,est,lock){const lim=!!s.limit;
   return `<span class="m sk11">${lock?`<i class="sk11l">${lock}</i>`:''}${head}<span class="sk11s">${sub}</span></span>`;
 }
 // battle list: replace the .m span of every skill button (the filter chips of skillfilt9.js ran inside and already removed hidden rows)
-{const ch0=cmdHtml;cmdHtml=function(){let h=ch0.apply(this,arguments);try{const a=B&&B.cur;if(a&&B.mode==='cmd'&&B.menu==='root'&&h.includes('class="mi limit')){const LS=limitSkill(a),re=/(<button class="mi limit[^"]*" data-act="cmd" data-arg="limit">[\s\S]*?)<span class="m">Ready<\/span>/;let est='';try{est=skNum(a,LS)||'';}catch(e){}h=h.replace(re,(m,p1)=>p1+sr11Strip(LS,est,''));}
+HOOK.xform('cmdHtml','skillrows11','skill numbers on the battle skill list',function(h){try{const a=B&&B.cur;if(a&&B.mode==='cmd'&&B.menu==='root'&&h.includes('class="mi limit')){const LS=limitSkill(a),re=/(<button class="mi limit[^"]*" data-act="cmd" data-arg="limit">[\s\S]*?)<span class="m">Ready<\/span>/;let est='';try{est=skNum(a,LS)||'';}catch(e){}h=h.replace(re,(m,p1)=>p1+sr11Strip(LS,est,''));}
   if(!a||B.mode!=='cmd'||B.menu!=='skills')return h;
   known(a).forEach(s=>{const re=new RegExp(`(<button class="mi [^"]*" data-act="sk" data-arg="${s.id}"[^>]*>[\\s\\S]*?)<span class="m">(?:<span class="num [^"]*">[^<]*<\\/span> )?[^<]*<\\/span>`);
-    if(!re.test(h))return;let est='';try{est=skNum(a,s)||'';}catch(e){}h=h.replace(re,(m,p1)=>p1+sr11Strip(s,est,''));});}catch(e){}return h;};}
+    if(!re.test(h))return;let est='';try{est=skNum(a,s)||'';}catch(e){}h=h.replace(re,(m,p1)=>p1+sr11Strip(s,est,''));});}catch(e){}return h;});
 // hero sheet: rows are matched by skill name, after sheet11.js built the tabs
-{const mc0=mChar;mChar=function(id,edit){const h=mc0.apply(this,arguments);try{
+HOOK.xform('mChar','skillrows11','skill numbers on the hero sheet rows',function(h,id,edit){try{
   const c=G.roster[id],t=TPL[id];if(!c||!t)return h;const list=classSkills(t).concat(id==='vaelith'&&typeof archiveSkills==='function'?archiveSkills():[]),by={};list.forEach(s=>{by[s.n]=s;});
   const tp=document.createElement('template');tp.innerHTML=h;let n=0;
   const cls=t.cls,LM={};[LIMIT[cls],LIMIT2[cls]||LIMIT[cls]].forEach((L,i)=>{if(!L)return;const o=Object.assign({limit:1,mp:0,hits:1},L);if(i===0&&o.pw)o.pw=+(o.pw*(typeof LIMIT_I==='number'?LIMIT_I:.7)).toFixed(2);LM[(i?'Limit II: ':'Limit I: ')+L.n]=o;});
   tp.content.querySelectorAll('.row').forEach(r=>{const b=r.querySelector(':scope>div>b'),m=r.querySelector(':scope>span.m');if(!b||!m||m.classList.contains('sk11'))return;
     const nm=b.textContent.trim(),isL=r.classList.contains('limitr'),s=isL?LM[nm]:by[nm];if(!s)return;const lock=isL?r.classList.contains('lock'):!skillKnown(c,s);
     const w=document.createElement('template');w.innerHTML=sr11Strip(s,'',lock?(isL?(m.textContent.trim()||'Locked'):'Lv '+s.lv):'');r.replaceChild(w.content.firstChild,m);n++;});
-  return n?tp.innerHTML:h;}catch(e){return h;}};}
+  return n?tp.innerHTML:h;}catch(e){return h;}});
 {const st=document.createElement('style');st.textContent=
  '.mi .m.sk11,.row .m.sk11{display:flex;flex-direction:column;align-items:flex-end;gap:1px;text-align:right;white-space:nowrap;line-height:1.15}'+
  '.m.sk11 .sk11e{font-size:.78rem;font-weight:800;color:#ffd8a0;animation:none;opacity:1;transform:none;position:static}.m.sk11 .sk11e.sk11k{color:#b8c8dc;font-weight:700}'+

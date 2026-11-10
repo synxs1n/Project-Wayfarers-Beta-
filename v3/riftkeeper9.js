@@ -30,7 +30,7 @@ ST_SYM.rk_unmake='<circle cx="5" cy="5" r="3.6" fill="none" stroke="currentColor
 // ----- the gate in the Echo Rift -----
 {const bs0=buildSanctum;buildSanctum=function(){const m=bs0.apply(this,arguments);try{
   m.npcs.push({x:RIFT_HALL.rk[0],y:RIFT_HALL.rk[1],hx:RIFT_HALL.rk[0],hy:RIFT_HALL.rk[1],name:"The Riftkeeper's Gate",line:'',view:'front',face:'r',act:'riftkeeper',portal:1,key:RK_KEY,look:null});}catch(e){}return m;};}
-{const dp0=drawPortal;drawPortal=function(ctx,px,py,n,now){
+HOOK.wrap('drawPortal','riftkeeper9',"the Riftkeeper's gate",function(next,ctx,px,py,n,now){
   if(n&&n.key===RK_KEY){const open=rkUnlocked(),f=(c,x,y,w,h)=>{ctx.fillStyle=c;ctx.fillRect(px+x,py+y,w,h);},ph=now/900,el=RK_ELS[Math.floor(ph)%8],col=open?ELC[el]:'#6a6a7c',edge=open?'#d4b464':'#5a5a68';
     f('#0e0a16',0,-3,16,19);f(edge,0,-3,16,1);f(edge,0,-3,1,19);f(edge,15,-3,1,19);f(edge,0,15,16,1);f(open?'#2a1f58':'#22202c',2,-1,12,15);f(open?'#4a4390':'#3a3844',2,-1,1,15);
     f(edge,7,-2,2,2);f(edge,3,1,1,10);f(edge,12,1,1,10);
@@ -38,7 +38,7 @@ ST_SYM.rk_unmake='<circle cx="5" cy="5" r="3.6" fill="none" stroke="currentColor
     f('#06030e',5,3,6,8);f(col,6,5,4,4);f(open?'#ffffff':'#8a8a98',7,6,2,2);f(edge,5,3,6,1);f(edge,5,10,6,1);f(edge,5,3,1,8);f(edge,10,3,1,8);
     if(!open){f('#0e0a16',6,11,4,3);f('#9a9aa8',7,12,2,2);f('#9a9aa8',7,10,1,2);f('#9a9aa8',8,9,1,1);}
     return;}
-  return dp0.apply(this,arguments);};}
+  return next(ctx,px,py,n,now);});
 function mRiftkeeper(){const d=guardianDef('riftkeeper'),have=rkBeaten().length,all=echoKeys().length,open=rkUnlocked(),first=!META.riftkeeper;
   return box('The Riftkeeper',`<div class="row"><img class="mimg" src="${monURL('riftkeeper')}" alt=""><div class="grow"><b>${esc(d.n)}</b><small>Ultimate boss · Level ${RKC.lv} · no auto · no fleeing${META.riftkeeper?' · beaten':''}</small>
       <small>${open?'The gate stands open. The keeper of every door waits behind it.':`${have} of ${all} Echoes beaten.`}</small></div></div>
@@ -88,7 +88,7 @@ function rkEnter(u,S,ph){S.phase=ph;const now=Date.now();
 // keeps phase, element, countdown chip and sprite in step with the state (after every turn of the boss and every hit on it)
 function rkSync(){const S=rkOf();if(!S||B.over)return;const u=S.u,ph=rkPhaseOf(u);
   if(ph>S.phase)rkEnter(u,S,ph);rkSetEl(u);rkChip(u,S);}
-{const cp0=checkPhase;checkPhase=function(e){const r=cp0.apply(this,arguments);try{if(e&&B&&B.rk&&e===B.rk.u)rkSync();}catch(x){}return r;};}
+HOOK.after('checkPhase','riftkeeper9','keeper phase sync',function(r,e){try{if(e&&B&&B.rk&&e===B.rk.u)rkSync();}catch(x){}});
 {const et0=endTurn;endTurn=function(u){const r=et0.apply(this,arguments);try{if(B&&B.rk&&u===B.rk.u&&!B.over){if(u.primed&&B.rk.phase!==1)u.primed=null;B.rk.at=-1;rkSync();}}catch(e){}return r;};}
 // the boss's turn: a countdown ticks; the third tick lands the Unmaking instead of a move; every 3rd phase 3 turn it begins a new one
 function rkTurnStart(u){const S=B.rk;rkSync();if(S.phase!==3)return false;S.t3++;
@@ -100,10 +100,8 @@ function rkTurnStart(u){const S=B.rk;rkSync();if(S.phase!==3)return false;S.t3++
   if(S.t3%RKC.every===0){S.count=RKC.count;S.tells++;u.shield=Math.min(u.maxShield,RKC.ward3);u.broken=0;u.recover=0;fx(u,'Unmaking','stat bad');banner('UNMAKING IN '+RKC.count,'#ff4a6a');
     log(`The Riftkeeper raises the lantern: the Unmaking lands in ${RKC.count} of its turns. Break its shield (${u.shield} pips) before then, or Guard.`);rkChip(u,S);}
   return false;}
-function rkHookTurn(){if(enemyTurn0.__rk)return;const et0=enemyTurn0;
-  enemyTurn0=function(u){try{if(B&&!B.over&&B.rk&&u===B.rk.u&&u.hp>0&&rkTurnStart(u))return;}catch(e){try{wdLog('riftkeeper: '+(e&&e.message||e),u);}catch(_){}}
-    return et0.apply(this,arguments);};enemyTurn0.__rk=1;if(et0.__b4)enemyTurn0.__b4=1;if(et0.__b4g)enemyTurn0.__b4g=1;}
-rkHookTurn();
+HOOK.wrap('enemyTurn0','riftkeeper9','Riftkeeper turn',function(next,u){try{if(B&&!B.over&&B.rk&&u===B.rk.u&&u.hp>0&&rkTurnStart(u))return;}catch(e){try{wdLog('riftkeeper: '+(e&&e.message||e),u);}catch(_){}}
+  return next(u);});
 // the intent: the element in the move's name, and the Unmaking when it lands next turn (the boss is always "known": its moves are the lesson)
 {const fp0=foePlan;foePlan=function(u){const p=fp0.apply(this,arguments);try{const S=B&&B.rk;if(S&&u===S.u&&u.hp>0){rkSetEl(u);if(S.phase===3&&S.count===1)return Object.assign({},p,{sk:RK_UNMAKE,cat:'big'});
     if(p&&p.sk&&p.sk.id==='attack'){const sk=u.sk[0];return Object.assign({},p,{sk,cat:typeof b5Cat==='function'?b5Cat(sk):p.cat});}}}catch(e){}return p;};
@@ -118,12 +116,12 @@ rkHookTurn();
 // the Break shield of phase 2: while a shade lives and the shield holds, hits on it are cut
 HOOK.after('calcDamage','riftkeeper9','phase 2 shield while shades live',function(r,a,sk,t){try{const S=B&&B.rk;if(S&&r&&r.dmg>0&&a&&a.side==='p'&&t===S.u&&S.phase===2&&!t.broken&&rkShades().length)r.dmg=Math.max(1,Math.round(r.dmg*(1-RKC.wardCut)));}catch(e){}});
 // shades are no Echo kills; when the keeper falls its shades unravel with it
-{const fl0=fallen;fallen=function(u){const sh=u&&u.shade&&u.base?bestOf(u.base):null,k0=sh?sh.kills:0;const r=fl0.apply(this,arguments);
-  try{if(sh)sh.kills=k0;if(u&&B&&B.rk&&u===B.rk.u)B.en.forEach(e=>{if(e.shade&&e.hp>0){e.hp=0;e.st={};e.deathT=Date.now();log(`${e.name} unravels.`);}});}catch(e){}return r;};}
+HOOK.wrap('fallen','riftkeeper9','shades are no Echo kills',function(next,...args){const u=args[0];const sh=u&&u.shade&&u.base?bestOf(u.base):null,k0=sh?sh.kills:0;const r=next(...args);
+  try{if(sh)sh.kills=k0;if(u&&B&&B.rk&&u===B.rk.u)B.en.forEach(e=>{if(e.shade&&e.hp>0){e.hp=0;e.st={};e.deathT=Date.now();log(`${e.name} unravels.`);}});}catch(e){}return r;});
 // no auto, no pork chops, the Rift's own music
 {const ab0=autoBan;autoBan=function(spec){const r=ab0.apply(this,arguments);if(r)return r;if(spec&&spec.kind==='riftkeeper'&&G&&!G.daily)return 'No auto against the Riftkeeper';return null;};}
 {const pb0=porkBlocked;porkBlocked=function(){if(B&&B.spec&&B.spec.kind==='riftkeeper')return true;return pb0.apply(this,arguments);};}
-{const bt0=battleTheme;battleTheme=function(){if(B&&B.spec&&B.spec.kind==='riftkeeper')return 'd_'+ZS(4).theme;return bt0.apply(this,arguments);};}
+HOOK.wrap('battleTheme','riftkeeper9','Riftkeeper backdrop',function(next){if(B&&B.spec&&B.spec.kind==='riftkeeper')return 'd_'+ZS(4).theme;return next();});
 HOOK.after('startBattle','riftkeeper9','Riftkeeper fight state',function(r){try{if(r===false||!B||!B.spec||B.spec.kind!=='riftkeeper')return;const u=B.en.find(e=>e.rk);if(!u)return;
   B.rk={u,phase:1,el:null,at:-1,count:0,t3:0,shadeN:0,tells:0,lands:0,fizz:0};B.auto=false;rkSetEl(u);rkChip(u,B.rk);
   log(`Phase 1: its element changes every turn. Phase 2 brings two Echo shades; phase 3 the Unmaking.`);render();}catch(e){}});
@@ -140,7 +138,7 @@ HOOK.wrap('win','riftkeeper9','Riftkeeper rewards',function(next,...a){const sp=
 // ----- the charm: Riftwalker's Key -----
 addGear('c_riftkeeper',{n:"Riftwalker's Key",slot:'c',tier:5,hp:100,price:1500,unique:1,rk:1});
 IC_CHARM.c_riftkeeper={body:'seal',G:'#2a1f58',gly:'star',gk:'E',E:'#c9a8ff',cord:'chain',rim:'T',aura:1};
-{const cs0=calcStats;calcStats=function(c){const S=cs0.apply(this,arguments);try{if(c&&c.eq&&c.eq.c==='c_riftkeeper'&&!(G&&G.daily)){ELK.forEach(el=>{S.elBoost[el]=(S.elBoost[el]||0)+RKC.elUp;});S.mpEff=(S.mpEff||0)-RKC.mpUp;}}catch(e){}return S;};}
-{const gd0=gearDesc;gearDesc=function(id){let h=gd0.apply(this,arguments);try{const g=typeof id==='string'?gearOf(id):id;if(g&&g.rk)h+=(h?', ':'')+`+${Math.round(RKC.elUp*100)}% damage with every element, skills cost ${Math.round(RKC.mpUp*100)}% more MP`;}catch(e){}return h;};}
+HOOK.after('calcStats','riftkeeper9','Riftwalker key perks',function(S,c){try{if(c&&c.eq&&c.eq.c==='c_riftkeeper'&&!(G&&G.daily)){ELK.forEach(el=>{S.elBoost[el]=(S.elBoost[el]||0)+RKC.elUp;});S.mpEff=(S.mpEff||0)-RKC.mpUp;}}catch(e){}});
+HOOK.xform('gearDesc','riftkeeper9','Riftwalker key text',function(h,id){try{const g=typeof id==='string'?gearOf(id):id;if(g&&g.rk)h+=(h?', ':'')+`+${Math.round(RKC.elUp*100)}% damage with every element, skills cost ${Math.round(RKC.mpUp*100)}% more MP`;}catch(e){}return h;});
 // ----- tests -----
 window.__RK={RKC,rkSync:()=>rkSync(),unlocked:()=>rkUnlocked(),beaten:()=>rkBeaten().length,get S(){return B&&B.rk;},turnStart:u=>rkTurnStart(u),shades:()=>rkShades(),intent:u=>b5Intent(u),turn:u=>enemyTurn0(u),idle:(k,n)=>{const c=monCanvas(k);return {w:c.width,h:c.height,diff:bossIdle(c,0,0,760)!==bossIdle(c,0,760,760),c0:bossIdle(c,0,0,760).toDataURL(),c1:bossIdle(c,0,760,760).toDataURL()};},hurtB:d=>{hurt(B.rk.u,d);},guard:()=>guard(),end:()=>checkEnd(),dmg:(a,sk,t)=>calcDamage(a,sk,t),react:(p,d)=>!!reactFor(p,d),chip:n=>chipShield(B.rk.u,n,'test'),mk:k=>{const sp=echoSpec(k);return makeEcho(k,56,{final:!!FINALS[k],stage:3,hpM:sp.hpM,powM:sp.powM}).S.mhp;}};

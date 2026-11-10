@@ -8,8 +8,8 @@ const QUIRK={mossling:{imm:['poison']},dewtoad:{res:'earth'},cinderpup:{imm:['bu
 // QUIRK_RES: in config.js
 function quirkDef(art){const q=QUIRK[art],m=MON[art];if(!q||!m)return null;const o={};if(q.res&&matchup(q.res,m.el)===1)o.res=q.res;if(q.imm)o.imm=q.imm.slice();return (o.res||o.imm)?o:null;}
 function quirkText(q){if(!q)return '';const p=[];if(q.res)p.push(`shrugs off ${EL[q.res]} (takes ${Math.round((1-QUIRK_RES)*100)}%)`);if(q.imm)p.push('immune to '+q.imm.map(k=>STS[k].n).join(' and '));return p.join('; ');}
-{const me0=makeEnemy;makeEnemy=function(m,lv,opt){const e=me0.apply(this,arguments);if(!e.boss){const q=quirkDef(m.art);if(q){e.q=q;if(q.res)e.S.elRes[q.res]=QUIRK_RES;if(q.imm)e.imm=q.imm;}}return e;};}
-{const as0=addSt;addSt=function(t,k,src,silent){if(t&&t.imm&&t.imm.includes(k)&&STS[k]&&STS[k].bad){fx(t,'Immune','stat good effx imm');if(!silent)log(`${t.name} is immune to ${STS[k].n}!`);learnQuirk(t);return false;}return as0.apply(this,arguments);};}
+HOOK.after('makeEnemy','insight','foe quirks',function(e,m,lv,opt){if(!e.boss){const q=quirkDef(m.art);if(q){e.q=q;if(q.res)e.S.elRes[q.res]=QUIRK_RES;if(q.imm)e.imm=q.imm;}}});
+HOOK.before('addSt','insight','immune foes shrug off a status',function(t,k,src,silent){if(t&&t.imm&&t.imm.includes(k)&&STS[k]&&STS[k].bad){fx(t,'Immune','stat good effx imm');if(!silent)log(`${t.name} is immune to ${STS[k].n}!`);learnQuirk(t);return HOOK.stop(false);}});
 
 // ----- what the player knows -----
 function bestEntry(e){return META.best[e.base]||{};}

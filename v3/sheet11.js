@@ -129,7 +129,7 @@ function sh11Build(h,id,edit){
   panel.textContent='';if(mnav)panel.appendChild(mnav);keep.forEach(n=>panel.appendChild(n));panel.appendChild(hd);panel.appendChild(tabs);panel.appendChild(body);
   panel.classList.add('sh11');
   return tp.innerHTML;}
-{const mc0=mChar;mChar=function(id,edit){const h=mc0.apply(this,arguments);try{return sh11Build(h,id,edit);}catch(e){return h;}};}
+HOOK.xform('mChar','sheet11','hero sheet tabs',function(h,id,edit){try{return sh11Build(h,id,edit);}catch(e){return h;}});
 Object.assign(ACT,{
   sheetTab(k){if(!SH11_TABS.some(t=>t[0]===k))return;V.sheetTab=k;render();const b=document.querySelector('#modal .sh11-body');if(b)b.scrollTop=0;},
   sheetSkF(k){V.sheetSkF=String(k||'all');render();}});

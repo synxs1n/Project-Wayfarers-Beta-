@@ -34,6 +34,7 @@ function modalBack(m){
   if(m.from)return ()=>{V.modal=m.from;};
   return null;
 }
+modalBack=HOOK.def('modalBack',modalBack);
 // popups opened from another popup remember where they came from
 ['settings','slots'].forEach(k=>{const f=ACT[k];if(!f)return;ACT[k]=function(){const prev=V.modal;const r=f.apply(this,arguments);if(V.modal&&prev&&prev!==V.modal&&prev.type!==V.modal.type)V.modal.from=prev;return r;};});
 function withClose(h){const m=V.modal;const back=modalBack(m);
@@ -70,6 +71,7 @@ function vSwap(where){
     ${town?`<h4>Reserves <span class="cnt nums">${bench.length} waiting</span></h4>${filterBar('party')}<div class="grid mini">${benchS.map(c=>`<button class="mini ${sel&&sel.r===c.id?'sel':''} elstrip ${c.el.length>1?'dual':''} ${isLeg(c.id)?'leg':isEpic(c.id)?'epic':''}" ${dualStyle(TPL[c.id])} data-act="swapTap" data-arg="r:${c.id}">${heroTag(c.id)}<img src="${heroFrontURL(c.id)}" alt=""><b>${esc(c.name)}${c.legacy?' ★':''}</b><small>Lv ${c.lv} ${CLS[TPL[c.id].cls].n}</small><span class="els">${c.el.map(ico).join('')}</span></button>`).join('')||'<p class="note">Everyone you have recruited is already in your six.</p>'}</div>`
       :where==='menu'?'<p class="note">Reordering works anywhere.</p>':'<p class="note">Reordering works anywhere. Swapping roster heroes into your six happens in town.</p>'}${grid?'</div>':''}`;
 }
+vSwap=HOOK.def('vSwap',vSwap);
 Object.assign(ACT,{
   swapTap(a){
     const [k,v]=String(a).split(':'),where=V.modal&&V.modal.type==='guild'?'guild':'menu',town=swapTown(where),sel=V.swapSel,P=partySlots();

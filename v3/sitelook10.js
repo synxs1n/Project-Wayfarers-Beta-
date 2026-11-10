@@ -181,9 +181,9 @@ function slDenGround(ctx,m,x,y,T){const L=SL_DEN[slRealmKey(m)],rk=SL_ROCK[L.rk]
     else{ctx.fillStyle='#5a8a3a';ctx.fillRect(bx,by,1,2);ctx.fillRect(bx+1,by+1,1,1);}}
   ctx.restore();}
 // ---------- hooks: 2D tiles and the HD ground share drawTile ----------
-{const dt0=drawTile;drawTile=function(ctx,m,x,y,frame){const r=dt0.apply(this,arguments);
+HOOK.after('drawTile','sitelook10','den and lair ground, cast shadows',function(r,ctx,m,x,y,frame){
   try{if(m&&m.kind==='field'&&!m.fort){const S=slSites(m),T=S&&S.tiles[x+','+y];if(T){if(T.den)slDenGround(ctx,m,x,y,T);else if(T.lair)slLairGround(ctx,m,x,y,T);}
-    if(S&&!SLX.noAO){slCast(ctx,m,S,x,y);if(m.d8lair)slMoundAO(ctx,m,x,y);}}}catch(e){slErr('tile',e);}return r;};}
+    if(S&&!SLX.noAO){slCast(ctx,m,S,x,y);if(m.d8lair)slMoundAO(ctx,m,x,y);}}}catch(e){slErr('tile',e);}});
 // the contact shadow of a front on the ground (a wide soft one and a dark core under the foot, thrown to the lower right) and the ambient occlusion where a lair mound meets
 // the ground (dark at the foot of its right and lower sides, a faint one on the left): drawn into the ground tiles, so 2D and the HD-2D ground bake share it
 function slCast(ctx,m,S,x,y){if(!S.sh.length||'~#'.includes(tileAt(m,x,y)))return;const px=x*TS,py=y*TS;
@@ -205,9 +205,9 @@ const SLE=[];function slErr(w,e){if(SLE.length<20)SLE.push(w+': '+(e&&e.message|
     try{if(kind==='cavemouth'){SLX.n.den++;return slDenSprite(m);}
       const r=o0.apply(this,arguments);if(m.d8lair&&!window.__D8OFF&&!D8.card)return r;const s=slLairSprite(m);if(s){SLX.n.lair++;return s;}return r;}catch(e){slErr(kind,e);}}
   return o0.apply(this,arguments);};}
-{const do0=drawObjects;drawObjects=function(ctx,m,y){const keep=SLX.m;SLX.m=m;try{const r=do0.apply(this,arguments);
+HOOK.wrap('drawObjects','sitelook10','lair sprite over the props',function(next,ctx,m,y){const keep=SLX.m;SLX.m=m;try{const r=next(ctx,m,y);
   if(m&&m.kind==='field'&&m.ent&&m.d8lair&&!window.__D8OFF&&!D8.card&&y===Math.max(...m.d8lair.tiles.map(t=>t[1]))){try{const s=slLairSprite(m);if(s){SLX.n.lair++;ctx.drawImage(s,m.ent[0]*TS+8-s.width/2,m.ent[1]*TS+17-s.height);}}catch(e){slErr('lair2d',e);}}
-  return r;}finally{SLX.m=keep;}};}
+  return r;}finally{SLX.m=keep;}});
 // the mound under the front is a low embankment (dungeon8 raised it into a tall hill that hid the door from some sides); heights, hill, torches and banners follow
 HOOK.wrap('getMap','sitelook10','lair mound: a low embankment under the realm front',function(next,...a){const m=next(...a);try{const L=m&&m.kind==='field'&&m.d8lair;if(L&&!L.__low){L.__low=1;const K=.32;for(const k in L.cor)L.cor[k]*=K;for(const k in L.hh)L.hh[k]*=K;L.top*=K;}}catch(e){slErr('low',e);}return m;});
 // the cave mouth is drawn on the 'E' tile with its centre on the tile (worldgfx2): the new sprite is 64 wide; its base meets the old base line

@@ -28,13 +28,13 @@ HOOK.wrap('encounterFoes','world3','night pool and night power on fields',functi
     out.forEach(e=>{['atk','mag','def','res'].forEach(k=>{e.S[k]*=NIGHT_POW;});e.S.mhp=Math.round(e.S.mhp*NIGHT_POW);e.hp=e.S.mhp;e.night=1;});return out;}
   return next(...a);});
 // the Bestiary lists night variants under their realm
-{const ba0=bestAll;bestAll=function(){const out=ba0();const extra=[];ZONES.forEach((Z,zi)=>(NIGHT[Z.theme]||[]).forEach(([b])=>{const k='n_'+b;if(MON[k])extra.push({k,d:MON[k],zone:zi,night:1});}));
+HOOK.xform('bestAll','world3','night variants under their realm',function(out){const extra=[];ZONES.forEach((Z,zi)=>(NIGHT[Z.theme]||[]).forEach(([b])=>{const k='n_'+b;if(MON[k])extra.push({k,d:MON[k],zone:zi,night:1});}));
   const res=[];out.forEach(o=>{res.push(o);if(!o.g)return;});// keep guardians last
-  const fieldOnly=out.filter(o=>!o.g),bosses=out.filter(o=>o.g);return fieldOnly.concat(extra,bosses);};}
+  const fieldOnly=out.filter(o=>!o.g),bosses=out.filter(o=>o.g);return fieldOnly.concat(extra,bosses);});
 // ----- clock ticks -----
-{const ar0=arrive;arrive=function(){if(G&&WS.m&&!mapIndoor(WS.m))tickClock(1);wxStep();return ar0.apply(this,arguments);};}
+HOOK.before('arrive','world3','clock ticks',function(){if(G&&WS.m&&!mapIndoor(WS.m))tickClock(1);wxStep();});
 HOOK.before('finishBattle','world3','clock ticks',function(how){try{if(G&&!G.daily)tickClock(6);}catch(e){}});
-{const ra0=restAll;restAll=function(){const r=ra0.apply(this,arguments);if(r)setMorning();return r;};}
+HOOK.after('restAll','world3','morning after a rest',function(r){if(r)setMorning();});
 {const ct0=campRest;campRest=function(){const r=ct0.apply(this,arguments);tickClock(60);return r;};}
 // ----- weather: lasts WX_MIN..WX_MAX steps per realm, follows you between that realm's town and field, mostly clear -----
 // shares (out of 100); clear skies 65-75%, the realm's signature weather next, harsh types rare
@@ -66,8 +66,8 @@ HOOK.wrap('placeAt','world3','weather on arrival',function(next,...a){let mid=a[
     if(forced&&G.wxSave[s]==null){G.wxSave[s]=m0&&m0[s]!=null&&m0[s]!=='storm'?m0[s]:(m0&&m0[s])||'clear';G.weather[s]='storm';}
     else if(!forced&&G.wxSave[s]!=null&&m.kind==='field'){G.weather[s]=G.wxSave[s];delete G.wxSave[s];}}catch(e){}return r;});
 // ----- HUD chip and the tint -----
-{const wu0=wkwUpdate;wkwUpdate=function(){wu0();const wk=$('wkw');if(!wk||!G||!WS.m||mapIndoor(WS.m))return;const P=PH_LOOK[clockPhase()];
-  const html=`<button class="wchip ph ${clockPhase()}" data-act="wxInfo" data-arg="time" title="Time of day (moves as you walk and fight)">${P.i} ${P.n}</button>`;if(!wk.innerHTML.includes('wchip ph '+clockPhase()))wk.insertAdjacentHTML('afterbegin',html);};}
+HOOK.after('wkwUpdate','world3','time of day chip',function(){const wk=$('wkw');if(!wk||!G||!WS.m||mapIndoor(WS.m))return;const P=PH_LOOK[clockPhase()];
+  const html=`<button class="wchip ph ${clockPhase()}" data-act="wxInfo" data-arg="time" title="Time of day (moves as you walk and fight)">${P.i} ${P.n}</button>`;if(!wk.innerHTML.includes('wchip ph '+clockPhase()))wk.insertAdjacentHTML('afterbegin',html);});
 function tintFor(t){// smooth colour by clock position
   const k=(a,b,p)=>a+(b-a)*p,ph=clockPhase(t);t=((t%CLK_LEN)+CLK_LEN)%CLK_LEN;
   if(ph==='day')return null;

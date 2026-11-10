@@ -168,8 +168,8 @@ function b3FxRects(now){if(!B)return [];const L=b3Lay();if(!L)return [];let top=
 // which live foes a detonator sets off, and the reaction on each
 function detTargets(sk){if(!B||!sk||sk.role!=='det')return [];const els=skEls(sk);return B.en.filter(e=>e.hp>0&&e.primed).map(e=>{const el=els.find(x=>reactFor(e.primed.el,x));const R=el&&reactFor(e.primed.el,el);return R?{e,R,p:e.primed.el,d:el}:null;}).filter(Boolean);}
 // the reaction text floats with both element icons: note them on the effect entry when the reaction fires
-{const dr0=doReaction;doReaction=function(a,t,el){const p=t&&t.primed&&t.primed.el,R=dr0.apply(this,arguments);try{if(R&&t&&t.fx){for(let i=t.fx.length-1;i>=0;i--){const f=t.fx[i];if(f.cls==='react'&&f.txt===R.n){f.rp=p;f.rd=el;break;}}}}catch(e){}
-  try{if(R&&t)b9React(a,t,p,el,R);}catch(e){}return R;};}// v0.9.5: the reaction moment (section 9)
+HOOK.wrap('doReaction','battle3','reaction icons on the effect entry',function(next,...args){const [a,t,el]=args;const p=t&&t.primed&&t.primed.el,R=next(...args);try{if(R&&t&&t.fx){for(let i=t.fx.length-1;i>=0;i--){const f=t.fx[i];if(f.cls==='react'&&f.txt===R.n){f.rp=p;f.rd=el;break;}}}}catch(e){}
+  try{if(R&&t)b9React(a,t,p,el,R);}catch(e){}return R;});// v0.9.5: the reaction moment (section 9)
 // in the skill list: every foe this detonator sets off right now, with the reaction and both element icons (else what it reacts with)
 function detList(s){if(!s||s.role!=='det'||!B)return '';const L=detTargets(s);if(!L.length)return detNote(s);
   // v0.7.7: symbols only: the primed element on each foe it sets off now (the reaction and foe names stay in the tooltip)
@@ -328,12 +328,12 @@ function b8Strip(){if(!B||BL.mode==='side')return '';// v0.8.10: also in the wid
 {const fc0=foeCards;foeCards=function(){const h=fc0.apply(this,arguments);try{return b8Strip()+h;}catch(e){return h;}};}
 // portrait: the auto lock note moves into the command header, between the hero's name and Back (one line less under the auto row).
 // v0.8.7: the commands come before the party cards, so the header also carries the acting hero's HP and MP (bars and numbers, under the name)
-{const ch0=cmdHtml;cmdHtml=function(){let h=ch0.apply(this,arguments);try{if(BL.mode!=='tall')return h;const bk='<button class="btn sm cmdback"';
+HOOK.xform('cmdHtml','battle3','tall layout: HP/MP bars and the auto note in the command head',function(h){try{if(BL.mode!=='tall')return h;const bk='<button class="btn sm cmdback"';
   const a=B&&B.mode==='cmd'&&B.cur;if(a&&a.S&&h.indexOf('<div class="who cmdhead">')>=0){const pc=(v,m)=>Math.max(0,Math.min(100,m?v/m*100:0)).toFixed(1);
     const bars=`<span class="b8hm" role="img" aria-label="HP ${Math.max(0,a.hp)} of ${a.S.mhp}, MP ${a.mp} of ${a.S.mmp}"><span class="hb hp"><i style="width:${pc(a.hp,a.S.mhp)}%"></i></span><em class="nums">${Math.max(0,a.hp)}</em><span class="hb mp"><i style="width:${pc(a.mp,a.S.mmp)}%"></i></span><em class="nums">${a.mp}</em></span>`;
     h=h.replace(/(<div class="who cmdhead">[\s\S]*?<small>)/,'$1'+bars);}
   const m=String(h).match(/<small class="autowhy">[^<]*<\/small>/);
-  if(!m||h.indexOf(bk)<0)return h;return h.replace(m[0],'').replace(bk,m[0].replace('class="autowhy"','class="autowhy inhead"')+bk);}catch(e){return h;}};}
+  if(!m||h.indexOf(bk)<0)return h;return h.replace(m[0],'').replace(bk,m[0].replace('class="autowhy"','class="autowhy inhead"')+bk);}catch(e){return h;}});
 // v0.8.10 portrait: the room under the stage goes to the commands first, at their natural height plus up to B8.tallGrow px (taller
 // rows, easier to tap; the owner: "make the action menu a bit bigger to fill in space and push the other menus down"), and the top
 // B8.peek px of the party cards (they and the foes are in the box under the commands, which scrolls); the stage takes the rest, never
@@ -398,7 +398,7 @@ function b8Small(c){if(!c||!c.hd||c.hd<2||!(B8H.k<1))return c;let o=B8HC.get(c);
   const tw=Math.round(RW*B8H.k),th=Math.round(RH*B8H.k),lw=Math.ceil(tw/k),lh=Math.ceil(th/k);o=hdCv(lw,lh,k);const x=o.getContext('2d');
   x.setTransform(1,0,0,1,0,0);x.imageSmoothingEnabled=false;(x._hdDI||x.drawImage).call(x,c,0,0,RW,RH,Math.round((lw*k-tw)/2),lh*k-th,tw,th);// bitmap pixels (sprhd.js reads logical ones)x.setTransform(k,0,0,k,0,0);
   B8HC.set(c,o);return o;}
-{const so=spriteOf;spriteOf=function(u,walk){const c=so.apply(this,arguments);try{if(u&&(u.heroArt||u.side==='p'&&!(TPL[u.id]&&TPL[u.id].mon)))return b8Small(c);}catch(e){}return c;};}
+HOOK.xform('spriteOf','battle3','small battle sprites',function(c,u,walk){try{if(u&&(u.heroArt||u.side==='p'&&!(TPL[u.id]&&TPL[u.id].mon)))return b8Small(c);}catch(e){}return c;});
 
 // ----- 9) v0.9.5: battle clarity (simple layer, damage groups, reaction moments) -----
 // Simple by default: each foe shows ONE key weakness (card and stage tag), the one that sets up a reaction for this party when there is
@@ -453,7 +453,7 @@ ACT.b9wx=function(ref){if(!B)return;B.b9x=B.b9x||{};B.b9x[ref]=!B.b9x[ref];rende
 const ARCH_LINE={flying:'Flying: ranged hits hard',armored:'Armored: magic and piercing cut through, other hits glance off',jelly:'Jelly: magic wrecks it, weapons sink in',
   undead:'Undead: healing and Light burn it, blunt blows shatter it',swarm:'Swarm: hits on every foe shred it',beast:'Beast: blunt blows batter it',plant:'Plant: slashes and fire cut it down'};
 function b9TypeLine(e){try{if(!e||!e.ty||!e.ty.length||!revealed(e))return '';const L=e.ty.map(k=>ARCH_LINE[k]).filter(Boolean);return L.length?L.join('. ')+'.':'';}catch(x){return '';}}
-{const sc0=scan;scan=function(t){const r=sc0.apply(this,arguments);try{const ln=b9TypeLine(t);if(ln&&B)log(ln);}catch(e){}return r;};}
+HOOK.after('scan','battle3','foe type line',function(r,t){try{const ln=b9TypeLine(t);if(ln&&B)log(ln);}catch(e){}});
 // the i panel: the capped chips and the type line under "From the Bestiary"
 {const ud0=uDetHtml;uDetHtml=function(){let h=ud0.apply(this,arguments);try{const P=B&&B.uDet,u=P&&unitOf(P.ref);if(h&&u&&u.side==='e'){const c=b9Chips(u),ln=b9TypeLine(u);
   if(c||ln){const add=`<div class="b9det">${c?`<div class="b9chips">${c}</div>`:''}${ln?`<p class="note b9ty">${esc(ln)}</p>`:''}</div>`;const k=h.indexOf('<div class="btnrow"><button class="btn gold" data-act="uClose"');h=k>=0?h.slice(0,k)+add+h.slice(k):h;}}}catch(e){}return h;};}

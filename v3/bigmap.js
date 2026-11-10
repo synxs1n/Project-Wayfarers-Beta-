@@ -68,7 +68,7 @@ ACT.bmTap=function(arg,el){const cv=el||document.getElementById('bmap'),p=BM.pt;
   V.modal=null;render();toast(door?`Walking to ${door.n}.`:`Walking to ${t.o.m.kind==='town'?ZS(t.o.m.s).town:ZS(t.o.m.s).n}.`);};
 ACT.wmChart=function(){V.modal={type:'worldmap',from:{type:'bigmap'}};render();};
 {const wm0=ACT.worldMap;ACT.worldMap=function(){if(!G||V.screen!=='world')return;if(!worldV3())return wm0.apply(this,arguments);const prev=V.modal;V.modal={type:'bigmap',from:prev&&prev.type==='map'?prev:{type:'map'}};render();};}
-{const mb0=modalBack;modalBack=function(m){if(m&&m.type==='bigmap')return ()=>{V.modal=m.from||{type:'map'};};if(m&&m.type==='worldmap'&&m.from&&m.from.type==='bigmap')return ()=>{V.modal={type:'bigmap',from:{type:'map'}};};return mb0.apply(this,arguments);};}
+HOOK.before('modalBack','bigmap','big map and world map back targets',function(m){if(m&&m.type==='bigmap')return HOOK.stop(()=>{V.modal=m.from||{type:'map'};});if(m&&m.type==='worldmap'&&m.from&&m.from.type==='bigmap')return HOOK.stop(()=>{V.modal={type:'bigmap',from:{type:'map'}};});});
 // ----- routes across maps -----
 // edges: how to leave a map for a neighbour: {to, ex, ey, dir} (the exit tile and the step that goes through it)
 function bmEdges(id){const m=getMap(id);if(!m)return [];const E=[],s=m.s|0,been=k=>!!((G.been||{})[k]);
@@ -100,11 +100,11 @@ function bmRunLeg(){const R=WS.route,m=WS.m;if(!R||!m)return false;const L=R.leg
 function bmEnter(L){const [a,b]=DIRV[L.dir]||[0,0];if(WS.x+a!==L.ex||WS.y+b!==L.ey){// not in front of it after all: walk again
     const p=awPlan(WS.m,L.ex,L.ey);if(p.res==='ok'){p.plan.route=WS.route.k;p.plan.phase='walk';awGo(p.plan,'route');}else WS.route=null;return;}
   awGo({m:WS.m.id,tx:L.ex,ty:L.ey,goals:[[L.ex,L.ey,null]],what:'enter',dirs:[L.dir],end:[L.ex,L.ey,null],at:WS.x+','+WS.y,fails:0,route:WS.route.k,phase:'enter'},'route');}
-{const wt0=worldTick;worldTick=function(){try{const R=WS.route;if(R&&V.screen==='world'&&!V.modal&&!WS.dlg&&!WS.lock&&!B&&WS.m&&!WS.mv&&!WS.auto&&!WS.awPend&&!WS.awResume){const A=WS.autoLast;
+HOOK.before('worldTick','bigmap','route legs',function(){try{const R=WS.route;if(R&&V.screen==='world'&&!V.modal&&!WS.dlg&&!WS.lock&&!B&&WS.m&&!WS.mv&&!WS.auto&&!WS.awPend&&!WS.awResume){const A=WS.autoLast;
     if(R.pend){R.pend=0;if(!bmRunLeg())WS.route=null;}
     else if(A&&A.src==='route'&&A.route===R.k&&A.why==='arrived'&&A.phase==='walk'){A.phase='done';bmEnter(R.legs[R.k]);}
     else if(A&&A.src==='route'&&A.why==='arrived'&&A.phase==='last'){WS.route=null;}
-    else if(A&&A.src==='route'&&A.why&&A.why!=='map'&&A.why!=='halt'&&A.why!=='battle'&&A.why!=='arrived'){WS.route=null;}}}catch(e){WS.route=null;}return wt0.apply(this,arguments);};}
+    else if(A&&A.src==='route'&&A.why&&A.why!=='map'&&A.why!=='halt'&&A.why!=='battle'&&A.why!=='arrived'){WS.route=null;}}}catch(e){WS.route=null;}});
 HOOK.after('placeAt','bigmap','next leg of a route',function(){try{const R=WS.route;if(!R)return;const L=R.legs[R.k];if(L&&L.to&&WS.m&&WS.m.id===L.to){R.k++;R.pend=1;}else if(L&&L.to&&WS.m&&WS.m.id!==L.m)WS.route=null;}catch(e){WS.route=null;}});
 {const s0=awStop;awStop=function(why){const r=s0.apply(this,arguments);try{if(WS.route&&(why==='input'||why==='blocked'||why==='dialog'||why==='menu'))WS.route=null;}catch(e){}return r;};}
 // a battle on a leg: the resume keeps the leg's source and phase

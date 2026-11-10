@@ -67,16 +67,16 @@ function fs11Cv(c,art){if(!c||!c.width)return c;const cvb=document.getElementByI
   FS11.cache.set(c,{k:K,o});return o;}
 {const mc0=monCanvas;monCanvas=function(art,f){if(FS11.on){try{const s=fs11Src(art,f);if(s)return fs11Cv(s,art);}catch(e){}}
   const c=mc0.apply(this,arguments);try{if(FS11.on)return fs11Cv(c,art);}catch(e){}return c;};}
-{const so0=spriteOf;spriteOf=function(u,walk){const was=FS11.on;FS11.on=u&&u.side!=='p'&&!u.heroArt?1:0;try{return so0.apply(this,arguments);}finally{FS11.on=was;}};}
-{const bf0=battleFrame;battleFrame=function(){const was=FS11.on;FS11.on=1;try{return bf0.apply(this,arguments);}finally{FS11.on=was;}};}
+HOOK.wrap('spriteOf','battle11','foe size scaling on',function(next,u,walk){const was=FS11.on;FS11.on=u&&u.side!=='p'&&!u.heroArt?1:0;try{return next(u,walk);}finally{FS11.on=was;}});
+HOOK.wrap('battleFrame','battle11','foe size scaling on',function(next,now){const was=FS11.on;FS11.on=1;try{return next(now);}finally{FS11.on=was;}});
 {const ub0=unitBox;unitBox=function(u){const b=ub0.apply(this,arguments);try{if(b&&u&&u.side!=='p'&&!u.heroArt&&u.art){const c=spriteOf(u),sp=c&&c._s11;let w,h,vis;
   if(sp){w=c.width;h=c.height;vis=h-sp.T*c._s11s;}else{const sz=MON_SIZE(u.art),n=Math.round(sz*fs11Scale(u.art));w=h=vis=n;if(n===sz)return b;}
   b.w=w;b.h=h;const lo=FS11.top+vis,hi=BL.H-2;let y=b.y;if(y<lo)y=Math.min(lo,hi);if(y!==b.y){if(b.gy!=null)b.gy+=y-b.y;b.y=y;}}}catch(e){}return b;};}
 
 // ----- the command head without the HP/MP mini bars -----
 {const st=document.createElement('style');st.textContent='.battle.b3 .who.cmdhead small .b8hm{display:none!important}.bstage .unit.foe{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}';document.head.appendChild(st);}
-{const ch0=cmdHtml;cmdHtml=function(){let h=ch0.apply(this,arguments);try{const m=String(h).match(/<span class="b8hm" role="img" aria-label="([^"]*)">(?:<span class="hb (?:hp|mp)"><i style="[^"]*"><\/i><\/span><em class="nums">[^<]*<\/em>){2}<\/span>/);
-  if(m)h=h.replace(m[0],'').replace('<div class="who cmdhead">','<div class="who cmdhead" role="group" aria-label="'+m[1]+'">');}catch(e){}return h;};}/* the numbers stay as the head's accessible label */
+HOOK.xform('cmdHtml','battle11','command head without the HP/MP mini bars',function(h){try{const m=String(h).match(/<span class="b8hm" role="img" aria-label="([^"]*)">(?:<span class="hb (?:hp|mp)"><i style="[^"]*"><\/i><\/span><em class="nums">[^<]*<\/em>){2}<\/span>/);
+  if(m)h=h.replace(m[0],'').replace('<div class="who cmdhead">','<div class="who cmdhead" role="group" aria-label="'+m[1]+'">');}catch(e){}return h;});/* the numbers stay as the head's accessible label */
 
 // ----- double tap / press and hold on a foe opens its card -----
 let FG11=null,FL11=null;

@@ -39,8 +39,8 @@ function ensureSub(g){
 const inSub=id=>{const t=TPL[id];if(!t)return false;if(t.src==='L'||t.src==='x'||t.mon)return true;return !G||ensureSub(G).includes(id);};
 // ----- hooks -----
 HOOK.after('newGame','tavern2','journey roster and tavern reset',function(){try{G.sub=null;ensureSub(G);G.tv=null;}catch(e){}});
-{const up=unpackG;unpackG=function(){const g=up.apply(this,arguments);try{ensureSub(g);}catch(e){}return g;};}
-{const rc=recruit;recruit=function(id){const r=rc.apply(this,arguments);try{if(r&&G.sub&&!G.sub.includes(id)&&!(TPL[id]&&(TPL[id].src==='L'||TPL[id].src==='x')))G.sub.push(id);}catch(e){}return r;};}
+HOOK.after('unpackG','tavern2','journey roster subset',function(g){try{ensureSub(g);}catch(e){}});
+HOOK.after('recruit','tavern2','recruit joins the subset',function(r,id){try{if(r&&G.sub&&!G.sub.includes(id)&&!(TPL[id]&&(TPL[id].src==='L'||TPL[id].src==='x')))G.sub.push(id);}catch(e){}});
 // challenge board and rare visitors only draw from the subset
 {const ce=challEligible;challEligible=function(){return ce.apply(this,arguments).filter(c=>inSub(c.hero));};}
 {const rp=rarePool;rarePool=function(){return rp.apply(this,arguments).filter(inSub);};}
@@ -49,7 +49,7 @@ function tvInit(){if(!G.tv||typeof G.tv!=='object')G.tv={sl:null,sh:0,at:0,ev:fa
 // v0.5.0: no per area recruit cap. tvLeft stays for old callers and always reports room.
 function tvLeft(){return Infinity;}
 function tvEvent(){tvInit().ev=true;}
-{const ra=restAll;restAll=function(){const r=ra.apply(this,arguments);if(r)try{tvEvent();}catch(e){}return r;};}
+HOOK.after('restAll','tavern2','tavern event after a rest',function(r){if(r)try{tvEvent();}catch(e){}});
 HOOK.wrap('finishBattle','tavern2','tavern event on a stage clear',function(next,...a){const was=G&&G.cleared?G.cleared.filter(Boolean).length:0;const r=next(...a);try{if(G&&G.cleared&&G.cleared.filter(Boolean).length>was)tvEvent();}catch(e){}return r;});
 // the pool for this town: subset wayfarers with a tavern source that have arrived by this area, not owned, not on the Guild board
 const ceBoosted=id=>!!(G&&G.ce&&G.ce.boost&&G.ce.boost[id]);
@@ -74,7 +74,7 @@ function tvNextText(){const t=tvInit(),c=Math.max(0,TV_CD-tvSince());
   if(t.ev)return `Next shuffle: after ${c} more battle${c>1?'s':''} (you have already rested or cleared a stage).`;
   return `Next shuffle: after you rest at an inn or clear a stage, and at least ${TV_CD} battles since the last one${c>0?` (${c} to go)`:''}.`;}
 function tavernLater(){const mine=tvPool().length;const later=RAW.filter(r=>(r[6][0]==='t')&&inSub(r[0])&&!G.roster[r[0]]&&!challIsPooled(r[0])&&!tavernUnlocked(r[0])).length;return later;}
-{const rc2=recruit;recruit=function(id,free){const was=!G.roster[id],r=rc2.apply(this,arguments);try{if(r&&was&&!free&&TPL[id].src[0]!=='r'){const t=tvInit();t.n[G.stage]=(t.n[G.stage]||0)+1;const i=t.sl?t.sl.indexOf(id):-1;if(i>=0)t.sl[i]=null;}}catch(e){}return r;};}
+HOOK.wrap('recruit','tavern2','recruit count per stage',function(next,...args){const [id,free]=args;const was=!G.roster[id],r=next(...args);try{if(r&&was&&!free&&TPL[id].src[0]!=='r'){const t=tvInit();t.n[G.stage]=(t.n[G.stage]||0)+1;const i=t.sl?t.sl.indexOf(id):-1;if(i>=0)t.sl[i]=null;}}catch(e){}return r;});
 // v0.5.0: gold is the only thing that can stop a hire (recruit() checks it)
 const hireOK=id=>!!TPL[id];
 

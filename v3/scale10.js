@@ -5,4 +5,4 @@
 // spriteOf (battle) sets a flag for the duration of its call, so every canvas built inside it (idle, poses, hit frames) comes out at .85.
 const SC10={battle:.9};/* v0.15.6: .9 (36x50), the middle between the full rig (too tall) and .85 */const HB10={on:0};
 {const hc0=heroCanvas;heroCanvas=function(id,walk){if(HB10.on&&HRS.f===1)return rigScale(SC10.battle,()=>hc0.call(this,id,walk));return hc0.apply(this,arguments);};}
-{const so0=spriteOf;spriteOf=function(u,walk){const was=HB10.on;HB10.on=1;try{return so0.apply(this,arguments);}finally{HB10.on=was;}};}
+HOOK.wrap('spriteOf','scale10','battle sprite scale',function(next,u,walk){const was=HB10.on;HB10.on=1;try{return next(u,walk);}finally{HB10.on=was;}});

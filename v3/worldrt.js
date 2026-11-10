@@ -44,6 +44,7 @@ function enterCave(c,s){const k=getMap(c.id);G.been=G.been||{};G.cavesSeen=G.cav
 function leaveCave(id){const s=+id.slice(1),f=getMap('f'+s),c=f.caves.find(q=>q.id===id);placeAt('f'+s,c.out[0],c.out[1],c.face[1]>0?'d':c.face[1]<0?'u':c.face[0]<0?'l':'r');showLocation();saveGame();}
 function innSpot(s){const m=getMap('t'+s),b=m.bld.find(b=>b.k==='inn');return [b.door[0],b.door[1]+1];}
 function showLocation(){const m=WS.m;if(!m)return;setTimeout(()=>{if(typeof renderWorldUI==='function')renderWorldUI();},0);WS.locT=Date.now();WS.locN=locName(m)+(m.kind==='field'&&G.cleared[m.s]?' (relit)':'')+(m.kind==='field'&&G.weather[m.s]&&G.weather[m.s]!=='clear'?' · '+WEATHER[G.weather[m.s]].n:'');if(typeof vHeader==='function'&&document.getElementById('hdr'))document.getElementById('hdr').innerHTML=vHeader();if(typeof playMusic==='function')playMusic(musicFor());}
+showLocation=HOOK.def('showLocation',showLocation);
 function musicFor(){const m=WS.m;if(!m)return 'title';if(m.archive)return 'archive';return m.kind==='dungeon'?'dungeon':m.kind==='town'?'town':'field';}
 const DIRV={u:[0,-1],d:[0,1],l:[-1,0],r:[1,0],ul:[-1,-1],ur:[1,-1],dl:[-1,1],dr:[1,1]};
 // v0.4.1 1.10: every input source keeps its own state and a timestamp of when it last changed; the most recent active source wins.
@@ -110,6 +111,7 @@ function worldTick(dt,now){
   }
   tryStep(now);
 }
+worldTick=HOOK.def('worldTick',worldTick);
 // v5.0: 8-direction movement. Diagonals move one tile on each axis but take sqrt(2) as long, never cut a corner past
 // a wall or object, and never step diagonally onto doors, exits, stairs or other special tiles (those fall back to straight moves).
 const DIAG_MS=1.414;
@@ -198,6 +200,7 @@ function arrive(){
     later(()=>{WS.lock=false;startBattle({stage:m.s,kind:m.kind==='dungeon'?'dungeon':'field'});},460);
   }
 }
+arrive=HOOK.def('arrive',arrive);
 // v0.3.3: a thrown error inside fn used to leave WS.lock set forever, which freezes the whole world. Always release it.
 function fadeTo(fn){WS.lock=true;WS.fade=performance.now();WS.fadeLock=WS.fade;later(()=>{try{fn();}catch(e){try{console.error(e);}catch(_){}}finally{WS.lock=false;WS.fadeLock=0;WS.fadeIn=performance.now();}},230);}
 function facing(){const [dx,dy]=DIRV[WS.dir];return [WS.x+dx,WS.y+dy];}

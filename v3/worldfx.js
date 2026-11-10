@@ -75,7 +75,8 @@ function wfxTiled(ctx,vw,vh,ox,oy,fn){let L=WFXT.cv;if(!L||L.width!==vw||L.heigh
 // The save keeps G.chests as before (quests, vaults, keys, chestsLeft read it); the full map shows opened chests dimmed, the minimap not.
 const WFX_NONE=mkCv(1,1);
 let WFX_OC0=null;
-{const oc0=objCanvas;WFX_OC0=oc0;objCanvas=function(th,kind){if(kind==='chestOpen'&&WFX.chestGone)return WFX_NONE;return oc0.apply(this,arguments);};}
+WFX_OC0=HOOK.snap('objCanvas');
+HOOK.before('objCanvas','worldfx','the opened chest is gone',function(th,kind){if(kind==='chestOpen'&&WFX.chestGone)return HOOK.stop(WFX_NONE);});
 // v0.8.3: the opening is shown before the chest goes (the owner liked it): the lid pops open with a glint, the open chest stays while the
 // loot is collected (the find text), then it fades out. Drawn on top in both renderers; the tile itself is already gone from the map.
 const WFX_OPEN={};window.__WFXO=WFX_OPEN;// key -> {m,x,y,th,t0,done} (window.__WFXO for tests)
@@ -89,8 +90,8 @@ function wfxChestAnims(now,draw){const T=WFX.chestAnim||{open:320,hold:250,fade:
 HOOK.after('worldDraw','worldfx','world-space ambience',function(_,now){try{if(typeof hdActive==='function'&&hdActive())return;const ctx=WS.ctx,cx=Math.round(WS.cam.x),cy=Math.round(WS.cam.y);
   wfxChestAnims(performance.now(),(o,cv,fa,jig,glint)=>{const px=o.x*TS-cx-1+jig,py=o.y*TS-cy+16-cv.height;ctx.save();ctx.globalAlpha=fa;ctx.drawImage(cv,px,py);
     if(glint){ctx.fillStyle='rgba(255,236,160,.9)';ctx.fillRect(px+7,py-2,2,2);ctx.fillRect(px+3,py+1,1,1);ctx.fillRect(px+12,py,1,1);}ctx.restore();});}catch(e){}});
-{const ha0=hdActors;hdActors=function(m,now,ts){const r=ha0.apply(this,arguments);try{const V=HD.S.V;
-  wfxChestAnims(performance.now(),(o,cv,fa,jig,glint)=>{hdChar(HD.dyn,cv,o.x*TS+8+jig,0,o.y*TS+12,false,Math.round(255*fa),0,1);});}catch(e){}return r;};}
+HOOK.after('hdActors','worldfx','opening chests in HD-2D',function(r,m,now,ts){try{const V=HD.S.V;
+  wfxChestAnims(performance.now(),(o,cv,fa,jig,glint)=>{hdChar(HD.dyn,cv,o.x*TS+8+jig,0,o.y*TS+12,false,Math.round(255*fa),0,1);});}catch(e){}});
 {const sa0=solidAt;solidAt=function(m,x,y){if(WFX.chestGone&&m&&m.t&&tileAt(m,x,y)==='c'){const r=m.t[y]&&m.t[y][x];if((r==='C'||r==='K')&&G&&G.chests&&G.chests[m.id+':'+x+','+y])return m.npcs.some(n=>n.x===x&&n.y===y)||dynActors(m).some(a=>a.x===x&&a.y===y);}return sa0.apply(this,arguments);};}
 // the ground under a chest is painted like the ground around it (it showed as an odd pale patch once the opened chest was gone)
-{const dt0=drawTile;drawTile=function(ctx,m,x,y,fr){const r=WFX.chestGone&&m&&m.t&&m.t[y]?m.t[y][x]:null;if((r==='C'||r==='K')&&typeof floorLike==='function'){m.t[y][x]=floorLike(m,x,y);try{return dt0.apply(this,arguments);}finally{m.t[y][x]=r;}}return dt0.apply(this,arguments);};}
+HOOK.wrap('drawTile','worldfx','ground under a gone chest',function(next,ctx,m,x,y,fr){const r=WFX.chestGone&&m&&m.t&&m.t[y]?m.t[y][x]:null;if((r==='C'||r==='K')&&typeof floorLike==='function'){m.t[y][x]=floorLike(m,x,y);try{return next(ctx,m,x,y,fr);}finally{m.t[y][x]=r;}}return next(ctx,m,x,y,fr);});

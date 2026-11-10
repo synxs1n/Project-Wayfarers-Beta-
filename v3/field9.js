@@ -41,17 +41,17 @@ function fld9MarkChests(m){try{const s=seenOf(m);(m.chests||[]).forEach(([x,y])=
 {const rs0=roamSees;roamSees=function(){try{if(G&&G.fsx&&G.fsx.shadow>0&&!G.daily)return false;}catch(e){}return rs0.apply(this,arguments);};}
 // Lure: the encounter roll in arrive reads ENC_RATE; raise it for the step (same number of random calls)
 // step counters, the song's healing; Lantern ends when you leave its map
-{const ar0=arrive;arrive=function(){const X=G&&G.fsx,m=WS.m,lure=X&&X.lure>0&&m&&m.kind!=='town'&&!G.daily,k=META.cfg.enc,old=ENC_RATE[k];
+HOOK.wrap('arrive','field9','step counters, lure, the song',function(next,...a){const X=G&&G.fsx,m=WS.m,lure=X&&X.lure>0&&m&&m.kind!=='town'&&!G.daily,k=META.cfg.enc,old=ENC_RATE[k];
   if(lure)ENC_RATE[k]=(old??.11)*FLD9.lureMul;
-  let r;try{r=ar0.apply(this,arguments);}finally{if(lure)ENC_RATE[k]=old;}
+  let r;try{r=next(...a);}finally{if(lure)ENC_RATE[k]=old;}
   try{if(X&&m&&m.kind!=='town'&&!G.daily){let ch=0;const ended=[],songOn=X.song>0;
     ['haste','shadow','lure','song'].forEach(q=>{if(X[q]>0){X[q]--;ch=1;if(!X[q])ended.push(q);}});
     if(songOn){X.songN=(X.songN|0)+1;if(X.songN%FLD9.songEvery===0)G.party.forEach(id=>{const c=G.roster[id];if(c&&c.hp>0)c.hp=Math.min(c.S.mhp,c.hp+Math.max(1,Math.round(c.S.mhp*FLD9.songPct)));});}
     if(!(X.song>0))delete X.songN;
-    ended.forEach(q=>toast(`${FLD9.sk.find(f=>f.key===q).n} fades.`));if(ch)wkwUpdate();}}catch(e){}return r;};}
+    ended.forEach(q=>toast(`${FLD9.sk.find(f=>f.key===q).n} fades.`));if(ch)wkwUpdate();}}catch(e){}return r;});
 HOOK.after('placeAt','field9','Lantern ends on another map',function(){try{const X=G&&G.fsx;if(X&&X.lantern&&WS.m&&X.lantern!==WS.m.id){delete X.lantern;wkwUpdate();}}catch(e){}});
 // HUD chips beside the weather (like the Holy Water ward)
-{const wk0=wkwUpdate;wkwUpdate=function(){const r=wk0.apply(this,arguments);try{const wk=$('wkw'),X=G&&G.fsx;if(!wk||!X)return r;
+HOOK.after('wkwUpdate','field9','field skill chips',function(r){try{const wk=$('wkw'),X=G&&G.fsx;if(!wk||!X)return r;
   const ch=[['haste','»','Haste'],['shadow','◐','Shadowstep'],['lure','◎','Lure'],['song','♪','Marching Song']].filter(([k])=>X[k]>0)
     .map(([k,i,n])=>`<span class="wchip fschip" title="${n}">${i} ${n} <b class="nums">${X[k]}</b></span>`).join('')+(X.lantern&&WS.m&&X.lantern===WS.m.id?'<span class="wchip fschip" title="Lantern: this map is lit">✦ Lantern</span>':'');
-  wk.querySelectorAll('.fschip').forEach(e=>e.remove());if(ch)wk.insertAdjacentHTML('beforeend',ch);}catch(e){}return r;};}
+  wk.querySelectorAll('.fschip').forEach(e=>e.remove());if(ch)wk.insertAdjacentHTML('beforeend',ch);}catch(e){}return r;});

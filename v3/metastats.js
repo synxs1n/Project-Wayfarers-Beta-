@@ -32,9 +32,9 @@ HOOK.wrap('win','metastats','gold earned, boss wins, journey clears',function(ne
 {const dw=dailyWin,dl=dailyLose;
   dailyWin=function(){const r=dw.apply(this,arguments);try{const S=ms();S.won++;S.dailies++;msSave();}catch(e){}return r;};
   dailyLose=function(){const r=dl.apply(this,arguments);try{const S=ms();S.lost++;S.dailies++;msSave();}catch(e){}return r;};}
-{const ar0=arrive;arrive=function(){try{if(G&&!G.daily)ms().steps++;}catch(e){}return ar0.apply(this,arguments);};}
+HOOK.before('arrive','metastats','lifetime steps',function(){try{if(G&&!G.daily)ms().steps++;}catch(e){}});
 {const ax0=addXp;addXp=function(){const u=ax0.apply(this,arguments);try{if(G&&!G.daily&&u&&u.length)msAdd('levelUps',u.length);}catch(e){}return u;};}
-{const rc0=recruit;recruit=function(){const n0=G?Object.keys(G.roster).length:0,r=rc0.apply(this,arguments);try{if(r&&G&&Object.keys(G.roster).length>n0)msAdd('recruits',1,true);}catch(e){}return r;};}
+HOOK.wrap('recruit','metastats','recruit count',function(next,...args){const n0=G?Object.keys(G.roster).length:0,r=next(...args);try{if(r&&G&&Object.keys(G.roster).length>n0)msAdd('recruits',1,true);}catch(e){}return r;});
 HOOK.wrap('openChest','metastats','chests opened',function(next,x,y){let fresh=false;try{fresh=!G.chests[WS.m.id+':'+x+','+y];}catch(e){}const r=next(x,y);if(fresh)msAdd('chests',1,true);return r;});
 function metaBlock(){
   const S=ms(),row=(b,s)=>`<div class="row"><div class="grow"><b>${b}</b></div><span class="m nums">${s}</span></div>`;

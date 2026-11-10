@@ -13,7 +13,7 @@ HOOK.before('finishBattle','fixes11','remember an arena fight',function(){try{if
 // A reaction showed a "✸ Melt!" banner (battle3 section 9), a floating "Melt! +N MP" effect text (engine fx + battle4) and the target tag's
 // reaction preview at once. The banner now carries the MP line and the floating text is dropped while the banner shows; the target tag
 // stays (it is a preview before the hit, not a notice).
-{const dr0=doReaction;doReaction=function(a,t,el){const R=dr0.apply(this,arguments);try{if(R&&t&&t.fx&&B&&B.b9rx&&Date.now()-B.b9rx.t0<B9.banMs){for(let i=t.fx.length-1;i>=0;i--){const f=t.fx[i];if(f.cls==='react'){if(f.b4mp)B.b9rx.mp=f.b4mp;t.fx.splice(i,1);break;}}}}catch(e){}return R;};}
+HOOK.after('doReaction','fixes11','drop the reaction float during the ban',function(R,a,t,el){try{if(R&&t&&t.fx&&B&&B.b9rx&&Date.now()-B.b9rx.t0<B9.banMs){for(let i=t.fx.length-1;i>=0;i--){const f=t.fx[i];if(f.cls==='react'){if(f.b4mp)B.b9rx.mp=f.b4mp;t.fx.splice(i,1);break;}}}}catch(e){}});
 {const rx0=b9RxHtml;b9RxHtml=function(){let h=rx0.apply(this,arguments);try{const ev=B&&B.b9rx;if(ev&&ev.mp&&h)h=h.replace('!</b>',`!</b><small class="b9mp">+${ev.mp} MP</small>`);}catch(e){}return h;};}
 {const bb0=b9BanBox;b9BanBox=function(ev){if(!ev||!ev.mp)return bb0.apply(this,arguments);const n0=ev.n;ev.n=n0+' +'+ev.mp+' MP';try{return bb0.call(this,ev);}finally{ev.n=n0;}};}// the box is measured with the MP text, so nothing is cut (v095b)
 try{const st=document.createElement('style');st.textContent='.bstage .b9ban .b9mp{display:inline;font-size:.78em;opacity:.95;color:#8ad0ff;margin-left:.35em;font-weight:800}';document.head.appendChild(st);}catch(e){}
@@ -27,7 +27,7 @@ HOOK.after('win','fixes11','rift gate kill record',function(){try{const sp=B&&B.
 // kills come from G.riftWon. The account record is still kept for the Codex. Old journeys start dark until the gates are won again.
 function riftView(){const v=Object.assign({},META.best||{});try{echoKeys().forEach(k=>{const d=guardianDef(k);if(!d)return;const w=!!(G&&G.riftWon&&G.riftWon[k]);v['Echo '+d.n]=Object.assign({},v['Echo '+d.n]||{},{kills:w?1:0});});}catch(e){}return v;}
 function withRiftView(fn){const b0=META.best;try{META.best=riftView();return fn();}finally{META.best=b0;}}
-{const dp0=drawPortal;drawPortal=function(){const a=arguments;return withRiftView(()=>dp0.apply(this,a));};}
+HOOK.wrap('drawPortal','fixes11','gate card reads the journey view of the Echo records',function(next,...a){return withRiftView(()=>next(...a));});
 {const mp0=mPortal;mPortal=function(){const a=arguments;return withRiftView(()=>mp0.apply(this,a));};}
 {const rb0=rkBeaten;rkBeaten=function(){const a=arguments;return withRiftView(()=>rb0.apply(this,a));};}
 HOOK.after('win','fixes11','rift win per journey',function(){try{const sp=B&&B.spec;if(!sp||sp.kind!=='echoBoss'||!sp.rift||!sp.key||!G)return;G.riftWon=G.riftWon||{};G.riftWon[sp.key]=1;}catch(e){}});
@@ -68,7 +68,7 @@ try{const st=document.createElement('style');st.textContent='.ldcards{grid-templ
 // ----- v0.17.8: everything in an Echo Rift fight is level 55 -----
 // The Echo itself is made at the rift level (rk10: 55), but anything it summons mid fight was made at its own level minus three
 // (battle4 summon) or at the stage level. In a rift fight every foe made while the battle runs takes the rift level.
-{const me0=makeEnemy;makeEnemy=function(mo,lv,o){try{const sp=B&&B.spec;if(sp&&sp.kind==='echoBoss'&&sp.rift&&sp.lv>0)lv=sp.lv;}catch(e){}return me0.call(this,mo,lv,o);};}
+HOOK.wrap('makeEnemy','fixes11','rift boss level',function(next,mo,lv,o){try{const sp=B&&B.spec;if(sp&&sp.kind==='echoBoss'&&sp.rift&&sp.lv>0)lv=sp.lv;}catch(e){}return next(mo,lv,o);});
 // ----- v0.17.8: an Echo fights alone -----
 // Some Echoes summon help mid fight (battle4 summon gimmick, boss skills). In the Echo Rift only the Echo itself stands: any foe without
 // the echo flag that joins the fight is removed on the next turn-order pass.

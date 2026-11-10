@@ -48,7 +48,7 @@ function d8Var(thv,mat){const id=(thv||'meadow')+'%'+mat;if(DTHEME[id])return id
   DTHEME[id]={f:M.f.map((c,i)=>lerpHex(c,B.f[i],k)),w:M.w.map((c,i)=>lerpHex(c,B.w[i],k)),top:lerpHex(M.top,B.top,k*.5),acc:M.acc,acc2:M.acc2,name:mat};
   if(!THEME[id])THEME[id]=THEME[thv]||THEME[String(thv).split(/[@~#%]/)[0]]||THEME.meadow;return id;}
 function d8Look(m){if(!m.d8)return;const base=m.thv||m.theme;if(String(base).includes('%'))return;m.thv=d8Var(base,m.d8);const M=D8M[m.d8];m.d8dark=M.dark;m.d8hero=M.hero;}
-{const ab0=applyBossTheme;applyBossTheme=function(m){const r=ab0.apply(this,arguments);try{if(m&&m.d8)d8Look(m);}catch(e){}return r;};}
+HOOK.after('applyBossTheme','dungeon8','dungeon look',function(r,m){try{if(m&&m.d8)d8Look(m);}catch(e){}});
 
 // =================== 2. reshaping organic places ===================
 function d8Noise(seed,W,H,cell){const R=mulberry(seed),gw=Math.ceil(W/cell)+2,gh=Math.ceil(H/cell)+2,g=new Float32Array(gw*gh);for(let i=0;i<g.length;i++)g[i]=R();
@@ -204,10 +204,10 @@ function d8Prop(mat,kind,D){const key=mat+':'+kind+':'+D.acc+D.w[0];if(D8P[key])
   else{f(W[3],2,27,10,2);f(W[1],4,7,6,21);f(W[0],5,5,4,23);f(W[2],6,4,2,3);f(D.acc,6,3,2,3);f('#ffffff',6,3,1,1);f(D.acc2,8,15,1,2);}
   return D8P[key]=cv;}
 const D8_PGLOW={ice:'ice',icevault:'ice',lava:'lava',forge:'lava',root:'fungus',keep:'torch',astral:'violet',rock:'ice'};
-{const oc0=objCanvas;objCanvas=function(theme,kind,v){const m=D8.dm;if(m&&m.d8&&(kind==='pillar'||(kind==='grave'&&m.d8==='crypt')))return d8Prop(m.d8,kind,DTH(m));return oc0.apply(this,arguments);};}
-{const do0=drawObjects;drawObjects=function(ctx,m,y){if(m&&m.kind==='field'&&m.d8lair&&!D8.card&&!window.__D8OFF){try{const Lr=m.d8lair;if(y===Math.max(...Lr.tiles.map(t=>t[1]))){const h=d8Hill2D(m,Lr);ctx.drawImage(h.cv,h.x,h.y);}}catch(e){}}const keep=D8.dm;D8.dm=m&&m.kind==='dungeon'&&m.d8?m:null;
-  try{const r=do0.apply(this,arguments);if(D8.dm){const g=m.theme==='cave'||m.theme==='void'?null:D8_PGLOW[m.d8];if(g)for(let x=0;x<m.w;x++)if(tileAt(m,x,y)==='P'){m.lights=m.lights||[];m.lights.push([x*TS+8,y*TS-4,g==='torch'?26:16,g]);}}return r;}
-  finally{D8.dm=keep;}};}
+HOOK.before('objCanvas','dungeon8','themed pillars and graves',function(theme,kind,v){const m=D8.dm;if(m&&m.d8&&(kind==='pillar'||(kind==='grave'&&m.d8==='crypt')))return HOOK.stop(d8Prop(m.d8,kind,DTH(m)));});
+HOOK.wrap('drawObjects','dungeon8','lair hill, pillar glow lights',function(next,ctx,m,y){if(m&&m.kind==='field'&&m.d8lair&&!D8.card&&!window.__D8OFF){try{const Lr=m.d8lair;if(y===Math.max(...Lr.tiles.map(t=>t[1]))){const h=d8Hill2D(m,Lr);ctx.drawImage(h.cv,h.x,h.y);}}catch(e){}}const keep=D8.dm;D8.dm=m&&m.kind==='dungeon'&&m.d8?m:null;
+  try{const r=next(ctx,m,y);if(D8.dm){const g=m.theme==='cave'||m.theme==='void'?null:D8_PGLOW[m.d8];if(g)for(let x=0;x<m.w;x++)if(tileAt(m,x,y)==='P'){m.lights=m.lights||[];m.lights.push([x*TS+8,y*TS-4,g==='torch'?26:16,g]);}}return r;}
+  finally{D8.dm=keep;}});
 
 // =================== 1. the look, HD-2D ===================
 {const hk0=hdKind;hdKind=function(m,c){if(c==='~'&&m&&m.kind==='dungeon'&&m.d8){const q=D8M[m.d8].liq;return q==='lava'?6:q==='void'?5:4;}return hk0.apply(this,arguments);};}
@@ -231,8 +231,8 @@ function d8BgExtra(ctx,W,H,R,mat,pre){const gy=bgGY(H),D=DTHEME['d8'+mat],f=(c,x
 function d8BgKey(pre,mat,base){const id='d8'+mat,M=D8M[mat];if(!DTHEME[id])DTHEME[id]={f:M.f.slice(),w:M.w.slice(),top:M.top,acc:M.acc,acc2:M.acc2,name:mat};
   const key=pre+id;if(!BG[key]&&BG[pre+base])BG[key]=function(ctx,W,H,R){const keep=DTHEME[base];DTHEME[base]=DTHEME[id];try{BG[pre+base](ctx,W,H,R);}finally{DTHEME[base]=keep;}d8BgExtra(ctx,W,H,R,mat,pre);};
   return BG[key]?key:null;}
-{const bt0=battleTheme;battleTheme=function(){const k=bt0.apply(this,arguments);try{const sp=B&&B.spec;if(!sp||!sp.d8||!D8M[sp.d8])return k;const mt=/^(d_|c_|boss_)([a-z]+)$/.exec(k);if(!mt)return k;
-  const pre=mt[1]==='d_'&&sp.d8org?'c_':mt[1];return d8BgKey(pre,sp.d8,mt[2])||k;}catch(e){return k;}};}
+HOOK.xform('battleTheme','dungeon8','dungeon backdrop key',function(k){try{const sp=B&&B.spec;if(!sp||!sp.d8||!D8M[sp.d8])return k;const mt=/^(d_|c_|boss_)([a-z]+)$/.exec(k);if(!mt)return k;
+  const pre=mt[1]==='d_'&&sp.d8org?'c_':mt[1];return d8BgKey(pre,sp.d8,mt[2])||k;}catch(e){return k;}});
 
 // =================== 3. the boss lair on the field ===================
 // v0.8.9 (owner: "the lair sprite is flat ... it should be more natural looking ... part of the land, as the boss would have dug it out"):
@@ -344,7 +344,7 @@ function d8LairGeo(m,S,b,Q,U,Vv,p,V){const Lr=m.d8lair,isM=(x,y)=>Lr.mask.has(x+
   S.bh.push({b,h:top});D8.lair.hd=Object.assign(D8.lair.hd||{},{geo:n,top:+(top/V).toFixed(1),id:m.id});}
 // a mound tile is ground for the block pass (the hill above stands in its place)
 {const hk1=hdKind;hdKind=function(m,c,x,y){if(m&&m.kind==='field'&&m.d8lair&&x!=null&&m.d8lair.mask.has(x+','+y))return 0;return hk1.apply(this,arguments);};}
-{const ha0=hdActors;hdActors=function(m,now,ts){ha0.apply(this,arguments);try{const Lr=m&&m.kind==='field'&&m.d8lair;if(!Lr||window.__D8OFF)return;const V=HD.S.V,ex=Lr.ex*TS+8;
+HOOK.after('hdActors','dungeon8','lair glow, torches and plume in HD-2D',function(r,m,now,ts){try{const Lr=m&&m.kind==='field'&&m.d8lair;if(!Lr||window.__D8OFF)return;const V=HD.S.V,ex=Lr.ex*TS+8;
   if(Math.abs(ex-HD.cam.x)>480||Math.abs(Lr.ey*TS-HD.cam.z)>640)return;const L=d8LairState(m),still=gfxStill(),gl=hdRgb(L.glow).map(v=>Math.round(v*255)),p=still?.85:.8+.2*Math.sin(ts/(L.lit?1100:520));
   // light spilling from the mouth
   const mzx=ex-Lr.fv[0]*7,mzz=Lr.ey*TS+8-Lr.fv[1]*7+(Lr.south?.2:0);if(Lr.mouth)hdBill(HD.dynA,'glow',hdGlowS(),mzx,(Lr.south?4:2)*V,mzz,false,.5,gl[0],gl[1],gl[2],Math.round((L.lit?30:45)*p),4);
@@ -360,7 +360,7 @@ function d8LairGeo(m,S,b,Q,U,Vv,p,V){const Lr=m.d8lair,isM=(x,y)=>Lr.mask.has(x+
     if(sk)hdBill(HD.dyn,'d8sk:'+L.key,sub('s',16,16),sk[0]*TS+8,(hAt(sk[0],sk[1])-2)*V,sk[1]*TS+9,false,1,255,255,255,255,2|8);}
   // the plume rising from the top: faint, the mouth's colour; not while the hero stands right in front of it
   const tp=Lr.tiles.reduce((a,t)=>Lr.hh[t+'']>=Lr.hh[a+'']?t:a,Lr.tiles[0]),pz=tp[1]*TS+8,hx=WS.px+8,hz=WS.py+12,front=Math.abs(hx-ex)<22&&hz<pz;D8.lair.hd=Object.assign(D8.lair.hd||{},{front,lit:L.lit,plume:front?0:1});
-  if(!front)hdBill(HD.dynA,'d8plume:'+L.glow,d8Tint(d8Plume(),L.glow),tp[0]*TS+8,(Lr.top-4)*V,pz,false,1,255,255,255,Math.round((L.lit?35:50)*p),4);}catch(e){}};}
+  if(!front)hdBill(HD.dynA,'d8plume:'+L.glow,d8Tint(d8Plume(),L.glow),tp[0]*TS+8,(Lr.top-4)*V,pz,false,1,255,255,255,Math.round((L.lit?35:50)*p),4);}catch(e){}});
 // the lair's 2D lights (marked) are left out of the HD-2D bake: hdLights adds its own, smaller ones
 {const bl0=hdBakeLights;hdBakeLights=function(m,S,lights){return bl0.call(this,m,S,(lights||[]).filter(L=>L[4]!==1));};}
 // ----- 2D: the mound on its tiles, the ground around it, the extras as the entrance's prop -----
@@ -408,9 +408,9 @@ function d8LairGround2D(ctx,m,x,y,Lr){const L=d8LairState(m),c=tileAt(m,x,y),px=
   if(L.lit)return;const d=Math.abs(x-Lr.ex)+Math.abs(y-Lr.ey);if(d>4)return;
   if(d8LH(x,y,7)<.45){f('#e8e0d0',2+Math.floor(R()*9),3+Math.floor(R()*9),4,1);if(R()<.5)f('#d8d0c0',3+Math.floor(R()*8),6+Math.floor(R()*6),1,3);}
   if(d8LH(x,y,9)<.55)for(let i=0;i<3;i++){const a=Math.floor(R()*13),b=Math.floor(R()*13);f(L.r[1],a,b,2,2);f(L.r[2],a,b,1,1);}}
-{const dt0=drawTile;drawTile=function(ctx,m,x,y,frame){const Lr=m&&m.kind==='field'&&m.d8lair;if(!Lr||window.__D8OFF)return dt0.apply(this,arguments);const k=x+','+y;
-  if(Lr.mask.has(k)){const c=m.t[y][x];m.t[y][x]=Lr.under[k]||'.';try{dt0.apply(this,arguments);}finally{m.t[y][x]=c;}D8.lair.n2d=(D8.lair.n2d||0)+1;return;}
-  const r=dt0.apply(this,arguments);if(Math.abs(x-Lr.ex)<=4&&Math.abs(y-Lr.ey)<=4)d8LairGround2D(ctx,m,x,y,Lr);return r;};}
+HOOK.wrap('drawTile','dungeon8','lair mound ground in 2D',function(next,ctx,m,x,y,frame){const Lr=m&&m.kind==='field'&&m.d8lair;if(!Lr||window.__D8OFF)return next(ctx,m,x,y,frame);const k=x+','+y;
+  if(Lr.mask.has(k)){const c=m.t[y][x];m.t[y][x]=Lr.under[k]||'.';try{next(ctx,m,x,y,frame);}finally{m.t[y][x]=c;}D8.lair.n2d=(D8.lair.n2d||0)+1;return;}
+  const r=next(ctx,m,x,y,frame);if(Math.abs(x-Lr.ex)<=4&&Math.abs(y-Lr.ey)<=4)d8LairGround2D(ctx,m,x,y,Lr);return r;});
 const D8_EMPTY=mkCv(1,1);
 // the entrance's prop: in 2D the torches on the front faces, the banner and the skull pile on top (the mouth is in the face art);
 // in HD-2D nothing (the hill and its billboards are geometry)
@@ -438,7 +438,7 @@ function hx2(c){const h=hx(c);return h.join(',');}
 MAPICO_X.lair=[[2,4,6,1,'#6a5a4c'],[1,5,8,5,'#5a4a3e'],[0,7,10,3,'#4a3c32'],[3,3,4,1,'#7a6a5a'],[4,6,2,4,'#0a0710'],[4,9,2,1,'#ff6a3a'],[3,2,1,1,'#e8e0d0'],[6,1,1,2,'#3a2a1a'],[7,1,2,1,'#c0392b']];
 MAPICO_X.lairlit=[[2,4,6,1,'#7a6a5c'],[1,5,8,5,'#6a5a4e'],[0,7,10,3,'#5a4c42'],[3,3,4,1,'#8a7a6a'],[4,6,2,4,'#0a0710'],[4,9,2,1,'#ffd04a'],[4,1,2,2,'#ffd04a']];
 MAPICO_NAME.lair='Lair';MAPICO_NAME.lairlit='Lair (relit)';MKN.lair='Lair';MKN.lairlit='Lair (relit)';MK.lair=['#ff5a3a','☗'];MK.lairlit=['#ffd04a','☗'];
-{const mm0=mapMarks;mapMarks=function(m){const L=mm0.apply(this,arguments);try{if(m&&m.kind==='field'&&!window.__D8OFF)L.forEach(o=>{if(o.k==='dungeon')o.k=G.cleared&&G.cleared[m.s]?'lairlit':'lair';});}catch(e){}return L;};}
+HOOK.after('mapMarks','dungeon8','lair markers',function(L,m){try{if(m&&m.kind==='field'&&!window.__D8OFF)L.forEach(o=>{if(o.k==='dungeon')o.k=G.cleared&&G.cleared[m.s]?'lairlit':'lair';});}catch(e){}});
 
 // =================== 4. saves made inside a reshaped dungeon ===================
 {const ew0=enterWorldFromSave;enterWorldFromSave=function(){try{const p=G&&G.pos;if(p&&/^[dkofg]\d/.test(String(p.m))){resetMaps();const m=getMap(p.m);if(m&&(m.kind==='dungeon'||m.kind==='field')&&solidAt(m,p.x,p.y)){const s=d8Nearest(m,p.x,p.y);if(s){p.x=s[0];p.y=s[1];D8.moved=[p.m,s[0],s[1]];}}}}catch(e){}

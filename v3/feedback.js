@@ -18,7 +18,7 @@ function fbEvent(s){FB.events.push({t:Date.now(),e:String(s).slice(0,140)});if(F
     if(V.screen!==FB.lastScreen){FB.lastScreen=V.screen;fbEvent('screen: '+V.screen);}
     if(mt!==FB.lastModal){FB.lastModal=mt;if(mt&&mt!=='feedback'&&mt!=='fbcopy')fbEvent('opened: '+mt+(V.modal.tab?' / '+V.modal.tab:''));}});
   const t0=toast;toast=function(m){fbEvent('toast: '+m);return t0(m);};
-  const s0=showLocation;showLocation=function(){const r=s0.apply(this,arguments);if(WS.m)fbEvent('arrived: '+locName(WS.m)+' ('+WS.m.kind+')');return r;};
+  HOOK.after('showLocation','feedback','log the arrival',function(){if(WS.m)fbEvent('arrived: '+locName(WS.m)+' ('+WS.m.kind+')');});
   HOOK.after('startBattle','feedback','log the start',function(r,spec){if(r!==false&&B)fbEvent(`battle start: ${spec.kind}, stage ${spec.stage}, seed ${B.seed}`);});
   HOOK.before('finishBattle','feedback','log the end',function(how){fbEvent('battle end: '+how);});
 }

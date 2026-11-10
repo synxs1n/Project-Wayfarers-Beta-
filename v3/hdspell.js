@@ -31,23 +31,23 @@ function hbsHit(x,y,el,start,big,u){const m=hbQ().spell||1,R=Math.random,b=u&&un
   // v0.12.6: the pieces the set pieces above lack (embers, a wave arc, a fan of shards, rock chunks, curved slashes, sparkles, sinking wisps), from anim.js, drawn additively
   try{if(typeof anElem==='function'&&el!=='arcane')anElem(el,x,y,start,big,u,1);}catch(e){}
   if(big&&GFX.q.camera&&typeof HD_CAM!=='undefined')gfxCamPush(x,y,HD_CAM.big);}
-{const ba0=burstAt;burstAt=function(x,y,el,start,big){const r=ba0.apply(this,arguments);try{if(hbsOn())hbsHit(x,y,el,start,big,HBS.u);}catch(e){}return r;};}
-{const of0=onFx;onFx=function(u,txt,cls){HBS.u=u;try{return of0.apply(this,arguments);}finally{HBS.u=null;
+HOOK.after('burstAt','hdspell','HD-2D hit shapes',function(r,x,y,el,start,big){try{if(hbsOn())hbsHit(x,y,el,start,big,HBS.u);}catch(e){}});
+HOOK.wrap('onFx','hdspell','HD-2D popup lights',function(next,u,txt,cls){HBS.u=u;try{return next(u,txt,cls);}finally{HBS.u=null;
   try{if(hbsOn()&&u&&B&&V.screen==='battle'){const c=centerOf(u),b=unitBox(u);if(c&&b){
     if(cls==='heal')hbLight({x:c.x,y:c.y,foot:b.gy!=null?b.gy:b.y,r:46,col:[.5,1,.6],int:.8,life:620,fade:'pulse'});
-    else if(cls==='react')hbLight({x:c.x,y:c.y,foot:b.gy!=null?b.gy:b.y,r:110,col:hbRGB(ELC[u.reactEl]||'#ffd04a'),int:1.8,t0:performance.now()+IMPACT,life:700});}}}catch(e){}}};}
+    else if(cls==='react')hbLight({x:c.x,y:c.y,foot:b.gy!=null?b.gy:b.y,r:110,col:hbRGB(ELC[u.reactEl]||'#ffd04a'),int:1.8,t0:performance.now()+IMPACT,life:700});}}}catch(e){}}});
 // casters: a floor circle, a growing light and motes drawn in
-{const oa0=onAction;onAction=function(a,now){const r=oa0.apply(this,arguments);try{if(hbsOn()&&a&&a.actKind&&a.actKind!=='phys'){const c=centerOf(a),b=unitBox(a);if(c&&b){
+HOOK.after('onAction','hdspell','HD-2D caster circle',function(r,a,now){try{if(hbsOn()&&a&&a.actKind&&a.actKind!=='phys'){const c=centerOf(a),b=unitBox(a);if(c&&b){
   const el=a.actEl||(a.actKind==='mag'?'arcane':null),col=el?(HBS_COL[el]||ELC[el]||'#c8a0ff'):a.actKind==='heal'?'#7aff8a':'#fff6a0',C=hbRGB(col),gy=b.gy!=null?b.gy:b.y,m=hbQ().spell||1;
   hbDecal({x:c.x,y:gy,r:Math.max(12,b.w*.6),col:C,a:.7,t0:now,life:IMPACT+420,grow:1,spin:.25});
   hbLight({x:c.x,y:c.y,foot:gy,r:52,col:C,int:.95,t0:now,life:IMPACT+360,fade:'in'});
-  for(let i=0;i<5*m;i++){const ag=Math.random()*Math.PI*2,d=14+Math.random()*10;hbsP({k:'hbC',x:c.x,y:c.y,dx:Math.cos(ag)*d,dy:Math.sin(ag)*d*.6,t0:now+i*20,life:IMPACT+60,col});}}}}catch(e){}return r;};}
+  for(let i=0;i<5*m;i++){const ag=Math.random()*Math.PI*2,d=14+Math.random()*10;hbsP({k:'hbC',x:c.x,y:c.y,dx:Math.cos(ag)*d,dy:Math.sin(ag)*d*.6,t0:now+i*20,life:IMPACT+60,col});}}}}catch(e){}});
 // Limit Breaks: spotlight, gold circle and light, a longer camera push
-{const bf0=battleFrame;battleFrame=function(now){try{if(hbsOn()&&B)for(let i=0;i<B.front.length;i++){const u=B.front[i];if(u.actLimit&&u.actLimit!==u._hblim){u._hblim=u.actLimit;
+HOOK.before('battleFrame','hdspell','Limit Break spotlight',function(now){try{if(hbsOn()&&B)for(let i=0;i<B.front.length;i++){const u=B.front[i];if(u.actLimit&&u.actLimit!==u._hblim){u._hblim=u.actLimit;
   if(Date.now()-u.actLimit<400){const c=centerOf(u),b=unitBox(u);if(c&&b){HB.spot={x:c.x,y:c.y,t0:now,life:1100};
     hbDecal({x:c.x,y:b.gy!=null?b.gy:b.y,r:Math.max(18,b.w*.9),col:[1,.82,.35],a:.85,t0:now,life:1100,grow:1,spin:.3});
     hbLight({x:c.x,y:c.y-4,foot:b.gy!=null?b.gy:b.y,r:110,col:[1,.85,.5],int:1.6,t0:now,life:1100,fade:'pulse'});
-    if(GFX.q.camera)gfxCamPush(c.x,c.y,HD_CAM.limit);}}}}}catch(e){}return bf0.apply(this,arguments);};}
+    if(GFX.q.camera)gfxCamPush(c.x,c.y,HD_CAM.limit);}}}}}catch(e){}});
 // ----- drawing (into the unit layer, after the original particles) -----
 function hbsDraw(ctx,p,now){const t=now-p.t0;if(t<0)return;const q=t/p.life;if(q>=1)return;const R=Math.round;
   switch(p.k){
@@ -99,7 +99,7 @@ function hbsDraw(ctx,p,now){const t=now-p.t0;if(t<0)return;const q=t/p.life;if(q
     case 'hbX':{const r=Math.round(p.r*Math.sin(Math.min(1,q*2)*Math.PI*.5)*(1-q*.4));ctx.globalCompositeOperation='lighter';ctx.globalAlpha=1-q;ctx.fillStyle='#ffffff';
       ctx.fillRect(R(p.x-r),R(p.y),r*2+1,1);ctx.fillRect(R(p.x),R(p.y-r),1,r*2+1);ctx.globalAlpha=(1-q)*.6;ctx.fillStyle='#ffe08a';ctx.fillRect(R(p.x-r*.6),R(p.y-r*.6),2,2);ctx.fillRect(R(p.x+r*.6-1),R(p.y+r*.6-1),2,2);ctx.globalCompositeOperation='source-over';break;}
     case 'hbC':{const e=1-q*q,x=p.x+p.dx*e,y=p.y+p.dy*e;ctx.globalCompositeOperation='lighter';ctx.globalAlpha=Math.min(1,q*3);ctx.fillStyle=p.col;ctx.fillRect(R(x),R(y),1,1);ctx.globalCompositeOperation='source-over';break;}}}
-{const dp0=drawParts;drawParts=function(ctx,now){const r=dp0.apply(this,arguments);if(!HB.on)return r;try{const P=BV.P;for(let i=0;i<P.length;i++)if(P[i].hb)hbsDraw(ctx,P[i],now);}catch(e){}ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';ctx.lineCap='butt';return r;};}
+HOOK.after('drawParts','hdspell','HD-2D particle kinds',function(r,ctx,now){if(!HB.on)return;try{const P=BV.P;for(let i=0;i<P.length;i++)if(P[i].hb)hbsDraw(ctx,P[i],now);}catch(e){}ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';ctx.lineCap='butt';});
 
 // ----- v0.17.7: the kind vocabulary on the HD stage (fxkind11.js calls hbsKind): a light and a floor decal per kind of skill, so slash, blunt, pierce,
 // ranged, heal, buff, debuff, song and a summon each read on the lit stage as they do on the 2D one (the particles themselves draw on both) -----

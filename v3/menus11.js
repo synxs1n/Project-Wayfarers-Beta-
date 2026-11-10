@@ -45,7 +45,7 @@ function m11Pop(){
   return true;
 }
 function m11CanPop(){return !!(V.modal&&MH.stack.length&&!M11_MUST.has(V.modal.type));}
-{const mb0=modalBack;modalBack=function(m){if(m&&m===V.modal&&m11CanPop())return ()=>{};return mb0.apply(this,arguments);};}
+HOOK.before('modalBack','menus11','back goes through the history',function(m){if(m&&m===V.modal&&m11CanPop())return HOOK.stop(()=>{});});
 {const xb0=ACT.xBack;ACT.xBack=function(){if(m11CanPop()&&m11Pop())return;return xb0.apply(this,arguments);};}
 // every in-view "Back" goes through the history while there is one
 ['charBack','menuBack','roleBack','bondsBack','natBack','fsBack','gearBack','obBack'].forEach(k=>{const f=ACT[k];if(typeof f!=='function')return;

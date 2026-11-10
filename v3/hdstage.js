@@ -392,7 +392,7 @@ function hbLitBuild(c,K,P){const look=K.look,W0=c._rw||c.width,H0=c._rh||c.heigh
 function hbLit(c){const K=HB.bake,u=HB.cu;if(!K||!u||!c||!c.width)return c;const P=hbUnitLight(u,K,performance.now());
   let m=HB_LIT.get(c);if(!m||m.K!==K){m={K,map:new Map()};HB_LIT.set(c,m);}let o=m.map.get(P.key);if(o)return o;
   if(m.map.size>40)m.map.clear();o=hbLitBuild(c,K,P);m.map.set(P.key,o);HB.litN=(HB.litN||0)+1;return o;}
-{const so0=spriteOf;spriteOf=function(u){HB.cu=u;return so0.apply(this,arguments);};}
+HOOK.before('spriteOf','hdstage','remember the unit being lit',function(u){HB.cu=u;});
 // v0.5.8: the element badges by the HP bars (battleui.js) are HUD too: on the full GL stage they are drawn from a copy whose solid pixels
 // carry alpha 254 (the HUD mark), so the unit lighting leaves them crisp and unlit wherever they are drawn
 if(typeof elShapeCv==='function'){const es0=elShapeCv,HB_EH={};elShapeCv=function(el){const c=es0.apply(this,arguments);if(!BV.glFull||!c)return c;let h=HB_EH[el];
@@ -464,15 +464,15 @@ function hbFrame(now){const gl=HB.gl,q=hbQ(),W=BL.W,H=BL.H,key=HB.force||battleT
     hbPass(hbMain(q),null,[K.F.tex,K.fl,K.road||K.fl,R.un,bl],(u,gl)=>hbMainU(u,gl,K,look,q,{A,sx:BV.sx||0,sy:BV.sy||0,par,ix:G6I.x||0,iy:G6I.y||0,imp,ic,spx,spy,spot,t:still?0:now/1000}));}
   HB.frames++;HB.ms=HB.ms*.9+(performance.now()-t0)*.1;return true;}
 // ----- the frame wrapper: GL when wanted and working, otherwise the old 2D stage exactly -----
-{const bf0=battleFrame;battleFrame=function(now){
+HOOK.wrap('battleFrame','hdstage','GL stage frame',function(next,now){
   const want=hbWanted()&&(HB.R||hbSetup());
-  if(!want){if(HB.on){HB.on=false;hbShow(false);}BV.glStage=false;return bf0.apply(this,arguments);}
+  if(!want){if(HB.on){HB.on=false;hbShow(false);}BV.glStage=false;return next(now);}
   if(!HB.on){HB.on=true;hbShow(true);}
-  const under=hbQ().mode==='under';BV.glStage=true;BV.glFull=!under;BV.glUnder=under?hbUnder:null;BV.tint=under?hbLit:null;BV.glShadow=under?hbShadow2D:null;let r;try{r=bf0.apply(this,arguments);}finally{BV.glStage=false;BV.glFull=false;BV.glUnder=null;BV.tint=null;BV.glShadow=null;}
+  const under=hbQ().mode==='under';BV.glStage=true;BV.glFull=!under;BV.glUnder=under?hbUnder:null;BV.tint=under?hbLit:null;BV.glShadow=under?hbShadow2D:null;let r;try{r=next(now);}finally{BV.glStage=false;BV.glFull=false;BV.glUnder=null;BV.tint=null;BV.glShadow=null;}
   try{if(!hbFrame(now)){HB.on=false;hbShow(false);}}catch(e){HB.dead=true;HB.err=String(e&&e.message||e);HB.why='gl error';HB.on=false;hbShow(false);try{console.warn('HD stage off:',HB.err);}catch(x){}
     // redraw this frame in 2D so nothing is missing
-    try{bf0.apply(this,arguments);}catch(x){}}
-  return r;};}
+    try{next(now);}catch(x){}}
+  return r;});
 // a new battle screen: the canvas is re-attached on the first frame; effect lights and circles from the last fight are dropped
-{const lb0=layoutBattle;layoutBattle=function(){const r=lb0.apply(this,arguments);try{if(HB.cv&&HB.on)hbPlace();}catch(e){}return r;};}
+HOOK.after('layoutBattle','hdstage','place the GL canvas',function(r){try{if(HB.cv&&HB.on)hbPlace();}catch(e){}});
 HOOK.before('startBattle','hdstage','reset the HD-2D stage lights',function(){HB.L.length=0;HB.D.length=0;HB.spot=null;if(HB.lost&&HB.gl&&!HB.gl.isContextLost())HB.lost=false;});

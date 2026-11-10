@@ -27,7 +27,7 @@ const brLerp=(a,b,t)=>a.map((v,i)=>Math.round(v+(b[i]-v)*t));
 // the palette on the map: m.thv wins over the realm and boss variants (liftOverlay re-runs applyBossTheme on every map of the realm)
 function brApply(m){if(!m||!m.breach)return m;m.thv='breach';m.motif=null;m.bkey=null;return m;}
 HOOK.wrap('getMap','breachlook11','the Breach palette (m.thv)',function(next,...a){const m=next(...a);try{if(a[0]==='x0')brApply(m);}catch(e){}return m;});
-{const ab0=applyBossTheme;applyBossTheme=function(m){const r=ab0.apply(this,arguments);try{brApply(m);}catch(e){}return r;};}
+HOOK.after('applyBossTheme','breachlook11','the Breach palette',function(r,m){try{brApply(m);}catch(e){}});
 
 // ---------- tiles ----------
 // the aurora: slow bands of rift colour (violet to teal) over the void sea, a function of the map pixel so it runs across tiles
@@ -70,7 +70,7 @@ function brTile(ctx,m,x,y,frame){const c0=tileAt(m,x,y),c=c0==='G'?'=':c0==='o'?
   if(wet(0,-1)){for(let i=0;i<16;i++)if(R()<.8)f(i%2?'#a898d8':'#7a6cb0',i,0,1,1+(R()<.4?1:0));}
   if(wet(-1,0))for(let j=0;j<16;j++)if(R()<.8)f('#9486c8',0,j,1+(R()<.3?1:0),1);
   if(wet(1,0))for(let j=0;j<16;j++)if(R()<.8)f('#9486c8',15-(R()<.3?1:0),j,2,1);}
-{const dt0=drawTile;drawTile=function(ctx,m,x,y,frame){const r=dt0.apply(this,arguments);try{if(brIs(m))brTile(ctx,m,x,y,frame);}catch(e){}return r;};}
+HOOK.after('drawTile','breachlook11','Breach tiles',function(r,ctx,m,x,y,frame){try{if(brIs(m))brTile(ctx,m,x,y,frame);}catch(e){}});
 
 // ---------- props ----------
 function brProp(kind){if(BRL.oc[kind])return BRL.oc[kind];const P=(w,h)=>new PG(w+2,h+2,1,1);let g,pal,opt={};
@@ -84,11 +84,11 @@ function brProp(kind){if(BRL.oc[kind])return BRL.oc[kind];const P=(w,h)=>new PG(
   else if(kind==='bush'){g=P(16,14);g.ell(8,8,7.5,5.5,'A');g.ell(5,6,3,2.5,'B');g.ell(11,7,2.5,2,'B');g.px([[4,6],[11,6],[8,9],[13,9]],'C');pal={A:'#0f2d34',B:'#17525a',C:'#8af4e4'};opt.flat='C';}
   else return null;
   return BRL.oc[kind]=paint(g,pal,opt);}
-{const oc0=objCanvas;objCanvas=function(theme,kind,v){try{if(BRL.dm&&theme==='void'&&kind!=='waystone'){const c=brProp(kind);return c||oc0.call(this,'breach',kind,v);}}catch(e){}return oc0.apply(this,arguments);};}
-{const do0=drawObjects;drawObjects=function(ctx,m,y){const was=BRL.dm;BRL.dm=brIs(m)?m:null;try{return do0.apply(this,arguments);}finally{BRL.dm=was;}};}
+HOOK.wrap('objCanvas','breachlook11','Breach props',function(next,theme,kind,v){try{if(BRL.dm&&theme==='void'&&kind!=='waystone'){const c=brProp(kind);return c||next('breach',kind,v);}}catch(e){}return next(theme,kind,v);});
+HOOK.wrap('drawObjects','breachlook11','Breach prop context (BRL.dm)',function(next,ctx,m,y){const was=BRL.dm;BRL.dm=brIs(m)?m:null;try{return next(ctx,m,y);}finally{BRL.dm=was;}});
 
 // ---------- HD-2D: fog and grade; 2D and HD overlay: the aurora in the sky band ----------
-{const hl1=hdLook;hdLook=function(m,now){const o=hl1.apply(this,arguments);try{if(brIs(m)&&!(typeof mapIndoor==='function'&&mapIndoor(m))){const C=[.02,.04,.085];for(let i=0;i<3;i++)o.fog[i]=C[i];o.fogA=Math.max(o.fogA,.7);o.gain[0]*=.95;o.gain[1]*=1.03;o.gain[2]*=1.06;}}catch(e){}return o;};}
+HOOK.after('hdLook','breachlook11','Breach fog and grade',function(o,m,now){try{if(brIs(m)&&!(typeof mapIndoor==='function'&&mapIndoor(m))){const C=[.02,.04,.085];for(let i=0;i<3;i++)o.fog[i]=C[i];o.fogA=Math.max(o.fogA,.7);o.gain[0]*=.95;o.gain[1]*=1.03;o.gain[2]*=1.06;}}catch(e){}});
 function brRibbon(ctx,x0,x1,y0,yMax,t,k){// a wavy ribbon of aurora, fading downward: strips 3 px wide, a few steps of alpha
   const V=[154,90,255],Tl=[47,224,192];for(let x=x0;x<x1;x+=3){const u=x/Math.max(1,x1-x0),c=brLerp(V,Tl,Math.max(0,Math.min(1,.5+.5*Math.sin(u*3.1+t*.12+k)))),yc=y0+Math.sin(x/29+t*.25+k)*9+Math.sin(x/11-t*.4)*3,th=12;
     for(let s=0;s<4;s++){const yy=yc+s*th/4;if(yy>yMax)break;ctx.fillStyle=`rgba(${c[0]},${c[1]},${c[2]},${(.16-s*.036).toFixed(3)})`;ctx.fillRect(x,Math.round(yy),3,Math.ceil(th/4)+1);}}}
@@ -99,7 +99,7 @@ HOOK.after('worldDraw','breachlook11','aurora over the Breach sky band',function
 // ---------- the battle backdrop ----------
 function brBattle(sp){return !!(sp&&(sp.breach||(sp.bg&&sp.bg.br))&&sp.kind!=='arena'&&sp.kind!=='daily'&&!(typeof BOSS_STAGE_KINDS!=='undefined'&&BOSS_STAGE_KINDS[sp.kind]));}
 HOOK.after('startBattle','breachlook11','tag a fight begun in the Breach for its backdrop (roamers too)',function(){try{if(B&&B.spec&&B.spec.bg&&WS&&WS.m&&WS.m.breach)B.spec.bg.br=1;}catch(e){}});
-{const bt0=battleTheme;battleTheme=function(){const k=bt0.apply(this,arguments);try{if(B&&brBattle(B.spec)&&BG.breach)return 'breach';}catch(e){}return k;};}
+HOOK.xform('battleTheme','breachlook11','Breach backdrop',function(k){try{if(B&&brBattle(B.spec)&&BG.breach)return 'breach';}catch(e){}return k;});
 const brPx=(ctx,col,x,y,w,h)=>{ctx.fillStyle=col;ctx.fillRect(Math.round(x),Math.round(y),w||1,h||1);};
 function brFloatIsle(ctx,x,y,w,R,dim){// a distant broken island: flat dark top with a pale lip, a hanging underside of shards, a vein of light
   const k=dim||1;brPx(ctx,'#0d0a1a',x,y,w,3);brPx(ctx,k>.8?'#7a6cb0':'#4a4078',x+1,y,w-2,1);

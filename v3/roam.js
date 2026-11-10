@@ -70,7 +70,7 @@ HOOK.wrap('finishBattle','roam','beaten roamers',function(next,...a){const how=a
     // v0.10.6: every other roamer near the party backs off after a fight (a chaser standing next to you used to start the next battle
     // the moment the results closed, twice in a row with two chasers): the near ones go home and rest, the rest pause a moment
     const m2=WS.m;if(G&&m2&&m2.roam){const now=performance.now();m2.roam.forEach(q=>{if(q.dead)return;const d=Math.abs(q.x-WS.x)+Math.abs(q.y-WS.y);if(d<=5){q.x=q.hx;q.y=q.hy;q.fx=q.x;q.fy=q.y;q.t0=0;q.mode='patrol';q.rest=Math.max(q.rest||0,now+3500);}else q.rest=Math.max(q.rest||0,now+1500);});}}catch(e){}return r;});
-{const wt0=worldTick;worldTick=function(dt,now){wt0.apply(this,arguments);try{const m=WS.m;if(V.screen==='world'&&m&&(m.kind==='dungeon'||m.kind==='field')){if(!m.roam)roamSpawn(m);if(m.roam)roamTick(m,now);}}catch(e){}};}
+HOOK.after('worldTick','roam','roamers spawn and move',function(r,dt,now){try{const m=WS.m;if(V.screen==='world'&&m&&(m.kind==='dungeon'||m.kind==='field')){if(!m.roam)roamSpawn(m);if(m.roam)roamTick(m,now);}}catch(e){}});
 // drawing: the foe's own sprite at small size, a gold ring for elites, a faint sight cone, a "!" while chasing
 HOOK.after('worldDraw','roam','roamers',function(_,now){try{const m=WS.m;if(!m||!m.roam||(m.kind!=='dungeon'&&m.kind!=='field'))return;const ctx=WS.ctx,cx=Math.round(WS.cam.x),cy=Math.round(WS.cam.y),still=typeof reducedMotion==='function'&&reducedMotion();
   m.roam.forEach(r=>{if(r.dead)return;let x=r.x*TS,y=r.y*TS;if(r.t0&&r.fx!=null){const p=Math.min(1,(now-r.t0)/(r.mode==='chase'?ROAM.chaseMs:ROAM.patrolMs));x=(r.fx+(r.x-r.fx)*p)*TS;y=(r.fy+(r.y-r.fy)*p)*TS;}

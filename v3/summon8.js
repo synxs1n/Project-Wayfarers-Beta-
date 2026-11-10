@@ -11,7 +11,7 @@ const SUM={turns:3,mp:.3,mpMin:10,hpK:1.2,lvUp:2,powM:.95,lesser:.6,lesserTurns:
 function sumList(){try{return Object.values(G.summons||{});}catch(e){return [];}}
 function sumUnlock(mon,name,mod){if(!G||G.daily||!MON[mon])return false;G.summons=G.summons||{};if(G.summons[mon])return false;G.summons[mon]={mon,name:name||MON[mon].n,mod:mod||null,at:Date.now()};return true;}
 // old saves: guardians already beaten become summons
-{const up0=unpackG;unpackG=function(){const r=up0.apply(this,arguments);try{if(G&&!G.summons&&G.miniDone&&G.miniPick&&typeof MINIS!=='undefined'){G.summons={};Object.keys(G.miniDone).forEach(id=>{const i=G.miniPick[id];const D=i!=null&&MINIS[i];if(D)sumUnlock(D[0],D[2],D[5]);});}}catch(e){}return r;};}
+HOOK.after('unpackG','summon8','old saves: beaten guardians become summons',function(r){try{if(G&&!G.summons&&G.miniDone&&G.miniPick&&typeof MINIS!=='undefined'){G.summons={};Object.keys(G.miniDone).forEach(id=>{const i=G.miniPick[id];const D=i!=null&&MINIS[i];if(D)sumUnlock(D[0],D[2],D[5]);});}}catch(e){}});
 // v0.12: one guardian per site, drawn WITHOUT replacement per journey. A seeded Fisher-Yates shuffle of all guardians (seed: G.run.seed)
 // is dealt out by site slot (Sanctum of stage s: slot s, Den of stage s: slot 5+s), so the pick does not depend on the order the sites are
 // visited, and no two sites ever share one. A slot whose guardian is already held by another site (old saves, which picked by visit order)
@@ -69,7 +69,7 @@ function sumPray(a,mon){const o=G.summons&&G.summons[mon];if(!o||!sumCan(a))retu
         if(P.n>0){log(`${u.name} keeps praying.`);fx(u,'Praying','stat good');B.mode='wait';render();later(()=>{if(B&&!B.over)endTurn(u,1);},PAUSE*.6);return;}
         B.pray=null;const o=G.summons&&G.summons[P.mon];B.mode='wait';if(o&&sumFire(u,o,P.lesser)){u.next=B.time+delayOf(u,1);render();later(advance,PAUSE*.8);return;}}}}
   return ad0.apply(this,arguments);};}
-{const fl0=fallen;fallen=function(u){if(u&&u.isSum){u.deathT=Date.now();fx(u,'Driven off','stat bad');sumEnd('ko');render();return;}if(u&&B&&B.pray&&B.pray.by===u)B.pray=null;return fl0.apply(this,arguments);};}
+HOOK.before('fallen','summon8','a summon is driven off instead of falling',function(u){if(u&&u.isSum){u.deathT=Date.now();fx(u,'Driven off','stat bad');sumEnd('ko');render();return HOOK.stop();}if(u&&B&&B.pray&&B.pray.by===u)B.pray=null;});
 {const lb0=lbAdd;lbAdd=function(c,n){if(c&&c.isSum)return;return lb0.apply(this,arguments);};}
 {const cs0=canSwap;canSwap=function(){if(B&&(B.sum||B.pray))return false;return cs0.apply(this,arguments);};}
 // the Vanguard always comes back before the fight ends
@@ -78,8 +78,8 @@ HOOK.before('win','summon8','the summon leaves',function(){try{if(B&&B.sum)sumEn
 HOOK.after('startBattle','summon8','fresh battle',function(r){try{if(r!==false&&B){B.sum=null;B.pray=null;B.sumDead=0;B.summonedBy={};}}catch(e){}});
 // ----- the command -----
 function sumMenuHtml(a){const L=sumList();return `<p class="hint">${sumClassOf(a)==='monk'?`A lesser form answers after two turns of stillness and takes ${esc(a.name)}'s place for ${SUM.lesserTurns} turns.`:`The guardian answers next turn and takes the whole Vanguard's place for ${SUM.turns} turns. Costs ${sumCost(a)} MP.`}</p><div class="menu list">${L.map(o=>`<button class="mi tk-ally" data-act="sumPick" data-arg="${o.mon}"><span class="n">${esc(o.name)}</span><span class="m">${(MON[o.mon].el||[]).map(ico).join('')}</span><small>${esc((MON[o.mon].sk||[]).map(s=>s[0]).join(', '))}</small></button>`).join('')}</div>`;}
-{const ch0=cmdHtml;cmdHtml=function(){if(B&&B.menu==='summons'&&B.cur){const h=ch0.apply(this,arguments);const i=h.indexOf('<div class="menu');return (i>=0?h.slice(0,i):h)+sumMenuHtml(B.cur)+'<button class="btn sm cmdback" data-act="back">‹ Back</button>';}
-  let h=ch0.apply(this,arguments);try{const a=B&&B.cur;if(a&&B.menu==='root'&&sumCan(a)){const k=sumClassOf(a),btn=`<button class="mi summon s8" data-act="sumAsk" title="${k==='monk'?'Call a lesser guardian to take your place after two turns of stillness':'Pray for a Sanctum guardian: next turn it takes the field in place of the Vanguard'}">${k==='monk'?'Spirit Call':'Invoke'}</button>`;h=h.replace('<div class="menu sec">','<div class="menu sec">'+btn);}}catch(e){}return h;};}
+HOOK.wrap('cmdHtml','summon8','summons menu and Invoke button',function(next,...args){if(B&&B.menu==='summons'&&B.cur){const h=next(...args);const i=h.indexOf('<div class="menu');return (i>=0?h.slice(0,i):h)+sumMenuHtml(B.cur)+'<button class="btn sm cmdback" data-act="back">‹ Back</button>';}
+  let h=next(...args);try{const a=B&&B.cur;if(a&&B.menu==='root'&&sumCan(a)){const k=sumClassOf(a),btn=`<button class="mi summon s8" data-act="sumAsk" title="${k==='monk'?'Call a lesser guardian to take your place after two turns of stillness':'Pray for a Sanctum guardian: next turn it takes the field in place of the Vanguard'}">${k==='monk'?'Spirit Call':'Invoke'}</button>`;h=h.replace('<div class="menu sec">','<div class="menu sec">'+btn);}}catch(e){}return h;});
 Object.assign(ACT,{sumAsk(){if(!B||B.mode!=='cmd'||!sumCan(B.cur))return;const L=sumList();if(L.length===1){sumPray(B.cur,L[0].mon);render();return;}B.menu='summons';render();},
   sumPick(mon){if(!B||B.mode!=='cmd'||!sumCan(B.cur))return;if(sumPray(B.cur,mon))render();}});
 // the praying hero's card says so

@@ -352,9 +352,9 @@ function svJourneyRow(){
   return `<div class="svrow"><span class="svi ${s}">${SV_ICON[s]||'☁'}</span><div class="grow"><b>${esc(SV_TXT[s]||'')}</b><small>${vis?'<b>Prominent reminder:</b> this is not synced to an account. Export save is your backup.':SV.last?'Last sync '+esc(agoText(SV.last)):'Waiting for the first sync'}${SV.errMsg&&s==='error'?'<br>'+esc(SV.errMsg):''}${SV.werr?'<br><b class="svbad">The last save did not write on this device. Export now.</b>':''}</small></div></div>
     <div class="btnrow svbtns"><button class="btn sm" data-act="svExport" data-arg="${slot}">Export save</button><button class="btn sm" data-act="recoverOpen">Recover Saves</button>${vis?'':`<button class="btn sm" data-act="svDelAsk" data-arg="${slot}">Delete cloud save</button>`}</div>`;
 }
-{const vj0=vJourney;vJourney=function(){let h=vj0.apply(this,arguments);
+HOOK.xform('vJourney','saves','Sync button and save bar row',function(h){
   h=h.replace(/(data-act="saveJ">[^<]*<\/button>)(<\/div>)/,`$1<button class="btn" data-act="svSyncNow" title="${esc(SV_TXT[SV.status]||'')}" ${SV.status==='local'?'disabled':''}>${SV_ICON[SV.status]||'☁'} Sync</button>$2`);
-  return h.replace(/(<div class="savebar[\s\S]*?<\/button><\/div>)/,'$1'+svJourneyRow());};}
+  return h.replace(/(<div class="savebar[\s\S]*?<\/button><\/div>)/,'$1'+svJourneyRow());});
 function mSlots(m){
   const rows=[0,1,2].map(s=>{const o=slotSummary(s),st=slotState(s);
     const info=o?`Stage ${o.stage+1}, ${o.cleared} of 5 beacons relit${o.cycle?', NG+'+o.cycle:''}. Party level ${o.lv}, ${fmt(o.gold)} gold, ${o.battles} battles.${o.savedAt?' Saved '+new Date(o.savedAt).toLocaleString():''}`:st==='bad'?'<span class="svbad">This save could not be read. It is still stored, untouched.</span>':'Empty';

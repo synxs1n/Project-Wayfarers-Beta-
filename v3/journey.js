@@ -1,6 +1,6 @@
 // ===== journey.js (v0.2.0): the Journey tab and journey stats =====
 // New save fields, all defaulted on read: G.stats.steps, G.stats.won, G.stats.fled, G.stats.lost, G.stats.play (ms).
-{const ar0=arrive;arrive=function(){if(G&&G.stats)G.stats.steps=(G.stats.steps||0)+1;return ar0.apply(this,arguments);};}
+HOOK.before('arrive','journey','step count',function(){if(G&&G.stats)G.stats.steps=(G.stats.steps||0)+1;});
 HOOK.before('finishBattle','journey','won/fled/lost stats',function(how){try{if(G&&G.stats&&!G.daily){const k=how==='win'?'won':how==='fled'?'fled':how==='lose'?'lost':null;if(k)G.stats[k]=(G.stats[k]||0)+1;}}catch(e){}});
 // play time: counted in 15 second ticks while the page is visible and a journey is open
 setInterval(()=>{try{if(G&&G.stats&&!G.daily&&document.visibilityState==='visible'&&(V.screen==='world'||V.screen==='battle'))G.stats.play=(G.stats.play||0)+15000;}catch(e){}},15000);
@@ -29,4 +29,5 @@ function vJourney(){
     <div class="btnrow"><button class="btn" data-act="exportOpen">Export save</button>${G.won&&!G.legacyChosen?'<button class="btn gold" data-act="pickLegacy">Choose a Legacy</button>':''}${G.won?'<button class="btn" data-act="startNG">Begin New Game+</button>':''}<button class="btn" data-act="toTitle">Quit to title</button></div>
     <p class="note">The game also saves on its own when you rest, travel and finish fights.</p>`;
 }
+vJourney=HOOK.def('vJourney',vJourney);
 ACT.saveJ=function(){if(saveGame()){V.savedT=Date.now();sfx('chest');toast('Journey saved to slot '+((META.slot||0)+1)+'.');}else toast('Saving is not available here.');render();setTimeout(()=>{if(V.modal&&V.modal.type==='menu'&&V.modal.tab==='system')render();},4100);};

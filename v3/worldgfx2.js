@@ -191,10 +191,9 @@ const P2K={
   return [g,{A:T.stone[0],B:tint(T.stone[0],.28),C:shade(T.stone[0],.72),D:T.stone[3],E:tint(T.stone[0],.5)}];}
 };
 // the three scene kinds (board, boat, gate and the lighthouse) are shaded inside obj2 above (kind branches), through the same helpers
-const _oc1=objCanvas;
-objCanvas=function(theme,kind,v){const f=P2K[kind];if(!f)return _oc1.apply(this,arguments);
-  const key=theme+':'+kind+':'+(v||0);if(OBJ3[key])return OBJ3[key];const T=THEME[theme];if(!T||!T.stone)return _oc1.apply(this,arguments);
-  const r=f(theme,v||0,T);return OBJ3[key]=paintP(r[0],r[1],r[2]);};
+HOOK.before('objCanvas','worldgfx2','scene props through paintP',function(theme,kind,v){const f=P2K[kind];if(!f)return;
+  const key=theme+':'+kind+':'+(v||0);if(OBJ3[key])return HOOK.stop(OBJ3[key]);const T=THEME[theme];if(!T||!T.stone)return;
+  const r=f(theme,v||0,T);return HOOK.stop(OBJ3[key]=paintP(r[0],r[1],r[2]));});
 const _fence0=fenceDraw;
 fenceDraw=function(ctx,m,x,y){const px=x*TS,py=y*TS,isF=(dx,dy)=>tileAt(m,x+dx,y+dy)==='F';
   const f=(c,a,b,w,h)=>{ctx.fillStyle=c;ctx.fillRect(px+a,py+b,w,h);};
@@ -206,8 +205,7 @@ fenceDraw=function(ctx,m,x,y){const px=x*TS,py=y*TS,isF=(dx,dy)=>tileAt(m,x+dx,y
   if(isF(-1,0)||isF(1,0)){[5,10].forEach(r=>{f(L,6,r,1,1);});}
   if(isF(0,-1)){f(D,7,0,2,3);f(W,7,0,1,3);f(L,7,0,1,1);}if(isF(0,1)){f(D,7,14,2,2);f(W,7,14,1,2);}
 };
-const _drawObjects0=drawObjects;
-drawObjects=function(ctx,m,y){
+HOOK.wrap('drawObjects','worldgfx2','dungeon props, contact shadows, boards and boats',function(next,ctx,m,y){
   if(m.kind==='dungeon'){
     for(let x=0;x<m.w;x++){const c=tileAt(m,x,y),px=x*TS,py=y*TS,th=m.theme;const at=(cv,ox,oy)=>ctx.drawImage(cv,px+ox,py+16-cv.height+oy);
       if(c==='C')at(objCanvas(th,'chest'),-1,0);else if(c==='c')at(objCanvas(th,'chestOpen'),-1,0);else if(c==='K')at(obj2(th,'keychest'),-1,0);
@@ -219,7 +217,7 @@ drawObjects=function(ctx,m,y){
   for(let x=0;x<m.w;x++){const c=tileAt(m,x,y),px=x*TS,py=y*TS;// contact shadows for props that had none (the light is upper left: the shadow falls to the lower right)
     if(c==='L')shadowAt(ctx,px+9,py+15,3,1);else if(c==='m')shadowAt(ctx,px+9,py+15,8,2);else if(c==='u')shadowAt(ctx,px+9,py+15,3,1);else if(c==='a')shadowAt(ctx,px+9,py+14,6,2);
     else if(c==='h')shadowAt(ctx,px+9,py+14,8,2);else if(c==='Q')shadowAt(ctx,px+9,py+15,8,2);else if(c==='g')shadowAt(ctx,px+9,py+15,5,1);}
-  _drawObjects0(ctx,m,y);
+  next(ctx,m,y);
   for(let x=0;x<m.w;x++){const c=tileAt(m,x,y),px=x*TS,py=y*TS,th=m.theme;const at=(cv,ox,oy)=>ctx.drawImage(cv,px+ox,py+16-cv.height+oy);
     if(c==='q'){shadowAt(ctx,px+8,py+14,9,2);at(obj2(th,'board'),-3,1);}
     else if(c==='o')at(obj2(th,'boat',x),-5,4);
@@ -227,7 +225,7 @@ drawObjects=function(ctx,m,y){
     else if(c==='E'&&m.kind==='field'){const cv=(m.caves||[]).find(q=>q.x===x&&q.y===y),face=cv?cv.face:(m.entFace||[0,1]),spr=obj2(th,cv?'cavemouth':'facade'),ang=0;/* v0.4.1 1.6: entrances are always drawn upright, whichever way the trail approaches them */
       ctx.save();ctx.translate(px+8,py+8);ctx.rotate(ang);ctx.drawImage(spr,-spr.width/2,8-spr.height+1);ctx.restore();}
     else if(c==='K')at(obj2(th,'keychest'),-1,0);}
-};
+});
 const _drawBuilding0=drawBuilding;
 drawBuilding=function(ctx,m,b){
   if(b.k==='lighthouse'){const c=obj2(m.theme,'lighthouse');ctx.drawImage(c,b.x*TS+b.w*TS/2-c.width/2,(b.y+b.h)*TS-c.height+1);m.lights=m.lights||[];m.lights.push([b.x*TS+b.w*TS/2,(b.y+b.h)*TS-c.height+14,46]);return;}

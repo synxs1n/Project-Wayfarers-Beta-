@@ -64,8 +64,8 @@ function resSS(cv,K){if(!cv||!(K>=1)||cv._ss===K)return;
   cv._ss=0;dw.set.call(cv,lw);dh.set.call(cv,lh);ssCanvas(cv,K);
   try{Object.keys(IMG).forEach(k=>{if(k.indexOf('bm:')===0)delete IMG[k];});}catch(e){}}// foes are resampled for the new density
 if(typeof SPRITE_HD!=='undefined'&&SPRITE_HD){
-  {const lb0=layoutBattle;layoutBattle=function(){const r=lb0.apply(this,arguments);try{const cv=$('bcv');if(cv&&cv._ss&&sprHiRes())resSS(cv,resBk());}catch(e){}return r;};}
-  {const bf0=battleFrame;battleFrame=function(){try{const cv=$('bcv');if(cv&&cv._ss&&sprHiRes()){const K=resBk();if(cv._ss!==K)resSS(cv,K);}}catch(e){}return bf0.apply(this,arguments);};}
+  HOOK.after('layoutBattle','res11','resolution of the battle canvas',function(r){try{const cv=$('bcv');if(cv&&cv._ss&&sprHiRes())resSS(cv,resBk());}catch(e){}});
+  HOOK.before('battleFrame','res11','resolution of the battle canvas',function(){try{const cv=$('bcv');if(cv&&cv._ss&&sprHiRes()){const K=resBk();if(cv._ss!==K)resSS(cv,K);}}catch(e){}});
 }
 // the HD-2D characters are sampled at the scene's own density (worldzoom10.js multiplies HD.px by WZ10.px): 2 texels per art pixel at 1x and 2x,
 // 3 at 3x, so a card texel is one internal pixel

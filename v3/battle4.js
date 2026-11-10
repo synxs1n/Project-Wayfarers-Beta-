@@ -26,12 +26,12 @@ const b4Hex=c=>(c&&c.st&&c.st.hex&&c.st.hex.v)||0;
 
 // ----- 1) detonation reward -----
 function b4DetGain(a){const D=B4.det;return Math.max(D.mpMin,Math.round(((a.S&&a.S.mmp)||0)*D.mpPct));}
-{const dr0=doReaction;doReaction=function(a,t,el){const R=dr0.apply(this,arguments);
+HOOK.after('doReaction','battle4','detonator MP gain',function(R,a,t,el){
   try{if(R&&a&&a.side==='p'&&b4On('det')){const act=B.actN||0;if(B.b4detAct!==act){B.b4detAct=act;B.b4detK=0;}
     if(B.b4detK<B4.det.maxPerAct){B.b4detK++;const n=Math.min(b4DetGain(a),Math.max(0,a.S.mmp-a.mp));a.mp+=n;B.b4det=(B.b4det||0)+1;B.b4detMp=(B.b4detMp||0)+n;
       if(t&&t.fx)for(let i=t.fx.length-1;i>=0;i--){const f=t.fx[i];if(f.cls==='react'&&f.txt===R.n){f.txt=R.n+' +'+n+' MP';f.b4mp=n;break;}}
       log(`${a.name} draws ${n} MP from the blast.`);}}}catch(e){}
-  return R;};}
+  });
 
 // ----- 3) momentum: the kind of an action, the gauge, its effect -----
 function b4Sig(sk){if(!sk)return 'atk';if(sk.limit)return 'limit';if(sk.id==='attack')return 'atk';if(sk.k==='heal'||sk.k==='revive'||sk.k==='mpself')return 'heal';
@@ -58,7 +58,7 @@ function b4PartyAct(a,sig){if(!B||!a||a.side!=='p')return;
 {const ex0=exec;exec=function(sk,tgts){const a=B&&B.cur,sig=b4Sig(sk);const r=ex0.apply(this,arguments);try{b4PartyAct(a,sig);}catch(e){}return r;};}
 {const ui0=useItem;useItem=function(id,t){const a=B&&B.cur,n0=G&&G.inv?G.inv[id]||0:0;const r=ui0.apply(this,arguments);try{if(G&&G.inv&&(G.inv[id]||0)<n0)b4PartyAct(a,'item');}catch(e){}return r;};}
 {const gu0=guard;guard=function(){const a=B&&B.cur;const r=gu0.apply(this,arguments);try{b4PartyAct(a,'guard');}catch(e){}return r;};}
-{const sc0=scan;scan=function(t){const a=B&&B.cur;const r=sc0.apply(this,arguments);try{b4PartyAct(a,'scan');const ln=b4RoleLine(t);if(ln){log('Role: '+ln);if(typeof render==='function')render();}}catch(e){}return r;};}
+HOOK.wrap('scan','battle4','party action and role line',function(next,...args){const t=args[0];const a=B&&B.cur;const r=next(...args);try{b4PartyAct(a,'scan');const ln=b4RoleLine(t);if(ln){log('Role: '+ln);if(typeof render==='function')render();}}catch(e){}return r;});
 
 // ----- 2) free swap -----
 function b4FreeLeft(){if(!b4On('swap'))return 99;const s=B.b4swT;return s==null?0:Math.max(0,B4.swap.cd-((B.pturns||0)-s));}
@@ -93,8 +93,8 @@ function b4RoleLine(u){const r=u&&(u.boss?(B4.roles.boss&&B4.roles.boss.on?'boss
     leech:`Leech. Every ${R.leechEvery===2?'other':R.leechEvery} turn it drains every Vanguard hero who is not guarding and heals from each. Burst it down or Guard.`,
     boss:`Every ${R.boss.every}th turn it gathers power, then strikes your whole Vanguard next turn. Guard halves it for each hero who guards.`,
     flank:`Skirmisher. Once the same three heroes have stood in the Vanguard for ${R.flankAt} actions, it strikes the weakest from the flank. Swap to break it up.`}[r]||'';}
-{const me0=makeEnemy;makeEnemy=function(m,lv,opt){const e=me0.apply(this,arguments);
-  try{const r=b4RoleOfMon(m);if(r&&e&&!e.boss&&b4RolesAllowed()){e.role=r;if(r==='guard'&&!e.maxShield){e.maxShield=B4.roles.pips;e.shield=e.maxShield;e.broken=0;}}}catch(x){}return e;};}
+HOOK.after('makeEnemy','battle4','foe roles',function(e,m,lv,opt){
+  try{const r=b4RoleOfMon(m);if(r&&e&&!e.boss&&b4RolesAllowed()){e.role=r;if(r==='guard'&&!e.maxShield){e.maxShield=B4.roles.pips;e.shield=e.maxShield;e.broken=0;}}}catch(x){}});
 // what the role makes this foe do on its next turn (null: its usual move). Deterministic: no RNG, no clock.
 function b4RolePlan(u){const r=b4Role(u);if(!r||!B||u.hp<=0)return null;const R=B4.roles,live=B.front.filter(c=>c.hp>0);if(!live.length)return null;const n=(u.turns||0)+1;
   const ix=c=>B.front.indexOf(c),taunt=live.find(c=>has(c,'taunt'));
@@ -135,12 +135,13 @@ function b4RoleSk(P,u){const R=B4.roles,el=(u&&u.el&&u.el[0])||null;
 // battle5.js loads before or after this file (battle5.js replaces enemyTurn0 outright when it runs).
 function b4HookPlan(){if(typeof foePlan!=='function'||foePlan.__b4)return;const fp0=foePlan;
   foePlan=function(u){const p=fp0.apply(this,arguments);try{const P=p&&b4RolePlan(u),sk=P&&b4RoleSk(P,u);if(sk)return Object.assign({},p,{sk,cat:typeof b5Cat==='function'?b5Cat(sk):p.cat,b4:P});}catch(e){}return p;};foePlan.__b4=1;}
-function b4HookTurn(){if(enemyTurn0.__b4)return;const et0=enemyTurn0;
-  enemyTurn0=function(u){try{if(B&&!B.over&&u&&u.hp>0&&b4Role(u)){const P=b4RolePlan(u);if(P){let tr=null;
+let b4TurnHooked=false;
+function b4HookTurn(){if(b4TurnHooked)return;b4TurnHooked=true;
+  HOOK.wrap('enemyTurn0','battle4','foe role turn',function(next,u){try{if(B&&!B.over&&u&&u.hp>0&&b4Role(u)){const P=b4RolePlan(u);if(P){let tr=null;
         try{if(typeof B5R!=='undefined'&&B5R.trace){const sk=b4RoleSk(P,u),cat=typeof b5Cat==='function'?b5Cat(sk):P.kind;tr={foe:u.name,turn:(u.turns||0)+1,plan:cat,did:cat,sk:sk.n,shown:typeof b5Shown==='function'?b5Shown(u):null,known:typeof b5Knows==='function'?b5Knows(u):false,role:P.kind};}}catch(_){}
         if(b4RoleDo(u,P)){if(tr){B5R.trace.push(tr);if(B5R.trace.length>400)B5R.trace.shift();}return;}}}}
     catch(e){try{wdLog('b4 role: '+(e&&e.message||e),u);}catch(_){}}
-    return et0.apply(this,arguments);};enemyTurn0.__b4=1;}
+    return next(u);});}
 b4HookPlan();b4HookTurn();
 // damage: momentum, Hex, Shieldbearer cover
 HOOK.after('calcDamage','battle4','Momentum, Hex, guard cover',function(r,a,sk,t){
@@ -239,9 +240,10 @@ function b4GimTurn(u){const S=B.b4g;const n=(u.turns||0)+1;b4GimExpire(u);if(B.o
   if(!B.over&&S.D.t!=='phase2'&&n>=BOSS_GIM.first&&(n-BOSS_GIM.first)%(S.D.every||BOSS_GIM.every)===0)b4GimTell(u);b4GimSync();}
 function b4GimStart(){B.b4g=null;if(!b4GimOn())return;const u=B.en.find(e=>e.boss&&e.key&&b4GimDefOf(e.key));if(!u)return;const D=b4GimDefOf(u.key);
   B.b4g={u,key:String(u.key).replace(/^echo_/,''),D,ticks:0,pend:null,act:null,lvl:0};log(`Realm gimmick: ${b4GimLine(D)}`);}
-function b4HookGim(){if(enemyTurn0.__b4g)return;const et0=enemyTurn0;
-  enemyTurn0=function(u){try{if(B&&!B.over&&B.b4g&&u===B.b4g.u&&u.hp>0){b4GimTurn(u);if(checkEnd())return;}}catch(e){try{wdLog('b4 gimmick: '+(e&&e.message||e),u);}catch(_){}}
-    return et0.apply(this,arguments);};enemyTurn0.__b4g=1;if(et0.__b4)enemyTurn0.__b4=1;}
+let b4GimHooked=false;
+function b4HookGim(){if(b4GimHooked)return;b4GimHooked=true;
+  HOOK.wrap('enemyTurn0','battle4','boss gimmick turn',function(next,u){try{if(B&&!B.over&&B.b4g&&u===B.b4g.u&&u.hp>0){b4GimTurn(u);if(checkEnd())return;}}catch(e){try{wdLog('b4 gimmick: '+(e&&e.message||e),u);}catch(_){}}
+    return next(u);});}
 // effects on damage and speed (tide, dark, mirror, veil, airborne, chill)
 HOOK.after('calcDamage','battle4','boss gimmick damage',function(r,a,sk,t){
   try{const S=B&&B.b4g;if(!S||!r||!r.dmg||!a||!t||!sk)return;const D=S.D,A=S.act;let m=1;
@@ -261,7 +263,7 @@ HOOK.wrap('perform','battle4','boss gimmick answers',function(next,...args){let 
     if(off&&S.act&&S.act.t==='veil'&&els.includes('light')&&(tgts||[]).includes(u)){S.act=null;fx(u,'Revealed','stat good');log(`${a.name}'s light reveals ${u.name}.`);}
     if(S.act&&S.act.t==='mirror'&&hit&&sk.k===S.act.kind&&a.hp>0&&!a.isComp){const d=Math.max(1,Math.round((hp0-u.hp)*D.refl));fx(a,String(d),'dmg');log(`The mirror splashes ${d} back at ${a.name}.`);hurt(a,d);}
     b4GimPhase(u);b4GimSync();}catch(e){}return r;});
-{const sc1=scan;scan=function(t){const S=B&&B.b4g;const r=sc1.apply(this,arguments);try{if(S&&S.u===t){if(S.act&&S.act.t==='veil'){S.act=null;fx(t,'Revealed','stat good');log(`The scan cuts through the mist: ${t.name} is revealed.`);}log(`Realm gimmick: ${b4GimLine(S.D)}`);b4GimSync();}}catch(e){}return r;};}
+HOOK.wrap('scan','battle4','realm gimmick reveal',function(next,...args){const t=args[0];const S=B&&B.b4g;const r=next(...args);try{if(S&&S.u===t){if(S.act&&S.act.t==='veil'){S.act=null;fx(t,'Revealed','stat good');log(`The scan cuts through the mist: ${t.name} is revealed.`);}log(`Realm gimmick: ${b4GimLine(S.D)}`);b4GimSync();}}catch(e){}return r;});
 {const hu1=hurt;hurt=function(t,d){const r=hu1.apply(this,arguments);try{if(B&&B.b4g&&t===B.b4g.u){b4GimPhase(t);b4GimSync();}}catch(e){}return r;};}
 // the i panel: the boss's gimmick and where it stands now
 function b4GimNow(){const S=B&&B.b4g;if(!S)return '';const D=S.D,P=S.pend,A=S.act;
@@ -346,18 +348,18 @@ function b4SwapBody(a){const fr=B.front,ready=b4FreeReady(),left=b4FreeLeft(),cd
     :`<p class="hint"><b>Free swap:</b> ${esc(sel.name)} steps back (ailments, buffs and mark cleared) and the newcomer takes that place. ${esc(a.name)} keeps this turn. One free swap every ${cd} party turns.</p>`;
   const list=sel?`<div class="menu list">${B.back.map((c,i)=>`<button class="mi" data-act="sw" data-arg="${i}" ${c.hp>0?'':'disabled'}><span class="n">${port(c.id,'sm')}${esc(c.name)}</span><span class="m">${c.hp}/${c.S.mhp}</span><small>Lv ${c.lv} ${CLS[TPL[c.id].cls].n} ${c.el.map(ico).join('')}</small></button>`).join('')}</div>`:'';
   return row+hint+list;}
-{const ch0=cmdHtml;cmdHtml=function(){let h=ch0.apply(this,arguments);
+HOOK.xform('cmdHtml','battle4','swap menu body and free swap label',function(h){
   try{if(B&&!B.auto&&!B.over&&B.mode==='cmd'&&B.cur){if(B.menu!=='swap')B.b4out=null;
     if(B.menu==='swap'&&b4On('swap')){const i=h.indexOf('<p class="hint">Who takes');if(i>=0)h=h.slice(0,i)+b4SwapBody(B.cur);}
     else if(B.menu==='root'&&b4FreeReady()){if(has(B.cur,'root')&&canSwap())h=h.replace(/title="Rooted: cannot switch out">Rooted<\/button>/,'title="Free swap: another Vanguard hero can step back">Switch</button>');
       h=h.replace(/(data-arg="swap"[^>]*title=")([^"]*)(")/,'$1$2 (a free swap is ready)$3');}}}catch(e){}
-  return h;};}
+  return h;});
 ACT.b4out=function(i){if(!B||B.mode!=='cmd')return;B.b4out=+i;render();};
 {const sw0=ACT.sw;ACT.sw=function(i){if(B&&B.mode==='cmd'&&B.b4out!=null&&B.front[B.b4out]&&B.front[B.b4out]!==B.cur){if(b4FreeSwap(B.b4out,+i)===false)render();return;}return sw0.apply(this,arguments);};}
 
 // ----- Bestiary: the role in one plain line -----
-if(typeof mBeast==='function'){const mb0=mBeast;mBeast=function(m){let h=mb0.apply(this,arguments);try{if(!h||!m)return h;const d=MON[m.k],g=!d&&typeof guardianDef==='function'&&guardianDef(m.k);const ln=g?b4RoleLine({boss:1}):d&&b4RoleLine({role:b4RoleOfMon(d)});
-  if(ln)h=h.replace('<h4>Skills</h4>',`<h4>Role</h4><p class="note b4role">${esc(ln)}</p><h4>Skills</h4>`);}catch(e){}return h;};}
+HOOK.xform('mBeast','battle4','Role line on the Bestiary card',function(h,m){try{if(!h||!m)return h;const d=MON[m.k],g=!d&&typeof guardianDef==='function'&&guardianDef(m.k);const ln=g?b4RoleLine({boss:1}):d&&b4RoleLine({role:b4RoleOfMon(d)});
+  if(ln)h=h.replace('<h4>Skills</h4>',`<h4>Role</h4><p class="note b4role">${esc(ln)}</p><h4>Skills</h4>`);}catch(e){}return h;});
 
 // ----- tests -----
 const B4X={get cfg(){return B4;},plan:u=>b4RolePlan(u),roleLine:u=>b4RoleLine(u),roleOf:m=>b4RoleOfMon(m),ROLE:B4ROLE,freeSwap:(f,b)=>b4FreeSwap(f,b),freeReady:()=>b4FreeReady(),freeLeft:()=>b4FreeLeft(),

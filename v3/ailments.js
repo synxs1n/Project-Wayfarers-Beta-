@@ -17,7 +17,7 @@ if(typeof ITEM_TIER_OF!=='undefined'){ITEM_TIER_OF.salts=0;ITEM_TIER_OF.ash=1;IT
 const hasAil=c=>!!(c&&c.ail&&AIL_KEYS.some(k=>c.ail[k]));
 const ailOf=c=>AIL_KEYS.filter(k=>c&&c.ail&&c.ail[k]);
 // wound shrinks max HP everywhere stats are computed
-{const cs0=calcStats;calcStats=function(c){const S=cs0.apply(this,arguments);if(c&&c.ail&&c.ail.wound){S.mhp=Math.max(10,Math.round(S.mhp*AIL.woundMhp));}return S;};}
+HOOK.after('calcStats','ailments','wound shrinks max HP',function(S,c){if(c&&c.ail&&c.ail.wound){S.mhp=Math.max(10,Math.round(S.mhp*AIL.woundMhp));}});
 // cleansing: passing ailments always go; curse goes to Purify style skills; wound only to the big revive-and-cleanse heals (opt.hard) and the Bandage
 function cleanse(t,opt){// with no opt, the battle's own calls choose: a revive-and-cleanse skill is hard:1, an item cure is item:1 (see perform/useItem below)
   if(!opt&&typeof B!=='undefined'&&B&&B.hardCleanse)opt={hard:1};else if(!opt&&typeof B!=='undefined'&&B&&B.itemCure)opt={item:1};opt=opt||{};let n=0;
@@ -40,16 +40,16 @@ HOOK.wrap('perform','ailments','hard cleanse flag for revive and cleanse skills'
     T.forEach(t=>{if(t.hp>0&&hasAil(t)){cleanse(t,hard?{hard:1}:{});refresh(t);}});}
   return fc0.apply(this,arguments);};}
 // the inn heals everything; a tent washes Poison out
-{const ra0=restAll;restAll=function(s){const ok=ra0.apply(this,arguments);if(ok){Object.values(G.roster).forEach(c=>{c.ail={};c.S=calcStats(c);c.hp=c.S.mhp;c.mp=c.S.mmp;});saveGame();}return ok;};}
+HOOK.after('restAll','ailments','the inn clears ailments',function(ok,s){if(ok){Object.values(G.roster).forEach(c=>{c.ail={};c.S=calcStats(c);c.hp=c.S.mhp;c.mp=c.S.mmp;});saveGame();}});
 if(typeof campRest==='function'){const cr0=campRest;campRest=function(){const r=cr0.apply(this,arguments);try{Object.values(G.roster).forEach(c=>{if(c.ail&&c.ail.poison)delete c.ail.poison;});}catch(e){}return r;};}
 // battles: carry ailments in and out
 HOOK.after('startBattle','ailments','carry hero ailments in',function(r){try{if(r!==false&&B&&!(G&&G.daily)){allParty().forEach(c=>{ailOf(c).forEach(k=>{c.st[k]={t:STS[k].t,src:null};});});}}catch(e){}});
 HOOK.before('finishBattle','ailments','ailments carried out',function(how){try{if(B&&G&&!G.daily){allParty().forEach(c=>{const a={};if(c.hp>0)AIL_KEYS.forEach(k=>{if(c.st&&c.st[k])a[k]=1;});c.ail=a;c.S=calcStats(c);c.hp=Math.min(c.hp,c.S.mhp);});}}catch(e){}});
 // a Wound landed in battle takes hold at once: max HP drops now
-{const as0=addSt;addSt=function(t,k,src,silent){const was=t&&t.st&&t.st[k];const r=as0.apply(this,arguments);try{if(r&&k==='wound'&&t.side==='p'&&!was){t.ail=t.ail||{};t.ail.wound=1;t.S=calcStats(t);t.hp=Math.min(t.hp,t.S.mhp);}
-  if(k==='wound'&&t&&t.side==='e'&&t.st&&t.st.wound)delete t.st.wound;}catch(e){}return r;};}
+HOOK.wrap('addSt','ailments','wound becomes an ailment',function(next,...args){const [t,k,src,silent]=args;const was=t&&t.st&&t.st[k];const r=next(...args);try{if(r&&k==='wound'&&t.side==='p'&&!was){t.ail=t.ail||{};t.ail.wound=1;t.S=calcStats(t);t.hp=Math.min(t.hp,t.S.mhp);}
+  if(k==='wound'&&t&&t.side==='e'&&t.st&&t.st.wound)delete t.st.wound;}catch(e){}return r;});
 // out of battle poison: a little HP every few steps, never lethal
-{const ar0=arrive;arrive=function(){const r=ar0.apply(this,arguments);try{if(G&&!G.daily){G.ailSteps=(G.ailSteps||0)+1;if(G.ailSteps>=AIL.poisonSteps){G.ailSteps=0;let hit=false;G.party.forEach(id=>{const c=G.roster[id];if(c&&c.hp>1&&c.ail&&c.ail.poison){c.hp=Math.max(1,c.hp-Math.max(1,Math.round(c.S.mhp*AIL.poisonPct)));hit=true;}});if(hit&&typeof renderWorldUI==='function'&&!V.modal)renderWorldUI();}}}catch(e){}return r;};}
+HOOK.after('arrive','ailments','out of battle poison',function(){try{if(G&&!G.daily){G.ailSteps=(G.ailSteps||0)+1;if(G.ailSteps>=AIL.poisonSteps){G.ailSteps=0;let hit=false;G.party.forEach(id=>{const c=G.roster[id];if(c&&c.hp>1&&c.ail&&c.ail.poison){c.hp=Math.max(1,c.hp-Math.max(1,Math.round(c.S.mhp*AIL.poisonPct)));hit=true;}});if(hit&&typeof renderWorldUI==='function'&&!V.modal)renderWorldUI();}}}catch(e){}});
 // foes that carry them
 (function(){const bossEdit=d=>{if(!d||d.__wound)return;d.__wound=1;const sk=(d.sk||[]).find(s=>s[3]==='one'&&s[4]==='phys')||(d.sk||[]).find(s=>s[3]==='one');if(sk){sk[5]=(sk[5]||[]).concat([['wound',AIL.bossWound]]);}};
   Object.keys(GUARDIANS).forEach(k=>bossEdit(GUARDIANS[k]));Object.keys(FINALS).forEach(k=>bossEdit(FINALS[k]));

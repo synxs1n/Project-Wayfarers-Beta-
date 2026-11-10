@@ -52,10 +52,10 @@ const P5S={el:null,t1:null,t2:null,t3:null,shownAt:0,state:'',retry:false};
 function p5SaveLabel(){const slot=(META.slot||0)+1,just=V.savedT&&Date.now()-V.savedT<4000;return {slot,when:just?'Saved ✓':G&&G.savedAt?'Saved '+agoText(G.savedAt):'Not saved yet',just};}
 function p5SavePin(){if(!G||G.daily)return '';const L=p5SaveLabel();
   return `<span class="savepin"><button class="btn sm ${L.just?'gold':''}" data-act="p5Save" aria-label="Save now to slot ${L.slot}">💾 Save</button><small class="nums">Slot ${L.slot} · ${esc(L.when)}</small></span>`;}
-{const mm0=mMenu;mMenu=function(m){let h=String(mm0.apply(this,arguments));try{
+HOOK.xform('mMenu','p5settings','menu title, save pin and version',function(h,m){h=String(h);try{
   h=h.replace('<h2>Menu</h2>',`<h2 class="menuh">Menu ${p5SavePin()}</h2>`);
   h=h.replace(/<span class="verf">[^<]*<\/span>/,`<span class="verf">${esc(gameTitleVer())}</span>`);
-  if((m&&m.tab)==='help'){const k=h.indexOf('<p class="note">Stuck, confused');if(k>=0)h=h.slice(0,k)+`<p class="note"><b>${GAME_TITLE}</b>, ${esc(String(GAME_VERSION).replace(/^Beta\s*/,''))}. The changelog is in Help / Feedback.</p>`+h.slice(k);}}catch(e){}return h;};}
+  if((m&&m.tab)==='help'){const k=h.indexOf('<p class="note">Stuck, confused');if(k>=0)h=h.slice(0,k)+`<p class="note"><b>${GAME_TITLE}</b>, ${esc(String(GAME_VERSION).replace(/^Beta\s*/,''))}. The changelog is in Help / Feedback.</p>`+h.slice(k);}}catch(e){}return h;});
 ACT.p5Save=function(){if(!G||G.daily){toast('Saving is not available here.');return;}P5S.manual=1;let ok=false;try{ok=saveGame();}finally{P5S.manual=0;}
   if(ok){V.savedT=Date.now();try{sfx('chest');}catch(e){}}render();setTimeout(()=>{if(V.modal&&V.modal.type==='menu')render();},4100);};
 ACT.p5Retry=function(){ACT.p5Save();};

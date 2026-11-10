@@ -39,8 +39,8 @@ boardState=function(){if(!G)return null;try{const here=g7TownStage(),Q=G.quests.
   if(Q.some(q=>q.state==='active'&&questReady(q)&&(handFree(q)||(q.type!=='guild'&&q.type!=='arena'&&q.stage===here)))||(G.bounties||[]).some(b=>bountyReady(b)&&b.stage===here))return 'ready';
   if(Q.some(q=>q.state==='open'&&q.type!=='legend'&&g7OnBoard(q,here)))return 'new';}catch(e){}return null;};
 // ----- markers: active quest targets show before their tile is seen -----
-{const mm0=mapMarks;mapMarks=function(m){const o=mm0.apply(this,arguments);try{if(m&&m.kind==='field'&&!G.daily){const have=new Set(o.filter(q=>q.k==='quest'||q.k==='questghost').map(q=>q.x+','+q.y));
-  dynActors(m).forEach(a=>{if(!(a.type==='elite'||a.type==='rival'||a.type==='legend')||have.has(a.x+','+a.y))return;o.push({x:a.x,y:a.y,k:ghostActor(a)?'questghost':'quest',far:1});});}}catch(e){}return o;};}
+HOOK.after('mapMarks','handin9','quest targets before their tile is seen',function(o,m){try{if(m&&m.kind==='field'&&!G.daily){const have=new Set(o.filter(q=>q.k==='quest'||q.k==='questghost').map(q=>q.x+','+q.y));
+  dynActors(m).forEach(a=>{if(!(a.type==='elite'||a.type==='rival'||a.type==='legend')||have.has(a.x+','+a.y))return;o.push({x:a.x,y:a.y,k:ghostActor(a)?'questghost':'quest',far:1});});}}catch(e){}});
 {const wn0=wmName;wmName=function(n,full){let s=wn0.apply(this,arguments);try{if(full&&n.kind==='town'){const st=typeof n.stage==='number'?n.stage:+(String(n.id).slice(1));if(!(st>=0))return s;
   const ready=G.quests.some(q=>q.state==='active'&&questReady(q)&&!handFree(q)&&q.type!=='guild'&&q.type!=='arena'&&q.stage===st)||(G.bounties||[]).some(b=>bountyReady(b)&&b.stage===st);if(ready)s+=' · hand in!';}}catch(e){}return s;};}
 {const st=document.createElement('style');st.textContent='.handwhere{display:block;color:#ffd98a;font-size:.72em;max-width:9em;text-align:right}';document.head.appendChild(st);}

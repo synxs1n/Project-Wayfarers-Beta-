@@ -9,7 +9,7 @@ function echoDef(k){const d=guardianDef(k);if(!d)return null;const dmg=d.sk.filt
   return Object.assign({},d,{n:'Echo '+d.n,sk:d.sk.concat([nsk]),echoOf:k,
     phase2:{at:.25,say:`The Echo of ${d.n} fractures and surges!`,self:[['might',1],['haste',1]],heal:.06}});}
 // the second phase: fires once below 25% HP, after the boss's own phase
-{const cp0=checkPhase;checkPhase=function(e){cp0.apply(this,arguments);try{if(e&&e.phase2&&e.phaseDone&&!e.p2done&&e.hp>0&&e.hp<=e.S.mhp*e.phase2.at){e.p2done=1;const P1=e.phase;e.phase=e.phase2;e.phaseDone=false;cp0(e);e.phase=P1;e.phaseDone=true;}}catch(x){}};}
+HOOK.wrap('checkPhase','echocore','second boss phase',function(next,...args){const e=args[0];next(...args);try{if(e&&e.phase2&&e.phaseDone&&!e.p2done&&e.hp>0&&e.hp<=e.S.mhp*e.phase2.at){e.p2done=1;const P1=e.phase;e.phase=e.phase2;e.phaseDone=false;next(e);e.phase=P1;e.phaseDone=true;}}catch(x){}});
 function makeEcho(k,lv,o){const def=echoDef(k),e=makeEnemy(def,lv,Object.assign({boss:true,key:k,noBuff:1},o));e.echo=1;if(typeof MART!=='undefined'&&MART['echo_'+e.art])e.art='echo_'+e.art;e.echoKey=k;e.phase2=def.phase2;return e;}
 // story echo (in the boss's dungeon) and rift echo (post game, the strongest scaling from echoSpec). The Daily Trial's echo is untouched.
 HOOK.before('encounterFoes','echocore','story Echo and Rift Echo fights',function(spec){
@@ -37,6 +37,6 @@ const ECHOFORGE={
   ST.forEach(s=>{if(b[s])o[s]=Math.round(b[s]*(s==='spd'?1:EF_K));});['mpEff','elDmg','tome'].forEach(q=>{if(b[q])o[q]=b[q];});addGear('w_'+f+'_ef',o);});})();
 function efCost(f){const m={};ECHOFORGE[f].sh.forEach(k=>{m['es_'+k]=EF_SHARDS;});m.essence=EF_ESS;m.core=EF_CORE;return m;}
 function efPerkOf(c){const g=c&&c.eq&&gearOf(c.eq.w);return g&&g.ef?ECHOFORGE[g.ef]:null;}
-{const cs0=calcStats;calcStats=function(c){const S=cs0.apply(this,arguments);try{const P=c&&c.side==='p'&&efPerkOf(c);if(P){if(P.crit)S.crit=(S.crit||0)+P.crit;if(P.critDmg)S.critDmg=(S.critDmg||1.5)+P.critDmg;if(P.eva)S.eva=(S.eva||0)+P.eva;if(P.spdP)S.spd*=1+P.spdP;
-  if(P.elAll)ELK.forEach(el=>{S.elBoost[el]=(S.elBoost[el]||0)+P.elAll;});if(P.bossDmg)S.bossDmg=P.bossDmg;if(P.primeDmg)S.primeDmg=P.primeDmg;S.efPerk=P.n;}}catch(e){}return S;};}
+HOOK.after('calcStats','echocore','Echoforged weapon perks',function(S,c){try{const P=c&&c.side==='p'&&efPerkOf(c);if(P){if(P.crit)S.crit=(S.crit||0)+P.crit;if(P.critDmg)S.critDmg=(S.critDmg||1.5)+P.critDmg;if(P.eva)S.eva=(S.eva||0)+P.eva;if(P.spdP)S.spd*=1+P.spdP;
+  if(P.elAll)ELK.forEach(el=>{S.elBoost[el]=(S.elBoost[el]||0)+P.elAll;});if(P.bossDmg)S.bossDmg=P.bossDmg;if(P.primeDmg)S.primeDmg=P.primeDmg;S.efPerk=P.n;}}catch(e){}});
 HOOK.after('calcDamage','echocore','Echoforged boss and primed damage',function(r,a,sk,t){try{if(a&&a.S&&r&&r.dmg>0){let m=1;if(a.S.bossDmg&&t&&t.boss)m*=1+a.S.bossDmg;if(a.S.primeDmg&&t&&t.primed)m*=1+a.S.primeDmg;if(m!==1)r.dmg=Math.round(r.dmg*m);}}catch(e){}});

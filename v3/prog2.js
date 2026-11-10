@@ -47,7 +47,7 @@ HOOK.wrap('perform','prog2','hand and auto turn counters, goal counters',functio
       // a telegraphed hit (battle4.js: Crushing Charge, Cataclysm) landing on a guarded hero
       if(a&&a.side!=='p'&&sk&&(sk.id==='b4charge'||sk.id==='b4cata')){B.nz.tele++;if((tg||[]).some(c=>c&&c.side==='p'&&c.hp>0&&c.guard))B.nz.guard++;}}}catch(e){}
   const r=next(...args);try{if(B&&B.nz&&B.b4mo&&B.b4mo.full)B.nz.surge=1;}catch(e){}return r;});
-{const dr0=doReaction;doReaction=function(a,t,el){const r=dr0.apply(this,arguments);try{if(r&&B&&B.nz&&a&&a.side==='p')B.nz.react++;}catch(e){}return r;};}
+HOOK.after('doReaction','prog2','count reactions',function(r,a,t,el){try{if(r&&B&&B.nz&&a&&a.side==='p')B.nz.react++;}catch(e){}});
 {const cs0=chipShield;chipShield=function(t){const was=t&&t.broken;const r=cs0.apply(this,arguments);try{if(B&&B.nz&&t&&t.side!=='p'&&!was&&t.broken===2)B.nz.brk++;}catch(e){}return r;};}
 {const at0=autoTurn;autoTurn=function(){if(autoLocked()){if(B)B.auto=false;return;}return at0.apply(this,arguments);};}
 {const a0=ACT.auto;ACT.auto=function(){if(B&&B.auto)return a0.apply(this,arguments);/* v0.10.0: stopping auto is always allowed */if(autoLocked()){toast('Auto is locked here: '+(autoReason()||'win this fight manually once first').replace(/^./,c=>c.toLowerCase())+'.');if(typeof sfx==='function')sfx('deny');return;}return a0.apply(this,arguments);};}
@@ -58,9 +58,9 @@ HOOK.wrap('win','prog2','boss won by hand, auto per foe type opens',function(nex
   try{if(man&&kills&&B===was&&B&&B.result){const fresh=[];kills.forEach(e=>{if(autoTypeOpen(e.base)&&!fresh.includes(e.base))fresh.push(e.base);});
     if(fresh.length){B.result.autoNew=fresh;toast(`Auto unlocked against ${fresh.slice(0,2).join(' and ')}${fresh.length>2?' and more':''}.`);}}}catch(e){}
   return r;});
-{const sc0=scan;scan=function(t){const r=sc0.apply(this,arguments);try{if(t&&nzLive()&&autoTypeFoe(t)&&B&&B.spec&&B.spec.kind!=='daily'&&autoTypeOpen(t.base,'scan'))toast(`Scanned: auto unlocked against ${t.base}.`);}catch(e){}return r;};}
+HOOK.after('scan','prog2','scan unlocks auto',function(r,t){try{if(t&&nzLive()&&autoTypeFoe(t)&&B&&B.spec&&B.spec.kind!=='daily'&&autoTypeOpen(t.base,'scan'))toast(`Scanned: auto unlocked against ${t.base}.`);}catch(e){}});
 HOOK.after('newGame','prog2','auto per foe type starts closed',function(){try{if(G&&!G.daily)G.autoOk={};}catch(e){}});
-{const up0=unpackG;unpackG=function(o){const g=up0.apply(this,arguments);try{if(!g.bossWon){g.bossWon={};(g.cleared||[]).forEach((c,s)=>{if(!c||!g.run)return;const k=s<4?(g.run.bosses||[])[s]:g.run.final;if(k)g.bossWon['b:'+k]=1;});}}catch(e){}return g;};}
+HOOK.after('unpackG','prog2','old saves: bosses won',function(g,o){try{if(!g.bossWon){g.bossWon={};(g.cleared||[]).forEach((c,s)=>{if(!c||!g.run)return;const k=s<4?(g.run.bosses||[])[s]:g.run.final;if(k)g.bossWon['b:'+k]=1;});}}catch(e){}});
 
 // v0.10.0: a later arena or trial wave can bring foe types auto is still locked for: auto stops itself instead of leaving a Stop button that refuses
 {const nw0=nextWave;nextWave=function(){const r=nw0.apply(this,arguments);try{if(B&&B.auto&&autoLocked()){B.auto=false;V.auto=false;B.autoLock=1;toast('Auto stopped: '+(autoReason()||'').replace(/^./,c=>c.toLowerCase())+'.');render();}}catch(e){}return r;};}

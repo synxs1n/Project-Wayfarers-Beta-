@@ -23,7 +23,7 @@ function pqSheetLine(c){const q=G&&G.personal&&G.personal[c.id];let s=`Battles t
   if(q&&q.state==='done')s+='. Personal quest done';else if(q&&q.state==='active')s+='. Personal quest under way';
   else if(TPL[c.id]&&TPL[c.id].mon){}else if(!realmReached(PERSONAL_REALM))s+='. Unlocks in the '+(['first','second','third','fourth','fifth'][PERSONAL_REALM]||'later')+' realm';else if(personalEligible(c))s+='. Personal quest ready at the Guild Hall';
   return s;}
-{const mc0=mChar;mChar=function(id){let h=mc0.apply(this,arguments);try{const c=G&&G.roster[id];if(c&&typeof h==='string')h=h.replace(/(<p class="note nums">)Battles together: \d+ of \d+(<\/p>)/,(a,p1,p2)=>p1+esc(pqSheetLine(c))+p2);}catch(e){}return h;};}
+HOOK.xform('mChar','p4party','Battles together line',function(h,id){try{const c=G&&G.roster[id];if(c&&typeof h==='string')h=h.replace(/(<p class="note nums">)Battles together: \d+ of \d+(<\/p>)/,(a,p1,p2)=>p1+esc(pqSheetLine(c))+p2);}catch(e){}return h;});
 
 // ---------- 4.2 guilds ----------
 const GUILD_WORDS=[[/\bFactions\b/g,'Guilds'],[/\bfactions\b/g,'guilds'],[/\bFaction\b/g,'Guild'],[/\bfaction\b/g,'guild'],[/\bFACTIONS\b/g,'GUILDS']];
@@ -32,7 +32,7 @@ function guildText(s){if(typeof s!=='string'||!/faction/i.test(s))return s;// te
 (function(){try{FACB.hand.n='The Steady Hand Guild';FAC.forEach(F=>F.perks.forEach(p=>{if(p)p.t=guildText(p.t);}));
   MENU_SUB.factions='Guilds';MENU_SUB.fmis='Guilds';if(MJINGLE.rank)MJINGLE.rank.name='Guild rank up';}catch(e){}})();
 {const v0=vFactions;vFactions=function(){return guildText(v0.apply(this,arguments));};}
-{const v0=vFacMissions;vFacMissions=function(){return guildText(v0.apply(this,arguments));};}
+HOOK.xform('vFacMissions','p4party','guild text',function(h){return guildText(h);});
 HOOK.xform('vModal','p4party','guild text on every popup above it',function(h){return guildText(h);});
 {const t0=toast;toast=function(m){return t0.apply(this,[guildText(m)].concat([].slice.call(arguments,1)));};}
 

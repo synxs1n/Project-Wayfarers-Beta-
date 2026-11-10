@@ -10,11 +10,11 @@ function isSeen(m,x,y){const s=seenOf(m);if(!s||x<0||y<0||x>=m.w||y>=m.h)return 
 function revealAround(){const m=WS.m;if(!G||!m||G.daily)return;const s=seenOf(m),R=MAP_R[m.kind]||6,x0=WS.x,y0=WS.y;let ch=0;
   for(let y=y0-R;y<=y0+R;y++)for(let x=x0-R;x<=x0+R;x++){if(x<0||y<0||x>=m.w||y>=m.h)continue;if((x-x0)*(x-x0)+(y-y0)*(y-y0)>R*R+1)continue;const i=y*m.w+x;if(!(s[i>>3]&(1<<(i&7)))){s[i>>3]|=1<<(i&7);ch++;}}
   if(ch){let b='';for(let i=0;i<s.length;i++)b+=String.fromCharCode(s[i]);G.explored=G.explored||{};G.explored[m.id]=btoa(b);MAPCV.dirty=1;}}
-{const ar0=arrive;arrive=function(){const r=ar0.apply(this,arguments);try{revealAround();drawMini();}catch(e){}return r;};}
+HOOK.after('arrive','map','reveal around, redraw the minimap',function(){try{revealAround();drawMini();}catch(e){}});
 HOOK.after('placeAt','map','reveal around, redraw the minimap',function(){try{MAPCV.dirty=1;revealAround();setTimeout(drawMini,0);}catch(e){}});
 // when a new journey starts the seen cache must not leak from the old one
 HOOK.before('newGame','map','forget the explored map',function(){Object.keys(SEEN).forEach(k=>delete SEEN[k]);MAPCV.id=null;});
-{const up0=unpackG;unpackG=function(){Object.keys(SEEN).forEach(k=>delete SEEN[k]);MAPCV.id=null;return up0.apply(this,arguments);};}
+HOOK.before('unpackG','map','forget the explored map',function(){Object.keys(SEEN).forEach(k=>delete SEEN[k]);MAPCV.id=null;});
 // ----- terrain colours -----
 function mapCol(m,c){const th=m.theme,dun=m.kind==='dungeon';
   if(c==='~')return th==='cave'?'#b0482a':th==='void'?'#2a1a4a':th==='heights'?'#b8c8dc':th==='snow'?'#6a9ac8':'#3a6ab0';
@@ -94,7 +94,7 @@ function miniNarrow(){return (window.innerWidth||800)<560;}
 function ensureMini(){try{if(V.screen==='world'){const wv=document.querySelector('.wview');if(wv){const nw=miniNarrow();
   if(!document.getElementById('mmap'))wv.insertAdjacentHTML('beforeend','<canvas id="mmap" class="mmap" width="'+(nw?84:112)+'" height="'+(nw?63:84)+'" aria-hidden="true"></canvas>');
   {const ob=document.getElementById('mmbtn');if(ob)ob.remove();}}}drawMini();}catch(e){}}
-{const wu0=wkwUpdate;wkwUpdate=function(){try{wu0.apply(this,arguments);}catch(e){try{wdLog('wkwUpdate: '+e.message);}catch(_){}}ensureMini();};}
+HOOK.wrap('wkwUpdate','map','keep the minimap; log HUD errors',function(next,...args){try{next(...args);}catch(e){try{wdLog('wkwUpdate: '+e.message);}catch(_){}}ensureMini();});
 window.addEventListener('resize',()=>{try{drawMini();}catch(e){}});
 // deferred to the next frame (and coalesced) so a render never pays for a forced layout here
 let miniRaf=0;HOOK.after('render','map','make sure the minimap exists (next frame)',function(){if(V.screen==='world'&&!miniRaf)miniRaf=requestAnimationFrame(()=>{miniRaf=0;ensureMini();});});
@@ -170,6 +170,7 @@ function worldGraph(){
   side.forEach(f=>f());
   return {nodes,edges};
 }
+mapMarks=HOOK.def('mapMarks',mapMarks);
 // ----- v0.6.3: the world map as an illustrated, code drawn chart -----
 // A parchment sheet (grain, stains, burnt edge, compass rose); each area drawn as a little vignette in its realm's colours: towns as
 // clusters of roofs, fields as countryside with a road through it, dungeons as dark towers (a gold beacon once relit), caves as rock arches,
@@ -357,7 +358,7 @@ function awNext(){const A=WS.auto,m=WS.m;if(!A||!m||A.m!==m.id){awStop('map');re
 {const wi0=worldInputDir;worldInputDir=function(){if(!WS.auto)return wi0.apply(this,arguments);const top=(inputSources()[0]||[])[0];
   if(top!=='auto'){awStop('input');return wi0.apply(this,arguments);}return awNext();};}
 {const h0=haltInput;haltInput=function(){awStop('halt');return h0.apply(this,arguments);};}
-{const wt0=worldTick;worldTick=function(){if(WS.auto&&(V.modal||WS.dlg))awStop(WS.dlg?'dialog':'menu');return wt0.apply(this,arguments);};}
+HOOK.before('worldTick','map','stop tap to walk under a menu or dialog',function(){if(WS.auto&&(V.modal||WS.dlg))awStop(WS.dlg?'dialog':'menu');});
 HOOK.before('placeAt','map','stop tap to walk',function(){awStop('map');});
 // any key, and any press in the world view that is not a map, stops the walk
 window.addEventListener('keydown',e=>{if(WS.auto&&V.screen==='world'&&!e.repeat)awStop('input');},true);
@@ -394,4 +395,4 @@ HOOK.before('startBattle','map','keep the tap to walk through the fight',functio
   WS.awResume=A&&A.m&&WS.m&&A.m===WS.m.id?{m:A.m,tx:A.tx,ty:A.ty,t:performance.now()}:null;if(WS.auto)awStop('battle');}catch(e){WS.awResume=null;}});
 HOOK.after('finishBattle','map','resume the tap to walk',function(){try{const R=WS.awResume;if(!R)return;WS.awResume=null;if(!G||!WS.m||WS.m.id!==R.m||B&&!B.over&&B.lost||V.screen!=='world'&&V.screen!=='battle')return;
   const alive=partyChars().some(c=>c.hp>0);if(!alive)return;WS.awPend=R;}catch(e){WS.awResume=null;}});
-{const wt0=worldTick;worldTick=function(){try{const R=WS.awPend;if(R&&V.screen==='world'&&!V.modal&&!WS.dlg&&!WS.lock&&!B&&WS.m&&!WS.mv){WS.awPend=null;if(WS.m.id===R.m){const p=awPlan(WS.m,R.tx,R.ty);if(p.res==='ok'){if(R.src==='route'){p.plan.route=R.route;p.plan.phase=R.phase;}awGo(p.plan,R.src==='route'?'route':'resume');}else if(R.src==='route')WS.route=null;}}}catch(e){WS.awPend=null;}return wt0.apply(this,arguments);};}
+HOOK.before('worldTick','map','resume a pending walk',function(){try{const R=WS.awPend;if(R&&V.screen==='world'&&!V.modal&&!WS.dlg&&!WS.lock&&!B&&WS.m&&!WS.mv){WS.awPend=null;if(WS.m.id===R.m){const p=awPlan(WS.m,R.tx,R.ty);if(p.res==='ok'){if(R.src==='route'){p.plan.route=R.route;p.plan.phase=R.phase;}awGo(p.plan,R.src==='route'?'route':'resume');}else if(R.src==='route')WS.route=null;}}}catch(e){WS.awPend=null;}});

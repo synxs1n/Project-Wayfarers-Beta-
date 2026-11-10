@@ -8,6 +8,6 @@ Object.assign(ACT,{
   bountyAll(){const L=(G.bounties||[]).filter(b=>b.stage<=G.stage&&b.state==='open');L.forEach(b=>{b.state='active';});saveGame();if(L.length)toast(`Accepted ${L.length} bount${L.length>1?'ies':'y'}. The marked beasts now roam their fields.`);render();},
   facAcceptAll(){const f=facInit();let n=0;FAC.forEach(F=>facMissionList(F.id).forEach(m=>{if(f.acc[m.id]==null&&!f.done[m.id]){f.acc[m.id]=facCount(m.k);n++;}}));saveGame();if(n)toast(`Accepted ${n} mission${n>1?'s':''}.`);render();},
   facClaimAll(){const f=facInit();let n=0;FAC.forEach(F=>facMissionList(F.id).forEach(m=>{if(f.acc[m.id]!=null&&!f.done[m.id]&&facProg(m)>=m.n){ACT.facClaim(m.id);n++;}}));if(n>1)toast(`Claimed ${n} missions.`);render();}});
-{const vf0=vFacMissions;vFacMissions=function(){const h=vf0.apply(this,arguments);try{const f=facInit();let a=0,c=0;FAC.forEach(F=>facMissionList(F.id).forEach(m=>{if(f.acc[m.id]==null)a++;else if(!f.done[m.id]&&facProg(m)>=m.n)c++;}));
-  return allBar('facAcceptAll','facClaimAll',a,c)+h;}catch(e){return h;}};}
+HOOK.xform('vFacMissions','allq','accept all and claim all bar',function(h){try{const f=facInit();let a=0,c=0;FAC.forEach(F=>facMissionList(F.id).forEach(m=>{if(f.acc[m.id]==null)a++;else if(!f.done[m.id]&&facProg(m)>=m.n)c++;}));
+  return allBar('facAcceptAll','facClaimAll',a,c)+h;}catch(e){return h;}});
 // v0.9.5: the ranks page (vFactions) no longer lists missions, so it has no bar of its own; the Notice Board's Guilds tab shows the missions bar once

@@ -20,7 +20,7 @@ function g6CamApply(now){const cv=document.getElementById('bcv'),st=document.get
   if(k<=0||gfxStill()){if(CAM.applied){cv.style.transform='';if(gl)gl.style.transform='';st.style.transform=`scale(${BL.sc})`;CAM.applied=false;}return;}
   const z=1+(CAM.z-1)*k,sc=BL.sc,fx=Math.max(0,Math.min(BL.W,CAM.fx))*sc,fy=Math.max(0,Math.min(BL.H,CAM.fy))*sc,t=`translate(${fx.toFixed(1)}px,${fy.toFixed(1)}px) scale(${z.toFixed(4)}) translate(${(-fx).toFixed(1)}px,${(-fy).toFixed(1)}px)`;
   cv.style.transform=t;if(gl)gl.style.transform=t;st.style.transform=t+` scale(${sc})`;CAM.applied=true;}
-{const lb0=layoutBattle;layoutBattle=function(){const r=lb0.apply(this,arguments);CAM.applied=false;try{const cv=document.getElementById('bcv');if(cv)cv.style.transform='';const gl=document.getElementById('bgl');if(gl)gl.style.transform='';}catch(e){}return r;};}
+HOOK.after('layoutBattle','gfx6battle','reset camera transform',function(r){CAM.applied=false;try{const cv=document.getElementById('bcv');if(cv)cv.style.transform='';const gl=document.getElementById('bgl');if(gl)gl.style.transform='';}catch(e){}});
 // ----- particle cap by tier -----
 {const pt0=part;part=function(o){const cap=GFX.q.parts;if(BV.P.length>=cap)BV.P.splice(0,BV.P.length-cap+1);return pt0.apply(this,arguments);};}
 // ----- richer elemental hits -----
@@ -39,7 +39,7 @@ function g6Burst(x,y,el,start,big){const lv=GFX.q.elfx;if(!lv||gfxStill()||GFX.o
     else if(el==='light'){if(i<4)g6P({k:'g6x',x:x+(R()-.5)*24,y:y+(R()-.5)*20,t0:start+i*50,life:300,col:'#ffffff'});}
     else if(i<3)g6P({k:'g6x',x:x+(R()-.5)*16,y:y+(R()-.5)*12,t0:start+i*40,life:220,col});}
   if(el==='water'||el==='ice')g6P({k:'ring',x,y:y+8,t0:start+60,life:340,col:el==='ice'?'#e8faff':'#8ad0ff',r:big?22:14,flat:1});}
-{const ba0=burstAt;burstAt=function(x,y,el,start,big){ba0.apply(this,arguments);try{g6Burst(x,y,el,start,big);}catch(e){}};}
+HOOK.after('burstAt','gfx6battle','richer elemental hits',function(r,x,y,el,start,big){try{g6Burst(x,y,el,start,big);}catch(e){}});
 // drawing the new kinds (the original drawParts keeps and expires them by life)
 function g6DrawPart(ctx,p,now){const t=now-p.t0;if(t<0)return;const q=t/p.life;if(q>=1)return;const s=t/1000;
   switch(p.k){
@@ -54,26 +54,26 @@ function g6DrawPart(ctx,p,now){const t=now-p.t0;if(t<0)return;const q=t/p.life;i
     case 'g6x':{const r=Math.round(1+3*Math.sin(q*Math.PI));ctx.globalAlpha=1-q;ctx.fillStyle=p.col;ctx.fillRect(Math.round(p.x)-r,Math.round(p.y),r*2+1,1);ctx.fillRect(Math.round(p.x),Math.round(p.y)-r,1,r*2+1);break;}}}
 function g6Orbs(ctx,p,now){if(p.k!=='orb')return;const t=now-p.t0;if(t<0)return;const q=t/p.life;if(q>=1)return;const e=q*q*(3-2*q),x=p.x+(p.x2-p.x)*e,y=p.y+(p.y2-p.y)*e-Math.sin(q*Math.PI)*10;
   ctx.globalCompositeOperation='lighter';ctx.globalAlpha=.7;ctx.drawImage(g6Glow(g6Rgba(p.col,.8)),x-10,y-10,20,20);ctx.globalCompositeOperation='source-over';}
-{const dp0=drawParts;drawParts=function(ctx,now){const r=dp0.apply(this,arguments);if(GFX.off)return r;try{const P=BV.P,bl=GFX.q.bloom>1;for(let i=0;i<P.length;i++){const p=P[i];if(p.g6)g6DrawPart(ctx,p,now);else if(bl)g6Orbs(ctx,p,now);}}catch(e){}ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';return r;};}
+HOOK.after('drawParts','gfx6battle','new particle kinds and orbs',function(r,ctx,now){if(GFX.off)return;try{const P=BV.P,bl=GFX.q.bloom>1;for(let i=0;i<P.length;i++){const p=P[i];if(p.g6)g6DrawPart(ctx,p,now);else if(bl)g6Orbs(ctx,p,now);}}catch(e){}ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';});
 // ----- camera pushes and impact frames come from the same hooks that spawn hit effects -----
-{const of0=onFx;onFx=function(u,txt,cls){of0.apply(this,arguments);try{if(!B||V.screen!=='battle'||!u||GFX.off)return;const c=centerOf(u);if(!c)return;const now=performance.now(),start=now+IMPACT;
+HOOK.after('onFx','gfx6battle','camera push and impact frame',function(r,u,txt,cls){try{if(!B||V.screen!=='battle'||!u||GFX.off)return;const c=centerOf(u);if(!c)return;const now=performance.now(),start=now+IMPACT;
   // hit reaction: a little dust kicked up at the feet as the unit is knocked back
   if(/dmg/.test(cls||'')&&!/poison|burn|bleed/.test(cls)&&GFX.q.elfx&&!gfxStill()){const b=unitBox(u);if(b){const dir=u.side==='p'?1:-1;for(let i=0;i<4;i++)g6P({k:'p',x:b.x+(Math.random()-.5)*8,y:b.y-1,vx:dir*(14+Math.random()*22),vy:-6-Math.random()*8,g:40,t0:start,life:300+Math.random()*160,col:i%2?'rgba(220,210,190,.8)':'rgba(160,150,130,.7)',sz:i%2?2:1});}}
   const crit=/crit/.test(cls||''),react=cls==='react',brk=txt==='BREAK';if(!(crit||react||brk))return;
   gfxCamPush(c.x,c.y,brk?GFX_CAM.brk:react?GFX_CAM.react:GFX_CAM.crit);
-  if(GFX.q.impact&&!gfxStill()){G6I.t=start;G6I.x=c.x;G6I.y=c.y;G6I.col=react?(ELC[u.reactEl]||'#ffd04a'):brk?'#ffd04a':'#ffffff';}}catch(e){}};}
+  if(GFX.q.impact&&!gfxStill()){G6I.t=start;G6I.x=c.x;G6I.y=c.y;G6I.col=react?(ELC[u.reactEl]||'#ffd04a'):brk?'#ffd04a':'#ffffff';}}catch(e){}});
 function g6Impact(ctx,W,H,now){const d=now-G6I.t;if(!G6I.t||d<0||d>70)return;ctx.fillStyle='rgba(10,6,24,.34)';ctx.fillRect(0,0,W,H);
   ctx.globalCompositeOperation='lighter';ctx.globalAlpha=.9;ctx.drawImage(g6Glow(g6Rgba(G6I.col,.9)),G6I.x-30,G6I.y-30,60,60);ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';}
 // ----- victory hop -----
 {const ub0=unitBox;unitBox=function(u){const b=ub0.apply(this,arguments);try{if(b&&G6V.win&&u&&u.side==='p'&&u.hp>0){const d=performance.now()-G6V.t0;if(d>0&&d<2400)b.y-=Math.round(Math.abs(Math.sin(d/150+b.i*.9))*3*(1-d/2400));}}catch(e){}return b;};}
 // ----- the frame -----
-{const bf0=battleFrame;battleFrame=function(now){if(!B||GFX.off)return bf0.apply(this,arguments);const q=GFX.q,still=gfxStill();
+HOOK.wrap('battleFrame','gfx6battle','camera, parallax, vignette',function(next,now){if(!B||GFX.off)return next(now);const q=GFX.q,still=gfxStill();
   try{if(BV.shake&&!BV.shake._g6){BV.shake._g6=1;BV.shake.amp=Math.min(BV.shake.amp,q.shake);}
     // Limit Breaks push the camera toward the hero
     for(let i=0;i<B.front.length;i++){const u=B.front[i];if(u.actLimit&&u.actLimit!==u._g6lim){u._g6lim=u.actLimit;if(Date.now()-u.actLimit<400){const c=centerOf(u);if(c)gfxCamPush(c.x,c.y,GFX_CAM.limit);}}}
     const won=!!B.over&&B.en.length>0&&!B.en.some(g6Alive);if(won&&!G6V.win)G6V.t0=performance.now();G6V.win=won&&!still;
     PARA.on=!!q.parallax;PARA.off=still?0:.45*Math.sin(now/12000*Math.PI*2)-(CAM.on?(CAM.fx/BL.W-.5)*1.1*g6CamEnv(now):0);}catch(e){}
-  let r;try{r=bf0.apply(this,arguments);}finally{PARA.on=false;}
+  let r;try{r=next(now);}finally{PARA.on=false;}
   try{const cv=document.getElementById('bcv');if(cv&&!BV.glFull){const ctx=cv.getContext('2d');if(q.impact&&!still)g6Impact(ctx,BL.W,BL.H,now);if(q.vignette&&!BV.glStage)ctx.drawImage(g6Vignette(BL.W,BL.H,.2),0,0);}g6CamApply(now);}catch(e){}
-  return r;};}
+  return r;});
 function g6Alive(e){return e.hp>0;}

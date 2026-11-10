@@ -28,6 +28,7 @@ BG.arena=function(ctx,W,H,R){
   groundPlane(ctx,W,H,bgGY(H),['#e0c890','#d0b47a','#c0a068','#a88a58'],R,'#b89a68');
 };
 function battleTheme(){if(!B)return 'meadow';const th=ZS(B.stage).theme,k=B.spec.kind;if(k==='arena')return 'arena';if(k==='dungeon'||k==='boss'||k==='echoBoss')return 'd_'+th;return th;}
+battleTheme=HOOK.def('battleTheme',battleTheme);
 // ----- layout -----
 // v0.6.3: slots come from B3.slots (config.js) as [x share, depth on the ground band 0..1]; depth d lands at BATTLE_GROUND top + d*(bot-top)
 // through p2GroundY (p2world.js), so feet stay on the ground plane (2.1).
@@ -63,7 +64,9 @@ function layoutBattle(){
   st.style.width=WIDE_W+'px';st.style.height=WIDE_H+'px';st.style.transform=`scale(${sc})`;
   if(mode==='wide')b3WideBot(wrap,bat);else bat.style.removeProperty('--b3bot');
 }
+layoutBattle=HOOK.def('layoutBattle',layoutBattle);
 function spriteOf(u,walk){if(u.heroArt)return imgOf('bhe:'+u.heroArt,()=>heroCanvas(u.heroArt,walk));return u.side==='p'?imgOf('bh:'+u.id+(walk?':w':'')+lookKey(u.id),()=>heroCanvas(u.id,walk)):imgOf('bm:'+u.art,()=>monCanvas(u.art));}
+spriteOf=HOOK.def('spriteOf',spriteOf);
 function unitBox(u){
   const W=BL.W,H=BL.H;
   if(u.side==='p'){const i=B.front.indexOf(u);if(i<0)return null;const [fx,fy]=slotsFor('p',3)[i];const c=spriteOf(u);return {x:Math.round(fx*W),y:Math.round(fy*H),w:c.width,h:c.height,i};}
@@ -90,6 +93,7 @@ function burstAt(x,y,el,start,big){
   for(let i=0;i<n;i++){const a=Math.random()*Math.PI*2,s=30+Math.random()*(big?90:60);
     part({k:'p',x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s+(E.up||0),g:E.g||0,swirl:E.swirl?(Math.random()<.5?-1:1):0,t0:start+Math.random()*40,life:280+Math.random()*260,col:E.c[i%3],sz:Math.random()<.3?2:1});}
 }
+burstAt=HOOK.def('burstAt',burstAt);
 function sparkleUp(x,y,col,start,n){for(let i=0;i<(n||10);i++)part({k:'p',x:x+(Math.random()-.5)*20,y:y-Math.random()*20,vx:(Math.random()-.5)*10,vy:-20-Math.random()*30,g:0,t0:start+Math.random()*200,life:500+Math.random()*300,col,sz:Math.random()<.3?2:1});}
 function shatterAt(x,y,start){for(let i=0;i<22;i++){const a=Math.random()*Math.PI*2,s=50+Math.random()*90;part({k:'p',x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-30,g:220,t0:start,life:500+Math.random()*300,col:i%2?'#ffd04a':'#ffffff',sz:2});}part({k:'ring',x,y,t0:start,life:360,col:'#ffd04a',r:30});BV.shake={t:start,life:300,amp:3};BV.flash={t:start,life:120,col:'rgba(255,230,140,.4)'};}
 function centerOf(u){const b=unitBox(u);if(!b)return null;return {x:b.x,y:b.y-b.h*.5};}
@@ -107,6 +111,7 @@ function onFx(u,txt,cls){
   else if(/good/.test(cls)){part({k:'ring',x:c.x,y:c.y+12,t0:now,life:400,col:'#7affd0',r:16,flat:1});sparkleUp(c.x,c.y+8,'#fff6a0',now,5);}
   else if(/bad/.test(cls)){part({k:'ring',x:c.x,y:c.y,t0:start,life:300,col:'#d07a8a',r:12});}
 }
+onFx=HOOK.def('onFx',onFx);
 // new actions: casting circles and projectiles
 function onAction(a,now){
   const c=centerOf(a);if(!c)return;
@@ -118,6 +123,7 @@ function onAction(a,now){
   }else if(typeof sfx==='function')sfx('swing');
   if(a.actKind==='mag')tg.forEach(t=>{const d=centerOf(t);if(d)part({k:'orb',x:c.x,y:c.y,x2:d.x,y2:d.y,t0:now+30,life:IMPACT-30,col:ELC[el]||'#c8a0ff'});});
 }
+onAction=HOOK.def('onAction',onAction);
 // ----- per-frame draw -----
 function battleFrame(now){
   const cv=$('bcv');if(!cv||!B)return;
@@ -152,6 +158,7 @@ function battleFrame(now){
   ctx.restore();
   if(BV.flash){const p=(now-BV.flash.t)/BV.flash.life;if(p>=0&&p<1){ctx.fillStyle=BV.flash.col;ctx.globalAlpha=1-p;ctx.fillRect(0,0,W,H);ctx.globalAlpha=1;}else if(p>=1)BV.flash=null;}
 }
+battleFrame=HOOK.def('battleFrame',battleFrame);
 function targetable(u){
   if(!(B.mode==='cmd'&&B.menu==='target'&&B.pend))return false;
   if(u.side==='e')return !!(B.pend.sk&&u.hp>0&&(B.pend.sk.t==='one'||B.pend.sk.t==='chain'||(typeof healsUndead==='function'&&healsUndead(B.pend.sk,u))));
@@ -254,6 +261,7 @@ function drawParts(ctx,now){
   });
   ctx.globalAlpha=1;BV.P=keep;
 }
+drawParts=HOOK.def('drawParts',drawParts);
 
 // phones: grow or shrink the stage so the whole battle screen fits without scrolling
 function fitBattle(){

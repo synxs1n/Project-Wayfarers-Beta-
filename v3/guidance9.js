@@ -22,9 +22,9 @@ function guildDoor(m){try{const b=(m.bld||[]).find(b=>b.k==='guild');return b?[b
   actors.push({y:(d[1]-1)*TS+.3,deco:'guildmark',draw:()=>{const bob=Math.round(Math.sin(now/220)*2),p=.55+.45*Math.sin(now/180),col=st==='ready'?'#7aff8a':'#ffd04a';
     ctx.fillStyle=`rgba(255,240,160,${.25*p})`;ctx.beginPath();ctx.arc(px+8,py-14+bob,10,0,7);ctx.fill();
     ctx.fillStyle='#150b17';ctx.fillRect(px+5,py-24+bob,7,14);ctx.fillStyle=col;ctx.fillRect(px+6,py-23+bob,5,8);ctx.fillRect(px+6,py-13+bob,5,2);}});}catch(e){}return r;};}
-{const ha0=hdActors;hdActors=function(m,now,ts){const r=ha0.apply(this,arguments);try{if(m.kind!=='town')return r;const st=guildState(),d=st&&guildDoor(m);if(!d)return r;
+HOOK.after('hdActors','guidance9','guild door marker in HD-2D',function(r,m,now,ts){try{if(m.kind!=='town')return r;const st=guildState(),d=st&&guildDoor(m);if(!d)return r;
   const V=HD.S.V,still=typeof gfxStill==='function'&&gfxStill(),bob=still?0:Math.round(Math.sin(ts/220)*2),col=st==='ready'?'#7aff8a':'#ffd04a',qx=d[0],qy=d[1]-1;
-  hdBill(HD.dynA,'glow',hdGlowS(),qx*TS+8,(30+bob)*V-10,(qy+1)*TS+2,false,.8,255,240,160,110,4);hdBill(HD.dyn,'mk'+col,hdMark(col),qx*TS+8,(30+bob)*V,(qy+1)*TS+2,false,1,255,255,255,255,4);}catch(e){}return r;};}
+  hdBill(HD.dynA,'glow',hdGlowS(),qx*TS+8,(30+bob)*V-10,(qy+1)*TS+2,false,.8,255,240,160,110,4);hdBill(HD.dyn,'mk'+col,hdMark(col),qx*TS+8,(30+bob)*V,(qy+1)*TS+2,false,1,255,255,255,255,4);}catch(e){}return r;});
 // ----- 2) quest goals and the guide -----
 function qgWhere(q){try{const Z=ZS(q.stage);if(q.type==='hunt')return `Fight on the field of ${Z.n} (${Z.town}'s realm) until ${q.n} ${MON[q.mon]?MON[q.mon].n:'of the marked foe'} are down.`;
   if(q.type==='gather')return `Gather ${q.n} ${MATS[q.mat]||q.mat} in ${Z.n}: pick the glowing spots on the field, or buy at the Smithy.`;

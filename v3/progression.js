@@ -29,7 +29,7 @@ function recruitFit(id,N){
 function fitTags(id){return recruitFit(id).why.map(w=>`<em class="fit">${esc(w)}</em>`).join('');}
 function nextTavernUnlock(){const b=battlesSoFar();for(let n=1;n<TAV_BATTLES.length;n++){if(n>G.stage&&b<TAV_BATTLES[n])return {n,need:TAV_BATTLES[n]-b};}return null;}
 function rerollTavern(){G.tavRoll=(G.tavRoll||0)+1;}
-{const ra=restAll;restAll=function(){const r=ra.apply(this,arguments);if(r)rerollTavern();return r;};}
+HOOK.after('restAll','progression','new tavern visitors after a rest',function(r){if(r)rerollTavern();});
 
 // ----- Guild Hall recruitment challenges -----
 // Beta v0.3.1: a bigger pool (four tavern and rare heroes moved here, two of them dual-type) and tougher goals.

@@ -231,7 +231,7 @@ function heroPoseOf(u,a){
   return null;
 }
 const HPS={on:true};
-{const so9=spriteOf;spriteOf=function(u,walk){const c=so9.apply(this,arguments);
+HOOK.xform('spriteOf','heropose9','hero pose frames',function(c,u,walk){
   try{
     if(!HPS.on||!u||u.side!=='p'||u.heroArt||u.isComp||u.hp<=0||(typeof B!=='undefined'&&B&&B.wipe))return c;
     const t=TPL[u.id];if(!t||t.mon||!t.look||t.scourge)return c;
@@ -242,6 +242,6 @@ const HPS={on:true};
     // idle A is the normal sprite; B hangs cloth and hair 1px lower (same 620 ms beat as the breathing in drawUnit)
     if(!still&&!walk&&a>520){const i=(typeof B!=='undefined'&&B&&B.front?B.front.indexOf(u):0)||0;if(Math.floor(performance.now()/620+i*.5)%2===1)return b8Small(heroPoseImg(u.id,'idle',1,false));}
   }catch(e){}
-  return c;};}
+  return c;});
 // the prayer and the spell already raise the hands: soften the hop animPose adds on top
 if(typeof animPose==='function'){const ap9=animPose;animPose=function(u,a,dir,b){const r=ap9.apply(this,arguments);try{if(r&&r.dy&&u.side==='p'&&!u.isComp){const pf=heroPoseOf(u,a);if(pf&&(pf.pose==='pray'||pf.pose==='cast'))return Object.assign({},r,{dy:Math.round(r.dy*.5)});}}catch(e){}return r;};}

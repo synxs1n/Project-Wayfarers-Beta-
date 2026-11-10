@@ -345,13 +345,13 @@ function realmVariant(theme,R){const id=theme+'@'+R.key;if(THEME[id])return id;c
   const V=Object.assign({},T);['g','tg','p','cb','cl'].forEach(k=>{if(T[k])V[k]=lerpArr(T[k],B.mix,B.k*(k==='cb'?.5:k==='cl'?.6:1));});
   V.w=T.w.slice();V.w[0]=lerpHex(T.w[0],B.mix,B.k*.5);V.w[3]=lerpHex(T.w[3],B.mix,B.k*.5);V.roof=B.roof.slice();V.dec=B.dec.slice();V.lip=lerpHex(T.lip,B.mix,B.k*.7);THEME[id]=V;
   const DV=Object.assign({},D);DV.f=lerpArr(D.f,B.mix,B.k*.55);DV.w=lerpArr(D.w,B.mix,B.k*.5);DV.top=lerpHex(D.top,B.mix,B.k*.35);DTHEME[id]=DV;return id;}
-{const ab0=applyBossTheme;applyBossTheme=function(m){
+HOOK.wrap('applyBossTheme','realms','realm look, cleared maps relit',function(next,m){
   try{if(m&&m.kind==='town'){(m.npcs||[]).forEach(n=>{if(n.line0==null)n.line0=n.line;});if(!m.signs0&&m.signs)m.signs0=Object.assign({},m.signs);}}catch(e){}
   const cleared=!!(G&&G.cleared&&typeof m.s==='number'&&G.cleared[m.s]&&!m.archive);
-  if(!cleared)ab0.apply(this,arguments);else{m.thv=m.theme;m.motif=null;m.amb=null;m.btint=null;m.bkey=null;
+  if(!cleared)next(m);else{m.thv=m.theme;m.motif=null;m.amb=null;m.btint=null;m.bkey=null;
     (m.npcs||[]).forEach(n=>{if(n.line0!=null){n.line=n.line0;n.themed=0;}});if(m.signs0)m.signs=Object.assign({},m.signs0);}
   try{const R=typeof m.s==='number'&&!m.archive&&G&&G.run?realmAt(m.s):null;if(R&&THEME[m.theme]&&DTHEME[m.theme]){const base=realmVariant(m.theme,R);
-    m.thv=(!cleared&&m.bkey)?themeVariant(base,m.bkey):base;if(cleared||!m.bkey){m.motif=R.lean.motif;m.amb=R.lean.amb;m.btint=R.lean.tint;}}}catch(e){}};}
+    m.thv=(!cleared&&m.bkey)?themeVariant(base,m.bkey):base;if(cleared||!m.bkey){m.motif=R.lean.motif;m.amb=R.lean.amb;m.btint=R.lean.tint;}}}catch(e){}});
 // boss down: the overlay lifts from every map of that realm, and the realm says so
 function liftOverlay(s){try{Object.values(MAPS).forEach(m=>{if(m&&m.s===s&&!m.archive)applyBossTheme(m);});syncPools();}catch(e){}}
 HOOK.wrap('finishBattle','realms','overlay lifts on a first clear',function(next,...a){const how=a[0];const sp=B&&B.spec,s=sp&&sp.stage,c0=B?B.clr0:true;const r=next(...a);
@@ -395,7 +395,7 @@ function overlayGuide(){if(!G||!G.run||G.daily)return '';const s=WS.m&&typeof WS
   const R=realmAt(s),o=bovAt(s),f=calFxAt(s);if(!R&&!o)return '';
   return `<h4>${esc(ZS(s).n)}</h4>${R&&isRv2()?`<p class="note">${esc(R.intro.split('. ')[0])}.</p>`:''}${o?`<p class="note"><b>The realm is uneasy.</b> ${esc(o.guide)} It lifts when the realm's master falls.</p>`:G.cleared[s]?'<p class="note">The realm is at peace. Its master has fallen.</p>':''}${f?`<p class="note"><b>${esc(f.n)}.</b> ${esc(f.d)}</p>`:''}`;}
 {const nl0=npcLore;npcLore=function(m){const L=nl0.apply(this,arguments);try{const o=bovAt(m.s|0);if(!o)return G&&G.cleared&&G.cleared[m.s|0]?[]:L;return L.concat([o.say]);}catch(e){return L;}};}
-{const ba0=bestAll;bestAll=function(){const out=ba0();try{const have=new Set(out.map(o=>o.k));Object.keys(BOV).forEach(k=>{const id=BOV[k].mon[0];if(MON[id]&&!have.has(id))out.push({k:id,d:MON[id],odd:1});});}catch(e){}return out;};}
+HOOK.xform('bestAll','realms','realm oddities in the Bestiary',function(out){try{const have=new Set(out.map(o=>o.k));Object.keys(BOV).forEach(k=>{const id=BOV[k].mon[0];if(MON[id]&&!have.has(id))out.push({k:id,d:MON[id],odd:1});});}catch(e){}return out;});
 // keep pools right after a load or a new journey
 HOOK.before('getMap','realms','sync pools before a new map',function(id){if(!MAPS[id])syncPools();});
 // the opening story frames whichever realm the journey starts in

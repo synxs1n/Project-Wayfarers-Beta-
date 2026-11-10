@@ -15,4 +15,4 @@ function compPerk(o){return COMP_FAM[compFamily(o)]||null;}
 // adds the perk to a stat block (called by the companion stat hook)
 function applyCompPerk(S,o){const P=compPerk(o);if(!P)return S;if(P.crit)S.crit=(S.crit||0)+P.crit;if(P.spd)S.spd*=1+P.spd;if(P.ward)S.ward=P.ward;if(P.thorns)S.thorns=P.thorns;if(P.mend)S.mend=P.mend;S.perk=P.n;return S;}
 // Warding Glow: a chance to shrug off a new ailment
-{const as0=addSt;addSt=function(t,k,src,silent){if(t&&t.side==='p'&&t.S&&t.S.ward&&STS[k]&&STS[k].bad&&!(t.st||{})[k]&&t.hp>0&&RNG()<t.S.ward){fx(t,'Warded','stat good effx imm');if(!silent)log(`${t.name}'s companion wards off ${STS[k].n}.`);return false;}return as0.apply(this,arguments);};}
+HOOK.before('addSt','comp2','a pet wards off a status',function(t,k,src,silent){if(t&&t.side==='p'&&t.S&&t.S.ward&&STS[k]&&STS[k].bad&&!(t.st||{})[k]&&t.hp>0&&RNG()<t.S.ward){fx(t,'Warded','stat good effx imm');if(!silent)log(`${t.name}'s companion wards off ${STS[k].n}.`);return HOOK.stop(false);}});

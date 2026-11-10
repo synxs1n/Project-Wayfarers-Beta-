@@ -2,8 +2,8 @@
 // The owner: "add equip button next to sheet button on party cards, it opens the equip menu for that character." The Party tab's cards
 // (and the Guild Hall's swap view) get an Equip button next to Sheet; it opens Backpack > Equipment with that hero's row scrolled into view
 // and lit for a moment. No save fields.
-{const vs0=vSwap;vSwap=function(where){let h=vs0.apply(this,arguments);try{h=h.replace(/<button class="btn sm swsheet" data-act="(\w+)" data-arg="([^"]+)" aria-label="Open ([^"]*)'s sheet">Sheet<\/button>/g,
-  (m,act,id,name)=>`<div class="swbtns"><button class="btn sm swsheet" data-act="${act}" data-arg="${id}" aria-label="Open ${name}'s sheet">Sheet</button><button class="btn sm sweq" data-act="eqOpen" data-arg="${id}" aria-label="Equip ${name}" title="Open the Equipment page at ${name}">Equip</button></div>`);}catch(e){}return h;};}
+HOOK.xform('vSwap','equipbtn10','Equip button beside each Sheet button',function(h,where){try{h=h.replace(/<button class="btn sm swsheet" data-act="(\w+)" data-arg="([^"]+)" aria-label="Open ([^"]*)'s sheet">Sheet<\/button>/g,
+  (m,act,id,name)=>`<div class="swbtns"><button class="btn sm swsheet" data-act="${act}" data-arg="${id}" aria-label="Open ${name}'s sheet">Sheet</button><button class="btn sm sweq" data-act="eqOpen" data-arg="${id}" aria-label="Equip ${name}" title="Open the Equipment page at ${name}">Equip</button></div>`);}catch(e){}return h;});
 {const ve0=vEquipTab;vEquipTab=function(){let h=ve0.apply(this,arguments);try{const L=(V.charList||[]).slice(),f=V.eqFocus&&Date.now()-V.eqFocus.t<2500?V.eqFocus.id:null;let i=0;h=h.replace(/<div class="eqrow">/g,()=>{const id=L[i++]||'';return `<div class="eqrow${id===f?' eqfocus':''}" data-hero="${id}">`;});}catch(e){}return h;};}
 ACT.eqOpen=function(id){if(!G||!G.roster[id])return;V.eqFocus={id,t:Date.now()};V.modal={type:'menu',tab:'equip',from:V.modal&&V.modal.type!=='menu'?V.modal:undefined};render();
   setTimeout(()=>{try{const el=document.querySelector(`#modal .eqrow[data-hero="${id}"]`);if(el)el.scrollIntoView({block:'center',behavior:'smooth'});}catch(e){}},30);

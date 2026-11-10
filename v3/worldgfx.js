@@ -108,6 +108,7 @@ function drawTile(ctx,m,x,y,frame){
   if(c==='f'){for(let i=0;i<4;i++){const fx=Math.floor(R()*12)+2,fy=Math.floor(R()*12)+2,col=T.dec[Math.floor(R()*4)];f(T.tg[0],fx+1,fy+2,1,2);f(col,fx,fy,1,1);f(col,fx+2,fy,1,1);f(col,fx+1,fy-1,1,1);f(col,fx+1,fy+1,1,1);f('#fff6a0',fx+1,fy,1,1);}}
   if(c==='r'){for(let i=0;i<5;i++){const s=T.stone;f(s[Math.floor(R()*3)],Math.floor(R()*13),Math.floor(R()*13),2+Math.floor(R()*2),2);}}
 }
+drawTile=HOOK.def('drawTile',drawTile);
 // ----- objects -----
 const OBJ_CACHE={};
 function objCanvas(theme,kind,v){
@@ -165,6 +166,7 @@ function objCanvas(theme,kind,v){
   else if(kind==='tower'){g=P(22,34);g.rect(2,12,18,21,'A');for(let r=14;r<33;r+=4)g.rect(2,r,18,1,'D');g.rect(1,8,20,5,'B');for(let i=1;i<21;i+=5)g.rect(i,4,3,4,'B');g.rect(9,18,4,7,'K');g.rect(10,19,2,5,'Y');g.line(11,4,11,-3,'W');g.rect(12,-3,6,4,'F');pal={A:T.stone[0],B:T.stone[2],D:T.stone[1],K:OUTC,Y:'#ffd98a',W:'#3a2a1a',F:['#a82a2a','#2a5aa8','#c8a02a','#6a2a8a','#2a8a6a','#4a2a6a'][0]};opt.flat='YK';}
   return OBJ_CACHE[key]=paint(g,pal,opt);
 }
+objCanvas=HOOK.def('objCanvas',objCanvas);
 function fenceDraw(ctx,m,x,y){
   const px=x*TS,py=y*TS,isF=(dx,dy)=>tileAt(m,x+dx,y+dy)==='F';
   const f=(c,a,b,w,h)=>{ctx.fillStyle=c;ctx.fillRect(px+a,py+b,w,h);};
@@ -204,6 +206,7 @@ function drawObjects(ctx,m,y){
   }
   m.bld.filter(b=>b.y+b.h-1===y).forEach(b=>bakeBuilding(m,b));
 }
+drawObjects=HOOK.def('drawObjects',drawObjects);
 // v0.3.3: each building is its own sprite so it can be depth sorted against the party and townsfolk
 const BSP_X=10,BSP_TOP=52;
 function bakeBuilding(m,b){const cv=mkCv(b.w*TS+BSP_X*2,b.h*TS+BSP_TOP+6),c=cv.getContext('2d');c.translate(BSP_X-b.x*TS,BSP_TOP-b.y*TS);drawBuilding(c,m,b);(m.bsp=m.bsp||[]).push({b,cv});}

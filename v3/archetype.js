@@ -92,7 +92,7 @@ const isUndead=t=>!!(t&&t.ty&&t.ty.includes('undead'));
 function healsUndead(sk,u){return !!(sk&&(sk.k==='heal'||sk.k==='revive')&&(sk.t==='ally'||sk.t==='dead')&&isUndead(u)&&u.hp>0);}
 
 // tag foes as they are made
-{const me0=makeEnemy;makeEnemy=function(m,lv,opt){const e=me0.apply(this,arguments);try{e.ty=tyOf(m.art);}catch(x){e.ty=[];}return e;};}
+HOOK.after('makeEnemy','archetype','foe types',function(e,m,lv,opt){try{e.ty=tyOf(m.art);}catch(x){e.ty=[];}});
 // Undead are weak to Light, whatever their own element is
 {const eo0=effOf;effOf=function(el,t){let m=eo0.apply(this,arguments);if(el==='light'&&isUndead(t))m=Math.max(m,UNDEAD_LIGHT);return m;};}
 // damage: archetype multiplier on top of the element multiplier
@@ -155,17 +155,17 @@ function archChips(e){
 }
 // skill and weapon labels
 function dlChip(s,cls){const d=dlFor(cls||null,s);return d?`<em class="dl ${d}" title="Delivery: ${DL_NAME[d]} (${DL_HINT[d]}). Some foes resist or fear this kind of attack.">${DL_NAME[d]}</em>`:'';}
-if(typeof gearDesc==='function'){const gd0=gearDesc;gearDesc=function(id){const s=gd0.apply(this,arguments);const g=GEAR[id];return g&&g.slot==='w'&&g.fam&&WT_DL[g.fam]?s+` Delivery: ${DL_NAME[WT_DL[g.fam]]}.`:s;};}
+HOOK.xform('gearDesc','archetype','weapon delivery text',function(s,id){const g=GEAR[id];return g&&g.slot==='w'&&g.fam&&WT_DL[g.fam]?s+` Delivery: ${DL_NAME[WT_DL[g.fam]]}.`:s;});
 
 // Bestiary: a Type section (bosses stay hidden until learned)
-if(typeof mBeast==='function'){const mb0=mBeast;mBeast=function(m){let h=mb0.apply(this,arguments);if(!h||!m)return h;
+HOOK.xform('mBeast','archetype','Type section on the Bestiary card',function(h,m){if(!h||!m)return h;
   const o=bestAll().find(x=>x.k===m.k);if(!o)return h;const tags=tyOf(o.k);
   const b=META.best[o.d.n]||{},rev=!!(b.hit||b.scan);
   let sec;
   if(!tags.length)sec=`<h4>Type</h4><p class="note">No special type. Plain damage rules apply.</p>`;
   else if(o.g&&!rev)sec=`<h4>Type</h4><p class="note lockl">? Land a hit on it or scan it to learn what kind of foe it is.</p>`;
   else sec=`<h4>Type</h4><div class="rows compact">${tags.map(k=>`<div class="row"><div class="grow"><b class="aty ${k}">${ARCH[k].n}</b><small>${esc(ARCH[k].d)}</small></div></div>`).join('')}</div>`;
-  return h.replace('<h4>Skills</h4>',sec+'<h4>Skills</h4>');};}
+  return h.replace('<h4>Skills</h4>',sec+'<h4>Skills</h4>');});
 
 // Guides tab: Foe types (v0.4.0 3.1). Reads the tables above, so a changed number never leaves the guide stale.
 function vTypes(){

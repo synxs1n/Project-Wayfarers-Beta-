@@ -41,10 +41,10 @@ HOOK.wrap('win','echo2','Echo rewards (story Echo, Rift)',function(next,...a){co
 {const ar0=applyRemote;applyRemote=function(r){if(r&&r.flags&&r.flags.echoRift)META.echoRift=1;return ar0.apply(this,arguments);};}
 // pork chops, battle backdrop and music treat a story echo like its boss
 {const pb0=porkBlocked;porkBlocked=function(){if(B&&B.spec&&B.spec.kind==='storyEcho')return true;return pb0.apply(this,arguments);};}
-{const bt0=battleTheme;battleTheme=function(){if(B&&B.spec&&B.spec.kind==='storyEcho')return 'd_'+ZS(B.stage).theme;return bt0.apply(this,arguments);};}
+HOOK.wrap('battleTheme','echo2','story echo backdrop',function(next){if(B&&B.spec&&B.spec.kind==='storyEcho')return 'd_'+ZS(B.stage).theme;return next();});
 // ----- Bestiary: echo forms are their own entries -----
-{const ba0=bestAll;bestAll=function(){const out=ba0();echoKeys().forEach(k=>{const d=echoDef(k);if(d){d.art=MART['echo_'+d.art]?'echo_'+d.art:d.art;out.push({k:'echo_'+k,d,g:1,echo:1});}});return out;};}
-{const mb0=mBeast;mBeast=function(m){let h=mb0.apply(this,arguments);if(m&&String(m.k).startsWith('echo_'))h=h.replace('Which one waits where changes each journey.','An Echo: it lingers in its dungeon after you beat the original, and answers in the Echo Rift. Echoes do not count toward the Archive or the Stick.');return h;};}
+HOOK.xform('bestAll','echo2','echo forms are their own entries',function(out){echoKeys().forEach(k=>{const d=echoDef(k);if(d){d.art=MART['echo_'+d.art]?'echo_'+d.art:d.art;out.push({k:'echo_'+k,d,g:1,echo:1});}});return out;});
+HOOK.xform('mBeast','echo2','Echo note on echo entries',function(h,m){if(m&&String(m.k).startsWith('echo_'))h=h.replace('Which one waits where changes each journey.','An Echo: it lingers in its dungeon after you beat the original, and answers in the Echo Rift. Echoes do not count toward the Archive or the Stick.');return h;});
 // ----- the Echoforge (Smithy) -----
 function efTabOn(){return !!G&&(G.won||ECHO_CAT.ids.some(id=>(G.mats[id]||0)>0));}
 function efBaseIn(f){const re=new RegExp('^w_'+f+'_5(\\+(\\d))?$');let best=-1,id=null;G.gear.forEach((g,i)=>{const m=String(g).match(re);if(m){const p=+(m[2]||0);if(p>best){best=p;id=i;}}});return id==null?null:{i:id,plus:best};}
@@ -61,4 +61,4 @@ ACT.efForge=function(f){if(!ECHOFORGE[f])return;const m=efCost(f),base=efBaseIn(
     drawGearIcon(x,gearFamOf(id),null,5,null,id);// v0.6.3: the mythic design of the family in echo colours (icons2.js)
     if(g.plus){x.fillStyle='#ffd04a';for(let i=0;i<g.plus;i++)x.fillRect(12-i*3,13,2,2);}return c;})}">`;};}
 // gear text mentions the perk
-{const gd0=gearDesc;gearDesc=function(id){let s=gd0.apply(this,arguments);try{const g=typeof id==='string'?gearOf(id):id;if(g&&g.ef&&g.efPerk)s+=(s?', ':'')+g.efPerk;}catch(e){}return s;};}
+HOOK.xform('gearDesc','echo2','Echoforge perk text',function(s,id){try{const g=typeof id==='string'?gearOf(id):id;if(g&&g.ef&&g.efPerk)s+=(s?', ':'')+g.efPerk;}catch(e){}return s;});

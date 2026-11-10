@@ -28,8 +28,8 @@ if(SPRITE_HD){
   halfCanvas=function(c){if(c.width<=44)return c;const o=hdCv(Math.ceil(c.width/2),Math.ceil(c.height/2)),x=o.getContext('2d');x.drawImage(c,0,0,o.width,o.height);return o;};
   // the world and battle canvases render at SPR.k
   {const ws0=worldSizeCanvas;worldSizeCanvas=function(){try{if(WS.cv&&!WS.cv._ss&&WS.ctx&&sprHiRes())ssCanvas(WS.cv,SPR.k);}catch(e){}return ws0.apply(this,arguments);};}
-  {const lb0=layoutBattle;layoutBattle=function(){const r=lb0.apply(this,arguments);try{const cv=$('bcv');if(cv&&!cv._ss&&sprHiRes())ssCanvas(cv,SPR.k);}catch(e){}return r;};}
-  {const bf0=battleFrame;battleFrame=function(now){try{const cv=$('bcv');if(cv&&!cv._ss&&sprHiRes())ssCanvas(cv,SPR.k);}catch(e){}return bf0.apply(this,arguments);};}
+  HOOK.after('layoutBattle','sprhd2','supersample the battle canvas',function(r){try{const cv=$('bcv');if(cv&&!cv._ss&&sprHiRes())ssCanvas(cv,SPR.k);}catch(e){}});
+  HOOK.before('battleFrame','sprhd2','supersample the battle canvas',function(now){try{const cv=$('bcv');if(cv&&!cv._ss&&sprHiRes())ssCanvas(cv,SPR.k);}catch(e){}});
   // warm the sprite caches in idle time: the leader's walk frames, then every party hero's battle sprites (one sprite per idle slice)
   const WARM={q:[],busy:0,done:{}};
   const idle=f=>(window.requestIdleCallback?requestIdleCallback(f,{timeout:400}):setTimeout(f,40));

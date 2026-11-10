@@ -229,7 +229,7 @@ try{MENU_SUB.fmis='Guild missions';MENU_SUB.pouch='Materials';MENU_SUB.system='J
 try{const QG=MENU_GROUPS.find(g=>g[0]==='quests'),RG=MENU_GROUPS.find(g=>g[0]==='records');QG[2].splice(0,QG[2].length,'quests','factions','qbounty','qarena');
   const k=RG[2].indexOf('factions');if(k>=0)RG[2].splice(k,1);MENU_SUB.qbounty='Bounties';MENU_SUB.qarena='Arena';}catch(e){}
 {const mt0=ACT.menuTab;ACT.menuTab=function(t){return mt0.call(this,t==='fmis'?'factions':t);};}
-{const mm0=mMenu;mMenu=function(m){if(m&&m.tab==='fmis')m.tab='factions';return mm0.apply(this,arguments);};}
+HOOK.before('mMenu','menus3','old fmis tab opens Guilds',function(m){if(m&&m.tab==='fmis')m.tab='factions';});
 
 // ----- the visible viewport: panels fit the screen the phone really shows (the URL bar and the Android app's bars included) -----
 function m3Vh(){try{const v=window.visualViewport,h=Math.round(v?v.height:innerHeight);document.documentElement.style.setProperty('--vvh',h+'px');}catch(e){}}
@@ -240,8 +240,8 @@ try{if(screen.orientation&&screen.orientation.addEventListener)screen.orientatio
 function m3CharmBtn(){if(!G||G.daily||!(G.gear||[]).some(id=>{const g=gearOf(id);return g&&g.slot==='c';}))return '';
   return '<div class="btnrow m3charmeq"><button class="btn sm gold" data-act="autoEqCharms" title="Gives each hero in your party the best charm you already own. Buys nothing.">Equip best charms</button><button class="btn sm" data-act="p3Alch" title="Plans the best charm each party hero can end up with: bought here or from your pack, tempered as far as you can afford. Confirm before anything happens.">Upgrade whole party</button></div>';}
 // the Party tab's helper row: one "Equip Best" button (party only); the reserves button is gone
-{const sw0=vSwap;vSwap=function(){let h=sw0.apply(this,arguments);if(typeof h!=='string')return h;
-  h=h.replace(/<button class="btn sm" data-act="autoEqCamp"[^>]*>[^<]*<\/button>/,'').replace(/(<button class="btn sm" data-act="autoEqParty"[^>]*>)Equip best: party/,'$1Equip Best').replace('title="The best gear you own for your party. May take gear from your reserves."','title="Gears the six heroes in your party with the best gear you own."');return h;};}
+HOOK.xform('vSwap','menus3','Equip Best button on the Party tab',function(h){if(typeof h!=='string')return h;
+  h=h.replace(/<button class="btn sm" data-act="autoEqCamp"[^>]*>[^<]*<\/button>/,'').replace(/(<button class="btn sm" data-act="autoEqParty"[^>]*>)Equip best: party/,'$1Equip Best').replace('title="The best gear you own for your party. May take gear from your reserves."','title="Gears the six heroes in your party with the best gear you own."');return h;});
 
 // ----- test hook -----
 window.__M3={get MENU_GROUPS(){return MENU_GROUPS;},m3Norm,m3Tabs,m3Secs,NB_TABS,NB_MENU,nbSecs,nbBody,shopFBar:c=>shopFBar(c),ddSel,M3_LEG,M3_HOME,m3Upg};

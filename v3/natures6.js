@@ -56,10 +56,10 @@ function nat6Default(id){const t=TPL[id];if(!t||!NAT6_CLASS[t.cls])return null;c
 try{MASTERY.light.heal=0;MASTERY.light.vs=.15;MASTERY.light.d='Light skills deal 25% more and may Blind. +15% against undead and shadow foes.';
   Object.keys(MASTERY).forEach(k=>{MASTERY[k].d=MASTERY[k].d.replace('20% more','25% more');});}catch(e){}
 const MAST6={mp:.1,res:.25};
-{const cs0=calcStats;calcStats=function(c){const S=cs0.apply(this,arguments);try{if(!c||!S)return S;const NF=natInfo(natOf(c)).fx||{};
+HOOK.after('calcStats','natures6','nature and mastery stat perks',function(S,c){try{if(!c||!S)return;const NF=natInfo(natOf(c)).fx||{};
     if(NF.critDmg)S.critDmg=(S.critDmg||1.5)+NF.critDmg;if(NF.acc)S.acc=(S.acc||.97)+NF.acc;if(NF.mpEff)S.mpEff=Math.max(S.mpEff||0,NF.mpEff);
     if(NF.guardM)S.guardM=NF.guardM;if(NF.low)S.low=NF.low;if(NF.chi)S.chi=NF.chi;
-    if(S.mastery&&!(G&&G.daily)){S.mmp=Math.round(S.mmp*(1+MAST6.mp));S.elRes[S.mastery]=Math.max(S.elRes[S.mastery]||0,MAST6.res);}}catch(e){}return S;};}
+    if(S.mastery&&!(G&&G.daily)){S.mmp=Math.round(S.mmp*(1+MAST6.mp));S.elRes[S.mastery]=Math.max(S.elRes[S.mastery]||0,MAST6.res);}}catch(e){}});
 HOOK.xform('calcDamage','natures6','nature and mastery perks on damage',function(r,a,sk,t){try{if(!r||!a||!t||!a.S)return r;let m=1;
     if(a.S.low&&a.hp<=a.S.mhp*.5)m*=1+a.S.low;
     if(t.guard&&t.S&&t.S.guardM)m*=t.S.guardM;

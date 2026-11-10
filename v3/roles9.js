@@ -36,18 +36,18 @@ function rl9Factor(c,s){if(!s||s.bond||s.limit||s.id==='attack')return 1;const t
 // ---- auto-spent points follow the main role ----
 {const aa0=autoAlloc;autoAlloc=function(c){try{const t=TPL[c.id],C=CLS[t.cls],st=ROLE9.stat[heroMain(c)];if(C&&st&&C.pref&&C.pref[0]!==st&&heroMain(c)!==heroRoles(c)[0]){const p0=C.pref;C.pref=[st].concat(p0.filter(k=>k!==st)).slice(0,3);try{return aa0.apply(this,arguments);}finally{C.pref=p0;}}}catch(e){}return aa0.apply(this,arguments);};}
 // ---- FAITH ----
-{const cs0=calcStats;calcStats=function(c){const S=cs0.apply(this,arguments);try{if(G&&G.daily)return S;const f=(S.attr&&S.attr.fth)||0;if(f>0){const b=Math.min(ROLE9.fthElCap,f*ROLE9.fthEl);S.elBoost.light=(S.elBoost.light||0)+b;S.elBoost.shadow=(S.elBoost.shadow||0)+b;S.fthRes=Math.min(ROLE9.fthResCap,f*ROLE9.fthRes);}}catch(e){}return S;};}
+HOOK.after('calcStats','roles9','faith perks',function(S,c){try{if(G&&G.daily)return;const f=(S.attr&&S.attr.fth)||0;if(f>0){const b=Math.min(ROLE9.fthElCap,f*ROLE9.fthEl);S.elBoost.light=(S.elBoost.light||0)+b;S.elBoost.shadow=(S.elBoost.shadow||0)+b;S.fthRes=Math.min(ROLE9.fthResCap,f*ROLE9.fthRes);}}catch(e){}});
 let SUM9_CASTER=null;
 {const sf0=sumFire;sumFire=function(a){SUM9_CASTER=a||null;try{return sf0.apply(this,arguments);}finally{SUM9_CASTER=null;}};}
 {const sm0=sumMake;sumMake=function(o,lesser,owner){const u=sm0.apply(this,arguments);try{const a=owner||SUM9_CASTER;const f=a&&a.S&&a.S.attr&&a.S.attr.fth||0;if(f>0&&u&&u.S){const k=1+f*ROLE9.fthSum;u.S.atk*=k;u.S.mag*=k;u.fthK=k;}}catch(e){}return u;};}
-{const as0=addSt;addSt=function(t,k,src,silent){try{const def=STS[k];if(t&&t.side==='p'&&def&&def.bad&&t.S&&t.S.fthRes&&!(G&&G.daily)&&Math.random()<t.S.fthRes){if(!silent){fx(t,'Faith','st good');log(`${t.name}'s faith shrugs off ${def.n}.`);}return false;}}catch(e){}return as0.apply(this,arguments);};}
+HOOK.before('addSt','roles9','faith shrugs off a status',function(t,k,src,silent){try{const def=STS[k];if(t&&t.side==='p'&&def&&def.bad&&t.S&&t.S.fthRes&&!(G&&G.daily)&&Math.random()<t.S.fthRes){if(!silent){fx(t,'Faith','st good');log(`${t.name}'s faith shrugs off ${def.n}.`);}return HOOK.stop(false);}}catch(e){}});
 // ---- one free stat reset ----
 {const rc0=respecCost;respecCost=function(c){try{if(G&&!G.daily&&!G.rs9)return 0;}catch(e){}return rc0.apply(this,arguments);};}
 {const rs0=ACT.respec;ACT.respec=function(){const c=G&&G.roster[V.modal&&V.modal.char];const free=!!(c&&G&&!G.daily&&!G.rs9&&Object.keys(c.alloc||{}).length);const r=rs0.apply(this,arguments);try{if(free&&c&&!Object.keys(c.alloc||{}).length){G.rs9=1;toast('Your one free stat reset is spent. The next costs gold.');saveGame();}}catch(e){}return r;};}
 // ---- the hero sheet: the role row and the picker ----
-{const mc0=mChar;mChar=function(id,edit){let h=mc0.apply(this,arguments);try{const c=G.roster[id];if(!c||G.daily)return h;const R=heroRoles(c),main=heroMain(c),w=roleWpn(c);
+HOOK.xform('mChar','roles9','role row on the hero sheet',function(h,id,edit){try{const c=G.roster[id];if(!c||G.daily)return h;const R=heroRoles(c),main=heroMain(c),w=roleWpn(c);
   const row=`<h4>Role</h4><div class="rows compact rl9"><div class="row"><div class="grow"><b>${esc(ROLES.names[main]||main)}</b><small>${esc(ROLE9.desc[main]||'')}${w?` Weapon: ${esc(WT_NAME[w]||w)}.`:''} Sub roles: ${R.slice(0).filter(r=>r!==main).map(r=>esc(ROLES.names[r]||r)).join(', ')} (85% power).</small></div>${edit&&inTown()?`<button class="btn sm" data-act="rolePick" data-arg="${id}">Change</button>`:edit?'<small>Change it in town.</small>':''}</div></div>`;
-  h=h.replace('<h4>Attributes',row+'<h4>Attributes');if(!G.rs9)h=h.replace('>Respec for 0 gold<','>Respec: free this once<');}catch(e){}return h;};}
+  h=h.replace('<h4>Attributes',row+'<h4>Attributes');if(!G.rs9)h=h.replace('>Respec for 0 gold<','>Respec: free this once<');}catch(e){}return h;});
 ACT.rolePick=function(id){if(!G||!G.roster[id]||!inTown())return;V.modal={type:'rolepick',char:id,from:V.modal};render();};
 ACT.roleSet=function(a){const [id,r]=String(a).split(':');const c=G&&G.roster[id];if(!c||!heroRoles(c).includes(r))return;c.role=r===heroRoles(c)[0]?undefined:r;if(c.role===undefined)delete c.role;refresh(c);saveGame();toast(`${c.name} now leads as ${ROLES.names[r]||r}.`);V.modal=V.modal&&V.modal.from||{type:'char',char:id};render();};
 HOOK.before('vModal','roles9','role picker',function(m){if(!m||m.type!=='rolepick')return;const c=G.roster[m.char];if(!c)return HOOK.stop('');const t=TPL[c.id],main=heroMain(c);

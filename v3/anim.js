@@ -28,7 +28,7 @@ function streak(x,y,dir,col,start,n){for(let i=0;i<(n||5);i++)part({k:'p',x:x-di
 function projectile(x,y,x2,y2,col,start,life,thick){part({k:'shot',x,y,x2,y2,t0:start,life,col,thick});}
 function notes(x,y,start){for(let i=0;i<3;i++)part({k:'note',x:x+(i-1)*6,y,t0:start+i*90,life:600,col:['#ffd04a','#8ad0ff','#ff9ad0'][i]});}
 function converge(x,y,col,start){for(let i=0;i<10;i++){const a=i/10*Math.PI*2,r=16;part({k:'p',x:x+Math.cos(a)*r,y:y+Math.sin(a)*r*.6,vx:-Math.cos(a)*r*5,vy:-Math.sin(a)*r*3,g:0,t0:start,life:180,col,sz:1});}}
-{const oa0=onAction;onAction=function(a,now){oa0.apply(this,arguments);try{if(gfxStill())return;const c=centerOf(a);if(!c)return;const b=unitBox(a),dir=a.side==='p'?-1:1,st=animStyle(a),k=a.actKind;
+HOOK.after('onAction','anim','physical, magic and heal shapes',function(r,a,now){try{if(gfxStill())return;const c=centerOf(a);if(!c)return;const b=unitBox(a),dir=a.side==='p'?-1:1,st=animStyle(a),k=a.actKind;
   const tg=B.en.concat(B.front).filter(u=>u!==a&&u.fxT&&Math.abs(u.fxT-a.actT)<60),t0=tg[0]&&centerOf(tg[0]);
   if(a.actLimit&&Date.now()-a.actLimit<200){part({k:'ring',x:c.x,y:b.y-1,t0:now,life:600,col:'#ffd04a',r:26,flat:1});sparkleUp(c.x,c.y,'#ffd04a',now,14);}
   if(k==='phys'||st==='foe'&&(k==='phys'||!k)){
@@ -41,23 +41,23 @@ function converge(x,y,col,start){for(let i=0;i<10;i++){const a=i/10*Math.PI*2,r=
     else if(st==='foe'){part({k:'ring',x:c.x,y:c.y,t0:now,life:120,col:'#ff6a6a',r:8});}}
   else if(k==='mag'||k==='status'||k==='buff'){converge(c.x,c.y-4,ELC[a.actEl]||'#c8a0ff',now);if(st==='play')notes(c.x,c.y-b.h*.4,now);}
   else if(k==='heal'){for(let i=0;i<8;i++)part({k:'p',x:c.x+(Math.random()-.5)*10,y:b.y,vx:0,vy:-60-Math.random()*40,g:0,t0:now+i*25,life:380,col:i%2?'#7aff8a':'#ffffff',sz:1});}
-}catch(e){}};}
+}catch(e){}});
 // new particle kinds: arrows/bolts and music notes
-{const dp0=drawParts;drawParts=function(ctx,now){try{BV.P.forEach(p=>{if(p.k!=='shot'&&p.k!=='note')return;const t=now-p.t0;if(t<0)return;const q=t/p.life;if(q>=1){p.dead=1;return;}
+HOOK.before('drawParts','anim','arrow and note particles',function(ctx,now){try{BV.P.forEach(p=>{if(p.k!=='shot'&&p.k!=='note')return;const t=now-p.t0;if(t<0)return;const q=t/p.life;if(q>=1){p.dead=1;return;}
   if(p.k==='shot'){const x=p.x+(p.x2-p.x)*q,y=p.y+(p.y2-p.y)*q-Math.sin(q*Math.PI)*(p.thick?2:6),dx=p.x2-p.x,dy=p.y2-p.y,L=Math.hypot(dx,dy)||1,ux=dx/L,uy=dy/L;
     ctx.globalAlpha=1;ctx.fillStyle=p.col;for(let i=0;i<(p.thick?5:7);i++)ctx.fillRect(Math.round(x-ux*i),Math.round(y-uy*i),p.thick?2:1,p.thick?2:1);ctx.fillStyle='#ffffff';ctx.fillRect(Math.round(x),Math.round(y),1,1);}
   else{const y=p.y-q*16,x=p.x+Math.sin(q*6)*3;ctx.globalAlpha=1-q;ctx.fillStyle=p.col;ctx.fillRect(Math.round(x),Math.round(y),2,2);ctx.fillRect(Math.round(x)+1,Math.round(y)-4,1,4);ctx.fillRect(Math.round(x)+2,Math.round(y)-4,2,1);}});
-  BV.P=BV.P.filter(p=>!p.dead);}catch(e){}ctx.globalAlpha=1;return dp0.apply(this,arguments);};}
+  BV.P=BV.P.filter(p=>!p.dead);}catch(e){}ctx.globalAlpha=1;});
 // Limit Breaks get their own pose; bosses flourish on phase changes
 HOOK.before('perform','anim','Limit Break pose time',function(a,sk){try{if(a&&sk&&sk.limit){a.actLimit=Date.now();ANX.lim=a.actLimit+1300;}}catch(e){}});
-{const cp0=checkPhase;checkPhase=function(e){const was=e&&e.phaseDone,was2=e&&e.p2done;cp0.apply(this,arguments);try{if(e&&e.boss&&((!was&&e.phaseDone)||(!was2&&e.p2done))&&V.screen==='battle'&&!gfxStill()){const c=centerOf(e),now=performance.now();if(!c)return;
-  part({k:'rays',x:c.x,y:c.y,t0:now,life:700,col:'#ff9a6a'});part({k:'ring',x:c.x,y:c.y,t0:now,life:600,col:'#ff6a3a',r:48});part({k:'ring',x:c.x,y:c.y,t0:now+120,life:520,col:'#ffffff',r:32});BV.shake={t:now,life:420,amp:3};BV.flash={t:now,life:180,col:'rgba(255,140,90,.3)'};}}catch(x){}};}
+HOOK.wrap('checkPhase','anim','boss phase burst',function(next,...args){const e=args[0];const was=e&&e.phaseDone,was2=e&&e.p2done;next(...args);try{if(e&&e.boss&&((!was&&e.phaseDone)||(!was2&&e.p2done))&&V.screen==='battle'&&!gfxStill()){const c=centerOf(e),now=performance.now();if(!c)return;
+  part({k:'rays',x:c.x,y:c.y,t0:now,life:700,col:'#ff9a6a'});part({k:'ring',x:c.x,y:c.y,t0:now,life:600,col:'#ff6a3a',r:48});part({k:'ring',x:c.x,y:c.y,t0:now+120,life:520,col:'#ffffff',r:32});BV.shake={t:now,life:420,amp:3};BV.flash={t:now,life:180,col:'rgba(255,140,90,.3)'};}}catch(x){}});
 // summons: a circle opens on the way in, a puff on the way out
 {const sc0=summonComp;summonComp=function(){const a=B&&B.cur;const r=sc0.apply(this,arguments);try{const u=B.front.find(x=>x.isComp&&x.owner===a);if(u&&!gfxStill()){const now=performance.now(),b=unitBox(u),col=ELC[(u.el||[])[0]]||'#ffd04a';
   part({k:'circle',x:b.x,y:b.y-1,t0:now,life:700,col});part({k:'ring',x:b.x,y:b.y-b.h*.5,t0:now+150,life:500,col:'#ffffff',r:30});sparkleUp(b.x,b.y-b.h*.5,col,now+120,16);}}catch(e){}return r;};}
 {const cr0=compReturn;compReturn=function(u){let c=null;try{c=centerOf(u);}catch(e){}const r=cr0.apply(this,arguments);try{if(c&&!gfxStill()){const now=performance.now();for(let i=0;i<14;i++){const a=Math.random()*Math.PI*2;part({k:'p',x:c.x,y:c.y,vx:Math.cos(a)*40,vy:Math.sin(a)*30-20,g:0,t0:now,life:420,col:i%2?'#ffffff':'#c8c0d8',sz:2});}}}catch(e){}return r;};}
 // reduced motion: no screen shake
-{const bf0=battleFrame;battleFrame=function(now){if(gfxStill())BV.shake=null;return bf0.apply(this,arguments);};}
+HOOK.before('battleFrame','anim','no shake when still',function(now){if(gfxStill())BV.shake=null;});
 // menus and the map: a short fade when a window first opens (not on every refresh)
 HOOK.wrap('render','anim','popup open fade',function(next,...a){const key=V.modal?V.modal.type+':'+(V.modal.tab||''):null;const r=next(...a);try{if(key&&key!==V._animKey&&!gfxStill()){const el=document.querySelector('#modal .modal')||document.querySelector('#modal > *');if(el){el.classList.remove('menter');void el.offsetWidth;el.classList.add('menter');}}V._animKey=key;}catch(e){}return r;});
 // ===== v0.12.6: skill looks: element shapes, physical hits, heals, buffs, Limit Breaks, boss telegraph =====
@@ -155,21 +155,21 @@ function anDraw(ctx,p,now){const t=now-p.t0;if(t<0)return;const q=t/p.life;if(q>
     case 'mote':{const x=p.x+Math.sin(s*5+p.ph)*2,y=p.y-p.vy*s;ctx.globalAlpha=Math.min(1,q*4)*(1-q);ctx.fillStyle=p.col;ctx.fillRect(R(x),R(y)-1,1,3);ctx.fillRect(R(x)-1,R(y),3,1);break;}
     case 'soft':{const r=p.r*(.5+.5*Math.sqrt(q));ctx.globalAlpha=(1-q)*.3;ctx.fillStyle=p.col;ctx.beginPath();ctx.ellipse(p.x,p.y,r,r*.35,0,0,7);ctx.fill();break;}}
   if(p.lit)ctx.globalCompositeOperation='source-over';}
-{const dp0=drawParts;drawParts=function(ctx,now){const r=dp0.apply(this,arguments);try{const P=BV.P;for(let i=0;i<P.length;i++)if(P[i].k==='an')anDraw(ctx,P[i],now);
-  if(ANX.tint&&now<ANX.tint.until){ctx.globalAlpha=.16;ctx.fillStyle=ANX.tint.col;ctx.fillRect(-4,-4,BL.W+8,BL.H+8);}}catch(e){}ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';return r;};}
+HOOK.after('drawParts','anim','element shapes and tint',function(r,ctx,now){try{const P=BV.P;for(let i=0;i<P.length;i++)if(P[i].k==='an')anDraw(ctx,P[i],now);
+  if(ANX.tint&&now<ANX.tint.until){ctx.globalAlpha=.16;ctx.fillStyle=ANX.tint.col;ctx.fillRect(-4,-4,BL.W+8,BL.H+8);}}catch(e){}ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';});
 // hits: the element or physical shape lands with the damage number (HD-2D draws the element shapes itself, through hdspell.js)
-{const ba1=burstAt;burstAt=function(x,y,el,start,big){const r=ba1.apply(this,arguments);try{if(!gfxStill()&&!(el!=='hit'&&typeof hbsOn==='function'&&hbsOn()))anHit(x,y,el,start,big,ANX.u);}catch(e){}return r;};}
+HOOK.after('burstAt','anim','element or physical hit shape',function(r,x,y,el,start,big){try{if(!gfxStill()&&!(el!=='hit'&&typeof hbsOn==='function'&&hbsOn()))anHit(x,y,el,start,big,ANX.u);}catch(e){}});
 // heals, buffs and debuffs ride on the popup text; ANX.u tells burstAt which unit the hit is on
-{const of1=onFx;onFx=function(u,txt,cls){ANX.u=u;try{return of1.apply(this,arguments);}finally{ANX.u=null;try{anFxText(u,txt,cls);}catch(e){}}};}
+HOOK.wrap('onFx','anim','heal and buff popup shapes',function(next,u,txt,cls){ANX.u=u;try{return next(u,txt,cls);}finally{ANX.u=null;try{anFxText(u,txt,cls);}catch(e){}}});
 function anFxText(u,txt,cls){if(!B||V.screen!=='battle'||!u||gfxStill())return;const c=centerOf(u),b=unitBox(u);if(!c||!b)return;const R=Math.random,now=performance.now(),lit=typeof hbsOn==='function'&&hbsOn()?1:0;
   if(cls==='heal'){const gy=b.gy!=null?b.gy:b.y;for(let i=0;i<anN(7);i++)anP({s:'mote',x:c.x+(R()-.5)*b.w*.5,y:gy-R()*b.h*.4,vy:26+R()*22,ph:R()*6,t0:now+i*32,life:420+R()*120,col:i%2?'#9affb0':'#ffffff',lit});
     anP({s:'soft',x:c.x,y:gy,r:Math.min(b.w,40)*.7+6,col:'#7aff8a',t0:now,life:480,lit});part({k:'ring',x:c.x,y:gy,t0:now+40,life:420,col:'#bfffc8',r:Math.min(b.w,40)*.5+6,flat:1});return;}
   const g=/good/.test(cls||''),bd=/bad/.test(cls||'')&&!/^(Telegraph|BREAK|Reeling|Stunned)$/.test(String(txt));if(!g&&!bd)return;if(u._anChev&&now-u._anChev<300)return;u._anChev=now;
   anP({s:'chev',x:c.x,y:g?c.y+b.h*.28:c.y-b.h*.2,rx:Math.min(b.w,40)*.5+3,ry:4,n:anN(5),d:g?-1:1,col:g?'#7affd0':'#d07a8a',t0:now+(g?60:IMPACT),life:520,lit});}
 // Limit Breaks: a screen flash (a static tint under reduced motion) and a golden pillar at the hero; the hits are 1.5x (ANX.lim, set in perform)
-{const oa2=onAction;onAction=function(a,now){oa2.apply(this,arguments);try{ANX.st=animStyle(a);ANX.k=a.actKind;ANX.dir=a.side==='p'?-1:1;
+HOOK.after('onAction','anim','limit break flash',function(r,a,now){try{ANX.st=animStyle(a);ANX.k=a.actKind;ANX.dir=a.side==='p'?-1:1;
   if(a.actLimit&&Date.now()-a.actLimit<250){const first=a._anLimT!==a.actLimit;a._anLimT=a.actLimit;if(first){
     if(gfxStill())ANX.tint={until:now+520,col:'#ffe9a0'};
-    else{BV.flash={t:now,life:280,col:'rgba(255,236,170,.5)'};const c=centerOf(a);if(c)anP({s:'beam',x:c.x,y:c.y,w:10,t0:now,life:480});}}}}catch(e){}};}
+    else{BV.flash={t:now,life:280,col:'rgba(255,236,170,.5)'};const c=centerOf(a);if(c)anP({s:'beam',x:c.x,y:c.y,w:10,t0:now,life:480});}}}}catch(e){}});
 // a foe winding up (Charger or boss telegraph): drawUnit swells it a little and pulses a glow
 function bossTele(u){try{return !!(B&&u&&u.side==='e'&&u.hp>0&&(has(u,'charge')||(B.b4g&&B.b4g.u===u&&B.b4g.pend)));}catch(e){return false;}}

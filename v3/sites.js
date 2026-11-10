@@ -17,8 +17,8 @@ function siteVariant(theme,kind){const id=theme+'#'+kind;if(DTHEME[id])return id
   if(kind==='cave'){DV.f=lerpArr(D.f,'#4a5a3a',.45);DV.w=lerpArr(D.w,'#33402c',.55);DV.top='#070c06';DV.acc='#7af0a0';DV.acc2='#c0e870';DV.name='cave';}
   else{DV.f=lerpArr(D.f,'#8a8a90',.6);DV.w=lerpArr(D.w,'#6a6a74',.65);DV.top='#121216';DV.acc='#c0392b';DV.acc2='#ffd04a';DV.name='fort';}
   DTHEME[id]=DV;if(!THEME[id])THEME[id]=THEME[theme];return id;}
-{const ab1=applyBossTheme;applyBossTheme=function(m){ab1.apply(this,arguments);try{if(m&&m.cave){m.thv=siteVariant(m.theme,m.fort?'fort':'cave');
-  m.amb=m.fort?'flecks':'drips';m.btint=m.fort?'rgba(140,60,40,.04)':'rgba(40,90,60,.07)';m.motif=null;}}catch(e){}};}
+HOOK.after('applyBossTheme','sites','cave and fort variants',function(r,m){try{if(m&&m.cave){m.thv=siteVariant(m.theme,m.fort?'fort':'cave');
+  m.amb=m.fort?'flecks':'drips';m.btint=m.fort?'rgba(140,60,40,.04)':'rgba(40,90,60,.07)';m.motif=null;}}catch(e){}});
 // cave drips: a light, falling-water particle layer
 {const tf0=themeFX;themeFX=function(ctx,m,vw,vh,now){if(m&&m.amb==='drips'){if(m.btint){ctx.fillStyle=m.btint;ctx.fillRect(0,0,vw,vh);}const still=typeof reducedMotion==='function'&&reducedMotion(),t=still?0:now/1000;
   for(let i=0;i<14;i++){const x=(i*97+13)%vw,y=((i*61+7)+t*60*(1+i%3*.3))%vh;ctx.fillStyle='rgba(170,230,200,.55)';ctx.fillRect(Math.floor(x),Math.floor(y),1,3);}return;}return tf0.apply(this,arguments);};}

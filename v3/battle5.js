@@ -63,6 +63,7 @@ function enemyTurn0(u){
   const go=m=>{B.b5m=m;try{perform(u,sk,tg);}finally{if(B)B.b5m=null;}endTurn(u,1);};
   if(b5TimedOk(u,sk,tg)){const bt=B,t=tg[0];b5Ring(t,'def',ok=>{if(B!==bt||B.over||B.cur!==u||u.hp<=0)return;try{if(ok)fx(t,'Timed guard','stat good');go(ok?{a:u,t,m:1-B5.defDown}:null);}catch(e){wdForce(u,'timed guard: '+(e&&e.message||e));}});return;}
   go(null);}
+enemyTurn0=HOOK.def('enemyTurn0',enemyTurn0);
 // the icon the screen shows for a foe right now (read back from the stage label, else from the order bar): what the tests compare
 function b5Shown(u){try{const r=unitRef(u),e=document.querySelector(`#bstage .b5it[data-u="${r}"]`)||document.querySelector(`#border .b5oi[data-u="${r}"]`);return e?e.dataset.cat:null;}catch(e){return null;}}
 
@@ -204,12 +205,12 @@ function b9Cue(){if(!B||B.over||B.auto||B.mode!=='cmd'||!B.cur||B.cur.side!=='p'
   let hx=null;try{hx=B.front.filter(c=>c.hp>0&&!c.isComp&&b4Hex(c)>=2).sort((x,y)=>b4Hex(y)-b4Hex(x))[0];}catch(e){}
   if(hx){const via=b9Cleanse(a);if(via)return {k:'hex',u:hx,glow:via,txt:`Hex ${b4Hex(hx)} on ${hx.name}: cleanse it`,tip:`${hx.name} carries ${b4Hex(hx)} Hex stacks; at ${B4.roles.hexMax} the next one bursts. ${via==='skills'?'A cleanse skill':'A Remedy'} clears it.`};}
   return null;}
-{const ch0=cmdHtml;cmdHtml=function(){let h=ch0.apply(this,arguments);try{if(!B||B.menu!=='root'||B.swapAsk)return h;const C=b9Cue();if(!C)return h;
+HOOK.xform('cmdHtml','battle5','cue and glow on the command menu',function(h){try{if(!B||B.menu!=='root'||B.swapAsk)return h;const C=b9Cue();if(!C)return h;
   const cls=C.k==='guard'?'g':C.k==='int'?'it':'hx',cue=`<span class="b9cue inhead ${cls}" role="status" title="${esc(C.tip)}" aria-label="${esc(C.tip)}">${esc(C.txt)}</span>`,bk='<button class="btn sm cmdback"';
   if(h.indexOf(bk)>=0)h=h.replace(bk,cue+bk);
   if(C.glow==='guard')h=h.replace('data-arg="guard">Guard</button>',`data-arg="guard" title="${esc(C.tip)}">Guard!</button>`).replace('<button class="mi" data-act="cmd" data-arg="guard"','<button class="mi b9glow" data-act="cmd" data-arg="guard"');
   else if(C.glow==='skills')h=h.replace('<button class="mi" data-act="cmd" data-arg="skills"',`<button class="mi b9glow ${C.k==='hex'?'cl':''}" title="${esc(C.tip)}" data-act="cmd" data-arg="skills"`);
-  else if(C.glow==='items')h=h.replace('<button class="mi" data-act="cmd" data-arg="items"',`<button class="mi b9glow cl" title="${esc(C.tip)}" data-act="cmd" data-arg="items"`);}catch(e){}return h;};}
+  else if(C.glow==='items')h=h.replace('<button class="mi" data-act="cmd" data-arg="items"',`<button class="mi b9glow cl" title="${esc(C.tip)}" data-act="cmd" data-arg="items"`);}catch(e){}return h;});
 
 // tests: window.__A.B5
 const B5API={cfg:B5,R:B5R,order:(n,c)=>b5Order(n,c),plan:u=>foePlan(u),intent:u=>b5Intent(u),cat:sk=>b5Cat(sk),knows:u=>b5Knows(u),press:()=>b5Press(),timedOn:()=>b5TimedOn(),choose:(u,r,n)=>foeChoose(u,r,n)};

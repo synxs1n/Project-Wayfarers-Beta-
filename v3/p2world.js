@@ -81,11 +81,11 @@ HOOK.before('startBattle','p2world','backdrop from the terrain (spec.bg)',functi
   try{if(spec&&typeof spec==='object'&&!spec.bg&&spec.kind!=='daily'&&!(G&&G.daily)&&V.screen==='world'&&WS&&WS.m){const m=WS.m;
     spec.bg={th:p2BaseTheme(m.s),k:m.kind==='field'?'field':m.kind==='town'?'field':m.cave?'cave':'dungeon',g:bgGroundAt(m,WS.x,WS.y)};}}catch(e){}});
 const BOSS_STAGE_KINDS={boss:1,echoBoss:1,storyEcho:1,mini:1};
-{const bt0=battleTheme;battleTheme=function(){const base=bt0.apply(this,arguments);try{if(!B||!B.spec)return base;const sp=B.spec,k=sp.kind,th=p2BaseTheme(B.stage);
+HOOK.xform('battleTheme','p2world','stage theme from the fight spec',function(base){try{if(!B||!B.spec)return base;const sp=B.spec,k=sp.kind,th=p2BaseTheme(B.stage);
   if(k==='arena'||k==='daily')return base;
   if(BOSS_STAGE_KINDS[k])return 'boss_'+th;
   const bg=sp.bg;if(bg){if(bg.k==='cave')return 'c_'+bg.th;if(bg.k==='dungeon')return 'd_'+bg.th;return 'f:'+bg.th+':'+(BG_GROUNDS.includes(bg.g)?bg.g:BG_NATURAL[bg.th]);}
-  return BG[base]?base:th;}catch(e){return base;}};}
+  return BG[base]?base:th;}catch(e){return base;}});
 // every unit stands on the ground plane: slot heights are mapped into [top, bot] of the stage; flying foes hover above their shadow
 function p2GroundY(fy){const G0=BATTLE_GROUND,lo=G0.top,hi=G0.bot;return Math.max(lo,Math.min(hi,lo+(fy-.48)*(hi-lo)/(.97-.48)));}
 function p2Flying(u){return !!(u&&u.side==='e'&&u.ty&&u.ty.includes('flying'));}
@@ -282,7 +282,7 @@ function entCanvas(th,st){const k=th+':'+st;if(ENT_CV[k])return ENT_CV[k];const 
     f('#4a9a3a',ox-17,base-28,2,10);f('#4a9a3a',ox+11,base-20,2,6);lamp(ox-21,base-9);lamp(ox+20,base-9);}
   return ENT_CV[k]=cv;}
 {const o20=obj2;obj2=function(theme,kind,v){if(kind==='facade'&&P2.dm&&P2.dm.kind==='field'){const st=entStyleFor(P2.dm.s);if(st!=='facade')return entCanvas(p2BaseTheme(P2.dm.s),st);}return o20.apply(this,arguments);};}
-{const do0=drawObjects;drawObjects=function(ctx,m,y){P2.dm=m;try{return do0.apply(this,arguments);}finally{P2.dm=null;}};}
+HOOK.wrap('drawObjects','p2world','entrance style context (P2.dm)',function(next,ctx,m,y){P2.dm=m;try{return next(ctx,m,y);}finally{P2.dm=null;}});
 
 // ---------------------------------------------------------------- 2.6 dual types come later ----------------------------------------------------------------
 const p2Dual=id=>!!(TPL[id]&&TPL[id].el&&TPL[id].el.length>1);
@@ -348,7 +348,7 @@ ACT.hintOk=function(){P2.hint=null;const d=document.getElementById('p2hint');if(
 ACT.hintOff=function(){META.cfg.hints=false;saveMeta();ACT.hintOk();toast('Hints are off. Turn them back on in Settings; past hints stay in Guides > Hints.');if(V.modal)render();};
 ACT.hintsReset=function(){META.hints={};META.cfg.hints=true;saveMeta();toast('Hints will show again in the first realm.');render();};
 // triggers
-{const sl0=showLocation;showLocation=function(){const r=sl0.apply(this,arguments);try{const m=WS.m;hintFire(m&&m.kind==='town'&&(G.stats&&G.stats.battles)?'town':'world');}catch(e){}return r;};}
+HOOK.after('showLocation','p2world','location hints',function(){try{const m=WS.m;hintFire(m&&m.kind==='town'&&(G.stats&&G.stats.battles)?'town':'world');}catch(e){}});
 HOOK.after('startBattle','p2world','battle hint',function(r){try{if(r!==false&&B&&!G.daily)hintFire('battle');}catch(e){}});
 HOOK.after('finishBattle','p2world','win hint',function(r,how){try{if(how==='win')setTimeout(()=>hintFire('win'),600);}catch(e){}});
 // Settings row and the Guides > Hints page
@@ -360,8 +360,8 @@ function vHints(){const H=META.hints||{},seen=HINTS.filter(h=>H[h.id]);
   return `<p class="note">Tips from your first steps, kept here once they have shown. ${seen.length} of ${HINTS.length} seen. Hints are ${hintsOn()?'on':'off'} (Settings).</p>`+
     (seen.length?`<div class="rows">${seen.map(h=>`<div class="row"><div><small>${esc(H[h.id])}</small></div></div>`).join('')}</div>`:'<p class="note">No hints yet. They show during the first realm.</p>')+
     `<div class="btnrow"><button class="btn sm" data-act="cfg" data-arg='["hints",${hintsOn()?'false':'true'}]'>${hintsOn()?'Turn hints off':'Turn hints on'}</button><button class="btn sm" data-act="hintsReset">Show them again</button></div>`;}
-{const mm1=mMenu;mMenu=function(m){if(!m||m.tab!=='hints')return mm1.apply(this,arguments);
-  const html=mm1.apply(this,arguments),tabs=menuTabsHtml(menuGroupOf('hints'),'hints'),k=html.indexOf(tabs);return k<0?html:html.slice(0,k+tabs.length)+vHints()+html.slice(k+tabs.length);};}
+HOOK.wrap('mMenu','p2world','Hints tab',function(next,...args){const m=args[0];if(!m||m.tab!=='hints')return next(...args);
+  const html=next(...args),tabs=menuTabsHtml(menuGroupOf('hints'),'hints'),k=html.indexOf(tabs);return k<0?html:html.slice(0,k+tabs.length)+vHints()+html.slice(k+tabs.length);});
 try{const css=document.createElement('style');css.textContent=`#p2hint{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 54px);transform:translate(-50%,-8px);z-index:60;max-width:min(92vw,420px);box-sizing:border-box;
   background:rgba(20,14,30,.94);color:#f4ecd8;border:1px solid #ffd04a;border-radius:10px;padding:6px 9px;font-size:12px;line-height:1.3;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;box-shadow:0 4px 18px rgba(0,0,0,.5)}
   #p2hint.show{opacity:1;pointer-events:auto;transform:translate(-50%,0)}#p2hint.bat{top:auto;bottom:calc(env(safe-area-inset-bottom,0px) + 10px)}#p2hint .btn{padding:3px 8px;font-size:12px}#p2hint b{color:#ffd04a;margin-right:6px}#p2hint .btnrow{margin-top:4px;display:flex;gap:6px;justify-content:flex-end}

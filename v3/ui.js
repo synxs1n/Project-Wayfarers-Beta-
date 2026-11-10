@@ -162,6 +162,7 @@ function wkwUpdate(){
   if(G.ward>0)html+=`<span class="wchip hwchip" title="Holy Water: no random battles">✧ Ward <b class="nums">${G.ward}</b></span>`;
   if(wk.innerHTML!==html)wk.innerHTML=html;
 }
+wkwUpdate=HOOK.def('wkwUpdate',wkwUpdate);
 function renderWorldUI(){
   const d=$('wdlg');if(!d)return;
   d.innerHTML=WS.dlg?`<button class="dlg" data-act="talk">${WS.dlg.name?`<b>${esc(WS.dlg.name)}</b>`:''}<span>${esc(WS.dlg.text)}</span><i>▼</i></button>`:'';
@@ -261,6 +262,7 @@ function cmdHtml(){
   }
   return who+body;
 }
+cmdHtml=HOOK.def('cmdHtml',cmdHtml);
 
 // ----- modals -----
 function box(title,body,btns,wide){return `<div class="modal"><div class="panel box ${wide?'wide':''}"><h2>${title}</h2>${body}<div class="btnrow">${btns||'<button class="btn" data-act="closeModal">Close</button>'}</div></div></div>`;}
@@ -341,6 +343,7 @@ function mChar(id,edit){
     ${bondSheet(id)}
     <div class="btnrow"><button class="btn gold" data-act="${m.type==='guild'?'charBack':'menuBack'}">Back</button></div></div></div>`;
 }
+mChar=HOOK.def('mChar',mChar);
 // v0.4.0 3.1: seven top groups, with sub tabs where a group holds more than one page. Tab ids are unchanged so every old link still lands.
 // v0.6.3: regrouped so each group holds one kind of page: Quests has the guild missions, Backpack has Materials, Records has Lore
 // (the story so far), Guides keeps only the how-to pages. Ids are unchanged; 'pouch' is new (Materials, was the end of Items).
@@ -384,9 +387,11 @@ function mMenu(m){
   if(typeof nbMenuBody==='function'){const nb=nbMenuBody(m);if(nb!=null)body=nb;}// v0.9.5: Quests, Guilds, Bounties, Arena are the Notice Board (menus3.js)
   return box('Menu',menuTabsHtml(grp,tab)+body,`<span class="verf">${esc(GAME_VERSION)}</span>${canStuck()?'<button class="btn" data-act="stuckAsk" title="Return to the dungeon entrance for free">Stuck?</button>':''}<button class="btn" data-act="fbOpen">Help / Feedback</button><button class="btn gold" data-act="closeModal">Close</button>`,true);
 }
+mMenu=HOOK.def('mMenu',mMenu);
 function bestAll(){
   const out=[];ZONES.forEach((Z,zi)=>Z.pool.forEach(k=>out.push({k,d:MON[k],zone:zi})));
   GPOOL.concat(FPOOL).forEach(k=>out.push({k,d:guardianDef(k),g:1}));return out;}
+bestAll=HOOK.def('bestAll',bestAll);
 function vBestiary(){
   const all=bestAll(),seen=all.filter(o=>(META.best[o.d.n]||{}).seen).length;
   const tile=o=>{const b=META.best[o.d.n]||{};if(!b.seen)return `<div class="btile unk"><img src="${monURL(o.d.art)}" alt=""><b>???</b><span class="els"></span></div>`;
@@ -425,6 +430,7 @@ function mBeast(m){
     ${o.g?`<h4>Turning point and pattern</h4>${T>=3?`<p>${d.phase?`At ${Math.round(d.phase.at*100)}% HP: ${esc(d.phase.say)}${d.phase.summon?' It calls for help.':''}${d.phase.heal?` It heals ${Math.round(d.phase.heal*100)}%.`:''}`:'No turning point.'} It has a Break shield: hit its weaknesses and detonate reactions to crack it, then pile on while it reels.</p>`:lock(3,'Its turning point and attack pattern')}`:''}
     ${drops.length?`<h4>Drops</h4>${T>=2?`<p>${drops.join(', ')}, plus the local realm relic${T>=3?`. Odds per kill: about ${Math.round(55*(1+pk.drop))}% for a part or raw material, 38% for the realm relic; elite versions also drop a Dread Core.`:'.'}</p>`:lock(2,'The drop table')}`:o.g?`<h4>Drops</h4><p>${T>=2?'Two Dread Cores per win, plus gear and gold.':'?'}</p>`:''}`,'<button class="btn gold" data-act="menuTab" data-arg="beasts">Back</button>');
 }
+mBeast=HOOK.def('mBeast',mBeast);
 function vLore(){
   const head=`<tr><th></th>${ELK.map(d=>`<th>${ico(d)}</th>`).join('')}</tr>`;
   const rows=ELK.map(a=>`<tr><th>${ico(a)}</th>${ELK.map(d=>{const v=CHART[a][d];return `<td class="${v>1?'s':v<1?'r':''}">${v>1?'2':v<1?'½':''}</td>`;}).join('')}</tr>`).join('');

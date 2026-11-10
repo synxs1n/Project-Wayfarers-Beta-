@@ -40,14 +40,14 @@ const TW_RIFT=['fire','water','ice','lightning','earth','wind','light','shadow']
   const h=TW.on('heal'),it=ITEMS[id];if(!h||!it||!it.heal)return ui0.apply(this,arguments);
   ITEMS[id]=Object.assign({},it,{heal:Math.round(it.heal*h.m)});try{return ui0.apply(this,arguments);}finally{ITEMS[id]=it;}};}
 // reactions: Fire x2 in the trial; Reactions only (NG+) makes every reaction stronger
-{const dr0=doReaction;doReaction=function(a,t,el){const R=dr0.apply(this,arguments);try{if(R){
+HOOK.after('doReaction','twists','twist: stronger reactions',function(R,a,t,el){try{if(R){
   const f=TW.on('fire2');if(f&&(R.p==='fire'||R.d==='fire'||el==='fire'))R.m*=f.m;
-  const q=TW.ng('react');if(q)R.m*=q.m;}}catch(e){}return R;};}
+  const q=TW.ng('react');if(q)R.m*=q.m;}}catch(e){}});
 // super effective hits
 HOOK.after('calcDamage','twists','twist: weakness damage',function(r){try{const w=TW.on('weak');if(w&&r&&r.em>1)r.dmg=Math.max(1,Math.round(r.dmg*w.m));}catch(e){}});
 // statuses last one more turn (only a status this call actually set, not one it cancelled)
-{const as0=addSt;addSt=function(t,k){const L=TW.on('linger');if(!L||!t||!t.st)return as0.apply(this,arguments);
-  const prev=t.st[k],ok=as0.apply(this,arguments);if(ok&&t.st[k]&&t.st[k]!==prev&&typeof t.st[k].t==='number')t.st[k].t+=L.add;return ok;};}
+HOOK.wrap('addSt','twists','twist: statuses linger',function(next,...args){const [t,k]=args;const L=TW.on('linger');if(!L||!t||!t.st)return next(...args);
+  const prev=t.st[k],ok=next(...args);if(ok&&t.st[k]&&t.st[k]!==prev&&typeof t.st[k].t==='number')t.st[k].t+=L.add;return ok;});
 // wave start: shields, primes, glass foes, Ward; the trial's first fight also charges Limits
 function twWave(first){
   if(!TW.inTrial())return;const T=TW.cur();if(!T)return;
@@ -64,7 +64,7 @@ function twWave(first){
 
 // ===== New Game+ modifier effects =====
 // Foes hit harder (never in the Daily Trial: TW.ng is off there)
-{const me0=makeEnemy;makeEnemy=function(){const e=me0.apply(this,arguments);try{const b=TW.ng('brutal');if(b&&e&&e.S){e.S.atk*=b.pow;e.S.mag*=b.pow;}}catch(x){}return e;};}
+HOOK.after('makeEnemy','twists','twist: foes hit harder',function(e){try{const b=TW.ng('brutal');if(b&&e&&e.S){e.S.atk*=b.pow;e.S.mag*=b.pow;}}catch(x){}});
 // Elites everywhere: one foe in each wild fight gets a shield and more HP
 const TW_WILD=['field','dungeon','cavern'];
 function twElite(){
@@ -81,20 +81,20 @@ function twRift(u){const cur=u.el&&u.el[0],i=TW_RIFT.indexOf(cur),nx=TW_RIFT[(i+
 // rewards: every chosen modifier multiplies battle XP and gold (win() reads facMul once per fight)
 {const fm0=facMul;facMul=function(){const r=Object.assign({},fm0.apply(this,arguments));try{if(G&&!G.daily)TW.mods().forEach(m=>{r.xp*=m.xp||1;r.gold*=m.gold||1;});}catch(e){}return r;};}
 // Cold inns: the rest restores only part of what is missing (a fallen hero wakes at that share of HP)
-{const ra0=restAll;restAll=function(){
+HOOK.wrap('restAll','twists','twist: cold inns',function(next,...args){
   const m=TW.ng('coldinn'),pre={};if(m&&G)Object.keys(G.roster).forEach(id=>{const c=G.roster[id];pre[id]=[c.hp,c.mp];});
-  const ok=ra0.apply(this,arguments);
+  const ok=next(...args);
   if(ok&&G){if(m)Object.keys(G.roster).forEach(id=>{const c=G.roster[id],p=pre[id];if(!p||!c.S)return;
       c.hp=p[0]<=0?Math.max(1,Math.round(c.S.mhp*m.heal)):Math.min(c.S.mhp,Math.round(p[0]+(c.S.mhp-p[0])*m.heal));
       c.mp=Math.min(c.S.mmp,Math.round(Math.max(0,p[1])+(c.S.mmp-Math.max(0,p[1]))*m.heal));});
     if(Array.isArray(G.ngDown)&&G.ngDown.length)G.ngDown=[];
     if(m||TW.ng('iron'))saveGame();}
-  return ok;};}
+  return ok;});
 // Ironman: a hero who falls stays down (at 0 HP) until an inn
 function ironDowned(c){return !!(c&&TW.ng('iron')&&Array.isArray(G.ngDown)&&G.ngDown.includes(c.id));}
 function ironClamp(){if(!TW.ng('iron')||!Array.isArray(G.ngDown))return;
   G.ngDown.forEach(id=>{const c=G.roster[id];if(c&&c.hp>0){c.hp=0;c.st={};if(B){c.fx=(c.fx||[]).filter(f=>f.txt!=='Revived');fx(c,'Stays down','stat bad');}}});}
-{const fl0=fallen;fallen=function(u){const r=fl0.apply(this,arguments);try{if(u&&u.side==='p'&&TW.ng('iron')&&G.roster[u.id]){G.ngDown=Array.isArray(G.ngDown)?G.ngDown:[];if(!G.ngDown.includes(u.id))G.ngDown.push(u.id);}}catch(e){}return r;};}
+HOOK.after('fallen','twists','twist: ironman downed list',function(r,u){try{if(u&&u.side==='p'&&TW.ng('iron')&&G.roster[u.id]){G.ngDown=Array.isArray(G.ngDown)?G.ngDown:[];if(!G.ngDown.includes(u.id))G.ngDown.push(u.id);}}catch(e){}});
 HOOK.wrap('perform','twists','Iron clamp after every action',function(next,...a){try{return next(...a);}finally{try{ironClamp();}catch(e){}}});
 {const uf0=useItemField;useItemField=function(id,c){if(ironDowned(c)&&ITEMS[id]&&ITEMS[id].revive)return false;return uf0.apply(this,arguments);};}
 {const fe0=fsEffect;fsEffect=function(s,t){if(ironDowned(t))return false;return fe0.apply(this,arguments);};}
@@ -141,8 +141,8 @@ ACT.ngMod=function(id){if(!twUnlocked(TW.mod(id)))return;const L=V.ngMods=V.ngMo
 {const ms0=mSlots;mSlots=function(m){let h=ms0.apply(this,arguments);try{[0,1,2].forEach(s=>{const o=loadRaw(s);const n=o&&TW.modNames(o);if(!n)return;
   const a=h.indexOf(`<b>Slot ${s+1}`);if(a<0)return;const b=h.indexOf('</small>',a);if(b<0)return;h=h.slice(0,b+8)+`<small class="ngm">Modifiers: ${esc(n)}</small>`+h.slice(b+8);});}catch(e){}return h;};}
 {const vh0=vHeader;vHeader=function(){let h=vh0.apply(this,arguments);try{const L=TW.mods();if(L.length&&G&&G.run&&G.run.cycle)h=h.replace(`<span class="cyc">NG+${G.run.cycle}</span>`,`<span class="cyc" title="Modifiers: ${esc(TW.modNames())}">NG+${G.run.cycle}<span class="ngc">✦${L.length}</span></span>`);}catch(e){}return h;};}
-{const vj0=vJourney;vJourney=function(){let h=vj0.apply(this,arguments);try{const L=TW.mods();if(L.length){
+HOOK.xform('vJourney','twists','active modifiers list',function(h){try{const L=TW.mods();if(L.length){
   const rows=L.map(m=>`<div class="row"><div class="grow"><b>${esc(m.n)}</b><small>${esc(m.risk)} ${esc(m.gain)}</small></div></div>`).join('');
-  h=h.replace(/(<b>New Game\+<\/b><\/div><span class="m nums">Cycle \d+<\/span><\/div>)/,'$1'+rows);}}catch(e){}return h;};}
+  h=h.replace(/(<b>New Game\+<\/b><\/div><span class="m nums">Cycle \d+<\/span><\/div>)/,'$1'+rows);}}catch(e){}return h;});
 // tests: read any game binding by name (window.__A.TW.get('restAll'))
 TW.get=k=>eval(k);

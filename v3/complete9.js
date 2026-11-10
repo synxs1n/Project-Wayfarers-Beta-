@@ -17,8 +17,8 @@ function REALM_DONE(s){const L=[];if(!G||G.daily)return L;
   L.push({k:'boss',n:s<4?'Scourge':'Calamity',done:lairDone(s)});return L;}
 function realmProgress(s){const L=REALM_DONE(s),d=L.filter(x=>x.done).length;return {L,d,n:L.length,pct:L.length?Math.round(d*100/L.length):0};}
 // ----- map markers: a done flag, then a checkmark over the icon (area map and minimap share drawMarks) -----
-{const mm0=mapMarks;mapMarks=function(m){const o=mm0.apply(this,arguments);try{if(m&&m.kind==='field'&&!G.daily)o.forEach(q=>{if(['cave','fort','dungeon','lair','lairlit'].includes(q.k)){
-  const k=q.k==='cave'||q.k==='fort'?q.k:'lair';if(siteDone(k,m.s))q.done=1;}});}catch(e){}return o;};}
+HOOK.after('mapMarks','complete9','done flag on site markers',function(o,m){try{if(m&&m.kind==='field'&&!G.daily)o.forEach(q=>{if(['cave','fort','dungeon','lair','lairlit'].includes(q.k)){
+  const k=q.k==='cave'||q.k==='fort'?q.k:'lair';if(siteDone(k,m.s))q.done=1;}});}catch(e){}});
 function drawCheck(x,px,py,r){x.save();x.lineCap='round';x.lineJoin='round';x.strokeStyle='rgba(0,0,0,.75)';x.lineWidth=Math.max(2.5,r*.5);
   const p=[[px-r*.55,py],[px-r*.1,py+r*.45],[px+r*.65,py-r*.5]];x.beginPath();x.moveTo(...p[0]);x.lineTo(...p[1]);x.lineTo(...p[2]);x.stroke();
   x.strokeStyle='#7aff8a';x.lineWidth=Math.max(1.4,r*.28);x.beginPath();x.moveTo(...p[0]);x.lineTo(...p[1]);x.lineTo(...p[2]);x.stroke();x.restore();}
@@ -30,9 +30,9 @@ function vRealms(){try{if(!G||G.daily)return '';const rows=[];
     bits=[['quest','Quests'],['bounty','Bounties'],['den','Den'],['sanctum','Sanctum'],['boss','Boss']].map(([k,n])=>{const v=mk(k);return v?`${n} ${v}`:'';}).filter(Boolean).join(' · ');
     rows.push(`<div class="row ${P.d===P.n?'up':''}"><div class="grow"><b>Realm ${s+1}: ${esc(Z.n)}</b><small>${bits}</small></div><span class="m nums">${P.d===P.n?'100% ✓':`${P.d} of ${P.n}`}</span></div>`);}
   return `<h4>Realms</h4><div class="rows compact">${rows.join('')}</div>`;}catch(e){return '';}}
-{const vj0=vJourney;vJourney=function(){let h=vj0.apply(this,arguments);try{const sec=vRealms(),k=h.indexOf('<h4>Progress</h4>');if(sec)h=k>=0?h.slice(0,k)+sec+h.slice(k):h+sec;}catch(e){}return h;};}
+HOOK.xform('vJourney','complete9','Realms section',function(h){try{const sec=vRealms(),k=h.indexOf('<h4>Progress</h4>');if(sec)h=k>=0?h.slice(0,k)+sec+h.slice(k):h+sec;}catch(e){}return h;});
 // v0.11.4: the first visit to a special place tags its name with what it is: "Den: Mossback Hollow", "Sanctum: ...", "Lair: ...".
 // Later visits show the plain name. G.siteTag remembers which have been tagged (optional field, journey bound).
 function siteKind(m){if(!m)return '';if(m.cave&&m.fort)return 'Sanctum';if(m.cave)return 'Den';if(m.kind==='dungeon'&&!m.archive&&!m.sanctum)return 'Lair';return '';}
-{const sl0=showLocation;showLocation=function(){const r=sl0.apply(this,arguments);try{const m=WS.m,k=siteKind(m);if(k&&G&&!G.daily){G.siteTag=G.siteTag||{};
-  if(!G.siteTag[m.id]){G.siteTag[m.id]=1;WS.locN=k+': '+WS.locN;}}}catch(e){}return r;};}
+HOOK.after('showLocation','complete9','site kind in the location name',function(){try{const m=WS.m,k=siteKind(m);if(k&&G&&!G.daily){G.siteTag=G.siteTag||{};
+  if(!G.siteTag[m.id]){G.siteTag[m.id]=1;WS.locN=k+': '+WS.locN;}}}catch(e){}});

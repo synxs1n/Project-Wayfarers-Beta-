@@ -41,9 +41,9 @@ function arenaMedalCount(){try{return ARENA.reduce((a,A,i)=>a+((G.arena||[])[i]>
     out.push([k,k+seg.length,s2]);pos=k+seg.length;});
   let r='',p=0;out.forEach(([a,b,s])=>{r+=h.slice(p,a)+s;p=b;});h=r+h.slice(p);}catch(e){}return h;};}
 // ---------- Records > Journey ----------
-{const vj0=vJourney;vJourney=function(){let h=vj0.apply(this,arguments);try{const n=arenaMedalCount(),strip=`<span class="amedals">${ARENA.map((A,i)=>(G.arena||[])[i]>0?arenaMedal(i,14):'').join('')}</span> `;
+HOOK.xform('vJourney','arena11','Arena medals row',function(h){try{const n=arenaMedalCount(),strip=`<span class="amedals">${ARENA.map((A,i)=>(G.arena||[])[i]>0?arenaMedal(i,14):'').join('')}</span> `;
   const row=`<div class="row"><div class="grow"><b>Arena medals collected</b></div><span class="m nums">${strip}${n} of ${ARENA.length}</span></div>`;
-  const m=h.match(/<div class="row"><div class="grow"><b>Scourges defeated<\/b><\/div><span class="m nums">[^<]*<\/span><\/div>/);if(m)h=h.replace(m[0],m[0]+row);}catch(e){}return h;};}
+  const m=h.match(/<div class="row"><div class="grow"><b>Scourges defeated<\/b><\/div><span class="m nums">[^<]*<\/span><\/div>/);if(m)h=h.replace(m[0],m[0]+row);}catch(e){}return h;});
 // ---------- Weekly Trial ----------
 dailyKey=function(d){d=d||new Date();const m=new Date(d.getFullYear(),d.getMonth(),d.getDate()-((d.getDay()+6)%7));
   return m.getFullYear()+'-'+String(m.getMonth()+1).padStart(2,'0')+'-'+String(m.getDate()).padStart(2,'0');};

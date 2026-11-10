@@ -12,7 +12,7 @@ const PC_LOCK='opens after the first Scourge falls';
 // 1. guild missions
 {const fl0=facMissionList;facMissionList=function(id){const L=fl0.apply(this,arguments);if(pcFirstBoss())return L;const f=facInit();return L.filter(m=>f.acc[m.id]!=null);};}
 {const fa0=ACT.facAccept;ACT.facAccept=function(id){if(!pcFirstBoss()){toast('Guild missions '+PC_LOCK+'.');return;}return fa0.apply(this,arguments);};}
-{const vm0=vFacMissions;vFacMissions=function(){const h=vm0.apply(this,arguments);if(pcFirstBoss()||!G)return h;return `<p class="note pclock">Guild missions ${PC_LOCK}. Your standing with each faction already counts from what you do on the road.</p>`+h;};}
+HOOK.xform('vFacMissions','pacing','guild missions lock note',function(h){if(pcFirstBoss()||!G)return h;return `<p class="note pclock">Guild missions ${PC_LOCK}. Your standing with each faction already counts from what you do on the road.</p>`+h;});
 // 2. tempering
 function pcTemperOpen(){return pcFirstBoss()||pcHasTempered();}
 {const vt0=vTemper;vTemper=function(opt){if(G&&!G.daily&&!pcTemperOpen())return `<p class="note pclock">The smith will temper your gear once the first Scourge falls. Until then, forge and buy what you need.</p>`;return vt0.apply(this,arguments);};}
@@ -51,8 +51,8 @@ if(typeof vBonds==='function'){const vb0=vBonds;vBonds=function(){if(!pcUnlocked
 function pcGuildOpen(){return pcGated()?pcUnlocked('guilds'):pcFirstBoss();}
 {const fl1=facMissionList;facMissionList=function(id){if(!pcGated()||pcGuildOpen())return fl1.apply(this,arguments);const f=facInit();return fl1.apply(this,arguments).filter(m=>f.acc[m.id]!=null);};}
 {const fa1=ACT.facAccept;ACT.facAccept=function(id){if(pcGated()&&!pcGuildOpen()){toast('Guild missions '+pcLockText('guilds')+'.');return;}return fa1.apply(this,arguments);};}
-{const vm1=vFacMissions;vFacMissions=function(){const h=vm1.apply(this,arguments);if(!G||!pcGated()||pcGuildOpen())return h;const t=`Guild missions ${pcLockText('guilds')}.`;
-  return h.includes(`Guild missions ${PC_LOCK}.`)?h.replace(`Guild missions ${PC_LOCK}.`,t):`<p class="note pclock">${t} Your standing with each faction already counts from what you do on the road.</p>`+h;};}
+HOOK.xform('vFacMissions','pacing','guild missions lock note (gated pacing)',function(h){if(!G||!pcGated()||pcGuildOpen())return h;const t=`Guild missions ${pcLockText('guilds')}.`;
+  return h.includes(`Guild missions ${PC_LOCK}.`)?h.replace(`Guild missions ${PC_LOCK}.`,t):`<p class="note pclock">${t} Your standing with each faction already counts from what you do on the road.</p>`+h;});
 // the Echoforge: the fourth realm (or once the journey is won)
 if(typeof efTabOn==='function'){const ef0=efTabOn;efTabOn=function(){return ef0.apply(this,arguments)&&pcUnlocked('echoforge');};}
 // the arena's top tiers: the Golden Coliseum needs the fourth realm (ARENA min already asks for three Scourges)
@@ -61,5 +61,5 @@ const PC_NEWS={1:'New in this realm: elemental reactions (a primer marks a foe, 
   2:'New in this realm: guild missions at the Guild Hall, and Camp Supplies at Alchemy for making camp on the road.',
   3:'New in this realm: the Echoforge at the Smithy and the Golden Coliseum. Beyond the last Calamity waits New Game+: keep your heroes, face harder foes, add modifiers.'};
 function pcNews(){try{if(!pcGated())return;const r=Math.min(3,pcRealm());G.pcN=G.pcN||{};for(let k=1;k<=r;k++){if(G.pcN['r'+k])continue;G.pcN['r'+k]=1;if(k===r&&PC_NEWS[k])toast(PC_NEWS[k]);}}catch(e){}}
-{const sl0=showLocation;showLocation=function(){const r=sl0.apply(this,arguments);try{if(WS.m&&WS.m.kind==='town')pcNews();}catch(e){}return r;};}
+HOOK.after('showLocation','pacing','news on arriving in town',function(){try{if(WS.m&&WS.m.kind==='town')pcNews();}catch(e){}});
 try{window.__P95={pcUnlocked,pcRealm,pcGated,pcLockText,pcNews,pcGuildOpen,get PACE(){return PACE;}};}catch(e){}

@@ -84,7 +84,7 @@ HOOK.before('encounterFoes','chance','duel foes',function(spec){if(spec.kind==='
 // ----- the hiring discount for traders you bought from -----
 {const rc=recruitCost;recruitCost=function(id){let c=rc.apply(this,arguments);try{if(G&&G.ce&&G.ce.fr&&G.ce.fr[id])c=Math.round(c*.8);}catch(e){}return c;};}
 // ----- steps -----
-{const ar=arrive;arrive=function(){const r=ar.apply(this,arguments);try{ceStep();}catch(e){}return r;};}
+HOOK.after('arrive','chance','chance meeting step',function(){try{ceStep();}catch(e){}});
 
 // v0.4.3: travel packs roll their contents: three picks from a stage-weighted table, sometimes a rare extra
 const PACK_TABLE=[['potion',3,0],['hipotion',2,1],['ether',3,0],['remedy',2,0],['salts',2,0],['ash',1,1],['bandage',1,2],['plume',1,1],['tent',1,0],['holywater',1,1],['vigor',1,2],['sage',1,2],['elixir',.3,3]];

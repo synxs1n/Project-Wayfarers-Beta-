@@ -47,6 +47,6 @@ function g7Gimmicks(){const D=(typeof BOSS_GIM!=='undefined'&&BOSS_GIM.def)||{};
   return `<p class="note">Every Scourge and Calamity has one realm gimmick it telegraphs a turn ahead, with a clear answer (guard, move, cleanse, or hit the right spot). Names show once you have met the boss.</p><div class="rows compact">${rows}</div>`;}
 function g7Body(tab){if(tab==='charts')return g7Charts();if(tab==='ailments')return `<p class="note">Ailments hurt your heroes and foes alike. Cures, Remedies and some skills clear them; Poison, Curse and Wounds last past the fight.</p>`+g7Sts(true);
   if(tab==='boons')return `<p class="note">Boons help the one who carries them for a few turns.</p>`+g7Sts(false);if(tab==='gimmicks')return g7Gimmicks();return null;}
-{const mm0=mMenu;mMenu=function(m){const b=m&&g7Body(m.tab);let h=mm0.apply(this,arguments);if(b)h=h.replace('<div class="btnrow">',b+'<div class="btnrow">');return h;};}
+HOOK.wrap('mMenu','guild7','guide bodies on the menu tabs',function(next,...args){const m=args[0];const b=m&&g7Body(m.tab);let h=next(...args);if(b)h=h.replace('<div class="btnrow">',b+'<div class="btnrow">');return h;});
 // Lore keeps the story: the charts and statuses moved to Guides
 {const vl0=vLore;vLore=function(){let h=vl0.apply(this,arguments);try{const i=h.indexOf('<h4>Element chart</h4>');if(i>=0)h=h.slice(0,i)+`<p class="note">The element chart, every reaction, the ailments, boons and boss gimmicks are in Guides.</p>`;}catch(e){}return h;};}

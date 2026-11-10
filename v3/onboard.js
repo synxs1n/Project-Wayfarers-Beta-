@@ -287,8 +287,8 @@ function vSysGuide(m){const at=m&&m.obAt,met=TIPS.filter(t=>t.always||tipSeen(t.
   return `<p class="note">Each part of the game explains itself with a short tip the first time you meet it. Every tip you have seen is here in more detail.${left?` ${left} more will show as you play.`:''} Tips are ${tipsOn()?'on':'off'} (Settings).</p>`+
     (V.obPrev?`<div class="btnrow"><button class="btn sm" data-act="obBack">Back</button></div>`:'')+(body||'<p class="note empty">No tips yet. They show the first time you meet each part of the game.</p>')+
     `<div class="btnrow"><button class="btn sm" data-act="cfg" data-arg='["tips",${tipsOn()?'false':'true'}]'>${tipsOn()?'Turn tips off':'Turn tips on'}</button><button class="btn sm" data-act="tipsReset">Reset tips</button></div>`;}
-{const mm1=mMenu;mMenu=function(m){if(!m||m.tab!=='sysg')return mm1.apply(this,arguments);
-  const html=mm1.apply(this,arguments),tabs=menuTabsHtml(menuGroupOf('sysg'),'sysg'),k=html.indexOf(tabs);return k<0?html:html.slice(0,k+tabs.length)+vSysGuide(m)+html.slice(k+tabs.length);};}
+HOOK.wrap('mMenu','onboard','System Guide tab',function(next,...args){const m=args[0];if(!m||m.tab!=='sysg')return next(...args);
+  const html=next(...args),tabs=menuTabsHtml(menuGroupOf('sysg'),'sysg'),k=html.indexOf(tabs);return k<0?html:html.slice(0,k+tabs.length)+vSysGuide(m)+html.slice(k+tabs.length);});
 
 // ----- Settings: Tips on or off, Reset tips -----
 HOOK.wrap('settingsBody','onboard','Tips row',function(next,...a){const h=next(...a),on=tipsOn();
