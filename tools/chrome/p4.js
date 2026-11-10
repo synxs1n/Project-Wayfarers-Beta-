@@ -63,7 +63,7 @@ const rift=await ev(()=>{const A=__A,G=A.G;A.ACT.resultOk&&A.ACT.resultOk();A.V.
 console.log('rift',JSON.stringify(rift));chk('C2 (v0.3.3) Echo Sanctum row on the waystone; 1 echo now, all 25 after the account unlock',rift.row&&rift.k0===1&&rift.k1===25&&rift.list);
 await shot('rift');
 const fo=await ev(()=>{const A=__A,G=A.G;A.efCost('blade');Object.keys(A.efCost('blade')).forEach(k=>{G.mats[k]=10;});G.gold=99999;G.gear.push('w_blade_5+2');A.V.modal={type:'smithy',tab:'echo'};A.render();const t=document.querySelector('#modal').innerText;
-  A.ACT.efForge('blade');const ok=G.gear.some(g=>g==='w_blade_ef+2')||Object.values(G.roster).some(c=>c.eq.w==='w_blade_ef+2');const g=A.gearOf('w_blade_ef'),b=A.gearOf('w_blade_5');return {tab:/Echoforged Ruinsong/.test(t),ok,atk:g.atk,base:b.atk};});
+  A.ACT.efForge('blade');const ok=G.gear.some(g=>g==='w_blade_ef'||g==='w_blade_ef+2')||Object.values(G.roster).some(c=>c.eq.w==='w_blade_ef'||c.eq.w==='w_blade_ef+2');/* v0.16.8: Echoforged pieces are forged at their final strength (no plus) */const g=A.gearOf('w_blade_ef'),b=A.gearOf('w_blade_5');return {tab:/Echoforged Ruinsong/.test(t),ok,atk:g.atk,base:b.atk};});
 console.log('forge',JSON.stringify(fo));chk('C3 Echoforge tab and forging keeps the temper',fo.tab&&fo.ok&&fo.atk>fo.base);
 // ---- C bestiary
 const be=await ev(()=>{const A=__A;A.V.modal={type:'menu',tab:'beasts'};A.render();const t=document.querySelector('#modal').innerText;return {grp:/Echoes/i.test(t),tag:document.querySelectorAll('.echot').length};});

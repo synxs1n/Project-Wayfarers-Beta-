@@ -4,6 +4,8 @@
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.16.8',['Echoforged gear is the best in the game short of a personal relic: every piece sits 14% or more above the shop\'s tier-5 piece at max temper in every stat, cannot be tempered (it starts where tempering would end), and relics stay above it. The Echoforge now has a recipe for every weapon family and for mail, robe and vest, and asks 1.6x the tier-5 shop price in gold on top of the shards.',
+  'The Echoforge in the Sanctum hall is a landmark: a stone plinth with the anvil, an echo-crystal brazier, a banner, a rune ring and drifting shards, lit in both views.']],
  ['Beta v0.16.7',['Echo Rift gates glow for this journey\'s wins only (the Codex keeps the account record). The Riftkeeper tells you that breaking every Echo opens the centre gate, and warns about what waits there.',
   'The "Guard against a big hit" goal counts any Guard made while a foe winds up or telegraphs, so it no longer sits unfinished at the end of the game.',
   'Forge and Tempering rows carry the item\'s rarity colour like the shop; the Temper button is plain again (the cost chips stay under the title).',

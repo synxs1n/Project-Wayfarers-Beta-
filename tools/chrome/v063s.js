@@ -71,7 +71,7 @@ chk('icons: every pair differs in at least 8 pixels',ic.close.length===0||ic.clo
 chk('icons: tier variants of a family differ in shape (4+ pixels of silhouette)',ic.flat.length===0||ic.flat.slice(0,80).join(' '));
 chk('icons: rarer gear is more ornate (more colours at tier 5 than tier 0, rising overall)',ic.byT[5]>ic.byT[0]+3&&ic.byT[4]>ic.byT[1]||ic.byT.join(','));
 chk('icons: signature weapons and Oathmantles have their own silhouettes (6+ pixels from the tier 4 shop piece)',ic.sig.length===0||ic.sig.slice(0,20).join(' '));
-chk('icons: Echoforged pieces differ from the mythic shop piece',ic.ef.length===6&&ic.ef.every(d=>d>=20)||JSON.stringify(ic.ef));
+chk('icons: Echoforged pieces differ from the mythic shop piece',ic.ef.length>=6&&ic.ef.every(d=>d>=20)||JSON.stringify(ic.ef));
 // tempered pips still show and the Stick still glows
 const misc=await ev(()=>{const A=__A,src=h=>(/src="([^"]+)"/.exec(h)||[])[1];return {plus:src(A.gearIcon('w_blade_2'))!==src(A.gearIcon('w_blade_2+2')),stick:!!src(A.gearIcon('w_stick')),frame:/gframe/.test(A.gearIcon('u_mira'))};});
 chk('icons: tempered gear keeps its +N pips, the Stick has an icon, icons sit in the tier frame',misc.plus&&misc.stick&&misc.frame||JSON.stringify(misc));

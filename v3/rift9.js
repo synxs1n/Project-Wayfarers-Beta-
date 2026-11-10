@@ -10,10 +10,7 @@ const RIFT_FORGE_KEY='__forge';
 HOOK.before('vModal','rift9','Echoforge anvil in the Rift',function(m){if(m&&m.type==='portal'&&m.key===RIFT_FORGE_KEY){const mm={type:'smithy',tab:'echo',from:null};V.modal=mm;return HOOK.stop(mShop(mm));}});
 // drawing: the anvil, the won glow, the Calamity arch
 {const dp0=drawPortal;drawPortal=function(ctx,px,py,n,now){
-  if(n.key===RIFT_FORGE_KEY){const f=(c,x,y,w,h)=>{ctx.fillStyle=c;ctx.fillRect(px+x,py+y,w,h);};const p=.5+.5*Math.sin(now/260);
-    f('#0e0a16',1,4,14,12);f('#3a3a48',2,5,12,10);f('#5a5a6c',3,5,10,2);f('#2a2a34',6,9,4,6);f('#6a6a7c',1,13,14,2);
-    ctx.fillStyle=`rgba(180,140,255,${.25+.35*p})`;ctx.fillRect(px+5,py+3,6,2);f('#e8d8ff',7,3,2,1);
-    ctx.fillStyle=`rgba(120,80,200,${.12*p})`;ctx.beginPath();ctx.arc(px+8,py+9,13,0,7);ctx.fill();return;}
+  if(n.key===RIFT_FORGE_KEY)return;/* v0.16.x: the Echoforge landmark is drawn by echo11.js (forgeDraw, 2D and HD-2D) */
   const d=guardianDef(n.key),open=riftKeys().includes(n.key),won=!!d&&(((META.best||{})['Echo '+d.n])||{}).kills>0,col=(d&&typeof ELC!=='undefined'&&ELC[d.el[0]])||'#b48aff';
   if(n.cal){// a taller pointed arch, crimson with a gold edge, drawn under the gate
     const f=(c,x,y,w,h)=>{ctx.fillStyle=c;ctx.fillRect(px+x,py+y,w,h);};const e=open?'#ffd04a':'#6a5a30';
