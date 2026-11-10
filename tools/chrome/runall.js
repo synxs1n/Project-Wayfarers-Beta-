@@ -25,6 +25,12 @@ const GROUPS={
   audio:'audio audioplay v082s v083a',
   title:'v041p54 v053s v060a v071t v080wt',
   app:'liveupdate sw liveboot-v046 v050p6a',
+  // ci: the smoke set GitHub Actions runs on every push (.github/workflows/release.yml, job "test"); a failure blocks the APK and installer.
+  // Kept under about 5 minutes here (about 10 on a runner): one or two tests per screen and system, none that is timing sensitive.
+  ci:'v165a v063wb v145a v153a sanct v142a v141a v140a v152a v139a v136a v160a v164a v157a v159a v137a v163a v162a v151a v138a v134a v143a savesys',
+  // flaky: tests that fail now and then under machine load for timing reasons (particles sampled by wall clock, the title walk, the
+  // long auto fight, a stale minimap tap). Run them alone when a change touches what they cover; never in ci.
+  flaky:'v158a v080wt v080b v071wt',
 };
 // ---- tests that fail for old reasons (the game moved on; the test was not updated). Not counted as failures, not in "all" ----
 const STALE={
