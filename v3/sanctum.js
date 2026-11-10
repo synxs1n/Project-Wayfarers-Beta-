@@ -65,6 +65,7 @@ function mPortal(m){const k=m.key,d=guardianDef(k);if(!d)return '';const b=(META
     ${open?'':`<p class="note warn">Locked. ${esc(portalLockWhy(k))}</p>`}${FPOOL.includes(k)?'<p class="note"><b>Calamity Echo.</b> One of the five world-enders, harder than any Scourge.</p>':''}
     <p class="note">Echoes at full strength: Scourges at level 50 or your average +5, Calamities at 56 or your average +8. Every Echo drops Echo Essence; its Shard on the first win this journey, often after that. Shards feed the Smithy's Echoforge.</p>`,
     `<button class="btn" data-act="closeModal">Not yet</button><button class="btn gold" data-act="riftFight" data-arg="${k}" ${open?'':'disabled'}>Challenge</button>`);}
+mPortal=HOOK.def('mPortal',mPortal);
 HOOK.before('vModal','sanctum','portal popup',function(m){if(m&&m.type==='portal')return HOOK.stop(mPortal(m));});
 // ----- the waystone row -----
 function riftRow(){if(!G)return '';const open=sanctumOpen(),n=sanctumProgress();if(!open&&!G.won&&!n)return '';

@@ -158,3 +158,8 @@ try{window.__GL={GL,GOALS,glS,glCheck,glList,glRender,glSpot,glHero,glObstacles,
 try{window.__NZ={get NUDGE(){return NUDGE},get AUTO_REW(){return AUTO_REW},autoReason:()=>autoReason(),autoOkMap:()=>autoOkMap(),autoTypeLeft:n=>autoTypeLeft(n),manualBonusPct:()=>manualBonusPct(),
   autoRewardMul:()=>autoRewardMul(),scan:t=>scan(t),doReaction:(a,t,el)=>doReaction(a,t,el),chipShield:(t,n)=>chipShield(t,n),makeEnemy:(m,l,o)=>makeEnemy(m,l,o),packG:()=>packG(),unpackG:o=>unpackG(o),
   obEval:t=>obEval(t),obOpened:()=>obOpened(),obPrimedTip:e=>obPrimedTip(e),get toast(){const t=document.getElementById('toast');return t?t.textContent:'';}};}catch(e){}
+// ----- v0.16.7: the "Guard against a big hit" goal counts any Guard made while a foe telegraphs -----
+// prog2 counted it only when a foe's Crushing Charge or Cataclysm landed on a guarding hero. Bosses with their own wind ups never
+// counted, so the goal sat in the list at the end of the game. Guarding while any living foe has a charge or telegraph up counts now.
+guard=HOOK.def('guard',guard);
+HOOK.before('guard','goals','a Guard under a foe telegraph counts for the goal',function(){try{if(B&&B.nz&&B.cur&&B.cur.side==='p'&&(B.en||[]).some(e=>e.hp>0&&((e.st&&(e.st.charge||e.st.g_tele))||e.boss||e.elite||(B.spec&&(B.spec.kind==='boss'||B.spec.boss))))){B.nz.guard++;if(!B.nz.tele)B.nz.tele=1;}}catch(e){}});/* v0.17.7: a Guard in any boss or elite fight counts too (the owner's guards did not register) */

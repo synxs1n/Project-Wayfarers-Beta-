@@ -19,3 +19,8 @@ HOOK.wrap('win','p4xp','XP catch up (XPC)',function(next,...a){
     x=Math.round(base*m);
     if(m>1)XPC.rows.push({id:c.id,name:c.name,pct:Math.round((m-1)*100),xp:Math.max(0,x-Math.round(base)),front,gap:XPC.max-c.lv,top:XPC.max});}
   return ax0.apply(this,[c,x].concat([].slice.call(arguments,2)));};}
+// ----- v0.17.1: at the level cap, XP becomes gold; drops past the pack's cap become gold -----
+const CAPG={xpPer:8,dropRate:.4};
+addXp=HOOK.def('addXp',addXp);// after the catch up wrap above (the cap check sits outside it)
+HOOK.before('addXp','p4xp','at the level cap, XP becomes gold',function(c,x){try{if(c&&c.lv>=LV_CAP&&x>0&&G){const g=Math.max(1,Math.round(x/CAPG.xpPer));G.gold+=g;if(B)B.capGold=(B.capGold||0)+g;return HOOK.stop([]);}}catch(e){}});
+// (the win hooks that sell overflow drops and pay B.capGold out stay in fixes11.js: they must follow results.js and the Breach purse)

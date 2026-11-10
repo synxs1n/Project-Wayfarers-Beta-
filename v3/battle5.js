@@ -103,6 +103,7 @@ function b5Order(n,cost){if(!B)return [];const live=liveUnits(),SP={slow:1,haste
   return out;}
 // the engine's own helper now uses the same forecast
 turnOrder=function(n){return b5Order(n).map(o=>o.u);};
+turnOrder=HOOK.def('turnOrder',turnOrder);// rift9.js hooks it (an Echo fights alone)
 // the cost of what is being aimed right now (null when nothing is)
 function b5PendCost(){if(!B||B.mode!=='cmd'||!B.pend)return null;const P=B.pend;if(P.scan)return .5;if(P.item)return .8;if(P.sk)return P.sk.cost||1;return null;}
 function b5OrderHtml(){const n=BL.mode==='tall'?B5.order.tall:B5.order.wide,pc=b5PendCost(),pv=pc!=null&&pc!==1,L=b5Order(n,pv?pc:null),cur=B.cur;

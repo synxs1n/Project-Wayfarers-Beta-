@@ -183,6 +183,14 @@ function _accBuild(){
     _accMap[id]=o;});
 }
 function accOf(id){if(!_accMap){try{_accBuild();}catch(e){_accMap={};}}return id&&_accMap[id]||null;}
+accOf=HOOK.def('accOf',accOf);
+// v0.14.1 (was fixes10.js):
+// 3) Eye patches went to 23 of 92 heroes; now about one in five of those keeps it, the rest swap it for a pouch or satchel, and a third
+//    of the scarves and earrings go too, so each piece stays a distinguishing mark.
+HOOK.xform('accOf','art2','eye patches, scarves and earrings are rarer',function(o,id){try{if(o&&o.acc&&!o._f10){o._f10=1;const h=hashS(String(id)+'acc10'),L=(TPL[id]&&TPL[id].look)||{};
+  if(o.acc.includes('eyepatch')&&h%5!==0){o.acc=o.acc.filter(a=>a!=='eyepatch');if(!o.acc.length)o.acc.push(L.b==='monk'?'satchel':'pouch');}
+  if(o.acc.includes('earrings')&&(h>>>3)%3===0&&o.acc.length>1)o.acc=o.acc.filter(a=>a!=='earrings');
+  if(o.acc.includes('scarf')&&(h>>>5)%3===0&&o.acc.length>1)o.acc=o.acc.filter(a=>a!=='scarf');}}catch(e){}return o;});
 function accLook(L,id){const o=L&&accOf(id);if(!o)return L;if(L._acc===id)return L;const n=Object.assign({},L);if(o.hair)n.hair=o.hair;n._acc=id;return n;}
 // accessories drawn over the finished body. Coordinates are the 32x32 grid used by the side, front and back painters. a = accessory colour, d = its shade.
 // accessories drawn over the finished body. Coordinates are the 40x56 rig. a = accessory colour, d = its shade. part: 'head' (head, face; goes on the head layer) or 'body' (neck, body)

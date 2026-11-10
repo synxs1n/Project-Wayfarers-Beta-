@@ -22,6 +22,8 @@ const RK_BASE=['Key-Lash','Doorfall','Lantern Flare'];
 const RK_UNMAKE={id:'rkUnmake',n:'Unmaking',k:'mag',pw:9,t:'all',el:'shadow',mp:0,cost:1,hits:1};
 // ----- account state -----
 function rkBeaten(){try{return echoKeys().filter(k=>{const d=guardianDef(k);return d&&(((META.best||{})['Echo '+d.n])||{}).kills>0;});}catch(e){return [];}}
+rkBeaten=HOOK.def('rkBeaten',rkBeaten);
+HOOK.wrap('rkBeaten','riftkeeper9','Echo records read through the journey view (rift9.js withRiftView)',function(next,...a){return withRiftView(()=>next(...a));});
 function rkUnlocked(){try{return rkBeaten().length>=echoKeys().length;}catch(e){return false;}}
 const rkTitle=()=>!!(META.titles&&META.titles.riftwalker);
 // ----- statuses -----
@@ -50,6 +52,8 @@ HOOK.before('vModal','riftkeeper9','Riftkeeper gate card, Warden rest',function(
   if(m&&m.type==='portal'&&m.key===RK_KEY)return HOOK.stop(mRiftkeeper());
   if(m&&m.type==='rkrest')return HOOK.stop(box('Echo Warden',`<p>"The Rift never tires, but you do. Sit a while by the gates: the Echoes will keep. No charge in here."</p><p class="note">Restores everyone's HP and MP and clears every ailment. Free.</p>${rkTitle()?'<p class="note">The Warden bows to a <b>Riftwalker</b>.</p>':''}`,
     '<button class="btn" data-act="closeModal">Not now</button><button class="btn gold" data-act="riftRest">Rest</button>'));});
+// the Riftkeeper says what the hall is for (was fixes11.js: a vModal xform on the rkrest popup built just above)
+HOOK.xform('vModal','riftkeeper9','Riftkeeper warning',function(h,m){try{if(m&&m.type==='rkrest'&&typeof rkUnlocked==='function'&&!rkUnlocked()){const n=rkBeaten().length,t=echoKeys().length;h=h.replace('<p class="note">Restores',`<p>"Break every Echo in this hall (${n} of ${t} so far) and the centre gate will open. Be warned: what waits behind it is stronger than anything you have faced."</p><p class="note">Restores`);}}catch(e){}return h;});
 Object.assign(ACT,{
   rkFight(){if(!rkUnlocked()||(G&&G.daily))return;V.modal=null;if(!startBattle({kind:'riftkeeper',stage:4,lv:RKC.lv})){toast('Your party needs rest first.');render();}},
   // the Echo Warden's rest: restAll without the gold (and without refreshing the shops); an Ironman hero who fell stays down until an inn

@@ -238,6 +238,7 @@ function actorTalk(a){
   if(a.type==='wanderer'){const q=a.q,t=TPL[q.hero];
     say(t.n,`You came for me? I got turned around in the dark and something big started breathing behind that door. Let's get out of here.`,()=>{q.found=true;if(!G.roster[q.hero])recruit(q.hero,true);toast(t.n+' joins your roster. Report back to the quest board.');saveGame();render();});}
 }
+actorTalk=HOOK.def('actorTalk',actorTalk);
 function say(name,text,after){WS.dlg={name,text,after};WS.held=[];WS.target=null;WS.touchDir=null;if(typeof sfx==='function')sfx('blip');render();}
 function nextDlg(){const d=WS.dlg;WS.dlg=null;render();if(d&&d.after)d.after();}
 // v0.12: chest items: the old six picks (x3) plus bandage (common), ash (uncommon) and tent (rare); one pick, as before
@@ -259,6 +260,7 @@ function openChest(x,y){
 }
 openChest=HOOK.def('openChest',openChest);// v0.9.9: one definition; modules add hooks (hooks.js)
 function askBoss(){V.modal={type:'boss',s:WS.m.s};render();}
+askBoss=HOOK.def('askBoss',askBoss);
 function openService(k){V.modal={type:k,tab:null};render();}
 function openTravel(){V.modal={type:'travel'};render();}
 function travelTo(s){V.modal=null;fadeTo(()=>{const [x,y]=innSpot(s);placeAt('t'+s,x,y,'d');showLocation();saveGame();});render();}

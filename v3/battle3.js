@@ -497,6 +497,7 @@ function b9BanBox(ev){const L=b3Lay();if(!L)return null;const W=BL.W,H=BL.H,sc=B
       const C=[];for(let y=top+1;y+h<=H-1;y+=2)for(const f of [0,-1,1,-2,2,-3,3]){const x=Math.round(W/2-w/2+f*W/10);if(x<1||x+w>W-1)continue;C.push({x,y,c:Math.abs(y+h/2-H*.32)/2+Math.abs(f)*3});}
       C.sort((a,b)=>a.c-b.c);for(const q of C){const r={x:q.x,y:q.y,w,h};if(!obs.some(o=>b3Hit(r,o,o.body?0:B3.pad)))return Object.assign(r,{fs});}}}
   return null;}
+b9BanBox=HOOK.def('b9BanBox',b9BanBox);
 // the banner box of the reaction showing now (placed once, at its first render)
 function b9BanNow(){const ev=B&&B.b9rx;if(!ev)return null;const age=Date.now()-ev.t0;if(age<0||age>B9.banMs)return null;if(ev.r===undefined)ev.r=b9BanBox(ev);return ev.r;}
 // the flash and the banner, in the stage's own layer (fxLayer appends this); negative delays keep the animation running across re-renders
@@ -507,4 +508,9 @@ function b9RxHtml(){const ev=B&&B.b9rx;if(!ev)return '';const age=Date.now()-ev.
   const r=b9BanNow();
   if(r){h+=`<div class="b9ban" data-id="${ev.id}" role="status" style="left:${r.x}px;top:${r.y}px;width:${r.w}px;height:${r.h}px;font-size:${r.fs.toFixed(2)}px;--c1:${c1};--c2:${c2};animation-duration:${B9.banMs}ms;animation-delay:-${age}ms">${EL[ev.p]?ico(ev.p):''}${EL[ev.d]?ico(ev.d):''}<b>✸ ${esc(ev.n)}!</b></div>`;ev.banShown=1;}
   return h;}
+b9RxHtml=HOOK.def('b9RxHtml',b9RxHtml);
+// v0.16.5 (was fixes11.js): one reaction marker, not three. The banner carries the MP line (the float is dropped by battle4.js's doReaction hook).
+HOOK.xform('b9RxHtml','battle3','the banner carries the MP line',function(h){try{const ev=B&&B.b9rx;if(ev&&ev.mp&&h)h=h.replace('!</b>',`!</b><small class="b9mp">+${ev.mp} MP</small>`);}catch(e){}return h;});
+HOOK.wrap('b9BanBox','battle3','box measured with the MP text',function(next,...a){const ev=a[0];if(!ev||!ev.mp)return next(...a);const n0=ev.n;ev.n=n0+' +'+ev.mp+' MP';try{return next(ev);}finally{ev.n=n0;}});// the box is measured with the MP text, so nothing is cut (v095b)
+try{const st=document.createElement('style');st.textContent='.bstage .b9ban .b9mp{display:inline;font-size:.78em;opacity:.95;color:#8ad0ff;margin-left:.35em;font-weight:800}';document.head.appendChild(st);}catch(e){}
 {const an0=animating;animating=function(){return an0.apply(this,arguments)||!!(B&&B.b9rx&&Date.now()-B.b9rx.t0<B9.banMs+150);};}

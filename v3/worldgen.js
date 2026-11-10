@@ -734,6 +734,7 @@ function dynActors(m){
   if(m.kind==='dungeon'&&!m.cave){(G.quests||[]).forEach(q=>{if(q.type==='wanderer'&&q.state==='active'&&!q.found&&q.stage===m.s)out.push({type:'wanderer',x:m.wander[0],y:m.wander[1],q});});}
   return out;
 }
+dynActors=HOOK.def('dynActors',dynActors);
 
 // v0.4.3: carve a road from each gate's landing tile to the nearest road tile, clearing decoration (trees, bushes, crates, barrels)
 // on the way and right beside the landing; buildings, walls, water, lamps, signs and services are never moved

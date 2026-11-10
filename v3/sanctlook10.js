@@ -246,7 +246,7 @@ HOOK.after('hdLook','sanctlook10','pale stone grade',function(o,m,now){try{if(m&
 // geometry (px, relative to the top left of the 3 x 2 footprint, 48 x 32): pillars x 7..15 and 33..41 (the 'U' columns), the door of light between
 // them (x 16..32; the 'E' tile is its lower half, a stair of three steps), lanterns on the front 'U' tiles x 0..7 and 40..47, lintel above y -17..-8.
 function sncOldGateLights(m,arr){const fa=m.fortAt;if(!fa||!arr)return arr;return arr.filter(L=>!(L[3]==='cyan'&&Math.abs(L[0]-(fa[0]*TS+8))<2&&Math.abs(L[1]-(fa[1]*TS+4))<2)&&!(L[3]==='lamp'&&L[2]===12&&Math.abs(L[1]-(fa[1]*TS-3))<2));}
-function sncGateLights(m){const [fx,fy]=m.fortAt,x=(fx-1)*TS,y=(fy-1)*TS;return [[x+4,y+22,11,'lamp'],[x+44,y+22,11,'lamp']];}
+// sncGateLights is owned by sitelook10.js now (the two lamp version here was dead)
 function sncFieldM(){return SNCX.fm||(typeof WS!=='undefined'?WS.m:null);}
 function sncGroundPal(P){return {lg:P.lg,path:P.cap==='snow'?'#c8d8e6':P.cap==='coast'?'#d0c8b0':'#b9b2a4'};}
 // ground paint: a ring of lighter ground and a path of flat stones leading to the stair (drawn in 2D and in the HD ground texture)

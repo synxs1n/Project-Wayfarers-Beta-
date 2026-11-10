@@ -86,13 +86,21 @@ function legendTalk(a){
   else if(id==='jaeson'){convInit();V.modal={type:'convergence'};}
   render();
 }
-{const at0=actorTalk;actorTalk=function(a){if(a.type==='legend')return legendTalk(a);return at0.apply(this,arguments);};}
-{const da0=dynActors;dynActors=function(m){const out=da0(m);
+HOOK.before('actorTalk','legends','legend talk',function(a){if(a.type==='legend')return HOOK.stop(legendTalk(a));});
+// (from fixes10.js) talking to a legend challenger always answers: one that is not ready yet says what its road asks. Registered after the talk above, so it runs first.
+HOOK.before('actorTalk','legends','a challenger that is not ready answers',function(a){if(a&&a.type==='legend'&&a.q&&!['kaevan','nikaris','jaeson'].includes(a.q.hero)){const t=TPL[a.q.hero];say(t?t.n:'Wayfarer',`"Not yet. Come back when you have what this road asks of you." (A legend's challenge: see Quests for what it wants.)`);return HOOK.stop();}});
+HOOK.xform('dynActors','legends','legend quest actors',function(out,m){
   if(m.kind==='field'&&m.part!==1&&m.free&&m.free.length)legendQ(m).forEach(q=>{let k=(hashS(q.hero+(q.step||0))*7)%m.free.length,p=m.free[k];
     for(let j=0;j<m.free.length&&(out.some(o=>o.x===p[0]&&o.y===p[1])||(m.nodes||[]).some(n=>n.x===p[0]&&n.y===p[1]));j++)p=m.free[(k+j*11)%m.free.length];
     const mon=q.hero==='nikaris'&&(q.step||0)<2?((q.step||0)===0?'frostwolf':'thunderhawk'):null;
     out.push({type:'legend',q,x:p[0],y:p[1],mon});});
-  return out;};}
+  return out;});
+// ----- v0.17.1: legendary classes stay unmentioned until one of their heroes is unlocked -----
+// Class lists in the UI ("For: Mages, Archmages, Chroniclers", "tomes are for Mages, Archmages and Chroniclers") named the three legendary
+// classes to every player. Until a legend of that class is unlocked (legends.js legendOn), its name is cut from such lists.
+function legendClsOn(cls){try{return Object.keys(TPL).some(id=>TPL[id].cls===cls&&TPL[id].legend&&typeof legendOn==='function'&&legendOn(id));}catch(e){return true;}}
+function hideLegendNames(h){try{Object.keys(CLS).forEach(k=>{if(!CLS[k].legend||legendClsOn(k))return;const n=CLS[k].n.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+  h=h.replace(new RegExp(', '+n+'s?(?=[,. <])','g'),'').replace(new RegExp(' and '+n+'s?(?=[,. <])','g'),'').replace(new RegExp(n+'s?, ','g'),'').replace(new RegExp(n+'s? and ','g'),'');});}catch(e){}return h;}
 HOOK.after('genQuests','legends','legend quests',function(r,s){try{legendRoll(s);}catch(e){}});
 HOOK.after('placeAt','legends','Jaeson\'s storm',function(r,mid,x,y,f){const m=WS.m;if(m&&m.kind==='field'&&legendQ(m).some(q=>q.hero==='jaeson'))G.weather[m.s]='storm';});
 function drawLegendActor(ctx,a,cx,cy,now){

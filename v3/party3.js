@@ -88,6 +88,14 @@ function p6Train(X,jit){if(X.size<3)return null;const R=c=>X.R[c.id],lvk=jit?c=>
     if(!drop)return;set=set.filter(c=>c!==drop).concat(fill);anchors.push(fill);});
   const trainees=set.filter(c=>!anchors.includes(c)&&X.top-c.lv>=BP6.train.gap);if(!trainees.length)return null;
   return {set:set.sort((a,b)=>a.lv-b.lv),trainees,anchors};}
+p6Train=HOOK.def('p6Train',p6Train);
+// (was fixes11.js, owner's seventh batch)
+// 1. The Training team (party3.js p6Train) is the heroes three or more levels below the roster's top plus the anchors a team needs; it no
+//    longer fills its remaining slots with the next lowest levels (heroes a level or two behind, who merely have levels left). The free
+//    slots go to the strongest of the rest. XP catch up is untouched.
+HOOK.xform('p6Train','party3','Training team keeps only real trainees',function(r,X,jit){try{if(!r)return r;const gap=(BP6&&BP6.train&&BP6.train.gap)||3,keep=r.set.filter(c=>r.anchors.includes(c)||X.top-c.lv>=gap);
+  if(keep.length===r.set.length)return r;const rest=X.all.filter(c=>!keep.includes(c)).sort((a,b)=>X.pw[b.id]-X.pw[a.id]);const set=keep.concat(rest.slice(0,X.size-keep.length));
+  return {set:set.sort((a,b)=>a.lv-b.lv),trainees:set.filter(c=>!r.anchors.includes(c)&&X.top-c.lv>=gap),anchors:r.anchors.concat(rest.slice(0,X.size-keep.length))};}catch(e){return r;}});
 const P6_NAMES={bal:'Balanced',boss:'Boss ready',area:'Area answer',mix:'Fresh mix',rot:'Rotation',train:'Training team'};
 function p6Summary(o,X,first){const T=X.T,nm=c=>esc(c.name);
   if(o.key==='bal')return 'One of every role first (tank, healer, damage, support, Primer and Detonator), every delivery and a spread of elements. Level and gear only settle ties.'+(X.shuf&&X.shuf.bal?' (Another take: near-best heroes trade places.)':'');
@@ -195,6 +203,11 @@ try{const st=document.createElement('style');st.textContent=`.card.hero.epic,but
 .cname .epictag{display:inline-block;vertical-align:middle;padding:0 6px;font:900 .55rem/1.4 var(--fb);letter-spacing:.12em;color:#140a1e;background:linear-gradient(180deg,#e2c4ff,#a868f0);border:2px solid #140a1e}
 .bp6f{margin:.4em 0}.bp6sum{margin:.3em 0}`;document.head.appendChild(st);}catch(e){}
 
+// ----- v0.17.5: the Loadouts tab shows who is in each loadout -----
+function ldCards(){try{const L=LD();if(!L.length)return '';const name=id=>{const c=G.roster[id];return c?esc(c.name):'?';};
+  return `<div class="rows ldcards">${L.map((o,i)=>{if(!o)return '';const P=o.party||[],van=P.slice(0,3),rear=P.slice(3,6);const grp=(ids,lab)=>ids.length?`<div class="ldgrp"><small class="lbl">${lab}</small><div class="ldmem">${ids.map(id=>`<span class="ldm">${G.roster[id]?port(id,'noail'):'<span class="port pt10"></span>'}<small>${name(id)}</small></span>`).join('')}</div></div>`:'';
+    return `<div class="row ldcard"><div class="grow"><b>${i+1}. ${esc(o.name)}</b>${grp(van,'Vanguard')}${grp(rear,'Rearguard')}</div><div class="ldb"><button class="btn sm gold" data-act="ldApply" data-arg="${i}">Load</button></div></div>`;}).join('')}</div>`;}catch(e){return '';}}
+try{const st=document.createElement('style');st.textContent='.ldcards{grid-template-columns:1fr;margin-top:6px}.ldcard .ldgrp{margin-top:4px}.ldcard .ldmem{display:flex;flex-wrap:wrap;gap:6px 10px;margin-top:2px}.ldcard .ldm{display:inline-flex;flex-direction:column;align-items:center;gap:1px;width:52px}.ldcard .ldm small{font-size:10px;line-height:1.1;text-align:center;max-width:52px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}';document.head.appendChild(st);}catch(e){}
 // ----- test hook (our own object; window.__A is not touched) -----
 window.__P6={bestParty:()=>bestParty(),autoCamp,p6Sel,isLeg:id=>isLeg(id),isEpic:id=>isEpic(id),heroTag:id=>heroTag(id),get BP6(){return BP6;},
   role:id=>{const keep=P3C;P3C={why:{},kit:{}};try{const r=p6Role(G.roster[id]);return {tank:r.tank,heal:r.heal,sup:r.sup,dmg:r.dmg,pr:r.pr,de:r.de,cls:r.cls};}finally{P3C=keep;}}};

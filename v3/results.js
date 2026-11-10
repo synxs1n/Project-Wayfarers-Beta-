@@ -83,6 +83,7 @@ function mResult(i){
     ${rsJoin(i)}${rsGrid(i)}${rsBonus(i)}${rsParty(i)}${rsNotes(i)}
     <div class="btnrow stickyb rs-foot">${foot}</div></div></div>`;}
 {const ok0=ACT.resultOk;ACT.resultOk=function(){const i=V.modal&&V.modal.info;if(i&&i.tame&&!i.tamed&&!i.tameWarn){i.tameWarn=1;try{sfx('blip');}catch(e){}render();const p=document.querySelector('#modal .panel');if(p)p.scrollTop=0;return;}return ok0.apply(this,arguments);};}
+ACT.resultOk=HOOK.def('ACT.resultOk',ACT.resultOk);
 HOOK.before('finishBattle','results','when the last battle ended (V.endT)',function(){V.endT=Date.now();});// v0.8.2: when the last battle ended (qready stays quiet then)
 ACT.resultLeave=function(){const i=V.modal&&V.modal.info;if(i)i.tame=null;return ACT.resultOk();};
 try{const css=document.createElement('style');css.textContent=`

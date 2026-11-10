@@ -97,39 +97,7 @@ HOOK.wrap('getMap','sites','sanctum maps; place the sanctum on its field',functi
 // footprint as before (the 'U' tiles and the 'E' door), so nothing about reachability changes. It is painted into the field's base layer
 // (so heroes and townsfolk always draw in front of it). A Den mouth is a mossy rock arch and a lair a clawed hill: neither has pillars,
 // stairs or this cold white-blue rune light.
-function drawGatehouse(ctx,x,y){drawShrineRing(ctx,x,y);drawShrineFront(ctx,x,y);}
-function drawShrineRing(ctx,x,y){
-  const f=(c,a,b,w,h)=>{ctx.fillStyle=c;ctx.fillRect(x+a,y+b,w,h);};
-  // the ring of standing stones and candles on the ground in front (flat, walkable): drawn first, under everything
-  ctx.fillStyle='rgba(20,24,40,.22)';ctx.beginPath();ctx.ellipse(x+24,y+36,31,9,0,0,7);ctx.fill();
-  for(let i=0;i<12;i++){const t=Math.PI*(.12+i/11*.76),sx=Math.round(24+Math.cos(t)*30),sy=Math.round(36+Math.sin(t)*8);
-    if(i%3===1){f('#2a2230',sx-1,sy-1,3,1);f('#ffd070',sx,sy-2,1,2);f('#fff6c8',sx,sy-3,1,1);ctx.fillStyle='rgba(255,208,112,.22)';ctx.beginPath();ctx.arc(x+sx+.5,y+sy-2,3.5,0,7);ctx.fill();}
-    else{f('#4a4658',sx-1,sy-3,3,4);f('#8c889a',sx-1,sy-3,3,1);f('#6a667a',sx-1,sy-2,1,3);}}
-}
-function drawShrineFront(ctx,x,y){
-  const f=(c,a,b,w,h)=>{ctx.fillStyle=c;ctx.fillRect(x+a,y+b,w,h);};
-  // the stone stair: four steps widening toward the front, rune notches on the risers
-  for(let i=0;i<4;i++){const w=14+i*3,yy=TS+14+i*4;f('#6a6678',24-w/2-1,yy,w+2,5);f('#aaa6b4',24-w/2,yy,w,2);f('#7a7688',24-w/2,yy+2,w,2);f('#3a3648',24-w/2,yy+4,w,1);
-    if(i>0){f('#8ae8ff',22,yy+3,1,1);f('#8ae8ff',25,yy+3,1,1);}}
-  // the back wall (dark, cool) and the doorway with the glowing arch
-  f('#3a3a4e',9,-2,30,TS*2-2);f('#4a4a60',10,-1,28,2);f('#26263a',11,2,26,TS*2-8);
-  ctx.fillStyle='#0a0c1a';ctx.beginPath();ctx.moveTo(x+16,y+TS+14);ctx.lineTo(x+16,y+11);ctx.quadraticCurveTo(x+24,y-2,x+32,y+11);ctx.lineTo(x+32,y+TS+14);ctx.fill();
-  const gl=ctx.createRadialGradient(x+24,y+TS+4,1,x+24,y+TS+4,16);gl.addColorStop(0,'rgba(150,230,255,.5)');gl.addColorStop(1,'rgba(150,230,255,0)');ctx.fillStyle=gl;ctx.fillRect(x+14,y+8,20,TS+8);
-  ctx.strokeStyle='#8ae8ff';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x+16,y+TS+14);ctx.lineTo(x+16,y+11);ctx.quadraticCurveTo(x+24,y-2,x+32,y+11);ctx.lineTo(x+32,y+TS+14);ctx.stroke();
-  ctx.strokeStyle='#e8fbff';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x+17.5,y+TS+10);ctx.lineTo(x+17.5,y+11);ctx.quadraticCurveTo(x+24,y+.5,x+30.5,y+11);ctx.lineTo(x+30.5,y+TS+10);ctx.stroke();
-  [[13,16],[11,22],[10,28],[34,16],[36,22],[37,28],[24,0]].forEach(([a,b])=>{f('#8ae8ff',a,b,2,1);f('#8ae8ff',a+(a<24?0:1),b+1,1,2);});// runes on the wall and the keystone sigil
-  // the pediment over the gate with its sun rune
-  ctx.fillStyle='#5a566a';ctx.beginPath();ctx.moveTo(x+1,y-6);ctx.lineTo(x+24,y-17);ctx.lineTo(x+47,y-6);ctx.fill();
-  ctx.fillStyle='#b8b4c4';ctx.beginPath();ctx.moveTo(x+4,y-7);ctx.lineTo(x+24,y-15);ctx.lineTo(x+44,y-7);ctx.lineTo(x+44,y-6);ctx.lineTo(x+4,y-6);ctx.fill();
-  f('#d8d4e0',1,-6,46,3);f('#8a869a',1,-3,46,1);f('#fff6c8',23,-12,2,2);f('#ffe08a',22,-11,4,1);f('#ffe08a',23,-13,2,4);
-  // two marble pillars with capitals, bases and a rune band, a lantern hung from each side of the arch
-  [[2],[38]].forEach(([a])=>{f('#7a768a',a,-8,8,TS*2+6);f('#d8d4e0',a+1,-8,3,TS*2+6);f('#a8a4b6',a+4,-8,2,TS*2+6);f('#5a566a',a+6,-8,2,TS*2+6);
-    f('#e8e4f0',a-1,-10,10,3);f('#8a869a',a-1,-7,10,1);f('#5a566a',a-1,TS*2-2,10,4);f('#8a869a',a-1,TS*2-3,10,1);
-    f('#8ae8ff',a+2,6,1,3);f('#8ae8ff',a+4,6,1,3);f('#8ae8ff',a+3,10,1,2);f('#8ae8ff',a+2,14,3,1);
-    f('#fff6c8',a+3,-12,2,2);ctx.fillStyle='rgba(255,246,200,.28)';ctx.beginPath();ctx.arc(x+a+4,y-11,4,0,7);ctx.fill();});
-  [[13],[33]].forEach(([a])=>{f('#2a2230',a+1,3,1,5);f('#2a2230',a-1,8,5,1);f('#ffd070',a,9,3,4);f('#fff6c8',a+1,10,1,2);f('#2a2230',a-1,13,5,1);
-    ctx.fillStyle='rgba(255,208,112,.26)';ctx.beginPath();ctx.arc(x+a+1.5,y+11,6,0,7);ctx.fill();});
-}
+// drawGatehouse, drawShrineRing and drawShrineFront (the v0.12 shrine paint) are owned by sanctlook10.js now (drawShrineFront again by sitelook10.js); the old bodies were dead.
 {const bm0=buildMapCanvas;buildMapCanvas=function(m,fr){const c=bm0.apply(this,arguments);try{if(m&&m.kind==='field'&&m.fortAt&&c&&c.getContext){const [fx,fy]=m.fortAt;drawGatehouse(c.getContext('2d'),(fx-1)*TS,(fy-1)*TS);
     m.lights=m.lights||[];/* soft light at night: the two lanterns and the rune arch (also baked as lights in HD-2D) */m.lights.push([fx*TS-2,fy*TS-3,12,'lamp'],[fx*TS+18,fy*TS-3,12,'lamp'],[fx*TS+8,fy*TS+4,16,'cyan']);}
     if(m&&m.fort&&m.hall&&c&&c.getContext)drawHallRunes(c.getContext('2d'),m);}catch(e){}return c;};}
@@ -177,8 +145,8 @@ function miniFor(m){G.miniPick=G.miniPick||{};let i=G.miniPick[m.id];
     i=order.find(k=>!used.has(k));if(i==null)i=order[Object.keys(G.miniPick).length%order.length];G.miniPick[m.id]=i;}
   const D=MINIS[i];return {mon:D[0],name:D[2],mod:D[5]};}
 // the Sanctum's guardian waits on its rune circle until it is beaten: who it is, and how close the hero stands (0..1) for the name tag
-function sanctGuard(m){try{if(!m||!m.fort||!m.guardAt||!G||!G.run||G.daily||(G.miniDone&&G.miniDone[m.id])||!siteHasMini(m.id))return null;
-  const mb=m._gd||(m._gd=miniFor(m));return {mon:mb.mon,name:mb.name,art:MON[mb.mon].art,x:m.guardAt[0],y:m.guardAt[1]};}catch(e){return null;}}
+// the old standing guard on the rune circle is gone: the miniboss is a real actor now (dynActors hook below). worldrt.js and hd2d.js still ask for it, so it stays as a stub.
+function sanctGuard(m){return null;}
 function sanctNear(g){const d=Math.max(Math.abs(WS.x-g.x),Math.abs(WS.y-g.y));return Math.max(0,Math.min(1,(8-d)/3));}
 HOOK.before('openChest','sites','cave reward chests',function(x,y){const m=WS.m;try{if(m&&m.cave&&G&&!G.daily&&(m.chests||[]).some(c=>c[0]===x&&c[1]===y&&c[2]==='reward')&&!G.chests[m.id+':'+x+','+y]){
     G.miniDone=G.miniDone||{};if(siteHasMini(m.id)&&!G.miniDone[m.id]){const mb=miniFor(m);say(null,`Something heavy shifts in the dark. ${mb.name} rises to guard the prize!`,()=>{haltInput();startBattle({stage:m.s,kind:'mini',mini:{id:m.id,mon:mb.mon,name:mb.name,mod:mb.mod}});});return HOOK.stop(undefined);}
@@ -190,5 +158,31 @@ HOOK.wrap('encounterFoes','sites','miniboss fights',function(next,...a){let spec
 HOOK.wrap('finishBattle','sites','miniboss prizes',function(next,...a){const how=a[0];const sp=B&&B.spec,mi=sp&&sp.mini&&typeof sp.mini==='object'?sp.mini:null;const r=next(...a);
   try{if(mi&&how==='win'&&G){G.miniDone=G.miniDone||{};G.miniDone[mi.id]=1;const s=sp.stage,g=econG(300+s*250);G.gold+=g;G.mats.core=(G.mats.core||0)+1;G.mats[ZS(s).mat]=(G.mats[ZS(s).mat]||0)+3;saveGame();
     toast(`${mi.name} falls. Bonus: ${g} gold, a Dread Core and 3 ${MATS[ZS(s).mat]}. The prize chest is yours.`);}}catch(e){}return r;});
+// ----- v0.14.1 (was fixes10.js): field actors on open ground; Den and Sanctum minibosses wait at the end -----
+// 1) Bounty beasts, legend challengers and quest wanderers placed on a field could land on a tile the Sanctum gatehouse or a den mouth
+//    later covered, so they stood inside a wall where nobody could talk to them. dynActors now moves any actor on a solid tile, or
+//    within one tile of a site mouth, exit or dungeon door, to the nearest open spot. Talking to a legend challenger always answers.
+// 2) The owner: "Get rid of chest to activate boss fight in dens, the miniboss or duel opponent should be waiting at the end of the den
+//    like scourges in dungeons do." The miniboss stands at the end (the Sanctum's rune circle, or the tile before a Den's prize chest),
+//    drawn like a bounty beast with a red marker; walk into it or face it and press A to be asked to fight. The prize chest will not
+//    open while it stands. Saves: G.miniDone as before.
+function f10Bad(m,x,y){try{const c=m.t[y]&&m.t[y][x];if(c==null||SOLID.includes(c))return true;if((m.caves||[]).some(s=>Math.abs(s.x-x)<=1&&Math.abs(s.y-y)<=1))return true;
+  if(m.ent&&Math.abs(m.ent[0]-x)<=1&&Math.abs(m.ent[1]-y)<=2)return true;if((m.exits||[]).some(e=>Math.abs(e.x-x)<=1&&Math.abs(e.y-y)<=1))return true;}catch(e){}return false;}
+function miniPending(m){try{return !!(m&&m.cave&&G&&!G.daily&&siteHasMini(m.id)&&!(G.miniDone&&G.miniDone[m.id]));}catch(e){return false;}}
+function miniSpot(m){if(m._ms!==undefined)return m._ms;let p=null;try{if(m.fort&&m.guardAt)p=m.guardAt.slice();else if(m.prize){const [px,py]=m.prize;
+  const c=[[px,py+1],[px,py-1],[px-1,py],[px+1,py],[px,py+2],[px-1,py+1],[px+1,py+1],[px,py-2]].find(([x,y])=>m.t[y]&&m.t[y][x]&&!SOLID.includes(m.t[y][x]));p=c||null;}}catch(e){}return m._ms=p;}
+HOOK.xform('dynActors','sites','field actors off walls, the miniboss waits at the end',function(out,m){try{if(!m||!m.t)return out;
+  out.forEach(a=>{if(a.mini||!f10Bad(m,a.x,a.y))return;const free=(m.free||[]).filter(p=>!f10Bad(m,p[0],p[1])&&!out.some(o=>o!==a&&o.x===p[0]&&o.y===p[1]));if(!free.length)return;
+    let best=null,bd=1e9;free.forEach(p=>{const d=Math.abs(p[0]-a.x)+Math.abs(p[1]-a.y);if(d<bd){bd=d;best=p;}});if(best){a.x=best[0];a.y=best[1];}});
+  if(miniPending(m)){const p=miniSpot(m);if(p){const mb=m._gd||(m._gd=miniFor(m));out.push({type:'elite',mini:1,x:p[0],y:p[1],b:{mon:mb.mon,name:mb.name,mod:mb.mod,mini:m.id,lv:STAGE_LV[m.s][1]+SITES.miniLv+ngLvOff()}});}}}catch(e){}return out;});
+HOOK.before('actorTalk','sites','talk to the miniboss',function(a){if(a&&a.mini){V.modal={type:'miniask',id:a.b.mini,b:a.b};render();return HOOK.stop();}});
+HOOK.before('vModal','sites','miniboss ask',function(m){if(!m||m.type!=='miniask')return;const b=m.b||{},mo=MON[b.mon]||{},md=(typeof ELITE_MODS!=='undefined'?ELITE_MODS:[]).find(x=>x.k===b.mod),here=WS.m;
+  return HOOK.stop(box(esc(b.name||mo.n||'Guardian'),`<div class="bossv"><img src="${monURL(mo.art)}" alt=""></div><div class="els">${elChips(mo.el||[])}</div><p>${here&&here.fort?'It stands on the rune circle of the keep\'s hall, between you and the prize.':'It waits at the back of the den, between you and the prize.'}</p><p class="note">Level ${b.lv||'?'}, with a pack. ${md?`<b>${md.n}:</b> ${md.d}`:''} No auto battle. Win and the chest is yours, plus a Dread Core, gold and materials.</p>`,
+    `<button class="btn" data-act="closeModal">Not yet</button><button class="btn gold" data-act="miniGo">Fight</button>`));});
+ACT.miniGo=function(){const m=WS.m;if(!m||!miniPending(m))return;const mb=m._gd||(m._gd=miniFor(m));V.modal=null;haltInput();startBattle({stage:m.s,kind:'mini',mini:{id:m.id,mon:mb.mon,name:mb.name,mod:mb.mod}});};
+// the miniboss's spot is the end of the den; a den or keep asks about it, not the boss door (askBoss is def'd in worldrt.js)
+HOOK.before('askBoss','sites','a den asks the miniboss',function(){const m=WS.m;if(m&&m.cave){if(miniPending(m)){const a=dynActors(m).find(x=>x.mini);if(a)return HOOK.stop(actorTalk(a));}return HOOK.stop();}});
+/* after 'cave reward chests' above: the prize chest stays shut while the miniboss stands (worldfx's sparkle wrap sits outside and only fires for a chest that opened) */
+HOOK.before('openChest','sites','prize chest waits for the miniboss',function(x,y){try{const m=WS.m;if(m&&miniPending(m)&&m.prize&&m.prize[0]===x&&m.prize[1]===y){const mb=m._gd||(m._gd=miniFor(m));say(null,`${mb.name} stands between you and the prize. Beat it first.`);return HOOK.stop();}}catch(e){}});
 // map: sanctums get their own marker and name
 if(typeof MAPICO_X!=='undefined'){MAPICO_X.fort=[[0,3,10,7,'#7a7a86'],[0,1,3,9,'#5a5a66'],[7,1,3,9,'#5a5a66'],[1,4,1,3,'#c0392b'],[8,4,1,3,'#c0392b'],[4,6,2,4,'#120c10']];MAPICO_NAME.fort='Sanctum';}// v0.6.3: player facing text says sanctum, not side sanctum (ids and save keys unchanged)

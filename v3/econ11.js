@@ -1,5 +1,5 @@
 // ===== econ11.js (v0.16.x): owner economy pass: forging starts at +0, selling consumables and safer gear sales, personal relics =====
-// Runs last in MODS (after walkanim10.js). Everything here wraps or rewrites at load; no new save fields.
+// Runs last in MODS (after portrait10.js). Everything here wraps or rewrites at load; no new save fields.
 //  1) Forged gear starts at +0 (it used to come out at +1, +2 late), same temper ladder as bought gear. Gold is re-priced so that gold plus the ore,
 //     logs and herbs bought at the counter is ECON11.craftK (85%) of the shop price: cheaper than buying by a modest margin, with the monster
 //     parts and the realm relic as the real gate (those are drops).

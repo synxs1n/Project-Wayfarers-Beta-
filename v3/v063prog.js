@@ -95,6 +95,15 @@ Object.assign(ACT,{
   bondsOpen(){V.modal={type:'bonds',from:V.modal};render();},
   bondsBack(){const f=V.modal&&V.modal.from;V.modal=f||null;render();},
   bview(v){V.bview=v==='tame'?'tame':'all';render();}});
+ACT.campOpen=HOOK.def('ACT.campOpen',ACT.campOpen);mCamp=HOOK.def('mCamp',mCamp);
+// ----- v0.17.4: Make camp offers the Tent too -----
+// Make camp used Camp Supplies only; a Tent had to be used from the Items list. The camp popup now has a "Use" row to pick Camp Supplies
+// or a Tent (with counts and what each does), and opening camp with no Supplies but a Tent in the pack picks the Tent on its own.
+HOOK.after('ACT.campOpen','v063prog','no Supplies but a Tent: pick the Tent',function(r){try{if(V.modal&&V.modal.type==='camp'&&!V.modal.item&&!(G.inv.campkit>0)&&G.inv.tent>0){V.modal.item='tent';render();}}catch(e){}});
+ACT.campUse=function(it){if(!V.modal||V.modal.type!=='camp')return;V.modal.item=it==='tent'?'tent':'campkit';render();};
+HOOK.xform('mCamp','v063prog','a Use row: Camp Supplies or a Tent',function(h,m){try{const ck=G.inv.campkit||0,tn=G.inv.tent||0;if(!(ck||tn))return h;const cur=m.item==='tent'?'tent':'campkit';
+  const row=`<div class="row camppick"><div class="grow"><small>Use</small></div><button class="btn sm ${cur==='campkit'?'gold':''}" data-act="campUse" data-arg="campkit" ${ck?'':'disabled'} title="60% HP and MP back and a boon">Camp Supplies <span class="nums">${ck}</span></button><button class="btn sm ${cur==='tent'?'gold':''}" data-act="campUse" data-arg="tent" ${tn?'':'disabled'} title="60% HP and MP back, KO'd heroes up at 30%, and a boon">Tent <span class="nums">${tn}</span></button></div>`;
+  const i=h.indexOf('</h2>');h=i>=0?h.slice(0,i+5)+row+h.slice(i+5):row+h;}catch(e){}return h;});
 HOOK.before('vModal','v063prog','camp and bonds popups',function(m){if(m&&m.type==='camp')return HOOK.stop(mCamp(m));
   if(m&&m.type==='bonds')return HOOK.stop(box('Bonds',vBonds(),m.from?'<button class="btn gold" data-act="bondsBack">Back</button>':'<button class="btn gold" data-act="closeModal">Close</button>',true));
   });

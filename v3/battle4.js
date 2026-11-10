@@ -32,6 +32,12 @@ HOOK.after('doReaction','battle4','detonator MP gain',function(R,a,t,el){
       if(t&&t.fx)for(let i=t.fx.length-1;i>=0;i--){const f=t.fx[i];if(f.cls==='react'&&f.txt===R.n){f.txt=R.n+' +'+n+' MP';f.b4mp=n;break;}}
       log(`${a.name} draws ${n} MP from the blast.`);}}}catch(e){}
   });
+// ----- v0.16.5: one reaction marker, not three -----
+// A reaction showed a "✸ Melt!" banner (battle3 section 9), a floating "Melt! +N MP" effect text (engine fx + battle4) and the target tag's
+// reaction preview at once. The banner now carries the MP line and the floating text is dropped while the banner shows; the target tag
+// stays (it is a preview before the hit, not a notice).
+// (the float's text is battle4's b4mp, so this follows the detonator hook above; the banner is battle3's)
+HOOK.after('doReaction','battle4','drop the reaction float during the ban',function(R,a,t,el){try{if(R&&t&&t.fx&&B&&B.b9rx&&Date.now()-B.b9rx.t0<B9.banMs){for(let i=t.fx.length-1;i>=0;i--){const f=t.fx[i];if(f.cls==='react'){if(f.b4mp)B.b9rx.mp=f.b4mp;t.fx.splice(i,1);break;}}}}catch(e){}});
 
 // ----- 3) momentum: the kind of an action, the gauge, its effect -----
 function b4Sig(sk){if(!sk)return 'atk';if(sk.limit)return 'limit';if(sk.id==='attack')return 'atk';if(sk.k==='heal'||sk.k==='revive'||sk.k==='mpself')return 'heal';

@@ -65,3 +65,7 @@ try{TIPS.forEach(t=>{['n','g'].forEach(f=>{if(typeof t[f]==='string')t[f]=wk11(t
 try{if(ITEMS.porkchop&&ITEMS.porkchop.d)ITEMS.porkchop.d=wk11(ITEMS.porkchop.d);}catch(e){}
 try{TWISTS.daily.forEach(t=>{['n','c','d'].forEach(f=>{if(typeof t[f]==='string')t[f]=wk11(t[f]);});});}catch(e){}
 try{if(typeof MTRACK!=='undefined'&&MTRACK.arena){const a0=MTRACK.arena;MTRACK.arena=function(){const o=a0.apply(this,arguments);if(o&&o.name)o.name=wk11(o.name);return o;};}}catch(e){}
+
+// ----- after an arena fight (win or loss) the results screen returns to the Guild Hall's arena page, not the town street (was fixes11.js) -----
+HOOK.before('finishBattle','arena11','remember an arena fight',function(){try{if(B&&B.spec&&B.spec.kind==='arena')V.arenaBack=1;}catch(e){}});
+HOOK.wrap('ACT.resultOk','arena11','back to the arena page',function(next,...a){const back=V.arenaBack;V.arenaBack=0;const r=next(...a);try{if(back&&!V.modal&&V.screen!=='battle'){V.modal={type:'guild',tab:'arena'};render();}}catch(e){}return r;});

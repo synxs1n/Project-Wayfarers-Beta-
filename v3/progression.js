@@ -10,7 +10,7 @@ function battlesSoFar(){return (G&&G.stats&&G.stats.battles)||0;}
 function tavernUnlocked(id){const s=TPL[id].src;if(s[0]==='s')return true;if(s[0]!=='t')return false;const n=+s.slice(1);return n<=G.stage||battlesSoFar()>=TAV_BATTLES[n];}
 function tavernPool(){return RAW.map(r=>r[0]).filter(id=>{const s=TPL[id].src;return (s[0]==='t'||s[0]==='s')&&!G.roster[id]&&!challIsPooled(id)&&tavernUnlocked(id);});}
 function partyOf(){return (G.party||[]).map(id=>G.roster[id]).filter(Boolean);}
-function heroRoles(id,lv){const S=classSkills(TPL[id]).filter(s=>s.lv<=lv);return {P:S.some(s=>s.role==='primer'),D:S.some(s=>s.role==='det')};}
+// heroRoles is owned by roles9.js (the old {P,D} body here was dead: the later declaration wins at hoisting)
 function partyNeeds(){
   const P=partyOf(),lv=Math.max(5,avgLv()+3),roles={},els={};let pr=false,dt=false;
   P.forEach(c=>{roles[CLASS_ROLE[TPL[c.id].cls]||'damage']=(roles[CLASS_ROLE[TPL[c.id].cls]||'damage']||0)+1;c.el.forEach(e=>{els[e]=1;});const r=known(c);if(r.some(s=>s.role==='primer'))pr=true;if(r.some(s=>s.role==='det'))dt=true;});
