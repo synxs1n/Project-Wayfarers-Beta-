@@ -8,7 +8,7 @@ const {open,chk,done}=require('./pw');
  const k=g('getMap')('k1');o.pending=g('miniPending')(k);const acts=g('dynActors')(k).filter(a=>a.mini);o.miniActor=acts.length;o.spotOpen=!!g('miniSpot')(k)&&!A.TW.get('SOLID').includes(k.t[g('miniSpot')(k)[1]][g('miniSpot')(k)[0]]);
  g('placeAt')('k1',k.prize[0],k.prize[1]+1,'u');A.WS.x=k.prize[0];A.WS.y=k.prize[1]+1;g('openChest')(k.prize[0],k.prize[1]);o.chestKept=!G.chests['k1:'+k.prize[0]+','+k.prize[1]];o.refusal=!!(A.WS.dlg&&/stands between you/.test(A.WS.dlg.text));A.WS.dlg=null;
  g('askBoss')();o.askModal=A.V.modal&&A.V.modal.type;A.V.modal=null;
- G.miniDone={k1:1};o.gone=g('dynActors')(k).filter(a=>a.mini).length;g('openChest')(k.prize[0],k.prize[1]);o.chestOpen=!!G.chests['k1:'+k.prize[0]+','+k.prize[1]];A.WS.dlg=null;
+ G.miniDone={k1:1};o.gone=g('dynActors')(k).filter(a=>a.mini).length;o.mimic=!!g('isMimic')(k,k.prize[0],k.prize[1]);g('openChest')(k.prize[0],k.prize[1]);o.chestOpen=!!G.chests['k1:'+k.prize[0]+','+k.prize[1]]||o.mimic;/* about 13% of Den prize chests are Mimics (mimic.js MIMIC_RATE): the ambush fires instead of the open */A.WS.dlg=null;
  const f=g('getMap')('o1');o.fortActor=g('dynActors')(f).filter(a=>a.mini).length;o.fortGuardAt=!!f.guardAt;o.sg=g('sanctGuard')(f);
  // the Breach
  o.rowBefore=(A.V.modal={type:'travel'},A.render(),!!document.querySelector('#modal [data-act=toBreach]'));G.won=true;G.visited=[0,1,2,3,4];G.lastTown=4;A.render();o.rowAfter=!!document.querySelector('#modal [data-act=toBreach]');
