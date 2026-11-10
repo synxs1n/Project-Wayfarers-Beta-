@@ -179,9 +179,9 @@ function hLegsSide(g,L,walk){
   const b=L.b,robe=b==='robe';
   const near=walk?[[21,32],[24,39.6],[25,48.6]]:[[21,32],[21.6,40],[21.6,48.6]];
   const far=walk?[[19.5,32],[16.6,40],[13.8,47.6]]:[[19.5,32],[19,40],[18.4,48.6]];
-  if(robe){// the hem hides the legs; two feet show under it
-    hLegSide(g,Object.assign({},L,{b:'light'}),[[far[0][0],49],[far[1][0],49.5],far[2]],1,walk);
-    hLegSide(g,Object.assign({},L,{b:'light'}),[[near[0][0],49],[near[1][0],49.5],near[2]],0,0);
+  if(robe){/* v0.17.1: the hem hides the thighs, so the stride shows below it: real leg points (near leg reaches forward, far leg trails with the heel up), a boot that lands ahead of the hem */
+    const rl=Object.assign({},L,{b:'light'}),rn=walk?[[21,32],[25.4,40],[27.4,48.6]]:[[21,32],[21.4,40],[21.6,48.6]],rf=walk?[[19.5,32],[15.6,40],[12.4,47.8]]:[[19.5,32],[18.6,40],[18,48.6]];
+    hLegSide(g,rl,rf,1,walk);hLegSide(g,rl,rn,0,0);
     return;}
   hLegSide(g,L,far,1,walk);
   hLegSide(g,L,near,0,0);
@@ -206,9 +206,13 @@ function hTorsoSide(g,L,walk,cls){
     g.px([[21,18],[22,18],[22,19]],'Q');
   }else if(b==='robe'){
     // bodice, then the skirt: flares to the hem, folds, trim
-    g.poly([[16,28.5],[25,28.5],[28,47.6],[12.6,47.6]],'P');
-    g.rect(13,46,15,2,'Q');
-    [[19,32,17,46],[22,32,24,46],[20.5,36,20.5,46]].forEach(q=>g.line(q[0],q[1],q[2],q[3],'p'));
+    if(!walk){g.poly([[16,28.5],[25,28.5],[28,47.6],[12.6,47.6]],'P');
+      g.rect(13,46,15,2,'Q');
+      [[19,32,17,46],[22,32,24,46],[20.5,36,20.5,46]].forEach(q=>g.line(q[0],q[1],q[2],q[3],'p'));}
+    else{/* the stride: the back of the hem trails and flares, the front lifts over the stepping boot (the boot shows below it), the folds lean with the step */
+      g.poly([[16,28.5],[25,28.5],[28.4,37],[28.8,45.6],[22,45.6],[19.6,47.6],[10.8,47.6],[14,38]],'P');
+      g.rect(11,46,9,2,'Q');g.rect(20,45,9,1,'Q');g.px([[19,46],[19,47]],'Q');
+      [[19,32,15,46],[22,32,25,44],[20.5,36,19.5,46]].forEach(q=>g.line(q[0],q[1],q[2],q[3],'p'));}
     g.rect(17,27,8,2,'Q');g.s(24,27,'G');g.px([[21,18],[22,18],[22,19]],'Q');
   }else if(b==='heavy'){
     // plate over the chest, a tabard under the belt, a plated skirt
@@ -565,9 +569,12 @@ function hLegFront(g,L,lift,left){
   for(let y=0;y<t.h;y++)for(let x=0;x<t.w;x++){const c=t.a[y*t.w+x];if(c)g.a[y*g.w+(left?x:g.w-1-x)]=c;}
 }
 function hLegsFront(g,L,frame){
-  if(L.b==='robe'){
-    const lift=[frame===1?2:0,frame===2?2:0];
-    [[16,19],[20,23]].forEach((r,i)=>{for(let j=0;j<3;j++)g.rect(r[0],49-lift[i]+j,4,1,'B');g.rect(r[0],52-lift[i],4,1,'b');});
+  if(L.b==='robe'){/* v0.17.1: the swing foot hangs from a lifted hem (boot rows 47 to 50), the planted foot steps out below the hem to the floor row (48 to 52, a pixel wider), so every stride frame shows two boots and the same lowest row */
+    const lf=frame===1?0:frame===2?1:-1;
+    [[16,19],[20,23]].forEach((r,i)=>{
+      let x0=r[0],w=4,y0=48,y1=52;
+      if(lf>=0){if(i===lf){y0=47;y1=50;}else{y0=48;if(i===0){x0--;}w=5;}}
+      g.rect(x0,y0,w,y1-y0,'B');g.rect(x0,y1,w,1,'b');});
     return;}
   hLegFront(g,L,frame===1?2:0,true);hLegFront(g,L,frame===2?2:0,false);
 }
@@ -583,7 +590,7 @@ function hArmFront(g,L,left,swing,dx){dx=dx||0;
   t.rect(10+dx,32+swing+(robe?1:0),3,3,heavy?'N':'S');
   for(let y=0;y<t.h;y++)for(let x=0;x<t.w;x++){const c=t.a[y*t.w+x];if(c)g.a[y*g.w+(left?x:g.w-1-x)]=c;}
 }
-function hTorsoFront(g,L,view,cls){
+function hTorsoFront(g,L,view,cls,frame){
   const b=L.b,F=view==='front';
   hsym(g,18,HF_TORSO[b],'P');
   if(b==='light'){
@@ -591,7 +598,11 @@ function hTorsoFront(g,L,view,cls){
     g.px([[18,18],[19,19],[20,19],[21,18]],F?'Q':'P');
     if(F)g.px([[19,20],[20,22],[19,24]],'q');
   }else if(b==='robe'){
-    hsym(g,29,HF_SKIRT,'P');g.rect(11,46,18,2,'Q');
+    /* v0.17.1 the stride: below row 40 the skirt swings a pixel toward the planted foot, the swing side's hem lifts a row (trim on rows 45 and 46) and the planted side's hem hangs to row 47 */
+    {const lf=frame===1?0:frame===2?1:-1,dx=lf===0?1:lf===1?-1:0,Rw=g.sc?g.sc.sw:g.w;
+     HF_SKIRT.forEach((xl,i)=>{const y=29+i,d=y>=40?dx:0;
+       for(let h=0;h<2;h++){if(y===47&&h===lf)continue;const a=h?20:xl+d,b=h?Rw-xl+d:20;g.rect(a,y,b-a,1,'P');}});
+     for(let h=0;h<2;h++){const a=h?20:11+(lf>=0?dx:0),b=h?29+(lf>=0?dx:0):20;g.rect(a,h===lf?45:46,b-a,2,'Q');}}
     [[17,32,16,46],[22,32,23,46],[19.5,34,19.5,46],[14,34,13,46],[25,34,26,46]].forEach(q=>g.line(q[0],q[1],q[2],q[3],'p'));
     g.rect(15,27,10,2,'Q');if(F)g.rect(19,27,2,2,'G');
     if(F)g.px([[18,18],[19,19],[20,19],[21,18]],'Q');
@@ -668,7 +679,7 @@ function rigFB(L,view,frame,id){
   if(!F&&L.sh)hShieldFront(g,L,view);
   const upright=F&&!['none','dagger','twindagger','claws','fists','lute','harp'].includes(L.wpn||'none');hArmFront(g,L,true,F?-sw:sw,upright?-2:0);hArmFront(g,L,false,F?sw:-sw);
   hLegsFront(g,L,frame);
-  hTorsoFront(g,L,view,cls);
+  hTorsoFront(g,L,view,cls,frame);
   hNeck(g,view);
   drawFlair(g,L,id,view);drawAcc(g,L,id,view,'body');
   const hd=hHead(L,view,id),bob=frame>0&&!L.vill?1:0;drawAcc(hd,L,id,view,'head');
@@ -1451,7 +1462,7 @@ const _heroPal0=heroPal;
 heroPal=function(L,els,id){
   const p=_heroPal0(L,els),F=id?flairOf(id):{};const h=hashS(id||JSON.stringify(L.pal||{}));
   if(!(L.pal&&L.pal.K))p.K=F.K||PANTS[h%PANTS.length];
-  if(!(L.pal&&L.pal.B))p.B=F.B||BOOTS[(h>>3)%BOOTS.length];
+  if(!(L.pal&&L.pal.B))p.B=F.B||BOOTS[(h>>>3)%BOOTS.length];
   p.A=F.A||tint(p.C,.2);
   return p;
 };
