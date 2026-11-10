@@ -22,6 +22,8 @@ Build everything with `sh build.sh`. Changing `RELEASE_VERSION` (for example to 
 
 Do not delete the `latest` release; the app update links use it.
 
+The build refuses to produce a page when `tools/buildcheck.py` finds a module missing from `v3/` or from MODS, a top-level const reassigned later, a duplicate top-level name or a syntax error in the joined script (it warns on a `//` comment that swallows code). On every push GitHub Actions runs the smoke tests (`tools/chrome/runall.js ci`, about 5 minutes) before it builds the APK and installer; a red test blocks those two, not the website, which serves the committed `index.html`. Before a cleanup commit (no game change) run the whole suite: `node runall.js all`; it is green when only the stale list fails. See `docs/README.md`, "Cleanup rules".
+
 The Android app updates itself from the live site (`v3/liveboot.js`): it downloads a newer `index.html` into its own cache and swaps it in on the next launch, falling back to the packed build if that version fails to start. Every build has a build ID (a hash of its code, `APP_BUILD` in `v3/appver.js` and `build` in `version.json`, written by `v3build.py`), so a rebuild of the same version is picked up too; an older version never is. Only a change to the native shell (plugins, icons, permissions) needs a new APK. Test: `node tools/chrome/liveupdate.js`.
 
 ## Audio

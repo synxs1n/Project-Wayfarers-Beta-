@@ -46,6 +46,13 @@ Read these before a big pass:
 - `audio-notes-v045.md`: the orchestral audio (v0.4.5) and Android live updates (v0.4.6).
 - `v050-prompt.md`: the full spec for the Beta v0.5.0 pass. Rollback point: `rollback-v046.md`.
 
+Cleanup rules (v0.18.6, cleanup steps 1 to 5):
+- A function another module changes is `HOOK.def`'d once in its owner and the change is a registered hook (`HOOK.before/after/xform/wrap` with the module name and a few words of purpose). The raw `{const f0=fn;fn=function...}` idiom is for one-off wraps of functions nobody else touches; `python3 tools/wrapmap.py` (`--write` for `docs/wrapmap.md`, `NAME` for one chain) shows what is still raw. Hook order is load order (last registered outermost); when a hook must sit outside another, it lives in the later module and says so.
+- New behaviour goes in the module that owns the feature, never in a fix pile. `fixes11.js` keeps only the hooks that must load last, each with the reason.
+- `tools/buildcheck.py` runs inside `v3build.py`: E1 MODS names a missing file, E2 a `v3/*.js` is in no list, E3 a top-level const is reassigned, E4 a top-level name is declared twice, W1 a `//` comment swallows code, W2 `node --check` on the joined script, W4 a function is declared twice (the later wins silently).
+- CI: `.github/workflows/release.yml` job `test` builds and runs `runall.js ci` (group `ci`, about 5 minutes); `android` and `windows` need it. Group `flaky` holds timing-sensitive tests; run them alone when touching what they cover. The `STALE` list in `runall.js` names every test that fails for an old reason, with the reason; `all` skips them, `--stale` runs them. A cleanup commit (no game change, no version bump) needs `runall.js all` green before and after.
+- `node tools/hooksmap.js --write` regenerates the hook lists in `CODEMAP.md` from the running game.
+
 Testing tips:
 - Chrome tests: `tools/chrome/*.js` (Playwright, `pw.js`). Run from `tools/chrome` with `PWHTML=../../out/aurelis3.html`. Audio and update tests serve the repo over http themselves: `audio.js`, `audioplay.js`, `liveupdate.js`.
 - Run many at once with the runner (one test at a time, a timeout per test, a summary table and a JSON report):
