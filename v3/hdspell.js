@@ -117,3 +117,20 @@ function hbsKind(fx,x,y,gy,start,o){if(!hbsOn()||fx==='mag')return;o=o||{};const
     case 'debuff':hbLight({x,y,foot:gy,r:54,col:[1,1,1],int:-.55,t0:start,life:560,fade:'pulse'});D(w*.9,.5,620,{col:[.55,.3,.8],spin:-.2});break;
     case 'song':L(.8,50,620,{fade:'pulse'});D(w*1.1,.45,640,{spin:.2});break;
     case 'summon':L(1.8,100,800);D(w*1.3,.8,800,{spin:.2});if(GFX.q.camera&&typeof HD_CAM!=='undefined')gfxCamPush(x,y,HD_CAM.big);break;}}
+
+// ----- v0.17.10: lights, decals and tinted cards for the new shapes (fxkind11.js calls hbsFx / hbsStatus). hbsFx is one light with an optional floor decal;
+// hbsStatus picks its look from the shape: warm shapes light the stage, dark ones (ink, gloom, sigils, curse) take light away, the others tint it. The shapes themselves
+// are the 'st' particles of fxkind11.js, drawn additively on this stage when their glow is part of the look (FK_SHADD), so they read as tinted cards in the unit layer -----
+function hbsFx(o){if(!hbsOn()||!o)return;const col=hbRGB(o.col||'#ffffff'),big=o.big?1.25:1,t0=o.start||performance.now();
+  if(o.neg)hbLight({x:o.x,y:o.y,foot:o.gy,r:(o.r||60)*big,col:[1,1,1],int:-(o.int||.5),t0,life:o.life||600,fade:'pulse'});
+  else hbLight({x:o.x,y:o.y,foot:o.gy,r:(o.r||60)*big,col,int:(o.int||1)*big,t0,life:o.life||600,fade:o.fade||'pulse'});
+  if(o.decal)hbDecal({x:o.x,y:o.gy,r:o.decal[0]*big,col,a:o.decal[1],t0,life:(o.life||600)+60,grow:1,spin:o.decal[2]||.15});}
+const HBS_ST={// shape: [light intensity, radius, life, decal alpha, spin, negative?]
+  hexplates:[1.1,50,680,.5,.3],speed:[1.2,46,560,.35,.8],leaves:[.8,46,720,.5,.1],blades:[1.3,46,600,.35,.2],stones:[.7,44,640,.5,.05],mark:[1.6,50,600,0,0],reticle:[1.4,44,560,.4,.6],
+  sigils:[.9,52,760,.7,.35],hexstar:[1.1,48,760,.4,.4],gather:[1.4,70,880,.7,.5],warn:[1.5,54,600,.4,0],target:[1.0,46,760,.7,.2],rod:[2.0,60,520,0,0],frost:[1.1,50,760,.55,.05],
+  bubbles:[.6,40,640,.45,.05],streaks:[.5,38,520,.4,0],embers:[1.0,48,760,.5,.1],chains:[.4,40,640,.4,.05],stars:[1.0,38,700,0,0],roots:[.4,40,720,.45,0],droop:[.3,36,560,.3,0],crack:[1.3,40,500,0,0],
+  afterimage:[.6,44,560,0,0],mist:[.5,52,720,.3,.05],panes:[1.3,48,600,.3,.4],waves:[.7,50,700,.5,.1],unmake:[.9,60,760,.6,.5],runes:[.9,48,700,.5,.4],bell:[.5,36,600,0,0]};
+const HBS_STNEG={ink:[.55,44,640,.5,0],gloom:[.7,64,760,.55,.05]};
+function hbsStatus(key,sh,x,y,gy,start,o){if(!hbsOn())return;o=o||{};const col=(key&&typeof STS!=='undefined'&&STS[key]&&STS[key].c)||o.col||'#ffffff',N=HBS_STNEG[sh],T=HBS_ST[sh];
+  if(N)hbsFx({x,y,gy,start,neg:1,col,int:N[0],r:N[1],life:N[2],big:o.big,decal:[ (o.w||16)*1.1,N[3],N[4] ]});
+  else if(T)hbsFx({x,y,gy,start,col,int:T[0]*(o.good===false?.8:1),r:T[1],life:T[2],big:o.big,decal:T[3]?[(o.w||16)*1.15,T[3],T[4]]:null});}

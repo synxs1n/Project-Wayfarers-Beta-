@@ -9,6 +9,7 @@
 // Painting goes through heroCanvas(), so the HD painter, legends mounts and pets are all honoured. Walkers, portraits and the sheet never call this.
 const HPO={list:['swing','thrust','smash','shoot','cast','pray','guard','cheer','hit'],n:0};
 const HPS_K=1.3,HPS_W=1.3;// the rig is about 1.7 times the old figure's arm length: pose offsets are written in the old units and scaled in the helpers
+const HPH={};// pose hand registry, filled by heroPoseGrid (key = the pose image's cache key)
 let HPW=null;// {pose,frame,walk} read once by the heroGridSide wrapper below
 // ---------- pixel helpers (corner-space points: cell i spans [i,i+1)) ----------
 function hpStamp(g,x,y,k,t){
@@ -122,12 +123,14 @@ function heroPoseGrid(L,pose,frame,id,walk){
   const a0=HPA0[fam]!==undefined?HPA0[fam]:-90;
   // arm: shoulder -> elbow -> hand centre (all relative to J); the hand is a 2x2 block (3x3 glove for fists)
   c.arm=(ex,ey,hx,hy,col)=>{ex*=K;ey*=K;hx*=K;hy*=K;const e=[J[0]+ex,J[1]+ey],h=[J[0]+hx,J[1]+hy];hpLine(o,[J[0],J[1]],e,col||sl,3);hpLine(o,e,h,col||sl,3);};
-  c.hand=(hx,hy)=>{hx*=K;hy*=K;const x=Math.round(J[0]+hx),y=Math.round(J[1]+hy);if(w==='fists'){for(let j=-1;j<=1;j++)for(let i=-1;i<=1;i++)hpPut(o,x+i,y+j,'w');hpPut(o,x+1,y,'G');hpPut(o,x+1,y-1,'G');}else for(let j=-1;j<=0;j++)for(let i=-1;i<=0;i++)hpPut(o,x+i,y+j,wh);};
-  c.wp=(hx,hy,ang,opt)=>hpWeapon(c,w,J[0]+hx*K,J[1]+hy*K,ang,opt);
+  c.hand=(hx,hy)=>{hx*=K;hy*=K;const x=Math.round(J[0]+hx),y=Math.round(J[1]+hy);c.lh=[x,y];if(w==='fists'){for(let j=-1;j<=1;j++)for(let i=-1;i<=1;i++)hpPut(o,x+i,y+j,'w');hpPut(o,x+1,y,'G');hpPut(o,x+1,y-1,'G');}else for(let j=-1;j<=0;j++)for(let i=-1;i<=0;i++)hpPut(o,x+i,y+j,wh);};
+  c.wp=(hx,hy,ang,opt)=>{c.lw=[Math.round(J[0]+hx*K),Math.round(J[1]+hy*K)];return hpWeapon(c,w,J[0]+hx*K,J[1]+hy*K,ang,opt);};
   c.px=(x,y,k)=>hpPut(o,Math.round(J[0]+x*K),Math.round(J[1]+y*K),k,true);
-  c.orb=(x,y,r,k)=>o.ell(J[0]+x*K,J[1]+y*K,r*1.3,r*1.3,k);
+  c.orb=(x,y,r,k)=>{if(!c.lo)c.lo=[J[0]+x*K,J[1]+y*K];o.ell(J[0]+x*K,J[1]+y*K,r*1.3,r*1.3,k);};
   c.glint=(x,y)=>{c.px(x,y,'D');c.px(x-.6,y,'D');c.px(x+.6,y,'D');c.px(x,y-.6,'D');c.px(x,y+.6,'D');};
   hpPose(c,pose,frame,w,fam,a0,L);
+  // v0.17.10: where the effects start: the orb of a cast, else the weapon grip, else the last hand (measured from the pose itself, in grid cells; heroHand() maps it to the stage)
+  try{const m=pose==='cast'&&c.lo?c.lo:(c.lw||c.lh);if(m)HPH['bp9:'+id+':'+pose+(frame?1:0)+(walk?'w':'')+lookKey(id)]={x:m[0],y:m[1],w:o.w,h:o.h,hand:c.lh||m,pose};}catch(e){}
   return o;
 }
 function hpCut(o,from){const W=o.w;for(let y=from;y>=1;y--)for(let x=0;x<W;x++)o.a[y*W+x]=o.a[(y-1)*W+x];for(let x=0;x<W;x++)o.a[x]=0;}
@@ -192,6 +195,11 @@ function hpPose(c,pose,f,w,fam,a0,L){
 // ---------- wiring ----------
 {const hg9=heroGridSide;heroGridSide=function(L,walk,id){if(HPW){const w=HPW;HPW=null;return heroPoseGrid(L,w.pose,w.frame,id,w.walk);}return hg9.apply(this,arguments);};}
 function heroPoseCanvas(id,pose,frame,walk){HPW={pose,frame,walk:!!walk};try{return heroCanvas(id,false);}finally{HPW=null;}}
+// the hand (or orb) of a pose in grid cells {x,y,w,h}: builds the pose once, then reads what heroPoseGrid measured; rest = the '!' marker of the bare grid
+function heroHand(id,pose,frame,walk){const k='bp9:'+id+':'+pose+(frame?1:0)+(walk?'w':'')+lookKey(id);if(!HPH[k]){
+    if(pose==='rest'||pose==='idle'){try{const L=heroLook(id),o=hpBare(L,id,false,true),m=hpMarks(o);if(m.H)HPH[k]={x:m.H.x+1,y:m.H.y+1,w:o.w,h:o.h,hand:[m.H.x+1,m.H.y+1],pose:'rest'};}catch(e){}}
+    else heroPoseImg(id,pose,frame,walk);}
+  return HPH[k]||null;}
 function heroPoseImg(id,pose,frame,walk){return imgOf('bp9:'+id+':'+pose+(frame?1:0)+(walk?'w':'')+lookKey(id),()=>heroPoseCanvas(id,pose,frame,walk));}
 // which skill a hero is using: recorded when the action starts (perform) or the Guard command runs
 {const pf0=perform;perform=function(a,sk,tgts){try{if(a&&sk&&a.side==='p'){a.actSk=sk;a.actSkT=Date.now();a.actDl=typeof deliveryOf==='function'?deliveryOf(a,sk):null;}}catch(e){}return pf0.apply(this,arguments);};}
@@ -214,10 +222,12 @@ function heroPoseOf(u,a){
   if(u.actT&&a>=0&&a<520){
     const known=u.actSk&&Math.abs((u.actSkT||0)-u.actT)<80,st=typeof animStyle==='function'?animStyle(u):'swing';
     const p=known?heroPoseFor(u.actSk,u.actDl,st):heroPoseFor(null,null,st,u.actKind);
-    if(p){let fr=a<IMPACT?0:1;if(known&&u.actSk.hits>1&&u.actSk.t!=='rand'&&a>=IMPACT&&['swing','thrust','smash'].includes(p))fr=Math.floor((a-IMPACT)/70)%2;// v0.17.7: a multi-hit skill alternates its release and wind-up frames, one beat per blow
+    if(p){let fr=a<IMPACT?0:1;if(known&&Math.max(u.actSk.hits||1,(u.fk11&&u.fk11.landed)||1)>1&&u.actSk.t!=='rand'&&a>=IMPACT&&['swing','thrust','smash'].includes(p))fr=Math.floor((a-IMPACT)/70)%2;// v0.17.7: a multi-hit skill alternates its release and wind-up frames, one beat per blow
       return {pose:p,frame:fr};}
   }
-  if(u.guard&&u.hp>0)return {pose:'guard',frame:1};
+  if(u.guard&&u.hp>0&&!(typeof G6V!=='undefined'&&G6V.win))return {pose:'guard',frame:1};
+  // v0.17.10: the last foe is down: the standing heroes cheer (the same pose a buff uses), one after another, on top of the hop gfx6battle.js gives them
+  if(typeof G6V!=='undefined'&&G6V.win&&u.hp>0&&typeof gfxStill==='function'&&!gfxStill()){const d=performance.now()-G6V.t0,i=(typeof B!=='undefined'&&B&&B.front?B.front.indexOf(u):0)||0;if(d>120+i*90)return {pose:'cheer',frame:Math.floor(d/260+i*.5)%2};}
   return null;
 }
 const HPS={on:true};
