@@ -53,4 +53,4 @@ function breachTurn(m){const want=breachWalkDir(),k={r:0,d:1,l:2,u:3}[want]||0;i
     const s=m.gates.start,p=T([s.x,s.y]),a=T([s.arrive[0],s.arrive[1]]);s.x=p[0];s.y=p[1];s.arrive=[a[0],a[1],FACE[(FACE.indexOf(s.arrive[2])+1)%4]];s.cells=s.cells.map(T);s.side={w:'n',n:'e',e:'s',s:'w'}[s.side];s.label=s.side;
     const sg={};Object.keys(m.signs).forEach(key=>{const q=T(key.split(',').map(Number));sg[q.join()]=m.signs[key];});m.signs=sg;m.free=m.free.map(T);}
   m.bld=stampBuildings(m.t);}
-HOOK.wrap('getMap','breach10','the Meridian Breach, its own islands in the void',function(next,...a){if(a[0]!=='x0')return next(...a);if(MAPS.x0)return MAPS.x0;return MAPS.x0=buildBreach();});
+HOOK.wrap('getMap','breach10','the Meridian Breach, its own islands in the void',function(next,...a){if(a[0]!=='x0')return next(...a);if(MAPS.x0)return MAPS.x0;const m=buildBreach();/* v0.18.6: this hook never calls the rest of the chain for x0, so mapheal's hook never saw the Breach; heal it here like every other new map */try{if(typeof healMap==='function'&&!m.__healed&&!(typeof HEAL_OFF!=='undefined'&&HEAL_OFF)){m.__healed=true;healMap(m);}}catch(e){}return MAPS.x0=m;});
