@@ -65,8 +65,8 @@ chk('Guilds: Accept all, Claim all, claimable mission first',all.fAcc&&all.misAc
 chk('Guilds: Ready and Active sections filter',all.readyEmpty&&all.activeRows>0||JSON.stringify(all));
 // ---- back one level at a time
 const bk=await ev(()=>{const A=__A,o=[],st=()=>A.V.modal?A.V.modal.type+':'+A.V.modal.tab+'/'+A.V.modal.sec:'closed';
-  A.V.modal={type:'board'};A.render();A.ACT.sTab('bounties');A.ACT.sSec('active');o.push(st());for(let i=0;i<3;i++){A.ACT.xBack();o.push(st());}
-  A.V.modal=null;A.TW.get('openService')('guild');A.ACT.gtab('recruit');o.push(st());A.ACT.xBack();o.push(st());A.ACT.xBack();o.push(st());return o;});
+  A.V.modal=null;A.render();/* v0.17.8: back is the menu history: start from the world */A.V.modal={type:'board'};A.render();A.ACT.sTab('bounties');A.ACT.sSec('active');o.push(st());for(let i=0;i<3;i++){A.ACT.xBack();o.push(st());}
+  A.V.modal=null;A.render();A.TW.get('openService')('guild');A.ACT.gtab('recruit');o.push(st());A.ACT.xBack();o.push(st());A.ACT.xBack();o.push(st());return o;});
 chk('back: section, tab, then leave (board and Guild Hall)',JSON.stringify(bk)===JSON.stringify(['board:bounties/active','board:bounties/all','board:quests/all','closed','guild:recruit/all','guild:guilds/all','closed'])||JSON.stringify(bk));
 // ---- arena: Enter only in town from the menu
 const ar=await ev(()=>{const A=__A,o={};A.V.modal={type:'menu',tab:'qarena'};A.render();o.townOn=document.querySelectorAll('#modal [data-act="arena"]').length===0&&/Enter from the Guild Hall/.test(document.querySelector('#modal').innerText);/* v0.13.4: the Menu's Arena tab never enters; the Guild Hall does */A.V.modal={type:'guild',tab:'arena'};A.render();o.hallOn=[...document.querySelectorAll('#modal [data-act="arena"]')].some(b=>!b.disabled);A.V.modal={type:'menu',tab:'qarena'};A.render();
