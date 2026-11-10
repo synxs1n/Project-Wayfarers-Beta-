@@ -65,3 +65,11 @@ function ldCards(){try{const L=LD();if(!L.length)return '';const name=id=>{const
   return `<div class="rows ldcards">${L.map((o,i)=>{if(!o)return '';const P=o.party||[],van=P.slice(0,3),rear=P.slice(3,6);const grp=(ids,lab)=>ids.length?`<div class="ldgrp"><small class="lbl">${lab}</small><div class="ldmem">${ids.map(id=>`<span class="ldm">${G.roster[id]?port(id,'noail'):'<span class="port pt10"></span>'}<small>${name(id)}</small></span>`).join('')}</div></div>`:'';
     return `<div class="row ldcard"><div class="grow"><b>${i+1}. ${esc(o.name)}</b>${grp(van,'Vanguard')}${grp(rear,'Rearguard')}</div><div class="ldb"><button class="btn sm gold" data-act="ldApply" data-arg="${i}">Load</button></div></div>`;}).join('')}</div>`;}catch(e){return '';}}
 try{const st=document.createElement('style');st.textContent='.ldcards{grid-template-columns:1fr;margin-top:6px}.ldcard .ldgrp{margin-top:4px}.ldcard .ldmem{display:flex;flex-wrap:wrap;gap:6px 10px;margin-top:2px}.ldcard .ldm{display:inline-flex;flex-direction:column;align-items:center;gap:1px;width:52px}.ldcard .ldm small{font-size:10px;line-height:1.1;text-align:center;max-width:52px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}';document.head.appendChild(st);}catch(e){}
+// ----- v0.17.8: everything in an Echo Rift fight is level 55 -----
+// The Echo itself is made at the rift level (rk10: 55), but anything it summons mid fight was made at its own level minus three
+// (battle4 summon) or at the stage level. In a rift fight every foe made while the battle runs takes the rift level.
+{const me0=makeEnemy;makeEnemy=function(mo,lv,o){try{const sp=B&&B.spec;if(sp&&sp.kind==='echoBoss'&&sp.rift&&sp.lv>0)lv=sp.lv;}catch(e){}return me0.call(this,mo,lv,o);};}
+// ----- v0.17.8: an Echo fights alone -----
+// Some Echoes summon help mid fight (battle4 summon gimmick, boss skills). In the Echo Rift only the Echo itself stands: any foe without
+// the echo flag that joins the fight is removed on the next turn-order pass.
+{const to0=turnOrder;turnOrder=function(){try{const sp=B&&B.spec;if(sp&&sp.kind==='echoBoss'&&sp.rift&&B.en&&B.en.some(e=>!e.echo))B.en=B.en.filter(e=>e.echo);}catch(e){}return to0.apply(this,arguments);};}

@@ -23,8 +23,8 @@ r.vis=await ev(()=>{const A=__A,m=A.WS.m;return m.npcs.filter(n=>n.portal).filte
 chk('no gate sits in the bottom 3 rows or has a solid tile directly south (the HD-2D wall front would hide it)',r.vis.length===0||JSON.stringify(r.vis));
 console.log(JSON.stringify(r));chk('every gate reachable, exit reachable, no sealed floor',r.approach&&r.floorUnreach===0&&r.exitOk||JSON.stringify(r));
 // interact with a gate: north (face up) and south (face down)
-// v0.17.1: Wild Bay gate at (3,1) from the south, Tide Bay gate at (31,17) from the west, a Calamity gate in the ring at (13,18) from the south
-for(const [gx,gy,px,py,face] of [[3,1,3,2,'u'],[31,17,30,17,'r'],[13,18,13,19,'u'],[16,2,16,3,'u']]){
+// v0.17.2: Wild Bay gate at (14,6) from the south (walkway side), Tide Bay gate at (26,17) from the west, a Calamity gate in the inner ring at (13,20) from the south
+for(const [gx,gy,px,py,face] of [[14,6,14,7,'u'],[26,17,25,17,'r'],[13,20,13,21,'u'],[16,2,16,3,'u']]){
   r=await ev(([gx,gy,px,py,face])=>{const A=__A;A.V.modal=null;A.placeAt('s0',px,py,face);A.WS.lock=false;A.WS.dir=face;A.interact();return {modal:A.V.modal&&A.V.modal.type,key:A.V.modal&&A.V.modal.key,txt:document.querySelector('#modal .panel')?.innerText.replace(/\n+/g,' | ').slice(0,200)};},[gx,gy,px,py,face]);
   console.log(JSON.stringify(r));chk('gate at '+gx+','+gy+' opens its card',r.modal==='portal'&&!!r.key||JSON.stringify(r));
 }
@@ -36,12 +36,12 @@ console.log(JSON.stringify(r));chk('Challenge starts the Echo fight with rift sc
 await H.browser.close();
 const H2=await open({w:430,h:800,mobile:true});
 await H2.ev(()=>{__A.ACT.new();['mira','lumen','oren'].forEach(id=>__A.ACT.pickS(id));__A.ACT.begin();__A.ACT.storyOk();});await H2.wait(250);
-await H2.ev(()=>{const A=__A,G=A.G;G.won=true;G.echoStory={0:1,1:1,2:1,3:1,4:1};A.V.modal=null;A.getMap('s0');A.placeAt('s0',16,26,'d');A.WS.lock=false;});await H2.wait(200);
+await H2.ev(()=>{const A=__A,G=A.G;G.won=true;G.echoStory={0:1,1:1,2:1,3:1,4:1};A.V.modal=null;A.getMap('s0');A.placeAt('s0',16,32,'d');A.WS.lock=false;});await H2.wait(200);
 await H2.page.keyboard.down('ArrowDown');await H2.wait(500);await H2.page.keyboard.up('ArrowDown');await H2.wait(900);
 const ex=await H2.ev(()=>({id:__A.WS.m.id,kind:__A.WS.m.kind}));console.log(JSON.stringify(ex));
 chk('south door returns to the last town',ex.kind==='town'||JSON.stringify(ex));
 // reload while standing in the Sanctum: the save resumes there
-const rl=await H2.ev(()=>{const A=__A;A.getMap('s0');A.placeAt('s0',16,25,'u');A.saveGame();return JSON.stringify(A.G.pos);});
+const rl=await H2.ev(()=>{const A=__A;A.getMap('s0');A.placeAt('s0',16,31,'u');A.saveGame();return JSON.stringify(A.G.pos);});
 console.log(rl);
 await H2.browser.close();
 console.log('done');

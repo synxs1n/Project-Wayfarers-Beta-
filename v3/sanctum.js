@@ -6,31 +6,34 @@
 const SANCT_ID='s0';
 function sanctumOpen(){return !!G&&!G.daily&&[0,1,2,3,4].every(s=>(G.echoStory||{})[s]);}
 function sanctumProgress(){const n=G?[0,1,2,3,4].filter(s=>(G.echoStory||{})[s]).length:0;return n;}
-// v0.17.1: The Echo Rift, rebuilt around the Echoforge. A 33 x 28 hall on one north-south axis: the south door and the start tile at the
-// bottom, the Echoforge dead centre, the five Calamity gates in a ring of five around it (one vertex due north, the gap in the south
-// so the way from the door runs straight into the ring), the Riftkeeper (with his rest popup) and his gate at the far north end of the
-// axis. The twenty Scourges stand in five bays of four, grouped by the elements they carry (a Scourge is not tied to a realm in the
-// current journeys: any Scourge can sit in any realm), each bay with a brazier pair and a sign naming it: Wild Bay and Ember Bay in the
-// north corners, Gloam Bay and Tide Bay on the west and east walls, the Storm and Frost Bay either side of the south door.
-// Every gate has open floor on the side that faces the hall; walkways are one tile wide or more everywhere.
-const RIFT_HALL={W:33,H:28,start:[16,25],exit:[16,27],forge:[16,14],rk:[16,2],keeper:[16,5],
-  ring:[[16,9],[21,12],[19,18],[13,18],[11,12]],
-  bays:[
-   {n:'Wild Bay',d:'earth and wind',keys:['thornwarden','hollowshepherd','queenmantis','locustchoir'],at:[[3,1],[5,1],[7,1],[9,1]],sign:[6,1],bz:[[1,1],[11,1]]},
-   {n:'Ember Bay',d:'fire',keys:['cinderking','ashwyvern','candlemoth','geysermatron'],at:[[23,1],[25,1],[27,1],[29,1]],sign:[26,1],bz:[[21,1],[31,1]]},
-   {n:'Tide Bay',d:'water',keys:['drake','siren','brinehag','ironmaw'],at:[[31,11],[31,13],[31,15],[31,17]],sign:[29,14],bz:[[31,9],[31,19]]},
-   {n:'Storm and Frost Bay',d:'lightning and ice',keys:['ysolde','hoarwyrm','frostlich','paleweaver'],at:[[20,23],[22,23],[10,23],[12,23]],sign:[21,23],sign2:[11,23],bz:[[8,23],[14,23],[18,23],[24,23]]},
-   {n:'Gloam Bay',d:'shadow and iron',keys:['bonecolossus','gloomcap','crowregent','ironsentinel'],at:[[1,11],[1,13],[1,15],[1,17]],sign:[3,14],bz:[[1,9],[1,19]]}],
-  pillars:[[6,8],[26,8],[6,20],[26,20]],corners:[[1,26],[31,26],[13,3],[19,3]]};
+// v0.17.2: The Echo Rift, concentric. A 33 x 34 hall on one north-south axis (x 16): the south door and the start tile at the bottom, the
+// Echoforge at the centre (16,16), the five Calamity gates on an inner ring (radius 5, a vertex due north, the south left open) and the
+// twenty Scourge gates on an outer ring (radius 10.5) around them, 21 evenly spaced slots with the one on the south axis left out, so the
+// lane from the door runs straight up into the middle. Slots run clockwise from the south; every four sit together as one element family
+// (a Scourge is not tied to a realm in the current journeys: any Scourge can sit in any realm): Storm and Frost, Gloam, Wild, Ember, Tide.
+// Each family has a sign on the walkway side of its arc (radius 8) and braziers where the arcs meet (radius 12.2, the last pair flanking the
+// lane). The Riftkeeper (with his rest popup) and his gate stand on the axis north of the outer ring. Walkways between the rings are 4 tiles
+// wide; every gate has open floor on the side that faces the centre and on the side that faces the wall. interact() reads the tile in WS.dir,
+// so standing in the walkway and facing out hits a Scourge gate, facing in hits a Calamity gate.
+const RIFT_HALL=(()=>{const W=33,H=34,cx=16,cy=16,pol=(r,deg)=>{const a=deg*Math.PI/180;return [Math.round(cx+r*Math.sin(a)),Math.round(cy-r*Math.cos(a))];},
+  step=360/21,sl=j=>180+j*step,
+  fam=[{n:'Storm and Frost Bay',d:'lightning and ice',keys:['ysolde','hoarwyrm','frostlich','paleweaver']},
+   {n:'Gloam Bay',d:'shadow and iron',keys:['bonecolossus','gloomcap','crowregent','ironsentinel']},
+   {n:'Wild Bay',d:'earth and wind',keys:['thornwarden','hollowshepherd','queenmantis','locustchoir']},
+   {n:'Ember Bay',d:'fire',keys:['cinderking','ashwyvern','candlemoth','geysermatron']},
+   {n:'Tide Bay',d:'water',keys:['drake','siren','brinehag','ironmaw']}];
+  const bays=fam.map((f,g)=>Object.assign({},f,{at:[1,2,3,4].map(i=>pol(10.5,sl(4*g+i))),sign:pol(8,sl(4*g+2.5)),bz:[pol(12.2,sl(4*g+.5))].concat(g===4?[pol(12.2,sl(20.5))]:[])}));
+  return {W,H,start:[16,31],exit:[16,33],forge:[cx,cy],rk:[16,2],keeper:[16,4],ring:[0,72,144,216,288].map(d=>pol(5,d)),bays,
+  pillars:[[4,6],[28,6],[4,27],[28,27]],corners:[[1,32],[31,32],[14,2],[18,2]]};})();
 function buildSanctum(){
   const R=RIFT_HALL,W=R.W,H=R.H,t=[];for(let y=0;y<H;y++){const r=[];for(let x=0;x<W;x++)r.push(y===0||y===H-1||x===0||x===W-1?'#':'.');t.push(r);}
   t[R.exit[1]][R.exit[0]]='E';
   R.bays.forEach(b=>{b.bz.forEach(([x,y])=>{t[y][x]='v';});});R.corners.forEach(([x,y])=>{t[y][x]='v';});R.pillars.forEach(([x,y])=>{t[y][x]='P';});
   const m={id:SANCT_ID,z:4,s:4,kind:'dungeon',theme:'void',safe:1,archive:1,sanctum:1,hub:'The Echo Rift',exits:[],npcs:[],bld:[],signs:{},t,start:R.start.slice(),bossAt:null,chests:[],wander:[0,0],nodes:[]};
   m.w=W;m.h=H;m.tone=valueNoise(mulberry(7171),W,H,6);m.shelves=[];
-  // the signs: tile 'S' between the middle two gates of a row bay, in front of the middle of a column bay (the tile south of a gate stays open)
+  // the signs: tile 'S' on the walkway side of each family's arc
   R.bays.forEach(b=>{[b.sign,b.sign2].filter(Boolean).forEach(([x,y])=>{t[y][x]='S';m.signs[x+','+y]=`${b.n}: the Scourges of ${b.d}. Four gates, one for each Echo.`;});});
-  // Scourges: by bay; a Scourge no bay names yet takes the nearest free bay slot, so a new boss still gets a gate
+  // Scourges: by family arc; a Scourge no arc names yet takes the first free outer-ring slot, so a new boss still gets a gate
   const gp=GPOOL.slice(),fp=FPOOL.slice(),put=(k,x,y,cal)=>{const d=guardianDef(k);if(!d)return;
     m.npcs.push(cal?{x,y,hx:x,hy:y,name:'Calamity Gate: Echo '+d.n,line:'',view:'front',face:'r',act:'portal',portal:1,cal:1,key:k,look:null}
       :{x,y,hx:x,hy:y,name:'Gate of Echo '+d.n,line:'',view:'front',face:'r',act:'portal',portal:1,key:k,look:null});};
@@ -38,7 +41,7 @@ function buildSanctum(){
   gp.filter(k=>!used.has(k)).forEach((k,i)=>{const p=free[i];if(p)put(k,p[0],p[1]);});
   // the Calamities: the inner ring around the Echoforge, clockwise from due north
   fp.forEach((k,j)=>{const p=R.ring[j];if(p)put(k,p[0],p[1],1);});
-  m.npcs.push({x:R.keeper[0],y:R.keeper[1],hx:R.keeper[0],hy:R.keeper[1],name:'Echo Warden',line:'Every Scourge and Calamity you broke is still ringing in here. Stand before a gate and press Space to challenge its Echo. The Calamities ring the forge, the Scourges keep to their bays along the walls, and the way out is the south door. This hall is safe: nothing roams.',look:villagerLook('Echo Warden'),view:'front',face:'r'});
+  m.npcs.push({x:R.keeper[0],y:R.keeper[1],hx:R.keeper[0],hy:R.keeper[1],name:'Echo Warden',line:'Every Scourge and Calamity you broke is still ringing in here. Stand before a gate and press Space to challenge its Echo. The Calamities ring the forge, the Scourges stand in a wider ring around them, four to an element, and the way out is the south door. This hall is safe: nothing roams.',look:villagerLook('Echo Warden'),view:'front',face:'r'});
   return m;
 }
 // ----- drawing: a small rune gate, dim until its Echo has answered, a gold pip once beaten -----

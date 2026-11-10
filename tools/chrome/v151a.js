@@ -49,15 +49,15 @@ chk('forging a sword, mail and lyre: the gold taken is the shown gold, the base 
 chk('every Echoforged piece computes stats without an exception',r.perkErr.length===0||JSON.stringify(r.perkErr));
 // ---- the anvil in 2D ----
 const view=async(h,tag)=>{
-  await h.ev(()=>{const A=__A;A.V.modal=null;A.getMap('s0');A.placeAt('s0',16,16,'u');A.WS.lock=false;A.WS.dir='u';A.V.screen='world';A.render();});await h.wait(4200);
+  await h.ev(()=>{const A=__A;A.V.modal=null;A.getMap('s0');A.placeAt('s0',16,18,'u');A.WS.lock=false;A.WS.dir='u';A.V.screen='world';A.render();});await h.wait(4200);
   const x=await h.ev(()=>{const A=__A,m=A.WS.m,n=m.npcs.find(q=>q.forge),L=(m.lights||[]).concat(m.tl||[]).filter(l=>Math.abs(l[0]-n.x*16)<48&&Math.abs(l[1]-n.y*16)<48&&l[3]==='violet');
     return {pos:[n.x,n.y],lights:L.length,hd:!!(A.HD&&A.HD.live),hdErr:A.HD&&A.HD.forgeErr||null,trig:n.act==='portal'&&n.portal===1&&n.key==='__forge'};});
   await h.shot(tag);return x;};
-const pg=await ev(()=>{const A=__A,o={};A.getMap('s0');A.placeAt('s0',16,15,'u');A.WS.lock=false;A.G.gold=99999;A.V.modal={type:'smithy',tab:'echo'};A.render();const t=document.querySelector('#modal').innerText;o.page={rows:document.querySelectorAll('#modal .row.rec').length,gold:new RegExp(A.TW.get('efGold')('blade').toLocaleString('en-US')).test(t),sec:/weapons/i.test(t)&&/armor/i.test(t),lute:/Dissonance/.test(t),knell:/Knellplate/.test(t),vs:/at max temper \(\+3\)/.test(t)};return o;});
+const pg=await ev(()=>{const A=__A,o={};A.getMap('s0');A.placeAt('s0',16,17,'u');A.WS.lock=false;A.G.gold=99999;A.V.modal={type:'smithy',tab:'echo'};A.render();const t=document.querySelector('#modal').innerText;o.page={rows:document.querySelectorAll('#modal .row.rec').length,gold:new RegExp(A.TW.get('efGold')('blade').toLocaleString('en-US')).test(t),sec:/weapons/i.test(t)&&/armor/i.test(t),lute:/Dissonance/.test(t),knell:/Knellplate/.test(t),vs:/at max temper \(\+3\)/.test(t)};return o;});
 chk('the Echoforge page (in the Echo Rift) lists every piece in two sections with the gold and the +3 comparison',pg.page.rows>=28&&pg.page.gold&&pg.page.sec&&pg.page.lute&&pg.page.knell&&pg.page.vs||JSON.stringify(pg));
 const a2=await view(H,'forge_2d_1000x560');console.log(JSON.stringify(a2));
-chk('2D: the anvil stands at tile 16,14 (v0.17.1: the middle of the Echo Rift) with the same trigger and emits violet light',a2.pos[0]===16&&a2.pos[1]===14&&a2.trig&&a2.lights>=1||JSON.stringify(a2));
-const ia=await ev(()=>{const A=__A;A.V.modal=null;A.placeAt('s0',16,15,'u');A.WS.lock=false;A.WS.dir='u';A.interact();/* v0.17.1: the forge stands at (16,14) */return A.V.modal&&A.V.modal.type;});
+chk('2D: the anvil stands at tile 16,16 (v0.17.2: the middle of the Echo Rift) with the same trigger and emits violet light',a2.pos[0]===16&&a2.pos[1]===16&&a2.trig&&a2.lights>=1||JSON.stringify(a2));
+const ia=await ev(()=>{const A=__A;A.V.modal=null;A.placeAt('s0',16,17,'u');A.WS.lock=false;A.WS.dir='u';A.interact();/* v0.17.1: the forge stands at (16,16) */return A.V.modal&&A.V.modal.type;});
 chk('standing south of the anvil and pressing interact opens the Echoforge',ia==='smithy'||ia);
 // draw it at several phases, with the glow, to prove no exception on a bare canvas
 const dr=await ev(()=>{const E=window.__ECHO11,errs=[];const c=document.createElement('canvas');c.width=E.FG.cw;c.height=E.FG.ch;const x=c.getContext('2d');

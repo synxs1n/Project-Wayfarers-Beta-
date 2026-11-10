@@ -404,3 +404,8 @@ gates are beaten, cutscene on entering the gate, returns with a new look, rematc
 - menus3.css .box max-height min(92vh, 100svh - 24px - safe-area), .modal align-content:start + safe-area padding. battle3.css b8col .pcs/.fcs one column; battle3.js wide planner prefers col && fr && !cr among whole arrangements. fixes11 guard wrap also counts boss/elite fights.
 - Click to move: HD hdPick is exact on open ground at 1000/1366/1920 (zoom 1.33); clicks on tiles behind buildings/walls return the wall-front tile (ray hits the height field) and NPC/prop pick rects win over ground. Asked the owner where it misfires.
 - Open: menu back-navigation with scroll memory and tap-outside-to-close (owner), Echo Rift ring (helper), animation overhaul (helper).
+
+## 0.17.8
+- sanctum.js RIFT_HALL computed from polar positions: hall 33x34, forge (16,16), Calamity ring r5 (south gap), Scourge ring r~10.5 (21 slots, south empty), signs at r8, braziers at r12.2, keeper (16,4), gate (16,2), start (16,31). Tests v153a/sanct/v145a/v151a updated. Weak: spacing 2-3 tiles uneven; walkway ~4 tiles wide; 390x844 crops the hall.
+- fixes11.js: makeEnemy wrapped: in a rift echoBoss fight every foe made takes B.spec.lv (55), so summons are 55 too.
+- fixes11.js: turnOrder wrapped: in a rift fight B.en keeps only e.echo foes (summons culled). Pending: foe/boss sprite sweep at the new battle scale (helper, waiting for a slot).

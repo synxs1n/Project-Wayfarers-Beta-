@@ -3,7 +3,7 @@ const {open,chk,done}=require('./pw');
 (async()=>{const H=await open({w:1000,h:560});const r=await H.ev(()=>{const A=__A,g=A.TW.get;A.ACT.new();['mira','lumen','oren'].forEach(i=>A.ACT.pickS(i));A.ACT.begin();A.ACT.storyOk();const G=g('G'),M=A.META,o={};
  const wc=g('walkerCanvas')('npc:t',A.TPL.mira.look,A.TPL.mira.el,'mira','front',0);o.walker=[wc.width,wc.height];
  g('startBattle')({stage:0,kind:'field'});const B=g('B');g('spriteOf')(B.front[0]);g('HB10').on=1;const c=g('heroCanvas')('mira');g('HB10').on=0;/* the stage may shrink what spriteOf hands out (b8Small); measure the rig's battle canvas itself */o.battle=[c._rw||c.width,c._rh||c.height,c.hd||1];o.portrait=[g('heroCanvas')('mira').width,g('heroCanvas')('mira').height];try{g('finishBattle')('flee');}catch(e){}A.V.modal=null;A.V.screen='world';
- const s=g('getMap')('s0');const n=s.npcs.find(q=>q.isRK);o.name=n&&n.name;o.home=n&&[n.hx,n.hy];g('placeAt')('s0',16,8,'u');g('worldDraw')(performance.now());o.visible=!!n&&n.x===n.hx;
+ const s=g('getMap')('s0');const n=s.npcs.find(q=>q.isRK);o.name=n&&n.name;o.home=n&&[n.hx,n.hy];g('placeAt')('s0',16,9,'u');g('worldDraw')(performance.now());o.visible=!!n&&n.x===n.hx;
  o.riftLv=g('riftSpec')(g('echoKeys')()[0]).lv;
  G.riftWon=G.riftWon||{};g('echoKeys')().forEach(k=>{const d=g('guardianDef')(k);M.best['Echo '+d.n]=Object.assign(M.best['Echo '+d.n]||{},{kills:1});G.riftWon[k]=1;/* v0.16.7: gates and the keeper read this journey's wins */});delete M.riftkeeper;o.unlocked=g('rkUnlocked')();g('worldDraw')(performance.now());o.gone=n.x<0;
  A.V.modal={type:'portal',key:'__riftkeeper'};A.render();o.card=/keeper is gone/.test(document.querySelector('#modal').innerText);

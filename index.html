@@ -1863,7 +1863,7 @@ html.rm .battle.b3 .cmd .mi.b9glow{animation:none}
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.17.6";const APP_BUILD="e36f5bcc9358";
+(function(){const APP_VER="0.17.8";const APP_BUILD="b3349082d329";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2565,7 +2565,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.17.6";const APP_BUILD="e36f5bcc9358";
+const APP_VER="0.17.8";const APP_BUILD="b3349082d329";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2573,6 +2573,10 @@ const APP_VER="0.17.6";const APP_BUILD="e36f5bcc9358";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.17.8',['The Echo Rift is concentric: the Echoforge at the centre, the five Calamity gates in a ring around it, and the twenty Scourge gates in a wider ring around those, four to an element with a sign per arc, the lane from the south door running through both rings to the forge and the Riftkeeper at the north end.',
+  'An Echo in the Rift fights alone: nothing it would summon joins the fight, and everything in a rift fight is level 55.']],
+ ['Beta v0.17.7',['The hero sheet is a tabbed sheet: a compact header (portrait, name, class and level, role, elements, HP, MP, XP, Equip), then Overview, Stats, Skills (with a filter), Gear and Role tabs; the last tab is remembered and the body scrolls inside the box. Menus clear the system bar and scroll within themselves.',
+  'Wide screens: the battle puts the Foes in the right column under the Rearguard, one card per row, and the command menu keeps the full width under the stage. The "Guard against a big hit" goal also counts a Guard in any boss or elite fight.']],
  ['Beta v0.17.6',['Battle rebalance, damage kinds. No class reaches more than two physical kinds through its own skills and weapons (Warrior and Knight slash and blunt, Monk blunt and slash, Thief slash and piercing, Archer and Sniper ranged and piercing, Druid ranged and slash; casters magic), so a party has to mix classes to answer slash, blunt, piercing, ranged and magic. The weapon sets the kind of physical skills: a warhammer or mace hits blunt, a sword slashes, a lance in a knight\'s hands is blunt, thrown stars pierce. The Skills list says "Blunt with your mace" or "Always Blunt" under each skill, and a foe\'s Weak tooltip lists which of your heroes answer it. Hand Axe is now Heave and Javelin is Shield Throw. Flying foes take a little more from piercing. Pacing is unchanged (about 12.6 boss tries, level 41 at the end).',
   'Render resolution follows your display. On a 1080p or larger screen, a phone at 3x density, or a zoomed window, the HD-2D view, the light map and the battle stage render at 2x (3x on High at 1440p and up) instead of one internal pixel per art pixel, characters are sampled at the finer density, and ground, props and buildings are upscaled once with a pixel-art scaler, so edges and diagonals stay crisp instead of blurring. Settings has a Render scale row (Auto, 1x, 2x, 3x); Auto steps down by itself on hardware that cannot hold the frame rate. The Flat view picks whole device pixels per art pixel. A true art-level overhaul (native 2x tiles, props, icons) is a later step.']],
  ['Beta v0.17.5',['The Loadouts tab lists each loadout with its vanguard and rearguard (portraits and names) and a Load button.']],
@@ -14565,31 +14569,34 @@ ACT.efForge=function(f){if(!ECHOFORGE[f])return;const m=efCost(f),base=efBaseIn(
 const SANCT_ID='s0';
 function sanctumOpen(){return !!G&&!G.daily&&[0,1,2,3,4].every(s=>(G.echoStory||{})[s]);}
 function sanctumProgress(){const n=G?[0,1,2,3,4].filter(s=>(G.echoStory||{})[s]).length:0;return n;}
-// v0.17.1: The Echo Rift, rebuilt around the Echoforge. A 33 x 28 hall on one north-south axis: the south door and the start tile at the
-// bottom, the Echoforge dead centre, the five Calamity gates in a ring of five around it (one vertex due north, the gap in the south
-// so the way from the door runs straight into the ring), the Riftkeeper (with his rest popup) and his gate at the far north end of the
-// axis. The twenty Scourges stand in five bays of four, grouped by the elements they carry (a Scourge is not tied to a realm in the
-// current journeys: any Scourge can sit in any realm), each bay with a brazier pair and a sign naming it: Wild Bay and Ember Bay in the
-// north corners, Gloam Bay and Tide Bay on the west and east walls, the Storm and Frost Bay either side of the south door.
-// Every gate has open floor on the side that faces the hall; walkways are one tile wide or more everywhere.
-const RIFT_HALL={W:33,H:28,start:[16,25],exit:[16,27],forge:[16,14],rk:[16,2],keeper:[16,5],
-  ring:[[16,9],[21,12],[19,18],[13,18],[11,12]],
-  bays:[
-   {n:'Wild Bay',d:'earth and wind',keys:['thornwarden','hollowshepherd','queenmantis','locustchoir'],at:[[3,1],[5,1],[7,1],[9,1]],sign:[6,1],bz:[[1,1],[11,1]]},
-   {n:'Ember Bay',d:'fire',keys:['cinderking','ashwyvern','candlemoth','geysermatron'],at:[[23,1],[25,1],[27,1],[29,1]],sign:[26,1],bz:[[21,1],[31,1]]},
-   {n:'Tide Bay',d:'water',keys:['drake','siren','brinehag','ironmaw'],at:[[31,11],[31,13],[31,15],[31,17]],sign:[29,14],bz:[[31,9],[31,19]]},
-   {n:'Storm and Frost Bay',d:'lightning and ice',keys:['ysolde','hoarwyrm','frostlich','paleweaver'],at:[[20,23],[22,23],[10,23],[12,23]],sign:[21,23],sign2:[11,23],bz:[[8,23],[14,23],[18,23],[24,23]]},
-   {n:'Gloam Bay',d:'shadow and iron',keys:['bonecolossus','gloomcap','crowregent','ironsentinel'],at:[[1,11],[1,13],[1,15],[1,17]],sign:[3,14],bz:[[1,9],[1,19]]}],
-  pillars:[[6,8],[26,8],[6,20],[26,20]],corners:[[1,26],[31,26],[13,3],[19,3]]};
+// v0.17.2: The Echo Rift, concentric. A 33 x 34 hall on one north-south axis (x 16): the south door and the start tile at the bottom, the
+// Echoforge at the centre (16,16), the five Calamity gates on an inner ring (radius 5, a vertex due north, the south left open) and the
+// twenty Scourge gates on an outer ring (radius 10.5) around them, 21 evenly spaced slots with the one on the south axis left out, so the
+// lane from the door runs straight up into the middle. Slots run clockwise from the south; every four sit together as one element family
+// (a Scourge is not tied to a realm in the current journeys: any Scourge can sit in any realm): Storm and Frost, Gloam, Wild, Ember, Tide.
+// Each family has a sign on the walkway side of its arc (radius 8) and braziers where the arcs meet (radius 12.2, the last pair flanking the
+// lane). The Riftkeeper (with his rest popup) and his gate stand on the axis north of the outer ring. Walkways between the rings are 4 tiles
+// wide; every gate has open floor on the side that faces the centre and on the side that faces the wall. interact() reads the tile in WS.dir,
+// so standing in the walkway and facing out hits a Scourge gate, facing in hits a Calamity gate.
+const RIFT_HALL=(()=>{const W=33,H=34,cx=16,cy=16,pol=(r,deg)=>{const a=deg*Math.PI/180;return [Math.round(cx+r*Math.sin(a)),Math.round(cy-r*Math.cos(a))];},
+  step=360/21,sl=j=>180+j*step,
+  fam=[{n:'Storm and Frost Bay',d:'lightning and ice',keys:['ysolde','hoarwyrm','frostlich','paleweaver']},
+   {n:'Gloam Bay',d:'shadow and iron',keys:['bonecolossus','gloomcap','crowregent','ironsentinel']},
+   {n:'Wild Bay',d:'earth and wind',keys:['thornwarden','hollowshepherd','queenmantis','locustchoir']},
+   {n:'Ember Bay',d:'fire',keys:['cinderking','ashwyvern','candlemoth','geysermatron']},
+   {n:'Tide Bay',d:'water',keys:['drake','siren','brinehag','ironmaw']}];
+  const bays=fam.map((f,g)=>Object.assign({},f,{at:[1,2,3,4].map(i=>pol(10.5,sl(4*g+i))),sign:pol(8,sl(4*g+2.5)),bz:[pol(12.2,sl(4*g+.5))].concat(g===4?[pol(12.2,sl(20.5))]:[])}));
+  return {W,H,start:[16,31],exit:[16,33],forge:[cx,cy],rk:[16,2],keeper:[16,4],ring:[0,72,144,216,288].map(d=>pol(5,d)),bays,
+  pillars:[[4,6],[28,6],[4,27],[28,27]],corners:[[1,32],[31,32],[14,2],[18,2]]};})();
 function buildSanctum(){
   const R=RIFT_HALL,W=R.W,H=R.H,t=[];for(let y=0;y<H;y++){const r=[];for(let x=0;x<W;x++)r.push(y===0||y===H-1||x===0||x===W-1?'#':'.');t.push(r);}
   t[R.exit[1]][R.exit[0]]='E';
   R.bays.forEach(b=>{b.bz.forEach(([x,y])=>{t[y][x]='v';});});R.corners.forEach(([x,y])=>{t[y][x]='v';});R.pillars.forEach(([x,y])=>{t[y][x]='P';});
   const m={id:SANCT_ID,z:4,s:4,kind:'dungeon',theme:'void',safe:1,archive:1,sanctum:1,hub:'The Echo Rift',exits:[],npcs:[],bld:[],signs:{},t,start:R.start.slice(),bossAt:null,chests:[],wander:[0,0],nodes:[]};
   m.w=W;m.h=H;m.tone=valueNoise(mulberry(7171),W,H,6);m.shelves=[];
-  // the signs: tile 'S' between the middle two gates of a row bay, in front of the middle of a column bay (the tile south of a gate stays open)
+  // the signs: tile 'S' on the walkway side of each family's arc
   R.bays.forEach(b=>{[b.sign,b.sign2].filter(Boolean).forEach(([x,y])=>{t[y][x]='S';m.signs[x+','+y]=`${b.n}: the Scourges of ${b.d}. Four gates, one for each Echo.`;});});
-  // Scourges: by bay; a Scourge no bay names yet takes the nearest free bay slot, so a new boss still gets a gate
+  // Scourges: by family arc; a Scourge no arc names yet takes the first free outer-ring slot, so a new boss still gets a gate
   const gp=GPOOL.slice(),fp=FPOOL.slice(),put=(k,x,y,cal)=>{const d=guardianDef(k);if(!d)return;
     m.npcs.push(cal?{x,y,hx:x,hy:y,name:'Calamity Gate: Echo '+d.n,line:'',view:'front',face:'r',act:'portal',portal:1,cal:1,key:k,look:null}
       :{x,y,hx:x,hy:y,name:'Gate of Echo '+d.n,line:'',view:'front',face:'r',act:'portal',portal:1,key:k,look:null});};
@@ -14597,7 +14604,7 @@ function buildSanctum(){
   gp.filter(k=>!used.has(k)).forEach((k,i)=>{const p=free[i];if(p)put(k,p[0],p[1]);});
   // the Calamities: the inner ring around the Echoforge, clockwise from due north
   fp.forEach((k,j)=>{const p=R.ring[j];if(p)put(k,p[0],p[1],1);});
-  m.npcs.push({x:R.keeper[0],y:R.keeper[1],hx:R.keeper[0],hy:R.keeper[1],name:'Echo Warden',line:'Every Scourge and Calamity you broke is still ringing in here. Stand before a gate and press Space to challenge its Echo. The Calamities ring the forge, the Scourges keep to their bays along the walls, and the way out is the south door. This hall is safe: nothing roams.',look:villagerLook('Echo Warden'),view:'front',face:'r'});
+  m.npcs.push({x:R.keeper[0],y:R.keeper[1],hx:R.keeper[0],hy:R.keeper[1],name:'Echo Warden',line:'Every Scourge and Calamity you broke is still ringing in here. Stand before a gate and press Space to challenge its Echo. The Calamities ring the forge, the Scourges stand in a wider ring around them, four to an element, and the way out is the south door. This hall is safe: nothing roams.',look:villagerLook('Echo Warden'),view:'front',face:'r'});
   return m;
 }
 // ----- drawing: a small rune gate, dim until its Echo has answered, a gold pip once beaten -----
@@ -28914,6 +28921,14 @@ function ldCards(){try{const L=LD();if(!L.length)return '';const name=id=>{const
   return `<div class="rows ldcards">${L.map((o,i)=>{if(!o)return '';const P=o.party||[],van=P.slice(0,3),rear=P.slice(3,6);const grp=(ids,lab)=>ids.length?`<div class="ldgrp"><small class="lbl">${lab}</small><div class="ldmem">${ids.map(id=>`<span class="ldm">${G.roster[id]?port(id,'noail'):'<span class="port pt10"></span>'}<small>${name(id)}</small></span>`).join('')}</div></div>`:'';
     return `<div class="row ldcard"><div class="grow"><b>${i+1}. ${esc(o.name)}</b>${grp(van,'Vanguard')}${grp(rear,'Rearguard')}</div><div class="ldb"><button class="btn sm gold" data-act="ldApply" data-arg="${i}">Load</button></div></div>`;}).join('')}</div>`;}catch(e){return '';}}
 try{const st=document.createElement('style');st.textContent='.ldcards{grid-template-columns:1fr;margin-top:6px}.ldcard .ldgrp{margin-top:4px}.ldcard .ldmem{display:flex;flex-wrap:wrap;gap:6px 10px;margin-top:2px}.ldcard .ldm{display:inline-flex;flex-direction:column;align-items:center;gap:1px;width:52px}.ldcard .ldm small{font-size:10px;line-height:1.1;text-align:center;max-width:52px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}';document.head.appendChild(st);}catch(e){}
+// ----- v0.17.8: everything in an Echo Rift fight is level 55 -----
+// The Echo itself is made at the rift level (rk10: 55), but anything it summons mid fight was made at its own level minus three
+// (battle4 summon) or at the stage level. In a rift fight every foe made while the battle runs takes the rift level.
+{const me0=makeEnemy;makeEnemy=function(mo,lv,o){try{const sp=B&&B.spec;if(sp&&sp.kind==='echoBoss'&&sp.rift&&sp.lv>0)lv=sp.lv;}catch(e){}return me0.call(this,mo,lv,o);};}
+// ----- v0.17.8: an Echo fights alone -----
+// Some Echoes summon help mid fight (battle4 summon gimmick, boss skills). In the Echo Rift only the Echo itself stands: any foe without
+// the echo flag that joins the fight is removed on the next turn-order pass.
+{const to0=turnOrder;turnOrder=function(){try{const sp=B&&B.spec;if(sp&&sp.kind==='echoBoss'&&sp.rift&&B.en&&B.en.some(e=>!e.echo))B.en=B.en.filter(e=>e.echo);}catch(e){}return to0.apply(this,arguments);};}
 
 // ===== arena11.js (v0.16.x, owner batch 8): arena score and medals, Weekly Trial =====
 // 1) Arena score per tier (win only), like the trial's: waves x 1500 - hero turns x 18 - knockouts x 250 + party HP left x 2000 (never below 0).
