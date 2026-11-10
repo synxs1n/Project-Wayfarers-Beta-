@@ -7,7 +7,10 @@
 // same, so anchoring in both views and the HD atlas are unaffected. HD canvases (sprhd) are rebuilt as HD canvases at the same detail.
 const WA10={sway:1,bob:1,hip:.6};
 {const wc0=walkerCanvas;walkerCanvas=function(key,L,els,id,view,frame){const c=wc0.apply(this,arguments);
-  try{if((view!=='front'&&view!=='back')||(frame!==1&&frame!==2)||!c||!c.width||(id&&TPL[id]&&TPL[id].mon))return c;
+  try{if(!c||!c.width||(id&&TPL[id]&&TPL[id].mon))return c;
+    // v0.16.7: the side stride frame bobs up a pixel too, so a hero whose side stride is subtle no longer glides left or right
+    if(view==='side'){if(frame!==1)return c;const ck='wa10s:'+(typeof key==='string'?key:'')+':'+c.width+'x'+c.height;if(IMG[ck])return IMG[ck];const k=c.hd||1,W=c.width,H=c.height,o=k>1?hdCv(W,H,k):mkCv(W,H),x=o.getContext('2d');x.imageSmoothingEnabled=false;x.drawImage(c,0,0,W,H,0,-WA10.bob,W,H);return IMG[ck]=o;}
+    if((view!=='front'&&view!=='back')||(frame!==1&&frame!==2))return c;
     const ck='wa10:'+(typeof key==='string'?key:'')+':'+view+':'+frame+':'+c.width+'x'+c.height;if(IMG[ck])return IMG[ck];
     const k=c.hd||1,W=c.width,H=c.height,o=k>1?hdCv(W,H,k):mkCv(W,H),x=o.getContext('2d');x.imageSmoothingEnabled=false;
     const hip=Math.round(H*WA10.hip),dx=(frame===1?-1:1)*WA10.sway,dy=-WA10.bob;

@@ -21,3 +21,19 @@ try{const st=document.createElement('style');st.textContent='.bstage .b9ban .b9m
 // Gates glow from META.best['Echo '+name].kills, which engine.js counts per unit base name. An Echo that changes form (phase 2) or dies
 // as another unit left the record on the other name, so its gate stayed dark. A rift win now marks the gate's own Echo record too.
 HOOK.after('win','fixes11','rift gate kill record',function(){try{const sp=B&&B.spec;if(!sp||sp.kind!=='echoBoss'||!sp.rift||!sp.key)return;const d=guardianDef(sp.key);if(!d)return;const b=bestOf('Echo '+d.n);if(!(b.kills>0))b.kills=1;if(typeof saveMeta==='function')saveMeta();}catch(e){}});
+// ----- v0.16.7: Echo Rift gates glow per journey -----
+// drawPortal, rift9's glow, mPortal and rkBeaten all read META.best['Echo '+name].kills (account wide). The owner wants the hall to reflect
+// this journey: a rift win records G.riftWon[key]=1, and while those functions run META.best is swapped for a view in which each Echo's
+// kills come from G.riftWon. The account record is still kept for the Codex. Old journeys start dark until the gates are won again.
+function riftView(){const v=Object.assign({},META.best||{});try{echoKeys().forEach(k=>{const d=guardianDef(k);if(!d)return;const w=!!(G&&G.riftWon&&G.riftWon[k]);v['Echo '+d.n]=Object.assign({},v['Echo '+d.n]||{},{kills:w?1:0});});}catch(e){}return v;}
+function withRiftView(fn){const b0=META.best;try{META.best=riftView();return fn();}finally{META.best=b0;}}
+{const dp0=drawPortal;drawPortal=function(){const a=arguments;return withRiftView(()=>dp0.apply(this,a));};}
+{const mp0=mPortal;mPortal=function(){const a=arguments;return withRiftView(()=>mp0.apply(this,a));};}
+{const rb0=rkBeaten;rkBeaten=function(){const a=arguments;return withRiftView(()=>rb0.apply(this,a));};}
+HOOK.after('win','fixes11','rift win per journey',function(){try{const sp=B&&B.spec;if(!sp||sp.kind!=='echoBoss'||!sp.rift||!sp.key||!G)return;G.riftWon=G.riftWon||{};G.riftWon[sp.key]=1;}catch(e){}});
+// the Riftkeeper says what the hall is for
+HOOK.xform('vModal','fixes11','Riftkeeper warning',function(h,m){try{if(m&&m.type==='rkrest'&&typeof rkUnlocked==='function'&&!rkUnlocked()){const n=rkBeaten().length,t=echoKeys().length;h=h.replace('<p class="note">Restores',`<p>"Break every Echo in this hall (${n} of ${t} so far) and the centre gate will open. Be warned: what waits behind it is stronger than anything you have faced."</p><p class="note">Restores`);}}catch(e){}return h;});
+// ----- v0.16.7: the "Guard against a big hit" goal counts any Guard made while a foe telegraphs -----
+// prog2 counted it only when a foe's Crushing Charge or Cataclysm landed on a guarding hero. Bosses with their own wind ups never
+// counted, so the goal sat in the list at the end of the game. Guarding while any living foe has a charge or telegraph up counts now.
+{const g0=guard;guard=function(){try{if(B&&B.nz&&B.cur&&B.cur.side==='p'&&(B.en||[]).some(e=>e.hp>0&&e.st&&(e.st.charge||e.st.g_tele))){B.nz.guard++;if(!B.nz.tele)B.nz.tele=1;}}catch(e){}return g0.apply(this,arguments);};}

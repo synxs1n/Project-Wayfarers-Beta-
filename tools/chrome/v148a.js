@@ -22,7 +22,7 @@ chk('crafting a sword gives w_blade_2 at +0 and it can be tempered',cr.ok&&cr.id
 // ---- 5) tempering cost visible ----
 await ev(()=>{const A=__A,G=A.G;G.gold=5000;G.gear.push('w_blade_2','a_mail_2','w_staff_2');A.V.modal={type:'smithy',tab:'forge'};A.render();});await wait(300);
 const tc=await ev(()=>{const rows=[...document.querySelectorAll('#modal .row.rec')],o=rows.slice(0,4).map(r=>{const m=r.querySelector('.mats.tcost'),b=r.querySelector('button[data-act="forge"]'),rr=r.getBoundingClientRect();return {has:!!m,gold:m&&!!m.querySelector('.matc.gold'),top:m?Math.round(m.getBoundingClientRect().top-rr.top):-1,btn:b&&b.innerText.replace(/\s+/g,' ')};});return {n:rows.length,o};});
-chk('tempering rows: cost line near the top of each row and "Temper · Ng" on the button '+JSON.stringify(tc.o[0]),tc.n>0&&tc.o.every(x=>x.has&&x.gold&&x.top>=0&&x.top<90&&/^Temper · [\d,]+g$/.test(x.btn||''))||JSON.stringify(tc));
+chk('tempering rows: cost line near the top of each row and a plain "Temper" button (v0.16.7: the owner wanted the label back) '+JSON.stringify(tc.o[0]),tc.n>0&&tc.o.every(x=>x.has&&x.gold&&x.top>=0&&x.top<90&&/^Temper$/.test((x.btn||'').trim()))||JSON.stringify(tc));
 if(SHOTS)await H.shot('v148a-temper');
 const up=await ev(()=>{const A=__A,G=A.G,c=G.roster[G.party[0]];A.V.modal={type:'upg',cid:c.id,sl:'w'};A.render();return document.querySelector('#modal').innerText;});
 chk('the Upgrade popup shows the gold of a step (cost chips)',/gold/i.test(up));

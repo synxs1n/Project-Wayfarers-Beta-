@@ -4,6 +4,10 @@
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.16.7',['Echo Rift gates glow for this journey\'s wins only (the Codex keeps the account record). The Riftkeeper tells you that breaking every Echo opens the centre gate, and warns about what waits there.',
+  'The "Guard against a big hit" goal counts any Guard made while a foe winds up or telegraphs, so it no longer sits unfinished at the end of the game.',
+  'Forge and Tempering rows carry the item\'s rarity colour like the shop; the Temper button is plain again (the cost chips stay under the title).',
+  'Walking left or right bobs a pixel on the stride, so nobody glides.']],
  ['Beta v0.16.6',['Materials have their own icons (every ore, log, herb and part looks different, and every guardian shard too), and gather nodes in the field show the material they hold: ore glinting on a rock, a stack of logs, the herb\'s own plant, in both views. A herb node now yields exactly the herb it shows.',
   'Selling: Alchemy buys back potions, tonics, cures and travel gear (40% of list) alongside the spare gear, materials and charms the Sell tabs already took; tempered gear returns part of its tempering cost; rare, tempered and Echoforged pieces ask before selling; keepsakes (personal relics, bound, legend, signature and Medal gear, the Stick) cannot be sold.',
   'Crafting: forging makes the +0 piece, priced so gold plus counter-bought materials come to 85% of the shop price (it was 72% for a +1 piece).',

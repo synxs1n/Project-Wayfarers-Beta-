@@ -409,7 +409,7 @@ html,body{overscroll-behavior-y:none}
 .nums,.wallet,.stats b,.bar+small{font-variant-numeric:tabular-nums lining-nums}
 .wallet{font-weight:800}
 .pouch{margin:8px 0 12px}.ph{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:6px}.ph b{color:var(--gold)}.ph small{flex-basis:100%}
-.row.rec.ready{border-color:#6a8a3a;box-shadow:inset 3px 0 0 #8ad04a}
+.row.rec{box-shadow:inset 3px 0 0 var(--tc,#4a4a5a)}.row.rec.ready{border-color:#6a8a3a;box-shadow:inset 3px 0 0 var(--tc,#8ad04a)}/* v0.16.7: the strip is the item's rarity colour, like the shop rows */
 .row.rec .mats{margin-top:6px}
 .btnrow.tight{gap:4px;margin:0;flex-wrap:nowrap}
 .row.prow{padding:4px 6px;gap:6px}
