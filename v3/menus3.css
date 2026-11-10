@@ -1,7 +1,7 @@
 /* ===================== Beta v0.6.3: shops and menus (menus3.js) ===================== */
 /* Panels fit the screen the phone really shows: --vvh is the visual viewport height (menus3.js), so the panel's own scroll reaches
    its last row even when the browser bar or the app's bars take part of the screen (100vh counts the screen behind them). */
-.box{max-height:calc(100vh - 32px);max-height:min(92vh,calc(var(--vvh,100dvh) - 32px))}
+.box{max-height:calc(100vh - 32px);max-height:min(92vh,calc(100svh - 24px))}/* v0.17.3: the smallest viewport height, so the box always fits above the browser bar and scrolls inside itself (the sheet's bottom used to be reachable only after scrolling the page behind) */
 .modal{align-items:safe center;justify-items:safe center}
 .modal>.box{margin:auto 0}
 /* the world header peeks out behind a centred panel as a cut "Wa..." on tablets and folds: hide its brand while a popup is up */

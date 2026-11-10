@@ -387,3 +387,7 @@ gates are beaten, cutscene on entering the gate, returns with a new look, rematc
 
 ## 0.17.2
 - art.js: heroPal boot colour used (h>>3)%BOOTS.length (negative for ~26 heroes -> undefined -> no boots); now >>>. Robe body stride frames: side legs with real stride points and hem trail/flare; front/back one boot lifted, hem sway 1px. walkanim10.js retired to a stub (its hip split left a transparent row). Test v154a (world, 92 heroes x 2 scales x 8 frames: frames differ, boot row constant, both boots, boot palette). v140a HERO_BASE c4f99d51.
+
+## 0.17.3
+- menus3.css .box max-height min(92vh, 100svh - 24px) (was var(--vvh) which goes stale and exceeds the visible height with the URL bar shown, so the box bottom sat below the fold).
+- Open: character sheet reorganisation (owner) pending a helper slot.

@@ -4,6 +4,7 @@
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.17.3',['Menus and sheets always fit above the browser bar and scroll inside their own box (the bottom of a long sheet was reachable only after scrolling the page behind).']],
  ['Beta v0.17.2',['Walking: every wayfarer in a robe now strides properly (near leg forward, hem trailing and lifting over the stepping boot, one boot raised in the front and back frames), and a long-standing bug that left about twenty-six wayfarers with no boot colour at all (their feet vanished) is fixed. The stopgap sway from 0.15.7 is gone with it.']],
  ['Beta v0.17.1',['The Echo Sanctum is now The Echo Rift, rebuilt around the Echoforge: the forge stands in the middle of a 33x28 hall, the five Calamity gates ring it, the twenty Scourge gates sit in five named bays along the walls (grouped by element, with braziers and signs), and the Riftkeeper and his gate hold the north end on the axis.',
   'At the level cap, experience becomes gold (8 XP to the gold), and a drop you already hold fifty of is sold on the spot; both show on the rewards screen. The Pork Chop Sandwich has a shorter description. The Role row in the sheet fills its line. The "Copy hero seal" button is gone until co-op exists.',
