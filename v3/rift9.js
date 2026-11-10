@@ -5,7 +5,7 @@
 const RIFT_FORGE_KEY='__forge';
 {const ef0=efTabOn;efTabOn=function(){try{return !!(WS.m&&WS.m.sanctum)&&ef0.apply(this,arguments);}catch(e){return false;}};}
 {const bs0=buildSanctum;buildSanctum=function(){const m=bs0.apply(this,arguments);try{
-  m.npcs.push({x:13,y:6,hx:13,hy:6,name:'Echoforge',line:'',view:'front',face:'r',act:'portal',portal:1,forge:1,key:RIFT_FORGE_KEY,look:null});}catch(e){}return m;};}
+  m.npcs.push({x:19,y:7,hx:19,hy:7,name:'Echoforge'/* v0.17.0: off the centre line, the bigger forge stood between the hall and the Riftkeeper's gate at (13,4) */,line:'',view:'front',face:'r',act:'portal',portal:1,forge:1,key:RIFT_FORGE_KEY,look:null});}catch(e){}return m;};}
 // the anvil opens the Smithy's Echoforge page; the Warden's rest is wired by riftkeeper9.js (ACT.riftRest)
 HOOK.before('vModal','rift9','Echoforge anvil in the Rift',function(m){if(m&&m.type==='portal'&&m.key===RIFT_FORGE_KEY){const mm={type:'smithy',tab:'echo',from:null};V.modal=mm;return HOOK.stop(mShop(mm));}});
 // drawing: the anvil, the won glow, the Calamity arch

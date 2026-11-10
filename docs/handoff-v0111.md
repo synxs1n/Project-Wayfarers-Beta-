@@ -376,3 +376,6 @@ gates are beaten, cutscene on entering the gate, returns with a new look, rematc
 
 ## 0.16.9
 - battle11.js (new, after mats11/echo11): foe sprites resampled 1.35x (BIG_ART, 81x81) / 1.1x (44x44) during battleFrame only (monCanvas flag), unitBox follows, head kept >= 4 px from the stage top; cmdhead .b8hm removed (aria-label keeps the numbers); double tap (350 ms) or hold (450 ms) on a foe box/plate/tag opens ACT.uInfo; a single aiming tap now fires on release. Test v152a (battle group); v080b portrait check no longer needs the head bars. Weak: uneven pixels at 1.35x; boss-fight slots may overlap on tall stages; shadow width capped at 40.
+
+## 0.17.0
+- hd2d.js portal frame cache key includes won ('w'/'o' from G.riftWon) and open ('O'/'L') state (frames were cached dark forever). rift9.js Echoforge npc moved (13,6) -> (19,7); echo11 reads the npc position for its art and lights.
