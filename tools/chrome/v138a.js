@@ -113,9 +113,9 @@ r=await ev(()=>{const A=__A,T=A.TW.get,G=A.G,META=A.META,o={};G.won=true;G.echoS
   o.reach=m.npcs.filter(n=>n.portal).every(n=>seen[n.y<9?n.y+1:n.y-1][n.x]);
   // the Riftkeeper's card counts every Echo
   const b0=JSON.stringify(META.best||{});META.best=META.best||{};const ks=T('echoKeys')();
-  ks.slice(0,total-1).forEach(k=>{META.best['Echo '+T('guardianDef')(k).n]={seen:1,kills:1,scan:0,known:{}};});
+  const G0=T('G');G0.riftWon={};ks.slice(0,total-1).forEach(k=>{META.best['Echo '+T('guardianDef')(k).n]={seen:1,kills:1,scan:0,known:{}};G0.riftWon[k]=1;/* v0.16.7: the keeper reads this journey's wins */});
   o.have1=T('rkUnlocked')();o.txt1=T('mRiftkeeper')().replace(/<[^>]+>/g,' ');
-  META.best['Echo '+T('guardianDef')(ks[total-1]).n]={seen:1,kills:1,scan:0,known:{}};
+  META.best['Echo '+T('guardianDef')(ks[total-1]).n]={seen:1,kills:1,scan:0,known:{}};G0.riftWon[ks[total-1]]=1;
   o.have2=T('rkUnlocked')();o.txt2=T('mRiftkeeper')().replace(/<[^>]+>/g,' ');o.dis2=/disabled/.test(T('mRiftkeeper')());
   META.best=JSON.parse(b0);return o;});
 console.log(JSON.stringify(r).slice(0,700));

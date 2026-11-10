@@ -872,7 +872,7 @@ function win(){
     c.mp=Math.min(c.S.mmp,c.mp+Math.round(c.S.mmp*.12));
   });
   // bonds grow between partners who finish a fight side by side
-  const fr=B.front.filter(c=>c.hp>0);
+  const fr=partyChars().filter(c=>!c.isComp);/* v0.17.1: bonds grow for every pair in the party, rearguard included, not only the vanguard still standing */
   for(let i=0;i<fr.length;i++)for(let j=i+1;j<fr.length;j++){const k=bondKey(fr[i].id,fr[j].id);if(!BONDMAP[k])continue;const before=bondLv(fr[i].id,fr[j].id);G.bonds[k]=(G.bonds[k]||0)+1;const after=bondLv(fr[i].id,fr[j].id);
     if(after>before){info.bonds.push({a:fr[i].name,b:fr[j].name,lv:after});if(after===1||after===3)G.talks.push({k,lv:after});}}
   G.gold+=info.gold;info.drops.forEach(d=>{G.inv[d]=Math.min(invCap(),(G.inv[d]||0)+1);});

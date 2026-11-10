@@ -379,3 +379,8 @@ gates are beaten, cutscene on entering the gate, returns with a new look, rematc
 
 ## 0.17.0
 - hd2d.js portal frame cache key includes won ('w'/'o' from G.riftWon) and open ('O'/'L') state (frames were cached dark forever). rift9.js Echoforge npc moved (13,6) -> (19,7); echo11 reads the npc position for its art and lights.
+
+## 0.17.1 (batch 9, my part)
+- fixes11.js: addXp wrap converts XP at LV_CAP to gold (x/8), B.capGold reported on the rewards screen; before/after 'win' hooks turn drops that were already at invCap into gold (40% of price); hideLegendNames xform cuts legendary class names from class lists until legendOn. ui.js: seal button removed; sheet Equipment block uses .row.tr gear rows (.eqsheet). engine.js:875 bond pairs = partyChars() (still filtered by BONDMAP, so only defined pairs; owner: both in party, vanguard or rearguard). roles9.js: no "Sub role: 85% power" note. items.js Pork Chop text. style.css .rl9 full width.
+- Click to move: works headless on low/medium/high at 1280x800, 1366x768 and 1920x1080; could not reproduce. Asked the owner for the setup.
+- Echo Rift (helper): sanctum.js RIFT_HALL constant (33x28, start 16,25, forge 16,14, keeper 16,5, gate 16,2, five bays by element, Calamity ring); rift9/riftkeeper9/rk10 read positions from RIFT_HALL; renamed in locName, Waystone row, keeper lines, realms.js toast, lore9 entry. Tests v153a (world), sanct/v145a/v151a/v138a updated. Weak: bays by element not realm (Scourges are not realm-bound); north Calamity gate on the keeper's axis; 390x844 crops the hall bottom.

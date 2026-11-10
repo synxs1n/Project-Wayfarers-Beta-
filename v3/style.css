@@ -1031,3 +1031,9 @@ body.noscroll #p5save{top:auto!important;bottom:8px!important}
 
 /* v0.16.2: toasts sit a little higher than before (the middle of the screen was worse), clear of the Run/Map/Menu row */
 #toast{bottom:calc(112px + env(safe-area-inset-bottom,0px))}
+
+/* v0.17.1: the Role row in the sheet spans the whole line (it sat in one 240px grid column) */
+.rows.compact.rl9{grid-template-columns:1fr}
+
+/* v0.17.1: the sheet's Equipment rows */
+.eqsheet{grid-template-columns:1fr}.eqsheet .eqsrow{gap:10px;cursor:pointer}.eqsheet .eqsrow small{display:block}.eqsheet .eqsrow .gico.empty{width:32px;height:32px;border:2px dashed var(--ink);border-radius:6px;flex:none}

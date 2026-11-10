@@ -1,6 +1,6 @@
-// ===== riftkeeper9.js (v0.12.13): the Riftkeeper, the ultimate boss behind the Echo Sanctum =====
+// ===== riftkeeper9.js (v0.12.13): the Riftkeeper, the ultimate boss at the north end of the Echo Rift =====
 // Unlock (account wide): every Rift gate's Echo beaten at least once (META.best['Echo <name>'].kills > 0 for every key in echoKeys()). Its gate
-// stands in the middle of the Sanctum hall (13,4), sealed until then ("N of M Echoes beaten"), then lit. Fight: startBattle({kind:'riftkeeper',
+// stands at the north end of the hall's axis (RIFT_HALL.rk), sealed until then ("N of M Echoes beaten"), then lit. Fight: startBattle({kind:'riftkeeper',
 // stage:4,lv:60}); no auto (autoBan), no fleeing (a boss). Data: foes.js RIFTKEEPER, art: art3.js rkArt (riftkeeper_<element> swaps the
 // lantern colour), gate card and Warden rest in this file, NG+ modifier 'rift' in twists.js.
 //   Phase 1 (100 to 66% HP): its element cycles every turn (fire, water, ice, lightning, earth, wind, light, shadow); its skills take that
@@ -27,9 +27,9 @@ const rkTitle=()=>!!(META.titles&&META.titles.riftwalker);
 // ----- statuses -----
 STS.rk_unmake={n:'Unmaking',a:'UNM',bad:1,t:99,c:'#ff4a6a',d:'The Riftkeeper unmakes the party when the count reaches zero: 150% of every hero\'s max HP. Guard halves it. Break its shield before then and it fizzles.'};
 ST_SYM.rk_unmake='<circle cx="5" cy="5" r="3.6" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M5 2.4V5l1.8 1.2" fill="none" stroke="currentColor" stroke-width="1.1"/>';
-// ----- the gate in the Sanctum hall -----
+// ----- the gate in the Echo Rift -----
 {const bs0=buildSanctum;buildSanctum=function(){const m=bs0.apply(this,arguments);try{
-  m.npcs.push({x:13,y:4,hx:13,hy:4,name:"The Riftkeeper's Gate",line:'',view:'front',face:'r',act:'riftkeeper',portal:1,key:RK_KEY,look:null});}catch(e){}return m;};}
+  m.npcs.push({x:RIFT_HALL.rk[0],y:RIFT_HALL.rk[1],hx:RIFT_HALL.rk[0],hy:RIFT_HALL.rk[1],name:"The Riftkeeper's Gate",line:'',view:'front',face:'r',act:'riftkeeper',portal:1,key:RK_KEY,look:null});}catch(e){}return m;};}
 {const dp0=drawPortal;drawPortal=function(ctx,px,py,n,now){
   if(n&&n.key===RK_KEY){const open=rkUnlocked(),f=(c,x,y,w,h)=>{ctx.fillStyle=c;ctx.fillRect(px+x,py+y,w,h);},ph=now/900,el=RK_ELS[Math.floor(ph)%8],col=open?ELC[el]:'#6a6a7c',edge=open?'#d4b464':'#5a5a68';
     f('#0e0a16',0,-3,16,19);f(edge,0,-3,16,1);f(edge,0,-3,1,19);f(edge,15,-3,1,19);f(edge,0,15,16,1);f(open?'#2a1f58':'#22202c',2,-1,12,15);f(open?'#4a4390':'#3a3844',2,-1,1,15);
@@ -42,7 +42,7 @@ ST_SYM.rk_unmake='<circle cx="5" cy="5" r="3.6" fill="none" stroke="currentColor
 function mRiftkeeper(){const d=guardianDef('riftkeeper'),have=rkBeaten().length,all=echoKeys().length,open=rkUnlocked(),first=!META.riftkeeper;
   return box('The Riftkeeper',`<div class="row"><img class="mimg" src="${monURL('riftkeeper')}" alt=""><div class="grow"><b>${esc(d.n)}</b><small>Ultimate boss · Level ${RKC.lv} · no auto · no fleeing${META.riftkeeper?' · beaten':''}</small>
       <small>${open?'The gate stands open. The keeper of every door waits behind it.':`${have} of ${all} Echoes beaten.`}</small></div></div>
-    ${open?'':`<p class="note warn">Sealed. Beat every Echo in the Sanctum at least once (the gates glow once their Echo has answered). ${have} of ${all} Echoes beaten.</p>`}
+    ${open?'':`<p class="note warn">Sealed. Beat every Echo in the Echo Rift at least once (the gates glow once their Echo has answered). ${have} of ${all} Echoes beaten.</p>`}
     <p class="note"><b>Phase 1:</b> its element changes every turn; set off a detonator of that element while it stands Primed. <b>Phase 2:</b> two Echo shades join and shield it while they live. <b>Phase 3:</b> every third turn it readies the Unmaking: guard, or break its shield before the count ends.</p>
     <p class="note">${first?'First win: Riftwalker\'s Key (all elements +10% damage, skills cost 10% more MP), the title Riftwalker, and the New Game+ modifier Rift.':`Each win: Echo Essence x${RKC.essence}.`}${rkTitle()?' You are a <b>Riftwalker</b>.':''}</p>`,
     `<button class="btn" data-act="closeModal">Not yet</button><button class="btn gold" data-act="rkFight" ${open?'':'disabled'}>Challenge</button>`);}

@@ -37,3 +37,18 @@ HOOK.xform('vModal','fixes11','Riftkeeper warning',function(h,m){try{if(m&&m.typ
 // prog2 counted it only when a foe's Crushing Charge or Cataclysm landed on a guarding hero. Bosses with their own wind ups never
 // counted, so the goal sat in the list at the end of the game. Guarding while any living foe has a charge or telegraph up counts now.
 {const g0=guard;guard=function(){try{if(B&&B.nz&&B.cur&&B.cur.side==='p'&&(B.en||[]).some(e=>e.hp>0&&e.st&&(e.st.charge||e.st.g_tele))){B.nz.guard++;if(!B.nz.tele)B.nz.tele=1;}}catch(e){}return g0.apply(this,arguments);};}
+// ----- v0.17.1: at the level cap, XP becomes gold; drops past the pack's cap become gold -----
+const CAPG={xpPer:8,dropRate:.4};
+{const ax0=addXp;addXp=function(c,x){try{if(c&&c.lv>=LV_CAP&&x>0&&G){const g=Math.max(1,Math.round(x/CAPG.xpPer));G.gold+=g;if(B)B.capGold=(B.capGold||0)+g;return [];}}catch(e){}return ax0.apply(this,arguments);};}
+HOOK.before('win','fixes11','pack snapshot for cap drops',function(){try{if(B&&G)B.invBefore=Object.assign({},G.inv||{});}catch(e){}});
+HOOK.after('win','fixes11','cap XP and overflow drops to gold',function(){try{const info=B&&B.result;if(!info||!G)return;info.notes=info.notes||[];let g=0;const full=[];
+  (info.drops||[]).forEach(d=>{const had=(B.invBefore||{})[d]||0;if(had>=invCap()){const it=ITEMS[d];const v=Math.max(1,Math.round(((it&&it.price)||10)*CAPG.dropRate));g+=v;full.push((it&&it.n)||d);}});
+  if(g>0){G.gold+=g;info.gold=(info.gold||0)+g;info.notes.push(`${[...new Set(full)].join(', ')}: the pack holds ${invCap()} already, sold on the spot for ${fmt(g)} gold.`);}
+  if(B.capGold){info.gold=(info.gold||0)+B.capGold;info.notes.push(`Experience beyond the level cap became ${fmt(B.capGold)} gold.`);B.capGold=0;}}catch(e){}});
+// ----- v0.17.1: legendary classes stay unmentioned until one of their heroes is unlocked -----
+// Class lists in the UI ("For: Mages, Archmages, Chroniclers", "tomes are for Mages, Archmages and Chroniclers") named the three legendary
+// classes to every player. Until a legend of that class is unlocked (legends.js legendOn), its name is cut from such lists.
+function legendClsOn(cls){try{return Object.keys(TPL).some(id=>TPL[id].cls===cls&&TPL[id].legend&&typeof legendOn==='function'&&legendOn(id));}catch(e){return true;}}
+function hideLegendNames(h){try{Object.keys(CLS).forEach(k=>{if(!CLS[k].legend||legendClsOn(k))return;const n=CLS[k].n.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+  h=h.replace(new RegExp(', '+n+'s?(?=[,. <])','g'),'').replace(new RegExp(' and '+n+'s?(?=[,. <])','g'),'').replace(new RegExp(n+'s?, ','g'),'').replace(new RegExp(n+'s? and ','g'),'');});}catch(e){}return h;}
+HOOK.xform('vModal','fixes11','hide legendary class names',function(h){return hideLegendNames(h);});

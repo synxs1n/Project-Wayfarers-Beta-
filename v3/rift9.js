@@ -1,11 +1,11 @@
 // ===== rift9.js (v0.12.13): the Echo Rift: Echoforge inside the Rift only, gates that show their state, Calamity gates apart =====
-// The Echoforge (echo gear from Echo Shards) is no longer a Smithy tab in town: an Echoforge anvil stands in the Sanctum hall. A beaten
-// gate glows in its element colour (the whole arch, not a pip); a Calamity gate is a taller pointed arch in crimson and gold on the south
-// row, clearly another kind of door. No save fields.
+// The Echoforge (echo gear from Echo Shards) is no longer a Smithy tab in town: an Echoforge anvil stands in the middle of the Echo Rift. A beaten
+// gate glows in its element colour (the whole arch, not a pip); a Calamity gate is a taller pointed arch in crimson and gold in the ring round the forge
+// (v0.17.1), clearly another kind of door. No save fields.
 const RIFT_FORGE_KEY='__forge';
 {const ef0=efTabOn;efTabOn=function(){try{return !!(WS.m&&WS.m.sanctum)&&ef0.apply(this,arguments);}catch(e){return false;}};}
 {const bs0=buildSanctum;buildSanctum=function(){const m=bs0.apply(this,arguments);try{
-  m.npcs.push({x:19,y:7,hx:19,hy:7,name:'Echoforge'/* v0.17.0: off the centre line, the bigger forge stood between the hall and the Riftkeeper's gate at (13,4) */,line:'',view:'front',face:'r',act:'portal',portal:1,forge:1,key:RIFT_FORGE_KEY,look:null});}catch(e){}return m;};}
+  m.npcs.push({x:RIFT_HALL.forge[0],y:RIFT_HALL.forge[1],hx:RIFT_HALL.forge[0],hy:RIFT_HALL.forge[1],name:'Echoforge'/* v0.17.1: back in the middle of the (larger) hall, ringed by the Calamity gates */,line:'',view:'front',face:'r',act:'portal',portal:1,forge:1,key:RIFT_FORGE_KEY,look:null});}catch(e){}return m;};}
 // the anvil opens the Smithy's Echoforge page; the Warden's rest is wired by riftkeeper9.js (ACT.riftRest)
 HOOK.before('vModal','rift9','Echoforge anvil in the Rift',function(m){if(m&&m.type==='portal'&&m.key===RIFT_FORGE_KEY){const mm={type:'smithy',tab:'echo',from:null};V.modal=mm;return HOOK.stop(mShop(mm));}});
 // drawing: the anvil, the won glow, the Calamity arch

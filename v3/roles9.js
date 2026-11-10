@@ -32,7 +32,7 @@ function roleWpn(c){try{const t=TPL[c.id];return ((ROLE9.wpn[t.cls]||{})[heroMai
 const RL9C={};
 function rl9Factor(c,s){if(!s||s.bond||s.limit||s.id==='attack')return 1;const t=TPL[c.id];if(!t||G&&G.daily)return 1;const main=heroMain(c),own=s.rl||(ROLES.cls[t.cls]?ROLES.cls[t.cls].p:main);return own===main?1:ROLE9.sub;}
 {const kn0=known;known=function(c){const L=kn0.apply(this,arguments);try{if(!c||!TPL[c.id]||G&&G.daily)return L;return L.map(s=>{const f=rl9Factor(c,s);if(f===1)return s;const key=c.id+':'+heroMain(c)+':'+s.id+':'+(s.pw||0);let x=RL9C[key];
-  if(!x){x=Object.assign({},s,{sub:1});if(s.pw)x.pw=+(s.pw*f).toFixed(3);if(s.fx)x.fx=s.fx.map(q=>Array.isArray(q)?[q[0],+((q[1]==null?1:q[1])*ROLE9.subFx).toFixed(3)].concat(q.slice(2)):q);x.d=(s.d||'')+' Sub role: 85% power.';RL9C[key]=x;}return x;});}catch(e){return L;}};}
+  if(!x){x=Object.assign({},s,{sub:1});if(s.pw)x.pw=+(s.pw*f).toFixed(3);if(s.fx)x.fx=s.fx.map(q=>Array.isArray(q)?[q[0],+((q[1]==null?1:q[1])*ROLE9.subFx).toFixed(3)].concat(q.slice(2)):q);x.d=(s.d||'');/* v0.17.1: no role note in the description (owner) */RL9C[key]=x;}return x;});}catch(e){return L;}};}
 // ---- auto-spent points follow the main role ----
 {const aa0=autoAlloc;autoAlloc=function(c){try{const t=TPL[c.id],C=CLS[t.cls],st=ROLE9.stat[heroMain(c)];if(C&&st&&C.pref&&C.pref[0]!==st&&heroMain(c)!==heroRoles(c)[0]){const p0=C.pref;C.pref=[st].concat(p0.filter(k=>k!==st)).slice(0,3);try{return aa0.apply(this,arguments);}finally{C.pref=p0;}}}catch(e){}return aa0.apply(this,arguments);};}
 // ---- FAITH ----
