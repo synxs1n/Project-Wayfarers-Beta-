@@ -36,6 +36,16 @@ const COMBO={
 };
 const comboKey=els=>els.slice().sort().join('+');
 const SKC={};
+// v0.17 (dmg11.js): skills whose damage kind is FIXED, by class and skill id. Every other physical skill (and the basic Attack, bond techs and
+// Limit Breaks) takes the kind of the weapon in hand (WT_KIND / CLS_KINDS in items.js). A `dl` written on a skill also fixes it.
+// Each class reaches at most two physical kinds through its weapons and these skills; casters one (plus magic).
+const DL_FORCE={
+  knight:{bash:'blunt'},
+  thief:{stab:'piercing',steal:'piercing',shiv1:'piercing',assn:'piercing',shadowstep:'piercing',lotus:'piercing',dart:'piercing',dart2:'piercing',fan:'piercing'},
+  archer:{pierce:'piercing',heavenp:'piercing'},
+  sniper:{eclipse:'piercing'},
+  druid:{wolf:'slash',pack:'slash',oldwood:'slash',limit:'slash'}
+};
 // v0.10.5 early band: front line (warrior, knight, monk) gets its DETONATOR first and a primer by lv 18; every other class gets its PRIMER first and a detonator later (SKILL_ROLE in data.js + these fills).
 // v5.1 role fills: added only when a class would otherwise miss a Primer or Detonator in that band
 const ROLE_FILL={
@@ -57,7 +67,7 @@ function classSkills(t){
     add({id:'pstrike',n:'Power Strike',k:'phys',pw:1.5,mp:3,lv:1,d:'A heavy swing.'});
     add({id:'edge1',n:n1+' Edge',k:'phys',pw:1.7,mp:5,el:e1,lv:3,d:`Blade wreathed in ${n1}.`});
     add({id:'rend',n:'Rend',k:'phys',pw:1.2,mp:5,lv:6,fx:[['bleed',.8]],d:'A tearing cut. Likely Bleeds.'});
-    add({id:'hurl',n:'Hand Axe',k:'phys',pw:1.2,mp:3,lv:4,dl:'ranged',d:'Hurl an axe across the field. Flying foes cannot weave away from it.'});
+    add({id:'hurl',n:'Heave',k:'phys',pw:1.2,mp:3,lv:4,d:'Hurl your weapon across the field and fetch it back. Strikes with the kind of damage of your weapon.'});
     if(e2)add({id:'edge2',n:n2+' Edge',k:'phys',pw:1.7,mp:5,el:e2,lv:8,d:`Blade wreathed in ${n2}.`});
     add({id:'cleave',n:'Cleave',k:'phys',pw:1,mp:9,t:'all',lv:10,d:'Sweeps every foe.'});
     add({id:'cry',n:'War Cry',k:'status',t:'self',mp:6,lv:13,fx:[['might',1],['taunt',1]],d:'Gain Might and Taunt: foes come for you.'});
@@ -67,7 +77,7 @@ function classSkills(t){
     add({id:'bash',n:'Shield Bash',k:'phys',pw:1.3,mp:3,lv:1,fx:[['stun',.25]],d:'May Stun.'});
     add({id:'provoke',n:'Provoke',k:'status',t:'self',mp:4,lv:3,fx:[['taunt',1],['bulwark',1]],d:'Taunt foes and gain Bulwark.'});
     add({id:'lance1',n:n1+' Lance',k:'phys',pw:1.6,mp:5,el:e1,lv:5,d:`Charge tipped with ${n1}.`});
-    add({id:'javelin',n:'Javelin',k:'phys',pw:1.2,mp:3,lv:9,dl:'ranged',d:'Throw a javelin. Flying foes cannot weave away from it.'});
+    add({id:'javelin',n:'Shield Throw',k:'phys',pw:1.2,mp:3,lv:9,dl:'blunt',d:'Hurl the shield like a discus. Always Blunt.'});
     add({id:'aegis',n:'Aegis',k:'status',t:'ally',mp:6,lv:7,fx:[['ward',1]],d:'Ward an ally: blocks the next hit completely.'});
     if(e2)add({id:'lance2',n:n2+' Lance',k:'phys',pw:1.6,mp:5,el:e2,lv:8,d:`Charge tipped with ${n2}.`});
     add({id:'wall',n:'Guard Wall',k:'status',t:'allyAll',mp:10,lv:11,fx:[['bulwark',1]],d:'Bulwark for the vanguard.'});

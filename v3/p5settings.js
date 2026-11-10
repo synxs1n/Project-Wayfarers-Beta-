@@ -100,3 +100,11 @@ function p5Saved(ok,manual){const now=Date.now();P5S.manualShown=!!manual;
 // the cloud chip (saves.js #svicon) moves out of the bottom left corner, where it sat on the movement pad, to sit beside the message
 {const i0=svIcon;svIcon=function(){const r=i0.apply(this,arguments);try{const n=performance.now();if(P5S.state||n-(P5S.placed||0)>400){P5S.placed=n;p5Place();}}catch(e){}return r;};}
 window.addEventListener('resize',()=>{try{p5Place();}catch(e){}});
+
+// ---------- v0.17.3: Settings > Render scale (Auto / 1x / 2x / 3x; META.cfg.render, read by res11.js) ----------
+// Internal pixels per art pixel for the HD-2D world and the battle stage. Auto follows the display (a 1080p window renders at 2x, a 4K one
+// at 3x); 1x is the old look and the lightest. The row is placed after Graphics by res11.js.
+function rsRow(){try{const c=META.cfg.render,cur=(c==='1'||c==='2'||c==='3')?c:'auto',lab=[['auto','Auto'],['1','1x'],['2','2x'],['3','3x']];
+  const chips=lab.map(([k,t])=>`<button class="chip ${cur===k?'on':''}" data-act="cfg" data-arg='["render","${k}"]'>${t}</button>`).join('');
+  let now='';try{if(cur==='auto'){const d=Math.round((WS.scale||2)*resDev()*10)/10;now=` Auto is using ${HD&&HD.pxI?HD.pxI:resPx(d)}x on this screen (${d} device pixels per art pixel).`;}}catch(e){}
+  return `<div class="rows rsrows"><div class="row"><div><b>Render scale</b><small>How many screen pixels the HD-2D world and battle stage draw per art pixel. Higher is sharper on big screens and costs more; 1x is the lightest.${now}</small></div><div class="chips">${chips}</div></div></div>`;}catch(e){return '';}}

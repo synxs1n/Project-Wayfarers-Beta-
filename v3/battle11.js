@@ -15,11 +15,17 @@
 // registered earlier, stops the event before this one).
 const FS11={big:81/60,small:44/40,top:4,on:0,hold:450,dbl:350,slop:10,cache:new WeakMap()};
 function fs11Scale(art){try{return MON_SIZE(art)>=60?FS11.big:FS11.small;}catch(e){return 1;}}
-function fs11Cv(c,art){if(!c||!c.width)return c;let o=FS11.cache.get(c);if(o)return o;const s=fs11Scale(art),lw=Math.round(c.width*s),lh=Math.round(c.height*s),k=c.hd;
-  if(k&&typeof hdCv==='function'){const RW=c._rw||Math.round(c.width*k),RH=c._rh||Math.round(c.height*k);o=hdCv(lw,lh,k);const x=o.getContext('2d');x.setTransform(1,0,0,1,0,0);x.imageSmoothingEnabled=false;(x._hdDI||x.drawImage).call(x,c,0,0,RW,RH,0,0,Math.round(lw*k),Math.round(lh*k));x.setTransform(k,0,0,k,0,0);}/* bitmap pixels, as b8Small */
+// v0.17.3: the resample follows the battle layer's backing density (res11.js resBk: 2 on small or plain screens, 4 where the display has the
+// pixels). Going from the 2x HD paint to more pixels, the foe is first doubled with EPX (Scale2x, edges stay square, no blur) until it has
+// at least the target's pixels, then taken nearest neighbour to the exact size, so a 1.35x boss has even, crisp pixels at any density.
+function fs11Cv(c,art){if(!c||!c.width)return c;const cvb=document.getElementById('bcv'),k=c.hd,K=k&&cvb&&cvb._ss>k?cvb._ss:k;let e=FS11.cache.get(c);if(e&&e.k===K)return e.o;let o;
+  const s=fs11Scale(art),lw=Math.round(c.width*s),lh=Math.round(c.height*s);
+  if(k&&typeof hdCv==='function'){const RW=c._rw||Math.round(c.width*k),RH=c._rh||Math.round(c.height*k);o=hdCv(lw,lh,K);const x=o.getContext('2d'),tw=Math.round(lw*K),th=Math.round(lh*K);x.setTransform(1,0,0,1,0,0);x.imageSmoothingEnabled=false;
+    let src=c,sw=RW,sh=RH;if(K>k&&typeof resEpx==='function'){try{let n=0;while(sw<tw&&n<2){src=resEpx(src);sw=src.width;sh=src.height;n++;}}catch(er){src=c;sw=RW;sh=RH;}}
+    (x._hdDI||x.drawImage).call(x,src,0,0,sw,sh,0,0,tw,th);x.setTransform(K,0,0,K,0,0);}/* bitmap pixels, as b8Small */
   else{o=mkCv(lw,lh);const x=o.getContext('2d');x.imageSmoothingEnabled=false;x.drawImage(c,0,0,c.width,c.height,0,0,lw,lh);}
-  try{if(typeof BART!=='undefined'&&BART.has(c))BART.set(o,BART.get(c));}catch(e){}/* the boss exhale frame looks up its frame B by the source canvas */
-  FS11.cache.set(c,o);return o;}
+  try{if(typeof BART!=='undefined'&&BART.has(c))BART.set(o,BART.get(c));}catch(er){}/* the boss exhale frame looks up its frame B by the source canvas */
+  FS11.cache.set(c,{k:K,o});return o;}
 {const mc0=monCanvas;monCanvas=function(art,f){const c=mc0.apply(this,arguments);try{if(FS11.on)return fs11Cv(c,art);}catch(e){}return c;};}
 {const so0=spriteOf;spriteOf=function(u,walk){const was=FS11.on;FS11.on=u&&u.side!=='p'&&!u.heroArt?1:0;try{return so0.apply(this,arguments);}finally{FS11.on=was;}};}
 {const bf0=battleFrame;battleFrame=function(){const was=FS11.on;FS11.on=1;try{return bf0.apply(this,arguments);}finally{FS11.on=was;}};}

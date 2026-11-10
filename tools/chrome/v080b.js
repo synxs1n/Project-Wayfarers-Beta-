@@ -189,7 +189,7 @@ async function setup(H,kind,he,fo,seed){
     chk(`${tag}: an armored foe's card: weak to Blunt and Magic, resists Slash, Piercing and Ranged (${JSON.stringify(r.arm)})`,!!r.arm&&['Blunt','Magic'].every(k=>r.arm.up.includes(k))&&['Slash','Piercing','Ranged'].every(k=>r.arm.dn.includes(k))&&r.arm.up.length===2&&r.arm.dn.length===3);/* v0.13.6: the three melee kinds apart again */
     chk(`${tag}: an undead foe's card: weak to Heal (${JSON.stringify(r.und)})`,!!r.und&&r.und.up.includes('Heal'));
     chk(`${tag}: the names stay in the tooltip ("${r.title}")`,/Ranged/.test(r.title)&&/Physical|Slash|Piercing|Blunt/.test(r.title)/* v0.13.6: resists list the damage kinds by name */);
-    chk(`${tag}: the skill list's delivery chip is the symbol, named in its tooltip`,!!r.chip&&r.chip.img&&/Delivery: /.test(r.chip.title)&&r.chip.txt===''||JSON.stringify(r.chip));
+    chk(`${tag}: the skill list's delivery chip is the symbol, named in its tooltip (v0.17: or the weapon-kind text)`,!!r.chip&&r.chip.img&&/(Delivery: |always deals|with your|Follows your weapon)/.test(r.chip.title)&&r.chip.txt===''||JSON.stringify(r.chip));
     chk(`${tag}: the aim tag on the armored foe shows the archetype arrow with the delivery symbol`,r.tags.some(t=>t.arch)||JSON.stringify(r.tags));
     const m=await H.ev(()=>{const A=__A;A.B.menu='root';A.B.pend=null;A.render();return null;});await H.wait(300);const mm=await H.ev(MEASURE);
     chk(`${tag}: no text cut with the symbols on the cards`,mm.bad.length===0||mm.bad.slice(0,5).join(' | '));

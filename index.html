@@ -1055,6 +1055,11 @@ body.noscroll #p5save{top:auto!important;bottom:8px!important}
 
 /* v0.17.1: the sheet's Equipment rows */
 .eqsheet{grid-template-columns:1fr}.eqsheet .eqsrow{gap:10px;cursor:pointer}.eqsheet .eqsrow small{display:block}.eqsheet .eqsrow .gico.empty{width:32px;height:32px;border:2px dashed var(--ink);border-radius:6px;flex:none}
+
+/* ===== v0.17.3 res11.js: crisp at any pixel ratio. Art stays on a pixel grid: the title canvases and every picture drawn from a canvas (cards, portraits,
+   item icons, element marks, the map) use nearest neighbour when the browser scales them; img has had it since the start. The GL layers keep it. ===== */
+#tcv,#t7cv,.tstage canvas,.t7stage canvas{image-rendering:pixelated}
+.port img,.gico,.elb,.fci,.udi,.mimg,.bimg img,.btile>img,.lineup img,.tame img,.bossv img{image-rendering:pixelated}
 :root:not(.flat){
   --orn-g-tl:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cg fill='none' stroke-linecap='square'%3E%3Cpath d='M2.5 16V2.5H16' stroke='%23e6c784' stroke-width='1.2'/%3E%3Cpath d='M5.5 11V5.5H11' stroke='%23a8874c' stroke-width='1'/%3E%3C/g%3E%3Cg fill='%23e6c784'%3E%3Cpath d='M2.5 16.5l1.6 2.2-1.6 2.2-1.6-2.2z'/%3E%3Cpath d='M16.5 2.5l2.2 1.6-2.2 1.6-2.2-1.6z'/%3E%3Ccircle cx='5.5' cy='5.5' r='1.3'/%3E%3C/g%3E%3C/svg%3E");
   --orn-g-tr:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cg transform='matrix(-1 0 0 1 24 0)'%3E%3Cg fill='none' stroke-linecap='square'%3E%3Cpath d='M2.5 16V2.5H16' stroke='%23e6c784' stroke-width='1.2'/%3E%3Cpath d='M5.5 11V5.5H11' stroke='%23a8874c' stroke-width='1'/%3E%3C/g%3E%3Cg fill='%23e6c784'%3E%3Cpath d='M2.5 16.5l1.6 2.2-1.6 2.2-1.6-2.2z'/%3E%3Cpath d='M16.5 2.5l2.2 1.6-2.2 1.6-2.2-1.6z'/%3E%3Ccircle cx='5.5' cy='5.5' r='1.3'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
@@ -1855,7 +1860,7 @@ html.rm .battle.b3 .cmd .mi.b9glow{animation:none}
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.17.5";const APP_BUILD="d5a227b55462";
+(function(){const APP_VER="0.17.6";const APP_BUILD="98d2fdbe3774";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2225,11 +2230,11 @@ const ROLES={
       {id:'r_cover',n:'Shield Ally',k:'status',t:'ally',mp:5,lv:13,fx:[['bulwark',1],['regen',1]],d:'Covers an ally: Bulwark and Regen.',r:'buffer'}],
     archer:[{id:'r_cripple',n:'Crippling Shot',k:'phys',pw:1,mp:6,lv:15,dl:'ranged',fx:[['weaken',.85],['slow',.6]],d:'An arrow to the sword arm. Likely Weakens, may Slow.',r:'debuffer'},
       {id:'r_flare',n:'Flare Arrow',k:'phys',pw:.8,mp:8,t:'all',lv:18,dl:'ranged',fx:[['blind',.7]],d:'A burning flare bursts over every foe. May Blind.',r:'debuffer'}],
-    thief:[{id:'r_stars',n:'Throwing Stars',k:'phys',pw:.7,hits:2,mp:3,cost:.8,lv:4,dl:'ranged',d:'Two quick stars from the hip. Ranged: flying foes cannot weave away.',r:'ranged'},
-      {id:'r_kunai',n:'Kunai Volley',k:'phys',pw:.8,mp:9,t:'all',lv:16,dl:'ranged',fx:[['bleed',.4]],d:'A fan of kunai at every foe. Ranged; may Bleed.',r:'ranged'},
+    thief:[{id:'r_stars',n:'Throwing Stars',k:'phys',pw:.7,hits:2,mp:3,cost:.8,lv:4,dl:'piercing',d:'Two quick stars from the hip. Piercing: they find the gaps in armor.',r:'ranged'},
+      {id:'r_kunai',n:'Kunai Volley',k:'phys',pw:.8,mp:9,t:'all',lv:16,dl:'piercing',fx:[['bleed',.4]],d:'A fan of kunai at every foe. Piercing; may Bleed.',r:'ranged'},
       {id:'r_hamstr',n:'Hamstring',k:'phys',pw:.8,mp:5,cost:.8,lv:12,fx:[['slow',.8],['weaken',.5]],d:'A cut behind the knee. Likely Slows, may Weaken.',r:'debuffer'},
       {id:'r_toxin',n:'Toxic Cloud',k:'status',t:'all',mp:10,lv:18,fx:[['poison',.85],['weaken',.6]],d:'A cloud of venom over every foe. Likely Poisons, may Weaken.',r:'debuffer'},
-      {id:'r_fuma',n:'Fuma Shuriken',k:'phys',pw:1.9,mp:12,cost:1.1,pierce:1,lv:24,dl:'ranged',d:'A great folding shuriken that cuts through armor. Ranged; ignores half of defense.',r:'ranged'}],
+      {id:'r_fuma',n:'Fuma Shuriken',k:'phys',pw:1.9,mp:12,cost:1.1,pierce:1,lv:24,dl:'piercing',d:'A great folding shuriken that cuts through armor. Piercing; ignores half of defense.',r:'ranged'}],
     monk:[{id:'r_chimend',n:'Chi Mend',k:'heal',chi:1,pw:1.6,mp:5,t:'ally',lv:7,d:'Pushes chi into an ally to close their wounds.',r:'healer'},
       {id:'r_harmony',n:'Harmony Meditation',k:'status',t:'allyAll',mp:10,lv:14,fx:[['focus',1]],heal:.1,d:'The line breathes with him: Focus for the vanguard and a 10% heal.',r:'buffer'},
       {id:'r_lotus',n:'Lotus Circle',k:'heal',chi:1,pw:1.1,mp:12,t:'allyAll',lv:21,d:'A shared meditation that heals the vanguard.',r:'healer'}],
@@ -2360,11 +2365,19 @@ const SPR={k:2,addH:6,rimA:.5,outA:.55};
 // units from the key light. spell: element spell effects (0 none, 1 some, 2 more; also capped by GFX_Q.parts). props: far scenery props.
 const HD_BATTLE={
   low:   {on:0},
-  medium:{on:1,mode:'under',res:1,maxPx:520000,lights:4,shadows:6, decals:3,bloomK:.55,dof:1,  rays:1,rim:1,spell:1,props:1},
-  high:  {on:1,res:2,  maxPx:2300000,lights:8,shadows:12,decals:4,bloomK:.7, dof:1.2,rays:1,rim:1,spell:2,props:1}};
+  medium:{on:1,mode:'under',res:1,maxPx:900000,lights:4,shadows:6, decals:3,bloomK:.55,dof:1,  rays:1,rim:1,spell:1,props:1},
+  high:  {on:1,res:2,  maxPx:3200000,lights:8,shadows:12,decals:4,bloomK:.7, dof:1.2,rays:1,rim:1,spell:2,props:1}};
 // The floor: persp is the perspective offset as a share of the floor height (smaller = deeper perspective), tile is the world size of
 // one floor texture tile in logical px, sq is the depth squash of floor circles and shadows, focus is the sharp band [top, bottom] as a
 // share of the floor (units stand there; above it the floor blurs toward the horizon, below it a little toward the bottom edge).
+// v0.17.3 RENDER (res11.js, hd2d.js, hdstage.js, battle11.js): render resolution follows the display. d = device pixels per art pixel =
+// view scale x page zoom x devicePixelRatio. Auto: internal pixels per art pixel = clamp(floor(d / k + bias), 1, tier max) (d 3 -> 1, 4 -> 2,
+// 6 -> 3). META.cfg.render: 'auto' | '1' | '2' | '3' (Settings > Render scale) forces the value (still capped by the GPU: maxTex).
+// tex: ground, prop and building textures are upscaled once with EPX (Scale2x) from this many internal px per art px on.
+// bk: the battle unit layer's backing pixels per logical px (2 below d bk, else bkHi, an integer multiple of the 2x HD paint).
+// sc4W/sc5W/scH: the flat view may use scale 4 or 5 on boxes this wide and tall (layout px); minVw: the narrowest view (art px) a
+// dpr-aware scale change may produce. stage: the GL battle stage's backing pixels per CSS pixel, from the display, capped per tier by resMax.
+const RENDER={k:2,bias:.25,max:3,tex:2,bk:3,bkHi:4,sc4W:1360,sc5W:1760,scH:520,minVw:150,maxArea:4200000,texArea:16000000,stageMax:{medium:2,high:3}};
 const HD_FLOOR={persp:.32,tile:96,sq:.34,focus:[.12,.9],fog:.55};
 // Colour grade per time of day (outdoor battles) and weather: gain (rgb multiplier), lift (rgb added), sat, contrast, amb (light on units,
 // rgb), key (key light colour), vig (vignette). Indoor stages (caves, halls, boss stages) use `indoor`.
@@ -2420,7 +2433,8 @@ const WMAP={cell:[64,150,38],vig:.78,names:84};// cell: px per area (normal min,
 // fog, in camera distances. xray: radius (art px) around the hero where props and walls in front of him thin out; actMin: the least
 // light characters get (dark places stay readable); heroLight: radius of the hero's lantern; shaft: light shaft strength.
 // dof: tilt shift (shift of the sharp band from the hero, band half height, ramp, strength; all shares of the view height).
-// bloom: threshold and strength (Medium, High). tiers: px = internal pixels per art pixel (1 = the 2D view's own grid), blur = size
+// bloom: threshold and strength (Medium, High). tiers: px = the least internal pixels per art pixel (1 = the 2D view's own grid; v0.17.3: the
+// real value follows the display, see RENDER and resPx in res11.js), pxMax = the most (3 = the HD paint's own detail), blur = size
 // divisor of the blurred copy, lmap = light map size (every light in view is drawn into it each frame), bloom 1 = from the blurred copy,
 // 2 = its own wider pass, dof 1 or 2 blur rounds, shafts on or off, every = remake the blurred copy every n frames.
 // lmMax: most lights per frame; lightK: light strength; chunk: static geometry chunk size in tiles (culling).
@@ -2429,7 +2443,7 @@ const WMAP={cell:[64,150,38],vig:.78,names:84};// cell: px per area (normal min,
 const HD2D={pitch:40,fov:28,maxHfov:40,zoom:1,follow:85,topSlack:.2,sway:{amp:0,pitch:0,ms:11000},
   wall:{dungeon:22,cliff:12,town:14},water:-3,deep:-14,fogStart:1.15,fogEnd:2.7,xray:{out:26,dun:40},actMin:{out:.62,dun:.58},heroLight:120,shaft:.09,
   dof:{shift:.06,band:.24,ramp:.5,max:.7},bloom:{thr:.86,med:.5,high:.55},
-  tiers:{medium:{px:1,blur:2,lmap:128,bloom:1,dof:1,shafts:1,every:2},high:{px:1,blur:2,lmap:192,bloom:2,dof:1,shafts:1}},lmMax:96,lightK:.8,chunk:8,
+  tiers:{medium:{px:1,pxMax:2,blur:2,lmap:128,bloom:1,dof:1,shafts:1,every:2},high:{px:1,pxMax:3,blur:2,lmap:192,bloom:2,dof:1,shafts:1}},lmMax:96,lightK:.8,chunk:8,
   suns:{day:[-.55,.78,.3],dusk:[-.9,.36,.25],dawn:[.9,.36,.25]},
   look:{
     day:  {amb:[.66,.66,.7],sun:[.5,.47,.4],sd:[-.55,.78,.3],sh:[.55,0,0],fog:[.74,.84,.98],fogA:.32,exp:1,con:1.07,sat:1.14,vig:.32,lift:[0,0,.02],gain:[1.03,1,.96],emis:0,lamp:0,shaft:1,shC:[1,.93,.72],pl:0},
@@ -2548,7 +2562,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.17.5";const APP_BUILD="d5a227b55462";
+const APP_VER="0.17.6";const APP_BUILD="98d2fdbe3774";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2556,6 +2570,8 @@ const APP_VER="0.17.5";const APP_BUILD="d5a227b55462";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.17.6',['Battle rebalance, damage kinds. No class reaches more than two physical kinds through its own skills and weapons (Warrior and Knight slash and blunt, Monk blunt and slash, Thief slash and piercing, Archer and Sniper ranged and piercing, Druid ranged and slash; casters magic), so a party has to mix classes to answer slash, blunt, piercing, ranged and magic. The weapon sets the kind of physical skills: a warhammer or mace hits blunt, a sword slashes, a lance in a knight\'s hands is blunt, thrown stars pierce. The Skills list says "Blunt with your mace" or "Always Blunt" under each skill, and a foe\'s Weak tooltip lists which of your heroes answer it. Hand Axe is now Heave and Javelin is Shield Throw. Flying foes take a little more from piercing. Pacing is unchanged (about 12.6 boss tries, level 41 at the end).',
+  'Render resolution follows your display. On a 1080p or larger screen, a phone at 3x density, or a zoomed window, the HD-2D view, the light map and the battle stage render at 2x (3x on High at 1440p and up) instead of one internal pixel per art pixel, characters are sampled at the finer density, and ground, props and buildings are upscaled once with a pixel-art scaler, so edges and diagonals stay crisp instead of blurring. Settings has a Render scale row (Auto, 1x, 2x, 3x); Auto steps down by itself on hardware that cannot hold the frame rate. The Flat view picks whole device pixels per art pixel. A true art-level overhaul (native 2x tiles, props, icons) is a later step.']],
  ['Beta v0.17.5',['The Loadouts tab lists each loadout with its vanguard and rearguard (portraits and names) and a Load button.']],
  ['Beta v0.17.4',['Make camp lets you choose Camp Supplies or a Tent (counts shown, the Tent also gets KO\'d heroes up), and picks the Tent by itself when you have no Supplies.']],
  ['Beta v0.17.3',['Menus and sheets always fit above the browser bar and scroll inside their own box (the bottom of a long sheet was reachable only after scrolling the page behind).']],
@@ -3164,6 +3180,16 @@ const COMBO={
 };
 const comboKey=els=>els.slice().sort().join('+');
 const SKC={};
+// v0.17 (dmg11.js): skills whose damage kind is FIXED, by class and skill id. Every other physical skill (and the basic Attack, bond techs and
+// Limit Breaks) takes the kind of the weapon in hand (WT_KIND / CLS_KINDS in items.js). A `dl` written on a skill also fixes it.
+// Each class reaches at most two physical kinds through its weapons and these skills; casters one (plus magic).
+const DL_FORCE={
+  knight:{bash:'blunt'},
+  thief:{stab:'piercing',steal:'piercing',shiv1:'piercing',assn:'piercing',shadowstep:'piercing',lotus:'piercing',dart:'piercing',dart2:'piercing',fan:'piercing'},
+  archer:{pierce:'piercing',heavenp:'piercing'},
+  sniper:{eclipse:'piercing'},
+  druid:{wolf:'slash',pack:'slash',oldwood:'slash',limit:'slash'}
+};
 // v0.10.5 early band: front line (warrior, knight, monk) gets its DETONATOR first and a primer by lv 18; every other class gets its PRIMER first and a detonator later (SKILL_ROLE in data.js + these fills).
 // v5.1 role fills: added only when a class would otherwise miss a Primer or Detonator in that band
 const ROLE_FILL={
@@ -3185,7 +3211,7 @@ function classSkills(t){
     add({id:'pstrike',n:'Power Strike',k:'phys',pw:1.5,mp:3,lv:1,d:'A heavy swing.'});
     add({id:'edge1',n:n1+' Edge',k:'phys',pw:1.7,mp:5,el:e1,lv:3,d:`Blade wreathed in ${n1}.`});
     add({id:'rend',n:'Rend',k:'phys',pw:1.2,mp:5,lv:6,fx:[['bleed',.8]],d:'A tearing cut. Likely Bleeds.'});
-    add({id:'hurl',n:'Hand Axe',k:'phys',pw:1.2,mp:3,lv:4,dl:'ranged',d:'Hurl an axe across the field. Flying foes cannot weave away from it.'});
+    add({id:'hurl',n:'Heave',k:'phys',pw:1.2,mp:3,lv:4,d:'Hurl your weapon across the field and fetch it back. Strikes with the kind of damage of your weapon.'});
     if(e2)add({id:'edge2',n:n2+' Edge',k:'phys',pw:1.7,mp:5,el:e2,lv:8,d:`Blade wreathed in ${n2}.`});
     add({id:'cleave',n:'Cleave',k:'phys',pw:1,mp:9,t:'all',lv:10,d:'Sweeps every foe.'});
     add({id:'cry',n:'War Cry',k:'status',t:'self',mp:6,lv:13,fx:[['might',1],['taunt',1]],d:'Gain Might and Taunt: foes come for you.'});
@@ -3195,7 +3221,7 @@ function classSkills(t){
     add({id:'bash',n:'Shield Bash',k:'phys',pw:1.3,mp:3,lv:1,fx:[['stun',.25]],d:'May Stun.'});
     add({id:'provoke',n:'Provoke',k:'status',t:'self',mp:4,lv:3,fx:[['taunt',1],['bulwark',1]],d:'Taunt foes and gain Bulwark.'});
     add({id:'lance1',n:n1+' Lance',k:'phys',pw:1.6,mp:5,el:e1,lv:5,d:`Charge tipped with ${n1}.`});
-    add({id:'javelin',n:'Javelin',k:'phys',pw:1.2,mp:3,lv:9,dl:'ranged',d:'Throw a javelin. Flying foes cannot weave away from it.'});
+    add({id:'javelin',n:'Shield Throw',k:'phys',pw:1.2,mp:3,lv:9,dl:'blunt',d:'Hurl the shield like a discus. Always Blunt.'});
     add({id:'aegis',n:'Aegis',k:'status',t:'ally',mp:6,lv:7,fx:[['ward',1]],d:'Ward an ally: blocks the next hit completely.'});
     if(e2)add({id:'lance2',n:n2+' Lance',k:'phys',pw:1.6,mp:5,el:e2,lv:8,d:`Charge tipped with ${n2}.`});
     add({id:'wall',n:'Guard Wall',k:'status',t:'allyAll',mp:10,lv:11,fx:[['bulwark',1]],d:'Bulwark for the vanguard.'});
@@ -3636,6 +3662,17 @@ const WT_NAME={blade:'Sword',axe:'Axe',greatsword:'Greatsword',lance:'Lance',mac
 // which weapon types a class may wield, and which armor weight it may wear
 const CLS_WPN={warrior:['blade','axe','greatsword','warhammer'],knight:['blade','lance','mace','standard'],mage:['staff','tome','wand'],healer:['staff','tome','mace','censer'],thief:['dagger','shortsword','thrown'],archer:['bow','longbow','crossbow'],monk:['knuckles','claws','qstaff','beads'],bard:['lute','harp','flute','lyre'],
   sniper:['crossbow','bow'],druid:['bow','longbow'],archmage:['staff','tome'],chronicler:['tome','staff']};
+// v0.17: WEAPON-DRIVEN DAMAGE KIND (dmg11.js). A physical skill with no fixed kind (DL_FORCE in skills.js, or a `dl` on the skill) and the basic
+// Attack take their kind from the weapon in hand. WT_KIND is the natural kind of each weapon family; CLS_KINDS lists the physical kinds a class
+// may reach at all (at most two; casters one, plus magic), and CLS_KIND_ALT re-kinds the families that class wields outside its list.
+// A class with no weapon in hand (or in the Daily Trial) uses the first kind of its list.
+const WT_KIND={blade:'slash',axe:'slash',greatsword:'slash',shortsword:'slash',dagger:'slash',claws:'slash',
+  mace:'blunt',warhammer:'blunt',staff:'blunt',qstaff:'blunt',knuckles:'blunt',beads:'blunt',wand:'blunt',censer:'blunt',tome:'blunt',
+  lance:'piercing',standard:'piercing',
+  bow:'ranged',longbow:'ranged',crossbow:'ranged',thrown:'ranged',lute:'ranged',harp:'ranged',flute:'ranged',lyre:'ranged'};
+const CLS_KINDS={warrior:['slash','blunt'],knight:['slash','blunt'],monk:['blunt','slash'],archer:['ranged','piercing'],thief:['slash','piercing'],
+  mage:['blunt'],healer:['blunt'],bard:['ranged'],sniper:['ranged','piercing'],druid:['ranged','slash'],archmage:['blunt'],chronicler:['blunt']};
+const CLS_KIND_ALT={knight:{lance:'blunt',standard:'blunt'},thief:{thrown:'piercing'}};
 const CLS_ARM={warrior:'heavy',knight:'heavy',mage:'light',healer:'light',bard:'light',chronicler:'light',archmage:'light',thief:'medium',archer:'medium',monk:'medium',sniper:'medium',druid:'medium'};
 const ARM_NAME={light:'Light armor',medium:'Medium armor',heavy:'Heavy armor'};
 const ARM_FAM={heavy:'mail',medium:'vest',light:'robe'};
@@ -9717,6 +9754,7 @@ function worldSizeCanvas(){
   const avail=vhPx-(hdr?hdr.offsetHeight:0)-(wbar?wbar.offsetHeight:0)-padH-(land?20:box.width<720?36:76);
   const cssH=land?clamp(avail,160,900):clamp(avail,170,box.width<720?620:(zz>1?600:560));// v0.10.1: a little taller on a zoomed computer screen
   if(land)sc=cssH>=380?3:2;
+  sc=resScale(sc,box.width,zz,cssH);// v0.17.3: a whole number of device pixels per art pixel (dpr 1.25, 1.5), scale 4 and 5 on very wide boxes (res11.js)
   const vw=Math.floor(box.width/sc),vh=Math.floor(cssH/sc);
   // v0.5.1: also compare the canvas's own height and display size. A canvas rebuilt after a battle starts at 300x150 with no CSS size;
   // on a view exactly 300 pixels wide (a Galaxy Z Fold opened, about 932 CSS px) nothing else differed, so it stayed at 300x150.
@@ -18511,6 +18549,14 @@ function p5Saved(ok,manual){const now=Date.now();P5S.manualShown=!!manual;
 {const i0=svIcon;svIcon=function(){const r=i0.apply(this,arguments);try{const n=performance.now();if(P5S.state||n-(P5S.placed||0)>400){P5S.placed=n;p5Place();}}catch(e){}return r;};}
 window.addEventListener('resize',()=>{try{p5Place();}catch(e){}});
 
+// ---------- v0.17.3: Settings > Render scale (Auto / 1x / 2x / 3x; META.cfg.render, read by res11.js) ----------
+// Internal pixels per art pixel for the HD-2D world and the battle stage. Auto follows the display (a 1080p window renders at 2x, a 4K one
+// at 3x); 1x is the old look and the lightest. The row is placed after Graphics by res11.js.
+function rsRow(){try{const c=META.cfg.render,cur=(c==='1'||c==='2'||c==='3')?c:'auto',lab=[['auto','Auto'],['1','1x'],['2','2x'],['3','3x']];
+  const chips=lab.map(([k,t])=>`<button class="chip ${cur===k?'on':''}" data-act="cfg" data-arg='["render","${k}"]'>${t}</button>`).join('');
+  let now='';try{if(cur==='auto'){const d=Math.round((WS.scale||2)*resDev()*10)/10;now=` Auto is using ${HD&&HD.pxI?HD.pxI:resPx(d)}x on this screen (${d} device pixels per art pixel).`;}}catch(e){}
+  return `<div class="rows rsrows"><div class="row"><div><b>Render scale</b><small>How many screen pixels the HD-2D world and battle stage draw per art pixel. Higher is sharper on big screens and costs more; 1x is the lightest.${now}</small></div><div class="chips">${chips}</div></div></div>`;}catch(e){return '';}}
+
 // ===== keymap.js: keyboard mapping =====
 // One table of actions and their default keys. META.keys holds only the player's overrides ({action:[key,key]}), defaults apply when missing.
 // kmIs(e,action) tests a keydown/keyup event, kmLabel(action) gives the text for help lines, kmDir(e) gives 'u'/'d'/'l'/'r' or null.
@@ -19663,10 +19709,13 @@ function hbEnv(o,now){const t=(now-o.t0)/o.life;if(t<0)return 0;if(t>=1)return -
   if(o.fade==='in')return t<.8?t/.8:1-(t-.8)/.2;if(o.fade==='pulse')return Math.sin(t*Math.PI);return t<.08?t/.08:Math.pow(1-(t-.08)/.92,1.6);}
 // ----- canvas placement -----
 function hbShow(on){const cv=HB.cv,bc=document.getElementById('bcv');if(cv){cv.style.display=on?'block':'none';if(!on)cv.style.translate='';}if(bc)bc.style.opacity=on&&hbQ().mode!=='under'?'0':'';HB.redraw=true;}
+// v0.17.3: the GL stage's backing pixels per CSS pixel: the display's own (devicePixelRatio x page zoom), capped per tier (RENDER.stageMax);
+// Settings > Render scale 1x / 2x / 3x asks for that many (still no more than the display has). maxPx below still caps the pixel count.
+function resStageR(q){const dev=resDev(),c=resCfg(),cap=RENDER.stageMax[GFX.tier]||2;return c?Math.min(c,dev):RES.st?1:Math.min(dev,cap);}
 function hbPlace(){const wrap=document.getElementById('bwrap'),bc=document.getElementById('bcv'),cv=HB.cv;if(!wrap||!bc||!cv)return false;
   if(cv.parentNode!==wrap||cv.nextSibling!==bc){wrap.insertBefore(cv,bc);HB.redraw=true;}
   const op=hbQ().mode==='under'?'':'0';if(cv.style.display!=='block')cv.style.display='block';if(bc.style.opacity!==op)bc.style.opacity=op;
-  const q=hbQ(),dpr=Math.max(1,window.devicePixelRatio||1),cw=BL.W*BL.sc,ch=BL.H*BL.sc;let r=Math.min(q.res||1,dpr);
+  const q=hbQ(),dpr=Math.max(1,window.devicePixelRatio||1),cw=BL.W*BL.sc,ch=BL.H*BL.sc;let r=Math.max(Math.min(q.res||1,dpr),resStageR(q));// v0.17.3: follows the display (res11.js)
   if(cw*ch*r*r>(q.maxPx||1e6))r=Math.sqrt((q.maxPx||1e6)/(cw*ch));
   const bw=Math.max(1,Math.round(cw*r)),bh=Math.max(1,Math.round(ch*r));
   if(cv.width!==bw||cv.height!==bh){cv.width=bw;cv.height=bh;HB.redraw=true;}
@@ -23920,7 +23969,7 @@ function hdResources(){const gl=HD.gl,A=['aP','aT','aC','aN'];
   HD.P={scene:h2Program(gl,H2SRC.scene_v,H2SRC.scene_f,A),char:h2Program(gl,H2SRC.scene_v,H2SRC.char_f,A),down:h2Program(gl,H2SRC.quad_v,H2SRC.down_f,['aP']),
     blur:h2Program(gl,H2SRC.quad_v,H2SRC.blur_f,['aP']),comp:h2Program(gl,H2SRC.quad_v,H2SRC.comp_f,['aP']),lm:h2Program(gl,H2SRC.lm_v,H2SRC.lm_f,['aP','aQ','aC']),lms:h2Program(gl,H2SRC.lms_v,H2SRC.lms_f,['aP'])};
   HD.ib=h2QuadIndex(gl);HD.fs=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,HD.fs);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW);
-  HD.atl=new H2Atlas(gl,1024);HD.vb=[gl.createBuffer(),gl.createBuffer(),gl.createBuffer(),gl.createBuffer(),gl.createBuffer(),gl.createBuffer()];
+  HD.atl=new H2Atlas(gl,(gl.getParameter(gl.MAX_TEXTURE_SIZE)||1024)>=2048?2048:1024);HD.vb=[gl.createBuffer(),gl.createBuffer(),gl.createBuffer(),gl.createBuffer(),gl.createBuffer(),gl.createBuffer()];
   HD.dyn=new H2Batch(512);HD.dynB=new H2Batch(256);HD.dynA=new H2Batch(64);HD.dynC=new H2Batch(64);HD.dynCB=new H2Batch(8);// v0.5.8: characters (opaque, blended) for the character program
   HD.lmv=new Float32Array(HD2D.lmMax*4*7);HD.lw=new Float32Array(HD2D.lmMax*4);HD.lmR=new Float32Array(4);
   HD.rt=null;HD.size='';HD.S=null;HD.map=null;HD.dirty=true;HD.blurOk=false;}
@@ -23933,11 +23982,16 @@ function hdAttach(){const wc=WS.cv;if(!wc||!wc.isConnected||!wc.parentElement||!
   if(s.width!==W)s.width=W;if(s.height!==H)s.height=H;if(s.left!==L)s.left=L;if(s.top!==T)s.top=T;return true;}
 function hdDetach(){HD.live=false;HD.ovClear=null;try{const p=HD.cv&&HD.cv.parentElement;if(p)p.classList.remove('hd');}catch(e){}}
 // internal resolution: the tier's pixels per art pixel (1 = the 2D view's own grid: the same pixels as the 2D canvas over it)
-function hdSize(q){const sc=WS.scale||2,w=Math.max(16,Math.round(WS.vw*q.px)),h=Math.max(16,Math.round(WS.vh*q.px)),cw=WS.vw*sc,ch=WS.vh*sc,key=w+'x'+h+':'+q.bloom+':'+q.lmap+':'+q.blur;
+// v0.17.3: the tier's px is only the least. The real value follows the display (res11.js resPx: device pixels per art pixel = view scale x
+// page zoom x devicePixelRatio, divided by RENDER.k), is forced by Settings > Render scale, and is kept inside the GPU's limits.
+function hdPxOf(q){const d=(WS.scale||2)*resDev(),cap=Math.max(1,Math.min(q.pxMax||RENDER.max,RENDER.max));let px=Math.max(q.px||1,resPx(d,cap));
+  const lim=Math.min(HD.maxTex||4096,4096),big=Math.max(WS.vw||1,WS.vh||1);px=Math.min(px,Math.max(1,Math.floor(lim/big)));
+  const area=Math.max(1,(WS.vw||1)*(WS.vh||1));px=Math.min(px,Math.max(1,Math.floor(Math.sqrt(RENDER.maxArea/area))));return px;}
+function hdSize(q){const px=HD.pxI||1,sc=WS.scale||2,w=Math.max(16,Math.round(WS.vw*px)),h=Math.max(16,Math.round(WS.vh*px)),cw=WS.vw*sc,ch=WS.vh*sc,lm=Math.round(q.lmap*(1+(px-1)*.5)),key=w+'x'+h+':'+q.bloom+':'+lm+':'+q.blur;
   if(key!==HD.size){const gl=HD.gl;if(HD.rt)Object.values(HD.rt).forEach(o=>h2RTFree(gl,o));HD.cv.width=w;HD.cv.height=h;
-    const qw=Math.max(4,Math.round(w/q.blur)),qh=Math.max(4,Math.round(h/q.blur));
+    const bd=q.blur*px,qw=Math.max(4,Math.round(w/bd)),qh=Math.max(4,Math.round(h/bd));HD.blurD=bd;// the blurred copies keep their size in art pixels
     const cp=h2Tex(gl,gl.LINEAR);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGB,w,h,0,gl.RGB,gl.UNSIGNED_BYTE,null);// RGB: the canvas has no alpha, and a copy needs matching channels
-    HD.rt={cp:{t:cp,f:null,rb:null,w,h},q1:h2RT(gl,qw,qh,false),q2:h2RT(gl,qw,qh,false),lm:h2RT(gl,q.lmap,q.lmap,false)};
+    HD.rt={cp:{t:cp,f:null,rb:null,w,h},q1:h2RT(gl,qw,qh,false),q2:h2RT(gl,qw,qh,false),lm:h2RT(gl,lm,lm,false)};
     if(q.bloom>1){const ew=Math.max(4,Math.round(qw/2)),eh=Math.max(4,Math.round(qh/2));HD.rt.e1=h2RT(gl,ew,eh,false);HD.rt.e2=h2RT(gl,ew,eh,false);}
     HD.size=key;}
   return {cw,ch,w,h,r:w/cw};}
@@ -24159,7 +24213,7 @@ function hdBakeLights(m,S,lights){const V=S.V,out=[],T=m.kind==='dungeon'?null:T
     push(lx,10*V,ly+10,r,t);});
   return new Float32Array(out);}
 // what the ground, blocks and sun shadows depend on: tile kinds with props folded (a chest opening, a lever or bars only re-cut the cards)
-function hdSig(m){let s=m.id+':'+(m.thv||'')+':'+(GFX.q&&GFX.q.ao?1:0)+':'+(G.cleared&&G.cleared[m.s]?1:0)+':';const F={c:'C',K:'C','|':'.',D:'.',l:'.'};
+function hdSig(m){let s=m.id+':'+(m.thv||'')+':t'+(HD.td||1)+':'+(GFX.q&&GFX.q.ao?1:0)+':'+(G.cleared&&G.cleared[m.s]?1:0)+':';const F={c:'C',K:'C','|':'.',D:'.',l:'.'};
   for(let y=0;y<m.h;y++){let r='';for(let x=0;x<m.w;x++){const c=tileAt(m,x,y);r+=F[c]||c;}s+=r;}return s;}
 function hdBakeProps(m){const S=HD.S,gl=HD.gl,t0=performance.now(),save={lights:m.lights,smoke:m.smoke,bsp:m.bsp,torches:m.torches&&m.torches.slice(),mills:m.mills&&m.mills.slice()};
   ['tcd'].forEach(k=>{if(S[k])gl.deleteTexture(S[k]);S[k]=null;});['mcd','mbl'].forEach(k=>{h2ChunksFree(gl,S[k]);S[k]=null;});
@@ -24167,8 +24221,13 @@ function hdBakeProps(m){const S=HD.S,gl=HD.gl,t0=performance.now(),save={lights:
   try{cards=hdBakeCards(m,S,dummy,dummy);deco=hdBakeDeco(m);blds=hdBakeBuildings(m,S,save.bsp,deco);}
   finally{m.lights=save.lights;m.smoke=save.smoke;m.bsp=save.bsp;if(save.torches)m.torches=save.torches;if(save.mills)m.mills=save.mills;}
   S.L=hdBakeLights(m,S,(save.lights||[]).concat([]));
-  {const pc=hdMergeProps(cards,blds);if(pc)S.tcd=h2TexFrom(gl,pc);}if(cards)S.mcd=cards.bt.build(gl);if(blds)S.mbl=blds.bt.build(gl);
+  {const pc=hdMergeProps(cards,blds);if(pc)S.tcd=h2TexFrom(gl,hdUp(pc));}if(cards)S.mcd=cards.bt.build(gl);if(blds)S.mbl=blds.bt.build(gl);
   HD.dirty=false;HD.bakeMs=performance.now()-t0;HD.bakes++;HD.partial=(HD.partial||0)+1;}
+// v0.17.3: baked 1x art (ground, props, buildings) is doubled once with EPX (Scale2x, res11.js resEpx: straight edges stay straight,
+// diagonals lose their stairs, no new colours, no blur) when the view renders at 2 internal pixels per art pixel or more. The UVs are
+// shares of the canvas, so nothing else changes. Kept 1x when a texture would pass the GPU's size or RENDER.texArea.
+function hdUp(cv){if(!cv||!(HD.td>1))return cv;const lim=HD.maxTex||4096;if(cv.width*2>lim||cv.height*2>lim||cv.width*cv.height*4>RENDER.texArea)return cv;
+  try{return resEpx(cv)||cv;}catch(e){return cv;}}
 function hdBake(m){const sig=hdSig(m);if(HD.S&&HD.S.m===m&&HD.S.sig===sig&&HD.map===m)return hdBakeProps(m);
   const t0=performance.now(),gl=HD.gl,V=hdV(),S={m,V,sig,hArt:m.kind==='dungeon'?HD2D.wall.dungeon:HD2D.wall.cliff,zArt:HD2D.wall.town};hdFreeMap();
   HD.maxTex=gl.getParameter(gl.MAX_TEXTURE_SIZE)||4096;
@@ -24211,8 +24270,8 @@ function hdBake(m){const sig=hdSig(m);if(HD.S&&HD.S.m===m&&HD.S.sig===sig&&HD.ma
     // one texture per water frame for the ground and the block faces: the code drawn faces sit in a strip under the map's ground art
     const GH=MHp+st.height,mk=g=>{const c=mkCv(Math.max(MWp,st.width),GH),x=c.getContext('2d');x.drawImage(g,0,0);x.drawImage(st,0,MHp);return c;},G0=mk(g0),G1=mk(g1),GW=G0.width;
     GC.mapUV(MWp/GW,0,MHp/GH,0);SC.mapUV(st.width/GW,0,st.height/GH,MHp/GH);
-    S.tg0=h2TexFrom(gl,G0);S.tg1=h2TexFrom(gl,G1);S.mg=GC.build(gl);S.mst=SC.build(gl);S.mmisc=h2Mesh(gl,misc);
-    {const pc=hdMergeProps(cards,blds);if(pc)S.tcd=h2TexFrom(gl,pc);}if(cards)S.mcd=cards.bt.build(gl);if(blds)S.mbl=blds.bt.build(gl);
+    S.tg0=h2TexFrom(gl,hdUp(G0));S.tg1=h2TexFrom(gl,hdUp(G1));S.mg=GC.build(gl);S.mst=SC.build(gl);S.mmisc=h2Mesh(gl,misc);
+    {const pc=hdMergeProps(cards,blds);if(pc)S.tcd=h2TexFrom(gl,hdUp(pc));}if(cards)S.mcd=cards.bt.build(gl);if(blds)S.mbl=blds.bt.build(gl);
     if(sh){S.tsh=h2Tex(gl,gl.LINEAR);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,sh.w,sh.h,0,gl.RGBA,gl.UNSIGNED_BYTE,sh.d);S.shInv=[1/(sh.w*4),1/(sh.h*4)];}
     else{S.tsh=h2Tex(gl,gl.NEAREST);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,1,1,0,gl.RGBA,gl.UNSIGNED_BYTE,new Uint8Array([0,0,0,255]));S.shInv=[0,0];}
     S.W=MWp;S.H=MHp;S.maxH=Math.max(HD2D.wall.dungeon,HD2D.wall.cliff)*V+70*V;
@@ -24315,7 +24374,7 @@ function hdBlob2(){return hdSpr('blob2',24,12,(c,w,h)=>{const d=c.createImageDat
 // per pixel with NEAREST: crisp, no shimmer from skipped texels.
 const H2SM=new WeakMap(),H2SMc=new Int32Array(64),H2SMw=new Float32Array(64);
 function hdSmall(cv,s,px){const k=s*1000+px;let e=H2SM.get(cv);if(e&&e.k===k)return e.c;
-  const W0=cv._rw||cv.width,H0=cv._rh||cv.height,tw=Math.max(2,Math.round(cv.width*s*px/2)*2),fx=W0/tw,fy=fx,th=Math.max(2,Math.ceil(H0/fy-.01));
+  const W0=cv._rw||cv.width,H0=cv._rh||cv.height,tw=Math.max(2,Math.min(Math.floor(W0/2)*2,Math.round(cv.width*s*px/2)*2)),fx=W0/tw,fy=fx,th=Math.max(2,Math.ceil(H0/fy-.01));
   let src;try{src=cv.getContext('2d').getImageData(0,0,W0,H0).data;}catch(_){return cv;}
   const o=mkCv(tw,th),oc=o.getContext('2d'),img=oc.createImageData(tw,th),d=img.data,C=H2SMc,Wt=H2SMw,L=c=>((c>>16)&255)*.3+((c>>8)&255)*.59+(c&255)*.11;
   for(let ty=0;ty<th;ty++){const y1=H0-(th-1-ty)*fy,y0=y1-fy;// bottom aligned: the feet keep their row
@@ -24490,9 +24549,10 @@ function hdScene(gl,S,o,now,still,full){const P=HD.P,u=P.scene.u,uc=P.char.u,fr=
 // source), then one blended pass lays the blur over the top and bottom of the view (tilt shift) with bloom, light shafts and the vignette.
 // One pass over the geometry per frame, culled to the chunks in view; nothing full size is rendered off screen.
 function hdFrame(now){const m=WS.m,gl=HD.gl,q=hdTierQ(),still=gfxStill(),ts=still?0:now;
+  HD.pxI=hdPxOf(q);HD.td=HD.pxI>=RENDER.tex?2:1;// v0.17.3
   if(HD.dirty||HD.map!==m||!HD.S||HD.baseRef!==WS.base[0]){hdBake(m);HD.baseRef=WS.base[0];}
   const sz=hdSize(q);hdCamera(m,now,sz,q);const o=hdLook(m,now),S=HD.S;
-  HD.px=q.px||1;const nl=hdLights(m,ts,q,o);HD.dyn.n=0;HD.dynB.n=0;HD.dynA.n=0;HD.dynC.n=0;HD.dynCB.n=0;hdActors(m,now,ts);try{hdWfx(m,ts);}catch(e){HD.wfxErr=String(e&&e.message||e);}HD.dynUp=0;// v0.5.8: lights first, the characters read them
+  HD.px=HD.pxI||1;const nl=hdLights(m,ts,q,o);HD.dyn.n=0;HD.dynB.n=0;HD.dynA.n=0;HD.dynC.n=0;HD.dynCB.n=0;hdActors(m,now,ts);try{hdWfx(m,ts);}catch(e){HD.wfxErr=String(e&&e.message||e);}HD.dynUp=0;// v0.5.8: lights first, the characters read them
   hdDrawLM(gl,nl,o);
   const P=HD.P,sp=P.scene,u=sp.u,RT=HD.rt;
   for(let i=0;i<4;i++)gl.enableVertexAttribArray(i);gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,HD.ib);gl.disable(gl.CULL_FACE);
@@ -24531,7 +24591,7 @@ function hdFrame(now){const m=WS.m,gl=HD.gl,q=hdTierQ(),still=gfxStill(),ts=stil
   // the finished frame, copied (one call, no second pass over the scene) and shrunk: the source of the blur
     gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,RT.cp.t);gl.copyTexSubImage2D(gl.TEXTURE_2D,0,0,0,0,0,sz.w,sz.h);
     // horizontal blur straight from the full size copy into the small target (it shrinks as it blurs), then vertical; a second round on dof 2
-    hdPost(gl,P,P.blur,RT.cp,q2,q2.w,q2.h);gl.uniform2f(P.blur.u.uD,q.blur/sz.w,0);gl.uniform1f(P.blur.u.uThr,0);hdFS(gl);
+    hdPost(gl,P,P.blur,RT.cp,q2,q2.w,q2.h);gl.uniform2f(P.blur.u.uD,(HD.blurD||q.blur)/sz.w,0);gl.uniform1f(P.blur.u.uThr,0);hdFS(gl);
     hdPost(gl,P,P.blur,q2,q1,q1.w,q1.h);gl.uniform2f(P.blur.u.uD,0,1/q2.h);hdFS(gl);
     if(q.dof>1){hdPost(gl,P,P.blur,q1,q2,q2.w,q2.h);gl.uniform2f(P.blur.u.uD,1/q1.w,0);hdFS(gl);hdPost(gl,P,P.blur,q2,q1,q1.w,q1.h);gl.uniform2f(P.blur.u.uD,0,1/q2.h);hdFS(gl);}
     // High: a wider bloom, thresholded while it shrinks to an eighth
@@ -24547,7 +24607,7 @@ function hdFrame(now){const m=WS.m,gl=HD.gl,q=hdTierQ(),still=gfxStill(),ts=stil
   gl.uniform4f(C.u.uDof,fy+dof.shift,dof.band*wide,dof.ramp*Math.sqrt(wide),q.dof?dof.max:0);
   gl.uniform4f(C.u.uBl,thr,(q.bloom>1?bl.high:bl.med)*(1+o.bloom),RT.e1?1:0,0);
   gl.uniform4f(C.u.uSh,q.shafts&&m.kind!=='dungeon'?o.shaft*HD2D.shaft:0,ts/1000,0,0);gl.uniform3fv(C.u.uShC,o.shC);gl.uniform2f(C.u.uAsp,sz.w/sz.h,1);gl.uniform1f(C.u.uVig,o.vig);
-  if(C.u.uHt){gl.activeTexture(gl.TEXTURE3);gl.bindTexture(gl.TEXTURE_2D,RT.cp.t);gl.uniform1i(C.u.uC,3);gl.activeTexture(gl.TEXTURE0);gl.uniform4f(C.u.uHt,ht*.45/* v0.10.0: gentler haze */,ts/1000,Math.min(.98,fy+.12),1/sz.w);}
+  if(C.u.uHt){gl.activeTexture(gl.TEXTURE3);gl.bindTexture(gl.TEXTURE_2D,RT.cp.t);gl.uniform1i(C.u.uC,3);gl.activeTexture(gl.TEXTURE0);gl.uniform4f(C.u.uHt,ht*.45/* v0.10.0: gentler haze */,ts/1000,Math.min(.98,fy+.12),(HD.pxI||1)/sz.w);}
   gl.enable(gl.BLEND);gl.blendFunc(gl.ONE,gl.ONE_MINUS_SRC_ALPHA);hdFS(gl);gl.disable(gl.BLEND);
   HD.frames++;}
 // ----- the 2D canvas on top: weather, ambience particles, festival lanterns, battle flash and fades (all screen space) -----
@@ -29262,11 +29322,17 @@ window.__ECHO11={ECHO11,ECHOARM,efGold,efItemId,efBaseId,efAll,forgeDraw,FG};
 // registered earlier, stops the event before this one).
 const FS11={big:81/60,small:44/40,top:4,on:0,hold:450,dbl:350,slop:10,cache:new WeakMap()};
 function fs11Scale(art){try{return MON_SIZE(art)>=60?FS11.big:FS11.small;}catch(e){return 1;}}
-function fs11Cv(c,art){if(!c||!c.width)return c;let o=FS11.cache.get(c);if(o)return o;const s=fs11Scale(art),lw=Math.round(c.width*s),lh=Math.round(c.height*s),k=c.hd;
-  if(k&&typeof hdCv==='function'){const RW=c._rw||Math.round(c.width*k),RH=c._rh||Math.round(c.height*k);o=hdCv(lw,lh,k);const x=o.getContext('2d');x.setTransform(1,0,0,1,0,0);x.imageSmoothingEnabled=false;(x._hdDI||x.drawImage).call(x,c,0,0,RW,RH,0,0,Math.round(lw*k),Math.round(lh*k));x.setTransform(k,0,0,k,0,0);}/* bitmap pixels, as b8Small */
+// v0.17.3: the resample follows the battle layer's backing density (res11.js resBk: 2 on small or plain screens, 4 where the display has the
+// pixels). Going from the 2x HD paint to more pixels, the foe is first doubled with EPX (Scale2x, edges stay square, no blur) until it has
+// at least the target's pixels, then taken nearest neighbour to the exact size, so a 1.35x boss has even, crisp pixels at any density.
+function fs11Cv(c,art){if(!c||!c.width)return c;const cvb=document.getElementById('bcv'),k=c.hd,K=k&&cvb&&cvb._ss>k?cvb._ss:k;let e=FS11.cache.get(c);if(e&&e.k===K)return e.o;let o;
+  const s=fs11Scale(art),lw=Math.round(c.width*s),lh=Math.round(c.height*s);
+  if(k&&typeof hdCv==='function'){const RW=c._rw||Math.round(c.width*k),RH=c._rh||Math.round(c.height*k);o=hdCv(lw,lh,K);const x=o.getContext('2d'),tw=Math.round(lw*K),th=Math.round(lh*K);x.setTransform(1,0,0,1,0,0);x.imageSmoothingEnabled=false;
+    let src=c,sw=RW,sh=RH;if(K>k&&typeof resEpx==='function'){try{let n=0;while(sw<tw&&n<2){src=resEpx(src);sw=src.width;sh=src.height;n++;}}catch(er){src=c;sw=RW;sh=RH;}}
+    (x._hdDI||x.drawImage).call(x,src,0,0,sw,sh,0,0,tw,th);x.setTransform(K,0,0,K,0,0);}/* bitmap pixels, as b8Small */
   else{o=mkCv(lw,lh);const x=o.getContext('2d');x.imageSmoothingEnabled=false;x.drawImage(c,0,0,c.width,c.height,0,0,lw,lh);}
-  try{if(typeof BART!=='undefined'&&BART.has(c))BART.set(o,BART.get(c));}catch(e){}/* the boss exhale frame looks up its frame B by the source canvas */
-  FS11.cache.set(c,o);return o;}
+  try{if(typeof BART!=='undefined'&&BART.has(c))BART.set(o,BART.get(c));}catch(er){}/* the boss exhale frame looks up its frame B by the source canvas */
+  FS11.cache.set(c,{k:K,o});return o;}
 {const mc0=monCanvas;monCanvas=function(art,f){const c=mc0.apply(this,arguments);try{if(FS11.on)return fs11Cv(c,art);}catch(e){}return c;};}
 {const so0=spriteOf;spriteOf=function(u,walk){const was=FS11.on;FS11.on=u&&u.side!=='p'&&!u.heroArt?1:0;try{return so0.apply(this,arguments);}finally{FS11.on=was;}};}
 {const bf0=battleFrame;battleFrame=function(){const was=FS11.on;FS11.on=1;try{return bf0.apply(this,arguments);}finally{FS11.on=was;}};}
@@ -29313,6 +29379,135 @@ document.addEventListener('pointerup',e=>{const P=FG11;if(!P||e.pointerId!==P.id
 },true);
 document.addEventListener('contextmenu',e=>{try{if(FG11&&(FG11.held||FG11.timer)||(B&&V.screen==='battle'&&e.target&&e.target.closest&&e.target.closest('.bstage .unit.foe')))e.preventDefault();}catch(er){}},true);
 window.__B11={FS:FS11,fg:()=>FG11,open:fg11Open,hit:fg11Hit};
+
+// ===== dmg11.js (v0.17): weapon-driven damage kinds and the per-class kind limit =====
+// The owner's brief: no character should answer every damage type, and the weapon in hand should change what a physical skill does.
+//  1) A physical skill (and the basic Attack, bond techs and Limit Breaks) with no FIXED kind deals the kind of the equipped weapon family
+//     (WT_KIND in items.js: blade/axe/greatsword/shortsword/dagger/claws slash; mace/hammer/staff/quarterstaff/knuckles/beads/wand/censer/tome
+//     blunt; lance/standard piercing; bow/longbow/crossbow/thrown and the bard's instruments ranged).
+//  2) A skill keeps a fixed kind when it has a `dl`, or is listed in DL_FORCE (skills.js): a dedicated "Piercing Shot" pierces with any bow.
+//  3) CLS_KINDS (items.js) is the most a class may reach: two physical kinds (casters one, plus magic). A weapon outside the class's list is
+//     re-kinded by CLS_KIND_ALT (a knight's couched lance hits Blunt, a thief's thrown stars Pierce), so the limit holds for any gear.
+//  4) Display: the skill list says "Blunt with your mace" under the skill, the sheet's chip tooltip says it, and a foe's Weak tooltip adds
+//     which of your heroes answer each kind. tools/dmgaudit.js prints the class x kind matrix; tools/chrome/v155a.js checks the limit.
+Object.assign(WT_DL,WT_KIND);
+Object.assign(DL_HINT,{blunt:'maces, hammers, fists and staves',piercing:'lances, thrown knives and armor piercing shots',ranged:'bows, bolts and music on the wind'});
+// chart: piercing had one use (flyers x1.1), so only Archer, Thief and Sniper reached something nobody needed. Lances and bolts now bring flyers down.
+try{ARCH.flying.dl.piercing=1.25;ARCH.flying.d='Ranged shots and piercing lances catch it. Slashes and blows glance off, and earth magic barely reaches it.';ARCH_LINE.armored='Armored: blunt blows and magic crack it, other hits glance off';ARCH_LINE.flying='Flying: ranged and piercing hits catch it';}catch(e){}
+const D11={note:true};
+const d11Cls=a=>{const t=a&&a.id&&TPL[a.id];return t&&!t.mon&&CLS_KINDS[t.cls]?t.cls:null;};
+// the kind a weapon family deals in a class's hands (no weapon: the first kind of the class)
+function d11Kind(cls,fam){const L=CLS_KINDS[cls];if(!L)return null;const n=fam&&WT_KIND[fam];if(!n)return L[0];if(L.includes(n))return n;return (CLS_KIND_ALT[cls]||{})[fam]||L[0];}
+function d11Forced(cls,s){if(!s)return null;if(s.dl)return s.dl;const f=DL_FORCE[cls];return (f&&f[s.id])||null;}
+{const d0=dlFor;dlFor=function(cls,s){if(!s||!CLS_KINDS[cls])return d0.apply(this,arguments);if(s.dl)return s.dl;if(s.k==='mag')return 'magic';if(s.k==='heal'||s.k==='revive')return 'heal';if(s.k!=='phys')return null;return d11Forced(cls,s);};}
+{const d0=deliveryOf;deliveryOf=function(a,sk){const cls=d11Cls(a);if(!sk||!cls||a.side==='e')return d0.apply(this,arguments);
+  if(sk.dl)return sk.dl;if(sk.k==='mag')return 'magic';if(sk.k==='heal'||sk.k==='revive')return 'heal';if(sk.k!=='phys')return null;
+  return d11Forced(cls,sk)||d11Kind(cls,a.S&&a.S.wp);};}
+const d11Cap=k=>DL_NAME[k]||k;
+// what a skill says about its kind for this hero: {k, fixed, fam}
+function d11Info(a,s){const cls=d11Cls(a);if(!cls||!s||s.k!=='phys')return null;const f=d11Forced(cls,s),fam=a.S&&a.S.wp||null;return {k:f||d11Kind(cls,fam),fixed:!!f,fam};}
+const d11Wname=f=>(WT_NAME[f]||f||'').toLowerCase();
+function d11Tip(i){if(!i)return '';if(i.fixed)return `${d11Cap(i.k)}: this skill always deals ${d11Cap(i.k).toLowerCase()} damage.`;return i.fam?`${d11Cap(i.k)} with your ${d11Wname(i.fam)}`:`${d11Cap(i.k)} (no weapon)`;}
+// the skill list: one small line under the description
+{const pn0=perkNote;perkNote=function(u,s){let h=pn0.apply(this,arguments);try{const i=d11Info(u,s);if(i&&D11.note)h+=`<small class="dk11 ${i.k}" title="${esc(d11Tip(i))}">${i.fixed?`Always ${esc(d11Cap(i.k))}`:esc(d11Tip(i))}</small>`;}catch(e){}return h;};}
+// the chip on skill rows: in battle the kind of the acting hero, in town the kinds the class can reach with that skill
+{const dc0=dlChip;dlChip=function(s,cls){try{if(s&&s.k==='phys'&&cls&&CLS_KINDS[cls]){const u=B&&B.mode==='cmd'&&B.cur&&B.cur.id&&TPL[B.cur.id]&&TPL[B.cur.id].cls===cls?B.cur:null,f=d11Forced(cls,s);
+  const ks=f?[f]:u?[d11Info(u,s).k]:CLS_KINDS[cls].slice(),tip=f?`${d11Cap(f)}: this skill always deals ${d11Cap(f).toLowerCase()} damage.`:u?d11Tip(d11Info(u,s)):`Follows your weapon: ${ks.map(d11Cap).join(' or ')}.`;
+  return `<em class="dl ${ks[0]} sym" title="${esc(tip)}" aria-label="${esc(ks.map(d11Cap).join(' or '))}">${ks.map(k=>dlIco(k)).join('')}</em>`;}}catch(e){}return dc0.apply(this,arguments);};}
+// kinds a roster hero can deal right now (known skills and the basic Attack with the weapon in hand), for Best Party and the foe tooltips
+function d11Kinds(c){const K=new Set();try{const t=TPL[c.id],g=c.eq&&c.eq.w&&canEquip(c,c.eq.w)?gearOf(c.eq.w):null,u={id:c.id,side:'p',S:{wp:g&&g.fam||null}};
+  let L;try{L=known(c);}catch(e){L=classSkills(t).filter(s=>skillKnown(c,s));}
+  L.forEach(s=>{if(s.k==='phys'||s.k==='mag'){const d=deliveryOf(u,s);if(d)K.add(d);}if(s.k==='heal'||s.k==='revive')K.add('heal');});
+  const at=deliveryOf(u,atkFor(u));if(at)K.add(at);}catch(e){}return K;}
+{const pk0=p3Kit;p3Kit=function(c){const k=pk0.apply(this,arguments);try{if(k&&!k._d11&&c&&TPL[c.id]&&d11Cls(c)){k._d11=1;const K=d11Kinds(c);K.forEach(d=>k.dl.add(d));
+  [...k.dl].forEach(d=>{if(d!=='heal'&&!K.has(d))k.dl.delete(d);});}}catch(e){}return k;};}
+// foe Weak tooltips: which of your living heroes answer each kind
+let D11A={key:'',m:null};
+function d11Answers(){if(!B||!B.front)return {};const key=(B.id||0)+'|'+B.front.map(c=>c.id+(c.hp>0?1:0)+(c.S&&c.S.wp||'')+':'+c.lv).join();if(D11A.key===key&&D11A.m)return D11A.m;
+  const m={};B.front.forEach(u=>{if(u.hp<=0)return;const c=G&&G.roster[u.id];if(!c)return;d11Kinds(c).forEach(d=>{if(d!=='heal')(m[d]=m[d]||[]).push(u.name);});});D11A={key,m};return m;}
+{const fw0=foeWeak;foeWeak=function(e){const h=fw0.apply(this,arguments);try{if(!h||!B)return h;const M=d11Answers();
+  return String(h).replace(/title="Weak to ([^".]*)(\.[^"]*)?"/g,(m0,list,rest)=>{const ans=list.split(', ').map(n=>{const k=Object.keys(DL_NAME).find(x=>DL_NAME[x]===n);return k&&k!=='heal'?`${n}: ${(M[k]||['nobody']).join(', ')}`:null;}).filter(Boolean);
+    return `title="Weak to ${list}${rest||'.'}${ans.length?' Your answers: '+ans.join('; ')+'.':''}"`;});}catch(x){return h;}};}
+try{const st=document.createElement('style');st.textContent='.dk11{display:block;opacity:.8;font-size:.82em;margin-top:1px}.dk11.slash{color:#e8b6a0}.dk11.blunt{color:#e6cf8f}.dk11.piercing{color:#b9d6ee}.dk11.ranged{color:#b9e0b0}';document.head.appendChild(st);}catch(e){}
+// tests (our own object; window.__A is left alone)
+try{window.__D11={get CLS_KINDS(){return CLS_KINDS;},get WT_KIND(){return WT_KIND;},get CLS_KIND_ALT(){return CLS_KIND_ALT;},get DL_FORCE(){return DL_FORCE;},get CLS_WPN(){return CLS_WPN;},get TPL(){return TPL;},get ATTACK(){return ATTACK;},
+  deliveryOf:(a,s)=>deliveryOf(a,s),classSkills:t=>classSkills(t),known:c=>known(c),limitSkill:c=>limitSkill(c),atkFor:a=>atkFor(a),heroRoles:c=>heroRoles(c),newChar:(i,l,t)=>newChar(i,l,t),kinds:c=>d11Kinds(c),answers:()=>d11Answers(),foeWeak:e=>foeWeak(e),get G(){return G;}};}catch(e){}
+
+// ===== res11.js (v0.17.3): render resolution follows the display =====
+// Owner: "On bigger screens the game looks too pixelated, starts to blur. Increase the amount of pixels we are using."
+// d = device pixels per art pixel = view scale x page zoom (deskscale.js) x devicePixelRatio. A 1920x1080 window runs at page zoom 4/3, scale 3:
+// d = 4; a 2560x1440 one at zoom 2: d = 6; a phone at dpr 3 and scale 2: d = 6. The constants are RENDER (config.js).
+//   HD-2D world (hd2d.js hdPxOf): internal pixels per art pixel = clamp(floor(d / RENDER.k + RENDER.bias), 1, tier pxMax) (d 4 -> 2, d 6 -> 3);
+//     ground, props and buildings are doubled with EPX (resEpx) from 2 px on; the characters are sampled at the same density as the scene.
+//   Flat view (worldrt.js worldSizeCanvas -> resScale): the integer scale is moved by one when that makes an art pixel a whole number of
+//     device pixels (dpr 1.25 / 1.5), and scale 4 or 5 is allowed on boxes RENDER.sc4W / sc5W wide.
+//   Battle (hdstage.js hbPlace -> resStageR; here: the unit layer's backing density, battle11.js boss resample).
+//   Settings > Render scale: Auto / 1x / 2x / 3x (META.cfg.render).
+function resDpr(){try{return Math.max(1,window.devicePixelRatio||1);}catch(e){return 1;}}
+function resZoom(){try{return typeof dsZoom==='function'?dsZoom():1;}catch(e){return 1;}}
+function resDev(){return resDpr()*resZoom();}
+// 0 = Auto, else 1, 2 or 3
+function resCfg(){try{const v=META&&META.cfg&&META.cfg.render;return v==='1'||v==='2'||v==='3'?+v:0;}catch(e){return 0;}}
+function resPx(d,cap){const c=resCfg();if(c)return Math.min(c,RENDER.max);
+  return Math.max(1,Math.min(Math.max(1,Math.min(RENDER.max,cap||RENDER.max,RES.cap||RENDER.max)),Math.floor(d/RENDER.k+RENDER.bias)));}
+// Auto steps down by itself on a machine that cannot keep up: gfx6.js Auto graphics measures the frame rate over 3 s windows and, below
+// GFX_AUTO.down, would drop the whole tier. While the HD-2D view (or the GL stage) renders above 1x, the first step is one internal pixel
+// less (RES.cap; the battle stage and unit layer fall back to their old density, RES.st). It never goes back up on that device (kept in
+// localStorage, not in the save: another device has other hardware). Picking a Render scale in Settings clears it. Not under tests
+// (window.__PWTEST), which need a fixed value.
+const RES={cap:0,st:0,drops:0};
+try{RES.cap=+localStorage.getItem('wf_rescap')||0;RES.st=+localStorage.getItem('wf_resst')||0;}catch(e){}
+function resKeep(){try{localStorage.setItem('wf_rescap',String(RES.cap||0));localStorage.setItem('wf_resst',String(RES.st||0));}catch(e){}}
+{const f0=gfxAutoFeed;gfxAutoFeed=function(fps){try{if(!window.__PWTEST&&resCfg()===0&&gfxCfg()==='auto'&&fps<GFX_AUTO.down){
+  if(V.screen==='world'&&HD.live&&HD.pxI>1){RES.cap=HD.pxI-1;RES.drops++;resKeep();GFX.fps=Math.round(fps);GFX.decisions++;return gfxTier();}
+  if(V.screen==='battle'&&!RES.st&&(HB.on||resBk()>SPR.k)){RES.st=1;RES.drops++;resKeep();GFX.fps=Math.round(fps);GFX.decisions++;try{resSS($('bcv'),resBk());hbPlace();}catch(e){}return gfxTier();}}}catch(e){}
+  return f0.apply(this,arguments);};}
+{const c0=ACT.cfg;ACT.cfg=function(arg){const r=c0.apply(this,arguments);try{const a=typeof arg==='string'?JSON.parse(arg):arg;if(a&&a[0]==='render'){RES.cap=0;RES.st=0;resKeep();}}catch(e){}return r;};}
+// ----- the flat view's scale -----
+function resScale(sc,boxW,zz,cssH){try{let want=sc;if(boxW>=RENDER.sc5W&&cssH>=RENDER.scH)want=Math.max(want,5);else if(boxW>=RENDER.sc4W&&cssH>=RENDER.scH)want=Math.max(want,4);
+  const dev=resDpr()*(zz||1),ok=s=>Math.abs(s*dev-Math.round(s*dev))<.02;
+  if(ok(want))return want;
+  for(const o of [1,-1,2,-2]){const s=want+o;if(s>=2&&s<=5&&ok(s)&&boxW/s>=RENDER.minVw)return s;}
+  return want;}catch(e){return sc;}}
+// ----- EPX (Scale2x) on a canvas: the pixel art scaler sprhd.js epx() uses on palette indices, here on RGBA words. An edge pixel takes the
+// colour of its two neighbours when they agree and differ from the other two; borders repeat; transparent pixels compare equal. -----
+function resEpx(cv){const w=cv._rw||cv.width,h=cv._rh||cv.height,x=cv.getContext('2d'),img=x.getImageData(0,0,w,h),A=new Uint32Array(img.data.buffer),N=new Uint32Array(A.length);
+  for(let i=0;i<A.length;i++)N[i]=(A[i]>>>24)?A[i]:0;
+  const W2=w*2,o=mkCv(W2,h*2),ox=o.getContext('2d'),oi=ox.createImageData(W2,h*2),B=new Uint32Array(oi.data.buffer);
+  for(let y=0;y<h;y++){const r0=y*w,ru=y>0?r0-w:r0,rd=y<h-1?r0+w:r0,ob=y*2*W2;
+    for(let xx=0;xx<w;xx++){const i=r0+xx,P=A[i],a=N[ru+xx],d=N[rd+xx],c=N[xx>0?i-1:i],b=N[xx<w-1?i+1:i];
+      let p1=P,p2=P,p3=P,p4=P;
+      if(c===a&&c!==d&&a!==b)p1=A[ru+xx];
+      if(a===b&&a!==c&&b!==d)p2=A[ru+xx];
+      if(d===c&&d!==b&&c!==a)p3=A[rd+xx];
+      if(b===d&&b!==a&&d!==c)p4=A[rd+xx];
+      // the corner takes the neighbour's own word (it is the same colour as the matching pair)
+      if(p1!==P)p1=xx>0?A[i-1]:p1;
+      if(p2!==P)p2=xx<w-1?A[i+1]:p2;
+      if(p3!==P)p3=xx>0?A[i-1]:p3;
+      if(p4!==P)p4=xx<w-1?A[i+1]:p4;
+      const q=ob+xx*2;B[q]=p1;B[q+1]=p2;B[q+W2]=p3;B[q+W2+1]=p4;}}
+  ox.putImageData(oi,0,0);return o;}
+// the same on a hdCv-style canvas for the battle: n passes of EPX on a bitmap, as a plain canvas (raw pixels)
+function resEpxRaw(cv,passes){let c=cv;for(let i=0;i<passes;i++)c=resEpx(c);return c;}
+// ----- the battle unit layer: backing pixels per logical pixel (the 2x HD paint doubles evenly into 4) -----
+function resBk(){try{if(typeof BL==='undefined'||!BL||!BL.sc||RES.st&&!resCfg())return SPR.k;const d=BL.sc*resDev(),c=resCfg();
+  if(c)return c>=3?RENDER.bkHi:SPR.k;return d>=RENDER.bk?RENDER.bkHi:SPR.k;}catch(e){return SPR.k;}}
+function resSS(cv,K){if(!cv||!(K>=1)||cv._ss===K)return;
+  if(!cv._ss){ssCanvas(cv,K);return;}
+  const P=HTMLCanvasElement.prototype,dw=Object.getOwnPropertyDescriptor(P,'width'),dh=Object.getOwnPropertyDescriptor(P,'height'),lw=cv.width,lh=cv.height;
+  cv._ss=0;dw.set.call(cv,lw);dh.set.call(cv,lh);ssCanvas(cv,K);
+  try{Object.keys(IMG).forEach(k=>{if(k.indexOf('bm:')===0)delete IMG[k];});}catch(e){}}// foes are resampled for the new density
+if(typeof SPRITE_HD!=='undefined'&&SPRITE_HD){
+  {const lb0=layoutBattle;layoutBattle=function(){const r=lb0.apply(this,arguments);try{const cv=$('bcv');if(cv&&cv._ss&&sprHiRes())resSS(cv,resBk());}catch(e){}return r;};}
+  {const bf0=battleFrame;battleFrame=function(){try{const cv=$('bcv');if(cv&&cv._ss&&sprHiRes()){const K=resBk();if(cv._ss!==K)resSS(cv,K);}}catch(e){}return bf0.apply(this,arguments);};}
+}
+// the HD-2D characters are sampled at the scene's own density (worldzoom10.js multiplies HD.px by WZ10.px): 2 texels per art pixel at 1x and 2x,
+// 3 at 3x, so a card texel is one internal pixel
+try{if(typeof WZ10!=='undefined'){const base=WZ10.px;Object.defineProperty(WZ10,'px',{get(){const p=(typeof HD!=='undefined'&&HD.px)||1;return Math.max(base,p)/p;},set(v){},configurable:true});}}catch(e){}
+// ----- Settings > Render scale -----
+HOOK.xform('settingsBody','res11','Render scale row after Graphics',function(h){try{const row=rsRow();const m=/<div class="rows gfxrows">[\s\S]*?<\/div><\/div><\/div>/.exec(h);
+  if(m)return h.slice(0,m.index+m[0].length)+row+h.slice(m.index+m[0].length);return h+row;}catch(e){return h;}});
 
 window.__A={walkable,ceInit,tvSlots,genQuests,STARTERS,starterDraw,ECON,AUTO_NERF,rebuildBase,detLive,REACT,skEls,packContents,miniFor,AUTO_REW,ENC_RATE,ENC_MIN_STEPS,detNote,classSkills,stickCount,bestAll,calcStats,lookKey,vTemper,storyEchoUp,leaveDungeon,win,ldApply,genFort,caveOk,enterCave,siteHasMini,openChest,nextDlg,WS,mapIcoRects,roamSpawn,roamInterior,roamSees,mapTargets,DIRV,tileAt,STAGE_LV,autoBan,rollWeather,guardianDef,mapIssues,mapEntry,syncPools,bovAt,calFxAt,realmAt,REALMS,BOV,CAL_FX,overlayGuide,liftOverlay,drawGearIcon,gearIcon,itemIcon,RAW,sigKind,sigGid,personalDone,heroLook,hasSignature,LEGEND_IDS,facDirty,facCount,facRank,facRep,FACB,FAC,finishBattle,npcWords,npcHints,npcPool,titleMake,titleAdvance,TTS,placeAt,wkwUpdate,innSpot,getMap,monURL,enterVia,applyBossTheme,BTHEME,resetMaps,rebuildBase,shopStock,gearDesc,calcStats,gearMigrate,CLS_WPN,CLS_ARM,WPERK,WT_NAME,equipWhy,lootBase,GEAR,canEquip,gearOf,perkNote,FAM_MAT_V35,fbDraft,META:{get best(){return META.best},get codex(){return META.codex},get q(){return META.q}},saveMeta,OFF,offPending,offFlush,PROFILE,profileSync,codexSee,getMap,placeAt,interact,sanctumOpen,riftKeys,echoKeys,BONDS,bondKey,wkwUpdate,inTown,WS,LC,lsort,bestParty,fsCast,fsSkills,ldApply,MON,registerTamed,stickPower,stickCount,autoOne,planGear,bestTag,gainersFor,compGainFor,refresh,fitsFor,canEquip,gearOf,queueNewGear,ARENA,fxDur,banDur,stageTags,autoSwitchPick,layoutBattle,newChar,calcStats,limitSkill,limitTier,canStuck,dunReachable,LV_CAP,addXp,echoSpec,bossLvFor,fx,MON,log,effInfo,tierOf,perkOf,quirkDef,forgeCost,buyPlan,vJourney,modalBack,partySlots,limitOpen,town2Reached,skillKnown,known,classSkills,paceMigrate,unpackG,packG,makeEnemy,QUIRK,arrive,enterDungeon,wkwUpdate,useTravel,travelWhyNot,porkFlee,porkBlocked,encTile,campRest,buyPart,partLeft,alchStock,GAME_VERSION,CHANGELOG,ITEMS,tavernOffers,tavernPool,recruitFit,partyNeeds,vNext,CHALL,innSpot,RECIPES,MATS,FB,fbContext,REDEEM,legendJoin,legendQ,genQuests,dynActors,convInit,PROFILE,profileSync,checkArchive,GPOOL,FPOOL,guardianDef,saveMeta,archiveSkills,get G(){return G;},set G(v){G=v;},get B(){return B;},get V(){return V;},get META(){return META;},WS,ACT,render,newGame,placeAt,startBattle,autoTurn,advance,finishBattle,getMap,innSpot,setPause:p=>{PAUSE=p;},autoCfg,worldInputDir,inputSources,battleFrame,battleTheme,STS,MAPS,mapIssues,healMap,mimicReward,dropChest,interact,worldDraw,TPL,ZONES,ZS,newChar,recruit,saveGame,resetMaps,dynActors,tileAt,BV,refresh,genBounties,genQuests,vStarter,heroCard,heroURL,iconURL,masteryLine,AU,buildTrack,tone,noiseHit,MIDI,sfx,audioVol};
 ['heroRoles','SOLID','WEATHER','WX_BASE','weatherFX','superGuide','recruitCost','ceStart','ceStep','ceInit','cePool','wxList','SUPER_TABLE','superOk','facRank','facRep','facInit','facCount','facCredit','FAC','FMIS','facMissionList','facProg','tyOf','facSync','facMul','facBest','worldPlan','caveReward','enterCave','leaveCave','leaveDungeon','buildCaveMap','worldGraph','openWorldMap','sigReport','SIG_NAMES','starterDraw','ITEM_TIERS','gTierIdx','tierChip','gearIcon','starterSlots','STARTERS','CLK_LEN','CLK_PH','clockPhase','wxInfoBody','recipeOrder','recipeGain','recipeReady','recipeClose','effOf','calcDamage','healsUndead','storyEchoUp','riftKeys','echoDef','efCost','autoLocked','bossFightKey','learnScanAll','isSeen','mapMarks','genSub','subOK','subReq','ensureSub','inSub','tvSlots','tvInit','tvLeft','tvEvent','tvNextText','tvPool','tvDue','tvShuffle','mTavern','hireOK','TV_CAP','TV_CD','POOL_IDS','natPool','natOf','natRoll','NATURES','natInfo','natRerollCost','natChooseCost','NAT_CLASS','iconURL','seenOf','mapIcoDraw','drawMini','MAPCV','revealAround','fxLayer','numDur','compBonusText','compPerk','checkPhase','win','unitBox','LNQ','challVisible','challEligible','challState','isMimic','migrateCompanions','canSummon','summonComp','compOf','clockPhase','tickClock','isNight','rollWeather','wxStep','nightPool','encounterFoes','restAll','tameElite','openChest','rerollTavern','bestAll','gearTier','SV','svCheck','svFlush','svInit','svPush','svPull','svScan','svParse','svBackup','svPack','svUnpack','svProg','svCloudList','svDelDoc','svGet','svCap','slotState','slotKey','svDecode','SV_CH','svStatus','svSlotRaw','svLoad','loadRaw','svHash','svIdx'].forEach(k=>{try{Object.defineProperty(window.__A,k,{get:()=>eval(k)});}catch(e){}});

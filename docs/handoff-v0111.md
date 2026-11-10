@@ -393,3 +393,8 @@ gates are beaten, cutscene on entering the gate, returns with a new look, rematc
 - Open: character sheet reorganisation (owner) pending a helper slot.
 - fixes11.js: ACT.campOpen falls back to item 'tent'; ACT.campUse; mCamp wrapped with a Use row (campkit/tent).
 - 0.17.5 fixes11.js ldCards() (rows with portraits and names per loadout), appended in ui.js loadouts tab.
+
+## 0.17.6
+- dmg11.js (new): kind resolution (WT_KIND/CLS_KINDS/CLS_KIND_ALT in items.js, DL_FORCE in skills.js), display lines, foe Weak "Your answers", flyer piercing 1.25. Skills: Hand Axe -> Heave (weapon kind), Javelin -> Shield Throw (blunt), thief stars/kunai/fuma piercing (config.js). tools/dmgaudit.js prints the class x kind matrix. Sim: 12.55 -> 12.75 boss tries, level 41.05 -> 41.15. Test v155a (battle). Weak: gear tooltips lack hero context (knight's lance says Piercing); piercing is scarce by design.
+- res11.js (new) + hd2d/hdstage/battle11/worldrt/p5settings/config RENDER: internal px per art px = clamp(floor(d/2+.25),1,tier max) (medium 2, high 3); EPX-upscaled ground/prop/building textures from 2x; battle unit layer 4x backing at d>=3; Settings > Render scale (META.cfg.render); Auto governor steps down under 45 fps (off under __PWTEST). Frame cost in software GL about 2.8x at 1080p 2x. Test v156a (world); v053a expects HD.pxI. Weak: item icons are 16px sources; title scene untouched; EPX textures up to ~100 MB on big fields.
+- Pending: sheet11 (character sheet reorganisation) helper.

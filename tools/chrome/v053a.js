@@ -9,7 +9,7 @@ const state=ev=>ev(()=>{const A=__A,HD=A.HD,w=A.WS.cv,c=HD.cv;try{A.worldDraw2(p
  
   return {live:HD.live,broken:HD.broken,why:HD.why,hd:!!document.querySelector('.wview.hd'),gl:!!(c&&c.isConnected&&getComputedStyle(c).display!=='none'),same:!!(c&&w&&c.parentElement===w.parentElement),
     cssGL:c&&c.isConnected?[c.style.width,c.style.height]:null,css2D:w?[w.style.width,w.style.height]:null,cssPx:w?[Math.round(w.getBoundingClientRect().width),Math.round(w.getBoundingClientRect().height)]:null,
-    buf:c?[c.width,c.height]:null,v:[A.WS.vw,A.WS.vh,A.WS.scale],px:(()=>{try{A.worldDraw2(performance.now());A.worldDraw2(performance.now());return [...A.WS.ctx.getImageData(Math.floor(A.WS.vw/2),Math.floor(A.WS.vh/2),1,1).data];}catch(e){return null;}})()};});
+    buf:c?[c.width,c.height]:null,k:HD.pxI||1,v:[A.WS.vw,A.WS.vh,A.WS.scale],px:(()=>{try{A.worldDraw2(performance.now());A.worldDraw2(performance.now());return [...A.WS.ctx.getImageData(Math.floor(A.WS.vw/2),Math.floor(A.WS.vh/2),1,1).data];}catch(e){return null;}})()};});
 // project a ground point to client coordinates through the HD camera
 const PROJ=`(x,y,z)=>{const M=__A.HD.mats.vp,X=M[0]*x+M[4]*y+M[8]*z+M[12],Y=M[1]*x+M[5]*y+M[9]*z+M[13],W=M[3]*x+M[7]*y+M[11]*z+M[15],r=__A.WS.cv.getBoundingClientRect();return [r.left+(X/W*.5+.5)*r.width,r.top+(1-(Y/W*.5+.5))*r.height];}`;
 (async()=>{
@@ -18,9 +18,9 @@ const PROJ=`(x,y,z)=>{const M=__A.HD.mats.vp,X=M[0]*x+M[4]*y+M[8]*z+M[12],Y=M[1]
   for(const t of ['low','medium','high']){const H=await open({w:390,h:844,mobile:true,dpr:2,pre:META(t)});H.page.on('console',m=>{if(m.type()==='error'&&!/file:\/\/|ERR_FILE|net::/.test(m.text()))errs.push(t+': '+m.text());});
     await start(H.ev);await H.wait(700);const s=await state(H.ev);
     if(t==='low')chk('Low: the 2D view',!s.live&&s.px&&s.px[3]===255||JSON.stringify(s));
-    else chk(`${t}: the HD-2D view is live under the 2D canvas, same CSS size (${s.cssGL}), art pixel buffer (${s.buf})`,s.live&&s.hd&&s.gl&&s.same&&s.cssGL+''===s.css2D+''&&s.buf+''===[s.v[0],s.v[1]]+''&&s.px[3]===255||JSON.stringify(s));
+    else chk(`${t}: the HD-2D view is live under the 2D canvas, same CSS size (${s.cssGL}), art pixel buffer x internal px ${s.k} (${s.buf})`,s.live&&s.hd&&s.gl&&s.same&&s.cssGL+''===s.css2D+''&&s.buf+''===[s.v[0]*s.k,s.v[1]*s.k]+''&&s.px[3]===255||JSON.stringify(s));
     if(t==='medium'){
-      chk('Medium renders on the art pixel grid (buffer = the view in art pixels)',s.buf[0]===s.v[0]&&s.buf[1]===s.v[1]||JSON.stringify(s));
+      chk('Medium renders on the art pixel grid (buffer = the view in art pixels x the internal pixels per art pixel, v0.17.x res11.js)',s.buf[0]===s.v[0]*s.k&&s.buf[1]===s.v[1]*s.k||JSON.stringify(s));
       // Settings row, then turning it off and on
       const row=await H.ev(()=>{__A.ACT.settings&&__A.ACT.settings();__A.render();const r=[...document.querySelectorAll('.hdrows .chip')].map(b=>b.textContent+(b.classList.contains('on')?'*':''));__A.V.modal=null;__A.render();return r;});
       chk('Settings shows HD-2D world On/Off with On selected by default',row.join()==='On*,Off'||JSON.stringify(row));
@@ -91,12 +91,12 @@ const PROJ=`(x,y,z)=>{const M=__A.HD.mats.vp,X=M[0]*x+M[4]*y+M[8]*z+M[12],Y=M[1]
   // ---- view size at phone, sideways, Fold open and desktop sizes, also after a battle and after rotating ----
   for(const [w,h] of [[390,844],[844,390],[933,705],[1280,800]]){const H=await open({w,h,mobile:w<1000,dpr:2,pre:META('medium')});const {ev,wait}=H;H.page.on('console',m=>{if(m.type()==='error'&&!/file:\/\/|ERR_FILE|net::/.test(m.text()))errs.push(w+': '+m.text());});
     await start(ev);await wait(700);const a=await state(ev);
-    chk(`${w}x${h}: HD-2D frame matches the view (${a.v} art px, ${a.cssPx} CSS px)`,a.live&&a.same&&a.cssGL+''===a.css2D+''&&a.buf+''===[a.v[0],a.v[1]]+''&&a.cssPx[0]===a.v[0]*a.v[2]&&a.cssPx[1]===a.v[1]*a.v[2]&&a.cssPx[0]>=300||JSON.stringify(a));
+    chk(`${w}x${h}: HD-2D frame matches the view (${a.v} art px, ${a.cssPx} CSS px)`,a.live&&a.same&&a.cssGL+''===a.css2D+''&&a.buf+''===[a.v[0]*a.k,a.v[1]*a.k]+''&&a.cssPx[0]===a.v[0]*a.v[2]&&a.cssPx[1]===a.v[1]*a.v[2]&&a.cssPx[0]>=300||JSON.stringify(a));
     await ev(()=>{__A.startBattle({stage:0,kind:'field'});});await wait(500);await ev(()=>{__A.B.en.forEach(e=>e.hp=0);__A.win();});await wait(400);
     await ev(()=>{const b=document.querySelector('[data-act="resultOk"]');if(b)b.click();});await wait(800);const b=await state(ev);
     chk(`${w}x${h}: after a battle HD-2D draws into the new world canvas, same size (${b.cssPx})`,b.live&&b.same&&b.cssGL+''===a.cssGL+''&&b.cssPx+''===a.cssPx+''&&b.buf+''===a.buf+''&&b.px[3]===255||JSON.stringify({a,b}));
     if(w===390){await H.page.setViewportSize({width:844,height:390});await wait(1200);const c=await state(ev);
-      chk(`rotated to 844x390: HD-2D follows the view (${c.v})`,c.live&&c.same&&c.cssGL+''===c.css2D+''&&c.buf+''===[c.v[0],c.v[1]]+''&&c.cssPx+''!==a.cssPx+''||JSON.stringify(c));}
+      chk(`rotated to 844x390: HD-2D follows the view (${c.v})`,c.live&&c.same&&c.cssGL+''===c.css2D+''&&c.buf+''===[c.v[0]*c.k,c.v[1]*c.k]+''&&c.cssPx+''!==a.cssPx+''||JSON.stringify(c));}
     await H.browser.close();}
   chk(`no console errors (${errs.slice(0,4).join(' | ')})`,errs.length===0);
   console.log((process.exitCode?'':'')+'done');await require('./pw').done({browser:{close:async()=>{}}});

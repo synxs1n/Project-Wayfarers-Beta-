@@ -280,6 +280,7 @@ function worldSizeCanvas(){
   const avail=vhPx-(hdr?hdr.offsetHeight:0)-(wbar?wbar.offsetHeight:0)-padH-(land?20:box.width<720?36:76);
   const cssH=land?clamp(avail,160,900):clamp(avail,170,box.width<720?620:(zz>1?600:560));// v0.10.1: a little taller on a zoomed computer screen
   if(land)sc=cssH>=380?3:2;
+  sc=resScale(sc,box.width,zz,cssH);// v0.17.3: a whole number of device pixels per art pixel (dpr 1.25, 1.5), scale 4 and 5 on very wide boxes (res11.js)
   const vw=Math.floor(box.width/sc),vh=Math.floor(cssH/sc);
   // v0.5.1: also compare the canvas's own height and display size. A canvas rebuilt after a battle starts at 300x150 with no CSS size;
   // on a view exactly 300 pixels wide (a Galaxy Z Fold opened, about 932 CSS px) nothing else differed, so it stayed at 300x150.

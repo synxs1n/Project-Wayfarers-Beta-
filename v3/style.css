@@ -1037,3 +1037,8 @@ body.noscroll #p5save{top:auto!important;bottom:8px!important}
 
 /* v0.17.1: the sheet's Equipment rows */
 .eqsheet{grid-template-columns:1fr}.eqsheet .eqsrow{gap:10px;cursor:pointer}.eqsheet .eqsrow small{display:block}.eqsheet .eqsrow .gico.empty{width:32px;height:32px;border:2px dashed var(--ink);border-radius:6px;flex:none}
+
+/* ===== v0.17.3 res11.js: crisp at any pixel ratio. Art stays on a pixel grid: the title canvases and every picture drawn from a canvas (cards, portraits,
+   item icons, element marks, the map) use nearest neighbour when the browser scales them; img has had it since the start. The GL layers keep it. ===== */
+#tcv,#t7cv,.tstage canvas,.t7stage canvas{image-rendering:pixelated}
+.port img,.gico,.elb,.fci,.udi,.mimg,.bimg img,.btile>img,.lineup img,.tame img,.bossv img{image-rendering:pixelated}

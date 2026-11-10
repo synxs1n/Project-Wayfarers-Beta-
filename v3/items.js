@@ -160,6 +160,17 @@ const WT_NAME={blade:'Sword',axe:'Axe',greatsword:'Greatsword',lance:'Lance',mac
 // which weapon types a class may wield, and which armor weight it may wear
 const CLS_WPN={warrior:['blade','axe','greatsword','warhammer'],knight:['blade','lance','mace','standard'],mage:['staff','tome','wand'],healer:['staff','tome','mace','censer'],thief:['dagger','shortsword','thrown'],archer:['bow','longbow','crossbow'],monk:['knuckles','claws','qstaff','beads'],bard:['lute','harp','flute','lyre'],
   sniper:['crossbow','bow'],druid:['bow','longbow'],archmage:['staff','tome'],chronicler:['tome','staff']};
+// v0.17: WEAPON-DRIVEN DAMAGE KIND (dmg11.js). A physical skill with no fixed kind (DL_FORCE in skills.js, or a `dl` on the skill) and the basic
+// Attack take their kind from the weapon in hand. WT_KIND is the natural kind of each weapon family; CLS_KINDS lists the physical kinds a class
+// may reach at all (at most two; casters one, plus magic), and CLS_KIND_ALT re-kinds the families that class wields outside its list.
+// A class with no weapon in hand (or in the Daily Trial) uses the first kind of its list.
+const WT_KIND={blade:'slash',axe:'slash',greatsword:'slash',shortsword:'slash',dagger:'slash',claws:'slash',
+  mace:'blunt',warhammer:'blunt',staff:'blunt',qstaff:'blunt',knuckles:'blunt',beads:'blunt',wand:'blunt',censer:'blunt',tome:'blunt',
+  lance:'piercing',standard:'piercing',
+  bow:'ranged',longbow:'ranged',crossbow:'ranged',thrown:'ranged',lute:'ranged',harp:'ranged',flute:'ranged',lyre:'ranged'};
+const CLS_KINDS={warrior:['slash','blunt'],knight:['slash','blunt'],monk:['blunt','slash'],archer:['ranged','piercing'],thief:['slash','piercing'],
+  mage:['blunt'],healer:['blunt'],bard:['ranged'],sniper:['ranged','piercing'],druid:['ranged','slash'],archmage:['blunt'],chronicler:['blunt']};
+const CLS_KIND_ALT={knight:{lance:'blunt',standard:'blunt'},thief:{thrown:'piercing'}};
 const CLS_ARM={warrior:'heavy',knight:'heavy',mage:'light',healer:'light',bard:'light',chronicler:'light',archmage:'light',thief:'medium',archer:'medium',monk:'medium',sniper:'medium',druid:'medium'};
 const ARM_NAME={light:'Light armor',medium:'Medium armor',heavy:'Heavy armor'};
 const ARM_FAM={heavy:'mail',medium:'vest',light:'robe'};

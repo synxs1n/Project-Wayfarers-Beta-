@@ -32,7 +32,7 @@ function hdResources(){const gl=HD.gl,A=['aP','aT','aC','aN'];
   HD.P={scene:h2Program(gl,H2SRC.scene_v,H2SRC.scene_f,A),char:h2Program(gl,H2SRC.scene_v,H2SRC.char_f,A),down:h2Program(gl,H2SRC.quad_v,H2SRC.down_f,['aP']),
     blur:h2Program(gl,H2SRC.quad_v,H2SRC.blur_f,['aP']),comp:h2Program(gl,H2SRC.quad_v,H2SRC.comp_f,['aP']),lm:h2Program(gl,H2SRC.lm_v,H2SRC.lm_f,['aP','aQ','aC']),lms:h2Program(gl,H2SRC.lms_v,H2SRC.lms_f,['aP'])};
   HD.ib=h2QuadIndex(gl);HD.fs=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,HD.fs);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW);
-  HD.atl=new H2Atlas(gl,1024);HD.vb=[gl.createBuffer(),gl.createBuffer(),gl.createBuffer(),gl.createBuffer(),gl.createBuffer(),gl.createBuffer()];
+  HD.atl=new H2Atlas(gl,(gl.getParameter(gl.MAX_TEXTURE_SIZE)||1024)>=2048?2048:1024);HD.vb=[gl.createBuffer(),gl.createBuffer(),gl.createBuffer(),gl.createBuffer(),gl.createBuffer(),gl.createBuffer()];
   HD.dyn=new H2Batch(512);HD.dynB=new H2Batch(256);HD.dynA=new H2Batch(64);HD.dynC=new H2Batch(64);HD.dynCB=new H2Batch(8);// v0.5.8: characters (opaque, blended) for the character program
   HD.lmv=new Float32Array(HD2D.lmMax*4*7);HD.lw=new Float32Array(HD2D.lmMax*4);HD.lmR=new Float32Array(4);
   HD.rt=null;HD.size='';HD.S=null;HD.map=null;HD.dirty=true;HD.blurOk=false;}
@@ -45,11 +45,16 @@ function hdAttach(){const wc=WS.cv;if(!wc||!wc.isConnected||!wc.parentElement||!
   if(s.width!==W)s.width=W;if(s.height!==H)s.height=H;if(s.left!==L)s.left=L;if(s.top!==T)s.top=T;return true;}
 function hdDetach(){HD.live=false;HD.ovClear=null;try{const p=HD.cv&&HD.cv.parentElement;if(p)p.classList.remove('hd');}catch(e){}}
 // internal resolution: the tier's pixels per art pixel (1 = the 2D view's own grid: the same pixels as the 2D canvas over it)
-function hdSize(q){const sc=WS.scale||2,w=Math.max(16,Math.round(WS.vw*q.px)),h=Math.max(16,Math.round(WS.vh*q.px)),cw=WS.vw*sc,ch=WS.vh*sc,key=w+'x'+h+':'+q.bloom+':'+q.lmap+':'+q.blur;
+// v0.17.3: the tier's px is only the least. The real value follows the display (res11.js resPx: device pixels per art pixel = view scale x
+// page zoom x devicePixelRatio, divided by RENDER.k), is forced by Settings > Render scale, and is kept inside the GPU's limits.
+function hdPxOf(q){const d=(WS.scale||2)*resDev(),cap=Math.max(1,Math.min(q.pxMax||RENDER.max,RENDER.max));let px=Math.max(q.px||1,resPx(d,cap));
+  const lim=Math.min(HD.maxTex||4096,4096),big=Math.max(WS.vw||1,WS.vh||1);px=Math.min(px,Math.max(1,Math.floor(lim/big)));
+  const area=Math.max(1,(WS.vw||1)*(WS.vh||1));px=Math.min(px,Math.max(1,Math.floor(Math.sqrt(RENDER.maxArea/area))));return px;}
+function hdSize(q){const px=HD.pxI||1,sc=WS.scale||2,w=Math.max(16,Math.round(WS.vw*px)),h=Math.max(16,Math.round(WS.vh*px)),cw=WS.vw*sc,ch=WS.vh*sc,lm=Math.round(q.lmap*(1+(px-1)*.5)),key=w+'x'+h+':'+q.bloom+':'+lm+':'+q.blur;
   if(key!==HD.size){const gl=HD.gl;if(HD.rt)Object.values(HD.rt).forEach(o=>h2RTFree(gl,o));HD.cv.width=w;HD.cv.height=h;
-    const qw=Math.max(4,Math.round(w/q.blur)),qh=Math.max(4,Math.round(h/q.blur));
+    const bd=q.blur*px,qw=Math.max(4,Math.round(w/bd)),qh=Math.max(4,Math.round(h/bd));HD.blurD=bd;// the blurred copies keep their size in art pixels
     const cp=h2Tex(gl,gl.LINEAR);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGB,w,h,0,gl.RGB,gl.UNSIGNED_BYTE,null);// RGB: the canvas has no alpha, and a copy needs matching channels
-    HD.rt={cp:{t:cp,f:null,rb:null,w,h},q1:h2RT(gl,qw,qh,false),q2:h2RT(gl,qw,qh,false),lm:h2RT(gl,q.lmap,q.lmap,false)};
+    HD.rt={cp:{t:cp,f:null,rb:null,w,h},q1:h2RT(gl,qw,qh,false),q2:h2RT(gl,qw,qh,false),lm:h2RT(gl,lm,lm,false)};
     if(q.bloom>1){const ew=Math.max(4,Math.round(qw/2)),eh=Math.max(4,Math.round(qh/2));HD.rt.e1=h2RT(gl,ew,eh,false);HD.rt.e2=h2RT(gl,ew,eh,false);}
     HD.size=key;}
   return {cw,ch,w,h,r:w/cw};}
@@ -271,7 +276,7 @@ function hdBakeLights(m,S,lights){const V=S.V,out=[],T=m.kind==='dungeon'?null:T
     push(lx,10*V,ly+10,r,t);});
   return new Float32Array(out);}
 // what the ground, blocks and sun shadows depend on: tile kinds with props folded (a chest opening, a lever or bars only re-cut the cards)
-function hdSig(m){let s=m.id+':'+(m.thv||'')+':'+(GFX.q&&GFX.q.ao?1:0)+':'+(G.cleared&&G.cleared[m.s]?1:0)+':';const F={c:'C',K:'C','|':'.',D:'.',l:'.'};
+function hdSig(m){let s=m.id+':'+(m.thv||'')+':t'+(HD.td||1)+':'+(GFX.q&&GFX.q.ao?1:0)+':'+(G.cleared&&G.cleared[m.s]?1:0)+':';const F={c:'C',K:'C','|':'.',D:'.',l:'.'};
   for(let y=0;y<m.h;y++){let r='';for(let x=0;x<m.w;x++){const c=tileAt(m,x,y);r+=F[c]||c;}s+=r;}return s;}
 function hdBakeProps(m){const S=HD.S,gl=HD.gl,t0=performance.now(),save={lights:m.lights,smoke:m.smoke,bsp:m.bsp,torches:m.torches&&m.torches.slice(),mills:m.mills&&m.mills.slice()};
   ['tcd'].forEach(k=>{if(S[k])gl.deleteTexture(S[k]);S[k]=null;});['mcd','mbl'].forEach(k=>{h2ChunksFree(gl,S[k]);S[k]=null;});
@@ -279,8 +284,13 @@ function hdBakeProps(m){const S=HD.S,gl=HD.gl,t0=performance.now(),save={lights:
   try{cards=hdBakeCards(m,S,dummy,dummy);deco=hdBakeDeco(m);blds=hdBakeBuildings(m,S,save.bsp,deco);}
   finally{m.lights=save.lights;m.smoke=save.smoke;m.bsp=save.bsp;if(save.torches)m.torches=save.torches;if(save.mills)m.mills=save.mills;}
   S.L=hdBakeLights(m,S,(save.lights||[]).concat([]));
-  {const pc=hdMergeProps(cards,blds);if(pc)S.tcd=h2TexFrom(gl,pc);}if(cards)S.mcd=cards.bt.build(gl);if(blds)S.mbl=blds.bt.build(gl);
+  {const pc=hdMergeProps(cards,blds);if(pc)S.tcd=h2TexFrom(gl,hdUp(pc));}if(cards)S.mcd=cards.bt.build(gl);if(blds)S.mbl=blds.bt.build(gl);
   HD.dirty=false;HD.bakeMs=performance.now()-t0;HD.bakes++;HD.partial=(HD.partial||0)+1;}
+// v0.17.3: baked 1x art (ground, props, buildings) is doubled once with EPX (Scale2x, res11.js resEpx: straight edges stay straight,
+// diagonals lose their stairs, no new colours, no blur) when the view renders at 2 internal pixels per art pixel or more. The UVs are
+// shares of the canvas, so nothing else changes. Kept 1x when a texture would pass the GPU's size or RENDER.texArea.
+function hdUp(cv){if(!cv||!(HD.td>1))return cv;const lim=HD.maxTex||4096;if(cv.width*2>lim||cv.height*2>lim||cv.width*cv.height*4>RENDER.texArea)return cv;
+  try{return resEpx(cv)||cv;}catch(e){return cv;}}
 function hdBake(m){const sig=hdSig(m);if(HD.S&&HD.S.m===m&&HD.S.sig===sig&&HD.map===m)return hdBakeProps(m);
   const t0=performance.now(),gl=HD.gl,V=hdV(),S={m,V,sig,hArt:m.kind==='dungeon'?HD2D.wall.dungeon:HD2D.wall.cliff,zArt:HD2D.wall.town};hdFreeMap();
   HD.maxTex=gl.getParameter(gl.MAX_TEXTURE_SIZE)||4096;
@@ -323,8 +333,8 @@ function hdBake(m){const sig=hdSig(m);if(HD.S&&HD.S.m===m&&HD.S.sig===sig&&HD.ma
     // one texture per water frame for the ground and the block faces: the code drawn faces sit in a strip under the map's ground art
     const GH=MHp+st.height,mk=g=>{const c=mkCv(Math.max(MWp,st.width),GH),x=c.getContext('2d');x.drawImage(g,0,0);x.drawImage(st,0,MHp);return c;},G0=mk(g0),G1=mk(g1),GW=G0.width;
     GC.mapUV(MWp/GW,0,MHp/GH,0);SC.mapUV(st.width/GW,0,st.height/GH,MHp/GH);
-    S.tg0=h2TexFrom(gl,G0);S.tg1=h2TexFrom(gl,G1);S.mg=GC.build(gl);S.mst=SC.build(gl);S.mmisc=h2Mesh(gl,misc);
-    {const pc=hdMergeProps(cards,blds);if(pc)S.tcd=h2TexFrom(gl,pc);}if(cards)S.mcd=cards.bt.build(gl);if(blds)S.mbl=blds.bt.build(gl);
+    S.tg0=h2TexFrom(gl,hdUp(G0));S.tg1=h2TexFrom(gl,hdUp(G1));S.mg=GC.build(gl);S.mst=SC.build(gl);S.mmisc=h2Mesh(gl,misc);
+    {const pc=hdMergeProps(cards,blds);if(pc)S.tcd=h2TexFrom(gl,hdUp(pc));}if(cards)S.mcd=cards.bt.build(gl);if(blds)S.mbl=blds.bt.build(gl);
     if(sh){S.tsh=h2Tex(gl,gl.LINEAR);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,sh.w,sh.h,0,gl.RGBA,gl.UNSIGNED_BYTE,sh.d);S.shInv=[1/(sh.w*4),1/(sh.h*4)];}
     else{S.tsh=h2Tex(gl,gl.NEAREST);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,1,1,0,gl.RGBA,gl.UNSIGNED_BYTE,new Uint8Array([0,0,0,255]));S.shInv=[0,0];}
     S.W=MWp;S.H=MHp;S.maxH=Math.max(HD2D.wall.dungeon,HD2D.wall.cliff)*V+70*V;
@@ -427,7 +437,7 @@ function hdBlob2(){return hdSpr('blob2',24,12,(c,w,h)=>{const d=c.createImageDat
 // per pixel with NEAREST: crisp, no shimmer from skipped texels.
 const H2SM=new WeakMap(),H2SMc=new Int32Array(64),H2SMw=new Float32Array(64);
 function hdSmall(cv,s,px){const k=s*1000+px;let e=H2SM.get(cv);if(e&&e.k===k)return e.c;
-  const W0=cv._rw||cv.width,H0=cv._rh||cv.height,tw=Math.max(2,Math.round(cv.width*s*px/2)*2),fx=W0/tw,fy=fx,th=Math.max(2,Math.ceil(H0/fy-.01));
+  const W0=cv._rw||cv.width,H0=cv._rh||cv.height,tw=Math.max(2,Math.min(Math.floor(W0/2)*2,Math.round(cv.width*s*px/2)*2)),fx=W0/tw,fy=fx,th=Math.max(2,Math.ceil(H0/fy-.01));
   let src;try{src=cv.getContext('2d').getImageData(0,0,W0,H0).data;}catch(_){return cv;}
   const o=mkCv(tw,th),oc=o.getContext('2d'),img=oc.createImageData(tw,th),d=img.data,C=H2SMc,Wt=H2SMw,L=c=>((c>>16)&255)*.3+((c>>8)&255)*.59+(c&255)*.11;
   for(let ty=0;ty<th;ty++){const y1=H0-(th-1-ty)*fy,y0=y1-fy;// bottom aligned: the feet keep their row
@@ -602,9 +612,10 @@ function hdScene(gl,S,o,now,still,full){const P=HD.P,u=P.scene.u,uc=P.char.u,fr=
 // source), then one blended pass lays the blur over the top and bottom of the view (tilt shift) with bloom, light shafts and the vignette.
 // One pass over the geometry per frame, culled to the chunks in view; nothing full size is rendered off screen.
 function hdFrame(now){const m=WS.m,gl=HD.gl,q=hdTierQ(),still=gfxStill(),ts=still?0:now;
+  HD.pxI=hdPxOf(q);HD.td=HD.pxI>=RENDER.tex?2:1;// v0.17.3
   if(HD.dirty||HD.map!==m||!HD.S||HD.baseRef!==WS.base[0]){hdBake(m);HD.baseRef=WS.base[0];}
   const sz=hdSize(q);hdCamera(m,now,sz,q);const o=hdLook(m,now),S=HD.S;
-  HD.px=q.px||1;const nl=hdLights(m,ts,q,o);HD.dyn.n=0;HD.dynB.n=0;HD.dynA.n=0;HD.dynC.n=0;HD.dynCB.n=0;hdActors(m,now,ts);try{hdWfx(m,ts);}catch(e){HD.wfxErr=String(e&&e.message||e);}HD.dynUp=0;// v0.5.8: lights first, the characters read them
+  HD.px=HD.pxI||1;const nl=hdLights(m,ts,q,o);HD.dyn.n=0;HD.dynB.n=0;HD.dynA.n=0;HD.dynC.n=0;HD.dynCB.n=0;hdActors(m,now,ts);try{hdWfx(m,ts);}catch(e){HD.wfxErr=String(e&&e.message||e);}HD.dynUp=0;// v0.5.8: lights first, the characters read them
   hdDrawLM(gl,nl,o);
   const P=HD.P,sp=P.scene,u=sp.u,RT=HD.rt;
   for(let i=0;i<4;i++)gl.enableVertexAttribArray(i);gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,HD.ib);gl.disable(gl.CULL_FACE);
@@ -643,7 +654,7 @@ function hdFrame(now){const m=WS.m,gl=HD.gl,q=hdTierQ(),still=gfxStill(),ts=stil
   // the finished frame, copied (one call, no second pass over the scene) and shrunk: the source of the blur
     gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,RT.cp.t);gl.copyTexSubImage2D(gl.TEXTURE_2D,0,0,0,0,0,sz.w,sz.h);
     // horizontal blur straight from the full size copy into the small target (it shrinks as it blurs), then vertical; a second round on dof 2
-    hdPost(gl,P,P.blur,RT.cp,q2,q2.w,q2.h);gl.uniform2f(P.blur.u.uD,q.blur/sz.w,0);gl.uniform1f(P.blur.u.uThr,0);hdFS(gl);
+    hdPost(gl,P,P.blur,RT.cp,q2,q2.w,q2.h);gl.uniform2f(P.blur.u.uD,(HD.blurD||q.blur)/sz.w,0);gl.uniform1f(P.blur.u.uThr,0);hdFS(gl);
     hdPost(gl,P,P.blur,q2,q1,q1.w,q1.h);gl.uniform2f(P.blur.u.uD,0,1/q2.h);hdFS(gl);
     if(q.dof>1){hdPost(gl,P,P.blur,q1,q2,q2.w,q2.h);gl.uniform2f(P.blur.u.uD,1/q1.w,0);hdFS(gl);hdPost(gl,P,P.blur,q2,q1,q1.w,q1.h);gl.uniform2f(P.blur.u.uD,0,1/q2.h);hdFS(gl);}
     // High: a wider bloom, thresholded while it shrinks to an eighth
@@ -659,7 +670,7 @@ function hdFrame(now){const m=WS.m,gl=HD.gl,q=hdTierQ(),still=gfxStill(),ts=stil
   gl.uniform4f(C.u.uDof,fy+dof.shift,dof.band*wide,dof.ramp*Math.sqrt(wide),q.dof?dof.max:0);
   gl.uniform4f(C.u.uBl,thr,(q.bloom>1?bl.high:bl.med)*(1+o.bloom),RT.e1?1:0,0);
   gl.uniform4f(C.u.uSh,q.shafts&&m.kind!=='dungeon'?o.shaft*HD2D.shaft:0,ts/1000,0,0);gl.uniform3fv(C.u.uShC,o.shC);gl.uniform2f(C.u.uAsp,sz.w/sz.h,1);gl.uniform1f(C.u.uVig,o.vig);
-  if(C.u.uHt){gl.activeTexture(gl.TEXTURE3);gl.bindTexture(gl.TEXTURE_2D,RT.cp.t);gl.uniform1i(C.u.uC,3);gl.activeTexture(gl.TEXTURE0);gl.uniform4f(C.u.uHt,ht*.45/* v0.10.0: gentler haze */,ts/1000,Math.min(.98,fy+.12),1/sz.w);}
+  if(C.u.uHt){gl.activeTexture(gl.TEXTURE3);gl.bindTexture(gl.TEXTURE_2D,RT.cp.t);gl.uniform1i(C.u.uC,3);gl.activeTexture(gl.TEXTURE0);gl.uniform4f(C.u.uHt,ht*.45/* v0.10.0: gentler haze */,ts/1000,Math.min(.98,fy+.12),(HD.pxI||1)/sz.w);}
   gl.enable(gl.BLEND);gl.blendFunc(gl.ONE,gl.ONE_MINUS_SRC_ALPHA);hdFS(gl);gl.disable(gl.BLEND);
   HD.frames++;}
 // ----- the 2D canvas on top: weather, ambience particles, festival lanterns, battle flash and fades (all screen space) -----

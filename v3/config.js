@@ -287,11 +287,11 @@ const ROLES={
       {id:'r_cover',n:'Shield Ally',k:'status',t:'ally',mp:5,lv:13,fx:[['bulwark',1],['regen',1]],d:'Covers an ally: Bulwark and Regen.',r:'buffer'}],
     archer:[{id:'r_cripple',n:'Crippling Shot',k:'phys',pw:1,mp:6,lv:15,dl:'ranged',fx:[['weaken',.85],['slow',.6]],d:'An arrow to the sword arm. Likely Weakens, may Slow.',r:'debuffer'},
       {id:'r_flare',n:'Flare Arrow',k:'phys',pw:.8,mp:8,t:'all',lv:18,dl:'ranged',fx:[['blind',.7]],d:'A burning flare bursts over every foe. May Blind.',r:'debuffer'}],
-    thief:[{id:'r_stars',n:'Throwing Stars',k:'phys',pw:.7,hits:2,mp:3,cost:.8,lv:4,dl:'ranged',d:'Two quick stars from the hip. Ranged: flying foes cannot weave away.',r:'ranged'},
-      {id:'r_kunai',n:'Kunai Volley',k:'phys',pw:.8,mp:9,t:'all',lv:16,dl:'ranged',fx:[['bleed',.4]],d:'A fan of kunai at every foe. Ranged; may Bleed.',r:'ranged'},
+    thief:[{id:'r_stars',n:'Throwing Stars',k:'phys',pw:.7,hits:2,mp:3,cost:.8,lv:4,dl:'piercing',d:'Two quick stars from the hip. Piercing: they find the gaps in armor.',r:'ranged'},
+      {id:'r_kunai',n:'Kunai Volley',k:'phys',pw:.8,mp:9,t:'all',lv:16,dl:'piercing',fx:[['bleed',.4]],d:'A fan of kunai at every foe. Piercing; may Bleed.',r:'ranged'},
       {id:'r_hamstr',n:'Hamstring',k:'phys',pw:.8,mp:5,cost:.8,lv:12,fx:[['slow',.8],['weaken',.5]],d:'A cut behind the knee. Likely Slows, may Weaken.',r:'debuffer'},
       {id:'r_toxin',n:'Toxic Cloud',k:'status',t:'all',mp:10,lv:18,fx:[['poison',.85],['weaken',.6]],d:'A cloud of venom over every foe. Likely Poisons, may Weaken.',r:'debuffer'},
-      {id:'r_fuma',n:'Fuma Shuriken',k:'phys',pw:1.9,mp:12,cost:1.1,pierce:1,lv:24,dl:'ranged',d:'A great folding shuriken that cuts through armor. Ranged; ignores half of defense.',r:'ranged'}],
+      {id:'r_fuma',n:'Fuma Shuriken',k:'phys',pw:1.9,mp:12,cost:1.1,pierce:1,lv:24,dl:'piercing',d:'A great folding shuriken that cuts through armor. Piercing; ignores half of defense.',r:'ranged'}],
     monk:[{id:'r_chimend',n:'Chi Mend',k:'heal',chi:1,pw:1.6,mp:5,t:'ally',lv:7,d:'Pushes chi into an ally to close their wounds.',r:'healer'},
       {id:'r_harmony',n:'Harmony Meditation',k:'status',t:'allyAll',mp:10,lv:14,fx:[['focus',1]],heal:.1,d:'The line breathes with him: Focus for the vanguard and a 10% heal.',r:'buffer'},
       {id:'r_lotus',n:'Lotus Circle',k:'heal',chi:1,pw:1.1,mp:12,t:'allyAll',lv:21,d:'A shared meditation that heals the vanguard.',r:'healer'}],
@@ -422,11 +422,19 @@ const SPR={k:2,addH:6,rimA:.5,outA:.55};
 // units from the key light. spell: element spell effects (0 none, 1 some, 2 more; also capped by GFX_Q.parts). props: far scenery props.
 const HD_BATTLE={
   low:   {on:0},
-  medium:{on:1,mode:'under',res:1,maxPx:520000,lights:4,shadows:6, decals:3,bloomK:.55,dof:1,  rays:1,rim:1,spell:1,props:1},
-  high:  {on:1,res:2,  maxPx:2300000,lights:8,shadows:12,decals:4,bloomK:.7, dof:1.2,rays:1,rim:1,spell:2,props:1}};
+  medium:{on:1,mode:'under',res:1,maxPx:900000,lights:4,shadows:6, decals:3,bloomK:.55,dof:1,  rays:1,rim:1,spell:1,props:1},
+  high:  {on:1,res:2,  maxPx:3200000,lights:8,shadows:12,decals:4,bloomK:.7, dof:1.2,rays:1,rim:1,spell:2,props:1}};
 // The floor: persp is the perspective offset as a share of the floor height (smaller = deeper perspective), tile is the world size of
 // one floor texture tile in logical px, sq is the depth squash of floor circles and shadows, focus is the sharp band [top, bottom] as a
 // share of the floor (units stand there; above it the floor blurs toward the horizon, below it a little toward the bottom edge).
+// v0.17.3 RENDER (res11.js, hd2d.js, hdstage.js, battle11.js): render resolution follows the display. d = device pixels per art pixel =
+// view scale x page zoom x devicePixelRatio. Auto: internal pixels per art pixel = clamp(floor(d / k + bias), 1, tier max) (d 3 -> 1, 4 -> 2,
+// 6 -> 3). META.cfg.render: 'auto' | '1' | '2' | '3' (Settings > Render scale) forces the value (still capped by the GPU: maxTex).
+// tex: ground, prop and building textures are upscaled once with EPX (Scale2x) from this many internal px per art px on.
+// bk: the battle unit layer's backing pixels per logical px (2 below d bk, else bkHi, an integer multiple of the 2x HD paint).
+// sc4W/sc5W/scH: the flat view may use scale 4 or 5 on boxes this wide and tall (layout px); minVw: the narrowest view (art px) a
+// dpr-aware scale change may produce. stage: the GL battle stage's backing pixels per CSS pixel, from the display, capped per tier by resMax.
+const RENDER={k:2,bias:.25,max:3,tex:2,bk:3,bkHi:4,sc4W:1360,sc5W:1760,scH:520,minVw:150,maxArea:4200000,texArea:16000000,stageMax:{medium:2,high:3}};
 const HD_FLOOR={persp:.32,tile:96,sq:.34,focus:[.12,.9],fog:.55};
 // Colour grade per time of day (outdoor battles) and weather: gain (rgb multiplier), lift (rgb added), sat, contrast, amb (light on units,
 // rgb), key (key light colour), vig (vignette). Indoor stages (caves, halls, boss stages) use `indoor`.
@@ -482,7 +490,8 @@ const WMAP={cell:[64,150,38],vig:.78,names:84};// cell: px per area (normal min,
 // fog, in camera distances. xray: radius (art px) around the hero where props and walls in front of him thin out; actMin: the least
 // light characters get (dark places stay readable); heroLight: radius of the hero's lantern; shaft: light shaft strength.
 // dof: tilt shift (shift of the sharp band from the hero, band half height, ramp, strength; all shares of the view height).
-// bloom: threshold and strength (Medium, High). tiers: px = internal pixels per art pixel (1 = the 2D view's own grid), blur = size
+// bloom: threshold and strength (Medium, High). tiers: px = the least internal pixels per art pixel (1 = the 2D view's own grid; v0.17.3: the
+// real value follows the display, see RENDER and resPx in res11.js), pxMax = the most (3 = the HD paint's own detail), blur = size
 // divisor of the blurred copy, lmap = light map size (every light in view is drawn into it each frame), bloom 1 = from the blurred copy,
 // 2 = its own wider pass, dof 1 or 2 blur rounds, shafts on or off, every = remake the blurred copy every n frames.
 // lmMax: most lights per frame; lightK: light strength; chunk: static geometry chunk size in tiles (culling).
@@ -491,7 +500,7 @@ const WMAP={cell:[64,150,38],vig:.78,names:84};// cell: px per area (normal min,
 const HD2D={pitch:40,fov:28,maxHfov:40,zoom:1,follow:85,topSlack:.2,sway:{amp:0,pitch:0,ms:11000},
   wall:{dungeon:22,cliff:12,town:14},water:-3,deep:-14,fogStart:1.15,fogEnd:2.7,xray:{out:26,dun:40},actMin:{out:.62,dun:.58},heroLight:120,shaft:.09,
   dof:{shift:.06,band:.24,ramp:.5,max:.7},bloom:{thr:.86,med:.5,high:.55},
-  tiers:{medium:{px:1,blur:2,lmap:128,bloom:1,dof:1,shafts:1,every:2},high:{px:1,blur:2,lmap:192,bloom:2,dof:1,shafts:1}},lmMax:96,lightK:.8,chunk:8,
+  tiers:{medium:{px:1,pxMax:2,blur:2,lmap:128,bloom:1,dof:1,shafts:1,every:2},high:{px:1,pxMax:3,blur:2,lmap:192,bloom:2,dof:1,shafts:1}},lmMax:96,lightK:.8,chunk:8,
   suns:{day:[-.55,.78,.3],dusk:[-.9,.36,.25],dawn:[.9,.36,.25]},
   look:{
     day:  {amb:[.66,.66,.7],sun:[.5,.47,.4],sd:[-.55,.78,.3],sh:[.55,0,0],fog:[.74,.84,.98],fogA:.32,exp:1,con:1.07,sat:1.14,vig:.32,lift:[0,0,.02],gain:[1.03,1,.96],emis:0,lamp:0,shaft:1,shC:[1,.93,.72],pl:0},

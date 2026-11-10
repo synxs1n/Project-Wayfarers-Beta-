@@ -276,10 +276,13 @@ function hbEnv(o,now){const t=(now-o.t0)/o.life;if(t<0)return 0;if(t>=1)return -
   if(o.fade==='in')return t<.8?t/.8:1-(t-.8)/.2;if(o.fade==='pulse')return Math.sin(t*Math.PI);return t<.08?t/.08:Math.pow(1-(t-.08)/.92,1.6);}
 // ----- canvas placement -----
 function hbShow(on){const cv=HB.cv,bc=document.getElementById('bcv');if(cv){cv.style.display=on?'block':'none';if(!on)cv.style.translate='';}if(bc)bc.style.opacity=on&&hbQ().mode!=='under'?'0':'';HB.redraw=true;}
+// v0.17.3: the GL stage's backing pixels per CSS pixel: the display's own (devicePixelRatio x page zoom), capped per tier (RENDER.stageMax);
+// Settings > Render scale 1x / 2x / 3x asks for that many (still no more than the display has). maxPx below still caps the pixel count.
+function resStageR(q){const dev=resDev(),c=resCfg(),cap=RENDER.stageMax[GFX.tier]||2;return c?Math.min(c,dev):RES.st?1:Math.min(dev,cap);}
 function hbPlace(){const wrap=document.getElementById('bwrap'),bc=document.getElementById('bcv'),cv=HB.cv;if(!wrap||!bc||!cv)return false;
   if(cv.parentNode!==wrap||cv.nextSibling!==bc){wrap.insertBefore(cv,bc);HB.redraw=true;}
   const op=hbQ().mode==='under'?'':'0';if(cv.style.display!=='block')cv.style.display='block';if(bc.style.opacity!==op)bc.style.opacity=op;
-  const q=hbQ(),dpr=Math.max(1,window.devicePixelRatio||1),cw=BL.W*BL.sc,ch=BL.H*BL.sc;let r=Math.min(q.res||1,dpr);
+  const q=hbQ(),dpr=Math.max(1,window.devicePixelRatio||1),cw=BL.W*BL.sc,ch=BL.H*BL.sc;let r=Math.max(Math.min(q.res||1,dpr),resStageR(q));// v0.17.3: follows the display (res11.js)
   if(cw*ch*r*r>(q.maxPx||1e6))r=Math.sqrt((q.maxPx||1e6)/(cw*ch));
   const bw=Math.max(1,Math.round(cw*r)),bh=Math.max(1,Math.round(ch*r));
   if(cv.width!==bw||cv.height!==bh){cv.width=bw;cv.height=bh;HB.redraw=true;}
