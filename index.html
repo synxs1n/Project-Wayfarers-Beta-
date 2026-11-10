@@ -1866,7 +1866,7 @@ html.rm .battle.b3 .cmd .mi.b9glow{animation:none}
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.18.2";const APP_BUILD="20c652f69c3b";
+(function(){const APP_VER="0.18.3";const APP_BUILD="98519896f20a";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2568,7 +2568,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.18.2";const APP_BUILD="20c652f69c3b";
+const APP_VER="0.18.3";const APP_BUILD="98519896f20a";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2576,7 +2576,8 @@ const APP_VER="0.18.2";const APP_BUILD="20c652f69c3b";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
- ['Beta v0.18.2',['The Meridian Breach has its own look apart from the realms: cracked near-black violet ground with teal veins, a star sea with slow aurora bands and drifting shards, pale glowing cliffs, rift-glass bridges, obsidian rune stones and spore bushes. Fights that start in the Breach get their own backdrop of broken islands under the aurora instead of the last field you walked.']],
+ ['Beta v0.18.3',['Click to move on a computer no longer wanders off to a random spot: a mouse press only turns into a drag after real movement, the tapped tile is read when you let go, and the Windows app no longer mixes zoomed and unzoomed coordinates. Skill lists show their numbers permanently: a fixed strip with the damage estimate in battle (power elsewhere), hits, kind and MP cost, instead of a number that popped up and faded.']],
+['Beta v0.18.2',['The Meridian Breach has its own look apart from the realms: cracked near-black violet ground with teal veins, a star sea with slow aurora bands and drifting shards, pale glowing cliffs, rift-glass bridges, obsidian rune stones and spore bushes. Fights that start in the Breach get their own backdrop of broken islands under the aurora instead of the last field you walked.']],
 ['Beta v0.18.1',['Battle animation pass two: every status has its own shape (poison bubbles, bleed streaks, stun stars, ward plates and so on), all twelve Limit Breaks and the signature skills have their own flourish, boss windups and realm gimmicks telegraph before they land, slash arcs are thicker with a glow, spell flashes tint by element, multi-hit counts only blows that landed, big hits get a short hit-stop and camera punch, and foes fall apart differently by the kind of blow that finished them.']],
 ['Beta v0.18.0',['Foe and boss sprites on the battle stage are repainted at a clean whole-pixel scale (bosses one and a half times their art, guardians twice, with the HD paint they had lost), with room around them so arms, hammers, crowns and tails are no longer cut flat, feet on the stage line, and a gentler boss idle glow. Bosses stand about 90 px tall now.']],
  ['Beta v0.17.9',['Wide windows (desktop, the Windows app) use up to 1400 px of width instead of 1000, so the world view shows more and the dark side margins shrink.',
@@ -30563,6 +30564,69 @@ BG.breach=function(ctx,W,H,R){const gy=bgGY(H);
     else{f('#1a1430',x,y-4,7,4);f('#4a3e80',x+1,y-5,5,3);f('#a898d8',x+1,y-5,4,1);}}
   L(BW*.5,gy-H*.18,gy+1,100,'#3fe0c8',.28,.3);L(BW*.22,gy-H*.1,gy+1,80,'#9a6aff',.25,.3);};}
 {const hk0=hbLook;hbLook=function(info){const o=hk0.apply(this,arguments);try{if(info&&info.base==='breach'&&info.out&&HD_LOOK.night){const n=HD_LOOK.night;o.ph='night';o.night=true;o.gain=n.gain.slice();o.lift=n.lift;o.sat=n.sat;o.con=n.con;o.amb=n.amb;o.key=n.key;o.vig=n.vig;o.kp=[.5,-.1];o.kx=0;o.cloud=0;}}catch(e){}return o;};}
+
+// ===== nav11.js (v0.17.9): click / tap to walk with a computer mouse =====
+// Owner: "on computer, when I click a space to walk to on the screen, it walks to a random spot rather than where I clicked".
+// Found with a Playwright probe that drives real mouse events (docs/handoff-v0111.md, 0.17.9):
+// 1. ui2.js treats a press as a DRAG (steer toward the pointer, tap target dropped) once a pointermove arrives after 220 ms or after 14 px. A
+//    real mouse always sends pointermove for 1 px of jitter, and on Medium/High (HD-2D) a frame takes long enough that the move is handled
+//    after 220 ms, so an ordinary click became "drag": the hero took a few steps in one of 8 directions (a random spot) and the tap
+//    target was thrown away. Here a mouse or pen press only becomes a drag after 6 px of travel, whatever the hold time.
+// 2. The tap tile came from the camera at pointerdown. It is now recomputed at pointerup (the camera glides while the hero walks), so the tile
+//    is the one under the cursor at release.
+// 3. Computers zoom the page with CSS zoom on <html> (deskscale.js, 1.33 at 1920x1080). Before Chromium 128 (the Windows app is Electron 31 =
+//    Chromium 126) getBoundingClientRect() of an element inside a zoomed page is in unzoomed px while clientX stays in viewport px, so
+//    mapPoint (and hdPick) mixed two spaces and the tile was off by the zoom ratio times the distance from the top left. The pointer position
+//    given to mapPoint is divided by the zoom when the two spaces disagree (checked against <html> itself, so it is a no-op on Chromium 128+).
+function nv11Zoom(){try{const z=typeof dsZoom==='function'?dsZoom():1;if(z<=1.001)return 1;const w=document.documentElement.getBoundingClientRect().width;if(!(w>0))return 1;
+  const k=window.innerWidth/w;return k>1+(z-1)/2?z:1;}catch(e){return 1;}}
+{const mp0=mapPoint;mapPoint=function(e){const k=nv11Zoom();if(k===1||!e)return mp0.apply(this,arguments);return mp0.call(this,{clientX:e.clientX/k,clientY:e.clientY/k,target:e.target});};}
+const NV11={slop:6,dbg:null};
+const nv11Mouse=e=>e.pointerType==='mouse'||e.pointerType==='pen';
+// capture phase on window runs before ui2.js's document listeners. A small mouse move is swallowed so it can never turn the press into a drag.
+window.addEventListener('pointermove',e=>{try{const M=TOUCH&&TOUCH.map;if(!M||M.id!==e.pointerId||M.drag||!nv11Mouse(e))return;
+  if(Math.hypot(e.clientX-M.x0,e.clientY-M.y0)<NV11.slop)e.stopImmediatePropagation();}catch(_){}},true);
+// at release: a press that stayed within the slop is a tap on the tile under the cursor NOW (camera as it is at pointerup)
+window.addEventListener('pointerup',e=>{try{const M=TOUCH&&TOUCH.map;if(!M||M.id!==e.pointerId||M.drag||!nv11Mouse(e)||e.type!=='pointerup')return;
+  if(Math.hypot(e.clientX-M.x0,e.clientY-M.y0)>=NV11.slop*2)return;const p=mapPoint(e);if(!p)return;NV11.dbg={down:M.p0,up:p};M.p0=p;
+  if(WS.mv)WS.pathAt=null;}catch(_){}},true);
+
+// ===== skillrows11.js (v0.17.9): skill numbers are part of the row =====
+// Owner: "Skill numbers should not just pop up when you enter screen, they should be a permanent part of each ability in the skill list."
+// Cause: the battle Skills row drew its damage estimate as <span class="num dmg">. ".num" is the FLOATING damage number (style.css .num
+// { position:absolute; animation: rise 1s ... }), so every estimate popped in, floated up and faded out to opacity 0 about a second after the
+// menu opened, which is the number that "pops up" and then is gone. The hero sheet Skills tab never showed a number (MP or "Lv N" only).
+// Here both lists get one fixed strip, rendered with the row: estimate (battle) or power, hits, kind, MP. No .num class, no animation, no timer.
+// The tooltips and descriptions stay as extra detail.
+function sr11Kind(s){return s.k==='phys'?'Physical':s.k==='mag'?'Magic':s.k==='heal'?'Heal':s.k==='revive'?'Revive':s.k==='status'?((s.t==='ally'||s.t==='allyAll'||s.t==='self'||s.t==='dead')?'Buff':'Debuff'):'';}
+function sr11Pw(s){return s.pw?Math.round(s.pw*100):0;}
+// est: the live estimate ('~96', '~96 each') or '' ; lock: 'Lv 12' on the sheet's locked rows
+function sr11Strip(s,est,lock){const lim=!!s.limit;
+  const hits=s.hits>1?`<i class="sk11h" title="Hits">x${s.hits}</i>`:'',pw=sr11Pw(s),kind=sr11Kind(s);
+  const head=est?`<b class="sk11e" title="Estimated ${s.k==='heal'||s.k==='revive'?'healing':'damage'} now">${est}</b>`:pw?`<b class="sk11e" title="Power">Pow ${pw}</b>`:`<b class="sk11e sk11k">${kind||'Skill'}</b>`;
+  const sub=[est&&pw?`<i class="sk11p" title="Power">Pow ${pw}</i>`:'',hits,(est||pw)&&kind?`<i class="sk11k">${kind}</i>`:'',lim?`<i class="sk11c" title="Limit gauge, no MP">Limit</i>`:`<i class="sk11c" title="MP cost">${s.mp} MP</i>`].filter(Boolean).join('');
+  return `<span class="m sk11">${lock?`<i class="sk11l">${lock}</i>`:''}${head}<span class="sk11s">${sub}</span></span>`;
+}
+// battle list: replace the .m span of every skill button (the filter chips of skillfilt9.js ran inside and already removed hidden rows)
+{const ch0=cmdHtml;cmdHtml=function(){let h=ch0.apply(this,arguments);try{const a=B&&B.cur;if(a&&B.mode==='cmd'&&B.menu==='root'&&h.includes('class="mi limit')){const LS=limitSkill(a),re=/(<button class="mi limit[^"]*" data-act="cmd" data-arg="limit">[\s\S]*?)<span class="m">Ready<\/span>/;let est='';try{est=skNum(a,LS)||'';}catch(e){}h=h.replace(re,(m,p1)=>p1+sr11Strip(LS,est,''));}
+  if(!a||B.mode!=='cmd'||B.menu!=='skills')return h;
+  known(a).forEach(s=>{const re=new RegExp(`(<button class="mi [^"]*" data-act="sk" data-arg="${s.id}"[^>]*>[\\s\\S]*?)<span class="m">(?:<span class="num [^"]*">[^<]*<\\/span> )?[^<]*<\\/span>`);
+    if(!re.test(h))return;let est='';try{est=skNum(a,s)||'';}catch(e){}h=h.replace(re,(m,p1)=>p1+sr11Strip(s,est,''));});}catch(e){}return h;};}
+// hero sheet: rows are matched by skill name, after sheet11.js built the tabs
+{const mc0=mChar;mChar=function(id,edit){const h=mc0.apply(this,arguments);try{
+  const c=G.roster[id],t=TPL[id];if(!c||!t)return h;const list=classSkills(t).concat(id==='vaelith'&&typeof archiveSkills==='function'?archiveSkills():[]),by={};list.forEach(s=>{by[s.n]=s;});
+  const tp=document.createElement('template');tp.innerHTML=h;let n=0;
+  const cls=t.cls,LM={};[LIMIT[cls],LIMIT2[cls]||LIMIT[cls]].forEach((L,i)=>{if(!L)return;const o=Object.assign({limit:1,mp:0,hits:1},L);if(i===0&&o.pw)o.pw=+(o.pw*(typeof LIMIT_I==='number'?LIMIT_I:.7)).toFixed(2);LM[(i?'Limit II: ':'Limit I: ')+L.n]=o;});
+  tp.content.querySelectorAll('.row').forEach(r=>{const b=r.querySelector(':scope>div>b'),m=r.querySelector(':scope>span.m');if(!b||!m||m.classList.contains('sk11'))return;
+    const nm=b.textContent.trim(),isL=r.classList.contains('limitr'),s=isL?LM[nm]:by[nm];if(!s)return;const lock=isL?r.classList.contains('lock'):!skillKnown(c,s);
+    const w=document.createElement('template');w.innerHTML=sr11Strip(s,'',lock?(isL?(m.textContent.trim()||'Locked'):'Lv '+s.lv):'');r.replaceChild(w.content.firstChild,m);n++;});
+  return n?tp.innerHTML:h;}catch(e){return h;}};}
+{const st=document.createElement('style');st.textContent=
+ '.mi .m.sk11,.row .m.sk11{display:flex;flex-direction:column;align-items:flex-end;gap:1px;text-align:right;white-space:nowrap;line-height:1.15}'+
+ '.m.sk11 .sk11e{font-size:.78rem;font-weight:800;color:#ffd8a0;animation:none;opacity:1;transform:none;position:static}.m.sk11 .sk11e.sk11k{color:#b8c8dc;font-weight:700}'+
+ '.mi .m.sk11 .sk11e{color:#ffd8a0}.m.sk11 .sk11s{display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap;font-size:.64rem;color:#a8d4ff}.m.sk11 .sk11s i,.m.sk11 .sk11l{font-style:normal}'+
+ '.m.sk11 .sk11k{color:#c8d4e8}.m.sk11 .sk11l{font-size:.66rem;color:#e8c070;font-weight:700}.m.sk11 *{animation:none!important}';
+ document.head.appendChild(st);}
 
 window.__A={walkable,ceInit,tvSlots,genQuests,STARTERS,starterDraw,ECON,AUTO_NERF,rebuildBase,detLive,REACT,skEls,packContents,miniFor,AUTO_REW,ENC_RATE,ENC_MIN_STEPS,detNote,classSkills,stickCount,bestAll,calcStats,lookKey,vTemper,storyEchoUp,leaveDungeon,win,ldApply,genFort,caveOk,enterCave,siteHasMini,openChest,nextDlg,WS,mapIcoRects,roamSpawn,roamInterior,roamSees,mapTargets,DIRV,tileAt,STAGE_LV,autoBan,rollWeather,guardianDef,mapIssues,mapEntry,syncPools,bovAt,calFxAt,realmAt,REALMS,BOV,CAL_FX,overlayGuide,liftOverlay,drawGearIcon,gearIcon,itemIcon,RAW,sigKind,sigGid,personalDone,heroLook,hasSignature,LEGEND_IDS,facDirty,facCount,facRank,facRep,FACB,FAC,finishBattle,npcWords,npcHints,npcPool,titleMake,titleAdvance,TTS,placeAt,wkwUpdate,innSpot,getMap,monURL,enterVia,applyBossTheme,BTHEME,resetMaps,rebuildBase,shopStock,gearDesc,calcStats,gearMigrate,CLS_WPN,CLS_ARM,WPERK,WT_NAME,equipWhy,lootBase,GEAR,canEquip,gearOf,perkNote,FAM_MAT_V35,fbDraft,META:{get best(){return META.best},get codex(){return META.codex},get q(){return META.q}},saveMeta,OFF,offPending,offFlush,PROFILE,profileSync,codexSee,getMap,placeAt,interact,sanctumOpen,riftKeys,echoKeys,BONDS,bondKey,wkwUpdate,inTown,WS,LC,lsort,bestParty,fsCast,fsSkills,ldApply,MON,registerTamed,stickPower,stickCount,autoOne,planGear,bestTag,gainersFor,compGainFor,refresh,fitsFor,canEquip,gearOf,queueNewGear,ARENA,fxDur,banDur,stageTags,autoSwitchPick,layoutBattle,newChar,calcStats,limitSkill,limitTier,canStuck,dunReachable,LV_CAP,addXp,echoSpec,bossLvFor,fx,MON,log,effInfo,tierOf,perkOf,quirkDef,forgeCost,buyPlan,vJourney,modalBack,partySlots,limitOpen,town2Reached,skillKnown,known,classSkills,paceMigrate,unpackG,packG,makeEnemy,QUIRK,arrive,enterDungeon,wkwUpdate,useTravel,travelWhyNot,porkFlee,porkBlocked,encTile,campRest,buyPart,partLeft,alchStock,GAME_VERSION,CHANGELOG,ITEMS,tavernOffers,tavernPool,recruitFit,partyNeeds,vNext,CHALL,innSpot,RECIPES,MATS,FB,fbContext,REDEEM,legendJoin,legendQ,genQuests,dynActors,convInit,PROFILE,profileSync,checkArchive,GPOOL,FPOOL,guardianDef,saveMeta,archiveSkills,get G(){return G;},set G(v){G=v;},get B(){return B;},get V(){return V;},get META(){return META;},WS,ACT,render,newGame,placeAt,startBattle,autoTurn,advance,finishBattle,getMap,innSpot,setPause:p=>{PAUSE=p;},autoCfg,worldInputDir,inputSources,battleFrame,battleTheme,STS,MAPS,mapIssues,healMap,mimicReward,dropChest,interact,worldDraw,TPL,ZONES,ZS,newChar,recruit,saveGame,resetMaps,dynActors,tileAt,BV,refresh,genBounties,genQuests,vStarter,heroCard,heroURL,iconURL,masteryLine,AU,buildTrack,tone,noiseHit,MIDI,sfx,audioVol};
 ['heroRoles','SOLID','WEATHER','WX_BASE','weatherFX','superGuide','recruitCost','ceStart','ceStep','ceInit','cePool','wxList','SUPER_TABLE','superOk','facRank','facRep','facInit','facCount','facCredit','FAC','FMIS','facMissionList','facProg','tyOf','facSync','facMul','facBest','worldPlan','caveReward','enterCave','leaveCave','leaveDungeon','buildCaveMap','worldGraph','openWorldMap','sigReport','SIG_NAMES','starterDraw','ITEM_TIERS','gTierIdx','tierChip','gearIcon','starterSlots','STARTERS','CLK_LEN','CLK_PH','clockPhase','wxInfoBody','recipeOrder','recipeGain','recipeReady','recipeClose','effOf','calcDamage','healsUndead','storyEchoUp','riftKeys','echoDef','efCost','autoLocked','bossFightKey','learnScanAll','isSeen','mapMarks','genSub','subOK','subReq','ensureSub','inSub','tvSlots','tvInit','tvLeft','tvEvent','tvNextText','tvPool','tvDue','tvShuffle','mTavern','hireOK','TV_CAP','TV_CD','POOL_IDS','natPool','natOf','natRoll','NATURES','natInfo','natRerollCost','natChooseCost','NAT_CLASS','iconURL','seenOf','mapIcoDraw','drawMini','MAPCV','revealAround','fxLayer','numDur','compBonusText','compPerk','checkPhase','win','unitBox','LNQ','challVisible','challEligible','challState','isMimic','migrateCompanions','canSummon','summonComp','compOf','clockPhase','tickClock','isNight','rollWeather','wxStep','nightPool','encounterFoes','restAll','tameElite','openChest','rerollTavern','bestAll','gearTier','SV','svCheck','svFlush','svInit','svPush','svPull','svScan','svParse','svBackup','svPack','svUnpack','svProg','svCloudList','svDelDoc','svGet','svCap','slotState','slotKey','svDecode','SV_CH','svStatus','svSlotRaw','svLoad','loadRaw','svHash','svIdx'].forEach(k=>{try{Object.defineProperty(window.__A,k,{get:()=>eval(k)});}catch(e){}});
