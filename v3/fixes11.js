@@ -36,7 +36,7 @@ HOOK.xform('vModal','fixes11','Riftkeeper warning',function(h,m){try{if(m&&m.typ
 // ----- v0.16.7: the "Guard against a big hit" goal counts any Guard made while a foe telegraphs -----
 // prog2 counted it only when a foe's Crushing Charge or Cataclysm landed on a guarding hero. Bosses with their own wind ups never
 // counted, so the goal sat in the list at the end of the game. Guarding while any living foe has a charge or telegraph up counts now.
-{const g0=guard;guard=function(){try{if(B&&B.nz&&B.cur&&B.cur.side==='p'&&(B.en||[]).some(e=>e.hp>0&&e.st&&(e.st.charge||e.st.g_tele))){B.nz.guard++;if(!B.nz.tele)B.nz.tele=1;}}catch(e){}return g0.apply(this,arguments);};}
+{const g0=guard;guard=function(){try{if(B&&B.nz&&B.cur&&B.cur.side==='p'&&(B.en||[]).some(e=>e.hp>0&&((e.st&&(e.st.charge||e.st.g_tele))||e.boss||e.elite||(B.spec&&(B.spec.kind==='boss'||B.spec.boss))))){B.nz.guard++;if(!B.nz.tele)B.nz.tele=1;}}catch(e){}return g0.apply(this,arguments);};}/* v0.17.7: a Guard in any boss or elite fight counts too (the owner's guards did not register) */
 // ----- v0.17.1: at the level cap, XP becomes gold; drops past the pack's cap become gold -----
 const CAPG={xpPer:8,dropRate:.4};
 {const ax0=addXp;addXp=function(c,x){try{if(c&&c.lv>=LV_CAP&&x>0&&G){const g=Math.max(1,Math.round(x/CAPG.xpPer));G.gold+=g;if(B)B.capGold=(B.capGold||0)+g;return [];}}catch(e){}return ax0.apply(this,arguments);};}

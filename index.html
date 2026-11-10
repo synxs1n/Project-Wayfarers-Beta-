@@ -1136,7 +1136,7 @@ body.noscroll #p5save{top:auto!important;bottom:8px!important}
 /* ===================== Beta v0.6.3: shops and menus (menus3.js) ===================== */
 /* Panels fit the screen the phone really shows: --vvh is the visual viewport height (menus3.js), so the panel's own scroll reaches
    its last row even when the browser bar or the app's bars take part of the screen (100vh counts the screen behind them). */
-.box{max-height:calc(100vh - 32px);max-height:min(92vh,calc(100svh - 24px))}/* v0.17.3: the smallest viewport height, so the box always fits above the browser bar and scrolls inside itself (the sheet's bottom used to be reachable only after scrolling the page behind) */
+.box{max-height:calc(100vh - 32px);max-height:min(92vh,calc(100svh - 24px - env(safe-area-inset-bottom,0px)))}.modal{padding-bottom:env(safe-area-inset-bottom,0px);align-content:start}/* v0.17.7: and clear of the system bar; a box taller than the view scrolls the modal from its top *//* v0.17.3: the smallest viewport height, so the box always fits above the browser bar and scrolls inside itself (the sheet's bottom used to be reachable only after scrolling the page behind) */
 .modal{align-items:safe center;justify-items:safe center}
 .modal>.box{margin:auto 0}
 /* the world header peeks out behind a centred panel as a cut "Wa..." on tablets and folds: hide its brand while a popup is up */
@@ -1375,7 +1375,7 @@ html.rm .fxlayer .fx2.b3fx{animation-name:fade2!important}
 .battle.b3.bside .bline{align-self:start}
 .battle.b3.bside .order{max-width:100%}
 .battle.b3.bside .bwrap{grid-column:auto;margin:0}
-.battle.b3.bside .bbottom{grid-column:auto;align-self:stretch;max-height:calc(100vh - 120px);overflow:auto;overscroll-behavior:contain}
+.battle.b3.bside .bbottom{grid-column:auto;align-self:stretch;max-height:calc(100svh - 120px - env(safe-area-inset-bottom,0px));overflow:auto;overscroll-behavior:contain}
 .battle.b3.bside .bbottom .cmd{order:1}
 .battle.b3.bside .bbottom .bparty{order:2}
 .battle.b3.bside .fcs,.battle.b3.bside .pcs{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
@@ -1779,6 +1779,9 @@ html.rm .battle.b3 .cmd .mi.b9glow{animation:none}
 .battle.b3 .pgroup.rsv .pc.rs .ucr.ucrm .bar{height:5px}
 .battle.b3 .pgroup.rsv .pc.rs .ucr.ucrm .nums{color:#a8d0ff}
 .battle.b3.m-tall .pgroup.rsv .pcw .pc.rs{min-height:44px}
+
+/* v0.17.7 widescreen column: one card per row in the right column (two 150px columns squeezed the cards) */
+.battle.b3.m-wide.b8col .pcs,.battle.b3.m-wide.b8col .fcs{grid-template-columns:1fr}
 /* Beta v0.7.0 battle information and input (battle5.js) */
 /* stage intent label: a box laid out by b3Lay (logical stage px) */
 .bstage .b5it{display:grid;place-items:center;padding:0;border-radius:2px;border:.6px solid #150b17;background:rgba(21,11,23,.86);color:#ffd8c8;pointer-events:none;z-index:6;box-shadow:0 0 0 .5px rgba(255,255,255,.25);overflow:hidden}
@@ -1860,7 +1863,7 @@ html.rm .battle.b3 .cmd .mi.b9glow{animation:none}
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.17.6";const APP_BUILD="98d2fdbe3774";
+(function(){const APP_VER="0.17.6";const APP_BUILD="e36f5bcc9358";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2562,7 +2565,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.17.6";const APP_BUILD="98d2fdbe3774";
+const APP_VER="0.17.6";const APP_BUILD="e36f5bcc9358";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -21752,7 +21755,8 @@ function b3WideSc(w,vh,wrap,bat){try{
         out.push({sc,col:true,cr:true,fr,fs,R,L,ch,P,P0,F0:fs?F:fl,fh:fr?fR:F,band:Math.max(0,avail-sh(sc)-fixL-P-F)+Math.max(0,avail-right)+(P0-P)*3+(fs?0:fl-F)*3,n:3+(fr?1:0)+(fs?2:0)});}}
     // an arrangement that shows everything whole (nothing squeezed to scroll, the stage at least B8.min) wins over any that does not
     out.forEach(o=>{o.fits=o.sc>=B8.min?1:0;o.whole=o.fits&&!(o.P0>o.P)&&!(o.F0>o.fh)?1:0;});
-    out.sort((a,b)=>(b.whole-a.whole)||(b.fits-a.fits)||(b.sc-a.sc)||(a.band-b.band)||(a.n-b.n));return out[0];};
+    out.forEach(o=>{o.pref=o.col&&o.fr&&!o.cr?1:0;});/* v0.17.7 (owner): on wide screens the foes sit in the right column under the Rearguard and the commands keep the left, whenever that arrangement shows everything whole */
+    out.sort((a,b)=>(b.whole-a.whole)||(b.pref-a.pref)||(b.fits-a.fits)||(b.sc-a.sc)||(a.band-b.band)||(a.n-b.n));return out[0];};
   let r=pick();
   if(r.sc<B8.tightAt&&B&&!B._b8t){B._b8t=1;bat.classList.add('b8tight');r=pick();}
   bat.classList.toggle('b8tight',!!(B&&B._b8t));bat.classList.toggle('b8col',r.col);bat.classList.toggle('b8lr',!!r.lr);bat.classList.toggle('b8fr',!!r.fr);bat.classList.toggle('b8cr',!!r.cr);bat.classList.toggle('b8fs',!!r.fs);
@@ -28881,7 +28885,7 @@ HOOK.xform('vModal','fixes11','Riftkeeper warning',function(h,m){try{if(m&&m.typ
 // ----- v0.16.7: the "Guard against a big hit" goal counts any Guard made while a foe telegraphs -----
 // prog2 counted it only when a foe's Crushing Charge or Cataclysm landed on a guarding hero. Bosses with their own wind ups never
 // counted, so the goal sat in the list at the end of the game. Guarding while any living foe has a charge or telegraph up counts now.
-{const g0=guard;guard=function(){try{if(B&&B.nz&&B.cur&&B.cur.side==='p'&&(B.en||[]).some(e=>e.hp>0&&e.st&&(e.st.charge||e.st.g_tele))){B.nz.guard++;if(!B.nz.tele)B.nz.tele=1;}}catch(e){}return g0.apply(this,arguments);};}
+{const g0=guard;guard=function(){try{if(B&&B.nz&&B.cur&&B.cur.side==='p'&&(B.en||[]).some(e=>e.hp>0&&((e.st&&(e.st.charge||e.st.g_tele))||e.boss||e.elite||(B.spec&&(B.spec.kind==='boss'||B.spec.boss))))){B.nz.guard++;if(!B.nz.tele)B.nz.tele=1;}}catch(e){}return g0.apply(this,arguments);};}/* v0.17.7: a Guard in any boss or elite fight counts too (the owner's guards did not register) */
 // ----- v0.17.1: at the level cap, XP becomes gold; drops past the pack's cap become gold -----
 const CAPG={xpPer:8,dropRate:.4};
 {const ax0=addXp;addXp=function(c,x){try{if(c&&c.lv>=LV_CAP&&x>0&&G){const g=Math.max(1,Math.round(x/CAPG.xpPer));G.gold+=g;if(B)B.capGold=(B.capGold||0)+g;return [];}}catch(e){}return ax0.apply(this,arguments);};}
@@ -29508,6 +29512,143 @@ try{if(typeof WZ10!=='undefined'){const base=WZ10.px;Object.defineProperty(WZ10,
 // ----- Settings > Render scale -----
 HOOK.xform('settingsBody','res11','Render scale row after Graphics',function(h){try{const row=rsRow();const m=/<div class="rows gfxrows">[\s\S]*?<\/div><\/div><\/div>/.exec(h);
   if(m)return h.slice(0,m.index+m[0].length)+row+h.slice(m.index+m[0].length);return h+row;}catch(e){return h;}});
+
+// ===== sheet11.js (v0.17.x): the hero sheet as a tabbed sheet =====
+// The hero sheet (mChar, shown in the 'guild' modal with a char and in the 'char' modal) had grown into one long column. This module wraps mChar
+// LAST (after roles9, learn, comp, p3shop, p4party, v063prog added their blocks) and re-slices the finished html: it parses the string, moves the
+// existing nodes (so every data-act, every xform-added block and every inner html stays as the other modules made it) into a compact header,
+// a tab bar and five panes, and returns the new string. Nothing is regenerated except the header bars, tab bar and skill filter.
+//   header : portrait (front bust), name, level + class + role, element icons, HP / MP / XP bars, Equip button
+//   Overview: nature, bio, class card, party note | battles together, bonds
+//   Stats   : core stat buttons, mastery | attributes with point spending (Auto-spend, Respec)
+//   Skills  : signature, field skills, skills with a filter (known, locked, purpose), limit break
+//   Gear    : the gear rows (tap a row in the Guild Hall to change it), the pet
+//   Role    : the role picker row (roles9.js)
+// A heading this module does not know lands at the end of Overview, so a block another module adds is never dropped.
+// V.sheetTab remembers the last tab, V.sheetSkF the skill filter. No save fields.
+const SH11_TABS=[['overview','Overview'],['stats','Stats'],['skills','Skills'],['gear','Gear'],['role','Role']];
+const SH11_H4={'role':'role','attributes':'stats','equipment':'gear','pet':'gear','charms':'gear','limit break':'skills','skills':'skills','bonds':'overview'};
+{const st=document.createElement('style');st.textContent=`
+.panel.sh11{display:flex;flex-direction:column;overflow:hidden;padding-bottom:12px}
+.sh11>.cnav{flex:none;margin-bottom:4px}
+.sh11>.legstrip{flex:none}
+.sh11-head{flex:none;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:2px 10px;align-items:center;padding-bottom:6px}
+.sh11-head .pbig.sh11-port{width:62px;height:62px;grid-row:1}
+.sh11-head .pbig.sh11-port img{width:100%;height:100%;object-fit:cover;object-position:50% 20%}
+.sh11-id{min-width:0}
+.sh11-id h2.cname{margin:0;font-size:1.15rem;line-height:1.15;overflow-wrap:anywhere}
+.sh11-id small{display:block}
+.sh11-id .els{margin-top:2px}.sh11-id .els .el{font-size:.7rem}
+.sh11-act{grid-column:3;grid-row:1;align-self:start}
+.sh11-bars{grid-column:1/-1;grid-row:2;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.sh11-bars>div{min-width:0}.sh11-bars small{display:block;font-size:.7rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sh11-bars .bar{margin-top:1px;height:7px}
+.sh11-tabs{flex:none;flex-wrap:nowrap;gap:4px;margin:0 0 6px}
+.sh11-tabs .chip{flex:1 1 0;min-width:0;padding:7px 2px;text-align:center;font-size:.8rem}
+.sh11-tabs .chip .cnt{font:700 11px/1 var(--fb);margin-left:3px;opacity:.9}
+.sh11-body{flex:1 1 auto;min-height:0;overflow-y:auto;overflow-x:hidden;padding:0 2px 22px;overscroll-behavior:contain}
+.sh11-body>*,.sh11-col>*{min-width:0}
+.sh11-pane{display:none}.sh11-pane.on{display:block}
+.sh11-col h4:first-child{margin-top:4px}
+.sh11-col{display:block;min-width:0}
+.sh11-empty{margin:8px 0}.sh11-col>p.note{text-align:left}
+.sh11-skf{margin:4px 0 8px;gap:4px}.sh11-skf .chip{font-size:.74rem;padding:4px 8px}
+.sh11 .row.shx{display:none}
+.sh11 .eqsheet .eqsrow{min-width:0}.sh11 .attrs{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+.sh11 .stats.tapstats{grid-template-columns:repeat(auto-fill,minmax(96px,1fr))}
+.sh11-body .btnrow:last-child{margin-top:12px}
+@media (min-width:760px){
+ .panel.sh11.box.wide{max-width:min(980px,100%)}
+ .sh11-pane.on.cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 22px;align-items:start}
+ .sh11-head{grid-template-columns:auto minmax(0,1fr) minmax(220px,1.1fr) auto}
+ .sh11-head .pbig.sh11-port{grid-row:1}
+ .sh11-bars{grid-column:3;grid-row:1;grid-template-columns:1fr;gap:3px}
+ .sh11-act{grid-column:4}
+}
+@media (max-height:640px){.sh11-head .pbig.sh11-port{width:48px;height:48px}.sh11>.cnav{margin-bottom:0}}
+`;document.head.appendChild(st);}
+function sh11Tab(){const k=V&&V.sheetTab;return SH11_TABS.some(t=>t[0]===k)?k:'overview';}
+function sh11Build(h,id,edit){
+  if(typeof h!=='string'||typeof document==='undefined'||h.indexOf('charsheet')<0)return h;
+  const c=G&&G.roster[id];if(!c)return h;
+  const tp=document.createElement('template');tp.innerHTML=h;
+  const wrap=tp.content.firstElementChild,panel=wrap&&wrap.querySelector(':scope>.panel.charsheet');if(!panel)return h;
+  const mh=panel.querySelector(':scope>.mh'),grow=mh&&mh.querySelector(':scope>.grow');if(!mh||!grow)return h;
+  const ch=[...panel.children],head=ch.indexOf(mh);
+  const nav=panel.querySelector(':scope>.cnav'),leg=panel.querySelector(':scope>.legstrip');
+  const q=(r,s)=>r.querySelector(':scope>'+s);
+  const name=q(grow,'h2.cname'),title=q(grow,'small.ltitle'),lvl=[...grow.children].find(e=>e.tagName==='SMALL'&&!e.className),els=q(grow,'.els');
+  const nat=q(grow,'.natb'),bio=q(grow,'p.bio'),bt=q(grow,'p.note.nums'),card=q(grow,'.clscard'),mline=q(grow,'p.mline'),sig=q(grow,'p.sig');
+  const xp=q(panel,'.xp'),stats=q(panel,'.stats.tapstats');
+  // after the header: group by h4
+  const P={overview:[[],[]],stats:[[],[]],skills:[[]],gear:[[]],role:[[]]};let footer=null,cur=null,curTab=null;
+  const put=(tab,col,n)=>{if(n)P[tab][col].push(n);};
+  ch.slice(head+1).forEach(n=>{
+    if(n===xp||n===stats)return;
+    if(n.matches('.btnrow')&&n.querySelector('[data-act=charBack],[data-act=menuBack]')){footer=n;return;}
+    if(n.tagName==='H4'){const k=n.textContent.replace(/\d+ points? to spend/,'').trim().toLowerCase();curTab=SH11_H4[k]||(/charm|gear/.test(k)?'gear':'overview');cur=k;
+      put(curTab,curTab==='overview'?1:curTab==='stats'?1:0,n);return;}
+    if(n.matches('p.note')&&/^(In your six|On the roster)/.test(n.textContent)){put('overview',0,n);return;}
+    if(n.querySelector&&n.querySelector('[data-act=fsOpen]')){P.skills[0].unshift(n);return;}
+    put(curTab||'overview',(curTab||'overview')==='overview'||curTab==='stats'?1:0,n);});
+  // Skills before Limit Break inside the Skills pane
+  const sk=P.skills[0],li=sk.findIndex(n=>n.tagName==='H4'&&/^limit/i.test(n.textContent));
+  if(li>=0){const si=sk.findIndex(n=>n.tagName==='H4'&&/^skills/i.test(n.textContent));
+    if(si>li){const lim=sk.slice(li,si),rest=sk.slice(si);const pre=sk.slice(0,li);P.skills[0]=pre.concat(rest,lim);}}
+  const mk=(h4,txt)=>{const e=document.createElement(h4?'h4':'div');if(txt)e.textContent=txt;return e;};
+  // Overview
+  P.overview[0]=[nat,bio,card].filter(Boolean).concat(P.overview[0]);
+  if(bt)P.overview[1].unshift(bt);
+  // Stats
+  if(stats){P.stats[0].push(mk(1,'Core stats'),stats);}
+  if(mline){P.stats[0].push(mk(1,'Mastery'),mline);}
+  // Skills: signature first
+  if(sig)P.skills[0].unshift(sig);
+  // skill filter over the rows of the Skills section
+  const skH=P.skills[0].find(n=>n.tagName==='H4'&&/^skills/i.test(n.textContent)),rowsEl=skH&&P.skills[0].find(n=>n.matches&&n.matches('.rows')&&n.compareDocumentPosition(skH)&2);
+  if(rowsEl){const rows=[...rowsEl.children].filter(r=>r.classList.contains('row')),pur={};
+    rows.forEach(r=>{const e=r.querySelector('em.pur');r._p=e?[...e.classList].filter(x=>x!=='pur')[0]:'';if(r._p&&!pur[r._p])pur[r._p]=e.textContent.trim();});
+    const nK=rows.filter(r=>!r.classList.contains('lock')).length;
+    const F=[['all','All '+rows.length],['known','Known '+nK],['lock','Locked '+(rows.length-nK)]].concat(Object.keys(pur).map(k=>['p:'+k,pur[k]]));
+    let f=V.sheetSkF||'all';if(!F.some(x=>x[0]===f))f='all';
+    rows.forEach(r=>{const lock=r.classList.contains('lock'),ok=f==='all'||(f==='known'&&!lock)||(f==='lock'&&lock)||(f.slice(0,2)==='p:'&&r._p===f.slice(2));if(!ok)r.classList.add('shx');});
+    const fb=document.createElement('div');fb.className='chips sh11-skf';fb.setAttribute('role','group');fb.setAttribute('aria-label','Filter skills');
+    fb.innerHTML=F.map(x=>`<button class="chip sm ${x[0]===f?'on':''}" data-act="sheetSkF" data-arg="${x[0]}">${esc(x[1])}</button>`).join('');
+    P.skills[0].splice(P.skills[0].indexOf(skH)+1,0,fb);}
+  // Role
+  if(!P.role[0].length){const p=mk(0);p.className='note sh11-empty';p.textContent='No role to choose here.';P.role[0].push(p);}
+  // header
+  const S=c.S,t=TPL[id];let role='';try{role=ROLES.names[heroMain(c)]||'';}catch(e){}
+  const hd=document.createElement('div');hd.className='sh11-head';
+  const port=document.createElement('div');port.className='pbig sh11-port';const img=document.createElement('img');img.alt='';try{img.src=(typeof portraitURL==='function'?portraitURL(id):heroURL(id));}catch(e){img.src=heroURL(id);}port.appendChild(img);
+  const idb=document.createElement('div');idb.className='sh11-id';
+  if(name)idb.appendChild(name);if(title)idb.appendChild(title);
+  const lv=document.createElement('small');lv.textContent=(lvl?lvl.textContent:'')+(role?' · '+role:'');idb.appendChild(lv);
+  if(els)idb.appendChild(els);
+  hd.appendChild(port);hd.appendChild(idb);
+  const bars=document.createElement('div');bars.className='sh11-bars';
+  const xpTxt=c.lv>=LV_CAP?'XP: level cap':`XP ${fmt(c.xp)} / ${fmt(need(c.lv))}`;
+  bars.innerHTML=`<div><small class="nums">HP ${c.hp}/${S.mhp}</small>${bar(c.hp,S.mhp,'var(--hp)')}</div><div><small class="nums">MP ${c.mp}/${S.mmp}</small>${bar(c.mp,S.mmp,'var(--mp)')}</div><div><small class="nums">${xpTxt}</small>${c.lv>=LV_CAP?bar(1,1,'var(--gold)'):bar(c.xp,need(c.lv),'var(--gold)')}</div>`;
+  hd.appendChild(bars);
+  if(edit){const a=document.createElement('div');a.className='sh11-act';a.innerHTML=`<button class="btn sm" data-act="eqOpen" data-arg="${id}" aria-label="Equip ${esc(c.name)}" title="Open the Equipment page at ${esc(c.name)}">Equip</button>`;hd.appendChild(a);}
+  // tab bar + panes
+  const cur0=sh11Tab(),tabs=document.createElement('div');tabs.className='chips sh11-tabs';tabs.setAttribute('role','tablist');
+  tabs.innerHTML=SH11_TABS.map(([k,l])=>`<button role="tab" aria-selected="${k===cur0}" class="chip ${k===cur0?'on':''}" data-act="sheetTab" data-arg="${k}">${l}${k==='stats'&&c.pts>0?`<span class="cnt" title="${c.pts} point${c.pts>1?'s':''} to spend">${c.pts}</span>`:''}</button>`).join('');
+  const body=document.createElement('div');body.className='sh11-body';
+  SH11_TABS.forEach(([k])=>{const sec=document.createElement('section');sec.className='sh11-pane'+(k===cur0?' on':'')+(P[k].length>1?' cols':'');sec.dataset.pane=k;sec.setAttribute('role','tabpanel');
+    P[k].forEach(col=>{const d=document.createElement('div');d.className='sh11-col';col.forEach(n=>d.appendChild(n));sec.appendChild(d);});body.appendChild(sec);});
+  if(footer)body.appendChild(footer);
+  // rebuild the panel
+  const keep=[];if(nav)keep.push(nav);if(leg)keep.push(leg);
+  const mnav=panel.querySelector(':scope>.mnav');
+  panel.textContent='';if(mnav)panel.appendChild(mnav);keep.forEach(n=>panel.appendChild(n));panel.appendChild(hd);panel.appendChild(tabs);panel.appendChild(body);
+  panel.classList.add('sh11');
+  return tp.innerHTML;}
+{const mc0=mChar;mChar=function(id,edit){const h=mc0.apply(this,arguments);try{return sh11Build(h,id,edit);}catch(e){return h;}};}
+Object.assign(ACT,{
+  sheetTab(k){if(!SH11_TABS.some(t=>t[0]===k))return;V.sheetTab=k;render();const b=document.querySelector('#modal .sh11-body');if(b)b.scrollTop=0;},
+  sheetSkF(k){V.sheetSkF=String(k||'all');render();}});
+{const cn0=ACT.charNav;ACT.charNav=function(){const r=cn0.apply(this,arguments);try{const b=document.querySelector('#modal .sh11-body');if(b)b.scrollTop=0;}catch(e){}return r;};}
 
 window.__A={walkable,ceInit,tvSlots,genQuests,STARTERS,starterDraw,ECON,AUTO_NERF,rebuildBase,detLive,REACT,skEls,packContents,miniFor,AUTO_REW,ENC_RATE,ENC_MIN_STEPS,detNote,classSkills,stickCount,bestAll,calcStats,lookKey,vTemper,storyEchoUp,leaveDungeon,win,ldApply,genFort,caveOk,enterCave,siteHasMini,openChest,nextDlg,WS,mapIcoRects,roamSpawn,roamInterior,roamSees,mapTargets,DIRV,tileAt,STAGE_LV,autoBan,rollWeather,guardianDef,mapIssues,mapEntry,syncPools,bovAt,calFxAt,realmAt,REALMS,BOV,CAL_FX,overlayGuide,liftOverlay,drawGearIcon,gearIcon,itemIcon,RAW,sigKind,sigGid,personalDone,heroLook,hasSignature,LEGEND_IDS,facDirty,facCount,facRank,facRep,FACB,FAC,finishBattle,npcWords,npcHints,npcPool,titleMake,titleAdvance,TTS,placeAt,wkwUpdate,innSpot,getMap,monURL,enterVia,applyBossTheme,BTHEME,resetMaps,rebuildBase,shopStock,gearDesc,calcStats,gearMigrate,CLS_WPN,CLS_ARM,WPERK,WT_NAME,equipWhy,lootBase,GEAR,canEquip,gearOf,perkNote,FAM_MAT_V35,fbDraft,META:{get best(){return META.best},get codex(){return META.codex},get q(){return META.q}},saveMeta,OFF,offPending,offFlush,PROFILE,profileSync,codexSee,getMap,placeAt,interact,sanctumOpen,riftKeys,echoKeys,BONDS,bondKey,wkwUpdate,inTown,WS,LC,lsort,bestParty,fsCast,fsSkills,ldApply,MON,registerTamed,stickPower,stickCount,autoOne,planGear,bestTag,gainersFor,compGainFor,refresh,fitsFor,canEquip,gearOf,queueNewGear,ARENA,fxDur,banDur,stageTags,autoSwitchPick,layoutBattle,newChar,calcStats,limitSkill,limitTier,canStuck,dunReachable,LV_CAP,addXp,echoSpec,bossLvFor,fx,MON,log,effInfo,tierOf,perkOf,quirkDef,forgeCost,buyPlan,vJourney,modalBack,partySlots,limitOpen,town2Reached,skillKnown,known,classSkills,paceMigrate,unpackG,packG,makeEnemy,QUIRK,arrive,enterDungeon,wkwUpdate,useTravel,travelWhyNot,porkFlee,porkBlocked,encTile,campRest,buyPart,partLeft,alchStock,GAME_VERSION,CHANGELOG,ITEMS,tavernOffers,tavernPool,recruitFit,partyNeeds,vNext,CHALL,innSpot,RECIPES,MATS,FB,fbContext,REDEEM,legendJoin,legendQ,genQuests,dynActors,convInit,PROFILE,profileSync,checkArchive,GPOOL,FPOOL,guardianDef,saveMeta,archiveSkills,get G(){return G;},set G(v){G=v;},get B(){return B;},get V(){return V;},get META(){return META;},WS,ACT,render,newGame,placeAt,startBattle,autoTurn,advance,finishBattle,getMap,innSpot,setPause:p=>{PAUSE=p;},autoCfg,worldInputDir,inputSources,battleFrame,battleTheme,STS,MAPS,mapIssues,healMap,mimicReward,dropChest,interact,worldDraw,TPL,ZONES,ZS,newChar,recruit,saveGame,resetMaps,dynActors,tileAt,BV,refresh,genBounties,genQuests,vStarter,heroCard,heroURL,iconURL,masteryLine,AU,buildTrack,tone,noiseHit,MIDI,sfx,audioVol};
 ['heroRoles','SOLID','WEATHER','WX_BASE','weatherFX','superGuide','recruitCost','ceStart','ceStep','ceInit','cePool','wxList','SUPER_TABLE','superOk','facRank','facRep','facInit','facCount','facCredit','FAC','FMIS','facMissionList','facProg','tyOf','facSync','facMul','facBest','worldPlan','caveReward','enterCave','leaveCave','leaveDungeon','buildCaveMap','worldGraph','openWorldMap','sigReport','SIG_NAMES','starterDraw','ITEM_TIERS','gTierIdx','tierChip','gearIcon','starterSlots','STARTERS','CLK_LEN','CLK_PH','clockPhase','wxInfoBody','recipeOrder','recipeGain','recipeReady','recipeClose','effOf','calcDamage','healsUndead','storyEchoUp','riftKeys','echoDef','efCost','autoLocked','bossFightKey','learnScanAll','isSeen','mapMarks','genSub','subOK','subReq','ensureSub','inSub','tvSlots','tvInit','tvLeft','tvEvent','tvNextText','tvPool','tvDue','tvShuffle','mTavern','hireOK','TV_CAP','TV_CD','POOL_IDS','natPool','natOf','natRoll','NATURES','natInfo','natRerollCost','natChooseCost','NAT_CLASS','iconURL','seenOf','mapIcoDraw','drawMini','MAPCV','revealAround','fxLayer','numDur','compBonusText','compPerk','checkPhase','win','unitBox','LNQ','challVisible','challEligible','challState','isMimic','migrateCompanions','canSummon','summonComp','compOf','clockPhase','tickClock','isNight','rollWeather','wxStep','nightPool','encounterFoes','restAll','tameElite','openChest','rerollTavern','bestAll','gearTier','SV','svCheck','svFlush','svInit','svPush','svPull','svScan','svParse','svBackup','svPack','svUnpack','svProg','svCloudList','svDelDoc','svGet','svCap','slotState','slotKey','svDecode','SV_CH','svStatus','svSlotRaw','svLoad','loadRaw','svHash','svIdx'].forEach(k=>{try{Object.defineProperty(window.__A,k,{get:()=>eval(k)});}catch(e){}});

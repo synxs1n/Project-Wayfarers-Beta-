@@ -78,9 +78,9 @@ const LEARN=()=>{const A=__A,B=A.B,M=A.META.best;B.en.forEach(e=>{const b=M[e.ba
     chk(`undead: weak to Heal (${JSON.stringify(r.und)})`,!!r.und&&r.und.up.includes('Heal'));
     chk(`flying: weak to Ranged (${JSON.stringify(r.fly)})`,!!r.fly&&r.fly.up.includes('Ranged'));
     chk(`only the group symbols on the cards (${[...new Set(r.all)].join(',')})`,r.all.length>0&&r.all.every(x=>['Slash','Blunt','Piercing','Ranged','Magic','Heal'].includes(x)));/* v0.13.6: the three melee kinds apart */
-    chk(`one plain type line ("${r.lines[2]}")`,r.lines[2]==='Flying: ranged hits hard.'&&r.lines.every(l=>/^[A-Z][a-z]+: [^.]+\.$/.test(l)));
-    chk(`the i panel carries it ("${r.panel}")`,r.panel==='Flying: ranged hits hard.');
-    chk(`Scan logs it (${JSON.stringify(r.scan)})`,r.scan.includes('Flying: ranged hits hard.'));
+    chk(`one plain type line ("${r.lines[2]}")`,r.lines[2]==='Flying: ranged and piercing hits catch it.'&&/* v0.17.6 dmg11 wording */r.lines.every(l=>/^[A-Z][a-z]+: [^.]+\.$/.test(l)));
+    chk(`the i panel carries it ("${r.panel}")`,r.panel==='Flying: ranged and piercing hits catch it.');
+    chk(`Scan logs it (${JSON.stringify(r.scan)})`,r.scan.includes('Flying: ranged and piercing hits catch it.'));
     await H.browser.close();}
   // ---------- 4: the reaction moment ----------
   if(!ONLY||ONLY==='react')for(const [tier,rm,w,h] of (process.env.RT?JSON.parse(process.env.RT):[['medium',false,390,844],['low',false,933,705],['high',false,844,390],['medium',true,390,844]])){

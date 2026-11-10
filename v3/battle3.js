@@ -276,7 +276,8 @@ function b3WideSc(w,vh,wrap,bat){try{
         out.push({sc,col:true,cr:true,fr,fs,R,L,ch,P,P0,F0:fs?F:fl,fh:fr?fR:F,band:Math.max(0,avail-sh(sc)-fixL-P-F)+Math.max(0,avail-right)+(P0-P)*3+(fs?0:fl-F)*3,n:3+(fr?1:0)+(fs?2:0)});}}
     // an arrangement that shows everything whole (nothing squeezed to scroll, the stage at least B8.min) wins over any that does not
     out.forEach(o=>{o.fits=o.sc>=B8.min?1:0;o.whole=o.fits&&!(o.P0>o.P)&&!(o.F0>o.fh)?1:0;});
-    out.sort((a,b)=>(b.whole-a.whole)||(b.fits-a.fits)||(b.sc-a.sc)||(a.band-b.band)||(a.n-b.n));return out[0];};
+    out.forEach(o=>{o.pref=o.col&&o.fr&&!o.cr?1:0;});/* v0.17.7 (owner): on wide screens the foes sit in the right column under the Rearguard and the commands keep the left, whenever that arrangement shows everything whole */
+    out.sort((a,b)=>(b.whole-a.whole)||(b.pref-a.pref)||(b.fits-a.fits)||(b.sc-a.sc)||(a.band-b.band)||(a.n-b.n));return out[0];};
   let r=pick();
   if(r.sc<B8.tightAt&&B&&!B._b8t){B._b8t=1;bat.classList.add('b8tight');r=pick();}
   bat.classList.toggle('b8tight',!!(B&&B._b8t));bat.classList.toggle('b8col',r.col);bat.classList.toggle('b8lr',!!r.lr);bat.classList.toggle('b8fr',!!r.fr);bat.classList.toggle('b8cr',!!r.cr);bat.classList.toggle('b8fs',!!r.fs);

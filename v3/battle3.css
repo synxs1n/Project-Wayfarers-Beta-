@@ -136,7 +136,7 @@ html.rm .fxlayer .fx2.b3fx{animation-name:fade2!important}
 .battle.b3.bside .bline{align-self:start}
 .battle.b3.bside .order{max-width:100%}
 .battle.b3.bside .bwrap{grid-column:auto;margin:0}
-.battle.b3.bside .bbottom{grid-column:auto;align-self:stretch;max-height:calc(100vh - 120px);overflow:auto;overscroll-behavior:contain}
+.battle.b3.bside .bbottom{grid-column:auto;align-self:stretch;max-height:calc(100svh - 120px - env(safe-area-inset-bottom,0px));overflow:auto;overscroll-behavior:contain}
 .battle.b3.bside .bbottom .cmd{order:1}
 .battle.b3.bside .bbottom .bparty{order:2}
 .battle.b3.bside .fcs,.battle.b3.bside .pcs{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
@@ -540,3 +540,6 @@ html.rm .battle.b3 .cmd .mi.b9glow{animation:none}
 .battle.b3 .pgroup.rsv .pc.rs .ucr.ucrm .bar{height:5px}
 .battle.b3 .pgroup.rsv .pc.rs .ucr.ucrm .nums{color:#a8d0ff}
 .battle.b3.m-tall .pgroup.rsv .pcw .pc.rs{min-height:44px}
+
+/* v0.17.7 widescreen column: one card per row in the right column (two 150px columns squeezed the cards) */
+.battle.b3.m-wide.b8col .pcs,.battle.b3.m-wide.b8col .fcs{grid-template-columns:1fr}
