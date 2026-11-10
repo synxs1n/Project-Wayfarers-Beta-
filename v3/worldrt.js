@@ -268,7 +268,7 @@ function worldSizeCanvas(){
   const cv=WS.cv;if(!cv)return;
   // v0.5.0 1.2: never size from a canvas that is detached or hidden (a resize while the battle results are up used to shrink the view)
   if(!cv.isConnected||!cv.parentElement)return;
-  const zz=dsZoom(),box={width:cv.parentElement.getBoundingClientRect().width/zz};if(box.width<40)return;
+  const zz=dsZoom(),box={width:cv.parentElement.clientWidth||cv.parentElement.getBoundingClientRect().width/zz};if(box.width<40)return;/* v0.18.5: clientWidth is layout px under both zoom semantics */
   let sc=box.width>=720?3:2;
   // size the view so the whole world screen (header, view, bar, touch controls) fits the visible screen without scrolling
   const vhPx=(window.visualViewport?window.visualViewport.height:window.innerHeight)/zz;

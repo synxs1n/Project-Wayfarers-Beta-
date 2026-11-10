@@ -1045,3 +1045,20 @@ body.noscroll #p5save{top:auto!important;bottom:8px!important}
 
 /* v0.17.9: wide windows use more of the screen (the app was capped at 1000 layout px, leaving dark margins on a desktop); the world view grows with it */
 @media (min-width:1200px){#app{max-width:min(1400px,calc(100vw - 32px))}#app:has(section.title){max-width:1000px}/* the title scene keeps its 1000 px lineup */}
+/* v0.18.5 (zoomfix11.js): while the page is zoomed on a computer, --lvh/--lvw stand in for vh/vw (Chromium before 128 leaves those
+   unzoomed, so menus grew taller than the window); the world and battle screens never scroll the page; the world frame fills the window */
+html[data-dz] .box{max-height:min(calc(var(--lvh) * 92),calc(var(--lvh) * 100 - 24px))}
+html[data-dz] .menu.list{max-height:calc(var(--lvh) * 42)}
+html[data-dz] .battle.b3 .menu.list{max-height:min(calc(var(--lvh) * 46),420px)}
+html[data-dz] .bmscroll{max-height:calc(var(--lvh) * 62)}
+html[data-dz] .battle.bside .bbottom{max-height:calc(var(--lvh) * 100 - 96px)}
+html[data-dz] .battle.b3.bside .bbottom{max-height:calc(var(--lvh) * 100 - 120px)}
+html[data-dz] .udbox{max-height:calc(var(--lvh) * 100 - 24px)}
+html[data-dz] .mapbox{max-width:min(940px,calc(var(--lvw) * 96))}
+html[data-dz] #toast{max-width:calc(var(--lvw) * 90)}
+html[data-dz] #lnq{max-width:calc(var(--lvw) * 92)}
+html[data-dz] #app{max-width:min(1400px,calc(var(--lvw) * 100 - 32px))}
+html[data-dz] #app:has(section.title){max-width:1000px}
+html[data-dz].dzlock,html[data-dz].dzlock body{overflow:hidden;height:100%}
+html[data-dz].dzlock.mopen .modal{overflow:auto}
+@media (min-width:1200px){#app:has(.world){max-width:calc(100vw - 32px)}html[data-dz] #app:has(.world){max-width:calc(var(--lvw) * 100 - 32px)}}
