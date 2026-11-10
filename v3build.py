@@ -42,6 +42,12 @@ def scope_css(css,pre='html:not(.flat)'):
             out.append(buf+'}');buf='';ctx.pop();i+=1;continue
         buf+=c;i+=1
     return ''.join(out)+buf
+# v0.18.5 cleanup step 2: build guards (tools/buildcheck.py) stop the build on a missing or unlisted module, a reassigned top-level
+# const, a duplicate top-level name or a syntax error in the joined script, and warn on the `//` swallow and duplicate functions
+import sys
+sys.path.insert(0,os.path.join(d,'tools'))
+import buildcheck
+if not buildcheck.run(MODS):sys.exit('v3build: build guards failed (see buildcheck lines above)')
 src='\n'.join(r(n) for n in MODS if n!='appver.js')+r('fonts.css')+r('style.css')+scope_css(r('ui3.css'))+r('menus3.css')+r('battle3.css')+r('battle5.css')+r('battle4.css')+r('shell.html')+r('liveboot.js')
 build=hashlib.sha256(src.encode('utf-8')).hexdigest()[:12]
 open(os.path.join(d,'v3','appver.js'),'w').write('const APP_VER="%s";const APP_BUILD="%s";\n'%(ver,build))
