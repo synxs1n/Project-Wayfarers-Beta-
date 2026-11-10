@@ -4,6 +4,7 @@
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.17.5',['The Loadouts tab lists each loadout with its vanguard and rearguard (portraits and names) and a Load button.']],
  ['Beta v0.17.4',['Make camp lets you choose Camp Supplies or a Tent (counts shown, the Tent also gets KO\'d heroes up), and picks the Tent by itself when you have no Supplies.']],
  ['Beta v0.17.3',['Menus and sheets always fit above the browser bar and scroll inside their own box (the bottom of a long sheet was reachable only after scrolling the page behind).']],
  ['Beta v0.17.2',['Walking: every wayfarer in a robe now strides properly (near leg forward, hem trailing and lifting over the stepping boot, one boot raised in the front and back frames), and a long-standing bug that left about twenty-six wayfarers with no boot colour at all (their feet vanished) is fixed. The stopgap sway from 0.15.7 is gone with it.']],

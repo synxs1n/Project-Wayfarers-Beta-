@@ -377,7 +377,7 @@ function mMenu(m){
   if(tab==='system')body=vJourney();
   if(tab==='factions'&&typeof vFactions==='function')body=vFactions();
   if(tab==='fmis'&&typeof vFacMissions==='function')body=vFacMissions();
-  if(tab==='loadouts')body=(typeof ldStrip==='function'?`<p class="note">Loadouts remember who is in your six, their order, gear and pets. Tap one to switch${inTown()?'':' (switching your six happens in town)'}.</p>${ldStrip()}<div class="btnrow"><button class="btn gold" data-act="ldMgr">Manage loadouts</button></div>`:'');
+  if(tab==='loadouts')body=(typeof ldStrip==='function'?`<p class="note">Loadouts remember who is in your six, their order, gear and pets. Tap one to switch${inTown()?'':' (switching your six happens in town)'}.</p>${ldStrip()}${typeof ldCards==='function'?ldCards():''}<div class="btnrow"><button class="btn gold" data-act="ldMgr">Manage loadouts</button></div>`:'');
   if(tab==='types'&&typeof vTypes==='function')body=vTypes();
   if(tab==='help')body=`<p class="note">Stuck, confused or found a bug? Everything here is also in the other Guides tabs: What next? points at your next goal, Lore tells the story so far, and Foe types explains who is weak to what.</p><div class="btnrow"><button class="btn gold" data-act="fbOpen">Help / Feedback</button></div>`;
   if(tab==='settings')body=settingsBody();

@@ -392,3 +392,4 @@ gates are beaten, cutscene on entering the gate, returns with a new look, rematc
 - menus3.css .box max-height min(92vh, 100svh - 24px) (was var(--vvh) which goes stale and exceeds the visible height with the URL bar shown, so the box bottom sat below the fold).
 - Open: character sheet reorganisation (owner) pending a helper slot.
 - fixes11.js: ACT.campOpen falls back to item 'tent'; ACT.campUse; mCamp wrapped with a Use row (campkit/tent).
+- 0.17.5 fixes11.js ldCards() (rows with portraits and names per loadout), appended in ui.js loadouts tab.
