@@ -8,13 +8,13 @@ for(const [w,h,gfx] of [[390,844,'medium'],[1000,560,'medium'],[390,844,'low']])
  const tag=`${w}x${h} ${gfx}`,H=await open({w,h,mobile:w<500,pre:META(gfx)});const {ev,wait,page}=H;
  await battle(H,{boss:true,stage:2,foes:3});
  const r=await ev(()=>{const A=__A,B=A.B,out={foes:[],heroes:[]};
-  B.en.forEach(e=>{const b=A.unitBox(e),c=A.spriteOf(e),sz=A.MON_SIZE(e.art);out.foes.push({art:e.art,sz,w:b.w,top:b.y-b.h,H:A.BL.H,cw:c.width,ch:c.height});});
+  B.en.forEach(e=>{const b=A.unitBox(e),c=A.spriteOf(e),sz=A.MON_SIZE(e.art);out.foes.push({art:e.art,sz,w:b.w,h:b.h,top:b.y-b.h,H:A.BL.H,cw:c.width,ch:c.height});});
   B.front.forEach(u=>{const b=A.unitBox(u),c=A.spriteOf(u);out.heroes.push({w:b.w,h:b.h,cw:c.width,ch:c.height});});
   out.bars=document.querySelectorAll('#bcmd .cmdhead .b8hm').length;out.sr=/HP \d+ of \d+, MP/.test((document.querySelector('#bcmd .cmdhead')||{getAttribute(){return '';}}).getAttribute('aria-label')||'');
   out.cardBars=document.querySelectorAll('#bparty .pcw .hb,#bparty .pcw .bar').length;out.who=!!document.querySelector('#bcmd .cmdhead b');
   return out;});
  console.log(tag,JSON.stringify(r));
- chk(`${tag}: foes are drawn at 81 (60-art) or 44 (40-art), the box and canvas agree`,r.foes.every(f=>f.w===(f.sz>=60?81:44)&&f.cw===f.w&&f.ch===f.w)||JSON.stringify(r.foes));
+ chk(`${tag}: foes are drawn on a padded stage canvas (v0.17.9: at least the old 81 / 44 art box, box and canvas agree)`,r.foes.every(f=>f.w>=(f.sz>=60?81:44)&&f.cw===f.w&&f.ch===f.h)||JSON.stringify(r.foes));
  chk(`${tag}: no foe pokes above the stage`,r.foes.every(f=>f.top>=0)||JSON.stringify(r.foes));
  chk(`${tag}: heroes keep their size (canvas at most 40x56)`,r.heroes.every(x=>x.cw<=40&&x.ch<=56&&x.w===x.cw)||JSON.stringify(r.heroes));
  chk(`${tag}: no HP/MP bars in the command head, name kept, the numbers stay for screen readers when the head is shown`,r.bars===0&&r.who&&(w>500||r.sr)||JSON.stringify([r.bars,r.who,r.sr]));

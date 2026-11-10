@@ -650,7 +650,7 @@ function bossFrameSrc(c){const a=BART.get(c);if(a&&MART[a]){try{const s=monCanva
 function bossFrame1(c){let f=BIDLE.get(c);if(f)return f;const w=c.width,h=c.height,cut=Math.floor(h*.55),src=bossFrameSrc(c);
   f=c.hd?hdCv(w,h,c.hd):mkCv(w,h);const x=f.getContext('2d');x.imageSmoothingEnabled=false;
   x.drawImage(src,0,cut,w,h-cut,0,cut,w,h-cut);x.drawImage(src,0,0,w,cut,0,1,w,cut);
-  x.globalCompositeOperation='source-atop';x.globalAlpha=.2;x.fillStyle='#fff2d0';x.fillRect(0,0,w,h);BIDLE.set(c,f);return f;}
+  x.globalCompositeOperation='source-atop';x.globalAlpha=.08;x.fillStyle='#fff2d0';/* v0.17.9: .2 lifted the whole sprite and its outline by about 30 luma every 760 ms (a flash, washed out frame 1); .08 is the soft glow */x.fillRect(0,0,w,h);BIDLE.set(c,f);return f;}
 function bossIdle(c,seed,now,ms){if(typeof gfxStill==='function'&&gfxStill())return c;return Math.floor(now/(ms||760)+(seed||0)*.5)%2?bossFrame1(c):c;}
 {const io0=imgOf;imgOf=function(key,fn){const c=io0.apply(this,arguments);try{if(typeof key==='string'&&key.charCodeAt(0)===109&&key.startsWith('mapboss:'))return bossIdle(c,0,performance.now(),840);}catch(e){}return c;};}
 // ===== v0.12.13: the Riftkeeper, the ultimate boss (60x60; foes.js RIFTKEEPER, riftkeeper9.js) =====
