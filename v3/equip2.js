@@ -94,8 +94,8 @@ function gainersFor(id,all){const k='g'+(all?'a':'p')+id;if(FITC&&FITC[k])return
 const pctTxt=o=>'+'+Math.max(1,Math.round(o.g.pct*100))+'%';
 function bestTag(id){const L=gainersFor(id);
   // v0.4.0 3.5: the headline is about your active party. Heroes waiting in the roster get one smaller, quieter line.
-  const R=gainersFor(id,true).filter(o=>!G.party.includes(o.c.id)).slice(0,4);
-  const side=R.length?`<small class="bestside">Also helps in your roster: ${R.map(o=>`${esc(o.c.name)} <em class="up">${pctTxt(o)}</em>`).join(', ')}.</small>`:'';
+  // v0.18.7: reserves keep no gear, so a piece is judged for the party only (the "Also helps in your roster" line is gone)
+  const side='';
   if(!L.length)return `<span class="best none">Would not help anyone in your active party.</span>${side}`;
   return `<div class="bestl"><b>Helps your party:</b>${L.slice(0,6).map(o=>`<div class="bestr">${port(o.c.id,'sm')}<b>${esc(o.c.name)}</b> <em class="up">${pctTxt(o)}</em> <span>${deltaHtml(o.c,id)}</span></div>`).join('')}</div>${side}`;}
 function cmpPanel(id){if(V.cmp!==id)return `<button class="btn sm cmpb" data-act="cmpT" data-arg="${id}">Compare</button>`;
@@ -114,4 +114,4 @@ function autoCharms(){if(!G||G.daily)return 0;const party=G.party.slice(),before
   const n=party.filter(id=>G.roster[id]&&(G.roster[id].eq.c||null)!==before[id]).length;
   saveGame();if(n)sfx('equip');toast(n?`Equip best charms: ${n} hero${n>1?'es':''} changed charm.`:'Equip best charms: nobody has a better charm to wear.');render();return n;}
 // the buttons: autoEqParty (the one "Equip Best", party only) and autoEqOne (per hero); autoEqAll stays callable but has no button
-Object.assign(ACT,{autoEqOne(id){autoRun('one',id||V.modal.char);},autoEqParty(){autoRun('party');},autoEqAll(){autoRun('all');},autoEqCharms(){autoCharms();}});
+Object.assign(ACT,{autoEqOne(id){autoRun('one',id||V.modal.char);},autoEqParty(){autoRun('party');},autoEqAll(){autoRun('party');},autoEqCharms(){autoCharms();}});

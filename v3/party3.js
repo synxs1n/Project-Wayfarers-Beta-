@@ -24,7 +24,7 @@ const p6StepF=(arr,n)=>{const f=Math.floor(n);return p6Step(arr,f)+(n-f)*arr[Mat
 function p6Fly(T){try{let n=0,f=0;const pool=T.mons.length?T.mons:(ZS(T.s).pool||[]);pool.forEach(k=>{const d=MON[k];if(!d)return;n++;if(tyOf(d.art).includes('flying'))f++;});
   return {share:n?f/n:0,boss:!!(T.boss&&(T.boss.ty||[]).includes('flying'))};}catch(e){return {share:0,boss:false};}}
 // shared context for one Build Party pass: power, roles, threats
-function p6Ctx(){const all=Object.values(G.roster),pw={},R={};all.forEach(c=>{pw[c.id]=Math.max(1,loadoutScore(c,c.S));R[c.id]=p6Role(c);});
+function p6Ctx(){const all=Object.values(G.roster),pw={},R={};all.forEach(c=>{pw[c.id]=Math.max(1,pt12Power(c));/* v0.18.7: reserves keep no gear, so power is compared without it for everyone (party12.js) */R[c.id]=p6Role(c);});
   const T0=p3Threats();return {all,pw,R,mx:Math.max(1,...Object.values(pw)),T:T0,fly:p6Fly(T0),top:Math.max(1,...all.map(c=>c.lv|0)),size:Math.min(6,all.length)};}
 const p6Step=(arr,n)=>{let s=0;for(let i=0;i<n;i++)s+=arr[Math.min(i,arr.length-1)];return s;};
 // the formation score: roles first, then answers to what lies ahead, then a little strength
@@ -159,37 +159,19 @@ function mBestParty(m){const P=m.plan,o=P.opts[P.pick]||{},cur=new Set(G.party),
     <h4>Vanguard <small>(fights)</small></h4><div class="rows">${P.ids.slice(0,3).map(row).join('')}</div>
     ${P.ids.length>3?`<h4>Rearguard <small>(swaps in when someone falls or tires)</small></h4><div class="rows">${P.ids.slice(3).map((id,i)=>row(id,i+3)).join('')}</div>`:''}
     ${out.length?`<p class="note">Going to the reserves: ${out.map(id=>esc(G.roster[id].name)).join(', ')}.</p>`:''}
-    ${same&&P.ids.every((id,i)=>G.party[i]===id)?'<p class="note">This is already your party, in this order.</p>':''}${!same&&!inTown()?'<p class="note warn">Changing who is in your six happens in town. You can apply it there.</p>':''}${p3GapsHtml(P.ids,T,false)}`,
-    `<button class="btn gold" data-act="bpApply" ${!same&&!inTown()?'disabled':''}>Apply ${esc(o.name||'')}</button><button class="btn" data-act="xBack">Cancel</button>`);}
+    ${same&&P.ids.every((id,i)=>G.party[i]===id)?'<p class="note">This is already your party, in this order.</p>':''}${!same&&!partyHere()?'<p class="note warn">Changing who is in your six happens in town. You can apply it there.</p>':''}${p3GapsHtml(P.ids,T,false)}`,
+    `<button class="btn gold" data-act="bpApply" ${!same&&!partyHere()?'disabled':''}>Apply ${esc(o.name||'')}</button><button class="btn" data-act="xBack">Cancel</button>`);}
 {const bo0=ACT.bpOpen;ACT.bpOpen=function(){if(!G||G.daily)return;return bo0.apply(this,arguments);};}
 {const sw0=ACT.p3Swap;ACT.p3Swap=function(){const m=V.modal,key=m&&m.type==='bp'&&m.plan?m.plan.key:null;const r=sw0.apply(this,arguments);
   try{const n=V.modal;if(key&&n&&n.type==='bp'&&n.plan&&n.plan.opts){const j=n.plan.opts.findIndex(o=>o.key===key);if(j>=0){p6Sel(n.plan,j);render();}}}catch(e){}return r;};}
 
-// ----- 4. Equip best: reserves (heroes outside the party, spare gear only) -----
+// ----- 4. Equip best: reserves (v0.18.7: reserves keep no gear, so this is now a pointer; the pack is where their gear lives, party12.js) -----
 const P6_CAMP='Reserves';
-function autoCamp(){if(!G||G.daily)return;const party=G.party.slice(),camp=Object.keys(G.roster).filter(id=>!party.includes(id));
-  if(!camp.length){toast('No reserves: every wayfarer you have is in your party.');return;}
-  const snap=snapAuto(),before={};Object.values(G.roster).forEach(c=>{before[c.id]={eq:Object.assign({},c.eq),comp:(compOf(c)||{}).id||null,pw:loadoutScore(c,c.S)};});
-  // gear: the pack plus what the reserves already wear; the party is neither planned for nor taken from
-  applyGear(planGear(camp,[],true));Object.values(G.roster).forEach(refresh);
-  // companions: only ones not walking with a party member
-  const free=(G.tamed||[]).filter(o=>!o.with||!party.includes(o.with)),pairs=[];
-  free.forEach(o=>camp.forEach(id=>pairs.push({o,id,g:compGainFor(o,G.roster[id])})));
-  const dO=new Set(),dC=new Set(),map=new Map();pairs.sort((a,b)=>b.g-a.g).forEach(p=>{if(p.g<=.01||dO.has(p.o.id)||dC.has(p.id))return;dO.add(p.o.id);dC.add(p.id);map.set(p.o.id,p.id);});
-  free.forEach(o=>{if(map.has(o.id))o.with=map.get(o.id);else if(o.with&&camp.includes(o.with))o.with=null;});
-  Object.values(G.roster).forEach(refresh);
-  const rows=[];Object.values(G.roster).forEach(c=>{const b=before[c.id],ch=[];
-    GSLOTS.forEach(sl=>{if((b.eq[sl]||null)!==(c.eq[sl]||null))ch.push({sl,from:b.eq[sl]||null,to:c.eq[sl]||null});});
-    const nc=(compOf(c)||{}).id||null;if(ch.length||nc!==b.comp)rows.push({id:c.id,name:c.name,inParty:party.includes(c.id),ch,comp:nc!==b.comp?{from:b.comp,to:nc}:null,pw0:b.pw,pw1:loadoutScore(c,c.S)});});
-  saveGame();sfx('equip');V.modal={type:'autoEq',rows,snap,mode:'camp',from:V.modal};render();}
+function autoCamp(){if(!G||G.daily)return;toast('Reserves keep no gear: it waits in the pack. Equip Best gears the six who are in your party.');}
 {const ma0=mAutoEq;mAutoEq=function(m){let h=ma0.apply(this,arguments);if(typeof h!=='string')return h;h=h.split('<small>(roster)</small>').join('<small>(reserve)</small>');
-  if(m&&m.mode==='camp'){h=h.replace(/<h2>[^<]*<\/h2>/,`<h2>Equip best: ${P6_CAMP.toLowerCase()}</h2><p class="note p6camp">Only spare gear from your pack and what your reserves already wear. Your party's gear and companions were not touched.</p>`);
-    if(!(m.rows||[]).length)h=h.replace(/<p>Everyone already[^<]*<\/p>/,'<p>Every reserve already has the best spare gear for their class.</p>');}
   return h;};}
 {const ve0=vEquipTab;vEquipTab=function(){let h=ve0.apply(this,arguments);try{if(!G||G.daily||typeof h!=='string')return h;
-  h=h.replace('<h4>Roster</h4>',`<h4>${P6_CAMP}</h4>`);
-  const camp=Object.keys(G.roster).some(id=>!G.party.includes(id));
-  h=h.replace(/(<button class="btn" data-act="autoEqAll"[^>]*>[^<]*<\/button>)/,`$1<button class="btn" data-act="autoEqCamp" ${camp?'':'disabled'} title="Your reserves (heroes not in your party) get the best spare gear from the pack. Never takes anything from your party.">Equip best: reserves</button>`);}catch(e){}return h;};}
+  h=h.replace('<h4>Roster</h4>',`<h4>${P6_CAMP}</h4>`);}catch(e){}return h;};}
 Object.assign(ACT,{bpPick(j){const m=V.modal;if(!m||m.type!=='bp'||!m.plan||!m.plan.opts)return;j=+j||0;const P=m.plan,o=P.opts[j];
     // the chip that is already selected: Balanced, Fresh mix and Training team give another take (P.shuf counter), the rest stay as they are
     if(o&&j===P.pick&&(o.key==='bal'||o.key==='mix'||o.key==='train')){const shuf=Object.assign({},P.shuf),hist=Object.assign({},P.hist);shuf[o.key]=(shuf[o.key]|0)+1;

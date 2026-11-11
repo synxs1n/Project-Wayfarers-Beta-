@@ -44,8 +44,9 @@ function ldApply(i){
   const curSet=new Set(G.party);
   if(members.length<L.party.length){Object.values(G.roster).filter(c=>!members.includes(c.id)).sort((a,b)=>b.lv-a.lv).slice(0,L.party.length-members.length).forEach(c=>{members.push(c.id);msgs.fill.push(`${esc(c.name)} filled an empty place.`);});}
   const changed=members.some(id=>!curSet.has(id))||G.party.some(id=>!members.includes(id));
-  if(changed&&!inTown()){V.modal={type:'ldRes',title:'Switch loadout',msgs:{miss:['Changing who is in your six happens in town. Order, gear and pets can change anywhere.'],fill:[],move:[]},snap:null,from:V.modal};render();return;}
+  if(changed&&!partyHere()){V.modal={type:'ldRes',title:'Switch loadout',msgs:{miss:['Changing who is in your six happens in town. Order, gear and pets can change anywhere.'],fill:[],move:[]},snap:null,from:V.modal};render();return;}
   const snap=snapAuto();
+  pt12StowOutside(members);// v0.18.7: heroes leaving the six hand their gear to the pack first (party12.js), so the loadout can use it
   // gear: every member hands their gear back, then each slot is filled from the pack with what the loadout had
   const pack=G.gear.slice();members.forEach(id=>GSLOTS.forEach(sl=>{const c=G.roster[id];if(c.eq[sl]){pack.push(c.eq[sl]);c.eq[sl]=null;}}));
   const worn=id=>Object.values(G.roster).find(c=>!members.includes(c.id)&&GSLOTS.some(sl=>c.eq[sl]===id));
@@ -111,7 +112,7 @@ Object.assign(ACT,{
   ldUndo(){const m=V.modal;if(m&&m.snap){undoAuto(m.snap);toast('Loadout change undone.');}V.modal=m&&m.from||null;render();},
   ldDone(){const m=V.modal;V.modal=m&&m.from||null;render();},
   bpOpen(){V.modal={type:'bp',plan:bestParty(),from:V.modal};render();},
-  bpApply(){const m=V.modal,P=m.plan;if(!P)return;const cur=new Set(G.party),same=P.ids.length===G.party.length&&P.ids.every(id=>cur.has(id));if(!same&&!inTown())return;
+  bpApply(){const m=V.modal,P=m.plan;if(!P)return;const cur=new Set(G.party),same=P.ids.length===G.party.length&&P.ids.every(id=>cur.has(id));if(!same&&!partyHere())return;
     const snap=snapAuto();G.party=P.ids.filter(id=>G.roster[id]).slice(0,6);saveGame();sfx('equip');V.modal={type:'ldRes',title:'Party built',msgs:{miss:[],fill:[],move:[]},snap,from:{type:'menu',tab:'party'}};render();},
   fsOpen(id){if(G.daily||B)return;V.modal={type:'field',hero:typeof id==='string'?id:null,sk:null,from:V.modal};render();},
   fsHero(id){V.modal.hero=id;V.modal.sk=null;V.modal.msg=null;render();},

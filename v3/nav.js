@@ -47,7 +47,7 @@ ACT.xBack=function(){const f=modalBack(V.modal);if(!f)return ACT.xClose();V.swap
 // them in, or send the picked hero to the roster and fill the gap with the next hero you tap.
 function partySlots(){const P=[];for(let i=0;i<6;i++)P.push(G.party[i]||null);return P;}
 function setSlots(P){G.party=P.filter(Boolean);}
-function swapTown(where){return where==='guild'||inTown();}
+function swapTown(where){return where==='guild'||partyHere();}
 function vSwap(where){
   const town=swapTown(where),sel=V.swapSel,P=partySlots(),openAct=where==='guild'?'openChar':'viewChar';
   // v0.4.3: in the Menu the party is a 3 + 3 grid (vanguard on top, rearguard below) that fits one screen

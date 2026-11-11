@@ -79,7 +79,6 @@ function titleDraw(ctx,W,H,now){
   const k=TTS.prev?Math.min(1,(now-TTS.t0)/TITLE_FADE):1;
   if(TTS.prev&&k<1&&!rm){paint(TTS.prev,1);paint(sc,k);}else{TTS.prev=null;paint(sc,1);}
 }
-loop=HOOK.def('loop',loop);// v0.18.7: perf12.js marks the frames the loop draws (idle limiter); gfx6, hd2d and title7 still wrap it the old way
 let BUILT=null;
 function buildScreen(){
   const s=V.screen,scr=$('screen');BUILT=s;scr.className='screen s-'+s;
@@ -362,10 +361,10 @@ function mMenu(m){
     body=`<div class="btnrow"><button class="btn gold" data-act="mapWorld">World map</button><button class="btn" data-act="miniT">Minimap: ${miniOn()?'on':'off'}</button></div><h4>${esc(lbl)}</h4><canvas id="fmap" class="fmap" data-act="fmTap" aria-label="Map of ${esc(lbl)}"></canvas><p class="note fmnote" id="fmnote" aria-live="polite"></p><div class="maplegend"><span><b style="color:#fff">➤</b> You</span>${legendKeys(L).map(k=>MAPICO_NAME[k]?`<span><canvas class="lgi" data-ico="${k}" width="20" height="20"></canvas> ${MAPICO_NAME[k]}</span>`:`<span><b style="color:${MK[k][0]}">${MK[k][1]}</b> ${MKN[k]}</span>`).join('')}</div><p class="note">Only places your party has seen are drawn. Tap a place you have been to and the party walks there.</p>`;}}
   if(tab==='party'){body=vSwap('menu');
     // outside town swaps are blocked, except the wild recruit swap (G.pendRecruit, v0.10.2)
-    try{if(G&&!G.daily&&!inTown())body+=G.pendRecruit&&G.roster[G.pendRecruit]?`<p class="note">${esc(G.roster[G.pendRecruit].name)} has just joined you, so they can be swapped in now. Other heroes can only be switched out in town.</p>`:'<p class="note">You must be in town to switch party members out.</p>';}catch(e){}}
+    try{if(G&&!G.daily&&!partyHere())body+=G.pendRecruit&&G.roster[G.pendRecruit]?`<p class="note">${esc(G.roster[G.pendRecruit].name)} has just joined you, so they can be swapped in now. Other heroes can only be switched out in town.</p>`:'<p class="note">You must be in town to switch party members out.</p>';}catch(e){}}
   if(tab==='equip')body=vEquipTab();
   if(tab==='comp')body=vCompanions();
-  if(tab==='roster'){const town=inTown(),list=lsort('roster',Object.values(G.roster).filter(c=>lmatch('roster',c)),(a,b)=>(G.party.includes(b.id)-G.party.includes(a.id))||b.lv-a.lv||a.name.localeCompare(b.name));V.charList=list.map(c=>c.id);
+  if(tab==='roster'){const town=partyHere(),list=lsort('roster',Object.values(G.roster).filter(c=>lmatch('roster',c)),(a,b)=>(G.party.includes(b.id)-G.party.includes(a.id))||b.lv-a.lv||a.name.localeCompare(b.name));V.charList=list.map(c=>c.id);
     const chips=filterBar('roster');
     body=`<p class="note">${Object.keys(G.roster).length} of ${ensureSub(G).length} wayfarers in this journey. Tap a hero to equip gear and spend stat points${town?', or to put them in your six':''}.${town?'':' Swapping roster heroes into your six happens in town.'}</p>${chips}<div class="grid mini">${list.map(c=>`<button class="mini elstrip ${G.party.includes(c.id)?'in':''} ${c.el.length>1?'dual':''} ${isLeg(c.id)?'leg':''}" ${dualStyle(TPL[c.id])} data-act="viewChar" data-arg="${c.id}">${isLeg(c.id)?legSeal(1)+'<span class="legtag">LEGENDARY</span>':''}<img src="${heroFrontURL(c.id)}" alt=""><span class="miniail">${typeof ailBadge==='function'?ailBadge(c.id):''}</span><b>${esc(c.name)}${c.legacy?' ★':''}</b><small>Lv ${c.lv} ${CLS[TPL[c.id].cls].n}</small>${xpMini(c)}<span class="els">${c.el.map(ico).join('')}${G.party.includes(c.id)?'<em class="pts">In party</em>':''}</span></button>`).join('')}</div>`;}
   if(tab==='items'){const f=LC('items'),sh=f.sh||'all',kind=id=>{const o=ITEMS[id];return o.travel?'travel':(o.heal||o.mp||o.cure||o.revive)?'battle':'other';};
@@ -381,7 +380,7 @@ function mMenu(m){
   if(tab==='system')body=vJourney();
   if(tab==='factions'&&typeof vFactions==='function')body=vFactions();
   if(tab==='fmis'&&typeof vFacMissions==='function')body=vFacMissions();
-  if(tab==='loadouts')body=(typeof ldStrip==='function'?`<p class="note">Loadouts remember who is in your six, their order, gear and pets. Tap one to switch${inTown()?'':' (switching your six happens in town)'}.</p>${ldStrip()}${typeof ldCards==='function'?ldCards():''}<div class="btnrow"><button class="btn gold" data-act="ldMgr">Manage loadouts</button></div>`:'');
+  if(tab==='loadouts')body=(typeof ldStrip==='function'?`<p class="note">Loadouts remember who is in your six, their order, gear and pets. Tap one to switch${partyHere()?'':' (switching your six happens in town)'}.</p>${ldStrip()}${typeof ldCards==='function'?ldCards():''}<div class="btnrow"><button class="btn gold" data-act="ldMgr">Manage loadouts</button></div>`:'');
   if(tab==='types'&&typeof vTypes==='function')body=vTypes();
   if(tab==='help')body=`<p class="note">Stuck, confused or found a bug? Everything here is also in the other Guides tabs: What next? points at your next goal, Lore tells the story so far, and Foe types explains who is weak to what.</p><div class="btnrow"><button class="btn gold" data-act="fbOpen">Help / Feedback</button></div>`;
   if(tab==='settings')body=settingsBody();
@@ -483,8 +482,8 @@ const ACT={
   menuBack(){V.modal={type:'menu',tab:V.lastMenuTab||'party'};render();},
   beast(k){V.modal={type:'beast',k};render();},
   pmove(a){const [i,d]=a.split(',').map(Number),j=i+d,p=G.party;if(j<0||j>=p.length)return;[p[i],p[j]]=[p[j],p[i]];saveGame();sfx('blip');render();},
-  assignM(i){if(!inTown())return;assignSlot(V.modal.id,+i);saveGame();sfx('blip');render();},
-  unassignM(){if(!inTown())return;if(G.party.length>1){G.party=G.party.filter(x=>x!==V.modal.id);saveGame();}render();},
+  assignM(i){if(!partyHere())return;assignSlot(V.modal.id,+i);saveGame();sfx('blip');render();},
+  unassignM(){if(!partyHere())return;if(G.party.length>1){G.party=G.party.filter(x=>x!==V.modal.id);saveGame();}render();},
   viewChar(id){V.modal={type:'char',char:id,gear:null,list:(V.charList||[]).slice()};render();},
   charNav(d){const m=V.modal;if(!m)return;const L=(m.list||[]).filter(x=>G.roster[x]);if(L.length<2)return;const i=L.indexOf(m.char);m.char=L[((i<0?0:i)+(+d)+L.length)%L.length];m.gear=null;if(typeof sfx==='function')sfx('blip');render();const p=document.querySelector('#modal .panel');if(p)p.scrollTop=0;},
   xClose(){const m=V.modal;if(!m)return;const t=m.type;
@@ -579,6 +578,7 @@ function loop(){
   if(V.screen==='title'){const cv=$('tcv');if(cv){const box=cv.parentElement.clientWidth,sc=box>=720?3:2,W=Math.floor(box/sc),H=Math.floor(260/sc);if(cv.width!==W){cv.width=W;cv.height=H;cv.style.width=W*sc+'px';cv.style.height=H*sc+'px';}const ctx=cv.getContext('2d');titleDraw(ctx,W,H,now);}}
   LAST=now;requestAnimationFrame(loop);
 }
+loop=HOOK.def('loop',loop);// v0.18.7: perf12.js marks the frames the loop draws (idle limiter); gfx6, hd2d and title7 still wrap it the old way
 const KEYDIR={ArrowUp:'u',ArrowDown:'d',ArrowLeft:'l',ArrowRight:'r',w:'u',s:'d',a:'l',d:'r',W:'u',S:'d',A:'l',D:'r'};
 function boot(){
   loadMeta();applyCfg();

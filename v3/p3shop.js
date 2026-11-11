@@ -207,7 +207,7 @@ function p3Gaps(ids,T){T=T||p3Threats();const set=ids.map(id=>G.roster[id]).filt
   G0.forEach(g=>{const inn=g.fill[0];if(!inn)return;if(set.length<6){g.swap={in:inn,out:null};return;}let best=null;
     set.forEach(c=>{const t=set.map(x=>x===c?G.roster[inn]:x),v=p3TeamScore(t,pw,mx,T);if(!best||v>best.v)best={v,out:c.id};});g.swap={in:inn,out:best.out};});
   return G0;}
-function p3GapsHtml(ids,T,open){const L=p3Gaps(ids,T),town=inTown(),nm=id=>esc(G.roster[id].name);
+function p3GapsHtml(ids,T,open){const L=p3Gaps(ids,T),town=partyHere(),nm=id=>esc(G.roster[id].name);
   if(!L.length)return `<div class="p3gaps ok"><small class="up">✓ Team check: healer, tank, every delivery, Primer, Detonator and element answers for this area are covered.</small></div>`;
   return `<details class="p3gaps" ${open?'open':''}><summary><b>Team check:</b> missing ${L.map(g=>g.label).join(', ')}</summary><div class="rows">${L.map(g=>`<div class="row"><div class="grow"><b>${g.label}</b><small>${g.why}</small><small>${g.fill.length?'Could fill: '+g.fill.map(nm).join(', '):'Nobody on your roster yet. The tavern and Guild Hall may have someone.'}</small></div>${g.swap?`<button class="btn sm" data-act="p3Swap" data-arg="${g.swap.in},${g.swap.out||''}" ${town?'':'disabled'} title="${town?'':'Swapping roster heroes into your six happens in town.'}">${g.swap.out?`Swap ${nm(g.swap.in)} in for ${nm(g.swap.out)}`:`Add ${nm(g.swap.in)}`}</button>`:''}</div>`).join('')}</div>${town?'':'<p class="note"><small>Swapping happens in town.</small></p>'}</details>`;}
 function p3ThreatLine(T){const a=Object.keys(T.arch).filter(k=>T.mons.some(m=>tyOf(MON[m].art).includes(k)));
@@ -387,7 +387,7 @@ Object.assign(ACT,{
   p3Alch(){if(!G||G.daily)return;V.modal={type:'p3plan',charms:1,plan:p3SmithPlan(['c']),from:V.modal};render();},
   p3SmithGo(){const m=V.modal;if(!m||m.type!=='p3plan')return;const R=p3SmithRun(m.plan);sfx(R.done?'buy':'deny');
     V.modal={type:'autoEq',mode:'smith',rows:R.rows,snap:R.snap,from:m.from,p3:R};render();},
-  p3Swap(a){if(!G||G.daily)return;if(!inTown()){toast('Swapping roster heroes into your six happens in town.');return;}const [inn,out]=String(a).split(',');if(!G.roster[inn]||G.party.includes(inn))return;
+  p3Swap(a){if(!G||G.daily)return;if(!partyHere()){toast('Swapping roster heroes into your six happens in town.');return;}const [inn,out]=String(a).split(',');if(!G.roster[inn]||G.party.includes(inn))return;
     const P=G.party.slice();if(out&&P.includes(out))P[P.indexOf(out)]=inn;else if(P.length<6)P.push(inn);else return;G.party=P;saveGame();sfx('blip');
     toast(out&&G.roster[out]?`${G.roster[inn].name} joins the six; ${G.roster[out].name} waits on the roster.`:`${G.roster[inn].name} joins the six.`);
     if(V.modal&&V.modal.type==='bp')V.modal.plan=bestParty();render();},

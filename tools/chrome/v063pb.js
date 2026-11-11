@@ -49,10 +49,10 @@ const ce=await ev(()=>{const A=__A,G=A.G,GEAR=A.GEAR,o={};G.roster={};['mira','l
   return o;});
 console.log(JSON.stringify({btn:ce.btn,mode:ce.mode,camp:ce.camp,rows:ce.rows,pack:[ce.pack0,ce.pack1],comp:[ce.comp0,ce.comp1]}));
 chk('Equipment tab has one Equip Best button and no reserves or everyone button (v0.10.2)',ce.btn==='Equip Best'&&!ce.campH||JSON.stringify({btn:ce.btn,h:ce.campH}));
-chk('it equips the heroes at camp from the pack',ce.mode==='camp'&&ce.camp.every(e=>e.w||e.a)&&ce.pack1<ce.pack0||JSON.stringify(ce.camp));
-chk('it never touches the party\'s gear',ce.p1===ce.p0);
-chk('it never moves a party hero\'s companion; a free one may go to camp',ce.comp1[0]==='mira'&&(ce.comp1[1]===null||['brann','tess','sable'].includes(ce.comp1[1]))||JSON.stringify(ce.comp1));
-chk('the summary only lists heroes at camp, titled for camp',ce.rows.length>0&&ce.rows.every(r=>!r.inParty)&&/reserves/i.test(ce.txt)&&/party's gear and companions were not touched/.test(ce.txt)||ce.txt.slice(0,300));
+// v0.18.7 (party12.js): reserves keep no gear, so Equip Best gears the party only and the reserves stay bare
+chk('reserves keep no gear: Equip Best leaves them bare',ce.camp.every(e=>!e.w&&!e.a&&!e.c)||JSON.stringify(ce.camp));
+chk('Equip Best gears the party from the pack (the pack shrinks)',ce.mode==='party'&&ce.pack1<=ce.pack0||JSON.stringify({mode:ce.mode,pack:[ce.pack0,ce.pack1]}));
+chk('the summary only lists heroes in the party',ce.rows.length>0&&ce.rows.every(r=>r.inParty)||JSON.stringify(ce.rows));
 chk('Undo restores gear, pack and companions exactly',ce.s2===ce.s0);
 chk('the Daily Trial is unaffected (auto equip stays off there)',ce.daily);
 await done(h);})();

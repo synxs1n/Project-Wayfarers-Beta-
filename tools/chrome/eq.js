@@ -12,8 +12,8 @@ const setup=await ev(()=>{const G=__A.G,GEAR=__A.GEAR,ks=Object.keys(GEAR).filte
   const top=(slot,pred)=>ks.filter(k=>GEAR[k].slot===slot&&(!pred||pred(GEAR[k]))).sort((a,b)=>(GEAR[b].tier||0)-(GEAR[a].tier||0))[0];
   const w=top('w',g=>!g.tome),a=top('a'),c=top('c');
   G.gear=[];Object.values(G.roster).forEach(h=>{h.eq={w:null,a:null,c:null};});
-  const b=G.roster.brann;b.eq={w,a,c};
-  const low=ks.filter(k=>GEAR[k].slot==='w'&&!GEAR[k].tome&&(GEAR[k].tier||0)<=1).slice(0,3);G.gear=low.slice();
+  /* v0.18.7: reserves keep no gear, so the best pieces start in the pack instead of on brann */const b=G.roster.brann;b.eq={};
+  const low=ks.filter(k=>GEAR[k].slot==='w'&&!GEAR[k].tome&&(GEAR[k].tier||0)<=1).slice(0,3);G.gear=low.concat([w,a,c]);
   Object.values(G.roster).forEach(__A.refresh);
   G.tamed=G.tamed||[];
   const mk=(id,mon,cls)=>({id,mon,name:'T'+id,cls,trait:'keen',bb:0,scourge:0,with:null});
@@ -27,7 +27,7 @@ await ev(()=>__A.ACT.autoEqParty());await wait(200);
 const r1=await ev(()=>{const G=__A.G;return {brann:G.roster.brann.eq,party:G.party.map(id=>G.roster[id].eq),modal:__A.V.modal&&__A.V.modal.type,html:document.querySelector('.modal')?.innerText.slice(0,300)};});
 console.log(JSON.stringify(r1));
 const partyHas=r1.party.some(e=>e.w===setup.w||e.a===setup.a||e.c===setup.c);
-chk('party auto takes top gear from non-party roster hero',partyHas||'party got none of brann gear');
+chk('party auto takes the top gear from the pack (v0.18.7: reserves keep no gear)',partyHas||'party got none of the top gear');
 chk('summary modal shown',r1.modal==='autoEq');
 await shot('eq_party');
 await ev(()=>__A.ACT.autoEqUndo());await wait(100);
@@ -35,14 +35,14 @@ chk('undo restores pack, equipment and companions exactly',(await snap())===s0||
 // individual auto must never take from another hero
 await ev(()=>__A.ACT.autoEqOne('mira'));await wait(100);
 const r2=await ev(()=>({brann:__A.G.roster.brann.eq}));
-chk('individual auto never takes from another hero',JSON.stringify(r2.brann)===JSON.stringify({w:setup.w,a:setup.a,c:setup.c})||'took from brann');
+chk('individual auto leaves a reserve bare (v0.18.7)',Object.values(r2.brann).every(x=>!x)||JSON.stringify(r2.brann));
 await ev(()=>__A.ACT.autoEqUndo());
 // all-roster auto: nobody with a class-usable slot stays empty if gear exists
 await ev(()=>{const G=__A.G,ks=Object.keys(__A.GEAR).filter(k=>!__A.GEAR[k].stick&&!__A.GEAR[k].only);G.gear=G.gear.concat(ks.filter(k=>__A.GEAR[k].slot==='a').slice(0,8),ks.filter(k=>__A.GEAR[k].slot==='c').slice(0,8));});
 await ev(()=>__A.ACT.autoEqAll());await wait(200);
-const r3=await ev(()=>{const G=__A.G;return Object.values(G.roster).map(c=>[c.id,!!c.eq.w,!!c.eq.a,!!c.eq.c]);});
+const r3=await ev(()=>{const G=__A.G;return Object.values(G.roster).filter(c=>G.party.includes(c.id)).map(c=>[c.id,!!c.eq.w,!!c.eq.a,!!c.eq.c]);});
 console.log(JSON.stringify(r3));
-chk('all auto fills armor and charm for every hero',r3.every(r=>r[2]&&r[3])||JSON.stringify(r3));
+chk('all auto (now the party only) fills armor and charm for every party hero',r3.every(r=>r[2]&&r[3])||JSON.stringify(r3));
 // invariants: no item duplicated beyond what existed
 const inv=await ev(()=>{const G=__A.G,all=G.gear.slice();Object.values(G.roster).forEach(c=>['w','a','c'].forEach(s=>{if(c.eq[s])all.push(c.eq[s]);}));return all.length;});
 console.log('items total',inv);

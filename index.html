@@ -1906,7 +1906,7 @@ html.rm .battle.b3 .cmd .mi.b9glow{animation:none}
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.18.8";const APP_BUILD="1103d6285991";
+(function(){const APP_VER="0.18.9";const APP_BUILD="478ad89c2e43";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2608,7 +2608,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.18.8";const APP_BUILD="1103d6285991";
+const APP_VER="0.18.9";const APP_BUILD="478ad89c2e43";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2616,7 +2616,8 @@ const APP_VER="0.18.8";const APP_BUILD="1103d6285991";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
- ['Beta v0.18.8',['Records opens on Completion: every tracker each realm has (fields, Den, Lair, Sanctum, beacon, quests, bounties, taming, and the realm\'s Echo once the Rift is open), with an Echo Rift section above it that keeps a secret boss as ??? until beaten. Account play time now counts the same thing each journey counts, raised to at least what your save slots add up to. The Notice Board is one list again (quests, bounties, guild missions, notices) with one Accept all and one Claim all that says what must be handed in elsewhere. Settings > Tips no longer breaks into single letters on phones. Den, Lair and Sanctum tags show on every arrival, and the Meridian Breach introduces itself the first time.']],
+ ['Beta v0.18.9',['You can change your party in the Echo Rift hall between gates. Heroes outside the six keep no gear: everything goes back to the pack when they leave, pick-ups are suggested only for the party, and a bare hero joining is offered Equip Best. New Game+ sends you to realms you have not seen and bosses you have not faced first; once everything is seen the mix is random with a lean toward bosses missing from your last two journeys.']],
+['Beta v0.18.8',['Records opens on Completion: every tracker each realm has (fields, Den, Lair, Sanctum, beacon, quests, bounties, taming, and the realm\'s Echo once the Rift is open), with an Echo Rift section above it that keeps a secret boss as ??? until beaten. Account play time now counts the same thing each journey counts, raised to at least what your save slots add up to. The Notice Board is one list again (quests, bounties, guild missions, notices) with one Accept all and one Claim all that says what must be handed in elsewhere. Settings > Tips no longer breaks into single letters on phones. Den, Lair and Sanctum tags show on every arrival, and the Meridian Breach introduces itself the first time.']],
 ['Beta v0.18.7',['Phones run cooler on High graphics: the world and battle no longer redraw on every screen refresh while nothing moves (30 frames a second at rest, 8 under a menu, none when the app is hidden), and phones cap the internal render at 2 pixels per art pixel unless you pick 3x in Settings. Nothing changes at rest in how it looks.']],
 ['Beta v0.18.6',['The Meridian Breach now gets the same path check as every other map when it is laid out, so a chest or roamer can no longer land where no path reaches it.']],
 ['Beta v0.18.5',['Computer screens: the world view fills the window with no dark bars (on wide windows the whole frame grows so you see more world), menus taller than the window now scroll inside themselves instead of needing the page behind them scrolled, and the world and battle screens never scroll the page. This also fixes the Windows app, whose older browser kept menus and the view at the unzoomed size. The barred hoard no longer sits in Next goals after the Calamity falls (it stays in Quests).']],
@@ -11242,7 +11243,6 @@ function titleDraw(ctx,W,H,now){
   const k=TTS.prev?Math.min(1,(now-TTS.t0)/TITLE_FADE):1;
   if(TTS.prev&&k<1&&!rm){paint(TTS.prev,1);paint(sc,k);}else{TTS.prev=null;paint(sc,1);}
 }
-loop=HOOK.def('loop',loop);// v0.18.7: perf12.js marks the frames the loop draws (idle limiter); gfx6, hd2d and title7 still wrap it the old way
 let BUILT=null;
 function buildScreen(){
   const s=V.screen,scr=$('screen');BUILT=s;scr.className='screen s-'+s;
@@ -11525,10 +11525,10 @@ function mMenu(m){
     body=`<div class="btnrow"><button class="btn gold" data-act="mapWorld">World map</button><button class="btn" data-act="miniT">Minimap: ${miniOn()?'on':'off'}</button></div><h4>${esc(lbl)}</h4><canvas id="fmap" class="fmap" data-act="fmTap" aria-label="Map of ${esc(lbl)}"></canvas><p class="note fmnote" id="fmnote" aria-live="polite"></p><div class="maplegend"><span><b style="color:#fff">➤</b> You</span>${legendKeys(L).map(k=>MAPICO_NAME[k]?`<span><canvas class="lgi" data-ico="${k}" width="20" height="20"></canvas> ${MAPICO_NAME[k]}</span>`:`<span><b style="color:${MK[k][0]}">${MK[k][1]}</b> ${MKN[k]}</span>`).join('')}</div><p class="note">Only places your party has seen are drawn. Tap a place you have been to and the party walks there.</p>`;}}
   if(tab==='party'){body=vSwap('menu');
     // outside town swaps are blocked, except the wild recruit swap (G.pendRecruit, v0.10.2)
-    try{if(G&&!G.daily&&!inTown())body+=G.pendRecruit&&G.roster[G.pendRecruit]?`<p class="note">${esc(G.roster[G.pendRecruit].name)} has just joined you, so they can be swapped in now. Other heroes can only be switched out in town.</p>`:'<p class="note">You must be in town to switch party members out.</p>';}catch(e){}}
+    try{if(G&&!G.daily&&!partyHere())body+=G.pendRecruit&&G.roster[G.pendRecruit]?`<p class="note">${esc(G.roster[G.pendRecruit].name)} has just joined you, so they can be swapped in now. Other heroes can only be switched out in town.</p>`:'<p class="note">You must be in town to switch party members out.</p>';}catch(e){}}
   if(tab==='equip')body=vEquipTab();
   if(tab==='comp')body=vCompanions();
-  if(tab==='roster'){const town=inTown(),list=lsort('roster',Object.values(G.roster).filter(c=>lmatch('roster',c)),(a,b)=>(G.party.includes(b.id)-G.party.includes(a.id))||b.lv-a.lv||a.name.localeCompare(b.name));V.charList=list.map(c=>c.id);
+  if(tab==='roster'){const town=partyHere(),list=lsort('roster',Object.values(G.roster).filter(c=>lmatch('roster',c)),(a,b)=>(G.party.includes(b.id)-G.party.includes(a.id))||b.lv-a.lv||a.name.localeCompare(b.name));V.charList=list.map(c=>c.id);
     const chips=filterBar('roster');
     body=`<p class="note">${Object.keys(G.roster).length} of ${ensureSub(G).length} wayfarers in this journey. Tap a hero to equip gear and spend stat points${town?', or to put them in your six':''}.${town?'':' Swapping roster heroes into your six happens in town.'}</p>${chips}<div class="grid mini">${list.map(c=>`<button class="mini elstrip ${G.party.includes(c.id)?'in':''} ${c.el.length>1?'dual':''} ${isLeg(c.id)?'leg':''}" ${dualStyle(TPL[c.id])} data-act="viewChar" data-arg="${c.id}">${isLeg(c.id)?legSeal(1)+'<span class="legtag">LEGENDARY</span>':''}<img src="${heroFrontURL(c.id)}" alt=""><span class="miniail">${typeof ailBadge==='function'?ailBadge(c.id):''}</span><b>${esc(c.name)}${c.legacy?' ★':''}</b><small>Lv ${c.lv} ${CLS[TPL[c.id].cls].n}</small>${xpMini(c)}<span class="els">${c.el.map(ico).join('')}${G.party.includes(c.id)?'<em class="pts">In party</em>':''}</span></button>`).join('')}</div>`;}
   if(tab==='items'){const f=LC('items'),sh=f.sh||'all',kind=id=>{const o=ITEMS[id];return o.travel?'travel':(o.heal||o.mp||o.cure||o.revive)?'battle':'other';};
@@ -11544,7 +11544,7 @@ function mMenu(m){
   if(tab==='system')body=vJourney();
   if(tab==='factions'&&typeof vFactions==='function')body=vFactions();
   if(tab==='fmis'&&typeof vFacMissions==='function')body=vFacMissions();
-  if(tab==='loadouts')body=(typeof ldStrip==='function'?`<p class="note">Loadouts remember who is in your six, their order, gear and pets. Tap one to switch${inTown()?'':' (switching your six happens in town)'}.</p>${ldStrip()}${typeof ldCards==='function'?ldCards():''}<div class="btnrow"><button class="btn gold" data-act="ldMgr">Manage loadouts</button></div>`:'');
+  if(tab==='loadouts')body=(typeof ldStrip==='function'?`<p class="note">Loadouts remember who is in your six, their order, gear and pets. Tap one to switch${partyHere()?'':' (switching your six happens in town)'}.</p>${ldStrip()}${typeof ldCards==='function'?ldCards():''}<div class="btnrow"><button class="btn gold" data-act="ldMgr">Manage loadouts</button></div>`:'');
   if(tab==='types'&&typeof vTypes==='function')body=vTypes();
   if(tab==='help')body=`<p class="note">Stuck, confused or found a bug? Everything here is also in the other Guides tabs: What next? points at your next goal, Lore tells the story so far, and Foe types explains who is weak to what.</p><div class="btnrow"><button class="btn gold" data-act="fbOpen">Help / Feedback</button></div>`;
   if(tab==='settings')body=settingsBody();
@@ -11646,8 +11646,8 @@ const ACT={
   menuBack(){V.modal={type:'menu',tab:V.lastMenuTab||'party'};render();},
   beast(k){V.modal={type:'beast',k};render();},
   pmove(a){const [i,d]=a.split(',').map(Number),j=i+d,p=G.party;if(j<0||j>=p.length)return;[p[i],p[j]]=[p[j],p[i]];saveGame();sfx('blip');render();},
-  assignM(i){if(!inTown())return;assignSlot(V.modal.id,+i);saveGame();sfx('blip');render();},
-  unassignM(){if(!inTown())return;if(G.party.length>1){G.party=G.party.filter(x=>x!==V.modal.id);saveGame();}render();},
+  assignM(i){if(!partyHere())return;assignSlot(V.modal.id,+i);saveGame();sfx('blip');render();},
+  unassignM(){if(!partyHere())return;if(G.party.length>1){G.party=G.party.filter(x=>x!==V.modal.id);saveGame();}render();},
   viewChar(id){V.modal={type:'char',char:id,gear:null,list:(V.charList||[]).slice()};render();},
   charNav(d){const m=V.modal;if(!m)return;const L=(m.list||[]).filter(x=>G.roster[x]);if(L.length<2)return;const i=L.indexOf(m.char);m.char=L[((i<0?0:i)+(+d)+L.length)%L.length];m.gear=null;if(typeof sfx==='function')sfx('blip');render();const p=document.querySelector('#modal .panel');if(p)p.scrollTop=0;},
   xClose(){const m=V.modal;if(!m)return;const t=m.type;
@@ -11742,6 +11742,7 @@ function loop(){
   if(V.screen==='title'){const cv=$('tcv');if(cv){const box=cv.parentElement.clientWidth,sc=box>=720?3:2,W=Math.floor(box/sc),H=Math.floor(260/sc);if(cv.width!==W){cv.width=W;cv.height=H;cv.style.width=W*sc+'px';cv.style.height=H*sc+'px';}const ctx=cv.getContext('2d');titleDraw(ctx,W,H,now);}}
   LAST=now;requestAnimationFrame(loop);
 }
+loop=HOOK.def('loop',loop);// v0.18.7: perf12.js marks the frames the loop draws (idle limiter); gfx6, hd2d and title7 still wrap it the old way
 const KEYDIR={ArrowUp:'u',ArrowDown:'d',ArrowLeft:'l',ArrowRight:'r',w:'u',s:'d',a:'l',d:'r',W:'u',S:'d',A:'l',D:'r'};
 function boot(){
   loadMeta();applyCfg();
@@ -13091,7 +13092,7 @@ ACT.xBack=function(){const f=modalBack(V.modal);if(!f)return ACT.xClose();V.swap
 // them in, or send the picked hero to the roster and fill the gap with the next hero you tap.
 function partySlots(){const P=[];for(let i=0;i<6;i++)P.push(G.party[i]||null);return P;}
 function setSlots(P){G.party=P.filter(Boolean);}
-function swapTown(where){return where==='guild'||inTown();}
+function swapTown(where){return where==='guild'||partyHere();}
 function vSwap(where){
   const town=swapTown(where),sel=V.swapSel,P=partySlots(),openAct=where==='guild'?'openChar':'viewChar';
   // v0.4.3: in the Menu the party is a 3 + 3 grid (vanguard on top, rearguard below) that fits one screen
@@ -13450,7 +13451,7 @@ HOOK.wrap('render','equip','per-render fit cache (FITC)',function(next,...a){FIT
 // v0.8.3: only the party (the owner's call); reserves are geared from their sheet in Party
 function vEquipTab(){const L=G.party.filter(id=>G.roster[id]);V.charList=L.slice();
   // v0.9.5: the team helpers come first (Build party and the single Equip Best button, party only); the note follows
-  return `<div class="btnrow eqtools">${G.daily?'':'<button class="btn" data-act="bpOpen">Build party</button>'}<button class="btn gold" data-act="autoEqParty" title="Gears the six heroes in your party with the best gear you own. Heroes outside the party keep what they wear unless the party needs it.">Equip Best</button></div>
+  return `<div class="btnrow eqtools">${G.daily?'':'<button class="btn" data-act="bpOpen">Build party</button>'}<button class="btn gold" data-act="autoEqParty" title="Gears the six heroes in your party with the best gear you own. Heroes outside the party keep no gear: it waits in the pack.">Equip Best</button></div>
   <p class="note">Every hero's weapon, armor and charm at a glance. Tap a slot to change it; works anywhere outside battle. A hero's sheet has an Upgrade button on each slot. <small>Equip Best gears your party of six. The per-hero Auto button only uses your pack and free pets. It never takes from another hero.</small></p>
   <div class="eqlist">${L.map((id,i)=>{const c=G.roster[id];return `${i===G.party.length&&i?'<h4>Roster</h4>':i===0?'<h4>Party</h4>':''}<div class="eqrow">${port(id)}<div class="grow"><b>${esc(c.name)}</b><small>Lv ${c.lv} ${CLS[TPL[id].cls].n}</small>${xpMini(c)}
     <div class="eqslots">${EQSL.map(sl=>{const g=gearOf(c.eq[sl]);return `<button class="eqs" data-act="eqPick" data-arg="${id},${sl}">${g?gearIcon(c.eq[sl]):'<span class="gico empty"></span>'}<span><small>${SLOTN[sl]}</small>${g?esc(g.n):'Empty'}</span></button>`;}).join('')}</div>${petSlotHtml(c)}</div>
@@ -13606,8 +13607,8 @@ function gainersFor(id,all){const k='g'+(all?'a':'p')+id;if(FITC&&FITC[k])return
 const pctTxt=o=>'+'+Math.max(1,Math.round(o.g.pct*100))+'%';
 function bestTag(id){const L=gainersFor(id);
   // v0.4.0 3.5: the headline is about your active party. Heroes waiting in the roster get one smaller, quieter line.
-  const R=gainersFor(id,true).filter(o=>!G.party.includes(o.c.id)).slice(0,4);
-  const side=R.length?`<small class="bestside">Also helps in your roster: ${R.map(o=>`${esc(o.c.name)} <em class="up">${pctTxt(o)}</em>`).join(', ')}.</small>`:'';
+  // v0.18.7: reserves keep no gear, so a piece is judged for the party only (the "Also helps in your roster" line is gone)
+  const side='';
   if(!L.length)return `<span class="best none">Would not help anyone in your active party.</span>${side}`;
   return `<div class="bestl"><b>Helps your party:</b>${L.slice(0,6).map(o=>`<div class="bestr">${port(o.c.id,'sm')}<b>${esc(o.c.name)}</b> <em class="up">${pctTxt(o)}</em> <span>${deltaHtml(o.c,id)}</span></div>`).join('')}</div>${side}`;}
 function cmpPanel(id){if(V.cmp!==id)return `<button class="btn sm cmpb" data-act="cmpT" data-arg="${id}">Compare</button>`;
@@ -13626,7 +13627,7 @@ function autoCharms(){if(!G||G.daily)return 0;const party=G.party.slice(),before
   const n=party.filter(id=>G.roster[id]&&(G.roster[id].eq.c||null)!==before[id]).length;
   saveGame();if(n)sfx('equip');toast(n?`Equip best charms: ${n} hero${n>1?'es':''} changed charm.`:'Equip best charms: nobody has a better charm to wear.');render();return n;}
 // the buttons: autoEqParty (the one "Equip Best", party only) and autoEqOne (per hero); autoEqAll stays callable but has no button
-Object.assign(ACT,{autoEqOne(id){autoRun('one',id||V.modal.char);},autoEqParty(){autoRun('party');},autoEqAll(){autoRun('all');},autoEqCharms(){autoCharms();}});
+Object.assign(ACT,{autoEqOne(id){autoRun('one',id||V.modal.char);},autoEqParty(){autoRun('party');},autoEqAll(){autoRun('party');},autoEqCharms(){autoCharms();}});
 
 // ===== party2.js (v0.3.3): party tools: sorting and filters, XP bars, loadouts, Best Party, field skills =====
 // Sorting and filters (remembered in META.cfg.lists), XP bars, team loadouts (G.loadouts, up to 8, optional save field),
@@ -13674,8 +13675,9 @@ function ldApply(i){
   const curSet=new Set(G.party);
   if(members.length<L.party.length){Object.values(G.roster).filter(c=>!members.includes(c.id)).sort((a,b)=>b.lv-a.lv).slice(0,L.party.length-members.length).forEach(c=>{members.push(c.id);msgs.fill.push(`${esc(c.name)} filled an empty place.`);});}
   const changed=members.some(id=>!curSet.has(id))||G.party.some(id=>!members.includes(id));
-  if(changed&&!inTown()){V.modal={type:'ldRes',title:'Switch loadout',msgs:{miss:['Changing who is in your six happens in town. Order, gear and pets can change anywhere.'],fill:[],move:[]},snap:null,from:V.modal};render();return;}
+  if(changed&&!partyHere()){V.modal={type:'ldRes',title:'Switch loadout',msgs:{miss:['Changing who is in your six happens in town. Order, gear and pets can change anywhere.'],fill:[],move:[]},snap:null,from:V.modal};render();return;}
   const snap=snapAuto();
+  pt12StowOutside(members);// v0.18.7: heroes leaving the six hand their gear to the pack first (party12.js), so the loadout can use it
   // gear: every member hands their gear back, then each slot is filled from the pack with what the loadout had
   const pack=G.gear.slice();members.forEach(id=>GSLOTS.forEach(sl=>{const c=G.roster[id];if(c.eq[sl]){pack.push(c.eq[sl]);c.eq[sl]=null;}}));
   const worn=id=>Object.values(G.roster).find(c=>!members.includes(c.id)&&GSLOTS.some(sl=>c.eq[sl]===id));
@@ -13741,7 +13743,7 @@ Object.assign(ACT,{
   ldUndo(){const m=V.modal;if(m&&m.snap){undoAuto(m.snap);toast('Loadout change undone.');}V.modal=m&&m.from||null;render();},
   ldDone(){const m=V.modal;V.modal=m&&m.from||null;render();},
   bpOpen(){V.modal={type:'bp',plan:bestParty(),from:V.modal};render();},
-  bpApply(){const m=V.modal,P=m.plan;if(!P)return;const cur=new Set(G.party),same=P.ids.length===G.party.length&&P.ids.every(id=>cur.has(id));if(!same&&!inTown())return;
+  bpApply(){const m=V.modal,P=m.plan;if(!P)return;const cur=new Set(G.party),same=P.ids.length===G.party.length&&P.ids.every(id=>cur.has(id));if(!same&&!partyHere())return;
     const snap=snapAuto();G.party=P.ids.filter(id=>G.roster[id]).slice(0,6);saveGame();sfx('equip');V.modal={type:'ldRes',title:'Party built',msgs:{miss:[],fill:[],move:[]},snap,from:{type:'menu',tab:'party'}};render();},
   fsOpen(id){if(G.daily||B)return;V.modal={type:'field',hero:typeof id==='string'?id:null,sk:null,from:V.modal};render();},
   fsHero(id){V.modal.hero=id;V.modal.sk=null;V.modal.msg=null;render();},
@@ -18019,7 +18021,7 @@ function p3Gaps(ids,T){T=T||p3Threats();const set=ids.map(id=>G.roster[id]).filt
   G0.forEach(g=>{const inn=g.fill[0];if(!inn)return;if(set.length<6){g.swap={in:inn,out:null};return;}let best=null;
     set.forEach(c=>{const t=set.map(x=>x===c?G.roster[inn]:x),v=p3TeamScore(t,pw,mx,T);if(!best||v>best.v)best={v,out:c.id};});g.swap={in:inn,out:best.out};});
   return G0;}
-function p3GapsHtml(ids,T,open){const L=p3Gaps(ids,T),town=inTown(),nm=id=>esc(G.roster[id].name);
+function p3GapsHtml(ids,T,open){const L=p3Gaps(ids,T),town=partyHere(),nm=id=>esc(G.roster[id].name);
   if(!L.length)return `<div class="p3gaps ok"><small class="up">✓ Team check: healer, tank, every delivery, Primer, Detonator and element answers for this area are covered.</small></div>`;
   return `<details class="p3gaps" ${open?'open':''}><summary><b>Team check:</b> missing ${L.map(g=>g.label).join(', ')}</summary><div class="rows">${L.map(g=>`<div class="row"><div class="grow"><b>${g.label}</b><small>${g.why}</small><small>${g.fill.length?'Could fill: '+g.fill.map(nm).join(', '):'Nobody on your roster yet. The tavern and Guild Hall may have someone.'}</small></div>${g.swap?`<button class="btn sm" data-act="p3Swap" data-arg="${g.swap.in},${g.swap.out||''}" ${town?'':'disabled'} title="${town?'':'Swapping roster heroes into your six happens in town.'}">${g.swap.out?`Swap ${nm(g.swap.in)} in for ${nm(g.swap.out)}`:`Add ${nm(g.swap.in)}`}</button>`:''}</div>`).join('')}</div>${town?'':'<p class="note"><small>Swapping happens in town.</small></p>'}</details>`;}
 function p3ThreatLine(T){const a=Object.keys(T.arch).filter(k=>T.mons.some(m=>tyOf(MON[m].art).includes(k)));
@@ -18199,7 +18201,7 @@ Object.assign(ACT,{
   p3Alch(){if(!G||G.daily)return;V.modal={type:'p3plan',charms:1,plan:p3SmithPlan(['c']),from:V.modal};render();},
   p3SmithGo(){const m=V.modal;if(!m||m.type!=='p3plan')return;const R=p3SmithRun(m.plan);sfx(R.done?'buy':'deny');
     V.modal={type:'autoEq',mode:'smith',rows:R.rows,snap:R.snap,from:m.from,p3:R};render();},
-  p3Swap(a){if(!G||G.daily)return;if(!inTown()){toast('Swapping roster heroes into your six happens in town.');return;}const [inn,out]=String(a).split(',');if(!G.roster[inn]||G.party.includes(inn))return;
+  p3Swap(a){if(!G||G.daily)return;if(!partyHere()){toast('Swapping roster heroes into your six happens in town.');return;}const [inn,out]=String(a).split(',');if(!G.roster[inn]||G.party.includes(inn))return;
     const P=G.party.slice();if(out&&P.includes(out))P[P.indexOf(out)]=inn;else if(P.length<6)P.push(inn);else return;G.party=P;saveGame();sfx('blip');
     toast(out&&G.roster[out]?`${G.roster[inn].name} joins the six; ${G.roster[out].name} waits on the roster.`:`${G.roster[inn].name} joins the six.`);
     if(V.modal&&V.modal.type==='bp')V.modal.plan=bestParty();render();},
@@ -20451,7 +20453,7 @@ const p6StepF=(arr,n)=>{const f=Math.floor(n);return p6Step(arr,f)+(n-f)*arr[Mat
 function p6Fly(T){try{let n=0,f=0;const pool=T.mons.length?T.mons:(ZS(T.s).pool||[]);pool.forEach(k=>{const d=MON[k];if(!d)return;n++;if(tyOf(d.art).includes('flying'))f++;});
   return {share:n?f/n:0,boss:!!(T.boss&&(T.boss.ty||[]).includes('flying'))};}catch(e){return {share:0,boss:false};}}
 // shared context for one Build Party pass: power, roles, threats
-function p6Ctx(){const all=Object.values(G.roster),pw={},R={};all.forEach(c=>{pw[c.id]=Math.max(1,loadoutScore(c,c.S));R[c.id]=p6Role(c);});
+function p6Ctx(){const all=Object.values(G.roster),pw={},R={};all.forEach(c=>{pw[c.id]=Math.max(1,pt12Power(c));/* v0.18.7: reserves keep no gear, so power is compared without it for everyone (party12.js) */R[c.id]=p6Role(c);});
   const T0=p3Threats();return {all,pw,R,mx:Math.max(1,...Object.values(pw)),T:T0,fly:p6Fly(T0),top:Math.max(1,...all.map(c=>c.lv|0)),size:Math.min(6,all.length)};}
 const p6Step=(arr,n)=>{let s=0;for(let i=0;i<n;i++)s+=arr[Math.min(i,arr.length-1)];return s;};
 // the formation score: roles first, then answers to what lies ahead, then a little strength
@@ -20586,37 +20588,19 @@ function mBestParty(m){const P=m.plan,o=P.opts[P.pick]||{},cur=new Set(G.party),
     <h4>Vanguard <small>(fights)</small></h4><div class="rows">${P.ids.slice(0,3).map(row).join('')}</div>
     ${P.ids.length>3?`<h4>Rearguard <small>(swaps in when someone falls or tires)</small></h4><div class="rows">${P.ids.slice(3).map((id,i)=>row(id,i+3)).join('')}</div>`:''}
     ${out.length?`<p class="note">Going to the reserves: ${out.map(id=>esc(G.roster[id].name)).join(', ')}.</p>`:''}
-    ${same&&P.ids.every((id,i)=>G.party[i]===id)?'<p class="note">This is already your party, in this order.</p>':''}${!same&&!inTown()?'<p class="note warn">Changing who is in your six happens in town. You can apply it there.</p>':''}${p3GapsHtml(P.ids,T,false)}`,
-    `<button class="btn gold" data-act="bpApply" ${!same&&!inTown()?'disabled':''}>Apply ${esc(o.name||'')}</button><button class="btn" data-act="xBack">Cancel</button>`);}
+    ${same&&P.ids.every((id,i)=>G.party[i]===id)?'<p class="note">This is already your party, in this order.</p>':''}${!same&&!partyHere()?'<p class="note warn">Changing who is in your six happens in town. You can apply it there.</p>':''}${p3GapsHtml(P.ids,T,false)}`,
+    `<button class="btn gold" data-act="bpApply" ${!same&&!partyHere()?'disabled':''}>Apply ${esc(o.name||'')}</button><button class="btn" data-act="xBack">Cancel</button>`);}
 {const bo0=ACT.bpOpen;ACT.bpOpen=function(){if(!G||G.daily)return;return bo0.apply(this,arguments);};}
 {const sw0=ACT.p3Swap;ACT.p3Swap=function(){const m=V.modal,key=m&&m.type==='bp'&&m.plan?m.plan.key:null;const r=sw0.apply(this,arguments);
   try{const n=V.modal;if(key&&n&&n.type==='bp'&&n.plan&&n.plan.opts){const j=n.plan.opts.findIndex(o=>o.key===key);if(j>=0){p6Sel(n.plan,j);render();}}}catch(e){}return r;};}
 
-// ----- 4. Equip best: reserves (heroes outside the party, spare gear only) -----
+// ----- 4. Equip best: reserves (v0.18.7: reserves keep no gear, so this is now a pointer; the pack is where their gear lives, party12.js) -----
 const P6_CAMP='Reserves';
-function autoCamp(){if(!G||G.daily)return;const party=G.party.slice(),camp=Object.keys(G.roster).filter(id=>!party.includes(id));
-  if(!camp.length){toast('No reserves: every wayfarer you have is in your party.');return;}
-  const snap=snapAuto(),before={};Object.values(G.roster).forEach(c=>{before[c.id]={eq:Object.assign({},c.eq),comp:(compOf(c)||{}).id||null,pw:loadoutScore(c,c.S)};});
-  // gear: the pack plus what the reserves already wear; the party is neither planned for nor taken from
-  applyGear(planGear(camp,[],true));Object.values(G.roster).forEach(refresh);
-  // companions: only ones not walking with a party member
-  const free=(G.tamed||[]).filter(o=>!o.with||!party.includes(o.with)),pairs=[];
-  free.forEach(o=>camp.forEach(id=>pairs.push({o,id,g:compGainFor(o,G.roster[id])})));
-  const dO=new Set(),dC=new Set(),map=new Map();pairs.sort((a,b)=>b.g-a.g).forEach(p=>{if(p.g<=.01||dO.has(p.o.id)||dC.has(p.id))return;dO.add(p.o.id);dC.add(p.id);map.set(p.o.id,p.id);});
-  free.forEach(o=>{if(map.has(o.id))o.with=map.get(o.id);else if(o.with&&camp.includes(o.with))o.with=null;});
-  Object.values(G.roster).forEach(refresh);
-  const rows=[];Object.values(G.roster).forEach(c=>{const b=before[c.id],ch=[];
-    GSLOTS.forEach(sl=>{if((b.eq[sl]||null)!==(c.eq[sl]||null))ch.push({sl,from:b.eq[sl]||null,to:c.eq[sl]||null});});
-    const nc=(compOf(c)||{}).id||null;if(ch.length||nc!==b.comp)rows.push({id:c.id,name:c.name,inParty:party.includes(c.id),ch,comp:nc!==b.comp?{from:b.comp,to:nc}:null,pw0:b.pw,pw1:loadoutScore(c,c.S)});});
-  saveGame();sfx('equip');V.modal={type:'autoEq',rows,snap,mode:'camp',from:V.modal};render();}
+function autoCamp(){if(!G||G.daily)return;toast('Reserves keep no gear: it waits in the pack. Equip Best gears the six who are in your party.');}
 {const ma0=mAutoEq;mAutoEq=function(m){let h=ma0.apply(this,arguments);if(typeof h!=='string')return h;h=h.split('<small>(roster)</small>').join('<small>(reserve)</small>');
-  if(m&&m.mode==='camp'){h=h.replace(/<h2>[^<]*<\/h2>/,`<h2>Equip best: ${P6_CAMP.toLowerCase()}</h2><p class="note p6camp">Only spare gear from your pack and what your reserves already wear. Your party's gear and companions were not touched.</p>`);
-    if(!(m.rows||[]).length)h=h.replace(/<p>Everyone already[^<]*<\/p>/,'<p>Every reserve already has the best spare gear for their class.</p>');}
   return h;};}
 {const ve0=vEquipTab;vEquipTab=function(){let h=ve0.apply(this,arguments);try{if(!G||G.daily||typeof h!=='string')return h;
-  h=h.replace('<h4>Roster</h4>',`<h4>${P6_CAMP}</h4>`);
-  const camp=Object.keys(G.roster).some(id=>!G.party.includes(id));
-  h=h.replace(/(<button class="btn" data-act="autoEqAll"[^>]*>[^<]*<\/button>)/,`$1<button class="btn" data-act="autoEqCamp" ${camp?'':'disabled'} title="Your reserves (heroes not in your party) get the best spare gear from the pack. Never takes anything from your party.">Equip best: reserves</button>`);}catch(e){}return h;};}
+  h=h.replace('<h4>Roster</h4>',`<h4>${P6_CAMP}</h4>`);}catch(e){}return h;};}
 Object.assign(ACT,{bpPick(j){const m=V.modal;if(!m||m.type!=='bp'||!m.plan||!m.plan.opts)return;j=+j||0;const P=m.plan,o=P.opts[j];
     // the chip that is already selected: Balanced, Fresh mix and Training team give another take (P.shuf counter), the rest stay as they are
     if(o&&j===P.pick&&(o.key==='bal'||o.key==='mix'||o.key==='train')){const shuf=Object.assign({},P.shuf),hist=Object.assign({},P.hist);shuf[o.key]=(shuf[o.key]|0)+1;
@@ -23061,7 +23045,7 @@ const TIPS=[
   g:'Camp Supplies are sold at Alchemy from the third realm. In a field or dungeon (not in town or next to a guardian), Make camp from the Party tab: standing heroes get back a quarter of their HP and MP, and you pick one boon for the next 3 battles (Whetstone, Watch fire, Early rise or Forager\'s luck).'},
  {id:'reserves',n:'Reserves and spare gear',sec:'Party',go:['menuTab','party','Party'],
   t:()=>{if(!obWorld())return null;const r=obReserves();return r.length?`${p2Nm(G.roster[r[0]])} is a Reserve, outside the party. Swap heroes in town from the Party tab.`:null;},
-  g:'Heroes outside the party are your Reserves. They still earn some XP. In town you can swap them into the party from the Party tab, and a wayfarer met on the road can step in on the spot. Equip Best gears your six; a reserve\'s own sheet has an Auto button for spare gear.'},
+  g:'Heroes outside the party are your Reserves. They still earn some XP. In town or in the Echo Rift hall you can swap them into the party from the Party tab, and a wayfarer met on the road can step in on the spot. Reserves keep no gear: it waits in the pack, and Equip Best gears whoever is in your six.'},
  {id:'bestparty',n:'Build Party and Training team',sec:'Party',go:['bpOpen','','Build Party'],
   t:()=>{if(!obModal('menu')||obTab()!=='party')return null;return obReserves().length?'Build Party suggests parties for this area. Training team helps heroes who fell behind.':null;},
   g:'Build Party (Party tab) looks at your roster, the foes of this area and its boss, and suggests a Vanguard and Rearguard in formations: Balanced, Boss ready, Area answer, Fresh mix, Rotation. Training team puts heroes who fell behind beside a strong tank and healer, so the XP catch up bonus lifts them quickly.'},
@@ -31077,6 +31061,129 @@ HOOK.after('showLocation','records12','Den, Lair and Sanctum tags on every arriv
     if(!G.breachLook){setTimeout(()=>{try{if(G&&!G.breachLook&&V.screen==='world'&&WS.m&&WS.m.breach&&!V.modal&&!B&&!WS.dlg){G.breachLook=1;say('The Meridian Breach',R12_BREACH_TEXT);saveGame();}}catch(e){}},1200);}
     return;}
   const k=siteKind(m);if(k&&String(WS.locN).indexOf(k+': ')!==0)WS.locN=k+': '+WS.locN;}catch(e){}});
+
+// ===== party12.js (v0.18.7): party changes in the Echo Rift hall, reserves keep no gear, New Game+ draws what you have not seen =====
+// 1. partyHere(): the Party tab's swap, reserve, Build Party and loadout actions were locked to town (inTown(), ui2.js: world screen on a town
+//    map). The lock was the v0.2.0 rule "the six are set in town" (plus the v0.10.2 wild recruit exception). The Echo Rift hall is a safe hub
+//    (map.sanctum, safe:1) where gates are fought one at a time, so the six may change there between gates. In a rift fight V.screen is
+//    'battle', so partyHere() is false and the battle screen has no swapping beyond the free swap of its own six. Everything else outside
+//    town (fields, dungeons, caves) keeps the old lock.
+// 2. Reserves keep no gear. Gear lives on the six; a hero who is not in the party has everything back in the pack (G.gear). One sweep
+//    (pt12Tick, before render) enforces it for every way a hero can leave the six (swap, reserve, Build Party, loadout, wild recruit, Undo),
+//    ldApply calls pt12StowOutside before it hands out gear. Old saves are migrated once (unpackG hook, G.pt12mig) with a one-time message.
+//    Gear suggestions already compare only the party (fitsFor/gainersFor use G.party); the roster side line in bestTag is removed here.
+//    A reserve who joins the six gets "Equip Best" offered on the Party tab. Best Party compares power without gear (pt12Power).
+//    Pets are not gear and stay with their hero. Nothing runs in the Daily Trial.
+// 3. New Game+ (cycle > 0): the four standard realms, the Calamity realm and their bosses are drawn from what the account has not seen yet.
+//    META.pt12.runs holds one record per playthrough in order: {s:seed,c:cycle,o:order,b:bosses,f:final,vis:realms visited,bs:bosses faced}.
+//    Unseen realms and unseen bosses come first; when everything is seen the draw is random with a lean (PT12.lean) toward whatever was not
+//    in the last two playthroughs. Bosses use META.best[name].seen too (it syncs with the account), the realm list is local to the device.
+//    A realm names its own Scourge and stand-ins (realmdata.js boss, alt; world12.js), so the draw picks (realm, boss) pairs; a realm with no boss
+//    named draws its boss the old way. It runs as a newRun hook (after realms.js, look9.js and world12.js) and newGame re-asserts it.
+//    The run also carries G.run.ngp = {b,f}, the bosses drawn.
+// New save fields: G.pt12mig (the gear migration ran), G.pt12note (message pending), G.run.ngp. New META field: META.pt12 = {v:1,runs:[...]}. Tunable: PT12.
+
+const PT12={lean:.6,recent:2,keep:40};
+
+// ---------- 1. changing the party in the Echo Rift hall ----------
+function partyHere(){try{return inTown()||!!(V.screen==='world'&&!B&&WS.m&&WS.m.sanctum);}catch(e){return false;}}
+
+// ---------- 2. reserves keep no gear ----------
+// every hero outside `keep` (an array of ids; default: the party) hands all their gear to the pack; returns {n,by:{id:count}}
+function pt12StowOutside(keep,g){g=g||G;const out={n:0,by:{}};if(!g||g.daily||!g.roster)return out;const K=new Set(keep||g.party||[]);
+  Object.keys(g.roster).forEach(id=>{if(K.has(id))return;const c=g.roster[id];if(!c||!c.eq)return;let k=0;
+    EQSL.forEach(sl=>{const it=c.eq[sl];if(it){g.gear.push(it);c.eq[sl]=null;k++;}});
+    if(k){out.n+=k;out.by[id]=k;try{refresh(c);}catch(e){}}});
+  return out;}
+// power without gear: a reserve has none, so nobody's gear counts when Best Party compares heroes
+function pt12Power(c){try{return loadoutScore(c,calcStats(Object.assign({},c,{eq:{}})));}catch(e){return loadoutScore(c,c.S);}}
+const pt12Names=ids=>ids.map(id=>G.roster[id]&&G.roster[id].name).filter(Boolean);
+function pt12Tick(){
+  if(!G||G.daily||B||V.screen==='battle')return;
+  if(V.pt12G!==G){V.pt12G=G;V.pt12P=G.party.slice();}
+  const cur=G.party.slice(),prev=V.pt12P||cur,left=prev.filter(id=>!cur.includes(id)&&G.roster[id]),came=cur.filter(id=>!prev.includes(id)&&G.roster[id]);V.pt12P=cur;
+  const r=pt12StowOutside();
+  if(r.n){saveGame();const who=left.filter(id=>r.by[id]);
+    if(who.length){const k=who.reduce((a,id)=>a+r.by[id],0);toast(`${pt12Names(who).join(', ')} left the six: ${k} piece${k>1?'s':''} of gear back in the pack.`);}}
+  const bare=came.filter(id=>{const c=G.roster[id];return c&&!c.eq.w&&!c.eq.a;});
+  if(bare.length&&!r.n)toast(`${pt12Names(bare).join(', ')} joins the six with no gear. Equip Best is on the Party tab.`);
+  if(G.pt12note&&V.screen==='world'&&!V.modal&&!WS.dlg){const n=G.pt12note;delete G.pt12note;saveGame();
+    V.modal={type:'story',title:'Gear back in the pack',text:`Heroes outside your six no longer carry gear. ${n} piece${n>1?'s':''} of gear from your reserves went back to the pack. Equip Best gears the six in your party, and a hero who joins the six can be geared from the pack.`,btn:'OK'};}
+}
+HOOK.before('render','party12','reserves keep no gear (the sweep)',function(){try{pt12Tick();}catch(e){console.error(e);}});
+// old saves: every hero outside the six is unequipped into the pack once
+HOOK.after('unpackG','party12','migrate: reserves keep no gear',function(g,o){try{if(!g||g.daily||g.pt12mig)return;g.pt12mig=1;const G0=G;G=g;let r;try{r=pt12StowOutside(null,g);}finally{G=G0;}if(r&&r.n)g.pt12note=r.n;}catch(e){}});
+// the Party tab: a reserve who has joined the six and has nothing to wear gets Equip Best offered
+HOOK.xform('vSwap','party12','Equip Best offer for heroes in the six with empty weapon or armor slots',function(h,where){try{
+  if(!G||G.daily||typeof h!=='string'||where==='guild')return h;
+  const bare=G.party.map(id=>G.roster[id]).filter(c=>c&&['w','a'].some(sl=>!c.eq[sl]&&G.gear.some(id=>slotOk(c,sl,id))));
+  if(!bare.length)return h;
+  return h+`<div class="pt12eq row"><div class="grow"><b>${bare.map(c=>esc(c.name)).join(', ')}</b><small>${bare.length>1?'have':'has'} an empty weapon or armor slot and the pack has gear that fits. Heroes outside the six keep no gear.</small></div><button class="btn sm gold" data-act="autoEqParty">Equip Best</button></div>`;}catch(e){return h;}});
+// a reserve's sheet: the slots are shown but cannot be changed (the gear is in the pack)
+HOOK.xform('mChar','party12','reserve sheet: gear slots are read only',function(h,id,edit){try{if(!G||G.daily||typeof h!=='string'||G.party.includes(id)||!G.roster[id])return h;
+  h=h.replace(/<button class="row tr eqsrow" data-act="gearSlot" data-arg="\w"/g,'<button class="row tr eqsrow" disabled');
+  return h.replace('On the roster.','On the roster (a reserve). Reserves keep no gear: it waits in the pack until they join the six.');}catch(e){return h;}});
+
+// ---------- 3. New Game+: realms and bosses you have not seen ----------
+const PT12_TIER={thistle:1,orchard:1,strand:1,lakes:1,mire:2,grotto:2,tundra:2,peaks:2,deeps:3,mines:3,glacier:3,mesa:3},PT12_WANT=[[1],[1,2],[2,3],[3]];// the fantasy ladder of realms.js
+const pt12Meta=()=>{const m=META.pt12=META.pt12&&Array.isArray(META.pt12.runs)?META.pt12:{v:1,runs:[]};return m;};
+const pt12RealmKey=i=>{try{return REALMS[i-REALM_BASE].key;}catch(e){return '';}};
+const pt12RealmName=i=>{try{return REALMS[i-REALM_BASE].n;}catch(e){return String(i);}};
+// the record of one playthrough (created when it starts, or, for a journey begun before this existed, when it is first looked at)
+function pt12Rec(g){g=g||G;if(!g||g.daily||!g.run||!g.run.order)return null;const M=pt12Meta();let r=M.runs.find(x=>x.s===g.run.seed);
+  if(!r){r={s:g.run.seed,c:g.run.cycle||0,o:g.run.order.slice(),b:(g.run.bosses||[]).slice(),f:g.run.final,vis:[],bs:[]};M.runs.push(r);if(M.runs.length>PT12.keep)M.runs.splice(0,M.runs.length-PT12.keep);}return r;}
+function pt12Track(g){try{g=g||G;const r=pt12Rec(g);if(!r)return;let ch=false;
+  (g.visited||[]).forEach(st=>{const i=g.run.order[st];if(i!=null&&!r.vis.includes(i)){r.vis.push(i);ch=true;}});
+  (g.cleared||[]).forEach((c,s)=>{if(!c)return;const k=s<4?(g.run.bosses||[])[s]:g.run.final;if(k&&!r.bs.includes(k)){r.bs.push(k);ch=true;}});
+  if(ch)saveMeta();}catch(e){}}
+HOOK.before('newGame','party12','close the record of the journey that ends',function(){try{if(G&&!G.daily)pt12Track(G);}catch(e){}});
+HOOK.after('arrive','party12','realms visited',function(){pt12Track();});
+HOOK.after('win','party12','bosses beaten',function(){pt12Track();});
+HOOK.after('startBattle','party12','bosses faced',function(r,spec){try{if(r===false||!G||G.daily||!spec||spec.kind!=='boss')return;const k=bossKeyFor(spec.stage|0),rec=pt12Rec();if(rec&&k&&!rec.bs.includes(k)){rec.bs.push(k);saveMeta();}}catch(e){}});
+// the draw. ctx = {runs: [records, oldest first], seenBoss(k): the account has met this boss}; R = random function. Pure: the test sim uses it too.
+// A realm names its own Scourge and the ones that can stand in for it (realmdata.js: boss, alt; world12.js), so the draw picks (realm, boss) pairs:
+// pairs with an unseen realm and an unseen boss first, then an unseen realm, then an unseen boss, then random weighted by recency.
+function pt12Age(runs,test){for(let i=runs.length-1,a=1;i>=0;i--,a++)if(test(runs[i]))return a;return Infinity;}
+const pt12Cands=(i,pool)=>{try{const R=ZONES[i],l=[R.boss].concat(R.alt||[]).filter(k=>k&&pool.includes(k)&&guardianDef(k));return l.length?l:null;}catch(e){return null;}};
+// one boss from `pool` the old way (no realm connection): unseen first, then weighted by how long ago it was met
+function pt12Loose(pool,n,R,seen,age){const left=pool.slice(),out=[];while(out.length<n&&left.length){const un=left.filter(k=>!seen(k));let k;
+  if(un.length)k=un[Math.floor(R()*un.length)];else{const w=left.map(x=>age(x)>PT12.recent?1+PT12.lean:1),tot=w.reduce((a,b)=>a+b,0);let r=R()*tot,i=0;for(;i<left.length-1;i++){if((r-=w[i])<0)break;}k=left[i];}
+  out.push(k);left.splice(left.indexOf(k),1);}return out;}
+function pt12Select(ctx,R){
+  const runs=ctx.runs,seenR=new Set();runs.forEach(r=>(r.vis||[]).forEach(i=>seenR.add(i)));
+  const bossSeen=k=>ctx.seenBoss(k)||runs.some(r=>(r.bs||[]).includes(k));
+  const rAge=i=>pt12Age(runs,r=>(r.vis||[]).includes(i)),bAge=k=>pt12Age(runs,r=>(r.bs||[]).includes(k));
+  const used=new Set(),usedB=new Set(),order=[],bosses=[];let coupled=true;
+  // one slot: ts = the tiers the slot wants (null for the Calamity realm), realms = the candidates, pool = the bosses allowed
+  function slot(ts,realms,pool){const U=[];
+    realms.forEach(i=>{if(used.has(i))return;const L=(pt12Cands(i,pool)||[]).filter(b=>!usedB.has(b)),dist=ts?Math.min(...ts.map(t=>Math.abs((PT12_TIER[pt12RealmKey(i)]||2)-t))):0;
+      (L.length?L:[null]).forEach(b=>{const rs=seenR.has(i),bs=b?bossSeen(b):false;U.push({i,b,dist,cls:!rs&&(!b||!bs)?0:!rs?1:(b&&!bs)?1.5:2});});});
+    const best=Math.min(...U.map(u=>u.cls));let P=U.filter(u=>u.cls===best);const d=Math.min(...P.map(u=>u.dist));P=P.filter(u=>u.dist===d);let u;
+    if(best<2)u=P[Math.floor(R()*P.length)];
+    else{const w=P.map(x=>(x.b&&bAge(x.b)>PT12.recent?1+PT12.lean:1)*(rAge(x.i)>PT12.recent?1+PT12.lean/2:1)),tot=w.reduce((a,b)=>a+b,0);let r=R()*tot,k=0;for(;k<P.length-1;k++){if((r-=w[k])<0)break;}u=P[k];}
+    used.add(u.i);if(u.b)usedB.add(u.b);else coupled=false;return u;}
+  PT12_WANT.forEach(ts=>{const u=slot(ts,REALM_STD,GPOOL);order.push(u.i);bosses.push(u.b);});
+  const c=slot(null,REALM_CAL,FPOOL);order.push(c.i);let final=c.b;
+  // a realm with no boss of its own named (or all taken): drawn the old way, unseen first
+  const hole=bosses.map((b,k)=>b?-1:k).filter(k=>k>=0);
+  if(hole.length){const f=pt12Loose(GPOOL.filter(k=>!usedB.has(k)),hole.length,R,bossSeen,bAge);hole.forEach((k,j)=>bosses[k]=f[j]);}
+  if(!final)final=pt12Loose(FPOOL,1,R,bossSeen,bAge)[0];
+  return {order,bosses,final,coupled,newRealms:order.filter(i=>!seenR.has(i)).length,newBosses:bosses.concat([final]).filter(k=>!bossSeen(k)).length};}
+const pt12Ctx=()=>({runs:pt12Meta().runs,seenBoss:k=>{try{return ((META.best||{})[guardianDef(k).n]||{}).seen>0;}catch(e){return false;}}});
+// New Game+ (cycle > 0) draws its run here, after realms.js, look9.js and world12.js have drawn theirs: the realms and their bosses are replaced
+HOOK.xform('newRun','party12','New Game+ draws realms and bosses not seen yet',function(r,cycle){try{if((cycle||0)>0&&r&&r.order&&r.rv===2){
+  const S=pt12Select(pt12Ctx(),seeded((r.seed^0x12a7)>>>0));r.order=S.order;r.bosses=S.bosses;r.final=S.final;r.ngp={b:S.bosses.slice(),f:S.final};}}catch(e){console.error(e);}return r;});
+// whatever load order the modules have, the bosses chosen here stand (and the first realm's quests are made again if a later hook changed them)
+HOOK.after('newGame','party12','keep the New Game+ draw, record the playthrough',function(r,ids,cycle){try{if(!G||G.daily||!G.run)return;
+  // newRun is only hookable once engine.js defines it (HOOK.def); without that the draw happens here, after the fact
+  if((cycle||0)>0&&!G.run.ngp&&G.run.order&&G.run.rv===2){const S=pt12Select(pt12Ctx(),seeded((G.run.seed^0x12a7)>>>0));G.run.order=S.order;G.run.bosses=S.bosses;G.run.final=S.final;G.run.ngp={b:S.bosses.slice(),f:S.final};try{if(typeof lookSync==='function')lookSync();}catch(e){}G.quests=[];genQuests(0);}
+  const p2=G.run.ngp;
+  if(p2&&((G.run.bosses||[]).join()!==p2.b.join()||G.run.final!==p2.f)){G.run.bosses=p2.b.slice();G.run.final=p2.f;try{if(typeof lookSync==='function')lookSync();}catch(e){}G.quests=[];genQuests(0);}
+  pt12Rec(G);saveMeta();}catch(e){console.error(e);}});
+// ---------- styles ----------
+try{const st=document.createElement('style');st.textContent='.pt12eq{margin:.5em 0;padding:.4em .5em;border:1px solid rgba(255,208,74,.4);border-radius:6px}';document.head.appendChild(st);}catch(e){}
+// ---------- test hook (our own object; window.__A is not touched) ----------
+window.__PT12={PT12,partyHere,pt12StowOutside,pt12Tick,pt12Power,pt12Select,pt12Ctx,pt12Rec,pt12Track,pt12RealmName,get META(){return META;}};
 
 window.__A={walkable,ceInit,tvSlots,genQuests,STARTERS,starterDraw,ECON,AUTO_NERF,rebuildBase,detLive,REACT,skEls,packContents,miniFor,AUTO_REW,ENC_RATE,ENC_MIN_STEPS,detNote,classSkills,stickCount,bestAll,calcStats,lookKey,vTemper,storyEchoUp,leaveDungeon,win,ldApply,genFort,caveOk,enterCave,siteHasMini,openChest,nextDlg,WS,mapIcoRects,roamSpawn,roamInterior,roamSees,mapTargets,DIRV,tileAt,STAGE_LV,autoBan,rollWeather,guardianDef,mapIssues,mapEntry,syncPools,bovAt,calFxAt,realmAt,REALMS,BOV,CAL_FX,overlayGuide,liftOverlay,drawGearIcon,gearIcon,itemIcon,RAW,sigKind,sigGid,personalDone,heroLook,hasSignature,LEGEND_IDS,facDirty,facCount,facRank,facRep,FACB,FAC,finishBattle,npcWords,npcHints,npcPool,titleMake,titleAdvance,TTS,placeAt,wkwUpdate,innSpot,getMap,monURL,enterVia,applyBossTheme,BTHEME,resetMaps,rebuildBase,shopStock,gearDesc,calcStats,gearMigrate,CLS_WPN,CLS_ARM,WPERK,WT_NAME,equipWhy,lootBase,GEAR,canEquip,gearOf,perkNote,FAM_MAT_V35,fbDraft,META:{get best(){return META.best},get codex(){return META.codex},get q(){return META.q}},saveMeta,OFF,offPending,offFlush,PROFILE,profileSync,codexSee,getMap,placeAt,interact,sanctumOpen,riftKeys,echoKeys,BONDS,bondKey,wkwUpdate,inTown,WS,LC,lsort,bestParty,fsCast,fsSkills,ldApply,MON,registerTamed,stickPower,stickCount,autoOne,planGear,bestTag,gainersFor,compGainFor,refresh,fitsFor,canEquip,gearOf,queueNewGear,ARENA,fxDur,banDur,stageTags,autoSwitchPick,layoutBattle,newChar,calcStats,limitSkill,limitTier,canStuck,dunReachable,LV_CAP,addXp,echoSpec,bossLvFor,fx,MON,log,effInfo,tierOf,perkOf,quirkDef,forgeCost,buyPlan,vJourney,modalBack,partySlots,limitOpen,town2Reached,skillKnown,known,classSkills,paceMigrate,unpackG,packG,makeEnemy,QUIRK,arrive,enterDungeon,wkwUpdate,useTravel,travelWhyNot,porkFlee,porkBlocked,encTile,campRest,buyPart,partLeft,alchStock,GAME_VERSION,CHANGELOG,ITEMS,tavernOffers,tavernPool,recruitFit,partyNeeds,vNext,CHALL,innSpot,RECIPES,MATS,FB,fbContext,REDEEM,legendJoin,legendQ,genQuests,dynActors,convInit,PROFILE,profileSync,checkArchive,GPOOL,FPOOL,guardianDef,saveMeta,archiveSkills,get G(){return G;},set G(v){G=v;},get B(){return B;},get V(){return V;},get META(){return META;},WS,ACT,render,newGame,placeAt,startBattle,autoTurn,advance,finishBattle,getMap,innSpot,setPause:p=>{PAUSE=p;},autoCfg,worldInputDir,inputSources,battleFrame,battleTheme,STS,MAPS,mapIssues,healMap,mimicReward,dropChest,interact,worldDraw,TPL,ZONES,ZS,newChar,recruit,saveGame,resetMaps,dynActors,tileAt,BV,refresh,genBounties,genQuests,vStarter,heroCard,heroURL,iconURL,masteryLine,AU,buildTrack,tone,noiseHit,MIDI,sfx,audioVol};
 ['heroRoles','SOLID','WEATHER','WX_BASE','weatherFX','superGuide','recruitCost','ceStart','ceStep','ceInit','cePool','wxList','SUPER_TABLE','superOk','facRank','facRep','facInit','facCount','facCredit','FAC','FMIS','facMissionList','facProg','tyOf','facSync','facMul','facBest','worldPlan','caveReward','enterCave','leaveCave','leaveDungeon','buildCaveMap','worldGraph','openWorldMap','sigReport','SIG_NAMES','starterDraw','ITEM_TIERS','gTierIdx','tierChip','gearIcon','starterSlots','STARTERS','CLK_LEN','CLK_PH','clockPhase','wxInfoBody','recipeOrder','recipeGain','recipeReady','recipeClose','effOf','calcDamage','healsUndead','storyEchoUp','riftKeys','echoDef','efCost','autoLocked','bossFightKey','learnScanAll','isSeen','mapMarks','genSub','subOK','subReq','ensureSub','inSub','tvSlots','tvInit','tvLeft','tvEvent','tvNextText','tvPool','tvDue','tvShuffle','mTavern','hireOK','TV_CAP','TV_CD','POOL_IDS','natPool','natOf','natRoll','NATURES','natInfo','natRerollCost','natChooseCost','NAT_CLASS','iconURL','seenOf','mapIcoDraw','drawMini','MAPCV','revealAround','fxLayer','numDur','compBonusText','compPerk','checkPhase','win','unitBox','LNQ','challVisible','challEligible','challState','isMimic','migrateCompanions','canSummon','summonComp','compOf','clockPhase','tickClock','isNight','rollWeather','wxStep','nightPool','encounterFoes','restAll','tameElite','openChest','rerollTavern','bestAll','gearTier','SV','svCheck','svFlush','svInit','svPush','svPull','svScan','svParse','svBackup','svPack','svUnpack','svProg','svCloudList','svDelDoc','svGet','svCap','slotState','slotKey','svDecode','SV_CH','svStatus','svSlotRaw','svLoad','loadRaw','svHash','svIdx'].forEach(k=>{try{Object.defineProperty(window.__A,k,{get:()=>eval(k)});}catch(e){}});
