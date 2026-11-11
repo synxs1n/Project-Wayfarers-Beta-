@@ -1911,7 +1911,7 @@ html.rm .battle.b3 .cmd .mi.b9glow{animation:none}
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.19.1";const APP_BUILD="5bc19b1ab520";
+(function(){const APP_VER="0.19.2";const APP_BUILD="e62a6f7e41c0";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2131,7 +2131,7 @@ const BOSS_LV={frac:.5,cap:12};
 // 3.2 bosses: shield pips +50% (5 to 8, 7 to 11); the break window hits for less and is over once the foe loses the turn it staggers
 const BOSS_PIPS={mult:1.5};const BREAK_WIN={bonus:1.3,short:true};
 // 3.2 extra boss muscle on top of the old stat table (hp and power multipliers)
-const BOSS_BUFF={hp:[.84,1.4,1.45,1.6,1.28],pow:[.97,1.3,1.34,1.56,1.25]}// v0.19: eased about 7% hp and 3% pow with the role power change (was hp [.9,1.5,1.55,1.7,1.36], pow [1,1.34,1.38,1.6,1.28]) to pay for the 12 skill kit, role power and no dual ultimates, so the journey sim stays at level 41.3 and 14.6 boss tries (before the skill changes: 40.5 and 11.1; without the ease: 42.6 and 19.6); v0.4.3: re-tuned with capes; v0.8.2: the first three Scourges eased (were hp 1.3, 1.75, 1.8 and pow 1.15, 1.4, 1.44) so no boss is a wall; v0.9.5: hp [1.15,1.65,1.7,2.0,1.52] -> about 4 to 10% less, the realm gimmicks (BOSS_GIM) carry the rest
+const BOSS_BUFF={hp:[.8,1.34,1.39,1.53,1.22],pow:[.955,1.28,1.32,1.535,1.23]}// v0.19: eased about 7% hp and 3% pow with the role power change (was hp [.9,1.5,1.55,1.7,1.36], pow [1,1.34,1.38,1.6,1.28]) to pay for the 12 skill kit, role power and no dual ultimates, so the journey sim stays at level 41.3 and 14.6 boss tries (before the skill changes: 40.5 and 11.1; without the ease: 42.6 and 19.6); v0.4.3: re-tuned with capes; v0.8.2: the first three Scourges eased (were hp 1.3, 1.75, 1.8 and pow 1.15, 1.4, 1.44) so no boss is a wall; v0.9.5: hp [1.15,1.65,1.7,2.0,1.52] -> about 4 to 10% less, the realm gimmicks (BOSS_GIM) carry the rest
 // BOSS_GIM (v0.9.5, battle4.js): every Scourge and Calamity brings one realm gimmick to its first fight (kind 'boss'; not Echoes, not the Daily
 // Trial). Each is telegraphed on the boss's turn (a log line, a "Telegraph" chip on the boss, a mark on the heroes it will hit) and lands on its
 // next turn, so reading it pays. first: the boss's turn of the first telegraph; every: turns between telegraphs (per boss: every).
@@ -2326,10 +2326,51 @@ const SK12={cap:12,dualUlt:false,legendsKeepUlt:true,
   ult:{warrior:['titan','ragnarok'],knight:['judge'],mage:['s3a','cataclysm'],healer:['verdict'],thief:['assn','lotus'],archer:['heavenp'],monk:['dragon','ascend'],bard:['finale','symphony'],
     sniper:['s3a','tenk'],druid:['s3a','oldwood'],archmage:['s3a','zeropoint'],chronicler:['s3a','finaled']},
   physCls:['warrior','knight','thief','archer','monk','sniper','druid'],
-  gen:{warrior:['{n} Brand','{n} Breaker'],knight:['{n} Seal','{n} Charge'],thief:['{n} Needle','{n} Cut'],archer:['{n} Mark','{n} Bolt'],monk:['{n} Touch','{n} Strike'],
-    mage:['{n} Mark','{n} Lance'],healer:['{n} Halo','{n} Smite'],bard:['{n} Chord','{n} Crescendo'],sniper:['{n} Mark','{n} Bolt'],druid:['{n} Thorn','{n} Fang'],
-    archmage:['{n} Mark','{n} Lance'],chronicler:['{n} Gloss','{n} Verse']},
-  genLv:{P:8,D:12},dualReact:1};
+  // gen (v0.19.2, kits12.js): the filler a dual type gets for an element that lacks a Primer or Detonator. Its name is the class's own primer / detonator
+  // family ({n} = the element), the same family the class's first elemental skills carry (slotNames below), so a kit reads as one voice. voice: the class's
+  // description of that family (never the words Primer, Detonator or prime). genLv: where the fillers land.
+  gen:{warrior:['{n} Brand','{n} Edge'],knight:['{n} Seal','{n} Lance'],thief:['{n} Needle','{n} Shiv'],archer:['{n} Tracer','{n} Arrow'],monk:['{n} Palm','{n} Chi Burst'],
+    mage:['{n} Mark','{n} Lance'],healer:['{n} Halo','{n} Smite'],bard:['{n} Tune','{n} Crescendo'],sniper:['{n} Mark','{n} Quarrel'],druid:['{n} Thorn','{n} Fang'],
+    archmage:['{n} Glyph','{n} Lance'],chronicler:['{n} Gloss','{n} Verse']},
+  voice:{warrior:["A branding blow that sets {n} into the foe and leaves it clinging.","A heavy {n} cut swung with the whole shoulder."],
+    knight:["A rap of the shield that seals the foe in {n}; the seal lingers.","A charge with a lance of {n} that drives home."],
+    thief:["A needle dipped in {n}, left in the foe.","A fast {n} blade through the gap in the guard."],
+    archer:["A tracer arrow that leaves {n} hanging on the foe's trail.","An arrow of {n} loosed at full draw."],
+    monk:["An open palm that leaves {n} humming in the foe.","A fist of {n} driven through the guard."],
+    mage:["Marks the foe with a mote of {n} that lingers.","A lance of {n}, focused to a point."],
+    healer:["A halo of {n} settles on the foe and lingers.","A smite of {n} from above."],
+    bard:["A {n} tune that lingers on the foe.","A rising {n} crescendo that crashes on one foe."],
+    sniper:["A bolt that leaves {n} clinging to the foe.","A {n} quarrel loosed at full gallop."],
+    druid:["Thorns of {n} snag the foe and linger.","The pack's fang, wreathed in {n}."],
+    archmage:["A glyph of {n} traced on the foe, glowing.","A lance of {n} cast through the glyph."],
+    chronicler:["A gloss of {n} ink written across the foe.","A verse of {n} that ends the sentence."]},
+  // slotNames: the first elemental skills of a class (skills.js) keep a fixed Primer or Detonator role by slot; where the family name says the opposite
+  // (an Edge that primes, a Ray that detonates) the skill takes the class's voice for the role it has. id -> name pattern.
+  slotNames:{warrior:{edge2:'{n} Brand'},knight:{lance2:'{n} Seal'},mage:{s1b:'{n} Lance'},healer:{ray1:'{n} Halo',ray2:'{n} Smite'},thief:{shiv2:'{n} Needle'},
+    archer:{arrow1:'{n} Tracer'},monk:{chi2:'{n} Palm'}},
+  // roleSwap: classes whose first two spells have the opposite roles by their names (Thunder Quarrel bursts, Shadow Quarrel lingers)
+  roleSwap:{sniper:['s1a','s1b']},
+  genLv:{P:8,D:12},dualReact:1,
+  // keep / drop (v0.19.2): the skills that define how a class plays are protected from the cap (an identity skill the cap left out takes the place of the
+  // first skill in drop that is in the kit, never one a dual type needs for its Primers and Detonators)
+  keep:{warrior:['cleave'],knight:['wall'],healer:['purify'],thief:['smoke','flurry'],archer:['mark'],monk:['fists','med'],bard:['dis','req']},
+  drop:{warrior:['hurl','r_shout','rend'],knight:['javelin','r_cover','r_banner'],healer:['r_aegis','r_bless'],thief:['dart','r_fuma','r_stars'],
+    archer:['galebar','r_cripple','r_flare'],monk:['r_harmony','tempkick','iron'],bard:['r_storm','secondwind','rondo','r_ballad']},
+  // arts: the dual art of a physical class (physCls) is a martial move that still names its two elements: "{word a} and {word b} {noun}". The noun is
+  // picked from the kind of art (all foes, one foe, the vanguard) by the pair; casters keep the spell names in COMBO (skills.js).
+  arts:{w:{fire:'Cinder',water:'Tide',earth:'Loam',wind:'Gale',lightning:'Thunder',ice:'Frost',light:'Dawn',shadow:'Dusk'},
+    n:{warrior:{all:['Sweep','Reaping'],one:['Hammerfall','Breaker'],ally:['Banner','Stand']},knight:{all:['Sweep','Rampart'],one:['Slam','Charge'],ally:['Bastion','Wall Stance']},
+      thief:{all:['Knife Storm','Dance'],one:['Backstab','Cut'],ally:['Veil','Hush']},archer:{all:['Arrowfall','Downpour'],one:['Longshot','Deadeye'],ally:['Cover']},
+      monk:{all:['Whirlwind','Spin Kick'],one:['Rush','Dragon Palm'],ally:['Stance','Breath']},sniper:{all:['Gallop','Stampede'],one:['Riding Shot','Longshot'],ally:['Cover']},
+      druid:{all:['Stampede','Rampage'],one:['Rake','Maul'],ally:['Grove','Howl']}},
+    d:{warrior:{all:"A wide, two handed sweep that carries {a} and {b} through every foe.",one:"One crushing blow, the blade alive with {a} and {b}.",ally:"Plants the banner and calls on {a} and {b} for the whole vanguard."},
+      knight:{all:"The shield leads a charge through every foe, edged in {a} and {b}.",one:"A lance charge tipped with {a} and {b}.",ally:"Grounds the shield and calls up {a} and {b} around the vanguard."},
+      thief:{all:"A fan of knives laced with {a} and {b} through every foe.",one:"A single cut laced with {a} and {b}.",ally:"Slips the vanguard into {a} and {b} cover."},
+      archer:{all:"A volley of arrows tipped with {a} and {b} over every foe.",one:"One arrow loosed with {a} and {b} on the head.",ally:"Covering fire dressed in {a} and {b} for the vanguard."},
+      monk:{all:"A spinning kick that drags {a} and {b} through every foe.",one:"A palm strike that drives {a} and {b} home.",ally:"A still stance that draws {a} and {b} around the vanguard."},
+      sniper:{all:"A galloping volley shot in {a} and {b} across every foe.",one:"A bolt loosed at full gallop with {a} and {b}.",ally:"Covering fire dressed in {a} and {b} for the vanguard."},
+      druid:{all:"The pack and the weather answer in {a} and {b} on every foe.",one:"Claw and root together, {a} and {b}, on one foe.",ally:"The grove answers in {a} and {b} for the vanguard."}}}};
+
 // ROLEPW: skill power by how a skill's role sits in the hero's class role list (roles9.js ROLE9.cls: main, then two sub roles): the hero's main role 1,
 // a sub role `secondary`, any other role `off`. Primer, Detonator and dual art damage never counts below `secondary`. A nature that leans into a skill's role
 // adds `natLift` to that skill's multiplier, never above `natCap` (so a lifted off-role skill never matches a main-role one). Debuff chances move by
@@ -2639,7 +2680,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.19.1";const APP_BUILD="5bc19b1ab520";
+const APP_VER="0.19.2";const APP_BUILD="e62a6f7e41c0";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -3241,7 +3282,7 @@ const SIG={
 // =================== SKILL DATA (skills, limit breaks, bonds). Split out of data.js ===================
 // =================== SKILLS ===================
 const SPELL={fire:['Ember','Inferno','Pyroclasm'],water:['Splash','Torrent','Deluge'],earth:['Rock Toss','Quake','Landslide'],wind:['Gust','Cyclone','Tempest'],
- lightning:['Spark','Chain Bolt','Thunderfall'],ice:['Frost','Blizzard','Absolute Zero'],light:['Gleam','Radiant Burst','Sunfall'],shadow:['Gloom','Umbral Wave','Eclipse']};
+ lightning:['Spark','Static Storm','Thunderfall'],ice:['Frost','Blizzard','Absolute Zero'],light:['Gleam','Radiant Flood','Sunfall'],shadow:['Gloom','Umbral Wave','Eclipse']};
 const ATTACK={id:'attack',n:'Attack',k:'phys',pw:1,mp:0,t:'one',cost:1,hits:1,el:null,lv:1,d:'A basic strike.'};
 const COMBO={
  'fire+water':{n:'Scalding Steam',k:'mag',pw:1.05,t:'all',fx:[['burn',.45],['blind',.3]],d:'Steam scalds every foe. May Burn or Blind.'},
@@ -3526,7 +3567,7 @@ function lateSkills(cls,e1,e2,n1,n2){const E2=e2||e1,N2=n2||n1;const L={
   {id:'galebar',n:'Gale Barrage',k:'phys',pw:.72,hits:2,mp:18,t:'all',el:E2,role:'det',lv:46,d:`Two ${N2} volleys over every foe.`},
   {id:'heavenp',n:'Heavenpiercer',k:'phys',pw:4.4,mp:30,cost:1.3,pierce:1,crit:.3,el:e1,role:'det',lv:50,shieldChip:3,cap:1,d:'One arrow loosed at the sky that comes down through anything. Ignores half of defense; chips 3 shield pips.'}],
  monk:[{id:'furnace',n:'Inner Furnace',k:'mpself',pw:1.6,mp:0,t:'self',lv:42,fx:[['haste',1],['might',1]],d:'Restores HP and MP and lights the furnace: Haste and Might.'},
-  {id:'tempkick',n:'Tempest Kick',k:'phys',pw:1.3,mp:14,t:'all',el:e1,role:'primer',lv:46,fx:[['stun',.2]],d:`A ${n1} whirlwind kick through every foe. May Stun.`},
+  {id:'tempkick',n:'Tempest Whirl',k:'phys',pw:1.3,mp:14,t:'all',el:e1,role:'primer',lv:46,fx:[['stun',.2]],d:`A whirl of kicks that leaves ${n1} lingering on every foe. May Stun.`},
   {id:'ascend',n:'Ascension Fist',k:'phys',pw:.95,hits:5,mp:28,el:e2?[e1,e2]:e1,role:'det',drain:.2,lv:50,cap:1,d:'Five blows that climb to the heavens. Heals him for 20% of the damage.'}],
  bard:[{id:'rondo',n:'Rondo of Ruin',k:'mag',pw:1.1,mp:16,t:'all',el:e1,role:'primer',lv:42,fx:[['break',.5]],d:`A ${n1} rondo on every foe. May Break.`},
   {id:'secondwind',n:'Second Wind',k:'heal',pw:1.2,mp:18,t:'allyAll',lv:46,fx:[['haste',1]],lbParty:20,d:'Heals the line, grants Haste and +20 Limit gauge.'},
@@ -10406,6 +10447,7 @@ function unitBox(u){
   if(u.heroArt){const c=spriteOf(u);return {x:Math.round(sl[0]*W),y:Math.round(sl[1]*H),w:c.width,h:c.height,i};}
   const sz=MON_SIZE(u.art);return {x:Math.round(sl[0]*W),y:Math.round(sl[1]*H),w:sz,h:sz,i};
 }
+unitBox=HOOK.def('unitBox',unitBox);// v0.19.2: one definition; kits12 places guardians and summoned guardians
 const WHITE={};
 function whiteOf(c,key,col){const k=key+(col||'');if(WHITE[k])return WHITE[k];const o=mkCv(c.width,c.height),x=o.getContext('2d');x.drawImage(c,0,0);x.globalCompositeOperation='source-in';x.fillStyle=col||'#ffffff';x.fillRect(0,0,c.width,c.height);return WHITE[k]=o;}
 function iconCv(el){return elShapeCv(el);}
@@ -17139,7 +17181,7 @@ const MINIS=[
 MINIS.forEach(([id,b,n,e,c])=>makeMonVariant(id,b,n,e,c,{mini:1,hp:+((MON[b]||{hp:1}).hp*1.1).toFixed(2)}));
 // v0.12: guardians are Scourge sized. Every guardian art joins BIG_ART (battle.js unitBox and monCanvas read MON_SIZE: 60 like a Scourge);
 // their code drawn art is the 40 px base monster with a new colour, so monCanvas draws it at its own size and enlarges it 1.5x (nearest
-// neighbour) into the 60 px box. The Priest's Invoke summon uses a small alias art (summon8.js sumArt), so it stays the old size.
+// neighbour) into the 60 px box. v0.19.2: the summoned guardian (summon8.js) uses the same art and the boss size (battle11.js).
 MINIS.forEach(D=>{if(!BIG_ART.includes(D[0]))BIG_ART.push(D[0]);});
 const MINI_BIG=new Set(MINIS.map(D=>D[0]));
 {const mc0=monCanvas;monCanvas=function(art,f){if(!MINI_BIG.has(art))return mc0.apply(this,arguments);
@@ -23662,7 +23704,8 @@ HOOK.wrap('mMenu','guild7','guide bodies on the menu tabs',function(next,...args
 // summon blocks summoning for the rest of the battle. Costs SUM.mp of the Priest's max MP, once per Priest per battle. Monks from
 // level SUM.monkLv get a lesser call: two turns of praying, a weaker (SUM.lesser) summon that takes only the Monk's own place for
 // SUM.lesserTurns turns. Never in the Daily Trial; auto battle never prays (the summon still acts if it is already out).
-const SUM={turns:3,mp:.3,mpMin:10,hpK:1.2,lvUp:2,powM:.95,lesser:.6,lesserTurns:2,monkLv:10,monkPray:2};
+// v0.19.2: a guardian is a boss you can summon: it stays 5 turns when a Priest invokes it (was 3) and 3 when a Monk calls it (was 2), and is drawn at boss size
+const SUM={turns:5,mp:.3,mpMin:10,hpK:1.2,lvUp:2,powM:.95,lesser:.6,lesserTurns:3,monkLv:10,monkPray:2};
 function sumList(){try{return Object.values(G.summons||{});}catch(e){return [];}}
 function sumUnlock(mon,name,mod){if(!G||G.daily||!MON[mon])return false;G.summons=G.summons||{};if(G.summons[mon])return false;G.summons[mon]={mon,name:name||MON[mon].n,mod:mod||null,at:Date.now()};return true;}
 // old saves: guardians already beaten become summons
@@ -23678,9 +23721,6 @@ miniFor=function(m){G.miniPick=G.miniPick||{};let i=G.miniPick[m.id];
     for(let k=0;k<n&&i==null;k++){const c=order[(s0+k)%n];if(!used.has(c))i=c;}
     if(i==null)i=order[s0%n];G.miniPick[m.id]=i;}
   const D=MINIS[i];return {mon:D[0],name:D[2],mod:D[5]};};
-// small art for the summoned guardian: the unit's art key without the BIG_ART entry (40 px), same drawing
-function sumArt(a){if(typeof BIG_ART==='undefined'||!BIG_ART.includes(a))return a;const k=a+'~s';
-  if(!MART[k]){MART[k]=MART[a];if(MEXTRA[a])MEXTRA[k]=MEXTRA[a];if(typeof MON_TY!=='undefined'&&MON_TY[a])MON_TY[k]=MON_TY[a];if(typeof FAM_OF!=='undefined'&&FAM_OF[a])FAM_OF[k]=FAM_OF[a];}return k;}
 // every Sanctum has its guardian (caves keep their chance)
 {const sh0=siteHasMini;siteHasMini=function(id){if(typeof id==='string'&&id[0]==='o')return true;return sh0.apply(this,arguments);};}
 HOOK.after('win','summon8','a beaten guardian becomes a summon',function(){try{const sp=B&&B.spec,mi=sp&&sp.mini;if(!mi||typeof mi!=='object'||!G||G.daily)return;if(sumUnlock(mi.mon,mi.name,mi.mod)){const info=(B&&B.result)||(V.modal&&V.modal.info);if(info){info.notes=info.notes||[];info.notes.push(`${mi.name} is bound to your cause: a Priest can now Invoke it in battle (a Monk from level ${SUM.monkLv} can call a lesser form).`);}}}catch(e){}});
@@ -23691,17 +23731,18 @@ function sumCost(a){return Math.max(SUM.mpMin,Math.round(a.S.mmp*SUM.mp));}
 // ----- the unit -----
 function sumMake(o,lesser,owner){const m=MON[o.mon];const heroes=B.front.filter(c=>c.hp>0),lv=Math.round(heroes.reduce((q,c)=>q+c.lv,0)/Math.max(1,heroes.length))+SUM.lvUp;
   const u=makeEnemy(m,lv,{elite:true,name:o.name,mod:o.mod,noField:1,noBuff:1,hpM:1,powM:SUM.powM*(lesser?SUM.lesser:1)});
-  u.art=sumArt(u.art);u.side='p';u.isSum=1;u.id='sum_'+o.mon;u.base=o.name;u.lb=0;u.owner=owner||null;u.lesser=!!lesser;u.turnsLeft=lesser?SUM.lesserTurns:SUM.turns;
+  u.side='p';u.isSum=1;u.id='sum_'+o.mon;u.base=o.name;u.lb=0;u.owner=owner||null;u.lesser=!!lesser;u.turnsLeft=lesser?SUM.lesserTurns:SUM.turns;
   const pool=lesser?(owner?owner.S.mhp:0):B.front.reduce((q,c)=>q+(c.S?c.S.mhp:0),0);u.S.mhp=Math.max(u.S.mhp,Math.round(pool*SUM.hpK*(lesser?.8:1)));u.hp=u.S.mhp;u.S.mmp=999;u.mp=999;
-  if(!TPL[u.id])TPL[u.id]={id:u.id,n:o.name,cls:'warrior',el:m.el.slice(),trait:'brave',bio:`${o.name}, guardian of a Sanctum, bound to your cause.`,src:'sum',look:null,mon:o.mon,art:sumArt(m.art),summon:1};
+  if(!TPL[u.id])TPL[u.id]={id:u.id,n:o.name,cls:'warrior',el:m.el.slice(),trait:'brave',bio:`${o.name}, guardian of a Sanctum, bound to your cause.`,src:'sum',look:null,mon:o.mon,art:m.art,summon:1};
   u.msk=(m.sk||[]).map(s=>({id:'s'+s[0],n:s[0],el:s[1],pw:+(s[2]*1.05).toFixed(2),t:s[3]==='all'?'all':s[3]==='self'?'self':'one',k:s[4]==='buff'?'buff':s[4],fx:s[5]||null,mp:0,cost:1,hits:1}));
   return u;}
 function sumFire(a,o,lesser){const u=sumMake(o,lesser,lesser?a:null);
   if(lesser){const i=B.front.indexOf(a);if(i<0)return false;B.sum={u,lesser:1,slot:i,owner:a,by:a};B.front[i]=u;a.hidden=1;}
   else{B.sum={u,front:B.front,by:a};B.front=[u];}
   B.summonedBy=B.summonedBy||{};B.summonedBy[a.id]=1;u.next=B.time;u.enterT=Date.now();
-  banner(`${o.name}!`,ELC[(MON[o.mon].el||[])[0]]||'#ffd04a');log(lesser?`${a.name}'s call is answered: a lesser ${o.name} takes ${a.name}'s place for ${u.turnsLeft} turns.`:`${a.name}'s prayer is answered: ${o.name} takes the field for ${u.turnsLeft} turns while the Vanguard steps back.`);
+  banner(`GUARDIAN: ${o.name}`,ELC[(MON[o.mon].el||[])[0]]||'#ffd04a');log(lesser?`${a.name}'s call is answered: a lesser ${o.name} takes ${a.name}'s place for ${u.turnsLeft} turns.`:`${a.name}'s prayer is answered: ${o.name} takes the field for ${u.turnsLeft} turns while the Vanguard steps back.`);
   if(typeof sfx==='function')sfx('level');return true;}
+sumFire=HOOK.def('sumFire',sumFire);// v0.19.2: kits12 adds the boss entrance (glow, name plate)
 function sumEnd(why){const S=B&&B.sum;if(!S)return;const u=S.u;
   if(S.lesser){const i=B.front.indexOf(u);if(i>=0)B.front[i]=S.owner;S.owner.hidden=0;S.owner.next=B.time+delayOf(S.owner,.4);S.owner.enterT=Date.now();}
   else{B.front=S.front;B.front.forEach((c,i)=>{c.hidden=0;c.next=B.time+delayOf(c,.3+.15*i);c.enterT=Date.now();});}
@@ -29516,7 +29557,14 @@ window.__ECHO11={ECHO11,ECHOARM,efGold,efItemId,efBaseId,efAll,forgeDraw,FG};
 // target on release. While a foe is a valid target the single tap now fires on release (it fired on pointer down in ui.js, which a hold could not
 // cancel); moving more than 10 px or a cancelled pointer (scroll) does nothing. A timed hit ring owns every press (battle5.js capture listener,
 // registered earlier, stops the event before this one).
-const FS11={big:1.5,small:1.25,mini:2,top:4,on:0,hold:450,dbl:350,slop:10,cache:new WeakMap(),spec:{}};
+const FS11={big:1.5,small:1.25,mini:2.5,top:4,on:0,hold:450,dbl:350,slop:10,cache:new WeakMap(),spec:{}};
+// ===== v0.19.2 guardians at boss size =====
+// Owner: "Guardians are too small, should be as big as bosses, both when facing them and summoning them." Measured on the stage (the alpha bounds of
+// the finished canvases): a Scourge or Calamity (60 px art at 1.5x) shows a figure about 91 px tall and 95 wide, a guardian (a 40 px art at 2.0x) about
+// 71 and 75. The guardian target is now 2.5 (5 backing pixels per art pixel at density 2, 10 at density 4: whole pixels either way), a figure of about
+// 89 by 94, the size of a boss. The Priest's and the Monk's summoned guardian is drawn the same way (spriteOf and unitBox treat u.isSum like a foe, and
+// summon8.js no longer swaps in the small '~s' art). kits12.js places them: a guardian fight uses the boss slots, a summoned guardian takes the party's
+// boss slot, or stands beside the allies it does not overlap.
 // ===== v0.17.9 foe fidelity pass (the sweep of every foe sprite as the stage draws it; tools/chrome/v160a.js) =====
 // What the sweep found (265 arts): 162 arts had painted pixels on the canvas edge (the boss grids are drawn to the full 60x60, so arms, hammers,
 // crowns and the key-staff were cut flat and the outline and glow lost there), 44 non-flyers stood 3 to 13 px above the stage line (the art
@@ -29527,7 +29575,7 @@ const FS11={big:1.5,small:1.25,mini:2,top:4,on:0,hold:450,dbl:350,slop:10,cache:
 // on the canvas), cropped under the feet (flyers keep their bottom rows: they hover), then taken to the stage by a whole number of backing
 // pixels per ART pixel:
 //   apx = floor(target * K) backing px per art px, K = the unit layer's backing density (2 on plain screens, 4 where the display has the
-//   pixels; res11.js resBk). target: BIG_ART 1.5, ordinary foes 1.25, guardian variants (40 px art) 2.0 (an 80 px figure like a Scourge).
+//   pixels; res11.js resBk). target: BIG_ART 1.5, ordinary foes 1.25, guardian variants (40 px art) 2.0 (v0.19.2: 2.5, see below).
 //   K 2: bosses 3 px per art px (art 90 logical), ordinary foes 2 (1.0x), guardians 4. K 4: bosses 6, ordinary foes 5 (1.25x), guardians 8.
 //   The HD paint is two bitmap pixels per art pixel, so K 4 bosses are exactly 3 backing px per bitmap pixel (clean nearest), K 2 bosses 1.5 (each
 //   art pixel an even 3 px, the half pixel smoothing alternating 1 and 2). A non-integer ratio of two or more takes one EPX pass first.
@@ -29570,9 +29618,9 @@ function fs11Cv(c,art){if(!c||!c.width)return c;const cvb=document.getElementByI
   FS11.cache.set(c,{k:K,o});return o;}
 {const mc0=monCanvas;monCanvas=function(art,f){if(FS11.on){try{const s=fs11Src(art,f);if(s)return fs11Cv(s,art);}catch(e){}}
   const c=mc0.apply(this,arguments);try{if(FS11.on)return fs11Cv(c,art);}catch(e){}return c;};}
-HOOK.wrap('spriteOf','battle11','foe size scaling on',function(next,u,walk){const was=FS11.on;FS11.on=u&&u.side!=='p'&&!u.heroArt?1:0;try{return next(u,walk);}finally{FS11.on=was;}});
+HOOK.wrap('spriteOf','battle11','foe size scaling on (a summoned guardian is drawn like a foe guardian)',function(next,u,walk){const was=FS11.on;FS11.on=u&&(u.side!=='p'||u.isSum)&&!u.heroArt?1:0;try{return next(u,walk);}finally{FS11.on=was;}});
 HOOK.wrap('battleFrame','battle11','foe size scaling on',function(next,now){const was=FS11.on;FS11.on=1;try{return next(now);}finally{FS11.on=was;}});
-{const ub0=unitBox;unitBox=function(u){const b=ub0.apply(this,arguments);try{if(b&&u&&u.side!=='p'&&!u.heroArt&&u.art){const c=spriteOf(u),sp=c&&c._s11;let w,h,vis;
+{const ub0=unitBox;unitBox=function(u){const b=ub0.apply(this,arguments);try{if(b&&u&&(u.side!=='p'||u.isSum)&&!u.heroArt&&u.art){const c=spriteOf(u),sp=c&&c._s11;let w,h,vis;
   if(sp){w=c.width;h=c.height;vis=h-sp.T*c._s11s;}else{const sz=MON_SIZE(u.art),n=Math.round(sz*fs11Scale(u.art));w=h=vis=n;if(n===sz)return b;}
   b.w=w;b.h=h;const lo=FS11.top+vis,hi=BL.H-2;let y=b.y;if(y<lo)y=Math.min(lo,hi);if(y!==b.y){if(b.gy!=null)b.gy+=y-b.y;b.y=y;}}}catch(e){}return b;};}
 
@@ -31119,6 +31167,7 @@ window.__PT12={PT12,partyHere,pt12StowOutside,pt12Tick,pt12Power,pt12Select,pt12
 // 1) Focus: +FOCUS.crit critical chance for FOCUS.turns of the holder's turns, on every damage skill. It is no longer spent by the first attack.
 // 2) Dual arts (COMBO, the `combo` skill of a two element hero) are physical for a physical class (SK12.physCls) and magic for the rest. The kind of a
 //    physical art then follows dmg11.js (the weapon in hand).
+// (v0.19.2: kits12.js reworks the Primer / Detonator guarantee and the identity skills; see its header)
 // 3) Kits: classSkills ends with this module's hook, so everything that lists or learns a class's skills sees the same list. A hero learns at most SK12.cap
 //    class skills (Limit Breaks, bond techs, Archive skills and the basic Attack are outside it). Dual types lose the elemental ultimates (SK12.ult) and are
 //    guaranteed one Primer and one Detonator per element (a spare skill is retagged, else a filler is added). Which skills survive the cap: guarantees,
@@ -31162,14 +31211,10 @@ HOOK.wrap('perform','skills12','off role buffs last shorter',function(next,...ar
 const s12Ult=(cls,s)=>!!(s&&s.el&&((SK12.ult[cls]||[]).includes(s.id)));
 const s12Is=(s,role,e)=>s.role===role&&!s.combo&&skHitsFoe(s)&&(role==='primer'?skEls(s)[0]===e:skEls(s).includes(e));
 const s12Lv=(a,b)=>a.lv-b.lv||(a.lv0||a.lv)-(b.lv0||b.lv);
-function s12Gen(t,e,role){const cls=t.cls,nm=SK12.gen[cls]||['{n} Brand','{n} Strike'],n=EL[e],phys=SK12.physCls.includes(cls),P=role==='primer';
-  const o={id:'g12_'+(P?'p':'d')+'_'+e,n:nm[P?0:1].replace('{n}',n),k:phys?'phys':'mag',pw:P?1.15:1.6,mp:P?4:6,cost:1,hits:1,t:'one',el:e,role,lv:SK12.genLv[P?'P':'D'],fixed:1,gen:1,
-    d:P?`A glancing ${phys?'blow':'cast'} that leaves ${n} clinging to the foe.`:`A focused ${n} ${phys?'strike':'burst'} that sets off a prime.`};
-  o.lv0=o.lv;try{const d=dlFor(cls,o);if(d)o.dl=d;}catch(x){}return o;}
-// a dual type has a Primer and a Detonator of each of its elements
-function s12Guarantee(t,S){const out=S.slice();t.el.forEach(e=>['primer','det'].forEach(role=>{if(out.some(s=>s12Is(s,role,e)))return;
-  const c=out.filter(s=>!s.role&&!s.combo&&!s.sig&&skHitsFoe(s)&&(s.k==='phys'||s.k==='mag')&&s.el===e).sort(s12Lv)[0];
-  if(c){c.role=role;return;}out.push(s12Gen(t,e,role));}));return out;}
+// a dual type has a Primer and a Detonator of each of its elements. v0.19.2: kits12.js owns this (k12Guarantee: a skill is only ever given a role its name
+// does not contradict, otherwise a filler in the class's voice is added); the hook below is the one definition
+function s12Guarantee(t,S){return S.slice();}
+s12Guarantee=HOOK.def('s12Guarantee',s12Guarantee);
 function s12Roles(t){return ROLE9.cls[t.cls]||(ROLES.cls[t.cls]?[ROLES.cls[t.cls].p].concat(ROLES.cls[t.cls].s):[]);}
 // how much a skill is worth to a role (the same weights roleOut uses, roles.js)
 function s12Val(s,r){const W=ROLES.w,A=(s.t==='all'||s.t==='allyAll'||s.t==='rand')?W.area:s.t==='self'?W.self:1,c=s.cost||1;
@@ -31189,6 +31234,7 @@ function s12Pick(t,S){const cap=SK12.cap,keep=new Set(),add=s=>{if(s&&!keep.has(
   add(by(s=>s.k==='heal'&&s.t==='ally')[0]);add(by(s=>s.k==='heal'&&s.t==='allyAll')[0]);add(by(s=>s.k==='revive'||s.revive)[0]);
   S.slice().sort(s12Lv).forEach(add);
   return S.filter(s=>keep.has(s)).sort(s12Lv);}
+s12Pick=HOOK.def('s12Pick',s12Pick);// v0.19.2: kits12.js brings back each class's identity skills after the cap
 function s12Build(t,L){const cls=t.cls,dual=t.el.length>1,legend=t.src==='L'||t.src==='x';
   L.forEach(s=>{if(s.combo&&!s._k12){s._k12=1;const phys=SK12.physCls.includes(cls);if((s.k==='mag'&&phys)||(s.k==='phys'&&!phys)){s.k=phys?'phys':'mag';delete s.dl;try{const d=dlFor(cls,s);if(d)s.dl=d;}catch(x){}}}});
   let S=L;
@@ -31670,6 +31716,119 @@ HOOK.wrap('caveReward','world12','a cave prize that is a wayfarer follows the sp
 HOOK.wrap('fortReward','world12','the keep cells follow the spacing',function(next,s){const prev=WR.gate;WR.gate=1;try{const r=next(s);try{if(G.fortWon&&G.fortWon[s]==='recruit')wrNote(s,'fort');}catch(e){}return r;}finally{WR.gate=prev;}});
 HOOK.xform('caveRecruitPool','world12','spacing and dual types for cave and keep recruits',function(pool,s){try{if(!WR.gate||!G||G.daily)return pool;if(!wrAllow(s))return [];
   const solo=pool.filter(h=>!wrDual(h));return solo.length&&hashS(G.run.seed+'dual'+s)%100>=wrDualW(s)*100?solo:pool;}catch(e){return pool;}});
+
+// ===== kits12.js (v0.19.2): kits that read right, dual arts in a class's voice, identity skills back in the 12, guardians as summonable bosses =====
+// The owner's four requests after 0.19.1, all new behaviour here; the numbers and names are data in config.js (SK12: gen, voice, slotNames, roleSwap, keep,
+// drop, arts), skills.js (SPELL names, Tempest Whirl) and summon8.js (SUM turns), battle11.js (FS11.mini).
+// 1) Primers and Detonators follow what a skill does and reads like. skills12.js guaranteed one Primer and one Detonator per element of a dual type by
+//    retagging a spare skill or adding a filler, and a retag could give a skill a role its name contradicts ("Shadow Ray" priming, "Wind Ray" detonating:
+//    the first spells of a class carry a fixed role by slot, whatever the family name says). Now: k12Guarantee never retags a skill unless its name reads
+//    as that role (k12Reads: a mark, a brand, a seal, a halo, a rune, a lingering tune primes; a burst, a smite, a lance, an edge, a crescendo detonates),
+//    otherwise it adds a filler named in the class's voice (SK12.gen, SK12.voice); the slot skills that name the opposite role take the class's voice for the
+//    role they have (SK12.slotNames: Earth Edge that primes is Earth Brand, Wind Ray that detonates is Wind Smite); legends whose first two spells read the
+//    other way round swap roles (SK12.roleSwap: Thunder Quarrel bursts, Shadow Quarrel lingers).
+// 2) Dual arts of a physical class (SK12.physCls) are martial moves that still name both elements ("Loam and Tide Volley"), with a martial description
+//    and the effects the spell version had; casters keep their spell names (COMBO in skills.js). The spell name stays in s.spell.
+// 3) The cap (skills12.js s12Pick) left out skills that define a class (Hunter's Mark, Cleave, Flurry of Fists, Smoke Bomb, Purify, Dissonance...).
+//    SK12.keep names each class's identity skills; one the cap dropped comes back and takes the place of the first skill in SK12.drop that is in the kit
+//    (a generic or repeated damage skill), never one a dual type needs for its Primers and Detonators.
+// 4) Guardians are bosses you can summon: guardian sprites are drawn at boss size (battle11.js), a guardian fight stands on the boss slots, a summoned
+//    guardian (summon8.js: 5 turns for a Priest, 3 for a Monk) takes the party's boss slot or stands beside its allies without covering them, and its
+//    entrance gets the boss treatment: the "GUARDIAN: name" banner, a short glow and rings, and a name plate over its head for as long as it stays.
+const K12={glow:1200,plateGap:2,gap:3,retag:[],swap:[],id:[]};
+
+// ---- 1. primers and detonators that read like what they are ----
+const K12_P=/\b(mark|brand|branding|seal|rune|halo|needle|touch|thorn|gloss|chord|refrain|tune|dart|palm|whirl|fan|rondo|glyph|tracer|veil|sigil|consecrate|consecrated|ground|hex|curse)\b/i;
+const K12_D=/\b(burst|smite|breaker|crescendo|lance|bolt|strike|charge|fang|cut|verse|blow|fist|kick|finale|verdict|judgement|cataclysm|ragnarok|titan|assassinate|lotus|heavenpiercer|piercing|barrage|symphony|edge|shiv|arrow|shot|quarrel|eclipse)\b/i;
+// what a skill's name says: 'primer', 'det', 'mixed' (both, "Branding Strike") or null
+function k12Reads(s){const n=String(s&&s.n||''),p=K12_P.test(n),d=K12_D.test(n);return p&&d?'mixed':p?'primer':d?'det':null;}
+// a role the name does not contradict
+function k12Fits(s,role){const r=k12Reads(s);return !r||r==='mixed'||r===role;}
+const k12El=s=>EL[Array.isArray(s.el)?s.el[0]:s.el]||'';
+function k12Gen(t,e,role){const cls=t.cls,nm=SK12.gen[cls]||['{n} Mark','{n} Lance'],vo=SK12.voice[cls]||['',''],n=EL[e],phys=SK12.physCls.includes(cls),P=role==='primer';
+  const o={id:'g12_'+(P?'p':'d')+'_'+e,n:nm[P?0:1].replace('{n}',n),k:phys?'phys':'mag',pw:P?1.15:1.6,mp:P?4:6,cost:1,hits:1,t:'one',el:e,role,lv:SK12.genLv[P?'P':'D'],fixed:1,gen:1,
+    d:vo[P?0:1].replace('{n}',n)};
+  o.lv0=o.lv;try{const d=dlFor(cls,o);if(d)o.dl=d;}catch(x){}return o;}
+// legends whose first two spells read the other way round swap their fixed roles (once: the skill objects are shared with the full list)
+function k12Swap(t,S){const ids=SK12.roleSwap[t.cls];if(!ids)return;const a=S.find(s=>s.id===ids[0]),b=S.find(s=>s.id===ids[1]);if(!a||!b||a._k12sw||!a.role||!b.role||a.role===b.role)return;
+  const r=a.role;a.role=b.role;b.role=r;a._k12sw=b._k12sw=1;K12.swap.push(t.id+': '+a.n+' '+a.role+', '+b.n+' '+b.role);}
+function k12Guarantee(t,S){const out=S.slice();k12Swap(t,out);
+  t.el.forEach(e=>['primer','det'].forEach(role=>{if(out.some(s=>s12Is(s,role,e)))return;
+    const c=out.filter(s=>!s.role&&!s.combo&&!s.sig&&skHitsFoe(s)&&(s.k==='phys'||s.k==='mag')&&s.el===e&&k12Reads(s)===role).sort(s12Lv)[0];
+    if(c){c.role=role;K12.retag.push(t.id+': '+c.n+' '+role);return;}
+    out.push(k12Gen(t,e,role));}));return out;}
+HOOK.wrap('s12Guarantee','kits12','roles by what the skill reads like; a filler in the class voice instead of a contradicting retag',function(next,t,S){return k12Guarantee(t,S);});
+// the slot skills whose family name says the opposite of the role they have take the class's voice for it
+function k12Slots(t,L){const tb=SK12.slotNames[t.cls],vo=SK12.voice[t.cls];if(!tb||!vo)return;
+  L.forEach(s=>{const p=tb[s.id];if(!p||s._k12n||!s.role||!k12Fits({n:p},s.role))return;s._k12n=1;const n=k12El(s);if(!n)return;
+    s.spell0=s.n;s.n=p.replace('{n}',n);s.d=vo[s.role==='primer'?0:1].replace('{n}',n);});}
+
+// ---- 2. dual arts in the class's voice ----
+const K12_ST={burn:'Burn',blind:'Blind',slow:'Slow',weaken:'Weaken',stun:'Stun',break:'Break',root:'Root',bleed:'Bleed',poison:'Poison'};
+const K12_BUFF={might:'Might',regen:'Regen',haste:'Haste',ward:'Ward',bulwark:'Bulwark',focus:'Focus',taunt:'Taunt'};
+const k12List=a=>a.length<2?a.join(''):a.slice(0,-1).join(', ')+' and '+a[a.length-1];
+const k12Or=a=>a.length<2?a.join(''):a.slice(0,-1).join(', ')+' or '+a[a.length-1];
+// the effects of the art, from its data (the spell text of COMBO says the same things in spell words)
+function k12Fx(s){const fx=s.fx||[],ally=s.t==='allyAll'||s.t==='ally'||s.t==='self';
+  if(ally){const g=fx.map(f=>K12_BUFF[f[0]]||K12_ST[f[0]]||f[0]);if(s.k==='heal')return `Heals${s.cleanse?' and cleanses':''} the vanguard${g.length?' and grants '+k12List(g):''}.`;return g.length?`Grants ${k12List(g)} to the vanguard.`:'';}
+  const hi=fx.filter(f=>f[1]>=.6).map(f=>(K12_ST[f[0]]||f[0])+'s'),lo=fx.filter(f=>f[1]<.6).map(f=>K12_ST[f[0]]||f[0]),out=[];
+  if(hi.length)out.push('Likely '+k12List(hi));if(lo.length)out.push((out.length?'may ':'May ')+k12Or(lo));
+  let t=out.length?out.join('; ')+'.':'';if(s.afflicted)t+=' Hits 50% harder on afflicted foes.';if(s.pierce)t+=' Ignores half of resistance.';
+  if(s.self&&s.self.length)t+=' Grants you '+k12List(s.self.map(f=>K12_BUFF[f[0]]||f[0]))+'.';return t.trim();}
+const k12Hash=k=>[...k].reduce((a,c)=>a+c.charCodeAt(0),0);
+function k12Art(t,s){const A=SK12.arts,cls=t.cls;if(!s||!s.combo||s._k12c||!SK12.physCls.includes(cls)||!A.n[cls])return;s._k12c=1;
+  const kind=s.t==='all'?'all':(s.t==='allyAll'||s.t==='ally'||s.t==='self')?'ally':'one',els=t.el,N=A.n[cls][kind];if(!N||els.length<2)return;
+  const noun=N[k12Hash(comboKey(els))%N.length];s.spell=s.n;
+  s.n=`${A.w[els[0]]} and ${A.w[els[1]]} ${noun}`;s.d=(A.d[cls][kind].replace('{a}',EL[els[0]]).replace('{b}',EL[els[1]])+' '+k12Fx(s)).trim();}
+
+// ---- 3. identity skills back in the 12 ----
+// a dual type needs a Primer and a Detonator of each element in the kit
+function k12Covers(t,L){return t.el.length<2||t.el.every(e=>['primer','det'].every(role=>L.some(s=>s12Is(s,role,e))));}
+function k12Identity(t,S,kit){const keep=SK12.keep[t.cls];if(!keep||!kit)return kit;const drop=SK12.drop[t.cls]||[];let out=kit.slice();
+  keep.forEach(id=>{if(out.some(s=>s.id===id))return;const add=S.find(s=>s.id===id);if(!add)return;
+    for(const d of drop){const v=out.find(s=>s.id===d);if(!v||keep.includes(v.id)||v.sig||v.combo)continue;const nx=out.filter(s=>s!==v).concat([add]);if(!k12Covers(t,nx))continue;
+      out=nx;K12.id.push(t.id+': +'+add.n+' -'+v.n);return;}});
+  return out.length===kit.length?out.sort(s12Lv):kit;}
+HOOK.wrap('s12Pick','kits12','each class keeps the skills that define it (SK12.keep) when the cap drops them',function(next,t,S){return k12Identity(t,S,next(t,S));});
+
+// names and arts are written once on the finished list (the skill objects are the ones classSkills caches, shared with the full list)
+HOOK.xform('classSkills','kits12','slot skills in the class voice, martial dual arts',function(L,t){
+  if(!L||!t||t.mon||!CLS[t.cls]||L._k12)return L;L._k12=1;
+  try{const full=typeof sk12Full==='function'?sk12Full(t):L;[L,full].forEach(l=>{k12Slots(t,l);l.forEach(s=>k12Art(t,s));});}catch(e){}return L;});
+
+// ---- 4. guardians as bosses ----
+const K12B=new WeakMap();
+// where the visible figure of a unit's canvas lies, in logical px from the canvas's left and top (the alpha bounds, once per canvas)
+function k12Fig(u){try{const c=spriteOf(u);if(!c||!c.getContext)return null;let e=K12B.get(c);if(e)return e;
+  const k=c.hd||1,w=c._rw||Math.round(c.width*k),h=c._rh||Math.round(c.height*k),d=c.getContext('2d').getImageData(0,0,w,h).data;let l=1e9,r=-1,t=1e9,b=-1;
+  for(let y=0;y<h;y++)for(let x=0;x<w;x++)if(d[(y*w+x)*4+3]>24){if(x<l)l=x;if(x>r)r=x;if(y<t)t=y;if(y>b)b=y;}
+  if(r<0)return null;e={l:l/k,r:(r+1)/k,t:t/k,b:(b+1)/k,w:c.width,h:c.height};K12B.set(c,e);return e;}catch(x){return null;}}
+// the figure's rectangle on the stage for a unit at its box b (a party unit is drawn mirrored)
+function k12Rect(u,b){const f=k12Fig(u);if(!f||!b)return null;const m=u.side==='p',x0=b.x-f.w/2,l=m?x0+f.w-f.r:x0+f.l,r=m?x0+f.w-f.l:x0+f.r;return {l,r,t:b.y-f.h+f.t+1,b:b.y-f.h+f.b+1,w:r-l};}
+HOOK.xform('unitBox','kits12','a guardian fight stands on the boss slots; a summoned guardian takes the party boss slot or stands clear of its allies',function(b,u){
+  try{if(!b||!u||!B||!BL)return b;const W=BL.W,H=BL.H;
+    if(u.isSum&&B.sum&&B.sum.u===u){const sl=slotsFor('e',1,true)[0],f=k12Fig(u);b.y=Math.round(sl[1]*H);let x=Math.round((1-sl[0])*W);const lo=f?(f.w/2-f.r):-44,hi=f?(f.w/2-f.l):44;
+      const o=B.front.filter(c=>c!==u&&c.hp>0&&!c.hidden);
+      if(o.length){let e=1e9;o.forEach(c=>{const q=unitBox(c);if(q)e=Math.min(e,q.x-q.w/2);});if(e<1e9)x=Math.min(x,Math.round(e-K12.gap-hi));}
+      x=Math.min(x,W-1-hi);x=Math.max(x,1-lo);b.x=x;return b;}
+    if(!u.isSum&&u.side!=='p'&&b.i!=null&&B.spec&&B.spec.mini&&typeof B.spec.mini==='object'){const sl=slotsFor('e',B.en.length,true)[b.i];if(sl){b.x=Math.round(sl[0]*W);b.y=Math.round(sl[1]*H);}}
+  }catch(e){}return b;});
+// the entrance: rings, sparks and a glow in the guardian's element (the banner is GUARDIAN: name, summon8.js)
+HOOK.after('sumFire','kits12','boss entrance: rings and a glow',function(r,a,o,lesser){try{if(!r||!B||!B.sum)return;const u=B.sum.u,b=unitBox(u),now=performance.now(),col=ELC[(MON[o.mon].el||[])[0]]||'#ffd04a';if(!b)return;
+  u.k12In=Date.now();u.k12Col=col;const gy=b.gy!=null?b.gy:b.y,rw=Math.round(b.w*.42);
+  part({k:'ring',x:b.x,y:gy,t0:now,life:760,col,r:rw,flat:1});part({k:'ring',x:b.x,y:gy,t0:now+140,life:700,col:'#ffffff',r:Math.round(rw*.66),flat:1});
+  sparkleUp(b.x,b.y-b.h*.3,col,now,16);sparkleUp(b.x,b.y-b.h*.3,'#ffffff',now,6);BV.shake={t:now,life:260,amp:2};}catch(e){}});
+HOOK.after('battleFrame','kits12','guardian glow on entering',function(r,now){try{const S=B&&B.sum,u=S&&S.u;if(!u||!u.k12In||V.screen!=='battle')return;const age=Date.now()-u.k12In;if(age<0||age>K12.glow)return;
+  const cv=document.getElementById('bcv'),b=cv&&unitBox(u);if(!b)return;const ctx=cv.getContext('2d'),col=u.k12Col||'#ffd04a',p=age/K12.glow,cy=b.y-b.h*.45;
+  ctx.save();ctx.globalCompositeOperation='lighter';ctx.globalAlpha=Math.max(0,.85*(1-p*p));const g=ctx.createRadialGradient(b.x,cy,4,b.x,cy,b.h*.75);g.addColorStop(0,col+'aa');g.addColorStop(1,col+'00');ctx.fillStyle=g;ctx.fillRect(b.x-b.h,cy-b.h,b.h*2,b.h*2);ctx.restore();}catch(e){}});
+// the name plate (the boss bar's name, level and what is left of its stay) over the summoned guardian's head
+try{const st=document.createElement('style');st.textContent='.k12plate{position:absolute;transform:translateX(-50%);white-space:nowrap;pointer-events:none;z-index:7;font:700 5.5px/1 sans-serif;letter-spacing:.2px;color:#ffe9a8;background:rgba(21,11,23,.88);border:1px solid #ffd04a;border-radius:2px;padding:2px 4px}.k12plate b{color:#ffd04a;margin-right:3px}.k12plate i{font-style:normal;color:#c8b8d8;margin-left:3px}.k12plate em{font-style:normal;color:#9affc8;margin-left:3px}';document.head.appendChild(st);}catch(e){}
+HOOK.after('renderBattle','kits12','name plate over a summoned guardian',function(){try{const S=B&&B.sum,u=S&&S.u,el=document.getElementById('bstage');if(!el)return;el.querySelectorAll('.k12plate').forEach(n=>n.remove());if(!u||u.hp<=0||V.screen!=='battle')return;
+  const b=unitBox(u),R=b&&k12Rect(u,b);if(!b)return;const W=BL.W,n=u.turnsLeft,pw=Math.round((`GUARDIAN ${u.name} Lv ${u.lv} ${n} turns`.length)*3.1+16),x=Math.max(pw/2+2,Math.min(W-pw/2-2,R?(R.l+R.r)/2:b.x)),y=Math.max(2,(R?R.t:b.y-b.h)-K12.plateGap-12);
+  el.insertAdjacentHTML('beforeend',`<div class="k12plate" style="left:${Math.round(x)}px;top:${Math.round(y)}px"><b>GUARDIAN</b>${esc(u.name)}<i>Lv ${u.lv}</i><em>${n} turn${n===1?'':'s'}</em></div>`);}catch(e){}});
+
+// tests and the audit
+try{window.__K12={K12,reads:k12Reads,fits:k12Fits,fig:k12Fig,rect:k12Rect,covers:k12Covers,get SK12(){return SK12;}};}catch(e){}
 
 window.__A={walkable,ceInit,tvSlots,genQuests,STARTERS,starterDraw,ECON,AUTO_NERF,rebuildBase,detLive,REACT,skEls,packContents,miniFor,AUTO_REW,ENC_RATE,ENC_MIN_STEPS,detNote,classSkills,stickCount,bestAll,calcStats,lookKey,vTemper,storyEchoUp,leaveDungeon,win,ldApply,genFort,caveOk,enterCave,siteHasMini,openChest,nextDlg,WS,mapIcoRects,roamSpawn,roamInterior,roamSees,mapTargets,DIRV,tileAt,STAGE_LV,autoBan,rollWeather,guardianDef,mapIssues,mapEntry,syncPools,bovAt,calFxAt,realmAt,REALMS,BOV,CAL_FX,overlayGuide,liftOverlay,drawGearIcon,gearIcon,itemIcon,RAW,sigKind,sigGid,personalDone,heroLook,hasSignature,LEGEND_IDS,facDirty,facCount,facRank,facRep,FACB,FAC,finishBattle,npcWords,npcHints,npcPool,titleMake,titleAdvance,TTS,placeAt,wkwUpdate,innSpot,getMap,monURL,enterVia,applyBossTheme,BTHEME,resetMaps,rebuildBase,shopStock,gearDesc,calcStats,gearMigrate,CLS_WPN,CLS_ARM,WPERK,WT_NAME,equipWhy,lootBase,GEAR,canEquip,gearOf,perkNote,FAM_MAT_V35,fbDraft,META:{get best(){return META.best},get codex(){return META.codex},get q(){return META.q}},saveMeta,OFF,offPending,offFlush,PROFILE,profileSync,codexSee,getMap,placeAt,interact,sanctumOpen,riftKeys,echoKeys,BONDS,bondKey,wkwUpdate,inTown,WS,LC,lsort,bestParty,fsCast,fsSkills,ldApply,MON,registerTamed,stickPower,stickCount,autoOne,planGear,bestTag,gainersFor,compGainFor,refresh,fitsFor,canEquip,gearOf,queueNewGear,ARENA,fxDur,banDur,stageTags,autoSwitchPick,layoutBattle,newChar,calcStats,limitSkill,limitTier,canStuck,dunReachable,LV_CAP,addXp,echoSpec,bossLvFor,fx,MON,log,effInfo,tierOf,perkOf,quirkDef,forgeCost,buyPlan,vJourney,modalBack,partySlots,limitOpen,town2Reached,skillKnown,known,classSkills,paceMigrate,unpackG,packG,makeEnemy,QUIRK,arrive,enterDungeon,wkwUpdate,useTravel,travelWhyNot,porkFlee,porkBlocked,encTile,campRest,buyPart,partLeft,alchStock,GAME_VERSION,CHANGELOG,ITEMS,tavernOffers,tavernPool,recruitFit,partyNeeds,vNext,CHALL,innSpot,RECIPES,MATS,FB,fbContext,REDEEM,legendJoin,legendQ,genQuests,dynActors,convInit,PROFILE,profileSync,checkArchive,GPOOL,FPOOL,guardianDef,saveMeta,archiveSkills,get G(){return G;},set G(v){G=v;},get B(){return B;},get V(){return V;},get META(){return META;},WS,ACT,render,newGame,placeAt,startBattle,autoTurn,advance,finishBattle,getMap,innSpot,setPause:p=>{PAUSE=p;},autoCfg,worldInputDir,inputSources,battleFrame,battleTheme,STS,MAPS,mapIssues,healMap,mimicReward,dropChest,interact,worldDraw,TPL,ZONES,ZS,newChar,recruit,saveGame,resetMaps,dynActors,tileAt,BV,refresh,genBounties,genQuests,vStarter,heroCard,heroURL,iconURL,masteryLine,AU,buildTrack,tone,noiseHit,MIDI,sfx,audioVol};
 ['heroRoles','SOLID','WEATHER','WX_BASE','weatherFX','superGuide','recruitCost','ceStart','ceStep','ceInit','cePool','wxList','SUPER_TABLE','superOk','facRank','facRep','facInit','facCount','facCredit','FAC','FMIS','facMissionList','facProg','tyOf','facSync','facMul','facBest','worldPlan','caveReward','enterCave','leaveCave','leaveDungeon','buildCaveMap','worldGraph','openWorldMap','sigReport','SIG_NAMES','starterDraw','ITEM_TIERS','gTierIdx','tierChip','gearIcon','starterSlots','STARTERS','CLK_LEN','CLK_PH','clockPhase','wxInfoBody','recipeOrder','recipeGain','recipeReady','recipeClose','effOf','calcDamage','healsUndead','storyEchoUp','riftKeys','echoDef','efCost','autoLocked','bossFightKey','learnScanAll','isSeen','mapMarks','genSub','subOK','subReq','ensureSub','inSub','tvSlots','tvInit','tvLeft','tvEvent','tvNextText','tvPool','tvDue','tvShuffle','mTavern','hireOK','TV_CAP','TV_CD','POOL_IDS','natPool','natOf','natRoll','NATURES','natInfo','natRerollCost','natChooseCost','NAT_CLASS','iconURL','seenOf','mapIcoDraw','drawMini','MAPCV','revealAround','fxLayer','numDur','compBonusText','compPerk','checkPhase','win','unitBox','LNQ','challVisible','challEligible','challState','isMimic','migrateCompanions','canSummon','summonComp','compOf','clockPhase','tickClock','isNight','rollWeather','wxStep','nightPool','encounterFoes','restAll','tameElite','openChest','rerollTavern','bestAll','gearTier','SV','svCheck','svFlush','svInit','svPush','svPull','svScan','svParse','svBackup','svPack','svUnpack','svProg','svCloudList','svDelDoc','svGet','svCap','slotState','slotKey','svDecode','SV_CH','svStatus','svSlotRaw','svLoad','loadRaw','svHash','svIdx'].forEach(k=>{try{Object.defineProperty(window.__A,k,{get:()=>eval(k)});}catch(e){}});

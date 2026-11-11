@@ -134,7 +134,7 @@ const MINIS=[
 MINIS.forEach(([id,b,n,e,c])=>makeMonVariant(id,b,n,e,c,{mini:1,hp:+((MON[b]||{hp:1}).hp*1.1).toFixed(2)}));
 // v0.12: guardians are Scourge sized. Every guardian art joins BIG_ART (battle.js unitBox and monCanvas read MON_SIZE: 60 like a Scourge);
 // their code drawn art is the 40 px base monster with a new colour, so monCanvas draws it at its own size and enlarges it 1.5x (nearest
-// neighbour) into the 60 px box. The Priest's Invoke summon uses a small alias art (summon8.js sumArt), so it stays the old size.
+// neighbour) into the 60 px box. v0.19.2: the summoned guardian (summon8.js) uses the same art and the boss size (battle11.js).
 MINIS.forEach(D=>{if(!BIG_ART.includes(D[0]))BIG_ART.push(D[0]);});
 const MINI_BIG=new Set(MINIS.map(D=>D[0]));
 {const mc0=monCanvas;monCanvas=function(art,f){if(!MINI_BIG.has(art))return mc0.apply(this,arguments);

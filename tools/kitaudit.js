@@ -1,7 +1,7 @@
 // Kit audit (v0.19 skills12): how many class skills each wayfarer can learn, per class and for single versus dual types, how many dual types lack a Primer
 // or Detonator for one of their elements, how many dual types still hold an elemental ultimate, and which skills are in the kit.
 // Loads the whole game like tools/dmgaudit.js does (SIMROOT=<other checkout> audits that build: run it on a copy of an older revision for the "before").
-// Usage: node tools/kitaudit.js [--detail] [--json]
+// Usage: node tools/kitaudit.js [--detail] [--names] [--json]   (--names: every kit by skill name with its Primer / Detonator tag)
 const fs=require('fs'),path=require('path');const {chromium}=require('playwright');
 const ROOT=process.env.SIMROOT||path.join(__dirname,'..'),V3=path.join(ROOT,'v3');
 const BP=fs.readFileSync(path.join(ROOT,'v3build.py'),'utf8'),MODS=JSON.parse((BP.match(/MODS=(\[[^\]]+\])/))[1].replace(/'/g,'"'));
@@ -16,7 +16,7 @@ ids.forEach(id=>{const t=A.TPL[id];if(!A.CLS[t.cls])return;const L=A.classSkills
   const dual=t.el.length>1,lg=t.src==='L'||t.src==='x';
   const pd=t.el.map(e=>({e,P:L.some(s=>s.role==='primer'&&!s.combo&&A.skHitsFoe(s)&&A.skEls(s)[0]===e),D:L.some(s=>s.role==='det'&&!s.combo&&A.skHitsFoe(s)&&A.skEls(s).includes(e))}));
   out.push({id,cls:t.cls,dual,lg,n:L.length,full:full.length,pd,ult:L.filter(s=>s.el&&(ULT[t.cls]||[]).includes(s.id)).map(s=>s.id),combo:L.filter(s=>s.combo).map(s=>s.k),last:Math.max(...L.map(s=>s.lv)),
-    ids:L.map(s=>s.id+'@'+s.lv+(s.role?'/'+s.role:'')).join(' ')});});
+    ids:L.map(s=>s.id+'@'+s.lv+(s.role?'/'+s.role:'')).join(' '),names:L.map(s=>s.n+(s.role?' ['+s.role+']':'')).join(', ')});});
 return out;`;
 (async()=>{const detail=process.argv.includes('--detail'),json=process.argv.includes('--json');
   const browser=await chromium.launch();const page=await browser.newPage();
@@ -38,4 +38,5 @@ return out;`;
   console.log(`dual types (not legends) holding an elemental ultimate: ${ult.length}${ult.length?' ('+ult.map(x=>x.id).join(', ')+')':''}; legends/special with one: ${D.filter(x=>x.lg&&x.ult.length).map(x=>x.id).join(', ')||'none'}`);
   console.log('dual art kinds: '+[...new Set(r.filter(x=>x.combo.length).map(x=>x.cls+':'+[...new Set(x.combo)].join('/')))].sort().join('  '));
   if(detail)r.forEach(x=>console.log(`${x.id} ${x.cls}${x.dual?' DUAL':''} n=${x.n} (full ${x.full}) last lv ${x.last} :: ${x.ids}`));
+  if(process.argv.includes('--names'))r.forEach(x=>console.log(`${x.id} ${x.cls}${x.dual?' DUAL':''}: ${x.names}`));
 })().catch(e=>{console.error(e);process.exit(1);});

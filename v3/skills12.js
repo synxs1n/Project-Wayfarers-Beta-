@@ -4,6 +4,7 @@
 // 1) Focus: +FOCUS.crit critical chance for FOCUS.turns of the holder's turns, on every damage skill. It is no longer spent by the first attack.
 // 2) Dual arts (COMBO, the `combo` skill of a two element hero) are physical for a physical class (SK12.physCls) and magic for the rest. The kind of a
 //    physical art then follows dmg11.js (the weapon in hand).
+// (v0.19.2: kits12.js reworks the Primer / Detonator guarantee and the identity skills; see its header)
 // 3) Kits: classSkills ends with this module's hook, so everything that lists or learns a class's skills sees the same list. A hero learns at most SK12.cap
 //    class skills (Limit Breaks, bond techs, Archive skills and the basic Attack are outside it). Dual types lose the elemental ultimates (SK12.ult) and are
 //    guaranteed one Primer and one Detonator per element (a spare skill is retagged, else a filler is added). Which skills survive the cap: guarantees,
@@ -47,14 +48,10 @@ HOOK.wrap('perform','skills12','off role buffs last shorter',function(next,...ar
 const s12Ult=(cls,s)=>!!(s&&s.el&&((SK12.ult[cls]||[]).includes(s.id)));
 const s12Is=(s,role,e)=>s.role===role&&!s.combo&&skHitsFoe(s)&&(role==='primer'?skEls(s)[0]===e:skEls(s).includes(e));
 const s12Lv=(a,b)=>a.lv-b.lv||(a.lv0||a.lv)-(b.lv0||b.lv);
-function s12Gen(t,e,role){const cls=t.cls,nm=SK12.gen[cls]||['{n} Brand','{n} Strike'],n=EL[e],phys=SK12.physCls.includes(cls),P=role==='primer';
-  const o={id:'g12_'+(P?'p':'d')+'_'+e,n:nm[P?0:1].replace('{n}',n),k:phys?'phys':'mag',pw:P?1.15:1.6,mp:P?4:6,cost:1,hits:1,t:'one',el:e,role,lv:SK12.genLv[P?'P':'D'],fixed:1,gen:1,
-    d:P?`A glancing ${phys?'blow':'cast'} that leaves ${n} clinging to the foe.`:`A focused ${n} ${phys?'strike':'burst'} that sets off a prime.`};
-  o.lv0=o.lv;try{const d=dlFor(cls,o);if(d)o.dl=d;}catch(x){}return o;}
-// a dual type has a Primer and a Detonator of each of its elements
-function s12Guarantee(t,S){const out=S.slice();t.el.forEach(e=>['primer','det'].forEach(role=>{if(out.some(s=>s12Is(s,role,e)))return;
-  const c=out.filter(s=>!s.role&&!s.combo&&!s.sig&&skHitsFoe(s)&&(s.k==='phys'||s.k==='mag')&&s.el===e).sort(s12Lv)[0];
-  if(c){c.role=role;return;}out.push(s12Gen(t,e,role));}));return out;}
+// a dual type has a Primer and a Detonator of each of its elements. v0.19.2: kits12.js owns this (k12Guarantee: a skill is only ever given a role its name
+// does not contradict, otherwise a filler in the class's voice is added); the hook below is the one definition
+function s12Guarantee(t,S){return S.slice();}
+s12Guarantee=HOOK.def('s12Guarantee',s12Guarantee);
 function s12Roles(t){return ROLE9.cls[t.cls]||(ROLES.cls[t.cls]?[ROLES.cls[t.cls].p].concat(ROLES.cls[t.cls].s):[]);}
 // how much a skill is worth to a role (the same weights roleOut uses, roles.js)
 function s12Val(s,r){const W=ROLES.w,A=(s.t==='all'||s.t==='allyAll'||s.t==='rand')?W.area:s.t==='self'?W.self:1,c=s.cost||1;
@@ -74,6 +71,7 @@ function s12Pick(t,S){const cap=SK12.cap,keep=new Set(),add=s=>{if(s&&!keep.has(
   add(by(s=>s.k==='heal'&&s.t==='ally')[0]);add(by(s=>s.k==='heal'&&s.t==='allyAll')[0]);add(by(s=>s.k==='revive'||s.revive)[0]);
   S.slice().sort(s12Lv).forEach(add);
   return S.filter(s=>keep.has(s)).sort(s12Lv);}
+s12Pick=HOOK.def('s12Pick',s12Pick);// v0.19.2: kits12.js brings back each class's identity skills after the cap
 function s12Build(t,L){const cls=t.cls,dual=t.el.length>1,legend=t.src==='L'||t.src==='x';
   L.forEach(s=>{if(s.combo&&!s._k12){s._k12=1;const phys=SK12.physCls.includes(cls);if((s.k==='mag'&&phys)||(s.k==='phys'&&!phys)){s.k=phys?'phys':'mag';delete s.dl;try{const d=dlFor(cls,s);if(d)s.dl=d;}catch(x){}}}});
   let S=L;

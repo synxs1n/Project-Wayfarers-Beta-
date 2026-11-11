@@ -137,7 +137,7 @@ const BOSS_LV={frac:.5,cap:12};
 // 3.2 bosses: shield pips +50% (5 to 8, 7 to 11); the break window hits for less and is over once the foe loses the turn it staggers
 const BOSS_PIPS={mult:1.5};const BREAK_WIN={bonus:1.3,short:true};
 // 3.2 extra boss muscle on top of the old stat table (hp and power multipliers)
-const BOSS_BUFF={hp:[.84,1.4,1.45,1.6,1.28],pow:[.97,1.3,1.34,1.56,1.25]}// v0.19: eased about 7% hp and 3% pow with the role power change (was hp [.9,1.5,1.55,1.7,1.36], pow [1,1.34,1.38,1.6,1.28]) to pay for the 12 skill kit, role power and no dual ultimates, so the journey sim stays at level 41.3 and 14.6 boss tries (before the skill changes: 40.5 and 11.1; without the ease: 42.6 and 19.6); v0.4.3: re-tuned with capes; v0.8.2: the first three Scourges eased (were hp 1.3, 1.75, 1.8 and pow 1.15, 1.4, 1.44) so no boss is a wall; v0.9.5: hp [1.15,1.65,1.7,2.0,1.52] -> about 4 to 10% less, the realm gimmicks (BOSS_GIM) carry the rest
+const BOSS_BUFF={hp:[.8,1.34,1.39,1.53,1.22],pow:[.955,1.28,1.32,1.535,1.23]}// v0.19: eased about 7% hp and 3% pow with the role power change (was hp [.9,1.5,1.55,1.7,1.36], pow [1,1.34,1.38,1.6,1.28]) to pay for the 12 skill kit, role power and no dual ultimates, so the journey sim stays at level 41.3 and 14.6 boss tries (before the skill changes: 40.5 and 11.1; without the ease: 42.6 and 19.6); v0.4.3: re-tuned with capes; v0.8.2: the first three Scourges eased (were hp 1.3, 1.75, 1.8 and pow 1.15, 1.4, 1.44) so no boss is a wall; v0.9.5: hp [1.15,1.65,1.7,2.0,1.52] -> about 4 to 10% less, the realm gimmicks (BOSS_GIM) carry the rest
 // BOSS_GIM (v0.9.5, battle4.js): every Scourge and Calamity brings one realm gimmick to its first fight (kind 'boss'; not Echoes, not the Daily
 // Trial). Each is telegraphed on the boss's turn (a log line, a "Telegraph" chip on the boss, a mark on the heroes it will hit) and lands on its
 // next turn, so reading it pays. first: the boss's turn of the first telegraph; every: turns between telegraphs (per boss: every).
@@ -332,10 +332,51 @@ const SK12={cap:12,dualUlt:false,legendsKeepUlt:true,
   ult:{warrior:['titan','ragnarok'],knight:['judge'],mage:['s3a','cataclysm'],healer:['verdict'],thief:['assn','lotus'],archer:['heavenp'],monk:['dragon','ascend'],bard:['finale','symphony'],
     sniper:['s3a','tenk'],druid:['s3a','oldwood'],archmage:['s3a','zeropoint'],chronicler:['s3a','finaled']},
   physCls:['warrior','knight','thief','archer','monk','sniper','druid'],
-  gen:{warrior:['{n} Brand','{n} Breaker'],knight:['{n} Seal','{n} Charge'],thief:['{n} Needle','{n} Cut'],archer:['{n} Mark','{n} Bolt'],monk:['{n} Touch','{n} Strike'],
-    mage:['{n} Mark','{n} Lance'],healer:['{n} Halo','{n} Smite'],bard:['{n} Chord','{n} Crescendo'],sniper:['{n} Mark','{n} Bolt'],druid:['{n} Thorn','{n} Fang'],
-    archmage:['{n} Mark','{n} Lance'],chronicler:['{n} Gloss','{n} Verse']},
-  genLv:{P:8,D:12},dualReact:1};
+  // gen (v0.19.2, kits12.js): the filler a dual type gets for an element that lacks a Primer or Detonator. Its name is the class's own primer / detonator
+  // family ({n} = the element), the same family the class's first elemental skills carry (slotNames below), so a kit reads as one voice. voice: the class's
+  // description of that family (never the words Primer, Detonator or prime). genLv: where the fillers land.
+  gen:{warrior:['{n} Brand','{n} Edge'],knight:['{n} Seal','{n} Lance'],thief:['{n} Needle','{n} Shiv'],archer:['{n} Tracer','{n} Arrow'],monk:['{n} Palm','{n} Chi Burst'],
+    mage:['{n} Mark','{n} Lance'],healer:['{n} Halo','{n} Smite'],bard:['{n} Tune','{n} Crescendo'],sniper:['{n} Mark','{n} Quarrel'],druid:['{n} Thorn','{n} Fang'],
+    archmage:['{n} Glyph','{n} Lance'],chronicler:['{n} Gloss','{n} Verse']},
+  voice:{warrior:["A branding blow that sets {n} into the foe and leaves it clinging.","A heavy {n} cut swung with the whole shoulder."],
+    knight:["A rap of the shield that seals the foe in {n}; the seal lingers.","A charge with a lance of {n} that drives home."],
+    thief:["A needle dipped in {n}, left in the foe.","A fast {n} blade through the gap in the guard."],
+    archer:["A tracer arrow that leaves {n} hanging on the foe's trail.","An arrow of {n} loosed at full draw."],
+    monk:["An open palm that leaves {n} humming in the foe.","A fist of {n} driven through the guard."],
+    mage:["Marks the foe with a mote of {n} that lingers.","A lance of {n}, focused to a point."],
+    healer:["A halo of {n} settles on the foe and lingers.","A smite of {n} from above."],
+    bard:["A {n} tune that lingers on the foe.","A rising {n} crescendo that crashes on one foe."],
+    sniper:["A bolt that leaves {n} clinging to the foe.","A {n} quarrel loosed at full gallop."],
+    druid:["Thorns of {n} snag the foe and linger.","The pack's fang, wreathed in {n}."],
+    archmage:["A glyph of {n} traced on the foe, glowing.","A lance of {n} cast through the glyph."],
+    chronicler:["A gloss of {n} ink written across the foe.","A verse of {n} that ends the sentence."]},
+  // slotNames: the first elemental skills of a class (skills.js) keep a fixed Primer or Detonator role by slot; where the family name says the opposite
+  // (an Edge that primes, a Ray that detonates) the skill takes the class's voice for the role it has. id -> name pattern.
+  slotNames:{warrior:{edge2:'{n} Brand'},knight:{lance2:'{n} Seal'},mage:{s1b:'{n} Lance'},healer:{ray1:'{n} Halo',ray2:'{n} Smite'},thief:{shiv2:'{n} Needle'},
+    archer:{arrow1:'{n} Tracer'},monk:{chi2:'{n} Palm'}},
+  // roleSwap: classes whose first two spells have the opposite roles by their names (Thunder Quarrel bursts, Shadow Quarrel lingers)
+  roleSwap:{sniper:['s1a','s1b']},
+  genLv:{P:8,D:12},dualReact:1,
+  // keep / drop (v0.19.2): the skills that define how a class plays are protected from the cap (an identity skill the cap left out takes the place of the
+  // first skill in drop that is in the kit, never one a dual type needs for its Primers and Detonators)
+  keep:{warrior:['cleave'],knight:['wall'],healer:['purify'],thief:['smoke','flurry'],archer:['mark'],monk:['fists','med'],bard:['dis','req']},
+  drop:{warrior:['hurl','r_shout','rend'],knight:['javelin','r_cover','r_banner'],healer:['r_aegis','r_bless'],thief:['dart','r_fuma','r_stars'],
+    archer:['galebar','r_cripple','r_flare'],monk:['r_harmony','tempkick','iron'],bard:['r_storm','secondwind','rondo','r_ballad']},
+  // arts: the dual art of a physical class (physCls) is a martial move that still names its two elements: "{word a} and {word b} {noun}". The noun is
+  // picked from the kind of art (all foes, one foe, the vanguard) by the pair; casters keep the spell names in COMBO (skills.js).
+  arts:{w:{fire:'Cinder',water:'Tide',earth:'Loam',wind:'Gale',lightning:'Thunder',ice:'Frost',light:'Dawn',shadow:'Dusk'},
+    n:{warrior:{all:['Sweep','Reaping'],one:['Hammerfall','Breaker'],ally:['Banner','Stand']},knight:{all:['Sweep','Rampart'],one:['Slam','Charge'],ally:['Bastion','Wall Stance']},
+      thief:{all:['Knife Storm','Dance'],one:['Backstab','Cut'],ally:['Veil','Hush']},archer:{all:['Arrowfall','Downpour'],one:['Longshot','Deadeye'],ally:['Cover']},
+      monk:{all:['Whirlwind','Spin Kick'],one:['Rush','Dragon Palm'],ally:['Stance','Breath']},sniper:{all:['Gallop','Stampede'],one:['Riding Shot','Longshot'],ally:['Cover']},
+      druid:{all:['Stampede','Rampage'],one:['Rake','Maul'],ally:['Grove','Howl']}},
+    d:{warrior:{all:"A wide, two handed sweep that carries {a} and {b} through every foe.",one:"One crushing blow, the blade alive with {a} and {b}.",ally:"Plants the banner and calls on {a} and {b} for the whole vanguard."},
+      knight:{all:"The shield leads a charge through every foe, edged in {a} and {b}.",one:"A lance charge tipped with {a} and {b}.",ally:"Grounds the shield and calls up {a} and {b} around the vanguard."},
+      thief:{all:"A fan of knives laced with {a} and {b} through every foe.",one:"A single cut laced with {a} and {b}.",ally:"Slips the vanguard into {a} and {b} cover."},
+      archer:{all:"A volley of arrows tipped with {a} and {b} over every foe.",one:"One arrow loosed with {a} and {b} on the head.",ally:"Covering fire dressed in {a} and {b} for the vanguard."},
+      monk:{all:"A spinning kick that drags {a} and {b} through every foe.",one:"A palm strike that drives {a} and {b} home.",ally:"A still stance that draws {a} and {b} around the vanguard."},
+      sniper:{all:"A galloping volley shot in {a} and {b} across every foe.",one:"A bolt loosed at full gallop with {a} and {b}.",ally:"Covering fire dressed in {a} and {b} for the vanguard."},
+      druid:{all:"The pack and the weather answer in {a} and {b} on every foe.",one:"Claw and root together, {a} and {b}, on one foe.",ally:"The grove answers in {a} and {b} for the vanguard."}}}};
+
 // ROLEPW: skill power by how a skill's role sits in the hero's class role list (roles9.js ROLE9.cls: main, then two sub roles): the hero's main role 1,
 // a sub role `secondary`, any other role `off`. Primer, Detonator and dual art damage never counts below `secondary`. A nature that leans into a skill's role
 // adds `natLift` to that skill's multiplier, never above `natCap` (so a lifted off-role skill never matches a main-role one). Debuff chances move by

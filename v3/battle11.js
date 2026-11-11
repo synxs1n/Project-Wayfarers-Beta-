@@ -13,7 +13,14 @@
 // target on release. While a foe is a valid target the single tap now fires on release (it fired on pointer down in ui.js, which a hold could not
 // cancel); moving more than 10 px or a cancelled pointer (scroll) does nothing. A timed hit ring owns every press (battle5.js capture listener,
 // registered earlier, stops the event before this one).
-const FS11={big:1.5,small:1.25,mini:2,top:4,on:0,hold:450,dbl:350,slop:10,cache:new WeakMap(),spec:{}};
+const FS11={big:1.5,small:1.25,mini:2.5,top:4,on:0,hold:450,dbl:350,slop:10,cache:new WeakMap(),spec:{}};
+// ===== v0.19.2 guardians at boss size =====
+// Owner: "Guardians are too small, should be as big as bosses, both when facing them and summoning them." Measured on the stage (the alpha bounds of
+// the finished canvases): a Scourge or Calamity (60 px art at 1.5x) shows a figure about 91 px tall and 95 wide, a guardian (a 40 px art at 2.0x) about
+// 71 and 75. The guardian target is now 2.5 (5 backing pixels per art pixel at density 2, 10 at density 4: whole pixels either way), a figure of about
+// 89 by 94, the size of a boss. The Priest's and the Monk's summoned guardian is drawn the same way (spriteOf and unitBox treat u.isSum like a foe, and
+// summon8.js no longer swaps in the small '~s' art). kits12.js places them: a guardian fight uses the boss slots, a summoned guardian takes the party's
+// boss slot, or stands beside the allies it does not overlap.
 // ===== v0.17.9 foe fidelity pass (the sweep of every foe sprite as the stage draws it; tools/chrome/v160a.js) =====
 // What the sweep found (265 arts): 162 arts had painted pixels on the canvas edge (the boss grids are drawn to the full 60x60, so arms, hammers,
 // crowns and the key-staff were cut flat and the outline and glow lost there), 44 non-flyers stood 3 to 13 px above the stage line (the art
@@ -24,7 +31,7 @@ const FS11={big:1.5,small:1.25,mini:2,top:4,on:0,hold:450,dbl:350,slop:10,cache:
 // on the canvas), cropped under the feet (flyers keep their bottom rows: they hover), then taken to the stage by a whole number of backing
 // pixels per ART pixel:
 //   apx = floor(target * K) backing px per art px, K = the unit layer's backing density (2 on plain screens, 4 where the display has the
-//   pixels; res11.js resBk). target: BIG_ART 1.5, ordinary foes 1.25, guardian variants (40 px art) 2.0 (an 80 px figure like a Scourge).
+//   pixels; res11.js resBk). target: BIG_ART 1.5, ordinary foes 1.25, guardian variants (40 px art) 2.0 (v0.19.2: 2.5, see below).
 //   K 2: bosses 3 px per art px (art 90 logical), ordinary foes 2 (1.0x), guardians 4. K 4: bosses 6, ordinary foes 5 (1.25x), guardians 8.
 //   The HD paint is two bitmap pixels per art pixel, so K 4 bosses are exactly 3 backing px per bitmap pixel (clean nearest), K 2 bosses 1.5 (each
 //   art pixel an even 3 px, the half pixel smoothing alternating 1 and 2). A non-integer ratio of two or more takes one EPX pass first.
@@ -67,9 +74,9 @@ function fs11Cv(c,art){if(!c||!c.width)return c;const cvb=document.getElementByI
   FS11.cache.set(c,{k:K,o});return o;}
 {const mc0=monCanvas;monCanvas=function(art,f){if(FS11.on){try{const s=fs11Src(art,f);if(s)return fs11Cv(s,art);}catch(e){}}
   const c=mc0.apply(this,arguments);try{if(FS11.on)return fs11Cv(c,art);}catch(e){}return c;};}
-HOOK.wrap('spriteOf','battle11','foe size scaling on',function(next,u,walk){const was=FS11.on;FS11.on=u&&u.side!=='p'&&!u.heroArt?1:0;try{return next(u,walk);}finally{FS11.on=was;}});
+HOOK.wrap('spriteOf','battle11','foe size scaling on (a summoned guardian is drawn like a foe guardian)',function(next,u,walk){const was=FS11.on;FS11.on=u&&(u.side!=='p'||u.isSum)&&!u.heroArt?1:0;try{return next(u,walk);}finally{FS11.on=was;}});
 HOOK.wrap('battleFrame','battle11','foe size scaling on',function(next,now){const was=FS11.on;FS11.on=1;try{return next(now);}finally{FS11.on=was;}});
-{const ub0=unitBox;unitBox=function(u){const b=ub0.apply(this,arguments);try{if(b&&u&&u.side!=='p'&&!u.heroArt&&u.art){const c=spriteOf(u),sp=c&&c._s11;let w,h,vis;
+{const ub0=unitBox;unitBox=function(u){const b=ub0.apply(this,arguments);try{if(b&&u&&(u.side!=='p'||u.isSum)&&!u.heroArt&&u.art){const c=spriteOf(u),sp=c&&c._s11;let w,h,vis;
   if(sp){w=c.width;h=c.height;vis=h-sp.T*c._s11s;}else{const sz=MON_SIZE(u.art),n=Math.round(sz*fs11Scale(u.art));w=h=vis=n;if(n===sz)return b;}
   b.w=w;b.h=h;const lo=FS11.top+vis,hi=BL.H-2;let y=b.y;if(y<lo)y=Math.min(lo,hi);if(y!==b.y){if(b.gy!=null)b.gy+=y-b.y;b.y=y;}}}catch(e){}return b;};}
 

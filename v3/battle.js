@@ -74,6 +74,7 @@ function unitBox(u){
   if(u.heroArt){const c=spriteOf(u);return {x:Math.round(sl[0]*W),y:Math.round(sl[1]*H),w:c.width,h:c.height,i};}
   const sz=MON_SIZE(u.art);return {x:Math.round(sl[0]*W),y:Math.round(sl[1]*H),w:sz,h:sz,i};
 }
+unitBox=HOOK.def('unitBox',unitBox);// v0.19.2: one definition; kits12 places guardians and summoned guardians
 const WHITE={};
 function whiteOf(c,key,col){const k=key+(col||'');if(WHITE[k])return WHITE[k];const o=mkCv(c.width,c.height),x=o.getContext('2d');x.drawImage(c,0,0);x.globalCompositeOperation='source-in';x.fillStyle=col||'#ffffff';x.fillRect(0,0,c.width,c.height);return WHITE[k]=o;}
 function iconCv(el){return elShapeCv(el);}

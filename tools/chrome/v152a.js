@@ -7,6 +7,8 @@ const {open,chk,done}=require('./pw');const {META,battle}=require('./v063lib');
 for(const [w,h,gfx] of [[390,844,'medium'],[1000,560,'medium'],[390,844,'low']]){
  const tag=`${w}x${h} ${gfx}`,H=await open({w,h,mobile:w<500,pre:META(gfx)});const {ev,wait,page}=H;
  await battle(H,{boss:true,stage:2,foes:3});
+ // v0.19.2: the random foe pick can hold a guardian (a Sanctum variant), now boss sized: it would cover the first foe's centre, so ordinary foes stand in for it
+ await ev(()=>{const A=__A,B=A.B,M=A.TW.get('MINI_BIG');B.en.forEach((e,i)=>{if(M.has(e.art))B.en[i]=A.makeEnemy(A.MON.mossling,5);});A.render();});
  const r=await ev(()=>{const A=__A,B=A.B,out={foes:[],heroes:[]};
   B.en.forEach(e=>{const b=A.unitBox(e),c=A.spriteOf(e),sz=A.MON_SIZE(e.art);out.foes.push({art:e.art,sz,w:b.w,h:b.h,top:b.y-b.h,H:A.BL.H,cw:c.width,ch:c.height});});
   B.front.forEach(u=>{const b=A.unitBox(u),c=A.spriteOf(u);out.heroes.push({w:b.w,h:b.h,cw:c.width,ch:c.height});});

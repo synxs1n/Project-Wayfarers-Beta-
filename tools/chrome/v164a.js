@@ -26,7 +26,7 @@ const r=await ev(()=>{const T=__A.TW.get,B=T('B'),FK=T('FK'),BV=T('BV'),STS=T('S
   // 5. combo extra hits are counted
   const e0=B.en[0];a.S.combo=1;a.S.acc=1;e0.S.eva=0;B.cur=a;const I0=T('fk11Info')(a,{id:'t_c',n:'x',k:'phys',t:'one',dl:'slash',pw:.1,hits:2,mp:0,cost:1});
   e0.st={};e0.hp=e0.S.mhp=99999;/* since v0.19.0 the role-power pass recomputes stats during the action, which wiped a.S.combo=1 back to the hero's real chance (so 2 blows one time in three); pin it in the stats hook */
-  const HK=T('HOOK');HK.after('calcStats','v164a','pin combo for the test',function(r,c){try{if(c===a){a.S.combo=1;a.S.acc=1;}if(c===e0)e0.S.eva=0;}catch(e){}});
+  const HK=T('HOOK');HK.after('calcStats','v164a','pin combo for the test',function(r,c){try{const S=(r&&typeof r==='object')?r:c&&c.S;if(c===a&&S){S.combo=1;S.acc=1;a.S.combo=1;a.S.acc=1;}if(c===e0&&S){S.eva=0;e0.S.eva=0;}}catch(e){}});
   FK.cur=null;T('perform')(a,{id:'t_c',n:'x',k:'phys',t:'one',dl:'slash',pw:.1,hits:2,mp:0,cost:1},[e0]);o.combo=a.fk11&&a.fk11.landed;a.S.combo=0;
   // 6. reduced motion
   T('META').cfg.rmotion=true;BV.P.length=0;const u=B.front[1];u._fkS=null;o.rm.ok=T('fkStatus')(u,'poison',false,'Poison',{});o.rm.n=BV.P.filter(p=>p.k==='fk').length;o.rm.tint=T('fkTintOf')(u,null,Date.now());u._fkTint={col:'#fff',t0:Date.now(),life:300,a:1};o.rm.tint2=T('fkKOState')(B.en[0],Date.now());T('META').cfg.rmotion=false;u._fkTint=null;

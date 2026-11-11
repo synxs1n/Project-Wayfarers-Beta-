@@ -7,7 +7,8 @@
 // summon blocks summoning for the rest of the battle. Costs SUM.mp of the Priest's max MP, once per Priest per battle. Monks from
 // level SUM.monkLv get a lesser call: two turns of praying, a weaker (SUM.lesser) summon that takes only the Monk's own place for
 // SUM.lesserTurns turns. Never in the Daily Trial; auto battle never prays (the summon still acts if it is already out).
-const SUM={turns:3,mp:.3,mpMin:10,hpK:1.2,lvUp:2,powM:.95,lesser:.6,lesserTurns:2,monkLv:10,monkPray:2};
+// v0.19.2: a guardian is a boss you can summon: it stays 5 turns when a Priest invokes it (was 3) and 3 when a Monk calls it (was 2), and is drawn at boss size
+const SUM={turns:5,mp:.3,mpMin:10,hpK:1.2,lvUp:2,powM:.95,lesser:.6,lesserTurns:3,monkLv:10,monkPray:2};
 function sumList(){try{return Object.values(G.summons||{});}catch(e){return [];}}
 function sumUnlock(mon,name,mod){if(!G||G.daily||!MON[mon])return false;G.summons=G.summons||{};if(G.summons[mon])return false;G.summons[mon]={mon,name:name||MON[mon].n,mod:mod||null,at:Date.now()};return true;}
 // old saves: guardians already beaten become summons
@@ -23,9 +24,6 @@ miniFor=function(m){G.miniPick=G.miniPick||{};let i=G.miniPick[m.id];
     for(let k=0;k<n&&i==null;k++){const c=order[(s0+k)%n];if(!used.has(c))i=c;}
     if(i==null)i=order[s0%n];G.miniPick[m.id]=i;}
   const D=MINIS[i];return {mon:D[0],name:D[2],mod:D[5]};};
-// small art for the summoned guardian: the unit's art key without the BIG_ART entry (40 px), same drawing
-function sumArt(a){if(typeof BIG_ART==='undefined'||!BIG_ART.includes(a))return a;const k=a+'~s';
-  if(!MART[k]){MART[k]=MART[a];if(MEXTRA[a])MEXTRA[k]=MEXTRA[a];if(typeof MON_TY!=='undefined'&&MON_TY[a])MON_TY[k]=MON_TY[a];if(typeof FAM_OF!=='undefined'&&FAM_OF[a])FAM_OF[k]=FAM_OF[a];}return k;}
 // every Sanctum has its guardian (caves keep their chance)
 {const sh0=siteHasMini;siteHasMini=function(id){if(typeof id==='string'&&id[0]==='o')return true;return sh0.apply(this,arguments);};}
 HOOK.after('win','summon8','a beaten guardian becomes a summon',function(){try{const sp=B&&B.spec,mi=sp&&sp.mini;if(!mi||typeof mi!=='object'||!G||G.daily)return;if(sumUnlock(mi.mon,mi.name,mi.mod)){const info=(B&&B.result)||(V.modal&&V.modal.info);if(info){info.notes=info.notes||[];info.notes.push(`${mi.name} is bound to your cause: a Priest can now Invoke it in battle (a Monk from level ${SUM.monkLv} can call a lesser form).`);}}}catch(e){}});
@@ -36,17 +34,18 @@ function sumCost(a){return Math.max(SUM.mpMin,Math.round(a.S.mmp*SUM.mp));}
 // ----- the unit -----
 function sumMake(o,lesser,owner){const m=MON[o.mon];const heroes=B.front.filter(c=>c.hp>0),lv=Math.round(heroes.reduce((q,c)=>q+c.lv,0)/Math.max(1,heroes.length))+SUM.lvUp;
   const u=makeEnemy(m,lv,{elite:true,name:o.name,mod:o.mod,noField:1,noBuff:1,hpM:1,powM:SUM.powM*(lesser?SUM.lesser:1)});
-  u.art=sumArt(u.art);u.side='p';u.isSum=1;u.id='sum_'+o.mon;u.base=o.name;u.lb=0;u.owner=owner||null;u.lesser=!!lesser;u.turnsLeft=lesser?SUM.lesserTurns:SUM.turns;
+  u.side='p';u.isSum=1;u.id='sum_'+o.mon;u.base=o.name;u.lb=0;u.owner=owner||null;u.lesser=!!lesser;u.turnsLeft=lesser?SUM.lesserTurns:SUM.turns;
   const pool=lesser?(owner?owner.S.mhp:0):B.front.reduce((q,c)=>q+(c.S?c.S.mhp:0),0);u.S.mhp=Math.max(u.S.mhp,Math.round(pool*SUM.hpK*(lesser?.8:1)));u.hp=u.S.mhp;u.S.mmp=999;u.mp=999;
-  if(!TPL[u.id])TPL[u.id]={id:u.id,n:o.name,cls:'warrior',el:m.el.slice(),trait:'brave',bio:`${o.name}, guardian of a Sanctum, bound to your cause.`,src:'sum',look:null,mon:o.mon,art:sumArt(m.art),summon:1};
+  if(!TPL[u.id])TPL[u.id]={id:u.id,n:o.name,cls:'warrior',el:m.el.slice(),trait:'brave',bio:`${o.name}, guardian of a Sanctum, bound to your cause.`,src:'sum',look:null,mon:o.mon,art:m.art,summon:1};
   u.msk=(m.sk||[]).map(s=>({id:'s'+s[0],n:s[0],el:s[1],pw:+(s[2]*1.05).toFixed(2),t:s[3]==='all'?'all':s[3]==='self'?'self':'one',k:s[4]==='buff'?'buff':s[4],fx:s[5]||null,mp:0,cost:1,hits:1}));
   return u;}
 function sumFire(a,o,lesser){const u=sumMake(o,lesser,lesser?a:null);
   if(lesser){const i=B.front.indexOf(a);if(i<0)return false;B.sum={u,lesser:1,slot:i,owner:a,by:a};B.front[i]=u;a.hidden=1;}
   else{B.sum={u,front:B.front,by:a};B.front=[u];}
   B.summonedBy=B.summonedBy||{};B.summonedBy[a.id]=1;u.next=B.time;u.enterT=Date.now();
-  banner(`${o.name}!`,ELC[(MON[o.mon].el||[])[0]]||'#ffd04a');log(lesser?`${a.name}'s call is answered: a lesser ${o.name} takes ${a.name}'s place for ${u.turnsLeft} turns.`:`${a.name}'s prayer is answered: ${o.name} takes the field for ${u.turnsLeft} turns while the Vanguard steps back.`);
+  banner(`GUARDIAN: ${o.name}`,ELC[(MON[o.mon].el||[])[0]]||'#ffd04a');log(lesser?`${a.name}'s call is answered: a lesser ${o.name} takes ${a.name}'s place for ${u.turnsLeft} turns.`:`${a.name}'s prayer is answered: ${o.name} takes the field for ${u.turnsLeft} turns while the Vanguard steps back.`);
   if(typeof sfx==='function')sfx('level');return true;}
+sumFire=HOOK.def('sumFire',sumFire);// v0.19.2: kits12 adds the boss entrance (glow, name plate)
 function sumEnd(why){const S=B&&B.sum;if(!S)return;const u=S.u;
   if(S.lesser){const i=B.front.indexOf(u);if(i>=0)B.front[i]=S.owner;S.owner.hidden=0;S.owner.next=B.time+delayOf(S.owner,.4);S.owner.enterT=Date.now();}
   else{B.front=S.front;B.front.forEach((c,i)=>{c.hidden=0;c.next=B.time+delayOf(c,.3+.15*i);c.enterT=Date.now();});}

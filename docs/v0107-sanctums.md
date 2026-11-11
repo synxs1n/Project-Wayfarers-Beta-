@@ -13,3 +13,6 @@ At stage 0 (level 3 party) the guardian came in with 244 HP and hit for about 2x
 
 ## Tests
 Script used: a real time battle at speed 3 with the Priest praying on their first turn (`tools/chrome` style, see the session's p8b script): fired, Vanguard hidden, three turns, restored. Chrome tests that read the words Fortress or Healer in UI text were updated to Sanctum and Priest.
+
+## v0.19.2: guardians as bosses you can summon
+A summoned guardian stays `SUM.turns` = 5 turns when a Priest invokes it (was 3) and `SUM.lesserTurns` = 3 when a Monk calls it (was 2). Guardians (facing you and summoned) are drawn at boss size (`FS11.mini` 2.5, battle11.js; the summon uses the real guardian art, no small alias). A guardian fight stands on the boss slots; the Priest's guardian takes the party's boss slot, the Monk's lesser form stands beside its allies without covering them (kits12.js `unitBox` hook). The entrance shows the `GUARDIAN: name` banner, rings and a glow, and a name plate with its level and turns left while it stays. Powers are unchanged, so a longer stay is more damage dealt: watch the Sanctum guardian balance.

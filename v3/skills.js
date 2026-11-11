@@ -2,7 +2,7 @@
 // =================== SKILL DATA (skills, limit breaks, bonds). Split out of data.js ===================
 // =================== SKILLS ===================
 const SPELL={fire:['Ember','Inferno','Pyroclasm'],water:['Splash','Torrent','Deluge'],earth:['Rock Toss','Quake','Landslide'],wind:['Gust','Cyclone','Tempest'],
- lightning:['Spark','Chain Bolt','Thunderfall'],ice:['Frost','Blizzard','Absolute Zero'],light:['Gleam','Radiant Burst','Sunfall'],shadow:['Gloom','Umbral Wave','Eclipse']};
+ lightning:['Spark','Static Storm','Thunderfall'],ice:['Frost','Blizzard','Absolute Zero'],light:['Gleam','Radiant Flood','Sunfall'],shadow:['Gloom','Umbral Wave','Eclipse']};
 const ATTACK={id:'attack',n:'Attack',k:'phys',pw:1,mp:0,t:'one',cost:1,hits:1,el:null,lv:1,d:'A basic strike.'};
 const COMBO={
  'fire+water':{n:'Scalding Steam',k:'mag',pw:1.05,t:'all',fx:[['burn',.45],['blind',.3]],d:'Steam scalds every foe. May Burn or Blind.'},
@@ -287,7 +287,7 @@ function lateSkills(cls,e1,e2,n1,n2){const E2=e2||e1,N2=n2||n1;const L={
   {id:'galebar',n:'Gale Barrage',k:'phys',pw:.72,hits:2,mp:18,t:'all',el:E2,role:'det',lv:46,d:`Two ${N2} volleys over every foe.`},
   {id:'heavenp',n:'Heavenpiercer',k:'phys',pw:4.4,mp:30,cost:1.3,pierce:1,crit:.3,el:e1,role:'det',lv:50,shieldChip:3,cap:1,d:'One arrow loosed at the sky that comes down through anything. Ignores half of defense; chips 3 shield pips.'}],
  monk:[{id:'furnace',n:'Inner Furnace',k:'mpself',pw:1.6,mp:0,t:'self',lv:42,fx:[['haste',1],['might',1]],d:'Restores HP and MP and lights the furnace: Haste and Might.'},
-  {id:'tempkick',n:'Tempest Kick',k:'phys',pw:1.3,mp:14,t:'all',el:e1,role:'primer',lv:46,fx:[['stun',.2]],d:`A ${n1} whirlwind kick through every foe. May Stun.`},
+  {id:'tempkick',n:'Tempest Whirl',k:'phys',pw:1.3,mp:14,t:'all',el:e1,role:'primer',lv:46,fx:[['stun',.2]],d:`A whirl of kicks that leaves ${n1} lingering on every foe. May Stun.`},
   {id:'ascend',n:'Ascension Fist',k:'phys',pw:.95,hits:5,mp:28,el:e2?[e1,e2]:e1,role:'det',drain:.2,lv:50,cap:1,d:'Five blows that climb to the heavens. Heals him for 20% of the damage.'}],
  bard:[{id:'rondo',n:'Rondo of Ruin',k:'mag',pw:1.1,mp:16,t:'all',el:e1,role:'primer',lv:42,fx:[['break',.5]],d:`A ${n1} rondo on every foe. May Break.`},
   {id:'secondwind',n:'Second Wind',k:'heal',pw:1.2,mp:18,t:'allyAll',lv:46,fx:[['haste',1]],lbParty:20,d:'Heals the line, grants Haste and +20 Limit gauge.'},
