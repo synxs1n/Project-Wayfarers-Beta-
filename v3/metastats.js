@@ -48,3 +48,5 @@ function metaBlock(){
     ${S.first?row('First played',new Date(S.first).toLocaleDateString()):''}</div>`;
 }
 window.__MS={get stats(){return ms();},tick:msTick,save:msSave};
+// records12.js hooks these two (account play time follows the journeys' own play time; both times in one block)
+msTick=HOOK.def('msTick',msTick);metaBlock=HOOK.def('metaBlock',metaBlock);

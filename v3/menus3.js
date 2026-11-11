@@ -178,7 +178,7 @@ function nbQuestRow(q){const st=nbQState(q);
   return `<div class="row"><div class="grow"><b>${esc(q.title)}</b>${st==='ready'?' <em class="qtag">Ready</em>':''}<small>${esc(q.desc)}</small><small>${q.state==='active'?prog+'. ':''}Reward: ${rew}</small></div>${btn}</div>`;}
 function nbQuests(sec){const Q=m3Quests();let h='';
   if(sec!=='personal'){const L=Q.filter(q=>sec==='all'||nbQState(q)===sec).sort((a,b)=>NB_ORD[nbQState(a)]-NB_ORD[nbQState(b)]);
-    h+=(typeof allBar==='function'?allBar('qAcceptAll','qClaimAll',Q.filter(q=>q.state==='open').length,Q.filter(q=>q.state==='active'&&questReady(q)).length):'')
+    h+=(typeof allBar==='function'?allBar('qAcceptAll','qClaimAll',Q.filter(q=>q.state==='open').length,Q.filter(q=>q.state==='active'&&questReady(q)&&(typeof canHandIn!=='function'||canHandIn(q))).length):'')
       +m3Rows(L.map(nbQuestRow).join(''),{ready:'Nothing is ready to hand in yet.',active:'No quests under way.',open:'No new notices. More go up as your journey goes on.',done:'Nothing finished yet.'}[sec]||'No notices yet.');}
   if(sec==='personal'||(sec==='all'&&nbPersonal().length))h+=(sec==='all'?m3H('Personal quests'):'')+vPersonal();
   return `<p class="note">Accept a notice, do the deed, then claim the reward here or on any town's board.</p>${h}`;}
@@ -189,12 +189,15 @@ function nbArena(menu){const cl=G.cleared.filter(Boolean).length,far=menu&&!inTo
   return `<p class="note">The guild's fighting pit. Back-to-back waves of foes from every realm, no fleeing, no rest between waves.${far?' Enter it from any town.':''}</p><div class="rows">${ARENA.map((A,i)=>`<div class="row"><div class="grow"><b>${A.n}</b><small>${A.waves} waves, foes level ${A.lvs[0]}-${A.lvs[1]}. Suggested party level ${A.rec}. ${A.min>cl?`Opens after ${A.min} Scourge${A.min>1?'s':''} fall${A.min>1?'':'s'}.`:`Best: ${G.arena[i]?'cleared x'+G.arena[i]:'not yet cleared'}.`}</small><small>${fmt(A.reward.gold)} gold, ${A.reward.mat} materials${A.reward.charm?', a stat charm':''}${A.reward.core?', '+A.reward.core+' Dread Cores':''}</small></div><button class="btn sm gold" data-act="arena" data-arg="${i}" ${A.min>cl||far?'disabled':''}>Enter</button></div>`).join('')}</div>
     ${m3H('Echoes')}<p class="note">Beat a Scourge or the Calamity and an optional Echo of it lingers in its dungeon, on the rune circle where it fell. After the Calamity, the Echo Rift at any waystone lets you fight every Echo you have unlocked again.</p>`;}
 function nbGuilds(sec){return (typeof vFacMissions==='function'?vFacMissions(sec):'')+(sec==='all'&&typeof vFactions==='function'?m3H('Ranks and perks')+vFactions():'');}
+nbSecs=HOOK.def('nbSecs',nbSecs);// records12.js adds the all-notices tab
 function nbBody(tab,sec,menu){sec=sec||'all';
   if(tab==='guilds')return nbGuilds(sec);if(tab==='bounties')return nbBounties(sec);if(tab==='arena')return nbArena(menu);return nbQuests(sec);}
+nbBody=HOOK.def('nbBody',nbBody);
 // the Menu's Quests group draws the same bodies, with the section chips under the menu's own tabs (ui.js mMenu asks nbMenuBody)
 function nbMenuBody(m){const tab=NB_MENU[m&&m.tab];if(!tab||!G)return null;const S=nbSecs(tab);if(!S.some(x=>x[0]===m.sec))m.sec='all';
   const nav=S.length>1?`<div class="chips nbsec" role="tablist" aria-label="Sections">${S.map(([k,l,c])=>`<button role="tab" aria-selected="${k===m.sec}" class="chip sm ${k===m.sec?'on':''}" data-act="sSec" data-arg="${k}">${l}${c!=null?` <span class="cnt nums">${c}</span>`:''}</button>`).join('')}</div>`:'';
   return nav+nbBody(tab,m.sec,true);}
+nbMenuBody=HOOK.def('nbMenuBody',nbMenuBody);// records12.js: Records > Completion
 // ----- the Guild Hall: the Notice Board's tabs plus Recruits and Natures -----
 function m3Guild(m){const tab=m.tab,sec=m.sec;let body='';
   if(tab==='recruit')body=vChallenges();

@@ -112,3 +112,16 @@ details.facstock>summary{cursor:pointer;font:700 13px/1.3 var(--fb);color:var(--
 .m11sec.danger{border-color:rgba(255,110,90,.5)}.m11sec.danger .m11h{color:#ff9a86}
 .m11sec .rows{margin:0}.m11sec .btnrow{margin:6px 0}
 .m11sec .m11sv .svrow{margin:0}
+/* v0.18.7 (records12): Settings > Tips row: the On / Off / Reset tips / Hint log chips left the text no width at 390px (one letter per line); the row wraps and the text keeps a floor */
+.rows.obset .row,.m11b .row{flex-wrap:wrap}.rows.obset .row>.grow,.m11b .row>.grow{flex:1 1 200px;min-width:140px}.rows.obset .row>.chips,.m11b .row>.chips{margin-left:auto}
+/* location banner: a second line (the Meridian Breach) */
+.wloc{white-space:pre-line}
+/* Records > Completion */
+.r12realm{margin:0 0 10px}.r12realm .r12head{border-bottom-width:2px}.r12realm .r12trk{margin-top:3px}
+.r12t.none .grow b,.r12t.none .m{opacity:.55}.r12t.up .m{color:#7aff8a}
+.r12rift .row.up .m{color:#7aff8a}
+/* Notice Board: the kind of each row */
+.r12kind{display:inline-block;font-size:.72em;letter-spacing:.06em;text-transform:uppercase;color:var(--mute,#9a9080);margin:0 0 1px;padding:0 5px;border:1px solid rgba(217,180,106,.25);border-radius:3px}
+.r12away{color:#f0c27a}
+/* a ready notice that cannot be handed in here (handin9): the place to go wraps under the greyed Claim instead of widening the row (4px sideways scroll at 344px) */
+.row>.m>.handwhere{display:block;white-space:normal;max-width:9.5em;text-align:right;margin-left:auto}

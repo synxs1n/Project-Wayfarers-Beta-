@@ -32,8 +32,8 @@ const kit=await ev(()=>!!document.querySelector('#modal [data-act="buyItem"][dat
 // v0.10.6: the town Notice Board has Quests and Bounties; the Guild Hall has Guilds, Arena, Recruits and Natures
 await show({type:'guild'});n=await nav();chk('Guild Hall tabs: Guilds, Arena, Recruits, Natures',JSON.stringify(n.tabs)===JSON.stringify(['Guilds','Arena','Recruits','Natures'])||JSON.stringify(n.tabs));
 await show({type:'guild',tab:'guilds'});n=await nav();chk('Guild Hall > Guilds sections: All, Ready, Active, Open',JSON.stringify(n.secs)===JSON.stringify(['All','Ready','Active','Open'])||JSON.stringify(n.secs));
-await show({type:'board'});n=await nav();chk('Notice Board tabs: Quests, Bounties',JSON.stringify(n.tabs)===JSON.stringify(['Quests','Bounties'])||JSON.stringify(n.tabs));
-await show({type:'board'});n=await nav();chk('Notice Board sections: All, Ready, Active, Open, Done, Personal',JSON.stringify(n.secs)===JSON.stringify(['All','Ready','Active','Open','Done','Personal'])||JSON.stringify(n.secs));
+await show({type:'board'});n=await nav();chk('Notice Board tabs: Notices, Quests, Bounties (v0.18.7)',JSON.stringify(n.tabs)===JSON.stringify(['Notices','Quests','Bounties'])||JSON.stringify(n.tabs));
+await show({type:'board',tab:'quests'});n=await nav();chk('Notice Board > Quests sections: All, Ready, Active, Open, Done, Personal',JSON.stringify(n.secs)===JSON.stringify(['All','Ready','Active','Open','Done','Personal'])||JSON.stringify(n.secs));
 const hg=await ev(()=>{const o={};for(const t of ['smithy','workshop','tavern','guild','board']){__A.V.modal={type:t};__A.render();o[t]=!!document.querySelector('#modal h2 .hgold');}return o;});
 chk('every shop title carries the purse',Object.values(hg).every(Boolean)||JSON.stringify(hg));
 // ---- old ids still land
@@ -90,7 +90,7 @@ const top=await ev(()=>[...document.querySelectorAll('#modal .mgrp .chip')].map(
 chk('menu groups (v0.12.6): Party, Backpack, Quests, Map, Records, Guides, Settings',JSON.stringify(top)===JSON.stringify(['Party','Backpack','Quests','Map','Records','Guides','Settings'])||JSON.stringify(top));
 const sub=await ev(()=>{const o={};for(const g of ['gear','quests','records','guides']){__A.ACT.menuGrp(g);o[g]=[...document.querySelectorAll('#modal .msub .chip')].map(x=>x.textContent.trim());}return o;});
 chk('Backpack: Equipment, Items, Materials',JSON.stringify(sub.gear)===JSON.stringify(['Equipment','Items','Materials'])||JSON.stringify(sub.gear));
-chk('Quests (v0.12.6, board then hall): Quests, Bounties, Guilds, Arena',JSON.stringify(sub.quests.map(x=>x.replace(/\s*\d+$/,'')))===JSON.stringify(['Quests','Bounties','Guilds','Arena'])||JSON.stringify(sub.quests));
+chk('Quests (v0.18.7: the list, then board, then hall): Notices, Quests, Bounties, Guilds, Arena',JSON.stringify(sub.quests.map(x=>x.replace(/\s*\d+$/,'')))===JSON.stringify(['Notices','Quests','Bounties','Guilds','Arena'])||JSON.stringify(sub.quests));
 chk('Records holds Lore',sub.records.includes('Lore')&&!sub.guides.includes('Lore')||JSON.stringify(sub));
 chk('the pinned Save button is still in the menu title',await ev(()=>!!document.querySelector('#modal h2 .savepin [data-act="p5Save"]')));
 // ---- Daily Trial: shops still open and no plan button

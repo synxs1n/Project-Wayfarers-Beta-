@@ -12,7 +12,7 @@ const r=await ev(async()=>{const A=__A,G=A.G,o={};
   // Inn closes after a rest
   G.gold=999;Object.values(G.roster)[0].hp=1;/* since v0.9.x an unhurt party is asked first (innSure), so someone needs the rest */A.V.modal={type:'inn'};A.ACT.rest();await new Promise(q=>setTimeout(q,900));o.innClosed=A.V.modal===null;
   // Accept all / Claim all on the board
-  for(let s=0;s<=G.stage;s++)A.genQuests(s);A.V.modal={type:'board'};A.render();o.accBtn=!!document.querySelector('[data-act="qAcceptAll"]');A.ACT.qAcceptAll();o.allActive=G.quests.filter(q=>q.stage<=G.stage).every(q=>q.state!=='open');
+  for(let s=0;s<=G.stage;s++)A.genQuests(s);A.V.modal={type:'board',tab:'quests'};/* v0.18.7: the board opens on the Notices list; the Quests tab keeps its own bar */A.render();o.accBtn=!!document.querySelector('[data-act="qAcceptAll"]');A.ACT.qAcceptAll();o.allActive=A.TW.get('m3Quests')().every(q=>q.state!=='open');
   const hq=G.quests.find(q=>q.type==='hunt'&&q.state==='active');if(hq)hq.have=hq.n;const g0=G.gold;A.render();o.claimBtn=!!document.querySelector('[data-act="qClaimAll"]');A.ACT.qClaimAll();o.claimed=G.gold>g0;
   // bounties and faction missions. v0.9.9: since v0.10.6 the bounties are on the town Notice Board and the guild missions on the Guild Hall's Guilds tab, and a new journey
   // opens guild missions in the third realm (pacing.js PACE.at.guilds): no Accept all for them before it, then Accept all takes every one

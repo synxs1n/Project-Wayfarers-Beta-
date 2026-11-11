@@ -24,7 +24,7 @@ function modalBack(m){
   if(t==='map')return ()=>{V.modal=m.from||null;};   // v0.4.1 1.9: the map has a back arrow next to the X (back to where it was opened from, else the world)
   // v0.5.0 1.5: every shop screen has the back arrow. v0.6.3: shops have main tabs and section chips (menus3.js), so back is one level:
   // a section (or a hero picked on the Natures tab) goes back to All, a tab goes back to the shop's first tab, the first tab leaves the shop.
-  const SHOP_HOME={smithy:'shop',workshop:'shop',guild:'guilds',tavern:'hire',inn:null,board:'quests',archivist:null};// v0.9.5: the Guild Hall and the Notice Board start on the board's Guilds and Quests tabs
+  const SHOP_HOME={smithy:'shop',workshop:'shop',guild:'guilds',tavern:'hire',inn:null,board:'all',archivist:null};// v0.9.5: the Guild Hall and the Notice Board start on the board's Guilds and Quests tabs
   if(t in SHOP_HOME){if(typeof m3Norm==='function')m3Norm(m);const home=SHOP_HOME[t],tab=m.tab&&m.tab!=='party'?m.tab:home;
     if(t==='guild'&&tab==='nature'&&m.nat)return ()=>{m.nat=null;};
     if(m.sec&&m.sec!=='all')return ()=>{m.sec='all';};

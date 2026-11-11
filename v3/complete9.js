@@ -15,6 +15,7 @@ function REALM_DONE(s){const L=[];if(!G||G.daily)return L;
   try{if(typeof caveStage==='function'&&caveStage(s))L.push({k:'den',n:CAVE_NAMES[s],done:denDone(s)});}catch(e){}
   try{if(typeof fortWanted==='function'&&fortWanted(s))L.push({k:'sanctum',n:(typeof FORT_NAMES!=='undefined'&&FORT_NAMES[s])||'Sanctum',done:fortDoneS(s)});}catch(e){}
   L.push({k:'boss',n:s<4?'Scourge':'Calamity',done:lairDone(s)});return L;}
+REALM_DONE=HOOK.def('REALM_DONE',REALM_DONE);// records12.js reads the maps for the Den and Sanctum rows
 function realmProgress(s){const L=REALM_DONE(s),d=L.filter(x=>x.done).length;return {L,d,n:L.length,pct:L.length?Math.round(d*100/L.length):0};}
 // ----- map markers: a done flag, then a checkmark over the icon (area map and minimap share drawMarks) -----
 HOOK.after('mapMarks','complete9','done flag on site markers',function(o,m){try{if(m&&m.kind==='field'&&!G.daily)o.forEach(q=>{if(['cave','fort','dungeon','lair','lairlit'].includes(q.k)){

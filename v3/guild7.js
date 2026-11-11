@@ -12,7 +12,7 @@ const G7_MEDALS=[['c_medal0',{n:'Bronze Medal',slot:'c',tier:1,hp:40,atk:4,price
  ['c_medal4',{n:'Eclipse Medal',slot:'c',tier:5,hp:200,atk:16,mag:16,def:10,res:10,spd:4,price:8000,medal:1,d:'Survived the Eclipse Gauntlet.'}]];
 try{G7_MEDALS.forEach(([id,o])=>{if(!GEAR[id])addGear(id,o);});}catch(e){}
 // ----- the buildings -----
-{const t0=m3Tabs;m3Tabs=function(t){if(t==='board')return [['quests','Quests'],['bounties','Bounties']];if(t==='guild')return [['guilds','Guilds'],['arena','Arena'],['recruit','Recruits'],['nature','Natures']];return t0.apply(this,arguments);};}
+{const t0=m3Tabs;m3Tabs=function(t){if(t==='board')return [['all','Notices'],['quests','Quests'],['bounties','Bounties']];if(t==='guild')return [['guilds','Guilds'],['arena','Arena'],['recruit','Recruits'],['nature','Natures']];return t0.apply(this,arguments);};}
 try{if(M3_LEG.guild)delete M3_LEG.guild.personal;}catch(e){}
 function g7TownStage(){try{if(WS.m&&WS.m.kind==='town')return WS.m.s|0;return (G.lastTown|0);}catch(e){return 0;}}
 // v0.10.8: one rule for "this town's board shows it", shared by the board list and the board's "!" marker (towngfx.js boardState)
