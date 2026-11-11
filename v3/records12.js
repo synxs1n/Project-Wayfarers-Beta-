@@ -1,4 +1,4 @@
-// ===== records12.js (v0.18.7): Records > Completion, one account play time, one Notice Board list, the site tags and the Breach line =====
+// ===== records12.js (v0.18.7): Records > Completion, one account play time, one Notice Board list, the Breach description =====
 // 1. Records > Completion (was Realms): above the realm list an Echo Rift section (only once the Rift is open) with the Echoes beaten and
 //    the Riftkeeper as "Secret boss: ???" until beaten; per realm EVERY tracker the realm has (field chests, Den, Lair, Sanctum, beacon,
 //    Echo, quests, bounties, taming), a Den or Sanctum the realm was not given says so. Cause of the missing Den: worldPlan() gives a Den
@@ -10,10 +10,9 @@
 //    still counts by its own ticks. Both times are shown in Account totals.
 // 3. One Notice Board list: "Notices" tab (board and Menu > Quests) with quests, bounties and guild missions, one Accept all and one
 //    Claim all that hands in everything that may be handed in at this place and names what waits elsewhere.
-// 4. The site tag (Den, Lair, Sanctum) shows on every arrival; the Meridian Breach has a banner line and a one time description.
+// 4. The Meridian Breach has a one time description (the area banner and the Den, Lair and Sanctum tags moved to titles12.js).
 // New optional fields: META.stats.credit {journey: ms}, META.stats.pl12 (seeded flag), G.breachLook (the description was shown).
-const R12_BREACH_LINE='Where the strongest wayfarers train';
-const R12_BREACH_TEXT='Every realm bleeds into this field, and the ground never settles. The strongest wayfarers come here to train, because nothing in the Breach is kind and nothing in it is wasted. Your Echoes would know the place.';
+const R12_BREACH_TEXT='Every realm bleeds through into this field, and the ground never settles. The fiercest foes of all the realms gather here, and the strongest wayfarers come to test themselves against them. Nothing in the Breach is kind, and nothing in it is wasted.';
 
 // ---------- 2. account play time ----------
 function r12Jid(st,run){return (st&&+st.start||0)+':'+((run&&+run.seed)||0);}
@@ -128,9 +127,9 @@ Object.assign(ACT,{
     try{facMisAll().filter(m=>facMisState(m)==='open').forEach(m=>{ACT.facAccept(m.id);if(facMisState(m)!=='open')n++;});}catch(e){}
     saveGame();if(n)toast(`Accepted ${n} notice${n>1?'s':''}.`);render();}});
 
-// ---------- 4. the site tag on every arrival, the Breach ----------
-HOOK.after('showLocation','records12','Den, Lair and Sanctum tags on every arrival; the Meridian Breach line and its first-visit description',function(){try{const m=WS.m;if(!m||!G||G.daily)return;
-  if(m.breach){WS.locN=locName(m)+'\n'+R12_BREACH_LINE;
+// ---------- 4. the Breach description ----------
+HOOK.after('showLocation','records12','the Meridian Breach first-visit description (the banner itself is titles12.js)',function(){try{const m=WS.m;if(!m||!G||G.daily)return;
+  if(m.breach){
     if(!G.breachLook){setTimeout(()=>{try{if(G&&!G.breachLook&&V.screen==='world'&&WS.m&&WS.m.breach&&!V.modal&&!B&&!WS.dlg){G.breachLook=1;say('The Meridian Breach',R12_BREACH_TEXT);saveGame();}}catch(e){}},1200);}
     return;}
-  const k=siteKind(m);if(k&&String(WS.locN).indexOf(k+': ')!==0)WS.locN=k+': '+WS.locN;}catch(e){}});
+  }catch(e){}});

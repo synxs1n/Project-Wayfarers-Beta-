@@ -85,7 +85,7 @@ const start=H=>H.det(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEac
   chk(`Den tag on every arrival (${r.den.join(' | ')})`,r.den.every(x=>/^Den: /.test(x)));
   chk(`Lair tag on every arrival (${r.lair.join(' | ')}) and Sanctum (${r.sanct.join(' | ')})`,r.lair.every(x=>/^Lair: /.test(x))&&r.sanct.every(x=>/^Sanctum: /.test(x)));
   chk(`a field has no tag (${r.field[1]})`,!/: /.test(r.field[1].split(' · ')[0]));
-  chk(`Breach banner has its own line (${JSON.stringify(r.breach)}); the description shows once (${(r.dlg||'').slice(0,40)}..., again ${r.again})`,/Meridian Breach\nWhere the strongest wayfarers train/.test(r.breach)&&/strongest wayfarers/.test(r.dlg||'')&&r.look===1&&!r.again);
+  chk(`Breach banner is the name alone (${JSON.stringify(r.breach)}); the description shows once (${(r.dlg||'').slice(0,40)}..., again ${r.again})`,r.breach==='The Meridian Breach'&&/strongest wayfarers/.test(r.dlg||'')&&!/echo/i.test(r.dlg||'')&&r.look===1&&!r.again);
   await H.browser.close();
 
   // ---------- 4. Settings > Tips ----------

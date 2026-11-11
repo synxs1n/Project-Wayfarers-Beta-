@@ -80,7 +80,7 @@ const br=await H.ev(()=>{const A=__A,G=A.G,T=A.TW.get;G.won=true;G.cleared=[true
   const f=A.getMap('f0');A.placeAt('f0',3,f.sy!=null?f.sy:5,'r');T('showLocation')();o.field=A.WS.locN;
   A.V.modal={type:'travel'};A.render();const br=document.querySelector('#modal .breachrow');o.row=br?br.textContent.replace(/\s+/g,' ').trim():'';A.V.modal=null;
   const m=A.getMap('x0');o.marks=T('mapMarks')(m).map(q=>q.n||q.k).join(',');o.mini=T('locName')(m);return o;});
-chk(`the Breach's banner has no "(relit)" ('${br.breach}') while a cleared field still does ('${br.field}')`,!/relit/i.test(br.breach)&&/relit/.test(br.field));
+chk(`the Breach's banner has no "(relit)" ('${br.breach}') while a cleared field still does ('${br.field}')`,!/relit/i.test(br.breach)&&/relit/i.test(br.field));
 chk(`the Waystone list's Breach row (${br.row}), its name and its markers carry no "(relit)"`,/Meridian Breach/.test(br.row)&&!/relit/i.test(br.row)&&!/relit/i.test(br.mini)&&!/relit/i.test(br.marks));
 // ---------------- 7. walk frames ----------------
 const lg=await H.ev(()=>{const A=__A,T=A.TW.get,TPL=T('TPL'),o={rows:0,bad:[],townLow:[],minR:9,minLift:99,vill:0,stride:T('HSTRIDE')};

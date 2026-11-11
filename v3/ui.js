@@ -573,7 +573,7 @@ function loop(){
   const now=performance.now();
   try{padPoll(now);}catch(e){}
   if(V.screen==='world'&&WS.cv){worldTick(now-LAST,now);worldDraw(now);
-    const l=$('wloc');if(l){const on=WS.locT&&Date.now()-WS.locT<2600;const txt=on?WS.locN:'';if(l.textContent!==txt)l.textContent=txt;l.className='wloc'+(on?' on':'');}}
+    const l=$('wloc');if(l){const on=WS.locT&&Date.now()-WS.locT<2600;const txt=on?WS.locN:'';if(l.textContent!==txt){if(typeof t12Paint==='function')t12Paint(l,txt);else l.textContent=txt;}l.className='wloc'+(on?' on':'');}}
   if(V.screen==='battle'&&B)battleFrame(now);
   if(V.screen==='title'){const cv=$('tcv');if(cv){const box=cv.parentElement.clientWidth,sc=box>=720?3:2,W=Math.floor(box/sc),H=Math.floor(260/sc);if(cv.width!==W){cv.width=W;cv.height=H;cv.style.width=W*sc+'px';cv.style.height=H*sc+'px';}const ctx=cv.getContext('2d');titleDraw(ctx,W,H,now);}}
   LAST=now;requestAnimationFrame(loop);

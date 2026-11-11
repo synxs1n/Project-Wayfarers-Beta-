@@ -142,7 +142,7 @@ const REC2D=`(T)=>{const A=__A,ctx=A.WS.ctx,P=CanvasRenderingContext2D.prototype
     // results: the victory crest is not blackletter
     if(tier==='medium'){await ev(()=>{const A=__A;A.B.en.forEach(e=>{e.hp=0;});A.win();});await wait(900);
       const v=await ev(()=>{const h=document.querySelector('.panel.result h2');return h?{f:getComputedStyle(h).fontFamily,t:h.textContent}:null;});
-      chk(`results: the victory crest is set in the UI face, not blackletter (${v&&v.f})`,!!v&&/Victory/i.test(v.t)&&!/Jacquard/.test(v.f)&&/Nunito/.test(v.f)||JSON.stringify(v));
+      chk(`results: the victory crest is set in the fantasy display face (Cinzel Decorative, v0.19), not blackletter (${v&&v.f})`,!!v&&/Victory/i.test(v.t)&&!/Jacquard/.test(v.f)&&/Cinzel Decorative/.test(v.f)||JSON.stringify(v));
       const bl=await ev(()=>[...document.querySelectorAll('body *')].filter(e=>/Jacquard/.test(getComputedStyle(e).fontFamily.split(',')[0])&&e.textContent.trim()).map(e=>e.tagName+'.'+e.className).slice(0,5));
       chk(`no text on screen in the blackletter (${bl.join(' ')})`,bl.length===0);
       await ev(()=>{__A.V.modal=null;try{__A.finishBattle('x');}catch(e){}__A.render();});}
