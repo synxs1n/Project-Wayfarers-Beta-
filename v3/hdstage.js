@@ -279,6 +279,7 @@ function hbShow(on){const cv=HB.cv,bc=document.getElementById('bcv');if(cv){cv.s
 // v0.17.3: the GL stage's backing pixels per CSS pixel: the display's own (devicePixelRatio x page zoom), capped per tier (RENDER.stageMax);
 // Settings > Render scale 1x / 2x / 3x asks for that many (still no more than the display has). maxPx below still caps the pixel count.
 function resStageR(q){const dev=resDev(),c=resCfg(),cap=RENDER.stageMax[GFX.tier]||2;return c?Math.min(c,dev):RES.st?1:Math.min(dev,cap);}
+resStageR=HOOK.def('resStageR',resStageR);// perf12.js caps it on phones
 function hbPlace(){const wrap=document.getElementById('bwrap'),bc=document.getElementById('bcv'),cv=HB.cv;if(!wrap||!bc||!cv)return false;
   if(cv.parentNode!==wrap||cv.nextSibling!==bc){wrap.insertBefore(cv,bc);HB.redraw=true;}
   const op=hbQ().mode==='under'?'':'0';if(cv.style.display!=='block')cv.style.display='block';if(bc.style.opacity!==op)bc.style.opacity=op;

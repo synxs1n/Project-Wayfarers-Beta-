@@ -15,6 +15,7 @@ function resDev(){return resDpr()*resZoom();}
 function resCfg(){try{const v=META&&META.cfg&&META.cfg.render;return v==='1'||v==='2'||v==='3'?+v:0;}catch(e){return 0;}}
 function resPx(d,cap){const c=resCfg();if(c)return Math.min(c,RENDER.max);
   return Math.max(1,Math.min(Math.max(1,Math.min(RENDER.max,cap||RENDER.max,RES.cap||RENDER.max)),Math.floor(d/RENDER.k+RENDER.bias)));}
+resPx=HOOK.def('resPx',resPx);// perf12.js caps it on phones
 // Auto steps down by itself on a machine that cannot keep up: gfx6.js Auto graphics measures the frame rate over 3 s windows and, below
 // GFX_AUTO.down, would drop the whole tier. While the HD-2D view (or the GL stage) renders above 1x, the first step is one internal pixel
 // less (RES.cap; the battle stage and unit layer fall back to their old density, RES.st). It never goes back up on that device (kept in
@@ -58,6 +59,7 @@ function resEpxRaw(cv,passes){let c=cv;for(let i=0;i<passes;i++)c=resEpx(c);retu
 // ----- the battle unit layer: backing pixels per logical pixel (the 2x HD paint doubles evenly into 4) -----
 function resBk(){try{if(typeof BL==='undefined'||!BL||!BL.sc||RES.st&&!resCfg())return SPR.k;const d=BL.sc*resDev(),c=resCfg();
   if(c)return c>=3?RENDER.bkHi:SPR.k;return d>=RENDER.bk?RENDER.bkHi:SPR.k;}catch(e){return SPR.k;}}
+resBk=HOOK.def('resBk',resBk);// perf12.js caps it on phones
 function resSS(cv,K){if(!cv||!(K>=1)||cv._ss===K)return;
   if(!cv._ss){ssCanvas(cv,K);return;}
   const P=HTMLCanvasElement.prototype,dw=Object.getOwnPropertyDescriptor(P,'width'),dh=Object.getOwnPropertyDescriptor(P,'height'),lw=cv.width,lh=cv.height;

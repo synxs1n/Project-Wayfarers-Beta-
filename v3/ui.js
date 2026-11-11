@@ -79,6 +79,7 @@ function titleDraw(ctx,W,H,now){
   const k=TTS.prev?Math.min(1,(now-TTS.t0)/TITLE_FADE):1;
   if(TTS.prev&&k<1&&!rm){paint(TTS.prev,1);paint(sc,k);}else{TTS.prev=null;paint(sc,1);}
 }
+loop=HOOK.def('loop',loop);// v0.18.7: perf12.js marks the frames the loop draws (idle limiter); gfx6, hd2d and title7 still wrap it the old way
 let BUILT=null;
 function buildScreen(){
   const s=V.screen,scr=$('screen');BUILT=s;scr.className='screen s-'+s;
