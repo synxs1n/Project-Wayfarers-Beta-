@@ -1830,6 +1830,18 @@ html.rm .battle.b3 .cmd .mi.b9glow{animation:none}
 
 /* v0.17.7 widescreen column: one card per row in the right column (two 150px columns squeezed the cards) */
 .battle.b3.m-wide.b8col .pcs,.battle.b3.m-wide.b8col .fcs{grid-template-columns:1fr}
+
+/* menus12.js: the Slash and Pierce symbols are drawn at 3x in code, so they scale smooth (the pixel art ones stay pixelated) */
+img.dli.slash,img.dli.piercing{image-rendering:auto}
+/* the tag strip on skill rows: scope, kind with its symbol, Primer / Detonator */
+.m12tags{display:inline-flex;flex-wrap:wrap;gap:3px;align-items:center;margin:0 0 0 5px;vertical-align:middle}
+.row .m12tags,.rows .m12tags{margin:2px 0 1px}.row>div>.m12tags{display:flex;margin-left:0}
+.m12tags .m12t{display:inline-flex;align-items:center;gap:2px;font:800 .56rem/1 var(--fb);font-style:normal;letter-spacing:.04em;text-transform:uppercase;padding:2px 4px;border:1px solid #150b17;border-radius:3px;background:#2a2438;color:#e8dcc0}
+.m12tags .m12t.sc.fo{color:#ffb4aa}.m12tags .m12t.sc.al{color:#a8e8b8}
+.m12tags .m12t .ico{width:11px;height:11px;margin:0;vertical-align:0}
+.m12tags .m12t.kind.slash{background:#3a4358}.m12tags .m12t.kind.blunt{background:#6a4a2a}.m12tags .m12t.kind.piercing{background:#6a3040}.m12tags .m12t.kind.ranged{background:#2c6a4a}.m12tags .m12t.kind.magic{background:#4a3088}.m12tags .m12t.kind.heal{background:#256a3c}
+.mi.m12last{box-shadow:inset 0 0 0 1px rgba(255,216,160,.55)}
+.mi.m12last .n::after{content:"last";margin-left:5px;font:700 .52rem/1 var(--fb);letter-spacing:.06em;text-transform:uppercase;color:#ffd8a0;opacity:.8}
 /* Beta v0.7.0 battle information and input (battle5.js) */
 /* stage intent label: a box laid out by b3Lay (logical stage px) */
 .bstage .b5it{display:grid;place-items:center;padding:0;border-radius:2px;border:.6px solid #150b17;background:rgba(21,11,23,.86);color:#ffd8c8;pointer-events:none;z-index:6;box-shadow:0 0 0 .5px rgba(255,255,255,.25);overflow:hidden}
@@ -1911,7 +1923,7 @@ html.rm .battle.b3 .cmd .mi.b9glow{animation:none}
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.19.2";const APP_BUILD="e62a6f7e41c0";
+(function(){const APP_VER="0.19.3";const APP_BUILD="9a24db224da1";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2680,7 +2692,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.19.2";const APP_BUILD="e62a6f7e41c0";
+const APP_VER="0.19.3";const APP_BUILD="9a24db224da1";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -15262,6 +15274,7 @@ function learnScan(c){if(!G||G.daily||!c||!TPL[c.id])return [];G.skSeen=G.skSeen
 function learnScanAll(){if(!G)return [];return Object.values(G.roster).flatMap(learnScan);}
 function learnTag(s){const els=skEls(s);return `${els.map(ico).join('')}${roleTag(s)}`;}
 function learnLine(o){return `<b>${esc(o.name)} learned ${esc(o.sk.n)}!</b> <span class="lrn">${learnTag(o.sk)}</span>`;}
+learnLine=HOOK.def('learnLine',learnLine);// menus12.js adds the target scope and the damage kind
 // heroes already on the roster are recorded when a save loads or a journey starts
 HOOK.after('unpackG','learn','record skills of loaded heroes',function(g){try{const G0=G;G=g;Object.values(g.roster).forEach(c=>{g.skSeen=g.skSeen||{};if(!g.skSeen[c.id])learnScan(c);});G=G0;}catch(e){}});
 // battle results: one line per new skill, under the level ups
@@ -16339,7 +16352,7 @@ function sigReport(){
 function rlSkills(t){const L=(ROLES.sk[t.cls]||[]),e1=t.el[0],n1=EL[e1]||'';
   return L.map(o=>{const x=Object.assign({cost:1,hits:1,t:'one',mp:0,el:null,fixed:1},JSON.parse(JSON.stringify(o)));
     if(x.el==='e1')x.el=e1;x.n=x.n.replace(/\{n1\}/g,n1);x.d=x.d.replace(/\{n1\}/g,n1);x.lv0=x.lv;x.rl=x.r;delete x.r;
-    if(!x.dl){const d=dlFor(t.cls,x);if(d)x.dl=d;}if(x.rl&&ROLES.names[x.rl])x.d+=' '+ROLES.names[x.rl]+' role.';return x;});}
+    if(!x.dl){const d=dlFor(t.cls,x);if(d)x.dl=d;}return x;/* the role is the skill's rl tag; its name is no longer written into the description (the row shows the Sub / Off chip instead) */});}
 HOOK.xform('classSkills','roles','secondary role skills and adjustments',function(L,t){
   if(!L||L._rl||!t||t.mon||!ROLES.sk[t.cls])return L;L._rl=1;
   try{const A=(ROLES.adj||{})[t.cls]||{};L.forEach(s=>{if(A[s.id])Object.assign(s,JSON.parse(JSON.stringify(A[s.id])));});
@@ -22119,6 +22132,7 @@ const DLC={slash:'#b9c6dc',blunt:'#d39a58',piercing:'#ec7484',ranged:'#62d494',m
 function dlShapeCv(d){if(DLSV[d])return DLSV[d];const S=DLSHAPE[d]||DLSHAPE.slash,c=mkCv(11,11),x=c.getContext('2d'),col=DLC[d]||'#ccc',hi=tint(col,.6);
   for(let y=0;y<9;y++)for(let i=0;i<9;i++){if(S[y][i]==='.')continue;for(let a=-1;a<=1;a++)for(let b=-1;b<=1;b++){x.fillStyle='#150b17';x.fillRect(i+1+a,y+1+b,1,1);}}
   for(let y=0;y<9;y++)for(let i=0;i<9;i++){const p=S[y][i];if(p==='.')continue;x.fillStyle=p==='o'?hi:col;x.fillRect(i+1,y+1,1,1);}return DLSV[d]=c;}
+dlShapeCv=HOOK.def('dlShapeCv',dlShapeCv);// menus12.js redraws Slash and Piercing
 function dlIco(d,cls){if(!DL_NAME[d])return '';return `<img class="ico dli ${d} ${cls||''}" src="${cvURL('dli:'+d,()=>dlShapeCv(d))}" alt="${DL_NAME[d]}" title="${DL_NAME[d]}">`;}
 // what a foe is weak to (x1.1 or more) and resists (x0.9 or less) by delivery, from its archetypes (Undead also burn from healing magic);
 // known once the foe type has been hit or scanned (as its traits are: revealed()), the same way its element weaknesses are learned
@@ -30814,11 +30828,12 @@ HOOK.xform('mChar','skillrows11','skill numbers on the hero sheet rows',function
  document.head.appendChild(st);}
 
 // ===== menus11.js (v0.17.8 menu pass): menu history, tap outside to close, Load another journey, Settings in sections =====
-// 1. History. Every change of the view in #modal (a new V.modal, or a menu tab / sub tab / shop section / sheet state change) pushes the view
+// 1. History. Every change from one MENU to another in #modal (now: a new modal type, a sheet to its Equipment screen; NOT a tab, sub tab, chip or shop
+//    section inside the same menu, those are remembered in the menu's own snapshot) pushes the view
 //    it left (a shallow copy of the modal object plus the scroll position of every scrolled element in the popup) onto MH.stack. Back (the
 //    arrow, Esc, the gamepad B, the Android back gesture, and the Back / Done buttons of the sheets and shops) pops the top, shows that view
 //    again and restores its scroll. The stack clears when V.modal goes null (the player is back in the world) and when a "must answer" popup
-//    shows. It lives only here: never in G, META or a save. With an empty stack every old back rule (modalBack, from:) still applies.
+//    shows. It lives only here: never in G, META or a save. With an empty stack a menu has no step left (Back leaves it); the from: rules of popups still apply.
 // 2. A tap on the dimmed backdrop (outside the .box) closes every popup and menu at once, with guards (see backdropOk).
 // 3. Load another journey: Menu > Journey and Settings > Account and Saves open the title's slot picker (mSlots), a confirm, then slotLoad.
 // 4. Settings rows (from every module's settingsBody hook) are re-sliced into titled, collapsible sections.
@@ -30830,8 +30845,13 @@ const M11_MUST=new Set(['story','legendEvt','cev','convergence','result','lose',
 const M11_NOPUSH=new Set([...M11_MUST,'ldRes','equipNow','m11leave','p3need']);
 // in a battle only these informational popups close on a backdrop tap (the command prompt, targeting and the result stay put)
 const M11_BATTLE_OK=new Set(['battlelore','statInfo','wxinfo','beast','codexEntry','goalguide']);
-const M11_SIG=['type','tab','cat','sec','char','id','k','nat','hero','slot','mode','key','sk','cid','sub','item','charms','s','b'];
-function m11Sig(m){if(!m)return '';return M11_SIG.map(k=>{const v=m[k];return v==null?'':(typeof v==='object'?'o':String(v));}).join('|')+(m.gear?'|g':'')+(m.ingame?'|ig':'');}
+// now: the history steps between MENUS, not between the tabs, chips or sections inside one menu. A menu is a modal type (the Menu with all its tabs,
+// a shop, a hero sheet, the Equipment screen of a sheet, a popup...). The key is what makes two views "the same menu"; the tab a menu was left on is
+// kept in its snapshot, so Back shows it as it was.
+// a menu opened from a popup (the Equipment page from a hero sheet) carries `from`: its key ends in ^, so it is a menu of its own on the stack, while tapping
+// another tab inside it (the same family, no ^) is not a step
+function m11Sig(m){if(!m)return '';const t=m.type==='guild'&&m.char?'char':m.type;return t+((m.type==='char'||m.type==='guild')&&m.gear?':gear':'')+(m.from&&m.from.type&&m.from.type!==m.type?'^':'');}
+const m11Fam=sig=>String(sig||'').replace('^','');
 function m11Scroll(){try{const mod=$('modal');if(!mod||!mod.firstElementChild)return [];return [...mod.querySelectorAll('.modal,.modal *')].filter(e=>e.scrollTop>0).map(e=>[pathOf(e,mod),e.scrollTop]);}catch(e){return [];}}
 function m11ScrollPut(sc){try{const mod=$('modal');if(!mod||!sc||!sc.length)return;const put=()=>sc.forEach(([p,t])=>{const e=byPath(p,mod);if(e&&Math.abs(e.scrollTop-t)>1)e.scrollTop=t;});put();
   requestAnimationFrame(()=>{put();setTimeout(put,120);});}catch(e){}}
@@ -30842,16 +30862,17 @@ function m11Track(before){
   const sig=m11Sig(m),c=MH.cur;
   if(!before&&c&&c.obj===m){c.sig=sig;c.snap=Object.assign({},m);return;}   // the same popup, normalised while it rendered (menus3 m3Norm moves a legacy tab to tab + sec): not a new view
   const sc=before&&c?m11Scroll():(c?c.scroll:[]);   // before the html is built the DOM still shows the view we are leaving
-  if(c&&c.sig!==sig&&!MH.popping&&c.snap&&!M11_NOPUSH.has(c.snap.type)){
-    const top=MH.stack[MH.stack.length-1];
-    if(!(top&&top.sig===c.sig)){MH.stack.push({sig:c.sig,snap:c.snap,scroll:sc||[]});if(MH.stack.length>MH.max)MH.stack.shift();}}
+  if(c&&m11Fam(c.sig)!==m11Fam(sig)&&!MH.popping&&c.snap&&!M11_NOPUSH.has(c.snap.type)){
+    const top=MH.stack[MH.stack.length-1],at=MH.stack.map(e=>e.sig).lastIndexOf(sig);
+    if(at>=0)MH.stack.length=at;   // going forward to a menu that is already behind us is a return to it: drop it and everything above
+    else if(!(top&&top.sig===c.sig)){MH.stack.push({sig:c.sig,snap:c.snap,scroll:sc||[]});if(MH.stack.length>MH.max)MH.stack.shift();}}
   MH.cur={sig,snap:Object.assign({},m),obj:m,scroll:c&&c.sig===sig?sc:[]};
 }
 HOOK.before('render','menus11','history: note the view change before the popup html is built (the back arrow needs the stack)',function(){try{m11Track(true);}catch(e){}});
 HOOK.after('render','menus11','history: a hook inside render may have opened a popup; restore the scroll of a view we went back to',function(){try{m11Track(false);if(MH.popping){const sc=MH.popping.scroll;MH.popping=null;m11ScrollPut(sc);}}catch(e){}});
 function m11Pop(){
   let e=MH.stack.pop();const cs=MH.cur&&MH.cur.sig;
-  while(e&&e.sig===cs)e=MH.stack.pop();
+  while(e&&m11Fam(e.sig)===m11Fam(cs))e=MH.stack.pop();
   if(!e)return false;
   V.swapSel=null;MH.popping=e;V.modal=Object.assign({},e.snap);
   if(V.modal.type==='menu'&&V.modal.tab){V.lastMenuTab=V.modal.tab;try{(V.menuSub=V.menuSub||{})[menuGroupOf(V.modal.tab)[0]]=V.modal.tab;}catch(x){}}
@@ -30861,6 +30882,13 @@ function m11Pop(){
 }
 function m11CanPop(){return !!(V.modal&&MH.stack.length&&!M11_MUST.has(V.modal.type));}
 HOOK.before('modalBack','menus11','back goes through the history',function(m){if(m&&m===V.modal&&m11CanPop())return HOOK.stop(()=>{});});
+// Now: tabs, chips and sections are not history steps. With nothing behind it a menu (the Menu, a shop, a hero sheet) has no old "section goes back to All /
+// tab goes back to the first tab / sheet goes to the Party" rule left: Back leaves it (the Menu itself shows no arrow, the X does the same)
+const M11_MENUS=new Set(['smithy','workshop','tavern','inn','board','archivist']);
+HOOK.xform('modalBack','menus11','a menu with nothing behind it: Back leaves it, no tab or section steps (the shops and sheets keep their arrow, the Menu has none)',function(f,m){
+  try{if(!f||!m||m!==V.modal||MH.stack.length||M11_MUST.has(m.type))return f;const t=m.type;
+    if(t==='menu')return null;
+    if(M11_MENUS.has(t)||(t==='guild'&&!m.char)||((t==='char'||t==='guild')&&!m.gear&&!m.recruitAsk))return ()=>{V.modal=null;};}catch(e){}return f;});
 {const xb0=ACT.xBack;ACT.xBack=function(){if(m11CanPop()&&m11Pop())return;return xb0.apply(this,arguments);};}
 // every in-view "Back" goes through the history while there is one
 ['charBack','menuBack','roleBack','bondsBack','natBack','fsBack','gearBack','obBack'].forEach(k=>{const f=ACT[k];if(typeof f!=='function')return;
@@ -31829,6 +31857,108 @@ HOOK.after('renderBattle','kits12','name plate over a summoned guardian',functio
 
 // tests and the audit
 try{window.__K12={K12,reads:k12Reads,fits:k12Fits,fig:k12Fig,rect:k12Rect,covers:k12Covers,get SK12(){return SK12;}};}catch(e){}
+
+// ===== menus12.js (menu pass 12): battle menu memory per hero, one tag strip on every skill row, new Slash and Pierce symbols, no role names in skill text =====
+// The owner's five requests:
+// 1) Battle menu memory is tied to the hero. The command menu remembers, for each hero of the fight, the submenu they were in (Skills or Items), the scroll of
+//    that list and the last skill (or item) they picked; a hero's turn opens at that place. Per fight (M12.mem is dropped when B.id changes), never saved.
+//    (The menu history Back rule of the same pass lives in menus11.js: it steps between menus, not between the tabs of one.)
+// 2) One tag strip for every skill row, from one builder (m12Tags): target scope (Single / All / Self / Ally / Allies ...), the delivery kind of a physical
+//    skill with its symbol (Slash / Blunt / Pierce / Ranged, through dmg11.js for the hero's own weapon when the skill follows it; on a class overview
+//    with no hero, every kind the class can reach), the element symbols of a magic skill, and the Primer / Detonator tags (a dual art is both).
+//    The battle list already drew most of it, so there the builder only adds what a row is missing; the hero sheet's Skills tab, the codex and
+//    starter previews and the "learned" notices got the strip from here (before, the sheet knew no scope and no kind in town: dlChip had no hero to ask).
+// 3) Slash and Piercing symbols redrawn in code (battle3.js dlShapeCv is a hook point now): a curved blade and a spear tip, drawn at 3x and shown smooth.
+// 4) The role of a skill is never written into its description ("Healer role." came from roles.js; this module also scrubs any left in a list).
+const M12={mem:{},bid:null,cv:{}};
+// ---------- tag strip ----------
+const M12_SC={one:['Single','One foe','fo'],all:['All','Every foe','fo'],rand:['Random','Random foes','fo'],chain:['Chain','Jumps from foe to foe','fo'],ally:['Ally','One ally','al'],allyAll:['Allies','Every ally','al'],self:['Self','The caster','al'],dead:['Fallen','A fallen ally','al']};
+const M12_KN={slash:'Slash',blunt:'Blunt',piercing:'Pierce',ranged:'Ranged',magic:'Magic',heal:'Heal'};
+// the unit dmg11.js asks about for a roster hero: the family of the weapon in hand
+function m12Unit(c){try{if(!c||!c.id||!TPL[c.id])return null;const g=c.eq&&c.eq.w&&canEquip(c,c.eq.w)?gearOf(c.eq.w):null;return {id:c.id,side:'p',S:{wp:g&&g.fam||(c.S&&c.S.wp)||null}};}catch(e){return null;}}
+// the delivery kinds a skill shows: [] for status skills; with a hero the one kind it deals now, with only a class every kind it can reach
+function m12Kinds(u,cls,s){if(!s)return [];if(s.k==='mag')return ['magic'];if(s.k==='heal'||s.k==='revive')return ['heal'];if(s.k!=='phys')return [];
+  try{if(u){const d=deliveryOf(u,s);if(d)return [d];}}catch(e){}
+  try{if(cls&&CLS_KINDS[cls]){const f=d11Forced(cls,s);return f?[f]:CLS_KINDS[cls].slice();}}catch(e){}
+  return s.dl?[s.dl]:[];}
+function m12Scope(s){const o=M12_SC[s&&s.t];return o?`<em class="m12t sc ${o[2]}" title="Targets: ${o[1]}">${o[0]}</em>`:'';}
+function m12Kind(u,cls,s){const ks=m12Kinds(u,cls,s);if(!ks.length)return '';const names=ks.map(k=>M12_KN[k]||k).join(' / '),els=skEls(s);
+  const tip=s.k==='phys'?(s.dl||(cls&&d11Forced(cls,s))?`${names}: this skill always deals ${names.toLowerCase()} damage.`:u?`${names} with your weapon: a physical skill deals the kind of the weapon in hand.`:`Follows your weapon: ${names}.`):s.k==='mag'?'Magic: not stopped by armor.':'Healing.';
+  return `<em class="m12t kind ${ks[0]}" title="${esc(tip)}">${ks.map(k=>dlIco(k)).join('')}${s.k==='mag'?els.map(ico).join(''):''}${esc(names)}</em>`;}
+function m12Role(s){if(!s)return '';const w=skTagsFull(),el=skEls(s).length;
+  if(s.role&&el){const p=s.role==='primer';return `<em class="role ${s.role}" title="${p?'Primes a foe with its element for 2 turns. A matching Detonator sets off a reaction.':'Sets off a reaction on a foe Primed with a matching element.'}">${w?(p?'⟐ Primer':'✸ Detonator'):(p?'⟐':'✸')}</em>`;}
+  if(s.combo&&(typeof skHitsFoe!=='function'||skHitsFoe(s)))return `<em class="role primer" title="Primes a foe with both of its elements.">${w?'⟐ Primer':'⟐'}</em><em class="role det" title="Sets off the reaction of each of its elements on a Primed foe.">${w?'✸ Detonator':'✸'}</em>`;
+  return '';}
+// only: the parts to draw (default all three)
+function m12Tags(u,cls,s,only){const o=only||['tgt','kind','role'];return `<span class="m12tags">${o.includes('tgt')?m12Scope(s):''}${o.includes('kind')?m12Kind(u,cls,s):''}${o.includes('role')?m12Role(s):''}</span>`;}
+// the battle list: add only what a row lacks, and mark the skill this hero used last
+HOOK.xform('cmdHtml','menus12','battle skill rows: a missing scope, kind or Primer / Detonator tag is added; the last used skill is marked',function(h){try{
+  const a=B&&B.cur;if(!a||B.mode!=='cmd'||B.menu!=='skills'||typeof h!=='string')return h;
+  const cls=TPL[a.id]&&TPL[a.id].cls,mm=B&&M12.bid===B.id&&M12.mem[a.id];
+  known(a).forEach(s=>{const id=String(s.id).replace(/[^\w-]/g,'');
+    const re=new RegExp(`(<button class="mi [^"]*" data-act="sk" data-arg="${id}"[^>]*>\\s*<span class="n">)([\\s\\S]*?)(</span>)`);
+    h=h.replace(re,(m0,p1,body,p3)=>{const only=[];if(!/class="tk"/.test(body))only.push('tgt');
+      if(!/class="ico dli |class="dl /.test(body)&&m12Kinds(a,cls,s).length)only.push('kind');if(!/class="role /.test(body)&&(s.role||s.combo))only.push('role');
+      return only.length?p1+body+m12Tags(a,cls,s,only)+p3:m0;});
+    if(mm&&mm.sk===s.id)h=h.replace(new RegExp(`(<button class="mi [^"]*)(" data-act="sk" data-arg="${id}")`),'$1 m12last$2');});
+  return h;}catch(e){return h;}});
+// rows outside the battle (hero sheet, codex and starter previews): matched by skill name, the strip goes right after the name
+function m12Rows(h,id,c){try{
+  const t=TPL[id];if(!t||typeof h!=='string')return h;const u=c?m12Unit(c):null,cls=t.cls;
+  const list=classSkills(t).concat(id==='vaelith'&&typeof archiveSkills==='function'?archiveSkills():[]),by={};list.forEach(s=>{by[s.n]=s;});
+  [LIMIT[cls],LIMIT2[cls]||LIMIT[cls]].forEach((L,i)=>{if(!L)return;by[(i?'Limit II: ':'Limit I: ')+L.n]=Object.assign({limit:1,mp:0,hits:1},L);});
+  const tp=document.createElement('template');tp.innerHTML=h;let n=0;
+  tp.content.querySelectorAll('.row').forEach(r=>{if(r.querySelector('.m12tags'))return;const b=r.querySelector(':scope>div>b');if(!b)return;
+    const nm=b.textContent.trim(),s=by[nm];if(!s)return;
+    r.querySelectorAll(':scope>div>em.role,:scope>div>em.dl,:scope>div>em.tk').forEach(e=>e.remove());
+    b.insertAdjacentHTML('afterend',m12Tags(u,cls,s));n++;});
+  return n?tp.innerHTML:h;}catch(e){return h;}}
+HOOK.xform('mChar','menus12','skill rows on the hero sheet: scope, kind (for the weapon in hand), Primer / Detonator',function(h,id){try{const c=G&&G.roster[id];return c?m12Rows(h,id,c):h;}catch(e){return h;}});
+HOOK.xform('vModal','menus12','skill rows of the codex and starter previews',function(h,m){try{if(m&&(m.type==='codexEntry'||m.type==='starterSheet')&&m.id)return m12Rows(h,m.id,null);}catch(e){}return h;});
+HOOK.xform('learnLine','menus12','the "learned" notice names the scope and the kind',function(h,o){try{const c=G&&o&&G.roster[o.hero],t=c&&TPL[c.id];if(!t||!o.sk||typeof h!=='string')return h;
+  return h.replace(/<\/span>$/,m12Tags(m12Unit(c),t.cls,o.sk,['tgt','kind'])+'</span>');}catch(e){return h;}});
+
+// ---------- no role names in skill text ----------
+const M12_ROLE_RE=/\s*\b(?:(?:main|sub|off|secondary|primary|healer|support|saboteur|caster|marksman|striker|guardian|summoner|tank|buffer|debuffer)\s+)role\b\.?|\s+as an? (?:healer|support|saboteur|caster|marksman|striker|guardian|summoner|tank|buffer|debuffer)\b/gi;
+function m12Clean(L){try{(L||[]).forEach(s=>{if(s&&typeof s.d==='string'&&!s._m12&&M12_ROLE_RE.test(s.d)){M12_ROLE_RE.lastIndex=0;s.d=s.d.replace(M12_ROLE_RE,'').replace(/\s{2,}/g,' ').trim();}M12_ROLE_RE.lastIndex=0;if(s)s._m12=1;});}catch(e){}return L;}
+HOOK.xform('classSkills','menus12','skill descriptions never name a role',function(L){return m12Clean(L);});
+
+// ---------- Slash and Pierce symbols ----------
+// 11 x 11 logical pixels like the others, drawn at 3x with a dark outline, a body colour and a light facet; CSS keeps these two smooth (battle3.css)
+function m12Draw(d){const K=3,c=mkCv(11*K,11*K),x=c.getContext('2d'),col=DLC[d]||'#ccc',hi=tint(col,.62),ln='#150b17';x.scale(K,K);x.lineJoin='round';x.lineCap='round';
+  const out=(w)=>{x.strokeStyle=ln;x.lineWidth=w;x.stroke();};
+  if(d==='piercing'){ // a spear tip: a slim leaf head on a short shaft, the left half lit
+    x.beginPath();x.moveTo(5.5,.5);x.bezierCurveTo(7.6,2.2,8.4,3.6,8.1,5.1);x.lineTo(6.5,6.3);x.lineTo(4.5,6.3);x.lineTo(2.9,5.1);x.bezierCurveTo(2.6,3.6,3.4,2.2,5.5,.5);x.closePath();out(1.9);x.fillStyle=col;x.fill();
+    x.beginPath();x.moveTo(5.5,1.1);x.bezierCurveTo(3.9,2.5,3.4,3.7,3.6,4.9);x.lineTo(5.5,5.7);x.closePath();x.fillStyle=hi;x.fill();
+    x.beginPath();x.moveTo(5.5,6.2);x.lineTo(5.5,10.3);out(2.6);x.strokeStyle=col;x.lineWidth=1.1;x.stroke();
+  }else{ // a curved blade: a crescent from the hilt (low left) to a sharp tip (high right)
+    x.beginPath();x.moveTo(1.8,9.2);x.bezierCurveTo(1.2,4.6,4.6,1.5,10.2,.8);x.bezierCurveTo(7.2,2.6,5.2,5.4,4.2,8.4);x.closePath();out(1.9);x.fillStyle=col;x.fill();
+    x.beginPath();x.moveTo(2.6,8);x.bezierCurveTo(2.6,5.2,4.8,3.1,8.4,1.7);x.bezierCurveTo(5.8,3.6,4.4,5.8,3.7,7.8);x.closePath();x.fillStyle=hi;x.fill();
+    x.beginPath();x.moveTo(.9,10.1);x.lineTo(3.1,7.9);out(2.7);x.strokeStyle='#b8873a';x.lineWidth=1.2;x.stroke();
+    x.beginPath();x.moveTo(1.9,6.9);x.lineTo(4.5,9.5);out(2.3);x.strokeStyle='#e8c070';x.lineWidth=.9;x.stroke();}
+  return c;}
+HOOK.before('dlShapeCv','menus12','Slash and Piercing drawn as curves',function(d){if(d!=='slash'&&d!=='piercing')return;try{return HOOK.stop(M12.cv[d]||(M12.cv[d]=m12Draw(d)));}catch(e){}});
+
+// ---------- battle menu memory, per hero ----------
+function m12Mem(a){if(M12.bid!==B.id){M12.bid=B.id;M12.mem={};}return M12.mem[a.id]||(M12.mem[a.id]={menu:'root',sk:null,item:null,sc:{}});}
+// (renderBattle, not cmdHtml: battle3.js builds the command html for every hero to measure it, and that must not touch the memory)
+HOOK.before('renderBattle','menus12','battle menu memory: a turn opens at the hero\'s own remembered submenu; the place is noted on every render',function(stageOnly){try{if(stageOnly)return;
+  const a=B&&B.cur;if(!B||B.mode!=='cmd'||!a||a.side==='e'||B.over||B.auto)return;const mm=m12Mem(a),key=a.id+'#'+(B.pturns||0);
+  if(B.m12key!==key){B.m12key=key;
+    if(B.menu==='root'&&!B.pend&&!B.swapAsk&&((mm.menu==='skills'&&known(a).length)||mm.menu==='items'))B.menu=mm.menu;}
+  if(B.swapAsk)return;let m=B.menu;
+  if(m==='target'){m=B.tgFrom&&B.tgFrom!=='target'?B.tgFrom:'root';if(B.pend&&B.pend.sk&&B.pend.sk.id)mm.sk=B.pend.sk.id;if(B.pend&&B.pend.item)mm.item=B.pend.item;}
+  if(m==='root'||m==='skills'||m==='items')mm.menu=m;}catch(e){}});
+// the scrolled box of the command list: #bcmd itself or the box around it (the portrait layout scrolls .bbottom)
+function m12Scroller(){try{const c=document.getElementById('bcmd');if(!c)return null;for(let e=c;e&&e!==document.body;e=e.parentElement){if(e.scrollHeight>e.clientHeight+2&&/auto|scroll/.test(getComputedStyle(e).overflowY))return e;}}catch(x){}return null;}
+function m12Put(){try{if(!B||B.mode!=='cmd'||B.pend||B.swapAsk||!B.cur||(B.menu!=='skills'&&B.menu!=='items'))return;const mm=m12Mem(B.cur),el=m12Scroller();if(!el)return;
+  const want=mm.sc[B.menu];
+  if(want>1){if(el.scrollTop<2)el.scrollTop=want;}
+  else if(want==null){const id=B.menu==='skills'?mm.sk:mm.item;if(id){const b=document.querySelector(`#bcmd [data-act="${B.menu==='skills'?'sk':'item'}"][data-arg="${id}"]`);if(b){const r=b.getBoundingClientRect(),q=el.getBoundingClientRect();if(r.bottom>q.bottom||r.top<q.top)el.scrollTop+=r.top-q.top-8;}}}}catch(e){}}
+HOOK.after('renderBattle','menus12','battle menu memory: put the remembered scroll back (after the layout hooks)',function(r,stageOnly){if(stageOnly)return;m12Put();requestAnimationFrame(m12Put);});
+document.addEventListener('scroll',e=>{try{if(!B||B.mode!=='cmd'||B.pend||B.swapAsk||!B.cur||(B.menu!=='skills'&&B.menu!=='items'))return;const t=e.target,c=document.getElementById('bcmd');
+  if(!c||!t||t===document||!(t===c||(t.contains&&t.contains(c))||c.contains(t)))return;if(t.scrollTop>=0)m12Mem(B.cur).sc[B.menu]=t.scrollTop;}catch(x){}},true);
+try{window.__M12={M12,tags:m12Tags,unit:m12Unit,kinds:m12Kinds,clean:m12Clean,draw:m12Draw};}catch(e){}
 
 window.__A={walkable,ceInit,tvSlots,genQuests,STARTERS,starterDraw,ECON,AUTO_NERF,rebuildBase,detLive,REACT,skEls,packContents,miniFor,AUTO_REW,ENC_RATE,ENC_MIN_STEPS,detNote,classSkills,stickCount,bestAll,calcStats,lookKey,vTemper,storyEchoUp,leaveDungeon,win,ldApply,genFort,caveOk,enterCave,siteHasMini,openChest,nextDlg,WS,mapIcoRects,roamSpawn,roamInterior,roamSees,mapTargets,DIRV,tileAt,STAGE_LV,autoBan,rollWeather,guardianDef,mapIssues,mapEntry,syncPools,bovAt,calFxAt,realmAt,REALMS,BOV,CAL_FX,overlayGuide,liftOverlay,drawGearIcon,gearIcon,itemIcon,RAW,sigKind,sigGid,personalDone,heroLook,hasSignature,LEGEND_IDS,facDirty,facCount,facRank,facRep,FACB,FAC,finishBattle,npcWords,npcHints,npcPool,titleMake,titleAdvance,TTS,placeAt,wkwUpdate,innSpot,getMap,monURL,enterVia,applyBossTheme,BTHEME,resetMaps,rebuildBase,shopStock,gearDesc,calcStats,gearMigrate,CLS_WPN,CLS_ARM,WPERK,WT_NAME,equipWhy,lootBase,GEAR,canEquip,gearOf,perkNote,FAM_MAT_V35,fbDraft,META:{get best(){return META.best},get codex(){return META.codex},get q(){return META.q}},saveMeta,OFF,offPending,offFlush,PROFILE,profileSync,codexSee,getMap,placeAt,interact,sanctumOpen,riftKeys,echoKeys,BONDS,bondKey,wkwUpdate,inTown,WS,LC,lsort,bestParty,fsCast,fsSkills,ldApply,MON,registerTamed,stickPower,stickCount,autoOne,planGear,bestTag,gainersFor,compGainFor,refresh,fitsFor,canEquip,gearOf,queueNewGear,ARENA,fxDur,banDur,stageTags,autoSwitchPick,layoutBattle,newChar,calcStats,limitSkill,limitTier,canStuck,dunReachable,LV_CAP,addXp,echoSpec,bossLvFor,fx,MON,log,effInfo,tierOf,perkOf,quirkDef,forgeCost,buyPlan,vJourney,modalBack,partySlots,limitOpen,town2Reached,skillKnown,known,classSkills,paceMigrate,unpackG,packG,makeEnemy,QUIRK,arrive,enterDungeon,wkwUpdate,useTravel,travelWhyNot,porkFlee,porkBlocked,encTile,campRest,buyPart,partLeft,alchStock,GAME_VERSION,CHANGELOG,ITEMS,tavernOffers,tavernPool,recruitFit,partyNeeds,vNext,CHALL,innSpot,RECIPES,MATS,FB,fbContext,REDEEM,legendJoin,legendQ,genQuests,dynActors,convInit,PROFILE,profileSync,checkArchive,GPOOL,FPOOL,guardianDef,saveMeta,archiveSkills,get G(){return G;},set G(v){G=v;},get B(){return B;},get V(){return V;},get META(){return META;},WS,ACT,render,newGame,placeAt,startBattle,autoTurn,advance,finishBattle,getMap,innSpot,setPause:p=>{PAUSE=p;},autoCfg,worldInputDir,inputSources,battleFrame,battleTheme,STS,MAPS,mapIssues,healMap,mimicReward,dropChest,interact,worldDraw,TPL,ZONES,ZS,newChar,recruit,saveGame,resetMaps,dynActors,tileAt,BV,refresh,genBounties,genQuests,vStarter,heroCard,heroURL,iconURL,masteryLine,AU,buildTrack,tone,noiseHit,MIDI,sfx,audioVol};
 ['heroRoles','SOLID','WEATHER','WX_BASE','weatherFX','superGuide','recruitCost','ceStart','ceStep','ceInit','cePool','wxList','SUPER_TABLE','superOk','facRank','facRep','facInit','facCount','facCredit','FAC','FMIS','facMissionList','facProg','tyOf','facSync','facMul','facBest','worldPlan','caveReward','enterCave','leaveCave','leaveDungeon','buildCaveMap','worldGraph','openWorldMap','sigReport','SIG_NAMES','starterDraw','ITEM_TIERS','gTierIdx','tierChip','gearIcon','starterSlots','STARTERS','CLK_LEN','CLK_PH','clockPhase','wxInfoBody','recipeOrder','recipeGain','recipeReady','recipeClose','effOf','calcDamage','healsUndead','storyEchoUp','riftKeys','echoDef','efCost','autoLocked','bossFightKey','learnScanAll','isSeen','mapMarks','genSub','subOK','subReq','ensureSub','inSub','tvSlots','tvInit','tvLeft','tvEvent','tvNextText','tvPool','tvDue','tvShuffle','mTavern','hireOK','TV_CAP','TV_CD','POOL_IDS','natPool','natOf','natRoll','NATURES','natInfo','natRerollCost','natChooseCost','NAT_CLASS','iconURL','seenOf','mapIcoDraw','drawMini','MAPCV','revealAround','fxLayer','numDur','compBonusText','compPerk','checkPhase','win','unitBox','LNQ','challVisible','challEligible','challState','isMimic','migrateCompanions','canSummon','summonComp','compOf','clockPhase','tickClock','isNight','rollWeather','wxStep','nightPool','encounterFoes','restAll','tameElite','openChest','rerollTavern','bestAll','gearTier','SV','svCheck','svFlush','svInit','svPush','svPull','svScan','svParse','svBackup','svPack','svUnpack','svProg','svCloudList','svDelDoc','svGet','svCap','slotState','slotKey','svDecode','SV_CH','svStatus','svSlotRaw','svLoad','loadRaw','svHash','svIdx'].forEach(k=>{try{Object.defineProperty(window.__A,k,{get:()=>eval(k)});}catch(e){}});

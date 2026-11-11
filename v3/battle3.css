@@ -543,3 +543,15 @@ html.rm .battle.b3 .cmd .mi.b9glow{animation:none}
 
 /* v0.17.7 widescreen column: one card per row in the right column (two 150px columns squeezed the cards) */
 .battle.b3.m-wide.b8col .pcs,.battle.b3.m-wide.b8col .fcs{grid-template-columns:1fr}
+
+/* menus12.js: the Slash and Pierce symbols are drawn at 3x in code, so they scale smooth (the pixel art ones stay pixelated) */
+img.dli.slash,img.dli.piercing{image-rendering:auto}
+/* the tag strip on skill rows: scope, kind with its symbol, Primer / Detonator */
+.m12tags{display:inline-flex;flex-wrap:wrap;gap:3px;align-items:center;margin:0 0 0 5px;vertical-align:middle}
+.row .m12tags,.rows .m12tags{margin:2px 0 1px}.row>div>.m12tags{display:flex;margin-left:0}
+.m12tags .m12t{display:inline-flex;align-items:center;gap:2px;font:800 .56rem/1 var(--fb);font-style:normal;letter-spacing:.04em;text-transform:uppercase;padding:2px 4px;border:1px solid #150b17;border-radius:3px;background:#2a2438;color:#e8dcc0}
+.m12tags .m12t.sc.fo{color:#ffb4aa}.m12tags .m12t.sc.al{color:#a8e8b8}
+.m12tags .m12t .ico{width:11px;height:11px;margin:0;vertical-align:0}
+.m12tags .m12t.kind.slash{background:#3a4358}.m12tags .m12t.kind.blunt{background:#6a4a2a}.m12tags .m12t.kind.piercing{background:#6a3040}.m12tags .m12t.kind.ranged{background:#2c6a4a}.m12tags .m12t.kind.magic{background:#4a3088}.m12tags .m12t.kind.heal{background:#256a3c}
+.mi.m12last{box-shadow:inset 0 0 0 1px rgba(255,216,160,.55)}
+.mi.m12last .n::after{content:"last";margin-left:5px;font:700 .52rem/1 var(--fb);letter-spacing:.06em;text-transform:uppercase;color:#ffd8a0;opacity:.8}

@@ -11,6 +11,7 @@ function learnScan(c){if(!G||G.daily||!c||!TPL[c.id])return [];G.skSeen=G.skSeen
 function learnScanAll(){if(!G)return [];return Object.values(G.roster).flatMap(learnScan);}
 function learnTag(s){const els=skEls(s);return `${els.map(ico).join('')}${roleTag(s)}`;}
 function learnLine(o){return `<b>${esc(o.name)} learned ${esc(o.sk.n)}!</b> <span class="lrn">${learnTag(o.sk)}</span>`;}
+learnLine=HOOK.def('learnLine',learnLine);// menus12.js adds the target scope and the damage kind
 // heroes already on the roster are recorded when a save loads or a journey starts
 HOOK.after('unpackG','learn','record skills of loaded heroes',function(g){try{const G0=G;G=g;Object.values(g.roster).forEach(c=>{g.skSeen=g.skSeen||{};if(!g.skSeen[c.id])learnScan(c);});G=G0;}catch(e){}});
 // battle results: one line per new skill, under the level ups

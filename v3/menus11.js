@@ -1,9 +1,10 @@
 // ===== menus11.js (v0.17.8 menu pass): menu history, tap outside to close, Load another journey, Settings in sections =====
-// 1. History. Every change of the view in #modal (a new V.modal, or a menu tab / sub tab / shop section / sheet state change) pushes the view
+// 1. History. Every change from one MENU to another in #modal (now: a new modal type, a sheet to its Equipment screen; NOT a tab, sub tab, chip or shop
+//    section inside the same menu, those are remembered in the menu's own snapshot) pushes the view
 //    it left (a shallow copy of the modal object plus the scroll position of every scrolled element in the popup) onto MH.stack. Back (the
 //    arrow, Esc, the gamepad B, the Android back gesture, and the Back / Done buttons of the sheets and shops) pops the top, shows that view
 //    again and restores its scroll. The stack clears when V.modal goes null (the player is back in the world) and when a "must answer" popup
-//    shows. It lives only here: never in G, META or a save. With an empty stack every old back rule (modalBack, from:) still applies.
+//    shows. It lives only here: never in G, META or a save. With an empty stack a menu has no step left (Back leaves it); the from: rules of popups still apply.
 // 2. A tap on the dimmed backdrop (outside the .box) closes every popup and menu at once, with guards (see backdropOk).
 // 3. Load another journey: Menu > Journey and Settings > Account and Saves open the title's slot picker (mSlots), a confirm, then slotLoad.
 // 4. Settings rows (from every module's settingsBody hook) are re-sliced into titled, collapsible sections.
@@ -15,8 +16,13 @@ const M11_MUST=new Set(['story','legendEvt','cev','convergence','result','lose',
 const M11_NOPUSH=new Set([...M11_MUST,'ldRes','equipNow','m11leave','p3need']);
 // in a battle only these informational popups close on a backdrop tap (the command prompt, targeting and the result stay put)
 const M11_BATTLE_OK=new Set(['battlelore','statInfo','wxinfo','beast','codexEntry','goalguide']);
-const M11_SIG=['type','tab','cat','sec','char','id','k','nat','hero','slot','mode','key','sk','cid','sub','item','charms','s','b'];
-function m11Sig(m){if(!m)return '';return M11_SIG.map(k=>{const v=m[k];return v==null?'':(typeof v==='object'?'o':String(v));}).join('|')+(m.gear?'|g':'')+(m.ingame?'|ig':'');}
+// now: the history steps between MENUS, not between the tabs, chips or sections inside one menu. A menu is a modal type (the Menu with all its tabs,
+// a shop, a hero sheet, the Equipment screen of a sheet, a popup...). The key is what makes two views "the same menu"; the tab a menu was left on is
+// kept in its snapshot, so Back shows it as it was.
+// a menu opened from a popup (the Equipment page from a hero sheet) carries `from`: its key ends in ^, so it is a menu of its own on the stack, while tapping
+// another tab inside it (the same family, no ^) is not a step
+function m11Sig(m){if(!m)return '';const t=m.type==='guild'&&m.char?'char':m.type;return t+((m.type==='char'||m.type==='guild')&&m.gear?':gear':'')+(m.from&&m.from.type&&m.from.type!==m.type?'^':'');}
+const m11Fam=sig=>String(sig||'').replace('^','');
 function m11Scroll(){try{const mod=$('modal');if(!mod||!mod.firstElementChild)return [];return [...mod.querySelectorAll('.modal,.modal *')].filter(e=>e.scrollTop>0).map(e=>[pathOf(e,mod),e.scrollTop]);}catch(e){return [];}}
 function m11ScrollPut(sc){try{const mod=$('modal');if(!mod||!sc||!sc.length)return;const put=()=>sc.forEach(([p,t])=>{const e=byPath(p,mod);if(e&&Math.abs(e.scrollTop-t)>1)e.scrollTop=t;});put();
   requestAnimationFrame(()=>{put();setTimeout(put,120);});}catch(e){}}
@@ -27,16 +33,17 @@ function m11Track(before){
   const sig=m11Sig(m),c=MH.cur;
   if(!before&&c&&c.obj===m){c.sig=sig;c.snap=Object.assign({},m);return;}   // the same popup, normalised while it rendered (menus3 m3Norm moves a legacy tab to tab + sec): not a new view
   const sc=before&&c?m11Scroll():(c?c.scroll:[]);   // before the html is built the DOM still shows the view we are leaving
-  if(c&&c.sig!==sig&&!MH.popping&&c.snap&&!M11_NOPUSH.has(c.snap.type)){
-    const top=MH.stack[MH.stack.length-1];
-    if(!(top&&top.sig===c.sig)){MH.stack.push({sig:c.sig,snap:c.snap,scroll:sc||[]});if(MH.stack.length>MH.max)MH.stack.shift();}}
+  if(c&&m11Fam(c.sig)!==m11Fam(sig)&&!MH.popping&&c.snap&&!M11_NOPUSH.has(c.snap.type)){
+    const top=MH.stack[MH.stack.length-1],at=MH.stack.map(e=>e.sig).lastIndexOf(sig);
+    if(at>=0)MH.stack.length=at;   // going forward to a menu that is already behind us is a return to it: drop it and everything above
+    else if(!(top&&top.sig===c.sig)){MH.stack.push({sig:c.sig,snap:c.snap,scroll:sc||[]});if(MH.stack.length>MH.max)MH.stack.shift();}}
   MH.cur={sig,snap:Object.assign({},m),obj:m,scroll:c&&c.sig===sig?sc:[]};
 }
 HOOK.before('render','menus11','history: note the view change before the popup html is built (the back arrow needs the stack)',function(){try{m11Track(true);}catch(e){}});
 HOOK.after('render','menus11','history: a hook inside render may have opened a popup; restore the scroll of a view we went back to',function(){try{m11Track(false);if(MH.popping){const sc=MH.popping.scroll;MH.popping=null;m11ScrollPut(sc);}}catch(e){}});
 function m11Pop(){
   let e=MH.stack.pop();const cs=MH.cur&&MH.cur.sig;
-  while(e&&e.sig===cs)e=MH.stack.pop();
+  while(e&&m11Fam(e.sig)===m11Fam(cs))e=MH.stack.pop();
   if(!e)return false;
   V.swapSel=null;MH.popping=e;V.modal=Object.assign({},e.snap);
   if(V.modal.type==='menu'&&V.modal.tab){V.lastMenuTab=V.modal.tab;try{(V.menuSub=V.menuSub||{})[menuGroupOf(V.modal.tab)[0]]=V.modal.tab;}catch(x){}}
@@ -46,6 +53,13 @@ function m11Pop(){
 }
 function m11CanPop(){return !!(V.modal&&MH.stack.length&&!M11_MUST.has(V.modal.type));}
 HOOK.before('modalBack','menus11','back goes through the history',function(m){if(m&&m===V.modal&&m11CanPop())return HOOK.stop(()=>{});});
+// Now: tabs, chips and sections are not history steps. With nothing behind it a menu (the Menu, a shop, a hero sheet) has no old "section goes back to All /
+// tab goes back to the first tab / sheet goes to the Party" rule left: Back leaves it (the Menu itself shows no arrow, the X does the same)
+const M11_MENUS=new Set(['smithy','workshop','tavern','inn','board','archivist']);
+HOOK.xform('modalBack','menus11','a menu with nothing behind it: Back leaves it, no tab or section steps (the shops and sheets keep their arrow, the Menu has none)',function(f,m){
+  try{if(!f||!m||m!==V.modal||MH.stack.length||M11_MUST.has(m.type))return f;const t=m.type;
+    if(t==='menu')return null;
+    if(M11_MENUS.has(t)||(t==='guild'&&!m.char)||((t==='char'||t==='guild')&&!m.gear&&!m.recruitAsk))return ()=>{V.modal=null;};}catch(e){}return f;});
 {const xb0=ACT.xBack;ACT.xBack=function(){if(m11CanPop()&&m11Pop())return;return xb0.apply(this,arguments);};}
 // every in-view "Back" goes through the history while there is one
 ['charBack','menuBack','roleBack','bondsBack','natBack','fsBack','gearBack','obBack'].forEach(k=>{const f=ACT[k];if(typeof f!=='function')return;

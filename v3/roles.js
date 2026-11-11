@@ -9,7 +9,7 @@
 function rlSkills(t){const L=(ROLES.sk[t.cls]||[]),e1=t.el[0],n1=EL[e1]||'';
   return L.map(o=>{const x=Object.assign({cost:1,hits:1,t:'one',mp:0,el:null,fixed:1},JSON.parse(JSON.stringify(o)));
     if(x.el==='e1')x.el=e1;x.n=x.n.replace(/\{n1\}/g,n1);x.d=x.d.replace(/\{n1\}/g,n1);x.lv0=x.lv;x.rl=x.r;delete x.r;
-    if(!x.dl){const d=dlFor(t.cls,x);if(d)x.dl=d;}if(x.rl&&ROLES.names[x.rl])x.d+=' '+ROLES.names[x.rl]+' role.';return x;});}
+    if(!x.dl){const d=dlFor(t.cls,x);if(d)x.dl=d;}return x;/* the role is the skill's rl tag; its name is no longer written into the description (the row shows the Sub / Off chip instead) */});}
 HOOK.xform('classSkills','roles','secondary role skills and adjustments',function(L,t){
   if(!L||L._rl||!t||t.mon||!ROLES.sk[t.cls])return L;L._rl=1;
   try{const A=(ROLES.adj||{})[t.cls]||{};L.forEach(s=>{if(A[s.id])Object.assign(s,JSON.parse(JSON.stringify(A[s.id])));});

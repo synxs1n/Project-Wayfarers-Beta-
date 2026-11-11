@@ -371,6 +371,7 @@ const DLC={slash:'#b9c6dc',blunt:'#d39a58',piercing:'#ec7484',ranged:'#62d494',m
 function dlShapeCv(d){if(DLSV[d])return DLSV[d];const S=DLSHAPE[d]||DLSHAPE.slash,c=mkCv(11,11),x=c.getContext('2d'),col=DLC[d]||'#ccc',hi=tint(col,.6);
   for(let y=0;y<9;y++)for(let i=0;i<9;i++){if(S[y][i]==='.')continue;for(let a=-1;a<=1;a++)for(let b=-1;b<=1;b++){x.fillStyle='#150b17';x.fillRect(i+1+a,y+1+b,1,1);}}
   for(let y=0;y<9;y++)for(let i=0;i<9;i++){const p=S[y][i];if(p==='.')continue;x.fillStyle=p==='o'?hi:col;x.fillRect(i+1,y+1,1,1);}return DLSV[d]=c;}
+dlShapeCv=HOOK.def('dlShapeCv',dlShapeCv);// menus12.js redraws Slash and Piercing
 function dlIco(d,cls){if(!DL_NAME[d])return '';return `<img class="ico dli ${d} ${cls||''}" src="${cvURL('dli:'+d,()=>dlShapeCv(d))}" alt="${DL_NAME[d]}" title="${DL_NAME[d]}">`;}
 // what a foe is weak to (x1.1 or more) and resists (x0.9 or less) by delivery, from its archetypes (Undead also burn from healing magic);
 // known once the foe type has been hit or scanned (as its traits are: revealed()), the same way its element weaknesses are learned

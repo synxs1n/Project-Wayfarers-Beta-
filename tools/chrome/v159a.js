@@ -19,16 +19,12 @@ const SH=process.env.SHOTDIR;const shot=async(page,n)=>{if(!SH)return;require('f
  const sc=await ev(()=>{const p=document.querySelector('#modal .panel');p.scrollTop=140;return {top:p.scrollTop,max:p.scrollHeight-p.clientHeight};});
  chk('the Items tab scrolls inside the box on a short phone ('+JSON.stringify(sc)+')',sc.top>60||JSON.stringify(sc));
  await ev(()=>{__A.ACT.viewChar('mira');});await wait(150);
- s=await st();chk('a hero sheet opened from Items: stack has Party and Items, the arrow shows',s.t==='char'&&s.n===2&&s.arrow||JSON.stringify(s));
+ s=await st();chk('a hero sheet opened from Items: the stack has the Menu (one step; its tab Items is remembered in it, since v0.19.x tabs are not steps), the arrow shows',s.t==='char'&&s.n===1&&s.arrow||JSON.stringify(s));
  await ev(()=>{__A.ACT.charBack();});await wait(300);
  s=await st();chk('the sheet Back button returns to the Items tab at the scroll it was left at',s.t==='menu'&&s.tab==='items'&&Math.abs(s.sc-sc.top)<=2||JSON.stringify(s)+' want '+sc.top);
  await ev(()=>{__A.ACT.menuTab('pouch');});await wait(120);
  await page.keyboard.press('Escape');await wait(250);
- s=await st();chk('Esc goes back from Materials to Items, scroll restored',s.t==='menu'&&s.tab==='items'&&Math.abs(s.sc-sc.top)<=2||JSON.stringify(s));
- await page.click('#modal .mback');await wait(250);
- s=await st();chk('the arrow button goes back to Party',s.t==='menu'&&s.tab==='party'&&s.n===0||JSON.stringify(s));
- await ev(()=>{__A.ACT.xBack();});await wait(150);
- s=await st();chk('with nothing left, Back leaves to the world',s.t==null&&s.n===0||JSON.stringify(s));
+ s=await st();chk('Esc from the Materials tab leaves the menu (v0.19.x: tabs are remembered, not history steps; Back leaves the whole menu)',s.t==null&&s.n===0||JSON.stringify(s));
  // a chain with a popup in between: Items -> sheet -> Equip page (eqOpen) -> back is the sheet, back again is Items
  await ev(()=>{const A=__A;A.ACT.menu();A.ACT.menuTab('items');A.ACT.viewChar('oren');A.ACT.eqOpen('oren');});await wait(200);
  await ev(()=>{__A.ACT.xBack();});await wait(150);s=await st();

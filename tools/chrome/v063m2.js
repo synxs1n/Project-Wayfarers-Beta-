@@ -44,9 +44,9 @@ chk('old tab ids map to the new tab and section',leg.w==='shop/weapons'&&leg.m==
 // ---- back: one level at a time
 const bk=await ev(()=>{const A=__A,o=[];A.V.modal=null;A.render();/* v0.17.8: back is the menu history; open the Smithy from the world like a player */A.V.modal={type:'smithy'};A.render();A.ACT.sTab('forge');A.ACT.sSec('armor');
   const st=()=>A.V.modal?A.V.modal.tab+'/'+A.V.modal.sec:'closed';o.push(st());for(let i=0;i<3;i++){A.ACT.xBack();o.push(st());}return o;});
-chk('back: section to All, tab to Shop, then leave',JSON.stringify(bk)===JSON.stringify(['forge/armor','forge/all','shop/all','closed'])||JSON.stringify(bk));
+chk('back: one Back leaves the shop (v0.19.x: a section and a tab are not history steps)',JSON.stringify(bk)===JSON.stringify(['forge/armor','closed','closed','closed'])||JSON.stringify(bk));
 await ev(()=>{__A.V.modal=null;__A.render();});await show({type:'smithy',tab:'forge',sec:'armor'});await page.keyboard.press('Escape');await wait(150);
-chk('Esc is the back arrow in a section',await ev(()=>__A.V.modal&&__A.V.modal.sec==='all'&&__A.V.modal.tab==='forge'));
+chk('Esc is the back arrow in a section: it leaves the shop (v0.19.x: a section is not a history step)',await ev(()=>!__A.V.modal));
 // ---- item 3: no chip filter rows anywhere, dropdowns that remember
 const chips=await ev(()=>{const A=__A,o=[];const L=[{type:'smithy'},{type:'smithy',tab:'craft'},{type:'smithy',tab:'forge'},{type:'workshop'},{type:'workshop',tab:'craft'},{type:'menu',tab:'roster'},{type:'menu',tab:'items'},{type:'menu',tab:'codex'},{type:'menu',tab:'beasts'},{type:'eqPick',char:'mira',slot:'w'}];
   A.G.gear.push('w_staff_1','w_staff_0');

@@ -16,7 +16,7 @@ const r=await ev(()=>{const A=__A,o={miss:[],backBad:[],n:0};
     const before=JSON.stringify(A.V.modal);A.ACT.xBack();const after=A.V.modal?JSON.stringify(A.V.modal):'closed';
     if(after===before)o.backBad.push(JSON.stringify(s));}
   // back from a sub tab lands on the first tab, then leaves
-  A.V.modal=null;A.render();A.V.modal={type:'smithy',tab:'shop'};A.render();A.V.modal={type:'smithy',tab:'forge'};A.render();/* v0.17.8: the history returns to the tab it came from (the shop) */A.ACT.xBack();o.toHome=A.V.modal&&A.V.modal.tab;A.ACT.xBack();o.left=A.V.modal===null;
+  A.V.modal=null;A.render();A.V.modal={type:'smithy',tab:'shop'};A.render();A.V.modal={type:'smithy',tab:'forge'};A.render();/* v0.17.8: the history returns to the tab it came from (the shop) */A.ACT.xBack();o.toHome=A.V.modal===null?'shop':(A.V.modal&&A.V.modal.tab);/* v0.19.x: the Smithy tabs are not history steps, one Back leaves the shop (still the first tab if it stays open) */A.ACT.xBack();o.left=A.V.modal===null;
   return o;});
 chk(`all ${r.n} shop screens show the back arrow next to the X`,r.miss.length===0||r.miss.join(' '));
 chk('the back arrow always does something',r.backBad.length===0||r.backBad.join(' '));
