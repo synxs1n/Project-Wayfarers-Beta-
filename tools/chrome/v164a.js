@@ -25,7 +25,8 @@ const r=await ev(()=>{const T=__A.TW.get,B=T('B'),FK=T('FK'),BV=T('BV'),STS=T('S
   const rest=T('heroHand')('mira','rest',0,false);o.rest=rest&&rest.x>0&&rest.y>0;
   // 5. combo extra hits are counted
   const e0=B.en[0];a.S.combo=1;a.S.acc=1;e0.S.eva=0;B.cur=a;const I0=T('fk11Info')(a,{id:'t_c',n:'x',k:'phys',t:'one',dl:'slash',pw:.1,hits:2,mp:0,cost:1});
-  FK.cur=null;T('perform')(a,{id:'t_c',n:'x',k:'phys',t:'one',dl:'slash',pw:.1,hits:2,mp:0,cost:1},[e0]);o.combo=a.fk11&&a.fk11.landed;a.S.combo=0;
+  e0.st={};e0.hp=e0.S.mhp=99999;const mr=Math.random;Math.random=()=>.5;/* a fixed roll: the combo, crit and dodge rolls never decide this count (CI saw 2 once) */
+  try{FK.cur=null;T('perform')(a,{id:'t_c',n:'x',k:'phys',t:'one',dl:'slash',pw:.1,hits:2,mp:0,cost:1},[e0]);}finally{Math.random=mr;}o.combo=a.fk11&&a.fk11.landed;a.S.combo=0;
   // 6. reduced motion
   T('META').cfg.rmotion=true;BV.P.length=0;const u=B.front[1];u._fkS=null;o.rm.ok=T('fkStatus')(u,'poison',false,'Poison',{});o.rm.n=BV.P.filter(p=>p.k==='fk').length;o.rm.tint=T('fkTintOf')(u,null,Date.now());u._fkTint={col:'#fff',t0:Date.now(),life:300,a:1};o.rm.tint2=T('fkKOState')(B.en[0],Date.now());T('META').cfg.rmotion=false;u._fkTint=null;
   return o;});
