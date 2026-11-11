@@ -10,8 +10,8 @@ function sanctumProgress(){const n=G?[0,1,2,3,4].filter(s=>(G.echoStory||{})[s])
 // Echoforge at the centre (16,16), the five Calamity gates on an inner ring (radius 5, a vertex due north, the south left open) and the
 // twenty Scourge gates on an outer ring (radius 10.5) around them, 21 evenly spaced slots with the one on the south axis left out, so the
 // lane from the door runs straight up into the middle. Slots run clockwise from the south; every four sit together as one element family
-// (a Scourge is not tied to a realm in the current journeys: any Scourge can sit in any realm): Storm and Frost, Gloam, Wild, Ember, Tide.
-// Each family has a sign on the walkway side of its arc (radius 8) and braziers where the arcs meet (radius 12.2, the last pair flanking the
+// (the arcs follow the elements, not the realms; each realm brings its own Scourge since v0.18.7, realmdata.js boss): Storm and Frost, Gloam, Wild, Ember, Tide.
+// Each family has a sign (a solid 'S' tile, drawn in 2D and HD-2D since v0.18.7: dungeons never drew one, so it was an empty square that blocked the walkway) on the walkway side of its arc (radius 8) and braziers where the arcs meet (radius 12.2, the last pair flanking the
 // lane). The Riftkeeper (with his rest popup) and his gate stand on the axis north of the outer ring. Walkways between the rings are 4 tiles
 // wide; every gate has open floor on the side that faces the centre and on the side that faces the wall. interact() reads the tile in WS.dir,
 // so standing in the walkway and facing out hits a Scourge gate, facing in hits a Calamity gate.
@@ -35,8 +35,8 @@ function buildSanctum(){
   R.bays.forEach(b=>{[b.sign,b.sign2].filter(Boolean).forEach(([x,y])=>{t[y][x]='S';m.signs[x+','+y]=`${b.n}: the Scourges of ${b.d}. Four gates, one for each Echo.`;});});
   // Scourges: by family arc; a Scourge no arc names yet takes the first free outer-ring slot, so a new boss still gets a gate
   const gp=GPOOL.slice(),fp=FPOOL.slice(),put=(k,x,y,cal)=>{const d=guardianDef(k);if(!d)return;
-    m.npcs.push(cal?{x,y,hx:x,hy:y,name:'Calamity Gate: Echo '+d.n,line:'',view:'front',face:'r',act:'portal',portal:1,cal:1,key:k,look:null}
-      :{x,y,hx:x,hy:y,name:'Gate of Echo '+d.n,line:'',view:'front',face:'r',act:'portal',portal:1,key:k,look:null});};
+    m.npcs.push(cal?{x,y,hx:x,hy:y,name:'Calamity Gate: '+echoName(d),line:'',view:'front',face:'r',act:'portal',portal:1,cal:1,key:k,look:null}
+      :{x,y,hx:x,hy:y,name:'Gate of '+echoName(d),line:'',view:'front',face:'r',act:'portal',portal:1,key:k,look:null});};
   const used=new Set(),free=[];R.bays.forEach(b=>b.at.forEach((p,i)=>{const k=b.keys[i];if(k&&gp.includes(k)&&!used.has(k)){used.add(k);put(k,p[0],p[1]);}else free.push(p);}));
   gp.filter(k=>!used.has(k)).forEach((k,i)=>{const p=free[i];if(p)put(k,p[0],p[1]);});
   // the Calamities: the inner ring around the Echoforge, clockwise from due north
@@ -45,7 +45,9 @@ function buildSanctum(){
   return m;
 }
 // ----- drawing: a small rune gate, dim until its Echo has answered, a gold pip once beaten -----
-function drawPortal(ctx,px,py,n,now){const d=guardianDef(n.key),open=riftKeys().includes(n.key),col=(typeof ELC!=='undefined'&&ELC[d.el[0]])||'#b48aff',won=(((META.best||{})['Echo '+d.n])||{}).kills>0,ph=now/320+n.x;
+// v0.18.7: the lit colour of a gate comes from the boss behind it (RIFT_COL in realmdata.js), else its first element
+function riftGateCol(k){const d=guardianDef(k);return (typeof RIFT_COL!=='undefined'&&RIFT_COL[k])||(d&&typeof ELC!=='undefined'&&ELC[d.el[0]])||'#b48aff';}
+function drawPortal(ctx,px,py,n,now){const d=guardianDef(n.key),open=riftKeys().includes(n.key),col=riftGateCol(n.key),won=(((META.best||{})[echoName(d)])||{}).kills>0,ph=now/320+n.x;
   const f=(c,x,y,w,h)=>{ctx.fillStyle=c;ctx.fillRect(px+x,py+y,w,h);};
   const cal=!!n.cal;if(cal){f('#2a0608',-1,-5,18,22);f(open?'#ffd04a':'#7a6a3a',-1,-5,18,1);f(open?'#ffd04a':'#7a6a3a',-1,-5,1,22);f(open?'#ffd04a':'#7a6a3a',16,-5,1,22);}
   f('#0e0a16',0,-3,16,19);f(cal?'#7a1a22':'#4a4068',1,-2,14,17);f(cal?'#2a0810':'#1c1430',3,-1,10,13);f(cal?'#a0303a':'#5a4a80',0,13,16,3);f('#0e0a16',0,15,16,1);
@@ -60,8 +62,8 @@ function sanctumActor(actors,n,ctx,cx,cy,now){const px=n.x*TS-cx,py=n.y*TS-cy;if
 function portalLockWhy(k){try{const st=[0,1,2,3,4].find(s=>bossKeyFor(s)===k);const n=sanctumProgress();
   if(st!=null)return `Beat its Echo in ${ZS(st).dungeon||'its dungeon'} this journey. Or beat all five story Echoes of one journey (${n} of 5 so far) and every gate opens for good.`;
   return `This Echo is not in this journey. Beat all five story Echoes of one journey (${n} of 5 so far) and every gate opens for good, in every journey.`;}catch(e){return 'Beat the story Echoes to open it.';}}
-function mPortal(m){const k=m.key,d=guardianDef(k);if(!d)return '';const b=(META.best||{})['Echo '+d.n]||{},open=riftKeys().includes(k);
-  return box(`Echo of ${esc(d.n)}`,`<div class="row"><img class="mimg" src="${monURL('echo_'+d.art)}" alt=""><div class="grow"><b>Echo ${esc(d.n)}</b><small>${bossClass(k)} · Level ${echoLv(k)}${b.kills?` · beaten ${b.kills}x`:''}${(G.bossWon||{})['e:'+k]?' · auto allowed':' · auto locked until a manual win'}</small><small>Shard: ${G.mats['es_'+k]||0} held</small></div></div>
+function mPortal(m){const k=m.key,d=guardianDef(k);if(!d)return '';const b=(META.best||{})[echoName(d)]||{},open=riftKeys().includes(k);
+  return box(`Echo of ${esc(d.n)}`,`<div class="row"><img class="mimg" src="${monURL('echo_'+d.art)}" alt=""><div class="grow"><b>${esc(echoName(d))}</b><small>${bossClass(k)} · Level ${echoLv(k)}${b.kills?` · beaten ${b.kills}x`:''}${(G.bossWon||{})['e:'+k]?' · auto allowed':' · auto locked until a manual win'}</small><small>Shard: ${G.mats['es_'+k]||0} held</small></div></div>
     ${open?'':`<p class="note warn">Locked. ${esc(portalLockWhy(k))}</p>`}${FPOOL.includes(k)?'<p class="note"><b>Calamity Echo.</b> One of the five world-enders, harder than any Scourge.</p>':''}
     <p class="note">Echoes at full strength: Scourges at level 50 or your average +5, Calamities at 56 or your average +8. Every Echo drops Echo Essence; its Shard on the first win this journey, often after that. Shards feed the Smithy's Echoforge.</p>`,
     `<button class="btn" data-act="closeModal">Not yet</button><button class="btn gold" data-act="riftFight" data-arg="${k}" ${open?'':'disabled'}>Challenge</button>`);}

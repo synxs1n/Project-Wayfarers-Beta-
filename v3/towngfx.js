@@ -58,3 +58,4 @@ function townDecorActors(actors,now,cx,cy){
 // 'ready' if a quest can be handed in, 'new' if the board has posts you haven't taken, else null
 function boardState(){if(!G)return null;try{if(G.quests.some(q=>q.state==='active'&&typeof questReady==='function'&&questReady(q)))return 'ready';if(G.quests.some(q=>q.state==='open'&&q.stage<=G.stage&&q.type!=='legend'))return 'new';}catch(e){}return null;}
 
+townDecorActors=HOOK.def('townDecorActors',townDecorActors);// v0.18.7: world12.js stands each town's landmark in the depth sort (2D only; HD-2D bakes only 'building:' and 'board' decor)

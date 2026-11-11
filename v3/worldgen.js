@@ -5,8 +5,8 @@ const TS=16;
 // T tree t bush R rock f flowers F fence B bridge C chest K key chest W waystone S sign q quest board X Scourge or Calamity rune circle
 // O fountain L lamp b barrel x crate h hay k cart m stall u banner a anvil v brazier g grave N standing stone
 // Q ruin wall P pillar/crystal e tent y crops r rubble o boat G sealed gate E dungeon door/stairs U entrance facade
-// D locked door | bars l lever H building
-const SOLID='T#ZYtR~FWSqCKXOLbxhkmuavgNQPeoUD|lHGA';
+// D locked door | bars l lever H building j town landmark footprint (v0.18.7)
+const SOLID='T#ZYtR~FWSqCKXOLbxhkmuavgNQPeoUD|lHGAj';// v0.18.7: j is a town landmark's footprint (world12.js draws it)
 const SERVICE={inn:1,tavern:1,smithy:1,guild:1,workshop:1};
 let MAPS={};
 function resetMaps(){MAPS={};}
@@ -671,6 +671,7 @@ queueMicrotask(()=>{try{HOOK.wrap('getMap','townexit','new towns: nothing hides 
   try{if(fresh&&m&&m.kind==='town'&&typeof lay3On==='function'&&lay3On()&&!(G&&G.daily))townExitPass(m);}catch(e){}return m;});}catch(e){}});
 // gathering spots: herb patches, ore glints and fallen logs. Walk over one to collect it. They regrow when you rest at an inn.
 const NODE_MIX={meadow:['herb','herb','wood','wood','ore'],coast:['herb','herb','wood','ore'],cave:['ore','ore','ore','herb'],snow:['ore','ore','wood','herb'],heights:['wood','wood','ore','herb'],void:['herb','herb','ore','wood']};
+placeNodes=HOOK.def('placeNodes',placeNodes);// v0.18.7: world12.js moves a node off a chest, a prop or an unreachable tile
 function placeNodes(m){
   const R=mulberry(G.run.seed+4242+m.s*97+(m.kind==='dungeon'?7:0)),mix=NODE_MIX[m.theme]||NODE_MIX.meadow;
   let spots=[];

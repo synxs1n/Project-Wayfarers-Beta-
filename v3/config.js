@@ -357,6 +357,10 @@ const ENC_MIN_STEPS=12;// v0.9.5: at least 12 tiles walked between random battle
 const ENC={rew:{xp:[2,1.6,1.2,1,.85],gold:1.45},roam:{xp:1.1,gold:1.15}};
 // chance meetings with a wayfarer (chance.js): about 1 in 170 steps after a 30 step quiet gap, at most 2 per area
 const CE_ODDS=1/170, CE_GAP=30, CE_AREA_CAP=2;
+// v0.18.7 wild recruit events (chance meetings, a Den or cave prize that is a wayfarer, the keep's cells; world12.js): at least minSteps steps (on fields and in caves
+// and dungeons) and minBattles battles since the last one (firstSteps before the first), at most perRealm[stage] per realm (the realm's place in the journey, 0 to 4) and total per journey; dual type wayfarers are
+// kept (not re-drawn) with the chance dual[stage] (the stage is the realm's place in the journey, 0 to 4)
+const WREC={minSteps:240,minBattles:3,firstSteps:120,perRealm:[1,2,2,2,1],total:8,dual:[.08,.2,.5,.85,1]};
 // TOWN_LANE: every town gate gets a clear approach lane at least this many tiles wide to the main road
 const TOWN_LANE=2;
 // day and night

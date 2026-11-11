@@ -23,9 +23,11 @@ const measure=H=>H.ev(()=>{const A=__A,WS=A.WS,HD=A.HD;A.worldDraw2(performance.
   for(const t of ['medium','high']){const H=await boot(t);const {ev,wait}=H;
     // town: day, then night, same spot (in the open, away from lamps)
     const spot=await ev(()=>{const A=__A,m=A.getMap('t0');A.placeAt('t0',A.WS.x,A.WS.y,'d');A.render();A.worldDraw2(performance.now());
-      const L=(m.lights||[]).map(l=>[l[0],l[1]]);for(let y=0;y<m.h;y++)for(let x=0;x<m.w;x++)if('LWv'.includes(A.tileAt(m,x,y)))L.push([x*16+8,y*16+8]);
+      const L=(m.lights||[]).concat(m.tl||[]).map(l=>[l[0],l[1]]);/* v0.18.7: m.tl holds the town landmark's night light too */for(let y=0;y<m.h;y++)for(let x=0;x<m.w;x++)if('LWv'.includes(A.tileAt(m,x,y)))L.push([x*16+8,y*16+8]);
       let best=null,bd=-1;for(let y=3;y<m.h-3;y++)for(let x=3;x<m.w-3;x++){let ok=true;for(let j=-1;j<=2&&ok;j++)for(let i=-1;i<=1&&ok;i++)if(A.solidAt(m,x+i,y+j))ok=false;if(!ok)continue;
         const d=Math.min(1e4,...L.map(p=>Math.hypot(p[0]-x*16-8,p[1]-y*16-8)));if(d>bd){bd=d;best=[x,y];}}
+      if(!best){/* v0.18.7: the town's landmark can take the last open 3 x 4 patch; stand on any free tile with one free tile below instead */
+        for(let y=3;y<m.h-3;y++)for(let x=3;x<m.w-3;x++){if(A.solidAt(m,x,y)||A.solidAt(m,x,y+1))continue;const d=Math.min(1e4,...L.map(p=>Math.hypot(p[0]-x*16-8,p[1]-y*16-8)));if(d>bd){bd=d;best=[x,y];}}}
       if(best)A.placeAt('t0',best[0],best[1],'d');A.G.clock=120;A.G.weather[0]='clear';A.TR.ph=null;A.TR.wx.key=null;A.render();return [best,Math.round(bd)];});
     await wait(300);const day=await measure(H);
     await ev(()=>{const A=__A;A.G.clock=700;A.TR.ph=null;A.render();});await wait(300);const night=await measure(H);

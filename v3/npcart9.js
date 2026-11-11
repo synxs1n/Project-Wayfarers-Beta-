@@ -177,8 +177,9 @@ function npcGarb(g,L,view){
     else{g.rect(22,19,1,8,'f');g.rect(20,26,5,7,'f');}
   }
   if(r==='fisher'){
-    if(F){g.rect(14,20,12,7,'f');g.px([[16,22],[19,22],[22,22]],'g');g.rect(14,44,5,8,'g');g.rect(21,44,5,8,'g');}
-    else if(B){g.rect(14,20,12,7,'f');g.rect(14,44,5,8,'g');g.rect(21,44,5,8,'g');}
+    const ll=NP9.frame===1?HSTRIDE:0,lr=NP9.frame===2?HSTRIDE:0;// v0.18.7: the wader boots follow the stride (they were fixed rectangles, so a fisher never lifted a foot going up or down)
+    if(F){g.rect(14,20,12,7,'f');g.px([[16,22],[19,22],[22,22]],'g');g.rect(14,44,5,8-ll,'g');g.rect(21,44,5,8-lr,'g');}
+    else if(B){g.rect(14,20,12,7,'f');g.rect(14,44,5,8-ll,'g');g.rect(21,44,5,8-lr,'g');}
     else{g.rect(19,20,6,7,'f');g.rect(19,44,6,8,'g');}
   }
   if(r==='miner'){

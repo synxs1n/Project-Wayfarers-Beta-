@@ -1062,3 +1062,8 @@ html[data-dz] #app:has(section.title){max-width:1000px}
 html[data-dz].dzlock,html[data-dz].dzlock body{overflow:hidden;height:100%}
 html[data-dz].dzlock.mopen .modal{overflow:auto}
 @media (min-width:1200px){#app:has(.world){max-width:calc(100vw - 32px)}html[data-dz] #app:has(.world){max-width:calc(var(--lvw) * 100 - 32px)}}
+/* v0.18.7: the phone pad sits under every text box. Stacking order inside #app: the world canvas, then the pad (joy and A/B) at 2, then
+   the view's own overlays (location banner, dialog box, minimap) at 30; the modal layer (#modal, 50), tip cards and the toast sit above all of it */
+.pad .joy,.pad .abtn{position:relative;z-index:2}
+.world.land .pad{z-index:2}
+.wview>#wloc,.wview>#wdlg,.wview>.mmap{z-index:30}

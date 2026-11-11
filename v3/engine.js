@@ -31,6 +31,7 @@ function newRun(cycle){
   const gp=weightedDraw(GPOOL,4,R),fp=weightedDraw(FPOOL,1,R);
   return {order:[0,...mids,5],bosses:gp,final:fp[0],cycle:cycle||0,seed:Math.floor(R()*1e9)};
 }
+newRun=HOOK.def('newRun',newRun);// v0.18.7: one definition; realms.js (the realms), look9.js (look), world12.js (each realm's own Scourge) hook it
 function bossWeight(k){const b=(META.best||{})[guardianDef(k).n];return b&&b.seen?1:Math.min(2,1+.15*(META.clears||0));}
 function weightedDraw(pool,n,R){const p=pool.slice(),out=[];while(out.length<n&&p.length){const w=p.map(bossWeight),tot=w.reduce((a,b)=>a+b,0);let r=R()*tot,i=0;for(;i<p.length-1;i++){if((r-=w[i])<0)break;}out.push(p.splice(i,1)[0]);}return out;}
 function bossKeyFor(s){return s<4?G.run.bosses[s]:G.run.final;}
@@ -330,7 +331,7 @@ function makeEnemy(m,lv,opt){
     sk:m.sk.map(s=>({id:'e'+s[0],n:s[0],el:s[1],pw:s[2],t:s[3],k:s[4],fx:s[5]||null,mp:0,cost:1,hits:1})),turns:0,next:0,phaseDone:false,phase:m.phase||null,multi:m.multi||1};
   if(boss){e.maxShield=Math.round((opt.final?7:5)*BOSS_PIPS.mult);e.shield=e.maxShield;e.broken=0;}
   if(opt.elite){e.name=opt.name;e.maxShield=3;e.shield=3;e.broken=0;e.multi=2;e.phase={at:.5,say:`${opt.name} howls and fights harder!`,self:[['might',1],['haste',1]]};}
-  if(opt.echo){e.name='Echo '+e.name;e.echo=1;}
+  if(opt.echo){e.name=echoName(e.name);e.echo=1;}
   return e;
 }
 makeEnemy=HOOK.def('makeEnemy',makeEnemy);// one definition; modules add hooks (hooks.js)

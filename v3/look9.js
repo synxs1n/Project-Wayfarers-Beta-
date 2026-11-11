@@ -16,7 +16,7 @@ const LOOK9={
  drowned:{n:'sunken ruins',pal:{g:['#7a8a80','#6a7a70','#8a9a90','#5a6a60'],w:['#1e4a5a','#2a6070','#7aa8b0','#123a48']},lip:'#8a9a90'}
 };
 function lookOn(){try{return !!(G&&!G.daily&&G.run&&G.run.tv===2);}catch(e){return false;}}
-{const nr0=newRun;newRun=function(){const r=nr0.apply(this,arguments);try{r.tv=2;}catch(e){}return r;};}
+HOOK.xform('newRun','look9','new journeys carry tv 2 (the v0.13 look)',function(r){try{r.tv=2;}catch(e){}return r;});
 // the layout tileset per journey: Ironroot is heights in new journeys, cave in older ones
 REALMS.forEach(R=>{R.theme0=R.theme;});
 function lookSync(){const on=lookOn();REALMS.forEach(R=>{const L=LOOK9[R.key];R.theme=on&&L&&L.base?L.base:R.theme0;});}

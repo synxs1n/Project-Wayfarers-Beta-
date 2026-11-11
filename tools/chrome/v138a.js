@@ -67,7 +67,7 @@ chk('a Lore entry (history, customs, folk) and a dungeon and ground look exist f
 // ---- 4. new journeys draw the new realm and bosses ----
 r=await ev(([NEW])=>{const A=__A,T=A.TW.get,STD=T('REALM_STD'),CAL=T('REALM_CAL'),FP=T('FPOOL'),GP=T('GPOOL'),NR=T('newRun'),asIdx=T('REALMS').find(x=>x.key==='ashglass').idx,o={boss:{},cal:{},bad:[],n:600};
   NEW.forEach(k=>o.boss[k]=0);CAL.forEach(i=>o.cal[i]=0);const dn=Date.now;
-  try{for(let k=0;k<o.n;k++){Date.now=()=>1700000000000+k*86400003;const r=NR(0);
+  try{for(let k=0;k<o.n;k++){Date.now=()=>1700000000000+k*86400003;const r=NR(k%2);/* v0.18.7: each realm brings its own Scourge; the alternates (most of the new ones) come on a New Game+, so half the journeys are cycle 1 */
     if(r.order.length!==5||new Set(r.order).size!==5||!r.order.slice(0,4).every(i=>STD.includes(i))||!CAL.includes(r.order[4])||r.bosses.length!==4||new Set(r.bosses).size!==4||!r.bosses.every(b=>GP.includes(b))||!FP.includes(r.final)){if(o.bad.length<3)o.bad.push(JSON.stringify(r));}
     r.bosses.concat([r.final]).forEach(b=>{if(b in o.boss)o.boss[b]++;});o.cal[r.order[4]]++;}}finally{Date.now=dn;}
   o.asIdx=asIdx;return o;},[NEW]);
@@ -113,9 +113,9 @@ r=await ev(()=>{const A=__A,T=A.TW.get,G=A.G,META=A.META,o={};G.won=true;G.echoS
   o.reach=m.npcs.filter(n=>n.portal).every(n=>seen[n.y<9?n.y+1:n.y-1][n.x]);
   // the Riftkeeper's card counts every Echo
   const b0=JSON.stringify(META.best||{});META.best=META.best||{};const ks=T('echoKeys')();
-  const G0=T('G');G0.riftWon={};ks.slice(0,total-1).forEach(k=>{META.best['Echo '+T('guardianDef')(k).n]={seen:1,kills:1,scan:0,known:{}};G0.riftWon[k]=1;/* v0.16.7: the keeper reads this journey's wins */});
+  const G0=T('G');G0.riftWon={};ks.slice(0,total-1).forEach(k=>{META.best[T('echoName')(T('guardianDef')(k))]={seen:1,kills:1,scan:0,known:{}};G0.riftWon[k]=1;/* v0.16.7: the keeper reads this journey's wins */});
   o.have1=T('rkUnlocked')();o.txt1=T('mRiftkeeper')().replace(/<[^>]+>/g,' ');
-  META.best['Echo '+T('guardianDef')(ks[total-1]).n]={seen:1,kills:1,scan:0,known:{}};G0.riftWon[ks[total-1]]=1;
+  META.best[T('echoName')(T('guardianDef')(ks[total-1]))]={seen:1,kills:1,scan:0,known:{}};G0.riftWon[ks[total-1]]=1;
   o.have2=T('rkUnlocked')();o.txt2=T('mRiftkeeper')().replace(/<[^>]+>/g,' ');o.dis2=/disabled/.test(T('mRiftkeeper')());
   META.best=JSON.parse(b0);return o;});
 console.log(JSON.stringify(r).slice(0,700));

@@ -475,7 +475,7 @@ function hdActors(m,now,ts){const B=HD.dyn,BB=HD.dynB,BA=HD.dynA,V=HD.S.V,still=
   // townsfolk and gates
   m.npcs.forEach((n,i)=>{let nx=n.x*TS,ny=n.y*TS,moving=false;if(n.mv){const p=Math.min(1,(now-n.mv.t0)/420);nx=(n.mv.fx+(n.x-n.mv.fx)*p)*TS;ny=(n.mv.fy+(n.y-n.mv.fy)*p)*TS;moving=p<1;}
     if(Math.abs(nx-HD.cam.x)>420||Math.abs(ny-HD.cam.z)>520)return;
-    if(n.portal){const ph=ts/320+n.x,st=((Math.round(ph/(Math.PI*2/24))%24)+24)%24,key='portal:'+n.key+':'+st+':'+((G&&G.riftWon&&G.riftWon[n.key])?'w':'o')+(typeof riftKeys==='function'&&riftKeys().includes(n.key)?'O':'L');/* v0.17.0: the cached frames carry the beaten and open state, so a gate won this session lights up at once */let c=H2F[key];
+    if(n.portal){const ph=ts/320+n.x,st=((Math.round(ph/(Math.PI*2/24))%24)+24)%24,key='portal:'+n.key+':'+(typeof riftGateCol==='function'?riftGateCol(n.key):'')+':'+st+':'+((G&&G.riftWon&&G.riftWon[n.key])?'w':'o')+(typeof riftKeys==='function'&&riftKeys().includes(n.key)?'O':'L');/* v0.17.0: the cached frames carry the beaten and open state, so a gate won this session lights up at once */let c=H2F[key];
       if(!c){c=H2F[key]=mkCv(16,20);drawPortal(c.getContext('2d'),0,3,Object.assign({},n,{x:0}),st*(Math.PI*2/24)*320);}
       hdBill(B,key,c,nx+8,-1*V,ny+14,false,1,255,255,255,255,2);hdPickAdd(i,nx+8,ny+14,20*V,16,n.x,n.y);return;}
     const v=n.view||'front',fm=moving?walkFrame(v,true,now):0,c=walkerCanvas('npc:'+n.name+m.id,n.look,['light'],null,v,fm),bob=moving||still?0:Math.floor(now/700+n.hx)%2;

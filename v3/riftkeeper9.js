@@ -21,7 +21,7 @@ const RK_PRIME={fire:'ice',water:'lightning',ice:'lightning',lightning:'ice',ear
 const RK_BASE=['Key-Lash','Doorfall','Lantern Flare'];
 const RK_UNMAKE={id:'rkUnmake',n:'Unmaking',k:'mag',pw:9,t:'all',el:'shadow',mp:0,cost:1,hits:1};
 // ----- account state -----
-function rkBeaten(){try{return echoKeys().filter(k=>{const d=guardianDef(k);return d&&(((META.best||{})['Echo '+d.n])||{}).kills>0;});}catch(e){return [];}}
+function rkBeaten(){try{return echoKeys().filter(k=>{const d=guardianDef(k);return d&&(((META.best||{})[echoName(d)])||{}).kills>0;});}catch(e){return [];}}
 rkBeaten=HOOK.def('rkBeaten',rkBeaten);
 HOOK.wrap('rkBeaten','riftkeeper9','Echo records read through the journey view (rift9.js withRiftView)',function(next,...a){return withRiftView(()=>next(...a));});
 function rkUnlocked(){try{return rkBeaten().length>=echoKeys().length;}catch(e){return false;}}

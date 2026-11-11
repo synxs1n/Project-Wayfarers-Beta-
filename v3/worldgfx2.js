@@ -211,6 +211,7 @@ HOOK.wrap('drawObjects','worldgfx2','dungeon props, contact shadows, boards and 
       if(c==='C')at(objCanvas(th,'chest'),-1,0);else if(c==='c')at(objCanvas(th,'chestOpen'),-1,0);else if(c==='K')at(obj2(th,'keychest'),-1,0);
       else if(c==='l')at(obj2(th,'lever',G.levers[m.id]?1:0),1,0);else if(c==='|')at(obj2(th,'bars'),-1,1);else if(c==='D')at(obj2(th,'door'),-1,1);
       else if(c==='g')at(objCanvas(th,'grave'),1,0);else if(c==='P'){shadowAt(ctx,px+8,py+14,5,2);at(objCanvas(th,'pillar'),1,1);}
+      else if(c==='S')at(objCanvas(th,'sign'),-1,1);/* v0.18.7: the Echo Rift's bay signs are solid; a dungeon never drew an 'S', so they were empty squares that blocked the way */
       else if(c==='|'&&G.levers[m.id]){/* raised */}}
     return;
   }

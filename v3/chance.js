@@ -94,3 +94,4 @@ function packContents(){const s=G.stage|0,L=PACK_TABLE.filter(r=>ITEMS[r[0]]&&r[
   const parts=[];Object.keys(got).forEach(k=>{const add=Math.min(got[k],invCap()-(G.inv[k]||0));if(add>0){G.inv[k]=(G.inv[k]||0)+add;}parts.push(`${got[k]>1?got[k]+' x ':'a '}${ITEMS[k].n}`);});
   if(Math.random()<.2){const m=ZS(s).mat;G.mats[m]=(G.mats[m]||0)+2;parts.push(`2 ${MATS[m]}`);}
   return parts.length>1?parts.slice(0,-1).join(', ')+' and '+parts[parts.length-1]:parts[0];}
+ceStep=HOOK.def('ceStep',ceStep);ceStart=HOOK.def('ceStart',ceStart);// v0.18.7: world12.js spaces wild recruit events (steps, battles, a budget per realm)

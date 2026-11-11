@@ -334,11 +334,11 @@ function syncPools(){if(!G||!G.run)return;REALMS.forEach(R=>{let p=R.pool0.slice
 // ---------- new journeys draw the realms (seeded) ----------
 // v0.11.1: a journey started from now on lays its fields out by thirds (lay3On); older journeys keep their maps
 function lay3On(){try{return !!(G&&G.run&&G.run.lay3);}catch(e){return false;}}
-{const nr0=newRun;newRun=function(cycle){const r=nr0.apply(this,arguments);try{const R=seeded((r.seed^0x5eed)>>>0);
+HOOK.xform('newRun','realms','draw the journey\'s realms (seeded)',function(r,cycle){try{const R=seeded((r.seed^0x5eed)>>>0);
   // v0.11.9: the realms rise in fantasy: realm 1 from the grounded tier, realm 2 from tiers 1-2, realm 3 from tiers 2-3, realm 4 from the wildest tier
   const TIER={thistle:1,orchard:1,strand:1,lakes:1,mire:2,grotto:2,tundra:2,peaks:2,deeps:3,mines:3,glacier:3,mesa:3},want=[[1],[1,2],[2,3],[3]],std=[],used=new Set();
   want.forEach(ts=>{let pool=REALM_STD.filter(i=>!used.has(i)&&ts.includes(TIER[REALMS[i-REALM_BASE].key]||2));if(!pool.length)pool=REALM_STD.filter(i=>!used.has(i));const pick=pool[Math.floor(R()*pool.length)];used.add(pick);std.push(pick);});
-  const cal=REALM_CAL[Math.floor(R()*REALM_CAL.length)];r.order=std.concat([cal]);r.rv=2;r.lay3=1;/* v0.11.1: sites by thirds of the route (worldgen.js, sites.js) */}catch(e){}return r;};}
+  const cal=REALM_CAL[Math.floor(R()*REALM_CAL.length)];r.order=std.concat([cal]);r.rv=2;r.lay3=1;/* v0.11.1: sites by thirds of the route (worldgen.js, sites.js) */}catch(e){}return r;});
 
 // ---------- look: realm palette under the boss overlay; the overlay lifts when the boss falls ----------
 function realmVariant(theme,R){const id=theme+'@'+R.key;if(THEME[id])return id;const B=R.lean,T=THEME[theme],D=DTHEME[theme];
@@ -401,3 +401,4 @@ HOOK.before('getMap','realms','sync pools before a new map',function(id){if(!MAP
 // the opening story frames whichever realm the journey starts in
 const REALM_OPENING='The Meridian Light that keeps the sky of Aurelis bright has begun to gutter. One by one the beacons are going dark, and a Scourge sits at the end of every road. You and your companions set out to light them again.';
 {const bg0=ACT.begin;ACT.begin=function(){const r=bg0.apply(this,arguments);try{if(V.modal&&V.modal.type==='story'&&isRv2()&&V.modal.text===ZS(0).intro)V.modal.text=REALM_OPENING+' '+ZS(0).intro;}catch(e){}return r;};}
+cePick=HOOK.def('cePick',cePick);// v0.18.7: world12.js leans dual type wayfarers toward the later realms

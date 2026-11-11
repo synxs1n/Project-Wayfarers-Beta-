@@ -311,3 +311,4 @@ function leverOrderBad(d){
   if(toLever>=0&&toDoorShut>=0&&toLever<Math.floor(toDoorShut/3))bad.push('lever-near');
   return bad;
 }
+caveRecruitPool=HOOK.def('caveRecruitPool',caveRecruitPool);caveReward=HOOK.def('caveReward',caveReward);// v0.18.7: world12.js spaces wild recruits and leans dual type toward later realms

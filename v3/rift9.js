@@ -11,7 +11,7 @@ HOOK.before('vModal','rift9','Echoforge anvil in the Rift',function(m){if(m&&m.t
 // drawing: the anvil, the won glow, the Calamity arch
 HOOK.wrap('drawPortal','rift9','anvil, won glow, Calamity arch',function(next,ctx,px,py,n,now){
   if(n.key===RIFT_FORGE_KEY)return;/* v0.16.x: the Echoforge landmark is drawn by echo11.js (forgeDraw, 2D and HD-2D) */
-  const d=guardianDef(n.key),open=riftKeys().includes(n.key),won=!!d&&(((META.best||{})['Echo '+d.n])||{}).kills>0,col=(d&&typeof ELC!=='undefined'&&ELC[d.el[0]])||'#b48aff';
+  const d=guardianDef(n.key),open=riftKeys().includes(n.key),won=!!d&&(((META.best||{})[echoName(d)])||{}).kills>0,col=riftGateCol(n.key);
   if(n.cal){// a taller pointed arch, crimson with a gold edge, drawn under the gate
     const f=(c,x,y,w,h)=>{ctx.fillStyle=c;ctx.fillRect(px+x,py+y,w,h);};const e=open?'#ffd04a':'#6a5a30';
     f('#2a0608',-2,-9,20,27);for(let i=0;i<5;i++){f('#2a0608',6-i*2+1,-11-i*-1,2+i*4,1);}f(e,-2,-9,1,27);f(e,17,-9,1,27);f(e,-2,17,20,1);f(e,5,-13,6,1);f(e,3,-12,2,1);f(e,11,-12,2,1);f(e,1,-11,2,1);f(e,13,-11,2,1);f(e,-1,-10,2,1);f(e,15,-10,2,1);
@@ -19,17 +19,17 @@ HOOK.wrap('drawPortal','rift9','anvil, won glow, Calamity arch',function(next,ct
   next(ctx,px,py,n,now);
   if(won){const p=.6+.4*Math.sin(now/420+n.x);ctx.save();ctx.globalAlpha=.28*p;ctx.fillStyle=col;ctx.fillRect(px-1,py-4,18,21);ctx.globalAlpha=.9;ctx.fillStyle=col;ctx.fillRect(px+1,py-3,14,1);ctx.fillRect(px+1,py+14,14,1);ctx.fillRect(px+1,py-3,1,18);ctx.fillRect(px+14,py-3,1,18);ctx.restore();}});
 // the gate card says it plainly
-HOOK.xform('mPortal','rift9','the gate card says it is beaten',function(h,m){try{const d=guardianDef(m.key);const won=d&&(((META.best||{})['Echo '+d.n])||{}).kills>0;if(won)h=h.replace('<p class="note">','<p class="note up"><b>Beaten.</b> Its gate glows; fight it again for Essence and a chance at its Shard.</p><p class="note">');}catch(e){}return h;});
+HOOK.xform('mPortal','rift9','the gate card says it is beaten',function(h,m){try{const d=guardianDef(m.key);const won=d&&(((META.best||{})[echoName(d)])||{}).kills>0;if(won)h=h.replace('<p class="note">','<p class="note up"><b>Beaten.</b> Its gate glows; fight it again for Essence and a chance at its Shard.</p><p class="note">');}catch(e){}return h;});
 // ----- (was fixes11.js) Echo Rift rules. These must be registered after the rift9 glow/card hooks above: they wrap them in the journey view -----
 // ----- v0.16.5: a won rift gate always lights -----
 // Gates glow from META.best['Echo '+name].kills, which engine.js counts per unit base name. An Echo that changes form (phase 2) or dies
 // as another unit left the record on the other name, so its gate stayed dark. A rift win now marks the gate's own Echo record too.
-HOOK.after('win','rift9','rift gate kill record',function(){try{const sp=B&&B.spec;if(!sp||sp.kind!=='echoBoss'||!sp.rift||!sp.key)return;const d=guardianDef(sp.key);if(!d)return;const b=bestOf('Echo '+d.n);if(!(b.kills>0))b.kills=1;if(typeof saveMeta==='function')saveMeta();}catch(e){}});
+HOOK.after('win','rift9','rift gate kill record',function(){try{const sp=B&&B.spec;if(!sp||sp.kind!=='echoBoss'||!sp.rift||!sp.key)return;const d=guardianDef(sp.key);if(!d)return;const b=bestOf(echoName(d));if(!(b.kills>0))b.kills=1;if(typeof saveMeta==='function')saveMeta();}catch(e){}});
 // ----- v0.16.7: Echo Rift gates glow per journey -----
 // drawPortal, rift9's glow, mPortal and rkBeaten all read META.best['Echo '+name].kills (account wide). The owner wants the hall to reflect
 // this journey: a rift win records G.riftWon[key]=1, and while those functions run META.best is swapped for a view in which each Echo's
 // kills come from G.riftWon. The account record is still kept for the Codex. Old journeys start dark until the gates are won again.
-function riftView(){const v=Object.assign({},META.best||{});try{echoKeys().forEach(k=>{const d=guardianDef(k);if(!d)return;const w=!!(G&&G.riftWon&&G.riftWon[k]);v['Echo '+d.n]=Object.assign({},v['Echo '+d.n]||{},{kills:w?1:0});});}catch(e){}return v;}
+function riftView(){const v=Object.assign({},META.best||{});try{echoKeys().forEach(k=>{const d=guardianDef(k);if(!d)return;const w=!!(G&&G.riftWon&&G.riftWon[k]);v[echoName(d)]=Object.assign({},v[echoName(d)]||{},{kills:w?1:0});});}catch(e){}return v;}
 function withRiftView(fn){const b0=META.best;try{META.best=riftView();return fn();}finally{META.best=b0;}}
 HOOK.wrap('drawPortal','rift9','gate card reads the journey view of the Echo records',function(next,...a){return withRiftView(()=>next(...a));});
 HOOK.wrap('mPortal','rift9','gate card reads the journey view of the Echo records',function(next,...a){return withRiftView(()=>next(...a));});

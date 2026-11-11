@@ -558,7 +558,7 @@ const HF_SKIRT=[14,14,14,13,13,13,13,12,12,12,12,12,11,11,11,11,11,11,11];
 function hLegFront(g,L,lift,left){
   const b=L.b,heavy=b==='heavy',monk=b==='monk';
   const t=hnew(),ay=49-lift;
-  const hip=[16.8,32],kn=[16.6,40-lift*.4],an=[16.9,ay];
+  const hip=[16.8,32],kn=[16.6+(lift?.5:0),40-lift*.8],an=[16.9+(lift?.9:0),ay];/* v0.18.7: a real stride: the swing leg's knee comes up and its foot steps in and rises 4 rows (was 2, one pixel row of boot at the walker's size) */
   const T=monk?'P':'K',Bt=heavy?'M':monk?'S':'B',Bs=heavy?'N':monk?'e':'b';
   hlimb(t,[hip,kn,an],monk?3.2:heavy?2.8:2.6,monk?2.2:heavy?2.3:1.9,T);
   if(heavy){t.ell(kn[0],kn[1]-.4,2.7,2.1,'M');t.s(Math.round(kn[0])-1,Math.round(kn[1])-2,'c');hlimb(t,[[kn[0],kn[1]+1.5],[an[0],an[1]-2],[an[0],an[1]+.5]],2.4,1.9,'M');t.px([[15,Math.round(kn[1])+4],[15,Math.round(kn[1])+5]],'c');}
@@ -568,6 +568,8 @@ function hLegFront(g,L,lift,left){
   if(heavy)t.px([[16,50-lift]],'c');
   for(let y=0;y<t.h;y++)for(let x=0;x<t.w;x++){const c=t.a[y*t.w+x];if(c)g.a[y*g.w+(left?x:g.w-1-x)]=c;}
 }
+let HFR=0;// the stride frame rigFB is drawing (the cloak's hem lifts on the swing side)
+const HSTRIDE=5;// rows the swing foot rises on the north and south walk frames (tools/chrome/v168a.js audits it on every rig)
 function hLegsFront(g,L,frame){
   if(L.b==='robe'){/* v0.17.1: the swing foot hangs from a lifted hem (boot rows 47 to 50), the planted foot steps out below the hem to the floor row (48 to 52, a pixel wider), so every stride frame shows two boots and the same lowest row */
     const lf=frame===1?0:frame===2?1:-1;
@@ -576,7 +578,7 @@ function hLegsFront(g,L,frame){
       if(lf>=0){if(i===lf){y0=47;y1=50;}else{y0=48;if(i===0){x0--;}w=5;}}
       g.rect(x0,y0,w,y1-y0,'B');g.rect(x0,y1,w,1,'b');});
     return;}
-  hLegFront(g,L,frame===1?2:0,true);hLegFront(g,L,frame===2?2:0,false);
+  hLegFront(g,L,frame===1?HSTRIDE:0,true);hLegFront(g,L,frame===2?HSTRIDE:0,false);
 }
 function hArmFront(g,L,left,swing,dx){dx=dx||0;
   const b=L.b,heavy=b==='heavy',monk=b==='monk',robe=b==='robe';
@@ -632,7 +634,7 @@ function hBackFront(g,L,view,pass){
   const F=view==='front',bk=L.back||[];
   if(bk.includes('cape')){
     if(F&&pass==='under'){g.rect(10,19,3,29,'Y');g.rect(27,19,3,29,'Y');g.px([[10,48],[29,48]],'z');}
-    if(!F&&pass==='over'){hsh(g,t=>t.poly([[15,18.4],[25,18.4],[27.4,22],[28.6,34],[29.6,48.6],[10.4,48.6],[11.4,34],[12.6,22]],'x'),['Y','Y','z'],{cap:8});[[16,24,14,48],[20,22,20,48],[24,24,26,48]].forEach(q=>g.line(q[0],q[1],q[2],q[3],'z'));g.rect(15,18,10,2,'Q');g.px([[19,19],[20,19]],'G');}
+    if(!F&&pass==='over'){/* v0.18.7: the cloak ends four rows higher so the shins, the boots and the stride show below it */hsh(g,t=>t.poly([[15,18.4],[25,18.4],[27.4,22],[28.6,34],[29.6,HFR===2?40:44],[10.4,HFR===1?40:44],[11.4,34],[12.6,22]],'x'),['Y','Y','z'],{cap:8});[[16,24,14,43],[20,22,20,43],[24,24,26,43]].forEach(q=>g.line(q[0],q[1],q[2],q[3],'z'));g.rect(15,18,10,2,'Q');g.px([[19,19],[20,19]],'G');}
   }
   if(bk.includes('scarf')&&pass==='over'){g.rect(16,16,8,3,'Y');if(F){g.rect(22,19,2,8,'Y');g.px([[22,27],[23,27]],'z');}else g.rect(19,19,2,7,'Y');}
   if(bk.includes('pack')){
@@ -674,7 +676,7 @@ function weaponFB(g,L,view){
 }
 function rigFB(L,view,frame,id){
   const g=hnew(),F=view==='front',cls=heroCls(L,id);
-  hBackFront(g,L,view,'under');
+  HFR=frame;hBackFront(g,L,view,'under');
   const sw=frame===1?1:frame===2?-1:0;
   if(!F&&L.sh)hShieldFront(g,L,view);
   const upright=F&&!['none','dagger','twindagger','claws','fists','lute','harp'].includes(L.wpn||'none');hArmFront(g,L,true,F?-sw:sw,upright?-2:0);hArmFront(g,L,false,F?sw:-sw);

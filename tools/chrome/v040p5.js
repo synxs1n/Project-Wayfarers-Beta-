@@ -32,7 +32,7 @@ const c=await H.ev(()=>{const A=__A,o={};
     A.leaveCave('k'+s);if(A.WS.m.id!=='f'+s||A.WS.x!==cv.out[0]||A.WS.y!==cv.out[1])o.bad='leave k'+s;}
   // reward kinds
   const kinds={};const g0=A.G.gear.length;
-  [['gear',1],['item',1],['charm',2],['recruit',2]].forEach(([kind,s])=>{A.worldPlan()[s].cave=kind;const before=A.G.gear.slice(),inv=JSON.stringify(A.G.inv),ro=Object.keys(A.G.roster).length;const msg=A.caveReward(s);
+  [['gear',1],['item',1],['charm',2],['recruit',2]].forEach(([kind,s])=>{A.worldPlan()[s].cave=kind;A.G.wrec={st:999,bt:99,n:{},tot:0,last:-1};/* v0.18.7: wild recruit spacing (world12.js) lets this one through */const before=A.G.gear.slice(),inv=JSON.stringify(A.G.inv),ro=Object.keys(A.G.roster).length;const msg=A.caveReward(s);
     kinds[kind]={msg,gear:A.G.gear.filter((x,i)=>i>=before.length),inv:JSON.stringify(A.G.inv)!==inv,roster:Object.keys(A.G.roster).length-ro};});
   o.kinds=kinds;return o;});
 console.log(JSON.stringify(c));

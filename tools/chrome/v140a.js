@@ -9,7 +9,7 @@ const PRE=`localStorage.clear();localStorage.setItem('aurelis-meta-v1',JSON.stri
 // 0.16.1: side head re-derived from the front head (face, hair, hat tops), hash re-taken: 7f2d471d.
 // 0.17.1: robe walk pass (hem sway, lifted and planted boots, side stride) and the boot colour fix; walkanim10 retired: hash re-taken c4f99d51.
 // 0.14.6: the hero sprites were redrawn (art.js, art2.js), so the expected hash of mira, lumen and oren walkers was re-taken (the check still means: npcart9.js changes no hero pixel)
-const HERO_BASE=process.env.HERO_BASE||'c4f99d51';// re-taken for the .8 (32x45) overworld walker (v0.15.1)
+const HERO_BASE=process.env.HERO_BASE||'4cc195c7';// re-taken for the .8 (32x45) overworld walker (v0.15.1), again for the real north and south stride (v0.18.7: art.js HSTRIDE, the cloak hem)
 (async()=>{const H=await open({w:430,h:800,mobile:true,pre:PRE});const {ev,wait}=H;
 await ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(i=>A.ACT.pickS(i));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;});await wait(250);
 const VIEWS=[['front',0],['front',1],['front',2],['front',3],['back',0],['back',1],['back',2],['side',0],['side',1],['side',3]];

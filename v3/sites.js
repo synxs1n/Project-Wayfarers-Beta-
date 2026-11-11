@@ -186,3 +186,4 @@ HOOK.before('askBoss','sites','a den asks the miniboss',function(){const m=WS.m;
 HOOK.before('openChest','sites','prize chest waits for the miniboss',function(x,y){try{const m=WS.m;if(m&&miniPending(m)&&m.prize&&m.prize[0]===x&&m.prize[1]===y){const mb=m._gd||(m._gd=miniFor(m));say(null,`${mb.name} stands between you and the prize. Beat it first.`);return HOOK.stop();}}catch(e){}});
 // map: sanctums get their own marker and name
 if(typeof MAPICO_X!=='undefined'){MAPICO_X.fort=[[0,3,10,7,'#7a7a86'],[0,1,3,9,'#5a5a66'],[7,1,3,9,'#5a5a66'],[1,4,1,3,'#c0392b'],[8,4,1,3,'#c0392b'],[4,6,2,4,'#120c10']];MAPICO_NAME.fort='Sanctum';}// v0.6.3: player facing text says sanctum, not side sanctum (ids and save keys unchanged)
+fortReward=HOOK.def('fortReward',fortReward);// v0.18.7: world12.js spaces wild recruits (the keep's cells)

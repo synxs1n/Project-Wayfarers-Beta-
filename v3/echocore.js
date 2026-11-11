@@ -3,10 +3,12 @@
 // phase, Echo Shards and Echo Essence, and the six Echoforged weapons.
 // Echo forms are their own Bestiary entries ("Echo <name>"): they never count toward the Archive or the Tamer's Stick.
 const ECHO_STORY=(typeof process!=='undefined'&&process.env&&process.env.ECHOCFG)?JSON.parse(process.env.ECHOCFG):{lvAdd:1,hpM:1.3,powM:1.05,hpS:[.95,1.15,.8,1.1,.85]};// a story echo vs its base boss: tuned for ~70% at the base boss's level
+// the one echo naming function (v0.18.7): 'Echo Dimmer', never 'Echo The Dimmer'. Takes a def, a name or an Echo's base name.
+function echoName(d){const n=String(d&&d.n!=null?d.n:d).replace(/^the\s+/i,'');return 'Echo '+n;}
 function echoKeys(){return GPOOL.concat(FPOOL);}
 function echoDef(k){const d=guardianDef(k);if(!d)return null;const dmg=d.sk.filter(s=>s[4]!=='buff'),s0=dmg[0]||d.sk[0];
   const nsk=[`Resounding ${s0[0]}`,s0[1],+(s0[2]*1.2).toFixed(2),'all',s0[4]==='buff'?'mag':s0[4],(s0[5]||[]).concat([['weaken',.35]])];
-  return Object.assign({},d,{n:'Echo '+d.n,sk:d.sk.concat([nsk]),echoOf:k,
+  return Object.assign({},d,{n:echoName(d),sk:d.sk.concat([nsk]),echoOf:k,
     phase2:{at:.25,say:`The Echo of ${d.n} fractures and surges!`,self:[['might',1],['haste',1]],heal:.06}});}
 // the second phase: fires once below 25% HP, after the boss's own phase
 HOOK.wrap('checkPhase','echocore','second boss phase',function(next,...args){const e=args[0];next(...args);try{if(e&&e.phase2&&e.phaseDone&&!e.p2done&&e.hp>0&&e.hp<=e.S.mhp*e.phase2.at){e.p2done=1;const P1=e.phase;e.phase=e.phase2;e.phaseDone=false;next(e);e.phase=P1;e.phaseDone=true;}}catch(x){}});

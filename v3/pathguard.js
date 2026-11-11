@@ -240,3 +240,4 @@ function drawAudit(m){const out={hidden:[],holes:[],apron:[],door:[],props:0,hei
     if(PG_APRON_DECOR.includes(c))out.apron.push({x,y,c,b:b.k,side});
     else if(R&&!pgBlocksTile(m,x,y)&&!R[y][x])out.door.push({x,y,b:b.k,side,why:side==='step'?'door step unreachable':'apron tile unreachable'});});});
   return out;}
+drawAudit=HOOK.def('drawAudit',drawAudit);// v0.18.7: world12.js adds the node check (out.nodes) and knows the landmark footprint
