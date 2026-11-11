@@ -11,7 +11,12 @@
 const {open,chk,done}=require('./pw');
 const META=t=>`localStorage.clear();localStorage.setItem('aurelis-meta-v1',JSON.stringify({cfg:{speed:1,enc:'off',diff:'normal',music:0,sfx:0,autoStats:true,autoEquip:false,gfx:'${t}',rmotion:true,hints:false,tips:false,hd2d:true}}));(()=>{let s=5;Math.random=()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296;};})();`;
 const only=process.env.ONLY||'',want=n=>!only||only.split(',').includes(n);
-async function boot(t,w,h){const H=await open({w:w||430,h:h||760,mobile:true,dpr:1,pre:META(t)});const errs=[];H.page.on('console',m=>{if(m.type()==='error'&&!/file:|ERR_FILE|Failed to load resource|net::/.test(m.text()))errs.push(m.text());});H.errs=errs;
+// every page call is bounded: a call that never comes back (a starved frame, a page that stopped) fails the test with a name instead of hanging it
+const bound=(p,ms,what)=>{let t;return Promise.race([p,new Promise((_,rej)=>{t=setTimeout(()=>rej(new Error('timeout after '+ms+' ms: '+what)),ms);})]).finally(()=>clearTimeout(t));};
+setTimeout(()=>{console.log('FAIL watchdog: v174a ran over 900 s');process.exit(1);},900000).unref();
+// poll (from node, not from the page's frames) until fn gives the same JSON twice in a row, at most ms; returns the last value
+async function rest(H,fn,ms){const t0=Date.now();let prev=null,v=null;while(Date.now()-t0<(ms||5000)){try{v=JSON.stringify(await bound(H.page.evaluate(fn),4000,'rest'));}catch(e){v='error: '+e.message;}if(v===prev&&!/^error/.test(v))return JSON.parse(v);prev=v;await H.wait(150);}return null;}
+async function boot(t,w,h){const H=await open({w:w||430,h:h||760,mobile:true,dpr:1,pre:META(t)});const ev0=H.ev;H.ev=(f,a)=>bound(ev0(f,a),120000,'page call');const errs=[];H.page.on('console',m=>{if(m.type()==='error'&&!/file:|ERR_FILE|Failed to load resource|net::/.test(m.text()))errs.push(m.text());});H.errs=errs;
   await H.ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;A.render();});await H.wait(500);return H;}
 (async()=>{
   // ---------- 1. exits on land ----------
@@ -31,50 +36,47 @@ async function boot(t,w,h){const H=await open({w:w||430,h:h||760,mobile:true,dpr
     chk(`every exit tile is open ground or road, and the path checks (mapIssues) are no worse (${now.mi} against ${old.mi}); no generation error (${now.err})`,now.err===0&&now.mi<=old.mi);
     await H.browser.close();}
   // ---------- 2. weather in world space ----------
-  const REC=`(T)=>{const A=__A,ctx=A.WS.ctx,f0=ctx.fillRect,d0=ctx.drawImage,out=[];let on=false;const W=A.W7.W7;
-    ctx.fillRect=function(x,y,w,h){if(on&&w*h<2500)out.push([x,y,w,h]);return f0.apply(this,arguments);};
-    ctx.drawImage=function(im,a,b,c,d,e,f,g,h){if(on){if(arguments.length===3)out.push([a,b,im.width,im.height]);else if(arguments.length===5)out.push([a,b,c,d]);}return d0.apply(this,arguments);};
-    W.rec=v=>{on=v;};try{A.worldDraw2(T);}finally{delete ctx.fillRect;delete ctx.drawImage;W.rec=null;}
-    return {r:out,cam:[A.WS.cam.x,A.WS.cam.y],hero:[A.WS.px+8,A.WS.py+16],vw:A.WS.vw,mode:A.W7.W7.stats.mode,n:A.W7.W7.stats.n,layers:A.W7.W7.stats.layers.slice()};}`;
-  const SPOT=`(w,dx)=>{const A=__A,G=A.G,m=A.getMap('f1');G.clock=150;G.weather[1]=w;A.TR.wx.key=null;let best=null;for(const [jr,il] of [[2,3],[1,2],[1,1]]){for(let y=6;y<m.h-6&&!best;y++)for(let x=6;x<m.w-dx-6;x++){let ok=true;for(let j=-jr;j<=jr&&ok;j++)for(let i=-il;i<=dx+il&&ok;i++)if(A.solidAt(m,x+i,y+j))ok=false;if(ok){best=[x,y];break;}}if(best)break;}
-    A.V.modal=null;A.WS.dlg=null;A.placeAt('f1',best[0],best[1],'d');A.TR.ph=null;A.render();return best;}`;
-  // frame A, the hero walks, frame B at the same time: the shift each particle made (the histogram of x shifts of rects that kept their y and size)
-  const SHIFT=async(H,w,dx,minH)=>{const best=await H.ev(`(${SPOT})(${JSON.stringify(w)},${dx})`);await H.wait(250);
-    const cam=()=>H.settle(()=>[Math.round(__A.WS.cam.x),Math.round(__A.WS.cam.y),__A.WS.x,__A.WS.y],null,{frames:5,timeout:5000});await cam();
-    const a=await H.ev(`(${REC})(40000)`);await H.ev(([b,dx])=>{__A.placeAt('f1',b[0]+dx,b[1],'d');__A.render();},[best,dx]);await H.wait(250);await cam();const b=await H.ev(`(${REC})(40000)`);
-    return H.ev(([a,b,minH])=>{if(minH){a.r=a.r.filter(q=>q[3]>=minH);b.r=b.r.filter(q=>q[3]>=minH);}const h={},dc=Math.round(b.cam[0])-Math.round(a.cam[0]);let pairs=0;const hx=a.hero[0]-a.cam[0],hy=a.hero[1]-a.cam[1];
-      const idx={};b.r.forEach(q=>{const k=q[1]+':'+q[2]+':'+q[3];(idx[k]=idx[k]||[]).push(q[0]);});
-      a.r.forEach(q=>{if(Math.abs(q[0]-hx)<90&&Math.abs(q[1]-hy)<90)return;const xs=idx[q[1]+':'+q[2]+':'+q[3]];if(!xs)return;
-        // the nearest counterpart on the same row, within 150 px
-        let bd=1e9;xs.forEach(x=>{const d=x-q[0];if(Math.abs(d)<Math.abs(bd))bd=d;});if(Math.abs(bd)<=150){pairs++;h[bd]=(h[bd]||0)+1;}});
-      const top=Object.entries(h).sort((p,q)=>q[1]-p[1]);
-      // a particle that leaves one side of the view comes back on the other (the lattice wraps every view width plus its margin): minus the camera's shift, or that shift plus one period
-      let ex=0,wp=0;Object.entries(h).forEach(([d,n])=>{d=+d;if(Math.abs(d+dc)<=1)ex+=n;else if(dc>0?d>=-dc+a.vw-4:d<=-dc-a.vw+4)wp+=n;});
-      return {dc,pairs,top:top.slice(0,3),share:pairs?top[0][1]/pairs:0,exact:pairs?ex/pairs:0,wrapped:pairs?wp/pairs:0,at:+(top[0]?top[0][0]:0),na:a.r.length,nb:b.r.length,mode:a.mode,layers:a.layers};},[a,b,minH||0]);};
+  // Deterministic: no hero walking, no camera easing, no clock. The 2D weather is a pure function of (map, weather, time, camera offset), so it is drawn twice at the same
+  // time with the camera offset 80 px apart (the hero stays at the same world spot), and each particle of frame A is looked up in frame B at exactly the place the camera delta
+  // puts it. A particle whose new place is off the view (it wrapped round the lattice) or within 90 px of the hero's face (the face clearing moves with the hero) is skipped.
   const WX=['rain','storm','snow','blizzard','fog','gale','sand','ashfall'];
-  if(want('2'))for(const [tier,hd] of [['medium',false],['low',false]]){const H=await boot(tier);const {ev}=H;await ev(hd=>{__A.META.cfg.hd2d=hd;__A.gfxApply();},hd);
-    const rows=[];for(const w of WX){const r=await SHIFT(H,w,5);rows.push([w,r]);}
-    const dcs=new Set(rows.map(([w,r])=>r.dc));
-    chk(`2D ${tier}: the camera moved when the hero walked 5 tiles (${[...dcs].join(',')} px)`,[...dcs].every(d=>Math.abs(d)>=60)||JSON.stringify(rows.map(r=>r[1].dc)));
-    chk(`2D ${tier}: in every weather the particles keep their place in the world: one shift for (nearly) all of them, equal to minus the camera's, or that plus a whole lattice period (at least the view's width) where it wrapped round the view (${rows.map(([w,r])=>`${w} ${Math.round(r.exact*100)}% + ${Math.round(r.wrapped*100)}% wrapped of ${r.pairs}`).join('; ')})`,
-      rows.every(([w,r])=>r.pairs>=2&&r.exact+r.wrapped>=.5)&&rows.reduce((a,[w,r])=>a+(r.exact+r.wrapped)*r.pairs,0)>=.85*rows.reduce((a,[w,r])=>a+r.pairs,0)||JSON.stringify(rows));
-    if(tier==='medium'){// the old parallax shows three different shifts: bug reproduced
-      await ev(()=>{const P=__A.W7.WX7.par;P[0]=.82;P[2]=1.35;});const r=await SHIFT(H,'rain',5);await ev(()=>{const P=__A.W7.WX7.par;P[0]=1;P[2]=1;});const rn=await SHIFT(H,'rain',5);
-      chk(`rain with the old parallax (.82, 1, 1.35): ${Math.round((r.exact+r.wrapped)*100)}% of ${r.pairs} particles made the camera's shift (the far and near layers did not); now ${Math.round((rn.exact+rn.wrapped)*100)}% of ${rn.pairs}`,r.pairs>=8&&r.exact+r.wrapped<.8&&rn.pairs>=8&&rn.exact+rn.wrapped>=.85||JSON.stringify({r,rn}));}
+  const GRAB=`([w,ox,mode])=>{const A=__A,W=A.W7,G=A.G,m=A.WS.m,vw=420,vh=320,cv=document.createElement('canvas');cv.width=vw;cv.height=vh;const x=cv.getContext('2d'),out=[];
+    G.weather[m.s]=w;A.TR.wx.key=null;A.trUpdate(1);const f0=x.fillRect,d0=x.drawImage;
+    const R=Math.round;x.fillRect=function(a,b,c,d){if(c*d<2500)out.push([R(a),R(b),R(c),R(d)]);return f0.apply(this,arguments);};
+    x.drawImage=function(im,a,b,c,d){if(arguments.length===3)out.push([R(a),R(b),im.width,im.height]);else if(arguments.length===5)out.push([R(a),R(b),R(c),R(d)]);return d0.apply(this,arguments);};
+    try{W.w7World(x,mode||'w2d',m,ox,100,vw,vh,9000);}finally{delete x.fillRect;delete x.drawImage;}
+    return {r:out,hero:[Math.round(A.WS.px)+8-ox,Math.round(A.WS.py)+16-100],vw,vh,n:W.W7.stats.n};}`;
+  const SHIFT=async(H,w,dx)=>{const a=await H.ev(`(${GRAB})(${JSON.stringify([w,100])})`),b=await H.ev(`(${GRAB})(${JSON.stringify([w,100+dx])})`);
+    return H.ev(([a,b,dx])=>{const key=q=>q[0]+':'+q[1]+':'+q[2]+':'+q[3],bs=new Set(b.r.map(key));let seen=0,moved=0,skippedWrap=0,skippedHero=0;
+      a.r.forEach(q=>{const nx=q[0]-dx;if(nx<-q[2]||nx>a.vw){skippedWrap++;return;}
+        if((Math.abs(q[0]-a.hero[0])<90&&Math.abs(q[1]-a.hero[1])<90)||(Math.abs(nx-b.hero[0])<90&&Math.abs(q[1]-b.hero[1])<90)){skippedHero++;return;}
+        seen++;if([...[-1,0,1]].some(e=>bs.has((nx+e)+':'+q[1]+':'+q[2]+':'+q[3])))moved++;});
+      return {seen,moved,share:seen?moved/seen:0,skippedWrap,skippedHero,na:a.r.length,nb:b.r.length,n:a.n};},[a,b,dx]);};
+  const PLACE2=`(()=>{const A=__A,G=A.G,m=A.getMap('f1');G.clock=150;let best=null;for(let y=8;y<m.h-8&&!best;y++)for(let x=8;x<m.w-8;x++){if(!A.solidAt(m,x,y)){best=[x,y];break;}}A.V.modal=null;A.WS.dlg=null;A.placeAt('f1',best[0],best[1],'d');A.render();return best;})()`;
+  if(want('2'))for(const tier of ['medium','low']){const H=await boot(tier);const {ev}=H;await ev(()=>{__A.META.cfg.hd2d=false;__A.META.cfg.rmotion=true;__A.gfxApply();});
+    await ev(PLACE2);const rows=[];for(const w of WX){rows.push([w,await SHIFT(H,w,80)]);}
+    const seen=rows.reduce((a,[w,r])=>a+r.seen,0),moved=rows.reduce((a,[w,r])=>a+r.moved,0);
+    chk(`2D ${tier}: every weather draws particles (${rows.map(([w,r])=>w+' '+r.na).join(', ')})`,rows.every(([w,r])=>r.na>=4)||JSON.stringify(rows));
+    chk(`2D ${tier}: with the camera 80 px on, each particle is exactly 80 px along on screen, in every weather: ${moved} of ${seen} (${rows.map(([w,r])=>`${w} ${r.moved}/${r.seen}`).join(', ')}; wrapped and face-cleared ones skipped)`,
+      seen>=40&&moved>=seen*.97&&rows.every(([w,r])=>r.moved>=r.seen*.9)||JSON.stringify(rows));
+    if(tier==='medium'){// the old parallax: far layer 18% behind the camera, near layer 35% ahead: bug reproduced
+      await ev(()=>{const P=__A.W7.WX7.par;P[0]=.82;P[2]=1.35;});const r=await SHIFT(H,'rain',80);await ev(()=>{const P=__A.W7.WX7.par;P[0]=1;P[2]=1;});const rn=await SHIFT(H,'rain',80);
+      chk(`rain with the old parallax (.82, 1, 1.35): only ${r.moved} of ${r.seen} particles moved exactly with the camera (the far and near layers did not); now ${rn.moved} of ${rn.seen}`,r.seen>=8&&r.moved<r.seen*.8&&rn.seen>=8&&rn.moved>=rn.seen*.97||JSON.stringify({r,rn}));}
     chk(`2D ${tier}: WX7.par and WX7.fogPar are 1 for every layer`,await ev(()=>{const W=__A.W7.WX7;return W.par.every(v=>v===1)&&W.fogPar.every(v=>v===1);}));
     await H.browser.close();}
-  if(want('2')){// HD-2D: the overlay's particles shift as one, the scene's quads keep their world positions
-    const H=await boot('medium');const {ev}=H;await ev(()=>{__A.META.cfg.hd2d=true;__A.gfxApply();});
-    const live=await ev(()=>__A.HD.live||__A.hdActive&&__A.hdActive());
-    const rows=[];for(const w of ['rain','snow','fog']){await ev(`(${SPOT})(${JSON.stringify(w)},5)`);await H.wait(400);
-      const best=await ev(()=>({p:[__A.WS.x,__A.WS.y]}));
-      const rec=()=>ev(`(()=>{const A=__A,HD=A.HD,out=[];const q0=HD.dynB.quad;HD.dynB.quad=function(P){out.push([P[0],P[2],P[7]]);return q0.apply(this,arguments);};try{A.worldDraw2(40000);}finally{HD.dynB.quad=q0;}return {r:out,cam:[HD.cam.x,HD.cam.z]};})()`);
-      await H.settle(()=>[Math.round(__A.HD.cam.x),Math.round(__A.HD.cam.z)],null,{frames:6,timeout:6000});const a=await rec();
-      await ev(([p])=>{__A.placeAt('f1',p[0]+5,p[1],'d');__A.render();},[best.p]);await H.wait(300);await H.settle(()=>[Math.round(__A.HD.cam.x),Math.round(__A.HD.cam.z)],null,{frames:6,timeout:6000});const b=await rec();
+  if(want('2')){// HD-2D: the overlay's particles follow the ground exactly, the scene's quads keep their world positions
+    const H=await boot('medium');const {ev}=H;await ev(()=>{__A.META.cfg.hd2d=true;__A.META.cfg.rmotion=true;__A.gfxApply();});
+    const live=await ev(()=>!!(__A.HD.live||(__A.hdActive&&__A.hdActive())));
+    await ev(PLACE2);
+    const rec=()=>ev(`(()=>{const A=__A,HD=A.HD,out=[];const q0=HD.dynB.quad;HD.dynB.quad=function(P){out.push([P[0],P[2],P[7]]);return q0.apply(this,arguments);};try{A.worldDraw2(40000);}finally{HD.dynB.quad=q0;}return {r:out,cam:[HD.cam.x,HD.cam.z]};})()`);
+    const rows=[];for(const w of ['rain','snow','fog']){await ev(w=>{__A.G.weather[1]=w;__A.TR.wx.key=null;__A.trUpdate(1);},w);
+      await rest(H,()=>[Math.round(__A.HD.cam.x),Math.round(__A.HD.cam.z)],6000);const a=await rec();
+      const p=await ev(()=>[__A.WS.x,__A.WS.y]);await ev(([p])=>{__A.placeAt('f1',p[0]+5,p[1],'d');__A.render();},[p]);
+      await rest(H,()=>[Math.round(__A.HD.cam.x),Math.round(__A.HD.cam.z)],8000);const b=await rec();
       const key=q=>Math.round(q[0]*10)+','+Math.round(q[1]*10)+','+Math.round(q[2]);const sa=new Set(a.r.map(key));let same=0;b.r.forEach(q=>{if(sa.has(key(q)))same++;});
-      rows.push([w,{na:a.r.length,nb:b.r.length,same,moved:Math.round(b.cam[0]-a.cam[0])}]);}
+      rows.push([w,{na:a.r.length,nb:b.r.length,same,moved:Math.round(b.cam[0]-a.cam[0])}]);
+      await ev(([p])=>{__A.placeAt('f1',p[0],p[1],'d');},[p]);}
     chk(`HD-2D: the scene's weather quads keep their world positions when the camera moves (${rows.map(([w,r])=>`${w}: ${r.same} of ${r.nb} quads unchanged, camera ${r.moved}`).join('; ')})`,live&&rows.every(([w,r])=>r.nb>=40&&r.same>=r.nb*.5&&Math.abs(r.moved)>=20)||JSON.stringify({live,rows}));
-    // the overlay is the 2D layer over the scene (mode 'ov'): the ground's screen motion goes in as its offset, and every particle must follow it exactly (v077wa's grab, all layers)
     const ov=await ev(()=>{const A=__A,W=A.W7,m=A.WS.m,cv=document.createElement('canvas');cv.width=420;cv.height=320;const x=cv.getContext('2d');A.G.weather[m.s]='rain';A.TR.wx.key=null;A.trUpdate(1);
       const grab=(ox)=>{const o=[];const d0=x.drawImage;x.drawImage=function(im,a,b){if(arguments.length===3)o.push([a,b,im.width,im.height]);return d0.apply(this,arguments);};try{W.w7World(x,'ov',m,ox,60,420,320,9000);}finally{delete x.drawImage;}return o;};
       const a=grab(100),b=grab(120),has=(l,px,py,w,h)=>l.some(q=>Math.abs(q[0]-px)<=1&&q[1]===py&&q[2]===w&&q[3]===h);let seen=0,same=0;a.forEach(r=>{const nx=r[0]-20;if(nx<-10||nx>400)return;seen++;if(has(b,nx,r[1],r[2],r[3]))same++;});return {n:a.length,seen,same};});

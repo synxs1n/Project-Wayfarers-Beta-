@@ -30,7 +30,7 @@ const GROUPS={
   ci:'v165a v063wb v145a v153a sanct v142a v141a v140a v152a v139a v136a v160a v164a v157a v159a v137a v163a v162a v151a v138a v134a v143a savesys',
   // flaky: tests that fail now and then under machine load for timing reasons (particles sampled by wall clock, the title walk, the
   // long auto fight, a stale minimap tap). Run them alone when a change touches what they cover; never in ci.
-  flaky:'v158a v080wt v080b v071wt v174a',
+  flaky:'v158a v080wt v080b v071wt',
 };
 // ---- tests that fail for old reasons (the game moved on; the test was not updated). Not counted as failures, not in "all" ----
 const STALE={
