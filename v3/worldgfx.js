@@ -323,4 +323,5 @@ function buildMapCanvas(m,frame){
   for(let y=0;y<m.h;y++)drawObjects(ctx,m,y);
   return cv;
 }
+buildMapCanvas=HOOK.def('buildMapCanvas',buildMapCanvas);// v0.19.6: worldart13.js stands the field entrances in the depth sort (m.bsp)
 

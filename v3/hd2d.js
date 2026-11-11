@@ -103,6 +103,7 @@ function hdStructCanvas(m,S){const dun=m.kind==='dungeon',T=dun?THEME[m.theme]||
 // ground shadows land on the ground canvases instead
 function hdBakeCards(m,S,g0,g1){const fa=m.kind==='field'&&m.fortAt&&m.t[m.fortAt[1]]?m.fortAt:null,fc=fa?m.t[fa[1]][fa[0]]:null;// v0.6.3: no cave mouth card on the gatehouse
   if(fa)m.t[fa[1]][fa[0]]='U';try{return hdBakeCards0(m,S,g0,g1);}finally{if(fa)m.t[fa[1]][fa[0]]=fc;}}
+hdBakeCards=HOOK.def('hdBakeCards',hdBakeCards);// v0.19.6: worldart13.js keeps the den and lair fronts out of the card strip (they stand as building cards)
 function hdBakeCards0(m,S,g0,g1){const W=m.w*TS,SH=64,UP=58,CW=8,st=mkCv(W,SH),sc=st.getContext('2d',{willReadFrequently:true});
   const want=c=>H2_OBJ.indexOf(c)>=0||(c==='E'&&m.kind==='field');
   const pk=new H2Pack(2048),items=[];const sh0=shadowAt,c0=g0.getContext('2d'),c1=g1.getContext('2d');
@@ -168,10 +169,12 @@ function hdGateGeo(m,S,b,Q,U,Vv,p,V,bt){const G2=H2G,x0=b.x*TS,x1=x0+b.w*TS,zb=b
     Q([xl,h,zz,xr,h,zz,xr,0,zz,xl,0,zz],U(p,76),Vv(p,10),U(p,92),Vv(p,14),255,[0,0,1],2|8);// the riser
     flat([xl,h,zz-d,xr,h,zz-d,xr,h,zz,xl,h,zz],stp);}// the tread
   S.bh.push({b,h:hT});}
+hdGateGeo=HOOK.def('hdGateGeo',hdGateGeo);// v0.19.6: worldart13.js builds the entrance cards with a depth footprint
 // buildings: roofed houses become boxes with a gabled roof cut from their 2D sprite; keeps a box with battlements; tents, the lighthouse
 // and anything unusual stand up as one card. Signs and landmark props (towngfx) come from the town decor pass as a card on the facade.
 function hdBldKind(m,b){if(b.k==='gatehouse')return 'gate';if(b.k==='lighthouse')return 'tower';/* v0.11.7: a narrow round tower (v0.11.4 'keep' stretched the sprite over the footprint) */const T=THM(m);let mat=T.mat;if(['guild','keep','chapel','tower','windmill'].includes(b.k))mat=m.theme==='void'?'tent':'stone';
   if(mat==='tent'||b.k==='bigtent')return 'card';if(b.k==='keep'||b.k==='tower')return 'keep';return 'roof';}
+hdBldKind=HOOK.def('hdBldKind',hdBldKind);// v0.19.6: worldart13.js entrance parts take the gate path
 // v0.12.13: a tent stands as a cone of cloth, not a flat card: 18 slices round an ellipse on the footprint, each slice mapped to its
 // own wedge of the 2D tent sprite (quad4 takes a texture coordinate per corner), so the lit left face, the seams and the hem wrap round;
 // the pole and pennant are a small card at the apex. The back half shows the front's wedges mirrored, which the camera only sees at the top.

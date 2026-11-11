@@ -374,7 +374,8 @@ function sncGateGeo(m,S,b,Q,U,Vv,p,V,bt){const th=m&&m.theme||'meadow',P=SNC_P(t
     box(cx-3,cx+3,za,zb,12*V,19*V,F(58,18,8,8),side,top);box(cx-4.5,cx+4.5,za-1.5,zb+1.5,19*V,21.5*V,F(68,18,12,4),side,top,8);});
   S.bh.push({b,h:hK});}
 {const gp0=hdGatePart;hdGatePart=function(m){const r=gp0.apply(this,arguments);try{if(r&&m&&m.kind==='field')r.cv=sncGateSheet(m);}catch(e){}return r;};}
-{const gg0=hdGateGeo;hdGateGeo=function(m,S,b,Q,U,Vv,p,V,bt){try{return sncGateGeo(m,S,b,Q,U,Vv,p,V,bt);}catch(e){return gg0.apply(this,arguments);}};}
+// v0.19.6: a registered hook (was a raw wrap that took every 'gate' part, the worldart13 entrance cards included); sitelook10 answers the gatehouse before this
+HOOK.wrap('hdGateGeo','sanctlook10','the shrine gate geometry',function(next,m,S,b,Q,U,Vv,p,V,bt){try{return sncGateGeo(m,S,b,Q,U,Vv,p,V,bt);}catch(e){return next(m,S,b,Q,U,Vv,p,V,bt);}});
 
 // the lights the tile scan adds (lanterns, and the violet glow cave and void realms put on pillars) are softer and gold in a Sanctum
 {const sl0=scanLights;scanLights=function(m){const r=sl0.apply(this,arguments);try{if(m&&m.fort&&m.tl)m.tl=m.tl.filter(L=>L[3]!=='violet').map(L=>L[3]==='fire'?[L[0],L[1]+2,22,'lamp']:L);}catch(e){}return r;};}

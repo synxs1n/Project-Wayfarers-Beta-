@@ -18,7 +18,7 @@ const HERE=__dirname,ROOT=path.join(HERE,'..','..');
 // ---- groups: every runnable test belongs to one or more ----
 const GROUPS={
   battle:'v166a v164a v162a v160a v158a v155a v152a v147a ucards wide v136a v139a v109a v040p1 v041p1a v041p1b v041p1d v041p1g v041p2 v041p26 v041p65 v050p1d v050p1g v050p2b v050p2bg v051a v053b v058a v059a v061a v062a v063ba v063bb v063bc v063bd v070ia v070ib v070ic v070m1 v070m2 v075a v076b v080b v080ca v095b v095na v095p2 v173a',
-  world:'v174a v171a v168a v170av165a v161a v163a v156a v154a v153a v150a v145a v144a v141a v142a collide roof nature sanct v138a v140a v040fs v040p5 v040p5b v040p6 v040p789 v041p1c v041p1e v041p1f v041p1h v041p1i v041p1j v041p4 v041p44 v041p46 v041p47 v041p53 v050p1b v050p1c v050p1f v050p2world v050p5c v051c v053a v146a v056a v062a v063wo v071wa v071wb v071wt v077wa v077wb v080r v080wa v082da v082db v083a v095p1',
+  world:'v175a v174a v171a v168a v170a v165a v161a v163a v156a v154a v153a v150a v145a v144a v141a v142a collide roof nature sanct v138a v140a v040fs v040p5 v040p5b v040p6 v040p789 v041p1c v041p1e v041p1f v041p1h v041p1i v041p1j v041p4 v041p44 v041p46 v041p47 v041p53 v050p1b v050p1c v050p1f v050p2world v050p5c v051c v053a v146a v056a v062a v063wo v071wa v071wb v071wt v077wa v077wb v080r v080wa v082da v082db v083a v095p1',
   menus:'v172a v167a v159a v157aeq eq2 v110a v119a v119b p4b p5b smithy smithy2 smithy3 smithyfuzz smithywalk tavern v040p3 v041p6 v041p64 v041p67 v041p6b v043c v050p1a v050p1e v050p1h v050p3a v050p3b v050p4 v051b v053ua v053ub v063m1 v063m2 v063s v070oa v070ob v072a v077a v095m1 v095m2 v095m3 v095m4 v095nb v135a v149a v148a v151a',
   party:'v143a v137a v134a v120a v041p5 v063g v063pa v063pb v063wa v063wb v071a v077d v080cb v081a v095p3 v050p2daily v169a',
   saves:'oldsave savesys offline v041old v041p1k v043b v050p4b v050p5 v050p5b v085s v085s2',
@@ -88,7 +88,7 @@ const STALE={
 // ---- tests that compare against an older build: the revision whose committed index.html is OLDHTML when OLDHTML is not set ----
 const OLD={v050p2daily:'fab13f2',v095na:'fab13f2',v080ca:'927e63e'};
 // ---- per test timeout (seconds) where the default is too short ----
-const SLOW={v174a:1200,v080b:1500,v063wa:1200,v070ia:900,v076b:900,v050p1c:1500,v050p2world:1200,v082da:1200,collide:1200,v041p4:900,v063m1:900,v095m4:900,v053ua:900,audio:900,v080cb:1200};
+const SLOW={v175a:900,v174a:1200,v080b:1500,v063wa:1200,v070ia:900,v076b:900,v050p1c:1500,v050p2world:1200,v082da:1200,collide:1200,v041p4:900,v063m1:900,v095m4:900,v053ua:900,audio:900,v080cb:1200};
 // not runnable here (for --list): old puppeteer/@sparticuz tests, missing pre-v3 builds, helpers, screenshot/sheet/perf scripts
 const NOT_RUNNABLE='arch beta fb leg lever p1 p2 p3 p4 p5 prog v020 v030 v50 gear saveformats world6 v040p2 v043 pw v063lib v095lib syncmock rlmeasure v053dbg runall v050p6suite v053suite.sh v063suite.sh (runners)';
 

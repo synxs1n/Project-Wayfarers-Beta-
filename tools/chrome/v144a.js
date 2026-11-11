@@ -9,8 +9,8 @@ const R=await ev(()=>{const A=__A,g=A.TW.get,G=g('G'),Z=g('ZONES'),out=[],hs=new
   try{const s0=snap(f),i0=g('mapIssues')(f).length;
    const cv0=g('buildMapCanvas')(f,0),cv1=g('buildMapCanvas')(f,1);o.draw=(o.draw!==false)&&cv0.width===f.w*16&&cv1.height===f.h*16;
    o.same=(o.same!==false)&&snap(f)===s0&&g('mapIssues')(f).length===i0;
-   (f.caves||[]).forEach(c=>{if(c.kind==='fort'){const [x,y]=c.id==='o1'&&f.fortAt?f.fortAt:[c.x,c.y];o.fort=f.t[y][x]==='E'&&f.t[y][x-1]==='U'&&f.t[y-1][x]==='U';o.lights=g('sncGateLights')(f).length;}else{o.denE=f.t[c.y][c.x]==='E';const sp=g('slDenSprite')(f);o.den=sp.width===64&&sp.height===48;}});
-   if(f.ent){o.entE=f.t[f.ent[1]][f.ent[0]]==='E';const L=f.d8lair;o.mask=!L||L.tiles.every(([x,y])=>f.t[y][x]==='#');const sp=g('slLairSprite')(f);o.lair=sp.width===64&&sp.height===60;ls.add(g('slLairKit')(f).id);}
+   (f.caves||[]).forEach(c=>{if(c.kind==='fort'){const [x,y]=c.id==='o1'&&f.fortAt?f.fortAt:[c.x,c.y];o.fort=f.t[y][x]==='E'&&f.t[y][x-1]==='U'&&f.t[y-1][x]==='U';o.lights=g('sncGateLights')(f).length;}else{o.denE=f.t[c.y][c.x]==='E';const sp=g('slDenSprite')(f);o.den=sp.width===78&&sp.height===55;/* v0.19.6 worldart13: 64x48 plus a 7 px top face and 7 px each side */}});
+   if(f.ent){o.entE=f.t[f.ent[1]][f.ent[0]]==='E';const L=f.d8lair;o.mask=!L||L.tiles.every(([x,y])=>f.t[y][x]==='#');const sp=g('slLairSprite')(f);o.lair=sp.width===78&&sp.height===67;/* v0.19.6 worldart13: 64x60 plus the faces */ls.add(g('slLairKit')(f).id);}
    o.sheet=!!g('slSaSheet')(f);hs.add(g('slDenSprite')(f).toDataURL().length+':'+z.key);
   }catch(e){o.err.push(e.message);}}
  o.errs=g('SLE').slice();out.push(o);});
@@ -20,8 +20,8 @@ const R=await ev(()=>{const A=__A,g=A.TW.get,G=g('G'),Z=g('ZONES'),out=[],hs=new
  return {out,dens:dens.size,kits:kits.size,nd:Object.keys(g('SL_DEN')).length,lit,kitsUsed:[...ls].length};});
 console.log(JSON.stringify(R.out.map(o=>[o.key,o.draw,o.same,o.den,o.denE,o.entE,o.mask,o.lair,o.fort,o.lights,o.err.length]).slice(0,17)));
 for(const o of R.out){chk(`${o.key}: both frames draw, the map (tiles, mapIssues) is unchanged by drawing, no module errors`,o.draw===true&&o.same===true&&!o.err.length&&!o.errs.length||JSON.stringify(o));
- if(o.den!==undefined)chk(`${o.key}: den mouth 64x48 on its unchanged E tile`,o.den&&o.denE||JSON.stringify(o));
- if(o.lair!==undefined)chk(`${o.key}: lair front 64x60, entrance E and every mound tile unchanged`,o.lair&&o.entE&&o.mask||JSON.stringify(o));
+ if(o.den!==undefined)chk(`${o.key}: den mouth 78x55 (64x48 with its faces) on its unchanged E tile`,o.den&&o.denE||JSON.stringify(o));
+ if(o.lair!==undefined)chk(`${o.key}: lair front 78x67 (64x60 with its faces), entrance E and every mound tile unchanged`,o.lair&&o.entE&&o.mask||JSON.stringify(o));
  if(o.fort!==undefined)chk(`${o.key}: Sanctum keeps the 3 x 2 U/E footprint, 3 lights`,o.fort&&o.lights===3||JSON.stringify(o));}
 chk('17 realms, 17 distinct den mouths and 17 distinct lair fronts; relit differs',R.dens===R.nd&&R.nd===17&&R.kits===17&&R.lit||JSON.stringify([R.dens,R.kits,R.lit]));
 // depth pass: no entrance is a flat fill. Every den and lair sprite has many tones, is lit from the upper left (the upper left half is brighter than the lower right

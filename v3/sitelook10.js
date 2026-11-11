@@ -436,7 +436,7 @@ function slShrineFront(ctx,x,y){const m=sncFieldM(),th=slSaKey(m),P0=SNC_P(th),S
   [[14,4],[17,4],[29,4],[32,4]].forEach(([a,b],i)=>ctx.drawImage(o.rib,i%4*4,0,3,8,x+a,y+b,3,8));
   if(cfg.torii)[[9,-2],[12,-2],[35,-2],[38,-2]].forEach(([a,b],i)=>ctx.drawImage(o.rib,(i+1)%4*4,0,3,9,x+a,y+b,3,9));
   ctx.restore();}
-drawShrineFront=slShrineFront;
+drawShrineFront=HOOK.def('drawShrineFront',slShrineFront);// v0.19.6: worldart13.js gives the shrine's parts a top and a side face
 function sncGateLights(m){const [fx,fy]=m.fortAt,x=(fx-1)*TS,y=(fy-1)*TS;return [[x+24,y+17,7,'lamp'],[x+9,y+22,4,'lamp'],[x+39,y+22,4,'lamp']];}
 // ---------- HD-2D: stair, shrine, wings, posts and lintel as geometry; guardians and ribbons as cards ----------
 // sheet (px): niche 0,0 20x26 | guard 24,0 14x22 | post 40,0 5x38 | rib 48,0 16x12 | lintel 0,28 60x12 | tread 0,42 20x3 | wing 22,42 12x9 | roof cap 36,42 22x4

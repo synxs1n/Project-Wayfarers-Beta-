@@ -38,6 +38,7 @@ evals any name), `window.__AU` (ambience.js), `__P2` (p2world.js), `__P3` (p3sho
 | dungeon looks per realm, organic cave walls, the boss lair entrance | `dungeon8.js` (D8M materials, D8_REALM) |
 | world movement, gates, chests, encounters | `worldrt.js`, `roam.js`, `chance.js`, `mimic.js`, `stuck.js`, `travel.js` |
 | exits on land, entrances with volume (den, lair), Sanctum side carpets, weather parallax, gather node sprites, the Mimic's art | `worldart12.js` (see `docs/v0192-worldart12.md`); the hooks it uses are `HOOK.def`'d in `sanctlook10.js` (sncYard, sncHall), `sitelook10.js` (slDenByKey, slLairByKit), `mats11.js` (m11NodeDraw) |
+| entrances as solid masses (top, front and side faces, the recessed mouth, the cast shadow, the depth sort): den mouths, lair fronts, the Sanctum shrine and inner door, the Rift gates, in 2D and HD-2D | `worldart13.js` (see `docs/worldart13-entrances.md`); the hooks it uses are `HOOK.def`'d in `worldgfx.js` (buildMapCanvas), `hd2d.js` (hdBakeCards, hdBldKind, hdGateGeo), `sitelook10.js` (drawShrineFront); `window.__WA13.off` gives the v0.19.5 look back |
 | world drawing (2D) | `worldgfx.js`, `worldgfx2.js`, `towngfx.js`, `worldrt.js` (worldDraw), `gfx6world.js`, `worldfx.js`, `daylight.js` |
 | HD-2D world (Medium and High graphics) | `hd2d.js` (worldDraw replacement), `hd2dgl.js` (WebGL layer), `config.js` 8 (HD2D) |
 | weather and day/night | `world3.js` (tables, rolls, clock), `engine2.js` (WEATHER defs, battle weather), `p5trans.js` (blends), `weather7.js` (layers), `config.js` 6 and 8 |
@@ -555,6 +556,19 @@ Registered (load order; 1 is next to the base):
 
 Runs: **base** → 1 ailments → 2 echocore → 3 comp → 4 roles → 5 natures6 → 6 riftkeeper9 → 7 roles9 → 8 echo11
 
+### hdActors (8 hooks)
+Registered (load order; 1 is next to the base):
+1. `worldfx.js` after: opening chests in HD-2D
+2. `dungeon8.js` after: lair glow, torches and plume in HD-2D
+3. `guidance9.js` after: guild door marker in HD-2D
+4. `npcmark9.js` after: quest markers over NPCs in HD-2D
+5. `npcart9.js` before: record the clock for the idle frames
+6. `echo11.js` after: the Echoforge in HD-2D
+7. `world12.js` after: the town landmark in HD-2D
+8. `worldart13.js` after: the Sanctum inner door and the Rift gate faces in HD-2D
+
+Runs: 5 npcart9 → **base** → 1 worldfx → 2 dungeon8 → 3 guidance9 → 4 npcmark9 → 6 echo11 → 7 world12 → 8 worldart13
+
 ### placeAt (8 hooks)
 Registered (load order; 1 is next to the base):
 1. `legends.js` after: Jaeson's storm
@@ -580,18 +594,6 @@ Registered (load order; 1 is next to the base):
 8. `skills12.js` after: trim old saves to the capped kit
 
 Runs: 5 map → **base** → 1 tavern2 → 2 comp → 3 learn → 4 prog2 → 6 summon8 → 7 party12 → 8 skills12
-
-### hdActors (7 hooks)
-Registered (load order; 1 is next to the base):
-1. `worldfx.js` after: opening chests in HD-2D
-2. `dungeon8.js` after: lair glow, torches and plume in HD-2D
-3. `guidance9.js` after: guild door marker in HD-2D
-4. `npcmark9.js` after: quest markers over NPCs in HD-2D
-5. `npcart9.js` before: record the clock for the idle frames
-6. `echo11.js` after: the Echoforge in HD-2D
-7. `world12.js` after: the town landmark in HD-2D
-
-Runs: 5 npcart9 → **base** → 1 worldfx → 2 dungeon8 → 3 guidance9 → 4 npcmark9 → 6 echo11 → 7 world12
 
 ### onFx (7 hooks)
 Registered (load order; 1 is next to the base):
@@ -756,6 +758,26 @@ Registered (load order; 1 is next to the base):
 
 Runs: 1 anim → **base** → 2 anim → 3 gfx6battle → 4 hdspell → 5 fxkind11
 
+### drawPortal (5 hooks)
+Registered (load order; 1 is next to the base):
+1. `rift9.js` around: anvil, won glow, Calamity arch
+2. `rift9.js` around: gate card reads the journey view of the Echo records
+3. `riftkeeper9.js` around: the Riftkeeper's gate
+4. `echo11.js` around: the Echoforge landmark
+5. `worldart13.js` around: the Rift gate faces under its panel (2D)
+
+Runs: 5 worldart13 (around) → 4 echo11 (around) → 3 riftkeeper9 (around) → 2 rift9 (around) → 1 rift9 (around) → **base** → 1 rift9 (around) → 2 rift9 (around) → 3 riftkeeper9 (around) → 4 echo11 (around) → 5 worldart13 (around)
+
+### drawTile (5 hooks)
+Registered (load order; 1 is next to the base):
+1. `worldfx.js` around: ground under a gone chest
+2. `dungeon8.js` around: lair mound ground in 2D
+3. `sitelook10.js` after: den and lair ground, cast shadows
+4. `breachlook11.js` after: Breach tiles
+5. `worldart13.js` after: cast shadows of the entrances
+
+Runs: 2 dungeon8 (around) → 1 worldfx (around) → **base** → 1 worldfx (around) → 2 dungeon8 (around) → 3 sitelook10 → 4 breachlook11 → 5 worldart13
+
 ### genQuests (5 hooks)
 Registered (load order; 1 is next to the base):
 1. `legends.js` after: legend quests
@@ -852,24 +874,6 @@ Registered (load order; 1 is next to the base):
 4. `riftkeeper9.js` after: keeper phase sync
 
 Runs: 3 sfx2 (around) → 2 anim (around) → 1 echocore (around) → **base** → 1 echocore (around) → 2 anim (around) → 3 sfx2 (around) → 4 riftkeeper9
-
-### drawPortal (4 hooks)
-Registered (load order; 1 is next to the base):
-1. `rift9.js` around: anvil, won glow, Calamity arch
-2. `rift9.js` around: gate card reads the journey view of the Echo records
-3. `riftkeeper9.js` around: the Riftkeeper's gate
-4. `echo11.js` around: the Echoforge landmark
-
-Runs: 4 echo11 (around) → 3 riftkeeper9 (around) → 2 rift9 (around) → 1 rift9 (around) → **base** → 1 rift9 (around) → 2 rift9 (around) → 3 riftkeeper9 (around) → 4 echo11 (around)
-
-### drawTile (4 hooks)
-Registered (load order; 1 is next to the base):
-1. `worldfx.js` around: ground under a gone chest
-2. `dungeon8.js` around: lair mound ground in 2D
-3. `sitelook10.js` after: den and lair ground, cast shadows
-4. `breachlook11.js` after: Breach tiles
-
-Runs: 2 dungeon8 (around) → 1 worldfx (around) → **base** → 1 worldfx (around) → 2 dungeon8 (around) → 3 sitelook10 → 4 breachlook11
 
 ### fallen (4 hooks)
 Registered (load order; 1 is next to the base):
@@ -991,12 +995,40 @@ Registered (load order; 1 is next to the base):
 
 Runs: **base** → 1 legends (result) → 2 sites (result)
 
+### hdGateGeo (2 hooks)
+Registered (load order; 1 is next to the base):
+1. `sanctlook10.js` around: the shrine gate geometry
+2. `worldart13.js` around: entrance cards with a depth footprint
+
+Runs: 2 worldart13 (around) → 1 sanctlook10 (around) → **base** → 1 sanctlook10 (around) → 2 worldart13 (around)
+
 ### mPortal (2 hooks)
 Registered (load order; 1 is next to the base):
 1. `rift9.js` result: the gate card says it is beaten
 2. `rift9.js` around: gate card reads the journey view of the Echo records
 
 Runs: 2 rift9 (around) → **base** → 1 rift9 (result) → 2 rift9 (around)
+
+### slDenByKey (2 hooks)
+Registered (load order; 1 is next to the base):
+1. `worldart12.js` result: den mouths with volume
+2. `worldart13.js` result: den mouths as solid masses
+
+Runs: **base** → 1 worldart12 (result) → 2 worldart13 (result)
+
+### slLairByKit (2 hooks)
+Registered (load order; 1 is next to the base):
+1. `worldart12.js` result: lair fronts with volume
+2. `worldart13.js` result: lair fronts as solid masses
+
+Runs: **base** → 1 worldart12 (result) → 2 worldart13 (result)
+
+### townDecorActors (2 hooks)
+Registered (load order; 1 is next to the base):
+1. `world12.js` after: the town landmark in the 2D depth sort
+2. `worldart13.js` after: the Sanctum inner door in the 2D depth sort
+
+Runs: **base** → 1 world12 → 2 worldart13
 
 ### accOf (1 hook)
 Registered (load order; 1 is next to the base):
@@ -1040,6 +1072,12 @@ Registered (load order; 1 is next to the base):
 
 Runs: **base** → 1 battle3 (result)
 
+### buildMapCanvas (1 hook)
+Registered (load order; 1 is next to the base):
+1. `worldart13.js` after: field entrances stand in the depth sort
+
+Runs: **base** → 1 worldart13
+
 ### caveRecruitPool (1 hook)
 Registered (load order; 1 is next to the base):
 1. `world12.js` result: spacing and dual types for cave and keep recruits
@@ -1076,6 +1114,12 @@ Registered (load order; 1 is next to the base):
 
 Runs: 1 menus12 → **base**
 
+### drawShrineFront (1 hook)
+Registered (load order; 1 is next to the base):
+1. `worldart13.js` around: the shrine parts stand with a top and a side face
+
+Runs: 1 worldart13 (around) → **base** → 1 worldart13 (around)
+
 ### fortReward (1 hook)
 Registered (load order; 1 is next to the base):
 1. `world12.js` around: the keep cells follow the spacing
@@ -1087,6 +1131,18 @@ Registered (load order; 1 is next to the base):
 1. `goals.js` before: a Guard under a foe telegraph counts for the goal
 
 Runs: 1 goals → **base**
+
+### hdBakeCards (1 hook)
+Registered (load order; 1 is next to the base):
+1. `worldart13.js` around: entrance fronts stand as building cards, not strip cards
+
+Runs: 1 worldart13 (around) → **base** → 1 worldart13 (around)
+
+### hdBldKind (1 hook)
+Registered (load order; 1 is next to the base):
+1. `worldart13.js` result: entrance parts take the gate path
+
+Runs: **base** → 1 worldart13 (result)
 
 ### interact (1 hook)
 Registered (load order; 1 is next to the base):
@@ -1208,18 +1264,6 @@ Registered (load order; 1 is next to the base):
 
 Runs: **base** → 1 world12
 
-### slDenByKey (1 hook)
-Registered (load order; 1 is next to the base):
-1. `worldart12.js` result: den mouths with volume
-
-Runs: **base** → 1 worldart12 (result)
-
-### slLairByKit (1 hook)
-Registered (load order; 1 is next to the base):
-1. `worldart12.js` result: lair fronts with volume
-
-Runs: **base** → 1 worldart12 (result)
-
 ### sncHall (1 hook)
 Registered (load order; 1 is next to the base):
 1. `worldart12.js` after: the hall: side carpets
@@ -1237,12 +1281,6 @@ Registered (load order; 1 is next to the base):
 1. `kits12.js` after: boss entrance: rings and a glow
 
 Runs: **base** → 1 kits12
-
-### townDecorActors (1 hook)
-Registered (load order; 1 is next to the base):
-1. `world12.js` after: the town landmark in the 2D depth sort
-
-Runs: **base** → 1 world12
 
 ### turnOrder (1 hook)
 Registered (load order; 1 is next to the base):
