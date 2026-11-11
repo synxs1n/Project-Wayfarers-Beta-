@@ -24,13 +24,13 @@ const w=await ev(()=>{const A=__D11,d=(id,fam,sid)=>{const u={id,side:'p',S:{wp:
   th=Object.keys(A.TPL).find(id=>A.TPL[id].cls==='thief'&&!A.TPL[id].mon),ar=Object.keys(A.TPL).find(id=>A.TPL[id].cls==='archer'&&!A.TPL[id].mon);
  return {blade:d(war,'blade','pstrike'),hammer:d(war,'warhammer','pstrike'),hammerAtk:d(war,'warhammer','attack'),greatTitan:d(war,'greatsword','titan'),
   knMace:d(kn,'mace','lance1'),knBlade:d(kn,'blade','lance1'),knLance:d(kn,'lance','lance1'),knBash:d(kn,'blade','bash'),
-  thDagger:d(th,'dagger','flurry'),thStab:d(th,'dagger','stab'),thStabThrown:d(th,'thrown','stab'),thThrown:d(th,'thrown','flurry'),
+  thDagger:d(th,'dagger','r_hamstr'),thStab:d(th,'dagger','stab'),thStabThrown:d(th,'thrown','stab'),thThrown:d(th,'thrown','r_hamstr'),
   arBow:d(ar,'bow','aim'),arPierce:d(ar,'crossbow','pierce'),arNone:d(ar,null,'aim')};});
 console.log(JSON.stringify(w));
 chk('warrior Power Strike: sword slash, warhammer blunt',w.blade==='slash'&&w.hammer==='blunt'||JSON.stringify(w));
 chk('warrior basic Attack follows the warhammer (blunt); a Titan Blow with a greatsword slashes',w.hammerAtk==='blunt'&&w.greatTitan==='slash'||JSON.stringify(w));
 chk('knight Lance skill: mace blunt, blade slash, a lance is re-kinded blunt; Shield Bash is always blunt',w.knMace==='blunt'&&w.knBlade==='slash'&&w.knLance==='blunt'&&w.knBash==='blunt'||JSON.stringify(w));
-chk('thief: dagger slash on a free skill, Quick Stab always piercing, thrown stars piercing',w.thDagger==='slash'&&w.thStab==='piercing'&&w.thStabThrown==='piercing'&&w.thThrown==='piercing'||JSON.stringify(w));
+chk('thief: dagger slash on a free skill (Hamstring: Flurry left the capped kit in v0.19), Quick Stab always piercing, thrown stars piercing',w.thDagger==='slash'&&w.thStab==='piercing'&&w.thStabThrown==='piercing'&&w.thThrown==='piercing'||JSON.stringify(w));
 chk('archer: bow ranged, Piercing Shot piercing with any bow, no weapon falls back to ranged',w.arBow==='ranged'&&w.arPierce==='piercing'&&w.arNone==='ranged'||JSON.stringify(w));
 // 3) the display in the skill list, and the foe's Weak tooltip
 await ev(()=>{const A=__A,B=A.B,u=B.front[0];u.S.wp='mace';u.mp=u.S.mmp||99;A.ACT.cmd('skills');});await wait(250);

@@ -10,11 +10,11 @@ function rlSkills(t){const L=(ROLES.sk[t.cls]||[]),e1=t.el[0],n1=EL[e1]||'';
   return L.map(o=>{const x=Object.assign({cost:1,hits:1,t:'one',mp:0,el:null,fixed:1},JSON.parse(JSON.stringify(o)));
     if(x.el==='e1')x.el=e1;x.n=x.n.replace(/\{n1\}/g,n1);x.d=x.d.replace(/\{n1\}/g,n1);x.lv0=x.lv;x.rl=x.r;delete x.r;
     if(!x.dl){const d=dlFor(t.cls,x);if(d)x.dl=d;}if(x.rl&&ROLES.names[x.rl])x.d+=' '+ROLES.names[x.rl]+' role.';return x;});}
-{const cs2=classSkills;classSkills=function(t){const L=cs2.apply(this,arguments);
+HOOK.xform('classSkills','roles','secondary role skills and adjustments',function(L,t){
   if(!L||L._rl||!t||t.mon||!ROLES.sk[t.cls])return L;L._rl=1;
   try{const A=(ROLES.adj||{})[t.cls]||{};L.forEach(s=>{if(A[s.id])Object.assign(s,JSON.parse(JSON.stringify(A[s.id])));});
     const have=new Set(L.map(s=>s.id));rlSkills(t).forEach(s=>{if(!have.has(s.id))L.push(s);});L.sort((a,b)=>a.lv-b.lv||(a.lv0||a.lv)-(b.lv0||b.lv));}catch(e){}
-  return L;};}
+  return L;});
 
 // Monk chi heals (chi:1) draw on the better of healing power and ROLES.w.chiK x attack
 const rlHealP=(a,sk)=>{const h=a.S.healP||a.S.mag;return sk&&sk.chi?Math.max(h,ROLES.w.chiK*a.S.atk):h;};

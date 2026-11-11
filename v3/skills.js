@@ -118,7 +118,7 @@ function classSkills(t){
     add({id:'aim',n:'Aimed Shot',k:'phys',pw:1.4,mp:2,lv:1,d:'A careful shot.'});
     add({id:'arrow1',n:n1+' Arrow',k:'phys',pw:1.6,mp:4,el:e1,lv:4,d:`Arrow charged with ${n1}.`});
     add({id:'barb',n:'Barbed Arrow',k:'phys',pw:1.1,mp:5,lv:6,fx:[['bleed',.85]],d:'Likely Bleeds.'});
-    add({id:'hawk',n:'Hawkeye',k:'status',t:'self',mp:4,lv:8,fx:[['focus',1]],d:'Focus: your next attack is a critical.'});
+    add({id:'hawk',n:'Hawkeye',k:'status',t:'self',mp:4,lv:8,fx:[['focus',1]],d:`Focus: +${Math.round(FOCUS.crit*100)}% crit chance for ${FOCUS.turns} turns.`});
     if(e2)add({id:'arrow2',n:n2+' Arrow',k:'phys',pw:1.6,mp:4,el:e2,lv:9,d:`Arrow charged with ${n2}.`});
     add({id:'volley',n:'Volley',k:'phys',pw:1,mp:9,t:'all',lv:10,d:'Rain of arrows on all foes.'});
     add({id:'pin',n:'Pin Down',k:'phys',pw:.9,mp:6,lv:13,fx:[['root',.9],['slow',.5]],d:'Roots a foe in place. May Slow.'});
@@ -139,7 +139,7 @@ function classSkills(t){
     add({id:'s1b',n:'Shadow Quarrel',k:'phys',pw:1.6,mp:4,el:'shadow',lv:3,d:'A black-fletched bolt that drinks the light.'});
     add({id:'charge',n:'Hoofbeat Charge',k:'phys',pw:1.8,mp:6,lv:6,fx:[['stun',.25]],d:'Rides a foe down. May Stun.'});
     add({id:'wheel',n:'Wheeling Volley',k:'phys',pw:.95,mp:9,t:'all',lv:9,fx:[['slow',.3]],d:'Circles the field, shooting every foe. May Slow.'});
-    add({id:'khan',n:"Khan's Focus",k:'status',t:'self',mp:6,lv:12,fx:[['focus',1],['haste',1]],d:'Focus and Haste: his next shot is a sure critical.'});
+    add({id:'khan',n:"Khan's Focus",k:'status',t:'self',mp:6,lv:12,fx:[['focus',1],['haste',1]],d:`Focus and Haste: +${Math.round(FOCUS.crit*100)}% crit chance for ${FOCUS.turns} turns.`});
     add({id:'squall',n:'Black Squall',k:'phys',pw:1.15,mp:13,t:'all',el:['shadow','lightning'],lv:16,d:'A storm of shadow-lightning bolts on every foe.'});
     add({id:'s3a',n:'Shadowstorm',k:'phys',pw:3.2,mp:16,cost:1.25,crit:.2,el:['shadow','lightning'],lv:22,d:'His namesake shot. Slow to draw, high crit.'});
     break;
@@ -172,7 +172,7 @@ function classSkills(t){
     add({id:'s3a',n:'Final Chapter',k:'mag',pw:3.3,mp:24,cost:1.3,el:e1,lv:20,d:`The last page, written in ${n1}. Slow recovery.`});
     break;
   case 'bard':
-    add({id:'song',n:'Soothing Song',k:'heal',pw:.8,mp:8,t:'allyAll',lv:1,d:'Heals the vanguard.'});
+    add({id:'song',n:'Soothing Song',k:'heal',pw:1.1,mp:8,t:'allyAll',lv:1,d:'Heals the vanguard.'});
     add({id:'hymn',n:'Battle Hymn',k:'status',t:'allyAll',mp:8,lv:3,fx:[['might',1]],d:'Might for the vanguard.'});
     add({id:'dis',n:'Dissonance',k:'status',t:'all',mp:8,lv:6,fx:[['break',.8]],d:'May Break every foe.'});
     add({id:'tune1',n:n1+' Tune',k:'mag',pw:.9,mp:10,t:'all',el:e1,lv:9,d:`${n1} melody on all foes.`});
@@ -199,6 +199,7 @@ function classSkills(t){
   S.sort((a,b)=>a.lv-b.lv||a.lv0-b.lv0);
   return SKC[t.id]=S;
 }
+classSkills=HOOK.def('classSkills',classSkills);// v0.19: one definition; archetype, sigskills, roles and skills12 add hooks (hooks.js)
 // Beta v0.2.0 pacing: two skills at level 1, then one about every 3.3 levels. The big finishers stay last and the
 // dual-element art lands mid-game. lv0 keeps the old level so saves made before this keep what they already learned.
 // v0.10.8: target types that reach a foe (roles need one)

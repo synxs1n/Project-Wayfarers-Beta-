@@ -1906,7 +1906,7 @@ html.rm .battle.b3 .cmd .mi.b9glow{animation:none}
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.18.9";const APP_BUILD="478ad89c2e43";
+(function(){const APP_VER="0.19.0";const APP_BUILD="f61cf1b2b672";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2126,7 +2126,7 @@ const BOSS_LV={frac:.5,cap:12};
 // 3.2 bosses: shield pips +50% (5 to 8, 7 to 11); the break window hits for less and is over once the foe loses the turn it staggers
 const BOSS_PIPS={mult:1.5};const BREAK_WIN={bonus:1.3,short:true};
 // 3.2 extra boss muscle on top of the old stat table (hp and power multipliers)
-const BOSS_BUFF={hp:[.9,1.5,1.55,1.7,1.36],pow:[1,1.34,1.38,1.6,1.28]}// v0.4.3: re-tuned with capes; v0.8.2: the first three Scourges eased (were hp 1.3, 1.75, 1.8 and pow 1.15, 1.4, 1.44) so no boss is a wall; v0.9.5: hp [1.15,1.65,1.7,2.0,1.52] -> about 4 to 10% less, the realm gimmicks (BOSS_GIM) carry the rest
+const BOSS_BUFF={hp:[.84,1.4,1.45,1.6,1.28],pow:[.97,1.3,1.34,1.56,1.25]}// v0.19: eased about 7% hp and 3% pow with the role power change (was hp [.9,1.5,1.55,1.7,1.36], pow [1,1.34,1.38,1.6,1.28]) to pay for the 12 skill kit, role power and no dual ultimates, so the journey sim stays at level 41.3 and 14.6 boss tries (before the skill changes: 40.5 and 11.1; without the ease: 42.6 and 19.6); v0.4.3: re-tuned with capes; v0.8.2: the first three Scourges eased (were hp 1.3, 1.75, 1.8 and pow 1.15, 1.4, 1.44) so no boss is a wall; v0.9.5: hp [1.15,1.65,1.7,2.0,1.52] -> about 4 to 10% less, the realm gimmicks (BOSS_GIM) carry the rest
 // BOSS_GIM (v0.9.5, battle4.js): every Scourge and Calamity brings one realm gimmick to its first fight (kind 'boss'; not Echoes, not the Daily
 // Trial). Each is telegraphed on the boss's turn (a log line, a "Telegraph" chip on the boss, a mark on the heroes it will hit) and lands on its
 // next turn, so reading it pays. first: the boss's turn of the first telegraph; every: turns between telegraphs (per boss: every).
@@ -2274,24 +2274,24 @@ const ROLES={
       {id:'r_stance',n:'Iron Stance',k:'status',t:'self',mp:7,lv:20,fx:[['taunt',1],['regen',1]],d:'Plants his feet: Taunt and Regen. The line hides behind him.',r:'tank'}],
     knight:[{id:'r_banner',n:'Raise the Banner',k:'status',t:'allyAll',mp:12,lv:19,fx:[['haste',1]],d:'The standard goes up: Haste for the vanguard.',r:'buffer'},
       {id:'r_cover',n:'Shield Ally',k:'status',t:'ally',mp:5,lv:13,fx:[['bulwark',1],['regen',1]],d:'Covers an ally: Bulwark and Regen.',r:'buffer'}],
-    archer:[{id:'r_cripple',n:'Crippling Shot',k:'phys',pw:1,mp:6,lv:15,dl:'ranged',fx:[['weaken',.85],['slow',.6]],d:'An arrow to the sword arm. Likely Weakens, may Slow.',r:'debuffer'},
-      {id:'r_flare',n:'Flare Arrow',k:'phys',pw:.8,mp:8,t:'all',lv:18,dl:'ranged',fx:[['blind',.7]],d:'A burning flare bursts over every foe. May Blind.',r:'debuffer'}],
+    archer:[{id:'r_cripple',n:'Crippling Shot',k:'phys',pw:1,mp:6,lv:15,dl:'ranged',fx:[['weaken',.85],['slow',.7]],d:'An arrow to the sword arm. Likely Weakens, may Slow.',r:'debuffer'},
+      {id:'r_flare',n:'Flare Arrow',k:'phys',pw:.8,mp:8,t:'all',lv:18,dl:'ranged',fx:[['blind',.85]],d:'A burning flare bursts over every foe. May Blind.',r:'debuffer'}],
     thief:[{id:'r_stars',n:'Throwing Stars',k:'phys',pw:.7,hits:2,mp:3,cost:.8,lv:4,dl:'piercing',d:'Two quick stars from the hip. Piercing: they find the gaps in armor.',r:'ranged'},
       {id:'r_kunai',n:'Kunai Volley',k:'phys',pw:.8,mp:9,t:'all',lv:16,dl:'piercing',fx:[['bleed',.4]],d:'A fan of kunai at every foe. Piercing; may Bleed.',r:'ranged'},
       {id:'r_hamstr',n:'Hamstring',k:'phys',pw:.8,mp:5,cost:.8,lv:12,fx:[['slow',.8],['weaken',.5]],d:'A cut behind the knee. Likely Slows, may Weaken.',r:'debuffer'},
       {id:'r_toxin',n:'Toxic Cloud',k:'status',t:'all',mp:10,lv:18,fx:[['poison',.85],['weaken',.6]],d:'A cloud of venom over every foe. Likely Poisons, may Weaken.',r:'debuffer'},
       {id:'r_fuma',n:'Fuma Shuriken',k:'phys',pw:1.9,mp:12,cost:1.1,pierce:1,lv:24,dl:'piercing',d:'A great folding shuriken that cuts through armor. Piercing; ignores half of defense.',r:'ranged'}],
     monk:[{id:'r_chimend',n:'Chi Mend',k:'heal',chi:1,pw:1.6,mp:5,t:'ally',lv:7,d:'Pushes chi into an ally to close their wounds.',r:'healer'},
-      {id:'r_harmony',n:'Harmony Meditation',k:'status',t:'allyAll',mp:10,lv:14,fx:[['focus',1]],heal:.1,d:'The line breathes with him: Focus for the vanguard and a 10% heal.',r:'buffer'},
+      {id:'r_harmony',n:'Harmony Meditation',k:'status',t:'allyAll',mp:10,lv:14,fx:[['focus',1]],heal:.2,d:'The line breathes with him: Focus (more crit chance for a few turns) for the vanguard and a 20% heal.',r:'buffer'},
       {id:'r_lotus',n:'Lotus Circle',k:'heal',chi:1,pw:1.1,mp:12,t:'allyAll',lv:21,d:'A shared meditation that heals the vanguard.',r:'healer'}],
     mage:[{id:'r_snare',n:'Time Snare',k:'status',t:'all',mp:10,lv:16,fx:[['slow',.6],['weaken',.25]],d:'Thickens time around every foe. Likely Slows, may Weaken.',r:'debuffer'}],
     healer:[{id:'r_bless',n:'Blessing',k:'status',t:'ally',mp:6,lv:10,fx:[['might',1],['regen',1]],d:'A blessing on one ally: Might and Regen.',r:'buffer'},
       {id:'r_aegis',n:'Holy Aegis',k:'status',t:'allyAll',mp:14,lv:17,fx:[['bulwark',1]],d:'A dome of light: Bulwark for the vanguard.',r:'buffer'}],
     bard:[{id:'r_anthem',n:'Anthem of Valor',k:'status',t:'allyAll',mp:16,lv:14,fx:[['might',1],['haste',1]],d:'The battle anthem: Might and Haste for the vanguard.',r:'buffer'},
-      {id:'r_aria',n:'{n1} Aria',k:'mag',pw:1.9,mp:5,lv:5,el:'e1',d:'A piercing {n1} note aimed at one foe.',r:'magic'},
-      {id:'r_ballad',n:'Healing Ballad',k:'heal',pw:2.1,mp:6,t:'ally',lv:8,d:'A slow ballad that mends one ally.',r:'healer'},
-      {id:'r_chorus',n:'Restoring Chorus',k:'heal',pw:1.35,mp:12,t:'allyAll',lv:18,fx:[['regen',1]],d:'The whole line sings along: heals the vanguard and grants Regen.',r:'healer'},
-      {id:'r_storm',n:'{n1} Storm Song',k:'mag',pw:2.5,mp:14,cost:1.2,lv:26,el:'e1',d:'The song rises into a {n1} storm on one foe. Slow recovery.',r:'magic'}],
+      {id:'r_aria',n:'{n1} Aria',k:'mag',pw:2.1,mp:5,lv:5,el:'e1',d:'A piercing {n1} note aimed at one foe.',r:'magic'},
+      {id:'r_ballad',n:'Healing Ballad',k:'heal',pw:1.75,mp:6,t:'ally',lv:8,d:'A slow ballad that mends one ally.',r:'healer'},
+      {id:'r_chorus',n:'Restoring Chorus',k:'heal',pw:1.2,mp:12,t:'allyAll',lv:18,fx:[['regen',1]],d:'The whole line sings along: heals the vanguard and grants Regen.',r:'healer'},
+      {id:'r_storm',n:'{n1} Storm Song',k:'mag',pw:2.8,mp:14,cost:1.2,lv:26,el:'e1',d:'The song rises into a {n1} storm on one foe. Slow recovery.',r:'magic'}],
     sniper:[{id:'r_hobble',n:'Hobbling Bolt',k:'phys',pw:1,mp:6,lv:14,dl:'ranged',fx:[['slow',.8],['weaken',.6]],d:'A bolt to the leg. Likely Slows, may Weaken.',r:'debuffer'},
       {id:'r_flash',n:'Flash Bolt',k:'phys',pw:.9,mp:11,t:'all',lv:20,dl:'ranged',fx:[['blind',.7],['slow',.4]],d:'A bolt that bursts into light over every foe. May Blind and Slow.',r:'debuffer'}],
     druid:[{id:'r_tangle',n:'Tangleroot',k:'status',t:'all',mp:9,lv:12,fx:[['root',.7],['slow',.6]],d:'Roots burst up under every foe. May Root and Slow.',r:'debuffer'},
@@ -2299,7 +2299,9 @@ const ROLES={
     archmage:[{id:'r_frostmail',n:'Frost Mail',k:'status',t:'allyAll',mp:12,lv:18,fx:[['bulwark',1]],heal:.1,d:'A skin of rime for the vanguard: Bulwark and a 10% heal.',r:'buffer'}],
     chronicler:[{id:'r_draft',n:'Corrected Draft',k:'heal',pw:1.15,mp:12,t:'allyAll',lv:18,d:'Rewrites the last page: heals the vanguard.',r:'healer'}]},
   // adj: changes to existing class skills (by class and skill id), merged in when the list is built
-  adj:{chronicler:{annotate:{fx:[['break',.9],['weaken',.5]],rl:'debuffer'},redact:{fx:[['blind',.7]]}},bard:{tune1:{pw:1},tune2:{pw:1}},druid:{wildmend:{chi:1,pw:1.15}}},
+  adj:{chronicler:{annotate:{fx:[['break',.9],['weaken',.5]],rl:'debuffer'},redact:{fx:[['blind',.7]]}},bard:{tune1:{pw:1},tune2:{pw:1}},druid:{wildmend:{chi:1,pw:1.15}},
+    // v0.19: role power now comes from ROLEPW, so a few sub role numbers are set to keep every secondary in the 55 to 78% band
+    knight:{lance1:{pw:1.75},lance2:{pw:1.75},judge:{pw:3}},thief:{assn:{pw:2.3}}},
   charms:[{id:'c_rl_mend',n:"Mender's Locket",st:{mag:8,res:6},attr:{fth:3},perk:{healUp:.12},d:'+12% healing',price:520},
     {id:'c_rl_song',n:'Spellstring Charm',st:{mag:12,mp:30},perk:{spellPow:.08},d:'+8% spell damage',price:520},
     {id:'c_rl_quiv',n:'Kunai Pouch',st:{atk:8,spd:4},attr:{dex:3},perk:{rngPow:.1},d:'+10% Ranged damage',price:520},
@@ -2308,6 +2310,26 @@ const ROLES={
     {id:'c_rl_ward',n:"Warden's Badge",st:{hp:110,def:10},perk:{tauntDef:.15},d:'Takes 15% less while Taunting',price:560}],
   shopFrom:1};
 
+// v0.19 skills12.js: Focus, the skill cap, dual types, and role power.
+// FOCUS: the Focus status gives +crit chance (added to the hero's crit chance, all damage skills) for `turns` of the holder's turns; it is no longer spent by the first attack.
+// SK12: cap = most class skills a hero can learn (Limit Breaks, bond techs, Archive skills and the basic Attack are outside it). dualUlt false: a dual type
+// (two elements) never learns the elemental ultimates listed in ult (by class); legendsKeepUlt keeps them for legendary and special wayfarers (src L or x).
+// physCls: classes whose dual art is a physical move (kind from the weapon, dmg11.js); every other class casts it as magic. gen: names of the filler Primer (P) and
+// Detonator (D) a dual type gets for an element that lacks one; genLv: where they land. dualReact: how much of the second reaction a dual art adds (1 = in full).
+const FOCUS={crit:.4,turns:3};
+const SK12={cap:12,dualUlt:false,legendsKeepUlt:true,
+  ult:{warrior:['titan','ragnarok'],knight:['judge'],mage:['s3a','cataclysm'],healer:['verdict'],thief:['assn','lotus'],archer:['heavenp'],monk:['dragon','ascend'],bard:['finale','symphony'],
+    sniper:['s3a','tenk'],druid:['s3a','oldwood'],archmage:['s3a','zeropoint'],chronicler:['s3a','finaled']},
+  physCls:['warrior','knight','thief','archer','monk','sniper','druid'],
+  gen:{warrior:['{n} Brand','{n} Breaker'],knight:['{n} Seal','{n} Charge'],thief:['{n} Needle','{n} Cut'],archer:['{n} Mark','{n} Bolt'],monk:['{n} Touch','{n} Strike'],
+    mage:['{n} Mark','{n} Lance'],healer:['{n} Halo','{n} Smite'],bard:['{n} Chord','{n} Crescendo'],sniper:['{n} Mark','{n} Bolt'],druid:['{n} Thorn','{n} Fang'],
+    archmage:['{n} Mark','{n} Lance'],chronicler:['{n} Gloss','{n} Verse']},
+  genLv:{P:8,D:12},dualReact:1};
+// ROLEPW: skill power by how a skill's role sits in the hero's class role list (roles9.js ROLE9.cls: main, then two sub roles): the hero's main role 1,
+// a sub role `secondary`, any other role `off`. Primer, Detonator and dual art damage never counts below `secondary`. A nature that leans into a skill's role
+// adds `natLift` to that skill's multiplier, never above `natCap` (so a lifted off-role skill never matches a main-role one). Debuff chances move by
+// fxShare of the gap; a buff of an off-role skill lasts offBuff turns less (at least 1).
+const ROLEPW={primary:1,secondary:.8,off:.5,natLift:.14,natCap:.9,fxShare:.33,offBuff:1};
 // PACE (v0.9.5, pacing.js): the realm (0 = the first) in which each system opens on a journey started on v0.9.5 or later. Older journeys,
 // New Game+ cycles and the Daily Trial have everything open. pcUnlocked(system) reads it (the onboarding tips can ask it too).
 // combat, elements and taming are always open; tempering keeps its own rule (after the first Scourge); camp follows CAMP.fromStage.
@@ -2608,7 +2630,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.18.9";const APP_BUILD="478ad89c2e43";
+const APP_VER="0.19.0";const APP_BUILD="f61cf1b2b672";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2616,7 +2638,8 @@ const APP_VER="0.18.9";const APP_BUILD="478ad89c2e43";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
- ['Beta v0.18.9',['You can change your party in the Echo Rift hall between gates. Heroes outside the six keep no gear: everything goes back to the pack when they leave, pick-ups are suggested only for the party, and a bare hero joining is offered Equip Best. New Game+ sends you to realms you have not seen and bosses you have not faced first; once everything is seen the mix is random with a lean toward bosses missing from your last two journeys.']],
+ ['Beta v0.19.0',['Skills and roles reworked. Every wayfarer learns at most 12 class skills (Limit Breaks, bond techs and Archive skills are outside the cap), chosen so each element has a primer and a detonator; dual types prime and set off both their elements with their dual art but never learn the elemental ultimates, which stay with single types. Dual arts hit as physical for fighters (kind from the weapon) and as magic for casters. Focus now raises crit chance by 40% for 3 turns. Skill power follows the class: main-role skills at full strength, sub-role at 80%, off-role at 50% (a priest heals harder than a bard, a thief debuffs harder than a mage), and a nature lifts the skills of its own role. Bosses eased a little (about 7% HP) to keep the journey at the same pace. The tavern now shows which recruit brings the primer or detonator your party lacks.']],
+['Beta v0.18.9',['You can change your party in the Echo Rift hall between gates. Heroes outside the six keep no gear: everything goes back to the pack when they leave, pick-ups are suggested only for the party, and a bare hero joining is offered Equip Best. New Game+ sends you to realms you have not seen and bosses you have not faced first; once everything is seen the mix is random with a lean toward bosses missing from your last two journeys.']],
 ['Beta v0.18.8',['Records opens on Completion: every tracker each realm has (fields, Den, Lair, Sanctum, beacon, quests, bounties, taming, and the realm\'s Echo once the Rift is open), with an Echo Rift section above it that keeps a secret boss as ??? until beaten. Account play time now counts the same thing each journey counts, raised to at least what your save slots add up to. The Notice Board is one list again (quests, bounties, guild missions, notices) with one Accept all and one Claim all that says what must be handed in elsewhere. Settings > Tips no longer breaks into single letters on phones. Den, Lair and Sanctum tags show on every arrival, and the Meridian Breach introduces itself the first time.']],
 ['Beta v0.18.7',['Phones run cooler on High graphics: the world and battle no longer redraw on every screen refresh while nothing moves (30 frames a second at rest, 8 under a menu, none when the app is hidden), and phones cap the internal render at 2 pixels per art pixel unless you pick 3x in Settings. Nothing changes at rest in how it looks.']],
 ['Beta v0.18.6',['The Meridian Breach now gets the same path check as every other map when it is laid out, so a chest or roamer can no longer land where no path reaches it.']],
@@ -3324,7 +3347,7 @@ function classSkills(t){
     add({id:'aim',n:'Aimed Shot',k:'phys',pw:1.4,mp:2,lv:1,d:'A careful shot.'});
     add({id:'arrow1',n:n1+' Arrow',k:'phys',pw:1.6,mp:4,el:e1,lv:4,d:`Arrow charged with ${n1}.`});
     add({id:'barb',n:'Barbed Arrow',k:'phys',pw:1.1,mp:5,lv:6,fx:[['bleed',.85]],d:'Likely Bleeds.'});
-    add({id:'hawk',n:'Hawkeye',k:'status',t:'self',mp:4,lv:8,fx:[['focus',1]],d:'Focus: your next attack is a critical.'});
+    add({id:'hawk',n:'Hawkeye',k:'status',t:'self',mp:4,lv:8,fx:[['focus',1]],d:`Focus: +${Math.round(FOCUS.crit*100)}% crit chance for ${FOCUS.turns} turns.`});
     if(e2)add({id:'arrow2',n:n2+' Arrow',k:'phys',pw:1.6,mp:4,el:e2,lv:9,d:`Arrow charged with ${n2}.`});
     add({id:'volley',n:'Volley',k:'phys',pw:1,mp:9,t:'all',lv:10,d:'Rain of arrows on all foes.'});
     add({id:'pin',n:'Pin Down',k:'phys',pw:.9,mp:6,lv:13,fx:[['root',.9],['slow',.5]],d:'Roots a foe in place. May Slow.'});
@@ -3345,7 +3368,7 @@ function classSkills(t){
     add({id:'s1b',n:'Shadow Quarrel',k:'phys',pw:1.6,mp:4,el:'shadow',lv:3,d:'A black-fletched bolt that drinks the light.'});
     add({id:'charge',n:'Hoofbeat Charge',k:'phys',pw:1.8,mp:6,lv:6,fx:[['stun',.25]],d:'Rides a foe down. May Stun.'});
     add({id:'wheel',n:'Wheeling Volley',k:'phys',pw:.95,mp:9,t:'all',lv:9,fx:[['slow',.3]],d:'Circles the field, shooting every foe. May Slow.'});
-    add({id:'khan',n:"Khan's Focus",k:'status',t:'self',mp:6,lv:12,fx:[['focus',1],['haste',1]],d:'Focus and Haste: his next shot is a sure critical.'});
+    add({id:'khan',n:"Khan's Focus",k:'status',t:'self',mp:6,lv:12,fx:[['focus',1],['haste',1]],d:`Focus and Haste: +${Math.round(FOCUS.crit*100)}% crit chance for ${FOCUS.turns} turns.`});
     add({id:'squall',n:'Black Squall',k:'phys',pw:1.15,mp:13,t:'all',el:['shadow','lightning'],lv:16,d:'A storm of shadow-lightning bolts on every foe.'});
     add({id:'s3a',n:'Shadowstorm',k:'phys',pw:3.2,mp:16,cost:1.25,crit:.2,el:['shadow','lightning'],lv:22,d:'His namesake shot. Slow to draw, high crit.'});
     break;
@@ -3378,7 +3401,7 @@ function classSkills(t){
     add({id:'s3a',n:'Final Chapter',k:'mag',pw:3.3,mp:24,cost:1.3,el:e1,lv:20,d:`The last page, written in ${n1}. Slow recovery.`});
     break;
   case 'bard':
-    add({id:'song',n:'Soothing Song',k:'heal',pw:.8,mp:8,t:'allyAll',lv:1,d:'Heals the vanguard.'});
+    add({id:'song',n:'Soothing Song',k:'heal',pw:1.1,mp:8,t:'allyAll',lv:1,d:'Heals the vanguard.'});
     add({id:'hymn',n:'Battle Hymn',k:'status',t:'allyAll',mp:8,lv:3,fx:[['might',1]],d:'Might for the vanguard.'});
     add({id:'dis',n:'Dissonance',k:'status',t:'all',mp:8,lv:6,fx:[['break',.8]],d:'May Break every foe.'});
     add({id:'tune1',n:n1+' Tune',k:'mag',pw:.9,mp:10,t:'all',el:e1,lv:9,d:`${n1} melody on all foes.`});
@@ -3405,6 +3428,7 @@ function classSkills(t){
   S.sort((a,b)=>a.lv-b.lv||a.lv0-b.lv0);
   return SKC[t.id]=S;
 }
+classSkills=HOOK.def('classSkills',classSkills);// v0.19: one definition; archetype, sigskills, roles and skills12 add hooks (hooks.js)
 // Beta v0.2.0 pacing: two skills at level 1, then one about every 3.3 levels. The big finishers stay last and the
 // dual-element art lands mid-game. lv0 keeps the old level so saves made before this keep what they already learned.
 // v0.10.8: target types that reach a foe (roles need one)
@@ -12559,7 +12583,7 @@ function battlesSoFar(){return (G&&G.stats&&G.stats.battles)||0;}
 function tavernUnlocked(id){const s=TPL[id].src;if(s[0]==='s')return true;if(s[0]!=='t')return false;const n=+s.slice(1);return n<=G.stage||battlesSoFar()>=TAV_BATTLES[n];}
 function tavernPool(){return RAW.map(r=>r[0]).filter(id=>{const s=TPL[id].src;return (s[0]==='t'||s[0]==='s')&&!G.roster[id]&&!challIsPooled(id)&&tavernUnlocked(id);});}
 function partyOf(){return (G.party||[]).map(id=>G.roster[id]).filter(Boolean);}
-// heroRoles is owned by roles9.js (the old {P,D} body here was dead: the later declaration wins at hoisting)
+// heroRoles(c) is the role list (roles9.js). The {P,D} "has a Primer / Detonator by level lv" this file and tavern2.js want is heroPrimeDet(id,lv) (skills12.js)
 function partyNeeds(){
   const P=partyOf(),lv=Math.max(5,avgLv()+3),roles={},els={};let pr=false,dt=false;
   P.forEach(c=>{roles[CLASS_ROLE[TPL[c.id].cls]||'damage']=(roles[CLASS_ROLE[TPL[c.id].cls]||'damage']||0)+1;c.el.forEach(e=>{els[e]=1;});const r=known(c);if(r.some(s=>s.role==='primer'))pr=true;if(r.some(s=>s.role==='det'))dt=true;});
@@ -12570,7 +12594,7 @@ function recruitFit(id,N){
   if(role!=='damage'&&!N.roles[role]){w+=2.5;why.push('Fills: '+ROLE_LBL[role]);}
   else if(role==='damage'&&(N.roles.damage||0)<2){w+=1;why.push('More damage');}
   const fresh=t.el.filter(e=>!N.els[e]);if(fresh.length){w+=fresh.length;why.push('New element: '+fresh.map(e=>EL[e]).join(', '));}
-  const R=heroRoles(id,N.lv);
+  const R=heroPrimeDet(id,N.lv);
   if(!N.dt&&R.D){w+=2.5;why.push('Brings a ✸ Detonator');}
   if(!N.pr&&R.P){w+=2.5;why.push('Brings a ⟐ Primer');}
   return {w,why};
@@ -12732,12 +12756,12 @@ Object.assign(ACT,{
 const POOL_IDS=()=>RAW.filter(r=>r[6]!=='L'&&r[6]!=='x'&&TPL[r[0]]).map(r=>r[0]);
 function subReq(set,must){must=must||[]; // returns the list of unmet guarantees as [label, candidate test]
   const ids=[...set],cl={},el={};let pr=0,dt=0,du=0,ch=0,early=0;
-  ids.forEach(id=>{const t=TPL[id];cl[t.cls]=(cl[t.cls]||0)+1;t.el.forEach(e=>el[e]=(el[e]||0)+1);const R=heroRoles(id,40);if(R.P)pr++;if(R.D)dt++;if(t.el.length>1)du++;if(challIsPooled(id))ch++;
+  ids.forEach(id=>{const t=TPL[id];cl[t.cls]=(cl[t.cls]||0)+1;t.el.forEach(e=>el[e]=(el[e]||0)+1);const R=heroPrimeDet(id,40);if(R.P)pr++;if(R.D)dt++;if(t.el.length>1)du++;if(challIsPooled(id))ch++;
     if((t.src==='s'||t.src==='t0')&&!must.includes(id))early++;});
   const need=[];
   Object.keys(NAT_CLASS).forEach(k=>{if((cl[k]||0)<3)need.push(id=>TPL[id].cls===k);});
   ELK.forEach(e=>{if((el[e]||0)<3)need.push(id=>TPL[id].el.includes(e));});
-  if(pr<4)need.push(id=>heroRoles(id,40).P);if(dt<4)need.push(id=>heroRoles(id,40).D);
+  if(pr<4)need.push(id=>heroPrimeDet(id,40).P);if(dt<4)need.push(id=>heroPrimeDet(id,40).D);
   if(du<6)need.push(id=>TPL[id].el.length>1);if(ch<5)need.push(id=>challIsPooled(id));if(early<4)need.push(id=>{const s=TPL[id].src;return (s==='s'||s==='t0')&&!must.includes(id);});
   return need;
 }
@@ -13030,7 +13054,7 @@ function stPopHtml(){
     title=`⟐ Primed: ${EL[el]}`;body=`A ✸ Detonator of a matching element sets off a reaction: ${L.map(R=>`${EL[R.d]} → ${R.n}`).join(', ')}. A primed foe can't be primed again until this fades or detonates.`;src=u.primed.by?`Primed by ${u.primed.by}.`:'';dur=`Fades after ${u.primed.t} more of its turn${u.primed.t===1?'':'s'}.`;}
   else if(P.k==='broken'){title='Broken';body='Its shield is shattered: it takes 50% more damage and loses its next turn.';dur='Recovers after it reels.';}
   else{const st=(u.st||{})[P.k],d=STS[P.k];if(!st||!d){B.stPop=null;return '';}title=d.n;body=d.d;
-    src=st.src?(st.src==='self'?'Self-applied.':`From ${st.src}.`):'';dur=P.k==='ward'?'Until it blocks a hit, or '+st.t+' more turns.':P.k==='focus'?'Until the next attack, or '+st.t+' more turns.':P.k==='stun'?'Skips its next turn.':`${st.t} more turn${st.t===1?'':'s'} (counted on ${esc(u.name)}'s turns).`;
+    src=st.src?(st.src==='self'?'Self-applied.':`From ${st.src}.`):'';dur=P.k==='ward'?'Until it blocks a hit, or '+st.t+' more turns.':P.k==='focus'?st.t+' more turn'+(st.t===1?'':'s')+' (not used up by attacking).':P.k==='stun'?'Skips its next turn.':`${st.t} more turn${st.t===1?'':'s'} (counted on ${esc(u.name)}'s turns).`;
     if(st.v)body+=` About ${st.v} per turn.`;}
   return `<div class="stpop" role="dialog" aria-label="${esc(title)}"><div class="sth"><b>${esc(u.name)}</b><button class="btn sm" data-act="stClose" aria-label="Close">✕</button></div><h5>${STS[P.k]||P.k==='broken'?stSym(P.k,'big')+' ':''}${esc(title)}</h5><p>${body}</p>${src?`<small>${src}</small>`:''}${dur?`<small>${dur}</small>`:''}</div>`;
 }
@@ -15025,7 +15049,7 @@ function deliveryOf(a,sk){
 }
 
 // skills are tagged once, when a hero's list is first built
-{const cs0=classSkills;classSkills=function(t){const L=cs0.apply(this,arguments);if(L&&!L._dl){L._dl=1;L.forEach(s=>{const d=dlFor(t&&t.cls,s);if(d&&!s.dl)s.dl=d;});}return L;};}
+HOOK.xform('classSkills','archetype','tag every skill with its damage kind once',function(L,t){if(L&&!L._dl){L._dl=1;L.forEach(s=>{const d=dlFor(t&&t.cls,s);if(d&&!s.dl)s.dl=d;});}return L;});
 
 // ---- the multiplier ----
 function archParts(a,sk,t){
@@ -16215,10 +16239,10 @@ function sigFlavour(L,t){
   const txt=ally?rd.map(f=>SIG_ST_N[f[0]]).join(' and '):sigFoeTxt(keep.concat(rd));
   s.d=(s.k==='phys'||s.k==='mag'?`${EL[e]} tinged. `:'')+(ally?`Gives ${txt}.`:txt[0].toUpperCase()+txt.slice(1)+'.')+(s.t==='all'?' Hits every foe.':'');
 }
-{const cs1=classSkills;classSkills=function(t){const L=cs1.apply(this,arguments);
+HOOK.xform('classSkills','sigskills','the wayfarer\'s signature skill and element flavour',function(L,t){
   if(!L||L._sg||!t||t.src==='L'||t.src==='x'||t.mon||!SIG_NAMES[t.id])return L;L._sg=1;
   try{sigFlavour(L,t);const s=sigBuild(t);if(s){const d=typeof dlFor==='function'?dlFor(t.cls,s):null;if(d)s.dl=d;L.push(s);L.sort((a,b)=>a.lv-b.lv||(a.lv0||a.lv)-(b.lv0||b.lv));}}catch(e){}
-  return L;};}
+  return L;});
 // ---- report (used by the tests and the design notes) ----
 function sigReport(){
   const ids=Object.keys(SIG_NAMES).filter(id=>TPL[id]),rows=ids.map(id=>{const s=classSkills(TPL[id]).find(x=>x.id==='sg_'+id);return {id,cls:TPL[id].cls,el:TPL[id].el.join('/'),s};});
@@ -16245,11 +16269,11 @@ function rlSkills(t){const L=(ROLES.sk[t.cls]||[]),e1=t.el[0],n1=EL[e1]||'';
   return L.map(o=>{const x=Object.assign({cost:1,hits:1,t:'one',mp:0,el:null,fixed:1},JSON.parse(JSON.stringify(o)));
     if(x.el==='e1')x.el=e1;x.n=x.n.replace(/\{n1\}/g,n1);x.d=x.d.replace(/\{n1\}/g,n1);x.lv0=x.lv;x.rl=x.r;delete x.r;
     if(!x.dl){const d=dlFor(t.cls,x);if(d)x.dl=d;}if(x.rl&&ROLES.names[x.rl])x.d+=' '+ROLES.names[x.rl]+' role.';return x;});}
-{const cs2=classSkills;classSkills=function(t){const L=cs2.apply(this,arguments);
+HOOK.xform('classSkills','roles','secondary role skills and adjustments',function(L,t){
   if(!L||L._rl||!t||t.mon||!ROLES.sk[t.cls])return L;L._rl=1;
   try{const A=(ROLES.adj||{})[t.cls]||{};L.forEach(s=>{if(A[s.id])Object.assign(s,JSON.parse(JSON.stringify(A[s.id])));});
     const have=new Set(L.map(s=>s.id));rlSkills(t).forEach(s=>{if(!have.has(s.id))L.push(s);});L.sort((a,b)=>a.lv-b.lv||(a.lv0||a.lv)-(b.lv0||b.lv));}catch(e){}
-  return L;};}
+  return L;});
 
 // Monk chi heals (chi:1) draw on the better of healing power and ROLES.w.chiK x attack
 const rlHealP=(a,sk)=>{const h=a.S.healP||a.S.mag;return sk&&sk.chi?Math.max(h,ROLES.w.chiK*a.S.atk):h;};
@@ -16342,40 +16366,42 @@ HOOK.wrap('perform','atk6','typed basic attack by class',function(next,...args){
 // replaced by +15% against undead and shadow foes; Shadow keeps its drain.
 const NAT6={
  // warrior
- bulwark6:{n:'Bulwark',sub:'Tank',d:'+15% defense, +10% max HP, -6% attack. Guarding cuts damage by 60% instead of 50%.',fx:{def:1.15,hp:1.1,atk:.94,guardM:.8}},
- berserk6:{n:'Berserker',sub:'Damage',d:'+15% attack, +6% crit, -10% defense. +12% damage below half HP.',fx:{atk:1.15,crit:.06,def:.9,low:.12}},
- vanguard6:{n:'Vanguard',sub:'Tempo',d:'+6% attack and defense, actions take 5% less time.',fx:{atk:1.06,def:1.06,tempo:.95}},
+ bulwark6:{n:'Bulwark',sub:'Tank',rl:'tank',d:'+15% defense, +10% max HP. Guarding cuts damage by 60% instead of 50%. Tank skills +14% power.',fx:{def:1.15,hp:1.1,guardM:.8}},
+ berserk6:{n:'Berserker',sub:'Damage',rl:'phys',d:'+15% attack, +6% crit, -10% defense. +12% damage below half HP. Physical skills +14% power.',fx:{atk:1.15,crit:.06,def:.9,low:.12}},
+ vanguard6:{n:'Vanguard',sub:'Tempo',rl:'debuffer',d:'+6% attack and defense, actions take 5% less time. Debuff skills +14% power.',fx:{atk:1.06,def:1.06,tempo:.95}},
  // knight
- sentinel6:{n:'Sentinel',sub:'Tank',d:'+15% defense, +10% resistance, -8% attack. Guarding cuts damage by 60%.',fx:{def:1.15,res:1.1,atk:.92,guardM:.8}},
- crusader6:{n:'Crusader',sub:'Damage',d:'+12% attack, +8% crit damage, -8% resistance.',fx:{atk:1.12,critDmg:.08,res:.92}},
- warden6:{n:'Warden',sub:'Support',d:'+12% max HP, +12% resistance, -5% attack.',fx:{hp:1.12,res:1.12,atk:.95}},
+ sentinel6:{n:'Sentinel',sub:'Tank',rl:'tank',d:'+15% defense, +10% resistance. Guarding cuts damage by 60%. Tank skills +14% power.',fx:{def:1.15,res:1.1,guardM:.8}},
+ crusader6:{n:'Crusader',sub:'Damage',rl:'phys',d:'+12% attack, +8% crit damage, -8% resistance. Physical skills +14% power.',fx:{atk:1.12,critDmg:.08,res:.92}},
+ warden6:{n:'Warden',sub:'Support',rl:'buffer',d:'+12% max HP, +12% resistance. Support skills +14% power.',fx:{hp:1.12,res:1.12}},
  // mage
- evoker6:{n:'Evoker',sub:'Damage',d:'+15% magic, -8% resistance, -8% max HP.',fx:{mag:1.15,res:.92,hp:.92}},
- sage6:{n:'Sage',sub:'Support',d:'+12% resistance, +15% MP, -4% magic. Spells cost 10% less MP.',fx:{res:1.12,mp:1.15,mag:.96,mpEff:.1}},
- channeler6:{n:'Channeler',sub:'Tempo',d:'+8% magic, actions take 6% less time, -6% max HP.',fx:{mag:1.08,tempo:.94,hp:.94}},
+ evoker6:{n:'Evoker',sub:'Damage',rl:'magic',d:'+15% magic, -8% resistance, -8% max HP. Magic skills +14% power.',fx:{mag:1.15,res:.92,hp:.92}},
+ sage6:{n:'Sage',sub:'Support',rl:'buffer',d:'+12% resistance, +15% MP. Spells cost 10% less MP. Support skills +14% power.',fx:{res:1.12,mp:1.15,mpEff:.1}},
+ channeler6:{n:'Channeler',sub:'Tempo',rl:'debuffer',d:'+8% magic, actions take 6% less time, -6% max HP. Debuff skills +14% power.',fx:{mag:1.08,tempo:.94,hp:.94}},
  // healer (priest)
- mender6:{n:'Mender',sub:'Support',d:'+18% healing, -5% magic.',fx:{heal:1.18,mag:.95}},
- oracle6:{n:'Oracle',sub:'Damage',d:'+12% magic, +10% resistance, -6% healing.',fx:{mag:1.12,res:1.1,heal:.94}},
- devout6:{n:'Devout',sub:'Tank',d:'+12% max HP, +12% resistance, -4% magic.',fx:{hp:1.12,res:1.12,mag:.96}},
+ mender6:{n:'Mender',sub:'Support',rl:'healer',d:'+18% healing. Healing skills +14% power.',fx:{heal:1.18}},
+ oracle6:{n:'Oracle',sub:'Damage',rl:'magic',d:'+12% magic, +10% resistance. Magic skills +14% power.',fx:{mag:1.12,res:1.1}},
+ devout6:{n:'Devout',sub:'Tank',rl:'buffer',d:'+12% max HP, +12% resistance. Support skills +14% power.',fx:{hp:1.12,res:1.12}},
  // thief
- shadow6:{n:'Shadow',sub:'Damage',d:'+10% crit, +5% evasion, -8% max HP.',fx:{crit:.1,eva:.05,hp:.92}},
- duelist6:{n:'Duelist',sub:'Tempo',d:'+12% attack, +6% agility, -3% evasion.',fx:{atk:1.12,agi:1.06,eva:-.03}},
- trickster6:{n:'Trickster',sub:'Support',d:'+10% agility, actions take 6% less time, -5% attack.',fx:{agi:1.1,tempo:.94,atk:.95}},
+ shadow6:{n:'Shadow',sub:'Damage',rl:'ranged',d:'+10% crit, +5% evasion, -8% max HP. Ranged skills +14% power.',fx:{crit:.1,eva:.05,hp:.92}},
+ duelist6:{n:'Duelist',sub:'Tempo',rl:'phys',d:'+12% attack, +6% agility, -3% evasion. Physical skills +14% power.',fx:{atk:1.12,agi:1.06,eva:-.03}},
+ trickster6:{n:'Trickster',sub:'Support',rl:'debuffer',d:'+10% agility, actions take 6% less time. Debuff skills +14% power.',fx:{agi:1.1,tempo:.94}},
  // archer
- marksman6:{n:'Marksman',sub:'Damage',d:'+8% crit, +15% crit damage, -6% max HP.',fx:{crit:.08,critDmg:.15,hp:.94}},
- ranger6:{n:'Ranger',sub:'Tempo',d:'+10% attack, +8% agility.',fx:{atk:1.1,agi:1.08}},
- hawk6:{n:'Hawk',sub:'Support',d:'+8% accuracy, actions take 5% less time, -4% attack.',fx:{acc:.08,tempo:.95,atk:.96}},
+ marksman6:{n:'Marksman',sub:'Damage',rl:'ranged',d:'+8% crit, +15% crit damage, -6% max HP. Ranged skills +14% power.',fx:{crit:.08,critDmg:.15,hp:.94}},
+ ranger6:{n:'Ranger',sub:'Tempo',rl:'phys',d:'+10% attack, +8% agility. Physical skills +14% power.',fx:{atk:1.1,agi:1.08}},
+ hawk6:{n:'Hawk',sub:'Support',rl:'debuffer',d:'+8% accuracy, actions take 5% less time. Debuff skills +14% power.',fx:{acc:.08,tempo:.95}},
  // monk
- ironfist6:{n:'Ironfist',sub:'Damage',d:'+12% attack, +8% max HP, -8% resistance.',fx:{atk:1.12,hp:1.08,res:.92}},
- stillwater6:{n:'Stillwater',sub:'Tank',d:'+12% defense and resistance, -6% attack. Chi heals 15% stronger.',fx:{def:1.12,res:1.12,atk:.94,chi:.15}},
- tempest6:{n:'Tempest',sub:'Tempo',d:'+8% agility, actions take 10% less time, -6% defense.',fx:{agi:1.08,tempo:.9,def:.94}},
+ ironfist6:{n:'Ironfist',sub:'Damage',rl:'phys',d:'+12% attack, +8% max HP, -8% resistance. Physical skills +14% power.',fx:{atk:1.12,hp:1.08,res:.92}},
+ stillwater6:{n:'Stillwater',sub:'Tank',rl:'healer',d:'+12% defense and resistance. Chi heals 15% stronger. Healing skills +14% power.',fx:{def:1.12,res:1.12,chi:.15}},
+ tempest6:{n:'Tempest',sub:'Tempo',rl:'buffer',d:'+8% agility, actions take 10% less time, -6% defense. Support skills +14% power.',fx:{agi:1.08,tempo:.9,def:.94}},
  // bard
- virtuoso6:{n:'Virtuoso',sub:'Damage',d:'+12% magic, +10% MP, -6% max HP.',fx:{mag:1.12,mp:1.1,hp:.94}},
- herald6:{n:'Herald',sub:'Tank',d:'+10% resistance, +10% max HP.',fx:{res:1.1,hp:1.1}},
- minstrel6:{n:'Minstrel',sub:'Tempo',d:'+8% agility, actions take 8% less time, -5% magic.',fx:{agi:1.08,tempo:.92,mag:.95}}};
+ virtuoso6:{n:'Virtuoso',sub:'Damage',rl:'magic',d:'+12% magic, +10% MP, -6% max HP. Magic skills +14% power.',fx:{mag:1.12,mp:1.1,hp:.94}},
+ herald6:{n:'Herald',sub:'Healer',rl:'healer',d:'+10% resistance, +10% max HP. Healing skills +14% power.',fx:{res:1.1,hp:1.1}},
+ minstrel6:{n:'Minstrel',sub:'Tempo',rl:'buffer',d:'+8% agility, actions take 8% less time. Support skills +14% power.',fx:{agi:1.08,tempo:.92}}};
 const NAT6_CLASS={warrior:['bulwark6','berserk6','vanguard6'],knight:['sentinel6','crusader6','warden6'],mage:['evoker6','sage6','channeler6'],
  healer:['mender6','oracle6','devout6'],thief:['shadow6','duelist6','trickster6'],archer:['marksman6','ranger6','hawk6'],monk:['ironfist6','stillwater6','tempest6'],bard:['virtuoso6','herald6','minstrel6']};
 try{Object.assign(NATURES,NAT6);Object.keys(NAT6_CLASS).forEach(k=>{NAT_CLASS[k]=NAT6_CLASS[k];});}catch(e){}
+// v0.19: every nature names the role it leans into (rl). It no longer cuts any output stat (attack, magic, healing): the class's role list sets how strong a
+// skill of each role is (ROLEPW in config.js), and a nature that matches a skill's role lifts it by ROLEPW.natLift, below ROLEPW.natCap.
 // the pool: the three sub-roles of the class (plus the hero's own trait while it is the current nature of an old save)
 {const np0=natPool;natPool=function(id){const t=TPL[id];if(!t||!NAT6_CLASS[t.cls]||t.src==='L'||t.src==='x'||t.mon)return np0.apply(this,arguments);
   const P=NAT6_CLASS[t.cls].slice();if(t.trait&&NATURES[t.trait]&&!P.includes(t.trait))P.push(t.trait);try{const c=G&&G.roster&&G.roster[id],cur=c&&natOf(c);if(cur&&!P.includes(cur)&&NATURES[cur])P.push(cur);}catch(e){}return P;};}
@@ -16400,6 +16426,8 @@ HOOK.xform('calcDamage','natures6','nature and mastery perks on damage',function
 // Stillwater monks: chi heals 15% stronger (roles.js sets the chi heal power inside its own perform hook; this scales both inputs)
 HOOK.wrap('perform','natures6','chi heal nature perk',function(next,...args){const a=args[0],sk=args[1];if(!(sk&&sk.chi&&a&&a.S&&a.S.chi&&typeof ROLES!=='undefined'))return next(...args);
   const k0=ROLES.w.chiK,h0=a.S.healP;try{ROLES.w.chiK=k0*(1+a.S.chi);if(h0)a.S.healP=h0*(1+a.S.chi);return next(...args);}finally{ROLES.w.chiK=k0;a.S.healP=h0;}});
+
+try{[['mender','healer'],['arcane','magic'],['focused','magic'],['wise','magic'],['berserk','phys'],['fierce','phys'],['bulwark','tank'],['hardy','tank'],['sturdy','tank']].forEach(([k,r])=>{if(NATURES[k]&&!NATURES[k].rl)NATURES[k].rl=r;});}catch(e){}
 
 // ===== npc2.js (v0.4.1): NPC dialogue =====
 // Each NPC keeps their original line (and the re-lit town variant) and gains more: realm flavor, hints that adapt to the journey (no spoilers)
@@ -27261,7 +27289,7 @@ LORE_REALM.ashglass={hist:`Saltwick began as a salt-cutters' camp on the rim of 
 //    Hea/Sum/Sup, Bard Sup/Cas/Hea; legends follow). The existing role keys stay (phys, ranged, magic, tank, healer, buffer, debuffer) and
 //    'summoner' joins them, so saves, role skills and party scoring keep working; only the names shown change.
 // 2) A hero's main role can be swapped to one of its sub roles from the hero sheet in town (c.role, optional save field). Skills of the
-//    main role are at full power; skills of a sub role run at 85% (damage and healing; ailment chances x.9). Untagged skills belong to the
+//    main role are at full power; skills of a sub role run at ROLEPW.secondary and skills of any other role at ROLEPW.off (v0.19, skills12.js; before: 85%). Untagged skills belong to the
 //    class's own role. The main role also drives auto-spent stat points (its stat first) and names the weapon family that suits it.
 // 3) FAITH: a summoned guardian's attack and magic scale with the caller's Faith (+0.8% per point), Light and Shadow damage gain +0.3%
 //    per point (cap +25%), and a hero shrugs off an ailment with a chance of 0.6% per point (cap 35%).
@@ -27284,11 +27312,15 @@ function heroMain(c){const R=heroRoles(c);return c&&c.role&&R.includes(c.role)?c
 function roleWpn(c){try{const t=TPL[c.id];return ((ROLE9.wpn[t.cls]||{})[heroMain(c)])||null;}catch(e){return null;}}
 // the Summoner role's output: Invoke or Spirit Call known, or a pet at hand
 {const ro0=roleOut;roleOut=function(c,role){if(role==='summoner'){try{const ks=known(c);let v=ks.some(s=>/invoke|spirit/i.test(s.id)||s.summon)?1:0;if(typeof canSummon==='function'&&G&&compOf&&compOf(c))v=Math.max(v,.7);return v*(1+((c.S&&c.S.attr&&c.S.attr.fth)||0)*ROLE9.fthSum);}catch(e){return 0;}}return ro0.apply(this,arguments);};}
-// ---- skills of a sub role run at 85% ----
+// ---- skill power by role (v0.19): the hero's main role 1, a sub role ROLEPW.secondary, any other role ROLEPW.off, a nature that leans into the role lifts it ----
+// The role of a skill and the multiplier are worked out in skills12.js (sk12Role, sk12Mult); this only builds the scaled copy of the skill known() hands out.
 const RL9C={};
-function rl9Factor(c,s){if(!s||s.bond||s.limit||s.id==='attack')return 1;const t=TPL[c.id];if(!t||G&&G.daily)return 1;const main=heroMain(c),own=s.rl||(ROLES.cls[t.cls]?ROLES.cls[t.cls].p:main);return own===main?1:ROLE9.sub;}
-{const kn0=known;known=function(c){const L=kn0.apply(this,arguments);try{if(!c||!TPL[c.id]||G&&G.daily)return L;return L.map(s=>{const f=rl9Factor(c,s);if(f===1)return s;const key=c.id+':'+heroMain(c)+':'+s.id+':'+(s.pw||0);let x=RL9C[key];
-  if(!x){x=Object.assign({},s,{sub:1});if(s.pw)x.pw=+(s.pw*f).toFixed(3);if(s.fx)x.fx=s.fx.map(q=>Array.isArray(q)?[q[0],+((q[1]==null?1:q[1])*ROLE9.subFx).toFixed(3)].concat(q.slice(2)):q);x.d=(s.d||'');/* v0.17.1: no role note in the description (owner) */RL9C[key]=x;}return x;});}catch(e){return L;}};}
+function rl9Factor(c,s){const o=sk12Mult(c,s);return o?o.m:1;}
+{const kn0=known;known=function(c){const L=kn0.apply(this,arguments);try{if(!c||!TPL[c.id]||G&&G.daily)return L;return L.map(s=>{const o=sk12Mult(c,s);if(!o||o.tier==='primary')return s;const key=c.id+':'+heroMain(c)+':'+(c.nat||'')+':'+s.id+':'+(s.pw||0)+':'+o.m;let x=RL9C[key];
+  if(!x){x=Object.assign({},s,{sub:1,rlm:o.m,rlt:o.tier,rlr:o.r,rln:o.nat});if(s.pw&&(s.k==='phys'||s.k==='mag'||s.k==='heal'))x.pw=+(s.pw*o.m).toFixed(3);
+    if(s.fx)x.fx=s.fx.map(q=>Array.isArray(q)&&STS[q[0]]&&STS[q[0]].bad?[q[0],+((q[1]==null?1:q[1])*(1-(1-o.m)*ROLEPW.fxShare)).toFixed(3)].concat(q.slice(2)):q);
+    if(s.heal)x.heal=+(s.heal*o.m).toFixed(3);if(o.tier==='off'&&s.k==='status'&&s.t!=='one'&&s.t!=='all')x.buffCut=ROLEPW.offBuff;
+    x.d=(s.d||'');RL9C[key]=x;}return x;});}catch(e){return L;}};}
 // ---- auto-spent points follow the main role ----
 {const aa0=autoAlloc;autoAlloc=function(c){try{const t=TPL[c.id],C=CLS[t.cls],st=ROLE9.stat[heroMain(c)];if(C&&st&&C.pref&&C.pref[0]!==st&&heroMain(c)!==heroRoles(c)[0]){const p0=C.pref;C.pref=[st].concat(p0.filter(k=>k!==st)).slice(0,3);try{return aa0.apply(this,arguments);}finally{C.pref=p0;}}}catch(e){}return aa0.apply(this,arguments);};}
 // ---- FAITH ----
@@ -27302,13 +27334,13 @@ HOOK.before('addSt','roles9','faith shrugs off a status',function(t,k,src,silent
 {const rs0=ACT.respec;ACT.respec=function(){const c=G&&G.roster[V.modal&&V.modal.char];const free=!!(c&&G&&!G.daily&&!G.rs9&&Object.keys(c.alloc||{}).length);const r=rs0.apply(this,arguments);try{if(free&&c&&!Object.keys(c.alloc||{}).length){G.rs9=1;toast('Your one free stat reset is spent. The next costs gold.');saveGame();}}catch(e){}return r;};}
 // ---- the hero sheet: the role row and the picker ----
 HOOK.xform('mChar','roles9','role row on the hero sheet',function(h,id,edit){try{const c=G.roster[id];if(!c||G.daily)return h;const R=heroRoles(c),main=heroMain(c),w=roleWpn(c);
-  const row=`<h4>Role</h4><div class="rows compact rl9"><div class="row"><div class="grow"><b>${esc(ROLES.names[main]||main)}</b><small>${esc(ROLE9.desc[main]||'')}${w?` Weapon: ${esc(WT_NAME[w]||w)}.`:''} Sub roles: ${R.slice(0).filter(r=>r!==main).map(r=>esc(ROLES.names[r]||r)).join(', ')} (85% power).</small></div>${edit&&inTown()?`<button class="btn sm" data-act="rolePick" data-arg="${id}">Change</button>`:edit?'<small>Change it in town.</small>':''}</div></div>`;
+  const row=`<h4>Role</h4><div class="rows compact rl9"><div class="row"><div class="grow"><b>${esc(ROLES.names[main]||main)}</b><small>${esc(ROLE9.desc[main]||'')}${w?` Weapon: ${esc(WT_NAME[w]||w)}.`:''} Sub roles: ${R.slice(0).filter(r=>r!==main).map(r=>esc(ROLES.names[r]||r)).join(', ')} (${Math.round(ROLEPW.secondary*100)}% power; any other role ${Math.round(ROLEPW.off*100)}%).</small></div>${edit&&inTown()?`<button class="btn sm" data-act="rolePick" data-arg="${id}">Change</button>`:edit?'<small>Change it in town.</small>':''}</div></div>`;
   h=h.replace('<h4>Attributes',row+'<h4>Attributes');if(!G.rs9)h=h.replace('>Respec for 0 gold<','>Respec: free this once<');}catch(e){}return h;});
 ACT.rolePick=function(id){if(!G||!G.roster[id]||!inTown())return;V.modal={type:'rolepick',char:id,from:V.modal};render();};
 ACT.roleSet=function(a){const [id,r]=String(a).split(':');const c=G&&G.roster[id];if(!c||!heroRoles(c).includes(r))return;c.role=r===heroRoles(c)[0]?undefined:r;if(c.role===undefined)delete c.role;refresh(c);saveGame();toast(`${c.name} now leads as ${ROLES.names[r]||r}.`);V.modal=V.modal&&V.modal.from||{type:'char',char:id};render();};
 HOOK.before('vModal','roles9','role picker',function(m){if(!m||m.type!=='rolepick')return;const c=G.roster[m.char];if(!c)return HOOK.stop('');const t=TPL[c.id],main=heroMain(c);
   const rows=heroRoles(c).map((r,i)=>{const w=(ROLE9.wpn[t.cls]||{})[r],st=ROLE9.stat[r];return `<div class="row ${r===main?'up':''}"><div class="grow"><b>${esc(ROLES.names[r]||r)}${i===0?' <small>(class role)</small>':''}</b><small>${esc(ROLE9.desc[r]||'')}${w?` Weapon: ${esc(WT_NAME[w]||w)}.`:''}${st?` Auto-spend favours ${esc(ATTRN[st][0])}.`:''}</small></div>${r===main?'<span class="m">Main</span>':`<button class="btn sm gold" data-act="roleSet" data-arg="${c.id}:${r}">Lead</button>`}</div>`;}).join('');
-  return HOOK.stop(box(`${esc(c.name)}: main role`,`<p class="note">The main role's skills are at full power; the other two run at 85%. Auto-spent stat points follow the main role. Swap any time in town.</p><div class="rows">${rows}</div>`,`<button class="btn" data-act="roleBack">Back</button>`));});
+  return HOOK.stop(box(`${esc(c.name)}: main role`,`<p class="note">The main role's skills are at full power; the other two run at ${Math.round(ROLEPW.secondary*100)}%, and skills outside your three roles at ${Math.round(ROLEPW.off*100)}%. Auto-spent stat points follow the main role. Swap any time in town.</p><div class="rows">${rows}</div>`,`<button class="btn" data-act="roleBack">Back</button>`));});
 ACT.roleBack=function(){V.modal=V.modal&&V.modal.from||null;render();};
 // ---- foe cards and aim tags show Slash, Blunt and Piercing apart again (no "Physical" group) ----
 try{Object.assign(DG_NAME,{slash:'Slash',blunt:'Blunt',piercing:'Piercing'});Object.assign(DG_ART,{slash:'slash',blunt:'blunt',piercing:'piercing'});Object.assign(DG_OF,{slash:'slash',blunt:'blunt',piercing:'piercing'});}catch(e){}
@@ -31184,6 +31216,150 @@ HOOK.after('newGame','party12','keep the New Game+ draw, record the playthrough'
 try{const st=document.createElement('style');st.textContent='.pt12eq{margin:.5em 0;padding:.4em .5em;border:1px solid rgba(255,208,74,.4);border-radius:6px}';document.head.appendChild(st);}catch(e){}
 // ---------- test hook (our own object; window.__A is not touched) ----------
 window.__PT12={PT12,partyHere,pt12StowOutside,pt12Tick,pt12Power,pt12Select,pt12Ctx,pt12Rec,pt12Track,pt12RealmName,get META(){return META;}};
+
+// ===== skills12.js (v0.19): Focus, the 12 skill kit, dual types, dual arts, role power, tavern primer and detonator needs =====
+// The owner's brief (five items), all of it new behaviour in this module, with its numbers in config.js (FOCUS, SK12, ROLEPW) and the tables it reads in
+// skills.js (COMBO, ROLE_FILL), roles9.js (ROLE9.cls) and natures6.js (NAT6 .rl).
+// 1) Focus: +FOCUS.crit critical chance for FOCUS.turns of the holder's turns, on every damage skill. It is no longer spent by the first attack.
+// 2) Dual arts (COMBO, the `combo` skill of a two element hero) are physical for a physical class (SK12.physCls) and magic for the rest. The kind of a
+//    physical art then follows dmg11.js (the weapon in hand).
+// 3) Kits: classSkills ends with this module's hook, so everything that lists or learns a class's skills sees the same list. A hero learns at most SK12.cap
+//    class skills (Limit Breaks, bond techs, Archive skills and the basic Attack are outside it). Dual types lose the elemental ultimates (SK12.ult) and are
+//    guaranteed one Primer and one Detonator per element (a spare skill is retagged, else a filler is added). Which skills survive the cap: guarantees,
+//    the dual art, the signature skill, one skill for each of the class's roles, the single types' ultimates, the first heals, then the rest by level.
+//    A dual art primes a foe with both of its elements and sets off the reaction of each of its elements on a prime.
+// 4) Role power: sk12Role names the role of a skill, sk12Mult the multiplier (ROLEPW) from where that role sits in the hero's class role list, plus the
+//    lift of a nature that leans into that role. roles9.js applies it in known(). The sheet and battle rows show it.
+// 5) heroPrimeDet(id,lv): {P,D} for the tavern and the recruit fit (heroRoles in roles9.js is the role list, not this).
+const S12={cur:null,msg:null};
+// ---- 1. Focus ----
+try{STS.focus.t=FOCUS.turns;STS.focus.d=`+${Math.round(FOCUS.crit*100)}% critical chance for ${FOCUS.turns} turns. It is not used up by attacking.`;}catch(e){}
+HOOK.wrap('calcDamage','skills12','Focus adds crit chance for its turns (it no longer forces the next crit)',function(next,...args){const a=args[0],f=a&&a.st&&a.st.focus;if(!f||!a.S)return next(...args);
+  delete a.st.focus;const c0=a.S.crit,had=Object.prototype.hasOwnProperty.call(a.S,'crit');a.S.crit=(c0||.05)+FOCUS.crit;
+  try{return next(...args);}finally{if(had)a.S.crit=c0;else delete a.S.crit;a.st.focus=f;}});
+
+// ---- skill roles (3, 4) ----
+const S12_RANGED=['archer','sniper','druid'];
+// the role a skill belongs to (null: the hero's own, never scaled)
+function sk12Role(cls,s){if(!s)return null;if(s.rl)return s.rl;const k=s.k,fx=s.fx||[];
+  if(k==='heal'||k==='revive')return 'healer';
+  if(k==='mag')return 'magic';
+  if(k==='phys')return s.dl==='ranged'||(!s.dl&&S12_RANGED.includes(cls))?'ranged':'phys';
+  if(k==='status'){const ally=s.t==='self'||s.t==='ally'||s.t==='allyAll';if(!ally)return 'debuffer';const g=fx.map(f=>f[0]);
+    if(g.includes('taunt')||g.includes('bulwark')||g.includes('ward'))return 'tank';if(g.length&&g.every(x=>x==='regen'))return 'healer';return 'buffer';}
+  return null;}
+function sk12Nat(c){try{const n=natInfo(natOf(c));return n&&n.rl||null;}catch(e){return null;}}
+// {m, tier:'primary'|'secondary'|'off', r, nat} or null for skills that are never scaled
+function sk12Mult(c,s){try{const t=c&&TPL[c.id];if(!t||!s||s.bond||s.limit||s.id==='attack'||(G&&G.daily))return null;const r=sk12Role(t.cls,s);if(!r)return null;
+  const R=heroRoles(c),main=heroMain(c);let m,tier;
+  if(r===main){m=ROLEPW.primary;tier='primary';}else if(R.includes(r)){m=ROLEPW.secondary;tier='secondary';}else{m=ROLEPW.off;tier='off';}
+  if(tier==='off'&&(s.role||s.combo)&&(s.k==='phys'||s.k==='mag')){m=ROLEPW.secondary;tier='secondary';}
+  let nat=false;if(tier!=='primary'&&sk12Nat(c)===r){m=Math.min(ROLEPW.natCap,m+ROLEPW.natLift);nat=true;}
+  return {m:+m.toFixed(3),tier,r,nat};}catch(e){return null;}}
+const sk12Pc=m=>Math.round(m*100)+'%';
+function sk12Tag(o){return o&&o.tier!=='primary'?`<i class="sk12r ${o.tier}" title="${o.tier==='off'?'Off role':'Secondary role'} for this class: power x${sk12Pc(o.m)}${o.nat?' (includes the nature\'s lift)':''}">${o.tier==='off'?'Off':'Sub'} x${sk12Pc(o.m)}</i>`:'';}
+// off-role buffs last a turn shorter
+HOOK.wrap('perform','skills12','off role buffs last shorter',function(next,...args){const a=args[0],sk=args[1],cut=sk&&sk.buffCut;if(!cut||!a||!a.S)return next(...args);
+  const b0=a.S.buffT;a.S.buffT=(b0||0)-cut;try{return next(...args);}finally{a.S.buffT=b0;}});
+
+// ---- 3. kits ----
+const s12Ult=(cls,s)=>!!(s&&s.el&&((SK12.ult[cls]||[]).includes(s.id)));
+const s12Is=(s,role,e)=>s.role===role&&!s.combo&&skHitsFoe(s)&&(role==='primer'?skEls(s)[0]===e:skEls(s).includes(e));
+const s12Lv=(a,b)=>a.lv-b.lv||(a.lv0||a.lv)-(b.lv0||b.lv);
+function s12Gen(t,e,role){const cls=t.cls,nm=SK12.gen[cls]||['{n} Brand','{n} Strike'],n=EL[e],phys=SK12.physCls.includes(cls),P=role==='primer';
+  const o={id:'g12_'+(P?'p':'d')+'_'+e,n:nm[P?0:1].replace('{n}',n),k:phys?'phys':'mag',pw:P?1.15:1.6,mp:P?4:6,cost:1,hits:1,t:'one',el:e,role,lv:SK12.genLv[P?'P':'D'],fixed:1,gen:1,
+    d:P?`A glancing ${phys?'blow':'cast'} that leaves ${n} clinging to the foe.`:`A focused ${n} ${phys?'strike':'burst'} that sets off a prime.`};
+  o.lv0=o.lv;try{const d=dlFor(cls,o);if(d)o.dl=d;}catch(x){}return o;}
+// a dual type has a Primer and a Detonator of each of its elements
+function s12Guarantee(t,S){const out=S.slice();t.el.forEach(e=>['primer','det'].forEach(role=>{if(out.some(s=>s12Is(s,role,e)))return;
+  const c=out.filter(s=>!s.role&&!s.combo&&!s.sig&&skHitsFoe(s)&&(s.k==='phys'||s.k==='mag')&&s.el===e).sort(s12Lv)[0];
+  if(c){c.role=role;return;}out.push(s12Gen(t,e,role));}));return out;}
+function s12Roles(t){return ROLE9.cls[t.cls]||(ROLES.cls[t.cls]?[ROLES.cls[t.cls].p].concat(ROLES.cls[t.cls].s):[]);}
+// how much a skill is worth to a role (the same weights roleOut uses, roles.js)
+function s12Val(s,r){const W=ROLES.w,A=(s.t==='all'||s.t==='allyAll'||s.t==='rand')?W.area:s.t==='self'?W.self:1,c=s.cost||1;
+  if(r==='phys'||r==='magic'||r==='ranged')return (s.pw||0)*(s.hits||1)*A/c;
+  if(r==='healer')return (s.k==='heal'||s.k==='revive')?(s.pw||0)*A/c:((s.fx||[]).some(f=>f[0]==='regen')?.2:0);
+  if(r==='buffer'||r==='tank'){let v=0;const fx=(s.k==='status'&&s.t!=='one'&&s.t!=='all')||s.k==='heal'?(s.fx||[]):[];fx.concat(s.allyFx||[]).forEach(([k])=>{if(STS[k]&&!STS[k].bad)v+=(W.buff[k]||.5);});return v*A/c+(s.heal||0)*3;}
+  if(r==='debuffer'){let v=0;(s.fx||[]).forEach(([k,ch])=>{if(STS[k]&&STS[k].bad)v+=Math.min(1,ch||1)*(W.debuff[k]||.5);});return (s.k==='status'||s.k==='phys'||s.k==='mag')?v*A/c:0;}
+  return 0;}
+function s12Pick(t,S){const cap=SK12.cap,keep=new Set(),add=s=>{if(s&&!keep.has(s)&&keep.size<cap)keep.add(s);},by=f=>S.filter(f).sort(s12Lv);
+  t.el.forEach(e=>['primer','det'].forEach(role=>add(by(s=>s12Is(s,role,e))[0])));
+  by(s=>s.combo).forEach(add);by(s=>s.sig||/^sg_/.test(s.id)).forEach(add);
+  S.slice().sort(s12Lv).slice(0,2).forEach(add);                       // a hero always has its first two moves
+  by(s=>s12Ult(t.cls,s)).forEach(add);                                  // single types keep their ultimates
+  // each of the class's roles keeps its two best skills (best by what the skill does for that role: roleOut credits any buff or debuff, whoever casts it)
+  s12Roles(t).forEach(r=>{const dmg=r==='phys'||r==='magic'||r==='ranged';
+    S.filter(s=>dmg?sk12Role(t.cls,s)===r:s12Val(s,r)>0).sort((a,b)=>s12Val(b,r)-s12Val(a,r)||s12Lv(a,b)).slice(0,2).forEach(add);});
+  add(by(s=>s.k==='heal'&&s.t==='ally')[0]);add(by(s=>s.k==='heal'&&s.t==='allyAll')[0]);add(by(s=>s.k==='revive'||s.revive)[0]);
+  S.slice().sort(s12Lv).forEach(add);
+  return S.filter(s=>keep.has(s)).sort(s12Lv);}
+function s12Build(t,L){const cls=t.cls,dual=t.el.length>1,legend=t.src==='L'||t.src==='x';
+  L.forEach(s=>{if(s.combo&&!s._k12){s._k12=1;const phys=SK12.physCls.includes(cls);if((s.k==='mag'&&phys)||(s.k==='phys'&&!phys)){s.k=phys?'phys':'mag';delete s.dl;try{const d=dlFor(cls,s);if(d)s.dl=d;}catch(x){}}}});
+  let S=L;
+  if(dual&&!SK12.dualUlt&&!(legend&&SK12.legendsKeepUlt))S=S.filter(s=>!s12Ult(cls,s));
+  if(dual)S=s12Guarantee(t,S);
+  if(S.length>SK12.cap)S=s12Pick(t,S);else if(S!==L)S=S.slice().sort(s12Lv);
+  return S;}
+const S12C={},S12FULL={};
+HOOK.xform('classSkills','skills12','the 12 skill kit, dual type primers and detonators, dual art kind (last hook: sees the finished list)',function(L,t){
+  if(!L||!t||t.mon||!CLS[t.cls])return L;const c=S12C[t.id];if(c&&c.L===L&&c.n===L.length)return c.out;
+  let out=L;try{out=s12Build(t,L);}catch(e){out=L;}S12C[t.id]={L,n:L.length,out};S12FULL[t.id]=L;return out;});
+// every skill the class could have had before the cap (for saves and the audit)
+function sk12Full(t){classSkills(t);return S12FULL[t.id]||classSkills(t);}
+
+// ---- dual arts: prime both elements, set off the reaction of both ----
+function s12Score(e){let n=0;try{(B.front||[]).forEach(u=>{if(u.hp<=0)return;const c=G.roster[u.id];if(!c)return;known(c).forEach(s=>{if(s.role==='det'&&skEls(s).some(x=>reactFor(e,x)))n++;});});}catch(x){}return n;}
+HOOK.wrap('perform','skills12','dual arts prime both elements and set off both reactions; a second prime element can be set off',function(next,...args){
+  const a=args[0],sk=args[1],tg=args[2];if(!B||!a||a.side!=='p'||!sk||!tg||!(sk.k==='phys'||sk.k==='mag'))return next(...args);
+  const els=skEls(sk),det=sk.role==='det',dual=!!sk.combo&&els.length>1&&skHitsFoe(sk);
+  if(!det&&!dual)return next(...args);
+  const was=new Map();tg.forEach(t=>{if(!t||t.side!=='e')return;was.set(t,!!t.primed);const P=t.primed;
+    if(det&&P&&P.el2&&!els.some(x=>reactFor(P.el,x))&&els.some(x=>reactFor(P.el2,x))){const o=P.el;P.el=P.el2;P.el2=o;}});
+  const prev=S12.cur;S12.cur=dual?sk:null;let r;
+  try{r=next(...args);}finally{S12.cur=prev;}
+  if(dual){const live=(B.en||[]);tg.forEach(t=>{if(!t||t.side!=='e'||t.hp<=0||t.primed||was.get(t)||!live.includes(t))return;
+    const [e1,e2]=els,el=s12Score(e2)>s12Score(e1)?e2:e1,o=el===e1?e2:e1;t.primed={el,el2:o,t:2,by:a.name};t.primeT=Date.now();B.nPrime=(B.nPrime||0)+1;
+    fx(t,'Primed: '+EL[el]+' + '+EL[o],'stat prime');try{if(typeof sfx==='function')sfx('prime');}catch(x){}log(`${t.name} is Primed with ${EL[el]} and ${EL[o]}.`);});}
+  return r;});
+HOOK.wrap('doReaction','skills12','a dual art sets off the reaction of each of its elements',function(next,...args){const a=args[0],t=args[1],sk=S12.cur,P=t&&t.primed;
+  if(!sk||!P||!sk.combo)return next(...args);const els=skEls(sk),primes=[P.el].concat(P.el2?[P.el2]:[]);
+  const pairs=[];els.forEach(de=>{const pe=primes.find(p=>reactFor(p,de));if(pe)pairs.push([pe,de]);});
+  if(pairs.length<2){if(pairs.length===1)P.el=pairs[0][0];return next(a,t,pairs.length?pairs[0][1]:args[2]);}
+  P.el=pairs[0][0];const R=next(a,t,pairs[0][1]);if(!R)return R;
+  const R0=reactFor(pairs[1][0],pairs[1][1]);if(!R0)return R;
+  const R2=Object.assign({},R0,{m:R0.m*DET_BONUS*((WX().react||{})[reactKey(pairs[1][0],pairs[1][1])]||1)});
+  log(`${R2.n}! ${a.name}'s ${EL[pairs[1][1]]} detonates the ${EL[pairs[1][0]]} prime on ${t.name} as well.`);fx(t,R2.n,'react');B.nDet=(B.nDet||0)+1;
+  const M=Object.assign({},R,{n:R.n+' + '+R2.n,m:1+(R.m-1)+(R2.m-1)*SK12.dualReact,fx:(R.fx||[]).concat(R2.fx||[]),strip:R.strip||R2.strip,selfFx:(R.selfFx||[]).concat(R2.selfFx||[]),
+    allyFx:(R.allyFx||R2.allyFx)?(R.allyFx||[]).concat(R2.allyFx||[]):undefined,splash:Math.max(R.splash||0,R2.splash||0)||undefined});
+  t.reactN=M.n;return M;});
+
+// ---- old saves: nobody keeps a skill the new kit lacks, nobody loses a function ----
+function s12Fn(s){if(s.role)return s.role+':'+(skEls(s)[0]||'');if(s.combo)return 'combo';return String(sk12Role('x',s))+':'+(s.t==='all'||s.t==='allyAll'?'all':'one');}
+function s12Migrate(g){const lost={};let n=0;Object.keys(g.roster||{}).forEach(id=>{const c=g.roster[id],t=TPL[id];if(!c||!t||t.mon||!CLS[t.cls])return;
+  const kit=classSkills(t),full=sk12Full(t),ids=new Set(kit.map(s=>s.id));
+  if(c.keep){const k=c.keep.filter(x=>ids.has(x));if(k.length!==c.keep.length){if(k.length)c.keep=k;else delete c.keep;}}
+  const gone=full.filter(s=>!ids.has(s.id)&&skillKnown(c,s)&&!s.gen);
+  gone.forEach(d=>{const f=s12Fn(d);if(kit.some(s=>skillKnown(c,s)&&s12Fn(s)===f))return;const rep=kit.filter(s=>s12Fn(s)===f).sort(s12Lv)[0];if(rep&&!skillKnown(c,rep))c.keep=(c.keep||[]).concat(rep.id);});
+  if(gone.length){lost[id]=gone.map(s=>s.n);n++;}});
+  if(n&&!g.s12){g.s12=1;g.s12msg=`Class skills are capped at ${SK12.cap} per wayfarer now: ${n} of yours set aside some moves. Dual types no longer learn elemental ultimates.`;}
+  return lost;}
+HOOK.after('unpackG','skills12','trim old saves to the capped kit',function(g){try{s12Migrate(g);}catch(e){}});
+HOOK.after('render','skills12','one notice after an old save is trimmed',function(){try{if(G&&G.s12msg&&V.screen!=='title'){const m=G.s12msg;delete G.s12msg;toast(m);}}catch(e){}});
+
+// ---- skill rows show the role tier ----
+HOOK.xform('cmdHtml','skills12','role tier on the battle skill rows',function(h){try{const a=B&&B.cur;if(!a||B.mode!=='cmd'||B.menu!=='skills')return h;
+  known(a).forEach(s=>{if(!s.rlt)return;const tag=sk12Tag({m:s.rlm,tier:s.rlt,nat:s.rln});const re=new RegExp(`(<button class="mi [^"]*" data-act="sk" data-arg="${s.id}"[^>]*>[\\s\\S]*?<span class="sk11s">)`);h=h.replace(re,(m,p)=>p+tag);});}catch(e){}return h;});
+HOOK.xform('mChar','skills12','role power on the hero sheet skill rows',function(h,id){try{const c=G.roster[id],t=TPL[id];if(!c||!t||G.daily)return h;const by={};classSkills(t).forEach(s=>{by[s.n]=s;});
+  const tp=document.createElement('template');tp.innerHTML=h;let n=0;
+  tp.content.querySelectorAll('.row').forEach(r=>{const b=r.querySelector(':scope>div>b'),e=r.querySelector('.sk11e'),sub=r.querySelector('.sk11s');if(!b||!e||!sub)return;const s=by[b.textContent.trim()];if(!s)return;
+    const o=sk12Mult(c,s);if(!o)return;if(s.pw&&(s.k==='phys'||s.k==='mag'||s.k==='heal')&&/^Pow \d+$/.test(e.textContent.trim()))e.textContent='Pow '+Math.round(s.pw*o.m*100);
+    if(o.tier!=='primary'){const w=document.createElement('template');w.innerHTML=sk12Tag(o);sub.insertBefore(w.content.firstChild,sub.firstChild);n++;}});
+  return n?tp.innerHTML:h;}catch(e){return h;}});
+try{const st=document.createElement('style');st.textContent='.sk12r{font-style:normal;color:#e8c9a0}.sk12r.off{color:#e0a0a0}';document.head.appendChild(st);}catch(e){}
+
+// ---- 5. primer and detonator of a hero's kit at a level ({P,D}); the tavern and the recruit fit read it ----
+function heroPrimeDet(id,lv){const r={P:false,D:false},t=TPL[id];if(!t||t.mon)return r;classSkills(t).forEach(s=>{if(s.lv<=lv&&s.role&&skHitsFoe(s)){if(s.role==='primer')r.P=true;if(s.role==='det')r.D=true;}});return r;}
+try{window.__S12={get S12(){return S12;},kit:t=>classSkills(t),full:t=>sk12Full(t),role:(cls,s)=>sk12Role(cls,s),mult:(c,s)=>sk12Mult(c,s),pd:(id,lv)=>heroPrimeDet(id,lv),migrate:g=>s12Migrate(g),get TPL(){return TPL;},get CLS(){return CLS;}};}catch(e){}
 
 window.__A={walkable,ceInit,tvSlots,genQuests,STARTERS,starterDraw,ECON,AUTO_NERF,rebuildBase,detLive,REACT,skEls,packContents,miniFor,AUTO_REW,ENC_RATE,ENC_MIN_STEPS,detNote,classSkills,stickCount,bestAll,calcStats,lookKey,vTemper,storyEchoUp,leaveDungeon,win,ldApply,genFort,caveOk,enterCave,siteHasMini,openChest,nextDlg,WS,mapIcoRects,roamSpawn,roamInterior,roamSees,mapTargets,DIRV,tileAt,STAGE_LV,autoBan,rollWeather,guardianDef,mapIssues,mapEntry,syncPools,bovAt,calFxAt,realmAt,REALMS,BOV,CAL_FX,overlayGuide,liftOverlay,drawGearIcon,gearIcon,itemIcon,RAW,sigKind,sigGid,personalDone,heroLook,hasSignature,LEGEND_IDS,facDirty,facCount,facRank,facRep,FACB,FAC,finishBattle,npcWords,npcHints,npcPool,titleMake,titleAdvance,TTS,placeAt,wkwUpdate,innSpot,getMap,monURL,enterVia,applyBossTheme,BTHEME,resetMaps,rebuildBase,shopStock,gearDesc,calcStats,gearMigrate,CLS_WPN,CLS_ARM,WPERK,WT_NAME,equipWhy,lootBase,GEAR,canEquip,gearOf,perkNote,FAM_MAT_V35,fbDraft,META:{get best(){return META.best},get codex(){return META.codex},get q(){return META.q}},saveMeta,OFF,offPending,offFlush,PROFILE,profileSync,codexSee,getMap,placeAt,interact,sanctumOpen,riftKeys,echoKeys,BONDS,bondKey,wkwUpdate,inTown,WS,LC,lsort,bestParty,fsCast,fsSkills,ldApply,MON,registerTamed,stickPower,stickCount,autoOne,planGear,bestTag,gainersFor,compGainFor,refresh,fitsFor,canEquip,gearOf,queueNewGear,ARENA,fxDur,banDur,stageTags,autoSwitchPick,layoutBattle,newChar,calcStats,limitSkill,limitTier,canStuck,dunReachable,LV_CAP,addXp,echoSpec,bossLvFor,fx,MON,log,effInfo,tierOf,perkOf,quirkDef,forgeCost,buyPlan,vJourney,modalBack,partySlots,limitOpen,town2Reached,skillKnown,known,classSkills,paceMigrate,unpackG,packG,makeEnemy,QUIRK,arrive,enterDungeon,wkwUpdate,useTravel,travelWhyNot,porkFlee,porkBlocked,encTile,campRest,buyPart,partLeft,alchStock,GAME_VERSION,CHANGELOG,ITEMS,tavernOffers,tavernPool,recruitFit,partyNeeds,vNext,CHALL,innSpot,RECIPES,MATS,FB,fbContext,REDEEM,legendJoin,legendQ,genQuests,dynActors,convInit,PROFILE,profileSync,checkArchive,GPOOL,FPOOL,guardianDef,saveMeta,archiveSkills,get G(){return G;},set G(v){G=v;},get B(){return B;},get V(){return V;},get META(){return META;},WS,ACT,render,newGame,placeAt,startBattle,autoTurn,advance,finishBattle,getMap,innSpot,setPause:p=>{PAUSE=p;},autoCfg,worldInputDir,inputSources,battleFrame,battleTheme,STS,MAPS,mapIssues,healMap,mimicReward,dropChest,interact,worldDraw,TPL,ZONES,ZS,newChar,recruit,saveGame,resetMaps,dynActors,tileAt,BV,refresh,genBounties,genQuests,vStarter,heroCard,heroURL,iconURL,masteryLine,AU,buildTrack,tone,noiseHit,MIDI,sfx,audioVol};
 ['heroRoles','SOLID','WEATHER','WX_BASE','weatherFX','superGuide','recruitCost','ceStart','ceStep','ceInit','cePool','wxList','SUPER_TABLE','superOk','facRank','facRep','facInit','facCount','facCredit','FAC','FMIS','facMissionList','facProg','tyOf','facSync','facMul','facBest','worldPlan','caveReward','enterCave','leaveCave','leaveDungeon','buildCaveMap','worldGraph','openWorldMap','sigReport','SIG_NAMES','starterDraw','ITEM_TIERS','gTierIdx','tierChip','gearIcon','starterSlots','STARTERS','CLK_LEN','CLK_PH','clockPhase','wxInfoBody','recipeOrder','recipeGain','recipeReady','recipeClose','effOf','calcDamage','healsUndead','storyEchoUp','riftKeys','echoDef','efCost','autoLocked','bossFightKey','learnScanAll','isSeen','mapMarks','genSub','subOK','subReq','ensureSub','inSub','tvSlots','tvInit','tvLeft','tvEvent','tvNextText','tvPool','tvDue','tvShuffle','mTavern','hireOK','TV_CAP','TV_CD','POOL_IDS','natPool','natOf','natRoll','NATURES','natInfo','natRerollCost','natChooseCost','NAT_CLASS','iconURL','seenOf','mapIcoDraw','drawMini','MAPCV','revealAround','fxLayer','numDur','compBonusText','compPerk','checkPhase','win','unitBox','LNQ','challVisible','challEligible','challState','isMimic','migrateCompanions','canSummon','summonComp','compOf','clockPhase','tickClock','isNight','rollWeather','wxStep','nightPool','encounterFoes','restAll','tameElite','openChest','rerollTavern','bestAll','gearTier','SV','svCheck','svFlush','svInit','svPush','svPull','svScan','svParse','svBackup','svPack','svUnpack','svProg','svCloudList','svDelDoc','svGet','svCap','slotState','slotKey','svDecode','SV_CH','svStatus','svSlotRaw','svLoad','loadRaw','svHash','svIdx'].forEach(k=>{try{Object.defineProperty(window.__A,k,{get:()=>eval(k)});}catch(e){}});

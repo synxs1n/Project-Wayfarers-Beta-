@@ -69,7 +69,7 @@ function deliveryOf(a,sk){
 }
 
 // skills are tagged once, when a hero's list is first built
-{const cs0=classSkills;classSkills=function(t){const L=cs0.apply(this,arguments);if(L&&!L._dl){L._dl=1;L.forEach(s=>{const d=dlFor(t&&t.cls,s);if(d&&!s.dl)s.dl=d;});}return L;};}
+HOOK.xform('classSkills','archetype','tag every skill with its damage kind once',function(L,t){if(L&&!L._dl){L._dl=1;L.forEach(s=>{const d=dlFor(t&&t.cls,s);if(d&&!s.dl)s.dl=d;});}return L;});
 
 // ---- the multiplier ----
 function archParts(a,sk,t){

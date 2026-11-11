@@ -32,7 +32,7 @@ function stPopHtml(){
     title=`⟐ Primed: ${EL[el]}`;body=`A ✸ Detonator of a matching element sets off a reaction: ${L.map(R=>`${EL[R.d]} → ${R.n}`).join(', ')}. A primed foe can't be primed again until this fades or detonates.`;src=u.primed.by?`Primed by ${u.primed.by}.`:'';dur=`Fades after ${u.primed.t} more of its turn${u.primed.t===1?'':'s'}.`;}
   else if(P.k==='broken'){title='Broken';body='Its shield is shattered: it takes 50% more damage and loses its next turn.';dur='Recovers after it reels.';}
   else{const st=(u.st||{})[P.k],d=STS[P.k];if(!st||!d){B.stPop=null;return '';}title=d.n;body=d.d;
-    src=st.src?(st.src==='self'?'Self-applied.':`From ${st.src}.`):'';dur=P.k==='ward'?'Until it blocks a hit, or '+st.t+' more turns.':P.k==='focus'?'Until the next attack, or '+st.t+' more turns.':P.k==='stun'?'Skips its next turn.':`${st.t} more turn${st.t===1?'':'s'} (counted on ${esc(u.name)}'s turns).`;
+    src=st.src?(st.src==='self'?'Self-applied.':`From ${st.src}.`):'';dur=P.k==='ward'?'Until it blocks a hit, or '+st.t+' more turns.':P.k==='focus'?st.t+' more turn'+(st.t===1?'':'s')+' (not used up by attacking).':P.k==='stun'?'Skips its next turn.':`${st.t} more turn${st.t===1?'':'s'} (counted on ${esc(u.name)}'s turns).`;
     if(st.v)body+=` About ${st.v} per turn.`;}
   return `<div class="stpop" role="dialog" aria-label="${esc(title)}"><div class="sth"><b>${esc(u.name)}</b><button class="btn sm" data-act="stClose" aria-label="Close">✕</button></div><h5>${STS[P.k]||P.k==='broken'?stSym(P.k,'big')+' ':''}${esc(title)}</h5><p>${body}</p>${src?`<small>${src}</small>`:''}${dur?`<small>${dur}</small>`:''}</div>`;
 }

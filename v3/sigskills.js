@@ -84,10 +84,10 @@ function sigFlavour(L,t){
   const txt=ally?rd.map(f=>SIG_ST_N[f[0]]).join(' and '):sigFoeTxt(keep.concat(rd));
   s.d=(s.k==='phys'||s.k==='mag'?`${EL[e]} tinged. `:'')+(ally?`Gives ${txt}.`:txt[0].toUpperCase()+txt.slice(1)+'.')+(s.t==='all'?' Hits every foe.':'');
 }
-{const cs1=classSkills;classSkills=function(t){const L=cs1.apply(this,arguments);
+HOOK.xform('classSkills','sigskills','the wayfarer\'s signature skill and element flavour',function(L,t){
   if(!L||L._sg||!t||t.src==='L'||t.src==='x'||t.mon||!SIG_NAMES[t.id])return L;L._sg=1;
   try{sigFlavour(L,t);const s=sigBuild(t);if(s){const d=typeof dlFor==='function'?dlFor(t.cls,s):null;if(d)s.dl=d;L.push(s);L.sort((a,b)=>a.lv-b.lv||(a.lv0||a.lv)-(b.lv0||b.lv));}}catch(e){}
-  return L;};}
+  return L;});
 // ---- report (used by the tests and the design notes) ----
 function sigReport(){
   const ids=Object.keys(SIG_NAMES).filter(id=>TPL[id]),rows=ids.map(id=>{const s=classSkills(TPL[id]).find(x=>x.id==='sg_'+id);return {id,cls:TPL[id].cls,el:TPL[id].el.join('/'),s};});

@@ -137,7 +137,7 @@ const BOSS_LV={frac:.5,cap:12};
 // 3.2 bosses: shield pips +50% (5 to 8, 7 to 11); the break window hits for less and is over once the foe loses the turn it staggers
 const BOSS_PIPS={mult:1.5};const BREAK_WIN={bonus:1.3,short:true};
 // 3.2 extra boss muscle on top of the old stat table (hp and power multipliers)
-const BOSS_BUFF={hp:[.9,1.5,1.55,1.7,1.36],pow:[1,1.34,1.38,1.6,1.28]}// v0.4.3: re-tuned with capes; v0.8.2: the first three Scourges eased (were hp 1.3, 1.75, 1.8 and pow 1.15, 1.4, 1.44) so no boss is a wall; v0.9.5: hp [1.15,1.65,1.7,2.0,1.52] -> about 4 to 10% less, the realm gimmicks (BOSS_GIM) carry the rest
+const BOSS_BUFF={hp:[.84,1.4,1.45,1.6,1.28],pow:[.97,1.3,1.34,1.56,1.25]}// v0.19: eased about 7% hp and 3% pow with the role power change (was hp [.9,1.5,1.55,1.7,1.36], pow [1,1.34,1.38,1.6,1.28]) to pay for the 12 skill kit, role power and no dual ultimates, so the journey sim stays at level 41.3 and 14.6 boss tries (before the skill changes: 40.5 and 11.1; without the ease: 42.6 and 19.6); v0.4.3: re-tuned with capes; v0.8.2: the first three Scourges eased (were hp 1.3, 1.75, 1.8 and pow 1.15, 1.4, 1.44) so no boss is a wall; v0.9.5: hp [1.15,1.65,1.7,2.0,1.52] -> about 4 to 10% less, the realm gimmicks (BOSS_GIM) carry the rest
 // BOSS_GIM (v0.9.5, battle4.js): every Scourge and Calamity brings one realm gimmick to its first fight (kind 'boss'; not Echoes, not the Daily
 // Trial). Each is telegraphed on the boss's turn (a log line, a "Telegraph" chip on the boss, a mark on the heroes it will hit) and lands on its
 // next turn, so reading it pays. first: the boss's turn of the first telegraph; every: turns between telegraphs (per boss: every).
@@ -285,24 +285,24 @@ const ROLES={
       {id:'r_stance',n:'Iron Stance',k:'status',t:'self',mp:7,lv:20,fx:[['taunt',1],['regen',1]],d:'Plants his feet: Taunt and Regen. The line hides behind him.',r:'tank'}],
     knight:[{id:'r_banner',n:'Raise the Banner',k:'status',t:'allyAll',mp:12,lv:19,fx:[['haste',1]],d:'The standard goes up: Haste for the vanguard.',r:'buffer'},
       {id:'r_cover',n:'Shield Ally',k:'status',t:'ally',mp:5,lv:13,fx:[['bulwark',1],['regen',1]],d:'Covers an ally: Bulwark and Regen.',r:'buffer'}],
-    archer:[{id:'r_cripple',n:'Crippling Shot',k:'phys',pw:1,mp:6,lv:15,dl:'ranged',fx:[['weaken',.85],['slow',.6]],d:'An arrow to the sword arm. Likely Weakens, may Slow.',r:'debuffer'},
-      {id:'r_flare',n:'Flare Arrow',k:'phys',pw:.8,mp:8,t:'all',lv:18,dl:'ranged',fx:[['blind',.7]],d:'A burning flare bursts over every foe. May Blind.',r:'debuffer'}],
+    archer:[{id:'r_cripple',n:'Crippling Shot',k:'phys',pw:1,mp:6,lv:15,dl:'ranged',fx:[['weaken',.85],['slow',.7]],d:'An arrow to the sword arm. Likely Weakens, may Slow.',r:'debuffer'},
+      {id:'r_flare',n:'Flare Arrow',k:'phys',pw:.8,mp:8,t:'all',lv:18,dl:'ranged',fx:[['blind',.85]],d:'A burning flare bursts over every foe. May Blind.',r:'debuffer'}],
     thief:[{id:'r_stars',n:'Throwing Stars',k:'phys',pw:.7,hits:2,mp:3,cost:.8,lv:4,dl:'piercing',d:'Two quick stars from the hip. Piercing: they find the gaps in armor.',r:'ranged'},
       {id:'r_kunai',n:'Kunai Volley',k:'phys',pw:.8,mp:9,t:'all',lv:16,dl:'piercing',fx:[['bleed',.4]],d:'A fan of kunai at every foe. Piercing; may Bleed.',r:'ranged'},
       {id:'r_hamstr',n:'Hamstring',k:'phys',pw:.8,mp:5,cost:.8,lv:12,fx:[['slow',.8],['weaken',.5]],d:'A cut behind the knee. Likely Slows, may Weaken.',r:'debuffer'},
       {id:'r_toxin',n:'Toxic Cloud',k:'status',t:'all',mp:10,lv:18,fx:[['poison',.85],['weaken',.6]],d:'A cloud of venom over every foe. Likely Poisons, may Weaken.',r:'debuffer'},
       {id:'r_fuma',n:'Fuma Shuriken',k:'phys',pw:1.9,mp:12,cost:1.1,pierce:1,lv:24,dl:'piercing',d:'A great folding shuriken that cuts through armor. Piercing; ignores half of defense.',r:'ranged'}],
     monk:[{id:'r_chimend',n:'Chi Mend',k:'heal',chi:1,pw:1.6,mp:5,t:'ally',lv:7,d:'Pushes chi into an ally to close their wounds.',r:'healer'},
-      {id:'r_harmony',n:'Harmony Meditation',k:'status',t:'allyAll',mp:10,lv:14,fx:[['focus',1]],heal:.1,d:'The line breathes with him: Focus for the vanguard and a 10% heal.',r:'buffer'},
+      {id:'r_harmony',n:'Harmony Meditation',k:'status',t:'allyAll',mp:10,lv:14,fx:[['focus',1]],heal:.2,d:'The line breathes with him: Focus (more crit chance for a few turns) for the vanguard and a 20% heal.',r:'buffer'},
       {id:'r_lotus',n:'Lotus Circle',k:'heal',chi:1,pw:1.1,mp:12,t:'allyAll',lv:21,d:'A shared meditation that heals the vanguard.',r:'healer'}],
     mage:[{id:'r_snare',n:'Time Snare',k:'status',t:'all',mp:10,lv:16,fx:[['slow',.6],['weaken',.25]],d:'Thickens time around every foe. Likely Slows, may Weaken.',r:'debuffer'}],
     healer:[{id:'r_bless',n:'Blessing',k:'status',t:'ally',mp:6,lv:10,fx:[['might',1],['regen',1]],d:'A blessing on one ally: Might and Regen.',r:'buffer'},
       {id:'r_aegis',n:'Holy Aegis',k:'status',t:'allyAll',mp:14,lv:17,fx:[['bulwark',1]],d:'A dome of light: Bulwark for the vanguard.',r:'buffer'}],
     bard:[{id:'r_anthem',n:'Anthem of Valor',k:'status',t:'allyAll',mp:16,lv:14,fx:[['might',1],['haste',1]],d:'The battle anthem: Might and Haste for the vanguard.',r:'buffer'},
-      {id:'r_aria',n:'{n1} Aria',k:'mag',pw:1.9,mp:5,lv:5,el:'e1',d:'A piercing {n1} note aimed at one foe.',r:'magic'},
-      {id:'r_ballad',n:'Healing Ballad',k:'heal',pw:2.1,mp:6,t:'ally',lv:8,d:'A slow ballad that mends one ally.',r:'healer'},
-      {id:'r_chorus',n:'Restoring Chorus',k:'heal',pw:1.35,mp:12,t:'allyAll',lv:18,fx:[['regen',1]],d:'The whole line sings along: heals the vanguard and grants Regen.',r:'healer'},
-      {id:'r_storm',n:'{n1} Storm Song',k:'mag',pw:2.5,mp:14,cost:1.2,lv:26,el:'e1',d:'The song rises into a {n1} storm on one foe. Slow recovery.',r:'magic'}],
+      {id:'r_aria',n:'{n1} Aria',k:'mag',pw:2.1,mp:5,lv:5,el:'e1',d:'A piercing {n1} note aimed at one foe.',r:'magic'},
+      {id:'r_ballad',n:'Healing Ballad',k:'heal',pw:1.75,mp:6,t:'ally',lv:8,d:'A slow ballad that mends one ally.',r:'healer'},
+      {id:'r_chorus',n:'Restoring Chorus',k:'heal',pw:1.2,mp:12,t:'allyAll',lv:18,fx:[['regen',1]],d:'The whole line sings along: heals the vanguard and grants Regen.',r:'healer'},
+      {id:'r_storm',n:'{n1} Storm Song',k:'mag',pw:2.8,mp:14,cost:1.2,lv:26,el:'e1',d:'The song rises into a {n1} storm on one foe. Slow recovery.',r:'magic'}],
     sniper:[{id:'r_hobble',n:'Hobbling Bolt',k:'phys',pw:1,mp:6,lv:14,dl:'ranged',fx:[['slow',.8],['weaken',.6]],d:'A bolt to the leg. Likely Slows, may Weaken.',r:'debuffer'},
       {id:'r_flash',n:'Flash Bolt',k:'phys',pw:.9,mp:11,t:'all',lv:20,dl:'ranged',fx:[['blind',.7],['slow',.4]],d:'A bolt that bursts into light over every foe. May Blind and Slow.',r:'debuffer'}],
     druid:[{id:'r_tangle',n:'Tangleroot',k:'status',t:'all',mp:9,lv:12,fx:[['root',.7],['slow',.6]],d:'Roots burst up under every foe. May Root and Slow.',r:'debuffer'},
@@ -310,7 +310,9 @@ const ROLES={
     archmage:[{id:'r_frostmail',n:'Frost Mail',k:'status',t:'allyAll',mp:12,lv:18,fx:[['bulwark',1]],heal:.1,d:'A skin of rime for the vanguard: Bulwark and a 10% heal.',r:'buffer'}],
     chronicler:[{id:'r_draft',n:'Corrected Draft',k:'heal',pw:1.15,mp:12,t:'allyAll',lv:18,d:'Rewrites the last page: heals the vanguard.',r:'healer'}]},
   // adj: changes to existing class skills (by class and skill id), merged in when the list is built
-  adj:{chronicler:{annotate:{fx:[['break',.9],['weaken',.5]],rl:'debuffer'},redact:{fx:[['blind',.7]]}},bard:{tune1:{pw:1},tune2:{pw:1}},druid:{wildmend:{chi:1,pw:1.15}}},
+  adj:{chronicler:{annotate:{fx:[['break',.9],['weaken',.5]],rl:'debuffer'},redact:{fx:[['blind',.7]]}},bard:{tune1:{pw:1},tune2:{pw:1}},druid:{wildmend:{chi:1,pw:1.15}},
+    // v0.19: role power now comes from ROLEPW, so a few sub role numbers are set to keep every secondary in the 55 to 78% band
+    knight:{lance1:{pw:1.75},lance2:{pw:1.75},judge:{pw:3}},thief:{assn:{pw:2.3}}},
   charms:[{id:'c_rl_mend',n:"Mender's Locket",st:{mag:8,res:6},attr:{fth:3},perk:{healUp:.12},d:'+12% healing',price:520},
     {id:'c_rl_song',n:'Spellstring Charm',st:{mag:12,mp:30},perk:{spellPow:.08},d:'+8% spell damage',price:520},
     {id:'c_rl_quiv',n:'Kunai Pouch',st:{atk:8,spd:4},attr:{dex:3},perk:{rngPow:.1},d:'+10% Ranged damage',price:520},
@@ -319,6 +321,26 @@ const ROLES={
     {id:'c_rl_ward',n:"Warden's Badge",st:{hp:110,def:10},perk:{tauntDef:.15},d:'Takes 15% less while Taunting',price:560}],
   shopFrom:1};
 
+// v0.19 skills12.js: Focus, the skill cap, dual types, and role power.
+// FOCUS: the Focus status gives +crit chance (added to the hero's crit chance, all damage skills) for `turns` of the holder's turns; it is no longer spent by the first attack.
+// SK12: cap = most class skills a hero can learn (Limit Breaks, bond techs, Archive skills and the basic Attack are outside it). dualUlt false: a dual type
+// (two elements) never learns the elemental ultimates listed in ult (by class); legendsKeepUlt keeps them for legendary and special wayfarers (src L or x).
+// physCls: classes whose dual art is a physical move (kind from the weapon, dmg11.js); every other class casts it as magic. gen: names of the filler Primer (P) and
+// Detonator (D) a dual type gets for an element that lacks one; genLv: where they land. dualReact: how much of the second reaction a dual art adds (1 = in full).
+const FOCUS={crit:.4,turns:3};
+const SK12={cap:12,dualUlt:false,legendsKeepUlt:true,
+  ult:{warrior:['titan','ragnarok'],knight:['judge'],mage:['s3a','cataclysm'],healer:['verdict'],thief:['assn','lotus'],archer:['heavenp'],monk:['dragon','ascend'],bard:['finale','symphony'],
+    sniper:['s3a','tenk'],druid:['s3a','oldwood'],archmage:['s3a','zeropoint'],chronicler:['s3a','finaled']},
+  physCls:['warrior','knight','thief','archer','monk','sniper','druid'],
+  gen:{warrior:['{n} Brand','{n} Breaker'],knight:['{n} Seal','{n} Charge'],thief:['{n} Needle','{n} Cut'],archer:['{n} Mark','{n} Bolt'],monk:['{n} Touch','{n} Strike'],
+    mage:['{n} Mark','{n} Lance'],healer:['{n} Halo','{n} Smite'],bard:['{n} Chord','{n} Crescendo'],sniper:['{n} Mark','{n} Bolt'],druid:['{n} Thorn','{n} Fang'],
+    archmage:['{n} Mark','{n} Lance'],chronicler:['{n} Gloss','{n} Verse']},
+  genLv:{P:8,D:12},dualReact:1};
+// ROLEPW: skill power by how a skill's role sits in the hero's class role list (roles9.js ROLE9.cls: main, then two sub roles): the hero's main role 1,
+// a sub role `secondary`, any other role `off`. Primer, Detonator and dual art damage never counts below `secondary`. A nature that leans into a skill's role
+// adds `natLift` to that skill's multiplier, never above `natCap` (so a lifted off-role skill never matches a main-role one). Debuff chances move by
+// fxShare of the gap; a buff of an off-role skill lasts offBuff turns less (at least 1).
+const ROLEPW={primary:1,secondary:.8,off:.5,natLift:.14,natCap:.9,fxShare:.33,offBuff:1};
 // PACE (v0.9.5, pacing.js): the realm (0 = the first) in which each system opens on a journey started on v0.9.5 or later. Older journeys,
 // New Game+ cycles and the Daily Trial have everything open. pcUnlocked(system) reads it (the onboarding tips can ask it too).
 // combat, elements and taming are always open; tempering keeps its own rule (after the first Scourge); camp follows CAMP.fromStage.

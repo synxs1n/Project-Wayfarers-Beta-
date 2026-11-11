@@ -6,12 +6,12 @@
 const POOL_IDS=()=>RAW.filter(r=>r[6]!=='L'&&r[6]!=='x'&&TPL[r[0]]).map(r=>r[0]);
 function subReq(set,must){must=must||[]; // returns the list of unmet guarantees as [label, candidate test]
   const ids=[...set],cl={},el={};let pr=0,dt=0,du=0,ch=0,early=0;
-  ids.forEach(id=>{const t=TPL[id];cl[t.cls]=(cl[t.cls]||0)+1;t.el.forEach(e=>el[e]=(el[e]||0)+1);const R=heroRoles(id,40);if(R.P)pr++;if(R.D)dt++;if(t.el.length>1)du++;if(challIsPooled(id))ch++;
+  ids.forEach(id=>{const t=TPL[id];cl[t.cls]=(cl[t.cls]||0)+1;t.el.forEach(e=>el[e]=(el[e]||0)+1);const R=heroPrimeDet(id,40);if(R.P)pr++;if(R.D)dt++;if(t.el.length>1)du++;if(challIsPooled(id))ch++;
     if((t.src==='s'||t.src==='t0')&&!must.includes(id))early++;});
   const need=[];
   Object.keys(NAT_CLASS).forEach(k=>{if((cl[k]||0)<3)need.push(id=>TPL[id].cls===k);});
   ELK.forEach(e=>{if((el[e]||0)<3)need.push(id=>TPL[id].el.includes(e));});
-  if(pr<4)need.push(id=>heroRoles(id,40).P);if(dt<4)need.push(id=>heroRoles(id,40).D);
+  if(pr<4)need.push(id=>heroPrimeDet(id,40).P);if(dt<4)need.push(id=>heroPrimeDet(id,40).D);
   if(du<6)need.push(id=>TPL[id].el.length>1);if(ch<5)need.push(id=>challIsPooled(id));if(early<4)need.push(id=>{const s=TPL[id].src;return (s==='s'||s==='t0')&&!must.includes(id);});
   return need;
 }
