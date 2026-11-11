@@ -129,6 +129,7 @@ function sncYard(f,R,D,P,x,y,m,o,L,px,py,cc){if(!o.ok)return;const k=sncYK(o,x,y
   // a curb where garden meets path or walk
   if(k==='grass'||k==='gravel'){const nb=(dx,dy)=>{const q=sncYK(o,x+dx,y+dy);return q==='path'||q==='walk'||q==='out';};
     if(nb(0,-1)){f(F[3],0,0,16,1);f(tint(F[2],.4),0,1,16,1);}if(nb(0,1)){f(F[3],0,15,16,1);}if(nb(-1,0)){f(F[3],0,0,1,16);}if(nb(1,0)){f(F[3],15,0,1,16);}}}
+sncYard=HOOK.def('sncYard',sncYard);// v0.19.2: worldart12.js lays the garden's side carpets as panels
 // the runner carpet with gold trim and fringe: a long strip from the start tile up the axis to the rune circle (the edges of its set decide the trim)
 function sncCarpet(f,D,o,x,y){const C=o.carpet,has=(dx,dy)=>C.has((x+dx)+','+(y+dy)),cl=D.cloth,vert=o.dir==='n'||o.dir==='s';
   const st=(e,d,t,col)=>e==='T'?f(col,0,d,16,t):e==='B'?f(col,0,16-d-t,16,t):e==='L'?f(col,d,0,t,16):f(col,16-d-t,0,t,16);
@@ -150,6 +151,7 @@ function sncHall(f,R,D,P,x,y,m,o,L,px,py,ctx){if(!o.ok)return;const key=x+','+y;
   if(Math.abs(u-o.cx)<=1&&v>=o.gv&&v<=o.gv+2){const edge=(du,dv,col,th)=>{const a=o.xf(u,v),b=o.xf(u+du,v+dv),dx=b[0]-a[0],dy=b[1]-a[1];if(dx<0)f(col,0,0,th,16);else if(dx>0)f(col,16-th,0,th,16);else if(dy<0)f(col,0,0,16,th);else f(col,0,16-th,16,th);};
     if(u===o.cx-1)edge(-1,0,tint(D.f[2],.3),1);if(u===o.cx+1)edge(1,0,tint(D.f[2],.3),1);if(v===o.gv)edge(0,-1,tint(D.f[2],.3),1);}
 }
+sncHall=HOOK.def('sncHall',sncHall);// v0.19.2: worldart12.js adds the hall's side carpets
 // the stairs out (the start room's door): three pale steps in warm light. The art is drawn with the way out at the top (you walk south in); turned for the other facings
 function sncDoor(f0,D,L,px,py,dir){dir=dir||'s';
   const f=dir==='n'?(c,a,b,w,h)=>f0(c,a,16-b-h,w,h):dir==='e'?(c,a,b,w,h)=>f0(c,b,a,h,w):dir==='w'?(c,a,b,w,h)=>f0(c,16-b-h,a,h,w):f0;

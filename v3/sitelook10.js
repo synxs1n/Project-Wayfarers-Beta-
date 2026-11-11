@@ -118,6 +118,7 @@ function slDenByKey(key){const L=SL_DEN[key];const id='den:'+key;if(SL_DENC[id])
   // soft light from the opening (a glow over the sill) after the outline so it stays soft
   P.glow(L.acc,cx,by-3,13,.22);
   return SL_DENC[id]=P.cv;}
+slDenByKey=HOOK.def('slDenByKey',slDenByKey);// v0.19.2: worldart12.js gives the den mouth volume
 const SL_DECO={
  roots:D=>{const {P,cx,by,oh,ow}=D;[[-1,0],[1,0]].forEach(([s])=>{for(let i=0;i<3;i++){let x=cx+s*(ow/2-i*2),y=by-oh+3+i;for(let k=0;k<7+i*2;k++){P.px(i%2?'#5a3a1e':'#7a4e28',x,y+k);if(k%3===1)x+=s*(i%2?-1:1);}}});
     P.f('#7a4e28',cx-ow/2-5,by-6,3,6);P.f('#7a4e28',cx+ow/2+2,by-5,3,5);P.px('#9a6a38',cx-ow/2-5,by-6);},
@@ -373,6 +374,7 @@ function slLairByKit(K,lit){const id='lair:'+K.id+':'+(lit?1:0);if(SL_LAIRC[id])
     P.c.globalCompositeOperation='source-over';slLamp(P,12,48,1,'#ffe08a');slLamp(P,52,48,1,'#ffe08a');P.glow('#ffd870',32,56,12,.3);[[22,58],[42,58],[26,59]].forEach(([x,y],i)=>{P.f('#fff6a0',x,y,2,1);P.px(i%2?'#ff8a8a':'#ffd040',x+1,y-1);});}
   P.light();P.outline2('#120c14');P.glow(K.lt==='fire'?'#ff7a2a':K.lt==='cyan'||K.lt==='ice'?'#8ad0ff':K.lt==='violet'?'#b080ff':K.lt==='fungus'?'#7af0d0':'#ffd070',32,57,12,.2);
   return SL_LAIRC[id]=P.cv;}
+slLairByKit=HOOK.def('slLairByKit',slLairByKit);// v0.19.2: worldart12.js gives the lair front volume
 // the lane in front of the door: worn stones and the realm's signs
 function slLairGround(ctx,m,x,y,T){const K=slLairKit(m),rk=SL_ROCK[K.rk],px=x*TS,py=y*TS,R=mulberry(x*97+y*31+m.s*7),ch=tileAt(m,x,y);if(!SL_PATHOK.includes(ch)||T.k>3)return;
   ctx.save();ctx.beginPath();ctx.rect(px,py,16,16);ctx.clip();if(T.k<=3)slStones(ctx,px,py,T.fv,rk,i=>(x*3+y*5+i)%3,K.bits==='kelp'||K.bits==='ice'?'#9ac8e8':null);

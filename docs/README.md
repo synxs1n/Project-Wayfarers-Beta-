@@ -45,6 +45,7 @@ Read these before a big pass:
 - `v0100-phase1.md`: the v0.10.0 tester fixes (gates, tap to walk, roamers, arena auto, wipe view, weather indoors, phones) and the one report not reproduced.
 - `audio-notes-v045.md`: the orchestral audio (v0.4.5) and Android live updates (v0.4.6).
 - `v050-prompt.md`: the full spec for the Beta v0.5.0 pass. Rollback point: `rollback-v046.md`.
+- `v0192-worldart12.md`: the v0.19.2 world art pass (`v3/worldart12.js`): field exits on land, den and lair entrances with volume, Sanctum side carpets as panels, weather anchored in world space, gather nodes drawn as props, the Mimic as a chest; test `tools/chrome/v174a.js`.
 
 Cleanup rules (v0.18.6, cleanup steps 1 to 5):
 - A function another module changes is `HOOK.def`'d once in its owner and the change is a registered hook (`HOOK.before/after/xform/wrap` with the module name and a few words of purpose). The raw `{const f0=fn;fn=function...}` idiom is for one-off wraps of functions nobody else touches; `python3 tools/wrapmap.py` (`--write` for `docs/wrapmap.md`, `NAME` for one chain) shows what is still raw. Hook order is load order (last registered outermost); when a hook must sit outside another, it lives in the later module and says so.

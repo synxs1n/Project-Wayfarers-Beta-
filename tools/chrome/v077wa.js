@@ -64,11 +64,11 @@ const REC2D=`(T)=>{const A=__A,ctx=A.WS.ctx,P=CanvasRenderingContext2D.prototype
       chk(`2D medium: the 2D renderer is in use (not HD-2D)`,rows.every(([w,r])=>!r.live)||'live');
       // heat shimmer rows
       const sh=await ev(`(()=>{(${PLACE})('heat');const A=__A;A.worldDraw2(31000);return A.W7.stats.shimmer;})()`);chk(`2D medium: heat shimmers (${sh} rows shifted)`,sh>10||sh);
-      // parallax: the near layer leads the camera, the ground layer moves with it
+      // v0.19.2 (worldart12.js): no parallax any more, every layer moves with the ground (1 x the camera): the owner wanted weather that stays where it is when the hero walks (v174a tests every weather)
       const par=await ev(()=>{const A=__A,W=A.W7,cv=document.createElement('canvas');cv.width=420;cv.height=320;const x=cv.getContext('2d'),m=A.WS.m;A.G.weather[m.s]='rain';A.TR.wx.key=null;A.trUpdate(1);
         const P=CanvasRenderingContext2D.prototype;const grab=(ox)=>{const o=[];const d0=x.drawImage;x.drawImage=function(im,a,b){if(arguments.length===3)o.push([a,b,im.width,im.height]);return d0.apply(this,arguments);};W.w7World(x,'w2d',m,ox,100,420,320,9000);delete x.drawImage;return o;};
         const a=grab(100).filter(r=>r[3]>=18),b=grab(120).filter(r=>r[3]>=18),m27=a.filter(r=>b.some(q=>Math.abs(q[0]-(r[0]-27))<=1&&q[1]===r[1])).length,m20=a.filter(r=>b.some(q=>Math.abs(q[0]-(r[0]-20))<=1&&q[1]===r[1])).length;return {n:a.length,m27,m20};});
-      chk(`2D medium: the near rain layer leads the camera (camera 20 px: ${par.m27} of ${par.n} near streaks moved 27 px, ${par.m20} moved 20)`,par.n>=4&&par.m27>=par.n*.6&&par.m20<=par.n*.2||JSON.stringify(par));}
+      chk(`2D medium: the near rain layer moves with the camera, not ahead of it (camera 20 px: ${par.m20} of ${par.n} near streaks moved 20 px, ${par.m27} moved 27)`,par.n>=4&&par.m20>=par.n*.6&&par.m27<=par.n*.2||JSON.stringify(par));}
     else{const mx=Math.max(...rows.map(([w,r])=>r.mx));
       chk(`2D low: cheap (most particles in a frame ${mx}, cap ${await ev(()=>__A.W7.WX7.tier.low.cap)}; no near layer, no ground layer)`,mx<=await ev(()=>__A.W7.WX7.tier.low.cap)&&rows.every(([w,r])=>r.st.layers[2]===0||['starfall','meteor'].includes(w))&&rows.every(([w,r])=>r.st.ground===0)||JSON.stringify(rows.map(([w,r])=>[w,r.mx,r.st.layers,r.st.ground])));
       chk(`2D low: every weather still draws (${rows.map(([w,r])=>w+' '+r.st.n).join(', ')})`,rows.every(([w,r])=>r.st.n>0)||'empty');}

@@ -115,6 +115,7 @@ function m11NodeDraw(ctx,id,px,py,tw){
   const cv=mkCv(16,16),cx=cv.getContext('2d');icPaint(cx,b,P,{});ctx.drawImage(cv,px,py);
   const s=(sp.sp||[[7,6]])[Math.abs(Math.floor(tw||0))%((sp.sp||[[1]]).length)||0]||[7,6];
   if(tw===0){ctx.fillStyle='#ffffff';ctx.fillRect(px+s[0],py+s[1]-1,1,3);ctx.fillRect(px+s[0]-1,py+s[1],3,1);}else if(tw===1){ctx.fillStyle='#fff6c0';ctx.fillRect(px+s[0],py+s[1],1,1);}}
+m11NodeDraw=HOOK.def('m11NodeDraw',m11NodeDraw);// v0.19.2: worldart12.js draws the gather nodes in the world's palette
 // ---------------------------------------------------------------- which material a node holds ----------------------------------------------------------------
 function m11Hash(m,n){let h=(Math.imul(n.x+1,73856093)^Math.imul(n.y+7,19349663)^Math.imul((m.s|0)+3,83492791)^Math.imul((G&&G.run&&G.run.seed|0)+11,2654435761))>>>0;h=Math.imul(h^(h>>>15),2246822519)>>>0;h=(h^(h>>>13))>>>0;return (h%1000)/1000;}
 function m11NodeMat(m,n){if(n.mat)return n.mat;const t=matTier(m.s|0);let id;
