@@ -2,7 +2,7 @@
 
 Who wraps what, in load order. `raw` is the `{const f0=fn;fn=function...}` idiom, `replace` a reassignment without calling the old body, the rest are HOOK registrations. "def" names the module that HOOK.def'd the function. Raw wraps on a def'd function should become registrations; functions with many raw wraps and no def are the candidates for one.
 
-408 functions wrapped; 447 raw wraps or replacements, 623 hook registrations.
+411 functions wrapped; 447 raw wraps or replacements, 633 hook registrations.
 
 | function | owner | def | layers | chain (load order) |
 |---|---|---|---|---|
@@ -18,20 +18,21 @@ Who wraps what, in load order. `raw` is the `{const f0=fn;fn=function...}` idiom
 | calcDamage | engine.js | engine.js | 14 | engine.js:after → insight.js:after → echocore.js:after → archetype.js:after → roles.js:after → natures6.js:xform → realms.js:after → twists.js:after → battle5.js:after → battle4.js:after → battle4.js:after → riftkeeper9.js:after → fxkind11.js:raw → skills12.js:wrap |
 | battleFrame | battle.js | battle.js | 13 | anim.js:before → gfx6battle.js:wrap → hdstage.js:wrap → hdspell.js:before → sprhd2.js:before → battle11.js:wrap → res11.js:before → fxkind11.js:before → perf12.js:before → kits12.js:after → chars13.js:before → chars13.js:after → chars13.js:wrap |
 | encounterFoes | engine.js | engine.js | 13 | legends.js:before → travel.js:after → world3.js:wrap → chance.js:before → mimic.js:before → echocore.js:before → roam.js:wrap → sites.js:wrap → p2world.js:wrap → duellines.js:after → riftkeeper9.js:before → endgame10.js:before → endgame10.js:wrap |
+| newGame | engine.js | engine.js | 12 | account.js:after → progression.js:after → tavern2.js:after → metastats.js:after → prog2.js:after → map.js:before → pacing.js:after → goals.js:after → look9.js:after → party12.js:before → party12.js:after → menus14.js:after |
 | renderBattle | ui.js | ui.js | 12 | battleui.js:after → battle3.js:after → battle3.js:after → battle3.js:after → battle3.js:before → battle5.js:after → battle4.js:wrap → chain5.js:after → summon8.js:after → kits12.js:after → menus12.js:before → menus12.js:after |
-| newGame | engine.js | engine.js | 11 | account.js:after → progression.js:after → tavern2.js:after → metastats.js:after → prog2.js:after → map.js:before → pacing.js:after → goals.js:after → look9.js:after → party12.js:before → party12.js:after |
+| mChar | ui.js | ui.js | 11 | comp.js:xform → learn.js:wrap → p3shop.js:xform → p4party.js:xform → roles9.js:xform → sheet11.js:xform → skillrows11.js:xform → party12.js:xform → skills12.js:xform → menus12.js:xform → menus14.js:xform |
 | arrive | worldrt.js | worldrt.js | 10 | journey.js:before → metastats.js:before → world3.js:before → chance.js:after → ailments.js:after → map.js:after → field9.js:wrap → party12.js:after → world12.js:after → worldart12.js:after |
 | cmdHtml | ui.js | ui.js | 10 | battle3.js:xform → battle5.js:xform → battle4.js:xform → summon8.js:wrap → battle9.js:xform → skillfilt9.js:xform → battle11.js:xform → skillrows11.js:xform → skills12.js:xform → menus12.js:xform |
 | hdActors | hd2d.js | hd2d.js | 10 | worldfx.js:after → dungeon8.js:after → guidance9.js:after → npcmark9.js:after → npcart9.js:before → echo11.js:after → world12.js:after → worldart13.js:after → light13.js:after → terrain13.js:after |
-| mChar | ui.js | ui.js | 10 | comp.js:xform → learn.js:wrap → p3shop.js:xform → p4party.js:xform → roles9.js:xform → sheet11.js:xform → skillrows11.js:xform → party12.js:xform → skills12.js:xform → menus12.js:xform |
+| unpackG | engine.js | engine.js | 9 | tavern2.js:after → comp.js:after → learn.js:after → prog2.js:after → map.js:before → summon8.js:after → party12.js:after → skills12.js:after → menus14.js:after |
 | calcStats | engine.js | engine.js | 8 | ailments.js:after → echocore.js:after → comp.js:after → roles.js:after → natures6.js:after → riftkeeper9.js:after → roles9.js:after → echo11.js:after |
 | placeAt | worldrt.js | worldrt.js | 8 | legends.js:after → progression.js:after → stuck.js:wrap → world3.js:wrap → map.js:after → map.js:before → bigmap.js:after → field9.js:after |
 | showLocation | worldrt.js | worldrt.js | 8 | feedback.js:after → p2world.js:after → pacing.js:after → complete9.js:after → records12.js:after → world12.js:after → titles12.js:wrap → hud13.js:after |
-| unpackG | engine.js | engine.js | 8 | tavern2.js:after → comp.js:after → learn.js:after → prog2.js:after → map.js:before → summon8.js:after → party12.js:after → skills12.js:after |
+| classSkills | skills.js | skills.js | 7 | archetype.js:xform → sigskills.js:xform → roles.js:xform → skills12.js:xform → kits12.js:xform → menus12.js:xform → menus14.js:xform |
 | onFx | battle.js | battle.js | 7 | anim.js:wrap → sfx2.js:before → gfx6battle.js:after → hdspell.js:wrap → fxkind11.js:after → fxkind11.js:wrap → fxkind11.js:after |
 | spriteOf | battle.js | battle.js | 7 | hdstage.js:before → battle3.js:xform → heropose9.js:xform → anim10.js:xform → scale10.js:wrap → battle11.js:wrap → chars13.js:xform |
 | townDecorActors | towngfx.js | towngfx.js | 7 | gfx6world.js:raw → guidance9.js:raw → npcmark9.js:raw → world12.js:after → worldart13.js:after → light13.js:after → terrain13.js:after |
-| classSkills | skills.js | skills.js | 6 | archetype.js:xform → sigskills.js:xform → roles.js:xform → skills12.js:xform → kits12.js:xform → menus12.js:xform |
+| buildMapCanvas | worldgfx.js | worldgfx.js | 6 | sites.js:raw → gfx6world.js:raw → sanctlook10.js:raw → worldart13.js:after → terrain13.js:before → terrain13.js:after |
 | doReaction | engine.js | engine.js | 6 | prog2.js:after → twists.js:after → battle3.js:wrap → battle4.js:after → battle4.js:after → skills12.js:wrap |
 | drawObjects | worldgfx.js | worldgfx.js | 6 | worldgfx2.js:wrap → p2world.js:wrap → dungeon8.js:wrap → sanctlook10.js:wrap → sitelook10.js:wrap → breachlook11.js:wrap |
 | drawTile | worldgfx.js | worldgfx.js | 6 | worldfx.js:wrap → dungeon8.js:wrap → sitelook10.js:after → breachlook11.js:after → worldart13.js:after → terrain13.js:wrap |
@@ -43,7 +44,6 @@ Who wraps what, in load order. `raw` is the `{const f0=fn;fn=function...}` idiom
 | addSt | engine.js | engine.js | 5 | insight.js:before → ailments.js:wrap → comp2.js:before → twists.js:wrap → roles9.js:before |
 | applyBossTheme | bosstheme.js | bosstheme.js | 5 | realms.js:wrap → sites.js:after → dungeon8.js:after → sanctlook10.js:after → breachlook11.js:after |
 | battleTheme | battle.js | battle.js | 5 | echo2.js:wrap → p2world.js:xform → dungeon8.js:xform → riftkeeper9.js:wrap → breachlook11.js:xform |
-| buildMapCanvas | worldgfx.js | worldgfx.js | 5 | sites.js:raw → gfx6world.js:raw → sanctlook10.js:raw → worldart13.js:after → terrain13.js:after |
 | drawParts | battle.js | battle.js | 5 | anim.js:before → anim.js:after → gfx6battle.js:after → hdspell.js:after → fxkind11.js:after |
 | genQuests | engine.js | engine.js | 5 | legends.js:after → equip.js:after → realms.js:wrap → pacing.js:after → guild7.js:after |
 | hdLook | hd2d.js | hd2d.js | 5 | weather7.js:after → sanctlook10.js:after → voidsky10.js:after → breachlook11.js:after → light13.js:after |
@@ -67,6 +67,7 @@ Who wraps what, in load order. `raw` is the `{const f0=fn;fn=function...}` idiom
 | newRun | engine.js | engine.js | 4 | realms.js:xform → look9.js:xform → party12.js:xform → world12.js:xform |
 | scanLights | worldrt.js | worldrt.js | 4 | sanctlook10.js:raw → sitelook10.js:raw → echo11.js:raw → world12.js:after |
 | unitBox | battle.js | battle.js | 4 | p2world.js:raw → gfx6battle.js:raw → battle11.js:raw → kits12.js:xform |
+| useItem | engine.js | engine.js | 4 | ailments.js:raw → twists.js:raw → battle4.js:raw → fixes14.js:wrap |
 | vFacMissions | factions.js | factions.js | 4 | allq.js:xform → p4party.js:xform → pacing.js:xform → pacing.js:xform |
 | vJourney | journey.js | journey.js | 4 | saves.js:xform → twists.js:xform → complete9.js:xform → arena11.js:xform |
 | walkerCanvas | art2.js | sprhd.js | 4 | sprhd.js:raw → sprhd.js:replace → npcart9.js:raw → chars13.js:xform |
@@ -99,7 +100,6 @@ Who wraps what, in load order. `raw` is the `{const f0=fn;fn=function...}` idiom
 | sfx | audio.js |  | 3 | sfx2.js:raw → sfx2.js:replace → results.js:raw |
 | shopStock | engine.js |  | 3 | roles.js:raw → capes.js:raw → charms9.js:raw |
 | summonComp | comp.js |  | 3 | anim.js:raw → sfx2.js:raw → fxkind11.js:raw |
-| useItem | engine.js |  | 3 | ailments.js:raw → twists.js:raw → battle4.js:raw |
 | vHeader | ui.js |  | 3 | p5settings.js:raw → twists.js:raw → title7.js:raw |
 | weatherFX | worldrt.js |  | 3 | world3.js:raw → p5trans.js:raw → weather7.js:replace |
 | advance | engine.js |  | 2 | comp.js:raw → summon8.js:raw |
@@ -142,6 +142,7 @@ Who wraps what, in load order. `raw` is the `{const f0=fn;fn=function...}` idiom
 | gearIcon | equip.js |  | 2 | echo2.js:raw → tiers.js:raw |
 | gearOf | items.js |  | 2 | econ11.js:raw → echo11.js:raw |
 | genBounties | engine.js |  | 2 | realms.js:raw → charms9.js:raw |
+| glRender | goals.js | goals.js | 2 | menus14.js:before → menus14.js:after |
 | guardPaths | pathguard.js |  | 2 | pathguard.js:raw → pathguard.js:raw |
 | haltInput | worldrt.js |  | 2 | map.js:raw → remember.js:raw |
 | hdBldKind | hd2d.js | hd2d.js | 2 | dungeon8.js:raw → worldart13.js:xform |
@@ -270,6 +271,7 @@ Who wraps what, in load order. `raw` is the `{const f0=fn;fn=function...}` idiom
 | gfxCamPush | gfx6battle.js |  | 1 | battle3.js:raw |
 | glHtml | goals.js |  | 1 | guidance9.js:raw |
 | glList | goals.js |  | 1 | guidance9.js:raw |
+| glSpot | goals.js | goals.js | 1 | menus14.js:xform |
 | groundPlane | bg.js |  | 1 | gfx6.js:raw |
 | halfCanvas | legends.js |  | 1 | sprhd2.js:replace |
 | hbFloorTile | hdstage.js |  | 1 | breachlook11.js:raw |
@@ -396,6 +398,7 @@ Who wraps what, in load order. `raw` is the `{const f0=fn;fn=function...}` idiom
 | tintFor | world3.js |  | 1 | p5trans.js:raw |
 | titleDraw | ui.js |  | 1 | gfx6.js:raw |
 | travelWhyNot | travel.js |  | 1 | v063prog.js:raw |
+| tvPickOk | tavern2.js | tavern2.js | 1 | menus14.js:xform |
 | tvPool | tavern2.js |  | 1 | p2world.js:raw |
 | upgApply | p3shop.js |  | 1 | echo11.js:raw |
 | upgOpts | p3shop.js |  | 1 | echo11.js:raw |

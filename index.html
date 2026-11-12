@@ -2119,7 +2119,7 @@ html:not(.flat) .battle.b3 .bline .b4mo .b4bar{box-shadow:inset 0 0 0 1px #000,0
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.20.3";const APP_BUILD="93379722c38a";
+(function(){const APP_VER="0.20.4";const APP_BUILD="694bd9565382";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2888,7 +2888,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.20.3";const APP_BUILD="93379722c38a";
+const APP_VER="0.20.4";const APP_BUILD="694bd9565382";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2896,7 +2896,8 @@ const APP_VER="0.20.3";const APP_BUILD="93379722c38a";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
- ['Beta v0.20.3',['The hero sheet is one page again with a Show dropdown to jump to or filter one section. Tier tags like EPIC are crisp on phones. Next goals stays pinned under the minimap. Taverns offer a mix: no main element twice at a small table, no class twice, at most two of a role. Skills are learned at an even pace: no gap over 6 levels and never three at once, with the kit\'s order kept and old saves keeping what they had.']],
+ ['Beta v0.20.4',['Encounter grass reads at a glance again in every realm: dense, varied patches that stand out from plain ground (frost-tipped on snow, dune grass on sand, charred stalks on ash, glowing spore grass in the Breach with no boxy glow). Water has depth: pale shallows, the realm\'s colour, darker deeps, and varied wave marks and highlights instead of a grid of stripes. The aurora spans the whole sky. Every exit walkway has land on both sides.']],
+['Beta v0.20.3',['The hero sheet is one page again with a Show dropdown to jump to or filter one section. Tier tags like EPIC are crisp on phones. Next goals stays pinned under the minimap. Taverns offer a mix: no main element twice at a small table, no class twice, at most two of a role. Skills are learned at an even pace: no gap over 6 levels and never three at once, with the kit\'s order kept and old saves keeping what they had.']],
 ['Beta v0.20.2',['Den mouths, lair and dungeon fronts, caves, the sanctum shrine and its inner door, and the Echo Rift gates now face the camera straight on: symmetric, with a lighter top band, the mouth recessed into the dark, the cast shadow and props kept, and the party still hidden when it walks behind them. The dark slab that used to sit beside every entrance (an outline bug) is gone.']],
 ['Beta v0.20.1',['Battle fixes: the Momentum bar shows again in every state; the Primed chip stays a small chip in the corner of a foe card instead of stretching over it, and tapping anywhere on a foe card targets it; after a hero uses an item their next turn opens on the main actions; learned-skill lines on the victory screen wrap inside the panel on phones.']],
 ['Beta v0.20.0',['Light and shadow: every tree, building, cliff and tall prop casts a soft shadow from one sun that swings with the hour, and the HD-2D scene gets a warm key light and a cool fill. Night is no longer a blue wash: lanterns, windows, braziers, torches, waystones and fountains pool warm light on the ground and the rest falls dark; interiors are lit from their fires. Particles per realm (fireflies, pollen, ash and embers, dust, frost sparkle, spores, void motes). Battles open with a shatter in the realm colour, doorways iris on the hero, and a won fight blooms back into the world.']],
@@ -28643,7 +28644,7 @@ HOOK.after('hdLook','voidsky10','void fog',function(o,m,now){try{const dun=typeo
 // 2D and HD overlay: stars in the sky band above the map's top edge (the camera shows it on tall phone screens)
 HOOK.after('worldDraw','voidsky10','stars over the void sky band',function(){try{const m=WS.m,ctx=WS.ctx;if(!m||m.kind==='dungeon'||!ctx)return;const T=THM(m);if(!T||!T.stars)return;
   const vw=WS.vw,vh=WS.vh,cy=WS.cam?WS.cam.y:0;const top=Math.min(vh,Math.max(0,Math.round(-cy)));if(top<4)return;
-  const still=typeof gfxStill==='function'&&gfxStill(),t=still?0:performance.now()/1000;ctx.save();ctx.setTransform(1,0,0,1,0,0);
+  const still=typeof gfxStill==='function'&&gfxStill(),t=still?0:performance.now()/1000,k=Math.max(1,((WS.cv&&WS.cv._rw)||vw)/vw);ctx.save();ctx.setTransform(k,0,0,k,0,0);/* terrain14: the real backing scale, as light13 */
   for(let i=0;i<70;i++){const h1=hashS('vs'+i),x=(h1%997)/997*vw,y=((h1>>>10)%883)/883*top,tw=.45+.55*Math.abs(Math.sin(t*(.6+(i%5)*.2)+i));ctx.globalAlpha=tw*.9;ctx.fillStyle=i%7===0?'#b48aff':'#f6f0ff';ctx.fillRect(Math.round(x),Math.round(y),i%9===0?2:1,i%9===0?2:1);}
   ctx.restore();}catch(e){}});
 
@@ -30943,7 +30944,7 @@ function brRibbon(ctx,x0,x1,y0,yMax,t,k){// a wavy ribbon of aurora, fading down
   const V=[154,90,255],Tl=[47,224,192];for(let x=x0;x<x1;x+=3){const u=x/Math.max(1,x1-x0),c=brLerp(V,Tl,Math.max(0,Math.min(1,.5+.5*Math.sin(u*3.1+t*.12+k)))),yc=y0+Math.sin(x/29+t*.25+k)*9+Math.sin(x/11-t*.4)*3,th=12;
     for(let s=0;s<4;s++){const yy=yc+s*th/4;if(yy>yMax)break;ctx.fillStyle=`rgba(${c[0]},${c[1]},${c[2]},${(.16-s*.036).toFixed(3)})`;ctx.fillRect(x,Math.round(yy),3,Math.ceil(th/4)+1);}}}
 HOOK.after('worldDraw','breachlook11','aurora over the Breach sky band',function(){try{const m=WS.m,ctx=WS.ctx;if(!brIs(m)||!ctx)return;const vw=WS.vw,vh=WS.vh,cy=WS.cam?WS.cam.y:0,top=Math.min(vh,Math.max(0,Math.round(-cy)));if(top<8)return;
-  const still=typeof gfxStill==='function'&&gfxStill(),t=still?0:performance.now()/1000;ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.beginPath();ctx.rect(0,0,vw,top);ctx.clip();
+  const still=typeof gfxStill==='function'&&gfxStill(),t=still?0:performance.now()/1000,k=Math.max(1,((WS.cv&&WS.cv._rw)||vw)/vw);ctx.save();ctx.setTransform(k,0,0,k,0,0);/* terrain14: the canvas's real backing scale (above Low the HD-2D overlay holds a 2x bitmap; identity drew the band in its top-left quarter) */ctx.beginPath();ctx.rect(0,0,vw,top);ctx.clip();
   brRibbon(ctx,0,vw,top*.42,top,t,0);brRibbon(ctx,0,vw,top*.72,top,t,2.4);ctx.restore();}catch(e){}});
 
 // ---------- the battle backdrop ----------
@@ -32248,6 +32249,7 @@ try{window.__M12={M12,tags:m12Tags,unit:m12Unit,kinds:m12Kinds,clean:m12Clean,dr
 //  1 a field's exit sits on land: the mouth of the lane that leaves a field (and the one back to town) had void ('~') beside and under it in the
 //    realms that have void, a 3 wide strip of ground with a cliff drop at its sides ("some land is missing in the path to the next area"). Every exit now has
 //    an apron of ground, 11 wide and 7 deep (void turned to plain ground only, nothing else moves); drawAudit reports what is left in `exitLand`.
+//    terrain14: and a causeway along the walkway from every exit of a field or a town to open land where '~' is void or cloud (see section 1).
 //  2 den, dungeon (lair) and cave entrances are rebuilt with volume in both renderers (see section 2)
 //  3 the Sanctum's side carpets are their own panels (border, weave, fringe and a seam against the runner) that fill the floor to the pillars
 //  4 weather and ambience stay where they are when the hero walks: every parallax in WX7 is 1 (the far layer lagged the camera by 18% and the near
@@ -32256,7 +32258,7 @@ try{window.__M12={M12,tags:m12Tags,unit:m12Unit,kinds:m12Kinds,clean:m12Clean,dr
 //    instead of the inventory icon pasted on the ground
 //  6 the Mimic is a chest first (lid, planks, bands, lock) with teeth top and bottom in the open mouth and a tongue
 // Nothing here touches a save, the Daily Trial, game state or the random numbers. Tests: tools/chrome/v174a.js.
-const WA12={n:{exit:0,node:0,carpet:0,den:0,lair:0},off:false,err:[]};
+const WA12={n:{exit:0,cause:0,node:0,carpet:0,den:0,lair:0},off:false,cause:true,err:[]};// cause false: the v0.19.2 apron only (tests)
 function wa12Err(w,e){if(WA12.err.length<20)WA12.err.push(w+': '+(e&&e.message||e));}
 // ---------- 1. exits on land ----------
 const WA12_APRON={d:7,q:5};
@@ -32267,12 +32269,49 @@ function wa12ExitGroups(m){const g=m&&m.t;if(!g||!m.exits||!m.exits.length)retur
 // the tiles of the apron: d rows in from the edge, q tiles either side of the exit's middle
 function wa12Apron(m,G,fn){const g=m.t,H=g.length,W=g[0].length,A=WA12_APRON;
   for(let d=0;d<A.d;d++)for(let q=-A.q;q<=A.q;q++){const x=G.e.x+G.n[0]*d+G.l[0]*q,y=G.e.y+G.n[1]*d+G.l[1]*q;if(x<0||y<0||x>=W||y>=H)continue;fn(x,y,d,q);}}
-function wa12ExitIssues(m){const out=[];try{if(!m||m.kind!=='field')return out;wa12ExitGroups(m).forEach(G=>wa12Apron(m,G,(x,y,d,q)=>{if(m.t[y][x]==='~')out.push({x,y,why:'void in the apron of the exit at '+G.e.x+','+G.e.y});}));}catch(e){wa12Err('exitIssues',e);}return out;}
-function wa12ExitLand(m){let n=0;try{if(!m||m.kind!=='field'||WA12.off)return 0;
-  wa12ExitGroups(m).forEach(G=>wa12Apron(m,G,(x,y)=>{if(m.t[y][x]==='~'){m.t[y][x]='.';n++;}}));
-  if(n){m.exitLand=(m.exitLand||0)+n;WA12.n.exit+=n;if(m.tl)m.tl=null;}}catch(e){wa12Err('exitLand',e);}return n;}
-HOOK.wrap('getMap','worldart12','a field exit sits on land (no void in its apron)',function(next,...a){const had=!!MAPS[a[0]];const m=next(...a);try{if(!had&&m&&m.kind==='field'&&!m.__wa12x){m.__wa12x=1;wa12ExitLand(m);}}catch(e){wa12Err('getMap',e);}return m;});
-HOOK.xform('drawAudit','worldart12','exit aprons: no void beside or under an exit',function(out,m){try{if(out)out.exitLand=wa12ExitIssues(m);}catch(e){wa12Err('audit',e);}return out;});
+// terrain14 (the owner after v0.20.0: "still missing land at some exits to areas"): the apron covers only the last 7 rows, so a walkway that
+// reaches the edge over the void (the Breach's bridge from its central island to the south exit, the Ashen Expanse's lane north, a town's
+// bridge out over the cloud sea or the void) still ran with starfield on both sides. Every exit of a field or a town in a realm whose '~' is
+// void or cloud (THEME stars or cloud) now also gets a causeway: the walkway is followed from the exit's middle tile (breadth first over
+// open tiles) to the first tile of "open land" (a tile with no void within 2 tiles, in a group of at least WA12_COR.big such tiles), and
+// every void tile within WA12_COR.r of that path turns to ground, bridge tiles on it turn to road, and a bridge left with no void beside
+// it turns to road too. Void stays round the islands everywhere else. drawAudit's exitLand reports void within 2 tiles of such a path.
+const WA12_COR={r:3,near:2,big:60,max:120};
+function wa12VoidLike(m){try{const T=THM(m);return !!(T&&(T.stars||T.cloud));}catch(e){return false;}}
+function wa12Open(c){return c!=='~'&&(!SOLID.includes(c)||c==='G'||c==='X');}
+// tiles with no void within `near` (Chebyshev), and the size of each 4 connected group of them
+function wa12Thick(m){const g=m.t,H=g.length,W=g[0].length,R=WA12_COR.near,th=new Uint8Array(W*H),grp=new Int32Array(W*H).fill(-1),size=[];
+  const v=new Uint8Array(W*H);for(let y=0;y<H;y++)for(let x=0;x<W;x++)v[y*W+x]=g[y][x]==='~'?1:0;
+  for(let y=0;y<H;y++)for(let x=0;x<W;x++){if(v[y*W+x]||g[y][x]==='B')continue;let ok=1;// land: anything but void and bridges (props and buildings stand on land)
+    for(let j=-R;j<=R&&ok;j++){const Y=y+j;if(Y<0||Y>=H)continue;for(let i=-R;i<=R;i++){const X=x+i;if(X<0||X>=W)continue;if(v[Y*W+X]){ok=0;break;}}}th[y*W+x]=ok;}
+  for(let p=0;p<W*H;p++){if(!th[p]||grp[p]>=0)continue;const id=size.length,q=[p];grp[p]=id;for(let k=0;k<q.length;k++){const c=q[k],x=c%W,y=(c/W)|0;
+      for(const [a,b] of [[1,0],[-1,0],[0,1],[0,-1]]){const X=x+a,Y=y+b;if(X<0||Y<0||X>=W||Y>=H)continue;const j=Y*W+X;if(th[j]&&grp[j]<0){grp[j]=id;q.push(j);}}}size.push(q.length);}
+  return {th,grp,size,W,H};}
+// the walkway from an exit to open land: a list of [x,y] from the exit tile, or [] when the exit already stands on open land (or none is found)
+function wa12Path(m,G,K){const {th,grp,size,W,H}=K,big=p=>th[p]&&size[grp[p]]>=WA12_COR.big,s0=G.e.y*W+G.e.x;if(big(s0))return [];
+  const prev=new Int32Array(W*H).fill(-2),q=[s0];prev[s0]=-1;let end=-1;
+  for(let k=0;k<q.length&&end<0;k++){const p=q[k],x=p%W,y=(p/W)|0;for(const [a,b] of [[G.n[0],G.n[1]],[1,0],[-1,0],[0,1],[0,-1]]){const X=x+a,Y=y+b;if(X<0||Y<0||X>=W||Y>=H)continue;const j=Y*W+X;
+      if(prev[j]!==-2||!wa12Open(m.t[Y][X]))continue;prev[j]=p;if(big(j)){end=j;break;}q.push(j);}}
+  if(end<0)return [];const out=[];for(let p=end;p>=0;p=prev[p])out.push([p%W,(p/W)|0]);out.reverse();return out.length>WA12_COR.max?[]:out;}
+function wa12ExitIssues(m){const out=[];try{if(!m||!(m.kind==='field'||m.kind==='town'))return out;const vl=wa12VoidLike(m);
+    wa12ExitGroups(m).forEach(G=>{if(m.kind==='field'||vl)wa12Apron(m,G,(x,y,d,q)=>{if(m.t[y][x]==='~')out.push({x,y,why:'void in the apron of the exit at '+G.e.x+','+G.e.y});});
+      if(!vl)return;const K=wa12Thick(m),path=wa12Path(m,G,K),seen=new Set(),R=WA12_COR.near;
+      path.forEach(([px,py])=>{for(let j=-R;j<=R;j++)for(let i=-R;i<=R;i++){const x=px+i,y=py+j;if(x<0||y<0||y>=m.t.length||x>=m.t[0].length||m.t[y][x]!=='~')continue;const k=x+','+y;if(seen.has(k))continue;seen.add(k);
+        out.push({x,y,why:'void beside the walkway to the exit at '+G.e.x+','+G.e.y});}});});}catch(e){wa12Err('exitIssues',e);}return out;}
+function wa12ExitLand(m){let n=0,nc=0;try{if(!m||!(m.kind==='field'||m.kind==='town')||WA12.off)return 0;const vl=WA12.cause&&wa12VoidLike(m),touched=[];if(!WA12.cause&&m.kind!=='field')return 0;
+  wa12ExitGroups(m).forEach(G=>{if(m.kind==='field'||vl)wa12Apron(m,G,(x,y)=>{if(m.t[y][x]==='~'){m.t[y][x]='.';n++;touched.push([x,y]);}});});
+  if(vl)wa12ExitGroups(m).forEach(G=>{const path=wa12Path(m,G,wa12Thick(m)),R=WA12_COR.r,H=m.t.length,W=m.t[0].length;
+    path.forEach(([px,py])=>{if(m.t[py][px]==='B'){m.t[py][px]='=';nc++;}for(let j=-R;j<=R;j++)for(let i=-R;i<=R;i++){const x=px+i,y=py+j;if(x<0||y<0||x>=W||y>=H)continue;
+      if(m.t[y][x]==='~'){m.t[y][x]='.';n++;nc++;touched.push([x,y]);}else if(m.t[y][x]==='B'&&Math.max(Math.abs(i),Math.abs(j))<=1){m.t[y][x]='=';nc++;}}});});
+  // a bridge left with no void beside it is a road now
+  if(touched.length){const H=m.t.length,W=m.t[0].length,seen=new Set();touched.forEach(([tx,ty])=>{for(let j=-1;j<=1;j++)for(let i=-1;i<=1;i++){const x=tx+i,y=ty+j;if(x<0||y<0||x>=W||y>=H||m.t[y][x]!=='B'||seen.has(x+','+y))continue;seen.add(x+','+y);
+      if(![[1,0],[-1,0],[0,1],[0,-1]].some(([a,b])=>{const X=x+a,Y=y+b;return X>=0&&Y>=0&&X<W&&Y<H&&m.t[Y][X]==='~';}))m.t[y][x]='=';}});}
+  if(n||nc){m.exitLand=(m.exitLand||0)+n;m.exitCause=(m.exitCause||0)+nc;WA12.n.exit+=n;WA12.n.cause+=nc;if(m.tl)m.tl=null;
+    // new ground can put a route past a townsperson or a prop: pathguard's pass runs again on the changed map (its log is kept)
+    if(typeof guardPaths==='function'&&m.__guarded&&!window.__PGOFF&&!(typeof HEAL_OFF!=='undefined'&&HEAL_OFF)){const was=m.guarded||[];guardPaths(m);m.guarded=was.concat(m.guarded||[]);}}}catch(e){wa12Err('exitLand',e);}return n;}
+// registered in a microtask, after worldgen's townexit and world12's landmark pass (both microtasks too), so it sees a town's gates where they end up
+queueMicrotask(()=>{try{HOOK.wrap('getMap','worldart12','an exit sits on land: the apron, and a causeway along the walkway over the void (fields and towns; outside townexit and world12)',function(next,...a){const had=!!MAPS[a[0]];const m=next(...a);try{if(!had&&m&&(m.kind==='field'||m.kind==='town')&&!m.__wa12x){m.__wa12x=1;wa12ExitLand(m);}}catch(e){wa12Err('getMap',e);}return m;});}catch(e){wa12Err('hook',e);}});
+HOOK.xform('drawAudit','worldart12','exit aprons and walkways: no void beside or under an exit',function(out,m){try{if(out)out.exitLand=wa12ExitIssues(m);}catch(e){wa12Err('audit',e);}return out;});
 // ---------- 4. weather in world space ----------
 // WX7.par and WX7.fogPar scale how far each layer scrolls against the camera (1 = exactly with the ground). They were [.82,1,1.35] and [.96,1,1.05]
 WX7.par.fill(1);WX7.fogPar.fill(1);
@@ -32310,7 +32349,7 @@ HOOK.after('sncHall','worldart12','the hall: side carpets',function(r,f,R,D,P,x,
   wa12Panel(f,D,P,sncCanon(m,x,y),(a,b)=>wa12HallPan(o,m,x+a,y+b),{T:false,B:false,L:false,R:false},0);}catch(e){wa12Err('hall',e);}});
 
 // test hooks
-try{window.__WA12=WA12;WA12.api={exitIssues:wa12ExitIssues,exitLand:wa12ExitLand,exitGroups:wa12ExitGroups};}catch(e){}
+try{window.__WA12=WA12;WA12.api={exitIssues:wa12ExitIssues,exitLand:wa12ExitLand,exitGroups:wa12ExitGroups,exitPath:(m,G)=>wa12Path(m,G,wa12Thick(m)),voidLike:wa12VoidLike};}catch(e){}
 // ---------- 6. the Mimic: a chest first ----------
 // Same frame API and anchors as art.js (idle A and B, the lunge, the slam), the same wood, lid and gold as the chest in the realm (worldgfx.js 'chest': W, L, G, K): a
 // planked body with a gold band at each end and a lock plate, a lid with its own planks and bands, four claw feet. The mouth is the gap between lid and body: teeth hang
@@ -33101,13 +33140,17 @@ try{window.__C13={C13,code:c13Code,frame:c13Frame,mid:c13Mid,midKind:c13MidKind,
 //      id) lays two or three ground tones in soft patches (sub tile feathered edges), worn paths that fade at their edges (fields), and 4 to 6
 //      tuft clump variants (size, lean, tone) placed by the same noise so they cluster and spill out of the ',' tiles. Per material from the
 //      realm's THEME tones: grass (tufts), sand and coast (pebbles, shells, dune ripples), snow (drifts and crust sparkle), ash and volcanic
-//      (cinders, soot, a rare ember), the void (spores) and the Breach (its tuft carpet thinned to one or two clumps with spores).
+//      (cinders, soot, a rare ember), the void (spores) and the Breach.
+//      terrain14 (the owner after v0.20.0): the ',' tiles had become bare ground with two to five clumps, so encounter grass no longer read; every
+//      ',' tile is again a dense patch of tall growth in every realm (section 1b), plain ground keeps the patchwork and only rare small tufts, and
+//      the Breach's full tile teal cast (the "boxy green glow") is gone: it has its own spore grass.
 //   2. TRANSITIONS (the same hook, after the tile): decided by neighbour tiles at draw time, painted inside the tile: grass (or sand) creeping
 //      onto road, cobble and plaza edges in ragged bites; a wet dark rim on the land beside water and foam specks on the water beside land
 //      (sand fades into water through a wet band and a pale shallow); a lip of rock crumbs and a shadow line where the ground meets a cliff top.
-//   3. WATER: baked into the ground (buildMapCanvas hook, both renderers): a flipped, darkened, offset reflection of the prop north of each
+//   3. WATER: the body is painted here (terrain14, section 2b: depth from the shore, pale shallows, dark deeps, varied wave marks; the base's
+//      flat blue with dashes on fixed rows read as a regular grid). Baked into the ground (buildMapCanvas hook, both renderers): a flipped, darkened, offset reflection of the prop north of each
 //      water tile (trees, lamps, waystones, signs, rocks...) cut by water lines, and a sky band under the far shore. Animated in one layer:
-//      a slow sine highlight band and sparkle specks per water tile, foam that breathes on the shore, and sparkle over the fountains
+//      a drifting highlight on about half the water tiles and a sparkle on fewer (t13WAnim: own length, speed and sway each), foam that breathes on the shore, and sparkle over the fountains
 //      (2D: one depth sort entry; HD-2D: quads in the blended dynamic batch the scene already draws, nothing rebaked).
 //   4. WEATHER ON THE GROUND: a wet level climbs while it rains (storm too) and dries after, a snow level grows while it snows and melts
 //      after (worldDraw hook, in memory only). Wet: stone, cobble, plaza and paths darken with a faint sky sheen (2D runs per row in the
@@ -33115,7 +33158,7 @@ try{window.__C13={C13,code:c13Code,frame:c13Frame,mid:c13Mid,midKind:c13MidKind,
 //      ledges, a dusting on open ground) drawn at the level's alpha (2D: a cap canvas per map, one drawImage; HD-2D: a cap texture over the
 //      card and building geometry plus roof, ledge and dusting quads, rebuilt only when the level crosses one of 8 steps, 2 s apart at most).
 // Cheap: nothing is rebaked per frame, the per frame work is one layer in each renderer and stops at a cap of tiles; perf12's limiter is untouched.
-const T13={off:false,n:{tile:0,tuft:0,edge:0,refl:0,wq:0,wetq:0,snowq:0,cap:0,fr:0,hdfr:0,hdcap:0},err:[],wet:0,snow:0,t:0,
+const T13={off:false,n:{tile:0,tuft:0,grow:0,spore:0,spill:0,wbody:0,wave:0,edge:0,refl:0,wq:0,wetq:0,snowq:0,cap:0,fr:0,hdfr:0,hdcap:0},err:[],wet:0,snow:0,t:0,
   cfg:{ramp:{wet:22000,dry:70000,snow:45000,melt:110000},steps:8,gap:2000,wetA:.4,sheenA:.14,dustA:.16,capA:.9,roofA:.55,water2d:400,waterHd:260},
   hd:{S:null,mesh:null,tex:null,pend:null,gen:0,used:-1,lv:-1,lvT:0,W:0,H:0},force:null};
 function t13Err(w,e){if(T13.err.length<24)T13.err.push(w+': '+(e&&e.message||e));}
@@ -33157,13 +33200,55 @@ function t13Clump(f,M,v,X,Y,ln,tn,R){
     if(v===0){f(dk,X,Y,2,1);}else if(v===1){f(so,X,Y,3,1);f(dk,X+1,Y+1,1,1);}else if(v===2){f(dk,X,Y,1,1);f(dk,X+2,Y+1,1,1);}
     else if(v===3){f(so,X,Y,4,1);f(so,X+1,Y+1,2,1);}else if(v===4){f(dk,X+1,Y,2,1);f('#ff7a2a',X,Y+1,1,1);}else{f(dk,X,Y+1,3,1);f(dk,X+1,Y,1,1);}return;}
 }
+// ---------- 1b. encounter growth (terrain14) ----------
+// The owner after v0.19.8: "grass was integral to knowing when you'd get into a battle and most of it looks gone now". v0.19.8 drew the ','
+// tiles as bare ground with two to five clumps; every ',' tile is again a dense patch of tall growth: three rows of four clumps (the old
+// carpet's twelve) plus up to three more, each three blades of four to six px with a dark bed at its foot, its own lean (the map's noise
+// leans whole patches the same way, a quarter of the clumps lean their own way) and tone (dark, mid, light sets). Per material: the realm's
+// grass (meadow, heights, the coast's dune grass), frost tipped blue blades in the snow, charred stalks with ash or ember tips in the ash
+// realms, violet blades in the void, and the Breach's own spore grass (teal blades whose heads glow, a soft plus shaped halo, never a square).
+// Plain ground keeps the patchwork and only a rare small tuft, so the two read apart at a glance (drawAudit-free numbers: tools/chrome/v176a.js 5).
+const T13_GP=new WeakMap();
+function t13GrowPal(M,T,tn){const key=T||tn;let c=T13_GP.get(key);if(c&&c[M])return c[M];if(!c){c={};T13_GP.set(key,c);}const tg=tn.tg;let o;
+  if(M==='snow')o={bl:[[shade(tg[0],.9),tg[0],'#ffffff'],[shade(tg[0],.78),shade(tg[1],.9),'#f4fbff'],[tg[0],tg[1],'#ffffff']],bed:shade(tg[0],.7),bedA:.4,tip:'#ffffff'};
+  else if(M==='ash'){// charred stalks; on a pale ash plain (the Ashglass Reach) they take a third of the ground's shade, so they read as scorched brush, not ink
+    const g3=tn.g[3],L=hx(tn.g[0]),pale=L[0]*.3+L[1]*.59+L[2]*.11>140,k=pale?.32:0,q=c=>k?mix(c,g3,k):c;
+    o={bl:[['#1e1816','#3a2e28','#a8a098'].map(q),['#141010','#2c2420','#8a8078'].map(q),['#2a2220','#4a3c34','#c8c0b4'].map(q)],bed:q('#120e0e'),bedA:pale?.3:.42,tip:'#ff7a2a'};}
+  else if(M==='cinder')o={bl:[[shade(tg[0],.62),shade(tg[0],.82),tg[2]],[shade(tg[0],.5),shade(tg[1],.7),shade(tg[2],.85)],[shade(tg[0],.7),tg[0],tint(tg[2],.2)]],bed:shade(tg[0],.42),bedA:.42,tip:tg[2]};
+  else if(M==='breach')o={bl:[['#0d3436','#17a088','#7ae8d0'],['#0a2826','#127a66','#46c8b0'],['#11403e','#1fb496','#a8f4e2']],bed:'#05030a',bedA:.5,tip:'#c8fff4',spore:['#c8fff4','#d0b8ff'],halo:'rgba(63,224,200,.28)'};
+  else if(M==='void')o={bl:[[shade(tg[0],.85),tg[1],tg[2]],[shade(tg[0],.7),tg[0],tint(tg[1],.15)],[tg[0],tint(tg[1],.1),tint(tg[2],.15)]],bed:shade(tg[0],.55),bedA:.45,tip:'#c8a0ff',spore:['#8a6ad0','#5fc9a0']};
+  else{// grass, the coast and the mesa: the realm's own grass tones, a touch darker at the foot so a patch has depth
+    const dk=[shade(tg[0],.8),shade(tg[1],.82),shade(tg[2],.86)];o={bl:[[shade(tg[0],.92),tg[1],tg[2]],dk,[tg[0],tint(tg[1],.1),tint(tg[2],.14)]],bed:shade(tg[0],.62),bedA:M==='sand'?.36:.4,tip:tint(tg[2],.35)};}
+  return c[M]=o;}
+// one clump: three blades standing on row Yb (the middle one tallest, h px), their top two px leaning ln; clipped to the tile
+function t13Tall(f,X,Yb,h,ln,P,G){const put=(col,a,b2)=>{if(a>=0&&a<16&&b2>=0&&b2<16)f(col,a,b2,1,1);};
+  const blade=(bx,hh,col,top)=>{for(let k=0;k<hh;k++){const yy=Yb-k,lx=k>=hh-2?ln:0;put(k===hh-1&&top?top:col,bx+lx,yy);}};
+  blade(X,h-1,P[0],null);blade(X+2,h-2,P[0],null);blade(X+1,h,P[1],P[2]);}
+function t13Growth(f,m,x,y,M,tn,N,R){const G=t13GrowPal(M,THM(m),tn),b=N.b(x+.5,y+.5),wl=N.a(x*.37+3.1,y*.37+1.7),lean0=wl>.56?1:wl<.44?-1:0,list=[];
+  for(let r=0;r<3;r++)for(let k=0;k<4;k++){const Yb=5+r*5-(R()<.5?1:0),X=k*4+((r&1)?2:0)+Math.floor(R()*2)-1;list.push([X,Yb]);}
+  const extra=b>.66?3:b>.45?2:1;for(let i=0;i<extra;i++)list.push([Math.floor(R()*14),3+Math.floor(R()*13)]);
+  // the bed: a dark soft foot under each clump (ragged, never the tile's square)
+  t13Bed(f,G,list,R);
+  let spores=0;
+  list.forEach(([X,Yb],i)=>{const ln=R()<.25?Math.floor(R()*3)-1:lean0,h=4+Math.floor(R()*3),t=R(),P=t<.22?G.bl[1]:t>.8?G.bl[2]:G.bl[0];t13Tall(f,X,Yb,h,ln,P,G);T13.n.tuft++;
+    const top=Yb-h+1,tx=X+1+ln;
+    if(M==='snow'&&R()<.5)f('#ffffff',Math.max(0,X),Math.min(15,Yb),3,1);
+    else if(M==='ash'&&R()<.08){if(tx>=0&&tx<16&&top>=0)f(G.tip,tx,top,1,1);}
+    else if((M==='grass'||M==='sand')&&R()<.12){if(tx>=0&&tx<16&&top>=0)f(G.tip,tx,top,1,1);}
+    else if(G.spore&&R()<(M==='breach'?.45:.25)&&tx>=1&&tx<15&&top>=1){const sc=G.spore[R()<.65?0:1];if(G.halo){f(G.halo,tx-1,top,1,1);f(G.halo,tx+1,top,1,1);f(G.halo,tx,top-1,1,1);}f(sc,tx,top,1,1);spores++;}});
+  if(M==='sand'&&R()<.6){const X=1+Math.floor(R()*12),Y=3+Math.floor(R()*11);t13Clump(f,M,Math.floor(R()*3),X,Y,0,tn.pebble,R);}
+  T13.n.grow++;if(spores)T13.n.spore+=spores;}
+function t13Bed(f,G,list,R){// the dark foot of each clump: a 5 px band at the blades' feet and 3 px under them, at the bed's alpha (the caller's ctx alpha is 1)
+  const al=G.bedA;list.forEach(([X,Yb])=>{f13A(f,G.bed,al,X-1,Yb,5,1);f13A(f,G.bed,al*.6,X,Yb-1,3,1);if(Yb<15)f13A(f,G.bed,al*.5,X,Yb+1,3,1);});}
+let T13_CTX=null;// the context of the tile being drawn (t13Tile sets it), for the alpha fills
+function f13A(f,col,a,X,Y,w,h){const c=T13_CTX;if(!c)return;const x0=Math.max(0,X),x1=Math.min(16,X+w);if(x1<=x0||Y<0||Y>15)return;const g=c.globalAlpha;c.globalAlpha=a;f(col,x0,Y,x1-x0,h);c.globalAlpha=g;}
 const T13_REFL={T:['tree',-3,2,'t'],t:['bush',-1,1],R:['rock',-1,1],C:['chest',-1,0],c:['chestOpen',-1,0],S:['sign',-1,1],W:['waystone',-1,1],L:['lamp',2,1],b:['barrel',1,0],x:['crate',0,0],
   h:['hay',-1,0],k:['cart',-2,0],a:['anvil',-1,0],g:['grave',1,0],N:['standing',1,1],Q:['ruinwall',-1,1],P:['pillar',1,1],e:['tent',-3,1,'v'],Y:['tower',-4,1]};
 function t13ObjAt(m,c,x,y){const o=T13_REFL[c];if(!o)return null;const v=(x*31+y*17)%5;let cv=null;
   try{cv=objCanvas(m.theme,o[0],o[3]==='t'?v%2:o[3]==='v'?v:0);}catch(e){return null;}if(!cv||!cv.width)return null;return {cv,ox:o[1],oy:o[2]};}
 function t13Tile(ctx,m,x,y,frame,c){const T=THM(m);if(!T)return;const tn=t13Tones(T),M=t13Mat(m),N=t13Noise(m),px=x*TS,py=y*TS,town=m.kind==='town';
   const f=(col,a,b,w,h)=>{ctx.fillStyle=col;ctx.fillRect(px+a,py+b,w,h);},k=t13Class(c),R=mulberry((t13H(x,y,m.s|0)*1e9|0)+13),nb=(dx,dy)=>t13Class(tileAt(m,x+dx,y+dy));
-  T13.n.tile++;
+  T13.n.tile++;T13_CTX=ctx;
   if(k==='g'){// --- patchwork: two or three tones in soft patches, 4 x 4 px feathered blocks of the map's noise
     const isBr=M==='breach';if(!isBr){
       for(let j=0;j<4;j++)for(let i=0;i<4;i++){const a=N.a(x+(i+.5)/4,y+(j+.5)/4);let al=0,col=null;
@@ -33171,18 +33256,22 @@ function t13Tile(ctx,m,x,y,frame,c){const T=THM(m);if(!T)return;const tn=t13Tone
         if(al>.04){ctx.globalAlpha=al;f(col,i*4,j*4,4,4);}
         if(!town&&(M==='grass'||M==='sand'||M==='snow'||M==='ash')){const b=N.b(x+(i+.5)/4,y+(j+.5)/4),d=Math.abs(b-.5);if(d<.07){ctx.globalAlpha=(1-d/.07)*.5;f(tn.path,i*4,j*4,4,4);}}}
       ctx.globalAlpha=1;}
-    // --- tufts, pebbles, drifts, cinders or spores: clustered by the noise, more on ',' tiles, a few on open ground
-    const b=N.b(x+.5,y+.5),tuftTile=c===',',dense=b>.6;let n=0;
-    if(M==='grass'){n=tuftTile?2+Math.floor(b*3.2):(dense&&R()<.55?1:0);}
-    else if(M==='breach'){n=tuftTile?2+(b>.5?1:0):(dense&&R()<.2?1:0);if(tuftTile)f('rgba(63,224,200,.16)',0,0,16,16);}// the encounter tile keeps a teal cast so it still reads as grass
-    else if(M==='void'){n=tuftTile?1+Math.floor(b*2.5):(dense&&R()<.35?1:0);}
-    else{n=tuftTile?2+Math.floor(b*2.5):(dense?1+(R()<.4?1:0):(R()<.25?1:0));}
-    if(c==='f')n=Math.min(n,1);
-    for(let i=0;i<n;i++){const v=Math.floor(R()*6),ln=Math.floor(R()*3)-1,ts=Math.floor(R()*3),X=Math.floor(R()*11),Y=2+Math.floor(R()*11);
-      const tone=M==='sand'?tn.pebble:M==='snow'?[null,null,tn.g[3]]:(M==='ash'||M==='cinder')?[tn.dark]:tn.tuft[ts];
-      t13Clump(f,M,v,X,Y,ln,tone,R);T13.n.tuft++;}
-    if(M==='breach'&&tuftTile){for(let i=0;i<3;i++){const sx=1+Math.floor(R()*14),sy=1+Math.floor(R()*13);f('rgba(63,224,200,.22)',sx-1,sy-1,3,3);f(R()<.65?'#c8fff4':'#d0b8ff',sx,sy,1,1);}}
-    if(M==='void'&&tuftTile&&R()<.6){const sx=Math.floor(R()*15),sy=Math.floor(R()*15);f(R()<.5?'#8a6ad0':'#5fc9a0',sx,sy,1,1);}
+    // --- encounter growth on ',' (terrain14: a dense patch of tall growth in every realm); on open ground a few small tufts, pebbles, drifts,
+    // cinders or spores clustered by the noise, and a short tuft or two spilling over from a neighbouring ',' tile
+    const b=N.b(x+.5,y+.5),dense=b>.6;
+    if(c===','){t13Growth(f,m,x,y,M,tn,N,R);}
+    else{let n=0;
+      if(M==='grass')n=dense&&R()<.3?1:0;
+      else if(M==='breach')n=dense&&R()<.15?1:0;
+      else if(M==='void')n=dense&&R()<.25?1:0;
+      else n=dense?1+(R()<.4?1:0):(R()<.25?1:0);
+      if(c==='f')n=Math.min(n,1);
+      for(let i=0;i<n;i++){const v=M==='grass'||M==='breach'||M==='void'?3:Math.floor(R()*6),ln=Math.floor(R()*3)-1,ts=Math.floor(R()*3),X=Math.floor(R()*11),Y=2+Math.floor(R()*11);
+        const tone=M==='sand'?tn.pebble:M==='snow'?[null,null,tn.g[3]]:(M==='ash'||M==='cinder')?[tn.dark]:tn.tuft[ts];
+        t13Clump(f,M,v,X,Y,ln,tone,R);T13.n.tuft++;}
+      if(c==='.'){const G=t13GrowPal(M,THM(m),tn);let sp=0;[[0,-1],[0,1],[-1,0],[1,0]].forEach(([dx,dy])=>{if(sp||tileAt(m,x+dx,y+dy)!==','||R()>.3)return;sp=1;
+        const X=dx<0?Math.floor(R()*2):dx>0?12+Math.floor(R()*2):2+Math.floor(R()*10),Yb=dy<0?3+Math.floor(R()*2):dy>0?15:5+Math.floor(R()*9);t13Tall(f,X,Yb,3,Math.floor(R()*3)-1,G.bl[1],G);T13.n.spill++;});}
+      if(M==='void'&&R()<.15){const sx=Math.floor(R()*15),sy=Math.floor(R()*15);f(R()<.5?'#8a6ad0':'#5fc9a0',sx,sy,1,1);}}
   }
   // --- transitions, inside this tile, read off the neighbours
   const wetOk=!(T.cloud||T.stars||m.theme==='cave');// cloud seas, the void and lava get no waterline
@@ -33199,7 +33288,9 @@ function t13Tile(ctx,m,x,y,frame,c){const T=THM(m);if(!T)return;const tn=t13Tone
         if(dy>0)f(col,i,16-d,1,d);else if(dy<0)f(col,i,0,1,d);else if(dx>0)f(col,16-d,i,d,1);else f(col,0,i,d,1);
         if(sand&&R()<.3){if(dy>0)f(tn.wet2,i,15-d,1,1);else if(dy<0)f(tn.wet2,i,d,1,1);}}};
     rim(0,1);rim(0,-1);rim(1,0);rim(-1,0);}
-  if(k==='w'&&wetOk){// foam specks on the water beside land (the two bake frames differ, so it breathes even on Low); a pale shallow on sand
+  if(k==='w'&&wetOk){// terrain14: the water's own body (depth, shallows, wave marks), then foam specks on the water beside land (the two bake frames
+    // differ, so it breathes even on Low); a pale shallow on sand
+    try{t13WaterBody(ctx,f,m,x,y,frame,T,tn,N,R);}catch(e){t13Err('wbody',e);}
     const foam=tn.foam,sand=M==='sand',o=frame?1:0;
     const edge=(dx,dy)=>{const q=nb(dx,dy);if(q==='w')return;T13.n.edge++;
       if(sand){ctx.globalAlpha=.55;if(dy<0)f(tn.shallow,0,0,16,3);else if(dy>0)f(tn.shallow,0,13,16,3);else if(dx<0)f(tn.shallow,0,0,3,16);else f(tn.shallow,13,0,3,16);ctx.globalAlpha=1;}
@@ -33218,6 +33309,47 @@ HOOK.wrap('drawTile','terrain13','ground patchwork, tuft variety and material tr
   if(T13.off||!m||m.kind==='dungeon'||!m.t||!m.t[y])return next(ctx,m,x,y,frame);
   const c=tileAt(m,x,y),sw=c===','&&m.t[y][x]===',';if(sw)m.t[y][x]='.';// the base and the Breach draw bare ground; the clumps are this module's
   try{const r=next(ctx,m,x,y,frame);try{t13Tile(ctx,m,x,y,frame,c);}catch(e){t13Err('tile',e);}return r;}finally{if(sw)m.t[y][x]=',';}});
+// ---------- 2b. the water's body (terrain14) ----------
+// The owner after v0.19.8: "water looks a bit worse and too uniform". The base painted every water tile one flat blue with two dashes on fixed
+// rows (and a darker band on fixed rows in the deep), so open water was a regular grid of stripes. Now the body is painted here, in 2 px cells:
+// the depth of each cell is the distance to land (tiles, a breadth first pass per map, bilinear between tile centres) plus the map's noise and
+// a 2 x 2 ordered dither, read through six tones made from the realm's own water (pale shallows by the shore, sandy on the coast, the
+// realm's water, then two darker deeps); then 0 to 2 wave marks per tile (a crest of 3 to 6 px with a pale lit pixel and a dark trough
+// under it, a short double dash or a small chevron) at hashed places and lengths, shifted one px left or right in the second bake frame, and a
+// rare sparkle. The shore keeps the realm's lip, the bank shade and the ragged foam. Cloud seas, the void and lava keep their own art.
+const T13_WD=new WeakMap(),T13_BAYER=[0,2,3,1];
+function t13WDepth(m){const g=m.t;let o=T13_WD.get(m);if(o&&o.t===g&&o.w===m.w&&o.h===m.h&&o.gen===m.__t13wg)return o.d;const W=m.w,H=m.h,d=new Float32Array(W*H),q=[];
+  for(let y=0;y<H;y++)for(let x=0;x<W;x++){const c=tileAt(m,x,y),wt=T13_WATER.includes(c)||c==='B';d[y*W+x]=wt?1e9:0;if(!wt)q.push(y*W+x);}
+  for(let k=0;k<q.length;k++){const p=q[k],x=p%W,y=(p/W)|0,v=d[p]+1;for(const [a,b] of [[1,0],[-1,0],[0,1],[0,-1]]){const X=x+a,Y=y+b;if(X<0||Y<0||X>=W||Y>=H)continue;const j=Y*W+X;if(d[j]>v){d[j]=v;q.push(j);}}}
+  for(let i=0;i<d.length;i++)if(d[i]>=1e9)d[i]=12;// a map of water only
+  T13_WD.set(m,{t:g,w:W,h:H,gen:m.__t13wg,d});return d;}
+const T13_WT=new WeakMap();
+function t13WTones(T,tn,M){let o=T13_WT.get(T);if(o&&o.M===M)return o.c;const w=tn.w;
+  const c=[M==='sand'?mix(w[1],tn.g[2],.38):mix(w[1],w[2],.22),mix(w[1],w[0],.4),w[0],mix(w[0],w[3],.5),w[3],shade(w[3],.8)];T13_WT.set(T,{M,c});return c;}
+function t13WaterBody(ctx,f,m,x,y,frame,T,tn,N,R){const D=t13WDepth(m),W=m.w,H=m.h,M=t13Mat(m),C=t13WTones(T,tn,M);
+  const at=(X,Y)=>D[Math.max(0,Math.min(H-1,Y))*W+Math.max(0,Math.min(W-1,X))];
+  const d00=at(x-1,y-1),d10=at(x,y-1),d20=at(x+1,y-1),d01=at(x-1,y),d11=at(x,y),d21=at(x+1,y),d02=at(x-1,y+1),d12=at(x,y+1),d22=at(x+1,y+1);
+  const lvl=new Uint8Array(64);
+  for(let j=0;j<8;j++)for(let i=0;i<8;i++){let u=(i+.5)/8-.5,v=(j+.5)/8-.5;// offset from this tile's centre, -.44..+.44
+    const ux=u<0?u+1:u,vy=v<0?v+1:v,L=u<0?[d00,d10,d01,d11,d02,d12]:[d10,d20,d11,d21,d12,d22];// the four tile centres round the cell
+    const r0=v<0?[L[0],L[1]]:[L[2],L[3]],r1=v<0?[L[2],L[3]]:[L[4],L[5]];const top=r0[0]+(r0[1]-r0[0])*ux,bot=r1[0]+(r1[1]-r1[0])*ux,dd=top+(bot-top)*vy;
+    const fx=x+(i+.5)/8,fy=y+(j+.5)/8,nz=(N.a(fx,fy)-.5)*1.8+(dd>2.5?(N.b(fx*1.7+7,fy*1.7+3)-.5)*Math.min(3,dd-2.5)*1.6:0),dith=(T13_BAYER[(i&1)+(j&1)*2]/4-.375)*.4,dep=dd+nz+dith;// open water swells in slow blobs
+    lvl[j*8+i]=dep<.95?0:dep<1.7?1:dep<2.6?2:dep<3.6?3:dep<5?4:5;}
+  for(let j=0;j<8;j++){let i0=0;for(let i=1;i<=8;i++){if(i<8&&lvl[j*8+i]===lvl[j*8+i0])continue;f(C[lvl[j*8+i0]],i0*2,j*2,(i-i0)*2,2);i0=i;}}
+  // wave marks: 0 to 2 per tile, hashed kind, place and length; lit crest, dark trough; the second frame moves each a px its own way
+  const h=t13H(x,y,41),nm=h<.32?0:h<.78?1:2;
+  for(let k=0;k<nm;k++){const kind=Math.floor(R()*3),len=3+Math.floor(R()*4),X=Math.floor(R()*(15-len)),Y=2+Math.floor(R()*11),sh=frame?(k%2?-1:1):0,xx=Math.max(0,Math.min(15-len,X+sh));
+    const l=lvl[Math.min(7,Y>>1)*8+Math.min(7,(xx+1)>>1)],lit=C[Math.max(0,l-2)],dark=C[Math.min(5,l+1)];
+    if(kind===0){f(lit,xx+1,Y,len-2,1);f(lit,xx,Y+1,1,1);f(lit,xx+len-1,Y+1,1,1);f(dark,xx+1,Y+1,len-2,1);ctx.globalAlpha=.55;f(tn.w[2],xx+1+Math.floor(R()*(len-2)),Y,1,1);ctx.globalAlpha=1;}
+    else if(kind===1){f(lit,xx,Y,len-1,1);f(dark,xx+1,Y+1,len-1,1);if(Y<13)f(lit,xx+2,Y+2,Math.max(1,len-3),1);}
+    else{f(lit,xx,Y+1,1,1);f(lit,xx+1,Y,1,1);f(lit,xx+2,Y+1,1,1);f(dark,xx+1,Y+1,1,1);}T13.n.wave++;}
+  if(R()<.09&&((x+y+frame)&1)){ctx.globalAlpha=.9;f('#ffffff',1+Math.floor(R()*14),1+Math.floor(R()*14),1,1);ctx.globalAlpha=1;}
+  // the shore: the realm's lip and pale line where land is north (the base drew them under this body), the bank's shade where it is south
+  const up=tileAt(m,x,y-1),dn=tileAt(m,x,y+1),land=c=>!T13_WATER.includes(c)&&c!=='B';
+  if(land(up)){f(T.lip||tn.g[0],0,0,16,2);f(shade(T.lip||tn.g[0],.8),0,2,16,1);}
+  if(land(dn))f(shade(C[1],.78),0,15,16,1);
+  T13.n.wbody++;}
+HOOK.before('buildMapCanvas','terrain13','the water depth follows the tiles of the map being baked',function(m){try{if(m)m.__t13wg=(m.__t13wg|0)+1;}catch(e){}});
 // ---------- 3: water, the baked part: reflections and the sky band ----------
 function t13Water(ctx,m,frame){const T=THM(m);if(!T||T.cloud||T.stars||m.theme==='cave')return;const tn=t13Tones(T),w=tn.w,R=mulberry((m.s|0)*131+7);
   for(let y=0;y<m.h;y++)for(let x=0;x<m.w;x++){const c=tileAt(m,x,y);if(!T13_WATER.includes(c))continue;const px=x*TS,py=y*TS,up=tileAt(m,x,y-1);
@@ -33246,14 +33378,22 @@ function t13Ground2D(ctx,m,cx,cy,vw,vh,ts){const T=THM(m);if(!T)return;const tn=
     for(let x=x0;x<=x1;x++){const c=tileAt(m,x,y),k=t13Class(c);
       if(wet>.01&&(k==='r'||k==='p'||c==='s'||c==='B')){const kk=k==='p'||c==='s'||c==='B'||town?'p':'r';if(run>=0&&kk!==runK)flush(x);if(run<0){run=x;runK=kk;}}else if(run>=0)flush(x);
       if(water&&k==='w'&&nw<C.water2d&&ts){nw++;const px=x*TS-cx,py=y*TS-cy,h=t13H(x,y,17),h2=t13H(x,y,23);
-        const ph=(ts/2200+h)%1,yb=2+Math.floor(ph*12),a=.22+.22*Math.sin(ts/1300+h*6.28);ctx.globalAlpha=Math.max(0,a);ctx.fillStyle=w[2];ctx.fillRect(px+1+Math.floor(h2*7),py+yb,4+Math.floor(h*5),1);
-        const sp=(ts/900+h2*3)%1;if(sp<.18){ctx.globalAlpha=Math.sin(sp/.18*Math.PI)*.9;ctx.fillStyle='#ffffff';ctx.fillRect(px+2+Math.floor(h*12),py+2+Math.floor(h2*11),1,1);}
+        const Q=t13WAnim(x,y,ts);if(Q.ba>.02){ctx.globalAlpha=Q.ba;ctx.fillStyle=w[2];ctx.fillRect(px+Q.bx,py+Q.by,Q.bl,1);}
+        if(Q.sa>0){ctx.globalAlpha=Q.sa;ctx.fillStyle='#ffffff';ctx.fillRect(px+Q.sx,py+Q.sy,1,1);}
         const land=!T13_WATER.includes(tileAt(m,x,y-1))||!T13_WATER.includes(tileAt(m,x,y+1))||!T13_WATER.includes(tileAt(m,x-1,y))||!T13_WATER.includes(tileAt(m,x+1,y));
         if(land){ctx.globalAlpha=.3+.3*Math.sin(ts/1600+(x+y)*.9);ctx.fillStyle=tn.foam;const wob=Math.floor(ts/700)%2;
           if(!T13_WATER.includes(tileAt(m,x,y-1)))ctx.fillRect(px+1+Math.floor(h*12),py+1+wob,2,1);if(!T13_WATER.includes(tileAt(m,x,y+1)))ctx.fillRect(px+2+Math.floor(h2*11),py+14-wob,2,1);
           if(!T13_WATER.includes(tileAt(m,x-1,y)))ctx.fillRect(px+wob,py+2+Math.floor(h*11),1,2);if(!T13_WATER.includes(tileAt(m,x+1,y)))ctx.fillRect(px+15-wob,py+1+Math.floor(h2*12),1,2);}}}
     flush(x1+1);}
   ctx.globalAlpha=1;T13.n.wq+=nw;T13.n.fr++;}
+// the moving part of a water tile (terrain14): about half the tiles carry a drifting highlight of 2 to 7 px at their own speed and sway, and
+// fewer than half a sparkle with its own period, so the open water never shows one dash per tile marching in step
+const T13_WQ={bx:0,by:0,bl:0,ba:0,sx:0,sy:0,sa:0};
+function t13WAnim(x,y,ts){const Q=T13_WQ,h=t13H(x,y,17),h2=t13H(x,y,23),h3=t13H(x,y,29);Q.ba=0;Q.sa=0;
+  if(h3<.55){const ph=(ts/(1700+h2*1700)+h)%1;Q.bl=2+Math.floor(h*6);Q.bx=Math.max(0,Math.min(16-Q.bl,1+Math.floor(h2*(14-Q.bl))+Math.round(Math.sin(ts/(800+h*900)+h3*9))));Q.by=2+Math.floor(ph*12);
+    Q.ba=Math.max(0,(.16+.24*Math.sin(ts/(1100+h3*1100)+h*6.28))*Math.sin(ph*Math.PI));}
+  if(h2<.42){const sp=(ts/(650+h3*900)+h2*3)%1;if(sp<.16){Q.sa=Math.sin(sp/.16*Math.PI)*.9;Q.sx=1+Math.floor(t13H(x,y,Math.floor(ts/(650+h3*900)+h2*3))*14);Q.sy=1+Math.floor(h*14);}}
+  return Q;}
 // the cap canvas of a map: prop tops, roofs, ledges and a dusting on open ground, white; drawn at the snow level's alpha
 const T13_CAPS=new WeakMap();
 function t13CapOf(cv){let c=T13_CAPS.get(cv);if(c)return c;const w=cv.width,h=cv.height;c=mkCv(w,h);try{const d=cv.getContext('2d').getImageData(0,0,w,h).data,o=c.getContext('2d'),img=o.createImageData(w,h),q=img.data;
@@ -33294,8 +33434,8 @@ function t13HdFrame(m,now,ts){const S=HD.S;if(!S||!S.HT)return;const V=S.V,B=HD.
     for(let x=x0;x<=x1;x++){const c=tileAt(m,x,y),k=t13Class(c);
       if(wet>.01&&(k==='r'||k==='p'||c==='s'||c==='B')){const kk=k==='p'||c==='s'||c==='B'||town?'p':'r';if(run>=0&&kk!==runK)flush(x);if(run<0){run=x;runK=kk;}}else if(run>=0)flush(x);
       if(water&&k==='w'&&ts&&nw<C.waterHd&&S.KD[y*W+x]===4){nw++;const px=x*TS,pz=y*TS,h=t13H(x,y,17),h2=t13H(x,y,23);
-        const ph=(ts/2200+h)%1,zb=pz+2+ph*11,a=.22+.22*Math.sin(ts/1300+h*6.28);if(a>.02){const xa=px+1+Math.floor(h2*7),len=4+Math.floor(h*5);flat(xa,xa+len,zb,zb+1,yw,wc[0],wc[1],wc[2],Math.round(a*255),0);}
-        const sp=(ts/900+h2*3)%1;if(sp<.18){const xa=px+2+Math.floor(h*12),za=pz+2+Math.floor(h2*11);flat(xa,xa+1,za,za+1,yw+.1,255,255,255,Math.round(Math.sin(sp/.18*Math.PI)*230),4);}
+        const Q=t13WAnim(x,y,ts);if(Q.ba>.02)flat(px+Q.bx,px+Q.bx+Q.bl,pz+Q.by,pz+Q.by+1,yw,wc[0],wc[1],wc[2],Math.round(Q.ba*255),0);
+        if(Q.sa>0)flat(px+Q.sx,px+Q.sx+1,pz+Q.sy,pz+Q.sy+1,yw+.1,255,255,255,Math.round(Q.sa*255),4);
         const un=!T13_WATER.includes(tileAt(m,x,y-1)),dn=!T13_WATER.includes(tileAt(m,x,y+1)),lf=!T13_WATER.includes(tileAt(m,x-1,y)),rt=!T13_WATER.includes(tileAt(m,x+1,y));
         if(un||dn||lf||rt){const fa=Math.round((.3+.3*Math.sin(ts/1600+(x+y)*.9))*255),wob=Math.floor(ts/700)%2;
           if(un){const xa=px+1+Math.floor(h*12);flat(xa,xa+2,pz+1+wob,pz+2+wob,yw+.05,fc[0],fc[1],fc[2],fa,0);}if(dn){const xa=px+2+Math.floor(h2*11);flat(xa,xa+2,pz+14-wob,pz+15-wob,yw+.05,fc[0],fc[1],fc[2],fa,0);}
@@ -33358,26 +33498,7 @@ HOOK.after('hdScene','terrain13','the snow caps over the cards, roofs, ledges an
   gl.bindTexture(gl.TEXTURE_2D,h.tex||HD.atl.t);hdDrawChunks(gl,h.mesh);
   gl.depthMask(true);gl.disable(gl.BLEND);gl.disable(gl.DEPTH_TEST);gl.uniform4f(u.uXr,0,0,1,0);}catch(e){t13Err('hdscene',e);}});
 // test hooks
-try{window.__T13=T13;T13.api={tile:t13Tile,mat:t13Mat,noise:t13Noise,capOf:t13CapOf,capCanvas:t13CapCanvas,track:t13Track,hdSnow:t13HdSnowMesh,weights:t13Weights};}catch(e){}
-
-// ===== fixes14.js (fix pass 14): the owner's four notes after the 0.19.7 to 0.20.0 passes; the CSS half is fixes14.css =====
-// 1) Momentum gauge (fixes14.css): hud13.css set "Momentum" in Cinzel with letter spacing, wider than the Nunito word it replaced, so in a
-//    Surge or Drained state the label and "Surge +15%" no longer fit one line of the 138 px gauge: the label wrapped to two lines, the gauge
-//    needed three rows in a 40 px plate, the bar was pushed onto the bottom edge (under the corner ornaments) and, where the device font draws a
-//    little larger, below it, where the log strip (overflow hidden) cut it off. The label stays on one line now and the gauge may be a little wider.
-// 2) Primed chip on the foe cards (fixes14.css): the status row is one nowrap line at the card's foot, and its items could shrink. A long
-//    chip (the reaction name of an aimed Detonator) squeezed the status buttons until their contents stacked into tall columns; the line grew
-//    to their height and the chip stretched with it into a big box over the name and HP. Nothing overflowed, so b3TagFit never wrapped the row.
-//    The items keep their own width now (so an overfull row wraps), the row is capped to the space the card reserves for it, and while a foe
-//    is being chosen the row lets taps through to the card under it.
-// 3) Battle menu memory (menus12.js): a hero who used an item opens their next turn on the main actions, not the Items list. Skills keep
-//    their memory. (useItem is HOOK.def'd in engine.js for this.)
-// 4) Victory screen, new skills (fixes14.css): each line's tag strip was nowrap in a space-between flex row; on a phone the strip ran out of
-//    the panel and squeezed the name into one letter per line. The row wraps now, the tags wrap under the text.
-HOOK.wrap('useItem','fixes14','battle menu memory: after an item the next turn opens on the main actions',function(next,...args){
-  const a=B&&B.cur,id=args[0],n0=G&&G.inv?G.inv[id]||0:0;const r=next(...args);
-  try{if(a&&a.side==='p'&&G&&G.inv&&(G.inv[id]||0)<n0&&typeof m12Mem==='function'){const mm=m12Mem(a);mm.menu='root';}}catch(e){}
-  return r;});
+try{window.__T13=T13;T13.api={tile:t13Tile,mat:t13Mat,noise:t13Noise,growPal:t13GrowPal,wdepth:t13WDepth,wanim:(x,y,ts)=>Object.assign({},t13WAnim(x,y,ts)),capOf:t13CapOf,capCanvas:t13CapCanvas,track:t13Track,hdSnow:t13HdSnowMesh,weights:t13Weights};}catch(e){}
 
 // ===== menus14.js (menu pass 14): the hero sheet on one page, crisp tier tags, Next goals under the minimap, a mixed tavern, skills spread over the levels =====
 // The owner's five notes after 0.20.0:
@@ -33489,6 +33610,25 @@ HOOK.after('newGame','menus14','a new journey uses the spread levels',function()
 try{window.__M14={M14,levels:m14Levels,mix:m14Mix,keep:m14Keep,spot:m14Spot,sec:m14Sec,get tvShuffle(){return tvShuffle;},get ensureSub(){return ensureSub;},get tvPool(){return tvPool;},
   get TPL(){return TPL;},get CLASS_ROLE(){return CLASS_ROLE;},get G(){return G;},get V(){return V;},get GL(){return GL;},get glRender(){return glRender;},get glHero(){return glHero;},
   kit:t=>classSkills(t)};}catch(e){}
+
+// ===== fixes14.js (fix pass 14): the owner's four notes after the 0.19.7 to 0.20.0 passes; the CSS half is fixes14.css =====
+// 1) Momentum gauge (fixes14.css): hud13.css set "Momentum" in Cinzel with letter spacing, wider than the Nunito word it replaced, so in a
+//    Surge or Drained state the label and "Surge +15%" no longer fit one line of the 138 px gauge: the label wrapped to two lines, the gauge
+//    needed three rows in a 40 px plate, the bar was pushed onto the bottom edge (under the corner ornaments) and, where the device font draws a
+//    little larger, below it, where the log strip (overflow hidden) cut it off. The label stays on one line now and the gauge may be a little wider.
+// 2) Primed chip on the foe cards (fixes14.css): the status row is one nowrap line at the card's foot, and its items could shrink. A long
+//    chip (the reaction name of an aimed Detonator) squeezed the status buttons until their contents stacked into tall columns; the line grew
+//    to their height and the chip stretched with it into a big box over the name and HP. Nothing overflowed, so b3TagFit never wrapped the row.
+//    The items keep their own width now (so an overfull row wraps), the row is capped to the space the card reserves for it, and while a foe
+//    is being chosen the row lets taps through to the card under it.
+// 3) Battle menu memory (menus12.js): a hero who used an item opens their next turn on the main actions, not the Items list. Skills keep
+//    their memory. (useItem is HOOK.def'd in engine.js for this.)
+// 4) Victory screen, new skills (fixes14.css): each line's tag strip was nowrap in a space-between flex row; on a phone the strip ran out of
+//    the panel and squeezed the name into one letter per line. The row wraps now, the tags wrap under the text.
+HOOK.wrap('useItem','fixes14','battle menu memory: after an item the next turn opens on the main actions',function(next,...args){
+  const a=B&&B.cur,id=args[0],n0=G&&G.inv?G.inv[id]||0:0;const r=next(...args);
+  try{if(a&&a.side==='p'&&G&&G.inv&&(G.inv[id]||0)<n0&&typeof m12Mem==='function'){const mm=m12Mem(a);mm.menu='root';}}catch(e){}
+  return r;});
 
 window.__A={walkable,ceInit,tvSlots,genQuests,STARTERS,starterDraw,ECON,AUTO_NERF,rebuildBase,detLive,REACT,skEls,packContents,miniFor,AUTO_REW,ENC_RATE,ENC_MIN_STEPS,detNote,classSkills,stickCount,bestAll,calcStats,lookKey,vTemper,storyEchoUp,leaveDungeon,win,ldApply,genFort,caveOk,enterCave,siteHasMini,openChest,nextDlg,WS,mapIcoRects,roamSpawn,roamInterior,roamSees,mapTargets,DIRV,tileAt,STAGE_LV,autoBan,rollWeather,guardianDef,mapIssues,mapEntry,syncPools,bovAt,calFxAt,realmAt,REALMS,BOV,CAL_FX,overlayGuide,liftOverlay,drawGearIcon,gearIcon,itemIcon,RAW,sigKind,sigGid,personalDone,heroLook,hasSignature,LEGEND_IDS,facDirty,facCount,facRank,facRep,FACB,FAC,finishBattle,npcWords,npcHints,npcPool,titleMake,titleAdvance,TTS,placeAt,wkwUpdate,innSpot,getMap,monURL,enterVia,applyBossTheme,BTHEME,resetMaps,rebuildBase,shopStock,gearDesc,calcStats,gearMigrate,CLS_WPN,CLS_ARM,WPERK,WT_NAME,equipWhy,lootBase,GEAR,canEquip,gearOf,perkNote,FAM_MAT_V35,fbDraft,META:{get best(){return META.best},get codex(){return META.codex},get q(){return META.q}},saveMeta,OFF,offPending,offFlush,PROFILE,profileSync,codexSee,getMap,placeAt,interact,sanctumOpen,riftKeys,echoKeys,BONDS,bondKey,wkwUpdate,inTown,WS,LC,lsort,bestParty,fsCast,fsSkills,ldApply,MON,registerTamed,stickPower,stickCount,autoOne,planGear,bestTag,gainersFor,compGainFor,refresh,fitsFor,canEquip,gearOf,queueNewGear,ARENA,fxDur,banDur,stageTags,autoSwitchPick,layoutBattle,newChar,calcStats,limitSkill,limitTier,canStuck,dunReachable,LV_CAP,addXp,echoSpec,bossLvFor,fx,MON,log,effInfo,tierOf,perkOf,quirkDef,forgeCost,buyPlan,vJourney,modalBack,partySlots,limitOpen,town2Reached,skillKnown,known,classSkills,paceMigrate,unpackG,packG,makeEnemy,QUIRK,arrive,enterDungeon,wkwUpdate,useTravel,travelWhyNot,porkFlee,porkBlocked,encTile,campRest,buyPart,partLeft,alchStock,GAME_VERSION,CHANGELOG,ITEMS,tavernOffers,tavernPool,recruitFit,partyNeeds,vNext,CHALL,innSpot,RECIPES,MATS,FB,fbContext,REDEEM,legendJoin,legendQ,genQuests,dynActors,convInit,PROFILE,profileSync,checkArchive,GPOOL,FPOOL,guardianDef,saveMeta,archiveSkills,get G(){return G;},set G(v){G=v;},get B(){return B;},get V(){return V;},get META(){return META;},WS,ACT,render,newGame,placeAt,startBattle,autoTurn,advance,finishBattle,getMap,innSpot,setPause:p=>{PAUSE=p;},autoCfg,worldInputDir,inputSources,battleFrame,battleTheme,STS,MAPS,mapIssues,healMap,mimicReward,dropChest,interact,worldDraw,TPL,ZONES,ZS,newChar,recruit,saveGame,resetMaps,dynActors,tileAt,BV,refresh,genBounties,genQuests,vStarter,heroCard,heroURL,iconURL,masteryLine,AU,buildTrack,tone,noiseHit,MIDI,sfx,audioVol};
 ['heroRoles','SOLID','WEATHER','WX_BASE','weatherFX','superGuide','recruitCost','ceStart','ceStep','ceInit','cePool','wxList','SUPER_TABLE','superOk','facRank','facRep','facInit','facCount','facCredit','FAC','FMIS','facMissionList','facProg','tyOf','facSync','facMul','facBest','worldPlan','caveReward','enterCave','leaveCave','leaveDungeon','buildCaveMap','worldGraph','openWorldMap','sigReport','SIG_NAMES','starterDraw','ITEM_TIERS','gTierIdx','tierChip','gearIcon','starterSlots','STARTERS','CLK_LEN','CLK_PH','clockPhase','wxInfoBody','recipeOrder','recipeGain','recipeReady','recipeClose','effOf','calcDamage','healsUndead','storyEchoUp','riftKeys','echoDef','efCost','autoLocked','bossFightKey','learnScanAll','isSeen','mapMarks','genSub','subOK','subReq','ensureSub','inSub','tvSlots','tvInit','tvLeft','tvEvent','tvNextText','tvPool','tvDue','tvShuffle','mTavern','hireOK','TV_CAP','TV_CD','POOL_IDS','natPool','natOf','natRoll','NATURES','natInfo','natRerollCost','natChooseCost','NAT_CLASS','iconURL','seenOf','mapIcoDraw','drawMini','MAPCV','revealAround','fxLayer','numDur','compBonusText','compPerk','checkPhase','win','unitBox','LNQ','challVisible','challEligible','challState','isMimic','migrateCompanions','canSummon','summonComp','compOf','clockPhase','tickClock','isNight','rollWeather','wxStep','nightPool','encounterFoes','restAll','tameElite','openChest','rerollTavern','bestAll','gearTier','SV','svCheck','svFlush','svInit','svPush','svPull','svScan','svParse','svBackup','svPack','svUnpack','svProg','svCloudList','svDelDoc','svGet','svCap','slotState','slotKey','svDecode','SV_CH','svStatus','svSlotRaw','svLoad','loadRaw','svHash','svIdx'].forEach(k=>{try{Object.defineProperty(window.__A,k,{get:()=>eval(k)});}catch(e){}});

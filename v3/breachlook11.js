@@ -93,7 +93,7 @@ function brRibbon(ctx,x0,x1,y0,yMax,t,k){// a wavy ribbon of aurora, fading down
   const V=[154,90,255],Tl=[47,224,192];for(let x=x0;x<x1;x+=3){const u=x/Math.max(1,x1-x0),c=brLerp(V,Tl,Math.max(0,Math.min(1,.5+.5*Math.sin(u*3.1+t*.12+k)))),yc=y0+Math.sin(x/29+t*.25+k)*9+Math.sin(x/11-t*.4)*3,th=12;
     for(let s=0;s<4;s++){const yy=yc+s*th/4;if(yy>yMax)break;ctx.fillStyle=`rgba(${c[0]},${c[1]},${c[2]},${(.16-s*.036).toFixed(3)})`;ctx.fillRect(x,Math.round(yy),3,Math.ceil(th/4)+1);}}}
 HOOK.after('worldDraw','breachlook11','aurora over the Breach sky band',function(){try{const m=WS.m,ctx=WS.ctx;if(!brIs(m)||!ctx)return;const vw=WS.vw,vh=WS.vh,cy=WS.cam?WS.cam.y:0,top=Math.min(vh,Math.max(0,Math.round(-cy)));if(top<8)return;
-  const still=typeof gfxStill==='function'&&gfxStill(),t=still?0:performance.now()/1000;ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.beginPath();ctx.rect(0,0,vw,top);ctx.clip();
+  const still=typeof gfxStill==='function'&&gfxStill(),t=still?0:performance.now()/1000,k=Math.max(1,((WS.cv&&WS.cv._rw)||vw)/vw);ctx.save();ctx.setTransform(k,0,0,k,0,0);/* terrain14: the canvas's real backing scale (above Low the HD-2D overlay holds a 2x bitmap; identity drew the band in its top-left quarter) */ctx.beginPath();ctx.rect(0,0,vw,top);ctx.clip();
   brRibbon(ctx,0,vw,top*.42,top,t,0);brRibbon(ctx,0,vw,top*.72,top,t,2.4);ctx.restore();}catch(e){}});
 
 // ---------- the battle backdrop ----------

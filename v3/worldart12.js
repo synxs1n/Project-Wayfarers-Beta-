@@ -3,6 +3,7 @@
 //  1 a field's exit sits on land: the mouth of the lane that leaves a field (and the one back to town) had void ('~') beside and under it in the
 //    realms that have void, a 3 wide strip of ground with a cliff drop at its sides ("some land is missing in the path to the next area"). Every exit now has
 //    an apron of ground, 11 wide and 7 deep (void turned to plain ground only, nothing else moves); drawAudit reports what is left in `exitLand`.
+//    terrain14: and a causeway along the walkway from every exit of a field or a town to open land where '~' is void or cloud (see section 1).
 //  2 den, dungeon (lair) and cave entrances are rebuilt with volume in both renderers (see section 2)
 //  3 the Sanctum's side carpets are their own panels (border, weave, fringe and a seam against the runner) that fill the floor to the pillars
 //  4 weather and ambience stay where they are when the hero walks: every parallax in WX7 is 1 (the far layer lagged the camera by 18% and the near
@@ -11,7 +12,7 @@
 //    instead of the inventory icon pasted on the ground
 //  6 the Mimic is a chest first (lid, planks, bands, lock) with teeth top and bottom in the open mouth and a tongue
 // Nothing here touches a save, the Daily Trial, game state or the random numbers. Tests: tools/chrome/v174a.js.
-const WA12={n:{exit:0,node:0,carpet:0,den:0,lair:0},off:false,err:[]};
+const WA12={n:{exit:0,cause:0,node:0,carpet:0,den:0,lair:0},off:false,cause:true,err:[]};// cause false: the v0.19.2 apron only (tests)
 function wa12Err(w,e){if(WA12.err.length<20)WA12.err.push(w+': '+(e&&e.message||e));}
 // ---------- 1. exits on land ----------
 const WA12_APRON={d:7,q:5};
@@ -22,12 +23,49 @@ function wa12ExitGroups(m){const g=m&&m.t;if(!g||!m.exits||!m.exits.length)retur
 // the tiles of the apron: d rows in from the edge, q tiles either side of the exit's middle
 function wa12Apron(m,G,fn){const g=m.t,H=g.length,W=g[0].length,A=WA12_APRON;
   for(let d=0;d<A.d;d++)for(let q=-A.q;q<=A.q;q++){const x=G.e.x+G.n[0]*d+G.l[0]*q,y=G.e.y+G.n[1]*d+G.l[1]*q;if(x<0||y<0||x>=W||y>=H)continue;fn(x,y,d,q);}}
-function wa12ExitIssues(m){const out=[];try{if(!m||m.kind!=='field')return out;wa12ExitGroups(m).forEach(G=>wa12Apron(m,G,(x,y,d,q)=>{if(m.t[y][x]==='~')out.push({x,y,why:'void in the apron of the exit at '+G.e.x+','+G.e.y});}));}catch(e){wa12Err('exitIssues',e);}return out;}
-function wa12ExitLand(m){let n=0;try{if(!m||m.kind!=='field'||WA12.off)return 0;
-  wa12ExitGroups(m).forEach(G=>wa12Apron(m,G,(x,y)=>{if(m.t[y][x]==='~'){m.t[y][x]='.';n++;}}));
-  if(n){m.exitLand=(m.exitLand||0)+n;WA12.n.exit+=n;if(m.tl)m.tl=null;}}catch(e){wa12Err('exitLand',e);}return n;}
-HOOK.wrap('getMap','worldart12','a field exit sits on land (no void in its apron)',function(next,...a){const had=!!MAPS[a[0]];const m=next(...a);try{if(!had&&m&&m.kind==='field'&&!m.__wa12x){m.__wa12x=1;wa12ExitLand(m);}}catch(e){wa12Err('getMap',e);}return m;});
-HOOK.xform('drawAudit','worldart12','exit aprons: no void beside or under an exit',function(out,m){try{if(out)out.exitLand=wa12ExitIssues(m);}catch(e){wa12Err('audit',e);}return out;});
+// terrain14 (the owner after v0.20.0: "still missing land at some exits to areas"): the apron covers only the last 7 rows, so a walkway that
+// reaches the edge over the void (the Breach's bridge from its central island to the south exit, the Ashen Expanse's lane north, a town's
+// bridge out over the cloud sea or the void) still ran with starfield on both sides. Every exit of a field or a town in a realm whose '~' is
+// void or cloud (THEME stars or cloud) now also gets a causeway: the walkway is followed from the exit's middle tile (breadth first over
+// open tiles) to the first tile of "open land" (a tile with no void within 2 tiles, in a group of at least WA12_COR.big such tiles), and
+// every void tile within WA12_COR.r of that path turns to ground, bridge tiles on it turn to road, and a bridge left with no void beside
+// it turns to road too. Void stays round the islands everywhere else. drawAudit's exitLand reports void within 2 tiles of such a path.
+const WA12_COR={r:3,near:2,big:60,max:120};
+function wa12VoidLike(m){try{const T=THM(m);return !!(T&&(T.stars||T.cloud));}catch(e){return false;}}
+function wa12Open(c){return c!=='~'&&(!SOLID.includes(c)||c==='G'||c==='X');}
+// tiles with no void within `near` (Chebyshev), and the size of each 4 connected group of them
+function wa12Thick(m){const g=m.t,H=g.length,W=g[0].length,R=WA12_COR.near,th=new Uint8Array(W*H),grp=new Int32Array(W*H).fill(-1),size=[];
+  const v=new Uint8Array(W*H);for(let y=0;y<H;y++)for(let x=0;x<W;x++)v[y*W+x]=g[y][x]==='~'?1:0;
+  for(let y=0;y<H;y++)for(let x=0;x<W;x++){if(v[y*W+x]||g[y][x]==='B')continue;let ok=1;// land: anything but void and bridges (props and buildings stand on land)
+    for(let j=-R;j<=R&&ok;j++){const Y=y+j;if(Y<0||Y>=H)continue;for(let i=-R;i<=R;i++){const X=x+i;if(X<0||X>=W)continue;if(v[Y*W+X]){ok=0;break;}}}th[y*W+x]=ok;}
+  for(let p=0;p<W*H;p++){if(!th[p]||grp[p]>=0)continue;const id=size.length,q=[p];grp[p]=id;for(let k=0;k<q.length;k++){const c=q[k],x=c%W,y=(c/W)|0;
+      for(const [a,b] of [[1,0],[-1,0],[0,1],[0,-1]]){const X=x+a,Y=y+b;if(X<0||Y<0||X>=W||Y>=H)continue;const j=Y*W+X;if(th[j]&&grp[j]<0){grp[j]=id;q.push(j);}}}size.push(q.length);}
+  return {th,grp,size,W,H};}
+// the walkway from an exit to open land: a list of [x,y] from the exit tile, or [] when the exit already stands on open land (or none is found)
+function wa12Path(m,G,K){const {th,grp,size,W,H}=K,big=p=>th[p]&&size[grp[p]]>=WA12_COR.big,s0=G.e.y*W+G.e.x;if(big(s0))return [];
+  const prev=new Int32Array(W*H).fill(-2),q=[s0];prev[s0]=-1;let end=-1;
+  for(let k=0;k<q.length&&end<0;k++){const p=q[k],x=p%W,y=(p/W)|0;for(const [a,b] of [[G.n[0],G.n[1]],[1,0],[-1,0],[0,1],[0,-1]]){const X=x+a,Y=y+b;if(X<0||Y<0||X>=W||Y>=H)continue;const j=Y*W+X;
+      if(prev[j]!==-2||!wa12Open(m.t[Y][X]))continue;prev[j]=p;if(big(j)){end=j;break;}q.push(j);}}
+  if(end<0)return [];const out=[];for(let p=end;p>=0;p=prev[p])out.push([p%W,(p/W)|0]);out.reverse();return out.length>WA12_COR.max?[]:out;}
+function wa12ExitIssues(m){const out=[];try{if(!m||!(m.kind==='field'||m.kind==='town'))return out;const vl=wa12VoidLike(m);
+    wa12ExitGroups(m).forEach(G=>{if(m.kind==='field'||vl)wa12Apron(m,G,(x,y,d,q)=>{if(m.t[y][x]==='~')out.push({x,y,why:'void in the apron of the exit at '+G.e.x+','+G.e.y});});
+      if(!vl)return;const K=wa12Thick(m),path=wa12Path(m,G,K),seen=new Set(),R=WA12_COR.near;
+      path.forEach(([px,py])=>{for(let j=-R;j<=R;j++)for(let i=-R;i<=R;i++){const x=px+i,y=py+j;if(x<0||y<0||y>=m.t.length||x>=m.t[0].length||m.t[y][x]!=='~')continue;const k=x+','+y;if(seen.has(k))continue;seen.add(k);
+        out.push({x,y,why:'void beside the walkway to the exit at '+G.e.x+','+G.e.y});}});});}catch(e){wa12Err('exitIssues',e);}return out;}
+function wa12ExitLand(m){let n=0,nc=0;try{if(!m||!(m.kind==='field'||m.kind==='town')||WA12.off)return 0;const vl=WA12.cause&&wa12VoidLike(m),touched=[];if(!WA12.cause&&m.kind!=='field')return 0;
+  wa12ExitGroups(m).forEach(G=>{if(m.kind==='field'||vl)wa12Apron(m,G,(x,y)=>{if(m.t[y][x]==='~'){m.t[y][x]='.';n++;touched.push([x,y]);}});});
+  if(vl)wa12ExitGroups(m).forEach(G=>{const path=wa12Path(m,G,wa12Thick(m)),R=WA12_COR.r,H=m.t.length,W=m.t[0].length;
+    path.forEach(([px,py])=>{if(m.t[py][px]==='B'){m.t[py][px]='=';nc++;}for(let j=-R;j<=R;j++)for(let i=-R;i<=R;i++){const x=px+i,y=py+j;if(x<0||y<0||x>=W||y>=H)continue;
+      if(m.t[y][x]==='~'){m.t[y][x]='.';n++;nc++;touched.push([x,y]);}else if(m.t[y][x]==='B'&&Math.max(Math.abs(i),Math.abs(j))<=1){m.t[y][x]='=';nc++;}}});});
+  // a bridge left with no void beside it is a road now
+  if(touched.length){const H=m.t.length,W=m.t[0].length,seen=new Set();touched.forEach(([tx,ty])=>{for(let j=-1;j<=1;j++)for(let i=-1;i<=1;i++){const x=tx+i,y=ty+j;if(x<0||y<0||x>=W||y>=H||m.t[y][x]!=='B'||seen.has(x+','+y))continue;seen.add(x+','+y);
+      if(![[1,0],[-1,0],[0,1],[0,-1]].some(([a,b])=>{const X=x+a,Y=y+b;return X>=0&&Y>=0&&X<W&&Y<H&&m.t[Y][X]==='~';}))m.t[y][x]='=';}});}
+  if(n||nc){m.exitLand=(m.exitLand||0)+n;m.exitCause=(m.exitCause||0)+nc;WA12.n.exit+=n;WA12.n.cause+=nc;if(m.tl)m.tl=null;
+    // new ground can put a route past a townsperson or a prop: pathguard's pass runs again on the changed map (its log is kept)
+    if(typeof guardPaths==='function'&&m.__guarded&&!window.__PGOFF&&!(typeof HEAL_OFF!=='undefined'&&HEAL_OFF)){const was=m.guarded||[];guardPaths(m);m.guarded=was.concat(m.guarded||[]);}}}catch(e){wa12Err('exitLand',e);}return n;}
+// registered in a microtask, after worldgen's townexit and world12's landmark pass (both microtasks too), so it sees a town's gates where they end up
+queueMicrotask(()=>{try{HOOK.wrap('getMap','worldart12','an exit sits on land: the apron, and a causeway along the walkway over the void (fields and towns; outside townexit and world12)',function(next,...a){const had=!!MAPS[a[0]];const m=next(...a);try{if(!had&&m&&(m.kind==='field'||m.kind==='town')&&!m.__wa12x){m.__wa12x=1;wa12ExitLand(m);}}catch(e){wa12Err('getMap',e);}return m;});}catch(e){wa12Err('hook',e);}});
+HOOK.xform('drawAudit','worldart12','exit aprons and walkways: no void beside or under an exit',function(out,m){try{if(out)out.exitLand=wa12ExitIssues(m);}catch(e){wa12Err('audit',e);}return out;});
 // ---------- 4. weather in world space ----------
 // WX7.par and WX7.fogPar scale how far each layer scrolls against the camera (1 = exactly with the ground). They were [.82,1,1.35] and [.96,1,1.05]
 WX7.par.fill(1);WX7.fogPar.fill(1);
@@ -65,7 +103,7 @@ HOOK.after('sncHall','worldart12','the hall: side carpets',function(r,f,R,D,P,x,
   wa12Panel(f,D,P,sncCanon(m,x,y),(a,b)=>wa12HallPan(o,m,x+a,y+b),{T:false,B:false,L:false,R:false},0);}catch(e){wa12Err('hall',e);}});
 
 // test hooks
-try{window.__WA12=WA12;WA12.api={exitIssues:wa12ExitIssues,exitLand:wa12ExitLand,exitGroups:wa12ExitGroups};}catch(e){}
+try{window.__WA12=WA12;WA12.api={exitIssues:wa12ExitIssues,exitLand:wa12ExitLand,exitGroups:wa12ExitGroups,exitPath:(m,G)=>wa12Path(m,G,wa12Thick(m)),voidLike:wa12VoidLike};}catch(e){}
 // ---------- 6. the Mimic: a chest first ----------
 // Same frame API and anchors as art.js (idle A and B, the lunge, the slam), the same wood, lid and gold as the chest in the realm (worldgfx.js 'chest': W, L, G, K): a
 // planked body with a gold band at each end and a lock plate, a lid with its own planks and bands, four claw feet. The mouth is the gap between lid and body: teeth hang
