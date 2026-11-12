@@ -692,6 +692,7 @@ function useItem(id,t){
   }
   t.healT=Date.now();G.inv[id]--;a.actT=Date.now();a.actKind='item';endTurn(a,.8);
 }
+useItem=HOOK.def('useItem',useItem);// v0.20.x: fixes14.js resets the hero's battle menu memory after an item
 function guard(){const a=B.cur;autoNote(a,'Guard');a.guard=true;a.buffT=Date.now();log(`${a.name} braces behind a guard.`);fx(a,'Guard','stat good');endTurn(a,.6);}
 function flee(){
   if(B.boss||B.spec.kind==='elite'||B.spec.kind==='arena'||B.spec.kind==='daily'){log('There is no fleeing from this fight!');B.menu='root';render();return;}

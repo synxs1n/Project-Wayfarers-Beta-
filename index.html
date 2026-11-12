@@ -2062,13 +2062,39 @@ html:not(.flat) .panel.result.box>.mclose+h2,html:not(.flat) .panel.result.box>.
     linear-gradient(90deg,rgba(217,180,106,0),rgba(217,180,106,.45) 25%,rgba(217,180,106,.45) 75%,rgba(217,180,106,0)) left bottom/100% 1px no-repeat,
     radial-gradient(ellipse at 50% 60%,rgba(240,190,90,.18),rgba(240,190,90,0) 60%),linear-gradient(180deg,var(--h13r1,#22273f),var(--h13r2,#181b2e))}
 html:not(.flat) .panel.result.box .rs-cell,html:not(.flat) .panel.result.box .rs-join{background:color-mix(in srgb,var(--h13c1,#1f2339) 55%,transparent);box-shadow:inset 0 0 0 1px rgba(217,180,106,.1)}
+/* ===== fixes14.css (fix pass 14, see fixes14.js for the causes) ===== */
+/* 1) the Momentum gauge: "Momentum" and its state on one line, so the gauge is two rows (label, bar) in its 40 px plate at every state */
+.battle.b3 .bline .b4mo{max-width:166px}
+.battle.b3 .bline .b4mo .b4mt{flex-wrap:nowrap}
+.battle.b3 .bline .b4mo .b4bar{flex:none;min-height:6px}
+html:not(.flat) .battle.b3 .bline .b4mo .b4mt b{letter-spacing:.01em}
+html:not(.flat) .battle.b3 .bline .b4mo .b4bar{box-shadow:inset 0 0 0 1px #000,0 0 0 1px rgba(217,180,106,.26)}
+/* 2) the status row at a card's foot: items keep their width (an overfull row wraps, b3TagFit), the row never grows past the space the card
+   reserves for it (one row, or two with tagwrap), and the Primed chip is one small line */
+.battle.b3 .pcw.hastags .ptags{align-items:center}
+.battle.b3 .pcw.hastags .ptags>*{flex-shrink:0}
+.battle.b3 .ptags .sti{white-space:nowrap}
+.battle.b3 .pchip{white-space:nowrap;overflow:hidden;align-self:center;line-height:1.1}
+/* where the card is too narrow for the whole chip, the word "Primed" gives way first (the symbol, turns and reaction stay) */
+.battle.b3 .pchip>*{flex-shrink:0}.battle.b3 .pchip>b{flex-shrink:1;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.battle.b3 .fcw.hastags .ptags{max-height:23px}
+.battle.b3.m-wide .fcw.hastags .ptags{max-height:18px}
+.battle.b3 .bparty .pgroup .fcw.hastags.tagwrap .ptags{max-height:46px}
+.battle.b3.m-wide .bparty .pgroup .fcw.hastags.tagwrap .ptags{max-height:36px}
+/* while a foe is being chosen, a tap anywhere on its card (the status row included) picks it */
+.battle.b3 .fcw:has(>.fc.tg) .ptags,.battle.b3 .fcw:has(>.fc.tg) .ptags>*{pointer-events:none}
+/* 4) the victory screen's "learned" lines: the text and the tag strip wrap inside the panel */
+.learnr{flex-wrap:wrap;justify-content:flex-start;row-gap:4px;column-gap:8px}
+.learnr>b{flex:0 1 auto;min-width:0}
+.learnr .lrn{white-space:normal;display:inline-flex;flex-wrap:wrap;align-items:center;gap:3px;min-width:0;max-width:100%}
+.learnr .lrn .m12tags{margin:0;max-width:100%}
 
 </style>
 <div id="app"><div id="hdr"></div><main id="screen"></main></div>
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.20.0";const APP_BUILD="21973a5cd2d9";
+(function(){const APP_VER="0.20.1";const APP_BUILD="566c3e3d48a4";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2837,7 +2863,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.20.0";const APP_BUILD="21973a5cd2d9";
+const APP_VER="0.20.1";const APP_BUILD="566c3e3d48a4";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -7799,6 +7825,7 @@ function useItem(id,t){
   }
   t.healT=Date.now();G.inv[id]--;a.actT=Date.now();a.actKind='item';endTurn(a,.8);
 }
+useItem=HOOK.def('useItem',useItem);// v0.20.x: fixes14.js resets the hero's battle menu memory after an item
 function guard(){const a=B.cur;autoNote(a,'Guard');a.guard=true;a.buffT=Date.now();log(`${a.name} braces behind a guard.`);fx(a,'Guard','stat good');endTurn(a,.6);}
 function flee(){
   if(B.boss||B.spec.kind==='elite'||B.spec.kind==='arena'||B.spec.kind==='daily'){log('There is no fleeing from this fight!');B.menu='root';render();return;}
@@ -33270,6 +33297,25 @@ HOOK.after('hdScene','terrain13','the snow caps over the cards, roofs, ledges an
   gl.depthMask(true);gl.disable(gl.BLEND);gl.disable(gl.DEPTH_TEST);gl.uniform4f(u.uXr,0,0,1,0);}catch(e){t13Err('hdscene',e);}});
 // test hooks
 try{window.__T13=T13;T13.api={tile:t13Tile,mat:t13Mat,noise:t13Noise,capOf:t13CapOf,capCanvas:t13CapCanvas,track:t13Track,hdSnow:t13HdSnowMesh,weights:t13Weights};}catch(e){}
+
+// ===== fixes14.js (fix pass 14): the owner's four notes after the 0.19.7 to 0.20.0 passes; the CSS half is fixes14.css =====
+// 1) Momentum gauge (fixes14.css): hud13.css set "Momentum" in Cinzel with letter spacing, wider than the Nunito word it replaced, so in a
+//    Surge or Drained state the label and "Surge +15%" no longer fit one line of the 138 px gauge: the label wrapped to two lines, the gauge
+//    needed three rows in a 40 px plate, the bar was pushed onto the bottom edge (under the corner ornaments) and, where the device font draws a
+//    little larger, below it, where the log strip (overflow hidden) cut it off. The label stays on one line now and the gauge may be a little wider.
+// 2) Primed chip on the foe cards (fixes14.css): the status row is one nowrap line at the card's foot, and its items could shrink. A long
+//    chip (the reaction name of an aimed Detonator) squeezed the status buttons until their contents stacked into tall columns; the line grew
+//    to their height and the chip stretched with it into a big box over the name and HP. Nothing overflowed, so b3TagFit never wrapped the row.
+//    The items keep their own width now (so an overfull row wraps), the row is capped to the space the card reserves for it, and while a foe
+//    is being chosen the row lets taps through to the card under it.
+// 3) Battle menu memory (menus12.js): a hero who used an item opens their next turn on the main actions, not the Items list. Skills keep
+//    their memory. (useItem is HOOK.def'd in engine.js for this.)
+// 4) Victory screen, new skills (fixes14.css): each line's tag strip was nowrap in a space-between flex row; on a phone the strip ran out of
+//    the panel and squeezed the name into one letter per line. The row wraps now, the tags wrap under the text.
+HOOK.wrap('useItem','fixes14','battle menu memory: after an item the next turn opens on the main actions',function(next,...args){
+  const a=B&&B.cur,id=args[0],n0=G&&G.inv?G.inv[id]||0:0;const r=next(...args);
+  try{if(a&&a.side==='p'&&G&&G.inv&&(G.inv[id]||0)<n0&&typeof m12Mem==='function'){const mm=m12Mem(a);mm.menu='root';}}catch(e){}
+  return r;});
 
 window.__A={walkable,ceInit,tvSlots,genQuests,STARTERS,starterDraw,ECON,AUTO_NERF,rebuildBase,detLive,REACT,skEls,packContents,miniFor,AUTO_REW,ENC_RATE,ENC_MIN_STEPS,detNote,classSkills,stickCount,bestAll,calcStats,lookKey,vTemper,storyEchoUp,leaveDungeon,win,ldApply,genFort,caveOk,enterCave,siteHasMini,openChest,nextDlg,WS,mapIcoRects,roamSpawn,roamInterior,roamSees,mapTargets,DIRV,tileAt,STAGE_LV,autoBan,rollWeather,guardianDef,mapIssues,mapEntry,syncPools,bovAt,calFxAt,realmAt,REALMS,BOV,CAL_FX,overlayGuide,liftOverlay,drawGearIcon,gearIcon,itemIcon,RAW,sigKind,sigGid,personalDone,heroLook,hasSignature,LEGEND_IDS,facDirty,facCount,facRank,facRep,FACB,FAC,finishBattle,npcWords,npcHints,npcPool,titleMake,titleAdvance,TTS,placeAt,wkwUpdate,innSpot,getMap,monURL,enterVia,applyBossTheme,BTHEME,resetMaps,rebuildBase,shopStock,gearDesc,calcStats,gearMigrate,CLS_WPN,CLS_ARM,WPERK,WT_NAME,equipWhy,lootBase,GEAR,canEquip,gearOf,perkNote,FAM_MAT_V35,fbDraft,META:{get best(){return META.best},get codex(){return META.codex},get q(){return META.q}},saveMeta,OFF,offPending,offFlush,PROFILE,profileSync,codexSee,getMap,placeAt,interact,sanctumOpen,riftKeys,echoKeys,BONDS,bondKey,wkwUpdate,inTown,WS,LC,lsort,bestParty,fsCast,fsSkills,ldApply,MON,registerTamed,stickPower,stickCount,autoOne,planGear,bestTag,gainersFor,compGainFor,refresh,fitsFor,canEquip,gearOf,queueNewGear,ARENA,fxDur,banDur,stageTags,autoSwitchPick,layoutBattle,newChar,calcStats,limitSkill,limitTier,canStuck,dunReachable,LV_CAP,addXp,echoSpec,bossLvFor,fx,MON,log,effInfo,tierOf,perkOf,quirkDef,forgeCost,buyPlan,vJourney,modalBack,partySlots,limitOpen,town2Reached,skillKnown,known,classSkills,paceMigrate,unpackG,packG,makeEnemy,QUIRK,arrive,enterDungeon,wkwUpdate,useTravel,travelWhyNot,porkFlee,porkBlocked,encTile,campRest,buyPart,partLeft,alchStock,GAME_VERSION,CHANGELOG,ITEMS,tavernOffers,tavernPool,recruitFit,partyNeeds,vNext,CHALL,innSpot,RECIPES,MATS,FB,fbContext,REDEEM,legendJoin,legendQ,genQuests,dynActors,convInit,PROFILE,profileSync,checkArchive,GPOOL,FPOOL,guardianDef,saveMeta,archiveSkills,get G(){return G;},set G(v){G=v;},get B(){return B;},get V(){return V;},get META(){return META;},WS,ACT,render,newGame,placeAt,startBattle,autoTurn,advance,finishBattle,getMap,innSpot,setPause:p=>{PAUSE=p;},autoCfg,worldInputDir,inputSources,battleFrame,battleTheme,STS,MAPS,mapIssues,healMap,mimicReward,dropChest,interact,worldDraw,TPL,ZONES,ZS,newChar,recruit,saveGame,resetMaps,dynActors,tileAt,BV,refresh,genBounties,genQuests,vStarter,heroCard,heroURL,iconURL,masteryLine,AU,buildTrack,tone,noiseHit,MIDI,sfx,audioVol};
 ['heroRoles','SOLID','WEATHER','WX_BASE','weatherFX','superGuide','recruitCost','ceStart','ceStep','ceInit','cePool','wxList','SUPER_TABLE','superOk','facRank','facRep','facInit','facCount','facCredit','FAC','FMIS','facMissionList','facProg','tyOf','facSync','facMul','facBest','worldPlan','caveReward','enterCave','leaveCave','leaveDungeon','buildCaveMap','worldGraph','openWorldMap','sigReport','SIG_NAMES','starterDraw','ITEM_TIERS','gTierIdx','tierChip','gearIcon','starterSlots','STARTERS','CLK_LEN','CLK_PH','clockPhase','wxInfoBody','recipeOrder','recipeGain','recipeReady','recipeClose','effOf','calcDamage','healsUndead','storyEchoUp','riftKeys','echoDef','efCost','autoLocked','bossFightKey','learnScanAll','isSeen','mapMarks','genSub','subOK','subReq','ensureSub','inSub','tvSlots','tvInit','tvLeft','tvEvent','tvNextText','tvPool','tvDue','tvShuffle','mTavern','hireOK','TV_CAP','TV_CD','POOL_IDS','natPool','natOf','natRoll','NATURES','natInfo','natRerollCost','natChooseCost','NAT_CLASS','iconURL','seenOf','mapIcoDraw','drawMini','MAPCV','revealAround','fxLayer','numDur','compBonusText','compPerk','checkPhase','win','unitBox','LNQ','challVisible','challEligible','challState','isMimic','migrateCompanions','canSummon','summonComp','compOf','clockPhase','tickClock','isNight','rollWeather','wxStep','nightPool','encounterFoes','restAll','tameElite','openChest','rerollTavern','bestAll','gearTier','SV','svCheck','svFlush','svInit','svPush','svPull','svScan','svParse','svBackup','svPack','svUnpack','svProg','svCloudList','svDelDoc','svGet','svCap','slotState','slotKey','svDecode','SV_CH','svStatus','svSlotRaw','svLoad','loadRaw','svHash','svIdx'].forEach(k=>{try{Object.defineProperty(window.__A,k,{get:()=>eval(k)});}catch(e){}});

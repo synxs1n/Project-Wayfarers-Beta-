@@ -1,0 +1,26 @@
+/* ===== fixes14.css (fix pass 14, see fixes14.js for the causes) ===== */
+/* 1) the Momentum gauge: "Momentum" and its state on one line, so the gauge is two rows (label, bar) in its 40 px plate at every state */
+.battle.b3 .bline .b4mo{max-width:166px}
+.battle.b3 .bline .b4mo .b4mt{flex-wrap:nowrap}
+.battle.b3 .bline .b4mo .b4bar{flex:none;min-height:6px}
+html:not(.flat) .battle.b3 .bline .b4mo .b4mt b{letter-spacing:.01em}
+html:not(.flat) .battle.b3 .bline .b4mo .b4bar{box-shadow:inset 0 0 0 1px #000,0 0 0 1px rgba(217,180,106,.26)}
+/* 2) the status row at a card's foot: items keep their width (an overfull row wraps, b3TagFit), the row never grows past the space the card
+   reserves for it (one row, or two with tagwrap), and the Primed chip is one small line */
+.battle.b3 .pcw.hastags .ptags{align-items:center}
+.battle.b3 .pcw.hastags .ptags>*{flex-shrink:0}
+.battle.b3 .ptags .sti{white-space:nowrap}
+.battle.b3 .pchip{white-space:nowrap;overflow:hidden;align-self:center;line-height:1.1}
+/* where the card is too narrow for the whole chip, the word "Primed" gives way first (the symbol, turns and reaction stay) */
+.battle.b3 .pchip>*{flex-shrink:0}.battle.b3 .pchip>b{flex-shrink:1;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.battle.b3 .fcw.hastags .ptags{max-height:23px}
+.battle.b3.m-wide .fcw.hastags .ptags{max-height:18px}
+.battle.b3 .bparty .pgroup .fcw.hastags.tagwrap .ptags{max-height:46px}
+.battle.b3.m-wide .bparty .pgroup .fcw.hastags.tagwrap .ptags{max-height:36px}
+/* while a foe is being chosen, a tap anywhere on its card (the status row included) picks it */
+.battle.b3 .fcw:has(>.fc.tg) .ptags,.battle.b3 .fcw:has(>.fc.tg) .ptags>*{pointer-events:none}
+/* 4) the victory screen's "learned" lines: the text and the tag strip wrap inside the panel */
+.learnr{flex-wrap:wrap;justify-content:flex-start;row-gap:4px;column-gap:8px}
+.learnr>b{flex:0 1 auto;min-width:0}
+.learnr .lrn{white-space:normal;display:inline-flex;flex-wrap:wrap;align-items:center;gap:3px;min-width:0;max-width:100%}
+.learnr .lrn .m12tags{margin:0;max-width:100%}
