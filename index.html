@@ -2119,7 +2119,7 @@ html:not(.flat) .battle.b3 .bline .b4mo .b4bar{box-shadow:inset 0 0 0 1px #000,0
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.20.4";const APP_BUILD="694bd9565382";
+(function(){const APP_VER="0.20.5";const APP_BUILD="c10bb91dce39";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2888,7 +2888,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.20.4";const APP_BUILD="694bd9565382";
+const APP_VER="0.20.5";const APP_BUILD="c10bb91dce39";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2896,7 +2896,8 @@ const APP_VER="0.20.4";const APP_BUILD="694bd9565382";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
- ['Beta v0.20.4',['Encounter grass reads at a glance again in every realm: dense, varied patches that stand out from plain ground (frost-tipped on snow, dune grass on sand, charred stalks on ash, glowing spore grass in the Breach with no boxy glow). Water has depth: pale shallows, the realm\'s colour, darker deeps, and varied wave marks and highlights instead of a grid of stripes. The aurora spans the whole sky. Every exit walkway has land on both sides.']],
+ ['Beta v0.20.5',['Grass is back to how it looked before the graphics passes: encounter grass and open ground use the original painting again (no patchwork, extra clumps or tufts spilling over). The newer water, shorelines, wet ground and snow, and land beside exits all stay.']],
+['Beta v0.20.4',['Encounter grass reads at a glance again in every realm: dense, varied patches that stand out from plain ground (frost-tipped on snow, dune grass on sand, charred stalks on ash, glowing spore grass in the Breach with no boxy glow). Water has depth: pale shallows, the realm\'s colour, darker deeps, and varied wave marks and highlights instead of a grid of stripes. The aurora spans the whole sky. Every exit walkway has land on both sides.']],
 ['Beta v0.20.3',['The hero sheet is one page again with a Show dropdown to jump to or filter one section. Tier tags like EPIC are crisp on phones. Next goals stays pinned under the minimap. Taverns offer a mix: no main element twice at a small table, no class twice, at most two of a role. Skills are learned at an even pace: no gap over 6 levels and never three at once, with the kit\'s order kept and old saves keeping what they had.']],
 ['Beta v0.20.2',['Den mouths, lair and dungeon fronts, caves, the sanctum shrine and its inner door, and the Echo Rift gates now face the camera straight on: symmetric, with a lighter top band, the mouth recessed into the dark, the cast shadow and props kept, and the party still hidden when it walks behind them. The dark slab that used to sit beside every entrance (an outline bug) is gone.']],
 ['Beta v0.20.1',['Battle fixes: the Momentum bar shows again in every state; the Primed chip stays a small chip in the corner of a foe card instead of stretching over it, and tapping anywhere on a foe card targets it; after a hero uses an item their next turn opens on the main actions; learned-skill lines on the victory screen wrap inside the panel on phones.']],
@@ -33249,7 +33250,7 @@ function t13ObjAt(m,c,x,y){const o=T13_REFL[c];if(!o)return null;const v=(x*31+y
 function t13Tile(ctx,m,x,y,frame,c){const T=THM(m);if(!T)return;const tn=t13Tones(T),M=t13Mat(m),N=t13Noise(m),px=x*TS,py=y*TS,town=m.kind==='town';
   const f=(col,a,b,w,h)=>{ctx.fillStyle=col;ctx.fillRect(px+a,py+b,w,h);},k=t13Class(c),R=mulberry((t13H(x,y,m.s|0)*1e9|0)+13),nb=(dx,dy)=>t13Class(tileAt(m,x+dx,y+dy));
   T13.n.tile++;T13_CTX=ctx;
-  if(k==='g'){// --- patchwork: two or three tones in soft patches, 4 x 4 px feathered blocks of the map's noise
+  if(k==='g'&&T13.grass==='new'){// --- (off since v0.20.5: the ground is the original paint again) patchwork: two or three tones in soft patches, 4 x 4 px feathered blocks of the map's noise
     const isBr=M==='breach';if(!isBr){
       for(let j=0;j<4;j++)for(let i=0;i<4;i++){const a=N.a(x+(i+.5)/4,y+(j+.5)/4);let al=0,col=null;
         if(a<.4){al=Math.min(1,(.4-a)/.12)*.5;col=tn.dark;}else if(a>.6){al=Math.min(1,(a-.6)/.12)*.42;col=tn.light;}
@@ -33269,7 +33270,7 @@ function t13Tile(ctx,m,x,y,frame,c){const T=THM(m);if(!T)return;const tn=t13Tone
       for(let i=0;i<n;i++){const v=M==='grass'||M==='breach'||M==='void'?3:Math.floor(R()*6),ln=Math.floor(R()*3)-1,ts=Math.floor(R()*3),X=Math.floor(R()*11),Y=2+Math.floor(R()*11);
         const tone=M==='sand'?tn.pebble:M==='snow'?[null,null,tn.g[3]]:(M==='ash'||M==='cinder')?[tn.dark]:tn.tuft[ts];
         t13Clump(f,M,v,X,Y,ln,tone,R);T13.n.tuft++;}
-      if(c==='.'){const G=t13GrowPal(M,THM(m),tn);let sp=0;[[0,-1],[0,1],[-1,0],[1,0]].forEach(([dx,dy])=>{if(sp||tileAt(m,x+dx,y+dy)!==','||R()>.3)return;sp=1;
+      if(c==='.'&&T13.grass==='new'){const G=t13GrowPal(M,THM(m),tn);let sp=0;/* no tufts spilling from grass tiles since v0.20.5 */[[0,-1],[0,1],[-1,0],[1,0]].forEach(([dx,dy])=>{if(sp||tileAt(m,x+dx,y+dy)!==','||R()>.3)return;sp=1;
         const X=dx<0?Math.floor(R()*2):dx>0?12+Math.floor(R()*2):2+Math.floor(R()*10),Yb=dy<0?3+Math.floor(R()*2):dy>0?15:5+Math.floor(R()*9);t13Tall(f,X,Yb,3,Math.floor(R()*3)-1,G.bl[1],G);T13.n.spill++;});}
       if(M==='void'&&R()<.15){const sx=Math.floor(R()*15),sy=Math.floor(R()*15);f(R()<.5?'#8a6ad0':'#5fc9a0',sx,sy,1,1);}}
   }
@@ -33307,7 +33308,12 @@ function t13Tile(ctx,m,x,y,frame,c){const T=THM(m);if(!T)return;const tn=t13Tone
 }
 HOOK.wrap('drawTile','terrain13','ground patchwork, tuft variety and material transitions (2D base and the HD-2D ground bake)',function(next,ctx,m,x,y,frame){
   if(T13.off||!m||m.kind==='dungeon'||!m.t||!m.t[y])return next(ctx,m,x,y,frame);
-  const c=tileAt(m,x,y),sw=c===','&&m.t[y][x]===',';if(sw)m.t[y][x]='.';// the base and the Breach draw bare ground; the clumps are this module's
+  const c=tileAt(m,x,y);
+  // v0.20.5, owner: "grass just looks much worse than it did before all the graphical changes, revert grass to how it looked before":
+  // encounter grass (',') and open ground keep the original paint (no patchwork, tufts, pebbles or spill); this module still adds the
+  // transitions, the water and the weather on the ground. Encounter grass (',') is drawn by the original tile painter only (worldgfx drawTile, and breachlook11 in the Breach), with nothing added here
+  if(c===','&&T13.grass!=='new')return next(ctx,m,x,y,frame);
+  const sw=c===','&&m.t[y][x]===',';if(sw)m.t[y][x]='.';// (T13.grass='new' brings back the 0.20.4 growth for comparison)
   try{const r=next(ctx,m,x,y,frame);try{t13Tile(ctx,m,x,y,frame,c);}catch(e){t13Err('tile',e);}return r;}finally{if(sw)m.t[y][x]=',';}});
 // ---------- 2b. the water's body (terrain14) ----------
 // The owner after v0.19.8: "water looks a bit worse and too uniform". The base painted every water tile one flat blue with two dashes on fixed

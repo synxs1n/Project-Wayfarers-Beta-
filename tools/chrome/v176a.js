@@ -10,7 +10,8 @@
 //     fall after (synthetic frame times)
 //  4. HD-2D (Medium): water quads are emitted each frame, wet quads in a wet town, the snow mesh is built once per level step (not per frame) and
 //     changes the composed frame; no module errors, no page errors anywhere
-//  5. terrain14 encounter grass reads at a glance in every realm: the contrast of ',' against '.' tiles (mean colour distance from plain ground's median,
+//  5. (v0.20.5: the owner asked for the original grass back; sections 1, 2 and 5 now check the revert: ',' tiles and their contrast are the original paint's)
+//     was: terrain14 encounter grass reads at a glance in every realm: the contrast of ',' against '.' tiles (mean colour distance from plain ground's median,
 //     ',' minus '.', and the share of (',' , '.') pairs where the ',' tile stands out more) is at or above the pre-0.19.8 base (the module off draws it)
 //  6. terrain14 water: deep water (3+ tiles from land) is darker than the shallows, open water tiles differ from each other (no fixed rows of dashes; the
 //     base, module off, paints them all alike), and about half the tiles carry a moving highlight at any time (not one per tile in step)
@@ -75,9 +76,9 @@ const TILES=`([off,what])=>{const A=__A,T=window.__T13,m=A.WS.m,was=T.off,n0=Obj
   if(want('1')){const H=await boot('low');const f=await CALL(H,GO,['lakes','field']);
     const on=await CALL(H,TILES,[false,'tufts']),off=await CALL(H,TILES,[true,'tufts']);
     const spread=a=>{const s=new Set(a);return {d:s.size,min:Math.min(...a),max:Math.max(...a)};},so=spread(on.counts),sf=spread(off.counts);
-    chk(`1. ',' tiles differ: ${so.d} distinct clump pixel counts over ${on.counts.length} tiles (${so.min} to ${so.max}); off ${sf.d} (${sf.min} to ${sf.max})`,on.counts.length>=12&&so.d>=5&&so.min<so.max*.7);
+    chk(`1. v0.20.5 grass revert: ',' tiles keep the original paint: clump pixel counts on equal off on all ${on.counts.length} tiles (${on.counts.filter((v,i)=>v!==off.counts[i]).length} differ)`,on.counts.length>=12&&on.counts.every((v,i)=>v===off.counts[i]));
     const tn=await CALL(H,TILES,[false,'tones']),tf=await CALL(H,TILES,[true,'tones']);
-    chk(`1. open ground carries more tones: ${tn.tones} colours over ${tn.n} '.' tiles on, ${tf.tones} off`,tn.tones>tf.tones+4);
+    console.log(`1. open ground tones: ${tn.tones} colours over ${tn.n} '.' tiles on, ${tf.tones} off (the patchwork is off since v0.20.5; transitions by roads and water still add a few)`);
     const en=await CALL(H,TILES,[false,'edges']),ef=await CALL(H,TILES,[true,'edges']);
     chk(`1. a road beside grass: ${en.road} grass px in rows 1 to 2 on (the base paints row 0 and one side column), ${ef.road} off`,en.road==null||en.road>=(ef.road||0)+4);
     chk(`1. the land beside water: ${en.land} wet rim px on, ${ef.land} off`,en.land==null||(en.land>=8&&(ef.land||0)===0));
@@ -93,11 +94,10 @@ const TILES=`([off,what])=>{const A=__A,T=window.__T13,m=A.WS.m,was=T.off,n0=Obj
   if(want('2')){const H=await boot('low');const sum=(l,k)=>l.reduce((a,o)=>a+o[k],0);
     for(const [key,mat,mark,min] of [['mesa','sand','peb',1],['tundra','snow','white',40],['deeps','ash','char',100],['ashen','ash','char',100]]){
       await CALL(H,GO,[key,'field']);const on=await CALL(H,TILES,[false,'mat']),off=await CALL(H,TILES,[true,'mat']);
-      chk(`2. ${key}: material ${on.mat}, ${on.list.length} ',' tiles: ${mark} px ${sum(on.list,mark)} on against ${sum(off.list,mark)} off; growth ${on.grow} patches, ${on.tuft} clumps (${(on.tuft/Math.max(1,on.grow)).toFixed(1)} a tile)`,
-        on.mat===mat&&on.list.length>0&&sum(on.list,mark)>=min&&sum(on.list,mark)>sum(off.list,mark)&&on.tuft>=on.grow*12);}
+      chk(`2. ${key} (v0.20.5 grass revert): ${on.list.length} ',' tiles draw the original paint: ${mark} px ${sum(on.list,mark)} on, ${sum(off.list,mark)} off; ${on.tuft} clumps and ${on.grow} patches added`,on.list.length>0&&sum(on.list,mark)===sum(off.list,mark)&&on.tuft===0&&on.grow===0);}
     const b=await CALL(H,GO,['breach','field']);const on=await CALL(H,TILES,[false,'mat']);const gs=on.list.map(o=>o.ground/256);
-    chk(`2. the Breach (${b.id}): material ${on.mat}, ${on.list.length} ',' tiles, ${sum(on.list,'blade')} spore grass blade px, ${sum(on.list,'spore')} glowing spore heads, ${on.tuft} clumps on ${on.grow} patches`,on.mat==='breach'&&on.list.length>0&&sum(on.list,'blade')>on.list.length*40&&sum(on.list,'spore')>0&&on.tuft>=on.grow*12);
-    chk(`2. the Breach: no tile shaped tint on ',' tiles: the bare obsidian between the blades keeps the ground's own colours (lowest share ${Math.min(...gs).toFixed(2)}, mean ${(gs.reduce((a,v)=>a+v,0)/gs.length).toFixed(2)}; v0.20.0's teal cast left 0)`,gs.length>0&&Math.min(...gs)>=.08);
+    const offB=await CALL(H,TILES,[true,'mat']);
+    chk(`2. the Breach (${b.id}, v0.20.5 grass revert): ${on.list.length} ',' tiles draw breachlook11's own paint: spore heads ${sum(on.list,'spore')} on, ${sum(offB.list,'spore')} off; ${on.tuft} clumps added; ground share between ${Math.min(...gs).toFixed(2)} and 1`,on.list.length>0&&sum(on.list,'spore')===sum(offB.list,'spore')&&on.tuft===0);
     const e=await H.ev(()=>({err:window.__T13.err}));chk(`2. no module errors (${e.err.length}) ${e.err.join(' | ')}`,e.err.length===0);chk(`2. no page errors (${H.errs.length})`,H.errs.length===0);await H.browser.close();}
   // ---------- 3. the 2D frame ----------
   if(want('3')){const H=await boot('low');const f=await CALL(H,GO,['lakes','field']);
@@ -156,8 +156,8 @@ const TILES=`([off,what])=>{const A=__A,T=window.__T13,m=A.WS.m,was=T.off,n0=Obj
       const on=await CALL(H,TILES,[false,'contrast']),off=await CALL(H,TILES,[true,'contrast']);rows.push([key,on,off]);}
     console.log('contrast (C = colour distance of \',\' tiles from plain ground minus that of \'.\' tiles; auc = share of pairs where \',\' stands out more):');
     rows.forEach(([k,on,off])=>console.log(`  ${k.padEnd(9)} on C ${on.C} auc ${on.auc} (${on.n})   pre-0.19.8 base C ${off.C} auc ${off.auc}`));
-    const bad=rows.filter(([k,on,off])=>on.C==null||on.auc<.85||(off.C!=null&&on.C<off.C*.9));// the realm's boss variant (drawn per run) shifts both a little
-    chk(`5. ',' tiles stand out from '.' in every realm (auc >= .85) at or above the pre-0.19.8 contrast (90%): ${rows.length-bad.length} of ${rows.length}${bad.length?' (short: '+bad.map(r=>r[0]).join(', ')+')':''}`,bad.length===0);
+    const bad=rows.filter(([k,on,off])=>on.C==null||off.C==null||Math.abs(on.C-off.C)>Math.max(1.5,Math.abs(off.C)*.1)||Math.abs(on.auc-off.auc)>.08);// v0.20.5: the original paint's contrast, not a new one
+    chk(`5. v0.20.5 grass revert: ',' against '.' contrast equals the original paint's in every realm (C within 10%, auc within .08): ${rows.length-bad.length} of ${rows.length}${bad.length?' (short: '+bad.map(r=>r[0]).join(', ')+')':''}`,bad.length===0);
     const e=await H.ev(()=>({err:window.__T13.err}));chk(`5. no module errors (${e.err.length}) ${e.err.join(' | ')}`,e.err.length===0);chk(`5. no page errors (${H.errs.length})`,H.errs.length===0);await H.browser.close();}
   // ---------- 6. water with depth and variety (terrain14) ----------
   if(want('6')){const H=await boot('low');

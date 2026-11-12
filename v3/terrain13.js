@@ -117,7 +117,7 @@ function t13ObjAt(m,c,x,y){const o=T13_REFL[c];if(!o)return null;const v=(x*31+y
 function t13Tile(ctx,m,x,y,frame,c){const T=THM(m);if(!T)return;const tn=t13Tones(T),M=t13Mat(m),N=t13Noise(m),px=x*TS,py=y*TS,town=m.kind==='town';
   const f=(col,a,b,w,h)=>{ctx.fillStyle=col;ctx.fillRect(px+a,py+b,w,h);},k=t13Class(c),R=mulberry((t13H(x,y,m.s|0)*1e9|0)+13),nb=(dx,dy)=>t13Class(tileAt(m,x+dx,y+dy));
   T13.n.tile++;T13_CTX=ctx;
-  if(k==='g'){// --- patchwork: two or three tones in soft patches, 4 x 4 px feathered blocks of the map's noise
+  if(k==='g'&&T13.grass==='new'){// --- (off since v0.20.5: the ground is the original paint again) patchwork: two or three tones in soft patches, 4 x 4 px feathered blocks of the map's noise
     const isBr=M==='breach';if(!isBr){
       for(let j=0;j<4;j++)for(let i=0;i<4;i++){const a=N.a(x+(i+.5)/4,y+(j+.5)/4);let al=0,col=null;
         if(a<.4){al=Math.min(1,(.4-a)/.12)*.5;col=tn.dark;}else if(a>.6){al=Math.min(1,(a-.6)/.12)*.42;col=tn.light;}
@@ -137,7 +137,7 @@ function t13Tile(ctx,m,x,y,frame,c){const T=THM(m);if(!T)return;const tn=t13Tone
       for(let i=0;i<n;i++){const v=M==='grass'||M==='breach'||M==='void'?3:Math.floor(R()*6),ln=Math.floor(R()*3)-1,ts=Math.floor(R()*3),X=Math.floor(R()*11),Y=2+Math.floor(R()*11);
         const tone=M==='sand'?tn.pebble:M==='snow'?[null,null,tn.g[3]]:(M==='ash'||M==='cinder')?[tn.dark]:tn.tuft[ts];
         t13Clump(f,M,v,X,Y,ln,tone,R);T13.n.tuft++;}
-      if(c==='.'){const G=t13GrowPal(M,THM(m),tn);let sp=0;[[0,-1],[0,1],[-1,0],[1,0]].forEach(([dx,dy])=>{if(sp||tileAt(m,x+dx,y+dy)!==','||R()>.3)return;sp=1;
+      if(c==='.'&&T13.grass==='new'){const G=t13GrowPal(M,THM(m),tn);let sp=0;/* no tufts spilling from grass tiles since v0.20.5 */[[0,-1],[0,1],[-1,0],[1,0]].forEach(([dx,dy])=>{if(sp||tileAt(m,x+dx,y+dy)!==','||R()>.3)return;sp=1;
         const X=dx<0?Math.floor(R()*2):dx>0?12+Math.floor(R()*2):2+Math.floor(R()*10),Yb=dy<0?3+Math.floor(R()*2):dy>0?15:5+Math.floor(R()*9);t13Tall(f,X,Yb,3,Math.floor(R()*3)-1,G.bl[1],G);T13.n.spill++;});}
       if(M==='void'&&R()<.15){const sx=Math.floor(R()*15),sy=Math.floor(R()*15);f(R()<.5?'#8a6ad0':'#5fc9a0',sx,sy,1,1);}}
   }
@@ -175,7 +175,12 @@ function t13Tile(ctx,m,x,y,frame,c){const T=THM(m);if(!T)return;const tn=t13Tone
 }
 HOOK.wrap('drawTile','terrain13','ground patchwork, tuft variety and material transitions (2D base and the HD-2D ground bake)',function(next,ctx,m,x,y,frame){
   if(T13.off||!m||m.kind==='dungeon'||!m.t||!m.t[y])return next(ctx,m,x,y,frame);
-  const c=tileAt(m,x,y),sw=c===','&&m.t[y][x]===',';if(sw)m.t[y][x]='.';// the base and the Breach draw bare ground; the clumps are this module's
+  const c=tileAt(m,x,y);
+  // v0.20.5, owner: "grass just looks much worse than it did before all the graphical changes, revert grass to how it looked before":
+  // encounter grass (',') and open ground keep the original paint (no patchwork, tufts, pebbles or spill); this module still adds the
+  // transitions, the water and the weather on the ground. Encounter grass (',') is drawn by the original tile painter only (worldgfx drawTile, and breachlook11 in the Breach), with nothing added here
+  if(c===','&&T13.grass!=='new')return next(ctx,m,x,y,frame);
+  const sw=c===','&&m.t[y][x]===',';if(sw)m.t[y][x]='.';// (T13.grass='new' brings back the 0.20.4 growth for comparison)
   try{const r=next(ctx,m,x,y,frame);try{t13Tile(ctx,m,x,y,frame,c);}catch(e){t13Err('tile',e);}return r;}finally{if(sw)m.t[y][x]=',';}});
 // ---------- 2b. the water's body (terrain14) ----------
 // The owner after v0.19.8: "water looks a bit worse and too uniform". The base painted every water tile one flat blue with two dashes on fixed
