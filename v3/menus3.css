@@ -125,3 +125,28 @@ details.facstock>summary{cursor:pointer;font:700 13px/1.3 var(--fb);color:var(--
 .r12away{color:#f0c27a}
 /* a ready notice that cannot be handed in here (handin9): the place to go wraps under the greyed Claim instead of widening the row (4px sideways scroll at 344px) */
 .row>.m>.handwhere{display:block;white-space:normal;max-width:9.5em;text-align:right;margin-left:auto}
+/* menus14: the hero sheet on one page: sheet11's panes all shown in order, a compact Show dropdown on top, a band over each section */
+.sh14-bar{flex:none;display:flex;align-items:center;gap:8px;margin:0 0 6px;min-width:0}
+.sh14-bar .dd.sh14-dd{flex-direction:row;align-items:center;gap:8px;flex:1 1 auto;min-width:0}
+.sh14-bar .dd.sh14-dd .ddw{flex:0 1 240px;min-width:0}
+.sh14-bar .ddsel{min-height:34px;padding:5px 28px 5px 10px}
+.sh14-pts{flex:none}
+.sh14.sh14-all .sh11-pane.on~.sh11-pane.on{margin-top:14px}
+.sh14-sec{grid-column:1/-1;position:sticky;top:0;z-index:2;display:flex;align-items:center;gap:8px;margin:2px 0 6px;padding:3px 8px;
+  font:800 11px/16px var(--fb);letter-spacing:2px;text-transform:uppercase;color:#1a1208;background:linear-gradient(90deg,#e0bd72,#8a6a38);border-radius:3px;box-shadow:0 2px 0 rgba(0,0,0,.35)}
+.sh14-sec .sh14-cnt{font:800 11px/16px var(--fb);letter-spacing:0;text-transform:none;color:#1a1208;background:#ffe39a;border-radius:8px;padding:0 6px;margin-left:auto}
+.sh14 .sh11-pane .sh11-col>h4:first-child{margin-top:2px}
+/* menus14: tier tags (EPIC, LEGENDARY, Legacy) are crisp badges: before, they inherited the hero name's text shadow (2 px drop + 18 px glow)
+   at a fractional size (8.8 px, letter spacing 1.056 px), which smeared on phones. Integer px, no shadow, a flat fill, grayscale antialiasing */
+h2.cname .epictag,h2.cname .legtag,h2.cname .cyc,.card.hero.epic>span.epictag,button.mini.epic>span.epictag,.btile.epic>span.epictag,.card.hero.leg>span.legtag,button.mini.leg>span.legtag,.btile.leg>span.legtag{
+  text-shadow:none;letter-spacing:1px;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:geometricPrecision;filter:none;transform:none;image-rendering:pixelated}
+h2.cname .epictag,h2.cname .legtag{display:inline-block;vertical-align:middle;padding:0 5px;font:900 10px/14px var(--fb);border-width:2px}
+h2.cname .cyc{text-shadow:none}
+h2.cname .epictag,.card.hero.epic>span.epictag,button.mini.epic>span.epictag,.btile.epic>span.epictag{color:#140a1e;background:#c99cff}
+h2.cname .legtag,.card.hero.leg>span.legtag,button.mini.leg>span.legtag,.btile.leg>span.legtag{color:#150b17;background:#f2c454}
+.card.hero.epic>span.epictag,.card.hero.leg>span.legtag{font:900 10px/14px var(--fb)}
+button.mini.epic>span.epictag,.btile.epic>span.epictag,button.mini.leg>span.legtag,.btile.leg>span.legtag{font:900 9px/12px var(--fb)}
+/* menus14: Next goals sits under the minimap, as wide as the minimap and a half (the chip as wide as the minimap) */
+.wview>#glp.gl,.wview>#glpm.gl{width:var(--m14w,168px);max-width:none;box-sizing:border-box;font-size:10.5px;padding:3px 6px 4px}
+.wview>#glp.gl.chip,.wview>#glpm.gl.chip{width:var(--m14c,112px);padding:2px 4px}
+.wview>#glp.gl .glhead,.wview>#glpm.gl .glhead{font-size:10.5px;min-height:24px}

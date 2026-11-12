@@ -134,6 +134,8 @@ function glRender(){try{const e0=document.getElementById('glp');
   if(GL.sig!==sig){e.innerHTML=glHtml(L,mode,mode==='chip'&&!user);GL.sig=sig;}
   e.className='gl '+mode+(Date.now()-GL.flash<3000?' flash':'');
   e.style.left=at.x+'px';e.style.top=at.y+'px';GL.pos=at;}catch(err){}}
+// v0.20.x: hook points (menus14.js locks the panel under the minimap: glSpot picks the spot and so the mode, glRender places and hides it)
+glSpot=HOOK.def('glSpot',glSpot);glRender=HOOK.def('glRender',glRender);
 HOOK.after('render','goals','Next goals panel',function(){try{if(V.screen==='world'&&!B){glCheck();}glRender();}catch(e){}});
 GL.tick=setInterval(()=>{try{if(V.screen==='world'&&!B)glRender();}catch(e){}},350);
 // the corner save note keeps clear of the panel

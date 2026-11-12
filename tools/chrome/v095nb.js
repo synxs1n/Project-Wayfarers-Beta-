@@ -4,13 +4,17 @@
 // 3) an old save (no G.goals) marks what it already did as done without paying; nothing in the Daily Trial
 // 4) at 390x844, 412x812, 844x390 and 933x705, with the hero walked to every part of the view: the panel stays inside the view and
 //    never covers the hero, the stick, the A/B buttons or the minimap (boxes measured here, not taken from goals.js); no page errors
+// Updated for menu pass 14 (menus14.js, owner: "lock next goals under minimap"): the panel no longer moves to a free corner. It sits right aligned
+// under the minimap in every mode and hides while even the chip would cover the hero or the area banner (shown for 2.6 s on entering an area, so
+// the checks wait for it to go). "Shows at every hero spot" became "shows at every spot but those with the hero on the minimap side (right half), and it is
+// always under the minimap".
 // Usage (from tools/chrome): PWHTML=../../out/aurelis3.html node v095nb.js
 const {open,chk,done}=require('./pw');
 const PRE=`localStorage.clear();localStorage.setItem('aurelis-meta-v1',JSON.stringify({cfg:{speed:1,enc:'off',music:0,sfx:0,gfx:'low',hints:false,tips:false}}));`;
 const START=()=>{const A=__A;A.ACT.new();['oren','mira','lumen'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;A.render();};
 const SIZES=[[390,844,true],[412,812,true],[844,390,true],[933,705,false]];
 (async()=>{
-const H=await open({w:390,h:844,mobile:true,pre:PRE});const {ev,wait}=H;await ev(START);await wait(500);
+const H=await open({w:390,h:844,mobile:true,pre:PRE});const {ev,wait}=H;await ev(START);await wait(3200);
 // ---------- 1) the panel ----------
 let r=await ev(()=>{const A=__A,L=__GL,G=A.G;L.glCheck();L.glRender();const e=document.getElementById('glp');
   return {n:L.glList().length,ids:L.glList().map(g=>g.id),shown:!!e&&e.style.display!=='none'&&e.offsetWidth>0,items:e?[...e.querySelectorAll('.gll li')].map(li=>li.textContent):[],head:e?(e.querySelector('.glhead')||{}).textContent:'',g:G.goals};});
@@ -60,15 +64,17 @@ chk('nothing in the Daily Trial',r.daily&&!r.on&&r.list===0&&!r.vis||JSON.string
 
 
 // ---------- 4) layout at four sizes, hero walked over the view ----------
-for(const [w,h,mob] of SIZES){const S=await open({w,h,mobile:mob,pre:PRE,tag:'s'+w});await S.ev(START);await S.wait(600);
+for(const [w,h,mob] of SIZES){const S=await open({w,h,mobile:mob,pre:PRE,tag:'s'+w});await S.ev(START);await S.wait(3200);
   // walk the hero (teleport) over a grid of spots in a field, measure after each
   const res=await S.ev(async()=>{const A=__A,L=__GL,WS=A.WS,out={n:0,bad:[],modes:{},outside:0,hidden:0};
     try{A.ACT.storyOk&&0;}catch(e){}
-    const m=WS.m,TS=16,box=e=>{if(!e)return null;const b=e.getBoundingClientRect();return b.width&&b.height?b:null;},hit=(a,b)=>a&&b&&a.left<b.right&&a.right>b.left&&a.top<b.bottom&&a.bottom>b.top;
+    const m=WS.m,TS=16,near=[],box=e=>{if(!e)return null;const b=e.getBoundingClientRect();return b.width&&b.height?b:null;},hit=(a,b)=>a&&b&&a.left<b.right&&a.right>b.left&&a.top<b.bottom&&a.bottom>b.top;
     const vis=e=>e&&getComputedStyle(e).display!=='none'&&getComputedStyle(e).visibility!=='hidden';
     for(let fy=.1;fy<=.9;fy+=.2)for(let fx=.1;fx<=.9;fx+=.2){const tx=Math.floor(m.w*fx),ty=Math.floor(m.h*fy);WS.px=tx*TS;WS.py=ty*TS;WS.cam=null;A.worldDraw2(performance.now());
       await new Promise(q=>setTimeout(q,420));A.worldDraw2(performance.now());L.glRender();
-      const e=document.getElementById('glp');if(!e||e.style.display==='none'){out.hidden++;continue;}out.n++;const P=box(e);out.modes[e.className]=(out.modes[e.className]||0)+1;
+      const e=document.getElementById('glp');
+      {const cv=WS.cv.getBoundingClientRect(),k=cv.width/WS.vw,hx=cv.left+(WS.px+8-WS.cam.x)*k,hy=cv.top+(WS.py+8-WS.cam.y)*k;if(!e||e.style.display==='none'){out.hidden++;if(!(hx>cv.left+cv.width/2))out.hidAway=(out.hidAway||0)+1;continue;}}
+      out.n++;const P=box(e);{const mm=box(document.getElementById('mmap'));if(mm&&(Math.abs(P.right-mm.right)>1.5||Math.abs(P.top-mm.bottom-6)>1.5||P.width<mm.width-1))out.notUnder=(out.notUnder||0)+1;}out.modes[e.className]=(out.modes[e.className]||0)+1;
       // the hero, measured here: his tile on the canvas through the camera, as drawn (16 px wide, about 26 px tall from the head)
       const cv=WS.cv.getBoundingClientRect(),k=cv.width/WS.vw,hx=cv.left+(WS.px+8-WS.cam.x)*k,hy=cv.top+(WS.py+8-WS.cam.y)*k;
       const hero={left:hx-8*k,right:hx+8*k,top:hy-18*k,bottom:hy+8*k};
@@ -80,7 +86,8 @@ for(const [w,h,mob] of SIZES){const S=await open({w,h,mobile:mob,pre:PRE,tag:'s'
       [...e.querySelectorAll('span,b,em,button')].forEach(x=>{if(x.scrollWidth>x.clientWidth+2&&getComputedStyle(x).overflow!=='visible')out.bad.push('cut:'+x.textContent.slice(0,20));});}
     return out;});
   console.log(w+'x'+h,JSON.stringify(res));
-  chk(`${w}x${h}: the panel shows at every hero spot (${res.n} of 25, ${JSON.stringify(res.modes)})`,res.n===25||JSON.stringify(res));
+  chk(`${w}x${h}: the panel shows at every hero spot but near the minimap corner (${res.n} of 25 shown, ${res.hidden} hidden, ${JSON.stringify(res.modes)})`,res.n+res.hidden===25&&res.n>=18&&!res.hidAway||JSON.stringify(res));
+  chk(`${w}x${h}: always right aligned under the minimap, at least as wide as it`,!res.notUnder||JSON.stringify(res));
   chk(`${w}x${h}: inside the view, never over the hero, the stick, A/B or the minimap`,res.outside===0&&res.bad.length===0||JSON.stringify(res));
   await S.browser.close();}
 await done(H);})();

@@ -56,10 +56,16 @@ const ceBoosted=id=>!!(G&&G.ce&&G.ce.boost&&G.ce.boost[id]);
 function tvPool(){return tavernPool().filter(id=>inSub(id)||ceBoosted(id));}
 function tvSince(){return battlesSoFar()-(tvInit().at||0);}
 function tvDue(){const t=tvInit();return !t.sl||(t.ev&&tvSince()>=TV_CD);}
+// may hero id take a seat next to out (the heroes drawn so far for this shuffle; left: the ones still free)? lv 3 is the strictest rule, 0 the
+// loosest. Here anyone may; menus14.js adds the mix rules (elements, classes, roles)
+function tvPickOk(out,id,lv,left){return true;}
+tvPickOk=HOOK.def('tvPickOk',tvPickOk);
 function tvShuffle(){
   const t=tvInit(),pool=tvPool(),N=partyNeeds();t.sh=(t.sh||0)+1;
   const R=seeded(hashS((G.run.seed||0)+':tv:'+t.sh+':'+G.stage)),left=pool.slice(),out=[];
-  while(out.length<TV_SLOTS&&left.length){const w=left.map(id=>recruitFit(id,N).w*(ceBoosted(id)?3:1)),tot=w.reduce((a,b)=>a+b,0);let r=R()*tot,i=0;for(;i<left.length-1;i++){if((r-=w[i])<0)break;}out.push(left.splice(i,1)[0]);}
+  // v0.20.x: each seat draws from the heroes tvPickOk lets sit next to the ones drawn so far, at the strictest level (3..0) anyone passes
+  while(out.length<TV_SLOTS&&left.length){let c=left;for(let lv=3;lv>=0;lv--){const f=left.filter(id=>tvPickOk(out,id,lv,left));if(f.length){c=f;break;}}
+    const w=c.map(id=>recruitFit(id,N).w*(ceBoosted(id)?3:1)),tot=w.reduce((a,b)=>a+b,0);let r=R()*tot,i=0;for(;i<c.length-1;i++){if((r-=w[i])<0)break;}out.push(c[i]);left.splice(left.indexOf(c[i]),1);}
   t.sl=out;t.at=battlesSoFar();t.ev=false;G.tavRoll=(G.tavRoll||0)+1;try{out.forEach(id=>typeof codexSee==='function'&&codexSee(id));}catch(e){}return t;}
 function tvSlots(){const t=tvInit();if(tvDue())tvShuffle();
   // a slot whose hero joined by another route (a challenge, a gift) becomes an empty seat too

@@ -1288,6 +1288,31 @@ details.facstock>summary{cursor:pointer;font:700 13px/1.3 var(--fb);color:var(--
 .r12away{color:#f0c27a}
 /* a ready notice that cannot be handed in here (handin9): the place to go wraps under the greyed Claim instead of widening the row (4px sideways scroll at 344px) */
 .row>.m>.handwhere{display:block;white-space:normal;max-width:9.5em;text-align:right;margin-left:auto}
+/* menus14: the hero sheet on one page: sheet11's panes all shown in order, a compact Show dropdown on top, a band over each section */
+.sh14-bar{flex:none;display:flex;align-items:center;gap:8px;margin:0 0 6px;min-width:0}
+.sh14-bar .dd.sh14-dd{flex-direction:row;align-items:center;gap:8px;flex:1 1 auto;min-width:0}
+.sh14-bar .dd.sh14-dd .ddw{flex:0 1 240px;min-width:0}
+.sh14-bar .ddsel{min-height:34px;padding:5px 28px 5px 10px}
+.sh14-pts{flex:none}
+.sh14.sh14-all .sh11-pane.on~.sh11-pane.on{margin-top:14px}
+.sh14-sec{grid-column:1/-1;position:sticky;top:0;z-index:2;display:flex;align-items:center;gap:8px;margin:2px 0 6px;padding:3px 8px;
+  font:800 11px/16px var(--fb);letter-spacing:2px;text-transform:uppercase;color:#1a1208;background:linear-gradient(90deg,#e0bd72,#8a6a38);border-radius:3px;box-shadow:0 2px 0 rgba(0,0,0,.35)}
+.sh14-sec .sh14-cnt{font:800 11px/16px var(--fb);letter-spacing:0;text-transform:none;color:#1a1208;background:#ffe39a;border-radius:8px;padding:0 6px;margin-left:auto}
+.sh14 .sh11-pane .sh11-col>h4:first-child{margin-top:2px}
+/* menus14: tier tags (EPIC, LEGENDARY, Legacy) are crisp badges: before, they inherited the hero name's text shadow (2 px drop + 18 px glow)
+   at a fractional size (8.8 px, letter spacing 1.056 px), which smeared on phones. Integer px, no shadow, a flat fill, grayscale antialiasing */
+h2.cname .epictag,h2.cname .legtag,h2.cname .cyc,.card.hero.epic>span.epictag,button.mini.epic>span.epictag,.btile.epic>span.epictag,.card.hero.leg>span.legtag,button.mini.leg>span.legtag,.btile.leg>span.legtag{
+  text-shadow:none;letter-spacing:1px;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:geometricPrecision;filter:none;transform:none;image-rendering:pixelated}
+h2.cname .epictag,h2.cname .legtag{display:inline-block;vertical-align:middle;padding:0 5px;font:900 10px/14px var(--fb);border-width:2px}
+h2.cname .cyc{text-shadow:none}
+h2.cname .epictag,.card.hero.epic>span.epictag,button.mini.epic>span.epictag,.btile.epic>span.epictag{color:#140a1e;background:#c99cff}
+h2.cname .legtag,.card.hero.leg>span.legtag,button.mini.leg>span.legtag,.btile.leg>span.legtag{color:#150b17;background:#f2c454}
+.card.hero.epic>span.epictag,.card.hero.leg>span.legtag{font:900 10px/14px var(--fb)}
+button.mini.epic>span.epictag,.btile.epic>span.epictag,button.mini.leg>span.legtag,.btile.leg>span.legtag{font:900 9px/12px var(--fb)}
+/* menus14: Next goals sits under the minimap, as wide as the minimap and a half (the chip as wide as the minimap) */
+.wview>#glp.gl,.wview>#glpm.gl{width:var(--m14w,168px);max-width:none;box-sizing:border-box;font-size:10.5px;padding:3px 6px 4px}
+.wview>#glp.gl.chip,.wview>#glpm.gl.chip{width:var(--m14c,112px);padding:2px 4px}
+.wview>#glp.gl .glhead,.wview>#glpm.gl .glhead{font-size:10.5px;min-height:24px}
 /* =================== Beta v0.6.3: battle screen (battle3.js) =================== */
 /* ----- stage labels: every box is placed by the layout pass (b3Lay) at exactly these sizes, in logical stage px ----- */
 .bstage .b3l{position:absolute;box-sizing:border-box;margin:0;transform:none}
@@ -2094,7 +2119,7 @@ html:not(.flat) .battle.b3 .bline .b4mo .b4bar{box-shadow:inset 0 0 0 1px #000,0
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.20.2";const APP_BUILD="d215fe66cf74";
+(function(){const APP_VER="0.20.3";const APP_BUILD="93379722c38a";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2863,7 +2888,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.20.2";const APP_BUILD="d215fe66cf74";
+const APP_VER="0.20.3";const APP_BUILD="93379722c38a";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2871,7 +2896,19 @@ const APP_VER="0.20.2";const APP_BUILD="d215fe66cf74";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
- ['Beta v0.19.1',['Every town has its own landmark (an ancient oak, a striped lighthouse, a great lantern and twenty more), named when you arrive and seen from the entry. The phone pad sits under every text box. The Echo Rift hall has no invisible walls, and its gates light up in a colour taken from the boss behind each one. Herbs never spawn on a chest or out of reach. The Breach drops its (relit) tag. Every wayfarer and townsperson has a real stride walking north and south. Wild recruits are spread out (about eight a journey, never two close together, dual types later in the journey). Each realm has its own Scourge instead of a random one. Echoes drop the "the" from their names.']],
+ ['Beta v0.20.3',['The hero sheet is one page again with a Show dropdown to jump to or filter one section. Tier tags like EPIC are crisp on phones. Next goals stays pinned under the minimap. Taverns offer a mix: no main element twice at a small table, no class twice, at most two of a role. Skills are learned at an even pace: no gap over 6 levels and never three at once, with the kit\'s order kept and old saves keeping what they had.']],
+['Beta v0.20.2',['Den mouths, lair and dungeon fronts, caves, the sanctum shrine and its inner door, and the Echo Rift gates now face the camera straight on: symmetric, with a lighter top band, the mouth recessed into the dark, the cast shadow and props kept, and the party still hidden when it walks behind them. The dark slab that used to sit beside every entrance (an outline bug) is gone.']],
+['Beta v0.20.1',['Battle fixes: the Momentum bar shows again in every state; the Primed chip stays a small chip in the corner of a foe card instead of stretching over it, and tapping anywhere on a foe card targets it; after a hero uses an item their next turn opens on the main actions; learned-skill lines on the victory screen wrap inside the panel on phones.']],
+['Beta v0.20.0',['Light and shadow: every tree, building, cliff and tall prop casts a soft shadow from one sun that swings with the hour, and the HD-2D scene gets a warm key light and a cool fill. Night is no longer a blue wash: lanterns, windows, braziers, torches, waystones and fountains pool warm light on the ground and the rest falls dark; interiors are lit from their fires. Particles per realm (fireflies, pollen, ash and embers, dust, frost sparkle, spores, void motes). Battles open with a shatter in the realm colour, doorways iris on the hero, and a won fight blooms back into the world.']],
+['Beta v0.19.9',['Every sprite shares one outline rule (a dark edge in its own darkest tone and a rim light on the lit side). Characters breathe, blink and their hair and cloaks sway; foes idle by family and bosses draw a heavier breath. The battle stage gains a mid-ground of rocks, trees, spires, ruins or shards, a horizon haze and contact shadows. Damage numbers are chunky and coloured by element, crits pop, and reaction text uses the fantasy face.']],
+['Beta v0.19.8',['The ground is alive: every field lays its own patchwork of tones with worn paths and clustered grass; grass bites into roads, a wet rim and breathing foam meet the water, cliff tops get a lip of rock; water carries a slow highlight, sparkle and reflections; rain wets the stone and dries after, and snow settles on roofs, ledges and trees and melts away.']],
+['Beta v0.19.7',['The battle HUD speaks the same gilded language as the banners and menus: hairline gold rules, small corner ornaments, the fantasy face for the small-caps labels, bevelled tinted plates and matching chips, at the same sizes as before, with a subtle tint from the realm you are in.']],
+['Beta v0.19.6',['Every entrance is a solid mass again, the way the old tents were: den mouths, lair fronts, the sanctum shrine and its inner door, and the Echo Rift gates rise above the ground with a lit top, a recessed mouth and a cast shadow, and the party walks behind them and is hidden.']],
+['Beta v0.19.5',['World art: den, lair and cave entrances get volume; sanctum side carpets are full panels with their own borders; weather stays put in the world as you walk; pickups are drawn in the world\'s own palette; the Mimic is a chest first, with teeth top and bottom; the walkway out of a field always has ground on both sides.']],
+['Beta v0.19.4',['Area titles redone in a fantasy face (also the Victory and Defeat crests and menu headings): the kind word above the name, a rule and colour per place, full width on phones under the minimap, shown only when you arrive, no weather suffix, and "Sanctum: Duskspire" instead of "Sanctum: Duskspire Sanctum". The Breach banner is just its name and its introduction is rewritten.']],
+['Beta v0.19.3',['Menus: Back steps from menu to menu and from the first menu closes everything; tabs inside a menu are remembered, not steps. The battle menu remembers each hero\'s last submenu, scroll and skill. Every skill row shows its target, its kind with a symbol (resolved for the weapon in hand), its elements and Primer or Detonator, everywhere skills are listed. New Slash and Pierce symbols. Role names are gone from skill descriptions.']],
+['Beta v0.19.2',['Skill kits read right: primers and detonators follow what a skill\'s name says it does, filler skills speak in the class\'s voice, and the Steppe Sniper\'s quarrels swap roles. Fighters\' dual arts are martial moves that name both elements; casters keep their spells. Identity skills are back inside the twelve (Hunter\'s Mark, Cleave, Guard Wall, Purify, Smoke Bomb, Flurry, Flurry of Fists, Meditate, Dissonance, Requiem). Guardians are bosses you can summon: boss-sized, 5 turns for a Priest and 3 for a Monk, with a boss entrance.']],
+['Beta v0.19.1',['Every town has its own landmark (an ancient oak, a striped lighthouse, a great lantern and twenty more), named when you arrive and seen from the entry. The phone pad sits under every text box. The Echo Rift hall has no invisible walls, and its gates light up in a colour taken from the boss behind each one. Herbs never spawn on a chest or out of reach. The Breach drops its (relit) tag. Every wayfarer and townsperson has a real stride walking north and south. Wild recruits are spread out (about eight a journey, never two close together, dual types later in the journey). Each realm has its own Scourge instead of a random one. Echoes drop the "the" from their names.']],
 ['Beta v0.19.0',['Skills and roles reworked. Every wayfarer learns at most 12 class skills (Limit Breaks, bond techs and Archive skills are outside the cap), chosen so each element has a primer and a detonator; dual types prime and set off both their elements with their dual art but never learn the elemental ultimates, which stay with single types. Dual arts hit as physical for fighters (kind from the weapon) and as magic for casters. Focus now raises crit chance by 40% for 3 turns. Skill power follows the class: main-role skills at full strength, sub-role at 80%, off-role at 50% (a priest heals harder than a bard, a thief debuffs harder than a mage), and a nature lifts the skills of its own role. Bosses eased a little (about 7% HP) to keep the journey at the same pace. The tavern now shows which recruit brings the primer or detonator your party lacks.']],
 ['Beta v0.18.9',['You can change your party in the Echo Rift hall between gates. Heroes outside the six keep no gear: everything goes back to the pack when they leave, pick-ups are suggested only for the party, and a bare hero joining is offered Equip Best. New Game+ sends you to realms you have not seen and bosses you have not faced first; once everything is seen the mix is random with a lean toward bosses missing from your last two journeys.']],
 ['Beta v0.18.8',['Records opens on Completion: every tracker each realm has (fields, Den, Lair, Sanctum, beacon, quests, bounties, taming, and the realm\'s Echo once the Rift is open), with an Echo Rift section above it that keeps a secret boss as ??? until beaten. Account play time now counts the same thing each journey counts, raised to at least what your save slots add up to. The Notice Board is one list again (quests, bounties, guild missions, notices) with one Accept all and one Claim all that says what must be handed in elsewhere. Settings > Tips no longer breaks into single letters on phones. Den, Lair and Sanctum tags show on every arrival, and the Meridian Breach introduces itself the first time.']],
@@ -13061,10 +13098,16 @@ const ceBoosted=id=>!!(G&&G.ce&&G.ce.boost&&G.ce.boost[id]);
 function tvPool(){return tavernPool().filter(id=>inSub(id)||ceBoosted(id));}
 function tvSince(){return battlesSoFar()-(tvInit().at||0);}
 function tvDue(){const t=tvInit();return !t.sl||(t.ev&&tvSince()>=TV_CD);}
+// may hero id take a seat next to out (the heroes drawn so far for this shuffle; left: the ones still free)? lv 3 is the strictest rule, 0 the
+// loosest. Here anyone may; menus14.js adds the mix rules (elements, classes, roles)
+function tvPickOk(out,id,lv,left){return true;}
+tvPickOk=HOOK.def('tvPickOk',tvPickOk);
 function tvShuffle(){
   const t=tvInit(),pool=tvPool(),N=partyNeeds();t.sh=(t.sh||0)+1;
   const R=seeded(hashS((G.run.seed||0)+':tv:'+t.sh+':'+G.stage)),left=pool.slice(),out=[];
-  while(out.length<TV_SLOTS&&left.length){const w=left.map(id=>recruitFit(id,N).w*(ceBoosted(id)?3:1)),tot=w.reduce((a,b)=>a+b,0);let r=R()*tot,i=0;for(;i<left.length-1;i++){if((r-=w[i])<0)break;}out.push(left.splice(i,1)[0]);}
+  // v0.20.x: each seat draws from the heroes tvPickOk lets sit next to the ones drawn so far, at the strictest level (3..0) anyone passes
+  while(out.length<TV_SLOTS&&left.length){let c=left;for(let lv=3;lv>=0;lv--){const f=left.filter(id=>tvPickOk(out,id,lv,left));if(f.length){c=f;break;}}
+    const w=c.map(id=>recruitFit(id,N).w*(ceBoosted(id)?3:1)),tot=w.reduce((a,b)=>a+b,0);let r=R()*tot,i=0;for(;i<c.length-1;i++){if((r-=w[i])<0)break;}out.push(c[i]);left.splice(left.indexOf(c[i]),1);}
   t.sl=out;t.at=battlesSoFar();t.ev=false;G.tavRoll=(G.tavRoll||0)+1;try{out.forEach(id=>typeof codexSee==='function'&&codexSee(id));}catch(e){}return t;}
 function tvSlots(){const t=tvInit();if(tvDue())tvShuffle();
   // a slot whose hero joined by another route (a challenge, a gift) becomes an empty seat too
@@ -23670,6 +23713,8 @@ function glRender(){try{const e0=document.getElementById('glp');
   if(GL.sig!==sig){e.innerHTML=glHtml(L,mode,mode==='chip'&&!user);GL.sig=sig;}
   e.className='gl '+mode+(Date.now()-GL.flash<3000?' flash':'');
   e.style.left=at.x+'px';e.style.top=at.y+'px';GL.pos=at;}catch(err){}}
+// v0.20.x: hook points (menus14.js locks the panel under the minimap: glSpot picks the spot and so the mode, glRender places and hides it)
+glSpot=HOOK.def('glSpot',glSpot);glRender=HOOK.def('glRender',glRender);
 HOOK.after('render','goals','Next goals panel',function(){try{if(V.screen==='world'&&!B){glCheck();}glRender();}catch(e){}});
 GL.tick=setInterval(()=>{try{if(V.screen==='world'&&!B)glRender();}catch(e){}},350);
 // the corner save note keeps clear of the panel
@@ -33333,6 +33378,117 @@ HOOK.wrap('useItem','fixes14','battle menu memory: after an item the next turn o
   const a=B&&B.cur,id=args[0],n0=G&&G.inv?G.inv[id]||0:0;const r=next(...args);
   try{if(a&&a.side==='p'&&G&&G.inv&&(G.inv[id]||0)<n0&&typeof m12Mem==='function'){const mm=m12Mem(a);mm.menu='root';}}catch(e){}
   return r;});
+
+// ===== menus14.js (menu pass 14): the hero sheet on one page, crisp tier tags, Next goals under the minimap, a mixed tavern, skills spread over the levels =====
+// The owner's five notes after 0.20.0:
+// 1) "character sheets felt better as 1 page, maybe have a drop down to filter for certain sections": the tabbed sheet (sheet11.js) becomes one scrolling
+//    page again. sheet11 still slices the old sheet into its five panes (its xform runs first); this module's xform (registered last, so outermost) drops
+//    the tab bar, shows every pane in order (Overview, Stats, Skills, Gear, Role) under a section band, and puts a compact "Show" dropdown at the top:
+//    "All sections" (default) or one section alone. The state is V.sheetTab as before ('all' or a section; a missing or unknown value is All), so a test
+//    or a module that sets V.sheetTab='skills' still gets the Skills section. The Prev / Next / Equip header and the skill filter chips (inside Skills)
+//    are sheet11's and stay.
+// 2) "epic tags are fuzzy": the EPIC / LEGENDARY / Legacy tag next to a hero name inherited the name's text shadow (a 2 px black drop and an 18 px gold glow)
+//    at a fractional size (.55rem = 8.8 px, letter spacing 1.056 px), so on a phone the 900 weight letters smeared. The tags are now crisp badges: no
+//    inherited shadow, integer px size, line height and letter spacing, a flat fill, grayscale antialiasing (menus3.css, "menus14").
+// 3) "lock next goals under minimap": the Next goals panel (goals.js) sits under the minimap, right aligned with it, as wide as the minimap and a half
+//    (at most 170 px), in every state (full, two goals, the folded chip). When the full panel would cover the hero or the area banner it shows two goals,
+//    then the chip; when even the chip would, it hides until the hero or the banner moves on. It never goes to another corner. (goals.js glSpot and
+//    glRender are hook points for this.)
+// 4) "tavern gave me 4 water types in my first town, should always be a mix": the tavern draw (tavern2.js tvShuffle) asks tvPickOk for every seat.
+//    The rules: level 3, the level 2 rules and the rest of the table can still be filled under them (a small search); level 2, no main element twice at a table of 4 or fewer (at most twice at a bigger one), no class twice, at most two heroes of one role;
+//    level 1, the element rule alone; level 0, anyone (a pool too small to mix). The weights (recruitFit: what the party lacks) still decide among those.
+// 5) "spread out when wayfarers learn abilities": the 12 skill kits (skills12.js, kits12.js) learned most skills by level 18, then had a gap of up to 26
+//    levels (24 to 42 or 50) and bunched learns (three or four within 3 levels). Each kit keeps its order (identity skills, the dual art, the signature)
+//    and its old levels wherever they already fit; the new levels walk the old ones in order with three rules: no gap over M14.spread.gap (6) levels
+//    (a late skill comes earlier), never three learns within 3 levels (the third moves to the first level after the window), never past
+//    M14.spread.end (42). The first one or two stay at the start level. So the early and mid kit is as before (a straight line from 4 to 46 left too few
+//    skills for the mid-game bosses: the journey sim went over its boss-try cap) and the long late gap closes. Limit Breaks keep their levels
+//    (LIMIT_LV, LIMIT2_LV). Old saves: a hero who had a skill under the old levels keeps it (c.keep), once per save (new optional save field G.m14lv).
+const M14={spread:{end:42,gap:6,win:3},mix:{off:false},sh:[['all','All sections'],['overview','Overview'],['stats','Stats'],['skills','Skills'],['gear','Gear'],['role','Role']]};
+
+// ---------- 1. the hero sheet on one page ----------
+function m14Sec(){const k=V&&V.sheetTab;return M14.sh.some(x=>x[0]===k)?k:'all';}
+function m14Sheet(h,id){
+  if(typeof h!=='string'||h.indexOf('sh11-body')<0||typeof document==='undefined')return h;
+  const c=G&&G.roster[id];if(!c)return h;
+  const tp=document.createElement('template');tp.innerHTML=h;const panel=tp.content.querySelector('.panel.sh11');if(!panel)return h;
+  const tabs=panel.querySelector(':scope>.sh11-tabs'),body=panel.querySelector(':scope>.sh11-body');if(!body)return h;
+  const cur=m14Sec(),pts=c.pts|0;
+  const opts=M14.sh.map(([k,l])=>[k,k==='stats'&&pts>0?`${l} (${pts} point${pts>1?'s':''} to spend)`:l]);
+  const bar=document.createElement('div');bar.className='sh14-bar';
+  bar.innerHTML=ddSel('Show','sheetSec','sh',opts,cur,'sh14-dd')+(pts>0&&cur!=='stats'&&cur!=='all'?`<button class="chip sm sh14-pts" data-act="sheetSec" data-arg="sh:stats" title="Points to spend in Stats">${pts} to spend</button>`:'');
+  if(tabs)tabs.replaceWith(bar);else body.before(bar);
+  body.querySelectorAll(':scope>.sh11-pane').forEach(p=>{const k=p.dataset.pane,lbl=(M14.sh.find(x=>x[0]===k)||[k,k])[1];
+    p.classList.toggle('on',cur==='all'||cur===k);p.removeAttribute('role');p.setAttribute('aria-label',lbl);
+    const band=document.createElement('div');band.className='sh14-sec';band.setAttribute('role','heading');band.setAttribute('aria-level','3');band.textContent=lbl;
+    if(k==='stats'&&pts>0){const b=document.createElement('em');b.className='sh14-cnt';b.textContent=pts+' to spend';band.appendChild(b);}
+    p.insertBefore(band,p.firstChild);
+    // the list heading inside Skills says "Skill list" under the Skills band (one SKILLS per section)
+    if(k==='skills')p.querySelectorAll('h4').forEach(e=>{if(/^skills$/i.test(e.textContent.trim()))e.textContent='Skill list';});});
+  panel.classList.add('sh14');panel.classList.toggle('sh14-all',cur==='all');
+  return tp.innerHTML;}
+HOOK.xform('mChar','menus14','the hero sheet on one page with a section dropdown (outside sheet11 tabs)',function(h,id){try{return m14Sheet(h,id);}catch(e){return h;}});
+ACT.sheetSec=function(a){const k=String(a||'').replace(/^sh:/,'');if(!M14.sh.some(x=>x[0]===k))return;V.sheetTab=k;render();
+  try{const b=document.querySelector('#modal .sh11-body');if(b)b.scrollTop=0;}catch(e){}};
+
+// ---------- 3. Next goals under the minimap ----------
+const m14Rect=s=>{const e=document.querySelector(s);if(!e)return null;const c=getComputedStyle(e);if(c.display==='none'||c.visibility==='hidden')return null;const b=e.getBoundingClientRect();return b.width&&b.height?b:null;};
+// the anchor: the minimap's box, else the top right corner of the canvas
+function m14Anchor(){const mm=m14Rect('#mmap');if(mm)return {r:mm.right,b:mm.bottom,w:mm.width};const cv=WS.cv&&WS.cv.getBoundingClientRect();return cv&&cv.width?{r:cv.right-8,b:cv.top+8,w:112}:null;}
+// the panel's spot (relative to the view) for a w x h box, right aligned under the anchor
+function m14Spot(wv,w){const W=wv.getBoundingClientRect(),A=m14Anchor();if(!A||!W.width)return null;return {x:Math.round(A.r-w-W.left-wv.clientLeft),y:Math.round(A.b+6-W.top-wv.clientTop)};}
+// what it must not cover: the hero and the area banner while it shows
+function m14Obs(){const o=[];try{const h=glHero();if(h)o.push(h);}catch(e){}const b=document.querySelector('#wloc.on')&&m14Rect('#wloc');if(b)o.push({l:b.left-4,t:b.top-4,r:b.right+4,b:b.bottom+4});return o;}
+function m14Hits(wv,at,w,h){const W=wv.getBoundingClientRect();return glHit(W.left+wv.clientLeft+at.x,W.top+wv.clientTop+at.y,w,h,m14Obs());}
+// the width the CSS gives the panel (and its measuring copy): the minimap's and a half (at most 170 px), but never past the hero standing in the middle
+// of the view (a narrow phone: the panel stops short of the hero's box), and never narrower than the minimap. Worked out once per view and minimap size.
+function m14Width(wv,A){const cv=WS.cv&&WS.cv.getBoundingClientRect();if(!cv||!cv.width)return Math.round(Math.max(A.w,Math.min(170,A.w*1.5)));
+  let half=56;try{const h=glHero();if(h)half=Math.max(24,(h.r-h.l)/2);}catch(e){}const room=A.r-(cv.left+cv.width/2+half)-6;
+  return Math.round(Math.max(A.w,Math.min(170,A.w*1.5,room)));}
+HOOK.before('glRender','menus14','panel width from the minimap',function(){try{const wv=document.querySelector('.wview'),A=wv&&m14Anchor();if(!A)return;
+  const key=Math.round(wv.getBoundingClientRect().width)+'x'+Math.round(A.w)+'@'+Math.round(A.r);if(M14.wk===key)return;M14.wk=key;
+  wv.style.setProperty('--m14w',m14Width(wv,A)+'px');wv.style.setProperty('--m14c',Math.round(A.w)+'px');GL.ms={};}catch(e){}});
+// glRender tries full, two, chip and takes the first mode glSpot finds room for: here the only room is under the minimap
+HOOK.xform('glSpot','menus14','the panel only goes under the minimap',function(r,wv,w,h){try{const at=m14Spot(wv,w);if(!at)return r;return m14Hits(wv,at,w,h)?null:at;}catch(e){return r;}});
+// after it is drawn: the spot is always the one under the minimap (also when no mode fit); hidden while even the chip would cover the hero or banner
+HOOK.after('glRender','menus14','the panel stays under the minimap',function(){try{const e=document.getElementById('glp');if(!e||e.style.display==='none')return;const wv=e.parentNode;
+  const at=m14Spot(wv,e.offsetWidth);if(!at)return;if(e.style.left!==at.x+'px')e.style.left=at.x+'px';if(e.style.top!==at.y+'px')e.style.top=at.y+'px';GL.pos=at;
+  e.classList.add('m14');if(m14Hits(wv,at,e.offsetWidth,e.offsetHeight))e.style.display='none';}catch(e){}});
+
+// ---------- 4. a mixed tavern ----------
+const m14Role=id=>CLASS_ROLE[TPL[id].cls]||'damage';
+function m14Mix(out,id,lv){if(lv<=0)return true;const t=TPL[id];if(!t)return true;const O=out.filter(o=>TPL[o]),e=t.el[0];
+  if(O.filter(o=>TPL[o].el[0]===e).length>=(TV_SLOTS<=4?1:2))return false;
+  if(lv>=2){if(O.some(o=>TPL[o].cls===t.cls))return false;const r=m14Role(id);if(O.filter(o=>m14Role(o)===r).length>=2)return false;}
+  return true;}
+// level 3: the strict rules, and the rest of the table can still be filled under them from the heroes left (a small search: the pool is about 8)
+function m14Fill(out,left,need){if(need<=0)return true;for(const id of left){if(out.includes(id)||!m14Mix(out,id,2))continue;if(m14Fill(out.concat(id),left.filter(x=>x!==id),need-1))return true;}return false;}
+function m14Pick(out,id,lv,left){if(lv<3)return m14Mix(out,id,lv);if(!m14Mix(out,id,2))return false;
+  const L=(left||[]).filter(x=>x!==id&&!out.includes(x)),need=Math.min(TV_SLOTS-out.length-1,L.length);return m14Fill(out.concat(id),L,need);}
+HOOK.xform('tvPickOk','menus14','tavern tables mix elements, classes and roles',function(ok,out,id,lv,left){try{return ok&&(M14.mix.off||m14Pick(out,id,lv,left));}catch(e){return ok;}});
+
+// ---------- 5. learn levels spread over the level range ----------
+// the new levels for a kit's old levels (sorted): old where it fits, no gap over S.gap, never three within S.win levels, never past S.end
+function m14Levels(old){const S=M14.spread,end=Math.min(LV_CAP-1,S.end),L=[];
+  old.forEach((o,i)=>{let v=i?Math.min(o,L[i-1]+S.gap):o;if(i)v=Math.max(v,L[i-1]);if(i>=2)v=Math.max(v,L[i-2]+S.win);L.push(Math.min(v,end));});return L;}
+HOOK.xform('classSkills','menus14','learn levels: old ones where they fit, no long gap, no bunching (order kept)',function(L,t){
+  if(!L||!t||t.mon||!CLS[t.cls]||L._m14||L.length<3)return L;L._m14=1;
+  try{const S=L.slice().sort((a,b)=>(a.lv12!=null?a.lv12:a.lv)-(b.lv12!=null?b.lv12:b.lv)||(a.lv0||a.lv)-(b.lv0||b.lv));
+    const lv=m14Levels(S.map(s=>s.lv12!=null?s.lv12:s.lv));
+    S.forEach((s,i)=>{if(s.lv12==null)s.lv12=s.lv;s.lv=lv[i];});}catch(e){}
+  return L;});
+// a save from before the spread: what a hero knew under the old levels stays known
+function m14Keep(g){if(!g||g.m14lv||g.daily)return 0;let n=0;
+  Object.keys(g.roster||{}).forEach(id=>{const c=g.roster[id],t=TPL[id];if(!c||!t||t.mon||!CLS[t.cls])return;
+    classSkills(t).forEach(s=>{if(s.lv12!=null&&s.lv12<=c.lv&&s.lv>c.lv&&!(c.keep&&c.keep.includes(s.id))){c.keep=(c.keep||[]).concat(s.id);n++;}});});
+  g.m14lv=1;return n;}
+HOOK.after('unpackG','menus14','old saves keep the skills the old learn levels gave',function(r,g){try{m14Keep(g);}catch(e){}});
+HOOK.after('newGame','menus14','a new journey uses the spread levels',function(){try{if(G)G.m14lv=1;}catch(e){}});
+
+// tests
+try{window.__M14={M14,levels:m14Levels,mix:m14Mix,keep:m14Keep,spot:m14Spot,sec:m14Sec,get tvShuffle(){return tvShuffle;},get ensureSub(){return ensureSub;},get tvPool(){return tvPool;},
+  get TPL(){return TPL;},get CLASS_ROLE(){return CLASS_ROLE;},get G(){return G;},get V(){return V;},get GL(){return GL;},get glRender(){return glRender;},get glHero(){return glHero;},
+  kit:t=>classSkills(t)};}catch(e){}
 
 window.__A={walkable,ceInit,tvSlots,genQuests,STARTERS,starterDraw,ECON,AUTO_NERF,rebuildBase,detLive,REACT,skEls,packContents,miniFor,AUTO_REW,ENC_RATE,ENC_MIN_STEPS,detNote,classSkills,stickCount,bestAll,calcStats,lookKey,vTemper,storyEchoUp,leaveDungeon,win,ldApply,genFort,caveOk,enterCave,siteHasMini,openChest,nextDlg,WS,mapIcoRects,roamSpawn,roamInterior,roamSees,mapTargets,DIRV,tileAt,STAGE_LV,autoBan,rollWeather,guardianDef,mapIssues,mapEntry,syncPools,bovAt,calFxAt,realmAt,REALMS,BOV,CAL_FX,overlayGuide,liftOverlay,drawGearIcon,gearIcon,itemIcon,RAW,sigKind,sigGid,personalDone,heroLook,hasSignature,LEGEND_IDS,facDirty,facCount,facRank,facRep,FACB,FAC,finishBattle,npcWords,npcHints,npcPool,titleMake,titleAdvance,TTS,placeAt,wkwUpdate,innSpot,getMap,monURL,enterVia,applyBossTheme,BTHEME,resetMaps,rebuildBase,shopStock,gearDesc,calcStats,gearMigrate,CLS_WPN,CLS_ARM,WPERK,WT_NAME,equipWhy,lootBase,GEAR,canEquip,gearOf,perkNote,FAM_MAT_V35,fbDraft,META:{get best(){return META.best},get codex(){return META.codex},get q(){return META.q}},saveMeta,OFF,offPending,offFlush,PROFILE,profileSync,codexSee,getMap,placeAt,interact,sanctumOpen,riftKeys,echoKeys,BONDS,bondKey,wkwUpdate,inTown,WS,LC,lsort,bestParty,fsCast,fsSkills,ldApply,MON,registerTamed,stickPower,stickCount,autoOne,planGear,bestTag,gainersFor,compGainFor,refresh,fitsFor,canEquip,gearOf,queueNewGear,ARENA,fxDur,banDur,stageTags,autoSwitchPick,layoutBattle,newChar,calcStats,limitSkill,limitTier,canStuck,dunReachable,LV_CAP,addXp,echoSpec,bossLvFor,fx,MON,log,effInfo,tierOf,perkOf,quirkDef,forgeCost,buyPlan,vJourney,modalBack,partySlots,limitOpen,town2Reached,skillKnown,known,classSkills,paceMigrate,unpackG,packG,makeEnemy,QUIRK,arrive,enterDungeon,wkwUpdate,useTravel,travelWhyNot,porkFlee,porkBlocked,encTile,campRest,buyPart,partLeft,alchStock,GAME_VERSION,CHANGELOG,ITEMS,tavernOffers,tavernPool,recruitFit,partyNeeds,vNext,CHALL,innSpot,RECIPES,MATS,FB,fbContext,REDEEM,legendJoin,legendQ,genQuests,dynActors,convInit,PROFILE,profileSync,checkArchive,GPOOL,FPOOL,guardianDef,saveMeta,archiveSkills,get G(){return G;},set G(v){G=v;},get B(){return B;},get V(){return V;},get META(){return META;},WS,ACT,render,newGame,placeAt,startBattle,autoTurn,advance,finishBattle,getMap,innSpot,setPause:p=>{PAUSE=p;},autoCfg,worldInputDir,inputSources,battleFrame,battleTheme,STS,MAPS,mapIssues,healMap,mimicReward,dropChest,interact,worldDraw,TPL,ZONES,ZS,newChar,recruit,saveGame,resetMaps,dynActors,tileAt,BV,refresh,genBounties,genQuests,vStarter,heroCard,heroURL,iconURL,masteryLine,AU,buildTrack,tone,noiseHit,MIDI,sfx,audioVol};
 ['heroRoles','SOLID','WEATHER','WX_BASE','weatherFX','superGuide','recruitCost','ceStart','ceStep','ceInit','cePool','wxList','SUPER_TABLE','superOk','facRank','facRep','facInit','facCount','facCredit','FAC','FMIS','facMissionList','facProg','tyOf','facSync','facMul','facBest','worldPlan','caveReward','enterCave','leaveCave','leaveDungeon','buildCaveMap','worldGraph','openWorldMap','sigReport','SIG_NAMES','starterDraw','ITEM_TIERS','gTierIdx','tierChip','gearIcon','starterSlots','STARTERS','CLK_LEN','CLK_PH','clockPhase','wxInfoBody','recipeOrder','recipeGain','recipeReady','recipeClose','effOf','calcDamage','healsUndead','storyEchoUp','riftKeys','echoDef','efCost','autoLocked','bossFightKey','learnScanAll','isSeen','mapMarks','genSub','subOK','subReq','ensureSub','inSub','tvSlots','tvInit','tvLeft','tvEvent','tvNextText','tvPool','tvDue','tvShuffle','mTavern','hireOK','TV_CAP','TV_CD','POOL_IDS','natPool','natOf','natRoll','NATURES','natInfo','natRerollCost','natChooseCost','NAT_CLASS','iconURL','seenOf','mapIcoDraw','drawMini','MAPCV','revealAround','fxLayer','numDur','compBonusText','compPerk','checkPhase','win','unitBox','LNQ','challVisible','challEligible','challState','isMimic','migrateCompanions','canSummon','summonComp','compOf','clockPhase','tickClock','isNight','rollWeather','wxStep','nightPool','encounterFoes','restAll','tameElite','openChest','rerollTavern','bestAll','gearTier','SV','svCheck','svFlush','svInit','svPush','svPull','svScan','svParse','svBackup','svPack','svUnpack','svProg','svCloudList','svDelDoc','svGet','svCap','slotState','slotKey','svDecode','SV_CH','svStatus','svSlotRaw','svLoad','loadRaw','svHash','svIdx'].forEach(k=>{try{Object.defineProperty(window.__A,k,{get:()=>eval(k)});}catch(e){}});
