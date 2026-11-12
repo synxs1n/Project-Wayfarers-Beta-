@@ -1,0 +1,88 @@
+/* ===== hud13.css (v0.19.7): one ornament language for the battle HUD, and the realm colour grade (see hud13.js) =====
+   Scoped under html:not(.flat) like ui3.css (the Flat look keeps its plain plates). Every rule here overrides battle3.css / ui3.css /
+   battle4.css from outside with a higher specificity; no padding, min-height or font size of a plate changes, so the planners
+   (b3WideSc, b8TallPlan, fitBattle) measure what they measured before. The tint variables (--h13*) are set on <html> by hud13.js; each
+   has the Gilded Night base colour as its fallback, so the look is unchanged where no realm is known (title, arena, Weekly Trial). */
+:root{
+  /* the modal filigree at plate scale: a 12 px L with diamond ends and a dot, the same gold pair (#e6c784 / #a8874c) as --orn-g-* */
+  --orn-s-tl:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M1.5 8.5V1.5H8.5' fill='none' stroke='%23e6c784' stroke-width='1' stroke-linecap='square'/%3E%3Cpath d='M1.5 8.3l1.3 1.6-1.3 1.6-1.3-1.6z' fill='%23e6c784'/%3E%3Cpath d='M8.3 1.5l1.6 1.3-1.6 1.3-1.6-1.3z' fill='%23e6c784'/%3E%3Ccircle cx='4.2' cy='4.2' r='.9' fill='%23a8874c'/%3E%3C/svg%3E");
+  --orn-s-tr:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cg transform='matrix(-1 0 0 1 12 0)'%3E%3Cpath d='M1.5 8.5V1.5H8.5' fill='none' stroke='%23e6c784' stroke-width='1' stroke-linecap='square'/%3E%3Cpath d='M1.5 8.3l1.3 1.6-1.3 1.6-1.3-1.6z' fill='%23e6c784'/%3E%3Cpath d='M8.3 1.5l1.6 1.3-1.6 1.3-1.6-1.3z' fill='%23e6c784'/%3E%3Ccircle cx='4.2' cy='4.2' r='.9' fill='%23a8874c'/%3E%3C/g%3E%3C/svg%3E");
+  --orn-s-bl:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cg transform='matrix(1 0 0 -1 0 12)'%3E%3Cpath d='M1.5 8.5V1.5H8.5' fill='none' stroke='%23e6c784' stroke-width='1' stroke-linecap='square'/%3E%3Cpath d='M1.5 8.3l1.3 1.6-1.3 1.6-1.3-1.6z' fill='%23e6c784'/%3E%3Cpath d='M8.3 1.5l1.6 1.3-1.6 1.3-1.6-1.3z' fill='%23e6c784'/%3E%3Ccircle cx='4.2' cy='4.2' r='.9' fill='%23a8874c'/%3E%3C/g%3E%3C/svg%3E");
+  --orn-s-br:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cg transform='matrix(-1 0 0 -1 12 12)'%3E%3Cpath d='M1.5 8.5V1.5H8.5' fill='none' stroke='%23e6c784' stroke-width='1' stroke-linecap='square'/%3E%3Cpath d='M1.5 8.3l1.3 1.6-1.3 1.6-1.3-1.6z' fill='%23e6c784'/%3E%3Cpath d='M8.3 1.5l1.6 1.3-1.6 1.3-1.6-1.3z' fill='%23e6c784'/%3E%3Ccircle cx='4.2' cy='4.2' r='.9' fill='%23a8874c'/%3E%3C/g%3E%3C/svg%3E");
+  /* the small corner set and the plate bevel (a hairline outside is the plate's own border; a dark gap, then a dim gold inner rule) */
+  --h13-corners:var(--orn-s-tl) left 1px top 1px no-repeat,var(--orn-s-tr) right 1px top 1px no-repeat,var(--orn-s-bl) left 1px bottom 1px no-repeat,var(--orn-s-br) right 1px bottom 1px no-repeat;
+  --h13-bevel:inset 0 0 0 1px rgba(8,9,16,.75),inset 0 0 0 2px rgba(217,180,106,.16),inset 0 1px 0 rgba(255,240,200,.07);
+  --h13-rule:inset 0 0 0 1px rgba(217,180,106,.14),inset 0 1px 0 rgba(255,240,200,.07),inset 0 -1px 0 rgba(0,0,0,.4);
+}
+/* ---------- the labels: Cinzel for the small capitals; names, numbers, command words and the log stay in Nunito ---------- */
+html:not(.flat) .battle.b3 .order .ocs>small{font-family:var(--ffan);font-weight:700;font-size:.6rem;line-height:1;letter-spacing:.1em;color:var(--ui-gold-hi);text-shadow:0 1px 0 #000}
+html:not(.flat) .battle.b3 .pgroup>h3{font-family:var(--ffan);font-weight:700;letter-spacing:.12em;text-shadow:0 1px 0 #000}
+html:not(.flat) .battle.b3 .bline .b4mo .b4mt b{font-family:var(--ffan);font-weight:700;font-size:.56rem;line-height:1.05;letter-spacing:.03em;color:var(--ui-gold-hi)}
+html:not(.flat) .battle.b3 .who.cmdhead b{font-family:var(--ffan);font-weight:700;font-size:.86rem;line-height:19.2px;letter-spacing:.01em}
+html:not(.flat) .battle.b3 .who.cmdhead b .turnl{font-family:var(--fb);font-weight:600;font-size:.82rem;letter-spacing:0}
+html:not(.flat) .battle.b3 .b4out .b4ol{font-family:var(--ffan);font-weight:700;letter-spacing:.08em}
+/* ---------- the turn order bar: a double hairline (the chips at both ends leave no room for corners) ---------- */
+html:not(.flat) .battle.b3 .order{background:linear-gradient(180deg,color-mix(in srgb,var(--h13p1,#1b1f33) 86%,transparent),color-mix(in srgb,var(--h13p2,#111424) 86%,transparent));
+  box-shadow:0 0 0 1px #000,var(--h13-rule)}
+html:not(.flat) .oc{background:linear-gradient(180deg,var(--h13o1,#24406a),var(--h13o2,#132438))}
+html:not(.flat) .oc.e{background:linear-gradient(180deg,var(--h13e1,#5a2228),var(--h13e2,#2e1016))}
+/* ---------- the boss plaque: crimson stays, with corners and the bevel ---------- */
+html:not(.flat) .battle.b3 .bossbar{background-image:var(--h13-corners),linear-gradient(90deg,rgba(54,14,24,.95),rgba(26,9,16,.95) 60%,rgba(40,12,20,.95));
+  box-shadow:0 0 0 1px #000,inset 0 0 0 1px rgba(8,9,16,.7),inset 0 0 0 2px rgba(230,150,120,.14),inset 0 1px 0 rgba(255,220,200,.07),0 6px 16px rgba(0,0,0,.4)}
+/* ---------- the log strip and the Momentum gauge ---------- */
+html:not(.flat) .battle.b3 .bline{background:linear-gradient(90deg,color-mix(in srgb,var(--h13l1,#0e101c) 92%,transparent),color-mix(in srgb,var(--h13c2,#141728) 80%,transparent));
+  box-shadow:inset 0 1px 0 rgba(255,240,200,.06),inset 0 -1px 0 rgba(0,0,0,.4)}
+html:not(.flat) .battle.b3 .bline .b4mo{background:var(--h13-corners),color-mix(in srgb,var(--h13b1,#0a0c16) 72%,transparent);border-color:rgba(217,180,106,.34);box-shadow:var(--h13-rule)}
+html:not(.flat) .battle.b3 .bline .b4mo .b4bar{background:var(--h13m,#2a2638);box-shadow:inset 0 0 0 1px #000,0 0 0 1px rgba(217,180,106,.12)}
+html:not(.flat) .battle.b3 .bline .b4mo.full{border-color:rgba(255,208,74,.75)}
+html:not(.flat) .battle.b3 .bline .b4mo.empty{border-color:rgba(255,106,90,.8)}
+/* ---------- the command panel: the modal frame it already has, on the tinted panel; the header tinted the same ---------- */
+html:not(.flat) .battle.b3 .cmd{background-image:var(--orn-g-tl) left 3px top 3px no-repeat,var(--orn-g-tr) right 3px top 3px no-repeat,var(--orn-g-bl) left 3px bottom 3px no-repeat,var(--orn-g-br) right 3px bottom 3px no-repeat,
+  linear-gradient(180deg,rgba(255,228,170,.055),rgba(255,228,170,0) 140px),var(--orn-tex),linear-gradient(180deg,var(--h13p1,#1b1f33),var(--h13p2,#111424))}
+html:not(.flat) .battle.b3 .who.cmdhead{background-image:linear-gradient(180deg,var(--h13h1,#1d2136),var(--h13h2,#191c30))}
+/* ---------- the party and foe groups: small corners over the panel (an overlay, so the cards keep their place), tinted ---------- */
+html:not(.flat) .battle.b3 .pgroup.heroes,html:not(.flat) .battle.b3 .pgroup.foes,html:not(.flat) .battle.b3 .pgroup.rsv{position:relative;box-shadow:0 0 0 1px #000,inset 0 1px 0 rgba(255,240,200,.05)}
+html:not(.flat) .battle.b3 .pgroup.heroes{background-image:linear-gradient(180deg,color-mix(in srgb,var(--h13g1,#1c223a) 45%,transparent),color-mix(in srgb,var(--h13l1,#0e101c) 30%,transparent));border-color:rgba(217,180,106,.3)}
+html:not(.flat) .battle.b3 .pgroup.foes{background-image:linear-gradient(180deg,color-mix(in srgb,var(--h13q1,#3c1018) 28%,transparent),color-mix(in srgb,var(--h13q2,#1e080e) 28%,transparent))}
+/* the Rearguard keeps its 3 px border (style.css) at the same width, recoloured from oak to the night frame with the gold rule inside it */
+html:not(.flat) .battle.b3 .pgroup.rsv{background:linear-gradient(180deg,color-mix(in srgb,var(--h13g1,#1c223a) 40%,transparent),color-mix(in srgb,var(--h13l1,#0e101c) 30%,transparent));border-color:#0a0b14;
+  box-shadow:0 0 0 1px #000,inset 0 0 0 1px rgba(217,180,106,.3),inset 0 1px 0 rgba(255,240,200,.05)}
+html:not(.flat) .battle.b3 .pgroup.heroes::after,html:not(.flat) .battle.b3 .pgroup.foes::after,html:not(.flat) .battle.b3 .pgroup.rsv::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:4;background:var(--h13-corners)}
+html:not(.flat) .battle.b3 .pgroup.rsv::after{inset:-2px}
+html:not(.flat) .battle.b3.m-wide .bbottom .pgroup>h3{left:14px}
+/* ---------- the cards: the same bevel as the plates, the realm tint, the hero of the turn keeps its gold ---------- */
+html:not(.flat) .battle.b3 .pcw .pc{background-image:linear-gradient(180deg,var(--h13c1,#1f2339),var(--h13c2,#141728));
+  box-shadow:inset 0 1px 0 rgba(255,240,200,.09),inset 0 -1px 0 rgba(0,0,0,.38),0 0 0 1px rgba(0,0,0,.6)}
+html:not(.flat) .battle.b3 .pcw .pc.turn{background-image:linear-gradient(90deg,rgba(238,198,112,.2),rgba(238,198,112,.04) 60%),linear-gradient(180deg,var(--h13c1,#262a42),var(--h13c2,#181b2e));
+  box-shadow:inset 3px 0 0 var(--ui-gold),inset 0 1px 0 rgba(255,240,200,.1),0 0 0 1px #000,0 0 0 2px rgba(246,223,160,.85),0 0 12px rgba(246,223,160,.45)}
+html:not(.flat) .battle.b3 .fcw .fc{background-image:linear-gradient(180deg,var(--h13f1,#2a1823),var(--h13f2,#180e15));
+  box-shadow:inset 0 1px 0 rgba(255,220,210,.08),inset 0 -1px 0 rgba(0,0,0,.38),0 0 0 1px rgba(0,0,0,.6)}
+html:not(.flat) .battle.b3 .fcw .fc.dethit{box-shadow:0 0 0 2px #fff,0 0 12px var(--pc)}
+html:not(.flat) .battle.b3 .b8fl .fl{background:linear-gradient(180deg,color-mix(in srgb,var(--h13n1,#2c161e) 90%,transparent),color-mix(in srgb,var(--h13n2,#160d16) 90%,transparent));box-shadow:inset 0 1px 0 rgba(255,220,210,.07)}
+html:not(.flat) .battle.b3 .b8fl .fl.tg{box-shadow:0 0 0 1px #ffd04a,0 0 8px rgba(255,208,74,.35)}
+html:not(.flat) .battle.b3 .b8fl .fl.dethit{box-shadow:0 0 0 2px #fff,0 0 10px var(--pc)}
+/* ---------- chips: one shape (3 px corners, a 1 px hairline drawn inside so no chip grows), 12 px symbols ---------- */
+html:not(.flat) .wchip{border:1px solid rgba(217,180,106,.4);border-radius:3px;background-image:linear-gradient(180deg,var(--h13k1,#1d2a40),var(--h13k2,#141d2e));box-shadow:0 0 0 1px #000,inset 0 1px 0 rgba(255,240,200,.07)}
+html:not(.flat) .wchip.ph.day{background-image:linear-gradient(180deg,#2e2c18,#201e10)}html:not(.flat) .wchip.ph.night{background-image:linear-gradient(180deg,#1d1d40,#13132b)}
+html:not(.flat) .wchip.ph.dusk{background-image:linear-gradient(180deg,#3d1d2d,#28121d)}html:not(.flat) .wchip.ph.dawn{background-image:linear-gradient(180deg,#3d2d1d,#281d12)}
+html:not(.flat) .mi .n em.tk{border-radius:3px;box-shadow:inset 0 0 0 1px rgba(217,180,106,.2)}
+html:not(.flat) .mi .n em.c,html:not(.flat) .mi .n em.b,html:not(.flat) .mi .n em.role{border-radius:3px;box-shadow:inset 0 0 0 1px rgba(217,180,106,.2)}
+html:not(.flat) em.dl.sym{border-radius:3px;border-color:rgba(217,180,106,.3)}
+html:not(.flat) em.pur{border-radius:3px}
+html:not(.flat) .m12tags .m12t{border-radius:3px;border-color:rgba(217,180,106,.26);background:var(--h13t1,#2a2438)}
+html:not(.flat) .m12tags .m12t .ico{width:12px;height:12px}
+html:not(.flat) .detf .ico{width:12px;height:12px}
+html:not(.flat) .battle.b3 .fwk{border-radius:3px}
+html:not(.flat) .battle.b3 .fwk.dn{background:color-mix(in srgb,var(--h13k2,#141c2c) 60%,transparent)}
+html:not(.flat) .sk11 .sk11s i{border-radius:3px}
+/* ---------- the world bar: tinted, the double hairline; transparent on landscape phones as before ---------- */
+html:not(.flat) .world .wbar{background:linear-gradient(180deg,color-mix(in srgb,var(--h13p1,#1b1f33) 85%,transparent),color-mix(in srgb,var(--h13l1,#0e101c) 85%,transparent));
+  box-shadow:0 0 0 1px #000,var(--h13-rule),0 4px 12px rgba(0,0,0,.35)}
+html:not(.flat) .world.land .wbar{background:none;border-color:transparent;box-shadow:none}
+/* ---------- the result frame: the modal filigree on the tinted panel, the title bar tinted the same ---------- */
+html:not(.flat) .panel.result.box{background:var(--orn-g-tl) left 3px top 3px no-repeat,var(--orn-g-tr) right 3px top 3px no-repeat,var(--orn-g-bl) left 3px bottom 3px no-repeat,var(--orn-g-br) right 3px bottom 3px no-repeat,
+  linear-gradient(180deg,rgba(255,228,170,.055),rgba(255,228,170,0) 140px),var(--orn-tex),linear-gradient(180deg,var(--h13p1,#1b1f33),var(--h13p2,#111424))}
+html:not(.flat) .panel.result.box>.mclose+h2,html:not(.flat) .panel.result.box>.mnav+h2{background:var(--orn-g-tl) left 2px top 2px no-repeat,var(--orn-g-tr) right 2px top 2px no-repeat,var(--orn-div) center bottom 4px/120px 13px no-repeat,
+    linear-gradient(90deg,rgba(217,180,106,0),rgba(217,180,106,.45) 25%,rgba(217,180,106,.45) 75%,rgba(217,180,106,0)) left bottom/100% 1px no-repeat,
+    radial-gradient(ellipse at 50% 60%,rgba(240,190,90,.18),rgba(240,190,90,0) 60%),linear-gradient(180deg,var(--h13r1,#22273f),var(--h13r2,#181b2e))}
+html:not(.flat) .panel.result.box .rs-cell,html:not(.flat) .panel.result.box .rs-join{background:color-mix(in srgb,var(--h13c1,#1f2339) 55%,transparent);box-shadow:inset 0 0 0 1px rgba(217,180,106,.1)}
