@@ -48,6 +48,7 @@ function wfxRun(set,m,ts,cxc,czc,Px,Pz,emit){if(!m||m.archive)return;const t=ts/
       const n=cnt(Math.round(N.firefly*(.4+.6*q)));for(let i=0;i<n;i++){const a=ts===0?.45:Math.max(0,Math.sin(ts/650+i*1.3))*.8;if(a<.02)continue;
       const x=wfxH(i,101)*Px+Math.sin(ts/1700+i*1.9)*14,z=wfxH(i,102)*Pz+Math.cos(ts/2300+i*2.7)*10,h=3+wfxH(i,103)*9;put(x,z,h,4,4,'#ffec8c',a*.35,1);put(x,z+.01,h+1,2,2,'#fffac8',a,1);}}
     else if(ph==='dawn'){const n=cnt(N.dew);for(let i=0;i<n;i++){const a=ts===0?.35:Math.max(0,Math.sin(ts/900+i*2.1))*.6;if(a<.02)continue;put(wfxH(i,111)*Px,wfxH(i,112)*Pz,1,1,1,'#ffffff',a,1);}}}}
+wfxRun=HOOK.def('wfxRun',wfxRun);// v0.19.7: light13.js adds the realm particles through a hook
 // a flock crossing now and then by day: each crossing has a world path (wrapped like the particles); emit(x, z, h, flap, shadowOnly)
 function wfxBirds(m,ts,cxc,czc,Px,Pz,emit){const q=GFX.q;if(!q||!q.birds)return;let on=false;try{on=g6BirdsOn(m);}catch(e){}if(!on)return;
   const B=WFX.bird,c=Math.floor(ts/B.period),tt=ts-c*B.period;if(tt>B.dur)return;const p=tt/B.dur,wind=wfxWind(m),n=q.birds;

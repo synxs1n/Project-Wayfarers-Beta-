@@ -41,5 +41,6 @@ function dayFxDraw(ctx,vw,vh,now,cam,ph,p){
   }
   ctx.restore();
 }
+dayFxDraw=HOOK.def('dayFxDraw',dayFxDraw);// v0.19.7: light13.js casts the building shadows itself
 HOOK.after('worldDraw','daylight','dusk and dawn',function(_,now){try{const m=WS.m;if(!m||(typeof mapIndoor==='function'?mapIndoor(m):m.kind==='dungeon'||m.archive)||!G||G.daily)return;const {ph,p}=phaseProg();if(ph!=='dusk'&&ph!=='dawn')return;
   dayFxDraw(WS.ctx,WS.vw,WS.vh,now,WS.cam,ph,p);}catch(e){}});
