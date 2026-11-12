@@ -242,6 +242,7 @@ function hdBakeBuildings(m,S,bsp,deco){const V=S.V,sin=Math.sin(HD2D.pitch*Math.
 // one texture for props and buildings (cards atlas on top, buildings below): one texture bind and one draw group fewer per frame
 function hdMergeProps(cards,blds){if(!cards&&!blds)return null;const ch=cards?cards.cv.height:0,bh=blds?blds.cv.height:0,AW=2048,AH=Math.min(HD.maxTex||4096,ch+bh),cv=mkCv(AW,AH),c=cv.getContext('2d');
   if(cards)c.drawImage(cards.cv,0,0);if(blds)c.drawImage(blds.cv,0,ch);if(cards)cards.bt.mapUV(1/AW,0,1/AH,0);if(blds)blds.bt.mapUV(1/AW,0,1/AH,ch/AH);return cv;}
+hdMergeProps=HOOK.def('hdMergeProps',hdMergeProps);// v0.19.7: terrain13.js takes the snow cap texture and geometry of the props
 // town decor (signs, landmark props, the board's label), drawn once onto a map sized canvas through the town's own decor pass
 function hdBakeDeco(m){if(m.kind!=='town'||typeof townDecorActors!=='function')return null;const W=m.w*TS,H=m.h*TS,dc=mkCv(W,H),sv={ctx:WS.ctx,vw:WS.vw,vh:WS.vh,m:WS.m},bs=boardState;
   try{WS.ctx=dc.getContext('2d');WS.vw=W;WS.vh=H;WS.m=m;boardState=()=>null;const arr=[];townDecorActors(arr,0,0,0);
@@ -613,6 +614,7 @@ function hdScene(gl,S,o,now,still,full){const P=HD.P,u=P.scene.u,uc=P.char.u,fr=
   if(full&&HD.heroQ>=0){gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);gl.depthFunc(gl.GREATER);gl.uniform1i(uc.uMode,1);gl.uniform4f(uc.uSil,.98,.9,.62,.5);
     gl.bindBuffer(gl.ARRAY_BUFFER,HD.vb[4]);h2Attribs(gl);gl.drawElements(gl.TRIANGLES,6,gl.UNSIGNED_SHORT,HD.heroQ*12);gl.depthFunc(gl.LEQUAL);}
   gl.depthMask(true);gl.disable(gl.BLEND);gl.disable(gl.DEPTH_TEST);gl.useProgram(P.scene.p);}
+hdScene=HOOK.def('hdScene',hdScene);// v0.19.7: terrain13.js draws the snow caps after the scene
 // Frame: light map, the scene straight onto the canvas (graded per pixel), a copy of it shrunk and blurred (the depth of field and bloom
 // source), then one blended pass lays the blur over the top and bottom of the view (tilt shift) with bloom, light shafts and the vignette.
 // One pass over the geometry per frame, culled to the chunks in view; nothing full size is rendered off screen.
