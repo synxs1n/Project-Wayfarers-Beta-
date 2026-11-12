@@ -244,6 +244,7 @@ function drawUnit(ctx,u,b,now,tgMode){
   // so a unit standing in front can no longer cover another unit's bar or element icon
   u._hud={x,y};
 }
+drawUnit=HOOK.def('drawUnit',drawUnit);// v0.19.7: one definition; chars13.js draws the mid-ground silhouettes in depth order and offsets each unit's breathing phase (fxkind11.js still wraps it the old way, outside)
 
 function drawParts(ctx,now){
   const keep=[];

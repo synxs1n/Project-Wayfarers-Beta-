@@ -98,6 +98,7 @@ function bgStatic(theme,W,H,seed){
   const cv=mkCv(W,H),ctx=cv.getContext('2d');BG[theme](ctx,W,H,mulberry(seed||theme.length*97));
   return BG_CACHE[key]=cv;
 }
+bgStatic=HOOK.def('bgStatic',bgStatic);// v0.19.7: one definition; chars13.js adds the horizon haze to the ground plane (gfx6.js parallax still wraps it the old way, outside)
 function bgAnim(ctx,theme,W,H,now){
   const t=now/1000,gy=bgGY(H);if(theme.startsWith('f:'))theme=theme.split(':')[1]; // v0.5.0 2.1: field backdrops animate like their realm's sky
   if(theme==='meadow'){[[0,14,34],[1,30,26],[2,8,22]].forEach(([i,y,w])=>{const x=Math.floor(((t*(4+i*2)+i*120)%(W+80))-40);cloudBlob(ctx,x,y,w,'#ffffff','#d8e8f4');});

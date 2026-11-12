@@ -368,6 +368,7 @@ function allParty(){return B.front.concat(B.back);}
 function WX(){return WEATHER[(B&&B.weather)||'clear']||WEATHER.clear;}
 function delayOf(u,cost){let d=cost*1000/(18+u.S.spd)*(u.S.tempo||1);if(B&&WX().spd)d/=WX().spd;if(has(u,'slow'))d*=1.5;if(has(u,'haste'))d*=.65;if(has(u,'root'))d*=1.25;return d;}
 function fx(u,txt,cls){const now=Date.now();u.fx=(u.fx||[]).filter(f=>now-f.t<4000);u.fx.push({t:now,txt,cls});if(/dmg/.test(cls))u.hitT=now;if(typeof onFx==='function')onFx(u,txt,cls);}
+fx=HOOK.def('fx',fx);// v0.19.7: one definition; chars13.js tags damage entries with their element (insight.js and fx2.js still wrap it the old way, outside)
 function banner(txt,col){if(!B)return;B.banner={t:Date.now(),txt,col:col||'#ffe3a0'};}
 
 function startBattle(spec){

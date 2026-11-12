@@ -117,6 +117,7 @@ function paintHD(g,pal,opt){
     if(K[i-W]===e||K[i-1]===e)continue;if(K[i+1]===e&&K[i+W]===e)put(i,cl);}}
   const cv=mkCv(W,H);cv.getContext('2d').putImageData(id,0,0);return sprHD(cv,2);
 }
+paintHD=HOOK.def('paintHD',paintHD);// v0.19.7: chars13.js applies the one outline rule and keeps the key grid kinds on the result
 // ----- heroes -----
 // eyes: a dark lid row, iris (hair coloured) with a catchlight, a lighter lower iris. Works on the doubled grid.
 function faceHD(K,W,H){
@@ -173,3 +174,4 @@ if(SPRITE_HD){
   if(typeof key!=='string'||(id&&TPL[id]&&TPL[id].mon))return wc0.apply(this,arguments);
   if(key.slice(0,4)==='big:')return wc0.call(this,key.slice(4),L,els,id,view,frame);
   return rigScale(.8,()=>wc0.call(this,key+"|c8",L,els,id,view,frame));};}/* v0.15.8: back to .8 (32x45): at .9 the walkers stood taller than the doors again; battle stays .9 (scale10.js) */
+walkerCanvas=HOOK.def('walkerCanvas',walkerCanvas);// v0.19.7: one definition after the compact rig wrapper; chars13.js hands standing walkers their idle frames (npcart9.js still wraps it the old way, outside)
