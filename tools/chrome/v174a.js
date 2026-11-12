@@ -143,7 +143,9 @@ async function boot(t,w,h){const H=await open({w:w||430,h:h||760,mobile:true,dpr
     await H.browser.close();}
   // ---------- 6. entrances ----------
   if(want('6')){const H=await boot('low');const {ev}=H;
-    const R=await ev(()=>{const A=__A,T=A.TW.get,W=window.__WA12,den=T('slDenByKey'),lair=T('slLairByKit'),DEN=T('SL_DEN'),LK=T('SL_LKIT'),out={den:{},lair:{}};
+    // worldart12's own fronts: worldart13 (the mass round them) is switched off while they are measured. Its 0.19.6 side face darkened the right edge,
+    // which these rim checks leaned on; since v0.20.1 the mass is front facing and adds nothing at the sides
+    const R=await ev(()=>{const A=__A,T=A.TW.get,W=window.__WA12,W13=window.__WA13,den=T('slDenByKey'),lair=T('slLairByKit'),DEN=T('SL_DEN'),LK=T('SL_LKIT'),out={den:{},lair:{}};if(W13)W13.off=true;
       const meas=(cv0,off)=>{const W2=cv0.width,H2=cv0.height,cv=document.createElement('canvas');cv.width=W2;cv.height=H2;cv.getContext('2d').drawImage(cv0,0,0);const d=cv.getContext('2d').getImageData(0,0,W2,H2).data;let lumL=0,nL=0,lumR=0,nR=0,thr=0,glowL=0,glowR=0,opq=0;
         for(let y=0;y<H2;y++)for(let x=0;x<W2;x++){const i=(y*W2+x)*4;if(d[i+3]<200)continue;opq++;const l=d[i]*.3+d[i+1]*.59+d[i+2]*.11;
           // the rim: the outer 3 px of the upper left edge and of the right edge
@@ -158,7 +160,7 @@ async function boot(t,w,h){const H=await open({w:w||430,h:h||760,mobile:true,dpr
         for(let y=H2-16;y<H2;y++)for(let x=0;x<W2;x++){const i=(y*W2+x)*4;if(Math.abs(A2[i]-B2[i])+Math.abs(A2[i+1]-B2[i+1])+Math.abs(A2[i+2]-B2[i+2])+Math.abs(A2[i+3]-B2[i+3])>40){if(x<W2*.34)pl++;else if(x>W2*.66)pr++;else if(y>=H2-3)th++;}}return {pl,pr,th};};
       for(const k of Object.keys(DEN)){W.off=false;const c=den(k),a=meas(c);W.off=true;const old=den(k);W.off=false;Object.assign(a,added(c,old));out.den[k]={a,sameAsOld:c===old};}
       for(const k of Object.keys(LK)){const K=Object.assign({id:k},LK[k]);W.off=false;const c=lair(K,false),a=meas(c);W.off=true;const old=lair(K,false);W.off=false;Object.assign(a,added(c,old));out.lair[k]={a,sameAsOld:c===old};}
-      return out;});
+      if(W13)W13.off=false;return out;});
     const dk=Object.keys(R.den),lk=Object.keys(R.lair);
     const okE=(e)=>e.a.pl>=12&&e.a.pr>=12&&e.a.th>=5&&e.a.rimL>e.a.rimR*1.1;
     chk(`den mouths (${dk.length} realms): props lit at each side of the foot, a threshold stone, the upper left rim lit above the right edge, not the old sprite (${dk.filter(k=>!okE(R.den[k])||R.den[k].sameAsOld).join(',')||'all'})`,dk.length>=17&&dk.every(k=>okE(R.den[k])&&!R.den[k].sameAsOld)||JSON.stringify(dk.filter(k=>!okE(R.den[k])).map(k=>[k,R.den[k].a])));

@@ -15,7 +15,32 @@ slice textured from its own wedge of the sprite, so the lit face and the seams w
 `worldDraw`'s depth sort by its front edge), a walker north of its front edge was hidden behind it and one south of it stood in front. The entrances had the
 lit rim and the props (worldart12) but were still one front face painted into the ground, with the hero always drawn over them.
 
-## The recipe, applied to every entrance
+## v0.20.1: front facing
+
+The owner after 0.19.6: "just make all den, sanctum and dungeon entrances front facing for now". Every entrance now faces the camera squarely: the mass
+rises straight up from its front (a top face along the upper edge, as wide as the front), with no side face and nothing added at the left or right. What
+stays: the mass above its footprint, the lighter top face, the recessed mouth with worldart12's lit threshold, the cast shadow, the props, the realm's
+materials, the depth sort in both renderers. Also fixed: the outline round the mass read the buffer it was writing, so it spread right and down from the
+first outline pixel and filled the box beside every mass with a dark slab (in 0.19.6 that slab sat behind the side face and made it look heavier).
+The sections below describe 0.19.6; where they differ, this is the current state:
+
+- **Volume** (`wa13Faces`): each silhouette pixel is copied N steps along (0,-1). The result is W x (H+N), with the front at (fx, N). fx centres the
+  front's opaque box in the canvas (at most 1 px on the current sprites: the orchard lair's tree, the observatory's telescope). The top face takes the
+  lightest of the first four pixels down from the edge (past the outline, which the 0.19.9 outline rule tints with the material, onto the cap), averaged
+  along the edge and pulled 30% toward white; its back row is 10% darker. Stats: `topL`, `frontL` (the front's first N rows under its outline), `fx`, `fy`.
+- **Mouth** (`wa13Recess`): the lintel and both jambs inside are darkened the same way. The lit right jamb of the three quarter light is gone.
+- **Sizes**: den 64 x 55 (was 78 x 55), lair 64 x 67 (was 78 x 67), Sanctum inner door 24 x 25 (was 30 x 25), Rift gate face card = panel width,
+  panel height + 3.
+- **HD-2D footprint** (`wa13Prof`): one 1 x 2 entry in `S.bh` per tile column the front covers (ex-2..ex+2). Its height is the front's over that column,
+  less 9 px (the top face is depth, not height). The old 3 x 2 box at sh-9 cast a square slab of shadow beside a round mouth. light13's 2D masks still use
+  the 3 x 2 box.
+- **Shrine (2D)**: its parts get top faces only, placed through `fx/fy`. HD-2D is unchanged (slSaGeo boxes).
+
+v175a numbers now (34 den mouths and lair fronts): 38 to 67 px tall. The top face is 1.10x to 2.22x as light as the front under it. Left and right
+margins differ by at most 1 px. 0 of 15261 added pixels lie off the straight-up extrusion (no side face). The hero one tile behind a den is 18% covered
+in 2D and 65% in HD-2D. On 150 fields, 380 entrances block nothing. HD footprint of the thistle den: 20, 28, 29, 28, 20 px across five columns.
+
+## The recipe, applied to every entrance (v0.19.6)
 
 - **Volume** (`wa13Faces`): the finished front sprite is extruded up and to the right (a three quarter view). Every pixel of its silhouette (alpha over 180) is
   copied N steps (7 for a field entrance, 5 and 4 for the shrine's parts, 3 for a door or gate) along (+1,-1); what stays visible round the front is a top face
