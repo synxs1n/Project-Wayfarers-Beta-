@@ -14,7 +14,7 @@
 //    META.pt12.runs holds one record per playthrough in order: {s:seed,c:cycle,o:order,b:bosses,f:final,vis:realms visited,bs:bosses faced}.
 //    Unseen realms and unseen bosses come first; when everything is seen the draw is random with a lean (PT12.lean) toward whatever was not
 //    in the last two playthroughs. Bosses use META.best[name].seen too (it syncs with the account), the realm list is local to the device.
-//    A realm names its own Scourge and stand-ins (realmdata.js boss, alt; world12.js), so the draw picks (realm, boss) pairs; a realm with no boss
+//    A realm names its own Scourge (realmdata.js boss; realms14 removed the stand-ins, alt, so a realm has exactly one boss; world12.js), so the draw picks (realm, boss) pairs; a realm with no boss
 //    named draws its boss the old way. It runs as a newRun hook (after realms.js, look9.js and world12.js) and newGame re-asserts it.
 //    The run also carries G.run.ngp = {b,f}, the bosses drawn.
 // New save fields: G.pt12mig (the gear migration ran), G.pt12note (message pending), G.run.ngp. New META field: META.pt12 = {v:1,runs:[...]}. Tunable: PT12.
@@ -61,7 +61,7 @@ HOOK.xform('mChar','party12','reserve sheet: gear slots are read only',function(
   return h.replace('On the roster.','On the roster (a reserve). Reserves keep no gear: it waits in the pack until they join the six.');}catch(e){return h;}});
 
 // ---------- 3. New Game+: realms and bosses you have not seen ----------
-const PT12_TIER={thistle:1,orchard:1,strand:1,lakes:1,mire:2,grotto:2,tundra:2,peaks:2,deeps:3,mines:3,glacier:3,mesa:3},PT12_WANT=[[1],[1,2],[2,3],[3]];// the fantasy ladder of realms.js
+const PT12_TIER={thistle:1,orchard:1,strand:1,lakes:1,moors:1,mire:2,grotto:2,tundra:2,peaks:2,bamboo:2,deeps:3,mines:3,glacier:3,mesa:3,bone:3,ashglass:3},PT12_WANT=[[1],[1,2],[2,3],[3]];// the fantasy ladder of realms.js
 const pt12Meta=()=>{const m=META.pt12=META.pt12&&Array.isArray(META.pt12.runs)?META.pt12:{v:1,runs:[]};return m;};
 const pt12RealmKey=i=>{try{return REALMS[i-REALM_BASE].key;}catch(e){return '';}};
 const pt12RealmName=i=>{try{return REALMS[i-REALM_BASE].n;}catch(e){return String(i);}};
@@ -77,7 +77,7 @@ HOOK.after('arrive','party12','realms visited',function(){pt12Track();});
 HOOK.after('win','party12','bosses beaten',function(){pt12Track();});
 HOOK.after('startBattle','party12','bosses faced',function(r,spec){try{if(r===false||!G||G.daily||!spec||spec.kind!=='boss')return;const k=bossKeyFor(spec.stage|0),rec=pt12Rec();if(rec&&k&&!rec.bs.includes(k)){rec.bs.push(k);saveMeta();}}catch(e){}});
 // the draw. ctx = {runs: [records, oldest first], seenBoss(k): the account has met this boss}; R = random function. Pure: the test sim uses it too.
-// A realm names its own Scourge and the ones that can stand in for it (realmdata.js: boss, alt; world12.js), so the draw picks (realm, boss) pairs:
+// A realm names its own Scourge (realmdata.js: boss; an optional alt list is still read but realms14 has none; world12.js), so the draw picks (realm, boss) pairs:
 // pairs with an unseen realm and an unseen boss first, then an unseen realm, then an unseen boss, then random weighted by recency.
 function pt12Age(runs,test){for(let i=runs.length-1,a=1;i>=0;i--,a++)if(test(runs[i]))return a;return Infinity;}
 const pt12Cands=(i,pool)=>{try{const R=ZONES[i],l=[R.boss].concat(R.alt||[]).filter(k=>k&&pool.includes(k)&&guardianDef(k));return l.length?l:null;}catch(e){return null;}};

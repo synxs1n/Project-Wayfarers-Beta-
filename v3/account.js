@@ -5,7 +5,7 @@
 // META (aurelis-meta-v1) stays the local cache. Merges are a union: counts take the max, known elements are OR'd, flags stay on once set.
 const PROFILE={status:'idle',uid:null,busy:false,dirty:false,timer:null,lastSync:0};
 // monsters renamed in later versions: their bestiary entries move to the new name
-const BEST_RENAME=Object.assign({'Husk Guardian':'Husk Watcher'},(()=>{const o={};GPOOL.concat(FPOOL).forEach(k=>{const n=guardianDef(k).n;if(/^the\s/i.test(n))o['Echo '+n]=echoName(n);});return o;})());// v0.18.7: records kept under 'Echo The X' move to 'Echo X'
+const BEST_RENAME=Object.assign({'Husk Guardian':'Husk Watcher','Seraph of Ash':'Seraph of the Zenith','Echo Seraph of Ash':'Echo Seraph of the Zenith'/* realms14: renamed for the Shattered Sky */},(()=>{const o={};GPOOL.concat(FPOOL).forEach(k=>{const n=guardianDef(k).n;if(/^the\s/i.test(n))o['Echo '+n]=echoName(n);});return o;})());// v0.18.7: records kept under 'Echo The X' move to 'Echo X'
 function renameBest(o){if(!o)return o;let r=null;Object.keys(BEST_RENAME).forEach(k=>{if(o[k]){r=r||Object.assign({},o);const n=BEST_RENAME[k],x=o[k],y=r[n]||{};r[n]={seen:Math.max(x.seen||0,y.seen||0),kills:Math.max(x.kills||0,y.kills||0),scan:Math.max(x.scan||0,y.scan||0),hit:Math.max(x.hit||0,y.hit||0),known:Object.assign({},x.known||{},y.known||{})};delete r[k];}});return r||o;}
 function mergeBest(a,b){a=renameBest(a);b=renameBest(b);const out={};new Set(Object.keys(a||{}).concat(Object.keys(b||{}))).forEach(k=>{const x=(a||{})[k]||{},y=(b||{})[k]||{};
   const known=Object.assign({},x.known||{},y.known||{});out[k]={seen:Math.max(x.seen||0,y.seen||0),kills:Math.max(x.kills||0,y.kills||0),scan:Math.max(x.scan||0,y.scan||0),known};if(x.hit||y.hit)out[k].hit=1;});return out;}
@@ -21,6 +21,7 @@ function applyRemote(r){
   if(r.flags&&r.flags.legends){META.legends=META.legends||{};Object.keys(r.flags.legends).forEach(k=>{if(r.flags.legends[k])META.legends[k]=1;});}
   saveMeta();
 }
+profileOf=HOOK.def('profileOf',profileOf);applyRemote=HOOK.def('applyRemote',applyRemote);// v0.20.6: roster14.js adds the permanent recruits (flags.legacy) to the profile
 async function profileSync(){
   if(PROFILE.busy){PROFILE.dirty=true;return;}
   PROFILE.busy=true;PROFILE.dirty=false;

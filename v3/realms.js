@@ -1,7 +1,7 @@
-// ===== realms.js (v0.4.1): sixteen realms, boss overlays, Calamity realms, realm weighting =====
+// ===== realms.js (v0.4.1): twenty realms, boss overlays, Calamity realms, realm weighting =====
 // Data first: every realm is one entry in REALMS below, every boss overlay one entry in BOV, every Calamity effect one entry in CAL_FX.
-// New journeys (G.run.rv===2) draw 4 of the 12 standard realms and 1 of the 4 Calamity realms from the run seed, and draw their bosses
-// independently, so any Scourge can sit in any standard realm and any Calamity in any Calamity realm. Older journeys keep the six
+// New journeys (G.run.rv===2) draw 4 of the 16 standard realms and 1 of the 4 Calamity realms from the run seed; each realm brings its own
+// Scourge (a Calamity in a Calamity realm), world12.js, so the variety is in which realms come up. Older journeys keep the six
 // original realms (ZONES 0 to 5) exactly as they were.
 // A realm reuses one of the six tilesets (meadow, coast, cave, snow, heights, void) for its layout rules and adds its own identity:
 // a palette lean, roofs and decorations, a ground motif, ambient particles, its own monster mix (with realm variants), weather table,
@@ -303,7 +303,11 @@ const MONV=[
  ['v_ashspawn','voidspawn','Ash Spawn',['fire','shadow'],'#8a4a3a'],['v_drownwatch','huskguard','Drowned Watcher',['water','shadow'],'#3a6a7a'],
  ['v_starwraith','eclipsewraith','Starless Wraith',['shadow'],'#2a2a5a'],['v_skyshard','gargoyle','Sky Shard',['light','lightning'],'#d8e0ff'],
  ['v_tidecrown','shellguard','Crownshell',['water','light'],'#5ab0c0','coralcrown'],['v_cindereater','stareater','Cinder Eater',['fire'],'#c0602a'],
- ['v_galeghost','cloudray','Shatterwind Ray',['wind','light'],'#e0e0ff'],['v_ashhusk','huskguard','Ashen Husk',['fire','shadow'],'#6a4a40']
+ ['v_galeghost','cloudray','Shatterwind Ray',['wind','light'],'#e0e0ff'],['v_ashhusk','huskguard','Ashen Husk',['fire','shadow'],'#6a4a40'],
+ // realms14: natives of the Ashglass Reach's geysers and of the three new Scourge realms (moors, bamboo highlands, bone fields)
+ ['v_saltjelly','brinejelly','Brine Spitter',['water','fire'],'#e8e0d0'],['v_heathwolf','frostwolf','Heath Wolf',['shadow','earth'],'#6a4a3a'],['v_rookling','cavebat','Rookling',['wind','shadow'],'#3a3a4c'],
+ ['v_canehopper','gustimp','Cane Hopper',['wind','earth'],'#8ab04a'],['v_mistmoth','tidewisp','Mist Moth',['water','wind'],'#c0e0d0'],['v_jadeguard','shellguard','Jade Guard',['earth'],'#5a9a6a'],
+ ['v_bonehound','frostwolf','Bone Hound',['shadow','earth'],'#d8d0b8'],['v_cairnwatch','iceknight','Cairn Watcher',['earth','shadow'],'#a8a090']
 ];
 function recol(hex,to,k){if(!/^#[0-9a-f]{6}$/i.test(String(hex)))return hex;return lerpHex(hex,to,k);}
 function makeMonVariant(id,base,name,els,col,extra,shape){const m=MON[base];if(!m||MON[id])return;
@@ -336,7 +340,7 @@ function syncPools(){if(!G||!G.run)return;REALMS.forEach(R=>{let p=R.pool0.slice
 function lay3On(){try{return !!(G&&G.run&&G.run.lay3);}catch(e){return false;}}
 HOOK.xform('newRun','realms','draw the journey\'s realms (seeded)',function(r,cycle){try{const R=seeded((r.seed^0x5eed)>>>0);
   // v0.11.9: the realms rise in fantasy: realm 1 from the grounded tier, realm 2 from tiers 1-2, realm 3 from tiers 2-3, realm 4 from the wildest tier
-  const TIER={thistle:1,orchard:1,strand:1,lakes:1,mire:2,grotto:2,tundra:2,peaks:2,deeps:3,mines:3,glacier:3,mesa:3},want=[[1],[1,2],[2,3],[3]],std=[],used=new Set();
+  const TIER={thistle:1,orchard:1,strand:1,lakes:1,moors:1,mire:2,grotto:2,tundra:2,peaks:2,bamboo:2,deeps:3,mines:3,glacier:3,mesa:3,bone:3,ashglass:3},want=[[1],[1,2],[2,3],[3]],std=[],used=new Set();
   want.forEach(ts=>{let pool=REALM_STD.filter(i=>!used.has(i)&&ts.includes(TIER[REALMS[i-REALM_BASE].key]||2));if(!pool.length)pool=REALM_STD.filter(i=>!used.has(i));const pick=pool[Math.floor(R()*pool.length)];used.add(pick);std.push(pick);});
   const cal=REALM_CAL[Math.floor(R()*REALM_CAL.length)];r.order=std.concat([cal]);r.rv=2;r.lay3=1;/* v0.11.1: sites by thirds of the route (worldgen.js, sites.js) */}catch(e){}return r;});
 

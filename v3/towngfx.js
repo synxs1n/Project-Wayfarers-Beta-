@@ -15,7 +15,7 @@ const SVC_ICON={
   workshop:[[4,1,2,2,'#c8c8d0'],[3,3,4,1,'#9a9aa8'],[2,4,6,5,'#3aa860'],[3,5,2,1,'#b8f0c8'],[2,9,6,1,'#2a7a40']],
   guild:[[2,1,1,9,'#5a3a1a'],[3,1,5,4,'#a82a2a'],[4,2,2,2,'#f0c050'],[3,5,3,1,'#a82a2a']]};
 {const db0=drawBuilding;drawBuilding=function(ctx,m,b){const L=SVC_LOOK[b.k],T=THM(m);
-  if(!L)return db0.apply(this,arguments);
+  if(!L||(m.sty&&typeof TST14!=='undefined'&&TST14[b.k]))return db0.apply(this,arguments);// v0.20.6: a realm's own building family (towns14.js) paints its own roof, chimney and sign
   // swap the theme's roof pick for the service colour for this one draw
   const saved=T.roof,rk=T.roofKind;T.roof=[L.roof,L.roof,L.roof,L.roof];if(rk==='thatch')T.roofKind='tile';try{db0.apply(this,arguments);}finally{T.roof=saved;T.roofKind=rk;}
   const x0=b.x*TS,y0=b.y*TS,w=b.w*TS,h=b.h*TS,f=(c,x,y,ww,hh)=>{ctx.fillStyle=c;ctx.fillRect(x0+x,y0+y,ww,hh);},dx=(b.door[0]-b.x)*TS,dy=h-16;
@@ -23,6 +23,9 @@ const SVC_ICON={
     const cx=4;f(OUTC,cx-1,-20,12,16);f('#3a3a42',cx,-19,10,15);f('#52525e',cx,-19,3,15);f('#26262e',cx+7,-19,3,15);f('#5a5a66',cx,-19,10,2);f('#7a7a88',cx,-19,10,1);f('#2e2e36',cx,-12,10,1);f('#2e2e36',cx,-6,10,1);f('#ff7a2a',cx+2,-21,6,2);f('#ffd04a',cx+3,-22,4,1);f('#fff0a8',cx+4,-22,2,1);}
   if(b.k==='inn'){f('#3a2a1a',dx-2,dy-6,20,1);}
 };}
+// v0.20.6: the colours of the plank sign over a door (towns14.js gives each building family its own wood, stone, bone or ice)
+function signLook(m,b){return {a:'#5a3a1e',b:'#7a5228',c:'#9a6a38',d:'#8a5e30',e:'#3e2612',f:'#e8d8b0'};}
+signLook=HOOK.def('signLook',signLook);
 // v0.4.1 1.4: props, signs and the quest board label are now y-sorted actors (base = the building's front edge / the board tile), so
 // a character standing in a doorway or in front of a board is always drawn over them; nothing paints on top of characters.
 function townDecorActors(actors,now,cx,cy){
@@ -42,7 +45,7 @@ function townDecorActors(actors,now,cx,cy){
     if(b.k==='guild'){const s=Math.sin(now/400);[[w/2-14,Math.round(s)],[w/2+8,-Math.round(s)]].forEach(([bx,o])=>{f(OUTC,bx-1,-15+o,8,12);f('#a82a2a',bx,-14+o,6,9);f('#c84444',bx,-14+o,2,9);f('#6e1818',bx+4,-14+o,2,9);f('#f0c050',bx,-14+o,6,1);f('#8a1c1c',bx+3,-10+o,1,5);});f('#f0c050',w/2-12,-12,2,2);f('#f0c050',w/2+10,-12,2,2);f('#fff0a0',w/2-12,-12,1,1);f('#fff0a0',w/2+10,-12,1,1);}
     // the sign: a plank with an icon and a label, centred over the door
     ctx.font='bold 8px "Trebuchet MS",Verdana,sans-serif';const tw=Math.ceil(ctx.measureText(L.label).width),sw=tw+18,sh=13,sx=Math.round(x0+dx+8-sw/2),sy=Math.round(y0+h-34);
-    ctx.fillStyle='rgba(10,6,24,.3)';ctx.fillRect(sx+1,sy+sh+1,sw,2);ctx.fillStyle='#150b17';ctx.fillRect(sx-1,sy-1,sw+2,sh+2);ctx.fillStyle='#5a3a1e';ctx.fillRect(sx,sy,sw,sh);ctx.fillStyle='#7a5228';ctx.fillRect(sx,sy,sw,2);ctx.fillStyle='#9a6a38';ctx.fillRect(sx,sy,sw,1);ctx.fillStyle='#8a5e30';ctx.fillRect(sx,sy,1,sh);ctx.fillStyle='#3e2612';ctx.fillRect(sx+sw-1,sy+1,1,sh-1);ctx.fillRect(sx,sy+sh-1,sw,1);ctx.fillStyle='#e8d8b0';ctx.fillRect(sx+1,sy+2,1,1);ctx.fillRect(sx+sw-2,sy+2,1,1);
+    ctx.fillStyle='rgba(10,6,24,.3)';ctx.fillRect(sx+1,sy+sh+1,sw,2);const SL=signLook(m,b);ctx.fillStyle='#150b17';ctx.fillRect(sx-1,sy-1,sw+2,sh+2);ctx.fillStyle=SL.a;ctx.fillRect(sx,sy,sw,sh);ctx.fillStyle=SL.b;ctx.fillRect(sx,sy,sw,2);ctx.fillStyle=SL.c;ctx.fillRect(sx,sy,sw,1);ctx.fillStyle=SL.d;ctx.fillRect(sx,sy,1,sh);ctx.fillStyle=SL.e;ctx.fillRect(sx+sw-1,sy+1,1,sh-1);ctx.fillRect(sx,sy+sh-1,sw,1);ctx.fillStyle=SL.f;ctx.fillRect(sx+1,sy+2,1,1);ctx.fillRect(sx+sw-2,sy+2,1,1);
     (SVC_ICON[b.k]||[]).forEach(([a,bb,ww,hh,c])=>{ctx.fillStyle=c;ctx.fillRect(sx+3+Math.round(a*.9),sy+2+Math.round(bb*.9),Math.max(1,Math.round(ww*.9)),Math.max(1,Math.round(hh*.9)));});
     ctx.fillStyle='#000';ctx.fillText(L.label,sx+14+1,sy+10);ctx.fillStyle=L.col;ctx.fillText(L.label,sx+14,sy+9);}});});
   // quest board: label, plus a pulsing marker when there is something new or ready to hand in

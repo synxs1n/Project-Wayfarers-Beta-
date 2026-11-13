@@ -28,7 +28,7 @@ const HEIGHTS={
 // text contrast on the v0.19.6 build (lightest tenth of the pixels behind the text), per pair: the new build must reach this less 0.15
 // (the least over the four sizes; fcName and wchip are measured and printed but not gated: the sky chip changes with the rolled weather and
 // the foe name probe reads the same odd 1.24 on both builds)
-const CONTRAST={pcName:8.04,pcLv:6.38,pcNums:10.35,fcNums:14.83,orderNext:8.8,moLabel:14.25,cmdName:12.6,blog:14.89,wkeys:10.53,fwkUp:12.66};
+const CONTRAST={pcName:8.04,pcLv:6.38,pcNums:10.35,fcNums:14.83,orderNext:8.8,moLabel:14.25,cmdName:12.6,blog:14.89,wkeys:10.53,fwkUp:10.2/* realms14: was 12.66. The helper battle() (v063lib.js) draws its three foes from every key of MON with a seeded generator, and eight new realm foes (MONV in realms.js) changed that list, so the first foe's Weak chip is another element's colour; 10.26 is the reading with it (WCAG AA is 4.5) */};
 const SEL={order:'.battle .order',bline:'.battle .bline',b4mo:'#b4mo',cmdhead:'.cmd .who.cmdhead',prim:'.menu.prim .mi',h3:'.pgroup.heroes>h3',pc:'.pgroup.heroes .pc',rs:'.pgroup.rsv .pc.rs',fc:'.pgroup.foes .fc',fl:'.b8fl .fl',
   wchip:'.wchip',fwk:'.fwk',sk11:'.sk11',wbar:'.wbar',resh2:'.panel.result>h2'};
 const PAIRS={pcName:['.pgroup.heroes .pc','.pgroup.heroes .pc .uct b'],pcLv:['.pgroup.heroes .pc','.pgroup.heroes .pc .ucl'],pcNums:['.pgroup.heroes .pc','.pgroup.heroes .pc .ucr .nums'],

@@ -34,7 +34,7 @@ const D8M={
 };
 // [material, organic]
 const D8_REALM={thistle:['crypt',0],orchard:['crypt',0],strand:['sea',1],mire:['flood',0],deeps:['lava',1],grotto:['root',1],tundra:['icevault',0],glacier:['ice',1],
-  peaks:['keep',0],mesa:['sand',0],lakes:['flood',0],mines:['forge',0],ashen:['lava',1],drowned:['flood',0],starless:['astral',0],shattered:['keep',0]};
+  peaks:['keep',0],mesa:['sand',0],lakes:['flood',0],mines:['forge',0],ashen:['lava',1],drowned:['flood',0],starless:['astral',0],shattered:['keep',0],moors:['crypt',0],bamboo:['root',1],bone:['crypt',0]/* realms14 */};
 const D8_ZONE={meadow:['crypt',0],coast:['sea',1],cave:['forge',0],snow:['ice',1],heights:['keep',0],void:['astral',0]};
 const D8_CAVE={meadow:'root',coast:'sea',cave:'lava',snow:'ice',heights:'rock',void:'astral'};
 const D8_KEEP=2;            // carving stays this many tiles (Chebyshev) away from every asset

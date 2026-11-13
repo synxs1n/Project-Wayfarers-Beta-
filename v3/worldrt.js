@@ -474,4 +474,4 @@ function weatherFX(ctx,w,W,H,now,battle){
   else if(w==='aurora'){for(let k=0;k<3;k++){ctx.fillStyle=['rgba(90,255,170,.26)','rgba(140,120,255,.22)','rgba(90,220,255,.2)'][k];for(let x=0;x<W;x+=2){const y=4+k*9+Math.floor(Math.sin(x/22+t*.7+k)*7);ctx.fillRect(x,y,2,14+k*3);}}}
   else if(w==='starfall'){for(let i=0;i<5;i++){const p=((t*.5+i*.23)%1),x=Math.floor((i*97+p*60)%W),y=Math.floor(p*H*.7);ctx.globalAlpha=1-p;ctx.fillStyle='#fff6c8';ctx.fillRect(x,y,1,1);ctx.fillStyle='#c8a0ff';ctx.fillRect(x-1,y-1,1,1);ctx.fillRect(x-2,y-2,1,1);ctx.globalAlpha=1;}}
 }
-scanLights=HOOK.def('scanLights',scanLights);interact=HOOK.def('interact',interact);// v0.18.7: world12.js lights town landmarks and reads them when faced
+findPath=HOOK.def('findPath',findPath);/* v0.20.6: world14.js sends a tap on an entrance's mass to its door */scanLights=HOOK.def('scanLights',scanLights);interact=HOOK.def('interact',interact);// v0.18.7: world12.js lights town landmarks and reads them when faced

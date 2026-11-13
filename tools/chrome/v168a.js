@@ -21,24 +21,24 @@ const en=await H.ev(()=>{const T=__A.TW.get,o={bad:[],n:0,fn:T('echoName')('The 
   const ren=T('renameBest')({'Echo The Dimmer':{seen:1,kills:3,scan:0,known:{}},'Echo Hoarwyrm':{seen:1,kills:1,scan:0,known:{}}});
   const m=__A.getMap('s0');o.gates=m.npcs.filter(n=>n.portal&&!n.forge).map(n=>n.name);o.rec=ren;return o;});
 chk(`echoName drops the leading "the": '${en.fn}', '${en.fn2}', '${en.fn3}'`,en.fn==='Echo Dimmer'&&en.fn2==='Echo Siren of the Deep'&&en.fn3==='Echo Hoarwyrm');
-chk(`all ${en.n} Echoes are named by echoName (no "Echo The ..."): ${en.bad.join('|')||'ok'}`,en.n===25&&!en.bad.length);
-chk('Rift gate names have no "Echo The"/"Echo the" ('+en.gates.filter(n=>/Dimmer|Crow|Locust/.test(n)).join(', ')+')',en.gates.length>=25&&!en.gates.some(n=>/Echo the /i.test(n)));
+chk(`all ${en.n} Echoes are named by echoName (no "Echo The ..."): ${en.bad.join('|')||'ok'}`,en.n===20&&!en.bad.length/* realms14: 20 Echoes, was 25 */);
+chk('Rift gate names have no "Echo The"/"Echo the" ('+en.gates.filter(n=>/Dimmer|Crow|Locust/.test(n)).join(', ')+')',en.gates.length>=20&&!en.gates.some(n=>/Echo the /i.test(n)));
 chk('records kept under "Echo The Dimmer" move to "Echo Dimmer" (kills 3), the others stay',!!en.rec['Echo Dimmer']&&en.rec['Echo Dimmer'].kills===3&&!en.rec['Echo The Dimmer']&&en.rec['Echo Hoarwyrm'].kills===1);
 // ---------------- 9. realm bosses ----------------
-const rb=await H.ev(()=>{const T=__A.TW.get,R=T('REALMS'),o={miss:[],el:[],cal:[],uniq:0,off:0,var:{},rb:0,n:0};const G=T('GPOOL'),F=T('FPOOL');
+const rb=await H.ev(()=>{const T=__A.TW.get,R=T('REALMS'),o={miss:[],el:[],cal:[],alt:R.filter(r=>r.alt&&r.alt.length).map(r=>r.key),uniq:0,off:0,var:{},rb:0,n:0};const G=T('GPOOL'),F=T('FPOOL');
   R.forEach(r=>{if(!r.boss){o.miss.push(r.key);return;}[r.boss].concat(r.alt||[]).forEach(k=>{const d=T('guardianDef')(k);if(!d){o.miss.push(r.key+':'+k);return;}if(!r.els.includes(d.el[0]))o.el.push(r.key+':'+k+' '+d.el[0]);if(r.cal?!F.includes(k):!G.includes(k))o.cal.push(r.key+':'+k);});});
   for(let i=0;i<150;i++){const run=T('newRun')(0);o.n++;const ok=run.rv===2&&run.order.slice(0,4).every((z,j)=>run.bosses[j]===R[z-T('REALM_BASE')].boss)&&run.final===R[run.order[4]-T('REALM_BASE')].boss;if(!ok)o.off++;if(run.rb)o.rb++;if(new Set(run.bosses.concat([run.final])).size!==5)o.uniq++;}
-  const seen={};for(let i=0;i<300;i++){const run=T('newRun')(1);run.order.forEach((z,j)=>{const r=R[z-T('REALM_BASE')],k=j<4?run.bosses[j]:run.final;if(![r.boss].concat(r.alt||[]).includes(k))o.off++;(seen[r.key]=seen[r.key]||new Set()).add(k);});}
-  o.varied=Object.keys(seen).filter(k=>seen[k].size>1).length;return o;});
-chk(`every realm has a Scourge (a Calamity in the five Calamity realms) and alternates: ${rb.miss.join(',')||'all 17'}`,!rb.miss.length&&!rb.cal.length||JSON.stringify([rb.miss,rb.cal]));
+  const seen={},dn=Date.now;/* realms14: newRun seeds from Date.now(); step it so 300 draws are 300 seeds (a loop inside one millisecond repeats one draw) */try{for(let i=0;i<300;i++){Date.now=()=>1700000000000+i*86400003;const run=T('newRun')(1);run.order.forEach((z,j)=>{const r=R[z-T('REALM_BASE')],k=j<4?run.bosses[j]:run.final;if(![r.boss].concat(r.alt||[]).includes(k))o.off++;(seen[r.key]=seen[r.key]||new Set()).add(k);});}}finally{Date.now=dn;}
+  o.varied=Object.keys(seen).filter(k=>seen[k].size>1).length;o.realmsSeen=Object.keys(seen).length;return o;});
+chk(`every realm has its own Scourge (a Calamity in the four Calamity realms), no alternates: ${rb.miss.join(',')||'all 20'}${rb.alt.length?' ALT '+rb.alt.join():''}`,!rb.miss.length&&!rb.cal.length&&!rb.alt.length||JSON.stringify([rb.miss,rb.cal]));
 chk(`the first element of every boss and alternate is one of its realm's elements (${rb.el.length?rb.el.join('; '):'all'})`,!rb.el.length);
 chk(`150 new journeys: each stage's boss is its realm's own (${rb.off} off), journey marked (${rb.rb}/150), none twice (${rb.uniq} repeats)`,rb.off===0&&rb.rb===150&&rb.uniq===0);
-chk(`New Game+ keeps the variety: ${rb.varied} realms drew an alternate in 300 journeys and stayed inside boss/alt`,rb.varied>=8&&rb.off===0);
+chk(`New Game+ keeps the variety through the realms (realms14: no alternates): ${rb.realmsSeen} of 20 realms came up in 300 journeys, each with its own boss only (${rb.varied} realms drew a second boss)`,rb.realmsSeen===20&&rb.varied===0&&rb.off===0);
 // ---------------- 5. rift gate colours ----------------
 const gc=await H.ev(()=>{const A=__A,T=A.TW.get,G=A.G,keys=T('echoKeys')(),cols=keys.map(k=>T('riftGateCol')(k)),h=c=>[1,3,5].map(i=>parseInt(c.slice(i,i+2),16)),o={n:keys.length,min:1e9,pair:'',el:0};
   for(let i=0;i<cols.length;i++)for(let j=i+1;j<cols.length;j++){const a=h(cols[i]),b=h(cols[j]),d=Math.hypot(a[0]-b[0],a[1]-b[1],a[2]-b[2]);if(d<o.min){o.min=Math.round(d);o.pair=keys[i]+'/'+keys[j];}}
   keys.forEach(k=>{if(cols[keys.indexOf(k)]===T('ELC')[T('guardianDef')(k).el[0]])o.el++;});o.rk=T('RIFT_COL');return o;});
-chk(`25 gates, 25 colours from the boss (RIFT_COL), the closest pair ${gc.pair} is ${gc.min} apart (>= 40); only ${gc.el} equal a plain element colour`,gc.n===25&&Object.keys(gc.rk).length===25&&gc.min>=40&&gc.el<=6);
+chk(`20 gates, 20 colours from the boss (RIFT_COL), the closest pair ${gc.pair} is ${gc.min} apart (>= 40); only ${gc.el} equal a plain element colour`,gc.n===20&&Object.keys(gc.rk).length===20&&gc.min>=40&&gc.el<=6);
 // HD-2D cache key
 await gfx(H,'medium');
 const hk=await H.ev(()=>{const A=__A,T=A.TW.get,G=A.G;G.won=true;G.echoStory={0:1,1:1,2:1,3:1,4:1};A.META.echoRift=true;G.riftWon={};T('echoKeys')().forEach(k=>{G.riftWon[k]=1;});A.getMap('s0');A.placeAt('s0',16,20,'u');A.V.modal=null;A.render();return 1;});
@@ -53,11 +53,11 @@ const hall=await H.ev(()=>{const A=__A,T=A.TW.get,m=A.getMap('s0'),o={solidEmpty
   // every solid tile char the hall uses has art in the dungeon draw pass: drawn by drawObjects (2D) and listed in H2_OBJ (HD-2D) or an actor (v braziers, gates)
   o.h2=T('H2_OBJ');return o;});
 chk(`Rift hall: no solid tile that shows nothing in 2D (${hall.hid.length?hall.hid.join('; '):'0 hidden'}) and no solid floor tile left (${hall.solidEmpty.length})`,!hall.hid.length&&!hall.solidEmpty.length);
-chk(`Rift hall tiles are only "${hall.chars}" and the bay signs (S, ${hall.signs}) are in the HD-2D prop set`,/^[#.EPSv]+$/.test(hall.chars)&&hall.h2.includes('S')&&hall.signs===5);
+chk(`Rift hall tiles are only "${hall.chars}" and the bay signs (S, ${hall.signs}) are in the HD-2D prop set`,/^[#.EPSv]+$/.test(hall.chars)&&hall.h2.includes('S')&&hall.signs===4/* realms14: four bays, four signs; was five */);
 // both renderers get their props from drawObjects (2D bakes the base with it, HD-2D cuts its prop cards from the same rows): the sign tile must paint pixels there
-const sg=await H.ev(()=>{const A=__A,T=A.TW.get,m=A.getMap('s0'),cv=document.createElement('canvas');cv.width=m.w*16;cv.height=64;const x=cv.getContext('2d');x.setTransform(1,0,0,1,0,-(9*16-58));T('drawObjects')(x,m,8);x.setTransform(1,0,0,1,0,0);
-  const d=x.getImageData(16*16,0,16,64).data;let n=0;for(let i=3;i<d.length;i+=4)if(d[i]>40)n++;return {n,h2:T('H2_OBJ').includes('S')};});
-chk(`the Rift sign at (16,8) paints ${sg.n} pixels in the shared prop pass (2D base and the HD-2D prop cards both use it)`,sg.n>60&&sg.h2);
+const sg=await H.ev(()=>{const A=__A,T=A.TW.get,m=A.getMap('s0'),cv=document.createElement('canvas');cv.width=m.w*16;cv.height=64;const x=cv.getContext('2d');const [sx,sy]=Object.keys(m.signs)[0].split(',').map(Number);/* realms14: the first sign (was the one at 16,8, which stood due north when there were five bays) */x.setTransform(1,0,0,1,0,-((sy+1)*16-58));T('drawObjects')(x,m,sy);x.setTransform(1,0,0,1,0,0);
+  const d=x.getImageData(sx*16,0,16,64).data;let n=0;for(let i=3;i<d.length;i+=4)if(d[i]>40)n++;return {n,sx,sy,h2:T('H2_OBJ').includes('S')};});
+chk(`the Rift sign at (${sg.sx},${sg.sy}) paints ${sg.n} pixels in the shared prop pass (2D base and the HD-2D prop cards both use it)`,sg.n>60&&sg.h2);
 // ---------------- 4. nodes ----------------
 const nd=await H.ev(()=>{const A=__A,G=A.G,T=A.TW.get,o={maps:0,bad:0,ex:[],auditNodes:0,withNodes:0};const seed0=G.run.seed,ord0=G.run.order.slice(),NZ=A.ZONES.length;
   for(let k=0;k<45;k++){G.run.seed=k*7919+101;G.run.order=ord0.map((z,i)=>(k*5+i*7)%NZ);G.sub=null;A.resetMaps();
@@ -94,7 +94,7 @@ const lg=await H.ev(()=>{const A=__A,T=A.TW.get,TPL=T('TPL'),o={rows:0,bad:[],to
     o.rows++;if(ratio<o.minR)o.minR=ratio;const need=L.b!=='robe';if(need&&lf<o.minLift)o.minLift=lf;
     if(ratio<.27||(need&&lf<6))o.bad.push(name+' ('+L.b+((L.back||[]).includes('cape')?' cape':'')+') change '+ratio.toFixed(2)+' lift '+lf);};
   Object.keys(TPL).forEach(id=>{const t=TPL[id];if(t.mon)return;audit(id,T('heroLook')(id),t.el,id,id+'_a');});
-  const seen={};for(let s=0;s<23;s++){A.G.run.order[0]=s;A.G.run.seed=900+s;A.resetMaps();const m=A.getMap('t0');(m.npcs||[]).forEach(n=>{if(!n.look||seen[n.name])return;seen[n.name]=1;o.vill++;audit(n.name,Object.assign({},n.look,{prop:null}),['light'],null,'npc:'+n.name+s)});}
+  const seen={};for(let s=0;s<26;s++){A.G.run.order[0]=s;/* realms14: 26 towns (6 + 20 realms; was 23) */A.G.run.seed=900+s;A.resetMaps();const m=A.getMap('t0');(m.npcs||[]).forEach(n=>{if(!n.look||seen[n.name])return;seen[n.name]=1;o.vill++;audit(n.name,Object.assign({},n.look,{prop:null}),['light'],null,'npc:'+n.name+s)});}
   A.resetMaps();return o;});
 chk(`${lg.rows} hero and townsfolk rigs (${lg.vill} townsfolk): the swing foot rises at least 6 rows of the 2x sprite (3 of the figure) on the north and south frames (least ${lg.minLift}, stride ${lg.stride} rows) and every frame pair changes at least 27% of the legs (least ${lg.minR.toFixed(2)}); failing: ${(()=>{const c={};lg.bad.forEach(b=>{const k=b.replace(/^.*\(/,'(').replace(/\).*$/,')');c[k]=(c[k]||0)+1;});return lg.bad.length?JSON.stringify(c)+' eg '+lg.bad.slice(0,3).join('; '):'none';})()}`,lg.bad.length===0&&lg.rows>=150&&lg.stride>=4);
 // ---------------- 8. wild recruits ----------------
@@ -131,7 +131,7 @@ const lm=await H.ev(()=>{const A=__A,G=A.G,T=A.TW.get,L=T('LM12'),o={n:L.length,
     const au=A.W71.drawAudit(m);if(au.hidden.length||au.holes.length||au.door.length||au.apron.length)o.aud.push(town+' '+JSON.stringify([au.hidden.slice(0,1),au.door.slice(0,1)]));
     if(T('mapIssues')(m).length)o.bad.push(town+' blocked');}}
   G.run.seed=seed0;G.run.order=ord0;A.resetMaps();o.dmin=Math.min(...o.dist);o.dmax=Math.max(...o.dist);o.dist=null;return o;});
-chk(`${lm.n} landmarks, one for each of the ${lm.zones} town names (${lm.cover} match), ${lm.ids} different ids, each named in its town's intro (${lm.intro} of ${lm.zones})`,lm.n===23&&lm.zones===23&&lm.cover===23&&lm.ids===23&&lm.intro===23);
+chk(`${lm.n} landmarks, one for each of the ${lm.zones} town names (${lm.cover} match), ${lm.ids} different ids, each named in its town's intro (${lm.intro} of ${lm.zones})`,lm.n===26&&lm.zones===26&&lm.cover===26&&lm.ids===26&&lm.intro===26/* realms14: 26 towns, three landmarks added; was 23 */);
 chk(`${lm.towns} towns built from 40 journeys: every one has its landmark on four 'j' tiles (${lm.none.length} without), no blocked door or gate, no hidden prop, door apron or hole (${lm.bad.concat(lm.aud).slice(0,3).join(' | ')||'clean'})`,!lm.none.length&&!lm.bad.length&&!lm.aud.length);
 chk(`placed where the entry sees it: ${lm.fit} of ${lm.towns} inside the 26 x 10 tile window of the entry at 1000x560 (>= 75%), ${lm.dmin} to ${lm.dmax} tiles away`,lm.fit>=lm.towns*.75);
 // the art: 23 cards, distinct silhouettes and signature colours that the cards are painted with
@@ -143,7 +143,7 @@ const art=await H.ev(()=>{const T=__A.TW.get,L=T('LM12'),o={empty:[],nocol:[],ma
   let minC=1e9,pc='',maxI=0,pi='';for(let i=0;i<L.length;i++)for(let j=i+1;j<L.length;j++){const a=h(L[i].col),b=h(L[j].col),d=Math.hypot(a[0]-b[0],a[1]-b[1],a[2]-b[2]);if(d<minC){minC=d;pc=L[i].id+'/'+L[j].id;}
     let inter=0,uni=0;for(let k=0;k<o.masks[i].length;k++){const p=o.masks[i][k],q=o.masks[j][k];if(p&&q)inter++;if(p||q)uni++;}const iou=inter/uni;if(iou>maxI){maxI=iou;pi=L[i].id+'/'+L[j].id;}}
   o.minC=Math.round(minC);o.pc=pc;o.maxI=+maxI.toFixed(2);o.pi=pi;o.masks=null;return o;});
-chk(`23 cards painted (none empty, animated ones change per frame: ${art.empty.join(' ')||'ok'}), each in its signature colour (${art.nocol.join(' ')||'all 23'}); closest two signature colours ${art.pc} are ${art.minC} apart (>= 30); most alike silhouettes ${art.pi} overlap ${art.maxI} (<= .85)`,!art.empty.length&&!art.nocol.length&&art.minC>=30&&art.maxI<=.85);
+chk(`26 cards painted (none empty, animated ones change per frame: ${art.empty.join(' ')||'ok'}), each in its signature colour (${art.nocol.join(' ')||'all 26'}); closest two signature colours ${art.pc} are ${art.minC} apart (>= 30); most alike silhouettes ${art.pi} overlap ${art.maxI} (<= .85)`,!art.empty.length&&!art.nocol.length&&art.minC>=30&&art.maxI<=.85);
 // the town in view: both renderers draw it, facing it reads it, the Waystone row names it
 const SH=process.env.SHOTS;if(SH)fs.mkdirSync(SH,{recursive:true});
 const setupTown=(i,face)=>H.ev(([i,face])=>{const A=__A,G=A.G,T=A.TW.get;G.run.order[0]=i;G.run.seed=424242+i;G.sub=null;A.resetMaps();G.stage=0;G.cleared=[false,false,false,false,false];A.WS.dlg=null;A.V.modal=null;const m=A.getMap('t0'),e=T('lmEntries')(m)[0],L=m.lm,

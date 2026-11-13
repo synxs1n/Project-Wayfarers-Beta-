@@ -93,7 +93,11 @@ const SL_DEN={
  shattered:{shape:'cliff',rk:'m',cap:'#c8c8d8',cap2:'#9a9ab0',deco:['shards'],inner:'#3a3460',acc:'#ffe08a',acc2:'#8ad0ff',lt:'gold'},
  ashglass:{shape:'dome',rk:'s',cap:'#f4f8f4',cap2:'#bfe8e0',deco:['salt'],inner:'#3a4a60',acc:'#e8f4ff',acc2:'#8adccc',lt:'cyan'},
  ashen:{shape:'cliff',rk:'b',cap:'#2a2624',cap2:'#1a1614',deco:['ember','stars'],inner:'#7a2a14',acc:'#ff6a3a',acc2:'#b080ff',lt:'fire'},
- starless:{shape:'cliff',rk:'v',cap:'#3a3060',cap2:'#2a2248',deco:['stars'],inner:'#3a2a6a',acc:'#b080ff',acc2:'#8ae6d4',lt:'violet'}};
+ starless:{shape:'cliff',rk:'v',cap:'#3a3060',cap2:'#2a2248',deco:['stars'],inner:'#3a2a6a',acc:'#b080ff',acc2:'#8ae6d4',lt:'violet'},
+ // realms14: the three realms added for the Scourges that had none
+ moors:{shape:'mound',rk:'u',cap:'#8a6a3e',cap2:'#6a4e2c',deco:['roots','thistle'],inner:'#3a2a3a',acc:'#e0b050',acc2:'#a05a7a',lt:'lamp'},
+ bamboo:{shape:'mound',rk:'g',cap:'#7aa850',cap2:'#58884e',deco:['roots','mush'],inner:'#2a5a3a',acc:'#a0e0a0',acc2:'#f0f0c0',lt:'fungus'},
+ bone:{shape:'mound',rk:'t',cap:'#c8c0a6',cap2:'#a8a086',deco:['cairn','roots'],inner:'#2a261e',acc:'#f0ead8',acc2:'#8a8478',lt:'lamp'}};
 function slDenShape(P,sh){const W=P.w,H=P.h;
   if(sh==='mound')return M=>{M.ell('#fff',32,36,28,14);M.f('#fff',4,36,56,12);M.ell('#fff',32,30,20,10);};
   if(sh==='dome')return M=>{M.ell('#fff',32,32,26,18);M.f('#fff',6,32,52,16);M.ell('#fff',14,38,10,8);M.ell('#fff',50,38,10,8);};
@@ -219,11 +223,12 @@ function slLights(m){const o=[];try{const S=slSites(m);if(!S)return o;S.dens.for
 {const hb0=hdBakeLights;hdBakeLights=function(m,S,lights){let add=null;try{if(m&&m.kind==='field'&&!m.fort)add=slLights(m);}catch(e){}return hb0.call(this,m,S,add&&add.length?(lights||[]).concat(add):lights);};}
 // ---------- LAIRS: the realm's own front for the main dungeon (64 x 60, the door on the 'E' tile) ----------
 const SL_LK={thistle:'thistle',orchard:'orchard',strand:'strand',mire:'mire',deeps:'smelter',grotto:'grotto',tundra:'vault',glacier:'choir',peaks:'bell',mesa:'sunspire',lakes:'mill',mines:'foundry',
-  ashen:'throne',drowned:'crown',starless:'obs',shattered:'zenith',ashglass:'cathedral'};
+  ashen:'throne',drowned:'crown',starless:'obs',shattered:'zenith',ashglass:'cathedral',moors:'rookery',bamboo:'pagoda',bone:'ossuary'/* realms14 */};
 const SL_LKIT={thistle:{lt:'lamp',lr:20,bits:'thistle',rk:'g'},orchard:{lt:'gold',lr:22,bits:'apples',rk:'t'},strand:{lt:'cyan',lr:20,bits:'kelp',rk:'w'},mire:{lt:'cyan',lr:18,bits:'kelp',rk:'u'},
   smelter:{lt:'fire',lr:26,bits:'ember',rk:'b'},grotto:{lt:'fungus',lr:24,bits:'mush',rk:'b'},vault:{lt:'ice',lr:24,bits:'ice',rk:'i'},choir:{lt:'ice',lr:22,bits:'ice',rk:'i'},bell:{lt:'lamp',lr:18,bits:'moss',rk:'m'},
   sunspire:{lt:'gold',lr:22,bits:'sand',rk:'s'},mill:{lt:'cyan',lr:18,bits:'kelp',rk:'w'},foundry:{lt:'fire',lr:26,bits:'ore',rk:'u'},throne:{lt:'fire',lr:28,bits:'ember',rk:'b'},crown:{lt:'cyan',lr:24,bits:'kelp',rk:'v'},
-  obs:{lt:'violet',lr:24,bits:'stars',rk:'v'},zenith:{lt:'gold',lr:24,bits:'shards',rk:'m'},cathedral:{lt:'cyan',lr:24,bits:'salt',rk:'s'}};
+  obs:{lt:'violet',lr:24,bits:'stars',rk:'v'},zenith:{lt:'gold',lr:24,bits:'shards',rk:'m'},cathedral:{lt:'cyan',lr:24,bits:'salt',rk:'s'},
+  rookery:{lt:'lamp',lr:18,bits:'thistle',rk:'u'},pagoda:{lt:'gold',lr:22,bits:'moss',rk:'g'},ossuary:{lt:'lamp',lr:20,bits:'ore',rk:'t'}};
 function slLairKit(m){const k=slKey(m);let id=k.key&&SL_LK[k.key]||{meadow:'thistle',coast:'strand',cave:'smelter',snow:'vault',heights:'bell',void:'obs'}[k.th]||'thistle';return Object.assign({id},SL_LKIT[id]);}
 function slArch(P,col,cx,by,w,h){const r=w/2,top=by-h;for(let y=top;y<=by;y++){const hw=y<top+r?Math.sqrt(Math.max(0,r*r-(top+r-y-.5)*(top+r-y-.5))):r;P.f(col,Math.round(cx-hw),y,Math.round(hw*2),1);}}
 // a pointed arch (gothic): two arcs meeting at a peak
@@ -365,7 +370,31 @@ const SL_LD={
    P.ell('#2a3a50',32,16,9,9);P.ell('#8ae0f0',32,16,7,7);for(let i=0;i<8;i++){const a=i/8*6.283;P.line('#e8f8ff',32,16,Math.round(32+Math.cos(a)*7),Math.round(16+Math.sin(a)*7));}P.ell('#fff2a8',32,16,2,2);P.f('#2a3a50',24,14,5,1);P.f('#e8f8ff',34,9,1,6);
    slDoor(P,rk,32,59,16,30,'#4a7a9a',{point:1});for(let x=6;x<58;x+=2)if((x*7)%5<3)P.f('#ffffff',x,19+((x*3)%3),1,1);
    [[8,30],[52,30]].forEach(([x,y])=>{P.f('#2a3a50',x,y,4,14);P.f('#8ae0f0',x+1,y+1,2,10);P.f('#e8f8ff',x+1,y+1,1,4);});for(let i=0;i<10;i++)P.f(i%2?'#f4f8f4':'#bfe8e0',4+((i*6)%56),56+(i%3),3,1);
-   [[10,59],[54,59]].forEach(([x,y])=>{P.poly('#f4f8f4',[[x-2,y],[x,y-8],[x+2,y]]);P.px('#8adccc',x,y-5);});}};
+   [[10,59],[54,59]].forEach(([x,y])=>{P.poly('#f4f8f4',[[x-2,y],[x,y-8],[x+2,y]]);P.px('#8adccc',x,y-5);});},
+ // realms14: three lair fronts for the realms added for the Scourges that had none. The rookery: a heather barrow under a split oak full of crows.
+ rookery:P=>{const rk=['#8a7a6a','#6a5c50','#4a4038','#1c1612'];
+   P.mass(M=>{M.ell('#fff',32,50,31,14);M.f('#fff',2,50,60,10);M.f('#fff',14,32,36,20);},['#7a5a3a','#5e4430','#463222','#1e1610'],{seed:3,fall:1});
+   for(let i=0;i<26;i++)P.px(i%3?'#a05a7a':'#d07a3a',4+((i*9)%56),30+((i*5)%22));
+   slDoor(P,rk,32,59,14,24,'#3a2a3a',{point:1});P.f('#c8b090',26,33,12,1);
+   // the oak and its crows
+   P.f('#2e2228',50,12,5,46);P.f('#4a3a42',50,12,2,46);P.line('#2e2228',52,26,60,14);P.line('#2e2228',52,32,42,22);P.line('#2e2228',51,18,44,8);P.line('#2e2228',54,20,58,6);
+   [[58,12],[44,20],[43,8],[56,5],[47,30],[60,24]].forEach(([x,y],i)=>{P.f('#14101c',x,y,3,2);P.f('#14101c',x+2,y-1,2,1);P.px('#e0b050',x+4,y-1+(i%2));});
+   P.f('#5a4a58',6,48,3,10);P.f('#5a4a58',12,50,2,8);P.poly('#14101c',[[8,47],[10,41],[12,47]]);},
+ // the pagoda: a stepped cane temple with a lantern door and bamboo stands either side
+ pagoda:P=>{const rk=['#9ab08a','#7a9070','#5a7050','#243020'];
+   P.mass(M=>{M.f('#fff',14,38,36,22);M.f('#fff',18,26,28,12);M.f('#fff',22,16,20,10);},rk,{seed:4,brick:5});
+   [[8,38,48,5],[14,26,36,4],[18,16,28,4],[22,6,20,3]].forEach(([x,y,w,h],i)=>{P.poly('#3a6a4a',[[x-4,y+h],[x+4,y-3],[x+w-4,y-3],[x+w+4,y+h]]);P.poly('#5a8a5a',[[x-2,y+h-1],[x+5,y-2],[x+w-5,y-2],[x+w+2,y+h-1]]);P.f('#243020',x-4,y+h,w+8,1);if(i<3)P.px('#f0d070',x+w/2,y+h+2);});
+   P.f('#f0d070',31,2,2,5);P.px('#fff6c0',32,2);
+   slDoor(P,rk,32,59,12,20,'#d8a040',{k:1});P.f('#e8c850',29,41,6,5);P.f('#fff0a0',30,42,4,3);P.f('#6a4a2a',31,38,2,3);
+   [[4,6],[9,10],[54,8],[59,6]].forEach(([x,t],i)=>{P.f(i%2?'#8ab85a':'#6a9a4a',x,t+6,3,58-t-6);for(let y=t+16;y<58;y+=9)P.f('#3a6a2a',x,y,3,1);P.poly('#5a9a3a',[[x-3,t+8],[x+1,t+4],[x+5,t+8]]);});},
+ // the ossuary: a pale vault front built of stacked bone, a skull keystone over a dark door
+ ossuary:P=>{const rk=['#e4dcc4','#c4bca4','#9a927c','#3a3628'];
+   P.mass(M=>{M.f('#fff',6,22,52,38);M.poly('#fff',[[6,22],[16,12],[32,6],[48,12],[58,22]]);},rk,{seed:5,brick:4});
+   for(let y=24;y<56;y+=5)for(let x=8+((y/5)%2)*3;x<54;x+=6){P.f('#f4eed8',x,y,4,2);P.f('#8a826c',x+3,y+1,1,2);}
+   slDoor(P,rk,32,59,16,28,'#2a261c',{point:1});
+   P.ell('#f4eed8',32,16,6,6);P.f('#2a261c',29,15,2,3);P.f('#2a261c',33,15,2,3);P.f('#2a261c',31,19,2,2);P.f('#d8d0b8',29,21,6,2);
+   [[4,59],[58,59]].forEach(([x,y])=>{P.f('#c4bca4',x-2,y-16,4,16);P.ell('#f4eed8',x,y-17,3,2);});
+   for(let i=0;i<8;i++)P.f(i%2?'#f4eed8':'#c4bca4',10+((i*7)%44),56+(i%3),3,1);}};
 const SL_LAIRC={};
 function slLairSprite(m){return slLairByKit(slLairKit(m),!!(G&&G.cleared&&G.cleared[m.s]));}
 function slLairByKit(K,lit){const id='lair:'+K.id+':'+(lit?1:0);if(SL_LAIRC[id])return SL_LAIRC[id];

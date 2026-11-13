@@ -19,6 +19,7 @@ function starterDraw(seed){
   const ORDER=['warrior','knight','mage','healer','thief','archer','monk','bard'];
   return out.sort((a,b)=>ORDER.indexOf(TPL[a].cls)-ORDER.indexOf(TPL[b].cls));
 }
+starterDraw=HOOK.def('starterDraw',starterDraw);// v0.20.6: roster14.js draws 16 (2 per element, 2 per class) from the whole roster instead of the 8 above
 // How many starter picks are left once Legacy heroes have taken their places (never more than 3 heroes in total).
 function starterSlots(){const L=((V&&V.legacyPick)||[]).filter(id=>TPL[id]&&(META.legacy||[]).includes(id)).slice(0,2).length;return Math.max(1,3-L);}
 function starterPreview(id){

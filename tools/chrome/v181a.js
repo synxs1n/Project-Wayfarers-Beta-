@@ -8,7 +8,7 @@
 // 4) the tavern mixes: 200 first-town draws, no main element twice when the pool has four or more main elements (never more than two), and a
 //    class repeats only when the pool cannot seat four classes under the rules; the same draws with the mix rules off show the old repeats
 // 5) learn levels: every hero's 12 skill kit starts at level 1 (two at most), no gap over 6 levels, never three within 3 levels, the last under the cap,
-//    the old order kept; an old save keeps what the old levels gave (c.keep) and a new journey is marked (G.m14lv)
+//    the old order kept; an old save keeps what the old levels gave (c.keep) and a new journey is marked (G.m14lv, 2 since 0.20.6: v185a has the level 45 schedule)
 // SHOTDIR=dir saves screenshots. Usage: PWHTML=../../out/aurelis3.html [SHOTDIR=/tmp/x] node v181a.js
 const {open,chk,done}=require('./pw');
 const PRE=`localStorage.clear();localStorage.setItem('aurelis-meta-v1',JSON.stringify({cfg:{speed:1,enc:'off',music:0,sfx:0,gfx:'medium',hints:false,tips:false}}));`;
@@ -86,5 +86,5 @@ const kt=await ev(()=>{const S=__S12,T=S.TPL,M=__M14,bad=[];let n=0,maxGap=0;Obj
  return {n,bad,maxGap,dl,kept,has,kn,old,flag:g.m14lv,newFlag:G.m14lv};});
 console.log('kits:',JSON.stringify(kt));
 chk(`learn levels: ${kt.n} kits start at 1, no gap over 6 (largest ${kt.maxGap}), never three within 3 levels, last under the cap, order kept`,kt.bad.length===0||kt.bad.slice(0,6).join(' | '));
-chk('an old save keeps every skill the old levels gave'+(kt.dl?` (${kt.dl.id} at level ${kt.dl.old} keeps ${kt.dl.n}, now level ${kt.dl.lv})`:'')+'; new journeys are marked',!!kt.dl&&kt.has&&kt.kept>0&&kt.kn===kt.old&&kt.flag===1&&kt.newFlag===1||JSON.stringify(kt));
+chk('an old save keeps every skill the old levels gave'+(kt.dl?` (${kt.dl.id} at level ${kt.dl.old} keeps ${kt.dl.n}, now level ${kt.dl.lv})`:'')+'; new journeys are marked 2 (v185a: the levels of this pass, G.m14lv 1 saves are migrated again)',!!kt.dl&&kt.has&&kt.kept>0&&kt.kn===kt.old&&kt.flag===2&&kt.newFlag===2||JSON.stringify(kt));
 await done(last);})();

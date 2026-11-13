@@ -28,6 +28,7 @@ function roamSpawn(m){
     const elite=R()<ROAM.elite,mon=mons[i],mod=elite?ELITE_MODS[Math.floor(R()*ELITE_MODS.length)].k:null;
     out.push({i,x,y,hx:x,hy:y,dir:['u','d','l','r'][Math.floor(R()*4)],mon,elite,mod,name:elite?`${MON[mon].n} ${ELITE_TITLES[Math.floor(R()*ELITE_TITLES.length)]}`:MON[mon].n,dead:dead.includes(i),t:0,mode:'patrol',lost:0,rest:0,role:(typeof b4RoleOfMon==='function'&&b4RoleOfMon(MON[mon]))||null});}
   m.roam=out;return out;}
+roamSpawn=HOOK.def('roamSpawn',roamSpawn);// v0.20.6: world14.js re-picks roamers that stand where the walk does not reach
 function roamSees(m,r,px,py){const [dx,dy]=DIRV[r.dir],vx=px-r.x,vy=py-r.y,fw=vx*dx+vy*dy,side=Math.abs(vx*dy-vy*dx);
   if(fw<1||fw>ROAM.sight||side>Math.ceil(fw/2))return false;
   // line of sight: every tile on the way must be open floor

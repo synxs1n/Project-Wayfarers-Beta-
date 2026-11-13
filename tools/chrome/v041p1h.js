@@ -1,4 +1,4 @@
-// v0.4.1 1.6: dungeon and cave entrances are never drawn rotated, on every field in every gate orientation
+// v0.4.1 1.6: dungeon and cave entrances are never drawn rotated, on every field in every gate orientation (v0.20.6: and all face south)
 const {open,chk,done}=require('./pw');
 (async()=>{
 const H=await open({w:430,h:800,mobile:true});
@@ -13,6 +13,7 @@ const r=await H.ev(()=>{const A=__A,G=A.G;const P=CanvasRenderingContext2D.proto
   finally{P.rotate=rot0;}
   return {rotated,fields,faces};});
 console.log(JSON.stringify(r));
-chk('1.6 fields covered include non-south entrances',Object.keys(r.faces).filter(k=>!k.endsWith('0,1')).length>0);
+// v0.20.6 (world14.js): every den, lair and shrine faces the camera whatever the gate orientation, so the faces are all south (this used to ask for some that were not)
+chk('1.6 fields covered: every entrance faces south in every gate orientation '+JSON.stringify(r.faces),r.fields>=90&&Object.keys(r.faces).every(k=>k.endsWith('0,1')));
 chk('1.6 no entrance is drawn rotated',r.rotated===0||JSON.stringify(r));
 await done(H);})();

@@ -86,14 +86,14 @@ function buildScreen(){
     const leg=(META.legacy||[]).filter(id=>TPL[id]);
     scr.innerHTML=`<section class="title"><div class="tstage"><canvas id="tcv"></canvas><div class="lineup">${titleScene().ids.map((id,i)=>`<img src="${heroURL(id)}" style="--d:${i*.17}s" alt="">`).join('')}</div></div>
       <p class="pre">Project</p><h1 class="logo">Aurelis</h1><p class="sub">Wayfarers</p>
-      <p class="tagline">${RAW.length} wayfarers. Five realms per journey, drawn from seventeen. Sixteen Scourges, five Calamities. Every run is different.</p><p class="ver">${esc(GAME_VERSION)}</p>
+      <p class="tagline">${RAW.length} wayfarers. Five realms per journey, drawn from twenty. Sixteen Scourges, four Calamities, each in a realm of its own. Every run is different.</p><p class="ver">${esc(GAME_VERSION)}</p>
       ${(()=>{/* v0.6.0: Continue first when there are saves, then New Journey and the Daily Trial; Settings and Help in a small row; save tools grouped */
         const has=[0,1,2].some(s=>slotState(s)!=='empty'),nj=META.cycles?'New Journey (NG+ '+META.cycles+')':'New Journey';
         return `<div class="tmenu"><div class="tmain">${has?'<button class="btn gold tbig" data-act="slots">Continue</button>':''}<button class="btn ${has?'':'gold tbig'}" data-act="new">${nj}</button><button class="btn daily" data-act="daily">Daily Trial</button></div>
         <div class="tmore"><button class="btn sm" data-act="settings">Settings</button><button class="btn sm" data-act="fbOpen">Help / Feedback</button></div>
         <details class="ttools"><summary>Saves and codes</summary><div class="tmore"><button class="btn sm" data-act="importOpen">Import save</button><button class="btn sm" data-act="recoverOpen">Recover saves</button><button class="btn sm" data-act="redeemOpen">Redeem code</button></div></details></div>`;})()}${svTitleNote()}
       ${leg.length?`<div class="legacy"><h3>Legacy heroes</h3><p class="note">Bring up to two of them on each new journey. They join at level 5 with veteran stats.</p><div class="els">${leg.map(id=>port(id,'sm')+`<b>${TPL[id].n}</b>`).join(' ')}</div></div>`:''}
-      <ul class="pitch"><li>Each journey: five realms, four Scourges drawn from twenty, and one of five Calamities at the end.</li><li>Mark a foe with one element, hit it with another: Melt, Conduct, Eclipse and 53 more reactions.</li><li>Break a Scourge's or Calamity's shield by hitting its weaknesses, then pile on.</li><li>Bonds, Limit Breaks, bounties, an arena, tempering and a legacy hero you keep forever.</li></ul></section>`;
+      <ul class="pitch"><li>Each journey: five realms, four Scourges drawn from sixteen, and one of four Calamities at the end.</li><li>Mark a foe with one element, hit it with another: Melt, Conduct, Eclipse and 53 more reactions.</li><li>Break a Scourge's or Calamity's shield by hitting its weaknesses, then pile on.</li><li>Bonds, Limit Breaks, bounties, an arena, tempering and a legacy hero you keep forever.</li></ul></section>`;
   }else if(s==='starter'){scr.innerHTML='<div id="starterBox"></div>';}
   else if(s==='world'){
     scr.innerHTML=`<div class="world"><div class="wview"><canvas id="wcv"></canvas><div id="wloc" class="wloc"></div><div id="wdlg"></div></div>
@@ -177,6 +177,7 @@ function vStarter(){
     <div class="grid cards">${((V.starterOpts&&V.starterOpts.length)?V.starterOpts:STARTERS).map(id=>`<div class="cardwrap">${heroCard(id,V.pick.includes(id),'pickS')}<button class="btn sm sheetb" data-act="sheetS" data-arg="${id}" aria-label="Open ${esc(TPL[id].n)}'s full sheet">Full sheet</button></div>`).join('')}</div>
     <div class="btnrow"><button class="btn" data-act="toTitle">Back</button><button class="btn gold" data-act="begin" ${n>=1&&n<=starterSlots()?'':'disabled'}>Begin with ${n+3-starterSlots()}/3</button></div></section>`;
 }
+vStarter=HOOK.def('vStarter',vStarter);// v0.20.6: roster14.js lays the screen out as permanent recruits plus the sixteen (twists.js still wraps it)
 function heroCard(id,sel,act,extra){
   const t=TPL[id],cls=CLS[t.cls],dual=t.el.length>1;
   return `<${act?'button':'div'} class="card hero elstrip ${sel?'sel':''} ${dual?'dual':''} ${isLeg(id)?'leg':isEpic(id)?'epic':''}" ${dualStyle(t)} ${act?`data-act="${act}" data-arg="${id}"`:''}>
@@ -456,6 +457,7 @@ function mLegacy(){
   const ids=Object.keys(G.roster).filter(id=>!(META.legacy||[]).includes(id)&&!TPL[id].mon);
   return box('Choose a Legacy',`<p class="story">The Meridian burns again. One of your wayfarers will carry this journey into every journey after it: they join each new game at level 5 with veteran stats.</p><div class="grid mini">${ids.map(id=>{const c=G.roster[id];return `<button class="mini" data-act="legacy" data-arg="${id}"><img src="${heroURL(id)}" alt=""><b>${esc(c.name)}</b><small>Lv ${c.lv} ${CLS[TPL[id].cls].n}</small><span class="els">${c.el.map(ico).join('')}</span></button>`;}).join('')}</div>`,'<button class="btn" data-act="closeModal">Decide later</button>',true);
 }
+mLegacy=HOOK.def('mLegacy',mLegacy);// v0.20.6: roster14.js: choose any number of permanent recruits
 
 // ----- actions -----
 function assignSlot(id,slot){const p=[];for(let i=0;i<6;i++)p.push(G.party[i]||null);const cur=p.indexOf(id),prev=p[slot];if(cur>=0)p[cur]=prev;p[slot]=id;G.party=p.filter(Boolean);}

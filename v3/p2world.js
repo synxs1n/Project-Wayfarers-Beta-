@@ -150,7 +150,7 @@ placeNodes=function(m){
 // water, signs, boards, fountains and waystones are never moved, so the lane goes around them. Townsfolk never stand or wander in a lane.
 const LANE_CLEAR='tTfxbhkmyLuavgNePr';
 function laneMain(m){// the main roads: '=' and ':' tiles of the town plan before any gate was cut
-  try{const Z=ZS(m.s),t=TOWNGEN[Z.theme](mulberry(500+m.s*41+realmOf(m.s))),S=new Set();t.g.forEach((r,y)=>r.forEach((c,x)=>{if((c==='='||c===':')&&x>0&&y>0&&x<r.length-1&&y<t.g.length-1)S.add(x+','+y);}));return S;}catch(e){return new Set();}}
+  try{const Z=ZS(m.s),t=townGen(Z,m.s,mulberry(500+m.s*41+realmOf(m.s))),S=new Set();t.g.forEach((r,y)=>r.forEach((c,x)=>{if((c==='='||c===':')&&x>0&&y>0&&x<r.length-1&&y<t.g.length-1)S.add(x+','+y);}));return S;}catch(e){return new Set();}}
 function laneGates(m){const W=m.w||m.t[0].length,H=m.h||m.t.length,out=[];const ex=m.exits||[];
   const side=e=>e.x===0?'w':e.x===W-1?'e':e.y===0?'n':e.y===H-1?'s':null;
   ['w','e','n','s'].forEach(sd=>{const c=ex.filter(e=>side(e)===sd);if(c.length)out.push({side:sd,cells:c.map(e=>[e.x,e.y])});});return out;}

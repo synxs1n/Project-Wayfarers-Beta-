@@ -146,12 +146,12 @@ chk(coupled?'bosses follow their realm (realm data names a boss per realm)':'NG+
 chk('every start has five distinct realms, four distinct Scourges, and the first realm has its quests',r.rows.every(x=>x.distinct&&x.quests)||JSON.stringify(r.rows.map(x=>[x.distinct,x.quests])));
 // once everything is seen: random, with a lean toward what was not in the last two playthroughs (compared with the same draw without the lean)
 r=await ev(()=>{const A=__A,T=A.TW.get,GP=T('GPOOL'),FP=T('FPOOL'),STD=T('REALM_STD'),CAL=T('REALM_CAL'),o={};
-  // 8 playthroughs, newest last: the last two met these eight Scourges; the older ones met the rest, so all 20 are seen
-  const mk=()=>{const runs=[];for(let n=0;n<8;n++){const bs=n===7?GP.slice(0,4):n===6?GP.slice(4,8):GP.slice(8+((n*4)%12),8+((n*4)%12)+4);runs.push({s:n+1,c:n,o:[],b:[],f:FP[n%FP.length],vis:n>=6?STD.slice(0,4):STD.slice(4+(n%2)*4,8+(n%2)*4),bs:bs.concat([FP[n%FP.length]])});}
+  // 8 playthroughs, newest last: the last two met these eight Scourges; the older ones met the rest, so all 16 are seen (realms14: was 20)
+  const mk=()=>{const runs=[];for(let n=0;n<8;n++){const bs=n===7?GP.slice(0,4):n===6?GP.slice(4,8):GP.slice(8+((n*4)%8),8+((n*4)%8)+4);runs.push({s:n+1,c:n,o:[],b:[],f:FP[n%FP.length],vis:n>=6?STD.slice(0,4):STD.slice(4+(n%2)*4,8+(n%2)*4),bs:bs.concat([FP[n%FP.length]])});}
     GP.slice(12).forEach(k=>runs[0].bs.push(k));runs[0].vis=STD.slice().concat(CAL);FP.forEach(k=>runs[0].bs.push(k));return runs;};
   const run=lean=>{const P=__PT12.PT12,l0=P.lean;P.lean=lean;try{const ctx={runs:mk(),seenBoss:()=>true},cnt={},rc={};GP.forEach(k=>cnt[k]=0);STD.forEach(i=>rc[i]=0);let unseen=0;const N=3000;
     for(let i=0;i<N;i++){let a=i*7919+13;const S=__PT12.pt12Select(ctx,()=>{a=(a*1664525+1013904223)>>>0;return a/4294967296;});S.bosses.forEach(k=>cnt[k]++);S.order.slice(0,4).forEach(x=>rc[x]++);if(S.newBosses||S.newRealms)unseen++;}
-    const rec=GP.slice(0,8).reduce((a,k)=>a+cnt[k],0)/8,old=GP.slice(8).reduce((a,k)=>a+cnt[k],0)/12,rr=STD.slice(0,4).reduce((a,i)=>a+rc[i],0)/4,ro=STD.slice(4).reduce((a,i)=>a+rc[i],0)/8;
+    const rec=GP.slice(0,8).reduce((a,k)=>a+cnt[k],0)/8,old=GP.slice(8).reduce((a,k)=>a+cnt[k],0)/(GP.length-8),rr=STD.slice(0,4).reduce((a,i)=>a+rc[i],0)/4,ro=STD.slice(4).reduce((a,i)=>a+rc[i],0)/(STD.length-4);
     return {rec,old,ratio:old/rec,rRatio:ro/rr,unseen,recMin:Math.min(...GP.slice(0,8).map(k=>cnt[k])),coupled:__PT12.pt12Select(ctx,()=>.5).coupled};}finally{P.lean=l0;}};
   o.flat=run(0);o.lean=run(__PT12.PT12.lean);o.gain=o.lean.ratio/o.flat.ratio;o.rGain=o.lean.rRatio/o.flat.rRatio;return o;});
 console.log('\nlean test (2000 draws, everything seen): bosses old/recent no lean',r.flat.ratio.toFixed(2),'lean',r.lean.ratio.toFixed(2),'gain x'+r.gain.toFixed(2),'| realms gain x'+r.rGain.toFixed(2),'| coupled',r.lean.coupled);

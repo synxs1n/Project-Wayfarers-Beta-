@@ -271,6 +271,7 @@ function drawBuilding(ctx,m,b){
     for(let i=0;i<10;i++)f(shade(roof,.8),sx+i-1,rt-20-i+ (i>4?0:0),18-i*2+2,1);f(roof,sx+2,rt-29,12,9);f(shade(roof,.6),sx+7,rt-35,2,8);f('#f0c050',sx+5,rt-33,6,1);
     f(OUTC,sx+3,rt-14,10,10);const glass=['#e04a4a','#3a8ae0','#f2c93a','#6ab048'];for(let j=0;j<8;j++)for(let i=0;i<8;i++){if((i-3.5)**2+(j-3.5)**2<16)f(glass[(i+j)%4],sx+4+i,rt-13+j,1,1);}}
 }
+drawBuilding=HOOK.def('drawBuilding',drawBuilding);// v0.20.6: towns14.js paints a realm's own building family through a hook
 function drawWindmillBody(ctx,m,b){m.mills=m.mills||[];const cx=b.x*TS+b.w*TS/2,cy=b.y*TS+2;if(!m.mills.some(q=>q[0]===cx))m.mills.push([cx,cy]);}
 function drawKeep(ctx,m,b){
   const T=THM(m),S=T.stone,x0=b.x*TS,y0=b.y*TS,w=b.w*TS,h=b.h*TS,R=mulberry(b.x*11+b.y);

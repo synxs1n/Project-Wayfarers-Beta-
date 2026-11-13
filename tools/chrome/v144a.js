@@ -23,7 +23,7 @@ for(const o of R.out){chk(`${o.key}: both frames draw, the map (tiles, mapIssues
  if(o.den!==undefined)chk(`${o.key}: den mouth 64x55 (64x48 with its top face) on its unchanged E tile`,o.den&&o.denE||JSON.stringify(o));
  if(o.lair!==undefined)chk(`${o.key}: lair front 64x67 (64x60 with its top face), entrance E and every mound tile unchanged`,o.lair&&o.entE&&o.mask||JSON.stringify(o));
  if(o.fort!==undefined)chk(`${o.key}: Sanctum keeps the 3 x 2 U/E footprint, 3 lights`,o.fort&&o.lights===3||JSON.stringify(o));}
-chk('17 realms, 17 distinct den mouths and 17 distinct lair fronts; relit differs',R.dens===R.nd&&R.nd===17&&R.kits===17&&R.lit||JSON.stringify([R.dens,R.kits,R.lit]));
+chk('20 realms, 20 distinct den mouths and 20 distinct lair fronts; relit differs [realms14: was 17; the three new realms have their own rookery, pagoda and ossuary lairs]',R.dens===R.nd&&R.nd===20&&R.kits===20&&R.lit||JSON.stringify([R.dens,R.kits,R.lit]));
 // depth pass: no entrance is a flat fill. Every den and lair sprite has many tones, is lit from the upper left (the upper left half is brighter than the lower right
 // half) and has a darker foot; the ground carries a cast shadow row under a den mouth, a lair front and the Sanctum shrine (drawTile differs with and without it)
 const DP=await ev(()=>{const A=__A,g=A.TW.get,G=g('G'),Z=g('ZONES');

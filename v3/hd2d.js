@@ -187,6 +187,9 @@ function hdTentCone(S,b,p,cv,Q,U,Vv,V,bt){const w=b.w*TS,h=b.h*TS,x0=b.x*TS,zf=(
     bt.quad4(H2P,[ua,va,ua,va,u1,vb,u0,vb],255,255,255,255,nx,ny,nz,2|8);}
   {const r0=apexRow-8,sx=cxs-2,sw=11,yt=ya+8*V;Q([cx-2,yt,zm,cx+sw-2,yt,zm,cx+sw-2,ya-1*V,zm,cx-2,ya-1*V,zm],U(p,sx),Vv(p,r0),U(p,sx+sw),Vv(p,apexRow+1),255,[0,.45,.89],2|8);}
   S.bh.push({b,h:ya});}
+// v0.20.6: the pitch of a roofed house (1 = the old gable); towns14.js gives each building family its own (a low hull, a steep chalet)
+function hdRoofProf(m,b){return 1;}
+hdRoofProf=HOOK.def('hdRoofProf',hdRoofProf);
 function hdBakeBuildings(m,S,bsp,deco){const V=S.V,sin=Math.sin(HD2D.pitch*Math.PI/180),pk=new H2Pack(1024),parts=[];
   {const g=hdGatePart(m);if(g)bsp=(bsp||[]).concat([g]);}// v0.6.3: the sanctum gatehouse stands up as towers and a curtain wall
   (bsp||[]).forEach(q=>{parts.push({q,r:pk.add(q.cv.width,q.cv.height)});});
@@ -221,7 +224,7 @@ function hdBakeBuildings(m,S,bsp,deco){const V=S.V,sin=Math.sin(HD2D.pitch*Math.
       if(top-11>2){const ah=top-11;Q([x0-BSP_X,yk+ah*V,zm,x0-BSP_X+cv.width,yk+ah*V,zm,x0-BSP_X+cv.width,yk,zm,x0-BSP_X,yk,zm],U(p,0),Vv(p,0),U(p,cv.width),Vv(p,ah),255,[0,.45,.89],2|8);}
       S.bh.push({b,h:yk});return;}
     // roofed house
-    const roofH=Math.floor(h*.5),wy=roofH-1,rt=-6,WH=h-wy,rows=roofH-(rt-1),dh=h/2+3,RH=Math.max(6,rows-dh*sin),yw=WH*V,yr=(WH+RH)*V,ze=zf+3,zbe=zb-3;
+    const roofH=Math.floor(h*.5),wy=roofH-1,rt=-6,WH=h-wy,rows=roofH-(rt-1),dh=h/2+3,RH=Math.max(6,(rows-dh*sin)*hdRoofProf(m,b)),yw=WH*V,yr=(WH+RH)*V,ze=zf+3,zbe=zb-3;
     Q([x0,yw,zf,x1,yw,zf,x1,0,zf,x0,0,zf],U(p,BSP_X),Vv(p,top+wy),U(p,BSP_X+w),Vv(p,top+h),255,[0,0,1],2|8);
     const sx0=BSP_X+2,sx1=BSP_X+9,sy0=top+wy+4,sy1=top+h-5;
     Q([x0,yw,zb,x0,yw,zf,x0,0,zf,x0,0,zb],U(p,sx0),Vv(p,sy0),U(p,sx1),Vv(p,sy1),255,[-1,0,0],8);

@@ -176,6 +176,9 @@ function townVoid(R){
   return townFinish(T,'void',R,road);
 }
 const TOWNGEN={meadow:townMeadow,coast:townCoast,cave:townCave,snow:townSnow,heights:townHeights,void:townVoid};
+// v0.20.6: the town of a realm comes from townGen (one definition): towns14.js picks the layout by the realm's key and theme family; the six theme layouts above stay as the fallback
+function townGen(Z,s,R){return TOWNGEN[Z.theme](R);}
+townGen=HOOK.def('townGen',townGen);
 
 // =================== FIELDS ===================
 const STAMPS={
@@ -554,7 +557,7 @@ function getMap(id){
   const s=+id.slice(1),kind=id[0]==='t'?'town':(id[0]==='f'||id[0]==='g')?'field':'dungeon',Z=ZS(s);
   const m={id,z:s,s,kind,theme:Z.theme,exits:[],npcs:[],bld:[],signs:{}};
   if(kind==='town'){
-    const t=TOWNGEN[Z.theme](mulberry(500+s*41+realmOf(s)));m.t=t.g;m.bld=t.bld;m.road=t.road;
+    const t=townGen(Z,s,mulberry(500+s*41+realmOf(s)));m.t=t.g;m.bld=t.bld;m.road=t.road;m.arch=t.arch||null;m.sty=t.sty||null;
     const W=m.t[0].length;
     const v3=worldV3();
     m.exits.push({x:0,y:t.road,to:s>0?(v3?{m:'f'+(s-1),g:'end'}:{m:'f'+(s-1),side:'e'}):null,msg:`The west road from ${Z.town} is closed. Your path runs east.`});

@@ -7,23 +7,22 @@ const SANCT_ID='s0';
 function sanctumOpen(){return !!G&&!G.daily&&[0,1,2,3,4].every(s=>(G.echoStory||{})[s]);}
 function sanctumProgress(){const n=G?[0,1,2,3,4].filter(s=>(G.echoStory||{})[s]).length:0;return n;}
 // v0.17.2: The Echo Rift, concentric. A 33 x 34 hall on one north-south axis (x 16): the south door and the start tile at the bottom, the
-// Echoforge at the centre (16,16), the five Calamity gates on an inner ring (radius 5, a vertex due north, the south left open) and the
-// twenty Scourge gates on an outer ring (radius 10.5) around them, 21 evenly spaced slots with the one on the south axis left out, so the
+// Echoforge at the centre (16,16), the four Calamity gates on an inner ring (radius 5, on the diagonals, the south left open) and the
+// sixteen Scourge gates on an outer ring (radius 10.5) around them, 17 evenly spaced slots with the one on the south axis left out, so the
 // lane from the door runs straight up into the middle. Slots run clockwise from the south; every four sit together as one element family
-// (the arcs follow the elements, not the realms; each realm brings its own Scourge since v0.18.7, realmdata.js boss): Storm and Frost, Gloam, Wild, Ember, Tide.
+// (the arcs follow the elements, not the realms; each realm brings its own Scourge since v0.18.7, realmdata.js boss): Storm and Frost, Gloam, Ember, Tide and Wild (realms14: four bays of four).
 // Each family has a sign (a solid 'S' tile, drawn in 2D and HD-2D since v0.18.7: dungeons never drew one, so it was an empty square that blocked the walkway) on the walkway side of its arc (radius 8) and braziers where the arcs meet (radius 12.2, the last pair flanking the
 // lane). The Riftkeeper (with his rest popup) and his gate stand on the axis north of the outer ring. Walkways between the rings are 4 tiles
 // wide; every gate has open floor on the side that faces the centre and on the side that faces the wall. interact() reads the tile in WS.dir,
 // so standing in the walkway and facing out hits a Scourge gate, facing in hits a Calamity gate.
 const RIFT_HALL=(()=>{const W=33,H=34,cx=16,cy=16,pol=(r,deg)=>{const a=deg*Math.PI/180;return [Math.round(cx+r*Math.sin(a)),Math.round(cy-r*Math.cos(a))];},
-  step=360/21,sl=j=>180+j*step,
-  fam=[{n:'Storm and Frost Bay',d:'lightning and ice',keys:['ysolde','hoarwyrm','frostlich','paleweaver']},
-   {n:'Gloam Bay',d:'shadow and iron',keys:['bonecolossus','gloomcap','crowregent','ironsentinel']},
-   {n:'Wild Bay',d:'earth and wind',keys:['thornwarden','hollowshepherd','queenmantis','locustchoir']},
+  step=360/17,sl=j=>180+j*step,
+  fam=[{n:'Storm and Frost Bay',d:'lightning and ice',keys:['ysolde','hoarwyrm','frostlich','ironsentinel']},
+   {n:'Gloam Bay',d:'shadow and bone',keys:['bonecolossus','gloomcap','crowregent','brinehag']},
    {n:'Ember Bay',d:'fire',keys:['cinderking','ashwyvern','candlemoth','geysermatron']},
-   {n:'Tide Bay',d:'water',keys:['drake','siren','brinehag','ironmaw']}];
-  const bays=fam.map((f,g)=>Object.assign({},f,{at:[1,2,3,4].map(i=>pol(10.5,sl(4*g+i))),sign:pol(8,sl(4*g+2.5)),bz:[pol(12.2,sl(4*g+.5))].concat(g===4?[pol(12.2,sl(20.5))]:[])}));
-  return {W,H,start:[16,31],exit:[16,33],forge:[cx,cy],rk:[16,2],keeper:[16,4],ring:[0,72,144,216,288].map(d=>pol(5,d)),bays,
+   {n:'Tide and Wild Bay',d:'water and earth',keys:['drake','siren','thornwarden','queenmantis']}];
+  const bays=fam.map((f,g)=>Object.assign({},f,{at:[1,2,3,4].map(i=>pol(10.5,sl(4*g+i))),sign:pol(8,sl(4*g+2.5)),bz:(g===2?[]:[pol(12.2,sl(4*g+.5))]/* realms14: with 17 slots the Gloam/Tide boundary (slot 8.5) is due north, where the Riftkeeper's lane runs: no brazier there */).concat(g===3?[pol(12.2,sl(16.5))]:[])}));
+  return {W,H,start:[16,31],exit:[16,33],forge:[cx,cy],rk:[16,2],keeper:[16,4],ring:[45,135,225,315].map(d=>pol(5,d)),bays,
   pillars:[[4,6],[28,6],[4,27],[28,27]],corners:[[1,32],[31,32],[14,2],[18,2]]};})();
 function buildSanctum(){
   const R=RIFT_HALL,W=R.W,H=R.H,t=[];for(let y=0;y<H;y++){const r=[];for(let x=0;x<W;x++)r.push(y===0||y===H-1||x===0||x===W-1?'#':'.');t.push(r);}
@@ -41,7 +40,7 @@ function buildSanctum(){
   gp.filter(k=>!used.has(k)).forEach((k,i)=>{const p=free[i];if(p)put(k,p[0],p[1]);});
   // the Calamities: the inner ring around the Echoforge, clockwise from due north
   fp.forEach((k,j)=>{const p=R.ring[j];if(p)put(k,p[0],p[1],1);});
-  m.npcs.push({x:R.keeper[0],y:R.keeper[1],hx:R.keeper[0],hy:R.keeper[1],name:'Echo Warden',line:'Every Scourge and Calamity you broke is still ringing in here. Stand before a gate and press Space to challenge its Echo. The Calamities ring the forge, the Scourges stand in a wider ring around them, four to an element, and the way out is the south door. This hall is safe: nothing roams.',look:villagerLook('Echo Warden'),view:'front',face:'r'});
+  m.npcs.push({x:R.keeper[0],y:R.keeper[1],hx:R.keeper[0],hy:R.keeper[1],name:'Echo Warden',line:'Every Scourge and Calamity you broke is still ringing in here. Stand before a gate and press Space to challenge its Echo. The four Calamities ring the forge, the sixteen Scourges stand in a wider ring around them, four to a bay, and the way out is the south door. This hall is safe: nothing roams.',look:villagerLook('Echo Warden'),view:'front',face:'r'});
   return m;
 }
 // ----- drawing: a small rune gate, dim until its Echo has answered, a gold pip once beaten -----
@@ -64,7 +63,7 @@ function portalLockWhy(k){try{const st=[0,1,2,3,4].find(s=>bossKeyFor(s)===k);co
   return `This Echo is not in this journey. Beat all five story Echoes of one journey (${n} of 5 so far) and every gate opens for good, in every journey.`;}catch(e){return 'Beat the story Echoes to open it.';}}
 function mPortal(m){const k=m.key,d=guardianDef(k);if(!d)return '';const b=(META.best||{})[echoName(d)]||{},open=riftKeys().includes(k);
   return box(`Echo of ${esc(d.n)}`,`<div class="row"><img class="mimg" src="${monURL('echo_'+d.art)}" alt=""><div class="grow"><b>${esc(echoName(d))}</b><small>${bossClass(k)} · Level ${echoLv(k)}${b.kills?` · beaten ${b.kills}x`:''}${(G.bossWon||{})['e:'+k]?' · auto allowed':' · auto locked until a manual win'}</small><small>Shard: ${G.mats['es_'+k]||0} held</small></div></div>
-    ${open?'':`<p class="note warn">Locked. ${esc(portalLockWhy(k))}</p>`}${FPOOL.includes(k)?'<p class="note"><b>Calamity Echo.</b> One of the five world-enders, harder than any Scourge.</p>':''}
+    ${open?'':`<p class="note warn">Locked. ${esc(portalLockWhy(k))}</p>`}${FPOOL.includes(k)?'<p class="note"><b>Calamity Echo.</b> One of the four world-enders, harder than any Scourge.</p>':''}
     <p class="note">Echoes at full strength: Scourges at level 50 or your average +5, Calamities at 56 or your average +8. Every Echo drops Echo Essence; its Shard on the first win this journey, often after that. Shards feed the Smithy's Echoforge.</p>`,
     `<button class="btn" data-act="closeModal">Not yet</button><button class="btn gold" data-act="riftFight" data-arg="${k}" ${open?'':'disabled'}>Challenge</button>`);}
 mPortal=HOOK.def('mPortal',mPortal);

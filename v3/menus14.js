@@ -16,14 +16,17 @@
 // 4) "tavern gave me 4 water types in my first town, should always be a mix": the tavern draw (tavern2.js tvShuffle) asks tvPickOk for every seat.
 //    The rules: level 3, the level 2 rules and the rest of the table can still be filled under them (a small search); level 2, no main element twice at a table of 4 or fewer (at most twice at a bigger one), no class twice, at most two heroes of one role;
 //    level 1, the element rule alone; level 0, anyone (a pool too small to mix). The weights (recruitFit: what the party lacks) still decide among those.
-// 5) "spread out when wayfarers learn abilities": the 12 skill kits (skills12.js, kits12.js) learned most skills by level 18, then had a gap of up to 26
-//    levels (24 to 42 or 50) and bunched learns (three or four within 3 levels). Each kit keeps its order (identity skills, the dual art, the signature)
-//    and its old levels wherever they already fit; the new levels walk the old ones in order with three rules: no gap over M14.spread.gap (6) levels
-//    (a late skill comes earlier), never three learns within 3 levels (the third moves to the first level after the window), never past
-//    M14.spread.end (42). The first one or two stay at the start level. So the early and mid kit is as before (a straight line from 4 to 46 left too few
-//    skills for the mid-game bosses: the journey sim went over its boss-try cap) and the long late gap closes. Limit Breaks keep their levels
-//    (LIMIT_LV, LIMIT2_LV). Old saves: a hero who had a skill under the old levels keeps it (c.keep), once per save (new optional save field G.m14lv).
-const M14={spread:{end:42,gap:6,win:3},mix:{off:false},sh:[['all','All sections'],['overview','Overview'],['stats','Stats'],['skills','Skills'],['gear','Gear'],['role','Role']]};
+// 5) "spread out when wayfarers learn abilities" (0.20.3), then "all abilities are learned too early (right now by lvl 36), should spread learned skills up
+//    till level 45" (this pass). The 12 skill kits (skills12.js, kits12.js) keep their order (the old levels sorted: identity skills, the dual art and the
+//    signature stay where they sit in it) but the levels are a schedule per kit now: the first one or two skills at the start level (as many as the kit had
+//    at level 1, one or two), the next at 4, then an even walk to the LAST class skill at level 45 (M14.spread.end; the cap is 50), the early gaps a little
+//    shorter (M14.spread.p, an exponent: 1 is a straight line, above 1 pulls the middle skills earlier). Rules, checked by m14Check: no gap over
+//    M14.spread.gap (6), never three learns within M14.spread.win (3) levels, order kept. A 12 skill kit with two at the start comes out near
+//    1,1,4,8,12,16,21,26,31,36,41,45. Limit Breaks keep their levels (LIMIT_LV, LIMIT2_LV); bond techs and Archive skills are outside the kit.
+//    Old saves: a hero keeps every skill the levels before this pass gave (c.keep), once per save: the optional save field G.m14lv says which levels the
+//    save has seen (none: the original table, 1: the 0.20.3 spread to level 42, 2: this one), and a save below 2 is migrated on load (unpackG).
+//    The 0.20.3 levels stay on every skill as s.lvP (M14.prev) for that migration.
+const M14={spread:{end:45,gap:6,win:3,p:1.5},prev:{end:42,gap:6,win:3},mix:{off:false},sh:[['all','All sections'],['overview','Overview'],['stats','Stats'],['skills','Skills'],['gear','Gear'],['role','Role']]};
 
 // ---------- 1. the hero sheet on one page ----------
 function m14Sec(){const k=V&&V.sheetTab;return M14.sh.some(x=>x[0]===k)?k:'all';}
@@ -87,24 +90,39 @@ function m14Pick(out,id,lv,left){if(lv<3)return m14Mix(out,id,lv);if(!m14Mix(out
 HOOK.xform('tvPickOk','menus14','tavern tables mix elements, classes and roles',function(ok,out,id,lv,left){try{return ok&&(M14.mix.off||m14Pick(out,id,lv,left));}catch(e){return ok;}});
 
 // ---------- 5. learn levels spread over the level range ----------
-// the new levels for a kit's old levels (sorted): old where it fits, no gap over S.gap, never three within S.win levels, never past S.end
-function m14Levels(old){const S=M14.spread,end=Math.min(LV_CAP-1,S.end),L=[];
+// the levels before this pass (0.20.3): the old levels where they fit, no gap over S.gap, never three within S.win levels, never past S.end
+function m14LevelsP(old){const S=M14.prev,end=Math.min(LV_CAP-1,S.end),L=[];
   old.forEach((o,i)=>{let v=i?Math.min(o,L[i-1]+S.gap):o;if(i)v=Math.max(v,L[i-1]);if(i>=2)v=Math.max(v,L[i-2]+S.win);L.push(Math.min(v,end));});return L;}
-HOOK.xform('classSkills','menus14','learn levels: old ones where they fit, no long gap, no bunching (order kept)',function(L,t){
+// the schedule for a kit of old.length skills (the old levels, sorted): k at the start level (1 or 2: as many as the kit had at level 1), then 4 and an
+// even walk to S.end; one pass of repairs keeps the gap and window rules whatever the rounding did
+function m14Levels(old){const S=M14.spread,end=Math.min(LV_CAP-1,S.end),n=old.length,L=[];
+  const k=Math.max(1,Math.min(2,old.filter(o=>o<=1).length)),m=n-k;
+  for(let i=0;i<n;i++){if(i<k){L.push(1);continue;}const j=i-k,x=m>1?j/(m-1):1;L.push(Math.round(4+(end-4)*Math.pow(x,S.p||1)));}
+  for(let i=1;i<n;i++){if(L[i]<L[i-1])L[i]=L[i-1];if(L[i]-L[i-1]>S.gap)L[i]=L[i-1]+S.gap;if(i>=2&&L[i]<L[i-2]+S.win)L[i]=L[i-2]+S.win;}
+  L[n-1]=Math.min(end,Math.max(L[n-1],end));for(let i=n-2;i>=0&&L[n-1]-L[i]>S.gap*(n-1-i);i--)L[i]=L[n-1]-S.gap*(n-1-i);
+  return L;}
+// the rules a kit's levels must meet (the sim and the test use it): the first one or two at the start level, the last at the end, no long gap, never
+// three within the window, no level over the cap
+function m14Check(L){const S=M14.spread,bad=[];L=L.slice().sort((a,b)=>a-b);
+  if(L[0]!==1||L.filter(x=>x===1).length>2)bad.push('start');if(L[L.length-1]!==Math.min(LV_CAP-1,S.end))bad.push('end');
+  if(Math.max(...L.slice(1).map((x,i)=>x-L[i]))>S.gap)bad.push('gap');
+  for(let i=2;i<L.length;i++)if(L[i]-L[i-2]<S.win){bad.push('window');break;}
+  return bad;}
+HOOK.xform('classSkills','menus14','learn levels: a schedule to level 45 per kit (order kept); the 0.20.3 levels stay as lvP',function(L,t){
   if(!L||!t||t.mon||!CLS[t.cls]||L._m14||L.length<3)return L;L._m14=1;
   try{const S=L.slice().sort((a,b)=>(a.lv12!=null?a.lv12:a.lv)-(b.lv12!=null?b.lv12:b.lv)||(a.lv0||a.lv)-(b.lv0||b.lv));
-    const lv=m14Levels(S.map(s=>s.lv12!=null?s.lv12:s.lv));
-    S.forEach((s,i)=>{if(s.lv12==null)s.lv12=s.lv;s.lv=lv[i];});}catch(e){}
+    const old=S.map(s=>s.lv12!=null?s.lv12:s.lv),lv=m14Levels(old),pv=m14LevelsP(old);
+    S.forEach((s,i)=>{if(s.lv12==null)s.lv12=s.lv;s.lvP=pv[i];s.lv=lv[i];});}catch(e){}
   return L;});
-// a save from before the spread: what a hero knew under the old levels stays known
-function m14Keep(g){if(!g||g.m14lv||g.daily)return 0;let n=0;
+// a save from before this spread: what a hero knew under the levels it had seen stays known (G.m14lv: none = the original table, 1 = the 0.20.3 spread, 2 = this one)
+function m14Keep(g){if(!g||g.m14lv>=2||g.daily)return 0;let n=0;const was=g.m14lv===1?'lvP':'lv12';
   Object.keys(g.roster||{}).forEach(id=>{const c=g.roster[id],t=TPL[id];if(!c||!t||t.mon||!CLS[t.cls])return;
-    classSkills(t).forEach(s=>{if(s.lv12!=null&&s.lv12<=c.lv&&s.lv>c.lv&&!(c.keep&&c.keep.includes(s.id))){c.keep=(c.keep||[]).concat(s.id);n++;}});});
-  g.m14lv=1;return n;}
+    classSkills(t).forEach(s=>{if(s[was]!=null&&s[was]<=c.lv&&s.lv>c.lv&&!(c.keep&&c.keep.includes(s.id))){c.keep=(c.keep||[]).concat(s.id);n++;}});});
+  g.m14lv=2;return n;}
 HOOK.after('unpackG','menus14','old saves keep the skills the old learn levels gave',function(r,g){try{m14Keep(g);}catch(e){}});
-HOOK.after('newGame','menus14','a new journey uses the spread levels',function(){try{if(G)G.m14lv=1;}catch(e){}});
+HOOK.after('newGame','menus14','a new journey uses the spread levels',function(){try{if(G)G.m14lv=2;}catch(e){}});
 
 // tests
-try{window.__M14={M14,levels:m14Levels,mix:m14Mix,keep:m14Keep,spot:m14Spot,sec:m14Sec,get tvShuffle(){return tvShuffle;},get ensureSub(){return ensureSub;},get tvPool(){return tvPool;},
+try{window.__M14={M14,levels:m14Levels,prev:m14LevelsP,check:m14Check,mix:m14Mix,keep:m14Keep,spot:m14Spot,sec:m14Sec,get tvShuffle(){return tvShuffle;},get ensureSub(){return ensureSub;},get tvPool(){return tvPool;},
   get TPL(){return TPL;},get CLASS_ROLE(){return CLASS_ROLE;},get G(){return G;},get V(){return V;},get GL(){return GL;},get glRender(){return glRender;},get glHero(){return glHero;},
   kit:t=>classSkills(t)};}catch(e){}

@@ -32,19 +32,13 @@ const BTHEME={
  nidhra:{label:'Black-ember',mix:'#3a1a28',k:.40,roof:['#4a1a2a','#2a1a2a','#6a2a1a','#3a2a3a'],dec:['#ff5a3a','#ffb04a','#6a2a4a','#c8a0b0'],motif:'scale',amb:'embers',tint:'rgba(70,10,20,.12)',mus:-4,
   omen:'Sunset comes early here, the colour of an ember in a dark fire.',npc:['Something very large flew over last night. It blocked the stars for a minute.','Smoke with no fire behind it. Lately every dusk.']},
  hollowking:{label:'Hollow crown',mix:'#4a2a70',k:.40,roof:['#5a3a8a','#3a2a5a','#6a4a98','#2a1a4a'],dec:['#b080ff','#f6e7a8','#5fc9a0','#ff8ad0'],motif:'crown',amb:'motes',tint:'rgba(70,30,110,.10)',mus:-1,
-  omen:'People talk about an empty throne out there. Nobody agrees which direction it is.',npc:['I dreamed I wore a crown made of nothing. It was heavy.','There is a gap in the stars shaped like a seat.']},
- seraph:{label:'Gilded ash',mix:'#e8d8b8',k:.36,roof:['#d8c8a0','#c8a860','#f0e8d0','#a89870'],dec:['#fff6d0','#ffffff','#ffd878','#f0b090'],motif:'feather',amb:'feathers',tint:'rgba(255,230,180,.08)',mus:2,
-  omen:'White ash falls on the shrines in the shape of feathers. It is warm to the touch.',npc:['The bells ring by themselves at dawn. Nobody pulls the ropes.','Everything glows a little at the edges lately. It is beautiful, and it frightens me.']},
- locustchoir:{label:'Barley-hum',mix:'#a8a04a',k:.34,roof:['#b0a040','#8a7a2a','#c8b858','#6a6a2a'],dec:['#e8dc80','#a8b050','#ffffff','#d0a040'],motif:'comb',amb:'motes',tint:'rgba(170,160,60,.07)',mus:1,
-  omen:'The barley is standing, but the ears are empty, and a hum with no source sits over every field.',npc:['Something sings at dusk. A whole choir of something.','I swept the porch twice. Wings. Always wings.']},
- ironmaw:{label:'Shell and tide',mix:'#6a7a7a',k:.36,roof:['#5a6a70','#7a7a82','#4a5a60','#8a8a90'],dec:['#a8b8c0','#6a8a9a','#c8c0a8','#ffffff'],motif:'tide',amb:'bubbles',tint:'rgba(80,100,110,.08)',mus:-2,
-  omen:'A hill by the shore has been moving a few feet every night, slowly, toward the town.',npc:['That rock was not there on Tuesday.','The tide goes out and something enormous breathes in.']},
+  omen:'People talk about an empty throne under the water. On clear nights you can see its green light from the pier.',npc:['I dreamed I wore a crown made of nothing. It was heavy.','There is a gap in the stars shaped like a seat.']},
+ seraph:{label:'Glass-gilded',mix:'#d0d8f0',k:.36,roof:['#b8c0e0','#c8a860','#e8ecf8','#8890b0'],dec:['#f4f8ff','#ffffff','#ffd878','#8ae6ff'],motif:'feather',amb:'feathers',tint:'rgba(255,230,180,.08)',mus:2,
+  omen:'Slivers of white glass fall on the shrines in the shape of feathers. They ring faintly when you touch them.',npc:['The bells ring by themselves at dawn. Nobody pulls the ropes.','Everything glows a little at the edges lately. It is beautiful, and it frightens me.']},
  candlemoth:{label:'Taper-lit',mix:'#e0b868',k:.34,roof:['#d0a050','#e8d4a0','#b88a40','#f0e0b8'],dec:['#fff0a0','#ffb040','#ffffff','#f0d890'],motif:'ember',amb:'motes',tint:'rgba(255,200,110,.08)',mus:2,
   omen:'Every candle in town leans the same way at night, as if toward a very small, very patient door.',npc:['Moths in the lamp-oil. Dusty, and warm to the touch.','The tapers burn twice as fast this month. Nobody sold us bad wax.']},
  brinehag:{label:'Tide-witched',mix:'#3a5a58',k:.38,roof:['#2a4a4a','#4a5a4a','#3a4a5a','#5a6a58'],dec:['#7affd0','#c8c0a8','#3a6a5a','#9ab0a0'],motif:'pearl',amb:'wisps',tint:'rgba(30,70,70,.10)',mus:-3,
   omen:'Wet footprints cross the dry cobbles at night, many of them, all headed the same way.',npc:['My grandmother left a bowl of brine on the step. She never said why.','I heard my name from the well. In a very old voice.']},
- hollowsun:{label:'Glare-bleached',mix:'#e8d8b8',k:.42,roof:['#d8c8a8','#b8a088','#f0e4cc','#a88a70'],dec:['#fff8d8','#ffd060','#ff9a4a','#bfe8f0'],motif:'frost',amb:'dust',tint:'rgba(255,230,170,.12)',mus:-4,
-  omen:'The noon light has a hole in it. Nobody can point to where, but all the shadows lean away.',npc:['Colours are washing out by midday. Everything goes the shade of bone.','The sun feels hollow. I know that is not a thing. It feels hollow.']}
 };
 const lerpHex=(a,b,t)=>{const A=hx(a),B=hx(b);return rh(A.map((v,i)=>v+(B[i]-v)*t));};
 const lerpArr=(arr,b,t)=>arr.map(c=>lerpHex(c,b,t));
@@ -119,12 +113,8 @@ function themeFX(ctx,m,vw,vh,now){
 function bossMusicOff(){try{const s=WS.m&&typeof WS.m.s==='number'?WS.m.s:B&&B.stage;const k=bossAtStage(s);return (BTHEME[k]||{}).mus||0;}catch(e){return 0;}}
 function bossMusicKey(){try{const s=WS.m&&typeof WS.m.s==='number'?WS.m.s:B&&B.stage;return bossAtStage(s)||'';}catch(e){return '';}}
 
-// v0.14.x: the four Scourges added after the Hollow Sun (bosses10.js)
+// v0.14.x: the two Scourges kept from those added after the Hollow Sun (bosses10.js)
 Object.assign(BTHEME,{
- hollowshepherd:{label:'Fold-lit',mix:'#8a9a5a',k:.36,roof:['#7a8a4a','#a89a5a','#5a7a4a','#c8c090'],dec:['#fff0b0','#c8e890','#ffffff','#a8c070'],motif:'thorn',amb:'motes',tint:'rgba(150,170,80,.07)',mus:-1,
-  omen:'A bell tolls at dusk from the east pasture, and the sheep file toward it without a shepherd.',npc:['I counted the flock twice. Both times there was one more than I own.','The lanterns on the hill never go out. Nobody lit them.']},
- paleweaver:{label:'Rime-spun',mix:'#a8b8d8',k:.38,roof:['#7a8ab0','#c0d0e8','#5a6a98','#e0e8f8'],dec:['#ffffff','#d8e8ff','#fff6a0','#a8c0e8'],motif:'frost',amb:'flecks',tint:'rgba(160,190,240,.08)',mus:-2,
-  omen:'Frost has strung itself across the lanes in long white lines, and the threads hum when the wind is still.',npc:['The hedges are wrapped in something finer than cobweb. It does not melt.','A fly stopped in midair at my window. I did not dare look closer.']},
  crowregent:{label:'Carrion-crowned',mix:'#3a3a4c',k:.40,roof:['#2a2a3a','#4a4a5c','#1a1a28','#5a5a6c'],dec:['#8a8aa0','#c8c8d8','#ff5a5a','#40405a'],motif:'feather',amb:'ash',tint:'rgba(30,30,50,.12)',mus:-3,
   omen:'The crows have stopped arguing. They sit on every roof in a long row, and they are all looking at one house.',npc:['One of them tipped its head at me like a person would.','I left a coin on the sill as a joke. It was gone by morning, and a bone was there instead.']},
  geysermatron:{label:'Steam-bound',mix:'#c88a6a',k:.36,roof:['#a8503a','#c8805a','#8a3a2a','#d8a07a'],dec:['#fff0e0','#ffb070','#a8e0f0','#ffffff'],motif:'ember',amb:'bubbles',tint:'rgba(220,130,90,.08)',mus:1,

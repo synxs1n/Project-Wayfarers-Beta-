@@ -37,7 +37,7 @@ async function run(gfx,w,h){const tag=`${gfx==='low'?'Flat':'HD-2D'} ${w}x${h}: 
     await page.keyboard.down('ArrowRight');await wait(140);await page.keyboard.up('ArrowRight');const pos=await where(ev,t);if(!pos)continue;n++;
     await page.mouse.move(pos[0],pos[1]);await page.mouse.down();await wait(60);await page.mouse.move(pos[0]+1,pos[1]);await wait(60);await page.mouse.up();await settleWalk(ev);
     const e=await ev(()=>({x:__A.WS.x,y:__A.WS.y,up:window.__up}));const u=e.up||t;if(Math.abs(e.x-u[0])+Math.abs(e.y-u[1])<=1)ok++;else bad.push([t,u,[e.x,e.y]]);}
-    chk(tag+'a click right after a step ends on the tile under the cursor ('+ok+'/'+n+')',n>=2&&ok===n||JSON.stringify(bad));}
+    chk(tag+'a click right after a step ends on the tile under the cursor ('+ok+'/'+n+')',n>=1&&ok===n||JSON.stringify(bad));/* v0.20.6: n >= 1: how many of the three candidates are on screen depends on the town's layout (a new layout shows one of them) */}
   // a real drag (40 px) still steers the hero
   {await ev(a=>{const A=__A;A.WS.target=null;A.placeAt('t0',a[0],a[1],'d');A.render();},[info.x,info.y]);await wait(600);
     const c=await ev(()=>{const r=__A.WS.cv.getBoundingClientRect();return [r.left+r.width/2,r.top+r.height/2];});

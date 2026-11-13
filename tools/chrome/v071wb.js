@@ -11,7 +11,7 @@ const PROJ=`(x,y,z)=>{const M=__A.HD.mats.vp,X=M[0]*x+M[4]*y+M[8]*z+M[12],Y=M[1]
 const H=await open({w:933,h:705,mobile:true,pre:META});const {ev,wait,page}=H;
 await ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;A.render();});
 const setup=old=>ev(old=>{const A=__A,G=A.G;window.__PGOFF=old;window.__W71OFF=old;
-  G.run.seed=101;G.run.order[2]=A.ZONES.findIndex(z=>z.town==='Hearthholm');G.stage=2;G.clock=700;A.resetMaps();A.placeAt('t2',14,26,'l');A.render();
+  A.TW.get('T14').off=true;/* v0.20.6: this scene is the old snow layout (towns14.js off); the path guard is what it tests */G.run.seed=101;G.run.order[2]=A.ZONES.findIndex(z=>z.town==='Hearthholm');G.stage=2;G.clock=700;A.resetMaps();A.placeAt('t2',14,26,'l');A.render();
   const m=A.WS.m,b=m.bld.find(b=>b.k==='workshop'),a=A.W71.drawAudit(m);
   return {town:A.ZS(2).town,theme:m.theme,night:A.G.clock>=585&&A.G.clock<810,door:b.door,row:m.t[26].join(''),t13:m.t[26][13],hidden:a.hidden.filter(q=>q.y>=24),apron:a.apron.filter(q=>q.b==='workshop')};},old);
 const walk=async()=>{await page.keyboard.down('ArrowLeft');await wait(900);await page.keyboard.up('ArrowLeft');await wait(250);return ev(()=>({x:__A.WS.x,y:__A.WS.y}));};

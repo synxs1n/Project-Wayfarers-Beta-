@@ -405,49 +405,6 @@ Object.assign(MART,{
   [[6,14],[54,12],[7,44],[53,42],[4,28]].forEach(([x,y],i)=>bsh(g,[['p',[[x,y-3+(i%2?B:0)],[x+2,y],[x,y+3],[x-2,y]]]],ic));
   return {pal:Object.assign({},bT4(rb,'#33487a',{cool:'#0a1430'}),bT4(ic,'#bfeaf8',{cool:'#2a4a8a'}),bT4(bn,'#e8eef4',{cool:'#304060'}),bT4(wd,'#8a6a4a'),{x:'#6af0ff',E:'#7af4ff',W:'#ffffff',o:'#d8f4ff',K:'#08101e',D:'#0c1830'}),flat:'xEWoK',glow:'#5ab0e0',rim:'#0e1a38'};
  },
- locustchoir(g,f){const F=mfr(f),B=F.b?1:0,bd='abcd',wg='efgh',lg='ijkl',m=x=>60-x;
-  g.ell(30,57,15,2.2,'D');
-  // the cloud: small locusts in an hourglass (wide top and bottom, narrow in the middle), the ring turning a pixel each beat
-  [[9,6,1],[24,4,.9],[38,5,1],[51,8,.9],[9,17,.9],[48,20,1],[16,26,.9],[44,30,.9],[10,38,1],[50,41,1],[8,50,1.1],[22,54,1],[40,53,1.1],[53,54,.9],[3,29,.8],[56,29,.8]].forEach(([x,y,s],i)=>bloc(g,x+(B&&i%2?1:0),y+(B&&i%3?1:0),s,i%2));
-  // the conductor: spread wings like two spires of glass
-  bsh(g,[['p',[[27,26],[15,8],[10,14],[11,26],[17,35],[26,36]]],['p',[[33,26],[45,8],[50,14],[49,26],[43,35],[34,36]]]],wg);
-  [[27,26,15,8],[27,28,11,16],[26,31,12,26],[25,34,17,35],[33,26,45,8],[33,28,49,16],[34,31,48,26],[35,34,43,35]].forEach(q=>g.line(q[0],q[1],q[2],q[3],'h'));
-  bsh(g,[['t',[[27,26],[19,15],[15,8+B]],2,1],['t',[[33,26],[41,15],[45,8+B]],2,1]],bd);
-  // jumper legs folded under it, front legs lifted to conduct
-  [1,-1].forEach(sd=>{const X=x=>sd>0?x:m(x);bsh(g,[['t',[[X(26),44],[X(17),40],[X(12),50],[X(14),56]],3.2,1.4]],bd);bsh(g,[['t',[[X(26),28],[X(19),24],[X(16),14+B]],1.8,1]],bd);g.px([[X(15),13+B],[X(16),12+B]],'W');});
-  // body: thorax and a banded abdomen
-  const P=[[30,24],[30,34],[30,44],[30,52]],r=[5,6,6,3.4];bsh(g,[['t',P,r,0]],bd);bbands(g,P,r,0,2.4,'c','bcd',1);bsh(g,[['t',[[28,26],[28,38]],2,1.6]],lg);
-  // head: great red eyes, a singing maw
-  bsh(g,[['e',30,17,6.4,7]],bd);g.ell(26,16,2.6,3.2,'E');g.ell(34,16,2.6,3.2,'E');g.s(25,15,'W');g.s(33,15,'W');g.px([[26,17],[34,17]],'K');
-  g.ell(30,22,2.8,1.4+B,'K');g.rect(29,21,2,1,'M');
-  bsh(g,[['t',[[26,11],[20,5],[15,2]],1.4,.6],['t',[[34,11],[40,5],[45,2]],1.4,.6]],bd);
-  // the song as gold notes
-  g.px([[4,28],[5,26],[6,24],[55,22],[56,20],[57,18],[3,52],[57,44],[30,1]].map(p=>[p[0],p[1]-B]),'y');
-  return {pal:Object.assign({},bT4(bd,'#8a9c3a',{cool:'#1a2a08'}),bT4(wg,'#dccf90',{cool:'#4a4010'}),bT4(lg,'#c8d868'),{q:'#a8742a',r:'#6a4a1e',E:'#ff5a30',y:'#ffe27a',v:'#e8b040',W:'#f4ecc0',M:'#8a2a1a',K:'#1a1008',D:'#2a2814'}),flat:'EyvWMK',rim:'#1a2008'};
- },
- ironmaw(g,f){const F=mfr(f),B=F.b?1:0,sh='abcd',ir='efgh',sk='ijkl',cr='mnop';
-  g.ell(30,57,26,2.6,'D');
-  // stumpy legs and a short spiked tail
-  bsh(g,[['r',15,44,13,12],['r',37,44,14,12],['r',12,54,17,3],['r',35,54,19,3]],sk);g.px([[14,56],[17,56],[20,56],[37,56],[41,56],[45,56]],'W');
-  bsh(g,[['p',[[52,42],[60,50],[54,52]]]],sk);
-  // the shell: a green dome ribbed with ship iron
-  bsh(g,[['p',[[10,44],[9,31],[14,20],[23,13],[35,12],[45,17],[53,26],[57,44]]]],sh,{cap:16});
-  [[16,44,24,17],[28,44,34,15],[40,44,44,18],[52,44,52,26]].forEach((q,i)=>{g.line(q[0],q[1],q[2],q[3],'e');g.line(q[0]+1,q[1],q[2]+1,q[3],'f');});
-  bsh(g,[['t',[[10,36],[24,31],[36,30],[48,33],[57,39]],2.6,2.2]],ir);g.rect(10,41,47,3,'g');
-  [[15,28],[22,21],[34,18],[43,22],[48,29],[19,38],[30,38],[41,38],[52,41],[28,26],[16,34]].forEach(([x,y])=>{g.s(x,y,'x');g.s(x+1,y,'y');});
-  g.px([[18,22],[40,17],[46,26],[24,43],[44,43],[51,36],[12,30],[56,34]],'W');
-  // a lighthouse grown out of the shell
-  bsh(g,[['r',24,8,7,9]],cr);g.rect(24,10,7,2,'x');g.rect(24,14,7,2,'x');bsh(g,[['r',22,6,11,2]],ir);bsh(g,[['r',25,3,5,3]],ir);g.rect(26,4,3,2,B?'W':'y');g.px([[27,4]],'W');
-  g.px(B?[[19,5],[35,4],[37,6],[17,3]]:[[20,4],[34,5],[36,3],[18,6]],'y');
-  // the head: low and wide, an iron jaw hung with teeth
-  bsh(g,[['e',8,41,9,7],['e',6,37,5,3]],sk);
-  g.poly([[1,44],[15,44],[15,47+B],[1,46]],'K');
-  bsh(g,[['p',[[1,47+B],[15,47+B],[15,53+B],[3,54+B]]],['r',0,45,2,5]],ir);
-  for(let x=2;x<15;x+=3)g.poly([[x,44],[x+1.6,44],[x+.8,47]],'W');for(let x=3;x<14;x+=4)g.poly([[x,47+B],[x+1.4,47+B],[x+.7,45]],'W');
-  g.px([[3,50+B],[7,50+B],[11,50+B]],'x');
-  g.rect(6,34,3,3,'y');g.rect(7,35,1,1,'K');g.line(3,34,10,32,'c');
-  return {pal:Object.assign({},bT4(sh,'#5e7050'),bT4(ir,'#8a92a6',{cool:'#202840'}),bT4(sk,'#788a62'),bT4(cr,'#e8e0c8',{cool:'#4a3a2a'}),{x:'#c8a85a',y:'#ffd860',W:'#eee8d4',K:'#140a0a',D:'#1a2018'}),flat:'xyWK',rim:'#101810'};
- },
  candlemoth(g,f){const F=mfr(f),B=F.b?1:0,wg='abcd',lw='efgh',fu='ijkl',wx='mnop',m=x=>60-x,fl=B?2:0;
   g.ell(30,57,12,2,'D');
   // wings: broad dusty fans, a burning eyespot on each, wax drips along the hem
@@ -472,7 +429,7 @@ Object.assign(MART,{
   return {pal:Object.assign({},bT4(wg,'#cdbb98',{cool:'#3a2a18'}),bT4(lw,'#a8906a',{cool:'#3a2a18'}),bT4(fu,'#f0e8d0',{cool:'#5a4a3a'}),bT4(wx,'#f4ecd2'),{x:'#ff9a30',y:'#fff0a0',E:'#ff6a2a',W:'#fffbe8',K:'#2a1008',D:'#2a2018'}),flat:'xyEWK',glow:'#ffcf70',rim:'#2a1c10'};
  }
 });
-['frostlich','locustchoir','ironmaw','candlemoth'].forEach(k=>{MEXTRA[k]=()=>{};});
+['frostlich','candlemoth'].forEach(k=>{MEXTRA[k]=()=>{};});
 Object.assign(MART,{
  brinehag(g,f){const F=mfr(f),B=F.b?1:0,kp='abcd',cl='efgh',sk='ijkl',ht='mnop';
   g.ell(30,57,26,2.4,'D');
@@ -500,25 +457,6 @@ Object.assign(MART,{
   [[22,12],[32,8],[38,14],[26,5],[16,16],[44,16],[30,16]].forEach(([x,y])=>{g.ell(x,y,1.6,1.3,'W');g.s(x,y-1,'W');});
   g.px(B?[[3,18],[57,24],[8,8],[52,5]]:[[2,20],[58,22],[9,10],[53,7]],'x');
   return {pal:Object.assign({},bT4(kp,'#3e6a34',{cool:'#0a2018'}),bT4(cl,'#2e5668',{cool:'#08141e'}),bT4(sk,'#8cae9c',{cool:'#203a4a'}),bT4(ht,'#5a5a4c'),{n:'#1a2a20',g:'#1a303e',p:'#2a2a22',W:'#f4f0e0',x:'#6affd0',y:'#e8fff4',E:'#c890ff',K:'#0a1418',D:'#101c20'}),flat:'xyWEK',glow:'#5ad0b0',rim:'#0a1418'};
- },
- hollowsun(g,f){const F=mfr(f),B=F.b?1:0,fr='abcd',gl='efgh',sl='ijkl',cx=30,cy=28;
-  g.ell(30,57,20,2.2,'D');
-  // salt spikes at the foot
-  bsh(g,[['k',8,57,6,45,6],['k',15,57,15,50,4.5],['k',23,58,22,53,3.4],['k',37,58,38,52,3.6],['k',45,57,45,48,4.6],['k',52,57,54,43,6]],sl);
-  // the corona: twelve flame prongs, the ring itself a disc of fire
-  const prongs=[];for(let i=0;i<12;i++){const a=i*Math.PI/6+.2,r1=(i%2?23:28)+(B&&i%2===0?1.5:0)+(B&&i%2?-1:0),dx=Math.cos(a),dy=Math.sin(a),px=-dy,py=dx;
-    prongs.push(['p',[[cx+dx*15+px*3.6,cy+dy*15+py*3.6],[cx+dx*r1,cy+dy*r1],[cx+dx*15-px*3.6,cy+dy*15-py*3.6]]]);}
-  bsh(g,prongs,fr,{bias:-.05});
-  bsh(g,[['e',cx,cy,19.5,19.5]],fr,{cap:16});
-  [0,1,2,3,4,5,6,7].forEach(i=>{const a=i*Math.PI/4+.4;g.line(cx+Math.cos(a)*14.5,cy+Math.sin(a)*14.5,cx+Math.cos(a+.2)*19,cy+Math.sin(a+.2)*19,'c');});
-  // the hollow: black, with a bright lip on the lit side and a slit of light like a pupil
-  g.ell(cx,cy,14.5,14.5,'K');for(let a=Math.PI*.7;a<Math.PI*1.45;a+=.05)g.s(Math.round(cx+Math.cos(a)*14.2),Math.round(cy+Math.sin(a)*14.2),'W');
-  g.ell(cx+1,cy+1,11.5,11.5,'V');g.ell(cx+2,cy+2,10.5,10.5,'K');
-  const h=B?10:8;g.poly([[cx,cy-h],[cx+2.4+B,cy],[cx,cy+h],[cx-2.4-B,cy]],'y');g.poly([[cx,cy-h+3],[cx+1,cy],[cx,cy+h-3],[cx-1,cy]],'W');
-  // glass shards in orbit
-  [[3,10,4],[56,8,3],[2,40,3],[57,38,4],[10,52,3],[50,52,3]].forEach(([x,y,r])=>bsh(g,[['p',[[x,y-r],[x+r*.6,y],[x,y+r*1.4],[x-r*.6,y]]]],gl));
-  g.px(B?[[14,3],[46,2],[0,26],[59,22],[29,0]]:[[14,2],[46,3],[0,28],[59,24],[28,1]],'W');
-  return {pal:Object.assign({},bT4(fr,'#ff8a2a',{cool:'#4a0a1a'}),bT4(gl,'#cfeaf0',{cool:'#304878'}),bT4(sl,'#f0e8e8',{cool:'#6a4a6a'}),{c:'#b8401a',V:'#5a1a3a',y:'#fff0a0',W:'#fff6d0',K:'#07030a',D:'#241410'}),flat:'yWKV',glow:'#ffb040',rim:'#1a0a0a'};
  },
  nidhra(g,f){const F=mfr(f),B=F.b?1:0,bd='abcd',wg='efgh',bl='ijkl',co='mnop',wb=B?2:0;
   // the eclipse behind her: a black disc in a gold corona
@@ -550,7 +488,7 @@ Object.assign(MART,{
   return {pal:Object.assign({},bT4(bd,'#38284e',{cool:'#0a0412'}),bT4(wg,'#8a4a9c',{cool:'#14061a'}),bT4(bl,'#9a5a4a',{cool:'#2a0a10'}),bT4(co,'#f6e7a8'),{x:'#ff5a2a',y:'#ffd04a',W:'#fff0d0',K:'#06030a',D:'#18101e'}),flat:'xyWK',glow:'#ff8a3a',rim:'#140a1e'};
  }
 });
-['brinehag','hollowsun','nidhra'].forEach(k=>{MEXTRA[k]=()=>{};});
+['brinehag','nidhra'].forEach(k=>{MEXTRA[k]=()=>{};});
 Object.assign(MART,{
  hollowking(g,f){const F=mfr(f),B=F.b?1:0,rb='abcd',st='efgh',cp='ijkl',gd='mnop',bl='qrst';
   g.ell(30,57,22,2.4,'D');
@@ -580,14 +518,14 @@ Object.assign(MART,{
  },
  seraph(g,f){const F=mfr(f),B=F.b?1:0,wu='abcd',wm='efgh',wl='ijkl',rb='mnop',sk='qrst',m=x=>60-x,wb=B?2:0;
   g.ell(30,57,18,2.4,'D');
-  // six wings of cinder: the top pair flung up, the middle pair spread, the lowest folded under
+  // six wings of shattered sky glass (realms14 retint, was cinder): the top pair flung up, the middle pair spread, the lowest folded under
   [1,-1].forEach(sd=>{const X=x=>sd>0?x:m(x);
     bsh(g,[['p',[[X(26),34],[X(7),44],[X(12),48],[X(10),54],[X(21),44]]]],wl);
     bsh(g,[['p',[[X(26),28],[X(1),24+wb],[X(5),32],[X(2),38],[X(15),35]]]],wm);
     bsh(g,[['p',[[X(26),24],[X(3),3-wb],[X(7),14],[X(1),19],[X(12),23]]]],wu);
     [[X(26),24,X(3),3-wb],[X(26),28,X(1),24+wb]].forEach(q=>g.line(q[0],q[1],q[2],q[3],'c'));
     g.px([[X(3),3-wb],[X(1),24+wb],[X(7),44],[X(2),38],[X(1),19]],'x');g.path([[X(7),14],[X(1),19],[X(12),23]],'x');});
-  // the gown: ash white, belted in gold, the hem burnt to embers
+  // the gown: pale, belted in gold, the hem frayed to light
   bsh(g,[['p',[[24,23],[36,23],[42,56],[18,56]]]],rb);bsh(g,[['p',[[28,26],[32,26],[34,56],[26,56]]]],rb,{bias:.1});
   g.rect(22,34,16,2,'G');g.line(30,36,30,56,'m');g.px([[20,54],[25,56],[34,55],[40,54],[22,50],[38,50]],'x');
   // one arm lifts the lamplighter's pole with a burning lamp; the other opens, palm out
@@ -598,7 +536,7 @@ Object.assign(MART,{
   bsh(g,[['e',30,16,6,7]],sk);g.rect(26,15,3,2,'E');g.rect(32,15,3,2,'E');g.px([[26,15],[32,15]],'y');g.line(29,20,32,20,'j');
   g.ell(30,5.5,10,3.2,'x');g.ell(30,5.5,7.6,1.8,0);g.ell(30,5.5,10,3.2,'x');g.ell(30,5.5,7.6,1.8,0);g.line(22,5,38,5,'y');
   g.px(B?[[4,28],[56,36],[8,50],[52,52],[16,2],[44,3]]:[[3,30],[57,34],[10,52],[50,54],[14,3],[46,2]],'x');
-  return {pal:Object.assign({},bT4(wu,'#8a7a78',{cool:'#2a1018'}),bT4(wm,'#5e4e52',{cool:'#1a0a10'}),bT4(wl,'#3a3036',{cool:'#100408'}),bT4(rb,'#e8dcc4',{cool:'#4a2a30'}),bT4(sk,'#e8c8b0',{cool:'#6a3a40'}),{G:'#f0c050',g:'#a07a28',c:'#c8604a',x:'#ff7a2a',y:'#fff2b0',E:'#ff8a2a',K:'#14080a',D:'#2a1e14'}),flat:'xyEK',glow:'#ffcf70',rim:'#1a0c0c'};
+  return {pal:Object.assign({},bT4(wu,'#a8b8f4',{cool:'#12123a'}),bT4(wm,'#7a8cd8',{cool:'#0e0e30'}),bT4(wl,'#4a5898',{cool:'#080826'}),bT4(rb,'#eef0ff',{cool:'#2a3050'}),bT4(sk,'#e8d0c8',{cool:'#4a4060'}),{G:'#f0d070',g:'#a08a30',c:'#8ab8f0',x:'#9aeaff',y:'#f4fbff',E:'#9aeaff',K:'#0a0a1c',D:'#1e2030'}),flat:'xyEK',glow:'#bfe8ff',rim:'#0c1020'};
  }
 });
 function rkArt(g,core,f){const F=mfr(f),B=F.b?1:0,rb='abcd',hd='efgh',gd='ijkl';
@@ -665,60 +603,14 @@ BIG_ART.push('riftkeeper');
 ELK.forEach(el=>{MART['riftkeeper_'+el]=g=>rkArt(g,ELC[el]);BIG_ART.push('riftkeeper_'+el);});
 MEXTRA.riftkeeper=(g,p)=>{};
 // ===== v0.13.7: four new Scourges and the fifth Calamity (60x60; foes.js, bosses9.js) =====
-// Silhouettes, each its own: the Locust Choir is a pillar of insects (a tall hourglass cloud around one great singing locust), Ironmaw
-// Tortoise a wide iron-plated dome with a heavy jaw low on the left, the Candleking Moth a pair of huge dusty wings under a crown of
-// three burning tapers, the Brinehag Matriarch a hunched hag under a wide barnacled hat rising from a mound of kelp and net, and the
-// Hollow Sun a ring of fire around a black hollow, with glass shards in orbit and salt spikes below. Idle is the shared bossIdle.
-// (the five sprites of this release are drawn in the BOSSART block at the top of this file)
-['locustchoir','ironmaw','candlemoth','brinehag','hollowsun'].forEach(k=>{BIG_ART.push(k);});
-// v0.14.x: the four Scourges added after the Hollow Sun (bosses10.js). Silhouettes: the Hollow Shepherd a tall hooded robe with a crook and a lit
-// lantern (the tell) and two lambs at its hem; the Pale Weaver a spider hanging on a thread, legs fanned wide; the Crow Regent a huge crow in
+// Silhouettes, each its own: the Candleking Moth a pair of huge dusty wings under a crown of three burning tapers, the Brinehag Matriarch a hunched
+// hag under a wide barnacled hat rising from a mound of kelp and net. Idle is the shared bossIdle. (realms14: the Locust Choir, Ironmaw Tortoise and the
+// Hollow Sun sprites were removed with the bosses)
+// (the sprites of this release are drawn in the BOSSART block at the top of this file)
+['candlemoth','brinehag'].forEach(k=>{BIG_ART.push(k);});
+// v0.14.x: the Scourges added after the Hollow Sun that stayed (bosses10.js; realms14 removed the Hollow Shepherd and the Pale Weaver). Silhouettes: the Crow Regent a huge crow in
 // profile on a bone perch with one wing mantled; the Geyser Matron a kettle-bellied jelly with three smoking chimneys. Idle is the shared bossIdle.
 Object.assign(MART,{
- hollowshepherd(g){
-  g.ell(30,57,24,3,'D');
-  // two lambs of moss and wool at its hem
-  g.ell(9,51,6,4.5,'W');g.ell(8,49,3,2,'V');g.ell(3,52,2.6,2.4,'K');g.s(2,51,'E');g.rect(6,54,2,3,'K');g.rect(11,54,2,3,'K');g.px([[5,48],[9,47],[12,50]],'V');
-  g.ell(51,54,5,3.6,'W');g.ell(55,55,2.2,2,'K');g.s(56,54,'E');g.rect(48,56,2,2,'K');g.rect(52,56,2,2,'K');
-  // the robe: a tall wet bell of moss, lit on the left, hem knotted with roots
-  g.poly([[22,16],[38,16],[47,53],[13,53]],'M');g.poly([[22,16],[28,16],[21,53],[13,53]],'L');g.poly([[38,16],[41,22],[47,53],[40,53]],'m');
-  for(let i=0;i<5;i++)g.line(22+i*4,24+i,20+i*6,52,'m');
-  for(let i=0;i<8;i++)g.path([[15+i*4.3,51],[13+i*4.6,57]],'R',2);g.rect(14,49,32,2,'r');
-  g.px([[24,30],[34,36],[28,44],[40,42],[19,40],[31,26]],'L');
-  // the wool scarf
-  g.ell(30,19,11,3.4,'W');g.ell(27,18,5,1.6,'V');g.px([[22,21],[27,22],[33,22],[38,21]],'w');
-  // arms: the left holds a brass bell, the right the crook
-  g.path([[22,22],[14,29],[12,34]],'M',4);g.ell(12,35,2.6,2.6,'R');g.poly([[8,37],[16,37],[17,44],[7,44]],'B');g.rect(7,43,11,2,'N');g.rect(11,45,2,2,'K');g.px([[9,39],[9,41]],'Y');
-  g.path([[38,22],[44,28],[47,31]],'M',4);g.ell(47,31,2.6,2.6,'R');
-  g.line(47,56,47,9,'R',2);g.line(46,56,46,10,'r');g.path([[47,9],[47,4],[52,2],[56,6]],'R',2);
-  // the lantern on the hook: the tell
-  g.rect(53,7,6,9,'N');g.rect(54,8,4,7,'Y');g.rect(55,9,2,4,'W');g.rect(52,6,8,2,'N');g.rect(55,15,2,2,'N');
-  // the hood and the hollow under it, a crown of twigs
-  g.poly([[20,17],[23,7],[30,2],[37,7],[40,17]],'M');g.poly([[20,17],[23,7],[28,4],[26,12],[24,17]],'L');
-  g.ell(30,13,6,7,'K');g.rect(26,11,2,3,'E');g.rect(33,11,2,3,'E');g.s(26,11,'W');g.s(33,11,'W');g.rect(28,18,4,1,'m');
-  g.path([[25,5],[21,1],[18,2]],'R',1);g.path([[35,5],[39,1],[42,2]],'R',1);g.path([[30,3],[30,0]],'R',1);g.px([[21,0],[40,0],[18,3],[43,3]],'L');
-  g.px([[4,38],[56,40],[2,26],[58,22],[14,6]],'Y');
-  return {pal:{M:'#5a7a3a',m:'#3a5228',L:'#8aa85a',R:'#6a4a2a',r:'#4a3220',K:'#0e0a14',E:'#fff0a0',Y:'#ffe27a',W:'#ece8d4',w:'#a8a490',V:'#c8c8b4',B:'#c8a85a',N:'#6a5230',D:'#1a2414'},flat:'EYK',glow:'#ffe08a',rim:'#10180c'};
- },
- paleweaver(g){
-  g.ell(30,58,14,2,'D');
-  // the thread it hangs from and corner webs
-  g.line(30,0,30,19,'V');g.path([[0,0],[14,10],[24,12]],'V');g.path([[0,8],[10,12]],'V');g.path([[60,0],[46,10],[36,12]],'V');g.path([[60,8],[50,12]],'V');
-  g.path([[0,2],[3,12],[8,20]],'V');g.path([[59,2],[56,12],[52,20]],'V');
-  // eight jointed legs, four a side, fanned wide
-  [[[25,23],[16,7],[6,9],[3,24]],[[24,26],[10,18],[3,29],[4,45]],[[24,29],[9,33],[4,45],[6,57]],[[26,33],[16,44],[11,52],[14,59]]].forEach(L=>{
-    g.path(L,'F',2);g.path(L.map(([x,y])=>[60-x,y]),'F',2);
-    L.slice(1,3).forEach(([x,y])=>{g.s(x,y,'W');g.s(60-x,y,'W');});g.s(L[3][0],L[3][1],'f');g.s(60-L[3][0],L[3][1],'f');});
-  // the abdomen hanging below, a hoarfrost body marked with a bolt
-  g.ell(30,40,12,14,'B');g.ell(25,34,6,8,'W');g.ell(30,40,12,14,'B');g.ell(26,35,6,8,'W');g.poly([[36,30],[40,40],[36,50],[32,52],[38,40]],'b');
-  g.path([[31,28],[27,35],[33,39],[28,47],[31,52]],'Y',2);
-  // cephalothorax, a cluster of eyes and two fangs
-  g.ell(30,24,8,6.5,'F');g.ell(27,22,4,3,'W');
-  g.rect(26,20,2,2,'E');g.rect(32,20,2,2,'E');g.rect(29,19,2,2,'E');g.s(27,24,'E');g.s(32,24,'E');g.s(24,22,'E');g.s(35,22,'E');
-  g.poly([[26,28],[27,34],[29,28]],'N');g.poly([[31,28],[33,34],[34,28]],'N');
-  g.px([[16,36],[44,34],[8,50],[52,48],[30,2]],'Y');
-  return {pal:{F:'#aebfd8',f:'#6a7a98',W:'#eaf2ff',B:'#8a9cc0',b:'#5a6a90',V:'#d8e8ff',Y:'#ffe94a',E:'#ff4a6a',N:'#2a2a40',D:'#1a1e2c'},flat:'EYN',glow:'#bfe0ff',rim:'#141a2a'};
- },
  crowregent(g){
   g.ell(30,58,22,2,'D');
   // the bone perch with knuckle ends
@@ -764,4 +656,4 @@ Object.assign(MART,{
   return {pal:{J:'#e0803a',j:'#a8481a',H:'#ffc890',G:'#ffb040',Y:'#fff0a0',B:'#bfe8f0',W:'#f4fcff',K:'#1a0a0a',T:'#3a9ab0',S:'#8a8a96',s:'#4a4a58',U:'#b4b4c0',D:'#201410'},flat:'GYKW',glow:'#ffb060',rim:'#1a0a08'};
  }
 });
-['hollowshepherd','paleweaver','crowregent','geysermatron'].forEach(k=>{BIG_ART.push(k);});
+['crowregent','geysermatron'].forEach(k=>{BIG_ART.push(k);});

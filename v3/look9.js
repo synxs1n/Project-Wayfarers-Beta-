@@ -13,7 +13,11 @@ const LOOK9={
  mesa:{n:'desert',tree:'cactus',pal:{g:['#e0c088','#d0ae74','#ecd09c','#bc9a62'],tg:['#a8904a','#c0a860','#d8c47a'],p:['#c8a070','#b08a5a','#dab888'],cl:['#c0784a','#a0603a','#d8946a','#7a4428'],w:['#d8b070','#e8c888','#f8e8c0','#b89050']},lip:'#ecd09c',roofKind:'flat',dens:{R:.07,T:.04}},
  ashen:{n:'ash wastes',tree:'dead',trunk:'#2e2a28',pal:{g:['#6a6462','#5a5452','#7a7472','#4a4442'],tg:['#4a4442','#6a6260','#a89a90'],p:['#7a706a','#645a54','#8e8480']},lip:'#7a7472',dens:{T:.06,R:.04}},
  shattered:{n:'sky isles',pal:{g:['#b8b0d8','#a8a0c8','#c8c0e8','#9890b8'],tg:['#8a80b0','#a89cd0','#e0d8ff']},lip:'#c8c0e8'},
- drowned:{n:'sunken ruins',pal:{g:['#7a8a80','#6a7a70','#8a9a90','#5a6a60'],w:['#1e4a5a','#2a6070','#7aa8b0','#123a48']},lip:'#8a9a90'}
+ drowned:{n:'sunken ruins',pal:{g:['#5a8a84','#4c7a76','#6a9c94','#3e6a66'],tg:['#2e5a5a','#3e8a84','#8aeed8'],w:['#1a5a70','#2a7a8c','#8ae8e8','#103e52']},lip:'#6a9c94'},
+ // realms14: the three realms added for the Scourges that had none (the Ashglass Reach's salt flat look is in bosses9.js)
+ moors:{n:'autumn moor',tree:'dead',trunk:'#4a3a30',pal:{g:['#8a6a3e','#7a5c34','#9a7a4a','#6a4e2c'],tg:['#5a3e2a','#7a4e2e','#c08a4a'],p:['#7a6a5a','#645648','#8e7e6c']},lip:'#9a7a4a',dens:{T:.05,R:.05,t:.05}},
+ bamboo:{n:'bamboo mist',base:'heights',tree:'fir',leaf:'#5a9a4a',leaf2:'#3e7a38',pal:{g:['#7aa078','#6a9068','#8ab088','#5a7e58'],tg:['#3e6a40','#58884e','#a8d090'],p:['#8a9a80','#74846a','#a0b094'],cl:['#6a7a6a','#4e5e50','#869886','#34423a']},lip:'#8ab088',dens:{T:.18,R:.04}},
+ bone:{n:'bone fields',tree:'dead',trunk:'#c8c0a8',pal:{g:['#b8b094','#a8a086','#c8c0a6','#98906e'],tg:['#8a846a','#a8a088','#d8d0b4'],p:['#d0c8b0','#b8b098','#e4dcc4']},lip:'#c8c0a6',dens:{R:.08,T:.03}}
 };
 function lookOn(){try{return !!(G&&!G.daily&&G.run&&G.run.tv===2);}catch(e){return false;}}
 HOOK.xform('newRun','look9','new journeys carry tv 2 (the v0.13 look)',function(r){try{r.tv=2;}catch(e){}return r;});

@@ -6,7 +6,7 @@
 //  4 gathering nodes never share a chest tile and are always reachable (nodeFix, in getMap and after placeNodes; drawAudit.nodes reports it)
 //  5 Rift gate colours come from the boss behind the gate (RIFT_COL in realmdata.js, riftGateCol in sanctum.js)   6 no "(relit)" on the Breach
 //  7 north and south walk frames have a real stride (art.js)                  8 wild recruit events are spaced, budgeted per realm, dual types come later
-//  9 each realm's own Scourge (REALMS boss/alt in realmdata.js)               10 echoName() (echocore.js): "Echo Dimmer", never "Echo The Dimmer"
+//  9 each realm's own Scourge (REALMS boss in realmdata.js; realms14: no alternates any more)               10 echoName() (echocore.js): "Echo Dimmer", never "Echo The Dimmer"
 // ---------- 1. landmarks ----------
 // Each painter draws on a 56 x 96 card, ground line at y 92, centre x 28, in 4 or fewer animation frames. P is the painter kit.
 const LMW=56,LMH=96,LMY=92,LMC=28,LM_OUT='#150b17';
@@ -25,7 +25,7 @@ function lmKit(ctx){
   const A=(a,fn)=>{ctx.globalAlpha=a;fn();ctx.globalAlpha=1;};
   const dots=(c,list)=>list.forEach(([x,y,w,h])=>rc(c,x,y,w||1,h||1));
   return {rc,E,G,B,L,S,A,dots,ell,poly:fillPoly,row};}
-// the 23 landmarks, one per town (keyed by the town's name): n the name in the intro line, line what the player reads at its foot,
+// the 26 landmarks (23 + three for the realms14 towns), one per town (keyed by the town's name): n the name in the intro line, line what the player reads at its foot,
 // fr animation frames, lt night light [dx,dy,radius,kind] (dx,dy from the footprint's top left px), col its signature colour (a colour the card is painted with; no two within 30 RGB, v168a)
 const LM12=[
  {town:'Hollowmere',id:'hollowoak',n:'the Hollow Oak',fr:2,lt:[28,36,22,'lamp'],col:'#3b8a34',
@@ -163,7 +163,25 @@ const LM12=[
   line:'A glass hourglass as tall as a house stands in the square at Saltwick, its sand a pale gold that falls in a thin line and has not run out since the salt flat dried.',
   draw(P,f){const {E,G,B,rc,S,A,L,dots}=P;S(21);B('#6a4420',9,10,3,76);B('#6a4420',44,10,3,76);B('#8a5a2a',6,5,44,6);B('#8a5a2a',6,84,44,7);rc('#c8902a',6,5,44,1);
    G('#9ac8e0',[[12,12],[44,12],[30,46],[26,46]]);G('#9ac8e0',[[26,46],[30,46],[44,83],[12,83]]);G('#d8f0fa',[[14,13],[24,13],[26,44]]);G('#d8f0fa',[[26,48],[16,82],[22,82]]);
-   G('#f0c048',[[16,22],[40,22],[30,44],[26,44]]);G('#f0c048',[[14,83],[42,83],[34,66],[28,56],[22,66]]);rc('#fff0a8',27,44,2,24);dots('#c87810',[[27,46+f*10,1,2],[28,56+f*8,1,1]]);rc('#fff0c0',19,23,3,1);}}
+   G('#f0c048',[[16,22],[40,22],[30,44],[26,44]]);G('#f0c048',[[14,83],[42,83],[34,66],[28,56],[22,66]]);rc('#fff0a8',27,44,2,24);dots('#c87810',[[27,46+f*10,1,2],[28,56+f*8,1,1]]);rc('#fff0c0',19,23,3,1);}},
+ // realms14: the three towns of the new Scourge realms
+ {town:'Rookhallow',id:'roost',n:'the Rookhallow Roost',fr:2,lt:null,col:'#6a4a78',
+  line:'A split dead oak stands at the end of the Rookhallow lane, black with crows from root to crown. Every one of them is looking down the lane toward you.',
+  draw(P,f){const {E,G,B,rc,S,L,dots}=P;S(20);E('#6a4a78',16,89,9,3,0);E('#6a4a78',42,90,8,3,0);B('#3a2a34',23,34,10,56);rc('#5a4450',23,34,2,56);rc('#1a1220',29,38,1,50);
+   L('#3a2a34',26,56,10,38,3);L('#3a2a34',30,48,46,26,3);L('#3a2a34',26,42,18,20,2);L('#3a2a34',31,62,46,50,2);L('#3a2a34',27,34,32,16,2);
+   [[8,36,0],[44,24,1],[17,19,1],[45,48,0],[13,38,1],[31,13,0]].forEach(([x,y,o])=>{const dy=o?f:0;E('#14101c',x,y+dy,3,2);rc('#14101c',x+2,y-2+dy,2,2);rc('#e0b050',x+4,y-1+dy,1,1);rc('#14101c',x-4,y+dy,2,1);});
+   dots('#14101c',[[50,10,1,1],[6,14,1,1],[52,36,1,1]]);}},
+ {town:'Canewick',id:'canegate',n:'the Canewick Cane Gate',fr:2,lt:[28,36,18,'lamp'],col:'#9ac060',
+  line:'Two stands of bamboo as thick as a man lean together over the Canewick road and meet in an arch, a paper lantern hanging from the join. The stalks click softly in no wind at all.',
+  draw(P,f){const {E,G,B,rc,S,A,L,dots}=P;S(20);[[8,6],[14,12],[38,12],[44,6]].forEach(([x,t],i)=>{B('#9ac060',x,t,5,90-t);for(let y=t+9;y<88;y+=14)rc('#4a7a2a',x,y,5,1);rc('#b8d880',x,t,1,90-t);});
+   L('#9ac060',13,10,28,2,3);L('#9ac060',43,10,28,2,3);G('#5a9a3a',[[4,16],[0,22],[10,20]]);G('#5a9a3a',[[48,18],[54,24],[44,22]]);
+   rc('#6a4a2a',27,5,2,10);B('#d0383a',22,15,12,16);rc('#f0b050',23,17,10,12);rc(f?'#fff0a0':'#ffd870',25,19,6,8);rc('#6a4a2a',22,15,12,1);rc('#6a4a2a',22,31,12,1);rc('#c8a060',27,32,2,6);
+   A(.3,()=>{E('#ffd870',28,23,14,12);});dots('#e8f4d8',[[12,60,1,1],[44,64,1,1],[9,40+f,1,1]]);}},
+ {town:'Pale Harrow',id:'ribarch',n:'the Harrow Ribs',fr:2,lt:null,col:'#b8b4a8',
+  line:'The ribs of something very large arch over the main street of Pale Harrow, bleached as flour and tall enough for a cart of hay. Nobody remembers who put them up, and nobody has dared take them down.',
+  draw(P,f){const {E,G,B,rc,S,L,dots}=P;S(21);[[6,0],[20,3],[34,6],[46,9]].forEach(([x,d])=>{L('#b8b4a8',x+6,90,x+2+d*.3,48+d,4);L('#b8b4a8',x+2+d*.3,48+d,x+14,22+d,4);L('#b8b4a8',x+14,22+d,x+30,14+d,4);L('#f8f0dc',x+6,90,x+2+d*.3,48+d,1);L('#a8a088',x+16,24+d,x+30,16+d,1);});
+   B('#b8b4a8',44,70,10,16);E('#e8e0cc',48,62,7,6,0);rc('#2a241c',45,60,3,3);rc('#2a241c',50,60,3,3);rc('#2a241c',47,65,4,1);rc('#e8e0cc',45,66,8,3);
+   dots('#a8a088',[[10,86,2,1],[24,88,3,1],[38,87,2,1]]);dots('#f8f0dc',[[20+f*2,40,1,1],[40-f*2,34,1,1]]);}}
 ];
 const LM_BY_TOWN={};LM12.forEach(l=>{LM_BY_TOWN[l.town]=l;});
 const LMC_CACHE={};
@@ -247,7 +265,7 @@ HOOK.wrap('getMap','world12','nodes checked again once the map is healed',functi
 // ---------- 6. the Breach is not a "relit" field ----------
 HOOK.after('showLocation','world12','no (relit) on the Meridian Breach',function(){try{const m=WS.m;if(m&&m.breach&&WS.locN){WS.locN=WS.locN.replace(' (relit)','');if(typeof vHeader==='function'&&document.getElementById('hdr'))document.getElementById('hdr').innerHTML=vHeader();}}catch(e){}});
 // ---------- 9. each realm's own Scourge ----------
-// REALMS carry boss (the realm's own Scourge, a Calamity in the Calamity realms) and alt (the ones that can stand in on a New Game+: the first element of
+// REALMS carry boss (the realm's own Scourge, a Calamity in the Calamity realms) and, until realms14, alt (the ones that stood in on a New Game+; the realms have none now, the variety comes from the realm draw in party12.js; the first element of
 // each is one of the realm's elements). A first journey (cycle 0) always meets the realm's own; from the second a New Game+ draws between them, unseen first.
 // Old journeys keep the bosses they were drawn with; G.run.rb marks the new rule. No boss repeats within a journey.
 function realmBossFor(realmIdx,cycle,R,used){const Rm=REALMS[realmIdx-REALM_BASE];if(!Rm||!Rm.boss)return null;let c=[Rm.boss].concat(Rm.alt||[]).filter(k=>guardianDef(k)&&!used.includes(k));if(!c.length)c=[Rm.boss];

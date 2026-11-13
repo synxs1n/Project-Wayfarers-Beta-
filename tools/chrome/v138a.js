@@ -1,4 +1,8 @@
-// v0.14.x: four more Scourges (The Hollow Shepherd, The Pale Weaver, The Crow Regent, The Geyser Matron: bosses10.js) make 20 Scourges and 5 Calamities,
+// realms14 (v184a.js has the new roster): the roster is 16 Scourges and 4 Calamities (16 + 4 Echoes and gates). This file now covers the four 0.13.7 / 0.14.x
+// Scourges that stayed (Candleking Moth, Brinehag Matriarch, Crow Regent, Geyser Matron). The Locust Choir, Ironmaw Tortoise, Hollow Shepherd, Pale Weaver and
+// the Hollow Sun were removed, and the Ashglass Reach became the salt-flat Scourge realm of the Geyser Matron (Brineglass Flats), so the old checks of those
+// five bosses and of the Ashglass Reach as a Calamity realm were changed or dropped (each line below says so).
+// v0.14.x: four more Scourges (The Hollow Shepherd, The Pale Weaver, The Crow Regent, The Geyser Matron: bosses10.js) made 20 Scourges and 5 Calamities,
 // 25 bosses, 25 Echoes and 25 Sanctum gates; they are covered here like the first four.
 // v0.13.7: four new Scourges (The Locust Choir, Ironmaw Tortoise, Candleking Moth, Brinehag Matriarch), the fifth Calamity (The Hollow Sun)
 // and its realm (The Ashglass Reach). Data and sprites (foes.js, art3.js, realmdata.js, bosstheme.js, lore9.js), wiring (bosses9.js), the
@@ -6,7 +10,7 @@
 // Usage: PWHTML=../../out/aurelis3.html node v138a.js
 const {open,chk,done}=require('./pw');
 const PRE=`localStorage.clear();localStorage.setItem('aurelis-meta-v1',JSON.stringify({cfg:{speed:1,enc:'off',music:0,sfx:0,gfx:'low',hints:false}}));`;
-const NEWG=['locustchoir','ironmaw','candlemoth','brinehag','hollowshepherd','paleweaver','crowregent','geysermatron'],NEWF=['hollowsun'],NEW=NEWG.concat(NEWF);
+const NEWG=['candlemoth','brinehag','crowregent','geysermatron'],NEWF=[],NEW=NEWG.concat(NEWF);// realms14: was the eight Scourges and the Hollow Sun
 (async()=>{const H=await open({w:430,h:800,mobile:true,pre:PRE});const {ev,wait}=H;
 await ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(i=>A.ACT.pickS(i));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;});await wait(250);
 
@@ -25,15 +29,15 @@ let r=await ev(([G4,F1])=>{const A=__A,T=A.TW.get,GU=T('GUARDIANS'),FI=T('FINALS
     const bv=T('BOV')[k];if(!bv||!T('MON')[bv.mon[0]]||!T('MON')[bv.mon[0]].ov===k&&0)bad.push(k+' BOV');
     if(T('bossClass')(k)!==(F1.includes(k)?'Calamity':'Scourge'))bad.push(k+' class');
     if(T('MATS')['es_'+k]==null)bad.push(k+' shard');});
-  o.bad=bad;o.fx=!!T('CAL_FX').hollowsun&&!!T('CAL_FX').hollowsun.el;
-  o.types={locustchoir:T('BOSS_TY').locustchoir,ironmaw:T('BOSS_TY').ironmaw,candlemoth:T('BOSS_TY').candlemoth,hollowshepherd:T('BOSS_TY').hollowshepherd,paleweaver:T('BOSS_TY').paleweaver,crowregent:T('BOSS_TY').crowregent,geysermatron:T('BOSS_TY').geysermatron};
+  o.bad=bad;o.fx=true;
+  o.types={candlemoth:T('BOSS_TY').candlemoth,crowregent:T('BOSS_TY').crowregent,geysermatron:T('BOSS_TY').geysermatron};
   o.elems=[...G4,...F1].map(k=>k+':'+T('guardianDef')(k).el.join('/'));
   o.gim=[...G4,...F1].map(k=>k+':'+T('BOSS_GIM').def[k].t);return o;},[NEWG,NEWF]);
 console.log(JSON.stringify(r));
-chk('20 Scourges and 5 Calamities (25 bosses), the new ones in GUARDIANS/GPOOL and FINALS/FPOOL',r.gp===20&&r.fp===5&&r.gk&&r.fk||JSON.stringify(r));
+chk('16 Scourges and 4 Calamities (20 bosses) [realms14: was 20 and 5], the kept ones in GUARDIANS/GPOOL',r.gp===16&&r.fp===4&&r.gk&&r.fk||JSON.stringify(r));
 chk('every new boss: stats, 3 to 4 skills in the usual shape, a phase, intro, sprite and Echo sprite, archetype, gimmick, overlay, theme, shard',r.bad.length===0||JSON.stringify(r.bad));
-chk('archetypes: Locust Choir swarm, Ironmaw armored, Candleking flying, Hollow Shepherd plant, Pale Weaver beast, Crow Regent flying, Geyser Matron jelly; Calamity effect Hollow glare',r.types.locustchoir[0]==='swarm'&&r.types.ironmaw[0]==='armored'&&r.types.candlemoth[0]==='flying'&&r.types.hollowshepherd[0]==='plant'&&r.types.paleweaver[0]==='beast'&&r.types.crowregent[0]==='flying'&&r.types.geysermatron[0]==='jelly'&&r.fx||JSON.stringify(r));
-chk('the new Scourges use gimmick types the roster was short of: veil, slot (two spots), phase2, tide',JSON.stringify(r.gim.filter(x=>/^(hollowshepherd|paleweaver|crowregent|geysermatron):/.test(x)))===JSON.stringify(['hollowshepherd:veil','paleweaver:slot','crowregent:phase2','geysermatron:tide'])||JSON.stringify(r.gim));
+chk('archetypes: Candleking flying, Crow Regent flying, Geyser Matron jelly [realms14: the Locust Choir, Ironmaw, Hollow Shepherd, Pale Weaver and the Hollow glare are gone]',r.types.candlemoth[0]==='flying'&&r.types.crowregent[0]==='flying'&&r.types.geysermatron[0]==='jelly'&&r.fx||JSON.stringify(r));
+chk('the kept Scourges use gimmick types the roster was short of: phase2, tide [realms14: veil and slot went with the Hollow Shepherd and the Pale Weaver]',JSON.stringify(r.gim.filter(x=>/^(crowregent|geysermatron):/.test(x)))===JSON.stringify(['crowregent:phase2','geysermatron:tide'])||JSON.stringify(r.gim));
 
 // ---- 2. the sprites ----
 r=await ev(([NEW])=>{const A=__A,T=A.TW.get,o={};const mask=c=>{const x=c.getContext('2d').getImageData(0,0,c.width,c.height).data,m=[];for(let i=3;i<x.length;i+=4)m.push(x[i]>20?1:0);return m;};
@@ -50,30 +54,30 @@ console.log(JSON.stringify(r));
 chk('each new boss sprite is 60x60, solid, has a second idle frame, and its Echo form and the boss canvas render without errors',!r.err.length&&NEW.every(k=>r.sizes[k]&&r.sizes[k][0]===60&&r.sizes[k][1]===60&&r.sizes[k][2]>900)||JSON.stringify(r));
 chk('silhouettes are unique: no new sprite is within 12% of another boss sprite (silhouette pixels that differ, as a share of its own)',r.minDiff>.12||JSON.stringify(r));
 
-// ---- 3. the realm ----
-r=await ev(()=>{const A=__A,T=A.TW.get,R=T('REALMS'),cal=R.filter(x=>x.cal),n=cal.find(x=>x.key==='ashglass'),ref=cal.find(x=>x.key==='ashen'),o={};
-  o.cals=cal.map(x=>x.key);o.missing=n?Object.keys(ref).filter(k=>!(k in n)&&k!=='quest').concat(Object.keys(ref.lean).filter(k=>!(k in n.lean)).map(k=>'lean.'+k)):['no entry'];
-  if(n){o.idx=n.idx;o.inCal=T('REALM_CAL').includes(n.idx);o.nCal=T('REALM_CAL').length;o.inZones=T('ZONES')[n.idx]===n;o.wx=!!T('WX_TABLE')[n.wxk]&&!!T('SUPER_TABLE')[n.wxk];
-    o.facts=[n.n,n.town,n.dungeon,n.mat,n.theme,n.els.join('/'),n.npc.length,n.quests.length,n.pool.length,n.favor.join('/')];
-    o.pool=n.pool.filter(k=>!T('MON')[k]);o.wxk=n.wx.map(w=>w[0]).filter(w=>!(w in (T('WX_TABLE').rlm_ashglass?{}:{}))&&false);
+// ---- 3. the realm ---- (realms14: the Ashglass Reach is the Brineglass Flats, a standard realm with the Geyser Matron; it is no longer a Calamity realm)
+r=await ev(()=>{const A=__A,T=A.TW.get,R=T('REALMS'),std=R.filter(x=>x.std),n=R.find(x=>x.key==='ashglass'),ref=R.find(x=>x.key==='orchard'),o={};
+  o.cals=R.filter(x=>x.cal).map(x=>x.key);o.missing=n?Object.keys(ref).filter(k=>!(k in n)&&k!=='quest'&&k!=='quests').concat(Object.keys(ref.lean).filter(k=>!(k in n.lean)).map(k=>'lean.'+k)):['no entry'];
+  if(n){o.idx=n.idx;o.inStd=T('REALM_STD').includes(n.idx);o.inCal=T('REALM_CAL').includes(n.idx);o.nStd=T('REALM_STD').length;o.inZones=T('ZONES')[n.idx]===n;o.wx=!!T('WX_TABLE')[n.wxk]&&!!T('SUPER_TABLE')[n.wxk];
+    o.facts=[n.n,n.town,n.dungeon,n.mat,n.theme0||n.theme,n.els.join('/'),n.npc.length,(n.quests||[]).length,n.pool.length,(n.favor||[]).join('/'),n.boss];
+    o.pool=n.pool.filter(k=>!T('MON')[k]);
     o.intro=n.intro.length>120&&n.win.length>60;o.mat=!!T('MATS')[n.mat];o.theme=!!T('THEME')[n.theme];o.quest=n.quests.every(q=>q.t&&q.d&&(q.mon?T('MON')[q.mon]:q.mat));
     o.lore=T('LORE_REALM').ashglass;o.bov=Object.keys(T('BOV')).length;o.looks=!!T('LOOK9').ashglass&&!!T('D8_REALM').ashglass;o.stdN=T('REALM_STD').length;}
   return o;});
 console.log(JSON.stringify(r).slice(0,900));
-chk('The Ashglass Reach is a Calamity realm with every field of the others and in REALM_CAL (5 of them)',r.cals&&r.cals.length===5&&!r.missing.length&&r.inCal&&r.nCal===5&&r.inZones&&r.wx||JSON.stringify(r));
-chk('its town, dungeon, material, theme, elements, 3 townsfolk lines, 2 quests, pool of 5 known foes, intro and win text',r.facts&&r.facts[0]==='The Ashglass Reach'&&r.facts[1]==='Saltwick'&&r.facts[2]==='The Glass Cathedral'&&r.facts[3]==='dust'&&r.facts[6]===3&&r.facts[7]===2&&r.facts[8]===5&&!r.pool.length&&r.intro&&r.mat&&r.theme&&r.quest||JSON.stringify(r));
-chk('a Lore entry (history, customs, folk) and a dungeon and ground look exist for it; 12 standard realms unchanged',r.lore&&r.lore.hist&&r.lore.custom&&r.lore.folk&&r.looks&&r.stdN===12||JSON.stringify(r));
+chk('The Ashglass Reach (Brineglass Flats) is a standard realm with every field of the others, in REALM_STD (16) and no longer in REALM_CAL (4 left)',r.cals&&r.cals.length===4&&!r.cals.includes('ashglass')&&!r.missing.length&&r.inStd&&!r.inCal&&r.nStd===16&&r.inZones&&r.wx||JSON.stringify(r));
+chk('its town, dungeon, material, theme, elements, 3 townsfolk lines, 2 quests, pool of 5 known foes, intro and win text, the Geyser Matron',r.facts&&r.facts[0]==='Brineglass Flats'&&r.facts[1]==='Saltwick'&&r.facts[2]==='The Glass Cathedral'&&r.facts[3]==='dust'&&r.facts[6]===3&&r.facts[7]===2&&r.facts[8]===5&&r.facts[10]==='geysermatron'&&!r.pool.length&&r.intro&&r.mat&&r.theme&&r.quest||JSON.stringify(r));
+chk('a Lore entry (history, customs, folk) and a dungeon and ground look exist for it; 16 standard realms',r.lore&&r.lore.hist&&r.lore.custom&&r.lore.folk&&r.looks&&r.stdN===16||JSON.stringify(r));
 
 // ---- 4. new journeys draw the new realm and bosses ----
-r=await ev(([NEW])=>{const A=__A,T=A.TW.get,STD=T('REALM_STD'),CAL=T('REALM_CAL'),FP=T('FPOOL'),GP=T('GPOOL'),NR=T('newRun'),asIdx=T('REALMS').find(x=>x.key==='ashglass').idx,o={boss:{},cal:{},bad:[],n:600};
+r=await ev(([NEW])=>{const A=__A,T=A.TW.get,STD=T('REALM_STD'),CAL=T('REALM_CAL'),FP=T('FPOOL'),GP=T('GPOOL'),NR=T('newRun'),asIdx=T('REALMS').find(x=>x.key==='ashglass').idx,o={boss:{},cal:{},bad:[],n:600};/* realms14: ashglass is a standard realm now */
   NEW.forEach(k=>o.boss[k]=0);CAL.forEach(i=>o.cal[i]=0);const dn=Date.now;
   try{for(let k=0;k<o.n;k++){Date.now=()=>1700000000000+k*86400003;const r=NR(k%2);/* v0.18.7: each realm brings its own Scourge; the alternates (most of the new ones) come on a New Game+, so half the journeys are cycle 1 */
     if(r.order.length!==5||new Set(r.order).size!==5||!r.order.slice(0,4).every(i=>STD.includes(i))||!CAL.includes(r.order[4])||r.bosses.length!==4||new Set(r.bosses).size!==4||!r.bosses.every(b=>GP.includes(b))||!FP.includes(r.final)){if(o.bad.length<3)o.bad.push(JSON.stringify(r));}
     r.bosses.concat([r.final]).forEach(b=>{if(b in o.boss)o.boss[b]++;});o.cal[r.order[4]]++;}}finally{Date.now=dn;}
   o.asIdx=asIdx;return o;},[NEW]);
 console.log(JSON.stringify(r));
-chk(`${r.n} seeded journeys: every one valid (5 distinct realms, 4 standard then 1 Calamity realm, 4 distinct Scourges drawn from 20, 1 Calamity)`,!r.bad.length||JSON.stringify(r));
-chk('each new Scourge (all eight) and the Hollow Sun is drawn at least once, and every Calamity realm including The Ashglass Reach',NEW.every(k=>r.boss[k]>0)&&Object.values(r.cal).every(n=>n>0)&&r.cal[r.asIdx]>0||JSON.stringify(r));
+chk(`${r.n} seeded journeys: every one valid (5 distinct realms, 4 standard then 1 Calamity realm, 4 distinct Scourges drawn from 16, 1 Calamity)`,!r.bad.length||JSON.stringify(r));
+chk('each kept Scourge (all four) is drawn at least once, and every Calamity realm (4) [realms14: the Ashglass Reach is no longer one]',NEW.every(k=>r.boss[k]>0)&&Object.values(r.cal).every(n=>n>0)&&Object.keys(r.cal).length===4||JSON.stringify(r));
 
 // ---- 5. old saves and gates that count Scourges ----
 r=await ev(()=>{const A=__A,T=A.TW.get,G=A.G,o={},run0=JSON.parse(JSON.stringify(G.run)),st0=G.stage;
@@ -89,16 +93,16 @@ chk('Scourge-count gates still reachable (Arena tiers need at most 5 cleared) an
 
 // ---- 6. the Realms tracker, Lore book, Bestiary ----
 r=await ev(([NEW])=>{const A=__A,T=A.TW.get,G=A.G,o={},run0=JSON.parse(JSON.stringify(G.run)),st0=G.stage;
-  const idx=T('REALMS').find(x=>x.key==='ashglass').idx;G.run=Object.assign({},run0,{order:[0,1,2,3,idx],bosses:['locustchoir','ironmaw','candlemoth','brinehag'],final:'hollowsun',rv:2});G.stage=4;
-  try{T('syncPools')();const lore=T('vLoreBook')();o.lore=/The Ashglass Reach/.test(lore)&&/Saltwick/.test(lore)&&/Glass Cathedral/.test(lore)&&/hollow/i.test(lore);
-    const rl=T('vRealms')();o.realms=/Ashglass Reach/.test(rl);o.names=[0,1,2,3,4].map(s=>T('guardianDef')(T('bossKeyFor')(s)).n).join('|');
+  const idx=T('REALMS').find(x=>x.key==='ashglass').idx;const ashen=T('REALMS').find(x=>x.key==='ashen').idx;G.run=Object.assign({},run0,{order:[0,1,2,idx,ashen],bosses:['thornwarden','drake','candlemoth','geysermatron'],final:'dimmer',rv:2});G.stage=4;G.visited=[0,1,2,3,4];
+  try{T('syncPools')();const lore=T('vLoreBook')();o.lore=/Brineglass Flats/.test(lore)&&/Saltwick/.test(lore)&&/Glass Cathedral/.test(lore)&&/boil/i.test(lore);
+    const rl=T('vRealms')();o.realms=/Brineglass Flats/.test(rl);o.names=[0,1,2,3,4].map(s=>T('guardianDef')(T('bossKeyFor')(s)).n).join('|');
     const ba=T('bestAll')(),ks=ba.map(x=>x.k);o.best=NEW.every(k=>ks.includes(k)&&ks.includes('echo_'+k));o.ov=NEW.every(k=>ks.includes(T('BOV')[k].mon[0]));
-    const m=T('mBeast')({k:'hollowsun'});o.beast=typeof m==='string'&&/Hollow Sun/.test(m);
-    G.mats=G.mats||{};o.zone=T('ZS')(4).n;o.cal=(T('calFxAt')(4)||{}).n;o.shot=T('bossClass')('hollowsun');}catch(e){o.err=e.message;}
+    const m=T('mBeast')({k:'geysermatron'});o.beast=typeof m==='string'&&/Geyser Matron/.test(m);
+    G.mats=G.mats||{};o.zone=T('ZS')(4).n;o.cal=(T('calFxAt')(4)||{}).n;o.shot=T('bossClass')('geysermatron');}catch(e){o.err=e.message;}
   G.run=run0;G.stage=st0;T('syncPools')();return o;},[NEW]);
 console.log(JSON.stringify(r));
-chk('Lore book has The Ashglass Reach (town, dungeon, history); the Realms tracker lists it',!r.err&&r.lore&&r.realms||JSON.stringify(r));
-chk('Bestiary lists the five bosses, their Echoes and their overlay foes; the beast card renders; the Calamity effect shows',!r.err&&r.best&&r.ov&&r.beast&&r.cal==='Hollow glare'||JSON.stringify(r));
+chk('Lore book has the Brineglass Flats (the Ashglass Reach: town, dungeon, history); the Realms tracker lists it',!r.err&&r.lore&&r.realms||JSON.stringify(r));
+chk('Bestiary lists the four kept bosses, their Echoes and their overlay foes; the beast card renders; the Calamity effect shows (Dimming sky)',!r.err&&r.best&&r.ov&&r.beast&&r.cal==='Dimming sky'||JSON.stringify(r));
 
 // ---- 7. the Echo Sanctum and the Riftkeeper ----
 r=await ev(()=>{const A=__A,T=A.TW.get,G=A.G,META=A.META,o={};G.won=true;G.echoStory={0:1,1:1,2:1,3:1,4:1};
@@ -119,8 +123,8 @@ r=await ev(()=>{const A=__A,T=A.TW.get,G=A.G,META=A.META,o={};G.won=true;G.echoS
   o.have2=T('rkUnlocked')();o.txt2=T('mRiftkeeper')().replace(/<[^>]+>/g,' ');o.dis2=/disabled/.test(T('mRiftkeeper')());
   META.best=JSON.parse(b0);return o;});
 console.log(JSON.stringify(r).slice(0,700));
-chk(`the Sanctum has one gate per Echo (${r.total}): ${r.gates} gates, ${r.keys} distinct, every Scourge and Calamity present, none overlapping, all reachable`,r.total===25&&r.gates===25&&r.keys===25&&r.all&&r.cal===5&&r.overlap===0&&r.reach&&r.rk||JSON.stringify(r));
-chk('the Riftkeeper gate counts every Echo dynamically: sealed at 24 of 25, open at 25 of 25',!r.have1&&/24 of 25 Echoes beaten/.test(r.txt1)&&r.have2&&!r.dis2||JSON.stringify([r.have1,r.have2,r.dis2,r.txt1.slice(0,300)]));
+chk(`the Sanctum has one gate per Echo (${r.total}): ${r.gates} gates, ${r.keys} distinct, every Scourge and Calamity present, none overlapping, all reachable [realms14: 20 gates, 4 Calamity; was 25 and 5]`,r.total===20&&r.gates===20&&r.keys===20&&r.all&&r.cal===4&&r.overlap===0&&r.reach&&r.rk||JSON.stringify(r));
+chk('the Riftkeeper gate counts every Echo dynamically: sealed at 19 of 20, open at 20 of 20 [realms14: was 24 of 25]',!r.have1&&/19 of 20 Echoes beaten/.test(r.txt1)&&r.have2&&!r.dis2||JSON.stringify([r.have1,r.have2,r.dis2,r.txt1.slice(0,300)]));
 
 // ---- 8. every new boss can be fought (story spec, then the Echo spec) ----
 for(const k of NEW){
@@ -136,7 +140,7 @@ for(const k of NEW){
   await wait(4500);
   const q=await ev(()=>{const A=__A,B=A.B,e=B&&B.en&&B.en[0];const o={turns:e?e.turns:-1,over:B&&B.over,log:B?B.log.length:0};A.setPause(999999);if(B&&!B.over){B.auto=false;A.V.auto=false;}try{A.finishBattle('x');}catch(x){o.fin=x.message;}A.V.modal=null;A.V.auto=false;return o;});
   console.log(k,JSON.stringify(r),JSON.stringify(q));
-  chk(`${k}: starts as a boss fight through the story spec with its own sprite and name`,r.ok&&r.key===k&&r.boss&&r.art===(k==='hollowsun'?'hollowsun':k)&&r.mhp>0&&r.drawn||JSON.stringify(r));
+  chk(`${k}: starts as a boss fight through the story spec with its own sprite and name`,r.ok&&r.key===k&&r.boss&&r.art===k&&r.mhp>0&&r.drawn||JSON.stringify(r));
   chk(`${k}: auto turns run (boss turns ${q.turns}), gimmick wired: ${r.gim}`,q.turns>=2&&r.gim||q.over&&r.gim||JSON.stringify(q));
   const e2=await ev(([k])=>{const A=__A,T=A.TW.get;A.G.party.forEach(id=>{const c=A.G.roster[id];c.hp=c.S.mhp;c.mp=c.S.mmp;c.st={};});A.setPause(999999);
     const ok=A.startBattle(T('riftSpec')(k));const B=A.B,e=B&&B.en[0];const o={ok:!!ok&&!!B,echo:e&&e.echo,art:e&&e.art,name:e&&e.name,sk:e&&e.sk.length};if(B){A.render();o.drawn=document.querySelector('#app').innerHTML.length>500;try{A.finishBattle('x');}catch(x){o.fin=x.message;}A.V.modal=null;}return o;},[k]);
@@ -144,13 +148,13 @@ for(const k of NEW){
 }
 // ---- 9. the realm's own maps build and draw (town, field, dungeon, caves) under the new look ----
 r=await ev(()=>{const A=__A,T=A.TW.get,G=A.G,o={err:[],maps:[]},idx=T('REALMS').find(x=>x.key==='ashglass').idx,run0=JSON.parse(JSON.stringify(G.run)),st0=G.stage;
-  G.run=Object.assign({},run0,{order:[0,1,2,3,idx],bosses:['locustchoir','ironmaw','candlemoth','brinehag'],final:'hollowsun',rv:2,lay3:1,tv:2});G.stage=4;A.resetMaps();T('syncPools')();
-  try{const f=A.getMap('f4');const ids=['t4','f4','d4'].concat((f.caves||[]).map(c=>c.id));
+  const ashen=T('REALMS').find(x=>x.key==='ashen').idx;G.run=Object.assign({},run0,{order:[0,1,2,idx,ashen],bosses:['thornwarden','drake','candlemoth','geysermatron'],final:'dimmer',rv:2,lay3:1,tv:2});G.stage=3;A.resetMaps();T('syncPools')();
+  try{const f=A.getMap('f3');const ids=['t3','f3','d3'].concat((f.caves||[]).map(c=>c.id));
     ids.forEach(id=>{try{const m=A.getMap(id);o.maps.push(id+':'+m.kind+':'+(m.theme||''));if(!m.t||!m.t.length)o.err.push(id+' empty');}catch(e){o.err.push(id+': '+e.message);}});
-    o.zone=T('ZS')(4).town;const k=T('guardianDef')(T('bossKeyFor')(4));o.boss=k.n;o.look=T('realmVariant')(T('ZS')(4).theme,T('ZS')(4));o.wx=T('WX_TABLE')[T('ZS')(4).wxk].length;}catch(e){o.err.push(e.message);}
-  A.placeAt&&A.placeAt('t4',10,10,'d');o.drawn=true;try{A.render();}catch(e){o.err.push('render '+e.message);}
+    o.zone=T('ZS')(3).town;const k=T('guardianDef')(T('bossKeyFor')(3));o.boss=k.n;o.look=T('realmVariant')(T('ZS')(3).theme,T('ZS')(3));o.wx=T('WX_TABLE')[T('ZS')(3).wxk].length;}catch(e){o.err.push(e.message);}
+  A.placeAt&&A.placeAt('t3',10,10,'d');o.drawn=true;try{A.render();}catch(e){o.err.push('render '+e.message);}
   return o;});
 await wait(400);
 console.log(JSON.stringify(r));
-chk('The Ashglass Reach town, field, dungeon and caves build and draw (the new look, Saltwick, its boss overlay)',!r.err.length&&r.maps.length>=3&&r.zone==='Saltwick'&&r.boss==='The Hollow Sun'||JSON.stringify(r));
+chk('The Brineglass Flats (Ashglass Reach) town, field, dungeon and caves build and draw (the salt flat look, Saltwick, its boss overlay)',!r.err.length&&r.maps.length>=3&&r.zone==='Saltwick'&&r.boss==='The Geyser Matron'||JSON.stringify(r));
 await done(H);})();

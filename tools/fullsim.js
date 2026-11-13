@@ -2,7 +2,8 @@
 // so every v0.5.0 system (XP catch up, surprise starts, first realm single types, Guild perks, shop and party changes) is live,
 // and drives battles with the same queue loop as tools/v3sim.js (the game's own careful brain or its auto).
 // Usage: node tools/fullsim.js <sim> [args]   sims: boss, stage1, xp, journey   (run from the repo root, no tools/v3 link needed)
-//   SEED=<n> replaces Math.random with a seeded LCG and freezes Date.now (new journeys draw their realms from it), so two builds
+//   SEED=<n> replaces Math.random with a seeded LCG and freezes Date.now (new journeys draw their realms from it; DRAW=<n> steps the frozen clock to draw another
+//   journey, the same realms and bosses for every run of one sim), so two builds
 //   can be compared exactly (before/after a cleanup)
 //   boss [N]        Scourge 4, Calamity and their Echoes at party levels 30/35/40/45, parties of 6 and 3
 //   stage1 [N]      stage 1 field fights at level 3: careful and auto, how many foes are dual type, surprise starts on roamers
@@ -205,9 +206,9 @@ journey:RUNS=>`RUNS=${RUNS||3};window.__DBG=${process.env.DBG?1:0};const out=[];
   fs.writeFileSync(P,'<!doctype html><html><head><meta charset="utf-8"></head><body><script>localStorage.clear();</script>'+MOCK+'<div id="app"><header id="hdr"></header><main id="screen"></main><div id="modal"></div></div></body></html>');
   await page.goto('file://'+P);
   const t0=Date.now();
-  const r=await page.evaluate(([SRC,HARNESS,LOOP,BODY,SEED])=>{window.__PWTEST=1;/* v0.11.4: no timed-hit rings in sims */if(SEED){let s=SEED>>>0;Math.random=()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296;};Date.now=()=>1700000000000;}window.__Q=[];const st=f=>{window.__Q.push(f);return 1;};
+  const r=await page.evaluate(([SRC,HARNESS,LOOP,BODY,SEED,DRAW])=>{window.__PWTEST=1;/* v0.11.4: no timed-hit rings in sims */if(SEED){let s=SEED>>>0;Math.random=()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296;};Date.now=()=>1700000000000+DRAW*86400003;/* DRAW=n: another journey draw (realms and bosses), the frozen clock steps by a day; 0 is the old fixed draw */}window.__Q=[];const st=f=>{window.__Q.push(f);return 1;};
     const A=(new Function('setTimeout',SRC+HARNESS))(st);window.__A2=A;A.setPause(0);
-    return (new Function('A',LOOP+BODY))(A);},[SRC,HARNESS,LOOP,SIMS[which](arg),+process.env.SEED||0]);
+    return (new Function('A',LOOP+BODY))(A);},[SRC,HARNESS,LOOP,SIMS[which](arg),+process.env.SEED||0,+process.env.DRAW||0]);
   console.log(`${which} on the full game (${MODS.length} modules), ${((Date.now()-t0)/1000).toFixed(0)} s`);console.log(r);
   if(errs.length)console.log('page errors:',errs.slice(0,3).join(' | '));
   await browser.close();try{fs.unlinkSync(P);}catch(e){}})();

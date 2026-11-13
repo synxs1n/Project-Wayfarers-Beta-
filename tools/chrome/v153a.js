@@ -1,5 +1,5 @@
 // v0.17.1 the Echo Rift: the hall rebuilt around the Echoforge (v0.17.2: 33 x 34, forge at the centre, the five Calamity gates on an inner ring, the twenty
-// Scourge gates on an outer ring in five arcs of four, the Riftkeeper and his gate at the north end of the axis, the door in the south) and renamed from
+// Scourge gates on an outer ring in five arcs of four; realms14: four Calamity gates on the diagonals and sixteen Scourge gates in four bays of four, the Riftkeeper and his gate at the north end of the axis, the door in the south) and renamed from
 // "Echo Sanctum" to "The Echo Rift". Checks the layout, not the art: forge in the middle third, every gate reachable from the start by BFS (and the tile
 // south of it, where the HD-2D camera looks from, open), nothing on the start tile or on a wall, no two npcs on one tile, bays named by signs, the name in
 // locName, the Waystone row, the cards and the dialogue, and no "Echo Sanctum" left in the player text of the files that own the hall.
@@ -44,7 +44,7 @@ const r=await ev(()=>{const A=__A,g=A.TW.get,o={};const m=A.getMap('s0'),W=m.w,H
   A.placeAt('s0',m.start[0],m.start[1],'u');A.V.screen='world';A.render();o.body=document.body.innerText;
   return o;});
 console.log(JSON.stringify(Object.assign({},r,{text:r.text.length,body:r.body.length,row:r.row.slice(0,80)})));
-chk('the hall holds 25 Echo gates (5 Calamities, 20 Scourges)',r.n===25&&r.cal===5&&r.sc===20||JSON.stringify([r.size,r.n,r.cal,r.sc]));
+chk('the hall holds 20 Echo gates (4 Calamities, 16 Scourges) [realms14: was 25, 5 and 20]',r.n===20&&r.cal===4&&r.sc===16||JSON.stringify([r.size,r.n,r.cal,r.sc]));
 chk('the Echoforge stands in the middle third of the hall, in fact on the centre',r.mid&&r.centred||JSON.stringify([r.size,r.forge]));
 chk('every gate, the forge and the Riftkeeper can be reached from the start tile (BFS over walkable tiles)',r.unreach.length===0||JSON.stringify(r.unreach));
 chk('every gate has open, reachable floor on the south (the HD-2D camera side); no gate hides behind the forge or another gate',r.noSouth.length===0||JSON.stringify(r.noSouth));
@@ -52,9 +52,9 @@ chk('no sealed floor, and the south door is reachable from the start',r.sealed==
 chk('no two npcs on one tile, none on the start tile, none on a wall, brazier, pillar or sign',r.dup.length===0&&!r.onStart&&r.onWall.length===0||JSON.stringify([r.dup,r.onStart,r.onWall]));
 chk('the Calamity gates ring the forge (3 to 8 tiles out) and every Scourge gate is farther out than the ring',r.ring[0]>=3&&r.ring[1]<=8&&r.scMin>r.ring[1]||JSON.stringify([r.ring,r.scMin]));
 chk('the Riftkeeper and his gate stand on the axis at the north end; the door and the start are on the same axis in the south',r.rkAxis&&r.keeperAxis&&r.startSouth||JSON.stringify([r.rkAxis,r.keeperAxis,r.startSouth]));
-chk('v0.17.2: the Scourges stand on an outer ring (radius 9.5 to 11.5) around the Calamity ring, evenly spaced (neighbour angles within 1.4x of each other apart from the south gap), walkway between the rings at least 1 tile',r.scR[0]>=9.5&&r.scR[1]<=11.5&&r.walk>=1&&r.nbMin>12&&r.gapMax<=40||JSON.stringify([r.scR,r.walk,r.nbMin,r.gapMax]));
+chk('v0.17.2: the Scourges stand on an outer ring (radius 9.5 to 11.5) around the Calamity ring, evenly spaced (neighbour angles within 1.4x of each other apart from the south gap, which is two steps of 360/17 degrees = 42.4 since realms14; was 34.3 with 21 slots), walkway between the rings at least 1 tile',r.scR[0]>=9.5&&r.scR[1]<=11.5&&r.walk>=1&&r.nbMin>12&&r.gapMax<=45||JSON.stringify([r.scR,r.walk,r.nbMin,r.gapMax]));
 chk('v0.17.2: the lane from the door to the forge is open (no gate or brazier on the axis south of the forge) and every gate has walkable floor on the centre side and the wall side',!r.lane&&r.laneOpen===0&&r.inOut.length===0||JSON.stringify([r.lane,r.laneOpen,r.inOut]));
-chk('the five bays are named by signs',r.bays.length===5||JSON.stringify(r.bays));
+chk('the four bays are named by signs [realms14: was five]',r.bays.length===4||JSON.stringify(r.bays));
 chk('"The Echo Rift" is the hall\'s name (hub, locName, on screen) and the Waystone row',r.hub==='The Echo Rift'&&r.loc==='The Echo Rift'&&/The Echo Rift/.test(r.row)&&/The Echo Rift/.test(r.body)||JSON.stringify([r.hub,r.loc,r.row.slice(0,80)]));
 chk('no "Echo Sanctum" or "Sanctum hall" in the hall\'s signs, dialogue, gate cards, rest popup or Waystone row',!/Echo Sanctum|Sanctum hall/i.test(r.text+r.row)||JSON.stringify((r.text+r.row).match(/.{30}(Echo Sanctum|Sanctum hall).{30}/gi)));
 // source scan: string literals and template text of the hall's own files (comment lines skipped)

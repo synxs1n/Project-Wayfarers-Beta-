@@ -42,6 +42,7 @@ function mapIssues(m){
   const A=healReach(m,s,false,false),Bs=healReach(m,s,true,true);
   return mapTargets(m).filter(t=>reachT(A,t)&&!reachT(Bs,t));
 }
+mapIssues=HOOK.def('mapIssues',mapIssues);// v0.20.6: world14.js adds mapIssues(m,{actors:true}) (roamers, actors, nodes and chests off the walkable ground)
 // shortest optimistic route (blockers passable) to a target; returns the loose tiles / npcs on it
 function healRoute(m,start,t){
   const g=m.t,H=g.length,W=g[0].length,prev=new Map(),k=(x,y)=>y*W+x,q=[start];prev.set(k(...start),null);

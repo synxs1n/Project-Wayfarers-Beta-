@@ -520,3 +520,6 @@ gates are beaten, cutscene on entering the gate, returns with a new look, rematc
 
 ## 0.20.5
 - Owner: "Grass just looks much worse than it did before all the graphical changes, revert grass to how it looked before". terrain13's drawTile wrap now returns the original painter for ',' tiles (no swap to '.', no growth, no transitions on them), and its ground block (patchwork, small tufts, pebbles/drifts/cinders/spores, spill from neighbouring grass) is off; transitions on other tiles, the water body and animation, wet/snow and the exit land stay. T13.grass='new' brings back the 0.20.4 growth and patchwork for comparison. v176a sections 1, 2 and 5 now assert the revert: ',' tiles and the ','-vs-'.' contrast equal the module-off paint in all 12 realms (they match exactly).
+
+## 0.20.9
+Four helper passes shipped together: world14 (cloud sea, reachable spawns, front-only entrances), towns14 (19 layouts, 20 building families, new journeys only via r.t14), realms14 (16 Scourges + 4 Calamities, 20 realms, unpackG maps removed bosses), roster14 (learn spread to 45, cumulative permanent recruits, 16-wayfarer starter pool). Docs: world14.md, towns14.md. Pacing: roster spread adds about 1 boss try, realms14 removes more; check v080cb.
