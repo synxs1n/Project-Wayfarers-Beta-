@@ -48,7 +48,7 @@ const ROOTS=['hollow','ash','ember','thorn','gloam','bone','mist','spire','cinde
   o.mantleLv=[...new Set(Object.keys(U).map(id=>(g('classSkills')(TPL[id]).find(s=>s.id==='mantle')||{}).lv).filter(Boolean))].sort((a,b)=>a-b);
   return o;});
  console.log('kits:',JSON.stringify(Object.assign({},r,{names:r.names.length})));
- chk(`all ${r.n} wayfarers: 14 class skills, at least 2 that no other wayfarer has, exactly 3 at level 10, no two skills alike in a kit (own skills per hero: ${JSON.stringify(r.own)})`,r.n===92&&r.bad.length===0||r.bad.slice(0,8).join(' | '));
+ chk(`all ${r.n} wayfarers: 14 class skills, at least 2 that no other wayfarer has, exactly 3 at level 10, no two skills alike in a kit (own skills per hero: ${JSON.stringify(r.own)})`,r.n===94&&r.bad.length===0||r.bad.slice(0,8).join(' | '));
  chk(`one schedule for every kit: ${Object.keys(r.sets).join(' ; ')} (single learns after the start, no gap over 4 levels from 11 on)`,Object.keys(r.sets).length===1&&Object.keys(r.sets)[0]==='1,1,6,11,14,18,21,25,28,31,35,38,42,45'||JSON.stringify(r.sets));
  chk(`the signature sits at level 18 for all 88 regular wayfarers and the second own skill at 38 for the ${r.late} that gained one (${r.newN} new skills, ${r.rest} wayfarers with a restored original)`,r.place.length===0&&r.late>=40&&r.newN===26||r.place.slice(0,8).join(' | ')+' '+r.late+' '+r.newN);
  const rooty=r.names.filter(n=>ROOTS.some(x=>n.toLowerCase().includes(x)));

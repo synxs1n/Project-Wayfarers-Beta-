@@ -437,7 +437,8 @@ const POINT_VAL={str:1,int:1,vit:1,spi:1,fth:1,agi:.6,dex:1,luk:1};
 // Beta v0.3.1 Faith: [base, growth]. Healers and Chroniclers scale mostly on it, Knights and Monks a little.
 // Their Intellect is lowered by 0.6 per Faith point so MAG stays where it was; healing goes up (Faith adds 0.5 heal power per point on top of MAG).
 const FTH={healer:[3,.9],chronicler:[3,.8],knight:[1,.3],monk:[1,.25]};
-Object.keys(CLS).forEach(k=>{
+// (legends17a.js: named so a class added by a later module gets the same curves; classAttrBuild(k) builds CLASS_ATTR[k] and CLASS_ATTR_LEGACY[k])
+function classAttrBuild(k){
   const c=CLS[k],dl=DEXLUK[k],at=i=>{
     const dex=dl.dex[0]+dl.dex[1]*i,luk=dl.luk[0]+dl.luk[1]*i,atk=c.atk[0]+c.atk[1]*i,mag=c.mag[0]+c.mag[1]*i,hp=c.hp[0]+c.hp[1]*i,res=c.res[0]+c.res[1]*i,spd=c.spd[0]+c.spd[1]*i;
     const int=mag/2,str=(atk-.4*dex)/2,vit=(hp-20-3*i)/6,spi=(res-.3*int)/1.2,agi=spd-4;
@@ -449,7 +450,8 @@ Object.keys(CLS).forEach(k=>{
   const a15={};ATTR.forEach(s=>{if(s==='fth')return;a15[s]=a0[s]+(a1[s]-a0[s])*15;});a15.fth=0;const d15=deriveStats(a15,15);
   Object.assign(CLASS_ATTR_LEGACY[k],{defM:(c.def[0]+c.def[1]*15)/d15.def,mpM:(c.mp[0]+c.mp[1]*15)/d15.mp});
   CLASS_ATTR[k]={b,g,defM:(c.def[0]+c.def[1]*15)/d15.def,mpM:(c.mp[0]+c.mp[1]*15)/d15.mp};
-});
+}
+Object.keys(CLS).forEach(k=>classAttrBuild(k));
 const ST=['hp','mp','atk','def','mag','res','spd'];
 const EQSL=['w','a','c','k'];// v0.4.3: weapon, armor, charm, cape
 const CF={sniper:['crossbow','vest'],druid:['bow','vest'],archmage:['staff','robe'],chronicler:['tome','robe'],warrior:['blade','mail'],knight:['blade','mail'],monk:['knuckles','vest'],mage:['staff','robe'],healer:['staff','robe'],bard:['lute','robe'],archer:['bow','vest'],thief:['dagger','vest']};

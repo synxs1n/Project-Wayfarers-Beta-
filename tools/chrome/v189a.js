@@ -41,7 +41,7 @@ const UNTIL=async id=>{const A=__A,B=A.B;A.setPause(60);
   A.ACT.new();['brann','mira','oren'].forEach(i=>A.ACT.pickS(i));A.ACT.begin();
   return {n,bad,sets,m14L:M.levels([1,1,3,4,5,6,7,8,9,10,11,12]).join(),k1:kn(1),k5:kn(5),k10:kn(10),k11:kn(11),b2,n2,a2,q2,n3,a3,a1:cnt(g1),q1,a0:cnt(g0),q0,f:[g2.m14lv,g3.m14lv,g1.m14lv,g0.m14lv],keep2:g2.roster.brann.keep,flag:A.G.m14lv,spread:M.M14.spread};});
  console.log('learn:',JSON.stringify(r));
- chk(`learn levels: ${r.n} kits, every one knows exactly 3 class skills at level 10, single learns after the two at level 1, last at 45, no gap over 6, order kept (${Object.keys(r.sets).join(' | ')})`,r.n===92&&r.bad.length===0||r.bad.slice(0,5).join(' | '));
+ chk(`learn levels: ${r.n} kits, every one knows exactly 3 class skills at level 10, single learns after the two at level 1, last at 45, no gap over 6, order kept (${Object.keys(r.sets).join(' | ')})`,r.n===94&&r.bad.length===0||r.bad.slice(0,5).join(' | '));
  chk(`the schedule is 1,1,6,11,14,18,21,25,28,31,35,38,42,45 (14 skills since roster17.js; a 12 skill kit had 1,1,6,11,15,20,24,28,32,37,41,45: __M14.levels)`,Object.keys(r.sets).join()==='1,1,6,11,14,18,21,25,28,31,35,38,42,45'&&r.m14L==='1,1,6,11,15,20,24,28,32,37,41,45'||Object.keys(r.sets).join(' | '));
  const all=(o,v)=>Object.values(o).every(x=>x===v);
  chk(`heroes know 2 class skills at level 1, 2 at level 5, 3 at level 10 and 4 at level 11`,all(r.k1,2)&&all(r.k5,2)&&all(r.k10,3)&&all(r.k11,4)||JSON.stringify([r.k1,r.k5,r.k10,r.k11]));

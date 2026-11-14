@@ -30,7 +30,7 @@ if(w===390){
     DL.LINES.__t={o:['First variant.','Second variant.','Third variant.']};const s0=A.G.run.seed;const p1=DL.line('__t','o'),p2=DL.line('__t','o');A.G.run.seed=s0+1;const p3=[0,1,2,3,4,5].map(i=>{A.G.run.seed=s0+i;return DL.line('__t','o');});A.G.run.seed=s0;delete DL.LINES.__t;
     return {n:ids.length,missing,dupOpen,dupFb,fbClash,dupAny,hy,longM,stable:p1===p2,varies:new Set(p3).size>1};});
   console.log(JSON.stringify({n:d.n,dupAny:d.dupAny}));
-  chk('all 92 wayfarers have every line',d.n===92&&d.missing.length===0||d.n+' '+d.missing.slice(0,8).join(','));
+  chk('all 94 wayfarers have every line (92 and the two legends of legends17a.js)',d.n===94&&d.missing.length===0||d.n+' '+d.missing.slice(0,8).join(','));
   chk('no two heroes share an opening line',d.dupOpen.length===0||d.dupOpen.join(' | '));
   chk('no two heroes share any line of the same kind',d.dupAny.length===0||d.dupAny.join(','));
   chk('the fallback is distinct for every hero',d.dupFb.length===0&&d.fbClash.length===0||JSON.stringify([d.dupFb,d.fbClash]));

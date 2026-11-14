@@ -125,3 +125,45 @@ Two more runs for the offers (bosses 3, 4 and the Calamity only, 240 fights a so
 - Pets by "tier" are monsters sorted by base stats, not by realm; a pet fights at its hero's level, so the realm it came from does not matter to the numbers.
 - The auto never prays or summons in the real game either, so all of this only matters in fights played by hand.
 - Damage over time a summon leaves on a foe (poison, burn, bleed ticks) is not counted in its damage share; reaction damage it sets off is.
+
+## legends17a: Joseth's summons and the class comparison (after the two new legends)
+New in the tool: sources `jPack` (Call the Pack the first turn he can), `jGuard` (Invoke, paid in HP), `jCer` (Cerberus; the gauge is filled for the call, so this is the Limit at its best), a `jose` party (Joseth, Brann, Mira, Sable, Oren, Tess), and `CMP=1`: the same six with one hero in the first seat (`CMPH=dist,pip` limits the rows), boss 3, boss 4 and the Calamity, with what the hero did himself (his summons and clone count as his). In the source tables Joseth's own auto summoning is off (`L17.simOff`), so a row shows only the call it names.
+
+`SOURCES=jPack,jGuard,jCer POINTS=boss3,boss4,calamity,field3 node sumbal.js 80` (SEED 7):
+| point | source | win % (none > first / hurt) | length (first / hurt) | HP lost % (none > first / hurt) | dmg share % (first / hurt) |
+|---|---|---|---|---|---|
+| boss3 | the pack | 34 > 44 / 50 | x0.80 / x0.95 | 63 > 55 / 56 | 12 / 10 |
+| boss3 | guardian (HP) | 34 > 26 / 30 | x1.21 / x1.13 | 63 > 64 / 65 | 13 / 8 |
+| boss3 | Cerberus | 34 > 23 / 21 | x1.17 / x0.99 | 63 > 64 / 64 | 7 / 4 |
+| boss4 | the pack | 36 > 53 / 39 | x0.75 / x0.86 | 63 > 53 / 60 | 16 / 8 |
+| boss4 | guardian (HP) | 36 > 40 / 31 | x1.26 / x1.03 | 63 > 61 / 64 | 13 / 7 |
+| boss4 | Cerberus | 36 > 50 / 39 | x0.90 / x0.97 | 63 > 60 / 63 | 19 / 10 |
+| calamity | the pack | 24 > 30 / 36 | x0.89 / x1.00 | 69 > 65 / 64 | 12 / 8 |
+| calamity | guardian (HP) | 24 > 14 / 19 | x1.47 / x1.36 | 69 > 69 / 69 | 12 / 7 |
+| calamity | Cerberus | 24 > 23 / 19 | x1.06 / x1.09 | 69 > 68 / 68 | 19 / 10 |
+| field3 | the pack | 100 > 100 / 100 | x0.94 / x1.00 | 4 > 4 / 4 | 17 / 0 |
+| all bosses | the pack | 31 > 42 / 42 | x0.81 / x0.93 | | 13 / 9 |
+| all bosses | guardian (HP) | 31 > 27 / 27 | x1.31 / x1.17 | | 13 / 7 |
+| all bosses | Cerberus | 31 > 32 / 26 | x1.04 / x1.02 | | 15 / 8 |
+
+- The pack is the strongest summon in the game: +11 points of boss win rate (a strong pet: +8 in the same run; a Priest's guardian: +1), and it is the only summon that makes won fights shorter (x0.81), because nobody steps out for it. That is what three pets at once beside the Vanguard means; its power (.7), HP (60%), stay (4 turns) and costs are the owner's numbers and were kept. What was tuned are the dogs' own moves.
+- His guardian is a little worse than a Priest's (-4 against +1): the 25% of his HP is a real price and the Vanguard still sits out. It is there for the second HP bar, as for everyone.
+- Cerberus is about neutral (+1 called at once, -5 called late) at boss 3 and the Calamity and good at boss 4, where Limit II opens (36 > 50): it does 15% of the damage for free, but calling it sends the pack home.
+
+`CMP=1 node sumbal.js 100` (300 boss fights a hero, about 5 points of noise either way):
+| hero | win % | hero's damage + healing a fight | share of the party's % |
+|---|---|---|---|
+| Sable (Thief, Shadow) | 29 | 1057 | 20 |
+| Pip (Thief, Water) | 35 | 1099 | 20 |
+| Dist (Chief Bandit, Water) | 38 | 959 | 17 |
+| Lumen (Priest, Light) | 27 | 1290 | 24 |
+| Brigid (Priest, Fire) | 37 | 1687 | 28 |
+| Ione (Priest, Lightning) | 28 | 1213 | 23 |
+| Joseth, no summons | 32 | 1006 | 19 |
+| Joseth, summons as the auto plays him | 37 | 1403 | 26 |
+
+Target: about 10 to 20% stronger than the base class in a boss fight, not more.
+- Dist: 38% against 32% for the two Thieves (+19%; +9% against Pip, the Thief of his own element). His own damage is a little under a Thief's (959 against 1078): under the auto he spends turns on Pick Up the Pace, Water Clone, Smoke Bomb and Slip Under, and what he adds is the party's speed and his own survival. Tuned on the way: attack and HP a little down (about +10% and +5% over a Thief; the proposal had +13% and +10%), Pick Up the Pace 14 MP and 20% (12 MP and 30%). Before: 44% with the proposal's numbers (60 fights a point). Tried in runs of 60: without Pick Up the Pace 42 falls to 38, without the clone 41, without the 10% evasion 40; Barnacle Edge as a detonator changed nothing (the auto does not chain his own marks).
+- Joseth: 37% against 31% for the three Priests (+20%), and level with Brigid, the Fire Priest. Without the pack he is at 32% and does less than any Priest (1006: fewer MP, no Lampglow, no Miracle), so the pack is what makes him the upgrade. Tuned on the way: the dogs' moves about 22% under the proposal (Warm Nuzzle 1.3 > 1.0, Bolt Fang 1.5 > 1.15, Skyhowl 1.0 > .75, Hamstring 1.1 > .9 ...), his speed the Priest's (8, .7; the proposal had 9, .8), Pyre Chain 1.05 > .95, Bloodstorm 3.0 > 2.7. With the proposal's numbers: 40 to 44% over three runs.
+- How a foe's single blow is shared out does not matter: with pack pets taking none of them (`L17.pack.draw` .01) the result was the same (38 against 39), so the lever was left at 1 (a pet is a target like any unit).
+- Not modelled: a person calling the pack and then Cerberus on its last turn, Sic, a tamed pet or a recruited boss in his slots, and gold (Light Fingers, Toll Toss).
