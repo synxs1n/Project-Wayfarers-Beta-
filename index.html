@@ -2119,7 +2119,7 @@ html:not(.flat) .battle.b3 .bline .b4mo .b4bar{box-shadow:inset 0 0 0 1px #000,0
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.21.2";const APP_BUILD="10051719693f";
+(function(){const APP_VER="0.21.3";const APP_BUILD="286e3f9a1ab3";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2420,7 +2420,7 @@ const TEMPER={raw:[2,3,4],part:[1,2,3],relic:[1,2,2],core:[0,0,1],goldK:[.6,1.2,
 const EF_K=1.18;
 const EF_SHARDS=2,EF_ESS=6,EF_CORE=3,EF_GOLD=3000;
 // capes (capes.js): CAPE_ST per tier [HP, resistance, speed]; CAPE_PRICE per tier.
-const CAPE_ST=[[25,4,0],[45,8,1],[70,13,2],[100,19,3],[140,26,4],[190,34,5]],CAPE_PRICE=[60,120,240,420,700,1000];
+const CAPE_ST=[[25,4,0],[45,8,1],[70,13,2],[100,19,3],[140,26,4],[190,36,5]]/* gear16: the top cape's RES 36 (was 34), clear of the tier below at +3 */,CAPE_PRICE=[60,120,240,420,700,1000];
 // STICK_Q: Bestiary entries the Tamer's Stick quest asks for (equip.js).
 const STICK_Q=6;
 
@@ -2888,7 +2888,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.21.2";const APP_BUILD="10051719693f";
+const APP_VER="0.21.3";const APP_BUILD="286e3f9a1ab3";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2896,6 +2896,7 @@ const APP_VER="0.21.2";const APP_BUILD="10051719693f";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.21.3',['Equipment: the Backpack tab works on phones (a hint card was sitting over it). Upgrade whole party buys every available upgrade in one press. Equipment shows every stat it raises or lowers, and by how much, against what the hero wears. Equip Best and Build party close the Menu when done, with an Undo Equip Best button in Backpack > Equipment. Rarities unlock by realm: Common and Uncommon in the first, then one more per realm. Any piece at +0 now beats the rarity below it at +3, so tempering steps are smaller. The personal quest fight names the real relic reward (weapon, armour or charm) instead of always a weapon.']],
  ['Beta v0.21.2',['Quests and goals: guilds and guild quest progress unlock after the first realm\'s Scourge falls. Personal quests unlock at 50 battles and offer themselves in a pop-up after the fight. The town notice board takes every kind of quest again, guild missions and personal quests included, and the guild notices "Sign the guild ledger" and "First blood in the pit" can be handed in. Next goals stays on screen (it no longer folds or hides when you walk near it), wraps properly on small phones, minimises only by its arrow, and has a Show goals switch in Settings > Display.']],
  ['Beta v0.21.1',['Regular foes are back to their normal size in battle. Heroes and bosses keep the bigger Unified look size.']],
  ['Beta v0.21.0',['Unified look: everything in the world now shares one style. Town roofs have small tile rows and sit lower so they cover less of the screen, battle units are 25% bigger on a crisp backdrop, the hero stays solid under roofs, props and buildings get one dark colour-matched outline and take on their realm\'s tint, and menus use the same frame style with no blur behind them. Settings > Display > Unified look switches it off.']],
@@ -3907,7 +3908,7 @@ const MON_DROPS={mossling:['healroot','ichor'],gustimp:['ichor','oak'],dewtoad:[
 // Kept out of MAT_PRICE on purpose, so recipe gold math ignores them and parts stay the gate.
 const PART_PRICE={hide:30,fang:32,scale:36,ichor:36,grit:40},PART_STOCK=3;
 const GEAR={};
-const ARM_K=3.5,FORGE_STEP=.25;
+const ARM_K=3.5,FORGE_STEP=.11;// gear16: .11 (was .25), so a piece at +3 (x1.33) stays under the next rarity at +0 in its main stats (test v188a.js)
 const WP=[6,14,25,39,57,80],AP=[5,11,18,27,38,52],PRICE=[60,150,380,750,1400,2400];
 const WN={blade:['Iron Blade','Steel Brand','Mythril Saber','Dawnsteel Blade','Stormforged Edge','Starcleaver'],
  staff:['Oak Staff','Moonwood Staff','Sage Rod','Tidecaller Staff','Skyglass Scepter','Hollow Star Rod'],
@@ -4000,7 +4001,7 @@ const ITEM_TIERS=[
  {n:'Echoforged',c:'#ffd9a0',c2:'#b48aff',pip:'❂'}];
 const ITEM_TIER_OF={potion:0,remedy:0,porkchop:0,ether:1,hipotion:1,vigor:1,sage:1,tent:1,holywater:2,plume:3,elixir:3};// v0.10.8: Elixir was tier 4 ('Legendary'), a chest staple // consumables
 const STN={hp:'HP',mp:'MP',atk:'ATK',def:'DEF',mag:'MAG',res:'RES',spd:'SPD'};
-// Tempered gear carries a +N suffix: each level adds 25% to its stats (FORGE_STEP).
+// Tempered gear carries a +N suffix: each level adds FORGE_STEP (11%) to its stats.
 function gearOf(id){
   if(!id)return null;if(id==='w_stick')return stickGear();const m=String(id).match(/^(.*)\+(\d)$/);
   if(!m)return GEAR[id]||null;
@@ -7323,7 +7324,7 @@ function genBounties(s){
   if(G.bounties.some(b=>b.stage===s))return;
   const Z=ZS(s),R=seeded(G.run.seed+s*31+5);
   for(let i=0;i<2;i++){const mon=Z.pool[Math.floor(R()*Z.pool.length)],mod=ELITE_MODS[Math.floor(R()*ELITE_MODS.length)],title=ELITE_TITLES[Math.floor(R()*ELITE_TITLES.length)];
-    G.bounties.push({id:'b'+s+i,stage:s,mon,mod:mod.k,name:`${MON[mon].n} ${title}`,lv:STAGE_LV[s][1]+4,state:'open',reward:{gold:250+s*250,mat:3,charm:pick(['c_str','c_int','c_vit','c_spi','c_agi','c_dex','c_luk'])}});}
+    G.bounties.push({id:'b'+s+i,stage:s,mon,mod:mod.k,name:`${MON[mon].n} ${title}`,lv:STAGE_LV[s][1]+4,state:'open',reward:{gold:250+s*250,mat:3,charm:pick(rarPool(['c_str','c_int','c_vit','c_spi','c_agi','c_dex','c_luk']))}});}
 }
 
 // =================== STATUS ===================
@@ -7979,7 +7980,7 @@ function win(){
     else if(spec.kind==='boss'&&!B.en.find(e=>e.boss&&FINALS[e.key])&&RNG()<.15){const bk=bossKeyFor(s);info.tame={mon:bk,name:'Lesser '+guardianDef(bk).n,bb:1,scourge:1};}}
   if(spec.kind==='legend'&&typeof legendWin==='function')legendWin(spec,info);
   if(typeof challengeWin==='function')challengeWin(spec,info);
-  if(spec.kind==='echoBoss'&&!(spec.rift&&G.echoes[spec.key])){G.echoes[spec.key]=1;const gid=lootBase()+'_5+3';G.gear.push(gid);info.gear=gid;}
+  if(spec.kind==='echoBoss'&&!(spec.rift&&G.echoes[spec.key])){G.echoes[spec.key]=1;const gid=rarFit(lootBase()+'_5+3');/* gear16: an Echo beaten early (the Rift in a later journey) gives the open rarity */G.gear.push(gid);info.gear=gid;}
   if(spec.kind==='boss'){
     const tier=Math.min(5,s+1),fam=lootBase();
     const gid=fam+'_'+tier;G.gear.push(gid);info.gear=gid;
@@ -10031,7 +10032,7 @@ function openChest(x,y){
   const s=m.s,tier=Math.min(5,s+1),dun=m.kind==='dungeon',vault=(m.chests||[]).some(c=>c[0]===x&&c[1]===y&&c[2]==='vault');
   let msg;const r=Math.random(),Z=ZS(s);
   if(m.cave&&(m.chests||[]).some(c=>c[0]===x&&c[1]===y&&c[2]==='reward')){rebuildBase();const t=caveReward(m.s);saveGame();say(null,'You open the chest. '+t);return;}
-  if(vault){G.vaults=G.vaults||{};G.vaults[s]=1;const ch=pick(['c_str','c_int','c_vit','c_spi','c_agi','c_dex','c_luk']),g=econG(200+s*150);G.gear.push(ch);G.gold+=g;msg=`Inside: ${gearOf(ch).n} and ${g} gold!`;}
+  if(vault){G.vaults=G.vaults||{};G.vaults[s]=1;const ch=pick(rarPool(['c_str','c_int','c_vit','c_spi','c_agi','c_dex','c_luk'])),g=econG(200+s*150);G.gear.push(ch);G.gold+=g;msg=`Inside: ${gearOf(ch).n} and ${g} gold!`;}
   else if(r<.28){const g=econG(60+s*110+ri(0,40));G.gold+=g;msg=`Inside: ${g} gold.`;}
   else if(r<.52){const it=pick(CHEST_ITEMS(s));const n=it==='plume'||it==='tent'?1:2;G.inv[it]=Math.min(invCap(),(G.inv[it]||0)+n);msg=`Inside: ${n>1?n+' x ':''}${ITEMS[it].n}.`;}
   else if(r<.7){const n=dun?3:2;G.mats[Z.mat]=(G.mats[Z.mat]||0)+n;msg=`Inside: ${n} x ${MATS[Z.mat]}.`;}
@@ -11657,7 +11658,7 @@ function vModal(m){
   case 'result':return mResult(m.info);
   case 'lose':return box('The party falls',`<p>Darkness closes in. You wake at the inn in ${esc(ZS(G.lastTown||0).town)}, a tenth lighter in the purse.</p>`,'<button class="btn gold" data-act="loseOk">Carry on</button>');
   case 'boss':return mBoss(m.s);
-  case 'elite':{const b=m.b,mo=MON[b.mon],md=ELITE_MODS.find(x=>x.k===b.mod);if(b.personal)return box(esc(b.name),`<div class="bossv"><img src="${monURL(mo.art)}" alt=""></div><div class="els">${elChips(mo.el)}</div><p class="story">${esc(b.text)}</p><p class="note">Level ${b.lv}, with a pack. ${md?`<b>${md.n}:</b> ${md.d}`:''} Reward: ${gearOf('u_'+b.personal).n}.</p>`,`<button class="btn" data-act="closeModal">Not yet</button><button class="btn gold" data-act="fightElite">Fight</button>`);return box(esc(b.name),`<div class="bossv"><img src="${monURL(mo.art)}" alt=""></div><div class="els">${elChips(mo.el)}</div><p>A marked monster from the guild's bounty board. ${md?`<b>${md.n}:</b> ${md.d}`:''}</p><p class="note">Level ${b.lv}, with a pack mate. Elites carry a Break shield. Reward: ${fmt(b.reward.gold)} gold, ${gearOf(b.reward.charm).n}, ${b.reward.mat} materials.</p>`,`<button class="btn" data-act="closeModal">Leave it</button><button class="btn gold" data-act="fightElite">Fight</button>`);}
+  case 'elite':{const b=m.b,mo=MON[b.mon],md=ELITE_MODS.find(x=>x.k===b.mod);if(b.personal)return box(esc(b.name),`<div class="bossv"><img src="${monURL(mo.art)}" alt=""></div><div class="els">${elChips(mo.el)}</div><p class="story">${esc(b.text)}</p><p class="note">Level ${b.lv}, with a pack. ${md?`<b>${md.n}:</b> ${md.d}`:''} Reward: ${gearOf((G.gear.includes('u_'+b.personal)||Object.values((G.roster[b.personal]||{}).eq||{}).includes('u_'+b.personal))?'u_'+b.personal:sigGid(b.personal)).n}.</p>`,`<button class="btn" data-act="closeModal">Not yet</button><button class="btn gold" data-act="fightElite">Fight</button>`);return box(esc(b.name),`<div class="bossv"><img src="${monURL(mo.art)}" alt=""></div><div class="els">${elChips(mo.el)}</div><p>A marked monster from the guild's bounty board. ${md?`<b>${md.n}:</b> ${md.d}`:''}</p><p class="note">Level ${b.lv}, with a pack mate. Elites carry a Break shield. Reward: ${fmt(b.reward.gold)} gold, ${gearOf(b.reward.charm).n}, ${b.reward.mat} materials.</p>`,`<button class="btn" data-act="closeModal">Leave it</button><button class="btn gold" data-act="fightElite">Fight</button>`);}
   case 'inn':return mInn();
   case 'tavern':return mTavern();
   case 'smithy':return mShop(m);
@@ -13423,7 +13424,7 @@ function vTemper(opt){opt=opt||{};
   const rows=tl.map(rowOf).join('');
   const bar=opt.bar&&typeof ddBar==='function'?ddBar([ddSel('Show','tShow','t',[['all','Everything'],['ready','Ready to temper'],['eq','Worn by the party'],['spare','Spares in the pack']],opt.show||'all')],'shopf'):'';
   const empty=n0&&(opt.slot||(opt.show&&opt.show!=='all'))?'<p class="note empty">Nothing here matches. Try another section or Show: Everything.</p>':'<p class="note empty">Nothing to temper right now. Fully tempered gear and the Tamer\'s Stick are not listed.</p>';
-  return `${bar}<details class="m3how"><summary>How tempering works</summary><p class="note">Each level adds 25% to an item's stats, up to +3. Every level needs the item's own raw material (ore, logs or herbs at its tier), a monster part for its kind (fangs for blades and daggers, scales for mail, ichor for staves and robes, hide for bows and garb, grit for charms), this realm's relic (${MATS[ZS(G.stage).mat]}), and gold. +3 also needs a Dread Core. The Smithy sells ore, logs and a few parts right here.</p></details>${rows?`<div class="rows">${rows}</div>`:empty}`;
+  return `${bar}<details class="m3how"><summary>How tempering works</summary><p class="note">Each level adds ${Math.round(FORGE_STEP*100)}% to an item's stats, up to +3. Every level needs the item's own raw material (ore, logs or herbs at its tier), a monster part for its kind (fangs for blades and daggers, scales for mail, ichor for staves and robes, hide for bows and garb, grit for charms), this realm's relic (${MATS[ZS(G.stage).mat]}), and gold. +3 also needs a Dread Core. The Smithy sells ore, logs and a few parts right here.</p></details>${rows?`<div class="rows">${rows}</div>`:empty}`;
 }
 Object.assign(ACT,{
   temperBuy(a){const o=JSON.parse(a),id=o.w==='spare'?G.gear[o.r]:G.roster[o.r.cid].eq[o.r.slot];const c=id&&forgeCost(id);if(!c)return;
@@ -14567,7 +14568,7 @@ HOOK.before('render','mimic','mimic loot after the fight, back on the map',funct
     if(!G.chests[key]){mimicReward(L.x,L.y,L.bonus);}}});
 // v0.4.1 1.2: a slain mimic and its chest vanish, and it drops a better reward than any ordinary chest (a tier above, plus a charm and gold)
 function mimicReward(x,y,bonus){const m=WS.m,key=m.id+':'+x+','+y;G.chests[key]=2;if(typeof sfx==='function')sfx('chest');
-  const s=m.s,tier=Math.min(5,s+2),gid=lootBase()+'_'+tier+'+1',cid=pick(['c_vital','c_mana','c_swift','c_clarity','c_'+pick(ELK)]);
+  const s=m.s,gid=rarLoot(lootBase(),s+2,1)/* gear16: a tier above, or the open rarity at +2 */,cid=pick(['c_vital','c_mana','c_swift','c_clarity','c_'+pick(ELK)]);
   G.gear.push(gid);G.gear.push(cid);rebuildBase();
   if(typeof dropChest==='function')dropChest(m,x,y);saveGame();
   say(null,`The Mimic collapses into splinters and the chest is gone. In the wreckage: ${gearOf(gid).n} (${ITEM_TIERS[gTierIdx(gearOf(gid))].n}), ${gearOf(cid).n} and ${bonus} gold!`);}
@@ -27418,7 +27419,7 @@ const CH9_EPIC=CHARMS9_EPIC.map(x=>x[0]),CH9_HEROIC=CHARMS9_HEROIC.map(x=>x[0]);
 HOOK.after('win','charms9','Epic and Heroic charms from Echoes and the arena',function(){try{const sp=B&&B.spec;if(!sp||!G||G.daily)return;const info=(B&&B.result)||(V.modal&&V.modal.info)||{};info.notes=info.notes||[];
   let id=null;if(sp.kind==='echoBoss'&&!sp.rift&&info.gear&&Math.random()<.5)id=pick(CH9_HEROIC);
   else if(sp.kind==='arena'&&(sp.tier|0)>=3&&Math.random()<(sp.tier>=4?.3:.4))id=pick(sp.tier>=4?CH9_HEROIC:CH9_EPIC);
-  if(id){G.gear.push(id);info.notes.push(`${gearOf(id).n} (${ITEM_TIERS[gTierIdx(gearOf(id))].n}) is in your gear.`);}}catch(e){}});
+  if(id&&rarOk(id)){G.gear.push(id);info.notes.push(`${gearOf(id).n} (${ITEM_TIERS[gTierIdx(gearOf(id))].n}) is in your gear.`);}}catch(e){}});
 
 // ===== holy9.js (v0.13.5): healing light burns the undead harder than a plain skill =====
 // The owner: healing on undead should beat a normal skill most of the time. Before, a heal dealt 75% of its amount (60% for party-wide
@@ -29249,7 +29250,7 @@ function heroFrontURL(id){try{const t=TPL[id];if(!t||t.mon)return heroURL(id);co
 //     hero's preferred weapon or armour type, at +3, plus the old 8% edge. Stats are computed from G, never saved, so old saves upgrade by themselves.
 //  4) Best-in-slot thinking: bestTag shows what a piece gives at max temper (+3) and flags "worth tempering"; Equip best lists pack pieces that are
 //     weaker today but beat the worn piece at max temper. Equip best itself still equips by today's stats.
-const ECON11={craftK:.85,sellK:.4,itemSell:.4,tempBonus:.25,confirmTier:2,relicEdge:1.08,relicTemper:1+FORGE_STEP*3};
+const ECON11={craftK:.85,sellK:.4,itemSell:.4,tempBonus:.25,confirmTier:2,relicEdge:1.08,relicTemper:1.75/* gear16: the old +3 factor as a number; FORGE_STEP changed and relics keep their strength */};
 
 // ----- 1) forged gear starts at +0 -----
 (function(){const buy=m=>Object.keys(m).reduce((s,k)=>s+(MAT_PRICE[k]||0)*m[k],0);/* relics ($rel...) are not in MAT_PRICE: not counted */
@@ -29568,7 +29569,7 @@ try{window.__M11={M11,M11HD,iconCanvas:m11Canvas,nodeCanvas:(id,st)=>{const c=mk
 //     in the Upgrade popups (p3shop.js upgOpts / upgApply wrapped) and charged by ACT.efForge.
 //     (relicBuild is wrapped too: at tier 5 each stat is at least 5% over the Echoforged piece, which only matters for small stats such as SPD.)
 //  4) The anvil in the Sanctum hall: a plinth, anvil, echo crystal brazier, banner, rune ring, drifting shards and motes (forgeDraw), in 2D and HD-2D; lights in m.lights.
-const ECHO11={K:2.0,goldK:1.6,relicEdge:1.25,attrAdd:9};
+const ECHO11={K:2.0,goldK:1.6,relicEdge:1.25,attrAdd:9,top3:1.75/* gear16: the old +3 factor, so Echoforged numbers stay as they were */};
 try{ECON11.relicEdge=ECHO11.relicEdge;}catch(e){}
 
 // ----- the recipes -----
@@ -29612,7 +29613,7 @@ function efEntry(f){return ECHOFORGE[f]||ECHOARM[f];}
   const o={n:'Echoforged '+E.n,slot:sl,tier:5,ef:f,fam:f,efPerk:E.perk,price:efGold(f)};
   if(sl==='a')o.weight=b.weight;else o.wt=f;
   /* K times the tier 5 piece, and never less than 14% over what that piece has at +3 (small stats such as SPD 1.5 would otherwise round level with it) */
-  ST.forEach(s=>{if(b[s]>0)o[s]=Math.max(Math.round(b[s]*ECHO11.K),Math.ceil(Math.round(b[s]*(1+FORGE_STEP*3))*1.14));else if(b[s])o[s]=b[s];});/* penalties (armour SPD, MP) stay as the shop piece has them */
+  ST.forEach(s=>{if(b[s]>0)o[s]=Math.max(Math.round(b[s]*ECHO11.K),Math.ceil(Math.round(b[s]*ECHO11.top3)*1.14));else if(b[s])o[s]=b[s];});/* penalties (armour SPD, MP) stay as the shop piece has them */
   ['mpEff','elDmg','tome'].forEach(q=>{if(b[q])o[q]=b[q];});
   if(b.attr){o.attr={};Object.keys(b.attr).forEach(a=>{o.attr[a]=b.attr[a]+ECHO11.attrAdd;});}/* a shop +3 adds 6 */
   addGear(efItemId(f),o);};
@@ -34725,6 +34726,131 @@ try{const st=document.createElement('style');st.textContent=`.gl .gll li{display
 @media (pointer:coarse),(max-width:600px){.wview>#glp.gl.gl .glhead,.wview>#glpm.gl.gl .glhead{min-height:44px}}`;document.head.appendChild(st);}catch(e){}
 try{window.__Q16={Q16,g16Open,g16Sync,g16Note,pq16List,q16AtDesk,q16Notices,q16GoalsOn,get G(){return G;},get V(){return V;},get B(){return B;}};}catch(e){}
 try{M11_RANK.unshift(['display',2.7,/"goals",/]);}catch(e){}// menus11.js sorts the Settings rows into sections: Show goals belongs to Display
+
+// ===== gear16.js (owner playtest pass on equipment, shops and the party buttons) =====
+// Last in MODS. No new save fields; test tools/chrome/v188a.js.
+//  1) A first realm hint (p2world.js #p2hint, fixed at the top, z 60) lay over the Menu's group tabs on a phone: Backpack and Quests took no taps
+//     for the 30 s it stays. While a window is open the hint is now put away (its clock stops) and comes back when the window closes.
+//  2) "Upgrade whole party" (Smithy and Alchemy, p3shop.js) planned one step per hero and slot from the pack as it stood, so the pieces the
+//     first press freed (hand-me-downs) and the steps that only opened after it showed up on a second press. The plan now runs round after
+//     round on a copy of the purse, the materials, the pack and what the six wear until a round finds nothing, and Confirm buys round after
+//     round the same way. Undo still puts the gear back (a piece tempered on the way stays tempered).
+//  3) deltaHtml lists every stat a piece changes for a hero against what they wear, gains and losses, with signed amounts: the eight sheet
+//     stats, then crit, accuracy, evasion, element damage and resistances, healing, perks. A shop or forge row nobody gains from shows the
+//     change for the heroes who could wear it.
+//  4) Equip Best and Build party (Apply) pressed in the Menu close it with a toast. Equip Best keeps an Undo on Backpack > Equipment until
+//     the gear changes again.
+//  5) Rarity by progress: rarCap() is the highest rarity (ITEM_TIERS index) a journey has open: Common and Uncommon in the first realm, one
+//     more per realm reached or Scourge beaten (pcRealm()), all six from the fifth. Shops, recipes, chests, the mimic, vaults and bounty
+//     charms stay under it; the one-per-realm cave and Sanctum charms carry their realm's rarity. New Game+ follows the same rule (the code
+//     gives it no gear rules of its own); the Daily Trial is open. Not capped: gear already owned, personal relics, guild rank charms, the
+//     Tamer's Stick, Echoforged gear.
+//  6) A piece of one rarity at +0 beats the rarity below at +3 in its main stats: FORGE_STEP (items.js) is .11 (was .25), the top cape's RES
+//     36 (was 34, config.js). Relics and Echoforged gear keep their numbers (econ11.js relicTemper, echo11.js ECHO11.top3).
+const G16={rounds:10,undo:null,hint:null,hintBack:15000};
+
+// ---------- 1) the hint card steps aside for an open window ----------
+// A plain hint (p2world.js hintShow) is put away while any window is open and its 30 s clock stops; when the window closes it is back for
+// G16.hintBack ms. A tip card (onboard.js, OB.cur) already sits inside the window and is left alone.
+function g16HintDock(){try{
+  const d=document.getElementById('p2hint');if(!d)return;
+  const tip=typeof OB!=='undefined'&&OB.cur,hide=!tip&&!!V.modal&&d.classList.contains('show')&&!d.classList.contains('inl');
+  if(hide&&!d.classList.contains('g16hide')){d.classList.add('g16hide');clearTimeout(P2.hintHide);G16.hint=P2.hint;}
+  else if(!hide&&d.classList.contains('g16hide')){d.classList.remove('g16hide');const id=G16.hint;G16.hint=null;
+    if(!tip&&id&&P2.hint===id&&d.classList.contains('show')){clearTimeout(P2.hintHide);P2.hintHide=setTimeout(()=>{if(P2.hint===id)ACT.hintOk();},G16.hintBack);hintPlace(d);}}}catch(e){}}
+HOOK.after('render','gear16','a first realm hint steps aside while a window is open (it covered the Menu tabs on phones)',g16HintDock);
+{const hs0=hintShow;hintShow=function(){const d=document.getElementById('p2hint');if(d)d.classList.remove('g16hide');const r=hs0.apply(this,arguments);g16HintDock();return r;};}
+
+// ---------- 5) rarity by progress ----------
+function rarCap(){try{if(!G||G.daily)return 5;return Math.max(1,Math.min(5,pcRealm()+1));}catch(e){return 5;}}
+// may this piece be handed out or sold now? (relics, bound gear, the Stick and Echoforged gear follow their own rules)
+function rarOk(id){const g=gearOf(id);if(!g)return true;if(g.stick||g.relic||g.only||g.bound||g.medal)return true;const t=gTierIdx(g);return t>5||t<=rarCap();}
+// a shop line piece (w_blade_3+1) brought down to the open rarity; anything else is returned as it is
+function rarFit(id){const m=String(id).match(/^([wak]_[a-z]+_)(\d)(\+\d)?$/);if(!m)return id;const cap=rarCap();return +m[2]>cap?m[1]+cap+(m[3]||''):id;}
+// loot of a family: the tier asked for, or the open rarity one temper level higher
+function rarLoot(base,tier,plus){let t=Math.min(5,tier),p=plus||0;const cap=rarCap();if(t>cap){p=Math.min(3,p+(t-cap));t=cap;}return base+'_'+t+(p?'+'+p:'');}
+const RAR_ALT=['c_swift','c_clarity'].concat(ELK.map(k=>'c_'+k));
+function rarPool(list){const L=list.filter(rarOk);if(L.length)return L;const A=RAR_ALT.filter(id=>GEAR[id]&&rarOk(id));return A.length?A:['c_vital','c_mana'];}
+function rarNote(){try{if(!G||G.daily)return '';const cap=rarCap();if(cap>=5)return '';
+  return `<p class="note g16rar">Rarities open now: up to <b style="color:${ITEM_TIERS[cap].c}">${ITEM_TIERS[cap].pip} ${ITEM_TIERS[cap].n}</b>. ${ITEM_TIERS[cap+1].n} gear opens when the next Scourge falls.</p>`;}catch(e){return '';}}
+{const ss0=shopStock;shopStock=function(tab){const r=ss0.apply(this,arguments);try{if(Array.isArray(r)&&G&&!G.daily)return r.filter(rarOk);}catch(e){}return r;};}
+{const ro0=recipeOpen;recipeOpen=function(r){return ro0.apply(this,arguments)&&(!r||!r.id||rarOk(r.id));};}
+{const fb0=shopFBar;shopFBar=function(ctx){const h=fb0.apply(this,arguments);return ctx==='items'?h:h+rarNote();};}
+// the one-per-realm charms (side cave, Sanctum) carry the rarity their realm opens: Uncommon, Rare, then Epic
+try{[typeof CAVE_CHARMS!=='undefined'?CAVE_CHARMS:{},typeof FORT_CHARMS!=='undefined'?FORT_CHARMS:{}].forEach(T=>Object.keys(T).forEach(s=>{const g=GEAR[T[s]];if(g)g.tier=Math.min(g.tier,(+s)+1);}));}catch(e){}
+
+// ---------- 3) every stat a piece changes ----------
+const G16_INT=[['mhp','HP'],['mmp','MP'],['atk','ATK'],['def','DEF'],['mag','MAG'],['res','RES'],['spd','SPD'],['healP','HEAL'],['luk','LUK']];
+// additive shares (0.04 = 4 points); a third entry -1 marks one where less is better
+const G16_PCT=[['crit','Crit'],['critDmg','Crit dmg'],['acc','Accuracy'],['eva','Evasion'],['healUp','Healing'],['spellPow','Spell dmg'],['rngPow','Ranged dmg'],['elDmg','Elemental dmg'],
+  ['mpEff','MP saved'],['pierce','DEF ignored'],['cleave','Cleave dmg'],['heavy','Physical dmg'],['charge','Charge dmg'],['combo','Extra hit'],['basicStun','Stun on attack'],
+  ['bossDmg','Boss dmg'],['primeDmg','Primed dmg'],['tauntDef','Taunt guard'],['fthRes','Ailment ward']];
+// multipliers around 1
+const G16_MUL=[['status','Ailment chance'],['stun','Stun chance'],['bleed','Bleed chance'],['tempo','Action time',-1]];
+const G16_TURN=[['buffT','buff turn'],['debT','debuff turn']];
+function g16Deltas(c,id){const g=gearOf(id),out=[];if(!g||!c||!c.S)return out;const A=c.S,B=statsWith(c,g.slot,id),num=v=>typeof v==='number'&&isFinite(v)?v:0;
+  const sg=d=>d>0?'+':'−',add=(k,d,t,inv)=>out.push({k,d,t,up:inv?d<0:d>0});
+  G16_INT.forEach(([k,n])=>{const d=num(B[k])-num(A[k]),r=Math.round(d);if(r)add(k,r,sg(r)+Math.abs(r)+' '+n);else if(Math.abs(d)>=.25)add(k,d,sg(d)+Math.abs(d).toFixed(1)+' '+n);});
+  const pct=(k,d,n,inv)=>{if(Math.abs(d)<.0005)return;const p=Math.abs(d*100),s=p>=9.95||Math.abs(p-Math.round(p))<.05?String(Math.round(p)):p.toFixed(1);add(k,d,sg(d)+s+'% '+n,inv);};
+  G16_PCT.forEach(([k,n,inv])=>pct(k,num(B[k])-num(A[k]),n,inv<0));
+  G16_MUL.forEach(([k,n,inv])=>pct(k,(B[k]==null?1:num(B[k]))-(A[k]==null?1:num(A[k])),n,inv<0));
+  [['elBoost','dmg'],['elRes','resist']].forEach(([m,w])=>{const a=A[m]||{},b=B[m]||{};ELK.forEach(el=>pct(m+'.'+el,num(b[el])-num(a[el]),EL[el]+' '+w));});
+  G16_TURN.forEach(([k,n])=>{const d=Math.round(num(B[k])-num(A[k]));if(d)add(k,d,sg(d)+Math.abs(d)+' '+n+(Math.abs(d)>1?'s':''));});
+  {const d=(B.immune?1:0)-(A.immune?1:0);if(d)add('immune',d,sg(d)+'Ailment guard');}
+  return out;}
+deltaHtml=function(c,id){const L=g16Deltas(c,id);return L.length?L.map(o=>`<b class="${o.up?'up':'dn'} g16d">${o.t}</b>`).join(' '):'<small>No change</small>';};
+// a shop, forge or temper row nobody gains from: what it would change for the heroes who could wear it
+{const bt0=bestTag;bestTag=function(id){let h=bt0.apply(this,arguments);try{if(!G||G.daily||gainersFor(id).length)return h;
+  const L=fitsFor(id).slice(0,2).map(o=>({c:o.c,h:g16Deltas(o.c,id)})).filter(o=>o.h.length);if(!L.length)return h;/* fitsFor: the party heroes who can wear it, least bad first (cached per draw) */
+  h+=`<div class="bestl g16vs"><b>Against what they wear:</b>${L.map(o=>`<div class="bestr">${port(o.c.id,'sm')}<b>${esc(o.c.name)}</b> <span>${o.h.map(x=>`<b class="${x.up?'up':'dn'} g16d">${x.t}</b>`).join(' ')}</span></div>`).join('')}</div>`;}catch(e){}return h;};}
+
+// ---------- 2) Upgrade whole party: every round in one press ----------
+// the plan, round after round, on a copy of the purse, the materials, the pack and what the party wears (nothing is bought or saved here)
+function g16PlanAll(slots){const first=p3SmithPlan(slots);if(!first.picks.length)return first;
+  const P=partyChars(),real={gold:G.gold,mats:G.mats,gear:G.gear,eq:{},S:{}};P.forEach(c=>{real.eq[c.id]=c.eq;real.S[c.id]=c.S;});
+  const all=[];let plan=first,n=0,cant=first.cant;
+  try{G.mats=Object.assign({},G.mats);G.gear=G.gear.slice();P.forEach(c=>{c.eq=Object.assign({},c.eq);});
+    while(plan.picks.length&&n<G16.rounds){n++;
+      plan.picks.forEach(p=>{const c=G.roster[p.cid];if(!c)return;G.gold-=p.gold;if(p.m)Object.keys(p.m).forEach(k=>{G.mats[k]=(G.mats[k]||0)-p.m[k];});
+        if(p.src==='pack'){const i=G.gear.indexOf(p.base);if(i>=0)G.gear.splice(i,1);}
+        const old=c.eq[p.sl];if(old)G.gear.push(old);c.eq[p.sl]=p.id;c.S=calcStats(c);p.round=n;all.push(p);});
+      plan=p3SmithPlan(slots);cant=plan.cant;}
+  }finally{G.gold=real.gold;G.mats=real.mats;G.gear=real.gear;P.forEach(c=>{c.eq=real.eq[c.id];c.S=real.S[c.id];});}
+  return {picks:all,cant,total:all.reduce((a,p)=>a+p.gold,0),gold0:real.gold,rounds:n};}
+// Undo after several rounds: everyone back in what they wore; a piece that was tempered on the way comes back tempered; the rest is the pack
+function g16UndoSnap(eq0){const pool={},put=id=>{if(id)pool[id]=(pool[id]||0)+1;};G.gear.forEach(put);Object.values(G.roster).forEach(c=>EQSL.forEach(sl=>put(c.eq[sl])));
+  const take=id=>{if(pool[id]>0){pool[id]--;return id;}const b=baseIdOf(id);for(let k=plusOf(id)+1;k<=3;k++){const t=b+'+'+k;if(pool[t]>0){pool[t]--;return t;}}return null;};
+  const eq={};Object.keys(eq0).forEach(cid=>{eq[cid]={};Object.keys(eq0[cid]).forEach(sl=>{eq[cid][sl]=eq0[cid][sl]?take(eq0[cid][sl]):null;});});
+  const gear=[];Object.keys(pool).forEach(id=>{for(let i=0;i<pool[id];i++)gear.push(id);});const s=snapAuto();s.gear=gear;s.eq=eq;return s;}
+ACT.p3Smith=function(){if(!G||G.daily)return;V.modal={type:'p3plan',plan:g16PlanAll(),from:V.modal};render();};
+ACT.p3Alch=function(){if(!G||G.daily)return;V.modal={type:'p3plan',charms:1,plan:g16PlanAll(['c']),from:V.modal};render();};
+ACT.p3SmithGo=function(){const m=V.modal;if(!m||m.type!=='p3plan')return;const slots=m.charms?['c']:undefined,eq0={},pw0={};
+  Object.values(G.roster).forEach(c=>{eq0[c.id]=Object.assign({},c.eq);pw0[c.id]=loadoutScore(c,c.S);});
+  // the first round is the one that was shown and confirmed; the rounds after it are planned from what is left
+  const T={stop:null,spent:0,bought:0,forged:0,tempered:0,done:0,of:0,rounds:0};let plan={picks:(m.plan&&m.plan.picks||[]).filter(p=>!p.round||p.round===1)};
+  while(plan.picks.length&&T.rounds<G16.rounds){T.rounds++;const R=p3SmithRun(plan);['spent','bought','forged','tempered','done'].forEach(k=>{T[k]+=R[k]||0;});T.of+=R.of||0;
+    if(R.stop){T.stop=R.stop;break;}if(!R.done)break;plan=p3SmithPlan(slots);}
+  const rows=[];Object.values(G.roster).forEach(c=>{const b=eq0[c.id],ch=[];EQSL.forEach(sl=>{if((b[sl]||null)!==(c.eq[sl]||null))ch.push({sl,from:b[sl]||null,to:c.eq[sl]||null});});
+    if(ch.length)rows.push({id:c.id,name:c.name,inParty:G.party.includes(c.id),ch,comp:null,pw0:pw0[c.id],pw1:loadoutScore(c,c.S)});});
+  sfx(T.done?'buy':'deny');V.modal={type:'autoEq',mode:'smith',rows,snap:g16UndoSnap(eq0),from:m.from,p3:T};render();};
+
+// ---------- 4) Equip Best and Build party close the Menu ----------
+function g16Sig(){try{return G.party.join(',')+'|'+G.gear.slice().sort().join(',')+'|'+Object.values(G.roster).map(c=>c.id+':'+EQSL.map(sl=>c.eq[sl]||'').join('/')).join(',');}catch(e){return '';}}
+{const ae0=ACT.autoEqParty;ACT.autoEqParty=function(){const inMenu=!!(V.modal&&V.modal.type==='menu');const r=ae0.apply(this,arguments);
+  try{const m=V.modal;if(inMenu&&m&&m.type==='autoEq'){const rows=m.rows||[],n=rows.length,a=rows.reduce((s,x)=>s+x.pw0,0),b=rows.reduce((s,x)=>s+x.pw1,0),pct=a>0?Math.round((b-a)/a*100):0;
+    G16.undo=n?{snap:m.snap,sig:g16Sig()}:null;V.modal=null;render();
+    toast(n?`Equip Best: ${n} hero${n>1?'es':''} changed gear${pct>0?' (+'+pct+'% power)':''}. Undo is in Backpack > Equipment.`:'Equip Best: your party already wears the best gear you own.');}}catch(e){}
+  return r;};}
+ACT.g16Undo=function(){const u=G16.undo;G16.undo=null;if(!u||!G||u.sig!==g16Sig()){toast('The gear has changed since: nothing to undo.');render();return;}undoAuto(u.snap);sfx('equip');toast('Equip Best undone.');render();};
+{const ve0=vEquipTab;vEquipTab=function(){let h=ve0.apply(this,arguments);try{if(G16.undo&&typeof h==='string'){if(G16.undo.sig!==g16Sig())G16.undo=null;
+  else h=h.replace(/(<button class="btn gold" data-act="autoEqParty"[^>]*>Equip Best<\/button>)/,'$1<button class="btn" data-act="g16Undo" title="Puts back the gear everyone wore before the last Equip Best">Undo Equip Best</button>');}}catch(e){}return h;};}
+{const ba0=ACT.bpApply;ACT.bpApply=function(){const m0=V.modal,inMenu=!!(m0&&m0.type==='bp'&&m0.from&&m0.from.type==='menu');const r=ba0.apply(this,arguments);
+  try{const m=V.modal;if(inMenu&&m&&m.type==='ldRes'){V.modal=null;render();const P=partyChars(),bare=P.filter(c=>!c.eq.w&&!c.eq.a);
+    toast('Party built: '+P.map(c=>c.name).join(', ')+'.'+(bare.length?' '+(bare.length>1?bare.length+' of them have':bare[0].name+' has')+' no gear yet: Equip Best is in the Menu.':''));}}catch(e){}
+  return r;};}
+
+try{const st=document.createElement('style');st.textContent=`.g16d{display:inline-block;max-width:100%;white-space:normal;font-weight:600}.g16vs{opacity:.92}.g16vs>b{color:inherit}.g16rar{margin:4px 0 6px}#p2hint.g16hide{display:none!important}.bestr>span,.cmpr>span{min-width:0;overflow-wrap:anywhere}`;document.head.appendChild(st);}catch(e){}
+window.__G16={G16,rarCap,rarOk,rarFit,rarLoot,rarPool,deltas:(c,id)=>g16Deltas(c,id),planAll:s=>g16PlanAll(s),recipeOpen:r=>recipeOpen(r),plan:s=>p3SmithPlan(s),hintDock:g16HintDock,FORGE_STEP};
 
 window.__A={walkable,ceInit,tvSlots,genQuests,STARTERS,starterDraw,ECON,AUTO_NERF,rebuildBase,detLive,REACT,skEls,packContents,miniFor,AUTO_REW,ENC_RATE,ENC_MIN_STEPS,detNote,classSkills,stickCount,bestAll,calcStats,lookKey,vTemper,storyEchoUp,leaveDungeon,win,ldApply,genFort,caveOk,enterCave,siteHasMini,openChest,nextDlg,WS,mapIcoRects,roamSpawn,roamInterior,roamSees,mapTargets,DIRV,tileAt,STAGE_LV,autoBan,rollWeather,guardianDef,mapIssues,mapEntry,syncPools,bovAt,calFxAt,realmAt,REALMS,BOV,CAL_FX,overlayGuide,liftOverlay,drawGearIcon,gearIcon,itemIcon,RAW,sigKind,sigGid,personalDone,heroLook,hasSignature,LEGEND_IDS,facDirty,facCount,facRank,facRep,FACB,FAC,finishBattle,npcWords,npcHints,npcPool,titleMake,titleAdvance,TTS,placeAt,wkwUpdate,innSpot,getMap,monURL,enterVia,applyBossTheme,BTHEME,resetMaps,rebuildBase,shopStock,gearDesc,calcStats,gearMigrate,CLS_WPN,CLS_ARM,WPERK,WT_NAME,equipWhy,lootBase,GEAR,canEquip,gearOf,perkNote,FAM_MAT_V35,fbDraft,META:{get best(){return META.best},get codex(){return META.codex},get q(){return META.q}},saveMeta,OFF,offPending,offFlush,PROFILE,profileSync,codexSee,getMap,placeAt,interact,sanctumOpen,riftKeys,echoKeys,BONDS,bondKey,wkwUpdate,inTown,WS,LC,lsort,bestParty,fsCast,fsSkills,ldApply,MON,registerTamed,stickPower,stickCount,autoOne,planGear,bestTag,gainersFor,compGainFor,refresh,fitsFor,canEquip,gearOf,queueNewGear,ARENA,fxDur,banDur,stageTags,autoSwitchPick,layoutBattle,newChar,calcStats,limitSkill,limitTier,canStuck,dunReachable,LV_CAP,addXp,echoSpec,bossLvFor,fx,MON,log,effInfo,tierOf,perkOf,quirkDef,forgeCost,buyPlan,vJourney,modalBack,partySlots,limitOpen,town2Reached,skillKnown,known,classSkills,paceMigrate,unpackG,packG,makeEnemy,QUIRK,arrive,enterDungeon,wkwUpdate,useTravel,travelWhyNot,porkFlee,porkBlocked,encTile,campRest,buyPart,partLeft,alchStock,GAME_VERSION,CHANGELOG,ITEMS,tavernOffers,tavernPool,recruitFit,partyNeeds,vNext,CHALL,innSpot,RECIPES,MATS,FB,fbContext,REDEEM,legendJoin,legendQ,genQuests,dynActors,convInit,PROFILE,profileSync,checkArchive,GPOOL,FPOOL,guardianDef,saveMeta,archiveSkills,get G(){return G;},set G(v){G=v;},get B(){return B;},get V(){return V;},get META(){return META;},WS,ACT,render,newGame,placeAt,startBattle,autoTurn,advance,finishBattle,getMap,innSpot,setPause:p=>{PAUSE=p;},autoCfg,worldInputDir,inputSources,battleFrame,battleTheme,STS,MAPS,mapIssues,healMap,mimicReward,dropChest,interact,worldDraw,TPL,ZONES,ZS,newChar,recruit,saveGame,resetMaps,dynActors,tileAt,BV,refresh,genBounties,genQuests,vStarter,heroCard,heroURL,iconURL,masteryLine,AU,buildTrack,tone,noiseHit,MIDI,sfx,audioVol};
 ['heroRoles','SOLID','WEATHER','WX_BASE','weatherFX','superGuide','recruitCost','ceStart','ceStep','ceInit','cePool','wxList','SUPER_TABLE','superOk','facRank','facRep','facInit','facCount','facCredit','FAC','FMIS','facMissionList','facProg','tyOf','facSync','facMul','facBest','worldPlan','caveReward','enterCave','leaveCave','leaveDungeon','buildCaveMap','worldGraph','openWorldMap','sigReport','SIG_NAMES','starterDraw','ITEM_TIERS','gTierIdx','tierChip','gearIcon','starterSlots','STARTERS','CLK_LEN','CLK_PH','clockPhase','wxInfoBody','recipeOrder','recipeGain','recipeReady','recipeClose','effOf','calcDamage','healsUndead','storyEchoUp','riftKeys','echoDef','efCost','autoLocked','bossFightKey','learnScanAll','isSeen','mapMarks','genSub','subOK','subReq','ensureSub','inSub','tvSlots','tvInit','tvLeft','tvEvent','tvNextText','tvPool','tvDue','tvShuffle','mTavern','hireOK','TV_CAP','TV_CD','POOL_IDS','natPool','natOf','natRoll','NATURES','natInfo','natRerollCost','natChooseCost','NAT_CLASS','iconURL','seenOf','mapIcoDraw','drawMini','MAPCV','revealAround','fxLayer','numDur','compBonusText','compPerk','checkPhase','win','unitBox','LNQ','challVisible','challEligible','challState','isMimic','migrateCompanions','canSummon','summonComp','compOf','clockPhase','tickClock','isNight','rollWeather','wxStep','nightPool','encounterFoes','restAll','tameElite','openChest','rerollTavern','bestAll','gearTier','SV','svCheck','svFlush','svInit','svPush','svPull','svScan','svParse','svBackup','svPack','svUnpack','svProg','svCloudList','svDelDoc','svGet','svCap','slotState','slotKey','svDecode','SV_CH','svStatus','svSlotRaw','svLoad','loadRaw','svHash','svIdx'].forEach(k=>{try{Object.defineProperty(window.__A,k,{get:()=>eval(k)});}catch(e){}});
