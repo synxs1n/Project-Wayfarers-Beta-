@@ -77,6 +77,7 @@ See the last section of `handoff-v0111.md` for the numbers of the run that shipp
   cell, boss win % none > first / hurt: seed 7 47 > 38 / 38 before, 47 > 48 / 43 after; seed 11 44 > 43 / 43 after; field fights x1.67 -> x1.06
   long. So the call went from a loss of 9 points to neutral; it is not the small plus pets give. The Summons tab says guardians and Lesser
   Scourges are made for boss fights.
-- **Jace's head**: three short cuts of his own (`L17.hair`: `l17a` side part, built in; `l17b` swept back; `l17c` crop with a fringe) and thin
-  rectangular glasses drawn on the doubled grid of the HD paint (`l17Specs`, key `7`), one HD pixel wide, with skin inside the lens. Tool
-  `tools/chrome/l17jace.js` renders the three cuts beside two other heroes.
+- **Jace's head and trim** (the owner: "i like l17a, just forget the glasses, also doesnt have enough yellow accents to denote lightning typing"): one
+  short cut of his own (`L17.hair.l17a`, a side part), no glasses, and lightning yellow (#ffe14a, key Q) on the mantle's edge and bolt clasp, the
+  sash, the cuffs, a zigzag down the robe's front, the hem, a bolt on the back of the mantle, and a core and charm on the staff. Tool
+  `tools/chrome/l17jace.js` renders him beside two other heroes.

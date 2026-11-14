@@ -298,7 +298,7 @@ L17.art=null;L17.looks={
   kaevan:{b:'light',hair:'short',hat:'hood',face:['handlebar'],back:['scarf'],wpn:'crossbow',sk:0,mount:1,eyes:'#f2d24a',l17:'sniper',
     pal:{H:'#1a1210',P:'#2a2740',Q:'#f2d24a',J:'#403c68',Y:'#e2b93a',M:'#6a6878',N:'#3a3848',G:'#f2d24a',Z:'#2a2638',K:'#221f2c',B:'#2a2018',W:'#5a3a26'}},
   jaeson:{b:'robe',hair:'swept',wpn:'staff_crystal',sk:0,eyes:'#2f9aff',l17:'weather',
-    pal:{H:'#2f6fe0',P:'#8fd0f6',Q:'#f2d24a',J:'#2c58a8',Y:'#2c58a8',C:'#c8f4ff',M:'#2a2a3a',G:'#f2d24a',W:'#b9a070'}}};
+    pal:{H:'#2f6fe0',P:'#86bfe2',Q:'#ffe14a',J:'#2c58a8',Y:'#2c58a8',C:'#c8f4ff',M:'#2a2a3a',G:'#ffe14a',W:'#b9a070'}}};
 try{Object.keys(L17.looks).forEach(id=>{TPL[id].look=L17.looks[id];const r=RAW.find(x=>x[0]===id);if(r)r[7]=L17.looks[id];});}catch(e){console.error('legends17b looks',e);}
 {const hp1=heroPal;heroPal=function(L,els,id){const p=hp1.apply(this,arguments);try{if(L&&L.l17==='hunter'){p.F='#8a8a98';p.f='#8a5e3c';p.g='#f0e2c0';p.i='#3a2618';}
     if(L&&L.l17==='weather'){p.E=L.eyes||'#2f9aff';}}catch(e){}return p;};}
@@ -321,10 +321,14 @@ function l17Body(g,L,view){const k=L.l17;
     if(view==='side'){g.rect(16,29,9,1,'L');g.rect(20,29,2,1,'G');g.rect(17,30,2,3,'L');}// belt, buckle, a bolt case at the hip
     else if(view==='front'){g.rect(14,29,12,1,'L');g.rect(19,29,2,1,'G');g.rect(24,30,3,4,'L');g.px([[24,30],[26,30]],'M');}
     else{g.rect(14,29,12,1,'L');g.rect(13,30,3,4,'L');}}
-  if(k==='weather'){
-    if(view==='side'){g.poly([[15,17.4],[24.6,17.2],[26.4,20.4],[25,22.6],[14.4,22.8],[13.6,20]],'J');g.rect(14,22,12,1,'Q');g.px([[22,19],[23,19],[22,20]],'G');g.s(22,19,'9');}
-    else if(view==='front'){g.poly([[15,16.6],[25,16.6],[29,19.4],[29,22.6],[11,22.6],[11,19.4]],'J');g.rect(11,22,18,1,'Q');g.rect(19,18,2,2,'G');g.s(19,18,'9');g.px([[18,20],[21,20]],'Q');}
-    else{g.poly([[15,16.6],[25,16.6],[29,19.4],[29,23.6],[11,23.6],[11,19.4]],'J');g.rect(11,23,18,1,'Q');g.px([[19,25],[20,25],[20,26],[19,27],[20,28]],'Q');}}}
+  if(k==='weather'){const zig=(x,y0,y1,k2)=>{for(let y=y0;y<=y1;y++)g.s(x+[0,1,1,0,-1,-1][(y-y0)%6],y,k2||'Q');};
+    if(view==='side'){g.poly([[15,17.4],[24.6,17.2],[26.4,20.4],[25,22.6],[14.4,22.8],[13.6,20]],'J');g.rect(14,22,12,1,'Q');g.px([[22,18],[23,19],[22,19],[23,20],[22,21]],'Q');
+      g.rect(16,29,9,1,'Q');zig(24,32,45);g.rect(13,45,15,2,'Q');g.px([[14,43],[16,42],[18,43],[20,42],[22,43]],'Q');}
+    else if(view==='front'){g.poly([[15,16.6],[25,16.6],[29,19.4],[29,22.6],[11,22.6],[11,19.4]],'J');g.rect(11,22,18,1,'Q');g.px([[20,17],[19,18],[20,18],[19,19],[20,19],[19,20],[18,20]],'Q');
+      g.rect(14,28,12,1,'Q');zig(19,31,44);zig(20,31,44);g.rect(11,45,18,2,'Q');g.px([[12,43],[14,42],[16,43],[23,43],[25,42],[27,43]],'Q');
+      g.rect(10,30,4,1,'Q');g.rect(26,30,4,1,'Q');}
+    else{g.poly([[15,16.6],[25,16.6],[29,19.4],[29,23.6],[11,23.6],[11,19.4]],'J');g.rect(11,23,18,1,'Q');g.px([[21,17],[20,18],[19,19],[20,19],[21,19],[20,20],[19,21],[18,22]],'Q');
+      g.rect(14,28,12,1,'Q');g.rect(11,45,18,2,'Q');g.px([[12,43],[14,42],[16,43],[18,42],[20,43],[22,42],[24,43],[26,42]],'Q');g.rect(10,30,4,1,'Q');g.rect(26,30,4,1,'Q');}}}
 // the parts on the head (after everything else)
 {const hgs3=heroGridSide,hgv3=heroGridView;
 // where the near arm and the weapon are on a finished side figure: the cells that differ from the bare figure
@@ -388,51 +392,26 @@ function l17Horse(frame){try{const g=l17HorseGrid(frame),opt={flat:'ey',rim:null
     return o;}catch(e){console.error('legends17b mount',e);return mc0.apply(this,arguments);}};}
 // Nikaris no longer brings the block pup and hawk of petCanvas (his hawk is on his shoulder); look.pets is gone with the old look
 
-// ---------- 6c. Jace's head, second pass (after 0.22.1, the owner: "hair looks weird, glasses too. make glasses square or rectangle") ----------
-// Hair: three short cuts of his own drawn with the rig's own hair shading (hsh, HAIRK), one clean mass with a clear hairline and no tufts:
-//   l17a a side part (the pick): the fringe falls from a part on his right across the brow   l17b swept back off a high forehead   l17c a crop with a short fringe
-// Glasses: thin rectangular frames drawn on the doubled grid of the HD paint (one HD pixel wide, half a rig pixel), so the lenses stay clear and the
-// eyes show: the rig leaves one marker key (t) between the eyes; the paint's detail pass finds the eyes and draws a frame round each, the bridge
-// and a temple arm. The old wire ring (drawn on the rig grid, twice as thick) is gone.
+// ---------- 6c. Jace's head and his lightning yellow (after 0.22.1) ----------
+// The owner: "i like l17a, just forget the glasses, also doesnt have enough yellow accents to denote lightning typing". Hair: one short cut of his
+// own (l17a, a side part with the fringe across the brow) drawn with the rig's hair shading. No glasses. Yellow (#ffe14a, the game's lightning
+// accent, flat key Q) on the mantle's edge and bolt clasp, the cuffs, the sash, a zigzag down the robe's front and along the hem, a bolt on the back
+// of the mantle, and a core and a charm on the staff: Ice in the cloth and the crystal, Lightning in the trim.
 L17.hair={
  l17a(g,v){
   if(v==='side'){hsh(g,t=>t.poly([[26.8,11.4],[27,9.6],[25.6,7.6],[23,6.6],[19,6.6],[16.4,7.6],[15.2,9.6],[15,12.2],[15.8,14.2],[17.3,13.6],[17.5,11.6],[19.4,10.5],[22.8,10.7],[25.4,11.6]],'x'),HAIRK,{cap:6});
     g.px([[19,7],[20,7],[21,7],[22,8]],'h');}
   else if(v==='back'){hsh(g,t=>t.poly(hairMirror([[20,6.6],[17.6,6.7],[15.8,8],[15.1,10],[15,12.8],[15.6,15],[17.2,16],[20,16.2]]),'x'),HAIRK,{cap:6});g.px([[22,8],[22,9],[23,10]],'l');g.px([[18,7],[19,7]],'h');}
   else{hsh(g,t=>t.poly([[20,6.6],[17.6,6.7],[15.8,8],[15.1,10],[15,12.2],[15.6,13.6],[16.3,12.2],[16.6,10.4],[17.6,9.6],[20.4,10.2],[23.4,11.4],[23.7,12.4],[24.4,13.6],[25,12.2],[24.9,10],[24.2,8],[22.4,6.7]],'x'),HAIRK,{cap:6});
-    g.px([[17,8],[18,9]],'l');g.px([[19,7],[20,7],[21,8],[22,8]],'h');}},
- l17b(g,v){
-  if(v==='side'){hsh(g,t=>t.poly([[26.2,9.8],[26,7.8],[24,6.2],[20,5.8],[16.8,6.8],[15.2,9.2],[15,12.4],[15.8,14.6],[17.2,14],[17.4,11.6],[19.4,10],[22.6,9.3],[25,9.6]],'x'),HAIRK,{cap:6});
-    g.px([[19,6],[20,6],[22,7],[17,8]],'h');}
-  else if(v==='back'){hsh(g,t=>t.poly(hairMirror([[20,5.9],[17.4,6.1],[15.6,7.8],[15,10],[15,12.8],[15.6,15.2],[17.2,16.2],[20,16.4]]),'x'),HAIRK,{cap:6});g.px([[18,7],[19,6],[21,6]],'h');g.px([[20,9],[20,11]],'l');}
-  else{hsh(g,t=>t.poly(hairMirror([[20,5.9],[17.4,6.1],[15.6,7.6],[15,9.6],[15,12],[15.5,13.3],[16.1,11.6],[16.4,9.8],[18,8.9],[20,8.7]]),'x'),HAIRK,{cap:6});g.px([[18,7],[19,6],[22,6]],'h');g.px([[20,7],[21,7]],'l');}},
- l17c(g,v){
-  if(v==='side'){hsh(g,t=>t.poly([[26.8,11.8],[27,9.8],[25.6,7.8],[23,6.9],[19,6.9],[16.4,7.8],[15.2,9.6],[15,12.2],[15.8,14],[17.3,13.4],[17.4,11.4],[19,10.8],[21,11.6],[22.6,10.8],[24.4,11.8],[25.6,11.2]],'x'),HAIRK,{cap:6});
-    g.px([[19,8],[20,8],[21,8]],'h');}
-  else if(v==='back'){hsh(g,t=>t.poly(hairMirror([[20,6.8],[17.6,6.9],[15.8,8.2],[15.1,10],[15,12.6],[15.6,14.8],[17.2,15.8],[20,16]]),'x'),HAIRK,{cap:6});g.px([[18,8],[19,8]],'h');}
-  else{hsh(g,t=>t.poly(hairMirror([[20,6.8],[17.6,6.9],[15.8,8.2],[15.1,10],[15,12.2],[15.6,13.6],[16.4,12.2],[16.6,11.3],[17.6,11.3],[18.4,10.5],[19.2,11.3],[20,10.7]]),'x'),HAIRK,{cap:6});g.px([[18,8],[19,8]],'h');}}};
+    g.px([[17,8],[18,9]],'l');g.px([[19,7],[20,7],[21,8],[22,8]],'h');}}};
 try{Object.keys(L17.hair).forEach(k=>{HAIR_STYLE[k]=L17.hair[k];HP.hair[k]={ear:1};});L17.looks.jaeson.hair='l17a';}catch(e){console.error('legends17b hair',e);}
-// the marker between the eyes (and nothing else: the frames are drawn at twice the detail by the paint)
-function l17Face(g,L,view,dy){dy=dy||0;if(L.l17!=='weather')return;if(view==='side')g.s(22,12+dy,'t');else if(view==='front'){g.s(19,12+dy,'t');g.s(20,12+dy,'t');}}
-// the frames on the doubled grid: K is the key grid at 2x. Eyes are runs of E (and 9); one frame round each, a bridge, a temple arm
-function l17Specs(K,W,H,before){const mk=[];for(let i=0;i<K.length;i++)if(K[i]==='t')mk.push(i);if(!mk.length)return null;
-  const my=Math.floor(mk[0]/W),seen=new Uint8Array(K.length),eyes=[];
-  for(let y=Math.max(0,my-5);y<Math.min(H,my+7);y++)for(let x=0;x<W;x++){const i=y*W+x;if(seen[i]||!(K[i]==='E'||K[i]==='9'))continue;
-    let x0=x,x1=x,y0=y,y1=y;const st=[i];seen[i]=1;while(st.length){const p=st.pop(),px=p%W,py=(p/W)|0;x0=Math.min(x0,px);x1=Math.max(x1,px);y0=Math.min(y0,py);y1=Math.max(y1,py);
-      [p-1,p+1,p-W,p+W].forEach(q=>{if(q>=0&&q<K.length&&!seen[q]&&(K[q]==='E'||K[q]==='9')&&Math.abs((q%W)-px)<=1){seen[q]=1;st.push(q);}});}
-    eyes.push({x0,x1,y0,y1});}
-  mk.forEach(i=>{K[i]='S';});// the marker itself is skin again
-  eyes.sort((a,b)=>a.x0-b.x0);return eyes.slice(0,2);}
-function l17SpecsDraw(K,W,H,eyes){if(!eyes||!eyes.length)return;const put=(x,y)=>{if(x>=0&&y>=0&&x<W&&y<H)K[y*W+x]='7';};
-  const top=Math.min(...eyes.map(e=>e.y0))-1,bot=Math.max(...eyes.map(e=>e.y1))+2,two=eyes.length>1,narrow=two&&(eyes[1].x1-eyes[1].x0)<(eyes[0].x1-eyes[0].x0);
-  const R=eyes.map((e,n)=>({l:e.x0-(two&&n===1?1:3),r:e.x1+(two&&n===0?1:(narrow?1:3))}));/* the lens is wider than the eye on its outer side and deeper below it, so skin shows inside the frame */
-  R.forEach(q=>{for(let x=q.l;x<=q.r;x++){put(x,top);put(x,bot);}for(let y=top;y<=bot;y++){put(q.l,y);put(q.r,y);}});
-  if(two)for(let x=R[0].r+1;x<R[1].l;x++)put(x,top+2);
-  // the temple arm: from the outer edge back toward the ear (the side view has its two lenses toward the face, so the arm runs left)
-  if(narrow||!two){for(let k=1;k<=5;k++)put(R[0].l-k,top+1);}else{put(R[0].l-1,top+1);put(R[1].r+1,top+1);}}
-try{if(typeof HERO_OPT!=='undefined'&&HERO_OPT.detail&&!HERO_OPT.l17){const d0=HERO_OPT.detail;HERO_OPT.l17=1;HERO_OPT.flat=(HERO_OPT.flat||'')+'7';
-    HERO_OPT.detail=function(K,W,H){let eyes=null;try{eyes=l17Specs(K,W,H);}catch(e){}const r=d0.apply(this,arguments);try{l17SpecsDraw(K,W,H,eyes);}catch(e){}return r;};}}catch(e){console.error('legends17b specs',e);}
-{const hp2=heroPal;heroPal=function(L,els,id){const p=hp2.apply(this,arguments);try{if(L&&L.l17==='weather'){p.t=p.S;p['7']='#1b2030';}}catch(e){}return p;};}
+// no glasses (the owner: "just forget the glasses"): a plain face, the blue eyes open
+function l17Face(g,L,view,dy){}
+// lightning yellow on the staff: a core in the crystal and a small bolt charm under it (the staff drawers add it while Jace's grid is built)
+{const sc0=WPN.staff_crystal.draw;WPN.staff_crystal.draw=function(g,x,y){sc0.apply(this,arguments);if(!L17.art||L17.art.k!=='weather')return;const c=x+1;
+    g.px([[c,y-26],[c,y-25],[c+1,y-25],[c,y-24]],'Q');g.px([[c+2,y-17],[c+3,y-16],[c+2,y-15],[c+3,y-14]],'Q');g.rect(c-1,y-18,3,1,'Q');};
+  const hs0=HPWD.staff;HPWD.staff=function(d,w,o){hs0.apply(this,arguments);if(!L17.art||L17.art.k!=='weather')return;d.dot(16,0,'Q');d.dot(17,0,'Q');d.bar(11,12,0,3,'Q');d.dot(10,2,'Q');d.dot(9,3,'Q');};
+  const wf2=weaponFB;weaponFB=function(g,L,view){wf2.apply(this,arguments);if(!L||L.l17!=='weather'||view==='front')return;g.px([[28,5],[29,6],[28,6]],'Q');g.px([[25,9],[26,8]],'Q');};}
 
 // ---------- 6b. battle effects of the signatures (drawing only: no battle state, no battle RNG; nothing under reduced motion) ----------
 // One particle kind 'l17' drawn after the others (both stages draw BV.P through drawParts), plus two things that last: the hawk circling over the

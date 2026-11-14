@@ -587,4 +587,4 @@ Four helper passes shipped together: world14 (cloud sea, reachable spawns, front
 ## legends17b follow-up (after 0.22.1; no version in this entry)
 - Kaevan down to the Archer base +4% to +17% in own damage at four of five boss points (+37% at boss 4; was +21% to +129%): ATK x.85, Steady Draw +40%, Longshot 1.6 / 20 MP, see `docs/legends17b.md`.
 - Spirit Call: one short turn of stillness, the lesser guardian fights beside the Monk for 4 turns (a fourth Vanguard unit; `unitBox` wrap; switching stays open). Measured neutral (was -9 points). Tests v173a, v191a, v195a updated. Anything that indexes `slotsFor('p',3)` by a front index must go through `unitBox`.
-- Jace: new hair (`L17.hair`, three cuts, `l17a` built in) and thin rectangular glasses painted at HD detail (`HERO_OPT.detail` wrapped once).
+- Jace: side part hair (`L17.hair.l17a`), no glasses, lightning yellow trim on robe, mantle and staff (the owner's verdict on the variants).
