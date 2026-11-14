@@ -92,20 +92,31 @@ ACT.pq16Accept=function(id){if(!G)return;const q=startPersonal(id);try{if(q){toa
 // folded to its header bar only by the player's arrow (META.cfg.goalsMin, kept across maps and reloads). It does not fold, hide or fade when
 // the hero walks under it (the owner: "we want it to stay open even when walking close"). Settings > Display > Show goals (META.cfg.goals, default on) turns it off.
 function q16GoalsOn(){try{return !(META.cfg&&META.cfg.goals===false);}catch(e){return true;}}
+// 0.21.7 (owner: "Next goals is never see through anymore, make it that way by default on both smaller and bigger versions"): the panel's
+// ground is half clear in both states (html.glsee: the skin's colour at Q16.clearA, no blur), the words stay solid with a dark edge.
+// Settings > Display > See-through goals (META.cfg.goalsClear, default on); Off is the solid panel. It still never hides, folds or fades by itself.
+function q16GoalsClear(){try{return !(META.cfg&&META.cfg.goalsClear===false);}catch(e){return true;}}
+function q16ClearSync(){try{document.documentElement.classList.toggle('glsee',q16GoalsClear());}catch(e){}}
 // the only spot is under the minimap, whatever lies there (after menus14's rule, which gave the spot up when the hero stood under it)
 HOOK.xform('glSpot','quests16','the panel keeps its spot under the minimap',function(r,wv,w){try{const at=m14Spot(wv,w);return at||r||{x:8,y:42};}catch(e){return r;}});
 {const gl0=glList;glList=function(){const L=gl0.apply(this,arguments);try{if(Q16.fill&&!L.length&&glOn())return [{id:'none',t:'No goals just now. Explore, or see Guides > What next?',sub:'',p:'',R:null,story:false}];}catch(e){}return L;};}
 {const gh0=glHtml;glHtml=function(L,mode,auto){let h=gh0.call(this,L,mode,false);try{if(mode==='chip')h=h.replace('<b>Goals</b>','<b>Next goals</b>').replace(/<span class="gln">[^<]*<\/span>/,'');
   h=h.replace(/(<li class="[^"]*" data-goal="none"[^>]*?) role="button" tabindex="0" data-act="goalGuide" data-arg="none"/,'$1');}catch(e){}return h;};}
-HOOK.wrap('glRender','quests16','always on the world screen; folded only by the player; Show goals setting',function(next){
+HOOK.wrap('glRender','quests16','always on the world screen; folded only by the player; Show goals setting',function(next){q16ClearSync();
   if(!q16GoalsOn()){try{const e=document.getElementById('glp');if(e)e.style.display='none';}catch(e){}return;}
   const dlg=WS.dlg;Q16.fill=1;try{if(dlg)WS.dlg=null;next();}finally{if(dlg&&!WS.dlg)WS.dlg=dlg;Q16.fill=0;}
   try{const e=document.getElementById('glp');if(!e||!e.innerHTML)return;const on=glOn()&&V.screen==='world'&&!B&&!V.modal&&!!WS.cv;if(!on)return;
     if(e.style.display==='none')e.style.display='';}catch(e){}});
-{const r0=hdRow;hdRow=function(){const on=q16GoalsOn();return r0.apply(this,arguments)+`<div class="rows"><div class="row"><div><b>Show goals</b><small>The Next goals panel under the minimap. Its arrow folds it to a bar and opens it again; Off hides it completely (Guides &gt; What next? still lists the goals).</small></div><div class="chips"><button class="chip ${on?'on':''}" data-act="cfg" data-arg='["goals",true]'>On</button><button class="chip ${on?'':'on'}" data-act="cfg" data-arg='["goals",false]'>Off</button></div></div></div>`;};}
+{const r0=hdRow;hdRow=function(){const on=q16GoalsOn();return r0.apply(this,arguments)+`<div class="rows"><div class="row"><div><b>Show goals</b><small>The Next goals panel under the minimap. Its arrow folds it to a bar and opens it again; Off hides it completely (Guides &gt; What next? still lists the goals).</small></div><div class="chips"><button class="chip ${on?'on':''}" data-act="cfg" data-arg='["goals",true]'>On</button><button class="chip ${on?'':'on'}" data-act="cfg" data-arg='["goals",false]'>Off</button></div></div>
+<div class="row"><div><b>See-through goals</b><small>The Next goals panel lets the world show through, folded or open; the words stay solid. Off makes the panel solid.</small></div><div class="chips"><button class="chip ${q16GoalsClear()?'on':''}" data-act="cfg" data-arg='["goalsClear",true]'>On</button><button class="chip ${q16GoalsClear()?'':'on'}" data-act="cfg" data-arg='["goalsClear",false]'>Off</button></div></div></div>`;};}
+{const ac0=applyCfg;applyCfg=function(){const r=ac0.apply(this,arguments);q16ClearSync();return r;};}
 try{const st=document.createElement('style');st.textContent=`.gl .gll li{display:flow-root;overflow-wrap:break-word;word-break:normal;hyphens:manual}
 .gl .gll li span{display:inline;min-width:0}.gl .gll li em{float:right;margin-left:6px;white-space:nowrap}
 .wview>#glp.gl.gl.chip,.wview>#glpm.gl.gl.chip{width:var(--m14w,168px)}.gl .glhead{white-space:nowrap}
-@media (pointer:coarse),(max-width:600px){.wview>#glp.gl.gl .glhead,.wview>#glpm.gl.gl .glhead{min-height:44px}}`;document.head.appendChild(st);}catch(e){}
-try{window.__Q16={Q16,g16Open,g16Sync,g16Note,pq16List,q16AtDesk,q16Notices,q16GoalsOn,get G(){return G;},get V(){return V;},get B(){return B;}};}catch(e){}
-try{M11_RANK.unshift(['display',2.7,/"goals",/]);}catch(e){}// menus11.js sorts the Settings rows into sections: Show goals belongs to Display
+@media (pointer:coarse),(max-width:600px){.wview>#glp.gl.gl .glhead,.wview>#glpm.gl.gl .glhead{min-height:44px}}
+html.glsee .wview>#glp.gl.gl.gl,html.glsee .wview>#glpm.gl.gl.gl{background:rgba(14,12,26,.55)!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;opacity:1!important;
+  text-shadow:0 0 2px #05030a,0 0 2px #05030a,0 1px 2px #05030a,0 0 5px rgba(5,3,10,.9)}
+html.glsee.flat .wview>#glp.gl.gl.gl,html.glsee.flat .wview>#glpm.gl.gl.gl{background:rgba(58,36,18,.55)!important}
+html.glsee .wview>#glp.gl .gln,html.glsee .wview>#glpm.gl .gln{text-shadow:none}`;document.head.appendChild(st);}catch(e){}
+try{window.__Q16={Q16,g16Open,g16Sync,g16Note,pq16List,q16AtDesk,q16Notices,q16GoalsOn,q16GoalsClear,get G(){return G;},get V(){return V;},get B(){return B;}};}catch(e){}
+try{M11_RANK.unshift(['display',2.7,/"goals",/],['display',2.71,/"goalsClear",/]);}catch(e){}// menus11.js sorts the Settings rows into sections: Show goals belongs to Display

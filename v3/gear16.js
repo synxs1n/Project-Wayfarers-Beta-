@@ -9,8 +9,9 @@
 //  3) deltaHtml lists every stat a piece changes for a hero against what they wear, gains and losses, with signed amounts: the eight sheet
 //     stats, then crit, accuracy, evasion, element damage and resistances, healing, perks. A shop or forge row nobody gains from shows the
 //     change for the heroes who could wear it.
-//  4) Equip Best and Build party (Apply) pressed in the Menu close it with a toast. Equip Best keeps an Undo on Backpack > Equipment until
-//     the gear changes again.
+//  4) Equip Best pressed right after Build party (Apply) in the same Menu visit closes the Menu with a toast (0.21.3 closed it after every
+//     Equip Best and every Build party; the owner meant only this case). Equip Best keeps an Undo on Backpack > Equipment until the gear
+//     changes again.
 //  5) Rarity by progress: rarCap() is the highest rarity (ITEM_TIERS index) a journey has open: Common and Uncommon in the first realm, one
 //     more per realm reached or Scourge beaten (pcRealm()), all six from the fifth. Shops, recipes, chests, the mimic, vaults and bounty
 //     charms stay under it; the one-per-realm cave and Sanctum charms carry their realm's rarity. New Game+ follows the same rule (the code
@@ -18,7 +19,7 @@
 //     Tamer's Stick, Echoforged gear.
 //  6) A piece of one rarity at +0 beats the rarity below at +3 in its main stats: FORGE_STEP (items.js) is .11 (was .25), the top cape's RES
 //     36 (was 34, config.js). Relics and Echoforged gear keep their numbers (econ11.js relicTemper, echo11.js ECHO11.top3).
-const G16={rounds:10,undo:null,hint:null,hintBack:15000};
+const G16={rounds:10,undo:null,built:null,hint:null,hintBack:15000};
 
 // ---------- 1) the hint card steps aside for an open window ----------
 // A plain hint (p2world.js hintShow) is put away while any window is open and its 30 s clock stops; when the window closes it is back for
@@ -105,20 +106,24 @@ ACT.p3SmithGo=function(){const m=V.modal;if(!m||m.type!=='p3plan')return;const s
     if(ch.length)rows.push({id:c.id,name:c.name,inParty:G.party.includes(c.id),ch,comp:null,pw0:pw0[c.id],pw1:loadoutScore(c,c.S)});});
   sfx(T.done?'buy':'deny');V.modal={type:'autoEq',mode:'smith',rows,snap:g16UndoSnap(eq0),from:m.from,p3:T};render();};
 
-// ---------- 4) Equip Best and Build party close the Menu ----------
+// ---------- 4) Equip Best right after Build party closes the Menu ----------
+// 0.21.7 (owner): Equip Best shows its result page (with Undo) again and Build party (Apply) keeps its own page. Only Equip Best pressed right
+// after a party was built in this same Menu visit (no window closed, no gear or party change in between: G16.built is the g16Sig() of that
+// moment) closes the Menu with a toast. Every Equip Best pressed from the Menu keeps "Undo Equip Best" on Backpack > Equipment.
 function g16Sig(){try{return G.party.join(',')+'|'+G.gear.slice().sort().join(',')+'|'+Object.values(G.roster).map(c=>c.id+':'+EQSL.map(sl=>c.eq[sl]||'').join('/')).join(',');}catch(e){return '';}}
-{const ae0=ACT.autoEqParty;ACT.autoEqParty=function(){const inMenu=!!(V.modal&&V.modal.type==='menu');const r=ae0.apply(this,arguments);
-  try{const m=V.modal;if(inMenu&&m&&m.type==='autoEq'){const rows=m.rows||[],n=rows.length,a=rows.reduce((s,x)=>s+x.pw0,0),b=rows.reduce((s,x)=>s+x.pw1,0),pct=a>0?Math.round((b-a)/a*100):0;
-    G16.undo=n?{snap:m.snap,sig:g16Sig()}:null;V.modal=null;render();
-    toast(n?`Equip Best: ${n} hero${n>1?'es':''} changed gear${pct>0?' (+'+pct+'% power)':''}. Undo is in Backpack > Equipment.`:'Equip Best: your party already wears the best gear you own.');}}catch(e){}
+function g16MenuUp(m){for(let i=0;m&&i<8;i++,m=m.from)if(m.type==='menu')return true;return false;}
+{const ae0=ACT.autoEqParty;ACT.autoEqParty=function(){const m0=V.modal,inMenu=g16MenuUp(m0),fresh=inMenu&&!!G16.built&&G16.built===g16Sig();G16.built=null;const r=ae0.apply(this,arguments);
+  try{const m=V.modal;if(inMenu&&m&&m.type==='autoEq'){const rows=m.rows||[],n=rows.length;G16.undo=n?{snap:m.snap,sig:g16Sig()}:null;
+    if(fresh){const a=rows.reduce((s,x)=>s+x.pw0,0),b=rows.reduce((s,x)=>s+x.pw1,0),pct=a>0?Math.round((b-a)/a*100):0;V.modal=null;render();
+      toast(n?`Equip Best: ${n} hero${n>1?'es':''} changed gear${pct>0?' (+'+pct+'% power)':''}. Undo is in Backpack > Equipment.`:'Equip Best: your new party already wears the best gear you own.');}}}catch(e){}
   return r;};}
+{const ba0=ACT.bpApply;ACT.bpApply=function(){const m0=V.modal,inMenu=!!(m0&&m0.type==='bp'&&g16MenuUp(m0.from));const r=ba0.apply(this,arguments);
+  try{const m=V.modal;G16.built=inMenu&&m&&m.type==='ldRes'?g16Sig():null;}catch(e){}
+  return r;};}
+HOOK.after('render','gear16','a party built in the Menu is "just built" only until every window is closed',function(){if(G16.built&&!V.modal)G16.built=null;});
 ACT.g16Undo=function(){const u=G16.undo;G16.undo=null;if(!u||!G||u.sig!==g16Sig()){toast('The gear has changed since: nothing to undo.');render();return;}undoAuto(u.snap);sfx('equip');toast('Equip Best undone.');render();};
 {const ve0=vEquipTab;vEquipTab=function(){let h=ve0.apply(this,arguments);try{if(G16.undo&&typeof h==='string'){if(G16.undo.sig!==g16Sig())G16.undo=null;
   else h=h.replace(/(<button class="btn gold" data-act="autoEqParty"[^>]*>Equip Best<\/button>)/,'$1<button class="btn" data-act="g16Undo" title="Puts back the gear everyone wore before the last Equip Best">Undo Equip Best</button>');}}catch(e){}return h;};}
-{const ba0=ACT.bpApply;ACT.bpApply=function(){const m0=V.modal,inMenu=!!(m0&&m0.type==='bp'&&m0.from&&m0.from.type==='menu');const r=ba0.apply(this,arguments);
-  try{const m=V.modal;if(inMenu&&m&&m.type==='ldRes'){V.modal=null;render();const P=partyChars(),bare=P.filter(c=>!c.eq.w&&!c.eq.a);
-    toast('Party built: '+P.map(c=>c.name).join(', ')+'.'+(bare.length?' '+(bare.length>1?bare.length+' of them have':bare[0].name+' has')+' no gear yet: Equip Best is in the Menu.':''));}}catch(e){}
-  return r;};}
 
 try{const st=document.createElement('style');st.textContent=`.g16d{display:inline-block;max-width:100%;white-space:normal;font-weight:600}.g16vs{opacity:.92}.g16vs>b{color:inherit}.g16rar{margin:4px 0 6px}#p2hint.g16hide{display:none!important}.bestr>span,.cmpr>span{min-width:0;overflow-wrap:anywhere}`;document.head.appendChild(st);}catch(e){}
 window.__G16={G16,rarCap,rarOk,rarFit,rarLoot,rarPool,deltas:(c,id)=>g16Deltas(c,id),planAll:s=>g16PlanAll(s),recipeOpen:r=>recipeOpen(r),plan:s=>p3SmithPlan(s),hintDock:g16HintDock,FORGE_STEP};

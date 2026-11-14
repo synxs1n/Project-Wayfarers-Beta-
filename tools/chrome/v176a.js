@@ -171,13 +171,15 @@ const TILES=`([off,what])=>{const A=__A,T=window.__T13,m=A.WS.m,was=T.off,n0=Obj
   if(want('7'))for(const tier of ['medium','low']){const H=await boot(tier,390,844);await CALL(H,GO,['breach','field']);
     await H.ev(()=>{const A=__A,m=A.WS.m;for(let y=1;y<m.h;y++)for(let x=Math.floor(m.w/2)-6;x<Math.floor(m.w/2)+6;x++){if(!A.solidAt(m,x,y)&&A.tileAt(m,x,y)!=='~'){A.placeAt(m.id,x,y,'u');A.WS.cam=null;A.render();return;}}});
     if(tier!=='low')await H.until(()=>__A.HD.live&&__A.HD.S&&__A.HD.S.m===__A.WS.m,null,{timeout:20000});await H.wait(800);
-    const r=await H.ev(()=>{const A=__A,P=CanvasRenderingContext2D.prototype,f0=P.fillRect,cv=A.WS.cv,o={aur:0,star:0,maxA:0,maxS:0,k:0};
+    const r=await H.ev(()=>{const A=__A,P=CanvasRenderingContext2D.prototype,f0=P.fillRect,d0=P.drawImage,cv=A.WS.cv,o={aur:0,star:0,maxA:0,maxS:0,k:0};
+      // fix17.js: the aurora is two tiling 512x160 textures laid with drawImage (the 3 px strips are the old painter, F17.off)
+      P.drawImage=function(img,sx,sy,sw,sh,dx,dy,dw,dh){try{if(this.canvas===cv&&img&&img.width===512&&img.height===160&&arguments.length===9){const t=this.getTransform();o.aur++;o.maxA=Math.max(o.maxA,Math.min((dx+dw)*t.a+t.e,cv._rw||cv.width));o.k=t.a;}}catch(e){}return d0.apply(this,arguments);};
       P.fillRect=function(a,b,w,h){try{if(this.canvas===cv){const fs=String(this.fillStyle),t=this.getTransform(),x1=(a+w)*t.a+t.e;
         const mm=/^rgba\((\d+), ?(\d+), ?(\d+), ?([\d.]+)\)/.exec(fs);if(mm&&+mm[1]>=47&&+mm[1]<=154&&+mm[3]>=192&&+mm[4]<=.17&&w===3){o.aur++;o.maxA=Math.max(o.maxA,x1);o.k=t.a;}
         if((fs==='#f6f0ff'||fs==='#b48aff')&&w<=2&&h<=2){o.star++;o.maxS=Math.max(o.maxS,x1);}}}catch(e){}return f0.apply(this,arguments);};
-      try{A.WS.cam=null;const t=performance.now();A.worldDraw(t);A.worldDraw(t+17);}finally{P.fillRect=f0;}o.W=cv._rw||cv.width;o.vw=A.WS.vw;o.top=Math.round(-(A.WS.cam?A.WS.cam.y:0));return o;});
+      try{A.WS.cam=null;const t=performance.now();A.worldDraw(t);A.worldDraw(t+17);}finally{P.fillRect=f0;P.drawImage=d0;}o.W=cv._rw||cv.width;o.vw=A.WS.vw;o.top=Math.round(-(A.WS.cam?A.WS.cam.y:0));return o;});
     if(r.aur===0&&r.top<8){chk(`7. ${tier}: the camera shows no sky band here (top ${r.top}; skipped)`,true);}
-    else{chk(`7. ${tier}: the Breach's aurora reaches across the view: its strips end at ${Math.round(r.maxA)} of ${r.W} backing px (scale ${r.k}; ${r.aur} strips)`,r.aur>0&&r.maxA>=r.W*.95);
+    else{chk(`7. ${tier}: the Breach's aurora reaches across the view: its layers end at ${Math.round(r.maxA)} of ${r.W} backing px (scale ${r.k}; ${r.aur} draws)`,r.aur>0&&r.maxA>=r.W*.95);
       chk(`7. ${tier}: the void's stars over the sky band spread across the view: rightmost at ${Math.round(r.maxS)} of ${r.W} (${r.star} stars)`,r.star>0&&r.maxS>=r.W*.75);}
     chk(`7. ${tier}: no page errors (${H.errs.length})`,H.errs.length===0);await H.browser.close();}
   // ---------- 8. every exit on land (terrain14) ----------

@@ -6,7 +6,7 @@
 //     a plan made right after it finds nothing, at several realms and purses; Undo puts everyone's gear back
 //  3. every stat a piece changes is listed with a sign, gains and losses, secondary stats and element resistances too, on the equip
 //     picker, the shop, the forge, Tempering and "Equip this now?"; nothing runs off the window on a phone
-//  4. Equip Best and Build party (Apply) pressed in the Menu close it with a toast; from another window they keep their result page;
+//  4. Equip Best keeps its result page and Build party (Apply) its own; only Equip Best right after a built party closes the Menu with a toast;
 //     Backpack > Equipment offers Undo for the last Equip Best
 //  5. rarity by progress: Common and Uncommon in realm 1, one more per realm, all six from realm 5, for the shelves, the recipes, mimic
 //     loot, vault and bounty charms and the one-per-realm charms; New Game+ the same, the Daily Trial open; owned gear stays through a save
@@ -120,28 +120,30 @@ const SETUP=`([stage,gold,mats])=>{const A=__A,G=A.G;G.stage=stage;G.cleared=[0,
   if(want('4')){
     await H.ev(()=>{const A=__A,G=A.G;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;});await H.until(()=>__A.V.screen==='world',null,{timeout:15000});
     await H.ev(()=>{const A=__A,G=A.G;G.gear=['w_tome_1','a_mail_1','c_swift'];G.pcV=0;A.V.modal={type:'menu',tab:'equip'};A.render();});await H.wait(100);
+    // 0.21.7 (owner): Equip Best shows its result page again and Build party keeps its own; only Equip Best right after a built party closes the Menu (the cases are in v192a.js)
     const eq0=await H.ev(()=>JSON.stringify(Object.values(__A.G.roster).map(c=>c.eq)));
+    await H.ev(()=>{const t=document.getElementById('toast');t.textContent='';t.className='';});
     await H.page.locator('#modal button[data-act="autoEqParty"]').first().tap({timeout:3000});await H.wait(120);
-    const e1=await H.ev(()=>({modal:__A.V.modal&&__A.V.modal.type,toast:document.getElementById('toast').textContent,show:document.getElementById('toast').className,worn:Object.values(__A.G.roster).filter(c=>c.eq.w==='w_tome_1'||c.eq.a==='a_mail_1'||c.eq.c==='c_swift').length}));
-    chk(`4 Equip Best in Menu > Backpack: the gear is on (${e1.worn} heroes), the Menu is closed and a toast says so ("${e1.toast}")`,e1.modal==null&&e1.worn>0&&e1.show==='show'&&/^Equip Best: \d+ hero/.test(e1.toast)||JSON.stringify(e1));
+    const e1=await H.ev(()=>({modal:__A.V.modal&&__A.V.modal.type,undo:!!document.querySelector('#modal [data-act="autoEqUndo"]'),toast:document.getElementById('toast').textContent,worn:Object.values(__A.G.roster).filter(c=>c.eq.w==='w_tome_1'||c.eq.a==='a_mail_1'||c.eq.c==='c_swift').length}));
+    chk(`4 Equip Best in Menu > Backpack: the gear is on (${e1.worn} heroes) and its result page with Undo is shown (no toast, the Menu is not closed)`,e1.modal==='autoEq'&&e1.undo&&e1.worn>0&&!/^Equip Best/.test(e1.toast)||JSON.stringify(e1));
     const u=await H.ev(()=>{const A=__A;A.V.modal={type:'menu',tab:'equip'};A.render();const b=document.querySelector('#modal button[data-act="g16Undo"]');const had=!!b;if(b)A.ACT.g16Undo();return {had,eq:JSON.stringify(Object.values(A.G.roster).map(c=>c.eq)),pack:A.G.gear.slice().sort().join(','),still:!!document.querySelector('#modal button[data-act="g16Undo"]')};});
     chk('4 Backpack > Equipment offers Undo Equip Best, and it puts the gear back as it was',u.had&&u.eq===eq0&&u.pack==='a_mail_1,c_swift,w_tome_1'&&!u.still||JSON.stringify(u));
-    await H.ev(()=>{__A.V.modal={type:'menu',tab:'party'};__A.render();});await H.wait(80);
-    await H.page.locator('#modal button[data-act="autoEqParty"]').first().tap({timeout:3000});await H.wait(100);
-    const e2=await H.ev(()=>({modal:__A.V.modal&&__A.V.modal.type,toast:document.getElementById('toast').textContent}));
-    chk(`4 Equip Best on the Party tab closes the Menu too ("${e2.toast}")`,e2.modal==null&&/^Equip Best/.test(e2.toast)||JSON.stringify(e2));
-    const e3=await H.ev(()=>{const A=__A;A.V.modal={type:'menu',tab:'party'};A.render();A.ACT.autoEqParty();return {modal:A.V.modal&&A.V.modal.type,toast:document.getElementById('toast').textContent};});
-    chk(`4 Equip Best with nothing to change still closes the Menu and says so ("${e3.toast}")`,e3.modal==null&&/already wears the best/.test(e3.toast)||JSON.stringify(e3));
-    const e4=await H.ev(()=>{const A=__A;A.G.gear.push('w_tome_1');const eq=A.G.roster.mira.eq.w;A.V.modal={type:'smithy',tab:'shop',sec:'all'};A.render();A.ACT.autoEqParty();const t=A.V.modal&&A.V.modal.type;A.V.modal=null;A.render();return t;});
+    const e3=await H.ev(()=>{const A=__A;A.V.modal={type:'menu',tab:'party'};A.render();A.ACT.autoEqParty();A.V.modal={type:'menu',tab:'party'};A.render();A.ACT.autoEqParty();const t=A.V.modal&&A.V.modal.type;A.V.modal=null;A.render();return t;});
+    chk('4 Equip Best with nothing left to change still shows its page (Party tab)',e3==='autoEq'||e3);
+    const e4=await H.ev(()=>{const A=__A;A.G.gear.push('w_tome_1');A.V.modal={type:'smithy',tab:'shop',sec:'all'};A.render();A.ACT.autoEqParty();const t=A.V.modal&&A.V.modal.type;A.V.modal=null;A.render();return t;});
     chk('4 Equip Best from another window (not the Menu) keeps its result page with Undo',e4==='autoEq'||e4);
-    // Build party: the Menu's button opens the formations; Apply closes everything with a toast
+    // Build party: the Menu's button opens the formations; Apply keeps its result page; Equip Best from there closes everything with a toast
     await H.ev(()=>{const A=__A,G=A.G;['wren','kael','pip','brann','dagna'].filter(id=>A.TPL[id]&&!G.roster[id]).slice(0,4).forEach(id=>{G.roster[id]=A.newChar(id,3,0);});G.party=['mira','lumen','oren'];A.V.modal={type:'menu',tab:'party'};A.render();});await H.wait(80);
     await H.page.locator('#modal button[data-act="bpOpen"]').first().tap({timeout:3000});await H.wait(120);
     const b1=await H.ev(()=>({modal:__A.V.modal&&__A.V.modal.type,from:__A.V.modal&&__A.V.modal.from&&__A.V.modal.from.type,town:__A.WS.m.kind}));
     chk(`4 Build party in the Menu opens the formations (${b1.modal}, in a ${b1.town})`,b1.modal==='bp'&&b1.from==='menu'||JSON.stringify(b1));
+    await H.ev(()=>{const t=document.getElementById('toast');t.textContent='';t.className='';});
     await H.page.locator('button[data-act="bpApply"]').first().tap({timeout:3000});await H.wait(150);
-    const b2=await H.ev(()=>({modal:__A.V.modal&&__A.V.modal.type,toast:document.getElementById('toast').textContent,show:document.getElementById('toast').className,n:__A.G.party.length}));
-    chk(`4 Apply builds the party (${b2.n} heroes), closes the Menu and a toast says so ("${b2.toast}")`,b2.modal==null&&b2.n>=3&&b2.show==='show'&&/^Party built: /.test(b2.toast)||JSON.stringify(b2));
+    const b2=await H.ev(()=>({modal:__A.V.modal&&__A.V.modal.type,toast:document.getElementById('toast').textContent,n:__A.G.party.length}));
+    chk(`4 Apply builds the party (${b2.n} heroes) and keeps its result page (the Menu is not closed)`,b2.modal==='ldRes'&&b2.n>=3&&!/^Party built/.test(b2.toast)||JSON.stringify(b2));
+    await H.page.locator('#modal button[data-act="autoEqParty"]').first().tap({timeout:3000});await H.wait(150);
+    const b3=await H.ev(()=>({modal:__A.V.modal&&__A.V.modal.type,toast:document.getElementById('toast').textContent,show:document.getElementById('toast').className}));
+    chk(`4 Equip Best right after the built party closes the Menu and a toast says so ("${b3.toast}")`,b3.modal==null&&b3.show==='show'&&/^Equip Best/.test(b3.toast)||JSON.stringify(b3));
   }
   // ---------- 5 ----------
   if(want('5')){

@@ -174,16 +174,16 @@ for(const [w,h,mob,gfx] of [[360,740,true],[390,844,true],[390,844,true,'medium'
   const hid=spots.filter(x=>!x.shown);
   chk(tag+`the panel is on screen at ${spots.length} places (towns, fields, a dungeon, map corners, while the area banner shows (${ban.banner&&ban.shown}), in a dialogue; HD-2D ${spots.filter(x=>x.hd).length}x), never folded by itself`,
     spots.length>=13&&!hid.length&&ban.banner&&ban.shown&&/\bfull\b/.test(ban.mode)&&spots.every(x=>/\bfull\b/.test(x.mode))&&(!gfx||spots.some(x=>x.hd))||JSON.stringify(hid.length?hid:spots.filter(x=>!/\bfull\b/.test(x.mode)).concat([{hd:spots.filter(x=>x.hd).length,ban}])));
-  // the hero walks under the panel: it stays open and fully opaque (the owner: "we want it to stay open even when walking close")
-  const under=await ev(async()=>{const A=__A,g=A.TW.get,out={n:0,bad:[],near:0};const fr=()=>new Promise(q=>requestAnimationFrame(()=>requestAnimationFrame(q)));
+  // the hero walks under the panel: it stays open and does not change (0.21.7: the panel is see-through by default, so the check is that its look, background and opacity, is the same wherever the hero stands) (the owner: "we want it to stay open even when walking close")
+  const under=await ev(async()=>{const A=__A,g=A.TW.get,out={n:0,bad:[],near:0,look:null};const fr=()=>new Promise(q=>requestAnimationFrame(()=>requestAnimationFrame(q)));
     for(const id of ['f0','t0']){const m=g('getMap')(id),W=m.w||m.t[0].length;
       for(let x=W-1;x>=W-6;x--)for(let y=0;y<=7;y+=(y<3?1:2)){try{g('placeAt')(id,x,y,'d');}catch(e){continue;}A.V.modal=null;A.render();await fr();__GL.glRender();
         const e=document.getElementById('glp'),h=__GL.glHero();if(!e||!h)continue;const b=e.getBoundingClientRect(),hit=h.l<b.right&&h.r>b.left&&h.t<b.bottom&&h.b>b.top;
         const near=h.l<b.right+40&&h.r>b.left-40&&h.t<b.bottom+40&&h.b>b.top-40;if(!near)continue;out.near++;if(hit)out.n++;
-        const cs=getComputedStyle(e),ok=e.style.display!=='none'&&b.width>0&&e.classList.contains('full')&&e.querySelectorAll('.gll li').length>=2&&cs.opacity==='1'&&cs.visibility==='visible';
+        const cs=getComputedStyle(e),look=cs.backgroundColor+'|'+cs.opacity;if(out.look==null)out.look=look;const ok=e.style.display!=='none'&&b.width>0&&e.classList.contains('full')&&e.querySelectorAll('.gll li').length>=2&&cs.opacity==='1'&&look===out.look&&cs.visibility==='visible';
         if(!ok)out.bad.push({id,x,y,hit,cls:e.className,disp:e.style.display,op:cs.opacity});}}
     return out;});
-  chk(tag+`the hero walks close to and under the panel (${under.near} places near it, ${under.n} with the hero under it): it stays open, with its goals, fully opaque`,under.n>=1&&under.near>under.n&&!under.bad.length||JSON.stringify(under).slice(0,600));
+  chk(tag+`the hero walks close to and under the panel (${under.near} places near it, ${under.n} with the hero under it): it stays open, with its goals, and looks the same everywhere (${under.look})`,under.n>=1&&under.near>under.n&&!under.bad.length||JSON.stringify(under).slice(0,600));
   await ev(()=>{const A=__A;A.TW.get('placeAt')('t0',5,5,'d');A.V.modal=null;A.render();__GL.glRender();});await wait(200);
   const a0=await ev(S);if(mob)await H.page.tap('#glp .glhead');else await H.page.click('#glp .glhead');await wait(450);
   const a1=await ev(S);const meta1=await ev(()=>JSON.parse(localStorage.getItem('aurelis-meta-v1')).cfg.goalsMin);
