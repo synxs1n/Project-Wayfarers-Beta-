@@ -339,6 +339,34 @@ Registered (load order; 1 is next to the base):
 
 Runs: 23 look9 → 22 dungeon8 → 20 bigmap → 19 remember → 17 battle4 → 13 hdstage → 10 p2world → 9 p2world → 8 realms (around) → 7 map → 5 ailments → **base** → 1 feedback → 2 travel → 3 metastats → 4 ailments → 6 prog2 → 8 realms (around) → 11 p2world → 12 p2world → 14 v063prog → 15 twists → 16 battle5 → 18 battle4 → 21 summon8 → 24 riftkeeper9 → 25 breachlook11 → 26 party12
 
+### getMap (23 hooks)
+Registered (load order; 1 is next to the base):
+1. `zones.js` after: closed west gate names the real forward direction
+2. `bosstheme.js` around: stage look from its boss (new maps)
+3. `mapheal.js` around: path healing (new maps)
+4. `realms.js` before: sync pools before a new map
+5. `sites.js` around: sanctum maps; place the sanctum on its field
+6. `p2world.js` around: town lanes, gathering spots on open tiles (new maps)
+7. `pathguard.js` around: path protection (new maps)
+8. `dungeon8.js` around: realm dungeon materials and organic caves (new maps)
+9. `dungeon8.js` around: boss lair on the field (new maps)
+10. `look9.js` before: realm layout tileset for this journey
+11. `look9.js` around: realm look terrain on new fields
+12. `endgame10.js` around: the Meridian Breach map
+13. `endgame10.js` around: the Calamity field opens onto the Breach
+14. `sanctlook10.js` around: sanctum look (after the dungeon material is set)
+15. `sitelook10.js` around: lair mound: a low embankment under the realm front
+16. `breach10.js` around: the Meridian Breach, its own islands in the void
+17. `breachlook11.js` around: the Breach palette (m.thv)
+18. `world12.js` around: nodes checked again once the map is healed
+19. `townexit.js` around: new towns: nothing hides a gate
+20. `world12.js` around: a landmark for every new town (after the exit pass)
+21. `worldart12.js` around: an exit sits on land: the apron, and a causeway along the walkway over the void (fields and towns; outside townexit and world12)
+22. `world14.js` around: unreachable chests move, nodes checked (after healing, the path guard and the exit aprons)
+23. `world16.js` around: the Breach Waystone in the centre; a post beside every town gate
+
+Runs: 23 world16 (around) → 22 world14 (around) → 21 worldart12 (around) → 20 world12 (around) → 19 townexit (around) → 18 world12 (around) → 17 breachlook11 (around) → 16 breach10 (around) → 15 sitelook10 (around) → 14 sanctlook10 (around) → 13 endgame10 (around) → 12 endgame10 (around) → 11 look9 (around) → 10 look9 → 9 dungeon8 (around) → 8 dungeon8 (around) → 7 pathguard (around) → 6 p2world (around) → 5 sites (around) → 4 realms → 3 mapheal (around) → 2 bosstheme (around) → **base** → 1 zones → 2 bosstheme (around) → 3 mapheal (around) → 5 sites (around) → 6 p2world (around) → 7 pathguard (around) → 8 dungeon8 (around) → 9 dungeon8 (around) → 11 look9 (around) → 12 endgame10 (around) → 13 endgame10 (around) → 14 sanctlook10 (around) → 15 sitelook10 (around) → 16 breach10 (around) → 17 breachlook11 (around) → 18 world12 (around) → 19 townexit (around) → 20 world12 (around) → 21 worldart12 (around) → 22 world14 (around) → 23 world16 (around)
+
 ### worldDraw (23 hooks)
 Registered (load order; 1 is next to the base):
 1. `legends.js` after: legend markers
@@ -366,33 +394,6 @@ Registered (load order; 1 is next to the base):
 23. `cohere15.js` before: the Unified look toggle
 
 Runs: 23 cohere15 → 22 terrain13 → 20 chars13 → 19 light13 (around) → 18 light13 → 16 perf12 → 14 rk10 → 12 npcart9 → 10 hd2d (around) → 7 p5trans (around) → **base** → 1 legends → 2 equip → 3 world3 → 4 mimic → 5 daylight → 6 roam → 7 p5trans (around) → 8 gfx6world → 9 worldfx → 10 hd2d (around) → 11 dungeon8 → 13 voidsky10 → 15 breachlook11 → 17 light13 → 19 light13 (around) → 21 chars13
-
-### getMap (22 hooks)
-Registered (load order; 1 is next to the base):
-1. `zones.js` after: closed west gate names the real forward direction
-2. `bosstheme.js` around: stage look from its boss (new maps)
-3. `mapheal.js` around: path healing (new maps)
-4. `realms.js` before: sync pools before a new map
-5. `sites.js` around: sanctum maps; place the sanctum on its field
-6. `p2world.js` around: town lanes, gathering spots on open tiles (new maps)
-7. `pathguard.js` around: path protection (new maps)
-8. `dungeon8.js` around: realm dungeon materials and organic caves (new maps)
-9. `dungeon8.js` around: boss lair on the field (new maps)
-10. `look9.js` before: realm layout tileset for this journey
-11. `look9.js` around: realm look terrain on new fields
-12. `endgame10.js` around: the Meridian Breach map
-13. `endgame10.js` around: the Calamity field opens onto the Breach
-14. `sanctlook10.js` around: sanctum look (after the dungeon material is set)
-15. `sitelook10.js` around: lair mound: a low embankment under the realm front
-16. `breach10.js` around: the Meridian Breach, its own islands in the void
-17. `breachlook11.js` around: the Breach palette (m.thv)
-18. `world12.js` around: nodes checked again once the map is healed
-19. `townexit.js` around: new towns: nothing hides a gate
-20. `world12.js` around: a landmark for every new town (after the exit pass)
-21. `worldart12.js` around: an exit sits on land: the apron, and a causeway along the walkway over the void (fields and towns; outside townexit and world12)
-22. `world14.js` around: unreachable chests move, nodes checked (after healing, the path guard and the exit aprons)
-
-Runs: 22 world14 (around) → 21 worldart12 (around) → 20 world12 (around) → 19 townexit (around) → 18 world12 (around) → 17 breachlook11 (around) → 16 breach10 (around) → 15 sitelook10 (around) → 14 sanctlook10 (around) → 13 endgame10 (around) → 12 endgame10 (around) → 11 look9 (around) → 10 look9 → 9 dungeon8 (around) → 8 dungeon8 (around) → 7 pathguard (around) → 6 p2world (around) → 5 sites (around) → 4 realms → 3 mapheal (around) → 2 bosstheme (around) → **base** → 1 zones → 2 bosstheme (around) → 3 mapheal (around) → 5 sites (around) → 6 p2world (around) → 7 pathguard (around) → 8 dungeon8 (around) → 9 dungeon8 (around) → 11 look9 (around) → 12 endgame10 (around) → 13 endgame10 (around) → 14 sanctlook10 (around) → 15 sitelook10 (around) → 16 breach10 (around) → 17 breachlook11 (around) → 18 world12 (around) → 19 townexit (around) → 20 world12 (around) → 21 worldart12 (around) → 22 world14 (around)
 
 ### settingsBody (16 hooks)
 Registered (load order; 1 is next to the base):
@@ -454,6 +455,25 @@ Registered (load order; 1 is next to the base):
 
 Runs: 14 cohere15 → 13 chars13 (around) → 11 chars13 → 9 perf12 → 8 fxkind11 → 7 res11 → 6 battle11 (around) → 5 sprhd2 → 4 hdspell → 3 hdstage (around) → 2 gfx6battle (around) → 1 anim → **base** → 2 gfx6battle (around) → 3 hdstage (around) → 6 battle11 (around) → 10 kits12 → 12 chars13 → 13 chars13 (around)
 
+### newGame (14 hooks)
+Registered (load order; 1 is next to the base):
+1. `account.js` after: codex roster
+2. `progression.js` after: draw the 5 guild recruits for this journey
+3. `tavern2.js` after: journey roster and tavern reset
+4. `metastats.js` after: new journey counted (not the Daily Trial start)
+5. `prog2.js` after: auto per foe type starts closed
+6. `map.js` before: forget the explored map
+7. `pacing.js` after: pacing version on a new journey
+8. `goals.js` after: goals start empty
+9. `look9.js` after: realm layout tileset for this journey
+10. `party12.js` before: close the record of the journey that ends
+11. `party12.js` after: keep the New Game+ draw, record the playthrough
+12. `menus14.js` after: a new journey uses the spread levels
+13. `quests16.js` after: the guild lock on a new journey
+14. `world16.js` after: new journeys draw their gates from all four sides
+
+Runs: 10 party12 → 6 map → **base** → 1 account → 2 progression → 3 tavern2 → 4 metastats → 5 prog2 → 7 pacing → 8 goals → 9 look9 → 11 party12 → 12 menus14 → 13 quests16 → 14 world16
+
 ### perform (14 hooks)
 Registered (load order; 1 is next to the base):
 1. `ailments.js` around: hard cleanse flag for revive and cleanse skills
@@ -509,23 +529,22 @@ Registered (load order; 1 is next to the base):
 
 Runs: 13 endgame10 (around) → 12 endgame10 → 11 riftkeeper9 → 9 p2world (around) → 8 sites (around) → 7 roam (around) → 6 echocore → 5 mimic → 4 chance → 3 world3 (around) → 1 legends → **base** → 2 travel → 3 world3 (around) → 7 roam (around) → 8 sites (around) → 9 p2world (around) → 10 duellines → 13 endgame10 (around)
 
-### newGame (13 hooks)
+### unpackG (12 hooks)
 Registered (load order; 1 is next to the base):
-1. `account.js` after: codex roster
-2. `progression.js` after: draw the 5 guild recruits for this journey
-3. `tavern2.js` after: journey roster and tavern reset
-4. `metastats.js` after: new journey counted (not the Daily Trial start)
-5. `prog2.js` after: auto per foe type starts closed
-6. `map.js` before: forget the explored map
-7. `pacing.js` after: pacing version on a new journey
-8. `goals.js` after: goals start empty
-9. `look9.js` after: realm layout tileset for this journey
-10. `party12.js` before: close the record of the journey that ends
-11. `party12.js` after: keep the New Game+ draw, record the playthrough
-12. `menus14.js` after: a new journey uses the spread levels
-13. `quests16.js` after: the guild lock on a new journey
+1. `tavern2.js` after: journey roster subset
+2. `comp.js` after: migrate companions
+3. `learn.js` after: record skills of loaded heroes
+4. `prog2.js` after: old saves: bosses won
+5. `map.js` before: forget the explored map
+6. `summon8.js` after: old saves: beaten guardians become summons
+7. `party12.js` after: migrate: reserves keep no gear
+8. `skills12.js` after: trim old saves to the capped kit
+9. `menus14.js` after: old saves keep the skills the old learn levels gave
+10. `realms14.js` after: old saves: a removed Scourge or Calamity maps to the nearest kept one
+11. `battle16.js` after: old saves: the pet of a removed Scourge follows the boss that replaced it
+12. `world16.js` after: what the account has seen of this journey joins the loaded save
 
-Runs: 10 party12 → 6 map → **base** → 1 account → 2 progression → 3 tavern2 → 4 metastats → 5 prog2 → 7 pacing → 8 goals → 9 look9 → 11 party12 → 12 menus14 → 13 quests16
+Runs: 5 map → **base** → 1 tavern2 → 2 comp → 3 learn → 4 prog2 → 6 summon8 → 7 party12 → 8 skills12 → 9 menus14 → 10 realms14 → 11 battle16 → 12 world16
 
 ### cmdHtml (11 hooks)
 Registered (load order; 1 is next to the base):
@@ -559,22 +578,6 @@ Registered (load order; 1 is next to the base):
 
 Runs: 2 learn (around) → **base** → 1 comp (result) → 2 learn (around) → 3 p3shop (result) → 4 p4party (result) → 5 roles9 (result) → 6 sheet11 (result) → 7 skillrows11 (result) → 8 party12 (result) → 9 skills12 (result) → 10 menus12 (result) → 11 menus14 (result)
 
-### unpackG (11 hooks)
-Registered (load order; 1 is next to the base):
-1. `tavern2.js` after: journey roster subset
-2. `comp.js` after: migrate companions
-3. `learn.js` after: record skills of loaded heroes
-4. `prog2.js` after: old saves: bosses won
-5. `map.js` before: forget the explored map
-6. `summon8.js` after: old saves: beaten guardians become summons
-7. `party12.js` after: migrate: reserves keep no gear
-8. `skills12.js` after: trim old saves to the capped kit
-9. `menus14.js` after: old saves keep the skills the old learn levels gave
-10. `realms14.js` after: old saves: a removed Scourge or Calamity maps to the nearest kept one
-11. `battle16.js` after: old saves: the pet of a removed Scourge follows the boss that replaced it
-
-Runs: 5 map → **base** → 1 tavern2 → 2 comp → 3 learn → 4 prog2 → 6 summon8 → 7 party12 → 8 skills12 → 9 menus14 → 10 realms14 → 11 battle16
-
 ### arrive (10 hooks)
 Registered (load order; 1 is next to the base):
 1. `journey.js` before: step count
@@ -605,6 +608,21 @@ Registered (load order; 1 is next to the base):
 
 Runs: 5 npcart9 → **base** → 1 worldfx → 2 dungeon8 → 3 guidance9 → 4 npcmark9 → 6 echo11 → 7 world12 → 8 worldart13 → 9 light13 → 10 terrain13
 
+### placeAt (10 hooks)
+Registered (load order; 1 is next to the base):
+1. `legends.js` after: Jaeson's storm
+2. `progression.js` after: places been
+3. `stuck.js` around: Stuck? return point
+4. `world3.js` around: weather on arrival
+5. `map.js` after: reveal around, redraw the minimap
+6. `map.js` before: stop tap to walk
+7. `bigmap.js` after: next leg of a route
+8. `field9.js` after: Lantern ends on another map
+9. `world16.js` after: the explored map goes to the account when the map changes
+10. `world16.js` around: never placed inside the moved Waystone or a new post
+
+Runs: 10 world16 (around) → 6 map → 4 world3 (around) → 3 stuck (around) → **base** → 1 legends → 2 progression → 3 stuck (around) → 4 world3 (around) → 5 map → 7 bigmap → 8 field9 → 9 world16 → 10 world16 (around)
+
 ### calcStats (9 hooks)
 Registered (load order; 1 is next to the base):
 1. `ailments.js` after: wound shrinks max HP
@@ -619,18 +637,18 @@ Registered (load order; 1 is next to the base):
 
 Runs: **base** → 1 ailments → 2 echocore → 3 comp → 4 roles → 5 natures6 → 6 riftkeeper9 → 7 roles9 → 8 echo11 → 9 battle16
 
-### placeAt (8 hooks)
+### drawTile (8 hooks)
 Registered (load order; 1 is next to the base):
-1. `legends.js` after: Jaeson's storm
-2. `progression.js` after: places been
-3. `stuck.js` around: Stuck? return point
-4. `world3.js` around: weather on arrival
-5. `map.js` after: reveal around, redraw the minimap
-6. `map.js` before: stop tap to walk
-7. `bigmap.js` after: next leg of a route
-8. `field9.js` after: Lantern ends on another map
+1. `worldfx.js` around: ground under a gone chest
+2. `dungeon8.js` around: lair mound ground in 2D
+3. `sitelook10.js` after: den and lair ground, cast shadows
+4. `breachlook11.js` after: Breach tiles
+5. `worldart13.js` after: cast shadows of the entrances
+6. `terrain13.js` around: ground patchwork, tuft variety and material transitions (2D base and the HD-2D ground bake)
+7. `world14.js` around: cloud sea body: billows from one noise field over the whole map (both renderers)
+8. `world16.js` before: only the tiles of a patch are painted
 
-Runs: 6 map → 4 world3 (around) → 3 stuck (around) → **base** → 1 legends → 2 progression → 3 stuck (around) → 4 world3 (around) → 5 map → 7 bigmap → 8 field9
+Runs: 8 world16 → 7 world14 (around) → 6 terrain13 (around) → 2 dungeon8 (around) → 1 worldfx (around) → **base** → 1 worldfx (around) → 2 dungeon8 (around) → 3 sitelook10 → 4 breachlook11 → 5 worldart13 → 6 terrain13 (around) → 7 world14 (around)
 
 ### showLocation (8 hooks)
 Registered (load order; 1 is next to the base):
@@ -657,17 +675,17 @@ Registered (load order; 1 is next to the base):
 
 Runs: **base** → 1 archetype (result) → 2 sigskills (result) → 3 roles (result) → 4 skills12 (result) → 5 kits12 (result) → 6 menus12 (result) → 7 menus14 (result)
 
-### drawTile (7 hooks)
+### drawObjects (7 hooks)
 Registered (load order; 1 is next to the base):
-1. `worldfx.js` around: ground under a gone chest
-2. `dungeon8.js` around: lair mound ground in 2D
-3. `sitelook10.js` after: den and lair ground, cast shadows
-4. `breachlook11.js` after: Breach tiles
-5. `worldart13.js` after: cast shadows of the entrances
-6. `terrain13.js` around: ground patchwork, tuft variety and material transitions (2D base and the HD-2D ground bake)
-7. `world14.js` around: cloud sea body: billows from one noise field over the whole map (both renderers)
+1. `worldgfx2.js` around: dungeon props, contact shadows, boards and boats
+2. `p2world.js` around: entrance style context (P2.dm)
+3. `dungeon8.js` around: lair hill, pillar glow lights
+4. `sanctlook10.js` around: sanctum prop context (SNCX.dm)
+5. `sitelook10.js` around: lair sprite over the props
+6. `breachlook11.js` around: Breach prop context (BRL.dm)
+7. `world16.js` before: only the prop rows of a patch are painted
 
-Runs: 7 world14 (around) → 6 terrain13 (around) → 2 dungeon8 (around) → 1 worldfx (around) → **base** → 1 worldfx (around) → 2 dungeon8 (around) → 3 sitelook10 → 4 breachlook11 → 5 worldart13 → 6 terrain13 (around) → 7 world14 (around)
+Runs: 7 world16 → 6 breachlook11 (around) → 5 sitelook10 (around) → 4 sanctlook10 (around) → 3 dungeon8 (around) → 2 p2world (around) → 1 worldgfx2 (around) → **base** → 1 worldgfx2 (around) → 2 p2world (around) → 3 dungeon8 (around) → 4 sanctlook10 (around) → 5 sitelook10 (around) → 6 breachlook11 (around)
 
 ### objCanvas (7 hooks)
 Registered (load order; 1 is next to the base):
@@ -693,6 +711,18 @@ Registered (load order; 1 is next to the base):
 
 Runs: 6 fxkind11 (around) → 4 hdspell (around) → 2 sfx2 → 1 anim (around) → **base** → 1 anim (around) → 3 gfx6battle → 4 hdspell (around) → 5 fxkind11 → 6 fxkind11 (around) → 7 fxkind11
 
+### openChest (7 hooks)
+Registered (load order; 1 is next to the base):
+1. `metastats.js` around: chests opened
+2. `equip.js` around: new gear watch (queues new gear)
+3. `mimic.js` before: a mimic in the chest
+4. `sites.js` before: cave reward chests
+5. `sites.js` before: prize chest waits for the miniboss
+6. `worldfx.js` around: chest opening sparkle
+7. `world16.js` around: a chest opens at once: only its own tiles are repainted
+
+Runs: 7 world16 (around) → 6 worldfx (around) → 5 sites → 4 sites → 3 mimic → 2 equip (around) → 1 metastats (around) → **base** → 1 metastats (around) → 2 equip (around) → 6 worldfx (around) → 7 world16 (around)
+
 ### spriteOf (7 hooks)
 Registered (load order; 1 is next to the base):
 1. `hdstage.js` before: remember the unit being lit
@@ -715,17 +745,6 @@ Registered (load order; 1 is next to the base):
 6. `skills12.js` around: a dual art sets off the reaction of each of its elements
 
 Runs: 6 skills12 (around) → 3 battle3 (around) → **base** → 1 prog2 → 2 twists → 3 battle3 (around) → 4 battle4 → 5 battle4 → 6 skills12 (around)
-
-### drawObjects (6 hooks)
-Registered (load order; 1 is next to the base):
-1. `worldgfx2.js` around: dungeon props, contact shadows, boards and boats
-2. `p2world.js` around: entrance style context (P2.dm)
-3. `dungeon8.js` around: lair hill, pillar glow lights
-4. `sanctlook10.js` around: sanctum prop context (SNCX.dm)
-5. `sitelook10.js` around: lair sprite over the props
-6. `breachlook11.js` around: Breach prop context (BRL.dm)
-
-Runs: 6 breachlook11 (around) → 5 sitelook10 (around) → 4 sanctlook10 (around) → 3 dungeon8 (around) → 2 p2world (around) → 1 worldgfx2 (around) → **base** → 1 worldgfx2 (around) → 2 p2world (around) → 3 dungeon8 (around) → 4 sanctlook10 (around) → 5 sitelook10 (around) → 6 breachlook11 (around)
 
 ### genQuests (6 hooks)
 Registered (load order; 1 is next to the base):
@@ -770,17 +789,6 @@ Registered (load order; 1 is next to the base):
 6. `menus11.js` result: a menu with nothing behind it: Back leaves it, no tab or section steps (the shops and sheets keep their arrow, the Menu has none)
 
 Runs: 5 menus11 → 4 menus9 → 3 bigmap → 2 recruit3 → 1 comp (around) → **base** → 1 comp (around) → 6 menus11 (result)
-
-### openChest (6 hooks)
-Registered (load order; 1 is next to the base):
-1. `metastats.js` around: chests opened
-2. `equip.js` around: new gear watch (queues new gear)
-3. `mimic.js` before: a mimic in the chest
-4. `sites.js` before: cave reward chests
-5. `sites.js` before: prize chest waits for the miniboss
-6. `worldfx.js` around: chest opening sparkle
-
-Runs: 6 worldfx (around) → 5 sites → 4 sites → 3 mimic → 2 equip (around) → 1 metastats (around) → **base** → 1 metastats (around) → 2 equip (around) → 6 worldfx (around)
 
 ### recruit (6 hooks)
 Registered (load order; 1 is next to the base):
@@ -1088,6 +1096,13 @@ Registered (load order; 1 is next to the base):
 
 Runs: 2 quests16 → 1 records12 → **base** → 3 quests16 (result)
 
+### applyRemote (2 hooks)
+Registered (load order; 1 is next to the base):
+1. `roster14.js` after: permanent recruits from the profile (a union), cycles take the larger
+2. `world16.js` before: explored maps from the profile: a union per journey and map
+
+Runs: 2 world16 → **base** → 1 roster14
+
 ### b9BanBox (2 hooks)
 Registered (load order; 1 is next to the base):
 1. `battle3.js` around: box measured with the MP text
@@ -1172,6 +1187,13 @@ Registered (load order; 1 is next to the base):
 
 Runs: **base** → 1 chars13 (result) → 2 cohere15 (result)
 
+### profileOf (2 hooks)
+Registered (load order; 1 is next to the base):
+1. `roster14.js` result: the permanent recruits and the cycle count go to the profile
+2. `world16.js` result: the explored maps of the latest journeys go to the profile (packed)
+
+Runs: **base** → 1 roster14 (result) → 2 world16 (result)
+
 ### slDenByKey (2 hooks)
 Registered (load order; 1 is next to the base):
 1. `worldart12.js` result: den mouths with volume
@@ -1216,12 +1238,6 @@ Registered (load order; 1 is next to the base):
 1. `p4xp.js` before: at the level cap, XP becomes gold
 
 Runs: 1 p4xp → **base**
-
-### applyRemote (1 hook)
-Registered (load order; 1 is next to the base):
-1. `roster14.js` after: permanent recruits from the profile (a union), cycles take the larger
-
-Runs: **base** → 1 roster14
 
 ### askBoss (1 hook)
 Registered (load order; 1 is next to the base):
@@ -1403,17 +1419,17 @@ Registered (load order; 1 is next to the base):
 
 Runs: **base** → 1 world12
 
-### profileOf (1 hook)
-Registered (load order; 1 is next to the base):
-1. `roster14.js` result: the permanent recruits and the cycle count go to the profile
-
-Runs: **base** → 1 roster14 (result)
-
 ### REALM_DONE (1 hook)
 Registered (load order; 1 is next to the base):
 1. `records12.js` result: Den and Sanctum rows follow the map, a Den the map has but the plan lacks is listed
 
 Runs: **base** → 1 records12 (result)
+
+### rebuildBase (1 hook)
+Registered (load order; 1 is next to the base):
+1. `world16.js` around: the repaint after a chest is a patch
+
+Runs: 1 world16 (around) → **base** → 1 world16 (around)
 
 ### resBk (1 hook)
 Registered (load order; 1 is next to the base):
@@ -1534,6 +1550,12 @@ Registered (load order; 1 is next to the base):
 1. `light13.js` after: the realm particles (fireflies, pollen, ash and embers, dust, frost, spores, void motes)
 
 Runs: **base** → 1 light13
+
+### worldPlan (1 hook)
+Registered (load order; 1 is next to the base):
+1. `world16.js` around: revision 3: all four sides, a plan that never crosses itself
+
+Runs: 1 world16 (around) → **base** → 1 world16 (around)
 
 <!-- hooksmap:end -->
 
