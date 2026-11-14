@@ -7,9 +7,9 @@
 // Minibosses: about 90% of caves and sanctums (seeded per site) have a capstone fight guarding the prize. Opening the prize chest
 // wakes it; win and the prize is yours plus a bonus. Minibosses can never be auto battled.
 // SITES: in config.js
-const FORT_NAMES=['Briarwatch Sanctum','Saltmarch Sanctum','Emberwall Sanctum','Frostcrag Sanctum','Duskspire Sanctum'];
+const FORT_NAMES=['Briarkeep Sanctum','Seamarch Sanctum','Forgewall Sanctum','Hoarcrag Sanctum','Duskhaven Sanctum'];
 const FORT_CHARMS={0:'c_ft0',1:'c_ft1',2:'c_ft2',3:'c_ft3',4:'c_ft4'};
-[['c_ft0','Briarwatch Sigil',{hp:150,atk:12,def:8}],['c_ft1','Saltmarch Seal',{mp:70,res:14,def:8}],['c_ft2','Emberwall Badge',{atk:18,spd:6}],['c_ft3','Frostcrag Token',{def:16,hp:110}],['c_ft4','Duskspire Crest',{mag:16,spd:8,mp:50}]]
+[['c_ft0','Briarkeep Sigil',{hp:150,atk:12,def:8}],['c_ft1','Seamarch Seal',{mp:70,res:14,def:8}],['c_ft2','Forgewall Badge',{atk:18,spd:6}],['c_ft3','Hoarcrag Token',{def:16,hp:110}],['c_ft4','Duskhaven Crest',{mag:16,spd:8,mp:50}]]
   .forEach(([id,n,st],i)=>addGear(id,Object.assign({n,slot:'c',tier:3,price:900+i*80,unique:1},st)));
 // ---------- looks ----------
 function siteVariant(theme,kind){const id=theme+'#'+kind;if(DTHEME[id])return id;const D=DTHEME[theme];if(!D)return theme;
@@ -123,14 +123,14 @@ function siteHasMini(id){if(String(id)[0]==='k')return true;return (hashS('mini'
 const MINIS=[
  ['mb_gorehorn','yeti','Gorehorn, Warden of the Drifts',['ice','earth'],'#9a6a5a','thorns'],['mb_mirequeen','dewtoad','The Mire Queen',['water','shadow'],'#4a6a3a','regen'],
  ['mb_slagjaw','slaggolem','Slagjaw the Unquenched',['fire','earth'],'#c04a1a','warded'],['mb_bellwraith','ashwraith','The Bell Wraith',['shadow','light'],'#8a8ab0','frenzy'],
- ['mb_pyreclaw','cinderpup','Pyreclaw, Kennelmaster',['fire'],'#e07a2a','frenzy'],['mb_shellking','shellguard','Old Shellking',['water','earth'],'#5a8aa0','warded'],
- ['mb_gallowcrow','gull','The Gallow Crow',['shadow','wind'],'#3a3a4a','thorns'],['mb_lanternmaw','stareater','Lanternmaw',['light','fire'],'#f0c060','regen'],
- ['mb_rustknight','iceknight','The Rusted Knight',['earth','lightning'],'#9a5a3a','warded'],['mb_stormcrown','thunderhawk','Stormcrown Matriarch',['lightning','wind'],'#c0c0f0','frenzy'],
- ['mb_rootmother','mossling','Rootmother',['earth','water'],'#3a7a3a','regen'],['mb_glasswidow','tidewisp','The Glass Widow',['water','light'],'#a0e0f0','thorns'],
- ['mb_hollowabbot','huskguard','The Hollow Abbot',['shadow'],'#5a4a3a','warded'],['mb_cinderbat','cavebat','Cinderwing Elder',['fire','shadow'],'#a03a2a','frenzy'],
- ['mb_frostmother','frostwolf','Frostmother',['ice'],'#c0d8f0','regen'],['mb_skullbell','gargoyle','Skullbell Sentinel',['earth','shadow'],'#7a7a6a','thorns'],
- ['mb_gloomray','cloudray','The Gloom Ray',['wind','shadow'],'#4a4a7a','frenzy'],['mb_brinehag','crawler','The Brine Hag',['water','shadow'],'#3a6a5a','regen'],
- ['mb_sunscorch','magmaslime','Sunscorch Ooze',['fire','light'],'#ffb040','warded'],['mb_voidcantor','voidspawn','The Void Cantor',['shadow','lightning'],'#5a3a8a','thorns']];
+ ['mb_pyreclaw','cinderpup','Pyreclaw, Kennelmaster',['fire'],'#e07a2a','frenzy'],['mb_shellking','shellguard','Old Shellgrim',['water','earth'],'#5a8aa0','warded'],
+ ['mb_gallowcrow','gull','The Gallow Crow',['shadow','wind'],'#3a3a4a','thorns'],['mb_lanternmaw','stareater','Glowmaw',['light','fire'],'#f0c060','regen'],
+ ['mb_rustknight','iceknight','The Rusted Knight',['earth','lightning'],'#9a5a3a','warded'],['mb_stormcrown','thunderhawk','Old Thunderwing',['lightning','wind'],'#c0c0f0','frenzy'],
+ ['mb_rootmother','mossling','Tanglemother',['earth','water'],'#3a7a3a','regen'],['mb_glasswidow','tidewisp','The Mirror Widow',['water','light'],'#a0e0f0','thorns'],
+ ['mb_hollowabbot','huskguard','The Silent Abbot',['shadow'],'#5a4a3a','warded'],['mb_cinderbat','cavebat','Sootwing Elder',['fire','shadow'],'#a03a2a','frenzy'],
+ ['mb_frostmother','frostwolf','Snowmother',['ice'],'#c0d8f0','regen'],['mb_skullbell','gargoyle','Tollskull Sentinel',['earth','shadow'],'#7a7a6a','thorns'],
+ ['mb_gloomray','cloudray','The Gloom Ray',['wind','shadow'],'#4a4a7a','frenzy'],['mb_brinehag','crawler','The Kelp Hag',['water','shadow'],'#3a6a5a','regen'],
+ ['mb_sunscorch','magmaslime','Scorchsand Ooze',['fire','light'],'#ffb040','warded'],['mb_voidcantor','voidspawn','The Void Cantor',['shadow','lightning'],'#5a3a8a','thorns']];
 MINIS.forEach(([id,b,n,e,c])=>makeMonVariant(id,b,n,e,c,{mini:1,hp:+((MON[b]||{hp:1}).hp*1.1).toFixed(2)}));
 // v0.12: guardians are Scourge sized. Every guardian art joins BIG_ART (battle.js unitBox and monCanvas read MON_SIZE: 60 like a Scourge);
 // their code drawn art is the 40 px base monster with a new colour, so monCanvas draws it at its own size and enlarges it 1.5x (nearest

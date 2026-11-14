@@ -24,15 +24,15 @@ and by tileset for side caves (`D8_CAVE`); fortresses are keeps:
 |---|---|---|
 | Glacier Teeth (The Frozen Choir), old Frostmere | ice cavern: icy rock walls with icicles, crystal clusters at the foot, frozen floor with cracks and frost, frozen pools, cold blue light | organic |
 | Rimewatch Tundra (Rimewatch Vault) | ice vault: ice brick with icicles and frost, crystal pillars | built |
-| Cinderhollow Deeps (The Deep Smelter), The Ashen Expanse (The Cinder Throne) | volcanic cavern: basalt, glowing cracks, lava pools that light the room, ember vents, ash | organic |
-| Ironroot Mines (The Ironroot Foundry), old Emberdeep Forge | basalt forge: dark masonry, forge grates, lava channels | built |
+| Kilnscar Depths (The Black Smelter), The Ashen Expanse (The Cinder Throne) | volcanic cavern: basalt, glowing cracks, lava pools that light the room, ember vents, ash | organic |
+| Ironroot Mines (The Great Foundry), old Underforge | basalt forge: dark masonry, forge grates, lava channels | built |
 | Gullreach Strand (Gullreach Sea Caves), old Drowned Grotto | sea cave: wet rock, barnacles and weed, coral, puddles and tide pools, dripping light | organic |
-| Mirefen Marsh (The Sunken Abbey), Willowmere Lakes (The Drowned Mill), The Drowned Crown | flooded halls: wet mossy masonry, water stains, murky pools | built |
-| Glowroot Grottos (The Glowroot Heart) | root cavern: hanging roots, moss, glowing fungi on walls and floor, giant mushrooms, bog pools | organic |
+| Mirefen Marsh (The Sunken Abbey), Willowmere Lakes (The Flooded Mill), The Drowned Crown | flooded halls: wet mossy masonry, water stains, murky pools | built |
+| Glowroot Grottos (The Fungal Heart) | root cavern: hanging roots, moss, glowing fungi on walls and floor, giant mushrooms, bog pools | organic |
 | Thistlewold Downs (Barrow), Amberglade Orchards (Cellars), old Verdane Barrow | crypt: masonry, skull niches, green banners, bones, tombs | built |
 | Sunspire Mesa (The Sunspire) | sandstone: carved glyph bands, sand drifts against the walls, obelisks | built |
-| Galecrest Peaks, The Shattered Sky, old Storm Spire | keep: masonry, red banners, brazier pillars, inlaid floor | built |
-| The Starless Wastes (The Hollow Observatory), old Hollow Star | astral halls: glowing runes, star specks | built |
+| Galecrest Peaks, The Shattered Sky, old Thunderhead Keep | keep: masonry, red banners, brazier pillars, inlaid floor | built |
+| The Starless Wastes (The Blind Observatory), old Hollow Star | astral halls: glowing runes, star specks | built |
 | side caves | root (meadow), sea (coast), volcanic (cave), ice (snow), mountain rock with crystals (heights), astral (void) | organic |
 | fortresses | keep | built |
 

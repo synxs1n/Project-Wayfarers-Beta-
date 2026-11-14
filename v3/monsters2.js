@@ -6,7 +6,7 @@ Object.assign(MON,{
  gnatswarm:{n:'Gnat Swarm',art:'gnatswarm',el:['wind'],hp:.7,atk:.85,def:.6,mag:.7,res:.7,spd:1.4,sk:[['Biting Cloud','wind',.9,'all','phys',[['poison',.25]]]]},
  barrowbones:{n:'Barrow Bones',art:'barrowbones',el:['shadow'],hp:.95,atk:1.05,def:.9,mag:.7,res:.8,spd:.85,sk:[['Rusty Cleave','shadow',1.2,'one','phys',[['bleed',.3]]]]},
  drownedsailor:{n:'Drowned Sailor',art:'drownedsailor',el:['water','shadow'],hp:1.1,atk:1.1,def:1,mag:.8,res:.9,spd:.8,sk:[['Hook Drag','water',1.35,'one','phys',[['root',.25]]],['Drowned Dirge','shadow',1,'all','mag',[['slow',.3]]]]},
- brinejelly:{n:'Brine Jelly',art:'brinejelly',el:['water'],hp:1.3,atk:.8,def:1.2,mag:1,res:.9,spd:.7,sk:[['Stinging Wrap','water',1.2,'one','mag',[['poison',.4]]]]},
+ brinejelly:{n:'Tide Jelly',art:'brinejelly',el:['water'],hp:1.3,atk:.8,def:1.2,mag:1,res:.9,spd:.7,sk:[['Stinging Wrap','water',1.2,'one','mag',[['poison',.4]]]]},
  rimewight:{n:'Rime Wight',art:'rimewight',el:['ice','shadow'],hp:1.2,atk:.9,def:1,mag:1.25,res:1.1,spd:.8,sk:[['Grave Chill','ice',1.25,'one','mag',[['slow',.4]]],['Frost Shroud','ice',0,'self','buff',[['ward',1]]]]},
  galephantom:{n:'Gale Phantom',art:'galephantom',el:['wind','shadow'],hp:.8,atk:.9,def:.7,mag:1.25,res:1.2,spd:1.25,sk:[['Keening Gale','wind',1,'all','mag',[['blind',.3]]]]}
 });

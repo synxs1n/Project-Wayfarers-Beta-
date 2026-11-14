@@ -5,7 +5,7 @@
 //     a darker ambient and heavier lamps at night (hdLook hook)
 //  2. 2D night: the ground beside a lamp is brighter with the pools than without, the ground away from every light darker; interiors: a torch pool
 //     flickers between two frames and holds still under reduced motion
-//  3. particles: fireflies at night in a meadow field, pollen by day, ash and embers in Cinderhollow, frost in the tundra, dust in the mesa, spores in
+//  3. particles: fireflies at night in a meadow field, pollen by day, ash and embers in Kilnscar, frost in the tundra, dust in the mesa, spores in
 //     the Breach, void motes in the Rift; none with the module off; the clock stops under a menu
 //  4. transitions: the battle start still whitens every quarter at p = .2 and .5 (v063bb) and the realm's shards cover the view at p = .9; the doorway
 //     iris keeps the hero's surroundings visible at p = .5 while the corners are dark, in 2D and HD-2D; reduced motion is a plain fade; the return
@@ -82,7 +82,7 @@ const LUMA=`(b)=>{const A=__A,cv=A.WS.cv,RW=cv._rw||cv.width,RH=cv._rh||cv.heigh
       L.pauseT=0;L.pauseOff=0;const s1=snap(9000),s2=snap(9600);A.V.modal={type:'menu',tab:'settings'};const s3=snap(10000),s4=snap(10600);A.V.modal=null;const s5=snap(11000),s6=snap(11600);/* the clock resumes where it stopped: the first frame after the menu is the one under it */out.menu={moves:s1!==s2,held:s3===s4,same:s5===s4,resumes:s6!==s5};return out;},[SCENE]);
     const ok=(k,min)=>p[k]&&!p[k].err&&p[k].hit>=min;
     chk(`fireflies at night in a meadow field (${p.firefly.id} ${p.firefly.rk}: ${p.firefly.hit}), pollen by day (${p.pollen.hit})`,ok('firefly',3)&&ok('pollen',3));
-    chk(`ash and embers in Cinderhollow (${p.ash.id} ${p.ash.rk}: ${p.ash.hit} ash, ${p.ember.hit} embers)`,p.ash.rk==='deeps'&&ok('ash',3)&&ok('ember',2));
+    chk(`ash and embers in Kilnscar (${p.ash.id} ${p.ash.rk}: ${p.ash.hit} ash, ${p.ember.hit} embers)`,p.ash.rk==='deeps'&&ok('ash',3)&&ok('ember',2));
     chk(`frost in the tundra (${p.frost.rk}: ${p.frost.hit}), dust in the mesa (${p.dust.rk}: ${p.dust.hit})`,p.frost.rk==='tundra'&&ok('frost',2)&&p.dust.rk==='mesa'&&ok('dust',3));
     chk(`spores in the Breach (${JSON.stringify(p.spore)}), void motes in the Rift (${JSON.stringify(p.rift)})`,ok('spore',3)&&ok('rift',3));
     chk(`nothing with the module off (${p.off}); the particles move (${p.menu.moves}), hold still under a menu (${p.menu.held}), resume where they stopped (${p.menu.same}) and move on (${p.menu.resumes})`,p.off===0&&p.menu.moves&&p.menu.held&&p.menu.same&&p.menu.resumes);

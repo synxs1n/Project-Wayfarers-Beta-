@@ -146,7 +146,7 @@ realm variants but not the boss overlays or realm weather.)
 | before | 95.8% | 10.6% | 96.0% | 10.1% | 50.3% |
 | after | 96.3% | 9.5% | 96.6% | 9.2% | 0% |
 
-The biggest moves per realm (careful HP lost, before to after): Mirefen Marsh 8 to 5%, Gullreach Strand 11 to 8%, Cinderhollow Deeps 12 to 8%,
+The biggest moves per realm (careful HP lost, before to after): Mirefen Marsh 8 to 5%, Gullreach Strand 11 to 8%, Kilnscar Depths 12 to 8%,
 Glacier Teeth 22 to 14%. Realms with few dual types (Verdane, Thistlewold, Willowmere) are unchanged. Stage 1 stays gentle; no retune needed.
 
 Also re-run (no expected change, the numbers move only by sim noise since battle seeds are random):

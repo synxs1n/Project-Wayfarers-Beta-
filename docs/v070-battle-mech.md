@@ -51,11 +51,11 @@ do not. Bosses are never given a role; they get the Cataclysm (below). The role 
 
 | role | foes | what it does | the mistake it punishes |
 | --- | --- | --- | --- |
-| Shieldbearer (`guard`) | Shellguard, Icebound Knight, Husk Watcher (+ Crownshell, Quarry Knight, Drowned Watcher, Ashen Husk) | 2 shield pips. While they hold, its allies take 40% less from heroes ("Covered") | hitting the others before you break its shield (weak hits, reactions) |
-| Hexer (`hex`) | Ash Wraith, Eclipse Wraith, Rime Wight, Gale Phantom (+ Starless Wraith) | every other turn, a Hex on the hero with the most stacks (-8% damage per stack). At 3 stacks the next Hex bursts for 30% of max HP | not cleansing (a cleanse, a Remedy, or stepping back clears it) |
+| Shieldbearer (`guard`) | Shellguard, Icebound Knight, Husk Watcher (+ Crownshell, Quarry Knight, Drowned Watcher, Charred Husk) | 2 shield pips. While they hold, its allies take 40% less from heroes ("Covered") | hitting the others before you break its shield (weak hits, reactions) |
+| Hexer (`hex`) | Ash Wraith, Eclipse Wraith, Rime Wight, Gale Phantom (+ Lightless Wraith) | every other turn, a Hex on the hero with the most stacks (-8% damage per stack). At 3 stacks the next Hex bursts for 30% of max HP | not cleansing (a cleanse, a Remedy, or stepping back clears it) |
 | Charger (`charge`) | Barrow Bones, Frostling Yeti, Slag Golem, Skyshaper, Drowned Sailor (+ Dune Golem, Sky Shard) | every 3rd turn it winds up at the weakest hero ("Winding up" icon). On its next turn it hits that slot for 2.6x | not guarding (Guard halves it). A stun or stripping its boons stops it, and swapping a tank into the slot works too |
-| Leech (`leech`) | Brine Jelly, Void Spawn, Cave Bat (+ Ember Bat, Ash Spawn) | every other turn, Siphon on each Vanguard hero who is not guarding (0.6x), healing 7% of its max HP per hero hit | a crowded, unguarded Vanguard and leaving it alive |
-| Skirmisher (`flank`) | Frost Wolf, Thunder Hawk, Star Eater, Glass Gull (+ Rime Stalker, Sun Hawk, Moor Gull, Cinder Eater) | once the same three heroes have stood in the Vanguard for 6 party actions, it hits the weakest for 1.9x every turn | never changing the Vanguard (any swap resets the count) |
+| Leech (`leech`) | Tide Jelly, Void Spawn, Cave Bat (+ Kiln Bat, Soot Spawn) | every other turn, Siphon on each Vanguard hero who is not guarding (0.6x), healing 7% of its max HP per hero hit | a crowded, unguarded Vanguard and leaving it alive |
+| Skirmisher (`flank`) | Frost Wolf, Thunder Hawk, Star Eater, Glass Gull (+ Rime Stalker, Sun Hawk, Moor Tern, Cinder Eater) | once the same three heroes have stood in the Vanguard for 6 party actions, it hits the weakest for 1.9x every turn | never changing the Vanguard (any swap resets the count) |
 | boss (`boss`) | every Scourge and Calamity | every 4th turn it gathers power (that turn is spent). On its next turn, a Cataclysm (3.0x) hits the whole Vanguard | not guarding. Guard halves it for each hero who guards. A Break (reeling) loses it |
 
 The first realm has only one role, the Charger (Barrow Bones), which teaches Guard.

@@ -23,6 +23,7 @@ function scanLights(m){
     else if(c==='N'&&m.kind==='field'&&G.cleared[m.s])m.tl.push([x*TS+8,y*TS-4,18,'cyan']);}
 }
 function rebuildBase(){if(!WS.m)return;WS.base=[buildMapCanvas(WS.m,0),buildMapCanvas(WS.m,1)];scanLights(WS.m);}
+rebuildBase=HOOK.def('rebuildBase',rebuildBase);// v0.21.x: world16.js repaints only a chest's own tiles when it opens
 function enterVia(to){
   const m=getMap(to.m);
   if(to.g&&m.gates&&m.gates[to.g]){ // v0.4.0 5.2: connected world, arrive at the matching gate

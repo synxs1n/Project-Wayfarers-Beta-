@@ -107,7 +107,7 @@ const MASK=`(fam,kind,w,h,theme)=>{const T=__A.TW.get('T14'),TS=16,db=__A.TW.get
         const e=me(m),R=e?re(m,e,true,true):null,steps=m.bld.filter(b=>b.door);out.doors+=steps.length;steps.forEach(b=>{const x=b.door[0],y=b.door[1]+1;if(!(R&&R[y]&&R[y][x]))out.gates.push(tag+' door '+b.k);});
         const kinds=new Set(m.bld.map(b=>b.k));['inn','tavern','smithy','workshop','guild'].forEach(q=>{if(!kinds.has(q))out.kinds.push(tag+' no '+q);});
         // gates: an exit on the west and east edge, the gate records' arrival tiles open and reached
-        const W=m.t[0].length,ex=m.exits||[];if(!ex.some(q=>q.x===W-1||q.y===0||q.y===m.t.length-1))out.gates.push(tag+' no way on');
+        const W=m.t[0].length,ex=m.exits||[];if(!ex.some(q=>q.x===W-1||q.y===0||q.y===m.t.length-1||(q.x===0&&q.to&&q.to.m==='f'+s)))out.gates.push(tag+' no way on');/* v0.21.x: the way on can be the west gate (plan revision 3, world16.js) */
         Object.entries(m.gates||{}).forEach(([n,g])=>{if(!g||!g.arrive)return;const [x,y]=g.arrive;if(A.SOLID.includes(m.t[y][x])||!(R&&R[y]&&R[y][x]))out.gates.push(tag+' gate '+n+' '+x+','+y);});
         const L=LM[Z.town];if(L){out.lm.n++;if(m.lm){const en=A.TW.get('lmEntries')(m)[0],cx=m.lm.x+1,Wm=m.w,Hm=m.h,cl=Math.max(0,Math.min(Wm-26,en.x+.5-13)),ct=Math.max(0,Math.min(Hm-10,en.y+.5-5)),ov=Math.max(0,cl-(cx-1.75))+Math.max(0,(cx+1.75)-(cl+26))+Math.max(0,ct-(m.lm.y+2-5.6))+Math.max(0,(m.lm.y+2)-(ct+10));if(ov===0)out.lm.fit++;}else out.lm.none.push(tag);}
         if(m.bld.some(b=>b.x<1||b.y<1||b.x+b.w>W-1||b.y+b.h>m.t.length-1))out.kinds.push(tag+' building out of bounds');}}

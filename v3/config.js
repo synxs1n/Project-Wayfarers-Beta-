@@ -368,7 +368,7 @@ const SK12={cap:12,dualUlt:false,legendsKeepUlt:true,
     archer:['galebar','r_cripple','r_flare'],monk:['r_harmony','tempkick','iron'],bard:['r_storm','secondwind','rondo','r_ballad']},
   // arts: the dual art of a physical class (physCls) is a martial move that still names its two elements: "{word a} and {word b} {noun}". The noun is
   // picked from the kind of art (all foes, one foe, the vanguard) by the pair; casters keep the spell names in COMBO (skills.js).
-  arts:{w:{fire:'Cinder',water:'Tide',earth:'Loam',wind:'Gale',lightning:'Thunder',ice:'Frost',light:'Dawn',shadow:'Dusk'},
+  arts:{w:{fire:'Blaze',water:'Tide',earth:'Loam',wind:'Gale',lightning:'Thunder',ice:'Frost',light:'Dawn',shadow:'Dusk'},
     n:{warrior:{all:['Sweep','Reaping'],one:['Hammerfall','Breaker'],ally:['Banner','Stand']},knight:{all:['Sweep','Rampart'],one:['Slam','Charge'],ally:['Bastion','Wall Stance']},
       thief:{all:['Knife Storm','Dance'],one:['Backstab','Cut'],ally:['Veil','Hush']},archer:{all:['Arrowfall','Downpour'],one:['Longshot','Deadeye'],ally:['Cover']},
       monk:{all:['Whirlwind','Spin Kick'],one:['Rush','Dragon Palm'],ally:['Stance','Breath']},sniper:{all:['Gallop','Stampede'],one:['Riding Shot','Longshot'],ally:['Cover']},

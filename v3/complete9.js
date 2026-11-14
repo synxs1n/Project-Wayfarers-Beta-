@@ -32,7 +32,7 @@ function vRealms(){try{if(!G||G.daily)return '';const rows=[];
     rows.push(`<div class="row ${P.d===P.n?'up':''}"><div class="grow"><b>Realm ${s+1}: ${esc(Z.n)}</b><small>${bits}</small></div><span class="m nums">${P.d===P.n?'100% ✓':`${P.d} of ${P.n}`}</span></div>`);}
   return `<h4>Realms</h4><div class="rows compact">${rows.join('')}</div>`;}catch(e){return '';}}
 HOOK.xform('vJourney','complete9','Realms section',function(h){try{const sec=vRealms(),k=h.indexOf('<h4>Progress</h4>');if(sec)h=k>=0?h.slice(0,k)+sec+h.slice(k):h+sec;}catch(e){}return h;});
-// v0.11.4: the first visit to a special place tags its name with what it is: "Den: Mossback Hollow", "Sanctum: ...", "Lair: ...".
+// v0.11.4: the first visit to a special place tags its name with what it is: "Den: Mossback Burrow", "Sanctum: ...", "Lair: ...".
 // Later visits show the plain name. G.siteTag remembers which have been tagged (optional field, journey bound).
 function siteKind(m){if(!m)return '';if(m.cave&&m.fort)return 'Sanctum';if(m.cave)return 'Den';if(m.kind==='dungeon'&&!m.archive&&!m.sanctum)return 'Lair';return '';}
 HOOK.after('showLocation','complete9','site kind in the location name',function(){try{const m=WS.m,k=siteKind(m);if(k&&G&&!G.daily){G.siteTag=G.siteTag||{};

@@ -1,10 +1,10 @@
 // realms14 (v184a.js has the new roster): the roster is 16 Scourges and 4 Calamities (16 + 4 Echoes and gates). This file now covers the four 0.13.7 / 0.14.x
-// Scourges that stayed (Candleking Moth, Brinehag Matriarch, Crow Regent, Geyser Matron). The Locust Choir, Ironmaw Tortoise, Hollow Shepherd, Pale Weaver and
+// Scourges that stayed (Emperor Candlemoth, Brinehag Matriarch, Crow Regent, Geyser Matron). The Locust Choir, Ironmaw Tortoise, Hollow Shepherd, Pale Weaver and
 // the Hollow Sun were removed, and the Ashglass Reach became the salt-flat Scourge realm of the Geyser Matron (Brineglass Flats), so the old checks of those
 // five bosses and of the Ashglass Reach as a Calamity realm were changed or dropped (each line below says so).
 // v0.14.x: four more Scourges (The Hollow Shepherd, The Pale Weaver, The Crow Regent, The Geyser Matron: bosses10.js) made 20 Scourges and 5 Calamities,
 // 25 bosses, 25 Echoes and 25 Sanctum gates; they are covered here like the first four.
-// v0.13.7: four new Scourges (The Locust Choir, Ironmaw Tortoise, Candleking Moth, Brinehag Matriarch), the fifth Calamity (The Hollow Sun)
+// v0.13.7: four new Scourges (The Locust Choir, Ironmaw Tortoise, Emperor Candlemoth, Brinehag Matriarch), the fifth Calamity (The Hollow Sun)
 // and its realm (The Ashglass Reach). Data and sprites (foes.js, art3.js, realmdata.js, bosstheme.js, lore9.js), wiring (bosses9.js), the
 // Sanctum's two rows of gates (sanctum.js) and the Riftkeeper's count of every Echo (riftkeeper9.js, dynamic through echoKeys()).
 // Usage: PWHTML=../../out/aurelis3.html node v138a.js
@@ -65,7 +65,7 @@ r=await ev(()=>{const A=__A,T=A.TW.get,R=T('REALMS'),std=R.filter(x=>x.std),n=R.
   return o;});
 console.log(JSON.stringify(r).slice(0,900));
 chk('The Ashglass Reach (Brineglass Flats) is a standard realm with every field of the others, in REALM_STD (16) and no longer in REALM_CAL (4 left)',r.cals&&r.cals.length===4&&!r.cals.includes('ashglass')&&!r.missing.length&&r.inStd&&!r.inCal&&r.nStd===16&&r.inZones&&r.wx||JSON.stringify(r));
-chk('its town, dungeon, material, theme, elements, 3 townsfolk lines, 2 quests, pool of 5 known foes, intro and win text, the Geyser Matron',r.facts&&r.facts[0]==='Brineglass Flats'&&r.facts[1]==='Saltwick'&&r.facts[2]==='The Glass Cathedral'&&r.facts[3]==='dust'&&r.facts[6]===3&&r.facts[7]===2&&r.facts[8]===5&&r.facts[10]==='geysermatron'&&!r.pool.length&&r.intro&&r.mat&&r.theme&&r.quest||JSON.stringify(r));
+chk('its town, dungeon, material, theme, elements, 3 townsfolk lines, 2 quests, pool of 5 known foes, intro and win text, the Geyser Matron',r.facts&&r.facts[0]==='Brineglass Flats'&&r.facts[1]==='Glarepan'&&r.facts[2]==='The Mirror Cathedral'&&r.facts[3]==='dust'&&r.facts[6]===3&&r.facts[7]===2&&r.facts[8]===5&&r.facts[10]==='geysermatron'&&!r.pool.length&&r.intro&&r.mat&&r.theme&&r.quest||JSON.stringify(r));
 chk('a Lore entry (history, customs, folk) and a dungeon and ground look exist for it; 16 standard realms',r.lore&&r.lore.hist&&r.lore.custom&&r.lore.folk&&r.looks&&r.stdN===16||JSON.stringify(r));
 
 // ---- 4. new journeys draw the new realm and bosses ----
@@ -94,7 +94,7 @@ chk('Scourge-count gates still reachable (Arena tiers need at most 5 cleared) an
 // ---- 6. the Realms tracker, Lore book, Bestiary ----
 r=await ev(([NEW])=>{const A=__A,T=A.TW.get,G=A.G,o={},run0=JSON.parse(JSON.stringify(G.run)),st0=G.stage;
   const idx=T('REALMS').find(x=>x.key==='ashglass').idx;const ashen=T('REALMS').find(x=>x.key==='ashen').idx;G.run=Object.assign({},run0,{order:[0,1,2,idx,ashen],bosses:['thornwarden','drake','candlemoth','geysermatron'],final:'dimmer',rv:2});G.stage=4;G.visited=[0,1,2,3,4];
-  try{T('syncPools')();const lore=T('vLoreBook')();o.lore=/Brineglass Flats/.test(lore)&&/Saltwick/.test(lore)&&/Glass Cathedral/.test(lore)&&/boil/i.test(lore);
+  try{T('syncPools')();const lore=T('vLoreBook')();o.lore=/Brineglass Flats/.test(lore)&&/Glarepan/.test(lore)&&/Mirror Cathedral/.test(lore)&&/boil/i.test(lore);
     const rl=T('vRealms')();o.realms=/Brineglass Flats/.test(rl);o.names=[0,1,2,3,4].map(s=>T('guardianDef')(T('bossKeyFor')(s)).n).join('|');
     const ba=T('bestAll')(),ks=ba.map(x=>x.k);o.best=NEW.every(k=>ks.includes(k)&&ks.includes('echo_'+k));o.ov=NEW.every(k=>ks.includes(T('BOV')[k].mon[0]));
     const m=T('mBeast')({k:'geysermatron'});o.beast=typeof m==='string'&&/Geyser Matron/.test(m);
@@ -156,5 +156,5 @@ r=await ev(()=>{const A=__A,T=A.TW.get,G=A.G,o={err:[],maps:[]},idx=T('REALMS').
   return o;});
 await wait(400);
 console.log(JSON.stringify(r));
-chk('The Brineglass Flats (Ashglass Reach) town, field, dungeon and caves build and draw (the salt flat look, Saltwick, its boss overlay)',!r.err.length&&r.maps.length>=3&&r.zone==='Saltwick'&&r.boss==='The Geyser Matron'||JSON.stringify(r));
+chk('The Brineglass Flats (Ashglass Reach) town, field, dungeon and caves build and draw (the salt flat look, Glarepan, its boss overlay)',!r.err.length&&r.maps.length>=3&&r.zone==='Glarepan'&&r.boss==='The Geyser Matron'||JSON.stringify(r));
 await done(H);})();

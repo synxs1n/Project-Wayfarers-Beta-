@@ -80,9 +80,11 @@ const REALM=`([key,kind])=>{const A=__A,G=A.G,zi=Object.fromEntries(A.ZONES.map(
     chk(`150 fields: the roamers keep their number (${f1.roamers} against ${f0.roamers}, ${f1.gone} dropped)`,f1.roamers===f0.roamers&&f1.gone<=Math.ceil(f0.roamBad*.2));
     chk('150 main dungeons: none off the walk, fix on or off: '+(d1.roamBad+d1.nodeBad+d1.chestBad)+' / '+(d0.roamBad+d0.nodeBad+d0.chestBad),d1.maps>=150&&d1.roamBad===0&&d1.nodeBad===0&&d1.chestBad===0&&d1.err===0);
     // the audit and mapIssues report a roamer planted on an island
-    const P=await ev(()=>{const A=__A,G=A.G,W=window.__W14;G.run.order[1]=A.ZONES.findIndex(z=>z.key==='peaks');A.resetMaps();const m=A.getMap('f1');A.TW.get('roamSpawn')(m);const R=W.api.reach(m);let isl=null;
-      for(let y=3;y<m.h-3&&!isl;y++)for(let x=3;x<m.w-3&&!isl;x++){if(R[y][x]||m.t[y][x]!=='.'&&m.t[y][x]!==',')continue;let all=true;for(let j=-1;j<=1&&all;j++)for(let i=-1;i<=1&&all;i++){const c=m.t[y+j][x+i];if(c!=='.'&&c!==','&&c!=='f')all=false;}if(all)isl=[x,y];}
-      if(!isl)return {none:1};const r=m.roam[0];const from=[r.x,r.y,r.hx,r.hy];r.x=r.hx=isl[0];r.y=r.hy=isl[1];
+    const P=await ev(()=>{const A=__A,G=A.G,W=window.__W14;G.run.order[1]=A.ZONES.findIndex(z=>z.key==='peaks');let m=null,R=null,isl=null;const seed0=G.run.seed;
+      // v0.21.x: the journey's plan (world16.js, revision 3) turns this field another way, so the island is looked for over a few journeys
+      for(let q=0;q<40&&!isl;q++){G.run.seed=seed0+q*101;A.resetMaps();m=A.getMap('f1');A.TW.get('roamSpawn')(m);R=W.api.reach(m);if(!m.roam||!m.roam.length)continue;
+      for(let y=3;y<m.h-3&&!isl;y++)for(let x=3;x<m.w-3&&!isl;x++){if(R[y][x]||m.t[y][x]!=='.'&&m.t[y][x]!==',')continue;let all=true;for(let j=-1;j<=1&&all;j++)for(let i=-1;i<=1&&all;i++){const c=m.t[y+j][x+i];if(c!=='.'&&c!==','&&c!=='f')all=false;}if(all)isl=[x,y];}}
+      if(!isl){G.run.seed=seed0;return {none:1};}const r=m.roam[0];const from=[r.x,r.y,r.hx,r.hy];r.x=r.hx=isl[0];r.y=r.hy=isl[1];
       const au=A.TW.get('drawAudit')(m),mi=A.TW.get('mapIssues')(m,{actors:true}),mi0=A.TW.get('mapIssues')(m);return {isl,unreach:au.unreach.roam.length,mi:mi.filter(q=>q.why==='roamer unreachable').length,mi0:mi0.length};});
     chk('a roamer planted on an island: drawAudit.unreach.roam '+P.unreach+', mapIssues(m,{actors:true}) '+P.mi+', plain mapIssues '+P.mi0,P.unreach===1&&P.mi===1&&P.mi0===0||JSON.stringify(P));
     const W2=await ev(()=>window.__W14.err.slice());chk('no module error '+JSON.stringify(W2),!W2.length);chk('no page errors '+JSON.stringify(H.errs),!H.errs.length);await H.browser.close();}

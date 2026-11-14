@@ -32,7 +32,7 @@ const SHP={
  moonfang(g,F,a,p){p.Y='#fff0a0';g.ell(a.hx+1.5,a.hy-8,3.4,3.4,'Y');g.ell(a.hx+3.2,a.hy-8.8,2.7,2.7,0);g.rect(Math.round(a.hx+7),Math.round(a.hy+4),1,3,'W');},
  // Hoarfang Wolf: curled ram horns
  ramhorns(g,F,a,p){p.H='#f0e8d4';p.h='#a89c84';g.ell(a.hx-5.5,a.hy-6,3.6,3.6,'h');g.ell(a.hx-6,a.hy-6.4,2.2,2.2,0);g.ell(a.hx-6.4,a.hy-7,1.2,1.2,'H');g.rect(Math.round(a.hx-4),Math.round(a.hy-4),3,2,'h');g.px([[a.hx-8,a.hy-8],[a.hx-7,a.hy-9]],'H');},
- // Frostmother: icicle antlers and an icicle beard
+ // Snowmother: icicle antlers and an icicle beard
  antlers(g,F,a,p){g.path([[a.hx,a.hy-5],[a.hx-1,a.hy-11],[a.hx+1,a.hy-16]],'C',2);g.path([[a.hx-1,a.hy-11],[a.hx-5,a.hy-13]],'C',1.5);g.path([[a.hx,a.hy-8],[a.hx+4,a.hy-11]],'C',1.5);g.path([[a.hx+1,a.hy-14],[a.hx+4,a.hy-16]],'c',1);
   [[0,7],[2,8],[4,7]].forEach(([x,y])=>g.poly([[a.hx+x-1,a.hy+y-3],[a.hx+x+1.4,a.hy+y-3],[a.hx+x+.2,a.hy+y+3]],'C'));},
  // Bog Toad: cattail reeds growing from the back
@@ -43,21 +43,21 @@ const SHP={
  lilycrown(g,F,a,p){p.P='#f08ab8';p.G='#f0c050';[-4,-2,0,2,4].forEach((o,n)=>{const x=a.hx-1.5+o,y=a.hy-10-(n%2?0:1);g.poly([[x-1.5,y+3.2],[x+.2,y-2],[x+1.8,y+3.2]],'P');});g.rect(Math.round(a.hx-4),Math.round(a.hy-8),5,1,'G');g.s(Math.round(a.hx-2),Math.round(a.hy-12),'G');},
  // Reed Crawler: reeds standing on the shell
  reedback(g,F,a,p){p.S='#6a9a3a';p.q='#6a4a2a';[[-8,9],[-5,12],[-2,8]].forEach(([dx,h])=>{const x=Math.round(a.bx+dx),y=Math.round(a.by-4);g.line(x,y,x+(h>10?-1:0),y-h,'S');g.poly([[x,y-4],[x+4,y-9],[x+1,y-4]],'S');if(h>10)g.ell(x-.5,y-h-1,1.2,2.4,'q');});},
- // Stormtide Crawler: a tall dorsal fin with a lightning mark
+ // Surge Crawler: a tall dorsal fin with a lightning mark
  tidefin(g,F,a,p){p.F='#4aa8ff';p.f='#2a6ab8';p.Y='#ffe14a';g.poly([[a.bx-9,a.by-4],[a.bx-7,a.by-12],[a.bx-4,a.by-6],[a.bx-2,a.by-14],[a.bx+1,a.by-6]],'f');g.poly([[a.bx-8,a.by-4],[a.bx-7,a.by-10],[a.bx-4.5,a.by-5.5]],'F');g.px([[a.bx-3,a.by-11],[a.bx-2,a.by-9],[a.bx-3,a.by-8]],'Y');},
- // Brine Hag: seaweed hair and barnacles
+ // Kelp Hag: seaweed hair and barnacles
  seaweed(g,F,a,p){p.S='#2f7a5a';p.s='#1f5a40';g.path([[a.bx-3,a.by-5],[a.bx-8,a.by-9],[a.bx-12,a.by-5],[a.bx-13,a.by+1]],'S',2);g.path([[a.bx,a.by-5],[a.bx-4,a.by-11],[a.bx-9,a.by-11]],'s',1.6);g.px([[a.bx-6,a.by-2],[a.bx-2,a.by-1],[a.bx+3,a.by-3]],'W');},
  // Crownshell: a coral crown over the shell
  coralcrown(g,F,a,p){p.P='#f08a7a';p.p='#b8584c';p.G='#f0c050';[-9,-5,-1,3,7].forEach((o,n)=>{const x=a.cx+o,top=a.cy-10.8*Math.sqrt(1-Math.min(1,(o/13.5)**2)),h=[5,8,6,9,6][n];g.poly([[x-2,top+2.5],[x,top-h],[x+2,top+2.5]],'p');g.poly([[x-1.4,top+2.5],[x-.4,top-h+1],[x+.6,top+2.5]],'P');});g.ell(a.cx-1,a.cy-12.5,1.8,1.8,'W');},
- // Old Shellking: two curved tusks
+ // Old Shellgrim: two curved tusks
  tusks(g,F,a,p){p.T='#f2ecd6';p.t='#b8b098';g.poly([[a.hx+2.5,a.hy+2.5],[a.hx+9,a.hy-4.5],[a.hx+6.5,a.hy+4.5]],'T');g.poly([[a.hx+3,a.hy+3.2],[a.hx+8,a.hy-3],[a.hx+6,a.hy+3.6]],'t');g.poly([[a.hx-1,a.hy+3],[a.hx+2,a.hy-3],[a.hx+3,a.hy+3.5]],'T');},
  // Glowcap Slime: glowing mushroom caps instead of a crater
  glowcaps(g,F,a,p){p.U='#8affd8';p.u='#3ab898';[[-5,1.5,4],[3,-1,3.2],[9,4,2.2]].forEach(([dx,dy,r])=>{const x=a.cx+dx,y=a.ty+dy;g.rect(Math.round(x),Math.round(y-2),2,3,'W');g.ell(x+1,y-3,r,r*.7,'u');g.ell(x+.4,y-3.6,r*.75,r*.5,'U');g.px([[x-1,y-3],[x+2,y-4]],'W');});},
- // Sunscorch Ooze: rays all round the crown
+ // Scorchsand Ooze: rays all round the crown
  sunflare(g,F,a,p){p.Y='#ffe08a';p.C='#ffb040';for(let k=0;k<7;k++){const t=-2.75+k*.4,x=a.cx+Math.cos(t)*(a.w+.5),y=a.cy+Math.sin(t)*(a.h+.5),ox=Math.cos(t),oy=Math.sin(t);g.poly([[x-oy*1.3,y+ox*1.3],[x+ox*5.5,y+oy*5.5],[x+oy*1.3,y-ox*1.3]],k%2?'C':'Y');}},
  // Thornbound Creeper: thorn spikes round the dome
  thorns(g,F,a,p){p.q='#3a2a1a';p.k='#c8a860';for(let k=0;k<6;k++){const t=-2.7+k*.45,x=a.x+Math.cos(t)*(a.w-1),y=a.y+Math.sin(t)*(a.h-1),ox=Math.cos(t),oy=Math.sin(t);g.poly([[x-oy*1.4,y+ox*1.4],[x+ox*5.5,y+oy*5.5],[x+oy*1.4,y-ox*1.4]],'q');g.s(Math.round(x+ox*4.6),Math.round(y+oy*4.6),'k');}},
- // Rootmother: roots creeping out at the feet and a branch crown
+ // Tanglemother: roots creeping out at the feet and a branch crown
  roots(g,F,a,p){p.q='#5a3a22';p.S='#3f7f32';g.path([[a.x-6,35],[a.x-12,36.5],[a.x-16,35]],'q',2.2);g.path([[a.x+6,35],[a.x+12,36.5],[a.x+16,35]],'q',2.2);g.path([[a.x-3,36],[a.x-5,38]],'q',1.5);
   g.path([[a.sx-1,a.sy],[a.sx-5,a.sy-7],[a.sx-7,a.sy-8]],'q',1.6);g.path([[a.sx+1,a.sy],[a.sx+5,a.sy-6],[a.sx+7,a.sy-8]],'q',1.6);g.px([[a.sx-7,a.sy-9],[a.sx+7,a.sy-9]],'S');},
  // Mantis Brood: two small scythes on the front of the ring
@@ -67,7 +67,7 @@ const SHAPE_OF={o_thornwarden:'thorns',mb_rootmother:'roots',o_drake:'tidefin',m
   o_hoarwyrm:'ramhorns',mb_frostmother:'antlers',n_frostwolf:'moonfang',o_gloomcap:'capback',mb_mirequeen:'lilycrown',mb_shellking:'tusks',mb_sunscorch:'sunflare',o_queenmantis:'blades'};
 // ---- family 2 flourishes (gull, thunder hawk, cave bat, cloud ray, tide wisp, ash and eclipse wraith). Appended: the table above is unchanged.
 Object.assign(SHP,{
- // Moor Gull: a dark hood and mantle, long tail streamers
+ // Moor Tern: a dark hood and mantle, long tail streamers
  gullcowl(g,F,a,p){p.Q='#34343f';p.q='#4c4c5c';g.ell(a.hx-1,a.hy-4.7,4.6,2.2,'Q');g.poly([[a.hx-4,a.hy+1],[a.hx-10,a.hy+6],[a.hx-6,a.hy+9],[a.hx-2,a.hy+5]],'q');
   g.path([[a.tx+1,a.ty],[a.tx-3,a.ty+4]],'Q');g.path([[a.tx+3,a.ty+1],[a.tx,a.ty+6]],'q');},
  // Moonglass Gull: a crescent moon above the head and two long crest plumes
@@ -81,19 +81,19 @@ Object.assign(SHP,{
  // Sun Hawk: a halo of flame plumes behind the head and a burning tail
  sunplume(g,F,a,p){p.Y='#ffd060';p.O='#ff8a3a';for(let k=0;k<6;k++){const t=-3.0+k*.5,x=a.hx+Math.cos(t)*5.2,y=a.hy-1+Math.sin(t)*5.2,ox=Math.cos(t),oy=Math.sin(t);g.poly([[x-oy*1.5,y+ox*1.5],[x+ox*(5+(k%2)*2),y+oy*(5+(k%2)*2)],[x+oy*1.5,y-ox*1.5]],k%2?'O':'Y');}
   g.px([[a.tx-1,a.ty-1],[a.tx-2,a.ty+1],[a.tx,a.ty+3]],'Y');},
- // Nightstorm Hawk: two long swept brow blades and a lightning mark on the chest
+ // Nightbolt Hawk: two long swept brow blades and a lightning mark on the chest
  stormbrow(g,F,a,p){p.Y='#ffe14a';g.poly([[a.hx-1,a.hy-4],[a.hx-12,a.hy-9],[a.hx-1.6,a.hy-1.4]],'b');g.path([[a.hx-1,a.hy-3.4],[a.hx-9,a.hy-7]],'M',1);
   g.path([[a.bx+4,a.by-2],[a.bx+1.5,a.by+1],[a.bx+4,a.by+1.5],[a.bx+1,a.by+5]],'Y',1.5);},
- // Stormcrown Matriarch: a floating crown of lightning prongs
+ // Old Thunderwing: a floating crown of lightning prongs
  lightcrown(g,F,a,p){p.Y='#ffe14a';p.y='#c8a020';const y=a.hy-13;g.ell(a.hx-1,y,5.6,1.5,'y');g.ell(a.hx-1,y-.6,4.6,.9,'Y');
   [-4,-2,0,2,4].forEach((o,n)=>{const x=a.hx-1+o,h=n%2?3:5;g.poly([[x-1,y-.5],[x+(n%2?-.6:.6),y-h],[x+1,y-.5]],'Y');g.s(Math.round(x),Math.round(y-h-1),'W');});},
- // Ember Bat: curled ram horns and flames on the wing tips
+ // Kiln Bat: curled ram horns and flames on the wing tips
  emberhorns(g,F,a,p){p.H='#4a3028';p.F='#ff8a3a';p.Y='#ffe08a';[-1,1].forEach(s=>{const x=20+s*5.6,y=a.hy-1;g.ell(x+s*1.5,y-.5,3.4,3.6,'H');g.ell(x+s*1.1,y-.8,1.8,2,0);g.px([[x+s*4,y+2]],'Y');
    const tx=20+s*(18+a.sp),ty=15+a.wy*1.1;g.poly([[tx-1.5,ty],[tx+(F.i?.6:-.6),ty-6],[tx+1.5,ty]],'F');g.poly([[tx-.6,ty],[tx,ty-3.2],[tx+.8,ty]],'Y');});},
  // Gloombat: long pointed ears and a pale fur ruff
  furruff(g,F,a,p){p.U='#cfc8e6';g.poly([[14.5,a.hy-10],[13.6,a.hy-17],[16.4,a.hy-10.5]],'B');g.poly([[25.5,a.hy-10],[26.4,a.hy-17],[23.6,a.hy-10.5]],'b');
   for(let k=-3;k<=3;k++)g.poly([[20+k*2.4-1.2,a.hy+3.4],[20+k*2.4+.2,a.hy+6.5+(k%2?2.5:0)],[20+k*2.4+1.2,a.hy+3.4]],'U');},
- // Cinderwing Elder: a jagged ash crest and an ember lantern hanging from its feet
+ // Sootwing Elder: a jagged ash crest and an ember lantern hanging from its feet
  emberlantern(g,F,a,p){p.N='#8a7a6a';p.L='#ffb040';p.Y='#ffe08a';p.G='#d8b050';
   for(let k=-2;k<=2;k++)g.poly([[20+k*2-1,a.hy-4.4],[20+k*2+(k?k*.3:0),a.hy-9-(2-Math.abs(k))],[20+k*2+1,a.hy-4.4]],'G');
   g.line(20,a.by+7,20,a.by+9,'N');g.rect(18,a.by+9,5,5,'N');g.rect(19,a.by+10,3,3,'L');g.s(20,a.by+11,'Y');},
@@ -114,18 +114,18 @@ Object.assign(SHP,{
  sirencrown(g,F,a,p){p.P='#f08a7a';p.p='#b8584c';p.H='#2f7a9a';p.h='#1f5a7a';
   [-1,1].forEach(s=>{tend(g,a.cx+s*10,a.by-1,19,3.2,F.i?3:0,'H',2,s*3);tend(g,a.cx+s*7,a.by,17,2.6,F.i?3.4:.4,'h',1,s*2);});
   [-6,-3,0,3,6].forEach((o,n)=>{const x=a.cx+o,top=a.cy-a.ry*Math.sqrt(Math.max(0,1-(o/a.rx)**2)),h=[4,6,8,6,4][n];g.poly([[x-1.8,top+2],[x,top-h],[x+1.8,top+2]],n%2?'P':'p');});},
- // Glass Widow: eight jointed glass legs round the bell and a red hourglass mark
+ // Mirror Widow: eight jointed glass legs round the bell and a red hourglass mark
  widowlegs(g,F,a,p){p.Z='#e8fbff';p.z='#9ac8d8';p.R='#e0304a';
   [-1,1].forEach(s=>[[-9,2,7,3],[-11,6,13,2],[-8,10,11,8],[-6,14,8,12]].forEach(([dx,dy,ex,ey],n)=>{const x0=a.cx+s*(a.rx-3-n*.6),y0=a.by-3+n*1.2+(F.i&&n%2?1:0);g.path([[x0,y0],[x0+s*(5+n),y0-2+n],[x0+s*(8+n*2),y0+8+n*2]],n%2?'z':'Z',1);}));
   g.poly([[a.cx-2,a.cy-6],[a.cx+3,a.cy-6],[a.cx+.5,a.cy-3.5]],'R');g.poly([[a.cx-2,a.cy-1],[a.cx+3,a.cy-1],[a.cx+.5,a.cy-3.5]],'R');},
- // Cinder Shade: two curved bone horns on the hood
+ // Soot Shade: two curved bone horns on the hood
  ashhorns(g,F,a,p){p.H='#d8cfc0';p.h='#8a8070';[-1,1].forEach(s=>{const x=a.hx+s*4;g.poly([[x-s*1,a.hy-4.4],[x+s*5,a.hy-9.5],[x+s*7,a.hy-6.5],[x+s*3.4,a.hy-4]],s<0?'H':'h');g.px([[x+s*6,a.hy-8]],'H');});},
  // Nidhra: a crown of bone spikes round the hood and ribs under the ember
  bonecrown(g,F,a,p){p.H='#e8e0cc';p.h='#8a8070';for(let k=0;k<5;k++){const t=-2.7+k*.55,x=a.hx+Math.cos(t)*6.2,y=a.hy+.5+Math.sin(t)*6.4,ox=Math.cos(t),oy=Math.sin(t);g.poly([[x-oy*1.4,y+ox*1.4],[x+ox*4.5,y+oy*4.5],[x+oy*1.4,y-ox*1.4]],k<2?'H':'h');}
   [0,1,2].forEach(n=>g.line(a.cx-4+n*.4,29+n*2,a.cx+4-n*.4,29+n*2,n?'h':'H'));},
  // The Bell Wraith: a great bronze bell hangs from the staff instead of the lantern
  bellprop(g,F,a,p){p.Z='#d0a850';p.z='#7a5a22';clr(g,a.lx-1,a.ly-2,8,9);g.line(a.lx+2,a.ly-2,a.lx+2,a.ly,'z');g.ell(a.lx+2,a.ly+3,3.4,3.2,'Z');g.rect(a.lx-1,a.ly+5,6,2,'Z');g.rect(a.lx-1,a.ly+6,6,1,'z');g.rect(a.lx+2,a.ly+7,1,2,'z');g.px([[a.lx+1,a.ly+2]],'W');},
- // Starless Wraith: the halo is gone; a star crown on a dark band and stars on the cloak
+ // Lightless Wraith: the halo is gone; a star crown on a dark band and stars on the cloak
  starcrown(g,F,a,p){p.Y='#fff0a0';p.V='#4a3a8a';clr(g,a.hx-8,0,17,5);g.rect(a.hx-5,5+(a.top-6),10,2,'V');
   [-4,-2,0,2,4].forEach((o,n)=>{const x=a.hx+o,h=n%2?3:5;g.poly([[x-1,5+(a.top-6)],[x,5+(a.top-6)-h],[x+1,5+(a.top-6)]],'V');g.s(x,5+(a.top-6)-h-1,'Y');});
   [[14,19],[13,28],[17,31],[26,27]].forEach(([x,y])=>{g.px([[x,y],[x-1,y],[x+1,y],[x,y-1],[x,y+1]],'Y');});},
@@ -163,18 +163,18 @@ Object.assign(SHP,{
   tend(g,a.hx-9,a.sy+4,15,1.8,F.i*2,'S',2,-1);tend(g,a.hx+10,a.sy+4,12,1.6,F.i*2+1,'s',2,1);tend(g,a.hx-3,a.top+1,6,1.2,F.i*2+2,'S',2,-2);
   g.poly([[a.hx-1,a.top],[a.hx-3,a.top-3],[a.hx+1,a.top-1],[a.hx+3,a.top-3],[a.hx+3,a.top]],'S');
   [[a.hx-6,a.sy+2],[a.hx+6,a.sy+3],[a.cx-6,a.cy+6],[a.cx+7,a.cy+4],[a.cx-2,a.cy+9]].forEach(([x,y])=>{g.rect(x,y,2,2,'B');g.s(x,y,'W');});},
- // Ashen Husk: ember flames licking up from both pauldrons, glowing cracks through the plate and an ember ring round the core
+ // Charred Husk: ember flames licking up from both pauldrons, glowing cracks through the plate and an ember ring round the core
  ashfire(g,F,a,p){p.F='#ff8a3a';p.Y='#ffd060';p.A='#8a7a72';
   [[a.hx-10,a.sy+1],[a.hx+10,a.sy+1]].forEach(([x,y],n)=>{const h=F.i?7:5;g.poly([[x-2,y],[x+(n?1:-1)*(F.i?1:0),y-h-1],[x+2,y]],'F');g.poly([[x-1,y],[x,y-h+2],[x+1,y]],'Y');});
   g.path([[a.hx-3,a.top],[a.hx-2,a.top+3],[a.hx-4,a.top+5]],'F');g.path([[a.cx-9,a.cy+3],[a.cx-6,a.cy+5],[a.cx-7,a.cy+8]],'F');g.path([[a.cx+8,a.cy-3],[a.cx+6,a.cy+1],[a.cx+8,a.cy+4]],'F');g.path([[13,31],[15,33]],'F');
   g.ell(a.cx,a.cy+1,6,6.8,'F');g.ell(a.cx,a.cy+1,4.6,5.6,'K');g.ell(a.cx,a.cy+1,2.4,2.4,F.hit?'W':'Y');g.px([[a.hx-8,a.top+10],[a.hx+9,a.top+13],[a.hx+3,a.top-1]],'A');},
- // The Hollow Abbot: a pointed cowl over the helm, a rope belt with tassels and a smoking censer swinging from the belt
+ // The Silent Abbot: a pointed cowl over the helm, a rope belt with tassels and a smoking censer swinging from the belt
  abbothood(g,F,a,p){p.V='#4a3a2e';p.v='#2e241c';p.R='#a89870';p.G='#d8b050';p.Y='#ffb040';clr(g,a.hx-6,a.top,12,4);
   g.poly([[a.hx-6,a.top+4],[a.hx-4,a.top+1],[a.hx,a.top-1],[a.hx+4,a.top+1],[a.hx+6,a.top+4]],'V');g.poly([[a.hx+1,a.top],[a.hx+4,a.top+1],[a.hx+6,a.top+4],[a.hx+2,a.top+4]],'v');
   g.poly([[a.hx-11,a.sy+4],[a.hx-7,a.sy+2],[a.hx+7,a.sy+2],[a.hx+11,a.sy+4],[a.hx+12,a.sy+7],[a.hx-12,a.sy+7]],'V');
   g.rect(11+a.L/2,25,17,1,'R');g.path([[a.cx+3,26],[a.cx+4,31]],'R');g.path([[a.cx-5,26],[a.cx-6,30]],'R');
   const sw=F.i?1:0,cx=12+a.L/2+sw;g.line(cx,26,cx,31,'G');g.ell(cx,33,2.4,2.2,'G');g.s(cx,33,'Y');g.px([[cx+2,29-sw],[cx+3,27],[cx+1,25-sw]],'R');},
- // Hollow Herald: a gold crown of five spikes on the helm and a gold ring round the chest core with storm sparks
+ // Void Herald: a gold crown of five spikes on the helm and a gold ring round the chest core with storm sparks
  hollowcrown(g,F,a,p){p.Z='#f0c050';p.z='#b88a28';p.Y='#ffe14a';p.R='#e04848';clr(g,a.hx-5,a.top,11,3);
   g.rect(a.hx-5,a.top+3,11,2,'Z');g.rect(a.hx-5,a.top+4,11,1,'z');[-4,-2,0,2,4].forEach((o,n)=>{g.poly([[a.hx+o-1,a.top+3],[a.hx+o,a.top+(n%2?1:-1)],[a.hx+o+1,a.top+3]],'Z');});g.px([[a.hx-3,a.top+4],[a.hx+1,a.top+4]],'R');
   g.ell(a.cx,a.cy+1,6.6,7.2,'Z');g.ell(a.cx,a.cy+1,4.6,5.6,'K');g.ell(a.cx,a.cy+1,3,3,F.hit?'W':'E');g.s(a.cx-1,a.cy,'W');
@@ -196,7 +196,7 @@ Object.assign(SHP,{
  leafcap(g,F,a,p){p.G='#6fb04a';p.g='#3f7a32';p.Q='#d8403a';p.q='#5a3a1a';clr(g,a.hx-7,a.hy-13,14,8);
   [[-3,-8,-2],[0,-11,0],[3,-8,2]].forEach(([dx,dy,s])=>{g.poly([[a.hx+dx*.3,a.hy-5],[a.hx+dx-1.6+s*.3,a.hy+dy+2],[a.hx+dx+.5,a.hy+dy],[a.hx+dx+2,a.hy+dy+3]],'G');g.line(a.hx+dx*.3,a.hy-5,a.hx+dx,a.hy+dy+1,'g');});
   g.ell(a.ar[0]+2,a.ar[1]+1.5,2.8,2.8,'Q');g.px([[a.ar[0]+3,a.ar[1]-1],[a.ar[0]+4,a.ar[1]-2]],'q');g.s(a.ar[0]+1,a.ar[1],'W');},
- // Duskwing Imp: long sickle horns swept back and a scatter of stars
+ // Gloamwing Imp: long sickle horns swept back and a scatter of stars
  moonhorn(g,F,a,p){p.H='#e8e0f0';p.h='#8a80a8';p.Y='#fff0a0';clr(g,a.hx-7,a.hy-13,14,8);
   g.path([[a.hx-2,a.hy-4],[a.hx-5,a.hy-8],[a.hx-10,a.hy-8],[a.hx-11,a.hy-3]],'h',2);g.path([[a.hx+2,a.hy-4],[a.hx,a.hy-9],[a.hx-4,a.hy-11]],'H',2);
   g.px(F.i?[[a.hx+8,a.hy-10],[a.hx-10,a.hy-14],[a.bx+9,a.by+6]]:[[a.hx+9,a.hy-9],[a.hx-9,a.hy-15],[a.bx+10,a.by+7]],'Y');},
@@ -209,7 +209,7 @@ Object.assign(SHP,{
  galecrest(g,F,a,p){p.Y='#ffe14a';p.Z='#7a68d0';p.z='#c8bcff';
   [[-9,-11,0],[-12,-6,1],[-11,-1,0]].forEach(([dx,dy,n])=>g.poly([[a.hx-2,a.hy-4],[a.hx+dx,a.hy+dy],[a.hx+dx+1.5,a.hy+dy+2.5],[a.hx-1,a.hy-1]],n?'Z':'z'));
   bolt(g,a.tx,a.ty,7,2+(F.i?1:0),'Y',1);bolt(g,a.tx+3,a.ty-1,5,-2,'z',1);},
- // Nightfrost Harpy: a crescent moon over the brow, an icicle crown and icicles hanging from the wing tips
+ // Nightsnow Harpy: a crescent moon over the brow, an icicle crown and icicles hanging from the wing tips
  frostveil(g,F,a,p){p.Y='#fff0a0';p.C='#bfe6ff';p.c='#6aa8d8';g.ell(a.hx-2,a.hy-10,3.2,3.2,'Y');g.ell(a.hx-.6,a.hy-10.8,2.6,2.6,0);
   [[-3,5],[0,7],[3,5]].forEach(([o,h])=>g.poly([[a.hx+o-1.3,a.hy-4.4],[a.hx+o,a.hy-4.4-h*.6],[a.hx+o+1.3,a.hy-4.4]],'C'));
   [a.nT,a.fT].forEach(t=>{g.poly([[t[0]-1,t[1]+1],[t[0]+1,t[1]+1],[t[0],t[1]+6]],'C');g.s(t[0],t[1]+2,'c');});
@@ -240,11 +240,11 @@ Object.assign(SHP,{
   g.line(a.hx,a.hy-5,a.hx,a.hy-14,'I');g.ell(a.hx,a.hy-15,1.6,1.6,'Y');if(F.i)g.px([[a.hx-3,a.hy-16],[a.hx+3,a.hy-14]],'Y');else g.px([[a.hx+3,a.hy-17],[a.hx-3,a.hy-14]],'Y');
   g.ell(a.cx,a.cy,3.6,3.6,'Q');g.ell(a.cx,a.cy,1.4,1.4,0);for(let k=0;k<8;k++){const t=k*Math.PI/4;g.s(Math.round(a.cx+Math.cos(t)*4.4),Math.round(a.cy+Math.sin(t)*4.4),'Q');}
   g.px([[a.hx-5,a.hy-4],[a.hx+5,a.hy-4],[a.cx-6,a.cy-4],[a.cx+7,a.cy+3]],'W');},
- // Skullbell Sentinel: a bronze bell hung from the neck and a skull on the shoulder
+ // Tollskull Sentinel: a bronze bell hung from the neck and a skull on the shoulder
  skullbell(g,F,a,p){p.U='#e0d8c0';p.u='#9a9078';p.N='#c8963a';p.n='#6a4a1a';const sw=F.i?1:0,bx=a.bx+1+sw,by=a.by+4;
   g.path([[a.hx-3,a.hy+5],[bx,by]],'n');g.poly([[bx-2,by],[bx-3.6,by+4],[bx-5,by+7],[bx+6,by+7],[bx+4.6,by+4],[bx+3,by]],'N');g.rect(bx-5,by+6,11,1,'n');g.s(bx+1,by+8,'n');g.px([[bx-1,by+2],[bx-2,by+4]],'W');
   g.ell(a.bx-6,a.by-9,3,2.8,'U');g.ell(a.bx-5.4,a.by-8.2,2.6,2.2,'u');g.ell(a.bx-6.4,a.by-9.4,2.2,1.8,'U');g.px([[a.bx-8,a.by-9],[a.bx-5,a.by-9]],'K');g.s(a.bx-6,a.by-7,'K');},
- // Ash Spawn: flames licking up from the two humps and glowing cracks through the dome
+ // Soot Spawn: flames licking up from the two humps and glowing cracks through the dome
  embercrest(g,F,a,p){p.F='#ff8a3a';p.Y='#ffd060';const h=F.i?7:5;
   [[a.cx-6,a.cy-a.ry*.62-3],[a.cx+4,a.cy-a.ry*.7-3],[a.cx-1,a.cy-a.ry+1]].forEach(([x,y],n)=>{const hh=h+(n===1?2:0);g.poly([[x-2.4,y],[x+(n-1)*.8,y-hh-1],[x+2.4,y]],'F');g.poly([[x-1,y],[x+(n-1)*.4,y-hh+2],[x+1,y]],'Y');});
   g.path([[a.cx-8,a.cy+4],[a.cx-6,a.cy+7],[a.cx-9,a.cy+9]],'F');g.path([[a.cx+6,a.cy-2],[a.cx+8,a.cy+2],[a.cx+7,a.cy+5]],'F');},
@@ -264,7 +264,7 @@ Object.assign(SHP,{
  cinderback(g,F,a,p){p.F='#ff8a3a';p.Y='#ffd060';p.O='#5a4a58';const h=F.i?5:4;
   for(let k=0;k<4;k++){const x=a.bx-7+k*4.6,y=a.by-6.5;g.poly([[x-1.6,y+1],[x+.5,y-h-(k%2)-1],[x+2.6,y+1]],'F');g.poly([[x-.4,y+1],[x+.6,y-h+1-(k%2)],[x+1.6,y+1]],'Y');}
   g.path([[a.bx-4,a.by-1],[a.bx-2,a.by+2],[a.bx-5,a.by+4]],'F');g.path([[a.bx+4,a.by-2],[a.bx+6,a.by+1]],'F');g.px(F.i?[[a.bx-9,a.by-14],[a.bx-7,a.by-17]]:[[a.bx-10,a.by-13],[a.bx-8,a.by-16]],'O');},
- // Lanternmaw: an angler stalk arching over the brow with a glowing lantern bulb
+ // Glowmaw: an angler stalk arching over the brow with a glowing lantern bulb
  lantern(g,F,a,p){p.L='#fff0a0';p.N='#8a7a4a';p.Y='#ffe08a';const sw=F.i?1:0;
   g.path([[a.hx+1,a.hy-4],[a.hx+2,a.hy-11],[a.hx+6,a.hy-12+sw],[a.hx+7,a.hy-8+sw]],'N',1.6);g.ell(a.hx+7,a.hy-6.5+sw,3.2,3.2,'Y');g.ell(a.hx+7,a.hy-6.5+sw,2.2,2.2,'L');g.s(a.hx+6,a.hy-7+sw,'W');},
  // Blackstar Eater: a crescent moon over the brow, longer fangs and drifting stars
@@ -293,19 +293,19 @@ const MONV=[
  // id, base, name, elements, colour, shape (a flourish of SHP, drawn over the base art: see above; only for variants of the redrawn foe arts so far)
  ['v_bramblepup','cinderpup','Bramble Pup',['earth'],'#5a8a3a','leaffan'],['v_sunimp','gustimp','Sunflick Imp',['light','wind'],'#f0c040'],
  ['v_bogtoad','dewtoad','Bog Toad',['water','shadow'],'#3a5a3a','reeds'],['v_marshwisp','tidewisp','Marsh Wisp',['water','shadow'],'#5a7a6a'],
- ['v_glowslime','magmaslime','Glowcap Slime',['earth','light'],'#5ad0b0','glowcaps'],['v_emberbat','cavebat','Ember Bat',['fire','shadow'],'#c0502a'],
+ ['v_glowslime','magmaslime','Glowcap Slime',['earth','light'],'#5ad0b0','glowcaps'],['v_emberbat','cavebat','Kiln Bat',['fire','shadow'],'#c0502a'],
  ['v_rimewolf','frostwolf','Rime Stalker',['ice','shadow'],'#4a5a8a','icehorn'],['v_galeharpy','snowharpy','Gale Harpy',['wind','lightning'],'#a8a0e0'],
  ['v_sunhawk','thunderhawk','Sun Hawk',['fire','wind'],'#e8a040'],['v_dunegolem','slaggolem','Dune Golem',['earth','wind'],'#d8b070'],
  ['v_lakeray','cloudray','Lake Ray',['water'],'#4a90c0'],['v_ironling','stormling','Ironling',['lightning','earth'],'#8a8a9a'],
- ['v_reedcrawler','crawler','Reed Crawler',['earth','water'],'#7a8a4a','reedback'],['v_moorgull','gull','Moor Gull',['wind','shadow'],'#6a6a7a'],
+ ['v_reedcrawler','crawler','Reed Crawler',['earth','water'],'#7a8a4a','reedback'],['v_moorgull','gull','Moor Tern',['wind','shadow'],'#6a6a7a'],
  ['v_orchardimp','gustimp','Orchard Sprite',['earth','light'],'#c0d060'],['v_quarryknight','iceknight','Quarry Knight',['earth'],'#8a7a6a'],
  // Calamity realm natives
- ['v_ashspawn','voidspawn','Ash Spawn',['fire','shadow'],'#8a4a3a'],['v_drownwatch','huskguard','Drowned Watcher',['water','shadow'],'#3a6a7a'],
- ['v_starwraith','eclipsewraith','Starless Wraith',['shadow'],'#2a2a5a'],['v_skyshard','gargoyle','Sky Shard',['light','lightning'],'#d8e0ff'],
+ ['v_ashspawn','voidspawn','Soot Spawn',['fire','shadow'],'#8a4a3a'],['v_drownwatch','huskguard','Drowned Watcher',['water','shadow'],'#3a6a7a'],
+ ['v_starwraith','eclipsewraith','Lightless Wraith',['shadow'],'#2a2a5a'],['v_skyshard','gargoyle','Sky Shard',['light','lightning'],'#d8e0ff'],
  ['v_tidecrown','shellguard','Crownshell',['water','light'],'#5ab0c0','coralcrown'],['v_cindereater','stareater','Cinder Eater',['fire'],'#c0602a'],
- ['v_galeghost','cloudray','Shatterwind Ray',['wind','light'],'#e0e0ff'],['v_ashhusk','huskguard','Ashen Husk',['fire','shadow'],'#6a4a40'],
+ ['v_galeghost','cloudray','Shatterwind Ray',['wind','light'],'#e0e0ff'],['v_ashhusk','huskguard','Charred Husk',['fire','shadow'],'#6a4a40'],
  // realms14: natives of the Ashglass Reach's geysers and of the three new Scourge realms (moors, bamboo highlands, bone fields)
- ['v_saltjelly','brinejelly','Brine Spitter',['water','fire'],'#e8e0d0'],['v_heathwolf','frostwolf','Heath Wolf',['shadow','earth'],'#6a4a3a'],['v_rookling','cavebat','Rookling',['wind','shadow'],'#3a3a4c'],
+ ['v_saltjelly','brinejelly','Salt Spitter',['water','fire'],'#e8e0d0'],['v_heathwolf','frostwolf','Heath Wolf',['shadow','earth'],'#6a4a3a'],['v_rookling','cavebat','Rookling',['wind','shadow'],'#3a3a4c'],
  ['v_canehopper','gustimp','Cane Hopper',['wind','earth'],'#8ab04a'],['v_mistmoth','tidewisp','Mist Moth',['water','wind'],'#c0e0d0'],['v_jadeguard','shellguard','Jade Guard',['earth'],'#5a9a6a'],
  ['v_bonehound','frostwolf','Bone Hound',['shadow','earth'],'#d8d0b8'],['v_cairnwatch','iceknight','Cairn Watcher',['earth','shadow'],'#a8a090']
 ];

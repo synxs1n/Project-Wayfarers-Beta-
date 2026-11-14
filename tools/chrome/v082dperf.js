@@ -1,5 +1,5 @@
 // v0.8.2 themed dungeons: frame rate, this build against the one before (PWBASE), measured in turns (before, after, before, after...) so a
-// busy machine weighs on both alike; best of REPS. Scenes: an ice cavern (Glacier Teeth), a volcanic cavern (Cinderhollow Deeps), a crypt
+// busy machine weighs on both alike; best of REPS. Scenes: an ice cavern (Glacier Teeth), a volcanic cavern (Kilnscar Depths), a crypt
 // (Thistlewold) and the lair field (standing south of the lair), on Low (2D) and Medium (HD-2D), CPU throttled RATE x (CDP), 390x844 at 2x.
 // Rows must stay within 3 fps of before. Usage: PWHTML=../../out/aurelis3.html PWBASE=<old.html> node v082dperf.js
 const {open,chk,done}=require('./pw');const fs=require('fs');

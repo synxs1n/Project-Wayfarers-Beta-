@@ -13,7 +13,7 @@
 //              lairs, dungeons, the halls) get the same pools over their own darkness. HD-2D keeps its light map; at night its ambient drops and the
 //              lamps weigh more (hdLook hook), so the pools stand out of the dark.
 //  3 PARTICLES one hook on wfxRun (worldfx.js, both renderers, world anchored like the weather, nothing over the hero, no random draw): fireflies at
-//              night in meadow realms, pollen by day in grass realms, ash and embers in Cinderhollow and over every brazier, dust in sandstone (the
+//              night in meadow realms, pollen by day in grass realms, ash and embers in Kilnscar and over every brazier, dust in sandstone (the
 //              mesa, sand dungeons), frost sparkle in the tundra, spores in the Breach, void motes in the Echo Rift. Their clock stops under a menu.
 //  4 TRANSITIONS the battle start is a horizontal shatter in the realm's colour (nine shards racing in from alternating sides, the two white flashes
 //              kept, 460 ms as before), a doorway is an iris closing on the hero (230 ms) and opening again (280 ms), the return from a won battle is
@@ -126,7 +126,7 @@ function l13Emit(set,m,ts,cxc,czc,Px,Pz,emit){if(set!=='amb'||!m||L13.off)return
   // pollen and seeds by day in the grass realms, drifting with the wind
   if(out&&(th==='meadow'||th==='heights')&&day>.05&&!m.breach){const n=cnt(N.pollen),wind=typeof wfxWind==='function'?wfxWind(m):.35;for(let i=0;i<n;i++){const H0=40,h=H0-((t*(5+(i%3)*2)+l13H(i,213)*H0)%H0);
     put(l13H(i,211)*Px+t*(9+(i%4)*4)*(.4+wind)+Math.sin(t*.9+i)*5,l13H(i,212)*Pz+Math.cos(t*.7+i)*3,h,1,1,i%3?'#fff6c0':'#ffffff',day*.55*Math.min(1,h/4),0);}}
-  // Cinderhollow: ash drifting down and embers rising, by day and night; embers over every brazier anywhere
+  // Kilnscar: ash drifting down and embers rising, by day and night; embers over every brazier anywhere
   if(out&&rk==='deeps'){const n=cnt(N.ash);for(let i=0;i<n;i++){const H0=60,h=H0-((t*(9+(i%3)*4)+l13H(i,221)*H0)%H0);put(l13H(i,222)*Px+t*7+Math.sin(t*.6+i)*6,l13H(i,223)*Pz,h,i%4?1:2,1,i%2?'#8a8080':'#b0a8a0',.55*Math.min(1,h/5),0);}
     const e=cnt(N.ember);for(let i=0;i<e;i++){const H0=48,h=(t*(14+(i%3)*5)+l13H(i,231)*H0)%H0,a=Math.min(1,(H0-h)/12);put(l13H(i,232)*Px+Math.sin(t*1.3+i)*4,l13H(i,233)*Pz,h,1,1,i%3?'#ff9a3a':'#ffd070',a*(still?.7:.7+.3*Math.sin(ts2/80+i)),1);}}
   l13Braziers(m).forEach(([bx,bz],j)=>{if(Math.abs(bx-cxc)>Px/2||Math.abs(bz-czc)>Pz/2)return;for(let i=0;i<N.brazier;i++){const k=j*7+i,H0=30,h=10+((t*(11+(i%2)*4)+l13H(k,241)*H0)%H0),a=Math.min(1,(H0+10-h)/10);

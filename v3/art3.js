@@ -603,7 +603,7 @@ BIG_ART.push('riftkeeper');
 ELK.forEach(el=>{MART['riftkeeper_'+el]=g=>rkArt(g,ELC[el]);BIG_ART.push('riftkeeper_'+el);});
 MEXTRA.riftkeeper=(g,p)=>{};
 // ===== v0.13.7: four new Scourges and the fifth Calamity (60x60; foes.js, bosses9.js) =====
-// Silhouettes, each its own: the Candleking Moth a pair of huge dusty wings under a crown of three burning tapers, the Brinehag Matriarch a hunched
+// Silhouettes, each its own: the Emperor Candlemoth a pair of huge dusty wings under a crown of three burning tapers, the Brinehag Matriarch a hunched
 // hag under a wide barnacled hat rising from a mound of kelp and net. Idle is the shared bossIdle. (realms14: the Locust Choir, Ironmaw Tortoise and the
 // Hollow Sun sprites were removed with the bosses)
 // (the sprites of this release are drawn in the BOSSART block at the top of this file)

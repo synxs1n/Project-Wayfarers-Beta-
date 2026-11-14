@@ -15,8 +15,8 @@ const ITEMS={
  holywater:{n:'Holy Water',d:'Keeps random battles away for about 150 steps. Scripted fights, bosses and tent ambushes still happen. A new flask resets the count',price:120,ward:150,travel:1},
  tent:{n:'Tent',d:'Rest in a field or dungeon: 60% HP and MP back, KO\'d heroes up at 30%. Monsters may find a camp pitched in tall grass or open floor; a road is safe',price:180,tent:1,travel:1}
 };
-const MATS={moss:'Verdant Moss',shell:'Brine Shell',ore:'Ember Ore',shard:'Frost Shard',feather:'Storm Feather',dust:'Void Dust',core:'Dread Core',
- copper:'Copper Ore',iron:'Iron Ore',mythril:'Mythril Ore',oak:'Oak Log',ash:'Ashwood Log',elder:'Elderwood Log',
+const MATS={moss:'Verdant Moss',shell:'Brine Shell',ore:'Kiln Ore',shard:'Frost Shard',feather:'Storm Feather',dust:'Void Dust',core:'Dread Core',
+ copper:'Copper Ore',iron:'Iron Ore',mythril:'Mythril Ore',oak:'Oak Log',ash:'Elmwood Log',elder:'Elderwood Log',
  healroot:'Healroot',bluecap:'Bluecap',sunpetal:'Sunpetal',starbloom:'Starbloom',
  hide:'Beast Hide',fang:'Sharp Fang',scale:'Tough Scale',ichor:'Wisp Ichor',grit:'Golem Grit'};
 // Materials come in families. Ore, wood and herbs come in tiers that follow the journey; parts drop from monsters; realm relics come from each realm's foes.
@@ -45,32 +45,32 @@ const GEAR={};
 const ARM_K=3.5,FORGE_STEP=.11;// gear16: .11 (was .25), so a piece at +3 (x1.33) stays under the next rarity at +0 in its main stats (test v188a.js)
 const WP=[6,14,25,39,57,80],AP=[5,11,18,27,38,52],PRICE=[60,150,380,750,1400,2400];
 const WN={blade:['Iron Blade','Steel Brand','Mythril Saber','Dawnsteel Blade','Stormforged Edge','Starcleaver'],
- staff:['Oak Staff','Moonwood Staff','Sage Rod','Tidecaller Staff','Skyglass Scepter','Hollow Star Rod'],
+ staff:['Oak Staff','Moonwood Staff','Sage Rod','Tidecaller Staff','Skyglass Scepter','Lodestar Rod'],
  bow:['Hunter Bow','Yew Bow','Falcon Bow','Frostwood Bow','Galewing Bow','Meridian Bow'],
  crossbow:['Light Crossbow','Steel Arbalest','Stormlatch','Rimeshot Arbalest','Thunderlock',"Khan's Arbalest"],
  dagger:['Iron Dirk','Steel Stiletto','Viper Fang','Rime Dagger','Stormglass Kris','Umbra Needle'],
- tome:['Apprentice Primer','Moonleaf Codex','Sage Grimoire','Tidebound Tome','Skyglass Folio','Hollow Star Codex'],
+ tome:['Apprentice Primer','Moonleaf Codex','Sage Grimoire','Tidebound Tome','Skyglass Folio','Lodestar Codex'],
  // v0.3.5 weapon lines (6 tiers each)
  axe:['Hatchet','Steel Cleaver','Mythril Waraxe','Dawnsteel Axe','Stormsplitter','Starhewer'],
  greatsword:['Iron Claymore','Steel Zweihander','Mythril Greatblade','Dawnsteel Colossus','Stormbreaker','Starfall Blade'],
  lance:['Iron Pike','Steel Lance','Mythril Spear','Dawnsteel Lance','Stormpiercer','Starpiercer'],
  mace:['Iron Mace','Steel Flail','Mythril Maul','Dawnsteel Morningstar','Thunder Maul','Starhammer'],
  shortsword:['Iron Gladius','Steel Shortblade','Viper Gladius','Rime Shortsword','Stormglass Gladius','Umbra Shortblade'],
- longbow:['Ash Longbow','Yew Warbow','Falcon Warbow','Frostwood Warbow','Galewing Warbow','Meridian Warbow'],
+ longbow:['Elm Longbow','Yew Warbow','Falcon Warbow','Frostwood Warbow','Galewing Warbow','Meridian Warbow'],
  knuckles:['Leather Wraps','Iron Knuckles','Mythril Cestus','Dawnsteel Fists','Storm Gauntlets','Starfist'],
  claws:['Iron Claws','Steel Talons','Viper Claws','Rime Talons','Storm Rakes','Umbra Claws'],
- qstaff:['Oak Quarterstaff','Ash Quarterstaff','Mythril Bo','Dawnwood Staff','Stormwood Bo','Starwood Staff'],
- lute:['Pine Lute','Maple Lute','Silverstring Lute','Tidesong Lute','Skyglass Lute','Hollow Star Lute'],
- harp:['Reed Harp','Silver Harp','Sage Harp','Tidesong Harp','Skyglass Harp','Hollow Star Harp'],
- flute:['Bone Flute','Silver Flute','Sage Pipe','Tidesong Flute','Skyglass Flute','Hollow Star Flute'],
+ qstaff:['Oak Quarterstaff','Elm Quarterstaff','Mythril Bo','Dawnwood Staff','Stormwood Bo','Starwood Staff'],
+ lute:['Pine Lute','Maple Lute','Silverstring Lute','Tidesong Lute','Skyglass Lute','Lodestar Lute'],
+ harp:['Reed Harp','Silver Harp','Sage Harp','Tidesong Harp','Skyglass Harp','Lodestar Harp'],
+ flute:['Antler Flute','Silver Flute','Sage Pipe','Tidesong Flute','Skyglass Flute','Lodestar Flute'],
  // v0.8.2 role weapons (roles.js): each leans a class into its secondary role
  thrown:['Iron Shuriken','Steel Kunai','Viper Stars','Rime Kunai','Storm Shuriken','Umbra Kunai'],
  beads:['Wooden Beads','Jade Beads','Pilgrim Beads','Dawn Rosary','Storm Rosary','Starlit Rosary'],
- wand:['Ash Wand','Bone Wand','Hexwood Wand','Rime Wand','Stormglass Wand','Void Wand'],
+ wand:['Hazel Wand','Horn Wand','Hexwood Wand','Rime Wand','Stormglass Wand','Void Wand'],
  censer:['Clay Censer','Brass Censer','Silver Censer','Dawn Censer','Storm Censer','Star Censer'],
  warhammer:['Iron Warhammer','Steel Warhammer','Mythril Warhammer','Dawnsteel Warhammer','Storm Warhammer','Star Warhammer'],
  standard:['Rag Standard','Guild Standard','Mythril Standard','Dawn Standard','Storm Standard','Star Standard'],
- lyre:['Pine Lyre','Silver Lyre','Sage Lyre','Tidesong Lyre','Skyglass Lyre','Hollow Star Lyre']};
+ lyre:['Pine Lyre','Silver Lyre','Sage Lyre','Tidesong Lyre','Skyglass Lyre','Lodestar Lyre']};
 const AN={mail:['Leather Vest','Chain Mail','Mythril Mail','Dawnplate','Stormplate','Starplate'],
  robe:['Linen Robe','Silk Robe','Mage Vestment','Rime Robe','Skyweave Robe','Void Robe'],
  vest:['Hide Jerkin','Scout Garb','Windrunner Garb','Frostrunner Garb','Gale Garb','Twilight Garb']};
@@ -113,7 +113,7 @@ addGear('c_mana',{n:'Mana Charm',slot:'c',tier:0,mp:35,price:120});
 addGear('c_swift',{n:'Swift Charm',slot:'c',tier:1,spd:6,price:220});
 addGear('c_clarity',{n:'Clarity Charm',slot:'c',tier:1,immune:1,price:260});
 // v0.4.0 5.3: one unique charm per side cave (found nowhere else, never sold in shops)
-[['c_cv0','Mossback Charm',{hp:140,def:8}],['c_cv1','Saltwhisper Pearl',{mp:70,mag:10,res:8}],['c_cv2','Cinderseam Charm',{atk:14,hp:80}],['c_cv3','Rimefang Charm',{def:12,res:12}],['c_cv4','Starfall Charm',{spd:10,mag:12,atk:8}]].forEach(([id,n,st],i)=>addGear(id,Object.assign({n,slot:'c',tier:3,price:600+i*100,unique:1},st)));
+[['c_cv0','Mossback Charm',{hp:140,def:8}],['c_cv1','Saltwhisper Pearl',{mp:70,mag:10,res:8}],['c_cv2','Coalseam Charm',{atk:14,hp:80}],['c_cv3','Icefang Charm',{def:12,res:12}],['c_cv4','Cometfall Charm',{spd:10,mag:12,atk:8}]].forEach(([id,n,st],i)=>addGear(id,Object.assign({n,slot:'c',tier:3,price:600+i*100,unique:1},st)));
 [['c_fa0','Guildmark Pin',{hp:90,atk:8,def:6}],['c_fa1','Anvilmark Charm',{atk:12,def:10}],['c_fa2','Vialmark Charm',{mag:12,res:10,mp:50}],['c_fa3','Wildcall Charm',{spd:10,hp:100,luk:6}],['c_fa4','Inkmark Charm',{mag:14,mp:60,spd:6}],['c_fa5','Steady Knot',{hp:80,def:8,luk:8}]].forEach(([id,n,st],i)=>addGear(id,Object.assign({n,slot:'c',tier:3,price:700+i*100,unique:1},st)));
 [['c_fb0',"Guildmaster's Seal",{hp:150,atk:12,def:10,spd:4}],['c_fb1',"Grandsmith's Hammerpin",{atk:18,def:14,hp:60}],['c_fb2',"Archmage's Phial",{mag:18,res:14,mp:80}],['c_fb3','Wild Heart',{spd:14,hp:140,luk:8}],['c_fb4','The Last Page',{mag:20,mp:90,spd:8}],['c_fb5','The Steady Hand',{hp:140,def:12,atk:12,luk:10}]].forEach(([id,n,st],i)=>addGear(id,Object.assign({n,slot:'c',tier:4,price:1400+i*100,unique:1},st)));
 addGear('c_fth',{n:'Saint Charm',slot:'c',tier:2,attr:{fth:6},price:400});

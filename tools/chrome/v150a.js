@@ -18,7 +18,7 @@ const ic=await ev(()=>{const T=__A.TW.get,M=window.__M11,ids=Object.keys(T('MATS
   return {n:ids.length,bad,dup,empty,own,img:img.every(Boolean),cls:sz[0]};});
 chk(`every material (${ic.n}) has an icon: no exception, at least 30 painted pixels`,ic.bad.length===0&&ic.empty.length===0&&ic.n>=22||JSON.stringify(ic));
 chk('icons are pairwise distinct (canvas hash)',ic.dup.length===0||JSON.stringify(ic.dup));
-chk('the new art covers every ore, log, herb and part plus Ember Ore and Verdant Moss',ic.own.length===0||JSON.stringify(ic.own));
+chk('the new art covers every ore, log, herb and part plus Kiln Ore and Verdant Moss',ic.own.length===0||JSON.stringify(ic.own));
 chk('matIcon still returns the same <img class="gico iico mico"> at 16x16 sources',ic.img&&ic.cls||JSON.stringify(ic));
 // ---- node sprites ----
 const nd=await ev(()=>{const M=window.__M11,T=__A.TW.get,GATH=['copper','iron','mythril','oak','ash','elder','healroot','bluecap','sunpetal','starbloom'],hash={},dup=[],bad=[],out=[];

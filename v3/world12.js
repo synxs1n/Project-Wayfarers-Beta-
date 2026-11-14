@@ -28,7 +28,7 @@ function lmKit(ctx){
 // the 26 landmarks (23 + three for the realms14 towns), one per town (keyed by the town's name): n the name in the intro line, line what the player reads at its foot,
 // fr animation frames, lt night light [dx,dy,radius,kind] (dx,dy from the footprint's top left px), col its signature colour (a colour the card is painted with; no two within 30 RGB, v168a)
 const LM12=[
- {town:'Hollowmere',id:'hollowoak',n:'the Hollow Oak',fr:2,lt:[28,36,22,'lamp'],col:'#3b8a34',
+ {town:'Larkspur',id:'hollowoak',n:'the Hollow Oak',fr:2,lt:[28,36,22,'lamp'],col:'#3b8a34',
   line:'An oak older than the town stands at the head of the street, its crown wider than the market and a lantern lit in the hollow of its trunk.',
   draw(P,f){const {E,G,B,rc,S,dots}=P;S(22);G('#5a3a22',[[12,92],[17,76],[39,76],[44,92],[34,89],[22,89]]);B('#6a4528',19,44,18,34);rc('#4a2e1a',19,44,3,34);
    E('#1a0e08',28,66,5,9,0);E('#ffb84a',28,70,3,4,0);rc('#fff0a0',27,69,2,2);
@@ -42,8 +42,8 @@ const LM12=[
    rc(LM_OUT,21,15,14,16);rc('#fff4b0',22,16,12,14);rc(f?'#ffffff':'#ffe070',24,19,8,8);rc('#7a6a3a',27,16,2,14);
    G('#b02a2a',[[18,15],[28,4],[38,15]]);rc('#e0e0e8',27,2,2,3);B('#3a2a24',25,76,6,10);
    A(.42,()=>poly('#fff0a0',f?[[36,22],[56,12],[56,30]]:[[20,22],[0,12],[0,30]]));}},
- {town:'Ashgate',id:'smelter',n:'the Ashgate Smelter',fr:2,lt:[22,70,26,'fire'],col:'#e8561e',
-  line:'The Ashgate smelter squats beside the road, its furnace never cold and its tall chimney the first thing you see through the smoke.',
+ {town:'Kilngate',id:'smelter',n:'the Kilngate Smelter',fr:2,lt:[22,70,26,'fire'],col:'#e8561e',
+  line:'The Kilngate smelter squats beside the road, its furnace never cold and its tall chimney the first thing you see through the smoke.',
   draw(P,f){const {E,G,B,rc,S,A}=P;S(22);B('#4c4854',6,58,38,32);for(let y=64;y<88;y+=6)rc('#34303c',7,y,36,1);for(let x=12;x<44;x+=9)rc('#34303c',x,58,1,32);
    rc(LM_OUT,13,66,16,24);rc('#1a0e0a',14,67,14,23);rc('#e8561e',15,72,12,18);rc(f?'#ffd04a':'#ffb030',17,76,8,14);rc('#fff0a8',19,82,4,8);
    B('#7a4a3a',32,10,13,50);for(let y=14;y<58;y+=4)rc('#5a3428',33,y,11,1);rc('#9a6450',33,10,2,50);B('#3a3a44',30,7,17,4);
@@ -75,19 +75,19 @@ const LM12=[
    const hy=34,a0=Math.PI/4+f*Math.PI/8;for(let k=0;k<4;k++){const a=a0+k*Math.PI/2,dx=Math.cos(a),dy=Math.sin(a),nx=-dy,ny=dx,p0=[LMC+dx*5,hy+dy*5],p1=[LMC+dx*23,hy+dy*23];
     G('#f2ead4',[[p0[0]+nx,p0[1]+ny],[p1[0]+nx,p1[1]+ny],[p1[0]+nx*7,p1[1]+ny*7],[p0[0]+nx*7,p0[1]+ny*7]]);P.L('#6a4a2a',p0[0],p0[1],p1[0],p1[1],2);}
    E('#5a3a1a',LMC,hy,3,3);}},
- {town:'Cidermere',id:'ciderpress',n:'the Great Cider Press',fr:1,lt:null,col:'#b0722a',
-  line:'In the middle of Cidermere stands the great cider press, a barrel as tall as a house beside a timber screw, and the town smells of apples from here to the gates.',
+ {town:'Ciderbrook',id:'ciderpress',n:'the Great Cider Press',fr:1,lt:null,col:'#b0722a',
+  line:'In the middle of Ciderbrook stands the great cider press, a barrel as tall as a house beside a timber screw, and the town smells of apples from here to the gates.',
   draw(P,f){const {E,G,B,rc,S,L,dots}=P;S(23);B('#7a4a22',36,22,5,68);B('#7a4a22',48,22,5,68);B('#7a4a22',34,18,21,6);rc('#5a5a66',43,24,3,24);rc('#8a8a98',43,24,1,24);L('#5a3a1a',36,36,52,36,2);B('#9a6a32',37,48,15,5);
    B('#b0722a',4,38,28,50);E('#c88a3a',18,38,14,5);rc('#3a2410',4,50,28,2);rc('#3a2410',4,72,28,2);rc('#5a5a66',4,50,28,1);rc('#5a5a66',4,72,28,1);rc('#d8a050',8,40,2,46);rc('#8a5420',28,40,3,46);rc('#e8a84a',10,60,12,6);rc('#8a5420',12,62,8,2);
    E('#d03a2a',40,86,4,4);E('#e05a3a',47,87,4,4);E('#b82a20',34,88,3,3);E('#d03a2a',51,89,3,3);dots('#4aa04a',[[41,81,3,2],[48,82,3,2]]);}},
- {town:'Brinewick',id:'whalearch',n:'the Whalebone Arch',fr:2,lt:null,col:'#e8e0c8',
-  line:'Two ribs of a great whale curve over the quay at Brinewick and meet like a gate, bleached white; every boat is steered under them for luck.',
+ {town:'Kelpwharf',id:'whalearch',n:'the Whalebone Arch',fr:2,lt:null,col:'#e8e0c8',
+  line:'Two ribs of a great whale curve over the quay at Kelpwharf and meet like a gate, bleached white; every boat is steered under them for luck.',
   draw(P,f){const {E,G,B,rc,S,dots}=P;S(21);const pts=[];for(let i=0;i<=40;i++){const t=Math.PI*i/40;pts.push([LMC-19+(1-Math.cos(t))*19,LMY-2-Math.sin(t)*72]);}
    [0,1,2].forEach(pass=>pts.forEach((p,i)=>{const e=Math.abs(i-20)/20,r=2+e*3.2;if(pass===0)P.ell(LM_OUT,p[0],p[1],r+1,r+1);else if(pass===1)P.ell('#e8e0c8',p[0],p[1],r,r);else P.ell('#fffaf0',p[0]-1,p[1]-1,Math.max(1,r-2),Math.max(1,r-2));}));
    E('#6a6a78',9,LMY-2,8,5);E('#6a6a78',47,LMY-2,8,5);dots('#4a8a5a',[[8,80,1,8],[10,82,1,6],[46,80,1,8],[48,82,1,6],[44,84,1,4]]);dots('#c8b898',[[9,60,2,2],[46,56,2,2],[28,19,2,2]]);
    dots('#f0f0f8',[[26+f*3,10,3,1],[27+f*3,9,1,1],[29+f*3,9,1,1]]);}},
- {town:'Reedhollow',id:'stilthut',n:'the Reedhollow Watch Hut',fr:2,lt:[14,50,16,'cyan'],col:'#3a5a58',
-  line:'A watch hut on tall stilts leans over Reedhollow, hung with teal marsh lanterns that the reeds seem to grow toward at dusk.',
+ {town:'Reedwade',id:'stilthut',n:'the Reedwade Watch Hut',fr:2,lt:[14,50,16,'cyan'],col:'#3a5a58',
+  line:'A watch hut on tall stilts leans over Reedwade, hung with teal marsh lanterns that the reeds seem to grow toward at dusk.',
   draw(P,f){const {E,G,B,rc,S,L,A,dots,ell}=P;S(21);ell('rgba(40,90,80,.35)',LMC,LMY,22,4);[12,20,34,42].forEach(x=>B('#3a2a1a',x,58,3,32));L('#4a3a22',12,60,34,88,1);L('#4a3a22',42,60,20,88,1);
    B('#5a4a30',6,54,44,4);B('#3a5a58',10,34,36,20);rc('#5a807c',10,34,3,20);rc('#1e302e',41,35,4,19);for(let y=38;y<54;y+=4)rc('#2a4240',11,y,34,1);
    B('#14101a',24,42,8,12);rc('#ffe090',16,40,6,6);rc(LM_OUT,17,41,4,1);G('#b8a050',[[5,34],[28,14],[51,34]]);for(let i=0;i<5;i++)L('#8a7a38',12+i*8,32,24+(i-2)*3,19,1);
@@ -103,8 +103,8 @@ const LM12=[
    G('#e8d4e8',[[21,90],[23,60],[33,60],[35,90],[28,86]]);rc('#fff0fc',24,62,2,26);E('#18807a',28,58,20,6,0);E('#2ac8b8',28,44,25,16);E('#58e8d8',20,34,10,6);
    dots('#ff8ac8',[]);E('#ff8ac8',16,44,4,3,0);E('#ff8ac8',36,38,3,2,0);E('#ff8ac8',44,48,3,2,0);E('#ffc8e8',28,30,3,2,0);
    E('#2ac8b8',8,82,7,5);E('#e8d4e8',8,88,2,3,0);E('#2ac8b8',48,84,6,4);rc('#e8d4e8',47,87,2,3);dots('#d8fff8',[[12+f*2,34,1,1],[40-f*2,30,1,1],[24,24+f,1,1]]);}},
- {town:'Frostgate',id:'frostbeacon',n:'the Frost Beacon',fr:2,lt:[28,18,26,'cyan'],col:'#4a6a98',
-  line:'On an ice pillar at the gate of Frostgate burns the Frost Beacon, a blue flame the cold cannot put out and the watch cannot stop looking at.',
+ {town:'Whitehearth',id:'frostbeacon',n:'the Frost Beacon',fr:2,lt:[28,18,26,'cyan'],col:'#4a6a98',
+  line:'On an ice pillar at the gate of Whitehearth burns the Frost Beacon, a blue flame the cold cannot put out and the watch cannot stop looking at.',
   draw(P,f){const {E,G,B,rc,S,A,ell,dots}=P;S(21);E('#f4faff',LMC,LMY-1,22,5);G('#4a6a98',[[14,90],[19,40],[37,40],[42,90]]);G('#7a9ac8',[[19,40],[28,40],[26,90],[14,90]]);rc('#b8d0f0',22,44,2,30);
    G('#3a5a88',[[8,90],[11,76],[15,90]]);G('#3a5a88',[[41,90],[45,70],[49,90]]);B('#3a4a68',16,34,24,7);rc('#5a6a88',16,34,24,1);
    A(.3,()=>ell('#7ad8ff',28,22,13,16));G('#4ab8f0',[[20,34],[28-f,6],[36,34]]);G('#a8e8ff',[[23,34],[28+f,12],[33,34]]);G('#ffffff',[[26,34],[28,20],[30,34]]);dots('#e8f8ff',[[18,12+f*3,1,1],[38,8,1,1],[30,3+f,1,1]]);}},
@@ -118,8 +118,8 @@ const LM12=[
   draw(P,f){const {E,G,B,rc,S,dots}=P;S(18);B('#e8e4dc',17,42,22,48);rc('#fffaf0',17,42,3,48);rc('#b4b0a8',36,43,3,47);dots('#6a6a76',[[23,52,2,8],[32,52,2,8],[23,68,2,8],[32,68,2,8]]);
    B('#e8e4dc',17,22,5,20);B('#e8e4dc',34,22,5,20);rc('#1a1420',22,24,12,18);G('#c8902a',[[22+f,26],[34+f,26],[37+f,38],[19+f,38]]);rc('#7a5410',27+f,38,2,4);rc('#f0c860',24+f,28,2,8);
    G('#3a5a6a',[[13,22],[28,5],[43,22]]);rc('#5a7a8a',28,5,1,17);rc('#d8c890',27,2,2,4);E('#fff0d0',28,56,5,5,0);rc('#3a2a20',28,53,1,3);rc('#3a2a20',28,56,3,1);B('#5a4a42',24,78,8,12);rc('#14101a',25,80,6,10);}},
- {town:'Dunecrown',id:'marketdome',n:'the Dunecrown Market Dome',fr:2,lt:null,col:'#e87a2a',
-  line:'A striped dome crowns the market of Dunecrown, orange and cream like a sunset, with pennants strung from its finial to every stall in the square.',
+ {town:'Dunemark',id:'marketdome',n:'the Dunemark Market Dome',fr:2,lt:null,col:'#e87a2a',
+  line:'A striped dome crowns the market of Dunemark, orange and cream like a sunset, with pennants strung from its finial to every stall in the square.',
   draw(P,f){const {E,G,B,rc,S,ell,L,dots}=P;S(24);ell(LM_OUT,28,52,25,26);for(let j=-25;j<=0;j++){const w=24*Math.sqrt(Math.max(0,1-(j*j)/625));for(let x=Math.round(28-w);x<Math.round(28+w);x++){const s=Math.floor((x-4)/6)%2;rc(s?'#f6e8c8':(j<-16?'#f09a4a':'#e87a2a'),x,52+j,1,1);}}
    rc('#5a3a1a',27,12,2,14);G('#d03a3a',[[29,12],[42,15+f],[29,19]]);B('#e8c890',5,52,46,38);rc('#fff0d0',5,52,46,2);rc('#b89868',48,54,3,36);
    [10,24,38].forEach(x=>{rc('#14101a',x,66,10,24);ell('#14101a',x+5,66,5,5);});rc('#d8b078',6,86,44,4);
@@ -159,8 +159,8 @@ const LM12=[
    const bob=[0,2,3,1][f]||0,sh=[[28,14+bob,10,16,'#e8e0ff'],[10,38-bob,7,12,'#c8b8ff'],[44,36+bob,7,11,'#d8d0ff']];
    sh.forEach(([cx,cy,w,h,c])=>{A(.26,()=>ell('#c8b8ff',cx,cy,w+6,h+5));G(c,[[cx,cy-h],[cx+w,cy],[cx,cy+h],[cx-w,cy]]);G(tint(c,.5),[[cx,cy-h],[cx,cy+h],[cx-w,cy]]);G(shade(c,.75),[[cx,cy-h],[cx+w,cy],[cx,cy+h]]);});
    A(.35,()=>{L('#e8e0ff',28,32+bob,24,68,1);L('#e8e0ff',10,48-bob,12,68,1);L('#e8e0ff',44,46+bob,40,58,1);});}},
- {town:'Saltwick',id:'hourglass',n:'the Saltwick Hourglass',fr:2,lt:null,col:'#f0c048',
-  line:'A glass hourglass as tall as a house stands in the square at Saltwick, its sand a pale gold that falls in a thin line and has not run out since the salt flat dried.',
+ {town:'Glarepan',id:'hourglass',n:'the Glarepan Hourglass',fr:2,lt:null,col:'#f0c048',
+  line:'A glass hourglass as tall as a house stands in the square at Glarepan, its sand a pale gold that falls in a thin line and has not run out since the salt flat dried.',
   draw(P,f){const {E,G,B,rc,S,A,L,dots}=P;S(21);B('#6a4420',9,10,3,76);B('#6a4420',44,10,3,76);B('#8a5a2a',6,5,44,6);B('#8a5a2a',6,84,44,7);rc('#c8902a',6,5,44,1);
    G('#9ac8e0',[[12,12],[44,12],[30,46],[26,46]]);G('#9ac8e0',[[26,46],[30,46],[44,83],[12,83]]);G('#d8f0fa',[[14,13],[24,13],[26,44]]);G('#d8f0fa',[[26,48],[16,82],[22,82]]);
    G('#f0c048',[[16,22],[40,22],[30,44],[26,44]]);G('#f0c048',[[14,83],[42,83],[34,66],[28,56],[22,66]]);rc('#fff0a8',27,44,2,24);dots('#c87810',[[27,46+f*10,1,2],[28,56+f*8,1,1]]);rc('#fff0c0',19,23,3,1);}},

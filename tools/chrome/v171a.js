@@ -42,7 +42,7 @@ const ban=H=>H.ev(()=>{const e=document.getElementById('wloc');const r=e.getBoun
     await H.browser.close();
   }
   const H=await open({w:390,h:844,mobile:true,pre:META});
-  const s=await H.ev(()=>{const A=__A;return {f:A.TW.get('FORT_NAMES').join('|'),b:A.TW.get('t12Bare')('Duskspire Sanctum')+'|'+A.TW.get('t12Bare')('Sanctum')};});
-  chk(`Sanctum names carry no kind word (${s.f}; ${s.b})`,!/Sanctum/.test(s.f)&&s.b==='Duskspire|Sanctum');
+  const s=await H.ev(()=>{const A=__A;return {f:A.TW.get('FORT_NAMES').join('|'),b:A.TW.get('t12Bare')('Duskhaven Sanctum')+'|'+A.TW.get('t12Bare')('Sanctum')};});
+  chk(`Sanctum names carry no kind word (${s.f}; ${s.b})`,!/Sanctum/.test(s.f)&&s.b==='Duskhaven|Sanctum');
   await done(H);
 })();

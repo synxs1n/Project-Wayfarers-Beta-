@@ -22,7 +22,7 @@ const BONDS9=[
   talkCamp:[["Tamsin","I set three wires round the camp."],["Borga","I walked into two."],["Tamsin","Then they work."]],
   talkInn:[["Borga","The innkeeper counted the spoons when you came in."],["Tamsin","Good. She will count them again when I leave, and feel proud."]],
   talkBoss:[["Borga","Held it right where you said."],["Tamsin","You held it. I just pointed."]]},
- {a:'ashwin',b:'brigid',tech:{n:'Ember Hymn',k:'phys',pw:1.3,t:'all',el:['fire','fire'],fx:[['burn',.7]],d:'A hymn that sets the arrows alight. Every foe likely Burns.'},
+ {a:'ashwin',b:'brigid',tech:{n:'Kindling Hymn',k:'phys',pw:1.3,t:'all',el:['fire','fire'],fx:[['burn',.7]],d:'A hymn that sets the arrows alight. Every foe likely Burns.'},
   talk:[["Brigid","Your arrows smell of smoke before you loose them."],["Ashwin","I keep the tips in the coals."],["Brigid","Sing when you draw. The fire listens."]],
   talk2:[["Ashwin","I sang. Badly."],["Brigid","The fire did not mind."],["Ashwin","The archer behind me minded."]],
   talkCamp:[["Brigid","Let me tend the fire tonight."],["Ashwin","You will make it a sermon."],["Brigid","A short one."]],

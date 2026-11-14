@@ -30,7 +30,7 @@ off at runtime, `n` counts, `err` collects caught errors); `tools/chrome/v177a.j
 ## 3. Particles in the world
 `wfxRun` (worldfx.js, now `HOOK.def`'d) gets one after hook: every emitter is world anchored like the rest of the ambience, drawn by the same
 `emit` in both renderers (nothing over the hero, no random draw). Fireflies at night in meadow realms, pollen by day in meadow and heights
-realms, ash and embers in Cinderhollow (`realmAt(m.s).key === 'deeps'`), embers over every brazier (`v` tiles, cached per map), dust in the
+realms, ash and embers in Kilnscar (`realmAt(m.s).key === 'deeps'`), embers over every brazier (`v` tiles, cached per map), dust in the
 mesa by day and in sand dungeons (`m.d8 === 'sand'`), frost sparkle in the tundra and glacier realms, spores in the Breach, void motes in the
 Echo Rift (an archive map: a `hdActors` hook puts them into the HD-2D scene, which skips archive maps in `hdWfx`). Their clock (`l13T`) stops
 under a menu and resumes where it stopped; counts scale with the view like `WFX.n`, 0.6x on Low.

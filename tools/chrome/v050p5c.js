@@ -26,7 +26,7 @@ const SWEEP=async lowOnly=>ev(lowOnly=>{const A=__A,G=A.G,TR=A.TR,WS=A.WS,o={tod
     G.clock=b[1]%A.CLK_LEN;const F0=frame();const k0=TR.k,from=TR.from;TR.k=.5;const Fm=frame();TR.k=1;const Fb=frame();
     const dAB=diff(La,Fb),d0=diff(La,F0),dm=diff(La,Fm),dmb=diff(Fm,Fb);
     const r={w,pair:a[0]+'>'+b[0],k0,from,dAB:+dAB.toFixed(2),d0:+d0.toFixed(2),dm:+dm.toFixed(2),lum:[lum(La),lum(Fm),lum(Fb)].map(x=>+x.toFixed(1))};
-    r.dmb=+dmb.toFixed(2);r.ok=k0===0&&from===a[0]&&d0<=Math.max(.6,.2*dAB)&&(dAB<1.5||(dm>.15*dAB&&dmb>.15*dAB));r.mix=dAB<1.5||(dm>=.29*dAB&&dmb>=.29*dAB);/* realms14: .29 (was .3): the realm list changed, so the same clock draws another first town (Lanternford, not Brinewick) and its fog night>dawn blend sits at 29.9% (8.84 of 29.54); the failure this test is for is 94% (a middle frame that is not a mix at all) */
+    r.dmb=+dmb.toFixed(2);r.ok=k0===0&&from===a[0]&&d0<=Math.max(.6,.2*dAB)&&(dAB<1.5||(dm>.15*dAB&&dmb>.15*dAB));r.mix=dAB<1.5||(dm>=.29*dAB&&dmb>=.29*dAB);/* realms14: .29 (was .3): the realm list changed, so the same clock draws another first town (Lanternford, not Kelpwharf) and its fog night>dawn blend sits at 29.9% (8.84 of 29.54); the failure this test is for is 94% (a middle frame that is not a mix at all) */
     o.tod.push(r);if(!r.ok||!r.mix)o.fails.push(r);}
   // ---- weather: fade in from clear and back out, in every phase ----
   for(const p of PH)for(const w of WX.filter(x=>x!=='clear')){

@@ -20,7 +20,7 @@ cave (under a cliff, the guild hall in the mouth), ruin (broken wall lines, rubb
 v1 rows of pavilions), fork (a hall and three galleries), bowl (amphitheatre), islands (floating islands, rope bridges), meander (a winding road), farmstead (fenced paddocks,
 stone circle), close (churchyard and a lane of shops).
 Each is hand placed with `T.B` and a few helpers (`t14Frame`, `t14Ell`); `t14Link` joins every door step to the nearest road, plaza, bridge or stair (over water: a boardwalk);
-`t14Deco` adds crates and lamps away from doors, bridges and stairs; the sign stands at (W-3, road+1) before the linking so a path never runs through it.
+`t14Deco` adds crates and lamps away from doors, bridges and stairs; the sign stands at (W-3, road+1) before the linking so a path never runs through it (world16.js later moves it off the gate lane and gives every gate its own post).
 Required in every town: inn, tavern, smithy, alchemy (`workshop`), guild hall, the waystone and the board, the road gates (west and east on the road row, which getMap widens
 and `townGates3` may move to another side), the sign. The checks are in `t14Check`; the test repeats them on the finished maps.
 

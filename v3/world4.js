@@ -38,6 +38,7 @@ function worldPlan(){
   idx.slice(0,n).forEach((s,i)=>{st[s].cave=kinds[i%4];});
   WPLAN={seed:key,v:st};return st;
 }
+worldPlan=HOOK.def('worldPlan',worldPlan);// v0.21.x: world16.js draws revision 3 (G.dunRev 3: west is in the mix)
 const fieldEndSide=s=>worldPlan()[s].c;
 const caveStage=s=>!!worldPlan()[s].cave;
 // a cave mouth in the field: a clearing off a branch trail, far from the dungeon entrance and from the start
@@ -149,8 +150,8 @@ function townGates3(m,s){
     if(!rec)return null;
     rec.cells.forEach(([x,y])=>m.exits.push({x,y,to}));gates[name]=rec;};
   // the default gates exist already: west (to the previous field, or closed in town 0) and east (to the field)
-  if(s>0&&want.prev&&want.prev!=='w'){closeGate(0,1);}
-  if(want.next!=='e'){closeGate(W-1,-1);}
+  if(s>0&&want.prev&&want.prev!=='w'&&want.next!=='w'){closeGate(0,1);}// v0.21.x: the west gate stays when it is the way out (plan revision 3, world16.js)
+  if(want.next!=='e'&&want.prev!=='e'){closeGate(W-1,-1);}// v0.21.x: and the east gate when it is the way in
   if(s>0)mk('prev',want.prev,{m:'f'+(s-1),g:'end'});
   mk('next',want.next,{m:'f'+s,g:'start'});
   if(s===0){gates.prev0={side:'w',x:0,y:road};}
@@ -162,8 +163,8 @@ function townGates3(m,s){
 // =================== SIDE CAVES (5.3) ===================
 // A cave is smaller than a main dungeon (48x34 against 60x40 or more) with no boss, no key and no lever. A chain of rooms leads to a prize room
 // at the far end; side rooms hold a few chests. The prize depends on the plan: +2 gear, a rare item, a challenge-only recruit or a unique charm.
-// side caves keep their own names; the first time you enter one the banner says what it is ("Den: Mossback Hollow", complete9.js)
-const CAVE_NAMES=['Mossback Hollow','Saltwhisper Cave','Cinderseam Cave','Rimefang Grotto','Starfall Hollow'];
+// side caves keep their own names; the first time you enter one the banner says what it is ("Den: Mossback Burrow", complete9.js)
+const CAVE_NAMES=['Mossback Burrow','Saltwhisper Cove','Coalseam Pit','Icefang Cleft','Cometfall Crater'];
 const CAVE_W=48,CAVE_H=34;
 function buildCave(R,th){
   const D=new Gr(CAVE_W,CAVE_H,'#'),rooms=[],ov=(r,o,p)=>r.x<o.x+o.w+p&&r.x+r.w+p>o.x&&r.y<o.y+o.h+p&&r.y+r.h+p>o.y;

@@ -12,8 +12,8 @@ function tickClock(n){if(!G||G.daily)return;const was=clockPhase();G.clock=(((G.
   if(typeof wkwUpdate==='function')wkwUpdate();}
 function setMorning(){if(G){G.clock=0;if(typeof wkwUpdate==='function')wkwUpdate();}}
 // ----- night monsters: two of each field's four foes become night variants; every field foe is 10% stronger at night -----
-const NIGHT={meadow:[['gustimp','Duskwing Imp'],['cinderpup','Gloam Hound']],coast:[['gull','Moonglass Gull'],['tidewisp','Nightwisp']],cave:[['cavebat','Gloombat'],['ashwraith','Cinder Shade']],
-  snow:[['snowharpy','Nightfrost Harpy'],['frostwolf','Moonfang Wolf']],heights:[['thunderhawk','Nightstorm Hawk'],['stormling','Witchlight']],void:[['voidspawn','Abyss Spawn'],['stareater','Blackstar Eater']]};
+const NIGHT={meadow:[['gustimp','Gloamwing Imp'],['cinderpup','Gloam Hound']],coast:[['gull','Moonglass Gull'],['tidewisp','Nightwisp']],cave:[['cavebat','Gloombat'],['ashwraith','Soot Shade']],
+  snow:[['snowharpy','Nightsnow Harpy'],['frostwolf','Moonfang Wolf']],heights:[['thunderhawk','Nightbolt Hawk'],['stormling','Witchlight']],void:[['voidspawn','Abyss Spawn'],['stareater','Blackstar Eater']]};
 (function(){Object.keys(NIGHT).forEach(th=>NIGHT[th].forEach(([b,name])=>{const m=MON[b];if(!m)return;const k='n_'+b,el=m.el.length===1&&m.el[0]!=='shadow'?[m.el[0],'shadow']:m.el.slice();
   MON[k]=Object.assign({},m,{n:name,art:k,el,night:1,base:b,hp:+(m.hp*1.05).toFixed(2),spd:+(m.spd*1.05).toFixed(2)});
   MON_DROPS[k]=(MON_DROPS[b]||[]).concat(['dust']);

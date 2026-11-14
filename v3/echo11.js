@@ -20,7 +20,7 @@ const ECHOARM={
   robe:{n:'Lumenveil',perk:'+12% maximum MP and +10% healing',mpP:.12,healUp:.10},
   vest:{n:'Veilrunner',perk:'+7% evasion and +8% speed',eva:.07,spdP:.08}};
 {const X={// the weapon families that had no recipe (every other class weapon in CLS_WPN): name, perk text and the numbers calcStats reads
-  axe:{n:'Hollowcleave',perk:'+20% damage with attacks that hit every foe',cleave:.2},
+  axe:{n:'Voidcleave',perk:'+20% damage with attacks that hit every foe',cleave:.2},
   greatsword:{n:'Dirgeblade',perk:'+15% physical damage',heavy:.15},
   lance:{n:'Wailpike',perk:'+25% damage to foes that have already acted',charge:.25},
   mace:{n:'Knellmaul',perk:'Stuns land 25% more often and +5% critical chance',stun:.25,crit:.05},

@@ -1,7 +1,7 @@
 // ===== mats11.js (v0.16.x): distinct material sprites =====
 // 1) Menu icons (16x16): every crafting material has its own colour and silhouette (each ore, log, herb and monster part), drawn with the
 //    PG grid + icPaint pipeline of icons.js (bevel from the upper left, outline, glint). icMatDraw is wrapped; the realm relics keep their
-//    older icons except Ember Ore and Verdant Moss. Guardian shards (es_*) are untouched.
+//    older icons except Kiln Ore and Verdant Moss. Guardian shards (es_*) are untouched.
 // 2) Overworld gather nodes show the material they hold: the node's material is fixed per spot (hash of seed, stage, tile) with the same
 //    odds gatherAt always used (healroot 40%, bluecap 30%, the tier herb 30%; ore and wood follow the stage tier), gatherAt is wrapped so the
 //    first Math.random() it draws selects exactly that herb, and drawNode (2D) and hdBill (HD-2D, the node card) swap the generic bush/rock/log

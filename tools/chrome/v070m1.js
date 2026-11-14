@@ -116,7 +116,7 @@ chk('Hexer: a cleanse removes the Hex',r.cleansed===0);
 chk(`Hexer: Hex 2 lowers the hero's damage (${r.hexDmg[0]} vs ${r.hexDmg[1]})`,r.hexDmg[0]<r.hexDmg[1]);
 chk(`Charger (Frostling Yeti): winds up (${r.windPlan}), then a Crushing Charge on the same hero (${r.hitFull} damage)`,r.cgRole==='charge'&&r.wind&&r.windPlan==='windup'&&r.unPlan==='unleash'&&r.unSame&&r.hitFull>0&&r.windGone||JSON.stringify(r));
 chk(`Charger: Guard halves it (${r.hitGuard} vs ${r.hitFull})`,r.sameAgain&&Math.abs(r.hitGuard-r.hitFull/2)<=Math.max(2,r.hitFull*.04)||JSON.stringify([r.hitGuard,r.hitFull]));
-chk(`Leech (Brine Jelly): Siphon drains the front heroes who do not guard (${r.drained.join('/')}) and heals ${r.healed}`,r.lcRole==='leech'&&r.siphon==='siphon'&&r.drained[0]>0&&r.drained[1]===0&&r.drained[2]>0&&r.healed>0||JSON.stringify(r));
+chk(`Leech (Tide Jelly): Siphon drains the front heroes who do not guard (${r.drained.join('/')}) and heals ${r.healed}`,r.lcRole==='leech'&&r.siphon==='siphon'&&r.drained[0]>0&&r.drained[1]===0&&r.drained[2]>0&&r.healed>0||JSON.stringify(r));
 chk(`Skirmisher (Frost Wolf): nothing at first, a Flanking Strike once the same three stood in front for ${r.lineN} actions (${r.flankHit} damage)`,r.fwRole==='flank'&&r.flank0===null&&r.flank==='flank'&&r.flankHit>0||JSON.stringify(r));
 chk(`Skirmisher: a swap resets the count (${r.lineAfter}) and the threat`,r.lineAfter===1&&r.flankAfter===null||JSON.stringify(r));
 chk(`boss: gathers power on its 4th turn, then a Cataclysm hits the whole Vanguard (${r.cataHit.join('/')})`,r.gather==='gather'&&r.gathered&&r.cata==='cataclysm'&&r.cataHit.every(x=>x>0)||JSON.stringify(r));

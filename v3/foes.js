@@ -6,14 +6,14 @@ const MON={
  mossling:{n:'Mossling',art:'mossling',el:['earth'],hp:1,atk:.9,def:1.1,mag:.8,res:.9,spd:.8,sk:[['Spore Puff','earth',1.1,'one','mag',[['poison',.5]]]]},
  gustimp:{n:'Gust Imp',art:'gustimp',el:['wind'],hp:.8,atk:.9,def:.8,mag:1,res:.9,spd:1.3,sk:[['Razor Gale','wind',1.1,'one','mag',[['bleed',.35]]]]},
  dewtoad:{n:'Dewtoad',art:'dewtoad',el:['water'],hp:1.15,atk:1,def:1,mag:.8,res:.9,spd:.85,sk:[['Tongue Lash','water',1.25,'one','phys'],['Puff Up','water',0,'self','buff',[['bulwark',1]]]]},
- cinderpup:{n:'Cinder Pup',art:'cinderpup',el:['fire'],hp:.9,atk:1.1,def:.8,mag:.8,res:.8,spd:1.1,sk:[['Ember Bite','fire',1.3,'one','phys',[['burn',.35]]]]},
+ cinderpup:{n:'Cinder Pup',art:'cinderpup',el:['fire'],hp:.9,atk:1.1,def:.8,mag:.8,res:.8,spd:1.1,sk:[['Scorch Bite','fire',1.3,'one','phys',[['burn',.35]]]]},
  crawler:{n:'Brine Crawler',art:'crawler',el:['water'],hp:1.1,atk:1.05,def:1.2,mag:.8,res:.9,spd:.8,sk:[['Pincer','water',1.3,'one','phys',[['bleed',.4]]],['Harden','water',0,'self','buff',[['bulwark',1]]]]},
  gull:{n:'Glass Gull',art:'gull',el:['wind','light'],hp:.8,atk:1.1,def:.8,mag:1,res:1,spd:1.4,sk:[['Glint Dive','light',1.3,'one','phys',[['blind',.3]]]]},
  tidewisp:{n:'Tide Wisp',art:'tidewisp',el:['water','lightning'],hp:.8,atk:.8,def:.8,mag:1.25,res:1.1,spd:1.1,sk:[['Static Tide','lightning',1,'all','mag',[['stun',.1]]]]},
  shellguard:{n:'Shellguard',art:'shellguard',el:['earth','water'],hp:1.4,atk:1,def:1.5,mag:.7,res:1,spd:.6,sk:[['Shell Slam','earth',1.5,'one','phys'],['Withdraw','earth',0,'self','buff',[['ward',1]]]]},
  magmaslime:{n:'Magma Slime',art:'magmaslime',el:['fire','earth'],hp:1.2,atk:1,def:1.1,mag:1,res:.9,spd:.8,sk:[['Lava Splash','fire',1.05,'all','mag',[['burn',.3]]]]},
  cavebat:{n:'Cave Bat',art:'cavebat',el:['shadow'],hp:.75,atk:1.1,def:.7,mag:.9,res:.9,spd:1.5,sk:[['Dusk Screech','shadow',1.1,'one','mag',[['blind',.5]]]]},
- ashwraith:{n:'Ash Wraith',art:'ashwraith',el:['fire','shadow'],hp:.9,atk:.8,def:.8,mag:1.3,res:1.2,spd:1,sk:[['Cinder Wail','fire',1.1,'all','mag',[['weaken',.3]]]]},
+ ashwraith:{n:'Ash Wraith',art:'ashwraith',el:['fire','shadow'],hp:.9,atk:.8,def:.8,mag:1.3,res:1.2,spd:1,sk:[['Smoulder Wail','fire',1.1,'all','mag',[['weaken',.3]]]]},
  slaggolem:{n:'Slag Golem',art:'slaggolem',el:['earth','fire'],hp:1.5,atk:1.2,def:1.4,mag:.7,res:.9,spd:.6,sk:[['Molten Fist','fire',1.6,'one','phys',[['burn',.4]]]]},
  frostwolf:{n:'Frost Wolf',art:'frostwolf',el:['ice'],hp:1,atk:1.2,def:.9,mag:.8,res:.9,spd:1.2,sk:[['Rime Fang','ice',1.5,'one','phys',[['bleed',.4]]]]},
  snowharpy:{n:'Snow Harpy',art:'snowharpy',el:['ice','wind'],hp:.8,atk:1,def:.8,mag:1.1,res:1,spd:1.4,sk:[['Hail Gale','wind',1,'all','mag',[['slow',.35]]]]},
@@ -26,7 +26,7 @@ const MON={
  voidspawn:{n:'Void Spawn',art:'voidspawn',el:['shadow'],hp:1.2,atk:1.1,def:1,mag:1.1,res:1,spd:.9,sk:[['Void Pulse','shadow',1.1,'all','mag',[['poison',.3]]]]},
  eclipsewraith:{n:'Eclipse Wraith',art:'eclipsewraith',el:['shadow','light'],hp:1,atk:.9,def:.9,mag:1.4,res:1.3,spd:1.1,sk:[['Penumbra','shadow',1.4,'one','mag',[['blind',.4]]]]},
  stareater:{n:'Star Eater',art:'stareater',el:['shadow','fire'],hp:1.1,atk:1.3,def:1,mag:.9,res:1,spd:1.1,sk:[['Starbite','shadow',1.7,'one','phys',[['bleed',.5]]]]},
- huskguard:{n:'Husk Watcher',art:'huskguard',el:['light','shadow'],hp:1.6,atk:1.3,def:1.5,mag:.8,res:1.1,spd:.6,sk:[['Hollow Slam','light',1.6,'one','phys'],['Vigil','light',0,'self','buff',[['bulwark',1]]]]}
+ huskguard:{n:'Husk Watcher',art:'huskguard',el:['light','shadow'],hp:1.6,atk:1.3,def:1.5,mag:.8,res:1.1,spd:.6,sk:[['Husk Slam','light',1.6,'one','phys'],['Vigil','light',0,'self','buff',[['bulwark',1]]]]}
 };
 // Scourges (GUARDIANS, 16: one per standard realm, four drawn per run) and Calamities (FINALS, 4: one per Calamity realm, one per run).
 // realms14: cut from 20 and 5. Every boss stands in its own themed realm (realmdata.js); the four Scourges that had no realm (The Locust Choir, Ironmaw Tortoise,
@@ -53,12 +53,12 @@ const GUARDIANS={
    phase:{at:.5,say:'OVERCLOCK. The Sentinel vents steam and speeds up!',self:[['haste',1],['might',1]],selfBad:[['break',1]]},intro:'Gears turn in the walls. An Iron Sentinel built by a forgotten guild clanks awake, its furnace heart blazing.'},
  siren:{n:'Siren of the Deep',art:'siren',el:['water','light'],hp:5.2,atk:.95,def:1.05,mag:1.28,res:1.3,spd:1.1,sk:[['Drowning Song','water',1.2,'all','mag',[['slow',.4]]],['Lure','light',1.5,'one','mag',[['stun',.3]]]],
    phase:{at:.5,say:'The Siren sings a healing hymn to herself!',self:[['regen',1]],heal:.1},intro:'A voice hums under the water, impossibly sweet. The Siren of the Deep rises, pearl-eyed.'},
- ashwyvern:{n:'Ashen Wyvern',art:'ashwyvern',el:['fire','wind'],hp:5.2,atk:1.3,def:1.1,mag:1.15,res:1,spd:1.15,sk:[['Cinder Dive','fire',1.6,'one','phys',[['burn',.5]]],['Ash Gale','wind',1.1,'all','mag',[['blind',.35]]]],
+ ashwyvern:{n:'Ashen Wyvern',art:'ashwyvern',el:['fire','wind'],hp:5.2,atk:1.3,def:1.1,mag:1.15,res:1,spd:1.15,sk:[['Scorch Dive','fire',1.6,'one','phys',[['burn',.5]]],['Soot Gale','wind',1.1,'all','mag',[['blind',.35]]]],
    phase:{at:.5,say:'The Wyvern takes to the air!',self:[['haste',1],['bulwark',1]]},intro:'Ash rains from the rafters. An Ashen Wyvern lands on the beacon and screams.'},
  frostlich:{n:'Frost Lich',art:'frostlich',el:['ice','shadow'],hp:5,atk:.9,def:1,mag:1.25,res:1.35,spd:1,sk:[['Soul Frost','ice',1.6,'one','mag',[['slow',.6]]],['Grave Chill','shadow',1.15,'all','mag',[['weaken',.4]]]],
    phase:{at:.5,say:'The Lich hides behind its phylactery ward!',self:[['ward',1]],wardEvery:4},intro:'Frost crawls up the walls in the shape of letters. The Frost Lich turns a page of its book and smiles.'},
- candlemoth:{n:'Candleking Moth',art:'candlemoth',el:['fire','light'],hp:5,atk:1,def:1,mag:1.3,res:1.2,spd:1.15,sk:[['Wax Drip','fire',1.5,'one','mag',[['burn',.5]]],['Lantern Dust','light',1.1,'all','mag',[['blind',.4]]],['Flicker Dive','fire',1.5,'one','phys',[['burn',.3]]]],
-   phase:{at:.5,say:'The Moth gutters, flares, and drinks every flame in the room!',self:[['haste',1]],party:[['blind',.5]],heal:.08},intro:'Every candle in the chamber leans the same way. The Candleking Moth unfolds from the dark, a crown of burning tapers on its brow and ten thousand dusty wings behind it.'},
+ candlemoth:{n:'Emperor Candlemoth',art:'candlemoth',el:['fire','light'],hp:5,atk:1,def:1,mag:1.3,res:1.2,spd:1.15,sk:[['Wax Drip','fire',1.5,'one','mag',[['burn',.5]]],['Lantern Dust','light',1.1,'all','mag',[['blind',.4]]],['Flicker Dive','fire',1.5,'one','phys',[['burn',.3]]]],
+   phase:{at:.5,say:'The Moth gutters, flares, and drinks every flame in the room!',self:[['haste',1]],party:[['blind',.5]],heal:.08},intro:'Every candle in the chamber leans the same way. The Emperor Candlemoth unfolds from the dark, a crown of burning tapers on its brow and ten thousand dusty wings behind it.'},
  brinehag:{n:'Brinehag Matriarch',art:'brinehag',el:['water','shadow'],hp:5.0,atk:1,def:1.05,mag:1.15,res:1.1,spd:.95,sk:[['Brine Curse','shadow',1.1,'all','mag',[['weaken',.35]]],['Drowning Hex','water',1.4,'one','mag',[['slow',.45]]],['Tide Mother','water',0,'self','buff',[['regen',1]]]],
    phase:{at:.5,say:'The Matriarch whistles up the drowned!',summon:'brinejelly',self:[['regen',1]]},intro:'Seaweed hair drips on the stones. The Brinehag Matriarch rises from the tide pool, a barnacled hat on her head and a drowned crew at her back.'},
  crowregent:{n:'The Crow Regent',art:'crowregent',el:['wind','shadow'],hp:4.7,atk:1.1,def:.95,mag:1,res:1,spd:1.1,sk:[['Carrion Dive','wind',1.5,'one','phys',[['bleed',.5]]],['Murder Wing','shadow',1.1,'all','mag',[['blind',.4]]],['Ill Omen','shadow',1.4,'one','mag',[['weaken',.5]]]],
@@ -69,7 +69,7 @@ const GUARDIANS={
 // v0.8.2: the Frost Lich (mag 1.4, ward every 3 turns), Ysolde (mag 1.35, spd 1.15), the Iron Sentinel (def 1.45) and the Siren (mag 1.35)
 // were eased: in fullsim.js bossgrid they won 0 to 40% where the other Scourges won 50 to 90% (docs/v080-roles-balance.md)
 const FINALS={
- dimmer:{n:'The Dimmer',art:'dimmer',el:['shadow','light'],hp:6.2,atk:1.25,def:1.3,mag:1.35,res:1.4,spd:1.1,sk:[['Hollow Hand','shadow',1.8,'one','phys',[['weaken',.5]]],['Dimming','shadow',1.25,'all','mag',[['blind',.3]]],['Starfall','light',1.3,'all','mag',[['break',.4]]]],
+ dimmer:{n:'The Dimmer',art:'dimmer',el:['shadow','light'],hp:6.2,atk:1.25,def:1.3,mag:1.35,res:1.4,spd:1.1,sk:[['Snuffing Hand','shadow',1.8,'one','phys',[['weaken',.5]]],['Dimming','shadow',1.25,'all','mag',[['blind',.3]]],['Starfall','light',1.3,'all','mag',[['break',.4]]]],
    phase:{at:.5,say:'The Dimmer swallows the light around it!',self:[['might',1],['bulwark',1]],party:[['blind',.5]]},intro:'The Dimmer waits in the black: a tall hollow in the shape of a figure, wearing every light it has swallowed.'},
  nidhra:{n:'Nidhra, Eclipse Dragon',art:'nidhra',el:['shadow','fire'],hp:6.4,atk:1.35,def:1.3,mag:1.3,res:1.25,spd:1.05,sk:[['Black Flame','fire',1.25,'all','mag',[['burn',.5]]],['Umbral Fang','shadow',1.9,'one','phys',[['bleed',.6]]],['Wingbeat','shadow',1.1,'all','phys',[['slow',.3]]]],
    phase:{at:.5,say:'Nidhra devours the eclipse and burns brighter!',self:[['might',1],['haste',1]]},intro:'Wings blot out the dead sky. Nidhra, the dragon who ate the sun, opens one burning eye.'},

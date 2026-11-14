@@ -1,13 +1,13 @@
 // ===== titles12.js (v0.18.8): the area title banner =====
 // One banner per arrival, themed per place. Owner's phone reports: the title was squished into a tall narrow column, fired again after every
-// battle, carried the weather and a second line on the Breach, and had the kind word inside the name ("Sanctum: Duskspire Sanctum").
+// battle, carried the weather and a second line on the Breach, and had the kind word inside the name ("Sanctum: Duskhaven Sanctum").
 //   1. layout: titles12.css (full view width with a max, small letters on phones, two lines at most, centred, below the minimap on phones)
 //   2. arrival only: showLocation also runs after a battle, a weather change, "back at the entrance"... A call for the map the banner last
 //      showed (same game) keeps everything else it does (music, header, hints) but does not light the banner again. Arriving at a map from
 //      another map, loading a game or starting one shows it.
 //   3. the banner is built here: a small kind word above the name (Den, Lair, Sanctum; Relit on a field whose beacon is lit), the name without a
 //      trailing Sanctum / Den / Lair, a rule in the kind's shape and a colour from the realm's THEME palette. No weather. WS.locN keeps a
-//      plain text form for the tests and the feedback log ("Sanctum: Duskspire"); WS.locX holds the parts; t12Paint (called by the world loop
+//      plain text form for the tests and the feedback log ("Sanctum: Duskhaven"); WS.locX holds the parts; t12Paint (called by the world loop
 //      in ui.js) turns them into the markup. The tag word is drawn from data-t (CSS), the plain "Den: " / " (relit)" are hidden text nodes, so textContent equals WS.locN.
 //   4. the kind-tagged names in the Records lists, the map markers and the Waystone lists lose the trailing Sanctum (FORT_NAMES).
 // The Breach's description text is in records12.js (R12_BREACH_TEXT).
