@@ -557,7 +557,7 @@ Registered (load order; 1 is next to the base):
 
 Runs: 14 cohere15 → 13 chars13 (around) → 11 chars13 → 9 perf12 → 8 fxkind11 → 7 res11 → 6 battle11 (around) → 5 sprhd2 → 4 hdspell → 3 hdstage (around) → 2 gfx6battle (around) → 1 anim → **base** → 2 gfx6battle (around) → 3 hdstage (around) → 6 battle11 (around) → 10 kits12 → 12 chars13 → 13 chars13 (around)
 
-### cmdHtml (13 hooks)
+### cmdHtml (14 hooks)
 Registered (load order; 1 is next to the base):
 1. `battle3.js` result: tall layout: HP/MP bars and the auto note in the command head
 2. `battle5.js` result: cue and glow on the command menu
@@ -570,10 +570,11 @@ Registered (load order; 1 is next to the base):
 9. `skills12.js` result: role tier on the battle skill rows
 10. `menus12.js` result: battle skill rows: a missing scope, kind or Primer / Detonator tag is added; the last used skill is marked
 11. `battle16.js` result: recruited bosses: a note where the Summon command was for anyone who cannot call them
-12. `legends17a.js` result: greyed rows with the reason, the boss command, HP for MP in his summons menu
-13. `legends17a.js` result: Joseth among the callers in the greyed Summon note
+12. `legends17b.js` result: Spirit Call: a turn of stillness, beside the Monk
+13. `legends17a.js` result: greyed rows with the reason, the boss command, HP for MP in his summons menu
+14. `legends17a.js` result: Joseth among the callers in the greyed Summon note
 
-Runs: 4 summon8 (around) → **base** → 1 battle3 (result) → 2 battle5 (result) → 3 battle4 (result) → 4 summon8 (around) → 5 battle9 (result) → 6 skillfilt9 (result) → 7 battle11 (result) → 8 skillrows11 (result) → 9 skills12 (result) → 10 menus12 (result) → 11 battle16 (result) → 12 legends17a (result) → 13 legends17a (result)
+Runs: 4 summon8 (around) → **base** → 1 battle3 (result) → 2 battle5 (result) → 3 battle4 (result) → 4 summon8 (around) → 5 battle9 (result) → 6 skillfilt9 (result) → 7 battle11 (result) → 8 skillrows11 (result) → 9 skills12 (result) → 10 menus12 (result) → 11 battle16 (result) → 12 legends17b (result) → 13 legends17a (result) → 14 legends17a (result)
 
 ### unpackG (13 hooks)
 Registered (load order; 1 is next to the base):
@@ -626,6 +627,22 @@ Registered (load order; 1 is next to the base):
 
 Runs: 7 field9 (around) → 3 world3 → 2 metastats → 1 journey → **base** → 4 chance → 5 ailments → 6 map → 7 field9 (around) → 8 party12 → 9 world12 → 10 worldart12 → 11 legends17b
 
+### calcStats (11 hooks)
+Registered (load order; 1 is next to the base):
+1. `ailments.js` after: wound shrinks max HP
+2. `echocore.js` after: Echoforged weapon perks
+3. `comp.js` after: paired pet stat bonus
+4. `roles.js` after: charm perks
+5. `natures6.js` after: nature and mastery stat perks
+6. `riftkeeper9.js` after: Riftwalker key perks
+7. `roles9.js` after: faith perks
+8. `echo11.js` after: Echoforged weapon and armour perks
+9. `battle16.js` after: Nikaris: a little less ATK and MAG
+10. `legends17b.js` after: Kaevan: a little less ATK (in line with the other Legendaries)
+11. `legends17a.js` after: Light Fingers: harder to hit
+
+Runs: **base** → 1 ailments → 2 echocore → 3 comp → 4 roles → 5 natures6 → 6 riftkeeper9 → 7 roles9 → 8 echo11 → 9 battle16 → 10 legends17b → 11 legends17a
+
 ### placeAt (11 hooks)
 Registered (load order; 1 is next to the base):
 1. `legends.js` after: Jaeson's storm
@@ -641,21 +658,6 @@ Registered (load order; 1 is next to the base):
 11. `legends17a.js` after: Zeus howls up a storm
 
 Runs: 10 world16 (around) → 6 map → 4 world3 (around) → 3 stuck (around) → **base** → 1 legends → 2 progression → 3 stuck (around) → 4 world3 (around) → 5 map → 7 bigmap → 8 field9 → 9 world16 → 10 world16 (around) → 11 legends17a
-
-### calcStats (10 hooks)
-Registered (load order; 1 is next to the base):
-1. `ailments.js` after: wound shrinks max HP
-2. `echocore.js` after: Echoforged weapon perks
-3. `comp.js` after: paired pet stat bonus
-4. `roles.js` after: charm perks
-5. `natures6.js` after: nature and mastery stat perks
-6. `riftkeeper9.js` after: Riftwalker key perks
-7. `roles9.js` after: faith perks
-8. `echo11.js` after: Echoforged weapon and armour perks
-9. `battle16.js` after: Nikaris: a little less ATK and MAG
-10. `legends17a.js` after: Light Fingers: harder to hit
-
-Runs: **base** → 1 ailments → 2 echocore → 3 comp → 4 roles → 5 natures6 → 6 riftkeeper9 → 7 roles9 → 8 echo11 → 9 battle16 → 10 legends17a
 
 ### classSkills (10 hooks)
 Registered (load order; 1 is next to the base):
@@ -1109,6 +1111,15 @@ Registered (load order; 1 is next to the base):
 
 Runs: 4 legends17a → 2 quests16 → 1 records12 → **base** → 3 quests16 (result)
 
+### sumFire (4 hooks)
+Registered (load order; 1 is next to the base):
+1. `kits12.js` after: boss entrance: rings and a glow
+2. `legends17b.js` around: a Monk's lesser guardian stands beside him, not in his place
+3. `legends17a.js` before: one summon layer: the pack goes home
+4. `legends17a.js` after: the blood summon for his guardian
+
+Runs: 3 legends17a → 2 legends17b (around) → **base** → 1 kits12 → 2 legends17b (around) → 4 legends17a
+
 ### townDecorActors (4 hooks)
 Registered (load order; 1 is next to the base):
 1. `world12.js` after: the town landmark in the 2D depth sort
@@ -1159,13 +1170,13 @@ Registered (load order; 1 is next to the base):
 
 Runs: 2 cohere15 → **base** → 1 terrain13 → 3 cohere15
 
-### sumFire (3 hooks)
+### unitBox (3 hooks)
 Registered (load order; 1 is next to the base):
-1. `kits12.js` after: boss entrance: rings and a glow
-2. `legends17a.js` before: one summon layer: the pack goes home
-3. `legends17a.js` after: the blood summon for his guardian
+1. `kits12.js` result: a guardian fight stands on the boss slots; a summoned guardian takes the party boss slot or stands clear of its allies
+2. `legends17b.js` around: a guardian beside the Monk has a place of its own
+3. `legends17a.js` before: the pack beside the Vanguard, Cerberus in front of it
 
-Runs: 2 legends17a → **base** → 1 kits12 → 3 legends17a
+Runs: 3 legends17a → 2 legends17b (around) → **base** → 1 kits12 (result) → 2 legends17b (around)
 
 ### walkerCanvas (3 hooks)
 Registered (load order; 1 is next to the base):
@@ -1293,13 +1304,6 @@ Registered (load order; 1 is next to the base):
 2. `worldart13.js` result: lair fronts as solid masses
 
 Runs: **base** → 1 worldart12 (result) → 2 worldart13 (result)
-
-### unitBox (2 hooks)
-Registered (load order; 1 is next to the base):
-1. `kits12.js` result: a guardian fight stands on the boss slots; a summoned guardian takes the party boss slot or stands clear of its allies
-2. `legends17a.js` before: the pack beside the Vanguard, Cerberus in front of it
-
-Runs: 2 legends17a → **base** → 1 kits12 (result)
 
 ### accOf (1 hook)
 Registered (load order; 1 is next to the base):
