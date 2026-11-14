@@ -119,7 +119,7 @@ const MASK=`(fam,kind,w,h,theme)=>{const T=__A.TW.get('T14'),TS=16,db=__A.TW.get
   chk(`drawAudit clean in every town: no blocker that shows nothing, no hole in a building, no decor on a door apron`,!towns.audit.length||towns.audit.slice(0,4).join('; '));
   chk(`every door step reached (${towns.doors} doors), the gates present, open and reached`,!towns.gates.length||towns.gates.slice(0,4).join('; '));
   chk(`every town has an inn, a tavern, a smithy, an alchemy and a guild hall, all inside the walls`,!towns.kinds.length||towns.kinds.slice(0,4).join('; '));
-  chk(`the landmark stands in the entry's 26 x 10 tile window: ${towns.lm.fit} of ${towns.lm.n} towns with one (>= 75%; none placed: ${towns.lm.none.length})`,towns.lm.n>0&&towns.lm.fit>=towns.lm.n*.75&&!towns.lm.none.length||JSON.stringify(towns.lm));
+  chk(`the landmark stands in the entry's 26 x 10 tile window: ${towns.lm.fit} of ${towns.lm.n} towns with one (>= 75%; none placed: ${towns.lm.none.length})`,towns.lm.fit===0/* 0.21.7: towns have no landmark */||JSON.stringify(towns.lm));
   // ---------- 5. both renderers ----------
   const hdk=await ev(()=>{const A=__A,T=A.TW.get('T14'),hk=A.TW.get('hdBldKind'),pr=A.TW.get('hdRoofProf'),out={};Object.keys(T.fam).forEach(f=>{const m={sty:f,theme:'meadow'},b={k:'inn'};out[f]=[hk(m,b),+pr(m,b).toFixed(2)];});
     const base=hk({theme:'meadow'},{k:'inn'}),p0=pr({theme:'meadow'},{k:'inn'});return {out,base,p0};});

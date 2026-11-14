@@ -217,8 +217,10 @@ function lmSpots(m,L,loose){const g=m.t,H=g.length,W=g[0].length,ent=lmEntries(m
         score+=(ov?-ov*7:24)-mini*1.2-Math.max(0,cx-(cl+19))*.9;}else score+=seen?2:0;});
     if(g[fy][fx]===':')score-=1.5;out.push({fx,fy,score});}
   return out.sort((a,b)=>b.score-a.score);}
+const LM_TOWNS=false;
 // place the landmark of a fresh town; the footprint must lose nothing but its own four tiles from the reach (no pocket, no blocked door or gate)
 function lmPlace(m){if(!m||m.kind!=='town'||m.archive||m.lm!==undefined||typeof m.s!=='number')return;m.lm=null;
+  if(!LM_TOWNS)return;/* 0.21.7: the owner asked for towns without landmarks (the Breach islands keep theirs) */
   let Z;try{Z=ZS(m.s);}catch(e){return;}const L=Z&&LM_BY_TOWN[Z.town];if(!L||!m.t)return;
   const pa=()=>{try{return typeof pathAssets==='function'?pathAssets(m).length:0;}catch(e){return 0;}},pa0=pa(),before=lmReach(m),iss0=(()=>{try{return mapIssues(m).length;}catch(e){return 0;}})(),spots=lmSpots(m,L,1).slice(0,80);
   for(const sp of spots){const sv=[];for(let j=0;j<2;j++)for(let i=0;i<2;i++){sv.push(m.t[sp.fy+j][sp.fx+i]);m.t[sp.fy+j][sp.fx+i]='j';}
@@ -241,8 +243,8 @@ HOOK.before('interact','world12','facing a landmark reads its line',function(){t
   if(m&&m.lm&&tileAt(m,fx,fy)==='j'){const L=LM12.find(q=>q.id===m.lm.id);if(L)return HOOK.stop(say(lmCap(L.n),L.line));}}catch(e){}});
 HOOK.xform('drawAudit','world12','landmark footprints draw; nodes are checked',function(out,m){try{if(!out)return out;out.hidden=out.hidden.filter(h=>!(h.c==='j'&&m.lm));out.nodes=nodeIssues(m);}catch(e){}return out;});
 // the name in the town's description lines: the realm's intro and the Waystone list
-ZONES.forEach(z=>{const L=LM_BY_TOWN[z.town];if(L&&z.intro&&!z.lmNote){z.lmNote=1;z.intro+=` You will know ${z.town} by ${L.n}, in plain sight from the gate.`;}});
-HOOK.xform('vModal','world12','the landmark on each Waystone row',function(h,m){try{if(m&&m.type==='travel'&&typeof h==='string'&&G&&G.visited)G.visited.forEach(s=>{const Z=ZS(s),L=Z&&LM_BY_TOWN[Z.town];if(!L)return;
+if(LM_TOWNS)ZONES.forEach(z=>{const L=LM_BY_TOWN[z.town];if(L&&z.intro&&!z.lmNote){z.lmNote=1;z.intro+=` You will know ${z.town} by ${L.n}, in plain sight from the gate.`;}});
+HOOK.xform('vModal','world12','the landmark on each Waystone row',function(h,m){try{if(LM_TOWNS&&m&&m.type==='travel'&&typeof h==='string'&&G&&G.visited)G.visited.forEach(s=>{const Z=ZS(s),L=Z&&LM_BY_TOWN[Z.town];if(!L)return;
   const a=`<b>${esc(Z.town)}</b><small>`,i=h.indexOf(a);if(i<0)return;const j=h.indexOf('</small>',i);if(j>0)h=h.slice(0,j)+' · '+esc(lmCap(L.n))+h.slice(j);});}catch(e){}return h;});
 // ---------- 4. gathering nodes: never on a chest or a prop, always reachable (mapheal's strict reach) ----------
 // placeNodes picked tiles from the field's free list or a flood of the dungeon before the chests and props went down, so a herb could land on a

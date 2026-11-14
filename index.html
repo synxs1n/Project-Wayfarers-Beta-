@@ -2119,7 +2119,7 @@ html:not(.flat) .battle.b3 .bline .b4mo .b4bar{box-shadow:inset 0 0 0 1px #000,0
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.21.6";const APP_BUILD="97b5107e9e28";
+(function(){const APP_VER="0.21.7";const APP_BUILD="56f8ebaa06e1";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2892,7 +2892,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.21.6";const APP_BUILD="97b5107e9e28";
+const APP_VER="0.21.7";const APP_BUILD="56f8ebaa06e1";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2900,6 +2900,7 @@ const APP_VER="0.21.6";const APP_BUILD="97b5107e9e28";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.21.7',['Towns no longer have a landmark standing in them; the ground where it stood is open. The Breach islands keep theirs.']],
  ['Beta v0.21.6',['Battle: double tapping or holding a foe\'s HP plate opens that foe\'s card even where another foe stands under the plate.']],
  ['Beta v0.21.5',['World and names: chests open at once again. Places you have explored follow your account, so click to walk works on another device. The Breach Waystone stands in the centre. New journeys leave towns by the west as often as any other side, every town gate has its own signpost, and no town is left without a way out. About a hundred names changed so the same words (hollow, frost, cinder, ember and more) stop repeating: Cinderhollow Deeps is Kilnscar Depths, Hollowmere is Larkspur, Frostgate is Whitehearth, and so on. Saves and bestiary records carry over.']],
  ['Beta v0.21.4',['Battle and roster: every turn opens on the main actions (no remembered submenu). Space, Enter or Z continues past victory, defeat and story screens, and Settings > Controls can bind up to four keys per action. Pets of the Scourges removed in 0.20.9 can be summoned again. Recruited bosses can only be called by Nikaris or a Priest; a summoned Scourge takes the field at full size in place of the three Vanguard heroes, who return unharmed when it leaves. Guardians and Nikaris are tuned down slightly. Skills are learned at 1, 1, 6, 11, 15, 20, 24, 28, 32, 37, 41 and 45, so three by level 10 (nothing already learned is lost). Dual type wayfarers do not turn up for recruitment before the third realm.']],
@@ -31898,8 +31899,10 @@ function lmSpots(m,L,loose){const g=m.t,H=g.length,W=g[0].length,ent=lmEntries(m
         score+=(ov?-ov*7:24)-mini*1.2-Math.max(0,cx-(cl+19))*.9;}else score+=seen?2:0;});
     if(g[fy][fx]===':')score-=1.5;out.push({fx,fy,score});}
   return out.sort((a,b)=>b.score-a.score);}
+const LM_TOWNS=false;
 // place the landmark of a fresh town; the footprint must lose nothing but its own four tiles from the reach (no pocket, no blocked door or gate)
 function lmPlace(m){if(!m||m.kind!=='town'||m.archive||m.lm!==undefined||typeof m.s!=='number')return;m.lm=null;
+  if(!LM_TOWNS)return;/* 0.21.7: the owner asked for towns without landmarks (the Breach islands keep theirs) */
   let Z;try{Z=ZS(m.s);}catch(e){return;}const L=Z&&LM_BY_TOWN[Z.town];if(!L||!m.t)return;
   const pa=()=>{try{return typeof pathAssets==='function'?pathAssets(m).length:0;}catch(e){return 0;}},pa0=pa(),before=lmReach(m),iss0=(()=>{try{return mapIssues(m).length;}catch(e){return 0;}})(),spots=lmSpots(m,L,1).slice(0,80);
   for(const sp of spots){const sv=[];for(let j=0;j<2;j++)for(let i=0;i<2;i++){sv.push(m.t[sp.fy+j][sp.fx+i]);m.t[sp.fy+j][sp.fx+i]='j';}
@@ -31922,8 +31925,8 @@ HOOK.before('interact','world12','facing a landmark reads its line',function(){t
   if(m&&m.lm&&tileAt(m,fx,fy)==='j'){const L=LM12.find(q=>q.id===m.lm.id);if(L)return HOOK.stop(say(lmCap(L.n),L.line));}}catch(e){}});
 HOOK.xform('drawAudit','world12','landmark footprints draw; nodes are checked',function(out,m){try{if(!out)return out;out.hidden=out.hidden.filter(h=>!(h.c==='j'&&m.lm));out.nodes=nodeIssues(m);}catch(e){}return out;});
 // the name in the town's description lines: the realm's intro and the Waystone list
-ZONES.forEach(z=>{const L=LM_BY_TOWN[z.town];if(L&&z.intro&&!z.lmNote){z.lmNote=1;z.intro+=` You will know ${z.town} by ${L.n}, in plain sight from the gate.`;}});
-HOOK.xform('vModal','world12','the landmark on each Waystone row',function(h,m){try{if(m&&m.type==='travel'&&typeof h==='string'&&G&&G.visited)G.visited.forEach(s=>{const Z=ZS(s),L=Z&&LM_BY_TOWN[Z.town];if(!L)return;
+if(LM_TOWNS)ZONES.forEach(z=>{const L=LM_BY_TOWN[z.town];if(L&&z.intro&&!z.lmNote){z.lmNote=1;z.intro+=` You will know ${z.town} by ${L.n}, in plain sight from the gate.`;}});
+HOOK.xform('vModal','world12','the landmark on each Waystone row',function(h,m){try{if(LM_TOWNS&&m&&m.type==='travel'&&typeof h==='string'&&G&&G.visited)G.visited.forEach(s=>{const Z=ZS(s),L=Z&&LM_BY_TOWN[Z.town];if(!L)return;
   const a=`<b>${esc(Z.town)}</b><small>`,i=h.indexOf(a);if(i<0)return;const j=h.indexOf('</small>',i);if(j>0)h=h.slice(0,j)+' · '+esc(lmCap(L.n))+h.slice(j);});}catch(e){}return h;});
 // ---------- 4. gathering nodes: never on a chest or a prop, always reachable (mapheal's strict reach) ----------
 // placeNodes picked tiles from the field's free list or a flood of the dungeon before the chests and props went down, so a herb could land on a
