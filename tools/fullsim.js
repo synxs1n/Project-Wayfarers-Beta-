@@ -1,7 +1,7 @@
 // Beta v0.5.1: balance sims on the real game. Loads EVERY v3 module in build order (the list in v3build.py) in headless Chrome,
 // so every v0.5.0 system (XP catch up, surprise starts, first realm single types, Guild perks, shop and party changes) is live,
 // and drives battles with the same queue loop as tools/v3sim.js (the game's own careful brain or its auto).
-// Usage: node tools/fullsim.js <sim> [args]   sims: boss, stage1, xp, journey   (run from the repo root, no tools/v3 link needed)
+// Usage: node tools/fullsim.js <sim> [args]   sims: boss, stage1, xp, journey, early   (run from the repo root, no tools/v3 link needed)
 //   SEED=<n> replaces Math.random with a seeded LCG and freezes Date.now (new journeys draw their realms from it; DRAW=<n> steps the frozen clock to draw another
 //   journey, the same realms and bosses for every run of one sim), so two builds
 //   can be compared exactly (before/after a cleanup)
@@ -37,6 +37,7 @@ return {get G(){return G},set G(v){G=v},get B(){return B},V,get META(){return ME
   ENC_RATE,ENC_MIN_STEPS,SOLID,syncPools:typeof syncPools==='function'?syncPools:()=>{},roamSpawn:typeof roamSpawn==='function'?roamSpawn:null,miniFor:typeof miniFor==='function'?miniFor:null,siteHasMini:typeof siteHasMini==='function'?siteHasMini:null,ZS,newRun:typeof newRun==='function'?newRun:null,avgLv,gearTier,ROAM:typeof ROAM!=='undefined'?ROAM:null,SURPRISE:typeof SURPRISE!=='undefined'?SURPRISE:null,
   DUAL_FROM:typeof DUAL_FROM!=='undefined'?DUAL_FROM:null,B4:typeof B4!=='undefined'?B4:null,XPCU:typeof XPCU!=='undefined'?XPCU:null,need,
   cfgSet:(k,v)=>{const p=k.split('.');let o=eval(p[0]);for(let i=1;i<p.length-1;i++)o=o[p[i]];o[p[p.length-1]]=v;},
+  E17:typeof E17!=='undefined'?E17:null,get WS(){return WS},get MAPS(){return MAPS},ZONES,ro14Pool:typeof ro14Pool==='function'?ro14Pool:null,xpFor,
   innHeal:()=>Object.values(G.roster).forEach(c=>{c.ail={};c.st={};c.S=calcStats(c);c.hp=c.S.mhp;c.mp=c.S.mmp;})};`;
 const LOOP=`
 const Q=window.__Q;
@@ -44,12 +45,12 @@ ${JSON.stringify(process.env.CFGSET||'')}.split(';').forEach(kv=>{if(!kv)return;
 function run(spec){Q.length=0;try{A.syncPools();}catch(e){}
   // the sims stand in for a player who plays every fight: the 'win it manually once first' auto lock on bosses does not apply
   try{A.G.bossWon=new Proxy({},{get:()=>1});}catch(e){}A.setSmart(!window.__AUTO);A.V.auto=true;try{A.META.cfg.autoOn=true;}catch(e){}A.META.best={};window.__TYPEFREE=0;if(!A.startBattle(spec))return null;const lk=!!(A.B&&A.B.autoLock);if(lk){window.__TYPEFREE=1;A.B.auto=true;}
-  let it=0;while(it++<400000){const m=A.V.modal;if(m&&(m.type==='result'||m.type==='lose'))break;
+  let it=0,hpEnd=null;/* early: the party's HP at the last step before the fight ended (the rewards may level a hero up and heal it) */while(it++<400000){const m=A.V.modal;if(m&&(m.type==='result'||m.type==='lose'))break;
     if(!Q.length){if(A.B&&A.B.mode==='cmd')(window.__AUTO?A.autoTurn:A.autoTurnSmart)();else if(A.B&&!A.B.over)A.advance();if(!Q.length)break;}
-    if((window.__MANUAL||lk)&&A.B)A.B.tA=0;Q.shift()();}
-  const m=A.V.modal,res=m&&m.type==='result'?'win':m&&m.type==='lose'?'lose':'stuck',info=m&&m.info;const t=A.B?A.B.time:0,en=A.B?A.B.en.map(e=>({el:e.el.slice(),boss:!!e.boss,elite:!!e.elite,role:e.role||null})):[],sur=A.B?!!A.B.surprise:false;
+    if((window.__MANUAL||lk)&&A.B)A.B.tA=0;Q.shift()();if(window.__HPTRACK&&A.B&&!A.B.over)hpEnd=A.G.party.reduce((a,id)=>a+Math.max(0,A.G.roster[id].hp),0);}
+  const m=A.V.modal,res=m&&m.type==='result'?'win':m&&m.type==='lose'?'lose':'stuck',info=m&&m.info;const t=A.B?A.B.time:0,en=A.B?A.B.en.map(e=>({el:e.el.slice(),boss:!!e.boss,elite:!!e.elite,role:e.role||null,lv:e.lv,mhp:e.S.mhp,pow:Math.max(e.S.atk,e.S.mag),xp:A.xpFor(e)})):[],sur=A.B?!!A.B.surprise:false;
   const pt=A.B?A.B.pturns||0:0,an=A.B?A.B.actN||0:0,b4=A.B?{det:A.B.nDet||0,mp:A.B.b4detMp||0,sw:(A.B.b4swN||0),aSw:A.B.autoSwaps||0,roles:A.B.b4roles||{},mo:A.B.b4mo?A.B.b4mo.hist.length:0,gt:A.B.b4gTells||0,gl:A.B.b4gLand||0,gs:A.B.b4gStop||0,gh:A.B.b4gHits||0,gk:A.B.b4g?A.B.b4g.key:null}:{};
-  A.V.modal=null;if(A.B)A.finishBattle("x");window.__TYPEFREE=0;return {res,t,info,en,sur,pt,an,b4,lk};}
+  A.V.modal=null;if(A.B)A.finishBattle("x");window.__TYPEFREE=0;return {res,t,info,en,sur,pt,an,b4,lk,hpEnd};}
 function party(ids,lv,tier){A.newGame(ids.slice(0,3));const G=A.G;G.roster={};G.party=[];ids.forEach(id=>{const c=G.roster[id]=A.newChar(id,lv,tier);if(A.GEAR['k_cape_'+Math.min(5,tier)]){c.eq.k='k_cape_'+Math.min(5,tier);c.S=A.calcStats(c);c.hp=c.S.mhp;c.mp=c.S.mmp;}G.party.push(id);});}
 let seed=909;const R=()=>{seed=(seed*1103515245+12345)&0x7fffffff;return seed/0x7fffffff;};
 const pool=A.RAW.filter(r=>r[6]!=='L'&&r[6]!=='x'&&A.TPL[r[0]]&&!A.TPL[r[0]].mon).map(r=>r[0]);
@@ -146,6 +147,42 @@ gim:N=>`N=${N||6};const out=[];const SZ=[3,4,5,6,6];
       row.push(k+' '+Math.round(100*w/Math.max(1,n))+'% t'+(gt/Math.max(1,n)).toFixed(1)+' l'+(gl/Math.max(1,n)).toFixed(1)+' s'+(gs/Math.max(1,n)).toFixed(1)+' hp'+Math.round(100*gh/Math.max(1,mh))+'%');}
     out.push((auto?'auto    ':'careful ')+'stage '+(s+1)+' party '+SZ[s]+' lv '+A.STAGE_BOSS_LV[s]+': '+row.join(' | '));}}
   window.__AUTO=false;return out.join('\\n');`,
+// early [N] (early17.js, docs/early17.md): the first field of the first realm for a fresh party of three from the starter pool. Geometry over
+// MAPSEEDS (default 8) maps of each realm that can come first: the grass tiles and the roamers in each band of the field (near, middle, far third
+// by walking distance from the entrance), elites among them, the nearest roamer. Then N fights per row at party levels 1 to 5 (a new journey
+// starts at 3): "before" (the module off), and the near, middle and far band with it on (spec.e17), with the game's auto and the careful brain:
+// win rate, share of the party's HP lost (mean, and how many fights cost over 35%), rounds (hero turns / 3), foes, their levels and HP, XP of the
+// foes. Roamer fights the same way (a plain roamer and an elite before; a near and a middle roamer after). EARLY_LV=3,4 limits the levels.
+// EARLY_ONLY=1: only the near and middle grass rows with auto (the test tools/chrome/v193a.js reads them).
+early:N=>`N=${N||150};const out=[];const E=A.E17,zi=Object.fromEntries(A.ZONES.map((z,i)=>[z&&z.key,i]));const FIRST=['thistle','orchard','strand','lakes','moors'];
+  const sp=A.ro14Pool?A.ro14Pool():pool;const pick3=()=>{const p=[];while(p.length<3){const id=sp[Math.floor(R()*sp.length)];if(!p.includes(id))p.push(id);}return p;};
+  const KS=${+process.env.MAPSEEDS||8},geo=[0,0,0],ro=[0,0,0],el=[0,0,0],nearest=[],firstB=[0,0,0];let maps=0,soft=0;
+  for(const key of FIRST)for(let k=0;k<KS;k++){A.newGame(pick3());const G=A.G;G.run.order[0]=zi[key];G.run.seed=5000+k*977+zi[key]*31;A.resetMaps();try{A.syncPools();}catch(e){}
+    const m=A.getMap('f0');maps++;const c=E.api.dist(m);
+    for(let y=0;y<c.H;y++)for(let x=0;x<c.W;x++)if(m.t[y][x]===',')geo[E.api.bandAt(m,x,y)]++;
+    E.off=1;m.roam=null;const L=(A.roamSpawn(m)||[]).filter(r=>!r.gone);E.off=0;let nd=1e9,nb=2;
+    L.forEach(r=>{const b=E.api.bandAt(m,r.hx,r.hy);ro[b]++;if(r.elite)el[b]++;const d=c.D[r.hx+r.hy*c.W];if(d>=0&&d<nd){nd=d;nb=b;}});nearest.push(Math.round(100*nd/c.end));firstB[nb]++;
+    m.roam=null;soft+=(A.roamSpawn(m)||[]).filter(r=>r.e17).length;m.roam=null;}
+  const tg=geo[0]+geo[1]+geo[2];nearest.sort((a,b)=>a-b);
+  out.push('maps '+maps+' ('+FIRST.join(', ')+' x '+KS+' seeds): grass tiles near/middle/far '+geo.map(g=>Math.round(100*g/tg)+'%').join('/')+' | roamers per field near/middle/far '+ro.map(g=>(g/maps).toFixed(2)).join('/')+', elite '+el.map(g=>(g/maps).toFixed(2)).join('/')+' (made plain by early17: '+(soft/maps).toFixed(2)+' per field) | nearest roamer at '+nearest[0]+'% to '+nearest[nearest.length-1]+'% of the way (median '+nearest[nearest.length>>1]+'%), in the near/middle/far band on '+firstB.join('/')+' maps');
+  const LV=${JSON.stringify(process.env.EARLY_LV||'1,2,3,4,5')}.split(',').map(Number);
+  window.__HPTRACK=1;
+  const fight=(label,L,mk,auto,off)=>{window.__AUTO=auto;let w=0,n=0,hp=0,over=0,pt=0,foes=0,lv=0,lvMax=0,fh=0,xp=0,nb=[0,0,0,0];
+    for(let i=0;i<N;i++){seed=7000+i*13+L*101;party(pick3(),L,0);const G=A.G;G.run.order[0]=zi[FIRST[i%FIRST.length]];G.stage=0;G.cleared=[0,0,0,0,0];G.run.seed=1000+i;A.resetMaps();A.innHeal();
+      E.off=off?1:0;const spec=mk(i);if(!spec){E.off=0;continue;}const ph=G.party.reduce((a,id)=>a+G.roster[id].S.mhp,0);let r=null;try{r=run(spec);}catch(e){r=null;}E.off=0;if(!r)continue;n++;const win=r.res==='win';if(win)w++;
+      const lost=win?Math.max(0,1-(r.hpEnd==null?ph:r.hpEnd)/ph):1;hp+=lost;if(lost>.35)over++;pt+=r.pt;
+      foes+=r.en.length;nb[Math.min(3,r.en.length)]++;r.en.forEach(e=>{lv+=e.lv;lvMax=Math.max(lvMax,e.lv);fh+=e.mhp;xp+=e.xp;});}
+    window.__AUTO=false;const d=Math.max(1,n);
+    out.push('party lv '+L+' '+(auto?'auto   ':'careful')+' '+label+': win '+(100*w/d).toFixed(1)+'% | HP lost '+Math.round(100*hp/d)+'% (over 35% in '+Math.round(100*over/d)+'% of fights) | rounds '+(pt/d/3).toFixed(1)+' | foes '+(foes/d).toFixed(2)+' (1/2/3: '+nb.slice(1).map(x=>Math.round(100*x/d)+'%').join('/')+') lv '+(lv/Math.max(1,foes)).toFixed(1)+' (top '+lvMax+') | foe HP per fight '+Math.round(fh/d)+' | foe XP per fight '+Math.round(xp/d));};
+  const fld=b=>()=>Object.assign({stage:0,kind:'field',weather:'clear'},b==null?{}:{e17:b});
+  if(${process.env.EARLY_ONLY?1:0}){for(const L of LV){fight('grass near third    ',L,fld(0),true,0);fight('grass middle third  ',L,fld(1),true,0);}return out.join('\\n');}
+  for(const L of LV){fight('grass before (any place)',L,fld(null),true,1);fight('grass near third    ',L,fld(0),true,0);fight('grass middle third  ',L,fld(1),true,0);fight('grass far third     ',L,fld(2),true,0);
+    fight('grass before (any place)',L,fld(null),false,1);fight('grass near third    ',L,fld(0),false,0);}
+  // roamers: a real roamer of this journey's first field; before = the module off (the level every roamer has), elite = the same one as an elite
+  const rm=(b,elite)=>()=>{const m=A.getMap('f0');E.off=1;m.roam=null;const L=A.roamSpawn(m)||[];E.off=0;m.roam=null;const q=L.find(r=>!r.elite)||L[0];if(!q)return null;
+    const e=L.find(r=>r.elite);return Object.assign({stage:0,kind:'field',weather:'clear',roam:{mid:m.id,i:q.i,mon:q.mon,elite:!!elite,mod:elite?(e?e.mod:'swift'):null,name:elite?(e?e.name:q.name+' the Swift'):q.name}},b==null?{}:{e17:b});};
+  for(const L of LV.filter(x=>x>=3).concat([6,7])){fight('roamer before        ',L,rm(null,0),true,1);fight('elite roamer before  ',L,rm(null,1),true,1);fight('roamer near third    ',L,rm(0,0),true,0);fight('roamer middle third  ',L,rm(1,0),true,0);}
+  return out.join('\\n');`,
 journey:RUNS=>`RUNS=${RUNS||3};window.__DBG=${process.env.DBG?1:0};const out=[];const TM=${JSON.stringify(TIME)},EXPL=${+process.env.EXPLORE||1.5};const sums={lk:[],h:[],hm:[],ha:[],lv:[],f:[],tries:[],rf:[],rn:[],si:[],mi:[],mw:[]};const SITESHARE=${process.env.SITESHARE!=null?+process.env.SITESHARE:.7};const ROAMSHARE=${process.env.ROAMSHARE!=null?+process.env.ROAMSHARE:.8};
   const fT=(o,boss,auto)=>!o?0:TM.fightIn+TM.fightOut+(boss?TM.bossIntro:0)+o.pt*(auto?TM.autoDecide:TM.decide)+(o.an||o.pt*2)*(auto?TM.animAuto:TM.anim);
   // rewards: the game pays AUTO_REW of the XP for a win auto mostly played. A typical player plays (1-autoShare) of the ordinary fights by hand
@@ -173,9 +210,13 @@ journey:RUNS=>`RUNS=${RUNS||3};window.__DBG=${process.env.DBG?1:0};const out=[];
       // v0.9.5: the visible roamers this journey really spawns on the field and in the dungeon (ROAMSHARE of them fought: a first run
       // chases most of what it sees; half of them caught unaware for a surprise round), each a real roamer fight; then the random battles
       const RL=[f,d].flatMap(m=>{let L=[];try{m.roam=null;L=(A.roamSpawn&&A.roamSpawn(m))||[];}catch(e){}return L.map(r=>({m,r}));}),nR=Math.round(RL.length*ROAMSHARE);
+      // early17.js: the first field's random fights are spread along the route (the field's share of it, from the entrance to the dungeon door),
+      // each in the band of the field it falls in (spec.e17); the dungeon's share and the fights ground out before a boss are as before
+      const e17K=(s===0&&A.E17&&!A.E17.off)?bfs(f,fEnt,fDun):0,e17F=e17K&&fDun?(A.E17.api.frac(f,fDun[0],fDun[1])||1):1;
       const nf=Math.round(st*EXPL/perFight);walk+=st*EXPL+nR*TM.roamWalk;rfN+=nR;rnN+=nf;
       for(let i=0;i<nR+nf;i++){const isR=i<nR,q=isR?RL[Math.floor(i*RL.length/Math.max(1,nR))]:null;window.__MANUAL=isR&&q.r.elite?1:MAN(i);
         const spec=isR?{stage:s,kind:q.m.kind==='dungeon'?'dungeon':'field',weather:'clear',roam:{mid:q.m.id,i:q.r.i,mon:q.r.mon,elite:q.r.elite,mod:q.r.mod,name:q.r.name},surprise:i%2?1:0}:{stage:s,kind:'field',weather:'clear'};
+        if(!isR&&e17K>0){const pos=(i-nR+.5)/Math.max(1,nf)*st;if(pos<e17K){const fr=pos/e17K*e17F;spec.e17=fr<A.E17.cut[0]?0:fr<A.E17.cut[1]?1:2;}}
         const o=run(spec);window.__MANUAL=0;fights++;const man=isR&&q.r.elite||!!(o&&o.lk);lockN+=o&&o.lk?1:0;sec+=man?fT(o,0,0):fTt(o,0);secM+=fT(o,0,0);secA+=man?fT(o,0,0):fT(o,0,1);if(!o||o.res!=='win'){lost++;A.innHeal();}
         if(i%4===3)A.innHeal();}// a rest or a potion stop now and then
 
