@@ -55,7 +55,7 @@ const H=await open({w:1000,h:560,pre:PRE});const {ev,wait}=H;await ev(START);
    delete N.st.l17watch;__L17.perform(K,sk(K,'s1b'),[boss]);o.dOff=(B.l17dives||0)-d0;o.lim=__L17.limit(N).n;o.look=JSON.stringify(g('TPL').nikaris.look);}
   // Kaevan
   {const B=fresh(),K=U('kaevan'),boss=B.en[0],st=sk(K,'l17_steady'),tenk=sk(K,'tenk'),s1b=sk(K,'s1b');
-   o.stCost=st.cost;const a=flat(()=>__L17.calc(K,s1b,boss).dmg);__L17.perform(K,st,[K]);o.steady=!!K.st.l17steady;const b=flat(()=>__L17.calc(K,s1b,boss).dmg);o.steadyX=+(b/a).toFixed(2);
+   o.stCost=st.cost;o.steadyK=__L17.L17.kae.steady;const a=flat(()=>__L17.calc(K,s1b,boss).dmg);__L17.perform(K,st,[K]);o.steady=!!K.st.l17steady;const b=flat(()=>__L17.calc(K,s1b,boss).dmg);o.steadyX=+(b/a).toFixed(2);
    // Blinded and steadied: 80 shots, none misses; each spends the status
    let miss=0,spent=0;for(let i=0;i<80;i++){K.st.blind={t:3};K.st.l17steady={t:3};boss.fx=[];__L17.perform(K,s1b,[boss]);if(boss.fx.some(f=>f.txt==='Miss'))miss++;if(!K.st.l17steady)spent++;}o.miss=miss;o.spent=spent;o.blindKept=!!K.st.blind;
    delete K.st.blind;let m2=0;for(let i=0;i<120;i++){K.st.blind={t:3};boss.fx=[];__L17.perform(K,s1b,[boss]);if(boss.fx.some(f=>f.txt==='Miss'))m2++;}o.missBlind=m2;delete K.st.blind;
@@ -95,7 +95,7 @@ const H=await open({w:1000,h:560,pre:PRE});const {ev,wait}=H;await ev(START);
   r.quiver[0]===4&&r.quiver[2]>r.quiver[1]*3&&r.rain[0]===3&&r.rain[1]==='all'&&r.split[0]==='chain'&&r.traps.length===1&&r.traps[0]==='Snare Line'||JSON.stringify([r.quiver,r.rain,r.split,r.traps]));
  chk(`Hawk's Watch: the hawk dives after an ally's attack and after his own (${r.dAlly}, ${r.dSelf}), not after a heal, not once the watch is over; his Limit is still ${r.lim}`,r.watch&&r.dAlly===1&&r.dSelf===2&&r.dHeal===2&&r.dOff===2&&r.diveLog===2&&r.lim==='Primal Stampede'||JSON.stringify(r));
  chk(`Steady Draw: a fast action (cost ${r.stCost}), the next shot x${r.steadyX}; Blinded and steadied 80 shots miss ${r.miss} times (${r.missBlind} of 120 without it) and each spends it; Blind stays`,
-  r.stCost<1&&r.steady&&Math.abs(r.steadyX-1.6)<.02&&r.miss===0&&r.spent===80&&r.missBlind>25&&r.blindKept||JSON.stringify(r));
+  r.stCost<1&&r.steady&&Math.abs(r.steadyX-r.steadyK)<.02&&r.miss===0&&r.spent===80&&r.missBlind>25&&r.blindKept||JSON.stringify(r));
  chk(`Horizon Shot is one bolt (${r.tenk.join(' ')}), capped at ${r.cap[1]} of a 1000 HP boss (${r.cap[0]}) and not against other foes (${r.noCap}); Longshot pierces, Stillwind Bolt stops (${r.still[1]}), Shadowstorm ${r.storm.join(' at cost ')}`,
   r.tenk[0]==='Horizon Shot'&&r.tenk[1]==='one'&&r.tenk[2]===1&&r.tenk[3]===true&&r.cap[0]<=r.cap[1]/* a tanky random boss can take less than the cap */&&(r.noCap==null||r.noCap>r.cap[1])&&r.long[0]===true&&/stun/.test(r.still[1])&&/slow/.test(r.still[1])&&r.storm[1]>=1.4||JSON.stringify(r));
  chk(`Kaevan is still mounted, keeps Parthian Shot and the horde Limit (${r.klim})`,r.mount&&r.trait==='parthian'&&/Tempest|Hooves/.test(r.klim)||JSON.stringify([r.mount,r.trait,r.klim]));
@@ -175,6 +175,20 @@ const H=await open({w:1000,h:560,pre:PRE});const {ev,wait}=H;await ev(START);
   chk(`${id}'s trail: no actor while it counts (${x.p0}), four field wins move it on (${x.p1}), its own foe stands on the field (${x.actor}), the fight is ${(x.foes||[]).join(', ')}${x.wx&&x.wx!=='clear'?' under a '+x.wx:''}, then the old meeting (${x.meet}), and joining unlocks him on the account`,
    x.state==='active'&&x.act0===0&&x.have===4&&x.t1===1&&!!x.actor&&!!x.modal&&x.html&&(x.foes||[]).length===3&&x.kind==='legend'&&x.t2===2&&!x.joined0&&!!x.meet&&!x.meetL17&&!x.on0&&x.joined&&x.on1&&x.qs==='claimed'||JSON.stringify(x));});
  chk(`with the code the old meeting posts instead (${r.coded.join()})`,r.coded.length>=2&&r.coded.includes('kaevan:meeting')&&r.coded.includes('nikaris:meeting')&&r.coded.every(x=>/:meeting$/.test(x))||JSON.stringify(r.coded));
+}
+// ---------- 6b. Spirit Call beside the Monk (legends17b.js section 8) ----------
+{const r=await ev(()=>{const A=__A,g=A.TW.get,G=A.G,o={},SUM=g('SUM'),MI=g('MINIS')[0];G.roster.taro=g('newChar')('taro',20,2);G.party=['taro','brann','oren'];Object.values(G.roster).forEach(c=>{c.S=g('calcStats')(c);c.hp=c.S.mhp;c.mp=c.S.mmp;});
+  G.summons={[MI[0]]:{mon:MI[0],name:MI[2],mod:MI[5]}};A.V.auto=false;A.startBattle({stage:1,kind:'boss',seed:9});const B=A.B;B.auto=false;B.mode='cmd';const a=B.front.find(u=>u.id==='taro');B.cur=a;
+  o.pray=SUM.monkPray;o.can=g('sumCan')(a);const t0=g('delayOf')(a,1);a.l17pray=1;o.still=+(g('delayOf')(a,1)/t0).toFixed(2);a.l17pray=0;
+  g('sumFire')(a,G.summons[MI[0]],true);const u=B.sum&&B.sum.u;o.front=B.front.map(x=>x.isSum?'guardian':x.id);o.hidden=!!a.hidden;o.turns=u&&u.turnsLeft;o.pow=+(u.S.atk/g('sumMake')(G.summons[MI[0]],false,null).S.atk).toFixed(2);o.live=g('liveUnits')().includes(a)&&g('liveUnits')().includes(u);
+  o.box=!!g('unitBox')(u)&&!!g('unitBox')(a);o.now=g('delayOf')(a,1);o.swap=g('canSwap')()||!B.back.some(c=>c.hp>0);o.log=B.log[B.log.length-1];
+  // the Monk acts while the guardian is out
+  const hp0=B.en[0].hp;B.cur=a;g('perform')(a,g('ATTACK'),[B.en[0]]);o.acted=B.en[0].hp<=hp0&&B.front.includes(a);
+  g('sumEnd')('done');o.after=B.front.map(x=>x.id);o.hint=/made for boss fights/.test(g('vCompanions')());o.txt=/a turn of stillness/.test(g('vCompanions')());A.finishBattle('x');delete G.roster.taro;G.party=['brann','mira','oren'];return o;});
+ console.log('spirit call:',JSON.stringify(r));
+ chk(`Spirit Call: ${r.pray} turn of stillness (a short one: x${r.still}), the lesser guardian stands beside the Monk for ${r.turns} turns (${r.front.join(', ')}), its arrival costs him no turn, he still acts and the Vanguard may switch; afterwards ${r.after.join(', ')}`,
+  r.pray===1&&r.can&&r.still===.5&&r.front.length===4&&r.front[3]==='guardian'&&r.front.includes('taro')&&!r.hidden&&r.turns===4&&Math.abs(r.pow-.75)<.04&&r.live&&r.box&&r.now===0&&r.swap&&/fights beside/.test(r.log)&&r.acted&&r.after.length===3&&r.after.includes('taro')||JSON.stringify(r));
+ chk('the Summons tab says guardians and Lesser Scourges are made for boss fights, and Spirit Call reads "a turn of stillness"',r.hint&&r.txt||JSON.stringify([r.hint,r.txt]));
 }
 // ---------- 7. auto battle ----------
 {await ev(START);await ev(PARTY,46);

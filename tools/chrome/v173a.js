@@ -93,8 +93,8 @@ const OUT=__dirname+'/out';
     s=await ev(()=>{const A=__A,T=A.TW.get,B=A.B,a=B.front.find(u=>u.id==='taro');B.cur=a;a.mp=a.S.mmp;const can=T('sumCan')(a),ok=T('sumFire')(a,A.G.summons.mb_slagjaw,true),u=B.sum&&B.sum.u;A.render();return {ok,can,turns:u&&u.turnsLeft,menu:T('sumMenuHtml')(a),front:B.front.length,slot:B.sum&&B.sum.slot};});
     await wait(1700);const mv=await ev(RECTS);const g2=mv.front.find(f=>/Slagjaw/.test(f.n)),others=mv.front.filter(f=>f!==g2);await shot(`v173a_${tag}_monk`);
     console.log(tag,'monk',JSON.stringify(s),'guardian',Math.round(g2.l),Math.round(g2.r),'heroes',others.map(o=>Math.round(o.l)+'-'+Math.round(o.r)).join(' '));
-    chk(`${tag}: a lesser guardian stays 3 turns; the Monk has the Spirit Call command again (roster17.js)`,s.ok&&s.turns===3&&s.can===true||JSON.stringify(s));
-    chk(`${tag}: the Monk's guardian is boss sized, inside the stage and covers none of the other heroes (${others.length} beside it)`,others.length===2&&(g2.r-g2.l)/(boss.r-boss.l)>.85&&g2.l>=0&&g2.r<=mv.W&&others.every(o=>!hit(g2,o))||JSON.stringify([g2,others,mv.W]));
+    chk(`${tag}: a lesser guardian stays 4 turns beside the Monk (legends17b.js; ${s.front} in the Vanguard); the Monk has the Spirit Call command`,s.ok&&s.turns===4&&s.front===4&&s.can===true||JSON.stringify(s));
+    chk(`${tag}: the Monk's guardian is boss sized, inside the stage and covers none of the other heroes (${others.length} beside it)`,others.length===3&&(g2.r-g2.l)/(boss.r-boss.l)>.85&&g2.l>=0&&g2.r<=mv.W&&others.every(o=>!hit(g2,o))||JSON.stringify([g2,others,mv.W]));
     // the summon is gone after its turns and the heroes come back
     const back=await ev(()=>{const A=__A,B=A.B;A.TW.get('sumEnd')('done');return {front:B.front.map(u=>u.id),hid:B.front.some(u=>u.hidden)};});
     chk(`${tag}: when it leaves the Vanguard is back`,back.front.join()==='lumen,taro,oren'&&!back.hid||JSON.stringify(back));

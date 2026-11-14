@@ -167,3 +167,11 @@ Target: about 10 to 20% stronger than the base class in a boss fight, not more.
 - Joseth: 37% against 31% for the three Priests (+20%), and level with Brigid, the Fire Priest. Without the pack he is at 32% and does less than any Priest (1006: fewer MP, no Lampglow, no Miracle), so the pack is what makes him the upgrade. Tuned on the way: the dogs' moves about 22% under the proposal (Warm Nuzzle 1.3 > 1.0, Bolt Fang 1.5 > 1.15, Skyhowl 1.0 > .75, Hamstring 1.1 > .9 ...), his speed the Priest's (8, .7; the proposal had 9, .8), Pyre Chain 1.05 > .95, Bloodstorm 3.0 > 2.7. With the proposal's numbers: 40 to 44% over three runs.
 - How a foe's single blow is shared out does not matter: with pack pets taking none of them (`L17.pack.draw` .01) the result was the same (38 against 39), so the lever was left at 1 (a pet is a target like any unit).
 - Not modelled: a person calling the pack and then Cerberus on its last turn, Sic, a tamed pet or a recruited boss in his slots, and gold (Light Fingers, Toll Toss).
+## After 0.22.1: Spirit Call (legends17b.js section 8)
+The Monk's call now takes one short turn of stillness and the lesser guardian fights beside him (4 turns, .75 of a Priest's). Same tool, 80 fights a cell:
+| run | boss win % (none > first / hurt) | boss length | field length (first) |
+|---|---|---|---|
+| before, seed 7 | 47 > 38 / 38 | x1.09 / x1.11 | x1.67 |
+| after, seed 7 | 47 > 48 / 43 | x0.97 / x0.99 | x1.06 |
+| after, seed 11 | 44 > 43 / 43 | x0.99 / x1.00 | x1.02 |
+Neutral within the noise (about 4 points), no longer a loss. Pets, Invoke and recruited Scourges were not changed.

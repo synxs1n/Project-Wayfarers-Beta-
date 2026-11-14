@@ -7,9 +7,10 @@
 //    NIKARIS  Quiver Run (four arrows at one foe), Snare Line (the one trap: Thornwhisper, Tangleroot and Bramble Prison merged at the stronger
 //             numbers), Hawk's Watch (his hawk circles for three of his turns and dives after every attack his side makes), Moonless Volley as an
 //             arrow rain in three falls, Split Arrow (leaps between foes). Beast calls, heals, Beastbond, Invoke, the Limit and the 0.21.4 trim stay.
-//    KAEVAN   Steady Draw (a fast action: the next shot +60% and it cannot miss), Stillwind Bolt (the stopping shot: Stun and Slow; was Hobbling
+//    KAEVAN   Steady Draw (a fast action: the next shot +40% and it cannot miss), Stillwind Bolt (the stopping shot: Stun and Slow; was Hobbling
 //             Bolt), Longshot pierces, Shadowstorm heavier and slower, and the capstone is one bolt, Horizon Shot (pierce; against a boss it never
-//             takes more than L17.kae.cap of its max HP). Mount, Hoofbeat Charge, Parthian Shot, Feigned Retreat and the horde Limit stay.
+//             takes more than L17.kae.cap of its max HP). After 0.22.1 ("bring kevin down in line with the others"): 15% less ATK (L17.kae.atk),
+//             Steady Draw +40% (was 60), Longshot 1.6 at 20 MP, Shadowstorm 4.0, Horizon Shot 5.4, the quarrels 1.4 and 1.75. Mount, Hoofbeat Charge, Parthian Shot, Feigned Retreat and the horde Limit stay.
 //    JACE     (hero id jaeson; "Jace Vael, the Weatherwright") a Mage who makes weather and feeds on it:
 //             - Call Thunderstorm / Call Blizzard: in battle a fast action that sets the battle's weather for L17.jace.wxTurns of his turns (then the
 //               sky the fight began under returns); on the field (Field skills) they set the realm's weather for L17.jace.fieldSteps steps through
@@ -33,7 +34,7 @@
 // Test: tools/chrome/v195a.js. Balance tool: tools/chrome/legbal.js.
 const L17={
   nik:{watchTurns:3,dive:.55,diveBlind:.2,diveMax:12},
-  kae:{steady:1.6,cap:.18},
+  kae:{steady:1.4,cap:0.18,atk:0.85},
   jace:{wxTurns:5,fieldSteps:160,fieldMp:14,heal:.1,fedMag:.04,fedSpd:.03,fedMax:5,strike:.16,strikeRod:.45,rodPull:.85,rodTurns:3,
     ice:1.15,iceFx:[['slow',.3],['stun',.12]],veil:.8,lone:1.1,limMix:.9},
   C:{},old:{},legacy:{},perf:0,
@@ -49,16 +50,16 @@ const L17={
      ['s2_nikaris'],
      ['l17_split',null,{n:'Split Arrow',k:'phys',t:'chain',pw:2.6,mp:10,el:'shadow',role:'primer',dl:'ranged',d:'An arrow that splits in flight and may leap from foe to foe.'}],
      ['oldwood']],
-   kaevan:[['s1a'],['s1b'],['charge'],
+   kaevan:[['s1a',{pw:1.4}],['s1b',{pw:1.75}],['charge',{pw:1.8}],
      ['l17_steady',null,{n:'Steady Draw',k:'status',t:'self',mp:5,cost:.7,fx:[['l17steady',1]],own:1,d:''}],
      ['wheel'],
-     ['combo',{pw:2,pierce:1,d:'A bolt loosed at full gallop with Shadow and Lightning that ignores half of defense. Likely Breaks.'}],
+     ['combo',{pw:1.6,mp:20,pierce:1,d:'A bolt loosed at full gallop with Shadow and Lightning that ignores half of defense. Likely Breaks.'}],
      ['khan'],
-     ['r_hobble',{n:'Stillwind Bolt',pw:1.3,mp:9,el:'lightning',fx:[['stun',.45],['slow',1]],d:'The stopping shot: a Lightning bolt that Slows what it hits and may Stun it.'}],
+     ['r_hobble',{n:'Stillwind Bolt',pw:1.2,mp:9,el:'lightning',fx:[['stun',.45],['slow',1]],d:'The stopping shot: a Lightning bolt that Slows what it hits and may Stun it.'}],
      ['r_flash'],['s2_kaevan'],
-     ['s3a',{pw:3.4,cost:1.4,d:'His namesake shot. Very slow to draw, high crit.'}],
-     ['stormmark'],['eclipse'],
-     ['tenk',{n:'Horizon Shot',t:'one',hits:1,pw:5.2,pierce:1,crit:.2,mp:32,cost:1.5,fx:null,d:''}]],
+     ['s3a',{pw:4.0,cost:1.4,d:'His namesake shot. Very slow to draw, high crit.'}],
+     ['stormmark'],['eclipse',{pw:2.8}],
+     ['tenk',{n:'Horizon Shot',t:'one',hits:1,pw:5.4,pierce:1,crit:.2,mp:32,cost:1.5,fx:null,d:''}]],
    jaeson:[['s1a'],['s1b'],
      ['l17_static',null,{n:'Static Field',k:'mag',t:'all',pw:.9,mp:8,el:'lightning',role:'primer',d:'Charges the air over every foe with Lightning.'}],
      ['l17_storm',null,{n:'Call Thunderstorm',k:'status',t:'self',mp:8,cost:.5,l17wx:'storm',d:''}],
@@ -180,9 +181,10 @@ function l17Call(a,k){const W=WEATHER[k];if(!B||!W)return;const cur=B.l17wx;B.l1
       log(`The ${WEATHER[X.k].n.toLowerCase()} ${u.name} called blows itself out.`);banner(WEATHER[X.prev]?WEATHER[X.prev].n:'Clear skies','#cfd8e8');}}}catch(e){}
   return en1.apply(this,arguments);};}
 // Stormfed speed; the party is not slowed by snow while Jace stands
-{const dl0=delayOf;delayOf=function(u,cost){let d=dl0.apply(this,arguments);try{if(u&&u.l17fed&&B)d/=1+L17.jace.fedSpd*u.l17fed;
+{const dl0=delayOf;delayOf=function(u,cost){if(u&&u.l17now){u.l17now=0;return 0;}let d=dl0.apply(this,arguments);try{if(u&&u.l17pray)d*=.5;if(u&&u.l17fed&&B)d/=1+L17.jace.fedSpd*u.l17fed;
     if(B&&u&&u.side==='p'&&WX().spd&&WX().spd<1&&l17Snowy()&&l17Jace())d*=WX().spd;}catch(e){}return d;};}
 HOOK.after('startBattle','legends17b','a fresh fight: no Stormfed, no called sky, no hawk',function(r){try{if(B)allParty().forEach(c=>{delete c.l17fed;delete c.l17absT;delete c.l17dives;});}catch(e){}});
+HOOK.after('calcStats','legends17b','Kaevan: a little less ATK (in line with the other Legendaries)',function(S,c){try{if(S&&c&&c.id==='kaevan'&&!(G&&G.daily))S.atk*=L17.kae.atk;}catch(e){}});
 // damage rules (through the bonus argument, so the Mantle and every preview see the finished number)
 HOOK.wrap('calcDamage','legends17b','Steady Draw, Stormfed, snow on Jace and his Ice, the focused area spell, the Horizon Shot cap',function(next,a,sk,t,bonus){
   let m=1;const J=L17.jace;
@@ -299,7 +301,6 @@ L17.art=null;L17.looks={
     pal:{H:'#2f6fe0',P:'#8fd0f6',Q:'#f2d24a',J:'#2c58a8',Y:'#2c58a8',C:'#c8f4ff',M:'#2a2a3a',G:'#f2d24a',W:'#b9a070'}}};
 try{Object.keys(L17.looks).forEach(id=>{TPL[id].look=L17.looks[id];const r=RAW.find(x=>x[0]===id);if(r)r[7]=L17.looks[id];});}catch(e){console.error('legends17b looks',e);}
 {const hp1=heroPal;heroPal=function(L,els,id){const p=hp1.apply(this,arguments);try{if(L&&L.l17==='hunter'){p.F='#8a8a98';p.f='#8a5e3c';p.g='#f0e2c0';p.i='#3a2618';}
-    if(L&&L.l17==='weather'){p.t='#eef4fb';}
     if(L&&L.l17==='weather'){p.E=L.eyes||'#2f9aff';}}catch(e){}return p;};}
 // the parts on the body (side view: drawn on the bare figure, before the near arm and the weapon; the poses bend them with the body)
 function l17Hawk(g,x,y,face){// a perched hawk, about 9 wide and 13 tall, its feet at (x,y); face 1 looks right, -1 left, 0 shows its back
@@ -325,10 +326,6 @@ function l17Body(g,L,view){const k=L.l17;
     else if(view==='front'){g.poly([[15,16.6],[25,16.6],[29,19.4],[29,22.6],[11,22.6],[11,19.4]],'J');g.rect(11,22,18,1,'Q');g.rect(19,18,2,2,'G');g.s(19,18,'9');g.px([[18,20],[21,20]],'Q');}
     else{g.poly([[15,16.6],[25,16.6],[29,19.4],[29,23.6],[11,23.6],[11,19.4]],'J');g.rect(11,23,18,1,'Q');g.px([[19,25],[20,25],[20,26],[19,27],[20,28]],'Q');}}}
 // the parts on the head (after everything else)
-function l17Face(g,L,view,dy){dy=dy||0;
-  if(L.l17==='weather'){const P=L=>L.map(p=>[p[0],p[1]+dy]);
-    if(view==='side'){g.px(P([[19,11],[20,11],[19,14],[20,14],[18,12],[18,13],[21,13]]),'t');g.px(P([[23,11],[23,14],[24,12],[24,13],[22,12],[21,12]]),'t');g.px(P([[17,12],[16,11]]),'t');}
-    else if(view==='front'){g.px(P([[17,11],[18,11],[17,14],[18,14],[16,12],[16,13],[19,13],[21,11],[22,11],[21,14],[22,14],[23,12],[23,13],[20,13],[19,12],[20,12]]),'t');g.px(P([[15,12],[24,12]]),'t');}}}
 {const hgs3=heroGridSide,hgv3=heroGridView;
 // where the near arm and the weapon are on a finished side figure: the cells that differ from the bare figure
 function l17ArmMask(L,walk,id,g){const M=new Uint8Array(g.a.length);try{const a0=L17.art;L17.art=null;let b;const L2=Object.assign({},L,{wpn:'none',l17:null});HRIG.bare=true;
@@ -390,6 +387,52 @@ function l17Horse(frame){try{const g=l17HorseGrid(frame),opt={flat:'ey',rim:null
     f('#14101a',27,39,7,4);f('#4a3424',28,40,5,2);f('#6a4a30',28,40,4,1);f('#c9a23a',27,42,7,1);f('#9a9aa8',33,38,1,4);
     return o;}catch(e){console.error('legends17b mount',e);return mc0.apply(this,arguments);}};}
 // Nikaris no longer brings the block pup and hawk of petCanvas (his hawk is on his shoulder); look.pets is gone with the old look
+
+// ---------- 6c. Jace's head, second pass (after 0.22.1, the owner: "hair looks weird, glasses too. make glasses square or rectangle") ----------
+// Hair: three short cuts of his own drawn with the rig's own hair shading (hsh, HAIRK), one clean mass with a clear hairline and no tufts:
+//   l17a a side part (the pick): the fringe falls from a part on his right across the brow   l17b swept back off a high forehead   l17c a crop with a short fringe
+// Glasses: thin rectangular frames drawn on the doubled grid of the HD paint (one HD pixel wide, half a rig pixel), so the lenses stay clear and the
+// eyes show: the rig leaves one marker key (t) between the eyes; the paint's detail pass finds the eyes and draws a frame round each, the bridge
+// and a temple arm. The old wire ring (drawn on the rig grid, twice as thick) is gone.
+L17.hair={
+ l17a(g,v){
+  if(v==='side'){hsh(g,t=>t.poly([[26.8,11.4],[27,9.6],[25.6,7.6],[23,6.6],[19,6.6],[16.4,7.6],[15.2,9.6],[15,12.2],[15.8,14.2],[17.3,13.6],[17.5,11.6],[19.4,10.5],[22.8,10.7],[25.4,11.6]],'x'),HAIRK,{cap:6});
+    g.px([[19,7],[20,7],[21,7],[22,8]],'h');}
+  else if(v==='back'){hsh(g,t=>t.poly(hairMirror([[20,6.6],[17.6,6.7],[15.8,8],[15.1,10],[15,12.8],[15.6,15],[17.2,16],[20,16.2]]),'x'),HAIRK,{cap:6});g.px([[22,8],[22,9],[23,10]],'l');g.px([[18,7],[19,7]],'h');}
+  else{hsh(g,t=>t.poly([[20,6.6],[17.6,6.7],[15.8,8],[15.1,10],[15,12.2],[15.6,13.6],[16.3,12.2],[16.6,10.4],[17.6,9.6],[20.4,10.2],[23.4,11.4],[23.7,12.4],[24.4,13.6],[25,12.2],[24.9,10],[24.2,8],[22.4,6.7]],'x'),HAIRK,{cap:6});
+    g.px([[17,8],[18,9]],'l');g.px([[19,7],[20,7],[21,8],[22,8]],'h');}},
+ l17b(g,v){
+  if(v==='side'){hsh(g,t=>t.poly([[26.2,9.8],[26,7.8],[24,6.2],[20,5.8],[16.8,6.8],[15.2,9.2],[15,12.4],[15.8,14.6],[17.2,14],[17.4,11.6],[19.4,10],[22.6,9.3],[25,9.6]],'x'),HAIRK,{cap:6});
+    g.px([[19,6],[20,6],[22,7],[17,8]],'h');}
+  else if(v==='back'){hsh(g,t=>t.poly(hairMirror([[20,5.9],[17.4,6.1],[15.6,7.8],[15,10],[15,12.8],[15.6,15.2],[17.2,16.2],[20,16.4]]),'x'),HAIRK,{cap:6});g.px([[18,7],[19,6],[21,6]],'h');g.px([[20,9],[20,11]],'l');}
+  else{hsh(g,t=>t.poly(hairMirror([[20,5.9],[17.4,6.1],[15.6,7.6],[15,9.6],[15,12],[15.5,13.3],[16.1,11.6],[16.4,9.8],[18,8.9],[20,8.7]]),'x'),HAIRK,{cap:6});g.px([[18,7],[19,6],[22,6]],'h');g.px([[20,7],[21,7]],'l');}},
+ l17c(g,v){
+  if(v==='side'){hsh(g,t=>t.poly([[26.8,11.8],[27,9.8],[25.6,7.8],[23,6.9],[19,6.9],[16.4,7.8],[15.2,9.6],[15,12.2],[15.8,14],[17.3,13.4],[17.4,11.4],[19,10.8],[21,11.6],[22.6,10.8],[24.4,11.8],[25.6,11.2]],'x'),HAIRK,{cap:6});
+    g.px([[19,8],[20,8],[21,8]],'h');}
+  else if(v==='back'){hsh(g,t=>t.poly(hairMirror([[20,6.8],[17.6,6.9],[15.8,8.2],[15.1,10],[15,12.6],[15.6,14.8],[17.2,15.8],[20,16]]),'x'),HAIRK,{cap:6});g.px([[18,8],[19,8]],'h');}
+  else{hsh(g,t=>t.poly(hairMirror([[20,6.8],[17.6,6.9],[15.8,8.2],[15.1,10],[15,12.2],[15.6,13.6],[16.4,12.2],[16.6,11.3],[17.6,11.3],[18.4,10.5],[19.2,11.3],[20,10.7]]),'x'),HAIRK,{cap:6});g.px([[18,8],[19,8]],'h');}}};
+try{Object.keys(L17.hair).forEach(k=>{HAIR_STYLE[k]=L17.hair[k];HP.hair[k]={ear:1};});L17.looks.jaeson.hair='l17a';}catch(e){console.error('legends17b hair',e);}
+// the marker between the eyes (and nothing else: the frames are drawn at twice the detail by the paint)
+function l17Face(g,L,view,dy){dy=dy||0;if(L.l17!=='weather')return;if(view==='side')g.s(22,12+dy,'t');else if(view==='front'){g.s(19,12+dy,'t');g.s(20,12+dy,'t');}}
+// the frames on the doubled grid: K is the key grid at 2x. Eyes are runs of E (and 9); one frame round each, a bridge, a temple arm
+function l17Specs(K,W,H,before){const mk=[];for(let i=0;i<K.length;i++)if(K[i]==='t')mk.push(i);if(!mk.length)return null;
+  const my=Math.floor(mk[0]/W),seen=new Uint8Array(K.length),eyes=[];
+  for(let y=Math.max(0,my-5);y<Math.min(H,my+7);y++)for(let x=0;x<W;x++){const i=y*W+x;if(seen[i]||!(K[i]==='E'||K[i]==='9'))continue;
+    let x0=x,x1=x,y0=y,y1=y;const st=[i];seen[i]=1;while(st.length){const p=st.pop(),px=p%W,py=(p/W)|0;x0=Math.min(x0,px);x1=Math.max(x1,px);y0=Math.min(y0,py);y1=Math.max(y1,py);
+      [p-1,p+1,p-W,p+W].forEach(q=>{if(q>=0&&q<K.length&&!seen[q]&&(K[q]==='E'||K[q]==='9')&&Math.abs((q%W)-px)<=1){seen[q]=1;st.push(q);}});}
+    eyes.push({x0,x1,y0,y1});}
+  mk.forEach(i=>{K[i]='S';});// the marker itself is skin again
+  eyes.sort((a,b)=>a.x0-b.x0);return eyes.slice(0,2);}
+function l17SpecsDraw(K,W,H,eyes){if(!eyes||!eyes.length)return;const put=(x,y)=>{if(x>=0&&y>=0&&x<W&&y<H)K[y*W+x]='7';};
+  const top=Math.min(...eyes.map(e=>e.y0))-1,bot=Math.max(...eyes.map(e=>e.y1))+2,two=eyes.length>1,narrow=two&&(eyes[1].x1-eyes[1].x0)<(eyes[0].x1-eyes[0].x0);
+  const R=eyes.map((e,n)=>({l:e.x0-(two&&n===1?1:3),r:e.x1+(two&&n===0?1:(narrow?1:3))}));/* the lens is wider than the eye on its outer side and deeper below it, so skin shows inside the frame */
+  R.forEach(q=>{for(let x=q.l;x<=q.r;x++){put(x,top);put(x,bot);}for(let y=top;y<=bot;y++){put(q.l,y);put(q.r,y);}});
+  if(two)for(let x=R[0].r+1;x<R[1].l;x++)put(x,top+2);
+  // the temple arm: from the outer edge back toward the ear (the side view has its two lenses toward the face, so the arm runs left)
+  if(narrow||!two){for(let k=1;k<=5;k++)put(R[0].l-k,top+1);}else{put(R[0].l-1,top+1);put(R[1].r+1,top+1);}}
+try{if(typeof HERO_OPT!=='undefined'&&HERO_OPT.detail&&!HERO_OPT.l17){const d0=HERO_OPT.detail;HERO_OPT.l17=1;HERO_OPT.flat=(HERO_OPT.flat||'')+'7';
+    HERO_OPT.detail=function(K,W,H){let eyes=null;try{eyes=l17Specs(K,W,H);}catch(e){}const r=d0.apply(this,arguments);try{l17SpecsDraw(K,W,H,eyes);}catch(e){}return r;};}}catch(e){console.error('legends17b specs',e);}
+{const hp2=heroPal;heroPal=function(L,els,id){const p=hp2.apply(this,arguments);try{if(L&&L.l17==='weather'){p.t=p.S;p['7']='#1b2030';}}catch(e){}return p;};}
 
 // ---------- 6b. battle effects of the signatures (drawing only: no battle state, no battle RNG; nothing under reduced motion) ----------
 // One particle kind 'l17' drawn after the others (both stages draw BV.P through drawParts), plus two things that last: the hawk circling over the
@@ -517,6 +560,40 @@ HOOK.before('encounterFoes','legends17b','the foes of a trail fight',function(sp
     L17.note=`${TPL[id].title} is unlocked on your account: on later journeys his own quest posts on a board.`;}}catch(e){}return r;};}
 // Help > Redeem names the other road
 {const vr0=vRedeem;vRedeem=function(){let h=vr0.apply(this,arguments);try{h=h.replace(/Needs a redeem code\./g,'Needs a redeem code, or follow the trail a Notice Board posts for him on a journey.');}catch(e){}return h;};}
+
+// ---------- 8. summons (after 0.22.1, the owner: "make what balance changes you see fit for the summons") ----------
+// sumbal.js measured the Monk's Spirit Call as a loss (about 9 points of boss win rate when used: two turns of stillness, then the Monk left the field
+// for a guardian at .6 strength). Now: one turn of stillness (SUM.monkPray 1) and the lesser guardian fights BESIDE the Monk: it stands as a fourth
+// unit of the Vanguard for SUM.lesserTurns of its turns, the Monk stays and keeps acting. Pets, Invoke and recruited Scourges keep their numbers.
+// A Monk's call of a recruited boss (roster17.js) still takes the whole Vanguard's place.
+L17.sum={lesser:.75,turns:4};// the guardian beside the Monk: its strength against a Priest's and its turns (SUM.lesser and SUM.lesserTurns still rule a Monk's recruited boss)
+try{SUM.monkPray=1;}catch(e){}
+// the Monk's turn of stillness is a short one (half the wait before his next turn), and the guardian's arrival costs him no turn
+{const sp0=sumPray;sumPray=function(a,mon){try{if(a&&sumClassOf(a)==='monk')a.l17pray=1;}catch(e){}try{return sp0.apply(this,arguments);}finally{try{if(a)a.l17pray=0;}catch(e){}}};}
+HOOK.wrap('sumFire','legends17b','a Monk\'s lesser guardian stands beside him, not in his place',function(next,a,o,lesser){const r=next(a,o,lesser);
+  try{const S=B&&B.sum;if(r&&lesser&&S&&S.lesser&&S.owner===a&&!S.beside){const i=B.front.indexOf(S.u);if(i>=0)B.front[i]=a;a.hidden=0;B.front.push(S.u);S.beside=1;S.u.l17side=1;S.u.turnsLeft=L17.sum.turns;{const k=L17.sum.lesser/SUM.lesser;S.u.S.atk*=k;S.u.S.mag*=k;}a.l17now=1;/* the guardian's arrival does not cost the Monk this turn (delayOf below) */
+      const k=B.log.length-1;if(k>=0&&/takes .*'s place/.test(B.log[k]))B.log[k]=`${a.name}'s call is answered: a lesser ${o.name} fights beside ${a.name} for ${S.u.turnsLeft} turns.`;}}catch(e){console.error('legends17b sumFire',e);}
+  return r;});
+{const se0=sumEnd;sumEnd=function(why){const S=B&&B.sum;if(!S||!S.beside)return se0.apply(this,arguments);const u=S.u,i=B.front.indexOf(u);if(i>=0)B.front.splice(i,1);
+  B.sum=null;if(why==='ko')B.sumDead=1;log(why==='ko'?`${u.name} is driven off.`:`${u.name} returns to the Sanctum.`);};}
+// the fourth unit's place on the stage: in front of the Monk (toward the foes), clear of the stage edge
+HOOK.wrap('unitBox','legends17b','a guardian beside the Monk has a place of its own',function(next,u){
+  if(!u||!(u.l17side||(B&&u.side==='p'&&B.front.indexOf(u)>2)))return next(u);/* any fourth unit of the Vanguard: the base has three places */
+  if(!u.l17side)L17.four=(u.id||u.name)+(u.isSum?' sum':'')+(u.isComp?' comp':'');
+  try{const i=B?B.front.indexOf(u):-1;if(i<0)return null;const c=spriteOf(u),w=c.width,h=c.height,W=BL.W,H=BL.H,f=typeof k12Fig==='function'?k12Fig(u):null,lo=f?(f.w/2-f.r):-w/2,hi=f?(f.w/2-f.l):w/2;
+    // like a Priest's guardian (kits12.js): on the boss line, its figure clear of the heroes on its right
+    let e=1e9;B.front.forEach(q=>{if(q===u||q.hp<=0||B.front.indexOf(q)>2)return;const b=next(q);if(b)e=Math.min(e,b.x-b.w/2);});
+    let x=e<1e9?Math.round(e-(typeof K12!=='undefined'?K12.gap:2)-hi):Math.round(W*.55);x=Math.min(x,W-1-hi);x=Math.max(x,1-lo);
+    return {x,y:Math.round(slotsFor('e',1,true)[0][1]*H),w,h,i};}catch(e){return null;}});
+// the Vanguard may still switch while a guardian stands beside the Monk (summon8.js closes switching while any summon is out)
+{const cs1=canSwap;canSwap=function(){const S=B&&B.sum;if(S&&S.beside&&!B.pray){B.sum=null;try{return cs1.apply(this,arguments);}finally{B.sum=S;}}return cs1.apply(this,arguments);};}
+// the texts that said "two turns" and "takes his place"
+const l17SumTxt=h=>{try{return String(h).replace(/A lesser form answers after two turns of stillness and takes (.*?)'s place for (\d+) turns\./g,'A lesser form answers after a turn of stillness and fights beside $1 for '+L17.sum.turns+' turns.')
+  .replace(/Call a lesser guardian to take your place after two turns of stillness/g,'Call a lesser guardian to fight beside you after a turn of stillness')
+  .replace(/Spirit Call \(1 turns of stillness, a lesser form for (\d+) turns in the Monk's place\)/g,"Spirit Call (a turn of stillness, a lesser form for "+L17.sum.turns+" turns beside the Monk)");}catch(e){return h;}};
+HOOK.xform('cmdHtml','legends17b','Spirit Call: a turn of stillness, beside the Monk',function(h){return l17SumTxt(h);});
+{const vc1=vCompanions;vCompanions=function(){let h=vc1.apply(this,arguments);try{h=l17SumTxt(h);
+    if(G&&!G.daily&&!/l17sumhint/.test(h)){const i=h.indexOf('</p>');if(i>=0)h=h.slice(0,i+4)+'<p class="note l17sumhint">Sanctum guardians and Lesser Scourges are made for boss fights: in an ordinary field fight they make the fight longer.</p>'+h.slice(i+4);}}catch(e){}return h;};}
 
 // tests
 try{window.__L17={L17,kit:id=>classSkills(TPL[id]),keep:g=>l17Keep(g),absorb:(j,w)=>l17Absorb(j,w||'Test.'),call:(a,k)=>l17Call(a,k),jace:()=>l17Jace(),rodOn:()=>l17RodOn(),auto:(a,f)=>l17Auto(a,f),

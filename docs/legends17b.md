@@ -63,3 +63,20 @@ wisps in a thunderstorm); then the old meeting (the pup and the hawk, the ride, 
 
 ## Balance (legbal.js, 40 boss fights a cell, five boss points, the careful auto)
 See the last section of `handoff-v0111.md` for the numbers of the run that shipped.
+
+## After 0.22.1: Kaevan brought in line, Spirit Call beside the Monk, Jace's head
+- **Kaevan** (the owner: "bring kevin down in line with the others"): 15% less ATK (`L17.kae.atk` .85, a `calcStats` hook like Nikaris's trim; his class
+  growth was 12% over an Archer's), Steady Draw +40% (was +60%), Longshot 1.6 pierce at 20 MP (was 2.0 at 16), Stillwind 1.2, Shadowstorm 4.0,
+  Horizon Shot 5.4 (cap 18%), Thunder Quarrel 1.4, Shadow Quarrel 1.75. Own damage against the Archer base (six Archers: Tess, Wren, Ciro, Corvin,
+  Skerry, Voss; `legbal.js`, 40 fights a cell): boss 2 x1.21 -> x1.04, boss 3 x1.94 -> x1.09, boss 4 x2.29 -> x1.37, Calamity x1.38 -> x1.17,
+  level 46 x1.41 -> x1.14. Boss 4 stays the high point: against the two dual type Archers alone (Skerry, Voss) it is x1.12 there.
+- **Spirit Call** (section 8 of the module): one short turn of stillness (`SUM.monkPray` 1, half the usual wait), then the lesser guardian stands
+  BESIDE the Monk as a fourth unit of the Vanguard (`B.sum.beside`, its own `unitBox` place on the boss line clear of the heroes) for
+  `L17.sum.turns` 4 turns at `L17.sum.lesser` .75 of a Priest's; its arrival costs the Monk no turn, he keeps acting, and the Vanguard may switch
+  while it is out. A Monk's recruited boss keeps roster17's rules (`SUM.lesser` .6, 3 turns, the whole Vanguard's place). `sumbal.js`, 80 fights a
+  cell, boss win % none > first / hurt: seed 7 47 > 38 / 38 before, 47 > 48 / 43 after; seed 11 44 > 43 / 43 after; field fights x1.67 -> x1.06
+  long. So the call went from a loss of 9 points to neutral; it is not the small plus pets give. The Summons tab says guardians and Lesser
+  Scourges are made for boss fights.
+- **Jace's head**: three short cuts of his own (`L17.hair`: `l17a` side part, built in; `l17b` swept back; `l17c` crop with a fringe) and thin
+  rectangular glasses drawn on the doubled grid of the HD paint (`l17Specs`, key `7`), one HD pixel wide, with skin inside the lens. Tool
+  `tools/chrome/l17jace.js` renders the three cuts beside two other heroes.
