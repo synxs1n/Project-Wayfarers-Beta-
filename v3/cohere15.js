@@ -118,12 +118,12 @@ HOOK.wrap('hbBake','cohere15','a crisp backdrop',function(next,...a){ch15Dof();c
     if(K)K._ch15=on;}catch(e){ch15Err(e);}return K;});
 HOOK.wrap('hbTex','cohere15','the backdrop source sampled nearest while it bakes',function(next,gl,o){if(CH15.bk&&o&&o.src&&o.pm&&!o.near)o=Object.assign({},o,{near:true});return next(gl,o);});
 // 6: units 1.25x about their feet; the boxes grow with them (bars, labels, taps follow), drawUnit gets the unscaled box
-function ch15Sc(){return ch15On()&&typeof B!=='undefined'&&B?CH15.unit:1;}
+function ch15Sc(u){return ch15On()&&typeof B!=='undefined'&&B&&!(u&&u.side==='e'&&!u.boss)?CH15.unit:1;}/* 0.21.1: regular foes keep their own size; heroes and bosses grow */
 // a copy (some boxes are handed out again, so the scale is never written into them). A raw wrap, not a hook: battle11.js (foe sizes),
 // gfx6battle.js and p2world.js wrap unitBox the old way outside the hook chain and battle11 rewrites a foe's w and h, so this must sit
 // outside all of them (cohere15 loads last)
 // A unit that would rise past the top of the stage grows less and stands lower; one at a side grows only up to the edge, as battle11 places its big foes (top margin FS11.top)
-{const ub0=unitBox;unitBox=function(u){const r=ub0.apply(this,arguments);try{let s=ch15Sc();if(r&&s!==1&&!r._ch15){const H=BL.H,top=typeof FS11!=='undefined'&&FS11.top!=null?FS11.top:2;
+{const ub0=unitBox;unitBox=function(u){const r=ub0.apply(this,arguments);try{let s=ch15Sc(u);if(r&&s!==1&&!r._ch15){const H=BL.H,top=typeof FS11!=='undefined'&&FS11.top!=null?FS11.top:2;
   s=Math.max(1,Math.min(s,(H-2-top)/Math.max(1,r.h),2*Math.min(r.x,BL.W-r.x)/Math.max(1,r.w)));/* at a side of the stage it grows only as far as the edge */const h=Math.round(r.h*s),o=Object.assign({},r,{w:Math.round(r.w*s),h,_ch15:s});
   if(o.y-h<top){const y=Math.min(top+h,H-2);if(o.gy!=null)o.gy+=y-o.y;o.y=y;}
   return o;}}catch(e){}return r;};}

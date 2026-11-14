@@ -128,7 +128,7 @@ const CALL=(H,src,a)=>H.ev('('+src+')('+JSON.stringify(a)+')');
     const r=await H.ev(()=>{const A=__A,C=window.__CH15,T=A.TW.get;A.setPause&&A.setPause(999999);A.startBattle({stage:1,kind:'wild'});A.render();const ub=T('unitBox'),bb=T('b3Body');
       const read=off=>{C.off=off;const u=A.B.front[0],e=A.B.en[0],a=ub(u),b=ub(e);return {hw:a.w,hh:a.h,hx:a.x,hy:a.y,ew:b.w,eh:b.h,body:bb(u).h};};const on=read(false),off=read(true);C.off=false;return {on,off};});
     console.log(tier,JSON.stringify(r));const near=(a,b)=>Math.abs(a-b*1.25)<=1.01;
-    chk(`6 ${tier}: hero and foe boxes 1.25x with the feet in place`,near(r.on.hh,r.off.hh)&&near(r.on.hw,r.off.hw)&&near(r.on.eh,r.off.eh)&&r.on.hx===r.off.hx&&r.on.hy===r.off.hy||JSON.stringify(r));
+    chk(`6 ${tier}: hero boxes 1.25x with the feet in place, a regular foe keeps its size`,near(r.on.hh,r.off.hh)&&near(r.on.hw,r.off.hw)&&r.on.eh===r.off.eh&&r.on.ew===r.off.ew&&r.on.hx===r.off.hx&&r.on.hy===r.off.hy||JSON.stringify(r));
     chk(`6 ${tier}: the body box (labels, bars) grows with them`,Math.abs(r.on.body-r.off.body*1.25)<=1.5||JSON.stringify(r));
     await H.ev(()=>{window.requestAnimationFrame=window.__raf;});await H.wait(800);
     chk(`6 ${tier}: no console errors`,!H.errs.length||H.errs.join(' | '));await H.browser.close();}

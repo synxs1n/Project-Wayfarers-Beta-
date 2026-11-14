@@ -2119,7 +2119,7 @@ html:not(.flat) .battle.b3 .bline .b4mo .b4bar{box-shadow:inset 0 0 0 1px #000,0
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.21.0";const APP_BUILD="368564c12806";
+(function(){const APP_VER="0.21.1";const APP_BUILD="341bfe917f66";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2888,7 +2888,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.21.0";const APP_BUILD="368564c12806";
+const APP_VER="0.21.1";const APP_BUILD="341bfe917f66";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2896,6 +2896,7 @@ const APP_VER="0.21.0";const APP_BUILD="368564c12806";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.21.1',['Regular foes are back to their normal size in battle. Heroes and bosses keep the bigger Unified look size.']],
  ['Beta v0.21.0',['Unified look: everything in the world now shares one style. Town roofs have small tile rows and sit lower so they cover less of the screen, battle units are 25% bigger on a crisp backdrop, the hero stays solid under roofs, props and buildings get one dark colour-matched outline and take on their realm\'s tint, and menus use the same frame style with no blur behind them. Settings > Display > Unified look switches it off.']],
  ['Beta v0.20.9',['Bosses are down to 16 Scourges and 4 Calamities, each in its own themed realm (three new realms: Gloamrook Moors, Jademist Highlands, Boneharrow Fields), and the Calamity realms are the grandest. Every town has its own layout and building style per realm. Clouds are a soft cumulus sea again, foes and chests no longer spawn where you cannot walk, and every den, lair and sanctum is entered from the front only. Skills are learned all the way up to level 45. Permanent recruits carry over from every win, with no limit, and a new journey offers a balanced pool of 16 wayfarers (2 per element, 2 per class).']],
  ['Beta v0.20.5',['Grass is back to how it looked before the graphics passes: encounter grass and open ground use the original painting again (no patchwork, extra clumps or tufts spilling over). The newer water, shorelines, wet ground and snow, and land beside exits all stay.']],
@@ -34536,12 +34537,12 @@ HOOK.wrap('hbBake','cohere15','a crisp backdrop',function(next,...a){ch15Dof();c
     if(K)K._ch15=on;}catch(e){ch15Err(e);}return K;});
 HOOK.wrap('hbTex','cohere15','the backdrop source sampled nearest while it bakes',function(next,gl,o){if(CH15.bk&&o&&o.src&&o.pm&&!o.near)o=Object.assign({},o,{near:true});return next(gl,o);});
 // 6: units 1.25x about their feet; the boxes grow with them (bars, labels, taps follow), drawUnit gets the unscaled box
-function ch15Sc(){return ch15On()&&typeof B!=='undefined'&&B?CH15.unit:1;}
+function ch15Sc(u){return ch15On()&&typeof B!=='undefined'&&B&&!(u&&u.side==='e'&&!u.boss)?CH15.unit:1;}/* 0.21.1: regular foes keep their own size; heroes and bosses grow */
 // a copy (some boxes are handed out again, so the scale is never written into them). A raw wrap, not a hook: battle11.js (foe sizes),
 // gfx6battle.js and p2world.js wrap unitBox the old way outside the hook chain and battle11 rewrites a foe's w and h, so this must sit
 // outside all of them (cohere15 loads last)
 // A unit that would rise past the top of the stage grows less and stands lower; one at a side grows only up to the edge, as battle11 places its big foes (top margin FS11.top)
-{const ub0=unitBox;unitBox=function(u){const r=ub0.apply(this,arguments);try{let s=ch15Sc();if(r&&s!==1&&!r._ch15){const H=BL.H,top=typeof FS11!=='undefined'&&FS11.top!=null?FS11.top:2;
+{const ub0=unitBox;unitBox=function(u){const r=ub0.apply(this,arguments);try{let s=ch15Sc(u);if(r&&s!==1&&!r._ch15){const H=BL.H,top=typeof FS11!=='undefined'&&FS11.top!=null?FS11.top:2;
   s=Math.max(1,Math.min(s,(H-2-top)/Math.max(1,r.h),2*Math.min(r.x,BL.W-r.x)/Math.max(1,r.w)));/* at a side of the stage it grows only as far as the edge */const h=Math.round(r.h*s),o=Object.assign({},r,{w:Math.round(r.w*s),h,_ch15:s});
   if(o.y-h<top){const y=Math.min(top+h,H-2);if(o.gy!=null)o.gy+=y-o.y;o.y=y;}
   return o;}}catch(e){}return r;};}
