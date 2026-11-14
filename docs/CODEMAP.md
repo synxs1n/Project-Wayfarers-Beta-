@@ -240,7 +240,7 @@ Registered (load order; 1 is next to the base):
 
 Runs: 29 fixes11 → 23 riftkeeper9 (around) → 19 handin9 (around) → 18 summon8 → 14 comp3 (around) → 13 pacing (around) → 12 results (around) → 11 p4party (around) → 10 p4xp (around) → 9 p3shop (around) → 8 prog2 (around) → 6 comp → 4 echo2 (around) → 3 mimic (around) → 2 equip (around) → 1 metastats (around) → **base** → 1 metastats (around) → 2 equip (around) → 3 mimic (around) → 4 echo2 (around) → 5 sanctum → 7 learn → 8 prog2 (around) → 9 p3shop (around) → 10 p4xp (around) → 11 p4party (around) → 12 results (around) → 13 pacing (around) → 14 comp3 (around) → 15 goals → 16 guild7 → 17 summon8 → 19 handin9 (around) → 20 bonds9 → 21 rift9 → 22 rift9 → 23 riftkeeper9 (around) → 24 arena9 → 25 charms9 → 26 endgame10 → 27 endgame10 → 28 endgame10 → 30 fixes11 → 31 arena11 → 32 party12
 
-### render (30 hooks)
+### render (31 hooks)
 Registered (load order; 1 is next to the base):
 1. `feedback.js` before: log screen and popup changes for bug reports
 2. `equip.js` around: per-render fit cache (FITC)
@@ -272,8 +272,9 @@ Registered (load order; 1 is next to the base):
 28. `cohere15.js` after: body.ch15 and the realm tint of the menus
 29. `quests16.js` before: personal quest offer popup
 30. `gear16.js` after: a first realm hint steps aside while a window is open (it covered the Menu tabs on phones)
+31. `gear16.js` after: a party built in the Menu is "just built" only until every window is closed
 
-Runs: 29 quests16 → 25 party12 → 22 menus11 → 12 p4party → 11 p3shop (around) → 9 anim (around) → 6 mimic → 5 town2 → 3 equip → 2 equip (around) → 1 feedback → **base** → 2 equip (around) → 4 town2 → 7 learn → 8 map → 9 anim (around) → 10 saves → 11 p3shop (around) → 13 gfx6 → 14 menus3 → 15 v063prog → 16 onboard → 17 goals → 18 recruit3 → 19 qready → 20 guidance9 → 21 arena11 → 23 menus11 → 24 zoomfix11 → 26 skills12 → 27 hud13 → 28 cohere15 → 30 gear16
+Runs: 29 quests16 → 25 party12 → 22 menus11 → 12 p4party → 11 p3shop (around) → 9 anim (around) → 6 mimic → 5 town2 → 3 equip → 2 equip (around) → 1 feedback → **base** → 2 equip (around) → 4 town2 → 7 learn → 8 map → 9 anim (around) → 10 saves → 11 p3shop (around) → 13 gfx6 → 14 menus3 → 15 v063prog → 16 onboard → 17 goals → 18 recruit3 → 19 qready → 20 guidance9 → 21 arena11 → 23 menus11 → 24 zoomfix11 → 26 skills12 → 27 hud13 → 28 cohere15 → 30 gear16 → 31 gear16
 
 ### finishBattle (28 hooks)
 Registered (load order; 1 is next to the base):
@@ -1194,6 +1195,13 @@ Registered (load order; 1 is next to the base):
 
 Runs: **base** → 1 roster14 (result) → 2 world16 (result)
 
+### rebuildBase (2 hooks)
+Registered (load order; 1 is next to the base):
+1. `world16.js` around: the repaint after a chest is a patch
+2. `fix17.js` after: the minimap takes its colours from the fresh base canvas
+
+Runs: 1 world16 (around) → **base** → 1 world16 (around) → 2 fix17
+
 ### slDenByKey (2 hooks)
 Registered (load order; 1 is next to the base):
 1. `worldart12.js` result: den mouths with volume
@@ -1424,12 +1432,6 @@ Registered (load order; 1 is next to the base):
 1. `records12.js` result: Den and Sanctum rows follow the map, a Den the map has but the plan lacks is listed
 
 Runs: **base** → 1 records12 (result)
-
-### rebuildBase (1 hook)
-Registered (load order; 1 is next to the base):
-1. `world16.js` around: the repaint after a chest is a patch
-
-Runs: 1 world16 (around) → **base** → 1 world16 (around)
 
 ### resBk (1 hook)
 Registered (load order; 1 is next to the base):

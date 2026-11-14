@@ -4,6 +4,7 @@
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.21.8',['The minimap and area map take their colours from the ground as it is painted, in every realm. The Breach aurora is a soft full-sky band again instead of piling up into flat blocks and streaks on clear days. Equip Best shows its result page with Undo again; the Menu only closes when you Equip Best right after building a new party. Next goals is see-through by default, open or folded, with a See-through goals switch in Settings > Display.']],
  ['Beta v0.21.7',['Towns no longer have a landmark standing in them; the ground where it stood is open. The Breach islands keep theirs.']],
  ['Beta v0.21.6',['Battle: double tapping or holding a foe\'s HP plate opens that foe\'s card even where another foe stands under the plate.']],
  ['Beta v0.21.5',['World and names: chests open at once again. Places you have explored follow your account, so click to walk works on another device. The Breach Waystone stands in the centre. New journeys leave towns by the west as often as any other side, every town gate has its own signpost, and no town is left without a way out. About a hundred names changed so the same words (hollow, frost, cinder, ember and more) stop repeating: Cinderhollow Deeps is Kilnscar Depths, Hollowmere is Larkspur, Frostgate is Whitehearth, and so on. Saves and bestiary records carry over.']],
