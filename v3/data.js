@@ -4,6 +4,7 @@
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.21.9',['Every wayfarer now has 14 skills, at least two of them their own: 26 get back one they had lost and 26 get a new one. Skills are learned at 1, 1, 6, 11, 14, 18, 21, 25, 28, 31, 35, 38, 42 and 45, and nothing already learned is lost. Mages, Archmages and Chroniclers learn Wellspring Mantle: for 4 turns most damage taken is paid in MP instead of HP. Monks have Spirit Call again and can call recruited Scourges at lesser strength. The Pets tab is now Summons and lists pets, recruited bosses, Sanctum guardians and beast calls, with who can call each.']],
  ['Beta v0.21.8',['The minimap and area map take their colours from the ground as it is painted, in every realm. The Breach aurora is a soft full-sky band again instead of piling up into flat blocks and streaks on clear days. Equip Best shows its result page with Undo again; the Menu only closes when you Equip Best right after building a new party. Next goals is see-through by default, open or folded, with a See-through goals switch in Settings > Display.']],
  ['Beta v0.21.7',['Towns no longer have a landmark standing in them; the ground where it stood is open. The Breach islands keep theirs.']],
  ['Beta v0.21.6',['Battle: double tapping or holding a foe\'s HP plate opens that foe\'s card even where another foe stands under the plate.']],

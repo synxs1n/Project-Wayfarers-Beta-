@@ -203,6 +203,44 @@ Registered (load order; 1 is next to the base):
 
 Runs: 51 quests16 → 45 menus11 → 42 econ11 → 39 roles9 → 37 riftkeeper9 → 36 rift9 → 35 guidance9 → 34 guidance9 → 33 junk9 → 31 bigmap → 30 recruit3 → 29 twists → 28 v063prog → 27 keymap → 26 p4party (around) → 24 p3shop → 23 p3shop → 21 p3shop → 20 saves → 19 sites → 18 starter → 17 autoset → 16 map → 15 comp → 14 comp → 13 sanctum → 12 echo2 → 11 ailments → 10 ailments → 8 chance → 7 describe → 6 town2 → 5 town2 → 4 gearmig → 3 party2 → 2 equip → 1 stuck → **base** → 9 factions (result) → 22 p3shop (result) → 25 p4party (result) → 26 p4party (around) → 32 duellines (result) → 38 riftkeeper9 (result) → 40 endgame10 (result) → 41 rk10 (result) → 43 fixes11 (result) → 44 arena11 (result) → 46 menus11 (result) → 47 world12 (result) → 48 menus12 (result) → 49 roster14 (result) → 50 quests16 (result)
 
+### render (33 hooks)
+Registered (load order; 1 is next to the base):
+1. `feedback.js` before: log screen and popup changes for bug reports
+2. `equip.js` around: per-render fit cache (FITC)
+3. `equip.js` before: open "Equip this now?" for queued new gear
+4. `town2.js` after: focus Rest in the Inn
+5. `town2.js` before: note the key that opened a popup (key guard)
+6. `mimic.js` before: mimic loot after the fight, back on the map
+7. `learn.js` after: queue new skill notices
+8. `map.js` after: make sure the minimap exists (next frame)
+9. `anim.js` around: popup open fade
+10. `saves.js` after: save status icon
+11. `p3shop.js` around: per-render Best Party cache (P3C)
+12. `p4party.js` before: the boss's lingering energy popup
+13. `gfx6.js` after: menu depth of field class
+14. `menus3.js` after: keep dropdown focus
+15. `v063prog.js` after: progression notes
+16. `onboard.js` after: keep the tip card placed
+17. `goals.js` after: Next goals panel
+18. `recruit3.js` after: ask where a wild recruit stands
+19. `qready.js` after: quests ready badge on the menu button
+20. `guidance9.js` after: Log button on the tip card
+21. `arena11.js` after: title button and battle chip say Weekly
+22. `menus11.js` before: history: note the view change before the popup html is built (the back arrow needs the stack)
+23. `menus11.js` after: history: a hook inside render may have opened a popup; restore the scroll of a view we went back to
+24. `zoomfix11.js` after: zoom vars and page lock
+25. `party12.js` before: reserves keep no gear (the sweep)
+26. `skills12.js` after: one notice after an old save is trimmed
+27. `hud13.js` after: realm tint variables on the HUD
+28. `cohere15.js` after: body.ch15 and the realm tint of the menus
+29. `quests16.js` before: personal quest offer popup
+30. `gear16.js` after: a first realm hint steps aside while a window is open (it covered the Menu tabs on phones)
+31. `gear16.js` after: a party built in the Menu is "just built" only until every window is closed
+32. `roster17.js` before: no stand-in status is ever drawn
+33. `roster17.js` after: one notice after an old save gains the two skills
+
+Runs: 32 roster17 → 29 quests16 → 25 party12 → 22 menus11 → 12 p4party → 11 p3shop (around) → 9 anim (around) → 6 mimic → 5 town2 → 3 equip → 2 equip (around) → 1 feedback → **base** → 2 equip (around) → 4 town2 → 7 learn → 8 map → 9 anim (around) → 10 saves → 11 p3shop (around) → 13 gfx6 → 14 menus3 → 15 v063prog → 16 onboard → 17 goals → 18 recruit3 → 19 qready → 20 guidance9 → 21 arena11 → 23 menus11 → 24 zoomfix11 → 26 skills12 → 27 hud13 → 28 cohere15 → 30 gear16 → 31 gear16 → 33 roster17
+
 ### win (32 hooks)
 Registered (load order; 1 is next to the base):
 1. `metastats.js` around: gold earned, boss wins, journey clears
@@ -239,42 +277,6 @@ Registered (load order; 1 is next to the base):
 32. `party12.js` after: bosses beaten
 
 Runs: 29 fixes11 → 23 riftkeeper9 (around) → 19 handin9 (around) → 18 summon8 → 14 comp3 (around) → 13 pacing (around) → 12 results (around) → 11 p4party (around) → 10 p4xp (around) → 9 p3shop (around) → 8 prog2 (around) → 6 comp → 4 echo2 (around) → 3 mimic (around) → 2 equip (around) → 1 metastats (around) → **base** → 1 metastats (around) → 2 equip (around) → 3 mimic (around) → 4 echo2 (around) → 5 sanctum → 7 learn → 8 prog2 (around) → 9 p3shop (around) → 10 p4xp (around) → 11 p4party (around) → 12 results (around) → 13 pacing (around) → 14 comp3 (around) → 15 goals → 16 guild7 → 17 summon8 → 19 handin9 (around) → 20 bonds9 → 21 rift9 → 22 rift9 → 23 riftkeeper9 (around) → 24 arena9 → 25 charms9 → 26 endgame10 → 27 endgame10 → 28 endgame10 → 30 fixes11 → 31 arena11 → 32 party12
-
-### render (31 hooks)
-Registered (load order; 1 is next to the base):
-1. `feedback.js` before: log screen and popup changes for bug reports
-2. `equip.js` around: per-render fit cache (FITC)
-3. `equip.js` before: open "Equip this now?" for queued new gear
-4. `town2.js` after: focus Rest in the Inn
-5. `town2.js` before: note the key that opened a popup (key guard)
-6. `mimic.js` before: mimic loot after the fight, back on the map
-7. `learn.js` after: queue new skill notices
-8. `map.js` after: make sure the minimap exists (next frame)
-9. `anim.js` around: popup open fade
-10. `saves.js` after: save status icon
-11. `p3shop.js` around: per-render Best Party cache (P3C)
-12. `p4party.js` before: the boss's lingering energy popup
-13. `gfx6.js` after: menu depth of field class
-14. `menus3.js` after: keep dropdown focus
-15. `v063prog.js` after: progression notes
-16. `onboard.js` after: keep the tip card placed
-17. `goals.js` after: Next goals panel
-18. `recruit3.js` after: ask where a wild recruit stands
-19. `qready.js` after: quests ready badge on the menu button
-20. `guidance9.js` after: Log button on the tip card
-21. `arena11.js` after: title button and battle chip say Weekly
-22. `menus11.js` before: history: note the view change before the popup html is built (the back arrow needs the stack)
-23. `menus11.js` after: history: a hook inside render may have opened a popup; restore the scroll of a view we went back to
-24. `zoomfix11.js` after: zoom vars and page lock
-25. `party12.js` before: reserves keep no gear (the sweep)
-26. `skills12.js` after: one notice after an old save is trimmed
-27. `hud13.js` after: realm tint variables on the HUD
-28. `cohere15.js` after: body.ch15 and the realm tint of the menus
-29. `quests16.js` before: personal quest offer popup
-30. `gear16.js` after: a first realm hint steps aside while a window is open (it covered the Menu tabs on phones)
-31. `gear16.js` after: a party built in the Menu is "just built" only until every window is closed
-
-Runs: 29 quests16 → 25 party12 → 22 menus11 → 12 p4party → 11 p3shop (around) → 9 anim (around) → 6 mimic → 5 town2 → 3 equip → 2 equip (around) → 1 feedback → **base** → 2 equip (around) → 4 town2 → 7 learn → 8 map → 9 anim (around) → 10 saves → 11 p3shop (around) → 13 gfx6 → 14 menus3 → 15 v063prog → 16 onboard → 17 goals → 18 recruit3 → 19 qready → 20 guidance9 → 21 arena11 → 23 menus11 → 24 zoomfix11 → 26 skills12 → 27 hud13 → 28 cohere15 → 30 gear16 → 31 gear16
 
 ### finishBattle (28 hooks)
 Registered (load order; 1 is next to the base):
@@ -417,6 +419,46 @@ Registered (load order; 1 is next to the base):
 
 Runs: 13 hd2d (around) → 12 onboard (around) → 8 gfx6 (around) → 7 p2world (around) → 6 deskscale (around) → 5 keymap (around) → 3 music2 (around) → 2 saves (around) → **base** → 1 battleui (result) → 2 saves (around) → 3 music2 (around) → 4 p5settings (result) → 5 keymap (around) → 6 deskscale (around) → 7 p2world (around) → 8 gfx6 (around) → 9 battle3 (result) → 10 battle3 (result) → 11 battle5 (result) → 12 onboard (around) → 13 hd2d (around) → 14 guidance9 (result) → 15 res11 (result) → 16 menus11 (result)
 
+### newGame (15 hooks)
+Registered (load order; 1 is next to the base):
+1. `account.js` after: codex roster
+2. `progression.js` after: draw the 5 guild recruits for this journey
+3. `tavern2.js` after: journey roster and tavern reset
+4. `metastats.js` after: new journey counted (not the Daily Trial start)
+5. `prog2.js` after: auto per foe type starts closed
+6. `map.js` before: forget the explored map
+7. `pacing.js` after: pacing version on a new journey
+8. `goals.js` after: goals start empty
+9. `look9.js` after: realm layout tileset for this journey
+10. `party12.js` before: close the record of the journey that ends
+11. `party12.js` after: keep the New Game+ draw, record the playthrough
+12. `menus14.js` after: a new journey uses the spread levels
+13. `quests16.js` after: the guild lock on a new journey
+14. `world16.js` after: new journeys draw their gates from all four sides
+15. `roster17.js` after: a new journey uses the 14 skill levels
+
+Runs: 10 party12 → 6 map → **base** → 1 account → 2 progression → 3 tavern2 → 4 metastats → 5 prog2 → 7 pacing → 8 goals → 9 look9 → 11 party12 → 12 menus14 → 13 quests16 → 14 world16 → 15 roster17
+
+### perform (15 hooks)
+Registered (load order; 1 is next to the base):
+1. `ailments.js` around: hard cleanse flag for revive and cleanse skills
+2. `archetype.js` around: heals hurt the undead
+3. `prog2.js` around: hand and auto turn counters, goal counters
+4. `anim.js` before: Limit Break pose time
+5. `roles.js` around: chi heals use the role heal power
+6. `atk6.js` around: typed basic attack by class
+7. `natures6.js` around: chi heal nature perk
+8. `twists.js` around: Iron clamp after every action
+9. `battle4.js` around: boss gimmick answers
+10. `chain5.js` before: Chain leaps
+11. `chain5.js` before: a guarded planned hit makes the hero quick
+12. `pacing.js` around: primers are plain hits until reactions open
+13. `skills12.js` around: off role buffs last shorter
+14. `skills12.js` around: dual arts prime both elements and set off both reactions; a second prime element can be set off
+15. `roster17.js` around: marks a real action (the Mantle only answers real blows)
+
+Runs: 15 roster17 (around) → 14 skills12 (around) → 13 skills12 (around) → 12 pacing (around) → 11 chain5 → 10 chain5 → 9 battle4 (around) → 8 twists (around) → 7 natures6 (around) → 6 atk6 (around) → 5 roles (around) → 4 anim → 3 prog2 (around) → 2 archetype (around) → 1 ailments (around) → **base** → 1 ailments (around) → 2 archetype (around) → 3 prog2 (around) → 5 roles (around) → 6 atk6 (around) → 7 natures6 (around) → 8 twists (around) → 9 battle4 (around) → 12 pacing (around) → 13 skills12 (around) → 14 skills12 (around) → 15 roster17 (around)
+
 ### renderBattle (15 hooks)
 Registered (load order; 1 is next to the base):
 1. `battleui.js` after: boss bar removed
@@ -456,45 +498,7 @@ Registered (load order; 1 is next to the base):
 
 Runs: 14 cohere15 → 13 chars13 (around) → 11 chars13 → 9 perf12 → 8 fxkind11 → 7 res11 → 6 battle11 (around) → 5 sprhd2 → 4 hdspell → 3 hdstage (around) → 2 gfx6battle (around) → 1 anim → **base** → 2 gfx6battle (around) → 3 hdstage (around) → 6 battle11 (around) → 10 kits12 → 12 chars13 → 13 chars13 (around)
 
-### newGame (14 hooks)
-Registered (load order; 1 is next to the base):
-1. `account.js` after: codex roster
-2. `progression.js` after: draw the 5 guild recruits for this journey
-3. `tavern2.js` after: journey roster and tavern reset
-4. `metastats.js` after: new journey counted (not the Daily Trial start)
-5. `prog2.js` after: auto per foe type starts closed
-6. `map.js` before: forget the explored map
-7. `pacing.js` after: pacing version on a new journey
-8. `goals.js` after: goals start empty
-9. `look9.js` after: realm layout tileset for this journey
-10. `party12.js` before: close the record of the journey that ends
-11. `party12.js` after: keep the New Game+ draw, record the playthrough
-12. `menus14.js` after: a new journey uses the spread levels
-13. `quests16.js` after: the guild lock on a new journey
-14. `world16.js` after: new journeys draw their gates from all four sides
-
-Runs: 10 party12 → 6 map → **base** → 1 account → 2 progression → 3 tavern2 → 4 metastats → 5 prog2 → 7 pacing → 8 goals → 9 look9 → 11 party12 → 12 menus14 → 13 quests16 → 14 world16
-
-### perform (14 hooks)
-Registered (load order; 1 is next to the base):
-1. `ailments.js` around: hard cleanse flag for revive and cleanse skills
-2. `archetype.js` around: heals hurt the undead
-3. `prog2.js` around: hand and auto turn counters, goal counters
-4. `anim.js` before: Limit Break pose time
-5. `roles.js` around: chi heals use the role heal power
-6. `atk6.js` around: typed basic attack by class
-7. `natures6.js` around: chi heal nature perk
-8. `twists.js` around: Iron clamp after every action
-9. `battle4.js` around: boss gimmick answers
-10. `chain5.js` before: Chain leaps
-11. `chain5.js` before: a guarded planned hit makes the hero quick
-12. `pacing.js` around: primers are plain hits until reactions open
-13. `skills12.js` around: off role buffs last shorter
-14. `skills12.js` around: dual arts prime both elements and set off both reactions; a second prime element can be set off
-
-Runs: 14 skills12 (around) → 13 skills12 (around) → 12 pacing (around) → 11 chain5 → 10 chain5 → 9 battle4 (around) → 8 twists (around) → 7 natures6 (around) → 6 atk6 (around) → 5 roles (around) → 4 anim → 3 prog2 (around) → 2 archetype (around) → 1 ailments (around) → **base** → 1 ailments (around) → 2 archetype (around) → 3 prog2 (around) → 5 roles (around) → 6 atk6 (around) → 7 natures6 (around) → 8 twists (around) → 9 battle4 (around) → 12 pacing (around) → 13 skills12 (around) → 14 skills12 (around)
-
-### calcDamage (13 hooks)
+### calcDamage (14 hooks)
 Registered (load order; 1 is next to the base):
 1. `engine.js` after: pack frenzy, auto nerf on the acting hero
 2. `insight.js` after: bestiary perk damage
@@ -509,8 +513,9 @@ Registered (load order; 1 is next to the base):
 11. `battle4.js` after: boss gimmick damage
 12. `riftkeeper9.js` after: phase 2 shield while shades live
 13. `skills12.js` around: Focus adds crit chance for its turns (it no longer forces the next crit)
+14. `roster17.js` around: Mantle: most of a blow on the caster is paid in MP
 
-Runs: 13 skills12 (around) → **base** → 1 engine → 2 insight → 3 echocore → 4 archetype → 5 roles → 6 natures6 (result) → 7 realms → 8 twists → 9 battle5 → 10 battle4 → 11 battle4 → 12 riftkeeper9 → 13 skills12 (around)
+Runs: 14 roster17 (around) → 13 skills12 (around) → **base** → 1 engine → 2 insight → 3 echocore → 4 archetype → 5 roles → 6 natures6 (result) → 7 realms → 8 twists → 9 battle5 → 10 battle4 → 11 battle4 → 12 riftkeeper9 → 13 skills12 (around) → 14 roster17 (around)
 
 ### encounterFoes (13 hooks)
 Registered (load order; 1 is next to the base):
@@ -559,7 +564,7 @@ Registered (load order; 1 is next to the base):
 8. `skillrows11.js` result: skill numbers on the battle skill list
 9. `skills12.js` result: role tier on the battle skill rows
 10. `menus12.js` result: battle skill rows: a missing scope, kind or Primer / Detonator tag is added; the last used skill is marked
-11. `battle16.js` result: recruited bosses: a note where the Summon command was for anyone but Nikaris or a Priest
+11. `battle16.js` result: recruited bosses: a note where the Summon command was for anyone who cannot call them
 
 Runs: 4 summon8 (around) → **base** → 1 battle3 (result) → 2 battle5 (result) → 3 battle4 (result) → 4 summon8 (around) → 5 battle9 (result) → 6 skillfilt9 (result) → 7 battle11 (result) → 8 skillrows11 (result) → 9 skills12 (result) → 10 menus12 (result) → 11 battle16 (result)
 
@@ -638,6 +643,19 @@ Registered (load order; 1 is next to the base):
 
 Runs: **base** → 1 ailments → 2 echocore → 3 comp → 4 roles → 5 natures6 → 6 riftkeeper9 → 7 roles9 → 8 echo11 → 9 battle16
 
+### classSkills (8 hooks)
+Registered (load order; 1 is next to the base):
+1. `archetype.js` result: tag every skill with its damage kind once
+2. `sigskills.js` result: the wayfarer's signature skill and element flavour
+3. `roles.js` result: secondary role skills and adjustments
+4. `skills12.js` result: the 12 skill kit, dual type primers and detonators, dual art kind (last hook: sees the finished list)
+5. `kits12.js` result: slot skills in the class voice, martial dual arts
+6. `menus12.js` result: skill descriptions never name a role
+7. `menus14.js` result: learn levels: three skills by level 10, then an even walk to 45 (order kept); the 0.20.3 levels stay as lvP, the 0.20.9 ones as lvQ
+8. `roster17.js` result: kits of 14: two more skills each (the Mantle, a restored skill, a new one), the signature at 18 and the second own skill at 38
+
+Runs: **base** → 1 archetype (result) → 2 sigskills (result) → 3 roles (result) → 4 skills12 (result) → 5 kits12 (result) → 6 menus12 (result) → 7 menus14 (result) → 8 roster17 (result)
+
 ### drawTile (8 hooks)
 Registered (load order; 1 is next to the base):
 1. `worldfx.js` around: ground under a gone chest
@@ -663,18 +681,6 @@ Registered (load order; 1 is next to the base):
 8. `hud13.js` after: realm tint when the map changes
 
 Runs: 7 titles12 (around) → **base** → 1 feedback → 2 p2world → 3 pacing → 4 complete9 → 5 records12 → 6 world12 → 7 titles12 (around) → 8 hud13
-
-### classSkills (7 hooks)
-Registered (load order; 1 is next to the base):
-1. `archetype.js` result: tag every skill with its damage kind once
-2. `sigskills.js` result: the wayfarer's signature skill and element flavour
-3. `roles.js` result: secondary role skills and adjustments
-4. `skills12.js` result: the 12 skill kit, dual type primers and detonators, dual art kind (last hook: sees the finished list)
-5. `kits12.js` result: slot skills in the class voice, martial dual arts
-6. `menus12.js` result: skill descriptions never name a role
-7. `menus14.js` result: learn levels: three skills by level 10, then an even walk to 45 (order kept); the 0.20.3 levels stay as lvP, the 0.20.9 ones as lvQ
-
-Runs: **base** → 1 archetype (result) → 2 sigskills (result) → 3 roles (result) → 4 skills12 (result) → 5 kits12 (result) → 6 menus12 (result) → 7 menus14 (result)
 
 ### drawObjects (7 hooks)
 Registered (load order; 1 is next to the base):
