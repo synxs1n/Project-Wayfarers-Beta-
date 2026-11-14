@@ -90,6 +90,9 @@ let FG11=null,FL11=null;
 function fg11Active(){try{if(!B||V.screen!=='battle'||V.modal||B.wipe)return false;const R=typeof B5R!=='undefined'&&B5R.ring;return !(R&&!R.done);}catch(e){return false;}}
 function fg11Hit(e){// the foe index under the pointer: a sprite box (DOM), else a plate or target tag drawn on the stage
   const t=e.target;if(!t||!t.closest)return null;const u=t.closest('.unit');
+  /* 0.21.6: a foe's plate is drawn over the units, so a tap on it means that foe even where another foe's tap area lies under it */
+  if(u&&u.classList.contains('foe'))try{const st=document.getElementById('bstage'),r=st&&st.getBoundingClientRect(),L=r&&r.width&&BL&&BL.W?b3Lay():null;if(L&&L.plates){const k=r.width/BL.W,x=(e.clientX-r.left)/k,y=(e.clientY-r.top)/k;
+    for(let i=0;i<B.en.length;i++){const f=B.en[i],o=f&&f.hp>0&&L.plates.get(f);if(o&&x>=o.x&&x<=o.x+o.w&&y>=o.y&&y<=o.y+o.h)return {i,el:+u.dataset.arg===i?u:null,tg:+u.dataset.arg===i&&u.classList.contains('tg')};}}}catch(er){}
   if(u){if(!u.classList.contains('foe'))return null;const i=+u.dataset.arg;const f=B.en[i];return f&&f.hp>0?{i,el:u,tg:u.classList.contains('tg')}:null;}
   if(t.closest('[data-act],button,a,input,select,textarea'))return null;
   const st=document.getElementById('bstage');if(!st||!t.closest('#bwrap'))return null;

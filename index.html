@@ -2119,7 +2119,7 @@ html:not(.flat) .battle.b3 .bline .b4mo .b4bar{box-shadow:inset 0 0 0 1px #000,0
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.21.5";const APP_BUILD="7d838cae4ee7";
+(function(){const APP_VER="0.21.6";const APP_BUILD="97b5107e9e28";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2892,7 +2892,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.21.5";const APP_BUILD="7d838cae4ee7";
+const APP_VER="0.21.6";const APP_BUILD="97b5107e9e28";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2900,6 +2900,7 @@ const APP_VER="0.21.5";const APP_BUILD="7d838cae4ee7";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.21.6',['Battle: double tapping or holding a foe\'s HP plate opens that foe\'s card even where another foe stands under the plate.']],
  ['Beta v0.21.5',['World and names: chests open at once again. Places you have explored follow your account, so click to walk works on another device. The Breach Waystone stands in the centre. New journeys leave towns by the west as often as any other side, every town gate has its own signpost, and no town is left without a way out. About a hundred names changed so the same words (hollow, frost, cinder, ember and more) stop repeating: Cinderhollow Deeps is Kilnscar Depths, Hollowmere is Larkspur, Frostgate is Whitehearth, and so on. Saves and bestiary records carry over.']],
  ['Beta v0.21.4',['Battle and roster: every turn opens on the main actions (no remembered submenu). Space, Enter or Z continues past victory, defeat and story screens, and Settings > Controls can bind up to four keys per action. Pets of the Scourges removed in 0.20.9 can be summoned again. Recruited bosses can only be called by Nikaris or a Priest; a summoned Scourge takes the field at full size in place of the three Vanguard heroes, who return unharmed when it leaves. Guardians and Nikaris are tuned down slightly. Skills are learned at 1, 1, 6, 11, 15, 20, 24, 28, 32, 37, 41 and 45, so three by level 10 (nothing already learned is lost). Dual type wayfarers do not turn up for recruitment before the third realm.']],
  ['Beta v0.21.3',['Equipment: the Backpack tab works on phones (a hint card was sitting over it). Upgrade whole party buys every available upgrade in one press. Equipment shows every stat it raises or lowers, and by how much, against what the hero wears. Equip Best and Build party close the Menu when done, with an Undo Equip Best button in Backpack > Equipment. Rarities unlock by realm: Common and Uncommon in the first, then one more per realm. Any piece at +0 now beats the rarity below it at +3, so tempering steps are smaller. The personal quest fight names the real relic reward (weapon, armour or charm) instead of always a weapon.']],
@@ -29856,6 +29857,9 @@ let FG11=null,FL11=null;
 function fg11Active(){try{if(!B||V.screen!=='battle'||V.modal||B.wipe)return false;const R=typeof B5R!=='undefined'&&B5R.ring;return !(R&&!R.done);}catch(e){return false;}}
 function fg11Hit(e){// the foe index under the pointer: a sprite box (DOM), else a plate or target tag drawn on the stage
   const t=e.target;if(!t||!t.closest)return null;const u=t.closest('.unit');
+  /* 0.21.6: a foe's plate is drawn over the units, so a tap on it means that foe even where another foe's tap area lies under it */
+  if(u&&u.classList.contains('foe'))try{const st=document.getElementById('bstage'),r=st&&st.getBoundingClientRect(),L=r&&r.width&&BL&&BL.W?b3Lay():null;if(L&&L.plates){const k=r.width/BL.W,x=(e.clientX-r.left)/k,y=(e.clientY-r.top)/k;
+    for(let i=0;i<B.en.length;i++){const f=B.en[i],o=f&&f.hp>0&&L.plates.get(f);if(o&&x>=o.x&&x<=o.x+o.w&&y>=o.y&&y<=o.y+o.h)return {i,el:+u.dataset.arg===i?u:null,tg:+u.dataset.arg===i&&u.classList.contains('tg')};}}}catch(er){}
   if(u){if(!u.classList.contains('foe'))return null;const i=+u.dataset.arg;const f=B.en[i];return f&&f.hp>0?{i,el:u,tg:u.classList.contains('tg')}:null;}
   if(t.closest('[data-act],button,a,input,select,textarea'))return null;
   const st=document.getElementById('bstage');if(!st||!t.closest('#bwrap'))return null;
