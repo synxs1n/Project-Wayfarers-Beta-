@@ -8,7 +8,8 @@
 // level SUM.monkLv get a lesser call: two turns of praying, a weaker (SUM.lesser) summon that takes only the Monk's own place for
 // SUM.lesserTurns turns. Never in the Daily Trial; auto battle never prays (the summon still acts if it is already out).
 // v0.19.2: a guardian is a boss you can summon: it stays 5 turns when a Priest invokes it (was 3) and 3 when a Monk calls it (was 2), and is drawn at boss size
-const SUM={turns:5,mp:.3,mpMin:10,hpK:1.2,lvUp:2,powM:.95,lesser:.6,lesserTurns:3,monkLv:10,monkPray:2};
+// after 0.21.0 ("boss summons are bit too strong, tune down slight bit"): 12% less damage (powM .95 to .835) and 12% less HP (hpK 1.2 to 1.055); see battle16.js
+const SUM={turns:5,mp:.3,mpMin:10,hpK:1.055,lvUp:2,powM:.835,lesser:.6,lesserTurns:3,monkLv:10,monkPray:2};
 function sumList(){try{return Object.values(G.summons||{});}catch(e){return [];}}
 function sumUnlock(mon,name,mod){if(!G||G.daily||!MON[mon])return false;G.summons=G.summons||{};if(G.summons[mon])return false;G.summons[mon]={mon,name:name||MON[mon].n,mod:mod||null,at:Date.now()};return true;}
 // old saves: guardians already beaten become summons
@@ -26,7 +27,7 @@ miniFor=function(m){G.miniPick=G.miniPick||{};let i=G.miniPick[m.id];
   const D=MINIS[i];return {mon:D[0],name:D[2],mod:D[5]};};
 // every Sanctum has its guardian (caves keep their chance)
 {const sh0=siteHasMini;siteHasMini=function(id){if(typeof id==='string'&&id[0]==='o')return true;return sh0.apply(this,arguments);};}
-HOOK.after('win','summon8','a beaten guardian becomes a summon',function(){try{const sp=B&&B.spec,mi=sp&&sp.mini;if(!mi||typeof mi!=='object'||!G||G.daily)return;if(sumUnlock(mi.mon,mi.name,mi.mod)){const info=(B&&B.result)||(V.modal&&V.modal.info);if(info){info.notes=info.notes||[];info.notes.push(`${mi.name} is bound to your cause: a Priest can now Invoke it in battle (a Monk from level ${SUM.monkLv} can call a lesser form).`);}}}catch(e){}});
+HOOK.after('win','summon8','a beaten guardian becomes a summon',function(){try{const sp=B&&B.spec,mi=sp&&sp.mini;if(!mi||typeof mi!=='object'||!G||G.daily)return;if(sumUnlock(mi.mon,mi.name,mi.mod)){const info=(B&&B.result)||(V.modal&&V.modal.info);if(info){info.notes=info.notes||[];info.notes.push(`${mi.name} is bound to your cause: a Priest can now Invoke it in battle.`);}}}catch(e){}});
 // ----- who can summon -----
 function sumClassOf(a){try{const t=TPL[a.id];if(!t||!B||a.side!=='p'||a.isComp||a.isSum)return null;if(t.cls==='healer')return 'priest';if(t.cls==='monk'&&a.lv>=SUM.monkLv)return 'monk';}catch(e){}return null;}
 function sumCan(a){if(!B||!G||G.daily||B.auto||!a||a.hp<=0)return false;if(B.sum||B.sumDead||B.pray)return false;const k=sumClassOf(a);if(!k||!sumList().length)return false;if((B.summonedBy||{})[a.id])return false;return a.mp>=sumCost(a);}

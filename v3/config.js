@@ -131,6 +131,10 @@ const SURPRISE={free:1};
 // DUAL_FROM: the first stage (0 = the first realm) where dual type wayfarers (taverns, challenges, chance meetings) and dual type regular
 // monsters appear. Bosses, minibosses, elites, mimics and other special foes may be dual at any stage.
 const DUAL_FROM=1;
+// DUAL_HERO_FROM (after 0.21.0, the owner: "no dual type wayfarers appear for recruitment until reaching the 3rd realm, 2nd realm is ok for some dual
+// type enemies to start appearing"): the first stage where a dual type WAYFARER is offered (tavern, challenge board, rare visitor, chance meeting, cave
+// and keep cells, the dual type legends). DUAL_FROM stays the stage for dual type regular monsters. The starter pool never holds a dual type (battle16.js).
+const DUAL_HERO_FROM=2;
 // Beta v0.4.1 Phase 3 balance knobs (one place, editable)
 // 3.2 boss level = max(base, base + frac*(party highest - base)), never more than cap above base
 const BOSS_LV={frac:.5,cap:12};

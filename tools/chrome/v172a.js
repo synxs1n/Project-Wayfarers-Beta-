@@ -110,7 +110,7 @@ const SH=process.env.SHOTDIR;
  chk('dlIco still gives the <img> with the name',/dli piercing/.test(s.ico)&&/alt="Piercing"/.test(s.ico)&&/dli slash/.test(s.ico));
  await H.browser.close();}
 
-// ---------- 4. battle menu memory per hero ----------
+// ---------- 4. battle menu memory per hero: removed after 0.21.0 (battle16.js): every turn opens on the main actions, at the top ----------
 {const H=await open({w:390,h:520,mobile:true,pre:PRE});const {ev,wait,page,until}=H;
  await ev(eval(START),['mira','lumen','oren']);await wait(150);
  await ev(()=>{const A=__A,G=A.G;['mira','lumen','oren'].forEach(i=>{G.roster[i].lv=30;});A.TW.get('startBattle')({stage:0,kind:'field'});});
@@ -128,8 +128,8 @@ const SH=process.env.SHOTDIR;
   return o;});
  chk('a hero with no memory starts at the top menu',q.fresh==='root'&&q.h2fresh==='root'||JSON.stringify(q));
  chk('the first hero\'s Skills place is not shown to the second hero',q.h2fresh==='root');
- chk('coming back to the first hero opens their Skills list, with the last skill marked',q.h1back==='skills'&&q.h1last||JSON.stringify(q));
- chk('the second hero\'s turn opens their own place (Items)',q.h2back==='items'||JSON.stringify(q));
+ chk('coming back to the first hero opens the main actions (no menu memory)',q.h1back==='root'||JSON.stringify(q));
+ chk('the second hero\'s turn opens the main actions too',q.h2back==='root'||JSON.stringify(q));
  // scroll per hero: scroll hero 1's list, hero 2's differently, switch back and forth
  const sc=await ev(()=>{const A=__A,T=A.TW.get,B=T('B'),ACT=T('ACT'),h1=B.front[0],h2=B.front[1];
   const go=(a,menu)=>{B.cur=a;B.pturns=(B.pturns||0)+1;B.mode='cmd';B.pend=null;B.swapAsk=null;B.menu=menu||'root';A.render();};
@@ -144,10 +144,10 @@ const SH=process.env.SHOTDIR;
   const other=await scrollOf();
   await ev(()=>{const A=__A,T=A.TW.get,B=T('B'),h1=B.front[0];B.cur=h1;B.pturns++;B.mode='cmd';B.pend=null;B.menu='root';A.render();});await wait(350);
   const back=await scrollOf();
-  chk('the Skills list scroll is the hero\'s own: the second hero\'s list starts at the top ('+JSON.stringify(other)+'), the first hero\'s comes back ('+want+' -> '+(back&&back.top)+')',want>20&&other&&other.top<5&&back&&Math.abs(back.top-want)<=3||JSON.stringify({want,other,back}));}
+  chk('no scroll memory: the second hero\'s list starts at the top ('+JSON.stringify(other)+'), and the first hero\'s next turn starts at the top too ('+want+' -> '+(back&&back.top)+')',want>20&&other&&other.top<5&&(!back||back.top<5)||JSON.stringify({want,other,back}));}
  // a new fight forgets it
  const nf=await ev(()=>{const A=__A,T=A.TW.get,B=T('B');return Object.keys(window.__M12.M12.mem).length;});
- chk('memory is kept per hero ('+nf+' heroes noted)',nf>=2);
+ chk('the per hero notes are still there for the turn in hand ('+nf+' heroes noted)',nf>=2);
  await H.browser.close();}
 done({browser:{close:async()=>{}}});
 })();

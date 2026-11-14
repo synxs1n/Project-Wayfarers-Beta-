@@ -74,7 +74,8 @@ const UNTIL=async id=>{const A=__A,B=A.B;A.setPause(60);
       if(B.cur.id!==id)return out;A.setPause(60);const s=A.known(B.cur).find(x=>x.t==='one'&&x.k!=='heal'&&!x.limit);A.ACT.cmd('skills');A.render();B.cur.mp=999;A.ACT.sk(s.id);if(B.menu==='target')A.ACT.tgtE(0);
       out.skill=await UNTIL(id);out.sk=s.n;return out;},UNTIL.toString());
     chk(`${tag}: after an item, ${mem.hero}'s next turn opens on the main actions (${mem.item})`,mem.item==='root'||JSON.stringify(mem));
-    chk(`${tag}: after a skill (${mem.sk}), the next turn opens on Skills (${mem.skill})`,mem.skill==='skills'||JSON.stringify(mem));
+    // after 0.21.0 (battle16.js): no battle menu memory, every turn opens on the main actions
+    chk(`${tag}: after a skill (${mem.sk}), the next turn opens on the main actions too (${mem.skill})`,mem.skill==='root'||JSON.stringify(mem));
     // ---- 4. victory screen, learned skills ----
     await battle(H,{heroes:4,foes:2,seed:5,lv:20});
     const v=await ev(async()=>{const A=__A,G=A.G,B=A.B;G.skSeen=G.skSeen||{};G.party.forEach(id=>{const ids=A.known(G.roster[id]).map(x=>x.id||x.n);G.skSeen[id]=ids.slice(0,Math.max(0,ids.length-2));});// the last two skills of each hero count as new

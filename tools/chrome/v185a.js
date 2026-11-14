@@ -6,7 +6,9 @@
 //    Menu > Journey, no cap); every one is offered on the starter screen of every later journey; the three heroes rule is the old one (a permanent
 //    recruit takes one of the three places, up to two); the pool goes to the cloud profile (flags.legacy sorted, a union, cycles the larger); old picks stay
 // 3) the starter pool: 500 draws, each exactly 16 wayfarers, two of each of the 8 elements (the first element) and two of each of the 8 classes, never a
-//    Legendary, never a permanent recruit, every hero of the 88 turns up and none is far over its share; the screen shows the sixteen grouped by class
+//    Legendary, never a permanent recruit, every hero of the 64 single types turns up (88 before 0.21.x, when dual types were drawn too) and none is far over its share; the screen shows the sixteen grouped by class
+// After 0.21.0 (battle pass 16, tools/chrome/v189a.js): the learn schedule is 1,1,6 then 11 to 45 (three skills at level 10), saves are marked 3 (a save
+// marked 2 keeps the 0.20.9 levels' skills, s.lvQ), and the starter pool is the 64 single type wayfarers (no dual type before the third realm).
 // SHOTDIR=dir saves screenshots. Usage: PWHTML=../../out/aurelis3.html [SHOTDIR=/tmp/x] node v185a.js
 const {open,chk,done}=require('./pw');
 const PRE=(meta)=>`localStorage.clear();localStorage.setItem('aurelis-meta-v1',JSON.stringify(Object.assign({cfg:{speed:1,enc:'off',music:0,sfx:0,gfx:'medium',hints:false,tips:false}},${JSON.stringify(meta||{})})));`;
@@ -22,7 +24,7 @@ const SH=process.env.SHOTDIR;
   // old saves: the first hero with a skill the new levels delay past the 0.20.3 and the original levels
   let dl=null;for(const id of Object.keys(T)){const t=T[id];if(t.mon||!S.CLS[t.cls]||t.src==='L'||t.src==='x')continue;const s=S.kit(t).find(x=>x.lvP!=null&&x.lvP<x.lv&&x.lv12<x.lv&&x.lvP-x.lv12>=1);if(s){dl={id,sk:s.id,n:s.n,p:s.lvP,o:s.lv12,lv:s.lv};break;}}
   const mk=(lv,flag)=>{const h=A.TW.get('newChar')(dl.id,lv);h.lv=lv;delete h.keep;const g={roster:{[dl.id]:h}};if(flag!=null)g.m14lv=flag;return g;};
-  const g0=mk(dl.p,null),r0=M.keep(g0),g1=mk(dl.p,1),r1=M.keep(g1),gp=mk(dl.o,1),rp=M.keep(gp),g2=mk(dl.p,2),r2=M.keep(g2),go=mk(dl.o,null),ro=M.keep(go);
+  const g0=mk(dl.p,null),r0=M.keep(g0),g1=mk(dl.p,1),r1=M.keep(g1),gp=mk(dl.o,1),rp=M.keep(gp),g2=mk(dl.p,3),r2=M.keep(g2),go=mk(dl.o,null),ro=M.keep(go);
   const has=(g,id)=>(g.roster[dl.id].keep||[]).includes(id);
   A.ACT.new();['brann','mira','oren'].forEach(i=>A.ACT.pickS(i));A.ACT.begin();
   return {n,bad,lasts,gaps,ex,dl,r:[r0,r1,rp,r2,ro],f:[g0.m14lv,g1.m14lv,gp.m14lv,g2.m14lv,go.m14lv],
@@ -30,9 +32,9 @@ const SH=process.env.SHOTDIR;
  console.log('kits:',JSON.stringify(kt));
  chk(`learn levels: ${kt.n} kits, each 12 skills, first one or two at level 1, last at 45 (${JSON.stringify(kt.lasts)}), largest gap ${JSON.stringify(kt.gaps)} (<= 6), never three within 3 levels, order kept`,kt.n===92&&kt.bad.length===0&&Object.keys(kt.lasts).join()==='45'||kt.bad.slice(0,6).join(' | '));
  chk('Limit Breaks keep their levels (15 and 30)',kt.LIM[0]===15&&kt.LIM[1]===30||JSON.stringify(kt.LIM));
- chk(`a save from before the 0.20.3 spread keeps what the original levels gave (${kt.dl&&kt.dl.id}: ${kt.dl&&kt.dl.n} at ${kt.dl&&kt.dl.o}, now ${kt.dl&&kt.dl.lv}), a save moved to the 0.20.3 levels keeps what those gave (it had it at ${kt.dl&&kt.dl.p}, one at ${kt.dl&&kt.dl.o} did not); each is marked 2, a marked save is left alone`,
-  !!kt.dl&&kt.keepOld&&kt.keepP&&!kt.keepPold&&kt.r[3]===0&&kt.noKeep2&&kt.f.every(x=>x===2)&&kt.r[0]>0&&kt.r[1]>0||JSON.stringify(kt));
- chk('a new journey is marked 2',kt.newFlag===2||kt.newFlag);
+ chk(`a save from before the 0.20.3 spread keeps what the original levels gave (${kt.dl&&kt.dl.id}: ${kt.dl&&kt.dl.n} at ${kt.dl&&kt.dl.o}, now ${kt.dl&&kt.dl.lv}), a save moved to the 0.20.3 levels keeps what those gave (it had it at ${kt.dl&&kt.dl.p}, one at ${kt.dl&&kt.dl.o} did not); each is marked 3, a save marked 3 is left alone`,
+  !!kt.dl&&kt.keepOld&&kt.keepP&&!kt.keepPold&&kt.r[3]===0&&kt.noKeep2&&kt.f.every(x=>x===3)&&kt.r[0]>0&&kt.r[1]>0||JSON.stringify(kt));
+ chk('a new journey is marked 3',kt.newFlag===3||kt.newFlag);
  await H.browser.close();}
 // ---------- 3: the draw ----------
 {const H=await open({w:390,h:844,pre:PRE()});const {ev}=H;last=H;
@@ -47,7 +49,7 @@ const SH=process.env.SHOTDIR;
   return {pool:pool.length,bad:bad.length,leg,notBase,sameAsLast,never:f.filter(x=>!x).length,min:Math.min(...f),max:Math.max(...f),mean,same:a===b,out,sorted,classes:C};});
  console.log('draw 500:',JSON.stringify(r));
  chk(`500 draws: every one has exactly 16 wayfarers, 2 of each of 8 elements and 2 of each of 8 classes (${r.classes.join(', ')})`,r.bad===0&&r.classes.length===8||r.bad);
- chk(`the draw uses the whole roster of ${r.pool} non-legend wayfarers of the 8 classes: none of the draws has a Legendary or a hero of another class`,r.pool===88&&r.leg===0&&r.notBase===0||JSON.stringify(r));
+ chk(`the draw uses the whole roster of ${r.pool} single type non-legend wayfarers of the 8 classes: none of the draws has a Legendary or a hero of another class`,r.pool===64&&r.leg===0&&r.notBase===0||JSON.stringify(r));
  chk(`spread: every hero turns up (min ${r.min}), none over 1.5x its share (max ${r.max}, share ${r.mean.toFixed(1)}), no two draws alike`,r.never===0&&r.max<=r.mean*1.5&&r.min>=r.mean*.5&&r.sameAsLast===0||JSON.stringify(r));
  chk('a seed gives the same sixteen, grouped by class; a permanent recruit is never drawn into them',r.same&&r.sorted&&r.out||JSON.stringify(r));
  await H.browser.close();}

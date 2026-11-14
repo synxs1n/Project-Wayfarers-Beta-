@@ -84,15 +84,16 @@ const OUT=__dirname+'/out';
     const pv=await ev(RECTS);const g1=pv.front[0];await shot(`v173a_${tag}_priest`);const sr=await ev(()=>{const r=document.getElementById('bstage').getBoundingClientRect();return {l:r.left,r:r.right};});
     console.log(tag,'priest',JSON.stringify(s),JSON.stringify(pr));
     chk(`${tag}: a Priest's guardian stays 5 turns, the menu says so, the real guardian art is used (not the small alias)`,s.ok&&s.turns===5&&/5 turns/.test(s.menu)&&s.art==='mb_slagjaw'&&s.front===1||JSON.stringify(s));
-    chk(`${tag}: the entrance has the boss banner and a name plate with its level and turns left inside the stage (${JSON.stringify(pr.plate)})`,/^GUARDIAN: Slagjaw/.test(s.ban||'')&&pr.plate&&/GUARDIAN/.test(pr.plate)&&/5 turns/.test(pr.plate)&&pr.pl>=sr.l-1&&pr.pr<=sr.r+1||JSON.stringify([s,pr,sr]));
+    chk(`${tag}: the entrance has the boss banner and a name plate with its level and turns left inside the stage (${JSON.stringify(pr.plate)})`,/^GUARDIAN: Slagjaw/.test(s.ban||'')&&pr.plate&&/GUARDIAN/.test(pr.plate)&&/[45] turns/.test(pr.plate)/* a timer left by the fight before may give the guardian its first turn before the plate is read: 4 is as right as 5 (s.turns above is checked at 5) */&&pr.pl>=sr.l-1&&pr.pr<=sr.r+1||JSON.stringify([s,pr,sr]));
     chk(`${tag}: the Priest's guardian is boss sized (${Math.round(g1.r-g1.l)}x${Math.round(g1.b-g1.t)}) and wholly inside the stage`,(g1.r-g1.l)/(boss.r-boss.l)>.85&&g1.l>=0&&g1.r<=pv.W&&g1.t>=0&&g1.b<=pv.H+1||JSON.stringify([g1,pv.W,pv.H]));
     await ev(()=>{const A=__A;A.B.over=true;A.finishBattle('fled');A.V.modal=null;});await wait(500);await ev(SETUP);
-    // a Monk calls it
+    // a Monk's lesser call: after 0.21.0 (battle16.js) only Nikaris or a Priest may summon a recruited boss, so the Monk has no command for it any more;
+    // the lesser form itself (sumFire with lesser) is still drawn and timed as before
     await ev(()=>{const A=__A;A.startBattle({stage:0,kind:'field'});});await wait(1500);
-    s=await ev(()=>{const A=__A,T=A.TW.get,B=A.B,a=B.front.find(u=>u.id==='taro');B.cur=a;const ok=T('sumFire')(a,A.G.summons.mb_slagjaw,true),u=B.sum&&B.sum.u;A.render();return {ok,turns:u&&u.turnsLeft,menu:T('sumMenuHtml')(a),front:B.front.length,slot:B.sum&&B.sum.slot};});
+    s=await ev(()=>{const A=__A,T=A.TW.get,B=A.B,a=B.front.find(u=>u.id==='taro');B.cur=a;a.mp=a.S.mmp;const can=T('sumCan')(a),ok=T('sumFire')(a,A.G.summons.mb_slagjaw,true),u=B.sum&&B.sum.u;A.render();return {ok,can,turns:u&&u.turnsLeft,menu:T('sumMenuHtml')(a),front:B.front.length,slot:B.sum&&B.sum.slot};});
     await wait(1700);const mv=await ev(RECTS);const g2=mv.front.find(f=>/Slagjaw/.test(f.n)),others=mv.front.filter(f=>f!==g2);await shot(`v173a_${tag}_monk`);
     console.log(tag,'monk',JSON.stringify(s),'guardian',Math.round(g2.l),Math.round(g2.r),'heroes',others.map(o=>Math.round(o.l)+'-'+Math.round(o.r)).join(' '));
-    chk(`${tag}: a Monk's guardian stays 3 turns and the menu says so`,s.ok&&s.turns===3&&/3 turns/.test(s.menu)||JSON.stringify(s));
+    chk(`${tag}: a lesser guardian stays 3 turns; the Monk has no Spirit Call command any more (Nikaris or a Priest only)`,s.ok&&s.turns===3&&s.can===false||JSON.stringify(s));
     chk(`${tag}: the Monk's guardian is boss sized, inside the stage and covers none of the other heroes (${others.length} beside it)`,others.length===2&&(g2.r-g2.l)/(boss.r-boss.l)>.85&&g2.l>=0&&g2.r<=mv.W&&others.every(o=>!hit(g2,o))||JSON.stringify([g2,others,mv.W]));
     // the summon is gone after its turns and the heroes come back
     const back=await ev(()=>{const A=__A,B=A.B;A.TW.get('sumEnd')('done');return {front:B.front.map(u=>u.id),hid:B.front.some(u=>u.hidden)};});

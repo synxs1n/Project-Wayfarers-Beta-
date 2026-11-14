@@ -86,5 +86,5 @@ const kt=await ev(()=>{const S=__S12,T=S.TPL,M=__M14,bad=[];let n=0,maxGap=0;Obj
  return {n,bad,maxGap,dl,kept,has,kn,old,flag:g.m14lv,newFlag:G.m14lv};});
 console.log('kits:',JSON.stringify(kt));
 chk(`learn levels: ${kt.n} kits start at 1, no gap over 6 (largest ${kt.maxGap}), never three within 3 levels, last under the cap, order kept`,kt.bad.length===0||kt.bad.slice(0,6).join(' | '));
-chk('an old save keeps every skill the old levels gave'+(kt.dl?` (${kt.dl.id} at level ${kt.dl.old} keeps ${kt.dl.n}, now level ${kt.dl.lv})`:'')+'; new journeys are marked 2 (v185a: the levels of this pass, G.m14lv 1 saves are migrated again)',!!kt.dl&&kt.has&&kt.kept>0&&kt.kn===kt.old&&kt.flag===2&&kt.newFlag===2||JSON.stringify(kt));
+chk('an old save keeps every skill the old levels gave'+(kt.dl?` (${kt.dl.id} at level ${kt.dl.old} keeps ${kt.dl.n}, now level ${kt.dl.lv})`:'')+'; new journeys are marked 3 (v185a, v189a: the levels of the later passes, G.m14lv 1 and 2 saves are migrated again)',!!kt.dl&&kt.has&&kt.kept>0&&kt.kn>=kt.old&&kt.flag===3&&kt.newFlag===3||JSON.stringify(kt));
 await done(last);})();

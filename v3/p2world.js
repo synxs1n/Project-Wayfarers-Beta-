@@ -286,7 +286,7 @@ HOOK.wrap('drawObjects','p2world','entrance style context (P2.dm)',function(next
 
 // ---------------------------------------------------------------- 2.6 dual types come later ----------------------------------------------------------------
 const p2Dual=id=>!!(TPL[id]&&TPL[id].el&&TPL[id].el.length>1);
-const p2DualOK=()=>!G||!!G.daily||(G.stage|0)>=DUAL_FROM;
+const p2DualOK=()=>!G||!!G.daily||(G.stage|0)>=(typeof DUAL_HERO_FROM==='number'?DUAL_HERO_FROM:DUAL_FROM);// wayfarers: the third realm (DUAL_HERO_FROM); foes below keep DUAL_FROM
 // wayfarers: the tavern, the challenge board, rare visitors and chance meetings offer single type wayfarers only in the first realm
 {const tp0=tvPool;tvPool=function(){const L=tp0.apply(this,arguments);return p2DualOK()?L:L.filter(id=>!p2Dual(id));};}
 {const ce0=challEligible;challEligible=function(){const L=ce0.apply(this,arguments);return p2DualOK()?L:L.filter(c=>!p2Dual(c.hero));};}

@@ -22,7 +22,7 @@ const RO14_ORDER=['warrior','knight','mage','healer','thief','archer','monk','ba
 // ---------- 3. the sixteen ----------
 // the base classes (the ones the starters come in) and the heroes a draw may use
 function ro14Classes(){const s=new Set(STARTERS.map(id=>TPL[id].cls));return RO14_ORDER.filter(c=>s.has(c)).concat([...s].filter(c=>!RO14_ORDER.includes(c)));}
-function ro14Pool(){const C=ro14Classes();return Object.keys(TPL).filter(id=>{const t=TPL[id];return t&&!t.mon&&C.includes(t.cls)&&t.el&&t.el.length&&!LEGEND_IDS.includes(id);});}
+function ro14Pool(){const C=ro14Classes();return Object.keys(TPL).filter(id=>{const t=TPL[id];return t&&!t.mon&&C.includes(t.cls)&&t.el&&t.el.length===1&&!LEGEND_IDS.includes(id);});}// single types only (after 0.21.0: no dual type wayfarer before the third realm): 64 of the 92
 // 2 per class and 2 per main element out of pool (the ids), seeded; null when there is no such draw (a pool too small)
 function ro14Pick(pool,R){const C=ro14Classes(),E=Object.keys(EL),per=RO14.per,P=pool.map(id=>TPL[id]);
   for(let i=P.length-1;i>0;i--){const j=Math.floor(R()*(i+1));[P[i],P[j]]=[P[j],P[i]];}
