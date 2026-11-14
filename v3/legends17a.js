@@ -2,30 +2,30 @@
 // The owner's baseline: a Legendary is an upgraded version of a base class with special abilities of its own.
 // JOSETH (id jose, class key bloodcaller, Fire / Lightning) is an upgraded Priest. His heals are level with a Priest's (same numbers, same magic
 //   and Faith curves); what he adds is party-wide blessings and the pack:
-//   - Blood Pact: his summons cost HP, never MP (L17.cost: one pet 12% of max HP, the whole pack 30%, a guardian or a recruited boss 25%, the one
-//     call-back a battle 15%; HP never drops under 1). Auto battle never pays below half HP (L17.autoHp).
+//   - Blood Pact: his summons cost HP, never MP (L17J.cost: one pet 12% of max HP, the whole pack 30%, a guardian or a recruited boss 25%, the one
+//     call-back a battle 15%; HP never drops under 1). Auto battle never pays below half HP (L17J.autoHp).
 //   - Three pet slots (G.j17.slots, an optional save field; an empty slot holds his own dog). His dogs Junah (golden retriever, healer), Odin (sable
 //     German Shepherd, saboteur) and Zeus (black and white husky, magic) are not tamed pets: they are not in G.tamed, cannot be released and take none
 //     of the 8 taming places. A tamed pet can be put in a slot instead; at most one recruited boss among the three.
 //   - Whistle calls the next pet of his slots, Call the Pack all that have not been called. They stand BESIDE the Vanguard (extra units in B.front,
-//     u.j17 'pet'), he stays on the field. A pack pet fights at L17.pack.pw (.7) power with L17.pack.hp (60%) of a pet's HP for L17.pack.turns (4)
-//     of its own turns. Once per battle Whistle calls back one pet that left or fell (L17.pack.backTurns 3 turns).
+//     u.j17 'pet'), he stays on the field. A pack pet fights at L17J.pack.pw (.7) power with L17J.pack.hp (60%) of a pet's HP for L17J.pack.turns (4)
+//     of its own turns. Once per battle Whistle calls back one pet that left or fell (L17J.pack.backTurns 3 turns).
 //   - The dogs have their own turn code (j17DogPick): Junah heals the weakest ally, gives Regen and cleanses; Odin slows, weakens, breaks, steals and
 //     strips boons; Zeus casts single and area lightning and stuns. A tamed pet in a slot fights as any summoned pet does (comp.js).
 //   - One layer of summons at a time: a guardian (Invoke, as a Priest, paid in HP), a recruited boss (he is a caller: b16Caller) or Cerberus sends
 //     the pack home; the pack cannot be called while one of those stands.
 //   - Limit I "Cerberus, the Bound Pack" (level 15) and Limit II "Cerberus Stormcrown" (level 30): a boss sized three headed hound that stands in
 //     front of the Vanguard without replacing it (u.j17 'cer') for 3 / 4 turns.
-//   - Blood Oath: with him in the fight beaten monsters sometimes swear to him (L17.oath: 8% in a field or dungeon fight, 10% a Lesser Scourge from a
+//   - Blood Oath: with him in the fight beaten monsters sometimes swear to him (L17J.oath: 8% in a field or dungeon fight, 10% a Lesser Scourge from a
 //     Scourge, 10% a Sanctum or den guardian as a recruited boss; never a Calamity). One roll at the higher chance with Nikaris along.
 //   - Every summon he makes uses the blood summon: he cuts his palm, drops to one knee and slams the palm on the ground; a blood red sigil ring
 //     spreads over the floor, smoke bursts and the summon stands in it (bigger for a guardian, a boss and Cerberus). Poses jblood and jslam.
 // DIST (id dist, class key chief, Water) is an upgraded Thief:
-//   - Light Fingers: every hit he lands has L17.lf.ch (12%) to lift a little gold (at most L17.lf.cap 40% of the fight's own gold) and he is 10%
+//   - Light Fingers: every hit he lands has L17J.lf.ch (12%) to lift a little gold (at most L17J.lf.cap 40% of the fight's own gold) and he is 10%
 //     harder to hit.
 //   - Cutwater: six hits, each with its own crit and Light Fingers roll. Water Clone: a water double (a palette swapped, see-through copy of his
-//     sprite) stands with him for 3 of his turns and repeats every damaging skill at L17.clone.pw (45%; the fallback if it tests high is 35%)
-//     with no MP cost, no steal and no gold. Pick Up the Pace: Haste for the Vanguard one turn longer, and each of them acts 20% sooner (L17.pace; the proposal had 30% for 12 MP: tuned after the class comparison, docs/sumbal17.md).
+//     sprite) stands with him for 3 of his turns and repeats every damaging skill at L17J.clone.pw (45%; the fallback if it tests high is 35%)
+//     with no MP cost, no steal and no gold. Pick Up the Pace: Haste for the Vanguard one turn longer, and each of them acts 20% sooner (L17J.pace; the proposal had 30% for 12 MP: tuned after the class comparison, docs/sumbal17.md).
 //     Slip Under: cannot be targeted until his next turn (area moves hit for half), +50% crit on his next attack, not two turns running.
 //     Toll Toss: costs gold (40 x the realm number) instead of MP. Shakedown strips one boon and always lifts gold.
 //   - Limit I Tidecrew Rush (nine hits, every foe at least once) and Limit II Clean Sweep (two waves, twelve hits, a boon off every foe, gold).
@@ -34,7 +34,7 @@
 //   OR the special quest, which also posts on the board without a code from a later realm (j17QuestRoll) and unlocks the hero on the account
 //   when it is finished: "Three Whistles" (Joseth) and "The Toll on the Water" (Dist). New ids only; no save field is renamed.
 // Hook points outside this file: data.js classAttrBuild (the class curves as a named function). Test: tools/chrome/v194a.js.
-const L17={
+const L17J={
   cost:{pet:.12,pack:.30,guard:.25,back:.15,ward:.08,raise:.06},autoHp:.5,
   pack:{pw:.7,hp:.6,turns:4,backTurns:3,draw:1},// draw: how often a foe's single blow aimed at a pack pet stays on it (1 = like any unit; lower sends it on to a hero)
   cer:[{pw:.6,hp:.4,turns:3},{pw:null,hp:.55,turns:4,heal:.2}],// pw null: the guardian strength (SUM.powM)
@@ -70,8 +70,8 @@ CF.bloodcaller=['staff','robe'];CF.chief=['dagger','vest'];
 })();
 TRAITS.bloodpact=['Blood Pact','Legendary: his summons cost HP, never MP; three pets out at once; beaten monsters sometimes swear to him'];
 TRAITS.lightfingers=['Light Fingers','Legendary: every hit may lift a little gold, and he is 10% harder to hit'];
-SIG.jose={n:'Blood Pact',d:`His summons cost HP, never MP. He keeps three pets and can have all three out at once, beside the Vanguard. With him in the fight beaten monsters sometimes swear to him (${Math.round(L17.oath.field*100)}% in normal fights), and a beaten Scourge or Sanctum guardian sometimes follows as a recruited boss.`};
-SIG.dist={n:'Light Fingers',d:`Every hit he lands has a ${Math.round(L17.lf.ch*100)}% chance to lift a little gold (up to ${Math.round(L17.lf.cap*100)}% of the fight's own gold), and he is ${Math.round(L17.lf.eva*100)}% harder to hit.`};
+SIG.jose={n:'Blood Pact',d:`His summons cost HP, never MP. He keeps three pets and can have all three out at once, beside the Vanguard. With him in the fight beaten monsters sometimes swear to him (${Math.round(L17J.oath.field*100)}% in normal fights), and a beaten Scourge or Sanctum guardian sometimes follows as a recruited boss.`};
+SIG.dist={n:'Light Fingers',d:`Every hit he lands has a ${Math.round(L17J.lf.ch*100)}% chance to lift a little gold (up to ${Math.round(L17J.lf.cap*100)}% of the fight's own gold), and he is ${Math.round(L17J.lf.eva*100)}% harder to hit.`};
 // ---------- 2. the wayfarers ----------
 const L17_LOOK={
   jose:{b:'light',hair:'short',hat:'widebrim',back:['cape'],wpn:'staff_crook',sk:2,jose:1,cowl:1,
@@ -80,7 +80,7 @@ const L17_LOOK={
     pal:{H:'#18222e',P:'#24507a',Q:'#f0c040',J:'#12202e',Y:'#3ab0d8',K:'#1a2634',B:'#2a2a34',L:'#5a3a22',M:'#cfe2ee',N:'#7a94a8',G:'#f0c040',C:'#4aa8ff',Z:'#bfe6ff',o:'#2f8fb0',i:'#bfe6ff',a:'#f0c040',f:'#a8782a'}}};
 RAW.push(['jose','Joseth','bloodcaller',['fire','lightning'],'bloodpact',"Joseth Kynmar, the Bloodhowl. A handler in a wide hat and a dark red coat who pays for every call in his own blood. Three dogs answer his whistle: Junah, Odin and Zeus. Something with three heads answers when he is angry.",'L',L17_LOOK.jose]);
 RAW.push(['dist','Dist','chief',['water'],'lightfingers',"Dist, Taker of Hearts. Chief of the Tidecrew, the bandits who work the river crossings. Quick hands, a quicker smile, and a double made of water that hits you again after he does.",'L',L17_LOOK.dist]);
-L17.ids.forEach(id=>{const r=RAW.find(x=>x[0]===id);TPL[id]={id,n:r[1],cls:r[2],el:r[3],trait:r[4],bio:r[5],src:r[6],look:r[7]};if(!LEGEND_IDS.includes(id))LEGEND_IDS.push(id);});
+L17J.ids.forEach(id=>{const r=RAW.find(x=>x[0]===id);TPL[id]={id,n:r[1],cls:r[2],el:r[3],trait:r[4],bio:r[5],src:r[6],look:r[7]};if(!LEGEND_IDS.includes(id))LEGEND_IDS.push(id);});
 TPL.jose.title='Joseth Kynmar, the Bloodhowl';TPL.dist.title='Dist, Taker of Hearts';
 // hidden templates (never in RAW, never recruitable; flagged summon and j17hid): the water clone (Dist's sprite on a water palette) and five of his crew for the Limit and the quest
 const L17_GANG=(function(){const gp=(o,p)=>Object.assign({b:'light',wpn:'dagger',sk:1,gang:1,pal:Object.assign({H:'#1e2630',P:'#1f3e5c',Q:'#3ab0d8',J:'#101c28',Y:'#2a7a9a',K:'#18222c',B:'#26262e',M:'#b8c8d4',N:'#6a8090',C:'#4aa8ff'},p||{})},o);
@@ -94,7 +94,7 @@ function j17Hid(id){if(!TPL[id]&&L17_HID[id])TPL[id]={id,n:'Dist',cls:'chief',el
 {const hc0=heroCls;heroCls=function(L,id){if(L&&L.jose)return 'healer';if(L&&(L.dist||L.gang))return 'thief';return hc0.apply(this,arguments);};}
 // signature weapons (engine2.js registerSignatures ran before these two existed). No rival is built for them (rivals.js): a rival is a MON entry, and
 // MON feeds the arena and the Daily Trial's seeded pick, which must stay as it is; their personal quest uses the plain bounty beast.
-try{L17.ids.forEach(id=>{const t=TPL[id],fam=CF[t.cls][0],base=GEAR['w_'+fam+'_4']||GEAR['w_'+fam+'_3'],o={n:`${t.n}'s ${SIGW[t.cls]}`,slot:'w',tier:4,only:id,fam,el:t.el[0],price:2400,attr:{[CLS[t.cls].pref[0]]:5}};
+try{L17J.ids.forEach(id=>{const t=TPL[id],fam=CF[t.cls][0],base=GEAR['w_'+fam+'_4']||GEAR['w_'+fam+'_3'],o={n:`${t.n}'s ${SIGW[t.cls]}`,slot:'w',tier:4,only:id,fam,el:t.el[0],price:2400,attr:{[CLS[t.cls].pref[0]]:5}};
     ST.forEach(k=>{if(base[k])o[k]=Math.round(base[k]*(base[k]>0?1.08:1));});addGear('u_'+id,o);const g=GEAR['u_'+id];
     try{g.price0=g.price;g.price=Math.round(g.price*ECON.gear);g.__ec=1;}catch(e){}g.relic=1;g.bound=1;});}catch(e){console.error('legends17a gear',e);}
 // redeem codes (legends.js: SHA-256 of 'aurelis-legend:' + CODE, upper case, no spaces). The placeholders follow the three older ones:
@@ -107,8 +107,8 @@ try{Object.assign(DUEL_LINES,{
  dist:{o:"You followed the money. Nobody follows the money.",m:"Two of me now!",w:"You still have your purse. Nobody still has their purse. I am coming with you.",l:"Lighter already? Travel safe. Travel often.",f:"Leaving so soon? You dropped something. No, I have it.",d:"Another day, then. I know which pocket.",r:"Robbed once, by you. I have been adding up the interest ever since.",rw:"Paid in full. Keep the change."}});}catch(e){}
 // roster17's table of the two skills a kit gained: for these two the kit comes whole from L17_KIT; the rows name their own two for tools that read it
 try{R17.add.jose=['j_whistle','j_pack'];R17.add.dist=['d_clone','d_pace'];}catch(e){}
-LEG_Q.jose={title:'Three Whistles',ok:s=>s>=Math.max(L17.q.jose.code,typeof DUAL_HERO_FROM==='number'?DUAL_HERO_FROM:2),ch:.3,desc:s=>`Three dogs have been seen on the roads of ${ZS(s).n}: a golden one that begs, a dark one that steals and a pale-eyed one that howls at storms. They answer to one whistle. Win all three over and the man behind it may show himself.`};
-LEG_Q.dist={title:'The Toll on the Water',ok:s=>s>=L17.q.dist.code,ch:.3,desc:s=>`Somebody has put a toll on the river crossing in ${ZS(s).n}, and nobody has seen who collects it. Pay it, catch the hand in your purse, and follow the money to the far bank.`};
+LEG_Q.jose={title:'Three Whistles',ok:s=>s>=Math.max(L17J.q.jose.code,typeof DUAL_HERO_FROM==='number'?DUAL_HERO_FROM:2),ch:.3,desc:s=>`Three dogs have been seen on the roads of ${ZS(s).n}: a golden one that begs, a dark one that steals and a pale-eyed one that howls at storms. They answer to one whistle. Win all three over and the man behind it may show himself.`};
+LEG_Q.dist={title:'The Toll on the Water',ok:s=>s>=L17J.q.dist.code,ch:.3,desc:s=>`Somebody has put a toll on the river crossing in ${ZS(s).n}, and nobody has seen who collects it. Pay it, catch the hand in your purse, and follow the money to the far bank.`};
 // ---------- 3. art ----------
 // The dogs are monster art on the 40x40 grid (facing right, paws on row 36, one shared body box so the three read as the same size). The idle frames
 // carry no effects; motes, wisps and the howl with its bolt are the cast frame (f.t 'atk'). Cerberus is boss art on the 60x60 grid, drawn with the
@@ -420,9 +420,9 @@ function j17Bend(g,hip,sh,sq){const W=g.w,src=g.a.slice(),at=(x,y)=>{const d=hip
   for(let y=F+1;y<g.h;y++)for(let x=0;x<g.w;x++)g.a[y*g.w+x]=0;};}
 // ---------- 4. statuses, kits and Limits ----------
 try{const pc=v=>Math.round(v*100);
-  STS.wclone={n:'Water Clone',a:'CLN',t:L17.clone.turns+1,c:'#4aa8ff',d:`A water double repeats every damaging skill at ${pc(L17.clone.pw)}% power.`};
-  STS.slip={n:'Slip Under',a:'SLP',t:2,c:'#8fd0ff',d:`Cannot be picked as a target; area moves hit for half. The next attack has +${pc(L17.slip.crit)}% critical chance.`};
-  STS.sic={n:'Sic',a:'SIC',bad:1,t:3,c:'#e0303a',d:`Joseth's summons go for it and deal ${pc(L17.sic.dmg-1)}% more to it.`};
+  STS.wclone={n:'Water Clone',a:'CLN',t:L17J.clone.turns+1,c:'#4aa8ff',d:`A water double repeats every damaging skill at ${pc(L17J.clone.pw)}% power.`};
+  STS.slip={n:'Slip Under',a:'SLP',t:2,c:'#8fd0ff',d:`Cannot be picked as a target; area moves hit for half. The next attack has +${pc(L17J.slip.crit)}% critical chance.`};
+  STS.sic={n:'Sic',a:'SIC',bad:1,t:3,c:'#e0303a',d:`Joseth's summons go for it and deal ${pc(L17J.sic.dmg-1)}% more to it.`};
   if(typeof ST_SYM!=='undefined'){ST_SYM.wclone='<path d="M3.4 1.2a1.6 1.6 0 1 1 0 3.2 1.6 1.6 0 0 1 0-3.2ZM1 9V6.6A2 2 0 0 1 3 4.8h.8A2 2 0 0 1 5.8 6.6V9ZM7 2.4a1.3 1.3 0 1 1 0 2.6 1.3 1.3 0 0 1 0-2.6ZM6.4 9V6.4a2.6 2.6 0 0 0-.3-1.1h1.3A1.7 1.7 0 0 1 9 7v2Z"/>';
     ST_SYM.slip='<path d="M1 3.2q2-1.6 4 0t4 0v1.4q-2 1.6-4 0t-4 0ZM1 6.2q2-1.6 4 0t4 0v1.4q-2 1.6-4 0t-4 0Z"/>';
     ST_SYM.sic='<path d="M2.2 1.4 4 3.6 5 .8 6 3.6 7.8 1.4 7.4 5.2 8.8 8.6H1.2L2.6 5.2Z"/>';}
@@ -433,16 +433,16 @@ const j17Pc=v=>Math.round(v*100);
 const L17_KIT={
  jose:[
   {id:'j_mend',n:'Blood Mend',k:'heal',t:'ally',pw:1.6,mp:4,d:'A drop of his own blood closes the wound. Heals one ally.'},
-  {id:'j_whistle',n:'Whistle',k:'status',t:'self',j17:'whistle',own:1,d:`Calls the next pet of his three to stand beside the Vanguard for ${L17.pack.turns} turns. Costs ${j17Pc(L17.cost.pet)}% of his max HP, no MP. Once per battle it calls back a pet that left or fell (${j17Pc(L17.cost.back)}% HP, ${L17.pack.backTurns} turns).`},
+  {id:'j_whistle',n:'Whistle',k:'status',t:'self',j17:'whistle',own:1,d:`Calls the next pet of his three to stand beside the Vanguard for ${L17J.pack.turns} turns. Costs ${j17Pc(L17J.cost.pet)}% of his max HP, no MP. Once per battle it calls back a pet that left or fell (${j17Pc(L17J.cost.back)}% HP, ${L17J.pack.backTurns} turns).`},
   {id:'j_bolt',n:'Blood Bolt',k:'mag',pw:1.3,mp:5,el:'fire',role:'det',d:'A bolt of burning blood, thrown hard.'},
   {id:'j_kennel',n:'Kennel Blessing',k:'status',t:'allyAll',mp:12,fx:[['might',1],['regen',1]],rl:'buffer',d:'A hand on every head: Might and Regen for the whole Vanguard, pets included.'},
   {id:'j_lash',n:'Volt Lash',k:'mag',pw:1.4,mp:5,t:'chain',el:'lightning',role:'primer',d:'A whip of lightning that may leap from foe to foe and stays on what it touches.'},
-  {id:'j_pack',n:'Call the Pack',k:'status',t:'self',j17:'pack',own:1,d:`Calls every pet of his three that has not been called yet, all at once. Costs ${j17Pc(L17.cost.pack)}% of his max HP, no MP.`},
+  {id:'j_pack',n:'Call the Pack',k:'status',t:'self',j17:'pack',own:1,d:`Calls every pet of his three that has not been called yet, all at once. Costs ${j17Pc(L17J.cost.pack)}% of his max HP, no MP.`},
   {id:'j_purge',n:'Purge',k:'heal',t:'ally',pw:.6,mp:4,cleanse:1,d:'Bleeds the poison out: cures ailments and heals a little.'},
-  {id:'j_ward',n:'Bloodward',k:'status',t:'allyAll',mp:10,fx:[['ward',1]],hpc:L17.cost.ward,rl:'buffer',d:`A ring of his blood around the line: Ward on the whole Vanguard (blocks the next hit on each). Also costs ${j17Pc(L17.cost.ward)}% of his max HP.`},
+  {id:'j_ward',n:'Bloodward',k:'status',t:'allyAll',mp:10,fx:[['ward',1]],hpc:L17J.cost.ward,rl:'buffer',d:`A ring of his blood around the line: Ward on the whole Vanguard (blocks the next hit on each). Also costs ${j17Pc(L17J.cost.ward)}% of his max HP.`},
   {id:'j_line',n:'Mend the Line',k:'heal',t:'allyAll',pw:1.1,mp:12,d:'Heals the vanguard, pets included.'},
-  {id:'j_sic',n:'Sic',k:'status',t:'one',mp:6,fx:[['break',.85],['sic',1]],rl:'summoner',d:`Points at one foe: likely Breaks it, and for 3 turns his summons go for it and deal ${j17Pc(L17.sic.dmg-1)}% more to it.`},
-  {id:'j_raise',n:'Raise in Blood',k:'revive',t:'dead',pw:.4,mp:11,hpc:L17.cost.raise,d:`Revives a fallen ally at 40% HP. Also costs ${j17Pc(L17.cost.raise)}% of his max HP.`},
+  {id:'j_sic',n:'Sic',k:'status',t:'one',mp:6,fx:[['break',.85],['sic',1]],rl:'summoner',d:`Points at one foe: likely Breaks it, and for 3 turns his summons go for it and deal ${j17Pc(L17J.sic.dmg-1)}% more to it.`},
+  {id:'j_raise',n:'Raise in Blood',k:'revive',t:'dead',pw:.4,mp:11,hpc:L17J.cost.raise,d:`Revives a fallen ally at 40% HP. Also costs ${j17Pc(L17J.cost.raise)}% of his max HP.`},
   {id:'j_pyre',n:'Pyre Chain',k:'mag',pw:.95,mp:10,t:'all',el:['fire','lightning'],role:'primer',d:'A chain of fire and lightning thrown over every foe.'},
   {id:'j_transf',n:'Transfusion',k:'heal',t:'ally',pw:4,mp:18,cost:1.2,d:'Gives one ally what he can spare, and then some. A very strong heal; slow recovery.'},
   {id:'j_storm',n:'Bloodstorm',k:'mag',pw:2.7,mp:20,cost:1.3,el:['fire','lightning'],role:'det',fx:[['stun',.3]],d:'Fire and lightning called down on one foe. May Stun. Slow recovery.'}],
@@ -452,11 +452,11 @@ const L17_KIT={
   {id:'d_dart',n:'River Dart',k:'phys',pw:1.1,mp:3,cost:.8,el:'water',role:'primer',dl:'piercing',d:'A thrown blade with river water on it that clings to the foe.'},
   {id:'d_cut',n:'Cutwater',k:'phys',pw:.3,hits:6,mp:7,d:'Six cuts on one foe, too quick to count. Each can be a critical and each can lift gold.'},
   {id:'d_barn',n:'Barnacle Edge',k:'phys',pw:1.1,mp:5,fx:[['bleed',.85]],d:'A notched blade that leaves a ragged wound. Likely Bleeds.'},
-  {id:'d_clone',n:'Water Clone',k:'status',t:'self',mp:L17.clone.mp,fx:[['wclone',1]],j17:'clone',own:1,d:`A double of himself in river water stands with him for ${L17.clone.turns} turns and repeats every damaging skill he uses at ${j17Pc(L17.clone.pw)}% power. It cannot be hit, costs no MP and takes no gold. It ends if he falls or leaves the Vanguard.`},
-  {id:'d_pace',n:'Pick Up the Pace',k:'status',t:'allyAll',mp:14,fx:[['haste',1]],j17:'pace',own:1,d:`Haste for the whole Vanguard that lasts a turn longer, and each of them takes the next turn ${j17Pc(L17.pace.pull)}% sooner.`},
-  {id:'d_slip',n:'Slip Under',k:'status',t:'self',mp:6,fx:[['slip',1]],j17:'slip',d:`Goes under the surface: until his next turn no foe can pick him as a target (area moves hit for half), and his next attack has +${j17Pc(L17.slip.crit)}% critical chance. Not two turns running.`},
+  {id:'d_clone',n:'Water Clone',k:'status',t:'self',mp:L17J.clone.mp,fx:[['wclone',1]],j17:'clone',own:1,d:`A double of himself in river water stands with him for ${L17J.clone.turns} turns and repeats every damaging skill he uses at ${j17Pc(L17J.clone.pw)}% power. It cannot be hit, costs no MP and takes no gold. It ends if he falls or leaves the Vanguard.`},
+  {id:'d_pace',n:'Pick Up the Pace',k:'status',t:'allyAll',mp:14,fx:[['haste',1]],j17:'pace',own:1,d:`Haste for the whole Vanguard that lasts a turn longer, and each of them takes the next turn ${j17Pc(L17J.pace.pull)}% sooner.`},
+  {id:'d_slip',n:'Slip Under',k:'status',t:'self',mp:6,fx:[['slip',1]],j17:'slip',d:`Goes under the surface: until his next turn no foe can pick him as a target (area moves hit for half), and his next attack has +${j17Pc(L17J.slip.crit)}% critical chance. Not two turns running.`},
   {id:'d_smoke',n:'Smoke Bomb',k:'status',t:'all',mp:8,fx:[['blind',.7]],d:'River mist and worse. May Blind every foe.'},
-  {id:'d_toll',n:'Toll Toss',k:'phys',pw:2.4,pierce:1,dl:'piercing',gold:1,d:`Throws a fistful of coins hard enough to matter: a piercing hit from across the field that ignores half of defense. Costs gold (${L17.toll.gold} x the realm number), no MP.`},
+  {id:'d_toll',n:'Toll Toss',k:'phys',pw:2.4,pierce:1,dl:'piercing',gold:1,d:`Throws a fistful of coins hard enough to matter: a piercing hit from across the field that ignores half of defense. Costs gold (${L17J.toll.gold} x the realm number), no MP.`},
   {id:'d_rip',n:'Riptide Sweep',k:'phys',pw:.95,mp:10,cost:.8,t:'all',el:'water',role:'primer',fx:[['slow',.4]],d:'A low sweep that drags every foe a step with the current. May Slow.'},
   {id:'d_shake',n:'Shakedown',k:'phys',pw:1.4,mp:8,j17:'shake',d:'Turns the foe upside down: strips one boon and always comes away with gold.'},
   {id:'d_under',n:'Undercut',k:'phys',pw:2.6,mp:14,el:'water',role:'det',crit:.25,d:'One cut from below the waterline. High critical chance.'},
@@ -470,8 +470,8 @@ function j17Kit(t){const id=j17KitId(t);if(!id)return null;if(L17_KC[id])return 
 HOOK.before('classSkills','legends17a','the two new legends: their kits of 14 as written',function(t){const K=j17Kit(t);if(K)return HOOK.stop(K);});
 // skills that are a mechanic (a summon, the clone, the dodge) carry no role power tag
 {const sm0=sk12Mult;sk12Mult=function(c,s){if(s&&s.j17&&s.k==='status')return null;return sm0.apply(this,arguments);};}
-LIMIT.bloodcaller={n:'Cerberus, the Bound Pack',k:'status',t:'self',j17:'cer',d:`The three become one. Any pets out leave, and Cerberus stands in front of the Vanguard for ${L17.cer[0].turns} turns: Threefold Bite (Fire), Skyhowl (Lightning on every foe, may Stun) and Pack Mend (heals the Vanguard). No HP cost.`};
-LIMIT2.bloodcaller={n:'Cerberus Stormcrown',k:'status',t:'self',j17:'cer',d:`The chains come off. Cerberus stands in front of the Vanguard for ${L17.cer[1].turns} turns at a guardian's strength, adds Stormcrown Howl (Fire and Lightning on every foe, Burn, Stun, chips 2 shield pips) and heals the Vanguard ${j17Pc(L17.cer[1].heal)}% when it leaves.`};
+LIMIT.bloodcaller={n:'Cerberus, the Bound Pack',k:'status',t:'self',j17:'cer',d:`The three become one. Any pets out leave, and Cerberus stands in front of the Vanguard for ${L17J.cer[0].turns} turns: Threefold Bite (Fire), Skyhowl (Lightning on every foe, may Stun) and Pack Mend (heals the Vanguard). No HP cost.`};
+LIMIT2.bloodcaller={n:'Cerberus Stormcrown',k:'status',t:'self',j17:'cer',d:`The chains come off. Cerberus stands in front of the Vanguard for ${L17J.cer[1].turns} turns at a guardian's strength, adds Stormcrown Howl (Fire and Lightning on every foe, Burn, Stun, chips 2 shield pips) and heals the Vanguard ${j17Pc(L17J.cer[1].heal)}% when it leaves.`};
 LIMIT.chief={n:'Tidecrew Rush',k:'phys',pw:.7,t:'rand',hits:9,fx:[['slow',.3]],j17:'crew',d:'He whistles and the crew runs the length of the field: nine hits, every foe at least once, the rest at random. May Slow.'};
 LIMIT2.chief={n:'Clean Sweep',k:'phys',pw:.8,t:'rand',hits:12,shieldChip:2,j17:'crew',d:'Two waves of the crew: twelve hits, every foe at least once. Every foe loses a boon, the crew leaves with gold, and it chips 2 shield pips.'};
 // ---------- 5. Joseth in battle: blood costs, the pack, Cerberus ----------
@@ -485,7 +485,7 @@ function j17Norm(g){try{g=g||G;if(!g||!Array.isArray(g.tamed))return;const used=
     if(o.scourge){if(boss){o.with=null;delete o.j17s;return;}boss=1;}
     if(!(o.j17s>=0&&o.j17s<3)||used[o.j17s]){const f=[0,1,2].find(i=>!used[i]&&!g.tamed.some(x=>x&&x!==o&&x.with==='jose'&&x.j17s===i));if(f==null){o.with=null;delete o.j17s;if(o.scourge)boss=0;return;}o.j17s=f;}
     used[o.j17s]=1;});}catch(e){}}
-function j17Slots(g){g=g||G;j17Norm(g);return [0,1,2].map(i=>{const o=((g&&g.tamed)||[]).find(x=>x&&x.with==='jose'&&x.j17s===i&&b16Def(x.mon));return o?{i,o}:{i,dog:L17.dogs[i]};});}
+function j17Slots(g){g=g||G;j17Norm(g);return [0,1,2].map(i=>{const o=((g&&g.tamed)||[]).find(x=>x&&x.with==='jose'&&x.j17s===i&&b16Def(x.mon));return o?{i,o}:{i,dog:L17J.dogs[i]};});}
 const j17EntName=e=>e.o?e.o.name:L17_MON[e.dog].n;
 const j17Out=()=>B?B.front.filter(u=>u&&u.j17==='pet'&&!u.j17gone):[];
 const j17CerOut=()=>B?B.front.find(u=>u&&u.j17==='cer'&&!u.j17gone)||null:null;
@@ -493,8 +493,8 @@ const j17CerOut=()=>B?B.front.find(u=>u&&u.j17==='cer'&&!u.j17gone)||null:null;
 function j17WhistleInfo(a){const S=j17S();if(!S||!a)return {why:''};if(G&&G.daily)return {why:'No pets in the Daily Trial.'};
   if(B.sum||B.pray)return {why:'One summon at a time: a guardian holds the field.'};if(j17CerOut())return {why:'One summon at a time: Cerberus holds the field.'};
   const P=j17Slots().filter(e=>!(e.o&&e.o.scourge)),un=P.filter(e=>!S.called[e.i]);
-  if(un.length)return {mode:'call',e:un[0],all:un,cost:L17.cost.pet};
-  if(!S.back){const out=j17Out(),gone=P.filter(e=>!out.some(u=>u.j17slot===e.i));if(gone.length)return {mode:'back',e:gone[0],all:[],cost:L17.cost.back};return {why:'Every pet is on the field.'};}
+  if(un.length)return {mode:'call',e:un[0],all:un,cost:L17J.cost.pet};
+  if(!S.back){const out=j17Out(),gone=P.filter(e=>!out.some(u=>u.j17slot===e.i));if(gone.length)return {mode:'back',e:gone[0],all:[],cost:L17J.cost.back};return {why:'Every pet is on the field.'};}
   return {why:'Every pet has been called, and the one call-back of this battle is spent.'};}
 // why a skill of these two cannot be used now (null: it can)
 function j17Block(a,s){try{if(!s||!a||!B)return null;
@@ -503,23 +503,23 @@ function j17Block(a,s){try{if(!s||!a||!B)return null;
   if(s.j17==='slip'&&has(a,'slip'))return 'Not two turns running.';
   if(s.gold){const c=j17Toll();if((G.gold||0)<c)return `Needs ${c} gold.`;}
   }catch(e){}return null;}
-const j17Toll=()=>L17.toll.gold*(((B&&B.stage)|0)+1);
+const j17Toll=()=>L17J.toll.gold*(((B&&B.stage)|0)+1);
 // --- a pack unit ---
 function j17Unit(a,e,turns,k){const dog=e.dog,id=dog?j17DogTpl(dog):e.o.id;if(!dog&&!TPL[id])registerTamed(e.o);const d=dog?L17_MON[dog]:compDef(e.o);
   const u=newChar(id,a.lv,gearTier());u.isComp=1;u.j17='pet';u.j17slot=e.i;u.j17dog=dog||null;u.owner=a;u.compTurns=turns;u.name=j17EntName(e);u.lb=0;
-  u.S.mhp=Math.max(1,Math.round(u.S.mhp*L17.pack.hp));u.hp=u.S.mhp;u.S.atk*=L17.pack.pw;u.S.mag*=L17.pack.pw;if(u.S.healP)u.S.healP*=L17.pack.pw;
+  u.S.mhp=Math.max(1,Math.round(u.S.mhp*L17J.pack.hp));u.hp=u.S.mhp;u.S.atk*=L17J.pack.pw;u.S.mag*=L17J.pack.pw;if(u.S.healP)u.S.healP*=L17J.pack.pw;
   u.msk=(d.sk||[]).map(s=>({id:'c'+s[0],n:s[0],el:s[1],pw:+(s[2]*1.05).toFixed(2),t:s[3]==='all'?'all':s[3]==='self'?'self':'one',k:s[4]==='buff'?'buff':s[4],fx:s[5]||null,mp:0,cost:1,hits:1}));
   u.next=B.time+delayOf(u,.45+.12*(k||0));u.enterT=0;u.j17in=Date.now()+j17Land();u.j17t0=Date.now();
   B.front.push(u);if(dog)j17Seen(dog);return u;}
 function j17Call(a,list,turns){const S=j17S(),us=list.map((e,k)=>{S.called[e.i]=1;return j17Unit(a,e,turns,k);});j17Anim(a,us,false);return us;}
 function j17Whistle(a){const I=j17WhistleInfo(a);if(!I.mode)return;j17Pay(a,I.cost);const back=I.mode==='back';if(back)j17S().back=1;
-  const u=j17Call(a,[I.e],back?L17.pack.backTurns:L17.pack.turns)[0];banner(`${u.name}!`,'#e0303a');
+  const u=j17Call(a,[I.e],back?L17J.pack.backTurns:L17J.pack.turns)[0];banner(`${u.name}!`,'#e0303a');
   log(back?`${a.name} whistles ${u.name} back for ${u.compTurns} turns.`:`${a.name} whistles: ${u.name} stands beside the Vanguard for ${u.compTurns} turns.`);}
-function j17CallPack(a){const I=j17WhistleInfo(a);if(I.mode!=='call')return;j17Pay(a,L17.cost.pack);const us=j17Call(a,I.all,L17.pack.turns);
-  banner('The pack!','#e0303a');log(`${a.name} calls the pack: ${us.map(u=>u.name).join(', ')} for ${L17.pack.turns} turns.`);}
+function j17CallPack(a){const I=j17WhistleInfo(a);if(I.mode!=='call')return;j17Pay(a,L17J.cost.pack);const us=j17Call(a,I.all,L17J.pack.turns);
+  banner('The pack!','#e0303a');log(`${a.name} calls the pack: ${us.map(u=>u.name).join(', ')} for ${L17J.pack.turns} turns.`);}
 // leaving: marked gone at once, taken out of the Vanguard at the next safe point (never while a loop walks B.front)
 function j17Leave(u,why){if(!u||u.j17gone)return;u.j17gone=1;u.hp=0;u.st={};u.j17out=Date.now();u.deathT=u.deathT||Date.now();
-  if(u.j17==='cer'){const C=L17.cer[u.j17two?1:0];if(why!=='ko'&&C.heal&&B)B.front.forEach(c=>{if(c.hp>0&&!c.j17){const n=Math.min(c.S.mhp-c.hp,Math.round(c.S.mhp*C.heal));if(n>0){c.hp+=n;fx(c,'+'+n,'heal');}}});
+  if(u.j17==='cer'){const C=L17J.cer[u.j17two?1:0];if(why!=='ko'&&C.heal&&B)B.front.forEach(c=>{if(c.hp>0&&!c.j17){const n=Math.min(c.S.mhp-c.hp,Math.round(c.S.mhp*C.heal));if(n>0){c.hp+=n;fx(c,'+'+n,'heal');}}});
     log(why==='ko'?`${u.name} is driven off.`:`${u.name} lies down and is gone.`);}
   else if(why!=='silent')log(why==='ko'?`${u.name} is driven off.`:why==='layer'?`${u.name} goes home.`:`${u.name} trots back to ${u.owner?u.owner.name:'Joseth'}.`);}
 function j17Sweep(){if(!B)return;for(let i=B.front.length-1;i>=0;i--)if(B.front[i]&&B.front[i].j17&&B.front[i].j17gone)B.front.splice(i,1);
@@ -588,10 +588,10 @@ function j17Turn(u){if(!B||B.over)return;const foes=B.en.filter(e=>e.hp>0);if(!f
   endTurn(u,1);}
 // Sic: Joseth's summons hit the marked foe harder; a summon never fills a Limit gauge or lifts gold
 HOOK.after('calcDamage','legends17a','Sic, Slip Under on area moves',function(r,a,sk,t){try{if(!r||!r.dmg||!B)return;
-  if(t&&t.side==='e'&&has(t,'sic')&&a&&a.side==='p'&&(a.j17||a.isComp||a.isSum))r.dmg=Math.max(1,Math.round(r.dmg*L17.sic.dmg));
-  if(t&&t.side==='p'&&has(t,'slip'))r.dmg=Math.max(1,Math.round(r.dmg*L17.slip.area));}catch(e){}});
+  if(t&&t.side==='e'&&has(t,'sic')&&a&&a.side==='p'&&(a.j17||a.isComp||a.isSum))r.dmg=Math.max(1,Math.round(r.dmg*L17J.sic.dmg));
+  if(t&&t.side==='p'&&has(t,'slip'))r.dmg=Math.max(1,Math.round(r.dmg*L17J.slip.area));}catch(e){}});
 // --- Cerberus ---
-function j17Cerberus(a,two){j17PackHome('layer');{const old=j17CerOut();if(old)j17Leave(old,'layer');}const C=L17.cer[two?1:0],key=two?'cerberus2':'cerberus',d=L17_MON[key];
+function j17Cerberus(a,two){j17PackHome('layer');{const old=j17CerOut();if(old)j17Leave(old,'layer');}const C=L17J.cer[two?1:0],key=two?'cerberus2':'cerberus',d=L17_MON[key];
   const heroes=B.front.filter(c=>c.hp>0&&!c.isComp&&!c.isSum&&!c.j17),lv=Math.max(1,Math.round(heroes.reduce((q,c)=>q+c.lv,0)/Math.max(1,heroes.length)));
   const u=makeEnemy(d,lv,{elite:true,name:d.n,noField:1,noBuff:1,hpM:1,powM:C.pw==null?SUM.powM:C.pw});
   u.side='p';u.isComp=1;u.j17='cer';u.j17two=two?1:0;u.id='sum_j17'+key;u.base=d.n;u.name=d.n;u.lb=0;u.owner=a;u.phase=null;u.multi=1;u.turnsLeft=C.turns;u.maxShield=0;u.shield=0;
@@ -621,7 +621,7 @@ if(typeof b4CanOut==='function'){const co0=b4CanOut;b4CanOut=function(c){if(c&&c
 {const sc0=sumClassOf;sumClassOf=function(a){try{if(j17Is(a)&&B)return 'priest';}catch(e){}return sc0.apply(this,arguments);};}
 {const bc0=b16Caller;b16Caller=function(a){try{if(a&&a.id==='jose'&&TPL.jose&&!TPL.jose.mon)return true;}catch(e){}return bc0.apply(this,arguments);};}
 {const sn0=sumCan;sumCan=function(a){if(!j17Is(a))return sn0.apply(this,arguments);if(j17CerOut())return false;const m=a.mp;a.mp=1e9;try{return sn0.apply(this,arguments);}finally{a.mp=m;}};}
-{const sp0=sumPray;sumPray=function(a,mon){if(!j17Is(a))return sp0.apply(this,arguments);if(!sumCan(a))return false;const c=sumCost(a);a.mp+=c;const hp0=a.hp;j17Pay(a,L17.cost.guard);
+{const sp0=sumPray;sumPray=function(a,mon){if(!j17Is(a))return sp0.apply(this,arguments);if(!sumCan(a))return false;const c=sumCost(a);a.mp+=c;const hp0=a.hp;j17Pay(a,L17J.cost.guard);
   const r=sp0.apply(this,arguments);if(!r){a.mp-=c;a.hp=hp0;}return r;};}
 HOOK.after('sumFire','legends17a','the blood summon for his guardian',function(r,a){try{if(r&&j17Is(a)&&B&&B.sum)j17Anim(a,[B.sum.u],true);}catch(e){}});
 // his own pets go through Whistle; a recruited boss in a slot has its own command
@@ -629,46 +629,46 @@ HOOK.after('sumFire','legends17a','the blood summon for his guardian',function(r
 {const co0=compOf;compOf=function(c){if(c&&c.id==='jose'&&G&&!c.isComp){const L=(G.tamed||[]).filter(o=>o&&o.with==='jose');return L.sort((x,y)=>(x.j17s||0)-(y.j17s||0))[0]||null;}return co0.apply(this,arguments);};}
 function j17BossEnt(a){try{if(!j17Is(a)||!B||!G||G.daily)return null;const e=j17Slots().find(e=>e.o&&e.o.scourge);return e&&b16Def(e.o.mon)?e:null;}catch(e){return null;}}
 function j17BossWhy(a){if((B.summoned||{})[a.id])return 'Already called this battle.';if(B.sum||B.pray)return 'One summon at a time.';if(j17CerOut())return 'One summon at a time: Cerberus holds the field.';return null;}
-ACT.j17Boss=function(){const a=B&&B.cur,e=a&&B.mode==='cmd'&&j17BossEnt(a);if(!e||j17BossWhy(a))return;if(!TPL[e.o.id])registerTamed(e.o);j17Pay(a,L17.cost.guard);b16BossFire(a,e.o);};
+ACT.j17Boss=function(){const a=B&&B.cur,e=a&&B.mode==='cmd'&&j17BossEnt(a);if(!e||j17BossWhy(a))return;if(!TPL[e.o.id])registerTamed(e.o);j17Pay(a,L17J.cost.guard);b16BossFire(a,e.o);};
 // --- the skills in hand: blood costs, summons, and the greyed rows ---
 {const sk0=ACT.sk;ACT.sk=function(id){try{if(B&&B.mode==='cmd'&&B.cur){const s=known(B.cur).find(x=>x.id===id),why=s&&j17Block(B.cur,s);if(why){toast(why);return;}}}catch(e){}return sk0.apply(this,arguments);};}
 HOOK.xform('cmdHtml','legends17a','greyed rows with the reason, the boss command, HP for MP in his summons menu',function(h){try{const a=B&&B.cur;if(!a||typeof h!=='string'||B.mode!=='cmd')return h;
   if(B.menu==='skills'&&(a.id==='jose'||a.id==='dist'))known(a).forEach(s=>{if(!(s.j17||s.gold||s.hpc))return;const why=j17Block(a,s),re=new RegExp(`(<button class="mi [^"]*" data-act="sk" data-arg="${s.id}")([^>]*>)`);
     h=h.replace(re,(m,p,q)=>p+(why&&!/ disabled/.test(q)?` disabled aria-disabled="true" title="${esc(why)}"`:'')+q);
-    const cost=s.j17==='whistle'?(()=>{const I=j17WhistleInfo(a);return I.mode?j17Pc(I.cost)+'% HP':'';})():s.j17==='pack'?j17Pc(L17.cost.pack)+'% HP':s.gold?j17Toll()+' gold':'';
+    const cost=s.j17==='whistle'?(()=>{const I=j17WhistleInfo(a);return I.mode?j17Pc(I.cost)+'% HP':'';})():s.j17==='pack'?j17Pc(L17J.cost.pack)+'% HP':s.gold?j17Toll()+' gold':'';
     if(cost)h=h.replace(new RegExp(`(data-act="sk" data-arg="${s.id}"[^>]*>(?:(?!</button>)[\\s\\S])*?)(<i class="sk11c"[^>]*>)?0 MP`),(m,p,q)=>p+(q?'<i class="sk11c" title="Cost">':'')+cost);
     if(s.j17==='whistle'||s.j17==='pack')h=h.replace(new RegExp(`(data-act="sk" data-arg="${s.id}"[^>]*>(?:(?!</button>)[\\s\\S])*?<b class="sk11e[^"]*">)Buff(</b>)`),'$1Summon$2');
     if(why)h=h.replace(new RegExp(`(data-act="sk" data-arg="${s.id}"[\\s\\S]*?<small>)`),`$1<b class="j17why">${esc(why)}</b> `);});
   if(B.menu==='root'&&j17Is(a)){const e=j17BossEnt(a);if(e&&!B.swapAsk){const why=j17BossWhy(a);
-      h=h.replace('<div class="menu sec">',`<div class="menu sec"><button class="mi summon b9sum j17boss" data-act="j17Boss" ${why?'disabled aria-disabled="true"':''} title="${esc(why||`${e.o.name} takes the whole Vanguard's place. Costs ${j17Pc(L17.cost.guard)}% of his max HP.`)}">Summon ${esc(e.o.name)} <small>${j17Pc(L17.cost.guard)}% HP</small></button>`);}}
-  if(j17Is(a)&&B.menu==='summons')h=h.replace(/Costs \d+ MP\./,`Costs ${j17Pc(L17.cost.guard)}% of his max HP, no MP.`);
-  if(j17Is(a)&&B.menu==='root')h=h.replace(/(<button class="mi summon s8"[^>]*>Invoke)(<\/button>)/,`$1 <small>${j17Pc(L17.cost.guard)}% HP</small>$2`);
+      h=h.replace('<div class="menu sec">',`<div class="menu sec"><button class="mi summon b9sum j17boss" data-act="j17Boss" ${why?'disabled aria-disabled="true"':''} title="${esc(why||`${e.o.name} takes the whole Vanguard's place. Costs ${j17Pc(L17J.cost.guard)}% of his max HP.`)}">Summon ${esc(e.o.name)} <small>${j17Pc(L17J.cost.guard)}% HP</small></button>`);}}
+  if(j17Is(a)&&B.menu==='summons')h=h.replace(/Costs \d+ MP\./,`Costs ${j17Pc(L17J.cost.guard)}% of his max HP, no MP.`);
+  if(j17Is(a)&&B.menu==='root')h=h.replace(/(<button class="mi summon s8"[^>]*>Invoke)(<\/button>)/,`$1 <small>${j17Pc(L17J.cost.guard)}% HP</small>$2`);
   }catch(e){console.error('legends17a cmd',e);}return h;});
 // auto battle: a summoner who summons, never below half HP (the plain auto and the careful one)
-function j17AutoJose(a){try{if(L17.simOff||!j17Is(a)||!B||B.over||B.mode!=='cmd')return false;const au=L17.auto;L17.auto=0;let ks;try{ks=known(a);}finally{L17.auto=au;}/* (his own list, not the one the auto is shown) */
+function j17AutoJose(a){try{if(L17J.simOff||!j17Is(a)||!B||B.over||B.mode!=='cmd')return false;const au=L17J.auto;L17J.auto=0;let ks;try{ks=known(a);}finally{L17J.auto=au;}/* (his own list, not the one the auto is shown) */
   const foes=B.en.filter(e=>e.hp>0);if(!foes.length)return false;
-  const tough=B.boss||foes.length>1||foes.some(e=>e.elite),after=c=>(a.hp-a.S.mhp*c)/a.S.mhp>=L17.autoHp;if(!tough)return false;
+  const tough=B.boss||foes.length>1||foes.some(e=>e.elite),after=c=>(a.hp-a.S.mhp*c)/a.S.mhp>=L17J.autoHp;if(!tough)return false;
   const I=j17WhistleInfo(a);if(!I.mode)return false;const pack=ks.find(s=>s.j17==='pack'),wh=ks.find(s=>s.j17==='whistle');
-  if(I.mode==='call'&&pack&&I.all.length>1&&after(L17.cost.pack)){exec(pack,[a]);return true;}
+  if(I.mode==='call'&&pack&&I.all.length>1&&after(L17J.cost.pack)){exec(pack,[a]);return true;}
   if(wh&&after(I.cost)&&(I.mode==='call'||B.boss)){exec(wh,[a]);return true;}}catch(e){console.error('legends17a auto',e);}return false;}
 {const as0=autoTurnSmart;autoTurnSmart=function(){if(B&&!B.over&&B.mode==='cmd'&&B.auto){const a=B.cur;if(a&&a.id==='jose'&&j17AutoJose(a))return;}
-  L17.auto=(L17.auto||0)+1;try{return as0.apply(this,arguments);}finally{L17.auto--;}};}
+  L17J.auto=(L17J.auto||0)+1;try{return as0.apply(this,arguments);}finally{L17J.auto--;}};}
 {const at0=autoTurn;autoTurn=function(){if(B&&!B.over&&B.mode==='cmd'&&B.auto&&!SIM_SMART){const a=B.cur;if(a&&a.id==='jose'&&RNG()<.5&&j17AutoJose(a))return;}
-  L17.auto=(L17.auto||0)+1;try{return at0.apply(this,arguments);}finally{L17.auto--;}};}
+  L17J.auto=(L17J.auto||0)+1;try{return at0.apply(this,arguments);}finally{L17J.auto--;}};}
 // while the auto chooses: nothing it cannot pay for, and it never spends gold or HP it should keep
-{const kn0=known;known=function(c){const L=kn0.apply(this,arguments);try{if(L17.auto>0&&c&&B&&(c.id==='jose'||c.id==='dist'))return L.filter(s=>!(s.j17==='whistle'||s.j17==='pack'||s.gold)&&!j17Block(c,s)&&!(s.hpc&&(c.hp-c.S.mhp*s.hpc)/c.S.mhp<L17.autoHp));}catch(e){}return L;};}
+{const kn0=known;known=function(c){const L=kn0.apply(this,arguments);try{if(L17J.auto>0&&c&&B&&(c.id==='jose'||c.id==='dist'))return L.filter(s=>!(s.j17==='whistle'||s.j17==='pack'||s.gold)&&!j17Block(c,s)&&!(s.hpc&&(c.hp-c.S.mhp*s.hpc)/c.S.mhp<L17J.autoHp));}catch(e){}return L;};}
 // ---------- 6. Dist in battle, and the one perform hook both heroes share ----------
 const j17BattleGold=()=>{try{return B.en.reduce((q,e)=>q+goldFor(e),0);}catch(e){return 0;}};
 function j17Lift(a,t,sure){const S=j17S();if(!S||!t)return 0;const g=Math.max(1,Math.round((t.lv||1)*(sure?1:.8)+ri(sure?3:1,sure?8:4)));
-  if(!sure){const cap=Math.round(j17BattleGold()*L17.lf.cap);if(S.lift>=cap)return 0;S.lift+=g;}
+  if(!sure){const cap=Math.round(j17BattleGold()*L17J.lf.cap);if(S.lift>=cap)return 0;S.lift+=g;}
   B.gold+=g;S.lifts++;S.gold=(S.gold||0)+g;return g;}
 HOOK.after('calcDamage','legends17a','Light Fingers: every real hit of his may lift gold',function(r,a,sk,t){try{
-  if(!r||!(r.dmg>0)||!B||!j17Dist(a)||!t||t.side!=='e'||!(L17.perf>0)||RNG!==L17.rng||L17.echo||(sk&&(sk.j17c||sk.id==='b4est'))||(G&&G.daily))return;
-  if(RNG()<L17.lf.ch){const g=j17Lift(a,t,false);if(g){L17.lfN=(L17.lfN||0)+g;}}}catch(e){}});
-HOOK.after('calcStats','legends17a','Light Fingers: harder to hit',function(S,c){try{if(S&&c&&c.id==='dist'&&!(G&&G.daily))S.eva=Math.min(.32,(S.eva||0)+L17.lf.eva);}catch(e){}});
+  if(!r||!(r.dmg>0)||!B||!j17Dist(a)||!t||t.side!=='e'||!(L17J.perf>0)||RNG!==L17J.rng||L17J.echo||(sk&&(sk.j17c||sk.id==='b4est'))||(G&&G.daily))return;
+  if(RNG()<L17J.lf.ch){const g=j17Lift(a,t,false);if(g){L17J.lfN=(L17J.lfN||0)+g;}}}catch(e){}});
+HOOK.after('calcStats','legends17a','Light Fingers: harder to hit',function(S,c){try{if(S&&c&&c.id==='dist'&&!(G&&G.daily))S.eva=Math.min(.32,(S.eva||0)+L17J.lf.eva);}catch(e){}});
 // Slip Under: +crit on the attack that follows it
 HOOK.wrap('calcDamage','legends17a','Slip Under: the next attack is likelier to crit',function(next,...args){const a=args[0];if(!a||!a.S||!a.st||!a.st.slip||!j17Dist(a))return next(...args);
-  const c0=a.S.crit;a.S.crit=(c0||.05)+L17.slip.crit;try{return next(...args);}finally{a.S.crit=c0;}});
+  const c0=a.S.crit;a.S.crit=(c0||.05)+L17J.slip.crit;try{return next(...args);}finally{a.S.crit=c0;}});
 // the crew: every foe once, then the rest at random; Limit II strips a boon from each foe, lifts gold and chips shields once
 function j17Crew(next,a,sk){const live=B.en.filter(e=>e.hp>0),two=!!sk.limit2,S=j17S(),N=sk.hits||1;S.crewT={t:Date.now(),two};
   const base=Object.assign({},sk,{j17:null,j17c:1,shieldChip:0});
@@ -677,7 +677,7 @@ function j17Crew(next,a,sk){const live=B.en.filter(e=>e.hp>0),two=!!sk.limit2,S=
   if(rest>0&&left.length){const lg=log;log=function(m){if(typeof m==='string'&&/ uses /.test(m))return;return lg.apply(this,arguments);};
     try{next(a,Object.assign({},base,{t:'rand',hits:rest}),left);}finally{log=lg;}}
   if(two){let n=0;B.en.forEach(e=>{if(e.hp<=0)return;const b=Object.keys(e.st).find(k=>STS[k]&&!STS[k].bad);if(b){delete e.st[b];fx(e,STS[b].n+' off','stat bad');n++;}if(e.maxShield)chipShield(e,2,'skill');});
-    let g=0;const pool=B.en.filter(e=>e.hp>0).concat(B.en);for(let i=0;i<Math.min(L17.crew.lifts,N)&&pool.length;i++)g+=j17Lift(a,pool[i%pool.length],true);
+    let g=0;const pool=B.en.filter(e=>e.hp>0).concat(B.en);for(let i=0;i<Math.min(L17J.crew.lifts,N)&&pool.length;i++)g+=j17Lift(a,pool[i%pool.length],true);
     if(g){fx(a,'+'+g+' gold','stat good');log(`The crew leaves with ${g} gold${n?` and ${n} boon${n>1?'s':''}`:''}.`);}}
   return r;}
 HOOK.wrap('perform','legends17a','blood costs, Whistle, the pack and Cerberus; the Water Clone, Pick Up the Pace, Slip Under, the crew',function(next,a,sk,tgts){
@@ -686,47 +686,47 @@ HOOK.wrap('perform','legends17a','blood costs, Whistle, the pack and Cerberus; t
   if(a.side==='e'){try{if(tgts&&tgts.length===1&&tgts[0]&&tgts[0].side==='p'&&has(tgts[0],'slip')&&sk.t!=='all'&&sk.t!=='self'){const t=tgts[0],o=B.front.filter(c=>c.hp>0&&c!==t&&!has(c,'slip')&&!c.j17gone);
       fx(t,'Slips under','stat good');if(o.length){log(`${t.name} is not there. ${a.name} turns on someone else.`);tgts=[pick(o)];}
       else{log(`${a.name} strikes at the water where ${t.name} was.`);a.actT=Date.now();a.actKind=sk.k;return;}}
-      if(tgts&&tgts.length===1&&tgts[0]&&tgts[0].j17==='pet'&&L17.pack.draw<1&&sk.t!=='all'&&sk.t!=='self'&&RNG()>=L17.pack.draw){const hs=B.front.filter(c=>c.hp>0&&!c.j17&&!has(c,'slip'));if(hs.length){const tn=hs.filter(c=>has(c,'taunt'));tgts=[tn.length?tn[0]:pick(hs)];}}}catch(e){}
+      if(tgts&&tgts.length===1&&tgts[0]&&tgts[0].j17==='pet'&&L17J.pack.draw<1&&sk.t!=='all'&&sk.t!=='self'&&RNG()>=L17J.pack.draw){const hs=B.front.filter(c=>c.hp>0&&!c.j17&&!has(c,'slip'));if(hs.length){const tn=hs.filter(c=>has(c,'taunt'));tgts=[tn.length?tn[0]:pick(hs)];}}}catch(e){}
     return next(a,sk,tgts);}
   if(a.side!=='p'||a.isComp||a.isSum||!(a.id==='jose'||a.id==='dist'))return next(a,sk,tgts);
-  const r0=L17.rng;L17.perf=(L17.perf||0)+1;L17.rng=RNG;
+  const r0=L17J.rng;L17J.perf=(L17J.perf||0)+1;L17J.rng=RNG;
   try{
     if(sk.hpc&&j17Is(a))j17Pay(a,sk.hpc);
     if(sk.gold&&!sk.j17echo){const c=Math.min(G.gold||0,j17Toll());G.gold-=c;fx(a,'-'+c+' gold','stat');log(`${a.name} throws ${c} gold.`);}
     if(sk.j17==='crew')return j17Crew(next,a,sk);
-    L17.lfN=0;const hpE=()=>B.en.reduce((q,e)=>q+Math.max(0,e.hp),0),h0=hpE();
+    L17J.lfN=0;const hpE=()=>B.en.reduce((q,e)=>q+Math.max(0,e.hp),0),h0=hpE();
     const r=next(a,sk,tgts);const h1=hpE();
     if(sk.j17==='whistle')j17Whistle(a);
     else if(sk.j17==='pack')j17CallPack(a);
     else if(sk.j17==='cer'){j17Cerberus(a,!!sk.limit2);}
-    else if(sk.j17==='pace'){(tgts||[]).forEach(t=>{if(!t||t.hp<=0)return;if(t.st.haste)t.st.haste.t+=L17.pace.turns;if(t!==a&&t.next>B.time)t.next=B.time+(t.next-B.time)*(1-L17.pace.pull);else if(t===a)a.j17pull=1;fx(t,'Quicker','stat good');});}
+    else if(sk.j17==='pace'){(tgts||[]).forEach(t=>{if(!t||t.hp<=0)return;if(t.st.haste)t.st.haste.t+=L17J.pace.turns;if(t!==a&&t.next>B.time)t.next=B.time+(t.next-B.time)*(1-L17J.pace.pull);else if(t===a)a.j17pull=1;fx(t,'Quicker','stat good');});}
     else if(sk.j17==='slip'){if(a.st.slip)a.st.slip.t=STS.slip.t;}
     else if(sk.j17==='clone'){j17S().cloneT=Date.now();}
     else if(sk.j17==='shake'){const t=(tgts||[])[0];if(t){if(t.hp>0){const b=Object.keys(t.st).find(k=>STS[k]&&!STS[k].bad);if(b){delete t.st[b];fx(t,STS[b].n+' off','stat bad');log(`${t.name} loses ${STS[b].n}.`);}}
         const g=j17Lift(a,t,true);if(g)log(`${a.name} shakes ${g} gold out of ${t.name}.`);}}
-    if(L17.lfN>0&&j17Dist(a)){fx(a,'+'+L17.lfN+' gold','stat good');log(`Light Fingers: ${a.name} lifts ${L17.lfN} gold.`);L17.lfN=0;}
+    if(L17J.lfN>0&&j17Dist(a)){fx(a,'+'+L17J.lfN+' gold','stat good');log(`Light Fingers: ${a.name} lifts ${L17J.lfN} gold.`);L17J.lfN=0;}
     // the Water Clone repeats a damaging skill (never a Limit, never its own echo)
     if(j17Dist(a)&&has(a,'wclone')&&(sk.k==='phys'||sk.k==='mag')&&!sk.limit&&!sk.j17echo&&a.hp>0&&sk.pw>0){
       const live=B.en.filter(e=>e.hp>0);let tg=sk.t==='all'||sk.t==='rand'?live:(tgts||[]).filter(t=>t&&t.hp>0&&t.side==='e');if(!tg.length&&live.length)tg=[pick(live)];
-      if(tg.length){const e2=Object.assign({},sk,{n:sk.n+' (Water Clone)',pw:+(sk.pw*L17.clone.pw).toFixed(3),steal:0,strip:0,fx:null,self:null,allyFx:null,shieldChip:0,drain:0,role:undefined,gold:0,j17:null,j17echo:1,mp:0});
-        const S=j17S();S.echoT=Date.now();S.echoN=(S.echoN||0)+1;const t0=a.actT,n0=a.actName;L17.echo=1;try{next(a,e2,tg);}finally{L17.echo=0;a.actT=t0;a.actName=n0;}S.mainD=h0-h1;S.echoD=h1-hpE();}}
+      if(tg.length){const e2=Object.assign({},sk,{n:sk.n+' (Water Clone)',pw:+(sk.pw*L17J.clone.pw).toFixed(3),steal:0,strip:0,fx:null,self:null,allyFx:null,shieldChip:0,drain:0,role:undefined,gold:0,j17:null,j17echo:1,mp:0});
+        const S=j17S();S.echoT=Date.now();S.echoN=(S.echoN||0)+1;const t0=a.actT,n0=a.actName;L17J.echo=1;try{next(a,e2,tg);}finally{L17J.echo=0;a.actT=t0;a.actName=n0;}S.mainD=h0-h1;S.echoD=h1-hpE();}}
     return r;
-  }finally{L17.perf--;L17.rng=r0;}});
+  }finally{L17J.perf--;L17J.rng=r0;}});
 // Pick Up the Pace on himself: his own next turn comes sooner too (his delay is set when the turn ends)
-{const et0=endTurn;endTurn=function(u,cost){const pull=u&&u.j17pull;if(pull)u.j17pull=0;const t0=B?B.time:0;const r=et0.apply(this,arguments);try{if(pull&&B&&u.hp>0&&u.next>t0)u.next=t0+(u.next-t0)*(1-L17.pace.pull);}catch(e){}return r;};}
+{const et0=endTurn;endTurn=function(u,cost){const pull=u&&u.j17pull;if(pull)u.j17pull=0;const t0=B?B.time:0;const r=et0.apply(this,arguments);try{if(pull&&B&&u.hp>0&&u.next>t0)u.next=t0+(u.next-t0)*(1-L17J.pace.pull);}catch(e){}return r;};}
 // the clone goes when he falls or leaves the Vanguard (a swap clears statuses already)
 HOOK.before('fallen','legends17a','the Water Clone falls apart with him',function(u){try{if(u&&u.id==='dist'&&u.st)delete u.st.wclone;}catch(e){}});
 // ---------- 7. the stage: where the pack stands, the blood summon, the clone, the crew ----------
 const J17V={fx:[],puff:[],last:null,frame:-1,alpha:new WeakMap(),pos:{pet:[[.62,.645],[.545,.79],[.6,.955]],cer:[.545,.9],cerT:[.585,.77]}};// shares of the stage (x, feet y); cerT: the tall (portrait) stage
 function j17Fast(){try{return PAUSE<300||(typeof gfxStill==='function'&&gfxStill());}catch(e){return false;}}
-function j17Land(){return j17Fast()?0:L17.anim.blood+L17.anim.kneel+330;}
+function j17Land(){return j17Fast()?0:L17J.anim.blood+L17J.anim.kneel+330;}
 // the summon starts: the poses on him, the ring from his palm, the smoke where each summon lands
 function j17Anim(a,units,big){const now=Date.now();a.j17anim={t:now,big:!!big};a.actT=now-600;a.actKind=null;a._act=a.actT;a._fkTint=null;// (the generic cast pose, hop, ring and tint are not used)
-  if(!j17Fast()&&B){B.j17hold=now+L17.anim.total;B.j17holdN=0;}
+  if(!j17Fast()&&B){B.j17hold=now+L17J.anim.total;B.j17holdN=0;}
   J17V.fx.push({t:now,a,units:(units||[]).slice(),big:!!big,box:J17V.last&&J17V.last.a===a?J17V.last.b:null,bid:B&&B.id});if(J17V.fx.length>6)J17V.fx.shift();
   try{if(typeof sfx==='function')sfx('level');}catch(e){}}
 // [pose, frame] at d ms into the summon
-function j17AnimPose(d){const A=L17.anim;if(d<A.blood*.45)return ['jblood',0];if(d<A.blood)return ['jblood',1];if(d<A.blood+A.kneel)return ['jslam',0];return ['jslam',1];}
+function j17AnimPose(d){const A=L17J.anim;if(d<A.blood*.45)return ['jblood',0];if(d<A.blood)return ['jblood',1];if(d<A.blood+A.kneel)return ['jslam',0];return ['jslam',1];}
 function j17AlphaCv(c,al){let o=J17V.alpha.get(c);if(o&&o.al===al)return o.c;const k=c.hd||1,RW=c._rw||Math.round(c.width*k),RH=c._rh||Math.round(c.height*k);let n;
   if(c.hd&&typeof hdCv==='function')n=hdCv(c.width,c.height,k);else n=mkCv(c.width,c.height);const x=n.getContext('2d');x.save();x.setTransform(1,0,0,1,0,0);x.globalAlpha=al;(x._hdDI||x.drawImage).call(x,c,0,0,RW,RH,0,0,RW,RH);x.restore();
   J17V.alpha.set(c,{al,c:n});return n;}
@@ -734,7 +734,7 @@ function j17MonFrame(u){const art=TPL[u.id]&&TPL[u.id].art;if(!art||!MART[art])r
   return imgOf('j17m:'+art+'#'+t+i,()=>monCanvas(art,{t,i}));}
 HOOK.xform('spriteOf','legends17a','the blood summon poses, the dogs\' frames, the water clone and the dodge',function(c,u,walk){try{if(!u||u.side!=='p')return c;
   if(u.j17){const f=j17MonFrame(u);return f||c;}
-  if(u.id==='jose'&&u.hp>0&&!u.isComp){const A=u.j17anim;if(A){const d=Date.now()-A.t;if(d>=0&&d<L17.anim.total){const P=j17AnimPose(d);return b8Small(heroPoseImg('jose',P[0],P[1],false));}}
+  if(u.id==='jose'&&u.hp>0&&!u.isComp){const A=u.j17anim;if(A){const d=Date.now()-A.t;if(d>=0&&d<L17J.anim.total){const P=j17AnimPose(d);return b8Small(heroPoseImg('jose',P[0],P[1],false));}}
     if(B&&B.pray&&B.pray.by===u)return b8Small(heroPoseImg('jose','jblood',1,false));}
   if(u.j17clone)return j17AlphaCv(c,.8);
   if(u.id==='dist'&&u.hp>0&&u.st&&u.st.slip&&!u.isComp)return j17AlphaCv(c,.4);}catch(e){}return c;});
@@ -755,7 +755,7 @@ function j17Sigil(ctx,x,y,R,p,al,now){const sq=.34,r=R*(1-Math.pow(1-p,2.2)),e=M
   ctx.restore();}
 function j17UnitGround(u){try{const b=unitBox(u);if(!b)return null;return {x:b.x,y:b.gy!=null?b.gy:b.y,w:b.w,h:b.h,s:b._ch15||1};}catch(e){return null;}}
 // under the units: the rings (called once a frame, before the first unit is drawn)
-function j17DrawGround(ctx,now){const T=Date.now(),A=L17.anim,slam=A.blood+A.kneel;J17V.fx=J17V.fx.filter(f=>T-f.t<A.total+500&&B&&f.bid===B.id);
+function j17DrawGround(ctx,now){const T=Date.now(),A=L17J.anim,slam=A.blood+A.kneel;J17V.fx=J17V.fx.filter(f=>T-f.t<A.total+500&&B&&f.bid===B.id);
   J17V.fx.forEach(f=>{const d=T-f.t,g=j17UnitGround(f.a)||(f.box?{x:f.box.x,y:f.box.gy!=null?f.box.gy:f.box.y,s:f.box._ch15||1}:null);if(!g||d<slam)return;
     const p=Math.min(1,(d-slam)/A.ring),out=d>A.total?Math.max(0,1-(d-A.total)/500):1,px=g.x-15*g.s,R=(f.big?74:46);
     j17Sigil(ctx,px,g.y+1,R,p,out,now);
@@ -776,8 +776,8 @@ function j17DrawCrew(ctx,d,two){const W=BL.W,H=BL.H,runs=two?[[0,.5,0],[80,.66,1
     if(two&&n%2){ctx.fillStyle='#f0c040';[[18,-24],[24,-12],[14,-4]].forEach(r=>ctx.fillRect(x+r[0]+Math.floor(d/60)%3,y+r[1],2,2));}
     ctx.globalAlpha=1;ctx.save();ctx.translate(x+img.width/2,y-img.height+1);ctx.scale(-1,1);ctx.drawImage(img,0,0);ctx.restore();});ctx.globalAlpha=1;}
 // a hero drawn by hand (Joseth kneeling where he stood while his guardian takes the field)
-function j17DrawGhost(ctx,f){const d=Date.now()-f.t;if(d<0||d>=L17.anim.total||!f.box)return;const P=j17AnimPose(d),img=b8Small(heroPoseImg('jose',P[0],P[1],false)),b=f.box,s=b._ch15||1,gy=b.gy!=null?b.gy:b.y;
-  ctx.save();ctx.globalAlpha=d>L17.anim.total-200?Math.max(0,(L17.anim.total-d)/200):1;ctx.translate(b.x,gy);ctx.scale(s,s);ctx.translate(-b.x,-gy);ctx.translate(Math.round(b.x-img.width/2)+img.width,Math.round(b.y-img.height+1));ctx.scale(-1,1);ctx.drawImage(img,0,0);ctx.restore();ctx.globalAlpha=1;}
+function j17DrawGhost(ctx,f){const d=Date.now()-f.t;if(d<0||d>=L17J.anim.total||!f.box)return;const P=j17AnimPose(d),img=b8Small(heroPoseImg('jose',P[0],P[1],false)),b=f.box,s=b._ch15||1,gy=b.gy!=null?b.gy:b.y;
+  ctx.save();ctx.globalAlpha=d>L17J.anim.total-200?Math.max(0,(L17J.anim.total-d)/200):1;ctx.translate(b.x,gy);ctx.scale(s,s);ctx.translate(-b.x,-gy);ctx.translate(Math.round(b.x-img.width/2)+img.width,Math.round(b.y-img.height+1));ctx.scale(-1,1);ctx.drawImage(img,0,0);ctx.restore();ctx.globalAlpha=1;}
 HOOK.wrap('drawUnit','legends17a','the sigil under the units, a summon hidden until its smoke, the water clone behind Dist',function(next,ctx,u,b,now,tg){
   try{if(J17V.frame!==now){J17V.frame=now;j17DrawGround(ctx,now);J17V.fx.forEach(f=>{if(B&&!B.front.includes(f.a))j17DrawGhost(ctx,f);});}}catch(e){}
   try{if(u&&u.j17){if(u.j17gone){if(!u.j17puff&&b){u.j17puff=1;J17V.puff.push({t:Date.now(),x:b.x,y:b.gy!=null?b.gy:b.y,w:b.w*.8,h:b.h*.7,seed:(u.j17slot||0)*5+2,bid:B.id});}return;}
@@ -803,18 +803,18 @@ function j17Names(h){if(typeof h!=='string'||!j17Known())return h;
   return h.replace(/Only Nikaris, a Priest or a Monk/g,'Only Nikaris, Joseth, a Priest or a Monk').replace(/Nikaris, Priest or Monk/g,'Nikaris, Joseth, Priest or Monk').replace(/It needs Nikaris, a Priest or a Monk/g,'It needs Nikaris, Joseth, a Priest or a Monk')
     .replace(/it needs a Priest or Nikaris to Invoke it/g,'it needs a Priest, Nikaris or Joseth to Invoke it').replace(/answers a Priest, Nikaris, or a Monk/g,'answers a Priest, Nikaris, Joseth, or a Monk').replace(/With Nikaris in the fight a beaten Scourge may ask to join/g,'With Nikaris or Joseth in the fight a beaten Scourge may ask to join');}
 HOOK.xform('cmdHtml','legends17a','Joseth among the callers in the greyed Summon note',function(h){return j17Names(h);});
-{const bt0=compBonusText;compBonusText=function(o){let h=bt0.apply(this,arguments);try{h=j17Names(h);if(o&&o.with==='jose')h=h.replace(/Summon once per battle \(\d+ turns\)/,o.scourge?`Summon once per battle (${COMP_TURNS+1} turns, ${j17Pc(L17.cost.guard)}% of his HP)`:`Whistle or Call the Pack (${L17.pack.turns} turns beside the Vanguard)`);}catch(e){}return h;};}
+{const bt0=compBonusText;compBonusText=function(o){let h=bt0.apply(this,arguments);try{h=j17Names(h);if(o&&o.with==='jose')h=h.replace(/Summon once per battle \(\d+ turns\)/,o.scourge?`Summon once per battle (${COMP_TURNS+1} turns, ${j17Pc(L17J.cost.guard)}% of his HP)`:`Whistle or Call the Pack (${L17J.pack.turns} turns beside the Vanguard)`);}catch(e){}return h;};}
 if(typeof r17Callers==='function'){const rc0=r17Callers;r17Callers=function(){const C=rc0.apply(this,arguments);try{const j=G.roster&&G.roster.jose;if(j&&!C.full.includes(j)){C.full=C.full.concat(j).sort((a,b)=>C.inSix(b)-C.inSix(a)||b.lv-a.lv);}}catch(e){}return C;};}
 function j17SlotRow(e,edit){const d=e.o?compDef(e.o):L17_MON[e.dog],boss=e.o&&e.o.scourge,role=e.dog?{healer:'Healer: heals the weakest ally, gives Regen, cleanses',saboteur:'Saboteur: slows, weakens, breaks, steals, strips boons',magic:'Magic: single and area lightning, stuns'}[d.role]:(d.sk||[]).map(s=>esc(s[0])).join(', ');
-  const who=boss?`<b>Joseth</b>: Summon, once per battle (${COMP_TURNS+1} turns in the whole Vanguard's place, ${j17Pc(L17.cost.guard)}% of his max HP)`:`<b>Joseth</b>: Whistle or Call the Pack (${L17.pack.turns} turns beside the Vanguard, ${j17Pc(L17.cost.pet)}% of his max HP, or ${j17Pc(L17.cost.pack)}% for all three)`;
+  const who=boss?`<b>Joseth</b>: Summon, once per battle (${COMP_TURNS+1} turns in the whole Vanguard's place, ${j17Pc(L17J.cost.guard)}% of his max HP)`:`<b>Joseth</b>: Whistle or Call the Pack (${L17J.pack.turns} turns beside the Vanguard, ${j17Pc(L17J.cost.pet)}% of his max HP, or ${j17Pc(L17J.cost.pack)}% for all three)`;
   return `<div class="row comprow j17slot"><img class="mimg" src="${monURL(d.art)}" alt=""><div class="grow"><b>${esc(j17EntName(e))}</b>${e.dog?' <em class="cyc">His own</em>':boss?' <em class="cyc legb">Recruited boss</em>':''}<small>Slot ${e.i+1} · ${(d.el||[]).map(ico).join('')} ${role}</small><small class="r17who">Who can call it: ${who}.</small></div>${edit?`<button class="btn sm" data-act="j17SlotPick" data-arg="${e.i}">Change</button>`:''}</div>`;}
-function j17PackHtml(edit){return `<h4 class="r17h j17h">Joseth's pack <small>3</small></h4><p class="note">Joseth keeps three pets and can have all three out at once, beside the Vanguard (they fight at ${j17Pc(L17.pack.pw)}% power with ${j17Pc(L17.pack.hp)}% of a pet's HP). His own dogs fill every slot you leave to them; a tamed pet can take a slot instead, at most one recruited boss among the three. One summon at a time: a guardian, a recruited boss or Cerberus sends the pack home.</p><div class="rows">${j17Slots().map(e=>j17SlotRow(e,edit)).join('')}</div>`;}
+function j17PackHtml(edit){return `<h4 class="r17h j17h">Joseth's pack <small>3</small></h4><p class="note">Joseth keeps three pets and can have all three out at once, beside the Vanguard (they fight at ${j17Pc(L17J.pack.pw)}% power with ${j17Pc(L17J.pack.hp)}% of a pet's HP). His own dogs fill every slot you leave to them; a tamed pet can take a slot instead, at most one recruited boss among the three. One summon at a time: a guardian, a recruited boss or Cerberus sends the pack home.</p><div class="rows">${j17Slots().map(e=>j17SlotRow(e,edit)).join('')}</div>`;}
 {const vc0=vCompanions;vCompanions=function(){let h=vc0.apply(this,arguments);try{h=j17Names(h);if(G&&!G.daily&&G.roster&&G.roster.jose){
-    h=h.replace(/<b>Joseth<\/b>: Summon, once per battle \(\d+ turns, in Joseth's place\)/g,`<b>Joseth</b>: Whistle or Call the Pack (${L17.pack.turns} turns beside the Vanguard)`);
+    h=h.replace(/<b>Joseth<\/b>: Summon, once per battle \(\d+ turns, in Joseth's place\)/g,`<b>Joseth</b>: Whistle or Call the Pack (${L17J.pack.turns} turns beside the Vanguard)`);
     const i=h.indexOf('<h4 class="r17h">');h=i>=0?h.slice(0,i)+j17PackHtml(true)+h.slice(i):h+j17PackHtml(true);}}catch(e){console.error('legends17a summons',e);}return h;};}
 function j17Put(o,i){if(!o)return;(G.tamed||[]).forEach(x=>{if(x&&x!==o&&x.with==='jose'&&(x.j17s===i||(o.scourge&&x.scourge))){x.with=null;delete x.j17s;}});o.with='jose';o.j17s=i;}
 function j17FreeSlot(o){const S=j17Slots();const b=o&&o.scourge&&S.find(e=>e.o&&e.o.scourge);if(b)return b.i;const d=S.find(e=>e.dog);return d?d.i:0;}
-function mJ17Slot(m){const i=m.slot|0,S=j17Slots(),cur=S[i],dog=L17_MON[L17.dogs[i]];
+function mJ17Slot(m){const i=m.slot|0,S=j17Slots(),cur=S[i],dog=L17_MON[L17J.dogs[i]];
   const rows=[`<div class="row comprow"><img class="mimg" src="${monURL(dog.art)}" alt=""><div class="grow"><b>${esc(dog.n)}</b> <em class="cyc">His own</em><small>${esc(dog.d)}</small></div><button class="btn sm ${cur.dog?'gold':''}" data-act="j17SlotSet" data-arg="${i},dog">${cur.dog?'In this slot':'Use'}</button></div>`]
     .concat((G.tamed||[]).filter(o=>o&&b16Def(o.mon)).map(o=>{const d=compDef(o),h=o.with&&G.roster[o.with],mine=cur.o===o,other=o.with==='jose'&&!mine;
       return `<div class="row comprow"><img class="mimg" src="${monURL(d.art)}" alt=""><div class="grow"><b>${esc(o.name)}</b>${o.scourge?' <em class="cyc legb">Recruited boss</em>':''}<small>${(d.el||[]).map(ico).join('')} ${esc(d.n)}</small><small>${mine?'In this slot':other?`In slot ${o.j17s+1} (moves here)`:h?`With ${esc(h.name)} (moves here)`:'Free'}</small></div><button class="btn sm ${mine?'gold':''}" data-act="j17SlotSet" data-arg="${i},${o.id}">${mine?'In this slot':'Use'}</button></div>`;}));
@@ -840,16 +840,16 @@ try{const st=document.createElement('style');st.textContent='.j17why{color:#ffc9
 HOOK.after('win','legends17a','Blood Oath: a beaten monster, Scourge or guardian may swear to Joseth',function(){try{const info=B&&B.result,spec=B&&B.spec;
   if(!info||!spec||!G||G.daily||info.tame||(G.tamed||[]).length>=8||!B.j17jose||!G.roster.jose)return;const nik=B.front.concat(B.back).some(c=>c&&c.id==='nikaris'),R=Math.random;let t=null;
   // (with Nikaris along his own, higher roll for monsters and Scourges has already been made: no second roll)
-  if(!nik&&(spec.kind==='field'||spec.kind==='dungeon')&&!spec.mini&&R()<L17.oath.field){const pool=B.en.filter(e=>MON[e.art]&&!e.elite&&!e.boss);if(pool.length){const e=pool[Math.floor(R()*pool.length)];t={mon:e.art,name:'Wild '+MON[e.art].n};}}
-  else if(!nik&&spec.kind==='boss'&&!B.en.find(e=>e.boss&&FINALS[e.key])&&R()<L17.oath.scourge){const bk=bossKeyFor(B.stage);t={mon:bk,name:'Lesser '+guardianDef(bk).n,scourge:1};}
-  else if(spec.mini&&typeof spec.mini==='object'&&MON[spec.mini.mon]&&R()<L17.oath.guard){t={mon:spec.mini.mon,name:'Lesser '+String(spec.mini.name||MON[spec.mini.mon].n).split(',')[0],scourge:1};}
+  if(!nik&&(spec.kind==='field'||spec.kind==='dungeon')&&!spec.mini&&R()<L17J.oath.field){const pool=B.en.filter(e=>MON[e.art]&&!e.elite&&!e.boss);if(pool.length){const e=pool[Math.floor(R()*pool.length)];t={mon:e.art,name:'Wild '+MON[e.art].n};}}
+  else if(!nik&&spec.kind==='boss'&&!B.en.find(e=>e.boss&&FINALS[e.key])&&R()<L17J.oath.scourge){const bk=bossKeyFor(B.stage);t={mon:bk,name:'Lesser '+guardianDef(bk).n,scourge:1};}
+  else if(spec.mini&&typeof spec.mini==='object'&&MON[spec.mini.mon]&&R()<L17J.oath.guard){t={mon:spec.mini.mon,name:'Lesser '+String(spec.mini.name||MON[spec.mini.mon].n).split(',')[0],scourge:1};}
   if(t){t.j17=1;info.tame=t;info.notes=info.notes||[];info.notes.push(`Blood Oath: ${t.name} offers to swear to Joseth.`);render();}}catch(e){console.error('legends17a oath',e);}});
 {const te0=tameElite;tameElite=function(t){const o=te0.apply(this,arguments);try{if(o&&t&&t.j17){o.oath=1;if(TPL[o.id])TPL[o.id].bio=`Sworn to Joseth in blood. A ${compDef(o).n} that follows the pack now.`;j17Norm(G);}}catch(e){}return o;};}
 {const rt0=registerTamed;registerTamed=function(o){const r=rt0.apply(this,arguments);try{if(o&&o.oath&&TPL[o.id])TPL[o.id].bio=`Sworn to Joseth in blood. A ${compDef(o).n} that follows the pack now.`;}catch(e){}return r;};}
 // ---------- 10. the two quests: "Three Whistles" and "The Toll on the Water" ----------
 // A legend quest (legends.js: G.quests type 'legend', q.step) posts on the Notice Board. With the redeem code it posts as the older legends' quests
-// do (legendRoll: from LEG_Q.ok, 30% a realm, for sure after one miss). Without a code it posts on its own from a later realm (L17.q.<id>.free,
-// 0 based: Dist from the third realm, Joseth from the fourth; L17.q.ch a realm, for sure after one miss), so every player can earn the hero.
+// do (legendRoll: from LEG_Q.ok, 30% a realm, for sure after one miss). Without a code it posts on its own from a later realm (L17J.q.<id>.free,
+// 0 based: Dist from the third realm, Joseth from the fourth; L17J.q.ch a realm, for sure after one miss), so every player can earn the hero.
 // Finishing it unlocks the hero on the account (META.legends), as the code does.
 // Three Whistles: 0 Junah wants a Potion from your pack; 1 Odin has your purse (a fight, the purse comes back); 2 Zeus howls up a storm (a fight);
 //   3 Joseth and all three dogs (the duel). The Toll on the Water: 0 the toll keeper takes a little gold whatever you answer; 1 the Runner
@@ -857,16 +857,16 @@ HOOK.after('win','legends17a','Blood Oath: a beaten monster, Scourge or guardian
 const j17Q=id=>((G&&G.quests)||[]).find(q=>q.type==='legend'&&q.hero===id)||null;
 function j17QuestRoll(s){try{if(!G||G.daily||s==null)return;G.legRoll=G.legRoll||{};G.legMiss=G.legMiss||{};
   try{if(typeof legendRoll==='function')legendRoll(s);}catch(e){}
-  L17.ids.forEach(id=>{if(G.roster[id]||j17Q(id)||legendOn(id))return;const Q=L17.q[id];if(s<Q.free)return;const k=id+':f'+s;if(G.legRoll[k])return;G.legRoll[k]=1;
-    if(Math.random()>=L17.q.ch&&!(G.legMiss[id+'f']>=1)&&s<4){G.legMiss[id+'f']=(G.legMiss[id+'f']||0)+1;return;}
+  L17J.ids.forEach(id=>{if(G.roster[id]||j17Q(id)||legendOn(id))return;const Q=L17J.q[id];if(s<Q.free)return;const k=id+':f'+s;if(G.legRoll[k])return;G.legRoll[k]=1;
+    if(Math.random()>=L17J.q.ch&&!(G.legMiss[id+'f']>=1)&&s<4){G.legMiss[id+'f']=(G.legMiss[id+'f']||0)+1;return;}
     const L=LEG_Q[id];G.quests.push({id:'L'+id,stage:s,type:'legend',hero:id,state:'open',step:0,title:L.title,desc:L.desc(s),reward:{gold:0}});});}catch(e){console.error('legends17a quest roll',e);}}
 HOOK.after('genQuests','legends17a','the two legend quests can post without a code',function(r,s){j17QuestRoll(s);});
 HOOK.before('nbBody','legends17a','the board checks for a legend quest of this realm (old saves, a code redeemed mid realm)',function(){try{if(G&&!G.daily)j17QuestRoll(G.stage);}catch(e){}});
-{const lp0=legendProg;legendProg=function(q){try{if(q&&L17.ids.includes(q.hero)&&q.state!=='claimed'){const n=ZS(q.stage).n,st=q.step||0;
+{const lp0=legendProg;legendProg=function(q){try{if(q&&L17J.ids.includes(q.hero)&&q.state!=='claimed'){const n=ZS(q.stage).n,st=q.step||0;
     return (q.hero==='jose'?['Find the golden dog','Find the dark dog that took your purse','Find the dog that howls at the storm','Find the man with the whistle']:['Find the toll keeper at the crossing','Corner the Runner','Follow the money to the far bank'])[st]+' in '+n;}}catch(e){}return lp0.apply(this,arguments);};}
 // who stands on the field for the step (the actor itself comes from legends.js dynActors)
 HOOK.wrap('walkerCanvas','legends17a','the quest actors: a dog, the toll keeper, the Runner',function(next,key,L,els,id,view,frame){try{
-  if(key==='leg:jose'){const q=j17Q('jose'),st=q?(q.step||0):3;if(st<3){const art=L17.dogs[st];return imgOf('j17w:'+art,()=>monCanvas(art));}}
+  if(key==='leg:jose'){const q=j17Q('jose'),st=q?(q.step||0):3;if(st<3){const art=L17J.dogs[st];return imgOf('j17w:'+art,()=>monCanvas(art));}}
   else if(key==='leg:dist'){const q=j17Q('dist'),st=q?(q.step||0):2,k=st===0?'dist_tk':st===1?'dist_c1':null;if(k)return next('leg:'+k,TPL[j17Hid(k)].look,['water'],k,view,frame);}}catch(e){}
   return next(key,L,els,id,view,frame);});
 HOOK.after('placeAt','legends17a','Zeus howls up a storm',function(){try{const m=WS.m;if(m&&m.kind==='field'&&legendQ(m).some(q=>q.hero==='jose'&&(q.step||0)===2))G.weather[m.s]='storm';}catch(e){}});
@@ -888,7 +888,7 @@ function j17Talk(q){const id=q.hero,st=q.step||0;let m;
   V.modal=Object.assign({type:'j17evt',hero:id,step:st},m);render();}
 function mJ17Evt(m){return box(esc(m.title),`<div class="mh j17evt"><div class="pbig leg"><img src="${m.img}" alt=""></div><div class="grow"><p class="story">${esc(m.text)}</p>${m.note?`<p class="note">${esc(m.note)}</p>`:''}${m.fight?'<p class="note">This is a tough fight. Rest first.</p>':''}</div></div>`,
   (m.btns||[]).map((b,i)=>`<button class="btn ${i===m.btns.length-1&&b[0]!=='closeModal'?'gold':''}" data-act="${b[0]}" ${b[2]===false?'disabled':''}>${esc(b[1])}</button>`).join(''),true);}
-HOOK.before('actorTalk','legends17a','the two new legends\' quest scenes (registered last: answers before the older legend hooks)',function(a){if(a&&a.type==='legend'&&a.q&&L17.ids.includes(a.q.hero))return HOOK.stop(j17Talk(a.q));});
+HOOK.before('actorTalk','legends17a','the two new legends\' quest scenes (registered last: answers before the older legend hooks)',function(a){if(a&&a.type==='legend'&&a.q&&L17J.ids.includes(a.q.hero))return HOOK.stop(j17Talk(a.q));});
 function j17Step(q,n,text,title){q.step=n;saveGame();V.modal={type:'story',title:title||q.title,text,btn:'Onward'};try{sfx('quest');}catch(e){}render();}
 Object.assign(ACT,{
   j17Give(){const q=j17Q('jose');if(!q||(q.step||0)!==0||!((G.inv.potion||0)>0))return;G.inv.potion--;
@@ -908,14 +908,14 @@ function j17Foes(spec){const s=spec.stage,lv=STAGE_LV[s][1]+1,st=spec.step||0,ou
     if(st===1){const e=makeEnemy(L17_MON.odin,Math.max(2,lv-2),{elite:true,name:'Odin',hpM:2.6+.2*s,powM:1.05});e.phase={at:.5,say:'Odin drops low and circles.',self:[['haste',1]]};out.push(e);}
     else if(st===2){const e=makeEnemy(L17_MON.zeus,Math.max(2,lv-2),{elite:true,name:'Zeus',hpM:2.6+.2*s,powM:1.05});e.phase={at:.5,say:'Zeus howls, and the sky splits.',self:[['might',1]]};out.push(e);}
     else{const e=makeEnemy(L17_FOE.jose,lv,{elite:true,name:'Joseth Kynmar',hpM:3.4+.3*s,powM:1.2+.05*s});e.heroArt='jose';e.multi=1;e.phase={at:.5,say:'Joseth bites his thumb. The pack closes in!',self:[['might',1],['haste',1]]};out.push(e);
-      L17.dogs.forEach(k=>{const d=makeEnemy(L17_MON[k],Math.max(2,lv-3),{hpM:1.1});out.push(d);});}
+      L17J.dogs.forEach(k=>{const d=makeEnemy(L17_MON[k],Math.max(2,lv-3),{hpM:1.1});out.push(d);});}
   }else{
     if(st===1){const e=plain(makeEnemy(L17_FOE.runner,Math.max(2,lv-1),{elite:true,name:'Tidecrew Runner',hpM:9,powM:.75}));e.heroArt=j17Hid('dist_c1');e.S.eva=.18;e.j17run=1;out.push(e);}
     else{const e=makeEnemy(L17_FOE.dist,lv,{elite:true,name:'Dist',hpM:3.8+.3*s,powM:1.2+.05*s});e.heroArt='dist';e.phase={at:.5,say:'Dist laughs, and a second Dist steps out of the river.',self:[['haste',1],['might',1]]};out.push(e);
       [0,4].forEach((k,i)=>{const c=makeEnemy(L17_FOE.cutter,Math.max(2,lv-3),{hpM:1.2});c.heroArt=j17Hid('dist_c'+k);c.name+=' '+'AB'[i];out.push(c);});}
   }
   return out;}
-HOOK.before('encounterFoes','legends17a','the fights of the two legend quests',function(spec){if(spec&&spec.kind==='legend'&&L17.ids.includes(spec.hero))return HOOK.stop(j17Foes(spec));});
+HOOK.before('encounterFoes','legends17a','the fights of the two legend quests',function(spec){if(spec&&spec.kind==='legend'&&L17J.ids.includes(spec.hero))return HOOK.stop(j17Foes(spec));});
 // the Runner: three blows that hurt and he is cornered; his fourth turn and he is gone (no loss, the step stays)
 HOOK.after('startBattle','legends17a','the Runner\'s rules',function(r){try{if(r!==false&&B){const e=B.en.find(x=>x.j17run);B.j17q=e?{e,n:0,hp:e.hp}:null;if(e)log('Corner him: three blows that hurt before his fourth turn.');}}catch(e){}});
 HOOK.after('perform','legends17a','the Runner counts the blows',function(r,a){try{const Q=B&&B.j17q;if(!Q||!a||a.side!=='p'||B.over)return;const e=Q.e;if(e.hp<Q.hp){Q.hp=e.hp;Q.n++;if(e.hp>0){fx(e,Q.n+' of 3','stat');if(Q.n>=3){log(`${e.name} is cornered and throws the purse down.`);fx(e,'Cornered','stat bad');e.hp=0;fallen(e);}}}}catch(e){}});
@@ -926,10 +926,10 @@ function j17Join(id,info){if(!G||G.roster[id])return;const q=j17Q(id);
   let back=0;if(q&&id==='dist'&&q.toll){back=q.toll;G.gold+=back;}
   META.legends=META.legends||{};META.legends[id]=1;try{saveMeta();codexSee(id,{rec:1,lv:c.lv});profileDirty();}catch(e){}saveGame();
   const line=id==='jose'?'"Good. They were right about you." He wipes his thumb on his coat. "Four of us, then. Five, on a bad day."':`"You still have your purse. Nobody still has their purse." He tosses it back${back?` (${back} gold)`:''}. "I am coming with you."`;
-  if(B&&info)L17.join=id;// (win() and finishBattle() rebuild the six from the fight: he is added after them, see the hook below)
+  if(B&&info)L17J.join=id;// (win() and finishBattle() rebuild the six from the fight: he is added after them, see the hook below)
   if(info)info.legend=`${TPL[id].title} joins you. ${line}`;else V.modal={type:'story',title:TPL[id].title,text:`${line}\n\n${TPL[id].n} joins your roster${G.party.includes(id)?' and your six':''}.`,btn:'Welcome aboard'};
   try{sfx('level');}catch(e){}}
-{const lw0=legendWin;legendWin=function(spec,info){if(!spec||!L17.ids.includes(spec.hero))return lw0.apply(this,arguments);const q=j17Q(spec.hero),st=spec.step||0;if(!q)return;info.legendKind=null;
+{const lw0=legendWin;legendWin=function(spec,info){if(!spec||!L17J.ids.includes(spec.hero))return lw0.apply(this,arguments);const q=j17Q(spec.hero),st=spec.step||0;if(!q)return;info.legendKind=null;
   if(spec.hero==='jose'){
     if(st===1){q.step=2;const g=q.purse||0;if(g)G.gold+=g;info.legend=`Odin drops your purse at your feet${g?` (${g} gold, all of it)`:''} and falls in beside the golden one as if he had always been there. On the high ground, something starts to howl.`;}
     else if(st===2){q.step=3;info.legend='Zeus stops mid howl, sneezes, and trots down to sniff your hand. The storm loses interest. Three dogs now, and all three are looking past you, at the road.';}
@@ -938,8 +938,8 @@ function j17Join(id,info){if(!G||G.roster[id])return;const q=j17Q(id);
     if(st===1){q.step=2;info.legend='The Runner throws down a purse that is not yours and points across the water with his chin. "He has yours. He always has yours."';}
     else if(st===2)j17Join('dist',info);}};}
 
-HOOK.after('finishBattle','legends17a','a legend who joined at the end of his duel takes a free place in the six',function(){try{const id=L17.join;L17.join=null;if(id&&G&&G.roster[id]&&!G.party.includes(id)&&G.party.length<6){G.party.push(id);saveGame();}}catch(e){}});
+HOOK.after('finishBattle','legends17a','a legend who joined at the end of his duel takes a free place in the six',function(){try{const id=L17J.join;L17J.join=null;if(id&&G&&G.roster[id]&&!G.party.includes(id)&&G.party.length<6){G.party.push(id);saveGame();}}catch(e){}});
 
 // ---------- tests ----------
-try{window.__L17={L17,MON:L17_MON,KIT:L17_KIT,V:J17V,slots:()=>j17Slots(),norm:()=>j17Norm(G),whistleInfo:a=>j17WhistleInfo(a),block:(a,s)=>j17Block(a,s),out:()=>j17Out(),cer:()=>j17CerOut(),toll:()=>j17Toll(),questRoll:s=>j17QuestRoll(s),quest:id=>j17Q(id),talk:q=>j17Talk(q),
+try{window.__L17A={L17:L17J,MON:L17_MON,KIT:L17_KIT,V:J17V,slots:()=>j17Slots(),norm:()=>j17Norm(G),whistleInfo:a=>j17WhistleInfo(a),block:(a,s)=>j17Block(a,s),out:()=>j17Out(),cer:()=>j17CerOut(),toll:()=>j17Toll(),questRoll:s=>j17QuestRoll(s),quest:id=>j17Q(id),talk:q=>j17Talk(q),
   foes:spec=>j17Foes(spec),join:(id,info)=>j17Join(id,info),hid:id=>j17Hid(id),turn:u=>j17Turn(u),leave:(u,w)=>j17Leave(u,w),tick:()=>j17Tick(),bossEnt:a=>j17BossEnt(a),auto:a=>j17AutoJose(a),packHtml:e=>j17PackHtml(e),is:a=>j17Is(a),animPose:d=>j17AnimPose(d),land:()=>j17Land(),names:h=>j17Names(h),kit:id=>classSkills(TPL[id]),dogPick:(u,f)=>j17DogPick(u,f),get G(){return G;},get B(){return B;}};}catch(e){}
