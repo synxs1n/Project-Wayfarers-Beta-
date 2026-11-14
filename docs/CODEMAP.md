@@ -517,7 +517,7 @@ Registered (load order; 1 is next to the base):
 
 Runs: 14 roster17 (around) → 13 skills12 (around) → **base** → 1 engine → 2 insight → 3 echocore → 4 archetype → 5 roles → 6 natures6 (result) → 7 realms → 8 twists → 9 battle5 → 10 battle4 → 11 battle4 → 12 riftkeeper9 → 13 skills12 (around) → 14 roster17 (around)
 
-### encounterFoes (13 hooks)
+### encounterFoes (14 hooks)
 Registered (load order; 1 is next to the base):
 1. `legends.js` before: legend fights
 2. `travel.js` after: ambush: foes hit harder
@@ -532,8 +532,9 @@ Registered (load order; 1 is next to the base):
 11. `riftkeeper9.js` before: the Riftkeeper fight
 12. `endgame10.js` before: Breach fights
 13. `endgame10.js` around: Breach roamer level
+14. `early17.js` around: gentle grass and roamers near the entrance of the first field
 
-Runs: 13 endgame10 (around) → 12 endgame10 → 11 riftkeeper9 → 9 p2world (around) → 8 sites (around) → 7 roam (around) → 6 echocore → 5 mimic → 4 chance → 3 world3 (around) → 1 legends → **base** → 2 travel → 3 world3 (around) → 7 roam (around) → 8 sites (around) → 9 p2world (around) → 10 duellines → 13 endgame10 (around)
+Runs: 14 early17 (around) → 13 endgame10 (around) → 12 endgame10 → 11 riftkeeper9 → 9 p2world (around) → 8 sites (around) → 7 roam (around) → 6 echocore → 5 mimic → 4 chance → 3 world3 (around) → 1 legends → **base** → 2 travel → 3 world3 (around) → 7 roam (around) → 8 sites (around) → 9 p2world (around) → 10 duellines → 13 endgame10 (around) → 14 early17 (around)
 
 ### unpackG (12 hooks)
 Registered (load order; 1 is next to the base):
@@ -1208,6 +1209,13 @@ Registered (load order; 1 is next to the base):
 
 Runs: 1 world16 (around) → **base** → 1 world16 (around) → 2 fix17
 
+### roamSpawn (2 hooks)
+Registered (load order; 1 is next to the base):
+1. `world14.js` result: roamers stand only on tiles the walk reaches
+2. `early17.js` result: no elite roamers near the entrance of the first field
+
+Runs: **base** → 1 world14 (result) → 2 early17 (result)
+
 ### slDenByKey (2 hooks)
 Registered (load order; 1 is next to the base):
 1. `worldart12.js` result: den mouths with volume
@@ -1462,12 +1470,6 @@ Registered (load order; 1 is next to the base):
 1. `riftkeeper9.js` around: Echo records read through the journey view (rift9.js withRiftView)
 
 Runs: 1 riftkeeper9 (around) → **base** → 1 riftkeeper9 (around)
-
-### roamSpawn (1 hook)
-Registered (load order; 1 is next to the base):
-1. `world14.js` result: roamers stand only on tiles the walk reaches
-
-Runs: **base** → 1 world14 (result)
 
 ### s12Guarantee (1 hook)
 Registered (load order; 1 is next to the base):
