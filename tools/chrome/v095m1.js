@@ -14,7 +14,7 @@ const show=m=>ev(m=>{__A.V.modal=m;__A.render();},m);
 const SEC={all:['All','Ready','Active','Open','Done'],quests:['All','Ready','Active','Open','Done','Personal'],guilds:['All','Ready','Active','Open'],bounties:['All','Active','Open','Done'],arena:[]};
 // ---- the board building in town
 await show({type:'board'});let n=await nav();
-chk('town board: Notice Board with tabs Notices, Quests, Bounties (v0.18.7)',/Notice Board/.test(n.title)&&JSON.stringify(n.tabs)===JSON.stringify(['Notices','Quests','Bounties'])||JSON.stringify(n));
+chk('town board: Notice Board with tabs Notices, Quests, Guilds, Bounties (v0.18.7; Guilds back with quests16)',/Notice Board/.test(n.title)&&JSON.stringify(n.tabs)===JSON.stringify(['Notices','Quests','Guilds','Bounties'])||JSON.stringify(n));
 chk('town board opens on Notices > All (v0.18.7)',n.on.join()==='Notices,All'||JSON.stringify(n.on));
 for(const t of ['quests','bounties']){await ev(t=>__A.ACT.sTab(t),t);n=await nav();chk(`board ${t}: sections ${SEC[t].join(', ')||'none'}`,JSON.stringify(n.secs)===JSON.stringify(SEC[t])||JSON.stringify(n.secs));}
 // ---- the Guild Hall

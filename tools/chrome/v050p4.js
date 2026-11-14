@@ -13,21 +13,21 @@ const p=await ev(()=>{const A=__A,G=A.G,o={},c=G.roster.mira;
   A.V.modal={type:'board',tab:'quests',sec:'personal'};A.render();const t1=document.querySelector('#modal').innerHTML;o.r1row=/data-act="personal"/.test(t1)||/Mira:/.test(t1);o.r1note=/open in the third realm/.test(document.querySelector('#modal').innerText);
   A.V.modal={type:'char',id:'mira'};o.sheet1=A.mChar('mira',false).match(/Battles together:[^<]*/)[0];
   // second realm, not enough battles: still hidden
-  G.stage=2;c.bt=39;o.r2a=A.personalEligible(c);o.r2atxt=A.personalLockText(c);A.V.modal={type:'board',tab:'quests',sec:'personal'};A.render();o.r2arow=/data-arg="mira"/.test(document.querySelector('#modal').innerHTML);
-  // 40 battles at level 3: open (the old rule wanted level 20)
-  c.bt=40;o.r2b=A.personalEligible(c);A.render();o.r2brow=/data-act="personal" data-arg="mira"/.test(document.querySelector('#modal').innerHTML);
+  G.stage=2;c.bt=49;o.r2a=A.personalEligible(c);o.r2atxt=A.personalLockText(c);A.V.modal={type:'board',tab:'quests',sec:'personal'};A.render();o.r2arow=/data-arg="mira"/.test(document.querySelector('#modal').innerHTML);
+  // 50 battles at level 3: open (the old rule wanted level 20)
+  c.bt=50;o.r2b=A.personalEligible(c);A.render();o.r2brow=/data-act="personal" data-arg="mira"/.test(document.querySelector('#modal').innerHTML);
   o.sheet2=A.mChar('mira',false).match(/Battles together:[^<]*/)[0];
   A.ACT.personal('mira');o.started=G.personal.mira&&G.personal.mira.state;A.render();o.roam=/Rival roaming/.test(document.querySelector('#modal').innerText);
   // a hero with no bt keeps the estimate (level-3)x5
   const l=G.roster.lumen;delete l.bt;l.lv=11;o.est=A.btOf(l);A.saveGame();const raw=JSON.parse(localStorage.getItem('aurelis-wayfarers-v3'));o.savedBt=raw.roster.lumen.bt;
   A.V.modal=null;return o;});
 console.log(JSON.stringify(p));
-chk('personal quests need 40 battles (config) and the third realm (v0.7.2)',p.bt===40&&p.realm===2);
+chk('personal quests need 50 battles (config; 40 before quests16) and the third realm (v0.7.2)',p.bt===50&&p.realm===2);
 chk('in the first realm a quest never opens, even with 60 battles',p.r1===false&&p.r1txt==='Unlocks in the third realm');
 chk('in the first realm the Notice Board Personal section shows no quest row, only a note',p.r1row===false&&p.r1note===true);
-chk('hero sheet: "Battles together: 60 of 40. Unlocks in the third realm"',/Battles together: 60 of 40\. Unlocks in the third realm/.test(p.sheet1));
-chk('second realm with 39 battles: hidden, lock text counts battles',p.r2a===false&&p.r2atxt==='Battles together: 39 of 40'&&p.r2arow===false);
-chk('second realm with 40 battles at level 3: no level gate any more',p.r2b===true&&p.r2brow===true&&/ready at the Guild Hall/.test(p.sheet2));
+chk('hero sheet: "Battles together: 60 of 50. Unlocks in the third realm"',/Battles together: 60 of 50\. Unlocks in the third realm/.test(p.sheet1));
+chk('second realm with 49 battles: hidden, lock text counts battles',p.r2a===false&&p.r2atxt==='Battles together: 49 of 50'&&p.r2arow===false);
+chk('second realm with 50 battles at level 3: no level gate any more',p.r2b===true&&p.r2brow===true&&/ready at the Notice Board/.test(p.sheet2));
 chk('accepting starts it as before',p.started==='active'&&p.roam===true);
 chk('a hero with no saved bt keeps the (level-3)x5 estimate',p.est===40&&p.savedBt==null);
 

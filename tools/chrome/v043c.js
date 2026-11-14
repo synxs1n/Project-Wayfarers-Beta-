@@ -17,7 +17,7 @@ const r=await ev(async()=>{const A=__A,G=A.G,o={};
   // bounties and faction missions. v0.9.9: since v0.10.6 the bounties are on the town Notice Board and the guild missions on the Guild Hall's Guilds tab, and a new journey
   // opens guild missions in the third realm (pacing.js PACE.at.guilds): no Accept all for them before it, then Accept all takes every one
   A.V.modal={type:'board',tab:'bounties'};A.render();o.bountyBtn=!!document.querySelector('#modal [data-act="bountyAll"]');A.ACT.bountyAll();o.bountyAll=G.bounties.filter(b=>b.stage<=G.stage).every(b=>b.state!=='open');
-  A.V.modal={type:'guild',tab:'guilds'};A.render();o.facEarly=!document.querySelector('#modal [data-act="facAcceptAll"]')&&!!G.pcV;
+  {const c0=G.cleared[0];G.cleared[0]=0;/* quests16: the guilds (and their missions) open when the first Scourge falls, which this test has already set */A.V.modal={type:'guild',tab:'guilds'};A.render();o.facEarly=!document.querySelector('#modal [data-act="facAcceptAll"]')&&!!G.pcV;G.cleared[0]=c0;}
   for(let i=0;i<window.__P95.PACE.at.guilds;i++)G.cleared[i]=1;A.render();o.facBtn=!!document.querySelector('#modal [data-act="facAcceptAll"]');
   const ML=A.TW.get('facMisAll')();A.ACT.facAcceptAll();o.facN=ML.length;o.facAll=ML.length>0&&ML.every(m=>A.TW.get('facMisState')(m)!=='open');
   o.facOpen=A.TW.get('facMisAll')().filter(m=>A.TW.get('facMisState')(m)==='open').map(m=>m.id).join();

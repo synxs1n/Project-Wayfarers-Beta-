@@ -43,7 +43,7 @@ for(const [w,h,mob] of [[390,844,true],[844,390,true],[1366,768,false]]){
  await ev(START);await wait(400);
  const ban=await ev(()=>{const M=__M14;M.glRender();const e=document.getElementById('glp'),b=document.querySelector('#wloc.on');if(!b)return {noBanner:1};
   const x=b.getBoundingClientRect(),hid=e.style.display==='none';if(hid)return {hid};const p=e.getBoundingClientRect();return {hid,over:p.left<x.right&&p.right>x.left&&p.top<x.bottom&&p.bottom>x.top};});
- chk(tag+'while the area banner shows, the panel is not over it',ban.noBanner||ban.hid||!ban.over||JSON.stringify(ban));
+ chk(tag+'while the area banner shows, the panel stays on screen (quests16: always shown; it used to hide)',ban.noBanner||!ban.hid||JSON.stringify(ban));
  await wait(2900);
  const meas=()=>ev(()=>{const M=__M14;M.glRender();const e=document.getElementById('glp'),mm=document.getElementById('mmap').getBoundingClientRect();if(e.style.display==='none')return {hidden:1};
   const p=e.getBoundingClientRect(),hb=M.glHero();return {mode:e.className,dx:Math.round(p.right-mm.right),dy:Math.round(p.top-mm.bottom),w:Math.round(p.width),mw:Math.round(mm.width),
@@ -52,7 +52,7 @@ for(const [w,h,mob] of [[390,844,true],[844,390,true],[1366,768,false]]){
  chk(tag+`the full panel is right aligned under the minimap, as wide as it to one and a half times (${a.w} vs ${a.mw}), not over the hero`,!a.hidden&&/full/.test(a.mode)&&Math.abs(a.dx)<=1&&Math.abs(a.dy-6)<=1&&a.w>=a.mw-1&&a.w<=a.mw*1.5+1&&!a.hero||JSON.stringify(a));
  if(SH)await page.screenshot({path:`${SH}/v181a_goals_${w}x${h}.png`});
  await ev(()=>{__A.ACT.goalsT();});await wait(100);const c=await meas();
- chk(tag+'folded, the chip is under the minimap too, as wide as it',!c.hidden&&/chip/.test(c.mode)&&Math.abs(c.dx)<=1&&Math.abs(c.dy-6)<=1&&Math.abs(c.w-c.mw)<=1||JSON.stringify(c));
+ chk(tag+'folded, the header bar is under the minimap too, as wide as the open panel (quests16; it was a chip as wide as the minimap)',!c.hidden&&/chip/.test(c.mode)&&Math.abs(c.dx)<=1&&Math.abs(c.dy-6)<=1&&c.w>=c.mw-1&&c.w<=c.mw*1.5+1||JSON.stringify(c));
  if(SH)await page.screenshot({path:`${SH}/v181a_goals_chip_${w}x${h}.png`});
  await ev(()=>{__A.ACT.goalsT();});await wait(100);
  await H.browser.close();}

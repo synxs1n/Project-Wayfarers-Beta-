@@ -63,12 +63,12 @@ const g=await ev(()=>{const A=__A,T=A.TW.get,G=A.G,P=window.__P95,o={};const at=
 console.log(JSON.stringify(Object.assign({},g,{bondPage0:g.bondPage0.slice(0,90),bondPage1:g.bondPage1.slice(0,60)})));
 chk('a new journey is gated (pcV)',g.pcV===1);
 chk(`realm 1: elements, combat and taming only (${g.u0.join(', ')})`,g.u0.join()==='elements,combat,taming'||g.u0.join());
-chk(`realm 2 adds reactions and bonds (${g.u1.join(', ')})`,['reactions','bonds'].every(k=>g.u1.includes(k))&&!g.u1.includes('guilds')&&!g.u1.includes('camp')||g.u1.join());
+chk(`realm 2 adds reactions and bonds (${g.u1.join(', ')})`,['reactions','bonds','guilds'].every(k=>g.u1.includes(k))&&!g.u1.includes('camp')||g.u1.join());
 chk(`realm 3 adds camp and guilds (${g.u2.join(', ')})`,['camp','guilds'].every(k=>g.u2.includes(k))&&!g.u2.includes('echoforge')||g.u2.join());
 chk(`realm 4 adds the endgame extras (${g.u3.join(', ')})`,['echoforge','arenaGold','ngplus'].every(k=>g.u3.includes(k))||g.u3.join());
 chk('a primer marks nothing in realm 1 and primes in realm 2',g.prime0===false&&g.prime1===true||JSON.stringify(g));
 chk(`bonds: no growth in realm 1 (${g.bond0}), growth in realm 2 (${g.bond1}); the Bonds page says when it opens`,g.bond0===0&&g.bond1===1&&/open in the second realm/.test(g.bondPage0)&&!/open in the second realm/.test(g.bondPage1)||JSON.stringify(g));
-chk(`guild missions open in realm 3 (${g.mis1} in realm 2, ${g.mis2} in realm 3)`,g.mis1===0&&g.mis2>0||JSON.stringify(g));
+chk(`guild missions are open from realm 2 (quests16; ${g.mis1} in realm 2, ${g.mis2} in realm 3)`,g.mis1>0&&g.mis2>0||JSON.stringify(g));
 chk('the Echoforge tab never opens in town (since 0.13.3 the Echoforge is an anvil inside the Echo Rift)',g.ef2===false&&g.ef3===false||JSON.stringify(g));
 chk('one notice when a realm opens something new',g.news1.includes('r1')&&g.toast===true||JSON.stringify(g));
 chk(`an old journey keeps everything: systems (${g.old.length}), primers in realm 1, guild missions in realm 2 (${g.oldMis})`,g.old.length===10&&g.oldPrime===true&&g.oldMis>0&&g.oldLoad===true||JSON.stringify(g));

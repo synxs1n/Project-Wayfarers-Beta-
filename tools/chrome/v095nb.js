@@ -88,6 +88,6 @@ for(const [w,h,mob] of SIZES){const S=await open({w,h,mobile:mob,pre:PRE,tag:'s'
   console.log(w+'x'+h,JSON.stringify(res));
   chk(`${w}x${h}: the panel shows at every hero spot but near the minimap corner (${res.n} of 25 shown, ${res.hidden} hidden, ${JSON.stringify(res.modes)})`,res.n+res.hidden===25&&res.n>=18&&!res.hidAway||JSON.stringify(res));
   chk(`${w}x${h}: always right aligned under the minimap, at least as wide as it`,!res.notUnder||JSON.stringify(res));
-  chk(`${w}x${h}: inside the view, never over the hero, the stick, A/B or the minimap`,res.outside===0&&res.bad.length===0||JSON.stringify(res));
+  chk(`${w}x${h}: inside the view, never hidden or folded by itself (quests16: it stays on screen and open, also over the hero), never over the stick, A/B or the minimap`,res.outside===0&&res.hidden===0&&res.bad.filter(x=>!/^hero@/.test(x)).length===0&&Object.keys(res.modes).every(m=>/\bfull\b/.test(m))||JSON.stringify(res));
   await S.browser.close();}
 await done(H);})();

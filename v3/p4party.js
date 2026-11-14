@@ -21,7 +21,7 @@ function vPersonal(){
     return `<div class="row">${port(c.id)}<div class="grow"><b>${esc(t.n)}: ${esc(w.n)}</b><small>${q&&q.text?esc(q.text)+(q.state==='active'?` It prowls ${esc(ZS(q.stage).n)}.`+(rivalNeed(q)?` <b class="rgneed">${esc(rivalNeedShort(q))}.</b>`:''):''):esc(gearDesc(w))}</small></div>${st}</div>`;}).join('')}</div>`;}
 function pqSheetLine(c){const q=G&&G.personal&&G.personal[c.id];let s=`Battles together: ${btOf(c)} of ${PERSONAL_BT}`;
   if(q&&q.state==='done')s+='. Personal quest done';else if(q&&q.state==='active')s+='. Personal quest under way';
-  else if(TPL[c.id]&&TPL[c.id].mon){}else if(!realmReached(PERSONAL_REALM))s+='. Unlocks in the '+(['first','second','third','fourth','fifth'][PERSONAL_REALM]||'later')+' realm';else if(personalEligible(c))s+='. Personal quest ready at the Guild Hall';
+  else if(TPL[c.id]&&TPL[c.id].mon){}else if(!realmReached(PERSONAL_REALM))s+='. Unlocks in the '+(['first','second','third','fourth','fifth'][PERSONAL_REALM]||'later')+' realm';else if(personalEligible(c))s+='. Personal quest ready at the Notice Board';
   return s;}
 HOOK.xform('mChar','p4party','Battles together line',function(h,id){try{const c=G&&G.roster[id];if(c&&typeof h==='string')h=h.replace(/(<p class="note nums">)Battles together: \d+ of \d+(<\/p>)/,(a,p1,p2)=>p1+esc(pqSheetLine(c))+p2);}catch(e){}return h;});
 

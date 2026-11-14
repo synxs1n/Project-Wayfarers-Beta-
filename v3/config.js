@@ -228,7 +228,7 @@ const TAV_BATTLES=[0,12,32,55,80];
 const CHALL_POST=3;// how many open challenges a board shows at once (accepted ones always stay posted on top)
 const TV_SLOTS=4,TV_CAP=Infinity,TV_CD=5;     // 4 tables, no per area recruit cap (v0.5.0), 5 battles between shuffles
 // 6.6 personal quests: a hero must also have fought this many battles beside you in this journey (per hero, saved as bt)
-const PERSONAL_BT=40;
+const PERSONAL_BT=50;
 // Beta v0.5.0 phases 4 and 5 (p4xp.js, p4party.js, p5settings.js)
 // 4.1 personal quests: no level gate any more; PERSONAL_BT battles together and the party in this realm (0 based) or later.
 const PERSONAL_REALM=2;// v0.7.2: third realm (was the second), see pacing.js

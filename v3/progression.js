@@ -145,7 +145,7 @@ function vNext(){
   if(cA)add(false,`${cA} potion, charm or tent recipe${cA>1?'s':''} you can craft right now`,'At Alchemy.');
   const forgeable=P.flatMap(c=>EQSL.map(sl=>c.eq[sl]).filter(Boolean)).filter(id=>{const f=forgeCost(id);return f&&G.gold>=f.gold&&hasMats(f.m);}).length;
   if(forgeable)add(false,`${forgeable} equipped item${forgeable>1?'s':''} can be tempered`,'In the Smithy\'s Tempering tab.');
-  const pe=P.filter(c=>personalEligible(c)&&!(G.personal||{})[c.id]);if(pe.length)add(false,'Personal quests available',pe.slice(0,3).map(c=>esc(c.name)).join(', ')+'. Start them at the Guild Hall.');
+  const pe=P.filter(c=>personalEligible(c)&&!(G.personal||{})[c.id]);if(pe.length)add(false,'Personal quests available',pe.slice(0,3).map(c=>esc(c.name)).join(', ')+'. Start them at the Notice Board.');
   if(G.tamed.length<8&&bo.length+ba.length)add(false,`Taming: ${G.tamed.length} of 8`,'Beaten elite bounties can be tamed.');
   const cl=G.cleared.filter(Boolean).length,ar=ARENA.map((A,i)=>({A,i})).filter(o=>o.A.min<=cl&&!G.arena[o.i]);if(ar.length)add(false,`Arena: ${esc(ar[0].A.n)} is open`,`Suggested party level ${ar[0].A.rec}.`);
   // readiness for the boss of this stage

@@ -32,7 +32,7 @@ const kit=await ev(()=>!!document.querySelector('#modal [data-act="buyItem"][dat
 // v0.10.6: the town Notice Board has Quests and Bounties; the Guild Hall has Guilds, Arena, Recruits and Natures
 await show({type:'guild'});n=await nav();chk('Guild Hall tabs: Guilds, Arena, Recruits, Natures',JSON.stringify(n.tabs)===JSON.stringify(['Guilds','Arena','Recruits','Natures'])||JSON.stringify(n.tabs));
 await show({type:'guild',tab:'guilds'});n=await nav();chk('Guild Hall > Guilds sections: All, Ready, Active, Open',JSON.stringify(n.secs)===JSON.stringify(['All','Ready','Active','Open'])||JSON.stringify(n.secs));
-await show({type:'board'});n=await nav();chk('Notice Board tabs: Notices, Quests, Bounties (v0.18.7)',JSON.stringify(n.tabs)===JSON.stringify(['Notices','Quests','Bounties'])||JSON.stringify(n.tabs));
+await show({type:'board'});n=await nav();chk('Notice Board tabs: Notices, Quests, Guilds, Bounties (v0.18.7; Guilds back with quests16)',JSON.stringify(n.tabs)===JSON.stringify(['Notices','Quests','Guilds','Bounties'])||JSON.stringify(n.tabs));
 await show({type:'board',tab:'quests'});n=await nav();chk('Notice Board > Quests sections: All, Ready, Active, Open, Done, Personal',JSON.stringify(n.secs)===JSON.stringify(['All','Ready','Active','Open','Done','Personal'])||JSON.stringify(n.secs));
 const hg=await ev(()=>{const o={};for(const t of ['smithy','workshop','tavern','guild','board']){__A.V.modal={type:t};__A.render();o[t]=!!document.querySelector('#modal h2 .hgold');}return o;});
 chk('every shop title carries the purse',Object.values(hg).every(Boolean)||JSON.stringify(hg));
