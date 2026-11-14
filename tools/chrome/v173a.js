@@ -13,14 +13,14 @@ const OUT=__dirname+'/out';
   // ================= 1. primers and detonators that read right =================
   let r=await H0.ev(()=>{const A=__A,T=A.TW.get,K=__K12,TPL=T('TPL'),CLS=T('CLS'),SK=K.SK12,o={n:0,big:[],miss:[],bad:[],rays:[],gens:[],badGen:[],words:[],swap:K.K12.swap,retag:K.K12.retag};
     const legend=t=>['sniper','druid','archmage','chronicler'].includes(t.cls);
-    Object.keys(TPL).forEach(id=>{const t=TPL[id];if(t.mon||!CLS[t.cls]||t.src==='x')return;o.n++;const L=T('classSkills')(t);if(L.length>SK.cap)o.big.push(id);
+    Object.keys(TPL).forEach(id=>{const t=TPL[id];if(t.mon||!CLS[t.cls]||t.src==='x')return;o.n++;const L=T('classSkills')(t);if(L.length>SK.cap+2)o.big.push(id);/* the cap of 12 picks the kit; roster17.js adds two more (14) */
       if(t.el.length>1)t.el.forEach(e=>['primer','det'].forEach(role=>{if(!L.some(s=>T('s12Is')(s,role,e)))o.miss.push(id+' '+e+' '+role);}));
       L.forEach(s=>{if(s.role&&!s.combo&&!legend(t)&&!K.fits(s,s.role))o.bad.push(id+' '+s.n+' '+s.role);if(/ Ray$/.test(s.n)&&s.role)o.rays.push(id+' '+s.n+' '+s.role);
         if(s.gen){o.gens.push(t.cls+':'+s.n);const nm=SK.gen[t.cls][s.role==='primer'?0:1].replace('{n}',T('EL')[s.el]);if(s.n!==nm||/prime|primer|detonat/i.test(s.d))o.badGen.push(id+' '+s.n);}
         });});
     return o;});
   console.log(JSON.stringify({n:r.n,gens:r.gens,swap:r.swap,retag:r.retag}));
-  chk('every kit has at most 12 class skills, every dual type a Primer and a Detonator of each element',r.n>=88&&!r.big.length&&!r.miss.length||JSON.stringify(r));
+  chk('every kit has at most 14 class skills (the 12 of the cap and the two of roster17.js), every dual type a Primer and a Detonator of each element',r.n>=88&&!r.big.length&&!r.miss.length||JSON.stringify(r));
   chk('no skill holds a role its name contradicts (legends keep their hand names)',!r.bad.length||JSON.stringify(r.bad));
   chk('no Ray is a Primer or a Detonator (Shadow Ray priming, Wind Ray detonating is gone)',!r.rays.length||JSON.stringify(r.rays));
   chk('fillers are named in the class voice (SK12.gen) and never say Primer, Detonator or prime',!r.badGen.length&&!r.words.length||JSON.stringify([r.badGen,r.words]));
@@ -87,13 +87,13 @@ const OUT=__dirname+'/out';
     chk(`${tag}: the entrance has the boss banner and a name plate with its level and turns left inside the stage (${JSON.stringify(pr.plate)})`,/^GUARDIAN: Slagjaw/.test(s.ban||'')&&pr.plate&&/GUARDIAN/.test(pr.plate)&&/[45] turns/.test(pr.plate)/* a timer left by the fight before may give the guardian its first turn before the plate is read: 4 is as right as 5 (s.turns above is checked at 5) */&&pr.pl>=sr.l-1&&pr.pr<=sr.r+1||JSON.stringify([s,pr,sr]));
     chk(`${tag}: the Priest's guardian is boss sized (${Math.round(g1.r-g1.l)}x${Math.round(g1.b-g1.t)}) and wholly inside the stage`,(g1.r-g1.l)/(boss.r-boss.l)>.85&&g1.l>=0&&g1.r<=pv.W&&g1.t>=0&&g1.b<=pv.H+1||JSON.stringify([g1,pv.W,pv.H]));
     await ev(()=>{const A=__A;A.B.over=true;A.finishBattle('fled');A.V.modal=null;});await wait(500);await ev(SETUP);
-    // a Monk's lesser call: after 0.21.0 (battle16.js) only Nikaris or a Priest may summon a recruited boss, so the Monk has no command for it any more;
-    // the lesser form itself (sumFire with lesser) is still drawn and timed as before
+    // a Monk's lesser call: 0.21.4 (battle16.js) had taken the Monk's command away; after 0.21.6 (roster17.js) the Monk has Spirit Call again, and the
+    // callers of a recruited boss are Nikaris, Priests and Monks. The lesser form is drawn and timed as before
     await ev(()=>{const A=__A;A.startBattle({stage:0,kind:'field'});});await wait(1500);
     s=await ev(()=>{const A=__A,T=A.TW.get,B=A.B,a=B.front.find(u=>u.id==='taro');B.cur=a;a.mp=a.S.mmp;const can=T('sumCan')(a),ok=T('sumFire')(a,A.G.summons.mb_slagjaw,true),u=B.sum&&B.sum.u;A.render();return {ok,can,turns:u&&u.turnsLeft,menu:T('sumMenuHtml')(a),front:B.front.length,slot:B.sum&&B.sum.slot};});
     await wait(1700);const mv=await ev(RECTS);const g2=mv.front.find(f=>/Slagjaw/.test(f.n)),others=mv.front.filter(f=>f!==g2);await shot(`v173a_${tag}_monk`);
     console.log(tag,'monk',JSON.stringify(s),'guardian',Math.round(g2.l),Math.round(g2.r),'heroes',others.map(o=>Math.round(o.l)+'-'+Math.round(o.r)).join(' '));
-    chk(`${tag}: a lesser guardian stays 3 turns; the Monk has no Spirit Call command any more (Nikaris or a Priest only)`,s.ok&&s.turns===3&&s.can===false||JSON.stringify(s));
+    chk(`${tag}: a lesser guardian stays 3 turns; the Monk has the Spirit Call command again (roster17.js)`,s.ok&&s.turns===3&&s.can===true||JSON.stringify(s));
     chk(`${tag}: the Monk's guardian is boss sized, inside the stage and covers none of the other heroes (${others.length} beside it)`,others.length===2&&(g2.r-g2.l)/(boss.r-boss.l)>.85&&g2.l>=0&&g2.r<=mv.W&&others.every(o=>!hit(g2,o))||JSON.stringify([g2,others,mv.W]));
     // the summon is gone after its turns and the heroes come back
     const back=await ev(()=>{const A=__A,B=A.B;A.TW.get('sumEnd')('done');return {front:B.front.map(u=>u.id),hid:B.front.some(u=>u.hidden)};});

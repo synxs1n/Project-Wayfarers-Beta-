@@ -5,7 +5,8 @@
 //    one action (Add key, a chip removes one, four at most); the defaults of the action button hold Space
 // 3) Summon works for every pet: every monster, every Scourge and Calamity as a Lesser Scourge, the five Scourges removed in 0.20.9 (moved to the
 //    boss that replaced them on load), and a pet with unknown data offers no dead button
-// 4) recruited bosses: only Nikaris or a Priest may Summon a Lesser Scourge or Invoke a guardian (the others get a greyed button with the note);
+// 4) recruited bosses: Nikaris or a Priest may Summon a Lesser Scourge or Invoke a guardian, and since roster17.js (after 0.21.6) a Monk of level 10 under
+//    the Monk rules (v191a); the others get a greyed button with the note;
 //    guardians are about 12% weaker; a summoned Lesser Scourge stays boss sized and takes the whole Vanguard's place for 4 turns (a further 12% under a
 //    guardian), the three heroes step out and come back as they were; ordinary pets are unchanged; Nikaris has 6% less ATK and MAG
 // 5) learn levels: all 92 kits know exactly three class skills at level 10 (1,1,6 then 11 to 45), never three at once, order kept; a save marked 2
@@ -28,7 +29,7 @@ const UNTIL=async id=>{const A=__A,B=A.B;A.setPause(60);
   Object.keys(TPL).forEach(id=>{const t=TPL[id];if(t.mon||!CLS[t.cls])return;n++;const k=g('classSkills')(t).slice().sort((a,b)=>a.lv-b.lv||a.lv12-b.lv12),L=k.map(s=>s.lv),p=M.check(L).slice();
    if(L.filter(x=>x<=10).length!==3)p.push('at 10: '+L.filter(x=>x<=10).length);
    const cnt={};L.forEach(x=>cnt[x]=(cnt[x]||0)+1);if(Object.keys(cnt).some(x=>cnt[x]>2||(cnt[x]>1&&+x!==1)))p.push('several at once');
-   if(!k.every((s,i)=>!i||s.lv12>=k[i-1].lv12))p.push('order');if(L[L.length-1]!==45)p.push('end');
+   if(!((q=>q.every((s,i)=>!i||s.lv12>=q[i-1].lv12))(k.filter(s=>s.lv12!=null&&!/^sg_/.test(s.id)))))p.push('order');if(L[L.length-1]!==45)p.push('end');
    sets[L.join(',')]=(sets[L.join(',')]||0)+1;if(p.length)bad.push(id+': '+p.join('/')+' '+L.join(','));});
   // what the heroes really know: a fresh hero at levels 1, 5, 10, 11
   const kn=lv=>{const o={};['brann','mira','lumen','taro','gilda','nikaris'].forEach(id=>{const c=g('newChar')(id,lv);c.lv=lv;delete c.keep;o[id]=g('classSkills')(TPL[id]).filter(s=>g('skillKnown')(c,s)).length;});return o;};
@@ -38,15 +39,15 @@ const UNTIL=async id=>{const A=__A,B=A.B;A.setPause(60);
   const g2=mk(8,2),b2=cnt(g2),n2=M.keep(g2),a2=cnt(g2),g3=mk(8,3),n3=M.keep(g3),a3=cnt(g3),g1=mk(8,1),n1=M.keep(g1),g0=mk(8,null),n0=M.keep(g0);
   const q2=g('classSkills')(TPL.brann).filter(s=>s.lvQ<=8).length,q1=g('classSkills')(TPL.brann).filter(s=>s.lvP<=8).length,q0=g('classSkills')(TPL.brann).filter(s=>s.lv12<=8).length;
   A.ACT.new();['brann','mira','oren'].forEach(i=>A.ACT.pickS(i));A.ACT.begin();
-  return {n,bad,sets,k1:kn(1),k5:kn(5),k10:kn(10),k11:kn(11),b2,n2,a2,q2,n3,a3,a1:cnt(g1),q1,a0:cnt(g0),q0,f:[g2.m14lv,g3.m14lv,g1.m14lv,g0.m14lv],keep2:g2.roster.brann.keep,flag:A.G.m14lv,spread:M.M14.spread};});
+  return {n,bad,sets,m14L:M.levels([1,1,3,4,5,6,7,8,9,10,11,12]).join(),k1:kn(1),k5:kn(5),k10:kn(10),k11:kn(11),b2,n2,a2,q2,n3,a3,a1:cnt(g1),q1,a0:cnt(g0),q0,f:[g2.m14lv,g3.m14lv,g1.m14lv,g0.m14lv],keep2:g2.roster.brann.keep,flag:A.G.m14lv,spread:M.M14.spread};});
  console.log('learn:',JSON.stringify(r));
  chk(`learn levels: ${r.n} kits, every one knows exactly 3 class skills at level 10, single learns after the two at level 1, last at 45, no gap over 6, order kept (${Object.keys(r.sets).join(' | ')})`,r.n===92&&r.bad.length===0||r.bad.slice(0,5).join(' | '));
- chk(`the schedule of a 12 skill kit is 1,1,6,11,15,20,24,28,32,37,41,45`,Object.keys(r.sets).join()==='1,1,6,11,15,20,24,28,32,37,41,45'||Object.keys(r.sets).join(' | '));
+ chk(`the schedule is 1,1,6,11,14,18,21,25,28,31,35,38,42,45 (14 skills since roster17.js; a 12 skill kit had 1,1,6,11,15,20,24,28,32,37,41,45: __M14.levels)`,Object.keys(r.sets).join()==='1,1,6,11,14,18,21,25,28,31,35,38,42,45'&&r.m14L==='1,1,6,11,15,20,24,28,32,37,41,45'||Object.keys(r.sets).join(' | '));
  const all=(o,v)=>Object.values(o).every(x=>x===v);
  chk(`heroes know 2 class skills at level 1, 2 at level 5, 3 at level 10 and 4 at level 11`,all(r.k1,2)&&all(r.k5,2)&&all(r.k10,3)&&all(r.k11,4)||JSON.stringify([r.k1,r.k5,r.k10,r.k11]));
  chk(`old save marked 2: a level 8 hero keeps the ${r.q2} skills the 0.20.9 levels gave (new levels alone: ${r.b2}; after: ${r.a2}; kept ${JSON.stringify(r.keep2)}), nothing is taken away`,r.q2===5&&r.b2===3&&r.a2===5&&r.n2===2||JSON.stringify(r));
  chk(`a save marked 1 keeps the 0.20.3 levels' skills (${r.a1} of ${r.q1}), an unmarked one the original table's (${r.a0} of ${r.q0}); every one is marked 3; a save marked 3 is left alone (${r.a3})`,r.a1===Math.max(r.q1,3)&&r.a0===Math.max(r.q0,3)&&r.f.every(x=>x===3)&&r.n3===0&&r.a3===3||JSON.stringify(r));
- chk('a new journey is marked 3',r.flag===3||r.flag);
+ chk('a new journey is marked 4 (roster17.js; menus14 alone marks 3)',r.flag===4||r.flag);
  await H.browser.close();}
 
 // ---------- 6. dual types ----------
@@ -124,7 +125,7 @@ const UNTIL=async id=>{const A=__A,B=A.B;A.setPause(60);
   ['brann','taro','lumen','nikaris'].forEach((w,i)=>{const q={};q.boss=press({mon:gk,scourge:1,bb:1},900+i,w);
    q.note=(()=>{const b=document.querySelector('#bcmd .b16no');return b?b.textContent.trim()+' | '+b.title:null;})();
    q.plain=press({mon:mk},910+i,w);o.who[w]=q;});
-  // guardians: Invoke for the Priest and Nikaris, not the Monk (level 20, over the old Spirit Call level), not the Warrior
+  // guardians: Invoke for the Priest and Nikaris, Spirit Call for the Monk (level 20; back since roster17.js), nothing for the Warrior
   const mini=g('MINIS')[0];G.summons={[mini[0]]:{mon:mini[0],name:mini[2],mod:mini[5]}};G.tamed=[];o.inv={};
   ['brann','taro','lumen','nikaris'].forEach(w=>{reset();const a=H(w);if(B.front.indexOf(a)<0){const j=B.back.indexOf(a);B.back[j]=B.front[0];B.front[0]=a;}a.mp=a.S.mmp;B.cur=a;A.render();
    const b=document.querySelector('#bcmd .b9sum');o.inv[w]={can:__B16.sumCan(a),cls:__B16.sumClassOf(a),btn:b?(b.disabled?'disabled':b.textContent.trim()):null,note:b&&b.disabled?b.title:null};});
@@ -159,10 +160,10 @@ const UNTIL=async id=>{const A=__A,B=A.B;A.setPause(60);
  chk(`the pets of the ${gone.length} Scourges removed in 0.20.9 follow the boss that replaced them (${gone.map(k=>k+' -> '+r.gone[k].to).join(', ')}) and Summon works`,gone.length===5&&gone.every(k=>!r.gone[k].why&&r.gone[k].to!==k&&/^Lesser /.test(r.gone[k].name)&&r.gone[k].name!=='Lesser Removed Boss')||JSON.stringify(r.gone));
  chk(`a save with such a pet loads with it moved (${JSON.stringify(r.load)})`,r.load&&r.load.mon!=='ironmaw'&&r.load.tpl&&r.load.def||JSON.stringify(r.load));
  chk('a pet with unknown monster data offers no Summon button, nothing throws and the Pets list still shows it',r.unknown&&!r.unknown.button&&!r.unknown.err&&r.unknown.listed||JSON.stringify(r.unknown));
- chk(`a Lesser Scourge is summoned by the Priest and by Nikaris only (Warrior: ${r.who.brann.boss}, Monk: ${r.who.taro.boss})`,r.who.lumen.boss===null&&r.who.nikaris.boss===null&&r.who.brann.boss==='disabled'&&r.who.taro.boss==='disabled'||JSON.stringify(r.who));
- chk(`the others see the note where the command was ("${r.who.brann.note}")`,/Nikaris or a Priest/.test(r.who.brann.note||'')&&/Only Nikaris or a Priest can summon a recruited boss/.test(r.who.brann.note||'')&&!r.who.lumen.note||JSON.stringify(r.who));
+ chk(`a Lesser Scourge is summoned by the Priest, by Nikaris and (after 0.21.6, roster17.js) by the Monk; not by the Warrior (Warrior: ${r.who.brann.boss}, Monk: ${r.who.taro.boss})`,r.who.lumen.boss===null&&r.who.nikaris.boss===null&&r.who.brann.boss==='disabled'&&r.who.taro.boss===null||JSON.stringify(r.who));
+ chk(`the others see the note where the command was ("${r.who.brann.note}")`,/Nikaris, Priest or Monk/.test(r.who.brann.note||'')&&/Only Nikaris, a Priest or a Monk of level 10 can summon a recruited boss/.test(r.who.brann.note||'')&&!r.who.lumen.note&&!r.who.taro.note||JSON.stringify(r.who));
  chk('an ordinary pet is still summoned by anyone',['brann','taro','lumen','nikaris'].every(w=>r.who[w].plain===null)||JSON.stringify(r.who));
- chk(`guardians: the Priest and Nikaris can Invoke, the Monk and the Warrior cannot (Monk: ${JSON.stringify(r.inv.taro)})`,r.inv.lumen.can&&r.inv.nikaris.can&&!r.inv.taro.can&&!r.inv.brann.can&&r.inv.taro.btn==='disabled'&&/Nikaris or a Priest/.test(r.inv.taro.note||'')&&r.inv.brann.btn===null||JSON.stringify(r.inv));
+ chk(`guardians: the Priest and Nikaris can Invoke, the Monk has Spirit Call again (roster17.js; level 20 here), the Warrior has no command (Monk: ${JSON.stringify(r.inv.taro)})`,r.inv.lumen.can&&r.inv.nikaris.can&&r.inv.taro.can&&r.inv.taro.cls==='monk'&&!r.inv.brann.can&&/Spirit Call/.test(r.inv.taro.btn||'')&&r.inv.brann.btn===null||JSON.stringify(r.inv));
  chk('Nikaris prays like a Priest (the full guardian, not a lesser form)',r.pray===true&&r.gu.turns===5||JSON.stringify([r.pray,r.gu]));
  chk(`guardians tuned down about 12%: power x${r.sum.powM} (was .95), HP pool x${r.sum.hpK} (was 1.2), still ${r.sum.turns} turns`,Math.abs(r.sum.powM/.95-.88)<.01&&Math.abs(r.sum.hpK/1.2-.88)<.01&&r.sum.turns===5||JSON.stringify(r.sum));
  const b=r.boss;

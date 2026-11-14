@@ -20,7 +20,7 @@ const {open,chk,done}=require('./pw');
   // ---- 2 and 3. kits, dual arts ----
   const k=await ev(()=>{const T=__A.TW.get,TPL=T('TPL'),CLS=T('CLS'),RAW=T('RAW'),SK12=T('SK12'),classSkills=T('classSkills'),S=__S12,skHitsFoe=T('skHitsFoe'),skEls=T('skEls'),deliveryOf=T('deliveryOf');
     const ids=RAW.filter(r=>r[6]!=='x'&&TPL[r[0]]&&!TPL[r[0]].mon&&CLS[TPL[r[0]].cls]).map(r=>r[0]);const o={n:ids.length,over:[],noPD:[],ult:[],singleUlt:0,single:0,kinds:{},bad:[],lb:[],dualN:0,small:[],early:[]};
-    ids.forEach(id=>{const t=TPL[id],L=classSkills(t),lg=t.src==='L'||t.src==='x';if(L.filter(s=>!s.bond).length>SK12.cap)o.over.push(id);
+    ids.forEach(id=>{const t=TPL[id],L=classSkills(t),lg=t.src==='L'||t.src==='x';if(L.filter(s=>!s.bond).length>SK12.cap+2)o.over.push(id);/* the cap of 12 picks the kit; roster17.js adds two (14) */
       if(L.filter(s=>s.lv<=1).length<2)o.early.push(id);
       if(t.el.length>1){o.dualN++;t.el.forEach(e=>{if(!L.some(s=>s.role==='primer'&&!s.combo&&skHitsFoe(s)&&skEls(s)[0]===e)||!L.some(s=>s.role==='det'&&!s.combo&&skHitsFoe(s)&&skEls(s).includes(e)))o.noPD.push(id+':'+e);});
         if(!lg&&L.some(s=>s.el&&(SK12.ult[t.cls]||[]).includes(s.id)))o.ult.push(id);}
@@ -30,7 +30,7 @@ const {open,chk,done}=require('./pw');
       if(L.length<8)o.small.push(id+':'+L.length);});
     const Ls=T('LIMIT'),L2=T('LIMIT2');Object.keys(CLS).forEach(c=>{if(Ls[c]&&L2[c])o.lb.push(c);});
     o.limit=T('limitSkill')(T('newChar')('mira',30)).n;return o;});
-  chk(`all ${k.n} wayfarers hold at most 12 class skills (over: ${k.over.join(',')||'none'}) and two skills at level 1 (${k.early.join(',')||'ok'}); none under 8 (${k.small.join(',')||'ok'})`,k.over.length===0&&k.early.length===0&&k.small.length===0);
+  chk(`all ${k.n} wayfarers hold at most 14 class skills (12 from the cap and the two of roster17.js; over: ${k.over.join(',')||'none'}) and two skills at level 1 (${k.early.join(',')||'ok'}); none under 8 (${k.small.join(',')||'ok'})`,k.over.length===0&&k.early.length===0&&k.small.length===0);
   chk(`all ${k.dualN} dual types have a Primer and a Detonator for each element (missing: ${k.noPD.join(',')||'none'})`,k.noPD.length===0&&k.dualN>=20);
   chk(`no dual type (legends and specials aside) holds an elemental ultimate (${k.ult.join(',')||'none'}), single types do keep theirs (${k.singleUlt} of ${k.single})`,k.ult.length===0&&k.singleUlt===k.single);
   chk(`dual arts follow the class: physical classes physical (weapon kind), the rest magic (${JSON.stringify(k.kinds)}; bad: ${k.bad.join(',')||'none'})`,k.bad.length===0&&Object.keys(k.kinds).length>=8);

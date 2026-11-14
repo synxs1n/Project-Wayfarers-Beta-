@@ -31,7 +31,7 @@ function tameElite(t){const m=MON[t.mon]||guardianDef(t.mon);if(!m)return null;
   const o={id:'tm'+Date.now().toString(36)+Math.floor(Math.random()*1296).toString(36),mon:t.mon,name:t.bb?t.name:t.name.replace(m.n+' ',''),cls:tameClass(m),trait:tameTrait(m),bb:t.bb?1:0,scourge:t.scourge?1:0,with:null};
   if(o.name.startsWith('the '))o.name=m.n+' '+o.name;o.name=tameUniqueName(o,m);registerTamed(o);G.tamed.push(o);G.compV=1;
   const free=partyChars().find(c=>!compOf(c));if(free){o.with=free.id;}saveGame();
-  setTimeout(()=>toast(`${o.name} is now a Pet${o.with?' of '+G.roster[o.with].name:''}. Manage it in Menu > Pets.`),400);return o;}
+  setTimeout(()=>toast(`${o.name} is now a Pet${o.with?' of '+G.roster[o.with].name:''}. Manage it in Menu > Summons.`),400);return o;}
 // stat bonus for the paired hero (not in the Daily Trial, which has no companions)
 HOOK.after('calcStats','comp','paired pet stat bonus',function(S,c){try{if(c&&c.side==='p'&&G&&!G.daily&&!c.isComp){const o=compOf(c);if(o){const k=compBonus(o),d=compDef(o);
   S.mhp=Math.round(S.mhp*(1+k));S.atk*=1+k;S.mag*=1+k;S.def*=1+k;S.res*=1+k;const el=d&&d.el&&d.el[0];if(el)S.elBoost[el]=(S.elBoost[el]||0)+.1;S.comp=o.id;applyCompPerk(S,o);}}}catch(e){}});
@@ -79,7 +79,7 @@ Object.assign(ACT,{
 function compBonusText(o){const k=Math.round(compBonus(o)*100),d=compDef(o),el=d&&d.el&&d.el[0],P=compPerk(o);
   return `+${k}% HP, ATK, MAG, DEF, RES${el?` · +10% ${EL[el]} damage`:''}${P?` · ${P.n}: ${P.d}`:''} · Summon once per battle (${o.bb||o.scourge?COMP_TURNS+1:COMP_TURNS} turns)`;}
 // ----- the Pet slot: shown under the gear slots on the Equipment screen and the hero sheet -----
-// Change opens the pet chooser for that hero (petPick); Remove unpairs. compPick (the pet-to-hero popup) stays in Menu > Pets.
+// Change opens the pet chooser for that hero (petPick); Remove unpairs. compPick (the pet-to-hero popup) stays in Menu > Summons (roster17.js).
 function petSlotHtml(c,mini){if(!c||G.daily)return '';const o=compOf(c),free=(G.tamed||[]).filter(x=>!x.with),any=(G.tamed||[]).length>0;
   const btns=o?`<button class="btn sm" data-act="petPick" data-arg="${c.id}">Change</button><button class="btn sm" data-act="petSet" data-arg="${c.id},">Remove</button>`:(any?`<button class="btn sm ${free.length?'gold':''}" data-act="petPick" data-arg="${c.id}">Choose</button>`:'');
   return `<div class="petslot"><span class="eqs petcur">${o?`<img class="gico" alt="" src="${monURL(compDef(o).art)}">`:'<span class="gico empty"></span>'}<span><small>Pet</small>${o?esc(o.name):'No pet'}</span></span>${btns}</div>`;}
@@ -93,8 +93,8 @@ Object.assign(ACT,{
     if(pid){const o=(G.tamed||[]).find(x=>x.id===pid);if(o)o.with=hid;}
     Object.values(G.roster).forEach(refresh);saveGame();sfx('blip');render();}
 });
-// Done/back from a pet popup returns to wherever it was opened (Equipment, hero sheet), not always the Pets tab
+// Done/back from a pet popup returns to wherever it was opened (Equipment, hero sheet), not always the Summons tab
 HOOK.wrap('modalBack','comp','pet popups go back to where they were opened',function(next,m){if(m&&(m.type==='petPick'||m.type==='compPick')&&m.from&&m.from.type&&m.from.type!=='petPick'&&m.from.type!=='compPick')return ()=>{V.modal=m.from;};return next(m);});
 HOOK.xform('mChar','comp','Pet row on the hero sheet',function(h,id,edit){try{const c=G.roster[id],o=c&&compOf(c);const i=h.indexOf('<h4>Limit Break</h4>');if(i<0||!c)return h;
-  const row=`<h4>Pet</h4>${edit&&!G.daily?petSlotHtml(c):''}${o?`<div class="row comprow"><img class="mimg" src="${monURL(compDef(o).art)}" alt=""><div class="grow"><b>${esc(o.name)}</b><small class="up">${compBonusText(o)}</small></div></div>`:`<p class="note">No pet paired.${edit?'':' Pair one in Menu &gt; Pets.'}</p>`}`;
+  const row=`<h4>Pet</h4>${edit&&!G.daily?petSlotHtml(c):''}${o?`<div class="row comprow"><img class="mimg" src="${monURL(compDef(o).art)}" alt=""><div class="grow"><b>${esc(o.name)}</b><small class="up">${compBonusText(o)}</small></div></div>`:`<p class="note">No pet paired.${edit?'':' Pair one in Menu &gt; Summons.'}</p>`}`;
   return h.slice(0,i)+row+h.slice(i);}catch(e){return h;}});

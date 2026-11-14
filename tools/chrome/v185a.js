@@ -18,7 +18,7 @@ const SH=process.env.SHOTDIR;
 {const H=await open({w:390,h:844,pre:PRE()});const {ev}=H;last=H;
  const kt=await ev(()=>{const S=__S12,T=S.TPL,M=__M14,A=__A,bad=[],lasts={},gaps={};let n=0,limits=null;
   Object.keys(T).forEach(id=>{const t=T[id];if(t.mon||!S.CLS[t.cls])return;n++;const k=S.kit(t).slice().sort((a,b)=>a.lv-b.lv),L=k.map(s=>s.lv);
-   const ord=k.every((s,i)=>!i||s.lv12>=k[i-1].lv12);const probs=M.check(L);if(!ord)probs.push('order');if(k.length!==12)probs.push('count '+k.length);
+   const ord=((q=>q.every((s,i)=>!i||s.lv12>=q[i-1].lv12))(k.filter(s=>s.lv12!=null&&!/^sg_/.test(s.id))));const probs=M.check(L);if(!ord)probs.push('order');if(k.length!==14)probs.push('count '+k.length);/* 14 since roster17.js; the order is that of the first 12 without the signature (it sits at 18) */
    const last=L[L.length-1],gap=Math.max(...L.slice(1).map((x,i)=>x-L[i]));lasts[last]=(lasts[last]||0)+1;gaps[gap]=(gaps[gap]||0)+1;if(probs.length)bad.push(id+':'+probs.join('/')+':'+L.join(','));});
   const ex=S.kit(T.brann).slice().sort((a,b)=>a.lv-b.lv).map(s=>s.lv);
   // old saves: the first hero with a skill the new levels delay past the 0.20.3 and the original levels
@@ -30,11 +30,11 @@ const SH=process.env.SHOTDIR;
   return {n,bad,lasts,gaps,ex,dl,r:[r0,r1,rp,r2,ro],f:[g0.m14lv,g1.m14lv,gp.m14lv,g2.m14lv,go.m14lv],
    keepOrig:has(g0,dl.sk),keepP:has(g1,dl.sk),keepPold:has(gp,dl.sk),noKeep2:!g2.roster[dl.id].keep,keepOld:has(go,dl.sk),newFlag:M.G.m14lv,LIM:[A.TW.get('LIMIT_LV'),A.TW.get('LIMIT2_LV')]};});
  console.log('kits:',JSON.stringify(kt));
- chk(`learn levels: ${kt.n} kits, each 12 skills, first one or two at level 1, last at 45 (${JSON.stringify(kt.lasts)}), largest gap ${JSON.stringify(kt.gaps)} (<= 6), never three within 3 levels, order kept`,kt.n===92&&kt.bad.length===0&&Object.keys(kt.lasts).join()==='45'||kt.bad.slice(0,6).join(' | '));
+ chk(`learn levels: ${kt.n} kits, each 14 skills (roster17.js), first one or two at level 1, last at 45 (${JSON.stringify(kt.lasts)}), largest gap ${JSON.stringify(kt.gaps)} (<= 6), never three within 3 levels, order kept`,kt.n===92&&kt.bad.length===0&&Object.keys(kt.lasts).join()==='45'||kt.bad.slice(0,6).join(' | '));
  chk('Limit Breaks keep their levels (15 and 30)',kt.LIM[0]===15&&kt.LIM[1]===30||JSON.stringify(kt.LIM));
  chk(`a save from before the 0.20.3 spread keeps what the original levels gave (${kt.dl&&kt.dl.id}: ${kt.dl&&kt.dl.n} at ${kt.dl&&kt.dl.o}, now ${kt.dl&&kt.dl.lv}), a save moved to the 0.20.3 levels keeps what those gave (it had it at ${kt.dl&&kt.dl.p}, one at ${kt.dl&&kt.dl.o} did not); each is marked 3, a save marked 3 is left alone`,
   !!kt.dl&&kt.keepOld&&kt.keepP&&!kt.keepPold&&kt.r[3]===0&&kt.noKeep2&&kt.f.every(x=>x===3)&&kt.r[0]>0&&kt.r[1]>0||JSON.stringify(kt));
- chk('a new journey is marked 3',kt.newFlag===3||kt.newFlag);
+ chk('a new journey is marked 4 (roster17.js: the 14 skill levels; v191a)',kt.newFlag===4||kt.newFlag);
  await H.browser.close();}
 // ---------- 3: the draw ----------
 {const H=await open({w:390,h:844,pre:PRE()});const {ev}=H;last=H;

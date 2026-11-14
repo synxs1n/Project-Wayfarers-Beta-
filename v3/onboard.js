@@ -95,9 +95,9 @@ const TIPS=[
  {id:'tame',n:'Taming',sec:'Creatures',go:['obBeasts','tame','Taming log'],
   t:()=>{if(!obModal('result'))return null;const i=V.modal.info;return i&&i.tame&&!i.tamed?`${i.tame.name} wants to join you! Tame it, then pair it with a hero who can summon it.`:null;},
   g:'Beaten bounty beasts, and now and then a wild monster or a lesser Scourge, may ask to join you on the rewards screen. Up to 8 can follow you. Records > Bestiary > Taming log shows what can be tamed and where it roams.'},
- {id:'comp',n:'Pets',sec:'Creatures',go:['menuTab','comp','Pets'],
-  t:()=>{if(!obWorld())return null;const o=(G.tamed||[]).find(x=>!x.with);return o?`${o.name} needs a partner. Pair it with a hero in Party > Pets.`:null;},
-  g:'Each tamed creature can be paired with one hero in Party > Pets. The hero gets a stat bonus from it, and a Summon command in battle. You can change pairs any time.'},
+ {id:'comp',n:'Summons',sec:'Creatures',go:['menuTab','comp','Summons'],
+  t:()=>{if(!obWorld())return null;const o=(G.tamed||[]).find(x=>!x.with);return o?`${o.name} needs a partner. Pair it with a hero in Party > Summons.`:null;},
+  g:'Each tamed creature can be paired with one hero in Party > Summons. The hero gets a stat bonus from it, and a Summon command in battle. You can change pairs any time. The same tab lists everything else your party can call (recruited bosses, Sanctum guardians) and who can call it.'},
  {id:'stick',n:"The Tamer's Stick",sec:'Creatures',
   t:()=>{if(!obModal('board'))return null;const q=(G.quests||[]).find(x=>x.type==='tamer'&&(x.state==='open'||x.state==='active'));return q?`Wren's Tamer's Stick grows with every Bestiary entry. Log ${q.n||6} creatures to earn it.`:null;},
   g:"Old Wren's quest on the first Quest Board: log enough creatures in your Bestiary and she gives you her stick. Any hero can wield it, and it grows stronger with every Bestiary entry until it rivals any blade."},
@@ -264,7 +264,7 @@ HOOK.after('render','onboard','keep the tip card placed',function(){try{if(OB.cu
 // ----- Guides > What next?: met but not tried yet -----
 function obUntried(){const out=[];if(!G||G.daily)return out;const add=(t,s)=>out.push([t,s]);
   try{const n=G.inv.campkit||0;if(tipSeen('camp')&&n>0&&!G.camp)add(`You have ${n} Camp Supplies: Make camp from the Party tab`,'Out in a field or dungeon: a small heal for the standing heroes and a boon for 3 battles.');}catch(e){}
-  try{const o=(G.tamed||[]).find(x=>!x.with);if(o)add(`${esc(o.name)} has no partner yet`,'Pair it with a hero in Party > Pets for a bonus and a Summon in battle.');}catch(e){}
+  try{const o=(G.tamed||[]).find(x=>!x.with);if(o)add(`${esc(o.name)} has no partner yet`,'Pair it with a hero in Party > Summons for a bonus and a Summon in battle.');}catch(e){}
   try{if(typeof readyTalks==='function'){const L=readyTalks();if(L.length)add(`${L.length} campfire talk${L.length>1?'s are':' is'} ready`,'Open Bonds from the Party tab, or Make camp, to listen.');}}catch(e){}
   try{if(tipSeen('scan')&&!tipUsed('scan')&&!Object.values(META.best||{}).some(b=>b&&b.scan))add('Try Scan in battle','It reads a foe\'s exact stats and hidden quirk for half a turn, and keeps them in the Bestiary.');}catch(e){}
   try{if(tipSeen('switch')&&!tipUsed('switch'))add('Try Switch in battle','On a hurt hero\'s turn it brings in a Rearguard hero, who acts at once.');}catch(e){}
