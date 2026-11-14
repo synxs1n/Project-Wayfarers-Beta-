@@ -9,16 +9,18 @@ for(const [w,h,gfx] of [[390,844,'medium'],[1000,560,'medium'],[390,844,'low']])
  await battle(H,{boss:true,stage:2,foes:3});
  // v0.19.2: the random foe pick can hold a guardian (a Sanctum variant), now boss sized: it would cover the first foe's centre, so ordinary foes stand in for it
  await ev(()=>{const A=__A,B=A.B,M=A.TW.get('MINI_BIG');B.en.forEach((e,i)=>{if(M.has(e.art))B.en[i]=A.makeEnemy(A.MON.mossling,5);});A.render();});
- const r=await ev(()=>{const A=__A,B=A.B,out={foes:[],heroes:[]};
-  B.en.forEach(e=>{const b=A.unitBox(e),c=A.spriteOf(e),sz=A.MON_SIZE(e.art);out.foes.push({art:e.art,sz,w:b.w,h:b.h,top:b.y-b.h,H:A.BL.H,cw:c.width,ch:c.height});});
-  B.front.forEach(u=>{const b=A.unitBox(u),c=A.spriteOf(u);out.heroes.push({w:b.w,h:b.h,cw:c.width,ch:c.height});});
+ const r=await ev(()=>{const A=__A,B=A.B,out={foes:[],heroes:[],k:window.__CH15&&window.__CH15.on()?window.__CH15.unit:1};
+  B.en.forEach(e=>{const b=A.unitBox(e),c=A.spriteOf(e),sz=A.MON_SIZE(e.art);out.foes.push({art:e.art,sz,k:b._ch15||1,w:b.w,h:b.h,top:b.y-b.h,H:A.BL.H,cw:c.width,ch:c.height});});
+  B.front.forEach(u=>{const b=A.unitBox(u),c=A.spriteOf(u);out.heroes.push({k:b._ch15||1,w:b.w,h:b.h,cw:c.width,ch:c.height});});
   out.bars=document.querySelectorAll('#bcmd .cmdhead .b8hm').length;out.sr=/HP \d+ of \d+, MP/.test((document.querySelector('#bcmd .cmdhead')||{getAttribute(){return '';}}).getAttribute('aria-label')||'');
   out.cardBars=document.querySelectorAll('#bparty .pcw .hb,#bparty .pcw .bar').length;out.who=!!document.querySelector('#bcmd .cmdhead b');
   return out;});
  console.log(tag,JSON.stringify(r));
- chk(`${tag}: foes are drawn on a padded stage canvas (v0.17.9: at least the old 81 / 44 art box, box and canvas agree)`,r.foes.every(f=>f.w>=(f.sz>=60?81:44)&&f.cw===f.w&&f.ch===f.h)||JSON.stringify(r.foes));
+ // 0.20.10: cohere15 draws battle units 1.25x (the box's own _ch15, less for a big foe near the top), so the box is the canvas times k
+ chk(`${tag}: foes are drawn on a padded stage canvas (v0.17.9: at least the old 81 / 44 art box, box and canvas agree)`,r.foes.every(f=>f.cw>=(f.sz>=60?81:44)&&Math.abs(f.cw*f.k-f.w)<=1&&Math.abs(f.ch*f.k-f.h)<=1)||JSON.stringify(r.foes));
  chk(`${tag}: no foe pokes above the stage`,r.foes.every(f=>f.top>=0)||JSON.stringify(r.foes));
- chk(`${tag}: heroes keep their size (canvas at most 40x56)`,r.heroes.every(x=>x.cw<=40&&x.ch<=56&&x.w===x.cw)||JSON.stringify(r.heroes));
+ // 0.20.10: the box is the canvas times cohere15's 1.25 (r.k); the canvas itself keeps its size
+ chk(`${tag}: heroes keep their size (canvas at most 40x56)`,r.heroes.every(x=>x.cw<=40&&x.ch<=56&&Math.abs(x.w-Math.round(x.cw*x.k))<=1)||JSON.stringify(r.heroes));
  chk(`${tag}: no HP/MP bars in the command head, name kept, the numbers stay for screen readers when the head is shown`,r.bars===0&&r.who&&(w>500||r.sr)||JSON.stringify([r.bars,r.who,r.sr]));
  // gestures
  const foeXY=async()=>ev(()=>{const e=document.querySelector('#bstage .unit.foe');const b=e.getBoundingClientRect();return {x:b.left+b.width/2,y:b.top+b.height/2,n:document.querySelectorAll('#bstage .unit.foe').length};});

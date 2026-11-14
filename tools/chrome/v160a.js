@@ -18,7 +18,7 @@ const AUDIT=()=>{const A=__A,out=[],now=performance.now(),TW=k=>A.TW.get(k);
  const bounds=s=>{const {RW,RH,d}=s;let l=RW,t=RH,r=-1,b=-1;for(let y=0;y<RH;y++)for(let x=0;x<RW;x++)if(d[(y*RW+x)*4+3]>=100){if(x<l)l=x;if(x>r)r=x;if(y<t)t=y;if(y>b)b=y;}return {l,t,r,b};};
  arts.forEach(art=>{const o={art};try{
   const u={side:'e',art,hp:1,id:art},sz=A.MON_SIZE(art),c=A.spriteOf(u),s=scan(c),{k,RW,RH,d}=s,bb=bounds(s),K=RW/c.width;
-  o.sz=sz;o.w=c.width;o.h=c.height;o.K=K;o.apx=RW/(c._s11?c._s11.W:sz);o.box=A.unitBox({side:'e',art,hp:1,id:art}).w;
+  o.sz=sz;o.w=c.width;o.h=c.height;o.K=K;o.apx=RW/(c._s11?c._s11.W:sz);o.box=A.unitBox({side:'e',art,hp:1,id:art}).w;o.k=A.unitBox({side:'e',art,hp:1,id:art})._ch15||1;
   let l=0,r=0,t=0,bt=0;for(let x=0;x<RW;x++){if(d[x*4+3]>=100)t++;if(d[((RH-1)*RW+x)*4+3]>=100)bt++;}
   for(let y=0;y<RH;y++){if(d[(y*RW)*4+3]>=100)l++;if(d[(y*RW+RW-1)*4+3]>=100)r++;}
   o.edge={l,r,t,b:bt};o.gap=(RH-1-bb.b)/K;o.fly=fam(art).includes('flying');
@@ -43,7 +43,8 @@ const AUDIT=()=>{const A=__A,out=[],now=performance.now(),TW=k=>A.TW.get(k);
   chk(`${tag}: no clipping (no painted pixel on the left, right or top canvas edge)`,r.every(o=>o.err||!(o.edge.l||o.edge.r||o.edge.t))||bad(o=>o.edge&&(o.edge.l||o.edge.r||o.edge.t)));
   chk(`${tag}: feet row within 2 px of the stage line (flyers exempt)`,r.every(o=>o.err||o.fly||(o.gap>=0&&o.gap<=2))||bad(o=>!o.err&&!o.fly&&!(o.gap>=0&&o.gap<=2)));
   chk(`${tag}: outline present (the silhouette ring is darker, or deliberately lighter as a rim glow, than the body)`,r.every(o=>o.err||!o.rn||Math.abs(o.ring-o.body)>=o.body*.12||o.ring<80)||bad(o=>!o.err&&o.rn&&!(Math.abs(o.ring-o.body)>=o.body*.12||o.ring<80)));
-  chk(`${tag}: unit box as big as the canvas`,r.every(o=>o.err||o.box===o.w)||bad(o=>!o.err&&o.box!==o.w));
+  // 0.20.10: cohere15 draws battle units 1.25x (o.k): the box is the canvas times k
+  chk(`${tag}: unit box as big as the canvas (times the 1.25x of cohere15 in a battle)`,r.every(o=>o.err||Math.abs(o.box-Math.round(o.w*o.k))<=1)||bad(o=>!o.err&&Math.abs(o.box-Math.round(o.w*o.k))>1));
   chk(`${tag}: integer friendly resample (an art pixel is a whole number of backing pixels)`,r.every(o=>o.err||Math.abs(o.apx-Math.round(o.apx))<.02)||bad(o=>!o.err&&Math.abs(o.apx-Math.round(o.apx))>=.02));
   chk(`${tag}: idle exhale moves the silhouette by at most 2 px (art frame B poses, which the guardians' base art animates, are exempt)`,r.every(o=>o.err||o.pop==null||o.pop<=2||/^(echo_)?drake$|^mb_|hollowking/.test(o.art))||bad(o=>o.pop>2&&!/^(echo_)?drake$|^mb_|hollowking/.test(o.art)));
   // v0.19.7 (chars13): the one dark outline rule lowers the darkest bosses' mean luma, so the exhale's .08 glow lifts the Dimmer by 16.1 instead of 15.8; the bound is 17

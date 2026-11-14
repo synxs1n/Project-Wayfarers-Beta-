@@ -3,13 +3,13 @@
 // a standing NPC alternating A and B (frozen under gfxStill).
 // Usage: PWHTML=../../out/aurelis3.html node v140a.js
 const {open,chk,done}=require('./pw');
-const PRE=`localStorage.clear();localStorage.setItem('aurelis-meta-v1',JSON.stringify({cfg:{speed:1,enc:'off',music:0,sfx:0,gfx:'low',hints:false}}));`;
+const PRE=`localStorage.clear();localStorage.setItem('aurelis-meta-v1',JSON.stringify({cfg:{speed:1,enc:'off',music:0,sfx:0,gfx:'low',hints:false,cohere:false}}));`;
 // hash of the hero walkers (mira, lumen, oren; front 0-2, back 0-2, side 0-1) measured on the build without npcart9.js
 // 0.15.9: the side view was redrawn (three-quarter profile, art.js), hash re-taken: 311b33ac.
 // 0.16.1: side head re-derived from the front head (face, hair, hat tops), hash re-taken: 7f2d471d.
 // 0.17.1: robe walk pass (hem sway, lifted and planted boots, side stride) and the boot colour fix; walkanim10 retired: hash re-taken c4f99d51.
 // 0.14.6: the hero sprites were redrawn (art.js, art2.js), so the expected hash of mira, lumen and oren walkers was re-taken (the check still means: npcart9.js changes no hero pixel)
-const HERO_BASE=process.env.HERO_BASE||'35384523';// 0.19.9: re-taken for the chars13 outline and rim light (idles off while hashing); before that re-taken for the .8 (32x45) overworld walker (v0.15.1), again for the real north and south stride (v0.18.7: art.js HSTRIDE, the cloak hem)
+const HERO_BASE=process.env.HERO_BASE||'35384523';// 0.20.10: hashed with the Unified look off (cohere:false in PRE): cohere15 changes hero pixels on purpose (one texel outlines, the realm hue in the flat view, which depends on the journey)// 0.19.9: re-taken for the chars13 outline and rim light (idles off while hashing); before that re-taken for the .8 (32x45) overworld walker (v0.15.1), again for the real north and south stride (v0.18.7: art.js HSTRIDE, the cloak hem)
 (async()=>{const H=await open({w:430,h:800,mobile:true,pre:PRE});const {ev,wait}=H;
 await ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(i=>A.ACT.pickS(i));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;});await wait(250);
 const VIEWS=[['front',0],['front',1],['front',2],['front',3],['back',0],['back',1],['back',2],['side',0],['side',1],['side',3]];

@@ -238,7 +238,7 @@ Registered (load order; 1 is next to the base):
 
 Runs: 29 fixes11 → 23 riftkeeper9 (around) → 19 handin9 (around) → 18 summon8 → 14 comp3 (around) → 13 pacing (around) → 12 results (around) → 11 p4party (around) → 10 p4xp (around) → 9 p3shop (around) → 8 prog2 (around) → 6 comp → 4 echo2 (around) → 3 mimic (around) → 2 equip (around) → 1 metastats (around) → **base** → 1 metastats (around) → 2 equip (around) → 3 mimic (around) → 4 echo2 (around) → 5 sanctum → 7 learn → 8 prog2 (around) → 9 p3shop (around) → 10 p4xp (around) → 11 p4party (around) → 12 results (around) → 13 pacing (around) → 14 comp3 (around) → 15 goals → 16 guild7 → 17 summon8 → 19 handin9 (around) → 20 bonds9 → 21 rift9 → 22 rift9 → 23 riftkeeper9 (around) → 24 arena9 → 25 charms9 → 26 endgame10 → 27 endgame10 → 28 endgame10 → 30 fixes11 → 31 arena11 → 32 party12
 
-### render (27 hooks)
+### render (28 hooks)
 Registered (load order; 1 is next to the base):
 1. `feedback.js` before: log screen and popup changes for bug reports
 2. `equip.js` around: per-render fit cache (FITC)
@@ -267,8 +267,9 @@ Registered (load order; 1 is next to the base):
 25. `party12.js` before: reserves keep no gear (the sweep)
 26. `skills12.js` after: one notice after an old save is trimmed
 27. `hud13.js` after: realm tint variables on the HUD
+28. `cohere15.js` after: body.ch15 and the realm tint of the menus
 
-Runs: 25 party12 → 22 menus11 → 12 p4party → 11 p3shop (around) → 9 anim (around) → 6 mimic → 5 town2 → 3 equip → 2 equip (around) → 1 feedback → **base** → 2 equip (around) → 4 town2 → 7 learn → 8 map → 9 anim (around) → 10 saves → 11 p3shop (around) → 13 gfx6 → 14 menus3 → 15 v063prog → 16 onboard → 17 goals → 18 recruit3 → 19 qready → 20 guidance9 → 21 arena11 → 23 menus11 → 24 zoomfix11 → 26 skills12 → 27 hud13
+Runs: 25 party12 → 22 menus11 → 12 p4party → 11 p3shop (around) → 9 anim (around) → 6 mimic → 5 town2 → 3 equip → 2 equip (around) → 1 feedback → **base** → 2 equip (around) → 4 town2 → 7 learn → 8 map → 9 anim (around) → 10 saves → 11 p3shop (around) → 13 gfx6 → 14 menus3 → 15 v063prog → 16 onboard → 17 goals → 18 recruit3 → 19 qready → 20 guidance9 → 21 arena11 → 23 menus11 → 24 zoomfix11 → 26 skills12 → 27 hud13 → 28 cohere15
 
 ### finishBattle (26 hooks)
 Registered (load order; 1 is next to the base):
@@ -332,6 +333,34 @@ Registered (load order; 1 is next to the base):
 
 Runs: 23 look9 → 22 dungeon8 → 20 bigmap → 19 remember → 17 battle4 → 13 hdstage → 10 p2world → 9 p2world → 8 realms (around) → 7 map → 5 ailments → **base** → 1 feedback → 2 travel → 3 metastats → 4 ailments → 6 prog2 → 8 realms (around) → 11 p2world → 12 p2world → 14 v063prog → 15 twists → 16 battle5 → 18 battle4 → 21 summon8 → 24 riftkeeper9 → 25 breachlook11 → 26 party12
 
+### worldDraw (23 hooks)
+Registered (load order; 1 is next to the base):
+1. `legends.js` after: legend markers
+2. `equip.js` after: the Tamer's Stick glow
+3. `world3.js` after: night tint
+4. `mimic.js` after: chest tells
+5. `daylight.js` after: dusk and dawn
+6. `roam.js` after: roamers
+7. `p5trans.js` around: smooth transitions (sets TR)
+8. `gfx6world.js` after: lighting and life
+9. `worldfx.js` after: world-space ambience
+10. `hd2d.js` around: Medium and High: the HD-2D scene instead of the 2D chain (falls back to it)
+11. `dungeon8.js` after: boss lair entrance effects (2D)
+12. `npcart9.js` before: record the world clock for the idle frames
+13. `voidsky10.js` after: stars over the void sky band
+14. `rk10.js` before: the keeper leaves and returns
+15. `breachlook11.js` after: aurora over the Breach sky band
+16. `perf12.js` before: idle frame limiter: a still world draws 30 fps on phones, 8 under a menu, nothing in a hidden tab
+17. `light13.js` after: night and interior light pools (2D)
+18. `light13.js` before: a running transition keeps the idle limiter busy
+19. `light13.js` around: screen transitions: the battle shatter, the doorway iris, the victory bloom
+20. `chars13.js` before: the idle clock
+21. `chars13.js` after: the idle clock
+22. `terrain13.js` before: the wet and snow levels follow the weather (in memory only)
+23. `cohere15.js` before: the Unified look toggle
+
+Runs: 23 cohere15 → 22 terrain13 → 20 chars13 → 19 light13 (around) → 18 light13 → 16 perf12 → 14 rk10 → 12 npcart9 → 10 hd2d (around) → 7 p5trans (around) → **base** → 1 legends → 2 equip → 3 world3 → 4 mimic → 5 daylight → 6 roam → 7 p5trans (around) → 8 gfx6world → 9 worldfx → 10 hd2d (around) → 11 dungeon8 → 13 voidsky10 → 15 breachlook11 → 17 light13 → 19 light13 (around) → 21 chars13
+
 ### getMap (22 hooks)
 Registered (load order; 1 is next to the base):
 1. `zones.js` after: closed west gate names the real forward direction
@@ -359,33 +388,6 @@ Registered (load order; 1 is next to the base):
 
 Runs: 22 world14 (around) → 21 worldart12 (around) → 20 world12 (around) → 19 townexit (around) → 18 world12 (around) → 17 breachlook11 (around) → 16 breach10 (around) → 15 sitelook10 (around) → 14 sanctlook10 (around) → 13 endgame10 (around) → 12 endgame10 (around) → 11 look9 (around) → 10 look9 → 9 dungeon8 (around) → 8 dungeon8 (around) → 7 pathguard (around) → 6 p2world (around) → 5 sites (around) → 4 realms → 3 mapheal (around) → 2 bosstheme (around) → **base** → 1 zones → 2 bosstheme (around) → 3 mapheal (around) → 5 sites (around) → 6 p2world (around) → 7 pathguard (around) → 8 dungeon8 (around) → 9 dungeon8 (around) → 11 look9 (around) → 12 endgame10 (around) → 13 endgame10 (around) → 14 sanctlook10 (around) → 15 sitelook10 (around) → 16 breach10 (around) → 17 breachlook11 (around) → 18 world12 (around) → 19 townexit (around) → 20 world12 (around) → 21 worldart12 (around) → 22 world14 (around)
 
-### worldDraw (22 hooks)
-Registered (load order; 1 is next to the base):
-1. `legends.js` after: legend markers
-2. `equip.js` after: the Tamer's Stick glow
-3. `world3.js` after: night tint
-4. `mimic.js` after: chest tells
-5. `daylight.js` after: dusk and dawn
-6. `roam.js` after: roamers
-7. `p5trans.js` around: smooth transitions (sets TR)
-8. `gfx6world.js` after: lighting and life
-9. `worldfx.js` after: world-space ambience
-10. `hd2d.js` around: Medium and High: the HD-2D scene instead of the 2D chain (falls back to it)
-11. `dungeon8.js` after: boss lair entrance effects (2D)
-12. `npcart9.js` before: record the world clock for the idle frames
-13. `voidsky10.js` after: stars over the void sky band
-14. `rk10.js` before: the keeper leaves and returns
-15. `breachlook11.js` after: aurora over the Breach sky band
-16. `perf12.js` before: idle frame limiter: a still world draws 30 fps on phones, 8 under a menu, nothing in a hidden tab
-17. `light13.js` after: night and interior light pools (2D)
-18. `light13.js` before: a running transition keeps the idle limiter busy
-19. `light13.js` around: screen transitions: the battle shatter, the doorway iris, the victory bloom
-20. `chars13.js` before: the idle clock
-21. `chars13.js` after: the idle clock
-22. `terrain13.js` before: the wet and snow levels follow the weather (in memory only)
-
-Runs: 22 terrain13 → 20 chars13 → 19 light13 (around) → 18 light13 → 16 perf12 → 14 rk10 → 12 npcart9 → 10 hd2d (around) → 7 p5trans (around) → **base** → 1 legends → 2 equip → 3 world3 → 4 mimic → 5 daylight → 6 roam → 7 p5trans (around) → 8 gfx6world → 9 worldfx → 10 hd2d (around) → 11 dungeon8 → 13 voidsky10 → 15 breachlook11 → 17 light13 → 19 light13 (around) → 21 chars13
-
 ### settingsBody (16 hooks)
 Registered (load order; 1 is next to the base):
 1. `battleui.js` result: Single target skills row
@@ -407,6 +409,25 @@ Registered (load order; 1 is next to the base):
 
 Runs: 13 hd2d (around) → 12 onboard (around) → 8 gfx6 (around) → 7 p2world (around) → 6 deskscale (around) → 5 keymap (around) → 3 music2 (around) → 2 saves (around) → **base** → 1 battleui (result) → 2 saves (around) → 3 music2 (around) → 4 p5settings (result) → 5 keymap (around) → 6 deskscale (around) → 7 p2world (around) → 8 gfx6 (around) → 9 battle3 (result) → 10 battle3 (result) → 11 battle5 (result) → 12 onboard (around) → 13 hd2d (around) → 14 guidance9 (result) → 15 res11 (result) → 16 menus11 (result)
 
+### battleFrame (14 hooks)
+Registered (load order; 1 is next to the base):
+1. `anim.js` before: no shake when still
+2. `gfx6battle.js` around: camera, parallax, vignette
+3. `hdstage.js` around: GL stage frame
+4. `hdspell.js` before: Limit Break spotlight
+5. `sprhd2.js` before: supersample the battle canvas
+6. `battle11.js` around: foe size scaling on
+7. `res11.js` before: resolution of the battle canvas
+8. `fxkind11.js` before: hit stop and lingering looks
+9. `perf12.js` before: idle frame limiter: a waiting battle draws 30 fps on phones, 8 under a menu, nothing in a hidden tab
+10. `kits12.js` after: guardian glow on entering
+11. `chars13.js` before: the idle clock
+12. `chars13.js` after: the idle clock
+13. `chars13.js` around: mid-ground layer and the 2D contact shadow
+14. `cohere15.js` before: the Unified look toggle
+
+Runs: 14 cohere15 → 13 chars13 (around) → 11 chars13 → 9 perf12 → 8 fxkind11 → 7 res11 → 6 battle11 (around) → 5 sprhd2 → 4 hdspell → 3 hdstage (around) → 2 gfx6battle (around) → 1 anim → **base** → 2 gfx6battle (around) → 3 hdstage (around) → 6 battle11 (around) → 10 kits12 → 12 chars13 → 13 chars13 (around)
+
 ### perform (14 hooks)
 Registered (load order; 1 is next to the base):
 1. `ailments.js` around: hard cleanse flag for revive and cleanse skills
@@ -425,24 +446,6 @@ Registered (load order; 1 is next to the base):
 14. `skills12.js` around: dual arts prime both elements and set off both reactions; a second prime element can be set off
 
 Runs: 14 skills12 (around) → 13 skills12 (around) → 12 pacing (around) → 11 chain5 → 10 chain5 → 9 battle4 (around) → 8 twists (around) → 7 natures6 (around) → 6 atk6 (around) → 5 roles (around) → 4 anim → 3 prog2 (around) → 2 archetype (around) → 1 ailments (around) → **base** → 1 ailments (around) → 2 archetype (around) → 3 prog2 (around) → 5 roles (around) → 6 atk6 (around) → 7 natures6 (around) → 8 twists (around) → 9 battle4 (around) → 12 pacing (around) → 13 skills12 (around) → 14 skills12 (around)
-
-### battleFrame (13 hooks)
-Registered (load order; 1 is next to the base):
-1. `anim.js` before: no shake when still
-2. `gfx6battle.js` around: camera, parallax, vignette
-3. `hdstage.js` around: GL stage frame
-4. `hdspell.js` before: Limit Break spotlight
-5. `sprhd2.js` before: supersample the battle canvas
-6. `battle11.js` around: foe size scaling on
-7. `res11.js` before: resolution of the battle canvas
-8. `fxkind11.js` before: hit stop and lingering looks
-9. `perf12.js` before: idle frame limiter: a waiting battle draws 30 fps on phones, 8 under a menu, nothing in a hidden tab
-10. `kits12.js` after: guardian glow on entering
-11. `chars13.js` before: the idle clock
-12. `chars13.js` after: the idle clock
-13. `chars13.js` around: mid-ground layer and the 2D contact shadow
-
-Runs: 13 chars13 (around) → 11 chars13 → 9 perf12 → 8 fxkind11 → 7 res11 → 6 battle11 (around) → 5 sprhd2 → 4 hdspell → 3 hdstage (around) → 2 gfx6battle (around) → 1 anim → **base** → 2 gfx6battle (around) → 3 hdstage (around) → 6 battle11 (around) → 10 kits12 → 12 chars13 → 13 chars13 (around)
 
 ### calcDamage (13 hooks)
 Registered (load order; 1 is next to the base):
@@ -653,6 +656,18 @@ Registered (load order; 1 is next to the base):
 
 Runs: 7 world14 (around) → 6 terrain13 (around) → 2 dungeon8 (around) → 1 worldfx (around) → **base** → 1 worldfx (around) → 2 dungeon8 (around) → 3 sitelook10 → 4 breachlook11 → 5 worldart13 → 6 terrain13 (around) → 7 world14 (around)
 
+### objCanvas (7 hooks)
+Registered (load order; 1 is next to the base):
+1. `worldgfx2.js` before: scene props through paintP
+2. `worldfx.js` before: the opened chest is gone
+3. `dungeon8.js` before: themed pillars and graves
+4. `look9.js` around: look sprites for trees and bushes
+5. `sanctlook10.js` before: sanctum pillars and lanterns
+6. `breachlook11.js` around: Breach props
+7. `cohere15.js` result: one outline and the realm palette on props
+
+Runs: 6 breachlook11 (around) → 5 sanctlook10 → 4 look9 (around) → 3 dungeon8 → 2 worldfx → 1 worldgfx2 → **base** → 4 look9 (around) → 6 breachlook11 (around) → 7 cohere15 (result)
+
 ### onFx (7 hooks)
 Registered (load order; 1 is next to the base):
 1. `anim.js` around: heal and buff popup shapes
@@ -699,6 +714,17 @@ Registered (load order; 1 is next to the base):
 
 Runs: 6 breachlook11 (around) → 5 sitelook10 (around) → 4 sanctlook10 (around) → 3 dungeon8 (around) → 2 p2world (around) → 1 worldgfx2 (around) → **base** → 1 worldgfx2 (around) → 2 p2world (around) → 3 dungeon8 (around) → 4 sanctlook10 (around) → 5 sitelook10 (around) → 6 breachlook11 (around)
 
+### hdLook (6 hooks)
+Registered (load order; 1 is next to the base):
+1. `weather7.js` after: weather grade
+2. `sanctlook10.js` after: pale stone grade
+3. `voidsky10.js` after: void fog
+4. `breachlook11.js` after: Breach fog and grade
+5. `light13.js` after: sun shadow by the hour, warm key and cool fill, darker nights
+6. `cohere15.js` result: no tilt shift blur, a little more haze
+
+Runs: **base** → 1 weather7 → 2 sanctlook10 → 3 voidsky10 → 4 breachlook11 → 5 light13 → 6 cohere15 (result)
+
 ### mMenu (6 hooks)
 Registered (load order; 1 is next to the base):
 1. `music2.js` around: Music Room tab
@@ -720,17 +746,6 @@ Registered (load order; 1 is next to the base):
 6. `menus11.js` result: a menu with nothing behind it: Back leaves it, no tab or section steps (the shops and sheets keep their arrow, the Menu has none)
 
 Runs: 5 menus11 → 4 menus9 → 3 bigmap → 2 recruit3 → 1 comp (around) → **base** → 1 comp (around) → 6 menus11 (result)
-
-### objCanvas (6 hooks)
-Registered (load order; 1 is next to the base):
-1. `worldgfx2.js` before: scene props through paintP
-2. `worldfx.js` before: the opened chest is gone
-3. `dungeon8.js` before: themed pillars and graves
-4. `look9.js` around: look sprites for trees and bushes
-5. `sanctlook10.js` before: sanctum pillars and lanterns
-6. `breachlook11.js` around: Breach props
-
-Runs: 6 breachlook11 (around) → 5 sanctlook10 → 4 look9 (around) → 3 dungeon8 → 2 worldfx → 1 worldgfx2 → **base** → 4 look9 (around) → 6 breachlook11 (around)
 
 ### openChest (6 hooks)
 Registered (load order; 1 is next to the base):
@@ -813,16 +828,6 @@ Registered (load order; 1 is next to the base):
 5. `guild7.js` after: notices that need the Guild Hall
 
 Runs: 3 realms (around) → **base** → 1 legends → 2 equip → 3 realms (around) → 4 pacing → 5 guild7
-
-### hdLook (5 hooks)
-Registered (load order; 1 is next to the base):
-1. `weather7.js` after: weather grade
-2. `sanctlook10.js` after: pale stone grade
-3. `voidsky10.js` after: void fog
-4. `breachlook11.js` after: Breach fog and grade
-5. `light13.js` after: sun shadow by the hour, warm key and cool fill, darker nights
-
-Runs: **base** → 1 weather7 → 2 sanctlook10 → 3 voidsky10 → 4 breachlook11 → 5 light13
 
 ### makeEnemy (5 hooks)
 Registered (load order; 1 is next to the base):
@@ -912,6 +917,15 @@ Registered (load order; 1 is next to the base):
 4. `realms.js` result: realm oddities in the Bestiary
 
 Runs: **base** → 1 world3 (result) → 2 mimic (result) → 3 echo2 (result) → 4 realms (result)
+
+### buildMapCanvas (4 hooks)
+Registered (load order; 1 is next to the base):
+1. `worldart13.js` after: field entrances stand in the depth sort
+2. `terrain13.js` before: the water depth follows the tiles of the map being baked
+3. `terrain13.js` after: water reflections and a sky band on the water (ground art of both renderers)
+4. `cohere15.js` after: one outline, roof courses and the realm palette on building sprites
+
+Runs: 2 terrain13 → **base** → 1 worldart13 → 3 terrain13 → 4 cohere15
 
 ### burstAt (4 hooks)
 Registered (load order; 1 is next to the base):
@@ -1011,14 +1025,6 @@ Registered (load order; 1 is next to the base):
 
 Runs: 3 sites → 2 legends → 1 legends → **base**
 
-### buildMapCanvas (3 hooks)
-Registered (load order; 1 is next to the base):
-1. `worldart13.js` after: field entrances stand in the depth sort
-2. `terrain13.js` before: the water depth follows the tiles of the map being baked
-3. `terrain13.js` after: water reflections and a sky band on the water (ground art of both renderers)
-
-Runs: 2 terrain13 → **base** → 1 worldart13 → 3 terrain13
-
 ### drawAudit (3 hooks)
 Registered (load order; 1 is next to the base):
 1. `world12.js` result: landmark footprints draw; nodes are checked
@@ -1043,6 +1049,14 @@ Registered (load order; 1 is next to the base):
 
 Runs: 3 riftkeeper9 (around) → 2 chain5 → 1 battle4 (around) → **base** → 1 battle4 (around) → 3 riftkeeper9 (around)
 
+### hdScene (3 hooks)
+Registered (load order; 1 is next to the base):
+1. `terrain13.js` after: the snow caps over the cards, roofs, ledges and ground (HD-2D)
+2. `cohere15.js` before: sprites take the realm hue
+3. `cohere15.js` after: the hero stays solid in front of roofs
+
+Runs: 2 cohere15 → **base** → 1 terrain13 → 3 cohere15
+
 ### b9BanBox (2 hooks)
 Registered (load order; 1 is next to the base):
 1. `battle3.js` around: box measured with the MP text
@@ -1050,12 +1064,26 @@ Registered (load order; 1 is next to the base):
 
 Runs: 1 battle3 (around) → **base** → 1 battle3 (around) → 2 chars13 (result)
 
+### drawUnit (2 hooks)
+Registered (load order; 1 is next to the base):
+1. `chars13.js` before: mid-ground silhouettes in depth order; each unit breathes on its own phase
+2. `cohere15.js` around: battle units 1.25x, drawn about their feet
+
+Runs: 2 cohere15 (around) → 1 chars13 → **base** → 2 cohere15 (around)
+
 ### glRender (2 hooks)
 Registered (load order; 1 is next to the base):
 1. `menus14.js` before: panel width from the minimap
 2. `menus14.js` after: the panel stays under the minimap
 
 Runs: 1 menus14 → **base** → 2 menus14
+
+### hdBakeCards (2 hooks)
+Registered (load order; 1 is next to the base):
+1. `worldart13.js` around: entrance fronts stand as building cards, not strip cards
+2. `cohere15.js` after: the same pass on the buildings the card bake adds
+
+Runs: 1 worldart13 (around) → **base** → 1 worldart13 (around) → 2 cohere15
 
 ### hdBldKind (2 hooks)
 Registered (load order; 1 is next to the base):
@@ -1071,6 +1099,13 @@ Registered (load order; 1 is next to the base):
 
 Runs: 2 worldart13 (around) → 1 sanctlook10 (around) → **base** → 1 sanctlook10 (around) → 2 worldart13 (around)
 
+### hdRoofProf (2 hooks)
+Registered (load order; 1 is next to the base):
+1. `towns14.js` result: the roof pitch of a family
+2. `cohere15.js` result: lower roofs, nearer the sprites' texel size
+
+Runs: **base** → 1 towns14 (result) → 2 cohere15 (result)
+
 ### interact (2 hooks)
 Registered (load order; 1 is next to the base):
 1. `world12.js` before: facing a landmark reads its line
@@ -1085,6 +1120,13 @@ Registered (load order; 1 is next to the base):
 
 Runs: 2 rift9 (around) → **base** → 1 rift9 (result) → 2 rift9 (around)
 
+### paintHD (2 hooks)
+Registered (load order; 1 is next to the base):
+1. `chars13.js` result: one outline rule and the key grid kinds on every HD sprite
+2. `cohere15.js` result: one texel outlines on sprites (no second drop edge)
+
+Runs: **base** → 1 chars13 (result) → 2 cohere15 (result)
+
 ### slDenByKey (2 hooks)
 Registered (load order; 1 is next to the base):
 1. `worldart12.js` result: den mouths with volume
@@ -1098,6 +1140,13 @@ Registered (load order; 1 is next to the base):
 2. `worldart13.js` result: lair fronts as solid masses
 
 Runs: **base** → 1 worldart12 (result) → 2 worldart13 (result)
+
+### walkerCanvas (2 hooks)
+Registered (load order; 1 is next to the base):
+1. `chars13.js` result: idle life: breath, blink and sway on standing walkers
+2. `cohere15.js` result: flat view: walkers take the realm hue
+
+Runs: **base** → 1 chars13 (result) → 2 cohere15 (result)
 
 ### accOf (1 hook)
 Registered (load order; 1 is next to the base):
@@ -1134,6 +1183,12 @@ Registered (load order; 1 is next to the base):
 1. `sites.js` before: a den asks the miniboss
 
 Runs: 1 sites → **base**
+
+### b3Body (1 hook)
+Registered (load order; 1 is next to the base):
+1. `cohere15.js` result: the body box grows with the unit
+
+Runs: **base** → 1 cohere15 (result)
 
 ### b9RxHtml (1 hook)
 Registered (load order; 1 is next to the base):
@@ -1201,12 +1256,6 @@ Registered (load order; 1 is next to the base):
 
 Runs: 1 worldart13 (around) → **base** → 1 worldart13 (around)
 
-### drawUnit (1 hook)
-Registered (load order; 1 is next to the base):
-1. `chars13.js` before: mid-ground silhouettes in depth order; each unit breathes on its own phase
-
-Runs: 1 chars13 → **base**
-
 ### findPath (1 hook)
 Registered (load order; 1 is next to the base):
 1. `world14.js` around: a tap on an entrance mass walks to its front door
@@ -1237,29 +1286,23 @@ Registered (load order; 1 is next to the base):
 
 Runs: 1 goals → **base**
 
-### hdBakeCards (1 hook)
+### hbBake (1 hook)
 Registered (load order; 1 is next to the base):
-1. `worldart13.js` around: entrance fronts stand as building cards, not strip cards
+1. `cohere15.js` around: a crisp backdrop
 
-Runs: 1 worldart13 (around) → **base** → 1 worldart13 (around)
+Runs: 1 cohere15 (around) → **base** → 1 cohere15 (around)
+
+### hbTex (1 hook)
+Registered (load order; 1 is next to the base):
+1. `cohere15.js` around: the backdrop source sampled nearest while it bakes
+
+Runs: 1 cohere15 (around) → **base** → 1 cohere15 (around)
 
 ### hdMergeProps (1 hook)
 Registered (load order; 1 is next to the base):
 1. `terrain13.js` result: the snow cap texture and geometry of the props (HD-2D)
 
 Runs: **base** → 1 terrain13 (result)
-
-### hdRoofProf (1 hook)
-Registered (load order; 1 is next to the base):
-1. `towns14.js` result: the roof pitch of a family
-
-Runs: **base** → 1 towns14 (result)
-
-### hdScene (1 hook)
-Registered (load order; 1 is next to the base):
-1. `terrain13.js` after: the snow caps over the cards, roofs, ledges and ground (HD-2D)
-
-Runs: **base** → 1 terrain13
 
 ### learnLine (1 hook)
 Registered (load order; 1 is next to the base):
@@ -1332,12 +1375,6 @@ Registered (load order; 1 is next to the base):
 1. `party3.js` result: Training team keeps only real trainees
 
 Runs: **base** → 1 party3 (result)
-
-### paintHD (1 hook)
-Registered (load order; 1 is next to the base):
-1. `chars13.js` result: one outline rule and the key grid kinds on every HD sprite
-
-Runs: **base** → 1 chars13 (result)
 
 ### placeNodes (1 hook)
 Registered (load order; 1 is next to the base):
@@ -1470,12 +1507,6 @@ Registered (load order; 1 is next to the base):
 1. `roster14.js` result: permanent recruits, then the sixteen grouped by class
 
 Runs: **base** → 1 roster14 (result)
-
-### walkerCanvas (1 hook)
-Registered (load order; 1 is next to the base):
-1. `chars13.js` result: idle life: breath, blink and sway on standing walkers
-
-Runs: **base** → 1 chars13 (result)
 
 ### wfxRun (1 hook)
 Registered (load order; 1 is next to the base):

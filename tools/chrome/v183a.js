@@ -125,7 +125,9 @@ const MASK=`(fam,kind,w,h,theme)=>{const T=__A.TW.get('T14'),TS=16,db=__A.TW.get
     const base=hk({theme:'meadow'},{k:'inn'}),p0=pr({theme:'meadow'},{k:'inn'});return {out,base,p0};});
   const kinds=new Set(Object.values(hdk.out).map(v=>v[0])),pitches=new Set(Object.values(hdk.out).map(v=>v[1]));
   console.log('HD-2D body and roof pitch per family: '+Object.entries(hdk.out).map(([f,v])=>f+' '+v[0]+(v[0]==='roof'?' x'+v[1]:'')).join(', '));
-  chk(`HD-2D bodies by family: ${[...kinds].join(', ')} (a gabled box, a flat topped box, a cone) and ${pitches.size} roof pitches; without a family the old body (${hdk.base}, pitch ${hdk.p0})`,kinds.size===3&&pitches.size>=6&&hdk.base==='roof'&&hdk.p0===1||JSON.stringify(hdk));
+  // 0.20.10: cohere15 lowers every HD-2D roof to .78 of its pitch (hdk.ch15), so the base pitch is .78 with the Unified look on
+  hdk.ch15=await ev(()=>window.__CH15&&window.__CH15.on()?.78:1);
+  chk(`HD-2D bodies by family: ${[...kinds].join(', ')} (a gabled box, a flat topped box, a cone) and ${pitches.size} roof pitches; without a family the old body (${hdk.base}, pitch ${hdk.p0})`,kinds.size===3&&pitches.size>=6&&hdk.base==='roof'&&Math.abs(hdk.p0-(hdk.ch15||1))<1e-9||JSON.stringify(hdk));
   const rend=async(g,w,h)=>{const H2=await open({w,h,mobile:false,pre:PRE(g)});await H2.ev(START);await H2.wait(400);if(g==='high')await H2.until(()=>__A.HD&&__A.HD.live,null,{timeout:20000});
     const zs=await H2.ev(()=>{const A=__A,T=A.TW.get('T14'),seen={},list=[];A.ZONES.forEach((z,i)=>{const a=T.assign(z);if(!seen[a.fam]){seen[a.fam]=1;list.push([i,a.fam,z.key||('base'+i)]);}});return list;});
     const errs=[];for(const [i,fam,key] of zs){await H2.ev(([i])=>{const A=__A;A.G.run.order[0]=i;A.G.run.rv=2;A.G.cleared={};A.resetMaps();const m=A.getMap('t0');A.placeAt('t0',Math.floor(m.t[0].length/2),m.road+1,'r');A.rebuildBase&&A.rebuildBase();A.V.modal=null;A.render();},[i]);

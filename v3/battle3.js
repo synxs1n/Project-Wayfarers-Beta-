@@ -32,6 +32,7 @@ function b3Body(u,b){b=b||unitBox(u);if(!b)return null;const c=spriteOf(u,false)
     const cx=b.x-4,cy=b.y-2;return {x:cx-h+6+v.t-m,y:cy-w/2-m,w:(v.b-v.t)+2*m,h:w+2*m};}
   const dx=Math.round(b.x-w/2),dy=Math.round(b.y-h+1),hero=u.side==='p',l=hero?w-v.r:v.l,r=hero?w-v.l:v.r,bob=b.hov?2:0;
   return {x:dx+l-m,y:dy+v.t-m-bob,w:r-l+2*m,h:v.b-v.t+2*m+2*bob};}
+b3Body=HOOK.def('b3Body',b3Body);// v0.20.10: cohere15.js grows the body box with its 1.25x units (labels and bars stay clear of them)
 // face: the top 40% of the visible body (used by the tests and to weigh fallbacks)
 function b3Face(bd){return bd?{x:bd.x,y:bd.y,w:bd.w,h:Math.max(6,bd.h*.4)}:null;}
 const b3Hit=(a,q,p)=>a.x<q.x+q.w+p&&a.x+a.w+p>q.x&&a.y<q.y+q.h+p&&a.y+a.h+p>q.y;

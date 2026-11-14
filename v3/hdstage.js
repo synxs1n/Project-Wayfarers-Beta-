@@ -119,6 +119,7 @@ function hbTex(gl,o){const t=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,t);
   gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,w);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,w);
   if(o.src){gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL,!!o.pm);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,o.src);if(o.mip)gl.generateMipmap(gl.TEXTURE_2D);}
   else gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,o.w,o.h,0,gl.RGBA,gl.UNSIGNED_BYTE,null);return t;}
+hbTex=HOOK.def('hbTex',hbTex);// v0.20.10: cohere15.js samples the battle backdrop crisp (nearest) while it bakes
 function hbFbo(gl,w,h){w=Math.max(1,Math.round(w));h=Math.max(1,Math.round(h));const tex=hbTex(gl,{w,h}),fb=gl.createFramebuffer();gl.bindFramebuffer(gl.FRAMEBUFFER,fb);
   gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,tex,0);gl.bindFramebuffer(gl.FRAMEBUFFER,null);return {fb,tex,w,h};}
 function hbFboFree(gl,o){if(!o)return;try{gl.deleteFramebuffer(o.fb);gl.deleteTexture(o.tex);}catch(e){}}
@@ -267,6 +268,7 @@ function hbBake(key,W,H){const gl=HB.gl,q=hbQ(),info=hbInfo(key),gy=bgGY(H),M=(t
   const tg=look.amb.map((v,i)=>Math.max(0,Math.min(1,v*look.gain[i]*1.04))),tint=tg.every(v=>v>.97)?null:{k:tg.map(v=>v.toFixed(2)).join(','),css:`rgb(${tg.map(v=>Math.round(v*255)).join(',')})`};
   HB.bake={tint,id:key+'|'+W+'x'+H+'|'+GFX.tier+'|'+look.ph+'|'+(B&&B.weather),key,info,W,H,gy,M,BW,BH,F,fl,road,lights,decals,fog,look,rb,span};
   return HB.bake;}
+hbBake=HOOK.def('hbBake',hbBake);// v0.20.10: cohere15.js bakes the backdrop without the depth of field blur, crisp like the units
 function hbBakeId(key,W,H){const info=hbInfo(key);return key+'|'+W+'x'+H+'|'+GFX.tier+'|'+hbLook(info).ph+'|'+(B&&B.weather);}
 // ----- lights and floor circles spawned by effects (hdspell.js) -----
 // light: {x,y,foot,r,col:[r,g,b],int,t0,life,fade:'out'|'in'|'pulse'}; decal: {x,y,r,col,a,t0,life,spin}
