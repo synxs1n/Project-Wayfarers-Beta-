@@ -147,7 +147,7 @@ last registered to the first, then the base, then after parts from the first reg
 To add one see `docs/v099-hooks.md`.
 
 <!-- hooksmap:start -->
-### vModal (49 hooks)
+### vModal (51 hooks)
 Registered (load order; 1 is next to the base):
 1. `stuck.js` before: Stuck? popup
 2. `equip.js` before: eqPick, autoEq, equipNow popups
@@ -198,8 +198,10 @@ Registered (load order; 1 is next to the base):
 47. `world12.js` result: the landmark on each Waystone row
 48. `menus12.js` result: skill rows of the codex and starter previews
 49. `roster14.js` result: the New Game+ card names every permanent recruit just added
+50. `quests16.js` result: no guild rank strip on the shops while the guilds are locked
+51. `quests16.js` before: personal quest offer popup
 
-Runs: 45 menus11 → 42 econ11 → 39 roles9 → 37 riftkeeper9 → 36 rift9 → 35 guidance9 → 34 guidance9 → 33 junk9 → 31 bigmap → 30 recruit3 → 29 twists → 28 v063prog → 27 keymap → 26 p4party (around) → 24 p3shop → 23 p3shop → 21 p3shop → 20 saves → 19 sites → 18 starter → 17 autoset → 16 map → 15 comp → 14 comp → 13 sanctum → 12 echo2 → 11 ailments → 10 ailments → 8 chance → 7 describe → 6 town2 → 5 town2 → 4 gearmig → 3 party2 → 2 equip → 1 stuck → **base** → 9 factions (result) → 22 p3shop (result) → 25 p4party (result) → 26 p4party (around) → 32 duellines (result) → 38 riftkeeper9 (result) → 40 endgame10 (result) → 41 rk10 (result) → 43 fixes11 (result) → 44 arena11 (result) → 46 menus11 (result) → 47 world12 (result) → 48 menus12 (result) → 49 roster14 (result)
+Runs: 51 quests16 → 45 menus11 → 42 econ11 → 39 roles9 → 37 riftkeeper9 → 36 rift9 → 35 guidance9 → 34 guidance9 → 33 junk9 → 31 bigmap → 30 recruit3 → 29 twists → 28 v063prog → 27 keymap → 26 p4party (around) → 24 p3shop → 23 p3shop → 21 p3shop → 20 saves → 19 sites → 18 starter → 17 autoset → 16 map → 15 comp → 14 comp → 13 sanctum → 12 echo2 → 11 ailments → 10 ailments → 8 chance → 7 describe → 6 town2 → 5 town2 → 4 gearmig → 3 party2 → 2 equip → 1 stuck → **base** → 9 factions (result) → 22 p3shop (result) → 25 p4party (result) → 26 p4party (around) → 32 duellines (result) → 38 riftkeeper9 (result) → 40 endgame10 (result) → 41 rk10 (result) → 43 fixes11 (result) → 44 arena11 (result) → 46 menus11 (result) → 47 world12 (result) → 48 menus12 (result) → 49 roster14 (result) → 50 quests16 (result)
 
 ### win (32 hooks)
 Registered (load order; 1 is next to the base):
@@ -238,7 +240,7 @@ Registered (load order; 1 is next to the base):
 
 Runs: 29 fixes11 → 23 riftkeeper9 (around) → 19 handin9 (around) → 18 summon8 → 14 comp3 (around) → 13 pacing (around) → 12 results (around) → 11 p4party (around) → 10 p4xp (around) → 9 p3shop (around) → 8 prog2 (around) → 6 comp → 4 echo2 (around) → 3 mimic (around) → 2 equip (around) → 1 metastats (around) → **base** → 1 metastats (around) → 2 equip (around) → 3 mimic (around) → 4 echo2 (around) → 5 sanctum → 7 learn → 8 prog2 (around) → 9 p3shop (around) → 10 p4xp (around) → 11 p4party (around) → 12 results (around) → 13 pacing (around) → 14 comp3 (around) → 15 goals → 16 guild7 → 17 summon8 → 19 handin9 (around) → 20 bonds9 → 21 rift9 → 22 rift9 → 23 riftkeeper9 (around) → 24 arena9 → 25 charms9 → 26 endgame10 → 27 endgame10 → 28 endgame10 → 30 fixes11 → 31 arena11 → 32 party12
 
-### render (28 hooks)
+### render (29 hooks)
 Registered (load order; 1 is next to the base):
 1. `feedback.js` before: log screen and popup changes for bug reports
 2. `equip.js` around: per-render fit cache (FITC)
@@ -268,10 +270,11 @@ Registered (load order; 1 is next to the base):
 26. `skills12.js` after: one notice after an old save is trimmed
 27. `hud13.js` after: realm tint variables on the HUD
 28. `cohere15.js` after: body.ch15 and the realm tint of the menus
+29. `quests16.js` before: personal quest offer popup
 
-Runs: 25 party12 → 22 menus11 → 12 p4party → 11 p3shop (around) → 9 anim (around) → 6 mimic → 5 town2 → 3 equip → 2 equip (around) → 1 feedback → **base** → 2 equip (around) → 4 town2 → 7 learn → 8 map → 9 anim (around) → 10 saves → 11 p3shop (around) → 13 gfx6 → 14 menus3 → 15 v063prog → 16 onboard → 17 goals → 18 recruit3 → 19 qready → 20 guidance9 → 21 arena11 → 23 menus11 → 24 zoomfix11 → 26 skills12 → 27 hud13 → 28 cohere15
+Runs: 29 quests16 → 25 party12 → 22 menus11 → 12 p4party → 11 p3shop (around) → 9 anim (around) → 6 mimic → 5 town2 → 3 equip → 2 equip (around) → 1 feedback → **base** → 2 equip (around) → 4 town2 → 7 learn → 8 map → 9 anim (around) → 10 saves → 11 p3shop (around) → 13 gfx6 → 14 menus3 → 15 v063prog → 16 onboard → 17 goals → 18 recruit3 → 19 qready → 20 guidance9 → 21 arena11 → 23 menus11 → 24 zoomfix11 → 26 skills12 → 27 hud13 → 28 cohere15
 
-### finishBattle (26 hooks)
+### finishBattle (28 hooks)
 Registered (load order; 1 is next to the base):
 1. `feedback.js` before: log the end
 2. `account.js` after: codex and Archive sync
@@ -299,8 +302,10 @@ Registered (load order; 1 is next to the base):
 24. `arena11.js` before: remember an arena fight
 25. `world12.js` before: battles since the last wild recruit event
 26. `light13.js` after: the return from a won battle blooms
+27. `quests16.js` before: a personal quest may be offered after this fight
+28. `quests16.js` after: the offer shows once the world is back
 
-Runs: 25 world12 → 24 arena11 → 23 duellines (around) → 22 summon8 → 20 v063prog (around) → 18 results → 17 music2 (around) → 16 sites (around) → 15 roam (around) → 14 realms (around) → 12 comp → 11 ailments → 10 factions (around) → 9 world3 → 6 journey → 5 battlefx → 4 tavern2 (around) → 3 progression (around) → 1 feedback → **base** → 2 account → 3 progression (around) → 4 tavern2 (around) → 7 metastats → 8 polish → 10 factions (around) → 13 map → 14 realms (around) → 15 roam (around) → 16 sites (around) → 17 music2 (around) → 19 p2world → 20 v063prog (around) → 21 goals → 23 duellines (around) → 26 light13
+Runs: 27 quests16 → 25 world12 → 24 arena11 → 23 duellines (around) → 22 summon8 → 20 v063prog (around) → 18 results → 17 music2 (around) → 16 sites (around) → 15 roam (around) → 14 realms (around) → 12 comp → 11 ailments → 10 factions (around) → 9 world3 → 6 journey → 5 battlefx → 4 tavern2 (around) → 3 progression (around) → 1 feedback → **base** → 2 account → 3 progression (around) → 4 tavern2 (around) → 7 metastats → 8 polish → 10 factions (around) → 13 map → 14 realms (around) → 15 roam (around) → 16 sites (around) → 17 music2 (around) → 19 p2world → 20 v063prog (around) → 21 goals → 23 duellines (around) → 26 light13 → 28 quests16
 
 ### startBattle (26 hooks)
 Registered (load order; 1 is next to the base):
@@ -483,7 +488,7 @@ Registered (load order; 1 is next to the base):
 
 Runs: 13 endgame10 (around) → 12 endgame10 → 11 riftkeeper9 → 9 p2world (around) → 8 sites (around) → 7 roam (around) → 6 echocore → 5 mimic → 4 chance → 3 world3 (around) → 1 legends → **base** → 2 travel → 3 world3 (around) → 7 roam (around) → 8 sites (around) → 9 p2world (around) → 10 duellines → 13 endgame10 (around)
 
-### newGame (12 hooks)
+### newGame (13 hooks)
 Registered (load order; 1 is next to the base):
 1. `account.js` after: codex roster
 2. `progression.js` after: draw the 5 guild recruits for this journey
@@ -497,8 +502,9 @@ Registered (load order; 1 is next to the base):
 10. `party12.js` before: close the record of the journey that ends
 11. `party12.js` after: keep the New Game+ draw, record the playthrough
 12. `menus14.js` after: a new journey uses the spread levels
+13. `quests16.js` after: the guild lock on a new journey
 
-Runs: 10 party12 → 6 map → **base** → 1 account → 2 progression → 3 tavern2 → 4 metastats → 5 prog2 → 7 pacing → 8 goals → 9 look9 → 11 party12 → 12 menus14
+Runs: 10 party12 → 6 map → **base** → 1 account → 2 progression → 3 tavern2 → 4 metastats → 5 prog2 → 7 pacing → 8 goals → 9 look9 → 11 party12 → 12 menus14 → 13 quests16
 
 ### renderBattle (12 hooks)
 Registered (load order; 1 is next to the base):
@@ -714,6 +720,17 @@ Registered (load order; 1 is next to the base):
 
 Runs: 6 breachlook11 (around) → 5 sitelook10 (around) → 4 sanctlook10 (around) → 3 dungeon8 (around) → 2 p2world (around) → 1 worldgfx2 (around) → **base** → 1 worldgfx2 (around) → 2 p2world (around) → 3 dungeon8 (around) → 4 sanctlook10 (around) → 5 sitelook10 (around) → 6 breachlook11 (around)
 
+### genQuests (6 hooks)
+Registered (load order; 1 is next to the base):
+1. `legends.js` after: legend quests
+2. `equip.js` after: the Tamer's Stick quest
+3. `realms.js` around: realm quests (pools, rival)
+4. `pacing.js` after: Tamer quest step for the pacing
+5. `guild7.js` after: notices that need the Guild Hall
+6. `quests16.js` after: guild notices wait for the first realm, then show in every town
+
+Runs: 3 realms (around) → **base** → 1 legends → 2 equip → 3 realms (around) → 4 pacing → 5 guild7 → 6 quests16
+
 ### hdLook (6 hooks)
 Registered (load order; 1 is next to the base):
 1. `weather7.js` after: weather grade
@@ -819,16 +836,6 @@ Registered (load order; 1 is next to the base):
 
 Runs: 5 worldart13 (around) → 4 echo11 (around) → 3 riftkeeper9 (around) → 2 rift9 (around) → 1 rift9 (around) → **base** → 1 rift9 (around) → 2 rift9 (around) → 3 riftkeeper9 (around) → 4 echo11 (around) → 5 worldart13 (around)
 
-### genQuests (5 hooks)
-Registered (load order; 1 is next to the base):
-1. `legends.js` after: legend quests
-2. `equip.js` after: the Tamer's Stick quest
-3. `realms.js` around: realm quests (pools, rival)
-4. `pacing.js` after: Tamer quest step for the pacing
-5. `guild7.js` after: notices that need the Guild Hall
-
-Runs: 3 realms (around) → **base** → 1 legends → 2 equip → 3 realms (around) → 4 pacing → 5 guild7
-
 ### makeEnemy (5 hooks)
 Registered (load order; 1 is next to the base):
 1. `insight.js` after: foe quirks
@@ -888,6 +895,16 @@ Registered (load order; 1 is next to the base):
 5. `goals.js` after: scan goal
 
 Runs: 4 battle4 (around) → 3 battle4 (around) → **base** → 1 prog2 → 2 battle3 → 3 battle4 (around) → 4 battle4 (around) → 5 goals
+
+### vFacMissions (5 hooks)
+Registered (load order; 1 is next to the base):
+1. `allq.js` result: accept all and claim all bar
+2. `p4party.js` result: guild text
+3. `pacing.js` result: guild missions lock note
+4. `pacing.js` result: guild missions lock note (gated pacing)
+5. `quests16.js` result: no missions while the guilds are locked
+
+Runs: **base** → 1 allq (result) → 2 p4party (result) → 3 pacing (result) → 4 pacing (result) → 5 quests16 (result)
 
 ### vJourney (5 hooks)
 Registered (load order; 1 is next to the base):
@@ -990,15 +1007,6 @@ Registered (load order; 1 is next to the base):
 
 Runs: **base** → 1 world12 → 2 worldart13 → 3 light13 → 4 terrain13
 
-### vFacMissions (4 hooks)
-Registered (load order; 1 is next to the base):
-1. `allq.js` result: accept all and claim all bar
-2. `p4party.js` result: guild text
-3. `pacing.js` result: guild missions lock note
-4. `pacing.js` result: guild missions lock note (gated pacing)
-
-Runs: **base** → 1 allq (result) → 2 p4party (result) → 3 pacing (result) → 4 pacing (result)
-
 ### wkwUpdate (4 hooks)
 Registered (load order; 1 is next to the base):
 1. `world3.js` after: time of day chip
@@ -1049,6 +1057,14 @@ Registered (load order; 1 is next to the base):
 
 Runs: 3 riftkeeper9 (around) → 2 chain5 → 1 battle4 (around) → **base** → 1 battle4 (around) → 3 riftkeeper9 (around)
 
+### glRender (3 hooks)
+Registered (load order; 1 is next to the base):
+1. `menus14.js` before: panel width from the minimap
+2. `menus14.js` after: the panel stays under the minimap
+3. `quests16.js` around: always on the world screen; folded only by the player; Show goals setting
+
+Runs: 3 quests16 (around) → 1 menus14 → **base** → 2 menus14 → 3 quests16 (around)
+
 ### hdScene (3 hooks)
 Registered (load order; 1 is next to the base):
 1. `terrain13.js` after: the snow caps over the cards, roofs, ledges and ground (HD-2D)
@@ -1056,6 +1072,14 @@ Registered (load order; 1 is next to the base):
 3. `cohere15.js` after: the hero stays solid in front of roofs
 
 Runs: 2 cohere15 → **base** → 1 terrain13 → 3 cohere15
+
+### nbBody (3 hooks)
+Registered (load order; 1 is next to the base):
+1. `records12.js` before: all-notices tab body
+2. `quests16.js` before: the Guilds tab is a locked note until the first realm is beaten
+3. `quests16.js` result: personal quests in the Notices list; hand-in place names the board
+
+Runs: 2 quests16 → 1 records12 → **base** → 3 quests16 (result)
 
 ### b9BanBox (2 hooks)
 Registered (load order; 1 is next to the base):
@@ -1071,12 +1095,12 @@ Registered (load order; 1 is next to the base):
 
 Runs: 2 cohere15 (around) → 1 chars13 → **base** → 2 cohere15 (around)
 
-### glRender (2 hooks)
+### glSpot (2 hooks)
 Registered (load order; 1 is next to the base):
-1. `menus14.js` before: panel width from the minimap
-2. `menus14.js` after: the panel stays under the minimap
+1. `menus14.js` result: the panel only goes under the minimap
+2. `quests16.js` result: the panel keeps its spot under the minimap
 
-Runs: 1 menus14 → **base** → 2 menus14
+Runs: **base** → 1 menus14 (result) → 2 quests16 (result)
 
 ### hdBakeCards (2 hooks)
 Registered (load order; 1 is next to the base):
@@ -1119,6 +1143,13 @@ Registered (load order; 1 is next to the base):
 2. `rift9.js` around: gate card reads the journey view of the Echo records
 
 Runs: 2 rift9 (around) → **base** → 1 rift9 (result) → 2 rift9 (around)
+
+### nbSecs (2 hooks)
+Registered (load order; 1 is next to the base):
+1. `records12.js` result: all-notices tab sections
+2. `quests16.js` result: guild notices counted on the Guilds tab; no sections while locked
+
+Runs: **base** → 1 records12 (result) → 2 quests16 (result)
 
 ### paintHD (2 hooks)
 Registered (load order; 1 is next to the base):
@@ -1274,12 +1305,6 @@ Registered (load order; 1 is next to the base):
 
 Runs: **base** → 1 chars13
 
-### glSpot (1 hook)
-Registered (load order; 1 is next to the base):
-1. `menus14.js` result: the panel only goes under the minimap
-
-Runs: **base** → 1 menus14 (result)
-
 ### guard (1 hook)
 Registered (load order; 1 is next to the base):
 1. `goals.js` before: a Guard under a foe telegraph counts for the goal
@@ -1352,23 +1377,11 @@ Registered (load order; 1 is next to the base):
 
 Runs: 1 records12 (around) → **base** → 1 records12 (around)
 
-### nbBody (1 hook)
-Registered (load order; 1 is next to the base):
-1. `records12.js` before: all-notices tab body
-
-Runs: 1 records12 → **base**
-
 ### nbMenuBody (1 hook)
 Registered (load order; 1 is next to the base):
 1. `records12.js` before: Records > Completion
 
 Runs: 1 records12 → **base**
-
-### nbSecs (1 hook)
-Registered (load order; 1 is next to the base):
-1. `records12.js` result: all-notices tab sections
-
-Runs: **base** → 1 records12 (result)
 
 ### p6Train (1 hook)
 Registered (load order; 1 is next to the base):
