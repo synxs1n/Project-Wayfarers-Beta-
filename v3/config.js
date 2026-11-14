@@ -218,7 +218,7 @@ const TEMPER={raw:[2,3,4],part:[1,2,3],relic:[1,2,2],core:[0,0,1],goldK:[.6,1.2,
 const EF_K=1.18;
 const EF_SHARDS=2,EF_ESS=6,EF_CORE=3,EF_GOLD=3000;
 // capes (capes.js): CAPE_ST per tier [HP, resistance, speed]; CAPE_PRICE per tier.
-const CAPE_ST=[[25,4,0],[45,8,1],[70,13,2],[100,19,3],[140,26,4],[190,34,5]],CAPE_PRICE=[60,120,240,420,700,1000];
+const CAPE_ST=[[25,4,0],[45,8,1],[70,13,2],[100,19,3],[140,26,4],[190,36,5]]/* gear16: the top cape's RES 36 (was 34), clear of the tier below at +3 */,CAPE_PRICE=[60,120,240,420,700,1000];
 // STICK_Q: Bestiary entries the Tamer's Stick quest asks for (equip.js).
 const STICK_Q=6;
 

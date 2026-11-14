@@ -245,7 +245,7 @@ function genBounties(s){
   if(G.bounties.some(b=>b.stage===s))return;
   const Z=ZS(s),R=seeded(G.run.seed+s*31+5);
   for(let i=0;i<2;i++){const mon=Z.pool[Math.floor(R()*Z.pool.length)],mod=ELITE_MODS[Math.floor(R()*ELITE_MODS.length)],title=ELITE_TITLES[Math.floor(R()*ELITE_TITLES.length)];
-    G.bounties.push({id:'b'+s+i,stage:s,mon,mod:mod.k,name:`${MON[mon].n} ${title}`,lv:STAGE_LV[s][1]+4,state:'open',reward:{gold:250+s*250,mat:3,charm:pick(['c_str','c_int','c_vit','c_spi','c_agi','c_dex','c_luk'])}});}
+    G.bounties.push({id:'b'+s+i,stage:s,mon,mod:mod.k,name:`${MON[mon].n} ${title}`,lv:STAGE_LV[s][1]+4,state:'open',reward:{gold:250+s*250,mat:3,charm:pick(rarPool(['c_str','c_int','c_vit','c_spi','c_agi','c_dex','c_luk']))}});}
 }
 
 // =================== STATUS ===================
@@ -901,7 +901,7 @@ function win(){
     else if(spec.kind==='boss'&&!B.en.find(e=>e.boss&&FINALS[e.key])&&RNG()<.15){const bk=bossKeyFor(s);info.tame={mon:bk,name:'Lesser '+guardianDef(bk).n,bb:1,scourge:1};}}
   if(spec.kind==='legend'&&typeof legendWin==='function')legendWin(spec,info);
   if(typeof challengeWin==='function')challengeWin(spec,info);
-  if(spec.kind==='echoBoss'&&!(spec.rift&&G.echoes[spec.key])){G.echoes[spec.key]=1;const gid=lootBase()+'_5+3';G.gear.push(gid);info.gear=gid;}
+  if(spec.kind==='echoBoss'&&!(spec.rift&&G.echoes[spec.key])){G.echoes[spec.key]=1;const gid=rarFit(lootBase()+'_5+3');/* gear16: an Echo beaten early (the Rift in a later journey) gives the open rarity */G.gear.push(gid);info.gear=gid;}
   if(spec.kind==='boss'){
     const tier=Math.min(5,s+1),fam=lootBase();
     const gid=fam+'_'+tier;G.gear.push(gid);info.gear=gid;

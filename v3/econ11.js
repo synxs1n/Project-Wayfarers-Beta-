@@ -11,7 +11,7 @@
 //     hero's preferred weapon or armour type, at +3, plus the old 8% edge. Stats are computed from G, never saved, so old saves upgrade by themselves.
 //  4) Best-in-slot thinking: bestTag shows what a piece gives at max temper (+3) and flags "worth tempering"; Equip best lists pack pieces that are
 //     weaker today but beat the worn piece at max temper. Equip best itself still equips by today's stats.
-const ECON11={craftK:.85,sellK:.4,itemSell:.4,tempBonus:.25,confirmTier:2,relicEdge:1.08,relicTemper:1+FORGE_STEP*3};
+const ECON11={craftK:.85,sellK:.4,itemSell:.4,tempBonus:.25,confirmTier:2,relicEdge:1.08,relicTemper:1.75/* gear16: the old +3 factor as a number; FORGE_STEP changed and relics keep their strength */};
 
 // ----- 1) forged gear starts at +0 -----
 (function(){const buy=m=>Object.keys(m).reduce((s,k)=>s+(MAT_PRICE[k]||0)*m[k],0);/* relics ($rel...) are not in MAT_PRICE: not counted */

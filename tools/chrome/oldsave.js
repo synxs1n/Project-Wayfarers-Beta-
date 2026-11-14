@@ -23,7 +23,7 @@ chk('new fields default safely (loadouts, sort/filter, queue)',(r.loadouts==='un
 // use every new surface on the loaded old save
 const u=await H.ev(()=>{const A=__A;const out={};A.V.modal={type:'menu',tab:'party'};A.render();out.party=document.querySelectorAll('.swc').length;
   A.V.modal={type:'menu',tab:'roster'};A.render();out.roster=document.querySelectorAll('.grid.mini .mini').length;A.V.modal={type:'menu',tab:'codex'};A.render();out.codex=document.querySelectorAll('.btile').length;
-  A.V.modal={type:'menu',tab:'equip'};A.render();out.equip=document.querySelectorAll('.eqrow').length;A.ACT.autoEqParty();out.auto=A.V.modal.type;A.ACT.autoEqUndo();
+  A.V.modal={type:'menu',tab:'equip'};A.render();out.equip=document.querySelectorAll('.eqrow').length;/* gear16: Equip Best pressed in the Menu closes it (a toast, Undo on Backpack > Equipment); from another window it keeps its result page */A.ACT.autoEqParty();out.autoMenu=A.V.modal?A.V.modal.type:'closed';A.ACT.g16Undo();A.V.modal={type:'inn'};A.ACT.autoEqParty();out.auto=A.V.modal.type;A.ACT.autoEqUndo();
   A.ACT.ldSave(0);out.ld=A.G.loadouts.length;const hid=A.BONDS[0].a;A.V.charList=[hid];A.V.modal={type:'char',char:hid,list:[hid]};A.render();out.bond=document.querySelectorAll('[data-act="bondTalk"]').length;
   A.V.modal={type:'inn'};A.render();out.inn=!!document.querySelector('[data-act="rest"]');return out;});
 console.log(JSON.stringify(u));

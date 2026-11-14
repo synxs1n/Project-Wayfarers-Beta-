@@ -42,8 +42,10 @@ const ce=await ev(()=>{const A=__A,G=A.G,GEAR=A.GEAR,o={};G.roster={};['mira','l
   if(btn)btn.click();else __P6.autoCamp();
   o.modal=A.V.modal&&A.V.modal.type;o.mode=A.V.modal&&A.V.modal.mode;A.render();const md=document.querySelector('#modal');o.txt=md?md.textContent:'';
   o.p1=pe();o.comp1=G.tamed.map(t=>t.with);o.camp=['brann','tess','sable'].map(id=>G.roster[id].eq);o.pack1=G.gear.length;
-  o.rows=(A.V.modal.rows||[]).map(r=>({id:r.id,inParty:r.inParty}));
-  const u=document.querySelector('#modal [data-act="autoEqUndo"]');if(u)u.click();else A.ACT.autoEqUndo();o.s2=S();A.V.modal=null;A.render();
+  // gear16: Equip Best pressed in the Menu closes it with a toast (no result page); who changed is read from the gear, Undo is ACT.g16Undo (Backpack > Equipment)
+  if(!A.V.modal){o.mode=window.__G16&&window.__G16.G16.undo?'party':o.mode;const e0=JSON.parse(o.s0).eq;o.rows=Object.keys(G.roster).filter(id=>JSON.stringify(G.roster[id].eq)!==JSON.stringify(e0[id])).map(id=>({id,inParty:G.party.includes(id)}));A.ACT.g16Undo();o.s2=S();}
+  else{o.rows=(A.V.modal.rows||[]).map(r=>({id:r.id,inParty:r.inParty}));
+  const u=document.querySelector('#modal [data-act="autoEqUndo"]');if(u)u.click();else A.ACT.autoEqUndo();o.s2=S();}A.V.modal=null;A.render();
   // daily: the button does nothing
   G.daily=1;const before=S();__P6.autoCamp();o.daily=S()===before&&!(A.V.modal&&A.V.modal.type==='autoEq');G.daily=0;A.V.modal=null;
   return o;});

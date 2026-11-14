@@ -19,4 +19,4 @@ const CH9_EPIC=CHARMS9_EPIC.map(x=>x[0]),CH9_HEROIC=CHARMS9_HEROIC.map(x=>x[0]);
 HOOK.after('win','charms9','Epic and Heroic charms from Echoes and the arena',function(){try{const sp=B&&B.spec;if(!sp||!G||G.daily)return;const info=(B&&B.result)||(V.modal&&V.modal.info)||{};info.notes=info.notes||[];
   let id=null;if(sp.kind==='echoBoss'&&!sp.rift&&info.gear&&Math.random()<.5)id=pick(CH9_HEROIC);
   else if(sp.kind==='arena'&&(sp.tier|0)>=3&&Math.random()<(sp.tier>=4?.3:.4))id=pick(sp.tier>=4?CH9_HEROIC:CH9_EPIC);
-  if(id){G.gear.push(id);info.notes.push(`${gearOf(id).n} (${ITEM_TIERS[gTierIdx(gearOf(id))].n}) is in your gear.`);}}catch(e){}});
+  if(id&&rarOk(id)){G.gear.push(id);info.notes.push(`${gearOf(id).n} (${ITEM_TIERS[gTierIdx(gearOf(id))].n}) is in your gear.`);}}catch(e){}});

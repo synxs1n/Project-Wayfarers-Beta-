@@ -11,7 +11,7 @@
 //     in the Upgrade popups (p3shop.js upgOpts / upgApply wrapped) and charged by ACT.efForge.
 //     (relicBuild is wrapped too: at tier 5 each stat is at least 5% over the Echoforged piece, which only matters for small stats such as SPD.)
 //  4) The anvil in the Sanctum hall: a plinth, anvil, echo crystal brazier, banner, rune ring, drifting shards and motes (forgeDraw), in 2D and HD-2D; lights in m.lights.
-const ECHO11={K:2.0,goldK:1.6,relicEdge:1.25,attrAdd:9};
+const ECHO11={K:2.0,goldK:1.6,relicEdge:1.25,attrAdd:9,top3:1.75/* gear16: the old +3 factor, so Echoforged numbers stay as they were */};
 try{ECON11.relicEdge=ECHO11.relicEdge;}catch(e){}
 
 // ----- the recipes -----
@@ -55,7 +55,7 @@ function efEntry(f){return ECHOFORGE[f]||ECHOARM[f];}
   const o={n:'Echoforged '+E.n,slot:sl,tier:5,ef:f,fam:f,efPerk:E.perk,price:efGold(f)};
   if(sl==='a')o.weight=b.weight;else o.wt=f;
   /* K times the tier 5 piece, and never less than 14% over what that piece has at +3 (small stats such as SPD 1.5 would otherwise round level with it) */
-  ST.forEach(s=>{if(b[s]>0)o[s]=Math.max(Math.round(b[s]*ECHO11.K),Math.ceil(Math.round(b[s]*(1+FORGE_STEP*3))*1.14));else if(b[s])o[s]=b[s];});/* penalties (armour SPD, MP) stay as the shop piece has them */
+  ST.forEach(s=>{if(b[s]>0)o[s]=Math.max(Math.round(b[s]*ECHO11.K),Math.ceil(Math.round(b[s]*ECHO11.top3)*1.14));else if(b[s])o[s]=b[s];});/* penalties (armour SPD, MP) stay as the shop piece has them */
   ['mpEff','elDmg','tome'].forEach(q=>{if(b[q])o[q]=b[q];});
   if(b.attr){o.attr={};Object.keys(b.attr).forEach(a=>{o.attr[a]=b.attr[a]+ECHO11.attrAdd;});}/* a shop +3 adds 6 */
   addGear(efItemId(f),o);};

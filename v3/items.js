@@ -42,7 +42,7 @@ const MON_DROPS={mossling:['healroot','ichor'],gustimp:['ichor','oak'],dewtoad:[
 // Kept out of MAT_PRICE on purpose, so recipe gold math ignores them and parts stay the gate.
 const PART_PRICE={hide:30,fang:32,scale:36,ichor:36,grit:40},PART_STOCK=3;
 const GEAR={};
-const ARM_K=3.5,FORGE_STEP=.25;
+const ARM_K=3.5,FORGE_STEP=.11;// gear16: .11 (was .25), so a piece at +3 (x1.33) stays under the next rarity at +0 in its main stats (test v188a.js)
 const WP=[6,14,25,39,57,80],AP=[5,11,18,27,38,52],PRICE=[60,150,380,750,1400,2400];
 const WN={blade:['Iron Blade','Steel Brand','Mythril Saber','Dawnsteel Blade','Stormforged Edge','Starcleaver'],
  staff:['Oak Staff','Moonwood Staff','Sage Rod','Tidecaller Staff','Skyglass Scepter','Hollow Star Rod'],
@@ -135,7 +135,7 @@ const ITEM_TIERS=[
  {n:'Echoforged',c:'#ffd9a0',c2:'#b48aff',pip:'❂'}];
 const ITEM_TIER_OF={potion:0,remedy:0,porkchop:0,ether:1,hipotion:1,vigor:1,sage:1,tent:1,holywater:2,plume:3,elixir:3};// v0.10.8: Elixir was tier 4 ('Legendary'), a chest staple // consumables
 const STN={hp:'HP',mp:'MP',atk:'ATK',def:'DEF',mag:'MAG',res:'RES',spd:'SPD'};
-// Tempered gear carries a +N suffix: each level adds 25% to its stats (FORGE_STEP).
+// Tempered gear carries a +N suffix: each level adds FORGE_STEP (11%) to its stats.
 function gearOf(id){
   if(!id)return null;if(id==='w_stick')return stickGear();const m=String(id).match(/^(.*)\+(\d)$/);
   if(!m)return GEAR[id]||null;

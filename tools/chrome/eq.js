@@ -58,7 +58,7 @@ chk('equipment tab shows the Equip Best button (v0.10.2: one button, party only)
 // companions: two free companions, party auto should attach them to party heroes; undo detaches
 const cs=await ev(()=>{const G=__A.G;const mons=Object.keys(__A.MON||{}).slice(0,2);if(!__A.registerTamed)return {skip:1};
   G.tamed=[];mons.forEach((m,i)=>{const o={id:'tmx'+i,mon:m,name:'Pet'+i,cls:'warrior',trait:'keen',bb:i?1:0,scourge:0,with:null};__A.registerTamed(o);G.tamed.push(o);});
-  const s0=JSON.stringify(G.tamed.map(o=>o.with));__A.ACT.autoEqParty();const s1=G.tamed.map(o=>o.with);__A.ACT.autoEqUndo();const s2=JSON.stringify(G.tamed.map(o=>o.with));
+  const s0=JSON.stringify(G.tamed.map(o=>o.with));__A.ACT.autoEqParty();const s1=G.tamed.map(o=>o.with);/* gear16: Equip Best pressed in the Menu closes it; its Undo is then on Backpack > Equipment (ACT.g16Undo) */if(__A.V.modal&&__A.V.modal.type==='autoEq')__A.ACT.autoEqUndo();else __A.ACT.g16Undo();const s2=JSON.stringify(G.tamed.map(o=>o.with));
   return {s0,s1,s2,party:G.party.slice()};});
 console.log(JSON.stringify(cs));
 if(!cs.skip){chk('party auto assigns companions to party heroes',cs.s1.every(w=>cs.party.includes(w))&&cs.s1.every(Boolean)||JSON.stringify(cs));

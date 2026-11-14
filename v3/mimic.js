@@ -21,7 +21,7 @@ HOOK.before('render','mimic','mimic loot after the fight, back on the map',funct
     if(!G.chests[key]){mimicReward(L.x,L.y,L.bonus);}}});
 // v0.4.1 1.2: a slain mimic and its chest vanish, and it drops a better reward than any ordinary chest (a tier above, plus a charm and gold)
 function mimicReward(x,y,bonus){const m=WS.m,key=m.id+':'+x+','+y;G.chests[key]=2;if(typeof sfx==='function')sfx('chest');
-  const s=m.s,tier=Math.min(5,s+2),gid=lootBase()+'_'+tier+'+1',cid=pick(['c_vital','c_mana','c_swift','c_clarity','c_'+pick(ELK)]);
+  const s=m.s,gid=rarLoot(lootBase(),s+2,1)/* gear16: a tier above, or the open rarity at +2 */,cid=pick(['c_vital','c_mana','c_swift','c_clarity','c_'+pick(ELK)]);
   G.gear.push(gid);G.gear.push(cid);rebuildBase();
   if(typeof dropChest==='function')dropChest(m,x,y);saveGame();
   say(null,`The Mimic collapses into splinters and the chest is gone. In the wreckage: ${gearOf(gid).n} (${ITEM_TIERS[gTierIdx(gearOf(gid))].n}), ${gearOf(cid).n} and ${bonus} gold!`);}

@@ -75,7 +75,7 @@ chk('a hero can wear the relic and the sheet name reads "Relic" '+JSON.stringify
 
 // ---- 3) max temper ----
 const mx=await ev(()=>{const A=__A,t=k=>A.TW.get(k),G=A.G,E=window.__E11;G.stage=3;G.cleared=[1,1,1,0,0,0];G.gold=20000;
-  const c=G.roster.brann||G.roster[G.party[3]];const fam=t('CF')[A.TPL[c.id].cls][0];const w2='w_'+fam+'_2+3',w3='w_'+fam+'_3';
+  const c=G.roster.brann||G.roster[G.party[3]];const fam=t('CF')[A.TPL[c.id].cls][0];/* gear16: a tier at +0 now beats the tier below at +3, so 'weaker today, better at max temper' is a pair inside one tier: the sword at +3 against the plain greatsword */const w2='w_'+fam+'_3+3',w3='w_greatsword_3';
   c.eq.w=w2;t('refresh')(c);G.gear.length=0;G.gear.push(w3);
   const cur=t('gainFor')(c,w3),mg=E.maxGainFor(c,w3);
   const tag=t('bestTag')(w3);const vs=t('vsMark')(c,w3);
@@ -85,7 +85,7 @@ const mx=await ev(()=>{const A=__A,t=k=>A.TW.get(k),G=A.G,E=window.__E11;G.stage
   const before=c.eq.w;t('autoRun')('one',c.id);const after=c.eq.w;
   const eqTxt=document.querySelector('#modal')?document.querySelector('#modal').innerText:'';
   return {cur:cur&&cur.d,mg:mg&&mg.d,tag:/At max temper/.test(tag),vs:/Better at max temper/.test(vs),chain:chain.length,chainMx:chain[0]&&chain[0].mx,tie:tie&&tie.d,w3m:w3m&&w3m.d,before,after,worth:/worth tempering/i.test(eqTxt),eqTxt:eqTxt.slice(0,200),mxtxt:(tag.match(/At max temper[^<]*<[^>]*>[^<]*/)||[''])[0]};});
-chk('a +3 worn piece beats the plain next tier today, but not at max temper (cur '+(mx.cur&&mx.cur.toFixed(1))+', max '+(mx.mg&&mx.mg.toFixed(1))+')',mx.cur<=.01&&mx.mg>.01||JSON.stringify(mx));
+chk('a +3 worn sword beats the plain greatsword of its tier today, but not at max temper (cur '+(mx.cur&&mx.cur.toFixed(1))+', max '+(mx.mg&&mx.mg.toFixed(1))+')',mx.cur<=.01&&mx.mg>.01||JSON.stringify(mx));
 chk('shop tag shows the max-temper projection and vsMark says better at max temper',mx.tag&&mx.vs||JSON.stringify(mx));
 chk('the per-slot Upgrade offers "buy/take it and temper to +3" for the weaker-today piece, with the max-temper text: '+mx.chainMx,mx.chain>=1&&/at max temper/.test(mx.chainMx||'')||JSON.stringify(mx));
 chk('a tie at max temper stays with the worn piece (same base +3 vs worn +3, and the piece against itself)',mx.tie===0&&Math.abs(mx.w3m)>=0||JSON.stringify(mx));
