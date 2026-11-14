@@ -2119,7 +2119,7 @@ html:not(.flat) .battle.b3 .bline .b4mo .b4bar{box-shadow:inset 0 0 0 1px #000,0
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.21.3";const APP_BUILD="286e3f9a1ab3";
+(function(){const APP_VER="0.21.4";const APP_BUILD="7f712ca47303";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2333,6 +2333,10 @@ const SURPRISE={free:1};
 // DUAL_FROM: the first stage (0 = the first realm) where dual type wayfarers (taverns, challenges, chance meetings) and dual type regular
 // monsters appear. Bosses, minibosses, elites, mimics and other special foes may be dual at any stage.
 const DUAL_FROM=1;
+// DUAL_HERO_FROM (after 0.21.0, the owner: "no dual type wayfarers appear for recruitment until reaching the 3rd realm, 2nd realm is ok for some dual
+// type enemies to start appearing"): the first stage where a dual type WAYFARER is offered (tavern, challenge board, rare visitor, chance meeting, cave
+// and keep cells, the dual type legends). DUAL_FROM stays the stage for dual type regular monsters. The starter pool never holds a dual type (battle16.js).
+const DUAL_HERO_FROM=2;
 // Beta v0.4.1 Phase 3 balance knobs (one place, editable)
 // 3.2 boss level = max(base, base + frac*(party highest - base)), never more than cap above base
 const BOSS_LV={frac:.5,cap:12};
@@ -2888,7 +2892,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.21.3";const APP_BUILD="286e3f9a1ab3";
+const APP_VER="0.21.4";const APP_BUILD="7f712ca47303";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2896,6 +2900,7 @@ const APP_VER="0.21.3";const APP_BUILD="286e3f9a1ab3";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.21.4',['Battle and roster: every turn opens on the main actions (no remembered submenu). Space, Enter or Z continues past victory, defeat and story screens, and Settings > Controls can bind up to four keys per action. Pets of the Scourges removed in 0.20.9 can be summoned again. Recruited bosses can only be called by Nikaris or a Priest; a summoned Scourge takes the field at full size in place of the three Vanguard heroes, who return unharmed when it leaves. Guardians and Nikaris are tuned down slightly. Skills are learned at 1, 1, 6, 11, 15, 20, 24, 28, 32, 37, 41 and 45, so three by level 10 (nothing already learned is lost). Dual type wayfarers do not turn up for recruitment before the third realm.']],
  ['Beta v0.21.3',['Equipment: the Backpack tab works on phones (a hint card was sitting over it). Upgrade whole party buys every available upgrade in one press. Equipment shows every stat it raises or lowers, and by how much, against what the hero wears. Equip Best and Build party close the Menu when done, with an Undo Equip Best button in Backpack > Equipment. Rarities unlock by realm: Common and Uncommon in the first, then one more per realm. Any piece at +0 now beats the rarity below it at +3, so tempering steps are smaller. The personal quest fight names the real relic reward (weapon, armour or charm) instead of always a weapon.']],
  ['Beta v0.21.2',['Quests and goals: guilds and guild quest progress unlock after the first realm\'s Scourge falls. Personal quests unlock at 50 battles and offer themselves in a pop-up after the fight. The town notice board takes every kind of quest again, guild missions and personal quests included, and the guild notices "Sign the guild ledger" and "First blood in the pit" can be handed in. Next goals stays on screen (it no longer folds or hides when you walk near it), wraps properly on small phones, minimises only by its arrow, and has a Show goals switch in Settings > Display.']],
  ['Beta v0.21.1',['Regular foes are back to their normal size in battle. Heroes and bosses keep the bigger Unified look size.']],
@@ -18940,13 +18945,14 @@ function rsRow(){try{const c=META.cfg.render,cur=(c==='1'||c==='2'||c==='3')?c:'
 // kmIs(e,action) tests a keydown/keyup event, kmLabel(action) gives the text for help lines, kmDir(e) gives 'u'/'d'/'l'/'r' or null.
 // KEYDIR (ui.js) is kept in sync by kmRebuild(), and the ui.js handlers read directions through kmDir.
 // Settings > Keys (popup type 'keys') lists the actions; Change waits for the next key press, Escape cancels, a key already used elsewhere is moved.
+// Add key binds one more key to an action (kmAdd), a key chip removes it (kmDrop).
 const KM_ACTIONS=[
   ['up','Move up',['ArrowUp','w']],['down','Move down',['ArrowDown','s']],['left','Move left',['ArrowLeft','a']],['right','Move right',['ArrowRight','d']],
   ['run','Run (hold)',['Shift']],['interact','Talk, open, interact',['z','Enter',' ']],['menu','Menu',['m']],['map','Map',['n']],['mute','Mute sound',['k']],['back','Back / close',['Escape']]
 ];
 const KM_DIRS={up:'u',down:'d',left:'l',right:'r'};
 const KM_MODS=['Shift','Control','Alt','Meta','CapsLock','AltGraph','Fn','NumLock','ScrollLock','OS','ContextMenu'];
-const KM={wait:null};
+const KM={wait:null,add:false,max:4};
 function kmNorm(k){k=String(k==null?'':k);return k.length===1?k.toLowerCase():k;}
 function kmKeys(a){
   let o=null;try{o=META&&META.keys&&META.keys[a];}catch(e){}
@@ -18965,21 +18971,30 @@ function kmSave(){kmRebuild();try{saveMeta();}catch(e){}}
 function kmSet(a,key){key=kmNorm(key);META.keys=META.keys||{};
   KM_ACTIONS.forEach(x=>{const b=x[0];if(b===a)return;const cur=kmKeys(b);if(cur.includes(key))META.keys[b]=cur.filter(k=>k!==key);});
   META.keys[a]=[key];kmSave();}
+// several keys for one action (after 0.21.0: "add option to make multiple keys the action button"): Add key appends (the key leaves any other action, as with
+// Change), a key chip removes that key while more than one is left. KM.max keys per action.
+function kmAdd(a,key){key=kmNorm(key);META.keys=META.keys||{};const mine=kmKeys(a).slice();if(mine.includes(key))return false;
+  KM_ACTIONS.forEach(x=>{const b=x[0];if(b===a)return;const cur=kmKeys(b);if(cur.includes(key))META.keys[b]=cur.filter(k=>k!==key);});
+  META.keys[a]=mine.concat([key]).slice(-KM.max);kmSave();return true;}
+function kmDrop(a,key){key=kmNorm(key);const mine=kmKeys(a);if(mine.length<2||!mine.includes(key))return false;META.keys=META.keys||{};META.keys[a]=mine.filter(k=>k!==key);kmSave();return true;}
 function kmReset(){META.keys={};kmSave();}
 function kmHasKb(){try{return matchMedia('(pointer:fine)').matches;}catch(e){return true;}}
 try{kmRebuild();}catch(e){}
 
 function mKeys(m){
-  const rows=KM_ACTIONS.map(([a,lab])=>{const w=KM.wait===a;
-    return `<div class="row kmrow"><div class="grow"><b>${lab}</b></div><div class="kmkeys">${w?'<span class="kmwait">Press a key...</span>':kmKeys(a).map(k=>`<kbd class="kmk">${esc(kmShow(k))}</kbd>`).join('')||'<small>unset</small>'}</div><button class="btn sm" data-act="kmChange" data-arg="${a}">${w?'Cancel':'Change'}</button></div>`;}).join('');
-  return box('Keys',`<p class="note">Pick an action, press Change, then press the new key. Esc cancels. A key used by another action moves to this one.</p><div class="rows">${rows}</div>`,
+  const rows=KM_ACTIONS.map(([a,lab])=>{const w=KM.wait===a,ks=kmKeys(a),many=ks.length>1;
+    const chips=ks.map(k=>many?`<button class="kmk kmx" data-act="kmDrop" data-arg="${a}|${esc(k)}" title="Remove ${esc(kmShow(k))} from ${esc(lab)}" aria-label="Remove ${esc(kmShow(k))} from ${esc(lab)}">${esc(kmShow(k))} <span aria-hidden="true">×</span></button>`:`<kbd class="kmk">${esc(kmShow(k))}</kbd>`).join('')||'<small>unset</small>';
+    return `<div class="row kmrow"><div class="grow"><b>${lab}</b>${a==='interact'?'<small>The action button: it also continues after a battle and answers a one button prompt.</small>':''}</div><div class="kmkeys">${w?`<span class="kmwait">Press a key${KM.add?' to add':''}...</span>`:chips}</div>${w?`<button class="btn sm" data-act="kmChange" data-arg="${a}">Cancel</button>`:`<button class="btn sm" data-act="kmAddKey" data-arg="${a}" ${ks.length>=KM.max?'disabled title="'+KM.max+' keys at most"':'title="Add another key for this action"'}>Add key</button><button class="btn sm" data-act="kmChange" data-arg="${a}" title="Replace the keys with one new key">Change</button>`}</div>`;}).join('');
+  return box('Keys',`<p class="note">Change replaces an action's keys with the next key you press. Add key gives it one more (up to ${KM.max}); tap a key to remove it. Esc cancels. A key used by another action moves to this one.</p><div class="rows">${rows}</div>`,
     `<button class="btn" data-act="kmReset">Reset to defaults</button><button class="btn gold" data-act="xBack">Done</button>`,true);}
 HOOK.before('vModal','keymap','keys popup',function(m){if(m&&m.type==='keys')return HOOK.stop(mKeys(m));});
 HOOK.wrap('settingsBody','keymap','Keys row',function(next,...a){const h=next(...a);if(!kmHasKb())return h;
-  return h+`<div class="rows"><div class="row"><div class="grow"><b>Keys</b><small>Choose the keyboard keys for moving, the menu, the map and mute.</small></div><button class="btn sm" data-act="kmOpen">Keys</button></div></div>`;});
+  return h+`<div class="rows"><div class="row"><div class="grow"><b>Keys</b><small>Choose the keyboard keys for moving, the action button (several keys if you like), the menu, the map and mute.</small></div><button class="btn sm" data-act="kmOpen">Keys</button></div></div>`;});
 Object.assign(ACT,{
   kmOpen(){KM.wait=null;V.modal={type:'keys',from:V.modal||null};render();},
-  kmChange(a){KM.wait=KM.wait===a?null:a;render();},
+  kmChange(a){KM.wait=KM.wait===a?null:a;KM.add=false;render();},
+  kmAddKey(a){if(kmKeys(a).length>=KM.max)return;KM.wait=a;KM.add=true;render();},
+  kmDrop(arg){const i=String(arg).indexOf('|');if(i<0)return;if(kmDrop(arg.slice(0,i),arg.slice(i+1)))render();},
   kmReset(){kmReset();KM.wait=null;try{toast('Keys reset to defaults.');}catch(e){}render();}
 });
 // capture the next key press while a Change is waiting (runs before every other key handler)
@@ -18989,7 +19004,10 @@ window.addEventListener('keydown',e=>{if(!KM.wait)return;
   if(KM_MODS.includes(e.key)&&e.key!=='Shift'){return;}
   if(e.key==='Shift'&&KM.wait!=='run')return;
   if(e.key==='Escape'){KM.wait=null;render();return;}
-  const a=KM.wait;KM.wait=null;kmSet(a,e.key);render();},true);
+  const a=KM.wait,add=KM.add;KM.wait=null;KM.add=false;if(add)kmAdd(a,e.key);else kmSet(a,e.key);
+  // the key that was just bound must not also act: its keyup and the click a held Space or Enter would give are swallowed (battle16.js b16Eat)
+  try{if(typeof b16Eat==='function')b16Eat(e.key);}catch(x){}
+  render();},true);
 
 // ===== deskscale.js (v0.10.1): the page zoom on computers =====
 // On a computer screen the page sat at its phone size (the app box is 1000 px wide) in a sea of dark blue. This zooms the whole
@@ -19473,7 +19491,7 @@ HOOK.wrap('drawObjects','p2world','entrance style context (P2.dm)',function(next
 
 // ---------------------------------------------------------------- 2.6 dual types come later ----------------------------------------------------------------
 const p2Dual=id=>!!(TPL[id]&&TPL[id].el&&TPL[id].el.length>1);
-const p2DualOK=()=>!G||!!G.daily||(G.stage|0)>=DUAL_FROM;
+const p2DualOK=()=>!G||!!G.daily||(G.stage|0)>=(typeof DUAL_HERO_FROM==='number'?DUAL_HERO_FROM:DUAL_FROM);// wayfarers: the third realm (DUAL_HERO_FROM); foes below keep DUAL_FROM
 // wayfarers: the tavern, the challenge board, rare visitors and chance meetings offer single type wayfarers only in the first realm
 {const tp0=tvPool;tvPool=function(){const L=tp0.apply(this,arguments);return p2DualOK()?L:L.filter(id=>!p2Dual(id));};}
 {const ce0=challEligible;challEligible=function(){const L=ce0.apply(this,arguments);return p2DualOK()?L:L.filter(c=>!p2Dual(c.hero));};}
@@ -23862,7 +23880,8 @@ HOOK.wrap('mMenu','guild7','guide bodies on the menu tabs',function(next,...args
 // level SUM.monkLv get a lesser call: two turns of praying, a weaker (SUM.lesser) summon that takes only the Monk's own place for
 // SUM.lesserTurns turns. Never in the Daily Trial; auto battle never prays (the summon still acts if it is already out).
 // v0.19.2: a guardian is a boss you can summon: it stays 5 turns when a Priest invokes it (was 3) and 3 when a Monk calls it (was 2), and is drawn at boss size
-const SUM={turns:5,mp:.3,mpMin:10,hpK:1.2,lvUp:2,powM:.95,lesser:.6,lesserTurns:3,monkLv:10,monkPray:2};
+// after 0.21.0 ("boss summons are bit too strong, tune down slight bit"): 12% less damage (powM .95 to .835) and 12% less HP (hpK 1.2 to 1.055); see battle16.js
+const SUM={turns:5,mp:.3,mpMin:10,hpK:1.055,lvUp:2,powM:.835,lesser:.6,lesserTurns:3,monkLv:10,monkPray:2};
 function sumList(){try{return Object.values(G.summons||{});}catch(e){return [];}}
 function sumUnlock(mon,name,mod){if(!G||G.daily||!MON[mon])return false;G.summons=G.summons||{};if(G.summons[mon])return false;G.summons[mon]={mon,name:name||MON[mon].n,mod:mod||null,at:Date.now()};return true;}
 // old saves: guardians already beaten become summons
@@ -23880,7 +23899,7 @@ miniFor=function(m){G.miniPick=G.miniPick||{};let i=G.miniPick[m.id];
   const D=MINIS[i];return {mon:D[0],name:D[2],mod:D[5]};};
 // every Sanctum has its guardian (caves keep their chance)
 {const sh0=siteHasMini;siteHasMini=function(id){if(typeof id==='string'&&id[0]==='o')return true;return sh0.apply(this,arguments);};}
-HOOK.after('win','summon8','a beaten guardian becomes a summon',function(){try{const sp=B&&B.spec,mi=sp&&sp.mini;if(!mi||typeof mi!=='object'||!G||G.daily)return;if(sumUnlock(mi.mon,mi.name,mi.mod)){const info=(B&&B.result)||(V.modal&&V.modal.info);if(info){info.notes=info.notes||[];info.notes.push(`${mi.name} is bound to your cause: a Priest can now Invoke it in battle (a Monk from level ${SUM.monkLv} can call a lesser form).`);}}}catch(e){}});
+HOOK.after('win','summon8','a beaten guardian becomes a summon',function(){try{const sp=B&&B.spec,mi=sp&&sp.mini;if(!mi||typeof mi!=='object'||!G||G.daily)return;if(sumUnlock(mi.mon,mi.name,mi.mod)){const info=(B&&B.result)||(V.modal&&V.modal.info);if(info){info.notes=info.notes||[];info.notes.push(`${mi.name} is bound to your cause: a Priest can now Invoke it in battle.`);}}}catch(e){}});
 // ----- who can summon -----
 function sumClassOf(a){try{const t=TPL[a.id];if(!t||!B||a.side!=='p'||a.isComp||a.isSum)return null;if(t.cls==='healer')return 'priest';if(t.cls==='monk'&&a.lv>=SUM.monkLv)return 'monk';}catch(e){}return null;}
 function sumCan(a){if(!B||!G||G.daily||B.auto||!a||a.hp<=0)return false;if(B.sum||B.sumDead||B.pray)return false;const k=sumClassOf(a);if(!k||!sumList().length)return false;if((B.summonedBy||{})[a.id])return false;return a.mp>=sumCost(a);}
@@ -33500,7 +33519,10 @@ try{window.__T13=T13;T13.api={tile:t13Tile,mat:t13Mat,noise:t13Noise,growPal:t13
 //    Old saves: a hero keeps every skill the levels before this pass gave (c.keep), once per save: the optional save field G.m14lv says which levels the
 //    save has seen (none: the original table, 1: the 0.20.3 spread to level 42, 2: this one), and a save below 2 is migrated on load (unpackG).
 //    The 0.20.3 levels stay on every skill as s.lvP (M14.prev) for that migration.
-const M14={spread:{end:45,gap:6,win:3,p:1.5},prev:{end:42,gap:6,win:3},mix:{off:false},sh:[['all','All sections'],['overview','Overview'],['stats','Stats'],['skills','Skills'],['gear','Gear'],['role','Role']]};
+//    After 0.21.0 ("heros learn too many skills early still ... should only have 3 skills each by level 10"): the schedule is 1,1,6 and then an even walk
+//    from 11 to 45 (1,1,6,11,15,20,24,28,32,37,41,45 for a 12 skill kit): exactly three class skills at level 10, single learns after the start. A save
+//    marked 2 keeps what the 0.20.9 levels gave (s.lvQ, M14.prev2) and is marked 3; new journeys start at 3. Test: tools/chrome/v189a.js (and v185a.js).
+const M14={spread:{end:45,gap:6,win:3,p:1,third:6,from:11},prev2:{end:45,gap:6,win:3,p:1.5},prev:{end:42,gap:6,win:3},mix:{off:false},sh:[['all','All sections'],['overview','Overview'],['stats','Stats'],['skills','Skills'],['gear','Gear'],['role','Role']]};
 
 // ---------- 1. the hero sheet on one page ----------
 function m14Sec(){const k=V&&V.sheetTab;return M14.sh.some(x=>x[0]===k)?k:'all';}
@@ -33567,37 +33589,51 @@ HOOK.xform('tvPickOk','menus14','tavern tables mix elements, classes and roles',
 // the levels before this pass (0.20.3): the old levels where they fit, no gap over S.gap, never three within S.win levels, never past S.end
 function m14LevelsP(old){const S=M14.prev,end=Math.min(LV_CAP-1,S.end),L=[];
   old.forEach((o,i)=>{let v=i?Math.min(o,L[i-1]+S.gap):o;if(i)v=Math.max(v,L[i-1]);if(i>=2)v=Math.max(v,L[i-2]+S.win);L.push(Math.min(v,end));});return L;}
-// the schedule for a kit of old.length skills (the old levels, sorted): k at the start level (1 or 2: as many as the kit had at level 1), then 4 and an
-// even walk to S.end; one pass of repairs keeps the gap and window rules whatever the rounding did
-function m14Levels(old){const S=M14.spread,end=Math.min(LV_CAP-1,S.end),n=old.length,L=[];
+// the 0.20.9 schedule (M14.prev2), kept for the migration of saves marked 2: k at the start level (1 or 2: as many as the kit had at level 1), then 4 and
+// an even walk to S.end with the early gaps a little shorter (S.p); one pass of repairs keeps the gap and window rules whatever the rounding did
+function m14LevelsQ(old){const S=M14.prev2,end=Math.min(LV_CAP-1,S.end),n=old.length,L=[];
   const k=Math.max(1,Math.min(2,old.filter(o=>o<=1).length)),m=n-k;
   for(let i=0;i<n;i++){if(i<k){L.push(1);continue;}const j=i-k,x=m>1?j/(m-1):1;L.push(Math.round(4+(end-4)*Math.pow(x,S.p||1)));}
   for(let i=1;i<n;i++){if(L[i]<L[i-1])L[i]=L[i-1];if(L[i]-L[i-1]>S.gap)L[i]=L[i-1]+S.gap;if(i>=2&&L[i]<L[i-2]+S.win)L[i]=L[i-2]+S.win;}
   L[n-1]=Math.min(end,Math.max(L[n-1],end));for(let i=n-2;i>=0&&L[n-1]-L[i]>S.gap*(n-1-i);i--)L[i]=L[n-1]-S.gap*(n-1-i);
+  return L;}
+// the schedule for a kit of old.length skills (the old levels, sorted). Owner's note after 0.21.0: "heros learn too many skills early still ... should only
+// have 3 skills each by level 10". So: k at the start level (1 or 2: as many as the kit had at level 1), then single learns up to the THIRD skill at
+// S.third (6; a kit with one start skill gets its second half way), and the rest in an even walk from S.from (11) to S.end (45). Every hero knows exactly
+// three class skills at level 10. One pass of repairs keeps the gap and window rules whatever the rounding did (it never pulls a skill under S.from).
+// A 12 skill kit with two at the start: 1,1,6,11,15,20,24,28,32,37,41,45.
+function m14Levels(old){const S=M14.spread,end=Math.min(LV_CAP-1,S.end),n=old.length,L=[];
+  const k=Math.max(1,Math.min(2,old.filter(o=>o<=1).length)),e=Math.min(3,n),m=n-e;
+  for(let i=0;i<n;i++){if(i<k){L.push(1);continue;}if(i<e){L.push(Math.round(1+(S.third-1)*(i-k+1)/(e-k)));continue;}
+    const j=i-e,x=m>1?j/(m-1):1;L.push(Math.round(S.from+(end-S.from)*Math.pow(x,S.p||1)));}
+  for(let i=e;i<n;i++){if(L[i]<L[i-1])L[i]=L[i-1];if(i>e&&L[i]-L[i-1]>S.gap)L[i]=L[i-1]+S.gap;if(i>=2&&L[i]<L[i-2]+S.win)L[i]=L[i-2]+S.win;}
+  if(n>e){L[n-1]=Math.min(end,Math.max(L[n-1],end));for(let i=n-2;i>=e&&L[n-1]-L[i]>S.gap*(n-1-i);i--)L[i]=L[n-1]-S.gap*(n-1-i);}
   return L;}
 // the rules a kit's levels must meet (the sim and the test use it): the first one or two at the start level, the last at the end, no long gap, never
 // three within the window, no level over the cap
 function m14Check(L){const S=M14.spread,bad=[];L=L.slice().sort((a,b)=>a-b);
   if(L[0]!==1||L.filter(x=>x===1).length>2)bad.push('start');if(L[L.length-1]!==Math.min(LV_CAP-1,S.end))bad.push('end');
   if(Math.max(...L.slice(1).map((x,i)=>x-L[i]))>S.gap)bad.push('gap');
+  if(L.length>=3&&L.filter(x=>x<=10).length!==3)bad.push('three by level 10');
   for(let i=2;i<L.length;i++)if(L[i]-L[i-2]<S.win){bad.push('window');break;}
   return bad;}
-HOOK.xform('classSkills','menus14','learn levels: a schedule to level 45 per kit (order kept); the 0.20.3 levels stay as lvP',function(L,t){
+HOOK.xform('classSkills','menus14','learn levels: three skills by level 10, then an even walk to 45 (order kept); the 0.20.3 levels stay as lvP, the 0.20.9 ones as lvQ',function(L,t){
   if(!L||!t||t.mon||!CLS[t.cls]||L._m14||L.length<3)return L;L._m14=1;
   try{const S=L.slice().sort((a,b)=>(a.lv12!=null?a.lv12:a.lv)-(b.lv12!=null?b.lv12:b.lv)||(a.lv0||a.lv)-(b.lv0||b.lv));
-    const old=S.map(s=>s.lv12!=null?s.lv12:s.lv),lv=m14Levels(old),pv=m14LevelsP(old);
-    S.forEach((s,i)=>{if(s.lv12==null)s.lv12=s.lv;s.lvP=pv[i];s.lv=lv[i];});}catch(e){}
+    const old=S.map(s=>s.lv12!=null?s.lv12:s.lv),lv=m14Levels(old),pv=m14LevelsP(old),qv=m14LevelsQ(old);
+    S.forEach((s,i)=>{if(s.lv12==null)s.lv12=s.lv;s.lvP=pv[i];s.lvQ=qv[i];s.lv=lv[i];});}catch(e){}
   return L;});
-// a save from before this spread: what a hero knew under the levels it had seen stays known (G.m14lv: none = the original table, 1 = the 0.20.3 spread, 2 = this one)
-function m14Keep(g){if(!g||g.m14lv>=2||g.daily)return 0;let n=0;const was=g.m14lv===1?'lvP':'lv12';
+// a save from before this spread: what a hero knew under the levels it had seen stays known (G.m14lv: none = the original table, 1 = the 0.20.3 spread,
+// 2 = the 0.20.9 spread to 45, 3 = this one, three by level 10). Nothing a hero already knows is taken away: the skills the new levels delay go to c.keep.
+function m14Keep(g){if(!g||g.m14lv>=3||g.daily)return 0;let n=0;const was=g.m14lv===2?'lvQ':g.m14lv===1?'lvP':'lv12';
   Object.keys(g.roster||{}).forEach(id=>{const c=g.roster[id],t=TPL[id];if(!c||!t||t.mon||!CLS[t.cls])return;
     classSkills(t).forEach(s=>{if(s[was]!=null&&s[was]<=c.lv&&s.lv>c.lv&&!(c.keep&&c.keep.includes(s.id))){c.keep=(c.keep||[]).concat(s.id);n++;}});});
-  g.m14lv=2;return n;}
+  g.m14lv=3;return n;}
 HOOK.after('unpackG','menus14','old saves keep the skills the old learn levels gave',function(r,g){try{m14Keep(g);}catch(e){}});
-HOOK.after('newGame','menus14','a new journey uses the spread levels',function(){try{if(G)G.m14lv=2;}catch(e){}});
+HOOK.after('newGame','menus14','a new journey uses the spread levels',function(){try{if(G)G.m14lv=3;}catch(e){}});
 
 // tests
-try{window.__M14={M14,levels:m14Levels,prev:m14LevelsP,check:m14Check,mix:m14Mix,keep:m14Keep,spot:m14Spot,sec:m14Sec,get tvShuffle(){return tvShuffle;},get ensureSub(){return ensureSub;},get tvPool(){return tvPool;},
+try{window.__M14={M14,levels:m14Levels,prev:m14LevelsP,prev2:m14LevelsQ,check:m14Check,mix:m14Mix,keep:m14Keep,spot:m14Spot,sec:m14Sec,get tvShuffle(){return tvShuffle;},get ensureSub(){return ensureSub;},get tvPool(){return tvPool;},
   get TPL(){return TPL;},get CLASS_ROLE(){return CLASS_ROLE;},get G(){return G;},get V(){return V;},get GL(){return GL;},get glRender(){return glRender;},get glHero(){return glHero;},
   kit:t=>classSkills(t)};}catch(e){}
 
@@ -33870,7 +33906,7 @@ const RO14_ORDER=['warrior','knight','mage','healer','thief','archer','monk','ba
 // ---------- 3. the sixteen ----------
 // the base classes (the ones the starters come in) and the heroes a draw may use
 function ro14Classes(){const s=new Set(STARTERS.map(id=>TPL[id].cls));return RO14_ORDER.filter(c=>s.has(c)).concat([...s].filter(c=>!RO14_ORDER.includes(c)));}
-function ro14Pool(){const C=ro14Classes();return Object.keys(TPL).filter(id=>{const t=TPL[id];return t&&!t.mon&&C.includes(t.cls)&&t.el&&t.el.length&&!LEGEND_IDS.includes(id);});}
+function ro14Pool(){const C=ro14Classes();return Object.keys(TPL).filter(id=>{const t=TPL[id];return t&&!t.mon&&C.includes(t.cls)&&t.el&&t.el.length===1&&!LEGEND_IDS.includes(id);});}// single types only (after 0.21.0: no dual type wayfarer before the third realm): 64 of the 92
 // 2 per class and 2 per main element out of pool (the ids), seeded; null when there is no such draw (a pool too small)
 function ro14Pick(pool,R){const C=ro14Classes(),E=Object.keys(EL),per=RO14.per,P=pool.map(id=>TPL[id]);
   for(let i=P.length-1;i>0;i--){const j=Math.floor(R()*(i+1));[P[i],P[j]]=[P[j],P[i]];}
@@ -34851,6 +34887,165 @@ ACT.g16Undo=function(){const u=G16.undo;G16.undo=null;if(!u||!G||u.sig!==g16Sig(
 
 try{const st=document.createElement('style');st.textContent=`.g16d{display:inline-block;max-width:100%;white-space:normal;font-weight:600}.g16vs{opacity:.92}.g16vs>b{color:inherit}.g16rar{margin:4px 0 6px}#p2hint.g16hide{display:none!important}.bestr>span,.cmpr>span{min-width:0;overflow-wrap:anywhere}`;document.head.appendChild(st);}catch(e){}
 window.__G16={G16,rarCap,rarOk,rarFit,rarLoot,rarPool,deltas:(c,id)=>g16Deltas(c,id),planAll:s=>g16PlanAll(s),recipeOpen:r=>recipeOpen(r),plan:s=>p3SmithPlan(s),hintDock:g16HintDock,FORGE_STEP};
+
+// ===== battle16.js (battle pass 16): the owner's playtest notes after 0.21.0 on battle, the action key, summons and recruitment =====
+// 1) "remove battle menu memory, just start at main action menu when turn starts": every hero turn opens on the main actions (Attack, Skills, Items,
+//    Guard...). menus12.js kept a remembered submenu, skill, item and scroll per hero; that memory is cleared at the start of every turn here (the
+//    hook is registered after menus12's, so it runs first), and the command list starts at its top. Inside one turn nothing changes: Back still
+//    returns to the list you came from.
+// 2) "should be able to press space on PC to continue after a battle, also add option to make multiple keys the action button (spacebar)": the action
+//    key (keymap.js 'interact': Z, Enter and Space by default) continues every prompt that has one way on: the rewards screen, "The party falls", story
+//    cards, campfire talks, and any popup whose only control (beside the corner close button) is one button (b16Next). One press, one step: a held key does not repeat, the press never reaches the
+//    world under the popup, never presses a button that only happens to hold the focus behind the popup, and Space does not scroll the page
+//    (b16Key, b16Eat). Several keys per action: Settings > Controls > Keys has Add key and a key chip removes a key (keymap.js kmAdd, kmDrop).
+// 3) "summon button not working for some pets": the pets that failed are the Lesser Scourges of the five bosses removed in 0.20.9 (The Locust Choir,
+//    Ironmaw Tortoise, The Hollow Shepherd, The Pale Weaver, the Hollow Sun: realms14.js R14_GONE). The save migration there moved the journey's
+//    bosses but not G.tamed, so such a pet had no monster data: the Summon button showed, the press threw inside summonComp (no template for the
+//    pet) AFTER marking the once per battle summon as used, and nothing came. Fix: b16PetFix (on load) moves such a pet to the boss that replaced
+//    its Scourge in that journey (r14Plan: same elements first), with its name, class and nature following; a pet whose monster is unknown for any
+//    other reason gets a stand-in record so no menu breaks, and offers no Summon button (canSummon needs the monster's data and the pet's template).
+// 4) "nerf Nick, boss summons are bit too strong, tune down slight bit, also Nick or Priest should be the only ones that can summon recruited bosses":
+//    Nick is Nikaris (the Beastwarden, the only Druid; no wayfarer is called Nick). Recruited bosses are the Sanctum guardians (summon8.js) and the
+//    Lesser Scourges tamed with Nikaris (comp.js, o.scourge).
+//    - who: only Nikaris or a Priest (the healer class) may Invoke a guardian or Summon a Lesser Scourge (b16Caller). Nikaris gains Invoke; the Monk's
+//      Spirit Call is gone; any other hero paired with a Lesser Scourge keeps the pairing bonus but not the Summon command. Where the command used
+//      to be, a greyed Summon button says "Nikaris or a Priest only" (and the Pets list says it on a Lesser Scourge).
+//    - tune: guardians hit 12% softer and have 12% less HP (summon8.js SUM.powM .95 to .835, SUM.hpK 1.2 to 1.055; still 5 turns).
+//    - "Scourges should remain big and replace all 3 party members when used as summons": a summoned Lesser Scourge takes the whole Vanguard's place at
+//      boss size, like a guardian, a further 12% under the guardian's numbers (B16.boss) for 4 turns; see b16BossFire. Ordinary pets are untouched.
+//    - Nikaris: 6% less ATK and MAG (B16.nik; his arrows, beasts and Wild Mend all scale from them).
+// 6) "no dual type wayfarers appear for recruitment until reaching the 3rd realm, 2nd realm is ok for some dual type enemies to start appearing":
+//    config.js DUAL_HERO_FROM=2 is the first stage for dual type wayfarers (p2world.js p2DualOK: tavern, challenge board, rare visitors, chance
+//    meetings); here the cave and keep cells and the guild's sent recruit follow it too, and the dual type legends (Kaevan, Jaeson) wait for it.
+//    The starter pool draws single types only (roster14.js ro14Pool). Foes are as they were: realm 1 single (DUAL_FROM=1), dual from realm 2.
+//    The gift of the second realm's Scourge (Sylva, a dual type) still joins when that Scourge falls, which is the moment the third realm opens.
+// (5, the learn levels, is in menus14.js.) Numbers: B16. Test: tools/chrome/v189a.js.
+const B16={boss:{pw:.88,hp:.88},nik:{atk:.94,mag:.94},note:'Only Nikaris or a Priest can summon a recruited boss.',short:'Nikaris or a Priest only',
+  cont:{result:'resultOk',lose:'loseOk',story:'storyOk',talk:'talkNext'},eat:null,turn:null};
+
+// ---------- 1. no battle menu memory ----------
+HOOK.before('renderBattle','battle16','no battle menu memory: a turn opens on the main actions (runs before menus12, which would put a submenu back)',function(stageOnly){try{if(stageOnly)return;
+  const a=B&&B.cur;if(!B||B.mode!=='cmd'||!a||a.side==='e'||B.over)return;const key=(B.id||0)+':'+a.id+'#'+(B.pturns||0);if(B.b16key===key)return;B.b16key=key;B16.turn=key;
+  // (the engine itself opens every turn on B.menu 'root'; only the memory that would move it has to go)
+  if(typeof m12Mem==='function'){const mm=m12Mem(a);mm.menu='root';mm.sk=null;mm.item=null;mm.sc={};}}catch(e){}});
+HOOK.after('renderBattle','battle16','a new turn starts at the top of the command list',function(r,stageOnly){try{if(stageOnly||!B16.turn)return;B16.turn=null;
+  if(B&&B.menu==='root'){const el=typeof m12Scroller==='function'?m12Scroller():null;if(el&&el.scrollTop>0)el.scrollTop=0;}}catch(e){}});
+
+// ---------- 2. the action key continues ----------
+// the one button that moves a prompt on, or null: the known "continue" prompts by their action, else a popup with a single control
+function b16Next(){try{const m=V.modal;if(!m)return null;const root=document.getElementById('modal');if(!root)return null;
+  const act=B16.cont[m.type];if(act){const b=root.querySelector(`button[data-act="${act}"]:not([disabled])`);if(b)return b;}
+  // (the corner close button every popup has, .mnav, is not a choice)
+  const all=[...root.querySelectorAll('button,a[href],input,select,textarea,[tabindex]:not([tabindex="-1"])')].filter(e=>!e.disabled&&e.offsetParent!==null&&!e.closest('.mnav'));
+  return all.length===1&&all[0].tagName==='BUTTON'&&all[0].closest('.btnrow')&&all[0].dataset.act&&ACT[all[0].dataset.act]?all[0]:null;}catch(e){return null;}}
+// the key that was handled: its keyup (where a browser may still "click" a focused button) is swallowed, once
+function b16Eat(k){B16.eat={k:kmNorm(k),t:Date.now()};}
+function b16Ctl(e){return !!(e&&e.tagName&&/^(BUTTON|A|INPUT|SELECT|TEXTAREA|SUMMARY)$/.test(e.tagName));}
+function b16Key(e){try{
+  if(e.defaultPrevented||e.ctrlKey||e.altKey||e.metaKey||KM.wait||!kmIs(e,'interact'))return;
+  const k=kmNorm(e.key),t=e.target,root=document.getElementById('modal'),ae=document.activeElement;
+  if(t&&t.tagName&&/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))return;
+  if(V.modal&&root){
+    // a control inside the popup holds the focus: Space and Enter press it, as always
+    const inside=ae&&ae!==document.body&&root.contains(ae)&&b16Ctl(ae);
+    if(inside&&(k===' '||k==='Enter'))return;
+    const b=e.repeat?null:b16Next();
+    // a press with the popup open never reaches the world under it, never presses a button behind it and never scrolls the page
+    e.preventDefault();e.stopImmediatePropagation();b16Eat(k);
+    if(b&&!(B16.last&&Date.now()-B16.last<120)){B16.last=Date.now();const f=ACT[b.dataset.act];if(f)f(b.dataset.arg,b);}
+    return;}
+  // no popup, in battle: Space must not scroll the page (a focused command button still takes it)
+  if(V.screen==='battle'&&k===' '&&!(ae&&ae!==document.body&&b16Ctl(ae)))e.preventDefault();
+}catch(x){}}
+window.addEventListener('keydown',b16Key);
+window.addEventListener('keyup',e=>{try{const E=B16.eat;if(E&&kmNorm(e.key)===E.k){B16.eat=null;e.preventDefault();}}catch(x){}},true);
+// a keyboard "click" (detail 0) that still arrives while the handled key is down is dropped
+document.addEventListener('click',e=>{try{const E=B16.eat;if(E&&e.detail===0&&e.isTrusted&&Date.now()-E.t<1500){e.stopPropagation();e.preventDefault();}}catch(x){}},true);
+window.addEventListener('blur',()=>{B16.eat=null;});
+
+// ---------- 3. pets whose monster is gone ----------
+const b16Def=mon=>MON[mon]||guardianDef(mon);
+// on load: a pet of a removed Scourge follows the boss that replaced it in this journey; returns how many moved
+function b16PetFix(g){let n=0;try{if(!g||!Array.isArray(g.tamed))return 0;let plan=null;
+  g.tamed.forEach(o=>{if(!o||b16Def(o.mon))return;if(typeof R14_GONE==='undefined'||!R14_GONE[o.mon])return;
+    plan=plan||r14Plan(g);const nk=plan[o.mon],d=nk&&b16Def(nk);if(!d)return;
+    o.mon0=o.mon;o.mon=nk;o.cls=tameClass(d);o.trait=tameTrait(d);
+    if(/^Lesser /.test(o.name||'')||!o.name){let nm='Lesser '+d.n;const used=new Set(g.tamed.filter(x=>x&&x!==o).map(x=>x.name));for(let k=2;used.has(nm)&&k<20;k++)nm='Lesser '+d.n+' '+['','','II','III','IV','V','VI','VII','VIII','IX'][k<10?k:9]+(k>=10?k:'');o.name=nm;}
+    registerTamed(o);n++;});
+  if(n)Object.keys(g.roster||{}).forEach(id=>{const c=g.roster[id];try{if(c&&g.tamed.some(o=>o.with===id&&o.mon0)){c.S=calcStats(c);c.hp=Math.min(c.hp,c.S.mhp);c.mp=Math.min(c.mp,c.S.mmp);}}catch(e){}});
+  }catch(e){console.error('battle16 pets',e);}return n;}
+HOOK.after('unpackG','battle16','old saves: the pet of a removed Scourge follows the boss that replaced it',function(r){b16PetFix(r);});
+// a pet with no monster data at all: a stand-in record, so the Pets list, the hero sheet and the bonus line still draw
+{const cd0=compDef;compDef=function(o){const d=cd0.apply(this,arguments);if(d||!o)return d;const any=MON[Object.keys(MON)[0]];
+  return {n:'Lost companion',el:['earth'],art:any&&any.art,sk:[],hp:1,atk:1,def:1,mag:1,res:1,spd:1,lost:1};};}
+// the Summon button is only offered when the press can work: the monster's data and the pet's template are there
+{const cs0=canSummon;canSummon=function(a){if(!cs0.apply(this,arguments))return false;
+  try{const o=compOf(a);if(!b16Def(o.mon))return false;if(!TPL[o.id])registerTamed(o);if(!TPL[o.id])return false;
+    if(o.scourge&&!b16Caller(a))return false;}catch(e){return false;}return true;};}
+
+// ---------- 4. recruited bosses: who may call them, and how hard they hit ----------
+function b16Caller(a){try{const t=a&&TPL[a.id];return !!t&&!t.mon&&(a.id==='nikaris'||t.cls==='healer');}catch(e){return false;}}
+// Invoke: the Priest as before, Nikaris like a Priest, nobody else (the Monk's lesser Spirit Call is gone)
+{const sc0=sumClassOf;sumClassOf=function(a){try{if(a&&a.id==='nikaris'&&B&&a.side==='p'&&!a.isComp&&!a.isSum)return 'priest';}catch(e){}
+  const k=sc0.apply(this,arguments);return k==='monk'?null:k;};}
+// the hero who used to have the command: why it is gone (null when nothing is withheld)
+function b16Blocked(a){try{if(!a||!B||!G||G.daily||a.side!=='p'||a.isComp||a.isSum||b16Caller(a))return null;const t=TPL[a.id];if(!t||t.mon)return null;
+  const o=compOf(a);if(o&&o.scourge&&b16Def(o.mon)&&!(B.summoned||{})[a.id])return `${o.name} is a recruited boss. ${B16.note}`;
+  if(t.cls==='monk'&&a.lv>=SUM.monkLv&&sumList().length&&!B.sum&&!B.sumDead)return `The Sanctum guardians are recruited bosses. ${B16.note}`;}catch(e){}return null;}
+HOOK.xform('cmdHtml','battle16','recruited bosses: a note where the Summon command was for anyone but Nikaris or a Priest',function(h){try{const a=B&&B.cur;
+  if(!a||B.mode!=='cmd'||B.menu!=='root'||B.swapAsk||typeof h!=='string')return h;const why=b16Blocked(a);if(!why)return h;
+  if(h.includes('class="mi summon b9sum"'))return h.replace(/(<button class="mi summon b9sum"[^>]*title=")/,'$1'+esc(why)+' ');
+  return h.replace('<div class="menu sec">',`<div class="menu sec"><button class="mi summon b9sum b16no" disabled aria-disabled="true" title="${esc(why)}">Summon <small>${B16.short}</small></button>`);}catch(e){return h;}});
+{const bt0=compBonusText;compBonusText=function(o){const h=bt0.apply(this,arguments);try{if(o&&o.scourge)return h+`</small><small class="b16note">A recruited boss: ${B16.note} Anyone it is paired with still gets its bonus.`;}catch(e){}return h;};}
+HOOK.after('calcStats','battle16','Nikaris: a little less ATK and MAG',function(S,c){try{if(S&&c&&c.id==='nikaris'&&!(G&&G.daily)){S.atk*=B16.nik.atk;S.mag*=B16.nik.mag;}}catch(e){}});
+// A summoned Lesser Scourge is a boss on your side (the owner: "Scourges should remain big and replace all 3 party members when used as summons"). It
+// takes the field the way an Invoked guardian does (summon8.js B.sum): B.front becomes [the Scourge], the Vanguard steps out with HP, MP and statuses
+// untouched (out of B.front they are not targeted, do not act and nothing ticks on them), and comes back when its turns are over, when it is driven
+// off, or when the fight ends (sumEnd, summon8's win and finishBattle hooks). It is drawn like a foe boss (battle11.js sizes u.isSum by its art,
+// kits12.js stands it on the mirrored boss slot, clamped inside the stage); u.b16big marks it as boss sized for the Unified look (ch15Sc below).
+// Turn order: it acts at once in the summoner's place (as a pet did) and then on its own speed; the returning heroes re-enter just after the current
+// time, staggered. Wipe check: while it stands the party is not wiped (checkEnd counts B.front and B.back); when it falls it is driven off and the
+// Vanguard is back in B.front before any check, so the fight goes on with the heroes as they were.
+// Numbers: the guardian formula a little lower: the party's level (no +2), power SUM.powM x B16.boss.pw, HP = the Vanguard's max HP x SUM.hpK x
+// B16.boss.hp, COMP_TURNS+1 = 4 turns (a guardian: 5). Its skills are the Scourge's own (with the second skill a grown pet has).
+function b16BossMake(o){const d=compDef(o),heroes=B.front.filter(c=>c.hp>0&&!c.isComp&&!c.isSum),lv=Math.max(1,Math.round(heroes.reduce((q,c)=>q+c.lv,0)/Math.max(1,heroes.length)));
+  const u=makeEnemy(d,lv,{elite:true,name:o.name,noField:1,noBuff:1,hpM:1,powM:SUM.powM*B16.boss.pw});
+  u.side='p';u.isSum=1;u.b16big=1;u.b16pet=o.id;u.id='sum_'+o.id;u.base=o.name;u.name=o.name;u.lb=0;u.owner=null;u.lesser=false;u.phase=null;u.multi=1;u.turnsLeft=COMP_TURNS+1;
+  const pool=B.front.reduce((q,c)=>q+(c.S&&!c.isComp&&!c.isSum?c.S.mhp:0),0);u.S.mhp=Math.max(1,Math.round(pool*SUM.hpK*B16.boss.hp));u.hp=u.S.mhp;u.S.mmp=999;u.mp=999;
+  TPL[u.id]={id:u.id,n:o.name,cls:'warrior',el:d.el.slice(),trait:'brave',bio:`${o.name}, a lesser Scourge that follows you.`,src:'sum',look:null,mon:o.mon,art:d.art,summon:1};
+  u.msk=(d.sk||[]).map(s=>({id:'s'+s[0],n:s[0],el:s[1],pw:+(s[2]*1.05).toFixed(2),t:s[3]==='all'?'all':s[3]==='self'?'self':'one',k:s[4]==='buff'?'buff':s[4],fx:s[5]||null,mp:0,cost:1,hits:1}));
+  return u;}
+function b16BossFire(a,o){const u=b16BossMake(o),col=ELC[(u.el||[])[0]]||'#ffd04a';
+  B.summoned=B.summoned||{};B.summoned[a.id]=1;B.sum={u,front:B.front,by:a,b16:1};B.front=[u];u.next=B.time;u.enterT=Date.now();u.k12In=Date.now();u.k12Col=col;a.actT=Date.now();
+  banner(`SCOURGE: ${o.name}`,col);log(`${a.name} calls ${o.name}! It takes the field for ${u.turnsLeft} turns while the Vanguard steps back.`);autoNote(a,'Summon '+o.name);
+  try{if(typeof sfx==='function')sfx('level');}catch(e){}
+  B.menu='root';B.pend=null;render();later(advance,PAUSE*.5);return u;}
+{const sc0=summonComp;summonComp=function(){try{const a=B&&B.cur,o=a&&compOf(a);
+    if(o&&o.scourge&&b16Def(o.mon)){if(!canSummon(a)||B.sum||B.pray)return;b16BossFire(a,o);return;}}catch(e){console.error('battle16 summon',e);}
+  return sc0.apply(this,arguments);};}
+// the name plate over its head (kits12.js) says SCOURGE
+HOOK.after('renderBattle','battle16','the name plate of a summoned Scourge says SCOURGE',function(){try{if(!B||!B.sum||!B.sum.b16||V.screen!=='battle')return;
+  document.querySelectorAll('.k12plate>b').forEach(b=>{if(b.textContent==='GUARDIAN')b.textContent='SCOURGE';});}catch(e){}});
+// leaving: the guardian's own exit with the pet's words (and a driven off pet does not close the Sanctum summons for the fight)
+{const se0=sumEnd;sumEnd=function(why){const S=B&&B.sum;if(!S||!S.b16)return se0.apply(this,arguments);const u=S.u;
+  B.front=S.front;B.front.forEach((c,i)=>{c.hidden=0;c.next=B.time+delayOf(c,.3+.15*i);c.enterT=Date.now();});B.sum=null;
+  log(why==='ko'?`${u.name} is driven off. The Vanguard steps back in.`:`${u.name} returns to your side. The Vanguard steps back in.`);};}
+// while a Scourge or a guardian stands, or a prayer is pending, no second pet is called into a Vanguard that is about to be swapped out
+{const cs1=canSummon;canSummon=function(a){if(B&&(B.sum||B.pray))return false;return cs1.apply(this,arguments);};}
+// the Unified look (cohere15.js ch15Sc) scales heroes and bosses: a summoned Scourge counts as a boss
+try{if(typeof ch15Sc==='function'){const cs0=ch15Sc;ch15Sc=function(u){try{if(u&&u.b16big)return ch15On()&&B?CH15.unit:1;}catch(e){}return cs0.apply(this,arguments);};}}catch(e){}
+
+// ---------- 6. dual type wayfarers from the third realm ----------
+HOOK.xform('caveRecruitPool','battle16','no dual type wayfarer in a cave, a keep cell or sent by a guild before the third realm',function(pool){try{
+  if(!Array.isArray(pool)||!G||G.daily||p2DualOK())return pool;return pool.filter(h=>!p2Dual(h));}catch(e){return pool;}});
+// a table seated before this rule (an older save in realm 1 or 2) or won in a duel: a dual type leaves the seat empty until the third realm
+{const ts0=tvSlots;tvSlots=function(){const sl=ts0.apply(this,arguments);try{if(Array.isArray(sl)&&G&&!G.daily&&!p2DualOK()){for(let i=0;i<sl.length;i++)if(sl[i]&&p2Dual(sl[i]))sl[i]=null;}}catch(e){}return sl;};}
+// the dual type legends keep their own conditions and also wait for the third realm
+try{Object.keys(LEG_Q).forEach(id=>{if(!p2Dual(id))return;const ok0=LEG_Q[id].ok;LEG_Q[id].ok=s=>s>=DUAL_HERO_FROM&&ok0(s);});}catch(e){}
+
+try{const st=document.createElement('style');st.textContent=`.battle .mi.b16no{opacity:.55;cursor:not-allowed}.b16note{display:block;opacity:.85}
+.kmk.kmx{cursor:pointer;background:none;color:inherit}.kmk.kmx:hover,.kmk.kmx:focus-visible{background:rgba(255,208,74,.18)}.kmk.kmx span{opacity:.7;margin-left:2px}`;document.head.appendChild(st);}catch(e){}
+try{window.__B16={B16,next:b16Next,petFix:b16PetFix,caller:b16Caller,blocked:b16Blocked,def:b16Def,bossMake:b16BossMake,get canSummon(){return canSummon;},get sumClassOf(){return sumClassOf;},get sumCan(){return sumCan;},get compDef(){return compDef;}};}catch(e){}
 
 window.__A={walkable,ceInit,tvSlots,genQuests,STARTERS,starterDraw,ECON,AUTO_NERF,rebuildBase,detLive,REACT,skEls,packContents,miniFor,AUTO_REW,ENC_RATE,ENC_MIN_STEPS,detNote,classSkills,stickCount,bestAll,calcStats,lookKey,vTemper,storyEchoUp,leaveDungeon,win,ldApply,genFort,caveOk,enterCave,siteHasMini,openChest,nextDlg,WS,mapIcoRects,roamSpawn,roamInterior,roamSees,mapTargets,DIRV,tileAt,STAGE_LV,autoBan,rollWeather,guardianDef,mapIssues,mapEntry,syncPools,bovAt,calFxAt,realmAt,REALMS,BOV,CAL_FX,overlayGuide,liftOverlay,drawGearIcon,gearIcon,itemIcon,RAW,sigKind,sigGid,personalDone,heroLook,hasSignature,LEGEND_IDS,facDirty,facCount,facRank,facRep,FACB,FAC,finishBattle,npcWords,npcHints,npcPool,titleMake,titleAdvance,TTS,placeAt,wkwUpdate,innSpot,getMap,monURL,enterVia,applyBossTheme,BTHEME,resetMaps,rebuildBase,shopStock,gearDesc,calcStats,gearMigrate,CLS_WPN,CLS_ARM,WPERK,WT_NAME,equipWhy,lootBase,GEAR,canEquip,gearOf,perkNote,FAM_MAT_V35,fbDraft,META:{get best(){return META.best},get codex(){return META.codex},get q(){return META.q}},saveMeta,OFF,offPending,offFlush,PROFILE,profileSync,codexSee,getMap,placeAt,interact,sanctumOpen,riftKeys,echoKeys,BONDS,bondKey,wkwUpdate,inTown,WS,LC,lsort,bestParty,fsCast,fsSkills,ldApply,MON,registerTamed,stickPower,stickCount,autoOne,planGear,bestTag,gainersFor,compGainFor,refresh,fitsFor,canEquip,gearOf,queueNewGear,ARENA,fxDur,banDur,stageTags,autoSwitchPick,layoutBattle,newChar,calcStats,limitSkill,limitTier,canStuck,dunReachable,LV_CAP,addXp,echoSpec,bossLvFor,fx,MON,log,effInfo,tierOf,perkOf,quirkDef,forgeCost,buyPlan,vJourney,modalBack,partySlots,limitOpen,town2Reached,skillKnown,known,classSkills,paceMigrate,unpackG,packG,makeEnemy,QUIRK,arrive,enterDungeon,wkwUpdate,useTravel,travelWhyNot,porkFlee,porkBlocked,encTile,campRest,buyPart,partLeft,alchStock,GAME_VERSION,CHANGELOG,ITEMS,tavernOffers,tavernPool,recruitFit,partyNeeds,vNext,CHALL,innSpot,RECIPES,MATS,FB,fbContext,REDEEM,legendJoin,legendQ,genQuests,dynActors,convInit,PROFILE,profileSync,checkArchive,GPOOL,FPOOL,guardianDef,saveMeta,archiveSkills,get G(){return G;},set G(v){G=v;},get B(){return B;},get V(){return V;},get META(){return META;},WS,ACT,render,newGame,placeAt,startBattle,autoTurn,advance,finishBattle,getMap,innSpot,setPause:p=>{PAUSE=p;},autoCfg,worldInputDir,inputSources,battleFrame,battleTheme,STS,MAPS,mapIssues,healMap,mimicReward,dropChest,interact,worldDraw,TPL,ZONES,ZS,newChar,recruit,saveGame,resetMaps,dynActors,tileAt,BV,refresh,genBounties,genQuests,vStarter,heroCard,heroURL,iconURL,masteryLine,AU,buildTrack,tone,noiseHit,MIDI,sfx,audioVol};
 ['heroRoles','SOLID','WEATHER','WX_BASE','weatherFX','superGuide','recruitCost','ceStart','ceStep','ceInit','cePool','wxList','SUPER_TABLE','superOk','facRank','facRep','facInit','facCount','facCredit','FAC','FMIS','facMissionList','facProg','tyOf','facSync','facMul','facBest','worldPlan','caveReward','enterCave','leaveCave','leaveDungeon','buildCaveMap','worldGraph','openWorldMap','sigReport','SIG_NAMES','starterDraw','ITEM_TIERS','gTierIdx','tierChip','gearIcon','starterSlots','STARTERS','CLK_LEN','CLK_PH','clockPhase','wxInfoBody','recipeOrder','recipeGain','recipeReady','recipeClose','effOf','calcDamage','healsUndead','storyEchoUp','riftKeys','echoDef','efCost','autoLocked','bossFightKey','learnScanAll','isSeen','mapMarks','genSub','subOK','subReq','ensureSub','inSub','tvSlots','tvInit','tvLeft','tvEvent','tvNextText','tvPool','tvDue','tvShuffle','mTavern','hireOK','TV_CAP','TV_CD','POOL_IDS','natPool','natOf','natRoll','NATURES','natInfo','natRerollCost','natChooseCost','NAT_CLASS','iconURL','seenOf','mapIcoDraw','drawMini','MAPCV','revealAround','fxLayer','numDur','compBonusText','compPerk','checkPhase','win','unitBox','LNQ','challVisible','challEligible','challState','isMimic','migrateCompanions','canSummon','summonComp','compOf','clockPhase','tickClock','isNight','rollWeather','wxStep','nightPool','encounterFoes','restAll','tameElite','openChest','rerollTavern','bestAll','gearTier','SV','svCheck','svFlush','svInit','svPush','svPull','svScan','svParse','svBackup','svPack','svUnpack','svProg','svCloudList','svDelDoc','svGet','svCap','slotState','slotKey','svDecode','SV_CH','svStatus','svSlotRaw','svLoad','loadRaw','svHash','svIdx'].forEach(k=>{try{Object.defineProperty(window.__A,k,{get:()=>eval(k)});}catch(e){}});

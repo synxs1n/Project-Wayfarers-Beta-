@@ -415,6 +415,26 @@ Registered (load order; 1 is next to the base):
 
 Runs: 13 hd2d (around) → 12 onboard (around) → 8 gfx6 (around) → 7 p2world (around) → 6 deskscale (around) → 5 keymap (around) → 3 music2 (around) → 2 saves (around) → **base** → 1 battleui (result) → 2 saves (around) → 3 music2 (around) → 4 p5settings (result) → 5 keymap (around) → 6 deskscale (around) → 7 p2world (around) → 8 gfx6 (around) → 9 battle3 (result) → 10 battle3 (result) → 11 battle5 (result) → 12 onboard (around) → 13 hd2d (around) → 14 guidance9 (result) → 15 res11 (result) → 16 menus11 (result)
 
+### renderBattle (15 hooks)
+Registered (load order; 1 is next to the base):
+1. `battleui.js` after: boss bar removed
+2. `battle3.js` after: fit the target tags
+3. `battle3.js` after: tall layout: bottom panel back to the top on a new turn
+4. `battle3.js` after: fit check once the whole render has run (microtask)
+5. `battle3.js` before: Expert battle info class (b9x)
+6. `battle5.js` after: forecast bar fit
+7. `battle4.js` around: gimmick sync before, Momentum bar after
+8. `chain5.js` after: planned targets on the intent tags and the party cards
+9. `summon8.js` after: praying badge
+10. `kits12.js` after: name plate over a summoned guardian
+11. `menus12.js` before: battle menu memory: a turn opens at the hero's own remembered submenu; the place is noted on every render
+12. `menus12.js` after: battle menu memory: put the remembered scroll back (after the layout hooks)
+13. `battle16.js` before: no battle menu memory: a turn opens on the main actions (runs before menus12, which would put a submenu back)
+14. `battle16.js` after: a new turn starts at the top of the command list
+15. `battle16.js` after: the name plate of a summoned Scourge says SCOURGE
+
+Runs: 13 battle16 → 11 menus12 → 7 battle4 (around) → 5 battle3 → **base** → 1 battleui → 2 battle3 → 3 battle3 → 4 battle3 → 6 battle5 → 7 battle4 (around) → 8 chain5 → 9 summon8 → 10 kits12 → 12 menus12 → 14 battle16 → 15 battle16
+
 ### battleFrame (14 hooks)
 Registered (load order; 1 is next to the base):
 1. `anim.js` before: no shake when still
@@ -507,22 +527,21 @@ Registered (load order; 1 is next to the base):
 
 Runs: 10 party12 → 6 map → **base** → 1 account → 2 progression → 3 tavern2 → 4 metastats → 5 prog2 → 7 pacing → 8 goals → 9 look9 → 11 party12 → 12 menus14 → 13 quests16
 
-### renderBattle (12 hooks)
+### cmdHtml (11 hooks)
 Registered (load order; 1 is next to the base):
-1. `battleui.js` after: boss bar removed
-2. `battle3.js` after: fit the target tags
-3. `battle3.js` after: tall layout: bottom panel back to the top on a new turn
-4. `battle3.js` after: fit check once the whole render has run (microtask)
-5. `battle3.js` before: Expert battle info class (b9x)
-6. `battle5.js` after: forecast bar fit
-7. `battle4.js` around: gimmick sync before, Momentum bar after
-8. `chain5.js` after: planned targets on the intent tags and the party cards
-9. `summon8.js` after: praying badge
-10. `kits12.js` after: name plate over a summoned guardian
-11. `menus12.js` before: battle menu memory: a turn opens at the hero's own remembered submenu; the place is noted on every render
-12. `menus12.js` after: battle menu memory: put the remembered scroll back (after the layout hooks)
+1. `battle3.js` result: tall layout: HP/MP bars and the auto note in the command head
+2. `battle5.js` result: cue and glow on the command menu
+3. `battle4.js` result: swap menu body and free swap label
+4. `summon8.js` around: summons menu and Invoke button
+5. `battle9.js` result: one Summon button
+6. `skillfilt9.js` result: skill filter chips
+7. `battle11.js` result: command head without the HP/MP mini bars
+8. `skillrows11.js` result: skill numbers on the battle skill list
+9. `skills12.js` result: role tier on the battle skill rows
+10. `menus12.js` result: battle skill rows: a missing scope, kind or Primer / Detonator tag is added; the last used skill is marked
+11. `battle16.js` result: recruited bosses: a note where the Summon command was for anyone but Nikaris or a Priest
 
-Runs: 11 menus12 → 7 battle4 (around) → 5 battle3 → **base** → 1 battleui → 2 battle3 → 3 battle3 → 4 battle3 → 6 battle5 → 7 battle4 (around) → 8 chain5 → 9 summon8 → 10 kits12 → 12 menus12
+Runs: 4 summon8 (around) → **base** → 1 battle3 (result) → 2 battle5 (result) → 3 battle4 (result) → 4 summon8 (around) → 5 battle9 (result) → 6 skillfilt9 (result) → 7 battle11 (result) → 8 skillrows11 (result) → 9 skills12 (result) → 10 menus12 (result) → 11 battle16 (result)
 
 ### mChar (11 hooks)
 Registered (load order; 1 is next to the base):
@@ -540,6 +559,22 @@ Registered (load order; 1 is next to the base):
 
 Runs: 2 learn (around) → **base** → 1 comp (result) → 2 learn (around) → 3 p3shop (result) → 4 p4party (result) → 5 roles9 (result) → 6 sheet11 (result) → 7 skillrows11 (result) → 8 party12 (result) → 9 skills12 (result) → 10 menus12 (result) → 11 menus14 (result)
 
+### unpackG (11 hooks)
+Registered (load order; 1 is next to the base):
+1. `tavern2.js` after: journey roster subset
+2. `comp.js` after: migrate companions
+3. `learn.js` after: record skills of loaded heroes
+4. `prog2.js` after: old saves: bosses won
+5. `map.js` before: forget the explored map
+6. `summon8.js` after: old saves: beaten guardians become summons
+7. `party12.js` after: migrate: reserves keep no gear
+8. `skills12.js` after: trim old saves to the capped kit
+9. `menus14.js` after: old saves keep the skills the old learn levels gave
+10. `realms14.js` after: old saves: a removed Scourge or Calamity maps to the nearest kept one
+11. `battle16.js` after: old saves: the pet of a removed Scourge follows the boss that replaced it
+
+Runs: 5 map → **base** → 1 tavern2 → 2 comp → 3 learn → 4 prog2 → 6 summon8 → 7 party12 → 8 skills12 → 9 menus14 → 10 realms14 → 11 battle16
+
 ### arrive (10 hooks)
 Registered (load order; 1 is next to the base):
 1. `journey.js` before: step count
@@ -554,21 +589,6 @@ Registered (load order; 1 is next to the base):
 10. `worldart12.js` after: node cards follow the realm of the map
 
 Runs: 7 field9 (around) → 3 world3 → 2 metastats → 1 journey → **base** → 4 chance → 5 ailments → 6 map → 7 field9 (around) → 8 party12 → 9 world12 → 10 worldart12
-
-### cmdHtml (10 hooks)
-Registered (load order; 1 is next to the base):
-1. `battle3.js` result: tall layout: HP/MP bars and the auto note in the command head
-2. `battle5.js` result: cue and glow on the command menu
-3. `battle4.js` result: swap menu body and free swap label
-4. `summon8.js` around: summons menu and Invoke button
-5. `battle9.js` result: one Summon button
-6. `skillfilt9.js` result: skill filter chips
-7. `battle11.js` result: command head without the HP/MP mini bars
-8. `skillrows11.js` result: skill numbers on the battle skill list
-9. `skills12.js` result: role tier on the battle skill rows
-10. `menus12.js` result: battle skill rows: a missing scope, kind or Primer / Detonator tag is added; the last used skill is marked
-
-Runs: 4 summon8 (around) → **base** → 1 battle3 (result) → 2 battle5 (result) → 3 battle4 (result) → 4 summon8 (around) → 5 battle9 (result) → 6 skillfilt9 (result) → 7 battle11 (result) → 8 skillrows11 (result) → 9 skills12 (result) → 10 menus12 (result)
 
 ### hdActors (10 hooks)
 Registered (load order; 1 is next to the base):
@@ -585,22 +605,7 @@ Registered (load order; 1 is next to the base):
 
 Runs: 5 npcart9 → **base** → 1 worldfx → 2 dungeon8 → 3 guidance9 → 4 npcmark9 → 6 echo11 → 7 world12 → 8 worldart13 → 9 light13 → 10 terrain13
 
-### unpackG (10 hooks)
-Registered (load order; 1 is next to the base):
-1. `tavern2.js` after: journey roster subset
-2. `comp.js` after: migrate companions
-3. `learn.js` after: record skills of loaded heroes
-4. `prog2.js` after: old saves: bosses won
-5. `map.js` before: forget the explored map
-6. `summon8.js` after: old saves: beaten guardians become summons
-7. `party12.js` after: migrate: reserves keep no gear
-8. `skills12.js` after: trim old saves to the capped kit
-9. `menus14.js` after: old saves keep the skills the old learn levels gave
-10. `realms14.js` after: old saves: a removed Scourge or Calamity maps to the nearest kept one
-
-Runs: 5 map → **base** → 1 tavern2 → 2 comp → 3 learn → 4 prog2 → 6 summon8 → 7 party12 → 8 skills12 → 9 menus14 → 10 realms14
-
-### calcStats (8 hooks)
+### calcStats (9 hooks)
 Registered (load order; 1 is next to the base):
 1. `ailments.js` after: wound shrinks max HP
 2. `echocore.js` after: Echoforged weapon perks
@@ -610,8 +615,9 @@ Registered (load order; 1 is next to the base):
 6. `riftkeeper9.js` after: Riftwalker key perks
 7. `roles9.js` after: faith perks
 8. `echo11.js` after: Echoforged weapon and armour perks
+9. `battle16.js` after: Nikaris: a little less ATK and MAG
 
-Runs: **base** → 1 ailments → 2 echocore → 3 comp → 4 roles → 5 natures6 → 6 riftkeeper9 → 7 roles9 → 8 echo11
+Runs: **base** → 1 ailments → 2 echocore → 3 comp → 4 roles → 5 natures6 → 6 riftkeeper9 → 7 roles9 → 8 echo11 → 9 battle16
 
 ### placeAt (8 hooks)
 Registered (load order; 1 is next to the base):
@@ -647,7 +653,7 @@ Registered (load order; 1 is next to the base):
 4. `skills12.js` result: the 12 skill kit, dual type primers and detonators, dual art kind (last hook: sees the finished list)
 5. `kits12.js` result: slot skills in the class voice, martial dual arts
 6. `menus12.js` result: skill descriptions never name a role
-7. `menus14.js` result: learn levels: a schedule to level 45 per kit (order kept); the 0.20.3 levels stay as lvP
+7. `menus14.js` result: learn levels: three skills by level 10, then an even walk to 45 (order kept); the 0.20.3 levels stay as lvP, the 0.20.9 ones as lvQ
 
 Runs: **base** → 1 archetype (result) → 2 sigskills (result) → 3 roles (result) → 4 skills12 (result) → 5 kits12 (result) → 6 menus12 (result) → 7 menus14 (result)
 
@@ -1089,6 +1095,13 @@ Registered (load order; 1 is next to the base):
 
 Runs: 1 battle3 (around) → **base** → 1 battle3 (around) → 2 chars13 (result)
 
+### caveRecruitPool (2 hooks)
+Registered (load order; 1 is next to the base):
+1. `world12.js` result: spacing and dual types for cave and keep recruits
+2. `battle16.js` result: no dual type wayfarer in a cave, a keep cell or sent by a guild before the third realm
+
+Runs: **base** → 1 world12 (result) → 2 battle16 (result)
+
 ### drawUnit (2 hooks)
 Registered (load order; 1 is next to the base):
 1. `chars13.js` before: mid-ground silhouettes in depth order; each unit breathes on its own phase
@@ -1233,12 +1246,6 @@ Registered (load order; 1 is next to the base):
 1. `chars13.js` result: a haze toward the horizon on the ground plane
 
 Runs: **base** → 1 chars13 (result)
-
-### caveRecruitPool (1 hook)
-Registered (load order; 1 is next to the base):
-1. `world12.js` result: spacing and dual types for cave and keep recruits
-
-Runs: **base** → 1 world12 (result)
 
 ### caveReward (1 hook)
 Registered (load order; 1 is next to the base):

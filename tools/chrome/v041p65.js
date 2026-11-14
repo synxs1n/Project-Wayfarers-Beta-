@@ -2,7 +2,7 @@
 const {open,chk,done}=require('./pw');
 (async()=>{
 const H=await open({w:430,h:880,mobile:true});const {ev,wait}=H;
-await ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;});
+await ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;/* 0.21.2: guilds open once the first Scourge is down */A.G.cleared=A.G.cleared||{};A.G.cleared[0]=1;A.facDirty&&A.facDirty();A.facCount('manual');});
 const fight=async(useAuto)=>ev(async(useAuto)=>{const A=__A;A.startBattle({stage:0,kind:'field',weather:'clear'});
   if(useAuto){A.B.auto=true;A.V.auto=true;}
   for(let i=0;i<1200;i++){await new Promise(r=>setTimeout(r,10));if(!A.B||A.B.over)break;
