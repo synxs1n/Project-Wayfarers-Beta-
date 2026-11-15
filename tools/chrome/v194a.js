@@ -1,7 +1,7 @@
 // legends17a.js: the two new Legendary wayfarers, Joseth Kynmar the Bloodhowl (Blood Summoner) and Dist, Taker of Hearts (Chief Bandit).
 // 1) data: both are legends (LEGEND_IDS, legend classes), out of the starter pool, the tavern pool and the Daily Trial; kits of 14 on the roster17 levels,
 //    exactly three known at level 10, two marked as the hero's own; the Daily Trial's seeded pick and the arena pool are untouched (nothing added to MON)
-// 2) unlock by code (JOSETH-PLACEHOLDER, DIST-PLACEHOLDER) and by quest with no code: the quest posts from a later realm, its steps can be played
+// 2) unlock by code (LEGEND-JOSE, LEGEND-DINO) and by quest with no code: the quest posts from a later realm, its steps can be played
 //    (a Potion for Junah, the fights with Odin and Zeus, the duel; the toll, the Runner who is cornered by three blows or gets away, Dist and his crew),
 //    the hero joins and is unlocked on the account
 // 3) every skill of both kits can be used in a battle; the blood summon runs (poses jblood and jslam, the ring, the summon hidden until its smoke)
@@ -43,7 +43,7 @@ const H=await open({w:390,h:844,pre:PRE});const {ev}=H;const cerr=[];H.page.on('
    r.sprites&&r.sprites.n===2*(1+6+1)&&r.sprites.poses===5&&r.sprites.dogs==='true,true,true,true,true'&&r.sprites.clone&&r.sprites.big||JSON.stringify(r.sprites));}
 // ---------- 2. unlock by code, and by quest with no code ----------
 {const r=await ev(async()=>{const A=__A,g=A.TW.get,o={},rc=g('redeemCode'),RED=g('REDEEM');
-  const bad=await rc('WRONG-CODE');RED.until=0;const a=await rc(' joseth-placeholder ');RED.until=0;const b=await rc('DIST-PLACEHOLDER');RED.until=0;const c=await rc('dist-placeholder');RED.until=0;
+  const bad=await rc('WRONG-CODE');RED.until=0;const a=await rc(' legend-jose ');RED.until=0;const b=await rc('LEGEND-DINO');RED.until=0;const c=await rc('legend-dino');RED.until=0;
   o.code=[bad.ok,a.ok&&a.id,b.ok&&b.id,c.already,g('legendOn')('jose'),g('legendOn')('dist')].join();
   o.redeem=g('vRedeem')().includes('Three Whistles')&&g('vRedeem')().includes('The Toll on the Water');
   return o;});
@@ -52,7 +52,7 @@ const H=await open({w:390,h:844,pre:PRE});const {ev}=H;const cerr=[];H.page.on('
  await ev(START,['mira','sable','oren']);
  const q=await ev(()=>{const A=__A,g=A.TW.get,G=A.G,o={},mr=Math.random;
   // with the code: the older legends' rule (legendRoll); Dist from the second realm, Joseth (a dual type) from the third
-  G.lrRun={n:99,r:{}};/* keep the codeless roll out of this part */Math.random=()=>0;G.stage=1;__L17A.questRoll(1);o.code1=G.quests.filter(x=>x.type==='legend').map(x=>x.hero).join();G.stage=2;__L17A.questRoll(2);o.code2=G.quests.filter(x=>x.type==='legend').map(x=>x.hero).sort().join();
+  G.lrRun={n:99,r:{}};/* keep the codeless roll out of this part; 0.22.7: a coded legend posts for sure, even on a high roll */Math.random=()=>.99;G.stage=1;__L17A.questRoll(1);o.code1=G.quests.filter(x=>x.type==='legend').map(x=>x.hero).join();G.stage=2;__L17A.questRoll(2);o.code2=G.quests.filter(x=>x.type==='legend').map(x=>x.hero).sort().join();
   // with no code (0.22.6): one rare roll a realm, chance 8% +1% a clear to 15%, at most 1+clears a run, no pity
   const META=g('META');META.legends={};G.quests=G.quests.filter(x=>x.type!=='legend');G.legRoll={};G.legMiss={};delete G.lrRun;const c0=META.clears;
   META.clears=0;o.ch0=__L17A.lr19.chance();o.cap0=__L17A.lr19.cap();META.clears=3;o.ch3=__L17A.lr19.chance();o.cap3=__L17A.lr19.cap();META.clears=20;o.ch20=__L17A.lr19.chance();o.cap20=__L17A.lr19.cap();META.clears=0;

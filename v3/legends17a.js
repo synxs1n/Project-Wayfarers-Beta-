@@ -97,10 +97,9 @@ function j17Hid(id){if(!TPL[id]&&L17_HID[id])TPL[id]={id,n:'Dist',cls:'chief',el
 try{L17J.ids.forEach(id=>{const t=TPL[id],fam=CF[t.cls][0],base=GEAR['w_'+fam+'_4']||GEAR['w_'+fam+'_3'],o={n:`${t.n}'s ${SIGW[t.cls]}`,slot:'w',tier:4,only:id,fam,el:t.el[0],price:2400,attr:{[CLS[t.cls].pref[0]]:5}};
     ST.forEach(k=>{if(base[k])o[k]=Math.round(base[k]*(base[k]>0?1.08:1));});addGear('u_'+id,o);const g=GEAR['u_'+id];
     try{g.price0=g.price;g.price=Math.round(g.price*ECON.gear);g.__ec=1;}catch(e){}g.relic=1;g.bound=1;});}catch(e){console.error('legends17a gear',e);}
-// redeem codes (legends.js: SHA-256 of 'aurelis-legend:' + CODE, upper case, no spaces). The placeholders follow the three older ones:
-// JOSETH-PLACEHOLDER and DIST-PLACEHOLDER. Swap a hash to change a code (see the note at the top of legends.js).
-LEGEND_CODES['ebf0c909796ecaaa8c9f75eb090e3058c089d35e26fd31573a19a3f8f499a2f2']='jose';
-LEGEND_CODES['8d9e36b76f3e04f9ecd4d7ebcfa9590b370db88c8e72daef6aa39fd1ac50f5ee']='dist';
+// redeem codes (legends.js: SHA-256 of 'aurelis-legend:' + CODE, upper case, no spaces; LEGEND-<real first name>). Swap a hash to change a code.
+LEGEND_CODES['b2c93363dca7831ef35f92bead561671b4ac7db0d81cc461ae3e8ee5a558e2a1']='jose';
+LEGEND_CODES['c86a7ca69759f5f0f9f18d7a20baaec67920152d5da4a647a8fa27fd188cc0c5']='dist';
 // their own lines (duellines.js): the duel of the quest, its shout at half health, the join, the rival of the personal quest
 try{Object.assign(DUEL_LINES,{
  jose:{o:"They like you. I am harder to please.",m:"Blood answers blood!",w:"Good. They were right about you. Four of us, then. Five, on a bad day.",l:"Down, all three. Leave them breathing. Come back when you can stand.",f:"Run if you like. Odin already has your scent.",d:"Not today? The dogs will remember you either way.",r:"You took one of mine once. Look around you. I brought the other three.",rw:"Good dogs. All of you. It is done."},

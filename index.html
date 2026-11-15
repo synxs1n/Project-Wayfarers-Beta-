@@ -2119,7 +2119,7 @@ html:not(.flat) .battle.b3 .bline .b4mo .b4bar{box-shadow:inset 0 0 0 1px #000,0
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.22.6";const APP_BUILD="c21ad3f08856";
+(function(){const APP_VER="0.22.7";const APP_BUILD="c9384fb0510e";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2892,7 +2892,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.22.6";const APP_BUILD="c21ad3f08856";
+const APP_VER="0.22.7";const APP_BUILD="c9384fb0510e";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2900,6 +2900,7 @@ const APP_VER="0.22.6";const APP_BUILD="c21ad3f08856";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.22.7',['Redeem codes now use the real person\'s name: LEGEND-NICK, LEGEND-KEVIN, LEGEND-JASON, LEGEND-JOSE and LEGEND-DINO. A redeemed Legendary\'s quest now posts for sure on the first realm he can appear in, on every journey, including the next one you load. You can redeem codes in game from Menu, Help (or the ? button).']],
  ['Beta v0.22.6',['Legendary quests are rare again. Each realm of a journey has one small chance (8%) to post a Legendary\'s quest for a hero you have not unlocked, with no catch-up after a miss. Each clear of the game adds 1% to that chance, up to 15%, and a journey shows at most one such quest plus one more per clear, up to five. Heroes you unlocked with a code still post their recruit quest as before.']],
  ['Beta v0.22.5',['Auto starts on the first press again, even when it unlocks partway through a fight. Clicking the full map, minimap and world map now walks to the right tile in the zoomed Windows app. Quest lists keep their order while open, guild notices show only under Guilds and Notices, and Accept, Claim and quest states look and read the same everywhere. Map changes are quicker again, mostly in the heights realms, and battle setup does less work.']],
  ['Beta v0.22.4',['Nikaris now joins the moment you beat his beasts: he steps out of the trees, calls them off, talks with you and joins your six on the spot (or the reserve if your six is full), on both his trail and his code quest. Monks now Invoke exactly like Priests, calling the same full guardians and Scourges into the whole Vanguard\'s place, but the Monk needs 2 turns of stillness to call and the guardian stays 4 turns instead of 5.']],
@@ -12613,11 +12614,12 @@ setTimeout(()=>{try{profileSync();}catch(e){}},1200);
 // Unlocks live in META.legends (local cache) and profile/<uid>.flags.legends (account), merged as a union.
 // Redeem codes are never stored in plain text: only SHA-256('aurelis-legend:' + CODE) is here.
 // To swap a code: node -e "console.log(require('crypto').createHash('sha256').update('aurelis-legend:'+'NEWCODE').digest('hex'))"
+// Codes are LEGEND-<the real person's first name> (0.22.7).
 // (codes are trimmed, upper-cased and stripped of spaces before hashing) and replace the matching hash below.
 const LEGEND_CODES={
- '0f29cf9fcc08d8236e87eea078bc528304aa9296b127ff22b8831ef462ad7f78':'kaevan',
- '7fb78e341af6a08ca85651461c78dc560fb66b71bab4246d4d67411be9636de2':'nikaris',
- '85d180472fb206773045e39e6675632fe4635b744222d4718790795922bc3e95':'jaeson'
+ 'eda533683babb11b28eb78b44cf02252c9084d8f6a5eea50cb8b1c1aaa1991ca':'kaevan',
+ '49c905b6a722eea7a5418989a9f38a7a88d4f4a15327016324915a31dff5920f':'nikaris',
+ '864659336e56df1bfd08411a2571ef676630ae18c2bc68f39bc2ad552bcd8872':'jaeson'
 };
 const REDEEM={until:0,busy:false,msg:null,ok:false};
 async function sha256hex(str){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str));return Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join('');}
@@ -12643,8 +12645,8 @@ function legendRoll(s){
   LEGEND_IDS.forEach(id=>{
     if(!legendOn(id)||G.roster[id]||G.quests.some(q=>q.type==='legend'&&q.hero===id))return;
     const k=id+':'+s;if(G.legRoll[k])return;G.legRoll[k]=1;
-    // v0.11.4: an unlocked legend always shows up: after one missed roll on an eligible realm (or from the fourth realm) its quest posts for sure
-    const L=LEG_Q[id];if(!L.ok(s))return;G.legMiss=G.legMiss||{};if(Math.random()>=L.ch&&!(G.legMiss[id]>=1)&&s<3){G.legMiss[id]=(G.legMiss[id]||0)+1;return;}
+    // 0.22.7: an unlocked legend (code redeemed or earned) posts his recruit quest for sure on the first realm he can, every journey, no roll
+    const L=LEG_Q[id];if(!L.ok(s))return;
     G.quests.push({id:'L'+id,stage:s,type:'legend',hero:id,state:'open',step:0,title:L.title,desc:L.desc(s),reward:{gold:0}});
   });
 }
@@ -12740,8 +12742,8 @@ function mLegendEvt(m){const t=TPL[m.hero];
     m.join?'<button class="btn gold" data-act="legendJoinBtn">Travel together</button>':`<button class="btn" data-act="closeModal">Not yet</button><button class="btn gold" data-act="legendFight">${esc(m.fight)}</button>`,true);}
 function vRedeem(){
   const un=LEGEND_IDS.filter(legendOn);
-  return `<p class="note">Got a code from the developer? Redeem it here to permanently unlock a Legendary hero on your account. You'll then meet them through their own quest event on a town quest board.</p>
-    <label class="fbl"><span>Redeem code</span></label><input class="fbin" id="redeemIn" maxlength="64" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="XXXX-XXXX">
+  return `<p class="note">Got a code from the developer? Redeem it here to permanently unlock a Legendary hero on your account. Codes look like LEGEND-NAME. From your next journey (or the next quest board you open), the hero's own quest posts for sure on the first realm they can appear in.</p>
+    <label class="fbl"><span>Redeem code</span></label><input class="fbin" id="redeemIn" maxlength="64" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="LEGEND-NAME">
     ${REDEEM.msg?`<p class="note ${REDEEM.ok?'okmsg':'warn'}">${esc(REDEEM.msg)}</p>`:''}
     <div class="btnrow"><button class="btn gold" data-act="redeem" ${REDEEM.busy?'disabled':''}>${REDEEM.busy?'Checking…':'Redeem'}</button></div>
     <h4>Legendary heroes</h4><div class="rows compact">${LEGEND_IDS.map(id=>{const t=TPL[id];const on=legendOn(id);return `<div class="row ${on?'':'lock'}">${on?port(id):''}<div class="grow"><b>${on?esc(t.title):'Locked legend'}</b><small>${on?`${CLS[t.cls].n} · ${TRAITS[t.trait][0]}. Look for "${esc(LEG_Q[id].title)}" on a quest board.`:'Needs a redeem code.'}</small></div></div>`;}).join('')}</div>
@@ -31205,6 +31207,7 @@ function m11Gen(){ // rows this pass adds, using acts that already exist
     }
   }
   out.help.push([0,`<div class="row"><div class="grow"><b>Help and feedback</b><small>Report a bug, send an idea, read the changelog or check your sent reports.</small></div><button class="btn sm" data-act="fbOpen">Help / Feedback</button></div>`]);
+  out.help.push([0,`<div class="row"><div class="grow"><b>Redeem a code</b><small>Unlock a Legendary hero with a code like LEGEND-NAME. Their quest posts on a quest board for sure.</small></div><button class="btn sm gold" data-act="redeemOpen">Redeem code</button></div>`]);
   out.help.push([1,`<div class="row"><div class="grow"><b>Guides</b><small>What next, foe types and how the systems work.</small></div><button class="btn sm" data-act="menuGrp" data-arg="guides">Guides</button></div>`]);
   try{if(!kmHasKb())out.controls.push([1,`<div class="row"><div class="grow"><b>Touch</b><small>Drag the pad or tap the ground to walk, tap people and doors to use them. The keyboard Keys row shows up on computers.</small></div></div>`]);}catch(e){}
   return out;}
@@ -36444,10 +36447,9 @@ function j17Hid(id){if(!TPL[id]&&L17_HID[id])TPL[id]={id,n:'Dist',cls:'chief',el
 try{L17J.ids.forEach(id=>{const t=TPL[id],fam=CF[t.cls][0],base=GEAR['w_'+fam+'_4']||GEAR['w_'+fam+'_3'],o={n:`${t.n}'s ${SIGW[t.cls]}`,slot:'w',tier:4,only:id,fam,el:t.el[0],price:2400,attr:{[CLS[t.cls].pref[0]]:5}};
     ST.forEach(k=>{if(base[k])o[k]=Math.round(base[k]*(base[k]>0?1.08:1));});addGear('u_'+id,o);const g=GEAR['u_'+id];
     try{g.price0=g.price;g.price=Math.round(g.price*ECON.gear);g.__ec=1;}catch(e){}g.relic=1;g.bound=1;});}catch(e){console.error('legends17a gear',e);}
-// redeem codes (legends.js: SHA-256 of 'aurelis-legend:' + CODE, upper case, no spaces). The placeholders follow the three older ones:
-// JOSETH-PLACEHOLDER and DIST-PLACEHOLDER. Swap a hash to change a code (see the note at the top of legends.js).
-LEGEND_CODES['ebf0c909796ecaaa8c9f75eb090e3058c089d35e26fd31573a19a3f8f499a2f2']='jose';
-LEGEND_CODES['8d9e36b76f3e04f9ecd4d7ebcfa9590b370db88c8e72daef6aa39fd1ac50f5ee']='dist';
+// redeem codes (legends.js: SHA-256 of 'aurelis-legend:' + CODE, upper case, no spaces; LEGEND-<real first name>). Swap a hash to change a code.
+LEGEND_CODES['b2c93363dca7831ef35f92bead561671b4ac7db0d81cc461ae3e8ee5a558e2a1']='jose';
+LEGEND_CODES['c86a7ca69759f5f0f9f18d7a20baaec67920152d5da4a647a8fa27fd188cc0c5']='dist';
 // their own lines (duellines.js): the duel of the quest, its shout at half health, the join, the rival of the personal quest
 try{Object.assign(DUEL_LINES,{
  jose:{o:"They like you. I am harder to please.",m:"Blood answers blood!",w:"Good. They were right about you. Four of us, then. Five, on a bad day.",l:"Down, all three. Leave them breathing. Come back when you can stand.",f:"Run if you like. Odin already has your scent.",d:"Not today? The dogs will remember you either way.",r:"You took one of mine once. Look around you. I brought the other three.",rw:"Good dogs. All of you. It is done."},

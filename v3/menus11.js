@@ -137,6 +137,7 @@ function m11Gen(){ // rows this pass adds, using acts that already exist
     }
   }
   out.help.push([0,`<div class="row"><div class="grow"><b>Help and feedback</b><small>Report a bug, send an idea, read the changelog or check your sent reports.</small></div><button class="btn sm" data-act="fbOpen">Help / Feedback</button></div>`]);
+  out.help.push([0,`<div class="row"><div class="grow"><b>Redeem a code</b><small>Unlock a Legendary hero with a code like LEGEND-NAME. Their quest posts on a quest board for sure.</small></div><button class="btn sm gold" data-act="redeemOpen">Redeem code</button></div>`]);
   out.help.push([1,`<div class="row"><div class="grow"><b>Guides</b><small>What next, foe types and how the systems work.</small></div><button class="btn sm" data-act="menuGrp" data-arg="guides">Guides</button></div>`]);
   try{if(!kmHasKb())out.controls.push([1,`<div class="row"><div class="grow"><b>Touch</b><small>Drag the pad or tap the ground to walk, tap people and doors to use them. The keyboard Keys row shows up on computers.</small></div></div>`]);}catch(e){}
   return out;}

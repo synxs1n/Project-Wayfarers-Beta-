@@ -3,11 +3,12 @@
 // Unlocks live in META.legends (local cache) and profile/<uid>.flags.legends (account), merged as a union.
 // Redeem codes are never stored in plain text: only SHA-256('aurelis-legend:' + CODE) is here.
 // To swap a code: node -e "console.log(require('crypto').createHash('sha256').update('aurelis-legend:'+'NEWCODE').digest('hex'))"
+// Codes are LEGEND-<the real person's first name> (0.22.7).
 // (codes are trimmed, upper-cased and stripped of spaces before hashing) and replace the matching hash below.
 const LEGEND_CODES={
- '0f29cf9fcc08d8236e87eea078bc528304aa9296b127ff22b8831ef462ad7f78':'kaevan',
- '7fb78e341af6a08ca85651461c78dc560fb66b71bab4246d4d67411be9636de2':'nikaris',
- '85d180472fb206773045e39e6675632fe4635b744222d4718790795922bc3e95':'jaeson'
+ 'eda533683babb11b28eb78b44cf02252c9084d8f6a5eea50cb8b1c1aaa1991ca':'kaevan',
+ '49c905b6a722eea7a5418989a9f38a7a88d4f4a15327016324915a31dff5920f':'nikaris',
+ '864659336e56df1bfd08411a2571ef676630ae18c2bc68f39bc2ad552bcd8872':'jaeson'
 };
 const REDEEM={until:0,busy:false,msg:null,ok:false};
 async function sha256hex(str){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str));return Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join('');}
@@ -33,8 +34,8 @@ function legendRoll(s){
   LEGEND_IDS.forEach(id=>{
     if(!legendOn(id)||G.roster[id]||G.quests.some(q=>q.type==='legend'&&q.hero===id))return;
     const k=id+':'+s;if(G.legRoll[k])return;G.legRoll[k]=1;
-    // v0.11.4: an unlocked legend always shows up: after one missed roll on an eligible realm (or from the fourth realm) its quest posts for sure
-    const L=LEG_Q[id];if(!L.ok(s))return;G.legMiss=G.legMiss||{};if(Math.random()>=L.ch&&!(G.legMiss[id]>=1)&&s<3){G.legMiss[id]=(G.legMiss[id]||0)+1;return;}
+    // 0.22.7: an unlocked legend (code redeemed or earned) posts his recruit quest for sure on the first realm he can, every journey, no roll
+    const L=LEG_Q[id];if(!L.ok(s))return;
     G.quests.push({id:'L'+id,stage:s,type:'legend',hero:id,state:'open',step:0,title:L.title,desc:L.desc(s),reward:{gold:0}});
   });
 }
@@ -130,8 +131,8 @@ function mLegendEvt(m){const t=TPL[m.hero];
     m.join?'<button class="btn gold" data-act="legendJoinBtn">Travel together</button>':`<button class="btn" data-act="closeModal">Not yet</button><button class="btn gold" data-act="legendFight">${esc(m.fight)}</button>`,true);}
 function vRedeem(){
   const un=LEGEND_IDS.filter(legendOn);
-  return `<p class="note">Got a code from the developer? Redeem it here to permanently unlock a Legendary hero on your account. You'll then meet them through their own quest event on a town quest board.</p>
-    <label class="fbl"><span>Redeem code</span></label><input class="fbin" id="redeemIn" maxlength="64" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="XXXX-XXXX">
+  return `<p class="note">Got a code from the developer? Redeem it here to permanently unlock a Legendary hero on your account. Codes look like LEGEND-NAME. From your next journey (or the next quest board you open), the hero's own quest posts for sure on the first realm they can appear in.</p>
+    <label class="fbl"><span>Redeem code</span></label><input class="fbin" id="redeemIn" maxlength="64" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="LEGEND-NAME">
     ${REDEEM.msg?`<p class="note ${REDEEM.ok?'okmsg':'warn'}">${esc(REDEEM.msg)}</p>`:''}
     <div class="btnrow"><button class="btn gold" data-act="redeem" ${REDEEM.busy?'disabled':''}>${REDEEM.busy?'Checking…':'Redeem'}</button></div>
     <h4>Legendary heroes</h4><div class="rows compact">${LEGEND_IDS.map(id=>{const t=TPL[id];const on=legendOn(id);return `<div class="row ${on?'':'lock'}">${on?port(id):''}<div class="grow"><b>${on?esc(t.title):'Locked legend'}</b><small>${on?`${CLS[t.cls].n} · ${TRAITS[t.trait][0]}. Look for "${esc(LEG_Q[id].title)}" on a quest board.`:'Needs a redeem code.'}</small></div></div>`;}).join('')}</div>

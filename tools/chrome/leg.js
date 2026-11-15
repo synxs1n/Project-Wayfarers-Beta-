@@ -20,7 +20,7 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));const ev=(f,a)=>page.evaluate(f,
 await ev(()=>__A.ACT.redeemOpen());await wait(300);
 await page.type('#redeemIn','wrong-code');await ev(()=>__A.ACT.redeem());await wait(400);console.log('wrong',await ev(()=>__A.REDEEM.msg));
 await ev(()=>{__A.REDEEM.until=0;});
-for(const c of ['kaevan-placeholder',' NIKARIS-PLACEHOLDER ','JAESON-PLACEHOLDER']){await ev(()=>{document.getElementById('redeemIn').value='';});await page.type('#redeemIn',c);await ev(()=>__A.ACT.redeem());await wait(500);console.log('code',await ev(()=>__A.REDEEM.msg));}
+for(const c of ['legend-kevin',' LEGEND-NICK ','LEGEND-JASON']){await ev(()=>{document.getElementById('redeemIn').value='';});await page.type('#redeemIn',c);await ev(()=>__A.ACT.redeem());await wait(500);console.log('code',await ev(()=>__A.REDEEM.msg));}
 await shot('redeem');
 console.log('legends',await ev(()=>JSON.stringify(__A.META.legends)));
 await wait(4500);console.log('remote flags',await ev(()=>JSON.stringify((__S.get('profile/u_test')||{}).flags)));
