@@ -705,19 +705,6 @@ Registered (load order; 1 is next to the base):
 
 Runs: 8 world16 → 7 world14 (around) → 6 terrain13 (around) → 2 dungeon8 (around) → 1 worldfx (around) → **base** → 1 worldfx (around) → 2 dungeon8 (around) → 3 sitelook10 → 4 breachlook11 → 5 worldart13 → 6 terrain13 (around) → 7 world14 (around)
 
-### genQuests (8 hooks)
-Registered (load order; 1 is next to the base):
-1. `legends.js` after: legend quests
-2. `equip.js` after: the Tamer's Stick quest
-3. `realms.js` around: realm quests (pools, rival)
-4. `pacing.js` after: Tamer quest step for the pacing
-5. `guild7.js` after: notices that need the Guild Hall
-6. `quests16.js` after: guild notices wait for the first realm, then show in every town
-7. `legends17b.js` after: the trail of a Legendary nobody has a code for
-8. `legends17a.js` after: the two legend quests can post without a code
-
-Runs: 3 realms (around) → **base** → 1 legends → 2 equip → 3 realms (around) → 4 pacing → 5 guild7 → 6 quests16 → 7 legends17b → 8 legends17a
-
 ### showLocation (8 hooks)
 Registered (load order; 1 is next to the base):
 1. `feedback.js` after: log the arrival
@@ -779,6 +766,18 @@ Registered (load order; 1 is next to the base):
 7. `legends17a.js` after: summon smoke and the crew over the units
 
 Runs: 1 anim → **base** → 2 anim → 3 gfx6battle → 4 hdspell → 5 fxkind11 → 6 legends17b → 7 legends17a
+
+### genQuests (7 hooks)
+Registered (load order; 1 is next to the base):
+1. `legends.js` after: legend quests
+2. `equip.js` after: the Tamer's Stick quest
+3. `realms.js` around: realm quests (pools, rival)
+4. `pacing.js` after: Tamer quest step for the pacing
+5. `guild7.js` after: notices that need the Guild Hall
+6. `quests16.js` after: guild notices wait for the first realm, then show in every town
+7. `legends17a.js` after: the two legend quests can post without a code
+
+Runs: 3 realms (around) → **base** → 1 legends → 2 equip → 3 realms (around) → 4 pacing → 5 guild7 → 6 quests16 → 7 legends17a
 
 ### modalBack (7 hooks)
 Registered (load order; 1 is next to the base):

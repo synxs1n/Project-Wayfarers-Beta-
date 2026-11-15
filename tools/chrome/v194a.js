@@ -52,18 +52,24 @@ const H=await open({w:390,h:844,pre:PRE});const {ev}=H;const cerr=[];H.page.on('
  await ev(START,['mira','sable','oren']);
  const q=await ev(()=>{const A=__A,g=A.TW.get,G=A.G,o={},mr=Math.random;
   // with the code: the older legends' rule (legendRoll); Dist from the second realm, Joseth (a dual type) from the third
-  Math.random=()=>0;G.stage=1;__L17A.questRoll(1);o.code1=G.quests.filter(x=>x.type==='legend').map(x=>x.hero).join();G.stage=2;__L17A.questRoll(2);o.code2=G.quests.filter(x=>x.type==='legend').map(x=>x.hero).sort().join();
-  // with no code: Dist from the third realm, Joseth from the fourth; a miss once, then for sure
-  const META=g('META');META.legends={};G.quests=G.quests.filter(x=>x.type!=='legend');G.legRoll={};G.legMiss={};
-  G.stage=1;__L17A.questRoll(1);o.free1=G.quests.filter(x=>x.type==='legend').length;
-  Math.random=()=>.99;G.stage=2;__L17A.questRoll(2);o.miss=G.quests.filter(x=>x.type==='legend').length;
-  G.stage=3;__L17A.questRoll(3);o.free3=G.quests.filter(x=>x.type==='legend').map(x=>x.hero).sort().join();
-  G.stage=4;__L17A.questRoll(4);o.free4=G.quests.filter(x=>x.type==='legend').map(x=>x.hero).sort().join();Math.random=mr;
+  G.lrRun={n:99,r:{}};/* keep the codeless roll out of this part */Math.random=()=>0;G.stage=1;__L17A.questRoll(1);o.code1=G.quests.filter(x=>x.type==='legend').map(x=>x.hero).join();G.stage=2;__L17A.questRoll(2);o.code2=G.quests.filter(x=>x.type==='legend').map(x=>x.hero).sort().join();
+  // with no code (0.22.6): one rare roll a realm, chance 8% +1% a clear to 15%, at most 1+clears a run, no pity
+  const META=g('META');META.legends={};G.quests=G.quests.filter(x=>x.type!=='legend');G.legRoll={};G.legMiss={};delete G.lrRun;const c0=META.clears;
+  META.clears=0;o.ch0=__L17A.lr19.chance();o.cap0=__L17A.lr19.cap();META.clears=3;o.ch3=__L17A.lr19.chance();o.cap3=__L17A.lr19.cap();META.clears=20;o.ch20=__L17A.lr19.chance();o.cap20=__L17A.lr19.cap();META.clears=0;
+  Math.random=()=>.5;G.stage=1;__L17A.questRoll(1);G.stage=2;__L17A.questRoll(2);G.stage=3;__L17A.questRoll(3);o.miss=G.quests.filter(x=>x.type==='legend').length;
+  Math.random=()=>0;__L17A.questRoll(3);o.again=G.quests.filter(x=>x.type==='legend').length;
+  G.stage=4;__L17A.questRoll(4);o.hit=G.quests.filter(x=>x.type==='legend').length;
+  delete G.lrRun.r[4];__L17A.questRoll(4);o.capped=G.quests.filter(x=>x.type==='legend').length;
+  META.clears=1;delete G.lrRun.r[4];__L17A.questRoll(4);o.cap1=G.quests.filter(x=>x.type==='legend').length;
+  // the board shape: post both of Joseth and Dist
+  G.quests=G.quests.filter(x=>x.type!=='legend');delete G.lrRun;__L17A.LR19.force=1;for(let i=0;i<8&&!(__L17A.quest('dist')&&__L17A.quest('jose'));i++){if(G.lrRun)G.lrRun.r={};__L17A.questRoll(4);}__L17A.LR19.force=0;
+  META.clears=c0;Math.random=mr;
   const Q=__L17A.quest('dist'),J=__L17A.quest('jose');o.shape=[Q.id,Q.state,Q.step,Q.title,J.title].join('|');
   o.board=(()=>{try{const h=g('nbBody')('quests');return /The Toll on the Water/.test(h)&&/Three Whistles/.test(h)&&/Dist, Taker of Hearts may join you/.test(h);}catch(e){return 'error '+e.message;}})();
   return o;});
  chk('with the code the quests post like the older legends\' (Dist from realm 2, Joseth from realm 3): '+q.code1+' / '+q.code2,q.code1==='dist'&&q.code2==='dist,jose'||JSON.stringify(q));
- chk('with no code: nothing in realm 2, one miss in realm 3, Dist for sure in realm 4, Joseth from realm 4 (for sure after his miss)',q.free1===0&&q.miss===0&&q.free3==='dist'&&q.free4==='dist,jose'||JSON.stringify(q));
+ chk(`with no code it is rare: ${Math.round(q.ch0*100)}% a realm and 1 a run at 0 clears, ${Math.round(q.ch3*100)}% and ${q.cap3} at 3, capped at ${Math.round(q.ch20*100)}% and ${q.cap20}`,Math.abs(q.ch0-.08)<1e-9&&q.cap0===1&&Math.abs(q.ch3-.11)<1e-9&&q.cap3===4&&Math.abs(q.ch20-.15)<1e-9&&q.cap20===5||JSON.stringify(q));
+ chk(`misses post nothing and there is no pity (${q.miss}); one roll a realm (${q.again}); a hit posts one (${q.hit}); the run cap holds at 0 clears (${q.capped}) and rises with a clear (${q.cap1})`,q.miss===0&&q.again===0&&q.hit===1&&q.capped===1&&q.cap1===2||JSON.stringify(q));
  chk('the quests are on the Notice Board with the hero as the reward: '+q.shape,q.board===true&&/^Ldist\|open\|0\|The Toll on the Water\|Three Whistles$/.test(q.shape)||JSON.stringify(q));
  // play both quests
  const p=await ev(()=>{const A=__A,g=A.TW.get,G=A.G,o={log:[]},ACT=A.ACT,V=A.V;g('battlePaused=function(){return true;}');

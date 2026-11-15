@@ -2119,7 +2119,7 @@ html:not(.flat) .battle.b3 .bline .b4mo .b4bar{box-shadow:inset 0 0 0 1px #000,0
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.22.5";const APP_BUILD="6b0cae32f36b";
+(function(){const APP_VER="0.22.6";const APP_BUILD="c21ad3f08856";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2892,7 +2892,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.22.5";const APP_BUILD="6b0cae32f36b";
+const APP_VER="0.22.6";const APP_BUILD="c21ad3f08856";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2900,6 +2900,7 @@ const APP_VER="0.22.5";const APP_BUILD="6b0cae32f36b";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.22.6',['Legendary quests are rare again. Each realm of a journey has one small chance (8%) to post a Legendary\'s quest for a hero you have not unlocked, with no catch-up after a miss. Each clear of the game adds 1% to that chance, up to 15%, and a journey shows at most one such quest plus one more per clear, up to five. Heroes you unlocked with a code still post their recruit quest as before.']],
  ['Beta v0.22.5',['Auto starts on the first press again, even when it unlocks partway through a fight. Clicking the full map, minimap and world map now walks to the right tile in the zoomed Windows app. Quest lists keep their order while open, guild notices show only under Guilds and Notices, and Accept, Claim and quest states look and read the same everywhere. Map changes are quicker again, mostly in the heights realms, and battle setup does less work.']],
  ['Beta v0.22.4',['Nikaris now joins the moment you beat his beasts: he steps out of the trees, calls them off, talks with you and joins your six on the spot (or the reserve if your six is full), on both his trail and his code quest. Monks now Invoke exactly like Priests, calling the same full guardians and Scourges into the whole Vanguard\'s place, but the Monk needs 2 turns of stillness to call and the guardian stays 4 turns instead of 5.']],
  ['Beta v0.22.3',['Kaevan is brought in line with the other Legendaries: less attack, Steady Draw adds 40% instead of 60%, and Longshot is weaker and costs more. The Monk\'s Spirit Call takes one short turn and its lesser guardian now fights beside the Monk for 4 turns instead of taking his place. The Summons tab notes that guardians and Lesser Scourges are made for boss fights. Jace has a new look: side-parted blue hair, no glasses, and lightning-yellow trim on his robe and staff.']],
@@ -36295,10 +36296,10 @@ Object.assign(L17.quest,{
 const l17Trail=q=>!!(q&&q.type==='legend'&&q.trail&&L17.quest[q.hero]);
 function l17QuestOk(id,s){const D=L17.quest[id];if(!D||s<D.from)return false;try{if(typeof p2Dual==='function'&&p2Dual(id)&&s<DUAL_HERO_FROM)return false;}catch(e){}
   if(id==='jaeson'&&s<3&&!['snow','heights'].includes(ZS(s).theme))return false;return true;}
-function l17QuestRoll(s){if(!G||G.daily)return;Object.keys(L17.quest).forEach(id=>{
-    if(legendOn(id)||G.roster[id]||G.quests.some(q=>q.type==='legend'&&q.hero===id)||!l17QuestOk(id,s))return;const D=L17.quest[id];
-    G.quests.push({id:'T'+id,stage:s,type:'legend',hero:id,trail:1,tstep:0,have:0,n:D.wins,state:'open',step:0,title:D.title,desc:D.desc(s),reward:{gold:0}});});}
-HOOK.after('genQuests','legends17b','the trail of a Legendary nobody has a code for',function(r,s){try{l17QuestRoll(s);}catch(e){console.error('legends17b quest',e);}});
+// 0.22.6: trails no longer post for sure. They are candidates for the one rare roll a realm (legends17a lr19Roll), with Joseth and Dist.
+function l17Cands(s){if(!G||G.daily)return [];return Object.keys(L17.quest).filter(id=>!(legendOn(id)||G.roster[id]||G.quests.some(q=>q.type==='legend'&&q.hero===id)||!l17QuestOk(id,s)))
+  .map(id=>({id,post(){const D=L17.quest[id];G.quests.push({id:'T'+id,stage:s,type:'legend',hero:id,trail:1,free:1,tstep:0,have:0,n:D.wins,state:'open',step:0,title:D.title,desc:D.desc(s),reward:{gold:0}});}}));}
+function l17QuestRoll(s){try{lr19Roll(s);}catch(e){console.error('legends17b quest',e);}}
 {const lp0=legendProg;legendProg=function(q){try{if(l17Trail(q)&&q.state!=='claimed'){const n=ZS(q.stage).n,D=L17.quest[q.hero];
     if((q.tstep||0)===0)return `Win fights in the fields of ${n}: ${Math.min(q.have||0,q.n)}/${q.n}`;if(q.tstep===1)return `Face ${D.fightN} in the fields of ${n}`;}}catch(e){}return lp0.apply(this,arguments);};}
 // step 1: fights won in that realm's fields
@@ -37194,8 +37195,8 @@ HOOK.after('win','legends17a','Blood Oath: a beaten monster, Scourge or guardian
 {const rt0=registerTamed;registerTamed=function(o){const r=rt0.apply(this,arguments);try{if(o&&o.oath&&TPL[o.id])TPL[o.id].bio=`Sworn to Joseth in blood. A ${compDef(o).n} that follows the pack now.`;}catch(e){}return r;};}
 // ---------- 10. the two quests: "Three Whistles" and "The Toll on the Water" ----------
 // A legend quest (legends.js: G.quests type 'legend', q.step) posts on the Notice Board. With the redeem code it posts as the older legends' quests
-// do (legendRoll: from LEG_Q.ok, 30% a realm, for sure after one miss). Without a code it posts on its own from a later realm (L17J.q.<id>.free,
-// 0 based: Dist from the third realm, Joseth from the fourth; L17J.q.ch a realm, for sure after one miss), so every player can earn the hero.
+// do (legendRoll: from LEG_Q.ok, 30% a realm, for sure after one miss). Without a code it can post from a later realm (L17J.q.<id>.free,
+// 0 based: Dist from the third realm, Joseth from the fourth) through the one rare roll a realm (lr19Roll below, 0.22.6).
 // Finishing it unlocks the hero on the account (META.legends), as the code does.
 // Three Whistles: 0 Junah wants a Potion from your pack; 1 Odin has your purse (a fight, the purse comes back); 2 Zeus howls up a storm (a fight);
 //   3 Joseth and all three dogs (the duel). The Toll on the Water: 0 the toll keeper takes a little gold whatever you answer; 1 the Runner
@@ -37203,9 +37204,19 @@ HOOK.after('win','legends17a','Blood Oath: a beaten monster, Scourge or guardian
 const j17Q=id=>((G&&G.quests)||[]).find(q=>q.type==='legend'&&q.hero===id)||null;
 function j17QuestRoll(s){try{if(!G||G.daily||s==null)return;G.legRoll=G.legRoll||{};G.legMiss=G.legMiss||{};
   try{if(typeof legendRoll==='function')legendRoll(s);}catch(e){}
-  L17J.ids.forEach(id=>{if(G.roster[id]||j17Q(id)||legendOn(id))return;const Q=L17J.q[id];if(s<Q.free)return;const k=id+':f'+s;if(G.legRoll[k])return;G.legRoll[k]=1;
-    if(Math.random()>=L17J.q.ch&&!(G.legMiss[id+'f']>=1)&&s<4){G.legMiss[id+'f']=(G.legMiss[id+'f']||0)+1;return;}
-    const L=LEG_Q[id];G.quests.push({id:'L'+id,stage:s,type:'legend',hero:id,state:'open',step:0,title:L.title,desc:L.desc(s),reward:{gold:0}});});}catch(e){console.error('legends17a quest roll',e);}}
+  lr19Roll(s);}catch(e){console.error('legends17a quest roll',e);}}
+// 0.22.6: Legendaries without a code are rare. One roll a realm for the whole run, picking one of the heroes that could post there (the trails of
+// legends17b and the quests of Joseth and Dist). The chance starts low and rises a little with each clear of the game (META.clears) to a cap,
+// and a run shows at most 1 + clears of them. No pity: a miss is a miss. A hero unlocked by a code still posts his recruit quest (legendRoll).
+const LR19={base:.08,step:.01,max:.15,cap:5,force:0};
+const lr19Chance=()=>Math.min(LR19.max,LR19.base+LR19.step*((META&&META.clears)||0));
+const lr19Cap=()=>Math.min(LR19.cap,1+((META&&META.clears)||0));
+function j17Cands(s){return L17J.ids.filter(id=>!(G.roster[id]||j17Q(id)||legendOn(id))&&s>=L17J.q[id].free)
+  .map(id=>({id,post(){const L=LEG_Q[id];G.quests.push({id:'L'+id,stage:s,type:'legend',hero:id,free:1,state:'open',step:0,title:L.title,desc:L.desc(s),reward:{gold:0}});}}));}
+function lr19Roll(s){if(!G||G.daily||s==null)return;
+  if(!G.lrRun)G.lrRun={n:G.quests.filter(q=>q.type==='legend'&&(q.trail||q.free||!legendOn(q.hero))).length,r:{}};const R=G.lrRun;
+  if(R.r[s])return;const c=l17Cands(s).concat(j17Cands(s));if(!c.length)return;R.r[s]=1;
+  if(!LR19.force&&(R.n>=lr19Cap()||Math.random()>=lr19Chance()))return;c[Math.floor(Math.random()*c.length)].post();R.n++;}
 HOOK.after('genQuests','legends17a','the two legend quests can post without a code',function(r,s){j17QuestRoll(s);});
 HOOK.before('nbBody','legends17a','the board checks for a legend quest of this realm (old saves, a code redeemed mid realm)',function(){try{if(G&&!G.daily)j17QuestRoll(G.stage);}catch(e){}});
 {const lp0=legendProg;legendProg=function(q){try{if(q&&L17J.ids.includes(q.hero)&&q.state!=='claimed'){const n=ZS(q.stage).n,st=q.step||0;
@@ -37287,7 +37298,7 @@ function j17Join(id,info){if(!G||G.roster[id])return;const q=j17Q(id);
 HOOK.after('finishBattle','legends17a','a legend who joined at the end of his duel takes a free place in the six',function(){try{const id=L17J.join;L17J.join=null;if(id&&G&&G.roster[id]&&!G.party.includes(id)&&G.party.length<6){G.party.push(id);saveGame();}}catch(e){}});
 
 // ---------- tests ----------
-try{window.__L17A={L17:L17J,MON:L17_MON,KIT:L17_KIT,V:J17V,slots:()=>j17Slots(),norm:()=>j17Norm(G),whistleInfo:a=>j17WhistleInfo(a),block:(a,s)=>j17Block(a,s),out:()=>j17Out(),cer:()=>j17CerOut(),toll:()=>j17Toll(),questRoll:s=>j17QuestRoll(s),quest:id=>j17Q(id),talk:q=>j17Talk(q),
+try{window.__L17A={L17:L17J,MON:L17_MON,KIT:L17_KIT,V:J17V,slots:()=>j17Slots(),norm:()=>j17Norm(G),whistleInfo:a=>j17WhistleInfo(a),block:(a,s)=>j17Block(a,s),out:()=>j17Out(),cer:()=>j17CerOut(),toll:()=>j17Toll(),questRoll:s=>j17QuestRoll(s),LR19,lr19:{chance:()=>lr19Chance(),cap:()=>lr19Cap(),roll:s=>lr19Roll(s)},quest:id=>j17Q(id),talk:q=>j17Talk(q),
   foes:spec=>j17Foes(spec),join:(id,info)=>j17Join(id,info),hid:id=>j17Hid(id),turn:u=>j17Turn(u),leave:(u,w)=>j17Leave(u,w),tick:()=>j17Tick(),bossEnt:a=>j17BossEnt(a),auto:a=>j17AutoJose(a),packHtml:e=>j17PackHtml(e),is:a=>j17Is(a),animPose:d=>j17AnimPose(d),land:()=>j17Land(),names:h=>j17Names(h),kit:id=>classSkills(TPL[id]),dogPick:(u,f)=>j17DogPick(u,f),get G(){return G;},get B(){return B;}};}catch(e){}
 
 // ===== legends18.js (after 0.22.3): Nikaris joins the moment his beasts are beaten =====

@@ -513,10 +513,10 @@ Object.assign(L17.quest,{
 const l17Trail=q=>!!(q&&q.type==='legend'&&q.trail&&L17.quest[q.hero]);
 function l17QuestOk(id,s){const D=L17.quest[id];if(!D||s<D.from)return false;try{if(typeof p2Dual==='function'&&p2Dual(id)&&s<DUAL_HERO_FROM)return false;}catch(e){}
   if(id==='jaeson'&&s<3&&!['snow','heights'].includes(ZS(s).theme))return false;return true;}
-function l17QuestRoll(s){if(!G||G.daily)return;Object.keys(L17.quest).forEach(id=>{
-    if(legendOn(id)||G.roster[id]||G.quests.some(q=>q.type==='legend'&&q.hero===id)||!l17QuestOk(id,s))return;const D=L17.quest[id];
-    G.quests.push({id:'T'+id,stage:s,type:'legend',hero:id,trail:1,tstep:0,have:0,n:D.wins,state:'open',step:0,title:D.title,desc:D.desc(s),reward:{gold:0}});});}
-HOOK.after('genQuests','legends17b','the trail of a Legendary nobody has a code for',function(r,s){try{l17QuestRoll(s);}catch(e){console.error('legends17b quest',e);}});
+// 0.22.6: trails no longer post for sure. They are candidates for the one rare roll a realm (legends17a lr19Roll), with Joseth and Dist.
+function l17Cands(s){if(!G||G.daily)return [];return Object.keys(L17.quest).filter(id=>!(legendOn(id)||G.roster[id]||G.quests.some(q=>q.type==='legend'&&q.hero===id)||!l17QuestOk(id,s)))
+  .map(id=>({id,post(){const D=L17.quest[id];G.quests.push({id:'T'+id,stage:s,type:'legend',hero:id,trail:1,free:1,tstep:0,have:0,n:D.wins,state:'open',step:0,title:D.title,desc:D.desc(s),reward:{gold:0}});}}));}
+function l17QuestRoll(s){try{lr19Roll(s);}catch(e){console.error('legends17b quest',e);}}
 {const lp0=legendProg;legendProg=function(q){try{if(l17Trail(q)&&q.state!=='claimed'){const n=ZS(q.stage).n,D=L17.quest[q.hero];
     if((q.tstep||0)===0)return `Win fights in the fields of ${n}: ${Math.min(q.have||0,q.n)}/${q.n}`;if(q.tstep===1)return `Face ${D.fightN} in the fields of ${n}`;}}catch(e){}return lp0.apply(this,arguments);};}
 // step 1: fights won in that realm's fields

@@ -848,8 +848,8 @@ HOOK.after('win','legends17a','Blood Oath: a beaten monster, Scourge or guardian
 {const rt0=registerTamed;registerTamed=function(o){const r=rt0.apply(this,arguments);try{if(o&&o.oath&&TPL[o.id])TPL[o.id].bio=`Sworn to Joseth in blood. A ${compDef(o).n} that follows the pack now.`;}catch(e){}return r;};}
 // ---------- 10. the two quests: "Three Whistles" and "The Toll on the Water" ----------
 // A legend quest (legends.js: G.quests type 'legend', q.step) posts on the Notice Board. With the redeem code it posts as the older legends' quests
-// do (legendRoll: from LEG_Q.ok, 30% a realm, for sure after one miss). Without a code it posts on its own from a later realm (L17J.q.<id>.free,
-// 0 based: Dist from the third realm, Joseth from the fourth; L17J.q.ch a realm, for sure after one miss), so every player can earn the hero.
+// do (legendRoll: from LEG_Q.ok, 30% a realm, for sure after one miss). Without a code it can post from a later realm (L17J.q.<id>.free,
+// 0 based: Dist from the third realm, Joseth from the fourth) through the one rare roll a realm (lr19Roll below, 0.22.6).
 // Finishing it unlocks the hero on the account (META.legends), as the code does.
 // Three Whistles: 0 Junah wants a Potion from your pack; 1 Odin has your purse (a fight, the purse comes back); 2 Zeus howls up a storm (a fight);
 //   3 Joseth and all three dogs (the duel). The Toll on the Water: 0 the toll keeper takes a little gold whatever you answer; 1 the Runner
@@ -857,9 +857,19 @@ HOOK.after('win','legends17a','Blood Oath: a beaten monster, Scourge or guardian
 const j17Q=id=>((G&&G.quests)||[]).find(q=>q.type==='legend'&&q.hero===id)||null;
 function j17QuestRoll(s){try{if(!G||G.daily||s==null)return;G.legRoll=G.legRoll||{};G.legMiss=G.legMiss||{};
   try{if(typeof legendRoll==='function')legendRoll(s);}catch(e){}
-  L17J.ids.forEach(id=>{if(G.roster[id]||j17Q(id)||legendOn(id))return;const Q=L17J.q[id];if(s<Q.free)return;const k=id+':f'+s;if(G.legRoll[k])return;G.legRoll[k]=1;
-    if(Math.random()>=L17J.q.ch&&!(G.legMiss[id+'f']>=1)&&s<4){G.legMiss[id+'f']=(G.legMiss[id+'f']||0)+1;return;}
-    const L=LEG_Q[id];G.quests.push({id:'L'+id,stage:s,type:'legend',hero:id,state:'open',step:0,title:L.title,desc:L.desc(s),reward:{gold:0}});});}catch(e){console.error('legends17a quest roll',e);}}
+  lr19Roll(s);}catch(e){console.error('legends17a quest roll',e);}}
+// 0.22.6: Legendaries without a code are rare. One roll a realm for the whole run, picking one of the heroes that could post there (the trails of
+// legends17b and the quests of Joseth and Dist). The chance starts low and rises a little with each clear of the game (META.clears) to a cap,
+// and a run shows at most 1 + clears of them. No pity: a miss is a miss. A hero unlocked by a code still posts his recruit quest (legendRoll).
+const LR19={base:.08,step:.01,max:.15,cap:5,force:0};
+const lr19Chance=()=>Math.min(LR19.max,LR19.base+LR19.step*((META&&META.clears)||0));
+const lr19Cap=()=>Math.min(LR19.cap,1+((META&&META.clears)||0));
+function j17Cands(s){return L17J.ids.filter(id=>!(G.roster[id]||j17Q(id)||legendOn(id))&&s>=L17J.q[id].free)
+  .map(id=>({id,post(){const L=LEG_Q[id];G.quests.push({id:'L'+id,stage:s,type:'legend',hero:id,free:1,state:'open',step:0,title:L.title,desc:L.desc(s),reward:{gold:0}});}}));}
+function lr19Roll(s){if(!G||G.daily||s==null)return;
+  if(!G.lrRun)G.lrRun={n:G.quests.filter(q=>q.type==='legend'&&(q.trail||q.free||!legendOn(q.hero))).length,r:{}};const R=G.lrRun;
+  if(R.r[s])return;const c=l17Cands(s).concat(j17Cands(s));if(!c.length)return;R.r[s]=1;
+  if(!LR19.force&&(R.n>=lr19Cap()||Math.random()>=lr19Chance()))return;c[Math.floor(Math.random()*c.length)].post();R.n++;}
 HOOK.after('genQuests','legends17a','the two legend quests can post without a code',function(r,s){j17QuestRoll(s);});
 HOOK.before('nbBody','legends17a','the board checks for a legend quest of this realm (old saves, a code redeemed mid realm)',function(){try{if(G&&!G.daily)j17QuestRoll(G.stage);}catch(e){}});
 {const lp0=legendProg;legendProg=function(q){try{if(q&&L17J.ids.includes(q.hero)&&q.state!=='claimed'){const n=ZS(q.stage).n,st=q.step||0;
@@ -941,5 +951,5 @@ function j17Join(id,info){if(!G||G.roster[id])return;const q=j17Q(id);
 HOOK.after('finishBattle','legends17a','a legend who joined at the end of his duel takes a free place in the six',function(){try{const id=L17J.join;L17J.join=null;if(id&&G&&G.roster[id]&&!G.party.includes(id)&&G.party.length<6){G.party.push(id);saveGame();}}catch(e){}});
 
 // ---------- tests ----------
-try{window.__L17A={L17:L17J,MON:L17_MON,KIT:L17_KIT,V:J17V,slots:()=>j17Slots(),norm:()=>j17Norm(G),whistleInfo:a=>j17WhistleInfo(a),block:(a,s)=>j17Block(a,s),out:()=>j17Out(),cer:()=>j17CerOut(),toll:()=>j17Toll(),questRoll:s=>j17QuestRoll(s),quest:id=>j17Q(id),talk:q=>j17Talk(q),
+try{window.__L17A={L17:L17J,MON:L17_MON,KIT:L17_KIT,V:J17V,slots:()=>j17Slots(),norm:()=>j17Norm(G),whistleInfo:a=>j17WhistleInfo(a),block:(a,s)=>j17Block(a,s),out:()=>j17Out(),cer:()=>j17CerOut(),toll:()=>j17Toll(),questRoll:s=>j17QuestRoll(s),LR19,lr19:{chance:()=>lr19Chance(),cap:()=>lr19Cap(),roll:s=>lr19Roll(s)},quest:id=>j17Q(id),talk:q=>j17Talk(q),
   foes:spec=>j17Foes(spec),join:(id,info)=>j17Join(id,info),hid:id=>j17Hid(id),turn:u=>j17Turn(u),leave:(u,w)=>j17Leave(u,w),tick:()=>j17Tick(),bossEnt:a=>j17BossEnt(a),auto:a=>j17AutoJose(a),packHtml:e=>j17PackHtml(e),is:a=>j17Is(a),animPose:d=>j17AnimPose(d),land:()=>j17Land(),names:h=>j17Names(h),kit:id=>classSkills(TPL[id]),dogPick:(u,f)=>j17DogPick(u,f),get G(){return G;},get B(){return B;}};}catch(e){}

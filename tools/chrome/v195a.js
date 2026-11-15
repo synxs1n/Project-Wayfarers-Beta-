@@ -153,7 +153,7 @@ const H=await open({w:1000,h:560,pre:PRE});const {ev,wait}=H;await ev(START);
   o.codes=Object.values(g('LEGEND_CODES')).sort().join();o.codeFn=typeof g('redeemCode')==='function';
   ['nikaris','kaevan','jaeson'].forEach(id=>{delete G.roster[id];});G.party=['brann','mira','oren'];M.legends={};G.quests=G.quests.filter(q=>q.type!=='legend');
   o.ok=['nikaris','kaevan','jaeson'].map(id=>[0,1,2,3,4].map(s=>__L17.questOk(id,s)?1:0).join(''));
-  const s=3;G.stage=s;g('genQuests')(s);const Q=G.quests.filter(q=>q.type==='legend');o.posted=Q.map(q=>q.hero+':'+q.title+':'+q.state);
+  const s=3;G.stage=s;g('genQuests')(s);/* 0.22.6: one rare roll a realm; force it and re-roll so all trails post */{const LR=__L17A.LR19;LR.force=1;for(let i=0;i<8;i++){if(G.lrRun)G.lrRun.r={};__L17A.lr19.roll(s);}LR.force=0;}const Q=G.quests.filter(q=>q.type==='legend');o.posted=Q.map(q=>q.hero+':'+q.title+':'+q.state);
   o.redeemTxt=/follow the trail/.test(g('vRedeem')());
   const out={};
   for(const id of ['nikaris','kaevan','jaeson']){const q=G.quests.find(x=>x.type==='legend'&&x.hero===id),x={};out[id]=x;if(!q)continue;A.ACT.qAccept(q.id);x.state=q.state;x.p0=g('legendProg')(q);
