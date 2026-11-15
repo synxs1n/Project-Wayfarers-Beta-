@@ -4,6 +4,9 @@
 //    of the 0.21.4 guardian tune). Recruited bosses (the Lesser Scourges, battle16.js) answer a Monk too, under those Monk rules: level 10, boss sized and
 //    in the whole Vanguard's place as 0.21.4 built it, at .6 of the power a Priest's call has, .8 of its HP and for 3 turns. So the callers of a recruited
 //    boss are Nikaris, Priests and Monks (b16Caller); every other hero paired with one keeps the bonus and sees why the command is greyed.
+//    After 0.22.3 (legends18, the owner: "just give monks the same summon (invoke) capabilities of priest"): no level gate and no lesser numbers. A Monk
+//    Invokes a guardian as a Priest does (summon8.js SUM.call.monk: two turns of stillness, 4 turns on the field) and calls a Lesser Scourge under the
+//    Priest's rules (the same power, HP and turns: battle16.js b16BossMake).
 // 2) "Turn pets menu into 'summons' and have it show all summonable things you have access to": Menu > Party > Summons (the tab id 'comp' and every save
 //    key stay). Sections: Pets (pairing as before), Recruited bosses (Lesser Scourges), Sanctum guardians, Beast calls (Nikaris's own skills). Every entry
 //    says who in the roster can call it, and what is missing when nobody can (r17Summons).
@@ -73,24 +76,14 @@ const R17={lv:[1,1,6,11,14,18,21,25,28,31,35,38,42,45],slot:{mid:5,late:11},
   perf:0,rng:null,C:{},audit:{}};
 const r17Mage=t=>!!t&&R17.mantle.cls.includes(t.cls);
 
-// ---------- 1. Monks call guardians (Spirit Call) and recruited bosses again ----------
+// ---------- 1. Monks call guardians (Invoke) and recruited bosses again ----------
 const r17Monk=a=>{try{const t=a&&TPL[a.id];return !!t&&!t.mon&&t.cls==='monk'&&a.id!=='nikaris';}catch(e){return false;}};
-const r17MonkOk=a=>r17Monk(a)&&a.lv>=SUM.monkLv;
-// Spirit Call as summon8.js defines it (battle16.js had removed it)
+const r17MonkOk=a=>r17Monk(a);// (no level gate after 0.22.3: a Monk calls whenever a Priest could)
+// the Monk's Invoke as summon8.js defines it (battle16.js had removed it)
 {const sc0=sumClassOf;sumClassOf=function(a){const k=sc0.apply(this,arguments);if(k)return k;
   try{if(a&&B&&a.side==='p'&&!a.isComp&&!a.isSum&&r17MonkOk(a))return 'monk';}catch(e){}return k;};}
-// a Lesser Scourge answers Nikaris, a Priest, or a Monk of level 10
+// a Lesser Scourge answers Nikaris, a Priest, or a Monk (under the Priest's rules: b16BossMake as it is)
 {const bc0=b16Caller;b16Caller=function(a){return bc0.apply(this,arguments)||r17MonkOk(a);};}
-// the greyed note: a Monk who has the level has the command again; a Monk below it reads the level
-{const bb0=b16Blocked;b16Blocked=function(a){try{if(r17MonkOk(a))return null;
-    if(r17Monk(a)&&a&&B&&G&&!G.daily&&a.side==='p'&&!a.isComp&&!a.isSum){const o=compOf(a);
-      if(o&&o.scourge&&b16Def(o.mon)&&!(B.summoned||{})[a.id])return `${o.name} is a recruited boss: a Monk calls it from level ${SUM.monkLv}.`;
-      if(sumList().length&&!B.sum&&!B.sumDead)return `Spirit Call: a Monk calls the Sanctum guardians from level ${SUM.monkLv}.`;return null;}}catch(e){}
-  return bb0.apply(this,arguments);};}
-// the Monk rules on a recruited boss: lesser power, lesser HP, the lesser stay (the caller is B.cur while b16BossFire runs)
-{const bm0=b16BossMake;b16BossMake=function(o){const a=B&&B.cur,monk=r17Monk(a);if(!monk)return bm0.apply(this,arguments);
-  const p0=SUM.powM;let u;SUM.powM=p0*SUM.lesser;try{u=bm0.apply(this,arguments);}finally{SUM.powM=p0;}
-  try{u.r17monk=1;u.turnsLeft=SUM.lesserTurns;u.S.mhp=Math.max(1,Math.round(u.S.mhp*.8));u.hp=u.S.mhp;}catch(e){}return u;};}
 
 // ---------- 4. the Mantle (before the kits: they hold the skill) ----------
 try{STS[R17.mantle.st]={n:'Mantle',a:'MTL',t:R17.mantle.turns+1,c:'#6fb4ff',d:`${Math.round(R17.mantle.share*100)}% of damage taken is paid in MP instead of HP. Ends when MP runs out.`};
@@ -168,20 +161,21 @@ function r17Unique(){const ids=Object.keys(TPL).filter(id=>{const t=TPL[id];retu
 try{MENU_SUB.comp='Summons';}catch(e){}
 function r17Callers(){const R=Object.values((G&&G.roster)||{}).filter(c=>c&&TPL[c.id]&&!TPL[c.id].mon),inSix=c=>(G.party||[]).includes(c.id);
   const srt=L=>L.slice().sort((a,b)=>inSix(b)-inSix(a)||b.lv-a.lv);
-  return {R,inSix,full:srt(R.filter(c=>c.id==='nikaris'||TPL[c.id].cls==='healer')),monk:srt(R.filter(c=>r17MonkOk(c))),young:srt(R.filter(c=>r17Monk(c)&&!r17MonkOk(c)))};}
+  return {R,inSix,full:srt(R.filter(c=>c.id==='nikaris'||TPL[c.id].cls==='healer')),monk:srt(R.filter(c=>r17MonkOk(c)))};}
 function r17Names(L,C){return L.map(c=>`<b>${esc(c.name)}</b>${C.inSix(c)?'':' (not in your six)'}`).join(', ');}
 function r17Who(parts,why){return `<small class="r17who ${parts.length?'':'no'}">${parts.length?'Who can call it: '+parts.join('; ')+'.':'Nobody can call it yet: '+why}</small>`;}
 function r17PetRow(o,C){const d=compDef(o),h=o.with&&G.roster[o.with];let who;
   if(d.lost)who=r17Who([],'its kind is unknown in this journey.');
-  else if(o.scourge){const ok=h&&b16Caller(h),monk=ok&&r17Monk(h),able=C.full.concat(C.monk).filter(c=>c!==h);
-    who=ok?r17Who([`<b>${esc(h.name)}</b>: Summon, once per battle${monk?` (a Monk's lesser call: ${SUM.lesserTurns} turns)`:` (${COMP_TURNS+1} turns)`}, in the whole Vanguard's place`],'')
-      :r17Who([],(h?`${esc(h.name)} keeps its bonus but cannot call a recruited boss. `:'it is not paired. ')+(able.length?`Pair it with ${r17Names(able,C)}.`:`It needs Nikaris, a Priest or a Monk of level ${SUM.monkLv}${C.young.length?` (${r17Names(C.young,C)}: not level ${SUM.monkLv} yet)`:''}.`));}
+  else if(o.scourge){const ok=h&&b16Caller(h),able=C.full.concat(C.monk).filter(c=>c!==h);
+    who=ok?r17Who([`<b>${esc(h.name)}</b>: Summon, once per battle (${COMP_TURNS+1} turns), in the whole Vanguard's place`],'')
+      :r17Who([],(h?`${esc(h.name)} keeps its bonus but cannot call a recruited boss. `:'it is not paired. ')+(able.length?`Pair it with ${r17Names(able,C)}.`:`It needs Nikaris, a Priest or a Monk.`));}
   else who=h?r17Who([`<b>${esc(h.name)}</b>: Summon, once per battle (${o.bb?COMP_TURNS+1:COMP_TURNS} turns, in ${esc(h.name)}'s place)`],''):r17Who([],'pair it with any hero, who can then Summon it.');
   return `<div class="row comprow"><img class="mimg" src="${monURL(d.art)}" alt=""><div class="grow"><b>${esc(o.name)}</b>${o.bb?' <em class="cyc">Beastbond</em>':''}${o.scourge?' <em class="cyc legb">Lesser Scourge</em>':''}<small>${d.el.map(ico).join('')} ${esc(d.n)} · ${(d.sk||[]).map(s=>esc(s[0])).join(', ')}</small><small class="up">${compBonusText(o)}</small><small>${h?`With <b>${esc(h.name)}</b>`:'Not paired'}</small>${who}</div><button class="btn sm" data-act="compPick" data-arg="${o.id}">${h?'Change':'Pair'}</button></div>`;}
 function r17GuardRow(o,C){const m=MON[o.mon]||{};const parts=[];
-  if(C.full.length)parts.push(`${r17Names(C.full,C)}: Invoke (a turn of prayer, then ${SUM.turns} turns in the whole Vanguard's place)`);
-  if(C.monk.length)parts.push(`${r17Names(C.monk,C)}: Spirit Call (${SUM.monkPray} turns of stillness, a lesser form for ${SUM.lesserTurns} turns in the Monk's place)`);
-  const why=`it needs a Priest or Nikaris to Invoke it, or a Monk of level ${SUM.monkLv} for a Spirit Call${C.young.length?` (${r17Names(C.young,C)}: not level ${SUM.monkLv} yet)`:''}.`;
+  const P=sumCallOf('priest'),M=sumCallOf('monk');
+  if(C.full.length)parts.push(`${r17Names(C.full,C)}: Invoke (a turn of prayer, then ${P.turns} turns in the whole Vanguard's place)`);
+  if(C.monk.length)parts.push(`${r17Names(C.monk,C)}: Invoke (${M.pray} turns of stillness, then ${M.turns} turns in the whole Vanguard's place)`);
+  const why=`it needs a Priest, Nikaris or a Monk to Invoke it.`;
   return `<div class="row comprow r17guard">${m.art?`<img class="mimg" src="${monURL(m.art)}" alt="">`:''}<div class="grow"><b>${esc(o.name)}</b> <em class="cyc legb">Guardian</em><small>${(m.el||[]).map(ico).join('')} ${(m.sk||[]).map(s=>esc(s[0])).join(', ')}</small>${r17Who(parts,why)}</div></div>`;}
 function r17Summons(){const L=G.tamed||[],C=r17Callers(),pets=L.filter(o=>!o.scourge),boss=L.filter(o=>o.scourge),gs=typeof sumList==='function'?sumList():[],nik=G.roster&&G.roster.nikaris;
   const sec=(t,n,body,empty)=>`<h4 class="r17h">${t}${n!=null?` <small>${n}</small>`:''}</h4>${body?`<div class="rows">${body}</div>`:`<p class="note">${empty}</p>`}`;

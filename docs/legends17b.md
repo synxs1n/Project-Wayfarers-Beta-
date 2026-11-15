@@ -70,7 +70,7 @@ See the last section of `handoff-v0111.md` for the numbers of the run that shipp
   Horizon Shot 5.4 (cap 18%), Thunder Quarrel 1.4, Shadow Quarrel 1.75. Own damage against the Archer base (six Archers: Tess, Wren, Ciro, Corvin,
   Skerry, Voss; `legbal.js`, 40 fights a cell): boss 2 x1.21 -> x1.04, boss 3 x1.94 -> x1.09, boss 4 x2.29 -> x1.37, Calamity x1.38 -> x1.17,
   level 46 x1.41 -> x1.14. Boss 4 stays the high point: against the two dual type Archers alone (Skerry, Voss) it is x1.12 there.
-- **Spirit Call** (section 8 of the module): one short turn of stillness (`SUM.monkPray` 1, half the usual wait), then the lesser guardian stands
+- **Spirit Call** (section 8 of the module; replaced after 0.22.3 by the Monk's Invoke, `summon8.js` `SUM.call`, see the legends18 section of `handoff-v0111.md`): one short turn of stillness (`SUM.monkPray` 1, half the usual wait), then the lesser guardian stands
   BESIDE the Monk as a fourth unit of the Vanguard (`B.sum.beside`, its own `unitBox` place on the boss line clear of the heroes) for
   `L17.sum.turns` 4 turns at `L17.sum.lesser` .75 of a Priest's; its arrival costs the Monk no turn, he keeps acting, and the Vanguard may switch
   while it is out. A Monk's recruited boss keeps roster17's rules (`SUM.lesser` .6, 3 turns, the whole Vanguard's place). `sumbal.js`, 80 fights a

@@ -5,8 +5,8 @@
 //    one action (Add key, a chip removes one, four at most); the defaults of the action button hold Space
 // 3) Summon works for every pet: every monster, every Scourge and Calamity as a Lesser Scourge, the five Scourges removed in 0.20.9 (moved to the
 //    boss that replaced them on load), and a pet with unknown data offers no dead button
-// 4) recruited bosses: Nikaris or a Priest may Summon a Lesser Scourge or Invoke a guardian, and since roster17.js (after 0.21.6) a Monk of level 10 under
-//    the Monk rules (v191a); the others get a greyed button with the note;
+// 4) recruited bosses: Nikaris or a Priest may Summon a Lesser Scourge or Invoke a guardian, and since roster17.js (after 0.21.6) a Monk (after 0.22.3
+//    at any level, under the Priest's rules: v191a); the others get a greyed button with the note;
 //    guardians are about 12% weaker; a summoned Lesser Scourge stays boss sized and takes the whole Vanguard's place for 4 turns (a further 12% under a
 //    guardian), the three heroes step out and come back as they were; ordinary pets are unchanged; Nikaris has 6% less ATK and MAG
 // 5) learn levels: all 92 kits know exactly three class skills at level 10 (1,1,6 then 11 to 45), never three at once, order kept; a save marked 2
@@ -125,12 +125,12 @@ const UNTIL=async id=>{const A=__A,B=A.B;A.setPause(60);
   ['brann','taro','lumen','nikaris'].forEach((w,i)=>{const q={};q.boss=press({mon:gk,scourge:1,bb:1},900+i,w);
    q.note=(()=>{const b=document.querySelector('#bcmd .b16no');return b?b.textContent.trim()+' | '+b.title:null;})();
    q.plain=press({mon:mk},910+i,w);o.who[w]=q;});
-  // guardians: Invoke for the Priest and Nikaris, Spirit Call for the Monk (level 20; back since roster17.js), nothing for the Warrior
+  // guardians: Invoke for the Priest, Nikaris and the Monk (after 0.22.3: two turns of stillness, 4 turns), nothing for the Warrior
   const mini=g('MINIS')[0];G.summons={[mini[0]]:{mon:mini[0],name:mini[2],mod:mini[5]}};G.tamed=[];o.inv={};
   ['brann','taro','lumen','nikaris'].forEach(w=>{reset();const a=H(w);if(B.front.indexOf(a)<0){const j=B.back.indexOf(a);B.back[j]=B.front[0];B.front[0]=a;}a.mp=a.S.mmp;B.cur=a;A.render();
    const b=document.querySelector('#bcmd .b9sum');o.inv[w]={can:__B16.sumCan(a),cls:__B16.sumClassOf(a),btn:b?(b.disabled?'disabled':b.textContent.trim()):null,note:b&&b.disabled?b.title:null};});
   // Nikaris prays and the guardian comes
-  {reset();const a=H('nikaris');if(B.front.indexOf(a)<0){const j=B.back.indexOf(a);B.back[j]=B.front[0];B.front[0]=a;}a.mp=a.S.mmp;B.cur=a;A.render();document.querySelector('#bcmd [data-act=sumOne]').click();o.pray=!!(B.pray&&B.pray.by===a&&!B.pray.lesser);
+  {reset();const a=H('nikaris');if(B.front.indexOf(a)<0){const j=B.back.indexOf(a);B.back[j]=B.front[0];B.front[0]=a;}a.mp=a.S.mmp;B.cur=a;A.render();document.querySelector('#bcmd [data-act=sumOne]').click();o.pray=!!(B.pray&&B.pray.by===a&&!B.pray.lesser&&B.pray.n===1&&B.pray.turns===5);
    const u=g('sumMake')(G.summons[mini[0]],false,null);o.gu={turns:u.turnsLeft};B.pray=null;}
   // ---- 4: the tune ----
   const SUM=g('SUM');o.sum={powM:SUM.powM,hpK:SUM.hpK,turns:SUM.turns};
@@ -161,9 +161,9 @@ const UNTIL=async id=>{const A=__A,B=A.B;A.setPause(60);
  chk(`a save with such a pet loads with it moved (${JSON.stringify(r.load)})`,r.load&&r.load.mon!=='ironmaw'&&r.load.tpl&&r.load.def||JSON.stringify(r.load));
  chk('a pet with unknown monster data offers no Summon button, nothing throws and the Pets list still shows it',r.unknown&&!r.unknown.button&&!r.unknown.err&&r.unknown.listed||JSON.stringify(r.unknown));
  chk(`a Lesser Scourge is summoned by the Priest, by Nikaris and (after 0.21.6, roster17.js) by the Monk; not by the Warrior (Warrior: ${r.who.brann.boss}, Monk: ${r.who.taro.boss})`,r.who.lumen.boss===null&&r.who.nikaris.boss===null&&r.who.brann.boss==='disabled'&&r.who.taro.boss===null||JSON.stringify(r.who));
- chk(`the others see the note where the command was ("${r.who.brann.note}")`,/Nikaris, Priest or Monk/.test(r.who.brann.note||'')&&/Only Nikaris, a Priest or a Monk of level 10 can summon a recruited boss/.test(r.who.brann.note||'')&&!r.who.lumen.note&&!r.who.taro.note||JSON.stringify(r.who));
+ chk(`the others see the note where the command was ("${r.who.brann.note}")`,/Nikaris, Priest or Monk/.test(r.who.brann.note||'')&&/Only Nikaris, a Priest or a Monk can summon a recruited boss/.test(r.who.brann.note||'')&&!r.who.lumen.note&&!r.who.taro.note||JSON.stringify(r.who));
  chk('an ordinary pet is still summoned by anyone',['brann','taro','lumen','nikaris'].every(w=>r.who[w].plain===null)||JSON.stringify(r.who));
- chk(`guardians: the Priest and Nikaris can Invoke, the Monk has Spirit Call again (roster17.js; level 20 here), the Warrior has no command (Monk: ${JSON.stringify(r.inv.taro)})`,r.inv.lumen.can&&r.inv.nikaris.can&&r.inv.taro.can&&r.inv.taro.cls==='monk'&&!r.inv.brann.can&&/Spirit Call/.test(r.inv.taro.btn||'')&&r.inv.brann.btn===null||JSON.stringify(r.inv));
+ chk(`guardians: the Priest, Nikaris and the Monk can Invoke, the Warrior has no command (Monk: ${JSON.stringify(r.inv.taro)})`,r.inv.lumen.can&&r.inv.nikaris.can&&r.inv.taro.can&&r.inv.taro.cls==='monk'&&!r.inv.brann.can&&/Invoke/.test(r.inv.taro.btn||'')&&r.inv.brann.btn===null||JSON.stringify(r.inv));
  chk('Nikaris prays like a Priest (the full guardian, not a lesser form)',r.pray===true&&r.gu.turns===5||JSON.stringify([r.pray,r.gu]));
  chk(`guardians tuned down about 12%: power x${r.sum.powM} (was .95), HP pool x${r.sum.hpK} (was 1.2), still ${r.sum.turns} turns`,Math.abs(r.sum.powM/.95-.88)<.01&&Math.abs(r.sum.hpK/1.2-.88)<.01&&r.sum.turns===5||JSON.stringify(r.sum));
  const b=r.boss;

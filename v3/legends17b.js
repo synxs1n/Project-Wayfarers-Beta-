@@ -30,7 +30,8 @@
 // 2) Looks (section 6): new key-grid parts painted by the game's own pipeline (hero rig, heroTone, paintHD): a hunter with a quiver and a hawk on the
 //    shoulder, a hooded sniper with a scarf and a sighted arbalest on a redrawn horse, a blue haired archmage in thin round glasses.
 // 3) Unlocking (section 7): each keeps his redeem code (legends.js, hashes untouched) and gains a board quest that needs no code (a "trail":
-//    win fights in the realm, one fight of his own, then his old meeting). Joining him unlocks him on the account.
+//    win fights in the realm, one fight of his own, then his old meeting; Nikaris joins right after his fight, legends18.js). Joining him unlocks him
+//    on the account.
 // Test: tools/chrome/v195a.js. Balance tool: tools/chrome/legbal.js.
 const L17={
   nik:{watchTurns:3,dive:.55,diveBlind:.2,diveMax:12},
@@ -181,7 +182,7 @@ function l17Call(a,k){const W=WEATHER[k];if(!B||!W)return;const cur=B.l17wx;B.l1
       log(`The ${WEATHER[X.k].n.toLowerCase()} ${u.name} called blows itself out.`);banner(WEATHER[X.prev]?WEATHER[X.prev].n:'Clear skies','#cfd8e8');}}}catch(e){}
   return en1.apply(this,arguments);};}
 // Stormfed speed; the party is not slowed by snow while Jace stands
-{const dl0=delayOf;delayOf=function(u,cost){if(u&&u.l17now){u.l17now=0;return 0;}let d=dl0.apply(this,arguments);try{if(u&&u.l17pray)d*=.5;if(u&&u.l17fed&&B)d/=1+L17.jace.fedSpd*u.l17fed;
+{const dl0=delayOf;delayOf=function(u,cost){let d=dl0.apply(this,arguments);try{if(u&&u.l17fed&&B)d/=1+L17.jace.fedSpd*u.l17fed;
     if(B&&u&&u.side==='p'&&WX().spd&&WX().spd<1&&l17Snowy()&&l17Jace())d*=WX().spd;}catch(e){}return d;};}
 HOOK.after('startBattle','legends17b','a fresh fight: no Stormfed, no called sky, no hawk',function(r){try{if(B)allParty().forEach(c=>{delete c.l17fed;delete c.l17absT;delete c.l17dives;});}catch(e){}});
 HOOK.after('calcStats','legends17b','Kaevan: a little less ATK (in line with the other Legendaries)',function(S,c){try{if(S&&c&&c.id==='kaevan'&&!(G&&G.daily))S.atk*=L17.kae.atk;}catch(e){}});
@@ -489,6 +490,7 @@ function l17FxBend(u,j){if(l17Still())return;const c=l17C(u),d=l17C(j);if(!c||!d
 // "trail" posts on the realm's board: win L.wins fights in that realm's fields, then one fight of his own on the field, then the old meeting
 // (Kaevan's ride, the pup and the hawk, the frozen lake). The quest is a legend quest (type 'legend', trail:1, tstep 0..2), so the board, the
 // markers, the map and the goals treat it like the others. Joining him by either road unlocks him on the account (META.legends).
+// After 0.22.3 (legends18.js): Nikaris's trail ends with its own fight: he steps out, talks and joins the moment the Pack Mother is beaten.
 Object.assign(L17.quest,{
  nikaris:{from:1,wins:4,title:'Tracks at the Treeline',art:'v_heathwolf',fightN:'The Pack Mother',go:'Stand your ground',
   desc:s=>`Something has been hunting the hunters of ${ZS(s).n}: arrows left in a neat row on the road, each one through a snare. Walk the fields, show whoever it is you can fight, and the tracks may lead somewhere.`,
@@ -541,37 +543,18 @@ HOOK.before('encounterFoes','legends17b','the foes of a trail fight',function(sp
 {const vr0=vRedeem;vRedeem=function(){let h=vr0.apply(this,arguments);try{h=h.replace(/Needs a redeem code\./g,'Needs a redeem code, or follow the trail a Notice Board posts for him on a journey.');}catch(e){}return h;};}
 
 // ---------- 8. summons (after 0.22.1, the owner: "make what balance changes you see fit for the summons") ----------
-// sumbal.js measured the Monk's Spirit Call as a loss (about 9 points of boss win rate when used: two turns of stillness, then the Monk left the field
-// for a guardian at .6 strength). Now: one turn of stillness (SUM.monkPray 1) and the lesser guardian fights BESIDE the Monk: it stands as a fourth
-// unit of the Vanguard for SUM.lesserTurns of its turns, the Monk stays and keeps acting. Pets, Invoke and recruited Scourges keep their numbers.
-// A Monk's call of a recruited boss (roster17.js) still takes the whole Vanguard's place.
-L17.sum={lesser:.75,turns:4};// the guardian beside the Monk: its strength against a Priest's and its turns (SUM.lesser and SUM.lesserTurns still rule a Monk's recruited boss)
-try{SUM.monkPray=1;}catch(e){}
-// the Monk's turn of stillness is a short one (half the wait before his next turn), and the guardian's arrival costs him no turn
-{const sp0=sumPray;sumPray=function(a,mon){try{if(a&&sumClassOf(a)==='monk')a.l17pray=1;}catch(e){}try{return sp0.apply(this,arguments);}finally{try{if(a)a.l17pray=0;}catch(e){}}};}
-HOOK.wrap('sumFire','legends17b','a Monk\'s lesser guardian stands beside him, not in his place',function(next,a,o,lesser){const r=next(a,o,lesser);
-  try{const S=B&&B.sum;if(r&&lesser&&S&&S.lesser&&S.owner===a&&!S.beside){const i=B.front.indexOf(S.u);if(i>=0)B.front[i]=a;a.hidden=0;B.front.push(S.u);S.beside=1;S.u.l17side=1;S.u.turnsLeft=L17.sum.turns;{const k=L17.sum.lesser/SUM.lesser;S.u.S.atk*=k;S.u.S.mag*=k;}a.l17now=1;/* the guardian's arrival does not cost the Monk this turn (delayOf below) */
-      const k=B.log.length-1;if(k>=0&&/takes .*'s place/.test(B.log[k]))B.log[k]=`${a.name}'s call is answered: a lesser ${o.name} fights beside ${a.name} for ${S.u.turnsLeft} turns.`;}}catch(e){console.error('legends17b sumFire',e);}
-  return r;});
-{const se0=sumEnd;sumEnd=function(why){const S=B&&B.sum;if(!S||!S.beside)return se0.apply(this,arguments);const u=S.u,i=B.front.indexOf(u);if(i>=0)B.front.splice(i,1);
-  B.sum=null;if(why==='ko')B.sumDead=1;log(why==='ko'?`${u.name} is driven off.`:`${u.name} returns to the Sanctum.`);};}
-// the fourth unit's place on the stage: in front of the Monk (toward the foes), clear of the stage edge
-HOOK.wrap('unitBox','legends17b','a guardian beside the Monk has a place of its own',function(next,u){
-  if(!u||!(u.l17side||(B&&u.side==='p'&&B.front.indexOf(u)>2)))return next(u);/* any fourth unit of the Vanguard: the base has three places */
-  if(!u.l17side)L17.four=(u.id||u.name)+(u.isSum?' sum':'')+(u.isComp?' comp':'');
+// 0.22.3 had the Monk's lesser guardian fight beside him. After 0.22.3 (the owner: "just give monks the same summon (invoke) capabilities of priest")
+// that is gone: a Monk Invokes the full guardian in the whole Vanguard's place (summon8.js SUM.call). What stays here: any fourth unit of the
+// Vanguard (none of the base game's; a guard for what may stand there) gets a place on the stage, and the Summons tab's hint.
+HOOK.wrap('unitBox','legends17b','a fourth unit of the Vanguard has a place of its own',function(next,u){
+  if(!u||!(B&&u.side==='p'&&B.front.indexOf(u)>2))return next(u);/* any fourth unit of the Vanguard: the base has three places */
+  L17.four=(u.id||u.name)+(u.isSum?' sum':'')+(u.isComp?' comp':'');
   try{const i=B?B.front.indexOf(u):-1;if(i<0)return null;const c=spriteOf(u),w=c.width,h=c.height,W=BL.W,H=BL.H,f=typeof k12Fig==='function'?k12Fig(u):null,lo=f?(f.w/2-f.r):-w/2,hi=f?(f.w/2-f.l):w/2;
     // like a Priest's guardian (kits12.js): on the boss line, its figure clear of the heroes on its right
     let e=1e9;B.front.forEach(q=>{if(q===u||q.hp<=0||B.front.indexOf(q)>2)return;const b=next(q);if(b)e=Math.min(e,b.x-b.w/2);});
     let x=e<1e9?Math.round(e-(typeof K12!=='undefined'?K12.gap:2)-hi):Math.round(W*.55);x=Math.min(x,W-1-hi);x=Math.max(x,1-lo);
     return {x,y:Math.round(slotsFor('e',1,true)[0][1]*H),w,h,i};}catch(e){return null;}});
-// the Vanguard may still switch while a guardian stands beside the Monk (summon8.js closes switching while any summon is out)
-{const cs1=canSwap;canSwap=function(){const S=B&&B.sum;if(S&&S.beside&&!B.pray){B.sum=null;try{return cs1.apply(this,arguments);}finally{B.sum=S;}}return cs1.apply(this,arguments);};}
-// the texts that said "two turns" and "takes his place"
-const l17SumTxt=h=>{try{return String(h).replace(/A lesser form answers after two turns of stillness and takes (.*?)'s place for (\d+) turns\./g,'A lesser form answers after a turn of stillness and fights beside $1 for '+L17.sum.turns+' turns.')
-  .replace(/Call a lesser guardian to take your place after two turns of stillness/g,'Call a lesser guardian to fight beside you after a turn of stillness')
-  .replace(/Spirit Call \(1 turns of stillness, a lesser form for (\d+) turns in the Monk's place\)/g,"Spirit Call (a turn of stillness, a lesser form for "+L17.sum.turns+" turns beside the Monk)");}catch(e){return h;}};
-HOOK.xform('cmdHtml','legends17b','Spirit Call: a turn of stillness, beside the Monk',function(h){return l17SumTxt(h);});
-{const vc1=vCompanions;vCompanions=function(){let h=vc1.apply(this,arguments);try{h=l17SumTxt(h);
+{const vc1=vCompanions;vCompanions=function(){let h=vc1.apply(this,arguments);try{
     if(G&&!G.daily&&!/l17sumhint/.test(h)){const i=h.indexOf('</p>');if(i>=0)h=h.slice(0,i+4)+'<p class="note l17sumhint">Sanctum guardians and Lesser Scourges are made for boss fights: in an ordinary field fight they make the fight longer.</p>'+h.slice(i+4);}}catch(e){}return h;};}
 
 // tests

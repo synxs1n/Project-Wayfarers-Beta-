@@ -4,12 +4,17 @@
 // G.miniPick). Priests (the Healer class) can Invoke a summon in battle: the Priest spends a turn praying (B.pray), and on their
 // next turn the guardian takes the field in place of the WHOLE Vanguard (B.front becomes [the summon]) for SUM.turns of its own
 // turns, hitting with the guardian's skills. When it ends, or if it falls, the Vanguard returns as it was (HP untouched); a fallen
-// summon blocks summoning for the rest of the battle. Costs SUM.mp of the Priest's max MP, once per Priest per battle. Monks from
-// level SUM.monkLv get a lesser call: two turns of praying, a weaker (SUM.lesser) summon that takes only the Monk's own place for
-// SUM.lesserTurns turns. Never in the Daily Trial; auto battle never prays (the summon still acts if it is already out).
-// v0.19.2: a guardian is a boss you can summon: it stays 5 turns when a Priest invokes it (was 3) and 3 when a Monk calls it (was 2), and is drawn at boss size
+// summon blocks summoning for the rest of the battle. Costs SUM.mp of the Priest's max MP, once per Priest per battle. Monks
+// Invoke too (SUM.call below). Never in the Daily Trial; auto battle never prays (the summon still acts if it is already out).
+// v0.19.2: a guardian is a boss you can summon: it stays 5 turns when a Priest invokes it (was 3), and is drawn at boss size
 // after 0.21.0 ("boss summons are bit too strong, tune down slight bit"): 12% less damage (powM .95 to .835) and 12% less HP (hpK 1.2 to 1.055); see battle16.js
-const SUM={turns:5,mp:.3,mpMin:10,hpK:1.055,lvUp:2,powM:.835,lesser:.6,lesserTurns:3,monkLv:10,monkPray:2};
+// legends18 (after 0.22.3, the owner: "just give monks the same summon (invoke) capabilities of priest, it just takes 2 turns the summon only last 4 turns
+// instead of priest 5"): the lesser call is gone. A Monk Invokes exactly as a Priest does (the same guardian at full strength, in the whole Vanguard's
+// place, the same MP, no level gate) with two parameters of his own (SUM.call): SUM.call.monk.pray turns of stillness before it answers (the Priest:
+// one turn of prayer) and SUM.call.monk.turns turns on the field (the Priest: SUM.turns). The wind-up is shown like the Priest's prayer: a "Stillness" mark
+// over him and the card badge (with the turns left), a log line each turn; only a KO breaks it (fallen clears B.pray), a Stun does not.
+const SUM={turns:5,mp:.3,mpMin:10,hpK:1.055,lvUp:2,powM:.835,call:{priest:{pray:1,turns:5},monk:{pray:2,turns:4}}};
+const sumCallOf=k=>(SUM.call&&SUM.call[k])||{pray:1,turns:SUM.turns};// the two parameters of a caller kind ('priest': Priests, Nikaris, Joseth; 'monk')
 function sumList(){try{return Object.values(G.summons||{});}catch(e){return [];}}
 function sumUnlock(mon,name,mod){if(!G||G.daily||!MON[mon])return false;G.summons=G.summons||{};if(G.summons[mon])return false;G.summons[mon]={mon,name:name||MON[mon].n,mod:mod||null,at:Date.now()};return true;}
 // old saves: guardians already beaten become summons
@@ -29,27 +34,27 @@ miniFor=function(m){G.miniPick=G.miniPick||{};let i=G.miniPick[m.id];
 {const sh0=siteHasMini;siteHasMini=function(id){if(typeof id==='string'&&id[0]==='o')return true;return sh0.apply(this,arguments);};}
 HOOK.after('win','summon8','a beaten guardian becomes a summon',function(){try{const sp=B&&B.spec,mi=sp&&sp.mini;if(!mi||typeof mi!=='object'||!G||G.daily)return;if(sumUnlock(mi.mon,mi.name,mi.mod)){const info=(B&&B.result)||(V.modal&&V.modal.info);if(info){info.notes=info.notes||[];info.notes.push(`${mi.name} is bound to your cause: a Priest can now Invoke it in battle.`);}}}catch(e){}});
 // ----- who can summon -----
-function sumClassOf(a){try{const t=TPL[a.id];if(!t||!B||a.side!=='p'||a.isComp||a.isSum)return null;if(t.cls==='healer')return 'priest';if(t.cls==='monk'&&a.lv>=SUM.monkLv)return 'monk';}catch(e){}return null;}
+function sumClassOf(a){try{const t=TPL[a.id];if(!t||!B||a.side!=='p'||a.isComp||a.isSum)return null;if(t.cls==='healer')return 'priest';if(t.cls==='monk')return 'monk';}catch(e){}return null;}
 function sumCan(a){if(!B||!G||G.daily||B.auto||!a||a.hp<=0)return false;if(B.sum||B.sumDead||B.pray)return false;const k=sumClassOf(a);if(!k||!sumList().length)return false;if((B.summonedBy||{})[a.id])return false;return a.mp>=sumCost(a);}
 function sumCost(a){return Math.max(SUM.mpMin,Math.round(a.S.mmp*SUM.mp));}
 // ----- the unit -----
-function sumMake(o,lesser,owner){const m=MON[o.mon];const heroes=B.front.filter(c=>c.hp>0),lv=Math.round(heroes.reduce((q,c)=>q+c.lv,0)/Math.max(1,heroes.length))+SUM.lvUp;
-  const u=makeEnemy(m,lv,{elite:true,name:o.name,mod:o.mod,noField:1,noBuff:1,hpM:1,powM:SUM.powM*(lesser?SUM.lesser:1)});
-  u.side='p';u.isSum=1;u.id='sum_'+o.mon;u.base=o.name;u.lb=0;u.owner=owner||null;u.lesser=!!lesser;u.turnsLeft=lesser?SUM.lesserTurns:SUM.turns;
-  const pool=lesser?(owner?owner.S.mhp:0):B.front.reduce((q,c)=>q+(c.S?c.S.mhp:0),0);u.S.mhp=Math.max(u.S.mhp,Math.round(pool*SUM.hpK*(lesser?.8:1)));u.hp=u.S.mhp;u.S.mmp=999;u.mp=999;
+// (the second and third arguments, once the lesser form and its owner, are unused: every guardian is the full one; roles9.js reads the caller from sumFire)
+function sumMake(o,_,owner,turns){const m=MON[o.mon];const heroes=B.front.filter(c=>c.hp>0),lv=Math.round(heroes.reduce((q,c)=>q+c.lv,0)/Math.max(1,heroes.length))+SUM.lvUp;
+  const u=makeEnemy(m,lv,{elite:true,name:o.name,mod:o.mod,noField:1,noBuff:1,hpM:1,powM:SUM.powM});
+  u.side='p';u.isSum=1;u.id='sum_'+o.mon;u.base=o.name;u.lb=0;u.owner=null;u.lesser=false;u.turnsLeft=turns||SUM.turns;
+  const pool=B.front.reduce((q,c)=>q+(c.S?c.S.mhp:0),0);u.S.mhp=Math.max(u.S.mhp,Math.round(pool*SUM.hpK));u.hp=u.S.mhp;u.S.mmp=999;u.mp=999;
   if(!TPL[u.id])TPL[u.id]={id:u.id,n:o.name,cls:'warrior',el:m.el.slice(),trait:'brave',bio:`${o.name}, guardian of a Sanctum, bound to your cause.`,src:'sum',look:null,mon:o.mon,art:m.art,summon:1};
   u.msk=(m.sk||[]).map(s=>({id:'s'+s[0],n:s[0],el:s[1],pw:+(s[2]*1.05).toFixed(2),t:s[3]==='all'?'all':s[3]==='self'?'self':'one',k:s[4]==='buff'?'buff':s[4],fx:s[5]||null,mp:0,cost:1,hits:1}));
   return u;}
-function sumFire(a,o,lesser){const u=sumMake(o,lesser,lesser?a:null);
-  if(lesser){const i=B.front.indexOf(a);if(i<0)return false;B.sum={u,lesser:1,slot:i,owner:a,by:a};B.front[i]=u;a.hidden=1;}
-  else{B.sum={u,front:B.front,by:a};B.front=[u];}
+// turns: how long it stays (the caller's SUM.call; a number, or nothing for the Priest's SUM.turns)
+function sumFire(a,o,turns){const u=sumMake(o,false,null,typeof turns==='number'?turns:null);
+  B.sum={u,front:B.front,by:a};B.front=[u];
   B.summonedBy=B.summonedBy||{};B.summonedBy[a.id]=1;u.next=B.time;u.enterT=Date.now();
-  banner(`GUARDIAN: ${o.name}`,ELC[(MON[o.mon].el||[])[0]]||'#ffd04a');log(lesser?`${a.name}'s call is answered: a lesser ${o.name} takes ${a.name}'s place for ${u.turnsLeft} turns.`:`${a.name}'s prayer is answered: ${o.name} takes the field for ${u.turnsLeft} turns while the Vanguard steps back.`);
+  banner(`GUARDIAN: ${o.name}`,ELC[(MON[o.mon].el||[])[0]]||'#ffd04a');log(`${a.name}'s ${sumClassOf(a)==='monk'?'call':'prayer'} is answered: ${o.name} takes the field for ${u.turnsLeft} turns while the Vanguard steps back.`);
   if(typeof sfx==='function')sfx('level');return true;}
 sumFire=HOOK.def('sumFire',sumFire);// v0.19.2: kits12 adds the boss entrance (glow, name plate)
 function sumEnd(why){const S=B&&B.sum;if(!S)return;const u=S.u;
-  if(S.lesser){const i=B.front.indexOf(u);if(i>=0)B.front[i]=S.owner;S.owner.hidden=0;S.owner.next=B.time+delayOf(S.owner,.4);S.owner.enterT=Date.now();}
-  else{B.front=S.front;B.front.forEach((c,i)=>{c.hidden=0;c.next=B.time+delayOf(c,.3+.15*i);c.enterT=Date.now();});}
+  B.front=S.front;B.front.forEach((c,i)=>{c.hidden=0;c.next=B.time+delayOf(c,.3+.15*i);c.enterT=Date.now();});
   B.sum=null;if(why==='ko')B.sumDead=1;
   log(why==='ko'?`${u.name} is driven off. The Vanguard steps back in.`:`${u.name} returns to the Sanctum. The Vanguard steps back in.`);}
 function sumTurn(u){if(!B||B.over)return;const foes=B.en.filter(e=>e.hp>0);if(!foes.length){advance();return;}
@@ -61,13 +66,13 @@ function sumTurn(u){if(!B||B.over)return;const foes=B.en.filter(e=>e.hp>0);if(!f
   endTurn(u,1);}
 // ----- praying: the next turn of the one who prays fires the summon -----
 function sumPray(a,mon){const o=G.summons&&G.summons[mon];if(!o||!sumCan(a))return false;const k=sumClassOf(a);a.mp-=sumCost(a);
-  B.pray={by:a,mon,n:k==='monk'?SUM.monkPray:1,lesser:k==='monk'};autoNote(a,'Invoke '+o.name);
-  log(k==='monk'?`${a.name} sits in stillness, calling to ${o.name}.`:`${a.name} prays to ${o.name}. The answer comes next turn.`);fx(a,'Praying','stat good');B.menu='root';endTurn(a,1);return true;}
+  const C=sumCallOf(k);B.pray={by:a,mon,n:C.pray,turns:C.turns,monk:k==='monk'?1:0};autoNote(a,'Invoke '+o.name);
+  log(C.pray>1?`${a.name} sits in stillness, calling to ${o.name}. The answer comes in ${C.pray} turns.`:`${a.name} prays to ${o.name}. The answer comes next turn.`);fx(a,C.pray>1?'Stillness':'Praying','stat good');B.menu='root';endTurn(a,1);return true;}
 {const ad0=advance;advance=function(){if(B&&!B.over){let u=null;liveUnits().forEach(x=>{if(!u||x.next<u.next||(x.next===u.next&&x.side==='p'))u=x;});
     if(u&&u.isSum){if(checkEnd())return;B.cur=u;B.time=u.next;B.mode='enemy';render();later(()=>sumTurn(u),PAUSE*.8);return;}
     if(u&&B.pray&&B.pray.by===u){const P=B.pray;if(u.hp<=0){B.pray=null;}else{B.cur=u;B.time=u.next;u.guard=false;P.n--;
-        if(P.n>0){log(`${u.name} keeps praying.`);fx(u,'Praying','stat good');B.mode='wait';render();later(()=>{if(B&&!B.over)endTurn(u,1);},PAUSE*.6);return;}
-        B.pray=null;const o=G.summons&&G.summons[P.mon];B.mode='wait';if(o&&sumFire(u,o,P.lesser)){u.next=B.time+delayOf(u,1);render();later(advance,PAUSE*.8);return;}}}}
+        if(P.n>0){log(P.monk?`${u.name} keeps still, calling.`:`${u.name} keeps praying.`);fx(u,P.monk?'Stillness':'Praying','stat good');B.mode='wait';render();later(()=>{if(B&&!B.over)endTurn(u,1);},PAUSE*.6);return;}
+        B.pray=null;const o=G.summons&&G.summons[P.mon];B.mode='wait';if(o&&sumFire(u,o,P.turns||SUM.turns)){u.next=B.time+delayOf(u,1);render();later(advance,PAUSE*.8);return;}}}}
   return ad0.apply(this,arguments);};}
 HOOK.before('fallen','summon8','a summon is driven off instead of falling',function(u){if(u&&u.isSum){u.deathT=Date.now();fx(u,'Driven off','stat bad');sumEnd('ko');render();return HOOK.stop();}if(u&&B&&B.pray&&B.pray.by===u)B.pray=null;});
 {const lb0=lbAdd;lbAdd=function(c,n){if(c&&c.isSum)return;return lb0.apply(this,arguments);};}
@@ -77,11 +82,13 @@ HOOK.before('finishBattle','summon8','the summon leaves',function(){try{if(B&&B.
 HOOK.before('win','summon8','the summon leaves',function(){try{if(B&&B.sum)sumEnd('done');}catch(e){}});
 HOOK.after('startBattle','summon8','fresh battle',function(r){try{if(r!==false&&B){B.sum=null;B.pray=null;B.sumDead=0;B.summonedBy={};}}catch(e){}});
 // ----- the command -----
-function sumMenuHtml(a){const L=sumList();return `<p class="hint">${sumClassOf(a)==='monk'?`A lesser form answers after two turns of stillness and takes ${esc(a.name)}'s place for ${SUM.lesserTurns} turns.`:`The guardian answers next turn and takes the whole Vanguard's place for ${SUM.turns} turns. Costs ${sumCost(a)} MP.`}</p><div class="menu list">${L.map(o=>`<button class="mi tk-ally" data-act="sumPick" data-arg="${o.mon}"><span class="n">${esc(o.name)}</span><span class="m">${(MON[o.mon].el||[]).map(ico).join('')}</span><small>${esc((MON[o.mon].sk||[]).map(s=>s[0]).join(', '))}</small></button>`).join('')}</div>`;}
+function sumHint(a){const C=sumCallOf(sumClassOf(a));return C.pray>1?`The guardian answers after ${C.pray} turns of stillness and takes the whole Vanguard's place for ${C.turns} turns. Costs ${sumCost(a)} MP.`:`The guardian answers next turn and takes the whole Vanguard's place for ${C.turns} turns. Costs ${sumCost(a)} MP.`;}
+function sumTip(a){const C=sumCallOf(sumClassOf(a));return C.pray>1?`Call a Sanctum guardian: after ${C.pray} turns of stillness it takes the field in place of the Vanguard for ${C.turns} turns`:'Pray for a Sanctum guardian: next turn it takes the field in place of the Vanguard';}
+function sumMenuHtml(a){const L=sumList();return `<p class="hint">${sumHint(a)}</p><div class="menu list">${L.map(o=>`<button class="mi tk-ally" data-act="sumPick" data-arg="${o.mon}"><span class="n">${esc(o.name)}</span><span class="m">${(MON[o.mon].el||[]).map(ico).join('')}</span><small>${esc((MON[o.mon].sk||[]).map(s=>s[0]).join(', '))}</small></button>`).join('')}</div>`;}
 HOOK.wrap('cmdHtml','summon8','summons menu and Invoke button',function(next,...args){if(B&&B.menu==='summons'&&B.cur){const h=next(...args);const i=h.indexOf('<div class="menu');return (i>=0?h.slice(0,i):h)+sumMenuHtml(B.cur)+'<button class="btn sm cmdback" data-act="back">‹ Back</button>';}
-  let h=next(...args);try{const a=B&&B.cur;if(a&&B.menu==='root'&&sumCan(a)){const k=sumClassOf(a),btn=`<button class="mi summon s8" data-act="sumAsk" title="${k==='monk'?'Call a lesser guardian to take your place after two turns of stillness':'Pray for a Sanctum guardian: next turn it takes the field in place of the Vanguard'}">${k==='monk'?'Spirit Call':'Invoke'}</button>`;h=h.replace('<div class="menu sec">','<div class="menu sec">'+btn);}}catch(e){}return h;});
+  let h=next(...args);try{const a=B&&B.cur;if(a&&B.menu==='root'&&sumCan(a)){const btn=`<button class="mi summon s8" data-act="sumAsk" title="${sumTip(a)}">Invoke</button>`;h=h.replace('<div class="menu sec">','<div class="menu sec">'+btn);}}catch(e){}return h;});
 Object.assign(ACT,{sumAsk(){if(!B||B.mode!=='cmd'||!sumCan(B.cur))return;const L=sumList();if(L.length===1){sumPray(B.cur,L[0].mon);render();return;}B.menu='summons';render();},
   sumPick(mon){if(!B||B.mode!=='cmd'||!sumCan(B.cur))return;if(sumPray(B.cur,mon))render();}});
 // the praying hero's card says so
 HOOK.after('renderBattle','summon8','praying badge',function(){try{if(!B||!B.pray||V.screen!=='battle')return;const i=allParty().indexOf(B.pray.by);if(i<0)return;const card=document.querySelector(`#bparty [data-act="tgtA"][data-arg="${i}"], #bparty .pc[data-arg="${i}"]`);if(!card||card.querySelector('.s8pray'))return;
-  const o=G.summons[B.pray.mon];const s=document.createElement('span');s.className='s8pray';s.textContent='✦ '+(o?o.name:'Praying');s.title=`Praying: ${o?o.name:''} answers ${B.pray.n>1?'in '+B.pray.n+' turns':'next turn'}.`;card.appendChild(s);}catch(e){}});
+  const o=G.summons[B.pray.mon];const s=document.createElement('span');s.className='s8pray';s.textContent='✦ '+(o?o.name:'Praying');s.title=`${B.pray.monk?'Stillness':'Praying'}: ${o?o.name:''} answers ${B.pray.n>1?'in '+B.pray.n+' turns':'next turn'}.`;if(B.pray.n>1)s.textContent+=' · '+B.pray.n;card.appendChild(s);}catch(e){}});

@@ -4,13 +4,13 @@
 // per caller, once without any summon and once with an AI that calls its summon the first turn it can:
 // (two callers: one that calls the first turn it can, one that waits until the Vanguard is hurt)
 //   pets (weak, middle and strong monsters by their base stats, and a Beastbond one), paired with the party's Warrior, who calls them in his place
-//   Sanctum guardians: Invoke by a Priest, Invoke by Nikaris, Spirit Call by a Monk
-//   Lesser Scourges (recruited bosses, boss sized, in the whole Vanguard's place): called by a Priest, by Nikaris, by a Monk (the Monk rules)
+//   Sanctum guardians: Invoke by a Priest, by Nikaris, by a Monk
+//   Lesser Scourges (recruited bosses, boss sized, in the whole Vanguard's place): called by a Priest, by Nikaris, by a Monk (the Priest's rules)
 // Per source and point: win rate, the length of a won fight (the battle clock, against the same party without the summon), the share of the
 // party's HP lost, and the summon's share of all damage and healing the party's side did. The pairing bonus of a pet is on in both runs, so the
 // difference is the Summon command alone.
 // Usage (from tools/chrome): node sumbal.js [N fights per cell, default 30]      SEED=<n> (default 7)   POINTS=boss1,field3   SOURCES=gMonk,sMonk   SIMROOT=<other checkout>
-//   CFGSET='SUM.monkPray=1;SUM.lesser=.7' tries other numbers (objects in config: SUM, B16.boss, COMP_BONUS; a const number such as COMP_TURNS cannot be set this way)
+//   CFGSET='SUM.call.monk.pray=1;SUM.call.monk.turns=5' tries other numbers (objects in config: SUM, B16.boss, COMP_BONUS; a const number such as COMP_TURNS cannot be set this way)
 // It prints one table and a summary per source; docs/sumbal17.md holds a run and the offers made from it. Not in the ci group (about 5 minutes).
 // legends17a.js: SOURCES=jPack,jGuard,jCer measure Joseth's pack (Call the Pack), his guardian (Invoke, paid in HP) and Cerberus (his Limit, the gauge
 // filled for the call). CMP=1 prints the class comparison instead: the same six with a Thief or Dist, a Priest or Joseth (with and without his summons)
@@ -80,7 +80,7 @@ const SRCS=[
  ['petbb','Pet, strong, Beastbond','pet',i=>{A.G.tamed=[mkPet(tier(2)[i%4],'brann',0,1)];return {kind:'pet',who:'brann'};}],
  ['gPriest','Guardian, Priest (Invoke)','priest',i=>{const o=MI[i%MI.length];A.G.summons={[o.mon]:o};return {kind:'guard',who:'lumen',mon:o.mon};}],
  ['gNik','Guardian, Nikaris (Invoke)','nik',i=>{const o=MI[i%MI.length];A.G.summons={[o.mon]:o};return {kind:'guard',who:'nikaris',mon:o.mon};}],
- ['gMonk','Guardian, Monk (Spirit Call)','monk',i=>{const o=MI[i%MI.length];A.G.summons={[o.mon]:o};return {kind:'guard',who:'taro',mon:o.mon};}],
+ ['gMonk','Guardian, Monk (Invoke)','monk',i=>{const o=MI[i%MI.length];A.G.summons={[o.mon]:o};return {kind:'guard',who:'taro',mon:o.mon};}],
  ['sPriest','Lesser Scourge, Priest','priest',i=>{A.G.tamed=[mkPet(GK[i%GK.length],'lumen',1,1)];return {kind:'pet',who:'lumen'};}],
  ['sNik','Lesser Scourge, Nikaris','nik',i=>{A.G.tamed=[mkPet(GK[i%GK.length],'nikaris',1,1)];return {kind:'pet',who:'nikaris'};}],
  ['sMonk','Lesser Scourge, Monk','monk',i=>{A.G.tamed=[mkPet(GK[i%GK.length],'taro',1,1)];return {kind:'pet',who:'taro'};}],

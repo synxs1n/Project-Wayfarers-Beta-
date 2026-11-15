@@ -1,7 +1,7 @@
 // battle pass 17 (v3/roster17.js), the owner's four playtest notes after 0.21.6:
-// 1) Monks call again: Spirit Call from level 10 (two turns of stillness, a lesser guardian for 3 turns in the Monk's place), and a Lesser Scourge answers
-//    a Monk under the same rules (level 10, lesser strength, 3 turns; boss sized and in the whole Vanguard's place); Nikaris and Priests as in 0.21.4;
-//    the other classes read the note
+// 1) Monks call again. After 0.22.3 (legends18, summon8.js SUM.call): a Monk Invokes as a Priest does, at any level (two turns of stillness, the full
+//    guardian in the whole Vanguard's place for 4 turns; a Priest: one turn, 5), and a Lesser Scourge answers a Monk under the Priest's rules (full
+//    strength, 4 turns; boss sized and in the whole Vanguard's place); Nikaris and Priests as in 0.21.4; the other classes read the note
 // 2) the Pets tab is Summons: sections for pets, recruited bosses, Sanctum guardians and Nikaris's beast calls, each entry with who can call it or why
 //    nobody can; pairing still works; ids and save keys kept
 // 3) kits of 14: all 92 wayfarers have 14 class skills, at least 2 that no other wayfarer has, exactly 3 at level 10, single learns from 11 to 45 no
@@ -86,13 +86,13 @@ const ROOTS=['hollow','ash','ember','thorn','gloam','bone','mist','spire','cinde
  const txt=h=>String(h||'').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ');
  console.log('summons:',JSON.stringify({tab:m.tab,petsTab:m.petsTab,sub:m.sub,rows:m.rows,heads:m.heads,paired:m.paired}));
  chk(`the tab reads Summons (${m.tab} button, ${m.petsTab} still saying Pets; MENU_SUB.comp "${m.sub}"), with the sections ${m.heads.join(' | ')}`,m.tab>=1&&m.petsTab===0&&m.sub==='Summons'&&['Pets','Recruited bosses','Sanctum guardians','Beast calls'].every((s,i)=>(m.heads[i]||'').startsWith(s))||JSON.stringify(m.heads));
- chk('an empty list names every source and how to get it',/No pets yet/.test(m.empty)&&/No Lesser Scourge/.test(m.empty)&&/No guardian is bound/.test(m.empty)&&/Nikaris, a Priest or a Monk of level 10/.test(m.empty)||txt(m.empty).slice(0,300));
+ chk('an empty list names every source and how to get it',/No pets yet/.test(m.empty)&&/No Lesser Scourge/.test(m.empty)&&/No guardian is bound/.test(m.empty)&&/Nikaris, a Priest or a Monk can summon a recruited boss/.test(m.empty)||txt(m.empty).slice(0,300));
  const t1=txt(m.h1),t2=txt(m.h2),t3=txt(m.h3),t4=txt(m.h4);
  chk('a paired pet names its hero as the caller; an unpaired one says to pair it',/Who can call it: Brann : Summon, once per battle \(3 turns, in Brann's place\)/.test(t1)&&/Nobody can call it yet: pair it with any hero/.test(t1)||t1.slice(0,500));
- chk('a Lesser Scourge paired with a Warrior: he keeps the bonus, cannot call it, and the list says who could (the Priest; the Monk is not level 10 yet)',/Nobody can call it yet: Brann keeps its bonus but cannot call a recruited boss\. Pair it with Lumen \./.test(t1)&&!/Pair it with [^.]*Taro/.test(t1)||t1.slice(0,900));
- chk('a guardian: the Priest Invokes it; the Monk under level 10 is not listed',/Who can call it: Lumen : Invoke \(a turn of prayer, then 5 turns in the whole Vanguard's place\)\./.test(t1)&&!/Spirit Call/.test(t1.split('Sanctum guardians')[1].split('Beast calls')[0])||t1.slice(-500));
- chk('at level 10 the Monk is a caller: the Scourge paired with him (a lesser call, 3 turns) and a Spirit Call for the guardian',/Who can call it: Taro : Summon, once per battle \(a Monk's lesser call: 3 turns\), in the whole Vanguard's place/.test(t2)&&/Taro : Spirit Call \(a turn of stillness, a lesser form for 4 turns beside the Monk\)/.test(t2)||t2.slice(0,900));
- chk('with no Priest, Monk or Nikaris in the roster the boss and the guardian say what is needed',/It needs Nikaris, a Priest or a Monk of level 10\./.test(t3)&&/Nobody can call it yet: it needs a Priest or Nikaris to Invoke it, or a Monk of level 10 for a Spirit Call\./.test(t3)||t3.slice(0,900));
+ chk('a Lesser Scourge paired with a Warrior: he keeps the bonus, cannot call it, and the list says who could (the Priest and the Monk, at any level)',/Nobody can call it yet: Brann keeps its bonus but cannot call a recruited boss\. Pair it with Lumen , Taro \./.test(t1)||t1.slice(0,900));
+ chk('a guardian: the Priest Invokes it (a turn of prayer, 5 turns), the Monk too at level 6 (two turns of stillness, 4 turns)',/Who can call it: Lumen : Invoke \(a turn of prayer, then 5 turns in the whole Vanguard's place\); Taro : Invoke \(2 turns of stillness, then 4 turns in the whole Vanguard's place\)\./.test(t1)&&!/Spirit Call/.test(t1)||t1.slice(-500));
+ chk('the Monk calls the Scourge paired with him under the Priest\'s rules (4 turns) and Invokes the guardian',/Who can call it: Taro : Summon, once per battle \(4 turns\), in the whole Vanguard's place/.test(t2)&&/Taro : Invoke \(2 turns of stillness, then 4 turns in the whole Vanguard's place\)/.test(t2)&&!/lesser call/.test(t2)||t2.slice(0,900));
+ chk('with no Priest, Monk or Nikaris in the roster the boss and the guardian say what is needed',/It needs Nikaris, a Priest or a Monk\./.test(t3)&&/Nobody can call it yet: it needs a Priest, Nikaris or a Monk to Invoke it\./.test(t3)||t3.slice(0,900));
  chk('with Nikaris in the roster his beast calls are listed, each with its level or that he knows it',/Beast calls 4/.test(t4)&&/Call Hawk/.test(t4)&&/Call Wolf/.test(t4)&&/Pack Hunt/.test(t4)&&/Call Boar/.test(t4)&&/Nikaris : a skill of his own/.test(t4)&&/Nikaris (learns it at level \d+|: a skill)/.test(t4)&&/Nikaris : Invoke/.test(t4)||t4.slice(-700));
  chk(`pairing still works from the list (the free pet is now with ${m.paired}) and the save keeps its keys (tamed, summons)`,m.pick&&m.paired==='lumen'&&m.rows>=4&&m.saveKeys.tamed&&m.saveKeys.summons||JSON.stringify(m));
  await H.browser.close();}
@@ -112,16 +112,16 @@ const ROOTS=['hollow','ash','ember','thorn','gloam','bone','mist','spire','cinde
   // --- guardians ---
   G.tamed=[];G.summons={[mini[0]]:{mon:mini[0],name:mini[2],mod:mini[5]}};o.inv={};
   ['brann','taro','lumen'].forEach(w=>{const a=turn(w);o.inv[w]={can:g('sumCan')(a),cls:g('sumClassOf')(a),btn:btn()};});
-  // the Monk presses: two turns of stillness, a lesser guardian in his place only
-  {const a=turn('taro'),mp0=a.mp;document.querySelector('#bcmd [data-act=sumOne]').click();o.pray=B.pray?{by:B.pray.by.id,n:B.pray.n,lesser:B.pray.lesser,mp:mp0-a.mp,cost:g('sumCost')(a)}:null;B.pray=null;
-   const u=g('sumMake')(G.summons[mini[0]],true,a),f=g('sumMake')(G.summons[mini[0]],false,null);o.lesser={turns:u.turnsLeft,fullTurns:f.turnsLeft,atk:+(u.S.atk/f.S.atk).toFixed(3),hp:u.S.mhp,own:a.S.mhp};
-   reset();B.cur=a;g('sumFire')(a,G.summons[mini[0]],true);o.fire={front:B.front.map(x=>x.id),hidden:!!a.hidden,lesser:!!(B.sum&&B.sum.lesser)};g('sumEnd')('done');o.fire.back=B.front.map(x=>x.id).join()===fr.map(x=>x.id).join();}
-  // under level 10 the Monk cannot, and reads the level
-  {const c=H('taro');c.lv=9;const a=turn('taro');o.young={can:g('sumCan')(a),cls:g('sumClassOf')(a),btn:btn()};c.lv=20;}
+  // the Monk presses: two turns of stillness, then the Priest's guardian for 4 turns in the whole Vanguard's place
+  {const a=turn('taro'),mp0=a.mp;document.querySelector('#bcmd [data-act=sumOne]').click();o.pray=B.pray?{by:B.pray.by.id,n:B.pray.n,turns:B.pray.turns,lesser:!!B.pray.lesser,mp:mp0-a.mp,cost:g('sumCost')(a)}:null;B.pray=null;
+   const u=g('sumMake')(G.summons[mini[0]],false,null,4),f=g('sumMake')(G.summons[mini[0]],false,null);o.full={turns:u.turnsLeft,fullTurns:f.turnsLeft,atk:+(u.S.atk/f.S.atk).toFixed(3),hp:u.S.mhp===f.S.mhp};
+   reset();B.cur=a;g('sumFire')(a,G.summons[mini[0]],4);o.fire={front:B.front.map(x=>x.isSum?'guardian':x.id),hidden:!!a.hidden,lesser:!!(B.sum&&B.sum.lesser),turns:B.sum&&B.sum.u.turnsLeft};g('sumEnd')('done');o.fire.back=B.front.map(x=>x.id).join()===fr.map(x=>x.id).join();}
+  // no level gate: a Monk of level 1 calls too
+  {const c=H('taro');c.lv=1;const a=turn('taro');o.young={can:g('sumCan')(a),cls:g('sumClassOf')(a),btn:btn()};c.lv=20;}
   // --- recruited bosses ---
   G.summons={};o.who={};
   ['brann','taro','lumen'].forEach((w,i)=>{G.tamed=[pet(1,w,i)];const a=turn(w);const b=btn();o.who[w]={btn:b,caller:g('b16Caller')(a)};});
-  // the Monk's call: boss sized, the whole Vanguard steps out, lesser numbers
+  // the Monk's call: boss sized, the whole Vanguard steps out, the Priest's numbers
   {G.tamed=[pet(1,'taro',7)];const a=turn('taro'),pool=fr.reduce((q,c)=>q+c.S.mhp,0);document.querySelector('#bcmd .b9sum').click();if(B.menu==='summons'){const q=document.querySelector('#bcmd [data-act=summon]');q&&q.click();}
    const u=B.front[0],base=g('makeEnemy')(d,u.lv,{elite:true,noField:1,noBuff:1,hpM:1,powM:1});
    o.monkBoss={front:B.front.length,big:u.b16big,isSum:u.isSum,monk:u.r17monk,turns:u.turnsLeft,hp:u.S.mhp,pool,atkK:+(u.S.atk/base.S.atk).toFixed(4),sum:!!(B.sum&&B.sum.b16),powAfter:SUM.powM};
@@ -129,24 +129,24 @@ const ROOTS=['hollow','ash','ember','thorn','gloam','bone','mist','spire','cinde
   // the Priest's call is as 0.21.4 built it
   {G.tamed=[pet(1,'lumen',8)];turn('lumen');document.querySelector('#bcmd .b9sum').click();if(B.menu==='summons'){const q=document.querySelector('#bcmd [data-act=summon]');q&&q.click();}
    const u=B.front[0],base=g('makeEnemy')(d,u.lv,{elite:true,noField:1,noBuff:1,hpM:1,powM:1});o.priestBoss={turns:u.turnsLeft,atkK:+(u.S.atk/base.S.atk).toFixed(4),hp:u.S.mhp,monk:!!u.r17monk};g('sumEnd')('done');}
-  // under level 10 the Monk reads the level on the greyed button
-  {const c=H('taro');c.lv=9;G.tamed=[pet(1,'taro',9)];turn('taro');o.youngBoss=btn();c.lv=20;}
+  // a Monk of level 1 paired with a Lesser Scourge can call it
+  {const c=H('taro');c.lv=1;G.tamed=[pet(1,'taro',9)];turn('taro');o.youngBoss=btn();c.lv=20;}
   // ordinary pets: anyone
   o.plain=['brann','taro','lumen'].map((w,i)=>{G.tamed=[pet(0,w,20+i)];const a=turn(w);return g('canSummon')(a);});
   o.note=g('B16').note;o.bonus=g('compBonusText')(pet(1,'brann',30)).replace(/<[^>]+>/g,' ');
   reset();G.tamed=[];B.cur=H('lumen');A.render();return o;});
  console.log('monks:',JSON.stringify(r));
- chk(`guardians: the Priest Invokes, the Monk has Spirit Call back (${JSON.stringify(r.inv.taro.btn)}), the Warrior has no command`,r.inv.lumen.can&&r.inv.lumen.cls==='priest'&&r.inv.taro.can&&r.inv.taro.cls==='monk'&&/Spirit Call/.test(r.inv.taro.btn.txt)&&!r.inv.taro.btn.dis&&!r.inv.brann.can&&r.inv.brann.btn===null||JSON.stringify(r.inv));
- chk(`Spirit Call (after 0.22.1, legends17b.js): one turn of stillness (${r.pray&&r.pray.n}), the Priest's MP cost (${r.pray&&r.pray.mp}), a lesser form: ${r.lesser.turns} turns (a Priest's: ${r.lesser.fullTurns}), power x${r.lesser.atk}, beside the Monk (${r.fire.front.join()})`,
-  r.pray&&r.pray.by==='taro'&&r.pray.n===1&&r.pray.lesser===true&&r.pray.mp===r.pray.cost&&r.lesser.turns===3&&r.lesser.fullTurns===5&&Math.abs(r.lesser.atk-.6)<.03&&r.fire.front.length===4&&r.fire.front.includes('taro')&&!r.fire.hidden&&r.fire.lesser&&r.fire.back||JSON.stringify([r.pray,r.lesser,r.fire]));
- chk(`a Monk under level 10 has no call and the greyed button says from which level ("${r.young.btn&&r.young.btn.tip}")`,!r.young.can&&r.young.cls===null&&r.young.btn&&r.young.btn.dis&&/Monk calls the Sanctum guardians from level 10/.test(r.young.btn.tip)||JSON.stringify(r.young));
- chk(`a Lesser Scourge answers the Priest and the Monk, not the Warrior ("${r.who.brann.btn&&r.who.brann.btn.tip}")`,r.who.lumen.caller&&!r.who.lumen.btn.dis&&r.who.taro.caller&&!r.who.taro.btn.dis&&!r.who.brann.caller&&r.who.brann.btn.dis&&/Only Nikaris, a Priest or a Monk of level 10 can summon a recruited boss/.test(r.who.brann.btn.tip)&&/Nikaris, Priest or Monk/.test(r.who.brann.btn.txt)||JSON.stringify(r.who));
+ chk(`guardians: the Priest Invokes, the Monk Invokes (${JSON.stringify(r.inv.taro.btn)}), the Warrior has no command`,r.inv.lumen.can&&r.inv.lumen.cls==='priest'&&r.inv.taro.can&&r.inv.taro.cls==='monk'&&/Invoke/.test(r.inv.taro.btn.txt)&&/2 turns of stillness/.test(r.inv.taro.btn.tip)&&!r.inv.taro.btn.dis&&!r.inv.brann.can&&r.inv.brann.btn===null||JSON.stringify(r.inv));
+ chk(`the Monk's Invoke (after 0.22.3, summon8.js SUM.call): ${r.pray&&r.pray.n} turns of stillness, the Priest's MP cost (${r.pray&&r.pray.mp}), the full guardian (power x${r.full.atk}, the same HP) for ${r.fire.turns} turns (a Priest's: ${r.full.fullTurns}) in the whole Vanguard's place (${r.fire.front.join()})`,
+  r.pray&&r.pray.by==='taro'&&r.pray.n===2&&r.pray.turns===4&&!r.pray.lesser&&r.pray.mp===r.pray.cost&&r.full.turns===4&&r.full.fullTurns===5&&r.full.atk===1&&r.full.hp&&r.fire.front.join()==='guardian'&&r.fire.turns===4&&!r.fire.lesser&&r.fire.back||JSON.stringify([r.pray,r.full,r.fire]));
+ chk(`no level gate: a Monk of level 1 Invokes ("${r.young.btn&&r.young.btn.tip}")`,r.young.can&&r.young.cls==='monk'&&r.young.btn&&!r.young.btn.dis||JSON.stringify(r.young));
+ chk(`a Lesser Scourge answers the Priest and the Monk, not the Warrior ("${r.who.brann.btn&&r.who.brann.btn.tip}")`,r.who.lumen.caller&&!r.who.lumen.btn.dis&&r.who.taro.caller&&!r.who.taro.btn.dis&&!r.who.brann.caller&&r.who.brann.btn.dis&&/Only Nikaris, a Priest or a Monk can summon a recruited boss/.test(r.who.brann.btn.tip)&&/Nikaris, Priest or Monk/.test(r.who.brann.btn.txt)||JSON.stringify(r.who));
  const mb=r.monkBoss;
- chk(`the Monk's Scourge: boss sized, alone in the whole Vanguard's place, under the Monk rules: ${mb.turns} turns, power x${mb.atkK} (.835 x .88 x .6), HP ${mb.hp} (the Vanguard's ${mb.pool} x 1.055 x .88 x .8); the heroes come back`,
-  mb.front===1&&mb.big===1&&mb.isSum&&mb.sum&&mb.monk===1&&mb.turns===3&&Math.abs(mb.atkK-.835*.88*.6)<.003&&Math.abs(mb.hp-Math.round(Math.round(mb.pool*1.055*.88)*.8))<=1&&mb.back&&Math.abs(mb.powAfter-.835)<1e-9||JSON.stringify(mb));
- chk(`the Priest's Scourge is as 0.21.4 built it: ${r.priestBoss.turns} turns, power x${r.priestBoss.atkK}`,r.priestBoss.turns===4&&Math.abs(r.priestBoss.atkK-.835*.88)<.003&&!r.priestBoss.monk&&r.priestBoss.hp>mb.hp||JSON.stringify(r.priestBoss));
- chk(`a Monk under level 10 paired with a Lesser Scourge reads the level ("${r.youngBoss&&r.youngBoss.tip}")`,r.youngBoss&&r.youngBoss.dis&&/a Monk calls it from level 10/.test(r.youngBoss.tip)||JSON.stringify(r.youngBoss));
- chk('ordinary pets are still summoned by anyone, and the pairing note names the three callers',r.plain.every(x=>x===true)&&/Nikaris, a Priest or a Monk of level 10/.test(r.note)&&/Nikaris, a Priest or a Monk of level 10/.test(r.bonus)||JSON.stringify([r.plain,r.note,r.bonus]));
+ chk(`the Monk's Scourge: boss sized, alone in the whole Vanguard's place, under the Priest's rules: ${mb.turns} turns, power x${mb.atkK} (.835 x .88), HP ${mb.hp} (the Vanguard's ${mb.pool} x 1.055 x .88); the heroes come back`,
+  mb.front===1&&mb.big===1&&mb.isSum&&mb.sum&&!mb.monk&&mb.turns===4&&Math.abs(mb.atkK-.835*.88)<.003&&Math.abs(mb.hp-Math.round(mb.pool*1.055*.88))<=1&&mb.back&&Math.abs(mb.powAfter-.835)<1e-9||JSON.stringify(mb));
+ chk(`the Priest's Scourge is as 0.21.4 built it, the same as the Monk's: ${r.priestBoss.turns} turns, power x${r.priestBoss.atkK}`,r.priestBoss.turns===4&&Math.abs(r.priestBoss.atkK-.835*.88)<.003&&!r.priestBoss.monk&&r.priestBoss.atkK===mb.atkK&&r.priestBoss.hp===mb.hp||JSON.stringify(r.priestBoss));
+ chk(`a Monk of level 1 paired with a Lesser Scourge can call it (${JSON.stringify(r.youngBoss)})`,r.youngBoss&&!r.youngBoss.dis||JSON.stringify(r.youngBoss));
+ chk('ordinary pets are still summoned by anyone, and the pairing note names the three callers',r.plain.every(x=>x===true)&&/Nikaris, a Priest or a Monk can summon/.test(r.note)&&/Nikaris, a Priest or a Monk can summon/.test(r.bonus)||JSON.stringify([r.plain,r.note,r.bonus]));
  await H.browser.close();}
 
 // ---------- 4. the Mantle ----------

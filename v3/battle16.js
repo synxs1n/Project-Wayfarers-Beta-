@@ -20,8 +20,9 @@
 //    - who (0.21.4): Nikaris or a Priest (the healer class) may Invoke a guardian or Summon a Lesser Scourge (b16Caller). Nikaris gains Invoke; any other
 //      hero paired with a Lesser Scourge keeps the pairing bonus but not the Summon command. Where the command used to be, a greyed Summon button
 //      says who can (and the Summons list says it on a Lesser Scourge).
-//      After 0.21.6 ("Monks can summon bosses too under the same rules as guardians before"): roster17.js gives the Monk's Spirit Call back (0.21.4 had
-//      removed it) and lets a Monk of level SUM.monkLv call a Lesser Scourge under the Monk rules. The callers are Nikaris, Priests and Monks.
+//      After 0.21.6 ("Monks can summon bosses too under the same rules as guardians before"): roster17.js gives the Monk his call back (0.21.4 had
+//      removed it) and lets a Monk call a Lesser Scourge. The callers are Nikaris, Priests and Monks. After 0.22.3 (legends18) a Monk Invokes as a
+//      Priest does (summon8.js SUM.call: two turns of stillness, 4 turns on the field) and calls a Lesser Scourge under the Priest's rules.
 //    - tune: guardians hit 12% softer and have 12% less HP (summon8.js SUM.powM .95 to .835, SUM.hpK 1.2 to 1.055; still 5 turns).
 //    - "Scourges should remain big and replace all 3 party members when used as summons": a summoned Lesser Scourge takes the whole Vanguard's place at
 //      boss size, like a guardian, a further 12% under the guardian's numbers (B16.boss) for 4 turns; see b16BossFire. Ordinary pets are untouched.
@@ -32,7 +33,7 @@
 //    The starter pool draws single types only (roster14.js ro14Pool). Foes are as they were: realm 1 single (DUAL_FROM=1), dual from realm 2.
 //    The gift of the second realm's Scourge (Sylva, a dual type) still joins when that Scourge falls, which is the moment the third realm opens.
 // (5, the learn levels, is in menus14.js.) Numbers: B16. Test: tools/chrome/v189a.js.
-const B16={boss:{pw:.88,hp:.88},nik:{atk:.94,mag:.94},note:`Only Nikaris, a Priest or a Monk of level ${SUM.monkLv} can summon a recruited boss.`,short:'Nikaris, Priest or Monk',
+const B16={boss:{pw:.88,hp:.88},nik:{atk:.94,mag:.94},note:`Only Nikaris, a Priest or a Monk can summon a recruited boss.`,short:'Nikaris, Priest or Monk',
   cont:{result:'resultOk',lose:'loseOk',story:'storyOk',talk:'talkNext'},eat:null,turn:null};
 
 // ---------- 1. no battle menu memory ----------
@@ -97,13 +98,13 @@ HOOK.after('unpackG','battle16','old saves: the pet of a removed Scourge follows
 
 // ---------- 4. recruited bosses: who may call them, and how hard they hit ----------
 function b16Caller(a){try{const t=a&&TPL[a.id];return !!t&&!t.mon&&(a.id==='nikaris'||t.cls==='healer');}catch(e){return false;}}
-// Invoke: the Priest as before, Nikaris like a Priest (0.21.4 removed the Monk's lesser Spirit Call here; roster17.js gives it back)
+// Invoke: the Priest as before, Nikaris like a Priest (0.21.4 removed the Monk's call here; roster17.js gives it back)
 {const sc0=sumClassOf;sumClassOf=function(a){try{if(a&&a.id==='nikaris'&&B&&a.side==='p'&&!a.isComp&&!a.isSum)return 'priest';}catch(e){}
   const k=sc0.apply(this,arguments);return k==='monk'?null:k;};}
 // the hero who used to have the command: why it is gone (null when nothing is withheld)
 function b16Blocked(a){try{if(!a||!B||!G||G.daily||a.side!=='p'||a.isComp||a.isSum||b16Caller(a))return null;const t=TPL[a.id];if(!t||t.mon)return null;
   const o=compOf(a);if(o&&o.scourge&&b16Def(o.mon)&&!(B.summoned||{})[a.id])return `${o.name} is a recruited boss. ${B16.note}`;
-  if(t.cls==='monk'&&a.lv>=SUM.monkLv&&sumList().length&&!B.sum&&!B.sumDead)return `The Sanctum guardians are recruited bosses. ${B16.note}`;}catch(e){}return null;}
+}catch(e){}return null;}
 HOOK.xform('cmdHtml','battle16','recruited bosses: a note where the Summon command was for anyone who cannot call them',function(h){try{const a=B&&B.cur;
   if(!a||B.mode!=='cmd'||B.menu!=='root'||B.swapAsk||typeof h!=='string')return h;const why=b16Blocked(a);if(!why)return h;
   if(h.includes('class="mi summon b9sum"'))return h.replace(/(<button class="mi summon b9sum"[^>]*title=")/,'$1'+esc(why)+' ');

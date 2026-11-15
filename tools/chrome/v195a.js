@@ -9,7 +9,8 @@
 //    Quicken; the Limit comes in waves in the weather's element
 // 5) old saves marked none, 1, 2, 3 and 4 keep every skill a legend knew (also the ones the rework dropped)
 // 6) unlocking: the code table still names the three; without a code a trail posts on the board, counts field wins, puts its own fight on the field
-//    and hands over to the old meeting; joining unlocks the hero on the account
+//    and hands over to the old meeting (Nikaris, after 0.22.3: he joins the moment his beasts are beaten, legends18.js; v197a); joining unlocks the
+//    hero on the account
 // 7) auto battle plays a boss fight with the three to the end and uses the signature moves; no page errors
 // Usage: PWHTML=<abs path to out/aurelis3.html> node v195a.js
 const {open,chk,done}=require('./pw');
@@ -161,6 +162,7 @@ const H=await open({w:1000,h:560,pre:PRE});const {ev,wait}=H;await ev(START);
     x.have=q.have;x.t1=q.tstep;x.p1=g('legendProg')(q);const a=g('dynActors')(m).find(a=>a.type==='legend'&&a.q===q);x.actor=a&&a.mon;
     A.V.screen='world';g('actorTalk')(a);x.modal=A.V.modal&&A.V.modal.l17&&A.V.modal.fight;x.html=/tough fight/.test(document.getElementById('modal').innerHTML);
     A.ACT.legendFight();x.foes=A.B?A.B.en.map(e=>e.name):null;x.kind=A.B&&A.B.spec.kind;x.wx=A.B&&A.B.weather;A.B.en.forEach(e=>{e.hp=0;});g('win')();x.t2=q.tstep;x.joined0=!!G.roster[id];A.V.modal=null;
+    if(id==='nikaris'){x.on1=!!(M.legends||{})[id];x.qs=q.state;A.finishBattle('win');delete G.l18meet;continue;}/* he joins at once (legends18.js) */
     const a2=g('dynActors')(m).find(a=>a.type==='legend'&&a.q===q);A.V.screen='world';g('actorTalk')(a2);x.meet=A.V.modal&&A.V.modal.type;x.meetL17=!!(A.V.modal&&A.V.modal.l17);A.V.modal=null;
     x.on0=!!(M.legends||{})[id];g('legendJoin')(id);x.joined=!!G.roster[id];x.on1=!!(M.legends||{})[id];x.qs=q.state;A.V.modal=null;}
   o.q=out;
@@ -172,23 +174,22 @@ const H=await open({w:1000,h:560,pre:PRE});const {ev,wait}=H;await ev(START);
  chk(`the code table still names the three (${r.codes}); Help > Redeem names the trail`,['jaeson','kaevan','nikaris'].every(k=>r.codes.split(',').includes(k))/* legends17a adds dist and jose */&&r.codeFn&&r.redeemTxt||JSON.stringify([r.codes,r.redeemTxt]));
  chk(`without a code the board of the fourth realm posts three trails (${r.posted.join(' | ')}); by realm: ${r.ok.join(' ')}`,['nikaris','kaevan','jaeson'].every(k=>r.posted.some(x=>x.startsWith(k+':')&&/:open$/.test(x)))/* legends17a posts its own trails too */&&r.ok[0]==='01111'&&r.ok[1]==='00111'&&/^00.11$/.test(r.ok[2])||JSON.stringify([r.posted,r.ok]));
  ['nikaris','kaevan','jaeson'].forEach(id=>{const x=r.q[id]||{};
-  chk(`${id}'s trail: no actor while it counts (${x.p0}), four field wins move it on (${x.p1}), its own foe stands on the field (${x.actor}), the fight is ${(x.foes||[]).join(', ')}${x.wx&&x.wx!=='clear'?' under a '+x.wx:''}, then the old meeting (${x.meet}), and joining unlocks him on the account`,
+  if(id==='nikaris')chk(`${id}'s trail: no actor while it counts (${x.p0}), four field wins move it on (${x.p1}), its own foe stands on the field (${x.actor}), the fight is ${(x.foes||[]).join(', ')}, and winning it he joins at once, unlocked on the account`,
+   x.state==='active'&&x.act0===0&&x.have===4&&x.t1===1&&!!x.actor&&!!x.modal&&x.html&&(x.foes||[]).length===3&&x.kind==='legend'&&x.joined0&&x.on1&&x.qs==='claimed'||JSON.stringify(x));
+  else chk(`${id}'s trail: no actor while it counts (${x.p0}), four field wins move it on (${x.p1}), its own foe stands on the field (${x.actor}), the fight is ${(x.foes||[]).join(', ')}${x.wx&&x.wx!=='clear'?' under a '+x.wx:''}, then the old meeting (${x.meet}), and joining unlocks him on the account`,
    x.state==='active'&&x.act0===0&&x.have===4&&x.t1===1&&!!x.actor&&!!x.modal&&x.html&&(x.foes||[]).length===3&&x.kind==='legend'&&x.t2===2&&!x.joined0&&!!x.meet&&!x.meetL17&&!x.on0&&x.joined&&x.on1&&x.qs==='claimed'||JSON.stringify(x));});
  chk(`with the code the old meeting posts instead (${r.coded.join()})`,r.coded.length>=2&&r.coded.includes('kaevan:meeting')&&r.coded.includes('nikaris:meeting')&&r.coded.every(x=>/:meeting$/.test(x))||JSON.stringify(r.coded));
 }
-// ---------- 6b. Spirit Call beside the Monk (legends17b.js section 8) ----------
+// ---------- 6b. the Monk's call (after 0.22.3: the Priest's Invoke, summon8.js SUM.call; the beside-the-Monk guardian of 0.22.3 is gone; v197a) ----------
 {const r=await ev(()=>{const A=__A,g=A.TW.get,G=A.G,o={},SUM=g('SUM'),MI=g('MINIS')[0];G.roster.taro=g('newChar')('taro',20,2);G.party=['taro','brann','oren'];Object.values(G.roster).forEach(c=>{c.S=g('calcStats')(c);c.hp=c.S.mhp;c.mp=c.S.mmp;});
   G.summons={[MI[0]]:{mon:MI[0],name:MI[2],mod:MI[5]}};A.V.auto=false;A.startBattle({stage:1,kind:'boss',seed:9});const B=A.B;B.auto=false;B.mode='cmd';const a=B.front.find(u=>u.id==='taro');B.cur=a;
-  o.pray=SUM.monkPray;o.can=g('sumCan')(a);const t0=g('delayOf')(a,1);a.l17pray=1;o.still=+(g('delayOf')(a,1)/t0).toFixed(2);a.l17pray=0;
-  g('sumFire')(a,G.summons[MI[0]],true);const u=B.sum&&B.sum.u;o.front=B.front.map(x=>x.isSum?'guardian':x.id);o.hidden=!!a.hidden;o.turns=u&&u.turnsLeft;o.pow=+(u.S.atk/g('sumMake')(G.summons[MI[0]],false,null).S.atk).toFixed(2);o.live=g('liveUnits')().includes(a)&&g('liveUnits')().includes(u);
-  o.box=!!g('unitBox')(u)&&!!g('unitBox')(a);o.now=g('delayOf')(a,1);o.swap=g('canSwap')()||!B.back.some(c=>c.hp>0);o.log=B.log[B.log.length-1];
-  // the Monk acts while the guardian is out
-  const hp0=B.en[0].hp;B.cur=a;g('perform')(a,g('ATTACK'),[B.en[0]]);o.acted=B.en[0].hp<=hp0&&B.front.includes(a);
-  g('sumEnd')('done');o.after=B.front.map(x=>x.id);o.hint=/made for boss fights/.test(g('vCompanions')());o.txt=/a turn of stillness/.test(g('vCompanions')());A.finishBattle('x');delete G.roster.taro;G.party=['brann','mira','oren'];return o;});
- console.log('spirit call:',JSON.stringify(r));
- chk(`Spirit Call: ${r.pray} turn of stillness (a short one: x${r.still}), the lesser guardian stands beside the Monk for ${r.turns} turns (${r.front.join(', ')}), its arrival costs him no turn, he still acts and the Vanguard may switch; afterwards ${r.after.join(', ')}`,
-  r.pray===1&&r.can&&r.still===.5&&r.front.length===4&&r.front[3]==='guardian'&&r.front.includes('taro')&&!r.hidden&&r.turns===4&&Math.abs(r.pow-.75)<.04&&r.live&&r.box&&r.now===0&&r.swap&&/fights beside/.test(r.log)&&r.acted&&r.after.length===3&&r.after.includes('taro')||JSON.stringify(r));
- chk('the Summons tab says guardians and Lesser Scourges are made for boss fights, and Spirit Call reads "a turn of stillness"',r.hint&&r.txt||JSON.stringify([r.hint,r.txt]));
+  o.call=SUM.call.monk;o.can=g('sumCan')(a);const bare=g('sumMake')(G.summons[MI[0]],false,null),fk=1+((a.S.attr&&a.S.attr.fth)||0)*g('ROLE9').fthSum;g('sumFire')(a,G.summons[MI[0]],SUM.call.monk.turns);const u=B.sum&&B.sum.u;o.front=B.front.map(x=>x.isSum?'guardian':x.id);o.turns=u&&u.turnsLeft;
+  o.pow=+(u.S.atk/bare.S.atk/fk).toFixed(2);/* the caller's Faith lifts it as it does a Priest's (roles9.js) */o.swap=g('canSwap')();
+  g('sumEnd')('done');o.after=B.front.map(x=>x.id);o.hint=/made for boss fights/.test(g('vCompanions')());A.finishBattle('x');delete G.roster.taro;G.party=['brann','mira','oren'];return o;});
+ console.log('monk call:',JSON.stringify(r));
+ chk(`the Monk's call is the Priest's guardian: ${r.call.pray} turns of stillness, then ${r.turns} turns in the whole Vanguard's place (${r.front.join(', ')}), full strength (x${r.pow}), no switching while it stands; afterwards ${r.after.join(', ')}`,
+  r.call.pray===2&&r.call.turns===4&&r.can&&r.front.join()==='guardian'&&r.turns===4&&r.pow===1&&r.swap===false&&r.after.length===3&&r.after.includes('taro')||JSON.stringify(r));
+ chk('the Summons tab says guardians and Lesser Scourges are made for boss fights',r.hint||JSON.stringify(r.hint));
 }
 // ---------- 7. auto battle ----------
 {await ev(START);await ev(PARTY,46);
