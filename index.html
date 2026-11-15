@@ -2119,7 +2119,7 @@ html:not(.flat) .battle.b3 .bline .b4mo .b4bar{box-shadow:inset 0 0 0 1px #000,0
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.22.4";const APP_BUILD="eefab6cb3266";
+(function(){const APP_VER="0.22.5";const APP_BUILD="6b0cae32f36b";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2892,7 +2892,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.22.4";const APP_BUILD="eefab6cb3266";
+const APP_VER="0.22.5";const APP_BUILD="6b0cae32f36b";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2900,6 +2900,7 @@ const APP_VER="0.22.4";const APP_BUILD="eefab6cb3266";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.22.5',['Auto starts on the first press again, even when it unlocks partway through a fight. Clicking the full map, minimap and world map now walks to the right tile in the zoomed Windows app. Quest lists keep their order while open, guild notices show only under Guilds and Notices, and Accept, Claim and quest states look and read the same everywhere. Map changes are quicker again, mostly in the heights realms, and battle setup does less work.']],
  ['Beta v0.22.4',['Nikaris now joins the moment you beat his beasts: he steps out of the trees, calls them off, talks with you and joins your six on the spot (or the reserve if your six is full), on both his trail and his code quest. Monks now Invoke exactly like Priests, calling the same full guardians and Scourges into the whole Vanguard\'s place, but the Monk needs 2 turns of stillness to call and the guardian stays 4 turns instead of 5.']],
  ['Beta v0.22.3',['Kaevan is brought in line with the other Legendaries: less attack, Steady Draw adds 40% instead of 60%, and Longshot is weaker and costs more. The Monk\'s Spirit Call takes one short turn and its lesser guardian now fights beside the Monk for 4 turns instead of taking his place. The Summons tab notes that guardians and Lesser Scourges are made for boss fights. Jace has a new look: side-parted blue hair, no glasses, and lightning-yellow trim on his robe and staff.']],
  ['Beta v0.22.2',['Two new Legendary wayfarers. Joseth Kynmar, the Bloodhowl (Blood Summoner, Fire and Lightning): a Priest\'s healing with a pack of three dogs he calls by paying HP, palm to the ground in a ring of blood: Junah heals, Odin sabotages, Zeus casts lightning. He can field three pets at once, call guardians and recruited bosses, and his Limit is Cerberus, which evolves at Limit II. Dist, Taker of Hearts (Chief Bandit, Water): a six-hit Cutwater, Water Clone that repeats his attacks, Pick Up the Pace to hasten the Vanguard, a coin throw that spends gold, and a bandit crew for his Limit. Each is unlocked by a redeem code or by a quest on the notice board: Three Whistles and The Toll on the Water.']],
@@ -11935,7 +11936,8 @@ const ACT={
   pickLegacy(){V.modal={type:'legacy'};render();},
   legacy(id){chooseLegacy(id);G.legacyChosen=id;V.modal={type:'ngplus',id};saveGame();render();},
   startNG(){V.modal=null;V.screen='starter';V.pick=[];V.ngCycle=Math.max(1,META.cycles||0);V.legacyPick=(META.legacy||[]).filter(id=>TPL[id]).slice(-1);render();},
-  auto(){V.auto=!V.auto;if(B){B.auto=V.auto;if(B.auto&&B.mode==='cmd')later(autoTurn,200);}render();},
+  auto(){/* fix18: in a battle the press flips what the button shows (B.auto); V.auto (the remembered choice) can still be on while a locked fight runs
+    with B.auto off (prog2.js), and flipping V.auto then took the first press to switch an auto that was not running "off" */V.auto=B?!B.auto:!V.auto;if(B){B.auto=V.auto;if(B.auto&&B.mode==='cmd')later(autoTurn,200);}render();},
   speed(){const s=[1,1.5,2],i=(s.indexOf(META.cfg.speed)+1)%3;META.cfg.speed=s[i<0?0:i];saveMeta();applyCfg();render();},
   cmd(a){if(!B||B.mode!=='cmd')return;
     if(a==='attack')return chooseSkill(ATTACK);
@@ -14556,7 +14558,7 @@ function vFactions(){if(!G)return '';facSync(true);const best=META.facBest||{};
 // every posted mission, ready to claim first, then under way, then open; sec: all, ready, active, open
 function facMisAll(){return FAC.flatMap(F=>facMissionList(F.id));}
 function vFacMissions(sec){if(!G)return '';facSync(true);sec=sec||'all';const o={ready:0,active:1,open:2};
-  const L=facMisAll().filter(m=>sec==='all'||facMisState(m)===sec).sort((a,b)=>o[facMisState(a)]-o[facMisState(b)]);
+  const L0=facMisAll().filter(m=>sec==='all'||facMisState(m)===sec),L=typeof nbKeep==='function'?nbKeep('m',L0,m=>m.id,m=>o[facMisState(m)]):L0.sort((a,b)=>o[facMisState(a)]-o[facMisState(b)]);
   return `<p class="note">Missions rotate after an inn rest. Accepted ones stay until done, and everything you did before accepting counts.</p>${L.length?`<div class="rows">${L.map(facMisRow).join('')}</div>`:`<p class="note empty">${{ready:'No mission is ready to claim yet.',active:'No missions under way.',open:'No new missions posted. Rank up for more.'}[sec]||'No missions posted yet. Rank up for more.'}</p>`}`;}
 vFacMissions=HOOK.def('vFacMissions',vFacMissions);
 // rank strip on the matching shop screens
@@ -20625,6 +20627,13 @@ function m3Tavern(m){const tab=m.tab;let body='';
 const NB_TABS=[['quests','Quests'],['guilds','Guilds'],['bounties','Bounties'],['arena','Arena']];
 const NB_MENU={quests:'quests',factions:'guilds',qbounty:'bounties',qarena:'arena'};// menu tab -> board tab
 const NB_ORD={ready:0,active:1,open:2,done:3};
+// fix18 (owner: "quest accepting is all over the place"): a list keeps its order while its popup stays open. Rows sort by state (ready, active,
+// open, done) the first time a list is drawn and then keep their places, so accepting or claiming changes that one row and nothing jumps;
+// rows that are new to the list go after, by state. Each list (key, tab, section) remembers its own order on the open popup (V.modal._nbk).
+function nbKeep(key,L,id,rank){const m=V.modal,s=L.map((x,i)=>({x,i,id:id(x),r:rank(x)}));if(!m||typeof m!=='object')return s.sort((a,b)=>a.r-b.r||a.i-b.i).map(o=>o.x);
+  const K=m._nbk||(m._nbk={}),k=key+'|'+(m.tab||'')+'|'+(m.sec||'all'),pos=new Map((K[k]||[]).map((x,i)=>[x,i]));
+  s.sort((a,b)=>{const pa=pos.has(a.id),pb=pos.has(b.id);if(pa&&pb)return pos.get(a.id)-pos.get(b.id);if(pa!==pb)return pa?-1:1;return a.r-b.r||a.i-b.i;});
+  const out=s.map(o=>o.x);K[k]=s.map(o=>o.id);return out;}
 function nbQState(q){return q.state==='active'?(questReady(q)?'ready':'active'):q.state==='open'?'open':'done';}
 function nbBState(b){return b.state==='open'||b.state==='active'?b.state:'done';}
 function nbPersonal(){try{return Object.values(G.roster).filter(c=>TPL[c.id]&&!TPL[c.id].mon&&pqShown(c));}catch(e){return [];}}
@@ -20640,12 +20649,12 @@ function nbQuestRow(q){const st=nbQState(q);
   const btn=st==='open'?`<button class="btn sm" data-act="qAccept" data-arg="${q.id}">Accept</button>`:st==='ready'?`<button class="btn sm gold" data-act="qClaim" data-arg="${q.id}">Claim</button>`:st==='active'?'<span class="m">Active</span>':'<span class="m up">Done</span>';
   return `<div class="row"><div class="grow"><b>${esc(q.title)}</b>${st==='ready'?' <em class="qtag">Ready</em>':''}<small>${esc(q.desc)}</small><small>${q.state==='active'?prog+'. ':''}Reward: ${rew}</small></div>${btn}</div>`;}
 function nbQuests(sec){const Q=m3Quests();let h='';
-  if(sec!=='personal'){const L=Q.filter(q=>sec==='all'||nbQState(q)===sec).sort((a,b)=>NB_ORD[nbQState(a)]-NB_ORD[nbQState(b)]);
+  if(sec!=='personal'){const L=nbKeep('q',Q.filter(q=>sec==='all'||nbQState(q)===sec),q=>q.id,q=>NB_ORD[nbQState(q)]);
     h+=(typeof allBar==='function'?allBar('qAcceptAll','qClaimAll',Q.filter(q=>q.state==='open').length,Q.filter(q=>q.state==='active'&&questReady(q)&&(typeof canHandIn!=='function'||canHandIn(q))).length):'')
       +m3Rows(L.map(nbQuestRow).join(''),{ready:'Nothing is ready to hand in yet.',active:'No quests under way.',open:'No new notices. More go up as your journey goes on.',done:'Nothing finished yet.'}[sec]||'No notices yet.');}
   if(sec==='personal'||(sec==='all'&&nbPersonal().length))h+=(sec==='all'?m3H('Personal quests'):'')+vPersonal();
   return `<p class="note">Accept a notice, do the deed, then claim the reward here or on any town's board.</p>${h}`;}
-function nbBounties(sec){const L=nbBountyList().filter(b=>sec==='all'||nbBState(b)===sec).sort((a,b)=>NB_ORD[nbBState(a)]-NB_ORD[nbBState(b)]);
+function nbBounties(sec){const L=nbKeep('b',nbBountyList().filter(b=>sec==='all'||nbBState(b)===sec),b=>b.id,b=>NB_ORD[nbBState(b)]);
   return `<p class="note">Accept a bounty and its marked beast roams that realm's field, glowing red. Beat it for gold, a stat charm and materials.</p>${typeof allBar==='function'?allBar('bountyAll','',nbBountyList().filter(b=>b.state==='open').length,0):''}${m3Rows(L.map(b=>{const mo=MON[b.mon],md=ELITE_MODS.find(x=>x.k===b.mod);
     return `<div class="row"><img class="mimg" src="${monURL(mo.art)}" alt=""><div class="grow"><b>${esc(b.name)}</b><small>${md.n}: ${md.d} Level ${b.lv}. Roams ${esc(ZS(b.stage).n)}.</small><small>${fmt(b.reward.gold)} gold, ${gearOf(b.reward.charm).n}</small></div>${b.state==='open'?`<button class="btn sm gold" data-act="bounty" data-arg="${b.id}">Accept</button>`:b.state==='active'?'<span class="m">Hunting</span>':'<span class="m up">Done</span>'}</div>`;}).join(''),{active:'No bounties under way.',open:'No open bounties.',done:'No bounties done yet.'}[sec]||'No bounties posted yet.')}`;}
 function nbArena(menu){const cl=G.cleared.filter(Boolean).length,far=menu&&!inTown();
@@ -31668,7 +31677,7 @@ function r12Ready(){const out=[];
     else out.push({t:'m',id:it.o.id,here:typeof facCanHand!=='function'||facCanHand(it.o.id),where:'Hand in at any Guild Hall.'});});
   return out;}
 function r12AllBody(sec,menu){sec=sec||'all';const I=r12Items(),R=r12Ready(),here=R.filter(x=>x.here).length,away=R.filter(x=>!x.here),nOpen=I.filter(x=>x.st==='open').length;
-  const L=I.filter(x=>sec==='all'||x.st===sec).sort((a,b)=>NB_ORD[a.st]-NB_ORD[b.st]);
+  const L=nbKeep('all',I.filter(x=>sec==='all'||x.st===sec),x=>x.k+':'+x.o.id,x=>NB_ORD[x.st]);
   const places=[...new Set(away.map(x=>x.where).filter(Boolean))].join(' ');
   const bar=typeof allBar==='function'?allBar('nbAcceptAll','nbClaimAll',nOpen,here):'';
   const note=away.length?`<p class="note r12away">${away.length} ready notice${away.length>1?'s':''} can't be handed in ${menu?'from the Menu':'here'}. ${esc(places)}</p>`:'';
@@ -34735,7 +34744,7 @@ const Q16_WHERE='Hand in at any Guild Hall or Notice Board.';
 facAtHall=function(){return q16AtDesk();};
 {const t0=m3Tabs;m3Tabs=function(t){const T=t0.apply(this,arguments);try{if(t==='board'&&!T.some(x=>x[0]==='guilds')){const i=T.findIndex(x=>x[0]==='bounties');T.splice(i<0?T.length:i,0,['guilds','Guilds']);}}catch(e){}return T;};}
 function q16Notices(){try{return m3Quests().filter(q=>q16Guild(q)&&q.state!=='claimed');}catch(e){return [];}}
-{const ng0=nbGuilds;nbGuilds=function(sec){let h=ng0.apply(this,arguments);try{const s=sec||'all',L=q16Notices().filter(q=>s==='all'||nbQState(q)===s).sort((a,b)=>NB_ORD[nbQState(a)]-NB_ORD[nbQState(b)]);
+{const ng0=nbGuilds;nbGuilds=function(sec){let h=ng0.apply(this,arguments);try{const s=sec||'all',L=nbKeep('gn',q16Notices().filter(q=>s==='all'||nbQState(q)===s),q=>q.id,q=>NB_ORD[nbQState(q)]);
   if(L.length)h=m3H('Guild notices')+`<div class="rows q16gn">${L.map(q=>nbQuestRow(q)).join('')}</div>`+m3H('Guild missions')+h;}catch(e){}return h;};}
 HOOK.xform('nbSecs','quests16','guild notices counted on the Guilds tab; no sections while locked',function(r,tab){try{if(tab!=='guilds')return r;if(!g16Open())return [];
   const L=q16Notices();if(!L.length)return r;return r.map(x=>[x[0],x[1],(x[2]|0)+L.filter(q=>x[0]==='all'||nbQState(q)===x[0]).length]);}catch(e){return r;}});
@@ -37350,6 +37359,142 @@ HOOK.after('render','legends18','Nikaris steps out on the field',function(){try{
   setTimeout(()=>{try{if(G&&G.l18meet&&!WS.dlg&&!V.modal&&!B&&V.screen==='world')l18Say();}catch(e){}},0);}catch(e){console.error('legends18 scene',e);}});
 // tests
 try{window.__L18={L18,lines:k=>l18Lines(k),join:(k,i)=>l18Join(k,i),old:()=>l18Old(),say:()=>l18Say(),spot:()=>l18Spot(),get G(){return G;},get B(){return B;},get V(){return V;},get WS(){return WS;}};}catch(e){}
+
+// ===== fix18.js: the owner's notes after 0.22.3 (test tools/chrome/v196a.js) =====
+// 1) "Have to click auto twice to start it": fixed at the root in ui.js ACT.auto. The press flipped V.auto, the remembered choice, while the
+//    button shows B.auto. A fight that opens with auto locked (a boss not yet won by hand, a foe type not yet beaten enough: prog2.js) turns
+//    B.auto off and leaves V.auto on, so once the lock lifted (the locked foe falls) the button said Start auto and the first press only
+//    switched the remembered choice off. The press now flips what the button shows.
+// 2) Transitions (battle start, every map change): see section 2 below and docs/handoff-v0111.md (fix18) for the timing table.
+// 3) "quest accepting is all over the place": one row language on the board, the Guild Hall and the Menu (section 3); lists keep their order
+//    while the popup is open (menus3.js nbKeep, used by every notice list); guild notices only on the Guilds tab and in Notices.
+// 4) "Can't click to walk on PC map at all": the full map (and the connected world map) read the pointer in viewport px against
+//    getBoundingClientRect in unzoomed px on Chromium before 128 (the Windows app is Electron 31 = Chromium 126) when the page is zoomed
+//    (deskscale.js: 1.33 in a maximised 1920x1080 window). The tile was off by the zoom ratio times the distance from the corner: "There is no way
+//    there", "not seen yet" or the wrong spot. nav11.js fixed this for the world view only (mapPoint); the map tiles now use the same correction.
+const F18={off:0,n:{bake1:0,lazy1:0},err:[]};
+function f18Err(w,e){try{if(F18.err.length<20)F18.err.push(w+': '+(e&&e.message||e));}catch(_){}}
+
+// ---------- 2. transitions ----------
+// The second animation frame of the 2D base (WS.base[1]: water and lava in their other pose) was painted with the first on every map change, in
+// the same task as the map change. In HD-2D (Medium, High) the world never draws it (the scene bakes its own ground), and in 2D the first
+// frame shows frame 0. It is now made when it is first read, or in the first idle moment after the new map's first frame, whichever comes
+// first (in 2D; HD-2D makes it only if something reads it): the same canvas, so nothing drawn changes. (A chest patch, world16.js, reads it and so makes it.)
+function f18LazyBase(arr,m){let c=null;const mk=()=>{if(!c){c=buildMapCanvas(m,1);F18.n.lazy1++;}return c;};
+  try{Object.defineProperty(arr,1,{get:mk,set(v){c=v;},enumerable:true,configurable:true});Object.defineProperty(arr,'f18Built',{value:()=>!!c});}catch(e){arr[1]=mk();}
+  // in HD-2D the world never draws it (only a chest patch or a fall back to 2D reads it, and the getter serves those); in 2D it is made in the
+  // first idle moment on the world screen, not during a battle that started right away
+  const idle=()=>{try{if(WS.base!==arr||c)return;if(V.screen!=='world'||(typeof hdActive==='function'&&hdActive()))return;mk();}catch(e){f18Err('lazy',e);}};
+  try{requestAnimationFrame(()=>{if(typeof requestIdleCallback==='function')requestIdleCallback(idle,{timeout:1500});else setTimeout(idle,200);});}catch(e){setTimeout(idle,200);}
+  return arr;}
+HOOK.wrap('rebuildBase','fix18','the second water frame of the 2D base is made when first needed',function(next,...a){if(F18.off||!WS.m)return next(...a);
+  // a chest's repaint (world16.js) patches the base in place: left as it is
+  try{if(typeof W16!=='undefined'&&W16.pend&&!W16.off)return next(...a);}catch(e){}
+  const m=WS.m,b0=buildMapCanvas,before=WS.base;let calls=0;
+  // the base body builds frame 0 then frame 1; frame 1 is left out here (scanLights and the other hooks run as before)
+  buildMapCanvas=function(mm,fr){if(mm===m&&fr===1&&calls++===0)return null;return b0.apply(this,arguments);};
+  let r;try{r=next(...a);}finally{buildMapCanvas=b0;}
+  // (only a base this call made: a chest patch, world16.js, keeps the old one; the descriptor is read so a lazy frame is never made here)
+  try{const Bs=WS.base,d=Bs&&Bs!==before&&Array.isArray(Bs)?Object.getOwnPropertyDescriptor(Bs,1):null;
+    if(WS.m===m&&d&&('value' in d)&&d.value==null&&Bs[0]){F18.n.bake1++;WS.base=f18LazyBase([Bs[0]],m);}}catch(e){f18Err('rebuild',e);}
+  return r;});
+
+// The battle screen sizes its stage from hidden copies of the command panel, the foes and the party column at each width it tries
+// (battle3.js b8HAt, b8CmdEst). Every copy was appended and read on its own, a full page layout each, and b8HAt measured again on every call:
+// about 25 layouts for one battle start, 0.4 to 0.8 s with six heroes. Same copies, same parent, same numbers, now read together: b8CmdEst lays
+// out one copy per Vanguard hero side by side and reads them in one layout, and b8HAt answers a repeat question (same panel, same markup, same
+// width and classes) within the same task from what it just measured.
+const F18H={v:null,n:{lay:0,ask:0,hit:0}};
+// the task's memo (cleared at the end of the task: the battle DOM may change before the next one)
+function f18Memo(){if(!F18H.v){F18H.v=new Map();const done=()=>{F18H.v=null;};try{queueMicrotask(done);}catch(e){Promise.resolve().then(done);}}return F18H.v;}
+{const h0=b8HAt;b8HAt=function(kind,w){if(F18.off||!B)return h0.apply(this,arguments);let k=null;F18H.n.ask++;
+  try{const bat=document.querySelector('.battle.b3');if(bat){const src=kind==='cmd'?document.getElementById('bcmd'):bat.querySelector(kind==='foes'?'#bparty .pgroup.foes':'#bparty .b3pty');
+      k=kind+'@'+Math.round(w)+'|'+(B.id||0)+'|'+bat.className+'|'+B.mode+'|'+B.menu+'|'+(B.swapAsk?1:0)+'|'+(B.auto?1:0)+'|'+(B.over?1:0)+'|'+(src?src.className+'#'+src.innerHTML:'-');
+      const M=f18Memo();if(M.has(k)){F18H.n.hit++;return M.get(k);}}}catch(e){k=null;}
+  const r=h0.apply(this,arguments);try{if(k)f18Memo().set(k,r);}catch(e){}return r;};}
+// (same body as battle3.js b8CmdEst; only the copies are read together)
+const F18_CE0=b8CmdEst;
+b8CmdEst=function(w){if(F18.off)return F18_CE0.apply(this,arguments);try{if(!B||B.over||B.auto)return 0;const cmd=document.getElementById('bcmd');if(!cmd||!cmd.offsetWidth||!cmd.parentNode)return 0;
+  const hs=B.front.filter(c=>c&&c.hp>0&&!c.isComp);if(!hs.length)return 0;const W=Math.round(w||cmd.offsetWidth);
+  const k=(B.id||0)+'|'+BL.mode+'|'+W+'|'+hs.map(c=>c.id+(lbReady(c)?'L':'')+(canSummon(c)?'S':'')+(has(c,'root')?'R':'')).join()+'|'+document.querySelector('.battle').className.replace(/ b3list/,'');
+  B._b8ce=B._b8ce||{};if(B._b8ce[k]!=null)return B._b8ce[k];
+  const sv={mode:B.mode,cur:B.cur,menu:B.menu,pend:B.pend,swapAsk:B.swapAsk,b4out:B.b4out},H=[];
+  try{for(const a of hs){B.mode='cmd';B.cur=a;B.menu='root';B.pend=null;B.swapAsk=null;H.push(cmdHtml());}}finally{Object.assign(B,sv);}
+  const C=H.map(html=>{const c=cmd.cloneNode(false);c.removeAttribute('id');
+    c.style.cssText='position:absolute;visibility:hidden;pointer-events:none;left:0;top:0;width:'+W+'px;height:auto;max-height:none;min-height:0;overflow:visible;grid-row:auto;grid-column:auto;--b8gp:0px;--b8gs:0px;--b8ga:0px';
+    c.innerHTML=html;return c;});
+  let h=0;C.forEach(c=>cmd.parentNode.appendChild(c));F18H.n.lay++;try{C.forEach(c=>{h=Math.max(h,c.offsetHeight);});}finally{C.forEach(c=>c.remove());}
+  return B._b8ce[k]=h;}catch(e){return 0;}};
+
+// The cloud sea (world14.js, the heights realms) paints every water tile pixel by pixel from a noise field, and every map change paints it four
+// times (the 2D base in two frames, the HD-2D ground in two frames): about a second on a heights field. Each tile's body is now painted once per
+// map and frame into a layer and copied from there (the same pixels: opaque colours at whole pixels, copied 1:1). The layers of the last two
+// maps are kept (four canvases at most).
+const F18C={L:new Map(),max:4,n:{paint:0,copy:0}};
+{const c0=w14CloudBody;w14CloudBody=function(ctx,m,x,y,frame,T,skipRows){
+  if(F18.off||!ctx||!m||!m.w||!m.h||typeof ctx.getTransform!=='function')return c0.apply(this,arguments);
+  try{const tr=ctx.getTransform();if(!(tr.a===1&&tr.b===0&&tr.c===0&&tr.d===1&&tr.e===0&&tr.f===0)||ctx.globalAlpha!==1||ctx.globalCompositeOperation!=='source-over'||(ctx.filter&&ctx.filter!=='none'))return c0.apply(this,arguments);
+    const key=m.id+'|'+(m.s|0)+'|'+(frame?1:0)+'|'+m.w+'x'+m.h;let e=F18C.L.get(key);
+    if(!e||e.T!==T||e.m!==m){e={T,m,cv:mkCv(m.w*TS,m.h*TS),done:new Int8Array(m.w*m.h).fill(-1)};F18C.L.delete(key);F18C.L.set(key,e);while(F18C.L.size>F18C.max)F18C.L.delete(F18C.L.keys().next().value);}
+    else{F18C.L.delete(key);F18C.L.set(key,e);}
+    const i=y*m.w+x,k=skipRows|0;
+    if(e.done[i]!==k){const c=e.cv.getContext('2d');c.clearRect(x*TS,y*TS,TS,TS);c0.call(this,c,m,x,y,frame,T,skipRows);e.done[i]=k;F18C.n.paint++;}
+    else{F18C.n.copy++;try{W14.n.cloud++;}catch(_){}}
+    ctx.drawImage(e.cv,x*TS,y*TS,TS,TS,x*TS,y*TS,TS,TS);return;}catch(er){f18Err('cloud',er);}
+  return c0.apply(this,arguments);};}
+
+// a chest patch (world16.js w16Patch) on a map whose second frame is not made yet patches the first frame only: the second is made later
+// from the map as it is then (the chest already open), so the patch stays as quick as before
+{const p0=w16Patch;w16Patch=function(p){const B=WS.base;if(F18.off||!B||typeof B.f18Built!=='function'||B.f18Built())return p0.apply(this,arguments);
+  const b0=buildMapCanvas,one=mkCv(1,1);WS.base=[B[0],mkCv(1,1)];buildMapCanvas=function(m,fr){return fr===1?one:b0.apply(this,arguments);};
+  try{return p0.apply(this,arguments);}finally{buildMapCanvas=b0;if(WS.base&&WS.base[0]===B[0])WS.base=B;}};}
+
+// ---------- 3. one way to accept and to claim ----------
+// Every notice row ends in one control: Accept (plain), Claim (gold), a greyed Claim with the place to go under the text, or Active / Done.
+// Before: bounties and personal quests had a gold Accept and quests and missions a plain one; bounties said Hunting, rivals Rival roaming, the
+// offer popup Accepted and missions a bare 2/5 where quests said Active; a beaten bounty was "Beaten" where a quest was "Ready"; the greyed Claim
+// was gold on missions, plain on quests and bounties, with the hand-in place beside the button on quests and under the text elsewhere.
+const F18_WHERE=()=>typeof Q16_WHERE==='string'?Q16_WHERE:'Hand in at any Guild Hall or Notice Board.';
+function f18Rows(h){if(typeof h!=='string'||F18.off)return h;try{
+  h=h.replace(/class="btn sm gold" data-act="(bounty|personal|pq16Accept|facAccept)"/g,'class="btn sm" data-act="$1"').replace(/class="btn sm gold" data-act="facAccept"/g,'class="btn sm" data-act="facAccept"')
+   .replace(/class="btn sm " data-act="facAccept"/g,'class="btn sm" data-act="facAccept"')
+   .replace(/<span class="m">(Hunting|Rival roaming)<\/span>/g,'<span class="m">Active</span>').replace(/<span class="m up">Accepted<\/span>/g,'<span class="m">Active</span>')
+   .replace(/<em class="qtag">Beaten<\/em>/g,'<em class="qtag">Ready</em>')
+   // a greyed Claim is never gold and names the place under the row's text
+   .replace(/(<button class="btn sm) gold(" data-act="bountyClaim" data-arg="[^"]*" disabled>)/g,'$1$2')
+   .replace(/<span class="m"><button class="btn sm" disabled title="([^"]*)">Claim<\/button><small class="handwhere">[^<]*<\/small><\/span>/g,(s,w)=>`<button class="btn sm" disabled title="${w}">Claim</button>\u0001${w}\u0001`)
+   .replace(/<button class="btn sm gold" disabled title="Hand in at any Guild Hall[^"]*">Claim<\/button>/g,()=>{const w=esc(F18_WHERE());return `<button class="btn sm" disabled title="${w}">Claim</button>\u0001${w}\u0001`;})
+   .replace(/ Hand in at any Guild Hall(?: or Notice Board)?\.(<\/small><\/div><button class="btn sm" disabled)/g,'$1');
+  // the place moves into the row's text column (the row is <div class="row ..."><...><div class="grow">...</div>BUTTON)
+  if(h.indexOf('\u0001')>=0)h=h.replace(/<\/div>(<button class="btn sm" disabled title="[^"]*">Claim<\/button>)\u0001([^\u0001]*)\u0001/g,'<small class="handwhere">$2</small></div>$1');
+  // a mission under way: Active, its progress stays in the text
+  h=h.replace(/(<div class="row facm">[\s\S]*?<\/div>)<span class="m nums">\d+\/\d+<\/span>/g,'$1<span class="m">Active</span>');
+  }catch(e){f18Err('rows',e);}return h;}
+HOOK.xform('nbBody','fix18','one row language for every notice: Accept, Claim, Active, Done',function(h){return f18Rows(h);});
+HOOK.xform('vModal','fix18','the personal quest offer rows in the same language',function(h,m){try{if(m&&m.type==='pqoffer')return f18Rows(h);}catch(e){}return h;});
+// guild notices are listed on the Guilds tab (and in Notices), no longer a second time on the Quests tab; Accept all and Claim all on the
+// Quests tab take what that tab shows
+F18.ng=0;
+{const mq0=m3Quests;m3Quests=function(){const L=mq0.apply(this,arguments);try{if(F18.ng&&!F18.off)return L.filter(q=>!(q&&(q.type==='guild'||q.type==='arena')));}catch(e){}return L;};}
+const f18NoGuild=(f,on)=>{if(!on)return f();F18.ng++;try{return f();}finally{F18.ng--;}};
+const f18QTab=()=>{try{const m=V.modal;return !!m&&m.tab==='quests';}catch(e){return false;}};
+HOOK.wrap('nbBody','fix18','the Quests tab lists quests, not guild notices',function(next,tab,...a){return f18NoGuild(()=>next(tab,...a),tab==='quests');});
+HOOK.wrap('nbSecs','fix18','the Quests tab counts what it lists',function(next,tab,...a){return f18NoGuild(()=>next(tab,...a),tab==='quests');});
+['qAcceptAll','qClaimAll'].forEach(k=>{const a0=ACT[k];if(typeof a0!=='function')return;ACT[k]=function(){const self=this,args=arguments;return f18NoGuild(()=>a0.apply(self,args),f18QTab());};});
+// a goal finished by the same press (the first quest taken pays the "Take a quest" goal) used to replace the press's own toast at once, so the
+// player read "Goal done" and never saw what was accepted; the goal line now follows the press's line in the same toast
+{const t0=toast;let last={m:'',t:0};toast=function(m){try{const now=Date.now();
+    if(typeof m==='string'&&/^Goal done:/.test(m)&&last.m&&!/^Goal done:/.test(last.m)&&now-last.t<1200){const s=last.m;last={m:s+' '+m,t:now};return t0.call(this,s+' '+m);}
+    last={m:String(m),t:now};}catch(e){}return t0.apply(this,arguments);};}
+
+// ---------- 4. map taps on a zoomed page in older Chromium (the Windows app) ----------
+// nv11Zoom() is 1 everywhere except where getBoundingClientRect and clientX disagree (Chromium < 128 with CSS zoom on <html>).
+{const f0=fmTile;fmTile=function(cv,cx,cy){const k=typeof nv11Zoom==='function'?nv11Zoom():1;return f0.call(this,cv,cx/k,cy/k);};}
+{const m0=mmTile;mmTile=function(cv,cx,cy){const k=typeof nv11Zoom==='function'?nv11Zoom():1;return m0.call(this,cv,cx/k,cy/k);};}
+{const b0=bmTileAt;bmTileAt=function(cv,cx,cy){const k=typeof nv11Zoom==='function'?nv11Zoom():1;return b0.call(this,cv,cx/k,cy/k);};}
+
+try{const st=document.createElement('style');st.textContent='.row .grow>.handwhere{max-width:none;text-align:left}';document.head.appendChild(st);}catch(e){}
+try{window.__F18={F18,rows:f18Rows,get G(){return G;},get V(){return V;},get B(){return B;},get WS(){return WS;},fmTile:(c,x,y)=>fmTile(c,x,y),bmTileAt:(c,x,y)=>bmTileAt(c,x,y),nbKeep:(k,L,i,r)=>nbKeep(k,L,i,r)};}catch(e){}
 
 window.__A={walkable,ceInit,tvSlots,genQuests,STARTERS,starterDraw,ECON,AUTO_NERF,rebuildBase,detLive,REACT,skEls,packContents,miniFor,AUTO_REW,ENC_RATE,ENC_MIN_STEPS,detNote,classSkills,stickCount,bestAll,calcStats,lookKey,vTemper,storyEchoUp,leaveDungeon,win,ldApply,genFort,caveOk,enterCave,siteHasMini,openChest,nextDlg,WS,mapIcoRects,roamSpawn,roamInterior,roamSees,mapTargets,DIRV,tileAt,STAGE_LV,autoBan,rollWeather,guardianDef,mapIssues,mapEntry,syncPools,bovAt,calFxAt,realmAt,REALMS,BOV,CAL_FX,overlayGuide,liftOverlay,drawGearIcon,gearIcon,itemIcon,RAW,sigKind,sigGid,personalDone,heroLook,hasSignature,LEGEND_IDS,facDirty,facCount,facRank,facRep,FACB,FAC,finishBattle,npcWords,npcHints,npcPool,titleMake,titleAdvance,TTS,placeAt,wkwUpdate,innSpot,getMap,monURL,enterVia,applyBossTheme,BTHEME,resetMaps,rebuildBase,shopStock,gearDesc,calcStats,gearMigrate,CLS_WPN,CLS_ARM,WPERK,WT_NAME,equipWhy,lootBase,GEAR,canEquip,gearOf,perkNote,FAM_MAT_V35,fbDraft,META:{get best(){return META.best},get codex(){return META.codex},get q(){return META.q}},saveMeta,OFF,offPending,offFlush,PROFILE,profileSync,codexSee,getMap,placeAt,interact,sanctumOpen,riftKeys,echoKeys,BONDS,bondKey,wkwUpdate,inTown,WS,LC,lsort,bestParty,fsCast,fsSkills,ldApply,MON,registerTamed,stickPower,stickCount,autoOne,planGear,bestTag,gainersFor,compGainFor,refresh,fitsFor,canEquip,gearOf,queueNewGear,ARENA,fxDur,banDur,stageTags,autoSwitchPick,layoutBattle,newChar,calcStats,limitSkill,limitTier,canStuck,dunReachable,LV_CAP,addXp,echoSpec,bossLvFor,fx,MON,log,effInfo,tierOf,perkOf,quirkDef,forgeCost,buyPlan,vJourney,modalBack,partySlots,limitOpen,town2Reached,skillKnown,known,classSkills,paceMigrate,unpackG,packG,makeEnemy,QUIRK,arrive,enterDungeon,wkwUpdate,useTravel,travelWhyNot,porkFlee,porkBlocked,encTile,campRest,buyPart,partLeft,alchStock,GAME_VERSION,CHANGELOG,ITEMS,tavernOffers,tavernPool,recruitFit,partyNeeds,vNext,CHALL,innSpot,RECIPES,MATS,FB,fbContext,REDEEM,legendJoin,legendQ,genQuests,dynActors,convInit,PROFILE,profileSync,checkArchive,GPOOL,FPOOL,guardianDef,saveMeta,archiveSkills,get G(){return G;},set G(v){G=v;},get B(){return B;},get V(){return V;},get META(){return META;},WS,ACT,render,newGame,placeAt,startBattle,autoTurn,advance,finishBattle,getMap,innSpot,setPause:p=>{PAUSE=p;},autoCfg,worldInputDir,inputSources,battleFrame,battleTheme,STS,MAPS,mapIssues,healMap,mimicReward,dropChest,interact,worldDraw,TPL,ZONES,ZS,newChar,recruit,saveGame,resetMaps,dynActors,tileAt,BV,refresh,genBounties,genQuests,vStarter,heroCard,heroURL,iconURL,masteryLine,AU,buildTrack,tone,noiseHit,MIDI,sfx,audioVol};
 ['heroRoles','SOLID','WEATHER','WX_BASE','weatherFX','superGuide','recruitCost','ceStart','ceStep','ceInit','cePool','wxList','SUPER_TABLE','superOk','facRank','facRep','facInit','facCount','facCredit','FAC','FMIS','facMissionList','facProg','tyOf','facSync','facMul','facBest','worldPlan','caveReward','enterCave','leaveCave','leaveDungeon','buildCaveMap','worldGraph','openWorldMap','sigReport','SIG_NAMES','starterDraw','ITEM_TIERS','gTierIdx','tierChip','gearIcon','starterSlots','STARTERS','CLK_LEN','CLK_PH','clockPhase','wxInfoBody','recipeOrder','recipeGain','recipeReady','recipeClose','effOf','calcDamage','healsUndead','storyEchoUp','riftKeys','echoDef','efCost','autoLocked','bossFightKey','learnScanAll','isSeen','mapMarks','genSub','subOK','subReq','ensureSub','inSub','tvSlots','tvInit','tvLeft','tvEvent','tvNextText','tvPool','tvDue','tvShuffle','mTavern','hireOK','TV_CAP','TV_CD','POOL_IDS','natPool','natOf','natRoll','NATURES','natInfo','natRerollCost','natChooseCost','NAT_CLASS','iconURL','seenOf','mapIcoDraw','drawMini','MAPCV','revealAround','fxLayer','numDur','compBonusText','compPerk','checkPhase','win','unitBox','LNQ','challVisible','challEligible','challState','isMimic','migrateCompanions','canSummon','summonComp','compOf','clockPhase','tickClock','isNight','rollWeather','wxStep','nightPool','encounterFoes','restAll','tameElite','openChest','rerollTavern','bestAll','gearTier','SV','svCheck','svFlush','svInit','svPush','svPull','svScan','svParse','svBackup','svPack','svUnpack','svProg','svCloudList','svDelDoc','svGet','svCap','slotState','slotKey','svDecode','SV_CH','svStatus','svSlotRaw','svLoad','loadRaw','svHash','svIdx'].forEach(k=>{try{Object.defineProperty(window.__A,k,{get:()=>eval(k)});}catch(e){}});

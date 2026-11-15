@@ -147,7 +147,7 @@ last registered to the first, then the base, then after parts from the first reg
 To add one see `docs/v099-hooks.md`.
 
 <!-- hooksmap:start -->
-### vModal (52 hooks)
+### vModal (53 hooks)
 Registered (load order; 1 is next to the base):
 1. `stuck.js` before: Stuck? popup
 2. `equip.js` before: eqPick, autoEq, equipNow popups
@@ -201,8 +201,9 @@ Registered (load order; 1 is next to the base):
 50. `quests16.js` result: no guild rank strip on the shops while the guilds are locked
 51. `quests16.js` before: personal quest offer popup
 52. `legends17a.js` before: the pack slot chooser and the quest scenes
+53. `fix18.js` result: the personal quest offer rows in the same language
 
-Runs: 52 legends17a → 51 quests16 → 45 menus11 → 42 econ11 → 39 roles9 → 37 riftkeeper9 → 36 rift9 → 35 guidance9 → 34 guidance9 → 33 junk9 → 31 bigmap → 30 recruit3 → 29 twists → 28 v063prog → 27 keymap → 26 p4party (around) → 24 p3shop → 23 p3shop → 21 p3shop → 20 saves → 19 sites → 18 starter → 17 autoset → 16 map → 15 comp → 14 comp → 13 sanctum → 12 echo2 → 11 ailments → 10 ailments → 8 chance → 7 describe → 6 town2 → 5 town2 → 4 gearmig → 3 party2 → 2 equip → 1 stuck → **base** → 9 factions (result) → 22 p3shop (result) → 25 p4party (result) → 26 p4party (around) → 32 duellines (result) → 38 riftkeeper9 (result) → 40 endgame10 (result) → 41 rk10 (result) → 43 fixes11 (result) → 44 arena11 (result) → 46 menus11 (result) → 47 world12 (result) → 48 menus12 (result) → 49 roster14 (result) → 50 quests16 (result)
+Runs: 52 legends17a → 51 quests16 → 45 menus11 → 42 econ11 → 39 roles9 → 37 riftkeeper9 → 36 rift9 → 35 guidance9 → 34 guidance9 → 33 junk9 → 31 bigmap → 30 recruit3 → 29 twists → 28 v063prog → 27 keymap → 26 p4party (around) → 24 p3shop → 23 p3shop → 21 p3shop → 20 saves → 19 sites → 18 starter → 17 autoset → 16 map → 15 comp → 14 comp → 13 sanctum → 12 echo2 → 11 ailments → 10 ailments → 8 chance → 7 describe → 6 town2 → 5 town2 → 4 gearmig → 3 party2 → 2 equip → 1 stuck → **base** → 9 factions (result) → 22 p3shop (result) → 25 p4party (result) → 26 p4party (around) → 32 duellines (result) → 38 riftkeeper9 (result) → 40 endgame10 (result) → 41 rk10 (result) → 43 fixes11 (result) → 44 arena11 (result) → 46 menus11 (result) → 47 world12 (result) → 48 menus12 (result) → 49 roster14 (result) → 50 quests16 (result) → 53 fix18 (result)
 
 ### render (36 hooks)
 Registered (load order; 1 is next to the base):
@@ -882,6 +883,17 @@ Registered (load order; 1 is next to the base):
 
 Runs: 6 guild7 (around) → 5 onboard (around) → 4 menus3 → 3 p2world (around) → 1 music2 (around) → **base** → 1 music2 (around) → 2 p5settings (result) → 3 p2world (around) → 5 onboard (around) → 6 guild7 (around)
 
+### nbBody (6 hooks)
+Registered (load order; 1 is next to the base):
+1. `records12.js` before: all-notices tab body
+2. `quests16.js` before: the Guilds tab is a locked note until the first realm is beaten
+3. `quests16.js` result: personal quests in the Notices list; hand-in place names the board
+4. `legends17a.js` before: the board checks for a legend quest of this realm (old saves, a code redeemed mid realm)
+5. `fix18.js` result: one row language for every notice: Accept, Claim, Active, Done
+6. `fix18.js` around: the Quests tab lists quests, not guild notices
+
+Runs: 6 fix18 (around) → 4 legends17a → 2 quests16 → 1 records12 → **base** → 3 quests16 (result) → 5 fix18 (result) → 6 fix18 (around)
+
 ### recruit (6 hooks)
 Registered (load order; 1 is next to the base):
 1. `account.js` after: codex entry for a recruit
@@ -1106,15 +1118,6 @@ Registered (load order; 1 is next to the base):
 
 Runs: **base** → 1 echo2 (result) → 2 archetype (result) → 3 p3shop (result) → 4 battle4 (result)
 
-### nbBody (4 hooks)
-Registered (load order; 1 is next to the base):
-1. `records12.js` before: all-notices tab body
-2. `quests16.js` before: the Guilds tab is a locked note until the first realm is beaten
-3. `quests16.js` result: personal quests in the Notices list; hand-in place names the board
-4. `legends17a.js` before: the board checks for a legend quest of this realm (old saves, a code redeemed mid realm)
-
-Runs: 4 legends17a → 2 quests16 → 1 records12 → **base** → 3 quests16 (result)
-
 ### townDecorActors (4 hooks)
 Registered (load order; 1 is next to the base):
 1. `world12.js` after: the town landmark in the 2D depth sort
@@ -1164,6 +1167,22 @@ Registered (load order; 1 is next to the base):
 3. `cohere15.js` after: the hero stays solid in front of roofs
 
 Runs: 2 cohere15 → **base** → 1 terrain13 → 3 cohere15
+
+### nbSecs (3 hooks)
+Registered (load order; 1 is next to the base):
+1. `records12.js` result: all-notices tab sections
+2. `quests16.js` result: guild notices counted on the Guilds tab; no sections while locked
+3. `fix18.js` around: the Quests tab counts what it lists
+
+Runs: 3 fix18 (around) → **base** → 1 records12 (result) → 2 quests16 (result) → 3 fix18 (around)
+
+### rebuildBase (3 hooks)
+Registered (load order; 1 is next to the base):
+1. `world16.js` around: the repaint after a chest is a patch
+2. `fix17.js` after: the minimap takes its colours from the fresh base canvas
+3. `fix18.js` around: the second water frame of the 2D base is made when first needed
+
+Runs: 3 fix18 (around) → 1 world16 (around) → **base** → 1 world16 (around) → 2 fix17 → 3 fix18 (around)
 
 ### sumFire (3 hooks)
 Registered (load order; 1 is next to the base):
@@ -1259,13 +1278,6 @@ Registered (load order; 1 is next to the base):
 
 Runs: 2 rift9 (around) → **base** → 1 rift9 (result) → 2 rift9 (around)
 
-### nbSecs (2 hooks)
-Registered (load order; 1 is next to the base):
-1. `records12.js` result: all-notices tab sections
-2. `quests16.js` result: guild notices counted on the Guilds tab; no sections while locked
-
-Runs: **base** → 1 records12 (result) → 2 quests16 (result)
-
 ### paintHD (2 hooks)
 Registered (load order; 1 is next to the base):
 1. `chars13.js` result: one outline rule and the key grid kinds on every HD sprite
@@ -1279,13 +1291,6 @@ Registered (load order; 1 is next to the base):
 2. `world16.js` result: the explored maps of the latest journeys go to the profile (packed)
 
 Runs: **base** → 1 roster14 (result) → 2 world16 (result)
-
-### rebuildBase (2 hooks)
-Registered (load order; 1 is next to the base):
-1. `world16.js` around: the repaint after a chest is a patch
-2. `fix17.js` after: the minimap takes its colours from the fresh base canvas
-
-Runs: 1 world16 (around) → **base** → 1 world16 (around) → 2 fix17
 
 ### roamSpawn (2 hooks)
 Registered (load order; 1 is next to the base):
