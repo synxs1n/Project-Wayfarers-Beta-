@@ -533,7 +533,8 @@ const ACT={
   pickLegacy(){V.modal={type:'legacy'};render();},
   legacy(id){chooseLegacy(id);G.legacyChosen=id;V.modal={type:'ngplus',id};saveGame();render();},
   startNG(){V.modal=null;V.screen='starter';V.pick=[];V.ngCycle=Math.max(1,META.cycles||0);V.legacyPick=(META.legacy||[]).filter(id=>TPL[id]).slice(-1);render();},
-  auto(){V.auto=!V.auto;if(B){B.auto=V.auto;if(B.auto&&B.mode==='cmd')later(autoTurn,200);}render();},
+  auto(){/* fix18: in a battle the press flips what the button shows (B.auto); V.auto (the remembered choice) can still be on while a locked fight runs
+    with B.auto off (prog2.js), and flipping V.auto then took the first press to switch an auto that was not running "off" */V.auto=B?!B.auto:!V.auto;if(B){B.auto=V.auto;if(B.auto&&B.mode==='cmd')later(autoTurn,200);}render();},
   speed(){const s=[1,1.5,2],i=(s.indexOf(META.cfg.speed)+1)%3;META.cfg.speed=s[i<0?0:i];saveMeta();applyCfg();render();},
   cmd(a){if(!B||B.mode!=='cmd')return;
     if(a==='attack')return chooseSkill(ATTACK);

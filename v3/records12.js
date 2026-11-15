@@ -106,7 +106,7 @@ function r12Ready(){const out=[];
     else out.push({t:'m',id:it.o.id,here:typeof facCanHand!=='function'||facCanHand(it.o.id),where:'Hand in at any Guild Hall.'});});
   return out;}
 function r12AllBody(sec,menu){sec=sec||'all';const I=r12Items(),R=r12Ready(),here=R.filter(x=>x.here).length,away=R.filter(x=>!x.here),nOpen=I.filter(x=>x.st==='open').length;
-  const L=I.filter(x=>sec==='all'||x.st===sec).sort((a,b)=>NB_ORD[a.st]-NB_ORD[b.st]);
+  const L=nbKeep('all',I.filter(x=>sec==='all'||x.st===sec),x=>x.k+':'+x.o.id,x=>NB_ORD[x.st]);
   const places=[...new Set(away.map(x=>x.where).filter(Boolean))].join(' ');
   const bar=typeof allBar==='function'?allBar('nbAcceptAll','nbClaimAll',nOpen,here):'';
   const note=away.length?`<p class="note r12away">${away.length} ready notice${away.length>1?'s':''} can't be handed in ${menu?'from the Menu':'here'}. ${esc(places)}</p>`:'';

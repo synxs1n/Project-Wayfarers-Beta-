@@ -17,7 +17,7 @@ const p=await ev(()=>{const A=__A,G=A.G,o={},c=G.roster.mira;
   // 50 battles at level 3: open (the old rule wanted level 20)
   c.bt=50;o.r2b=A.personalEligible(c);A.render();o.r2brow=/data-act="personal" data-arg="mira"/.test(document.querySelector('#modal').innerHTML);
   o.sheet2=A.mChar('mira',false).match(/Battles together:[^<]*/)[0];
-  A.ACT.personal('mira');o.started=G.personal.mira&&G.personal.mira.state;A.render();o.roam=/Rival roaming/.test(document.querySelector('#modal').innerText);
+  A.ACT.personal('mira');o.started=G.personal.mira&&G.personal.mira.state;A.render();o.roam=/Rival roaming|Active/.test(document.querySelector('#modal').innerText);/* fix18: an accepted notice of any kind says Active */
   // a hero with no bt keeps the estimate (level-3)x5
   const l=G.roster.lumen;delete l.bt;l.lv=11;o.est=A.btOf(l);A.saveGame();const raw=JSON.parse(localStorage.getItem('aurelis-wayfarers-v3'));o.savedBt=raw.roster.lumen.bt;
   A.V.modal=null;return o;});

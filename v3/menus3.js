@@ -162,6 +162,13 @@ function m3Tavern(m){const tab=m.tab;let body='';
 const NB_TABS=[['quests','Quests'],['guilds','Guilds'],['bounties','Bounties'],['arena','Arena']];
 const NB_MENU={quests:'quests',factions:'guilds',qbounty:'bounties',qarena:'arena'};// menu tab -> board tab
 const NB_ORD={ready:0,active:1,open:2,done:3};
+// fix18 (owner: "quest accepting is all over the place"): a list keeps its order while its popup stays open. Rows sort by state (ready, active,
+// open, done) the first time a list is drawn and then keep their places, so accepting or claiming changes that one row and nothing jumps;
+// rows that are new to the list go after, by state. Each list (key, tab, section) remembers its own order on the open popup (V.modal._nbk).
+function nbKeep(key,L,id,rank){const m=V.modal,s=L.map((x,i)=>({x,i,id:id(x),r:rank(x)}));if(!m||typeof m!=='object')return s.sort((a,b)=>a.r-b.r||a.i-b.i).map(o=>o.x);
+  const K=m._nbk||(m._nbk={}),k=key+'|'+(m.tab||'')+'|'+(m.sec||'all'),pos=new Map((K[k]||[]).map((x,i)=>[x,i]));
+  s.sort((a,b)=>{const pa=pos.has(a.id),pb=pos.has(b.id);if(pa&&pb)return pos.get(a.id)-pos.get(b.id);if(pa!==pb)return pa?-1:1;return a.r-b.r||a.i-b.i;});
+  const out=s.map(o=>o.x);K[k]=s.map(o=>o.id);return out;}
 function nbQState(q){return q.state==='active'?(questReady(q)?'ready':'active'):q.state==='open'?'open':'done';}
 function nbBState(b){return b.state==='open'||b.state==='active'?b.state:'done';}
 function nbPersonal(){try{return Object.values(G.roster).filter(c=>TPL[c.id]&&!TPL[c.id].mon&&pqShown(c));}catch(e){return [];}}
@@ -177,12 +184,12 @@ function nbQuestRow(q){const st=nbQState(q);
   const btn=st==='open'?`<button class="btn sm" data-act="qAccept" data-arg="${q.id}">Accept</button>`:st==='ready'?`<button class="btn sm gold" data-act="qClaim" data-arg="${q.id}">Claim</button>`:st==='active'?'<span class="m">Active</span>':'<span class="m up">Done</span>';
   return `<div class="row"><div class="grow"><b>${esc(q.title)}</b>${st==='ready'?' <em class="qtag">Ready</em>':''}<small>${esc(q.desc)}</small><small>${q.state==='active'?prog+'. ':''}Reward: ${rew}</small></div>${btn}</div>`;}
 function nbQuests(sec){const Q=m3Quests();let h='';
-  if(sec!=='personal'){const L=Q.filter(q=>sec==='all'||nbQState(q)===sec).sort((a,b)=>NB_ORD[nbQState(a)]-NB_ORD[nbQState(b)]);
+  if(sec!=='personal'){const L=nbKeep('q',Q.filter(q=>sec==='all'||nbQState(q)===sec),q=>q.id,q=>NB_ORD[nbQState(q)]);
     h+=(typeof allBar==='function'?allBar('qAcceptAll','qClaimAll',Q.filter(q=>q.state==='open').length,Q.filter(q=>q.state==='active'&&questReady(q)&&(typeof canHandIn!=='function'||canHandIn(q))).length):'')
       +m3Rows(L.map(nbQuestRow).join(''),{ready:'Nothing is ready to hand in yet.',active:'No quests under way.',open:'No new notices. More go up as your journey goes on.',done:'Nothing finished yet.'}[sec]||'No notices yet.');}
   if(sec==='personal'||(sec==='all'&&nbPersonal().length))h+=(sec==='all'?m3H('Personal quests'):'')+vPersonal();
   return `<p class="note">Accept a notice, do the deed, then claim the reward here or on any town's board.</p>${h}`;}
-function nbBounties(sec){const L=nbBountyList().filter(b=>sec==='all'||nbBState(b)===sec).sort((a,b)=>NB_ORD[nbBState(a)]-NB_ORD[nbBState(b)]);
+function nbBounties(sec){const L=nbKeep('b',nbBountyList().filter(b=>sec==='all'||nbBState(b)===sec),b=>b.id,b=>NB_ORD[nbBState(b)]);
   return `<p class="note">Accept a bounty and its marked beast roams that realm's field, glowing red. Beat it for gold, a stat charm and materials.</p>${typeof allBar==='function'?allBar('bountyAll','',nbBountyList().filter(b=>b.state==='open').length,0):''}${m3Rows(L.map(b=>{const mo=MON[b.mon],md=ELITE_MODS.find(x=>x.k===b.mod);
     return `<div class="row"><img class="mimg" src="${monURL(mo.art)}" alt=""><div class="grow"><b>${esc(b.name)}</b><small>${md.n}: ${md.d} Level ${b.lv}. Roams ${esc(ZS(b.stage).n)}.</small><small>${fmt(b.reward.gold)} gold, ${gearOf(b.reward.charm).n}</small></div>${b.state==='open'?`<button class="btn sm gold" data-act="bounty" data-arg="${b.id}">Accept</button>`:b.state==='active'?'<span class="m">Hunting</span>':'<span class="m up">Done</span>'}</div>`;}).join(''),{active:'No bounties under way.',open:'No open bounties.',done:'No bounties done yet.'}[sec]||'No bounties posted yet.')}`;}
 function nbArena(menu){const cl=G.cleared.filter(Boolean).length,far=menu&&!inTown();

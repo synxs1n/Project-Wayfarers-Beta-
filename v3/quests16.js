@@ -56,7 +56,7 @@ const Q16_WHERE='Hand in at any Guild Hall or Notice Board.';
 facAtHall=function(){return q16AtDesk();};
 {const t0=m3Tabs;m3Tabs=function(t){const T=t0.apply(this,arguments);try{if(t==='board'&&!T.some(x=>x[0]==='guilds')){const i=T.findIndex(x=>x[0]==='bounties');T.splice(i<0?T.length:i,0,['guilds','Guilds']);}}catch(e){}return T;};}
 function q16Notices(){try{return m3Quests().filter(q=>q16Guild(q)&&q.state!=='claimed');}catch(e){return [];}}
-{const ng0=nbGuilds;nbGuilds=function(sec){let h=ng0.apply(this,arguments);try{const s=sec||'all',L=q16Notices().filter(q=>s==='all'||nbQState(q)===s).sort((a,b)=>NB_ORD[nbQState(a)]-NB_ORD[nbQState(b)]);
+{const ng0=nbGuilds;nbGuilds=function(sec){let h=ng0.apply(this,arguments);try{const s=sec||'all',L=nbKeep('gn',q16Notices().filter(q=>s==='all'||nbQState(q)===s),q=>q.id,q=>NB_ORD[nbQState(q)]);
   if(L.length)h=m3H('Guild notices')+`<div class="rows q16gn">${L.map(q=>nbQuestRow(q)).join('')}</div>`+m3H('Guild missions')+h;}catch(e){}return h;};}
 HOOK.xform('nbSecs','quests16','guild notices counted on the Guilds tab; no sections while locked',function(r,tab){try{if(tab!=='guilds')return r;if(!g16Open())return [];
   const L=q16Notices();if(!L.length)return r;return r.map(x=>[x[0],x[1],(x[2]|0)+L.filter(q=>x[0]==='all'||nbQState(q)===x[0]).length]);}catch(e){return r;}});
