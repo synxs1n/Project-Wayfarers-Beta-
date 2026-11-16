@@ -5,8 +5,8 @@
 // bsh four tone masses, light from the top left, one accent kept flat, a tell part that moves on idle B, a lunge on atk) and draws at its
 // own size, so the battle stage, the Bestiary, the summon and the map all show the new design. Stats, skills and elements are unchanged
 // (makeMonVariant still copies them from the base foe).
-// On the map (section 2) a guardian waiting at the end of its Den or Sanctum stands about 1.5x its old size (G21.w) on a rune ring with
-// a slow aura in its element colour and its name over it as the hero comes near; elite roamers stand about 1.5x a roamer's size with the
+// On the map (section 2) a guardian waiting at the end of its Den or Sanctum stands a fifth bigger than before (G21.w) on a rune ring with
+// a slow aura in its element colour and its name over it as the hero comes near; elite roamers stand a fifth bigger than a roamer with the
 // gold ring, so the fights worth fearing read from across the field. Both renderers (2D worldDraw, HD-2D hdActors) draw them here: the core passes skip them while drawing (G21.hide) and the
 // actors stay in dynActors and m.roam for walking, talking and taps.
 const G21={off:false,hide:0,n:{mini:0,elite:0},last:{}};
@@ -292,9 +292,9 @@ const G21ART={
 Object.keys(G21ART).forEach(k=>{MART[k]=G21ART[k];MART[k].fr=1;if(typeof MEXTRA!=='undefined')MEXTRA[k]=()=>{};try{MINI_BIG.delete(k);}catch(e){}if(!BIG_ART.includes(k))BIG_ART.push(k);});
 // ---------- 2. big on the map ----------
 // sizes: the width on the map in world px (a tile is 16). Before: a guardian 40 (HD-2D) and its 60 px canvas (2D), a roamer 27 (HD-2D)
-// and 22 (2D) whether elite or not. Now a guardian 62 in both (less only where the map's top edge leaves no room), an elite 40 (HD-2D)
-// and 34 (2D).
-G21.w={mini:62,elite:40};
+// and 22 (2D) whether elite or not. Now a guardian 48 in both (less only where the map's top edge leaves no room), an elite 32 (HD-2D)
+// and 27 (2D): a step up from an ordinary foe, not a giant (v0.22.14; 0.22.13 had 62, 40 and 34).
+G21.w={mini:48,elite:32};/* v0.22.14: the owner found 62 and 40 way too big */
 const G21EL={fire:'#ff8a3a',water:'#4aa8ff',ice:'#bfe6ff',lightning:'#ffe14a',earth:'#d8a85a',wind:'#8ad0a0',light:'#fff0a0',shadow:'#b48aff'};
 const g21Col=mon=>{const m=MON[mon];return (m&&m.el&&G21EL[m.el[0]])||'#ffd04a';};
 const g21On=()=>!G21.off&&!(G&&G.daily);
@@ -318,7 +318,7 @@ function g21Draw2D(now){const m=WS.m,ctx=WS.ctx;if(!m||!ctx)return;const cx=Math
     ctx.globalAlpha=1;ctx.fillStyle='rgba(0,0,0,.35)';ctx.beginPath();ctx.ellipse(X,Y-1,W*.3,W*.08,0,0,7);ctx.fill();
     ctx.save();ctx.translate(X,0);ctx.scale(-1,1);ctx.drawImage(c,-W/2,Math.round(Y-H+3),W,H);ctx.restore();
     g21Tag2D(ctx,a,X,Math.round(Y-H+3));G21.n.mini++;G21.last.mini=['2d',W];});
-  g21Elites(m).forEach(r=>{const mo=MON[r.mon],c=g21Frame(mo.art,now,still),W=34,H=W*c.height/c.width;let [x,y]=g21RoamPos(r,now);x-=cx;y-=cy;
+  g21Elites(m).forEach(r=>{const mo=MON[r.mon],c=g21Frame(mo.art,now,still),W=27,H=W*c.height/c.width;let [x,y]=g21RoamPos(r,now);x-=cx;y-=cy;
     if(x<-W||y<-H||x>WS.vw+W||y>WS.vh+H)return;
     const [da,db]=DIRV[r.dir],S=ROAM.sight*TS;ctx.fillStyle=r.mode==='chase'?'rgba(255,90,60,.16)':'rgba(255,230,150,.09)';ctx.beginPath();ctx.moveTo(x+8,y+8);
     ctx.lineTo(x+8+da*S-db*S/2,y+8+db*S-da*S/2);ctx.lineTo(x+8+da*S+db*S/2,y+8+db*S+da*S/2);ctx.closePath();ctx.fill();

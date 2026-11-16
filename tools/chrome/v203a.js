@@ -2,7 +2,7 @@
 //  1 each of the twenty guardians (MINIS) has its own 60 x 60 drawing: not the base foe's shape (silhouette overlap with the old 1.5x
 //    enlargement under 70%), all twenty silhouettes different from each other, idle B differs from idle A, drawn at 60 px (no enlargement)
 //  2 a guardian fight and a summon use the new art (the foe's art is the mb_ id and its canvas draws)
-//  3 on the map (Medium HD-2D and Low 2D): the Den guardian is drawn by guard21 at about 1.5x its old width, the core pass skips it, it is
+//  3 on the map (Medium HD-2D and Low 2D): the Den guardian is drawn by guard21 a fifth wider than before, the core pass skips it, it is
 //    still an actor (blocks its tile, talking asks to fight)
 //  4 an elite roamer is drawn big (wider than a plain roamer) with its ring; after the frames it is alive again (the hide is undone)
 // Usage (from tools/chrome): PWHTML=<abs path to out/aurelis3.html> node v203a.js
@@ -40,7 +40,7 @@ const START=()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.A
       G21.hide++;const hid=A.dynActors(m).some(q=>q.mini);G21.hide--;
       A.placeAt('k0',x,y+1,'u');A.WS.lock=false;A.WS.dir='u';A.interact();const modal=A.V.modal&&A.V.modal.type;A.V.modal=null;A.render();
       return {n:G21.n.mini,last:G21.last.mini,solid,hid,modal,err:G21.err||null};},pre);
-    const want=gfx==='low'?['2d',55]:['hd',55];
+    const want=gfx==='low'?['2d',44]:['hd',44];
     chk(`3 ${gfx}: the Den guardian is drawn by guard21 (${c.n} frames, ${JSON.stringify(c.last)}; was 40 wide in HD-2D), skipped by the core pass (${!c.hid}), still solid (${c.solid}), talking asks to fight (${c.modal})`,
       (c.n>5&&c.last&&c.last[0]===want[0]&&c.last[1]>=want[1]&&!c.hid&&c.solid&&c.modal==='miniask'&&!c.err)||JSON.stringify(c));
     await ev(()=>{const A=__A,m=A.getMap('f0');A.placeAt('f0',...A.mapEntry(m),'d');});await wait(700);
@@ -49,7 +49,7 @@ const START=()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.A
       window.__G21.G21.n.elite=0;return m.roam.indexOf(e);});
     await wait(1200);
     const d=await ev((i)=>{const A=__A,G21=window.__G21.G21,e=A.WS.m.roam[i];return {n:G21.n.elite,last:G21.last.elite,dead:e.dead,h:!!e._g21h,err:G21.err||null};},r0);
-    const wmin=gfx==='low'?30:36;
+    const wmin=gfx==='low'?25:30;
     chk(`4 ${gfx}: the elite roamer is drawn big (${d.n} frames, ${JSON.stringify(d.last)}; a roamer is ${gfx==='low'?22:27}), alive after the frames (${!d.dead&&!d.h})`,
       (d.n>5&&d.last&&d.last[1]>=wmin&&!d.dead&&!d.h&&!d.err)||JSON.stringify(d));
     if(gfx==='low')break;await H.browser.close();}
