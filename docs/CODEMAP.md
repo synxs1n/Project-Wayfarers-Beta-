@@ -562,6 +562,24 @@ Registered (load order; 1 is next to the base):
 
 Runs: 14 cohere15 → 13 chars13 (around) → 11 chars13 → 9 perf12 → 8 fxkind11 → 7 res11 → 6 battle11 (around) → 5 sprhd2 → 4 hdspell → 3 hdstage (around) → 2 gfx6battle (around) → 1 anim → **base** → 2 gfx6battle (around) → 3 hdstage (around) → 6 battle11 (around) → 10 kits12 → 12 chars13 → 13 chars13 (around)
 
+### calcStats (13 hooks)
+Registered (load order; 1 is next to the base):
+1. `ailments.js` after: wound shrinks max HP
+2. `echocore.js` after: Echoforged weapon perks
+3. `comp.js` after: paired pet stat bonus
+4. `roles.js` after: charm perks
+5. `natures6.js` after: nature and mastery stat perks
+6. `riftkeeper9.js` after: Riftwalker key perks
+7. `roles9.js` after: faith perks
+8. `echo11.js` after: Echoforged weapon and armour perks
+9. `battle16.js` after: Nikaris: a little less ATK and MAG
+10. `legends17b.js` after: Kaevan: a little less ATK (in line with the other Legendaries)
+11. `legends17a.js` after: Light Fingers: harder to hit
+12. `legnat20.js` before: a Legendary carries their own nature
+13. `shields20.js` around: a shield counts only beside a one-handed weapon
+
+Runs: 13 shields20 (around) → 12 legnat20 → **base** → 1 ailments → 2 echocore → 3 comp → 4 roles → 5 natures6 → 6 riftkeeper9 → 7 roles9 → 8 echo11 → 9 battle16 → 10 legends17b → 11 legends17a → 13 shields20 (around)
+
 ### cmdHtml (13 hooks)
 Registered (load order; 1 is next to the base):
 1. `battle3.js` result: tall layout: HP/MP bars and the auto note in the command head
@@ -597,23 +615,6 @@ Registered (load order; 1 is next to the base):
 13. `legends17a.js` after: old saves: slot marks follow the pairings
 
 Runs: 5 map → **base** → 1 tavern2 → 2 comp → 3 learn → 4 prog2 → 6 summon8 → 7 party12 → 8 skills12 → 9 menus14 → 10 realms14 → 11 battle16 → 12 world16 → 13 legends17a
-
-### calcStats (12 hooks)
-Registered (load order; 1 is next to the base):
-1. `ailments.js` after: wound shrinks max HP
-2. `echocore.js` after: Echoforged weapon perks
-3. `comp.js` after: paired pet stat bonus
-4. `roles.js` after: charm perks
-5. `natures6.js` after: nature and mastery stat perks
-6. `riftkeeper9.js` after: Riftwalker key perks
-7. `roles9.js` after: faith perks
-8. `echo11.js` after: Echoforged weapon and armour perks
-9. `battle16.js` after: Nikaris: a little less ATK and MAG
-10. `legends17b.js` after: Kaevan: a little less ATK (in line with the other Legendaries)
-11. `legends17a.js` after: Light Fingers: harder to hit
-12. `legnat20.js` before: a Legendary carries their own nature
-
-Runs: 12 legnat20 → **base** → 1 ailments → 2 echocore → 3 comp → 4 roles → 5 natures6 → 6 riftkeeper9 → 7 roles9 → 8 echo11 → 9 battle16 → 10 legends17b → 11 legends17a
 
 ### mChar (12 hooks)
 Registered (load order; 1 is next to the base):
@@ -862,6 +863,17 @@ Registered (load order; 1 is next to the base):
 
 Runs: 6 legends17a → 5 legends17a → 4 riftkeeper9 (around) → 3 summon8 → 1 comp → **base** → 2 twists → 4 riftkeeper9 (around)
 
+### gearDesc (6 hooks)
+Registered (load order; 1 is next to the base):
+1. `echo2.js` result: Echoforge perk text
+2. `archetype.js` result: weapon delivery text
+3. `roles.js` result: charm role text
+4. `capes.js` result: boots name their weight
+5. `riftkeeper9.js` result: Riftwalker key text
+6. `shields20.js` result: shields say what they need
+
+Runs: **base** → 1 echo2 (result) → 2 archetype (result) → 3 roles (result) → 4 capes (result) → 5 riftkeeper9 (result) → 6 shields20 (result)
+
 ### hdLook (6 hooks)
 Registered (load order; 1 is next to the base):
 1. `weather7.js` after: weather grade
@@ -965,16 +977,6 @@ Registered (load order; 1 is next to the base):
 5. `legends18.js` result: Nikaris stands beside the party while he talks
 
 Runs: **base** → 1 legends (result) → 2 sites (result) → 3 world14 (result) → 4 legends17b (result) → 5 legends18 (result)
-
-### gearDesc (5 hooks)
-Registered (load order; 1 is next to the base):
-1. `echo2.js` result: Echoforge perk text
-2. `archetype.js` result: weapon delivery text
-3. `roles.js` result: charm role text
-4. `capes.js` result: boots name their weight
-5. `riftkeeper9.js` result: Riftwalker key text
-
-Runs: **base** → 1 echo2 (result) → 2 archetype (result) → 3 roles (result) → 4 capes (result) → 5 riftkeeper9 (result)
 
 ### makeEnemy (5 hooks)
 Registered (load order; 1 is next to the base):

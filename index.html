@@ -2119,7 +2119,7 @@ html:not(.flat) .battle.b3 .bline .b4mo .b4bar{box-shadow:inset 0 0 0 1px #000,0
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.22.11";const APP_BUILD="2a6aac63cd10";
+(function(){const APP_VER="0.22.12";const APP_BUILD="e5df2163c08f";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2893,7 +2893,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.22.11";const APP_BUILD="2a6aac63cd10";
+const APP_VER="0.22.12";const APP_BUILD="e5df2163c08f";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2901,6 +2901,7 @@ const APP_VER="0.22.11";const APP_BUILD="2a6aac63cd10";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.22.12',['Shields: Warriors and Knights have a new Shield slot. A shield adds defense and resistance while the hero holds a one-handed weapon (sword, axe, mace or lance); switching to a two-handed weapon puts the shield back in your pack. Find them at the Smithy under Shields.']],
  ['Beta v0.22.11',['Capes are now Boots, in three weights with one clear bonus each: Light boots add speed and anyone can wear them, Medium boots add max HP (medium and heavy armor wearers), Heavy boots add defense (heavy armor wearers). Capes you already own became Medium boots; a hero who cannot wear those now has Light boots of the same tier and temper. Find them at the Smithy under Boots.']],
  ['Beta v0.22.10',['Every Legendary now has a nature of their own, locked and separate from their signature: Kaevan is a Steppe Rider, Nikaris is Packwise, Jace has Stormglass, Joseth has Iron Blood and Dist is a Rivercat. Each one adds a few stats and lifts one kind of skill, like the class natures. Signatures are unchanged.']],
  ['Beta v0.22.9',['Leaving a lair or a den no longer freezes for a moment. A map you were just on is reused instead of being drawn again from scratch, and after you beat a lair\'s boss the field is drawn ahead while the rewards are on screen, so the walk out is quick too.']],
@@ -11747,7 +11748,7 @@ function mChar(id,edit){
     <div class="stats tapstats">${[['hp',`${c.hp}/${S.mhp}`],['mp',`${c.mp}/${S.mmp}`],['atk',Math.round(S.atk)],['def',Math.round(S.def)],['mag',Math.round(S.mag)],['res',Math.round(S.res)],['spd',Math.round(S.spd)],['crit',Math.round(S.crit*100)+'%'],['eva',Math.round(S.eva*100)+'%'],['healP',Math.round(S.healP)]].map(([k,v])=>`<button class="stb" data-act="statInfo" data-arg="${k}" aria-label="What is ${STAT_INFO[k][0]}?">${STAT_INFO[k][0]} <b>${v}</b></button>`).join('')}</div>
     <h4>Attributes ${c.pts?`<span class="pts">${c.pts} point${c.pts>1?'s':''} to spend</span>`:''}</h4><div class="attrs">${attrRows}</div>
     ${edit?`<div class="btnrow"><button class="btn sm ${c.auto!==false?'gold':''}" data-act="autoPts">Auto-spend ${c.auto!==false?'on':'off'}</button><button class="btn sm" data-act="respec" ${G.gold>=respecCost(c)&&Object.keys(c.alloc).length?'':'disabled'}>Respec for ${respecCost(c)} gold</button></div>`:''}
-    <h4>Equipment</h4><div class="rows compact eqsheet">${EQSL.map(sl=>{const gid=c.eq[sl],g=gid?gearOf(gid):null,inner=`${g?gearIcon(gid):'<span class="gico empty"></span>'}<div class="grow"><small>${SLOTN[sl]}</small><b>${g?esc(g.n):'Empty'}</b>${g?` ${tierChip(g)}<small>${gearDesc(g)}</small>`:''}</div>`;/* v0.17.1: the same gear rows as the Equipment page (icon, tier frame, chip, stats) */return edit?`<button class="row tr eqsrow" data-act="gearSlot" data-arg="${sl}" style="${g?tierVars(gTierIdx(g),g):''}">${inner}</button>`:`<div class="row tr eqsrow" style="${g?tierVars(gTierIdx(g),g):''}">${inner}</div>`;}).join('')}</div>
+    <h4>Equipment</h4><div class="rows compact eqsheet">${(typeof eqSlotsOf==='function'?eqSlotsOf(c):EQSL).map(sl=>{const gid=c.eq[sl],g=gid?gearOf(gid):null,inner=`${g?gearIcon(gid):'<span class="gico empty"></span>'}<div class="grow"><small>${SLOTN[sl]}</small><b>${g?esc(g.n):'Empty'}</b>${g?` ${tierChip(g)}<small>${gearDesc(g)}</small>`:''}</div>`;/* v0.17.1: the same gear rows as the Equipment page (icon, tier frame, chip, stats) */return edit?`<button class="row tr eqsrow" data-act="gearSlot" data-arg="${sl}" style="${g?tierVars(gTierIdx(g),g):''}">${inner}</button>`:`<div class="row tr eqsrow" style="${g?tierVars(gTierIdx(g),g):''}">${inner}</div>`;}).join('')}</div>
     <p class="note">${G.party.includes(id)?'In your six.':'On the roster.'} Change your party from Menu > Party.</p>${G.party.includes(id)&&fsSkills(c).length&&!G.daily?`<div class="btnrow"><button class="btn sm gold" data-act="fsOpen" data-arg="${id}">Field skills</button></div>`:''}
     <h4>Limit Break</h4>${limitRows(t.cls,c.lv)}
     <h4>Skills</h4><p class="note">⟐ Primers mark a foe with their element for 2 turns. ✸ Detonators set off a reaction on a foe primed with a matching element. Other elemental skills just hit.</p><div class="rows">${classSkills(t).concat(id==='vaelith'?archiveSkills():[]).map(s=>`<div class="row ${!skillKnown(c,s)?'lock':''} ${s.combo?'combo':''} ${s.archive?'arcrow':''}"><div><b>${skEls(s).map(ico).join('')}${esc(s.n)}</b>${roleTag(s)}<small>${esc(s.d)}</small>${perkNote(c,s)}</div><span class="m">${!skillKnown(c,s)?'Lv '+s.lv:s.mp+' MP'}</span></div>`).join('')}</div>
@@ -13715,7 +13716,7 @@ function vEquipTab(){const L=G.party.filter(id=>G.roster[id]);V.charList=L.slice
   return `<div class="btnrow eqtools">${G.daily?'':'<button class="btn" data-act="bpOpen">Build party</button>'}<button class="btn gold" data-act="autoEqParty" title="Gears the six heroes in your party with the best gear you own. Heroes outside the party keep no gear: it waits in the pack.">Equip Best</button></div>
   <p class="note">Every hero's weapon, armor and charm at a glance. Tap a slot to change it; works anywhere outside battle. A hero's sheet has an Upgrade button on each slot. <small>Equip Best gears your party of six. The per-hero Auto button only uses your pack and free pets. It never takes from another hero.</small></p>
   <div class="eqlist">${L.map((id,i)=>{const c=G.roster[id];return `${i===G.party.length&&i?'<h4>Roster</h4>':i===0?'<h4>Party</h4>':''}<div class="eqrow">${port(id)}<div class="grow"><b>${esc(c.name)}</b><small>Lv ${c.lv} ${CLS[TPL[id].cls].n}</small>${xpMini(c)}
-    <div class="eqslots">${EQSL.map(sl=>{const g=gearOf(c.eq[sl]);return `<button class="eqs" data-act="eqPick" data-arg="${id},${sl}">${g?gearIcon(c.eq[sl]):'<span class="gico empty"></span>'}<span><small>${SLOTN[sl]}</small>${g?esc(g.n):'Empty'}</span></button>`;}).join('')}</div>${petSlotHtml(c)}</div>
+    <div class="eqslots">${(typeof eqSlotsOf==='function'?eqSlotsOf(c):EQSL).map(sl=>{const g=gearOf(c.eq[sl]);return `<button class="eqs" data-act="eqPick" data-arg="${id},${sl}">${g?gearIcon(c.eq[sl]):'<span class="gico empty"></span>'}<span><small>${SLOTN[sl]}</small>${g?esc(g.n):'Empty'}</span></button>`;}).join('')}</div>${petSlotHtml(c)}</div>
     <button class="btn sm" data-act="autoEqOne" data-arg="${id}" title="Equip the best spare gear for ${esc(c.name)}">Auto</button></div>`;}).join('')}</div>`;}
 function mEquipPick(m){const c=G.roster[m.char];if(!c)return '';const sl=m.slot,cur=c.eq[sl];
   const ids=[...new Set(G.gear.filter(id=>{const g=gearOf(id);return g&&g.slot===sl&&(!g.only||g.only===c.id);}))];
@@ -13725,7 +13726,7 @@ function mEquipPick(m){const c=G.roster[m.char];if(!c)return '';const sl=m.slot,
   const ebar=ok0.length>1&&typeof ddBar==='function'?ddBar([ddSel('Show','lSh','eqpick',[['all','Everything that fits'],['upg','Upgrades only']],esh),ddSel('Rarity','lRg','eqpick',[['all','Any rarity']].concat(ITEM_TIERS.map((t,i)=>[String(i),esc(t.n)])),erg)],'lfbar'):'';
   const LST=(m.list||[]).filter(x=>G.roster[x]),li=LST.indexOf(c.id);
   return box(`${SLOTN[sl]}: ${esc(c.name)}`,`${LST.length>1?`<div class="cnav"><button class="btn sm" data-act="eqNav" data-arg="-1" aria-label="Previous hero">‹ Prev</button><small class="nums">${li+1} / ${LST.length}</small><button class="btn sm" data-act="eqNav" data-arg="1" aria-label="Next hero">Next ›</button></div>`:''}
-    <div class="chips">${EQSL.map(s=>`<button class="chip ${s===sl?'on':''}" data-act="eqSlot" data-arg="${s}">${SLOTN[s]}</button>`).join('')}</div>
+    <div class="chips">${(typeof eqSlotsOf==='function'?eqSlotsOf(c):EQSL).map(s=>`<button class="chip ${s===sl?'on':''}" data-act="eqSlot" data-arg="${s}">${SLOTN[s]}</button>`).join('')}</div>
     <div class="row eqcur">${cur?gearIcon(cur):''}<div class="grow"><small>Equipped</small><b>${cur?esc(gearOf(cur).n):'Nothing'}</b>${cur?tierChip(gearOf(cur)):''}<small>${cur?gearDesc(cur):''}</small></div>${cur?`<button class="btn sm" data-act="eqOff">Unequip</button>`:''}</div>
     ${ebar}<div class="rows">${ok.map(id=>{const n=G.gear.filter(x=>x===id).length,gg=gainFor(c,id);return `<div class="row tr ${gg.d>0.01?'upg':''}" style="${tierVars(gTierIdx(gearOf(id)),gearOf(id))}">${gearIcon(id)}<div class="grow"><b>${esc(gearOf(id).n)}</b> ${tierChip(gearOf(id))}${n>1?` <small>x${n}</small>`:''}<small>${gearDesc(id)}</small><small>${vsMark(c,id)} ${deltaHtml(c,id)}</small></div><button class="btn sm ${gg.d>0.01?'gold':''}" data-act="eqSet" data-arg="${id}">Equip</button></div>`;}).join('')||(ok0.length?'<p class="note empty">Nothing matches the filters.</p>':'<p class="note empty">No spare gear for this slot. The Smithy and Alchemy sell more.</p>')}
     ${no.length?`<p class="note">${no.length} item${no.length>1?'s':''} in your pack can't be used by a ${CLS[TPL[c.id].cls].n} (tomes are for Mages, Archmages and Chroniclers).</p>`:''}</div>`,
@@ -18199,7 +18200,7 @@ function temperWhy(list){const out={},memo={};const R=list.map(o=>{const c=forge
     const w=p3c().why[id];if(w)h+=`<small class="p3why">⇄ ${w}</small>`;}catch(e){}return h;};}
 
 // ===================== 3.3: Smithy plan =====================
-const P3_SLOTS=['w','a','k'];
+const P3_SLOTS=['w','a','k','s'];// v0.22.12: shields (only Warriors and Knights can take one)
 function p3Recipes(){const o={};RECIPES.forEach(r=>{if(r.id&&SMITH_CATS.includes(r.cat)&&recipeOpen(r)&&!o[r.id])o[r.id]=r;});return o;}
 // v0.11.8: the plan looks at where a piece can END: every base (pack, shop, forge) is also considered tempered +1, +2 and +3 (temper.js
 // forgeCost chain), with the gold and materials of the whole chain, so the pick is the best final stats you can afford, not the best
@@ -18481,7 +18482,7 @@ function upgSlotsHtml(slots,noPlan){if(!G||G.daily)return '';const rows=slots.ma
 HOOK.before('vModal','p3shop','upg popup (the Upgrade button)',function(m){if(m&&m.type==='upg')return HOOK.stop(mUpg(m));});
 // the hero sheet: an Upgrade button on each slot
 HOOK.xform('mChar','p3shop','Upgrade button on each equipment slot',function(h,id,edit){try{const c=G&&G.roster[id];if(!c||G.daily||typeof h!=='string')return h;
-  h=h.replace(/<h4>Equipment<\/h4><div class="eq">[\s\S]*?<\/div>/,()=>`<h4>Equipment</h4><div class="eq upgeq">${EQSL.map(sl=>`<div class="upgslot">${edit?`<button class="btn sm" data-act="gearSlot" data-arg="${sl}"><small>${SLOTN[sl]}</small> ${c.eq[sl]?gearOf(c.eq[sl]).n:'Empty'}</button>`:`<span class="eqv"><small>${SLOTN[sl]}</small> ${c.eq[sl]?gearOf(c.eq[sl]).n:'Empty'}</span>`}${upgBtn(c,sl)}</div>`).join('')}</div>`);}catch(e){}return h;});
+  h=h.replace(/<h4>Equipment<\/h4><div class="eq">[\s\S]*?<\/div>/,()=>`<h4>Equipment</h4><div class="eq upgeq">${(typeof eqSlotsOf==='function'?eqSlotsOf(c):EQSL).map(sl=>`<div class="upgslot">${edit?`<button class="btn sm" data-act="gearSlot" data-arg="${sl}"><small>${SLOTN[sl]}</small> ${c.eq[sl]?gearOf(c.eq[sl]).n:'Empty'}</button>`:`<span class="eqv"><small>${SLOTN[sl]}</small> ${c.eq[sl]?gearOf(c.eq[sl]).n:'Empty'}</span>`}${upgBtn(c,sl)}</div>`).join('')}</div>`);}catch(e){}return h;});
 Object.assign(ACT,{
   upgOpen(a){const [cid,sl]=String(a).split(',');if(!G||G.daily||!G.roster[cid]||!EQSL.includes(sl))return;upgOpenM(cid,sl);},
   upgDo(a){const [cid,sl,key]=String(a).split(',');const c=G&&G.roster[cid];if(!c||G.daily)return;const o=upgBest(c,sl).best;
@@ -18490,7 +18491,7 @@ Object.assign(ACT,{
     sfx(o.k==='pack'?'equip':'chest');toast(`${c.name}: ${was?gearOf(was).n:'nothing'} → ${gearOf(c.eq[sl]).n} (${upgPct(o)}).`);render();},
   upgAll(){const m=V.modal;if(!m||m.type!=='upg')return;const c=G.roster[m.cid],sl=m.sl,o=upgBest(c,sl).best||upgBest(c,sl).goal,from=m;
     if(!upgTown()){V.modal={type:'eqPick',char:m.cid,slot:sl,list:[m.cid],from};render();return;}
-    const sec={w:'weapons',a:'armor',k:'capes',c:'charms'}[sl];
+    const sec={w:'weapons',a:'armor',k:'capes',s:'shields',c:'charms'}[sl];
     if(o&&o.k==='temper')V.modal={type:'smithy',tab:'forge',sec,from};
     else if(o&&o.k==='ef')V.modal={type:'smithy',tab:'echo',from};
     else if(sl==='c')V.modal=o&&o.k==='forge'?{type:'workshop',tab:'craft',sec:'charm',from}:{type:'workshop',tab:'shop',sec:'charm',from};
@@ -20545,7 +20546,7 @@ function m3ItemSort(ids,priceOf){const f=SHOPF(),rr=m3Rar(),pr=priceOf||(id=>ITE
   return a.sort((x,y)=>iTierIdx(y)-iTierIdx(x)||pr(y)-pr(x));}
 
 // ----- structure -----
-const M3_LEG={smithy:{weapons:['shop','weapons'],armor:['shop','armor'],capes:['shop','capes'],mats:['shop','mats']},
+const M3_LEG={smithy:{weapons:['shop','weapons'],armor:['shop','armor'],capes:['shop','capes'],shields:['shop','shields'],mats:['shop','mats']},
   workshop:{relit:['shop','relit'],herbs:['shop','herb']},guild:{personal:['quests','personal'],party:['recruit','all']},tavern:{},board:{personal:['quests','personal']}};
 // v0.9.5: the Guild Hall opens on the Notice Board's Guilds tab; the town board opens on Quests (board tabs: NB_TABS below)
 const M3_HOME={smithy:'shop',workshop:'shop',guild:'guilds',tavern:'hire',board:'quests'};
@@ -20559,15 +20560,18 @@ function m3Tabs(t){
   return [];}
 // item kinds at Alchemy
 const m3Kind=id=>{const o=ITEMS[id];return o.travel?'travel':(o.cure||o.revive)?'cure':'potion';};
-const M3_SLOTSEC={weapons:'w',armor:'a',capes:'k',charms:'c'};
+const M3_SLOTSEC={weapons:'w',armor:'a',capes:'k',shields:'s',charms:'c'};
+// v0.22.12: the Shields section shows only once a Warrior or Knight is in the roster (shields20.js)
+const m3Sh=()=>{try{return Object.values(G.roster).some(c=>TPL[c.id]&&['warrior','knight'].includes(TPL[c.id].cls));}catch(e){return false;}};
+const m3ShSec=(L,n)=>m3Sh()?L.concat([['shields','Shields',n]]):L;
 function m3SellCnt(slots){const o={};(G.gear||[]).forEach(id=>{const g=gearOf(id);if(g&&!g.stick&&slots.includes(g.slot))o[id]=(o[id]||0)+1;});return o;}
 function m3Secs(t,tab){const n=(a)=>a.length;
   if(t==='smithy'){
-    if(tab==='shop'){const ar=shopStock('armor');return [['all','All'],['weapons','Weapons',n(shopStock('weapons'))],['armor','Armor',ar.filter(id=>gearOf(id).slot==='a').length],['capes','Boots',ar.filter(id=>gearOf(id).slot==='k').length],['mats','Materials']];}
+    if(tab==='shop'){const ar=shopStock('armor');return [['all','All'],['weapons','Weapons',n(shopStock('weapons'))],['armor','Armor',ar.filter(id=>gearOf(id).slot==='a').length],...m3ShSec([['capes','Boots',ar.filter(id=>gearOf(id).slot==='k').length]],ar.filter(id=>gearOf(id).slot==='s').length),['mats','Materials']];}
     if(tab==='craft')return [['all','All']].concat(RCAT.filter(([k])=>SMITH_CATS.includes(k)).map(([k,l])=>[k,l,RECIPES.filter(r=>r.cat===k&&recipeOpen(r)).length]));
-    if(tab==='forge'){const L=temperList();const c=s=>L.filter(o=>gearOf(o.id).slot===s).length;return [['all','All',L.length],['weapons','Weapons',c('w')],['armor','Armor',c('a')],['capes','Boots',c('k')],['charms','Charms',c('c')]];}
-    if(tab==='sell'){const C=m3SellCnt(['w','a','k']),c=s=>Object.keys(C).filter(id=>gearOf(id).slot===s).reduce((a,id)=>a+C[id],0);
-      return [['all','All'],['weapons','Weapons',c('w')],['armor','Armor',c('a')],['capes','Boots',c('k')],['mats','Materials']];}}
+    if(tab==='forge'){const L=temperList();const c=s=>L.filter(o=>gearOf(o.id).slot===s).length;return [['all','All',L.length],['weapons','Weapons',c('w')],['armor','Armor',c('a')],...m3ShSec([['capes','Boots',c('k')]],c('s')),['charms','Charms',c('c')]];}
+    if(tab==='sell'){const C=m3SellCnt(['w','a','k','s']),c=s=>Object.keys(C).filter(id=>gearOf(id).slot===s).reduce((a,id)=>a+C[id],0);
+      return [['all','All'],['weapons','Weapons',c('w')],['armor','Armor',c('a')],...m3ShSec([['capes','Boots',c('k')]],c('s')),['mats','Materials']];}}
   if(t==='workshop'){
     if(tab==='shop'){const S=alchStock(),k=x=>S.filter(id=>m3Kind(id)===x).length;
       return [['all','All'],['potion','Potions',k('potion')],['cure','Cures',k('cure')],['travel','Travel',k('travel')],['charm','Charms',shopStock('charms').length],['herb','Herbs',herbStock().length]].concat(G.cleared[townS()]?[['relit','Festival',RELIT_STOCK.length]]:[]);}
@@ -20616,16 +20620,16 @@ function m3SmithMatsBuy(){return `${m3H('Ore and wood')}<p class="note">Stock gr
 // ----- the Smithy -----
 function m3Smithy(m){const sec=m.sec,tab=m.tab;let body='';
   if(tab==='shop'){
-    const W=shopSortIds(shopStock('weapons')),AR=shopSortIds(shopStock('armor')),A=AR.filter(id=>gearOf(id).slot==='a'),K=AR.filter(id=>gearOf(id).slot==='k');
-    const grp={weapons:['Weapons',W],armor:['Armor',A],capes:['Boots',K]},emp='Nothing on the shelves matches the filters.';
+    const W=shopSortIds(shopStock('weapons')),AR=shopSortIds(shopStock('armor')),A=AR.filter(id=>gearOf(id).slot==='a'),K=AR.filter(id=>gearOf(id).slot==='k'),S=AR.filter(id=>gearOf(id).slot==='s');
+    const grp={weapons:['Weapons',W],armor:['Armor',A],capes:['Boots',K],shields:['Shields',S]},emp='Nothing on the shelves matches the filters.';
     const gear=k=>(sec==='all'?m3H(grp[k][0],grp[k][1].length):'')+m3Rows(grp[k][1].map(m3GearRow).join(''),emp);
     // v0.9.5: the best step for each slot comes first (p3shop.js upgSlotsHtml, with Upgrade whole party), then the filters and the shelves
-    body=(sec==='mats'?'':(typeof upgSlotsHtml==='function'?upgSlotsHtml(sec==='all'?['w','a','k']:[{weapons:'w',armor:'a',capes:'k'}[sec]]):m3PlanBtn())+shopFBar('buy'))+(sec==='all'?['weapons','armor','capes'].map(gear).join('')+m3SmithMatsBuy():sec==='mats'?m3SmithMatsBuy():gear(sec));
+    body=(sec==='mats'?'':(typeof upgSlotsHtml==='function'?upgSlotsHtml(sec==='all'?['w','a','k'].concat(m3Sh()?['s']:[]):[{weapons:'w',armor:'a',capes:'k',shields:'s'}[sec]]):m3PlanBtn())+shopFBar('buy'))+(sec==='all'?['weapons','armor','capes'].concat(m3Sh()?['shields']:[]).map(gear).join('')+m3SmithMatsBuy():sec==='mats'?m3SmithMatsBuy():gear(sec));
   }else if(tab==='craft')body=m3PlanBtn()+m3Recipes(SMITH_CATS,sec,'Smithy gear comes out already tempered, so it beats buying the same piece. Metal wants ore, wooden gear wants logs, and every piece wants monster parts.');
   else if(tab==='forge')body=vTemper({slot:M3_SLOTSEC[sec]||null,show:SHOPF().tsh||'all',bar:true});
   else if(tab==='sell'){const g=(sl,lab)=>(sec==='all'?m3H(lab):'')+m3Rows(m3SellRows(sl),'No spare '+lab.toLowerCase()+' in your pack.');
     const mats=(sec==='all'?m3H('Materials'):'')+`<div class="rows">${matSellRows(['ore','wood','part','relic'])}</div>`;
-    body=(typeof junkBar==='function'&&sec!=='mats'?junkBar(sec==='all'?['w','a','k']:[M3_SLOTSEC[sec]]):'')+(sec==='all'?g(['w'],'Weapons')+g(['a'],'Armor')+g(['k'],'Boots')+mats:sec==='mats'?mats:g([M3_SLOTSEC[sec]],{weapons:'Weapons',armor:'Armor',capes:'Boots'}[sec]))+'<p class="note">Charms and herbs sell at Alchemy.</p>';}
+    body=(typeof junkBar==='function'&&sec!=='mats'?junkBar(sec==='all'?['w','a','k','s']:[M3_SLOTSEC[sec]]):'')+(sec==='all'?g(['w'],'Weapons')+g(['a'],'Armor')+g(['k'],'Boots')+(m3Sh()?g(['s'],'Shields'):'')+mats:sec==='mats'?mats:g([M3_SLOTSEC[sec]],{weapons:'Weapons',armor:'Armor',capes:'Boots',shields:'Shields'}[sec]))+'<p class="note">Charms and herbs sell at Alchemy.</p>';}
   else if(tab==='echo')body=vEchoforge();
   return m3Box('smithy',m,m3Nav('smithy',m)+body+'<p class="note">Equip gear from the menu anywhere. Potions, charms and travel gear are at Alchemy, the green-flask house in town.</p>');}
 // ----- Alchemy -----
@@ -37698,6 +37702,62 @@ HOOK.before('calcStats','legnat20','a Legendary carries their own nature',functi
 // the hero sheet says it is locked and Legendary
 {const nb0=natBlock;natBlock=function(id,c){const r=nb0.apply(this,arguments);try{if(ln20Of(id)&&!(G&&G.daily))return r.replace('<small>Fixed nature.</small>','<small>Legendary nature, locked. Separate from the signature.</small>');}catch(e){}return r;};}
 try{window.__LN20=LN20S;}catch(e){}
+
+// ===== shields20.js (v0.22.12): shields for Warriors and Knights =====
+// Owner: "Add shields. Warriors and Knights can equip one when using a one-handed weapon."
+// A fifth equipment slot, s (Shield), shown only for classes that can hold one (SH20.cls: warrior, knight). A shield adds defense and some
+// resistance (SH20.def, SH20.res per tier, about a quarter of heavy armor's defense) and counts only while the weapon in hand is one-handed
+// (SH20.one: sword, axe, mace, lance; a signature weapon by its family). Two-handed: greatsword, warhammer, standard.
+// - Equipping a two-handed weapon puts the shield back in the pack (equipGear, and Equip best: the weapon is chosen first, then the shield).
+// - Anything that leaves a shield beside a two-handed weapon (an old path, a swap) keeps it on the hero but it gives nothing (calcStats wrap)
+//   and the sheet says why.
+// - Sold at the Smithy (Armor > Shields, the two newest tiers) once a Warrior or Knight is in the roster; tempered like armor (ore and hide).
+const SH20={cls:['warrior','knight'],one:['blade','axe','mace','lance','shortsword','dagger'],
+  n:['Wooden Buckler','Iron Heater','Steel Kite Shield','Tower Aegis','Royal Bulwark','Mythsteel Aegis'],
+  def:[5,10,16,24,34,47],res:[2,4,7,11,15,21],price:[70,170,420,820,1500,2600],n2:{}};
+SLOTN.s='Shield';
+if(!EQSL.includes('s'))EQSL.push('s');
+SH20.n.forEach((n,t)=>addGear('s_shield_'+t,{n,slot:'s',tier:t,fam:'shield',def:SH20.def[t],res:SH20.res[t],price:SH20.price[t]}));
+if(typeof FAM_RAW!=='undefined'){FAM_RAW.shield='ore';FAM_PART.shield='hide';}
+const sh20Cls=c=>{const t=c&&TPL[c.id];return !!(t&&SH20.cls.includes(t.cls));};
+// the weapon in hand is one-handed (no weapon counts as a free hand)
+function sh20OneHand(c,wid){const id=wid===undefined?c&&c.eq&&c.eq.w:wid;if(!id)return true;const g=gearOf(id);if(!g)return true;if(g.stick)return true;return SH20.one.includes(g.fam||g.wt);}
+const sh20Ok=c=>sh20Cls(c)&&sh20OneHand(c);
+// the slots a hero's sheet shows
+function eqSlotsOf(c){return EQSL.filter(sl=>sl!=='s'||sh20Cls(c));}
+{const ce0=canEquip;canEquip=function(c,id){const g=gearOf(id);if(g&&g.slot==='s')return sh20Ok(c);return ce0.apply(this,arguments);};}
+{const ew0=equipWhy;equipWhy=function(c,id){const g=gearOf(id),t=c&&TPL[c.id];if(g&&g.slot==='s'&&t){if(!sh20Cls(c))return 'Only Warriors and Knights carry shields.';
+  return 'A shield needs a one-handed weapon (sword, axe, mace or lance).';}return ew0.apply(this,arguments);};}
+// stats: a shield beside a two-handed weapon gives nothing
+HOOK.wrap('calcStats','shields20','a shield counts only beside a one-handed weapon',function(next,c){if(!c||!c.eq||!c.eq.s||sh20Ok(c))return next(c);
+  const s=c.eq.s;c.eq.s=null;try{return next(c);}finally{c.eq.s=s;}});
+// a two-handed weapon puts the shield back in the pack
+function sh20Drop(c){try{if(c&&c.eq&&c.eq.s&&!sh20Ok(c)&&G&&!G.daily){G.gear.push(c.eq.s);c.eq.s=null;return true;}}catch(e){}return false;}
+{const eg0=equipGear;equipGear=function(c,id){const r=eg0.apply(this,arguments);if(sh20Drop(c))try{refresh(c);}catch(e){}return r;};}
+// the Smithy's upgrade plan (p3shop.js): a shield is not planned for a hero whose planned weapon is two-handed, and a hero's weapon is
+// applied before their shield
+{const pp0=p3SmithPlan;p3SmithPlan=function(){const P=pp0.apply(this,arguments);try{if(!P||!P.picks||!P.picks.some(p=>p.sl==='s'))return P;
+  const two=new Set(P.picks.filter(p=>p.sl==='w'&&!sh20OneHand(G.roster[p.cid],p.id)).map(p=>p.cid));
+  P.picks=P.picks.filter(p=>!(p.sl==='s'&&two.has(p.cid)));
+  P.picks.sort((a,b)=>a.cid===b.cid?(a.sl==='s')-(b.sl==='s'):0);P.total=P.picks.reduce((a,p)=>a+p.gold,0);}catch(e){}return P;};}
+// the Smithy
+{const ss0=shopStock;shopStock=function(tab){const r=ss0.apply(this,arguments);try{if(tab==='armor'&&G&&Object.values(G.roster).some(c=>sh20Cls(c))){const tiers=[Math.min(5,G.stage)];if(G.stage>0)tiers.unshift(G.stage-1);
+  tiers.forEach(t=>r.push('s_shield_'+t));}}catch(e){}return r;};}
+// the item text
+HOOK.xform('gearDesc','shields20','shields say what they need',function(s,id){try{const g=typeof id==='string'?gearOf(id):id;if(g&&g.slot==='s'&&s.indexOf('One-handed')<0)return 'Shield (Warriors, Knights; with a one-handed weapon)'+(s?', '+s:'');}catch(e){}return s;});
+// the icon: a heater shield in the tier's metal, a boss and a trim that grow with the tier
+if(typeof ICF!=='undefined')ICF.shield=(b,t,P)=>{const o={};
+  icArt(b,3,1,['MMMMMMMMMM','MTTTTTTTTM','MT......TM','MT......TM','MT......TM','MT......TM','.MT....TM.','.MT....TM.','..MT..TM..','..MT..TM..','...MTTM...','....MM....'],t<2?{T:'W'}:null);
+  icRect(b,5,3,6,4,t<2?'W':'C');icRect(b,6,7,4,2,t<2?'W':'C');icRect(b,7,9,2,2,t<2?'W':'C');
+  if(t===0){icRect(b,7,3,1,8,'L');}
+  if(t===1){icSet(b,7,5,'M');icSet(b,8,5,'M');}
+  if(t>=2){icArt(b,6,4,['.MM.','MGGM','.MM.']);}
+  if(t===3){icSet(b,4,2,'G');icSet(b,11,2,'G');}
+  if(t===4){icSet(b,4,2,'G');icSet(b,11,2,'G');icRect(b,6,8,4,1,'T');o.spark=[[14,1]];}
+  if(t===5){icSet(b,4,2,'S');icSet(b,11,2,'S');icRect(b,6,8,4,1,'T');icSet(b,7,10,'S');o.aura=TIER_GEM[5];}
+  return o;};
+// tests
+try{window.__SH20={SH20,ok:c=>sh20Ok(c),one:(c,w)=>sh20OneHand(c,w),slots:c=>eqSlotsOf(c)};}catch(e){}
 
 window.__A={walkable,ceInit,tvSlots,genQuests,STARTERS,starterDraw,ECON,AUTO_NERF,rebuildBase,detLive,REACT,skEls,packContents,miniFor,AUTO_REW,ENC_RATE,ENC_MIN_STEPS,detNote,classSkills,stickCount,bestAll,calcStats,lookKey,vTemper,storyEchoUp,leaveDungeon,win,ldApply,genFort,caveOk,enterCave,siteHasMini,openChest,nextDlg,WS,mapIcoRects,roamSpawn,roamInterior,roamSees,mapTargets,DIRV,tileAt,STAGE_LV,autoBan,rollWeather,guardianDef,mapIssues,mapEntry,syncPools,bovAt,calFxAt,realmAt,REALMS,BOV,CAL_FX,overlayGuide,liftOverlay,drawGearIcon,gearIcon,itemIcon,RAW,sigKind,sigGid,personalDone,heroLook,hasSignature,LEGEND_IDS,facDirty,facCount,facRank,facRep,FACB,FAC,finishBattle,npcWords,npcHints,npcPool,titleMake,titleAdvance,TTS,placeAt,wkwUpdate,innSpot,getMap,monURL,enterVia,applyBossTheme,BTHEME,resetMaps,rebuildBase,shopStock,gearDesc,calcStats,gearMigrate,CLS_WPN,CLS_ARM,WPERK,WT_NAME,equipWhy,lootBase,GEAR,canEquip,gearOf,perkNote,FAM_MAT_V35,fbDraft,META:{get best(){return META.best},get codex(){return META.codex},get q(){return META.q}},saveMeta,OFF,offPending,offFlush,PROFILE,profileSync,codexSee,getMap,placeAt,interact,sanctumOpen,riftKeys,echoKeys,BONDS,bondKey,wkwUpdate,inTown,WS,LC,lsort,bestParty,fsCast,fsSkills,ldApply,MON,registerTamed,stickPower,stickCount,autoOne,planGear,bestTag,gainersFor,compGainFor,refresh,fitsFor,canEquip,gearOf,queueNewGear,ARENA,fxDur,banDur,stageTags,autoSwitchPick,layoutBattle,newChar,calcStats,limitSkill,limitTier,canStuck,dunReachable,LV_CAP,addXp,echoSpec,bossLvFor,fx,MON,log,effInfo,tierOf,perkOf,quirkDef,forgeCost,buyPlan,vJourney,modalBack,partySlots,limitOpen,town2Reached,skillKnown,known,classSkills,paceMigrate,unpackG,packG,makeEnemy,QUIRK,arrive,enterDungeon,wkwUpdate,useTravel,travelWhyNot,porkFlee,porkBlocked,encTile,campRest,buyPart,partLeft,alchStock,GAME_VERSION,CHANGELOG,ITEMS,tavernOffers,tavernPool,recruitFit,partyNeeds,vNext,CHALL,innSpot,RECIPES,MATS,FB,fbContext,REDEEM,legendJoin,legendQ,genQuests,dynActors,convInit,PROFILE,profileSync,checkArchive,GPOOL,FPOOL,guardianDef,saveMeta,archiveSkills,get G(){return G;},set G(v){G=v;},get B(){return B;},get V(){return V;},get META(){return META;},WS,ACT,render,newGame,placeAt,startBattle,autoTurn,advance,finishBattle,getMap,innSpot,setPause:p=>{PAUSE=p;},autoCfg,worldInputDir,inputSources,battleFrame,battleTheme,STS,MAPS,mapIssues,healMap,mimicReward,dropChest,interact,worldDraw,TPL,ZONES,ZS,newChar,recruit,saveGame,resetMaps,dynActors,tileAt,BV,refresh,genBounties,genQuests,vStarter,heroCard,heroURL,iconURL,masteryLine,AU,buildTrack,tone,noiseHit,MIDI,sfx,audioVol};
 ['heroRoles','SOLID','WEATHER','WX_BASE','weatherFX','superGuide','recruitCost','ceStart','ceStep','ceInit','cePool','wxList','SUPER_TABLE','superOk','facRank','facRep','facInit','facCount','facCredit','FAC','FMIS','facMissionList','facProg','tyOf','facSync','facMul','facBest','worldPlan','caveReward','enterCave','leaveCave','leaveDungeon','buildCaveMap','worldGraph','openWorldMap','sigReport','SIG_NAMES','starterDraw','ITEM_TIERS','gTierIdx','tierChip','gearIcon','starterSlots','STARTERS','CLK_LEN','CLK_PH','clockPhase','wxInfoBody','recipeOrder','recipeGain','recipeReady','recipeClose','effOf','calcDamage','healsUndead','storyEchoUp','riftKeys','echoDef','efCost','autoLocked','bossFightKey','learnScanAll','isSeen','mapMarks','genSub','subOK','subReq','ensureSub','inSub','tvSlots','tvInit','tvLeft','tvEvent','tvNextText','tvPool','tvDue','tvShuffle','mTavern','hireOK','TV_CAP','TV_CD','POOL_IDS','natPool','natOf','natRoll','NATURES','natInfo','natRerollCost','natChooseCost','NAT_CLASS','iconURL','seenOf','mapIcoDraw','drawMini','MAPCV','revealAround','fxLayer','numDur','compBonusText','compPerk','checkPhase','win','unitBox','LNQ','challVisible','challEligible','challState','isMimic','migrateCompanions','canSummon','summonComp','compOf','clockPhase','tickClock','isNight','rollWeather','wxStep','nightPool','encounterFoes','restAll','tameElite','openChest','rerollTavern','bestAll','gearTier','SV','svCheck','svFlush','svInit','svPush','svPull','svScan','svParse','svBackup','svPack','svUnpack','svProg','svCloudList','svDelDoc','svGet','svCap','slotState','slotKey','svDecode','SV_CH','svStatus','svSlotRaw','svLoad','loadRaw','svHash','svIdx'].forEach(k=>{try{Object.defineProperty(window.__A,k,{get:()=>eval(k)});}catch(e){}});

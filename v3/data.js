@@ -4,6 +4,7 @@
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.22.12',['Shields: Warriors and Knights have a new Shield slot. A shield adds defense and resistance while the hero holds a one-handed weapon (sword, axe, mace or lance); switching to a two-handed weapon puts the shield back in your pack. Find them at the Smithy under Shields.']],
  ['Beta v0.22.11',['Capes are now Boots, in three weights with one clear bonus each: Light boots add speed and anyone can wear them, Medium boots add max HP (medium and heavy armor wearers), Heavy boots add defense (heavy armor wearers). Capes you already own became Medium boots; a hero who cannot wear those now has Light boots of the same tier and temper. Find them at the Smithy under Boots.']],
  ['Beta v0.22.10',['Every Legendary now has a nature of their own, locked and separate from their signature: Kaevan is a Steppe Rider, Nikaris is Packwise, Jace has Stormglass, Joseth has Iron Blood and Dist is a Rivercat. Each one adds a few stats and lifts one kind of skill, like the class natures. Signatures are unchanged.']],
  ['Beta v0.22.9',['Leaving a lair or a den no longer freezes for a moment. A map you were just on is reused instead of being drawn again from scratch, and after you beat a lair\'s boss the field is drawn ahead while the rewards are on screen, so the walk out is quick too.']],

@@ -643,3 +643,9 @@ Owner: "Change capes to boots, with light, medium and heavy variants. Bonuses li
 - Old saves: `bootsMigrate` on load swaps an old cape a hero cannot wear (light armor classes) for light boots of the same tier and temper.
 - Balance: boots lost the cape's RES (mages keep RES from robes); not re-simmed.
 - Test `tools/chrome/v201a.js` (group menus).
+
+## shields20 (0.22.12): shields
+Owner: "Add shields. Warriors and Knights can equip one when using a one-handed weapon."
+- `v3/shields20.js`: a fifth slot `s` (EQSL gets 's'; SLOTN.s 'Shield'). Six shields `s_shield_0..5`, DEF 5..47 and RES 2..21 (about a quarter of heavy armor's DEF), tempered with ore and hide, icon `ICF.shield`. canEquip: Warrior or Knight and the weapon in hand one-handed (`SH20.one`: blade, axe, mace, lance; no weapon counts as a free hand). A shield beside a two-handed weapon gives nothing (calcStats wrap) and `equipGear` of a two-handed weapon puts it in the pack. Sheets (ui.js char, equip.js, p3shop upgrade) list `eqSlotsOf(c)`, so other classes see no Shield slot. Smithy: Shields section in Shop, Tempering and Sell once a Warrior or Knight is in the roster (menus3.js `m3Sh`), two newest tiers stocked; P3_SLOTS includes 's' for Upgrade whole party; the plan drops a shield for a hero whose planned weapon is two-handed and applies the weapon first (p3SmithPlan wrap).
+- Not done: shields are not drawn on the sprite (base looks with `sh:'kite'` already carry one); not re-simmed for balance.
+- Test `tools/chrome/v202a.js` (group menus).

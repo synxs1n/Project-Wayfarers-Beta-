@@ -1,1 +1,1 @@
-const APP_VER="0.22.11";const APP_BUILD="2a6aac63cd10";
+const APP_VER="0.22.12";const APP_BUILD="e5df2163c08f";
