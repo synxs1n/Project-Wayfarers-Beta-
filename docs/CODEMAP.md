@@ -205,6 +205,48 @@ Registered (load order; 1 is next to the base):
 
 Runs: 52 legends17a → 51 quests16 → 45 menus11 → 42 econ11 → 39 roles9 → 37 riftkeeper9 → 36 rift9 → 35 guidance9 → 34 guidance9 → 33 junk9 → 31 bigmap → 30 recruit3 → 29 twists → 28 v063prog → 27 keymap → 26 p4party (around) → 24 p3shop → 23 p3shop → 21 p3shop → 20 saves → 19 sites → 18 starter → 17 autoset → 16 map → 15 comp → 14 comp → 13 sanctum → 12 echo2 → 11 ailments → 10 ailments → 8 chance → 7 describe → 6 town2 → 5 town2 → 4 gearmig → 3 party2 → 2 equip → 1 stuck → **base** → 9 factions (result) → 22 p3shop (result) → 25 p4party (result) → 26 p4party (around) → 32 duellines (result) → 38 riftkeeper9 (result) → 40 endgame10 (result) → 41 rk10 (result) → 43 fixes11 (result) → 44 arena11 (result) → 46 menus11 (result) → 47 world12 (result) → 48 menus12 (result) → 49 roster14 (result) → 50 quests16 (result) → 53 fix18 (result)
 
+### win (37 hooks)
+Registered (load order; 1 is next to the base):
+1. `metastats.js` around: gold earned, boss wins, journey clears
+2. `equip.js` around: new gear watch (queues new gear)
+3. `mimic.js` around: mimic bonus gold, loot on the map
+4. `echo2.js` around: Echo rewards (story Echo, Rift)
+5. `sanctum.js` after: opens the Rift
+6. `comp.js` before: companions step back
+7. `learn.js` after: new skills on the result
+8. `prog2.js` around: boss won by hand, auto per foe type opens
+9. `p3shop.js` around: first boss Pork Chops
+10. `p4xp.js` around: XP catch up (XPC)
+11. `p4party.js` around: first boss energy
+12. `results.js` around: reward screen data
+13. `pacing.js` around: bonds stay closed until their realm
+14. `comp3.js` around: companion growth (second skill, evolution)
+15. `goals.js` after: goal counters from the fight
+16. `guild7.js` after: arena Medals
+17. `summon8.js` after: a beaten guardian becomes a summon
+18. `summon8.js` before: the summon leaves
+19. `handin9.js` around: bounty reward waits at the board
+20. `bonds9.js` after: after-the-battle talks
+21. `rift9.js` after: rift gate kill record
+22. `rift9.js` after: rift win per journey
+23. `riftkeeper9.js` around: Riftkeeper rewards
+24. `arena9.js` after: arena rare purse and Pit perks
+25. `charms9.js` after: Epic and Heroic charms from Echoes and the arena
+26. `endgame10.js` after: Breach purse
+27. `endgame10.js` after: Breach opens
+28. `endgame10.js` after: open the seal to the Breach
+29. `fixes11.js` before: pack snapshot for cap drops
+30. `fixes11.js` after: cap XP and overflow drops to gold
+31. `arena11.js` after: arena score and best per tier
+32. `party12.js` after: bosses beaten
+33. `legends17b.js` before: a field fight won counts for a trail
+34. `legends17a.js` before: the pack goes home before the fight ends (results and saves only see heroes)
+35. `legends17a.js` after: Blood Oath: a beaten monster, Scourge or guardian may swear to Joseth
+36. `legends18.js` after: a legend who joined in this fight takes a free seat
+37. `smooth20.js` after: paint the field ahead after the lair boss
+
+Runs: 34 legends17a → 33 legends17b → 29 fixes11 → 23 riftkeeper9 (around) → 19 handin9 (around) → 18 summon8 → 14 comp3 (around) → 13 pacing (around) → 12 results (around) → 11 p4party (around) → 10 p4xp (around) → 9 p3shop (around) → 8 prog2 (around) → 6 comp → 4 echo2 (around) → 3 mimic (around) → 2 equip (around) → 1 metastats (around) → **base** → 1 metastats (around) → 2 equip (around) → 3 mimic (around) → 4 echo2 (around) → 5 sanctum → 7 learn → 8 prog2 (around) → 9 p3shop (around) → 10 p4xp (around) → 11 p4party (around) → 12 results (around) → 13 pacing (around) → 14 comp3 (around) → 15 goals → 16 guild7 → 17 summon8 → 19 handin9 (around) → 20 bonds9 → 21 rift9 → 22 rift9 → 23 riftkeeper9 (around) → 24 arena9 → 25 charms9 → 26 endgame10 → 27 endgame10 → 28 endgame10 → 30 fixes11 → 31 arena11 → 32 party12 → 35 legends17a → 36 legends18 → 37 smooth20
+
 ### render (36 hooks)
 Registered (load order; 1 is next to the base):
 1. `feedback.js` before: log screen and popup changes for bug reports
@@ -245,47 +287,6 @@ Registered (load order; 1 is next to the base):
 36. `legends18.js` after: Nikaris steps out on the field
 
 Runs: 34 legends17b → 32 roster17 → 29 quests16 → 25 party12 → 22 menus11 → 12 p4party → 11 p3shop (around) → 9 anim (around) → 6 mimic → 5 town2 → 3 equip → 2 equip (around) → 1 feedback → **base** → 2 equip (around) → 4 town2 → 7 learn → 8 map → 9 anim (around) → 10 saves → 11 p3shop (around) → 13 gfx6 → 14 menus3 → 15 v063prog → 16 onboard → 17 goals → 18 recruit3 → 19 qready → 20 guidance9 → 21 arena11 → 23 menus11 → 24 zoomfix11 → 26 skills12 → 27 hud13 → 28 cohere15 → 30 gear16 → 31 gear16 → 33 roster17 → 35 legends17b → 36 legends18
-
-### win (36 hooks)
-Registered (load order; 1 is next to the base):
-1. `metastats.js` around: gold earned, boss wins, journey clears
-2. `equip.js` around: new gear watch (queues new gear)
-3. `mimic.js` around: mimic bonus gold, loot on the map
-4. `echo2.js` around: Echo rewards (story Echo, Rift)
-5. `sanctum.js` after: opens the Rift
-6. `comp.js` before: companions step back
-7. `learn.js` after: new skills on the result
-8. `prog2.js` around: boss won by hand, auto per foe type opens
-9. `p3shop.js` around: first boss Pork Chops
-10. `p4xp.js` around: XP catch up (XPC)
-11. `p4party.js` around: first boss energy
-12. `results.js` around: reward screen data
-13. `pacing.js` around: bonds stay closed until their realm
-14. `comp3.js` around: companion growth (second skill, evolution)
-15. `goals.js` after: goal counters from the fight
-16. `guild7.js` after: arena Medals
-17. `summon8.js` after: a beaten guardian becomes a summon
-18. `summon8.js` before: the summon leaves
-19. `handin9.js` around: bounty reward waits at the board
-20. `bonds9.js` after: after-the-battle talks
-21. `rift9.js` after: rift gate kill record
-22. `rift9.js` after: rift win per journey
-23. `riftkeeper9.js` around: Riftkeeper rewards
-24. `arena9.js` after: arena rare purse and Pit perks
-25. `charms9.js` after: Epic and Heroic charms from Echoes and the arena
-26. `endgame10.js` after: Breach purse
-27. `endgame10.js` after: Breach opens
-28. `endgame10.js` after: open the seal to the Breach
-29. `fixes11.js` before: pack snapshot for cap drops
-30. `fixes11.js` after: cap XP and overflow drops to gold
-31. `arena11.js` after: arena score and best per tier
-32. `party12.js` after: bosses beaten
-33. `legends17b.js` before: a field fight won counts for a trail
-34. `legends17a.js` before: the pack goes home before the fight ends (results and saves only see heroes)
-35. `legends17a.js` after: Blood Oath: a beaten monster, Scourge or guardian may swear to Joseth
-36. `legends18.js` after: a legend who joined in this fight takes a free seat
-
-Runs: 34 legends17a → 33 legends17b → 29 fixes11 → 23 riftkeeper9 (around) → 19 handin9 (around) → 18 summon8 → 14 comp3 (around) → 13 pacing (around) → 12 results (around) → 11 p4party (around) → 10 p4xp (around) → 9 p3shop (around) → 8 prog2 (around) → 6 comp → 4 echo2 (around) → 3 mimic (around) → 2 equip (around) → 1 metastats (around) → **base** → 1 metastats (around) → 2 equip (around) → 3 mimic (around) → 4 echo2 (around) → 5 sanctum → 7 learn → 8 prog2 (around) → 9 p3shop (around) → 10 p4xp (around) → 11 p4party (around) → 12 results (around) → 13 pacing (around) → 14 comp3 (around) → 15 goals → 16 guild7 → 17 summon8 → 19 handin9 (around) → 20 bonds9 → 21 rift9 → 22 rift9 → 23 riftkeeper9 (around) → 24 arena9 → 25 charms9 → 26 endgame10 → 27 endgame10 → 28 endgame10 → 30 fixes11 → 31 arena11 → 32 party12 → 35 legends17a → 36 legends18
 
 ### finishBattle (31 hooks)
 Registered (load order; 1 is next to the base):
@@ -934,6 +935,16 @@ Registered (load order; 1 is next to the base):
 
 Runs: **base** → 1 world3 (result) → 2 mimic (result) → 3 echo2 (result) → 4 realms (result) → 5 legends17a (result)
 
+### buildMapCanvas (5 hooks)
+Registered (load order; 1 is next to the base):
+1. `worldart13.js` after: field entrances stand in the depth sort
+2. `terrain13.js` before: the water depth follows the tiles of the map being baked
+3. `terrain13.js` after: water reflections and a sky band on the water (ground art of both renderers)
+4. `cohere15.js` after: one outline, roof courses and the realm palette on building sprites
+5. `smooth20.js` around: a map painted again in the same state is copied from the last paint
+
+Runs: 5 smooth20 (around) → 2 terrain13 → **base** → 1 worldart13 → 3 terrain13 → 4 cohere15 → 5 smooth20 (around)
+
 ### drawPortal (5 hooks)
 Registered (load order; 1 is next to the base):
 1. `rift9.js` around: anvil, won glow, Calamity arch
@@ -1053,15 +1064,6 @@ Registered (load order; 1 is next to the base):
 5. `legends17b.js` after: the called sky beside the weather chip
 
 Runs: 3 p3shop → 2 map (around) → **base** → 1 world3 → 2 map (around) → 4 field9 → 5 legends17b
-
-### buildMapCanvas (4 hooks)
-Registered (load order; 1 is next to the base):
-1. `worldart13.js` after: field entrances stand in the depth sort
-2. `terrain13.js` before: the water depth follows the tiles of the map being baked
-3. `terrain13.js` after: water reflections and a sky band on the water (ground art of both renderers)
-4. `cohere15.js` after: one outline, roof courses and the realm palette on building sprites
-
-Runs: 2 terrain13 → **base** → 1 worldart13 → 3 terrain13 → 4 cohere15
 
 ### burstAt (4 hooks)
 Registered (load order; 1 is next to the base):

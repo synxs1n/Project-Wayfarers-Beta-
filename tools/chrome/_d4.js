@@ -1,0 +1,14 @@
+const {open}=require('./pw');
+const META=`localStorage.clear();localStorage.setItem('aurelis-meta-v1',JSON.stringify({cfg:{speed:1,enc:'off',diff:'normal',music:0,sfx:0,autoStats:true,autoEquip:false,gfx:'medium',rmotion:false,hints:false,tips:false}}));`;
+(async()=>{const H=await open({w:1000,h:560,pre:META,tag:'d4'});const {ev,wait}=H;
+  await ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;A.G.run.seed=4242;try{A.resetMaps();A.syncPools();}catch(e){}A.placeAt('f0',...A.mapEntry(A.getMap('f0')),'d');A.render();});
+  await wait(1500);
+  const snap=()=>ev(()=>{const m=__A.getMap('f0'),o={};for(const k of Object.keys(m)){try{o[k]=JSON.stringify(m[k],(kk,x)=>x instanceof HTMLCanvasElement?'cv':x instanceof Set?[...x]:x instanceof Map?[...x]:x);}catch(e){o[k]='E';}}return o;});
+  await ev(()=>{window.__S20DBG=[];});const a=await snap();
+  await ev(()=>{const A=__A;A.TW.get('enterDungeon')(0);A.render();});await wait(1400);
+  const b=await snap();
+  await ev(()=>{const A=__A;A.TW.get('leaveDungeon')(0);A.render();});await wait(1400);
+  const c=await snap();
+  const d=(x,y)=>Object.keys({...x,...y}).filter(k=>x[k]!==y[k]).map(k=>k+' '+String(x[k]).slice(0,80)+' => '+String(y[k]).slice(0,80));
+  console.log(JSON.stringify(await ev(()=>window.__S20DBG)));console.log('A->B\n'+d(a,b).join('\n'));console.log('B->C\n'+d(b,c).join('\n'));
+  await H.browser.close();})();

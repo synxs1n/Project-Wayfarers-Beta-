@@ -4,6 +4,7 @@
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.22.9',['Leaving a lair or a den no longer freezes for a moment. A map you were just on is reused instead of being drawn again from scratch, and after you beat a lair\'s boss the field is drawn ahead while the rewards are on screen, so the walk out is quick too.']],
  ['Beta v0.22.8',['Smoother battles on computers, tablets and the Windows app. The battle screen used to pause for a moment on every turn while it worked out how big to draw the stage; it now does that work in one go, so turns flow without the hitch.']],
  ['Beta v0.22.7',['Redeem codes now use the real person\'s name: LEGEND-NICK, LEGEND-KEVIN, LEGEND-JASON, LEGEND-JOSE and LEGEND-DINO. A redeemed Legendary\'s quest now posts for sure on the first realm he can appear in, on every journey, including the next one you load. You can redeem codes in game from Menu, Help (or the ? button).']],
  ['Beta v0.22.6',['Legendary quests are rare again. Each realm of a journey has one small chance (8%) to post a Legendary\'s quest for a hero you have not unlocked, with no catch-up after a miss. Each clear of the game adds 1% to that chance, up to 15%, and a journey shows at most one such quest plus one more per clear, up to five. Heroes you unlocked with a code still post their recruit quest as before.']],
