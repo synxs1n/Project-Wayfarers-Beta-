@@ -629,3 +629,10 @@ Owner: "Still a slow transition load when leaving a lair". Measured with `tools/
 - After (Medium): the change task 11 to 21 ms, the longest frame 133 to 233 ms (the rest of `hdBake`: cards, buildings, shadow, the GL upload); after the boss 150 to 200 ms (was 450 to 580). Den -> field the same. Low: no long task at all on a repeat exit. The first visit to a field still paints (nothing to copy).
 - Next cut if still felt: keep the whole HD-2D bake (`HD.S` and its GL textures) of the last field instead of freeing it in `hdFreeMap`.
 - Test `tools/chrome/v199a.js` (group world, about 1 min): a copy is the same picture and side outputs as a fresh paint (2D and both HD-2D frames), a changed tile, weather, clear or setting paints again and matches, the walk out copies and stays within bounds, the boss case copies on the first walk out.
+
+## legnat20 (0.22.10): Legendary natures
+Owner: "Legendaries' natures are the same as their signatures. Give each a locked special nature that is different from the signature. Keep the signatures as they are."
+- Before: a Legendary's nature was the template trait (parthian, beastbond, twinweave, bloodpact, lightfingers), which is the signature's own name, with no stats (natInfo falls back to TRAITS, fx {}).
+- `v3/legnat20.js` (`LN20`): Kaevan Steppe Rider (ranged: +8% agility, +10% crit damage, 3% faster), Nikaris Packwise (debuffer: +8% HP, +6% accuracy, 4% faster), Jace Stormglass (magic: +8% magic and resistance, 3% faster), Joseth Iron Blood (healer: +12% HP, +8% healing), Dist Rivercat (phys: +8% attack, +5% crit, 3% faster). Same shape as the natures6 class natures (rl lifts that role's skills by ROLEPW.natLift) but no stat cut. Stored as c.nat (a calcStats before-hook sets it, so old saves get it), natPool is that one nature (locked: not on the Guild Hall Nature tab), the sheet says "Legendary nature, locked". The Daily Trial keeps template traits. Signatures (TPL.trait, SIG, TRAITS) untouched.
+- Balance: these are a small buff (they had no nature stats before). Not re-simmed with legbal/sumbal; worth a run if Kaevan's win rate matters.
+- Test `tools/chrome/v200a.js` (group party).

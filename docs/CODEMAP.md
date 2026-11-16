@@ -598,6 +598,23 @@ Registered (load order; 1 is next to the base):
 
 Runs: 5 map → **base** → 1 tavern2 → 2 comp → 3 learn → 4 prog2 → 6 summon8 → 7 party12 → 8 skills12 → 9 menus14 → 10 realms14 → 11 battle16 → 12 world16 → 13 legends17a
 
+### calcStats (12 hooks)
+Registered (load order; 1 is next to the base):
+1. `ailments.js` after: wound shrinks max HP
+2. `echocore.js` after: Echoforged weapon perks
+3. `comp.js` after: paired pet stat bonus
+4. `roles.js` after: charm perks
+5. `natures6.js` after: nature and mastery stat perks
+6. `riftkeeper9.js` after: Riftwalker key perks
+7. `roles9.js` after: faith perks
+8. `echo11.js` after: Echoforged weapon and armour perks
+9. `battle16.js` after: Nikaris: a little less ATK and MAG
+10. `legends17b.js` after: Kaevan: a little less ATK (in line with the other Legendaries)
+11. `legends17a.js` after: Light Fingers: harder to hit
+12. `legnat20.js` before: a Legendary carries their own nature
+
+Runs: 12 legnat20 → **base** → 1 ailments → 2 echocore → 3 comp → 4 roles → 5 natures6 → 6 riftkeeper9 → 7 roles9 → 8 echo11 → 9 battle16 → 10 legends17b → 11 legends17a
+
 ### mChar (12 hooks)
 Registered (load order; 1 is next to the base):
 1. `comp.js` result: Pet row on the hero sheet
@@ -630,22 +647,6 @@ Registered (load order; 1 is next to the base):
 11. `legends17b.js` after: the called sky counts down on the chip
 
 Runs: 7 field9 (around) → 3 world3 → 2 metastats → 1 journey → **base** → 4 chance → 5 ailments → 6 map → 7 field9 (around) → 8 party12 → 9 world12 → 10 worldart12 → 11 legends17b
-
-### calcStats (11 hooks)
-Registered (load order; 1 is next to the base):
-1. `ailments.js` after: wound shrinks max HP
-2. `echocore.js` after: Echoforged weapon perks
-3. `comp.js` after: paired pet stat bonus
-4. `roles.js` after: charm perks
-5. `natures6.js` after: nature and mastery stat perks
-6. `riftkeeper9.js` after: Riftwalker key perks
-7. `roles9.js` after: faith perks
-8. `echo11.js` after: Echoforged weapon and armour perks
-9. `battle16.js` after: Nikaris: a little less ATK and MAG
-10. `legends17b.js` after: Kaevan: a little less ATK (in line with the other Legendaries)
-11. `legends17a.js` after: Light Fingers: harder to hit
-
-Runs: **base** → 1 ailments → 2 echocore → 3 comp → 4 roles → 5 natures6 → 6 riftkeeper9 → 7 roles9 → 8 echo11 → 9 battle16 → 10 legends17b → 11 legends17a
 
 ### placeAt (11 hooks)
 Registered (load order; 1 is next to the base):

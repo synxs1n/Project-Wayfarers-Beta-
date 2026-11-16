@@ -2,7 +2,7 @@
 
 Who wraps what, in load order. `raw` is the `{const f0=fn;fn=function...}` idiom, `replace` a reassignment without calling the old body, the rest are HOOK registrations. "def" names the module that HOOK.def'd the function. Raw wraps on a def'd function should become registrations; functions with many raw wraps and no def are the candidates for one.
 
-469 functions wrapped; 561 raw wraps or replacements, 777 hook registrations.
+470 functions wrapped; 563 raw wraps or replacements, 778 hook registrations.
 
 | function | owner | def | layers | chain (load order) |
 |---|---|---|---|---|
@@ -22,9 +22,9 @@ Who wraps what, in load order. `raw` is the `{const f0=fn;fn=function...}` idiom
 | battleFrame | battle.js | battle.js | 14 | anim.js:before → gfx6battle.js:wrap → hdstage.js:wrap → hdspell.js:before → sprhd2.js:before → battle11.js:wrap → res11.js:before → fxkind11.js:before → perf12.js:before → kits12.js:after → chars13.js:before → chars13.js:after → chars13.js:wrap → cohere15.js:before |
 | cmdHtml | ui.js | ui.js | 13 | battle3.js:xform → battle5.js:xform → battle4.js:xform → summon8.js:wrap → battle9.js:xform → skillfilt9.js:xform → battle11.js:xform → skillrows11.js:xform → skills12.js:xform → menus12.js:xform → battle16.js:xform → legends17a.js:xform → legends17a.js:xform |
 | unpackG | engine.js | engine.js | 13 | tavern2.js:after → comp.js:after → learn.js:after → prog2.js:after → map.js:before → summon8.js:after → party12.js:after → skills12.js:after → menus14.js:after → realms14.js:after → battle16.js:after → world16.js:after → legends17a.js:after |
+| calcStats | engine.js | engine.js | 12 | ailments.js:after → echocore.js:after → comp.js:after → roles.js:after → natures6.js:after → riftkeeper9.js:after → roles9.js:after → echo11.js:after → battle16.js:after → legends17b.js:after → legends17a.js:after → legnat20.js:before |
 | mChar | ui.js | ui.js | 12 | comp.js:xform → learn.js:wrap → p3shop.js:xform → p4party.js:xform → roles9.js:xform → sheet11.js:xform → skillrows11.js:xform → party12.js:xform → skills12.js:xform → menus12.js:xform → menus14.js:xform → legends17a.js:xform |
 | arrive | worldrt.js | worldrt.js | 11 | journey.js:before → metastats.js:before → world3.js:before → chance.js:after → ailments.js:after → map.js:after → field9.js:wrap → party12.js:after → world12.js:after → worldart12.js:after → legends17b.js:after |
-| calcStats | engine.js | engine.js | 11 | ailments.js:after → echocore.js:after → comp.js:after → roles.js:after → natures6.js:after → riftkeeper9.js:after → roles9.js:after → echo11.js:after → battle16.js:after → legends17b.js:after → legends17a.js:after |
 | placeAt | worldrt.js | worldrt.js | 11 | legends.js:after → progression.js:after → stuck.js:wrap → world3.js:wrap → map.js:after → map.js:before → bigmap.js:after → field9.js:after → world16.js:after → world16.js:wrap → legends17a.js:after |
 | buildMapCanvas | worldgfx.js | worldgfx.js | 10 | sites.js:raw → gfx6world.js:raw → sanctlook10.js:raw → worldart13.js:after → terrain13.js:before → terrain13.js:after → cohere15.js:after → fix18.js:replace → fix18.js:replace → smooth20.js:wrap |
 | classSkills | skills.js | skills.js | 10 | archetype.js:xform → sigskills.js:xform → roles.js:xform → skills12.js:xform → kits12.js:xform → menus12.js:xform → menus14.js:xform → roster17.js:xform → legends17b.js:xform → legends17a.js:before |
@@ -200,6 +200,7 @@ Who wraps what, in load order. `raw` is the `{const f0=fn;fn=function...}` idiom
 | mPortal | sanctum.js | sanctum.js | 2 | rift9.js:xform → rift9.js:wrap |
 | mapPoint | ui2.js |  | 2 | hd2d.js:raw → nav11.js:raw |
 | mountCanvas | legends.js |  | 2 | sprhd2.js:replace → legends17b.js:raw |
+| natPool | data.js |  | 2 | natures6.js:raw → legnat20.js:raw |
 | nbGuilds | menus3.js |  | 2 | arena9.js:raw → quests16.js:raw |
 | nbQuestRow | menus3.js |  | 2 | guild7.js:raw → handin9.js:raw |
 | nextWave | engine.js |  | 2 | prog2.js:raw → twists.js:raw |
@@ -376,7 +377,7 @@ Who wraps what, in load order. `raw` is the `{const f0=fn;fn=function...}` idiom
 | msTick | metastats.js | metastats.js | 1 | records12.js:wrap |
 | musicFor | worldrt.js |  | 1 | sites.js:raw |
 | musicSync | ui.js |  | 1 | sfx2.js:replace |
-| natPool | data.js |  | 1 | natures6.js:raw |
+| natBlock | ui.js |  | 1 | legnat20.js:raw |
 | nbBState | menus3.js |  | 1 | handin9.js:raw |
 | nbBounties | menus3.js |  | 1 | handin9.js:raw |
 | newChar | engine.js |  | 1 | natures6.js:raw |

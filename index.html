@@ -2119,7 +2119,7 @@ html:not(.flat) .battle.b3 .bline .b4mo .b4bar{box-shadow:inset 0 0 0 1px #000,0
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.22.9";const APP_BUILD="763881ea0346";
+(function(){const APP_VER="0.22.10";const APP_BUILD="511b9fa809aa";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2892,7 +2892,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.22.9";const APP_BUILD="763881ea0346";
+const APP_VER="0.22.10";const APP_BUILD="511b9fa809aa";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2900,6 +2900,7 @@ const APP_VER="0.22.9";const APP_BUILD="763881ea0346";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.22.10',['Every Legendary now has a nature of their own, locked and separate from their signature: Kaevan is a Steppe Rider, Nikaris is Packwise, Jace has Stormglass, Joseth has Iron Blood and Dist is a Rivercat. Each one adds a few stats and lifts one kind of skill, like the class natures. Signatures are unchanged.']],
  ['Beta v0.22.9',['Leaving a lair or a den no longer freezes for a moment. A map you were just on is reused instead of being drawn again from scratch, and after you beat a lair\'s boss the field is drawn ahead while the rewards are on screen, so the walk out is quick too.']],
  ['Beta v0.22.8',['Smoother battles on computers, tablets and the Windows app. The battle screen used to pause for a moment on every turn while it worked out how big to draw the stage; it now does that work in one go, so turns flow without the hitch.']],
  ['Beta v0.22.7',['Redeem codes now use the real person\'s name: LEGEND-NICK, LEGEND-KEVIN, LEGEND-JASON, LEGEND-JOSE and LEGEND-DINO. A redeemed Legendary\'s quest now posts for sure on the first realm he can appear in, on every journey, including the next one you load. You can redeem codes in game from Menu, Help (or the ? button).']],
@@ -37645,6 +37646,31 @@ HOOK.after('win','smooth20','paint the field ahead after the lair boss',function
   const s=WS.m.s;if(!MAPS['f'+s])return;s20Ahead(getMap('f'+s));}catch(e){s20Err('win',e);}});
 // tests
 try{window.__S20={S20,key:(m,f)=>s20Key(m,f),paint:(m,fr,obj)=>{const d0=drawObjects;if(!obj)drawObjects=()=>{};try{return buildMapCanvas(m,fr);}finally{drawObjects=d0;}}};}catch(e){}
+
+// ===== legnat20.js (v0.22.10): every Legendary has a locked nature of their own, apart from the signature =====
+// Owner: "Legendaries' natures are the same as their signatures. Give each a locked special nature that is different from the signature.
+// Keep the signatures as they are." Before: a Legendary's nature was the template's trait (parthian, beastbond, twinweave, bloodpact,
+// lightfingers), which is the signature's own name and text and has no stats (natInfo falls back to TRAITS, fx {}): the hero sheet said
+// "Nature: Parthian Shot" above "Signature: Parthian Shot". Now each one has a nature of their own (LN20), in the same shape as the class
+// natures (natures6.js: a role it leans into, rl, lifting that role's skills, and a few stat keys) but with no stat cut, and it is locked
+// (a pool of one: no reroll at the Guild Hall). The signature (SIG, TRAITS, TPL.trait and everything that reads them) is unchanged.
+// It is stored on the hero as c.nat like any nature (old saves get it on their next stat calc). The Daily Trial keeps template traits (natOf).
+const LN20={
+ kaevan:{k:'l20steppe',n:'Steppe Rider',sub:'Legendary',rl:'ranged',d:'+8% agility, +10% critical damage, actions take 3% less time. Ranged skills +14% power.',fx:{agi:1.08,critDmg:.1,tempo:.97}},
+ nikaris:{k:'l20packwise',n:'Packwise',sub:'Legendary',rl:'debuffer',d:'+8% max HP, +6% accuracy, actions take 4% less time. Debuff skills +14% power.',fx:{hp:1.08,acc:.06,tempo:.96}},
+ jaeson:{k:'l20stormglass',n:'Stormglass',sub:'Legendary',rl:'magic',d:'+8% magic, +8% resistance, actions take 3% less time. Magic skills +14% power.',fx:{mag:1.08,res:1.08,tempo:.97}},
+ jose:{k:'l20ironblood',n:'Iron Blood',sub:'Legendary',rl:'healer',d:'+12% max HP, +8% healing. Healing skills +14% power.',fx:{hp:1.12,heal:1.08}},
+ dist:{k:'l20rivercat',n:'Rivercat',sub:'Legendary',rl:'phys',d:'+8% attack, +5% critical chance, actions take 3% less time. Physical skills +14% power.',fx:{atk:1.08,crit:.05,tempo:.97}}};
+try{Object.keys(LN20).forEach(id=>{const o=LN20[id];NATURES[o.k]={n:o.n,sub:o.sub,rl:o.rl,d:o.d,fx:o.fx,legend:id};});}catch(e){}
+const LN20S={off:0,LN20};
+const ln20Of=id=>LN20[id]?LN20[id].k:null;
+// the pool: the Legendary's own nature only (locked)
+{const np0=natPool;natPool=function(id){const k=ln20Of(id);if(k&&!(G&&G.daily))return [k];return np0.apply(this,arguments);};}
+// every Legendary carries it (new heroes, codes, old saves): set before the stats are read
+HOOK.before('calcStats','legnat20','a Legendary carries their own nature',function(c){try{const k=c&&ln20Of(c.id);if(k&&!LN20S.off&&c.nat!==k&&!(G&&G.daily))c.nat=k;}catch(e){}});
+// the hero sheet says it is locked and Legendary
+{const nb0=natBlock;natBlock=function(id,c){const r=nb0.apply(this,arguments);try{if(ln20Of(id)&&!(G&&G.daily))return r.replace('<small>Fixed nature.</small>','<small>Legendary nature, locked. Separate from the signature.</small>');}catch(e){}return r;};}
+try{window.__LN20=LN20S;}catch(e){}
 
 window.__A={walkable,ceInit,tvSlots,genQuests,STARTERS,starterDraw,ECON,AUTO_NERF,rebuildBase,detLive,REACT,skEls,packContents,miniFor,AUTO_REW,ENC_RATE,ENC_MIN_STEPS,detNote,classSkills,stickCount,bestAll,calcStats,lookKey,vTemper,storyEchoUp,leaveDungeon,win,ldApply,genFort,caveOk,enterCave,siteHasMini,openChest,nextDlg,WS,mapIcoRects,roamSpawn,roamInterior,roamSees,mapTargets,DIRV,tileAt,STAGE_LV,autoBan,rollWeather,guardianDef,mapIssues,mapEntry,syncPools,bovAt,calFxAt,realmAt,REALMS,BOV,CAL_FX,overlayGuide,liftOverlay,drawGearIcon,gearIcon,itemIcon,RAW,sigKind,sigGid,personalDone,heroLook,hasSignature,LEGEND_IDS,facDirty,facCount,facRank,facRep,FACB,FAC,finishBattle,npcWords,npcHints,npcPool,titleMake,titleAdvance,TTS,placeAt,wkwUpdate,innSpot,getMap,monURL,enterVia,applyBossTheme,BTHEME,resetMaps,rebuildBase,shopStock,gearDesc,calcStats,gearMigrate,CLS_WPN,CLS_ARM,WPERK,WT_NAME,equipWhy,lootBase,GEAR,canEquip,gearOf,perkNote,FAM_MAT_V35,fbDraft,META:{get best(){return META.best},get codex(){return META.codex},get q(){return META.q}},saveMeta,OFF,offPending,offFlush,PROFILE,profileSync,codexSee,getMap,placeAt,interact,sanctumOpen,riftKeys,echoKeys,BONDS,bondKey,wkwUpdate,inTown,WS,LC,lsort,bestParty,fsCast,fsSkills,ldApply,MON,registerTamed,stickPower,stickCount,autoOne,planGear,bestTag,gainersFor,compGainFor,refresh,fitsFor,canEquip,gearOf,queueNewGear,ARENA,fxDur,banDur,stageTags,autoSwitchPick,layoutBattle,newChar,calcStats,limitSkill,limitTier,canStuck,dunReachable,LV_CAP,addXp,echoSpec,bossLvFor,fx,MON,log,effInfo,tierOf,perkOf,quirkDef,forgeCost,buyPlan,vJourney,modalBack,partySlots,limitOpen,town2Reached,skillKnown,known,classSkills,paceMigrate,unpackG,packG,makeEnemy,QUIRK,arrive,enterDungeon,wkwUpdate,useTravel,travelWhyNot,porkFlee,porkBlocked,encTile,campRest,buyPart,partLeft,alchStock,GAME_VERSION,CHANGELOG,ITEMS,tavernOffers,tavernPool,recruitFit,partyNeeds,vNext,CHALL,innSpot,RECIPES,MATS,FB,fbContext,REDEEM,legendJoin,legendQ,genQuests,dynActors,convInit,PROFILE,profileSync,checkArchive,GPOOL,FPOOL,guardianDef,saveMeta,archiveSkills,get G(){return G;},set G(v){G=v;},get B(){return B;},get V(){return V;},get META(){return META;},WS,ACT,render,newGame,placeAt,startBattle,autoTurn,advance,finishBattle,getMap,innSpot,setPause:p=>{PAUSE=p;},autoCfg,worldInputDir,inputSources,battleFrame,battleTheme,STS,MAPS,mapIssues,healMap,mimicReward,dropChest,interact,worldDraw,TPL,ZONES,ZS,newChar,recruit,saveGame,resetMaps,dynActors,tileAt,BV,refresh,genBounties,genQuests,vStarter,heroCard,heroURL,iconURL,masteryLine,AU,buildTrack,tone,noiseHit,MIDI,sfx,audioVol};
 ['heroRoles','SOLID','WEATHER','WX_BASE','weatherFX','superGuide','recruitCost','ceStart','ceStep','ceInit','cePool','wxList','SUPER_TABLE','superOk','facRank','facRep','facInit','facCount','facCredit','FAC','FMIS','facMissionList','facProg','tyOf','facSync','facMul','facBest','worldPlan','caveReward','enterCave','leaveCave','leaveDungeon','buildCaveMap','worldGraph','openWorldMap','sigReport','SIG_NAMES','starterDraw','ITEM_TIERS','gTierIdx','tierChip','gearIcon','starterSlots','STARTERS','CLK_LEN','CLK_PH','clockPhase','wxInfoBody','recipeOrder','recipeGain','recipeReady','recipeClose','effOf','calcDamage','healsUndead','storyEchoUp','riftKeys','echoDef','efCost','autoLocked','bossFightKey','learnScanAll','isSeen','mapMarks','genSub','subOK','subReq','ensureSub','inSub','tvSlots','tvInit','tvLeft','tvEvent','tvNextText','tvPool','tvDue','tvShuffle','mTavern','hireOK','TV_CAP','TV_CD','POOL_IDS','natPool','natOf','natRoll','NATURES','natInfo','natRerollCost','natChooseCost','NAT_CLASS','iconURL','seenOf','mapIcoDraw','drawMini','MAPCV','revealAround','fxLayer','numDur','compBonusText','compPerk','checkPhase','win','unitBox','LNQ','challVisible','challEligible','challState','isMimic','migrateCompanions','canSummon','summonComp','compOf','clockPhase','tickClock','isNight','rollWeather','wxStep','nightPool','encounterFoes','restAll','tameElite','openChest','rerollTavern','bestAll','gearTier','SV','svCheck','svFlush','svInit','svPush','svPull','svScan','svParse','svBackup','svPack','svUnpack','svProg','svCloudList','svDelDoc','svGet','svCap','slotState','slotKey','svDecode','SV_CH','svStatus','svSlotRaw','svLoad','loadRaw','svHash','svIdx'].forEach(k=>{try{Object.defineProperty(window.__A,k,{get:()=>eval(k)});}catch(e){}});
