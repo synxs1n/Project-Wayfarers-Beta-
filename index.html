@@ -2119,7 +2119,7 @@ html:not(.flat) .battle.b3 .bline .b4mo .b4bar{box-shadow:inset 0 0 0 1px #000,0
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.22.14";const APP_BUILD="4daac90740cd";
+(function(){const APP_VER="0.22.15";const APP_BUILD="0ff36cee93f6";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2893,7 +2893,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.22.14";const APP_BUILD="4daac90740cd";
+const APP_VER="0.22.15";const APP_BUILD="0ff36cee93f6";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2901,6 +2901,7 @@ const APP_VER="0.22.14";const APP_BUILD="4daac90740cd";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.22.15',['Towns: buildings in the same town no longer look alike. The inn, tavern, smithy, alchemist and guild hall each wear their own roof colour in every realm (blue, red, iron, green, purple, blended with the realm\'s own material), thatched roofs included, and houses vary in roof shade, wall tone, shutters and roof pitch. Flat roofed towns (sandstone, cloud stone, obsidian) and the great keep now have real rooftops instead of blank slabs: a parapet, a tiled field, and a hatch or an awning.']],
  ['Beta v0.22.14',['Guardians and elite roamers were drawn too big on the map in 0.22.13. They are now only a little larger than an ordinary foe: enough to notice, not enough to tower over the hero. Their new designs, the rune ring and the gold ring stay.']],
  ['Beta v0.22.13',['Guardians have their own look: all twenty Den and Sanctum guardians (who are also your summons) were redrawn as unique creatures, from Gorehorn with his glacier antlers to the Void Cantor and its halo of rune stars, in battle, in the Bestiary and when summoned. On the map they now stand big at the end of their Den or Sanctum on a glowing rune ring with their name over them, and elite roamers are drawn larger with their gold ring, so the dangerous fights read from across the field.']],
  ['Beta v0.22.12',['Shields: Warriors and Knights have a new Shield slot. A shield adds defense and resistance while the hero holds a one-handed weapon (sword, axe, mace or lance); switching to a two-handed weapon puts the shield back in your pack. Find them at the Smithy under Shields.']],
@@ -24663,6 +24664,9 @@ function hdTentCone(S,b,p,cv,Q,U,Vv,V,bt){const w=b.w*TS,h=b.h*TS,x0=b.x*TS,zf=(
   {const r0=apexRow-8,sx=cxs-2,sw=11,yt=ya+8*V;Q([cx-2,yt,zm,cx+sw-2,yt,zm,cx+sw-2,ya-1*V,zm,cx-2,ya-1*V,zm],U(p,sx),Vv(p,r0),U(p,sx+sw),Vv(p,apexRow+1),255,[0,.45,.89],2|8);}
   S.bh.push({b,h:ya});}
 // v0.20.6: the pitch of a roofed house (1 = the old gable); towns14.js gives each building family its own (a low hull, a steep chalet)
+// the top face of a flat roofed (keep) building: one plain quad in the theme's stone; towns21.js lays a real roof on it (hook)
+function hdKeepTop(bt,m,b,x0,x1,zb,zf,yk,V){const st=hdRgb(THM(m).stone[2]).map(v=>Math.round(v*235));H2P.set([x0,yk,zb,x1,yk,zb,x1,yk,zf,x0,yk,zf]);bt.quad(H2P,-1,0,-1,0,st[0],st[1],st[2],255,0,1,0,8);}
+hdKeepTop=HOOK.def('hdKeepTop',hdKeepTop);
 function hdRoofProf(m,b){return 1;}
 hdRoofProf=HOOK.def('hdRoofProf',hdRoofProf);
 function hdBakeBuildings(m,S,bsp,deco){const V=S.V,sin=Math.sin(HD2D.pitch*Math.PI/180),pk=new H2Pack(1024),parts=[];
@@ -24695,7 +24699,7 @@ function hdBakeBuildings(m,S,bsp,deco){const V=S.V,sin=Math.sin(HD2D.pitch*Math.
       const sx0=BSP_X+3,sx1=BSP_X+11,sy0=top+12,sy1=top+h-6;
       Q([x0,yk,zb,x0,yk,zf,x0,0,zf,x0,0,zb],U(p,sx0),Vv(p,sy0),U(p,sx1),Vv(p,sy1),255,[-1,0,0],8);
       Q([x1,yk,zf,x1,yk,zb,x1,0,zb,x1,0,zf],U(p,sx0),Vv(p,sy0),U(p,sx1),Vv(p,sy1),255,[1,0,0],8);
-      const st=hdRgb(THM(m).stone[2]).map(v=>Math.round(v*235));H2P.set([x0,yk,zb,x1,yk,zb,x1,yk,zf,x0,yk,zf]);bt.quad(H2P,-1,0,-1,0,st[0],st[1],st[2],255,0,1,0,8);
+      hdKeepTop(bt,m,b,x0,x1,zb,zf,yk,V);
       if(top-11>2){const ah=top-11;Q([x0-BSP_X,yk+ah*V,zm,x0-BSP_X+cv.width,yk+ah*V,zm,x0-BSP_X+cv.width,yk,zm,x0-BSP_X,yk,zm],U(p,0),Vv(p,0),U(p,cv.width),Vv(p,ah),255,[0,.45,.89],2|8);}
       S.bh.push({b,h:yk});return;}
     // roofed house
@@ -38119,6 +38123,57 @@ HOOK.wrap('hdActors','guard21','big guardians and elite roamers (HD-2D, after th
   const r=g21Hide(m,()=>next(m,now,ts));try{if(g21On())g21DrawHD(m,now,ts);}catch(e){G21.err=String(e&&e.message||e);}return r;});
 // tests
 try{window.__G21={G21,art:G21ART,minis:()=>WS.m?g21Minis(WS.m):[],elites:()=>WS.m?g21Elites(WS.m):[]};}catch(e){}
+
+// ===== towns21.js (v0.22.15): buildings in a town tell each other apart, flat roofed towns get real rooftops =====
+// Owner: "all the buildings always look near identical in a town, theming is good but we want some character and uniqueness to each
+// town" and "some houses are missing rooftops".
+// What was wrong (whole-town captures of ten towns, HD-2D):
+//  1 A family (towns14.js TF14) paints every building from one recipe. Its role colours (F.r: inn, tavern, smithy, guild, workshop)
+//    sit close together in most families (lake: four dark teals; drift: four browns), and the thatch pattern ignores them altogether
+//    (timber: every roof the same gold). Only chalet read as a town of different buildings.
+//  2 The flat roofed families (hd 'keep': mesa, cloud, obsidian) had a single plain quad for the top face in HD-2D, in the theme's
+//    stone colour: from the tilted camera a blank grey slab, which reads as a house with its roof missing.
+// Now:
+//  1 Each building is painted from its own variant of the family (t21Var): a service building's roof takes its sign's colour
+//    (T21.role: inn blue, tavern red, smithy iron, alchemy green, guild purple, the hues of SVC_LOOK set a little further apart) mixed into the family's own roof tone, thatch
+//    included; houses take one of the family's roof colours by position with a lighter or darker cast, a wall tone a shade off their
+//    neighbours' and shutters of another colour. The realm's material, shapes and silhouette are untouched, so the theme holds.
+//    In HD-2D the roof pitch also differs a little by role (hdRoofProf): the inn and guild sit taller, the smithy lower.
+//  2 hdKeepTop (hd2d.js, a hook since this version): a parapet rim in the wall's colour, a roof field in the building's own roof
+//    colour, courses across it, and a roof hatch or a canvas awning by position. Keeps and towers outside a family (the walled
+//    keep's great hall) get the same roof in a slate tone of the theme's stone. T21.off restores the old look.
+const T21={off:false,mixSvc:.62,n:{top:0,var:0},role:{inn:'#2f62c0',tavern:'#b83a26',smithy:'#4a4a56',workshop:'#2f8a4a',guild:'#7a2a8a'}};
+const t21H=b=>((b.x*73856093)^(b.y*19349663)^((b.w||1)*83492791))>>>0;
+const T21_RI={inn:0,tavern:1,smithy:2,guild:3,chapel:3,workshop:4};
+// the roof colour of one building
+function t21Roof(F,b){const k=b.k,h=t21H(b),r=F.r||['#8a5a3a'];
+  if(T21_RI[k]!=null){const sv=T21.role[k]||null;if(!sv)return r[T21_RI[k]%r.length];/* the family's mean roof tone carries the theme, the role's hue tells the buildings apart */let base=r[0];for(let i=1;i<r.length;i++)base=mix(base,r[i],1/(i+1));return mix(base,sv,T21.mixSvc);}
+  const base=r[h%r.length],v=(h>>3)%3;return v===0?base:v===1?tint(base,.14):shade(base,.86);}
+const T21V=new WeakMap();
+function t21Var(F,b){let M=T21V.get(F);if(!M){M=new Map();T21V.set(F,M);}const key=b.k+':'+b.x+','+b.y+','+b.w;let V=M.get(key);if(V)return V;
+  const roof=t21Roof(F,b),h=t21H(b),house=T21_RI[b.k]==null;V=Object.create(F);V.r=[roof];
+  if(F.roofO&&F.roofO.pat==='thatch'){const t=mix(F.roofO.t||'#d4ae5a',roof,.42);V.roofO=Object.assign({},F.roofO,{t,t2:tint(t,.3),ridge:shade(t,.55)});}
+  if(house){const w=(h>>5)%3,adj=c=>w===0?c:w===1?mix(c,'#fff2d8',.1):shade(c,.92);
+    if(F.wall&&Array.isArray(F.wall.c))V.wall=Object.assign({},F.wall,{c:F.wall.c.map(adj)});if(Array.isArray(F.w))V.w=F.w.map(adj);
+    if(F.winO&&F.winO.shut&&F.r&&F.r.length>1)V.winO=Object.assign({},F.winO,{shut:F.r[(h>>7)%F.r.length]});}
+  M.set(key,V);T21.n.var++;return V;}
+{const p0=t14Paint;t14Paint=function(ctx,m,b,F){if(T21.off||!F||!b)return p0.apply(this,arguments);let V=F;try{V=t21Var(F,b);}catch(e){V=F;}return p0.call(this,ctx,m,b,V);};}
+const t21Fam=(m,b)=>{const F=m&&m.sty&&typeof TF14!=='undefined'&&TF14[m.sty];return F&&b&&TST14[b.k]&&!T14.off&&!T21.off?F:null;};
+HOOK.xform('hdRoofProf','towns21','the roof pitch differs a little by the building\'s role',function(r,m,b){const F=t21Fam(m,b);if(!F)return r;
+  const k=b.k,h=t21H(b);return r*(k==='inn'||k==='guild'?1.14:k==='smithy'?.9:k==='house'?[.9,1,1.1][(h>>9)%3]:1);});
+// the flat roof: rim, field, courses, a hatch or an awning
+HOOK.wrap('hdKeepTop','towns21','a real roof on flat roofed buildings',function(next,bt,m,b,x0,x1,zb,zf,yk,V){const F=t21Fam(m,b);if(T21.off||(T14&&T14.off))return next(bt,m,b,x0,x1,zb,zf,yk,V);
+  try{const h=t21H(b),st=(THM(m).stone||[])[2]||'#a8a4a0',wall=F?((F.w&&F.w[0])||'#b0a898'):st,rc=F?mix(t21Roof(F,b),wall,.22):mix(st,'#46527a',.5),Q=(c,ax,az,bx,bz,y,k)=>{const v=hdRgb(c).map(q=>Math.round(q*(k||235)));H2P.set([ax,y,az,bx,y,az,bx,y,bz,ax,y,bz]);bt.quad(H2P,-1,0,-1,0,v[0],v[1],v[2],255,0,1,0,8);};
+    const e=.35*V,in0=2.5,fx0=x0+in0,fx1=x1-in0,fz0=zb+in0,fz1=zf-in0;
+    Q(tint(wall,.18),x0,zb,x1,zf,yk);Q(shade(wall,.72),fx0-.6,fz0-.6,fx1+.6,fz1+.6,yk+e*.5);Q(rc,fx0,fz0,fx1,fz1,yk+e);
+    for(let z=fz0+3;z<fz1-1;z+=4)Q(shade(rc,.74),fx0,z,fx1,z+.7,yk+e*1.4);Q(tint(rc,.22),fx0,fz0,fx1,fz0+1.2,yk+e*1.5);
+    const w=fx1-fx0,d=fz1-fz0;
+    if(h%2===0&&w>20&&d>14){const hx0=fx0+w*.62,hz0=fz0+d*.3;Q('#3a2a1e',hx0-.8,hz0-.8,hx0+8.8,hz0+7.8,yk+e*2);Q('#8a5a34',hx0,hz0,hx0+8,hz0+7,yk+e*2.6);Q('#b98248',hx0,hz0,hx0+8,hz0+1.4,yk+e*3);Q('#5a3820',hx0+3.6,hz0,hx0+4.4,hz0+7,yk+e*3);}
+    else if(w>20&&d>14){const ax=fx0+w*.12,az=fz0+d*.28,ac=(typeof SVC_LOOK!=='undefined'&&SVC_LOOK[b.k])?SVC_LOOK[b.k].roof:(F?F.r[(h>>4)%F.r.length]:'#a83a2a');
+      for(let i=0;i<5;i++)Q(i%2?'#f1eee4':ac,ax+i*2.6,az,ax+i*2.6+2.6,az+9,yk+e*2.4+i*.01);Q('#3a2a1e',ax-.5,az+9,ax+13.5,az+9.8,yk+e*2.2);}
+    T21.n.top++;}catch(err){T21.err=String(err&&err.message||err);return next(bt,m,b,x0,x1,zb,zf,yk,V);}});
+// tests
+try{window.__T21={T21,roof:(sty,b)=>t21Roof(TF14[sty],b),fams:()=>Object.keys(TF14),keep:()=>Object.keys(TF14).filter(k=>TF14[k].hd==='keep')};}catch(e){}
 
 window.__A={walkable,ceInit,tvSlots,genQuests,STARTERS,starterDraw,ECON,AUTO_NERF,rebuildBase,detLive,REACT,skEls,packContents,miniFor,AUTO_REW,ENC_RATE,ENC_MIN_STEPS,detNote,classSkills,stickCount,bestAll,calcStats,lookKey,vTemper,storyEchoUp,leaveDungeon,win,ldApply,genFort,caveOk,enterCave,siteHasMini,openChest,nextDlg,WS,mapIcoRects,roamSpawn,roamInterior,roamSees,mapTargets,DIRV,tileAt,STAGE_LV,autoBan,rollWeather,guardianDef,mapIssues,mapEntry,syncPools,bovAt,calFxAt,realmAt,REALMS,BOV,CAL_FX,overlayGuide,liftOverlay,drawGearIcon,gearIcon,itemIcon,RAW,sigKind,sigGid,personalDone,heroLook,hasSignature,LEGEND_IDS,facDirty,facCount,facRank,facRep,FACB,FAC,finishBattle,npcWords,npcHints,npcPool,titleMake,titleAdvance,TTS,placeAt,wkwUpdate,innSpot,getMap,monURL,enterVia,applyBossTheme,BTHEME,resetMaps,rebuildBase,shopStock,gearDesc,calcStats,gearMigrate,CLS_WPN,CLS_ARM,WPERK,WT_NAME,equipWhy,lootBase,GEAR,canEquip,gearOf,perkNote,FAM_MAT_V35,fbDraft,META:{get best(){return META.best},get codex(){return META.codex},get q(){return META.q}},saveMeta,OFF,offPending,offFlush,PROFILE,profileSync,codexSee,getMap,placeAt,interact,sanctumOpen,riftKeys,echoKeys,BONDS,bondKey,wkwUpdate,inTown,WS,LC,lsort,bestParty,fsCast,fsSkills,ldApply,MON,registerTamed,stickPower,stickCount,autoOne,planGear,bestTag,gainersFor,compGainFor,refresh,fitsFor,canEquip,gearOf,queueNewGear,ARENA,fxDur,banDur,stageTags,autoSwitchPick,layoutBattle,newChar,calcStats,limitSkill,limitTier,canStuck,dunReachable,LV_CAP,addXp,echoSpec,bossLvFor,fx,MON,log,effInfo,tierOf,perkOf,quirkDef,forgeCost,buyPlan,vJourney,modalBack,partySlots,limitOpen,town2Reached,skillKnown,known,classSkills,paceMigrate,unpackG,packG,makeEnemy,QUIRK,arrive,enterDungeon,wkwUpdate,useTravel,travelWhyNot,porkFlee,porkBlocked,encTile,campRest,buyPart,partLeft,alchStock,GAME_VERSION,CHANGELOG,ITEMS,tavernOffers,tavernPool,recruitFit,partyNeeds,vNext,CHALL,innSpot,RECIPES,MATS,FB,fbContext,REDEEM,legendJoin,legendQ,genQuests,dynActors,convInit,PROFILE,profileSync,checkArchive,GPOOL,FPOOL,guardianDef,saveMeta,archiveSkills,get G(){return G;},set G(v){G=v;},get B(){return B;},get V(){return V;},get META(){return META;},WS,ACT,render,newGame,placeAt,startBattle,autoTurn,advance,finishBattle,getMap,innSpot,setPause:p=>{PAUSE=p;},autoCfg,worldInputDir,inputSources,battleFrame,battleTheme,STS,MAPS,mapIssues,healMap,mimicReward,dropChest,interact,worldDraw,TPL,ZONES,ZS,newChar,recruit,saveGame,resetMaps,dynActors,tileAt,BV,refresh,genBounties,genQuests,vStarter,heroCard,heroURL,iconURL,masteryLine,AU,buildTrack,tone,noiseHit,MIDI,sfx,audioVol};
 ['heroRoles','SOLID','WEATHER','WX_BASE','weatherFX','superGuide','recruitCost','ceStart','ceStep','ceInit','cePool','wxList','SUPER_TABLE','superOk','facRank','facRep','facInit','facCount','facCredit','FAC','FMIS','facMissionList','facProg','tyOf','facSync','facMul','facBest','worldPlan','caveReward','enterCave','leaveCave','leaveDungeon','buildCaveMap','worldGraph','openWorldMap','sigReport','SIG_NAMES','starterDraw','ITEM_TIERS','gTierIdx','tierChip','gearIcon','starterSlots','STARTERS','CLK_LEN','CLK_PH','clockPhase','wxInfoBody','recipeOrder','recipeGain','recipeReady','recipeClose','effOf','calcDamage','healsUndead','storyEchoUp','riftKeys','echoDef','efCost','autoLocked','bossFightKey','learnScanAll','isSeen','mapMarks','genSub','subOK','subReq','ensureSub','inSub','tvSlots','tvInit','tvLeft','tvEvent','tvNextText','tvPool','tvDue','tvShuffle','mTavern','hireOK','TV_CAP','TV_CD','POOL_IDS','natPool','natOf','natRoll','NATURES','natInfo','natRerollCost','natChooseCost','NAT_CLASS','iconURL','seenOf','mapIcoDraw','drawMini','MAPCV','revealAround','fxLayer','numDur','compBonusText','compPerk','checkPhase','win','unitBox','LNQ','challVisible','challEligible','challState','isMimic','migrateCompanions','canSummon','summonComp','compOf','clockPhase','tickClock','isNight','rollWeather','wxStep','nightPool','encounterFoes','restAll','tameElite','openChest','rerollTavern','bestAll','gearTier','SV','svCheck','svFlush','svInit','svPush','svPull','svScan','svParse','svBackup','svPack','svUnpack','svProg','svCloudList','svDelDoc','svGet','svCap','slotState','slotKey','svDecode','SV_CH','svStatus','svSlotRaw','svLoad','loadRaw','svHash','svIdx'].forEach(k=>{try{Object.defineProperty(window.__A,k,{get:()=>eval(k)});}catch(e){}});

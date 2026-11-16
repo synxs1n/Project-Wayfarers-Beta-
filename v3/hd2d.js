@@ -188,6 +188,9 @@ function hdTentCone(S,b,p,cv,Q,U,Vv,V,bt){const w=b.w*TS,h=b.h*TS,x0=b.x*TS,zf=(
   {const r0=apexRow-8,sx=cxs-2,sw=11,yt=ya+8*V;Q([cx-2,yt,zm,cx+sw-2,yt,zm,cx+sw-2,ya-1*V,zm,cx-2,ya-1*V,zm],U(p,sx),Vv(p,r0),U(p,sx+sw),Vv(p,apexRow+1),255,[0,.45,.89],2|8);}
   S.bh.push({b,h:ya});}
 // v0.20.6: the pitch of a roofed house (1 = the old gable); towns14.js gives each building family its own (a low hull, a steep chalet)
+// the top face of a flat roofed (keep) building: one plain quad in the theme's stone; towns21.js lays a real roof on it (hook)
+function hdKeepTop(bt,m,b,x0,x1,zb,zf,yk,V){const st=hdRgb(THM(m).stone[2]).map(v=>Math.round(v*235));H2P.set([x0,yk,zb,x1,yk,zb,x1,yk,zf,x0,yk,zf]);bt.quad(H2P,-1,0,-1,0,st[0],st[1],st[2],255,0,1,0,8);}
+hdKeepTop=HOOK.def('hdKeepTop',hdKeepTop);
 function hdRoofProf(m,b){return 1;}
 hdRoofProf=HOOK.def('hdRoofProf',hdRoofProf);
 function hdBakeBuildings(m,S,bsp,deco){const V=S.V,sin=Math.sin(HD2D.pitch*Math.PI/180),pk=new H2Pack(1024),parts=[];
@@ -220,7 +223,7 @@ function hdBakeBuildings(m,S,bsp,deco){const V=S.V,sin=Math.sin(HD2D.pitch*Math.
       const sx0=BSP_X+3,sx1=BSP_X+11,sy0=top+12,sy1=top+h-6;
       Q([x0,yk,zb,x0,yk,zf,x0,0,zf,x0,0,zb],U(p,sx0),Vv(p,sy0),U(p,sx1),Vv(p,sy1),255,[-1,0,0],8);
       Q([x1,yk,zf,x1,yk,zb,x1,0,zb,x1,0,zf],U(p,sx0),Vv(p,sy0),U(p,sx1),Vv(p,sy1),255,[1,0,0],8);
-      const st=hdRgb(THM(m).stone[2]).map(v=>Math.round(v*235));H2P.set([x0,yk,zb,x1,yk,zb,x1,yk,zf,x0,yk,zf]);bt.quad(H2P,-1,0,-1,0,st[0],st[1],st[2],255,0,1,0,8);
+      hdKeepTop(bt,m,b,x0,x1,zb,zf,yk,V);
       if(top-11>2){const ah=top-11;Q([x0-BSP_X,yk+ah*V,zm,x0-BSP_X+cv.width,yk+ah*V,zm,x0-BSP_X+cv.width,yk,zm,x0-BSP_X,yk,zm],U(p,0),Vv(p,0),U(p,cv.width),Vv(p,ah),255,[0,.45,.89],2|8);}
       S.bh.push({b,h:yk});return;}
     // roofed house

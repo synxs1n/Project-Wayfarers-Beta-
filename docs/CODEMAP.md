@@ -1168,6 +1168,14 @@ Registered (load order; 1 is next to the base):
 
 Runs: 3 quests16 (around) → 1 menus14 → **base** → 2 menus14 → 3 quests16 (around)
 
+### hdRoofProf (3 hooks)
+Registered (load order; 1 is next to the base):
+1. `towns14.js` result: the roof pitch of a family
+2. `cohere15.js` result: lower roofs, nearer the sprites' texel size
+3. `towns21.js` result: the roof pitch differs a little by the building's role
+
+Runs: **base** → 1 towns14 (result) → 2 cohere15 (result) → 3 towns21 (result)
+
 ### hdScene (3 hooks)
 Registered (load order; 1 is next to the base):
 1. `terrain13.js` after: the snow caps over the cards, roofs, ledges and ground (HD-2D)
@@ -1264,13 +1272,6 @@ Registered (load order; 1 is next to the base):
 2. `worldart13.js` around: entrance cards with a depth footprint
 
 Runs: 2 worldart13 (around) → 1 sanctlook10 (around) → **base** → 1 sanctlook10 (around) → 2 worldart13 (around)
-
-### hdRoofProf (2 hooks)
-Registered (load order; 1 is next to the base):
-1. `towns14.js` result: the roof pitch of a family
-2. `cohere15.js` result: lower roofs, nearer the sprites' texel size
-
-Runs: **base** → 1 towns14 (result) → 2 cohere15 (result)
 
 ### interact (2 hooks)
 Registered (load order; 1 is next to the base):
@@ -1452,6 +1453,12 @@ Registered (load order; 1 is next to the base):
 1. `cohere15.js` around: the backdrop source sampled nearest while it bakes
 
 Runs: 1 cohere15 (around) → **base** → 1 cohere15 (around)
+
+### hdKeepTop (1 hook)
+Registered (load order; 1 is next to the base):
+1. `towns21.js` around: a real roof on flat roofed buildings
+
+Runs: 1 towns21 (around) → **base** → 1 towns21 (around)
 
 ### hdMergeProps (1 hook)
 Registered (load order; 1 is next to the base):

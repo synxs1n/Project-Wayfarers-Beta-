@@ -2,7 +2,7 @@
 
 Who wraps what, in load order. `raw` is the `{const f0=fn;fn=function...}` idiom, `replace` a reassignment without calling the old body, the rest are HOOK registrations. "def" names the module that HOOK.def'd the function. Raw wraps on a def'd function should become registrations; functions with many raw wraps and no def are the candidates for one.
 
-474 functions wrapped; 571 raw wraps or replacements, 784 hook registrations.
+476 functions wrapped; 572 raw wraps or replacements, 786 hook registrations.
 
 | function | owner | def | layers | chain (load order) |
 |---|---|---|---|---|
@@ -116,6 +116,7 @@ Who wraps what, in load order. `raw` is the `{const f0=fn;fn=function...}` idiom
 | guard | engine.js | goals.js | 3 | battle4.js:raw → goals.js:before → heropose9.js:raw |
 | hdBakeLights | hd2d.js |  | 3 | dungeon8.js:raw → sanctlook10.js:raw → sitelook10.js:raw |
 | hdBldKind | hd2d.js | hd2d.js | 3 | dungeon8.js:raw → worldart13.js:xform → towns14.js:xform |
+| hdRoofProf | hd2d.js | hd2d.js | 3 | towns14.js:xform → cohere15.js:xform → towns21.js:xform |
 | hdScene | hd2d.js | hd2d.js | 3 | terrain13.js:after → cohere15.js:before → cohere15.js:after |
 | heroCanvas | art2.js |  | 3 | sprhd.js:replace → legends.js:raw → scale10.js:raw |
 | known | engine.js |  | 3 | roles9.js:raw → legends17b.js:raw → legends17a.js:raw |
@@ -184,7 +185,6 @@ Who wraps what, in load order. `raw` is the `{const f0=fn;fn=function...}` idiom
 | haltInput | worldrt.js |  | 2 | map.js:raw → remember.js:raw |
 | hdGatePart | hd2d.js |  | 2 | sanctlook10.js:raw → sitelook10.js:raw |
 | hdKind | hd2d.js |  | 2 | dungeon8.js:raw → dungeon8.js:raw |
-| hdRoofProf | hd2d.js | hd2d.js | 2 | towns14.js:xform → cohere15.js:xform |
 | hdRow | hd2d.js |  | 2 | cohere15.js:raw → quests16.js:raw |
 | hdStructCanvas | hd2d.js |  | 2 | dungeon8.js:raw → sanctlook10.js:raw |
 | heroCard | ui.js |  | 2 | account.js:raw → account.js:replace |
@@ -331,6 +331,7 @@ Who wraps what, in load order. `raw` is the `{const f0=fn;fn=function...}` idiom
 | hdBakeBuildings | hd2d.js |  | 1 | dungeon8.js:raw |
 | hdBill | hd2d.js |  | 1 | mats11.js:raw |
 | hdChar | hd2d.js |  | 1 | worldzoom10.js:raw |
+| hdKeepTop | hd2d.js | hd2d.js | 1 | towns21.js:wrap |
 | hdMergeProps | hd2d.js | hd2d.js | 1 | terrain13.js:xform |
 | hdOverlayBusy | hd2d.js |  | 1 | fix17.js:raw |
 | hdWfx | hd2d.js |  | 1 | weather7.js:raw |
@@ -452,6 +453,7 @@ Who wraps what, in load order. `raw` is the `{const f0=fn;fn=function...}` idiom
 | svIcon | saves.js |  | 1 | p5settings.js:raw |
 | svTitleNote | saves.js |  | 1 | cloud.js:raw |
 | syncNote | account.js |  | 1 | offline.js:raw |
+| t14Paint | towns14.js |  | 1 | towns21.js:raw |
 | tintFor | world3.js |  | 1 | p5trans.js:raw |
 | titleDraw | ui.js |  | 1 | gfx6.js:raw |
 | townGen | worldgen.js | worldgen.js | 1 | towns14.js:wrap |
