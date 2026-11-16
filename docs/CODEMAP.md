@@ -358,6 +358,35 @@ Registered (load order; 1 is next to the base):
 
 Runs: 23 look9 → 22 dungeon8 → 20 bigmap → 19 remember → 17 battle4 → 13 hdstage → 10 p2world → 9 p2world → 8 realms (around) → 7 map → 5 ailments → **base** → 1 feedback → 2 travel → 3 metastats → 4 ailments → 6 prog2 → 8 realms (around) → 11 p2world → 12 p2world → 14 v063prog → 15 twists → 16 battle5 → 18 battle4 → 21 summon8 → 24 riftkeeper9 → 25 breachlook11 → 26 party12 → 27 legends17b → 28 legends17a → 29 legends17a
 
+### worldDraw (24 hooks)
+Registered (load order; 1 is next to the base):
+1. `legends.js` after: legend markers
+2. `equip.js` after: the Tamer's Stick glow
+3. `world3.js` after: night tint
+4. `mimic.js` after: chest tells
+5. `daylight.js` after: dusk and dawn
+6. `roam.js` after: roamers
+7. `p5trans.js` around: smooth transitions (sets TR)
+8. `gfx6world.js` after: lighting and life
+9. `worldfx.js` after: world-space ambience
+10. `hd2d.js` around: Medium and High: the HD-2D scene instead of the 2D chain (falls back to it)
+11. `dungeon8.js` after: boss lair entrance effects (2D)
+12. `npcart9.js` before: record the world clock for the idle frames
+13. `voidsky10.js` after: stars over the void sky band
+14. `rk10.js` before: the keeper leaves and returns
+15. `breachlook11.js` after: aurora over the Breach sky band
+16. `perf12.js` before: idle frame limiter: a still world draws 30 fps on phones, 8 under a menu, nothing in a hidden tab
+17. `light13.js` after: night and interior light pools (2D)
+18. `light13.js` before: a running transition keeps the idle limiter busy
+19. `light13.js` around: screen transitions: the battle shatter, the doorway iris, the victory bloom
+20. `chars13.js` before: the idle clock
+21. `chars13.js` after: the idle clock
+22. `terrain13.js` before: the wet and snow levels follow the weather (in memory only)
+23. `cohere15.js` before: the Unified look toggle
+24. `guard21.js` around: big guardians and elite roamers (2D, after the core pass skipped them)
+
+Runs: 24 guard21 (around) → 23 cohere15 → 22 terrain13 → 20 chars13 → 19 light13 (around) → 18 light13 → 16 perf12 → 14 rk10 → 12 npcart9 → 10 hd2d (around) → 7 p5trans (around) → **base** → 1 legends → 2 equip → 3 world3 → 4 mimic → 5 daylight → 6 roam → 7 p5trans (around) → 8 gfx6world → 9 worldfx → 10 hd2d (around) → 11 dungeon8 → 13 voidsky10 → 15 breachlook11 → 17 light13 → 19 light13 (around) → 21 chars13 → 24 guard21 (around)
+
 ### getMap (23 hooks)
 Registered (load order; 1 is next to the base):
 1. `zones.js` after: closed west gate names the real forward direction
@@ -385,34 +414,6 @@ Registered (load order; 1 is next to the base):
 23. `world16.js` around: the Breach Waystone in the centre; a post beside every town gate
 
 Runs: 23 world16 (around) → 22 world14 (around) → 21 worldart12 (around) → 20 world12 (around) → 19 townexit (around) → 18 world12 (around) → 17 breachlook11 (around) → 16 breach10 (around) → 15 sitelook10 (around) → 14 sanctlook10 (around) → 13 endgame10 (around) → 12 endgame10 (around) → 11 look9 (around) → 10 look9 → 9 dungeon8 (around) → 8 dungeon8 (around) → 7 pathguard (around) → 6 p2world (around) → 5 sites (around) → 4 realms → 3 mapheal (around) → 2 bosstheme (around) → **base** → 1 zones → 2 bosstheme (around) → 3 mapheal (around) → 5 sites (around) → 6 p2world (around) → 7 pathguard (around) → 8 dungeon8 (around) → 9 dungeon8 (around) → 11 look9 (around) → 12 endgame10 (around) → 13 endgame10 (around) → 14 sanctlook10 (around) → 15 sitelook10 (around) → 16 breach10 (around) → 17 breachlook11 (around) → 18 world12 (around) → 19 townexit (around) → 20 world12 (around) → 21 worldart12 (around) → 22 world14 (around) → 23 world16 (around)
-
-### worldDraw (23 hooks)
-Registered (load order; 1 is next to the base):
-1. `legends.js` after: legend markers
-2. `equip.js` after: the Tamer's Stick glow
-3. `world3.js` after: night tint
-4. `mimic.js` after: chest tells
-5. `daylight.js` after: dusk and dawn
-6. `roam.js` after: roamers
-7. `p5trans.js` around: smooth transitions (sets TR)
-8. `gfx6world.js` after: lighting and life
-9. `worldfx.js` after: world-space ambience
-10. `hd2d.js` around: Medium and High: the HD-2D scene instead of the 2D chain (falls back to it)
-11. `dungeon8.js` after: boss lair entrance effects (2D)
-12. `npcart9.js` before: record the world clock for the idle frames
-13. `voidsky10.js` after: stars over the void sky band
-14. `rk10.js` before: the keeper leaves and returns
-15. `breachlook11.js` after: aurora over the Breach sky band
-16. `perf12.js` before: idle frame limiter: a still world draws 30 fps on phones, 8 under a menu, nothing in a hidden tab
-17. `light13.js` after: night and interior light pools (2D)
-18. `light13.js` before: a running transition keeps the idle limiter busy
-19. `light13.js` around: screen transitions: the battle shatter, the doorway iris, the victory bloom
-20. `chars13.js` before: the idle clock
-21. `chars13.js` after: the idle clock
-22. `terrain13.js` before: the wet and snow levels follow the weather (in memory only)
-23. `cohere15.js` before: the Unified look toggle
-
-Runs: 23 cohere15 → 22 terrain13 → 20 chars13 → 19 light13 (around) → 18 light13 → 16 perf12 → 14 rk10 → 12 npcart9 → 10 hd2d (around) → 7 p5trans (around) → **base** → 1 legends → 2 equip → 3 world3 → 4 mimic → 5 daylight → 6 roam → 7 p5trans (around) → 8 gfx6world → 9 worldfx → 10 hd2d (around) → 11 dungeon8 → 13 voidsky10 → 15 breachlook11 → 17 light13 → 19 light13 (around) → 21 chars13
 
 ### calcDamage (18 hooks)
 Registered (load order; 1 is next to the base):
@@ -649,6 +650,22 @@ Registered (load order; 1 is next to the base):
 
 Runs: 7 field9 (around) → 3 world3 → 2 metastats → 1 journey → **base** → 4 chance → 5 ailments → 6 map → 7 field9 (around) → 8 party12 → 9 world12 → 10 worldart12 → 11 legends17b
 
+### hdActors (11 hooks)
+Registered (load order; 1 is next to the base):
+1. `worldfx.js` after: opening chests in HD-2D
+2. `dungeon8.js` after: lair glow, torches and plume in HD-2D
+3. `guidance9.js` after: guild door marker in HD-2D
+4. `npcmark9.js` after: quest markers over NPCs in HD-2D
+5. `npcart9.js` before: record the clock for the idle frames
+6. `echo11.js` after: the Echoforge in HD-2D
+7. `world12.js` after: the town landmark in HD-2D
+8. `worldart13.js` after: the Sanctum inner door and the Rift gate faces in HD-2D
+9. `light13.js` after: void motes in the Echo Rift (HD-2D)
+10. `terrain13.js` after: living water, wet ground and the snow level (HD-2D)
+11. `guard21.js` around: big guardians and elite roamers (HD-2D, after the core pass skipped them)
+
+Runs: 11 guard21 (around) → 5 npcart9 → **base** → 1 worldfx → 2 dungeon8 → 3 guidance9 → 4 npcmark9 → 6 echo11 → 7 world12 → 8 worldart13 → 9 light13 → 10 terrain13 → 11 guard21 (around)
+
 ### placeAt (11 hooks)
 Registered (load order; 1 is next to the base):
 1. `legends.js` after: Jaeson's storm
@@ -679,21 +696,6 @@ Registered (load order; 1 is next to the base):
 10. `legends17a.js` before: the two new legends: their kits of 14 as written
 
 Runs: 10 legends17a → **base** → 1 archetype (result) → 2 sigskills (result) → 3 roles (result) → 4 skills12 (result) → 5 kits12 (result) → 6 menus12 (result) → 7 menus14 (result) → 8 roster17 (result) → 9 legends17b (result)
-
-### hdActors (10 hooks)
-Registered (load order; 1 is next to the base):
-1. `worldfx.js` after: opening chests in HD-2D
-2. `dungeon8.js` after: lair glow, torches and plume in HD-2D
-3. `guidance9.js` after: guild door marker in HD-2D
-4. `npcmark9.js` after: quest markers over NPCs in HD-2D
-5. `npcart9.js` before: record the clock for the idle frames
-6. `echo11.js` after: the Echoforge in HD-2D
-7. `world12.js` after: the town landmark in HD-2D
-8. `worldart13.js` after: the Sanctum inner door and the Rift gate faces in HD-2D
-9. `light13.js` after: void motes in the Echo Rift (HD-2D)
-10. `terrain13.js` after: living water, wet ground and the snow level (HD-2D)
-
-Runs: 5 npcart9 → **base** → 1 worldfx → 2 dungeon8 → 3 guidance9 → 4 npcmark9 → 6 echo11 → 7 world12 → 8 worldart13 → 9 light13 → 10 terrain13
 
 ### drawTile (8 hooks)
 Registered (load order; 1 is next to the base):
@@ -852,6 +854,17 @@ Registered (load order; 1 is next to the base):
 
 Runs: 6 skills12 (around) → 3 battle3 (around) → **base** → 1 prog2 → 2 twists → 3 battle3 (around) → 4 battle4 → 5 battle4 → 6 skills12 (around)
 
+### dynActors (6 hooks)
+Registered (load order; 1 is next to the base):
+1. `legends.js` result: legend quest actors
+2. `sites.js` result: field actors off walls, the miniboss waits at the end
+3. `world14.js` result: actors stand only on tiles the walk reaches
+4. `legends17b.js` result: a trail shows nothing while fights are counted, then its own foe
+5. `legends18.js` result: Nikaris stands beside the party while he talks
+6. `guard21.js` result: the big guardian is drawn by guard21
+
+Runs: **base** → 1 legends (result) → 2 sites (result) → 3 world14 (result) → 4 legends17b (result) → 5 legends18 (result) → 6 guard21 (result)
+
 ### fallen (6 hooks)
 Registered (load order; 1 is next to the base):
 1. `comp.js` before: a pet leaves instead of falling
@@ -967,16 +980,6 @@ Registered (load order; 1 is next to the base):
 5. `worldart13.js` around: the Rift gate faces under its panel (2D)
 
 Runs: 5 worldart13 (around) → 4 echo11 (around) → 3 riftkeeper9 (around) → 2 rift9 (around) → 1 rift9 (around) → **base** → 1 rift9 (around) → 2 rift9 (around) → 3 riftkeeper9 (around) → 4 echo11 (around) → 5 worldart13 (around)
-
-### dynActors (5 hooks)
-Registered (load order; 1 is next to the base):
-1. `legends.js` result: legend quest actors
-2. `sites.js` result: field actors off walls, the miniboss waits at the end
-3. `world14.js` result: actors stand only on tiles the walk reaches
-4. `legends17b.js` result: a trail shows nothing while fights are counted, then its own foe
-5. `legends18.js` result: Nikaris stands beside the party while he talks
-
-Runs: **base** → 1 legends (result) → 2 sites (result) → 3 world14 (result) → 4 legends17b (result) → 5 legends18 (result)
 
 ### makeEnemy (5 hooks)
 Registered (load order; 1 is next to the base):
