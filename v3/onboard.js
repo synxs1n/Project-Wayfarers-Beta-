@@ -132,7 +132,7 @@ const TIPS=[
   g:'The Guild Hall\'s Arena opens Bronze after the first Scourge, Silver after the second and Gold after the third. Waves come back to back with no rest and no fleeing; each tier pays gold and materials the first time.'},
  {id:'temper',n:'Tempering',sec:'Town',x:'o:temper',
   t:()=>{if(!obModal('smithy'))return null;const ok=partyOf().some(c=>EQSL.some(sl=>{const id=c.eq[sl];const f=id&&forgeCost(id);return f&&G.gold>=f.gold&&hasMats(f.m);}));return ok?'Temper what your best hitter holds first. Past +1 needs the realm relic, later a Dread Core.':null;},
-  g:'At the Smithy\'s Tempering tab, parts from monsters and gold raise a weapon, armor, cape or charm by +1. The list puts ready upgrades first. Going past +1 needs the realm\'s relic and, later, a Dread Core.'},
+  g:'At the Smithy\'s Tempering tab, parts from monsters and gold raise a weapon, armor, boots or charm by +1. The list puts ready upgrades first. Going past +1 needs the realm\'s relic and, later, a Dread Core.'},
  {id:'craft',n:'Crafting',sec:'Town',
   t:()=>{const sm=obModal('smithy'),al=obModal('workshop');if(!sm&&!al)return null;const can=RECIPES.some(r=>recipeOpen(r)&&(sm?SMITH_CATS.includes(r.cat):!SMITH_CATS.includes(r.cat))&&G.gold>=r.g&&hasMats(recipeMats(r)));
    return can?(sm?'Your materials can become gear here. Open the Forge tab to see what you can make.':'Your herbs and parts can be brewed here. Open Brew & craft to see what you can make.'):null;},

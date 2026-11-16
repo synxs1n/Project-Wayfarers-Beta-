@@ -7,7 +7,7 @@ chk('walking up into the door opens the Smithy',await ev(()=>__A.V.modal&&__A.V.
 for(const tab of ['weapons','forge','craft','mats','sell']){await ev(t=>{__A.V.modal.tab=t;__A.render();},tab);}
 // v0.5.0 1.5: Esc is the back arrow: from a sub tab it goes to the first tab, then it closes the shop
 await page.keyboard.press('Escape');await wait(300);
-// v0.6.3: the first tab is Shop (sections All, Weapons, Armor, Capes, Materials)
+// v0.6.3: the first tab is Shop (sections All, Weapons, Armor, Boots, Materials)
 // v0.19.x: tabs and sections are not history steps (menus11.js): the Smithy was the first menu opened, so one Esc closes it whatever tab it is on
 chk('Esc from a sub tab leaves the Smithy (tabs are remembered, not history steps)',await ev(()=>!__A.V.modal)||'no');
 chk('Esc closes it',await ev(()=>!__A.V.modal));

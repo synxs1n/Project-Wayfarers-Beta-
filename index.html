@@ -2119,7 +2119,7 @@ html:not(.flat) .battle.b3 .bline .b4mo .b4bar{box-shadow:inset 0 0 0 1px #000,0
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.22.10";const APP_BUILD="511b9fa809aa";
+(function(){const APP_VER="0.22.11";const APP_BUILD="2a6aac63cd10";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2209,7 +2209,7 @@ if(window.__SKIPMAIN){window.__SKIPMAIN=0;return;}// v0.4.6: a newer downloaded 
 //   1. Progression: XP, levels, difficulty, Limit Breaks, bonds
 //   2. Battle rules: drops, auto battle, ailments, reactions, archetypes, companions, Momentum and foe roles (B4)
 //   3. Foes and bosses: boss levels and muscle, field packs, creep, echoes, roamers, side sites, mimics, surprise starts
-//   4. Economy and shops: prices, gold and XP rates, pack size, Smithy, tempering, Echoforged, capes
+//   4. Economy and shops: prices, gold and XP rates, pack size, Smithy, tempering, Echoforged, boots
 //   5. Party and roster: taverns, the journey roster, personal quests, Best Party, loadouts, Make camp
 //   6. World: encounters, chance meetings, travel items, day and night, weather tables, factions, map generation
 //   7. Interface timings: transitions, the save indicator, hints, battle information (B5)
@@ -2399,7 +2399,7 @@ const SITES={fortW:62,fortH:40,mini:.9,miniHp:6,miniPow:1.55,miniLv:4};
 // MIMIC_RATE: share of ordinary dungeon chests that are mimics (mimic.js; picked from the run seed).
 const MIMIC_RATE=.13;
 
-// ==== 4. Economy and shops: prices, gold and XP rates, pack size, Smithy, tempering, Echoforged, capes ====
+// ==== 4. Economy and shops: prices, gold and XP rates, pack size, Smithy, tempering, Echoforged, boots ====
 // prices
 const MAT_PRICE={copper:18,iron:45,mythril:110,oak:14,ash:40,elder:95,healroot:10,bluecap:22,sunpetal:48,starbloom:120};
 // Beta v0.4.1 3.5 economy (all editable here)
@@ -2423,8 +2423,9 @@ const TEMPER={raw:[2,3,4],part:[1,2,3],relic:[1,2,2],core:[0,0,1],goldK:[.6,1.2,
 // and EF_GOLD gold.
 const EF_K=1.18;
 const EF_SHARDS=2,EF_ESS=6,EF_CORE=3,EF_GOLD=3000;
-// capes (capes.js): CAPE_ST per tier [HP, resistance, speed]; CAPE_PRICE per tier.
-const CAPE_ST=[[25,4,0],[45,8,1],[70,13,2],[100,19,3],[140,26,4],[190,36,5]]/* gear16: the top cape's RES 36 (was 34), clear of the tier below at +3 */,CAPE_PRICE=[60,120,240,420,700,1000];
+// boots (capes.js, v0.22.11): one clear bonus per weight, per tier 0..5. Light: speed (anyone). Medium: max HP (medium and heavy wearers).
+// Heavy: defense (heavy wearers). BOOT_PRICE per tier (as the old capes).
+const BOOT_ST={l:{k:'spd',v:[1,2,4,6,9,13]},m:{k:'hp',v:[35,60,95,135,190,255]},h:{k:'def',v:[4,8,13,19,27,37]}},BOOT_PRICE=[60,120,240,420,700,1000];
 // STICK_Q: Bestiary entries the Tamer's Stick quest asks for (equip.js).
 const STICK_Q=6;
 
@@ -2892,7 +2893,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.22.10";const APP_BUILD="511b9fa809aa";
+const APP_VER="0.22.11";const APP_BUILD="2a6aac63cd10";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2900,6 +2901,7 @@ const APP_VER="0.22.10";const APP_BUILD="511b9fa809aa";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.22.11',['Capes are now Boots, in three weights with one clear bonus each: Light boots add speed and anyone can wear them, Medium boots add max HP (medium and heavy armor wearers), Heavy boots add defense (heavy armor wearers). Capes you already own became Medium boots; a hero who cannot wear those now has Light boots of the same tier and temper. Find them at the Smithy under Boots.']],
  ['Beta v0.22.10',['Every Legendary now has a nature of their own, locked and separate from their signature: Kaevan is a Steppe Rider, Nikaris is Packwise, Jace has Stormglass, Joseth has Iron Blood and Dist is a Rivercat. Each one adds a few stats and lifts one kind of skill, like the class natures. Signatures are unchanged.']],
  ['Beta v0.22.9',['Leaving a lair or a den no longer freezes for a moment. A map you were just on is reused instead of being drawn again from scratch, and after you beat a lair\'s boss the field is drawn ahead while the rewards are on screen, so the walk out is quick too.']],
  ['Beta v0.22.8',['Smoother battles on computers, tablets and the Windows app. The battle screen used to pause for a moment on every turn while it worked out how big to draw the stage; it now does that work in one go, so turns flow without the hitch.']],
@@ -17436,20 +17438,44 @@ buildRivals();
 const TIER_METAL=['#b8bcc4','#c4dcc8','#a8c8f0','#ccb0f4','#ffd870','#ff9a8a'];
 const TIER_GEM=['#d8a060','#5fcf6a','#4a9bff','#b06aff','#ffc83d','#ff4a3a'];
 
-// ===== capes.js (v0.4.3): capes, the fourth equipment slot =====
-// Every class can wear a cape. Capes add HP, resistance and a little speed, about a quarter of what armor gives at the same tier.
-// Sold at the Smithy beside armor, tempered like garb (logs and hide). v0.6.3: capes no longer show on the hero's sprite (only the
-// weapon and the hero's own personal reward change the look); a hero's own cape from their base look stays.
-// Old saves simply have no cape equipped.
-
-SLOTN.k='Cape';
-const CAPE_N=['Traveler\'s Cloak','Woolen Cape','Ranger\'s Mantle','Silk Cloak','Royal Mantle','Mythweave Cape'];
-// CAPE_ST, CAPE_PRICE: in config.js
-const CAPE_COL=['#8a6a4a','#5fa86a','#4a7ad8','#9a5ae0','#e0b030','#d84a3a'];
-CAPE_N.forEach((n,t)=>{const [hp,res,spd]=CAPE_ST[t];addGear('k_cape_'+t,{n,slot:'k',tier:t,fam:'cape',hp,res,spd:spd||undefined,price:CAPE_PRICE[t]});});
-if(typeof GICON!=='undefined')GICON.cape=[[5,2,6,2],[4,4,8,9],[3,9,2,4],[11,9,2,4]];
-if(typeof FAM_RAW!=='undefined'){FAM_RAW.cape='wood';FAM_PART.cape='hide';}
-{const ss0=shopStock;shopStock=function(tab){const r=ss0.apply(this,arguments);if(tab==='armor'&&G){const tiers=[Math.min(5,G.stage)];if(G.stage>0)tiers.unshift(G.stage-1);tiers.forEach(t=>r.push('k_cape_'+t));}return r;};}
+// ===== capes.js (v0.4.3, boots since v0.22.11): the fourth equipment slot =====
+// v0.22.11, owner: "Change capes to boots, with light, medium and heavy variants. Bonuses like armor but simpler, usually one clear bonus."
+// The fourth slot (k) is Boots. Three weights, each with one clear bonus:
+//   Light boots  (k_bootl_T): speed. Every class can wear them.
+//   Medium boots (k_cape_T, the old cape ids, so saves keep them): max HP. Classes in medium or heavy armor.
+//   Heavy boots  (k_booth_T): defense. Classes in heavy armor.
+// A class wears boots of its armor weight or lighter (CLS_ARM). Sold at the Smithy beside armor (the two newest tiers of each weight the party
+// can wear), tempered like garb. Boots do not show on the sprite (as capes did not since v0.6.3).
+// Old saves: a cape becomes medium boots of the same tier and temper; a hero who cannot wear medium boots has theirs swapped for light boots
+// of the same tier and temper on load (bootsMigrate). Numbers in config.js (BOOT_ST, BOOT_PRICE).
+SLOTN.k='Boots';
+const BOOT_W={l:'light',m:'medium',h:'heavy'},BOOT_RANK={light:0,medium:1,heavy:2};
+const BOOT_N={
+ l:['Cloth Shoes','Soft Boots','Ranger\'s Treads','Silkstep Boots','Windwalkers','Mythweave Striders'],
+ m:['Traveler\'s Boots','Leather Boots','Studded Boots','Wyrmhide Boots','Royal Riding Boots','Mythhide Boots'],
+ h:['Iron Boots','Steel Sabatons','Knight\'s Greaves','Runed Greaves','Royal Sabatons','Mythsteel Greaves']};
+const BOOT_ID={l:'k_bootl_',m:'k_cape_',h:'k_booth_'};
+const CAPE_COL=['#8a6a4a','#5fa86a','#4a7ad8','#9a5ae0','#e0b030','#d84a3a'];// the tier trim colour of every boot icon
+['l','m','h'].forEach(w=>BOOT_N[w].forEach((n,t)=>{const o={n,slot:'k',tier:t,fam:'boot'+w,weight:BOOT_W[w],price:BOOT_PRICE[t]};o[BOOT_ST[w].k]=BOOT_ST[w].v[t];addGear(BOOT_ID[w]+t,o);}));
+if(typeof FAM_RAW!=='undefined'){FAM_RAW.bootl='wood';FAM_PART.bootl='hide';FAM_RAW.bootm='wood';FAM_PART.bootm='hide';FAM_RAW.booth='ore';FAM_PART.booth='hide';}
+const bootName=w=>({light:'Light boots',medium:'Medium boots',heavy:'Heavy boots'})[w]||'Boots';
+// who may wear which boots: the class's armor weight or lighter
+function bootOk(c,g){const t=TPL[c.id];if(!t)return false;return BOOT_RANK[g.weight]<=BOOT_RANK[CLS_ARM[t.cls]||'medium'];}
+{const ce0=canEquip;canEquip=function(c,id){const g=gearOf(id);if(g&&g.slot==='k'&&g.weight&&c&&TPL[c.id]&&!g.only)return bootOk(c,g);return ce0.apply(this,arguments);};}
+{const ew0=equipWhy;equipWhy=function(c,id){const g=gearOf(id),t=c&&TPL[c.id];if(g&&g.slot==='k'&&g.weight&&t){const top=CLS_ARM[t.cls]||'medium';
+  return `${CLS[t.cls].n}s wear ${top==='light'?'light boots':top==='medium'?'light or medium boots':'any boots'}.`;}return ew0.apply(this,arguments);};}
+// the item text names the weight first, as armor does
+HOOK.xform('gearDesc','capes','boots name their weight',function(s,id){try{const g=typeof id==='string'?gearOf(id):id;if(g&&g.slot==='k'&&g.weight&&s.indexOf(bootName(g.weight))<0)return bootName(g.weight)+(s?', '+s:'');}catch(e){}return s;});
+// the Smithy: the two newest tiers of each weight somebody in the roster can wear
+{const ss0=shopStock;shopStock=function(tab){const r=ss0.apply(this,arguments);if(tab==='armor'&&G){const tiers=[Math.min(5,G.stage)];if(G.stage>0)tiers.unshift(G.stage-1);
+  let top=0;try{Object.values(G.roster).forEach(c=>{const t=TPL[c.id];if(t)top=Math.max(top,BOOT_RANK[CLS_ARM[t.cls]||'medium']);});}catch(e){top=2;}
+  ['l','m','h'].forEach(w=>{if(BOOT_RANK[BOOT_W[w]]>top)return;tiers.forEach(t=>r.push(BOOT_ID[w]+t));});}return r;};}
+// old saves: boots a hero cannot wear (a mage in old cape ids, now medium boots) become light boots of the same tier and temper
+function bootsMigrate(g){g=g||G;const out=[];if(!g||g.daily||!g.roster)return out;
+  Object.values(g.roster).forEach(c=>{const id=c&&c.eq&&c.eq.k;if(!id||!TPL[c.id])return;const q=gearOf(id);if(!q||q.slot!=='k'||!q.weight||bootOk(c,q))return;
+    const m=String(id).match(/^k_(?:cape|bootl|booth)_(\d)(\+\d)?$/);if(!m)return;const nid='k_bootl_'+m[1]+(m[2]||'');c.eq.k=nid;out.push([c.id,id,nid]);});
+  if(out.length)Object.values(g.roster).forEach(c=>{try{refresh(c);}catch(e){}});return out;}
+{const e0=enterWorldFromSave;enterWorldFromSave=function(){const r=e0.apply(this,arguments);try{bootsMigrate(G);}catch(e){}return r;};}
 
 // ===== saves.js (v0.3.4): save recovery, slots, backups, import and export, account saves =====
 // Local keys are unchanged (aurelis-wayfarers-v3, -s1, -s2, aurelis-meta-v1). New and optional only:
@@ -20537,11 +20563,11 @@ const M3_SLOTSEC={weapons:'w',armor:'a',capes:'k',charms:'c'};
 function m3SellCnt(slots){const o={};(G.gear||[]).forEach(id=>{const g=gearOf(id);if(g&&!g.stick&&slots.includes(g.slot))o[id]=(o[id]||0)+1;});return o;}
 function m3Secs(t,tab){const n=(a)=>a.length;
   if(t==='smithy'){
-    if(tab==='shop'){const ar=shopStock('armor');return [['all','All'],['weapons','Weapons',n(shopStock('weapons'))],['armor','Armor',ar.filter(id=>gearOf(id).slot==='a').length],['capes','Capes',ar.filter(id=>gearOf(id).slot==='k').length],['mats','Materials']];}
+    if(tab==='shop'){const ar=shopStock('armor');return [['all','All'],['weapons','Weapons',n(shopStock('weapons'))],['armor','Armor',ar.filter(id=>gearOf(id).slot==='a').length],['capes','Boots',ar.filter(id=>gearOf(id).slot==='k').length],['mats','Materials']];}
     if(tab==='craft')return [['all','All']].concat(RCAT.filter(([k])=>SMITH_CATS.includes(k)).map(([k,l])=>[k,l,RECIPES.filter(r=>r.cat===k&&recipeOpen(r)).length]));
-    if(tab==='forge'){const L=temperList();const c=s=>L.filter(o=>gearOf(o.id).slot===s).length;return [['all','All',L.length],['weapons','Weapons',c('w')],['armor','Armor',c('a')],['capes','Capes',c('k')],['charms','Charms',c('c')]];}
+    if(tab==='forge'){const L=temperList();const c=s=>L.filter(o=>gearOf(o.id).slot===s).length;return [['all','All',L.length],['weapons','Weapons',c('w')],['armor','Armor',c('a')],['capes','Boots',c('k')],['charms','Charms',c('c')]];}
     if(tab==='sell'){const C=m3SellCnt(['w','a','k']),c=s=>Object.keys(C).filter(id=>gearOf(id).slot===s).reduce((a,id)=>a+C[id],0);
-      return [['all','All'],['weapons','Weapons',c('w')],['armor','Armor',c('a')],['capes','Capes',c('k')],['mats','Materials']];}}
+      return [['all','All'],['weapons','Weapons',c('w')],['armor','Armor',c('a')],['capes','Boots',c('k')],['mats','Materials']];}}
   if(t==='workshop'){
     if(tab==='shop'){const S=alchStock(),k=x=>S.filter(id=>m3Kind(id)===x).length;
       return [['all','All'],['potion','Potions',k('potion')],['cure','Cures',k('cure')],['travel','Travel',k('travel')],['charm','Charms',shopStock('charms').length],['herb','Herbs',herbStock().length]].concat(G.cleared[townS()]?[['relit','Festival',RELIT_STOCK.length]]:[]);}
@@ -20591,7 +20617,7 @@ function m3SmithMatsBuy(){return `${m3H('Ore and wood')}<p class="note">Stock gr
 function m3Smithy(m){const sec=m.sec,tab=m.tab;let body='';
   if(tab==='shop'){
     const W=shopSortIds(shopStock('weapons')),AR=shopSortIds(shopStock('armor')),A=AR.filter(id=>gearOf(id).slot==='a'),K=AR.filter(id=>gearOf(id).slot==='k');
-    const grp={weapons:['Weapons',W],armor:['Armor',A],capes:['Capes',K]},emp='Nothing on the shelves matches the filters.';
+    const grp={weapons:['Weapons',W],armor:['Armor',A],capes:['Boots',K]},emp='Nothing on the shelves matches the filters.';
     const gear=k=>(sec==='all'?m3H(grp[k][0],grp[k][1].length):'')+m3Rows(grp[k][1].map(m3GearRow).join(''),emp);
     // v0.9.5: the best step for each slot comes first (p3shop.js upgSlotsHtml, with Upgrade whole party), then the filters and the shelves
     body=(sec==='mats'?'':(typeof upgSlotsHtml==='function'?upgSlotsHtml(sec==='all'?['w','a','k']:[{weapons:'w',armor:'a',capes:'k'}[sec]]):m3PlanBtn())+shopFBar('buy'))+(sec==='all'?['weapons','armor','capes'].map(gear).join('')+m3SmithMatsBuy():sec==='mats'?m3SmithMatsBuy():gear(sec));
@@ -20599,7 +20625,7 @@ function m3Smithy(m){const sec=m.sec,tab=m.tab;let body='';
   else if(tab==='forge')body=vTemper({slot:M3_SLOTSEC[sec]||null,show:SHOPF().tsh||'all',bar:true});
   else if(tab==='sell'){const g=(sl,lab)=>(sec==='all'?m3H(lab):'')+m3Rows(m3SellRows(sl),'No spare '+lab.toLowerCase()+' in your pack.');
     const mats=(sec==='all'?m3H('Materials'):'')+`<div class="rows">${matSellRows(['ore','wood','part','relic'])}</div>`;
-    body=(typeof junkBar==='function'&&sec!=='mats'?junkBar(sec==='all'?['w','a','k']:[M3_SLOTSEC[sec]]):'')+(sec==='all'?g(['w'],'Weapons')+g(['a'],'Armor')+g(['k'],'Capes')+mats:sec==='mats'?mats:g([M3_SLOTSEC[sec]],{weapons:'Weapons',armor:'Armor',capes:'Capes'}[sec]))+'<p class="note">Charms and herbs sell at Alchemy.</p>';}
+    body=(typeof junkBar==='function'&&sec!=='mats'?junkBar(sec==='all'?['w','a','k']:[M3_SLOTSEC[sec]]):'')+(sec==='all'?g(['w'],'Weapons')+g(['a'],'Armor')+g(['k'],'Boots')+mats:sec==='mats'?mats:g([M3_SLOTSEC[sec]],{weapons:'Weapons',armor:'Armor',capes:'Boots'}[sec]))+'<p class="note">Charms and herbs sell at Alchemy.</p>';}
   else if(tab==='echo')body=vEchoforge();
   return m3Box('smithy',m,m3Nav('smithy',m)+body+'<p class="note">Equip gear from the menu anywhere. Potions, charms and travel gear are at Alchemy, the green-flask house in town.</p>');}
 // ----- Alchemy -----
@@ -21570,23 +21596,24 @@ ICF.vest=(b,t,P)=>{const o={};const cl=['#9a7a4a','#5a7a4a','#5aa08a','#a0c8e0',
   if(t===4){icArt(b,0,2,['FF..','.FFF','..F.']);icArt(b,12,2,['..FF','FFF.','.F..']);icRect(b,4,9,8,1,'T');icSet(b,8,9,'G');o.spark=[[14,0]];}
   if(t===5){icArt(b,5,5,['S....','...S.','.S...']);icRect(b,4,9,8,1,'T');icSet(b,8,9,'G');icSet(b,7,9,'G');icArt(b,3,12,['..T..TT..T'.slice(0,10)]);o.aura=TIER_GEM[5];}
   return o;};
-// ----- capes -----
-ICF.cape=(b,t,P)=>{const o={};P.C=CAPE_COL[t];P.K=shade(CAPE_COL[t],.7);
-  const shape=[['....CC....','...CCCC...','..CCCCCC..','..CCCCCC..','.CCCCCCCC.','.CCCCCCCC.','.CCCCCCCC.','CCCCCCCCCC','CCCCCCCCCC','CC.CC.CC.C'],
-    ['..CCCCCC..','.CCCCCCCC.','.CCCCCCCC.','.CCCCCCCC.','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','.CCCCCCCC.'],
-    ['...KKKK...','..KCCCCK..','..CCCCCC..','.CCCCCCCC.','.CCCCCCCC.','.CCCCCCCC.','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','C.CC.CC.CC'],
-    ['..CCCCCC..','.CCCCCCCC.','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','.CC.CC.CC.'],
-    ['.TTTTTTTT.','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','TTTTTTTTTT'],
-    ['.TTTTTTTT.','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','TCTCTCTCTC']][t];
-  icArt(b,3,2,shape);
-  for(let y=5;y<2+shape.length;y++){icSet(b,6,y,'K');icSet(b,9,y,'K');}
-  if(t===0){icSet(b,8,3,'L');}
-  if(t===1){icRect(b,5,3,6,1,'K');icSet(b,8,3,'M');}
-  if(t===2){icSet(b,7,3,'G');icSet(b,8,3,'G');}
-  if(t===3){icRect(b,3,4,10,1,'T');icSet(b,8,4,'G');icSet(b,7,4,'G');}
-  if(t===4){icSet(b,5,3,'G');icSet(b,10,3,'G');icArt(b,6,7,['.TT.','TTTT','.TT.']);o.spark=[[14,2]];}
-  if(t===5){icSet(b,5,3,'G');icSet(b,10,3,'G');[[5,7],[10,9],[7,11],[8,6]].forEach(([a,c])=>icSet(b,a,c,'S'));o.aura=TIER_GEM[5];}
-  return o;};
+// ----- boots (capes.js): light (cloth and soft leather), medium (riding leather), heavy (plate); the tier trim follows CAPE_COL -----
+function icBoot(b,t,P,w){const o={};const body={l:['#b89a70','#6a9a5a','#4a6ab0','#b0a0d8','#e8dcb0','#3a2a4a'],m:['#7a5a3a','#6a4a2a','#4a3a5a','#2a5a4a','#8a2a2a','#2a1a2a'],
+    h:['#8a8e96','#a8aeb8','#c0c6d0','#7a8aa8','#d8c070','#5a4a6a']}[w][t];
+  P.C=body;P.K=shade(body,.66);P.R=CAPE_COL[t];
+  const shape={l:['...CCCC....','...CCCC....','...CCCC....','...CCCC....','...CCCC....','...CCCCC...','...CCCCCCC.','..CCCCCCCCC','..KKKKKKKKK'],
+    m:['..RCCCCR...','..CCCCCC...','..CCCCCC...','..CCCCCC...','..CCCCCC...','..CCCCCC...','..CCCCCCC..','..CCCCCCCCC','..CCCCCCCCC','..KKKKKKKKK'],
+    h:['.RCCCCCR...','.CCCCCCC...','.CKCCCKC...','.CCCCCCC...','.CCCCCCC...','.RRRRRRR...','.CCCCCCCC..','.CCCCCCCCCC','.CCCCCCCCCC','.CCCCCCCCCC','.KKKKKKKKKK']}[w];
+  icArt(b,2,16-2-shape.length,shape);
+  const y0=16-2-shape.length;
+  if(w==='l'){icRect(b,5,y0+1,4,1,'K');if(t>=1)icRect(b,5,y0+3,4,1,'R');}
+  if(w==='m'){icRect(b,4,y0+4,6,1,'K');icSet(b,9,y0+4,'R');if(t>=1)icRect(b,4,y0+1,6,1,'R');}
+  if(w==='h'){icSet(b,4,y0+7,'K');icSet(b,7,y0+7,'K');icSet(b,10,y0+7,'K');}
+  if(t===2)icSet(b,6,y0+2,'G');
+  if(t===3){icSet(b,6,y0+2,'G');icSet(b,12,y0+shape.length-2,'G');}
+  if(t===4){icSet(b,6,y0+2,'G');icSet(b,12,y0+shape.length-2,'G');o.spark=[[14,2]];}
+  if(t===5){icSet(b,6,y0+2,'S');icSet(b,12,y0+shape.length-2,'S');icSet(b,3,y0+shape.length-2,'S');o.aura=TIER_GEM[5];}
+  return o;}
+ICF.bootl=(b,t,P)=>icBoot(b,t,P,'l');ICF.bootm=(b,t,P)=>icBoot(b,t,P,'m');ICF.booth=(b,t,P)=>icBoot(b,t,P,'h');
 // ----- silhouette extras: pixels each tier adds outside the family shape (only where the grid is empty), so tiers differ in shape -----
 const IC_SIL={
  tome:[[],[[13,6,'M'],[13,7,'M'],[13,8,'M'],[13,9,'M']],[[2,1,'T'],[13,1,'T'],[2,14,'T'],[13,14,'T']],[[9,14,'G'],[9,15,'G'],[10,14,'G'],[10,15,'G']],
@@ -23367,7 +23394,7 @@ const TIPS=[
   g:'The Guild Hall\'s Arena opens Bronze after the first Scourge, Silver after the second and Gold after the third. Waves come back to back with no rest and no fleeing; each tier pays gold and materials the first time.'},
  {id:'temper',n:'Tempering',sec:'Town',x:'o:temper',
   t:()=>{if(!obModal('smithy'))return null;const ok=partyOf().some(c=>EQSL.some(sl=>{const id=c.eq[sl];const f=id&&forgeCost(id);return f&&G.gold>=f.gold&&hasMats(f.m);}));return ok?'Temper what your best hitter holds first. Past +1 needs the realm relic, later a Dread Core.':null;},
-  g:'At the Smithy\'s Tempering tab, parts from monsters and gold raise a weapon, armor, cape or charm by +1. The list puts ready upgrades first. Going past +1 needs the realm\'s relic and, later, a Dread Core.'},
+  g:'At the Smithy\'s Tempering tab, parts from monsters and gold raise a weapon, armor, boots or charm by +1. The list puts ready upgrades first. Going past +1 needs the realm\'s relic and, later, a Dread Core.'},
  {id:'craft',n:'Crafting',sec:'Town',
   t:()=>{const sm=obModal('smithy'),al=obModal('workshop');if(!sm&&!al)return null;const can=RECIPES.some(r=>recipeOpen(r)&&(sm?SMITH_CATS.includes(r.cat):!SMITH_CATS.includes(r.cat))&&G.gold>=r.g&&hasMats(recipeMats(r)));
    return can?(sm?'Your materials can become gear here. Open the Forge tab to see what you can make.':'Your herbs and parts can be brewed here. Open Brew & craft to see what you can make.'):null;},

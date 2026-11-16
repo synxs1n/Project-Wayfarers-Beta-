@@ -11,11 +11,11 @@ const show=m=>ev(m=>{__A.V.modal=m;__A.render();},m);
 // ---- item 2: structure
 await show({type:'smithy'});let n=await nav();
 chk('Smithy main tabs: Shop, Forge, Tempering, Sell',JSON.stringify(n.tabs.slice(0,4))===JSON.stringify(['Shop','Forge','Tempering','Sell'])||JSON.stringify(n.tabs));
-chk('Smithy Shop sections: All, Weapons, Armor, Capes, Materials',JSON.stringify(n.secs)===JSON.stringify(['All','Weapons','Armor','Capes','Materials'])||JSON.stringify(n.secs));
-chk('Smithy opens on Shop > All with every section under its own heading',n.on.join()==='Shop,All'&&['Weapons','Armor','Capes','Ore and wood','Monster parts'].every(x=>n.h4.includes(x))||JSON.stringify(n));
+chk('Smithy Shop sections: All, Weapons, Armor, Boots, Materials',JSON.stringify(n.secs)===JSON.stringify(['All','Weapons','Armor','Boots','Materials'])||JSON.stringify(n.secs));
+chk('Smithy opens on Shop > All with every section under its own heading',n.on.join()==='Shop,All'&&['Weapons','Armor','Boots','Ore and wood','Monster parts'].every(x=>n.h4.includes(x))||JSON.stringify(n));
 await show({type:'smithy',tab:'craft'});n=await nav();chk('Forge sections: All, Weapons, Armor',JSON.stringify(n.secs)===JSON.stringify(['All','Weapons','Armor'])||JSON.stringify(n.secs));
-await show({type:'smithy',tab:'forge'});n=await nav();chk('Tempering sections: All, Weapons, Armor, Capes, Charms',JSON.stringify(n.secs)===JSON.stringify(['All','Weapons','Armor','Capes','Charms'])||JSON.stringify(n.secs));
-await show({type:'smithy',tab:'sell'});n=await nav();chk('Smithy Sell sections: All, Weapons, Armor, Capes, Materials',JSON.stringify(n.secs)===JSON.stringify(['All','Weapons','Armor','Capes','Materials'])||JSON.stringify(n.secs));
+await show({type:'smithy',tab:'forge'});n=await nav();chk('Tempering sections: All, Weapons, Armor, Boots, Charms',JSON.stringify(n.secs)===JSON.stringify(['All','Weapons','Armor','Boots','Charms'])||JSON.stringify(n.secs));
+await show({type:'smithy',tab:'sell'});n=await nav();chk('Smithy Sell sections: All, Weapons, Armor, Boots, Materials',JSON.stringify(n.secs)===JSON.stringify(['All','Weapons','Armor','Boots','Materials'])||JSON.stringify(n.secs));
 await show({type:'workshop'});n=await nav();
 chk('Alchemy main tabs: Shop, Brew & craft, Sell, Pouch',JSON.stringify(n.tabs)===JSON.stringify(['Shop','Brew & craft','Sell','Pouch'])||JSON.stringify(n.tabs));
 chk('Alchemy Shop sections: All, Potions, Cures, Travel, Charms, Herbs',JSON.stringify(n.secs.slice(0,6))===JSON.stringify(['All','Potions','Cures','Travel','Charms','Herbs'])||JSON.stringify(n.secs));

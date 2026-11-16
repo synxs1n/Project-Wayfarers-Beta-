@@ -966,6 +966,16 @@ Registered (load order; 1 is next to the base):
 
 Runs: **base** → 1 legends (result) → 2 sites (result) → 3 world14 (result) → 4 legends17b (result) → 5 legends18 (result)
 
+### gearDesc (5 hooks)
+Registered (load order; 1 is next to the base):
+1. `echo2.js` result: Echoforge perk text
+2. `archetype.js` result: weapon delivery text
+3. `roles.js` result: charm role text
+4. `capes.js` result: boots name their weight
+5. `riftkeeper9.js` result: Riftwalker key text
+
+Runs: **base** → 1 echo2 (result) → 2 archetype (result) → 3 roles (result) → 4 capes (result) → 5 riftkeeper9 (result)
+
 ### makeEnemy (5 hooks)
 Registered (load order; 1 is next to the base):
 1. `insight.js` after: foe quirks
@@ -1092,15 +1102,6 @@ Registered (load order; 1 is next to the base):
 4. `legends17a.js` before: the Runner gets away on his fourth turn
 
 Runs: 4 legends17a → 3 riftkeeper9 (around) → 2 chain5 → 1 battle4 (around) → **base** → 1 battle4 (around) → 3 riftkeeper9 (around)
-
-### gearDesc (4 hooks)
-Registered (load order; 1 is next to the base):
-1. `echo2.js` result: Echoforge perk text
-2. `archetype.js` result: weapon delivery text
-3. `roles.js` result: charm role text
-4. `riftkeeper9.js` result: Riftwalker key text
-
-Runs: **base** → 1 echo2 (result) → 2 archetype (result) → 3 roles (result) → 4 riftkeeper9 (result)
 
 ### layoutBattle (4 hooks)
 Registered (load order; 1 is next to the base):

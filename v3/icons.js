@@ -337,23 +337,24 @@ ICF.vest=(b,t,P)=>{const o={};const cl=['#9a7a4a','#5a7a4a','#5aa08a','#a0c8e0',
   if(t===4){icArt(b,0,2,['FF..','.FFF','..F.']);icArt(b,12,2,['..FF','FFF.','.F..']);icRect(b,4,9,8,1,'T');icSet(b,8,9,'G');o.spark=[[14,0]];}
   if(t===5){icArt(b,5,5,['S....','...S.','.S...']);icRect(b,4,9,8,1,'T');icSet(b,8,9,'G');icSet(b,7,9,'G');icArt(b,3,12,['..T..TT..T'.slice(0,10)]);o.aura=TIER_GEM[5];}
   return o;};
-// ----- capes -----
-ICF.cape=(b,t,P)=>{const o={};P.C=CAPE_COL[t];P.K=shade(CAPE_COL[t],.7);
-  const shape=[['....CC....','...CCCC...','..CCCCCC..','..CCCCCC..','.CCCCCCCC.','.CCCCCCCC.','.CCCCCCCC.','CCCCCCCCCC','CCCCCCCCCC','CC.CC.CC.C'],
-    ['..CCCCCC..','.CCCCCCCC.','.CCCCCCCC.','.CCCCCCCC.','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','.CCCCCCCC.'],
-    ['...KKKK...','..KCCCCK..','..CCCCCC..','.CCCCCCCC.','.CCCCCCCC.','.CCCCCCCC.','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','C.CC.CC.CC'],
-    ['..CCCCCC..','.CCCCCCCC.','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','.CC.CC.CC.'],
-    ['.TTTTTTTT.','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','TTTTTTTTTT'],
-    ['.TTTTTTTT.','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','CCCCCCCCCC','TCTCTCTCTC']][t];
-  icArt(b,3,2,shape);
-  for(let y=5;y<2+shape.length;y++){icSet(b,6,y,'K');icSet(b,9,y,'K');}
-  if(t===0){icSet(b,8,3,'L');}
-  if(t===1){icRect(b,5,3,6,1,'K');icSet(b,8,3,'M');}
-  if(t===2){icSet(b,7,3,'G');icSet(b,8,3,'G');}
-  if(t===3){icRect(b,3,4,10,1,'T');icSet(b,8,4,'G');icSet(b,7,4,'G');}
-  if(t===4){icSet(b,5,3,'G');icSet(b,10,3,'G');icArt(b,6,7,['.TT.','TTTT','.TT.']);o.spark=[[14,2]];}
-  if(t===5){icSet(b,5,3,'G');icSet(b,10,3,'G');[[5,7],[10,9],[7,11],[8,6]].forEach(([a,c])=>icSet(b,a,c,'S'));o.aura=TIER_GEM[5];}
-  return o;};
+// ----- boots (capes.js): light (cloth and soft leather), medium (riding leather), heavy (plate); the tier trim follows CAPE_COL -----
+function icBoot(b,t,P,w){const o={};const body={l:['#b89a70','#6a9a5a','#4a6ab0','#b0a0d8','#e8dcb0','#3a2a4a'],m:['#7a5a3a','#6a4a2a','#4a3a5a','#2a5a4a','#8a2a2a','#2a1a2a'],
+    h:['#8a8e96','#a8aeb8','#c0c6d0','#7a8aa8','#d8c070','#5a4a6a']}[w][t];
+  P.C=body;P.K=shade(body,.66);P.R=CAPE_COL[t];
+  const shape={l:['...CCCC....','...CCCC....','...CCCC....','...CCCC....','...CCCC....','...CCCCC...','...CCCCCCC.','..CCCCCCCCC','..KKKKKKKKK'],
+    m:['..RCCCCR...','..CCCCCC...','..CCCCCC...','..CCCCCC...','..CCCCCC...','..CCCCCC...','..CCCCCCC..','..CCCCCCCCC','..CCCCCCCCC','..KKKKKKKKK'],
+    h:['.RCCCCCR...','.CCCCCCC...','.CKCCCKC...','.CCCCCCC...','.CCCCCCC...','.RRRRRRR...','.CCCCCCCC..','.CCCCCCCCCC','.CCCCCCCCCC','.CCCCCCCCCC','.KKKKKKKKKK']}[w];
+  icArt(b,2,16-2-shape.length,shape);
+  const y0=16-2-shape.length;
+  if(w==='l'){icRect(b,5,y0+1,4,1,'K');if(t>=1)icRect(b,5,y0+3,4,1,'R');}
+  if(w==='m'){icRect(b,4,y0+4,6,1,'K');icSet(b,9,y0+4,'R');if(t>=1)icRect(b,4,y0+1,6,1,'R');}
+  if(w==='h'){icSet(b,4,y0+7,'K');icSet(b,7,y0+7,'K');icSet(b,10,y0+7,'K');}
+  if(t===2)icSet(b,6,y0+2,'G');
+  if(t===3){icSet(b,6,y0+2,'G');icSet(b,12,y0+shape.length-2,'G');}
+  if(t===4){icSet(b,6,y0+2,'G');icSet(b,12,y0+shape.length-2,'G');o.spark=[[14,2]];}
+  if(t===5){icSet(b,6,y0+2,'S');icSet(b,12,y0+shape.length-2,'S');icSet(b,3,y0+shape.length-2,'S');o.aura=TIER_GEM[5];}
+  return o;}
+ICF.bootl=(b,t,P)=>icBoot(b,t,P,'l');ICF.bootm=(b,t,P)=>icBoot(b,t,P,'m');ICF.booth=(b,t,P)=>icBoot(b,t,P,'h');
 // ----- silhouette extras: pixels each tier adds outside the family shape (only where the grid is empty), so tiers differ in shape -----
 const IC_SIL={
  tome:[[],[[13,6,'M'],[13,7,'M'],[13,8,'M'],[13,9,'M']],[[2,1,'T'],[13,1,'T'],[2,14,'T'],[13,14,'T']],[[9,14,'G'],[9,15,'G'],[10,14,'G'],[10,15,'G']],

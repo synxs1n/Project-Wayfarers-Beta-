@@ -2,7 +2,7 @@
 
 Who wraps what, in load order. `raw` is the `{const f0=fn;fn=function...}` idiom, `replace` a reassignment without calling the old body, the rest are HOOK registrations. "def" names the module that HOOK.def'd the function. Raw wraps on a def'd function should become registrations; functions with many raw wraps and no def are the candidates for one.
 
-470 functions wrapped; 563 raw wraps or replacements, 778 hook registrations.
+472 functions wrapped; 566 raw wraps or replacements, 779 hook registrations.
 
 | function | owner | def | layers | chain (load order) |
 |---|---|---|---|---|
@@ -56,6 +56,7 @@ Who wraps what, in load order. `raw` is the `{const f0=fn;fn=function...}` idiom
 | dynActors | worldgen.js | worldgen.js | 5 | legends.js:xform → sites.js:xform → world14.js:xform → legends17b.js:xform → legends18.js:xform |
 | endTurn | engine.js |  | 5 | twists.js:raw → chain5.js:raw → riftkeeper9.js:raw → legends17b.js:raw → legends17a.js:raw |
 | enemyTurn0 | battle5.js | battle5.js | 5 | battle4.js:wrap → battle4.js:wrap → chain5.js:before → riftkeeper9.js:wrap → legends17a.js:before |
+| gearDesc | items.js | items.js | 5 | echo2.js:xform → archetype.js:xform → roles.js:xform → capes.js:xform → riftkeeper9.js:xform |
 | heroPal | art.js |  | 5 | art2.js:replace → art2.js:replace → npcart9.js:raw → legends17b.js:raw → legends17a.js:raw |
 | makeEnemy | engine.js | engine.js | 5 | insight.js:after → archetype.js:after → twists.js:after → battle4.js:after → rift9.js:wrap |
 | mapMarks | map.js | map.js | 5 | sanctum.js:after → dungeon8.js:after → complete9.js:after → handin9.js:after → rift9.js:after |
@@ -76,7 +77,6 @@ Who wraps what, in load order. `raw` is the `{const f0=fn;fn=function...}` idiom
 | drawUnit | battle.js | battle.js | 4 | fxkind11.js:raw → chars13.js:before → cohere15.js:wrap → legends17a.js:wrap |
 | foePlan | battle5.js |  | 4 | battle4.js:replace → chain5.js:raw → riftkeeper9.js:raw → legends17b.js:raw |
 | fsCast | party2.js |  | 4 | ailments.js:raw → twists.js:raw → field9.js:raw → legends17b.js:raw |
-| gearDesc | items.js | items.js | 4 | echo2.js:xform → archetype.js:xform → roles.js:xform → riftkeeper9.js:xform |
 | hdBakeCards | hd2d.js | hd2d.js | 4 | dungeon8.js:raw → sitelook10.js:raw → worldart13.js:wrap → cohere15.js:after |
 | hdGateGeo | hd2d.js | hd2d.js | 4 | dungeon8.js:raw → sanctlook10.js:wrap → sitelook10.js:raw → worldart13.js:wrap |
 | heroGridSide | art2.js |  | 4 | sprhd.js:replace → heropose9.js:raw → legends17b.js:replace → legends17a.js:raw |
@@ -108,6 +108,7 @@ Who wraps what, in load order. `raw` is the `{const f0=fn;fn=function...}` idiom
 | compDef | comp.js |  | 3 | comp3.js:raw → battle16.js:raw → legends17a.js:raw |
 | drawAudit | pathguard.js | pathguard.js | 3 | world12.js:xform → worldart12.js:xform → world14.js:xform |
 | drawBuilding | worldgfx.js | worldgfx.js | 3 | worldgfx2.js:replace → towngfx.js:raw → towns14.js:wrap |
+| enterWorldFromSave | ui.js |  | 3 | gearmig.js:raw → capes.js:raw → dungeon8.js:raw |
 | facMissionList | factions.js |  | 3 | pacing.js:raw → pacing.js:raw → quests16.js:raw |
 | foeWeak | battleui.js |  | 3 | battle3.js:replace → battle3.js:replace → dmg11.js:raw |
 | fx | engine.js | engine.js | 3 | insight.js:raw → fx2.js:raw → chars13.js:after |
@@ -165,7 +166,6 @@ Who wraps what, in load order. `raw` is the `{const f0=fn;fn=function...}` idiom
 | drawNode | worldrt.js |  | 2 | p2world.js:raw → mats11.js:raw |
 | efTabOn | echo2.js |  | 2 | pacing.js:raw → rift9.js:raw |
 | effBadge | insight.js |  | 2 | archetype.js:raw → battle3.js:raw |
-| enterWorldFromSave | ui.js |  | 2 | gearmig.js:raw → dungeon8.js:raw |
 | exec | engine.js |  | 2 | battle5.js:raw → battle4.js:raw |
 | facMul | factions.js |  | 2 | roam.js:raw → twists.js:raw |
 | facRaw | factions.js |  | 2 | arena9.js:raw → quests16.js:replace |
@@ -263,6 +263,7 @@ Who wraps what, in load order. `raw` is the `{const f0=fn;fn=function...}` idiom
 | boot | ui.js |  | 1 | remember.js:raw |
 | bossMusicOff | bosstheme.js |  | 1 | realms.js:raw |
 | bossTele | anim.js |  | 1 | riftkeeper9.js:raw |
+| canEquip | items.js |  | 1 | capes.js:raw |
 | canHandIn | handin9.js |  | 1 | quests16.js:raw |
 | caveReward | world4.js | world4.js | 1 | world12.js:wrap |
 | cePick | realms.js | realms.js | 1 | world12.js:wrap |
@@ -297,6 +298,7 @@ Who wraps what, in load order. `raw` is the `{const f0=fn;fn=function...}` idiom
 | effOf | engine.js |  | 1 | archetype.js:raw |
 | elShapeCv | battleui.js |  | 1 | hdstage.js:replace |
 | enterCave | worldrt.js |  | 1 | sites.js:raw |
+| equipWhy | items.js |  | 1 | capes.js:raw |
 | facAtHall | factions.js |  | 1 | quests16.js:replace |
 | facCount | factions.js |  | 1 | quests16.js:replace |
 | facDerived | factions.js |  | 1 | arena9.js:raw |

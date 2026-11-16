@@ -7,7 +7,7 @@
 //   1. Progression: XP, levels, difficulty, Limit Breaks, bonds
 //   2. Battle rules: drops, auto battle, ailments, reactions, archetypes, companions, Momentum and foe roles (B4)
 //   3. Foes and bosses: boss levels and muscle, field packs, creep, echoes, roamers, side sites, mimics, surprise starts
-//   4. Economy and shops: prices, gold and XP rates, pack size, Smithy, tempering, Echoforged, capes
+//   4. Economy and shops: prices, gold and XP rates, pack size, Smithy, tempering, Echoforged, boots
 //   5. Party and roster: taverns, the journey roster, personal quests, Best Party, loadouts, Make camp
 //   6. World: encounters, chance meetings, travel items, day and night, weather tables, factions, map generation
 //   7. Interface timings: transitions, the save indicator, hints, battle information (B5)
@@ -197,7 +197,7 @@ const SITES={fortW:62,fortH:40,mini:.9,miniHp:6,miniPow:1.55,miniLv:4};
 // MIMIC_RATE: share of ordinary dungeon chests that are mimics (mimic.js; picked from the run seed).
 const MIMIC_RATE=.13;
 
-// ==== 4. Economy and shops: prices, gold and XP rates, pack size, Smithy, tempering, Echoforged, capes ====
+// ==== 4. Economy and shops: prices, gold and XP rates, pack size, Smithy, tempering, Echoforged, boots ====
 // prices
 const MAT_PRICE={copper:18,iron:45,mythril:110,oak:14,ash:40,elder:95,healroot:10,bluecap:22,sunpetal:48,starbloom:120};
 // Beta v0.4.1 3.5 economy (all editable here)
@@ -221,8 +221,9 @@ const TEMPER={raw:[2,3,4],part:[1,2,3],relic:[1,2,2],core:[0,0,1],goldK:[.6,1.2,
 // and EF_GOLD gold.
 const EF_K=1.18;
 const EF_SHARDS=2,EF_ESS=6,EF_CORE=3,EF_GOLD=3000;
-// capes (capes.js): CAPE_ST per tier [HP, resistance, speed]; CAPE_PRICE per tier.
-const CAPE_ST=[[25,4,0],[45,8,1],[70,13,2],[100,19,3],[140,26,4],[190,36,5]]/* gear16: the top cape's RES 36 (was 34), clear of the tier below at +3 */,CAPE_PRICE=[60,120,240,420,700,1000];
+// boots (capes.js, v0.22.11): one clear bonus per weight, per tier 0..5. Light: speed (anyone). Medium: max HP (medium and heavy wearers).
+// Heavy: defense (heavy wearers). BOOT_PRICE per tier (as the old capes).
+const BOOT_ST={l:{k:'spd',v:[1,2,4,6,9,13]},m:{k:'hp',v:[35,60,95,135,190,255]},h:{k:'def',v:[4,8,13,19,27,37]}},BOOT_PRICE=[60,120,240,420,700,1000];
 // STICK_Q: Bestiary entries the Tamer's Stick quest asks for (equip.js).
 const STICK_Q=6;
 

@@ -10,7 +10,7 @@
 //     Backpack > Equipment offers Undo for the last Equip Best
 //  5. rarity by progress: Common and Uncommon in realm 1, one more per realm, all six from realm 5, for the shelves, the recipes, mimic
 //     loot, vault and bounty charms and the one-per-realm charms; New Game+ the same, the Daily Trial open; owned gear stays through a save
-//  6. a piece at +0 beats the rarity below at +3 in its main stats, for every weapon and armour family and the capes, every tier
+//  6. a piece at +0 beats the rarity below at +3 in its main stats, for every weapon and armour family and the boots (three weights since v0.22.11), every tier
 // Usage (from tools/chrome): PWHTML=<abs path>/out/aurelis3.html node v188a.js [ONLY=1,...,6]
 const {open,chk,done}=require('./pw');
 const only=process.env.ONLY||'',want=n=>!only||only.split(',').includes(n);
@@ -181,7 +181,7 @@ const SETUP=`([stage,gold,mats])=>{const A=__A,G=A.G;G.stage=stage;G.cleared=[0,
         slots[hi.slot]=(slots[hi.slot]||0)+1;per[t]=(per[t]||0)+1;main(A.GEAR[fams[f][t-1]]).forEach(s=>{n++;const r=hi[s]/lo[s];if(r<worst){worst=r;wk=f+'_'+t+'.'+s+' '+hi[s]+' vs '+lo[s];}if(!(hi[s]>lo[s]))bad.push(f+'_'+t+'.'+s+' '+hi[s]+' <= '+lo[s]+' (+3 of the tier below)');});}});
       const ef=A.gearOf('w_blade_ef'),top=A.gearOf('w_blade_5+3');
       return {bad,n,fam:Object.keys(fams).length,slots,per,worst,wk,step:window.__G16.FORGE_STEP,p3:A.gearOf('w_blade_2+3').atk,p0:A.GEAR.w_blade_2.atk,ef:ef&&ef.atk,top:top.atk};});
-    chk(`6 every family (${T.fam}: ${JSON.stringify(T.slots)} family tiers by slot) and tier 1 to 5: +0 beats the rarity below at +3 in its main stats (${T.n} comparisons, closest ${T.wk})`,T.bad.length===0&&T.fam>=29&&[1,2,3,4,5].every(t=>T.per[t]===T.fam)&&T.slots.w>=120&&T.slots.a===15&&T.slots.k===5||T.bad.slice(0,12).join('; ')||JSON.stringify(T));
+    chk(`6 every family (${T.fam}: ${JSON.stringify(T.slots)} family tiers by slot) and tier 1 to 5: +0 beats the rarity below at +3 in its main stats (${T.n} comparisons, closest ${T.wk})`,T.bad.length===0&&T.fam>=29&&[1,2,3,4,5].every(t=>T.per[t]===T.fam)&&T.slots.w>=120&&T.slots.a===15&&T.slots.k===15||T.bad.slice(0,12).join('; ')||JSON.stringify(T));
     chk(`6 tempering still adds (${T.p0} ATK -> ${T.p3} at +3, ${Math.round(T.step*100)}% a level) and Echoforged stays above the top shop piece at +3 (${T.ef} vs ${T.top})`,T.p3>T.p0&&T.step>0&&T.ef>T.top||JSON.stringify(T));
   }
   chk('no page console errors',errs.length===0||errs.slice(0,3).join(' | '));

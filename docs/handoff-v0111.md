@@ -636,3 +636,10 @@ Owner: "Legendaries' natures are the same as their signatures. Give each a locke
 - `v3/legnat20.js` (`LN20`): Kaevan Steppe Rider (ranged: +8% agility, +10% crit damage, 3% faster), Nikaris Packwise (debuffer: +8% HP, +6% accuracy, 4% faster), Jace Stormglass (magic: +8% magic and resistance, 3% faster), Joseth Iron Blood (healer: +12% HP, +8% healing), Dist Rivercat (phys: +8% attack, +5% crit, 3% faster). Same shape as the natures6 class natures (rl lifts that role's skills by ROLEPW.natLift) but no stat cut. Stored as c.nat (a calcStats before-hook sets it, so old saves get it), natPool is that one nature (locked: not on the Guild Hall Nature tab), the sheet says "Legendary nature, locked". The Daily Trial keeps template traits. Signatures (TPL.trait, SIG, TRAITS) untouched.
 - Balance: these are a small buff (they had no nature stats before). Not re-simmed with legbal/sumbal; worth a run if Kaevan's win rate matters.
 - Test `tools/chrome/v200a.js` (group party).
+
+## boots (0.22.11): capes became boots
+Owner: "Change capes to boots, with light, medium and heavy variants. Bonuses like armor but simpler, usually one clear bonus."
+- `v3/capes.js` (the slot's owner module, rewritten): slot k is Boots. Light `k_bootl_T` +SPD (1..13), anyone; Medium `k_cape_T` (the old ids, so saves and tempers keep working) +HP (35..255), medium and heavy armor classes; Heavy `k_booth_T` +DEF (4..37), heavy armor classes (`BOOT_ST`, `BOOT_PRICE` in config.js; CAPE_ST is gone). A class wears its armor weight or lighter (`bootOk`, wraps of canEquip and equipWhy). The Smithy stocks the two newest tiers of each weight someone in the roster can wear; tempered with wood/ore and hide. Icons `ICF.bootl/bootm/booth` (icons.js). Menu labels Capes -> Boots (menus3.js; the section key stays `capes`).
+- Old saves: `bootsMigrate` on load swaps an old cape a hero cannot wear (light armor classes) for light boots of the same tier and temper.
+- Balance: boots lost the cape's RES (mages keep RES from robes); not re-simmed.
+- Test `tools/chrome/v201a.js` (group menus).
