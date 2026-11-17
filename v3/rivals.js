@@ -13,4 +13,4 @@ function buildRivals(){RAW.forEach((r,i)=>{const id=r[0],t=TPL[id];if(!t||t.mon)
   makeMonVariant(k,base,name,rivalEls(t),RIVAL_COL[(i*7)%RIVAL_COL.length],{rival:id,hp:+(MON[base].hp*1.1).toFixed(2)});});}
 buildRivals();
 {const sp0=startPersonal;startPersonal=function(id){const q=sp0.apply(this,arguments);try{const k='rv_'+id;if(q&&MON[k]){const t=TPL[id];q.mon=k;q.name=MON[k].n;
-  q.text=PQ_TEXT[t.cls].replace(/\{n\}/g,t.n).replace(/\{r\}/g,q.name).replace(/\{e\}/g,EL[t.el[0]].toLowerCase());saveGame();}}catch(e){}return q;};}
+  q.text=pqText(t.cls).replace(/\{n\}/g,t.n).replace(/\{r\}/g,q.name).replace(/\{e\}/g,EL[t.el[0]].toLowerCase());saveGame();}}catch(e){}return q;};}

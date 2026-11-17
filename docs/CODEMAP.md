@@ -798,6 +798,18 @@ Registered (load order; 1 is next to the base):
 
 Runs: 7 legends17a (around) → 5 menus11 → 4 menus9 → 3 bigmap → 2 recruit3 → 1 comp (around) → **base** → 1 comp (around) → 6 menus11 (result) → 7 legends17a (around)
 
+### nbBody (7 hooks)
+Registered (load order; 1 is next to the base):
+1. `records12.js` before: all-notices tab body
+2. `quests16.js` before: the Guilds tab is a locked note until the first realm is beaten
+3. `quests16.js` result: personal quests in the Notices list; hand-in place names the board
+4. `quests16.js` before: the All tab's Personal section
+5. `legends17a.js` before: the board checks for a legend quest of this realm (old saves, a code redeemed mid realm)
+6. `fix18.js` result: one row language for every notice: Accept, Claim, Active, Done
+7. `fix18.js` around: the Quests tab lists quests, not guild notices
+
+Runs: 7 fix18 (around) → 5 legends17a → 4 quests16 → 2 quests16 → 1 records12 → **base** → 3 quests16 (result) → 6 fix18 (result) → 7 fix18 (around)
+
 ### objCanvas (7 hooks)
 Registered (load order; 1 is next to the base):
 1. `worldgfx2.js` before: scene props through paintP
@@ -910,17 +922,6 @@ Registered (load order; 1 is next to the base):
 6. `guild7.js` around: guide bodies on the menu tabs
 
 Runs: 6 guild7 (around) → 5 onboard (around) → 4 menus3 → 3 p2world (around) → 1 music2 (around) → **base** → 1 music2 (around) → 2 p5settings (result) → 3 p2world (around) → 5 onboard (around) → 6 guild7 (around)
-
-### nbBody (6 hooks)
-Registered (load order; 1 is next to the base):
-1. `records12.js` before: all-notices tab body
-2. `quests16.js` before: the Guilds tab is a locked note until the first realm is beaten
-3. `quests16.js` result: personal quests in the Notices list; hand-in place names the board
-4. `legends17a.js` before: the board checks for a legend quest of this realm (old saves, a code redeemed mid realm)
-5. `fix18.js` result: one row language for every notice: Accept, Claim, Active, Done
-6. `fix18.js` around: the Quests tab lists quests, not guild notices
-
-Runs: 6 fix18 (around) → 4 legends17a → 2 quests16 → 1 records12 → **base** → 3 quests16 (result) → 5 fix18 (result) → 6 fix18 (around)
 
 ### recruit (6 hooks)
 Registered (load order; 1 is next to the base):
@@ -1128,6 +1129,15 @@ Registered (load order; 1 is next to the base):
 
 Runs: **base** → 1 echo2 (result) → 2 archetype (result) → 3 p3shop (result) → 4 battle4 (result)
 
+### nbSecs (4 hooks)
+Registered (load order; 1 is next to the base):
+1. `records12.js` result: all-notices tab sections
+2. `quests16.js` result: guild notices counted on the Guilds tab; no sections while locked
+3. `quests16.js` result: a Personal section on the All tab
+4. `fix18.js` around: the Quests tab counts what it lists
+
+Runs: 4 fix18 (around) → **base** → 1 records12 (result) → 2 quests16 (result) → 3 quests16 (result) → 4 fix18 (around)
+
 ### townDecorActors (4 hooks)
 Registered (load order; 1 is next to the base):
 1. `world12.js` after: the town landmark in the 2D depth sort
@@ -1185,14 +1195,6 @@ Registered (load order; 1 is next to the base):
 3. `cohere15.js` after: the hero stays solid in front of roofs
 
 Runs: 2 cohere15 → **base** → 1 terrain13 → 3 cohere15
-
-### nbSecs (3 hooks)
-Registered (load order; 1 is next to the base):
-1. `records12.js` result: all-notices tab sections
-2. `quests16.js` result: guild notices counted on the Guilds tab; no sections while locked
-3. `fix18.js` around: the Quests tab counts what it lists
-
-Runs: 3 fix18 (around) → **base** → 1 records12 (result) → 2 quests16 (result) → 3 fix18 (around)
 
 ### rebuildBase (3 hooks)
 Registered (load order; 1 is next to the base):

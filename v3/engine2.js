@@ -43,7 +43,12 @@ const PQ_TEXT={
  archer:'{n} missed {r} once, years ago, and has not missed anything since.',
  monk:'{n}\'s old master fell to {r}. Time to finish the lesson.',
  bard:'{n} needs one more verse for the ballad, and {r} is it.',
- chronicler:'{n} is missing one page from the archive, and {r} ate it.'};
+ chronicler:'{n} is missing one page from the archive, and {r} ate it.',
+ // v0.22.16: the first three Legendaries had no line, so Accept threw and did nothing for them
+ druid:'{n} has trailed {r} across three realms. The beasts say it is close.',
+ sniper:'{n} has had {r} in the glass once before, and let the shot go by. Not again.',
+ archmage:'{n} felt the weather turn wrong. {r} is at the middle of it.'};
+const pqText=cls=>PQ_TEXT[cls]||'{n} has unfinished business with {r}.';
 const SIGW={chronicler:'Lost Folio',warrior:'Heirloom Edge',knight:'Vow Blade',mage:'Lost Focus',healer:'Lamp Relic',thief:'Debt Collector',archer:'Second Shot',monk:"Master's Wraps",bard:'Final Verse',sniper:'Horizon Arbalest',druid:'Packcall Bow',archmage:'Stormglass Rod'};
 const ALTW={sword:'greatsword',greatsword:'katana',axe:'hammer',hammer:'axe',spear:'trident',trident:'spear',dagger:'twindagger',twindagger:'katana',bow:'crossbow',crossbow:'bow',
  staff_orb:'staff_crystal',staff_crystal:'staff_sun',staff_sun:'staff_orb',staff_crook:'staff_sun',rod:'staff_crystal',tome:'staff_orb',lute:'harp',harp:'fan',fan:'harp',fists:'claws',claws:'katana',scythe:'katana',katana:'greatsword',mace:'hammer'};
@@ -76,7 +81,7 @@ function startPersonal(id){
   const s=G.stage,Z=ZS(s),R=seeded((hashS(id)+G.run.seed)>>>0),mon=Z.pool[Math.floor(R()*Z.pool.length)],mod=ELITE_MODS[Math.floor(R()*ELITE_MODS.length)];
   const name=`${MON[mon].n} ${ELITE_TITLES[Math.floor(R()*ELITE_TITLES.length)]}`,t=TPL[id];
   const q={id:'p_'+id,personal:id,stage:s,mon,mod:mod.k,name,lv:Math.max(STAGE_LV[s][0]+4,c.lv+1),state:'active',
-    text:PQ_TEXT[t.cls].replace(/\{n\}/g,t.n).replace(/\{r\}/g,name).replace(/\{e\}/g,EL[t.el[0]].toLowerCase()),reward:{}};
+    text:pqText(t.cls).replace(/\{n\}/g,t.n).replace(/\{r\}/g,name).replace(/\{e\}/g,EL[t.el[0]].toLowerCase()),reward:{}};
   G.personal[id]=q;saveGame();return q;
 }
 function personalDone(b,info){

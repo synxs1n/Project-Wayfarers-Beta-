@@ -2,7 +2,7 @@
 
 Who wraps what, in load order. `raw` is the `{const f0=fn;fn=function...}` idiom, `replace` a reassignment without calling the old body, the rest are HOOK registrations. "def" names the module that HOOK.def'd the function. Raw wraps on a def'd function should become registrations; functions with many raw wraps and no def are the candidates for one.
 
-476 functions wrapped; 572 raw wraps or replacements, 788 hook registrations.
+476 functions wrapped; 572 raw wraps or replacements, 790 hook registrations.
 
 | function | owner | def | layers | chain (load order) |
 |---|---|---|---|---|
@@ -37,6 +37,7 @@ Who wraps what, in load order. `raw` is the `{const f0=fn;fn=function...}` idiom
 | drawParts | battle.js | battle.js | 7 | anim.js:before → anim.js:after → gfx6battle.js:after → hdspell.js:after → fxkind11.js:after → legends17b.js:after → legends17a.js:after |
 | genQuests | engine.js | engine.js | 7 | legends.js:after → equip.js:after → realms.js:wrap → pacing.js:after → guild7.js:after → quests16.js:after → legends17a.js:after |
 | modalBack | nav.js | nav.js | 7 | comp.js:wrap → recruit3.js:before → bigmap.js:before → menus9.js:before → menus11.js:before → menus11.js:xform → legends17a.js:wrap |
+| nbBody | menus3.js | menus3.js | 7 | records12.js:before → quests16.js:before → quests16.js:xform → quests16.js:before → legends17a.js:before → fix18.js:xform → fix18.js:wrap |
 | objCanvas | worldgfx.js | worldgfx.js | 7 | worldgfx2.js:before → worldfx.js:before → dungeon8.js:before → look9.js:wrap → sanctlook10.js:before → breachlook11.js:wrap → cohere15.js:xform |
 | onFx | battle.js | battle.js | 7 | anim.js:wrap → sfx2.js:before → gfx6battle.js:after → hdspell.js:wrap → fxkind11.js:after → fxkind11.js:wrap → fxkind11.js:after |
 | openChest | worldrt.js | worldrt.js | 7 | metastats.js:wrap → equip.js:wrap → mimic.js:before → sites.js:before → sites.js:before → worldfx.js:wrap → world16.js:wrap |
@@ -49,7 +50,6 @@ Who wraps what, in load order. `raw` is the `{const f0=fn;fn=function...}` idiom
 | gearDesc | items.js | items.js | 6 | echo2.js:xform → archetype.js:xform → roles.js:xform → capes.js:xform → riftkeeper9.js:xform → shields20.js:xform |
 | hdLook | hd2d.js | hd2d.js | 6 | weather7.js:after → sanctlook10.js:after → voidsky10.js:after → breachlook11.js:after → light13.js:after → cohere15.js:xform |
 | mMenu | ui.js | ui.js | 6 | music2.js:wrap → p5settings.js:xform → p2world.js:wrap → menus3.js:before → onboard.js:wrap → guild7.js:wrap |
-| nbBody | menus3.js | menus3.js | 6 | records12.js:before → quests16.js:before → quests16.js:xform → legends17a.js:before → fix18.js:xform → fix18.js:wrap |
 | recruit | engine.js | engine.js | 6 | account.js:after → tavern2.js:after → tavern2.js:wrap → metastats.js:wrap → music2.js:after → recruit3.js:wrap |
 | walkerCanvas | art2.js | sprhd.js | 6 | sprhd.js:raw → sprhd.js:replace → npcart9.js:raw → chars13.js:xform → cohere15.js:xform → legends17a.js:wrap |
 | applyBossTheme | bosstheme.js | bosstheme.js | 5 | realms.js:wrap → sites.js:after → dungeon8.js:after → sanctlook10.js:after → breachlook11.js:after |
@@ -60,6 +60,7 @@ Who wraps what, in load order. `raw` is the `{const f0=fn;fn=function...}` idiom
 | heroPal | art.js |  | 5 | art2.js:replace → art2.js:replace → npcart9.js:raw → legends17b.js:raw → legends17a.js:raw |
 | makeEnemy | engine.js | engine.js | 5 | insight.js:after → archetype.js:after → twists.js:after → battle4.js:after → rift9.js:wrap |
 | mapMarks | map.js | map.js | 5 | sanctum.js:after → dungeon8.js:after → complete9.js:after → handin9.js:after → rift9.js:after |
+| nbSecs | menus3.js | menus3.js | 5 | handin9.js:raw → records12.js:xform → quests16.js:xform → quests16.js:xform → fix18.js:wrap |
 | newRun | engine.js | engine.js | 5 | realms.js:xform → look9.js:xform → party12.js:xform → world12.js:xform → towns14.js:xform |
 | onAction | battle.js | battle.js | 5 | anim.js:after → anim.js:after → sfx2.js:before → hdspell.js:after → fxkind11.js:wrap |
 | restAll | engine.js | engine.js | 5 | progression.js:after → tavern2.js:after → world3.js:after → ailments.js:after → twists.js:wrap |
@@ -86,7 +87,6 @@ Who wraps what, in load order. `raw` is the `{const f0=fn;fn=function...}` idiom
 | layoutBattle | battle.js | battle.js | 4 | gfx6battle.js:after → hdstage.js:after → sprhd2.js:after → res11.js:after |
 | loop | ui.js | ui.js | 4 | gfx6.js:raw → hd2d.js:raw → title7.js:raw → perf12.js:wrap |
 | mBeast | ui.js | ui.js | 4 | echo2.js:xform → archetype.js:xform → p3shop.js:xform → battle4.js:xform |
-| nbSecs | menus3.js | menus3.js | 4 | handin9.js:raw → records12.js:xform → quests16.js:xform → fix18.js:wrap |
 | profileOf | account.js | account.js | 4 | echo2.js:raw → riftkeeper9.js:raw → roster14.js:xform → world16.js:xform |
 | rebuildBase | worldrt.js | worldrt.js | 4 | hd2d.js:raw → world16.js:wrap → fix17.js:after → fix18.js:wrap |
 | scanLights | worldrt.js | worldrt.js | 4 | sanctlook10.js:raw → sitelook10.js:raw → echo11.js:raw → world12.js:after |

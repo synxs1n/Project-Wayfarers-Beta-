@@ -72,6 +72,11 @@ await ev(()=>{const G=__A.TW.get('G');G.roster.lumen.bt=49;});r=await ev(FIGHT);
 chk('the next wayfarer to reach 50 gets the offer',r.after==='pqoffer'&&r.ids.join()==='lumen'||JSON.stringify(r));
 await H.page.click('#modal [data-act=closeModal]');await wait(150);
 r=await ev(()=>{const A=__A,G=A.TW.get('G');return {st:G.personal.lumen&&G.personal.lumen.state,modal:A.V.modal&&A.V.modal.type,off:G.pqOff.lumen};});
+// v0.22.16: every hero's class has a personal quest line (Nikaris, Kaevan and Jace had none: Accept threw), and the board's All tab has a Personal section
+{const q=await ev(()=>{const A=__A,g=A.TW.get,G=g('G'),TPL=g('TPL'),o={bad:[]};Object.keys(TPL).forEach(id=>{if(TPL[id].mon)return;const had=G.roster[id],sv=G.personal[id];try{if(!had)G.roster[id]=g('newChar')(id,12);const b0=G.roster[id].bt;G.roster[id].bt=60;delete G.personal[id];
+      const x=g('startPersonal')(id);if(!x||!x.text||/undefined/.test(x.text))o.bad.push(id);G.roster[id].bt=b0;}catch(e){o.bad.push(id+': '+e.message);}if(sv)G.personal[id]=sv;else delete G.personal[id];if(!had)delete G.roster[id];});
+    o.n=Object.keys(TPL).filter(id=>!TPL[id].mon).length;o.all=g('nbSecs')('all').some(x=>x[0]==='personal');const m0=A.V.modal;A.V.modal={type:'board',tab:'all',sec:'personal'};A.render();o.sec=A.V.modal.sec;o.body=/unfinished business/.test(document.querySelector('#modal').innerText);A.V.modal=m0;A.render();return o;});
+  chk(`a personal quest starts for every one of the ${q.n} wayfarers, and the board's All tab has its Personal section`,q.n>20&&!q.bad.length&&q.all&&q.sec==='personal'&&q.body||JSON.stringify(q));}
 const later=r;r=await ev(FIGHT);
 chk('Later closes it without starting, and it is not offered again',!later.st&&!later.modal&&later.off===1&&r.after!=='pqoffer'||JSON.stringify([later,r]));
 r=await ev(()=>{const A=__A,g=A.TW.get,G=g('G');A.V.modal=null;A.V.screen='world';g('enterVia')?0:0;const o={};const t=g('getMap')('t0');o.town=g('WS').m&&g('WS').m.kind;

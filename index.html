@@ -2119,7 +2119,7 @@ html:not(.flat) .battle.b3 .bline .b4mo .b4bar{box-shadow:inset 0 0 0 1px #000,0
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.22.15";const APP_BUILD="6b588083f06e";
+(function(){const APP_VER="0.22.16";const APP_BUILD="2b48972781d6";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2893,7 +2893,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.22.15";const APP_BUILD="6b588083f06e";
+const APP_VER="0.22.16";const APP_BUILD="2b48972781d6";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2901,7 +2901,9 @@ const APP_VER="0.22.15";const APP_BUILD="6b588083f06e";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
- ['Beta v0.22.16',['Towns: every service building now has its own things standing outside. Kegs, a table and a barrel by the tavern; an anvil, a weapon rack and a grindstone by the smithy; a bench, a washing line and flowers by the inn; a cauldron and a table of flasks by the alchemist; a training dummy and an archery target by the guild hall; a candle shrine and a grave by the chapel. Most houses get a woodpile, a flower box, a wash tub or hay. They stand on the ground beside the building in both views, never in a doorway or on a road.']],
+ ['Beta v0.22.16',['Towns: every service building now has its own things standing outside. Kegs, a table and a barrel by the tavern; an anvil, a weapon rack and a grindstone by the smithy; a bench, a washing line and flowers by the inn; a cauldron and a table of flasks by the alchemist; a training dummy and an archery target by the guild hall; a candle shrine and a grave by the chapel. Most houses get a woodpile, a flower box, a wash tub or hay. They stand on the ground beside the building in both views, never in a doorway or on a road.',
+  'Fixed: personal quests. Accept did nothing for Nikaris, Kaevan and Jace (in the popup and in the list), and the town Notice Board had no Personal filter on the tab it opens on. Both work now.',
+  'Fixed: arena wins never counted for the Pit Masters. Their missions (First blood, A regular, Crowd favourite and the rest) and your standing with them now count every bout you have won on this journey, including the ones before this update.']],
  ['Beta v0.22.15',['Towns: buildings in the same town no longer look alike. The inn, tavern, smithy, alchemist and guild hall each wear their own roof colour in every realm (blue, red, iron, green, purple, blended with the realm\'s own material), thatched roofs included, and houses vary in roof shade, wall tone, shutters and roof pitch. Flat roofed towns (sandstone, cloud stone, obsidian) and the great keep now have real rooftops instead of blank slabs: a parapet, a tiled field, and a hatch or an awning.']],
  ['Beta v0.22.14',['Guardians and elite roamers were drawn too big on the map in 0.22.13. They are now only a little larger than an ordinary foe: enough to notice, not enough to tower over the hero. Their new designs, the rune ring and the gold ring stay.']],
  ['Beta v0.22.13',['Guardians have their own look: all twenty Den and Sanctum guardians (who are also your summons) were redrawn as unique creatures, from Gorehorn with his glacier antlers to the Void Cantor and its halo of rune stars, in battle, in the Bestiary and when summoned. On the map they now stand big at the end of their Den or Sanctum on a glowing rune ring with their name over them, and elite roamers are drawn larger with their gold ring, so the dangerous fights read from across the field.']],
@@ -8090,7 +8092,12 @@ const PQ_TEXT={
  archer:'{n} missed {r} once, years ago, and has not missed anything since.',
  monk:'{n}\'s old master fell to {r}. Time to finish the lesson.',
  bard:'{n} needs one more verse for the ballad, and {r} is it.',
- chronicler:'{n} is missing one page from the archive, and {r} ate it.'};
+ chronicler:'{n} is missing one page from the archive, and {r} ate it.',
+ // v0.22.16: the first three Legendaries had no line, so Accept threw and did nothing for them
+ druid:'{n} has trailed {r} across three realms. The beasts say it is close.',
+ sniper:'{n} has had {r} in the glass once before, and let the shot go by. Not again.',
+ archmage:'{n} felt the weather turn wrong. {r} is at the middle of it.'};
+const pqText=cls=>PQ_TEXT[cls]||'{n} has unfinished business with {r}.';
 const SIGW={chronicler:'Lost Folio',warrior:'Heirloom Edge',knight:'Vow Blade',mage:'Lost Focus',healer:'Lamp Relic',thief:'Debt Collector',archer:'Second Shot',monk:"Master's Wraps",bard:'Final Verse',sniper:'Horizon Arbalest',druid:'Packcall Bow',archmage:'Stormglass Rod'};
 const ALTW={sword:'greatsword',greatsword:'katana',axe:'hammer',hammer:'axe',spear:'trident',trident:'spear',dagger:'twindagger',twindagger:'katana',bow:'crossbow',crossbow:'bow',
  staff_orb:'staff_crystal',staff_crystal:'staff_sun',staff_sun:'staff_orb',staff_crook:'staff_sun',rod:'staff_crystal',tome:'staff_orb',lute:'harp',harp:'fan',fan:'harp',fists:'claws',claws:'katana',scythe:'katana',katana:'greatsword',mace:'hammer'};
@@ -8123,7 +8130,7 @@ function startPersonal(id){
   const s=G.stage,Z=ZS(s),R=seeded((hashS(id)+G.run.seed)>>>0),mon=Z.pool[Math.floor(R()*Z.pool.length)],mod=ELITE_MODS[Math.floor(R()*ELITE_MODS.length)];
   const name=`${MON[mon].n} ${ELITE_TITLES[Math.floor(R()*ELITE_TITLES.length)]}`,t=TPL[id];
   const q={id:'p_'+id,personal:id,stage:s,mon,mod:mod.k,name,lv:Math.max(STAGE_LV[s][0]+4,c.lv+1),state:'active',
-    text:PQ_TEXT[t.cls].replace(/\{n\}/g,t.n).replace(/\{r\}/g,name).replace(/\{e\}/g,EL[t.el[0]].toLowerCase()),reward:{}};
+    text:pqText(t.cls).replace(/\{n\}/g,t.n).replace(/\{r\}/g,name).replace(/\{e\}/g,EL[t.el[0]].toLowerCase()),reward:{}};
   G.personal[id]=q;saveGame();return q;
 }
 function personalDone(b,info){
@@ -17434,7 +17441,7 @@ function buildRivals(){RAW.forEach((r,i)=>{const id=r[0],t=TPL[id];if(!t||t.mon)
   makeMonVariant(k,base,name,rivalEls(t),RIVAL_COL[(i*7)%RIVAL_COL.length],{rival:id,hp:+(MON[base].hp*1.1).toFixed(2)});});}
 buildRivals();
 {const sp0=startPersonal;startPersonal=function(id){const q=sp0.apply(this,arguments);try{const k='rv_'+id;if(q&&MON[k]){const t=TPL[id];q.mon=k;q.name=MON[k].n;
-  q.text=PQ_TEXT[t.cls].replace(/\{n\}/g,t.n).replace(/\{r\}/g,q.name).replace(/\{e\}/g,EL[t.el[0]].toLowerCase());saveGame();}}catch(e){}return q;};}
+  q.text=pqText(t.cls).replace(/\{n\}/g,t.n).replace(/\{r\}/g,q.name).replace(/\{e\}/g,EL[t.el[0]].toLowerCase());saveGame();}}catch(e){}return q;};}
 
 // ===== sprites.js (v0.4.1): item and equipment sprite palettes =====
 // palettes follow the rarity borders (ITEM_TIERS): common iron, uncommon green steel, rare blue steel, epic violet, legendary gold, mythic crimson.
@@ -27467,9 +27474,12 @@ try{
   [['p1','pit','First blood','Win 1 arena bout.','arena',1,14,1],['p2','pit','A regular','Win 3 arena bouts.','arena',3,24,1],['p3','pit','Crowd favourite','Win 6 arena bouts.','arena',6,36,2],['p4','pit','Silver and up','Win 3 bouts in the Silver Ring or higher.','arenaHi',3,40,2],['p5','pit','Legend of the pit','Win 12 arena bouts.','arena',12,60,3]]
     .forEach(a=>FMIS.push({id:a[0],f:a[1],t:a[2],d:a[3],k:a[4],n:a[5],rep:a[6],r:a[7]}));
 }catch(e){}
-function arenaWins(){try{return (G.arena||[]).reduce((a,n)=>a+(n|0),0);}catch(e){return 0;}}
-{const fd0=facDerived;facDerived=function(k){if(k==='arena')return arenaWins();if(k==='arenaHi'){try{return (G.arena||[]).reduce((a,n,i)=>a+(i>=1?(n|0):0),0);}catch(e){return 0;}}return fd0.apply(this,arguments);};}
-{const fr0=facRaw;facRaw=function(id){if(id==='pit'){try{return (G.arena||[]).reduce((a,n,i)=>a+(n|0)*(8+6*i),0);}catch(e){return 0;}}return fr0.apply(this,arguments);};}
+// v0.22.16: G.arena is an object keyed by tier ({0:2,1:1}; engine.js newGame), not an array: .reduce on it threw, the catch answered 0, and so no
+// arena win ever counted for the Pit Masters' missions or standing in a real journey (the test had set an array). arenaTally reads either shape
+function arenaTally(){const a=(G&&G.arena)||{};return ARENA.map((A,i)=>a[i]|0);}
+function arenaWins(){try{return arenaTally().reduce((a,n)=>a+n,0);}catch(e){return 0;}}
+{const fd0=facDerived;facDerived=function(k){if(k==='arena')return arenaWins();if(k==='arenaHi'){try{return arenaTally().reduce((a,n,i)=>a+(i>=1?(n|0):0),0);}catch(e){return 0;}}return fd0.apply(this,arguments);};}
+{const fr0=facRaw;facRaw=function(id){if(id==='pit'){try{return arenaTally().reduce((a,n,i)=>a+(n|0)*(8+6*i),0);}catch(e){return 0;}}return fr0.apply(this,arguments);};}
 // ----- the win: the rare purse and the Pit Masters' perks -----
 HOOK.after('win','arena9','arena rare purse and Pit perks',function(){try{const sp=B&&B.spec;if(!sp||sp.kind!=='arena'||!G||G.daily)return;const t=sp.tier|0,A=ARENA[t];if(!A)return;
   const info=(B&&B.result)||(V.modal&&V.modal.info)||{};info.notes=info.notes||[];const got=[];
@@ -34797,6 +34807,9 @@ HOOK.xform('nbBody','quests16','personal quests in the Notices list; hand-in pla
   if(tab==='all'&&(!sec||sec==='all')&&nbPersonal().length)h+=m3H('Personal quests')+vPersonal();
   h=h.replace(/Hand in at any Guild Hall(?! or)/g,'Hand in at any Guild Hall or Notice Board');}catch(e){}return h;});
 
+// v0.22.16: the board opens on its All tab, which had no Personal section (only the Quests tab did), so "Quests > Personal" was not there
+HOOK.xform('nbSecs','quests16','a Personal section on the All tab',function(r,tab){try{if(tab==='all'&&Array.isArray(r)&&!r.some(x=>x[0]==='personal'))return r.concat([['personal','Personal',nbPersonal().length]]);}catch(e){}return r;});
+HOOK.before('nbBody','quests16','the All tab\'s Personal section',function(tab,sec){if(tab==='all'&&sec==='personal'){try{return HOOK.stop(vPersonal());}catch(e){}}});
 // ---------- 2. the personal quest offer ----------
 function pq16List(){try{if(!G||G.daily)return [];const off=G.pqOff||{};return Object.values(G.roster).filter(c=>TPL[c.id]&&!TPL[c.id].mon&&!off[c.id]&&personalEligible(c)&&!(G.personal&&G.personal[c.id]&&G.personal[c.id].state&&G.personal[c.id].state!=='open'));}catch(e){return [];}}
 HOOK.before('finishBattle','quests16','a personal quest may be offered after this fight',function(how){try{if(how==='win'&&G&&!G.daily)V.pq16=1;}catch(e){}});

@@ -64,6 +64,9 @@ HOOK.xform('nbBody','quests16','personal quests in the Notices list; hand-in pla
   if(tab==='all'&&(!sec||sec==='all')&&nbPersonal().length)h+=m3H('Personal quests')+vPersonal();
   h=h.replace(/Hand in at any Guild Hall(?! or)/g,'Hand in at any Guild Hall or Notice Board');}catch(e){}return h;});
 
+// v0.22.16: the board opens on its All tab, which had no Personal section (only the Quests tab did), so "Quests > Personal" was not there
+HOOK.xform('nbSecs','quests16','a Personal section on the All tab',function(r,tab){try{if(tab==='all'&&Array.isArray(r)&&!r.some(x=>x[0]==='personal'))return r.concat([['personal','Personal',nbPersonal().length]]);}catch(e){}return r;});
+HOOK.before('nbBody','quests16','the All tab\'s Personal section',function(tab,sec){if(tab==='all'&&sec==='personal'){try{return HOOK.stop(vPersonal());}catch(e){}}});
 // ---------- 2. the personal quest offer ----------
 function pq16List(){try{if(!G||G.daily)return [];const off=G.pqOff||{};return Object.values(G.roster).filter(c=>TPL[c.id]&&!TPL[c.id].mon&&!off[c.id]&&personalEligible(c)&&!(G.personal&&G.personal[c.id]&&G.personal[c.id].state&&G.personal[c.id].state!=='open'));}catch(e){return [];}}
 HOOK.before('finishBattle','quests16','a personal quest may be offered after this fight',function(how){try{if(how==='win'&&G&&!G.daily)V.pq16=1;}catch(e){}});

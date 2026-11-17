@@ -22,9 +22,12 @@ try{
   [['p1','pit','First blood','Win 1 arena bout.','arena',1,14,1],['p2','pit','A regular','Win 3 arena bouts.','arena',3,24,1],['p3','pit','Crowd favourite','Win 6 arena bouts.','arena',6,36,2],['p4','pit','Silver and up','Win 3 bouts in the Silver Ring or higher.','arenaHi',3,40,2],['p5','pit','Legend of the pit','Win 12 arena bouts.','arena',12,60,3]]
     .forEach(a=>FMIS.push({id:a[0],f:a[1],t:a[2],d:a[3],k:a[4],n:a[5],rep:a[6],r:a[7]}));
 }catch(e){}
-function arenaWins(){try{return (G.arena||[]).reduce((a,n)=>a+(n|0),0);}catch(e){return 0;}}
-{const fd0=facDerived;facDerived=function(k){if(k==='arena')return arenaWins();if(k==='arenaHi'){try{return (G.arena||[]).reduce((a,n,i)=>a+(i>=1?(n|0):0),0);}catch(e){return 0;}}return fd0.apply(this,arguments);};}
-{const fr0=facRaw;facRaw=function(id){if(id==='pit'){try{return (G.arena||[]).reduce((a,n,i)=>a+(n|0)*(8+6*i),0);}catch(e){return 0;}}return fr0.apply(this,arguments);};}
+// v0.22.16: G.arena is an object keyed by tier ({0:2,1:1}; engine.js newGame), not an array: .reduce on it threw, the catch answered 0, and so no
+// arena win ever counted for the Pit Masters' missions or standing in a real journey (the test had set an array). arenaTally reads either shape
+function arenaTally(){const a=(G&&G.arena)||{};return ARENA.map((A,i)=>a[i]|0);}
+function arenaWins(){try{return arenaTally().reduce((a,n)=>a+n,0);}catch(e){return 0;}}
+{const fd0=facDerived;facDerived=function(k){if(k==='arena')return arenaWins();if(k==='arenaHi'){try{return arenaTally().reduce((a,n,i)=>a+(i>=1?(n|0):0),0);}catch(e){return 0;}}return fd0.apply(this,arguments);};}
+{const fr0=facRaw;facRaw=function(id){if(id==='pit'){try{return arenaTally().reduce((a,n,i)=>a+(n|0)*(8+6*i),0);}catch(e){return 0;}}return fr0.apply(this,arguments);};}
 // ----- the win: the rare purse and the Pit Masters' perks -----
 HOOK.after('win','arena9','arena rare purse and Pit perks',function(){try{const sp=B&&B.spec;if(!sp||sp.kind!=='arena'||!G||G.daily)return;const t=sp.tier|0,A=ARENA[t];if(!A)return;
   const info=(B&&B.result)||(V.modal&&V.modal.info)||{};info.notes=info.notes||[];const got=[];

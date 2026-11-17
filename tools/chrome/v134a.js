@@ -7,6 +7,8 @@ const {open,chk,done}=require('./pw');
  A.V.modal={type:'guild',tab:'guilds'};A.render();const m=document.querySelector('#modal');o.cards=m.querySelectorAll('.facc').length;o.shop=!!m.querySelector('.gshop');o.shopRows=m.querySelectorAll('.gshop .row').length;o.shopBefore=m.innerHTML.indexOf('gshop')<m.innerHTML.indexOf('Ranks and perks');
  o.pit=!!g('FACB').pit&&g('FAC3').pit.n.length===5&&!!A.GEAR.c_fa6&&!!A.GEAR.c_fb6&&g('FSTOCK').pit.length===3;
  G.arena=[3,2,0,0,0];g('facDirty')();o.rep=g('facRep')('pit');o.tier=g('facTier')('pit');o.wins=g('facCount')('arena');o.hi=g('facCount')('arenaHi');
+ // v0.22.16: the game keeps G.arena as an object keyed by tier (engine.js newGame); the tally has to read that shape too
+ G.arena={0:3,1:2};g('facDirty')();o.objWins=g('facCount')('arena');o.objHi=g('facCount')('arenaHi');o.objRep=g('facRep')('pit');
  // the win purse: a fake arena result through the win hook
  const B={spec:{kind:'arena',tier:2},result:{gold:0,notes:[]}};A.TW.set?A.TW.set('B',B):null;
  return o;});console.log(JSON.stringify(r));
@@ -14,5 +16,6 @@ const {open,chk,done}=require('./pw');
   chk('the Guild Hall arena tab lists five enterable tiers with their rare purse',r.hallEnter===5&&r.purse);
   chk('seven guilds, the Pit Masters among them, with charms and a counter',r.cards===7&&r.pit);
   chk('the Guild shop section sits before Ranks and perks with a row per counter (5 guilds have one)',r.shop&&r.shopRows===5&&r.shopBefore||JSON.stringify([r.shop,r.shopRows,r.shopBefore]));
+  chk('the same wins kept the way the game keeps them (an object keyed by tier) count the same: 5 wins, 2 high, standing 52',r.objWins===5&&r.objHi===2&&r.objRep===52||JSON.stringify([r.objWins,r.objHi,r.objRep]));
   chk('arena standing: 3 Bronze + 2 Silver wins = 24 + 28 = 52, rank 2; counters 5 wins, 2 high',r.rep===52&&r.tier===2&&r.wins===5&&r.hi===2||JSON.stringify([r.rep,r.tier,r.wins,r.hi]));
   await done(H);})();
