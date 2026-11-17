@@ -4,6 +4,7 @@
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.22.20',['Towns you can see. The camera looks down more steeply inside a town, so a building hides much less of what stands behind it, and every town is spread out: more open rows in front of each building, more room between neighbours, and buildings that stood stacked one behind the other have stepped apart. Doors and signs that sat behind a roof are in view. Walls, tree lines, roads and gates are unchanged in shape; towns are a few tiles larger. Fields, dungeons and battles keep the old camera.']],
  ['Beta v0.22.19',['Upgrades no longer need to be worth 3%. Any step that makes a hero better, however small, shows up on the Upgrade buttons and is used by Upgrade whole party.']],
  ['Beta v0.22.18',['Fixed: on a phone the new +5 stat buttons did not fit the attribute rows. They are replaced by one switch above the attributes: each + adds 1, or each + adds 5.']],
  ['Beta v0.22.17',['Upgrade whole party does much more. It now tempers what your heroes already wear, plans boots and charms along with weapons, armor and shields, and always goes for the piece that ends up best at full temper before spending on one that will be replaced. Every planned step, and every row of "Best upgrade for each slot", lists the materials and gold it uses.',

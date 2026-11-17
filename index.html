@@ -2119,7 +2119,7 @@ html:not(.flat) .battle.b3 .bline .b4mo .b4bar{box-shadow:inset 0 0 0 1px #000,0
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.22.19";const APP_BUILD="5177863b6869";
+(function(){const APP_VER="0.22.20";const APP_BUILD="c42d150e0d88";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2777,7 +2777,9 @@ const WMAP={cell:[64,150,38],vig:.78,names:84};// cell: px per area (normal min,
 // lmMax: most lights per frame; lightK: light strength; chunk: static geometry chunk size in tiles (culling).
 // look: lighting and grade per time of day and place; weather: how each weather scales ambient and sun and tints the fog.
 // fogN (v0.8.0): where the distance fog starts in that weather, as a share of fogStart (fog 0.3: it thickens smoothly from near the hero).
-const HD2D={pitch:40,fov:28,maxHfov:40,zoom:1,follow:85,topSlack:.2,sway:{amp:0,pitch:0,ms:11000},
+// v0.22.20: the camera looks down more steeply in a town (pitchTown 52) than elsewhere (pitch0 40), so a building hides less of what stands
+// behind it (towns23.js). HD2D.pitch is read where it always was: a getter on the map the party is on; setting it sets both.
+const HD2D={pitch0:40,pitchTown:52,fov:28,maxHfov:40,zoom:1,follow:85,topSlack:.2,sway:{amp:0,pitch:0,ms:11000},
   wall:{dungeon:22,cliff:12,town:14},water:-3,deep:-14,fogStart:1.15,fogEnd:2.7,xray:{out:26,dun:40},actMin:{out:.62,dun:.58},heroLight:120,shaft:.09,
   dof:{shift:.06,band:.24,ramp:.5,max:.7},bloom:{thr:.86,med:.5,high:.55},
   tiers:{medium:{px:1,pxMax:2,blur:2,lmap:128,bloom:1,dof:1,shafts:1,every:2},high:{px:1,pxMax:3,blur:2,lmap:192,bloom:2,dof:1,shafts:1}},lmMax:96,lightK:.8,chunk:8,
@@ -2801,6 +2803,7 @@ const HD2D={pitch:40,fov:28,maxHfov:40,zoom:1,follow:85,topSlack:.2,sway:{amp:0,
 // spread: how far to each side the light map is read (px), so a lamp on one side lights that side; rim: key light rim strength;
 // act: the least light a character gets (outdoors at night, in dungeons), added in the ambient's colour; shadow: contact shadow
 // [width as a share of the sprite, depth as a share of the width, core darkness, soft darkness, offset away from the key light px].
+Object.defineProperty(HD2D,'pitch',{enumerable:true,configurable:true,get(){try{if(typeof WS!=='undefined'&&WS&&WS.m&&WS.m.kind==='town'&&!(typeof G!=='undefined'&&G&&G.daily))return HD2D.pitchTown;}catch(e){}return HD2D.pitch0;},set(v){HD2D.pitch0=v;HD2D.pitchTown=v;}});
 HD2D.spr={sc:2/3,sat:.86,con:.9,spread:9,rim:.75,act:{out:.3,dun:.34},shadow:[.8,.55,.36,.3,1.6]};
 // v0.6.3 battle screen (battle3.js, battle3.css)
 // B3: the stage label layout, in logical stage px (the stage is drawn at BL.sc CSS px per px). body: margin kept around each sprite's
@@ -2899,7 +2902,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.22.19";const APP_BUILD="5177863b6869";
+const APP_VER="0.22.20";const APP_BUILD="c42d150e0d88";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2907,6 +2910,7 @@ const APP_VER="0.22.19";const APP_BUILD="5177863b6869";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.22.20',['Towns you can see. The camera looks down more steeply inside a town, so a building hides much less of what stands behind it, and every town is spread out: more open rows in front of each building, more room between neighbours, and buildings that stood stacked one behind the other have stepped apart. Doors and signs that sat behind a roof are in view. Walls, tree lines, roads and gates are unchanged in shape; towns are a few tiles larger. Fields, dungeons and battles keep the old camera.']],
  ['Beta v0.22.19',['Upgrades no longer need to be worth 3%. Any step that makes a hero better, however small, shows up on the Upgrade buttons and is used by Upgrade whole party.']],
  ['Beta v0.22.18',['Fixed: on a phone the new +5 stat buttons did not fit the attribute rows. They are replaced by one switch above the attributes: each + adds 1, or each + adds 5.']],
  ['Beta v0.22.17',['Upgrade whole party does much more. It now tempers what your heroes already wear, plans boots and charms along with weapons, armor and shields, and always goes for the piece that ends up best at full temper before spending on one that will be replaced. Every planned step, and every row of "Best upgrade for each slot", lists the materials and gold it uses.',
@@ -38377,6 +38381,76 @@ HOOK.xform('mChar','stats22','the stat points note and the +1 / +5 switch',funct
   const sw=c.pts>=2?`<div class="chips s22step" role="group" aria-label="Points per tap"><button class="chip sm ${S22.step===1?'on':''}" aria-pressed="${S22.step===1}" data-act="ptStep" data-arg="1">Each + adds 1</button><button class="chip sm ${S22.step===5?'on':''}" aria-pressed="${S22.step===5}" data-act="ptStep" data-arg="5">Each + adds 5</button></div>`:'';
   return h.replace(/(<h4>Attributes[\s\S]*?<\/h4>)/,'$1<p class="note s22cap">Two points a level. In one attribute, points count fully up to the hero\'s level ('+c.lv+') and half beyond it.</p>'+sw);}catch(e){return h;}});
 try{window.__S22={MANA22,S22,cost:mana22Cost};}catch(e){}
+
+// ===== towns23.js (v0.22.20): towns you can see: a steeper camera in town, layouts spread out =====
+// Owner: "you should be able to see them all clearly", then, shown the same town at pitch 40 and 52: "You can tilt it more but we still
+// want layouts spread out generally more."
+// Measured before: a 5 tile deep building stands about 79 world units tall in HD-2D; at pitch 40 it hides the ground for 5.9 tiles north of
+// its front, and the layouts keep 2 to 4 rows between building rows, so the doors and signs of the back rows were behind roofs.
+//  1 The camera: HD2D.pitch is 52 in a town (HD2D.pitchTown), 40 everywhere else (config.js makes pitch a getter on the map the party is on).
+//    At 52 the same building hides 3.9 tiles.
+//  2 The layouts are stretched after towns14 has made and checked them (a townGen wrap, outermost). Rows and columns that no building stands
+//    in are doubled where room is missing:
+//      - a building with another one to its south in its columns gets at least T23.needR (5) clear rows in front of it,
+//      - two buildings side by side get at least T23.needC (3) columns between them,
+//      - and every band of open rows or columns between buildings gets T23.spread (1) more, so a town is roomier everywhere,
+//    up to T23.maxR more rows and T23.maxC more columns. A doubled row copies only what runs straight through it (a path, a wall, a
+//    fence, water, a bridge that continues on both sides); everything else in the copy is open ground, so nothing is made twice (a
+//    waystone, a board, a lamp, a crate) and no road gets wider. The road row, the rows beside it and the map's edges are never doubled, so
+//    the gates and the town sign stay where getMap expects them. Buildings, doors and the road row move with the grid. The stretched town is
+//    checked again (t14Check); if it fails, the town stays as towns14 made it (T23.n.kept).
+// T23.off: the layouts as towns14 made them (the camera is HD2D.pitchTown either way; set it to 40 for the old view).
+const T23={off:false,needR:5,needC:3,spread:1,maxR:10,maxC:10,per:3,n:{made:0,kept:0,rows:0,cols:0}};
+const T23_RUN='=:#F~BTZ,';// what continues through a doubled line when it stands on both sides of it (paths, walls, the town wall, fences, water, bridges, the tree line)
+function t23Plan(t){const g=t.g,H=g.length,W=g[0].length,B=t.bld,road=t.road;
+  const rowFree=y=>y>1&&y<H-2&&Math.abs(y-road)>1&&!g[y].includes('H'),colFree=x=>{if(x<4||x>W-5)return false;for(let y=0;y<H;y++)if(g[y][x]==='H')return false;return true;};
+  const open=r=>{let n=0;for(const c of r)if(c==='.'||c===',')n++;return n;};
+  const dupR={},dupC={},sumR=(a,b)=>{let n=0;for(let y=a;y<=b;y++)n+=dupR[y]||0;return n;},sumC=(a,b)=>{let n=0;for(let x=a;x<=b;x++)n+=dupC[x]||0;return n;};
+  let tr=0,tc=0;
+  const addR=(a,b,need)=>{const rows=[];for(let y=a;y<=b;y++)if(rowFree(y))rows.push(y);rows.sort((p,q)=>open(g[q])-open(g[p])||p-q);let guard=0;
+    while(need>0&&rows.length&&tr<T23.maxR&&guard++<40){const y=rows.find(y=>(dupR[y]||0)<T23.per);if(y==null)break;dupR[y]=(dupR[y]||0)+1;tr++;need--;rows.push(rows.shift());}};
+  const colOpen=x=>{let n=0;for(let y=0;y<H;y++){const c=g[y][x];if(c==='.'||c===',')n++;}return n;};
+  const addC=(a,b,need)=>{const cols=[];for(let x=a;x<=b;x++)if(colFree(x))cols.push(x);cols.sort((p,q)=>colOpen(q)-colOpen(p)||p-q);let guard=0;
+    while(need>0&&cols.length&&tc<T23.maxC&&guard++<40){const x=cols.find(x=>(dupC[x]||0)<T23.per);if(x==null)break;dupC[x]=(dupC[x]||0)+1;tc++;need--;cols.push(cols.shift());}};
+  // rows in front of a building that has another one south of it in its columns
+  const pairsR=[];B.forEach(b=>B.forEach(c=>{if(b===c||c.y<b.y+b.h)return;if(c.x<b.x+b.w+1&&b.x<c.x+c.w+1)pairsR.push([b,c,c.y-(b.y+b.h)]);}));
+  pairsR.sort((p,q)=>p[2]-q[2]).forEach(([b,c,gap])=>{if(gap>=T23.needR+2)return;const a=b.y+b.h,e=c.y-1,need=T23.needR-gap-sumR(a,e);if(need>0)addR(a,e,need);});
+  const pairsC=[];B.forEach(b=>B.forEach(c=>{if(b===c||c.x<b.x+b.w)return;if(c.y<b.y+b.h&&b.y<c.y+c.h)pairsC.push([b,c,c.x-(b.x+b.w)]);}));
+  pairsC.sort((p,q)=>p[2]-q[2]).forEach(([b,c,gap])=>{const a=b.x+b.w,e=c.x-1,need=T23.needC-gap-sumC(a,e);if(need>0)addC(a,e,need);});
+  // roomier everywhere: one more line in every open band that lies between buildings and has had none yet
+  if(T23.spread>0){const ys=B.map(b=>b.y),ye=B.map(b=>b.y+b.h-1),y0=Math.min(...ys),y1=Math.max(...ye);let a=null;
+    for(let y=y0;y<=y1+1;y++){const fr=y<=y1&&rowFree(y);if(fr&&a==null)a=y;if(!fr&&a!=null){if(!sumR(a,y-1))addR(a,y-1,T23.spread);a=null;}}
+    const xs=B.map(b=>b.x),xe=B.map(b=>b.x+b.w-1),x0=Math.min(...xs),x1=Math.max(...xe);a=null;
+    for(let x=x0;x<=x1+1;x++){const fr=x<=x1&&colFree(x);if(fr&&a==null)a=x;if(!fr&&a!=null){if(!sumC(a,x-1))addC(a,x-1,T23.spread);a=null;}}}
+  return {dupR,dupC,tr,tc};}
+function t23Stretch(t){const P=t23Plan(t);if(!P.tr&&!P.tc)return null;let g=t.g.map(r=>r.slice());const H0=g.length,W0=g[0].length;
+  const keep=(a,b)=>{if(a===b&&T23_RUN.includes(a))return a;if('ZY'.includes(a)&&'ZY'.includes(b))return 'Z';/* a wall tower beside the town wall: the wall goes on */if('#Y'.includes(a)&&'#Y'.includes(b))return '#';if('=:B'.includes(a)&&'=:B'.includes(b))return '=';return '.';};
+  // rows (from the bottom up, so the indices of the plan stay true)
+  for(let y=H0-1;y>=0;y--){const n=P.dupR[y]||0;if(!n||!g[y+1])continue;const copy=g[y].map((c,x)=>keep(c,g[y+1][x]));for(let k=0;k<n;k++)g.splice(y+1,0,copy.slice());}
+  for(let x=W0-1;x>=0;x--){const n=P.dupC[x]||0;if(!n)continue;g.forEach(r=>{const c=keep(r[x],r[x+1]);for(let k=0;k<n;k++)r.splice(x+1,0,c);});}
+  const sy=y=>{let s=0;for(let i=0;i<y;i++)s+=P.dupR[i]||0;return y+s;},sx=x=>{let s=0;for(let i=0;i<x;i++)s+=P.dupC[i]||0;return x+s;};
+  const bld=t.bld.map(b=>Object.assign({},b,{x:sx(b.x),y:sy(b.y),door:b.door?[sx(b.door[0]),sy(b.door[1])]:b.door}));
+  return Object.assign({},t,{g,bld,road:sy(t.road),t23:{rows:P.tr,cols:P.tc}});}
+// 3 Where no whole row is free (buildings stand staggered, one stack beside another), single buildings step apart: of a tight pair the
+//   northern one moves north and the southern one south, a row at a time, onto plain ground only ('.' and ','; the door's own column may
+//   cross a path), leaving a clear row beyond. A building that moved north keeps a path from its new door step down to its old one.
+function t23Nudge(t){const g=t.g.map(r=>r.slice()),H=g.length,W=g[0].length,B=t.bld.map(b=>Object.assign({},b,{door:b.door?b.door.slice():b.door}));let moved=0;
+  const plain=c=>c==='.'||c===','||c===':'||c==='f'||c==='t',at=(x,y)=>(g[y]||[])[x];/* open ground, plaza paving, flowers and bushes */
+  const canRow=(b,y,doorCol)=>{if(y<2||y>H-3)return false;for(let x=b.x;x<b.x+b.w;x++){const c=at(x,y);if(!(plain(c)||(doorCol&&x===b.door[0]&&'=:'.includes(c))))return false;}return true;};
+  const clearRow=(b,y)=>{for(let x=b.x-1;x<=b.x+b.w;x++)if(at(x,y)==='H')return false;return y>0&&y<H-1;};
+  const south=b=>{const y=b.y+b.h;if(!b.door||!canRow(b,y,true)||!clearRow(b,y+1)||!clearRow(b,y+2)||Math.abs(y+1-t.road)<1||y+1===t.road)return false;const step=at(b.door[0],y+1);if(!(plain(step)||'=:'.includes(step)))return false;
+    for(let x=b.x;x<b.x+b.w;x++){g[y][x]='H';g[b.y][x]='.';}b.y++;b.door[1]++;return true;};
+  const north=b=>{const y=b.y-1;if(!b.door||!canRow(b,y,false)||!clearRow(b,y-1))return false;const oy=b.y+b.h-1;
+    for(let x=b.x;x<b.x+b.w;x++){g[y][x]='H';g[oy][x]=x===b.door[0]?'=':'.';}b.y--;b.door[1]--;return true;};
+  const pairs=[];B.forEach(b=>B.forEach(c=>{if(b!==c&&c.y>=b.y+b.h&&c.x<b.x+b.w&&b.x<c.x+c.w)pairs.push([b,c]);}));
+  for(let pass=0;pass<T23.needR;pass++){let any=false;pairs.forEach(([b,c])=>{const gap=c.y-(b.y+b.h);if(gap>=T23.needR)return;if(north(b)){any=true;moved++;}else if(south(c)){any=true;moved++;}});if(!any)break;}
+  return moved?Object.assign({},t,{g,bld:B,t23:Object.assign({},t.t23,{moved})}):null;}
+HOOK.wrap('townGen','towns23','layouts spread out: clear rows in front of every building, room between neighbours',function(next,Z,s,R){const t=next(Z,s,R);
+  try{if(T23.off||!t||!t.g||!t.bld||!t.arch)return t;const u=t23Stretch(t);
+    let ok=t;if(u){if(typeof t14Check==='function'&&t14Check(u).length)T23.n.kept++;else{ok=u;T23.n.made++;T23.n.rows+=u.t23.rows;T23.n.cols+=u.t23.cols;}}
+    try{const v=t23Nudge(ok);if(v&&!(typeof t14Check==='function'&&t14Check(v).length)){ok=v;T23.n.moved=(T23.n.moved||0)+v.t23.moved;}}catch(e){T23.err=String(e&&e.message||e);}
+    return ok;}catch(e){T23.err=String(e&&e.message||e);return t;}});
+try{window.__T23={T23,plan:t23Plan,stretch:t23Stretch};}catch(e){}
 
 window.__A={walkable,ceInit,tvSlots,genQuests,STARTERS,starterDraw,ECON,AUTO_NERF,rebuildBase,detLive,REACT,skEls,packContents,miniFor,AUTO_REW,ENC_RATE,ENC_MIN_STEPS,detNote,classSkills,stickCount,bestAll,calcStats,lookKey,vTemper,storyEchoUp,leaveDungeon,win,ldApply,genFort,caveOk,enterCave,siteHasMini,openChest,nextDlg,WS,mapIcoRects,roamSpawn,roamInterior,roamSees,mapTargets,DIRV,tileAt,STAGE_LV,autoBan,rollWeather,guardianDef,mapIssues,mapEntry,syncPools,bovAt,calFxAt,realmAt,REALMS,BOV,CAL_FX,overlayGuide,liftOverlay,drawGearIcon,gearIcon,itemIcon,RAW,sigKind,sigGid,personalDone,heroLook,hasSignature,LEGEND_IDS,facDirty,facCount,facRank,facRep,FACB,FAC,finishBattle,npcWords,npcHints,npcPool,titleMake,titleAdvance,TTS,placeAt,wkwUpdate,innSpot,getMap,monURL,enterVia,applyBossTheme,BTHEME,resetMaps,rebuildBase,shopStock,gearDesc,calcStats,gearMigrate,CLS_WPN,CLS_ARM,WPERK,WT_NAME,equipWhy,lootBase,GEAR,canEquip,gearOf,perkNote,FAM_MAT_V35,fbDraft,META:{get best(){return META.best},get codex(){return META.codex},get q(){return META.q}},saveMeta,OFF,offPending,offFlush,PROFILE,profileSync,codexSee,getMap,placeAt,interact,sanctumOpen,riftKeys,echoKeys,BONDS,bondKey,wkwUpdate,inTown,WS,LC,lsort,bestParty,fsCast,fsSkills,ldApply,MON,registerTamed,stickPower,stickCount,autoOne,planGear,bestTag,gainersFor,compGainFor,refresh,fitsFor,canEquip,gearOf,queueNewGear,ARENA,fxDur,banDur,stageTags,autoSwitchPick,layoutBattle,newChar,calcStats,limitSkill,limitTier,canStuck,dunReachable,LV_CAP,addXp,echoSpec,bossLvFor,fx,MON,log,effInfo,tierOf,perkOf,quirkDef,forgeCost,buyPlan,vJourney,modalBack,partySlots,limitOpen,town2Reached,skillKnown,known,classSkills,paceMigrate,unpackG,packG,makeEnemy,QUIRK,arrive,enterDungeon,wkwUpdate,useTravel,travelWhyNot,porkFlee,porkBlocked,encTile,campRest,buyPart,partLeft,alchStock,GAME_VERSION,CHANGELOG,ITEMS,tavernOffers,tavernPool,recruitFit,partyNeeds,vNext,CHALL,innSpot,RECIPES,MATS,FB,fbContext,REDEEM,legendJoin,legendQ,genQuests,dynActors,convInit,PROFILE,profileSync,checkArchive,GPOOL,FPOOL,guardianDef,saveMeta,archiveSkills,get G(){return G;},set G(v){G=v;},get B(){return B;},get V(){return V;},get META(){return META;},WS,ACT,render,newGame,placeAt,startBattle,autoTurn,advance,finishBattle,getMap,innSpot,setPause:p=>{PAUSE=p;},autoCfg,worldInputDir,inputSources,battleFrame,battleTheme,STS,MAPS,mapIssues,healMap,mimicReward,dropChest,interact,worldDraw,TPL,ZONES,ZS,newChar,recruit,saveGame,resetMaps,dynActors,tileAt,BV,refresh,genBounties,genQuests,vStarter,heroCard,heroURL,iconURL,masteryLine,AU,buildTrack,tone,noiseHit,MIDI,sfx,audioVol};
 ['heroRoles','SOLID','WEATHER','WX_BASE','weatherFX','superGuide','recruitCost','ceStart','ceStep','ceInit','cePool','wxList','SUPER_TABLE','superOk','facRank','facRep','facInit','facCount','facCredit','FAC','FMIS','facMissionList','facProg','tyOf','facSync','facMul','facBest','worldPlan','caveReward','enterCave','leaveCave','leaveDungeon','buildCaveMap','worldGraph','openWorldMap','sigReport','SIG_NAMES','starterDraw','ITEM_TIERS','gTierIdx','tierChip','gearIcon','starterSlots','STARTERS','CLK_LEN','CLK_PH','clockPhase','wxInfoBody','recipeOrder','recipeGain','recipeReady','recipeClose','effOf','calcDamage','healsUndead','storyEchoUp','riftKeys','echoDef','efCost','autoLocked','bossFightKey','learnScanAll','isSeen','mapMarks','genSub','subOK','subReq','ensureSub','inSub','tvSlots','tvInit','tvLeft','tvEvent','tvNextText','tvPool','tvDue','tvShuffle','mTavern','hireOK','TV_CAP','TV_CD','POOL_IDS','natPool','natOf','natRoll','NATURES','natInfo','natRerollCost','natChooseCost','NAT_CLASS','iconURL','seenOf','mapIcoDraw','drawMini','MAPCV','revealAround','fxLayer','numDur','compBonusText','compPerk','checkPhase','win','unitBox','LNQ','challVisible','challEligible','challState','isMimic','migrateCompanions','canSummon','summonComp','compOf','clockPhase','tickClock','isNight','rollWeather','wxStep','nightPool','encounterFoes','restAll','tameElite','openChest','rerollTavern','bestAll','gearTier','SV','svCheck','svFlush','svInit','svPush','svPull','svScan','svParse','svBackup','svPack','svUnpack','svProg','svCloudList','svDelDoc','svGet','svCap','slotState','slotKey','svDecode','SV_CH','svStatus','svSlotRaw','svLoad','loadRaw','svHash','svIdx'].forEach(k=>{try{Object.defineProperty(window.__A,k,{get:()=>eval(k)});}catch(e){}});

@@ -2,7 +2,7 @@
 
 Who wraps what, in load order. `raw` is the `{const f0=fn;fn=function...}` idiom, `replace` a reassignment without calling the old body, the rest are HOOK registrations. "def" names the module that HOOK.def'd the function. Raw wraps on a def'd function should become registrations; functions with many raw wraps and no def are the candidates for one.
 
-476 functions wrapped; 572 raw wraps or replacements, 792 hook registrations.
+476 functions wrapped; 572 raw wraps or replacements, 793 hook registrations.
 
 | function | owner | def | layers | chain (load order) |
 |---|---|---|---|---|
@@ -218,6 +218,7 @@ Who wraps what, in load order. `raw` is the `{const f0=fn;fn=function...}` idiom
 | svJourneyRow | saves.js |  | 2 | cloud.js:replace → menus11.js:raw |
 | tameElite | comp.js |  | 2 | v063prog.js:raw → legends17a.js:raw |
 | themeFX | bosstheme.js |  | 2 | sites.js:raw → sanctlook10.js:raw |
+| townGen | worldgen.js | worldgen.js | 2 | towns14.js:wrap → towns23.js:wrap |
 | turnOrder | engine.js | battle5.js | 2 | battle5.js:replace → rift9.js:before |
 | uDetHtml | battleui.js |  | 2 | battle3.js:raw → battle4.js:raw |
 | useItemField | engine.js |  | 2 | ailments.js:raw → twists.js:raw |
@@ -456,7 +457,6 @@ Who wraps what, in load order. `raw` is the `{const f0=fn;fn=function...}` idiom
 | t14Paint | towns14.js |  | 1 | towns21.js:raw |
 | tintFor | world3.js |  | 1 | p5trans.js:raw |
 | titleDraw | ui.js |  | 1 | gfx6.js:raw |
-| townGen | worldgen.js | worldgen.js | 1 | towns14.js:wrap |
 | travelWhyNot | travel.js |  | 1 | v063prog.js:raw |
 | tvPickOk | tavern2.js | tavern2.js | 1 | menus14.js:xform |
 | tvPool | tavern2.js |  | 1 | p2world.js:raw |

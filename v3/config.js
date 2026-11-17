@@ -575,7 +575,9 @@ const WMAP={cell:[64,150,38],vig:.78,names:84};// cell: px per area (normal min,
 // lmMax: most lights per frame; lightK: light strength; chunk: static geometry chunk size in tiles (culling).
 // look: lighting and grade per time of day and place; weather: how each weather scales ambient and sun and tints the fog.
 // fogN (v0.8.0): where the distance fog starts in that weather, as a share of fogStart (fog 0.3: it thickens smoothly from near the hero).
-const HD2D={pitch:40,fov:28,maxHfov:40,zoom:1,follow:85,topSlack:.2,sway:{amp:0,pitch:0,ms:11000},
+// v0.22.20: the camera looks down more steeply in a town (pitchTown 52) than elsewhere (pitch0 40), so a building hides less of what stands
+// behind it (towns23.js). HD2D.pitch is read where it always was: a getter on the map the party is on; setting it sets both.
+const HD2D={pitch0:40,pitchTown:52,fov:28,maxHfov:40,zoom:1,follow:85,topSlack:.2,sway:{amp:0,pitch:0,ms:11000},
   wall:{dungeon:22,cliff:12,town:14},water:-3,deep:-14,fogStart:1.15,fogEnd:2.7,xray:{out:26,dun:40},actMin:{out:.62,dun:.58},heroLight:120,shaft:.09,
   dof:{shift:.06,band:.24,ramp:.5,max:.7},bloom:{thr:.86,med:.5,high:.55},
   tiers:{medium:{px:1,pxMax:2,blur:2,lmap:128,bloom:1,dof:1,shafts:1,every:2},high:{px:1,pxMax:3,blur:2,lmap:192,bloom:2,dof:1,shafts:1}},lmMax:96,lightK:.8,chunk:8,
@@ -599,6 +601,7 @@ const HD2D={pitch:40,fov:28,maxHfov:40,zoom:1,follow:85,topSlack:.2,sway:{amp:0,
 // spread: how far to each side the light map is read (px), so a lamp on one side lights that side; rim: key light rim strength;
 // act: the least light a character gets (outdoors at night, in dungeons), added in the ambient's colour; shadow: contact shadow
 // [width as a share of the sprite, depth as a share of the width, core darkness, soft darkness, offset away from the key light px].
+Object.defineProperty(HD2D,'pitch',{enumerable:true,configurable:true,get(){try{if(typeof WS!=='undefined'&&WS&&WS.m&&WS.m.kind==='town'&&!(typeof G!=='undefined'&&G&&G.daily))return HD2D.pitchTown;}catch(e){}return HD2D.pitch0;},set(v){HD2D.pitch0=v;HD2D.pitchTown=v;}});
 HD2D.spr={sc:2/3,sat:.86,con:.9,spread:9,rim:.75,act:{out:.3,dun:.34},shadow:[.8,.55,.36,.3,1.6]};
 // v0.6.3 battle screen (battle3.js, battle3.css)
 // B3: the stage label layout, in logical stage px (the stage is drawn at BL.sc CSS px per px). body: margin kept around each sprite's

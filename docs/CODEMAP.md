@@ -1328,6 +1328,13 @@ Registered (load order; 1 is next to the base):
 
 Runs: **base** → 1 worldart12 (result) → 2 worldart13 (result)
 
+### townGen (2 hooks)
+Registered (load order; 1 is next to the base):
+1. `towns14.js` around: a layout and a building family for every realm (checked; the old theme layout is the fallback)
+2. `towns23.js` around: layouts spread out: clear rows in front of every building, room between neighbours
+
+Runs: 2 towns23 (around) → 1 towns14 (around) → **base** → 1 towns14 (around) → 2 towns23 (around)
+
 ### accOf (1 hook)
 Registered (load order; 1 is next to the base):
 1. `art2.js` result: eye patches, scarves and earrings are rarer
@@ -1609,12 +1616,6 @@ Registered (load order; 1 is next to the base):
 1. `roster14.js` before: 16 wayfarers: 2 of each class and 2 of each element, from the whole roster
 
 Runs: 1 roster14 → **base**
-
-### townGen (1 hook)
-Registered (load order; 1 is next to the base):
-1. `towns14.js` around: a layout and a building family for every realm (checked; the old theme layout is the fallback)
-
-Runs: 1 towns14 (around) → **base** → 1 towns14 (around)
 
 ### turnOrder (1 hook)
 Registered (load order; 1 is next to the base):
