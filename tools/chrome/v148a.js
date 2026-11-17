@@ -10,7 +10,7 @@ await ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.
 const T=(f,a)=>ev(([s,a])=>(0,eval)('('+s+')')(a),[f.toString(),a]);
 
 // ---- 2) forging starts at +0 ----
-const f=await ev(()=>{const A=__A,t=k=>A.TW.get(k),R=t('RECIPES').filter(r=>r.id&&t('SMITH_CATS').includes(r.cat)),MP=t('MAT_PRICE');
+const f=await ev(()=>{const A=__A,t=k=>A.TW.get(k),R=t('RECIPES').filter(r=>r.id&&['weapon','armor'].includes(r.cat)),/* 0.22.17: SMITH_CATS also holds charm now; charm recipes keep their own prices */MP=t('MAT_PRICE');
   const ratio=R.map(r=>{const g=A.GEAR[r.id],m=t('recipeMats')(r);let b=0;Object.keys(m).forEach(k=>{if(MP[k])b+=MP[k]*m[k];});return {id:r.id,plus:t('plusOf')(r.id),k:(r.g+b)/g.price,floor:r.g<=Math.round(g.price*.15)};});
   return {n:R.length,plus:ratio.filter(x=>x.plus>0).map(x=>x.id),bad:ratio.filter(x=>!x.floor&&(x.k<.7||x.k>.95)).map(x=>x.id+':'+x.k.toFixed(2)),min:Math.min(...ratio.map(x=>x.k)).toFixed(2),max:Math.max(...ratio.map(x=>x.k)).toFixed(2),shop:ratio.filter(x=>A.GEAR[x.id]).length};});
 chk('forge recipes exist for the smithy gear: '+f.n,f.n>=50);

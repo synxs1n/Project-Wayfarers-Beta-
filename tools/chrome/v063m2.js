@@ -11,21 +11,21 @@ const show=m=>ev(m=>{__A.V.modal=m;__A.render();},m);
 // ---- item 2: structure
 await show({type:'smithy'});let n=await nav();
 chk('Smithy main tabs: Shop, Forge, Tempering, Sell',JSON.stringify(n.tabs.slice(0,4))===JSON.stringify(['Shop','Forge','Tempering','Sell'])||JSON.stringify(n.tabs));
-chk('Smithy Shop sections: All, Weapons, Armor, Boots, Shields (a Knight is along), Materials',JSON.stringify(n.secs)===JSON.stringify(['All','Weapons','Armor','Boots','Shields','Materials'])||JSON.stringify(n.secs));
+chk('Smithy Shop sections: All, Weapons, Armor, Boots, Shields (a Knight is along), Charms (0.22.17), Materials',JSON.stringify(n.secs)===JSON.stringify(['All','Weapons','Armor','Boots','Shields','Charms','Materials'])||JSON.stringify(n.secs));
 chk('Smithy opens on Shop > All with every section under its own heading',n.on.join()==='Shop,All'&&['Weapons','Armor','Boots','Ore and wood','Monster parts'].every(x=>n.h4.includes(x))||JSON.stringify(n));
-await show({type:'smithy',tab:'craft'});n=await nav();chk('Forge sections: All, Weapons, Armor',JSON.stringify(n.secs)===JSON.stringify(['All','Weapons','Armor'])||JSON.stringify(n.secs));
+await show({type:'smithy',tab:'craft'});n=await nav();chk('Forge sections: All, Weapons, Armor, Charms (0.22.17)',JSON.stringify(n.secs)===JSON.stringify(['All','Weapons','Armor','Charms'])||JSON.stringify(n.secs));
 await show({type:'smithy',tab:'forge'});n=await nav();chk('Tempering sections: All, Weapons, Armor, Boots, Shields, Charms',JSON.stringify(n.secs)===JSON.stringify(['All','Weapons','Armor','Boots','Shields','Charms'])||JSON.stringify(n.secs));
-await show({type:'smithy',tab:'sell'});n=await nav();chk('Smithy Sell sections: All, Weapons, Armor, Boots, Shields (a Knight is along), Materials',JSON.stringify(n.secs)===JSON.stringify(['All','Weapons','Armor','Boots','Shields','Materials'])||JSON.stringify(n.secs));
+await show({type:'smithy',tab:'sell'});n=await nav();chk('Smithy Sell sections: All, Weapons, Armor, Boots, Shields (a Knight is along), Charms (0.22.17), Materials',JSON.stringify(n.secs)===JSON.stringify(['All','Weapons','Armor','Boots','Shields','Charms','Materials'])||JSON.stringify(n.secs));
 await show({type:'workshop'});n=await nav();
 chk('Alchemy main tabs: Shop, Brew & craft, Sell, Pouch',JSON.stringify(n.tabs)===JSON.stringify(['Shop','Brew & craft','Sell','Pouch'])||JSON.stringify(n.tabs));
-chk('Alchemy Shop sections: All, Potions, Cures, Travel, Charms, Herbs',JSON.stringify(n.secs.slice(0,6))===JSON.stringify(['All','Potions','Cures','Travel','Charms','Herbs'])||JSON.stringify(n.secs));
+chk('Alchemy Shop sections: All, Potions, Cures, Travel, Herbs (charms moved to the Smithy in 0.22.17)',JSON.stringify(n.secs.slice(0,5))===JSON.stringify(['All','Potions','Cures','Travel','Herbs'])||JSON.stringify(n.secs));
 // ---- item 1: charms have their own section
-const ch=await ev(()=>{__A.ACT.sSec('charm');const g=[...document.querySelectorAll('#modal [data-act="buyGear"]')].map(b=>b.dataset.arg),it=document.querySelectorAll('#modal [data-act="buyItem"]').length;return {g,it,on:__A.V.modal.sec};});
-chk('1: Alchemy > Shop > Charms lists only charms',ch.on==='charm'&&ch.g.length>0&&ch.g.every(id=>id.startsWith('c_'))&&ch.it===0||JSON.stringify(ch));
+const ch=await ev(()=>{const m0=__A.V.modal;__A.V.modal={type:'smithy',tab:'shop',sec:'charms'};__A.render();const done=()=>{__A.V.modal=m0;__A.render();};const g=[...document.querySelectorAll('#modal [data-act="buyGear"]')].map(b=>b.dataset.arg),it=document.querySelectorAll('#modal [data-act="buyItem"]').length,on=__A.V.modal.sec;done();return {g,it,on};});
+chk('1: Smithy > Shop > Charms lists only charms',ch.on==='charms'&&ch.g.length>0&&ch.g.every(id=>id.startsWith('c_'))&&ch.it===0||JSON.stringify(ch));
 const po=await ev(()=>{__A.ACT.sSec('potion');return {g:document.querySelectorAll('#modal [data-act="buyGear"]').length,it:[...document.querySelectorAll('#modal [data-act="buyItem"]')].map(b=>b.dataset.arg)};});
 chk('Alchemy > Potions has no charms and no travel gear',po.g===0&&po.it.length>0&&!po.it.includes('tent')&&!po.it.includes('holywater')||JSON.stringify(po));
-await show({type:'workshop',tab:'craft'});n=await nav();chk('Alchemy craft sections: All, Potions, Charms, Travel',JSON.stringify(n.secs)===JSON.stringify(['All','Potions','Charms','Travel'])||JSON.stringify(n.secs));
-await show({type:'workshop',tab:'sell'});n=await nav();chk('Alchemy Sell sections: All, Charms, Herbs, Items',JSON.stringify(n.secs)===JSON.stringify(['All','Charms','Herbs','Items'])||JSON.stringify(n.secs));
+await show({type:'workshop',tab:'craft'});n=await nav();chk('Alchemy craft sections: All, Potions, Travel',JSON.stringify(n.secs)===JSON.stringify(['All','Potions','Travel'])||JSON.stringify(n.secs));
+await show({type:'workshop',tab:'sell'});n=await nav();chk('Alchemy Sell sections: All, Herbs, Items',JSON.stringify(n.secs)===JSON.stringify(['All','Herbs','Items'])||JSON.stringify(n.secs));
 // v0.11.4: the Rusty Flagon is one page (no tabs): the wayfarers to hire, then a Kitchen heading with the sandwiches
 await show({type:'tavern'});n=await nav();chk('Tavern is one page with a Kitchen section (no tabs)',n.tabs.length===0&&n.h4.includes('Kitchen')||JSON.stringify(n));
 const kit=await ev(()=>!!document.querySelector('#modal [data-act="buyItem"][data-arg="porkchop"]'));chk('Tavern > Kitchen sells the sandwiches',kit);

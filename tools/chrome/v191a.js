@@ -188,7 +188,7 @@ const ROOTS=['hollow','ash','ember','thorn','gloam','bone','mist','spire','cinde
  console.log('mantle:',JSON.stringify(r));
  const S=.8;
  chk(`the Mage knows ${r.skill&&r.skill.n} at level 30 (a self skill, ${r.skill&&r.skill.mp} MP); the Warrior and the Priest do not`,r.known&&r.skill.n==='Wellspring Mantle'&&r.skill.t==='self'&&r.others.every(x=>!x)&&/80% of the damage taken is paid in MP instead of HP/.test(r.skill.d)||JSON.stringify([r.skill,r.others]));
- chk(`casting it costs ${r.cast.mp} MP and sets the status for the cast turn and 4 more (${r.cast.t})`,r.cast.has&&r.cast.mp>=6&&r.cast.mp<=8&&r.cast.t===4&&r.turns===5||JSON.stringify([r.cast,r.turns]));
+ chk(`casting it costs ${r.cast.mp} MP and sets the status for the cast turn and 4 more (${r.cast.t})`,r.cast.has&&r.cast.mp>=6&&r.cast.mp<=12/* 0.22.17: costs rise with the learn level (stats22.js) */&&r.cast.t===4&&r.turns===5||JSON.stringify([r.cast,r.turns]));
  chk(`the status has its own icon and name (${r.icon.name}: ${r.icon.desc}) and shows on the battle screen (${r.card})`,r.icon.sym&&r.icon.name==='Mantle'&&/80% of damage taken is paid in MP/.test(r.icon.desc)&&r.icon.stage&&r.card>=1||JSON.stringify([r.icon,r.card]));
  chk(`the same blow: ${r.plain.hp} HP without it; with it ${r.shield.hp} HP and ${r.shield.mp} MP (80% in MP, 1 MP a point)`,r.plain.hp>40&&r.plain.mp===0&&r.shield.mp===Math.floor(r.plain.hp*S)&&r.shield.hp===r.plain.hp-r.shield.mp||JSON.stringify([r.plain,r.shield]));
  chk(`a preview spends nothing (${r.prev.mp} MP, ${r.prev.hp} HP) and the foe's planned hit shows the HP part (${r.prev.est} of ${r.prev.full})`,r.prev.mp===0&&r.prev.hp===0&&r.prev.est===r.prev.full-r.prev.share&&r.prev.share===Math.floor(r.prev.full*S)||JSON.stringify(r.prev));
