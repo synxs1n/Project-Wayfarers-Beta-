@@ -749,3 +749,13 @@ From phone captures of the Menu, the battle screen and a field:
 - The battle screen: the owner asked for a MOCK-UP of a reorganised screen, not a change. It was sent as an image from the session; nothing in the game changed.
 - Test `tools/chrome/v209a.js` (group world); v148a, v178a, v191a follow. Next free test name: v210a.
 
+
+## 0.22.26: relic skills are signature moves
+
+Asked: "vanguard heals with regen is too common to make a relic skill, these should be super special and unique".
+
+- `R25.skill` in v3/relics25.js is now keyed by class (14 moves: Reckoning, Unbroken Line, Thousand Cuts, Skyfall, Final Mark, Hundred Fists, Wild Hunt, Rallying Tide, Unmaking, Twin Tempest, Stopped Hour, Red Covenant, Second Dawn, Encore). `R25.group` is no longer used by the skill.
+- `r25Skill` then adds a status per hero element (`R25.elFx` for strikes, `R25.elBoon` for mends, both elements of a dual hero) and a rider for the relic kind (`R25.kindFx`: weapon hits harder, armour Bulwark, shield Ward, boots Haste, charm fills limit gauges).
+- Named "<Hero>'s <Move>". 82+ distinct skills over 94 heroes; heroes with the same class, element and relic kind still share the effect (not the name).
+- Only uses fields the engine already had (execute, drain, strip, pierce, shieldChip, lbParty, revive, cleanse, fx, self, allyFx). Not balance tested in long play.
+- Test: tools/chrome/v210a.js (world group).

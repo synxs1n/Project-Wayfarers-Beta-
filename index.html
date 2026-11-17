@@ -2125,7 +2125,7 @@ html:not(.flat) .battle.b3 .bline .b4mo .b4bar{box-shadow:inset 0 0 0 1px #000,0
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.22.25";const APP_BUILD="d89bf5315eca";
+(function(){const APP_VER="0.22.26";const APP_BUILD="4642a2644fea";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2906,7 +2906,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.22.25";const APP_BUILD="d89bf5315eca";
+const APP_VER="0.22.26";const APP_BUILD="4642a2644fea";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2914,6 +2914,7 @@ const APP_VER="0.22.25";const APP_BUILD="d89bf5315eca";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.22.26',['Relic skills are signature moves now, one per class and named for the hero (Brann\'s Reckoning, Lumen\'s Second Dawn, Mira\'s Unmaking), shaped by the hero\'s elements and by what kind of gear the relic is. The shared heal with Regen, heavy strike and burst are gone.']],
  ['Beta v0.22.25',['Damage numbers are readable: larger, in the game\'s bold text face with a full dark outline (the small pixel face made 3, 5, 7 and 8 look alike).',
   'Personal relics are reworked. They are now their own rarity, Legendary, and are named after their owner with no "Relic" in the title: Mira\'s Starwoven Robe, Lumen\'s Prayer Beads, Pip\'s Soft Soles, Brann\'s Battered Buckler. They come in five kinds across the roster (weapons, armor, charms, boots, and shields for Warriors and Knights) instead of three. Each is the best piece of its slot for its hero at every stage, about the strength of Echoforged gear at the top, and carries a bonus for the hero\'s class (critical hits, spell power, healing, MP saved, evasion, max HP and more). While a hero wears their relic they know one more skill, named after it. A relic you already own keeps its kind and gains all of this.']],
  ['Beta v0.22.24',['Small tidy-ups. Pop-up notes at the bottom of the screen are wider, so a long one is two or three lines instead of a tall column over the middle of a menu. The Party tab no longer shows Bonds twice (it is a tab of its own). The note at the top of Backpack > Equipment is one line.']],
@@ -38598,8 +38599,8 @@ try{window.__T24={T24,TA24,check:t24Check,assign:t24Assign,make:t24Make};}catch(
 //    same way from the boots of the class's weight and the shield of the journey's tier; charms get their old scaling x R25.charmK (1.5), which puts them over the best shop charm at +3.
 //  5 BONUSES. R25.perk by class, applied in calcStats from whatever relic the hero wears: critical chance and damage, armor pierce, spell
 //    power, healing, MP saved, evasion, accuracy, max HP, DEF, a faster turn.
-//  6 A SKILL. While the relic is worn its owner knows one more skill (R25.skill by class group: a heavy single strike, a spell on every foe,
-//    or a heal with Regen for the vanguard), in the hero's element, named after the relic ("Awakened Prism"). skillKnown answers for it by what is equipped.
+//  6 A SKILL. While the relic is worn its owner knows one more skill: a signature move per class (R25.skill), shaped by the hero's element and
+//    by the kind of gear the relic is, named for the hero ("Brann's Reckoning"). skillKnown answers for it by what is equipped. (0.22.26)
 // R25.off: the relics as they were before this version.
 const R25={off:false,charmK:1.5,mix:['w','k','c','a','s','w','c','k','a','w'],
   names:{
@@ -38615,9 +38616,28 @@ const R25={off:false,charmK:1.5,mix:['w','k','c','a','s','w','c','k','a','w'],
     healUp:v=>`+${Math.round(v*100)}% healing`,mpEff:v=>`skills cost ${Math.round(v*100)}% less MP`,eva:v=>`+${Math.round(v*100)}% evasion`,acc:v=>`+${Math.round(v*100)}% accuracy`,
     tempo:v=>`acts ${Math.round((1-v)*100)}% sooner`,hpM:v=>`+${Math.round((v-1)*100)}% max HP`,defM:v=>`+${Math.round((v-1)*100)}% DEF`},
   group:{warrior:'phys',knight:'phys',thief:'phys',archer:'phys',monk:'phys',sniper:'phys',druid:'phys',chief:'phys',mage:'mag',archmage:'mag',chronicler:'mag',bloodcaller:'mag',healer:'heal',bard:'heal'},
-  skill:{phys:{k:'phys',pw:2.4,t:'one',mp:12,crit:.15,what:'A heavy strike on one foe, likelier to land a critical hit.'},
-    mag:{k:'mag',pw:1.5,t:'all',mp:16,what:'A burst of magic on every foe.'},
-    heal:{k:'heal',pw:1.3,t:'allyAll',mp:14,fx:[['regen',1]],what:'Heals the vanguard and grants Regen.'}}};
+  // 0.22.26: one signature move per class (never a copy of a kit skill), then shaped by the hero's element (R25.elFx) and by what kind of
+  // gear the relic is (R25.kindFx), and named for the hero. Asked: "vanguard heals with regen is too common to make a relic skill, these
+  // should be super special and unique".
+  skill:{warrior:{n:'Reckoning',k:'phys',pw:1.7,t:'all',mp:22,execute:.35,drain:.25,self:[['might',1]],what:'Cleaves every foe, hits wounded foes twice as hard, and heals the wielder for a quarter of the damage'},
+    knight:{n:'Unbroken Line',k:'phys',pw:2.3,t:'one',mp:20,shieldChip:4,self:[['taunt',1],['ward',1]],allyFx:[['bulwark',1]],what:'A shield breaking blow, and the wielder draws every attack behind a Ward while the vanguard gains Bulwark'},
+    thief:{n:'Thousand Cuts',k:'phys',pw:.75,t:'rand',hits:5,mp:20,crit:.3,strip:1,self:[['focus',1]],what:'Five cuts across the foes that tear away their boons, and leaves the wielder Focused'},
+    archer:{n:'Skyfall',k:'phys',pw:1.6,t:'all',mp:22,pierce:1,fx:[['break',.6]],what:'A volley on every foe that ignores half their defence and can Break them'},
+    sniper:{n:'Final Mark',k:'phys',pw:3.4,t:'one',mp:24,pierce:1,crit:.35,execute:.5,what:'One shot through armour, doubled against a foe under half health'},
+    monk:{n:'Hundred Fists',k:'phys',pw:.65,t:'rand',hits:6,mp:20,drain:.3,self:[['might',1],['haste',1]],what:'Six blows across the foes that feed the wielder, who gains Might and Haste'},
+    druid:{n:'Wild Hunt',k:'phys',pw:1.5,t:'all',mp:22,drain:.4,fx:[['root',.8],['poison',.8]],allyFx:[['bulwark',1]],what:'The wild falls on every foe, Rooting and Poisoning them, healing the wielder and granting the vanguard Bulwark'},
+    chief:{n:'Rallying Tide',k:'phys',pw:1.4,t:'all',mp:22,lbParty:30,allyFx:[['might',1],['haste',1]],what:'Strikes every foe, fills the limit gauges of the party and grants the vanguard Might and Haste'},
+    mage:{n:'Unmaking',k:'mag',pw:1.9,t:'all',mp:26,strip:1,fx:[['break',.5]],what:'Magic on every foe that tears away their boons and can Break them'},
+    archmage:{n:'Twin Tempest',k:'mag',pw:.85,t:'rand',hits:6,mp:26,strip:1,self:[['focus',1]],what:'Six bolts across the foes that tear away their boons, and leaves the wielder Focused'},
+    chronicler:{n:'Stopped Hour',k:'mag',pw:1.5,t:'all',mp:24,fx:[['slow',1],['stun',.4]],allyFx:[['haste',1]],what:'Time buckles: every foe is Slowed and may be Stunned while the vanguard gains Haste'},
+    bloodcaller:{n:'Red Covenant',k:'mag',pw:1.7,t:'all',mp:24,drain:.5,execute:.3,fx:[['bleed',.9]],what:'Bleeds every foe, hits the wounded twice as hard and returns half the damage as health'},
+    healer:{n:'Second Dawn',k:'heal',pw:1.8,t:'allyAll',mp:28,revive:.5,cleanse:1,fx:[['ward',1]],what:'Raises the fallen at half health, heals and cures the vanguard and Wards each of them against the next hit'},
+    bard:{n:'Encore',k:'heal',pw:1.1,t:'allyAll',mp:24,cleanse:1,fx:[['might',1],['focus',1]],what:'Heals and cures the vanguard, and grants each of them Might and a guaranteed critical hit'}},
+  // the hero's first element shapes it: a status on the foes for a strike, a boon for a mend
+  elFx:{fire:['burn',.8],water:['weaken',.7],ice:['slow',.8],lightning:['stun',.35],earth:['root',.8],wind:['blind',.8],shadow:['poison',.8],light:['weaken',.7]},
+  elBoon:{fire:'might',lightning:'haste',wind:'haste',ice:'bulwark',earth:'bulwark',water:'regen',light:'focus',shadow:'focus'},
+  // and what the relic is: a weapon hits harder, armour and shields protect the wielder, boots quicken them, a charm fills limit gauges
+  kindFx:{w:{pwM:1.15,txt:'Stronger for being a weapon'},a:{self:'bulwark',txt:'the wielder gains Bulwark'},s:{self:'ward',txt:'the wielder gains a Ward'},k:{self:'haste',txt:'the wielder gains Haste'},c:{lb:20,pwM:1.08,txt:'the limit gauges of the party fill'}}};
 const R25_PRE={w:'u_',a:'ua_',c:'uc_',k:'uk_',s:'us_'},R25_RE=/^u[acks]?_/;
 const r25Heroes=()=>Object.keys(TPL).filter(id=>TPL[id]&&!TPL[id].mon&&CLS[TPL[id].cls]);
 const r25Legend=id=>{try{const t=TPL[id];return !!(t&&(t.legend||(CLS[t.cls]&&CLS[t.cls].legend)||(typeof LEGEND_IDS!=='undefined'&&LEGEND_IDS.includes(id))));}catch(e){return false;}};
@@ -38659,9 +38679,20 @@ HOOK.xform('calcStats','relics25','the bonuses of the personal relic the hero we
     if(P.tempo)S.tempo=(S.tempo||1)*P.tempo;if(P.hpM)S.mhp=Math.round(S.mhp*P.hpM);if(P.defM)S.def=S.def*P.defM;S.relic25=g.rsk;}catch(e){R25.err=String(e&&e.message||e);}return S;});
 // ---------- 6. the skill ----------
 const R25S={};
-function r25Skill(t){const grp=R25.group[t.cls]||'phys',K=R25.skill[grp],kind=r25Kind(t.id),noun=kind==='w'?((typeof SIGW!=='undefined'&&SIGW[t.cls])||'Heirloom'):((R25.names[kind]||{})[t.cls]||(R25.names[kind]||{})._||'Keepsake');
-  const s={id:'relic_'+t.id,n:`Awakened ${noun}`,k:K.k,pw:K.pw,mp:K.mp,t:K.t,el:grp==='heal'?null:(t.el&&t.el[0])||null,lv:1,cost:1,hits:1,relic:t.id,d:`${K.what} Only while ${t.n}'s ${noun} is equipped.`};
-  if(K.crit)s.crit=K.crit;if(K.fx)s.fx=K.fx.map(q=>q.slice());try{if(typeof dlFor==='function'){const d=dlFor(t.cls,s);if(d)s.dl=d;}}catch(e){}return s;}
+function r25Skill(t){const K=R25.skill[t.cls]||R25.skill.warrior,kind=r25Kind(t.id),noun=kind==='w'?((typeof SIGW!=='undefined'&&SIGW[t.cls])||'Heirloom'):((R25.names[kind]||{})[t.cls]||(R25.names[kind]||{})._||'Keepsake');
+  const el=(t.el&&t.el[0])||null,heal=K.k==='heal',KF=R25.kindFx[kind]||{},sn=k=>(STS[k]&&STS[k].n)||k,bits=[];
+  const s={id:'relic_'+t.id,n:`${t.n}'s ${K.n}`,k:K.k,pw:+(K.pw*(KF.pwM||1)).toFixed(2),mp:K.mp,t:K.t,el:heal?null:el,lv:1,cost:1,hits:K.hits||1,relic:t.id};
+  ['crit','execute','drain','strip','pierce','shieldChip','lbParty','revive','cleanse'].forEach(k=>{if(K[k])s[k]=K[k];});
+  ['fx','self','allyFx'].forEach(k=>{if(K[k])s[k]=K[k].map(q=>q.slice());});
+  const has=(L,k)=>(L||[]).some(q=>q[0]===k);
+  if(el){if(heal){const b=R25.elBoon[el];if(b&&!has(s.fx,b)){(s.fx=s.fx||[]).push([b,1]);bits.push(`the vanguard gains ${sn(b)}`);}}
+    else{(t.el||[]).slice(0,2).forEach(e=>{const f=R25.elFx[e];if(f&&!has(s.fx,f[0])){(s.fx=s.fx||[]).push(f.slice());bits.push(`can ${sn(f[0])} them`);}});}
+    if(heal&&t.el[1]){const b=R25.elBoon[t.el[1]];if(b&&!has(s.fx,b)){s.fx.push([b,1]);bits.push(`the vanguard gains ${sn(b)}`);}}}
+  if(KF.self){if(heal){if(!has(s.fx,KF.self)){s.fx.push([KF.self,1]);bits.push(`the vanguard gains ${sn(KF.self)}`);}}else if(!has(s.self,KF.self)){(s.self=s.self||[]).push([KF.self,1]);bits.push(KF.txt);}}
+  if(KF.lb&&!heal){s.lbParty=(s.lbParty||0)+KF.lb;if(!K.lbParty)bits.push(KF.txt);}
+  if(KF.pwM&&kind==='w')bits.push(KF.txt);
+  s.d=`${K.what}${bits.length?'; '+bits.join(', '):''}. Only while ${t.n}'s ${noun} is equipped.`;
+  try{if(typeof dlFor==='function'){const d=dlFor(t.cls,s);if(d)s.dl=d;}}catch(e){}return s;}
 HOOK.xform('classSkills','relics25','the skill a personal relic grants while it is worn',function(L,t){try{if(R25.off||!L||!t||t.mon||!CLS[t.cls]||L.some(s=>s&&s.relic))return L;const sk=R25S[t.id]||(R25S[t.id]=r25Skill(t));return L.concat([sk]);/* a copy: the class kit itself (cached per hero, 14 skills) is left as it is */}catch(e){R25.err=String(e&&e.message||e);}return L;});
 {const sk0=skillKnown;skillKnown=function(c,s){if(s&&s.relic){if(R25.off)return false;const g=r25Worn(c);return !!(g&&g.only===s.relic);}return sk0.apply(this,arguments);};}
 // the item text: the bonuses and the skill

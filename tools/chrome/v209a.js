@@ -27,7 +27,7 @@ const META=`localStorage.clear();localStorage.setItem('aurelis-meta-v1',JSON.str
         const sc=g('loadoutScore')(c,g('statsWith')(c,sl,gid));if(sc>=bestShop)out.best++;else bad.push(id+' '+gid+' '+sc.toFixed(1)+' under the shop '+bestShop.toFixed(1));
         G.gear.push(gid);g('equipGear')(c,gid);const S1=g('calcStats')(c),k1=g('classSkills')(t).filter(s=>g('skillKnown')(c,s)).map(s=>s.id);
         if(mv.some(k=>Math.abs((S1[k]||0)-(S0[k]||0))>1e-6))out.perk++;else bad.push(id+' no bonus');if(k1.includes('relic_'+id)&&k1.length===k0.length+1)out.skill++;else bad.push(id+' skill '+k0.length+'>'+k1.length);
-        const d=g('gearDesc')(q);if(/grants the skill Awakened /.test(d))out.txt++;else bad.push(id+' text');}catch(e){bad.push(id+' '+e.message);}});
+        const d=g('gearDesc')(q);if(/grants the skill [A-Z][a-z]+'s /.test(d))out.txt++;else bad.push(id+' text');}catch(e){bad.push(id+' '+e.message);}});
     const kit=g('classSkills')(TPL.mira).filter(s=>!s.relic).length;return Object.assign(out,{bad,kit});});
   chk(`2 ${b.n} relics named "X's ...", Legendary, bound to their hero`,!b.bad.some(x=>/name|rarity|not bound|wearable/.test(x))||JSON.stringify(b.bad.filter(x=>/name|rarity|bound|wearable/.test(x)).slice(0,5)));
   chk(`3 best in slot: ${b.best} relics at or over the best shop piece of their slot at +3 for their hero`,(b.best>=b.n-4&&!b.bad.some(x=>/under the shop|cannot wear/.test(x)))||JSON.stringify(b.bad.filter(x=>/under|cannot/.test(x)).slice(0,5)));
