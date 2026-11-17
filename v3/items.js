@@ -262,4 +262,4 @@ const RECIPES=[];
 })();
 const RCAT=[['potion','Potions'],['weapon','Weapons'],['armor','Armor'],['charm','Charms'],['item','Travel']];
 // which crafting station owns which recipe category
-const SMITH_CATS=['weapon','armor'],ALCH_CATS=['potion','charm','item'];
+const SMITH_CATS=['weapon','armor','charm'],ALCH_CATS=['potion','item'];// v0.22.17: charms are the Smithy's (sold, forged, tempered and planned there with the rest of the gear)

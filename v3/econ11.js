@@ -67,7 +67,7 @@ const E11={item:false,on:false,all:false};
 {const jb0=junkBar;junkBar=function(){return E11.item?'':jb0.apply(this,arguments);};}
 {const ma0=m3Alchemy;m3Alchemy=function(m){if(!m||m.tab!=='sell')return ma0.apply(this,arguments);E11.on=true;E11.item=m.sec==='item';E11.all=m.sec==='all';
   try{let h=ma0.apply(this,arguments);if(E11.item)h=h.replace('<p class="note empty">No spare charms. Weapons and armor sell at the Smithy.</p>','');return h;}finally{E11.on=false;E11.item=false;E11.all=false;}};}
-{const sm0=m3Smithy;m3Smithy=function(m){let h=sm0.apply(this,arguments);try{h=h.replace('Charms and herbs sell at Alchemy.','Charms, herbs, potions and tonics sell at Alchemy.');}catch(e){}return h;};}
+{const sm0=m3Smithy;m3Smithy=function(m){let h=sm0.apply(this,arguments);try{/* v0.22.17: menus3.js says it itself (charms sell here now) */}catch(e){}return h;};}
 
 // ----- 4) best in slot at max temper -----
 {const bt1=bestTag;bestTag=function(id){let h=bt1.apply(this,arguments);try{if(!G||G.daily)return h;const g=gearOf(id);if(!g||g.stick||g.relic)return h;

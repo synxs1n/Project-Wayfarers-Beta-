@@ -1,16 +1,16 @@
 // ===== describe.js (v0.3.1): stat and attribute descriptions, class role cards =====
 // Tap any stat or attribute on the hero sheet for what it does; every class has a role card on the sheet and in the Codex.
 const STAT_INFO={
-  hp:['HP','Health. At 0 the hero is knocked out until revived.','Raised by Vitality, levels and armor.'],
+  hp:['HP','Health. At 0 the hero is knocked out until revived.','Raised by Vitality, a little by Strength, levels and armor.'],
   mp:['MP','Pays for skills. Recovers a little each turn and fully at an inn.','Raised by Spirit, Intellect, Faith, staves and robes.'],
-  atk:['ATK','Physical damage from attacks and physical skills.','Raised by Strength, some Dexterity, and weapons.'],
+  atk:['ATK','Physical damage from attacks and physical skills.','Raised by Strength, some Dexterity, and weapons. Thieves, Archers and the bow Legendaries take almost as much from Dexterity as from Strength.'],
   def:['DEF','Cuts physical damage taken.','Raised by Vitality, some Strength, and armor (mail most).'],
   mag:['MAG','Damage from spells and magical skills, and part of healing power.','Raised by Intellect, some Faith, staves and tomes.'],
   res:['RES','Cuts magical damage taken.','Raised by Spirit, a little Intellect and Faith, and robes.'],
   spd:['SPD','How soon a hero acts again. Higher speed means more turns.','Raised by Agility and light gear.'],
   crit:['CRIT','Chance for a critical hit (x1.5 or more damage).','Raised by Luck and Dexterity; some skills add more.'],
   eva:['EVA','Chance to dodge a physical attack.','Raised by Agility and Luck. Capped at 22%.'],
-  healP:['HEAL','Healing power for heal skills, Regen and revives.','Raised mostly by Faith, then Spirit and MAG.']};
+  healP:['HEAL','Healing power for heal skills, Regen and revives.','Raised mostly by Faith, then Spirit and MAG. Faith also raises the healing a hero receives.']};
 function prefersAttr(k){return Object.keys(CLS).filter(c=>(CLS[c].pref||[]).includes(k)).map(c=>CLS[c].n);}
 const CLASS_DESC={
   warrior:{role:'Vanguard damage',str:'Big single hits, sweeps that hit every foe, War Cry to draw attacks.',wpn:'Blades and mail'},

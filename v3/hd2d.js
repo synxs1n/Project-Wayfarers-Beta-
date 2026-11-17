@@ -174,7 +174,24 @@ hdGateGeo=HOOK.def('hdGateGeo',hdGateGeo);// v0.19.6: worldart13.js builds the e
 // and anything unusual stand up as one card. Signs and landmark props (towngfx) come from the town decor pass as a card on the facade.
 function hdBldKind(m,b){if(b.k==='gatehouse')return 'gate';if(b.k==='lighthouse')return 'tower';/* v0.11.7: a narrow round tower (v0.11.4 'keep' stretched the sprite over the footprint) */const T=THM(m);let mat=T.mat;if(['guild','keep','chapel','tower','windmill'].includes(b.k))mat=m.theme==='void'?'tent':'stone';
   if(mat==='tent'||b.k==='bigtent')return 'card';if(b.k==='keep'||b.k==='tower')return 'keep';return 'roof';}
-hdBldKind=HOOK.def('hdBldKind',hdBldKind);// v0.19.6: worldart13.js entrance parts take the gate path
+hdBldKind=HOOK.def('hdBldKind',hdBldKind);
+// v0.22.17 (owner: "the rooves of many buildings still dont cover them properly and you can see the empty space inside"): a roofed house is a
+// front wall, two side walls and two roof slopes textured with the roof rows of its 2D sprite. A family whose roof is not a plain rectangle
+// in that sprite (round, steep, hipped, stepped, pagoda, dome: ice, chalet, shroom, bone, drift ...) leaves the slopes' corners transparent,
+// and with no ceiling under them the camera looked through the corners at the ground inside the walls. hdRoofUnder lays a closed roof under
+// the textured one: both slopes over the wall rectangle, a hair lower, in the roof's own colour (the mean of the sprite's eave rows), and the
+// back wall. Where the sprite is opaque nothing changes; where it is cut away the building is still roofed. A hook, so a family can
+// colour it.
+function hdRoofTone(cv,sx,sy,sw,sh){try{const k=(cv._rw||cv.width)/cv.width,y0=Math.max(0,Math.round((sy+sh*.6)*k)),h=Math.max(1,Math.round(sh*.4*k)),x0=Math.max(0,Math.round(sx*k)),w=Math.max(1,Math.round(sw*k));
+  const d=cv.getContext('2d').getImageData(x0,y0,w,h).data;let r=0,g=0,bl=0,n=0;for(let i=0;i<d.length;i+=4){if(d[i+3]<200)continue;const L=d[i]+d[i+1]+d[i+2];if(L<90)continue;/* not the outline */r+=d[i];g+=d[i+1];bl+=d[i+2];n++;}
+  return n>8?[r/n,g/n,bl/n]:null;}catch(e){return null;}}
+function hdRoofUnder(bt,m,b,cv,o){const c=hdRoofTone(cv,o.sx,o.sy,o.sw,o.sh)||[110,96,90],e=.5*o.V,nf=Math.hypot(o.zf-o.zm,o.yr-o.ys)||1,
+  Qc=(a,k,n)=>{H2P.set(a);bt.quad(H2P,-1,0,-1,0,Math.round(c[0]*k),Math.round(c[1]*k),Math.round(c[2]*k),255,n[0],n[1],n[2],8);};
+  Qc([o.x0,o.yr-e,o.zm,o.x1,o.yr-e,o.zm,o.x1,o.ys-e,o.zf,o.x0,o.ys-e,o.zf],.9,[0,(o.zf-o.zm)/nf,(o.yr-o.ys)/nf]);// front slope
+  Qc([o.x0,o.yr-e,o.zm,o.x1,o.yr-e,o.zm,o.x1,o.ys-e,o.zb,o.x0,o.ys-e,o.zb],.68,[0,(o.zm-o.zb)/nf,-(o.yr-o.ys)/nf]);// back slope
+  Qc([o.x0,o.yw,o.zb,o.x1,o.yw,o.zb,o.x1,0,o.zb,o.x0,0,o.zb],.5,[0,0,-1]);// back wall
+  HD.roofUnder=(HD.roofUnder||0)+1;}
+hdRoofUnder=HOOK.def('hdRoofUnder',hdRoofUnder);// v0.19.6: worldart13.js entrance parts take the gate path
 // v0.12.13: a tent stands as a cone of cloth, not a flat card: 18 slices round an ellipse on the footprint, each slice mapped to its
 // own wedge of the 2D tent sprite (quad4 takes a texture coordinate per corner), so the lit left face, the seams and the hem wrap round;
 // the pole and pennant are a small card at the apex. The back half shows the front's wedges mirrored, which the camera only sees at the top.
@@ -237,6 +254,7 @@ function hdBakeBuildings(m,S,bsp,deco){const V=S.V,sin=Math.sin(HD2D.pitch*Math.
     const rx0=x0-5,rx1=x1+5,ys=(WH-1)*V,nf=Math.hypot(ze-zm,yr-ys),nb=Math.hypot(zm-zbe,yr-ys);
     Q([rx0,yr,zm,rx1,yr,zm,rx1,ys,zbe,rx0,ys,zbe],U(p,BSP_X-5),Vv(p,top+rt-1),U(p,BSP_X+w+5),Vv(p,top+roofH),215,[0,(zm-zbe)/nb,-(yr-ys)/nb],8);
     Q([rx0,yr,zm,rx1,yr,zm,rx1,ys,ze,rx0,ys,ze],U(p,BSP_X-5),Vv(p,top+rt-1),U(p,BSP_X+w+5),Vv(p,top+roofH),255,[0,(ze-zm)/nf,(yr-ys)/nf],2|8);
+    hdRoofUnder(bt,m,b,cv,{x0,x1,zb,zf,zm,yw,yr,ys,V,sx:BSP_X,sy:top+rt-1,sw:w,sh:roofH-(rt-1)});
     const ah=top+rt-1;if(ah>2)Q([x0-BSP_X,yr+ah*V,zm+.3,x0-BSP_X+cv.width,yr+ah*V,zm+.3,x0-BSP_X+cv.width,yr,zm+.3,x0-BSP_X,yr,zm+.3],U(p,0),Vv(p,0),U(p,cv.width),Vv(p,ah),255,[0,.45,.89],2|8);
     S.bh.push({b,h:(WH+RH*.6)*V});
     if(b.k==='windmill')S.mills.push([x0+w/2,(WH+RH*.8)*V,ze+2]);

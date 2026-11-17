@@ -142,7 +142,7 @@ function vNext(){
   const canR=RECIPES.filter(r=>recipeOpen(r)&&G.gold>=r.g&&hasMats(recipeMats(r))&&!(r.item&&(G.inv[r.item]||0)>=invCap()));
   const cS=canR.filter(r=>SMITH_CATS.includes(r.cat)).length,cA=canR.length-cS;
   if(cS)add(false,`${cS} weapon or armor recipe${cS>1?'s':''} you can Forge right now`,'At the Smithy.');
-  if(cA)add(false,`${cA} potion, charm or tent recipe${cA>1?'s':''} you can craft right now`,'At Alchemy.');
+  if(cA)add(false,`${cA} potion or tent recipe${cA>1?'s':''} you can craft right now`,'At Alchemy.');
   const forgeable=P.flatMap(c=>EQSL.map(sl=>c.eq[sl]).filter(Boolean)).filter(id=>{const f=forgeCost(id);return f&&G.gold>=f.gold&&hasMats(f.m);}).length;
   if(forgeable)add(false,`${forgeable} equipped item${forgeable>1?'s':''} can be tempered`,'In the Smithy\'s Tempering tab.');
   const pe=P.filter(c=>personalEligible(c)&&!(G.personal||{})[c.id]);if(pe.length)add(false,'Personal quests available',pe.slice(0,3).map(c=>esc(c.name)).join(', ')+'. Start them at the Notice Board.');

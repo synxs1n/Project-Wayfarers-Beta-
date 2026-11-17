@@ -4,6 +4,12 @@
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.22.17',['Upgrade whole party does much more. It now tempers what your heroes already wear, plans boots and charms along with weapons, armor and shields, and always goes for the piece that ends up best at full temper before spending on one that will be replaced. Every planned step, and every row of "Best upgrade for each slot", lists the materials and gold it uses.',
+  'Charms moved to the Smithy: bought, forged, tempered and sold there, and part of its Upgrade buttons. Alchemy keeps potions, cures, travel gear and herbs.',
+  'Boots lean by weight. Light boots give MAG and MP (the casters\' boots), medium boots SPD and HP, heavy boots DEF and HP. Equip Best no longer puts light boots on medium armor wearers.',
+  'Stats: every hero now gets 2 stat points a level (it was 1 every two levels), and a little less grows by itself, so more of a build is yours. Heroes in an old save are given the points they are owed. A +5 button sits beside each +. Points in one attribute count fully up to the hero\'s level and half beyond it. Strength also gives max HP, Faith also raises the healing a hero receives, and Thieves, Archers and the bow Legendaries take much more of their attack from Dexterity. Heroes left on automatic end up a little stronger in their main stats than before.',
+  'Mana: skills cost more the later they are learned (a level 21 skill 30% more, a level 41 skill 60% more; level 1 skills cost what they did). The party gets 8% of its MP back after a win (was 12%). The Mana Tonic restores 40 MP (was 30) and the Sage Brew 90 (was 70).',
+  'Fixed: roofs in the HD-2D view. Buildings with round, steep, hipped or stepped roofs had open corners you could see through to the ground inside. Every roofed building now has a closed roof underneath.']],
  ['Beta v0.22.16',['Towns: every service building now has its own things standing outside. Kegs, a table and a barrel by the tavern; an anvil, a weapon rack and a grindstone by the smithy; a bench, a washing line and flowers by the inn; a cauldron and a table of flasks by the alchemist; a training dummy and an archery target by the guild hall; a candle shrine and a grave by the chapel. Most houses get a woodpile, a flower box, a wash tub or hay. They stand on the ground beside the building in both views, never in a doorway or on a road.',
   'Fixed: personal quests. Accept did nothing for Nikaris, Kaevan and Jace (in the popup and in the list), and the town Notice Board had no Personal filter on the tab it opens on. Both work now.',
   'Fixed: arena wins never counted for the Pit Masters. Their missions (First blood, A regular, Crowd favourite and the rest) and your standing with them now count every bout you have won on this journey, including the ones before this update.']],
@@ -441,32 +447,44 @@ sniper:{n:'Steppe Sniper',legend:1,role:'Legendary horse archer. Crossbow bolts 
 };
 // =================== ATTRIBUTES ===================
 const ATTR=['str','int','vit','spi','fth','agi','dex','luk'];
-const ATTRN={str:['Strength','Physical attack, a little defense'],int:['Intellect','Magic attack, a little MP and resistance'],vit:['Vitality','Max HP and defense'],spi:['Spirit','MP, resistance, healing power, ailment resistance'],fth:['Faith','Healing and revives first, a little magic damage and resistance'],agi:['Agility','Turn speed and evasion'],dex:['Dexterity','Accuracy, critical damage, some physical attack'],luk:['Luck','Critical chance, ailment chance, evasion, steals and drops']};
+const ATTRN={str:['Strength','Physical attack, a little max HP and defense'],int:['Intellect','Magic attack, MP, a little resistance'],vit:['Vitality','Max HP and defense'],spi:['Spirit','MP, resistance, healing power, ailment resistance'],fth:['Faith','Healing given and healing received, revives, a little magic damage, MP and resistance'],agi:['Agility','Turn speed and evasion'],dex:['Dexterity','Accuracy, critical chance and damage (spells too), attack for bows, crossbows and daggers'],luk:['Luck','Critical chance, ailment chance, evasion, steals and drops']};
 const DEXLUK={sniper:{dex:[8,1.25],luk:[5,.7]},druid:{dex:[7,1.1],luk:[6,.9]},archmage:{dex:[3,.5],luk:[4,.6]},chronicler:{dex:[4,.6],luk:[5,.7]},warrior:{dex:[4,.6],luk:[3,.4]},knight:{dex:[3,.5],luk:[3,.4]},mage:{dex:[3,.5],luk:[4,.6]},healer:{dex:[3,.5],luk:[5,.7]},thief:{dex:[7,1.1],luk:[7,1.1]},archer:{dex:[8,1.2],luk:[5,.7]},monk:{dex:[6,.9],luk:[4,.6]},bard:{dex:[5,.7],luk:[7,1]}};
 // derived stat formulas (shared by heroes and the stat sheet)
-function deriveStats(a,L){const f=a.fth||0;
-  return {hp:20+a.vit*6+L*3,mp:4+a.spi*2.5+a.int+f*.6,atk:a.str*2+a.dex*.4,mag:a.int*2+f*1.2,def:a.vit*1.2+a.str*.3,res:a.spi*1.2+a.int*.3+f*.3,spd:4+a.agi};
+// v0.22.17, the owner's stat pass ("rebalance what each stat does, ensure they are all at least a little relevant for every class, rebalance
+// what stats classes rely on, more stats assignable"):
+//  - Strength also gives 1 max HP a point (a caster's Strength was worth nothing but .3 DEF).
+//  - The finesse classes (ATK_W: thief, archer, sniper, druid) take their attack from Strength 1.2 and Dexterity 1.0 a point; everyone else
+//    keeps Strength 2, Dexterity .4. So a bow or a dagger leans on Dexterity.
+//  - Faith also raises the healing a hero RECEIVES (.4% a point, calcStats S.healIn), so it is worth a point on anyone.
+//  - Dexterity and Luck already fed critical hits, which spells roll too; the texts now say so.
+//  - 40% of a class's natural growth is handed to the player as stat points (GROWTH_KEEP .60, was .82), 2 points a level (was 1 every two).
+//    The class curves are solved from the same stat tables as before, so a hero whose points follow the class's own growth is where they were.
+// cls undefined = the formulas before 0.22.17 (the Daily Trial's legacy curves keep them).
+const ATK_W={_:{str:2,dex:.4},thief:{str:1.2,dex:1},archer:{str:1.2,dex:1},sniper:{str:1.2,dex:1},druid:{str:1.2,dex:1}},STR_HP=1,PTS_PER_LV=2,FTH_HEALIN=.004;
+const atkW=cls=>cls==null?ATK_W._:(ATK_W[cls]||ATK_W._);
+function deriveStats(a,L,cls){const f=a.fth||0,W=atkW(cls);
+  return {hp:20+a.vit*6+(cls==null?0:a.str*STR_HP)+L*3,mp:4+a.spi*2.5+a.int+f*.6,atk:a.str*W.str+a.dex*W.dex,mag:a.int*2+f*1.2,def:a.vit*1.2+a.str*.3,res:a.spi*1.2+a.int*.3+f*.3,spd:4+a.agi};
 }
 // Class attribute curves are solved from the old stat curves so the balance carries over.
 // CLASS_ATTR_LEGACY keeps the pre-Faith curves: the Daily Trial uses them so its heroes stay exactly as they were.
-const CLASS_ATTR={},CLASS_ATTR_LEGACY={},GROWTH_KEEP=.82;
+const CLASS_ATTR={},CLASS_ATTR_LEGACY={},GROWTH_KEEP=.60,GROWTH_KEEP_LEGACY=.82;
 const POINT_VAL={str:1,int:1,vit:1,spi:1,fth:1,agi:.6,dex:1,luk:1};
 // Beta v0.3.1 Faith: [base, growth]. Healers and Chroniclers scale mostly on it, Knights and Monks a little.
 // Their Intellect is lowered by 0.6 per Faith point so MAG stays where it was; healing goes up (Faith adds 0.5 heal power per point on top of MAG).
 const FTH={healer:[3,.9],chronicler:[3,.8],knight:[1,.3],monk:[1,.25]};
 // (legends17a.js: named so a class added by a later module gets the same curves; classAttrBuild(k) builds CLASS_ATTR[k] and CLASS_ATTR_LEGACY[k])
 function classAttrBuild(k){
-  const c=CLS[k],dl=DEXLUK[k],at=i=>{
+  const c=CLS[k],dl=DEXLUK[k],mk=cls=>i=>{const W=atkW(cls);
     const dex=dl.dex[0]+dl.dex[1]*i,luk=dl.luk[0]+dl.luk[1]*i,atk=c.atk[0]+c.atk[1]*i,mag=c.mag[0]+c.mag[1]*i,hp=c.hp[0]+c.hp[1]*i,res=c.res[0]+c.res[1]*i,spd=c.spd[0]+c.spd[1]*i;
-    const int=mag/2,str=(atk-.4*dex)/2,vit=(hp-20-3*i)/6,spi=(res-.3*int)/1.2,agi=spd-4;
+    const int=mag/2,str=(atk-W.dex*dex)/W.str,vit=(hp-20-3*i-(cls==null?0:str*STR_HP))/6,spi=(res-.3*int)/1.2,agi=spd-4;
     return {str,int,vit,spi,agi,dex,luk};};
-  // 18% of natural growth is handed to the player as free stat points instead
-  const a0=at(0),a1=at(1),b={},g={};ATTR.forEach(s=>{if(s==='fth')return;b[s]=a0[s];g[s]=(a1[s]-a0[s])*GROWTH_KEEP;});
-  CLASS_ATTR_LEGACY[k]={b:Object.assign({},b,{fth:0}),g:Object.assign({},g,{fth:0})};
-  const F=FTH[k]||[0,0];b.fth=F[0];g.fth=F[1]*GROWTH_KEEP;b.int-=.6*b.fth;g.int-=.6*g.fth;
-  const a15={};ATTR.forEach(s=>{if(s==='fth')return;a15[s]=a0[s]+(a1[s]-a0[s])*15;});a15.fth=0;const d15=deriveStats(a15,15);
-  Object.assign(CLASS_ATTR_LEGACY[k],{defM:(c.def[0]+c.def[1]*15)/d15.def,mpM:(c.mp[0]+c.mp[1]*15)/d15.mp});
-  CLASS_ATTR[k]={b,g,defM:(c.def[0]+c.def[1]*15)/d15.def,mpM:(c.mp[0]+c.mp[1]*15)/d15.mp};
+  // part of the natural growth is handed to the player as free stat points instead (18% until v0.22.17, 40% since; the legacy curves keep 18%)
+  const build=(cls,keep)=>{const at=mk(cls),a0=at(0),a1=at(1),b={},g={};ATTR.forEach(s=>{if(s==='fth')return;b[s]=a0[s];g[s]=(a1[s]-a0[s])*keep;});
+    const a15={};ATTR.forEach(s=>{if(s==='fth')return;a15[s]=a0[s]+(a1[s]-a0[s])*15;});a15.fth=0;const d15=deriveStats(a15,15,cls);
+    return {b,g,full:Object.assign({},...ATTR.filter(s=>s!=='fth').map(s=>({[s]:a1[s]-a0[s]}))),defM:(c.def[0]+c.def[1]*15)/d15.def,mpM:(c.mp[0]+c.mp[1]*15)/d15.mp};};
+  const Lg=build(undefined,GROWTH_KEEP_LEGACY);Lg.b.fth=0;Lg.g.fth=0;CLASS_ATTR_LEGACY[k]=Lg;
+  const N=build(k,GROWTH_KEEP),F=FTH[k]||[0,0];N.b.fth=F[0];N.g.fth=F[1]*GROWTH_KEEP;N.b.int-=.6*N.b.fth;N.g.int-=.6*N.g.fth;N.full.fth=F[1];N.full.int-=.6*F[1];
+  CLASS_ATTR[k]=N;
 }
 Object.keys(CLS).forEach(k=>classAttrBuild(k));
 const ST=['hp','mp','atk','def','mag','res','spd'];

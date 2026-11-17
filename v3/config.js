@@ -212,6 +212,7 @@ const invCap=()=>(typeof G!=='undefined'&&G&&G.daily)?ITEM_MAX_DAILY:ITEM_MAX;
 // closeAbs (absolute share of the hero's gear score) or closeRel (relative), and then get a short tradeoff line.
 const SHOP_BEST={closeAbs:.02,closeRel:.2,minPct:.005};
 // 3.3 Smithy plan: the smallest gain worth buying or crafting for (share of the hero's gear score)
+const MANA={win:.08};// v0.22.17: MP back after a win, a share of max MP (was .12 written in engine.js); see stats22.js
 const SMITH_PLAN={minPct:.03};// v0.12.13: a step must gain 3% (was 1%: tiny upgrades kept showing after Upgrade whole party)
 // 3.9 Pork Chop Sandwiches handed over after the first boss victory, and how many it takes to walk back to town from a dungeon
 const PORK={firstBoss:2,toTown:2};
@@ -223,7 +224,10 @@ const EF_K=1.18;
 const EF_SHARDS=2,EF_ESS=6,EF_CORE=3,EF_GOLD=3000;
 // boots (capes.js, v0.22.11): one clear bonus per weight, per tier 0..5. Light: speed (anyone). Medium: max HP (medium and heavy wearers).
 // Heavy: defense (heavy wearers). BOOT_PRICE per tier (as the old capes).
-const BOOT_ST={l:{k:'spd',v:[1,2,4,6,9,13]},m:{k:'hp',v:[35,60,95,135,190,255]},h:{k:'def',v:[4,8,13,19,27,37]}},BOOT_PRICE=[60,120,240,420,700,1000];
+// v0.22.17 (owner: Equip Best put light boots on medium armor wearers for the speed; "medium boots should be better for medium armor wearers than light
+// boots, light should lean magical, medium should lean toward speed"): light = MAG and MP (the casters' boots), medium = SPD and some HP, heavy = DEF and HP.
+// Before: light SPD [1,2,4,6,9,13], medium HP [35..255], heavy DEF [4..37], one stat each.
+const BOOT_ST={l:{mag:[2,4,6,9,13,18],mp:[5,9,14,20,28,38]},m:{spd:[1,2,4,6,9,13],hp:[15,25,40,55,80,110]},h:{def:[4,8,13,19,27,37],hp:[20,35,55,80,110,150]}},BOOT_PRICE=[60,120,240,420,700,1000];
 // STICK_Q: Bestiary entries the Tamer's Stick quest asks for (equip.js).
 const STICK_Q=6;
 

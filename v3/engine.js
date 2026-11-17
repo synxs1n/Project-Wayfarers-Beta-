@@ -37,9 +37,12 @@ function weightedDraw(pool,n,R){const p=pool.slice(),out=[];while(out.length<n&&
 function bossKeyFor(s){return s<4?G.run.bosses[s]:G.run.final;}
 
 // =================== STATS ===================
+// v0.22.17: with 2 points a level, the points put in ONE attribute count fully up to the hero's level and half beyond it, so going all in
+// on one stat is a choice with a price, not the only sensible build (the Daily Trial keeps the plain count)
+function allocEff(c,k){const n=(c.alloc&&c.alloc[k])||0;if(G&&G.daily)return n;const cap=Math.max(1,c.lv||1);return n<=cap?n:cap+(n-cap)*.5;}
 function baseAttr(c){
   const t=TPL[c.id],A=(G&&G.daily?CLASS_ATTR_LEGACY:CLASS_ATTR)[t.cls],L=c.lv-1,a={};
-  ATTR.forEach(k=>{a[k]=A.b[k]+A.g[k]*L+((c.alloc&&c.alloc[k])||0)*POINT_VAL[k]+(c.vet||0);});
+  ATTR.forEach(k=>{a[k]=A.b[k]+A.g[k]*L+allocEff(c,k)*POINT_VAL[k]+(c.vet||0);});
   return a;
 }
 function calcStats(c){
@@ -47,7 +50,7 @@ function calcStats(c){
   const gears=EQSL.map(sl=>gearOf(c.eq[sl])).filter(Boolean);
   gears.forEach(g=>{if(g.attr)Object.keys(g.attr).forEach(k=>{if(daily&&k==='fth')return;a[k]=(a[k]||0)+g.attr[k];});});
   if(NF.agi)a.agi*=NF.agi;
-  const d=deriveStats(a,L);d.def*=A.defM;d.mp*=A.mpM;
+  const d=deriveStats(a,L,daily?undefined:t.cls);d.def*=A.defM;d.mp*=A.mpM;
   ['hp','mp','atk','def','mag','res'].forEach(k=>{if(NF[k])d[k]*=NF[k];});
   if(c.id==='vaelith')d.mag*=1+.01*archiveKeys().length;
   if(t.bb){d.hp*=1.12;d.atk*=1.12;d.mag*=1.12;d.def*=1.12;d.res*=1.12;}
@@ -56,7 +59,7 @@ function calcStats(c){
   S.mhp=Math.round(d.hp);S.mmp=Math.round(d.mp);S.atk=d.atk;S.def=d.def;S.mag=d.mag;S.res=d.res;S.spd=d.spd;
   S.crit=.04+a.luk*.003+a.dex*.0015+(NF.crit||0);S.critDmg=1.5+a.dex*.004;
   S.acc=.97+a.dex*.002;S.eva=Math.min(.22,a.agi*.0015+a.luk*.002+(NF.eva||0));
-  S.luk=a.luk;S.spi=a.spi;
+  S.luk=a.luk;S.spi=a.spi;if(!daily)S.healIn=Math.min(.3,Math.max(0,(a.fth||0)*FTH_HEALIN));// v0.22.17: Faith raises healing received
   S.healM=(NF.heal||1)*(S.mastery==='light'?1+MASTERY.light.heal:1);
   S.healP=(d.mag*.6+a.spi*.9+(a.fth||0)*.5)*S.healM;
   // v0.3.5 weapon perks (WPERK in data.js). Flat numbers are read straight off S by the battle code.
@@ -67,12 +70,19 @@ function calcStats(c){
   return S;
 }
 calcStats=HOOK.def('calcStats',calcStats);// one definition; modules add hooks (hooks.js)
-const curseMul=t=>t&&t.st&&t.st.curse?AIL.curseHeal:1;   // v0.4.1 2.2: a Cursed hero receives less healing
+const curseMul=t=>(t&&t.st&&t.st.curse?AIL.curseHeal:1)*(1+((t&&t.S&&t.S.healIn)||0));   // v0.4.1 2.2: a Cursed hero receives less healing
 function refresh(c){c.S=calcStats(c);c.hp=Math.min(c.hp,c.S.mhp);c.mp=Math.min(c.mp,c.S.mmp);return c;}
+// v0.22.17: with 2 points a level, 35% of an automatic point follows the class's preferred three (50/30/20, as before) and 65% follows the
+// class's own natural growth, so a hero left on automatic keeps the HP, defense and resistance the class always had
 function autoAlloc(c){
-  const p=CLS[TPL[c.id].cls].pref,w=[.5,.3,.2];
-  while(c.pts>0){const r=Math.random();const k=r<w[0]?p[0]:r<w[0]+w[1]?p[1]:p[2];c.alloc[k]=(c.alloc[k]||0)+1;c.pts--;}
+  const cls=TPL[c.id].cls,p=CLS[cls].pref,w=[.5,.3,.2],daily=!!(G&&G.daily),F=!daily&&CLASS_ATTR[cls]&&CLASS_ATTR[cls].full;
+  let ks=null,cum=null;if(F){ks=ATTR.filter(k=>(F[k]||0)>0);let t=0;cum=ks.map(k=>(t+=F[k]/POINT_VAL[k]));cum=cum.map(v=>v/t);}
+  while(c.pts>0){let k;if(F&&Math.random()<.65){const r=Math.random();k=ks[cum.findIndex(v=>r<=v)]||p[0];}else{const r=Math.random();k=r<w[0]?p[0]:r<w[0]+w[1]?p[1]:p[2];}c.alloc[k]=(c.alloc[k]||0)+1;c.pts--;}
 }
+const ptsAt=lv=>(G&&G.daily)?Math.floor(lv/2):PTS_PER_LV*(lv-1);
+// an older save: heroes get the points the new schedule owes them (their natural growth is lower by the same measure), once (c.sp2)
+function statMigrate(c){if(!c||c.sp2||(G&&G.daily))return 0;c.sp2=1;c.alloc=c.alloc||{};const have=Object.values(c.alloc).reduce((a,b)=>a+(b||0),0)+(c.pts||0),owed=Math.max(0,PTS_PER_LV*((c.lv||1)-1)-have);
+  if(owed){c.pts=(c.pts||0)+owed;if(c.auto!==false&&META.cfg.autoStats!==false)autoAlloc(c);}return owed;}
 function respecCost(c){return 40+c.lv*12;}
 function bondSkills(c){
   if(!B)return [];const out=[];
@@ -94,13 +104,13 @@ function archiveSkills(){return archiveKeys().map(k=>{const d=guardianDef(k),x=d
 function newChar(id,lv,tier){
   const t=TPL[id],f=CF[t.cls];
   const c={id,name:t.n,el:t.el,side:'p',pace:2,lv:1,xp:0,eq:{w:'w_'+f[0]+'_'+tier,a:'a_'+f[1]+'_'+tier,c:null},hp:1,mp:1,st:{},alloc:{},pts:0,auto:true,lb:0,bt:0};
-  c.nat=natRoll(id);c.lv=lv;c.pts=Math.floor(lv/2);if(META.cfg.autoStats!==false)autoAlloc(c);
+  c.nat=natRoll(id);c.lv=lv;c.pts=ptsAt(lv);if(!(G&&G.daily))c.sp2=1;if(META.cfg.autoStats!==false)autoAlloc(c);
   c.S=calcStats(c);c.hp=c.S.mhp;c.mp=c.S.mmp;return c;
 }
 function addXp(c,x){
   const ups=[];c.xp+=x;
   while(c.lv<LV_CAP&&c.xp>=need(c.lv)){
-    c.xp-=need(c.lv);const oh=c.S.mhp,om=c.S.mmp;c.lv++;if(c.lv%2===0)c.pts=(c.pts||0)+1;if(c.auto!==false&&META.cfg.autoStats!==false)autoAlloc(c);c.S=calcStats(c);
+    c.xp-=need(c.lv);const oh=c.S.mhp,om=c.S.mmp;c.lv++;c.pts=(c.pts||0)+((G&&G.daily)?(c.lv%2===0?1:0):PTS_PER_LV);if(c.auto!==false&&META.cfg.autoStats!==false)autoAlloc(c);c.S=calcStats(c);
     c.hp=Math.min(c.S.mhp,c.hp+(c.hp>0?c.S.mhp-oh:0));c.mp=Math.min(c.S.mmp,c.mp+(c.S.mmp-om));
     ups.push({lv:c.lv,learned:classSkills(TPL[c.id]).filter(s=>s.lv===c.lv&&!(c.keep&&c.keep.includes(s.id))).map(s=>s.n)});
   }
@@ -112,14 +122,14 @@ function gearTier(){return Math.max(0,Math.min(5,G.stage));}
 
 // ----- save / load -----
 function packG(){
-  const r={};Object.keys(G.roster).forEach(id=>{const c=G.roster[id];r[id]={lv:c.lv,xp:c.xp,eq:c.eq,hp:c.hp,mp:c.mp,alloc:c.alloc,pts:c.pts,auto:c.auto,lb:c.lb||0,lastB:c.lastB,vet:c.vet||0,legacy:c.legacy||0,pace:c.pace||0,ail:c.ail&&Object.keys(c.ail).length?c.ail:undefined,bt:c.bt!=null?c.bt:undefined,keep:c.keep||undefined,nat:c.nat||undefined,nrr:c.nrr||undefined};});
+  const r={};Object.keys(G.roster).forEach(id=>{const c=G.roster[id];r[id]={lv:c.lv,xp:c.xp,eq:c.eq,hp:c.hp,mp:c.mp,alloc:c.alloc,pts:c.pts,auto:c.auto,sp2:c.sp2||undefined,lb:c.lb||0,lastB:c.lastB,vet:c.vet||0,legacy:c.legacy||0,pace:c.pace||0,ail:c.ail&&Object.keys(c.ail).length?c.ail:undefined,bt:c.bt!=null?c.bt:undefined,keep:c.keep||undefined,nat:c.nat||undefined,nrr:c.nrr||undefined};});
   return Object.assign({},G,{roster:r});
 }
 // Beta v0.2.0: saves made under the old skill pacing keep every skill the hero had already learned.
 function paceMigrate(c){if(c.pace>=2)return;const t=TPL[c.id];if(t){const k=classSkills(t).filter(s=>(s.lv0||s.lv)<=c.lv&&s.lv>c.lv).map(s=>s.id);if(k.length)c.keep=k;}c.pace=2;}
 function unpackG(o){
   const g=Object.assign({},o);g.roster={};(o.tamed||[]).forEach(registerTamed);
-  Object.keys(o.roster).forEach(id=>{if(!TPL[id])return;const s=o.roster[id];const c=Object.assign({id,name:TPL[id].n,el:TPL[id].el,side:'p',st:{}},s);c.alloc=c.alloc||{};paceMigrate(c);c.S=calcStats(c);c.hp=Math.min(c.hp,c.S.mhp);c.mp=Math.min(c.mp,c.S.mmp);g.roster[id]=c;});
+  Object.keys(o.roster).forEach(id=>{if(!TPL[id])return;const s=o.roster[id];const c=Object.assign({id,name:TPL[id].n,el:TPL[id].el,side:'p',st:{}},s);c.alloc=c.alloc||{};paceMigrate(c);if(!o.daily)statMigrate(c);c.S=calcStats(c);c.hp=Math.min(c.hp,c.S.mhp);c.mp=Math.min(c.mp,c.S.mmp);g.roster[id]=c;});
   g.party=g.party.filter(id=>g.roster[id]);g.tamed=g.tamed||[];g.personal=g.personal||{};g.weather=g.weather||{};g.vaults=g.vaults||{};g.gath=g.gath||{};Object.keys(MATS).forEach(k=>{g.mats[k]=g.mats[k]||0;});g.talks=g.talks||[];
   return g;
 }
@@ -882,7 +892,7 @@ function win(){
     const ups=share>0?addXp(c,Math.round(txp*share*xpLvMul(c,flv))):[];
     if(ups.length)info.ups.push({name:c.name,lv:c.lv,learned:ups.flatMap(u=>u.learned),pts:c.pts});
     if(c.hp>0)c.hp=Math.min(c.S.mhp,c.hp+Math.round(c.S.mhp*([.25,.2,.15,.12,.12][s]||.1)));// v0.4.3: more recovery after a win in the first two realms   // v0.4.1 2.1: a KO'd hero stays KO'd after the fight (items, field skills, tents and the inn bring heroes back)
-    c.mp=Math.min(c.S.mmp,c.mp+Math.round(c.S.mmp*.12));
+    c.mp=Math.min(c.S.mmp,c.mp+Math.round(c.S.mmp*MANA.win));
   });
   // bonds grow between partners who finish a fight side by side
   const fr=partyChars().filter(c=>!c.isComp);/* v0.17.1: bonds grow for every pair in the party, rearguard included, not only the vanguard still standing */

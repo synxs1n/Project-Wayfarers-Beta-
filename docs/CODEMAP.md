@@ -600,6 +600,24 @@ Registered (load order; 1 is next to the base):
 
 Runs: 4 summon8 (around) → **base** → 1 battle3 (result) → 2 battle5 (result) → 3 battle4 (result) → 4 summon8 (around) → 5 battle9 (result) → 6 skillfilt9 (result) → 7 battle11 (result) → 8 skillrows11 (result) → 9 skills12 (result) → 10 menus12 (result) → 11 battle16 (result) → 12 legends17a (result) → 13 legends17a (result)
 
+### mChar (13 hooks)
+Registered (load order; 1 is next to the base):
+1. `comp.js` result: Pet row on the hero sheet
+2. `learn.js` around: New badges on the hero sheet skills
+3. `p3shop.js` result: Upgrade button on each equipment slot
+4. `p4party.js` result: Battles together line
+5. `roles9.js` result: role row on the hero sheet
+6. `sheet11.js` result: hero sheet tabs
+7. `skillrows11.js` result: skill numbers on the hero sheet rows
+8. `party12.js` result: reserve sheet: gear slots are read only
+9. `skills12.js` result: role power on the hero sheet skill rows
+10. `menus12.js` result: skill rows on the hero sheet: scope, kind (for the weapon in hand), Primer / Detonator
+11. `menus14.js` result: the hero sheet on one page with a section dropdown (outside sheet11 tabs)
+12. `legends17a.js` result: the pack on his hero sheet
+13. `stats22.js` result: a +5 button beside each attribute's +
+
+Runs: 2 learn (around) → **base** → 1 comp (result) → 2 learn (around) → 3 p3shop (result) → 4 p4party (result) → 5 roles9 (result) → 6 sheet11 (result) → 7 skillrows11 (result) → 8 party12 (result) → 9 skills12 (result) → 10 menus12 (result) → 11 menus14 (result) → 12 legends17a (result) → 13 stats22 (result)
+
 ### unpackG (13 hooks)
 Registered (load order; 1 is next to the base):
 1. `tavern2.js` after: journey roster subset
@@ -618,23 +636,6 @@ Registered (load order; 1 is next to the base):
 
 Runs: 5 map → **base** → 1 tavern2 → 2 comp → 3 learn → 4 prog2 → 6 summon8 → 7 party12 → 8 skills12 → 9 menus14 → 10 realms14 → 11 battle16 → 12 world16 → 13 legends17a
 
-### mChar (12 hooks)
-Registered (load order; 1 is next to the base):
-1. `comp.js` result: Pet row on the hero sheet
-2. `learn.js` around: New badges on the hero sheet skills
-3. `p3shop.js` result: Upgrade button on each equipment slot
-4. `p4party.js` result: Battles together line
-5. `roles9.js` result: role row on the hero sheet
-6. `sheet11.js` result: hero sheet tabs
-7. `skillrows11.js` result: skill numbers on the hero sheet rows
-8. `party12.js` result: reserve sheet: gear slots are read only
-9. `skills12.js` result: role power on the hero sheet skill rows
-10. `menus12.js` result: skill rows on the hero sheet: scope, kind (for the weapon in hand), Primer / Detonator
-11. `menus14.js` result: the hero sheet on one page with a section dropdown (outside sheet11 tabs)
-12. `legends17a.js` result: the pack on his hero sheet
-
-Runs: 2 learn (around) → **base** → 1 comp (result) → 2 learn (around) → 3 p3shop (result) → 4 p4party (result) → 5 roles9 (result) → 6 sheet11 (result) → 7 skillrows11 (result) → 8 party12 (result) → 9 skills12 (result) → 10 menus12 (result) → 11 menus14 (result) → 12 legends17a (result)
-
 ### arrive (11 hooks)
 Registered (load order; 1 is next to the base):
 1. `journey.js` before: step count
@@ -650,6 +651,22 @@ Registered (load order; 1 is next to the base):
 11. `legends17b.js` after: the called sky counts down on the chip
 
 Runs: 7 field9 (around) → 3 world3 → 2 metastats → 1 journey → **base** → 4 chance → 5 ailments → 6 map → 7 field9 (around) → 8 party12 → 9 world12 → 10 worldart12 → 11 legends17b
+
+### classSkills (11 hooks)
+Registered (load order; 1 is next to the base):
+1. `archetype.js` result: tag every skill with its damage kind once
+2. `sigskills.js` result: the wayfarer's signature skill and element flavour
+3. `roles.js` result: secondary role skills and adjustments
+4. `skills12.js` result: the 12 skill kit, dual type primers and detonators, dual art kind (last hook: sees the finished list)
+5. `kits12.js` result: slot skills in the class voice, martial dual arts
+6. `menus12.js` result: skill descriptions never name a role
+7. `menus14.js` result: learn levels: three skills by level 10, then an even walk to 45 (order kept); the 0.20.3 levels stay as lvP, the 0.20.9 ones as lvQ
+8. `roster17.js` result: kits of 14: two more skills each (the Mantle, a restored skill, a new one), the signature at 18 and the second own skill at 38
+9. `legends17b.js` result: the reworked kits of Nikaris, Kaevan and Jace (14 skills on the roster17 levels)
+10. `legends17a.js` before: the two new legends: their kits of 14 as written
+11. `stats22.js` result: a skill costs more MP the later it is learned
+
+Runs: 10 legends17a → **base** → 1 archetype (result) → 2 sigskills (result) → 3 roles (result) → 4 skills12 (result) → 5 kits12 (result) → 6 menus12 (result) → 7 menus14 (result) → 8 roster17 (result) → 9 legends17b (result) → 11 stats22 (result)
 
 ### hdActors (11 hooks)
 Registered (load order; 1 is next to the base):
@@ -682,21 +699,6 @@ Registered (load order; 1 is next to the base):
 11. `legends17a.js` after: Zeus howls up a storm
 
 Runs: 10 world16 (around) → 6 map → 4 world3 (around) → 3 stuck (around) → **base** → 1 legends → 2 progression → 3 stuck (around) → 4 world3 (around) → 5 map → 7 bigmap → 8 field9 → 9 world16 → 10 world16 (around) → 11 legends17a
-
-### classSkills (10 hooks)
-Registered (load order; 1 is next to the base):
-1. `archetype.js` result: tag every skill with its damage kind once
-2. `sigskills.js` result: the wayfarer's signature skill and element flavour
-3. `roles.js` result: secondary role skills and adjustments
-4. `skills12.js` result: the 12 skill kit, dual type primers and detonators, dual art kind (last hook: sees the finished list)
-5. `kits12.js` result: slot skills in the class voice, martial dual arts
-6. `menus12.js` result: skill descriptions never name a role
-7. `menus14.js` result: learn levels: three skills by level 10, then an even walk to 45 (order kept); the 0.20.3 levels stay as lvP, the 0.20.9 ones as lvQ
-8. `roster17.js` result: kits of 14: two more skills each (the Mantle, a restored skill, a new one), the signature at 18 and the second own skill at 38
-9. `legends17b.js` result: the reworked kits of Nikaris, Kaevan and Jace (14 skills on the roster17 levels)
-10. `legends17a.js` before: the two new legends: their kits of 14 as written
-
-Runs: 10 legends17a → **base** → 1 archetype (result) → 2 sigskills (result) → 3 roles (result) → 4 skills12 (result) → 5 kits12 (result) → 6 menus12 (result) → 7 menus14 (result) → 8 roster17 (result) → 9 legends17b (result)
 
 ### drawObjects (8 hooks)
 Registered (load order; 1 is next to the base):
@@ -1649,6 +1651,11 @@ Registered (load order; 1 is next to the base):
 1. `world16.js` around: revision 3: all four sides, a plan that never crosses itself
 
 Runs: 1 world16 (around) → **base** → 1 world16 (around)
+
+### hdRoofUnder (0 hooks)
+Registered (load order; 1 is next to the base):
+
+Runs: **base**
 
 <!-- hooksmap:end -->
 

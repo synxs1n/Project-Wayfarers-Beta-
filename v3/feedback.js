@@ -101,7 +101,7 @@ function vFbHelp(){
     <h4>Stuck in a dungeon?</h4><p class="note">Open the menu and tap <b>Stuck?</b> at the bottom. The party walks back to the dungeon's entrance for free, and keys, levers, chests and items stay as they are. If it ever happens, please send a bug report from this screen so we can fix the map.</p>
     <h4>Shops</h4><div class="rows compact">
     <div class="row"><div><b>The Smithy</b><small>Weapons and armor: buy, sell, Forge new pieces, and Tempering to make gear better. It also sells ore, logs and a few monster parts each rest.</small></div></div>
-    <div class="row"><div><b>Alchemy</b><small>The green-flask house. Potions, tonics, charms, Holy Water and tents; herbs for brewing.</small></div></div>
+    <div class="row"><div><b>Alchemy</b><small>The green-flask house. Potions, tonics, Holy Water and tents; herbs for brewing. Charms are at the Smithy.</small></div></div>
     <div class="row"><div><b>The tavern</b><small>Recruits and Pork Chop Sandwiches. Four wayfarers sit at the tables; a hired seat stays empty until the next shuffle (after an inn rest or a stage clear, plus a short cooldown). There is no limit on how many you hire, only gold.</small></div></div></div>
     <h4>Travel tips</h4><div class="rows compact">
     <div class="row"><div><b>Tent</b><small>Rest in a field or dungeon for 60% HP and MP. Camp in tall grass or on open dungeon floor and monsters may find you; a road is always safe. Not in towns, the Archive or a guardian's lair.</small></div></div>

@@ -85,7 +85,7 @@ function g16PlanAll(slots){const first=p3SmithPlan(slots);if(!first.picks.length
     while(plan.picks.length&&n<G16.rounds){n++;
       plan.picks.forEach(p=>{const c=G.roster[p.cid];if(!c)return;G.gold-=p.gold;if(p.m)Object.keys(p.m).forEach(k=>{G.mats[k]=(G.mats[k]||0)-p.m[k];});
         if(p.src==='pack'){const i=G.gear.indexOf(p.base);if(i>=0)G.gear.splice(i,1);}
-        const old=c.eq[p.sl];if(old)G.gear.push(old);c.eq[p.sl]=p.id;c.S=calcStats(c);p.round=n;all.push(p);});
+        const old=c.eq[p.sl];if(old&&p.src!=='temper')G.gear.push(old);c.eq[p.sl]=p.id;c.S=calcStats(c);p.round=n;all.push(p);});
       plan=p3SmithPlan(slots);cant=plan.cant;}
   }finally{G.gold=real.gold;G.mats=real.mats;G.gear=real.gear;P.forEach(c=>{c.eq=real.eq[c.id];c.S=real.S[c.id];});}
   return {picks:all,cant,total:all.reduce((a,p)=>a+p.gold,0),gold0:real.gold,rounds:n};}
@@ -95,8 +95,8 @@ function g16UndoSnap(eq0){const pool={},put=id=>{if(id)pool[id]=(pool[id]||0)+1;
   const eq={};Object.keys(eq0).forEach(cid=>{eq[cid]={};Object.keys(eq0[cid]).forEach(sl=>{eq[cid][sl]=eq0[cid][sl]?take(eq0[cid][sl]):null;});});
   const gear=[];Object.keys(pool).forEach(id=>{for(let i=0;i<pool[id];i++)gear.push(id);});const s=snapAuto();s.gear=gear;s.eq=eq;return s;}
 ACT.p3Smith=function(){if(!G||G.daily)return;V.modal={type:'p3plan',plan:g16PlanAll(),from:V.modal};render();};
-ACT.p3Alch=function(){if(!G||G.daily)return;V.modal={type:'p3plan',charms:1,plan:g16PlanAll(['c']),from:V.modal};render();};
-ACT.p3SmithGo=function(){const m=V.modal;if(!m||m.type!=='p3plan')return;const slots=m.charms?['c']:undefined,eq0={},pw0={};
+ACT.p3Alch=function(){ACT.p3Smith();};// v0.22.17: charms are part of the Smithy's plan
+ACT.p3SmithGo=function(){const m=V.modal;if(!m||m.type!=='p3plan')return;const slots=undefined,eq0={},pw0={};
   Object.values(G.roster).forEach(c=>{eq0[c.id]=Object.assign({},c.eq);pw0[c.id]=loadoutScore(c,c.S);});
   // the first round is the one that was shown and confirmed; the rounds after it are planned from what is left
   const T={stop:null,spent:0,bought:0,forged:0,tempered:0,done:0,of:0,rounds:0};let plan={picks:(m.plan&&m.plan.picks||[]).filter(p=>!p.round||p.round===1)};

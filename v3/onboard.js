@@ -136,10 +136,10 @@ const TIPS=[
  {id:'craft',n:'Crafting',sec:'Town',
   t:()=>{const sm=obModal('smithy'),al=obModal('workshop');if(!sm&&!al)return null;const can=RECIPES.some(r=>recipeOpen(r)&&(sm?SMITH_CATS.includes(r.cat):!SMITH_CATS.includes(r.cat))&&G.gold>=r.g&&hasMats(recipeMats(r)));
    return can?(sm?'Your materials can become gear here. Open the Forge tab to see what you can make.':'Your herbs and parts can be brewed here. Open Brew & craft to see what you can make.'):null;},
-  g:'Herbs, ore, logs and monster parts you gather turn into things. Alchemy (Brew & craft) makes potions, charms and travel gear; the Smithy (Forge) makes weapons and armor. Recipes open realm by realm, and What next? tells you when you can craft something.'},
+  g:'Herbs, ore, logs and monster parts you gather turn into things. Alchemy (Brew & craft) makes potions and travel gear; the Smithy (Forge) makes weapons, armor and charms. Recipes open realm by realm, and What next? tells you when you can craft something.'},
  {id:'charm',n:'Charms',sec:'Town',go:['menuTab','equip','Equipment'],
   t:()=>{if(!obWorld())return null;return (G.gear||[]).some(obCharm)?'You found a charm! Each hero has one charm slot. Equip it in Backpack > Equipment.':null;},
-  g:'Charms fill the fourth gear slot of each hero: a small stat boost or a special effect. Bounties drop stat charms, Alchemy sells and brews them (Shop > Charms), and guild ranks give unique ones. They can be tempered too.'},
+  g:'Charms fill the fourth gear slot of each hero: a small stat boost or a special effect. Bounties drop stat charms, the Smithy sells and forges them (Shop > Charms), and guild ranks give unique ones. They can be tempered too.'},
  // later
  {id:'echoforge',n:'Echoforge',sec:'Later',x:'o:echo',
   t:()=>{if(!obModal('smithy')||typeof efTabOn!=='function'||!efTabOn())return null;return 'Each Echo\'s shards forge a different weapon. Read the Echoforge list, then pick which Echo to hunt.';},

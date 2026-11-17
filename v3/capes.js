@@ -1,9 +1,10 @@
 // ===== capes.js (v0.4.3, boots since v0.22.11): the fourth equipment slot =====
 // v0.22.11, owner: "Change capes to boots, with light, medium and heavy variants. Bonuses like armor but simpler, usually one clear bonus."
-// The fourth slot (k) is Boots. Three weights, each with one clear bonus:
-//   Light boots  (k_bootl_T): speed. Every class can wear them.
-//   Medium boots (k_cape_T, the old cape ids, so saves keep them): max HP. Classes in medium or heavy armor.
-//   Heavy boots  (k_booth_T): defense. Classes in heavy armor.
+// The fourth slot (k) is Boots. Three weights (numbers since v0.22.17; before that light was speed, medium HP, heavy defense, one stat each,
+// and Equip Best put light boots on every medium armor wearer for the speed):
+//   Light boots  (k_bootl_T): MAG and MP, the casters' boots. Every class can wear them.
+//   Medium boots (k_cape_T, the old cape ids, so saves keep them): SPD and some HP. Classes in medium or heavy armor.
+//   Heavy boots  (k_booth_T): DEF and HP. Classes in heavy armor.
 // A class wears boots of its armor weight or lighter (CLS_ARM). Sold at the Smithy beside armor (the two newest tiers of each weight the party
 // can wear), tempered like garb. Boots do not show on the sprite (as capes did not since v0.6.3).
 // Old saves: a cape becomes medium boots of the same tier and temper; a hero who cannot wear medium boots has theirs swapped for light boots
@@ -16,7 +17,7 @@ const BOOT_N={
  h:['Iron Boots','Steel Sabatons','Knight\'s Greaves','Runed Greaves','Royal Sabatons','Mythsteel Greaves']};
 const BOOT_ID={l:'k_bootl_',m:'k_cape_',h:'k_booth_'};
 const CAPE_COL=['#8a6a4a','#5fa86a','#4a7ad8','#9a5ae0','#e0b030','#d84a3a'];// the tier trim colour of every boot icon
-['l','m','h'].forEach(w=>BOOT_N[w].forEach((n,t)=>{const o={n,slot:'k',tier:t,fam:'boot'+w,weight:BOOT_W[w],price:BOOT_PRICE[t]};o[BOOT_ST[w].k]=BOOT_ST[w].v[t];addGear(BOOT_ID[w]+t,o);}));
+['l','m','h'].forEach(w=>BOOT_N[w].forEach((n,t)=>{const o={n,slot:'k',tier:t,fam:'boot'+w,weight:BOOT_W[w],price:BOOT_PRICE[t]};Object.keys(BOOT_ST[w]).forEach(k=>{o[k]=BOOT_ST[w][k][t];});addGear(BOOT_ID[w]+t,o);}));
 if(typeof FAM_RAW!=='undefined'){FAM_RAW.bootl='wood';FAM_PART.bootl='hide';FAM_RAW.bootm='wood';FAM_PART.bootm='hide';FAM_RAW.booth='ore';FAM_PART.booth='hide';}
 const bootName=w=>({light:'Light boots',medium:'Medium boots',heavy:'Heavy boots'})[w]||'Boots';
 // who may wear which boots: the class's armor weight or lighter

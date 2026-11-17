@@ -6,8 +6,8 @@
 const CHARMS9_EPIC=[['c_ep0','Titan Charm',{hp:150,atk:14,def:10}],['c_ep1','Oracle Charm',{mp:80,mag:14,res:10}],['c_ep2','Zephyr Charm',{spd:12,hp:80,attr:{agi:6}}],
   ['c_ep3','Bulwark Charm',{def:16,res:12,hp:100}],['c_ep4','Marksman Charm',{atk:12,spd:6,attr:{dex:8}}],['c_ep5','Fortune Charm',{luk:14,hp:60,attr:{luk:6}}]];
 const CHARMS9_HEROIC=[['c_hr0','Colossus Charm',{hp:260,atk:20,def:16}],['c_hr1','Archon Charm',{mp:140,mag:22,res:16}],['c_hr2','Tempest Charm',{spd:18,atk:14,mag:14}],['c_hr3','Aegis Charm',{def:24,res:20,hp:160}]];
-CHARMS9_EPIC.forEach(([id,n,st],i)=>addGear(id,Object.assign({n,slot:'c',tier:3,price:1100+i*50,d:'An Epic charm. Alchemy sells and makes these from the third realm on.'},st)));
-CHARMS9_HEROIC.forEach(([id,n,st],i)=>addGear(id,Object.assign({n,slot:'c',tier:4,price:2600+i*100,d:'A Heroic charm. Alchemy sells and makes these from the fifth realm on.'},st)));
+CHARMS9_EPIC.forEach(([id,n,st],i)=>addGear(id,Object.assign({n,slot:'c',tier:3,price:1100+i*50,d:'An Epic charm. The Smithy sells and makes these from the third realm on.'},st)));
+CHARMS9_HEROIC.forEach(([id,n,st],i)=>addGear(id,Object.assign({n,slot:'c',tier:4,price:2600+i*100,d:'A Heroic charm. The Smithy sells and makes these from the fifth realm on.'},st)));
 try{CHARMS9_EPIC.forEach(([id],i)=>RECIPES.push({cat:'charm',id,m:{core:1,$rel:3,[['iron','ash','sunpetal'][i%3]]:2},g:420,t:1}));
   CHARMS9_HEROIC.forEach(([id],i)=>RECIPES.push({cat:'charm',id,m:{core:2,$rel:4,[['mythril','elder','starbloom','grit'][i%4]]:2},g:980,t:2}));}catch(e){}
 const CH9_EPIC=CHARMS9_EPIC.map(x=>x[0]),CH9_HEROIC=CHARMS9_HEROIC.map(x=>x[0]);

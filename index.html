@@ -2119,7 +2119,7 @@ html:not(.flat) .battle.b3 .bline .b4mo .b4bar{box-shadow:inset 0 0 0 1px #000,0
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.22.16";const APP_BUILD="2b48972781d6";
+(function(){const APP_VER="0.22.17";const APP_BUILD="974ba89f1a06";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2414,6 +2414,7 @@ const invCap=()=>(typeof G!=='undefined'&&G&&G.daily)?ITEM_MAX_DAILY:ITEM_MAX;
 // closeAbs (absolute share of the hero's gear score) or closeRel (relative), and then get a short tradeoff line.
 const SHOP_BEST={closeAbs:.02,closeRel:.2,minPct:.005};
 // 3.3 Smithy plan: the smallest gain worth buying or crafting for (share of the hero's gear score)
+const MANA={win:.08};// v0.22.17: MP back after a win, a share of max MP (was .12 written in engine.js); see stats22.js
 const SMITH_PLAN={minPct:.03};// v0.12.13: a step must gain 3% (was 1%: tiny upgrades kept showing after Upgrade whole party)
 // 3.9 Pork Chop Sandwiches handed over after the first boss victory, and how many it takes to walk back to town from a dungeon
 const PORK={firstBoss:2,toTown:2};
@@ -2425,7 +2426,10 @@ const EF_K=1.18;
 const EF_SHARDS=2,EF_ESS=6,EF_CORE=3,EF_GOLD=3000;
 // boots (capes.js, v0.22.11): one clear bonus per weight, per tier 0..5. Light: speed (anyone). Medium: max HP (medium and heavy wearers).
 // Heavy: defense (heavy wearers). BOOT_PRICE per tier (as the old capes).
-const BOOT_ST={l:{k:'spd',v:[1,2,4,6,9,13]},m:{k:'hp',v:[35,60,95,135,190,255]},h:{k:'def',v:[4,8,13,19,27,37]}},BOOT_PRICE=[60,120,240,420,700,1000];
+// v0.22.17 (owner: Equip Best put light boots on medium armor wearers for the speed; "medium boots should be better for medium armor wearers than light
+// boots, light should lean magical, medium should lean toward speed"): light = MAG and MP (the casters' boots), medium = SPD and some HP, heavy = DEF and HP.
+// Before: light SPD [1,2,4,6,9,13], medium HP [35..255], heavy DEF [4..37], one stat each.
+const BOOT_ST={l:{mag:[2,4,6,9,13,18],mp:[5,9,14,20,28,38]},m:{spd:[1,2,4,6,9,13],hp:[15,25,40,55,80,110]},h:{def:[4,8,13,19,27,37],hp:[20,35,55,80,110,150]}},BOOT_PRICE=[60,120,240,420,700,1000];
 // STICK_Q: Bestiary entries the Tamer's Stick quest asks for (equip.js).
 const STICK_Q=6;
 
@@ -2893,7 +2897,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.22.16";const APP_BUILD="2b48972781d6";
+const APP_VER="0.22.17";const APP_BUILD="974ba89f1a06";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2901,6 +2905,12 @@ const APP_VER="0.22.16";const APP_BUILD="2b48972781d6";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.22.17',['Upgrade whole party does much more. It now tempers what your heroes already wear, plans boots and charms along with weapons, armor and shields, and always goes for the piece that ends up best at full temper before spending on one that will be replaced. Every planned step, and every row of "Best upgrade for each slot", lists the materials and gold it uses.',
+  'Charms moved to the Smithy: bought, forged, tempered and sold there, and part of its Upgrade buttons. Alchemy keeps potions, cures, travel gear and herbs.',
+  'Boots lean by weight. Light boots give MAG and MP (the casters\' boots), medium boots SPD and HP, heavy boots DEF and HP. Equip Best no longer puts light boots on medium armor wearers.',
+  'Stats: every hero now gets 2 stat points a level (it was 1 every two levels), and a little less grows by itself, so more of a build is yours. Heroes in an old save are given the points they are owed. A +5 button sits beside each +. Points in one attribute count fully up to the hero\'s level and half beyond it. Strength also gives max HP, Faith also raises the healing a hero receives, and Thieves, Archers and the bow Legendaries take much more of their attack from Dexterity. Heroes left on automatic end up a little stronger in their main stats than before.',
+  'Mana: skills cost more the later they are learned (a level 21 skill 30% more, a level 41 skill 60% more; level 1 skills cost what they did). The party gets 8% of its MP back after a win (was 12%). The Mana Tonic restores 40 MP (was 30) and the Sage Brew 90 (was 70).',
+  'Fixed: roofs in the HD-2D view. Buildings with round, steep, hipped or stepped roofs had open corners you could see through to the ground inside. Every roofed building now has a closed roof underneath.']],
  ['Beta v0.22.16',['Towns: every service building now has its own things standing outside. Kegs, a table and a barrel by the tavern; an anvil, a weapon rack and a grindstone by the smithy; a bench, a washing line and flowers by the inn; a cauldron and a table of flasks by the alchemist; a training dummy and an archery target by the guild hall; a candle shrine and a grave by the chapel. Most houses get a woodpile, a flower box, a wash tub or hay. They stand on the ground beside the building in both views, never in a doorway or on a road.',
   'Fixed: personal quests. Accept did nothing for Nikaris, Kaevan and Jace (in the popup and in the list), and the town Notice Board had no Personal filter on the tab it opens on. Both work now.',
   'Fixed: arena wins never counted for the Pit Masters. Their missions (First blood, A regular, Crowd favourite and the rest) and your standing with them now count every bout you have won on this journey, including the ones before this update.']],
@@ -3338,32 +3348,44 @@ sniper:{n:'Steppe Sniper',legend:1,role:'Legendary horse archer. Crossbow bolts 
 };
 // =================== ATTRIBUTES ===================
 const ATTR=['str','int','vit','spi','fth','agi','dex','luk'];
-const ATTRN={str:['Strength','Physical attack, a little defense'],int:['Intellect','Magic attack, a little MP and resistance'],vit:['Vitality','Max HP and defense'],spi:['Spirit','MP, resistance, healing power, ailment resistance'],fth:['Faith','Healing and revives first, a little magic damage and resistance'],agi:['Agility','Turn speed and evasion'],dex:['Dexterity','Accuracy, critical damage, some physical attack'],luk:['Luck','Critical chance, ailment chance, evasion, steals and drops']};
+const ATTRN={str:['Strength','Physical attack, a little max HP and defense'],int:['Intellect','Magic attack, MP, a little resistance'],vit:['Vitality','Max HP and defense'],spi:['Spirit','MP, resistance, healing power, ailment resistance'],fth:['Faith','Healing given and healing received, revives, a little magic damage, MP and resistance'],agi:['Agility','Turn speed and evasion'],dex:['Dexterity','Accuracy, critical chance and damage (spells too), attack for bows, crossbows and daggers'],luk:['Luck','Critical chance, ailment chance, evasion, steals and drops']};
 const DEXLUK={sniper:{dex:[8,1.25],luk:[5,.7]},druid:{dex:[7,1.1],luk:[6,.9]},archmage:{dex:[3,.5],luk:[4,.6]},chronicler:{dex:[4,.6],luk:[5,.7]},warrior:{dex:[4,.6],luk:[3,.4]},knight:{dex:[3,.5],luk:[3,.4]},mage:{dex:[3,.5],luk:[4,.6]},healer:{dex:[3,.5],luk:[5,.7]},thief:{dex:[7,1.1],luk:[7,1.1]},archer:{dex:[8,1.2],luk:[5,.7]},monk:{dex:[6,.9],luk:[4,.6]},bard:{dex:[5,.7],luk:[7,1]}};
 // derived stat formulas (shared by heroes and the stat sheet)
-function deriveStats(a,L){const f=a.fth||0;
-  return {hp:20+a.vit*6+L*3,mp:4+a.spi*2.5+a.int+f*.6,atk:a.str*2+a.dex*.4,mag:a.int*2+f*1.2,def:a.vit*1.2+a.str*.3,res:a.spi*1.2+a.int*.3+f*.3,spd:4+a.agi};
+// v0.22.17, the owner's stat pass ("rebalance what each stat does, ensure they are all at least a little relevant for every class, rebalance
+// what stats classes rely on, more stats assignable"):
+//  - Strength also gives 1 max HP a point (a caster's Strength was worth nothing but .3 DEF).
+//  - The finesse classes (ATK_W: thief, archer, sniper, druid) take their attack from Strength 1.2 and Dexterity 1.0 a point; everyone else
+//    keeps Strength 2, Dexterity .4. So a bow or a dagger leans on Dexterity.
+//  - Faith also raises the healing a hero RECEIVES (.4% a point, calcStats S.healIn), so it is worth a point on anyone.
+//  - Dexterity and Luck already fed critical hits, which spells roll too; the texts now say so.
+//  - 40% of a class's natural growth is handed to the player as stat points (GROWTH_KEEP .60, was .82), 2 points a level (was 1 every two).
+//    The class curves are solved from the same stat tables as before, so a hero whose points follow the class's own growth is where they were.
+// cls undefined = the formulas before 0.22.17 (the Daily Trial's legacy curves keep them).
+const ATK_W={_:{str:2,dex:.4},thief:{str:1.2,dex:1},archer:{str:1.2,dex:1},sniper:{str:1.2,dex:1},druid:{str:1.2,dex:1}},STR_HP=1,PTS_PER_LV=2,FTH_HEALIN=.004;
+const atkW=cls=>cls==null?ATK_W._:(ATK_W[cls]||ATK_W._);
+function deriveStats(a,L,cls){const f=a.fth||0,W=atkW(cls);
+  return {hp:20+a.vit*6+(cls==null?0:a.str*STR_HP)+L*3,mp:4+a.spi*2.5+a.int+f*.6,atk:a.str*W.str+a.dex*W.dex,mag:a.int*2+f*1.2,def:a.vit*1.2+a.str*.3,res:a.spi*1.2+a.int*.3+f*.3,spd:4+a.agi};
 }
 // Class attribute curves are solved from the old stat curves so the balance carries over.
 // CLASS_ATTR_LEGACY keeps the pre-Faith curves: the Daily Trial uses them so its heroes stay exactly as they were.
-const CLASS_ATTR={},CLASS_ATTR_LEGACY={},GROWTH_KEEP=.82;
+const CLASS_ATTR={},CLASS_ATTR_LEGACY={},GROWTH_KEEP=.60,GROWTH_KEEP_LEGACY=.82;
 const POINT_VAL={str:1,int:1,vit:1,spi:1,fth:1,agi:.6,dex:1,luk:1};
 // Beta v0.3.1 Faith: [base, growth]. Healers and Chroniclers scale mostly on it, Knights and Monks a little.
 // Their Intellect is lowered by 0.6 per Faith point so MAG stays where it was; healing goes up (Faith adds 0.5 heal power per point on top of MAG).
 const FTH={healer:[3,.9],chronicler:[3,.8],knight:[1,.3],monk:[1,.25]};
 // (legends17a.js: named so a class added by a later module gets the same curves; classAttrBuild(k) builds CLASS_ATTR[k] and CLASS_ATTR_LEGACY[k])
 function classAttrBuild(k){
-  const c=CLS[k],dl=DEXLUK[k],at=i=>{
+  const c=CLS[k],dl=DEXLUK[k],mk=cls=>i=>{const W=atkW(cls);
     const dex=dl.dex[0]+dl.dex[1]*i,luk=dl.luk[0]+dl.luk[1]*i,atk=c.atk[0]+c.atk[1]*i,mag=c.mag[0]+c.mag[1]*i,hp=c.hp[0]+c.hp[1]*i,res=c.res[0]+c.res[1]*i,spd=c.spd[0]+c.spd[1]*i;
-    const int=mag/2,str=(atk-.4*dex)/2,vit=(hp-20-3*i)/6,spi=(res-.3*int)/1.2,agi=spd-4;
+    const int=mag/2,str=(atk-W.dex*dex)/W.str,vit=(hp-20-3*i-(cls==null?0:str*STR_HP))/6,spi=(res-.3*int)/1.2,agi=spd-4;
     return {str,int,vit,spi,agi,dex,luk};};
-  // 18% of natural growth is handed to the player as free stat points instead
-  const a0=at(0),a1=at(1),b={},g={};ATTR.forEach(s=>{if(s==='fth')return;b[s]=a0[s];g[s]=(a1[s]-a0[s])*GROWTH_KEEP;});
-  CLASS_ATTR_LEGACY[k]={b:Object.assign({},b,{fth:0}),g:Object.assign({},g,{fth:0})};
-  const F=FTH[k]||[0,0];b.fth=F[0];g.fth=F[1]*GROWTH_KEEP;b.int-=.6*b.fth;g.int-=.6*g.fth;
-  const a15={};ATTR.forEach(s=>{if(s==='fth')return;a15[s]=a0[s]+(a1[s]-a0[s])*15;});a15.fth=0;const d15=deriveStats(a15,15);
-  Object.assign(CLASS_ATTR_LEGACY[k],{defM:(c.def[0]+c.def[1]*15)/d15.def,mpM:(c.mp[0]+c.mp[1]*15)/d15.mp});
-  CLASS_ATTR[k]={b,g,defM:(c.def[0]+c.def[1]*15)/d15.def,mpM:(c.mp[0]+c.mp[1]*15)/d15.mp};
+  // part of the natural growth is handed to the player as free stat points instead (18% until v0.22.17, 40% since; the legacy curves keep 18%)
+  const build=(cls,keep)=>{const at=mk(cls),a0=at(0),a1=at(1),b={},g={};ATTR.forEach(s=>{if(s==='fth')return;b[s]=a0[s];g[s]=(a1[s]-a0[s])*keep;});
+    const a15={};ATTR.forEach(s=>{if(s==='fth')return;a15[s]=a0[s]+(a1[s]-a0[s])*15;});a15.fth=0;const d15=deriveStats(a15,15,cls);
+    return {b,g,full:Object.assign({},...ATTR.filter(s=>s!=='fth').map(s=>({[s]:a1[s]-a0[s]}))),defM:(c.def[0]+c.def[1]*15)/d15.def,mpM:(c.mp[0]+c.mp[1]*15)/d15.mp};};
+  const Lg=build(undefined,GROWTH_KEEP_LEGACY);Lg.b.fth=0;Lg.g.fth=0;CLASS_ATTR_LEGACY[k]=Lg;
+  const N=build(k,GROWTH_KEEP),F=FTH[k]||[0,0];N.b.fth=F[0];N.g.fth=F[1]*GROWTH_KEEP;N.b.int-=.6*N.b.fth;N.g.int-=.6*N.g.fth;N.full.fth=F[1];N.full.int-=.6*F[1];
+  CLASS_ATTR[k]=N;
 }
 Object.keys(CLS).forEach(k=>classAttrBuild(k));
 const ST=['hp','mp','atk','def','mag','res','spd'];
@@ -4160,7 +4182,7 @@ const RECIPES=[];
 })();
 const RCAT=[['potion','Potions'],['weapon','Weapons'],['armor','Armor'],['charm','Charms'],['item','Travel']];
 // which crafting station owns which recipe category
-const SMITH_CATS=['weapon','armor'],ALCH_CATS=['potion','charm','item'];
+const SMITH_CATS=['weapon','armor','charm'],ALCH_CATS=['potion','item'];// v0.22.17: charms are the Smithy's (sold, forged, tempered and planned there with the rest of the gear)
 
 // ===== foes.js (v0.4.0): foe data: monsters, bosses, guardians (split out of data.js) =====
 // =================== FOE DATA (monsters, bosses). Split out of data.js ===================
@@ -7148,9 +7170,12 @@ function weightedDraw(pool,n,R){const p=pool.slice(),out=[];while(out.length<n&&
 function bossKeyFor(s){return s<4?G.run.bosses[s]:G.run.final;}
 
 // =================== STATS ===================
+// v0.22.17: with 2 points a level, the points put in ONE attribute count fully up to the hero's level and half beyond it, so going all in
+// on one stat is a choice with a price, not the only sensible build (the Daily Trial keeps the plain count)
+function allocEff(c,k){const n=(c.alloc&&c.alloc[k])||0;if(G&&G.daily)return n;const cap=Math.max(1,c.lv||1);return n<=cap?n:cap+(n-cap)*.5;}
 function baseAttr(c){
   const t=TPL[c.id],A=(G&&G.daily?CLASS_ATTR_LEGACY:CLASS_ATTR)[t.cls],L=c.lv-1,a={};
-  ATTR.forEach(k=>{a[k]=A.b[k]+A.g[k]*L+((c.alloc&&c.alloc[k])||0)*POINT_VAL[k]+(c.vet||0);});
+  ATTR.forEach(k=>{a[k]=A.b[k]+A.g[k]*L+allocEff(c,k)*POINT_VAL[k]+(c.vet||0);});
   return a;
 }
 function calcStats(c){
@@ -7158,7 +7183,7 @@ function calcStats(c){
   const gears=EQSL.map(sl=>gearOf(c.eq[sl])).filter(Boolean);
   gears.forEach(g=>{if(g.attr)Object.keys(g.attr).forEach(k=>{if(daily&&k==='fth')return;a[k]=(a[k]||0)+g.attr[k];});});
   if(NF.agi)a.agi*=NF.agi;
-  const d=deriveStats(a,L);d.def*=A.defM;d.mp*=A.mpM;
+  const d=deriveStats(a,L,daily?undefined:t.cls);d.def*=A.defM;d.mp*=A.mpM;
   ['hp','mp','atk','def','mag','res'].forEach(k=>{if(NF[k])d[k]*=NF[k];});
   if(c.id==='vaelith')d.mag*=1+.01*archiveKeys().length;
   if(t.bb){d.hp*=1.12;d.atk*=1.12;d.mag*=1.12;d.def*=1.12;d.res*=1.12;}
@@ -7167,7 +7192,7 @@ function calcStats(c){
   S.mhp=Math.round(d.hp);S.mmp=Math.round(d.mp);S.atk=d.atk;S.def=d.def;S.mag=d.mag;S.res=d.res;S.spd=d.spd;
   S.crit=.04+a.luk*.003+a.dex*.0015+(NF.crit||0);S.critDmg=1.5+a.dex*.004;
   S.acc=.97+a.dex*.002;S.eva=Math.min(.22,a.agi*.0015+a.luk*.002+(NF.eva||0));
-  S.luk=a.luk;S.spi=a.spi;
+  S.luk=a.luk;S.spi=a.spi;if(!daily)S.healIn=Math.min(.3,Math.max(0,(a.fth||0)*FTH_HEALIN));// v0.22.17: Faith raises healing received
   S.healM=(NF.heal||1)*(S.mastery==='light'?1+MASTERY.light.heal:1);
   S.healP=(d.mag*.6+a.spi*.9+(a.fth||0)*.5)*S.healM;
   // v0.3.5 weapon perks (WPERK in data.js). Flat numbers are read straight off S by the battle code.
@@ -7178,12 +7203,19 @@ function calcStats(c){
   return S;
 }
 calcStats=HOOK.def('calcStats',calcStats);// one definition; modules add hooks (hooks.js)
-const curseMul=t=>t&&t.st&&t.st.curse?AIL.curseHeal:1;   // v0.4.1 2.2: a Cursed hero receives less healing
+const curseMul=t=>(t&&t.st&&t.st.curse?AIL.curseHeal:1)*(1+((t&&t.S&&t.S.healIn)||0));   // v0.4.1 2.2: a Cursed hero receives less healing
 function refresh(c){c.S=calcStats(c);c.hp=Math.min(c.hp,c.S.mhp);c.mp=Math.min(c.mp,c.S.mmp);return c;}
+// v0.22.17: with 2 points a level, 35% of an automatic point follows the class's preferred three (50/30/20, as before) and 65% follows the
+// class's own natural growth, so a hero left on automatic keeps the HP, defense and resistance the class always had
 function autoAlloc(c){
-  const p=CLS[TPL[c.id].cls].pref,w=[.5,.3,.2];
-  while(c.pts>0){const r=Math.random();const k=r<w[0]?p[0]:r<w[0]+w[1]?p[1]:p[2];c.alloc[k]=(c.alloc[k]||0)+1;c.pts--;}
+  const cls=TPL[c.id].cls,p=CLS[cls].pref,w=[.5,.3,.2],daily=!!(G&&G.daily),F=!daily&&CLASS_ATTR[cls]&&CLASS_ATTR[cls].full;
+  let ks=null,cum=null;if(F){ks=ATTR.filter(k=>(F[k]||0)>0);let t=0;cum=ks.map(k=>(t+=F[k]/POINT_VAL[k]));cum=cum.map(v=>v/t);}
+  while(c.pts>0){let k;if(F&&Math.random()<.65){const r=Math.random();k=ks[cum.findIndex(v=>r<=v)]||p[0];}else{const r=Math.random();k=r<w[0]?p[0]:r<w[0]+w[1]?p[1]:p[2];}c.alloc[k]=(c.alloc[k]||0)+1;c.pts--;}
 }
+const ptsAt=lv=>(G&&G.daily)?Math.floor(lv/2):PTS_PER_LV*(lv-1);
+// an older save: heroes get the points the new schedule owes them (their natural growth is lower by the same measure), once (c.sp2)
+function statMigrate(c){if(!c||c.sp2||(G&&G.daily))return 0;c.sp2=1;c.alloc=c.alloc||{};const have=Object.values(c.alloc).reduce((a,b)=>a+(b||0),0)+(c.pts||0),owed=Math.max(0,PTS_PER_LV*((c.lv||1)-1)-have);
+  if(owed){c.pts=(c.pts||0)+owed;if(c.auto!==false&&META.cfg.autoStats!==false)autoAlloc(c);}return owed;}
 function respecCost(c){return 40+c.lv*12;}
 function bondSkills(c){
   if(!B)return [];const out=[];
@@ -7205,13 +7237,13 @@ function archiveSkills(){return archiveKeys().map(k=>{const d=guardianDef(k),x=d
 function newChar(id,lv,tier){
   const t=TPL[id],f=CF[t.cls];
   const c={id,name:t.n,el:t.el,side:'p',pace:2,lv:1,xp:0,eq:{w:'w_'+f[0]+'_'+tier,a:'a_'+f[1]+'_'+tier,c:null},hp:1,mp:1,st:{},alloc:{},pts:0,auto:true,lb:0,bt:0};
-  c.nat=natRoll(id);c.lv=lv;c.pts=Math.floor(lv/2);if(META.cfg.autoStats!==false)autoAlloc(c);
+  c.nat=natRoll(id);c.lv=lv;c.pts=ptsAt(lv);if(!(G&&G.daily))c.sp2=1;if(META.cfg.autoStats!==false)autoAlloc(c);
   c.S=calcStats(c);c.hp=c.S.mhp;c.mp=c.S.mmp;return c;
 }
 function addXp(c,x){
   const ups=[];c.xp+=x;
   while(c.lv<LV_CAP&&c.xp>=need(c.lv)){
-    c.xp-=need(c.lv);const oh=c.S.mhp,om=c.S.mmp;c.lv++;if(c.lv%2===0)c.pts=(c.pts||0)+1;if(c.auto!==false&&META.cfg.autoStats!==false)autoAlloc(c);c.S=calcStats(c);
+    c.xp-=need(c.lv);const oh=c.S.mhp,om=c.S.mmp;c.lv++;c.pts=(c.pts||0)+((G&&G.daily)?(c.lv%2===0?1:0):PTS_PER_LV);if(c.auto!==false&&META.cfg.autoStats!==false)autoAlloc(c);c.S=calcStats(c);
     c.hp=Math.min(c.S.mhp,c.hp+(c.hp>0?c.S.mhp-oh:0));c.mp=Math.min(c.S.mmp,c.mp+(c.S.mmp-om));
     ups.push({lv:c.lv,learned:classSkills(TPL[c.id]).filter(s=>s.lv===c.lv&&!(c.keep&&c.keep.includes(s.id))).map(s=>s.n)});
   }
@@ -7223,14 +7255,14 @@ function gearTier(){return Math.max(0,Math.min(5,G.stage));}
 
 // ----- save / load -----
 function packG(){
-  const r={};Object.keys(G.roster).forEach(id=>{const c=G.roster[id];r[id]={lv:c.lv,xp:c.xp,eq:c.eq,hp:c.hp,mp:c.mp,alloc:c.alloc,pts:c.pts,auto:c.auto,lb:c.lb||0,lastB:c.lastB,vet:c.vet||0,legacy:c.legacy||0,pace:c.pace||0,ail:c.ail&&Object.keys(c.ail).length?c.ail:undefined,bt:c.bt!=null?c.bt:undefined,keep:c.keep||undefined,nat:c.nat||undefined,nrr:c.nrr||undefined};});
+  const r={};Object.keys(G.roster).forEach(id=>{const c=G.roster[id];r[id]={lv:c.lv,xp:c.xp,eq:c.eq,hp:c.hp,mp:c.mp,alloc:c.alloc,pts:c.pts,auto:c.auto,sp2:c.sp2||undefined,lb:c.lb||0,lastB:c.lastB,vet:c.vet||0,legacy:c.legacy||0,pace:c.pace||0,ail:c.ail&&Object.keys(c.ail).length?c.ail:undefined,bt:c.bt!=null?c.bt:undefined,keep:c.keep||undefined,nat:c.nat||undefined,nrr:c.nrr||undefined};});
   return Object.assign({},G,{roster:r});
 }
 // Beta v0.2.0: saves made under the old skill pacing keep every skill the hero had already learned.
 function paceMigrate(c){if(c.pace>=2)return;const t=TPL[c.id];if(t){const k=classSkills(t).filter(s=>(s.lv0||s.lv)<=c.lv&&s.lv>c.lv).map(s=>s.id);if(k.length)c.keep=k;}c.pace=2;}
 function unpackG(o){
   const g=Object.assign({},o);g.roster={};(o.tamed||[]).forEach(registerTamed);
-  Object.keys(o.roster).forEach(id=>{if(!TPL[id])return;const s=o.roster[id];const c=Object.assign({id,name:TPL[id].n,el:TPL[id].el,side:'p',st:{}},s);c.alloc=c.alloc||{};paceMigrate(c);c.S=calcStats(c);c.hp=Math.min(c.hp,c.S.mhp);c.mp=Math.min(c.mp,c.S.mmp);g.roster[id]=c;});
+  Object.keys(o.roster).forEach(id=>{if(!TPL[id])return;const s=o.roster[id];const c=Object.assign({id,name:TPL[id].n,el:TPL[id].el,side:'p',st:{}},s);c.alloc=c.alloc||{};paceMigrate(c);if(!o.daily)statMigrate(c);c.S=calcStats(c);c.hp=Math.min(c.hp,c.S.mhp);c.mp=Math.min(c.mp,c.S.mmp);g.roster[id]=c;});
   g.party=g.party.filter(id=>g.roster[id]);g.tamed=g.tamed||[];g.personal=g.personal||{};g.weather=g.weather||{};g.vaults=g.vaults||{};g.gath=g.gath||{};Object.keys(MATS).forEach(k=>{g.mats[k]=g.mats[k]||0;});g.talks=g.talks||[];
   return g;
 }
@@ -7993,7 +8025,7 @@ function win(){
     const ups=share>0?addXp(c,Math.round(txp*share*xpLvMul(c,flv))):[];
     if(ups.length)info.ups.push({name:c.name,lv:c.lv,learned:ups.flatMap(u=>u.learned),pts:c.pts});
     if(c.hp>0)c.hp=Math.min(c.S.mhp,c.hp+Math.round(c.S.mhp*([.25,.2,.15,.12,.12][s]||.1)));// v0.4.3: more recovery after a win in the first two realms   // v0.4.1 2.1: a KO'd hero stays KO'd after the fight (items, field skills, tents and the inn bring heroes back)
-    c.mp=Math.min(c.S.mmp,c.mp+Math.round(c.S.mmp*.12));
+    c.mp=Math.min(c.S.mmp,c.mp+Math.round(c.S.mmp*MANA.win));
   });
   // bonds grow between partners who finish a fight side by side
   const fr=partyChars().filter(c=>!c.isComp);/* v0.17.1: bonds grow for every pair in the party, rearguard included, not only the vanguard still standing */
@@ -12385,7 +12417,7 @@ function vFbHelp(){
     <h4>Stuck in a dungeon?</h4><p class="note">Open the menu and tap <b>Stuck?</b> at the bottom. The party walks back to the dungeon's entrance for free, and keys, levers, chests and items stay as they are. If it ever happens, please send a bug report from this screen so we can fix the map.</p>
     <h4>Shops</h4><div class="rows compact">
     <div class="row"><div><b>The Smithy</b><small>Weapons and armor: buy, sell, Forge new pieces, and Tempering to make gear better. It also sells ore, logs and a few monster parts each rest.</small></div></div>
-    <div class="row"><div><b>Alchemy</b><small>The green-flask house. Potions, tonics, charms, Holy Water and tents; herbs for brewing.</small></div></div>
+    <div class="row"><div><b>Alchemy</b><small>The green-flask house. Potions, tonics, Holy Water and tents; herbs for brewing. Charms are at the Smithy.</small></div></div>
     <div class="row"><div><b>The tavern</b><small>Recruits and Pork Chop Sandwiches. Four wayfarers sit at the tables; a hired seat stays empty until the next shuffle (after an inn rest or a stage clear, plus a short cooldown). There is no limit on how many you hire, only gold.</small></div></div></div>
     <h4>Travel tips</h4><div class="rows compact">
     <div class="row"><div><b>Tent</b><small>Rest in a field or dungeon for 60% HP and MP. Camp in tall grass or on open dungeon floor and monsters may find you; a road is always safe. Not in towns, the Archive or a guardian's lair.</small></div></div>
@@ -12954,7 +12986,7 @@ function vNext(){
   const canR=RECIPES.filter(r=>recipeOpen(r)&&G.gold>=r.g&&hasMats(recipeMats(r))&&!(r.item&&(G.inv[r.item]||0)>=invCap()));
   const cS=canR.filter(r=>SMITH_CATS.includes(r.cat)).length,cA=canR.length-cS;
   if(cS)add(false,`${cS} weapon or armor recipe${cS>1?'s':''} you can Forge right now`,'At the Smithy.');
-  if(cA)add(false,`${cA} potion, charm or tent recipe${cA>1?'s':''} you can craft right now`,'At Alchemy.');
+  if(cA)add(false,`${cA} potion or tent recipe${cA>1?'s':''} you can craft right now`,'At Alchemy.');
   const forgeable=P.flatMap(c=>EQSL.map(sl=>c.eq[sl]).filter(Boolean)).filter(id=>{const f=forgeCost(id);return f&&G.gold>=f.gold&&hasMats(f.m);}).length;
   if(forgeable)add(false,`${forgeable} equipped item${forgeable>1?'s':''} can be tempered`,'In the Smithy\'s Tempering tab.');
   const pe=P.filter(c=>personalEligible(c)&&!(G.personal||{})[c.id]);if(pe.length)add(false,'Personal quests available',pe.slice(0,3).map(c=>esc(c.name)).join(', ')+'. Start them at the Notice Board.');
@@ -14159,16 +14191,16 @@ document.addEventListener('DOMContentLoaded',offPaint);try{offPaint();}catch(e){
 // ===== describe.js (v0.3.1): stat and attribute descriptions, class role cards =====
 // Tap any stat or attribute on the hero sheet for what it does; every class has a role card on the sheet and in the Codex.
 const STAT_INFO={
-  hp:['HP','Health. At 0 the hero is knocked out until revived.','Raised by Vitality, levels and armor.'],
+  hp:['HP','Health. At 0 the hero is knocked out until revived.','Raised by Vitality, a little by Strength, levels and armor.'],
   mp:['MP','Pays for skills. Recovers a little each turn and fully at an inn.','Raised by Spirit, Intellect, Faith, staves and robes.'],
-  atk:['ATK','Physical damage from attacks and physical skills.','Raised by Strength, some Dexterity, and weapons.'],
+  atk:['ATK','Physical damage from attacks and physical skills.','Raised by Strength, some Dexterity, and weapons. Thieves, Archers and the bow Legendaries take almost as much from Dexterity as from Strength.'],
   def:['DEF','Cuts physical damage taken.','Raised by Vitality, some Strength, and armor (mail most).'],
   mag:['MAG','Damage from spells and magical skills, and part of healing power.','Raised by Intellect, some Faith, staves and tomes.'],
   res:['RES','Cuts magical damage taken.','Raised by Spirit, a little Intellect and Faith, and robes.'],
   spd:['SPD','How soon a hero acts again. Higher speed means more turns.','Raised by Agility and light gear.'],
   crit:['CRIT','Chance for a critical hit (x1.5 or more damage).','Raised by Luck and Dexterity; some skills add more.'],
   eva:['EVA','Chance to dodge a physical attack.','Raised by Agility and Luck. Capped at 22%.'],
-  healP:['HEAL','Healing power for heal skills, Regen and revives.','Raised mostly by Faith, then Spirit and MAG.']};
+  healP:['HEAL','Healing power for heal skills, Regen and revives.','Raised mostly by Faith, then Spirit and MAG. Faith also raises the healing a hero receives.']};
 function prefersAttr(k){return Object.keys(CLS).filter(c=>(CLS[c].pref||[]).includes(k)).map(c=>CLS[c].n);}
 const CLASS_DESC={
   warrior:{role:'Vanguard damage',str:'Big single hits, sweeps that hit every foe, War Cry to draw attacks.',wpn:'Blades and mail'},
@@ -17452,10 +17484,11 @@ const TIER_GEM=['#d8a060','#5fcf6a','#4a9bff','#b06aff','#ffc83d','#ff4a3a'];
 
 // ===== capes.js (v0.4.3, boots since v0.22.11): the fourth equipment slot =====
 // v0.22.11, owner: "Change capes to boots, with light, medium and heavy variants. Bonuses like armor but simpler, usually one clear bonus."
-// The fourth slot (k) is Boots. Three weights, each with one clear bonus:
-//   Light boots  (k_bootl_T): speed. Every class can wear them.
-//   Medium boots (k_cape_T, the old cape ids, so saves keep them): max HP. Classes in medium or heavy armor.
-//   Heavy boots  (k_booth_T): defense. Classes in heavy armor.
+// The fourth slot (k) is Boots. Three weights (numbers since v0.22.17; before that light was speed, medium HP, heavy defense, one stat each,
+// and Equip Best put light boots on every medium armor wearer for the speed):
+//   Light boots  (k_bootl_T): MAG and MP, the casters' boots. Every class can wear them.
+//   Medium boots (k_cape_T, the old cape ids, so saves keep them): SPD and some HP. Classes in medium or heavy armor.
+//   Heavy boots  (k_booth_T): DEF and HP. Classes in heavy armor.
 // A class wears boots of its armor weight or lighter (CLS_ARM). Sold at the Smithy beside armor (the two newest tiers of each weight the party
 // can wear), tempered like garb. Boots do not show on the sprite (as capes did not since v0.6.3).
 // Old saves: a cape becomes medium boots of the same tier and temper; a hero who cannot wear medium boots has theirs swapped for light boots
@@ -17468,7 +17501,7 @@ const BOOT_N={
  h:['Iron Boots','Steel Sabatons','Knight\'s Greaves','Runed Greaves','Royal Sabatons','Mythsteel Greaves']};
 const BOOT_ID={l:'k_bootl_',m:'k_cape_',h:'k_booth_'};
 const CAPE_COL=['#8a6a4a','#5fa86a','#4a7ad8','#9a5ae0','#e0b030','#d84a3a'];// the tier trim colour of every boot icon
-['l','m','h'].forEach(w=>BOOT_N[w].forEach((n,t)=>{const o={n,slot:'k',tier:t,fam:'boot'+w,weight:BOOT_W[w],price:BOOT_PRICE[t]};o[BOOT_ST[w].k]=BOOT_ST[w].v[t];addGear(BOOT_ID[w]+t,o);}));
+['l','m','h'].forEach(w=>BOOT_N[w].forEach((n,t)=>{const o={n,slot:'k',tier:t,fam:'boot'+w,weight:BOOT_W[w],price:BOOT_PRICE[t]};Object.keys(BOOT_ST[w]).forEach(k=>{o[k]=BOOT_ST[w][k][t];});addGear(BOOT_ID[w]+t,o);}));
 if(typeof FAM_RAW!=='undefined'){FAM_RAW.bootl='wood';FAM_PART.bootl='hide';FAM_RAW.bootm='wood';FAM_PART.bootm='hide';FAM_RAW.booth='ore';FAM_PART.booth='hide';}
 const bootName=w=>({light:'Light boots',medium:'Medium boots',heavy:'Heavy boots'})[w]||'Boots';
 // who may wear which boots: the class's armor weight or lighter
@@ -18211,7 +18244,16 @@ function temperWhy(list){const out={},memo={};const R=list.map(o=>{const c=forge
     const w=p3c().why[id];if(w)h+=`<small class="p3why">⇄ ${w}</small>`;}catch(e){}return h;};}
 
 // ===================== 3.3: Smithy plan =====================
-const P3_SLOTS=['w','a','k','s'];// v0.22.12: shields (only Warriors and Knights can take one)
+const P3_SLOTS=['w','a','k','s','c'];// v0.22.12: shields (only Warriors and Knights can take one); v0.22.17: charms (sold and forged at the Smithy now)
+// v0.22.17 (owner: "it should prioritize forging/tempering the things that will be the best ultimately for each of the characters"): where a
+// piece ENDS decides. p3Ult is the hero's score with the piece at max temper; the plan and the per slot Upgrade take the option with the
+// highest end first (ends within P3_ULT_EPS of each other count as equal), then the most gain today, then the least gold. So a new base that
+// is a little better today and much better at +3 is taken before another temper step on a piece that will be replaced. An option still has
+// to be a gain today (nobody is made weaker to save up), and the 3% floor does not apply to an empty slot.
+const P3_ULT_EPS=.004;
+function p3Ult(c,sl,id){try{return maxScoreOf(c,sl,id);}catch(e){return 0;}}
+function p3UltCmp(a,b){const m=Math.max(a.u||0,b.u||0,1);if(Math.abs((a.u||0)-(b.u||0))>m*P3_ULT_EPS)return (b.u||0)-(a.u||0);return 0;}
+const p3Floor=(c,sl)=>c.eq[sl]?(SMITH_PLAN.minPct||0):.0001;
 function p3Recipes(){const o={};RECIPES.forEach(r=>{if(r.id&&SMITH_CATS.includes(r.cat)&&recipeOpen(r)&&!o[r.id])o[r.id]=r;});return o;}
 // v0.11.8: the plan looks at where a piece can END: every base (pack, shop, forge) is also considered tempered +1, +2 and +3 (temper.js
 // forgeCost chain), with the gold and materials of the whole chain, so the pick is the best final stats you can afford, not the best
@@ -18221,47 +18263,56 @@ function p3Chain(base){const out=[{id:base,k:0,gold:0,m:{}}];let id=base,gold=0;
   return out;}
 function p3SmithPlan(slots){const SL=slots||P3_SLOTS;
   const party=partyChars();let gold=G.gold;const mats=Object.assign({},G.mats),pack={};G.gear.forEach(id=>{pack[id]=(pack[id]||0)+1;});
-  const stock=SL.includes('c')?shopStock('charms'):shopStock('weapons').concat(shopStock('armor'));
+  const stock=(SL.some(s=>s!=='c')?shopStock('weapons').concat(shopStock('armor')):[]).concat(SL.includes('c')?shopStock('charms'):[]);
   const shop=new Set(stock.filter(id=>GEAR[id])),rec=p3Recipes();
   const bases=[...new Set([...shop,...Object.keys(rec),...Object.keys(pack)])].filter(id=>{const g=gearOf(id);return g&&!g.stick&&SL.includes(g.slot);});
   const temperOn=typeof pcTemperOpen!=='function'||pcTemperOpen();
   const cands=[];bases.forEach(b=>(temperOn?p3Chain(b):[{id:b,k:0,gold:0,m:{}}]).forEach(ch=>cands.push(Object.assign({base:b},ch))));
   const ent=[];
-  party.forEach(c=>SL.forEach(sl=>{const opts=cands.filter(o=>slotOk(c,sl,o.id)&&(ceilOk(c,o.id)||(o.k===0&&(pack[o.base]||0)>0))).map(o=>Object.assign({},o,{g:gainFor(c,o.id)})).filter(o=>o.g&&o.g.d>.01&&o.g.pct>=SMITH_PLAN.minPct).sort((a,b)=>b.g.pct-a.g.pct||b.g.d-a.g.d);
+  party.forEach(c=>SL.forEach(sl=>{const cur=c.eq[sl]||null,fl=p3Floor(c,sl);
+    // v0.22.17: the piece the hero wears, tempered further (the plan used to look only at the shop, the recipes and the pack, so it never tempered worn gear)
+    const worn=cur&&temperOn&&!gearOf(cur).stick?p3Chain(cur).slice(1).map(ch=>Object.assign({base:cur,worn:1},ch)):[];
+    const opts=cands.filter(o=>slotOk(c,sl,o.id)&&(ceilOk(c,o.id)||(o.k===0&&(pack[o.base]||0)>0))).concat(worn).map(o=>Object.assign({},o,{g:gainFor(c,o.id),u:p3Ult(c,sl,o.id)})).filter(o=>o.g&&o.g.d>.01&&o.g.pct>=fl).sort((a,b)=>p3UltCmp(a,b)||b.g.pct-a.g.pct||b.g.d-a.g.d);
     if(opts.length)ent.push({c,sl,opts});}));
   ent.sort((a,b)=>b.opts[0].g.pct-a.opts[0].g.pct);
   const hasM=m=>Object.keys(m).every(k=>(mats[k]||0)>=m[k]);
   const picks=[],cant=[];
   ent.forEach(e=>{let missed=null;
     for(const o of e.opts){const id=o.id,base=o.base,ways=[],addT=(w)=>{const m=Object.assign({},w.m||{});Object.keys(o.m).forEach(q=>{m[q]=(m[q]||0)+o.m[q];});w.gold+=o.gold;w.m=Object.keys(m).length?m:w.m;w.mOk=!w.m||hasM(w.m);w.k=o.k;w.base=base;return w;};
-      if((pack[base]||0)>0)ways.push(addT({src:'pack',gold:0}));
-      if(shop.has(base))ways.push(addT({src:'buy',gold:GEAR[base].price}));
-      if(rec[base]){const m=recipeMats(rec[base]);ways.push(addT({src:'craft',gold:rec[base].g,m}));}
+      if(o.worn){ways.push(addT({src:'temper',gold:0}));}
+      else if((pack[base]||0)>0)ways.push(addT({src:'pack',gold:0}));
+      if(!o.worn&&shop.has(base))ways.push(addT({src:'buy',gold:GEAR[base].price}));
+      if(!o.worn&&rec[base]){const m=recipeMats(rec[base]);ways.push(addT({src:'craft',gold:rec[base].g,m}));}
       if(!ways.length)continue;
       const ok=ways.filter(w=>w.gold<=gold&&w.mOk).sort((a,b)=>a.gold-b.gold||(a.src==='buy'?-1:1));
-      if(!ok.length){if(!missed){const cheapest=ways.slice().sort((a,b)=>a.gold-b.gold)[0];missed={cid:e.c.id,sl:e.sl,id,gold:cheapest.gold,pct:o.g.pct,why:ways.every(w=>!w.mOk)?'mats':'gold'};}continue;}
+      if(!ok.length){if(!missed){const cheapest=ways.slice().sort((a,b)=>a.gold-b.gold)[0];missed={cid:e.c.id,sl:e.sl,id,gold:cheapest.gold,m:cheapest.m||null,pct:o.g.pct,why:ways.every(w=>!w.mOk)?'mats':'gold'};}continue;}
       const w=ok[0],alt=ways.filter(x=>x!==w&&x.src!=='pack').map(x=>({src:x.src,gold:x.gold}));
       if(w.src==='pack')pack[base]--;gold-=w.gold;if(w.m)Object.keys(w.m).forEach(k=>{mats[k]-=w.m[k];});
       picks.push({cid:e.c.id,sl:e.sl,id,base,k:w.k||0,src:w.src,gold:w.gold,m:w.m||null,pct:o.g.pct,alt,from:e.c.eq[e.sl]||null});
       if(missed&&missed.pct>o.g.pct+.001)cant.push(missed);missed=null;break;}
     if(missed)cant.push(missed);});
   const total=picks.reduce((a,p)=>a+p.gold,0);return {picks,cant,total,gold0:G.gold};}
-const p3Src=p=>{const t=p.k?` and temper it to +${p.k}`:'',g=`<b class="nums">${fmt(p.gold)}</b> gold${p.m&&Object.keys(p.m).length?' and materials you own':''}`;return p.src==='pack'?(p.k?`From your pack${t} for ${g}`:'From your pack'):p.src==='buy'?`Buy${t} for ${g}`:`Forge${t} for ${g}`;};
+// v0.22.17 (owner: "always present the materials used when forging or tempering"): every step lists its materials as chips, with the gold
+const p3Mats=(m,gold)=>(m&&Object.keys(m).length)||gold?`<div class="mats p3mats">${m&&Object.keys(m).length?matChips(m):''}${gold?`<span class="matc gold ${G.gold>=gold?'':'short'}"><i></i><b class="nums">${fmt(gold)}</b> gold</span>`:''}</div>`:'';
+const p3Src=p=>{const t=p.k?` and temper it to +${plusOf(p.id)||p.k}`:'';return p.src==='temper'?`Temper what they wear to +${plusOf(p.id)}`:p.src==='pack'?(p.k?`From your pack${t}`:'From your pack'):p.src==='buy'?`Buy${t}`:`Forge${t}`;};
 function mP3Plan(m){const P=m.plan,cn=id=>G.roster[id]?esc(G.roster[id].name):'?';
   const rows=P.picks.map(p=>{const c=G.roster[p.cid];if(!c)return '';const alt=p.alt.length?` <small class="mute">(${p.alt.map(a=>a.src==='buy'?'buying: '+fmt(a.gold):'forging: '+fmt(a.gold)+' and materials').join(', ')})</small>`:'';
-    return `<div class="row p3pl">${port(p.cid,'sm')}<div class="grow"><b>${cn(p.cid)}</b> <em class="up">+${Math.max(1,Math.round(p.pct*100))}%</em><small>${SLOTN[p.sl]}: ${p.from?esc(gearOf(p.from).n):'nothing'} → <span class="up">${esc(gearOf(p.id).n)}</span> ${tierChip(gearOf(p.id))}</small><small>${p3Src(p)}${alt}</small><small>${deltaHtml(c,p.id)}</small></div></div>`;}).join('');
-  const cant=P.cant.map(x=>`<div class="row"><div class="grow"><small><b>${cn(x.cid)}</b>: ${esc(gearOf(x.id).n)} (+${Math.max(1,Math.round(x.pct*100))}%) ${x.why==='mats'?'needs materials you do not have':`needs ${fmt(x.gold)} gold`}.</small></div><button class="btn sm" data-act="p3Need" data-arg="${x.cid}|${x.sl}|#${esc(x.id)}">What I need</button></div>`).join('');
+    return `<div class="row p3pl">${port(p.cid,'sm')}<div class="grow"><b>${cn(p.cid)}</b> <em class="up">+${Math.max(1,Math.round(p.pct*100))}%</em><small>${SLOTN[p.sl]}: ${p.from?esc(gearOf(p.from).n):'nothing'} → <span class="up">${esc(gearOf(p.id).n)}</span> ${tierChip(gearOf(p.id))}</small><small>${p3Src(p)}${alt}</small>${p3Mats(p.m,p.gold)}<small>${deltaHtml(c,p.id)}</small></div></div>`;}).join('');
+  const cant=P.cant.map(x=>`<div class="row"><div class="grow"><small><b>${cn(x.cid)}</b>: ${esc(gearOf(x.id).n)} (+${Math.max(1,Math.round(x.pct*100))}%) ${x.why==='mats'?'needs materials you do not have':`needs ${fmt(x.gold)} gold`}.</small>${p3Mats(x.m,x.gold)}</div><button class="btn sm" data-act="p3Need" data-arg="${x.cid}|${x.sl}|#${esc(x.id)}">What I need</button></div>`).join('');
   const short=G.gold<P.total;
-  const body=P.picks.length?`<p class="note">For each hero in your party, the piece that ends up best: ${m.charms?'a charm Alchemy sells':'what the Smithy sells or forges'}, or a spare from your pack, tempered as far as your gold and materials allow. When two ways reach the same piece, the cheaper one is picked. Nothing happens until you confirm.</p>
+  const body=P.picks.length?`<p class="note">For each hero in your party, the piece that ends up best at full temper: what they wear, what the Smithy sells or forges (weapons, armor, boots, shields and charms), or a spare from your pack, tempered as far as your gold and materials allow. When two ways reach the same piece, the cheaper one is picked. Nothing happens until you confirm.</p>
     <div class="rows">${rows}</div>${cant?`<h4>Out of reach for now</h4><div class="rows">${cant}</div>`:''}
     <p class="nums p3tot"><b>Total: ${fmt(P.total)} gold</b> · You have ${fmt(G.gold)} · Left after: ${fmt(Math.max(0,G.gold-P.total))}</p>${short?'<p class="warn">You no longer have enough gold for all of it. It will stop when the gold runs out.</p>':''}
     <p class="note"><small>Undo afterwards puts everyone's gear back as it was; what you bought or forged stays in your pack.</small></p>`
-    :`<p>Nothing to buy or forge: your party already has the best ${m.charms?'Alchemy':'the Smithy'} can offer${P.cant.length?' for the gold and materials you have':''}.</p>${cant?`<h4>Out of reach for now</h4><div class="rows">${cant}</div>`:''}`;
+    :`<p>Nothing to buy or forge: your party already has the best the Smithy can offer${P.cant.length?' for the gold and materials you have':''}.</p>${cant?`<h4>Out of reach for now</h4><div class="rows">${cant}</div>`:''}`;
   return box('Upgrade whole party',body,`<button class="btn" data-act="xBack">Cancel</button>${P.picks.length?`<button class="btn gold" data-act="p3SmithGo">Confirm: ${fmt(P.total)} gold</button>`:''}`,true);}
 function p3SmithRun(plan){
   const got=[];let stop=null,spent=0,bought=0,forged=0,tempered=0;
   for(const p of plan.picks){const c=G.roster[p.cid];if(!c)continue;
     const base=p.base||p.id;
+    if(p.src==='temper'){// the worn piece, step by step
+      if(c.eq[p.sl]!==base)continue;let fail=null,n=0;for(let k=0;k<p.k;k++){const fc=forgeCost(c.eq[p.sl]);if(!fc)break;if(G.gold<fc.gold){fail='gold';break;}if(!hasMats(fc.m)){fail='mats';break;}const g0=G.gold;if(!forge('eq',{cid:c.id,slot:p.sl}))break;spent+=g0-G.gold;tempered++;n++;}
+      p.id=c.eq[p.sl];if(n)got.push(p);if(fail){stop=fail;break;}continue;}
     if(p.src==='pack'){if(!G.gear.includes(base))continue;}
     else if(p.src==='buy'){const g=GEAR[base];if(G.gold<g.price){stop='gold';break;}G.gold-=g.price;G.gear.push(base);spent+=g.price;bought++;}
     else{const r=p3Recipes()[base];if(!r)continue;if(G.gold<r.g){stop='gold';break;}if(!hasMats(recipeMats(r))){stop='mats';break;}const g0=G.gold;if(!craft(r)){stop='gold';break;}spent+=g0-G.gold;forged++;}
@@ -18271,7 +18322,7 @@ function p3SmithRun(plan){
     got.push(p);}
   // the equips come after every purchase, so Undo only touches gear (bought items stay in the pack)
   const snap=snapAuto(),before={};Object.values(G.roster).forEach(c=>{before[c.id]={eq:Object.assign({},c.eq),pw:loadoutScore(c,c.S)};});
-  got.forEach(p=>{const c=G.roster[p.cid];if(c&&G.gear.includes(p.id)&&canEquip(c,p.id))equipGear(c,p.id);});
+  got.forEach(p=>{const c=G.roster[p.cid];if(p.src!=='temper'&&c&&G.gear.includes(p.id)&&canEquip(c,p.id))equipGear(c,p.id);});
   Object.values(G.roster).forEach(refresh);
   const rows=[];Object.values(G.roster).forEach(c=>{const b=before[c.id],ch=[];EQSL.forEach(sl=>{if((b.eq[sl]||null)!==(c.eq[sl]||null))ch.push({sl,from:b.eq[sl]||null,to:c.eq[sl]||null});});
     if(ch.length)rows.push({id:c.id,name:c.name,inParty:G.party.includes(c.id),ch,comp:null,pw0:b.pw,pw1:loadoutScore(c,c.S)});});
@@ -18416,7 +18467,7 @@ function upgOpts(c,sl){const out=[];if(!G||G.daily||!c)return out;const cur=c.eq
   // v0.16.1: pieces are judged at their ceiling. A purchase or a forged piece must beat the worn one at max temper (+3 against +3; a tie stays
   // with the worn piece); a spare already in the pack is free, so it only has to be better today. A piece that is weaker today but better at
   // the top still gets its chains (buy or forge, then temper to +1..+3), which used to be skipped because only today's stats were compared.
-  const add=o=>{if(!gearOf(o.id))return;const g=gainFor(c,o.id);if(!g||g.d<=.01)return;o.d=g.d;o.pct=g.pct;o.cid=c.id;o.sl=sl;o.mx=o.k==='temper'?upgMaxNow(c,cur):upgMax(c,o.id);o.key=o.k+':'+(o.k==='forge'?o.ri:o.k==='ef'?o.f:o.k==='chain'?o.base+'>'+o.steps:o.id);out.push(o);};
+  const add=o=>{if(!gearOf(o.id))return;const g=gainFor(c,o.id);if(!g||g.d<=.01)return;o.d=g.d;o.pct=g.pct;o.u=p3Ult(c,sl,o.id);o.cid=c.id;o.sl=sl;o.mx=o.k==='temper'?upgMaxNow(c,cur):upgMax(c,o.id);o.key=o.k+':'+(o.k==='forge'?o.ri:o.k==='ef'?o.f:o.k==='chain'?o.base+'>'+o.steps:o.id);out.push(o);};
   const bases=[];
   [...new Set(G.gear)].forEach(id=>{if(slotOk(c,sl,id)){add({k:'pack',id,gold:0,ok:true});bases.push({id,k:'pack',gold:0,m:{}});}});
   upgShop(sl).forEach(id=>{if(GEAR[id]&&slotOk(c,sl,id)&&ceilOk(c,id)){const o={k:'buy',id,gold:GEAR[id].price,ok:town&&G.gold>=GEAR[id].price,town:1};add(o);bases.push({id,k:'buy',gold:o.gold,m:{}});}});
@@ -18437,13 +18488,13 @@ function upgMax(c,id){try{const g=maxGainFor(c,id);if(!g||!maxBeats(g))return ''
 function upgMaxNow(c,id){try{const t=maxDeltaTxt(c,id,true);return t?t+' at max temper (+'+TEMPER_TOP+')':'';}catch(e){return '';}}
 const upgMaxHtml=o=>o&&o.mx?`<small class="mxt">${esc(o.mx)}</small>`:'';
 // the order: most gain, then less gold, then fewer materials, then pack before buying before forging
-const upgCmp=(a,b)=>(b.d-a.d)||(a.gold-b.gold)||(upgMatN(a)-upgMatN(b))||(UPG_KIND.indexOf(a.k)-UPG_KIND.indexOf(b.k));
+const upgCmp=(a,b)=>p3UltCmp(a,b)||(b.d-a.d)||(a.gold-b.gold)||(upgMatN(a)-upgMatN(b))||(UPG_KIND.indexOf(a.k)-UPG_KIND.indexOf(b.k));// v0.22.17: the best end first (o.u)
 function upgMatN(o){return o.m?Object.values(o.m).reduce((s,v)=>s+v,0):0;}
-function upgBest(c,sl){const L=upgOpts(c,sl).filter(o=>o.pct>=(SMITH_PLAN.minPct||0)).sort(upgCmp),best=L.find(o=>o.ok)||null;/* v0.12.13: the same 3% floor as Upgrade whole party */
+function upgBest(c,sl){const fl=p3Floor(c,sl),L=upgOpts(c,sl).filter(o=>o.pct>=fl).sort(upgCmp),best=L.find(o=>o.ok)||null;/* v0.12.13: the same 3% floor as Upgrade whole party */
   // what to save up for: the best step overall when it beats what can be done now
   const goal=L.find(o=>!o.ok&&(!best||o.d>best.d+.01))||null;return {best,goal,all:L};}
 function upgWhat(o,here){const g=gearOf(o.id),n=g?g.n:'?';
-  if(o.k==='pack')return `Equip ${esc(n)} from your pack`;if(o.k==='buy')return here?`Buy ${esc(n)}`:`Buy ${esc(n)} at ${gearOf(o.id).slot==='c'?'Alchemy':'the Smithy'}`;
+  if(o.k==='pack')return `Equip ${esc(n)} from your pack`;if(o.k==='buy')return here?`Buy ${esc(n)}`:`Buy ${esc(n)} at the Smithy`;
   if(o.k==='forge')return `Forge ${esc(n)}`;if(o.k==='temper')return `Temper to ${esc(n)}`;if(o.k==='chain'){const b=gearOf(o.base);return `${o.src==='pack'?'Take':o.src==='buy'?'Buy':'Forge'} ${esc(b?b.n:o.base)} and temper it to +${o.steps}`;}return `Echoforge ${esc(n)}`;}
 function upgCost(o){if(!o.gold&&!o.m)return 'Free';return `${o.m?matChips(o.m):''}<span class="matc gold ${G.gold>=o.gold?'':'short'}"><i></i><b class="nums">${fmt(o.gold)}</b> gold</span>${o.buy?`<small class="note">Includes ${fmt(o.buy.gold)} gold for ${o.buy.buy.map(([k,n])=>n+' '+esc(MATS[k])).join(', ')} from the Smithy.</small>`:''}`;}
 // before and after for the stats that change
@@ -18489,7 +18540,7 @@ function upgBtn(c,sl,cls){if(!G||G.daily)return '';const o=upgBest(c,sl).best;
 // shops: the best step for each slot first (the hero it helps most), one tap each
 function upgSlotsHtml(slots,noPlan){if(!G||G.daily)return '';const rows=slots.map(sl=>{let b=null;partyChars().forEach(c=>{const o=upgBest(c,sl).best;if(o&&(!b||o.pct>b.pct+1e-9||(Math.abs(o.pct-b.pct)<=1e-9&&o.gold<b.gold)))b=o;});return b;}).filter(Boolean);
   return `<div class="upgbest">${m3H('Best upgrade for each slot')}${rows.length?`<div class="rows">${rows.map(o=>{const c=G.roster[o.cid];
-    return `<div class="row">${gearIcon(o.id)}<div class="grow"><small>${SLOTN[o.sl]} for ${esc(c.name)}</small><b>${upgWhat(o,1)}</b> <em class="up">${upgPct(o)}</em><small>${deltaHtml(c,o.id)}</small>${upgMaxHtml(o)}</div><button class="btn sm gold" data-act="upgDo" data-arg="${c.id},${o.sl},${o.key}">${o.k==='temper'?'Temper · '+fmt(o.gold)+'g':o.gold?fmt(o.gold)+' gold':'Equip'}</button></div>`;}).join('')}</div>`:m3Empty('Your party already has the best you can pay for here.')}${noPlan?'':`<div class="btnrow p3smith"><button class="btn" data-act="p3Smith" title="Plans the best upgrade for each hero in your party, shows it, and only buys after you confirm">Upgrade whole party</button></div>`}</div>`;}
+    return `<div class="row">${gearIcon(o.id)}<div class="grow"><small>${SLOTN[o.sl]} for ${esc(c.name)}</small><b>${upgWhat(o,1)}</b> <em class="up">${upgPct(o)}</em><small>${deltaHtml(c,o.id)}</small>${upgMaxHtml(o)}${o.gold||o.m?`<div class="mats p3mats">${upgCost(o)}</div>`:''}</div><button class="btn sm gold" data-act="upgDo" data-arg="${c.id},${o.sl},${o.key}">${o.k==='temper'?'Temper · '+fmt(o.gold)+'g':o.gold?fmt(o.gold)+' gold':'Equip'}</button></div>`;}).join('')}</div>`:m3Empty('Your party already has the best you can pay for here.')}${noPlan?'':`<div class="btnrow p3smith"><button class="btn" data-act="p3Smith" title="Plans the best upgrade for each hero in your party, shows it, and only buys after you confirm">Upgrade whole party</button></div>`}</div>`;}
 HOOK.before('vModal','p3shop','upg popup (the Upgrade button)',function(m){if(m&&m.type==='upg')return HOOK.stop(mUpg(m));});
 // the hero sheet: an Upgrade button on each slot
 HOOK.xform('mChar','p3shop','Upgrade button on each equipment slot',function(h,id,edit){try{const c=G&&G.roster[id];if(!c||G.daily||typeof h!=='string')return h;
@@ -18505,7 +18556,6 @@ Object.assign(ACT,{
     const sec={w:'weapons',a:'armor',k:'capes',s:'shields',c:'charms'}[sl];
     if(o&&o.k==='temper')V.modal={type:'smithy',tab:'forge',sec,from};
     else if(o&&o.k==='ef')V.modal={type:'smithy',tab:'echo',from};
-    else if(sl==='c')V.modal=o&&o.k==='forge'?{type:'workshop',tab:'craft',sec:'charm',from}:{type:'workshop',tab:'shop',sec:'charm',from};
     else if(o&&o.k==='forge')V.modal={type:'smithy',tab:'craft',from};
     else V.modal={type:'smithy',tab:'shop',sec,from};
     render();}
@@ -20557,7 +20607,7 @@ function m3ItemSort(ids,priceOf){const f=SHOPF(),rr=m3Rar(),pr=priceOf||(id=>ITE
   return a.sort((x,y)=>iTierIdx(y)-iTierIdx(x)||pr(y)-pr(x));}
 
 // ----- structure -----
-const M3_LEG={smithy:{weapons:['shop','weapons'],armor:['shop','armor'],capes:['shop','capes'],shields:['shop','shields'],mats:['shop','mats']},
+const M3_LEG={smithy:{weapons:['shop','weapons'],armor:['shop','armor'],capes:['shop','capes'],shields:['shop','shields'],charms:['shop','charms'],mats:['shop','mats']},
   workshop:{relit:['shop','relit'],herbs:['shop','herb']},guild:{personal:['quests','personal'],party:['recruit','all']},tavern:{},board:{personal:['quests','personal']}};
 // v0.9.5: the Guild Hall opens on the Notice Board's Guilds tab; the town board opens on Quests (board tabs: NB_TABS below)
 const M3_HOME={smithy:'shop',workshop:'shop',guild:'guilds',tavern:'hire',board:'quests'};
@@ -20578,16 +20628,16 @@ const m3ShSec=(L,n)=>m3Sh()?L.concat([['shields','Shields',n]]):L;
 function m3SellCnt(slots){const o={};(G.gear||[]).forEach(id=>{const g=gearOf(id);if(g&&!g.stick&&slots.includes(g.slot))o[id]=(o[id]||0)+1;});return o;}
 function m3Secs(t,tab){const n=(a)=>a.length;
   if(t==='smithy'){
-    if(tab==='shop'){const ar=shopStock('armor');return [['all','All'],['weapons','Weapons',n(shopStock('weapons'))],['armor','Armor',ar.filter(id=>gearOf(id).slot==='a').length],...m3ShSec([['capes','Boots',ar.filter(id=>gearOf(id).slot==='k').length]],ar.filter(id=>gearOf(id).slot==='s').length),['mats','Materials']];}
+    if(tab==='shop'){const ar=shopStock('armor');return [['all','All'],['weapons','Weapons',n(shopStock('weapons'))],['armor','Armor',ar.filter(id=>gearOf(id).slot==='a').length],...m3ShSec([['capes','Boots',ar.filter(id=>gearOf(id).slot==='k').length]],ar.filter(id=>gearOf(id).slot==='s').length),['charms','Charms',n(shopStock('charms'))],['mats','Materials']];}
     if(tab==='craft')return [['all','All']].concat(RCAT.filter(([k])=>SMITH_CATS.includes(k)).map(([k,l])=>[k,l,RECIPES.filter(r=>r.cat===k&&recipeOpen(r)).length]));
     if(tab==='forge'){const L=temperList();const c=s=>L.filter(o=>gearOf(o.id).slot===s).length;return [['all','All',L.length],['weapons','Weapons',c('w')],['armor','Armor',c('a')],...m3ShSec([['capes','Boots',c('k')]],c('s')),['charms','Charms',c('c')]];}
-    if(tab==='sell'){const C=m3SellCnt(['w','a','k','s']),c=s=>Object.keys(C).filter(id=>gearOf(id).slot===s).reduce((a,id)=>a+C[id],0);
-      return [['all','All'],['weapons','Weapons',c('w')],['armor','Armor',c('a')],...m3ShSec([['capes','Boots',c('k')]],c('s')),['mats','Materials']];}}
+    if(tab==='sell'){const C=m3SellCnt(['w','a','k','s','c']),c=s=>Object.keys(C).filter(id=>gearOf(id).slot===s).reduce((a,id)=>a+C[id],0);
+      return [['all','All'],['weapons','Weapons',c('w')],['armor','Armor',c('a')],...m3ShSec([['capes','Boots',c('k')]],c('s')),['charms','Charms',c('c')],['mats','Materials']];}}
   if(t==='workshop'){
     if(tab==='shop'){const S=alchStock(),k=x=>S.filter(id=>m3Kind(id)===x).length;
-      return [['all','All'],['potion','Potions',k('potion')],['cure','Cures',k('cure')],['travel','Travel',k('travel')],['charm','Charms',shopStock('charms').length],['herb','Herbs',herbStock().length]].concat(G.cleared[townS()]?[['relit','Festival',RELIT_STOCK.length]]:[]);}
+      return [['all','All'],['potion','Potions',k('potion')],['cure','Cures',k('cure')],['travel','Travel',k('travel')],['herb','Herbs',herbStock().length]].concat(G.cleared[townS()]?[['relit','Festival',RELIT_STOCK.length]]:[]);}
     if(tab==='craft')return [['all','All']].concat(RCAT.filter(([k])=>ALCH_CATS.includes(k)).map(([k,l])=>[k,l,RECIPES.filter(r=>r.cat===k&&recipeOpen(r)).length]));
-    if(tab==='sell'){const C=m3SellCnt(['c']);return [['all','All'],['charm','Charms',Object.values(C).reduce((a,b)=>a+b,0)],['herb','Herbs',Object.keys(MATS).filter(id=>(G.mats[id]||0)>0&&MAT_OF[id].k==='herb').length]];}}
+    if(tab==='sell'){return [['all','All'],['herb','Herbs',Object.keys(MATS).filter(id=>(G.mats[id]||0)>0&&MAT_OF[id].k==='herb').length]];}}
   if(t==='guild'||t==='board')return nbSecs(tab);
   return [];}
 // normalise V.modal for a shop: main tab plus section, old ids mapped
@@ -20631,31 +20681,30 @@ function m3SmithMatsBuy(){return `${m3H('Ore and wood')}<p class="note">Stock gr
 // ----- the Smithy -----
 function m3Smithy(m){const sec=m.sec,tab=m.tab;let body='';
   if(tab==='shop'){
-    const W=shopSortIds(shopStock('weapons')),AR=shopSortIds(shopStock('armor')),A=AR.filter(id=>gearOf(id).slot==='a'),K=AR.filter(id=>gearOf(id).slot==='k'),S=AR.filter(id=>gearOf(id).slot==='s');
-    const grp={weapons:['Weapons',W],armor:['Armor',A],capes:['Boots',K],shields:['Shields',S]},emp='Nothing on the shelves matches the filters.';
-    const gear=k=>(sec==='all'?m3H(grp[k][0],grp[k][1].length):'')+m3Rows(grp[k][1].map(m3GearRow).join(''),emp);
+    const W=shopSortIds(shopStock('weapons')),AR=shopSortIds(shopStock('armor')),A=AR.filter(id=>gearOf(id).slot==='a'),K=AR.filter(id=>gearOf(id).slot==='k'),S=AR.filter(id=>gearOf(id).slot==='s'),CH=shopSortIds(shopStock('charms'));
+    const grp={weapons:['Weapons',W],armor:['Armor',A],capes:['Boots',K],shields:['Shields',S],charms:['Charms',CH]},emp='Nothing on the shelves matches the filters.';
+    const gear=k=>(sec==='all'?m3H(grp[k][0],grp[k][1].length):'')+(k==='charms'?m3CharmBtn():'')+m3Rows(grp[k][1].map(m3GearRow).join(''),emp);
     // v0.9.5: the best step for each slot comes first (p3shop.js upgSlotsHtml, with Upgrade whole party), then the filters and the shelves
-    body=(sec==='mats'?'':(typeof upgSlotsHtml==='function'?upgSlotsHtml(sec==='all'?['w','a','k'].concat(m3Sh()?['s']:[]):[{weapons:'w',armor:'a',capes:'k',shields:'s'}[sec]]):m3PlanBtn())+shopFBar('buy'))+(sec==='all'?['weapons','armor','capes'].concat(m3Sh()?['shields']:[]).map(gear).join('')+m3SmithMatsBuy():sec==='mats'?m3SmithMatsBuy():gear(sec));
+    body=(sec==='mats'?'':(typeof upgSlotsHtml==='function'?upgSlotsHtml(sec==='all'?['w','a','k'].concat(m3Sh()?['s']:[],['c']):[{weapons:'w',armor:'a',capes:'k',shields:'s',charms:'c'}[sec]]):m3PlanBtn())+shopFBar('buy'))+(sec==='all'?['weapons','armor','capes'].concat(m3Sh()?['shields']:[],['charms']).map(gear).join('')+m3SmithMatsBuy():sec==='mats'?m3SmithMatsBuy():gear(sec));
   }else if(tab==='craft')body=m3PlanBtn()+m3Recipes(SMITH_CATS,sec,'Smithy gear comes out already tempered, so it beats buying the same piece. Metal wants ore, wooden gear wants logs, and every piece wants monster parts.');
   else if(tab==='forge')body=vTemper({slot:M3_SLOTSEC[sec]||null,show:SHOPF().tsh||'all',bar:true});
   else if(tab==='sell'){const g=(sl,lab)=>(sec==='all'?m3H(lab):'')+m3Rows(m3SellRows(sl),'No spare '+lab.toLowerCase()+' in your pack.');
     const mats=(sec==='all'?m3H('Materials'):'')+`<div class="rows">${matSellRows(['ore','wood','part','relic'])}</div>`;
-    body=(typeof junkBar==='function'&&sec!=='mats'?junkBar(sec==='all'?['w','a','k','s']:[M3_SLOTSEC[sec]]):'')+(sec==='all'?g(['w'],'Weapons')+g(['a'],'Armor')+g(['k'],'Boots')+(m3Sh()?g(['s'],'Shields'):'')+mats:sec==='mats'?mats:g([M3_SLOTSEC[sec]],{weapons:'Weapons',armor:'Armor',capes:'Boots',shields:'Shields'}[sec]))+'<p class="note">Charms and herbs sell at Alchemy.</p>';}
+    body=(typeof junkBar==='function'&&sec!=='mats'?junkBar(sec==='all'?['w','a','k','s','c']:[M3_SLOTSEC[sec]]):'')+(sec==='all'?g(['w'],'Weapons')+g(['a'],'Armor')+g(['k'],'Boots')+(m3Sh()?g(['s'],'Shields'):'')+g(['c'],'Charms')+mats:sec==='mats'?mats:g([M3_SLOTSEC[sec]],{weapons:'Weapons',armor:'Armor',capes:'Boots',shields:'Shields',charms:'Charms'}[sec]))+'<p class="note">Herbs, potions and tonics sell at Alchemy.</p>';}
   else if(tab==='echo')body=vEchoforge();
-  return m3Box('smithy',m,m3Nav('smithy',m)+body+'<p class="note">Equip gear from the menu anywhere. Potions, charms and travel gear are at Alchemy, the green-flask house in town.</p>');}
+  return m3Box('smithy',m,m3Nav('smithy',m)+body+'<p class="note">Equip gear from the menu anywhere. Potions and travel gear are at Alchemy, the green-flask house in town.</p>');}
 // ----- Alchemy -----
 function m3Alchemy(m){const sec=m.sec,tab=m.tab;let body='';
   if(tab==='shop'){const S=alchStock(),one=sec!=='all';
     const items=k=>{const L=m3ItemSort(S.filter(id=>m3Kind(id)===k));return (one?'':m3H({potion:'Potions',cure:'Cures',travel:'Travel gear'}[k],L.length))+m3Rows(L.map(m3ItemRow).join(''),'Nothing here matches the filters.');};
-    const charms=()=>{const L=shopSortIds(shopStock('charms'));return (one?'':m3H('Charms',L.length))+m3CharmBtn()+m3Rows(L.map(m3GearRow).join(''),'No charms match the filters.');};
     const herbs=()=>(one?'':m3H('Herbs'))+`<p class="note">Fresh herbs for brewing. Stock grows as you reach later realms.</p><div class="rows">${herbStock().map(id=>matBuyRow(id,MAT_PRICE[id])).join('')}</div>`;
     const relit=()=>{if(!G.cleared[townS()])return '';const P={};RELIT_STOCK.forEach(([id,p])=>P[id]=p);const ids=RELIT_STOCK.map(x=>x[0]);
       return (one?'':m3H('Festival wares',ids.length))+`<p class="note">The beacon is lit and the alchemist is in a generous mood: rare stock, only in relit towns.</p><div class="rows">${ids.map(id=>{const isItem=!!ITEMS[id],n=isItem?ITEMS[id].n:gearOf(id).n,d=isItem?ITEMS[id].d:gearDesc(id),price=P[id];return `<div class="row"><div class="grow"><b>${n}</b><small>${d}${isItem?'. Carrying '+(G.inv[id]||0):''}</small></div><button class="btn sm" data-act="buyRelit" data-arg="${id}" ${G.gold>=price?'':'disabled'}>${fmt(price)}</button></div>`;}).join('')}</div>`;};
-    const P={potion:()=>items('potion'),cure:()=>items('cure'),travel:()=>items('travel'),charm:charms,herb:herbs,relit};
-    body=(sec==='charm'&&typeof upgSlotsHtml==='function'?upgSlotsHtml(['c'],1):'')+(sec==='herb'||sec==='relit'?'':shopFBar(sec==='charm'?'buy':sec==='all'?'mixed':'items'))+(one?P[sec]():Object.keys(P).map(k=>P[k]()).join(''));
-  }else if(tab==='craft')body=m3Recipes(ALCH_CATS,sec,sec==='potion'?'Brew draughts from herbs you pick in the fields. Cheaper than buying, and some brews are Alchemy-only.':sec==='charm'?'Charms need monster parts and your realm\'s relic.':sec==='item'?'Stitch your own tent from logs and hide.':'Brew draughts from herbs, make charms from monster parts and your realm\'s relic, and stitch your own tent.');
-  else if(tab==='sell'){const ch=(sec==='all'?m3H('Charms'):'')+m3Rows(m3SellRows(['c']),'No spare charms. Weapons and armor sell at the Smithy.'),hb=(sec==='all'?m3H('Herbs'):'')+`<div class="rows">${matSellRows(['herb'])}</div>`;
-    body=(typeof junkBar==='function'&&sec!=='herb'?junkBar(['c']):'')+(sec==='charm'?ch:sec==='herb'?hb:ch+hb);}
+    const P={potion:()=>items('potion'),cure:()=>items('cure'),travel:()=>items('travel'),herb:herbs,relit};
+    body=(sec==='herb'||sec==='relit'?'':shopFBar('items'))+(one?P[sec]():Object.keys(P).map(k=>P[k]()).join(''));
+  }else if(tab==='craft')body=m3Recipes(ALCH_CATS,sec,sec==='potion'?'Brew draughts from herbs you pick in the fields. Cheaper than buying, and some brews are Alchemy-only.':sec==='item'?'Stitch your own tent from logs and hide.':'Brew draughts from herbs and stitch your own tent. Charms are made at the Smithy.');
+  else if(tab==='sell'){const hb=(sec==='all'?m3H('Herbs'):'')+`<div class="rows">${matSellRows(['herb'])}</div>`;
+    body=hb+'<p class="note">Weapons, armor, boots and charms sell at the Smithy.</p>';}
   else body=`<p class="note">Everything you have gathered. Herbs brew here; ore, logs and parts go to the Smithy.</p>${vPouch()}`;
   return m3Box('workshop',m,m3Nav('workshop',m)+body);}
 // ----- the tavern -----
@@ -20758,9 +20807,9 @@ function m3Vh(){try{const v=window.visualViewport,h=Math.round(v?v.height:innerH
 m3Vh();addEventListener('resize',m3Vh);try{if(window.visualViewport)visualViewport.addEventListener('resize',m3Vh);}catch(e){}
 try{if(screen.orientation&&screen.orientation.addEventListener)screen.orientation.addEventListener('change',()=>setTimeout(m3Vh,200));}catch(e){}
 
-// ----- Alchemy Charms: "Equip best charms" (party, owned charms only, nothing bought) -----
+// ----- the Smithy's Charms section (at Alchemy until v0.22.17): "Equip best charms" (party, owned charms only, nothing bought) -----
 function m3CharmBtn(){if(!G||G.daily||!(G.gear||[]).some(id=>{const g=gearOf(id);return g&&g.slot==='c';}))return '';
-  return '<div class="btnrow m3charmeq"><button class="btn sm gold" data-act="autoEqCharms" title="Gives each hero in your party the best charm you already own. Buys nothing.">Equip best charms</button><button class="btn sm" data-act="p3Alch" title="Plans the best charm each party hero can end up with: bought here or from your pack, tempered as far as you can afford. Confirm before anything happens.">Upgrade whole party</button></div>';}
+  return '<div class="btnrow m3charmeq"><button class="btn sm gold" data-act="autoEqCharms" title="Gives each hero in your party the best charm you already own. Buys nothing.">Equip best charms</button></div>';}
 // the Party tab's helper row: one "Equip Best" button (party only); the reserves button is gone
 HOOK.xform('vSwap','menus3','Equip Best button on the Party tab',function(h){if(typeof h!=='string')return h;
   h=h.replace(/<button class="btn sm" data-act="autoEqCamp"[^>]*>[^<]*<\/button>/,'').replace(/(<button class="btn sm" data-act="autoEqParty"[^>]*>)Equip best: party/,'$1Equip Best').replace('title="The best gear you own for your party. May take gear from your reserves."','title="Gears the six heroes in your party with the best gear you own."');return h;});
@@ -23413,10 +23462,10 @@ const TIPS=[
  {id:'craft',n:'Crafting',sec:'Town',
   t:()=>{const sm=obModal('smithy'),al=obModal('workshop');if(!sm&&!al)return null;const can=RECIPES.some(r=>recipeOpen(r)&&(sm?SMITH_CATS.includes(r.cat):!SMITH_CATS.includes(r.cat))&&G.gold>=r.g&&hasMats(recipeMats(r)));
    return can?(sm?'Your materials can become gear here. Open the Forge tab to see what you can make.':'Your herbs and parts can be brewed here. Open Brew & craft to see what you can make.'):null;},
-  g:'Herbs, ore, logs and monster parts you gather turn into things. Alchemy (Brew & craft) makes potions, charms and travel gear; the Smithy (Forge) makes weapons and armor. Recipes open realm by realm, and What next? tells you when you can craft something.'},
+  g:'Herbs, ore, logs and monster parts you gather turn into things. Alchemy (Brew & craft) makes potions and travel gear; the Smithy (Forge) makes weapons, armor and charms. Recipes open realm by realm, and What next? tells you when you can craft something.'},
  {id:'charm',n:'Charms',sec:'Town',go:['menuTab','equip','Equipment'],
   t:()=>{if(!obWorld())return null;return (G.gear||[]).some(obCharm)?'You found a charm! Each hero has one charm slot. Equip it in Backpack > Equipment.':null;},
-  g:'Charms fill the fourth gear slot of each hero: a small stat boost or a special effect. Bounties drop stat charms, Alchemy sells and brews them (Shop > Charms), and guild ranks give unique ones. They can be tempered too.'},
+  g:'Charms fill the fourth gear slot of each hero: a small stat boost or a special effect. Bounties drop stat charms, the Smithy sells and forges them (Shop > Charms), and guild ranks give unique ones. They can be tempered too.'},
  // later
  {id:'echoforge',n:'Echoforge',sec:'Later',x:'o:echo',
   t:()=>{if(!obModal('smithy')||typeof efTabOn!=='function'||!efTabOn())return null;return 'Each Echo\'s shards forge a different weapon. Read the Echoforge list, then pick which Echo to hunt.';},
@@ -24658,7 +24707,24 @@ hdGateGeo=HOOK.def('hdGateGeo',hdGateGeo);// v0.19.6: worldart13.js builds the e
 // and anything unusual stand up as one card. Signs and landmark props (towngfx) come from the town decor pass as a card on the facade.
 function hdBldKind(m,b){if(b.k==='gatehouse')return 'gate';if(b.k==='lighthouse')return 'tower';/* v0.11.7: a narrow round tower (v0.11.4 'keep' stretched the sprite over the footprint) */const T=THM(m);let mat=T.mat;if(['guild','keep','chapel','tower','windmill'].includes(b.k))mat=m.theme==='void'?'tent':'stone';
   if(mat==='tent'||b.k==='bigtent')return 'card';if(b.k==='keep'||b.k==='tower')return 'keep';return 'roof';}
-hdBldKind=HOOK.def('hdBldKind',hdBldKind);// v0.19.6: worldart13.js entrance parts take the gate path
+hdBldKind=HOOK.def('hdBldKind',hdBldKind);
+// v0.22.17 (owner: "the rooves of many buildings still dont cover them properly and you can see the empty space inside"): a roofed house is a
+// front wall, two side walls and two roof slopes textured with the roof rows of its 2D sprite. A family whose roof is not a plain rectangle
+// in that sprite (round, steep, hipped, stepped, pagoda, dome: ice, chalet, shroom, bone, drift ...) leaves the slopes' corners transparent,
+// and with no ceiling under them the camera looked through the corners at the ground inside the walls. hdRoofUnder lays a closed roof under
+// the textured one: both slopes over the wall rectangle, a hair lower, in the roof's own colour (the mean of the sprite's eave rows), and the
+// back wall. Where the sprite is opaque nothing changes; where it is cut away the building is still roofed. A hook, so a family can
+// colour it.
+function hdRoofTone(cv,sx,sy,sw,sh){try{const k=(cv._rw||cv.width)/cv.width,y0=Math.max(0,Math.round((sy+sh*.6)*k)),h=Math.max(1,Math.round(sh*.4*k)),x0=Math.max(0,Math.round(sx*k)),w=Math.max(1,Math.round(sw*k));
+  const d=cv.getContext('2d').getImageData(x0,y0,w,h).data;let r=0,g=0,bl=0,n=0;for(let i=0;i<d.length;i+=4){if(d[i+3]<200)continue;const L=d[i]+d[i+1]+d[i+2];if(L<90)continue;/* not the outline */r+=d[i];g+=d[i+1];bl+=d[i+2];n++;}
+  return n>8?[r/n,g/n,bl/n]:null;}catch(e){return null;}}
+function hdRoofUnder(bt,m,b,cv,o){const c=hdRoofTone(cv,o.sx,o.sy,o.sw,o.sh)||[110,96,90],e=.5*o.V,nf=Math.hypot(o.zf-o.zm,o.yr-o.ys)||1,
+  Qc=(a,k,n)=>{H2P.set(a);bt.quad(H2P,-1,0,-1,0,Math.round(c[0]*k),Math.round(c[1]*k),Math.round(c[2]*k),255,n[0],n[1],n[2],8);};
+  Qc([o.x0,o.yr-e,o.zm,o.x1,o.yr-e,o.zm,o.x1,o.ys-e,o.zf,o.x0,o.ys-e,o.zf],.9,[0,(o.zf-o.zm)/nf,(o.yr-o.ys)/nf]);// front slope
+  Qc([o.x0,o.yr-e,o.zm,o.x1,o.yr-e,o.zm,o.x1,o.ys-e,o.zb,o.x0,o.ys-e,o.zb],.68,[0,(o.zm-o.zb)/nf,-(o.yr-o.ys)/nf]);// back slope
+  Qc([o.x0,o.yw,o.zb,o.x1,o.yw,o.zb,o.x1,0,o.zb,o.x0,0,o.zb],.5,[0,0,-1]);// back wall
+  HD.roofUnder=(HD.roofUnder||0)+1;}
+hdRoofUnder=HOOK.def('hdRoofUnder',hdRoofUnder);// v0.19.6: worldart13.js entrance parts take the gate path
 // v0.12.13: a tent stands as a cone of cloth, not a flat card: 18 slices round an ellipse on the footprint, each slice mapped to its
 // own wedge of the 2D tent sprite (quad4 takes a texture coordinate per corner), so the lit left face, the seams and the hem wrap round;
 // the pole and pennant are a small card at the apex. The back half shows the front's wedges mirrored, which the camera only sees at the top.
@@ -24721,6 +24787,7 @@ function hdBakeBuildings(m,S,bsp,deco){const V=S.V,sin=Math.sin(HD2D.pitch*Math.
     const rx0=x0-5,rx1=x1+5,ys=(WH-1)*V,nf=Math.hypot(ze-zm,yr-ys),nb=Math.hypot(zm-zbe,yr-ys);
     Q([rx0,yr,zm,rx1,yr,zm,rx1,ys,zbe,rx0,ys,zbe],U(p,BSP_X-5),Vv(p,top+rt-1),U(p,BSP_X+w+5),Vv(p,top+roofH),215,[0,(zm-zbe)/nb,-(yr-ys)/nb],8);
     Q([rx0,yr,zm,rx1,yr,zm,rx1,ys,ze,rx0,ys,ze],U(p,BSP_X-5),Vv(p,top+rt-1),U(p,BSP_X+w+5),Vv(p,top+roofH),255,[0,(ze-zm)/nf,(yr-ys)/nf],2|8);
+    hdRoofUnder(bt,m,b,cv,{x0,x1,zb,zf,zm,yw,yr,ys,V,sx:BSP_X,sy:top+rt-1,sw:w,sh:roofH-(rt-1)});
     const ah=top+rt-1;if(ah>2)Q([x0-BSP_X,yr+ah*V,zm+.3,x0-BSP_X+cv.width,yr+ah*V,zm+.3,x0-BSP_X+cv.width,yr,zm+.3,x0-BSP_X,yr,zm+.3],U(p,0),Vv(p,0),U(p,cv.width),Vv(p,ah),255,[0,.45,.89],2|8);
     S.bh.push({b,h:(WH+RH*.6)*V});
     if(b.k==='windmill')S.mills.push([x0+w/2,(WH+RH*.8)*V,ze+2]);
@@ -27509,8 +27576,8 @@ function vGuildShop(){try{if(!G||G.daily)return '';const here=inTown();const row
 const CHARMS9_EPIC=[['c_ep0','Titan Charm',{hp:150,atk:14,def:10}],['c_ep1','Oracle Charm',{mp:80,mag:14,res:10}],['c_ep2','Zephyr Charm',{spd:12,hp:80,attr:{agi:6}}],
   ['c_ep3','Bulwark Charm',{def:16,res:12,hp:100}],['c_ep4','Marksman Charm',{atk:12,spd:6,attr:{dex:8}}],['c_ep5','Fortune Charm',{luk:14,hp:60,attr:{luk:6}}]];
 const CHARMS9_HEROIC=[['c_hr0','Colossus Charm',{hp:260,atk:20,def:16}],['c_hr1','Archon Charm',{mp:140,mag:22,res:16}],['c_hr2','Tempest Charm',{spd:18,atk:14,mag:14}],['c_hr3','Aegis Charm',{def:24,res:20,hp:160}]];
-CHARMS9_EPIC.forEach(([id,n,st],i)=>addGear(id,Object.assign({n,slot:'c',tier:3,price:1100+i*50,d:'An Epic charm. Alchemy sells and makes these from the third realm on.'},st)));
-CHARMS9_HEROIC.forEach(([id,n,st],i)=>addGear(id,Object.assign({n,slot:'c',tier:4,price:2600+i*100,d:'A Heroic charm. Alchemy sells and makes these from the fifth realm on.'},st)));
+CHARMS9_EPIC.forEach(([id,n,st],i)=>addGear(id,Object.assign({n,slot:'c',tier:3,price:1100+i*50,d:'An Epic charm. The Smithy sells and makes these from the third realm on.'},st)));
+CHARMS9_HEROIC.forEach(([id,n,st],i)=>addGear(id,Object.assign({n,slot:'c',tier:4,price:2600+i*100,d:'A Heroic charm. The Smithy sells and makes these from the fifth realm on.'},st)));
 try{CHARMS9_EPIC.forEach(([id],i)=>RECIPES.push({cat:'charm',id,m:{core:1,$rel:3,[['iron','ash','sunpetal'][i%3]]:2},g:420,t:1}));
   CHARMS9_HEROIC.forEach(([id],i)=>RECIPES.push({cat:'charm',id,m:{core:2,$rel:4,[['mythril','elder','starbloom','grit'][i%4]]:2},g:980,t:2}));}catch(e){}
 const CH9_EPIC=CHARMS9_EPIC.map(x=>x[0]),CH9_HEROIC=CHARMS9_HEROIC.map(x=>x[0]);
@@ -29409,7 +29476,7 @@ const E11={item:false,on:false,all:false};
 {const jb0=junkBar;junkBar=function(){return E11.item?'':jb0.apply(this,arguments);};}
 {const ma0=m3Alchemy;m3Alchemy=function(m){if(!m||m.tab!=='sell')return ma0.apply(this,arguments);E11.on=true;E11.item=m.sec==='item';E11.all=m.sec==='all';
   try{let h=ma0.apply(this,arguments);if(E11.item)h=h.replace('<p class="note empty">No spare charms. Weapons and armor sell at the Smithy.</p>','');return h;}finally{E11.on=false;E11.item=false;E11.all=false;}};}
-{const sm0=m3Smithy;m3Smithy=function(m){let h=sm0.apply(this,arguments);try{h=h.replace('Charms and herbs sell at Alchemy.','Charms, herbs, potions and tonics sell at Alchemy.');}catch(e){}return h;};}
+{const sm0=m3Smithy;m3Smithy=function(m){let h=sm0.apply(this,arguments);try{/* v0.22.17: menus3.js says it itself (charms sell here now) */}catch(e){}return h;};}
 
 // ----- 4) best in slot at max temper -----
 {const bt1=bestTag;bestTag=function(id){let h=bt1.apply(this,arguments);try{if(!G||G.daily)return h;const g=gearOf(id);if(!g||g.stick||g.relic)return h;
@@ -34954,7 +35021,7 @@ function g16PlanAll(slots){const first=p3SmithPlan(slots);if(!first.picks.length
     while(plan.picks.length&&n<G16.rounds){n++;
       plan.picks.forEach(p=>{const c=G.roster[p.cid];if(!c)return;G.gold-=p.gold;if(p.m)Object.keys(p.m).forEach(k=>{G.mats[k]=(G.mats[k]||0)-p.m[k];});
         if(p.src==='pack'){const i=G.gear.indexOf(p.base);if(i>=0)G.gear.splice(i,1);}
-        const old=c.eq[p.sl];if(old)G.gear.push(old);c.eq[p.sl]=p.id;c.S=calcStats(c);p.round=n;all.push(p);});
+        const old=c.eq[p.sl];if(old&&p.src!=='temper')G.gear.push(old);c.eq[p.sl]=p.id;c.S=calcStats(c);p.round=n;all.push(p);});
       plan=p3SmithPlan(slots);cant=plan.cant;}
   }finally{G.gold=real.gold;G.mats=real.mats;G.gear=real.gear;P.forEach(c=>{c.eq=real.eq[c.id];c.S=real.S[c.id];});}
   return {picks:all,cant,total:all.reduce((a,p)=>a+p.gold,0),gold0:real.gold,rounds:n};}
@@ -34964,8 +35031,8 @@ function g16UndoSnap(eq0){const pool={},put=id=>{if(id)pool[id]=(pool[id]||0)+1;
   const eq={};Object.keys(eq0).forEach(cid=>{eq[cid]={};Object.keys(eq0[cid]).forEach(sl=>{eq[cid][sl]=eq0[cid][sl]?take(eq0[cid][sl]):null;});});
   const gear=[];Object.keys(pool).forEach(id=>{for(let i=0;i<pool[id];i++)gear.push(id);});const s=snapAuto();s.gear=gear;s.eq=eq;return s;}
 ACT.p3Smith=function(){if(!G||G.daily)return;V.modal={type:'p3plan',plan:g16PlanAll(),from:V.modal};render();};
-ACT.p3Alch=function(){if(!G||G.daily)return;V.modal={type:'p3plan',charms:1,plan:g16PlanAll(['c']),from:V.modal};render();};
-ACT.p3SmithGo=function(){const m=V.modal;if(!m||m.type!=='p3plan')return;const slots=m.charms?['c']:undefined,eq0={},pw0={};
+ACT.p3Alch=function(){ACT.p3Smith();};// v0.22.17: charms are part of the Smithy's plan
+ACT.p3SmithGo=function(){const m=V.modal;if(!m||m.type!=='p3plan')return;const slots=undefined,eq0={},pw0={};
   Object.values(G.roster).forEach(c=>{eq0[c.id]=Object.assign({},c.eq);pw0[c.id]=loadoutScore(c,c.S);});
   // the first round is the one that was shown and confirmed; the rounds after it are planned from what is left
   const T={stop:null,spent:0,bought:0,forged:0,tempered:0,done:0,of:0,rounds:0};let plan={picks:(m.plan&&m.plan.picks||[]).filter(p=>!p.round||p.round===1)};
@@ -38279,6 +38346,30 @@ HOOK.wrap('drawObjects','towns22','the role props stand where their crate tiles 
     ctx.drawImage(cv,px+Math.round((TS-cv.width)/2),py+TS-cv.height+1);}catch(e){T22.err=String(e&&e.message||e);}});return r;});
 // tests
 try{window.__T22={T22,place:t22Place,kinds:()=>Object.keys(P2K).filter(k=>k.startsWith('rp_'))};}catch(e){}
+
+// ===== stats22.js (v0.22.17): mana that matters; spending many stat points at once =====
+// Owner: "mana is not scarce enough, skills should cost more generally as you unlock more powerful skills. we want it to feel like mana pots
+// are useful/needed (but not too needed) throughout the game."
+// Before: a skill's MP cost was a flat number written with the skill, the party got 12% of max MP back after every win and 3% a turn, and
+// max MP grows with every level, so by the second realm casters ended most fights full.
+// Now:
+//  1 A skill costs more the later it is learned: x (1 + MANA22.k x (learn level - 1) / 40), so a level 1 skill costs what it did, a level 21
+//    skill 30% more and a level 41+ skill 60% more (MANA22.k .6). Costs of 0 (the basic attack, Limit Breaks) stay 0. The old number is kept
+//    on the skill as mp0. Done once per skill, as the last classSkills hook, so it sees the final learn levels (roster17.js).
+//  2 MP back after a win: 8% of max (MANA.win in config.js, was 12%). The 3% a turn stays.
+//  3 The Mana Tonic restores 40 MP (was 30) and the Sage Brew 90 (was 70), so a potion is a real answer.
+// The stat side of this version (what each attribute does, 2 points a level) is in data.js (deriveStats, ATK_W) and engine.js (autoAlloc,
+// statMigrate). Here only the sheet's "+5" button: with 2 points a level a hero taken off automatic has many points to place.
+const MANA22={k:.6,span:40,off:false};
+function mana22Cost(mp,lv){if(!(mp>0))return mp;return Math.max(1,Math.round(mp*(1+MANA22.k*Math.min(1,Math.max(0,((lv||1)-1)/MANA22.span)))));}
+HOOK.xform('classSkills','stats22','a skill costs more MP the later it is learned',function(L){try{if(MANA22.off||!L)return L;L.forEach(s=>{if(s&&!s._mp22&&s.mp>0){s._mp22=1;s.mp0=s.mp;s.mp=mana22Cost(s.mp,s.lv);}});}catch(e){}return L;});
+try{ITEMS.ether.mp=40;ITEMS.ether.d='Restores 40 MP';ITEMS.sage.mp=90;ITEMS.sage.d='Restores 90 MP';}catch(e){}
+// the sheet: a +5 beside each +
+ACT.addPt5=function(k){const c=G&&G.roster[V.modal&&V.modal.char];if(!c||!(c.pts>0)||!ATTR.includes(k))return;const n=Math.min(5,c.pts);c.alloc[k]=(c.alloc[k]||0)+n;c.pts-=n;refresh(c);saveGame();render();};
+HOOK.xform('mChar','stats22','a +5 button beside each attribute\'s +',function(h,id,edit){try{if(!edit||typeof h!=='string')return h;const c=G&&G.roster[id];if(!c)return h;
+  h=h.replace(/(<h4>Attributes[\s\S]*?<\/h4>)/,'$1<p class="note s22cap">Two points a level. In one attribute, points count fully up to the hero\'s level ('+c.lv+') and half beyond it.</p>');
+  return h.replace(/<button class="btn sm" data-act="addPt" data-arg="(\w+)"([^>]*)>\+<\/button>/g,(m,k,rest)=>c.pts<5?m:m+`<button class="btn sm ap5" data-act="addPt5" data-arg="${k}" aria-label="Add five points">+5</button>`);}catch(e){return h;}});
+try{window.__S22={MANA22,cost:mana22Cost};}catch(e){}
 
 window.__A={walkable,ceInit,tvSlots,genQuests,STARTERS,starterDraw,ECON,AUTO_NERF,rebuildBase,detLive,REACT,skEls,packContents,miniFor,AUTO_REW,ENC_RATE,ENC_MIN_STEPS,detNote,classSkills,stickCount,bestAll,calcStats,lookKey,vTemper,storyEchoUp,leaveDungeon,win,ldApply,genFort,caveOk,enterCave,siteHasMini,openChest,nextDlg,WS,mapIcoRects,roamSpawn,roamInterior,roamSees,mapTargets,DIRV,tileAt,STAGE_LV,autoBan,rollWeather,guardianDef,mapIssues,mapEntry,syncPools,bovAt,calFxAt,realmAt,REALMS,BOV,CAL_FX,overlayGuide,liftOverlay,drawGearIcon,gearIcon,itemIcon,RAW,sigKind,sigGid,personalDone,heroLook,hasSignature,LEGEND_IDS,facDirty,facCount,facRank,facRep,FACB,FAC,finishBattle,npcWords,npcHints,npcPool,titleMake,titleAdvance,TTS,placeAt,wkwUpdate,innSpot,getMap,monURL,enterVia,applyBossTheme,BTHEME,resetMaps,rebuildBase,shopStock,gearDesc,calcStats,gearMigrate,CLS_WPN,CLS_ARM,WPERK,WT_NAME,equipWhy,lootBase,GEAR,canEquip,gearOf,perkNote,FAM_MAT_V35,fbDraft,META:{get best(){return META.best},get codex(){return META.codex},get q(){return META.q}},saveMeta,OFF,offPending,offFlush,PROFILE,profileSync,codexSee,getMap,placeAt,interact,sanctumOpen,riftKeys,echoKeys,BONDS,bondKey,wkwUpdate,inTown,WS,LC,lsort,bestParty,fsCast,fsSkills,ldApply,MON,registerTamed,stickPower,stickCount,autoOne,planGear,bestTag,gainersFor,compGainFor,refresh,fitsFor,canEquip,gearOf,queueNewGear,ARENA,fxDur,banDur,stageTags,autoSwitchPick,layoutBattle,newChar,calcStats,limitSkill,limitTier,canStuck,dunReachable,LV_CAP,addXp,echoSpec,bossLvFor,fx,MON,log,effInfo,tierOf,perkOf,quirkDef,forgeCost,buyPlan,vJourney,modalBack,partySlots,limitOpen,town2Reached,skillKnown,known,classSkills,paceMigrate,unpackG,packG,makeEnemy,QUIRK,arrive,enterDungeon,wkwUpdate,useTravel,travelWhyNot,porkFlee,porkBlocked,encTile,campRest,buyPart,partLeft,alchStock,GAME_VERSION,CHANGELOG,ITEMS,tavernOffers,tavernPool,recruitFit,partyNeeds,vNext,CHALL,innSpot,RECIPES,MATS,FB,fbContext,REDEEM,legendJoin,legendQ,genQuests,dynActors,convInit,PROFILE,profileSync,checkArchive,GPOOL,FPOOL,guardianDef,saveMeta,archiveSkills,get G(){return G;},set G(v){G=v;},get B(){return B;},get V(){return V;},get META(){return META;},WS,ACT,render,newGame,placeAt,startBattle,autoTurn,advance,finishBattle,getMap,innSpot,setPause:p=>{PAUSE=p;},autoCfg,worldInputDir,inputSources,battleFrame,battleTheme,STS,MAPS,mapIssues,healMap,mimicReward,dropChest,interact,worldDraw,TPL,ZONES,ZS,newChar,recruit,saveGame,resetMaps,dynActors,tileAt,BV,refresh,genBounties,genQuests,vStarter,heroCard,heroURL,iconURL,masteryLine,AU,buildTrack,tone,noiseHit,MIDI,sfx,audioVol};
 ['heroRoles','SOLID','WEATHER','WX_BASE','weatherFX','superGuide','recruitCost','ceStart','ceStep','ceInit','cePool','wxList','SUPER_TABLE','superOk','facRank','facRep','facInit','facCount','facCredit','FAC','FMIS','facMissionList','facProg','tyOf','facSync','facMul','facBest','worldPlan','caveReward','enterCave','leaveCave','leaveDungeon','buildCaveMap','worldGraph','openWorldMap','sigReport','SIG_NAMES','starterDraw','ITEM_TIERS','gTierIdx','tierChip','gearIcon','starterSlots','STARTERS','CLK_LEN','CLK_PH','clockPhase','wxInfoBody','recipeOrder','recipeGain','recipeReady','recipeClose','effOf','calcDamage','healsUndead','storyEchoUp','riftKeys','echoDef','efCost','autoLocked','bossFightKey','learnScanAll','isSeen','mapMarks','genSub','subOK','subReq','ensureSub','inSub','tvSlots','tvInit','tvLeft','tvEvent','tvNextText','tvPool','tvDue','tvShuffle','mTavern','hireOK','TV_CAP','TV_CD','POOL_IDS','natPool','natOf','natRoll','NATURES','natInfo','natRerollCost','natChooseCost','NAT_CLASS','iconURL','seenOf','mapIcoDraw','drawMini','MAPCV','revealAround','fxLayer','numDur','compBonusText','compPerk','checkPhase','win','unitBox','LNQ','challVisible','challEligible','challState','isMimic','migrateCompanions','canSummon','summonComp','compOf','clockPhase','tickClock','isNight','rollWeather','wxStep','nightPool','encounterFoes','restAll','tameElite','openChest','rerollTavern','bestAll','gearTier','SV','svCheck','svFlush','svInit','svPush','svPull','svScan','svParse','svBackup','svPack','svUnpack','svProg','svCloudList','svDelDoc','svGet','svCap','slotState','slotKey','svDecode','SV_CH','svStatus','svSlotRaw','svLoad','loadRaw','svHash','svIdx'].forEach(k=>{try{Object.defineProperty(window.__A,k,{get:()=>eval(k)});}catch(e){}});

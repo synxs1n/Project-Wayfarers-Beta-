@@ -1,5 +1,5 @@
 // capes.js (v0.22.11): capes became boots, light, medium and heavy.
-//  1 eighteen boots (three weights x six tiers), each with one clear bonus (light SPD, medium HP, heavy DEF), rising with the tier
+//  1 eighteen boots (three weights x six tiers), each with its lean (light MAG and MP, medium SPD and HP, heavy DEF and HP; v0.22.17), rising with the tier
 //  2 who wears what: a light armor class light boots only, a medium class light or medium, a heavy class any; the reason names it
 //  3 the Smithy: the slot and the shelf say Boots, the shelf holds the weights the roster can wear; no "Cape" text on the equipment sheet
 //  4 an old save: a mage in an old cape (now medium boots) wears light boots of the same tier and temper after load; a knight keeps them
@@ -11,8 +11,9 @@ setTimeout(()=>{console.log('FAIL watchdog: v201a ran over 200 s');process.exit(
   await ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;A.render();});
   const r=await ev(()=>{const g=__A.TW.get,gearOf=g('gearOf'),o={};['l','m','h'].forEach(w=>{const id=w==='l'?'k_bootl_':w==='m'?'k_cape_':'k_booth_';
     o[w]=[0,1,2,3,4,5].map(t=>{const q=gearOf(id+t);return {n:q.n,slot:q.slot,st:['hp','mp','atk','def','mag','res','spd'].filter(k=>q[k]).map(k=>k+q[k])};});});return o;});
-  const one=w=>r[w].every(x=>x.slot==='k'&&x.st.length===1);const up=(w,k)=>r[w].every((x,i)=>i===0||+x.st[0].replace(k,'')>+r[w][i-1].st[0].replace(k,''));
-  chk(`1 boots: light ${r.l.map(x=>x.st).join(' ')}; medium ${r.m.map(x=>x.st).join(' ')}; heavy ${r.h.map(x=>x.st).join(' ')}`,(one('l')&&one('m')&&one('h')&&r.l[0].st[0].startsWith('spd')&&r.m[0].st[0].startsWith('hp')&&r.h[0].st[0].startsWith('def')&&up('l','spd')&&up('m','hp')&&up('h','def'))||JSON.stringify(r));
+  // v0.22.17: two stats each (light MAG and MP, medium SPD and HP, heavy DEF and HP)
+  const one=w=>r[w].every(x=>x.slot==='k'&&x.st.length===2);const val=(x,k)=>+((x.st.find(q=>q.startsWith(k))||k+'0').replace(k,''));const up=(w,k)=>r[w].every((x,i)=>i===0||val(x,k)>val(r[w][i-1],k));
+  chk(`1 boots: light ${r.l.map(x=>x.st).join(' ')}; medium ${r.m.map(x=>x.st).join(' ')}; heavy ${r.h.map(x=>x.st).join(' ')}`,(one('l')&&one('m')&&one('h')&&up('l','mag')&&up('l','mp')&&up('m','spd')&&up('m','hp')&&up('h','def')&&up('h','hp'))||JSON.stringify(r));
   const e=await ev(()=>{const A=__A,g=A.TW.get;['brann','tess'].forEach(id=>{try{g('recruit')(id,true);}catch(e){}});const R=A.G.roster;
     return Object.keys(R).map(id=>({id,cls:g('TPL')[id].cls,l:g('canEquip')(R[id],'k_bootl_1'),m:g('canEquip')(R[id],'k_cape_1'),h:g('canEquip')(R[id],'k_booth_1'),why:g('equipWhy')(R[id],'k_booth_1')}));});
   const want={mage:'100',healer:'100',archer:'110',thief:'110',monk:'110',knight:'111',warrior:'111'};

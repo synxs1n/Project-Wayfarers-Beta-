@@ -85,10 +85,10 @@ const SETUP=`([stage,gold,mats])=>{const A=__A,G=A.G;G.stage=stage;G.cleared=[0,
         return {n1,n2,spent:g0-G.gold,gold:G.gold,done:p3.done,rounds:p3.rounds,stop:p3.stop,grew:c1-c0,bought:(p3.bought||0)+(p3.forged||0)};});
       out.push(`realm ${stage+1} with ${gold} gold: ${r.n1} planned, ${r.done} done in ${r.rounds} round${r.rounds===1?'':'s'}, ${r.spent} spent, then ${r.n2}`);
       chk(`2 realm ${stage+1}, ${gold} gold, ${mats} of each material: the press does ${r.done} step${r.done===1?'':'s'} (${r.rounds} round${r.rounds===1?'':'s'}, ${r.spent} gold), a second press finds nothing`,r.n2===0&&r.gold>=0&&!r.stop&&(r.n1===0||r.done>0)&&r.grew===r.bought||JSON.stringify(r));}
-    // the charm plan at Alchemy runs the same loop
+    // the charm plan (ACT.p3Alch now opens the Smithy's plan, charms included) runs the same loop
     await H.ev(`(${SETUP})([2,6000,60])`);
-    const al=await H.ev(()=>{const A=__A;A.V.modal={type:'workshop',tab:'shop',sec:'charm'};A.ACT.p3Alch();const n1=A.V.modal.plan.picks.length;A.ACT.p3SmithGo();A.V.modal={type:'workshop',tab:'shop',sec:'charm'};A.ACT.p3Alch();const n2=A.V.modal.plan.picks.length;A.V.modal=null;return {n1,n2,c:Object.values(A.G.roster).filter(c=>c.eq.c).length};});
-    chk(`2 Alchemy's Upgrade whole party: ${al.n1} charms planned, ${al.c} heroes wear one, a second press finds nothing`,al.n1>0&&al.c>0&&al.n2===0||JSON.stringify(al));
+    const al=await H.ev(()=>{const A=__A;A.V.modal={type:'smithy',tab:'shop',sec:'charms'};A.ACT.p3Alch();const n1=A.V.modal.plan.picks.length;A.ACT.p3SmithGo();A.V.modal={type:'smithy',tab:'shop',sec:'charms'};A.ACT.p3Alch();const n2=A.V.modal.plan.picks.length;A.V.modal=null;return {n1,n2,c:Object.values(A.G.roster).filter(c=>c.eq.c).length};});
+    chk(`2 the charm plan (the Smithy's since 0.22.17): ${al.n1} charms planned, ${al.c} heroes wear one, a second press finds nothing`,al.n1>0&&al.c>0&&al.n2===0||JSON.stringify(al));
   }
   // ---------- 3 ----------
   if(want('3')){
@@ -108,7 +108,7 @@ const SETUP=`([stage,gold,mats])=>{const A=__A,G=A.G;G.stage=stage;G.cleared=[0,
       return {n:L.length,up:P.querySelectorAll('.g16d.up').length,dn:P.querySelectorAll('.g16d.dn').length,off,small,sx:P.scrollWidth-P.clientWidth,vs:P.querySelectorAll('.g16vs').length,rar:(P.querySelector('.g16rar')||{}).textContent||''};};
     for(const [name,modal,need] of [['the equip picker (weapon)',{type:'eqPick',char:'oren',slot:'w',list:['oren']},'updn'],['the equip picker (charm)',{type:'eqPick',char:'mira',slot:'c',list:['mira']},'up'],
       ['the Smithy shop',{type:'smithy',tab:'shop',sec:'weapons'},'updn'],['the Smithy forge',{type:'smithy',tab:'craft',sec:'all'},'updn'],['Tempering',{type:'smithy',tab:'forge',sec:'all'},'up'],
-      ['the Alchemy charm shelf',{type:'workshop',tab:'shop',sec:'charm'},'up'],['Equip this now? (loot)',{type:'equipNow',id:'w_mace_1+2',rest:[]},'updn']]){
+      ['the Smithy charm shelf',{type:'smithy',tab:'shop',sec:'charms'},'up'],['Equip this now? (loot)',{type:'equipNow',id:'w_mace_1+2',rest:[]},'updn']]){
       await H.ev(m=>{__A.V.cmp=null;__A.V.modal=m;__A.render();},modal);await H.wait(60);const v=await H.ev(VIEW);
       chk(`3 ${name} on a phone: ${v.n} signed stat changes (${v.up} gains, ${v.dn} losses), none off the window, none under 9.5 px, no sideways scroll`,v.n>0&&v.up>0&&(need==='up'||v.dn>0)&&v.off===0&&v.small===0&&v.sx<=1||JSON.stringify(v));}
     // a shelf piece nobody gains from still shows what it changes

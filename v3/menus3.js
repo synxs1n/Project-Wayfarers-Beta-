@@ -48,7 +48,7 @@ function m3ItemSort(ids,priceOf){const f=SHOPF(),rr=m3Rar(),pr=priceOf||(id=>ITE
   return a.sort((x,y)=>iTierIdx(y)-iTierIdx(x)||pr(y)-pr(x));}
 
 // ----- structure -----
-const M3_LEG={smithy:{weapons:['shop','weapons'],armor:['shop','armor'],capes:['shop','capes'],shields:['shop','shields'],mats:['shop','mats']},
+const M3_LEG={smithy:{weapons:['shop','weapons'],armor:['shop','armor'],capes:['shop','capes'],shields:['shop','shields'],charms:['shop','charms'],mats:['shop','mats']},
   workshop:{relit:['shop','relit'],herbs:['shop','herb']},guild:{personal:['quests','personal'],party:['recruit','all']},tavern:{},board:{personal:['quests','personal']}};
 // v0.9.5: the Guild Hall opens on the Notice Board's Guilds tab; the town board opens on Quests (board tabs: NB_TABS below)
 const M3_HOME={smithy:'shop',workshop:'shop',guild:'guilds',tavern:'hire',board:'quests'};
@@ -69,16 +69,16 @@ const m3ShSec=(L,n)=>m3Sh()?L.concat([['shields','Shields',n]]):L;
 function m3SellCnt(slots){const o={};(G.gear||[]).forEach(id=>{const g=gearOf(id);if(g&&!g.stick&&slots.includes(g.slot))o[id]=(o[id]||0)+1;});return o;}
 function m3Secs(t,tab){const n=(a)=>a.length;
   if(t==='smithy'){
-    if(tab==='shop'){const ar=shopStock('armor');return [['all','All'],['weapons','Weapons',n(shopStock('weapons'))],['armor','Armor',ar.filter(id=>gearOf(id).slot==='a').length],...m3ShSec([['capes','Boots',ar.filter(id=>gearOf(id).slot==='k').length]],ar.filter(id=>gearOf(id).slot==='s').length),['mats','Materials']];}
+    if(tab==='shop'){const ar=shopStock('armor');return [['all','All'],['weapons','Weapons',n(shopStock('weapons'))],['armor','Armor',ar.filter(id=>gearOf(id).slot==='a').length],...m3ShSec([['capes','Boots',ar.filter(id=>gearOf(id).slot==='k').length]],ar.filter(id=>gearOf(id).slot==='s').length),['charms','Charms',n(shopStock('charms'))],['mats','Materials']];}
     if(tab==='craft')return [['all','All']].concat(RCAT.filter(([k])=>SMITH_CATS.includes(k)).map(([k,l])=>[k,l,RECIPES.filter(r=>r.cat===k&&recipeOpen(r)).length]));
     if(tab==='forge'){const L=temperList();const c=s=>L.filter(o=>gearOf(o.id).slot===s).length;return [['all','All',L.length],['weapons','Weapons',c('w')],['armor','Armor',c('a')],...m3ShSec([['capes','Boots',c('k')]],c('s')),['charms','Charms',c('c')]];}
-    if(tab==='sell'){const C=m3SellCnt(['w','a','k','s']),c=s=>Object.keys(C).filter(id=>gearOf(id).slot===s).reduce((a,id)=>a+C[id],0);
-      return [['all','All'],['weapons','Weapons',c('w')],['armor','Armor',c('a')],...m3ShSec([['capes','Boots',c('k')]],c('s')),['mats','Materials']];}}
+    if(tab==='sell'){const C=m3SellCnt(['w','a','k','s','c']),c=s=>Object.keys(C).filter(id=>gearOf(id).slot===s).reduce((a,id)=>a+C[id],0);
+      return [['all','All'],['weapons','Weapons',c('w')],['armor','Armor',c('a')],...m3ShSec([['capes','Boots',c('k')]],c('s')),['charms','Charms',c('c')],['mats','Materials']];}}
   if(t==='workshop'){
     if(tab==='shop'){const S=alchStock(),k=x=>S.filter(id=>m3Kind(id)===x).length;
-      return [['all','All'],['potion','Potions',k('potion')],['cure','Cures',k('cure')],['travel','Travel',k('travel')],['charm','Charms',shopStock('charms').length],['herb','Herbs',herbStock().length]].concat(G.cleared[townS()]?[['relit','Festival',RELIT_STOCK.length]]:[]);}
+      return [['all','All'],['potion','Potions',k('potion')],['cure','Cures',k('cure')],['travel','Travel',k('travel')],['herb','Herbs',herbStock().length]].concat(G.cleared[townS()]?[['relit','Festival',RELIT_STOCK.length]]:[]);}
     if(tab==='craft')return [['all','All']].concat(RCAT.filter(([k])=>ALCH_CATS.includes(k)).map(([k,l])=>[k,l,RECIPES.filter(r=>r.cat===k&&recipeOpen(r)).length]));
-    if(tab==='sell'){const C=m3SellCnt(['c']);return [['all','All'],['charm','Charms',Object.values(C).reduce((a,b)=>a+b,0)],['herb','Herbs',Object.keys(MATS).filter(id=>(G.mats[id]||0)>0&&MAT_OF[id].k==='herb').length]];}}
+    if(tab==='sell'){return [['all','All'],['herb','Herbs',Object.keys(MATS).filter(id=>(G.mats[id]||0)>0&&MAT_OF[id].k==='herb').length]];}}
   if(t==='guild'||t==='board')return nbSecs(tab);
   return [];}
 // normalise V.modal for a shop: main tab plus section, old ids mapped
@@ -122,31 +122,30 @@ function m3SmithMatsBuy(){return `${m3H('Ore and wood')}<p class="note">Stock gr
 // ----- the Smithy -----
 function m3Smithy(m){const sec=m.sec,tab=m.tab;let body='';
   if(tab==='shop'){
-    const W=shopSortIds(shopStock('weapons')),AR=shopSortIds(shopStock('armor')),A=AR.filter(id=>gearOf(id).slot==='a'),K=AR.filter(id=>gearOf(id).slot==='k'),S=AR.filter(id=>gearOf(id).slot==='s');
-    const grp={weapons:['Weapons',W],armor:['Armor',A],capes:['Boots',K],shields:['Shields',S]},emp='Nothing on the shelves matches the filters.';
-    const gear=k=>(sec==='all'?m3H(grp[k][0],grp[k][1].length):'')+m3Rows(grp[k][1].map(m3GearRow).join(''),emp);
+    const W=shopSortIds(shopStock('weapons')),AR=shopSortIds(shopStock('armor')),A=AR.filter(id=>gearOf(id).slot==='a'),K=AR.filter(id=>gearOf(id).slot==='k'),S=AR.filter(id=>gearOf(id).slot==='s'),CH=shopSortIds(shopStock('charms'));
+    const grp={weapons:['Weapons',W],armor:['Armor',A],capes:['Boots',K],shields:['Shields',S],charms:['Charms',CH]},emp='Nothing on the shelves matches the filters.';
+    const gear=k=>(sec==='all'?m3H(grp[k][0],grp[k][1].length):'')+(k==='charms'?m3CharmBtn():'')+m3Rows(grp[k][1].map(m3GearRow).join(''),emp);
     // v0.9.5: the best step for each slot comes first (p3shop.js upgSlotsHtml, with Upgrade whole party), then the filters and the shelves
-    body=(sec==='mats'?'':(typeof upgSlotsHtml==='function'?upgSlotsHtml(sec==='all'?['w','a','k'].concat(m3Sh()?['s']:[]):[{weapons:'w',armor:'a',capes:'k',shields:'s'}[sec]]):m3PlanBtn())+shopFBar('buy'))+(sec==='all'?['weapons','armor','capes'].concat(m3Sh()?['shields']:[]).map(gear).join('')+m3SmithMatsBuy():sec==='mats'?m3SmithMatsBuy():gear(sec));
+    body=(sec==='mats'?'':(typeof upgSlotsHtml==='function'?upgSlotsHtml(sec==='all'?['w','a','k'].concat(m3Sh()?['s']:[],['c']):[{weapons:'w',armor:'a',capes:'k',shields:'s',charms:'c'}[sec]]):m3PlanBtn())+shopFBar('buy'))+(sec==='all'?['weapons','armor','capes'].concat(m3Sh()?['shields']:[],['charms']).map(gear).join('')+m3SmithMatsBuy():sec==='mats'?m3SmithMatsBuy():gear(sec));
   }else if(tab==='craft')body=m3PlanBtn()+m3Recipes(SMITH_CATS,sec,'Smithy gear comes out already tempered, so it beats buying the same piece. Metal wants ore, wooden gear wants logs, and every piece wants monster parts.');
   else if(tab==='forge')body=vTemper({slot:M3_SLOTSEC[sec]||null,show:SHOPF().tsh||'all',bar:true});
   else if(tab==='sell'){const g=(sl,lab)=>(sec==='all'?m3H(lab):'')+m3Rows(m3SellRows(sl),'No spare '+lab.toLowerCase()+' in your pack.');
     const mats=(sec==='all'?m3H('Materials'):'')+`<div class="rows">${matSellRows(['ore','wood','part','relic'])}</div>`;
-    body=(typeof junkBar==='function'&&sec!=='mats'?junkBar(sec==='all'?['w','a','k','s']:[M3_SLOTSEC[sec]]):'')+(sec==='all'?g(['w'],'Weapons')+g(['a'],'Armor')+g(['k'],'Boots')+(m3Sh()?g(['s'],'Shields'):'')+mats:sec==='mats'?mats:g([M3_SLOTSEC[sec]],{weapons:'Weapons',armor:'Armor',capes:'Boots',shields:'Shields'}[sec]))+'<p class="note">Charms and herbs sell at Alchemy.</p>';}
+    body=(typeof junkBar==='function'&&sec!=='mats'?junkBar(sec==='all'?['w','a','k','s','c']:[M3_SLOTSEC[sec]]):'')+(sec==='all'?g(['w'],'Weapons')+g(['a'],'Armor')+g(['k'],'Boots')+(m3Sh()?g(['s'],'Shields'):'')+g(['c'],'Charms')+mats:sec==='mats'?mats:g([M3_SLOTSEC[sec]],{weapons:'Weapons',armor:'Armor',capes:'Boots',shields:'Shields',charms:'Charms'}[sec]))+'<p class="note">Herbs, potions and tonics sell at Alchemy.</p>';}
   else if(tab==='echo')body=vEchoforge();
-  return m3Box('smithy',m,m3Nav('smithy',m)+body+'<p class="note">Equip gear from the menu anywhere. Potions, charms and travel gear are at Alchemy, the green-flask house in town.</p>');}
+  return m3Box('smithy',m,m3Nav('smithy',m)+body+'<p class="note">Equip gear from the menu anywhere. Potions and travel gear are at Alchemy, the green-flask house in town.</p>');}
 // ----- Alchemy -----
 function m3Alchemy(m){const sec=m.sec,tab=m.tab;let body='';
   if(tab==='shop'){const S=alchStock(),one=sec!=='all';
     const items=k=>{const L=m3ItemSort(S.filter(id=>m3Kind(id)===k));return (one?'':m3H({potion:'Potions',cure:'Cures',travel:'Travel gear'}[k],L.length))+m3Rows(L.map(m3ItemRow).join(''),'Nothing here matches the filters.');};
-    const charms=()=>{const L=shopSortIds(shopStock('charms'));return (one?'':m3H('Charms',L.length))+m3CharmBtn()+m3Rows(L.map(m3GearRow).join(''),'No charms match the filters.');};
     const herbs=()=>(one?'':m3H('Herbs'))+`<p class="note">Fresh herbs for brewing. Stock grows as you reach later realms.</p><div class="rows">${herbStock().map(id=>matBuyRow(id,MAT_PRICE[id])).join('')}</div>`;
     const relit=()=>{if(!G.cleared[townS()])return '';const P={};RELIT_STOCK.forEach(([id,p])=>P[id]=p);const ids=RELIT_STOCK.map(x=>x[0]);
       return (one?'':m3H('Festival wares',ids.length))+`<p class="note">The beacon is lit and the alchemist is in a generous mood: rare stock, only in relit towns.</p><div class="rows">${ids.map(id=>{const isItem=!!ITEMS[id],n=isItem?ITEMS[id].n:gearOf(id).n,d=isItem?ITEMS[id].d:gearDesc(id),price=P[id];return `<div class="row"><div class="grow"><b>${n}</b><small>${d}${isItem?'. Carrying '+(G.inv[id]||0):''}</small></div><button class="btn sm" data-act="buyRelit" data-arg="${id}" ${G.gold>=price?'':'disabled'}>${fmt(price)}</button></div>`;}).join('')}</div>`;};
-    const P={potion:()=>items('potion'),cure:()=>items('cure'),travel:()=>items('travel'),charm:charms,herb:herbs,relit};
-    body=(sec==='charm'&&typeof upgSlotsHtml==='function'?upgSlotsHtml(['c'],1):'')+(sec==='herb'||sec==='relit'?'':shopFBar(sec==='charm'?'buy':sec==='all'?'mixed':'items'))+(one?P[sec]():Object.keys(P).map(k=>P[k]()).join(''));
-  }else if(tab==='craft')body=m3Recipes(ALCH_CATS,sec,sec==='potion'?'Brew draughts from herbs you pick in the fields. Cheaper than buying, and some brews are Alchemy-only.':sec==='charm'?'Charms need monster parts and your realm\'s relic.':sec==='item'?'Stitch your own tent from logs and hide.':'Brew draughts from herbs, make charms from monster parts and your realm\'s relic, and stitch your own tent.');
-  else if(tab==='sell'){const ch=(sec==='all'?m3H('Charms'):'')+m3Rows(m3SellRows(['c']),'No spare charms. Weapons and armor sell at the Smithy.'),hb=(sec==='all'?m3H('Herbs'):'')+`<div class="rows">${matSellRows(['herb'])}</div>`;
-    body=(typeof junkBar==='function'&&sec!=='herb'?junkBar(['c']):'')+(sec==='charm'?ch:sec==='herb'?hb:ch+hb);}
+    const P={potion:()=>items('potion'),cure:()=>items('cure'),travel:()=>items('travel'),herb:herbs,relit};
+    body=(sec==='herb'||sec==='relit'?'':shopFBar('items'))+(one?P[sec]():Object.keys(P).map(k=>P[k]()).join(''));
+  }else if(tab==='craft')body=m3Recipes(ALCH_CATS,sec,sec==='potion'?'Brew draughts from herbs you pick in the fields. Cheaper than buying, and some brews are Alchemy-only.':sec==='item'?'Stitch your own tent from logs and hide.':'Brew draughts from herbs and stitch your own tent. Charms are made at the Smithy.');
+  else if(tab==='sell'){const hb=(sec==='all'?m3H('Herbs'):'')+`<div class="rows">${matSellRows(['herb'])}</div>`;
+    body=hb+'<p class="note">Weapons, armor, boots and charms sell at the Smithy.</p>';}
   else body=`<p class="note">Everything you have gathered. Herbs brew here; ore, logs and parts go to the Smithy.</p>${vPouch()}`;
   return m3Box('workshop',m,m3Nav('workshop',m)+body);}
 // ----- the tavern -----
@@ -249,9 +248,9 @@ function m3Vh(){try{const v=window.visualViewport,h=Math.round(v?v.height:innerH
 m3Vh();addEventListener('resize',m3Vh);try{if(window.visualViewport)visualViewport.addEventListener('resize',m3Vh);}catch(e){}
 try{if(screen.orientation&&screen.orientation.addEventListener)screen.orientation.addEventListener('change',()=>setTimeout(m3Vh,200));}catch(e){}
 
-// ----- Alchemy Charms: "Equip best charms" (party, owned charms only, nothing bought) -----
+// ----- the Smithy's Charms section (at Alchemy until v0.22.17): "Equip best charms" (party, owned charms only, nothing bought) -----
 function m3CharmBtn(){if(!G||G.daily||!(G.gear||[]).some(id=>{const g=gearOf(id);return g&&g.slot==='c';}))return '';
-  return '<div class="btnrow m3charmeq"><button class="btn sm gold" data-act="autoEqCharms" title="Gives each hero in your party the best charm you already own. Buys nothing.">Equip best charms</button><button class="btn sm" data-act="p3Alch" title="Plans the best charm each party hero can end up with: bought here or from your pack, tempered as far as you can afford. Confirm before anything happens.">Upgrade whole party</button></div>';}
+  return '<div class="btnrow m3charmeq"><button class="btn sm gold" data-act="autoEqCharms" title="Gives each hero in your party the best charm you already own. Buys nothing.">Equip best charms</button></div>';}
 // the Party tab's helper row: one "Equip Best" button (party only); the reserves button is gone
 HOOK.xform('vSwap','menus3','Equip Best button on the Party tab',function(h){if(typeof h!=='string')return h;
   h=h.replace(/<button class="btn sm" data-act="autoEqCamp"[^>]*>[^<]*<\/button>/,'').replace(/(<button class="btn sm" data-act="autoEqParty"[^>]*>)Equip best: party/,'$1Equip Best').replace('title="The best gear you own for your party. May take gear from your reserves."','title="Gears the six heroes in your party with the best gear you own."');return h;});
