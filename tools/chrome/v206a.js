@@ -7,6 +7,7 @@
 //  5 stats: 2 points a level (a new hero, a level up, an old save's hero is owed the difference once), points beyond the hero's level in one
 //    attribute count half, Strength gives HP, Faith healing received, a bow class takes more attack from Dexterity than a Warrior does
 //  6 mana: a skill learned late costs more than written (mp0), a level 1 skill the same; 8% MP back after a win; the Mana Tonic gives 40
+//  8 (v0.22.19) no 3% floor: a step worth less than 3% is on the Upgrade lists
 //  7 HD-2D: every roofed building of a town gets a closed roof under its textured one
 // Usage (from tools/chrome): PWHTML=<abs path to out/aurelis3.html> node v206a.js
 const {open,chk,done}=require('./pw');
@@ -45,6 +46,10 @@ const META=`localStorage.clear();localStorage.setItem('aurelis-meta-v1',JSON.str
   const e=await ev(()=>{const A=__A,g=A.TW.get,TPL=g('TPL'),o={late:0,lateUp:0,first:0,firstSame:0,bad:[]};Object.keys(TPL).forEach(id=>{if(TPL[id].mon)return;g('classSkills')(TPL[id]).forEach(s=>{if(!(s.mp0>0))return;if(s.lv>=21){o.late++;if(s.mp>s.mp0)o.lateUp++;else o.bad.push(id+':'+s.id);}if(s.lv<=1){o.first++;if(s.mp===s.mp0)o.firstSame++;}});});
     o.win=g('MANA').win;o.tonic=g('ITEMS').ether.mp;o.c41=window.__S22.cost(20,41);o.c1=window.__S22.cost(20,1);return o;});
   chk(`6 mana: ${e.lateUp} of ${e.late} skills learned at 21 or later cost more than written, ${e.firstSame} of ${e.first} level 1 skills the same (20 MP at 41: ${e.c41}); ${e.win*100}% MP after a win; the Mana Tonic ${e.tonic}`,(e.late>40&&e.lateUp>=e.late*.98&&/* a few legend skills are copies of an early skill moved to a late level: they keep its cost */e.first>10&&e.firstSame===e.first&&e.c41===32&&e.c1===20&&e.win===.08&&e.tonic===40)||JSON.stringify(e));
+  // 8 (v0.22.19) no minimum gain: a step worth under 3% is offered by the per slot Upgrade
+  const h=await ev(()=>{const A=__A,g=A.TW.get,G=g('G'),o={min:g('SMITH_PLAN').minPct,small:[],opts:0,all:0};G.gold=90000;
+    g('partyChars')().forEach(c=>{c.eq.c='c_mana';c.eq.k=null;g('refresh')(c);['c','k'].forEach(sl=>{const O=g('upgOpts')(c,sl),R=g('upgBest')(c,sl);o.opts+=O.length;o.all+=R.all.length;R.all.forEach(x=>{if(x.pct>0&&x.pct<.03)o.small.push(c.id+':'+sl+':'+(x.pct*100).toFixed(1));});});});o.n=o.small.length;o.small=o.small.slice(0,4);return o;});
+  chk(`8 no 3% floor: ${h.n} steps under 3% are on the Upgrade lists (${h.small.join(', ')})`,(h.min===0&&h.n>0&&h.all===h.opts)||JSON.stringify(h));/* every option that is a gain is listed */
   await ev(()=>{const A=__A,g=A.TW.get;g('HD').roofUnder=0;const m=A.getMap('t0');try{g('hdFreeMap')();}catch(x){}A.placeAt('t0',...A.mapEntry(m),'d');A.V.modal=null;A.render();});await wait(2500);
   const f=await ev(()=>{const g=__A.TW.get,m=__A.getMap('t0'),HD=g('HD');return {n:HD.roofUnder||0,roofed:m.bld.filter(b=>g('hdBldKind')(m,b)==='roof').length,live:!!HD.live,sty:m.sty};});
   chk(`7 a ${f.sty} town in HD-2D: ${f.n} closed roofs laid for ${f.roofed} roofed buildings`,(f.live&&(f.roofed===0||f.n>=f.roofed))||JSON.stringify(f));

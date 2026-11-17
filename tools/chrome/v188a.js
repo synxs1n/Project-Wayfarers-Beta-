@@ -86,7 +86,7 @@ const SETUP=`([stage,gold,mats])=>{const A=__A,G=A.G;G.stage=stage;G.cleared=[0,
       out.push(`realm ${stage+1} with ${gold} gold: ${r.n1} planned, ${r.done} done in ${r.rounds} round${r.rounds===1?'':'s'}, ${r.spent} spent, then ${r.n2}`);
       chk(`2 realm ${stage+1}, ${gold} gold, ${mats} of each material: the press does ${r.done} step${r.done===1?'':'s'} (${r.rounds} round${r.rounds===1?'':'s'}, ${r.spent} gold), a second press finds nothing`,r.n2===0&&r.gold>=0&&!r.stop&&(r.n1===0||r.done>0)&&r.grew===r.bought||JSON.stringify(r));}
     // the charm plan (ACT.p3Alch now opens the Smithy's plan, charms included) runs the same loop
-    await H.ev(`(${SETUP})([2,6000,60])`);
+    await H.ev(`(${SETUP})([2,60000,60])/* 0.22.19: enough gold that the plan reaches the charms (it buys the biggest gains first) */`);
     const al=await H.ev(()=>{const A=__A;A.V.modal={type:'smithy',tab:'shop',sec:'charms'};A.ACT.p3Alch();const n1=A.V.modal.plan.picks.length;A.ACT.p3SmithGo();A.V.modal={type:'smithy',tab:'shop',sec:'charms'};A.ACT.p3Alch();const n2=A.V.modal.plan.picks.length;A.V.modal=null;return {n1,n2,c:Object.values(A.G.roster).filter(c=>c.eq.c).length};});
     chk(`2 the charm plan (the Smithy's since 0.22.17): ${al.n1} charms planned, ${al.c} heroes wear one, a second press finds nothing`,al.n1>0&&al.c>0&&al.n2===0||JSON.stringify(al));
   }

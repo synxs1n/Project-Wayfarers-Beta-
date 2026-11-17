@@ -2119,7 +2119,7 @@ html:not(.flat) .battle.b3 .bline .b4mo .b4bar{box-shadow:inset 0 0 0 1px #000,0
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.22.18";const APP_BUILD="5134986493df";
+(function(){const APP_VER="0.22.19";const APP_BUILD="5177863b6869";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2412,10 +2412,12 @@ const ITEM_MAX=50,ITEM_MAX_DAILY=9;
 const invCap=()=>(typeof G!=='undefined'&&G&&G.daily)?ITEM_MAX_DAILY:ITEM_MAX;
 // 3.1 "Best for party" ordering: two upgrades for the same hero and slot count as close when their gains differ by at most
 // closeAbs (absolute share of the hero's gear score) or closeRel (relative), and then get a short tradeoff line.
-const SHOP_BEST={closeAbs:.02,closeRel:.2,minPct:.005};
+const SHOP_BEST={closeAbs:.02,closeRel:.2,minPct:.0001};// v0.22.19: was .005, see SMITH_PLAN
 // 3.3 Smithy plan: the smallest gain worth buying or crafting for (share of the hero's gear score)
 const MANA={win:.08};// v0.22.17: MP back after a win, a share of max MP (was .12 written in engine.js); see stats22.js
-const SMITH_PLAN={minPct:.03};// v0.12.13: a step must gain 3% (was 1%: tiny upgrades kept showing after Upgrade whole party)
+// v0.22.19, owner: "Remove 3% floor rules, any percent upgrade should appear/be used". No floor: every step that is a gain (score up by more
+// than .01) is offered and used by Upgrade whole party, the per slot Upgrade and the shop's upgrade tags. (v0.12.13 had set 3%, before that 1%.)
+const SMITH_PLAN={minPct:0};
 // 3.9 Pork Chop Sandwiches handed over after the first boss victory, and how many it takes to walk back to town from a dungeon
 const PORK={firstBoss:2,toTown:2};
 // TEMPER: tempering costs for +1, +2, +3 (temper.js): raw material, monster parts, realm relics, Dread Cores, gold factor, floor.
@@ -2897,7 +2899,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.22.18";const APP_BUILD="5134986493df";
+const APP_VER="0.22.19";const APP_BUILD="5177863b6869";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2905,6 +2907,7 @@ const APP_VER="0.22.18";const APP_BUILD="5134986493df";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.22.19',['Upgrades no longer need to be worth 3%. Any step that makes a hero better, however small, shows up on the Upgrade buttons and is used by Upgrade whole party.']],
  ['Beta v0.22.18',['Fixed: on a phone the new +5 stat buttons did not fit the attribute rows. They are replaced by one switch above the attributes: each + adds 1, or each + adds 5.']],
  ['Beta v0.22.17',['Upgrade whole party does much more. It now tempers what your heroes already wear, plans boots and charms along with weapons, armor and shields, and always goes for the piece that ends up best at full temper before spending on one that will be replaced. Every planned step, and every row of "Best upgrade for each slot", lists the materials and gold it uses.',
   'Charms moved to the Smithy: bought, forged, tempered and sold there, and part of its Upgrade buttons. Alchemy keeps potions, cures, travel gear and herbs.',
@@ -18250,11 +18253,11 @@ const P3_SLOTS=['w','a','k','s','c'];// v0.22.12: shields (only Warriors and Kni
 // piece ENDS decides. p3Ult is the hero's score with the piece at max temper; the plan and the per slot Upgrade take the option with the
 // highest end first (ends within P3_ULT_EPS of each other count as equal), then the most gain today, then the least gold. So a new base that
 // is a little better today and much better at +3 is taken before another temper step on a piece that will be replaced. An option still has
-// to be a gain today (nobody is made weaker to save up), and the 3% floor does not apply to an empty slot.
+// to be a gain today (nobody is made weaker to save up). v0.22.19: there is no minimum gain any more.
 const P3_ULT_EPS=.004;
 function p3Ult(c,sl,id){try{return maxScoreOf(c,sl,id);}catch(e){return 0;}}
 function p3UltCmp(a,b){const m=Math.max(a.u||0,b.u||0,1);if(Math.abs((a.u||0)-(b.u||0))>m*P3_ULT_EPS)return (b.u||0)-(a.u||0);return 0;}
-const p3Floor=(c,sl)=>c.eq[sl]?(SMITH_PLAN.minPct||0):.0001;
+const p3Floor=(c,sl)=>SMITH_PLAN.minPct||0;// v0.22.19: no floor (it was 3% for a filled slot)
 function p3Recipes(){const o={};RECIPES.forEach(r=>{if(r.id&&SMITH_CATS.includes(r.cat)&&recipeOpen(r)&&!o[r.id])o[r.id]=r;});return o;}
 // v0.11.8: the plan looks at where a piece can END: every base (pack, shop, forge) is also considered tempered +1, +2 and +3 (temper.js
 // forgeCost chain), with the gold and materials of the whole chain, so the pick is the best final stats you can afford, not the best
@@ -18491,7 +18494,7 @@ const upgMaxHtml=o=>o&&o.mx?`<small class="mxt">${esc(o.mx)}</small>`:'';
 // the order: most gain, then less gold, then fewer materials, then pack before buying before forging
 const upgCmp=(a,b)=>p3UltCmp(a,b)||(b.d-a.d)||(a.gold-b.gold)||(upgMatN(a)-upgMatN(b))||(UPG_KIND.indexOf(a.k)-UPG_KIND.indexOf(b.k));// v0.22.17: the best end first (o.u)
 function upgMatN(o){return o.m?Object.values(o.m).reduce((s,v)=>s+v,0):0;}
-function upgBest(c,sl){const fl=p3Floor(c,sl),L=upgOpts(c,sl).filter(o=>o.pct>=fl).sort(upgCmp),best=L.find(o=>o.ok)||null;/* v0.12.13: the same 3% floor as Upgrade whole party */
+function upgBest(c,sl){const fl=p3Floor(c,sl),L=upgOpts(c,sl).filter(o=>o.pct>=fl).sort(upgCmp),best=L.find(o=>o.ok)||null;/* the same floor as Upgrade whole party (none since v0.22.19) */
   // what to save up for: the best step overall when it beats what can be done now
   const goal=L.find(o=>!o.ok&&(!best||o.d>best.d+.01))||null;return {best,goal,all:L};}
 function upgWhat(o,here){const g=gearOf(o.id),n=g?g.n:'?';

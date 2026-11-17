@@ -86,11 +86,11 @@ const P3_SLOTS=['w','a','k','s','c'];// v0.22.12: shields (only Warriors and Kni
 // piece ENDS decides. p3Ult is the hero's score with the piece at max temper; the plan and the per slot Upgrade take the option with the
 // highest end first (ends within P3_ULT_EPS of each other count as equal), then the most gain today, then the least gold. So a new base that
 // is a little better today and much better at +3 is taken before another temper step on a piece that will be replaced. An option still has
-// to be a gain today (nobody is made weaker to save up), and the 3% floor does not apply to an empty slot.
+// to be a gain today (nobody is made weaker to save up). v0.22.19: there is no minimum gain any more.
 const P3_ULT_EPS=.004;
 function p3Ult(c,sl,id){try{return maxScoreOf(c,sl,id);}catch(e){return 0;}}
 function p3UltCmp(a,b){const m=Math.max(a.u||0,b.u||0,1);if(Math.abs((a.u||0)-(b.u||0))>m*P3_ULT_EPS)return (b.u||0)-(a.u||0);return 0;}
-const p3Floor=(c,sl)=>c.eq[sl]?(SMITH_PLAN.minPct||0):.0001;
+const p3Floor=(c,sl)=>SMITH_PLAN.minPct||0;// v0.22.19: no floor (it was 3% for a filled slot)
 function p3Recipes(){const o={};RECIPES.forEach(r=>{if(r.id&&SMITH_CATS.includes(r.cat)&&recipeOpen(r)&&!o[r.id])o[r.id]=r;});return o;}
 // v0.11.8: the plan looks at where a piece can END: every base (pack, shop, forge) is also considered tempered +1, +2 and +3 (temper.js
 // forgeCost chain), with the gold and materials of the whole chain, so the pick is the best final stats you can afford, not the best
@@ -327,7 +327,7 @@ const upgMaxHtml=o=>o&&o.mx?`<small class="mxt">${esc(o.mx)}</small>`:'';
 // the order: most gain, then less gold, then fewer materials, then pack before buying before forging
 const upgCmp=(a,b)=>p3UltCmp(a,b)||(b.d-a.d)||(a.gold-b.gold)||(upgMatN(a)-upgMatN(b))||(UPG_KIND.indexOf(a.k)-UPG_KIND.indexOf(b.k));// v0.22.17: the best end first (o.u)
 function upgMatN(o){return o.m?Object.values(o.m).reduce((s,v)=>s+v,0):0;}
-function upgBest(c,sl){const fl=p3Floor(c,sl),L=upgOpts(c,sl).filter(o=>o.pct>=fl).sort(upgCmp),best=L.find(o=>o.ok)||null;/* v0.12.13: the same 3% floor as Upgrade whole party */
+function upgBest(c,sl){const fl=p3Floor(c,sl),L=upgOpts(c,sl).filter(o=>o.pct>=fl).sort(upgCmp),best=L.find(o=>o.ok)||null;/* the same floor as Upgrade whole party (none since v0.22.19) */
   // what to save up for: the best step overall when it beats what can be done now
   const goal=L.find(o=>!o.ok&&(!best||o.d>best.d+.01))||null;return {best,goal,all:L};}
 function upgWhat(o,here){const g=gearOf(o.id),n=g?g.n:'?';

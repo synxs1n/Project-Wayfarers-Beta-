@@ -210,10 +210,12 @@ const ITEM_MAX=50,ITEM_MAX_DAILY=9;
 const invCap=()=>(typeof G!=='undefined'&&G&&G.daily)?ITEM_MAX_DAILY:ITEM_MAX;
 // 3.1 "Best for party" ordering: two upgrades for the same hero and slot count as close when their gains differ by at most
 // closeAbs (absolute share of the hero's gear score) or closeRel (relative), and then get a short tradeoff line.
-const SHOP_BEST={closeAbs:.02,closeRel:.2,minPct:.005};
+const SHOP_BEST={closeAbs:.02,closeRel:.2,minPct:.0001};// v0.22.19: was .005, see SMITH_PLAN
 // 3.3 Smithy plan: the smallest gain worth buying or crafting for (share of the hero's gear score)
 const MANA={win:.08};// v0.22.17: MP back after a win, a share of max MP (was .12 written in engine.js); see stats22.js
-const SMITH_PLAN={minPct:.03};// v0.12.13: a step must gain 3% (was 1%: tiny upgrades kept showing after Upgrade whole party)
+// v0.22.19, owner: "Remove 3% floor rules, any percent upgrade should appear/be used". No floor: every step that is a gain (score up by more
+// than .01) is offered and used by Upgrade whole party, the per slot Upgrade and the shop's upgrade tags. (v0.12.13 had set 3%, before that 1%.)
+const SMITH_PLAN={minPct:0};
 // 3.9 Pork Chop Sandwiches handed over after the first boss victory, and how many it takes to walk back to town from a dungeon
 const PORK={firstBoss:2,toTown:2};
 // TEMPER: tempering costs for +1, +2, +3 (temper.js): raw material, monster parts, realm relics, Dread Cores, gold factor, floor.

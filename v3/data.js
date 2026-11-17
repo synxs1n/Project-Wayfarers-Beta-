@@ -4,6 +4,7 @@
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.22.19',['Upgrades no longer need to be worth 3%. Any step that makes a hero better, however small, shows up on the Upgrade buttons and is used by Upgrade whole party.']],
  ['Beta v0.22.18',['Fixed: on a phone the new +5 stat buttons did not fit the attribute rows. They are replaced by one switch above the attributes: each + adds 1, or each + adds 5.']],
  ['Beta v0.22.17',['Upgrade whole party does much more. It now tempers what your heroes already wear, plans boots and charms along with weapons, armor and shields, and always goes for the piece that ends up best at full temper before spending on one that will be replaced. Every planned step, and every row of "Best upgrade for each slot", lists the materials and gold it uses.',
   'Charms moved to the Smithy: bought, forged, tempered and sold there, and part of its Upgrade buttons. Alchemy keeps potions, cures, travel gear and herbs.',
