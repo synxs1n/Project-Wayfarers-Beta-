@@ -765,11 +765,11 @@ Asked: "vanguard heals with regen is too common to make a relic skill, these sho
 Asked after two mock-ups (scratchpad only, not in the repo): maximise the stage on small phones, keep the action menu, put the party and foe cards behind a button.
 
 - v3/battle27.js, last in MODS. On only in the portrait ("tall") battle layout when the visible height is at most `B27.maxVh` (900). `B27.off=true` turns it off. Class `b27` on `.battle`, `b27open` while the sheet is open.
-- `layoutBattle` (battle.js) calls `b27Mark(bat,mode)` before it measures; it returns the stage scale (`B27.sc` 2.5, the old tall layout is 2).
+- `layoutBattle` (battle.js) calls `b27Mark(bat,mode)` before it measures; it returns the stage scale (`B27.sc` 2.25, the old tall layout is 2; 2.5 was tried and three foes overlapped enough that a tap picked the wrong one).
 - `b8TallPlan` is wrapped: no peek kept for cards, no growth of the rows, `B27.tallMax` 300, and the log line's height is given back to the stage.
 - The after hook on `renderBattle` moves the `.autorow` from `#bcmd` into `#border` (labels shortened, aria-label keeps the full text), moves `.osky` into `#bline`, adds the small ☰ button, and adds the sheet's header and footer to `#bparty`.
 - `#bline` is absolutely placed over the top of the stage. It needs `grid-area:auto`, otherwise its containing block is the (empty) grid area.
 - The CSS is in the module (a style element `#b27css`); `.cmd .autorow` (not `#bcmd`) so the hidden clone `b8CmdEst` measures gets it too.
 - The top bar is hidden with `body:has(.battle.b3.b27) #hdr`; its sound, help and settings buttons are at the foot of the sheet.
-- Known: on a 360x640 screen the HP tag of the hero standing highest can sit under the floating line. Units are 1.25x larger than before, not the 1.4x the mock-up drew (three foes no longer fit at more).
+- Known: on a 360x640 screen the HP tag of the hero standing highest can sit under the floating line. Units are 1.125x larger than before, not the 1.4x the mock-up drew.
 - Test: tools/chrome/v211a.js (battle group).

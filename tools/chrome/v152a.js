@@ -23,7 +23,7 @@ for(const [w,h,gfx] of [[390,844,'medium'],[1000,560,'medium'],[390,844,'low']])
  chk(`${tag}: heroes keep their size (canvas at most 40x56)`,r.heroes.every(x=>x.cw<=40&&x.ch<=56&&Math.abs(x.w-Math.round(x.cw*x.k))<=1)||JSON.stringify(r.heroes));
  chk(`${tag}: no HP/MP bars in the command head, name kept, the numbers stay for screen readers when the head is shown`,r.bars===0&&r.who&&(w>500||r.sr)||JSON.stringify([r.bars,r.who,r.sr]));
  // gestures
- const foeXY=async()=>ev(()=>{const e=document.querySelector('#bstage .unit.foe');const b=e.getBoundingClientRect();return {x:b.left+b.width/2,y:b.top+b.height/2,n:document.querySelectorAll('#bstage .unit.foe').length};});
+ const foeXY=async()=>ev(()=>{const e=document.querySelector('#bstage .unit.foe');const b=e.getBoundingClientRect();return {x:b.left+b.width*.25/* 0.22.27: the left quarter; in this made up scene a second boss sized foe covers the centre on the narrower phone stage */,y:b.top+b.height/2,n:document.querySelectorAll('#bstage .unit.foe').length};});
  const det=()=>ev(()=>({d:__A.B.uDet&&__A.B.uDet.ref,menu:__A.B.menu,mode:__A.B.mode,pend:!!__A.B.pend}));
  const close=()=>ev(()=>{if(__A.B.uDet)__A.ACT.uClose();});
  let p=await foeXY();

@@ -5,7 +5,7 @@
 const {open,chk,done}=require('./pw');
 (async()=>{
   const H=await open({w:430,h:800});const {ev,wait}=H;
-  await ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(i=>A.ACT.pickS(i));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;});await wait(300);
+  await ev(()=>{try{window.__R25.R25.off=true;}catch(e){}/* kits of 14; a worn personal relic adds a fifteenth skill (v209a, v210a) */const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(i=>A.ACT.pickS(i));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;});await wait(300);
   // ---- 1. Focus ----
   const f=await ev(()=>{const T=__A.TW.get,STS=T('STS'),FOCUS=T('FOCUS'),B0=T('B');
     T('startBattle')({stage:0,kind:'field'});const B=T('B'),a=B.front[0],e=B.en[0];e.S.eva=0;

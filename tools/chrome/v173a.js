@@ -8,7 +8,7 @@ const PRE=`localStorage.clear();localStorage.setItem('aurelis-meta-v1',JSON.stri
 const OUT=__dirname+'/out';
 (async()=>{
   const H0=await open({w:390,h:844,mobile:true,pre:PRE,out:OUT});
-  await H0.ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(i=>A.ACT.pickS(i));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;});await H0.wait(300);
+  await H0.ev(()=>{try{window.__R25.R25.off=true;}catch(e){}/* kits of 14; a worn personal relic adds a fifteenth skill (v209a, v210a) */const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(i=>A.ACT.pickS(i));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;});await H0.wait(300);
 
   // ================= 1. primers and detonators that read right =================
   let r=await H0.ev(()=>{const A=__A,T=A.TW.get,K=__K12,TPL=T('TPL'),CLS=T('CLS'),SK=K.SK12,o={n:0,big:[],miss:[],bad:[],rays:[],gens:[],badGen:[],words:[],swap:K.K12.swap,retag:K.K12.retag};

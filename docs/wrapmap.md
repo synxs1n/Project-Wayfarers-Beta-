@@ -2,7 +2,7 @@
 
 Who wraps what, in load order. `raw` is the `{const f0=fn;fn=function...}` idiom, `replace` a reassignment without calling the old body, the rest are HOOK registrations. "def" names the module that HOOK.def'd the function. Raw wraps on a def'd function should become registrations; functions with many raw wraps and no def are the candidates for one.
 
-483 functions wrapped; 581 raw wraps or replacements, 800 hook registrations.
+484 functions wrapped; 582 raw wraps or replacements, 800 hook registrations.
 
 | function | owner | def | layers | chain (load order) |
 |---|---|---|---|---|
@@ -444,6 +444,7 @@ Who wraps what, in load order. `raw` is the `{const f0=fn;fn=function...}` idiom
 | siteHasMini | sites.js |  | 1 | summon8.js:raw |
 | sk12Mult | skills12.js |  | 1 | legends17a.js:raw |
 | skillKnown | engine.js |  | 1 | relics25.js:raw |
+| slotsFor | battle.js |  | 1 | battle27.js:raw |
 | sncHall | sanctlook10.js | sanctlook10.js | 1 | worldart12.js:after |
 | sncYard | sanctlook10.js | sanctlook10.js | 1 | worldart12.js:wrap |
 | solidAt | worldgen.js |  | 1 | worldfx.js:raw |

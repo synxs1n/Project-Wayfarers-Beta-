@@ -5,14 +5,16 @@
 // Only the portrait ("tall") layout on a screen up to B27.maxVh px high changes; tablets, desktops and landscape keep the layout they had.
 //  1 the game's top bar is hidden in a battle (its sound, help and settings buttons move to the foot of the Party & foes sheet)
 //  2 the turn order shares one strip with Pause, Auto, Speed and the auto settings (they were a row of the command panel)
-//  3 the stage runs edge to edge and is drawn at B27.sc (2.5, was 2); it takes all the height the commands do not need
+//  3 the stage runs edge to edge and is drawn at B27.sc (2.25, was 2; at 2.5 three foes stand on each other and a tap picks the wrong one); it takes all the height the commands do not need
 //  4 Momentum, the last log line, the sky chips and the Log button float over the sky at the top of the stage
 //  5 Attack, Skills, Items and Guard are four large buttons (two by two); under them one slim row: Party & foes, Scan, Switch, Flee
 //  6 the party and foe cards are a sheet that slides over the commands (ACT.b27info): the cards as they were, plus Guide, sound, help, settings
-const B27={maxVh:900,sc:2.5,tallMax:300,grow:0,off:false};
+const B27={maxVh:900,sc:2.25,tallMax:300,grow:0,clear:71,off:(()=>{try{return localStorage.getItem('aurelis-b27off')==='1';}catch(e){return false;}})()};/* the stored flag is for the tests of the classic portrait layout */
 function b27On(mode){try{return !B27.off&&(mode||battleMode())==='tall'&&b3Vh()<=B27.maxVh;}catch(e){return false;}}
 // layoutBattle asks before it measures: marks the battle and returns the stage scale (0 = the layout's own)
-function b27Mark(bat,mode){try{const on=b27On(mode);bat.classList.toggle('m-tall',mode==='tall');bat.classList.toggle('b27',on);if(!on)bat.classList.remove('b27open');return on?B27.sc:0;}catch(e){return 0;}}
+function b27Mark(bat,mode){try{const on=b27On(mode);B27.live=on;bat.classList.toggle('m-tall',mode==='tall');bat.classList.toggle('b27',on);if(!on)bat.classList.remove('b27open');return on?B27.sc:0;}catch(e){return 0;}}
+// on a short stage the units stand a little lower, so the tags over the highest hero stay clear of the floating line (B27.clear logical px)
+{const s0=slotsFor;slotsFor=function(){const r=s0.apply(this,arguments);try{if(B27.live&&BL.mode==='tall'&&BL.H){const lo=Math.min(.62,B27.clear/BL.H);if(lo>.48)return r.map(([x,y])=>[x,+(lo+(y-.48)/.49*(.97-lo)).toFixed(4)]);}}catch(e){}return r;};}
 // the room under the stage: nothing is kept back for the party cards, the log line no longer sits under the stage
 {const p0=b8TallPlan;b8TallPlan=function(bat,room){if(!bat||!bat.classList.contains('b27'))return p0.apply(this,arguments);
   const pk=B8.peek,g=B8.tallGrow,mx=B8.tallMax;let add=0;try{const bl=document.getElementById('bline');add=(bl?bl.offsetHeight:40)+(parseFloat(getComputedStyle(bat).rowGap)||5);}catch(e){}
@@ -51,15 +53,16 @@ body:has(.battle.b3.b27) #hdr{display:none}
 .battle.b3.m-tall.b27 .order .autorow .btn small{display:block;font-size:.56rem;opacity:.8}
 .battle.b3.m-tall.b27 .cmd .autorow{display:none}
 .battle.b3.m-tall.b27 .bwrap{margin-left:-12px;margin-right:-12px;width:calc(100% + 24px);max-width:none}
-.battle.b3.m-tall.b27>.bline{grid-area:auto;position:absolute;left:-4px;right:-4px;top:var(--b27t,62px);z-index:6;min-height:36px;padding:0 0 0 3px;gap:4px;background:rgba(8,13,26,.72);border:1px solid rgba(217,180,106,.28);border-radius:8px;overflow:hidden}
-.battle.b3.m-tall.b27>.bline .osky{display:flex;flex:none;gap:2px}
+.battle.b3.m-tall.b27>.bline{grid-area:auto;position:absolute;left:-4px;right:-4px;top:var(--b27t,62px);z-index:6;min-height:40px;padding:0 0 0 3px;gap:4px;background:rgba(8,13,26,.88);border:1px solid rgba(217,180,106,.28);border-radius:8px;overflow:hidden}
+.battle.b3.m-tall.b27>.bline .osky{display:flex;flex:none;gap:2px;align-items:center}
 .battle.b3.m-tall.b27>.bline .osky .wchip .wxn{display:none}
 .battle.b3.m-tall.b27 .order{padding-top:2px;padding-bottom:2px;min-height:44px}
-.battle.b3.m-tall.b27>.bline .osky .wchip{min-width:26px;width:26px;height:34px;min-height:34px;padding:0;border:0;background:none}
+.battle.b3.m-tall.b27>.bline .osky .wchip{min-width:28px;width:28px;height:34px;min-height:34px;padding:0}
 .battle.b3.m-tall.b27>.bline .osky .wchip.d{width:auto;padding:0 4px;font-size:.62rem}
-.battle.b3.m-tall.b27>.bline .b4mo{min-width:66px;max-width:66px;min-height:34px;margin:0;padding:2px 4px}
-.battle.b3.m-tall.b27>.bline .b4mo .b4mt{font-size:.56rem}
-.battle.b3.m-tall.b27>.bline .blogbtn{min-height:36px;min-width:40px;padding:0 6px;font-size:.72rem;border-radius:0}
+.battle.b3.m-tall.b27>.bline .b4mo{min-height:40px;margin:0;min-width:74px;max-width:74px;padding:3px 5px}
+.battle.b3.m-tall.b27>.bline .b4mo .b4mt b{font-size:.5rem;letter-spacing:0}
+.battle.b3.m-tall.b27>.bline .blog p{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;font-size:.74rem;line-height:1.15}
+.battle.b3.m-tall.b27>.bline .blogbtn{min-height:40px;min-width:40px;padding:0 6px;font-size:.72rem;border-radius:0}
 .battle.b3.m-tall.b27>.bline .blogbtn.b27i{font-size:1rem;border-left:1px solid rgba(217,180,106,.28)}
 .battle.b3.m-tall.b27 .cmd .menu.prim{display:grid;grid-template-columns:1fr 1fr;gap:6px}
 .battle.b3.m-tall.b27 .cmd .menu.prim .mi{min-height:48px;font-size:1.06rem}
@@ -68,6 +71,7 @@ body:has(.battle.b3.b27) #hdr{display:none}
 .battle.b3.m-tall.b27 .cmd .menu.sec .mi.b27pf{order:-1;flex:1.7 1 118px;white-space:nowrap;border-color:#a48bff;background:linear-gradient(#34296a,#231c4b);color:#fff}
 .battle.b3.m-tall.b27 .cmd .menu.sec .mi[data-arg="guide"]{display:none}
 .battle.b3.m-tall.b27 .bbottom .pgroup,.battle.b3.m-tall.b27 .bbottom .b8fl,.battle.b3.m-tall.b27 .bbottom .b3pty{display:none}
+.battle.b3.m-tall.b27 .bban{top:54px}
 .battle.b3 .b27shade{display:none}
 .battle.b3.m-tall.b27.b27open .b27shade{display:block;position:fixed;inset:0;z-index:69;background:rgba(4,7,15,.55)}
 .battle.b3.m-tall.b27.b27open .bbottom .bparty{display:flex;flex-direction:column;gap:8px;position:fixed;left:0;right:0;bottom:0;max-height:78%;overflow-y:auto;overscroll-behavior:contain;z-index:70;box-sizing:border-box;background:#0f1930;border-top:2px solid #a48bff;border-radius:16px 16px 0 0;padding:10px 12px calc(12px + env(safe-area-inset-bottom,0px))}

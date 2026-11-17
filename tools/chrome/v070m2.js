@@ -4,7 +4,7 @@
 // tap targets, and a few seconds of auto battle against every foe role raise no page error.
 // Usage: PWHTML=../../out/aurelis3.html node v070m2.js
 const {open,chk,done}=require('./pw');const {AUTO_OK}=require('./v063lib');
-const PRE=`localStorage.clear();localStorage.setItem('aurelis-meta-v1',JSON.stringify({cfg:{speed:2,enc:'off',music:0,sfx:0,gfx:'medium',hints:false}}));`;
+const PRE=`localStorage.clear();localStorage.setItem('aurelis-b27off','1');/* 0.22.27: this test is about the classic portrait layout; the small phone layout has v211a */localStorage.setItem('aurelis-meta-v1',JSON.stringify({cfg:{speed:2,enc:'off',music:0,sfx:0,gfx:'medium',hints:false}}));`;
 let H;
 (async()=>{for(const [w,h] of [[390,844],[844,390],[933,705],[1280,720]]){const tag=w+'x'+h;
   H=await open({w,h,mobile:w<1000,pre:PRE});const {ev,wait}=H;

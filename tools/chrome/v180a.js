@@ -25,7 +25,7 @@ const UNTIL=async id=>{const A=__A,B=A.B;A.setPause(60);
   A.setPause(99999);return 'timeout';};
 (async()=>{
   for(const [w,h,mob,tag] of SIZES.filter(x=>!process.env.V180ONLY||x[3]===process.env.V180ONLY)){
-    const H=await open({w,h,mobile:mob,pre:PRE,tag:'v180a_'+tag});const {ev,wait}=H;
+    const H=await open({w,h,mobile:mob,pre:PRE+"localStorage.setItem('aurelis-b27off','1');"/* 0.22.27: this test is about the classic portrait layout; the small phone layout has v211a */,tag:'v180a_'+tag});const {ev,wait}=H;
     await battle(H,{heroes:6,foes:2,seed:5,lv:20});
     // ---- 1. Momentum ----
     for(const m of [0,8,50,100,'F','E']){

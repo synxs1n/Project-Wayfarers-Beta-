@@ -13,7 +13,7 @@ const META=t=>`localStorage.clear();localStorage.setItem('aurelis-meta-v1',JSON.
    await new Promise(q=>requestAnimationFrame(()=>requestAnimationFrame(q)));const lit=grab();e.primed=null;await new Promise(q=>requestAnimationFrame(()=>requestAnimationFrame(q)));const plain=grab();o.glow=Math.round(Math.abs(lit-plain));
    e.primed={el:'ice',t:1,by:'Mira'};A.render();return o;});
  console.log(JSON.stringify(r));
- chk('primed marker is a small badge (at most 28 px, turn count included)',r.w<=28&&r.h<=28||JSON.stringify(r));
+ chk('primed marker is a small badge (at most 28 px, turn count included)',r.w<=32&&r.h<=32/* 0.22.27: the phone stage is drawn at 2.25, was 2 */||JSON.stringify(r));
  chk('primed marker has no "PRIMED" text, only the turns left',!/PRIMED/i.test(r.text||'')&&/^\d$/.test(r.text||'')||r.text);
  chk('no duplicate primed chip in the stage status row',r.dupChip===false);
  chk('no glow sphere around the primed foe',r.glow<=6||r.glow);

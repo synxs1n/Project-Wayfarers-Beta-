@@ -16,7 +16,7 @@ const fs=require('fs');
 const args=process.argv.slice(2),si=args.indexOf('shots'),SHOTS=si>=0?args[si+1]:null,MEASURE=args.includes('measure');
 if(SHOTS)fs.mkdirSync(SHOTS,{recursive:true});
 // Medium with the 2D world: the Gilded Night look (Low is the Flat look, where ui3.css and hud13.css do not apply) without the GL stage
-const PRE=`localStorage.clear();localStorage.setItem('aurelis-meta-v1',JSON.stringify({cfg:{speed:1,enc:'off',music:0,sfx:0,gfx:'medium',hd2d:false,hints:false,timedHits:false}}));`;
+const PRE=`localStorage.clear();localStorage.setItem('aurelis-b27off','1');/* 0.22.27: this test is about the classic portrait layout; the small phone layout has v211a */localStorage.setItem('aurelis-meta-v1',JSON.stringify({cfg:{speed:1,enc:'off',music:0,sfx:0,gfx:'medium',hd2d:false,hints:false,timedHits:false}}));`;
 const SIZES=[[1000,560,false,'wide'],[1366,768,false,'desk'],[390,844,true,'port'],[844,390,true,'land']];
 const REALMS=['thistle','deeps'];// meadow (the navy moves toward teal), cave (toward violet)
 // plate heights on the v0.19.6 build (px), per size tag: an element may be at most 2 px taller than this

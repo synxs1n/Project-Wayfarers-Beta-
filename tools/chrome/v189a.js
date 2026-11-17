@@ -25,7 +25,7 @@ const UNTIL=async id=>{const A=__A,B=A.B;A.setPause(60);
 (async()=>{
 // ---------- 5. learn levels ----------
 {const H=await open({w:390,h:844,pre:PRE});const {ev}=H;
- const r=await ev(()=>{const A=__A,g=A.TW.get,TPL=g('TPL'),CLS=g('CLS'),M=__M14,bad=[],sets={};let n=0;
+ const r=await ev(()=>{try{window.__R25.R25.off=true;}catch(e){}/* kits of 14; a worn personal relic adds a fifteenth skill (v209a, v210a) */const A=__A,g=A.TW.get,TPL=g('TPL'),CLS=g('CLS'),M=__M14,bad=[],sets={};let n=0;
   Object.keys(TPL).forEach(id=>{const t=TPL[id];if(t.mon||!CLS[t.cls])return;n++;const k=g('classSkills')(t).slice().sort((a,b)=>a.lv-b.lv||a.lv12-b.lv12),L=k.map(s=>s.lv),p=M.check(L).slice();
    if(L.filter(x=>x<=10).length!==3)p.push('at 10: '+L.filter(x=>x<=10).length);
    const cnt={};L.forEach(x=>cnt[x]=(cnt[x]||0)+1);if(Object.keys(cnt).some(x=>cnt[x]>2||(cnt[x]>1&&+x!==1)))p.push('several at once');
