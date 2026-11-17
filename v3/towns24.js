@@ -116,7 +116,7 @@ HOOK.wrap('townGen','towns24','the new town plans (in view at pitch 40, a clear 
   }catch(e){T24.err=String(e&&e.message||e);}
   T24.n.fallback++;return next(Z,s,R);});
 // ---------- a gate in the north or south wall: a lane along the wall to the avenue ----------
-const T24_KEEP='SLuvWqCKcmO';
+const T24_KEEP='SyLuvWqCKcmO';// y: world16's gate post
 function t24GateLane(m){if(!m||m.kind!=='town'||!m.t||!m.gates||!/^n_/.test(m.arch||''))return 0;const g=m.t,H=g.length,W=g[0].length,road=m.road;let n=0;
   const ax=(()=>{for(const x of [W>>1,W-1-(W>>1)]){let ok=0;for(let y=3;y<H-3;y++)if(g[y][x]==='='||g[y][x]===':'||g[y][x]==='B')ok++;if(ok>=H-8)return x;}return null;})();if(ax==null)return 0;
   Object.values(m.gates).forEach(q=>{if(!q||!q.arrive||(q.side!=='n'&&q.side!=='s'))return;const [gx,gy]=q.arrive;if(gx===ax)return;const d=gx<ax?1:-1;
@@ -124,17 +124,19 @@ function t24GateLane(m){if(!m||m.kind!=='town'||!m.t||!m.gates||!/^n_/.test(m.ar
     // a gate post, a lamp, the sign or a banner on the row stays: the lane steps one row into town round it
     const inn=q.side==='n'?1:-1,put=(x,y)=>{const c=(g[y]||[])[x];if(c==null||c==='='||c===':'||c==='B'||'HZY#'.includes(c)||T24_KEEP.includes(c))return;g[y][x]=c==='~'?'B':'=';n++;};
     for(let x=gx;x!==ax+d;x+=d){const c=g[gy][x];if(T24_KEEP.includes(c)){put(x-1,gy+inn);put(x,gy+inn);put(x+1,gy+inn);}else put(x,gy);}
-    for(let y=Math.min(gy,road);y<=Math.max(gy,road);y++){const c=g[y][ax];if(c!=='='&&c!==':'&&c!=='B'&&c!=='H')g[y][ax]=c==='~'?'B':'=';}});
+    for(let y=Math.min(gy,road);y<=Math.max(gy,road);y++){const c=g[y][ax];if(c!=='='&&c!==':'&&c!=='B'&&c!=='H'&&!T24_KEEP.includes(c))g[y][ax]=c==='~'?'B':'=';}});/* a post on the avenue's first tile stays (the second pass paved over it) */
   if(n){m.tl=null;T24.n.lane+=n;
     // nobody stands on the new lane: a villager on it steps to the nearest open ground
     (m.npcs||[]).forEach(q=>{const c=(g[q.y]||[])[q.x];if(c!=='='&&c!=='B')return;for(let d=1;d<6;d++)for(const [a,b] of [[0,-d],[0,d],[-d,0],[d,0],[-d,-d],[d,-d],[-d,d],[d,d]]){const x=q.x+a,y=q.y+b,t=(g[y]||[])[x];
       if((t==='.'||t===','||t===':')&&!m.npcs.some(o=>o!==q&&o.x===x&&o.y===y)&&!m.bld.some(bb=>bb.door&&bb.door[0]===x&&Math.abs(bb.door[1]+1-y)<=1)){q.x=x;q.y=y;if(q.hx!=null){q.hx=x;q.hy=y;}return;}}});}
   return n;}
+// v0.22.22: registered in a microtask, so it runs after the passes that register that way (townexit, worldart12's exit apron, world14,
+// world16's gate posts). 0.22.21 ran it straight after getMap: the apron pass then turned the first tiles of the lane back into ground (a
+// gate with no road), and where the lane took the only open tile beside a gate, world16 found no place for the gate's post (v190a).
+// Twice: straight after getMap, so world16 finds the lane when it stands a post beside the gate (without it two lakeside gates in 1500 towns
+// got no post, v190a), and again last, because the exit apron pass clears the lane's first tiles. The second pass leaves the post alone (T24_KEEP).
 HOOK.wrap('getMap','towns24','a gate in the north or south wall gets a lane to the avenue',function(next,...a){const id=a[0],fresh=typeof id==='string'&&id[0]==='t'&&!MAPS[id];const m=next(...a);
   try{if(fresh&&m&&m.kind==='town')t24GateLane(m);}catch(e){T24.err=String(e&&e.message||e);}return m;});
-// v0.22.22: and once more after the passes that register in a microtask (townexit, worldart12's exit apron, world14, world16's gate posts):
-// the apron pass turned the first tiles of the lane back into ground, so a gate away from the avenue lost its road (0.22.21). The lane is
-// idempotent: it only lays what is missing.
 queueMicrotask(()=>{try{HOOK.wrap('getMap','towns24','the gate lane again, after the exit and gate post passes',function(next,...a){const id=a[0],fresh=typeof id==='string'&&id[0]==='t'&&!MAPS[id];const m=next(...a);
   try{if(fresh&&m&&m.kind==='town')t24GateLane(m);}catch(e){T24.err=String(e&&e.message||e);}return m;});}catch(e){}});
 // a hero saved inside what is now a building or a prop (the towns were rebuilt) stands at the town's entry instead

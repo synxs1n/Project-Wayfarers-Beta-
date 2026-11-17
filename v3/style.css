@@ -326,7 +326,9 @@ button.mini>img{width:68px;height:68px}
 .mi .n em.b,.bondtag{font-style:normal;font-size:.68rem;background:var(--ink);padding:0 4px;color:#7affd0}
 /* menus */
 .attrs{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:6px}
-.arow{display:grid;grid-template-columns:1fr auto 28px auto;align-items:center;gap:6px;padding:4px 8px;background:rgba(0,0,0,.28);border:2px solid var(--ink)}
+/* v0.22.22: the name column may shrink (minmax(0,1fr)); with 2 points a level the numbers are wider and the + button was pushed 2 px out of a narrow phone's sheet */
+.arow>*{min-width:0}.arow .stb{overflow:hidden}
+.arow{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(22px,auto) auto;align-items:center;gap:6px;padding:4px 8px;background:rgba(0,0,0,.28);border:2px solid var(--ink)}
 .arow .btn{padding:2px 9px 0}
 .pts{font-style:normal;font-size:.72rem;background:#2f4a2a;border:2px solid var(--ink);color:#a8ffb8;padding:0 5px;margin-left:4px;letter-spacing:0;text-transform:none}
 .mats{display:flex;flex-wrap:wrap;gap:6px}
