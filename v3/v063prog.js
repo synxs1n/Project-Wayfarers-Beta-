@@ -109,7 +109,7 @@ HOOK.before('vModal','v063prog','camp and bonds popups',function(m){if(m&&m.type
   });
 // the Party tab gets Bonds and Make camp next to Best party
 HOOK.xform('vSwap','v063prog','Bonds and Make camp on the Party tab',function(h){try{if(G&&!G.daily){const c=campBuffNow();
-    const add=`<button class="btn sm" data-act="bondsOpen">Bonds</button>${campOpen()?`<button class="btn sm" data-act="campOpen">Make camp</button>`:''}`;
+    const add=`${/* v0.22.24: no Bonds button here: Bonds is a tab of the Party group one row above (it was listed twice) */''}${campOpen()?`<button class="btn sm" data-act="campOpen">Make camp</button>`:''}`;
     const k=h.indexOf('data-act="fsOpen"');const e=k<0?-1:h.indexOf('</button>',k);
     h=e<0?`<div class="btnrow ptools">${add}</div>`+h:h.slice(0,e+9)+add+h.slice(e+9);
     if(c)h=h.replace(/(<div class="btnrow ptools">[\s\S]*?<\/div>)/,`$1<p class="note campnow">Camp boon: ${esc(campBuffText())}.</p>`);}}catch(x){}return h;});

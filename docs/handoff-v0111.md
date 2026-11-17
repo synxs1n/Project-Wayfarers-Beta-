@@ -735,3 +735,10 @@ Owner: "do a sweep of the game and look for any changes that could be useful". D
 - hd2d.js `hdRoofTone` caches its result per sprite canvas (`HD_TONE`): it read pixels back on every town bake (Chrome's "multiple readback" warning).
 - Known-failing tests looked at: v071a was stale, not a bug (it changed quest states inside an open board, which keeps its rows where they are since fix18's `nbKeep`); it opens a fresh board now and passes. v166a crashes in the test itself (a skill it names is gone). v177a is a shadow darkness threshold. Not reached: v050p1b, v050p1c, v050p1d, v051c, nature.
 
+## 0.22.24: menu tidy-ups (the last minutes of the sweep)
+From phone captures of the Menu, the battle screen and a field:
+- style.css `#toast`: `width:max-content;max-width:min(92vw,520px)`. It hangs from `left:50%`, so shrink-to-fit gave it at most half the screen and a long toast stood nine lines tall over an open menu.
+- v063prog.js: the Party tab's tool row no longer adds a Bonds button (Bonds is a tab of the Party group since menus9.js); Make camp stays.
+- equip.js: the Backpack > Equipment note is one line.
+- Seen and NOT done (no time): on a 390 x 844 screen the party cards under the battle commands are cut by a few pixels at the bottom edge; worth a look with the battle layout tests (v076b, v080b). Sprites, animations and fields were looked at only in the captures: nothing wrong stood out, nothing changed.
+

@@ -4,6 +4,7 @@
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.22.24',['Small tidy-ups. Pop-up notes at the bottom of the screen are wider, so a long one is two or three lines instead of a tall column over the middle of a menu. The Party tab no longer shows Bonds twice (it is a tab of its own). The note at the top of Backpack > Equipment is one line.']],
  ['Beta v0.22.23',['Towns load a little faster on a second visit: each building\'s roof colour is worked out once instead of every time the town is drawn.']],
  ['Beta v0.22.22',['Guardians no longer carry their name above their head on the map; the name is on the popup when you walk up to them.',
   'Fixed: after beating a Sanctum guardian you can walk straight up to the chest behind it. The rune circle it stood on stayed solid, so the chest could only be reached from the side.',

@@ -1069,3 +1069,8 @@ html[data-dz].dzlock.mopen .modal{overflow:auto}
 .pad .joy,.pad .abtn{position:relative;z-index:2}
 .world.land .pad{z-index:2}
 .wview>#wloc,.wview>#wdlg,.wview>.mmap{z-index:30}
+
+/* v0.22.24: a toast is as wide as its text up to 92% of the screen. It hung from the centre line, so it could only be half the screen wide and a
+   long message stood nine lines tall over the middle of an open menu. */
+#toast{width:max-content;max-width:min(92vw,520px);box-sizing:border-box}
+html[data-dz] #toast{max-width:min(calc(var(--lvw) * 92),520px)}
