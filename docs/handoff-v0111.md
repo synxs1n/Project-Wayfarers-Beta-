@@ -726,3 +726,12 @@ Owner notes on 0.22.21 (one message), all done:
 - Also 0.22.22, found by v207a failing one run in three: `t24GateLane` ran before the microtask passes (worldart12's exit apron and others), which turned the first tiles of the lane back into ground, so a north or south gate away from the avenue had no road in 0.22.21. It now runs a second time from a microtask-registered getMap wrap (outermost) and steps one row into town round a gate post, lamp, sign or banner (`T24_KEEP`).
 - The lane's last form (0.22.22): two passes (straight after getMap, so world16 finds a lane to stand its post beside; and from a microtask wrap, after the exit apron pass), and both leave `T24_KEEP` tiles alone, on the lane row and on the avenue column (the post, 'S', can stand on the avenue's first tile). v190a's gate post audit (756 gates, 1500 more towns) and v207a pass.
 - Sheet: `.arow` (style.css) lets the name column shrink (`minmax(0,1fr)`); with 2 points a level the wider numbers pushed the + button 2 px out of a 390 px sheet in about one run in three (v157a). The step switch reads "+1 a tap" / "+5 a tap" and wraps.
+
+## 0.22.23: a sweep
+Owner: "do a sweep of the game and look for any changes that could be useful". Done in the time there was:
+- The signed-shift hash bug (towns21's roofless houses, towns22's first build): searched every `>>` applied to a hash before a `%` in v3; no other case.
+- Smoke sweep (a script in the session, not kept): every map kind over five stages (t, f, d, o, k, the Breach, the Archive, the Sanctum hall), every Menu tab, every shop tab, the board tabs, travel, every hero sheet, a wild battle start: no page error, no console error, no "undefined" / "NaN" in any text, no module error field set.
+- Player-facing text checked for leftovers of this week's changes (charms at Alchemy, stat points every two levels, the old boot stats): none left.
+- hd2d.js `hdRoofTone` caches its result per sprite canvas (`HD_TONE`): it read pixels back on every town bake (Chrome's "multiple readback" warning).
+- Known-failing tests looked at: v071a was stale, not a bug (it changed quest states inside an open board, which keeps its rows where they are since fix18's `nbKeep`); it opens a fresh board now and passes. v166a crashes in the test itself (a skill it names is gone). v177a is a shadow darkness threshold. Not reached: v050p1b, v050p1c, v050p1d, v051c, nature.
+

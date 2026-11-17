@@ -4,6 +4,7 @@
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.22.23',['Towns load a little faster on a second visit: each building\'s roof colour is worked out once instead of every time the town is drawn.']],
  ['Beta v0.22.22',['Guardians no longer carry their name above their head on the map; the name is on the popup when you walk up to them.',
   'Fixed: after beating a Sanctum guardian you can walk straight up to the chest behind it. The rune circle it stood on stayed solid, so the chest could only be reached from the side.',
   'Every item can now be found. Smelling Salts and Holy Water turn up in chests and as battle drops (a Phoenix Feather too, rarely); the Sage Brew and Vigor Tonic in chests from the second realm, Camp Supplies from the third, an Elixir from the fourth.',

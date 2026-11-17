@@ -26,7 +26,7 @@ chk('Rearguard hero (same level) gains the same XP as the Vanguard',rx.mira>0&&r
 // quest ordering on the board: ready, active, open, done
 const qo=await ev(()=>{const A=__A,G=A.G;A.V.modal={type:'board',sec:'all'};A.render();const Q=G.quests.filter(q=>q.stage<=G.stage);
   if(Q.length<3)return {few:Q.length};Q[Q.length-1].state='active';Q[Q.length-2].state='active';const rq=Q[Q.length-2];rq.type='hunt';rq.n=1;rq.have=1;
-  A.render();const rows=[...document.querySelectorAll('#modal .row')].map(r=>r.querySelector('[data-act="qClaim"]')?'R':/Active/.test(r.textContent)&&!r.querySelector('[data-act="qAccept"]')?'A':r.querySelector('[data-act="qAccept"]')?'O':'D');
+  A.V.modal={type:'board',tab:'quests',sec:'all'};/* a fresh window: an open one keeps its rows where they are while you act (fix18 nbKeep) */A.render();const rows=[...document.querySelectorAll('#modal .row')].map(r=>r.querySelector('[data-act="qClaim"]')?'R':/Active/.test(r.textContent)&&!r.querySelector('[data-act="qAccept"]')?'A':r.querySelector('[data-act="qAccept"]')?'O':'D');
   A.V.modal=null;return {rows:rows.join('')};});
 chk('quest board: claimable first, then active, then open',/^R+A+O*D*$/.test(qo.rows||'')||JSON.stringify(qo));
 // Auto and Run remembered across a reload

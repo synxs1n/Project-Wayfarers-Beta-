@@ -182,7 +182,9 @@ hdBldKind=HOOK.def('hdBldKind',hdBldKind);
 // the textured one: both slopes over the wall rectangle, a hair lower, in the roof's own colour (the mean of the sprite's eave rows), and the
 // back wall. Where the sprite is opaque nothing changes; where it is cut away the building is still roofed. A hook, so a family can
 // colour it.
-function hdRoofTone(cv,sx,sy,sw,sh){try{const k=(cv._rw||cv.width)/cv.width,y0=Math.max(0,Math.round((sy+sh*.6)*k)),h=Math.max(1,Math.round(sh*.4*k)),x0=Math.max(0,Math.round(sx*k)),w=Math.max(1,Math.round(sw*k));
+const HD_TONE=new WeakMap();// v0.22.23: one read per sprite (the tone was read back from the canvas on every bake of the town)
+function hdRoofTone(cv,sx,sy,sw,sh){const hit=HD_TONE.get(cv);if(hit!==undefined)return hit;const t=hdRoofTone0(cv,sx,sy,sw,sh);try{HD_TONE.set(cv,t);}catch(e){}return t;}
+function hdRoofTone0(cv,sx,sy,sw,sh){try{const k=(cv._rw||cv.width)/cv.width,y0=Math.max(0,Math.round((sy+sh*.6)*k)),h=Math.max(1,Math.round(sh*.4*k)),x0=Math.max(0,Math.round(sx*k)),w=Math.max(1,Math.round(sw*k));
   const d=cv.getContext('2d').getImageData(x0,y0,w,h).data;let r=0,g=0,bl=0,n=0;for(let i=0;i<d.length;i+=4){if(d[i+3]<200)continue;const L=d[i]+d[i+1]+d[i+2];if(L<90)continue;/* not the outline */r+=d[i];g+=d[i+1];bl+=d[i+2];n++;}
   return n>8?[r/n,g/n,bl/n]:null;}catch(e){return null;}}
 function hdRoofUnder(bt,m,b,cv,o){const c=hdRoofTone(cv,o.sx,o.sy,o.sw,o.sh)||[110,96,90],e=.5*o.V,nf=Math.hypot(o.zf-o.zm,o.yr-o.ys)||1,
