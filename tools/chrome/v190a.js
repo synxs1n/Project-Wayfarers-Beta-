@@ -154,7 +154,7 @@ if(want('4')){
     o.more={towns:0,nogate:[],bad:0,iss:0};for(let k=84;k<384;k++){G.dunRev=k%4?3:2;G.run.seed=1000+k*7919+(k*k*13)%997;for(let s=0;s<5;s++)G.run.order[s]=pick(k,s);A.resetMaps();if(k%20===0)await new Promise(r=>setTimeout(r,0));
       for(let s=0;s<5;s++){const m=A.getMap('t'+s);o.more.towns++;o.more.iss+=A.mapIssues(m).length;paOf(m,s);(s?['prev','next']:['next']).forEach(g=>{const to=g==='prev'?'f'+(s-1):'f'+s;if(!m.gates[g]||m.exits.filter(e=>e.to&&e.to.m===to).length<3)o.more.nogate.push([k,s,g,m.arch]);});
         o.more.bad+=__W16.api.signAudit(m).filter(a=>!a.ok).length;}}
-    G.dunRev=3;return Object.assign(o,{merr:__W16.err.slice(),n:Object.assign({},__W16.n),layouts:Object.keys(T('T14').arch).length,realms:zones.length});});
+    G.dunRev=3;return Object.assign(o,{merr:__W16.err.slice(),n:Object.assign({},__W16.n),layouts:(()=>{try{return Object.keys(window.__T24.TA24).length;}catch(e){return Object.keys(T('T14').arch).length;}})()/* 0.22.21: the plans are towns24's (arch n_...) */,realms:zones.length});});
   console.log(`  ${S.towns} towns (${S.rev[3]} of new journeys, ${S.rev[2]} of old ones), ${S.gates} gates: ${S.ok} posts beside the lane, ${S.far} farther along the way in (${Object.keys(S.post).map(k=>k+' '+S.post[k]).join(', ')}); ${S.placed} posts set by this pass`);
   console.log('  gates by side: '+Object.keys(S.side).sort().map(k=>k+' '+S.side[k]).join(', '));
   chk(`4 every layout (${Object.keys(S.arch).length} of ${S.layouts}) and every realm (${Object.keys(S.realm).length} of ${S.realms}) was built`,Object.keys(S.arch).length===S.layouts&&Object.keys(S.realm).length===S.realms||JSON.stringify(S.arch));

@@ -708,6 +708,9 @@ Owner on 0.22.20: "higher town angle is awkward, go back to old angle and ensure
 - Old saves: towns are rebuilt on load; `enterWorldFromSave` is wrapped so a hero saved on a tile that is now solid stands at the town's entry.
 - hd2d.js `hdBakeBuildings` now packs one sprite per building (m.bsp holds each twice, once per painted frame; both went into the atlas).
 - Capture note: at `HD2D.zoom` under about .5 the roof x-ray circle round the hero covers much of the screen and the textured roofs dither away while `hdRoofUnder`'s slab does not (dark flat roofs in a capture). At zoom 1 the x-ray shows the hero through both. Stand the hero south of every building for a whole-town capture.
+- Unique towns: nine plans x mirror = 18, for 20 realms; the two doubles (the Ashen ring, the Moors bricks) take the plan's `alt` variant (ring: a wider flatter arc and three buildings south; bricks: the other bond). v183a's layout fingerprint (0.2 between every two realm towns) passes: min 0.202 inside 30 journeys; only base zone against realm pairs are closer, and those never share a journey.
+- Cost: the towns are up to twice the area of the old ones, and the HD-2D town bake measured 117 ms against 56 ms in v183a (limit raised to 2.6 x + 25). Frame cost is unchanged. If a phone hitches on entering a town, the big ones are bricks (58 x 40) and crescent (68 x 36).
+- Tests changed to follow: v183a (plan names n_..., bake limit, unknown realms), v190a (counts towns24's plans), v071wb unchanged (it sets `T14.off`, which towns24 honours).
 - Not done: "what they look like" beyond footprints (the 20 building families are the towns14 art), a landmark per town, per-plan terrain dressing beyond ponds, piers, park trees and ledges. He liked the roofs.
 - Test `tools/chrome/v207a.js` (group world; rewritten for towns24). Next free test name: v208a.
 

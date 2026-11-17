@@ -57,7 +57,8 @@ TA24.crescent=(R,th,o)=>{const W=68,H=36,r=24,cx=34,T=t14T(W,H,r,th);t24Edge(T,t
   slots.push({x:cx-24,y:r+8,w:5,p:7},{x:cx-12,y:r+8,w:5,p:8},{x:cx+12,y:r+8,w:5,p:9},{x:cx+24,y:r+8,w:5,p:10});
   if(o.pond){t14Ell(T,cx-7,r-7,4,2,'~',[',']);t14Ell(T,cx+7,r-7,4,2,'~',[',']);}t14Put(T,[[cx-14,r-2],[cx+14,r-2]],'L');T.slots=slots;return T;};
 TA24.bricks=(R,th,o)=>{const W=58,H=40,r=33,cx=29,T=t14T(W,H,r,th);t24Edge(T,th,o.wall);t24Avenue(T,cx);t24Plaza(T,cx,r,6,2);
-  const rows=[7,17,27],slots=[];rows.forEach((y,j)=>{const sh=j%2?5:0;[7,18,cx+11,cx+22].forEach((x,i)=>{const xx=x+(i<2?sh:-sh);slots.push({x:xx,y,w:i===1&&j===0?8:7,h:j===0?5:4,p:(2-j)*4+Math.abs(xx-cx)/10});});});
+  const rows=[7,17,27],slots=[];// o.alt: the other bond (the first and third terrace shifted instead of the second, three houses on the middle one)
+  rows.forEach((y,j)=>{const sh=(o.alt?j%2===0:j%2)?5:0;[7,18,cx+11,cx+22].forEach((x,i)=>{if(o.alt&&j===1&&i===3)return;const xx=x+(i<2?sh:-sh);slots.push({x:xx,y,w:i===1&&j===0?8:7,h:j===0?5:4,p:(2-j)*4+Math.abs(xx-cx)/10});});});
   // a low ledge under each terrace: a line of the frame's material with a stair where the avenue and each link come through
   if(o.ledge)rows.slice(0,2).forEach(y=>{for(let x=3;x<W-3;x++)if(x%6===0&&T.get(x,y+3)==='.')T.put(x,y+3,'f');});
   T.slots=slots;return T;};
@@ -79,8 +80,9 @@ TA24.steps=(R,th,o)=>{const W=60,H=38,r=18,cx=30,T=t14T(W,H,r,th);t24Edge(T,th,o
 TA24.ring=(R,th,o)=>{const W=54,H=36,r=20,cx=27,T=t14T(W,H,r,th);t24Edge(T,th,o.wall);t24Avenue(T,cx);t14Ell(T,cx,r,8,6,':',['.']);T.rect(cx-9,r,19,1,'=');for(let y=r-6;y<=r+6;y++)T.put(cx,y,'=');
   T.put(cx-3,r-3,'W');T.put(cx+3,r-3,'q');if(o.pond)T.rect(cx-5,r+2,2,2,'O');
   const P=(deg,rx,ry)=>[cx+Math.round(rx*Math.cos(deg*Math.PI/180)),r+Math.round(ry*Math.sin(deg*Math.PI/180))],slots=[];
-  [[208,22,12,7,3],[243,19,14,8,0],[297,19,14,7,1],[332,22,12,7,2]].forEach(([d,rx,ry,w,p])=>{const [x,y]=P(d,rx,ry);slots.push({x,y,w,p});});
-  [[150,21,11,6,4],[30,21,11,6,5],[120,15,13,6,6],[60,15,13,6,7]].forEach(([d,rx,ry,w,p])=>{const [x,y]=P(d,rx,ry);slots.push({x,y,w,p});});
+  // o.alt: the same oval turned: a wider, flatter north arc and three buildings south of the plaza instead of four
+  (o.alt?[[196,22,12,7,3],[232,20,15,8,0],[308,20,15,7,1],[344,22,12,7,2]]:[[208,22,12,7,3],[243,19,14,8,0],[297,19,14,7,1],[332,22,12,7,2]]).forEach(([d,rx,ry,w,p])=>{const [x,y]=P(d,rx,ry);slots.push({x,y,w,p});});
+  (o.alt?[[138,22,13,6,4],[42,22,13,6,5],[108,12,13,6,6]]:[[150,21,11,6,4],[30,21,11,6,5],[120,15,13,6,6],[60,15,13,6,7]]).forEach(([d,rx,ry,w,p])=>{const [x,y]=P(d,rx,ry);slots.push({x,y,w,p});});
   T.slots=slots;return T;};
 TA24.court=(R,th,o)=>{const W=50,H=40,r=33,cx=25,T=t14T(W,H,r,th);t24Edge(T,th,1);t24Avenue(T,cx);T.rect(cx-7,9,15,21,':');for(let y=9;y<r;y++)T.put(cx,y,'=');
   T.put(cx-3,20,'W');T.put(cx+3,20,'q');if(o.pond)T.rect(cx-5,24,2,2,'O');
@@ -102,9 +104,9 @@ function t24Make(arch,R,v,th,o){const T=TA24[arch](R,th,o||{}),W=T.W,cx=T.slots?
 // [plan, mirrored, options]
 const T24_TAB={thistle:['crescent',0,{pond:1}],orchard:['street',0,{}],strand:['lakeside',0,{}],mire:['ring',0,{pond:1}],deeps:['court',0,{}],grotto:['steps',0,{}],
   tundra:['court',1,{pond:1}],glacier:['bricks',0,{ledge:1}],peaks:['steps',1,{}],mesa:['cross',0,{wall:1}],lakes:['twin',0,{}],mines:['bricks',1,{}],
-  ashglass:['street',1,{wall:1}],moors:['bricks',0,{ledge:1}],bamboo:['ring',1,{}],bone:['cross',1,{}],
-  ashen:['ring',0,{}],drowned:['lakeside',1,{}],starless:['crescent',1,{}],shattered:['twin',1,{}],
-  base0:['cross',0,{}],base1:['lakeside',1,{}],base2:['court',0,{}],base3:['bricks',0,{}],base4:['steps',0,{}],base5:['ring',1,{}]};
+  ashglass:['street',1,{wall:1}],moors:['bricks',0,{ledge:1,alt:1}],bamboo:['ring',1,{}],bone:['cross',1,{}],
+  ashen:['ring',0,{alt:1}],drowned:['lakeside',1,{}],starless:['crescent',1,{}],shattered:['twin',1,{}],
+  base0:['cross',0,{}],base1:['lakeside',1,{}],base2:['court',0,{}],base3:['bricks',1,{alt:1}],base4:['steps',0,{}],base5:['ring',1,{alt:1}]};
 const T24_BY_TH={meadow:'crescent',coast:'lakeside',cave:'court',snow:'bricks',heights:'steps',void:'ring'};
 function t24Assign(Z){const k=typeof t14Key==='function'?t14Key(Z):Z.key,r=T24_TAB[k];if(r)return {arch:r[0],v:r[1],o:r[2]};return {arch:T24_BY_TH[Z.theme0||Z.theme]||'cross',v:0,o:{}};}
 HOOK.wrap('townGen','towns24','the new town plans (in view at pitch 40, a clear road to every edge); the towns14 plan is the fallback',function(next,Z,s,R){
