@@ -1,6 +1,6 @@
 // towns22.js (v0.22.16): props that mark a building's role.
 //  1 every prop kind paints (a canvas with pixels) in four themes, and the kinds differ from each other
-//  2 over the towns of a journey: every town gets props, the tavern, smithy and inn each get their own first prop where there is room,
+//  2 over the towns of a journey (the realms are drawn at random: a lake town has room for a few, a market town for sixteen): every town gets props, the tavern, smithy and inn each get their own first prop where there is room,
 //    each prop stands on plain ground at its building (the front row, a corner, a side, or one step out), never on a door apron, an NPC or a road; the map has no new issue
 //  3 nothing is lost: the reach with the props is the reach without them minus the prop tiles; the same town twice gives the same props
 //  4 both renderers draw them: the 2D row of a prop differs from the crate it replaces, HD-2D bakes the town without an error
@@ -26,7 +26,7 @@ const META=`localStorage.clear();localStorage.setItem('aurelis-meta-v1',JSON.str
       let iss=-1;try{iss=A.TW.get('mapIssues')(m).length;}catch(e){}out.push({t:i,sty:m.sty,n:m.rp.n,miss,iss});if(iss>0)bad.push('t'+i+' issues '+iss);}
     return {out,bad,err:T.err||null};});
   const missAll=b.out.reduce((s,o)=>s+o.miss.length,0);
-  chk(`2 five towns: ${b.out.map(o=>o.sty+' '+o.n).join(', ')} props; ${missAll} signature props without room`,(b.out.length===5&&b.out.every(o=>o.n>=3)&&b.out.reduce((s,o)=>s+o.n,0)>=30&&!b.bad.length&&!b.err&&missAll<=8)||JSON.stringify(b));
+  chk(`2 five towns: ${b.out.map(o=>o.sty+' '+o.n).join(', ')} props; ${missAll} signature props without room`,(b.out.length===5&&b.out.every(o=>o.n>=1)&&b.out.reduce((s,o)=>s+o.n,0)>=25&&!b.bad.length&&!b.err&&missAll<=8)||JSON.stringify(b));
   const c=await ev(()=>{const A=__A,T=window.__T22.T22,g=A.TW.get,reach=m=>{const R=g('healReach')(m,A.mapEntry(m),true,true);let n=0;R.forEach(r=>r.forEach(v=>{if(v)n++;}));return n;},out=[];
     for(let i=0;i<5;i++){T.off=false;A.resetMaps();const m1=A.getMap('t'+i),r1=reach(m1),k1=JSON.stringify(m1.rp&&m1.rp.at),n=m1.rp?m1.rp.n:0;A.resetMaps();const k2=JSON.stringify(A.getMap('t'+i).rp.at);
       T.off=true;A.resetMaps();const m0=A.getMap('t'+i),r0=reach(m0);T.off=false;out.push({t:i,r0,r1,n,same:k1===k2,off:!m0.rp});}A.resetMaps();return out;});
