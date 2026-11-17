@@ -217,7 +217,8 @@ function c13FaceRatio(){if(C13_FR)return C13_FR;try{const x=document.createEleme
 HOOK.xform('b9BanBox','chars13','the banner text in the fantasy face fits its measured box',function(r){try{if(r&&r.fs)r.fs=+(r.fs*c13FaceRatio()).toFixed(2);}catch(e){}return r;});
 try{const el=Object.keys(ELC).map(k=>`.fxlayer .fx2.b3fx.el-${k}{color:${tint(ELC[k],k==='shadow'?.45:.3)}}`).join('');
   const st=document.createElement('style');st.id='chars13-css';st.textContent=
-    `.fxlayer .fx2.b3fx{font-family:'Pixelify Sans',var(--fd),sans-serif;font-weight:700;letter-spacing:0;color:#fff;text-shadow:.5px 0 0 #0b0610,-.5px 0 0 #0b0610,0 .5px 0 #0b0610,0 -.5px 0 #0b0610,.5px .5px 0 #0b0610,-.5px -.5px 0 #0b0610,.5px -.5px 0 #0b0610,-.5px .5px 0 #0b0610,0 1px 0 #0b0610}`+
+    /* v0.22.25 (owner: "Damage numbers look weird in battle when the come up, not readable"): the pixel face at 13 px made 3, 7, 8 and 5 look alike. The numbers are in the game's text face (Nunito 900), a size up (fx2.js fxSize), with a full dark outline and a drop edge */
+    `.fxlayer .fx2.b3fx{font-family:var(--fb),Nunito,system-ui,sans-serif;font-weight:900;letter-spacing:0;font-variant-numeric:tabular-nums;color:#fff;-webkit-text-stroke:0;text-shadow:.7px 0 0 #0b0610,-.7px 0 0 #0b0610,0 .7px 0 #0b0610,0 -.7px 0 #0b0610,.6px .6px 0 #0b0610,-.6px -.6px 0 #0b0610,.6px -.6px 0 #0b0610,-.6px .6px 0 #0b0610,0 1.3px 0 #0b0610,0 1.6px 1.2px rgba(0,0,0,.55)}`+
     `.fxlayer .fx2.b3fx.weak{color:#ffb060}.fxlayer .fx2.b3fx.res{color:#aab8cc}.fxlayer .fx2.b3fx.heal{color:#8dff9f}${el}`+
     `.fxlayer .fx2.b3fx.crit{color:#ffd23d;animation-name:c13crit}.fxlayer .fx2.b3fx.crit::after{content:"!"}`+
     `.fxlayer .fx2.b3fx.stat.miss{color:#9a9ca8;font-size:.78em;font-weight:400}`+

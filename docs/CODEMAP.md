@@ -566,7 +566,7 @@ Registered (load order; 1 is next to the base):
 
 Runs: 14 cohere15 → 13 chars13 (around) → 11 chars13 → 9 perf12 → 8 fxkind11 → 7 res11 → 6 battle11 (around) → 5 sprhd2 → 4 hdspell → 3 hdstage (around) → 2 gfx6battle (around) → 1 anim → **base** → 2 gfx6battle (around) → 3 hdstage (around) → 6 battle11 (around) → 10 kits12 → 12 chars13 → 13 chars13 (around)
 
-### calcStats (13 hooks)
+### calcStats (14 hooks)
 Registered (load order; 1 is next to the base):
 1. `ailments.js` after: wound shrinks max HP
 2. `echocore.js` after: Echoforged weapon perks
@@ -581,8 +581,9 @@ Registered (load order; 1 is next to the base):
 11. `legends17a.js` after: Light Fingers: harder to hit
 12. `legnat20.js` before: a Legendary carries their own nature
 13. `shields20.js` around: a shield counts only beside a one-handed weapon
+14. `relics25.js` result: the bonuses of the personal relic the hero wears
 
-Runs: 13 shields20 (around) → 12 legnat20 → **base** → 1 ailments → 2 echocore → 3 comp → 4 roles → 5 natures6 → 6 riftkeeper9 → 7 roles9 → 8 echo11 → 9 battle16 → 10 legends17b → 11 legends17a → 13 shields20 (around)
+Runs: 13 shields20 (around) → 12 legnat20 → **base** → 1 ailments → 2 echocore → 3 comp → 4 roles → 5 natures6 → 6 riftkeeper9 → 7 roles9 → 8 echo11 → 9 battle16 → 10 legends17b → 11 legends17a → 13 shields20 (around) → 14 relics25 (result)
 
 ### cmdHtml (13 hooks)
 Registered (load order; 1 is next to the base):
@@ -638,6 +639,23 @@ Registered (load order; 1 is next to the base):
 
 Runs: 5 map → **base** → 1 tavern2 → 2 comp → 3 learn → 4 prog2 → 6 summon8 → 7 party12 → 8 skills12 → 9 menus14 → 10 realms14 → 11 battle16 → 12 world16 → 13 legends17a
 
+### classSkills (12 hooks)
+Registered (load order; 1 is next to the base):
+1. `archetype.js` result: tag every skill with its damage kind once
+2. `sigskills.js` result: the wayfarer's signature skill and element flavour
+3. `roles.js` result: secondary role skills and adjustments
+4. `skills12.js` result: the 12 skill kit, dual type primers and detonators, dual art kind (last hook: sees the finished list)
+5. `kits12.js` result: slot skills in the class voice, martial dual arts
+6. `menus12.js` result: skill descriptions never name a role
+7. `menus14.js` result: learn levels: three skills by level 10, then an even walk to 45 (order kept); the 0.20.3 levels stay as lvP, the 0.20.9 ones as lvQ
+8. `roster17.js` result: kits of 14: two more skills each (the Mantle, a restored skill, a new one), the signature at 18 and the second own skill at 38
+9. `legends17b.js` result: the reworked kits of Nikaris, Kaevan and Jace (14 skills on the roster17 levels)
+10. `legends17a.js` before: the two new legends: their kits of 14 as written
+11. `stats22.js` result: a skill costs more MP the later it is learned
+12. `relics25.js` result: the skill a personal relic grants while it is worn
+
+Runs: 10 legends17a → **base** → 1 archetype (result) → 2 sigskills (result) → 3 roles (result) → 4 skills12 (result) → 5 kits12 (result) → 6 menus12 (result) → 7 menus14 (result) → 8 roster17 (result) → 9 legends17b (result) → 11 stats22 (result) → 12 relics25 (result)
+
 ### arrive (11 hooks)
 Registered (load order; 1 is next to the base):
 1. `journey.js` before: step count
@@ -653,22 +671,6 @@ Registered (load order; 1 is next to the base):
 11. `legends17b.js` after: the called sky counts down on the chip
 
 Runs: 7 field9 (around) → 3 world3 → 2 metastats → 1 journey → **base** → 4 chance → 5 ailments → 6 map → 7 field9 (around) → 8 party12 → 9 world12 → 10 worldart12 → 11 legends17b
-
-### classSkills (11 hooks)
-Registered (load order; 1 is next to the base):
-1. `archetype.js` result: tag every skill with its damage kind once
-2. `sigskills.js` result: the wayfarer's signature skill and element flavour
-3. `roles.js` result: secondary role skills and adjustments
-4. `skills12.js` result: the 12 skill kit, dual type primers and detonators, dual art kind (last hook: sees the finished list)
-5. `kits12.js` result: slot skills in the class voice, martial dual arts
-6. `menus12.js` result: skill descriptions never name a role
-7. `menus14.js` result: learn levels: three skills by level 10, then an even walk to 45 (order kept); the 0.20.3 levels stay as lvP, the 0.20.9 ones as lvQ
-8. `roster17.js` result: kits of 14: two more skills each (the Mantle, a restored skill, a new one), the signature at 18 and the second own skill at 38
-9. `legends17b.js` result: the reworked kits of Nikaris, Kaevan and Jace (14 skills on the roster17 levels)
-10. `legends17a.js` before: the two new legends: their kits of 14 as written
-11. `stats22.js` result: a skill costs more MP the later it is learned
-
-Runs: 10 legends17a → **base** → 1 archetype (result) → 2 sigskills (result) → 3 roles (result) → 4 skills12 (result) → 5 kits12 (result) → 6 menus12 (result) → 7 menus14 (result) → 8 roster17 (result) → 9 legends17b (result) → 11 stats22 (result)
 
 ### hdActors (11 hooks)
 Registered (load order; 1 is next to the base):
@@ -777,6 +779,18 @@ Registered (load order; 1 is next to the base):
 7. `legends17a.js` after: summon smoke and the crew over the units
 
 Runs: 1 anim → **base** → 2 anim → 3 gfx6battle → 4 hdspell → 5 fxkind11 → 6 legends17b → 7 legends17a
+
+### gearDesc (7 hooks)
+Registered (load order; 1 is next to the base):
+1. `echo2.js` result: Echoforge perk text
+2. `archetype.js` result: weapon delivery text
+3. `roles.js` result: charm role text
+4. `capes.js` result: boots name their weight
+5. `riftkeeper9.js` result: Riftwalker key text
+6. `shields20.js` result: shields say what they need
+7. `relics25.js` result: a relic lists its bonuses and its skill
+
+Runs: **base** → 1 echo2 (result) → 2 archetype (result) → 3 roles (result) → 4 capes (result) → 5 riftkeeper9 (result) → 6 shields20 (result) → 7 relics25 (result)
 
 ### genQuests (7 hooks)
 Registered (load order; 1 is next to the base):
@@ -893,17 +907,6 @@ Registered (load order; 1 is next to the base):
 6. `legends17a.js` before: the Water Clone falls apart with him
 
 Runs: 6 legends17a → 5 legends17a → 4 riftkeeper9 (around) → 3 summon8 → 1 comp → **base** → 2 twists → 4 riftkeeper9 (around)
-
-### gearDesc (6 hooks)
-Registered (load order; 1 is next to the base):
-1. `echo2.js` result: Echoforge perk text
-2. `archetype.js` result: weapon delivery text
-3. `roles.js` result: charm role text
-4. `capes.js` result: boots name their weight
-5. `riftkeeper9.js` result: Riftwalker key text
-6. `shields20.js` result: shields say what they need
-
-Runs: **base** → 1 echo2 (result) → 2 archetype (result) → 3 roles (result) → 4 capes (result) → 5 riftkeeper9 (result) → 6 shields20 (result)
 
 ### hdLook (6 hooks)
 Registered (load order; 1 is next to the base):

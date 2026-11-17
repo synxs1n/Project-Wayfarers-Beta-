@@ -65,13 +65,13 @@ const rl=await ev(()=>{const A=__A,t=k=>A.TW.get(k),G=A.G,E=window.__E11,out=[];
       // at stage 4 the shops sell tiers 3 and 4: the relic (tier 5, +3) must beat the best +3 shop piece in every stat it has
       ['atk','mag','def','res','hp'].forEach(k=>{if(sh4[k]>0&&!(g[k]>=sh4[k]))res.bad.push(id+' '+k+' '+g[k]+' < '+sh4[k]);});}
     const o1=at1[id];if(['atk','mag','def','hp'].some(k=>g[k]>(o1[k]||0)))res.grow++;
-    if(!/'s Relic /.test(g.n))res.bad.push(id+' name '+g.n);});
+    if(/Relic/.test(g.n)||!/'s \S/.test(g.n))res.bad.push(id+' name '+g.n);});/* 0.22.25: "Mira's Prism", no Relic in the title (relics25.js) */
   return res;});
-chk('personal relic gear exists for the whole roster ('+rl.n+') and is flagged relic, untemperable, not for sale, named Relic',rl.n>=20&&rl.bad.length===0||JSON.stringify(rl.bad.slice(0,5)));
+chk('personal relic gear exists for the whole roster ('+rl.n+') and is flagged relic, untemperable, not for sale, named "X\'s ..." without the word Relic',rl.n>=20&&rl.bad.length===0||JSON.stringify(rl.bad.slice(0,5)));
 chk('relics grow with realm progress (a later realm has stronger relics)',rl.grow>0);
 const rq=await ev(()=>{const A=__A,t=k=>A.TW.get(k),G=A.G;const id=Object.keys(A.GEAR).find(i=>/^u_/.test(i)&&A.GEAR[i].only&&G.roster[A.GEAR[i].only]);if(!id)return {skip:1};const c=G.roster[A.GEAR[id].only];G.stage=4;G.cleared=[1,1,1,1,0,0];
   c.eq.w=id;t('refresh')(c);const w=t('gearOf')(id);return {name:w.n,atk:w.atk,mag:w.mag,score:t('loadoutScore')(c,c.S)};});
-chk('a hero can wear the relic and the sheet name reads "Relic" '+JSON.stringify(rq),rq.skip||/Relic/.test(rq.name));
+chk('a hero can wear the relic and the sheet name is "X\'s ..." with no "Relic" in it '+JSON.stringify(rq),rq.skip||(/'s \S/.test(rq.name)&&!/Relic/.test(rq.name)));
 
 // ---- 3) max temper ----
 const mx=await ev(()=>{const A=__A,t=k=>A.TW.get(k),G=A.G,E=window.__E11;G.stage=3;G.cleared=[1,1,1,0,0,0];G.gold=20000;

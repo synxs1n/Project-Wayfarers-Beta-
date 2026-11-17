@@ -17,7 +17,7 @@ const ROOTS=['hollow','ash','ember','thorn','gloam','bone','mist','spire','cinde
 (async()=>{
 // ---------- 3. kits of 14 ----------
 {const H=await open({w:390,h:844,pre:PRE});const {ev,wait}=H;
- const r=await ev(()=>{const A=__A,g=A.TW.get,TPL=g('TPL'),R=__R17.R17,U=__R17.unique(),o={n:0,bad:[],sets:{},own:{},place:[],names:[],late:0,newN:0,rest:0};
+ const r=await ev(()=>{try{window.__R25.R25.off=true;}catch(e){}/* 0.22.25: this test is about the class kits of 14; a worn personal relic adds a fifteenth skill (v209a) */const A=__A,g=A.TW.get,TPL=g('TPL'),R=__R17.R17,U=__R17.unique(),o={n:0,bad:[],sets:{},own:{},place:[],names:[],late:0,newN:0,rest:0};
   const all={};Object.keys(U).forEach(id=>g('classSkills')(TPL[id]).forEach(s=>{(all[s.n]=all[s.n]||[]).push(id);}));
   Object.keys(U).forEach(id=>{const u=U[id],p=[],K=g('classSkills')(TPL[id]).slice().sort((a,b)=>a.lv-b.lv),L=K.map(s=>s.lv);o.n++;
    if(u.n!==14)p.push('skills '+u.n);if(u.own.length<2)p.push('own '+u.own.length);if(L.filter(x=>x<=10).length!==3)p.push('at 10: '+L.filter(x=>x<=10).length);

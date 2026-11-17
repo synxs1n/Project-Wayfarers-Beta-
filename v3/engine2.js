@@ -49,7 +49,7 @@ const PQ_TEXT={
  sniper:'{n} has had {r} in the glass once before, and let the shot go by. Not again.',
  archmage:'{n} felt the weather turn wrong. {r} is at the middle of it.'};
 const pqText=cls=>PQ_TEXT[cls]||'{n} has unfinished business with {r}.';
-const SIGW={chronicler:'Lost Folio',warrior:'Heirloom Edge',knight:'Vow Blade',mage:'Lost Focus',healer:'Lamp Relic',thief:'Debt Collector',archer:'Second Shot',monk:"Master's Wraps",bard:'Final Verse',sniper:'Horizon Arbalest',druid:'Packcall Bow',archmage:'Stormglass Rod'};
+const SIGW={chronicler:'Lost Folio',warrior:'Heirloom Edge',knight:'Vow Blade',mage:'Lost Focus',healer:'Lampstaff',thief:'Debt Collector',archer:'Second Shot',monk:"Master's Wraps",bard:'Final Verse',sniper:'Horizon Arbalest',druid:'Packcall Bow',archmage:'Stormglass Rod'};
 const ALTW={sword:'greatsword',greatsword:'katana',axe:'hammer',hammer:'axe',spear:'trident',trident:'spear',dagger:'twindagger',twindagger:'katana',bow:'crossbow',crossbow:'bow',
  staff_orb:'staff_crystal',staff_crystal:'staff_sun',staff_sun:'staff_orb',staff_crook:'staff_sun',rod:'staff_crystal',tome:'staff_orb',lute:'harp',harp:'fan',fan:'harp',fists:'claws',claws:'katana',scythe:'katana',katana:'greatsword',mace:'hammer'};
 function registerSignatures(){RAW.forEach(r=>{const id=r[0],t=TPL[id],fam=CF[t.cls][0],base=GEAR['w_'+fam+'_4']||GEAR['w_'+fam+'_3'],o={n:`${t.n}'s ${SIGW[t.cls]}`,slot:'w',tier:4,only:id,fam:fam,el:t.el[0],price:2400,attr:{[CLS[t.cls].pref[0]]:5}};

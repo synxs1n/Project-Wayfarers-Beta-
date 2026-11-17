@@ -4,6 +4,8 @@
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.22.25',['Damage numbers are readable: larger, in the game\'s bold text face with a full dark outline (the small pixel face made 3, 5, 7 and 8 look alike).',
+  'Personal relics are reworked. They are now their own rarity, Legendary, and are named after their owner with no "Relic" in the title: Mira\'s Starwoven Robe, Lumen\'s Prayer Beads, Pip\'s Soft Soles, Brann\'s Battered Buckler. They come in five kinds across the roster (weapons, armor, charms, boots, and shields for Warriors and Knights) instead of three. Each is the best piece of its slot for its hero at every stage, about the strength of Echoforged gear at the top, and carries a bonus for the hero\'s class (critical hits, spell power, healing, MP saved, evasion, max HP and more). While a hero wears their relic they know one more skill, named after it. A relic you already own keeps its kind and gains all of this.']],
  ['Beta v0.22.24',['Small tidy-ups. Pop-up notes at the bottom of the screen are wider, so a long one is two or three lines instead of a tall column over the middle of a menu. The Party tab no longer shows Bonds twice (it is a tab of its own). The note at the top of Backpack > Equipment is one line.']],
  ['Beta v0.22.23',['Towns load a little faster on a second visit: each building\'s roof colour is worked out once instead of every time the town is drawn.']],
  ['Beta v0.22.22',['Guardians no longer carry their name above their head on the map; the name is on the popup when you walk up to them.',
