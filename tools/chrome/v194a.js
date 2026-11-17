@@ -18,7 +18,7 @@ const START=ids=>{const A=__A;A.ACT.new();ids.forEach(i=>A.ACT.pickS(i));A.ACT.b
 (async()=>{
 const H=await open({w:390,h:844,pre:PRE});const {ev}=H;const cerr=[];H.page.on('console',m=>{if(m.type()==='error')cerr.push(m.text().slice(0,200));});
 // ---------- 1. data ----------
-{const r=await ev(()=>{const A=__A,g=A.TW.get,TPL=g('TPL'),CLS=g('CLS'),R=__R17.R17,o={};
+{const r=await ev(()=>{try{window.__R25.R25.off=true;}catch(e){}/* 0.22.25: kits of 14; a worn personal relic adds a fifteenth skill (v209a) */const A=__A,g=A.TW.get,TPL=g('TPL'),CLS=g('CLS'),R=__R17.R17,o={};
   o.leg=g('LEGEND_IDS').join(',');o.cls=['bloodcaller','chief'].map(k=>CLS[k]&&CLS[k].legend&&CLS[k].n).join(',');o.names=TPL.jose.title+'|'+TPL.dist.title+'|'+TPL.dist.n;
   o.kits=['jose','dist'].map(id=>{const K=g('classSkills')(TPL[id]),L=K.map(s=>s.lv);return {n:K.length,lv:L.join()===R.lv.join(),at10:L.filter(x=>x<=10).length,ids:new Set(K.map(s=>s.id)).size,names:new Set(K.map(s=>s.n)).size,own:K.filter(s=>s.own).map(s=>s.n).join('+'),data:K.every(s=>s.d&&s.n&&s.k),role:K.some(s=>/primer|detonator/i.test(s.d))};});
   o.pool=g('ro14Pool')().filter(id=>id==='jose'||id==='dist'||TPL[id].j17hid).length;o.tav=g('POOL_IDS')().filter(id=>id==='jose'||id==='dist').length;

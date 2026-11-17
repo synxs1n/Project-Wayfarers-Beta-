@@ -21,7 +21,7 @@ const PARTY=(lv,ids)=>{const A=__A,g=A.TW.get,G=A.G;['nikaris','kaevan','jaeson'
 (async()=>{
 const H=await open({w:1000,h:560,pre:PRE});const {ev,wait}=H;await ev(START);
 // ---------- 1. kits ----------
-{const r=await ev(()=>{const g=__A.TW.get,TPL=g('TPL'),R=__R17.R17,o={};
+{const r=await ev(()=>{try{window.__R25.R25.off=true;}catch(e){}/* 0.22.25: kits of 14; a worn personal relic adds a fifteenth skill (v209a) */const g=__A.TW.get,TPL=g('TPL'),R=__R17.R17,o={};
   ['nikaris','kaevan','jaeson'].forEach(id=>{const K=g('classSkills')(TPL[id]),L=K.map(s=>s.lv);o[id]={n:K.length,lv:L.join(),at10:L.filter(x=>x<=10).length,own:K.filter(s=>s.own).map(s=>s.n),ids:new Set(K.map(s=>s.id)).size,names:new Set(K.map(s=>s.n)).size,
     bad:K.filter(s=>!s.n||!s.d||!s.k).map(s=>s.id),ownTxt:K.filter(s=>s.own).every(s=>/Only \w+ has this skill\.$/.test(s.d)),all:K.filter(s=>(s.k==='phys'||s.k==='mag')&&s.t==='all').map(s=>s.n),K:K.map(s=>s.id)};});
   o.sched=R.lv.join();o.name=[TPL.jaeson.n,TPL.jaeson.title,g('RAW').find(x=>x[0]==='jaeson')[1]];o.text=JSON.stringify([TPL.jaeson.bio,g('SIG').jaeson.d,g('CLS').archmage.role]).includes('Jaeson');return o;});
