@@ -358,7 +358,7 @@ Registered (load order; 1 is next to the base):
 
 Runs: 23 look9 → 22 dungeon8 → 20 bigmap → 19 remember → 17 battle4 → 13 hdstage → 10 p2world → 9 p2world → 8 realms (around) → 7 map → 5 ailments → **base** → 1 feedback → 2 travel → 3 metastats → 4 ailments → 6 prog2 → 8 realms (around) → 11 p2world → 12 p2world → 14 v063prog → 15 twists → 16 battle5 → 18 battle4 → 21 summon8 → 24 riftkeeper9 → 25 breachlook11 → 26 party12 → 27 legends17b → 28 legends17a → 29 legends17a
 
-### getMap (25 hooks)
+### getMap (26 hooks)
 Registered (load order; 1 is next to the base):
 1. `zones.js` after: closed west gate names the real forward direction
 2. `bosstheme.js` around: stage look from its boss (new maps)
@@ -385,8 +385,9 @@ Registered (load order; 1 is next to the base):
 23. `world14.js` around: unreachable chests move, nodes checked (after healing, the path guard and the exit aprons)
 24. `world16.js` around: the Breach Waystone in the centre; a post beside every town gate
 25. `towns22.js` around: props that mark a building's role, in every new town
+26. `towns24.js` around: the gate lane again, after the exit and gate post passes
 
-Runs: 25 towns22 (around) → 24 world16 (around) → 23 world14 (around) → 22 worldart12 (around) → 21 world12 (around) → 20 townexit (around) → 19 towns24 (around) → 18 world12 (around) → 17 breachlook11 (around) → 16 breach10 (around) → 15 sitelook10 (around) → 14 sanctlook10 (around) → 13 endgame10 (around) → 12 endgame10 (around) → 11 look9 (around) → 10 look9 → 9 dungeon8 (around) → 8 dungeon8 (around) → 7 pathguard (around) → 6 p2world (around) → 5 sites (around) → 4 realms → 3 mapheal (around) → 2 bosstheme (around) → **base** → 1 zones → 2 bosstheme (around) → 3 mapheal (around) → 5 sites (around) → 6 p2world (around) → 7 pathguard (around) → 8 dungeon8 (around) → 9 dungeon8 (around) → 11 look9 (around) → 12 endgame10 (around) → 13 endgame10 (around) → 14 sanctlook10 (around) → 15 sitelook10 (around) → 16 breach10 (around) → 17 breachlook11 (around) → 18 world12 (around) → 19 towns24 (around) → 20 townexit (around) → 21 world12 (around) → 22 worldart12 (around) → 23 world14 (around) → 24 world16 (around) → 25 towns22 (around)
+Runs: 26 towns24 (around) → 25 towns22 (around) → 24 world16 (around) → 23 world14 (around) → 22 worldart12 (around) → 21 world12 (around) → 20 townexit (around) → 19 towns24 (around) → 18 world12 (around) → 17 breachlook11 (around) → 16 breach10 (around) → 15 sitelook10 (around) → 14 sanctlook10 (around) → 13 endgame10 (around) → 12 endgame10 (around) → 11 look9 (around) → 10 look9 → 9 dungeon8 (around) → 8 dungeon8 (around) → 7 pathguard (around) → 6 p2world (around) → 5 sites (around) → 4 realms → 3 mapheal (around) → 2 bosstheme (around) → **base** → 1 zones → 2 bosstheme (around) → 3 mapheal (around) → 5 sites (around) → 6 p2world (around) → 7 pathguard (around) → 8 dungeon8 (around) → 9 dungeon8 (around) → 11 look9 (around) → 12 endgame10 (around) → 13 endgame10 (around) → 14 sanctlook10 (around) → 15 sitelook10 (around) → 16 breach10 (around) → 17 breachlook11 (around) → 18 world12 (around) → 19 towns24 (around) → 20 townexit (around) → 21 world12 (around) → 22 worldart12 (around) → 23 world14 (around) → 24 world16 (around) → 25 towns22 (around) → 26 towns24 (around)
 
 ### worldDraw (24 hooks)
 Registered (load order; 1 is next to the base):

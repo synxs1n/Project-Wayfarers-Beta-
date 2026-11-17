@@ -116,11 +116,14 @@ HOOK.wrap('townGen','towns24','the new town plans (in view at pitch 40, a clear 
   }catch(e){T24.err=String(e&&e.message||e);}
   T24.n.fallback++;return next(Z,s,R);});
 // ---------- a gate in the north or south wall: a lane along the wall to the avenue ----------
+const T24_KEEP='SLuvWqCKcmO';
 function t24GateLane(m){if(!m||m.kind!=='town'||!m.t||!m.gates||!/^n_/.test(m.arch||''))return 0;const g=m.t,H=g.length,W=g[0].length,road=m.road;let n=0;
   const ax=(()=>{for(const x of [W>>1,W-1-(W>>1)]){let ok=0;for(let y=3;y<H-3;y++)if(g[y][x]==='='||g[y][x]===':'||g[y][x]==='B')ok++;if(ok>=H-8)return x;}return null;})();if(ax==null)return 0;
   Object.values(m.gates).forEach(q=>{if(!q||!q.arrive||(q.side!=='n'&&q.side!=='s'))return;const [gx,gy]=q.arrive;if(gx===ax)return;const d=gx<ax?1:-1;
     for(let x=gx;x!==ax+d;x+=d){const c=g[gy][x];if(c==='H'||c==='Z'||c==='Y'||c==='#')return;}
-    for(let x=gx;x!==ax+d;x+=d){const c=g[gy][x];if(c!=='='&&c!==':'&&c!=='B'){g[gy][x]=c==='~'?'B':'=';n++;}}
+    // a gate post, a lamp, the sign or a banner on the row stays: the lane steps one row into town round it
+    const inn=q.side==='n'?1:-1,put=(x,y)=>{const c=(g[y]||[])[x];if(c==null||c==='='||c===':'||c==='B'||'HZY#'.includes(c)||T24_KEEP.includes(c))return;g[y][x]=c==='~'?'B':'=';n++;};
+    for(let x=gx;x!==ax+d;x+=d){const c=g[gy][x];if(T24_KEEP.includes(c)){put(x-1,gy+inn);put(x,gy+inn);put(x+1,gy+inn);}else put(x,gy);}
     for(let y=Math.min(gy,road);y<=Math.max(gy,road);y++){const c=g[y][ax];if(c!=='='&&c!==':'&&c!=='B'&&c!=='H')g[y][ax]=c==='~'?'B':'=';}});
   if(n){m.tl=null;T24.n.lane+=n;
     // nobody stands on the new lane: a villager on it steps to the nearest open ground
@@ -129,6 +132,11 @@ function t24GateLane(m){if(!m||m.kind!=='town'||!m.t||!m.gates||!/^n_/.test(m.ar
   return n;}
 HOOK.wrap('getMap','towns24','a gate in the north or south wall gets a lane to the avenue',function(next,...a){const id=a[0],fresh=typeof id==='string'&&id[0]==='t'&&!MAPS[id];const m=next(...a);
   try{if(fresh&&m&&m.kind==='town')t24GateLane(m);}catch(e){T24.err=String(e&&e.message||e);}return m;});
+// v0.22.22: and once more after the passes that register in a microtask (townexit, worldart12's exit apron, world14, world16's gate posts):
+// the apron pass turned the first tiles of the lane back into ground, so a gate away from the avenue lost its road (0.22.21). The lane is
+// idempotent: it only lays what is missing.
+queueMicrotask(()=>{try{HOOK.wrap('getMap','towns24','the gate lane again, after the exit and gate post passes',function(next,...a){const id=a[0],fresh=typeof id==='string'&&id[0]==='t'&&!MAPS[id];const m=next(...a);
+  try{if(fresh&&m&&m.kind==='town')t24GateLane(m);}catch(e){T24.err=String(e&&e.message||e);}return m;});}catch(e){}});
 // a hero saved inside what is now a building or a prop (the towns were rebuilt) stands at the town's entry instead
 {const e0=enterWorldFromSave;enterWorldFromSave=function(){const r=e0.apply(this,arguments);try{const m=WS&&WS.m;if(m&&m.kind==='town'&&m.t&&(()=>{const c=(m.t[WS.y]||[])[WS.x];return c==null||SOLID.includes(c);})()){const p=mapEntry(m);if(p)placeAt(m.id,p[0],p[1],'d');}}catch(e){}return r;};}
 try{window.__T24={T24,TA24,check:t24Check,assign:t24Assign,make:t24Make};}catch(e){}

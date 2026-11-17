@@ -723,4 +723,4 @@ Owner notes on 0.22.21 (one message), all done:
 - The key chest (worldfx.js): the opening entry carries `key:true` when the tile was 'K'; `wfxChestAnims` draws `keychest` then `wfxKeyChestOpen()` instead of the ordinary chest, and `wfxKeySprite()` (the Beacon Key, 11 x 18) rising 6 to 18 px over it with a bob, held while the find text is up. The draw callbacks take (o,cv,fa,jig,glint,up,isKey) in both renderers.
 - Gold text: `.btn.gold`, `.chip.on` and their children have `text-shadow:none` (ui3.css, last rule); cohere15.js's `body.ch15 .btn.gold` no longer sets one.
 - Test `tools/chrome/v208a.js` (group world). Next free test name: v209a.
-
+- Also 0.22.22, found by v207a failing one run in three: `t24GateLane` ran before the microtask passes (worldart12's exit apron and others), which turned the first tiles of the lane back into ground, so a north or south gate away from the avenue had no road in 0.22.21. It now runs a second time from a microtask-registered getMap wrap (outermost) and steps one row into town round a gate post, lamp, sign or banner (`T24_KEEP`).
