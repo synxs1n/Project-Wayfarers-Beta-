@@ -1159,8 +1159,7 @@ html[data-dz].dzlock.mopen .modal{overflow:auto}
 }@media (pointer:coarse){:where(html:not(.flat)) .chip,:where(html:not(.flat)) .chips.mgrp .chip,:where(html:not(.flat)) .chips.msub .chip,:where(html:not(.flat)) .btn.sm{min-height:40px}}:where(html:not(.flat)) .chips.mgrp .chip,:where(html:not(.flat)) .chips.msub .chip{min-height:40px}@media (max-width:720px){:where(html:not(.flat)) .cmd{padding:10px}:where(html:not(.flat)) .mi{padding:10px 8px 9px 22px}:where(html:not(.flat)) .mi::before{left:8px}:where(html:not(.flat)) .hdr{margin-bottom:6px}
 }@media (max-width:480px){:where(html:not(.flat)) .hdr .btn.sm{min-width:40px;padding:6px 8px}:where(html:not(.flat)) .wallet{padding:3px 9px 3px 5px}:where(html:not(.flat)) .chips.mgrp .chip{padding:8px 6px}:where(html:not(.flat)) .title>.btnrow.center{max-width:none}
 }@media (orientation:landscape) and (max-height:560px){:where(html:not(.flat)) .hdr{margin-bottom:0;padding-bottom:5px}:where(html:not(.flat)) .world.land .wbar{background:none;border-color:transparent;box-shadow:none;padding-top:0;padding-bottom:0}:where(html:not(.flat)) .title>.btnrow.center{max-width:560px;grid-template-columns:repeat(3,minmax(0,1fr))}:where(html:not(.flat)) .title>.btnrow.center>.btn:first-child{grid-column:span 3}:where(html:not(.flat)) .title>.btnrow.center>.btn:last-child:nth-child(even){grid-column:auto}
-}
-
+}:where(html:not(.flat)) .btn.gold,:where(html:not(.flat)) .chip.on,:where(html:not(.flat)) .chips.mgrp .chip.on,:where(html:not(.flat)) .btn.gold *,:where(html:not(.flat)) .chip.on *{text-shadow:none}
 /* ===================== Beta v0.6.3: shops and menus (menus3.js) ===================== */
 /* Panels fit the screen the phone really shows: --vvh is the visual viewport height (menus3.js), so the panel's own scroll reaches
    its last row even when the browser bar or the app's bars take part of the screen (100vh counts the screen behind them). */
@@ -2119,7 +2118,7 @@ html:not(.flat) .battle.b3 .bline .b4mo .b4bar{box-shadow:inset 0 0 0 1px #000,0
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.22.21";const APP_BUILD="bf9a28e17193";
+(function(){const APP_VER="0.22.22";const APP_BUILD="13133a2a290c";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2243,7 +2242,8 @@ const STARTER_LV=3;
 // battle drops: chance per beaten foe, multiplied by the party's luck bonus
 const DROP={realm:.38,part:.55,potion:.15,ether:.07,remedy:.07,hipotion:.05};
 // DROP_MIX: weights inside the remedy-slot drop roll (engine.js win): remedy keeps its DROP.remedy rate, the others are extra on top, picked from the same roll
-const DROP_MIX={remedy:1,bandage:.22,ash:.16,tent:.05};
+const DROP_MIX={remedy:1,bandage:.22,ash:.16,tent:.05,salts:.3,holywater:.06,plume:.04};// v0.22.22: salts, Holy Water and (rarely) a Phoenix Feather drop too
+const CHEST_UP=.04;// v0.22.22: the chance that a chest's gear is one rarity above the open one
 // Beta v0.4.1 2.5: the auto battle brain. healAt: heal an ally below this percent of max HP. skillChance: how often a turn uses a plain damage skill
 // instead of a basic attack. power: damage multiplier for everything auto does outside the Trial. spread: how often a single target attack picks a random foe instead of the first in line. dailySmart: keep the careful old brain inside the Daily Trial (the Trial must stay identical).
 const AUTO_NERF={healAt:40,skillChance:1,spread:0,power:.85,aware:.6,potion:0,smart:.6,limit:.5,det:.5,dailySmart:true};
@@ -2899,7 +2899,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.22.21";const APP_BUILD="bf9a28e17193";
+const APP_VER="0.22.22";const APP_BUILD="13133a2a290c";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2907,6 +2907,12 @@ const APP_VER="0.22.21";const APP_BUILD="bf9a28e17193";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.22.22',['Guardians no longer carry their name above their head on the map; the name is on the popup when you walk up to them.',
+  'Fixed: after beating a Sanctum guardian you can walk straight up to the chest behind it. The rune circle it stood on stayed solid, so the chest could only be reached from the side.',
+  'Every item can now be found. Smelling Salts and Holy Water turn up in chests and as battle drops (a Phoenix Feather too, rarely); the Sage Brew and Vigor Tonic in chests from the second realm, Camp Supplies from the third, an Elixir from the fourth.',
+  'Chests: a small chance (4%) that the gear inside is one rarity above what your journey has opened. Never Echoforged gear.',
+  'The Beacon Key chest keeps its own look while it opens (it turned into an ordinary chest), and the Beacon Key rises out of it when you take it.',
+  'Menus: the dark text on gold buttons and on the selected tab is crisp (a one pixel shadow doubled every letter).']],
  ['Beta v0.22.21',['New towns. Every town is rebuilt on a new plan: a market cross, a long high street, a crescent round a green, three staggered terraces, a lakeside quay with piers, twin plazas with a park between, a stepped hillside, a round plaza, or a walled court. Buildings are placed so that nothing stands close in front of another: every door and sign is in clear view from the normal camera. The main road runs straight through the plaza from west to east and an avenue from north to south, so there is always a clear road from the centre to every gate. Buildings have footprints by role (a wide guild hall, a long inn, a small alchemist), and where each service stands is different in every town.',
   'The steeper town camera of 0.22.20 is gone: towns use the same camera as everywhere else again.']],
  ['Beta v0.22.20',['Towns you can see. The camera looks down more steeply inside a town, so a building hides much less of what stands behind it, and every town is spread out: more open rows in front of each building, more room between neighbours, and buildings that stood stacked one behind the other have stepped apart. Doors and signs that sat behind a roof are in view. Walls, tree lines, roads and gates are unchanged in shape; towns are a few tiles larger. Fields, dungeons and battles keep the old camera.']],
@@ -8015,7 +8021,7 @@ function win(){
     {const Wx=WEATHER[B.weather]||{};if(Wx.mat&&!e.boss&&RNG()<Wx.mat)info.mats[ZS(s).mat]=(info.mats[ZS(s).mat]||0)+1;if(Wx.core&&!e.boss&&RNG()<Wx.core)info.mats.core=(info.mats.core||0)+1;}
     if(RNG()<DROP.potion*luck)info.drops.push('potion');
     if(RNG()<DROP.ether*luck)info.drops.push('ether');
-    {const rs=DROP_MIX,rt=rs.remedy+rs.bandage+rs.ash+rs.tent,rr=RNG()/(DROP.remedy*luck*rt/rs.remedy);if(rr<1){let q=rr*rt,k='remedy';for(const n of ['remedy','bandage','ash','tent']){if((q-=rs[n])<0){k=n;break;}}info.drops.push(k);}}// v0.12: same single roll as before (remedy keeps its rate); the roll's own position picks remedy, bandage, ash or tent (no extra RNG call)
+    {const rs=DROP_MIX,rt=Object.keys(rs).reduce((a,n)=>a+(ITEMS[n]?rs[n]:0),0),rr=RNG()/(DROP.remedy*luck*rt/rs.remedy);if(rr<1){let q=rr*rt,k='remedy';for(const n of Object.keys(rs)){if(!ITEMS[n])continue;if((q-=rs[n])<0){k=n;break;}}info.drops.push(k);}}// v0.12: same single roll as before (remedy keeps its rate); the roll's own position picks remedy, bandage, ash or tent (no extra RNG call)
     if(G.stage>=1&&RNG()<DROP.hipotion*luck)info.drops.push('hipotion');
     // quest progress
     G.quests.forEach(q=>{if(q.state==='active'&&q.type==='hunt'&&MON[q.mon]&&MON[q.mon].n===e.base){q.have=Math.min(q.n,(q.have||0)+1);if(q.have===q.n)info.quests.push(q.title);}});
@@ -8945,6 +8951,9 @@ function villagerLook(name){
 function tileAt(m,x,y){
   if(x<0||y<0||x>=m.w||y>=m.h)return m.kind==='dungeon'?'#':'Z';
   let c=m.t[y][x];
+  // v0.22.22: a Sanctum guardian stands on the rune circle right in front of the prize chest; the circle stayed a solid 'X' after the fight
+  // (and asked for a boss that is gone), so the chest could only be reached from the side. Once the guardian is beaten it is floor.
+  if(c==='X'&&m.fort&&m.guardAt&&typeof miniPending==='function'&&!miniPending(m))return '.';
   if(c==='X'&&G.cleared[m.s]&&!(typeof storyEchoUp==='function'&&storyEchoUp(m.s)))return '.';
   if(c==='G'&&G.cleared[m.s])return '=';
   if((c==='C'||c==='K')&&G.chests[m.id+':'+x+','+y])return 'c';
@@ -10102,7 +10111,13 @@ actorTalk=HOOK.def('actorTalk',actorTalk);
 function say(name,text,after){WS.dlg={name,text,after};WS.held=[];WS.target=null;WS.touchDir=null;if(typeof sfx==='function')sfx('blip');render();}
 function nextDlg(){const d=WS.dlg;WS.dlg=null;render();if(d&&d.after)d.after();}
 // v0.12: chest items: the old six picks (x3) plus bandage (common), ash (uncommon) and tent (rare); one pick, as before
-function CHEST_ITEMS(s){const hp=s>=1?'hipotion':'potion';return ['potion','potion','ether','ether','remedy','remedy','plume','plume',hp,hp,'potion','potion','potion','potion','bandage','bandage','bandage','bandage','ash','ash','tent'];}
+// v0.22.22 (owner: "Some items never appear in chest or as battle rewards, smelling salts is an example"): every item can turn up now.
+// Added: Smelling Salts and Holy Water from the first realm, the Sage Brew and Vigor Tonic from the second, Camp Supplies from the third, an
+// Elixir (rare) from the fourth.
+function CHEST_ITEMS(s){const hp=s>=1?'hipotion':'potion',L=['potion','potion','ether','ether','remedy','remedy','plume','plume',hp,hp,'potion','potion','potion','potion','bandage','bandage','bandage','bandage','ash','ash','tent','salts','salts','salts','holywater'];
+  if(s>=1)L.push('sage','vigor');if(s>=2&&ITEMS.campkit)L.push('campkit');if(s>=3)L.push('elixir');return L.filter(k=>ITEMS[k]);}
+const CHEST_ONE=['plume','tent','holywater','campkit','elixir','sage','vigor'];// one of these to a chest, two of the others
+function chestGear(tier,dun){const cap=typeof rarCap==='function'?rarCap():tier,up=!G.daily&&cap<5&&Math.random()<CHEST_UP;return {up,gid:up?lootBase()+'_'+(cap+1):lootBase()+'_'+tier+(dun?'+1':'')};}
 function openChest(x,y){
   const m=WS.m,key=m.id+':'+x+','+y;if(G.chests[key])return;
   const raw=m.t[y][x];G.chests[key]=1;if(typeof sfx==='function')sfx('chest');
@@ -10112,9 +10127,11 @@ function openChest(x,y){
   if(m.cave&&(m.chests||[]).some(c=>c[0]===x&&c[1]===y&&c[2]==='reward')){rebuildBase();const t=caveReward(m.s);saveGame();say(null,'You open the chest. '+t);return;}
   if(vault){G.vaults=G.vaults||{};G.vaults[s]=1;const ch=pick(rarPool(['c_str','c_int','c_vit','c_spi','c_agi','c_dex','c_luk'])),g=econG(200+s*150);G.gear.push(ch);G.gold+=g;msg=`Inside: ${gearOf(ch).n} and ${g} gold!`;}
   else if(r<.28){const g=econG(60+s*110+ri(0,40));G.gold+=g;msg=`Inside: ${g} gold.`;}
-  else if(r<.52){const it=pick(CHEST_ITEMS(s));const n=it==='plume'||it==='tent'?1:2;G.inv[it]=Math.min(invCap(),(G.inv[it]||0)+n);msg=`Inside: ${n>1?n+' x ':''}${ITEMS[it].n}.`;}
+  else if(r<.52){const it=pick(CHEST_ITEMS(s));const n=CHEST_ONE.includes(it)?1:2;G.inv[it]=Math.min(invCap(),(G.inv[it]||0)+n);msg=`Inside: ${n>1?n+' x ':''}${ITEMS[it].n}.`;}
   else if(r<.7){const n=dun?3:2;G.mats[Z.mat]=(G.mats[Z.mat]||0)+n;msg=`Inside: ${n} x ${MATS[Z.mat]}.`;}
-  else if(r<.9){const gid=lootBase()+'_'+tier+(dun?'+1':'');G.gear.push(gid);msg=`Inside: ${gearOf(gid).n} (${ITEM_TIERS[gTierIdx(gearOf(gid))].n})! Equip it from the menu, anywhere.`;}
+  else if(r<.9){// v0.22.22: a small chance (CHEST_UP) of a piece one rarity above what the journey has opened (never Echoforged: lootBase is shop gear)
+    const cg=chestGear(tier,dun),up=cg.up,gid=cg.gid;G.gear.push(gid);
+    msg=`Inside: ${gearOf(gid).n} (${ITEM_TIERS[gTierIdx(gearOf(gid))].n})!${up?' A rare find: a rarity you have not reached yet.':''} Equip it from the menu, anywhere.`;}
   else{const cid=pick(['c_vital','c_mana','c_swift','c_clarity','c_'+pick(ELK)]);G.gear.push(cid);msg=`Inside: ${gearOf(cid).n} (${ITEM_TIERS[gTierIdx(gearOf(cid))].n})!`;}
   rebuildBase();saveGame();say(null,'You open the chest. '+msg);
 }
@@ -22028,18 +22045,34 @@ HOOK.before('objCanvas','worldfx','the opened chest is gone',function(th,kind){i
 // v0.8.3: the opening is shown before the chest goes (the owner liked it): the lid pops open with a glint, the open chest stays while the
 // loot is collected (the find text), then it fades out. Drawn on top in both renderers; the tile itself is already gone from the map.
 const WFX_OPEN={};window.__WFXO=WFX_OPEN;// key -> {m,x,y,th,t0,done} (window.__WFXO for tests)
-HOOK.wrap('openChest','worldfx','chest opening sparkle',function(next,...a){let x=a[0],y=a[1];const m=WS.m,key=m&&m.id+':'+x+','+y,was=!!(G&&G.chests&&key&&G.chests[key]);const r=next(...a);
-  try{if(!was&&key&&G.chests[key]&&WFX.chestGone)WFX_OPEN[key]={m:m.id,x,y,th:m.theme,t0:performance.now(),done:0};}catch(e){}return r;});
+HOOK.wrap('openChest','worldfx','chest opening sparkle',function(next,...a){let x=a[0],y=a[1];const m=WS.m,key=m&&m.id+':'+x+','+y,was=!!(G&&G.chests&&key&&G.chests[key]),kc=!!(m&&m.t&&m.t[y]&&m.t[y][x]==='K');const r=next(...a);
+  try{if(!was&&key&&G.chests[key]&&WFX.chestGone)WFX_OPEN[key]={m:m.id,x,y,th:m.theme,t0:performance.now(),done:0,key:kc};}catch(e){}return r;});
+// v0.22.22 (owner: "Boss key chest turns to a regular chest during open animation. Let's also add a boss key sprite that appears when
+// obtaining the boss key"): the key chest keeps its own look while it opens (its blue and silver, lid up), and the Beacon Key rises out of
+// it, glints and hangs over the chest while the find text is up, then fades with the chest. Both renderers.
+const WFX_KC={};
+function wfxKeyChestOpen(){if(WFX_KC.open)return WFX_KC.open;const c=mkCv(18,18),x=c.getContext('2d'),f=(col,a,b,w,h)=>{x.fillStyle=col;x.fillRect(a,b,w,h);};
+  f('#150b17',2,1,14,16);f('#6a7ab0',3,2,12,4);f('#8e9cd0',3,2,12,1);f('#e8e8f8',3,5,12,1);f('#1a1a2a',3,6,12,3);f('#3a2a10',4,7,10,2);f('#ffd870',5,7,3,1);f('#ffe9a0',10,8,2,1);
+  f('#4a5a8a',3,9,12,7);f('#3a4870',3,14,12,2);f('#e8e8f8',3,9,12,1);f('#e8e8f8',3,9,1,7);f('#e8e8f8',14,9,1,7);f('#e8e8f8',7,10,4,3);f('#1a1a2a',8,11,2,1);return WFX_KC.open=c;}
+// the Beacon Key: a gold key whose bow is a beacon flame, 9 x 16
+function wfxKeySprite(){if(WFX_KC.key)return WFX_KC.key;const c=mkCv(11,18),x=c.getContext('2d'),f=(col,a,b,w,h)=>{x.fillStyle=col;x.fillRect(a,b,w,h);};
+  // outline
+  f('#2a1700',3,0,5,1);f('#2a1700',2,1,7,1);f('#2a1700',1,2,9,5);f('#2a1700',2,7,7,1);f('#2a1700',4,8,3,9);f('#2a1700',7,11,3,2);f('#2a1700',7,14,2,2);
+  // bow (the flame), shaft, teeth
+  f('#ffd24a',4,1,3,1);f('#ffd24a',3,2,5,1);f('#ffd24a',2,3,7,3);f('#ffd24a',3,6,5,1);f('#ff8a2a',4,3,3,3);f('#fff3b0',5,4,1,2);f('#fff7d0',3,2,1,1);
+  f('#e9b44a',5,7,1,9);f('#fff0a8',5,7,1,2);f('#e9b44a',7,12,2,1);f('#e9b44a',7,15,1,1);f('#b07a1c',5,14,1,2);return WFX_KC.key=c;}
+
 function wfxChestAnims(now,draw){const T=WFX.chestAnim||{open:320,hold:250,fade:450};for(const k in WFX_OPEN){const o=WFX_OPEN[k];if(!WS.m||WS.m.id!==o.m){delete WFX_OPEN[k];continue;}
   const busy=!!(WS.dlg||V.modal),age=now-o.t0;if(!busy&&age>T.open&&!o.done)o.done=now;
   const fa=o.done?Math.max(0,1-(now-o.done-T.hold)/T.fade):1;if(fa<=0){delete WFX_OPEN[k];continue;}
-  const open=age>=T.open*.45,cv=WFX_OC0(o.th,open?'chestOpen':'chest'),jig=!open&&!gfxStill()?Math.round(Math.sin(age/26)):0,glint=open&&age<T.open+260;
-  draw(o,cv,fa,jig,glint);}}
+  const open=age>=T.open*.45,cv=o.key?(open?wfxKeyChestOpen():WFX_OC0(o.th,'keychest')):WFX_OC0(o.th,open?'chestOpen':'chest'),jig=!open&&!gfxStill()?Math.round(Math.sin(age/26)):0,glint=open&&age<T.open+260;
+  draw(o,cv,fa,jig,glint);
+  if(o.key&&open){const k=Math.min(1,(age-T.open*.45)/420),rise=Math.round(6+12*(1-(1-k)*(1-k))),bob=gfxStill()?0:Math.round(Math.sin(age/260)*1.2);draw(o,wfxKeySprite(),fa*Math.min(1,k*3),0,age<T.open+700,rise+bob,1);}}}
 HOOK.after('worldDraw','worldfx','world-space ambience',function(_,now){try{if(typeof hdActive==='function'&&hdActive())return;const ctx=WS.ctx,cx=Math.round(WS.cam.x),cy=Math.round(WS.cam.y);
-  wfxChestAnims(performance.now(),(o,cv,fa,jig,glint)=>{const px=o.x*TS-cx-1+jig,py=o.y*TS-cy+16-cv.height;ctx.save();ctx.globalAlpha=fa;ctx.drawImage(cv,px,py);
+  wfxChestAnims(performance.now(),(o,cv,fa,jig,glint,up,isKey)=>{const px=isKey?o.x*TS-cx+8-Math.round(cv.width/2):o.x*TS-cx-1+jig,py=o.y*TS-cy+16-cv.height-(up||0);ctx.save();ctx.globalAlpha=fa;ctx.drawImage(cv,px,py);
     if(glint){ctx.fillStyle='rgba(255,236,160,.9)';ctx.fillRect(px+7,py-2,2,2);ctx.fillRect(px+3,py+1,1,1);ctx.fillRect(px+12,py,1,1);}ctx.restore();});}catch(e){}});
 HOOK.after('hdActors','worldfx','opening chests in HD-2D',function(r,m,now,ts){try{const V=HD.S.V;
-  wfxChestAnims(performance.now(),(o,cv,fa,jig,glint)=>{hdChar(HD.dyn,cv,o.x*TS+8+jig,0,o.y*TS+12,false,Math.round(255*fa),0,1);});}catch(e){}});
+  wfxChestAnims(performance.now(),(o,cv,fa,jig,glint,up,isKey)=>{hdChar(HD.dyn,cv,o.x*TS+8+jig,(up||0)*V,o.y*TS+12+(isKey?.6:0),false,Math.round(255*fa),0,1);});}catch(e){}});
 {const sa0=solidAt;solidAt=function(m,x,y){if(WFX.chestGone&&m&&m.t&&tileAt(m,x,y)==='c'){const r=m.t[y]&&m.t[y][x];if((r==='C'||r==='K')&&G&&G.chests&&G.chests[m.id+':'+x+','+y])return m.npcs.some(n=>n.x===x&&n.y===y)||dynActors(m).some(a=>a.x===x&&a.y===y);}return sa0.apply(this,arguments);};}
 // the ground under a chest is painted like the ground around it (it showed as an odd pale patch once the opened chest was gone)
 HOOK.wrap('drawTile','worldfx','ground under a gone chest',function(next,ctx,m,x,y,fr){const r=WFX.chestGone&&m&&m.t&&m.t[y]?m.t[y][x]:null;if((r==='C'||r==='K')&&typeof floorLike==='function'){m.t[y][x]=floorLike(m,x,y);try{return next(ctx,m,x,y,fr);}finally{m.t[y][x]=r;}}return next(ctx,m,x,y,fr);});
@@ -34802,7 +34835,7 @@ body.ch15 :is(.panel,.dlg,.btn,.chip:not(.chips.mgrp .chip):not(.chips.msub .chi
   border-color:var(--ch-ink);box-shadow:inset 1px 1px 0 var(--ch-hi),0 0 0 1px var(--ch-ink)}
 body.ch15 .panel:not(.scroll){box-shadow:inset 1px 1px 0 var(--ch-hi),inset 0 0 0 3px var(--ui-2),inset 0 0 0 4px var(--ui-line-s),0 0 0 1px var(--ch-ink),0 10px 24px rgba(20,12,34,.45)}
 body.ch15 .btn,body.ch15 .chip{text-shadow:0 1px 0 var(--ch-ink)}
-body.ch15 .btn.gold{border-color:#5f4115;text-shadow:0 1px 0 rgba(255,244,205,.55)}
+body.ch15 .btn.gold{border-color:#5f4115;text-shadow:none}/* v0.22.22: no shadow on gold (it doubled the letters) */
 body.ch15 .btn:disabled{box-shadow:0 0 0 1px var(--ch-ink)}
 body.ch15 .chips.mgrp .chip,body.ch15 .chips.msub .chip{border-color:var(--ch-ink)}
 body.ch15 :is(.chip.on:not(.chips.mgrp .chip):not(.chips.msub .chip),.card.sel,.swc.sel){box-shadow:inset 1px 1px 0 var(--ch-hi),0 0 0 1px var(--ch-ink),0 0 0 2px var(--ui-gold-lo)}
@@ -38187,7 +38220,7 @@ function g21Draw2D(now){const m=WS.m,ctx=WS.ctx;if(!m||!ctx)return;const cx=Math
   ctx.restore();}
 function g21Tag2D(ctx,a,X,top){const n=typeof sanctNear==='function'?sanctNear(a):0;
   ctx.fillStyle='#150b17';ctx.fillRect(X-2,top-9,5,9);ctx.fillStyle='#ff4a4a';ctx.fillRect(X-1,top-8,3,5);ctx.fillRect(X-1,top-2,3,1);
-  if(n>0){const s=a.b.name||'';ctx.save();ctx.globalAlpha=n;ctx.font='bold 7px sans-serif';ctx.textAlign='center';ctx.lineWidth=2;ctx.strokeStyle='#0a0614';ctx.fillStyle='#ffe08a';ctx.strokeText(s,X,top-12);ctx.fillText(s,X,top-12);ctx.restore();}}
+  /* v0.22.22 (owner: "Dont need miniboss names above their heads in overworld"): the name is in the popup when you walk up; only the red marker stays */}
 HOOK.wrap('worldDraw','guard21','big guardians and elite roamers (2D, after the core pass skipped them)',function(next,...a){const m=WS.m;
   const r=g21Hide(m,()=>next(...a));try{if(g21On()&&m&&!(typeof hdActive==='function'&&hdActive()))g21Draw2D(a[0]||performance.now());}catch(e){G21.err=String(e&&e.message||e);}return r;});
 // HD-2D: placed, lit and shadowed like every character (hdChar at an explicit width), the aura and rune ring as ground decals
@@ -38202,7 +38235,7 @@ function g21DrawHD(m,now,ts){const B=HD.dyn,BB=HD.dynB,BA=HD.dynA,V=HD.S.V,still
     g21Char(B,c,fx,-sp*V,fz,true,W);const h=HD.chH;hdShadowC(fx,fz+1,1.1);
     hdBill(BA,'glow',hdGlowS(),fx,h*.3,fz-.5,false,W/22,col[0]*255,col[1]*255,col[2]*255,Math.round((.22+.12*p)*255),4);
     hdBill(B,'mkr',hdMark('#ff4a4a'),fx,h+3*V,fz,false,1,255,255,255,255,4);
-    const n=typeof sanctNear==='function'?sanctNear(a):0,s=a.b.name||'';if(n>0&&s){const lab=hdSpr('gname:'+s,Math.max(24,s.length*5+8),11,(q,w,hh)=>{q.font='bold 8px sans-serif';q.textAlign='center';q.lineWidth=2.5;q.strokeStyle='#0a0614';q.fillStyle='#ffe08a';q.strokeText(s,w/2,8.5);q.fillText(s,w/2,8.5);});
+    const n=0/* v0.22.22: no name above a guardian */,s=a.b.name||'';if(n>0&&s){const lab=hdSpr('gname:'+s,Math.max(24,s.length*5+8),11,(q,w,hh)=>{q.font='bold 8px sans-serif';q.textAlign='center';q.lineWidth=2.5;q.strokeStyle='#0a0614';q.fillStyle='#ffe08a';q.strokeText(s,w/2,8.5);q.fillText(s,w/2,8.5);});
       hdBill(B,'gname:'+s,lab,fx,h+12*V,fz,false,1,255,255,255,Math.round(n*255),4);}
     hdPickAdd(-1,fx,fz,Math.max(h,22*V),Math.max(W*.6,16),a.x,a.y);G21.n.mini++;G21.last.mini=['hd',W,HD.chW];});
   g21Elites(m).forEach(r=>{const mo=MON[r.mon],c=g21Frame(mo.art,now,still);const [x,y]=g21RoamPos(r,now);if(Math.abs(x-HD.cam.x)>420||Math.abs(y-HD.cam.z)>520)return;

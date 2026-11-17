@@ -315,3 +315,7 @@ html.rm .menter .panel,html.rm .pc.tg,html.rm .swc.sel{animation:none}
   .title>.btnrow.center>.btn:last-child:nth-child(even){grid-column:auto}
 }
 /* ===== end v0.5.3 UI ===== */
+
+/* v0.22.22 (owner: "Menu words highlighted in yellow look fuzzy/pixelated"): dark text on the gold fill carried a 1 px text shadow (a light one on
+   gold buttons, the buttons' dark one on a selected chip), which doubled every letter. No shadow on gold. */
+.btn.gold,.chip.on,.chips.mgrp .chip.on,.btn.gold *,.chip.on *{text-shadow:none}

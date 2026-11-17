@@ -81,18 +81,34 @@ HOOK.before('objCanvas','worldfx','the opened chest is gone',function(th,kind){i
 // v0.8.3: the opening is shown before the chest goes (the owner liked it): the lid pops open with a glint, the open chest stays while the
 // loot is collected (the find text), then it fades out. Drawn on top in both renderers; the tile itself is already gone from the map.
 const WFX_OPEN={};window.__WFXO=WFX_OPEN;// key -> {m,x,y,th,t0,done} (window.__WFXO for tests)
-HOOK.wrap('openChest','worldfx','chest opening sparkle',function(next,...a){let x=a[0],y=a[1];const m=WS.m,key=m&&m.id+':'+x+','+y,was=!!(G&&G.chests&&key&&G.chests[key]);const r=next(...a);
-  try{if(!was&&key&&G.chests[key]&&WFX.chestGone)WFX_OPEN[key]={m:m.id,x,y,th:m.theme,t0:performance.now(),done:0};}catch(e){}return r;});
+HOOK.wrap('openChest','worldfx','chest opening sparkle',function(next,...a){let x=a[0],y=a[1];const m=WS.m,key=m&&m.id+':'+x+','+y,was=!!(G&&G.chests&&key&&G.chests[key]),kc=!!(m&&m.t&&m.t[y]&&m.t[y][x]==='K');const r=next(...a);
+  try{if(!was&&key&&G.chests[key]&&WFX.chestGone)WFX_OPEN[key]={m:m.id,x,y,th:m.theme,t0:performance.now(),done:0,key:kc};}catch(e){}return r;});
+// v0.22.22 (owner: "Boss key chest turns to a regular chest during open animation. Let's also add a boss key sprite that appears when
+// obtaining the boss key"): the key chest keeps its own look while it opens (its blue and silver, lid up), and the Beacon Key rises out of
+// it, glints and hangs over the chest while the find text is up, then fades with the chest. Both renderers.
+const WFX_KC={};
+function wfxKeyChestOpen(){if(WFX_KC.open)return WFX_KC.open;const c=mkCv(18,18),x=c.getContext('2d'),f=(col,a,b,w,h)=>{x.fillStyle=col;x.fillRect(a,b,w,h);};
+  f('#150b17',2,1,14,16);f('#6a7ab0',3,2,12,4);f('#8e9cd0',3,2,12,1);f('#e8e8f8',3,5,12,1);f('#1a1a2a',3,6,12,3);f('#3a2a10',4,7,10,2);f('#ffd870',5,7,3,1);f('#ffe9a0',10,8,2,1);
+  f('#4a5a8a',3,9,12,7);f('#3a4870',3,14,12,2);f('#e8e8f8',3,9,12,1);f('#e8e8f8',3,9,1,7);f('#e8e8f8',14,9,1,7);f('#e8e8f8',7,10,4,3);f('#1a1a2a',8,11,2,1);return WFX_KC.open=c;}
+// the Beacon Key: a gold key whose bow is a beacon flame, 9 x 16
+function wfxKeySprite(){if(WFX_KC.key)return WFX_KC.key;const c=mkCv(11,18),x=c.getContext('2d'),f=(col,a,b,w,h)=>{x.fillStyle=col;x.fillRect(a,b,w,h);};
+  // outline
+  f('#2a1700',3,0,5,1);f('#2a1700',2,1,7,1);f('#2a1700',1,2,9,5);f('#2a1700',2,7,7,1);f('#2a1700',4,8,3,9);f('#2a1700',7,11,3,2);f('#2a1700',7,14,2,2);
+  // bow (the flame), shaft, teeth
+  f('#ffd24a',4,1,3,1);f('#ffd24a',3,2,5,1);f('#ffd24a',2,3,7,3);f('#ffd24a',3,6,5,1);f('#ff8a2a',4,3,3,3);f('#fff3b0',5,4,1,2);f('#fff7d0',3,2,1,1);
+  f('#e9b44a',5,7,1,9);f('#fff0a8',5,7,1,2);f('#e9b44a',7,12,2,1);f('#e9b44a',7,15,1,1);f('#b07a1c',5,14,1,2);return WFX_KC.key=c;}
+
 function wfxChestAnims(now,draw){const T=WFX.chestAnim||{open:320,hold:250,fade:450};for(const k in WFX_OPEN){const o=WFX_OPEN[k];if(!WS.m||WS.m.id!==o.m){delete WFX_OPEN[k];continue;}
   const busy=!!(WS.dlg||V.modal),age=now-o.t0;if(!busy&&age>T.open&&!o.done)o.done=now;
   const fa=o.done?Math.max(0,1-(now-o.done-T.hold)/T.fade):1;if(fa<=0){delete WFX_OPEN[k];continue;}
-  const open=age>=T.open*.45,cv=WFX_OC0(o.th,open?'chestOpen':'chest'),jig=!open&&!gfxStill()?Math.round(Math.sin(age/26)):0,glint=open&&age<T.open+260;
-  draw(o,cv,fa,jig,glint);}}
+  const open=age>=T.open*.45,cv=o.key?(open?wfxKeyChestOpen():WFX_OC0(o.th,'keychest')):WFX_OC0(o.th,open?'chestOpen':'chest'),jig=!open&&!gfxStill()?Math.round(Math.sin(age/26)):0,glint=open&&age<T.open+260;
+  draw(o,cv,fa,jig,glint);
+  if(o.key&&open){const k=Math.min(1,(age-T.open*.45)/420),rise=Math.round(6+12*(1-(1-k)*(1-k))),bob=gfxStill()?0:Math.round(Math.sin(age/260)*1.2);draw(o,wfxKeySprite(),fa*Math.min(1,k*3),0,age<T.open+700,rise+bob,1);}}}
 HOOK.after('worldDraw','worldfx','world-space ambience',function(_,now){try{if(typeof hdActive==='function'&&hdActive())return;const ctx=WS.ctx,cx=Math.round(WS.cam.x),cy=Math.round(WS.cam.y);
-  wfxChestAnims(performance.now(),(o,cv,fa,jig,glint)=>{const px=o.x*TS-cx-1+jig,py=o.y*TS-cy+16-cv.height;ctx.save();ctx.globalAlpha=fa;ctx.drawImage(cv,px,py);
+  wfxChestAnims(performance.now(),(o,cv,fa,jig,glint,up,isKey)=>{const px=isKey?o.x*TS-cx+8-Math.round(cv.width/2):o.x*TS-cx-1+jig,py=o.y*TS-cy+16-cv.height-(up||0);ctx.save();ctx.globalAlpha=fa;ctx.drawImage(cv,px,py);
     if(glint){ctx.fillStyle='rgba(255,236,160,.9)';ctx.fillRect(px+7,py-2,2,2);ctx.fillRect(px+3,py+1,1,1);ctx.fillRect(px+12,py,1,1);}ctx.restore();});}catch(e){}});
 HOOK.after('hdActors','worldfx','opening chests in HD-2D',function(r,m,now,ts){try{const V=HD.S.V;
-  wfxChestAnims(performance.now(),(o,cv,fa,jig,glint)=>{hdChar(HD.dyn,cv,o.x*TS+8+jig,0,o.y*TS+12,false,Math.round(255*fa),0,1);});}catch(e){}});
+  wfxChestAnims(performance.now(),(o,cv,fa,jig,glint,up,isKey)=>{hdChar(HD.dyn,cv,o.x*TS+8+jig,(up||0)*V,o.y*TS+12+(isKey?.6:0),false,Math.round(255*fa),0,1);});}catch(e){}});
 {const sa0=solidAt;solidAt=function(m,x,y){if(WFX.chestGone&&m&&m.t&&tileAt(m,x,y)==='c'){const r=m.t[y]&&m.t[y][x];if((r==='C'||r==='K')&&G&&G.chests&&G.chests[m.id+':'+x+','+y])return m.npcs.some(n=>n.x===x&&n.y===y)||dynActors(m).some(a=>a.x===x&&a.y===y);}return sa0.apply(this,arguments);};}
 // the ground under a chest is painted like the ground around it (it showed as an odd pale patch once the opened chest was gone)
 HOOK.wrap('drawTile','worldfx','ground under a gone chest',function(next,ctx,m,x,y,fr){const r=WFX.chestGone&&m&&m.t&&m.t[y]?m.t[y][x]:null;if((r==='C'||r==='K')&&typeof floorLike==='function'){m.t[y][x]=floorLike(m,x,y);try{return next(ctx,m,x,y,fr);}finally{m.t[y][x]=r;}}return next(ctx,m,x,y,fr);});

@@ -178,7 +178,7 @@ body.ch15 :is(.panel,.dlg,.btn,.chip:not(.chips.mgrp .chip):not(.chips.msub .chi
   border-color:var(--ch-ink);box-shadow:inset 1px 1px 0 var(--ch-hi),0 0 0 1px var(--ch-ink)}
 body.ch15 .panel:not(.scroll){box-shadow:inset 1px 1px 0 var(--ch-hi),inset 0 0 0 3px var(--ui-2),inset 0 0 0 4px var(--ui-line-s),0 0 0 1px var(--ch-ink),0 10px 24px rgba(20,12,34,.45)}
 body.ch15 .btn,body.ch15 .chip{text-shadow:0 1px 0 var(--ch-ink)}
-body.ch15 .btn.gold{border-color:#5f4115;text-shadow:0 1px 0 rgba(255,244,205,.55)}
+body.ch15 .btn.gold{border-color:#5f4115;text-shadow:none}/* v0.22.22: no shadow on gold (it doubled the letters) */
 body.ch15 .btn:disabled{box-shadow:0 0 0 1px var(--ch-ink)}
 body.ch15 .chips.mgrp .chip,body.ch15 .chips.msub .chip{border-color:var(--ch-ink)}
 body.ch15 :is(.chip.on:not(.chips.mgrp .chip):not(.chips.msub .chip),.card.sel,.swc.sel){box-shadow:inset 1px 1px 0 var(--ch-hi),0 0 0 1px var(--ch-ink),0 0 0 2px var(--ui-gold-lo)}

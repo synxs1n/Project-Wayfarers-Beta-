@@ -243,7 +243,13 @@ actorTalk=HOOK.def('actorTalk',actorTalk);
 function say(name,text,after){WS.dlg={name,text,after};WS.held=[];WS.target=null;WS.touchDir=null;if(typeof sfx==='function')sfx('blip');render();}
 function nextDlg(){const d=WS.dlg;WS.dlg=null;render();if(d&&d.after)d.after();}
 // v0.12: chest items: the old six picks (x3) plus bandage (common), ash (uncommon) and tent (rare); one pick, as before
-function CHEST_ITEMS(s){const hp=s>=1?'hipotion':'potion';return ['potion','potion','ether','ether','remedy','remedy','plume','plume',hp,hp,'potion','potion','potion','potion','bandage','bandage','bandage','bandage','ash','ash','tent'];}
+// v0.22.22 (owner: "Some items never appear in chest or as battle rewards, smelling salts is an example"): every item can turn up now.
+// Added: Smelling Salts and Holy Water from the first realm, the Sage Brew and Vigor Tonic from the second, Camp Supplies from the third, an
+// Elixir (rare) from the fourth.
+function CHEST_ITEMS(s){const hp=s>=1?'hipotion':'potion',L=['potion','potion','ether','ether','remedy','remedy','plume','plume',hp,hp,'potion','potion','potion','potion','bandage','bandage','bandage','bandage','ash','ash','tent','salts','salts','salts','holywater'];
+  if(s>=1)L.push('sage','vigor');if(s>=2&&ITEMS.campkit)L.push('campkit');if(s>=3)L.push('elixir');return L.filter(k=>ITEMS[k]);}
+const CHEST_ONE=['plume','tent','holywater','campkit','elixir','sage','vigor'];// one of these to a chest, two of the others
+function chestGear(tier,dun){const cap=typeof rarCap==='function'?rarCap():tier,up=!G.daily&&cap<5&&Math.random()<CHEST_UP;return {up,gid:up?lootBase()+'_'+(cap+1):lootBase()+'_'+tier+(dun?'+1':'')};}
 function openChest(x,y){
   const m=WS.m,key=m.id+':'+x+','+y;if(G.chests[key])return;
   const raw=m.t[y][x];G.chests[key]=1;if(typeof sfx==='function')sfx('chest');
@@ -253,9 +259,11 @@ function openChest(x,y){
   if(m.cave&&(m.chests||[]).some(c=>c[0]===x&&c[1]===y&&c[2]==='reward')){rebuildBase();const t=caveReward(m.s);saveGame();say(null,'You open the chest. '+t);return;}
   if(vault){G.vaults=G.vaults||{};G.vaults[s]=1;const ch=pick(rarPool(['c_str','c_int','c_vit','c_spi','c_agi','c_dex','c_luk'])),g=econG(200+s*150);G.gear.push(ch);G.gold+=g;msg=`Inside: ${gearOf(ch).n} and ${g} gold!`;}
   else if(r<.28){const g=econG(60+s*110+ri(0,40));G.gold+=g;msg=`Inside: ${g} gold.`;}
-  else if(r<.52){const it=pick(CHEST_ITEMS(s));const n=it==='plume'||it==='tent'?1:2;G.inv[it]=Math.min(invCap(),(G.inv[it]||0)+n);msg=`Inside: ${n>1?n+' x ':''}${ITEMS[it].n}.`;}
+  else if(r<.52){const it=pick(CHEST_ITEMS(s));const n=CHEST_ONE.includes(it)?1:2;G.inv[it]=Math.min(invCap(),(G.inv[it]||0)+n);msg=`Inside: ${n>1?n+' x ':''}${ITEMS[it].n}.`;}
   else if(r<.7){const n=dun?3:2;G.mats[Z.mat]=(G.mats[Z.mat]||0)+n;msg=`Inside: ${n} x ${MATS[Z.mat]}.`;}
-  else if(r<.9){const gid=lootBase()+'_'+tier+(dun?'+1':'');G.gear.push(gid);msg=`Inside: ${gearOf(gid).n} (${ITEM_TIERS[gTierIdx(gearOf(gid))].n})! Equip it from the menu, anywhere.`;}
+  else if(r<.9){// v0.22.22: a small chance (CHEST_UP) of a piece one rarity above what the journey has opened (never Echoforged: lootBase is shop gear)
+    const cg=chestGear(tier,dun),up=cg.up,gid=cg.gid;G.gear.push(gid);
+    msg=`Inside: ${gearOf(gid).n} (${ITEM_TIERS[gTierIdx(gearOf(gid))].n})!${up?' A rare find: a rarity you have not reached yet.':''} Equip it from the menu, anywhere.`;}
   else{const cid=pick(['c_vital','c_mana','c_swift','c_clarity','c_'+pick(ELK)]);G.gear.push(cid);msg=`Inside: ${gearOf(cid).n} (${ITEM_TIERS[gTierIdx(gearOf(cid))].n})!`;}
   rebuildBase();saveGame();say(null,'You open the chest. '+msg);
 }

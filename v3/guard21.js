@@ -329,7 +329,7 @@ function g21Draw2D(now){const m=WS.m,ctx=WS.ctx;if(!m||!ctx)return;const cx=Math
   ctx.restore();}
 function g21Tag2D(ctx,a,X,top){const n=typeof sanctNear==='function'?sanctNear(a):0;
   ctx.fillStyle='#150b17';ctx.fillRect(X-2,top-9,5,9);ctx.fillStyle='#ff4a4a';ctx.fillRect(X-1,top-8,3,5);ctx.fillRect(X-1,top-2,3,1);
-  if(n>0){const s=a.b.name||'';ctx.save();ctx.globalAlpha=n;ctx.font='bold 7px sans-serif';ctx.textAlign='center';ctx.lineWidth=2;ctx.strokeStyle='#0a0614';ctx.fillStyle='#ffe08a';ctx.strokeText(s,X,top-12);ctx.fillText(s,X,top-12);ctx.restore();}}
+  /* v0.22.22 (owner: "Dont need miniboss names above their heads in overworld"): the name is in the popup when you walk up; only the red marker stays */}
 HOOK.wrap('worldDraw','guard21','big guardians and elite roamers (2D, after the core pass skipped them)',function(next,...a){const m=WS.m;
   const r=g21Hide(m,()=>next(...a));try{if(g21On()&&m&&!(typeof hdActive==='function'&&hdActive()))g21Draw2D(a[0]||performance.now());}catch(e){G21.err=String(e&&e.message||e);}return r;});
 // HD-2D: placed, lit and shadowed like every character (hdChar at an explicit width), the aura and rune ring as ground decals
@@ -344,7 +344,7 @@ function g21DrawHD(m,now,ts){const B=HD.dyn,BB=HD.dynB,BA=HD.dynA,V=HD.S.V,still
     g21Char(B,c,fx,-sp*V,fz,true,W);const h=HD.chH;hdShadowC(fx,fz+1,1.1);
     hdBill(BA,'glow',hdGlowS(),fx,h*.3,fz-.5,false,W/22,col[0]*255,col[1]*255,col[2]*255,Math.round((.22+.12*p)*255),4);
     hdBill(B,'mkr',hdMark('#ff4a4a'),fx,h+3*V,fz,false,1,255,255,255,255,4);
-    const n=typeof sanctNear==='function'?sanctNear(a):0,s=a.b.name||'';if(n>0&&s){const lab=hdSpr('gname:'+s,Math.max(24,s.length*5+8),11,(q,w,hh)=>{q.font='bold 8px sans-serif';q.textAlign='center';q.lineWidth=2.5;q.strokeStyle='#0a0614';q.fillStyle='#ffe08a';q.strokeText(s,w/2,8.5);q.fillText(s,w/2,8.5);});
+    const n=0/* v0.22.22: no name above a guardian */,s=a.b.name||'';if(n>0&&s){const lab=hdSpr('gname:'+s,Math.max(24,s.length*5+8),11,(q,w,hh)=>{q.font='bold 8px sans-serif';q.textAlign='center';q.lineWidth=2.5;q.strokeStyle='#0a0614';q.fillStyle='#ffe08a';q.strokeText(s,w/2,8.5);q.fillText(s,w/2,8.5);});
       hdBill(B,'gname:'+s,lab,fx,h+12*V,fz,false,1,255,255,255,Math.round(n*255),4);}
     hdPickAdd(-1,fx,fz,Math.max(h,22*V),Math.max(W*.6,16),a.x,a.y);G21.n.mini++;G21.last.mini=['hd',W,HD.chW];});
   g21Elites(m).forEach(r=>{const mo=MON[r.mon],c=g21Frame(mo.art,now,still);const [x,y]=g21RoamPos(r,now);if(Math.abs(x-HD.cam.x)>420||Math.abs(y-HD.cam.z)>520)return;

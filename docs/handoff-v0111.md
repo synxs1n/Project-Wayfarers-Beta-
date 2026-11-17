@@ -714,3 +714,13 @@ Owner on 0.22.20: "higher town angle is awkward, go back to old angle and ensure
 - Not done: "what they look like" beyond footprints (the 20 building families are the towns14 art), a landmark per town, per-plan terrain dressing beyond ponds, piers, park trees and ledges. He liked the roofs.
 - Test `tools/chrome/v207a.js` (group world; rewritten for towns24). Next free test name: v208a.
 
+## 0.22.22: guardian names, the rune circle, item sources, chest rarity, the key chest, gold text
+Owner notes on 0.22.21 (one message), all done:
+- guard21.js: no name above a guardian (2D `g21Tag2D` draws only the red marker; HD-2D label off with `n=0`). The name is still on the `miniask` popup.
+- "can't walk straight to the chest behind a guardian after beating it": a Sanctum (fort map) guardian stands on the rune circle tile 'X' at `m.guardAt`, one tile in front of `m.prize`. 'X' is in SOLID and stepping at it calls `askBoss`, which sites.js stops for a den or keep, so after the fight the tile was a silent wall. worldgen.js `tileAt` now answers '.' for an 'X' on a fort map with a guardAt once `miniPending(m)` is false. (A den's guardian stands on plain floor: no change needed.)
+- Items: `CHEST_ITEMS(s)` (worldrt.js) gains salts x3 and holywater, sage and vigor from s 1, campkit from s 2, elixir from s 3 (`CHEST_ONE`: one to a chest). `DROP_MIX` (config.js) gains salts .3, holywater .06, plume .04, and engine.js walks its keys (remedy keeps its rate; the group roll grows). Only the Pork Chop still comes from neither (the first boss gift and the shop).
+- Chest gear: `chestGear(tier,dun)` (worldrt.js): with `CHEST_UP` .04 (config.js), not in the Daily Trial and below rarity 5, the piece is `lootBase()` at `rarCap()+1`, untempered; lootBase is shop gear, so never Echoforged.
+- The key chest (worldfx.js): the opening entry carries `key:true` when the tile was 'K'; `wfxChestAnims` draws `keychest` then `wfxKeyChestOpen()` instead of the ordinary chest, and `wfxKeySprite()` (the Beacon Key, 11 x 18) rising 6 to 18 px over it with a bob, held while the find text is up. The draw callbacks take (o,cv,fa,jig,glint,up,isKey) in both renderers.
+- Gold text: `.btn.gold`, `.chip.on` and their children have `text-shadow:none` (ui3.css, last rule); cohere15.js's `body.ch15 .btn.gold` no longer sets one.
+- Test `tools/chrome/v208a.js` (group world). Next free test name: v209a.
+

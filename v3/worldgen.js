@@ -723,6 +723,9 @@ function villagerLook(name){
 function tileAt(m,x,y){
   if(x<0||y<0||x>=m.w||y>=m.h)return m.kind==='dungeon'?'#':'Z';
   let c=m.t[y][x];
+  // v0.22.22: a Sanctum guardian stands on the rune circle right in front of the prize chest; the circle stayed a solid 'X' after the fight
+  // (and asked for a boss that is gone), so the chest could only be reached from the side. Once the guardian is beaten it is floor.
+  if(c==='X'&&m.fort&&m.guardAt&&typeof miniPending==='function'&&!miniPending(m))return '.';
   if(c==='X'&&G.cleared[m.s]&&!(typeof storyEchoUp==='function'&&storyEchoUp(m.s)))return '.';
   if(c==='G'&&G.cleared[m.s])return '=';
   if((c==='C'||c==='K')&&G.chests[m.id+':'+x+','+y])return 'c';
