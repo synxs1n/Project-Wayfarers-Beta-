@@ -506,6 +506,27 @@ Registered (load order; 1 is next to the base):
 
 Runs: 10 party12 → 6 map → **base** → 1 account → 2 progression → 3 tavern2 → 4 metastats → 5 prog2 → 7 pacing → 8 goals → 9 look9 → 11 party12 → 12 menus14 → 13 quests16 → 14 world16 → 15 roster17 → 16 legends17b
 
+### renderBattle (16 hooks)
+Registered (load order; 1 is next to the base):
+1. `battleui.js` after: boss bar removed
+2. `battle3.js` after: fit the target tags
+3. `battle3.js` after: tall layout: bottom panel back to the top on a new turn
+4. `battle3.js` after: fit check once the whole render has run (microtask)
+5. `battle3.js` before: Expert battle info class (b9x)
+6. `battle5.js` after: forecast bar fit
+7. `battle4.js` around: gimmick sync before, Momentum bar after
+8. `chain5.js` after: planned targets on the intent tags and the party cards
+9. `summon8.js` after: praying badge
+10. `kits12.js` after: name plate over a summoned guardian
+11. `menus12.js` before: battle menu memory: a turn opens at the hero's own remembered submenu; the place is noted on every render
+12. `menus12.js` after: battle menu memory: put the remembered scroll back (after the layout hooks)
+13. `battle16.js` before: no battle menu memory: a turn opens on the main actions (runs before menus12, which would put a submenu back)
+14. `battle16.js` after: a new turn starts at the top of the command list
+15. `battle16.js` after: the name plate of a summoned Scourge says SCOURGE
+16. `battle27.js` after: small phones: top strip, floating log line and the Party & foes sheet
+
+Runs: 13 battle16 → 11 menus12 → 7 battle4 (around) → 5 battle3 → **base** → 1 battleui → 2 battle3 → 3 battle3 → 4 battle3 → 6 battle5 → 7 battle4 (around) → 8 chain5 → 9 summon8 → 10 kits12 → 12 menus12 → 14 battle16 → 15 battle16 → 16 battle27
+
 ### settingsBody (16 hooks)
 Registered (load order; 1 is next to the base):
 1. `battleui.js` result: Single target skills row
@@ -526,26 +547,6 @@ Registered (load order; 1 is next to the base):
 16. `menus11.js` result: titled sections in order of convenience: Play, Display, Sound, Controls, Account and Saves, Help and Feedback, Danger zone
 
 Runs: 13 hd2d (around) → 12 onboard (around) → 8 gfx6 (around) → 7 p2world (around) → 6 deskscale (around) → 5 keymap (around) → 3 music2 (around) → 2 saves (around) → **base** → 1 battleui (result) → 2 saves (around) → 3 music2 (around) → 4 p5settings (result) → 5 keymap (around) → 6 deskscale (around) → 7 p2world (around) → 8 gfx6 (around) → 9 battle3 (result) → 10 battle3 (result) → 11 battle5 (result) → 12 onboard (around) → 13 hd2d (around) → 14 guidance9 (result) → 15 res11 (result) → 16 menus11 (result)
-
-### renderBattle (15 hooks)
-Registered (load order; 1 is next to the base):
-1. `battleui.js` after: boss bar removed
-2. `battle3.js` after: fit the target tags
-3. `battle3.js` after: tall layout: bottom panel back to the top on a new turn
-4. `battle3.js` after: fit check once the whole render has run (microtask)
-5. `battle3.js` before: Expert battle info class (b9x)
-6. `battle5.js` after: forecast bar fit
-7. `battle4.js` around: gimmick sync before, Momentum bar after
-8. `chain5.js` after: planned targets on the intent tags and the party cards
-9. `summon8.js` after: praying badge
-10. `kits12.js` after: name plate over a summoned guardian
-11. `menus12.js` before: battle menu memory: a turn opens at the hero's own remembered submenu; the place is noted on every render
-12. `menus12.js` after: battle menu memory: put the remembered scroll back (after the layout hooks)
-13. `battle16.js` before: no battle menu memory: a turn opens on the main actions (runs before menus12, which would put a submenu back)
-14. `battle16.js` after: a new turn starts at the top of the command list
-15. `battle16.js` after: the name plate of a summoned Scourge says SCOURGE
-
-Runs: 13 battle16 → 11 menus12 → 7 battle4 (around) → 5 battle3 → **base** → 1 battleui → 2 battle3 → 3 battle3 → 4 battle3 → 6 battle5 → 7 battle4 (around) → 8 chain5 → 9 summon8 → 10 kits12 → 12 menus12 → 14 battle16 → 15 battle16
 
 ### battleFrame (14 hooks)
 Registered (load order; 1 is next to the base):
@@ -585,7 +586,7 @@ Registered (load order; 1 is next to the base):
 
 Runs: 13 shields20 (around) → 12 legnat20 → **base** → 1 ailments → 2 echocore → 3 comp → 4 roles → 5 natures6 → 6 riftkeeper9 → 7 roles9 → 8 echo11 → 9 battle16 → 10 legends17b → 11 legends17a → 13 shields20 (around) → 14 relics25 (result)
 
-### cmdHtml (13 hooks)
+### cmdHtml (14 hooks)
 Registered (load order; 1 is next to the base):
 1. `battle3.js` result: tall layout: HP/MP bars and the auto note in the command head
 2. `battle5.js` result: cue and glow on the command menu
@@ -600,8 +601,9 @@ Registered (load order; 1 is next to the base):
 11. `battle16.js` result: recruited bosses: a note where the Summon command was for anyone who cannot call them
 12. `legends17a.js` result: greyed rows with the reason, the boss command, HP for MP in his summons menu
 13. `legends17a.js` result: Joseth among the callers in the greyed Summon note
+14. `battle27.js` result: small phones: the Party & foes button leads the second row
 
-Runs: 4 summon8 (around) → **base** → 1 battle3 (result) → 2 battle5 (result) → 3 battle4 (result) → 4 summon8 (around) → 5 battle9 (result) → 6 skillfilt9 (result) → 7 battle11 (result) → 8 skillrows11 (result) → 9 skills12 (result) → 10 menus12 (result) → 11 battle16 (result) → 12 legends17a (result) → 13 legends17a (result)
+Runs: 4 summon8 (around) → **base** → 1 battle3 (result) → 2 battle5 (result) → 3 battle4 (result) → 4 summon8 (around) → 5 battle9 (result) → 6 skillfilt9 (result) → 7 battle11 (result) → 8 skillrows11 (result) → 9 skills12 (result) → 10 menus12 (result) → 11 battle16 (result) → 12 legends17a (result) → 13 legends17a (result) → 14 battle27 (result)
 
 ### mChar (13 hooks)
 Registered (load order; 1 is next to the base):

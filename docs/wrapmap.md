@@ -2,7 +2,7 @@
 
 Who wraps what, in load order. `raw` is the `{const f0=fn;fn=function...}` idiom, `replace` a reassignment without calling the old body, the rest are HOOK registrations. "def" names the module that HOOK.def'd the function. Raw wraps on a def'd function should become registrations; functions with many raw wraps and no def are the candidates for one.
 
-482 functions wrapped; 580 raw wraps or replacements, 798 hook registrations.
+483 functions wrapped; 581 raw wraps or replacements, 800 hook registrations.
 
 | function | owner | def | layers | chain (load order) |
 |---|---|---|---|---|
@@ -17,11 +17,11 @@ Who wraps what, in load order. `raw` is the `{const f0=fn;fn=function...}` idiom
 | calcDamage | engine.js | engine.js | 19 | engine.js:after → insight.js:after → echocore.js:after → archetype.js:after → roles.js:after → natures6.js:xform → realms.js:after → twists.js:after → battle5.js:after → battle4.js:after → battle4.js:after → riftkeeper9.js:after → fxkind11.js:raw → skills12.js:wrap → roster17.js:wrap → legends17b.js:wrap → legends17a.js:after → legends17a.js:after → legends17a.js:wrap |
 | encounterFoes | engine.js | engine.js | 16 | legends.js:before → travel.js:after → world3.js:wrap → chance.js:before → mimic.js:before → echocore.js:before → roam.js:wrap → sites.js:wrap → p2world.js:wrap → duellines.js:after → riftkeeper9.js:before → endgame10.js:before → endgame10.js:wrap → early17.js:wrap → legends17b.js:before → legends17a.js:before |
 | newGame | engine.js | engine.js | 16 | account.js:after → progression.js:after → tavern2.js:after → metastats.js:after → prog2.js:after → map.js:before → pacing.js:after → goals.js:after → look9.js:after → party12.js:before → party12.js:after → menus14.js:after → quests16.js:after → world16.js:after → roster17.js:after → legends17b.js:after |
+| renderBattle | ui.js | ui.js | 16 | battleui.js:after → battle3.js:after → battle3.js:after → battle3.js:after → battle3.js:before → battle5.js:after → battle4.js:wrap → chain5.js:after → summon8.js:after → kits12.js:after → menus12.js:before → menus12.js:after → battle16.js:before → battle16.js:after → battle16.js:after → battle27.js:after |
 | settingsBody | ui.js | ui.js | 16 | battleui.js:xform → saves.js:wrap → music2.js:wrap → p5settings.js:xform → keymap.js:wrap → deskscale.js:wrap → p2world.js:wrap → gfx6.js:wrap → battle3.js:xform → battle3.js:xform → battle5.js:xform → onboard.js:wrap → hd2d.js:wrap → guidance9.js:xform → res11.js:xform → menus11.js:xform |
-| renderBattle | ui.js | ui.js | 15 | battleui.js:after → battle3.js:after → battle3.js:after → battle3.js:after → battle3.js:before → battle5.js:after → battle4.js:wrap → chain5.js:after → summon8.js:after → kits12.js:after → menus12.js:before → menus12.js:after → battle16.js:before → battle16.js:after → battle16.js:after |
 | battleFrame | battle.js | battle.js | 14 | anim.js:before → gfx6battle.js:wrap → hdstage.js:wrap → hdspell.js:before → sprhd2.js:before → battle11.js:wrap → res11.js:before → fxkind11.js:before → perf12.js:before → kits12.js:after → chars13.js:before → chars13.js:after → chars13.js:wrap → cohere15.js:before |
 | calcStats | engine.js | engine.js | 14 | ailments.js:after → echocore.js:after → comp.js:after → roles.js:after → natures6.js:after → riftkeeper9.js:after → roles9.js:after → echo11.js:after → battle16.js:after → legends17b.js:after → legends17a.js:after → legnat20.js:before → shields20.js:wrap → relics25.js:xform |
-| cmdHtml | ui.js | ui.js | 13 | battle3.js:xform → battle5.js:xform → battle4.js:xform → summon8.js:wrap → battle9.js:xform → skillfilt9.js:xform → battle11.js:xform → skillrows11.js:xform → skills12.js:xform → menus12.js:xform → battle16.js:xform → legends17a.js:xform → legends17a.js:xform |
+| cmdHtml | ui.js | ui.js | 14 | battle3.js:xform → battle5.js:xform → battle4.js:xform → summon8.js:wrap → battle9.js:xform → skillfilt9.js:xform → battle11.js:xform → skillrows11.js:xform → skills12.js:xform → menus12.js:xform → battle16.js:xform → legends17a.js:xform → legends17a.js:xform → battle27.js:xform |
 | mChar | ui.js | ui.js | 13 | comp.js:xform → learn.js:wrap → p3shop.js:xform → p4party.js:xform → roles9.js:xform → sheet11.js:xform → skillrows11.js:xform → party12.js:xform → skills12.js:xform → menus12.js:xform → menus14.js:xform → legends17a.js:xform → stats22.js:xform |
 | unpackG | engine.js | engine.js | 13 | tavern2.js:after → comp.js:after → learn.js:after → prog2.js:after → map.js:before → summon8.js:after → party12.js:after → skills12.js:after → menus14.js:after → realms14.js:after → battle16.js:after → world16.js:after → legends17a.js:after |
 | classSkills | skills.js | skills.js | 12 | archetype.js:xform → sigskills.js:xform → roles.js:xform → skills12.js:xform → kits12.js:xform → menus12.js:xform → menus14.js:xform → roster17.js:xform → legends17b.js:xform → legends17a.js:before → stats22.js:xform → relics25.js:xform |
@@ -257,6 +257,7 @@ Who wraps what, in load order. `raw` is the `{const f0=fn;fn=function...}` idiom
 | b4Role | battle4.js |  | 1 | riftkeeper9.js:raw |
 | b5Knows | battle5.js |  | 1 | riftkeeper9.js:raw |
 | b8CmdEst | battle3.js |  | 1 | fix18.js:replace |
+| b8TallPlan | battle3.js |  | 1 | battle27.js:raw |
 | b9Cue | battle5.js |  | 1 | chain5.js:raw |
 | b9IntW | battle5.js |  | 1 | chain5.js:raw |
 | b9RxHtml | battle3.js | battle3.js | 1 | battle3.js:xform |

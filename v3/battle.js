@@ -45,11 +45,12 @@ function battleMode(){const zz=typeof dsZoom==='function'?dsZoom():1,vw=window.i
 function layoutBattle(){
   const wrap=$('bwrap');if(!wrap)return;
   const bat=wrap.parentNode,mode=battleMode();
+  const sc27=typeof b27Mark==='function'?b27Mark(bat,mode):0;/* v0.22.27 (battle27.js): the small phone layout marks the battle before anything is measured, and may ask for a larger stage scale */
   bat.classList.toggle('bside',mode==='side');bat.classList.toggle('m-tall',mode==='tall');bat.classList.toggle('m-wide',mode==='wide');wrap.style.width='';
   // v0.6.3: on landscape phones the stage column is sized from the screen (the right column keeps at least B3.sideCol px)
   const w=mode==='side'&&bat.clientWidth?Math.max(200,Math.min(bat.clientWidth-B3.sideCol,bat.clientWidth*.62)):(wrap.clientWidth||window.innerWidth-32),cv=$('bcv'),st=$('bstage');
   if(mode==='tall'){
-    const sc=2;BL={W:Math.floor(w/sc),H:BL.fitH?BL.fitH:(w<520?196:160),sc,fitH:BL.fitH,short:false,mode};
+    const sc=sc27||2;BL={W:Math.floor(w/sc),H:BL.fitH?BL.fitH:Math.round((w<520?196:160)*2/sc),sc,fitH:BL.fitH,short:false,mode};
     cv.width=BL.W;cv.height=BL.H;cv.style.width=BL.W*sc+'px';cv.style.height=BL.H*sc+'px';wrap.style.height=(BL.H*sc+8)+'px';/* v0.12.10: + the frame's 4px borders (border-box), as the wide layout does; the bottom 8px were clipped */
     st.style.width=BL.W+'px';st.style.height=BL.H+'px';st.style.transform=`scale(${sc})`;return;}
   const vh=(window.visualViewport?window.visualViewport.height:window.innerHeight)/(typeof dsZoom==='function'?dsZoom():1),hd=$('hdr')?$('hdr').offsetHeight:0,od=(mode==='side'?0:($('border')?$('border').offsetHeight:0))+b3Extra(mode),bb=document.querySelector('.bbottom');
