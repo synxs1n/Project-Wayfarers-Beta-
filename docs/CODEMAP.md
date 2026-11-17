@@ -614,7 +614,7 @@ Registered (load order; 1 is next to the base):
 10. `menus12.js` result: skill rows on the hero sheet: scope, kind (for the weapon in hand), Primer / Detonator
 11. `menus14.js` result: the hero sheet on one page with a section dropdown (outside sheet11 tabs)
 12. `legends17a.js` result: the pack on his hero sheet
-13. `stats22.js` result: a +5 button beside each attribute's +
+13. `stats22.js` result: the stat points note and the +1 / +5 switch
 
 Runs: 2 learn (around) → **base** → 1 comp (result) → 2 learn (around) → 3 p3shop (result) → 4 p4party (result) → 5 roles9 (result) → 6 sheet11 (result) → 7 skillrows11 (result) → 8 party12 (result) → 9 skills12 (result) → 10 menus12 (result) → 11 menus14 (result) → 12 legends17a (result) → 13 stats22 (result)
 
