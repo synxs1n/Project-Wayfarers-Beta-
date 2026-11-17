@@ -212,6 +212,9 @@ function hdRoofProf(m,b){return 1;}
 hdRoofProf=HOOK.def('hdRoofProf',hdRoofProf);
 function hdBakeBuildings(m,S,bsp,deco){const V=S.V,sin=Math.sin(HD2D.pitch*Math.PI/180),pk=new H2Pack(1024),parts=[];
   {const g=hdGatePart(m);if(g)bsp=(bsp||[]).concat([g]);}// v0.6.3: the sanctum gatehouse stands up as towers and a curtain wall
+  // v0.22.21: one sprite per building. m.bsp holds every building once per painted frame (two), and both copies went into the atlas; with the
+  // larger towns of towns24.js the merged atlas passed the texture limit and the last buildings lost their textures (a bare roof slab)
+  {const seen=new Map();(bsp||[]).forEach(q=>{if(q&&q.b)seen.set(q.b,q);else if(q)seen.set(q,q);});bsp=[...seen.values()];}
   (bsp||[]).forEach(q=>{parts.push({q,r:pk.add(q.cv.width,q.cv.height)});});
   const decoParts=[];if(deco){m.bld.forEach(b=>{if(!SVC_LOOK||!SVC_LOOK[b.k])return;const x=b.x*TS-28,y=(b.y+b.h)*TS-50,w=b.w*TS+56,h=56;decoParts.push({b,x,y,w,h,r:pk.add(w,h)});});
     (m._qb||[]).forEach(([qx,qy])=>{const x=qx*TS-12,y=qy*TS+14,w=40,h=16;decoParts.push({board:1,qx,qy,x,y,w,h,r:pk.add(w,h)});});}

@@ -52,7 +52,7 @@ const MASK=`(fam,kind,w,h,theme)=>{const T=__A.TW.get('T14'),TS=16,db=__A.TW.get
     try{for(let i=n0;i<A.ZONES.length;i++){const z=A.ZONES[i],a=T.assign(z);A.G.run.order[0]=i;A.resetMaps();const m=A.getMap('t0'),iss=A.TW.get('mapIssues')(m).length;out.push({key:z.key,arch:a.arch,fam:a.fam,guessed:!!a.guessed,built:m.arch,sty:m.sty,iss,doors:m.bld.length});}}
     finally{A.ZONES.length=n0;T.n=0;A.G.run.order=ord0;A.resetMaps();}return out;});
   fake.forEach(f=>console.log(`  fake realm ${f.key}: ${f.arch} / ${f.fam}${f.guessed?' (guessed)':''}`));
-  chk(`six realm keys nobody knows: each built a town on a layout and a family of its own by theme, motif and mood, mapIssues 0`,fake.every(f=>f.guessed&&f.built===f.arch&&f.sty===f.fam&&f.iss===0&&f.doors>=5)||JSON.stringify(fake));
+  chk(`six realm keys nobody knows: each built a town on a layout and a family of its own by theme, motif and mood, mapIssues 0`,fake.every(f=>f.guessed&&(f.built===f.arch||/^n_/.test(f.built||'')/* 0.22.21: the plan is towns24's (by theme), the family still towns14's guess */)&&f.sty===f.fam&&f.iss===0&&f.doors>=5)||JSON.stringify(fake));
   chk('the guessed families follow the mood (ember -> obsidian, frost snow -> ice, spore coast -> mud, bolt -> cloud, eclipse -> crystal)',(m=>m.zzember==='obsidian'&&m.zzfrost==='ice'&&m.zzspore==='mud'&&m.zzbolt==='cloud'&&m.zzvoid==='crystal')(Object.fromEntries(fake.map(f=>[f.key,f.fam])))||JSON.stringify(fake));
   // ---------- 2. layout fingerprints ----------
   const fpall=await ev(([FP,DIST,JOURNEYS])=>{const A=__A,fp=(0,eval)(FP),dist=(0,eval)(DIST),T=A.TW.get('T14'),ord0=A.G.run.order.slice(),N=A.ZONES.length;const res={};
