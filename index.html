@@ -2119,7 +2119,7 @@ html:not(.flat) .battle.b3 .bline .b4mo .b4bar{box-shadow:inset 0 0 0 1px #000,0
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.22.15";const APP_BUILD="4c2d3c36b312";
+(function(){const APP_VER="0.22.15";const APP_BUILD="6b588083f06e";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2893,7 +2893,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.22.15";const APP_BUILD="4c2d3c36b312";
+const APP_VER="0.22.15";const APP_BUILD="6b588083f06e";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2901,6 +2901,7 @@ const APP_VER="0.22.15";const APP_BUILD="4c2d3c36b312";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.22.16',['Towns: every service building now has its own things standing outside. Kegs, a table and a barrel by the tavern; an anvil, a weapon rack and a grindstone by the smithy; a bench, a washing line and flowers by the inn; a cauldron and a table of flasks by the alchemist; a training dummy and an archery target by the guild hall; a candle shrine and a grave by the chapel. Most houses get a woodpile, a flower box, a wash tub or hay. They stand on the ground beside the building in both views, never in a doorway or on a road.']],
  ['Beta v0.22.15',['Towns: buildings in the same town no longer look alike. The inn, tavern, smithy, alchemist and guild hall each wear their own roof colour in every realm (blue, red, iron, green, purple, blended with the realm\'s own material), thatched roofs included, and houses vary in roof shade, wall tone, shutters and roof pitch. Flat roofed towns (sandstone, cloud stone, obsidian) and the great keep now have real rooftops instead of blank slabs: a parapet, a tiled field, and a hatch or an awning.']],
  ['Beta v0.22.14',['Guardians and elite roamers were drawn too big on the map in 0.22.13. They are now only a little larger than an ordinary foe: enough to notice, not enough to tower over the hero. Their new designs, the rune ring and the gold ring stay.']],
  ['Beta v0.22.13',['Guardians have their own look: all twenty Den and Sanctum guardians (who are also your summons) were redrawn as unique creatures, from Gorehorn with his glacier antlers to the Void Cantor and its halo of rune stars, in battle, in the Bestiary and when summoned. On the map they now stand big at the end of their Den or Sanctum on a glowing rune ring with their name over them, and elite roamers are drawn larger with their gold ring, so the dangerous fights read from across the field.']],
@@ -38185,8 +38186,9 @@ try{window.__T21={T21,roof:(sty,b)=>t21Roof(TF14[sty],b),fams:()=>Object.keys(TF
 //   guild    a training dummy, an archery target, a weapon rack      chapel   a candle shrine, a grave, flowers
 //   houses   one of a woodpile, a flower box, a wash tub or hay (three houses in four)
 // How: a fresh town (getMap) is given the props on plain ground tiles ('.') that touch the building: the row in front of the facade, two
-// or more tiles from the door, then the tiles at its sides. A tile is taken only when the walkable reach loses nothing but that tile and
-// mapIssues does not grow, never on a door apron, beside an NPC, near an exit or right behind another building (HD-2D would hide it).
+// or more tiles from the door, then its front corners and the tiles at its sides. A tile is taken only when the walkable reach loses nothing but that tile and
+// mapIssues and pathAssets do not grow, never on a door apron, beside an NPC, near an exit or where a wall to the south would hide it in
+// HD-2D (pathguard's pgOcclude).
 // The tile itself becomes a crate tile ('x': solid, known to the minimap, the shadows and the HD-2D card strip); m.rp says what is drawn
 // there. drawObjects is wrapped: the row is drawn without those crates, then the prop's own sprite (objCanvas kinds 'rp_*' registered in
 // worldgfx2's P2K, so the shaded prop pass, the outline and the realm tint of cohere15 apply). HD-2D cuts its cards from drawObjects, so
@@ -38239,20 +38241,24 @@ function t22Place(m){if(!m||m.kind!=='town'||m.archive||m.rp!==undefined||!m.t||
   const ex=(m.exits||[]).map(e=>[e.x,e.y]);if(m.gates)Object.values(m.gates).forEach(q=>{if(q&&q.arrive)ex.push(q.arrive);});
   ex.forEach(([x,y])=>{for(let a=-3;a<=3;a++)for(let c=-3;c<=3;c++)no.add(K(x+a,y+c));});
   const tall=c=>c==='H'||c==='#'||c==='Y',free=(x,y)=>x>1&&y>1&&x<W-2&&y<H-2&&at(x,y)==='.'&&!no.has(K(x,y))&&!tall(at(x,y+1))&&!tall(at(x,y+2));
-  let reach=t22Reach(m),iss=t22Iss(m);if(reach<0)return;const rp={};let n=0;
+  const pa=()=>{try{return pathAssets(m).length;}catch(e){return 0;}},seen=(x,y,k)=>{try{const cv=objCanvas(m.theme,k);return !!cv&&cv.height-2-pgOcclude(m,x,y)>=PG_VIS+3;}catch(e){return false;}};
+  let reach=t22Reach(m),iss=t22Iss(m),pa0=pa();if(reach<0)return;const rp={};let n=0;
   m.bld.forEach(b=>{const list=T22.set[b.k];if(!list||!b.door)return;const h=t22H(b),house=b.k==='house';if(house&&h%4===3)return;
     const fy=b.y+b.h,dx=b.door[0],spots=[];
     for(let x=b.x;x<b.x+b.w;x++)if(Math.abs(x-dx)>=2)spots.push([x,fy,Math.abs(x-dx)]);
     spots.sort((p,q)=>p[2]-q[2]||((h>>>2)%2?p[0]-q[0]:q[0]-p[0]));
-    const sy=b.y+b.h-1;((h>>>4)%2?[[b.x-1,sy],[b.x+b.w,sy]]:[[b.x+b.w,sy],[b.x-1,sy]]).forEach(p=>spots.push(p));
+    const sy=b.y+b.h-1;{const L=b.x-1,Rr=b.x+b.w,sd=(h>>>4)%2?[L,Rr]:[Rr,L];/* the front corners, the side tiles by the facade, then one further back */[fy,sy,sy-1].forEach(y=>sd.forEach(x=>spots.push([x,y])));}
+    /* last, a step out from the facade (open ground where the strip along the wall is a protected walkway) */{const far=[];for(let x=b.x-1;x<=b.x+b.w;x++)if(Math.abs(x-dx)>=2)far.push([x,fy+1,Math.abs(x-dx)]);far.sort((p,q)=>p[2]-q[2]||p[0]-q[0]).forEach(p=>spots.push(p));}
     const kinds=house?[list[(h>>>6)%list.length]]:list;let k=0;
-    for(const [x,y] of spots){if(k>=Math.min(kinds.length,house?T22.max.house:T22.max.svc))break;if(!free(x,y))continue;
-      g[y][x]='x';const r2=t22Reach(m),i2=t22Iss(m);
-      if(r2>=reach-1&&i2<=iss){rp[K(x,y)]=kinds[k++];reach=r2;iss=i2;n++;no.add(K(x,y));}else g[y][x]='.';}});
+    for(const [x,y] of spots){if(k>=Math.min(kinds.length,house?T22.max.house:T22.max.svc))break;if(!free(x,y)){T22.n.nofree=(T22.n.nofree||0)+1;continue;}
+      if(!seen(x,y,kinds[k])){T22.n.hid=(T22.n.hid||0)+1;continue;}g[y][x]='x';const r2=t22Reach(m),i2=t22Iss(m);
+      if(r2>=reach-1&&i2<=iss&&pa()<=pa0){rp[K(x,y)]=kinds[k++];reach=r2;iss=i2;n++;no.add(K(x,y));}else{g[y][x]='.';const w=r2<reach-1?'reach':i2>iss?'iss':'path';T22.n[w]=(T22.n[w]||0)+1;}}});
   if(!n)return;const rows={};Object.keys(rp).forEach(key=>{const [x,y]=key.split(',').map(Number);(rows[y]=rows[y]||[]).push({x,k:rp[key]});});
   m.rp={at:rp,rows,n};m.tl=null;T22.n.placed+=n;T22.n.towns++;}
-HOOK.wrap('getMap','towns22','props that mark a building\'s role, in every new town',function(next,...a){const id=a[0],fresh=typeof id==='string'&&id[0]==='t'&&!MAPS[id];const m=next(...a);
-  try{if(fresh&&m&&m.kind==='town')t22Place(m);}catch(e){T22.err=String(e&&e.message||e);try{wdLog('towns22 '+id+': '+e.message);}catch(_){}}return m;});
+// in a microtask: townexit, worldart12, world14, world16 and world12 register their getMap hooks that way (gates moved, exit aprons, gate
+// posts), and the props must be placed on the finished town, so this hook has to be the outermost
+queueMicrotask(()=>{try{HOOK.wrap('getMap','towns22','props that mark a building\'s role, in every new town',function(next,...a){const id=a[0],fresh=typeof id==='string'&&id[0]==='t'&&!MAPS[id];const m=next(...a);
+  try{if(fresh&&m&&m.kind==='town')t22Place(m);}catch(e){T22.err=String(e&&e.message||e);try{wdLog('towns22 '+id+': '+e.message);}catch(_){}}return m;});}catch(e){}});
 // ---------- drawing (2D, and through the card strip HD-2D) ----------
 HOOK.wrap('drawObjects','towns22','the role props stand where their crate tiles are',function(next,ctx,m,y){const row=m&&m.rp&&m.rp.rows[y];if(!row||T22.off)return next(ctx,m,y);
   const live=row.filter(p=>m.t[y]&&m.t[y][p.x]==='x');live.forEach(p=>{m.t[y][p.x]='.';});let r;try{r=next(ctx,m,y);}finally{live.forEach(p=>{m.t[y][p.x]='x';});}

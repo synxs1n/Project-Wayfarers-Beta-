@@ -1,7 +1,7 @@
 // towns22.js (v0.22.16): props that mark a building's role.
 //  1 every prop kind paints (a canvas with pixels) in four themes, and the kinds differ from each other
 //  2 over the towns of a journey: every town gets props, the tavern, smithy and inn each get their own first prop where there is room,
-//    each prop stands on plain ground that touches its building, never on a door apron, an NPC or a road; the map has no new issue
+//    each prop stands on plain ground at its building (the front row, a corner, a side, or one step out), never on a door apron, an NPC or a road; the map has no new issue
 //  3 nothing is lost: the reach with the props is the reach without them minus the prop tiles; the same town twice gives the same props
 //  4 both renderers draw them: the 2D row of a prop differs from the crate it replaces, HD-2D bakes the town without an error
 //  5 T22.off: a new town gets no role props
@@ -18,7 +18,7 @@ const META=`localStorage.clear();localStorage.setItem('aurelis-meta-v1',JSON.str
   const b=await ev(()=>{const A=__A,T=window.__T22.T22,out=[],bad=[];A.resetMaps();for(let i=0;i<5;i++){const m=A.getMap('t'+i),rp=m.rp&&m.rp.at;if(!rp){bad.push('t'+i+' none');continue;}
       const first={tavern:'rp_kegs',smithy:'anvil',inn:'rp_bench'},got={};
       Object.keys(rp).forEach(key=>{const [x,y]=key.split(',').map(Number);if(m.t[y][x]!=='x')bad.push('t'+i+' '+key+' tile '+m.t[y][x]);
-        const b=m.bld.find(b=>(y===b.y+b.h&&x>=b.x&&x<b.x+b.w)||(y===b.y+b.h-1&&(x===b.x-1||x===b.x+b.w)));if(!b){bad.push('t'+i+' '+key+' touches no building');return;}
+        const b=m.bld.find(b=>(y===b.y+b.h&&x>=b.x&&x<b.x+b.w)||(y===b.y+b.h+1&&x>=b.x-1&&x<=b.x+b.w)||(y<=b.y+b.h&&y>=b.y+b.h-2&&(x===b.x-1||x===b.x+b.w)));if(!b){bad.push('t'+i+' '+key+' touches no building');return;}
         if(!T.set[b.k]||!T.set[b.k].includes(rp[key]))bad.push('t'+i+' '+key+' '+rp[key]+' at a '+b.k);got[b.k+':'+rp[key]]=1;
         m.bld.forEach(q=>{if(q.door&&Math.abs(x-q.door[0])<=1&&y>q.door[1]&&y<=q.door[1]+2)bad.push('t'+i+' '+key+' on a door apron');});
         if(m.npcs.some(n=>n.x===x&&n.y===y))bad.push('t'+i+' '+key+' on an NPC');});
@@ -26,7 +26,7 @@ const META=`localStorage.clear();localStorage.setItem('aurelis-meta-v1',JSON.str
       let iss=-1;try{iss=A.TW.get('mapIssues')(m).length;}catch(e){}out.push({t:i,sty:m.sty,n:m.rp.n,miss,iss});if(iss>0)bad.push('t'+i+' issues '+iss);}
     return {out,bad,err:T.err||null};});
   const missAll=b.out.reduce((s,o)=>s+o.miss.length,0);
-  chk(`2 five towns: ${b.out.map(o=>o.sty+' '+o.n).join(', ')} props; ${missAll} signature props without room`,(b.out.length===5&&b.out.every(o=>o.n>=4)&&!b.bad.length&&!b.err&&missAll<=4)||JSON.stringify(b));
+  chk(`2 five towns: ${b.out.map(o=>o.sty+' '+o.n).join(', ')} props; ${missAll} signature props without room`,(b.out.length===5&&b.out.every(o=>o.n>=3)&&b.out.reduce((s,o)=>s+o.n,0)>=30&&!b.bad.length&&!b.err&&missAll<=8)||JSON.stringify(b));
   const c=await ev(()=>{const A=__A,T=window.__T22.T22,g=A.TW.get,reach=m=>{const R=g('healReach')(m,A.mapEntry(m),true,true);let n=0;R.forEach(r=>r.forEach(v=>{if(v)n++;}));return n;},out=[];
     for(let i=0;i<5;i++){T.off=false;A.resetMaps();const m1=A.getMap('t'+i),r1=reach(m1),k1=JSON.stringify(m1.rp&&m1.rp.at),n=m1.rp?m1.rp.n:0;A.resetMaps();const k2=JSON.stringify(A.getMap('t'+i).rp.at);
       T.off=true;A.resetMaps();const m0=A.getMap('t'+i),r0=reach(m0);T.off=false;out.push({t:i,r0,r1,n,same:k1===k2,off:!m0.rp});}A.resetMaps();return out;});
