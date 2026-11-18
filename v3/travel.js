@@ -49,8 +49,9 @@ function useTravel(id){
   const o=ITEMS[id],m=WS.m;G.inv[id]--;
   if(o.ward){const had=G.ward>0;G.ward=o.ward;saveGame();V.modal=null;render();wkwUpdate();toast(had?`The ward is renewed: ${o.ward} steps.`:`A holy hush settles over the party. No random battles for ${o.ward} steps.`);sfx('heal');return true;}
   if(o.flee){V.modal=null;saveGame();render();
-    if(m.kind==='dungeon'){toast('You follow the smell of pork chops back to the entrance.');
-      fadeTo(()=>{const d=getMap(m.id);placeAt(m.id,d.start[0],d.start[1],'d');showLocation();saveGame();});return true;}
+    if(m.kind==='dungeon'){toast('You follow the smell of pork chops out to the door.');
+      // 0.22.32 (asked: "should teleport you to field right outside the dungeon door, not inside the dungeon"): out through the door it came in by
+      fadeTo(()=>{try{if(m.cave)leaveCave(m.id);else leaveDungeon(m.s);}catch(e){const d=getMap(m.id);placeAt(m.id,d.start[0],d.start[1],'d');showLocation();saveGame();}});return true;}
     // v0.4.0 3.6: anywhere else, the smell leads back to the last town you visited, right in front of its Inn
     const lt=G.lastTown||0;toast(`You follow the smell of pork chops back to the inn in ${ZS(lt).town}.`);
     fadeTo(()=>{const [ix,iy]=innSpot(lt);placeAt('t'+lt,ix,iy,'d');showLocation();saveGame();});return true;}

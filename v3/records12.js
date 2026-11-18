@@ -74,7 +74,7 @@ function r12TameByZone(){const out={};try{const L=tameList(),S=tamedSet();L.forE
 function r12Row(x){const none=!x.n,ok=!none&&x.d>=x.n,val=none?'None':ok?`✓ ${x.d} / ${x.n}`:`${x.d} / ${x.n}`;
   return `<div class="row r12t ${ok?'up':''} ${none?'none':''}"><div class="grow"><b>${esc(x.label)}</b>${x.note?`<small>${esc(x.note)}</small>`:''}</div><span class="m nums">${val}</span></div>`;}
 function r12RiftBlock(){try{if(!G||G.daily||typeof sanctumOpen!=='function'||!sanctumOpen())return '';
-  const K=echoKeys(),n=K.filter(k=>(G.riftWon||{})[k]).length,rk=!!META.riftkeeper;
+  const K=echoKeys(),n=K.filter(k=>(G.riftWon||{})[k]).length,rk=typeof rkJ==='function'?rkJ():!!META.riftkeeper;
   return `<h4>Echo Rift</h4><div class="rows compact r12rift"><div class="row ${n>=K.length?'up':''}"><div class="grow"><b>Echoes defeated</b><small>Every Scourge and Calamity answers again in the Rift.</small></div><span class="m nums">${n>=K.length?'✓ ':''}${n} / ${K.length}</span></div>
     <div class="row ${rk?'up':''}"><div class="grow"><b>${rk?'The Riftkeeper':'Secret boss'}</b></div><span class="m nums">${rk?'✓ Beaten':'???'}</span></div></div>`;}catch(e){return '';}}
 function vCompletion(){try{if(!G)return '';if(G.daily)return '<p class="note">Completion is tracked on a journey, not in the Daily Trial.</p>';

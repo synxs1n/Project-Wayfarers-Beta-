@@ -87,7 +87,7 @@ try{r25Register();}catch(e){R25.err=String(e&&e.message||e);}
     else{o=Object.assign({},rb0.apply(this,arguments));if(b.slot==='c')ST.forEach(q=>{if(o[q]>0)o[q]=Math.round(o[q]*R25.charmK);});/* a charm relic scored level with the best shop charm at +3 for some healers (v209a) */}
     o.n=r25Name(b.slot,b.only);o.leg25=1;o.rp=R25.perk[cls]||R25.perk._;o.rsk='relic_'+b.only;if(!o.el&&tp.el&&tp.el[0])o.el=tp.el[0];return o;};}
 // the rarity
-try{if(!ITEM_TIERS[7])ITEM_TIERS[7]={n:'Legendary',c:'#ff9d2e',c2:'#fff1b8',pip:'♛'};}catch(e){}
+try{if(!ITEM_TIERS[7])ITEM_TIERS[7]={n:'Legendary',c:'#ffd23d',c2:'#fff1b8',pip:'♛'};}catch(e){}
 {const gt0=gTierIdx;gTierIdx=function(g){if(!R25.off&&g&&g.relic&&g.only)return 7;return gt0.apply(this,arguments);};}
 // the bonuses
 const r25Worn=c=>{try{if(!c||!c.eq)return null;for(const sl of Object.keys(c.eq)){const id=c.eq[sl];if(id&&R25_RE.test(String(id))){const g=gearOf(id);if(g&&g.relic&&g.only===c.id&&g.rp)return g;}}}catch(e){}return null;};

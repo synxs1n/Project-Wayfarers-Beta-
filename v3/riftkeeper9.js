@@ -41,8 +41,12 @@ HOOK.wrap('drawPortal','riftkeeper9',"the Riftkeeper's gate",function(next,ctx,p
     if(!open){f('#0e0a16',6,11,4,3);f('#9a9aa8',7,12,2,2);f('#9a9aa8',7,10,1,2);f('#9a9aa8',8,9,1,1);}
     return;}
   return next(ctx,px,py,n,now);});
+// 0.22.32 (asked: "riftkeeper says he's beaten even if I haven't faced him yet in a playthrough"): the account flag META.riftkeeper keeps the
+// once only rewards; what the hall shows and says (beaten, Rematch, his second look and line, the Records row) reads the journey's own
+// G.rkWon (optional save field, set by the win).
+function rkJ(){try{return !!(G&&G.rkWon);}catch(e){return false;}}
 function mRiftkeeper(){const d=guardianDef('riftkeeper'),have=rkBeaten().length,all=echoKeys().length,open=rkUnlocked(),first=!META.riftkeeper;
-  return box('The Riftkeeper',`<div class="row"><img class="mimg" src="${monURL('riftkeeper')}" alt=""><div class="grow"><b>${esc(d.n)}</b><small>Ultimate boss · Level ${RKC.lv} · no auto · no fleeing${META.riftkeeper?' · beaten':''}</small>
+  return box('The Riftkeeper',`<div class="row"><img class="mimg" src="${monURL('riftkeeper')}" alt=""><div class="grow"><b>${esc(d.n)}</b><small>Ultimate boss · Level ${RKC.lv} · no auto · no fleeing${rkJ()?' · beaten on this journey':''}</small>
       <small>${open?'The gate stands open. The keeper of every door waits behind it.':`${have} of ${all} Echoes beaten.`}</small></div></div>
     ${open?'':`<p class="note warn">Sealed. Beat every Echo in the Echo Rift at least once (the gates glow once their Echo has answered). ${have} of ${all} Echoes beaten.</p>`}
     <p class="note"><b>Phase 1:</b> its element changes every turn; set off a detonator of that element while it stands Primed. <b>Phase 2:</b> two Echo shades join and shield it while they live. <b>Phase 3:</b> every third turn it readies the Unmaking: guard, or break its shield before the count ends.</p>
@@ -131,7 +135,7 @@ HOOK.after('startBattle','riftkeeper9','Riftkeeper fight state',function(r){try{
   log(`Phase 1: its element changes every turn. Phase 2 brings two Echo shades; phase 3 the Unmaking.`);render();}catch(e){}});
 // ----- rewards -----
 HOOK.wrap('win','riftkeeper9','Riftkeeper rewards',function(next,...a){const sp=B&&B.spec;const r=next(...a);try{if(!sp||sp.kind!=='riftkeeper'||G.daily)return r;
-  const info=V.modal&&V.modal.info||{};info.notes=info.notes||[];const first=!META.riftkeeper;
+  try{G.rkWon=1;}catch(e){}const info=V.modal&&V.modal.info||{};info.notes=info.notes||[];const first=!META.riftkeeper;
   if(first){META.riftkeeper=1;META.titles=META.titles||{};META.titles.riftwalker='Riftwalker';G.gear.push('c_riftkeeper');info.gear='c_riftkeeper';
     info.notes.push("The Riftkeeper lays down its key. You carry Riftwalker's Key now: all elements +10% damage, skills cost 10% more MP.");
     info.notes.push('Title earned: Riftwalker.');info.notes.push('New Game+ modifier unlocked: Rift (foes cycle elements every 3 turns, +35% XP and gold).');}

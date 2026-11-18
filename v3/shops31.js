@@ -4,7 +4,7 @@
 //  1 fills the screen; one 46 px bar with the shop's name and gold, Back and Close beside it
 //  2 the shop's tabs (Shop, Forge, Tempering, Sell ...) are a bar at the bottom with drawn icons; its sections are one row that slides
 //  3 "Best upgrade for each slot": Upgrade whole party comes first; a card is one block (who it is for, the piece and its gain on one
-//     line, the stat changes cut to two lines, the price on the button); the max temper line and the full list open when the card is tapped
+//     line, the stat changes cut to two lines, the price on the button); the full list opens when the card is tapped
 //  4 Sort and Show share a row; long descriptions are cut to two lines until the row is tapped (the rules of menus29.js, class m29)
 // Not in this version (they were on the mock-up): the worn piece beside the new one inside an opened card, a count of ready tempers on the
 // tab, and where a missing material comes from.
@@ -53,7 +53,7 @@ HOOK.after('render','shops31','the phone shop pass',function(){s31Pass();});
 .panel.s31 .upgbest .row .grow>em.up{display:inline;margin-left:6px}
 .panel.s31 .upgbest .row .mxt{display:none}
 .panel.s31 .upgbest .row .p3mats:not(:has(.matc:not(.gold))){display:none}
-.panel.s31 .upgbest .row.m29x .mxt{display:block}
+#modal .panel:has(>.shopnav) .mxt{display:none!important}/* 0.22.32: asked, "dont need to show what an item is at full temper in the shops anymore" (every screen size) */
 .panel.s31 .upgbest .row .btn{min-width:64px;padding:0 10px}
 `;document.head.appendChild(st);}
 try{window.__S31={S31,pass:s31Pass};}catch(e){}

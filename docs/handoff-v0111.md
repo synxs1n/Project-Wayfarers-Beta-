@@ -812,3 +812,12 @@ Asked after a mock-up: "shop menu updates are good, initiate the changes".
 - `.upgbest` is a flex column so `.p3smith` (Upgrade whole party) comes first; its rows are a three column grid; `.mxt` and a gold only `.p3mats` are hidden until the row has focus.
 - Not built from the mock-up: worn piece beside the new one in an opened card, a ready count on the Tempering tab, where a missing material comes from.
 - Test: tools/chrome/v215a.js (menus group).
+
+## 0.22.32: five small asks
+
+- travel.js: a Pork Chop Sandwich in a dungeon calls `leaveCave(m.id)` / `leaveDungeon(m.s)` (the field tile outside the door).
+- riftkeeper9.js `rkJ()` reads `G.rkWon` (optional save field, set by the win). rk10.js, the Riftkeeper box and the Records row use it; `META.riftkeeper` still gates the once only rewards and the NG+ Rift modifier. A journey that beat him before 0.22.32 shows him unbeaten again.
+- ITEM_TIERS: Heroic #35d6c4 (teal), Legendary #ffd23d. TIER_GEM[4] follows.
+- ui.js battle skill list: no `dlIco` before the name (element icons only).
+- shops31.js: `.mxt` hidden in every panel with a `.shopnav`.
+- Test: tools/chrome/v216a.js.

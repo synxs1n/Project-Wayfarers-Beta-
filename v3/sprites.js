@@ -3,4 +3,4 @@
 // v0.6.3: the drawing moved to icons.js / icons2.js (one design per item: drawGearIcon, drawItemIcon, itemIcon, matIcon); these stay the
 // shared tier colours for metal, gems and trims.
 const TIER_METAL=['#b8bcc4','#c4dcc8','#a8c8f0','#ccb0f4','#ffd870','#ff9a8a'];
-const TIER_GEM=['#d8a060','#5fcf6a','#4a9bff','#b06aff','#ffc83d','#ff4a3a'];
+const TIER_GEM=['#d8a060','#5fcf6a','#4a9bff','#b06aff','#35d6c4','#ff4a3a'];

@@ -11,7 +11,7 @@ const ITEMS={
  vigor:{n:'Vigor Tonic',d:'Restores 150 HP and 20 MP',price:0,heal:150,mp:20,craft:1},
  sage:{n:'Sage Brew',d:'Restores 70 MP',price:0,mp:70,craft:1},
  // Beta v0.1.0 travel items. `use` says where each works: b battle, d dungeon, w anywhere outside town, f fields and dungeons.
- porkchop:{n:'Pork Chop Sandwich',d:'Escape an ordinary fight, or outside battle return to the dungeon entrance or the last town (not bosses, legend events or the Weekly Trial)',price:60,flee:1,travel:1},
+ porkchop:{n:'Pork Chop Sandwich',d:'Escape an ordinary fight, or outside battle walk out to the field at the door of the dungeon, or back to the last town (not bosses, legend events or the Weekly Trial)',price:60,flee:1,travel:1},
  holywater:{n:'Holy Water',d:'Keeps random battles away for about 150 steps. Scripted fights, bosses and tent ambushes still happen. A new flask resets the count',price:120,ward:150,travel:1},
  tent:{n:'Tent',d:'Rest in a field or dungeon: 60% HP and MP back, KO\'d heroes up at 30%. Monsters may find a camp pitched in tall grass or open floor; a road is safe',price:180,tent:1,travel:1}
 };
@@ -130,7 +130,7 @@ const ITEM_TIERS=[
  {n:'Uncommon', c:'#5fcf6a',pip:'◆'},
  {n:'Rare',     c:'#4a9bff',pip:'▲'},
  {n:'Epic',     c:'#b06aff',pip:'■'},
- {n:'Heroic',   c:'#ffc83d',pip:'★'},// v0.10.8: was 'Legendary'; that word belongs to the legend heroes only (ui.js)
+ {n:'Heroic',   c:'#35d6c4',pip:'★'},/* 0.22.32: teal; the gold yellow is the Legendary relics' now, like the Legendary wayfarers */// v0.10.8: was 'Legendary'; that word belongs to the legend heroes only (ui.js)
  {n:'Mythic',   c:'#ff6a5a',pip:'✦'},
  {n:'Echoforged',c:'#ffd9a0',c2:'#b48aff',pip:'❂'}];
 const ITEM_TIER_OF={potion:0,remedy:0,porkchop:0,ether:1,hipotion:1,vigor:1,sage:1,tent:1,holywater:2,plume:3,elixir:3};// v0.10.8: Elixir was tier 4 ('Legendary'), a chest staple // consumables
