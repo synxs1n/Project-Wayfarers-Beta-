@@ -98,8 +98,9 @@ function t24Make(arch,R,v,th,o){const T=TA24[arch](R,th,o||{}),W=T.W,cx=T.slots?
   // nothing of a building on the road or the avenue
   if(v&1)t14Flip(T);
   if(T.get(W-3,T.road+1)!=='.'&&T.get(W-3,T.road+1)!==':')T.put(W-3,T.road+1,'.');T.put(W-3,T.road+1,'S');
+  try{if(typeof t37Dress==='function')t37Dress(T,R,th,o||{});}catch(e){T24.err=String(e&&e.message||e);}/* 0.22.37: the land under the plan (isles and bridges, canals, terraces) */
   t14Link(T,!!T.wet);t14Deco(T,R,{crates:1,lamp:th==='cave'||th==='void'?'v':'L'});
-  const t=townFinish(T,th,R,T.road);t.arch='n_'+arch;t.cx=W>>1;if(v&1&&W%2===0)t.cx=W-1-(W>>1);return t;}
+  const t=townFinish(T,th,R,T.road);t.arch='n_'+arch;t.land=T.land||null;t.cx=W>>1;if(v&1&&W%2===0)t.cx=W-1-(W>>1);return t;}
 // ---------- assignment ----------
 // [plan, mirrored, options]
 const T24_TAB={thistle:['crescent',0,{pond:1}],orchard:['street',0,{}],strand:['lakeside',0,{}],mire:['ring',0,{pond:1}],deeps:['court',0,{}],grotto:['steps',0,{}],

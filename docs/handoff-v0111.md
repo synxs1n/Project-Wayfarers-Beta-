@@ -853,3 +853,13 @@ Asked after a mock-up: "shop menu updates are good, initiate the changes".
 - Heal skills: power x0.88 (so the preview, the field use and the Undead damage all follow). config.js HEAL_HURT .75 to .95, HEAL_HURT_AOE .6 to .76.
 - relics25.js: every relic skill's power about x0.8, riders smaller, +2 MP; weapon rider 1.08, charm limit gain 10.
 - Not balance tested in long play.
+
+## 0.22.37: the land under the town plans (towns37.js)
+
+- `t24Make` (towns24.js) calls `t37Dress(T,R,th,o)` after `t24Fill` and before `t14Link`. `o.land` comes from `T37.land` by realm key (written into `T24_TAB` options at load).
+- isles: everything that is plain ground and not within a pad round a building or next to the plaza becomes `~`, roads over it become `B`; `T.wet=1` so `t14Link` makes boardwalks from the doors.
+- canal: two columns near 28% and 72% of the width, 2 wide if a clear strip exists else 1 wide, never under a building or its door row.
+- terrace: `#` ledges on rows no building or door row touches, at least 6 rows apart and 3 from the road, with `s` stairs at five columns; roads and the plaza pass through unchanged (t24Check only counts `=`, `:` and `B` as road).
+- The same checks accept or reject the town (three more seeds, then the towns14 plan). Over the 20 realms: 0 fallbacks.
+- `T37.off=true` before the maps are built gives the flat plans.
+- Test: tools/chrome/v220a.js.

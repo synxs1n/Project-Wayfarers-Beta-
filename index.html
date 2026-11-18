@@ -2125,7 +2125,7 @@ html:not(.flat) .battle.b3 .bline .b4mo .b4bar{box-shadow:inset 0 0 0 1px #000,0
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.22.36";const APP_BUILD="690fb3ffe655";
+(function(){const APP_VER="0.22.37";const APP_BUILD="8852650dc7b8";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2906,7 +2906,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.22.36";const APP_BUILD="690fb3ffe655";
+const APP_VER="0.22.37";const APP_BUILD="8852650dc7b8";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2914,6 +2914,7 @@ const APP_VER="0.22.36";const APP_BUILD="690fb3ffe655";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.22.37',['Towns have their land back. The towns that were islands (Mire, Peaks, Drowned, Shattered) stand on islands again with bridges between them, Lakes and Bamboo have canals, and Grotto, Mesa, Mines and Starless climb in terraces with stairs. Every building is still in clear view and every gate still has a road to it.']],
  ['Beta v0.22.36',['Skills pass. Relic skills are about a fifth weaker with smaller side effects. Every skill with two elements is a Dual art. Dual type heroes have a better spread: where one of their elements had no early or no late skill, one moved over from the other.','Regen is on far fewer skills (it stays on the ones that are about it: the Renews, Sanctuary, Meditate); Blessing gives Might and Focus, Lumen\'s Lampglow heals and gives Bulwark. Purify cures and no longer heals. Heals are 12% smaller, and a heal thrown at an Undead foe hurts it about a tenth more.']],
  ['Beta v0.22.35',['Screens open faster: the Bestiary, the Codex and the Smithy paint their first pictures at once and the rest over the next moments.']],
  ['Beta v0.22.34',['The battle screen on tablets and computers follows the phone layout: the stage runs the full width and takes most of the screen, the commands are one bar under it, and the party and foe cards open from Party & foes (a side panel on wide screens). A phone held sideways keeps the classic layout.','On phones the stage is a little taller.']],
@@ -38554,8 +38555,9 @@ function t24Make(arch,R,v,th,o){const T=TA24[arch](R,th,o||{}),W=T.W,cx=T.slots?
   // nothing of a building on the road or the avenue
   if(v&1)t14Flip(T);
   if(T.get(W-3,T.road+1)!=='.'&&T.get(W-3,T.road+1)!==':')T.put(W-3,T.road+1,'.');T.put(W-3,T.road+1,'S');
+  try{if(typeof t37Dress==='function')t37Dress(T,R,th,o||{});}catch(e){T24.err=String(e&&e.message||e);}/* 0.22.37: the land under the plan (isles and bridges, canals, terraces) */
   t14Link(T,!!T.wet);t14Deco(T,R,{crates:1,lamp:th==='cave'||th==='void'?'v':'L'});
-  const t=townFinish(T,th,R,T.road);t.arch='n_'+arch;t.cx=W>>1;if(v&1&&W%2===0)t.cx=W-1-(W>>1);return t;}
+  const t=townFinish(T,th,R,T.road);t.arch='n_'+arch;t.land=T.land||null;t.cx=W>>1;if(v&1&&W%2===0)t.cx=W-1-(W>>1);return t;}
 // ---------- assignment ----------
 // [plan, mirrored, options]
 const T24_TAB={thistle:['crescent',0,{pond:1}],orchard:['street',0,{}],strand:['lakeside',0,{}],mire:['ring',0,{pond:1}],deeps:['court',0,{}],grotto:['steps',0,{}],
@@ -39134,6 +39136,40 @@ function s36Kit(t,L){
 HOOK.xform('classSkills','skills36','the 0.22.36 kit pass (once per hero)',function(L,t){try{if(S36.off||!L||!t||t.mon||!L.length)return L;const f=L.find(s=>s&&!s.relic);if(!f||f._s36===S36.v)return L;
   L.forEach(s=>{if(s&&!s.relic)s._s36=S36.v;});s36Kit(t,L);}catch(e){S36.err=String(e&&e.message||e);}return L;});
 try{window.__S36=S36;}catch(e){}
+
+// ===== towns37.js (v0.22.37): the land under the town plans: isles and bridges, canals, terraces =====
+// Asked: "some towns lost a lot of their character in the last update, some had higher land or were islands connected by bridges, now
+// everything is flatland with a crossroad, it's on for exits to not be perfectly in the middle we just want them visible and a clear path to
+// them, like the road in the town leads to the exits".
+// The towns24 plans kept every building in view and every gate on a road, but all nine stood on one flat lawn; the towns14 plans they
+// replaced had lake towns on islands, sky ledges on rope bridges, canal towns and terraced hillsides. This gives the land back without
+// giving up either rule: t24Make calls t37Dress after the buildings are placed and before the doors are linked, so the links cross water as
+// boardwalks and the checks (t14Check, t24Check: buildings in view, road and avenue unbroken) still decide whether the town is accepted.
+//   isles    the ground is water (or open sky in the heights) except a pad round each building and the plaza; the road, the avenue and every
+//            door path cross it as bridges. Mire, Peaks, Drowned, Shattered and the fifth base zone, the towns that were islands.
+//   canal    two canals run north to south between the buildings, bridged where the road and the door paths cross. Lakes, Bamboo.
+//   terrace  rock ledges run across the town between the building rows, with stairs on the avenue and at a few other points: the town
+//            climbs away from the road. Grotto, Mesa, Mines, Starless and the third base zone.
+// T37.off: flat again. Which realm gets which is T37.land (by realm key).
+const T37={off:false,n:{isles:0,canal:0,terrace:0},land:{mire:'isles',peaks:'isles',drowned:'isles',shattered:'isles',base4:'isles',lakes:'canal',bamboo:'canal',grotto:'terrace',mesa:'terrace',mines:'terrace',starless:'terrace',base2:'terrace'}};
+function t37Near(T,x,y,pad){return T.bld.some(b=>x>=b.x-pad&&x<b.x+b.w+pad&&y>=b.y-pad&&y<b.y+b.h+pad+1);}
+function t37Isles(T){const W=T.W,H=T.H,g=T.g,keep=new Set(),K=(x,y)=>keep.add(x+','+y);
+  T.bld.forEach(b=>{const cx=b.x+b.w/2-.5,cy=b.y+b.h/2,rx=b.w/2+2.6,ry=b.h/2+2.8;for(let y=Math.floor(cy-ry);y<=cy+ry+1;y++)for(let x=Math.floor(cx-rx);x<=cx+rx;x++)if(((x-cx)/rx)**2+((y-cy)/(ry+.5))**2<=1)K(x,y);});
+  for(let y=1;y<H-1;y++)for(let x=1;x<W-1;x++)if(g[y][x]===':'||g[y][x]==='W'||g[y][x]==='q')for(let a=-1;a<=1;a++)for(let b=-1;b<=1;b++)K(x+a,y+b);
+  for(let y=1;y<H-1;y++)for(let x=1;x<W-1;x++){if(keep.has(x+','+y))continue;const c=g[y][x];if(c==='.'||c===','||c==='f'||c==='t')g[y][x]='~';else if(c==='=')g[y][x]='B';}
+  T.wet=1;}
+// a canal column: 2 wide if a clear 2 wide strip exists, else 1 wide; it may pass a building's side but never under one or its door step
+function t37Canal(T){const W=T.W,H=T.H,g=T.g,cx=W>>1,free=(x,w)=>{if(x<3||x+w>W-3||Math.abs(x-cx)<4)return false;for(let y=2;y<H-2;y++)for(let xx=x;xx<x+w;xx++){const c=g[y][xx];if(!'.,ft=:mLo'.includes(c)||t37Near(T,xx,y,0))return false;}return true;};
+  let n=0;const cut=(x,w)=>{for(let y=2;y<H-2;y++)for(let xx=x;xx<x+w;xx++){const c=g[y][xx];g[y][xx]=c==='='||c===':'?'B':'~';}n++;};
+  [Math.round(W*.28),Math.round(W*.72)].forEach(x0=>{for(const w of [2,1])for(let d=0;d<12;d++)for(const x of [x0+d,x0-d])if(free(x,w)){cut(x,w);return;}});
+  if(n)T.wet=1;return n;}
+function t37Terrace(T){const W=T.W,H=T.H,g=T.g,r=T.road,cx=W>>1,free=y=>{if(Math.abs(y-r)<3)return false;for(let x=1;x<W-1;x++){if(t37Near(T,x,y,0))return false;}return !T.bld.some(b=>y===b.y+b.h||y===b.y+b.h+1||y===b.y-1);};
+  let last=-9,n=0;for(let y=4;y<H-4;y++){if(y-last<6||!free(y))continue;last=y;n++;const st=new Set([cx,cx-1,cx+1].concat([.18,.36,.64,.82].map(k=>Math.round(W*k))));
+    for(let x=1;x<W-1;x++){const c=g[y][x];if(!'.,ft'.includes(c))continue;/* a road, the avenue or the plaza passes through the ledge as it is */g[y][x]=st.has(x)?'s':'#';}}
+  return n;}
+function t37Dress(T,R,th,o){if(T37.off||!o||!o.land)return;const k=o.land;if(k==='isles'){t37Isles(T);T37.n.isles++;}else if(k==='canal'){if(t37Canal(T))T37.n.canal++;}else if(k==='terrace'){if(t37Terrace(T))T37.n.terrace++;}T.land=k;}
+try{Object.keys(T37.land).forEach(k=>{if(T24_TAB[k])T24_TAB[k][2]=Object.assign({},T24_TAB[k][2],{land:T37.land[k]});});}catch(e){}
+try{window.__T37=T37;}catch(e){}
 
 window.__A={walkable,ceInit,tvSlots,genQuests,STARTERS,starterDraw,ECON,AUTO_NERF,rebuildBase,detLive,REACT,skEls,packContents,miniFor,AUTO_REW,ENC_RATE,ENC_MIN_STEPS,detNote,classSkills,stickCount,bestAll,calcStats,lookKey,vTemper,storyEchoUp,leaveDungeon,win,ldApply,genFort,caveOk,enterCave,siteHasMini,openChest,nextDlg,WS,mapIcoRects,roamSpawn,roamInterior,roamSees,mapTargets,DIRV,tileAt,STAGE_LV,autoBan,rollWeather,guardianDef,mapIssues,mapEntry,syncPools,bovAt,calFxAt,realmAt,REALMS,BOV,CAL_FX,overlayGuide,liftOverlay,drawGearIcon,gearIcon,itemIcon,RAW,sigKind,sigGid,personalDone,heroLook,hasSignature,LEGEND_IDS,facDirty,facCount,facRank,facRep,FACB,FAC,finishBattle,npcWords,npcHints,npcPool,titleMake,titleAdvance,TTS,placeAt,wkwUpdate,innSpot,getMap,monURL,enterVia,applyBossTheme,BTHEME,resetMaps,rebuildBase,shopStock,gearDesc,calcStats,gearMigrate,CLS_WPN,CLS_ARM,WPERK,WT_NAME,equipWhy,lootBase,GEAR,canEquip,gearOf,perkNote,FAM_MAT_V35,fbDraft,META:{get best(){return META.best},get codex(){return META.codex},get q(){return META.q}},saveMeta,OFF,offPending,offFlush,PROFILE,profileSync,codexSee,getMap,placeAt,interact,sanctumOpen,riftKeys,echoKeys,BONDS,bondKey,wkwUpdate,inTown,WS,LC,lsort,bestParty,fsCast,fsSkills,ldApply,MON,registerTamed,stickPower,stickCount,autoOne,planGear,bestTag,gainersFor,compGainFor,refresh,fitsFor,canEquip,gearOf,queueNewGear,ARENA,fxDur,banDur,stageTags,autoSwitchPick,layoutBattle,newChar,calcStats,limitSkill,limitTier,canStuck,dunReachable,LV_CAP,addXp,echoSpec,bossLvFor,fx,MON,log,effInfo,tierOf,perkOf,quirkDef,forgeCost,buyPlan,vJourney,modalBack,partySlots,limitOpen,town2Reached,skillKnown,known,classSkills,paceMigrate,unpackG,packG,makeEnemy,QUIRK,arrive,enterDungeon,wkwUpdate,useTravel,travelWhyNot,porkFlee,porkBlocked,encTile,campRest,buyPart,partLeft,alchStock,GAME_VERSION,CHANGELOG,ITEMS,tavernOffers,tavernPool,recruitFit,partyNeeds,vNext,CHALL,innSpot,RECIPES,MATS,FB,fbContext,REDEEM,legendJoin,legendQ,genQuests,dynActors,convInit,PROFILE,profileSync,checkArchive,GPOOL,FPOOL,guardianDef,saveMeta,archiveSkills,get G(){return G;},set G(v){G=v;},get B(){return B;},get V(){return V;},get META(){return META;},WS,ACT,render,newGame,placeAt,startBattle,autoTurn,advance,finishBattle,getMap,innSpot,setPause:p=>{PAUSE=p;},autoCfg,worldInputDir,inputSources,battleFrame,battleTheme,STS,MAPS,mapIssues,healMap,mimicReward,dropChest,interact,worldDraw,TPL,ZONES,ZS,newChar,recruit,saveGame,resetMaps,dynActors,tileAt,BV,refresh,genBounties,genQuests,vStarter,heroCard,heroURL,iconURL,masteryLine,AU,buildTrack,tone,noiseHit,MIDI,sfx,audioVol};
 ['heroRoles','SOLID','WEATHER','WX_BASE','weatherFX','superGuide','recruitCost','ceStart','ceStep','ceInit','cePool','wxList','SUPER_TABLE','superOk','facRank','facRep','facInit','facCount','facCredit','FAC','FMIS','facMissionList','facProg','tyOf','facSync','facMul','facBest','worldPlan','caveReward','enterCave','leaveCave','leaveDungeon','buildCaveMap','worldGraph','openWorldMap','sigReport','SIG_NAMES','starterDraw','ITEM_TIERS','gTierIdx','tierChip','gearIcon','starterSlots','STARTERS','CLK_LEN','CLK_PH','clockPhase','wxInfoBody','recipeOrder','recipeGain','recipeReady','recipeClose','effOf','calcDamage','healsUndead','storyEchoUp','riftKeys','echoDef','efCost','autoLocked','bossFightKey','learnScanAll','isSeen','mapMarks','genSub','subOK','subReq','ensureSub','inSub','tvSlots','tvInit','tvLeft','tvEvent','tvNextText','tvPool','tvDue','tvShuffle','mTavern','hireOK','TV_CAP','TV_CD','POOL_IDS','natPool','natOf','natRoll','NATURES','natInfo','natRerollCost','natChooseCost','NAT_CLASS','iconURL','seenOf','mapIcoDraw','drawMini','MAPCV','revealAround','fxLayer','numDur','compBonusText','compPerk','checkPhase','win','unitBox','LNQ','challVisible','challEligible','challState','isMimic','migrateCompanions','canSummon','summonComp','compOf','clockPhase','tickClock','isNight','rollWeather','wxStep','nightPool','encounterFoes','restAll','tameElite','openChest','rerollTavern','bestAll','gearTier','SV','svCheck','svFlush','svInit','svPush','svPull','svScan','svParse','svBackup','svPack','svUnpack','svProg','svCloudList','svDelDoc','svGet','svCap','slotState','slotKey','svDecode','SV_CH','svStatus','svSlotRaw','svLoad','loadRaw','svHash','svIdx'].forEach(k=>{try{Object.defineProperty(window.__A,k,{get:()=>eval(k)});}catch(e){}});
