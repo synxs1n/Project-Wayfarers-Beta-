@@ -802,3 +802,13 @@ Asked after a mock-up: "Menus look good let's apply the update".
 - `#mmap` is 196x147 css px at 900 px wide and up (same canvas, scaled).
 - The Backpack tab icon is option A of four the owner was shown (adventurer pack); they may pick another.
 - Test: tools/chrome/v214a.js.
+
+## 0.22.31: the shops on phones (shops31.js)
+
+Asked after a mock-up: "shop menu updates are good, initiate the changes".
+
+- v3/shops31.js, last in MODS. `s31Pass` marks any panel with a direct `.shopnav` child (m3Nav: smithy, workshop, tavern, guild, board) with the classes `m29` and `s31` when `m29On()`; `S31.off` or the `aurelis-m29off` flag turns it off. The m29 class brings the full screen panel, the one row filters and the two line clamp of menus29.js.
+- `.shopnav` is `display:contents`; `.stabs` is the fixed bottom bar (icons by `data-arg`; `data-s31t` on the panel is the modal type, so Alchemy's craft tab gets a flask), `.ssec` the sticky sliding row.
+- `.upgbest` is a flex column so `.p3smith` (Upgrade whole party) comes first; its rows are a three column grid; `.mxt` and a gold only `.p3mats` are hidden until the row has focus.
+- Not built from the mock-up: worn piece beside the new one in an opened card, a ready count on the Tempering tab, where a missing material comes from.
+- Test: tools/chrome/v215a.js (menus group).
