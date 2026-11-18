@@ -2125,7 +2125,7 @@ html:not(.flat) .battle.b3 .bline .b4mo .b4bar{box-shadow:inset 0 0 0 1px #000,0
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.22.28";const APP_BUILD="71f30a19acbe";
+(function(){const APP_VER="0.22.29";const APP_BUILD="18a2a4fdbf88";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2906,7 +2906,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.22.28";const APP_BUILD="71f30a19acbe";
+const APP_VER="0.22.29";const APP_BUILD="18a2a4fdbf88";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2914,6 +2914,7 @@ const APP_VER="0.22.28";const APP_BUILD="71f30a19acbe";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.22.29',['The menu on phones: it fills the screen, the sections (Party, Backpack, Quests, Map, More) are a bar at the bottom under your thumb, and sub tabs and quest filters are one row you can slide instead of two or three.','Party shows all six heroes at once; Show and Sort share a row; long item and quest text is cut to two lines until you tap the row. Records, Guides, Settings and Save are under More.']],
  ['Beta v0.22.28',['A Legendary wayfarer who joins while your six is full now asks where to stand: swap him in for someone on the spot, or keep him in the reserves (Dist and the others went straight to the reserves without asking).']],
  ['Beta v0.22.27',['Battles on a phone held upright: the stage is larger and runs edge to edge, Attack, Skills, Items and Guard are four large buttons, and the party and foe cards open from a new Party & foes button instead of sitting under the commands.','Pause, Auto and Speed moved up beside the turn order; Momentum and the log line float over the sky; Guide, sound, help and settings are at the foot of the Party & foes sheet.']],
  ['Beta v0.22.26',['Relic skills are signature moves now, one per class and named for the hero (Brann\'s Reckoning, Lumen\'s Second Dawn, Mira\'s Unmaking), shaped by the hero\'s elements and by what kind of gear the relic is. The shared heal with Regen, heavy strike and burst are gone.']],
@@ -38791,6 +38792,94 @@ body:has(.battle.b3.b27) #hdr{display:none}
 .b27sf .btn{flex:1 1 70px;min-height:40px}
 `;document.head.appendChild(st);}
 try{window.__B27={B27,on:b27On};}catch(e){}
+
+// ===== menus29.js (v0.22.29): the main menu on phones: content first, the sections under the thumb =====
+// Asked after a mock-up (scratchpad only): "Menus look good let's apply the update". On a 360x640 phone the frame, the Menu title, the Save
+// row, two rows of sections, two rows of sub tabs and the tool buttons took the first 500 px. Only on screens up to M29.maxW px wide:
+//  1 the menu fills the screen; one 46 px bar names the section and shows the save state, gold and Close
+//  2 the sections are a bar at the bottom: Party, Backpack, Quests (with a count of rewards ready), Map, More (Records, Guides, Settings, Save)
+//  3 sub tabs and quest filters are one row that scrolls sideways, never two rows; the sub tabs stay in view while the page scrolls
+//  4 Party: the tools are one row, a hero card has Sheet and Equip side by side and no XP bar (it is on the sheet), so the six fit on screen;
+//    the reserve filters share a row
+//  5 Backpack and Quests: Show and Sort share a row; long descriptions are cut to two lines until the row is tapped
+// The markup is the game's own (ui.js / menus3.js): a pass over #modal after each render adds the class, the title, gold, the More button and
+// its sheet. M29.off=true (or localStorage aurelis-m29off=1, for the tests of the classic menu) turns it off.
+const M29={maxW:560,more:false,off:(()=>{try{return localStorage.getItem('aurelis-m29off')==='1';}catch(e){return false;}})()};
+function m29On(){try{return !M29.off&&window.innerWidth<=M29.maxW;}catch(e){return false;}}
+function m29Ready(){let n=0;try{n+=m3Quests().filter(q=>nbQState(q)==='ready').length;}catch(e){}try{if(typeof facMisAll==='function')n+=facMisAll().filter(m=>facMisState(m)==='ready').length;}catch(e){}return n;}
+function m29MoreSync(pn,mg){const inMore=!!mg.querySelector('.chip.on[data-arg="records"],.chip.on[data-arg="guides"],.chip.on[data-arg="settings"]'),mb=mg.querySelector('.m29mb');
+  if(mb){mb.classList.toggle('on',inMore||M29.more);mb.setAttribute('aria-expanded',M29.more?'true':'false');}
+  pn.querySelectorAll(':scope>.m29more').forEach(x=>x.remove());if(!M29.more)return;
+  const s=document.createElement('div');s.className='m29more';s.innerHTML=['records','guides','settings'].map(k=>{const c=mg.querySelector(`[data-arg="${k}"]`);return c?`<button class="btn sm${c.classList.contains('on')?' gold':''}" data-act="menuGrp" data-arg="${k}">${esc((c.textContent||'').trim())}</button>`:'';}).join('')+'<button class="btn sm" data-act="p5Save">💾 Save now</button>';pn.appendChild(s);}
+function m29Pass(){try{const md=document.getElementById('modal');if(!md)return;const pn=md.querySelector('.panel'),mg=pn&&pn.querySelector(':scope>.mgrp');const ov=pn&&pn.parentNode;
+  if(!pn||!mg||!V.modal||V.modal.type!=='menu'){M29.more=false;return;}
+  const on=m29On();pn.classList.toggle('m29',on);if(ov&&ov.classList)ov.classList.toggle('m29m',on);if(!on)return;
+  if(pn.dataset.m29){m29MoreSync(pn,mg);return;}/* the same panel again (a render that kept the modal): only the More sheet can have changed */pn.dataset.m29='1';
+  // 1 the bar
+  const h=pn.querySelector(':scope>.menuh'),act=mg.querySelector('.chip.on'),lab=act?(act.textContent||'').trim():'Menu';
+  if(h){for(const n of [...h.childNodes])if(n.nodeType===3)n.remove();const t=document.createElement('b');t.className='m29t';t.textContent=lab;h.insertBefore(t,h.firstChild);
+    const g=document.createElement('span');g.className='m29g nums';g.innerHTML='<i>◉</i> '+((G&&G.gold)||0).toLocaleString();h.appendChild(g);}
+  // 2 the bottom bar: a count on Quests, and More
+  const rd=m29Ready(),qc=mg.querySelector('[data-arg="quests"]');if(rd>0&&qc){const b=document.createElement('span');b.className='m29bd nums';b.textContent=rd;b.setAttribute('aria-label',rd+' rewards ready');qc.appendChild(b);}
+  const mb=document.createElement('button');mb.className='chip m29mb';mb.dataset.act='m29More';mb.textContent='More';mg.appendChild(mb);m29MoreSync(pn,mg);
+  // 3 the open sub tab is in view
+  const ms=pn.querySelector(':scope>.msub'),so=ms&&ms.querySelector('.chip.on');if(so)ms.scrollLeft=Math.max(0,so.offsetLeft-(ms.clientWidth-so.offsetWidth)/2);
+  // 4 the loadout button joins the party tools
+  const pt=pn.querySelector('.ptools'),ld=pn.querySelector('.ldstrip');if(pt&&ld){ld.querySelectorAll('button').forEach(b=>pt.appendChild(b));ld.remove();}
+  // 5 a long description opens when its row is tapped
+  pn.querySelectorAll('.rows>.row').forEach(r=>{if(!r.hasAttribute('tabindex'))r.setAttribute('tabindex','0');});
+}catch(e){M29.err=String(e&&e.message||e);}}
+ACT.m29More=function(){M29.more=!M29.more;render();m29Pass();};
+['menuGrp','menuTab','p5Save','xClose','menu'].forEach(k=>{const f=ACT[k];if(typeof f==='function')ACT[k]=function(){M29.more=false;return f.apply(this,arguments);};});
+try{const md=document.getElementById('modal');if(md)new MutationObserver(m29Pass).observe(md,{childList:true});}catch(e){}
+HOOK.after('render','menus29','the phone menu pass',function(){m29Pass();});
+window.addEventListener('resize',()=>{try{if(V&&V.modal&&V.modal.type==='menu')render();}catch(e){}});
+{const st=document.createElement('style');st.id='m29css';st.textContent=`
+#modal .modal.m29m{padding:0;align-items:stretch}
+.panel.m29{display:block;width:100%;max-width:none;height:100%;max-height:none;min-height:100%;margin:0;border-radius:0;box-sizing:border-box;padding:0 10px calc(72px + env(safe-area-inset-bottom,0px));overflow-y:auto;overflow-x:hidden}
+.panel.m29::before,.panel.m29::after{display:none}
+.panel.m29>.mnav{position:fixed!important;top:3px!important;right:6px!important;left:auto!important;bottom:auto;z-index:30!important;margin:0;padding:0;width:40px;height:40px;display:block}
+.panel.m29>.mnav .mclose{position:static;display:grid;place-items:center;width:40px;height:40px;margin:0}
+.panel.m29>.menuh{position:sticky;top:0;z-index:8;display:flex;align-items:center;gap:8px;height:46px;min-height:46px;margin:0 -10px!important;transform:none;padding:0 54px 0 40px;box-sizing:border-box;background:#0f1830;border:0;border-bottom:1px solid #2a3a60;font-size:1.05rem}
+.panel.m29>.menuh .m29t{font:inherit;color:#ffe9a6;white-space:nowrap}
+.panel.m29>.menuh .savepin{display:flex;align-items:center;min-width:0;flex:0 1 auto;margin:0;padding:0}
+.panel.m29>.menuh .savepin .btn{display:none}
+.panel.m29>.menuh .savepin small{font:800 .62rem/1.2 var(--fb);color:#8fe0a0;border:1px solid #2f6a45;border-radius:10px;padding:2px 7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;letter-spacing:0;text-transform:none}
+.panel.m29>.menuh .m29g{margin-left:auto;font:800 .78rem/1 var(--fb);color:#ffd76a;white-space:nowrap;letter-spacing:0}
+.panel.m29>.menuh .m29g i{font-style:normal}
+.panel.m29>.mgrp{position:fixed;left:0;right:0;bottom:0;z-index:25;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:0;margin:0;padding:0 0 env(safe-area-inset-bottom,0px);box-sizing:content-box;height:58px;border:0;border-top:1px solid #33466f;border-radius:0;background:#0f1830}
+.panel.m29>.mgrp .chip{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;min-width:0;width:auto;height:58px;min-height:58px;margin:0;padding:0;border:0;border-radius:0;background:none;box-shadow:none;color:#8fa0c4;font:800 .64rem/1.1 var(--fb)}
+.panel.m29>.mgrp .chip::before{display:block;font-size:1.2rem;line-height:1.1;content:"☰"}
+.panel.m29>.mgrp .chip[data-arg="party"]::before{content:"⚔"}
+.panel.m29>.mgrp .chip[data-arg="gear"]::before{content:"🎒"}
+.panel.m29>.mgrp .chip[data-arg="quests"]::before{content:"📜"}
+.panel.m29>.mgrp .chip[data-arg="map"]::before{content:"🗺"}
+.panel.m29>.mgrp .chip.on{color:#ffe9a6;background:none;box-shadow:none;border:0}
+.panel.m29>.mgrp .chip.on::after{content:"";position:absolute;top:0;left:22%;right:22%;height:3px;border-radius:0 0 3px 3px;background:#e9c463}
+.panel.m29>.mgrp .chip[data-arg="records"],.panel.m29>.mgrp .chip[data-arg="guides"],.panel.m29>.mgrp .chip[data-arg="settings"]{display:none}
+.panel.m29>.mgrp .m29bd{position:absolute;top:5px;left:54%;min-width:16px;height:16px;box-sizing:border-box;border-radius:8px;background:#e0524f;color:#fff;font:800 .6rem/16px var(--fb);padding:0 4px}
+.panel.m29>.m29more{position:fixed;right:6px;bottom:calc(64px + env(safe-area-inset-bottom,0px));z-index:31;display:grid;gap:6px;min-width:170px;padding:8px;border-radius:12px;background:#121c36;border:1px solid #a48bff;box-shadow:0 10px 30px rgba(0,0,0,.6)}
+.panel.m29>.m29more .btn{min-height:44px;justify-content:flex-start}
+.panel.m29>.msub{position:sticky;top:46px;z-index:7;display:flex;flex-wrap:nowrap;gap:6px;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;margin:0 -10px 6px;padding:6px 10px;border:0;background:#0b1122}
+.panel.m29>.msub::-webkit-scrollbar,.panel.m29 .nbsec::-webkit-scrollbar,.panel.m29 .ptools::-webkit-scrollbar{display:none}
+.panel.m29>.msub .chip{flex:none;border-radius:20px;white-space:nowrap}
+.panel.m29 .nbsec{display:flex;flex-wrap:nowrap;gap:6px;overflow-x:auto;scrollbar-width:none;margin-left:-10px;margin-right:-10px;padding-left:10px;padding-right:10px}
+.panel.m29 .nbsec .chip{flex:none;white-space:nowrap}
+.panel.m29 .ptools{display:flex;flex-wrap:nowrap;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 -10px 6px;padding:0 10px}
+.panel.m29 .ptools .btn{flex:none;white-space:nowrap}
+.panel.m29 .swgridwrap>h4{margin:6px 0 4px}
+.panel.m29 .swlist .swb.xpb{display:none}
+.panel.m29 .swlist .swbtns{display:grid;grid-template-columns:1fr 1fr;gap:3px;padding:2px 3px 3px}
+.panel.m29 .swlist.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.panel.m29 .swlist .swc{min-width:0}
+.panel.m29 .swlist .swc .swbtns .btn.sm{min-width:0;width:auto;min-height:40px;padding:0;font-size:.7rem}
+.panel.m29 .ddbar{display:grid;grid-template-columns:repeat(auto-fit,minmax(88px,1fr));gap:6px}
+.panel.m29 .ddbar .dd{min-width:0;margin:0}
+.panel.m29 .rows>.row{outline:0}
+.panel.m29 .rows>.row small{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+.panel.m29 .rows>.row:focus small,.panel.m29 .rows>.row:focus-within small{-webkit-line-clamp:unset;overflow:visible}
+`;document.head.appendChild(st);}
+try{window.__M29={M29,on:m29On,pass:m29Pass};}catch(e){}
 
 window.__A={walkable,ceInit,tvSlots,genQuests,STARTERS,starterDraw,ECON,AUTO_NERF,rebuildBase,detLive,REACT,skEls,packContents,miniFor,AUTO_REW,ENC_RATE,ENC_MIN_STEPS,detNote,classSkills,stickCount,bestAll,calcStats,lookKey,vTemper,storyEchoUp,leaveDungeon,win,ldApply,genFort,caveOk,enterCave,siteHasMini,openChest,nextDlg,WS,mapIcoRects,roamSpawn,roamInterior,roamSees,mapTargets,DIRV,tileAt,STAGE_LV,autoBan,rollWeather,guardianDef,mapIssues,mapEntry,syncPools,bovAt,calFxAt,realmAt,REALMS,BOV,CAL_FX,overlayGuide,liftOverlay,drawGearIcon,gearIcon,itemIcon,RAW,sigKind,sigGid,personalDone,heroLook,hasSignature,LEGEND_IDS,facDirty,facCount,facRank,facRep,FACB,FAC,finishBattle,npcWords,npcHints,npcPool,titleMake,titleAdvance,TTS,placeAt,wkwUpdate,innSpot,getMap,monURL,enterVia,applyBossTheme,BTHEME,resetMaps,rebuildBase,shopStock,gearDesc,calcStats,gearMigrate,CLS_WPN,CLS_ARM,WPERK,WT_NAME,equipWhy,lootBase,GEAR,canEquip,gearOf,perkNote,FAM_MAT_V35,fbDraft,META:{get best(){return META.best},get codex(){return META.codex},get q(){return META.q}},saveMeta,OFF,offPending,offFlush,PROFILE,profileSync,codexSee,getMap,placeAt,interact,sanctumOpen,riftKeys,echoKeys,BONDS,bondKey,wkwUpdate,inTown,WS,LC,lsort,bestParty,fsCast,fsSkills,ldApply,MON,registerTamed,stickPower,stickCount,autoOne,planGear,bestTag,gainersFor,compGainFor,refresh,fitsFor,canEquip,gearOf,queueNewGear,ARENA,fxDur,banDur,stageTags,autoSwitchPick,layoutBattle,newChar,calcStats,limitSkill,limitTier,canStuck,dunReachable,LV_CAP,addXp,echoSpec,bossLvFor,fx,MON,log,effInfo,tierOf,perkOf,quirkDef,forgeCost,buyPlan,vJourney,modalBack,partySlots,limitOpen,town2Reached,skillKnown,known,classSkills,paceMigrate,unpackG,packG,makeEnemy,QUIRK,arrive,enterDungeon,wkwUpdate,useTravel,travelWhyNot,porkFlee,porkBlocked,encTile,campRest,buyPart,partLeft,alchStock,GAME_VERSION,CHANGELOG,ITEMS,tavernOffers,tavernPool,recruitFit,partyNeeds,vNext,CHALL,innSpot,RECIPES,MATS,FB,fbContext,REDEEM,legendJoin,legendQ,genQuests,dynActors,convInit,PROFILE,profileSync,checkArchive,GPOOL,FPOOL,guardianDef,saveMeta,archiveSkills,get G(){return G;},set G(v){G=v;},get B(){return B;},get V(){return V;},get META(){return META;},WS,ACT,render,newGame,placeAt,startBattle,autoTurn,advance,finishBattle,getMap,innSpot,setPause:p=>{PAUSE=p;},autoCfg,worldInputDir,inputSources,battleFrame,battleTheme,STS,MAPS,mapIssues,healMap,mimicReward,dropChest,interact,worldDraw,TPL,ZONES,ZS,newChar,recruit,saveGame,resetMaps,dynActors,tileAt,BV,refresh,genBounties,genQuests,vStarter,heroCard,heroURL,iconURL,masteryLine,AU,buildTrack,tone,noiseHit,MIDI,sfx,audioVol};
 ['heroRoles','SOLID','WEATHER','WX_BASE','weatherFX','superGuide','recruitCost','ceStart','ceStep','ceInit','cePool','wxList','SUPER_TABLE','superOk','facRank','facRep','facInit','facCount','facCredit','FAC','FMIS','facMissionList','facProg','tyOf','facSync','facMul','facBest','worldPlan','caveReward','enterCave','leaveCave','leaveDungeon','buildCaveMap','worldGraph','openWorldMap','sigReport','SIG_NAMES','starterDraw','ITEM_TIERS','gTierIdx','tierChip','gearIcon','starterSlots','STARTERS','CLK_LEN','CLK_PH','clockPhase','wxInfoBody','recipeOrder','recipeGain','recipeReady','recipeClose','effOf','calcDamage','healsUndead','storyEchoUp','riftKeys','echoDef','efCost','autoLocked','bossFightKey','learnScanAll','isSeen','mapMarks','genSub','subOK','subReq','ensureSub','inSub','tvSlots','tvInit','tvLeft','tvEvent','tvNextText','tvPool','tvDue','tvShuffle','mTavern','hireOK','TV_CAP','TV_CD','POOL_IDS','natPool','natOf','natRoll','NATURES','natInfo','natRerollCost','natChooseCost','NAT_CLASS','iconURL','seenOf','mapIcoDraw','drawMini','MAPCV','revealAround','fxLayer','numDur','compBonusText','compPerk','checkPhase','win','unitBox','LNQ','challVisible','challEligible','challState','isMimic','migrateCompanions','canSummon','summonComp','compOf','clockPhase','tickClock','isNight','rollWeather','wxStep','nightPool','encounterFoes','restAll','tameElite','openChest','rerollTavern','bestAll','gearTier','SV','svCheck','svFlush','svInit','svPush','svPull','svScan','svParse','svBackup','svPack','svUnpack','svProg','svCloudList','svDelDoc','svGet','svCap','slotState','slotKey','svDecode','SV_CH','svStatus','svSlotRaw','svLoad','loadRaw','svHash','svIdx'].forEach(k=>{try{Object.defineProperty(window.__A,k,{get:()=>eval(k)});}catch(e){}});

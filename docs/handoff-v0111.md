@@ -777,3 +777,14 @@ Asked after two mock-ups (scratchpad only, not in the repo): maximise the stage 
 ## 0.22.28: a Legendary joining a full six asks where to stand
 
 Reported for Dist. `legendJoin` (legends.js) and `j17Join` (legends17a.js) added the hero to the roster without setting `G.pendRecruit`, so the swap prompt of recruit3.js never opened. Both set it now when the six is full. Test: tools/chrome/v212a.js.
+
+## 0.22.29: the main menu on phones (menus29.js)
+
+Asked after a mock-up: "Menus look good let's apply the update".
+
+- v3/menus29.js, last in MODS. On when `window.innerWidth<=M29.maxW` (560). `M29.off=true` or localStorage `aurelis-m29off=1` turns it off (the tests of the classic menu set it).
+- No markup of its own for the menu body: `m29Pass` runs after each render (and from a MutationObserver on `#modal`), adds class `m29` to the menu panel and `m29m` to its overlay, writes the section name into `h2.menuh`, adds gold, the Quests badge (`m29Ready`), the More button and its sheet (`m29MoreSync`), moves the loadout button into `.ptools`.
+- A render that keeps the same modal node keeps the panel: `pn.dataset.m29` guards the one time work, `m29MoreSync` runs every time.
+- CSS is in the module (`#m29css`). The panel is `display:block` (as a flex column its scrolling rows collapsed), the header is sticky (the game's own h2 rule has z-index 19, so Close is 30, the bar 25), the section bar is `position:fixed`.
+- Records, Guides and Settings chips stay in `.mgrp` but are hidden; the More sheet has buttons with the same `menuGrp` actions, plus Save (`p5Save`).
+- Test: tools/chrome/v213a.js (menus group).
