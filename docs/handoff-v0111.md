@@ -867,3 +867,5 @@ Asked after a mock-up: "shop menu updates are good, initiate the changes".
 ## 0.22.38: own relic first in upgrade suggestions (fix38.js)
 
 `p3Ult` returns 1e9 for a hero's own relic (`g.relic && g.only===c.id`), so `upgCmp` and the whole party plan rank it first; `upgOpts` returns nothing for a slot that already holds the hero's own relic. Test: tools/chrome/v221a.js.
+
+NOT REPRODUCED. The owner's report (a regular piece suggested for a hero, then that hero's relic right after equipping it) could not be made to happen: with the relic in the pack it was already the first suggestion for all 94 heroes at every realm (scratchpad relscan.js), also under the old `u_<hero>` ids, and Upgrade whole party already equipped relics from the pack. fix38 is a guard only. Still to find out from the owner: which hero, which slot, which list (Smithy's Best upgrade for each slot, the hero sheet's Upgrade button, or Upgrade whole party). One untested idea: a shield relic that only becomes wearable after a one handed weapon is equipped.
