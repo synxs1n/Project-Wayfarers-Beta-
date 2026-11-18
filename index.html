@@ -2125,7 +2125,7 @@ html:not(.flat) .battle.b3 .bline .b4mo .b4bar{box-shadow:inset 0 0 0 1px #000,0
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.22.35";const APP_BUILD="c007460867cf";
+(function(){const APP_VER="0.22.36";const APP_BUILD="690fb3ffe655";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2308,8 +2308,8 @@ const QUIRK_RES=.4;
 const PERK_KILLS=[10,25,50],PERK_KILLS_BOSS=[2,4,6],PERK_DMG=[.03,.05,.08],PERK_DROP=[0,.05,.1];
 // archetypes (archetype.js)
 const UNDEAD_LIGHT=1.35;//  extra Light damage taken by Undead (on top of the type chart; the better of the two applies)
-const HEAL_HURT=.75;//  share of a heal's amount that an Undead foe takes as holy damage
-const HEAL_HURT_AOE=.6;//  same, for heals that cover the whole party
+const HEAL_HURT=.95;/* 0.22.36: was .75; heals are 12% smaller (skills36.js) and a little harder on the Undead *///  share of a heal's amount that an Undead foe takes as holy damage
+const HEAL_HURT_AOE=.76;/* 0.22.36: was .6 *///  same, for heals that cover the whole party
 const HEAL_HURT_PW_CAP=2.2;//  heals above this power do not hurt any more (Full Mend and Miracle stay fair)
 const ARCH_BOSS_CLAMP=[.75,1.3]; // Scourges and Calamities never swing further than this, so no one hero is mandatory
 const ARCH_FOE_CLAMP=[.4,1.8];
@@ -2906,7 +2906,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.22.35";const APP_BUILD="c007460867cf";
+const APP_VER="0.22.36";const APP_BUILD="690fb3ffe655";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2914,7 +2914,8 @@ const APP_VER="0.22.35";const APP_BUILD="c007460867cf";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
- ['Beta v0.22.35',['Screens open faster: the Bestiary, the Codex and the Smithy paint their first pictures at once and the rest over the next moments, and long shop lists only lay out the rows near the screen.']],
+ ['Beta v0.22.36',['Skills pass. Relic skills are about a fifth weaker with smaller side effects. Every skill with two elements is a Dual art. Dual type heroes have a better spread: where one of their elements had no early or no late skill, one moved over from the other.','Regen is on far fewer skills (it stays on the ones that are about it: the Renews, Sanctuary, Meditate); Blessing gives Might and Focus, Lumen\'s Lampglow heals and gives Bulwark. Purify cures and no longer heals. Heals are 12% smaller, and a heal thrown at an Undead foe hurts it about a tenth more.']],
+ ['Beta v0.22.35',['Screens open faster: the Bestiary, the Codex and the Smithy paint their first pictures at once and the rest over the next moments.']],
  ['Beta v0.22.34',['The battle screen on tablets and computers follows the phone layout: the stage runs the full width and takes most of the screen, the commands are one bar under it, and the party and foe cards open from Party & foes (a side panel on wide screens). A phone held sideways keeps the classic layout.','On phones the stage is a little taller.']],
  ['Beta v0.22.33',['The Echoforge has sections like the other shop tabs: All, For my party, Can forge, Weapons, Armor. What can be forged now comes first, and the long explanation folds away under About the Echoforge.']],
  ['Beta v0.22.32',['A Pork Chop Sandwich eaten in a dungeon walks you out to the field at its door (it used to leave you inside, at the entrance).','The Riftkeeper only counts as beaten on the journey that beat him; a new journey finds him unbeaten.','Legendary relics are gold yellow, like the Legendary wayfarers; Heroic gear is teal.','In battle a skill has only its element before its name (the kind of attack is the symbol after it). Shops no longer list what a piece becomes at max temper.']],
@@ -7767,7 +7768,7 @@ function perform(a,sk,tgts){
   }else if(sk.k==='heal'){
     for(const t of tgts){
       if(t.hp<=0){if(sk.revive){t.hp=Math.max(1,Math.round(t.S.mhp*sk.revive));t.st={};fx(t,'Revived','heal');log(`${t.name} rises again!`);}continue;}
-      const n=Math.round(sk.pw*(a.S.healP||a.S.mag)*rnd(.95,1.05)*(WX().heal||1)*(1+(a.S.healUp||0))*curseMul(t));const g=Math.min(n,t.S.mhp-t.hp);t.hp+=g;fx(t,'+'+g,'heal');t.healT=Date.now();log(`${t.name} recovers ${g} HP.`);
+      if(sk.pw>0){const n=Math.round(sk.pw*(a.S.healP||a.S.mag)*rnd(.95,1.05)*(WX().heal||1)*(1+(a.S.healUp||0))*curseMul(t));const g=Math.min(n,t.S.mhp-t.hp);t.hp+=g;fx(t,'+'+g,'heal');t.healT=Date.now();log(`${t.name} recovers ${g} HP.`);}/* 0.22.36: a skill of no power (Purify) cures and heals nothing */
       if(sk.cleanse){const c=cleanse(t);if(c)log(`${t.name} is cured.`);}
       if(a.id==='isolde')addSt(t,'regen',a,true);
       (sk.fx||[]).forEach(([k])=>addSt(t,k,a,true));}
@@ -38637,25 +38638,26 @@ const R25={off:false,charmK:1.5,mix:['w','k','c','a','s','w','c','k','a','w'],
   // 0.22.26: one signature move per class (never a copy of a kit skill), then shaped by the hero's element (R25.elFx) and by what kind of
   // gear the relic is (R25.kindFx), and named for the hero. Asked: "vanguard heals with regen is too common to make a relic skill, these
   // should be super special and unique".
-  skill:{warrior:{n:'Reckoning',k:'phys',pw:1.7,t:'all',mp:22,execute:.35,drain:.25,self:[['might',1]],what:'Cleaves every foe, hits wounded foes twice as hard, and heals the wielder for a quarter of the damage'},
-    knight:{n:'Unbroken Line',k:'phys',pw:2.3,t:'one',mp:20,shieldChip:4,self:[['taunt',1],['ward',1]],allyFx:[['bulwark',1]],what:'A shield breaking blow, and the wielder draws every attack behind a Ward while the vanguard gains Bulwark'},
-    thief:{n:'Thousand Cuts',k:'phys',pw:.75,t:'rand',hits:5,mp:20,crit:.3,strip:1,self:[['focus',1]],what:'Five cuts across the foes that tear away their boons, and leaves the wielder Focused'},
-    archer:{n:'Skyfall',k:'phys',pw:1.6,t:'all',mp:22,pierce:1,fx:[['break',.6]],what:'A volley on every foe that ignores half their defence and can Break them'},
-    sniper:{n:'Final Mark',k:'phys',pw:3.4,t:'one',mp:24,pierce:1,crit:.35,execute:.5,what:'One shot through armour, doubled against a foe under half health'},
-    monk:{n:'Hundred Fists',k:'phys',pw:.65,t:'rand',hits:6,mp:20,drain:.3,self:[['might',1],['haste',1]],what:'Six blows across the foes that feed the wielder, who gains Might and Haste'},
-    druid:{n:'Wild Hunt',k:'phys',pw:1.5,t:'all',mp:22,drain:.4,fx:[['root',.8],['poison',.8]],allyFx:[['bulwark',1]],what:'The wild falls on every foe, Rooting and Poisoning them, healing the wielder and granting the vanguard Bulwark'},
-    chief:{n:'Rallying Tide',k:'phys',pw:1.4,t:'all',mp:22,lbParty:30,allyFx:[['might',1],['haste',1]],what:'Strikes every foe, fills the limit gauges of the party and grants the vanguard Might and Haste'},
-    mage:{n:'Unmaking',k:'mag',pw:1.9,t:'all',mp:26,strip:1,fx:[['break',.5]],what:'Magic on every foe that tears away their boons and can Break them'},
-    archmage:{n:'Twin Tempest',k:'mag',pw:.85,t:'rand',hits:6,mp:26,strip:1,self:[['focus',1]],what:'Six bolts across the foes that tear away their boons, and leaves the wielder Focused'},
-    chronicler:{n:'Stopped Hour',k:'mag',pw:1.5,t:'all',mp:24,fx:[['slow',1],['stun',.4]],allyFx:[['haste',1]],what:'Time buckles: every foe is Slowed and may be Stunned while the vanguard gains Haste'},
-    bloodcaller:{n:'Red Covenant',k:'mag',pw:1.7,t:'all',mp:24,drain:.5,execute:.3,fx:[['bleed',.9]],what:'Bleeds every foe, hits the wounded twice as hard and returns half the damage as health'},
-    healer:{n:'Second Dawn',k:'heal',pw:1.8,t:'allyAll',mp:28,revive:.5,cleanse:1,fx:[['ward',1]],what:'Raises the fallen at half health, heals and cures the vanguard and Wards each of them against the next hit'},
-    bard:{n:'Encore',k:'heal',pw:1.1,t:'allyAll',mp:24,cleanse:1,fx:[['might',1],['focus',1]],what:'Heals and cures the vanguard, and grants each of them Might and a guaranteed critical hit'}},
+  // 0.22.36 ("skills given by Legendary relics are bit too strong"): about a fifth off every power, smaller riders, 2 MP more
+  skill:{warrior:{n:'Reckoning',k:'phys',pw:1.35,t:'all',mp:24,execute:.25,drain:.15,self:[['might',1]],what:'Cleaves every foe, hits wounded foes twice as hard, and heals the wielder for part of the damage'},
+    knight:{n:'Unbroken Line',k:'phys',pw:1.9,t:'one',mp:22,shieldChip:3,self:[['taunt',1],['ward',1]],allyFx:[['bulwark',1]],what:'A shield breaking blow, and the wielder draws every attack behind a Ward while the vanguard gains Bulwark'},
+    thief:{n:'Thousand Cuts',k:'phys',pw:.6,t:'rand',hits:5,mp:22,crit:.2,strip:1,self:[['focus',1]],what:'Five cuts across the foes that tear away their boons, and leaves the wielder Focused'},
+    archer:{n:'Skyfall',k:'phys',pw:1.3,t:'all',mp:24,pierce:1,fx:[['break',.4]],what:'A volley on every foe that ignores half their defence and can Break them'},
+    sniper:{n:'Final Mark',k:'phys',pw:2.7,t:'one',mp:26,pierce:1,crit:.25,execute:.35,what:'One shot through armour, doubled against a foe under a third of its health'},
+    monk:{n:'Hundred Fists',k:'phys',pw:.52,t:'rand',hits:6,mp:22,drain:.2,self:[['might',1],['haste',1]],what:'Six blows across the foes that feed the wielder, who gains Might and Haste'},
+    druid:{n:'Wild Hunt',k:'phys',pw:1.2,t:'all',mp:24,drain:.25,fx:[['root',.6],['poison',.6]],allyFx:[['bulwark',1]],what:'The wild falls on every foe, Rooting and Poisoning them, healing the wielder and granting the vanguard Bulwark'},
+    chief:{n:'Rallying Tide',k:'phys',pw:1.15,t:'all',mp:24,lbParty:15,allyFx:[['might',1],['haste',1]],what:'Strikes every foe, fills the limit gauges of the party and grants the vanguard Might and Haste'},
+    mage:{n:'Unmaking',k:'mag',pw:1.5,t:'all',mp:28,strip:1,fx:[['break',.35]],what:'Magic on every foe that tears away their boons and can Break them'},
+    archmage:{n:'Twin Tempest',k:'mag',pw:.68,t:'rand',hits:6,mp:28,strip:1,self:[['focus',1]],what:'Six bolts across the foes that tear away their boons, and leaves the wielder Focused'},
+    chronicler:{n:'Stopped Hour',k:'mag',pw:1.2,t:'all',mp:26,fx:[['slow',1],['stun',.25]],allyFx:[['haste',1]],what:'Time buckles: every foe is Slowed and may be Stunned while the vanguard gains Haste'},
+    bloodcaller:{n:'Red Covenant',k:'mag',pw:1.35,t:'all',mp:26,drain:.3,execute:.2,fx:[['bleed',.9]],what:'Bleeds every foe, hits the wounded twice as hard and returns part of the damage as health'},
+    healer:{n:'Second Dawn',k:'heal',pw:1.3,t:'allyAll',mp:30,revive:.3,cleanse:1,fx:[['ward',1]],what:'Raises the fallen at a third of their health, heals and cures the vanguard and Wards each of them against the next hit'},
+    bard:{n:'Encore',k:'heal',pw:.9,t:'allyAll',mp:26,cleanse:1,fx:[['might',1],['focus',1]],what:'Heals and cures the vanguard, and grants each of them Might and a guaranteed critical hit'}},
   // the hero's first element shapes it: a status on the foes for a strike, a boon for a mend
   elFx:{fire:['burn',.8],water:['weaken',.7],ice:['slow',.8],lightning:['stun',.35],earth:['root',.8],wind:['blind',.8],shadow:['poison',.8],light:['weaken',.7]},
   elBoon:{fire:'might',lightning:'haste',wind:'haste',ice:'bulwark',earth:'bulwark',water:'regen',light:'focus',shadow:'focus'},
   // and what the relic is: a weapon hits harder, armour and shields protect the wielder, boots quicken them, a charm fills limit gauges
-  kindFx:{w:{pwM:1.15,txt:'Stronger for being a weapon'},a:{self:'bulwark',txt:'the wielder gains Bulwark'},s:{self:'ward',txt:'the wielder gains a Ward'},k:{self:'haste',txt:'the wielder gains Haste'},c:{lb:20,pwM:1.08,txt:'the limit gauges of the party fill'}}};
+  kindFx:{w:{pwM:1.08,txt:'Stronger for being a weapon'},a:{self:'bulwark',txt:'the wielder gains Bulwark'},s:{self:'ward',txt:'the wielder gains a Ward'},k:{self:'haste',txt:'the wielder gains Haste'},c:{lb:10,pwM:1.04,txt:'the limit gauges of the party fill'}}};
 const R25_PRE={w:'u_',a:'ua_',c:'uc_',k:'uk_',s:'us_'},R25_RE=/^u[acks]?_/;
 const r25Heroes=()=>Object.keys(TPL).filter(id=>TPL[id]&&!TPL[id].mon&&CLS[TPL[id].cls]);
 const r25Legend=id=>{try{const t=TPL[id];return !!(t&&(t.legend||(CLS[t.cls]&&CLS[t.cls].legend)||(typeof LEGEND_IDS!=='undefined'&&LEGEND_IDS.includes(id))));}catch(e){return false;}};
@@ -39052,8 +39054,7 @@ try{window.__EF33={all:ef33All,pick:ef33Pick};}catch(e){}
 //    Bestiary paints 241 monsters before it can show one. Now the first P35.eager of a screen are painted at once and the rest get a
 //    one pixel placeholder and are painted over the next frames (P35.ms per frame), in page order. Nothing changes once a picture is cached.
 //  2 the max temper lines that shops stopped showing in 0.22.32 were still worked out for every piece and hero (bestTag, upgMax).
-//  3 long shop lists: rows off screen are not laid out or painted until they scroll near (content-visibility), and the phone menu and shop
-//    passes no longer measure the page inside the render (menus29.js, shops31.js).
+//  3 the phone menu and shop passes no longer measure the page inside the render (menus29.js, shops31.js).
 const P35={eager:16,ms:9,q:[],on:0,left:0,off:false,ph:'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'};
 function p35NoMax(){try{return !!(V&&V.modal&&(V.modal.type==='smithy'||V.modal.type==='workshop'));}catch(e){return false;}}
 {const u0=upgMax;upgMax=function(){return p35NoMax()?'':u0.apply(this,arguments);};}
@@ -39072,8 +39073,67 @@ function p35Fill(gen){try{if(gen!==P35.gen)return;const md=document.getElementBy
       el.setAttribute('style',el.getAttribute('style').replace(/data:image\/gif;base64,[A-Za-z0-9+/=]+#lz(\d+)/g,(x,i)=>P35.real(+i)||x.replace(/#lz\d+/,'')));}}
   if(more)requestAnimationFrame(()=>p35Fill(gen));}catch(e){P35.err=String(e&&e.message||e);}}
 HOOK.after('render','perf35','paint the pictures that were left',function(){try{if(P35.q.length){const g=P35.gen;requestAnimationFrame(()=>p35Fill(g));}}catch(e){}});
-{const st=document.createElement('style');st.id='p35css';st.textContent='#modal .panel:has(>.shopnav) .rows>.row{content-visibility:auto;contain-intrinsic-size:auto 130px}';document.head.appendChild(st);}
+// (content-visibility:auto on shop rows was tried and taken out: rows off screen dropped out of innerText, which the tests and screen readers read)
 try{window.__P35={P35,fill:()=>p35Fill(P35.gen)};}catch(e){}
+
+// ===== skills36.js (v0.22.36): a pass over every hero's kit =====
+// Asked: "skills given by Legendary relics are bit too strong, all 2 element skills should be dual arts, let's do a bit of skill rebalancing
+// and reworking as well, many dual types don't have a good spread of abilities of their different types as they level (we want it mixed
+// between primes/detonates of each type and weak/strong skills of each type), some skills on a character are repetitive on the same
+// character for example lumens lamp glow and radiant renew and everything has regen (purify shouldn't heal), healing feels a bit too strong
+// (it should be a bit stronger when used on undead)".
+// The kits come from several generators (skills.js, kits12.js, roster17.js ...). This runs once on each hero's finished kit (classSkills) and
+// edits the skill objects in place (they are the hero's own, no two heroes share one):
+//  1 every skill with two elements is a Dual art (s.combo): it primes with both and detonates on either (skills12.js)
+//  2 dual types: each of the hero's two elements should have a Primer, a Detonator, an early skill (learned by S36.early) and a late one.
+//    Where one element lacks one, a skill of the other element that can change hands (its name or text carries the element's word) moves
+//    over, as long as the giver keeps all four itself. Name and text follow ("Earth Rain" becomes "Water Rain").
+//  3 Regen stays on the skills that are about it (S36.regenKeep); elsewhere it goes, or becomes another boon (S36.regenTo). Lumen's Lampglow
+//    heals and gives Bulwark, so it is not Radiant Renew with a heal.
+//  4 Purify cures and no longer heals (power 0; engine.js skips the heal).
+//  5 heals are S36.heal (0.88) of what they were. config.js raises what a heal does to an Undead foe (HEAL_HURT .95, was .75), so that is
+//    about a tenth more than before.
+// Relic skills (s.relic) are not touched here; relics25.js has their own cut.
+const S36={v:1,early:20,heal:.88,off:false,log:{moved:[],gaps:[]},
+  regenKeep:{'Sanctuary':1,'Tidal Renew':1,'Radiant Renew':1,'Meditate':1},
+  regenTo:{'Blessing':'focus','Beacon Ward':'bulwark','Aurora':'focus','Spectrum Aria':'might','Cathedral Descant':'bulwark','Kennel Blessing':'focus','Iron Stance':'bulwark','Shield Ally':'ward','Lampglow':'bulwark'},
+  elN:{fire:'Fire',water:'Water',ice:'Ice',lightning:'Lightning',earth:'Earth',wind:'Wind',shadow:'Shadow',light:'Light'}};
+function s36Regen(s){const drop=L=>{if(!L)return false;const i=L.findIndex(q=>q[0]==='regen');if(i<0)return false;L.splice(i,1);return true;};
+  if(s.relic||S36.regenKeep[s.n])return;const had=[s.fx,s.allyFx,s.self].map(drop),any=had.some(Boolean);if(!any)return;
+  let to=S36.regenTo[s.n];const L=had[0]?(s.fx=s.fx||[]):had[1]?(s.allyFx=s.allyFx||[]):(s.self=s.self||[]);
+  if(s.n==='Lampglow'){const w=L.findIndex(q=>q[0]==='ward');if(w>=0)L.splice(w,1);}
+  if(to&&L.some(q=>q[0]===to))to=null;if(to)L.push([to,1]);
+  const tn=to&&STS[to]?STS[to].n:null;let d=String(s.d||'');
+  if(s.n==='Lampglow')d=d.replace('grants Regen and Ward','grants Bulwark');
+  else if(tn)d=d.replace(/\bRegen\b/,tn);
+  else d=d.replace(/,? and Regen\b/,'').replace(/\bRegen and /,'').replace(/, Regen\b/,'').replace(/\bRegen, /,'').replace(/\s+and grants\s*\./,'.').replace(/ and grants$/,'');
+  s.d=d;s._s36r=1;}
+function s36Dual(t,L){const els=t.el||[];if(els.length<2)return;const role=s=>s.role==='primer'?'p':s.role==='det'?'d':'';
+  const R=()=>L.filter(s=>!s.relic&&!s.combo&&typeof s.el==='string'&&els.includes(s.el)&&role(s)&&(s.k==='phys'||s.k==='mag'));
+  const has=(e,need)=>R().some(s=>s.el===e&&(need==='p'||need==='d'?role(s)===need:need==='w'?s.lv<=S36.early:s.lv>S36.early));
+  const gaps=e=>['p','d','w','s'].filter(n=>!has(e,n));
+  const can=(s)=>{const n=S36.elN[s.el];return !!n&&(String(s.n).indexOf(n)>=0||(String(s.d||'').indexOf(n)>=0&&!/Fire|Water|Ice|Frost|Lightning|Thunder|Storm|Volt|Earth|Stone|Wind|Gale|Shadow|Umbral|Light|Holy|Radiant|Ember|Inferno|Blizzard|Cyclone|Gust/.test(String(s.n))));};
+  for(let pass=0;pass<4;pass++){let did=false;
+    for(const e of els){const o=els.find(x=>x!==e),G=gaps(e);if(!G.length)continue;
+      for(const need of G){// a giver of the other element that fits the need and can be spared
+        const fits=s=>need==='p'||need==='d'?role(s)===need:need==='w'?s.lv<=S36.early:s.lv>S36.early;
+        const C=R().filter(s=>s.el===o&&fits(s)&&can(s)).sort((a,b)=>need==='w'?a.lv-b.lv:b.lv-a.lv);let done=false;
+        for(const s of C){const was=s.el,a=S36.elN[was],b=S36.elN[e],nn=String(s.n).split(a).join(b);if(L.some(x=>x!==s&&x.n===nn))continue;// the kit already has a skill of that name
+          s.el=e;if(gaps(o).length){s.el=was;continue;}// the giver must keep its own four
+          s.n=String(s.n).split(a).join(b);if(s.d)s.d=String(s.d).split(a).join(b);s._s36e=was;S36.log.moved.push(t.id+': '+s.n+' ('+was+' to '+e+')');done=did=true;break;}
+        if(done)break;}}
+    if(!did)break;}
+  els.forEach(e=>{const G=gaps(e);if(G.length)S36.log.gaps.push(t.id+' '+e+':'+G.join(''));});}
+function s36Kit(t,L){
+  L.forEach(s=>{if(!s||s.relic)return;
+    if(Array.isArray(s.el)&&s.el.length>1&&!s.combo&&(s.k==='phys'||s.k==='mag'||s.k==='heal')){s._k12c=1;/* keeps its own name and text: kits12.js would rename a new Dual art to the class's generic one, which the kit may already hold */s.combo=1;s._s36c=1;}
+    s36Regen(s);
+    if(s.k==='heal'&&s.n==='Purify'){s.pw=0;s.d='Cures every ailment on one ally.';}
+    else if(s.k==='heal'&&s.pw>0&&!s._s36h){s._s36h=1;s.pw=+(s.pw*S36.heal).toFixed(2);}});
+  s36Dual(t,L);}
+HOOK.xform('classSkills','skills36','the 0.22.36 kit pass (once per hero)',function(L,t){try{if(S36.off||!L||!t||t.mon||!L.length)return L;const f=L.find(s=>s&&!s.relic);if(!f||f._s36===S36.v)return L;
+  L.forEach(s=>{if(s&&!s.relic)s._s36=S36.v;});s36Kit(t,L);}catch(e){S36.err=String(e&&e.message||e);}return L;});
+try{window.__S36=S36;}catch(e){}
 
 window.__A={walkable,ceInit,tvSlots,genQuests,STARTERS,starterDraw,ECON,AUTO_NERF,rebuildBase,detLive,REACT,skEls,packContents,miniFor,AUTO_REW,ENC_RATE,ENC_MIN_STEPS,detNote,classSkills,stickCount,bestAll,calcStats,lookKey,vTemper,storyEchoUp,leaveDungeon,win,ldApply,genFort,caveOk,enterCave,siteHasMini,openChest,nextDlg,WS,mapIcoRects,roamSpawn,roamInterior,roamSees,mapTargets,DIRV,tileAt,STAGE_LV,autoBan,rollWeather,guardianDef,mapIssues,mapEntry,syncPools,bovAt,calFxAt,realmAt,REALMS,BOV,CAL_FX,overlayGuide,liftOverlay,drawGearIcon,gearIcon,itemIcon,RAW,sigKind,sigGid,personalDone,heroLook,hasSignature,LEGEND_IDS,facDirty,facCount,facRank,facRep,FACB,FAC,finishBattle,npcWords,npcHints,npcPool,titleMake,titleAdvance,TTS,placeAt,wkwUpdate,innSpot,getMap,monURL,enterVia,applyBossTheme,BTHEME,resetMaps,rebuildBase,shopStock,gearDesc,calcStats,gearMigrate,CLS_WPN,CLS_ARM,WPERK,WT_NAME,equipWhy,lootBase,GEAR,canEquip,gearOf,perkNote,FAM_MAT_V35,fbDraft,META:{get best(){return META.best},get codex(){return META.codex},get q(){return META.q}},saveMeta,OFF,offPending,offFlush,PROFILE,profileSync,codexSee,getMap,placeAt,interact,sanctumOpen,riftKeys,echoKeys,BONDS,bondKey,wkwUpdate,inTown,WS,LC,lsort,bestParty,fsCast,fsSkills,ldApply,MON,registerTamed,stickPower,stickCount,autoOne,planGear,bestTag,gainersFor,compGainFor,refresh,fitsFor,canEquip,gearOf,queueNewGear,ARENA,fxDur,banDur,stageTags,autoSwitchPick,layoutBattle,newChar,calcStats,limitSkill,limitTier,canStuck,dunReachable,LV_CAP,addXp,echoSpec,bossLvFor,fx,MON,log,effInfo,tierOf,perkOf,quirkDef,forgeCost,buyPlan,vJourney,modalBack,partySlots,limitOpen,town2Reached,skillKnown,known,classSkills,paceMigrate,unpackG,packG,makeEnemy,QUIRK,arrive,enterDungeon,wkwUpdate,useTravel,travelWhyNot,porkFlee,porkBlocked,encTile,campRest,buyPart,partLeft,alchStock,GAME_VERSION,CHANGELOG,ITEMS,tavernOffers,tavernPool,recruitFit,partyNeeds,vNext,CHALL,innSpot,RECIPES,MATS,FB,fbContext,REDEEM,legendJoin,legendQ,genQuests,dynActors,convInit,PROFILE,profileSync,checkArchive,GPOOL,FPOOL,guardianDef,saveMeta,archiveSkills,get G(){return G;},set G(v){G=v;},get B(){return B;},get V(){return V;},get META(){return META;},WS,ACT,render,newGame,placeAt,startBattle,autoTurn,advance,finishBattle,getMap,innSpot,setPause:p=>{PAUSE=p;},autoCfg,worldInputDir,inputSources,battleFrame,battleTheme,STS,MAPS,mapIssues,healMap,mimicReward,dropChest,interact,worldDraw,TPL,ZONES,ZS,newChar,recruit,saveGame,resetMaps,dynActors,tileAt,BV,refresh,genBounties,genQuests,vStarter,heroCard,heroURL,iconURL,masteryLine,AU,buildTrack,tone,noiseHit,MIDI,sfx,audioVol};
 ['heroRoles','SOLID','WEATHER','WX_BASE','weatherFX','superGuide','recruitCost','ceStart','ceStep','ceInit','cePool','wxList','SUPER_TABLE','superOk','facRank','facRep','facInit','facCount','facCredit','FAC','FMIS','facMissionList','facProg','tyOf','facSync','facMul','facBest','worldPlan','caveReward','enterCave','leaveCave','leaveDungeon','buildCaveMap','worldGraph','openWorldMap','sigReport','SIG_NAMES','starterDraw','ITEM_TIERS','gTierIdx','tierChip','gearIcon','starterSlots','STARTERS','CLK_LEN','CLK_PH','clockPhase','wxInfoBody','recipeOrder','recipeGain','recipeReady','recipeClose','effOf','calcDamage','healsUndead','storyEchoUp','riftKeys','echoDef','efCost','autoLocked','bossFightKey','learnScanAll','isSeen','mapMarks','genSub','subOK','subReq','ensureSub','inSub','tvSlots','tvInit','tvLeft','tvEvent','tvNextText','tvPool','tvDue','tvShuffle','mTavern','hireOK','TV_CAP','TV_CD','POOL_IDS','natPool','natOf','natRoll','NATURES','natInfo','natRerollCost','natChooseCost','NAT_CLASS','iconURL','seenOf','mapIcoDraw','drawMini','MAPCV','revealAround','fxLayer','numDur','compBonusText','compPerk','checkPhase','win','unitBox','LNQ','challVisible','challEligible','challState','isMimic','migrateCompanions','canSummon','summonComp','compOf','clockPhase','tickClock','isNight','rollWeather','wxStep','nightPool','encounterFoes','restAll','tameElite','openChest','rerollTavern','bestAll','gearTier','SV','svCheck','svFlush','svInit','svPush','svPull','svScan','svParse','svBackup','svPack','svUnpack','svProg','svCloudList','svDelDoc','svGet','svCap','slotState','slotKey','svDecode','SV_CH','svStatus','svSlotRaw','svLoad','loadRaw','svHash','svIdx'].forEach(k=>{try{Object.defineProperty(window.__A,k,{get:()=>eval(k)});}catch(e){}});

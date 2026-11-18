@@ -840,5 +840,16 @@ Asked after a mock-up: "shop menu updates are good, initiate the changes".
 - Measured with a CDP profile (scratchpad prof.js): Bestiary 77% in `monURL` (241 sprites painted before the first is shown), Smithy shop: `upgOpts`/`m3GearRow` plus forced layouts from `window.innerWidth` and `offsetWidth` in the menus29/shops31 passes, and max temper lines that are hidden since 0.22.32.
 - `cvURL` is wrapped: inside `vModal`, after `P35.eager` (16) uncached pictures, a one pixel GIF with `#lz<n>` is returned and `p35Fill` paints the real ones over the next frames (`P35.ms` 9 per frame) into `img[src*="#lz"]` and `[style*="#lz"]`. `P35.off=true` turns it off. A test that reads an image right after render must wait or switch it off.
 - `p35NoMax()` (smithy, workshop): `bestTag`'s max temper line and `upgMax` are skipped.
-- `content-visibility:auto` on shop rows.
+- `content-visibility:auto` on shop rows was tried and removed: off screen rows dropped out of `innerText` (v136a, v134a, v151a).
 - Numbers on the dev container, 390x844: Bestiary 750 to 142 ms, Codex 324 to 138, Smithy shop 390 to 180, Forge 244 to 105.
+
+## 0.22.36: the kit pass (skills36.js) and weaker relic skills
+
+- skills36.js is a `classSkills` xform that runs once per hero (flag `_s36` on the skill objects, which are per hero) and edits in place. `S36.off=true` before a kit is first read turns it off; `S36.log` lists what moved and the gaps left.
+- Two element skills get `combo=1` (and `_k12c=1` so kits12.js does not rename them to the class's generic Dual art).
+- `s36Dual`: for the 28 dual types, each element wants a primer, a detonator, a skill learned by level 20 and one after. A skill of the other element moves over when its name or text carries the element word and the giver keeps its own four. 11 moved; cadence, prisma (light has no early skill) and jose (few role skills) keep gaps.
+- Regen: 115 skills had it, 22 keep it (`S36.regenKeep`, plus anything not named in the tables that is a hero's own). `S36.regenTo` swaps it for another boon on some.
+- Purify: power 0, engine.js heal branch skips the heal when `sk.pw` is 0.
+- Heal skills: power x0.88 (so the preview, the field use and the Undead damage all follow). config.js HEAL_HURT .75 to .95, HEAL_HURT_AOE .6 to .76.
+- relics25.js: every relic skill's power about x0.8, riders smaller, +2 MP; weapon rider 1.08, charm limit gain 10.
+- Not balance tested in long play.

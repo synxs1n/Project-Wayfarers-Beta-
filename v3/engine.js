@@ -599,7 +599,7 @@ function perform(a,sk,tgts){
   }else if(sk.k==='heal'){
     for(const t of tgts){
       if(t.hp<=0){if(sk.revive){t.hp=Math.max(1,Math.round(t.S.mhp*sk.revive));t.st={};fx(t,'Revived','heal');log(`${t.name} rises again!`);}continue;}
-      const n=Math.round(sk.pw*(a.S.healP||a.S.mag)*rnd(.95,1.05)*(WX().heal||1)*(1+(a.S.healUp||0))*curseMul(t));const g=Math.min(n,t.S.mhp-t.hp);t.hp+=g;fx(t,'+'+g,'heal');t.healT=Date.now();log(`${t.name} recovers ${g} HP.`);
+      if(sk.pw>0){const n=Math.round(sk.pw*(a.S.healP||a.S.mag)*rnd(.95,1.05)*(WX().heal||1)*(1+(a.S.healUp||0))*curseMul(t));const g=Math.min(n,t.S.mhp-t.hp);t.hp+=g;fx(t,'+'+g,'heal');t.healT=Date.now();log(`${t.name} recovers ${g} HP.`);}/* 0.22.36: a skill of no power (Purify) cures and heals nothing */
       if(sk.cleanse){const c=cleanse(t);if(c)log(`${t.name} is cured.`);}
       if(a.id==='isolde')addSt(t,'regen',a,true);
       (sk.fx||[]).forEach(([k])=>addSt(t,k,a,true));}

@@ -37,25 +37,26 @@ const R25={off:false,charmK:1.5,mix:['w','k','c','a','s','w','c','k','a','w'],
   // 0.22.26: one signature move per class (never a copy of a kit skill), then shaped by the hero's element (R25.elFx) and by what kind of
   // gear the relic is (R25.kindFx), and named for the hero. Asked: "vanguard heals with regen is too common to make a relic skill, these
   // should be super special and unique".
-  skill:{warrior:{n:'Reckoning',k:'phys',pw:1.7,t:'all',mp:22,execute:.35,drain:.25,self:[['might',1]],what:'Cleaves every foe, hits wounded foes twice as hard, and heals the wielder for a quarter of the damage'},
-    knight:{n:'Unbroken Line',k:'phys',pw:2.3,t:'one',mp:20,shieldChip:4,self:[['taunt',1],['ward',1]],allyFx:[['bulwark',1]],what:'A shield breaking blow, and the wielder draws every attack behind a Ward while the vanguard gains Bulwark'},
-    thief:{n:'Thousand Cuts',k:'phys',pw:.75,t:'rand',hits:5,mp:20,crit:.3,strip:1,self:[['focus',1]],what:'Five cuts across the foes that tear away their boons, and leaves the wielder Focused'},
-    archer:{n:'Skyfall',k:'phys',pw:1.6,t:'all',mp:22,pierce:1,fx:[['break',.6]],what:'A volley on every foe that ignores half their defence and can Break them'},
-    sniper:{n:'Final Mark',k:'phys',pw:3.4,t:'one',mp:24,pierce:1,crit:.35,execute:.5,what:'One shot through armour, doubled against a foe under half health'},
-    monk:{n:'Hundred Fists',k:'phys',pw:.65,t:'rand',hits:6,mp:20,drain:.3,self:[['might',1],['haste',1]],what:'Six blows across the foes that feed the wielder, who gains Might and Haste'},
-    druid:{n:'Wild Hunt',k:'phys',pw:1.5,t:'all',mp:22,drain:.4,fx:[['root',.8],['poison',.8]],allyFx:[['bulwark',1]],what:'The wild falls on every foe, Rooting and Poisoning them, healing the wielder and granting the vanguard Bulwark'},
-    chief:{n:'Rallying Tide',k:'phys',pw:1.4,t:'all',mp:22,lbParty:30,allyFx:[['might',1],['haste',1]],what:'Strikes every foe, fills the limit gauges of the party and grants the vanguard Might and Haste'},
-    mage:{n:'Unmaking',k:'mag',pw:1.9,t:'all',mp:26,strip:1,fx:[['break',.5]],what:'Magic on every foe that tears away their boons and can Break them'},
-    archmage:{n:'Twin Tempest',k:'mag',pw:.85,t:'rand',hits:6,mp:26,strip:1,self:[['focus',1]],what:'Six bolts across the foes that tear away their boons, and leaves the wielder Focused'},
-    chronicler:{n:'Stopped Hour',k:'mag',pw:1.5,t:'all',mp:24,fx:[['slow',1],['stun',.4]],allyFx:[['haste',1]],what:'Time buckles: every foe is Slowed and may be Stunned while the vanguard gains Haste'},
-    bloodcaller:{n:'Red Covenant',k:'mag',pw:1.7,t:'all',mp:24,drain:.5,execute:.3,fx:[['bleed',.9]],what:'Bleeds every foe, hits the wounded twice as hard and returns half the damage as health'},
-    healer:{n:'Second Dawn',k:'heal',pw:1.8,t:'allyAll',mp:28,revive:.5,cleanse:1,fx:[['ward',1]],what:'Raises the fallen at half health, heals and cures the vanguard and Wards each of them against the next hit'},
-    bard:{n:'Encore',k:'heal',pw:1.1,t:'allyAll',mp:24,cleanse:1,fx:[['might',1],['focus',1]],what:'Heals and cures the vanguard, and grants each of them Might and a guaranteed critical hit'}},
+  // 0.22.36 ("skills given by Legendary relics are bit too strong"): about a fifth off every power, smaller riders, 2 MP more
+  skill:{warrior:{n:'Reckoning',k:'phys',pw:1.35,t:'all',mp:24,execute:.25,drain:.15,self:[['might',1]],what:'Cleaves every foe, hits wounded foes twice as hard, and heals the wielder for part of the damage'},
+    knight:{n:'Unbroken Line',k:'phys',pw:1.9,t:'one',mp:22,shieldChip:3,self:[['taunt',1],['ward',1]],allyFx:[['bulwark',1]],what:'A shield breaking blow, and the wielder draws every attack behind a Ward while the vanguard gains Bulwark'},
+    thief:{n:'Thousand Cuts',k:'phys',pw:.6,t:'rand',hits:5,mp:22,crit:.2,strip:1,self:[['focus',1]],what:'Five cuts across the foes that tear away their boons, and leaves the wielder Focused'},
+    archer:{n:'Skyfall',k:'phys',pw:1.3,t:'all',mp:24,pierce:1,fx:[['break',.4]],what:'A volley on every foe that ignores half their defence and can Break them'},
+    sniper:{n:'Final Mark',k:'phys',pw:2.7,t:'one',mp:26,pierce:1,crit:.25,execute:.35,what:'One shot through armour, doubled against a foe under a third of its health'},
+    monk:{n:'Hundred Fists',k:'phys',pw:.52,t:'rand',hits:6,mp:22,drain:.2,self:[['might',1],['haste',1]],what:'Six blows across the foes that feed the wielder, who gains Might and Haste'},
+    druid:{n:'Wild Hunt',k:'phys',pw:1.2,t:'all',mp:24,drain:.25,fx:[['root',.6],['poison',.6]],allyFx:[['bulwark',1]],what:'The wild falls on every foe, Rooting and Poisoning them, healing the wielder and granting the vanguard Bulwark'},
+    chief:{n:'Rallying Tide',k:'phys',pw:1.15,t:'all',mp:24,lbParty:15,allyFx:[['might',1],['haste',1]],what:'Strikes every foe, fills the limit gauges of the party and grants the vanguard Might and Haste'},
+    mage:{n:'Unmaking',k:'mag',pw:1.5,t:'all',mp:28,strip:1,fx:[['break',.35]],what:'Magic on every foe that tears away their boons and can Break them'},
+    archmage:{n:'Twin Tempest',k:'mag',pw:.68,t:'rand',hits:6,mp:28,strip:1,self:[['focus',1]],what:'Six bolts across the foes that tear away their boons, and leaves the wielder Focused'},
+    chronicler:{n:'Stopped Hour',k:'mag',pw:1.2,t:'all',mp:26,fx:[['slow',1],['stun',.25]],allyFx:[['haste',1]],what:'Time buckles: every foe is Slowed and may be Stunned while the vanguard gains Haste'},
+    bloodcaller:{n:'Red Covenant',k:'mag',pw:1.35,t:'all',mp:26,drain:.3,execute:.2,fx:[['bleed',.9]],what:'Bleeds every foe, hits the wounded twice as hard and returns part of the damage as health'},
+    healer:{n:'Second Dawn',k:'heal',pw:1.3,t:'allyAll',mp:30,revive:.3,cleanse:1,fx:[['ward',1]],what:'Raises the fallen at a third of their health, heals and cures the vanguard and Wards each of them against the next hit'},
+    bard:{n:'Encore',k:'heal',pw:.9,t:'allyAll',mp:26,cleanse:1,fx:[['might',1],['focus',1]],what:'Heals and cures the vanguard, and grants each of them Might and a guaranteed critical hit'}},
   // the hero's first element shapes it: a status on the foes for a strike, a boon for a mend
   elFx:{fire:['burn',.8],water:['weaken',.7],ice:['slow',.8],lightning:['stun',.35],earth:['root',.8],wind:['blind',.8],shadow:['poison',.8],light:['weaken',.7]},
   elBoon:{fire:'might',lightning:'haste',wind:'haste',ice:'bulwark',earth:'bulwark',water:'regen',light:'focus',shadow:'focus'},
   // and what the relic is: a weapon hits harder, armour and shields protect the wielder, boots quicken them, a charm fills limit gauges
-  kindFx:{w:{pwM:1.15,txt:'Stronger for being a weapon'},a:{self:'bulwark',txt:'the wielder gains Bulwark'},s:{self:'ward',txt:'the wielder gains a Ward'},k:{self:'haste',txt:'the wielder gains Haste'},c:{lb:20,pwM:1.08,txt:'the limit gauges of the party fill'}}};
+  kindFx:{w:{pwM:1.08,txt:'Stronger for being a weapon'},a:{self:'bulwark',txt:'the wielder gains Bulwark'},s:{self:'ward',txt:'the wielder gains a Ward'},k:{self:'haste',txt:'the wielder gains Haste'},c:{lb:10,pwM:1.04,txt:'the limit gauges of the party fill'}}};
 const R25_PRE={w:'u_',a:'ua_',c:'uc_',k:'uk_',s:'us_'},R25_RE=/^u[acks]?_/;
 const r25Heroes=()=>Object.keys(TPL).filter(id=>TPL[id]&&!TPL[id].mon&&CLS[TPL[id].cls]);
 const r25Legend=id=>{try{const t=TPL[id];return !!(t&&(t.legend||(CLS[t.cls]&&CLS[t.cls].legend)||(typeof LEGEND_IDS!=='undefined'&&LEGEND_IDS.includes(id))));}catch(e){return false;}};
