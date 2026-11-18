@@ -2125,7 +2125,7 @@ html:not(.flat) .battle.b3 .bline .b4mo .b4bar{box-shadow:inset 0 0 0 1px #000,0
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.22.37";const APP_BUILD="8852650dc7b8";
+(function(){const APP_VER="0.22.38";const APP_BUILD="e9c5e3f442ba";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2906,7 +2906,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.22.37";const APP_BUILD="8852650dc7b8";
+const APP_VER="0.22.38";const APP_BUILD="e9c5e3f442ba";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2914,6 +2914,7 @@ const APP_VER="0.22.37";const APP_BUILD="8852650dc7b8";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.22.38',['Upgrade suggestions put a hero\'s own relic first, and stop suggesting other gear for a slot once the relic is worn there (a shop piece used to be suggested, then the relic right after).']],
  ['Beta v0.22.37',['Towns have their land back. The towns that were islands (Mire, Peaks, Drowned, Shattered) stand on islands again with bridges between them, Lakes and Bamboo have canals, and Grotto, Mesa, Mines and Starless climb in terraces with stairs. Every building is still in clear view and every gate still has a road to it.']],
  ['Beta v0.22.36',['Skills pass. Relic skills are about a fifth weaker with smaller side effects. Every skill with two elements is a Dual art. Dual type heroes have a better spread: where one of their elements had no early or no late skill, one moved over from the other.','Regen is on far fewer skills (it stays on the ones that are about it: the Renews, Sanctuary, Meditate); Blessing gives Might and Focus, Lumen\'s Lampglow heals and gives Bulwark. Purify cures and no longer heals. Heals are 12% smaller, and a heal thrown at an Undead foe hurts it about a tenth more.']],
  ['Beta v0.22.35',['Screens open faster: the Bestiary, the Codex and the Smithy paint their first pictures at once and the rest over the next moments.']],
@@ -39170,6 +39171,19 @@ function t37Terrace(T){const W=T.W,H=T.H,g=T.g,r=T.road,cx=W>>1,free=y=>{if(Math
 function t37Dress(T,R,th,o){if(T37.off||!o||!o.land)return;const k=o.land;if(k==='isles'){t37Isles(T);T37.n.isles++;}else if(k==='canal'){if(t37Canal(T))T37.n.canal++;}else if(k==='terrace'){if(t37Terrace(T))T37.n.terrace++;}T.land=k;}
 try{Object.keys(T37.land).forEach(k=>{if(T24_TAB[k])T24_TAB[k][2]=Object.assign({},T24_TAB[k][2],{land:T37.land[k]});});}catch(e){}
 try{window.__T37=T37;}catch(e){}
+
+// ===== fix38.js (v0.22.38): a hero's own relic comes first in every upgrade suggestion =====
+// Reported: "Best upgrade for slot keeps suggesting one regular equipment and then suggesting the relic for that same character right after I
+// equip it's suggestion, should just show me the one that's better first".
+// Suggestions are ranked by where a piece ENDS (p3Ult: its score at max temper). A shop piece's end at +3 could rank over the hero's relic,
+// which cannot be tempered; bought at +0 it was weaker than the relic today, so the next suggestion was the relic, and with the relic on the
+// shop piece's +3 chain came back. A personal relic is meant to be the best piece for its hero (relics25.js), so:
+//  1 a hero's own relic ranks above everything for that hero (p3Ult), in the per slot view and in Upgrade whole party
+//  2 while a hero wears their own relic nothing is suggested for that slot (upgOpts)
+function f38Own(c,id){try{const g=id&&gearOf(id);return !!(g&&g.relic&&c&&g.only===c.id);}catch(e){return false;}}
+{const u0=p3Ult;p3Ult=function(c,sl,id){return f38Own(c,id)?1e9:u0.apply(this,arguments);};}
+{const o0=upgOpts;upgOpts=function(c,sl){try{if(c&&c.eq&&f38Own(c,c.eq[sl]))return [];}catch(e){}return o0.apply(this,arguments);};}
+try{window.__F38={own:f38Own};}catch(e){}
 
 window.__A={walkable,ceInit,tvSlots,genQuests,STARTERS,starterDraw,ECON,AUTO_NERF,rebuildBase,detLive,REACT,skEls,packContents,miniFor,AUTO_REW,ENC_RATE,ENC_MIN_STEPS,detNote,classSkills,stickCount,bestAll,calcStats,lookKey,vTemper,storyEchoUp,leaveDungeon,win,ldApply,genFort,caveOk,enterCave,siteHasMini,openChest,nextDlg,WS,mapIcoRects,roamSpawn,roamInterior,roamSees,mapTargets,DIRV,tileAt,STAGE_LV,autoBan,rollWeather,guardianDef,mapIssues,mapEntry,syncPools,bovAt,calFxAt,realmAt,REALMS,BOV,CAL_FX,overlayGuide,liftOverlay,drawGearIcon,gearIcon,itemIcon,RAW,sigKind,sigGid,personalDone,heroLook,hasSignature,LEGEND_IDS,facDirty,facCount,facRank,facRep,FACB,FAC,finishBattle,npcWords,npcHints,npcPool,titleMake,titleAdvance,TTS,placeAt,wkwUpdate,innSpot,getMap,monURL,enterVia,applyBossTheme,BTHEME,resetMaps,rebuildBase,shopStock,gearDesc,calcStats,gearMigrate,CLS_WPN,CLS_ARM,WPERK,WT_NAME,equipWhy,lootBase,GEAR,canEquip,gearOf,perkNote,FAM_MAT_V35,fbDraft,META:{get best(){return META.best},get codex(){return META.codex},get q(){return META.q}},saveMeta,OFF,offPending,offFlush,PROFILE,profileSync,codexSee,getMap,placeAt,interact,sanctumOpen,riftKeys,echoKeys,BONDS,bondKey,wkwUpdate,inTown,WS,LC,lsort,bestParty,fsCast,fsSkills,ldApply,MON,registerTamed,stickPower,stickCount,autoOne,planGear,bestTag,gainersFor,compGainFor,refresh,fitsFor,canEquip,gearOf,queueNewGear,ARENA,fxDur,banDur,stageTags,autoSwitchPick,layoutBattle,newChar,calcStats,limitSkill,limitTier,canStuck,dunReachable,LV_CAP,addXp,echoSpec,bossLvFor,fx,MON,log,effInfo,tierOf,perkOf,quirkDef,forgeCost,buyPlan,vJourney,modalBack,partySlots,limitOpen,town2Reached,skillKnown,known,classSkills,paceMigrate,unpackG,packG,makeEnemy,QUIRK,arrive,enterDungeon,wkwUpdate,useTravel,travelWhyNot,porkFlee,porkBlocked,encTile,campRest,buyPart,partLeft,alchStock,GAME_VERSION,CHANGELOG,ITEMS,tavernOffers,tavernPool,recruitFit,partyNeeds,vNext,CHALL,innSpot,RECIPES,MATS,FB,fbContext,REDEEM,legendJoin,legendQ,genQuests,dynActors,convInit,PROFILE,profileSync,checkArchive,GPOOL,FPOOL,guardianDef,saveMeta,archiveSkills,get G(){return G;},set G(v){G=v;},get B(){return B;},get V(){return V;},get META(){return META;},WS,ACT,render,newGame,placeAt,startBattle,autoTurn,advance,finishBattle,getMap,innSpot,setPause:p=>{PAUSE=p;},autoCfg,worldInputDir,inputSources,battleFrame,battleTheme,STS,MAPS,mapIssues,healMap,mimicReward,dropChest,interact,worldDraw,TPL,ZONES,ZS,newChar,recruit,saveGame,resetMaps,dynActors,tileAt,BV,refresh,genBounties,genQuests,vStarter,heroCard,heroURL,iconURL,masteryLine,AU,buildTrack,tone,noiseHit,MIDI,sfx,audioVol};
 ['heroRoles','SOLID','WEATHER','WX_BASE','weatherFX','superGuide','recruitCost','ceStart','ceStep','ceInit','cePool','wxList','SUPER_TABLE','superOk','facRank','facRep','facInit','facCount','facCredit','FAC','FMIS','facMissionList','facProg','tyOf','facSync','facMul','facBest','worldPlan','caveReward','enterCave','leaveCave','leaveDungeon','buildCaveMap','worldGraph','openWorldMap','sigReport','SIG_NAMES','starterDraw','ITEM_TIERS','gTierIdx','tierChip','gearIcon','starterSlots','STARTERS','CLK_LEN','CLK_PH','clockPhase','wxInfoBody','recipeOrder','recipeGain','recipeReady','recipeClose','effOf','calcDamage','healsUndead','storyEchoUp','riftKeys','echoDef','efCost','autoLocked','bossFightKey','learnScanAll','isSeen','mapMarks','genSub','subOK','subReq','ensureSub','inSub','tvSlots','tvInit','tvLeft','tvEvent','tvNextText','tvPool','tvDue','tvShuffle','mTavern','hireOK','TV_CAP','TV_CD','POOL_IDS','natPool','natOf','natRoll','NATURES','natInfo','natRerollCost','natChooseCost','NAT_CLASS','iconURL','seenOf','mapIcoDraw','drawMini','MAPCV','revealAround','fxLayer','numDur','compBonusText','compPerk','checkPhase','win','unitBox','LNQ','challVisible','challEligible','challState','isMimic','migrateCompanions','canSummon','summonComp','compOf','clockPhase','tickClock','isNight','rollWeather','wxStep','nightPool','encounterFoes','restAll','tameElite','openChest','rerollTavern','bestAll','gearTier','SV','svCheck','svFlush','svInit','svPush','svPull','svScan','svParse','svBackup','svPack','svUnpack','svProg','svCloudList','svDelDoc','svGet','svCap','slotState','slotKey','svDecode','SV_CH','svStatus','svSlotRaw','svLoad','loadRaw','svHash','svIdx'].forEach(k=>{try{Object.defineProperty(window.__A,k,{get:()=>eval(k)});}catch(e){}});

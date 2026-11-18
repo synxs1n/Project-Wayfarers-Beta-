@@ -863,3 +863,7 @@ Asked after a mock-up: "shop menu updates are good, initiate the changes".
 - The same checks accept or reject the town (three more seeds, then the towns14 plan). Over the 20 realms: 0 fallbacks.
 - `T37.off=true` before the maps are built gives the flat plans.
 - Test: tools/chrome/v220a.js.
+
+## 0.22.38: own relic first in upgrade suggestions (fix38.js)
+
+`p3Ult` returns 1e9 for a hero's own relic (`g.relic && g.only===c.id`), so `upgCmp` and the whole party plan rank it first; `upgOpts` returns nothing for a slot that already holds the hero's own relic. Test: tools/chrome/v221a.js.

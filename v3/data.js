@@ -4,6 +4,7 @@
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.22.38',['Upgrade suggestions put a hero\'s own relic first, and stop suggesting other gear for a slot once the relic is worn there (a shop piece used to be suggested, then the relic right after).']],
  ['Beta v0.22.37',['Towns have their land back. The towns that were islands (Mire, Peaks, Drowned, Shattered) stand on islands again with bridges between them, Lakes and Bamboo have canals, and Grotto, Mesa, Mines and Starless climb in terraces with stairs. Every building is still in clear view and every gate still has a road to it.']],
  ['Beta v0.22.36',['Skills pass. Relic skills are about a fifth weaker with smaller side effects. Every skill with two elements is a Dual art. Dual type heroes have a better spread: where one of their elements had no early or no late skill, one moved over from the other.','Regen is on far fewer skills (it stays on the ones that are about it: the Renews, Sanctuary, Meditate); Blessing gives Might and Focus, Lumen\'s Lampglow heals and gives Bulwark. Purify cures and no longer heals. Heals are 12% smaller, and a heal thrown at an Undead foe hurts it about a tenth more.']],
  ['Beta v0.22.35',['Screens open faster: the Bestiary, the Codex and the Smithy paint their first pictures at once and the rest over the next moments.']],

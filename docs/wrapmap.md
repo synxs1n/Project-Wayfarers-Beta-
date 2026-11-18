@@ -2,7 +2,7 @@
 
 Who wraps what, in load order. `raw` is the `{const f0=fn;fn=function...}` idiom, `replace` a reassignment without calling the old body, the rest are HOOK registrations. "def" names the module that HOOK.def'd the function. Raw wraps on a def'd function should become registrations; functions with many raw wraps and no def are the candidates for one.
 
-488 functions wrapped; 589 raw wraps or replacements, 806 hook registrations.
+489 functions wrapped; 591 raw wraps or replacements, 806 hook registrations.
 
 | function | owner | def | layers | chain (load order) |
 |---|---|---|---|---|
@@ -225,6 +225,7 @@ Who wraps what, in load order. `raw` is the `{const f0=fn;fn=function...}` idiom
 | townGen | worldgen.js | worldgen.js | 2 | towns14.js:wrap → towns24.js:wrap |
 | turnOrder | engine.js | battle5.js | 2 | battle5.js:replace → rift9.js:before |
 | uDetHtml | battleui.js |  | 2 | battle3.js:raw → battle4.js:raw |
+| upgOpts | p3shop.js |  | 2 | echo11.js:raw → fix38.js:raw |
 | useItemField | engine.js |  | 2 | ailments.js:raw → twists.js:raw |
 | vBonds | v063prog.js |  | 2 | pacing.js:raw → bonds9.js:raw |
 | vEchoforge | echo2.js |  | 2 | echo11.js:replace → echo33.js:raw |
@@ -400,6 +401,7 @@ Who wraps what, in load order. `raw` is the `{const f0=fn;fn=function...}` idiom
 | obShow | onboard.js |  | 1 | guidance9.js:raw |
 | p3Kit | p3shop.js |  | 1 | dmg11.js:raw |
 | p3SmithPlan | p3shop.js |  | 1 | shields20.js:raw |
+| p3Ult | p3shop.js |  | 1 | fix38.js:raw |
 | p6Train | party3.js | party3.js | 1 | party3.js:xform |
 | padPoll | ui2.js |  | 1 | battle5.js:raw |
 | part | battle.js |  | 1 | gfx6battle.js:raw |
@@ -476,7 +478,6 @@ Who wraps what, in load order. `raw` is the `{const f0=fn;fn=function...}` idiom
 | unitHud | battle3.js |  | 1 | legends17a.js:raw |
 | upgApply | p3shop.js |  | 1 | echo11.js:raw |
 | upgMax | p3shop.js |  | 1 | perf35.js:raw |
-| upgOpts | p3shop.js |  | 1 | echo11.js:raw |
 | useTravel | travel.js |  | 1 | v063prog.js:raw |
 | vBestiary | ui.js |  | 1 | v063prog.js:raw |
 | vFbHelp | feedback.js |  | 1 | p5settings.js:raw |
