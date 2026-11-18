@@ -205,6 +205,48 @@ Registered (load order; 1 is next to the base):
 
 Runs: 52 legends17a → 51 quests16 → 45 menus11 → 42 econ11 → 39 roles9 → 37 riftkeeper9 → 36 rift9 → 35 guidance9 → 34 guidance9 → 33 junk9 → 31 bigmap → 30 recruit3 → 29 twists → 28 v063prog → 27 keymap → 26 p4party (around) → 24 p3shop → 23 p3shop → 21 p3shop → 20 saves → 19 sites → 18 starter → 17 autoset → 16 map → 15 comp → 14 comp → 13 sanctum → 12 echo2 → 11 ailments → 10 ailments → 8 chance → 7 describe → 6 town2 → 5 town2 → 4 gearmig → 3 party2 → 2 equip → 1 stuck → **base** → 9 factions (result) → 22 p3shop (result) → 25 p4party (result) → 26 p4party (around) → 32 duellines (result) → 38 riftkeeper9 (result) → 40 endgame10 (result) → 41 rk10 (result) → 43 fixes11 (result) → 44 arena11 (result) → 46 menus11 (result) → 47 world12 (result) → 48 menus12 (result) → 49 roster14 (result) → 50 quests16 (result) → 53 fix18 (result)
 
+### render (37 hooks)
+Registered (load order; 1 is next to the base):
+1. `feedback.js` before: log screen and popup changes for bug reports
+2. `equip.js` around: per-render fit cache (FITC)
+3. `equip.js` before: open "Equip this now?" for queued new gear
+4. `town2.js` after: focus Rest in the Inn
+5. `town2.js` before: note the key that opened a popup (key guard)
+6. `mimic.js` before: mimic loot after the fight, back on the map
+7. `learn.js` after: queue new skill notices
+8. `map.js` after: make sure the minimap exists (next frame)
+9. `anim.js` around: popup open fade
+10. `saves.js` after: save status icon
+11. `p3shop.js` around: per-render Best Party cache (P3C)
+12. `p4party.js` before: the boss's lingering energy popup
+13. `gfx6.js` after: menu depth of field class
+14. `menus3.js` after: keep dropdown focus
+15. `v063prog.js` after: progression notes
+16. `onboard.js` after: keep the tip card placed
+17. `goals.js` after: Next goals panel
+18. `recruit3.js` after: ask where a wild recruit stands
+19. `qready.js` after: quests ready badge on the menu button
+20. `guidance9.js` after: Log button on the tip card
+21. `arena11.js` after: title button and battle chip say Weekly
+22. `menus11.js` before: history: note the view change before the popup html is built (the back arrow needs the stack)
+23. `menus11.js` after: history: a hook inside render may have opened a popup; restore the scroll of a view we went back to
+24. `zoomfix11.js` after: zoom vars and page lock
+25. `party12.js` before: reserves keep no gear (the sweep)
+26. `skills12.js` after: one notice after an old save is trimmed
+27. `hud13.js` after: realm tint variables on the HUD
+28. `cohere15.js` after: body.ch15 and the realm tint of the menus
+29. `quests16.js` before: personal quest offer popup
+30. `gear16.js` after: a first realm hint steps aside while a window is open (it covered the Menu tabs on phones)
+31. `gear16.js` after: a party built in the Menu is "just built" only until every window is closed
+32. `roster17.js` before: no stand-in status is ever drawn
+33. `roster17.js` after: one notice after an old save gains the two skills
+34. `legends17b.js` before: no stand-in status is ever drawn
+35. `legends17b.js` after: the trail moves on: one notice
+36. `legends18.js` after: Nikaris steps out on the field
+37. `menus29.js` after: the phone menu pass
+
+Runs: 34 legends17b → 32 roster17 → 29 quests16 → 25 party12 → 22 menus11 → 12 p4party → 11 p3shop (around) → 9 anim (around) → 6 mimic → 5 town2 → 3 equip → 2 equip (around) → 1 feedback → **base** → 2 equip (around) → 4 town2 → 7 learn → 8 map → 9 anim (around) → 10 saves → 11 p3shop (around) → 13 gfx6 → 14 menus3 → 15 v063prog → 16 onboard → 17 goals → 18 recruit3 → 19 qready → 20 guidance9 → 21 arena11 → 23 menus11 → 24 zoomfix11 → 26 skills12 → 27 hud13 → 28 cohere15 → 30 gear16 → 31 gear16 → 33 roster17 → 35 legends17b → 36 legends18 → 37 menus29
+
 ### win (37 hooks)
 Registered (load order; 1 is next to the base):
 1. `metastats.js` around: gold earned, boss wins, journey clears
@@ -246,47 +288,6 @@ Registered (load order; 1 is next to the base):
 37. `smooth20.js` after: paint the field ahead after the lair boss
 
 Runs: 34 legends17a → 33 legends17b → 29 fixes11 → 23 riftkeeper9 (around) → 19 handin9 (around) → 18 summon8 → 14 comp3 (around) → 13 pacing (around) → 12 results (around) → 11 p4party (around) → 10 p4xp (around) → 9 p3shop (around) → 8 prog2 (around) → 6 comp → 4 echo2 (around) → 3 mimic (around) → 2 equip (around) → 1 metastats (around) → **base** → 1 metastats (around) → 2 equip (around) → 3 mimic (around) → 4 echo2 (around) → 5 sanctum → 7 learn → 8 prog2 (around) → 9 p3shop (around) → 10 p4xp (around) → 11 p4party (around) → 12 results (around) → 13 pacing (around) → 14 comp3 (around) → 15 goals → 16 guild7 → 17 summon8 → 19 handin9 (around) → 20 bonds9 → 21 rift9 → 22 rift9 → 23 riftkeeper9 (around) → 24 arena9 → 25 charms9 → 26 endgame10 → 27 endgame10 → 28 endgame10 → 30 fixes11 → 31 arena11 → 32 party12 → 35 legends17a → 36 legends18 → 37 smooth20
-
-### render (36 hooks)
-Registered (load order; 1 is next to the base):
-1. `feedback.js` before: log screen and popup changes for bug reports
-2. `equip.js` around: per-render fit cache (FITC)
-3. `equip.js` before: open "Equip this now?" for queued new gear
-4. `town2.js` after: focus Rest in the Inn
-5. `town2.js` before: note the key that opened a popup (key guard)
-6. `mimic.js` before: mimic loot after the fight, back on the map
-7. `learn.js` after: queue new skill notices
-8. `map.js` after: make sure the minimap exists (next frame)
-9. `anim.js` around: popup open fade
-10. `saves.js` after: save status icon
-11. `p3shop.js` around: per-render Best Party cache (P3C)
-12. `p4party.js` before: the boss's lingering energy popup
-13. `gfx6.js` after: menu depth of field class
-14. `menus3.js` after: keep dropdown focus
-15. `v063prog.js` after: progression notes
-16. `onboard.js` after: keep the tip card placed
-17. `goals.js` after: Next goals panel
-18. `recruit3.js` after: ask where a wild recruit stands
-19. `qready.js` after: quests ready badge on the menu button
-20. `guidance9.js` after: Log button on the tip card
-21. `arena11.js` after: title button and battle chip say Weekly
-22. `menus11.js` before: history: note the view change before the popup html is built (the back arrow needs the stack)
-23. `menus11.js` after: history: a hook inside render may have opened a popup; restore the scroll of a view we went back to
-24. `zoomfix11.js` after: zoom vars and page lock
-25. `party12.js` before: reserves keep no gear (the sweep)
-26. `skills12.js` after: one notice after an old save is trimmed
-27. `hud13.js` after: realm tint variables on the HUD
-28. `cohere15.js` after: body.ch15 and the realm tint of the menus
-29. `quests16.js` before: personal quest offer popup
-30. `gear16.js` after: a first realm hint steps aside while a window is open (it covered the Menu tabs on phones)
-31. `gear16.js` after: a party built in the Menu is "just built" only until every window is closed
-32. `roster17.js` before: no stand-in status is ever drawn
-33. `roster17.js` after: one notice after an old save gains the two skills
-34. `legends17b.js` before: no stand-in status is ever drawn
-35. `legends17b.js` after: the trail moves on: one notice
-36. `legends18.js` after: Nikaris steps out on the field
-
-Runs: 34 legends17b → 32 roster17 → 29 quests16 → 25 party12 → 22 menus11 → 12 p4party → 11 p3shop (around) → 9 anim (around) → 6 mimic → 5 town2 → 3 equip → 2 equip (around) → 1 feedback → **base** → 2 equip (around) → 4 town2 → 7 learn → 8 map → 9 anim (around) → 10 saves → 11 p3shop (around) → 13 gfx6 → 14 menus3 → 15 v063prog → 16 onboard → 17 goals → 18 recruit3 → 19 qready → 20 guidance9 → 21 arena11 → 23 menus11 → 24 zoomfix11 → 26 skills12 → 27 hud13 → 28 cohere15 → 30 gear16 → 31 gear16 → 33 roster17 → 35 legends17b → 36 legends18
 
 ### finishBattle (31 hooks)
 Registered (load order; 1 is next to the base):
