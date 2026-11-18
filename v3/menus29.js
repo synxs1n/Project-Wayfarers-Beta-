@@ -6,7 +6,7 @@
 //  3 sub tabs and quest filters are one row that scrolls sideways, never two rows; the sub tabs stay in view while the page scrolls
 //  4 Party: the tools are one row, a hero card has Sheet and Equip side by side and no XP bar (it is on the sheet), so the six fit on screen;
 //    the reserve filters share a row
-//  5 Backpack and Quests: Show and Sort share a row; long descriptions are cut to two lines until the row is tapped
+//  5 Backpack and Quests: Show and Sort share a row; long descriptions are cut to two lines until the row is tapped (class m29x)
 // The markup is the game's own (ui.js / menus3.js): a pass over #modal after each render adds the class, the title, gold, the More button and
 // its sheet. M29.off=true (or localStorage aurelis-m29off=1, for the tests of the classic menu) turns it off.
 const M29={maxW:560,more:false,off:(()=>{try{return localStorage.getItem('aurelis-m29off')==='1';}catch(e){return false;}})()};
@@ -32,8 +32,10 @@ function m29Pass(){try{const md=document.getElementById('modal');if(!md)return;c
   // 4 the loadout button joins the party tools
   const pt=pn.querySelector('.ptools'),ld=pn.querySelector('.ldstrip');if(pt&&ld){ld.querySelectorAll('button').forEach(b=>pt.appendChild(b));ld.remove();}
   // 5 a long description opens when its row is tapped
-  pn.querySelectorAll('.rows>.row').forEach(r=>{if(!r.hasAttribute('tabindex'))r.setAttribute('tabindex','0');});
 }catch(e){M29.err=String(e&&e.message||e);}}
+// a shortened row opens when the row itself is tapped. Not on focus: a press on a button inside the row would open it first, the row would
+// grow under the finger and the tap would miss the button (v187a).
+document.addEventListener('click',e=>{try{const t=e.target;if(!t||!t.closest||t.closest('button,select,a,input,label,summary'))return;const r=t.closest('.panel.m29 .rows>.row');if(r)r.classList.toggle('m29x');}catch(_){}});
 ACT.m29More=function(){M29.more=!M29.more;render();m29Pass();};
 ['menuGrp','menuTab','p5Save','xClose','menu'].forEach(k=>{const f=ACT[k];if(typeof f==='function')ACT[k]=function(){M29.more=false;return f.apply(this,arguments);};});
 try{const md=document.getElementById('modal');if(md)new MutationObserver(m29Pass).observe(md,{childList:true});}catch(e){}
@@ -42,7 +44,7 @@ window.addEventListener('resize',()=>{try{if(V&&V.modal&&V.modal.type==='menu')r
 {const st=document.createElement('style');st.id='m29css';st.textContent=`
 #modal .modal.m29m{display:block;padding:0;overflow:hidden}
 #modal .modal.m29m>.panel.m29{animation:none!important;transform:none!important}/* a full screen sheet that slides in pokes past the screen edge while it moves */
-.panel.m29{display:block;width:100%;max-width:none;height:100%;max-height:100%;min-height:0;margin:0;border-radius:0;box-sizing:border-box;padding:0 10px calc(72px + env(safe-area-inset-bottom,0px));overflow-y:auto;overflow-x:hidden}
+.panel.m29{scroll-padding:100px 0 calc(72px + env(safe-area-inset-bottom,0px));display:block;width:100%;max-width:none;height:100%;max-height:100%;min-height:0;margin:0;border-radius:0;box-sizing:border-box;padding:0 10px calc(72px + env(safe-area-inset-bottom,0px));overflow-y:auto;overflow-x:hidden}
 .panel.m29::before,.panel.m29::after{display:none}
 .panel.m29>.mnav{position:fixed!important;top:3px!important;right:6px!important;left:auto!important;bottom:auto;z-index:30!important;margin:0;padding:0;width:40px;height:40px;display:block}
 .panel.m29>.mnav .mclose{position:static;display:grid;place-items:center;width:40px;height:40px;margin:0}
@@ -83,6 +85,6 @@ window.addEventListener('resize',()=>{try{if(V&&V.modal&&V.modal.type==='menu')r
 .panel.m29 .ddbar .dd{min-width:0;margin:0}
 .panel.m29 .rows>.row{outline:0}
 .panel.m29 .rows>.row small{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
-.panel.m29 .rows>.row:focus small,.panel.m29 .rows>.row:focus-within small{-webkit-line-clamp:unset;overflow:visible}
+.panel.m29 .rows>.row.m29x small{-webkit-line-clamp:unset;overflow:visible}
 `;document.head.appendChild(st);}
 try{window.__M29={M29,on:m29On,pass:m29Pass};}catch(e){}

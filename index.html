@@ -2125,7 +2125,7 @@ html:not(.flat) .battle.b3 .bline .b4mo .b4bar{box-shadow:inset 0 0 0 1px #000,0
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.22.31";const APP_BUILD="471fd83db847";
+(function(){const APP_VER="0.22.31";const APP_BUILD="6e7562c85339";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2906,7 +2906,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.22.31";const APP_BUILD="471fd83db847";
+const APP_VER="0.22.31";const APP_BUILD="6e7562c85339";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -38806,7 +38806,7 @@ try{window.__B27={B27,on:b27On};}catch(e){}
 //  3 sub tabs and quest filters are one row that scrolls sideways, never two rows; the sub tabs stay in view while the page scrolls
 //  4 Party: the tools are one row, a hero card has Sheet and Equip side by side and no XP bar (it is on the sheet), so the six fit on screen;
 //    the reserve filters share a row
-//  5 Backpack and Quests: Show and Sort share a row; long descriptions are cut to two lines until the row is tapped
+//  5 Backpack and Quests: Show and Sort share a row; long descriptions are cut to two lines until the row is tapped (class m29x)
 // The markup is the game's own (ui.js / menus3.js): a pass over #modal after each render adds the class, the title, gold, the More button and
 // its sheet. M29.off=true (or localStorage aurelis-m29off=1, for the tests of the classic menu) turns it off.
 const M29={maxW:560,more:false,off:(()=>{try{return localStorage.getItem('aurelis-m29off')==='1';}catch(e){return false;}})()};
@@ -38832,8 +38832,10 @@ function m29Pass(){try{const md=document.getElementById('modal');if(!md)return;c
   // 4 the loadout button joins the party tools
   const pt=pn.querySelector('.ptools'),ld=pn.querySelector('.ldstrip');if(pt&&ld){ld.querySelectorAll('button').forEach(b=>pt.appendChild(b));ld.remove();}
   // 5 a long description opens when its row is tapped
-  pn.querySelectorAll('.rows>.row').forEach(r=>{if(!r.hasAttribute('tabindex'))r.setAttribute('tabindex','0');});
 }catch(e){M29.err=String(e&&e.message||e);}}
+// a shortened row opens when the row itself is tapped. Not on focus: a press on a button inside the row would open it first, the row would
+// grow under the finger and the tap would miss the button (v187a).
+document.addEventListener('click',e=>{try{const t=e.target;if(!t||!t.closest||t.closest('button,select,a,input,label,summary'))return;const r=t.closest('.panel.m29 .rows>.row');if(r)r.classList.toggle('m29x');}catch(_){}});
 ACT.m29More=function(){M29.more=!M29.more;render();m29Pass();};
 ['menuGrp','menuTab','p5Save','xClose','menu'].forEach(k=>{const f=ACT[k];if(typeof f==='function')ACT[k]=function(){M29.more=false;return f.apply(this,arguments);};});
 try{const md=document.getElementById('modal');if(md)new MutationObserver(m29Pass).observe(md,{childList:true});}catch(e){}
@@ -38842,7 +38844,7 @@ window.addEventListener('resize',()=>{try{if(V&&V.modal&&V.modal.type==='menu')r
 {const st=document.createElement('style');st.id='m29css';st.textContent=`
 #modal .modal.m29m{display:block;padding:0;overflow:hidden}
 #modal .modal.m29m>.panel.m29{animation:none!important;transform:none!important}/* a full screen sheet that slides in pokes past the screen edge while it moves */
-.panel.m29{display:block;width:100%;max-width:none;height:100%;max-height:100%;min-height:0;margin:0;border-radius:0;box-sizing:border-box;padding:0 10px calc(72px + env(safe-area-inset-bottom,0px));overflow-y:auto;overflow-x:hidden}
+.panel.m29{scroll-padding:100px 0 calc(72px + env(safe-area-inset-bottom,0px));display:block;width:100%;max-width:none;height:100%;max-height:100%;min-height:0;margin:0;border-radius:0;box-sizing:border-box;padding:0 10px calc(72px + env(safe-area-inset-bottom,0px));overflow-y:auto;overflow-x:hidden}
 .panel.m29::before,.panel.m29::after{display:none}
 .panel.m29>.mnav{position:fixed!important;top:3px!important;right:6px!important;left:auto!important;bottom:auto;z-index:30!important;margin:0;padding:0;width:40px;height:40px;display:block}
 .panel.m29>.mnav .mclose{position:static;display:grid;place-items:center;width:40px;height:40px;margin:0}
@@ -38883,7 +38885,7 @@ window.addEventListener('resize',()=>{try{if(V&&V.modal&&V.modal.type==='menu')r
 .panel.m29 .ddbar .dd{min-width:0;margin:0}
 .panel.m29 .rows>.row{outline:0}
 .panel.m29 .rows>.row small{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
-.panel.m29 .rows>.row:focus small,.panel.m29 .rows>.row:focus-within small{-webkit-line-clamp:unset;overflow:visible}
+.panel.m29 .rows>.row.m29x small{-webkit-line-clamp:unset;overflow:visible}
 `;document.head.appendChild(st);}
 try{window.__M29={M29,on:m29On,pass:m29Pass};}catch(e){}
 
@@ -38926,7 +38928,6 @@ function s31Pass(){try{const md=document.getElementById('modal');if(!md)return;c
   const on=m29On()&&!S31.off,ov=pn.parentNode;pn.classList.toggle('m29',on);pn.classList.toggle('s31',on);if(ov&&ov.classList)ov.classList.toggle('m29m',on);if(!on||pn.dataset.s31)return;pn.dataset.s31='1';
   pn.classList.toggle('s31nt',!sn.querySelector(':scope>.stabs'));try{pn.dataset.s31t=(V.modal&&V.modal.type)||'';}catch(e){}
   const ms=sn.querySelector(':scope>.ssec'),so=ms&&ms.querySelector('.chip.on');if(so)ms.scrollLeft=Math.max(0,so.offsetLeft-(ms.clientWidth-so.offsetWidth)/2);
-  pn.querySelectorAll('.rows>.row').forEach(r=>{if(!r.hasAttribute('tabindex'))r.setAttribute('tabindex','0');});
 }catch(e){S31.err=String(e&&e.message||e);}}
 try{const md=document.getElementById('modal');if(md)new MutationObserver(s31Pass).observe(md,{childList:true});}catch(e){}
 HOOK.after('render','shops31','the phone shop pass',function(){s31Pass();});
@@ -38967,7 +38968,7 @@ HOOK.after('render','shops31','the phone shop pass',function(){s31Pass();});
 .panel.s31 .upgbest .row .grow>em.up{display:inline;margin-left:6px}
 .panel.s31 .upgbest .row .mxt{display:none}
 .panel.s31 .upgbest .row .p3mats:not(:has(.matc:not(.gold))){display:none}
-.panel.s31 .upgbest .row:focus .mxt,.panel.s31 .upgbest .row:focus-within .mxt{display:block}
+.panel.s31 .upgbest .row.m29x .mxt{display:block}
 .panel.s31 .upgbest .row .btn{min-width:64px;padding:0 10px}
 `;document.head.appendChild(st);}
 try{window.__S31={S31,pass:s31Pass};}catch(e){}
