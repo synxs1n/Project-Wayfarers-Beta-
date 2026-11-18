@@ -1270,7 +1270,7 @@ details.facstock>summary{cursor:pointer;font:700 13px/1.3 var(--fb);color:var(--
 .bp6hint{margin:2px 0 4px;opacity:.8}
 /* bigmap.js: the connected world map scrolls inside its box */
 .bmscroll{max-height:62vh;overflow:auto;margin:6px 0;border:2px solid var(--bronze);background:#0a0710;touch-action:pan-x pan-y}
-.bmscroll .bmap{margin:0;border:0;max-width:none}
+.bmscroll .bmap{margin:0 auto;border:0;max-width:none;display:block}
 /* v0.17.8 menus11.js: Settings in titled sections, the slot picker opened from a journey */
 .m11sec{margin:8px 0 10px;border:1px solid rgba(255,208,74,.22);border-radius:6px;background:rgba(255,255,255,.02)}
 .m11h{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;min-height:44px;padding:8px 12px;margin:0;font:700 .95rem/1.2 var(--fb,inherit);letter-spacing:.04em;text-transform:uppercase;color:var(--gold,#ffd04a);background:transparent;border:0;border-bottom:1px solid rgba(255,208,74,.18);cursor:pointer;text-align:left}
@@ -2125,7 +2125,7 @@ html:not(.flat) .battle.b3 .bline .b4mo .b4bar{box-shadow:inset 0 0 0 1px #000,0
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.22.29";const APP_BUILD="6f0e44bac336";
+(function(){const APP_VER="0.22.29";const APP_BUILD="d6c0cb8a93bb";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2906,7 +2906,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.22.29";const APP_BUILD="6f0e44bac336";
+const APP_VER="0.22.29";const APP_BUILD="d6c0cb8a93bb";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2914,7 +2914,7 @@ const APP_VER="0.22.29";const APP_BUILD="6f0e44bac336";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
- ['Beta v0.22.29',['The menu on phones: it fills the screen, the sections (Party, Backpack, Quests, Map, More) are a bar at the bottom under your thumb, and sub tabs and quest filters are one row you can slide instead of two or three.','Party shows all six heroes at once; Show and Sort share a row; long item and quest text is cut to two lines until you tap the row. Records, Guides, Settings and Save are under More.']],
+ ['Beta v0.22.29',['The menu on phones: it fills the screen, the sections (Party, Backpack, Quests, Map, More) are a bar at the bottom under your thumb, and sub tabs and quest filters are one row you can slide instead of two or three.','Party shows all six heroes at once; Show and Sort share a row; long item and quest text is cut to two lines until you tap the row. Records, Guides, Settings and Save are under More.','World map: a map that fits its frame is drawn larger and centred (on a computer it sat small in the left of a wide black frame).']],
  ['Beta v0.22.28',['A Legendary wayfarer who joins while your six is full now asks where to stand: swap him in for someone on the spot, or keep him in the reserves (Dist and the others went straight to the reserves without asking).']],
  ['Beta v0.22.27',['Battles on a phone held upright: the stage is larger and runs edge to edge, Attack, Skills, Items and Guard are four large buttons, and the party and foe cards open from a new Party & foes button instead of sitting under the commands.','Pause, Auto and Speed moved up beside the turn order; Momentum and the log line float over the sky; Guide, sound, help and settings are at the foot of the Party & foes sheet.']],
  ['Beta v0.22.26',['Relic skills are signature moves now, one per class and named for the hero (Brann\'s Reckoning, Lumen\'s Second Dawn, Mira\'s Unmaking), shaped by the hero\'s elements and by what kind of gear the relic is. The shared heal with Regen, heavy strike and burst are gone.']],
@@ -23916,7 +23916,10 @@ function bmDoors(L){const d=[];L.maps.forEach(o=>{const m=o.m;if(m.kind!=='field
   (m.caves||[]).forEach(c=>{if(!(isSeen(m,c.x,c.y)||(G.cavesSeen||{})[c.id]))return;d.push({o,x:c.x,y:c.y,k:c.kind==='fort'?'fort':'cave',id:c.id,n:c.kind==='fort'?(typeof FORT_NAMES!=='undefined'?FORT_NAMES[m.s]:'Sanctum'):CAVE_NAMES[m.s]});});});return d;}
 function bmBounds(L){let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;L.maps.forEach(o=>{x0=Math.min(x0,o.ox);y0=Math.min(y0,o.oy);x1=Math.max(x1,o.ox+o.m.w);y1=Math.max(y1,o.oy+o.m.h);});return {x0:x0-2,y0:y0-2,x1:x1+2,y1:y1+2};}
 function drawBigMap(){const cv=document.getElementById('bmap');if(!cv||!G)return;const L=BM.lay=bmLayout();if(!L.maps.length)return;const B0=BM.bounds=bmBounds(L),W=B0.x1-B0.x0,H=B0.y1-B0.y0;
-  const box=cv.parentElement,maxW=Math.min(1200,(box.clientWidth||340)-8);let sc=Math.max(3,Math.min(5,Math.floor(maxW/W)));BM.sc=sc;// at least 3 px a tile: the box scrolls
+  const box=cv.parentElement,maxW=Math.min(1200,(box.clientWidth||340)-8);let sc=Math.max(3,Math.min(5,Math.floor(maxW/W)));// at least 3 px a tile: the box scrolls
+  // 0.22.29 (the Windows app: a small map sat in the left of a wide, mostly black frame): a map that fits the frame both ways grows to fill it (up to 8 px a tile), and the canvas is centred
+  try{const z=typeof dsZoom==='function'?dsZoom():1,maxH=Math.floor((window.innerHeight/z)*.62)-8,fit=Math.floor(Math.min(maxW/W,maxH/H));if(fit>sc)sc=Math.min(8,fit);}catch(e){}
+  BM.sc=sc;cv.style.display='block';cv.style.margin='0 auto';
   cv.width=W*sc;cv.height=H*sc;cv.style.width=cv.width+'px';cv.style.height=cv.height+'px';
   const x=cv.getContext('2d');x.imageSmoothingEnabled=false;x.fillStyle='#0a0710';x.fillRect(0,0,cv.width,cv.height);
   const P=(wx,wy)=>[(wx-B0.x0)*sc,(wy-B0.y0)*sc];
@@ -38835,8 +38838,9 @@ try{const md=document.getElementById('modal');if(md)new MutationObserver(m29Pass
 HOOK.after('render','menus29','the phone menu pass',function(){m29Pass();});
 window.addEventListener('resize',()=>{try{if(V&&V.modal&&V.modal.type==='menu')render();}catch(e){}});
 {const st=document.createElement('style');st.id='m29css';st.textContent=`
-#modal .modal.m29m{padding:0;align-items:stretch}
-.panel.m29{display:block;width:100%;max-width:none;height:100%;max-height:none;min-height:100%;margin:0;border-radius:0;box-sizing:border-box;padding:0 10px calc(72px + env(safe-area-inset-bottom,0px));overflow-y:auto;overflow-x:hidden}
+#modal .modal.m29m{display:block;padding:0;overflow:hidden}
+#modal .modal.m29m>.panel.m29{animation:none!important;transform:none!important}/* a full screen sheet that slides in pokes past the screen edge while it moves */
+.panel.m29{display:block;width:100%;max-width:none;height:100%;max-height:100%;min-height:0;margin:0;border-radius:0;box-sizing:border-box;padding:0 10px calc(72px + env(safe-area-inset-bottom,0px));overflow-y:auto;overflow-x:hidden}
 .panel.m29::before,.panel.m29::after{display:none}
 .panel.m29>.mnav{position:fixed!important;top:3px!important;right:6px!important;left:auto!important;bottom:auto;z-index:30!important;margin:0;padding:0;width:40px;height:40px;display:block}
 .panel.m29>.mnav .mclose{position:static;display:grid;place-items:center;width:40px;height:40px;margin:0}

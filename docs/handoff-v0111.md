@@ -788,3 +788,9 @@ Asked after a mock-up: "Menus look good let's apply the update".
 - CSS is in the module (`#m29css`). The panel is `display:block` (as a flex column its scrolling rows collapsed), the header is sticky (the game's own h2 rule has z-index 19, so Close is 30, the bar 25), the section bar is `position:fixed`.
 - Records, Guides and Settings chips stay in `.mgrp` but are hidden; the More sheet has buttons with the same `menuGrp` actions, plus Save (`p5Save`).
 - Test: tools/chrome/v213a.js (menus group).
+
+### 0.22.29, the Windows app report ("click to move not working properly", "world map not presenting properly")
+
+- Tested in Chromium 126 (the Electron 31 engine; a `chrome-headless-shell` 126 build downloaded into the scratchpad with the owner's permission, not in the repo) at 1280x800, 1536x824 @1.25, 1280x680 @1.5, 1920x1040 and 2560x1400, on Low, Medium and High.
+- Click to walk on the field and taps on the World map land on the clicked tile in every case, so that part is NOT reproduced and nothing was changed for it. It needs the owner's description or a capture.
+- World map (bigmap.js `drawBigMap`): the canvas was left aligned at 3 to 5 px a tile in a 900 px frame. It is centred now and grows to at most 8 px a tile when the whole map fits the frame.

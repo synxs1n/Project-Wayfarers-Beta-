@@ -3,7 +3,7 @@
 // and the regrouped main menu.
 // Usage: PWHTML=../../out/aurelis3.html node v063m2.js
 const {open,chk,done}=require('./pw');
-(async()=>{const H=await open({w:390,h:844,mobile:true,pre:`localStorage.clear();localStorage.setItem('aurelis-meta-v1',JSON.stringify({cfg:{hints:false,music:0,sfx:0,enc:'off'}}));`});const {ev,wait,page}=H;
+(async()=>{const H=await open({w:390,h:844,mobile:true,pre:`localStorage.clear();localStorage.setItem('aurelis-m29off','1');localStorage.setItem('aurelis-meta-v1',JSON.stringify({cfg:{hints:false,music:0,sfx:0,enc:'off'}}));`});const {ev,wait,page}=H;
 await ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;A.G.gold=99999;A.G.stage=1;A.render();});
 const nav=()=>ev(()=>({tabs:[...document.querySelectorAll('#modal .stabs .chip')].map(x=>x.textContent.trim()),secs:[...document.querySelectorAll('#modal .ssec .chip')].map(x=>x.textContent.replace(/\s*\d+$/,'').trim()),
   on:[...document.querySelectorAll('#modal .stabs .chip.on,#modal .ssec .chip.on')].map(x=>x.textContent.replace(/\s*\d+$/,'').trim()),h4:[...document.querySelectorAll('#modal h4')].map(x=>x.textContent.replace(/\s*\d+$/,'').trim())}));

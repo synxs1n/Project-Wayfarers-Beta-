@@ -15,7 +15,7 @@
 const {open,chk,done}=require('./pw');
 const only=process.env.ONLY||'',want=n=>!only||only.split(',').includes(n);
 setTimeout(()=>{console.log('FAIL watchdog: v188a ran over 420 s');process.exit(1);},420000).unref();
-const QUIET="localStorage.clear();localStorage.setItem('aurelis-meta-v1',JSON.stringify({cfg:{speed:1,enc:'off',music:0,sfx:0,hints:false,tips:false,rmotion:true}}));(()=>{let s=7;Math.random=()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296;};})();";// sections 2 to 6 run on a seeded Math.random (natures, draws)
+const QUIET="localStorage.clear();localStorage.setItem('aurelis-m29off','1');/* 0.22.29: this test taps the classic menu's section chips; the phone menu has v213a */localStorage.setItem('aurelis-meta-v1',JSON.stringify({cfg:{speed:1,enc:'off',music:0,sfx:0,hints:false,tips:false,rmotion:true}}));(()=>{let s=7;Math.random=()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296;};})();";// sections 2 to 6 run on a seeded Math.random (natures, draws)
 async function boot(o){const H=await open(o);
   await H.ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;A.render();});
   await H.until(()=>__A.V.screen==='world',null,{timeout:15000});await H.wait(400);return H;}
@@ -30,7 +30,7 @@ const SETUP=`([stage,gold,mats])=>{const A=__A,G=A.G;G.stage=stage;G.cleared=[0,
 (async()=>{
   // ---------- 1 ----------
   if(want('1'))for(const [w,h,mob] of [[390,844,true],[1000,560,false]]){
-    const H=await boot({w,h,mobile:mob});// default settings: hints and tips on, the Unified look on
+    const H=await boot({w,h,mobile:mob,pre:"localStorage.setItem('aurelis-m29off','1');"});/* 0.22.29: the classic menu's section chips; the phone menu has v213a */// default settings: hints and tips on, the Unified look on
     for(const where of ['town','field'])for(const off of [false,true]){const tag=`${w}x${h} ${where} unified ${off?'off':'on'}`;
       await H.ev(([where,off])=>{const A=__A;if(window.__CH15)window.__CH15.off=off;A.V.modal=null;A.WS.dlg=null;
         if(where==='field'&&A.WS.m.kind!=='field'){const m=A.getMap('f0');A.placeAt('f0',m.start?m.start[0]:5,m.start?m.start[1]:5,'u');}A.render();},[where,off]);

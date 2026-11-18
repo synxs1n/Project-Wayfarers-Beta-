@@ -74,7 +74,7 @@ console.log('tavern, 200 first-town draws, mix rules off (the old draw) / on:',J
 chk('tavern: with the mix rules off the old draw repeats elements (the sim sees the bug)',tv.off.dupEl>40||JSON.stringify(tv.off));
 chk(`tavern: no main element twice when the pool has four or more (${tv.on.dupEl} repeats, all from 3-element pools), never three`,tv.on.dupElAvoidable===0&&tv.on.el3===0||JSON.stringify(tv.on));
 chk(`tavern: a class repeats only when the pool cannot seat four classes (${tv.on.dupCls} of 200)`,tv.on.dupClsAvoidable===0||JSON.stringify(tv.on));
-const kt=await ev(()=>{const S=__S12,T=S.TPL,M=__M14,bad=[];let n=0,maxGap=0;Object.keys(T).forEach(id=>{const t=T[id];if(t.mon||!S.CLS[t.cls])return;n++;const k=S.kit(t).slice().sort((a,b)=>a.lv-b.lv),L=k.map(s=>s.lv);
+const kt=await ev(()=>{try{window.__R25.R25.off=true;}catch(e){}/* kits of 14; a worn personal relic adds a fifteenth skill (v209a, v210a) */const S=__S12,T=S.TPL,M=__M14,bad=[];let n=0,maxGap=0;Object.keys(T).forEach(id=>{const t=T[id];if(t.mon||!S.CLS[t.cls])return;n++;const k=S.kit(t).slice().sort((a,b)=>a.lv-b.lv),L=k.map(s=>s.lv);
   const gap=Math.max(...L.slice(1).map((x,i)=>x-L[i])),win=Math.max(...L.map(x=>L.filter(y=>y>=x&&y<=x+2).length)),ord=((q=>q.every((s,i)=>!i||s.lv12>=q[i-1].lv12))(k.filter(s=>s.lv12!=null&&!/^sg_/.test(s.id))));maxGap=Math.max(maxGap,gap);
   if(L[0]!==1||L.filter(x=>x===1).length>2||gap>6||win>2||L[L.length-1]>=50||!ord)bad.push(id+':'+L.join(','));});
  // an old save: the first hero (in TPL order) with a skill the new levels delay, at the old level of that skill: it stays known (c.keep), and so

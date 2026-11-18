@@ -40,8 +40,9 @@ try{const md=document.getElementById('modal');if(md)new MutationObserver(m29Pass
 HOOK.after('render','menus29','the phone menu pass',function(){m29Pass();});
 window.addEventListener('resize',()=>{try{if(V&&V.modal&&V.modal.type==='menu')render();}catch(e){}});
 {const st=document.createElement('style');st.id='m29css';st.textContent=`
-#modal .modal.m29m{padding:0;align-items:stretch}
-.panel.m29{display:block;width:100%;max-width:none;height:100%;max-height:none;min-height:100%;margin:0;border-radius:0;box-sizing:border-box;padding:0 10px calc(72px + env(safe-area-inset-bottom,0px));overflow-y:auto;overflow-x:hidden}
+#modal .modal.m29m{display:block;padding:0;overflow:hidden}
+#modal .modal.m29m>.panel.m29{animation:none!important;transform:none!important}/* a full screen sheet that slides in pokes past the screen edge while it moves */
+.panel.m29{display:block;width:100%;max-width:none;height:100%;max-height:100%;min-height:0;margin:0;border-radius:0;box-sizing:border-box;padding:0 10px calc(72px + env(safe-area-inset-bottom,0px));overflow-y:auto;overflow-x:hidden}
 .panel.m29::before,.panel.m29::after{display:none}
 .panel.m29>.mnav{position:fixed!important;top:3px!important;right:6px!important;left:auto!important;bottom:auto;z-index:30!important;margin:0;padding:0;width:40px;height:40px;display:block}
 .panel.m29>.mnav .mclose{position:static;display:grid;place-items:center;width:40px;height:40px;margin:0}

@@ -32,7 +32,10 @@ function bmDoors(L){const d=[];L.maps.forEach(o=>{const m=o.m;if(m.kind!=='field
   (m.caves||[]).forEach(c=>{if(!(isSeen(m,c.x,c.y)||(G.cavesSeen||{})[c.id]))return;d.push({o,x:c.x,y:c.y,k:c.kind==='fort'?'fort':'cave',id:c.id,n:c.kind==='fort'?(typeof FORT_NAMES!=='undefined'?FORT_NAMES[m.s]:'Sanctum'):CAVE_NAMES[m.s]});});});return d;}
 function bmBounds(L){let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;L.maps.forEach(o=>{x0=Math.min(x0,o.ox);y0=Math.min(y0,o.oy);x1=Math.max(x1,o.ox+o.m.w);y1=Math.max(y1,o.oy+o.m.h);});return {x0:x0-2,y0:y0-2,x1:x1+2,y1:y1+2};}
 function drawBigMap(){const cv=document.getElementById('bmap');if(!cv||!G)return;const L=BM.lay=bmLayout();if(!L.maps.length)return;const B0=BM.bounds=bmBounds(L),W=B0.x1-B0.x0,H=B0.y1-B0.y0;
-  const box=cv.parentElement,maxW=Math.min(1200,(box.clientWidth||340)-8);let sc=Math.max(3,Math.min(5,Math.floor(maxW/W)));BM.sc=sc;// at least 3 px a tile: the box scrolls
+  const box=cv.parentElement,maxW=Math.min(1200,(box.clientWidth||340)-8);let sc=Math.max(3,Math.min(5,Math.floor(maxW/W)));// at least 3 px a tile: the box scrolls
+  // 0.22.29 (the Windows app: a small map sat in the left of a wide, mostly black frame): a map that fits the frame both ways grows to fill it (up to 8 px a tile), and the canvas is centred
+  try{const z=typeof dsZoom==='function'?dsZoom():1,maxH=Math.floor((window.innerHeight/z)*.62)-8,fit=Math.floor(Math.min(maxW/W,maxH/H));if(fit>sc)sc=Math.min(8,fit);}catch(e){}
+  BM.sc=sc;cv.style.display='block';cv.style.margin='0 auto';
   cv.width=W*sc;cv.height=H*sc;cv.style.width=cv.width+'px';cv.style.height=cv.height+'px';
   const x=cv.getContext('2d');x.imageSmoothingEnabled=false;x.fillStyle='#0a0710';x.fillRect(0,0,cv.width,cv.height);
   const P=(wx,wy)=>[(wx-B0.x0)*sc,(wy-B0.y0)*sc];
