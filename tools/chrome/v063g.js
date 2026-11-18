@@ -12,7 +12,7 @@ const clipCheck=()=>{const p=document.querySelector('#modal .panel');if(!p)retur
   return bad.length?bad.slice(0,4).join(' | '):true;};
 
 (async()=>{
-const H=await open({w:390,h:844,mobile:true,dpr:2});const {ev,wait,page}=H;
+const H=await open({w:390,h:844,mobile:true,dpr:2,pre:"localStorage.setItem('aurelis-m29off','1');"})/* 0.22.29: the classic menu; the phone menu has v213a */;const {ev,wait,page}=H;
 await setup(ev);await wait(400);
 
 // ---------- 1. taming log ----------
