@@ -62,7 +62,7 @@ function legendFoes(spec){
 HOOK.before('encounterFoes','legends','legend fights',function(spec){if(spec.kind==='legend')return HOOK.stop(legendFoes(spec));});
 function legendJoin(id,info){
   if(!G||G.roster[id])return;
-  const c=newChar(id,Math.max(3,avgLv()),gearTier());G.roster[id]=c;if(G.party.length<6)G.party.push(id);
+  const c=newChar(id,Math.max(3,avgLv()),gearTier());G.roster[id]=c;if(G.party.length<6)G.party.push(id);else if(!G.daily)G.pendRecruit=id;/* 0.22.28: with a full six a Legendary asks where to stand, like any wayfarer met in the wild (recruit3.js) */
   G.quests.forEach(q=>{if(q.type==='legend'&&q.hero===id)q.state='claimed';});
   codexSee(id,{rec:1,lv:c.lv});saveGame();
   const line={kaevan:'"You kept up. Fine. I ride with you until the storm runs out."',nikaris:'"The pup trusts you. The hawk trusts you. I suppose I will too."',jaeson:'"You read the storm right. Let us see what else it says."'}[id];

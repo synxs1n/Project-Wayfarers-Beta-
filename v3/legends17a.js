@@ -930,7 +930,7 @@ HOOK.after('startBattle','legends17a','the Runner\'s rules',function(r){try{if(r
 HOOK.after('perform','legends17a','the Runner counts the blows',function(r,a){try{const Q=B&&B.j17q;if(!Q||!a||a.side!=='p'||B.over)return;const e=Q.e;if(e.hp<Q.hp){Q.hp=e.hp;Q.n++;if(e.hp>0){fx(e,Q.n+' of 3','stat');if(Q.n>=3){log(`${e.name} is cornered and throws the purse down.`);fx(e,'Cornered','stat bad');e.hp=0;fallen(e);}}}}catch(e){}});
 HOOK.before('enemyTurn0','legends17a','the Runner gets away on his fourth turn',function(u){try{const Q=B&&B.j17q;if(Q&&u===Q.e&&u.hp>0&&(u.turns||0)>=3&&!B.over){B.over=true;log(`${u.name} is over the wall and gone. He will be back at the same corner.`);fx(u,'Gone','stat');render();later(()=>{try{finishBattle('fled');toast('He got away. Find him again and corner him faster.');}catch(e){}},PAUSE);return HOOK.stop();}}catch(e){}});
 function j17Join(id,info){if(!G||G.roster[id])return;const q=j17Q(id);
-  const c=newChar(id,Math.max(3,avgLv()),gearTier());G.roster[id]=c;if(G.party.length<6)G.party.push(id);
+  const c=newChar(id,Math.max(3,avgLv()),gearTier());G.roster[id]=c;if(G.party.length<6)G.party.push(id);else if(!G.daily)G.pendRecruit=id;/* 0.22.28: with a full six a Legendary asks where to stand, like any wayfarer met in the wild (recruit3.js) */
   G.quests.forEach(x=>{if(x.type==='legend'&&x.hero===id)x.state='claimed';});
   let back=0;if(q&&id==='dist'&&q.toll){back=q.toll;G.gold+=back;}
   META.legends=META.legends||{};META.legends[id]=1;try{saveMeta();codexSee(id,{rec:1,lv:c.lv});profileDirty();}catch(e){}saveGame();

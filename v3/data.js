@@ -4,6 +4,7 @@
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.22.28',['A Legendary wayfarer who joins while your six is full now asks where to stand: swap him in for someone on the spot, or keep him in the reserves (Dist and the others went straight to the reserves without asking).']],
  ['Beta v0.22.27',['Battles on a phone held upright: the stage is larger and runs edge to edge, Attack, Skills, Items and Guard are four large buttons, and the party and foe cards open from a new Party & foes button instead of sitting under the commands.','Pause, Auto and Speed moved up beside the turn order; Momentum and the log line float over the sky; Guide, sound, help and settings are at the foot of the Party & foes sheet.']],
  ['Beta v0.22.26',['Relic skills are signature moves now, one per class and named for the hero (Brann\'s Reckoning, Lumen\'s Second Dawn, Mira\'s Unmaking), shaped by the hero\'s elements and by what kind of gear the relic is. The shared heal with Regen, heavy strike and burst are gone.']],
  ['Beta v0.22.25',['Damage numbers are readable: larger, in the game\'s bold text face with a full dark outline (the small pixel face made 3, 5, 7 and 8 look alike).',

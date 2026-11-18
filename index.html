@@ -2125,7 +2125,7 @@ html:not(.flat) .battle.b3 .bline .b4mo .b4bar{box-shadow:inset 0 0 0 1px #000,0
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.22.27";const APP_BUILD="4638c763c92b";
+(function(){const APP_VER="0.22.28";const APP_BUILD="71f30a19acbe";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2906,7 +2906,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.22.27";const APP_BUILD="4638c763c92b";
+const APP_VER="0.22.28";const APP_BUILD="71f30a19acbe";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2914,6 +2914,7 @@ const APP_VER="0.22.27";const APP_BUILD="4638c763c92b";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.22.28',['A Legendary wayfarer who joins while your six is full now asks where to stand: swap him in for someone on the spot, or keep him in the reserves (Dist and the others went straight to the reserves without asking).']],
  ['Beta v0.22.27',['Battles on a phone held upright: the stage is larger and runs edge to edge, Attack, Skills, Items and Guard are four large buttons, and the party and foe cards open from a new Party & foes button instead of sitting under the commands.','Pause, Auto and Speed moved up beside the turn order; Momentum and the log line float over the sky; Guide, sound, help and settings are at the foot of the Party & foes sheet.']],
  ['Beta v0.22.26',['Relic skills are signature moves now, one per class and named for the hero (Brann\'s Reckoning, Lumen\'s Second Dawn, Mira\'s Unmaking), shaped by the hero\'s elements and by what kind of gear the relic is. The shared heal with Regen, heavy strike and burst are gone.']],
  ['Beta v0.22.25',['Damage numbers are readable: larger, in the game\'s bold text face with a full dark outline (the small pixel face made 3, 5, 7 and 8 look alike).',
@@ -12761,7 +12762,7 @@ function legendFoes(spec){
 HOOK.before('encounterFoes','legends','legend fights',function(spec){if(spec.kind==='legend')return HOOK.stop(legendFoes(spec));});
 function legendJoin(id,info){
   if(!G||G.roster[id])return;
-  const c=newChar(id,Math.max(3,avgLv()),gearTier());G.roster[id]=c;if(G.party.length<6)G.party.push(id);
+  const c=newChar(id,Math.max(3,avgLv()),gearTier());G.roster[id]=c;if(G.party.length<6)G.party.push(id);else if(!G.daily)G.pendRecruit=id;/* 0.22.28: with a full six a Legendary asks where to stand, like any wayfarer met in the wild (recruit3.js) */
   G.quests.forEach(q=>{if(q.type==='legend'&&q.hero===id)q.state='claimed';});
   codexSee(id,{rec:1,lv:c.lv});saveGame();
   const line={kaevan:'"You kept up. Fine. I ride with you until the storm runs out."',nikaris:'"The pup trusts you. The hawk trusts you. I suppose I will too."',jaeson:'"You read the storm right. Let us see what else it says."'}[id];
@@ -37462,7 +37463,7 @@ HOOK.after('startBattle','legends17a','the Runner\'s rules',function(r){try{if(r
 HOOK.after('perform','legends17a','the Runner counts the blows',function(r,a){try{const Q=B&&B.j17q;if(!Q||!a||a.side!=='p'||B.over)return;const e=Q.e;if(e.hp<Q.hp){Q.hp=e.hp;Q.n++;if(e.hp>0){fx(e,Q.n+' of 3','stat');if(Q.n>=3){log(`${e.name} is cornered and throws the purse down.`);fx(e,'Cornered','stat bad');e.hp=0;fallen(e);}}}}catch(e){}});
 HOOK.before('enemyTurn0','legends17a','the Runner gets away on his fourth turn',function(u){try{const Q=B&&B.j17q;if(Q&&u===Q.e&&u.hp>0&&(u.turns||0)>=3&&!B.over){B.over=true;log(`${u.name} is over the wall and gone. He will be back at the same corner.`);fx(u,'Gone','stat');render();later(()=>{try{finishBattle('fled');toast('He got away. Find him again and corner him faster.');}catch(e){}},PAUSE);return HOOK.stop();}}catch(e){}});
 function j17Join(id,info){if(!G||G.roster[id])return;const q=j17Q(id);
-  const c=newChar(id,Math.max(3,avgLv()),gearTier());G.roster[id]=c;if(G.party.length<6)G.party.push(id);
+  const c=newChar(id,Math.max(3,avgLv()),gearTier());G.roster[id]=c;if(G.party.length<6)G.party.push(id);else if(!G.daily)G.pendRecruit=id;/* 0.22.28: with a full six a Legendary asks where to stand, like any wayfarer met in the wild (recruit3.js) */
   G.quests.forEach(x=>{if(x.type==='legend'&&x.hero===id)x.state='claimed';});
   let back=0;if(q&&id==='dist'&&q.toll){back=q.toll;G.gold+=back;}
   META.legends=META.legends||{};META.legends[id]=1;try{saveMeta();codexSee(id,{rec:1,lv:c.lv});profileDirty();}catch(e){}saveGame();

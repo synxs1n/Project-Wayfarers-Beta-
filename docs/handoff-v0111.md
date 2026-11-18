@@ -773,3 +773,7 @@ Asked after two mock-ups (scratchpad only, not in the repo): maximise the stage 
 - The top bar is hidden with `body:has(.battle.b3.b27) #hdr`; its sound, help and settings buttons are at the foot of the sheet.
 - Known: on a 360x640 screen the HP tag of the hero standing highest can sit under the floating line. Units are 1.125x larger than before, not the 1.4x the mock-up drew.
 - Test: tools/chrome/v211a.js (battle group).
+
+## 0.22.28: a Legendary joining a full six asks where to stand
+
+Reported for Dist. `legendJoin` (legends.js) and `j17Join` (legends17a.js) added the hero to the roster without setting `G.pendRecruit`, so the swap prompt of recruit3.js never opened. Both set it now when the six is full. Test: tools/chrome/v212a.js.
