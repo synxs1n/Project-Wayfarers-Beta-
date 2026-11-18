@@ -2125,7 +2125,7 @@ html:not(.flat) .battle.b3 .bline .b4mo .b4bar{box-shadow:inset 0 0 0 1px #000,0
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.22.38";const APP_BUILD="e9c5e3f442ba";
+(function(){const APP_VER="0.22.39";const APP_BUILD="691dd7587254";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2906,7 +2906,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.22.38";const APP_BUILD="e9c5e3f442ba";
+const APP_VER="0.22.39";const APP_BUILD="691dd7587254";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2914,6 +2914,7 @@ const APP_VER="0.22.38";const APP_BUILD="e9c5e3f442ba";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.22.39',['Auto battle uses items properly: Smelling Salts before Phoenix Feathers, the draught that fits the wound, Mana Tonics and Sage Brew when a hero runs dry, Sacred Ash on a Curse, a Bandage Roll on a Wound, a Remedy on ailments.','Auto settings has a new Use items switch: turn it off and auto never spends an item.']],
  ['Beta v0.22.38',['Upgrade suggestions put a hero\'s own relic first, and stop suggesting other gear for a slot once the relic is worn there (a shop piece used to be suggested, then the relic right after).']],
  ['Beta v0.22.37',['Towns have their land back. The towns that were islands (Mire, Peaks, Drowned, Shattered) stand on islands again with bridges between them, Lakes and Bamboo have canals, and Grotto, Mesa, Mines and Starless climb in terraces with stairs. Every building is still in clear view and every gate still has a road to it.']],
  ['Beta v0.22.36',['Skills pass. Relic skills are about a fifth weaker with smaller side effects. Every skill with two elements is a Dual art. Dual type heroes have a better spread: where one of their elements had no early or no late skill, one moved over from the other.','Regen is on far fewer skills (it stays on the ones that are about it: the Renews, Sanctuary, Meditate); Blessing gives Might and Focus, Lumen\'s Lampglow heals and gives Bulwark. Purify cures and no longer heals. Heals are 12% smaller, and a heal thrown at an Undead foe hurts it about a tenth more.']],
@@ -39184,6 +39185,58 @@ function f38Own(c,id){try{const g=id&&gearOf(id);return !!(g&&g.relic&&c&&g.only
 {const u0=p3Ult;p3Ult=function(c,sl,id){return f38Own(c,id)?1e9:u0.apply(this,arguments);};}
 {const o0=upgOpts;upgOpts=function(c,sl){try{if(c&&c.eq&&f38Own(c,c.eq[sl]))return [];}catch(e){}return o0.apply(this,arguments);};}
 try{window.__F38={own:f38Own};}catch(e){}
+
+// ===== auto39.js (v0.22.39): auto battle uses the right item for the moment, and can be told not to use items =====
+// Asked: "Auto never uses mana pots, should also use the appropriate item for the situation more often, like it should use smelling salts
+// before pheonix feathers, review for other item use cases that arent coded into auto, make an auto option to turn off item use."
+// Before this, auto knew two items: a Healing Draught on itself under 30% HP when it had no heal, and a Phoenix Feather half the time someone
+// was down. It never touched Mana Tonic, Sage Brew, Vigor Tonic, Greater Draught, Elixir, Smelling Salts, Remedy, Sacred Ash or a Bandage Roll.
+// a39Pick looks before auto's own turn (autoTurn, outermost) and returns [item, target] or nothing:
+//  1 someone in the vanguard is down (or in the rearguard, in a hard fight) and this hero has no revive skill to cast: Smelling Salts first,
+//    a Phoenix Feather only when there are no Salts
+//  2 a vanguard hero is under the potion line (Auto settings, 30%) and this hero cannot heal: the smallest draught that covers most of what is
+//    missing (Healing Draught, Vigor Tonic, Greater Draught); an Elixir only against a boss or under 20%
+//  3 a healer who cannot pay for a heal while an ally is hurt, or any hero who cannot pay for a single skill in a hard fight: the smallest
+//    mana item that covers half the bar (Mana Tonic, Sage Brew, Vigor Tonic)
+//  4 a Curse: Sacred Ash. A Wound in a hard fight or under 60% HP: a Bandage Roll. Two passing ailments, or Poison, Burn or Bleed under half
+//    HP, when this hero has no cleanse: a Remedy
+// A "hard fight" is a boss, more than one foe, or a foe with over twice this hero's max HP and more than half of it left.
+// Auto settings has "Use items" (AC.items, on by default): off, auto uses no item at all (the two old cases included).
+const A39={err:'',last:null};
+try{AUTO_DEF.items=true;}catch(e){}
+{const c0=autoCfg;autoCfg=function(){const c=c0.apply(this,arguments);if(c.items===false){c.potion=false;c.reviveItem=false;}return c;};}
+function a39Pick(){const a=B&&B.cur;if(!a||a.side!=='p'||a.isComp||a.isSum||!G||!G.inv)return null;const AC=autoCfg();if(AC.items===false)return null;
+  const inv=id=>(ITEMS[id]&&G.inv[id])||0,ratio=c=>c.hp/c.S.mhp,fr=B.front.filter(c=>c.hp>0),foes=B.en.filter(e=>e.hp>0);if(!foes.length)return null;
+  const kit=known(a),ks=kit.filter(s=>a.mp>=(s.mp||0)),heals=kit.filter(s=>s.k==='heal'&&s.pw>0&&!s.bond),canHeal=heals.some(s=>a.mp>=(s.mp||0));
+  const canRev=ks.some(s=>s.k==='revive'||s.revive),canCure=ks.some(s=>s.cleanse);
+  const tough=!!B.boss||foes.length>1||foes.some(e=>e.S.mhp>a.S.mhp*2&&e.hp>e.S.mhp*.5);
+  // by size: the smallest that does the job, else the largest in the pack
+  const sized=(key,need,skip)=>{const L=Object.keys(ITEMS).filter(id=>ITEMS[id][key]&&!ITEMS[id].revive&&!ITEMS[id].travel&&inv(id)&&!(skip&&skip(id))).sort((x,y)=>ITEMS[x][key]-ITEMS[y][key]);
+    return L.find(id=>ITEMS[id][key]>=need)||L[L.length-1]||null;};
+  // 1 revive
+  if(AC.reviveItem!==false&&!(AC.reviveSkill&&canRev)){const d=B.front.find(c=>c.hp<=0)||(tough?B.back.find(c=>c.hp<=0):null);
+    if(d){const id=inv('salts')?'salts':inv('plume')?'plume':null;if(id)return [id,d];}}
+  // 2 a draught
+  const line=(AC.potionAt||30)/100,hurt=fr.filter(c=>ratio(c)<line).sort((x,y)=>ratio(x)-ratio(y))[0];
+  if(AC.potion!==false&&hurt&&!canHeal){const need=(hurt.S.mhp-hurt.hp)*.6,big=B.boss||ratio(hurt)<.2;
+    const id=sized('heal',need,x=>x==='elixir')||(big&&inv('elixir')?'elixir':null);if(id)return [id,hurt];}
+  // 3 mana
+  const paid=kit.filter(s=>(s.mp||0)>0&&(s.k==='phys'||s.k==='mag'||s.k==='heal'||s.k==='revive'||s.k==='status')),minC=paid.length?Math.min(...paid.map(s=>s.mp)):0;
+  const dry=paid.length&&(a.mp<minC||a.mp<a.S.mmp*.12),healerDry=heals.length&&!canHeal&&fr.some(c=>ratio(c)<(AC.healAt||50)/100);
+  if(healerDry||(dry&&tough)){const id=sized('mp',(a.S.mmp-a.mp)*.5,x=>x==='elixir')||(B.boss&&inv('elixir')?'elixir':null);if(id)return [id,a];}
+  // 4 cures
+  if(AC.cure!==false){const cu=fr.find(c=>c.st&&c.st.curse);if(cu&&inv('ash'))return ['ash',cu];
+    const wo=fr.find(c=>c.st&&c.st.wound&&(tough||ratio(c)<.6));if(wo&&inv('bandage'))return ['bandage',wo];
+    if(!canCure&&inv('remedy')){const bad=c=>Object.keys(c.st||{}).filter(k=>STS[k]&&STS[k].bad&&!STS[k].hard&&k!=='stun'&&k!=='curse'&&k!=='wound');
+      const si=fr.map(c=>({c,b:bad(c)})).filter(o=>o.b.length>=2||(o.b.some(k=>k==='poison'||k==='burn'||k==='bleed')&&ratio(o.c)<.5)).sort((x,y)=>y.b.length-x.b.length)[0];if(si)return ['remedy',si.c];}}
+  return null;}
+{const at0=autoTurn;autoTurn=function(){try{if(B&&!B.over&&B.mode==='cmd'&&B.auto&&!(typeof SIM_SMART!=='undefined'&&SIM_SMART)&&!(typeof autoLocked==='function'&&autoLocked())){const p=a39Pick();
+    if(p){A39.last=p[0];const n=G.inv[p[0]];useItem(p[0],p[1]);if(G.inv[p[0]]<n)return;}}}catch(e){A39.err=String(e&&e.message||e);}
+  return at0.apply(this,arguments);};}
+HOOK.xform('vModal','auto39','Auto settings: Use items',function(h,m){try{if(!m||m.type!=='autoset'||typeof h!=='string')return h;const on=autoCfg().items!==false;
+  const row=`<div class="row"><div class="grow"><b>Use items</b><small>On: Smelling Salts before Phoenix Feathers, the draught that fits the wound, Mana Tonics when a hero runs dry, Sacred Ash, Bandage Rolls and Remedies. Off: auto never spends an item.</small></div><div class="chips"><button class="chip ${on?'on':''}" data-act="autoCfg" data-arg='["items",true]'>On</button><button class="chip ${on?'':'on'}" data-act="autoCfg" data-arg='["items",false]'>Off</button></div></div>`;
+  h=h.replace('<h4>Options</h4><div class="rows">','<h4>Options</h4><div class="rows">'+row).replace(/never uses items/,'uses items only as the Use items option below allows');}catch(e){}return h;});
+try{window.__A39={A39,pick:a39Pick};}catch(e){}
 
 window.__A={walkable,ceInit,tvSlots,genQuests,STARTERS,starterDraw,ECON,AUTO_NERF,rebuildBase,detLive,REACT,skEls,packContents,miniFor,AUTO_REW,ENC_RATE,ENC_MIN_STEPS,detNote,classSkills,stickCount,bestAll,calcStats,lookKey,vTemper,storyEchoUp,leaveDungeon,win,ldApply,genFort,caveOk,enterCave,siteHasMini,openChest,nextDlg,WS,mapIcoRects,roamSpawn,roamInterior,roamSees,mapTargets,DIRV,tileAt,STAGE_LV,autoBan,rollWeather,guardianDef,mapIssues,mapEntry,syncPools,bovAt,calFxAt,realmAt,REALMS,BOV,CAL_FX,overlayGuide,liftOverlay,drawGearIcon,gearIcon,itemIcon,RAW,sigKind,sigGid,personalDone,heroLook,hasSignature,LEGEND_IDS,facDirty,facCount,facRank,facRep,FACB,FAC,finishBattle,npcWords,npcHints,npcPool,titleMake,titleAdvance,TTS,placeAt,wkwUpdate,innSpot,getMap,monURL,enterVia,applyBossTheme,BTHEME,resetMaps,rebuildBase,shopStock,gearDesc,calcStats,gearMigrate,CLS_WPN,CLS_ARM,WPERK,WT_NAME,equipWhy,lootBase,GEAR,canEquip,gearOf,perkNote,FAM_MAT_V35,fbDraft,META:{get best(){return META.best},get codex(){return META.codex},get q(){return META.q}},saveMeta,OFF,offPending,offFlush,PROFILE,profileSync,codexSee,getMap,placeAt,interact,sanctumOpen,riftKeys,echoKeys,BONDS,bondKey,wkwUpdate,inTown,WS,LC,lsort,bestParty,fsCast,fsSkills,ldApply,MON,registerTamed,stickPower,stickCount,autoOne,planGear,bestTag,gainersFor,compGainFor,refresh,fitsFor,canEquip,gearOf,queueNewGear,ARENA,fxDur,banDur,stageTags,autoSwitchPick,layoutBattle,newChar,calcStats,limitSkill,limitTier,canStuck,dunReachable,LV_CAP,addXp,echoSpec,bossLvFor,fx,MON,log,effInfo,tierOf,perkOf,quirkDef,forgeCost,buyPlan,vJourney,modalBack,partySlots,limitOpen,town2Reached,skillKnown,known,classSkills,paceMigrate,unpackG,packG,makeEnemy,QUIRK,arrive,enterDungeon,wkwUpdate,useTravel,travelWhyNot,porkFlee,porkBlocked,encTile,campRest,buyPart,partLeft,alchStock,GAME_VERSION,CHANGELOG,ITEMS,tavernOffers,tavernPool,recruitFit,partyNeeds,vNext,CHALL,innSpot,RECIPES,MATS,FB,fbContext,REDEEM,legendJoin,legendQ,genQuests,dynActors,convInit,PROFILE,profileSync,checkArchive,GPOOL,FPOOL,guardianDef,saveMeta,archiveSkills,get G(){return G;},set G(v){G=v;},get B(){return B;},get V(){return V;},get META(){return META;},WS,ACT,render,newGame,placeAt,startBattle,autoTurn,advance,finishBattle,getMap,innSpot,setPause:p=>{PAUSE=p;},autoCfg,worldInputDir,inputSources,battleFrame,battleTheme,STS,MAPS,mapIssues,healMap,mimicReward,dropChest,interact,worldDraw,TPL,ZONES,ZS,newChar,recruit,saveGame,resetMaps,dynActors,tileAt,BV,refresh,genBounties,genQuests,vStarter,heroCard,heroURL,iconURL,masteryLine,AU,buildTrack,tone,noiseHit,MIDI,sfx,audioVol};
 ['heroRoles','SOLID','WEATHER','WX_BASE','weatherFX','superGuide','recruitCost','ceStart','ceStep','ceInit','cePool','wxList','SUPER_TABLE','superOk','facRank','facRep','facInit','facCount','facCredit','FAC','FMIS','facMissionList','facProg','tyOf','facSync','facMul','facBest','worldPlan','caveReward','enterCave','leaveCave','leaveDungeon','buildCaveMap','worldGraph','openWorldMap','sigReport','SIG_NAMES','starterDraw','ITEM_TIERS','gTierIdx','tierChip','gearIcon','starterSlots','STARTERS','CLK_LEN','CLK_PH','clockPhase','wxInfoBody','recipeOrder','recipeGain','recipeReady','recipeClose','effOf','calcDamage','healsUndead','storyEchoUp','riftKeys','echoDef','efCost','autoLocked','bossFightKey','learnScanAll','isSeen','mapMarks','genSub','subOK','subReq','ensureSub','inSub','tvSlots','tvInit','tvLeft','tvEvent','tvNextText','tvPool','tvDue','tvShuffle','mTavern','hireOK','TV_CAP','TV_CD','POOL_IDS','natPool','natOf','natRoll','NATURES','natInfo','natRerollCost','natChooseCost','NAT_CLASS','iconURL','seenOf','mapIcoDraw','drawMini','MAPCV','revealAround','fxLayer','numDur','compBonusText','compPerk','checkPhase','win','unitBox','LNQ','challVisible','challEligible','challState','isMimic','migrateCompanions','canSummon','summonComp','compOf','clockPhase','tickClock','isNight','rollWeather','wxStep','nightPool','encounterFoes','restAll','tameElite','openChest','rerollTavern','bestAll','gearTier','SV','svCheck','svFlush','svInit','svPush','svPull','svScan','svParse','svBackup','svPack','svUnpack','svProg','svCloudList','svDelDoc','svGet','svCap','slotState','slotKey','svDecode','SV_CH','svStatus','svSlotRaw','svLoad','loadRaw','svHash','svIdx'].forEach(k=>{try{Object.defineProperty(window.__A,k,{get:()=>eval(k)});}catch(e){}});

@@ -869,3 +869,10 @@ Asked after a mock-up: "shop menu updates are good, initiate the changes".
 `p3Ult` returns 1e9 for a hero's own relic (`g.relic && g.only===c.id`), so `upgCmp` and the whole party plan rank it first; `upgOpts` returns nothing for a slot that already holds the hero's own relic. Test: tools/chrome/v221a.js.
 
 NOT REPRODUCED. The owner's report (a regular piece suggested for a hero, then that hero's relic right after equipping it) could not be made to happen: with the relic in the pack it was already the first suggestion for all 94 heroes at every realm (scratchpad relscan.js), also under the old `u_<hero>` ids, and Upgrade whole party already equipped relics from the pack. fix38 is a guard only. Still to find out from the owner: which hero, which slot, which list (Smithy's Best upgrade for each slot, the hero sheet's Upgrade button, or Upgrade whole party). One untested idea: a shield relic that only becomes wearable after a one handed weapon is equipped.
+
+## 0.22.39: auto battle and items (auto39.js)
+
+- `a39Pick()` runs before `autoTurn` (outermost wrap; skipped under SIM_SMART and while auto is locked) and returns `[item,target]`: revive (salts before plume), a sized draught, mana (ether, sage, vigor), ash, bandage, remedy. The rules are in the file header.
+- `AUTO_DEF.items` (true). `autoCfg` is wrapped: `items:false` also sets `potion` and `reviveItem` false, so the two old item uses in engine.js stop too.
+- The Auto settings screen gets a Use items row through a `vModal` xform.
+- Test: tools/chrome/v222a.js.

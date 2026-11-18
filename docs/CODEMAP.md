@@ -147,7 +147,7 @@ last registered to the first, then the base, then after parts from the first reg
 To add one see `docs/v099-hooks.md`.
 
 <!-- hooksmap:start -->
-### vModal (54 hooks)
+### vModal (55 hooks)
 Registered (load order; 1 is next to the base):
 1. `stuck.js` before: Stuck? popup
 2. `equip.js` before: eqPick, autoEq, equipNow popups
@@ -203,8 +203,9 @@ Registered (load order; 1 is next to the base):
 52. `legends17a.js` before: the pack slot chooser and the quest scenes
 53. `fix18.js` result: the personal quest offer rows in the same language
 54. `perf35.js` around: pictures not yet painted are left for the next frames
+55. `auto39.js` result: Auto settings: Use items
 
-Runs: 54 perf35 (around) → 52 legends17a → 51 quests16 → 45 menus11 → 42 econ11 → 39 roles9 → 37 riftkeeper9 → 36 rift9 → 35 guidance9 → 34 guidance9 → 33 junk9 → 31 bigmap → 30 recruit3 → 29 twists → 28 v063prog → 27 keymap → 26 p4party (around) → 24 p3shop → 23 p3shop → 21 p3shop → 20 saves → 19 sites → 18 starter → 17 autoset → 16 map → 15 comp → 14 comp → 13 sanctum → 12 echo2 → 11 ailments → 10 ailments → 8 chance → 7 describe → 6 town2 → 5 town2 → 4 gearmig → 3 party2 → 2 equip → 1 stuck → **base** → 9 factions (result) → 22 p3shop (result) → 25 p4party (result) → 26 p4party (around) → 32 duellines (result) → 38 riftkeeper9 (result) → 40 endgame10 (result) → 41 rk10 (result) → 43 fixes11 (result) → 44 arena11 (result) → 46 menus11 (result) → 47 world12 (result) → 48 menus12 (result) → 49 roster14 (result) → 50 quests16 (result) → 53 fix18 (result) → 54 perf35 (around)
+Runs: 54 perf35 (around) → 52 legends17a → 51 quests16 → 45 menus11 → 42 econ11 → 39 roles9 → 37 riftkeeper9 → 36 rift9 → 35 guidance9 → 34 guidance9 → 33 junk9 → 31 bigmap → 30 recruit3 → 29 twists → 28 v063prog → 27 keymap → 26 p4party (around) → 24 p3shop → 23 p3shop → 21 p3shop → 20 saves → 19 sites → 18 starter → 17 autoset → 16 map → 15 comp → 14 comp → 13 sanctum → 12 echo2 → 11 ailments → 10 ailments → 8 chance → 7 describe → 6 town2 → 5 town2 → 4 gearmig → 3 party2 → 2 equip → 1 stuck → **base** → 9 factions (result) → 22 p3shop (result) → 25 p4party (result) → 26 p4party (around) → 32 duellines (result) → 38 riftkeeper9 (result) → 40 endgame10 (result) → 41 rk10 (result) → 43 fixes11 (result) → 44 arena11 (result) → 46 menus11 (result) → 47 world12 (result) → 48 menus12 (result) → 49 roster14 (result) → 50 quests16 (result) → 53 fix18 (result) → 54 perf35 (around) → 55 auto39 (result)
 
 ### render (39 hooks)
 Registered (load order; 1 is next to the base):
