@@ -794,3 +794,11 @@ Asked after a mock-up: "Menus look good let's apply the update".
 - Tested in Chromium 126 (the Electron 31 engine; a `chrome-headless-shell` 126 build downloaded into the scratchpad with the owner's permission, not in the repo) at 1280x800, 1536x824 @1.25, 1280x680 @1.5, 1920x1040 and 2560x1400, on Low, Medium and High.
 - Click to walk on the field and taps on the World map land on the clicked tile in every case, so that part is NOT reproduced and nothing was changed for it. It needs the owner's description or a capture.
 - World map (bigmap.js `drawBigMap`): the canvas was left aligned at 3 to 5 px a tile in a 900 px frame. It is centred now and grows to at most 8 px a tile when the whole map fits the frame.
+
+## 0.22.30: Echoes in the realm list, removed bosses, desktop minimap (fix30.js)
+
+- `f30BossFix` runs before every `bossKeyFor`: a `G.run.bosses[s]` / `G.run.final` key that is no longer in GUARDIANS / FINALS is swapped for an unused one picked from the seed; the old key is kept in `G.run.bossWas`. Reported as a missing Echo on a live journey; the cause was the owner's guess and is not confirmed on their save.
+- `REALM_DONE` gets an `echo` entry per realm ("Echo of <boss>", done when `G.echoStory[s]`); `vRealms` shows it.
+- `#mmap` is 196x147 css px at 900 px wide and up (same canvas, scaled).
+- The Backpack tab icon is option A of four the owner was shown (adventurer pack); they may pick another.
+- Test: tools/chrome/v214a.js.

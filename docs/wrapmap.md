@@ -2,7 +2,7 @@
 
 Who wraps what, in load order. `raw` is the `{const f0=fn;fn=function...}` idiom, `replace` a reassignment without calling the old body, the rest are HOOK registrations. "def" names the module that HOOK.def'd the function. Raw wraps on a def'd function should become registrations; functions with many raw wraps and no def are the candidates for one.
 
-484 functions wrapped; 582 raw wraps or replacements, 801 hook registrations.
+485 functions wrapped; 583 raw wraps or replacements, 802 hook registrations.
 
 | function | owner | def | layers | chain (load order) |
 |---|---|---|---|---|
@@ -140,6 +140,7 @@ Who wraps what, in load order. `raw` is the `{const f0=fn;fn=function...}` idiom
 | vEquipTab | equip.js |  | 3 | party3.js:raw → equipbtn10.js:raw → gear16.js:raw |
 | vHeader | ui.js |  | 3 | p5settings.js:raw → twists.js:raw → title7.js:raw |
 | weatherFX | worldrt.js |  | 3 | world3.js:raw → p5trans.js:raw → weather7.js:replace |
+| REALM_DONE | complete9.js | complete9.js | 2 | records12.js:xform → fix30.js:xform |
 | animPose | anim.js |  | 2 | heropose9.js:raw → fxkind11.js:raw |
 | autoBan | prog2.js |  | 2 | roam.js:raw → riftkeeper9.js:raw |
 | b16Caller | battle16.js |  | 2 | roster17.js:raw → legends17a.js:raw |
@@ -231,7 +232,6 @@ Who wraps what, in load order. `raw` is the `{const f0=fn;fn=function...}` idiom
 | worldSizeCanvas | worldrt.js |  | 2 | sprhd2.js:raw → sprhd2.js:raw |
 | ACT.campOpen | ? | v063prog.js | 1 | v063prog.js:after |
 | ACT.resultOk | ? | results.js | 1 | arena11.js:wrap |
-| REALM_DONE | complete9.js | complete9.js | 1 | records12.js:xform |
 | WX | engine.js |  | 1 | twists.js:raw |
 | accOf | art2.js | art2.js | 1 | art2.js:xform |
 | alchStock | engine.js |  | 1 | v063prog.js:raw |
@@ -266,6 +266,7 @@ Who wraps what, in load order. `raw` is the `{const f0=fn;fn=function...}` idiom
 | bondScenes | town2.js |  | 1 | bonds9.js:raw |
 | bondSheet | v063prog.js |  | 1 | pacing.js:raw |
 | boot | ui.js |  | 1 | remember.js:raw |
+| bossKeyFor | engine.js |  | 1 | fix30.js:raw |
 | bossMusicOff | bosstheme.js |  | 1 | realms.js:raw |
 | bossTele | anim.js |  | 1 | riftkeeper9.js:raw |
 | canHandIn | handin9.js |  | 1 | quests16.js:raw |

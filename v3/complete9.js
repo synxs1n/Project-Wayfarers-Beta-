@@ -28,7 +28,7 @@ function drawCheck(x,px,py,r){x.save();x.lineCap='round';x.lineJoin='round';x.st
 // ----- the Journey tab: per realm, which of its Den, Sanctum, boss, quests and bounties are done -----
 function vRealms(){try{if(!G||G.daily)return '';const rows=[];
   for(let s=0;s<=Math.min(4,G.stage);s++){const P=realmProgress(s),Z=ZS(s),mk=k=>{const x=P.L.filter(o=>o.k===k);return x.length?`${x.filter(o=>o.done).length}/${x.length}`:'';},
-    bits=[['quest','Quests'],['bounty','Bounties'],['den','Den'],['sanctum','Sanctum'],['boss','Boss']].map(([k,n])=>{const v=mk(k);return v?`${n} ${v}`:'';}).filter(Boolean).join(' · ');
+    bits=[['quest','Quests'],['bounty','Bounties'],['den','Den'],['sanctum','Sanctum'],['boss','Boss'],['echo','Echo']].map(([k,n])=>{const v=mk(k);return v?`${n} ${v}`:'';}).filter(Boolean).join(' · ');
     rows.push(`<div class="row ${P.d===P.n?'up':''}"><div class="grow"><b>Realm ${s+1}: ${esc(Z.n)}</b><small>${bits}</small></div><span class="m nums">${P.d===P.n?'100% ✓':`${P.d} of ${P.n}`}</span></div>`);}
   return `<h4>Realms</h4><div class="rows compact">${rows.join('')}</div>`;}catch(e){return '';}}
 HOOK.xform('vJourney','complete9','Realms section',function(h){try{const sec=vRealms(),k=h.indexOf('<h4>Progress</h4>');if(sec)h=k>=0?h.slice(0,k)+sec+h.slice(k):h+sec;}catch(e){}return h;});

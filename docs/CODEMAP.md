@@ -1315,6 +1315,13 @@ Registered (load order; 1 is next to the base):
 
 Runs: **base** → 1 roster14 (result) → 2 world16 (result)
 
+### REALM_DONE (2 hooks)
+Registered (load order; 1 is next to the base):
+1. `records12.js` result: Den and Sanctum rows follow the map, a Den the map has but the plan lacks is listed
+2. `fix30.js` result: the realm's story Echo is part of its list
+
+Runs: **base** → 1 records12 (result) → 2 fix30 (result)
+
 ### roamSpawn (2 hooks)
 Registered (load order; 1 is next to the base):
 1. `world14.js` result: roamers stand only on tiles the walk reaches
@@ -1552,12 +1559,6 @@ Registered (load order; 1 is next to the base):
 1. `world12.js` after: a node never lands on a chest, a prop or an unreachable tile
 
 Runs: **base** → 1 world12
-
-### REALM_DONE (1 hook)
-Registered (load order; 1 is next to the base):
-1. `records12.js` result: Den and Sanctum rows follow the map, a Den the map has but the plan lacks is listed
-
-Runs: **base** → 1 records12 (result)
 
 ### resBk (1 hook)
 Registered (load order; 1 is next to the base):
