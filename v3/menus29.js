@@ -10,7 +10,8 @@
 // The markup is the game's own (ui.js / menus3.js): a pass over #modal after each render adds the class, the title, gold, the More button and
 // its sheet. M29.off=true (or localStorage aurelis-m29off=1, for the tests of the classic menu) turns it off.
 const M29={maxW:560,more:false,off:(()=>{try{return localStorage.getItem('aurelis-m29off')==='1';}catch(e){return false;}})()};
-function m29On(){try{return !M29.off&&window.innerWidth<=M29.maxW;}catch(e){return false;}}
+// the width is read once and again on resize: window.innerWidth makes the browser lay the page out, and this is asked on every render (0.22.35)
+function m29On(){try{if(M29.off)return false;if(M29.vw==null)M29.vw=window.innerWidth;return M29.vw<=M29.maxW;}catch(e){return false;}}
 function m29Ready(){let n=0;try{n+=m3Quests().filter(q=>nbQState(q)==='ready').length;}catch(e){}try{if(typeof facMisAll==='function')n+=facMisAll().filter(m=>facMisState(m)==='ready').length;}catch(e){}return n;}
 function m29MoreSync(pn,mg){const inMore=!!mg.querySelector('.chip.on[data-arg="records"],.chip.on[data-arg="guides"],.chip.on[data-arg="settings"]'),mb=mg.querySelector('.m29mb');
   if(mb){mb.classList.toggle('on',inMore||M29.more);mb.setAttribute('aria-expanded',M29.more?'true':'false');}
@@ -28,7 +29,7 @@ function m29Pass(){try{const md=document.getElementById('modal');if(!md)return;c
   const rd=m29Ready(),qc=mg.querySelector('[data-arg="quests"]');if(rd>0&&qc){const b=document.createElement('span');b.className='m29bd nums';b.textContent=rd;b.setAttribute('aria-label',rd+' rewards ready');qc.appendChild(b);}
   const mb=document.createElement('button');mb.className='chip m29mb';mb.dataset.act='m29More';mb.textContent='More';mg.appendChild(mb);m29MoreSync(pn,mg);
   // 3 the open sub tab is in view
-  const ms=pn.querySelector(':scope>.msub'),so=ms&&ms.querySelector('.chip.on');if(so)ms.scrollLeft=Math.max(0,so.offsetLeft-(ms.clientWidth-so.offsetWidth)/2);
+  const ms=pn.querySelector(':scope>.msub'),so=ms&&ms.querySelector('.chip.on');if(so)requestAnimationFrame(()=>{try{ms.scrollLeft=Math.max(0,so.offsetLeft-(ms.clientWidth-so.offsetWidth)/2);}catch(e){}});/* next frame: measuring here would lay the whole page out inside the render */
   // 4 the loadout button joins the party tools
   const pt=pn.querySelector('.ptools'),ld=pn.querySelector('.ldstrip');if(pt&&ld){ld.querySelectorAll('button').forEach(b=>pt.appendChild(b));ld.remove();}
   // 5 a long description opens when its row is tapped
@@ -40,7 +41,7 @@ ACT.m29More=function(){M29.more=!M29.more;render();m29Pass();};
 ['menuGrp','menuTab','p5Save','xClose','menu'].forEach(k=>{const f=ACT[k];if(typeof f==='function')ACT[k]=function(){M29.more=false;return f.apply(this,arguments);};});
 try{const md=document.getElementById('modal');if(md)new MutationObserver(m29Pass).observe(md,{childList:true});}catch(e){}
 HOOK.after('render','menus29','the phone menu pass',function(){m29Pass();});
-window.addEventListener('resize',()=>{try{if(V&&V.modal&&V.modal.type==='menu')render();}catch(e){}});
+window.addEventListener('resize',()=>{try{M29.vw=window.innerWidth;if(V&&V.modal&&V.modal.type==='menu')render();}catch(e){}});
 {const st=document.createElement('style');st.id='m29css';st.textContent=`
 #modal .modal.m29m{display:block;padding:0;overflow:hidden}
 #modal .modal.m29m>.panel.m29{animation:none!important;transform:none!important}/* a full screen sheet that slides in pokes past the screen edge while it moves */

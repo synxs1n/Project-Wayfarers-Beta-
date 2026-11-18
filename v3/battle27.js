@@ -2,19 +2,29 @@
 // Asked (after two mock-ups): "on smaller phone screens we want to maximize the space the battle window takes up. The next most important
 // thing is the action menu ... we need a way to look at all the party and enemy info cards that doesn't take up screen space on smaller
 // phones, maybe we make it a button on the action menu on smaller screens" and then "I like your mock up, make the changes."
-// Only the portrait ("tall") layout on a screen up to B27.maxVh px high changes; tablets, desktops and landscape keep the layout they had.
+// 0.22.27 was for upright phones only; 0.22.34 widened it to every screen but a short landscape one (see b27Fits below).
 //  1 the game's top bar is hidden in a battle (its sound, help and settings buttons move to the foot of the Party & foes sheet)
 //  2 the turn order shares one strip with Pause, Auto, Speed and the auto settings (they were a row of the command panel)
 //  3 the stage runs edge to edge and is drawn at B27.sc (2.25, was 2; at 2.5 three foes stand on each other and a tap picks the wrong one); it takes all the height the commands do not need
 //  4 Momentum, the last log line, the sky chips and the Log button float over the sky at the top of the stage
 //  5 Attack, Skills, Items and Guard are four large buttons (two by two); under them one slim row: Party & foes, Scan, Switch, Flee
 //  6 the party and foe cards are a sheet that slides over the commands (ACT.b27info): the cards as they were, plus Guide, sound, help, settings
-const B27={maxVh:900,sc:2.25,tallMax:300,grow:0,clear:71,off:(()=>{try{return localStorage.getItem('aurelis-b27off')==='1';}catch(e){return false;}})()};/* the stored flag is for the tests of the classic portrait layout */
-function b27On(mode){try{return !B27.off&&(mode||battleMode())==='tall'&&b3Vh()<=B27.maxVh;}catch(e){return false;}}
+const B27={minLandH:560,portW:176,landCmd:230,sc:2.25,tallMax:300,grow:0,clear:49,lineH:50,off:(()=>{try{return localStorage.getItem('aurelis-b27off')==='1';}catch(e){return false;}})()};/* the stored flag is for the tests of the classic portrait layout */
+// 0.22.34 (asked: "lets update the battle menu of the bigger versions of the battle screen a bit like how we did the small one, we want the
+// battle window ... to take up the majority of the screen"): the layout is no longer for phones only. Every screen uses it except a short
+// landscape one (under B27.minLandH px high: a phone held sideways keeps the classic layout, the stage would be a strip). battleMode says
+// 'tall' for them, and the stage scale comes from the screen: upright it aims at B27.portW logical px across (2.25 on a phone, 4.5 on a
+// tablet), sideways it is the largest that leaves B27.landCmd px for the turn order and the commands (the classic 320x150 stage at up to 6x).
+function b27Land(){try{const w=window.innerWidth/(typeof dsZoom==='function'?dsZoom():1),vh=b3Vh();return w>vh*1.15;}catch(e){return false;}}
+function b27Fits(){try{if(B27.off)return false;return !b27Land()||b3Vh()>=B27.minLandH;}catch(e){return false;}}
+{const m0=battleMode;battleMode=function(){return b27Fits()?'tall':m0.apply(this,arguments);};}
+function b27On(mode){try{return !B27.off&&(mode||battleMode())==='tall'&&b27Fits();}catch(e){return false;}}
+function b27Sc(bat){try{const w=(bat.clientWidth||window.innerWidth)+24,vh=b3Vh();
+  if(b27Land())return clamp(Math.floor(Math.min(w/320,(vh-B27.landCmd)/150)*4)/4,2,6);return clamp(Math.floor(w/B27.portW*4)/4,B27.sc,6);}catch(e){return B27.sc;}}
 // layoutBattle asks before it measures: marks the battle and returns the stage scale (0 = the layout's own)
-function b27Mark(bat,mode){try{const on=b27On(mode);B27.live=on;bat.classList.toggle('m-tall',mode==='tall');bat.classList.toggle('b27',on);if(!on)bat.classList.remove('b27open');return on?B27.sc:0;}catch(e){return 0;}}
+function b27Mark(bat,mode){try{const on=b27On(mode);B27.live=on;bat.classList.toggle('m-tall',mode==='tall');bat.classList.toggle('b27',on);bat.classList.toggle('b27land',on&&b27Land());if(!on)bat.classList.remove('b27open');return on?b27Sc(bat):0;}catch(e){return 0;}}
 // on a short stage the units stand a little lower, so the tags over the highest hero stay clear of the floating line (B27.clear logical px)
-{const s0=slotsFor;slotsFor=function(){const r=s0.apply(this,arguments);try{if(B27.live&&BL.mode==='tall'&&BL.H){const lo=Math.min(.62,B27.clear/BL.H);if(lo>.48)return r.map(([x,y])=>[x,+(lo+(y-.48)/.49*(.97-lo)).toFixed(4)]);}}catch(e){}return r;};}
+{const s0=slotsFor;slotsFor=function(){const r=s0.apply(this,arguments);try{if(B27.live&&BL.mode==='tall'&&BL.H){const lo=Math.min(.62,(B27.clear+B27.lineH/(BL.sc||2.25))/BL.H);if(lo>.48)return r.map(([x,y])=>[x,+(lo+(y-.48)/.49*(.97-lo)).toFixed(4)]);}}catch(e){}return r;};}
 // the room under the stage: nothing is kept back for the party cards, the log line no longer sits under the stage
 {const p0=b8TallPlan;b8TallPlan=function(bat,room){if(!bat||!bat.classList.contains('b27'))return p0.apply(this,arguments);
   const pk=B8.peek,g=B8.tallGrow,mx=B8.tallMax;let add=0;try{const bl=document.getElementById('bline');add=(bl?bl.offsetHeight:40)+(parseFloat(getComputedStyle(bat).rowGap)||5);}catch(e){}
@@ -72,6 +82,18 @@ body:has(.battle.b3.b27) #hdr{display:none}
 .battle.b3.m-tall.b27 .cmd .menu.sec .mi[data-arg="guide"]{display:none}
 .battle.b3.m-tall.b27 .bbottom .pgroup,.battle.b3.m-tall.b27 .bbottom .b8fl,.battle.b3.m-tall.b27 .bbottom .b3pty{display:none}
 .battle.b3.m-tall.b27 .bban{top:54px}
+.battle.b3.m-tall.b27 .cmd{padding-top:5px;padding-bottom:6px}
+.battle.b3.m-tall.b27 .who.cmdhead{padding:0 0 3px}
+.battle.b3.m-tall.b27 .cmd .menu.prim{gap:5px}
+.battle.b3.m-tall.b27 .cmd .menu.prim .mi{min-height:44px}
+.battle.b3.m-tall.b27 .who.cmdhead .cmdback{min-height:34px;height:34px;padding-top:0;padding-bottom:0}
+.battle.b3.m-tall.b27 .who.cmdhead{min-height:0}
+@media (min-width:700px){
+.battle.b3.m-tall.b27 .cmd .menu.prim{grid-template-columns:repeat(4,minmax(0,1fr))}
+.battle.b3.m-tall.b27 .cmd .menu.prim .mi{min-height:52px}
+.battle.b3.m-tall.b27 .cmd .menu.sec .mi.b27pf{flex:1 1 160px}
+.battle.b3.m-tall.b27.b27open .bbottom .bparty{left:auto;top:0;bottom:0;width:min(440px,92%);max-height:none;border-top:0;border-left:2px solid #a48bff;border-radius:16px 0 0 16px}
+}
 .battle.b3 .b27shade{display:none}
 .battle.b3.m-tall.b27.b27open .b27shade{display:block;position:fixed;inset:0;z-index:69;background:rgba(4,7,15,.55)}
 .battle.b3.m-tall.b27.b27open .bbottom .bparty{display:flex;flex-direction:column;gap:8px;position:fixed;left:0;right:0;bottom:0;max-height:78%;overflow-y:auto;overscroll-behavior:contain;z-index:70;box-sizing:border-box;background:#0f1930;border-top:2px solid #a48bff;border-radius:16px 16px 0 0;padding:10px 12px calc(12px + env(safe-area-inset-bottom,0px))}

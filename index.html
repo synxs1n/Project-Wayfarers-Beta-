@@ -2125,7 +2125,7 @@ html:not(.flat) .battle.b3 .bline .b4mo .b4bar{box-shadow:inset 0 0 0 1px #000,0
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.22.32";const APP_BUILD="84ad5ac4e989";
+(function(){const APP_VER="0.22.35";const APP_BUILD="c007460867cf";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2906,7 +2906,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.22.32";const APP_BUILD="84ad5ac4e989";
+const APP_VER="0.22.35";const APP_BUILD="c007460867cf";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2914,6 +2914,9 @@ const APP_VER="0.22.32";const APP_BUILD="84ad5ac4e989";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.22.35',['Screens open faster: the Bestiary, the Codex and the Smithy paint their first pictures at once and the rest over the next moments, and long shop lists only lay out the rows near the screen.']],
+ ['Beta v0.22.34',['The battle screen on tablets and computers follows the phone layout: the stage runs the full width and takes most of the screen, the commands are one bar under it, and the party and foe cards open from Party & foes (a side panel on wide screens). A phone held sideways keeps the classic layout.','On phones the stage is a little taller.']],
+ ['Beta v0.22.33',['The Echoforge has sections like the other shop tabs: All, For my party, Can forge, Weapons, Armor. What can be forged now comes first, and the long explanation folds away under About the Echoforge.']],
  ['Beta v0.22.32',['A Pork Chop Sandwich eaten in a dungeon walks you out to the field at its door (it used to leave you inside, at the entrance).','The Riftkeeper only counts as beaten on the journey that beat him; a new journey finds him unbeaten.','Legendary relics are gold yellow, like the Legendary wayfarers; Heroic gear is teal.','In battle a skill has only its element before its name (the kind of attack is the symbol after it). Shops no longer list what a piece becomes at max temper.']],
  ['Beta v0.22.31',['Shops on phones (the Smithy, Alchemy, the Tavern, the Guild hall, the Notice Board) use the new menu frame: the shop fills the screen, its tabs are a bar at the bottom, its sections are one row you can slide.','Best upgrade for each slot is a list of compact cards with Upgrade whole party first; tap a card for the full stat list.']],
  ['Beta v0.22.30',['Each realm\'s Echo is on its completion list (Records, Journey). A journey whose boss was later taken out of the game gets another boss in its place, so its Echo is there to fight.','On a computer the minimap is larger.']],
@@ -29552,7 +29555,7 @@ const E11={item:false,on:false,all:false};
 {const sm0=m3Smithy;m3Smithy=function(m){let h=sm0.apply(this,arguments);try{/* v0.22.17: menus3.js says it itself (charms sell here now) */}catch(e){}return h;};}
 
 // ----- 4) best in slot at max temper -----
-{const bt1=bestTag;bestTag=function(id){let h=bt1.apply(this,arguments);try{if(!G||G.daily)return h;const g=gearOf(id);if(!g||g.stick||g.relic)return h;
+{const bt1=bestTag;bestTag=function(id){let h=bt1.apply(this,arguments);try{if(!G||G.daily)return h;if(typeof p35NoMax==='function'&&p35NoMax())return h;/* 0.22.35: shops no longer show the max temper line (0.22.32), so it is not worked out there either */const g=gearOf(id);if(!g||g.stick||g.relic)return h;
   const L=partyChars().filter(c=>canEquip(c,id)).map(c=>({c,g:maxGainFor(c,id)})).filter(o=>maxBeats(o.g)).sort((a,b)=>b.g.pct-a.g.pct);if(!L.length)return h;
   if(!gainersFor(id).length)h=h.replace('Would not help anyone in your active party.','Not better today, but worth tempering.');
   h+=`<small class="mxt"><b>At max temper (+${TEMPER_TOP}):</b> ${L.slice(0,3).map(o=>`${esc(o.c.name)} ${esc(maxDeltaTxt(o.c,id,false)||'better')} <em class="up">+${Math.max(1,Math.round(o.g.pct*100))}%</em>`).join('; ')}</small>`;}catch(e){}return h;};}
@@ -38720,19 +38723,29 @@ try{window.__R25={R25,kind:r25Kind,gid:id=>sigGid(id),skill:id=>r25Skill(TPL[id]
 // Asked (after two mock-ups): "on smaller phone screens we want to maximize the space the battle window takes up. The next most important
 // thing is the action menu ... we need a way to look at all the party and enemy info cards that doesn't take up screen space on smaller
 // phones, maybe we make it a button on the action menu on smaller screens" and then "I like your mock up, make the changes."
-// Only the portrait ("tall") layout on a screen up to B27.maxVh px high changes; tablets, desktops and landscape keep the layout they had.
+// 0.22.27 was for upright phones only; 0.22.34 widened it to every screen but a short landscape one (see b27Fits below).
 //  1 the game's top bar is hidden in a battle (its sound, help and settings buttons move to the foot of the Party & foes sheet)
 //  2 the turn order shares one strip with Pause, Auto, Speed and the auto settings (they were a row of the command panel)
 //  3 the stage runs edge to edge and is drawn at B27.sc (2.25, was 2; at 2.5 three foes stand on each other and a tap picks the wrong one); it takes all the height the commands do not need
 //  4 Momentum, the last log line, the sky chips and the Log button float over the sky at the top of the stage
 //  5 Attack, Skills, Items and Guard are four large buttons (two by two); under them one slim row: Party & foes, Scan, Switch, Flee
 //  6 the party and foe cards are a sheet that slides over the commands (ACT.b27info): the cards as they were, plus Guide, sound, help, settings
-const B27={maxVh:900,sc:2.25,tallMax:300,grow:0,clear:71,off:(()=>{try{return localStorage.getItem('aurelis-b27off')==='1';}catch(e){return false;}})()};/* the stored flag is for the tests of the classic portrait layout */
-function b27On(mode){try{return !B27.off&&(mode||battleMode())==='tall'&&b3Vh()<=B27.maxVh;}catch(e){return false;}}
+const B27={minLandH:560,portW:176,landCmd:230,sc:2.25,tallMax:300,grow:0,clear:49,lineH:50,off:(()=>{try{return localStorage.getItem('aurelis-b27off')==='1';}catch(e){return false;}})()};/* the stored flag is for the tests of the classic portrait layout */
+// 0.22.34 (asked: "lets update the battle menu of the bigger versions of the battle screen a bit like how we did the small one, we want the
+// battle window ... to take up the majority of the screen"): the layout is no longer for phones only. Every screen uses it except a short
+// landscape one (under B27.minLandH px high: a phone held sideways keeps the classic layout, the stage would be a strip). battleMode says
+// 'tall' for them, and the stage scale comes from the screen: upright it aims at B27.portW logical px across (2.25 on a phone, 4.5 on a
+// tablet), sideways it is the largest that leaves B27.landCmd px for the turn order and the commands (the classic 320x150 stage at up to 6x).
+function b27Land(){try{const w=window.innerWidth/(typeof dsZoom==='function'?dsZoom():1),vh=b3Vh();return w>vh*1.15;}catch(e){return false;}}
+function b27Fits(){try{if(B27.off)return false;return !b27Land()||b3Vh()>=B27.minLandH;}catch(e){return false;}}
+{const m0=battleMode;battleMode=function(){return b27Fits()?'tall':m0.apply(this,arguments);};}
+function b27On(mode){try{return !B27.off&&(mode||battleMode())==='tall'&&b27Fits();}catch(e){return false;}}
+function b27Sc(bat){try{const w=(bat.clientWidth||window.innerWidth)+24,vh=b3Vh();
+  if(b27Land())return clamp(Math.floor(Math.min(w/320,(vh-B27.landCmd)/150)*4)/4,2,6);return clamp(Math.floor(w/B27.portW*4)/4,B27.sc,6);}catch(e){return B27.sc;}}
 // layoutBattle asks before it measures: marks the battle and returns the stage scale (0 = the layout's own)
-function b27Mark(bat,mode){try{const on=b27On(mode);B27.live=on;bat.classList.toggle('m-tall',mode==='tall');bat.classList.toggle('b27',on);if(!on)bat.classList.remove('b27open');return on?B27.sc:0;}catch(e){return 0;}}
+function b27Mark(bat,mode){try{const on=b27On(mode);B27.live=on;bat.classList.toggle('m-tall',mode==='tall');bat.classList.toggle('b27',on);bat.classList.toggle('b27land',on&&b27Land());if(!on)bat.classList.remove('b27open');return on?b27Sc(bat):0;}catch(e){return 0;}}
 // on a short stage the units stand a little lower, so the tags over the highest hero stay clear of the floating line (B27.clear logical px)
-{const s0=slotsFor;slotsFor=function(){const r=s0.apply(this,arguments);try{if(B27.live&&BL.mode==='tall'&&BL.H){const lo=Math.min(.62,B27.clear/BL.H);if(lo>.48)return r.map(([x,y])=>[x,+(lo+(y-.48)/.49*(.97-lo)).toFixed(4)]);}}catch(e){}return r;};}
+{const s0=slotsFor;slotsFor=function(){const r=s0.apply(this,arguments);try{if(B27.live&&BL.mode==='tall'&&BL.H){const lo=Math.min(.62,(B27.clear+B27.lineH/(BL.sc||2.25))/BL.H);if(lo>.48)return r.map(([x,y])=>[x,+(lo+(y-.48)/.49*(.97-lo)).toFixed(4)]);}}catch(e){}return r;};}
 // the room under the stage: nothing is kept back for the party cards, the log line no longer sits under the stage
 {const p0=b8TallPlan;b8TallPlan=function(bat,room){if(!bat||!bat.classList.contains('b27'))return p0.apply(this,arguments);
   const pk=B8.peek,g=B8.tallGrow,mx=B8.tallMax;let add=0;try{const bl=document.getElementById('bline');add=(bl?bl.offsetHeight:40)+(parseFloat(getComputedStyle(bat).rowGap)||5);}catch(e){}
@@ -38790,6 +38803,18 @@ body:has(.battle.b3.b27) #hdr{display:none}
 .battle.b3.m-tall.b27 .cmd .menu.sec .mi[data-arg="guide"]{display:none}
 .battle.b3.m-tall.b27 .bbottom .pgroup,.battle.b3.m-tall.b27 .bbottom .b8fl,.battle.b3.m-tall.b27 .bbottom .b3pty{display:none}
 .battle.b3.m-tall.b27 .bban{top:54px}
+.battle.b3.m-tall.b27 .cmd{padding-top:5px;padding-bottom:6px}
+.battle.b3.m-tall.b27 .who.cmdhead{padding:0 0 3px}
+.battle.b3.m-tall.b27 .cmd .menu.prim{gap:5px}
+.battle.b3.m-tall.b27 .cmd .menu.prim .mi{min-height:44px}
+.battle.b3.m-tall.b27 .who.cmdhead .cmdback{min-height:34px;height:34px;padding-top:0;padding-bottom:0}
+.battle.b3.m-tall.b27 .who.cmdhead{min-height:0}
+@media (min-width:700px){
+.battle.b3.m-tall.b27 .cmd .menu.prim{grid-template-columns:repeat(4,minmax(0,1fr))}
+.battle.b3.m-tall.b27 .cmd .menu.prim .mi{min-height:52px}
+.battle.b3.m-tall.b27 .cmd .menu.sec .mi.b27pf{flex:1 1 160px}
+.battle.b3.m-tall.b27.b27open .bbottom .bparty{left:auto;top:0;bottom:0;width:min(440px,92%);max-height:none;border-top:0;border-left:2px solid #a48bff;border-radius:16px 0 0 16px}
+}
 .battle.b3 .b27shade{display:none}
 .battle.b3.m-tall.b27.b27open .b27shade{display:block;position:fixed;inset:0;z-index:69;background:rgba(4,7,15,.55)}
 .battle.b3.m-tall.b27.b27open .bbottom .bparty{display:flex;flex-direction:column;gap:8px;position:fixed;left:0;right:0;bottom:0;max-height:78%;overflow-y:auto;overscroll-behavior:contain;z-index:70;box-sizing:border-box;background:#0f1930;border-top:2px solid #a48bff;border-radius:16px 16px 0 0;padding:10px 12px calc(12px + env(safe-area-inset-bottom,0px))}
@@ -38816,7 +38841,8 @@ try{window.__B27={B27,on:b27On};}catch(e){}
 // The markup is the game's own (ui.js / menus3.js): a pass over #modal after each render adds the class, the title, gold, the More button and
 // its sheet. M29.off=true (or localStorage aurelis-m29off=1, for the tests of the classic menu) turns it off.
 const M29={maxW:560,more:false,off:(()=>{try{return localStorage.getItem('aurelis-m29off')==='1';}catch(e){return false;}})()};
-function m29On(){try{return !M29.off&&window.innerWidth<=M29.maxW;}catch(e){return false;}}
+// the width is read once and again on resize: window.innerWidth makes the browser lay the page out, and this is asked on every render (0.22.35)
+function m29On(){try{if(M29.off)return false;if(M29.vw==null)M29.vw=window.innerWidth;return M29.vw<=M29.maxW;}catch(e){return false;}}
 function m29Ready(){let n=0;try{n+=m3Quests().filter(q=>nbQState(q)==='ready').length;}catch(e){}try{if(typeof facMisAll==='function')n+=facMisAll().filter(m=>facMisState(m)==='ready').length;}catch(e){}return n;}
 function m29MoreSync(pn,mg){const inMore=!!mg.querySelector('.chip.on[data-arg="records"],.chip.on[data-arg="guides"],.chip.on[data-arg="settings"]'),mb=mg.querySelector('.m29mb');
   if(mb){mb.classList.toggle('on',inMore||M29.more);mb.setAttribute('aria-expanded',M29.more?'true':'false');}
@@ -38834,7 +38860,7 @@ function m29Pass(){try{const md=document.getElementById('modal');if(!md)return;c
   const rd=m29Ready(),qc=mg.querySelector('[data-arg="quests"]');if(rd>0&&qc){const b=document.createElement('span');b.className='m29bd nums';b.textContent=rd;b.setAttribute('aria-label',rd+' rewards ready');qc.appendChild(b);}
   const mb=document.createElement('button');mb.className='chip m29mb';mb.dataset.act='m29More';mb.textContent='More';mg.appendChild(mb);m29MoreSync(pn,mg);
   // 3 the open sub tab is in view
-  const ms=pn.querySelector(':scope>.msub'),so=ms&&ms.querySelector('.chip.on');if(so)ms.scrollLeft=Math.max(0,so.offsetLeft-(ms.clientWidth-so.offsetWidth)/2);
+  const ms=pn.querySelector(':scope>.msub'),so=ms&&ms.querySelector('.chip.on');if(so)requestAnimationFrame(()=>{try{ms.scrollLeft=Math.max(0,so.offsetLeft-(ms.clientWidth-so.offsetWidth)/2);}catch(e){}});/* next frame: measuring here would lay the whole page out inside the render */
   // 4 the loadout button joins the party tools
   const pt=pn.querySelector('.ptools'),ld=pn.querySelector('.ldstrip');if(pt&&ld){ld.querySelectorAll('button').forEach(b=>pt.appendChild(b));ld.remove();}
   // 5 a long description opens when its row is tapped
@@ -38846,7 +38872,7 @@ ACT.m29More=function(){M29.more=!M29.more;render();m29Pass();};
 ['menuGrp','menuTab','p5Save','xClose','menu'].forEach(k=>{const f=ACT[k];if(typeof f==='function')ACT[k]=function(){M29.more=false;return f.apply(this,arguments);};});
 try{const md=document.getElementById('modal');if(md)new MutationObserver(m29Pass).observe(md,{childList:true});}catch(e){}
 HOOK.after('render','menus29','the phone menu pass',function(){m29Pass();});
-window.addEventListener('resize',()=>{try{if(V&&V.modal&&V.modal.type==='menu')render();}catch(e){}});
+window.addEventListener('resize',()=>{try{M29.vw=window.innerWidth;if(V&&V.modal&&V.modal.type==='menu')render();}catch(e){}});
 {const st=document.createElement('style');st.id='m29css';st.textContent=`
 #modal .modal.m29m{display:block;padding:0;overflow:hidden}
 #modal .modal.m29m>.panel.m29{animation:none!important;transform:none!important}/* a full screen sheet that slides in pokes past the screen edge while it moves */
@@ -38933,7 +38959,7 @@ const S31={off:false};
 function s31Pass(){try{const md=document.getElementById('modal');if(!md)return;const pn=md.querySelector('.panel'),sn=pn&&pn.querySelector(':scope>.shopnav');if(!pn||!sn)return;
   const on=m29On()&&!S31.off,ov=pn.parentNode;pn.classList.toggle('m29',on);pn.classList.toggle('s31',on);if(ov&&ov.classList)ov.classList.toggle('m29m',on);if(!on||pn.dataset.s31)return;pn.dataset.s31='1';
   pn.classList.toggle('s31nt',!sn.querySelector(':scope>.stabs'));try{pn.dataset.s31t=(V.modal&&V.modal.type)||'';}catch(e){}
-  const ms=sn.querySelector(':scope>.ssec'),so=ms&&ms.querySelector('.chip.on');if(so)ms.scrollLeft=Math.max(0,so.offsetLeft-(ms.clientWidth-so.offsetWidth)/2);
+  const ms=sn.querySelector(':scope>.ssec'),so=ms&&ms.querySelector('.chip.on');if(so)requestAnimationFrame(()=>{try{ms.scrollLeft=Math.max(0,so.offsetLeft-(ms.clientWidth-so.offsetWidth)/2);}catch(e){}});
 }catch(e){S31.err=String(e&&e.message||e);}}
 try{const md=document.getElementById('modal');if(md)new MutationObserver(s31Pass).observe(md,{childList:true});}catch(e){}
 HOOK.after('render','shops31','the phone shop pass',function(){s31Pass();});
@@ -38978,6 +39004,76 @@ HOOK.after('render','shops31','the phone shop pass',function(){s31Pass();});
 .panel.s31 .upgbest .row .btn{min-width:64px;padding:0 10px}
 `;document.head.appendChild(st);}
 try{window.__S31={S31,pass:s31Pass};}catch(e){}
+
+// ===== echo33.js (v0.22.33): the Echoforge is a shop like the others: sections, order, a short page =====
+// Asked: "echoforge counts as a shop, should be included when we do shop menu redesigns, it needs filters/better organization".
+// The Echoforge is the Smithy's fifth tab (menus3.js), so it already has the phone shop frame (shops31.js). This gives it what the other tabs have:
+//  1 sections with counts: All, For my party (a hero in the six can wear it), Can forge (everything it needs is in hand), Weapons, Armor
+//  2 order inside a section: what can be forged now first, then what the party can wear, then the rest; Weapons and Armor headings in All only
+//  3 the long explanation folds into "About the Echoforge" (open the first time, closed after: META.ef33seen)
+//  4 an empty section says why
+// The rows are the ones echo11.js builds (same text, same Forge button); this only picks and orders them.
+function ef33All(){const L=[];try{Object.keys(ECHOFORGE).forEach(f=>L.push({f,k:'weapons'}));Object.keys(ECHOARM).forEach(f=>L.push({f,k:'armor'}));
+  const P=partyChars();L.forEach(x=>{const id=efItemId(x.f),g0=efGold(x.f);let base=null,mats=false;try{base=efBaseIn(x.f);mats=hasMats(efCost(x.f));}catch(e){}
+    x.id=id;x.ok=!!base&&mats&&G.gold>=g0;x.party=P.some(c=>{try{return canEquip(c,id);}catch(e){return false;}});});}catch(e){}return L;}
+function ef33Pick(L,sec){return sec==='party'?L.filter(x=>x.party):sec==='ready'?L.filter(x=>x.ok):sec==='weapons'||sec==='armor'?L.filter(x=>x.k===sec):L;}
+{const s0=m3Secs;m3Secs=function(t,tab){if(t==='smithy'&&tab==='echo'){try{const L=ef33All(),n=s=>ef33Pick(L,s).length;
+    return [['all','All',L.length],['party','For my party',n('party')],['ready','Can forge',n('ready')],['weapons','Weapons',n('weapons')],['armor','Armor',n('armor')]];}catch(e){}}
+  return s0.apply(this,arguments);};}
+{const v0=vEchoforge;vEchoforge=function(){const h=v0.apply(this,arguments);try{const sec=(V.modal&&V.modal.sec)||'all',L=ef33All(),by={};
+  const re=/<div class="row rec[\s\S]*?data-act="efForge" data-arg="([^"]+)"[^>]*>Forge<\/button><\/div>/g;let m,n=0;while((m=re.exec(h))){by[m[1]]=m[0];n++;}
+  if(n!==L.length||!n)return h;// the page is not the shape this expects: leave it as it is
+  const note=(h.match(/^<p class="note">[\s\S]*?<\/p>/)||[''])[0],rank=x=>(x.ok?0:2)+(x.party?0:1);
+  const rows=X=>X.slice().sort((a,b)=>rank(a)-rank(b)).map(x=>by[x.f]).join('');
+  const pick=ef33Pick(L,sec),seen=!!(META&&META.ef33seen);try{if(!seen){META.ef33seen=1;saveMeta();}}catch(e){}
+  const about=note?`<details class="ef33about"${seen?'':' open'}><summary>About the Echoforge</summary>${note}</details>`:'';
+  const empty=sec==='ready'?'Nothing can be forged yet. Each piece needs its Shards, Echo Essence, Dread Cores, gold and a tier 5 piece of the same kind.':sec==='party'?'Nobody in your six can wear an Echoforged piece.':'Nothing here.';
+  const body=!pick.length?`<p class="note">${empty}</p>`:sec==='all'?['weapons','armor'].map(k=>{const X=pick.filter(x=>x.k===k);return X.length?`<h4 class="efsec">${k==='weapons'?'Weapons':'Armor'}</h4><div class="rows ef33">${rows(X)}</div>`:'';}).join(''):`<div class="rows ef33">${rows(pick)}</div>`;
+  return about+body;}catch(e){return h;}};}
+{const st=document.createElement('style');st.id='ef33css';st.textContent=`
+.ef33about{margin:4px 0 10px;border:1px solid var(--ui-line-s,rgba(217,180,106,.3));border-radius:8px;padding:0 10px}
+.ef33about>summary{cursor:pointer;min-height:40px;display:flex;align-items:center;font-weight:800}
+.ef33about>.note{margin:0 0 10px}
+.rows.ef33>.row.rec.ready{border-color:#e9c463}
+.panel.s31 .rows.ef33>.row{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:4px 8px;align-items:start;padding:8px}
+.panel.s31 .rows.ef33>.row>.grow{grid-column:2/4;grid-row:1;min-width:0}
+.panel.s31 .rows.ef33>.row>.grow>b{display:block;padding-right:78px}
+.panel.s31 .rows.ef33>.row>.btn{grid-column:3;grid-row:1;align-self:start;position:relative;z-index:1}
+.panel.s31 .rows.ef33>.row .mats{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+.panel.s31 .rows.ef33>.row .mats .matc{font-size:.68rem;padding:2px 6px;min-height:0}
+.panel.s31>.shopnav>.stabs .chip[data-arg="echo"]::before{-webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6-5.3-3-5.3 3 1.2-6L3.4 9.3l6-.7z'/%3E%3C/svg%3E");mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6-5.3-3-5.3 3 1.2-6L3.4 9.3l6-.7z'/%3E%3C/svg%3E")}
+`;document.head.appendChild(st);}
+try{window.__EF33={all:ef33All,pick:ef33Pick};}catch(e){}
+
+// ===== perf35.js (v0.22.35): screens that took long to open =====
+// Asked: "some screens are taking extra long too load". Measured on a 390x844 page (docs/handoff-v0111.md, 0.22.35): the Bestiary 750 ms,
+// the Smithy's Shop 390, the Codex 320, Party 260 on a desktop CPU, several times that on a phone. Where it went:
+//  1 pictures. A screen's sprites and icons are painted to canvases and turned into data URLs the first time they are shown (cvURL): the
+//    Bestiary paints 241 monsters before it can show one. Now the first P35.eager of a screen are painted at once and the rest get a
+//    one pixel placeholder and are painted over the next frames (P35.ms per frame), in page order. Nothing changes once a picture is cached.
+//  2 the max temper lines that shops stopped showing in 0.22.32 were still worked out for every piece and hero (bestTag, upgMax).
+//  3 long shop lists: rows off screen are not laid out or painted until they scroll near (content-visibility), and the phone menu and shop
+//    passes no longer measure the page inside the render (menus29.js, shops31.js).
+const P35={eager:16,ms:9,q:[],on:0,left:0,off:false,ph:'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'};
+function p35NoMax(){try{return !!(V&&V.modal&&(V.modal.type==='smithy'||V.modal.type==='workshop'));}catch(e){return false;}}
+{const u0=upgMax;upgMax=function(){return p35NoMax()?'':u0.apply(this,arguments);};}
+// ----- 1 pictures painted after the screen is up -----
+{const cu0=cvURL;cvURL=function(key,fn){if(!P35.on||P35.off)return cu0.apply(this,arguments);
+  if(URL_CACHE[key]||URL_CACHE[key+'#ch15'])return cu0.apply(this,arguments);
+  if(P35.left>0){P35.left--;return cu0.apply(this,arguments);}
+  const i=P35.q.push({key,fn})-1;return P35.ph+'#lz'+i;};
+ P35.real=function(i){const o=P35.q[i];if(!o)return null;try{return cu0.call(null,o.key,o.fn);}catch(e){return null;}};}
+HOOK.wrap('vModal','perf35','pictures not yet painted are left for the next frames',function(next,...a){if(P35.off||P35.on)return next(...a);P35.on=1;P35.left=P35.eager;P35.q=[];P35.gen=(P35.gen||0)+1;
+  try{return next(...a);}finally{P35.on=0;}});
+function p35Fill(gen){try{if(gen!==P35.gen)return;const md=document.getElementById('modal');if(!md)return;const t0=performance.now();
+  const L=md.querySelectorAll('img[src*="#lz"]');let more=false;
+  for(const im of L){if(performance.now()-t0>P35.ms){more=true;break;}const m=/#lz(\d+)$/.exec(im.getAttribute('src')||'');if(!m)continue;const u=P35.real(+m[1]);if(u)im.src=u;else im.removeAttribute('src');}
+  if(!more){const S=md.querySelectorAll('[style*="#lz"]');for(const el of S){if(performance.now()-t0>P35.ms*2){more=true;break;}
+      el.setAttribute('style',el.getAttribute('style').replace(/data:image\/gif;base64,[A-Za-z0-9+/=]+#lz(\d+)/g,(x,i)=>P35.real(+i)||x.replace(/#lz\d+/,'')));}}
+  if(more)requestAnimationFrame(()=>p35Fill(gen));}catch(e){P35.err=String(e&&e.message||e);}}
+HOOK.after('render','perf35','paint the pictures that were left',function(){try{if(P35.q.length){const g=P35.gen;requestAnimationFrame(()=>p35Fill(g));}}catch(e){}});
+{const st=document.createElement('style');st.id='p35css';st.textContent='#modal .panel:has(>.shopnav) .rows>.row{content-visibility:auto;contain-intrinsic-size:auto 130px}';document.head.appendChild(st);}
+try{window.__P35={P35,fill:()=>p35Fill(P35.gen)};}catch(e){}
 
 window.__A={walkable,ceInit,tvSlots,genQuests,STARTERS,starterDraw,ECON,AUTO_NERF,rebuildBase,detLive,REACT,skEls,packContents,miniFor,AUTO_REW,ENC_RATE,ENC_MIN_STEPS,detNote,classSkills,stickCount,bestAll,calcStats,lookKey,vTemper,storyEchoUp,leaveDungeon,win,ldApply,genFort,caveOk,enterCave,siteHasMini,openChest,nextDlg,WS,mapIcoRects,roamSpawn,roamInterior,roamSees,mapTargets,DIRV,tileAt,STAGE_LV,autoBan,rollWeather,guardianDef,mapIssues,mapEntry,syncPools,bovAt,calFxAt,realmAt,REALMS,BOV,CAL_FX,overlayGuide,liftOverlay,drawGearIcon,gearIcon,itemIcon,RAW,sigKind,sigGid,personalDone,heroLook,hasSignature,LEGEND_IDS,facDirty,facCount,facRank,facRep,FACB,FAC,finishBattle,npcWords,npcHints,npcPool,titleMake,titleAdvance,TTS,placeAt,wkwUpdate,innSpot,getMap,monURL,enterVia,applyBossTheme,BTHEME,resetMaps,rebuildBase,shopStock,gearDesc,calcStats,gearMigrate,CLS_WPN,CLS_ARM,WPERK,WT_NAME,equipWhy,lootBase,GEAR,canEquip,gearOf,perkNote,FAM_MAT_V35,fbDraft,META:{get best(){return META.best},get codex(){return META.codex},get q(){return META.q}},saveMeta,OFF,offPending,offFlush,PROFILE,profileSync,codexSee,getMap,placeAt,interact,sanctumOpen,riftKeys,echoKeys,BONDS,bondKey,wkwUpdate,inTown,WS,LC,lsort,bestParty,fsCast,fsSkills,ldApply,MON,registerTamed,stickPower,stickCount,autoOne,planGear,bestTag,gainersFor,compGainFor,refresh,fitsFor,canEquip,gearOf,queueNewGear,ARENA,fxDur,banDur,stageTags,autoSwitchPick,layoutBattle,newChar,calcStats,limitSkill,limitTier,canStuck,dunReachable,LV_CAP,addXp,echoSpec,bossLvFor,fx,MON,log,effInfo,tierOf,perkOf,quirkDef,forgeCost,buyPlan,vJourney,modalBack,partySlots,limitOpen,town2Reached,skillKnown,known,classSkills,paceMigrate,unpackG,packG,makeEnemy,QUIRK,arrive,enterDungeon,wkwUpdate,useTravel,travelWhyNot,porkFlee,porkBlocked,encTile,campRest,buyPart,partLeft,alchStock,GAME_VERSION,CHANGELOG,ITEMS,tavernOffers,tavernPool,recruitFit,partyNeeds,vNext,CHALL,innSpot,RECIPES,MATS,FB,fbContext,REDEEM,legendJoin,legendQ,genQuests,dynActors,convInit,PROFILE,profileSync,checkArchive,GPOOL,FPOOL,guardianDef,saveMeta,archiveSkills,get G(){return G;},set G(v){G=v;},get B(){return B;},get V(){return V;},get META(){return META;},WS,ACT,render,newGame,placeAt,startBattle,autoTurn,advance,finishBattle,getMap,innSpot,setPause:p=>{PAUSE=p;},autoCfg,worldInputDir,inputSources,battleFrame,battleTheme,STS,MAPS,mapIssues,healMap,mimicReward,dropChest,interact,worldDraw,TPL,ZONES,ZS,newChar,recruit,saveGame,resetMaps,dynActors,tileAt,BV,refresh,genBounties,genQuests,vStarter,heroCard,heroURL,iconURL,masteryLine,AU,buildTrack,tone,noiseHit,MIDI,sfx,audioVol};
 ['heroRoles','SOLID','WEATHER','WX_BASE','weatherFX','superGuide','recruitCost','ceStart','ceStep','ceInit','cePool','wxList','SUPER_TABLE','superOk','facRank','facRep','facInit','facCount','facCredit','FAC','FMIS','facMissionList','facProg','tyOf','facSync','facMul','facBest','worldPlan','caveReward','enterCave','leaveCave','leaveDungeon','buildCaveMap','worldGraph','openWorldMap','sigReport','SIG_NAMES','starterDraw','ITEM_TIERS','gTierIdx','tierChip','gearIcon','starterSlots','STARTERS','CLK_LEN','CLK_PH','clockPhase','wxInfoBody','recipeOrder','recipeGain','recipeReady','recipeClose','effOf','calcDamage','healsUndead','storyEchoUp','riftKeys','echoDef','efCost','autoLocked','bossFightKey','learnScanAll','isSeen','mapMarks','genSub','subOK','subReq','ensureSub','inSub','tvSlots','tvInit','tvLeft','tvEvent','tvNextText','tvPool','tvDue','tvShuffle','mTavern','hireOK','TV_CAP','TV_CD','POOL_IDS','natPool','natOf','natRoll','NATURES','natInfo','natRerollCost','natChooseCost','NAT_CLASS','iconURL','seenOf','mapIcoDraw','drawMini','MAPCV','revealAround','fxLayer','numDur','compBonusText','compPerk','checkPhase','win','unitBox','LNQ','challVisible','challEligible','challState','isMimic','migrateCompanions','canSummon','summonComp','compOf','clockPhase','tickClock','isNight','rollWeather','wxStep','nightPool','encounterFoes','restAll','tameElite','openChest','rerollTavern','bestAll','gearTier','SV','svCheck','svFlush','svInit','svPush','svPull','svScan','svParse','svBackup','svPack','svUnpack','svProg','svCloudList','svDelDoc','svGet','svCap','slotState','slotKey','svDecode','SV_CH','svStatus','svSlotRaw','svLoad','loadRaw','svHash','svIdx'].forEach(k=>{try{Object.defineProperty(window.__A,k,{get:()=>eval(k)});}catch(e){}});

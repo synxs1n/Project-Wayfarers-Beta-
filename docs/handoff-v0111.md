@@ -821,3 +821,24 @@ Asked after a mock-up: "shop menu updates are good, initiate the changes".
 - ui.js battle skill list: no `dlIco` before the name (element icons only).
 - shops31.js: `.mxt` hidden in every panel with a `.shopnav`.
 - Test: tools/chrome/v216a.js.
+
+## 0.22.33: the Echoforge has sections (echo33.js)
+
+- The Echoforge is the Smithy tab `echo` (only inside the Echo Sanctum: `efTabOn`). `m3Secs` is wrapped for it: all / party / ready / weapons / armor with counts (`ef33All`, `ef33Pick`).
+- `vEchoforge` is wrapped: it takes the rows echo11.js built out of the HTML by their Forge button (`data-arg`), filters and orders them (can forge, then wearable by the six), and folds the note into `<details class="ef33about">` (open until `META.ef33seen`). If the row count does not match it returns the page untouched.
+
+## 0.22.34: the new battle layout on every screen but a sideways phone (battle27.js)
+
+- `battleMode` is wrapped: 'tall' whenever `b27Fits()` (not off, and upright or at least `B27.minLandH` 560 px high). So the old wide layout only runs on a short landscape screen or with `aurelis-b27off`.
+- `b27Sc`: upright `floor(w/176*4)/4` (2.25 on a phone, 4.5 on an 820 px tablet); sideways the largest of `w/320` and `(vh-230)/150`, 2 to 6. Class `b27land` when sideways.
+- At 700 px and wider: the four commands in one row, the Party & foes sheet is a right hand drawer.
+- Phones: command head 34 px, commands 44 px (stage 361 px of 640, was 343).
+- Many older battle tests are about the classic wide layout: they set `aurelis-b27off` (see the list in the commit).
+
+## 0.22.35: load times (perf35.js)
+
+- Measured with a CDP profile (scratchpad prof.js): Bestiary 77% in `monURL` (241 sprites painted before the first is shown), Smithy shop: `upgOpts`/`m3GearRow` plus forced layouts from `window.innerWidth` and `offsetWidth` in the menus29/shops31 passes, and max temper lines that are hidden since 0.22.32.
+- `cvURL` is wrapped: inside `vModal`, after `P35.eager` (16) uncached pictures, a one pixel GIF with `#lz<n>` is returned and `p35Fill` paints the real ones over the next frames (`P35.ms` 9 per frame) into `img[src*="#lz"]` and `[style*="#lz"]`. `P35.off=true` turns it off. A test that reads an image right after render must wait or switch it off.
+- `p35NoMax()` (smithy, workshop): `bestTag`'s max temper line and `upgMax` are skipped.
+- `content-visibility:auto` on shop rows.
+- Numbers on the dev container, 390x844: Bestiary 750 to 142 ms, Codex 324 to 138, Smithy shop 390 to 180, Forge 244 to 105.

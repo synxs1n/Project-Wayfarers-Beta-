@@ -12,7 +12,7 @@ const S31={off:false};
 function s31Pass(){try{const md=document.getElementById('modal');if(!md)return;const pn=md.querySelector('.panel'),sn=pn&&pn.querySelector(':scope>.shopnav');if(!pn||!sn)return;
   const on=m29On()&&!S31.off,ov=pn.parentNode;pn.classList.toggle('m29',on);pn.classList.toggle('s31',on);if(ov&&ov.classList)ov.classList.toggle('m29m',on);if(!on||pn.dataset.s31)return;pn.dataset.s31='1';
   pn.classList.toggle('s31nt',!sn.querySelector(':scope>.stabs'));try{pn.dataset.s31t=(V.modal&&V.modal.type)||'';}catch(e){}
-  const ms=sn.querySelector(':scope>.ssec'),so=ms&&ms.querySelector('.chip.on');if(so)ms.scrollLeft=Math.max(0,so.offsetLeft-(ms.clientWidth-so.offsetWidth)/2);
+  const ms=sn.querySelector(':scope>.ssec'),so=ms&&ms.querySelector('.chip.on');if(so)requestAnimationFrame(()=>{try{ms.scrollLeft=Math.max(0,so.offsetLeft-(ms.clientWidth-so.offsetWidth)/2);}catch(e){}});
 }catch(e){S31.err=String(e&&e.message||e);}}
 try{const md=document.getElementById('modal');if(md)new MutationObserver(s31Pass).observe(md,{childList:true});}catch(e){}
 HOOK.after('render','shops31','the phone shop pass',function(){s31Pass();});

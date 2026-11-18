@@ -70,7 +70,7 @@ const E11={item:false,on:false,all:false};
 {const sm0=m3Smithy;m3Smithy=function(m){let h=sm0.apply(this,arguments);try{/* v0.22.17: menus3.js says it itself (charms sell here now) */}catch(e){}return h;};}
 
 // ----- 4) best in slot at max temper -----
-{const bt1=bestTag;bestTag=function(id){let h=bt1.apply(this,arguments);try{if(!G||G.daily)return h;const g=gearOf(id);if(!g||g.stick||g.relic)return h;
+{const bt1=bestTag;bestTag=function(id){let h=bt1.apply(this,arguments);try{if(!G||G.daily)return h;if(typeof p35NoMax==='function'&&p35NoMax())return h;/* 0.22.35: shops no longer show the max temper line (0.22.32), so it is not worked out there either */const g=gearOf(id);if(!g||g.stick||g.relic)return h;
   const L=partyChars().filter(c=>canEquip(c,id)).map(c=>({c,g:maxGainFor(c,id)})).filter(o=>maxBeats(o.g)).sort((a,b)=>b.g.pct-a.g.pct);if(!L.length)return h;
   if(!gainersFor(id).length)h=h.replace('Would not help anyone in your active party.','Not better today, but worth tempering.');
   h+=`<small class="mxt"><b>At max temper (+${TEMPER_TOP}):</b> ${L.slice(0,3).map(o=>`${esc(o.c.name)} ${esc(maxDeltaTxt(o.c,id,false)||'better')} <em class="up">+${Math.max(1,Math.round(o.g.pct*100))}%</em>`).join('; ')}</small>`;}catch(e){}return h;};}
