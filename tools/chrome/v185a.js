@@ -16,7 +16,7 @@ const SH=process.env.SHOTDIR;
 (async()=>{let last=null;
 // ---------- 1: learn levels ----------
 {const H=await open({w:390,h:844,pre:PRE()});const {ev}=H;last=H;
- const kt=await ev(()=>{const S=__S12,T=S.TPL,M=__M14,A=__A,bad=[],lasts={},gaps={};let n=0,limits=null;
+ const kt=await ev(()=>{try{window.__R25.R25.off=true;}catch(e){}/* kits of 14; a worn personal relic adds a fifteenth skill (v209a, v210a) */const S=__S12,T=S.TPL,M=__M14,A=__A,bad=[],lasts={},gaps={};let n=0,limits=null;
   Object.keys(T).forEach(id=>{const t=T[id];if(t.mon||!S.CLS[t.cls])return;n++;const k=S.kit(t).slice().sort((a,b)=>a.lv-b.lv),L=k.map(s=>s.lv);
    const ord=((q=>q.every((s,i)=>!i||s.lv12>=q[i-1].lv12))(k.filter(s=>s.lv12!=null&&!/^sg_/.test(s.id))));const probs=M.check(L);if(!ord)probs.push('order');if(k.length!==14)probs.push('count '+k.length);/* 14 since roster17.js; the order is that of the first 12 without the signature (it sits at 18) */
    const last=L[L.length-1],gap=Math.max(...L.slice(1).map((x,i)=>x-L[i]));lasts[last]=(lasts[last]||0)+1;gaps[gap]=(gaps[gap]||0)+1;if(probs.length)bad.push(id+':'+probs.join('/')+':'+L.join(','));});

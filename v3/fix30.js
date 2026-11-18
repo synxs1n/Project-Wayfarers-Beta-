@@ -16,5 +16,8 @@ function f30BossFix(){try{if(!G||!G.run||G.daily)return;const R=G.run,used=()=>n
 {const b0=bossKeyFor;bossKeyFor=function(s){f30BossFix();return b0.apply(this,arguments);};}
 HOOK.xform('REALM_DONE','fix30','the realm\'s story Echo is part of its list',function(L,s){try{if(!L||!G||G.daily||typeof guardianDef!=='function')return L;const d=guardianDef(bossKeyFor(s));
   if(d&&!L.some(o=>o.k==='echo'))L.push({k:'echo',n:'Echo of '+d.n,done:!!(G.echoStory||{})[s]});}catch(e){}return L;});
+//  4 0.22.28 made a Legendary who joins a full six ask where to stand. Nikaris joins inside his fight and then plays a scene on the field
+//    (G.l18meet, legends18.js): the question waited for the same moment and got there first, so the scene never played. It waits for the scene.
+{const a0=r3Ask;r3Ask=function(){try{if(G&&G.l18meet)return false;}catch(e){}return a0.apply(this,arguments);};}
 {const st=document.createElement('style');st.id='f30css';st.textContent='@media (min-width:900px){#mmap.mmap{width:196px!important;height:147px!important}}';document.head.appendChild(st);}
 try{window.__F30={fix:f30BossFix};}catch(e){}

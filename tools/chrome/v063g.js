@@ -55,7 +55,7 @@ chk('a maxed bond says so',b.g25.done===1);
 chk('the hero sheet shows the goal from the real counter',b.sheet.some(s=>/^2 more wins side by side until the campfire talk/.test(s))||b.sheet);
 chk('the Bonds page lists the pair with its goal',b.bondsRows>=1&&/more wins side by side/.test(b.bondsText||'')||[b.bondsRows,b.bondsText]);
 chk('a toast says a campfire talk is ready',/Campfire talk ready/.test(b.toast)&&b.talkN>=1||b.toast);
-chk('the Party tab has a Bonds button',b.partyBtn===true);
+chk('the Party tab has no Bonds button of its own (0.22.24: Bonds is listed once, as a sub tab)',b.partyBtn!==true);
 
 // ---------- 3. camp ----------
 const c=await ev(()=>{const A=__A,X=__V063,G=A.G,o={};A.V.modal=null;G.stage=2;
