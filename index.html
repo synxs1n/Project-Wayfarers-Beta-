@@ -2125,7 +2125,7 @@ html:not(.flat) .battle.b3 .bline .b4mo .b4bar{box-shadow:inset 0 0 0 1px #000,0
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.22.43";const APP_BUILD="71e5f1bcb6fc";
+(function(){const APP_VER="0.22.44";const APP_BUILD="92a821b715aa";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2906,7 +2906,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.22.43";const APP_BUILD="71e5f1bcb6fc";
+const APP_VER="0.22.44";const APP_BUILD="92a821b715aa";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2914,6 +2914,7 @@ const APP_VER="0.22.43";const APP_BUILD="71e5f1bcb6fc";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.22.44',['Skill levels are back to the hard rule: the Primers and Detonators that 0.22.43 moved to level 1 are learned at their own levels again. Reactions still work from the first realm, as soon as a wayfarer has the skills for them.']],
  ['Beta v0.22.43',['Prime and detonate from the first battle: every wayfarer now knows their first Primer and their first Detonator from level 1 (they used to arrive between level 6 and 14). Nothing else in the kits moved and no save loses a skill.']],
  ['Beta v0.22.42',['Primers now Prime foes from the very first realm of a new journey (they used to be plain hits until the second realm, so the Primer tag looked broken to new players).','In battle the skill and item lists open as a taller panel over the lower part of the stage (in columns on big screens), so the skills are no longer cut off.']],
  ['Beta v0.22.41',['The Save button is back in the top bar of the phone menu (it is still under More as well).']],
@@ -39299,23 +39300,6 @@ document.addEventListener('pointerup',e=>{try{if(N40.off||(e.pointerType!=='mous
 @media (prefers-reduced-motion:reduce){.n40::before{animation-duration:.9s}}
 `;document.head.appendChild(st);}
 try{window.__N40={N40,project:n40Project};}catch(e){}
-
-// ===== prime43.js (v0.22.43): prime and detonate from the first battle =====
-// 0.22.42 opened reactions in the first realm, but most kits only learned their first Primer at level 6 to 14 and their first Detonator
-// at 6 to 14 as well, so a fresh party could rarely do both. Here every hero knows their first Primer and their first Detonator from
-// level 1 (a Dual art counts as either). Only skills that were learned by level P43.max move, so a late finisher stays late (Dist's
-// Undercut at 42, Nikaris's Nightbloom Arrow at 18). Levels only ever go down, so no save loses a skill. The level a skill had before
-// stays on it as s.lv43. Off switch for tests: the stored flag aurelis-p43off (pw.js CLASSIC). Test: tools/chrome/v224a.js.
-const P43={max:14,off:(()=>{try{return localStorage.getItem('aurelis-p43off')==='1';}catch(e){return false;}})(),n:0};/* the stored flag is for tests that check the plain learn schedule */
-function p43Role(s,role){return !!s&&!s.relic&&(s.role===role||!!s.combo)&&(typeof skHitsFoe!=='function'||skHitsFoe(s));}
-function p43Pass(L){let ch=0;['primer','det'].forEach(role=>{const C=L.filter(s=>p43Role(s,role));if(!C.length)return;
-    const f=C.reduce((a,b)=>((b.lv43!=null?b.lv43:b.lv)<(a.lv43!=null?a.lv43:a.lv)?b:a));
-    if(f.lv43==null)f.lv43=f.lv;if(f.lv43<=P43.max&&f.lv>1){f.lv=1;ch++;P43.n++;}});return ch;}
-HOOK.xform('classSkills','prime43','the first Primer and the first Detonator are known from level 1',function(L,t){try{if(P43.off||!L||!t||t.mon||!L.length)return L;
-    p43Pass(L);let ok=true,last=-1;for(let i=0;i<L.length;i++){const s=L[i];if(!s||s.relic)continue;if(s.lv<last){ok=false;break;}last=s.lv;}
-    if(ok)return L;const K=L.filter(s=>s&&!s.relic).map((s,i)=>[s,i]).sort((a,b)=>a[0].lv-b[0].lv||a[1]-b[1]).map(x=>x[0]);return K.concat(L.filter(s=>s&&s.relic));
-  }catch(e){P43.err=String(e&&e.message||e);}return L;});
-try{window.__P43=P43;}catch(e){}
 
 window.__A={walkable,ceInit,tvSlots,genQuests,STARTERS,starterDraw,ECON,AUTO_NERF,rebuildBase,detLive,REACT,skEls,packContents,miniFor,AUTO_REW,ENC_RATE,ENC_MIN_STEPS,detNote,classSkills,stickCount,bestAll,calcStats,lookKey,vTemper,storyEchoUp,leaveDungeon,win,ldApply,genFort,caveOk,enterCave,siteHasMini,openChest,nextDlg,WS,mapIcoRects,roamSpawn,roamInterior,roamSees,mapTargets,DIRV,tileAt,STAGE_LV,autoBan,rollWeather,guardianDef,mapIssues,mapEntry,syncPools,bovAt,calFxAt,realmAt,REALMS,BOV,CAL_FX,overlayGuide,liftOverlay,drawGearIcon,gearIcon,itemIcon,RAW,sigKind,sigGid,personalDone,heroLook,hasSignature,LEGEND_IDS,facDirty,facCount,facRank,facRep,FACB,FAC,finishBattle,npcWords,npcHints,npcPool,titleMake,titleAdvance,TTS,placeAt,wkwUpdate,innSpot,getMap,monURL,enterVia,applyBossTheme,BTHEME,resetMaps,rebuildBase,shopStock,gearDesc,calcStats,gearMigrate,CLS_WPN,CLS_ARM,WPERK,WT_NAME,equipWhy,lootBase,GEAR,canEquip,gearOf,perkNote,FAM_MAT_V35,fbDraft,META:{get best(){return META.best},get codex(){return META.codex},get q(){return META.q}},saveMeta,OFF,offPending,offFlush,PROFILE,profileSync,codexSee,getMap,placeAt,interact,sanctumOpen,riftKeys,echoKeys,BONDS,bondKey,wkwUpdate,inTown,WS,LC,lsort,bestParty,fsCast,fsSkills,ldApply,MON,registerTamed,stickPower,stickCount,autoOne,planGear,bestTag,gainersFor,compGainFor,refresh,fitsFor,canEquip,gearOf,queueNewGear,ARENA,fxDur,banDur,stageTags,autoSwitchPick,layoutBattle,newChar,calcStats,limitSkill,limitTier,canStuck,dunReachable,LV_CAP,addXp,echoSpec,bossLvFor,fx,MON,log,effInfo,tierOf,perkOf,quirkDef,forgeCost,buyPlan,vJourney,modalBack,partySlots,limitOpen,town2Reached,skillKnown,known,classSkills,paceMigrate,unpackG,packG,makeEnemy,QUIRK,arrive,enterDungeon,wkwUpdate,useTravel,travelWhyNot,porkFlee,porkBlocked,encTile,campRest,buyPart,partLeft,alchStock,GAME_VERSION,CHANGELOG,ITEMS,tavernOffers,tavernPool,recruitFit,partyNeeds,vNext,CHALL,innSpot,RECIPES,MATS,FB,fbContext,REDEEM,legendJoin,legendQ,genQuests,dynActors,convInit,PROFILE,profileSync,checkArchive,GPOOL,FPOOL,guardianDef,saveMeta,archiveSkills,get G(){return G;},set G(v){G=v;},get B(){return B;},get V(){return V;},get META(){return META;},WS,ACT,render,newGame,placeAt,startBattle,autoTurn,advance,finishBattle,getMap,innSpot,setPause:p=>{PAUSE=p;},autoCfg,worldInputDir,inputSources,battleFrame,battleTheme,STS,MAPS,mapIssues,healMap,mimicReward,dropChest,interact,worldDraw,TPL,ZONES,ZS,newChar,recruit,saveGame,resetMaps,dynActors,tileAt,BV,refresh,genBounties,genQuests,vStarter,heroCard,heroURL,iconURL,masteryLine,AU,buildTrack,tone,noiseHit,MIDI,sfx,audioVol};
 ['heroRoles','SOLID','WEATHER','WX_BASE','weatherFX','superGuide','recruitCost','ceStart','ceStep','ceInit','cePool','wxList','SUPER_TABLE','superOk','facRank','facRep','facInit','facCount','facCredit','FAC','FMIS','facMissionList','facProg','tyOf','facSync','facMul','facBest','worldPlan','caveReward','enterCave','leaveCave','leaveDungeon','buildCaveMap','worldGraph','openWorldMap','sigReport','SIG_NAMES','starterDraw','ITEM_TIERS','gTierIdx','tierChip','gearIcon','starterSlots','STARTERS','CLK_LEN','CLK_PH','clockPhase','wxInfoBody','recipeOrder','recipeGain','recipeReady','recipeClose','effOf','calcDamage','healsUndead','storyEchoUp','riftKeys','echoDef','efCost','autoLocked','bossFightKey','learnScanAll','isSeen','mapMarks','genSub','subOK','subReq','ensureSub','inSub','tvSlots','tvInit','tvLeft','tvEvent','tvNextText','tvPool','tvDue','tvShuffle','mTavern','hireOK','TV_CAP','TV_CD','POOL_IDS','natPool','natOf','natRoll','NATURES','natInfo','natRerollCost','natChooseCost','NAT_CLASS','iconURL','seenOf','mapIcoDraw','drawMini','MAPCV','revealAround','fxLayer','numDur','compBonusText','compPerk','checkPhase','win','unitBox','LNQ','challVisible','challEligible','challState','isMimic','migrateCompanions','canSummon','summonComp','compOf','clockPhase','tickClock','isNight','rollWeather','wxStep','nightPool','encounterFoes','restAll','tameElite','openChest','rerollTavern','bestAll','gearTier','SV','svCheck','svFlush','svInit','svPush','svPull','svScan','svParse','svBackup','svPack','svUnpack','svProg','svCloudList','svDelDoc','svGet','svCap','slotState','slotKey','svDecode','SV_CH','svStatus','svSlotRaw','svLoad','loadRaw','svHash','svIdx'].forEach(k=>{try{Object.defineProperty(window.__A,k,{get:()=>eval(k)});}catch(e){}});

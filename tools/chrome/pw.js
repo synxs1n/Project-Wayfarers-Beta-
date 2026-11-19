@@ -37,7 +37,7 @@ async function frameFactor(browser){const c=await browser.newContext({viewport:{
 // Tests written for a layout or a behaviour that a later version made optional keep it through a stored flag, set after the test's own
 // startup script: b27 = the classic battle layout (battle27.js), m29 = the classic menu and shop frame (menus29.js, shops31.js),
 // p35 = pictures painted at once (perf35.js). The current behaviour has its own tests (v211a, v213a, v215a).
-const CLASSIC={v198a:['b27'],v062a:['b27'],v095b:['b27'],v196a:['b27'],smithy2:['p35','m29'],v158a:['b27'],v152a:['b27'],v194a:['p43'],v191a:['p43'],v185a:['p43'],v189a:['p43']};
+const CLASSIC={v198a:['b27'],v062a:['b27'],v095b:['b27'],v196a:['b27'],smithy2:['p35','m29'],v158a:['b27'],v152a:['b27']};
 function classicPre(){try{const k=path.basename(process.argv[1]||'','.js');return (CLASSIC[k]||[]).map(f=>`try{localStorage.setItem('aurelis-${f}off','1');}catch(e){}`).join('');}catch(e){return '';}}
 async function open(opt={}){
   // opt.browser: share one browser (each open still gets its own context, so its own localStorage: a second "device")
