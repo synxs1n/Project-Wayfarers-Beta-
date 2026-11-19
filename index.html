@@ -2125,7 +2125,7 @@ html:not(.flat) .battle.b3 .bline .b4mo .b4bar{box-shadow:inset 0 0 0 1px #000,0
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.22.40";const APP_BUILD="1b848515af59";
+(function(){const APP_VER="0.22.41";const APP_BUILD="9fe4019c529d";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2906,7 +2906,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.22.40";const APP_BUILD="1b848515af59";
+const APP_VER="0.22.41";const APP_BUILD="9fe4019c529d";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2914,6 +2914,7 @@ const APP_VER="0.22.40";const APP_BUILD="1b848515af59";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.22.41',['The Save button is back in the top bar of the phone menu (it is still under More as well).']],
  ['Beta v0.22.40',['Every dual type hero now has a Primer, a Detonator, an early skill and a late skill for each of their two elements (a Dual art with a role counts for both). Zephra, Isolde and Verbena had two skills trade places to get there.','A mouse click to walk shows a ring where you clicked and a gold diamond on the tile the party walks to.']],
  ['Beta v0.22.39',['Auto battle uses items properly: Smelling Salts before Phoenix Feathers, the draught that fits the wound, Mana Tonics and Sage Brew when a hero runs dry, Sacred Ash on a Curse, a Bandage Roll on a Wound, a Remedy on ailments.','Auto settings has a new Use items switch: turn it off and auto never spends an item.']],
  ['Beta v0.22.38',['Upgrade suggestions put a hero\'s own relic first, and stop suggesting other gear for a slot once the relic is worn there (a shop piece used to be suggested, then the relic right after).']],
@@ -38842,7 +38843,7 @@ try{window.__B27={B27,on:b27On};}catch(e){}
 // ===== menus29.js (v0.22.29): the main menu on phones: content first, the sections under the thumb =====
 // Asked after a mock-up (scratchpad only): "Menus look good let's apply the update". On a 360x640 phone the frame, the Menu title, the Save
 // row, two rows of sections, two rows of sub tabs and the tool buttons took the first 500 px. Only on screens up to M29.maxW px wide:
-//  1 the menu fills the screen; one 46 px bar names the section and shows the save state, gold and Close
+//  1 the menu fills the screen; one 46 px bar names the section and holds Save, the save state, gold and Close
 //  2 the sections are a bar at the bottom (drawn icons, not emoji: crossed swords, an adventurer's pack with a bedroll, flap and buckle, a scroll, a compass): Party, Backpack, Quests (with a count of rewards ready), Map, More (Records, Guides, Settings, Save)
 //  3 sub tabs and quest filters are one row that scrolls sideways, never two rows; the sub tabs stay in view while the page scrolls
 //  4 Party: the tools are one row, a hero card has Sheet and Equip side by side and no XP bar (it is on the sheet), so the six fit on screen;
@@ -38865,6 +38866,7 @@ function m29Pass(){try{const md=document.getElementById('modal');if(!md)return;c
   // 1 the bar
   const h=pn.querySelector(':scope>.menuh'),act=mg.querySelector('.chip.on'),lab=act?(act.textContent||'').trim():'Menu';
   if(h){for(const n of [...h.childNodes])if(n.nodeType===3)n.remove();const t=document.createElement('b');t.className='m29t';t.textContent=lab;h.insertBefore(t,h.firstChild);
+    const sm=h.querySelector('.savepin small');if(sm){sm.title=sm.textContent;sm.textContent=sm.textContent.replace(/^Slot \d+\s*·\s*/,'');}/* the slot is on the Save screen; here the room goes to the Save button */
     const g=document.createElement('span');g.className='m29g nums';g.innerHTML='<i>◉</i> '+((G&&G.gold)||0).toLocaleString();h.appendChild(g);}
   // 2 the bottom bar: a count on Quests, and More
   const rd=m29Ready(),qc=mg.querySelector('[data-arg="quests"]');if(rd>0&&qc){const b=document.createElement('span');b.className='m29bd nums';b.textContent=rd;b.setAttribute('aria-label',rd+' rewards ready');qc.appendChild(b);}
@@ -38893,7 +38895,8 @@ window.addEventListener('resize',()=>{try{M29.vw=window.innerWidth;if(V&&V.modal
 .panel.m29>.menuh{position:sticky;top:0;z-index:8;display:flex;align-items:center;gap:8px;height:46px;min-height:46px;margin:0 -10px!important;transform:none;padding:0 54px 0 40px;box-sizing:border-box;background:#0f1830;border:0;border-bottom:1px solid #2a3a60;font-size:1.05rem}
 .panel.m29>.menuh .m29t{font:inherit;color:#ffe9a6;white-space:nowrap}
 .panel.m29>.menuh .savepin{display:flex;align-items:center;min-width:0;flex:0 1 auto;margin:0;padding:0}
-.panel.m29>.menuh .savepin .btn{display:none}
+.panel.m29>.menuh .savepin{gap:6px}
+.panel.m29>.menuh .savepin .btn{display:inline-flex;align-items:center;flex:none;min-width:0;min-height:36px;height:36px;padding:0 9px;font-size:.74rem;white-space:nowrap}/* 0.22.41: asked, "save button should appear on top still in small phone menu" */
 .panel.m29>.menuh .savepin small{font:800 .62rem/1.2 var(--fb);color:#8fe0a0;border:1px solid #2f6a45;border-radius:10px;padding:2px 7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;letter-spacing:0;text-transform:none}
 .panel.m29>.menuh .m29g{margin-left:auto;font:800 .78rem/1 var(--fb);color:#ffd76a;white-space:nowrap;letter-spacing:0}
 .panel.m29>.menuh .m29g i{font-style:normal}

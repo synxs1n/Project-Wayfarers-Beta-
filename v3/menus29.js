@@ -1,7 +1,7 @@
 // ===== menus29.js (v0.22.29): the main menu on phones: content first, the sections under the thumb =====
 // Asked after a mock-up (scratchpad only): "Menus look good let's apply the update". On a 360x640 phone the frame, the Menu title, the Save
 // row, two rows of sections, two rows of sub tabs and the tool buttons took the first 500 px. Only on screens up to M29.maxW px wide:
-//  1 the menu fills the screen; one 46 px bar names the section and shows the save state, gold and Close
+//  1 the menu fills the screen; one 46 px bar names the section and holds Save, the save state, gold and Close
 //  2 the sections are a bar at the bottom (drawn icons, not emoji: crossed swords, an adventurer's pack with a bedroll, flap and buckle, a scroll, a compass): Party, Backpack, Quests (with a count of rewards ready), Map, More (Records, Guides, Settings, Save)
 //  3 sub tabs and quest filters are one row that scrolls sideways, never two rows; the sub tabs stay in view while the page scrolls
 //  4 Party: the tools are one row, a hero card has Sheet and Equip side by side and no XP bar (it is on the sheet), so the six fit on screen;
@@ -24,6 +24,7 @@ function m29Pass(){try{const md=document.getElementById('modal');if(!md)return;c
   // 1 the bar
   const h=pn.querySelector(':scope>.menuh'),act=mg.querySelector('.chip.on'),lab=act?(act.textContent||'').trim():'Menu';
   if(h){for(const n of [...h.childNodes])if(n.nodeType===3)n.remove();const t=document.createElement('b');t.className='m29t';t.textContent=lab;h.insertBefore(t,h.firstChild);
+    const sm=h.querySelector('.savepin small');if(sm){sm.title=sm.textContent;sm.textContent=sm.textContent.replace(/^Slot \d+\s*·\s*/,'');}/* the slot is on the Save screen; here the room goes to the Save button */
     const g=document.createElement('span');g.className='m29g nums';g.innerHTML='<i>◉</i> '+((G&&G.gold)||0).toLocaleString();h.appendChild(g);}
   // 2 the bottom bar: a count on Quests, and More
   const rd=m29Ready(),qc=mg.querySelector('[data-arg="quests"]');if(rd>0&&qc){const b=document.createElement('span');b.className='m29bd nums';b.textContent=rd;b.setAttribute('aria-label',rd+' rewards ready');qc.appendChild(b);}
@@ -52,7 +53,8 @@ window.addEventListener('resize',()=>{try{M29.vw=window.innerWidth;if(V&&V.modal
 .panel.m29>.menuh{position:sticky;top:0;z-index:8;display:flex;align-items:center;gap:8px;height:46px;min-height:46px;margin:0 -10px!important;transform:none;padding:0 54px 0 40px;box-sizing:border-box;background:#0f1830;border:0;border-bottom:1px solid #2a3a60;font-size:1.05rem}
 .panel.m29>.menuh .m29t{font:inherit;color:#ffe9a6;white-space:nowrap}
 .panel.m29>.menuh .savepin{display:flex;align-items:center;min-width:0;flex:0 1 auto;margin:0;padding:0}
-.panel.m29>.menuh .savepin .btn{display:none}
+.panel.m29>.menuh .savepin{gap:6px}
+.panel.m29>.menuh .savepin .btn{display:inline-flex;align-items:center;flex:none;min-width:0;min-height:36px;height:36px;padding:0 9px;font-size:.74rem;white-space:nowrap}/* 0.22.41: asked, "save button should appear on top still in small phone menu" */
 .panel.m29>.menuh .savepin small{font:800 .62rem/1.2 var(--fb);color:#8fe0a0;border:1px solid #2f6a45;border-radius:10px;padding:2px 7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;letter-spacing:0;text-transform:none}
 .panel.m29>.menuh .m29g{margin-left:auto;font:800 .78rem/1 var(--fb);color:#ffd76a;white-space:nowrap;letter-spacing:0}
 .panel.m29>.menuh .m29g i{font-style:normal}
