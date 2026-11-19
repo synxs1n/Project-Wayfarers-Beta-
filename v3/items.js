@@ -130,9 +130,9 @@ const ITEM_TIERS=[
  {n:'Uncommon', c:'#5fcf6a',pip:'◆'},
  {n:'Rare',     c:'#4a9bff',pip:'▲'},
  {n:'Epic',     c:'#b06aff',pip:'■'},
- {n:'Heroic',   c:'#35d6c4',pip:'★'},/* 0.22.32: teal; the gold yellow is the Legendary relics' now, like the Legendary wayfarers */// v0.10.8: was 'Legendary'; that word belongs to the legend heroes only (ui.js)
+ {n:'Heroic',   c:'#ff9838',pip:'★'},/* 0.22.47: ember orange (the owner's pick; it was teal since 0.22.32); the gold yellow is the Legendary relics', like the Legendary wayfarers */// v0.10.8: was 'Legendary'; that word belongs to the legend heroes only (ui.js)
  {n:'Mythic',   c:'#ff6a5a',pip:'✦'},
- {n:'Echoforged',c:'#ffd9a0',c2:'#b48aff',pip:'❂'}];
+ {n:'Echoforged',c:'#c9a6ff',c2:'#7df0e0',pip:'❂'}];/* 0.22.47: the violet of the Echoes (their glow is #b48aff; lifted a little so it does not read as Epic), with the Rift's teal as the second colour of the shimmer. It was a pale gold. */
 const ITEM_TIER_OF={potion:0,remedy:0,porkchop:0,ether:1,hipotion:1,vigor:1,sage:1,tent:1,holywater:2,plume:3,elixir:3};// v0.10.8: Elixir was tier 4 ('Legendary'), a chest staple // consumables
 const STN={hp:'HP',mp:'MP',atk:'ATK',def:'DEF',mag:'MAG',res:'RES',spd:'SPD'};
 // Tempered gear carries a +N suffix: each level adds FORGE_STEP (11%) to its stats.

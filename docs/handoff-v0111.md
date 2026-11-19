@@ -913,3 +913,9 @@ With `b3list` (a `.menu.list` is open) `#bcmd` is `position:fixed` at the bottom
   between party heroes. autoOne too.
 - Prices move during a run (guild rank memo, Union rebate), so the preview's gold can be off by a few coins; the gear is exact.
 - Test: tools/chrome/v225a.js (random states; SEEDS=n). v188a, v050p3a updated. v095m3 and v095m4 already failed before this.
+
+## 0.22.47 (fix47.js)
+- Accept all (nbAcceptAll, facAcceptAll) repeats until no guild mission is open (facMissionList shows the taken ones plus two new ones).
+- Solar Eclipse: f47Eclipse replaces the disc of world3.js, in weatherFX and in weather7.js's W7.old (the map layer is tiled, so nothing may be
+  drawn at a fixed spot); w7Legacy adds a gold rim on the map.
+- Tiers: Heroic #ff9838, Echoforged #c9a6ff / #7df0e0. Test: tools/chrome/v226a.js.
