@@ -68,15 +68,15 @@ const SETUP=`([stage,gold,mats])=>{const A=__A,G=A.G;G.stage=stage;G.cleared=[0,
   if(want('2')){
     // the hand-me-down: a low level warrior in a Rare blade and a high level warrior in a Common one, gold for one Epic weapon
     const hd=await H.ev(()=>{const A=__A,G=A.G;G.stage=3;G.cleared=[true,true,true];G.pcV=1;G.bossWon={0:1};const W=Object.keys(A.TPL).filter(id=>A.TPL[id].cls==='warrior'&&!A.TPL[id].mon&&!(A.LEGEND_IDS||[]).includes(id)).slice(0,2);
-      G.roster={};G.party=[];W.forEach((id,i)=>{const c=G.roster[id]=A.newChar(id,i?34:3,0);c.eq={w:i?'w_blade_0':'w_blade_2',a:'a_mail_3+3',c:null,k:'k_cape_3+3'};G.party.push(id);});
+      G.roster={};G.party=[];W.forEach((id,i)=>{const c=G.roster[id]=A.newChar(id,i?34:3,0);c.eq={w:i?'w_blade_0':'w_blade_2',a:'a_mail_3+3',c:'c_ep0+3',k:'k_cape_3+3'};G.party.push(id);});
       Object.keys(A.MATS).forEach(k=>{G.mats[k]=0;});G.gear=[];G.gold=A.GEAR.w_blade_3.price;Object.values(G.roster).forEach(A.refresh);A.V.modal={type:'smithy',tab:'shop',sec:'all'};A.render();
       const one=window.__G16.plan().picks.map(p=>p.cid+':'+p.id+':'+p.src);A.ACT.p3Smith();const P=A.V.modal.plan,all=P.picks.map(p=>p.cid+':'+p.id+':'+p.src+'@'+p.round);
       const eq0=W.map(id=>G.roster[id].eq.w),gear0=G.gear.slice(),gold0=G.gold;A.ACT.p3SmithGo();const m=A.V.modal,eq1=W.map(id=>G.roster[id].eq.w),again=window.__G16.plan().picks.length;
       const res={one,all,rounds:P.rounds,type:m&&m.type,p3:m&&m.p3,eq0,eq1,again,W,rows:(m.rows||[]).length};
       A.ACT.autoEqUndo();res.undo=W.map(id=>G.roster[id].eq.w);res.pack=G.gear.slice().sort();res.count=G.gear.length+W.reduce((s,id)=>s+Object.values(G.roster[id].eq).filter(Boolean).length,0);return res;});
-    chk(`2 hand-me-down: a single round plans ${hd.one.length} step (${hd.one.join(', ')}), the whole plan ${hd.all.length} in ${hd.rounds} rounds (${hd.all.join(', ')})`,hd.one.length===1&&hd.all.length===2&&hd.rounds===2&&/:pack@2$/.test(hd.all[1])||JSON.stringify(hd));
+    chk(`2 hand-me-down: a single round plans ${hd.one.length} step (${hd.one.join(', ')}), the whole plan ${hd.all.length} in ${hd.rounds} rounds (${hd.all.join(', ')})`,hd.all.length===2&&/:buy@1$/.test(hd.all[0])&&/:pack@\d$/.test(hd.all[1])||JSON.stringify(hd));/* 0.22.46 (gear46.js): the hand-me-down is taken in the same walk, as soon as the old blade is in the pack; both wear a charm here so the one purse goes to the weapon */
     chk(`2 hand-me-down: one press and both wear the better blade (${hd.eq0.join(', ')} -> ${hd.eq1.join(', ')}), a plan right after finds nothing (${hd.again})`,hd.type==='autoEq'&&hd.eq1[1]==='w_blade_2'&&hd.eq1[0]!=='w_blade_2'&&hd.again===0&&hd.rows===2||JSON.stringify(hd));
-    chk(`2 hand-me-down: Undo puts both back in what they wore and keeps what was bought in the pack (${hd.undo.join(', ')}; pack ${hd.pack.join(', ')})`,hd.undo[0]==='w_blade_2'&&hd.undo[1]==='w_blade_0'&&hd.pack.length===1&&hd.count===7||JSON.stringify(hd));
+    chk(`2 hand-me-down: Undo puts both back in what they wore and keeps what was bought in the pack (${hd.undo.join(', ')}; pack ${hd.pack.join(', ')})`,hd.undo[0]==='w_blade_2'&&hd.undo[1]==='w_blade_0'&&hd.pack.length===1&&hd.count===9||JSON.stringify(hd));
     // the general rule over realms and purses: the press spends, the next plan is empty, nothing is lost or doubled
     const out=[];for(const [stage,gold,mats] of [[0,400,60],[1,3000,60],[1,900,4],[2,9000,60],[2,60000,60],[3,20000,8],[4,200000,60]]){await H.ev(`(${SETUP})(${JSON.stringify([stage,gold,mats])})`);
       const r=await H.ev(()=>{const A=__A,G=A.G,cnt=()=>G.gear.length+Object.values(G.roster).reduce((s,c)=>s+Object.values(c.eq).filter(Boolean).length,0);

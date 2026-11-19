@@ -2,7 +2,7 @@
 
 Who wraps what, in load order. `raw` is the `{const f0=fn;fn=function...}` idiom, `replace` a reassignment without calling the old body, the rest are HOOK registrations. "def" names the module that HOOK.def'd the function. Raw wraps on a def'd function should become registrations; functions with many raw wraps and no def are the candidates for one.
 
-490 functions wrapped; 594 raw wraps or replacements, 809 hook registrations.
+493 functions wrapped; 597 raw wraps or replacements, 809 hook registrations.
 
 | function | owner | def | layers | chain (load order) |
 |---|---|---|---|---|
@@ -251,6 +251,7 @@ Who wraps what, in load order. `raw` is the `{const f0=fn;fn=function...}` idiom
 | audioVol | audio.js |  | 1 | p5settings.js:raw |
 | autoAlloc | engine.js |  | 1 | roles9.js:raw |
 | autoCfg | engine.js |  | 1 | auto39.js:raw |
+| autoOne | equip2.js |  | 1 | gear46.js:raw |
 | awStop | map.js |  | 1 | bigmap.js:raw |
 | b16BossFire | battle16.js |  | 1 | legends17a.js:raw |
 | b3Body | battle3.js | battle3.js | 1 | cohere15.js:xform |
@@ -323,6 +324,7 @@ Who wraps what, in load order. `raw` is the `{const f0=fn;fn=function...}` idiom
 | foeDg | battle3.js |  | 1 | roles9.js:raw |
 | forge | engine.js |  | 1 | factions.js:raw |
 | fortReward | sites.js | sites.js | 1 | world12.js:wrap |
+| g16PlanAll | gear16.js |  | 1 | gear46.js:raw |
 | g6CamEnv | gfx6battle.js |  | 1 | battle3.js:raw |
 | g7Charts | guild7.js |  | 1 | lore9.js:raw |
 | gTierIdx | tiers.js |  | 1 | relics25.js:raw |
@@ -414,6 +416,7 @@ Who wraps what, in load order. `raw` is the `{const f0=fn;fn=function...}` idiom
 | personalLockText | p4party.js |  | 1 | pacing.js:replace |
 | petCanvas | legends.js |  | 1 | sprhd2.js:replace |
 | petSlotHtml | comp.js |  | 1 | equipbtn10.js:raw |
+| planGear | equip2.js |  | 1 | gear46.js:raw |
 | playMusic | audio.js |  | 1 | audio2.js:replace |
 | profileSync | ? |  | 1 | offline.js:raw |
 | projectile | anim.js |  | 1 | fxkind11.js:raw |

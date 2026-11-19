@@ -84,7 +84,8 @@ chk('3.3 Undo restores the equips, purchases stay in the pack',run.back&&run.kep
 // cheaper of buying or forging
 const ch=await ev(()=>{const G=__A.G;const rec=__A.RECIPES.filter(r=>r.id&&['weapon','armor'].includes(r.cat));G.gold=1e6;Object.keys(G.mats).forEach(k=>G.mats[k]=50);['copper','iron','oak','ash','fang','hide','ichor','scale','grit','bluecap','relic0','relic1'].forEach(k=>G.mats[k]=50);
   ['oren','mira','lumen'].forEach(id=>{const c=G.roster[id];c.eq.w=null;c.eq.a=null;c.eq.k=null;c.S=__A.calcStats(c);});
-  const P=__P3.p3SmithPlan();const bad=P.picks.filter(p=>p.alt.some(a=>a.gold<p.gold));return {n:P.picks.length,bad:bad.length,crafts:P.picks.filter(p=>p.src==='craft').length};});
+  /* 0.22.46 (gear46.js): the plan takes the per slot step (upgBest); among the ways to the same piece that can be paid for, it is the cheapest */
+  const T=__A.TW.get,inT=T('inTown');T('inTown=function(){return true;}');let n=0,bad=0;try{['oren','mira','lumen'].forEach(id=>['w','a','k'].forEach(sl=>{const R=T('upgBest')(G.roster[id],sl),b=R.best;if(!b)return;n++;if(R.all.some(o=>o.ok&&o.id===b.id&&o.gold<b.gold))bad++;}));}finally{window.__inT=inT;T('inTown=window.__inT');}return {n,bad};});
 chk('3.3 each pick takes the cheaper of buying or forging',ch.n>0&&ch.bad===0||JSON.stringify(ch));
 // clean stop when the gold runs out between the plan and the confirm
 const stop=await ev(()=>{const G=__A.G;G.gold=5000;G.gear=[];Object.keys(G.mats).forEach(k=>G.mats[k]=0);['oren','mira','lumen'].forEach(id=>{const c=G.roster[id];c.eq.w=null;c.eq.a=null;c.eq.k=null;c.S=__A.calcStats(c);});

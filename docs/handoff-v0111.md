@@ -902,3 +902,14 @@ With `b3list` (a `.menu.list` is open) `#bcmd` is `position:fixed` at the bottom
   (pw.js CLASSIC). v095p3, v095na, v095nb updated for reactions in realm 1.
 - 0.22.44: prime43.js was removed again. Learn levels are a hard rule (the owner's words): never move a skill's level to open a system.
 - 0.22.45: skills36.js s36Dual has a third stage, an even spread: per stretch of the kit (S36.bands 14 / 28) and over the whole kit the single element role skills of a dual type differ by one at most. Renames use S36.elAlt when the plain name is taken (also by a name kits12.js gives later: fut()).
+
+## 0.22.46: one engine for Equip Best, Best upgrade for each slot and Upgrade whole party (gear46.js)
+- THE RULE: candidates are upgOpts (p3shop.js); valid only if a gain today; ranked by the end at max temper (p3Ult, own relic first), then gain
+  today, then cost (upgCmp); upgBest takes the first that can be paid for. Nothing else may rank gear.
+- Upgrade whole party = gp46Round (the per slot step of every party hero and slot, biggest gain first) walked until empty, re-asking upgBest
+  before each step. gp46Plan previews it on copies of gold, mats, pack, part stock and worn gear (gp46Virt); ACT.p3SmithGo runs it with upgApply.
+  The old planners (p3SmithPlan, g16PlanAll's loop) are still defined but nothing on screen uses them.
+- Equip Best = planGear -> gp46PlanGear: the same walk with pack pieces only (and pieces of heroes outside the party). No strip, no trades
+  between party heroes. autoOne too.
+- Prices move during a run (guild rank memo, Union rebate), so the preview's gold can be off by a few coins; the gear is exact.
+- Test: tools/chrome/v225a.js (random states; SEEDS=n). v188a, v050p3a updated. v095m3 and v095m4 already failed before this.
