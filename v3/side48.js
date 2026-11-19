@@ -35,6 +35,9 @@ ${S} .bwrap{margin-right:0;width:calc(100% + 12px)}
 ${S}.b48top>.bline{left:var(--b48ll);right:auto;width:var(--b48lw);top:var(--b48lt);background:rgba(8,13,26,.6)}
 ${S}.b48top>.bline .blog p{-webkit-line-clamp:2}
 ${S} .bban{top:14px}
+/* an open list (skills, items, the swap list) rises over the stage only: the card column stays in view (the owner: "it shouldn't cover the cards on the big screen") */
+${S}.b3list .bbottom .cmd{left:4px;right:calc(var(--b48w,200px) + 24px);border:2px solid #33466f;border-bottom:0;border-radius:10px 10px 0 0}
+@media (min-width:700px){${S}.b3list .menu.list{grid-template-columns:repeat(auto-fill,minmax(250px,1fr))}}
 ${P} .bparty{display:flex;flex-direction:column;gap:12px;position:absolute;right:0;top:var(--b48t,64px);bottom:0;width:var(--b48w,200px);overflow-y:auto;overscroll-behavior:contain;padding:8px 0 4px;box-sizing:border-box;scrollbar-width:thin}
 ${P} .b8fl{display:none}
 ${P} .b3pty{display:flex;flex-direction:column;gap:12px;order:1}

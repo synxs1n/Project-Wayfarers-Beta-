@@ -2125,7 +2125,7 @@ html:not(.flat) .battle.b3 .bline .b4mo .b4bar{box-shadow:inset 0 0 0 1px #000,0
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.22.48";const APP_BUILD="a183adf1ae90";
+(function(){const APP_VER="0.22.48";const APP_BUILD="31de289925ec";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2906,7 +2906,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.22.48";const APP_BUILD="a183adf1ae90";
+const APP_VER="0.22.48";const APP_BUILD="31de289925ec";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -39493,6 +39493,9 @@ ${S} .bwrap{margin-right:0;width:calc(100% + 12px)}
 ${S}.b48top>.bline{left:var(--b48ll);right:auto;width:var(--b48lw);top:var(--b48lt);background:rgba(8,13,26,.6)}
 ${S}.b48top>.bline .blog p{-webkit-line-clamp:2}
 ${S} .bban{top:14px}
+/* an open list (skills, items, the swap list) rises over the stage only: the card column stays in view (the owner: "it shouldn't cover the cards on the big screen") */
+${S}.b3list .bbottom .cmd{left:4px;right:calc(var(--b48w,200px) + 24px);border:2px solid #33466f;border-bottom:0;border-radius:10px 10px 0 0}
+@media (min-width:700px){${S}.b3list .menu.list{grid-template-columns:repeat(auto-fill,minmax(250px,1fr))}}
 ${P} .bparty{display:flex;flex-direction:column;gap:12px;position:absolute;right:0;top:var(--b48t,64px);bottom:0;width:var(--b48w,200px);overflow-y:auto;overscroll-behavior:contain;padding:8px 0 4px;box-sizing:border-box;scrollbar-width:thin}
 ${P} .b8fl{display:none}
 ${P} .b3pty{display:flex;flex-direction:column;gap:12px;order:1}

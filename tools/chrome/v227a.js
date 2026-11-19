@@ -4,6 +4,7 @@
 //  2 the line (sky, Momentum, log, Log, ☰) is inside the top strip, between the turn order and Pause / Auto / Speed; nothing floats on the stage
 //  3 no "Party & foes" command; a tap on a hero card opens that hero's details; the ☰ on the strip still opens the full sheet
 //  4 a phone (390x844) and a small window (900x640) keep the layout they had: no column, the Party & foes command is there
+//  5 an open skill list rises over the stage only: it does not cover the card column
 // Usage (from tools/chrome): PWHTML=<abs path to out/aurelis3.html> node v227a.js
 const {open,chk,done}=require('./pw');
 setTimeout(()=>{console.log('FAIL watchdog: v227a ran over 240 s');process.exit(1);},240000).unref();
@@ -28,6 +29,9 @@ const snap=new Function(R+`const bat=q('.battle.b3'),hp=qa('#bparty .pc').filter
   await ev(()=>{const B=__A.B;B.uDet=null;__A.TW.get('renderBattle')();document.querySelector('#bline .b27i').click();});await wait(400);
   const s=await ev(new Function(R+`const bat=q('.battle.b3');const o={open:bat.classList.contains('b27open'),btn:qa('#bparty .b27sf .btn').length};q('#bparty [data-act="b27info"]').click();return o;`));await wait(300);
   chk(`3 no Party & foes command (${a.pf}); a tap on a hero card opens the details (${d.det}); the strip's ☰ opens the sheet (${s.open}, ${s.btn} buttons at its foot)`,!a.pf&&d.det&&s.open&&s.btn>=3||JSON.stringify([a.pf,d,s]));
+  await ev(()=>{const b=document.querySelector('#bcmd [data-arg="skills"]');if(b)b.click();});await wait(700);
+  const l=await ev(new Function(R+`const c=r(q('#bcmd')),cards=qa('#bparty .pc,#bparty .fc').filter(vis).map(r),mi=qa('#bcmd .menu.list .mi').map(r);return {list:q('.battle.b3').classList.contains('b3list'),c,minX:Math.min(...cards.map(x=>x.x)),n:mi.length,cols:new Set(mi.map(m=>m.x)).size};`));
+  chk(`5 an open skill list (${l.n} skills in ${l.cols} columns) ends at x ${l.c.r}, left of the cards (${l.minX})`,l.list&&l.n>1&&l.cols>=2&&l.c.r<=l.minX||JSON.stringify(l));
   await H.browser.close();
   H=await boot(390,844,true);const p=await H.ev(snap);await H.browser.close();
   H=await boot(900,640,false);const w=await H.ev(snap);
