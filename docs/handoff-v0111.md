@@ -901,3 +901,4 @@ With `b3list` (a `.menu.list` is open) `#bcmd` is `position:fixed` at the bottom
 - Tests: `tools/chrome/v224a.js` (battle group). v185a, v189a, v191a, v194a check the plain schedule with the stored flag `aurelis-p43off`
   (pw.js CLASSIC). v095p3, v095na, v095nb updated for reactions in realm 1.
 - 0.22.44: prime43.js was removed again. Learn levels are a hard rule (the owner's words): never move a skill's level to open a system.
+- 0.22.45: skills36.js s36Dual has a third stage, an even spread: per stretch of the kit (S36.bands 14 / 28) and over the whole kit the single element role skills of a dual type differ by one at most. Renames use S36.elAlt when the plain name is taken (also by a name kits12.js gives later: fut()).

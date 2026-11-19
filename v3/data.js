@@ -4,6 +4,7 @@
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.22.45',['Dual type wayfarers learn their two elements evenly as they level: in each stretch of the kit and over the whole of it, the skills of one element outnumber the other by one at most. Sixteen late skills changed element (Vex learns Gale Fan, a Wind skill, at 42 in place of Lightning Fan) and three pairs traded places.']],
  ['Beta v0.22.44',['Skill levels are back to the hard rule: the Primers and Detonators that 0.22.43 moved to level 1 are learned at their own levels again. Reactions still work from the first realm, as soon as a wayfarer has the skills for them.']],
  ['Beta v0.22.43',['Prime and detonate from the first battle: every wayfarer now knows their first Primer and their first Detonator from level 1 (they used to arrive between level 6 and 14). Nothing else in the kits moved and no save loses a skill.']],
  ['Beta v0.22.42',['Primers now Prime foes from the very first realm of a new journey (they used to be plain hits until the second realm, so the Primer tag looked broken to new players).','In battle the skill and item lists open as a taller panel over the lower part of the stage (in columns on big screens), so the skills are no longer cut off.']],

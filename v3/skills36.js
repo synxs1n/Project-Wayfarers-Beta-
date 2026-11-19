@@ -17,7 +17,7 @@
 //  5 heals are S36.heal (0.88) of what they were. config.js raises what a heal does to an Undead foe (HEAL_HURT .95, was .75), so that is
 //    about a tenth more than before.
 // Relic skills (s.relic) are not touched here; relics25.js has their own cut.
-const S36={v:1,early:20,heal:.88,off:false,taken:/^Halo of (Light|Wind)$/,/* Lumen's and Pomona's own skills (v191a) */log:{moved:[],swapped:[],gaps:[]},
+const S36={v:1,early:20,bands:[14,28],taken2:/^(Wind Fan|Light Refrain)$/,/* Drift's and Aria's own skills */elAlt:{fire:'Ember',water:'Tide',ice:'Frost',lightning:'Thunder',earth:'Stone',wind:'Gale',shadow:'Umbral',light:'Radiant'},heal:.88,off:false,taken:/^Halo of (Light|Wind)$/,/* Lumen's and Pomona's own skills (v191a) */log:{moved:[],swapped:[],gaps:[],uneven:[]},
   regenKeep:{'Sanctuary':1,'Tidal Renew':1,'Radiant Renew':1,'Meditate':1},
   regenTo:{'Blessing':'focus','Beacon Ward':'bulwark','Aurora':'focus','Spectrum Aria':'might','Cathedral Descant':'bulwark','Kennel Blessing':'focus','Iron Stance':'bulwark','Shield Ally':'ward','Lampglow':'bulwark'},
   elN:{fire:'Fire',water:'Water',ice:'Ice',lightning:'Lightning',earth:'Earth',wind:'Wind',shadow:'Shadow',light:'Light'}};
@@ -58,6 +58,25 @@ function s36Dual(t,L){const els=t.el||[];if(els.length<2)return;const role=s=>s.
     for(const x of P)for(const y of P){if(x===y||x.el===y.el||role(x)!==role(y)||(x.lv<=S36.early)===(y.lv<=S36.early)||x.lv>y.lv)continue;const g0=all();trade(x,y);const g1=all();trade(x,y);
       if(g1<g0&&(!best||g1<best.g))best={x,y,g:g1};}
     if(!best)break;const {x,y}=best;trade(x,y);x._s36x=y._s36x=1;S36.log.swapped.push(t.id+': '+x.n+' (now level '+x.lv+') and '+y.n+' (now level '+y.lv+')');}
+  // 0.22.45: an even spread as the hero levels. In each stretch of the kit (S36.bands: by level 14, by 28, after) and over the whole kit, the
+  // single element skills of the two elements may differ by one at most (Vex learned Lightning Fan and Shadowstep late and no Wind skill).
+  // The stretch's last skill of the fuller element that can change hands is renamed to the other element; where none can, it trades places
+  // with a skill of the same role from another stretch. Neither is taken if it opens one of the four gaps above or tips another stretch.
+  const band=s=>{const B=S36.bands;for(let i=0;i<B.length;i++)if(s.lv<=B[i])return i;return B.length;},cnt=(e,k)=>R().filter(s=>s.el===e&&(k<0||band(s)===k)).length;
+  const diff=k=>cnt(els[0],k)-cnt(els[1],k),over=()=>{let n=0;for(let k=-1;k<=S36.bands.length;k++)n+=Math.max(0,Math.abs(diff(k))-1);return n;};
+  for(let pass=0;pass<6&&over()>0;pass++){const o0=over(),g0=all();let did=false;
+    for(let k=S36.bands.length;k>=-1&&!did;k--){const d=diff(k);if(Math.abs(d)<2)continue;const hi=d>0?els[0]:els[1],lo=d>0?els[1]:els[0];
+      const C=R().filter(s=>s.el===hi&&(k<0||band(s)===k)).sort((x,y)=>y.lv-x.lv);
+      for(const s of C){if(!can(s))continue;const a=S36.elN[hi],b=S36.elN[lo],fut=x=>{try{const tb=SK12.slotNames[t.cls],p=tb&&tb[x.id];if(p&&x.role&&!x._k12n){const n=k12El(x);if(n)return p.replace('{n}',n);}}catch(e){}return x.n;},/* kits12.js names a slot skill after this pass (a mage's Gloom becomes Shadow Lance) */free=n=>!L.some(x=>x!==s&&(String(x.n).toLowerCase()===n.toLowerCase()||String(fut(x)).toLowerCase()===n.toLowerCase()))&&!S36.taken.test(n)&&!S36.taken2.test(n);
+        if(L.some(x=>x!==s&&x.el===lo&&String(x.n).split(b).join('')===String(s.n).split(a).join('')))continue;/* the kit has this skill's twin in the other element already (a mage's two Lances) */
+        let nn=String(s.n).split(a).join(b);if(!free(nn))nn=String(s.n).split(a).join(S36.elAlt[lo]);if(!free(nn))continue;/* the plain name is in the kit or is another hero's own skill: the element's second word (Gale Fan) */
+        s.el=lo;if(over()>=o0||all()>g0){s.el=hi;continue;}
+        s.n=nn;if(s.d)s.d=String(s.d).split(a).join(b);s._s36e=hi;S36.log.moved.push(t.id+': '+s.n+' ('+hi+' to '+lo+', spread)');did=true;break;}
+      if(did)break;
+      for(const x of C){let best=null;for(const y of R()){if(y.el!==lo||role(y)!==role(x)||band(y)===band(x))continue;trade(x,y);const o1=over(),g1=all();trade(x,y);if(o1<o0&&g1<=g0&&(!best||o1<best.o))best={y,o:o1};}
+        if(best){trade(x,best.y);x._s36x=best.y._s36x=1;S36.log.swapped.push(t.id+': '+x.n+' (now level '+x.lv+') and '+best.y.n+' (now level '+best.y.lv+'), spread');did=true;break;}}}
+    if(!did)break;}
+  if(over()>0)S36.log.uneven.push(t.id+' '+[-1,0,1,2].map(k=>cnt(els[0],k)+'/'+cnt(els[1],k)).join(' '));
   els.forEach(e=>{const G=gaps(e);if(G.length)S36.log.gaps.push(t.id+' '+e+':'+G.join(''));});}
 function s36Kit(t,L){
   L.forEach(s=>{if(!s||s.relic)return;
