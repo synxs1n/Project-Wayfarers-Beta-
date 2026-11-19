@@ -1,15 +1,13 @@
-// ===== fix47.js (v0.22.47): the Solar Eclipse sky, Accept all takes every notice, tier colours =====
+// ===== fix47.js (v0.22.47): the Solar Eclipse sky, guild missions unlock as they are completed, tier colours =====
 // 1 Solar Eclipse (asked: "replace the floating shadow visuals for the eclipse weather event with a more appropriate graphical effect").
 //   world3.js drew a black disc with a corona at a fixed spot of the canvas. In battle that was a dark ball hanging in front of the scenery,
 //   beside the backdrop's own sun; on the map the weather layer is tiled (worldrt.js wfxTiled), so the disc repeated across the ground like
 //   drifting shadows. An eclipse is a change of LIGHT, so now it is drawn as one: a deep dusk over everything, a breathing band of corona
 //   gold falling from the top of the sky in battle, a breathing rim of the same gold around the view on the map, and slow motes of gold light rising. Nothing
 //   is drawn at a fixed spot of the map, so tiling shows no seams or repeats.
-// 2 Accept all (asked: "process every available quest in the list; verify that all tier 2 missions are captured"). A guild shows the
-//   missions already taken plus two new ones (factions.js facMissionList), so one Accept all took those two and the next two (often the
-//   tier 2 ones) only showed up afterwards, still open. Accept all now repeats until no open notice is left: F47.pass.
+// 2 Accept all and the guild lists: a guild has two missions out at a time and posts a new one when one is handed in (see below).
 // 3 Tier colours: Heroic is ember orange; Echoforged is the violet of the Echoes (see items.js).
-const F47={off:false,motes:34,pass:40,last:0};
+const F47={off:false,motes:34,slots:2};
 function f47Eclipse(ctx,W,H,now,battle){const t=now/1000;ctx.save();
   ctx.fillStyle='rgba(16,10,44,.36)';ctx.fillRect(0,0,W,H);// the dusk
   if(battle){const br=.5+.5*Math.sin(t*.9),g=ctx.createRadialGradient(W*.5,-H*.2,H*.05,W*.5,-H*.2,H*(1.0+.06*br));
@@ -25,17 +23,11 @@ function f47Eclipse(ctx,W,H,now,battle){const t=now/1000;ctx.save();
 try{if(typeof W7!=='undefined'&&typeof W7.old==='function'){const o0=W7.old;W7.old=function(ctx,w,W,H,now,battle){if(w==='eclipse'&&!F47.off){try{f47Eclipse(ctx,W,H,now||0,!!battle);return;}catch(e){F47.err=String(e&&e.message||e);}}return o0.apply(this,arguments);};}}catch(e){}
 // on the map the corona shows as a breathing rim of gold light around the view (it belongs to the view, not to the scrolling layer)
 try{if(typeof w7Legacy==='function'){const l0=w7Legacy;w7Legacy=function(ctx,w,k,V,now){const r=l0.apply(this,arguments);try{if(w==='eclipse'&&!F47.off&&V&&V.air&&V.mode!=='bt'&&typeof surgeGlow==='function')surgeGlow(ctx,'255,196,110',V.W,V.H,(.16+(Math.sin(now/1000*.9)+1)/2*.12)*k);}catch(e){}return r;};}}catch(e){}
-// ---------- 2 Accept all: until nothing open is left ----------
-['nbAcceptAll','facAcceptAll'].forEach(k=>{const a0=ACT[k];if(typeof a0!=='function')return;
-  ACT[k]=function(){if(F47.off)return a0.apply(this,arguments);
-    const open=()=>{try{return facMisAll().filter(m=>facMisState(m)==='open').length;}catch(e){return 0;}},mis=()=>{try{return Object.keys(facInit().acc||{}).length;}catch(e){return 0;}};
-    const taken=()=>mis()+(G.quests||[]).filter(q=>q.state==='active').length+(G.bounties||[]).filter(b=>b.state==='active').length;
-    const n0=taken(),t0=toast,r0=render,other=[];let r;
-    // one toast and one redraw for the whole press (a toast that is not the count, such as a goal met by the press, is shown after it)
-    try{toast=function(x){if(!/^Accepted \d+ /.test(String(x)))other.push(x);};render=function(){};
-      r=a0.apply(this,arguments);for(let i=0;i<F47.pass&&open()>0;i++){const b=mis();a0.apply(this,arguments);if(mis()===b)break;}
-    }finally{toast=t0;render=r0;}
-    const n=taken()-n0;F47.last=n;F47.left=open();
-    if(n>0)toast(k==='facAcceptAll'?`Accepted ${n} mission${n>1?'s':''}.`:`Accepted ${n} notice${n>1?'s':''}.`);other.forEach(x=>{try{toast(x);}catch(e){}});
-    render();return r;};});
+// ---------- 2 Accept all takes what is on show, and nothing new slides in behind it ----------
+// A guild listed the missions already taken plus two new ones (factions.js facMissionList). So the moment the two on show were accepted, two
+// more took their place: after Accept all there were open missions again, as if the press had missed them (often the tier 2 ones), and
+// pressing on took the guild's whole list. The owner's rule: new missions unlock as missions are completed. A guild now has F47.slots (2)
+// missions out at a time, taken ones included: a new one is posted when one is handed in. Accept all accepts every notice on show.
+function f47Open(L){try{const f=facInit(),acc=L.filter(m=>f.acc[m.id]!=null),rest=L.filter(m=>f.acc[m.id]==null);return acc.concat(rest.slice(0,Math.max(0,F47.slots-acc.length)));}catch(e){return L;}}
+{const ml0=facMissionList;facMissionList=function(id){const L=ml0.apply(this,arguments);return F47.off?L:f47Open(L);};}
 try{window.__F47=F47;}catch(e){}

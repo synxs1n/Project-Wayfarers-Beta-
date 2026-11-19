@@ -1,6 +1,6 @@
-// v0.22.47 (fix47.js): Accept all takes every notice, the Solar Eclipse is a change of light, tier colours.
-//  1 guild missions: with every guild at a high rank, one press of Accept all (Notices) leaves no open mission, and every mission of the
-//    guild's tiers (tier 2 and up included) that is not done is accepted; the same for the Guilds tab's own Accept all on a fresh state
+// v0.22.47 (fix47.js): guild missions unlock as they are completed, the Solar Eclipse is a change of light, tier colours.
+//  1 guild missions: a guild has two out at a time. Accept all (Notices, and the Guilds tab's own) takes every mission on show and no new
+//    one slides in behind it; handing one in posts one new mission; tier 2 missions on show are taken like the rest
 //  2 the eclipse draws no dark disc: over a white canvas no pixel is darker than the dusk itself, on the map layer and in battle; on the
 //    map nothing is tied to a spot (the layer is tiled), and the weather layer of the map (weather7.js) uses the new drawing
 //  3 Heroic is ember orange and Echoforged the violet of the Echoes; no two tiers share a colour
@@ -14,10 +14,16 @@ const META=`localStorage.clear();localStorage.setItem('aurelis-meta-v1',JSON.str
     g('facRank=function(){return 5;}');// every guild at a high rank: all tiers open
     const FAC=g('FAC'),FMIS=g('FMIS'),facInit=g('facInit'),tierOf=g('facTierOf'),tier=g('facTier'),all=g('facMisAll'),st=g('facMisState');
     const pool=()=>{const f=facInit();return FMIS.filter(m=>FAC.some(F=>F.id===m.f)&&tierOf(m.r)<=tier(m.f)&&!f.done[m.id]);};
-    const run=act=>{const f=facInit();f.acc={};const P=pool(),shown=all().filter(m=>st(m)==='open').length,t2=P.filter(m=>tierOf(m.r)>=2).length;A.V.modal={type:'board',tab:'all',sec:'all'};A.ACT[act]();const f2=facInit();
-      return {pool:P.length,shown,t2,acc:P.filter(m=>f2.acc[m.id]!=null).length,t2acc:P.filter(m=>tierOf(m.r)>=2&&f2.acc[m.id]!=null).length,open:all().filter(m=>st(m)==='open').length,toast:(document.body.innerText.match(/Accepted \d+ (notice|mission)s?/)||[''])[0]};};
+    const run=act=>{const f=facInit();f.acc={};f.done={};const P=pool().length,shown=all().filter(m=>st(m)==='open'),per=FAC.map(F=>g('facMissionList')(F.id).length);A.V.modal={type:'board',tab:'all',sec:'all'};A.ACT[act]();const f2=facInit();
+      const r={guilds:FAC.length,pool:P,shown:shown.length,per:Math.max(...per),took:shown.filter(m=>f2.acc[m.id]!=null).length,acc:Object.keys(f2.acc).length,open:all().filter(m=>st(m)==='open').length};
+      // hand one in: one new mission is posted for that guild
+      const m=shown[0];f2.done[m.id]=1;delete f2.acc[m.id];const L=g('facMissionList')(m.f);r.afterDone=L.length;r.newOpen=L.filter(x=>st(x)==='open').length;
+      // tier 2 and up: when one is on show, Accept all takes it
+      f2.acc={};f2.done={};FMIS.filter(x=>tierOf(x.r)<2).forEach(x=>{f2.done[x.id]=1;});const hi=all().filter(x=>st(x)==='open');r.hi=hi.length;r.hiT2=hi.filter(x=>tierOf(x.r)>=2).length;A.ACT[act]();const f3=facInit();r.hiTook=hi.filter(x=>f3.acc[x.id]!=null).length;r.hiOpen=all().filter(x=>st(x)==='open').length;f3.done={};f3.acc={};
+      return r;};
     o.nb=run('nbAcceptAll');o.fac=run('facAcceptAll');A.V.modal=null;return o;});
-  for(const k of ['nb','fac']){const r=a[k];chk(`1 ${k==='nb'?'Notices':'Guilds'} Accept all: ${r.shown} missions were on show, ${r.pool} were available (${r.t2} of tier 2 or higher); after one press ${r.acc} are accepted (${r.t2acc} of the higher tiers), ${r.open} still open ("${r.toast}")`,r.pool>r.shown&&r.t2>0&&r.acc===r.pool&&r.t2acc===r.t2&&r.open===0||JSON.stringify(r));}
+  for(const k of ['nb','fac']){const r=a[k];chk(`1 ${k==='nb'?'Notices':'Guilds'} Accept all: ${r.shown} missions on show (${r.per} a guild at most, ${r.pool} in the guilds' lists); one press takes all ${r.took} and no new one slides in (${r.open} open, ${r.acc} taken); handing one in posts ${r.newOpen} new one; with only tier 2 and up left, ${r.hi} on show (${r.hiT2} of tier 2 or higher), all ${r.hiTook} taken, ${r.hiOpen} open`,
+    r.shown>0&&r.per<=2&&r.pool>r.shown&&r.took===r.shown&&r.open===0&&r.acc===r.shown&&r.afterDone===2&&r.newOpen===1&&r.hi>0&&r.hiT2===r.hi&&r.hiTook===r.hi&&r.hiOpen===0||JSON.stringify(r));}
   const b=await ev(()=>{const A=__A,g=A.TW.get,o={};const fx=g('weatherFX'),W7=g('W7');
     const scan=(f,battle)=>{const c=document.createElement('canvas');c.width=320;c.height=200;const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,320,200);f(x,'eclipse',320,200,4000,battle);const d=x.getImageData(0,0,320,200).data;let min=255,dark=0;const rows=[];
       for(let y=0;y<200;y++){let s=0;for(let px=0;px<320;px++){const i=(y*320+px)*4,l=(d[i]*.3+d[i+1]*.5+d[i+2]*.2);s+=l;if(l<min)min=l;if(l<60)dark++;}rows.push(s/320);}

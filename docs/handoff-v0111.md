@@ -915,7 +915,7 @@ With `b3list` (a `.menu.list` is open) `#bcmd` is `position:fixed` at the bottom
 - Test: tools/chrome/v225a.js (random states; SEEDS=n). v188a, v050p3a updated. v095m3 and v095m4 already failed before this.
 
 ## 0.22.47 (fix47.js)
-- Accept all (nbAcceptAll, facAcceptAll) repeats until no guild mission is open (facMissionList shows the taken ones plus two new ones).
+- Guild missions: facMissionList is cut to F47.slots (2) missions out per guild, taken ones included; a new one is posted when one is handed in (the owner: "they should unlock as you complete"; never make Accept all take a guild's whole list).
 - Solar Eclipse: f47Eclipse replaces the disc of world3.js, in weatherFX and in weather7.js's W7.old (the map layer is tiled, so nothing may be
   drawn at a fixed spot); w7Legacy adds a gold rim on the map.
 - Tiers: Heroic #ff9838, Echoforged #c9a6ff / #7df0e0. Test: tools/chrome/v226a.js.
