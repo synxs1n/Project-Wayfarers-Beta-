@@ -4,6 +4,7 @@
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.22.43',['Prime and detonate from the first battle: every wayfarer now knows their first Primer and their first Detonator from level 1 (they used to arrive between level 6 and 14). Nothing else in the kits moved and no save loses a skill.']],
  ['Beta v0.22.42',['Primers now Prime foes from the very first realm of a new journey (they used to be plain hits until the second realm, so the Primer tag looked broken to new players).','In battle the skill and item lists open as a taller panel over the lower part of the stage (in columns on big screens), so the skills are no longer cut off.']],
  ['Beta v0.22.41',['The Save button is back in the top bar of the phone menu (it is still under More as well).']],
  ['Beta v0.22.40',['Every dual type hero now has a Primer, a Detonator, an early skill and a late skill for each of their two elements (a Dual art with a role counts for both). Zephra, Isolde and Verbena had two skills trade places to get there.','A mouse click to walk shows a ring where you clicked and a gold diamond on the tile the party walks to.']],

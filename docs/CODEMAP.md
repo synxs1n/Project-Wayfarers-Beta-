@@ -593,6 +593,25 @@ Registered (load order; 1 is next to the base):
 
 Runs: 13 shields20 (around) → 12 legnat20 → **base** → 1 ailments → 2 echocore → 3 comp → 4 roles → 5 natures6 → 6 riftkeeper9 → 7 roles9 → 8 echo11 → 9 battle16 → 10 legends17b → 11 legends17a → 13 shields20 (around) → 14 relics25 (result)
 
+### classSkills (14 hooks)
+Registered (load order; 1 is next to the base):
+1. `archetype.js` result: tag every skill with its damage kind once
+2. `sigskills.js` result: the wayfarer's signature skill and element flavour
+3. `roles.js` result: secondary role skills and adjustments
+4. `skills12.js` result: the 12 skill kit, dual type primers and detonators, dual art kind (last hook: sees the finished list)
+5. `kits12.js` result: slot skills in the class voice, martial dual arts
+6. `menus12.js` result: skill descriptions never name a role
+7. `menus14.js` result: learn levels: three skills by level 10, then an even walk to 45 (order kept); the 0.20.3 levels stay as lvP, the 0.20.9 ones as lvQ
+8. `roster17.js` result: kits of 14: two more skills each (the Mantle, a restored skill, a new one), the signature at 18 and the second own skill at 38
+9. `legends17b.js` result: the reworked kits of Nikaris, Kaevan and Jace (14 skills on the roster17 levels)
+10. `legends17a.js` before: the two new legends: their kits of 14 as written
+11. `stats22.js` result: a skill costs more MP the later it is learned
+12. `relics25.js` result: the skill a personal relic grants while it is worn
+13. `skills36.js` result: the 0.22.36 kit pass (once per hero)
+14. `prime43.js` result: the first Primer and the first Detonator are known from level 1
+
+Runs: 10 legends17a → **base** → 1 archetype (result) → 2 sigskills (result) → 3 roles (result) → 4 skills12 (result) → 5 kits12 (result) → 6 menus12 (result) → 7 menus14 (result) → 8 roster17 (result) → 9 legends17b (result) → 11 stats22 (result) → 12 relics25 (result) → 13 skills36 (result) → 14 prime43 (result)
+
 ### cmdHtml (14 hooks)
 Registered (load order; 1 is next to the base):
 1. `battle3.js` result: tall layout: HP/MP bars and the auto note in the command head
@@ -611,24 +630,6 @@ Registered (load order; 1 is next to the base):
 14. `battle27.js` result: small phones: the Party & foes button leads the second row
 
 Runs: 4 summon8 (around) → **base** → 1 battle3 (result) → 2 battle5 (result) → 3 battle4 (result) → 4 summon8 (around) → 5 battle9 (result) → 6 skillfilt9 (result) → 7 battle11 (result) → 8 skillrows11 (result) → 9 skills12 (result) → 10 menus12 (result) → 11 battle16 (result) → 12 legends17a (result) → 13 legends17a (result) → 14 battle27 (result)
-
-### classSkills (13 hooks)
-Registered (load order; 1 is next to the base):
-1. `archetype.js` result: tag every skill with its damage kind once
-2. `sigskills.js` result: the wayfarer's signature skill and element flavour
-3. `roles.js` result: secondary role skills and adjustments
-4. `skills12.js` result: the 12 skill kit, dual type primers and detonators, dual art kind (last hook: sees the finished list)
-5. `kits12.js` result: slot skills in the class voice, martial dual arts
-6. `menus12.js` result: skill descriptions never name a role
-7. `menus14.js` result: learn levels: three skills by level 10, then an even walk to 45 (order kept); the 0.20.3 levels stay as lvP, the 0.20.9 ones as lvQ
-8. `roster17.js` result: kits of 14: two more skills each (the Mantle, a restored skill, a new one), the signature at 18 and the second own skill at 38
-9. `legends17b.js` result: the reworked kits of Nikaris, Kaevan and Jace (14 skills on the roster17 levels)
-10. `legends17a.js` before: the two new legends: their kits of 14 as written
-11. `stats22.js` result: a skill costs more MP the later it is learned
-12. `relics25.js` result: the skill a personal relic grants while it is worn
-13. `skills36.js` result: the 0.22.36 kit pass (once per hero)
-
-Runs: 10 legends17a → **base** → 1 archetype (result) → 2 sigskills (result) → 3 roles (result) → 4 skills12 (result) → 5 kits12 (result) → 6 menus12 (result) → 7 menus14 (result) → 8 roster17 (result) → 9 legends17b (result) → 11 stats22 (result) → 12 relics25 (result) → 13 skills36 (result)
 
 ### mChar (13 hooks)
 Registered (load order; 1 is next to the base):

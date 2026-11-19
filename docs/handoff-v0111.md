@@ -892,3 +892,11 @@ NOT REPRODUCED. The owner's report (a regular piece suggested for a hero, then t
 ## 0.22.42: battle lists get room (battle27.js)
 
 With `b3list` (a `.menu.list` is open) `#bcmd` is `position:fixed` at the bottom, up to 64% of the screen, scrolling inside (not `.bbottom`: taking that box out of the flow changed the fit and left the stage dark on a first turn); at 700 px and wider the list is a grid of 290 px columns. Before, on the new desktop layout the list had the 160 px strip under the stage.
+
+## 0.22.42 / 0.22.43: prime and detonate from the first battle
+- 0.22.42: `PACE.at.reactions` is 0 (config.js). The pacing.js wrap that made a primer a plain hit in a gated first realm no longer fires.
+- 0.22.43: `v3/prime43.js` (last in MODS). A classSkills xform sets the learn level of each hero's first Primer and first Detonator
+  to 1 when it was learned by level 14 (`P43.max`); the old level stays as `s.lv43`. Levels only go down, so no save migration.
+  Nikaris (18) and Dist (42) keep their late Detonators. Kits now have gaps in the 6 / 11 / 14 slots.
+- Tests: `tools/chrome/v224a.js` (battle group). v185a, v191a, v194a check the plain schedule with the stored flag `aurelis-p43off`
+  (pw.js CLASSIC). v095p3, v095na, v095nb updated for reactions in realm 1.
