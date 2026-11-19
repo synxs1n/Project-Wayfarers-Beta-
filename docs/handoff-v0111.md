@@ -919,3 +919,9 @@ With `b3list` (a `.menu.list` is open) `#bcmd` is `position:fixed` at the bottom
 - Solar Eclipse: f47Eclipse replaces the disc of world3.js, in weatherFX and in weather7.js's W7.old (the map layer is tiled, so nothing may be
   drawn at a fixed spot); w7Legacy adds a gold rim on the map.
 - Tiers: Heroic #ff9838, Echoforged #c9a6ff / #7df0e0. Test: tools/chrome/v226a.js.
+
+## 0.22.48 (side48.js): big screens keep the cards on, the log line is in the top strip
+- On when the b27 layout is sideways and the window is at least 1000 x 600 (S48.minW / minH): class b48 on .battle. The grid gets a second
+  column (S48.w, 200 px); #bparty is laid over it (absolute, CSS only restyle of the battleui.js cards). b27Sc is wrapped so the stage scale
+  ignores the column. #bline is positioned in the top strip from measured offsets (class b48top). B27.noLine stops the unit lowering.
+- Phones and small windows are untouched. Stored test flag: aurelis-s48off. Test: tools/chrome/v227a.js (battle group).

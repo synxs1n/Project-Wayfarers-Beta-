@@ -24,7 +24,7 @@ function b27Sc(bat){try{const w=(bat.clientWidth||window.innerWidth)+24,vh=b3Vh(
 // layoutBattle asks before it measures: marks the battle and returns the stage scale (0 = the layout's own)
 function b27Mark(bat,mode){try{const on=b27On(mode);B27.live=on;bat.classList.toggle('m-tall',mode==='tall');bat.classList.toggle('b27',on);bat.classList.toggle('b27land',on&&b27Land());if(!on)bat.classList.remove('b27open');return on?b27Sc(bat):0;}catch(e){return 0;}}
 // on a short stage the units stand a little lower, so the tags over the highest hero stay clear of the floating line (B27.clear logical px)
-{const s0=slotsFor;slotsFor=function(){const r=s0.apply(this,arguments);try{if(B27.live&&BL.mode==='tall'&&BL.H){const lo=Math.min(.62,(B27.clear+B27.lineH/(BL.sc||2.25))/BL.H);if(lo>.48)return r.map(([x,y])=>[x,+(lo+(y-.48)/.49*(.97-lo)).toFixed(4)]);}}catch(e){}return r;};}
+{const s0=slotsFor;slotsFor=function(){const r=s0.apply(this,arguments);try{if(B27.live&&!B27.noLine/* side48.js: on big screens the line is in the top strip */&&BL.mode==='tall'&&BL.H){const lo=Math.min(.62,(B27.clear+B27.lineH/(BL.sc||2.25))/BL.H);if(lo>.48)return r.map(([x,y])=>[x,+(lo+(y-.48)/.49*(.97-lo)).toFixed(4)]);}}catch(e){}return r;};}
 // the room under the stage: nothing is kept back for the party cards, the log line no longer sits under the stage
 {const p0=b8TallPlan;b8TallPlan=function(bat,room){if(!bat||!bat.classList.contains('b27'))return p0.apply(this,arguments);
   const pk=B8.peek,g=B8.tallGrow,mx=B8.tallMax;let add=0;try{const bl=document.getElementById('bline');add=(bl?bl.offsetHeight:40)+(parseFloat(getComputedStyle(bat).rowGap)||5);}catch(e){}

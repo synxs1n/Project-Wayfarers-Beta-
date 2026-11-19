@@ -2125,7 +2125,7 @@ html:not(.flat) .battle.b3 .bline .b4mo .b4bar{box-shadow:inset 0 0 0 1px #000,0
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.22.47";const APP_BUILD="b093afdaddd9";
+(function(){const APP_VER="0.22.48";const APP_BUILD="a183adf1ae90";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2906,7 +2906,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.22.47";const APP_BUILD="b093afdaddd9";
+const APP_VER="0.22.48";const APP_BUILD="a183adf1ae90";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2914,6 +2914,7 @@ const APP_VER="0.22.47";const APP_BUILD="b093afdaddd9";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.22.48',['Big screens (the Windows app, tablets held sideways): the party and foe cards are always on screen again, in a slim column beside the stage. Each card stacks the HP bar over the MP bar with the numbers inside, and the Limit gauge is a gold line under them. Tap a card for the details.','On big screens the weather, Momentum, the last action and the Log button sit in the top strip next to the turn order, so nothing floats over the battle. Phones are unchanged.']],
  ['Beta v0.22.47',['Guild missions unlock as you complete them: a guild has two missions out at a time and posts a new one when you hand one in. Before, two new ones slid in the moment you accepted, so Accept all always seemed to leave some behind.','The Solar Eclipse no longer draws a dark disc floating over the ground or the battlefield. It is a deep dusk with a rim of corona gold and slow motes of light.','Heroic gear is ember orange. Echoforged gear is the violet of the Echoes.']],
  ['Beta v0.22.46',['Equip Best, Best upgrade for each slot and Upgrade whole party now run on one engine with one rule, so they agree: a piece must make the hero stronger today, and the one that ends best at max temper comes first (a hero\'s own relic above everything). Equip Best no longer strips the party and deals gear out by today\'s stats, so it never undoes an upgrade. After Upgrade whole party there is nothing left for the other two to do, and its preview is what actually happens.','Upgrade whole party hands a replaced piece down to another hero in the same press, and its total shows what the purse really ends lower by.']],
  ['Beta v0.22.45',['Dual type wayfarers learn their two elements evenly as they level: in each stretch of the kit and over the whole of it, the skills of one element outnumber the other by one at most. Sixteen late skills changed element (Vex learns Gale Fan, a Wind skill, at 42 in place of Lightning Fan) and three pairs traded places.']],
@@ -38759,7 +38760,7 @@ function b27Sc(bat){try{const w=(bat.clientWidth||window.innerWidth)+24,vh=b3Vh(
 // layoutBattle asks before it measures: marks the battle and returns the stage scale (0 = the layout's own)
 function b27Mark(bat,mode){try{const on=b27On(mode);B27.live=on;bat.classList.toggle('m-tall',mode==='tall');bat.classList.toggle('b27',on);bat.classList.toggle('b27land',on&&b27Land());if(!on)bat.classList.remove('b27open');return on?b27Sc(bat):0;}catch(e){return 0;}}
 // on a short stage the units stand a little lower, so the tags over the highest hero stay clear of the floating line (B27.clear logical px)
-{const s0=slotsFor;slotsFor=function(){const r=s0.apply(this,arguments);try{if(B27.live&&BL.mode==='tall'&&BL.H){const lo=Math.min(.62,(B27.clear+B27.lineH/(BL.sc||2.25))/BL.H);if(lo>.48)return r.map(([x,y])=>[x,+(lo+(y-.48)/.49*(.97-lo)).toFixed(4)]);}}catch(e){}return r;};}
+{const s0=slotsFor;slotsFor=function(){const r=s0.apply(this,arguments);try{if(B27.live&&!B27.noLine/* side48.js: on big screens the line is in the top strip */&&BL.mode==='tall'&&BL.H){const lo=Math.min(.62,(B27.clear+B27.lineH/(BL.sc||2.25))/BL.H);if(lo>.48)return r.map(([x,y])=>[x,+(lo+(y-.48)/.49*(.97-lo)).toFixed(4)]);}}catch(e){}return r;};}
 // the room under the stage: nothing is kept back for the party cards, the log line no longer sits under the stage
 {const p0=b8TallPlan;b8TallPlan=function(bat,room){if(!bat||!bat.classList.contains('b27'))return p0.apply(this,arguments);
   const pk=B8.peek,g=B8.tallGrow,mx=B8.tallMax;let add=0;try{const bl=document.getElementById('bline');add=(bl?bl.offsetHeight:40)+(parseFloat(getComputedStyle(bat).rowGap)||5);}catch(e){}
@@ -39454,6 +39455,76 @@ try{if(typeof w7Legacy==='function'){const l0=w7Legacy;w7Legacy=function(ctx,w,k
 function f47Open(L){try{const f=facInit(),acc=L.filter(m=>f.acc[m.id]!=null),rest=L.filter(m=>f.acc[m.id]==null);return acc.concat(rest.slice(0,Math.max(0,F47.slots-acc.length)));}catch(e){return L;}}
 {const ml0=facMissionList;facMissionList=function(id){const L=ml0.apply(this,arguments);return F47.off?L:f47Open(L);};}
 try{window.__F47=F47;}catch(e){}
+
+// ===== side48.js (v0.22.48): big screens: the party and foe cards are always on, in a slim column beside the stage =====
+// Asked (after three rounds of mock-ups, the owner picked "A2", the slimmest): the older side column of cards back on big screens, 200 px
+// wide, with the card's info stacked (the HP bar over the MP bar, the numbers inside the bars, the Limit gauge a thin gold line), so the
+// battle window stays big; and "move the bar with the weather and action history all the way to the top next to the turn order".
+// Phones and small windows are untouched (battle27.js as it was). On a screen at least S48.minW wide and S48.minH high, in the b27 layout:
+//  1 the battle grid gets a second column (S48.w px). #bparty (the cards the Party & foes sheet shows) is laid over it: Vanguard, reserves,
+//    Foes. The stage and the commands keep the first column; layoutBattle measures the narrower stage by itself (b27Mark runs first).
+//  2 the cards are restyled by CSS only (battleui.js markup): portrait, name, level, element; HP over MP with label and numbers inside
+//    the bar; the Limit gauge a 3 px line; status tags under the card. No info button: a tap on a card opens the details (ACT.tgtA / tgtE
+//    do that whenever no target is being picked).
+//  3 the floating line (sky chips, Momentum, last log line, Log, the ☰ sheet button) leaves the stage and sits in the top strip between
+//    the turn order and Pause / Auto / Speed. Nothing floats over the stage, so the units are not pushed down to clear it (B27.noLine).
+//  4 the wide "☰ Party & foes" command is gone here (the cards are on screen); the ☰ on the top strip still opens the sheet for the
+//    full cards, Guide, sound, help and settings.
+// Off switch for tests: the stored flag aurelis-s48off (pw.js CLASSIC).
+const S48={w:200,minW:1000,minH:600,lineMin:260,off:(()=>{try{return localStorage.getItem('aurelis-s48off')==='1';}catch(e){return false;}})()};
+function s48Fits(){try{if(S48.off||typeof b27Land!=='function'||!b27Land())return false;const z=typeof dsZoom==='function'?dsZoom():1;return window.innerWidth/z>=S48.minW&&b3Vh()>=S48.minH;}catch(e){return false;}}
+{const m0=b27Mark;b27Mark=function(bat,mode){let on=false;try{on=b27On(mode)&&s48Fits();bat.classList.toggle('b48',on);bat.style.setProperty('--b48w',S48.w+'px');S48.live=on;B27.noLine=on;}catch(e){}return m0.apply(this,arguments);};}
+// the stage scale: the column is not stage
+{const s0=b27Sc;b27Sc=function(bat){try{if(bat&&bat.classList.contains('b48')&&b27Land()){const w=(bat.clientWidth||window.innerWidth)-S48.w-8+12,vh=b3Vh();return clamp(Math.floor(Math.min(w/320,(vh-B27.landCmd)/150)*4)/4,2,6);}}catch(e){}return s0.apply(this,arguments);};}
+HOOK.xform('cmdHtml','side48','big screens: no Party & foes command (the cards are on screen)',function(h){try{const bat=document.querySelector('.battle.b3');if(!bat||!bat.classList.contains('b48'))return h;
+  return String(h).replace(/<button class="mi b27pf"[^>]*>[^<]*<\/button>/,'');}catch(e){return h;}});
+HOOK.after('renderBattle','side48','big screens: place the card column and the top line',function(r,stageOnly){try{if(stageOnly||!B)return;
+  const bat=document.querySelector('.battle.b3'),bo=document.getElementById('border'),bl=document.getElementById('bline'),wrap=document.getElementById('bwrap');if(!bat||!bo||!bl||!wrap)return;
+  if(!bat.classList.contains('b48')){bat.classList.remove('b48top');return;}
+  bat.style.setProperty('--b48t',wrap.offsetTop+'px');
+  // the line between the last turn token and the Pause / Auto / Speed buttons
+  const ocs=bo.querySelector('.ocs'),ar=bo.querySelector('.autorow'),last=ocs&&[...ocs.children].filter(e=>e.offsetWidth>0).pop();
+  const L=last?last.offsetLeft+last.offsetWidth+10:bo.offsetLeft+8,R=ar?ar.offsetLeft-8:bo.offsetLeft+bo.offsetWidth-8,ok=R-L>=S48.lineMin;
+  bat.classList.toggle('b48top',ok);if(ok){bat.style.setProperty('--b48ll',L+'px');bat.style.setProperty('--b48lw',(R-L)+'px');bat.style.setProperty('--b48lt',(bo.offsetTop+Math.max(0,Math.round((bo.offsetHeight-40)/2)))+'px');}
+}catch(e){S48.err=String(e&&e.message||e);}});
+{const st=document.createElement('style');st.id='s48css';const S='.battle.b3.m-tall.b27.b48',P=S+':not(.b27open) .bbottom';st.textContent=`
+${S}{grid-template-columns:minmax(0,1fr) var(--b48w,200px);grid-template-areas:"boss boss" "order order" "stage side" "line side" "bot side";column-gap:8px}
+${S} .bwrap{margin-right:0;width:calc(100% + 12px)}
+${S}.b48top>.bline{left:var(--b48ll);right:auto;width:var(--b48lw);top:var(--b48lt);background:rgba(8,13,26,.6)}
+${S}.b48top>.bline .blog p{-webkit-line-clamp:2}
+${S} .bban{top:14px}
+${P} .bparty{display:flex;flex-direction:column;gap:12px;position:absolute;right:0;top:var(--b48t,64px);bottom:0;width:var(--b48w,200px);overflow-y:auto;overscroll-behavior:contain;padding:8px 0 4px;box-sizing:border-box;scrollbar-width:thin}
+${P} .b8fl{display:none}
+${P} .b3pty{display:flex;flex-direction:column;gap:12px;order:1}
+${P} .pgroup{display:block;position:relative;border:1px solid rgba(217,180,106,.4);border-radius:6px;background:rgba(10,14,30,.72);padding:10px 4px 4px;margin:0}
+${P} .pgroup.foes{order:2;border-color:rgba(200,80,90,.55);background:rgba(30,12,22,.72)}
+${P} .pgroup>h3{display:block;position:absolute;left:8px;top:-8px;margin:0;padding:1px 6px;font-size:.56rem;letter-spacing:.14em;line-height:1.3;background:#0c1022;border:1px solid rgba(217,180,106,.4);border-radius:3px}
+${P} .pgroup.foes>h3{background:#1c0c16;border-color:rgba(200,80,90,.55)}
+${P} .pgroup .pcs,${P} .pgroup .fcs{display:grid;grid-template-columns:minmax(0,1fr);gap:4px}
+${P} .pcw{display:block;position:relative;min-width:0}
+${P} .uinfo{display:none}
+${P} .pc,${P} .fc{display:grid;grid-template-columns:32px minmax(0,1fr);gap:0 6px;align-items:center;width:100%;min-height:0;padding:3px 5px;text-align:left}
+${P} .pc .port{display:block;width:32px;height:32px;min-width:0;margin:0}
+${P} .pc .port img{width:100%;height:100%;display:block}
+${P} .fc .fci{width:30px;height:30px;object-fit:contain;justify-self:center}
+${P} .pm{display:grid;grid-template-columns:minmax(0,1fr);gap:2px;min-width:0}
+${P} .uct{display:flex;align-items:baseline;gap:4px;padding:0;min-width:0;font-size:.8rem;line-height:1.1}
+${P} .uct b{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+${P} .uct .ucl{font-size:.56rem;flex:none;opacity:.85}
+${P} .uct .elbs{margin-left:auto;display:flex;gap:1px;flex:none}
+${P} .uct .elb{width:12px;height:12px}
+${P} .ucr{display:block;position:relative;height:11px;min-height:0}
+${P} .ucr>i{position:absolute;left:3px;top:0;z-index:1;font:800 8px/11px system-ui,sans-serif;font-style:normal;color:rgba(255,255,255,.82);text-shadow:0 1px 0 #000}
+${P} .ucr .bar{display:block;width:100%;height:11px;margin:0}
+${P} .ucr em.nums{position:absolute;right:3px;top:0;z-index:1;font:800 9px/11px system-ui,sans-serif;font-style:normal;color:#fff;text-shadow:0 1px 0 #000,0 0 2px #000;min-width:0;width:auto}
+${P} .ucr:has(.lbar){height:3px}
+${P} .ucr:has(.lbar)>i,${P} .ucr:has(.lbar) em.nums{display:none}
+${P} .ucr .lbar{display:block;width:100%;height:3px;margin:0;border:0}
+${P} .ucc{display:none}
+${P} .ptags{display:flex;flex-wrap:wrap;gap:2px 3px;padding:2px 2px 0;font-size:.56rem}
+${P} .ptags:empty{display:none}
+`;document.head.appendChild(st);}
+try{window.__S48={S48,fits:s48Fits};}catch(e){}
 
 window.__A={walkable,ceInit,tvSlots,genQuests,STARTERS,starterDraw,ECON,AUTO_NERF,rebuildBase,detLive,REACT,skEls,packContents,miniFor,AUTO_REW,ENC_RATE,ENC_MIN_STEPS,detNote,classSkills,stickCount,bestAll,calcStats,lookKey,vTemper,storyEchoUp,leaveDungeon,win,ldApply,genFort,caveOk,enterCave,siteHasMini,openChest,nextDlg,WS,mapIcoRects,roamSpawn,roamInterior,roamSees,mapTargets,DIRV,tileAt,STAGE_LV,autoBan,rollWeather,guardianDef,mapIssues,mapEntry,syncPools,bovAt,calFxAt,realmAt,REALMS,BOV,CAL_FX,overlayGuide,liftOverlay,drawGearIcon,gearIcon,itemIcon,RAW,sigKind,sigGid,personalDone,heroLook,hasSignature,LEGEND_IDS,facDirty,facCount,facRank,facRep,FACB,FAC,finishBattle,npcWords,npcHints,npcPool,titleMake,titleAdvance,TTS,placeAt,wkwUpdate,innSpot,getMap,monURL,enterVia,applyBossTheme,BTHEME,resetMaps,rebuildBase,shopStock,gearDesc,calcStats,gearMigrate,CLS_WPN,CLS_ARM,WPERK,WT_NAME,equipWhy,lootBase,GEAR,canEquip,gearOf,perkNote,FAM_MAT_V35,fbDraft,META:{get best(){return META.best},get codex(){return META.codex},get q(){return META.q}},saveMeta,OFF,offPending,offFlush,PROFILE,profileSync,codexSee,getMap,placeAt,interact,sanctumOpen,riftKeys,echoKeys,BONDS,bondKey,wkwUpdate,inTown,WS,LC,lsort,bestParty,fsCast,fsSkills,ldApply,MON,registerTamed,stickPower,stickCount,autoOne,planGear,bestTag,gainersFor,compGainFor,refresh,fitsFor,canEquip,gearOf,queueNewGear,ARENA,fxDur,banDur,stageTags,autoSwitchPick,layoutBattle,newChar,calcStats,limitSkill,limitTier,canStuck,dunReachable,LV_CAP,addXp,echoSpec,bossLvFor,fx,MON,log,effInfo,tierOf,perkOf,quirkDef,forgeCost,buyPlan,vJourney,modalBack,partySlots,limitOpen,town2Reached,skillKnown,known,classSkills,paceMigrate,unpackG,packG,makeEnemy,QUIRK,arrive,enterDungeon,wkwUpdate,useTravel,travelWhyNot,porkFlee,porkBlocked,encTile,campRest,buyPart,partLeft,alchStock,GAME_VERSION,CHANGELOG,ITEMS,tavernOffers,tavernPool,recruitFit,partyNeeds,vNext,CHALL,innSpot,RECIPES,MATS,FB,fbContext,REDEEM,legendJoin,legendQ,genQuests,dynActors,convInit,PROFILE,profileSync,checkArchive,GPOOL,FPOOL,guardianDef,saveMeta,archiveSkills,get G(){return G;},set G(v){G=v;},get B(){return B;},get V(){return V;},get META(){return META;},WS,ACT,render,newGame,placeAt,startBattle,autoTurn,advance,finishBattle,getMap,innSpot,setPause:p=>{PAUSE=p;},autoCfg,worldInputDir,inputSources,battleFrame,battleTheme,STS,MAPS,mapIssues,healMap,mimicReward,dropChest,interact,worldDraw,TPL,ZONES,ZS,newChar,recruit,saveGame,resetMaps,dynActors,tileAt,BV,refresh,genBounties,genQuests,vStarter,heroCard,heroURL,iconURL,masteryLine,AU,buildTrack,tone,noiseHit,MIDI,sfx,audioVol};
 ['heroRoles','SOLID','WEATHER','WX_BASE','weatherFX','superGuide','recruitCost','ceStart','ceStep','ceInit','cePool','wxList','SUPER_TABLE','superOk','facRank','facRep','facInit','facCount','facCredit','FAC','FMIS','facMissionList','facProg','tyOf','facSync','facMul','facBest','worldPlan','caveReward','enterCave','leaveCave','leaveDungeon','buildCaveMap','worldGraph','openWorldMap','sigReport','SIG_NAMES','starterDraw','ITEM_TIERS','gTierIdx','tierChip','gearIcon','starterSlots','STARTERS','CLK_LEN','CLK_PH','clockPhase','wxInfoBody','recipeOrder','recipeGain','recipeReady','recipeClose','effOf','calcDamage','healsUndead','storyEchoUp','riftKeys','echoDef','efCost','autoLocked','bossFightKey','learnScanAll','isSeen','mapMarks','genSub','subOK','subReq','ensureSub','inSub','tvSlots','tvInit','tvLeft','tvEvent','tvNextText','tvPool','tvDue','tvShuffle','mTavern','hireOK','TV_CAP','TV_CD','POOL_IDS','natPool','natOf','natRoll','NATURES','natInfo','natRerollCost','natChooseCost','NAT_CLASS','iconURL','seenOf','mapIcoDraw','drawMini','MAPCV','revealAround','fxLayer','numDur','compBonusText','compPerk','checkPhase','win','unitBox','LNQ','challVisible','challEligible','challState','isMimic','migrateCompanions','canSummon','summonComp','compOf','clockPhase','tickClock','isNight','rollWeather','wxStep','nightPool','encounterFoes','restAll','tameElite','openChest','rerollTavern','bestAll','gearTier','SV','svCheck','svFlush','svInit','svPush','svPull','svScan','svParse','svBackup','svPack','svUnpack','svProg','svCloudList','svDelDoc','svGet','svCap','slotState','slotKey','svDecode','SV_CH','svStatus','svSlotRaw','svLoad','loadRaw','svHash','svIdx'].forEach(k=>{try{Object.defineProperty(window.__A,k,{get:()=>eval(k)});}catch(e){}});

@@ -469,7 +469,7 @@ Registered (load order; 1 is next to the base):
 
 Runs: 17 legends17a (around) → 16 legends17b (around) → 15 roster17 (around) → 14 skills12 (around) → 13 skills12 (around) → 12 pacing (around) → 11 chain5 → 10 chain5 → 9 battle4 (around) → 8 twists (around) → 7 natures6 (around) → 6 atk6 (around) → 5 roles (around) → 4 anim → 3 prog2 (around) → 2 archetype (around) → 1 ailments (around) → **base** → 1 ailments (around) → 2 archetype (around) → 3 prog2 (around) → 5 roles (around) → 6 atk6 (around) → 7 natures6 (around) → 8 twists (around) → 9 battle4 (around) → 12 pacing (around) → 13 skills12 (around) → 14 skills12 (around) → 15 roster17 (around) → 16 legends17b (around) → 17 legends17a (around) → 18 legends17a
 
-### renderBattle (17 hooks)
+### renderBattle (18 hooks)
 Registered (load order; 1 is next to the base):
 1. `battleui.js` after: boss bar removed
 2. `battle3.js` after: fit the target tags
@@ -488,8 +488,9 @@ Registered (load order; 1 is next to the base):
 15. `battle16.js` after: the name plate of a summoned Scourge says SCOURGE
 16. `battle27.js` after: small phones: top strip, floating log line and the Party & foes sheet
 17. `battle27.js` after: is a panel floating over the stage
+18. `side48.js` after: big screens: place the card column and the top line
 
-Runs: 13 battle16 → 11 menus12 → 7 battle4 (around) → 5 battle3 → **base** → 1 battleui → 2 battle3 → 3 battle3 → 4 battle3 → 6 battle5 → 7 battle4 (around) → 8 chain5 → 9 summon8 → 10 kits12 → 12 menus12 → 14 battle16 → 15 battle16 → 16 battle27 → 17 battle27
+Runs: 13 battle16 → 11 menus12 → 7 battle4 (around) → 5 battle3 → **base** → 1 battleui → 2 battle3 → 3 battle3 → 4 battle3 → 6 battle5 → 7 battle4 (around) → 8 chain5 → 9 summon8 → 10 kits12 → 12 menus12 → 14 battle16 → 15 battle16 → 16 battle27 → 17 battle27 → 18 side48
 
 ### encounterFoes (16 hooks)
 Registered (load order; 1 is next to the base):
@@ -574,6 +575,26 @@ Registered (load order; 1 is next to the base):
 
 Runs: 15 battle27 → 14 cohere15 → 13 chars13 (around) → 11 chars13 → 9 perf12 → 8 fxkind11 → 7 res11 → 6 battle11 (around) → 5 sprhd2 → 4 hdspell → 3 hdstage (around) → 2 gfx6battle (around) → 1 anim → **base** → 2 gfx6battle (around) → 3 hdstage (around) → 6 battle11 (around) → 10 kits12 → 12 chars13 → 13 chars13 (around)
 
+### cmdHtml (15 hooks)
+Registered (load order; 1 is next to the base):
+1. `battle3.js` result: tall layout: HP/MP bars and the auto note in the command head
+2. `battle5.js` result: cue and glow on the command menu
+3. `battle4.js` result: swap menu body and free swap label
+4. `summon8.js` around: summons menu and Invoke button
+5. `battle9.js` result: one Summon button
+6. `skillfilt9.js` result: skill filter chips
+7. `battle11.js` result: command head without the HP/MP mini bars
+8. `skillrows11.js` result: skill numbers on the battle skill list
+9. `skills12.js` result: role tier on the battle skill rows
+10. `menus12.js` result: battle skill rows: a missing scope, kind or Primer / Detonator tag is added; the last used skill is marked
+11. `battle16.js` result: recruited bosses: a note where the Summon command was for anyone who cannot call them
+12. `legends17a.js` result: greyed rows with the reason, the boss command, HP for MP in his summons menu
+13. `legends17a.js` result: Joseth among the callers in the greyed Summon note
+14. `battle27.js` result: small phones: the Party & foes button leads the second row
+15. `side48.js` result: big screens: no Party & foes command (the cards are on screen)
+
+Runs: 4 summon8 (around) → **base** → 1 battle3 (result) → 2 battle5 (result) → 3 battle4 (result) → 4 summon8 (around) → 5 battle9 (result) → 6 skillfilt9 (result) → 7 battle11 (result) → 8 skillrows11 (result) → 9 skills12 (result) → 10 menus12 (result) → 11 battle16 (result) → 12 legends17a (result) → 13 legends17a (result) → 14 battle27 (result) → 15 side48 (result)
+
 ### calcStats (14 hooks)
 Registered (load order; 1 is next to the base):
 1. `ailments.js` after: wound shrinks max HP
@@ -592,25 +613,6 @@ Registered (load order; 1 is next to the base):
 14. `relics25.js` result: the bonuses of the personal relic the hero wears
 
 Runs: 13 shields20 (around) → 12 legnat20 → **base** → 1 ailments → 2 echocore → 3 comp → 4 roles → 5 natures6 → 6 riftkeeper9 → 7 roles9 → 8 echo11 → 9 battle16 → 10 legends17b → 11 legends17a → 13 shields20 (around) → 14 relics25 (result)
-
-### cmdHtml (14 hooks)
-Registered (load order; 1 is next to the base):
-1. `battle3.js` result: tall layout: HP/MP bars and the auto note in the command head
-2. `battle5.js` result: cue and glow on the command menu
-3. `battle4.js` result: swap menu body and free swap label
-4. `summon8.js` around: summons menu and Invoke button
-5. `battle9.js` result: one Summon button
-6. `skillfilt9.js` result: skill filter chips
-7. `battle11.js` result: command head without the HP/MP mini bars
-8. `skillrows11.js` result: skill numbers on the battle skill list
-9. `skills12.js` result: role tier on the battle skill rows
-10. `menus12.js` result: battle skill rows: a missing scope, kind or Primer / Detonator tag is added; the last used skill is marked
-11. `battle16.js` result: recruited bosses: a note where the Summon command was for anyone who cannot call them
-12. `legends17a.js` result: greyed rows with the reason, the boss command, HP for MP in his summons menu
-13. `legends17a.js` result: Joseth among the callers in the greyed Summon note
-14. `battle27.js` result: small phones: the Party & foes button leads the second row
-
-Runs: 4 summon8 (around) → **base** → 1 battle3 (result) → 2 battle5 (result) → 3 battle4 (result) → 4 summon8 (around) → 5 battle9 (result) → 6 skillfilt9 (result) → 7 battle11 (result) → 8 skillrows11 (result) → 9 skills12 (result) → 10 menus12 (result) → 11 battle16 (result) → 12 legends17a (result) → 13 legends17a (result) → 14 battle27 (result)
 
 ### classSkills (13 hooks)
 Registered (load order; 1 is next to the base):
