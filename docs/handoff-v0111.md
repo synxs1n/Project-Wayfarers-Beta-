@@ -898,5 +898,5 @@ With `b3list` (a `.menu.list` is open) `#bcmd` is `position:fixed` at the bottom
 - 0.22.43: `v3/prime43.js` (last in MODS). A classSkills xform sets the learn level of each hero's first Primer and first Detonator
   to 1 when it was learned by level 14 (`P43.max`); the old level stays as `s.lv43`. Levels only go down, so no save migration.
   Nikaris (18) and Dist (42) keep their late Detonators. Kits now have gaps in the 6 / 11 / 14 slots.
-- Tests: `tools/chrome/v224a.js` (battle group). v185a, v191a, v194a check the plain schedule with the stored flag `aurelis-p43off`
+- Tests: `tools/chrome/v224a.js` (battle group). v185a, v189a, v191a, v194a check the plain schedule with the stored flag `aurelis-p43off`
   (pw.js CLASSIC). v095p3, v095na, v095nb updated for reactions in realm 1.
