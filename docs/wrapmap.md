@@ -2,7 +2,7 @@
 
 Who wraps what, in load order. `raw` is the `{const f0=fn;fn=function...}` idiom, `replace` a reassignment without calling the old body, the rest are HOOK registrations. "def" names the module that HOOK.def'd the function. Raw wraps on a def'd function should become registrations; functions with many raw wraps and no def are the candidates for one.
 
-490 functions wrapped; 593 raw wraps or replacements, 807 hook registrations.
+490 functions wrapped; 594 raw wraps or replacements, 807 hook registrations.
 
 | function | owner | def | layers | chain (load order) |
 |---|---|---|---|---|
@@ -111,6 +111,7 @@ Who wraps what, in load order. `raw` is the `{const f0=fn;fn=function...}` idiom
 | drawBuilding | worldgfx.js | worldgfx.js | 3 | worldgfx2.js:replace → towngfx.js:raw → towns14.js:wrap |
 | facMissionList | factions.js |  | 3 | pacing.js:raw → pacing.js:raw → quests16.js:raw |
 | foeWeak | battleui.js |  | 3 | battle3.js:replace → battle3.js:replace → dmg11.js:raw |
+| fsEffect | party2.js |  | 3 | ailments.js:raw → twists.js:raw → skills36.js:raw |
 | fx | engine.js | engine.js | 3 | insight.js:raw → fx2.js:raw → chars13.js:after |
 | glRender | goals.js | goals.js | 3 | menus14.js:before → menus14.js:after → quests16.js:wrap |
 | guard | engine.js | goals.js | 3 | battle4.js:raw → goals.js:before → heropose9.js:raw |
@@ -175,7 +176,6 @@ Who wraps what, in load order. `raw` is the `{const f0=fn;fn=function...}` idiom
 | facMul | factions.js |  | 2 | roam.js:raw → twists.js:raw |
 | facRaw | factions.js |  | 2 | arena9.js:raw → quests16.js:replace |
 | forgeCost | temper.js |  | 2 | factions.js:raw → echo11.js:raw |
-| fsEffect | party2.js |  | 2 | ailments.js:raw → twists.js:raw |
 | fsSkills | party2.js |  | 2 | field9.js:raw → legends17b.js:raw |
 | gearIcon | equip.js |  | 2 | echo2.js:raw → tiers.js:raw |
 | gearOf | items.js |  | 2 | econ11.js:raw → echo11.js:raw |

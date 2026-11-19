@@ -2125,7 +2125,7 @@ html:not(.flat) .battle.b3 .bline .b4mo .b4bar{box-shadow:inset 0 0 0 1px #000,0
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.22.41";const APP_BUILD="8ea6ece04fe1";
+(function(){const APP_VER="0.22.41";const APP_BUILD="a861b185343b";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2906,7 +2906,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.22.41";const APP_BUILD="8ea6ece04fe1";
+const APP_VER="0.22.41";const APP_BUILD="a861b185343b";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -39157,6 +39157,8 @@ function s36Kit(t,L){
   s36Dual(t,L);}
 HOOK.xform('classSkills','skills36','the 0.22.36 kit pass (once per hero)',function(L,t){try{if(S36.off||!L||!t||t.mon||!L.length)return L;const f=L.find(s=>s&&!s.relic);if(!f||f._s36===S36.v)return L;
   L.forEach(s=>{if(s&&!s.relic)s._s36=S36.v;});s36Kit(t,L);}catch(e){S36.err=String(e&&e.message||e);}return L;});
+// a cure that heals nothing is not offered from the field menu for a hero who is only hurt
+{const f0=fsEffect;fsEffect=function(s,t){try{if(s&&s.k==='heal'&&!(s.pw>0)&&!s.revive&&t&&t.hp>0)return !!(s.cleanse&&(Object.keys(t.st||{}).some(k=>STS[k]&&STS[k].bad)||(typeof hasAil==='function'&&hasAil(t))));}catch(e){}return f0.apply(this,arguments);};}
 try{window.__S36=S36;}catch(e){}
 
 // ===== towns37.js (v0.22.37): the land under the town plans: isles and bridges, canals, terraces =====

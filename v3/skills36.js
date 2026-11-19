@@ -68,4 +68,6 @@ function s36Kit(t,L){
   s36Dual(t,L);}
 HOOK.xform('classSkills','skills36','the 0.22.36 kit pass (once per hero)',function(L,t){try{if(S36.off||!L||!t||t.mon||!L.length)return L;const f=L.find(s=>s&&!s.relic);if(!f||f._s36===S36.v)return L;
   L.forEach(s=>{if(s&&!s.relic)s._s36=S36.v;});s36Kit(t,L);}catch(e){S36.err=String(e&&e.message||e);}return L;});
+// a cure that heals nothing is not offered from the field menu for a hero who is only hurt
+{const f0=fsEffect;fsEffect=function(s,t){try{if(s&&s.k==='heal'&&!(s.pw>0)&&!s.revive&&t&&t.hp>0)return !!(s.cleanse&&(Object.keys(t.st||{}).some(k=>STS[k]&&STS[k].bad)||(typeof hasAil==='function'&&hasAil(t))));}catch(e){}return f0.apply(this,arguments);};}
 try{window.__S36=S36;}catch(e){}

@@ -34,8 +34,8 @@ for(const sid of ids){
     if(btn&&!dis){await btn.scrollIntoViewIfNeeded();const r=await btn.boundingBox();await page.touchscreen.tap(r.x+r.width/2,r.y+r.height/2);}
   }
   await wait(200);
-  const after=await ev((a)=>{const A=__A,G=A.G;const v=G.roster[a.vic];return {hp:v.hp,mp:G.roster[G.party[0]].mp};},tgt);
-  chk(sid+': healed or revived the target',after.hp>tgt.hp0||JSON.stringify([tgt,after]));
+  const after=await ev((a)=>{const A=__A,G=A.G;const v=G.roster[a.vic];return {hp:v.hp,mp:G.roster[G.party[0]].mp,cured:!(v.st&&v.st.poison)};},tgt);
+  chk(sid+': healed, revived or (a cure of no power, 0.22.36) cured the target',after.hp>tgt.hp0||(sid==='purify'&&after.cured&&after.mp<tgt.mp0)||JSON.stringify([tgt,after]));
   chk(sid+': MP cost paid ('+tgt.mp+')',after.mp===tgt.mp0-tgt.mp||JSON.stringify([tgt,after]));
 }
 await done(H);

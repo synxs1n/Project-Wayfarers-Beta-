@@ -43,7 +43,7 @@ const cases=[ // [w,h,dpr,tier,expected internal px, label]
     if(tier==='medium'&&w===1920){// battle: unit layer density, foe resample
       const b=await H.ev(()=>{const g=__A.TW.get;g('startBattle')({stage:0,kind:'field'});return null;});await H.frames(8);
       const bt=await H.ev(()=>{const g=__A.TW.get,c=document.getElementById('bcv'),B=g('B'),f=B.en[0],s=g('spriteOf')(f),BL=g('BL'),hb=g('HB');return {ss:c._ss,raw:[c._rw,c._rh],logical:[c.width,c.height],hd:s.hd,sw:s.width,sh:s.height,sc:BL.sc,hb:hb.cv&&[hb.cv.width,hb.cv.height],cssw:parseFloat(c.style.width),err:!!g('HD').broken};});
-      chk(`battle at 1920x1080: the unit layer backs ${bt.ss} pixels per logical pixel (${bt.raw.join('x')} for ${bt.logical.join('x')}), the foe is resampled at the same density (hd ${bt.hd}), the GL stage is ${bt.hb&&bt.hb.join('x')} for ${Math.round(bt.cssw)} css px`,bt.ss===4&&bt.hd===4&&bt.raw[0]===bt.logical[0]*4&&bt.hb&&bt.hb[0]>bt.cssw*1.2||JSON.stringify(bt));
+      chk(`battle at 1920x1080: the unit layer backs ${bt.ss} pixels per logical pixel (${bt.raw.join('x')} for ${bt.logical.join('x')}), the foe is resampled at the same density (hd ${bt.hd}), the GL stage is ${bt.hb&&bt.hb.join('x')} for ${Math.round(bt.cssw)} css px`,bt.ss===4&&bt.hd===4&&bt.raw[0]===bt.logical[0]*4&&bt.hb&&bt.hb[0]>=bt.cssw/* 0.22.34: the stage is the full width now (1414 css px, was 880), so the 4x layer is 1.07 of it, not over 1.2 */||JSON.stringify(bt));
     }
     await H.browser.close();
   }
