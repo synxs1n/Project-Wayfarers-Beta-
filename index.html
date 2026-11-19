@@ -2125,7 +2125,7 @@ html:not(.flat) .battle.b3 .bline .b4mo .b4bar{box-shadow:inset 0 0 0 1px #000,0
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.22.41";const APP_BUILD="a861b185343b";
+(function(){const APP_VER="0.22.42";const APP_BUILD="610fc4f6c10f";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2906,7 +2906,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.22.41";const APP_BUILD="a861b185343b";
+const APP_VER="0.22.42";const APP_BUILD="610fc4f6c10f";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2914,6 +2914,7 @@ const APP_VER="0.22.41";const APP_BUILD="a861b185343b";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.22.42',['In battle the skill and item lists open as a taller panel over the lower part of the stage (in columns on big screens), so the skills are no longer cut off.']],
  ['Beta v0.22.41',['The Save button is back in the top bar of the phone menu (it is still under More as well).']],
  ['Beta v0.22.40',['Every dual type hero now has a Primer, a Detonator, an early skill and a late skill for each of their two elements (a Dual art with a role counts for both). Zephra, Isolde and Verbena had two skills trade places to get there.','A mouse click to walk shows a ring where you clicked and a gold diamond on the tile the party walks to.']],
  ['Beta v0.22.39',['Auto battle uses items properly: Smelling Salts before Phoenix Feathers, the draught that fits the wound, Mana Tonics and Sage Brew when a hero runs dry, Sacred Ash on a Curse, a Bandage Roll on a Wound, a Remedy on ailments.','Auto settings has a new Use items switch: turn it off and auto never spends an item.']],
@@ -38823,6 +38824,13 @@ body:has(.battle.b3.b27) #hdr{display:none}
 .battle.b3.m-tall.b27 .cmd .menu.sec .mi.b27pf{flex:1 1 160px}
 .battle.b3.m-tall.b27.b27open .bbottom .bparty{left:auto;top:0;bottom:0;width:min(440px,92%);max-height:none;border-top:0;border-left:2px solid #a48bff;border-radius:16px 0 0 16px}
 }
+/* 0.22.42 (asked: "in the action menu on big screens the skills are half blocked"): a list (skills, items, the swap list) no longer has to
+   fit the strip under the stage. The command panel rises over the lower part of the stage for as long as the list is open, up to 64% of the
+   screen, and scrolls inside; picking a skill or Back puts it back. On wide screens the list is in columns. Only #bcmd floats: the box
+   under the stage keeps its place and size, so nothing is measured or laid out again (floating the whole box left the stage dark when a list
+   was opened on the first turn). */
+.battle.b3.m-tall.b27.b3list .bbottom .cmd{display:block;/* not the bottom aligned column of the root menu: a list taller than the panel must start at its top */position:fixed;left:0;right:0;bottom:0;margin:0;width:auto;z-index:20;height:auto;max-height:64%;overflow-y:auto;overscroll-behavior:contain;box-sizing:border-box;padding:6px 8px calc(8px + env(safe-area-inset-bottom,0px));background:#0e172c;border:0;border-top:2px solid #33466f;border-radius:0;box-shadow:0 -10px 30px rgba(0,0,0,.5)}
+@media (min-width:700px){.battle.b3.m-tall.b27.b3list .menu.list{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:6px;align-items:stretch}}
 .battle.b3 .b27shade{display:none}
 .battle.b3.m-tall.b27.b27open .b27shade{display:block;position:fixed;inset:0;z-index:69;background:rgba(4,7,15,.55)}
 .battle.b3.m-tall.b27.b27open .bbottom .bparty{display:flex;flex-direction:column;gap:8px;position:fixed;left:0;right:0;bottom:0;max-height:78%;overflow-y:auto;overscroll-behavior:contain;z-index:70;box-sizing:border-box;background:#0f1930;border-top:2px solid #a48bff;border-radius:16px 16px 0 0;padding:10px 12px calc(12px + env(safe-area-inset-bottom,0px))}
@@ -38838,6 +38846,12 @@ body:has(.battle.b3.b27) #hdr{display:none}
 // a turned tablet or a resized window mid battle: the stage scale changes with the screen, so the stage is fitted again from scratch (the
 // resize pass of battle3.js only refits the classic wide layout; without this the stage kept a default 85 logical px, v211a)
 {let t=0;window.addEventListener('resize',()=>{try{if(!B27.live||typeof V==='undefined'||V.screen!=='battle'||!B)return;clearTimeout(t);t=setTimeout(()=>{try{if(V.screen!=='battle'||!B)return;BL.fitH=0;B._b8fit=0;B._b8vh=0;layoutBattle();renderBattle();}catch(e){}},60);}catch(e){}});}
+// While a panel floats over the stage (a list, or the Party & foes sheet) the GL backdrop is drawn every frame. hbFrame skips a frame that is
+// the same as the last, and the canvas does not keep its picture (no preserveDrawingBuffer): when the browser composes the stage again under
+// the new panel it has nothing to show, and the backdrop went black (0.22.42, seen on phones on a first turn).
+HOOK.after('renderBattle','battle27','is a panel floating over the stage',function(r,stageOnly){try{if(stageOnly)return;const bat=document.querySelector('.battle.b3');B27.cover=!!(bat&&bat.classList.contains('b27')&&(bat.classList.contains('b3list')||bat.classList.contains('b27open')));
+  const bc=document.getElementById('bcmd'),k=bat&&bat.classList.contains('b3list')?(B.menu||'')+'|'+(B.cur&&B.cur.id||''):'';if(bc&&k&&bc._b27k!==k){bc.scrollTop=0;const z=()=>{try{if(bc._b27k===k)bc.scrollTop=0;}catch(e){}};requestAnimationFrame(()=>{z();requestAnimationFrame(z);});/* the focus on the first entry scrolls the panel a row down; a newly opened list starts at its top */}if(bc)bc._b27k=k;if(typeof HB!=='undefined')HB.redraw=1;}catch(e){}});
+HOOK.before('battleFrame','battle27','keep the backdrop drawn under a floating panel',function(){try{if(B27.cover&&typeof HB!=='undefined')HB.redraw=1;}catch(e){}});
 try{window.__B27={B27,on:b27On};}catch(e){}
 
 // ===== menus29.js (v0.22.29): the main menu on phones: content first, the sections under the thumb =====

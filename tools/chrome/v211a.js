@@ -31,6 +31,11 @@ const start=async(H)=>{await H.ev(()=>{const A=__A;A.ACT.new();['mira','lumen','
   // 0.22.34: the layout is for every screen but a short sideways one
   await H.page.setViewportSize({width:1280,height:800});await wait(300);await ev(()=>{window.dispatchEvent(new Event('resize'));__A.render();});await wait(900);
   const d=await ev(new Function(R+`const st=r(q('#bwrap'));return {on:q('.battle.b3').classList.contains('b27'),land:q('.battle.b3').classList.contains('b27land'),st,share:st.w*st.h/(innerWidth*innerHeight),rows:new Set(qa('#bcmd .menu.prim .mi').map(e=>Math.round(e.getBoundingClientRect().top))).size,cards:qa('#bparty .pc').filter(vis).length,cmdB:r(q('#bcmd')).b,vh:innerHeight};`));
+  // 0.22.42: a list has room. On the big screen the skill list rises over the stage, in columns, with at least six skills in full view
+  await ev(()=>{const B=__A.B;B.front.forEach(c=>{c.lv=30;});const b=document.querySelector('#bcmd [data-arg="skills"]');if(b)b.click();});await wait(600);
+  const f=await ev(new Function(R+`const L=qa('#bcmd .menu.list .mi').map(r),bb=r(q('.bbottom'));return {n:L.length,full:L.filter(p=>p.y>=bb.y&&p.b<=innerHeight&&p.h>30).length,cols:new Set(L.map(p=>p.x)).size,bb,vh:innerHeight,list:q('.battle.b3').classList.contains('b3list')};`));
+  chk(`6 the skill list on a 1280x800 screen: ${f.n} skills, ${f.full} in full view, ${f.cols} columns, the panel from ${f.bb.y} to ${f.bb.b} of ${f.vh}`,(f.list&&f.n>=2&&f.full>=Math.min(6,f.n)&&(f.n<3||f.cols>=2)&&f.bb.b<=f.vh+1&&f.bb.h>=200&&f.bb.y>=f.vh*.3)||JSON.stringify(f));
+  await ev(()=>{const b=document.querySelector('#bcmd .cmdback');if(b)b.click();});await wait(400);
   await H.page.setViewportSize({width:844,height:390});await wait(300);await ev(()=>{window.dispatchEvent(new Event('resize'));__A.render();});await wait(900);
   const e=await ev(new Function(R+`return {on:q('.battle.b3').classList.contains('b27'),ar:qa('#bcmd .autorow').filter(vis).length,hdr:vis(q('#hdr'))};`));
   chk(`5 the log line floats at the top of the stage; at 1280x800 the stage is ${Math.round(d.share*100)}% of the screen with the commands in one row; a sideways phone (844x390) keeps the classic layout`,(lineOn&&d.on&&d.land&&d.share>=.55&&d.rows===1&&d.cards===0&&d.cmdB<=d.vh&&!e.on&&e.ar===1)||JSON.stringify([a.line,a.st,d,e]));

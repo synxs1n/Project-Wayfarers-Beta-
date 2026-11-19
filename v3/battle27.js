@@ -94,6 +94,13 @@ body:has(.battle.b3.b27) #hdr{display:none}
 .battle.b3.m-tall.b27 .cmd .menu.sec .mi.b27pf{flex:1 1 160px}
 .battle.b3.m-tall.b27.b27open .bbottom .bparty{left:auto;top:0;bottom:0;width:min(440px,92%);max-height:none;border-top:0;border-left:2px solid #a48bff;border-radius:16px 0 0 16px}
 }
+/* 0.22.42 (asked: "in the action menu on big screens the skills are half blocked"): a list (skills, items, the swap list) no longer has to
+   fit the strip under the stage. The command panel rises over the lower part of the stage for as long as the list is open, up to 64% of the
+   screen, and scrolls inside; picking a skill or Back puts it back. On wide screens the list is in columns. Only #bcmd floats: the box
+   under the stage keeps its place and size, so nothing is measured or laid out again (floating the whole box left the stage dark when a list
+   was opened on the first turn). */
+.battle.b3.m-tall.b27.b3list .bbottom .cmd{display:block;/* not the bottom aligned column of the root menu: a list taller than the panel must start at its top */position:fixed;left:0;right:0;bottom:0;margin:0;width:auto;z-index:20;height:auto;max-height:64%;overflow-y:auto;overscroll-behavior:contain;box-sizing:border-box;padding:6px 8px calc(8px + env(safe-area-inset-bottom,0px));background:#0e172c;border:0;border-top:2px solid #33466f;border-radius:0;box-shadow:0 -10px 30px rgba(0,0,0,.5)}
+@media (min-width:700px){.battle.b3.m-tall.b27.b3list .menu.list{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:6px;align-items:stretch}}
 .battle.b3 .b27shade{display:none}
 .battle.b3.m-tall.b27.b27open .b27shade{display:block;position:fixed;inset:0;z-index:69;background:rgba(4,7,15,.55)}
 .battle.b3.m-tall.b27.b27open .bbottom .bparty{display:flex;flex-direction:column;gap:8px;position:fixed;left:0;right:0;bottom:0;max-height:78%;overflow-y:auto;overscroll-behavior:contain;z-index:70;box-sizing:border-box;background:#0f1930;border-top:2px solid #a48bff;border-radius:16px 16px 0 0;padding:10px 12px calc(12px + env(safe-area-inset-bottom,0px))}
@@ -109,4 +116,10 @@ body:has(.battle.b3.b27) #hdr{display:none}
 // a turned tablet or a resized window mid battle: the stage scale changes with the screen, so the stage is fitted again from scratch (the
 // resize pass of battle3.js only refits the classic wide layout; without this the stage kept a default 85 logical px, v211a)
 {let t=0;window.addEventListener('resize',()=>{try{if(!B27.live||typeof V==='undefined'||V.screen!=='battle'||!B)return;clearTimeout(t);t=setTimeout(()=>{try{if(V.screen!=='battle'||!B)return;BL.fitH=0;B._b8fit=0;B._b8vh=0;layoutBattle();renderBattle();}catch(e){}},60);}catch(e){}});}
+// While a panel floats over the stage (a list, or the Party & foes sheet) the GL backdrop is drawn every frame. hbFrame skips a frame that is
+// the same as the last, and the canvas does not keep its picture (no preserveDrawingBuffer): when the browser composes the stage again under
+// the new panel it has nothing to show, and the backdrop went black (0.22.42, seen on phones on a first turn).
+HOOK.after('renderBattle','battle27','is a panel floating over the stage',function(r,stageOnly){try{if(stageOnly)return;const bat=document.querySelector('.battle.b3');B27.cover=!!(bat&&bat.classList.contains('b27')&&(bat.classList.contains('b3list')||bat.classList.contains('b27open')));
+  const bc=document.getElementById('bcmd'),k=bat&&bat.classList.contains('b3list')?(B.menu||'')+'|'+(B.cur&&B.cur.id||''):'';if(bc&&k&&bc._b27k!==k){bc.scrollTop=0;const z=()=>{try{if(bc._b27k===k)bc.scrollTop=0;}catch(e){}};requestAnimationFrame(()=>{z();requestAnimationFrame(z);});/* the focus on the first entry scrolls the panel a row down; a newly opened list starts at its top */}if(bc)bc._b27k=k;if(typeof HB!=='undefined')HB.redraw=1;}catch(e){}});
+HOOK.before('battleFrame','battle27','keep the backdrop drawn under a floating panel',function(){try{if(B27.cover&&typeof HB!=='undefined')HB.redraw=1;}catch(e){}});
 try{window.__B27={B27,on:b27On};}catch(e){}

@@ -888,3 +888,7 @@ NOT REPRODUCED. The owner's report (a regular piece suggested for a hero, then t
 - `s36Dual` counts a Dual art with a role toward both of its elements, so most of the gaps of 0.22.36 were not gaps and the moves are no longer needed (0 moved). What is left is settled by an exchange: two same role skills of the two elements trade name, element and text between an early and a late slot (`S36.log.swapped`: zephra, isolde, verbena). All 28 dual types are gap free (`S36.log.gaps` empty). Test: v223a.
 - Any single target cure built like Purify (cleanse, power up to .7) has power 0 (Joseth's Purge).
 - nav40.js: on a mouse or pen click to walk, a ring at the release point and a diamond at `n40Project(WS.target)`. The owner's Windows report (clicks walk to the wrong place) is still NOT reproduced: scratchpad win7.js / win8.js checked the ground ray against drawn characters and against the buildings at nine sizes in Chromium 126. The marker is there to show the error on their machine. `N40.last` holds the last pair.
+
+## 0.22.42: battle lists get room (battle27.js)
+
+With `b3list` (a `.menu.list` is open) `#bcmd` is `position:fixed` at the bottom, up to 64% of the screen, scrolling inside (not `.bbottom`: taking that box out of the flow changed the fit and left the stage dark on a first turn); at 700 px and wider the list is a grid of 290 px columns. Before, on the new desktop layout the list had the 160 px strip under the stage.

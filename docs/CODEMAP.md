@@ -469,6 +469,28 @@ Registered (load order; 1 is next to the base):
 
 Runs: 17 legends17a (around) → 16 legends17b (around) → 15 roster17 (around) → 14 skills12 (around) → 13 skills12 (around) → 12 pacing (around) → 11 chain5 → 10 chain5 → 9 battle4 (around) → 8 twists (around) → 7 natures6 (around) → 6 atk6 (around) → 5 roles (around) → 4 anim → 3 prog2 (around) → 2 archetype (around) → 1 ailments (around) → **base** → 1 ailments (around) → 2 archetype (around) → 3 prog2 (around) → 5 roles (around) → 6 atk6 (around) → 7 natures6 (around) → 8 twists (around) → 9 battle4 (around) → 12 pacing (around) → 13 skills12 (around) → 14 skills12 (around) → 15 roster17 (around) → 16 legends17b (around) → 17 legends17a (around) → 18 legends17a
 
+### renderBattle (17 hooks)
+Registered (load order; 1 is next to the base):
+1. `battleui.js` after: boss bar removed
+2. `battle3.js` after: fit the target tags
+3. `battle3.js` after: tall layout: bottom panel back to the top on a new turn
+4. `battle3.js` after: fit check once the whole render has run (microtask)
+5. `battle3.js` before: Expert battle info class (b9x)
+6. `battle5.js` after: forecast bar fit
+7. `battle4.js` around: gimmick sync before, Momentum bar after
+8. `chain5.js` after: planned targets on the intent tags and the party cards
+9. `summon8.js` after: praying badge
+10. `kits12.js` after: name plate over a summoned guardian
+11. `menus12.js` before: battle menu memory: a turn opens at the hero's own remembered submenu; the place is noted on every render
+12. `menus12.js` after: battle menu memory: put the remembered scroll back (after the layout hooks)
+13. `battle16.js` before: no battle menu memory: a turn opens on the main actions (runs before menus12, which would put a submenu back)
+14. `battle16.js` after: a new turn starts at the top of the command list
+15. `battle16.js` after: the name plate of a summoned Scourge says SCOURGE
+16. `battle27.js` after: small phones: top strip, floating log line and the Party & foes sheet
+17. `battle27.js` after: is a panel floating over the stage
+
+Runs: 13 battle16 → 11 menus12 → 7 battle4 (around) → 5 battle3 → **base** → 1 battleui → 2 battle3 → 3 battle3 → 4 battle3 → 6 battle5 → 7 battle4 (around) → 8 chain5 → 9 summon8 → 10 kits12 → 12 menus12 → 14 battle16 → 15 battle16 → 16 battle27 → 17 battle27
+
 ### encounterFoes (16 hooks)
 Registered (load order; 1 is next to the base):
 1. `legends.js` before: legend fights
@@ -511,27 +533,6 @@ Registered (load order; 1 is next to the base):
 
 Runs: 10 party12 → 6 map → **base** → 1 account → 2 progression → 3 tavern2 → 4 metastats → 5 prog2 → 7 pacing → 8 goals → 9 look9 → 11 party12 → 12 menus14 → 13 quests16 → 14 world16 → 15 roster17 → 16 legends17b
 
-### renderBattle (16 hooks)
-Registered (load order; 1 is next to the base):
-1. `battleui.js` after: boss bar removed
-2. `battle3.js` after: fit the target tags
-3. `battle3.js` after: tall layout: bottom panel back to the top on a new turn
-4. `battle3.js` after: fit check once the whole render has run (microtask)
-5. `battle3.js` before: Expert battle info class (b9x)
-6. `battle5.js` after: forecast bar fit
-7. `battle4.js` around: gimmick sync before, Momentum bar after
-8. `chain5.js` after: planned targets on the intent tags and the party cards
-9. `summon8.js` after: praying badge
-10. `kits12.js` after: name plate over a summoned guardian
-11. `menus12.js` before: battle menu memory: a turn opens at the hero's own remembered submenu; the place is noted on every render
-12. `menus12.js` after: battle menu memory: put the remembered scroll back (after the layout hooks)
-13. `battle16.js` before: no battle menu memory: a turn opens on the main actions (runs before menus12, which would put a submenu back)
-14. `battle16.js` after: a new turn starts at the top of the command list
-15. `battle16.js` after: the name plate of a summoned Scourge says SCOURGE
-16. `battle27.js` after: small phones: top strip, floating log line and the Party & foes sheet
-
-Runs: 13 battle16 → 11 menus12 → 7 battle4 (around) → 5 battle3 → **base** → 1 battleui → 2 battle3 → 3 battle3 → 4 battle3 → 6 battle5 → 7 battle4 (around) → 8 chain5 → 9 summon8 → 10 kits12 → 12 menus12 → 14 battle16 → 15 battle16 → 16 battle27
-
 ### settingsBody (16 hooks)
 Registered (load order; 1 is next to the base):
 1. `battleui.js` result: Single target skills row
@@ -553,7 +554,7 @@ Registered (load order; 1 is next to the base):
 
 Runs: 13 hd2d (around) → 12 onboard (around) → 8 gfx6 (around) → 7 p2world (around) → 6 deskscale (around) → 5 keymap (around) → 3 music2 (around) → 2 saves (around) → **base** → 1 battleui (result) → 2 saves (around) → 3 music2 (around) → 4 p5settings (result) → 5 keymap (around) → 6 deskscale (around) → 7 p2world (around) → 8 gfx6 (around) → 9 battle3 (result) → 10 battle3 (result) → 11 battle5 (result) → 12 onboard (around) → 13 hd2d (around) → 14 guidance9 (result) → 15 res11 (result) → 16 menus11 (result)
 
-### battleFrame (14 hooks)
+### battleFrame (15 hooks)
 Registered (load order; 1 is next to the base):
 1. `anim.js` before: no shake when still
 2. `gfx6battle.js` around: camera, parallax, vignette
@@ -569,8 +570,9 @@ Registered (load order; 1 is next to the base):
 12. `chars13.js` after: the idle clock
 13. `chars13.js` around: mid-ground layer and the 2D contact shadow
 14. `cohere15.js` before: the Unified look toggle
+15. `battle27.js` before: keep the backdrop drawn under a floating panel
 
-Runs: 14 cohere15 → 13 chars13 (around) → 11 chars13 → 9 perf12 → 8 fxkind11 → 7 res11 → 6 battle11 (around) → 5 sprhd2 → 4 hdspell → 3 hdstage (around) → 2 gfx6battle (around) → 1 anim → **base** → 2 gfx6battle (around) → 3 hdstage (around) → 6 battle11 (around) → 10 kits12 → 12 chars13 → 13 chars13 (around)
+Runs: 15 battle27 → 14 cohere15 → 13 chars13 (around) → 11 chars13 → 9 perf12 → 8 fxkind11 → 7 res11 → 6 battle11 (around) → 5 sprhd2 → 4 hdspell → 3 hdstage (around) → 2 gfx6battle (around) → 1 anim → **base** → 2 gfx6battle (around) → 3 hdstage (around) → 6 battle11 (around) → 10 kits12 → 12 chars13 → 13 chars13 (around)
 
 ### calcStats (14 hooks)
 Registered (load order; 1 is next to the base):
