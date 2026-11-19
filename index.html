@@ -2125,7 +2125,7 @@ html:not(.flat) .battle.b3 .bline .b4mo .b4bar{box-shadow:inset 0 0 0 1px #000,0
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.22.39";const APP_BUILD="0c7488514901";
+(function(){const APP_VER="0.22.40";const APP_BUILD="1b848515af59";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2906,7 +2906,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.22.39";const APP_BUILD="0c7488514901";
+const APP_VER="0.22.40";const APP_BUILD="1b848515af59";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2914,10 +2914,11 @@ const APP_VER="0.22.39";const APP_BUILD="0c7488514901";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.22.40',['Every dual type hero now has a Primer, a Detonator, an early skill and a late skill for each of their two elements (a Dual art with a role counts for both). Zephra, Isolde and Verbena had two skills trade places to get there.','A mouse click to walk shows a ring where you clicked and a gold diamond on the tile the party walks to.']],
  ['Beta v0.22.39',['Auto battle uses items properly: Smelling Salts before Phoenix Feathers, the draught that fits the wound, Mana Tonics and Sage Brew when a hero runs dry, Sacred Ash on a Curse, a Bandage Roll on a Wound, a Remedy on ailments.','Auto settings has a new Use items switch: turn it off and auto never spends an item.']],
  ['Beta v0.22.38',['Upgrade suggestions put a hero\'s own relic first, and stop suggesting other gear for a slot once the relic is worn there (a shop piece used to be suggested, then the relic right after).']],
  ['Beta v0.22.37',['Towns have their land back. The towns that were islands (Mire, Peaks, Drowned, Shattered) stand on islands again with bridges between them, Lakes and Bamboo have canals, and Grotto, Mesa, Mines and Starless climb in terraces with stairs. Every building is still in clear view and every gate still has a road to it.']],
- ['Beta v0.22.36',['Skills pass. Relic skills are about a fifth weaker with smaller side effects. Every skill with two elements is a Dual art. Seven dual type heroes have a better spread: where one of their elements had no early or no late skill, one moved over from the other.','Regen is on far fewer skills (it stays on the ones that are about it: the Renews, Sanctuary, Meditate); Blessing gives Might and Focus, Lumen\'s Lampglow heals and gives Bulwark. Purify cures and no longer heals. Heals are 12% smaller, and a heal thrown at an Undead foe hurts it about a tenth more.']],
+ ['Beta v0.22.36',['Skills pass. Relic skills are about a fifth weaker with smaller side effects. Every skill with two elements is a Dual art. Dual type heroes are checked for a spread across both elements (finished in 0.22.40).','Regen is on far fewer skills (it stays on the ones that are about it: the Renews, Sanctuary, Meditate); Blessing gives Might and Focus, Lumen\'s Lampglow heals and gives Bulwark. Purify cures and no longer heals. Heals are 12% smaller, and a heal thrown at an Undead foe hurts it about a tenth more.']],
  ['Beta v0.22.35',['Screens open faster: the Bestiary, the Codex and the Smithy paint their first pictures at once and the rest over the next moments.']],
  ['Beta v0.22.34',['The battle screen on tablets and computers follows the phone layout: the stage runs the full width and takes most of the screen, the commands are one bar under it, and the party and foe cards open from Party & foes (a side panel on wide screens). A phone held sideways keeps the classic layout.','On phones the stage is a little taller.']],
  ['Beta v0.22.33',['The Echoforge has sections like the other shop tabs: All, For my party, Can forge, Weapons, Armor. What can be forged now comes first, and the long explanation folds away under About the Echoforge.']],
@@ -39094,14 +39095,15 @@ try{window.__P35={P35,fill:()=>p35Fill(P35.gen)};}catch(e){}
 //  1 every skill with two elements is a Dual art (s.combo): it primes with both and detonates on either (skills12.js)
 //  2 dual types: each of the hero's two elements should have a Primer, a Detonator, an early skill (learned by S36.early) and a late one.
 //    Where one element lacks one, a skill of the other element that can change hands (its name or text carries the element's word) moves
-//    over, as long as the giver keeps all four itself and the skill is not one of the hero's own. Name and text follow.
+//    over, as long as the giver keeps all four itself and the skill is not one of the hero's own. Name and text follow. A Dual art with a
+//    role counts for both of its elements. What is still missing after that is settled by an exchange (see s36Dual, 0.22.40).
 //  3 Regen stays on the skills that are about it (S36.regenKeep); elsewhere it goes, or becomes another boon (S36.regenTo). Lumen's Lampglow
 //    heals and gives Bulwark, so it is not Radiant Renew with a heal.
 //  4 Purify cures and no longer heals (power 0; engine.js skips the heal).
 //  5 heals are S36.heal (0.88) of what they were. config.js raises what a heal does to an Undead foe (HEAL_HURT .95, was .75), so that is
 //    about a tenth more than before.
 // Relic skills (s.relic) are not touched here; relics25.js has their own cut.
-const S36={v:1,early:20,heal:.88,off:false,taken:/^Halo of (Light|Wind)$/,/* Lumen's and Pomona's own skills (v191a) */log:{moved:[],gaps:[]},
+const S36={v:1,early:20,heal:.88,off:false,taken:/^Halo of (Light|Wind)$/,/* Lumen's and Pomona's own skills (v191a) */log:{moved:[],swapped:[],gaps:[]},
   regenKeep:{'Sanctuary':1,'Tidal Renew':1,'Radiant Renew':1,'Meditate':1},
   regenTo:{'Blessing':'focus','Beacon Ward':'bulwark','Aurora':'focus','Spectrum Aria':'might','Cathedral Descant':'bulwark','Kennel Blessing':'focus','Iron Stance':'bulwark','Shield Ally':'ward','Lampglow':'bulwark'},
   elN:{fire:'Fire',water:'Water',ice:'Ice',lightning:'Lightning',earth:'Earth',wind:'Wind',shadow:'Shadow',light:'Light'}};
@@ -39116,9 +39118,11 @@ function s36Regen(s){const drop=L=>{if(!L)return false;const i=L.findIndex(q=>q[
   else d=d.replace(/,? and Regen\b/,'').replace(/\bRegen and /,'').replace(/, Regen\b/,'').replace(/\bRegen, /,'').replace(/\s+and grants\s*\./,'.').replace(/ and grants$/,'');
   s.d=d;s._s36r=1;}
 function s36Dual(t,L){const els=t.el||[];if(els.length<2)return;const role=s=>s.role==='primer'?'p':s.role==='det'?'d':'';
-  const R=()=>L.filter(s=>!s.relic&&!s.combo&&typeof s.el==='string'&&els.includes(s.el)&&role(s)&&(s.k==='phys'||s.k==='mag'));
-  const has=(e,need)=>R().some(s=>s.el===e&&(need==='p'||need==='d'?role(s)===need:need==='w'?s.lv<=S36.early:s.lv>S36.early));
-  const gaps=e=>['p','d','w','s'].filter(n=>!has(e,n));
+  // what counts for an element: its own Primers and Detonators, and a Dual art with a role (it primes with both elements, or detonates on either)
+  const hit=s=>!s.relic&&role(s)&&(s.k==='phys'||s.k==='mag'),of=(s,e)=>s.combo?[].concat(s.el||[]).includes(e):s.el===e;
+  const R=()=>L.filter(s=>hit(s)&&!s.combo&&typeof s.el==='string'&&els.includes(s.el));// the single element ones: only these change hands
+  const has=(e,need)=>L.some(s=>hit(s)&&of(s,e)&&(need==='p'||need==='d'?role(s)===need:need==='w'?s.lv<=S36.early:s.lv>S36.early));
+  const gaps=e=>['p','d','w','s'].filter(n=>!has(e,n)),all=()=>els.reduce((n,e)=>n+gaps(e).length,0);
   const can=(s)=>{if(s.own||s.sig||s.sigFl||/^sg_/.test(String(s.id)))return false;/* a hero's own skill keeps its element: renamed, "Halo of Water" would become another hero's "Halo of Light" (v191a) */const n=S36.elN[s.el];return !!n&&(String(s.n).indexOf(n)>=0||(String(s.d||'').indexOf(n)>=0&&!/Fire|Water|Ice|Frost|Lightning|Thunder|Storm|Volt|Earth|Stone|Wind|Gale|Shadow|Umbral|Light|Holy|Radiant|Ember|Inferno|Blizzard|Cyclone|Gust/.test(String(s.n))));};
   for(let pass=0;pass<4;pass++){let did=false;
     for(const e of els){const o=els.find(x=>x!==e),G=gaps(e);if(!G.length)continue;
@@ -39127,15 +39131,24 @@ function s36Dual(t,L){const els=t.el||[];if(els.length<2)return;const role=s=>s.
         const C=R().filter(s=>s.el===o&&fits(s)&&can(s)).sort((a,b)=>need==='w'?a.lv-b.lv:b.lv-a.lv);let done=false;
         for(const s of C){const was=s.el,a=S36.elN[was],b=S36.elN[e],nn=String(s.n).split(a).join(b);if(L.some(x=>x!==s&&x.n===nn)||S36.taken.test(nn))continue;// the kit already has a skill of that name, or it is another hero's own skill
           s.el=e;if(gaps(o).length){s.el=was;continue;}// the giver must keep its own four
-          s.n=String(s.n).split(a).join(b);if(s.d)s.d=String(s.d).split(a).join(b);s._s36e=was;S36.log.moved.push(t.id+': '+s.n+' ('+was+' to '+e+')');done=did=true;break;}
+          s.n=nn;if(s.d)s.d=String(s.d).split(a).join(b);s._s36e=was;S36.log.moved.push(t.id+': '+s.n+' ('+was+' to '+e+')');done=did=true;break;}
         if(done)break;}}
     if(!did)break;}
+  // 0.22.40: what is still missing is settled by an exchange. Two skills of the same role, one of each element, trade places in the kit: the
+  // early one's name, element and text go to the late slot and the other way round (level, power and cost stay with the slot). No skill is
+  // renamed, so this also works for a hero's own skills. Taken only when it leaves fewer gaps than before.
+  for(let pass=0;pass<3&&all()>0;pass++){let best=null;const P=R();
+    for(const x of P)for(const y of P){if(x===y||x.el===y.el||role(x)!==role(y)||(x.lv<=S36.early)===(y.lv<=S36.early)||x.lv>y.lv)continue;const g0=all();
+      const sw=()=>{for(const k of ['n','el','d','own','sig','sigFl']){const v=x[k];if(y[k]===undefined)delete x[k];else x[k]=y[k];if(v===undefined)delete y[k];else y[k]=v;}};sw();const g1=all();sw();
+      if(g1<g0&&(!best||g1<best.g))best={x,y,g:g1};}
+    if(!best)break;const {x,y}=best,a=x.n,b=y.n;for(const k of ['n','el','d','own','sig','sigFl']){const v=x[k];if(y[k]===undefined)delete x[k];else x[k]=y[k];if(v===undefined)delete y[k];else y[k]=v;}
+    x._s36x=y._s36x=1;S36.log.swapped.push(t.id+': '+b+' (now level '+x.lv+') and '+a+' (now level '+y.lv+')');}
   els.forEach(e=>{const G=gaps(e);if(G.length)S36.log.gaps.push(t.id+' '+e+':'+G.join(''));});}
 function s36Kit(t,L){
   L.forEach(s=>{if(!s||s.relic)return;
     if(Array.isArray(s.el)&&s.el.length>1&&!s.combo&&(s.k==='phys'||s.k==='mag'||s.k==='heal')){s._k12c=1;/* keeps its own name and text: kits12.js would rename a new Dual art to the class's generic one, which the kit may already hold */s.combo=1;s._s36c=1;}
     s36Regen(s);
-    if(s.k==='heal'&&s.n==='Purify'){s.pw=0;s.d='Cures every ailment on one ally.';}
+    if(s.k==='heal'&&s.cleanse&&s.t==='ally'&&!s.revive&&s.pw>0&&s.pw<=.7){s.pw=0;s.d='Cures every ailment on one ally.';}/* Purify, and the cures built like it (Joseth's Purge) */
     else if(s.k==='heal'&&s.pw>0&&!s._s36h){s._s36h=1;s.pw=+(s.pw*S36.heal).toFixed(2);}});
   s36Dual(t,L);}
 HOOK.xform('classSkills','skills36','the 0.22.36 kit pass (once per hero)',function(L,t){try{if(S36.off||!L||!t||t.mon||!L.length)return L;const f=L.find(s=>s&&!s.relic);if(!f||f._s36===S36.v)return L;
@@ -39240,6 +39253,31 @@ HOOK.xform('vModal','auto39','Auto settings: Use items',function(h,m){try{if(!m|
   const row=`<div class="row"><div class="grow"><b>Use items</b><small>On: Smelling Salts before Phoenix Feathers, the draught that fits the wound, Mana Tonics when a hero runs dry, Sacred Ash, Bandage Rolls and Remedies. Off: auto never spends an item.</small></div><div class="chips"><button class="chip ${on?'on':''}" data-act="autoCfg" data-arg='["items",true]'>On</button><button class="chip ${on?'':'on'}" data-act="autoCfg" data-arg='["items",false]'>Off</button></div></div>`;
   h=h.replace('<h4>Options</h4><div class="rows">','<h4>Options</h4><div class="rows">'+row).replace(/never uses items/,'uses items only as the Use items option below allows');}catch(e){}return h;});
 try{window.__A39={A39,pick:a39Pick};}catch(e){}
+
+// ===== nav40.js (v0.22.40): a click to walk shows where it landed =====
+// The owner, on the Windows app: "When I click a spot on the map or in the overworld it doesn't walk to the right place." Not reproduced: in
+// the app's engine (Chromium 126) at nine window sizes and three display scales a click on the ground resolved to the tile drawn under the
+// cursor, and the hero walked to it (docs/handoff-v0111.md, 0.22.40). So the game now shows what it understood, which is useful anyway and
+// will show the difference if there is one on the owner's machine:
+//   a white ring where the pointer was released, and a gold diamond on the tile the party is walking to (through the camera, HD-2D tiers).
+// When the two sit on each other the click was read correctly; apart, the gap is the error.
+// Mouse and pen only (a finger covers the spot). N40.off=true turns it off.
+const N40={off:false,ms:900};
+function n40Project(tx,ty){try{if(typeof HD==='undefined'||!HD.live||!HD.eye||!WS.cv)return null;const E=HD.eye,F=HD.fwd,U=HD.up,t=HD.tanH,asp=HD.asp,v=[tx*TS+TS/2-E[0],0-E[1],ty*TS+TS/2-E[2]];
+  const det=F[1]*U[2]-F[2]*U[1];if(Math.abs(det)<1e-9)return null;const lam=(v[1]*U[2]-v[2]*U[1])/det,c=(F[1]*v[2]-F[2]*v[1])/det;if(!(lam>0))return null;
+  const nx=(v[0]/lam-F[0])/(t*asp),ny=(c/lam)/t,r=WS.cv.getBoundingClientRect();return [r.left+(nx+1)/2*r.width,r.top+(1-ny)/2*r.height];}catch(e){return null;}}
+function n40Mark(x,y,cls){const d=document.createElement('i');d.className='n40 '+cls;d.style.left=x+'px';d.style.top=y+'px';document.body.appendChild(d);setTimeout(()=>{try{d.remove();}catch(e){}},N40.ms);}
+document.addEventListener('pointerup',e=>{try{if(N40.off||(e.pointerType!=='mouse'&&e.pointerType!=='pen')||typeof V==='undefined'||V.screen!=='world'||V.modal||!WS.target)return;
+  const t=e.target;if(!t||!t.closest||!t.closest('.wview,#wcv,#wgl'))return;const k=typeof nv11Zoom==='function'?nv11Zoom():1;
+  n40Mark(e.clientX/k,e.clientY/k,'at');const p=n40Project(WS.target[0],WS.target[1]);if(p)n40Mark(p[0],p[1],'to');N40.last={at:[e.clientX/k,e.clientY/k],to:p,tile:WS.target.slice()};}catch(_){}});
+{const st=document.createElement('style');st.id='n40css';st.textContent=`
+.n40{position:fixed;z-index:60;pointer-events:none;width:0;height:0}
+.n40.at::before{content:"";position:absolute;left:-9px;top:-9px;width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,.9);box-shadow:0 0 0 1px rgba(0,0,0,.6);animation:n40f .9s ease-out both}
+.n40.to::before{content:"";position:absolute;left:-6px;top:-6px;width:10px;height:10px;transform:rotate(45deg);background:#ffd23d;border:1px solid #1a1020;animation:n40f .9s ease-out both}
+@keyframes n40f{0%{opacity:1}70%{opacity:1}100%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.n40::before{animation-duration:.9s}}
+`;document.head.appendChild(st);}
+try{window.__N40={N40,project:n40Project};}catch(e){}
 
 window.__A={walkable,ceInit,tvSlots,genQuests,STARTERS,starterDraw,ECON,AUTO_NERF,rebuildBase,detLive,REACT,skEls,packContents,miniFor,AUTO_REW,ENC_RATE,ENC_MIN_STEPS,detNote,classSkills,stickCount,bestAll,calcStats,lookKey,vTemper,storyEchoUp,leaveDungeon,win,ldApply,genFort,caveOk,enterCave,siteHasMini,openChest,nextDlg,WS,mapIcoRects,roamSpawn,roamInterior,roamSees,mapTargets,DIRV,tileAt,STAGE_LV,autoBan,rollWeather,guardianDef,mapIssues,mapEntry,syncPools,bovAt,calFxAt,realmAt,REALMS,BOV,CAL_FX,overlayGuide,liftOverlay,drawGearIcon,gearIcon,itemIcon,RAW,sigKind,sigGid,personalDone,heroLook,hasSignature,LEGEND_IDS,facDirty,facCount,facRank,facRep,FACB,FAC,finishBattle,npcWords,npcHints,npcPool,titleMake,titleAdvance,TTS,placeAt,wkwUpdate,innSpot,getMap,monURL,enterVia,applyBossTheme,BTHEME,resetMaps,rebuildBase,shopStock,gearDesc,calcStats,gearMigrate,CLS_WPN,CLS_ARM,WPERK,WT_NAME,equipWhy,lootBase,GEAR,canEquip,gearOf,perkNote,FAM_MAT_V35,fbDraft,META:{get best(){return META.best},get codex(){return META.codex},get q(){return META.q}},saveMeta,OFF,offPending,offFlush,PROFILE,profileSync,codexSee,getMap,placeAt,interact,sanctumOpen,riftKeys,echoKeys,BONDS,bondKey,wkwUpdate,inTown,WS,LC,lsort,bestParty,fsCast,fsSkills,ldApply,MON,registerTamed,stickPower,stickCount,autoOne,planGear,bestTag,gainersFor,compGainFor,refresh,fitsFor,canEquip,gearOf,queueNewGear,ARENA,fxDur,banDur,stageTags,autoSwitchPick,layoutBattle,newChar,calcStats,limitSkill,limitTier,canStuck,dunReachable,LV_CAP,addXp,echoSpec,bossLvFor,fx,MON,log,effInfo,tierOf,perkOf,quirkDef,forgeCost,buyPlan,vJourney,modalBack,partySlots,limitOpen,town2Reached,skillKnown,known,classSkills,paceMigrate,unpackG,packG,makeEnemy,QUIRK,arrive,enterDungeon,wkwUpdate,useTravel,travelWhyNot,porkFlee,porkBlocked,encTile,campRest,buyPart,partLeft,alchStock,GAME_VERSION,CHANGELOG,ITEMS,tavernOffers,tavernPool,recruitFit,partyNeeds,vNext,CHALL,innSpot,RECIPES,MATS,FB,fbContext,REDEEM,legendJoin,legendQ,genQuests,dynActors,convInit,PROFILE,profileSync,checkArchive,GPOOL,FPOOL,guardianDef,saveMeta,archiveSkills,get G(){return G;},set G(v){G=v;},get B(){return B;},get V(){return V;},get META(){return META;},WS,ACT,render,newGame,placeAt,startBattle,autoTurn,advance,finishBattle,getMap,innSpot,setPause:p=>{PAUSE=p;},autoCfg,worldInputDir,inputSources,battleFrame,battleTheme,STS,MAPS,mapIssues,healMap,mimicReward,dropChest,interact,worldDraw,TPL,ZONES,ZS,newChar,recruit,saveGame,resetMaps,dynActors,tileAt,BV,refresh,genBounties,genQuests,vStarter,heroCard,heroURL,iconURL,masteryLine,AU,buildTrack,tone,noiseHit,MIDI,sfx,audioVol};
 ['heroRoles','SOLID','WEATHER','WX_BASE','weatherFX','superGuide','recruitCost','ceStart','ceStep','ceInit','cePool','wxList','SUPER_TABLE','superOk','facRank','facRep','facInit','facCount','facCredit','FAC','FMIS','facMissionList','facProg','tyOf','facSync','facMul','facBest','worldPlan','caveReward','enterCave','leaveCave','leaveDungeon','buildCaveMap','worldGraph','openWorldMap','sigReport','SIG_NAMES','starterDraw','ITEM_TIERS','gTierIdx','tierChip','gearIcon','starterSlots','STARTERS','CLK_LEN','CLK_PH','clockPhase','wxInfoBody','recipeOrder','recipeGain','recipeReady','recipeClose','effOf','calcDamage','healsUndead','storyEchoUp','riftKeys','echoDef','efCost','autoLocked','bossFightKey','learnScanAll','isSeen','mapMarks','genSub','subOK','subReq','ensureSub','inSub','tvSlots','tvInit','tvLeft','tvEvent','tvNextText','tvPool','tvDue','tvShuffle','mTavern','hireOK','TV_CAP','TV_CD','POOL_IDS','natPool','natOf','natRoll','NATURES','natInfo','natRerollCost','natChooseCost','NAT_CLASS','iconURL','seenOf','mapIcoDraw','drawMini','MAPCV','revealAround','fxLayer','numDur','compBonusText','compPerk','checkPhase','win','unitBox','LNQ','challVisible','challEligible','challState','isMimic','migrateCompanions','canSummon','summonComp','compOf','clockPhase','tickClock','isNight','rollWeather','wxStep','nightPool','encounterFoes','restAll','tameElite','openChest','rerollTavern','bestAll','gearTier','SV','svCheck','svFlush','svInit','svPush','svPull','svScan','svParse','svBackup','svPack','svUnpack','svProg','svCloudList','svDelDoc','svGet','svCap','slotState','slotKey','svDecode','SV_CH','svStatus','svSlotRaw','svLoad','loadRaw','svHash','svIdx'].forEach(k=>{try{Object.defineProperty(window.__A,k,{get:()=>eval(k)});}catch(e){}});

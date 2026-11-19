@@ -9,14 +9,15 @@
 //  1 every skill with two elements is a Dual art (s.combo): it primes with both and detonates on either (skills12.js)
 //  2 dual types: each of the hero's two elements should have a Primer, a Detonator, an early skill (learned by S36.early) and a late one.
 //    Where one element lacks one, a skill of the other element that can change hands (its name or text carries the element's word) moves
-//    over, as long as the giver keeps all four itself and the skill is not one of the hero's own. Name and text follow.
+//    over, as long as the giver keeps all four itself and the skill is not one of the hero's own. Name and text follow. A Dual art with a
+//    role counts for both of its elements. What is still missing after that is settled by an exchange (see s36Dual, 0.22.40).
 //  3 Regen stays on the skills that are about it (S36.regenKeep); elsewhere it goes, or becomes another boon (S36.regenTo). Lumen's Lampglow
 //    heals and gives Bulwark, so it is not Radiant Renew with a heal.
 //  4 Purify cures and no longer heals (power 0; engine.js skips the heal).
 //  5 heals are S36.heal (0.88) of what they were. config.js raises what a heal does to an Undead foe (HEAL_HURT .95, was .75), so that is
 //    about a tenth more than before.
 // Relic skills (s.relic) are not touched here; relics25.js has their own cut.
-const S36={v:1,early:20,heal:.88,off:false,taken:/^Halo of (Light|Wind)$/,/* Lumen's and Pomona's own skills (v191a) */log:{moved:[],gaps:[]},
+const S36={v:1,early:20,heal:.88,off:false,taken:/^Halo of (Light|Wind)$/,/* Lumen's and Pomona's own skills (v191a) */log:{moved:[],swapped:[],gaps:[]},
   regenKeep:{'Sanctuary':1,'Tidal Renew':1,'Radiant Renew':1,'Meditate':1},
   regenTo:{'Blessing':'focus','Beacon Ward':'bulwark','Aurora':'focus','Spectrum Aria':'might','Cathedral Descant':'bulwark','Kennel Blessing':'focus','Iron Stance':'bulwark','Shield Ally':'ward','Lampglow':'bulwark'},
   elN:{fire:'Fire',water:'Water',ice:'Ice',lightning:'Lightning',earth:'Earth',wind:'Wind',shadow:'Shadow',light:'Light'}};
@@ -31,9 +32,11 @@ function s36Regen(s){const drop=L=>{if(!L)return false;const i=L.findIndex(q=>q[
   else d=d.replace(/,? and Regen\b/,'').replace(/\bRegen and /,'').replace(/, Regen\b/,'').replace(/\bRegen, /,'').replace(/\s+and grants\s*\./,'.').replace(/ and grants$/,'');
   s.d=d;s._s36r=1;}
 function s36Dual(t,L){const els=t.el||[];if(els.length<2)return;const role=s=>s.role==='primer'?'p':s.role==='det'?'d':'';
-  const R=()=>L.filter(s=>!s.relic&&!s.combo&&typeof s.el==='string'&&els.includes(s.el)&&role(s)&&(s.k==='phys'||s.k==='mag'));
-  const has=(e,need)=>R().some(s=>s.el===e&&(need==='p'||need==='d'?role(s)===need:need==='w'?s.lv<=S36.early:s.lv>S36.early));
-  const gaps=e=>['p','d','w','s'].filter(n=>!has(e,n));
+  // what counts for an element: its own Primers and Detonators, and a Dual art with a role (it primes with both elements, or detonates on either)
+  const hit=s=>!s.relic&&role(s)&&(s.k==='phys'||s.k==='mag'),of=(s,e)=>s.combo?[].concat(s.el||[]).includes(e):s.el===e;
+  const R=()=>L.filter(s=>hit(s)&&!s.combo&&typeof s.el==='string'&&els.includes(s.el));// the single element ones: only these change hands
+  const has=(e,need)=>L.some(s=>hit(s)&&of(s,e)&&(need==='p'||need==='d'?role(s)===need:need==='w'?s.lv<=S36.early:s.lv>S36.early));
+  const gaps=e=>['p','d','w','s'].filter(n=>!has(e,n)),all=()=>els.reduce((n,e)=>n+gaps(e).length,0);
   const can=(s)=>{if(s.own||s.sig||s.sigFl||/^sg_/.test(String(s.id)))return false;/* a hero's own skill keeps its element: renamed, "Halo of Water" would become another hero's "Halo of Light" (v191a) */const n=S36.elN[s.el];return !!n&&(String(s.n).indexOf(n)>=0||(String(s.d||'').indexOf(n)>=0&&!/Fire|Water|Ice|Frost|Lightning|Thunder|Storm|Volt|Earth|Stone|Wind|Gale|Shadow|Umbral|Light|Holy|Radiant|Ember|Inferno|Blizzard|Cyclone|Gust/.test(String(s.n))));};
   for(let pass=0;pass<4;pass++){let did=false;
     for(const e of els){const o=els.find(x=>x!==e),G=gaps(e);if(!G.length)continue;
@@ -42,15 +45,24 @@ function s36Dual(t,L){const els=t.el||[];if(els.length<2)return;const role=s=>s.
         const C=R().filter(s=>s.el===o&&fits(s)&&can(s)).sort((a,b)=>need==='w'?a.lv-b.lv:b.lv-a.lv);let done=false;
         for(const s of C){const was=s.el,a=S36.elN[was],b=S36.elN[e],nn=String(s.n).split(a).join(b);if(L.some(x=>x!==s&&x.n===nn)||S36.taken.test(nn))continue;// the kit already has a skill of that name, or it is another hero's own skill
           s.el=e;if(gaps(o).length){s.el=was;continue;}// the giver must keep its own four
-          s.n=String(s.n).split(a).join(b);if(s.d)s.d=String(s.d).split(a).join(b);s._s36e=was;S36.log.moved.push(t.id+': '+s.n+' ('+was+' to '+e+')');done=did=true;break;}
+          s.n=nn;if(s.d)s.d=String(s.d).split(a).join(b);s._s36e=was;S36.log.moved.push(t.id+': '+s.n+' ('+was+' to '+e+')');done=did=true;break;}
         if(done)break;}}
     if(!did)break;}
+  // 0.22.40: what is still missing is settled by an exchange. Two skills of the same role, one of each element, trade places in the kit: the
+  // early one's name, element and text go to the late slot and the other way round (level, power and cost stay with the slot). No skill is
+  // renamed, so this also works for a hero's own skills. Taken only when it leaves fewer gaps than before.
+  for(let pass=0;pass<3&&all()>0;pass++){let best=null;const P=R();
+    for(const x of P)for(const y of P){if(x===y||x.el===y.el||role(x)!==role(y)||(x.lv<=S36.early)===(y.lv<=S36.early)||x.lv>y.lv)continue;const g0=all();
+      const sw=()=>{for(const k of ['n','el','d','own','sig','sigFl']){const v=x[k];if(y[k]===undefined)delete x[k];else x[k]=y[k];if(v===undefined)delete y[k];else y[k]=v;}};sw();const g1=all();sw();
+      if(g1<g0&&(!best||g1<best.g))best={x,y,g:g1};}
+    if(!best)break;const {x,y}=best,a=x.n,b=y.n;for(const k of ['n','el','d','own','sig','sigFl']){const v=x[k];if(y[k]===undefined)delete x[k];else x[k]=y[k];if(v===undefined)delete y[k];else y[k]=v;}
+    x._s36x=y._s36x=1;S36.log.swapped.push(t.id+': '+b+' (now level '+x.lv+') and '+a+' (now level '+y.lv+')');}
   els.forEach(e=>{const G=gaps(e);if(G.length)S36.log.gaps.push(t.id+' '+e+':'+G.join(''));});}
 function s36Kit(t,L){
   L.forEach(s=>{if(!s||s.relic)return;
     if(Array.isArray(s.el)&&s.el.length>1&&!s.combo&&(s.k==='phys'||s.k==='mag'||s.k==='heal')){s._k12c=1;/* keeps its own name and text: kits12.js would rename a new Dual art to the class's generic one, which the kit may already hold */s.combo=1;s._s36c=1;}
     s36Regen(s);
-    if(s.k==='heal'&&s.n==='Purify'){s.pw=0;s.d='Cures every ailment on one ally.';}
+    if(s.k==='heal'&&s.cleanse&&s.t==='ally'&&!s.revive&&s.pw>0&&s.pw<=.7){s.pw=0;s.d='Cures every ailment on one ally.';}/* Purify, and the cures built like it (Joseth's Purge) */
     else if(s.k==='heal'&&s.pw>0&&!s._s36h){s._s36h=1;s.pw=+(s.pw*S36.heal).toFixed(2);}});
   s36Dual(t,L);}
 HOOK.xform('classSkills','skills36','the 0.22.36 kit pass (once per hero)',function(L,t){try{if(S36.off||!L||!t||t.mon||!L.length)return L;const f=L.find(s=>s&&!s.relic);if(!f||f._s36===S36.v)return L;
