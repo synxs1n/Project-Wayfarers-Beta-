@@ -49,14 +49,15 @@ function s36Dual(t,L){const els=t.el||[];if(els.length<2)return;const role=s=>s.
         if(done)break;}}
     if(!did)break;}
   // 0.22.40: what is still missing is settled by an exchange. Two skills of the same role, one of each element, trade places in the kit: the
-  // early one's name, element and text go to the late slot and the other way round (level, power and cost stay with the slot). No skill is
+  // early skill goes to the late slot and the other way round (level, power and cost stay with the slot). No skill is
   // renamed, so this also works for a hero's own skills. Taken only when it leaves fewer gaps than before.
+  // everything that makes a skill what it is trades places (id, name, element, text, effects, the naming fields of kits12.js); what belongs to
+  // the slot stays: the levels, the power and the cost
+  const SLOT={lv:1,lv0:1,lv12:1,lvP:1,lvQ:1,lvR:1,lvK:1,lvS:1,pw:1,mp:1,mp0:1,_mp22:1,cost:1,_s36:1},trade=(x,y)=>{const K=new Set(Object.keys(x).concat(Object.keys(y)));K.forEach(k=>{if(SLOT[k])return;const hx=k in x,hy=k in y,v=x[k];if(hy)x[k]=y[k];else delete x[k];if(hx)y[k]=v;else delete y[k];});};
   for(let pass=0;pass<3&&all()>0;pass++){let best=null;const P=R();
-    for(const x of P)for(const y of P){if(x===y||x.el===y.el||role(x)!==role(y)||(x.lv<=S36.early)===(y.lv<=S36.early)||x.lv>y.lv)continue;const g0=all();
-      const sw=()=>{for(const k of ['n','el','d','own','sig','sigFl']){const v=x[k];if(y[k]===undefined)delete x[k];else x[k]=y[k];if(v===undefined)delete y[k];else y[k]=v;}};sw();const g1=all();sw();
+    for(const x of P)for(const y of P){if(x===y||x.el===y.el||role(x)!==role(y)||(x.lv<=S36.early)===(y.lv<=S36.early)||x.lv>y.lv)continue;const g0=all();trade(x,y);const g1=all();trade(x,y);
       if(g1<g0&&(!best||g1<best.g))best={x,y,g:g1};}
-    if(!best)break;const {x,y}=best,a=x.n,b=y.n;for(const k of ['n','el','d','own','sig','sigFl']){const v=x[k];if(y[k]===undefined)delete x[k];else x[k]=y[k];if(v===undefined)delete y[k];else y[k]=v;}
-    x._s36x=y._s36x=1;S36.log.swapped.push(t.id+': '+b+' (now level '+x.lv+') and '+a+' (now level '+y.lv+')');}
+    if(!best)break;const {x,y}=best;trade(x,y);x._s36x=y._s36x=1;S36.log.swapped.push(t.id+': '+x.n+' (now level '+x.lv+') and '+y.n+' (now level '+y.lv+')');}
   els.forEach(e=>{const G=gaps(e);if(G.length)S36.log.gaps.push(t.id+' '+e+':'+G.join(''));});}
 function s36Kit(t,L){
   L.forEach(s=>{if(!s||s.relic)return;
