@@ -106,4 +106,7 @@ body:has(.battle.b3.b27) #hdr{display:none}
 .b27sf{order:3;display:flex;flex-wrap:wrap;gap:6px}
 .b27sf .btn{flex:1 1 70px;min-height:40px}
 `;document.head.appendChild(st);}
+// a turned tablet or a resized window mid battle: the stage scale changes with the screen, so the stage is fitted again from scratch (the
+// resize pass of battle3.js only refits the classic wide layout; without this the stage kept a default 85 logical px, v211a)
+{let t=0;window.addEventListener('resize',()=>{try{if(!B27.live||typeof V==='undefined'||V.screen!=='battle'||!B)return;clearTimeout(t);t=setTimeout(()=>{try{if(V.screen!=='battle'||!B)return;BL.fitH=0;B._b8fit=0;B._b8vh=0;layoutBattle();renderBattle();}catch(e){}},60);}catch(e){}});}
 try{window.__B27={B27,on:b27On};}catch(e){}

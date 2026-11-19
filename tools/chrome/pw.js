@@ -34,6 +34,11 @@ async function loadFactor(page){const ms=await page.evaluate(`(${CAL})()`);retur
 async function frameFactor(browser){const c=await browser.newContext({viewport:{width:390,height:844}});try{const p=await c.newPage();await p.setContent('<body style="background:#123"></body>');
   const t=await p.evaluate(()=>new Promise(ok=>{const t=[];let last=performance.now();const f=n=>{t.push(n-last);last=n;if(t.length<90)requestAnimationFrame(f);else{t.sort((a,b)=>a-b);ok(t[85]);}};requestAnimationFrame(f);}));
   return Math.max(1,t/17);}finally{await c.close();}}
+// Tests written for a layout or a behaviour that a later version made optional keep it through a stored flag, set after the test's own
+// startup script: b27 = the classic battle layout (battle27.js), m29 = the classic menu and shop frame (menus29.js, shops31.js),
+// p35 = pictures painted at once (perf35.js). The current behaviour has its own tests (v211a, v213a, v215a).
+const CLASSIC={v198a:['b27'],v062a:['b27'],v095b:['b27'],v196a:['b27'],smithy2:['p35','m29'],v158a:['b27'],v152a:['b27']};
+function classicPre(){try{const k=path.basename(process.argv[1]||'','.js');return (CLASSIC[k]||[]).map(f=>`try{localStorage.setItem('aurelis-${f}off','1');}catch(e){}`).join('');}catch(e){return '';}}
 async function open(opt={}){
   // opt.browser: share one browser (each open still gets its own context, so its own localStorage: a second "device")
   // opt.mock: a script (no <script> tag) used instead of the default window.claude MOCK; opt.before(page): runs before the page loads
@@ -45,7 +50,7 @@ async function open(opt={}){
   const P=path.join(opt.dir||'/tmp','pw_page_'+process.pid+(opt.tag?'_'+opt.tag:'')+'.html');
   const clock=FREEZE&&opt.freeze?'<script>'+CLOCK+'</script>':'';
   // v0.11.4: timed hits are on by default in the game; tests keep them off unless a test sets META.cfg.timedHits=true (battle5.js b5TimedOn)
-  fs.writeFileSync(P,'<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body><script>window.__PWTEST=1</script>'+clock+'<script>'+(opt.pre||'localStorage.clear();')+'</script>'+(opt.mock!=null?'<script>'+opt.mock+'</script>':MOCK)+html+'</body></html>');
+  fs.writeFileSync(P,'<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body><script>window.__PWTEST=1</script>'+clock+'<script>'+(opt.pre||'localStorage.clear();')+classicPre()+'</script>'+(opt.mock!=null?'<script>'+opt.mock+'</script>':MOCK)+html+'</body></html>');
   await page.goto('file://'+P,{waitUntil:'load'});
   const ev=(f,a)=>page.evaluate(f,a);
   const shot=async n=>{await wait(250);await page.screenshot({path:(opt.out||'/tmp')+'/pw_'+n+'.png'});};

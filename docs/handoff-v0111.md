@@ -847,7 +847,7 @@ Asked after a mock-up: "shop menu updates are good, initiate the changes".
 
 - skills36.js is a `classSkills` xform that runs once per hero (flag `_s36` on the skill objects, which are per hero) and edits in place. `S36.off=true` before a kit is first read turns it off; `S36.log` lists what moved and the gaps left.
 - Two element skills get `combo=1` (and `_k12c=1` so kits12.js does not rename them to the class's generic Dual art).
-- `s36Dual`: for the 28 dual types, each element wants a primer, a detonator, a skill learned by level 20 and one after. A skill of the other element moves over when its name or text carries the element word and the giver keeps its own four. 11 moved; cadence, prisma (light has no early skill) and jose (few role skills) keep gaps.
+- `s36Dual`: for the 28 dual types, each element wants a primer, a detonator, a skill learned by level 20 and one after. A skill of the other element moves over when its name or text carries the element word and the giver keeps its own four. 7 moved (a hero's own skills never move, and no skill is renamed to another hero's own skill name, `S36.taken`); zephra, isolde, verbena, hollis, cadence, prisma and jose keep a gap.
 - Regen: 115 skills had it, 22 keep it (`S36.regenKeep`, plus anything not named in the tables that is a hero's own). `S36.regenTo` swaps it for another boon on some.
 - Purify: power 0, engine.js heal branch skips the heal when `sk.pw` is 0.
 - Heal skills: power x0.88 (so the preview, the field use and the Undead damage all follow). config.js HEAL_HURT .75 to .95, HEAL_HURT_AOE .6 to .76.
@@ -876,3 +876,9 @@ NOT REPRODUCED. The owner's report (a regular piece suggested for a hero, then t
 - `AUTO_DEF.items` (true). `autoCfg` is wrapped: `items:false` also sets `potion` and `reviveItem` false, so the two old item uses in engine.js stop too.
 - The Auto settings screen gets a Use items row through a `vModal` xform.
 - Test: tools/chrome/v222a.js.
+
+### Tests after 0.22.32 to 0.22.39
+
+- tools/chrome/pw.js has a `CLASSIC` table: tests named there get a stored flag after their own startup script (`aurelis-b27off`, `-m29off`, `-p35off`) and so keep the classic battle layout, the classic menu frame or pictures painted at once. Add a test there rather than editing its startup script.
+- battle27.js refits the stage on a window resize (a turned tablet): before, the stage kept a default height after a resize.
+- v186a check 3 (high) hovers around zero on untouched builds too (it failed on 0.22.31, passed on 0.22.36): treat as flaky.

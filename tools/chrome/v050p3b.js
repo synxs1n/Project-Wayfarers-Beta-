@@ -91,7 +91,7 @@ chk('3.9 Use 2 consumes 2 and lands in front of the last town\'s Inn',tw.m==='t0
 await ev(()=>{__A.enterDungeon(0);});await wait(500);
 await ev(()=>{const A=__A;A.WS.lock=false;A.V.modal=null;const d=A.getMap(A.WS.m.id);A.placeAt(A.WS.m.id,d.start[0]+0,d.start[1],'d');A.useTravel('porkchop');});await wait(700);
 const one=await ev(()=>{const A=__A,G=A.G;const d=A.getMap(A.WS.m.id);return {kind:A.WS.m.kind,inv:G.inv.porkchop,at:[A.WS.x,A.WS.y],start:d.start};});
-chk('3.9 the single use still returns to the dungeon entrance',one.kind==='dungeon'&&one.inv===2&&one.at[0]===one.start[0]&&one.at[1]===one.start[1]||JSON.stringify(one));
+chk('3.9 the single use walks out to the field at the dungeon door (0.22.32; it used to stop at the entrance inside)',one.kind==='field'&&one.inv===2||JSON.stringify(one));
 const out=await ev(()=>{const A=__A;A.V.modal=null;const f=A.getMap('f0');A.placeAt('f0',f.ent[0],f.ent[1]+1,'d');A.V.modal={type:'menu',tab:'items'};A.render();return {kind:A.WS.m.kind,b2:!!document.querySelector('#modal [data-act="p3Pork2"]')};});
 chk('3.9 outside a dungeon there is no "Use 2"',out.kind!=='dungeon'&&!out.b2||JSON.stringify(out));
 // in battle the old rule stays: one sandwich, a sure escape from ordinary fights

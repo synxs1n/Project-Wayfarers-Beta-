@@ -18,8 +18,8 @@ const start=H=>H.det(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEac
       secret:/Secret boss[\s\S]*\?\?\?/i.test(t),keeper:/The Riftkeeper/.test(t),rift:/Echo Rift[\s\S]*Echoes defeated/i.test(t)};});
   chk(`Echo Rift block: Echoes defeated 3 / ${r.n} and the Riftkeeper as "Secret boss ???" (${r.secret}, keeper named ${r.keeper})`,r.rift&&r.t.includes(`3 / ${r.n}`)&&r.secret&&!r.keeper);
   chk('every realm lists Field chests, Den, Lair, Sanctum, beacon, Echo, Quests, Bounties and Taming',r.rows.length===5&&r.rows.every(c=>['Field chests','Den','Lair','Sanctum','Echo','Quests','Bounties','Taming'].every(l=>c.labels.includes(l))&&c.labels.some(l=>/beacon/.test(l)))||JSON.stringify(r.rows[0]));
-  r=await H.ev(()=>{__A.META.riftkeeper=1;__A.render();return /The Riftkeeper[\s\S]*Beaten/.test(document.querySelector('#modal').innerText);});
-  chk('beaten Riftkeeper is named',r);await H.ev(()=>{delete __A.META.riftkeeper;});
+  r=await H.ev(()=>{__A.META.riftkeeper=1;__A.G.rkWon=1;/* 0.22.32: beaten is the journey's, not the account's */__A.render();return /The Riftkeeper[\s\S]*Beaten/.test(document.querySelector('#modal').innerText);});
+  chk('beaten Riftkeeper is named',r);await H.ev(()=>{delete __A.META.riftkeeper;delete __A.G.rkWon;});
   // the Den row says None where the realm has none; the map is the truth (seed 21 of the sweep: stage 3 is planned a Den the map never gets)
   r=await H.ev(()=>{const A=__A,G=A.G,T=A.TW.get,MAPS=T('MAPS');const out={none:0,den:0,bad:[]};
     for(let seed=1;seed<=40;seed++){G.run.seed=seed*104729+3;G.stage=4;Object.keys(MAPS).forEach(k=>delete MAPS[k]);G.been={};

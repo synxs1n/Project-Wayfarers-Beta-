@@ -6,7 +6,7 @@
 //    one pixel placeholder and are painted over the next frames (P35.ms per frame), in page order. Nothing changes once a picture is cached.
 //  2 the max temper lines that shops stopped showing in 0.22.32 were still worked out for every piece and hero (bestTag, upgMax).
 //  3 the phone menu and shop passes no longer measure the page inside the render (menus29.js, shops31.js).
-const P35={eager:16,ms:9,q:[],on:0,left:0,off:false,ph:'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'};
+const P35={eager:16,ms:9,q:[],on:0,left:0,off:(()=>{try{return localStorage.getItem('aurelis-p35off')==='1';}catch(e){return false;}})(),/* the stored flag is for tests that count what changes on an idle screen */ph:'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'};
 function p35NoMax(){try{return !!(V&&V.modal&&(V.modal.type==='smithy'||V.modal.type==='workshop'));}catch(e){return false;}}
 {const u0=upgMax;upgMax=function(){return p35NoMax()?'':u0.apply(this,arguments);};}
 // ----- 1 pictures painted after the screen is up -----

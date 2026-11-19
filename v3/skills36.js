@@ -9,14 +9,14 @@
 //  1 every skill with two elements is a Dual art (s.combo): it primes with both and detonates on either (skills12.js)
 //  2 dual types: each of the hero's two elements should have a Primer, a Detonator, an early skill (learned by S36.early) and a late one.
 //    Where one element lacks one, a skill of the other element that can change hands (its name or text carries the element's word) moves
-//    over, as long as the giver keeps all four itself. Name and text follow ("Earth Rain" becomes "Water Rain").
+//    over, as long as the giver keeps all four itself and the skill is not one of the hero's own. Name and text follow.
 //  3 Regen stays on the skills that are about it (S36.regenKeep); elsewhere it goes, or becomes another boon (S36.regenTo). Lumen's Lampglow
 //    heals and gives Bulwark, so it is not Radiant Renew with a heal.
 //  4 Purify cures and no longer heals (power 0; engine.js skips the heal).
 //  5 heals are S36.heal (0.88) of what they were. config.js raises what a heal does to an Undead foe (HEAL_HURT .95, was .75), so that is
 //    about a tenth more than before.
 // Relic skills (s.relic) are not touched here; relics25.js has their own cut.
-const S36={v:1,early:20,heal:.88,off:false,log:{moved:[],gaps:[]},
+const S36={v:1,early:20,heal:.88,off:false,taken:/^Halo of (Light|Wind)$/,/* Lumen's and Pomona's own skills (v191a) */log:{moved:[],gaps:[]},
   regenKeep:{'Sanctuary':1,'Tidal Renew':1,'Radiant Renew':1,'Meditate':1},
   regenTo:{'Blessing':'focus','Beacon Ward':'bulwark','Aurora':'focus','Spectrum Aria':'might','Cathedral Descant':'bulwark','Kennel Blessing':'focus','Iron Stance':'bulwark','Shield Ally':'ward','Lampglow':'bulwark'},
   elN:{fire:'Fire',water:'Water',ice:'Ice',lightning:'Lightning',earth:'Earth',wind:'Wind',shadow:'Shadow',light:'Light'}};
@@ -34,13 +34,13 @@ function s36Dual(t,L){const els=t.el||[];if(els.length<2)return;const role=s=>s.
   const R=()=>L.filter(s=>!s.relic&&!s.combo&&typeof s.el==='string'&&els.includes(s.el)&&role(s)&&(s.k==='phys'||s.k==='mag'));
   const has=(e,need)=>R().some(s=>s.el===e&&(need==='p'||need==='d'?role(s)===need:need==='w'?s.lv<=S36.early:s.lv>S36.early));
   const gaps=e=>['p','d','w','s'].filter(n=>!has(e,n));
-  const can=(s)=>{const n=S36.elN[s.el];return !!n&&(String(s.n).indexOf(n)>=0||(String(s.d||'').indexOf(n)>=0&&!/Fire|Water|Ice|Frost|Lightning|Thunder|Storm|Volt|Earth|Stone|Wind|Gale|Shadow|Umbral|Light|Holy|Radiant|Ember|Inferno|Blizzard|Cyclone|Gust/.test(String(s.n))));};
+  const can=(s)=>{if(s.own||s.sig||s.sigFl||/^sg_/.test(String(s.id)))return false;/* a hero's own skill keeps its element: renamed, "Halo of Water" would become another hero's "Halo of Light" (v191a) */const n=S36.elN[s.el];return !!n&&(String(s.n).indexOf(n)>=0||(String(s.d||'').indexOf(n)>=0&&!/Fire|Water|Ice|Frost|Lightning|Thunder|Storm|Volt|Earth|Stone|Wind|Gale|Shadow|Umbral|Light|Holy|Radiant|Ember|Inferno|Blizzard|Cyclone|Gust/.test(String(s.n))));};
   for(let pass=0;pass<4;pass++){let did=false;
     for(const e of els){const o=els.find(x=>x!==e),G=gaps(e);if(!G.length)continue;
       for(const need of G){// a giver of the other element that fits the need and can be spared
         const fits=s=>need==='p'||need==='d'?role(s)===need:need==='w'?s.lv<=S36.early:s.lv>S36.early;
         const C=R().filter(s=>s.el===o&&fits(s)&&can(s)).sort((a,b)=>need==='w'?a.lv-b.lv:b.lv-a.lv);let done=false;
-        for(const s of C){const was=s.el,a=S36.elN[was],b=S36.elN[e],nn=String(s.n).split(a).join(b);if(L.some(x=>x!==s&&x.n===nn))continue;// the kit already has a skill of that name
+        for(const s of C){const was=s.el,a=S36.elN[was],b=S36.elN[e],nn=String(s.n).split(a).join(b);if(L.some(x=>x!==s&&x.n===nn)||S36.taken.test(nn))continue;// the kit already has a skill of that name, or it is another hero's own skill
           s.el=e;if(gaps(o).length){s.el=was;continue;}// the giver must keep its own four
           s.n=String(s.n).split(a).join(b);if(s.d)s.d=String(s.d).split(a).join(b);s._s36e=was;S36.log.moved.push(t.id+': '+s.n+' ('+was+' to '+e+')');done=did=true;break;}
         if(done)break;}}

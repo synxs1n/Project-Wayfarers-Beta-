@@ -14,7 +14,7 @@ const OUT=__dirname+'/out';
   let r=await H0.ev(()=>{const A=__A,T=A.TW.get,K=__K12,TPL=T('TPL'),CLS=T('CLS'),SK=K.SK12,o={n:0,big:[],miss:[],bad:[],rays:[],gens:[],badGen:[],words:[],swap:K.K12.swap,retag:K.K12.retag};
     const legend=t=>['sniper','druid','archmage','chronicler'].includes(t.cls);
     Object.keys(TPL).forEach(id=>{const t=TPL[id];if(t.mon||!CLS[t.cls]||t.src==='x')return;o.n++;const L=T('classSkills')(t);if(L.length>SK.cap+2)o.big.push(id);/* the cap of 12 picks the kit; roster17.js adds two more (14) */
-      if(t.el.length>1)t.el.forEach(e=>['primer','det'].forEach(role=>{if(!L.some(s=>T('s12Is')(s,role,e)))o.miss.push(id+' '+e+' '+role);}));
+      if(t.el.length>1)t.el.forEach(e=>['primer','det'].forEach(role=>{if(!L.some(s=>T('s12Is')(s,role,e)||(s.combo&&[].concat(s.el||[]).includes(e))/* 0.22.36: a Dual art primes with both of its elements and detonates on either */))o.miss.push(id+' '+e+' '+role);}));
       L.forEach(s=>{if(s.role&&!s.combo&&!legend(t)&&!K.fits(s,s.role))o.bad.push(id+' '+s.n+' '+s.role);if(/ Ray$/.test(s.n)&&s.role)o.rays.push(id+' '+s.n+' '+s.role);
         if(s.gen){o.gens.push(t.cls+':'+s.n);const nm=SK.gen[t.cls][s.role==='primer'?0:1].replace('{n}',T('EL')[s.el]);if(s.n!==nm||/prime|primer|detonat/i.test(s.d))o.badGen.push(id+' '+s.n);}
         });});
@@ -35,7 +35,7 @@ const OUT=__dirname+'/out';
 
   // ================= 2. dual arts in the class voice =================
   r=await H0.ev(()=>{const A=__A,T=A.TW.get,TPL=T('TPL'),SK=__K12.SK12,EL=T('EL'),o={phys:[],cast:[],bad:[]};
-    Object.keys(TPL).forEach(id=>{const t=TPL[id];if(t.mon||!T('CLS')[t.cls]||t.el.length<2||t.src==='x')return;const c=T('classSkills')(t).find(s=>s.combo);if(!c)return;
+    Object.keys(TPL).forEach(id=>{const t=TPL[id];if(t.mon||!T('CLS')[t.cls]||t.el.length<2||t.src==='x')return;const c=T('classSkills')(t).find(s=>s.combo&&!s._s36c/* 0.22.36 made every two element skill a Dual art; those keep their own names */);if(!c)return;
       const base=T('COMBO')[T('comboKey')(t.el)];
       if(SK.physCls.includes(t.cls)){o.phys.push(id+' '+t.cls+': '+base.n+' -> '+c.n);const w=t.el.map(e=>SK.arts.w[e]);if(!c.n.startsWith(w[0]+' and '+w[1]+' ')||c.n===base.n||!c.d.includes(EL[t.el[0]])||!c.d.includes(EL[t.el[1]]))o.bad.push(id+' '+c.n+' | '+c.d);}
       else{o.cast.push(id+' '+c.n);if(c.n!==base.n)o.bad.push(id+' caster renamed '+c.n);}});
