@@ -2125,7 +2125,7 @@ html:not(.flat) .battle.b3 .bline .b4mo .b4bar{box-shadow:inset 0 0 0 1px #000,0
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.22.42";const APP_BUILD="610fc4f6c10f";
+(function(){const APP_VER="0.22.42";const APP_BUILD="1d81d5c2551b";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2363,7 +2363,7 @@ const BOSS_BUFF={hp:[.8,1.34,1.39,1.53,1.22],pow:[.955,1.28,1.32,1.535,1.23]}// 
 // round the boss takes cut less from kind and reflects refl of the damage), veil (for one round it takes cut less until a Scan or a Light
 // skill reveals it), wing (it takes off for a round: non Ranged physical hits deal cut less; then it dives at a marked spot for pct),
 // phase2 (at warn of its HP it cracks; at at a new move set (sk) and its shield back).
-// stageK: the gimmick's damage and healing by stage (the first Scourge is the gentle introduction; reactions only open in the second realm).
+// stageK: the gimmick's damage and healing by stage (the first Scourge is the gentle introduction; reactions were held back to the second realm until 0.22.42).
 const BOSS_GIM={on:true,daily:false,first:2,every:4,stageK:[.5,.85,1,1,1],
   def:{thornwarden:{t:'slot',n:'Thorn Snare',pct:.14,el:'earth',st:'root',d:'Roots erupt under one Vanguard spot on its next turn',tell:'Thorny roots creep under {who}',hit:'Roots burst under {who}'},
     drake:{t:'tide',n:'Rising Tide',every:3,max:3,spd:.05,dmg:.08,d:'The water rises every few turns: heroes without Water slow down and Water skills hit harder. An Earth skill dams it',tell:'The water swells around your feet',hit:'The tide rises'},
@@ -2605,7 +2605,7 @@ const ROLEPW={primary:1,secondary:.8,off:.5,natLift:.14,natCap:.9,fxShare:.33,of
 // PACE (v0.9.5, pacing.js): the realm (0 = the first) in which each system opens on a journey started on v0.9.5 or later. Older journeys,
 // New Game+ cycles and the Daily Trial have everything open. pcUnlocked(system) reads it (the onboarding tips can ask it too).
 // combat, elements and taming are always open; tempering keeps its own rule (after the first Scourge); camp follows CAMP.fromStage.
-const PACE={at:{elements:0,combat:0,taming:0,reactions:1,gear:1,bonds:1,camp:2,guilds:2,echoforge:3,arenaGold:3,ngplus:3}};
+const PACE={at:{elements:0,combat:0,taming:0,reactions:0,gear:1,bonds:1,camp:2,guilds:2,echoforge:3,arenaGold:3,ngplus:3}};
 
 // ==== 6. World: encounters, chance meetings, travel items, day and night, weather tables, factions, map generation ====
 // encounters on the road
@@ -2906,7 +2906,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.22.42";const APP_BUILD="610fc4f6c10f";
+const APP_VER="0.22.42";const APP_BUILD="1d81d5c2551b";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -2914,7 +2914,7 @@ const APP_VER="0.22.42";const APP_BUILD="610fc4f6c10f";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
- ['Beta v0.22.42',['In battle the skill and item lists open as a taller panel over the lower part of the stage (in columns on big screens), so the skills are no longer cut off.']],
+ ['Beta v0.22.42',['Primers now Prime foes from the very first realm of a new journey (they used to be plain hits until the second realm, so the Primer tag looked broken to new players).','In battle the skill and item lists open as a taller panel over the lower part of the stage (in columns on big screens), so the skills are no longer cut off.']],
  ['Beta v0.22.41',['The Save button is back in the top bar of the phone menu (it is still under More as well).']],
  ['Beta v0.22.40',['Every dual type hero now has a Primer, a Detonator, an early skill and a late skill for each of their two elements (a Dual art with a role counts for both). Zephra, Isolde and Verbena had two skills trade places to get there.','A mouse click to walk shows a ring where you clicked and a gold diamond on the tile the party walks to.']],
  ['Beta v0.22.39',['Auto battle uses items properly: Smelling Salts before Phoenix Feathers, the draught that fits the wound, Mana Tonics and Sage Brew when a hero runs dry, Sacred Ash on a Curse, a Bandage Roll on a Wound, a Remedy on ailments.','Auto settings has a new Use items switch: turn it off and auto never spends an item.']],
@@ -23315,7 +23315,7 @@ HOOK.after('genQuests','pacing','Tamer quest step for the pacing',function(r,s){
   const lt0=personalLockText;personalLockText=function(c){return lt0.apply(this,arguments).replace('Unlocks in the second realm','Unlocks in the '+ord(PERSONAL_REALM)+' realm');};}
 
 // =================== Beta v0.9.5: depth unlocks by realm (owner approved) ===================
-// PACE (config.js) says in which realm each system opens on a new journey: realm 1 elements, basic combat and taming; realm 2 reactions,
+// PACE (config.js) says in which realm each system opens on a new journey: realm 1 elements, basic combat, taming and (since 0.22.42) reactions; realm 2
 // gear upgrades (Tempering still waits for the first Scourge, above) and bonds; realm 3 camp and guild missions; realm 4 the endgame extras
 // (the Echoforge, the arena's Golden Coliseum, a New Game+ teaser). Gating only hides or holds back; it never removes anything:
 //  - a journey started before v0.9.5 (no G.pcV) keeps every system it had (only the v0.7.2 gates above apply to it),

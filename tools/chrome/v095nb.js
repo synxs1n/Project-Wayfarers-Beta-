@@ -34,7 +34,7 @@ chk('the panel hides while a window is open',r===true);
 // v0.9.6 depth unlocks (pacing.js pcUnlocked): no goal points at a system before it opens on this journey
 r=await ev(()=>{const L=__GL,G=__A.G,f=id=>L.GOALS.find(x=>x.id===id);const s0=G.stage,c0=G.cleared.slice();const a={pcV:G.pcV,r0:f("react").ok(),c0:f("camp").ok(),m0:f("guildm").ok(),t0:f("temper").ok()};
   G.stage=2;G.cleared=[true,true,false,false,false];a.c2=f("camp").ok();a.m2=f("guildm").ok();a.t2=f("temper").ok();G.stage=s0;G.cleared=c0;return a;});
-chk("first realm of a new journey: no reactions, temper, camp or guild mission goal; camp and guild missions from the third realm",r.pcV===1&&!r.r0&&!r.c0&&!r.m0&&!r.t0&&r.c2&&r.m2&&r.t2||JSON.stringify(r));
+chk("first realm of a new journey: no temper, camp or guild mission goal; camp and guild missions from the third realm",r.pcV===1&&!r.c0&&!r.m0&&!r.t0&&r.c2&&r.m2&&r.t2||JSON.stringify(r));
 // ---------- 2) done pays once ----------
 r=await ev(()=>{const A=__A,L=__GL,G=A.G,N=__NZ;const g0=G.gold,x0=G.party.map(id=>G.roster[id].xp+'/'+G.roster[id].lv),i0=G.inv.remedy||0;
   // the weak spot goal: a win where a hero hit a weakness

@@ -23,7 +23,7 @@ HOOK.after('genQuests','pacing','Tamer quest step for the pacing',function(r,s){
   const lt0=personalLockText;personalLockText=function(c){return lt0.apply(this,arguments).replace('Unlocks in the second realm','Unlocks in the '+ord(PERSONAL_REALM)+' realm');};}
 
 // =================== Beta v0.9.5: depth unlocks by realm (owner approved) ===================
-// PACE (config.js) says in which realm each system opens on a new journey: realm 1 elements, basic combat and taming; realm 2 reactions,
+// PACE (config.js) says in which realm each system opens on a new journey: realm 1 elements, basic combat, taming and (since 0.22.42) reactions; realm 2
 // gear upgrades (Tempering still waits for the first Scourge, above) and bonds; realm 3 camp and guild missions; realm 4 the endgame extras
 // (the Echoforge, the arena's Golden Coliseum, a New Game+ teaser). Gating only hides or holds back; it never removes anything:
 //  - a journey started before v0.9.5 (no G.pcV) keeps every system it had (only the v0.7.2 gates above apply to it),

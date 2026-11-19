@@ -118,7 +118,7 @@ r=await ev(()=>{const A=__A,O=__OB,N=__NZ,G=A.G;O.obM().s={};O.obM().u={};A.setP
   const st=G.stage,cl=G.cleared.slice();G.stage=0;G.cleared=[false,false,false,false,false];A.startBattle({stage:0,kind:"field",weather:"clear",foes:[A.makeEnemy(A.MON[k],4)]});const B=A.B,e=B.en[0];B.pturns=1;B.mode="cmd";
   e.primed={el:"fire",t:2};const o={pcV:G.pcV,gated:N.obEval(O.TIPMAP.primed),raw:!!O.TIPMAP.primed.t(),shield:(e.maxShield=3,e.shield=3,!!N.obEval(O.TIPMAP.shield))};A.V.modal=null;A.finishBattle("x");A.V.screen="world";
   G.stage=3;G.cleared=[true,true,true,false,false];return o;});
-chk("first realm of a new journey: no primed card (reactions open in the second realm), the shield card still shows",r.pcV===1&&r.gated===null&&r.raw&&r.shield||JSON.stringify(r));
+chk("first realm of a new journey: the primed card shows (reactions are open from the start since 0.22.42), the shield card too",r.pcV===1&&!!r.gated&&r.raw&&r.shield||JSON.stringify(r));
 r=await ev(()=>{const A=__A,O=__OB,N=__NZ,G=A.G;O.obM().s={};O.obM().u={};A.setPause(99999);
   const k=Object.keys(A.MON).filter(k=>!A.MON[k].mimic)[0];A.startBattle({stage:0,kind:'field',weather:'clear',foes:[A.makeEnemy(A.MON[k],4)]});const B=A.B,e=B.en[0];B.pturns=1;B.mode='cmd';
   const o={};e.primed={el:'fire',t:2};o.primed=N.obEval(O.TIPMAP.primed);
