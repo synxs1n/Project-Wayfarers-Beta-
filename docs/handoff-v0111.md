@@ -941,3 +941,9 @@ With `b3list` (a `.menu.list` is open) `#bcmd` is `position:fixed` at the bottom
   From S48.topW (900) px wide the line sits in the top strip and a list stays in the command box (class b48top); narrower, the line floats
   over the stage's side and a list is the rising panel kept left of the cards.
 - The skill boxes (three short lines) are the same on every b27 screen, phones included. The Attack button shows kind and estimate, no element.
+
+## 0.22.51 (side48.js)
+- The card column is sideways only again (b27Land, from 600 x 600): the owner prefers the earlier layout on upright tablets.
+- Skill boxes: every <small> is auto placed (grid-row:auto); the strip, the weapon line and the tags sit in rows 40 to 42 (empty rows take no
+  room, row-gap is 0). Never give two parts of a box the same grid cell (v228a check 8).
+- b48top: an open list is absolute over the foot of the stage, S48.rise (120) px above the box's own height.

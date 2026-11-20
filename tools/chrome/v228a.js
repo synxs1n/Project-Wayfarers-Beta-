@@ -7,6 +7,7 @@
 //  5 shields: a Knight starts with one; without it the shield skills are not in the battle list and the sheet says "Needs a shield"; with a
 //    two-handed weapon the shield slot says why it is empty
 //  7 the skill boxes are the same on a big screen and on a phone, and short (0.22.50)
+//  8 no text of a skill box lies on another (0.22.51: a Dual art's two lines did)
 //  6 the Guard glow is drawn (a visible shadow) when the cue asks for it
 // Usage (from tools/chrome): PWHTML=<abs path to out/aurelis3.html> node v228a.js
 const {open,chk,done}=require('./pw');
@@ -50,6 +51,11 @@ const META=`localStorage.clear();localStorage.setItem('aurelis-meta-v1',JSON.str
   await P.ev(()=>{const A=__A,g=A.TW.get;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;Object.values(A.G.roster).forEach(c=>{c.lv=30;c.S=g('calcStats')(c);c.hp=c.S.mhp;c.mp=c.S.mmp;});A.G.stage=1;A.G.cleared=[1,0,0,0,0];g('startBattle')({stage:1,kind:'wild'});A.render();});
   for(let i=0;i<80;i++){await P.wait(300);if(await P.ev(()=>{const B=__A.B;return !!(B&&B.cur&&B.cur.side==='p'&&B.mode==='cmd'&&B.menu==='root'&&document.querySelector('#bcmd [data-arg="skills"]'));}))break;}
   await P.ev(()=>document.querySelector('#bcmd [data-arg="skills"]').click());await P.wait(700);
+  // 0.22.51: a skill with two text lines (a Dual art, a hero's own skill): no line lies on another
+  const ov=await P.ev(()=>{const A=__A,g=A.TW.get,B=A.B,G=A.G;const c=g('newChar')('gorm',45,3);G.roster.gorm=c;c.S=g('calcStats')(c);c.hp=c.S.mhp;c.mp=c.S.mmp;const u=Object.assign(c,{side:'p',st:{}});B.front[0]=u;B.cur=u;B.menu='skills';B.mode='cmd';g('renderBattle')();
+    const out={n:0,two:0,bad:[]};document.querySelectorAll('#bcmd .menu.list .mi').forEach(m=>{out.n++;const parts=[...m.children].flatMap(e=>getComputedStyle(e).display==='contents'?[...e.children]:[e]).filter(e=>e.getBoundingClientRect().width>2&&e.getBoundingClientRect().height>2),R=parts.map(e=>e.getBoundingClientRect());if(m.querySelectorAll(':scope>small').length>2)out.two++;
+      for(let i=0;i<R.length;i++)for(let j=i+1;j<R.length;j++){const a=R[i],b=R[j];if(Math.min(a.right,b.right)-Math.max(a.left,b.left)>3&&Math.min(a.bottom,b.bottom)-Math.max(a.top,b.top)>3)out.bad.push(m.dataset.arg+': '+parts[i].className+' x '+parts[j].className);}});B.menu='skills';return out;});
+  chk(`8 Gorm's ${ov.n} skills (${ov.two} with more than one text line): no part of a box lies on another (${ov.bad.length})`,ov.n>8&&ov.two>=1&&!ov.bad.length||JSON.stringify(ov.bad.slice(0,5)));
   const ph=await P.ev(()=>{const L=[...document.querySelectorAll('#bcmd .menu.list .mi')],m=L.map(e=>e.getBoundingClientRect()),c=document.getElementById('bcmd').getBoundingClientRect();return {n:m.length,h:Math.max(...m.map(x=>x.height)),inView:m.filter(x=>x.top>=c.top&&x.bottom<=innerHeight+1).length,parts:['.n','small','.sk11e','.sk11c'].every(s=>{const e=L[0].querySelector(s);return e&&e.getBoundingClientRect().width>2;}),sx:document.documentElement.scrollWidth>innerWidth+1};});
   chk(`7 a phone (390x844) shows the same boxes: ${ph.n} skills, the tallest ${Math.round(ph.h)} px, ${ph.inView} in view at once, name, text, estimate and cost on each`,ph.n>3&&ph.h<=125&&ph.inView>=5&&ph.parts&&!ph.sx||JSON.stringify(ph));
   await done(P);})();

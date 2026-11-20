@@ -14,10 +14,12 @@
 //  4 the wide "☰ Party & foes" command is gone here (the cards are on screen); the ☰ on the top strip still opens the sheet for the
 //    full cards, Guide, sound, help and settings.
 // Off switch for tests: the stored flag aurelis-s48off (pw.js CLASSIC).
-const S48={w:200,minW:600,minH:600,topW:900,lineMin:260,/* 0.22.50: minW was 1000 and sideways only; the owner: "when I say big screens I'm also talking about tablet and fold open views". From topW px wide the log line sits in the top strip; narrower, it stays floating over the stage. */off:(()=>{try{return localStorage.getItem('aurelis-s48off')==='1';}catch(e){return false;}})()};
+const S48={w:200,minW:600,minH:600,topW:900,rise:120,lineMin:260,/* 0.22.50: minW was 1000 and sideways only; the owner: "when I say big screens I'm also talking about tablet and fold open views". From topW px wide the log line sits in the top strip; narrower, it stays floating over the stage. */off:(()=>{try{return localStorage.getItem('aurelis-s48off')==='1';}catch(e){return false;}})()};
 function s48W(){try{return window.innerWidth/(typeof dsZoom==='function'?dsZoom():1);}catch(e){return 0;}}
-function s48Fits(){try{if(S48.off)return false;return s48W()>=S48.minW&&b3Vh()>=S48.minH;}catch(e){return false;}}
-{const m0=b27Mark;b27Mark=function(bat,mode){let on=false;try{on=b27On(mode)&&s48Fits();bat.classList.toggle('b48',on);bat.style.setProperty('--b48w',S48.w+'px');S48.live=on;S48.top=on&&s48W()>=S48.topW;B27.noLine=S48.top;}catch(e){}return m0.apply(this,arguments);};}
+// 0.22.51: sideways only again (the owner: "for tablets held in long mode rather than wide mode, the screen looked better however it was
+// done before, wide mode is fine"). An upright tablet or fold has the phone layout: the full width stage and the Party & foes sheet.
+function s48Fits(){try{if(S48.off||typeof b27Land!=='function'||!b27Land())return false;return s48W()>=S48.minW&&b3Vh()>=S48.minH;}catch(e){return false;}}
+{const m0=b27Mark;b27Mark=function(bat,mode){let on=false;try{on=b27On(mode)&&s48Fits();bat.classList.toggle('b48',on);bat.style.setProperty('--b48w',S48.w+'px');bat.style.setProperty('--b48rise',S48.rise+'px');S48.live=on;S48.top=on&&s48W()>=S48.topW;B27.noLine=S48.top;}catch(e){}return m0.apply(this,arguments);};}
 // the stage scale: the column is not stage
 {const s0=b27Sc;b27Sc=function(bat){try{if(bat&&bat.classList.contains('b48')){const w=(bat.clientWidth||window.innerWidth)-S48.w-8+12,vh=b3Vh();if(b27Land())return clamp(Math.floor(Math.min(w/320,(vh-B27.landCmd)/150)*4)/4,2,6);return clamp(Math.floor(w/B27.portW*4)/4,B27.sc,6);}}catch(e){}return s0.apply(this,arguments);};}
 HOOK.xform('cmdHtml','side48','big screens: no Party & foes command (the cards are on screen)',function(h){try{const bat=document.querySelector('.battle.b3');if(!bat||!bat.classList.contains('b48'))return h;
@@ -43,12 +45,15 @@ ${S} .bban{top:14px}
    it over the stage). The turn line, Back and the filters share one row; under them the skills are boxes side by side (0.22.49: the owner
    prefers "the more boxy style with skills next to each other" to 0.22.48's one line rows), each with everything it showed before (name,
    target, purpose, kind, role, text, weapon line, what it is strong against, estimate, power, cost) in three short lines. The box keeps the height the root menu had (--b48ch) and the list scrolls inside. */
-${S}.b48top.b3list .bbottom .cmd{display:flex;flex-wrap:wrap;align-items:center;align-content:flex-start;gap:4px 8px;position:static;margin:0;width:auto;height:var(--b48ch,154px);max-height:var(--b48ch,154px);overflow:hidden;padding:5px 8px 6px;background:linear-gradient(#171c3a,#10142a);border:1px solid rgba(217,180,106,.35);border-radius:8px;box-shadow:none;z-index:auto;box-sizing:border-box}
+/* 0.22.51 (the owner: "we can bring back making the skill menu in battle overlap the battle window a little"): the box grows S48.rise px
+   upward over the foot of the stage while a list is open (two rows of boxes instead of one). It stays left of the cards. */
+${S}.b48top.b3list .bbottom{min-height:var(--b48ch,154px)}
+${S}.b48top.b3list .bbottom .cmd{display:flex;flex-wrap:wrap;align-items:center;align-content:flex-start;gap:4px 8px;position:absolute;left:0;right:calc(var(--b48w,200px) + 8px);bottom:0;top:auto;margin:0;width:auto;height:calc(var(--b48ch,154px) + var(--b48rise,120px));max-height:none;z-index:20;box-shadow:0 -8px 22px rgba(0,0,0,.45);overflow:hidden;padding:5px 8px 6px;background:linear-gradient(#171c3a,#10142a);border:1px solid rgba(217,180,106,.35);border-radius:8px;box-sizing:border-box}
 ${S}.b48top.b3list .cmd>.who.cmdhead{order:1;flex:0 0 auto;padding:0;min-height:0;gap:8px}
 ${S}.b48top.b3list .cmd>.who.cmdhead .port{display:none}
 ${S}.b48top.b3list .cmd>.chips{order:2;flex:1 1 200px;margin:0;display:flex;flex-wrap:nowrap;gap:4px;overflow-x:auto;scrollbar-width:none}
 ${S}.b48top.b3list .cmd>.a49vs{order:2;flex:0 1 auto;padding:0;font-size:.64rem;max-width:330px;line-height:1.15}
-${S}.b48top.b3list .cmd>.menu.list{order:3;flex:1 1 100%;min-height:0;align-self:stretch;height:calc(var(--b48ch,154px) - 52px);display:grid;grid-template-columns:repeat(auto-fill,minmax(236px,1fr));grid-auto-rows:min-content;gap:4px 5px;align-content:start;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;padding-right:2px}
+${S}.b48top.b3list .cmd>.menu.list{order:3;flex:1 1 100%;min-height:0;align-self:stretch;height:calc(var(--b48ch,154px) + var(--b48rise,120px) - 54px);display:grid;grid-template-columns:repeat(auto-fill,minmax(236px,1fr));grid-auto-rows:min-content;gap:4px 5px;align-content:start;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;padding-right:2px}
 ${S}.b48top.b3list .cmd>:not(.who):not(.chips):not(.menu):not(.a49vs){order:4;flex:1 1 100%}
 /* a screen with the card column but too narrow for the line in the top strip (an opened fold, a tablet held upright): the list is the
    rising panel of the phones, kept to the stage's side so the cards stay in view; the floating line keeps to the stage too */
@@ -60,15 +65,17 @@ ${T}.b3list .menu.list{display:grid;grid-template-columns:repeat(auto-fill,minma
 ${T}.b3list .cmd>.a49vs{font-size:.66rem;line-height:1.2}
 /* a skill is a box: name and tags with the estimate at their right; the text; then the weapon line and what it is strong against, with Power,
    kind and cost at their right. Everything the tall card showed, in three short lines. */
-${T}.b3list .menu.list .mi{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:1px 8px;align-items:center;align-content:start;width:100%;height:100%;min-height:0;padding:4px 8px 4px 18px;margin:0;text-align:left}
+${T}.b3list .menu.list .mi{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:0 8px;align-items:center;align-content:start;width:100%;height:100%;min-height:0;padding:4px 8px 4px 18px;margin:0;text-align:left}
 ${T}.b3list .menu.list .mi>.n{grid-area:1/1;display:flex;flex-wrap:wrap;align-items:center;gap:2px 0;font-size:.86rem;line-height:1.15;min-width:0}
 ${T}.b3list .menu.list .mi>.m{display:contents}
 ${T}.b3list .menu.list .mi>.m .sk11e{grid-area:1/2;justify-self:end;white-space:nowrap}
 ${T}.b3list .menu.list .mi>.m .sk11l{grid-area:1/2;justify-self:end}
-${T}.b3list .menu.list .mi>small{grid-area:2/1/3/3;margin:0;font-size:.7rem;line-height:1.2}
-${T}.b3list .menu.list .mi>small.dk11{grid-area:4/1/5/3;justify-self:start;max-width:56%;opacity:.75;font-size:.64rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-${T}.b3list .menu.list .mi>.effs{grid-area:4/1/5/3;justify-self:end;margin:0;display:flex;flex-wrap:nowrap;gap:2px;max-width:44%;overflow:hidden}
-${T}.b3list .menu.list .mi>.m .sk11s{grid-area:3/1/4/3;justify-self:start;justify-content:flex-start;gap:6px;flex-wrap:nowrap;white-space:nowrap}
+/* the text lines are placed one after another (a Dual art or a hero's own skill has two: 0.22.50 put them all in one cell, on top of each
+   other); the strip and the last line sit in far rows, which are empty and take no room */
+${T}.b3list .menu.list .mi>small{grid-column:1/-1;grid-row:auto;margin:1px 0 0;font-size:.7rem;line-height:1.2}
+${T}.b3list .menu.list .mi>small.dk11{grid-area:41/1/42/3;margin:1px 0 0;justify-self:start;max-width:100%;opacity:.75;font-size:.64rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+${T}.b3list .menu.list .mi>.effs{grid-area:42/1/43/3;justify-self:start;margin:1px 0 0;display:flex;flex-wrap:wrap;gap:2px;max-width:100%}
+${T}.b3list .menu.list .mi>.m .sk11s{grid-area:40/1/41/3;margin:1px 0;justify-self:start;justify-content:flex-start;gap:6px;flex-wrap:nowrap;white-space:nowrap}
 ${T}.b3list .menu.list .mi>.effs:empty{display:none}
 ${P} .bparty{display:flex;flex-direction:column;gap:12px;position:absolute;right:0;top:var(--b48t,64px);bottom:0;width:var(--b48w,200px);overflow-y:auto;overscroll-behavior:contain;padding:8px 0 4px;box-sizing:border-box;scrollbar-width:thin}
 ${P} .b8fl{display:none}

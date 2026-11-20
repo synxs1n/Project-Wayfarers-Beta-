@@ -34,15 +34,15 @@ const snap=new Function(R+`const bat=q('.battle.b3'),hp=qa('#bparty .pc').filter
   const l=await ev(new Function(R+`const c=r(q('#bcmd')),st=r(q('#bwrap')),cards=qa('#bparty .pc,#bparty .fc').filter(vis).map(r),mi=qa('#bcmd .menu.list .mi').map(r),ls=r(q('#bcmd .menu.list')),m0=q('#bcmd .menu.list .mi');
     return {list:q('.battle.b3').classList.contains('b3list'),c,st,minX:Math.min(...cards.map(x=>x.x)),n:mi.length,cols:new Set(mi.map(m=>m.x)).size,inView:mi.filter(m=>m.y>=ls.y-1&&m.b<=ls.b+6).length,rowH:mi[0]&&mi[0].h,vh:innerHeight,
       parts:['.n','small','.m .sk11e','.m .sk11c'].map(s=>{const e=m0.querySelector(s);return !!e&&vis(e);}),scroll:q('#bcmd .menu.list').scrollHeight>ls.h+2};`));
-  chk(`5 an open skill list stays in the box under the stage (${l.c.y}..${l.c.b}, the stage ends at ${l.st.b}) and left of the cards (${l.c.r} <= ${l.minX}): ${l.n} skills as boxes in ${l.cols} columns, a box is ${l.rowH} px high, ${l.inView} in full view at once, the rest by scrolling (${l.scroll}); a row shows name and tags, text, estimate and cost`,
-    l.list&&l.n>1&&l.cols>=3&&l.c.y>=l.st.b-2&&l.c.b<=l.vh&&l.c.r<=l.minX&&l.rowH<=120&&l.inView>=Math.min(l.cols,l.n)-1&&l.parts.every(Boolean)||JSON.stringify(l));
+  chk(`5 an open skill list rises a little over the stage's foot (${l.c.y}..${l.c.b}, the stage ends at ${l.st.b}) and left of the cards (${l.c.r} <= ${l.minX}): ${l.n} skills as boxes in ${l.cols} columns, a box is ${l.rowH} px high, ${l.inView} in full view at once, the rest by scrolling (${l.scroll}); a row shows name and tags, text, estimate and cost`,
+    l.list&&l.n>1&&l.cols>=3&&l.c.y>=l.st.b-140&&l.c.y<l.st.b/* 0.22.51: it rises a little over the foot of the stage */&&l.c.b<=l.vh&&l.c.r<=l.minX&&l.rowH<=125&&l.inView>=Math.min(l.cols,l.n)&&l.parts.every(Boolean)||JSON.stringify(l));
   await H.browser.close();
   H=await boot(390,844,true);const p=await H.ev(snap);await H.browser.close();
   // 0.22.50: an opened fold or an upright tablet has the column too; the line floats over the stage's side, the list rises on that side
-  H=await boot(673,841,true);const fo=await H.ev(snap);await H.ev(()=>{const b=document.querySelector('#bcmd [data-arg="skills"]');if(b)b.click();});await H.wait(700);
+  H=await boot(841,673,true);const fo=await H.ev(snap);await H.ev(()=>{const b=document.querySelector('#bcmd [data-arg="skills"]');if(b)b.click();});await H.wait(700);
   const fl=await H.ev(new Function(R+`const c=r(q('#bcmd')),cards=qa('#bparty .pc,#bparty .fc').filter(vis).map(r),mi=qa('#bcmd .menu.list .mi').map(r);return {c,minX:Math.min(...cards.map(x=>x.x)),n:mi.length,h:mi[0]&&mi[0].h};`));await H.browser.close();
-  chk(`6 an opened fold (673x841): column on (${fo.on}), ${fo.heroes+fo.foes} cards right of the stage (${fo.minX} >= ${fo.st.r}), the line stays over the stage (${fo.bl.x}..${fo.bl.r}), not in the strip (${fo.top}); the skill list rises left of the cards (${fl.c.r} <= ${fl.minX}), ${fl.n} boxes about ${fl.h} px high`,
+  chk(`6 an opened fold held sideways (841x673): column on (${fo.on}), ${fo.heroes+fo.foes} cards right of the stage (${fo.minX} >= ${fo.st.r}), the line stays over the stage (${fo.bl.x}..${fo.bl.r}), not in the strip (${fo.top}); the skill list rises left of the cards (${fl.c.r} <= ${fl.minX}), ${fl.n} boxes about ${fl.h} px high`,
     fo.on&&!fo.top&&fo.heroes===fo.party&&fo.foes===fo.en&&fo.minX>=fo.st.r&&fo.bl.r<=fo.minX&&fo.st.w>=400&&fl.c.r<=fl.minX&&fl.n>1&&fl.h<=110||JSON.stringify([fo.on,fo.top,fo.st,fo.bl,fo.minX,fl]));
-  H=await boot(560,760,true);const w=await H.ev(snap);
-  chk(`4 a phone keeps its layout (column ${p.on}, Party & foes ${p.pf}, stage ${p.st.w} wide of ${p.vw}); so does a 560x760 window (column ${w.on}, Party & foes ${w.pf})`,!p.on&&p.pf&&p.st.w>=p.vw-12&&!w.on&&w.pf||JSON.stringify([p.on,p.pf,p.st,w.on,w.pf]));
+  H=await boot(820,1180,true);const w=await H.ev(snap);
+  chk(`4 a phone keeps its layout (column ${p.on}, Party & foes ${p.pf}, stage ${p.st.w} wide of ${p.vw}); so does an upright tablet, 820x1180 (0.22.51: column ${w.on}, Party & foes ${w.pf}, stage ${w.st.w} wide)`,!p.on&&p.pf&&p.st.w>=p.vw-12&&!w.on&&w.pf&&w.st.w>=w.vw-12||JSON.stringify([p.on,p.pf,p.st,w.on,w.pf]));
   await done(H);})();
