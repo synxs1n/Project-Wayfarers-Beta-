@@ -48,9 +48,13 @@ function s49Give(c,tier){try{const t=TPL[c.id];if(!t||t.cls!=='knight'||!c.eq||c
 HOOK.after('unpackG','act49','old saves: a Knight without a shield is handed a plain one, once',function(g){try{if(!g||g.daily||g.s49sh||!g.roster)return;g.s49sh=1;Object.values(g.roster).forEach(c=>{s49Give(c,0);});}catch(e){}});
 HOOK.after('newGame','act49','new journeys need no shield hand out',function(){try{if(G)G.s49sh=1;}catch(e){}});
 {const st=document.createElement('style');st.id='a49css';st.textContent=`
-.m.sk11 .sk11s .sk11p{display:inline-block;padding:0 5px;border:1px solid rgba(255,216,160,.5);border-radius:4px;background:rgba(255,216,160,.1);color:#ffe2b0;font-weight:800;line-height:1.35;white-space:nowrap}
-.battle.b3 .cmd .menu .mi[data-arg="attack"]{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.a49a{display:inline-flex;align-items:center;gap:4px;margin-left:auto;font-size:.68rem;font-weight:700;color:#cfd8f0;white-space:nowrap}
+.m.sk11 .sk11s .sk11p{display:inline-block;padding:0 5px;box-shadow:inset 0 0 0 1px rgba(255,216,160,.5);border-radius:4px;background:rgba(255,216,160,.1);color:#ffe2b0;font-weight:800;line-height:inherit;white-space:nowrap}
+/* the name and its numbers share the line when the button is wide enough, or sit on two tight lines inside the same height */
+.battle.b3 .cmd .menu .mi[data-arg="attack"]{display:flex;align-items:center;align-content:center;gap:0 6px;flex-wrap:wrap;line-height:1.05}
+.battle.b3 .cmd .menu .mi[data-arg="attack"] .a49n{flex:none;line-height:1.05}
+.a49a{display:inline-flex;align-items:center;gap:3px;margin-left:auto;min-width:0;max-width:100%;font-size:.68rem;line-height:1;font-weight:700;color:#cfd8f0;white-space:nowrap}
+
+.battle.b3:not(.b27) .a49a i{display:none}/* the older compact layout (a phone held sideways) has narrow buttons: the kind's symbol and the number */
 .a49a .ico{width:14px;height:14px}.a49a i{font-style:normal}.a49a b{color:#ffd8a0;font-size:.8rem;margin-left:3px}
 .a49vs{font-size:.7rem;color:#cfd8f0;padding:1px 4px 3px;line-height:1.25}.a49vs b{color:#ffd8a0}.a49vs small{opacity:.75}
 #bstage .unit.foe.a49f::after{content:"";position:absolute;left:50%;bottom:-3px;width:26px;height:6px;margin-left:-13px;border-radius:50%;border:1px solid #ffd8a0;box-shadow:0 0 5px #ffd8a0;pointer-events:none}

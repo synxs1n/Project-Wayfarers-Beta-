@@ -2125,7 +2125,7 @@ html:not(.flat) .battle.b3 .bline .b4mo .b4bar{box-shadow:inset 0 0 0 1px #000,0
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.22.50";const APP_BUILD="ff2e30712061";
+(function(){const APP_VER="0.22.50";const APP_BUILD="23e29ae54d4d";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2906,7 +2906,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.22.50";const APP_BUILD="ff2e30712061";
+const APP_VER="0.22.50";const APP_BUILD="23e29ae54d4d";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -39613,9 +39613,13 @@ function s49Give(c,tier){try{const t=TPL[c.id];if(!t||t.cls!=='knight'||!c.eq||c
 HOOK.after('unpackG','act49','old saves: a Knight without a shield is handed a plain one, once',function(g){try{if(!g||g.daily||g.s49sh||!g.roster)return;g.s49sh=1;Object.values(g.roster).forEach(c=>{s49Give(c,0);});}catch(e){}});
 HOOK.after('newGame','act49','new journeys need no shield hand out',function(){try{if(G)G.s49sh=1;}catch(e){}});
 {const st=document.createElement('style');st.id='a49css';st.textContent=`
-.m.sk11 .sk11s .sk11p{display:inline-block;padding:0 5px;border:1px solid rgba(255,216,160,.5);border-radius:4px;background:rgba(255,216,160,.1);color:#ffe2b0;font-weight:800;line-height:1.35;white-space:nowrap}
-.battle.b3 .cmd .menu .mi[data-arg="attack"]{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.a49a{display:inline-flex;align-items:center;gap:4px;margin-left:auto;font-size:.68rem;font-weight:700;color:#cfd8f0;white-space:nowrap}
+.m.sk11 .sk11s .sk11p{display:inline-block;padding:0 5px;box-shadow:inset 0 0 0 1px rgba(255,216,160,.5);border-radius:4px;background:rgba(255,216,160,.1);color:#ffe2b0;font-weight:800;line-height:inherit;white-space:nowrap}
+/* the name and its numbers share the line when the button is wide enough, or sit on two tight lines inside the same height */
+.battle.b3 .cmd .menu .mi[data-arg="attack"]{display:flex;align-items:center;align-content:center;gap:0 6px;flex-wrap:wrap;line-height:1.05}
+.battle.b3 .cmd .menu .mi[data-arg="attack"] .a49n{flex:none;line-height:1.05}
+.a49a{display:inline-flex;align-items:center;gap:3px;margin-left:auto;min-width:0;max-width:100%;font-size:.68rem;line-height:1;font-weight:700;color:#cfd8f0;white-space:nowrap}
+
+.battle.b3:not(.b27) .a49a i{display:none}/* the older compact layout (a phone held sideways) has narrow buttons: the kind's symbol and the number */
 .a49a .ico{width:14px;height:14px}.a49a i{font-style:normal}.a49a b{color:#ffd8a0;font-size:.8rem;margin-left:3px}
 .a49vs{font-size:.7rem;color:#cfd8f0;padding:1px 4px 3px;line-height:1.25}.a49vs b{color:#ffd8a0}.a49vs small{opacity:.75}
 #bstage .unit.foe.a49f::after{content:"";position:absolute;left:50%;bottom:-3px;width:26px;height:6px;margin-left:-13px;border-radius:50%;border:1px solid #ffd8a0;box-shadow:0 0 5px #ffd8a0;pointer-events:none}

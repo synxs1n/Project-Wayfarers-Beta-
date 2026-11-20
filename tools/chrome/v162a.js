@@ -25,7 +25,7 @@ async function run(tier){const tag=tier+': ';const H=await open({w:390,h:844,mob
   chk(tag+'the strip text is the same at 0 ms, 400 ms and 1.8 s',a0.every((r,i)=>r.txt===a1[i].txt&&r.txt===a2[i].txt));
   chk(tag+'every row shows its MP cost',a0.every(r=>/\d+ MP/.test(r.txt)));
   chk(tag+'a damage row shows an estimate ("~N") and its power',a0.some(r=>/^~\d+/.test(r.txt)&&/Power \d+/.test(r.txt))||JSON.stringify(a0));
-  const cs=await ev(()=>{const m=document.querySelector('.battle .menu.list .mi .m.sk11');const r=m.getBoundingClientRect(),b=m.closest('.mi').getBoundingClientRect();return {inside:r.left>=b.left-1&&r.right<=b.right+1&&r.top>=b.top-1&&r.bottom<=b.bottom+1,w:Math.round(r.width)};});
+  const cs=await ev(()=>{let m=document.querySelector('.battle .menu.list .mi .m.sk11');const mi0=m.closest('.mi');if(!m.getBoundingClientRect().width)m=m.querySelector('.sk11s');/* 0.22.49: in the box layout the strip's two parts are laid out by the box itself */const r=m.getBoundingClientRect(),b=mi0.getBoundingClientRect();return {inside:r.left>=b.left-1&&r.right<=b.right+1&&r.top>=b.top-1&&r.bottom<=b.bottom+1,w:Math.round(r.width)};});
   chk(tag+'the strip sits inside its row ('+cs.w+' px wide)',cs.inside);
   // multi-hit: the strip function with a 3 hit skill, and a status skill with no power
   const u=await ev(()=>{const T=__A.TW.get;return [T('sr11Strip')({k:'phys',pw:.8,hits:3,mp:7},'~120',''),T('sr11Strip')({k:'status',t:'ally',mp:6},'',''),T('sr11Strip')({k:'mag',pw:1.7,mp:5},'','Lv 9')];});
