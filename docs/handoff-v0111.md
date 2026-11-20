@@ -947,3 +947,9 @@ With `b3list` (a `.menu.list` is open) `#bcmd` is `position:fixed` at the bottom
 - Skill boxes: every <small> is auto placed (grid-row:auto); the strip, the weapon line and the tags sit in rows 40 to 42 (empty rows take no
   room, row-gap is 0). Never give two parts of a box the same grid cell (v228a check 8).
 - b48top: an open list is absolute over the foot of the stage, S48.rise (120) px above the box's own height.
+
+## 0.22.52 (fix52.js, side48.js)
+- The barred hoard: f52Vault(s) sets G.vaults[s] when the vault chest of 'd'+s is marked open in G.chests (its spot or c.from). Swept from
+  questReady (cached by chest count) and after openChest. A vault never opened stays sealed. Not reproduced on a fresh journey: opening the
+  chest set the flag in all five dungeons; the repair is for saves where the two records disagree.
+- Card column: .pcw.hastags .ptags is static (battle3.css lays it absolutely over the card's foot). Test: tools/chrome/v229a.js (battle group).

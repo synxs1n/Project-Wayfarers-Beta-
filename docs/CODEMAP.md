@@ -747,6 +747,19 @@ Registered (load order; 1 is next to the base):
 
 Runs: 8 world16 → 7 world14 (around) → 6 terrain13 (around) → 2 dungeon8 (around) → 1 worldfx (around) → **base** → 1 worldfx (around) → 2 dungeon8 (around) → 3 sitelook10 → 4 breachlook11 → 5 worldart13 → 6 terrain13 (around) → 7 world14 (around)
 
+### openChest (8 hooks)
+Registered (load order; 1 is next to the base):
+1. `metastats.js` around: chests opened
+2. `equip.js` around: new gear watch (queues new gear)
+3. `mimic.js` before: a mimic in the chest
+4. `sites.js` before: cave reward chests
+5. `sites.js` before: prize chest waits for the miniboss
+6. `worldfx.js` around: chest opening sparkle
+7. `world16.js` around: a chest opens at once: only its own tiles are repainted
+8. `fix52.js` after: a vault chest that is open counts for its quest
+
+Runs: 7 world16 (around) → 6 worldfx (around) → 5 sites → 4 sites → 3 mimic → 2 equip (around) → 1 metastats (around) → **base** → 1 metastats (around) → 2 equip (around) → 6 worldfx (around) → 7 world16 (around) → 8 fix52
+
 ### showLocation (8 hooks)
 Registered (load order; 1 is next to the base):
 1. `feedback.js` after: log the arrival
@@ -868,18 +881,6 @@ Registered (load order; 1 is next to the base):
 7. `fxkind11.js` after: foe telegraph and wind-up looks
 
 Runs: 6 fxkind11 (around) → 4 hdspell (around) → 2 sfx2 → 1 anim (around) → **base** → 1 anim (around) → 3 gfx6battle → 4 hdspell (around) → 5 fxkind11 → 6 fxkind11 (around) → 7 fxkind11
-
-### openChest (7 hooks)
-Registered (load order; 1 is next to the base):
-1. `metastats.js` around: chests opened
-2. `equip.js` around: new gear watch (queues new gear)
-3. `mimic.js` before: a mimic in the chest
-4. `sites.js` before: cave reward chests
-5. `sites.js` before: prize chest waits for the miniboss
-6. `worldfx.js` around: chest opening sparkle
-7. `world16.js` around: a chest opens at once: only its own tiles are repainted
-
-Runs: 7 world16 (around) → 6 worldfx (around) → 5 sites → 4 sites → 3 mimic → 2 equip (around) → 1 metastats (around) → **base** → 1 metastats (around) → 2 equip (around) → 6 worldfx (around) → 7 world16 (around)
 
 ### actorTalk (6 hooks)
 Registered (load order; 1 is next to the base):

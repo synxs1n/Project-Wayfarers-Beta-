@@ -107,5 +107,8 @@ ${P} .ucr .lbar{display:block;width:100%;height:3px;margin:0;border:0}
 ${P} .ucc{display:none}
 ${P} .ptags{display:flex;flex-wrap:wrap;gap:2px 3px;padding:2px 2px 0;font-size:.56rem}
 ${P} .ptags:empty{display:none}
+/* 0.22.52: the older cards lay their tags over the card's foot (battle3.css .pcw.hastags .ptags, absolute, in a strip the card kept free);
+   these cards have no such strip, so the weakness and status tags sat on the HP bar. Here they follow the card. */
+${P} .pcw.hastags .ptags,${P} .fcw.hastags .ptags{position:static;left:auto;right:auto;bottom:auto;flex-wrap:wrap;overflow:visible;max-height:none;row-gap:2px;z-index:auto;pointer-events:auto}
 `;document.head.appendChild(st);}
 try{window.__S48={S48,fits:s48Fits};}catch(e){}
