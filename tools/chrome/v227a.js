@@ -4,7 +4,7 @@
 //  2 the line (sky, Momentum, log, Log, ☰) is inside the top strip, between the turn order and Pause / Auto / Speed; nothing floats on the stage
 //  3 no "Party & foes" command; a tap on a hero card opens that hero's details; the ☰ on the strip still opens the full sheet
 //  4 a phone (390x844) and a small window (900x640) keep the layout they had: no column, the Party & foes command is there
-//  5 an open skill list rises over the stage only: it does not cover the card column
+//  5 an open skill list stays in the command box under the stage (it covers neither the stage nor the cards), one skill per row with all its info
 // Usage (from tools/chrome): PWHTML=<abs path to out/aurelis3.html> node v227a.js
 const {open,chk,done}=require('./pw');
 setTimeout(()=>{console.log('FAIL watchdog: v227a ran over 240 s');process.exit(1);},240000).unref();
@@ -30,8 +30,11 @@ const snap=new Function(R+`const bat=q('.battle.b3'),hp=qa('#bparty .pc').filter
   const s=await ev(new Function(R+`const bat=q('.battle.b3');const o={open:bat.classList.contains('b27open'),btn:qa('#bparty .b27sf .btn').length};q('#bparty [data-act="b27info"]').click();return o;`));await wait(300);
   chk(`3 no Party & foes command (${a.pf}); a tap on a hero card opens the details (${d.det}); the strip's ☰ opens the sheet (${s.open}, ${s.btn} buttons at its foot)`,!a.pf&&d.det&&s.open&&s.btn>=3||JSON.stringify([a.pf,d,s]));
   await ev(()=>{const b=document.querySelector('#bcmd [data-arg="skills"]');if(b)b.click();});await wait(700);
-  const l=await ev(new Function(R+`const c=r(q('#bcmd')),cards=qa('#bparty .pc,#bparty .fc').filter(vis).map(r),mi=qa('#bcmd .menu.list .mi').map(r);return {list:q('.battle.b3').classList.contains('b3list'),c,minX:Math.min(...cards.map(x=>x.x)),n:mi.length,cols:new Set(mi.map(m=>m.x)).size};`));
-  chk(`5 an open skill list (${l.n} skills in ${l.cols} columns) ends at x ${l.c.r}, left of the cards (${l.minX})`,l.list&&l.n>1&&l.cols>=2&&l.c.r<=l.minX||JSON.stringify(l));
+  const l=await ev(new Function(R+`const c=r(q('#bcmd')),st=r(q('#bwrap')),cards=qa('#bparty .pc,#bparty .fc').filter(vis).map(r),mi=qa('#bcmd .menu.list .mi').map(r),ls=r(q('#bcmd .menu.list')),m0=q('#bcmd .menu.list .mi');
+    return {list:q('.battle.b3').classList.contains('b3list'),c,st,minX:Math.min(...cards.map(x=>x.x)),n:mi.length,cols:new Set(mi.map(m=>m.x)).size,inView:mi.filter(m=>m.y>=ls.y-1&&m.b<=ls.b+1).length,rowH:mi[0]&&mi[0].h,vh:innerHeight,
+      parts:['.n','small','.m .sk11e','.m .sk11c'].map(s=>{const e=m0.querySelector(s);return !!e&&vis(e);}),scroll:q('#bcmd .menu.list').scrollHeight>ls.h+2};`));
+  chk(`5 an open skill list stays in the box under the stage (${l.c.y}..${l.c.b}, the stage ends at ${l.st.b}) and left of the cards (${l.c.r} <= ${l.minX}): ${l.n} skills, one per row, a row is ${l.rowH} px, ${l.inView} in view at once, the rest by scrolling (${l.scroll}); a row shows name and tags, text, estimate and cost`,
+    l.list&&l.n>1&&l.cols===1&&l.c.y>=l.st.b-2&&l.c.b<=l.vh&&l.c.r<=l.minX&&l.rowH<=44&&l.inView>=3&&l.parts.every(Boolean)||JSON.stringify(l));
   await H.browser.close();
   H=await boot(390,844,true);const p=await H.ev(snap);await H.browser.close();
   H=await boot(900,640,false);const w=await H.ev(snap);

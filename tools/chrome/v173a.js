@@ -16,7 +16,7 @@ const OUT=__dirname+'/out';
     Object.keys(TPL).forEach(id=>{const t=TPL[id];if(t.mon||!CLS[t.cls]||t.src==='x')return;o.n++;const L=T('classSkills')(t);if(L.length>SK.cap+2)o.big.push(id);/* the cap of 12 picks the kit; roster17.js adds two more (14) */
       if(t.el.length>1)t.el.forEach(e=>['primer','det'].forEach(role=>{if(!L.some(s=>T('s12Is')(s,role,e)||(s.combo&&[].concat(s.el||[]).includes(e))/* 0.22.36: a Dual art primes with both of its elements and detonates on either */))o.miss.push(id+' '+e+' '+role);}));
       L.forEach(s=>{if(s.role&&!s.combo&&!legend(t)&&!K.fits(s,s.role))o.bad.push(id+' '+s.n+' '+s.role);if(/ Ray$/.test(s.n)&&s.role)o.rays.push(id+' '+s.n+' '+s.role);
-        if(s.gen){o.gens.push(t.cls+':'+s.n);const nm=SK.gen[t.cls][s.role==='primer'?0:1].replace('{n}',T('EL')[s.el]);if(s.n!==nm||/prime|primer|detonat/i.test(s.d))o.badGen.push(id+' '+s.n);}
+        if(s.gen){o.gens.push(t.cls+':'+s.n);const nm=SK.gen[t.cls][s.role==='primer'?0:1].replace('{n}',T('EL')[s.el]);const alt=SK.gen[t.cls][s.role==='primer'?0:1].replace('{n}',((window.__S36||{}).elAlt||{})[s.el]||'?');/* 0.22.45 (skills36.js): a filler moved to the hero's other element takes that element's second word when the plain name is taken (Umbral Lance) */if((s.n!==nm&&s.n!==alt)||/prime|primer|detonat/i.test(s.d))o.badGen.push(id+' '+s.n);}
         });});
     return o;});
   console.log(JSON.stringify({n:r.n,gens:r.gens,swap:r.swap,retag:r.retag}));
