@@ -75,11 +75,11 @@ const {open,chk,done}=require('./pw');
   const rw=await ev(()=>{const T=__A.TW.get;T('G').roster.brook&&0;const A=__A;A.ACT.new();['brook','lumen','mira'].forEach(i=>A.ACT.pickS(i));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;const G=T('G');G.roster.brook.lv=30;G.roster.brook.S=T('calcStats')(G.roster.brook);
     G.roster.brook.nat='minstrel6';G.roster.brook.S=T('calcStats')(G.roster.brook);A.V.modal={type:'char',char:'brook',tab:'skills'};A.render();const rows=[...document.querySelectorAll('#modal .row')].map(r=>r.textContent.replace(/\s+/g,' ')).filter(t=>/Ballad|Dissonance|Battle Hymn/.test(t));return rows;});
   console.log(JSON.stringify(rw));
-  chk('the hero sheet skill rows show the scaled power and Sub with the multiplier (Healing Ballad Pow 140 Sub x80%; the bard\'s own Battle Hymn no tag)',rw.some(t=>/Healing Ballad.*Pow 140.*Sub x80%/.test(t))&&rw.some(t=>/Battle Hymn/.test(t)&&!/(Sub|Off) x/.test(t))||JSON.stringify(rw));
+  chk('the hero sheet skill rows show the scaled power, and since 0.22.49 no Sub tag (Healing Ballad Power 140; the bard\'s own Battle Hymn no tag)',rw.some(t=>/Healing Ballad.*Power 140/.test(t))&&rw.some(t=>/Battle Hymn/.test(t)&&!/(Sub|Off) x/.test(t))||JSON.stringify(rw));
   const br=await ev(()=>{const T=__A.TW.get,G=T('G');G.roster.brook.nat='minstrel6';G.roster.brook.S=T('calcStats')(G.roster.brook);G.party=['brook','lumen','mira'];T('startBattle')({stage:0,kind:'field'});const B=T('B');
     B.cur=B.front.find(u=>u.id==='brook');B.mode='cmd';B.menu='skills';B.pend=null;__A.render();
     return [...document.querySelectorAll('#bcmd .mi, .bcmd .mi, .mi')].map(r=>r.textContent.replace(/\s+/g,' ')).filter(t=>/Healing Ballad|Battle Hymn/.test(t));});
-  chk('the battle skill row shows the scaled power and the tier (Healing Ballad ~101 Sub x80% Pow 140, Battle Hymn plain)',br.some(t=>/Healing Ballad.*~\d+.*Sub x80%.*Pow 140/.test(t))&&br.some(t=>/Battle Hymn/.test(t)&&!/(Sub|Off) x/.test(t))||JSON.stringify(br));
+  chk('the battle skill row shows the scaled power, no tier tag since 0.22.49 (Healing Ballad ~101 Power 140, Battle Hymn plain)',br.some(t=>/Healing Ballad.*~\d+.*Power 140/.test(t))&&br.some(t=>/Battle Hymn/.test(t)&&!/(Sub|Off) x/.test(t))||JSON.stringify(br));
   // ---- old saves ----
   const m=await ev(()=>{const T=__A.TW.get,TPL=T('TPL'),classSkills=T('classSkills'),S=__S12,sk=T('skillKnown');const full=S.full(TPL.brann),kit=classSkills(TPL.brann),ids=new Set(kit.map(s=>s.id));
     const drop=full.find(s=>!ids.has(s.id)&&s.lv<=40);const c={id:'brann',lv:40,keep:[drop.id,'pstrike']};const g={roster:{brann:c}};const lost=S.migrate(g);

@@ -39,22 +39,28 @@ ${S}.b48top>.bline{left:var(--b48ll);right:auto;width:var(--b48lw);top:var(--b48
 ${S}.b48top>.bline .blog p{-webkit-line-clamp:2}
 ${S} .bban{top:14px}
 /* 5 a list (skills, items, the swap list) stays in the command box under the stage: it covers neither the battle nor the cards (0.22.42 raised
-   it over the stage). The turn line, Back and the filters share one row; under them one skill per row with everything it showed before
-   (name, target, purpose, kind, role, text, weapon line, what it is strong against, estimate, power, cost), laid out along the row instead
-   of stacked, so a row is one line high when it fits. The box keeps the height the root menu had (--b48ch) and the list scrolls inside. */
+   it over the stage). The turn line, Back and the filters share one row; under them the skills are boxes side by side (0.22.49: the owner
+   prefers "the more boxy style with skills next to each other" to 0.22.48's one line rows), each with everything it showed before (name,
+   target, purpose, kind, role, text, weapon line, what it is strong against, estimate, power, cost) in three short lines. The box keeps the height the root menu had (--b48ch) and the list scrolls inside. */
 ${S}.b3list .bbottom .cmd{display:flex;flex-wrap:wrap;align-items:center;align-content:flex-start;gap:4px 8px;position:static;margin:0;width:auto;height:var(--b48ch,154px);max-height:var(--b48ch,154px);overflow:hidden;padding:5px 8px 6px;background:linear-gradient(#171c3a,#10142a);border:1px solid rgba(217,180,106,.35);border-radius:8px;box-shadow:none;z-index:auto;box-sizing:border-box}
 ${S}.b3list .cmd>.who.cmdhead{order:1;flex:0 0 auto;padding:0;min-height:0;gap:8px}
 ${S}.b3list .cmd>.who.cmdhead .port{display:none}
 ${S}.b3list .cmd>.chips{order:2;flex:1 1 200px;margin:0;display:flex;flex-wrap:nowrap;gap:4px;overflow-x:auto;scrollbar-width:none}
-${S}.b3list .cmd>.menu.list{order:3;flex:1 1 100%;min-height:0;align-self:stretch;height:calc(var(--b48ch,154px) - 54px);display:block;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;padding-right:2px}
-${S}.b3list .cmd>:not(.who):not(.chips):not(.menu){order:4;flex:1 1 100%}
-${S}.b3list .menu.list .mi{display:flex;flex-wrap:wrap;align-items:center;gap:1px 10px;width:100%;min-height:30px;padding:3px 10px 3px 22px;margin:0 0 3px;text-align:left}
-${S}.b3list .menu.list .mi>.n{order:1;flex:0 0 auto;font-size:.9rem}
-${S}.b3list .menu.list .mi>small{order:2;flex:0 1 auto;min-width:0;margin:0;font-size:.74rem;line-height:1.2;grid-column:auto}
-${S}.b3list .menu.list .mi>small.dk11{order:3;opacity:.75}
-${S}.b3list .menu.list .mi>.effs{order:4;flex:0 0 auto;margin:0}
-${S}.b3list .menu.list .mi>.m{order:5;flex:0 0 auto;margin-left:auto;flex-direction:row;align-items:baseline;gap:8px;text-align:right}
-${S}.b3list .menu.list .mi>.m .sk11s{gap:6px}
+${S}.b3list .cmd>.a49vs{order:2;flex:0 1 auto;padding:0;font-size:.64rem;max-width:330px;line-height:1.15}
+${S}.b3list .cmd>.menu.list{order:3;flex:1 1 100%;min-height:0;align-self:stretch;height:calc(var(--b48ch,154px) - 52px);display:grid;grid-template-columns:repeat(auto-fill,minmax(236px,1fr));grid-auto-rows:min-content;gap:4px 5px;align-content:start;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;padding-right:2px}
+${S}.b3list .cmd>:not(.who):not(.chips):not(.menu):not(.a49vs){order:4;flex:1 1 100%}
+/* a skill is a box: name and tags with the estimate at their right; the text; then the weapon line and what it is strong against, with Power,
+   kind and cost at their right. Everything the tall card showed, in three short lines. */
+${S}.b3list .menu.list .mi{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:1px 8px;align-items:center;align-content:start;width:100%;height:100%;min-height:0;padding:4px 8px 4px 18px;margin:0;text-align:left}
+${S}.b3list .menu.list .mi>.n{grid-area:1/1;display:flex;flex-wrap:wrap;align-items:center;gap:2px 0;font-size:.86rem;line-height:1.15;min-width:0}
+${S}.b3list .menu.list .mi>.m{display:contents}
+${S}.b3list .menu.list .mi>.m .sk11e{grid-area:1/2;justify-self:end;white-space:nowrap}
+${S}.b3list .menu.list .mi>.m .sk11l{grid-area:1/2;justify-self:end}
+${S}.b3list .menu.list .mi>small{grid-area:2/1/3/3;margin:0;font-size:.7rem;line-height:1.2}
+${S}.b3list .menu.list .mi>small.dk11{grid-area:4/1/5/3;justify-self:start;max-width:56%;opacity:.75;font-size:.64rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+${S}.b3list .menu.list .mi>.effs{grid-area:4/1/5/3;justify-self:end;margin:0;display:flex;flex-wrap:nowrap;gap:2px;max-width:44%;overflow:hidden}
+${S}.b3list .menu.list .mi>.m .sk11s{grid-area:3/1/4/3;justify-self:start;justify-content:flex-start;gap:6px;flex-wrap:nowrap;white-space:nowrap}
+${S}.b3list .menu.list .mi>.effs:empty{display:none}
 ${P} .bparty{display:flex;flex-direction:column;gap:12px;position:absolute;right:0;top:var(--b48t,64px);bottom:0;width:var(--b48w,200px);overflow-y:auto;overscroll-behavior:contain;padding:8px 0 4px;box-sizing:border-box;scrollbar-width:thin}
 ${P} .b8fl{display:none}
 ${P} .b3pty{display:flex;flex-direction:column;gap:12px;order:1}

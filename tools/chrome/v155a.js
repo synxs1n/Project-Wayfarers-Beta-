@@ -13,10 +13,10 @@ const lim=await ev(()=>{const A=__D11,G=A.G,CAST=['mage','healer','bard','archma
   const roles=A.heroRoles({id});roles.forEach(r=>{const c=G.roster[id]=A.newChar(id,99,5);c.role=r;let L=A.known(c);try{L=L.concat([A.limitSkill(c)]);}catch(e){}
    (A.CLS_WPN[cl]||[null]).forEach(f=>{const u={id,side:'p',S:{wp:f}};L.concat([A.atkFor(u)]).forEach(s=>{if(s.k==='phys'){const d=A.deliveryOf(u,s);if(d)o.kinds.add(d);}});});});});
  return Object.entries(out).map(([cl,o])=>({cl,kinds:[...o.kinds].sort(),list:o.list.slice().sort(),cast:CAST.includes(cl)}));});
-lim.forEach(r=>chk(`${r.cl}: physical kinds ${r.kinds.join('+')||'none'} (limit ${r.cast?1:2}, class list ${r.list.join('+')})`,r.kinds.length<=(r.cast?1:2)&&r.kinds.every(k=>r.list.includes(k))||JSON.stringify(r)));
+lim.forEach(r=>chk(`${r.cl}: physical kinds ${r.kinds.join('+')||'none'} (limit ${r.cast?1:r.list.length>2?3:2}, class list ${r.list.join('+')})`,r.kinds.length<=(r.cast?1:r.list.length>2?3:2)/* 0.22.49: the thief's class list has three (what a thief throws is Ranged again, the owner's call) */&&r.kinds.every(k=>r.list.includes(k))||JSON.stringify(r)));
 // a full party of six can cover slash, blunt, piercing and ranged only by mixing classes: no class covers more than two of the four
 const cov=lim.filter(r=>!r.cast||r.kinds.length).map(r=>r.kinds.filter(k=>k!=='magic'));
-chk('no class covers more than two of slash, blunt, piercing, ranged',cov.every(k=>k.length<=2)||JSON.stringify(cov));
+chk('no class covers more than two of slash, blunt, piercing, ranged, but the thieves (three since 0.22.49), and none covers all four',cov.every(k=>k.length<=3)&&cov.filter(k=>k.length===3).every(k=>k.join()==='piercing,ranged,slash')||JSON.stringify(cov));
 chk('every one of the four physical kinds is reached by some class',['slash','blunt','piercing','ranged'].every(k=>cov.some(c=>c.includes(k)))||JSON.stringify(cov));
 // 2) the weapon sets the kind
 const w=await ev(()=>{const A=__D11,d=(id,fam,sid)=>{const u={id,side:'p',S:{wp:fam}};const t=A.TPL[id],s=sid==='attack'?A.ATTACK:A.classSkills(t).find(x=>x.id===sid);return A.deliveryOf(u,s);};
@@ -30,7 +30,7 @@ console.log(JSON.stringify(w));
 chk('warrior Power Strike: sword slash, warhammer blunt',w.blade==='slash'&&w.hammer==='blunt'||JSON.stringify(w));
 chk('warrior basic Attack follows the warhammer (blunt); a Titan Blow with a greatsword slashes',w.hammerAtk==='blunt'&&w.greatTitan==='slash'||JSON.stringify(w));
 chk('knight Lance skill: mace blunt, blade slash, a lance is re-kinded blunt; Shield Bash is always blunt',w.knMace==='blunt'&&w.knBlade==='slash'&&w.knLance==='blunt'&&w.knBash==='blunt'||JSON.stringify(w));
-chk('thief: dagger slash on a free skill (Hamstring: Flurry left the capped kit in v0.19), Quick Stab always piercing, thrown stars piercing',w.thDagger==='slash'&&w.thStab==='piercing'&&w.thStabThrown==='piercing'&&w.thThrown==='piercing'||JSON.stringify(w));
+chk('thief: dagger slash on a free skill (Hamstring: Flurry left the capped kit in v0.19), Quick Stab always piercing, thrown weapons ranged (0.22.49)',w.thDagger==='slash'&&w.thStab==='piercing'&&w.thStabThrown==='piercing'&&w.thThrown==='ranged'||JSON.stringify(w));
 chk('archer: bow ranged, Piercing Shot piercing with any bow, no weapon falls back to ranged',w.arBow==='ranged'&&w.arPierce==='piercing'&&w.arNone==='ranged'||JSON.stringify(w));
 // 3) the display in the skill list, and the foe's Weak tooltip
 await ev(()=>{const A=__A,B=A.B,u=B.front[0];u.S.wp='mace';u.mp=u.S.mmp||99;A.ACT.cmd('skills');});await wait(250);

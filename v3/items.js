@@ -169,9 +169,9 @@ const WT_KIND={blade:'slash',axe:'slash',greatsword:'slash',shortsword:'slash',d
   mace:'blunt',warhammer:'blunt',staff:'blunt',qstaff:'blunt',knuckles:'blunt',beads:'blunt',wand:'blunt',censer:'blunt',tome:'blunt',
   lance:'piercing',standard:'piercing',
   bow:'ranged',longbow:'ranged',crossbow:'ranged',thrown:'ranged',lute:'ranged',harp:'ranged',flute:'ranged',lyre:'ranged'};
-const CLS_KINDS={warrior:['slash','blunt'],knight:['slash','blunt'],monk:['blunt','slash'],archer:['ranged','piercing'],thief:['slash','piercing'],
+const CLS_KINDS={warrior:['slash','blunt'],knight:['slash','blunt'],monk:['blunt','slash'],archer:['ranged','piercing'],thief:['slash','piercing','ranged'],
   mage:['blunt'],healer:['blunt'],bard:['ranged'],sniper:['ranged','piercing'],druid:['ranged','slash'],archmage:['blunt'],chronicler:['blunt']};
-const CLS_KIND_ALT={knight:{lance:'blunt',standard:'blunt'},thief:{thrown:'piercing'}};
+const CLS_KIND_ALT={knight:{lance:'blunt',standard:'blunt'},};/* 0.22.49: a thief's thrown weapons are Ranged (the class list has it again) */
 const CLS_ARM={warrior:'heavy',knight:'heavy',mage:'light',healer:'light',bard:'light',chronicler:'light',archmage:'light',thief:'medium',archer:'medium',monk:'medium',sniper:'medium',druid:'medium'};
 const ARM_NAME={light:'Light armor',medium:'Medium armor',heavy:'Heavy armor'};
 const ARM_FAM={heavy:'mail',medium:'vest',light:'robe'};

@@ -41,7 +41,7 @@ const SKC={};
 // Each class reaches at most two physical kinds through its weapons and these skills; casters one (plus magic).
 const DL_FORCE={
   knight:{bash:'blunt'},
-  thief:{stab:'piercing',steal:'piercing',shiv1:'piercing',assn:'piercing',shadowstep:'piercing',lotus:'piercing',dart:'piercing',dart2:'piercing',fan:'piercing'},
+  thief:{stab:'piercing',steal:'piercing',shiv1:'piercing',assn:'piercing',shadowstep:'piercing',lotus:'piercing',dart:'ranged',dart2:'ranged',fan:'ranged',r_stars:'ranged',r_kunai:'ranged'},/* 0.22.49 (the owner: "thieves lost their kunai and stars being ranged attacks"): what a thief throws is Ranged again; v0.17 had made it Piercing to hold the class to two kinds */
   archer:{pierce:'piercing',heavenp:'piercing'},
   sniper:{eclipse:'piercing'},
   druid:{wolf:'slash',pack:'slash',oldwood:'slash',limit:'slash'}

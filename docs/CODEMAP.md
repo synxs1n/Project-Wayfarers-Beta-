@@ -423,6 +423,30 @@ Registered (load order; 1 is next to the base):
 
 Runs: 24 guard21 (around) → 23 cohere15 → 22 terrain13 → 20 chars13 → 19 light13 (around) → 18 light13 → 16 perf12 → 14 rk10 → 12 npcart9 → 10 hd2d (around) → 7 p5trans (around) → **base** → 1 legends → 2 equip → 3 world3 → 4 mimic → 5 daylight → 6 roam → 7 p5trans (around) → 8 gfx6world → 9 worldfx → 10 hd2d (around) → 11 dungeon8 → 13 voidsky10 → 15 breachlook11 → 17 light13 → 19 light13 (around) → 21 chars13 → 24 guard21 (around)
 
+### renderBattle (19 hooks)
+Registered (load order; 1 is next to the base):
+1. `battleui.js` after: boss bar removed
+2. `battle3.js` after: fit the target tags
+3. `battle3.js` after: tall layout: bottom panel back to the top on a new turn
+4. `battle3.js` after: fit check once the whole render has run (microtask)
+5. `battle3.js` before: Expert battle info class (b9x)
+6. `battle5.js` after: forecast bar fit
+7. `battle4.js` around: gimmick sync before, Momentum bar after
+8. `chain5.js` after: planned targets on the intent tags and the party cards
+9. `summon8.js` after: praying badge
+10. `kits12.js` after: name plate over a summoned guardian
+11. `menus12.js` before: battle menu memory: a turn opens at the hero's own remembered submenu; the place is noted on every render
+12. `menus12.js` after: battle menu memory: put the remembered scroll back (after the layout hooks)
+13. `battle16.js` before: no battle menu memory: a turn opens on the main actions (runs before menus12, which would put a submenu back)
+14. `battle16.js` after: a new turn starts at the top of the command list
+15. `battle16.js` after: the name plate of a summoned Scourge says SCOURGE
+16. `battle27.js` after: small phones: top strip, floating log line and the Party & foes sheet
+17. `battle27.js` after: is a panel floating over the stage
+18. `side48.js` after: big screens: place the card column and the top line
+19. `act49.js` after: mark the foe the numbers are for
+
+Runs: 13 battle16 → 11 menus12 → 7 battle4 (around) → 5 battle3 → **base** → 1 battleui → 2 battle3 → 3 battle3 → 4 battle3 → 6 battle5 → 7 battle4 (around) → 8 chain5 → 9 summon8 → 10 kits12 → 12 menus12 → 14 battle16 → 15 battle16 → 16 battle27 → 17 battle27 → 18 side48 → 19 act49
+
 ### calcDamage (18 hooks)
 Registered (load order; 1 is next to the base):
 1. `engine.js` after: pack frenzy, auto nerf on the acting hero
@@ -469,28 +493,48 @@ Registered (load order; 1 is next to the base):
 
 Runs: 17 legends17a (around) → 16 legends17b (around) → 15 roster17 (around) → 14 skills12 (around) → 13 skills12 (around) → 12 pacing (around) → 11 chain5 → 10 chain5 → 9 battle4 (around) → 8 twists (around) → 7 natures6 (around) → 6 atk6 (around) → 5 roles (around) → 4 anim → 3 prog2 (around) → 2 archetype (around) → 1 ailments (around) → **base** → 1 ailments (around) → 2 archetype (around) → 3 prog2 (around) → 5 roles (around) → 6 atk6 (around) → 7 natures6 (around) → 8 twists (around) → 9 battle4 (around) → 12 pacing (around) → 13 skills12 (around) → 14 skills12 (around) → 15 roster17 (around) → 16 legends17b (around) → 17 legends17a (around) → 18 legends17a
 
-### renderBattle (18 hooks)
+### newGame (17 hooks)
 Registered (load order; 1 is next to the base):
-1. `battleui.js` after: boss bar removed
-2. `battle3.js` after: fit the target tags
-3. `battle3.js` after: tall layout: bottom panel back to the top on a new turn
-4. `battle3.js` after: fit check once the whole render has run (microtask)
-5. `battle3.js` before: Expert battle info class (b9x)
-6. `battle5.js` after: forecast bar fit
-7. `battle4.js` around: gimmick sync before, Momentum bar after
-8. `chain5.js` after: planned targets on the intent tags and the party cards
-9. `summon8.js` after: praying badge
-10. `kits12.js` after: name plate over a summoned guardian
-11. `menus12.js` before: battle menu memory: a turn opens at the hero's own remembered submenu; the place is noted on every render
-12. `menus12.js` after: battle menu memory: put the remembered scroll back (after the layout hooks)
-13. `battle16.js` before: no battle menu memory: a turn opens on the main actions (runs before menus12, which would put a submenu back)
-14. `battle16.js` after: a new turn starts at the top of the command list
-15. `battle16.js` after: the name plate of a summoned Scourge says SCOURGE
-16. `battle27.js` after: small phones: top strip, floating log line and the Party & foes sheet
-17. `battle27.js` after: is a panel floating over the stage
-18. `side48.js` after: big screens: place the card column and the top line
+1. `account.js` after: codex roster
+2. `progression.js` after: draw the 5 guild recruits for this journey
+3. `tavern2.js` after: journey roster and tavern reset
+4. `metastats.js` after: new journey counted (not the Daily Trial start)
+5. `prog2.js` after: auto per foe type starts closed
+6. `map.js` before: forget the explored map
+7. `pacing.js` after: pacing version on a new journey
+8. `goals.js` after: goals start empty
+9. `look9.js` after: realm layout tileset for this journey
+10. `party12.js` before: close the record of the journey that ends
+11. `party12.js` after: keep the New Game+ draw, record the playthrough
+12. `menus14.js` after: a new journey uses the spread levels
+13. `quests16.js` after: the guild lock on a new journey
+14. `world16.js` after: new journeys draw their gates from all four sides
+15. `roster17.js` after: a new journey uses the 14 skill levels
+16. `legends17b.js` after: a new journey starts on the reworked kits
+17. `act49.js` after: new journeys need no shield hand out
 
-Runs: 13 battle16 → 11 menus12 → 7 battle4 (around) → 5 battle3 → **base** → 1 battleui → 2 battle3 → 3 battle3 → 4 battle3 → 6 battle5 → 7 battle4 (around) → 8 chain5 → 9 summon8 → 10 kits12 → 12 menus12 → 14 battle16 → 15 battle16 → 16 battle27 → 17 battle27 → 18 side48
+Runs: 10 party12 → 6 map → **base** → 1 account → 2 progression → 3 tavern2 → 4 metastats → 5 prog2 → 7 pacing → 8 goals → 9 look9 → 11 party12 → 12 menus14 → 13 quests16 → 14 world16 → 15 roster17 → 16 legends17b → 17 act49
+
+### cmdHtml (16 hooks)
+Registered (load order; 1 is next to the base):
+1. `battle3.js` result: tall layout: HP/MP bars and the auto note in the command head
+2. `battle5.js` result: cue and glow on the command menu
+3. `battle4.js` result: swap menu body and free swap label
+4. `summon8.js` around: summons menu and Invoke button
+5. `battle9.js` result: one Summon button
+6. `skillfilt9.js` result: skill filter chips
+7. `battle11.js` result: command head without the HP/MP mini bars
+8. `skillrows11.js` result: skill numbers on the battle skill list
+9. `skills12.js` result: role tier on the battle skill rows
+10. `menus12.js` result: battle skill rows: a missing scope, kind or Primer / Detonator tag is added; the last used skill is marked
+11. `battle16.js` result: recruited bosses: a note where the Summon command was for anyone who cannot call them
+12. `legends17a.js` result: greyed rows with the reason, the boss command, HP for MP in his summons menu
+13. `legends17a.js` result: Joseth among the callers in the greyed Summon note
+14. `battle27.js` result: small phones: the Party & foes button leads the second row
+15. `side48.js` result: big screens: no Party & foes command (the cards are on screen)
+16. `act49.js` result: Attack shows element, kind and estimate; the list names the foe the numbers are for
+
+Runs: 4 summon8 (around) → **base** → 1 battle3 (result) → 2 battle5 (result) → 3 battle4 (result) → 4 summon8 (around) → 5 battle9 (result) → 6 skillfilt9 (result) → 7 battle11 (result) → 8 skillrows11 (result) → 9 skills12 (result) → 10 menus12 (result) → 11 battle16 (result) → 12 legends17a (result) → 13 legends17a (result) → 14 battle27 (result) → 15 side48 (result) → 16 act49 (result)
 
 ### encounterFoes (16 hooks)
 Registered (load order; 1 is next to the base):
@@ -512,27 +556,6 @@ Registered (load order; 1 is next to the base):
 16. `legends17a.js` before: the fights of the two legend quests
 
 Runs: 16 legends17a → 15 legends17b → 14 early17 (around) → 13 endgame10 (around) → 12 endgame10 → 11 riftkeeper9 → 9 p2world (around) → 8 sites (around) → 7 roam (around) → 6 echocore → 5 mimic → 4 chance → 3 world3 (around) → 1 legends → **base** → 2 travel → 3 world3 (around) → 7 roam (around) → 8 sites (around) → 9 p2world (around) → 10 duellines → 13 endgame10 (around) → 14 early17 (around)
-
-### newGame (16 hooks)
-Registered (load order; 1 is next to the base):
-1. `account.js` after: codex roster
-2. `progression.js` after: draw the 5 guild recruits for this journey
-3. `tavern2.js` after: journey roster and tavern reset
-4. `metastats.js` after: new journey counted (not the Daily Trial start)
-5. `prog2.js` after: auto per foe type starts closed
-6. `map.js` before: forget the explored map
-7. `pacing.js` after: pacing version on a new journey
-8. `goals.js` after: goals start empty
-9. `look9.js` after: realm layout tileset for this journey
-10. `party12.js` before: close the record of the journey that ends
-11. `party12.js` after: keep the New Game+ draw, record the playthrough
-12. `menus14.js` after: a new journey uses the spread levels
-13. `quests16.js` after: the guild lock on a new journey
-14. `world16.js` after: new journeys draw their gates from all four sides
-15. `roster17.js` after: a new journey uses the 14 skill levels
-16. `legends17b.js` after: a new journey starts on the reworked kits
-
-Runs: 10 party12 → 6 map → **base** → 1 account → 2 progression → 3 tavern2 → 4 metastats → 5 prog2 → 7 pacing → 8 goals → 9 look9 → 11 party12 → 12 menus14 → 13 quests16 → 14 world16 → 15 roster17 → 16 legends17b
 
 ### settingsBody (16 hooks)
 Registered (load order; 1 is next to the base):
@@ -575,26 +598,6 @@ Registered (load order; 1 is next to the base):
 
 Runs: 15 battle27 → 14 cohere15 → 13 chars13 (around) → 11 chars13 → 9 perf12 → 8 fxkind11 → 7 res11 → 6 battle11 (around) → 5 sprhd2 → 4 hdspell → 3 hdstage (around) → 2 gfx6battle (around) → 1 anim → **base** → 2 gfx6battle (around) → 3 hdstage (around) → 6 battle11 (around) → 10 kits12 → 12 chars13 → 13 chars13 (around)
 
-### cmdHtml (15 hooks)
-Registered (load order; 1 is next to the base):
-1. `battle3.js` result: tall layout: HP/MP bars and the auto note in the command head
-2. `battle5.js` result: cue and glow on the command menu
-3. `battle4.js` result: swap menu body and free swap label
-4. `summon8.js` around: summons menu and Invoke button
-5. `battle9.js` result: one Summon button
-6. `skillfilt9.js` result: skill filter chips
-7. `battle11.js` result: command head without the HP/MP mini bars
-8. `skillrows11.js` result: skill numbers on the battle skill list
-9. `skills12.js` result: role tier on the battle skill rows
-10. `menus12.js` result: battle skill rows: a missing scope, kind or Primer / Detonator tag is added; the last used skill is marked
-11. `battle16.js` result: recruited bosses: a note where the Summon command was for anyone who cannot call them
-12. `legends17a.js` result: greyed rows with the reason, the boss command, HP for MP in his summons menu
-13. `legends17a.js` result: Joseth among the callers in the greyed Summon note
-14. `battle27.js` result: small phones: the Party & foes button leads the second row
-15. `side48.js` result: big screens: no Party & foes command (the cards are on screen)
-
-Runs: 4 summon8 (around) → **base** → 1 battle3 (result) → 2 battle5 (result) → 3 battle4 (result) → 4 summon8 (around) → 5 battle9 (result) → 6 skillfilt9 (result) → 7 battle11 (result) → 8 skillrows11 (result) → 9 skills12 (result) → 10 menus12 (result) → 11 battle16 (result) → 12 legends17a (result) → 13 legends17a (result) → 14 battle27 (result) → 15 side48 (result)
-
 ### calcStats (14 hooks)
 Registered (load order; 1 is next to the base):
 1. `ailments.js` after: wound shrinks max HP
@@ -614,6 +617,44 @@ Registered (load order; 1 is next to the base):
 
 Runs: 13 shields20 (around) → 12 legnat20 → **base** → 1 ailments → 2 echocore → 3 comp → 4 roles → 5 natures6 → 6 riftkeeper9 → 7 roles9 → 8 echo11 → 9 battle16 → 10 legends17b → 11 legends17a → 13 shields20 (around) → 14 relics25 (result)
 
+### mChar (14 hooks)
+Registered (load order; 1 is next to the base):
+1. `comp.js` result: Pet row on the hero sheet
+2. `learn.js` around: New badges on the hero sheet skills
+3. `p3shop.js` result: Upgrade button on each equipment slot
+4. `p4party.js` result: Battles together line
+5. `roles9.js` result: role row on the hero sheet
+6. `sheet11.js` result: hero sheet tabs
+7. `skillrows11.js` result: skill numbers on the hero sheet rows
+8. `party12.js` result: reserve sheet: gear slots are read only
+9. `skills12.js` result: role power on the hero sheet skill rows
+10. `menus12.js` result: skill rows on the hero sheet: scope, kind (for the weapon in hand), Primer / Detonator
+11. `menus14.js` result: the hero sheet on one page with a section dropdown (outside sheet11 tabs)
+12. `legends17a.js` result: the pack on his hero sheet
+13. `stats22.js` result: the stat points note and the +1 / +5 switch
+14. `act49.js` result: hero sheet: a shield skill says it needs a shield
+
+Runs: 2 learn (around) → **base** → 1 comp (result) → 2 learn (around) → 3 p3shop (result) → 4 p4party (result) → 5 roles9 (result) → 6 sheet11 (result) → 7 skillrows11 (result) → 8 party12 (result) → 9 skills12 (result) → 10 menus12 (result) → 11 menus14 (result) → 12 legends17a (result) → 13 stats22 (result) → 14 act49 (result)
+
+### unpackG (14 hooks)
+Registered (load order; 1 is next to the base):
+1. `tavern2.js` after: journey roster subset
+2. `comp.js` after: migrate companions
+3. `learn.js` after: record skills of loaded heroes
+4. `prog2.js` after: old saves: bosses won
+5. `map.js` before: forget the explored map
+6. `summon8.js` after: old saves: beaten guardians become summons
+7. `party12.js` after: migrate: reserves keep no gear
+8. `skills12.js` after: trim old saves to the capped kit
+9. `menus14.js` after: old saves keep the skills the old learn levels gave
+10. `realms14.js` after: old saves: a removed Scourge or Calamity maps to the nearest kept one
+11. `battle16.js` after: old saves: the pet of a removed Scourge follows the boss that replaced it
+12. `world16.js` after: what the account has seen of this journey joins the loaded save
+13. `legends17a.js` after: old saves: slot marks follow the pairings
+14. `act49.js` after: old saves: a Knight without a shield is handed a plain one, once
+
+Runs: 5 map → **base** → 1 tavern2 → 2 comp → 3 learn → 4 prog2 → 6 summon8 → 7 party12 → 8 skills12 → 9 menus14 → 10 realms14 → 11 battle16 → 12 world16 → 13 legends17a → 14 act49
+
 ### classSkills (13 hooks)
 Registered (load order; 1 is next to the base):
 1. `archetype.js` result: tag every skill with its damage kind once
@@ -631,42 +672,6 @@ Registered (load order; 1 is next to the base):
 13. `skills36.js` result: the 0.22.36 kit pass (once per hero)
 
 Runs: 10 legends17a → **base** → 1 archetype (result) → 2 sigskills (result) → 3 roles (result) → 4 skills12 (result) → 5 kits12 (result) → 6 menus12 (result) → 7 menus14 (result) → 8 roster17 (result) → 9 legends17b (result) → 11 stats22 (result) → 12 relics25 (result) → 13 skills36 (result)
-
-### mChar (13 hooks)
-Registered (load order; 1 is next to the base):
-1. `comp.js` result: Pet row on the hero sheet
-2. `learn.js` around: New badges on the hero sheet skills
-3. `p3shop.js` result: Upgrade button on each equipment slot
-4. `p4party.js` result: Battles together line
-5. `roles9.js` result: role row on the hero sheet
-6. `sheet11.js` result: hero sheet tabs
-7. `skillrows11.js` result: skill numbers on the hero sheet rows
-8. `party12.js` result: reserve sheet: gear slots are read only
-9. `skills12.js` result: role power on the hero sheet skill rows
-10. `menus12.js` result: skill rows on the hero sheet: scope, kind (for the weapon in hand), Primer / Detonator
-11. `menus14.js` result: the hero sheet on one page with a section dropdown (outside sheet11 tabs)
-12. `legends17a.js` result: the pack on his hero sheet
-13. `stats22.js` result: the stat points note and the +1 / +5 switch
-
-Runs: 2 learn (around) → **base** → 1 comp (result) → 2 learn (around) → 3 p3shop (result) → 4 p4party (result) → 5 roles9 (result) → 6 sheet11 (result) → 7 skillrows11 (result) → 8 party12 (result) → 9 skills12 (result) → 10 menus12 (result) → 11 menus14 (result) → 12 legends17a (result) → 13 stats22 (result)
-
-### unpackG (13 hooks)
-Registered (load order; 1 is next to the base):
-1. `tavern2.js` after: journey roster subset
-2. `comp.js` after: migrate companions
-3. `learn.js` after: record skills of loaded heroes
-4. `prog2.js` after: old saves: bosses won
-5. `map.js` before: forget the explored map
-6. `summon8.js` after: old saves: beaten guardians become summons
-7. `party12.js` after: migrate: reserves keep no gear
-8. `skills12.js` after: trim old saves to the capped kit
-9. `menus14.js` after: old saves keep the skills the old learn levels gave
-10. `realms14.js` after: old saves: a removed Scourge or Calamity maps to the nearest kept one
-11. `battle16.js` after: old saves: the pet of a removed Scourge follows the boss that replaced it
-12. `world16.js` after: what the account has seen of this journey joins the loaded save
-13. `legends17a.js` after: old saves: slot marks follow the pairings
-
-Runs: 5 map → **base** → 1 tavern2 → 2 comp → 3 learn → 4 prog2 → 6 summon8 → 7 party12 → 8 skills12 → 9 menus14 → 10 realms14 → 11 battle16 → 12 world16 → 13 legends17a
 
 ### arrive (11 hooks)
 Registered (load order; 1 is next to the base):

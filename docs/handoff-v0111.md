@@ -925,3 +925,13 @@ With `b3list` (a `.menu.list` is open) `#bcmd` is `position:fixed` at the bottom
   column (S48.w, 200 px); #bparty is laid over it (absolute, CSS only restyle of the battleui.js cards). b27Sc is wrapped so the stage scale
   ignores the column. #bline is positioned in the top strip from measured offsets (class b48top). B27.noLine stops the unit lowering.
 - Phones and small windows are untouched. Stored test flag: aurelis-s48off. Test: tools/chrome/v227a.js (battle group).
+
+## 0.22.49 (act49.js; skills.js, items.js, config.js, side48.js)
+- Skill strip: "Power N" in a tag (sr11Strip wrap); sk12Tag returns '' (no Sub / Off tag anywhere; sk12Mult unchanged).
+- B.a49f: the foe the estimates are for (ACT.tgtE wrap while the root menu or the skill list is open; skNum wrap for single target skills).
+  The Attack button shows element or "No element", kind and estimate (cmdHtml xform).
+- Guard glow: stronger CSS for .mi.b9glow (the HD menu look drew over the old one).
+- Thieves: DL_FORCE.thief dart, dart2, fan, r_stars, r_kunai are 'ranged'; CLS_KINDS.thief has three kinds; r_stars / r_kunai dl in config.js.
+- Shields: S49.need (knight: bash, sburst, javelin, r_cover) are filtered out of known() without a worn shield; newChar gives a Knight a
+  shield, unpackG hands one out once (g.s49sh). Slot text "No shield: two-handed weapon" in ui.js, equip.js, p3shop.js.
+- Big screen list: boxes side by side (side48.js CSS). The owner wants boxes, not one line rows. Test: tools/chrome/v228a.js (battle group).
