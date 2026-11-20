@@ -29,7 +29,7 @@ async function run(tier){const tag=tier+': ';const H=await open({w:390,h:844,mob
   chk(tag+'the strip sits inside its row ('+cs.w+' px wide)',cs.inside);
   // multi-hit: the strip function with a 3 hit skill, and a status skill with no power
   const u=await ev(()=>{const T=__A.TW.get;return [T('sr11Strip')({k:'phys',pw:.8,hits:3,mp:7},'~120',''),T('sr11Strip')({k:'status',t:'ally',mp:6},'',''),T('sr11Strip')({k:'mag',pw:1.7,mp:5},'','Lv 9')];});
-  chk(tag+'hits show as x3 with the power',/x3/.test(u[0])&&/Power 80/.test(u[0])&&/~120/.test(u[0]));chk(tag+'a buff with no power shows its kind and MP',/>Buff</.test(u[1])&&/6 MP/.test(u[1]));chk(tag+'a locked sheet row shows Lv, power and MP',/Lv 9/.test(u[2])&&/Pow 170/.test(u[2])&&/5 MP/.test(u[2]));
+  chk(tag+'hits show as x3 with the power',/x3/.test(u[0])&&/Power 80/.test(u[0])&&/~120/.test(u[0]));chk(tag+'a buff with no power shows its kind and MP',/>Buff</.test(u[1])&&/6 MP/.test(u[1]));chk(tag+'a locked sheet row shows Lv, power and MP',/Lv 9/.test(u[2])&&/Power 170/.test(u[2])&&/5 MP/.test(u[2]));
   // filter chips still hide rows (a hero with six or more skills)
   const f=await ev(()=>{const T=__A.TW.get,B=T('B'),a=B.cur;const n0=document.querySelectorAll('.battle .menu.list .mi[data-act="sk"]').length;return {n0,ks:T('known')(a).length,chips:document.querySelectorAll('.battle .chips.skf .chip').length};});
   console.log(tier,'filter',JSON.stringify(f));
