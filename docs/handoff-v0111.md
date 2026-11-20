@@ -935,3 +935,9 @@ With `b3list` (a `.menu.list` is open) `#bcmd` is `position:fixed` at the bottom
 - Shields: S49.need (knight: bash, sburst, javelin, r_cover) are filtered out of known() without a worn shield; newChar gives a Knight a
   shield, unpackG hands one out once (g.s49sh). Slot text "No shield: two-handed weapon" in ui.js, equip.js, p3shop.js.
 - Big screen list: boxes side by side (side48.js CSS). The owner wants boxes, not one line rows. Test: tools/chrome/v228a.js (battle group).
+
+## 0.22.50 (side48.js, act49.js)
+- The card column is on from 600 x 600 in any orientation (S48.minW; "big screens" includes tablets and opened folds, the owner's words).
+  From S48.topW (900) px wide the line sits in the top strip and a list stays in the command box (class b48top); narrower, the line floats
+  over the stage's side and a list is the rising panel kept left of the cards.
+- The skill boxes (three short lines) are the same on every b27 screen, phones included. The Attack button shows kind and estimate, no element.

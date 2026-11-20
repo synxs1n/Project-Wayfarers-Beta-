@@ -3,7 +3,8 @@
 //    the stage is at least 1000 px wide and most of the screen's height; a hero card stacks HP over MP with the numbers inside the bars
 //  2 the line (sky, Momentum, log, Log, ☰) is inside the top strip, between the turn order and Pause / Auto / Speed; nothing floats on the stage
 //  3 no "Party & foes" command; a tap on a hero card opens that hero's details; the ☰ on the strip still opens the full sheet
-//  4 a phone (390x844) and a small window (900x640) keep the layout they had: no column, the Party & foes command is there
+//  6 an opened fold (673x841) has the column as well (0.22.50)
+//  4 a phone (390x844) and a narrow window (560x760) keep the layout they had: no column, the Party & foes command is there
 //  5 an open skill list stays in the command box under the stage (it covers neither the stage nor the cards), the skills as boxes side by side with all their info (0.22.49)
 // Usage (from tools/chrome): PWHTML=<abs path to out/aurelis3.html> node v227a.js
 const {open,chk,done}=require('./pw');
@@ -37,6 +38,11 @@ const snap=new Function(R+`const bat=q('.battle.b3'),hp=qa('#bparty .pc').filter
     l.list&&l.n>1&&l.cols>=3&&l.c.y>=l.st.b-2&&l.c.b<=l.vh&&l.c.r<=l.minX&&l.rowH<=120&&l.inView>=Math.min(l.cols,l.n)-1&&l.parts.every(Boolean)||JSON.stringify(l));
   await H.browser.close();
   H=await boot(390,844,true);const p=await H.ev(snap);await H.browser.close();
-  H=await boot(900,640,false);const w=await H.ev(snap);
-  chk(`4 a phone keeps its layout (column ${p.on}, Party & foes ${p.pf}, stage ${p.st.w} wide of ${p.vw}); so does a 900x640 window (column ${w.on}, Party & foes ${w.pf})`,!p.on&&p.pf&&p.st.w>=p.vw-12&&!w.on&&w.pf||JSON.stringify([p.on,p.pf,p.st,w.on,w.pf]));
+  // 0.22.50: an opened fold or an upright tablet has the column too; the line floats over the stage's side, the list rises on that side
+  H=await boot(673,841,true);const fo=await H.ev(snap);await H.ev(()=>{const b=document.querySelector('#bcmd [data-arg="skills"]');if(b)b.click();});await H.wait(700);
+  const fl=await H.ev(new Function(R+`const c=r(q('#bcmd')),cards=qa('#bparty .pc,#bparty .fc').filter(vis).map(r),mi=qa('#bcmd .menu.list .mi').map(r);return {c,minX:Math.min(...cards.map(x=>x.x)),n:mi.length,h:mi[0]&&mi[0].h};`));await H.browser.close();
+  chk(`6 an opened fold (673x841): column on (${fo.on}), ${fo.heroes+fo.foes} cards right of the stage (${fo.minX} >= ${fo.st.r}), the line stays over the stage (${fo.bl.x}..${fo.bl.r}), not in the strip (${fo.top}); the skill list rises left of the cards (${fl.c.r} <= ${fl.minX}), ${fl.n} boxes about ${fl.h} px high`,
+    fo.on&&!fo.top&&fo.heroes===fo.party&&fo.foes===fo.en&&fo.minX>=fo.st.r&&fo.bl.r<=fo.minX&&fo.st.w>=400&&fl.c.r<=fl.minX&&fl.n>1&&fl.h<=110||JSON.stringify([fo.on,fo.top,fo.st,fo.bl,fo.minX,fl]));
+  H=await boot(560,760,true);const w=await H.ev(snap);
+  chk(`4 a phone keeps its layout (column ${p.on}, Party & foes ${p.pf}, stage ${p.st.w} wide of ${p.vw}); so does a 560x760 window (column ${w.on}, Party & foes ${w.pf})`,!p.on&&p.pf&&p.st.w>=p.vw-12&&!w.on&&w.pf||JSON.stringify([p.on,p.pf,p.st,w.on,w.pf]));
   await done(H);})();

@@ -7,7 +7,8 @@
 //    estimates are worked out against (B.a49f). Single target skills and the basic Attack show the number against that foe; skills that hit
 //    several foes show the average over the foes alive. Until a foe is tapped the number is the average, as before. A line in the list says
 //    which it is.
-//  3 "Regular attacks should show their element, damage type and damage numbers in the action menu": the Attack button carries them.
+//  3 "Regular attacks should show their element, damage type and damage numbers in the action menu": the Attack button carries the kind and
+//    the number (0.22.50: "don't need to mention element on main attack button"; a basic attack has none).
 //  4 "Guard button stopped glowing when it's good time to guard": the glow of battle5.js was still set, but the newer menu looks (the HD
 //    theme, battle27.js) draw their own border and shadow over it. It is drawn with more weight here.
 //  5 "Sub role percent changes should only be a rule behind the scenes": the "Sub x80%" / "Off x50%" tag is gone from every skill row. The
@@ -29,7 +30,7 @@ const a49One=s=>!!s&&(s.k==='phys'||s.k==='mag')&&(!s.t||s.t==='one'||s.t==='cha
 // ---------- 3 the Attack button, and the line that says whom the numbers are for ----------
 HOOK.xform('cmdHtml','act49','Attack shows element, kind and estimate; the list names the foe the numbers are for',function(h){try{const a=B&&B.cur;if(!a||B.mode!=='cmd'||a.side!=='p')return h;h=String(h);
   if(B.menu==='root'){const sk=atkFor(a),k=deliveryOf(a,sk),els=typeof skEls==='function'?skEls(sk):[].concat(sk.el||[]);let est='';try{est=skNum(a,sk)||'';}catch(e){}
-    const info=`<span class="a49a">${els.length?els.map(e=>ico(e)).join(''):'<i class="a49ne" title="A basic attack has no element">No element</i>'}${k?dlIco(k)+`<i>${esc(DL_NAME[k]||k)}</i>`:''}${est?`<b>${est}</b>`:''}</span>`;
+    const info=`<span class="a49a">${k?dlIco(k)+`<i>${esc(DL_NAME[k]||k)}</i>`:''}${est?`<b>${est}</b>`:''}</span>`;
     h=h.replace(/(<button class="mi[^"]*" data-act="cmd" data-arg="attack"[^>]*>)Attack(<\/button>)/,(m,p,q)=>p+'<span class="a49n">Attack</span>'+info+q);}
   if(B.menu==='skills'){const e=a49Foe(),n=(B.en||[]).filter(x=>x.hp>0).length,txt=e?`Numbers against <b>${esc(e.name)}</b>`:n>1?'Numbers: the average of the foes. Tap a foe to see it for that one.':'';
     if(txt)h=h.replace('<div class="menu list">',`<div class="a49vs">${txt}${e&&n>1?' <small>(a skill that hits several shows their average)</small>':''}</div><div class="menu list">`);}
