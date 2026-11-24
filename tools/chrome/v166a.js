@@ -22,7 +22,7 @@ const {open,chk,done}=require('./pw');
     const ids=RAW.filter(r=>r[6]!=='x'&&TPL[r[0]]&&!TPL[r[0]].mon&&CLS[TPL[r[0]].cls]).map(r=>r[0]);const o={n:ids.length,over:[],noPD:[],ult:[],singleUlt:0,single:0,kinds:{},bad:[],lb:[],dualN:0,small:[],early:[]};
     ids.forEach(id=>{const t=TPL[id],L=classSkills(t),lg=t.src==='L'||t.src==='x';if(L.filter(s=>!s.bond).length>SK12.cap+2)o.over.push(id);/* the cap of 12 picks the kit; roster17.js adds two (14) */
       if(L.filter(s=>s.lv<=1).length<2)o.early.push(id);
-      if(t.el.length>1){o.dualN++;t.el.forEach(e=>{if(!L.some(s=>s.role==='primer'&&!s.combo&&skHitsFoe(s)&&skEls(s)[0]===e)||!L.some(s=>s.role==='det'&&!s.combo&&skHitsFoe(s)&&skEls(s).includes(e)))o.noPD.push(id+':'+e);});
+      if(t.el.length>1){o.dualN++;t.el.forEach(e=>{/* since 0.22.36 a Dual art counts for both of its elements: it primes with both and detonates on either (skills36.js) */const of=x=>skHitsFoe(x)&&skEls(x).includes(e)&&(x.combo||x.role);if(!L.some(x=>of(x)&&(x.combo||x.role==='primer'))||!L.some(x=>of(x)&&(x.combo||x.role==='det')))o.noPD.push(id+':'+e);});
         if(!lg&&L.some(s=>s.el&&(SK12.ult[t.cls]||[]).includes(s.id)))o.ult.push(id);}
       else if(!lg&&(SK12.ult[t.cls]||[]).length){o.single++;if(L.some(s=>s.el&&(SK12.ult[t.cls]||[]).includes(s.id)))o.singleUlt++;}
       const cb=L.find(s=>s.combo);if(cb&&(cb.k==='phys'||cb.k==='mag')){const phys=SK12.physCls.includes(t.cls);o.kinds[t.cls]=cb.k;if((cb.k==='phys')!==phys)o.bad.push(id);
