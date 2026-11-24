@@ -574,6 +574,8 @@ const WMAP={cell:[64,150,38],vig:.78,names:84};// cell: px per area (normal min,
 // divisor of the blurred copy, lmap = light map size (every light in view is drawn into it each frame), bloom 1 = from the blurred copy,
 // 2 = its own wider pass, dof 1 or 2 blur rounds, shafts on or off, every = remake the blurred copy every n frames.
 // lmMax: most lights per frame; lightK: light strength; chunk: static geometry chunk size in tiles (culling).
+// 0.22.53 (the lighting pass): outdoors the sun is stronger and warmer against a cooler ambient, the distance haze is about half as
+// thick, and contrast, colour and the dark frame are up (day con 1.07 > 1.13, sat 1.14 > 1.3, vig .32 > .42; dusk, dawn and night likewise).
 // look: lighting and grade per time of day and place; weather: how each weather scales ambient and sun and tints the fog.
 // fogN (v0.8.0): where the distance fog starts in that weather, as a share of fogStart (fog 0.3: it thickens smoothly from near the hero).
 const HD2D={pitch:40,fov:28,maxHfov:40,zoom:1,follow:85,topSlack:.2,sway:{amp:0,pitch:0,ms:11000},
@@ -582,10 +584,10 @@ const HD2D={pitch:40,fov:28,maxHfov:40,zoom:1,follow:85,topSlack:.2,sway:{amp:0,
   tiers:{medium:{px:1,pxMax:2,blur:2,lmap:128,bloom:1,dof:1,shafts:1,every:2},high:{px:1,pxMax:3,blur:2,lmap:192,bloom:2,dof:1,shafts:1}},lmMax:96,lightK:.8,chunk:8,
   suns:{day:[-.55,.78,.3],dusk:[-.9,.36,.25],dawn:[.9,.36,.25]},
   look:{
-    day:  {amb:[.66,.66,.7],sun:[.5,.47,.4],sd:[-.55,.78,.3],sh:[.55,0,0],fog:[.74,.84,.98],fogA:.32,exp:1,con:1.07,sat:1.14,vig:.32,lift:[0,0,.02],gain:[1.03,1,.96],emis:0,lamp:0,shaft:1,shC:[1,.93,.72],pl:0},
-    dusk: {amb:[.52,.4,.46],sun:[.72,.4,.2],sd:[-.9,.36,.25],sh:[0,.62,0],fog:[.86,.52,.42],fogA:.42,exp:1,con:1.06,sat:1.08,vig:.4,lift:[.02,0,.03],gain:[1.08,.95,.86],emis:.75,lamp:.8,shaft:1.3,shC:[1,.62,.35],pl:.25},
-    night:{amb:[.28,.33,.54],sun:[.1,.14,.25],sd:[.3,.85,.4],sh:[.28,0,0],fog:[.07,.09,.2],fogA:.55,exp:1.06,con:1.05,sat:.86,vig:.5,lift:[0,.01,.04],gain:[.94,.97,1.08],emis:1,lamp:1,shaft:0,shC:[.6,.7,1],pl:.6},
-    dawn: {amb:[.5,.47,.58],sun:[.62,.48,.38],sd:[.9,.36,.25],sh:[0,0,.58],fog:[.82,.76,.88],fogA:.45,exp:1,con:1.03,sat:1,vig:.36,lift:[.02,.01,.03],gain:[1.04,.98,1],emis:.45,lamp:.5,shaft:1.2,shC:[1,.8,.62],pl:.2},
+    day:  {amb:[.6,.62,.72],sun:[.66,.58,.42],sd:[-.55,.78,.3],sh:[.55,0,0],fog:[.78,.86,.96],fogA:.16,exp:1,con:1.13,sat:1.3,vig:.42,lift:[0,0,.025],gain:[1.06,1,.93],emis:0,lamp:0,shaft:1.3,shC:[1,.93,.72],pl:0},
+    dusk: {amb:[.52,.4,.46],sun:[.72,.4,.2],sd:[-.9,.36,.25],sh:[0,.62,0],fog:[.86,.52,.42],fogA:.3,exp:1,con:1.11,sat:1.2,vig:.46,lift:[.02,0,.03],gain:[1.08,.95,.86],emis:.75,lamp:.8,shaft:1.3,shC:[1,.62,.35],pl:.25},
+    night:{amb:[.28,.33,.54],sun:[.1,.14,.25],sd:[.3,.85,.4],sh:[.28,0,0],fog:[.07,.09,.2],fogA:.5,exp:1.06,con:1.08,sat:.96,vig:.54,lift:[0,.01,.04],gain:[.94,.97,1.08],emis:1,lamp:1,shaft:0,shC:[.6,.7,1],pl:.6},
+    dawn: {amb:[.5,.47,.58],sun:[.62,.48,.38],sd:[.9,.36,.25],sh:[0,0,.58],fog:[.82,.76,.88],fogA:.3,exp:1,con:1.09,sat:1.14,vig:.42,lift:[.02,.01,.03],gain:[1.04,.98,1],emis:.45,lamp:.5,shaft:1.2,shC:[1,.8,.62],pl:.2},
     dungeon:{amb:[.3,.27,.34],sun:[0,0,0],sd:[0,1,.3],sh:[0,0,0],fog:[.03,.02,.04],fogA:.72,exp:1.1,con:1.08,sat:1.06,vig:.56,lift:[0,0,.015],gain:[1.04,1,.98],emis:1,lamp:1,shaft:0,pl:1,bloom:.2},
     cave: {amb:[.28,.25,.32],sun:[0,0,0],sd:[0,1,.3],sh:[0,0,0],fog:[.03,.025,.04],fogA:.72,exp:1.1,con:1.08,sat:1.08,vig:.58,lift:[0,0,.015],gain:[1.05,1,.97],emis:1,lamp:1,shaft:0,pl:1,bloom:.2},
     hall: {amb:[.42,.36,.56],sun:[0,0,0],sd:[0,1,.3],sh:[0,0,0],fog:[.06,.04,.1],fogA:.6,exp:1.05,con:1.05,sat:1.08,vig:.45,lift:[.01,0,.03],gain:[1.02,1,1.04],emis:1,lamp:1,shaft:0,pl:.5,bloom:.25},
