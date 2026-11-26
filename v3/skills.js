@@ -132,7 +132,7 @@ function classSkills(t){
     if(e2)add({id:'chi2',n:n2+' Chi Burst',k:'phys',pw:1.6,mp:4,el:e2,lv:10,d:`Fist of ${n2}.`});
     add({id:'stunb',n:'Stunning Blow',k:'phys',pw:1.2,mp:8,lv:12,fx:[['stun',.4]],d:'May Stun.'});
     add({id:'iron',n:'Iron Body',k:'status',t:'self',mp:8,lv:15,fx:[['ward',1],['bulwark',1]],d:'Gain Ward and Bulwark.'});
-    add({id:'dragon',n:'Dragon Fist',k:'phys',pw:2.9,mp:16,el:e1,cost:1.3,lv:22,drain:.25,d:`Blazing ${n1} strike that feeds his chi: heals him for 25% of the damage. Slow recovery.`});
+    add({id:'dragon',n:'Dragon Fist',k:'phys',pw:3.1,mp:16,el:e1,cost:1.3,lv:22,drain:.25,d:`Blazing ${n1} strike that feeds his chi: heals him for 25% of the damage. Slow recovery.`});
     break;
   case 'sniper':
     add({id:'s1a',n:'Thunder Quarrel',k:'phys',pw:1.3,mp:3,t:'chain',el:'lightning',lv:1,d:'A crossbow bolt crackling with Lightning that may leap from foe to foe.'});

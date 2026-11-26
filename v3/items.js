@@ -188,7 +188,7 @@ const WPERK={
  mace:{p:'Crush: stun chances are 50% higher, and basic attacks have a 10% chance to stun',s:'Mace: stuns land 50% more often',stun:1.5,basicStun:.10},
  staff:{p:'Focus: spells cost 15% less MP, +10% elemental spell damage',s:'Staff: spells cost 15% less MP'},
  tome:{p:'Scholar: +10% spell damage',s:'Tome: +10% spell damage',spellPow:.10},
- dagger:{p:'Exploit: +15% damage to a foe with any ailment, +3% critical chance',s:'Dagger: +15% vs ailing foes',crit:.03,exploit:.15},/* v0.22.57: was +6% critical chance */
+ dagger:{p:'Exploit: +10% damage to a foe with any ailment, +3% critical chance',s:'Dagger: +10% vs ailing foes',crit:.03,exploit:.1},/* v0.22.57: was +6% critical chance */
  shortsword:{p:'Parry: +5% evasion, +4% critical chance',s:'Short sword: +5% evasion',eva:.05,crit:.04},
  bow:{p:"Piercing: ignores 10% of the target's defense",s:'Bow: ignores 10% DEF',pierce:.10},
  longbow:{p:"Long draw: ignores 16% of the target's defense, but actions take 4% longer",s:'Longbow: ignores 16% DEF',pierce:.16,tempo:1.04},
