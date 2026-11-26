@@ -475,10 +475,12 @@ const STS={
  taunt:{n:'Taunt',a:'TNT',t:3,c:'#ff5a5a',d:'Foes must aim single attacks at this hero.'},
  focus:{n:'Focus',a:'FCS',t:5,c:'#ffd23d',d:'The next attack is a guaranteed critical.'}
 };
+// v0.22.54 class pass (docs/balance54.md): Warrior res [4,1] -> [5,1.3] and spd .75 -> .82 a level (the least resistance and the fewest turns of any class);
+// Knight atk 1.9 -> 2.1 and spd [6,.6] -> [7,.68]; Mage mag 2.7 -> 2.55 a level (it dealt over twice the average damage per action).
 const CLS={
- warrior:{n:'Warrior',role:'Heavy melee. High HP and attack, hits groups, draws fire.',hp:[52,11],mp:[10,1.6],atk:[10,2.4],def:[8,1.9],mag:[3,.6],res:[4,1],spd:[8,.75],pref:['str','vit','dex']},
- knight:{n:'Knight',role:'Tank. Taunts, wards allies and raises party defense.',hp:[60,12.5],mp:[10,1.7],atk:[8,1.9],def:[11,2.4],mag:[3,.7],res:[7,1.5],spd:[6,.6],pref:['vit','spi','str']},
- mage:{n:'Mage',role:'Elemental caster. Big spells, hastes allies, fragile body.',hp:[36,7],mp:[28,3.8],atk:[4,.8],def:[4,1],mag:[12,2.7],res:[8,1.9],spd:[8,.75],pref:['int','spi','agi']},
+ warrior:{n:'Warrior',role:'Heavy melee. High HP and attack, hits groups, draws fire.',hp:[52,11],mp:[10,1.6],atk:[10,2.4],def:[8,1.9],mag:[3,.6],res:[5,1.3],spd:[8,.82],pref:['str','vit','dex']},
+ knight:{n:'Knight',role:'Tank. Taunts, wards allies and raises party defense.',hp:[60,12.5],mp:[10,1.7],atk:[8,2.1],def:[11,2.4],mag:[3,.7],res:[7,1.5],spd:[7,.68],pref:['vit','spi','str']},
+ mage:{n:'Mage',role:'Elemental caster. Big spells, hastes allies, fragile body.',hp:[36,7],mp:[28,3.8],atk:[4,.8],def:[4,1],mag:[12,2.55],res:[8,1.9],spd:[8,.75],pref:['int','spi','agi']},
  healer:{n:'Priest',role:'Heals, cleanses, grants Regen and revives. Invokes Sanctum guardians.',hp:[40,8],mp:[30,4],atk:[4,.8],def:[5,1.2],mag:[11,2.4],res:[9,2],spd:[8,.7],pref:['fth','spi','vit']},
  thief:{n:'Thief',role:'Fastest class. Steals, poisons and blinds.',hp:[40,8.5],mp:[14,2],atk:[8,1.9],def:[5,1.3],mag:[4,.8],res:[5,1.2],spd:[13,1.1],pref:['agi','dex','luk']},
  archer:{n:'Archer',role:'Ranged damage. Bleeds, roots and pierces armor.',hp:[42,8.5],mp:[16,2.2],atk:[9,2.1],def:[5,1.3],mag:[4,.8],res:[5,1.3],spd:[11,.95],pref:['dex','agi','str']},

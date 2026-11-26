@@ -269,6 +269,7 @@ function addSt(t,k,src,silent){
   if(!def){wdLog('unknown status '+k,t);return false;}
   if(OPP[k]&&t.st[OPP[k]]){delete t.st[OPP[k]];if(!silent)log(`${t.name}'s ${STS[OPP[k]].n} is cancelled.`);fx(t,STS[OPP[k]].n+' off','stat');return true;}
   if(t.id==='sylva'&&(k==='root'||k==='slow')){fx(t,'Immune','stat good');return false;}
+  if(k==='stun'&&t.side==='p'&&t.stunFree&&STUN_CAP.on){fx(t,'Resist','stat good');if(!silent)log(`${t.name} shakes off the stun.`);return false;}
   if(k==='stun'&&t.boss){if((t.stunCD||0)>0){fx(t,'Resist','stat');return false;}t.stunCD=3;}
   const o={t:def.t,src:src?(src===t?'self':src.name):null};
   if(src&&src.S){if(def.bad&&src.side!==t.side&&src.S.debT)o.t+=src.S.debT;else if(!def.bad&&src.side===t.side&&src.S.buffT)o.t+=src.S.buffT;}
@@ -336,7 +337,7 @@ let FOE_POW=1.12;
 let BOSS_HP=.9;
 function makeEnemy(m,lv,opt){
   opt=opt||{};const sc=enemyScale(),boss=!!opt.boss;
-  const fieldM=(!boss&&!opt.elite&&!(G&&G.daily)&&!opt.noField)?1:0;const fSt=Math.max(0,STAGE_LV.findIndex(r=>lv<=r[1])),fSi=fSt<0?4:fSt;const crp=fieldM?1+(worldCreep()-1)*(CREEP.field!=null?CREEP.field:1):worldCreep();const szM=(boss&&!opt.echo&&!opt.noBuff&&G&&!G.daily&&G.party)?Math.max(0,6-G.party.length):0;const spN=(fieldM&&G&&G.party&&G.party.length<3&&fSi<SMALL_PARTY.stages)?G.party.length-1:-1;const spH=spN>=0?SMALL_PARTY.hp[spN]:1,spP=spN>=0?SMALL_PARTY.pow[spN]:1;const hpM=spH*(1+BOSS_SIZE.hp*szM)*crp*m.hp*sc.hp*(opt.hpM||1)*(fieldM?FIELD_FOE.hp[fSi]:1)*(boss&&!opt.echo&&!opt.noBuff?BOSS_BUFF.hp[Math.min(4,opt.stage||0)]:1),pw=spP*(1+BOSS_SIZE.pow*szM)*crp*sc.pow*(opt.powM||1)*(fieldM?FIELD_FOE.pow[fSi]:1)*(boss&&!opt.echo&&!opt.noBuff?BOSS_BUFF.pow[Math.min(4,opt.stage||0)]:1)*(boss?(opt.final?1.5:[1.06,1.2,1.34,1.4][Math.min(3,opt.stage||0)]):1);
+  const fieldM=(!boss&&!opt.elite&&!(G&&G.daily)&&!opt.noField)?1:0;const fSt=Math.max(0,STAGE_LV.findIndex(r=>lv<=r[1])),fSi=fSt<0?4:fSt;const crp=fieldM?1+(worldCreep()-1)*(CREEP.field!=null?CREEP.field:1):worldCreep();const szOn=boss&&!opt.echo&&!opt.noBuff&&G&&!G.daily&&G.party,szE=BOSS_SIZE.expect[Math.min(4,opt.stage||0)],szS=szOn?Math.max(0,szE-G.party.length):0,szM=szOn?Math.max(0,6-Math.max(szE,G.party.length)):0,szH=1-BOSS_SIZE.short.hp*szS,szP=1-BOSS_SIZE.short.pow*szS;const spN=(fieldM&&G&&G.party&&G.party.length<3&&fSi<SMALL_PARTY.stages)?G.party.length-1:-1;const spH=spN>=0?SMALL_PARTY.hp[spN]:1,spP=spN>=0?SMALL_PARTY.pow[spN]:1;const hpM=spH*szH*(1+BOSS_SIZE.hp*szM)*crp*m.hp*sc.hp*(opt.hpM||1)*(fieldM?FIELD_FOE.hp[fSi]:1)*(boss&&!opt.echo&&!opt.noBuff?BOSS_BUFF.hp[Math.min(4,opt.stage||0)]:1),pw=spP*szP*(1+BOSS_SIZE.pow*szM)*crp*sc.pow*(opt.powM||1)*(fieldM?FIELD_FOE.pow[fSi]:1)*(boss&&!opt.echo&&!opt.noBuff?BOSS_BUFF.pow[Math.min(4,opt.stage||0)]:1)*(boss?(opt.final?1.5:[1.06,1.2,1.34,1.4][Math.min(3,opt.stage||0)]):1);
   const S={mhp:Math.round((30+12.5*lv)*hpM*(boss?BOSS_HP*(opt.final?2.6:[1.35,1.6,1.9,2.0][Math.min(3,opt.stage||0)]):1)),atk:(9+2.7*lv)*m.atk*pw*FOE_POW,mag:(9+2.7*lv)*m.mag*pw*FOE_POW,def:(6+1.8*lv)*m.def,res:(6+1.8*lv)*m.res,spd:(8+.8*lv)*m.spd,
     crit:.05,critDmg:1.5,mmp:999,elBoost:{},elRes:{},tempo:1,healM:1,immune:0,acc:.95,eva:clamp(.02+.04*(m.spd-1),0,.08),luk:lv*.6,spi:lv*.5};
   const e={side:'e',name:m.n,base:m.n,art:m.art,el:m.el,lv,S,hp:S.mhp,mp:999,st:{},boss,elite:!!opt.elite,mod:opt.mod||null,key:opt.key||null,
@@ -475,9 +476,9 @@ function advance0(){
   if(has(u,'regen')||u.mod==='regen'){const n=Math.min(u.S.mhp-u.hp,Math.round(u.S.mhp*.08));if(n>0){u.hp+=n;fx(u,'+'+n,'heal');log(`${u.name} regenerates ${n} HP.`);}}
   if(u.wardEvery&&u.turns%u.wardEvery===0&&!has(u,'ward'))addSt(u,'ward',u);
   if(u.mod==='warded'&&u.turns%3===0&&!has(u,'ward'))addSt(u,'ward',u);
-  if(has(u,'stun')){delete u.st.stun;log(`${u.name} is stunned and cannot act.`);fx(u,'Stunned','stat bad');B.mode='wait';render();later(()=>endTurn(u,1),PAUSE*.6);return;}
+  if(has(u,'stun')){delete u.st.stun;if(u.side==='p')u.stunFree=1;log(`${u.name} is stunned and cannot act.`);fx(u,'Stunned','stat bad');B.mode='wait';render();later(()=>endTurn(u,1),PAUSE*.6);return;}
   if(u.side==='p'&&weatherEvent())return;
-  if(u.side==='p'){B.pturns=(B.pturns||0)+1;
+  if(u.side==='p'){B.pturns=(B.pturns||0)+1;u.stunFree=0;
     u.mp=Math.min(u.S.mmp,u.mp+Math.round(u.S.mmp*.03));
     B.mode='cmd';B.menu='root';B.pend=null;render();
     if(B.auto)later(autoTurn,PAUSE*.6);
@@ -754,6 +755,7 @@ function autoTurn(){
   if(!B||B.over||B.mode!=='cmd'||!B.auto)return;
   if(SIM_SMART)return autoTurnSmart();
   if(G&&G.daily&&AUTO_NERF.dailySmart)return autoTurnSmart();
+  if(AUTO_NERF.guardMark&&typeof b4GimAutoGuard==='function'&&b4GimAutoGuard(B.cur))return;
   const a=B.cur,foes=B.en.filter(e=>e.hp>0),fr=B.front.filter(c=>c.hp>0);if(!foes.length)return;
   B.nerfAct=a;
   // v0.4.1 2.5 retune: on AUTO_NERF.smart of its turns auto thinks like a careful player; the rest are simple swings

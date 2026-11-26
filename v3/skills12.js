@@ -32,8 +32,8 @@ function sk12Role(cls,s){if(!s)return null;if(s.rl)return s.rl;const k=s.k,fx=s.
   return null;}
 function sk12Nat(c){try{const n=natInfo(natOf(c));return n&&n.rl||null;}catch(e){return null;}}
 // {m, tier:'primary'|'secondary'|'off', r, nat} or null for skills that are never scaled
-function sk12Mult(c,s){try{const t=c&&TPL[c.id];if(!t||!s||s.bond||s.limit||s.id==='attack'||(G&&G.daily))return null;const r=sk12Role(t.cls,s);if(!r)return null;
-  const R=heroRoles(c),main=heroMain(c);let m,tier;
+function sk12Mult(c,s){try{const t=c&&TPL[c.id];if(!t||!s||s.bond||s.limit||s.id==='attack'||(G&&G.daily))return null;let r=sk12Role(t.cls,s);if(!r)return null;
+  const R=heroRoles(c),main=heroMain(c);let m,tier;if(((ROLEPW.own||{})[t.cls]||[]).includes(s.id)&&R[0]===main)r=main;
   if(r===main){m=ROLEPW.primary;tier='primary';}else if(R.includes(r)){m=ROLEPW.secondary;tier='secondary';}else{m=ROLEPW.off;tier='off';}
   if(tier==='off'&&(s.role||s.combo)&&(s.k==='phys'||s.k==='mag')){m=ROLEPW.secondary;tier='secondary';}
   let nat=false;if(tier!=='primary'&&sk12Nat(c)===r){m=Math.min(ROLEPW.natCap,m+ROLEPW.natLift);nat=true;}
