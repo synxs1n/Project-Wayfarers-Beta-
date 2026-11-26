@@ -1,6 +1,7 @@
 // Beta v0.5.1: balance sims on the real game. Loads EVERY v3 module in build order (the list in v3build.py) in headless Chrome,
 // so every v0.5.0 system (XP catch up, surprise starts, first realm single types, Guild perks, shop and party changes) is live,
 // and drives battles with the same queue loop as tools/v3sim.js (the game's own careful brain or its auto).
+// ITEMS=1 (v0.22.57): every sim plays with a stocked bag and item use (see SIM_BAG in the harness); run a sim with and without to see what items are worth.
 // Usage: node tools/fullsim.js <sim> [args]   sims: boss, stage1, xp, journey, early   (run from the repo root, no tools/v3 link needed)
 //   SEED=<n> replaces Math.random with a seeded LCG and freezes Date.now (new journeys draw their realms from it; DRAW=<n> steps the frozen clock to draw another
 //   journey, the same realms and bosses for every run of one sim), so two builds
@@ -35,10 +36,17 @@ const HARNESS=`
 function render(){}
 // v0.9.5: the sims play elite roamers and minibosses by hand too (the game bans auto there), like the boss auto lock below
 if(typeof autoBan==='function')autoBan=function(){return null;};
+// v0.22.57 ITEMS=1: the party carries a bag (SIM_BAG by realm; ITEMBAG='potion:4,plume:1' overrides) and the careful player uses it by the game's own auto
+// item rules (auto39.js a39Pick: revive items when nobody can cast one, a draught under 30% HP when the hero cannot heal, mana when dry, cures). The
+// plain auto already follows those rules whenever the bag holds something. Without ITEMS the bag is whatever a new game starts with, as before.
+const SIM_BAG=[{potion:4,remedy:2,ether:1},{potion:5,remedy:2,ether:2,plume:1},{potion:4,hipotion:2,ether:3,remedy:2,plume:1,salts:1},{hipotion:4,potion:2,ether:3,remedy:3,plume:2,salts:1},{hipotion:5,ether:3,sage:1,remedy:3,plume:2,salts:2,elixir:1}];
+let SIM_USED=0;
+function simStock(stage,over){const bag=over||SIM_BAG[Math.max(0,Math.min(4,stage|0))];G.inv=G.inv||{};Object.keys(bag).forEach(k=>{if(ITEMS[k])G.inv[k]=bag[k];});}
+{const s0=autoTurnSmart;autoTurnSmart=function(){if(window.__ITEMS&&B&&!B.over&&B.mode==='cmd'){try{const p=a39Pick();if(p&&G.inv[p[0]]>0){SIM_USED++;return useItem(p[0],p[1]);}}catch(e){}}return s0.apply(this,arguments);};}
 // v0.9.5 auto per foe type (prog2.js): a fight whose foe types are not open yet is played by hand. The sims drive every fight with the
 // careful brain through B.auto, so the lock is lifted while such a fight runs (window.__TYPEFREE) and the fight is paid and timed as manual.
 if(typeof autoTypeReason==='function'){const atr0=autoTypeReason;autoTypeReason=function(){return window.__TYPEFREE?null:atr0.apply(this,arguments);};}
-return {HOOK,known,wrapKnown:w=>{const k0=known;known=function(c){return w(k0.apply(this,arguments),c);};},get G(){return G},set G(v){G=v},get B(){return B},V,get META(){return META},newGame,newChar,startBattle,advance,autoTurn,
+return {HOOK,known,simStock,simUsed:()=>SIM_USED,wrapKnown:w=>{const k0=known;known=function(c){return w(k0.apply(this,arguments),c);};},get G(){return G},set G(v){G=v},get B(){return B},V,get META(){return META},newGame,newChar,startBattle,advance,autoTurn,
   autoTurnSmart:typeof autoTurnSmart==='function'?autoTurnSmart:autoTurn,setPause:p=>{PAUSE=p},setSmart:v=>{if(typeof SIM_SMART!=='undefined')SIM_SMART=v},
   finishBattle,calcStats,TPL,RAW,GPOOL,FPOOL,STAGE_BOSS_LV,STAGE_LV,GEAR,recruit,refresh,encounterFoes,getMap,resetMaps,mapEntry,findPath:typeof findPath==='function'?findPath:null,
   ENC_RATE,ENC_MIN_STEPS,SOLID,syncPools:typeof syncPools==='function'?syncPools:()=>{},roamSpawn:typeof roamSpawn==='function'?roamSpawn:null,miniFor:typeof miniFor==='function'?miniFor:null,siteHasMini:typeof siteHasMini==='function'?siteHasMini:null,ZS,newRun:typeof newRun==='function'?newRun:null,avgLv,gearTier,ROAM:typeof ROAM!=='undefined'?ROAM:null,SURPRISE:typeof SURPRISE!=='undefined'?SURPRISE:null,
@@ -47,11 +55,11 @@ return {HOOK,known,wrapKnown:w=>{const k0=known;known=function(c){return w(k0.ap
   E17:typeof E17!=='undefined'?E17:null,get WS(){return WS},get MAPS(){return MAPS},ZONES,ro14Pool:typeof ro14Pool==='function'?ro14Pool:null,xpFor,
   innHeal:()=>Object.values(G.roster).forEach(c=>{c.ail={};c.st={};c.S=calcStats(c);c.hp=c.S.mhp;c.mp=c.S.mmp;})};`;
 const LOOP=`
-const Q=window.__Q;
+const Q=window.__Q;window.__ITEMS=${process.env.ITEMS&&process.env.ITEMS!=='0'?1:0};window.__BAG=${process.env.ITEMBAG?JSON.stringify(Object.fromEntries(process.env.ITEMBAG.split(',').map(x=>{const [k,v]=x.split(':');return [k,+v||1];}))):'null'};
 ${JSON.stringify(process.env.CFGSET||'')}.split(';').forEach(kv=>{if(!kv)return;const i=kv.indexOf('=');A.cfgSet(kv.slice(0,i),JSON.parse(kv.slice(i+1)));});// CFGSET='BOSS_LV.frac=.3;ECON.xp=1' tries other config values (objects only)
 function run(spec){Q.length=0;try{A.syncPools();}catch(e){}
   // the sims stand in for a player who plays every fight: the 'win it manually once first' auto lock on bosses does not apply
-  try{A.G.bossWon=new Proxy({},{get:()=>1});}catch(e){}A.setSmart(!window.__AUTO);A.V.auto=true;try{A.META.cfg.autoOn=true;}catch(e){}A.META.best={};window.__TYPEFREE=0;if(!A.startBattle(spec))return null;const lk=!!(A.B&&A.B.autoLock);if(lk){window.__TYPEFREE=1;A.B.auto=true;}
+  try{A.G.bossWon=new Proxy({},{get:()=>1});}catch(e){}A.setSmart(!window.__AUTO);A.V.auto=true;try{A.META.cfg.autoOn=true;}catch(e){}A.META.best={};window.__TYPEFREE=0;if(window.__ITEMS)A.simStock(spec.stage,window.__BAG);if(!A.startBattle(spec))return null;const lk=!!(A.B&&A.B.autoLock);if(lk){window.__TYPEFREE=1;A.B.auto=true;}
   let it=0,hpEnd=null;/* early: the party's HP at the last step before the fight ended (the rewards may level a hero up and heal it) */while(it++<400000){const m=A.V.modal;if(m&&(m.type==='result'||m.type==='lose'))break;
     if(!Q.length){if(A.B&&A.B.mode==='cmd')(window.__AUTO?A.autoTurn:A.autoTurnSmart)();else if(A.B&&!A.B.over)A.advance();if(!Q.length)break;}
     if((window.__MANUAL||lk)&&A.B)A.B.tA=0;Q.shift()();if(window.__HPTRACK&&A.B&&!A.B.over)hpEnd=A.G.party.reduce((a,id)=>a+Math.max(0,A.G.roster[id].hp),0);}
@@ -251,7 +259,7 @@ journey:RUNS=>`RUNS=${RUNS||3};window.__DBG=${process.env.DBG?1:0};const out=[];
 out:N=>`N=${N||20};const out=[];const SZ=[3,4,5,6,6];const WANT=${JSON.stringify(process.env.BOSSES||'')}.split(',').filter(Boolean);const DL=${+process.env.DLV||0};
   const ST=${JSON.stringify(process.env.BG_STAGES||'0,1,2,3,4')}.split(',').map(Number),AU=${JSON.stringify(process.env.GIM_AUTO||'0,1')}.split(',').map(Number);
   const hpSum=()=>A.G.party.reduce((a,id)=>a+Math.max(0,A.G.roster[id].hp),0),kos=()=>A.G.party.filter(id=>A.G.roster[id].hp<=0).length;
-  function run2(spec){Q.length=0;try{A.syncPools();}catch(e){}try{A.G.bossWon=new Proxy({},{get:()=>1});}catch(e){}A.setSmart(!window.__AUTO);A.V.auto=true;try{A.META.cfg.autoOn=true;}catch(e){}A.META.best={};window.__TYPEFREE=0;if(!A.startBattle(spec))return null;const lk=!!(A.B&&A.B.autoLock);if(lk){window.__TYPEFREE=1;A.B.auto=true;}
+  function run2(spec){Q.length=0;try{A.syncPools();}catch(e){}try{A.G.bossWon=new Proxy({},{get:()=>1});}catch(e){}A.setSmart(!window.__AUTO);A.V.auto=true;try{A.META.cfg.autoOn=true;}catch(e){}A.META.best={};window.__TYPEFREE=0;if(window.__ITEMS)A.simStock(spec.stage,window.__BAG);if(!A.startBattle(spec))return null;const lk=!!(A.B&&A.B.autoLock);if(lk){window.__TYPEFREE=1;A.B.auto=true;}
     let it=0,last=hpSum(),lost=0,healed=0,firstKO=-1,maxKO=0,bossHp=1,adds=0,lastPt=0;const boss=A.B.en.find(e=>e.boss);
     while(it++<400000){const m=A.V.modal;if(m&&(m.type==='result'||m.type==='lose'))break;
       if(!Q.length){if(A.B&&A.B.mode==='cmd')(window.__AUTO?A.autoTurn:A.autoTurnSmart)();else if(A.B&&!A.B.over)A.advance();if(!Q.length)break;}
@@ -295,7 +303,7 @@ diag:N=>`N=${N||3};const out=[];const SZ=[3,4,5,6,6];const ST=${JSON.stringify(p
   for(const s of ST){const keys=s<4?A.GPOOL:A.FPOOL,n=SZ[s];keys.forEach((k,ki)=>{for(let i=0;i<N;i++){seed=5100+s*997+i*31+ki*7;const ids=[];while(ids.length<n){const id=P8[Math.floor(R()*P8.length)];if(!ids.includes(id))ids.push(id);}
     ms=(99+s*13+i*101+ki*17)>>>0;party(ids,A.STAGE_BOSS_LV[s],s);A.G.stage=s;A.G.cleared=[0,1,2,3,4].map(x=>x<s);if(s<4)A.G.run.bosses[s]=k;else A.G.run.final=k;A.innHeal();
     cur={};ids.forEach(id=>{const c=A.G.roster[id];cur[id]={dd:0,dt:0,ko:0,turns:0,front:0,last:c.hp,heal:0};});
-    Q.length=0;try{A.syncPools();}catch(e){}try{A.G.bossWon=new Proxy({},{get:()=>1});}catch(e){}A.setSmart(true);A.V.auto=true;try{A.META.cfg.autoOn=true;}catch(e){}A.META.best={};if(!A.startBattle({stage:s,kind:'boss'}))continue;if(A.B.autoLock){window.__TYPEFREE=1;A.B.auto=true;}
+    Q.length=0;try{A.syncPools();}catch(e){}try{A.G.bossWon=new Proxy({},{get:()=>1});}catch(e){}A.setSmart(true);A.V.auto=true;try{A.META.cfg.autoOn=true;}catch(e){}A.META.best={};if(window.__ITEMS)A.simStock(s,window.__BAG);if(!A.startBattle({stage:s,kind:'boss'}))continue;if(A.B.autoLock){window.__TYPEFREE=1;A.B.auto=true;}
     let it=0;while(it++<400000){const m=A.V.modal;if(m&&(m.type==='result'||m.type==='lose'))break;
       if(!Q.length){if(A.B&&A.B.mode==='cmd'){const a=A.B.cur;A.autoTurnSmart();}else if(A.B&&!A.B.over)A.advance();if(!Q.length)break;}
       A.B.tA=0;Q.shift()();ids.forEach(id=>{const c=A.G.roster[id],o=cur[id];const h=Math.max(0,c.hp);if(h<o.last){o.dt+=o.last-h;if(h<=0)o.ko++;}else if(h>o.last)o.heal+=h-o.last;o.last=h;});}
@@ -324,7 +332,7 @@ eff:N=>`N=${N||6};const out=[];const SZ=[3,4,5,6,6];const ST=${JSON.stringify(pr
   for(const s of ST){const keys=s<4?A.GPOOL:A.FPOOL,n=SZ[s];keys.forEach((k,ki)=>{for(let i=0;i<N;i++){seed=5100+s*997+i*31+ki*7;const ids=[];while(ids.length<n){const id=P8[Math.floor(R()*P8.length)];if(!ids.includes(id))ids.push(id);}
     ms=(99+s*13+i*101+ki*17)>>>0;party(ids,A.STAGE_BOSS_LV[s],s);A.G.stage=s;A.G.cleared=[0,1,2,3,4].map(x=>x<s);if(s<4)A.G.run.bosses[s]=k;else A.G.run.final=k;A.innHeal();
     cur={};byName={};ids.forEach(id=>{const c=A.G.roster[id];cur[id]=Object.assign(Z(),{last:c.hp});byName[c.name]=id;});
-    Q.length=0;try{A.syncPools();}catch(e){}try{A.G.bossWon=new Proxy({},{get:()=>1});}catch(e){}A.setSmart(true);A.V.auto=true;try{A.META.cfg.autoOn=true;}catch(e){}A.META.best={};if(!A.startBattle({stage:s,kind:'boss'}))continue;if(A.B.autoLock){window.__TYPEFREE=1;A.B.auto=true;}
+    Q.length=0;try{A.syncPools();}catch(e){}try{A.G.bossWon=new Proxy({},{get:()=>1});}catch(e){}A.setSmart(true);A.V.auto=true;try{A.META.cfg.autoOn=true;}catch(e){}A.META.best={};if(window.__ITEMS)A.simStock(s,window.__BAG);if(!A.startBattle({stage:s,kind:'boss'}))continue;if(A.B.autoLock){window.__TYPEFREE=1;A.B.auto=true;}
     let it=0;while(it++<400000){const m=A.V.modal;if(m&&(m.type==='result'||m.type==='lose'))break;
       if(!Q.length){if(A.B&&A.B.mode==='cmd')A.autoTurnSmart();else if(A.B&&!A.B.over)A.advance();if(!Q.length)break;}
       A.B.tA=0;Q.shift()();ids.forEach(id=>{const c=A.G.roster[id],o=cur[id];const h=Math.max(0,c.hp);if(h<o.last){o.taken+=o.last-h;if(h<=0)o.ko++;}o.last=h;});}
@@ -347,6 +355,6 @@ eff:N=>`N=${N||6};const out=[];const SZ=[3,4,5,6,6];const ST=${JSON.stringify(pr
   const r=await page.evaluate(([SRC,HARNESS,LOOP,BODY,SEED,DRAW])=>{window.__PWTEST=1;/* v0.11.4: no timed-hit rings in sims */if(SEED){let s=SEED>>>0;Math.random=()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296;};Date.now=()=>1700000000000+DRAW*86400003;/* DRAW=n: another journey draw (realms and bosses), the frozen clock steps by a day; 0 is the old fixed draw */}window.__Q=[];const st=f=>{window.__Q.push(f);return 1;};
     const A=(new Function('setTimeout',SRC+HARNESS))(st);window.__A2=A;A.setPause(0);
     return (new Function('A',LOOP+BODY))(A);},[SRC,HARNESS,LOOP,SIMS[which](arg),+process.env.SEED||0,+process.env.DRAW||0]);
-  console.log(`${which} on the full game (${MODS.length} modules), ${((Date.now()-t0)/1000).toFixed(0)} s`);console.log(r);
+  console.log(`${which} on the full game (${MODS.length} modules), ${((Date.now()-t0)/1000).toFixed(0)} s${process.env.ITEMS&&process.env.ITEMS!=='0'?', WITH items':''}`);console.log(r);
   if(errs.length)console.log('page errors:',errs.slice(0,3).join(' | '));
   await browser.close();try{fs.unlinkSync(P);}catch(e){}})();

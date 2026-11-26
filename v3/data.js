@@ -474,7 +474,7 @@ const STS={
  might:{n:'Might',a:'MGT',t:3,c:'#ff7a5a',d:'Deals 30% more damage.'},
  bulwark:{n:'Bulwark',a:'BLW',t:3,c:'#7ab0ff',d:'Takes 30% less damage.'},
  haste:{n:'Haste',a:'HST',t:3,c:'#7affd0',d:'Turns come 35% faster.'},
- regen:{n:'Regen',a:'RGN',t:4,c:'#7aff8a',d:'Recovers 8% of max HP each turn.'},
+ regen:{n:'Regen',a:'RGN',t:4,c:'#7aff8a',d:'Recovers 6% of max HP each turn.'},
  ward:{n:'Ward',a:'WRD',t:6,c:'#f6e7a8',d:'Blocks the next hit completely.'},
  taunt:{n:'Taunt',a:'TNT',t:3,c:'#ff5a5a',d:'Foes must aim single attacks at this hero, who takes 30% less damage while braced for them.'},
  focus:{n:'Focus',a:'FCS',t:5,c:'#ffd23d',d:'The next attack is a guaranteed critical.'}
@@ -489,7 +489,7 @@ const CLS={
  mage:{n:'Mage',role:'Elemental caster. Big spells, hastes allies, fragile body.',hp:[36,7],mp:[28,3.8],atk:[4,.8],def:[4,1],mag:[12,2.55],res:[8,1.9],spd:[8,.75],pref:['int','spi','agi']},
  healer:{n:'Priest',role:'Heals, cleanses, grants Regen and revives. Invokes Sanctum guardians.',hp:[40,8],mp:[30,4],atk:[4,.8],def:[5,1.2],mag:[11,2.4],res:[9,2],spd:[8,.7],pref:['fth','spi','vit']},
  thief:{n:'Thief',role:'Fastest class. Steals, poisons and blinds.',hp:[40,8.5],mp:[14,2],atk:[8,2.15],def:[5,1.3],mag:[4,.8],res:[5,1.2],spd:[13,1.1],pref:['agi','dex','luk']},
- archer:{n:'Archer',role:'Ranged damage. Bleeds, roots and pierces armor.',hp:[42,8.5],mp:[16,2.2],atk:[13.6,3.5],def:[5,1.3],mag:[4,.8],res:[5,1.3],spd:[11,.95],pref:['dex','agi','str']},
+ archer:{n:'Archer',role:'Ranged damage. Bleeds, roots and pierces armor.',hp:[42,8.5],mp:[16,2.2],atk:[13.2,3.36],def:[5,1.3],mag:[4,.8],res:[5,1.3],spd:[11,.95],pref:['dex','agi','str']},
  monk:{n:'Monk',role:'Bare-fisted bruiser. Multi-hits, stuns, self-sustains.',hp:[50,10.5],mp:[14,2],atk:[8,1.75],def:[6,1.5],mag:[5,1],res:[6,1.4],spd:[10,.9],pref:['str','agi','vit']},
 sniper:{n:'Steppe Sniper',legend:1,role:'Legendary horse archer. Crossbow bolts of shadow and storm, and he shoots back when struck.',hp:[46,9.2],mp:[16,2.3],atk:[10,2.35],def:[6,1.5],mag:[4,.8],res:[6,1.4],spd:[11,1],pref:['dex','agi','str']},
  druid:{n:'Druid',legend:1,role:'Legendary beast warden. Longbow, a wolf and a hawk at his call, and a way with wild things.',hp:[46,9.2],mp:[20,2.8],atk:[9,2.3],def:[6,1.4],mag:[7,1.5],res:[7,1.6],spd:[11,.95],pref:['dex','spi','agi']},

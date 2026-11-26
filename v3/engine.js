@@ -475,11 +475,11 @@ function advance0(){
   if(u.broken===1)u.recover=1;
   let dot=0;
   const dm=WX().dot||1;
-  if(has(u,'poison')){const d=Math.max(1,Math.round(u.S.mhp*(u.boss?.02:.06)*dm));dot+=d;fx(u,String(d),'dmg poison');log(`${u.name} takes ${d} from poison.`);}
+  if(has(u,'poison')){const d=Math.max(1,Math.round(u.S.mhp*(u.boss?DOT_BOSS.poison:.06)*dm));dot+=d;fx(u,String(d),'dmg poison');log(`${u.name} takes ${d} from poison.`);}
   if(has(u,'burn')){const d=Math.max(1,Math.round(u.S.mhp*(u.boss?.02:.05)*dm));dot+=d;fx(u,String(d),'dmg burn');log(`${u.name} takes ${d} from burns.`);}
   if(has(u,'bleed')){const d=u.st.bleed.v||5;dot+=d;fx(u,String(d),'dmg bleed');log(`${u.name} bleeds for ${d}.`);}
   if(dot){hurt(u,dot);if(u.hp<=0){render();if(checkEnd())return;later(advance,PAUSE*.6);return;}}
-  if(has(u,'regen')||u.mod==='regen'){const n=Math.min(u.S.mhp-u.hp,Math.round(u.S.mhp*.08));if(n>0){u.hp+=n;fx(u,'+'+n,'heal');log(`${u.name} regenerates ${n} HP.`);}}
+  if(has(u,'regen')||u.mod==='regen'){const n=Math.min(u.S.mhp-u.hp,Math.round(u.S.mhp*(u.side==='p'?REGEN.hero:REGEN.foe)));if(n>0){u.hp+=n;fx(u,'+'+n,'heal');log(`${u.name} regenerates ${n} HP.`);}}
   if(u.wardEvery&&u.turns%u.wardEvery===0&&!has(u,'ward'))addSt(u,'ward',u);
   if(u.mod==='warded'&&u.turns%3===0&&!has(u,'ward'))addSt(u,'ward',u);
   if(has(u,'stun')){delete u.st.stun;if(u.side==='p')u.stunFree=1;log(`${u.name} is stunned and cannot act.`);fx(u,'Stunned','stat bad');B.mode='wait';render();later(()=>endTurn(u,1),PAUSE*.6);return;}

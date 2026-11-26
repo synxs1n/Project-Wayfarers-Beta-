@@ -146,7 +146,7 @@ const BOSS_PIPS={mult:1.5};const BREAK_WIN={bonus:1.3,short:true};
 // 3.2 extra boss muscle on top of the old stat table (hp and power multipliers)
 // v0.22.54: less burst and longer fights, and a steady ramp: the win rate of a careful party at the expected level steps down a little each realm (about
 // 66, 63, 60, 57, 53%) and the hero turns in a won fight step up a little (about 28, 31, 35, 39, 43). pow was [.955,1.28,1.32,1.535,1.23], hp [.8,1.34,1.39,1.53,1.22].
-const BOSS_BUFF={hp:[1.28,1.55,1.6,2.05,1.85],pow:[.93,1.16,1.33,1.9,1.42]}// v0.19: eased about 7% hp and 3% pow with the role power change (was hp [.9,1.5,1.55,1.7,1.36], pow [1,1.34,1.38,1.6,1.28]) to pay for the 12 skill kit, role power and no dual ultimates, so the journey sim stays at level 41.3 and 14.6 boss tries (before the skill changes: 40.5 and 11.1; without the ease: 42.6 and 19.6); v0.4.3: re-tuned with capes; v0.8.2: the first three Scourges eased (were hp 1.3, 1.75, 1.8 and pow 1.15, 1.4, 1.44) so no boss is a wall; v0.9.5: hp [1.15,1.65,1.7,2.0,1.52] -> about 4 to 10% less, the realm gimmicks (BOSS_GIM) carry the rest
+const BOSS_BUFF={hp:[1.28,1.55,1.6,2.05,1.85],pow:[.9,1.14,1.4,2.04,1.42]}// v0.19: eased about 7% hp and 3% pow with the role power change (was hp [.9,1.5,1.55,1.7,1.36], pow [1,1.34,1.38,1.6,1.28]) to pay for the 12 skill kit, role power and no dual ultimates, so the journey sim stays at level 41.3 and 14.6 boss tries (before the skill changes: 40.5 and 11.1; without the ease: 42.6 and 19.6); v0.4.3: re-tuned with capes; v0.8.2: the first three Scourges eased (were hp 1.3, 1.75, 1.8 and pow 1.15, 1.4, 1.44) so no boss is a wall; v0.9.5: hp [1.15,1.65,1.7,2.0,1.52] -> about 4 to 10% less, the realm gimmicks (BOSS_GIM) carry the rest
 // BOSS_GIM (v0.9.5, battle4.js): every Scourge and Calamity brings one realm gimmick to its first fight (kind 'boss'; not Echoes, not the Daily
 // Trial). Each is telegraphed on the boss's turn (a log line, a "Telegraph" chip on the boss, a mark on the heroes it will hit) and lands on its
 // next turn, so reading it pays. first: the boss's turn of the first telegraph; every: turns between telegraphs (per boss: every).
@@ -185,10 +185,13 @@ const BOSS_GIM={on:true,daily:false,first:2,every:4,stageK:[.5,.85,1,1,1],answer
 const BOSS_SIZE={hp:.07,pow:.06,expect:[3,4,5,6,6],short:{hp:.08,pow:.05}};// per stage 1 to 5
 // STUN_CAP (v0.22.54): a hero who has just lost a turn to a stun (or a freeze) cannot be stunned again until after their next turn.
 const STUN_CAP={on:true};
+// REGEN (v0.22.57): share of max HP a turn. Heroes .06 (was .08: Regen every turn was the second half of the Priest's lead); foes keep .08. DOT_BOSS: Poison on a
+// Scourge or Calamity, share of its max HP a turn (was .02; the Thief's and Archer's ailments now count for something on a boss).
+const REGEN={hero:.06,foe:.08},DOT_BOSS={poison:.03};
 // GEAR_LV (v0.22.57, calcStats): what the old, steeper gear tiers added now grows with the hero. w and a are the old minus the new weapon and armor
 // power at each realm's usual level (lv: 8, 16, 24, 32, 40; straight lines between, flat after 40). A hero gets it in the shape of their class's own
 // weapon and armor family (a Mage as magic and resistance, a Knight as attack, defense and HP).
-const GEAR_LV={on:true,lv:[8,16,24,32,40],w:[0,0,5,12,22],a:[0,0,2,5,9]};
+const GEAR_LV={on:true,lv:[8,16,24,32,40],w:[-2,0,5,12,22],a:[-1,0,2,5,9]};// the first entries are negative: Common gear is a little stronger than it was
 // TAUNT (v0.22.54): a hero under Taunt is braced: they take `cut` less damage from every hit (drawing fire was a death sentence for a Warrior).
 const TAUNT={cut:.3};
 // 3.3 echo levels. Story echo base = boss base + storyAdd; Sanctum echoes use fixed bases. While the party's highest hero is more than
@@ -320,8 +323,8 @@ const ROLES={
       {id:'r_hamstr',n:'Hamstring',k:'phys',pw:.8,mp:5,cost:.8,lv:12,fx:[['slow',.8],['weaken',.5]],d:'A cut behind the knee. Likely Slows, may Weaken.',r:'debuffer'},
       {id:'r_toxin',n:'Toxic Cloud',k:'status',t:'all',mp:10,lv:18,fx:[['poison',.85],['weaken',.6]],d:'A cloud of venom over every foe. Likely Poisons, may Weaken.',r:'debuffer'},
       {id:'r_fuma',n:'Fuma Shuriken',k:'phys',pw:1.9,mp:12,cost:1.1,pierce:1,lv:24,dl:'piercing',d:'A great folding shuriken that cuts through armor. Piercing; ignores half of defense.',r:'ranged'}],
-    monk:[{id:'r_chimend',n:'Chi Mend',k:'heal',chi:1,pw:1.6,mp:5,t:'ally',lv:7,d:'Pushes chi into an ally to close their wounds.',r:'healer'},
-      {id:'r_harmony',n:'Harmony Meditation',k:'status',t:'allyAll',mp:10,lv:14,fx:[['focus',1]],heal:.2,d:'The line breathes with him: Focus (more crit chance for a few turns) for the vanguard and a 20% heal.',r:'buffer'},
+    monk:[{id:'r_chimend',n:'Chi Mend',k:'heal',chi:1,pw:1.85,mp:5,t:'ally',lv:7,d:'Pushes chi into an ally to close their wounds.',r:'healer'},
+      {id:'r_harmony',n:'Harmony Meditation',k:'status',t:'allyAll',mp:10,lv:14,fx:[['focus',1]],heal:.23,d:'The line breathes with him: Focus (more crit chance for a few turns) for the vanguard and a 23% heal.',r:'buffer'},
       {id:'r_lotus',n:'Lotus Circle',k:'heal',chi:1,pw:1.1,mp:12,t:'allyAll',lv:21,d:'A shared meditation that heals the vanguard.',r:'healer'}],
     mage:[{id:'r_snare',n:'Time Snare',k:'status',t:'all',mp:10,lv:16,fx:[['slow',.6],['weaken',.25]],d:'Thickens time around every foe. Likely Slows, may Weaken.',r:'debuffer'}],
     healer:[{id:'r_bless',n:'Blessing',k:'status',t:'ally',mp:6,lv:10,fx:[['might',1],['regen',1]],d:'A blessing on one ally: Might and Regen.',r:'buffer'},
