@@ -107,9 +107,15 @@ HOOK.wrap('finishBattle','factions','faction credit',function(next,...a){const h
 function facSmithDisc(){let b=0;facPerks('smiths',facRank('smiths')).forEach(p=>{if(p.k==='forge')b=Math.max(b,p.v);});return b;}
 function facSmithRebate(){let b=0;facPerks('smiths',facRank('smiths')).forEach(p=>{if(p.rebate)b=Math.max(b,p.rebate);});return b;}
 // ---------- missions ----------
+// 0.22.47: Accept all takes what is on show, and nothing new slides in behind it.
+// A guild listed the missions already taken plus two new ones. So the moment the two on show were accepted, two more took their place: after
+// Accept all there were open missions again, as if the press had missed them (often the tier 2 ones), and pressing on took the guild's whole
+// list. The owner's rule: new missions unlock as missions are completed. A guild now has F47.slots (2, fix47.js) missions out at a time,
+// taken ones included: a new one is posted when one is handed in. Accept all accepts every notice on show.
+function f47Open(L){try{if(F47.off)return L;const f=facInit(),acc=L.filter(m=>f.acc[m.id]!=null),rest=L.filter(m=>f.acc[m.id]==null);return acc.concat(rest.slice(0,Math.max(0,F47.slots-acc.length)));}catch(e){return L;}}
 function facMissionList(id){const f=facInit(),t=facTier(id),pool=FMIS.filter(m=>m.f===id&&facTierOf(m.r)<=t&&!f.done[m.id]);
-  const acc=pool.filter(m=>f.acc[m.id]!=null),rest=pool.filter(m=>f.acc[m.id]==null);if(rest.length<=2)return acc.concat(rest);
-  const R=seeded(hashS((G.run.seed||1)+':fm:'+id+':'+(G.tavRoll||0))),left=rest.slice(),pk=[];while(pk.length<2&&left.length){pk.push(left.splice(Math.floor(R()*left.length),1)[0]);}return acc.concat(pk);}
+  const acc=pool.filter(m=>f.acc[m.id]!=null),rest=pool.filter(m=>f.acc[m.id]==null);if(rest.length<=2)return f47Open(acc.concat(rest));
+  const R=seeded(hashS((G.run.seed||1)+':fm:'+id+':'+(G.tavRoll||0))),left=rest.slice(),pk=[];while(pk.length<2&&left.length){pk.push(left.splice(Math.floor(R()*left.length),1)[0]);}return f47Open(acc.concat(pk));}
 // v0.7.7: progress counts everything done on this journey, also before the mission was accepted (the owner's call); acc only marks it taken
 // v0.10.x: missions taken from now on are handed in at a Guild Hall (any town's); older ones (no hand flag) still claim anywhere
 function facAtHall(){return !!(V&&V.modal&&V.modal.type==='guild');}

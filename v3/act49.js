@@ -18,15 +18,12 @@
 //    (S49.need: Shield Bash, Shield Brand, Shield Throw, Shield Ally) is only known in battle while a shield is worn; the hero sheet marks
 //    it "Needs a shield". So that no Knight starts without half a kit, a Knight is handed a plain shield (new heroes, and once for saves).
 const S49={need:{knight:{bash:1,sburst:1,javelin:1,r_cover:1}},off:false};
-// ---------- 5 no sub role tag ----------
-try{sk12Tag=function(){return '';};}catch(e){}
-// ---------- 1 Power ----------
-{const s0=sr11Strip;sr11Strip=function(){let h=s0.apply(this,arguments);try{h=String(h).replace(/<i class="sk11p" title="Power">Pow (\d+)<\/i>/,'<i class="sk11p" title="Power">Power $1</i>').replace(/(<b class="sk11e" title="Power">)Pow (\d+)(<\/b>)/,'$1Power $2$3');}catch(e){}return h;};}
+// ---------- 5 no sub role tag: sk12Tag (skills12.js) returns nothing ----------
+// ---------- 1 Power: sr11Strip (skillrows11.js) writes the full word; the framed tag is in the CSS below ----------
 // ---------- 2 the foe the numbers are for ----------
 function a49Foe(){try{if(!B||B.a49f==null)return null;const e=B.en[B.a49f];return e&&e.hp>0?e:null;}catch(e){return null;}}
 const a49One=s=>!!s&&(s.k==='phys'||s.k==='mag')&&(!s.t||s.t==='one'||s.t==='chain');
-{const n0=skNum;skNum=function(a,s){try{const e=a49One(s)&&a&&a.side==='p'?a49Foe():null;if(e){const r0=RNG,foc=a.st&&a.st.focus;let d=0;try{RNG=()=>.5;d=calcDamage(a,s,e).dmg;}finally{RNG=r0;if(foc&&a.st&&!a.st.focus)a.st.focus=foc;}return '~'+Math.round(d*(s.hits||1));}}catch(e){}return n0.apply(this,arguments);};}
-{const t0=ACT.tgtE;ACT.tgtE=function(i){try{if(!S49.off&&B&&B.mode==='cmd'&&!B.pend&&B.cur&&B.cur.side==='p'&&!B.auto&&B.en[+i]&&B.en[+i].hp>0&&(B.menu==='skills'||B.menu==='root')){B.a49f=+i;if(B.menu==='skills'){renderBattle();return;}}}catch(e){}return t0.apply(this,arguments);};}
+// skNum (insight.js) gives the number against that foe for a single target skill; ACT.tgtE (battleui.js) sets the foe on a tap.
 // ---------- 3 the Attack button, and the line that says whom the numbers are for ----------
 HOOK.xform('cmdHtml','act49','Attack shows element, kind and estimate; the list names the foe the numbers are for',function(h){try{const a=B&&B.cur;if(!a||B.mode!=='cmd'||a.side!=='p')return h;h=String(h);
   if(B.menu==='root'){const sk=atkFor(a),k=deliveryOf(a,sk),els=typeof skEls==='function'?skEls(sk):[].concat(sk.el||[]);let est='';try{est=skNum(a,sk)||'';}catch(e){}
@@ -39,12 +36,13 @@ HOOK.after('renderBattle','act49','mark the foe the numbers are for',function(){
 // ---------- 6 shield skills need the shield ----------
 function s49Needs(c,s){try{const t=c&&TPL[c.id],N=t&&S49.need[t.cls];return !!(N&&s&&N[s.id]&&!s.relic);}catch(e){return false;}}
 function s49Has(c){try{const r=(G&&G.roster&&G.roster[c.id])||c;return !!(r&&r.eq&&r.eq.s&&(typeof sh20Ok!=='function'||sh20Ok(r)));}catch(e){return true;}}
+// known stays a wrap: it must filter the finished list, after roles9.js and the legends modules have added their skills (r_cover is a role skill).
 {const k0=known;known=function(c){const L=k0.apply(this,arguments);try{if(S49.off||!c||c.side==='e'||!TPL[c.id]||!S49.need[TPL[c.id].cls]||s49Has(c))return L;return L.filter(s=>!s49Needs(c,s));}catch(e){return L;}};}
 HOOK.xform('mChar','act49','hero sheet: a shield skill says it needs a shield',function(h,id){try{const c=G&&G.roster[id],t=c&&TPL[id];if(!c||!t||!S49.need[t.cls]||s49Has(c)||typeof h!=='string')return h;
   classSkills(t).forEach(s=>{if(s49Needs(c,s))h=h.split(`<b>${esc(s.n)}</b>`).join(`<b>${esc(s.n)}</b> <em class="qtag a49sh" title="Only while a shield is worn (a shield needs a one-handed weapon)">Needs a shield</em>`);});}catch(e){}return h;});
 // a Knight starts with a plain shield; a save from before gets one once
 function s49Give(c,tier){try{const t=TPL[c.id];if(!t||t.cls!=='knight'||!c.eq||c.eq.s)return false;if(typeof sh20OneHand==='function'&&!sh20OneHand(c))return false;const id='s_shield_'+Math.max(0,Math.min(5,tier|0));if(!gearOf(id))return false;c.eq.s=id;return true;}catch(e){return false;}}
-{const n0=newChar;newChar=function(id,lv,tier){const c=n0.apply(this,arguments);try{if(!S49.off&&s49Give(c,tier)){c.S=calcStats(c);c.hp=c.S.mhp;c.mp=c.S.mmp;}}catch(e){}return c;};}
+// newChar (engine.js) hands it out.
 HOOK.after('unpackG','act49','old saves: a Knight without a shield is handed a plain one, once',function(g){try{if(!g||g.daily||g.s49sh||!g.roster)return;g.s49sh=1;Object.values(g.roster).forEach(c=>{s49Give(c,0);});}catch(e){}});
 HOOK.after('newGame','act49','new journeys need no shield hand out',function(){try{if(G)G.s49sh=1;}catch(e){}});
 {const st=document.createElement('style');st.id='a49css';st.textContent=`

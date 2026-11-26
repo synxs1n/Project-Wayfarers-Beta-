@@ -93,7 +93,7 @@ const stop=await ev(()=>{const G=__A.G;G.gold=5000;G.gear=[];Object.keys(G.mats)
   const first=P.picks.find(p=>p.src==='buy');G.gold=__A.GEAR[first.id].price+1;
   __A.ACT.p3SmithGo();const m=__A.V.modal;const txt=document.querySelector('#modal').innerText;return {stop:m.p3.stop,done:m.p3.done,of:m.p3.of,gold:G.gold,txt:/Stopped: the gold ran out/.test(txt),eq:G.roster[first.cid].eq[first.sl]===first.id};});
 chk('3.3 stops cleanly when the gold runs out, equips what it bought',stop.stop==='gold'&&stop.txt&&stop.done>=1&&stop.done<stop.of&&stop.gold>=0&&stop.eq||JSON.stringify(stop));
-const poor=await ev(()=>{const G=__A.G;G.gold=0;G.gear=[];Object.keys(G.mats).forEach(k=>G.mats[k]=0);const P=__P3.p3SmithPlan();__A.V.modal={type:'p3plan',plan:P,from:{type:'smithy'}};__A.render();return {picks:P.picks.length,cant:P.cant.length,txt:/out of reach/i.test(document.querySelector('#modal').innerText)};});
+const poor=await ev(()=>{const G=__A.G;G.gold=0;G.gear=[];Object.keys(G.mats).forEach(k=>G.mats[k]=0);const P=window.__GP46.plan();/* the old planner (p3SmithPlan) is gone: gear46.js is the plan */__A.V.modal={type:'p3plan',plan:P,from:{type:'smithy'}};__A.render();return {picks:P.picks.length,cant:P.cant.length,txt:/out of reach/i.test(document.querySelector('#modal').innerText)};});
 chk('3.3 what cannot be afforded is listed',poor.cant>0&&poor.txt||JSON.stringify(poor));
 await ev(()=>{__A.V.modal=null;__A.render();});
 await done(h);})();

@@ -97,7 +97,10 @@ function uDetHtml(){
 {const tE=ACT.tgtE,tA=ACT.tgtA;
   Object.assign(ACT,{
     // outside of target mode a tap on a unit opens its details; during targeting it still picks the target
-    tgtE(i){if(B&&!(B.mode==='cmd'&&B.pend&&B.pend.sk&&(B.pend.sk.t==='one'||B.pend.sk.t==='chain'||healsUndead(B.pend.sk,B.en[+i])))){if(B.mode!=='cmd'||(typeof B5R!=='undefined'&&B5R.ring&&!B5R.ring.done))return;/* v0.10.7: mid action (a timed ring, the hit landing) a tap is not a request for the info panel */return ACT.uInfo('e:'+i);}return tE.apply(this,arguments);},
+    tgtE(i){
+      // 0.22.49 (act49.js 2): with the command menu or the skill list open, a tap on a foe makes it the foe the estimates are worked out against
+      try{if(!S49.off&&B&&B.mode==='cmd'&&!B.pend&&B.cur&&B.cur.side==='p'&&!B.auto&&B.en[+i]&&B.en[+i].hp>0&&(B.menu==='skills'||B.menu==='root')){B.a49f=+i;if(B.menu==='skills'){renderBattle();return;}}}catch(e){}
+      if(B&&!(B.mode==='cmd'&&B.pend&&B.pend.sk&&(B.pend.sk.t==='one'||B.pend.sk.t==='chain'||healsUndead(B.pend.sk,B.en[+i])))){if(B.mode!=='cmd'||(typeof B5R!=='undefined'&&B5R.ring&&!B5R.ring.done))return;/* v0.10.7: mid action (a timed ring, the hit landing) a tap is not a request for the info panel */return ACT.uInfo('e:'+i);}return tE.apply(this,arguments);},
     tgtA(i){
       // v0.4.0 2.1: outside of targeting, a tap on a living reserve hero offers to switch them in
       if(B&&B.mode==='cmd'&&!B.pend&&!B.auto){const c=allParty()[+i],bi=B.back.indexOf(c);if(c&&bi>=0&&c.hp>0&&canSwap()){B.swapAsk={bi,by:B.cur.id};B.menu='root';render();const y=document.querySelector('#bcmd [data-act="swYes"]');if(y)y.focus();return;}}

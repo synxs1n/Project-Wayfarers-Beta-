@@ -39,7 +39,9 @@ function sk12Mult(c,s){try{const t=c&&TPL[c.id];if(!t||!s||s.bond||s.limit||s.id
   let nat=false;if(tier!=='primary'&&sk12Nat(c)===r){m=Math.min(ROLEPW.natCap,m+ROLEPW.natLift);nat=true;}
   return {m:+m.toFixed(3),tier,r,nat};}catch(e){return null;}}
 const sk12Pc=m=>Math.round(m*100)+'%';
-function sk12Tag(o){return o&&o.tier!=='primary'?`<i class="sk12r ${o.tier}" title="${o.tier==='off'?'Off role':'Secondary role'} for this class: power x${sk12Pc(o.m)}${o.nat?' (includes the nature\'s lift)':''}">${o.tier==='off'?'Off':'Sub'} x${sk12Pc(o.m)}</i>`:'';}
+// 0.22.49 (act49.js 5): "Sub role percent changes should only be a rule behind the scenes": the "Sub x80%" / "Off x50%" tag is gone from
+// every skill row. The rule itself (sk12Mult) is unchanged.
+function sk12Tag(o){return '';}
 // off-role buffs last a turn shorter
 HOOK.wrap('perform','skills12','off role buffs last shorter',function(next,...args){const a=args[0],sk=args[1],cut=sk&&sk.buffCut;if(!cut||!a||!a.S)return next(...args);
   const b0=a.S.buffT;a.S.buffT=(b0||0)-cut;try{return next(...args);}finally{a.S.buffT=b0;}});

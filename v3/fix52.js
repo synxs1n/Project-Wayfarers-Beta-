@@ -12,6 +12,6 @@ function f52Vault(s){try{if(!G||G.daily)return false;G.vaults=G.vaults||{};if(G.
     for(const c of m.chests){if(c[2]!=='vault')continue;const K=[m.id+':'+c[0]+','+c[1]];if(c.from)K.push(m.id+':'+c.from[0]+','+c.from[1]);
       if(K.some(k=>G.chests&&G.chests[k])){G.vaults[s]=1;F52.n++;return true;}}}catch(e){F52.err=String(e&&e.message||e);}return false;}
 function f52Sweep(){try{if(!G||G.daily)return;(G.quests||[]).forEach(q=>{if(q&&q.type==='vault'&&q.state!=='claimed'&&!(G.vaults||{})[q.stage]&&F52.chk[q.stage]!==G.run.seed+':'+Object.keys(G.chests||{}).length){F52.chk[q.stage]=G.run.seed+':'+Object.keys(G.chests||{}).length;f52Vault(q.stage);}});}catch(e){}}
-{const q0=questReady;questReady=function(q){try{if(q&&q.type==='vault'&&q.state==='active'&&!(G.vaults||{})[q.stage])f52Sweep();}catch(e){}return q0.apply(this,arguments);};}
+// questReady (engine.js) calls f52Sweep for an active vault quest whose flag is not set.
 HOOK.after('openChest','fix52','a vault chest that is open counts for its quest',function(){try{F52.chk={};f52Sweep();}catch(e){}});
 try{window.__F52={F52,vault:f52Vault,sweep:f52Sweep};}catch(e){}

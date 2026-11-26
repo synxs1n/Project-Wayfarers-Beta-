@@ -21,13 +21,9 @@ function f47Eclipse(ctx,W,H,now,battle){const t=now/1000;ctx.save();
 {const wf0=weatherFX;weatherFX=function(ctx,w,W,H,now,battle){if(w==='eclipse'&&!F47.off){try{f47Eclipse(ctx,W,H,now||0,!!battle);return;}catch(e){F47.err=String(e&&e.message||e);}}return wf0.apply(this,arguments);};}
 // weather7.js draws the rare skies through the function it kept at load (W7.old), tiled over the map: give it the new eclipse too
 try{if(typeof W7!=='undefined'&&typeof W7.old==='function'){const o0=W7.old;W7.old=function(ctx,w,W,H,now,battle){if(w==='eclipse'&&!F47.off){try{f47Eclipse(ctx,W,H,now||0,!!battle);return;}catch(e){F47.err=String(e&&e.message||e);}}return o0.apply(this,arguments);};}}catch(e){}
-// on the map the corona shows as a breathing rim of gold light around the view (it belongs to the view, not to the scrolling layer)
-try{if(typeof w7Legacy==='function'){const l0=w7Legacy;w7Legacy=function(ctx,w,k,V,now){const r=l0.apply(this,arguments);try{if(w==='eclipse'&&!F47.off&&V&&V.air&&V.mode!=='bt'&&typeof surgeGlow==='function')surgeGlow(ctx,'255,196,110',V.W,V.H,(.16+(Math.sin(now/1000*.9)+1)/2*.12)*k);}catch(e){}return r;};}}catch(e){}
+// on the map the corona shows as a breathing rim of gold light around the view: drawn at the end of w7Legacy (weather7.js).
+// The two wraps above stay wraps: the eclipse must be drawn instead of everything weatherFX has become by now (world3.js's disc, the
+// cross-fade of p5trans.js, the battle painter of weather7.js), so it has to sit outside all of them.
 // ---------- 2 Accept all takes what is on show, and nothing new slides in behind it ----------
-// A guild listed the missions already taken plus two new ones (factions.js facMissionList). So the moment the two on show were accepted, two
-// more took their place: after Accept all there were open missions again, as if the press had missed them (often the tier 2 ones), and
-// pressing on took the guild's whole list. The owner's rule: new missions unlock as missions are completed. A guild now has F47.slots (2)
-// missions out at a time, taken ones included: a new one is posted when one is handed in. Accept all accepts every notice on show.
-function f47Open(L){try{const f=facInit(),acc=L.filter(m=>f.acc[m.id]!=null),rest=L.filter(m=>f.acc[m.id]==null);return acc.concat(rest.slice(0,Math.max(0,F47.slots-acc.length)));}catch(e){return L;}}
-{const ml0=facMissionList;facMissionList=function(id){const L=ml0.apply(this,arguments);return F47.off?L:f47Open(L);};}
+// The rule (F47.slots missions out per guild) is applied where the list is made: facMissionList and f47Open in factions.js.
 try{window.__F47=F47;}catch(e){}

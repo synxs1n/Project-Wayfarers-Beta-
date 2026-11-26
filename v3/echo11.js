@@ -99,7 +99,7 @@ ACT.efForge=function(f){if(!efEntry(f))return;const m=efCost(f),base=efBaseIn(f)
   G.gold-=gold;payMats(m);G.gear.splice(base.i,1);const id=efItemId(f);G.gear.push(id);saveGame();sfx('chest');toast('Forged: '+gearOf(id).n);render();if(typeof queueNewGear==='function')queueNewGear([id],true);};
 
 // ----- Upgrade popups (p3shop.js): the gold of the Echoforge step, one id (no +N), and armour -----
-{const uo0=upgOpts;upgOpts=function(c,sl){const out=uo0.apply(this,arguments);try{if(!G||G.daily||!c)return out;const town=upgTown();
+{const uo0=upgOpts;upgOpts=function(c,sl){const out=uo0.apply(this,arguments);try{if(!G||G.daily||!c)return out;if(c.eq&&f38Own(c,c.eq[sl]))return out;/* 0.22.38 (p3shop.js f38Own): no Echoforge step either over a hero's own relic */const town=upgTown();
   for(let i=out.length-1;i>=0;i--){const o=out[i];if(o.k!=='ef')continue;o.id=efItemId(o.f);o.gold=efGold(o.f);o.ok=town&&hasMats(o.m)&&G.gold>=o.gold;
     const g=gainFor(c,o.id);if(!g||g.d<=.01){out.splice(i,1);continue;}o.d=g.d;o.pct=g.pct;o.mx=upgMax(c,o.id);}
   if(sl==='a'){const cur=c.eq.a||null;Object.keys(ECHOARM).forEach(f=>{const id=efItemId(f);if(!canEquip(c,id))return;const base=efBaseIn(f),worn=cur&&baseIdOf(cur)===efBaseId(f),src=base?'pack':worn?'eq':null;if(!src)return;

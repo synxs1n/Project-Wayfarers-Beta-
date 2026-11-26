@@ -90,6 +90,8 @@ function skHealAmt(a,s,t){
 // calcDamage rolls rnd(.92,1.08) and a crit; both read RNG, so it is called with RNG fixed at .5 (spread = 1.0, no crit roll) and any Focus
 // buff is put back afterwards (calcDamage consumes it). The result is the average over the live foes, times hits.
 function skNum(a,s){
+  // 0.22.49 (act49.js 2): with a foe tapped, a single target skill shows its number against that foe
+  try{const e=a49One(s)&&a&&a.side==='p'?a49Foe():null;if(e){const r0=RNG,foc=a.st&&a.st.focus;let d=0;try{RNG=()=>.5;d=calcDamage(a,s,e).dmg;}finally{RNG=r0;if(foc&&a.st&&!a.st.focus)a.st.focus=foc;}return '~'+Math.round(d*(s.hits||1));}}catch(e){}
   if(!a||!s||!B)return '';
   const each=s.t==='all'||s.t==='allyAll'||s.t==='rand'?' each':'';
   if(s.k==='phys'||s.k==='mag'){

@@ -1319,6 +1319,17 @@ button.mini.epic>span.epictag,.btile.epic>span.epictag,button.mini.leg>span.legt
 .wview>#glp.gl,.wview>#glpm.gl{width:var(--m14w,168px);max-width:none;box-sizing:border-box;font-size:10.5px;padding:3px 6px 4px}
 .wview>#glp.gl.chip,.wview>#glpm.gl.chip{width:var(--m14c,112px);padding:2px 4px}
 .wview>#glp.gl .glhead,.wview>#glpm.gl .glhead{font-size:10.5px;min-height:24px}
+/* ============================================================================================================================
+   battle3.css: every style of the battle screen, in three layers. Later sections win over earlier ones at equal weight, so keep the order.
+     A  the base screen (v0.6.3 to v0.9.5, battle3.js): stage labels, cards, commands, the classic wide and landscape layouts
+     B  the stage-first layout, class b27 (v0.22.27, battle27.js): every screen but a short landscape one. The top strip, the floating
+        log line, the big command buttons, the Party & foes sheet, the list panel that rises over the stage
+     C  big screens, classes b48 and b48top (v0.22.48, side48.js): the card column beside the stage, the log line in the top strip,
+        the skill boxes
+   Sections B and C were style blocks inside battle27.js and side48.js until this file took them (same rules, same order).
+   Sizes that the code sets on .battle: --b27t, --b48w, --b48rise, --b48t, --b48ch, --b48ll, --b48lw, --b48lt.
+   ============================================================================================================================ */
+/* ############################ A  THE BASE SCREEN ############################ */
 /* =================== Beta v0.6.3: battle screen (battle3.js) =================== */
 /* ----- stage labels: every box is placed by the layout pass (b3Lay) at exactly these sizes, in logical stage px ----- */
 .bstage .b3l{position:absolute;box-sizing:border-box;margin:0;transform:none}
@@ -1876,6 +1887,147 @@ img.dli.slash,img.dli.piercing{image-rendering:auto}
 .m12tags .m12t.kind.slash{background:#3a4358}.m12tags .m12t.kind.blunt{background:#6a4a2a}.m12tags .m12t.kind.piercing{background:#6a3040}.m12tags .m12t.kind.ranged{background:#2c6a4a}.m12tags .m12t.kind.magic{background:#4a3088}.m12tags .m12t.kind.heal{background:#256a3c}
 .mi.m12last{box-shadow:inset 0 0 0 1px rgba(255,216,160,.55)}
 .mi.m12last .n::after{content:"last";margin-left:5px;font:700 .52rem/1 var(--fb);letter-spacing:.06em;text-transform:uppercase;color:#ffd8a0;opacity:.8}
+
+/* ############################ B  THE STAGE-FIRST LAYOUT: .battle.b3.m-tall.b27 (battle27.js) ############################ */
+/* What it is and why: the header of battle27.js. b27Mark (battle27.js) sets m-tall, b27 and b27land on .battle before the layout measures. */
+body:has(.battle.b3.b27) #hdr{display:none}
+.battle.b3.m-tall.b27{position:relative}
+.battle.b3.m-tall.b27 .order{display:flex;align-items:center;gap:6px}
+.battle.b3.m-tall.b27 .order .ocs{flex:1 1 auto;min-width:0;overflow:hidden}
+.battle.b3.m-tall.b27 .order .ocs>small{display:none}
+.battle.b3.m-tall.b27 .order .autorow{display:flex;flex:none;gap:4px;margin:0 0 0 auto;padding:0;width:auto}
+.battle.b3.m-tall.b27 .order .autorow .btn{flex:none;min-width:40px;width:auto;min-height:40px;padding:0 7px;font-size:.74rem;line-height:1.05}
+.battle.b3.m-tall.b27 .order .autorow .btn small{display:block;font-size:.56rem;opacity:.8}
+.battle.b3.m-tall.b27 .cmd .autorow{display:none}
+.battle.b3.m-tall.b27 .bwrap{margin-left:-12px;margin-right:-12px;width:calc(100% + 24px);max-width:none}
+.battle.b3.m-tall.b27>.bline{grid-area:auto;position:absolute;left:-4px;right:-4px;top:var(--b27t,62px);z-index:6;min-height:40px;padding:0 0 0 3px;gap:4px;background:rgba(8,13,26,.88);border:1px solid rgba(217,180,106,.28);border-radius:8px;overflow:hidden}
+.battle.b3.m-tall.b27>.bline .osky{display:flex;flex:none;gap:2px;align-items:center}
+.battle.b3.m-tall.b27>.bline .osky .wchip .wxn{display:none}
+.battle.b3.m-tall.b27 .order{padding-top:2px;padding-bottom:2px;min-height:44px}
+.battle.b3.m-tall.b27>.bline .osky .wchip{min-width:28px;width:28px;height:34px;min-height:34px;padding:0}
+.battle.b3.m-tall.b27>.bline .osky .wchip.d{width:auto;padding:0 4px;font-size:.62rem}
+.battle.b3.m-tall.b27>.bline .b4mo{min-height:40px;margin:0;min-width:74px;max-width:74px;padding:3px 5px}
+.battle.b3.m-tall.b27>.bline .b4mo .b4mt b{font-size:.5rem;letter-spacing:0}
+.battle.b3.m-tall.b27>.bline .blog p{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;font-size:.74rem;line-height:1.15}
+.battle.b3.m-tall.b27>.bline .blogbtn{min-height:40px;min-width:40px;padding:0 6px;font-size:.72rem;border-radius:0}
+.battle.b3.m-tall.b27>.bline .blogbtn.b27i{font-size:1rem;border-left:1px solid rgba(217,180,106,.28)}
+.battle.b3.m-tall.b27 .cmd .menu.prim{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.battle.b3.m-tall.b27 .cmd .menu.prim .mi{min-height:48px;font-size:1.06rem}
+.battle.b3.m-tall.b27 .cmd .menu.sec{display:flex;flex-wrap:wrap;gap:5px}
+.battle.b3.m-tall.b27 .cmd .menu.sec .mi{flex:1 1 56px;min-width:0;min-height:40px}
+.battle.b3.m-tall.b27 .cmd .menu.sec .mi.b27pf{order:-1;flex:1.7 1 118px;white-space:nowrap;border-color:#a48bff;background:linear-gradient(#34296a,#231c4b);color:#fff}
+.battle.b3.m-tall.b27 .cmd .menu.sec .mi[data-arg="guide"]{display:none}
+.battle.b3.m-tall.b27 .bbottom .pgroup,.battle.b3.m-tall.b27 .bbottom .b8fl,.battle.b3.m-tall.b27 .bbottom .b3pty{display:none}
+.battle.b3.m-tall.b27 .bban{top:54px}
+.battle.b3.m-tall.b27 .cmd{padding-top:5px;padding-bottom:6px}
+.battle.b3.m-tall.b27 .who.cmdhead{padding:0 0 3px}
+.battle.b3.m-tall.b27 .cmd .menu.prim{gap:5px}
+.battle.b3.m-tall.b27 .cmd .menu.prim .mi{min-height:44px}
+.battle.b3.m-tall.b27 .who.cmdhead .cmdback{min-height:34px;height:34px;padding-top:0;padding-bottom:0}
+.battle.b3.m-tall.b27 .who.cmdhead{min-height:0}
+@media (min-width:700px){
+.battle.b3.m-tall.b27 .cmd .menu.prim{grid-template-columns:repeat(4,minmax(0,1fr))}
+.battle.b3.m-tall.b27 .cmd .menu.prim .mi{min-height:52px}
+.battle.b3.m-tall.b27 .cmd .menu.sec .mi.b27pf{flex:1 1 160px}
+.battle.b3.m-tall.b27.b27open .bbottom .bparty{left:auto;top:0;bottom:0;width:min(440px,92%);max-height:none;border-top:0;border-left:2px solid #a48bff;border-radius:16px 0 0 16px}
+}
+/* 0.22.42 (asked: "in the action menu on big screens the skills are half blocked"): a list (skills, items, the swap list) no longer has to
+   fit the strip under the stage. The command panel rises over the lower part of the stage for as long as the list is open, up to 64% of the
+   screen, and scrolls inside; picking a skill or Back puts it back. On wide screens the list is in columns. Only #bcmd floats: the box
+   under the stage keeps its place and size, so nothing is measured or laid out again (floating the whole box left the stage dark when a list
+   was opened on the first turn). */
+.battle.b3.m-tall.b27.b3list .bbottom .cmd{display:block;/* not the bottom aligned column of the root menu: a list taller than the panel must start at its top */position:fixed;left:0;right:0;bottom:0;margin:0;width:auto;z-index:20;height:auto;max-height:64%;overflow-y:auto;overscroll-behavior:contain;box-sizing:border-box;padding:6px 8px calc(8px + env(safe-area-inset-bottom,0px));background:#0e172c;border:0;border-top:2px solid #33466f;border-radius:0;box-shadow:0 -10px 30px rgba(0,0,0,.5)}
+@media (min-width:700px){.battle.b3.m-tall.b27.b3list .menu.list{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:6px;align-items:stretch}}
+.battle.b3 .b27shade{display:none}
+.battle.b3.m-tall.b27.b27open .b27shade{display:block;position:fixed;inset:0;z-index:69;background:rgba(4,7,15,.55)}
+.battle.b3.m-tall.b27.b27open .bbottom .bparty{display:flex;flex-direction:column;gap:8px;position:fixed;left:0;right:0;bottom:0;max-height:78%;overflow-y:auto;overscroll-behavior:contain;z-index:70;box-sizing:border-box;background:#0f1930;border-top:2px solid #a48bff;border-radius:16px 16px 0 0;padding:10px 12px calc(12px + env(safe-area-inset-bottom,0px))}
+.battle.b3.m-tall.b27.b27open .bbottom .b3pty{display:flex;flex-direction:column;gap:8px;order:1}
+.battle.b3.m-tall.b27.b27open .bbottom .pgroup{display:block;order:2}
+.battle.b3.m-tall.b27.b27open .bbottom .pgroup>h3{display:block;margin:0 0 4px}
+.battle.b3.m-tall.b27.b27open .bbottom .pgroup.heroes .pcs,.battle.b3.m-tall.b27.b27open .bbottom .pgroup.rsv .pcs{grid-template-columns:minmax(0,1fr)}
+.battle.b3.m-tall.b27.b27open .bbottom .fcs{grid-template-columns:minmax(0,1fr)}
+.b27sh{order:0;display:flex;align-items:center;justify-content:space-between;font-size:1rem}
+.b27sf{order:3;display:flex;flex-wrap:wrap;gap:6px}
+.b27sf .btn{flex:1 1 70px;min-height:40px}
+
+/* ############################ C  BIG SCREENS: .b27.b48 and .b48top (side48.js) ############################ */
+/* What it is and why: the header of side48.js. b27Mark sets b48 (a sideways screen at least S48.minW x S48.minH); the hook in side48.js sets
+   b48top when the log line fits in the top strip. Three groups of rules: the grid and the list box (.b48), the skill boxes on every b27
+   screen (.b27.b3list, here because they came with 0.22.49 and must follow section B), and the card column (.b48:not(.b27open) .bbottom). */
+.battle.b3.m-tall.b27.b48{grid-template-columns:minmax(0,1fr) var(--b48w,200px);grid-template-areas:"boss boss" "order order" "stage side" "line side" "bot side";column-gap:8px}
+.battle.b3.m-tall.b27.b48 .bwrap{margin-right:0;width:calc(100% + 12px)}
+.battle.b3.m-tall.b27.b48.b48top>.bline{left:var(--b48ll);right:auto;width:var(--b48lw);top:var(--b48lt);background:rgba(8,13,26,.6)}
+.battle.b3.m-tall.b27.b48.b48top>.bline .blog p{-webkit-line-clamp:2}
+.battle.b3.m-tall.b27.b48 .bban{top:14px}
+/* 5 a list (skills, items, the swap list) stays in the command box under the stage: it covers neither the battle nor the cards (0.22.42 raised
+   it over the stage). The turn line, Back and the filters share one row; under them the skills are boxes side by side (0.22.49: the owner
+   prefers "the more boxy style with skills next to each other" to 0.22.48's one line rows), each with everything it showed before (name,
+   target, purpose, kind, role, text, weapon line, what it is strong against, estimate, power, cost) in three short lines. The box keeps the height the root menu had (--b48ch) and the list scrolls inside. */
+/* 0.22.51 (the owner: "we can bring back making the skill menu in battle overlap the battle window a little"): the box grows S48.rise px
+   upward over the foot of the stage while a list is open (two rows of boxes instead of one). It stays left of the cards. */
+.battle.b3.m-tall.b27.b48.b48top.b3list .bbottom{min-height:var(--b48ch,154px)}
+.battle.b3.m-tall.b27.b48.b48top.b3list .bbottom .cmd{display:flex;flex-wrap:wrap;align-items:center;align-content:flex-start;gap:4px 8px;position:absolute;left:0;right:calc(var(--b48w,200px) + 8px);bottom:0;top:auto;margin:0;width:auto;height:calc(var(--b48ch,154px) + var(--b48rise,120px));max-height:none;z-index:20;box-shadow:0 -8px 22px rgba(0,0,0,.45);overflow:hidden;padding:5px 8px 6px;background:linear-gradient(#171c3a,#10142a);border:1px solid rgba(217,180,106,.35);border-radius:8px;box-sizing:border-box}
+.battle.b3.m-tall.b27.b48.b48top.b3list .cmd>.who.cmdhead{order:1;flex:0 0 auto;padding:0;min-height:0;gap:8px}
+.battle.b3.m-tall.b27.b48.b48top.b3list .cmd>.who.cmdhead .port{display:none}
+.battle.b3.m-tall.b27.b48.b48top.b3list .cmd>.chips{order:2;flex:1 1 200px;margin:0;display:flex;flex-wrap:nowrap;gap:4px;overflow-x:auto;scrollbar-width:none}
+.battle.b3.m-tall.b27.b48.b48top.b3list .cmd>.a49vs{order:2;flex:0 1 auto;padding:0;font-size:.64rem;max-width:330px;line-height:1.15}
+.battle.b3.m-tall.b27.b48.b48top.b3list .cmd>.menu.list{order:3;flex:1 1 100%;min-height:0;align-self:stretch;height:calc(var(--b48ch,154px) + var(--b48rise,120px) - 54px);display:grid;grid-template-columns:repeat(auto-fill,minmax(236px,1fr));grid-auto-rows:min-content;gap:4px 5px;align-content:start;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;padding-right:2px}
+.battle.b3.m-tall.b27.b48.b48top.b3list .cmd>:not(.who):not(.chips):not(.menu):not(.a49vs){order:4;flex:1 1 100%}
+/* a screen with the card column but too narrow for the line in the top strip (an opened fold, a tablet held upright): the list is the
+   rising panel of the phones, kept to the stage's side so the cards stay in view; the floating line keeps to the stage too */
+.battle.b3.m-tall.b27.b48:not(.b48top).b3list .bbottom .cmd{left:4px;right:calc(var(--b48w,200px) + 24px);border:2px solid #33466f;border-bottom:0;border-radius:10px 10px 0 0}
+.battle.b3.m-tall.b27.b48:not(.b48top)>.bline{right:calc(var(--b48w,200px) + 8px)}
+/* 0.22.50: the boxes are the same on every screen (the owner: "the skills should be presented in a clean similar way on every screen size").
+   On a phone the list is still the panel that rises over the stage (battle27.js), with one or two boxes across. */
+.battle.b3.m-tall.b27.b3list .menu.list{display:grid;grid-template-columns:repeat(auto-fill,minmax(236px,1fr));grid-auto-rows:min-content;gap:4px 5px;align-content:start}
+.battle.b3.m-tall.b27.b3list .cmd>.a49vs{font-size:.66rem;line-height:1.2}
+/* a skill is a box: name and tags with the estimate at their right; the text; then the weapon line and what it is strong against, with Power,
+   kind and cost at their right. Everything the tall card showed, in three short lines. */
+.battle.b3.m-tall.b27.b3list .menu.list .mi{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:0 8px;align-items:center;align-content:start;width:100%;height:100%;min-height:0;padding:4px 8px 4px 18px;margin:0;text-align:left}
+.battle.b3.m-tall.b27.b3list .menu.list .mi>.n{grid-area:1/1;display:flex;flex-wrap:wrap;align-items:center;gap:2px 0;font-size:.86rem;line-height:1.15;min-width:0}
+.battle.b3.m-tall.b27.b3list .menu.list .mi>.m{display:contents}
+.battle.b3.m-tall.b27.b3list .menu.list .mi>.m .sk11e{grid-area:1/2;justify-self:end;white-space:nowrap}
+.battle.b3.m-tall.b27.b3list .menu.list .mi>.m .sk11l{grid-area:1/2;justify-self:end}
+/* the text lines are placed one after another (a Dual art or a hero's own skill has two: 0.22.50 put them all in one cell, on top of each
+   other); the strip and the last line sit in far rows, which are empty and take no room */
+.battle.b3.m-tall.b27.b3list .menu.list .mi>small{grid-column:1/-1;grid-row:auto;margin:1px 0 0;font-size:.7rem;line-height:1.2}
+.battle.b3.m-tall.b27.b3list .menu.list .mi>small.dk11{grid-area:41/1/42/3;margin:1px 0 0;justify-self:start;max-width:100%;opacity:.75;font-size:.64rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.battle.b3.m-tall.b27.b3list .menu.list .mi>.effs{grid-area:42/1/43/3;justify-self:start;margin:1px 0 0;display:flex;flex-wrap:wrap;gap:2px;max-width:100%}
+.battle.b3.m-tall.b27.b3list .menu.list .mi>.m .sk11s{grid-area:40/1/41/3;margin:1px 0;justify-self:start;justify-content:flex-start;gap:6px;flex-wrap:nowrap;white-space:nowrap}
+.battle.b3.m-tall.b27.b3list .menu.list .mi>.effs:empty{display:none}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .bparty{display:flex;flex-direction:column;gap:12px;position:absolute;right:0;top:var(--b48t,64px);bottom:0;width:var(--b48w,200px);overflow-y:auto;overscroll-behavior:contain;padding:8px 0 4px;box-sizing:border-box;scrollbar-width:thin}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .b8fl{display:none}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .b3pty{display:flex;flex-direction:column;gap:12px;order:1}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .pgroup{display:block;position:relative;border:1px solid rgba(217,180,106,.4);border-radius:6px;background:rgba(10,14,30,.72);padding:10px 4px 4px;margin:0}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .pgroup.foes{order:2;border-color:rgba(200,80,90,.55);background:rgba(30,12,22,.72)}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .pgroup>h3{display:block;position:absolute;left:8px;top:-8px;margin:0;padding:1px 6px;font-size:.56rem;letter-spacing:.14em;line-height:1.3;background:#0c1022;border:1px solid rgba(217,180,106,.4);border-radius:3px}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .pgroup.foes>h3{background:#1c0c16;border-color:rgba(200,80,90,.55)}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .pgroup .pcs,.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .pgroup .fcs{display:grid;grid-template-columns:minmax(0,1fr);gap:4px}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .pcw{display:block;position:relative;min-width:0}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .uinfo{display:none}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .pc,.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .fc{display:grid;grid-template-columns:32px minmax(0,1fr);gap:0 6px;align-items:center;width:100%;min-height:0;padding:3px 5px;text-align:left}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .pc .port{display:block;width:32px;height:32px;min-width:0;margin:0}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .pc .port img{width:100%;height:100%;display:block}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .fc .fci{width:30px;height:30px;object-fit:contain;justify-self:center}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .pm{display:grid;grid-template-columns:minmax(0,1fr);gap:2px;min-width:0}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .uct{display:flex;align-items:baseline;gap:4px;padding:0;min-width:0;font-size:.8rem;line-height:1.1}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .uct b{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .uct .ucl{font-size:.56rem;flex:none;opacity:.85}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .uct .elbs{margin-left:auto;display:flex;gap:1px;flex:none}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .uct .elb{width:12px;height:12px}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .ucr{display:block;position:relative;height:11px;min-height:0}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .ucr>i{position:absolute;left:3px;top:0;z-index:1;font:800 8px/11px system-ui,sans-serif;font-style:normal;color:rgba(255,255,255,.82);text-shadow:0 1px 0 #000}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .ucr .bar{display:block;width:100%;height:11px;margin:0}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .ucr em.nums{position:absolute;right:3px;top:0;z-index:1;font:800 9px/11px system-ui,sans-serif;font-style:normal;color:#fff;text-shadow:0 1px 0 #000,0 0 2px #000;min-width:0;width:auto}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .ucr:has(.lbar){height:3px}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .ucr:has(.lbar)>i,.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .ucr:has(.lbar) em.nums{display:none}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .ucr .lbar{display:block;width:100%;height:3px;margin:0;border:0}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .ucc{display:none}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .ptags{display:flex;flex-wrap:wrap;gap:2px 3px;padding:2px 2px 0;font-size:.56rem}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .ptags:empty{display:none}
+/* 0.22.52: the older cards lay their tags over the card's foot (battle3.css .pcw.hastags .ptags, absolute, in a strip the card kept free);
+   these cards have no such strip, so the weakness and status tags sat on the HP bar. Here they follow the card. */
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .pcw.hastags .ptags,.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .fcw.hastags .ptags{position:static;left:auto;right:auto;bottom:auto;flex-wrap:wrap;overflow:visible;max-height:none;row-gap:2px;z-index:auto;pointer-events:auto}
 /* Beta v0.7.0 battle information and input (battle5.js) */
 /* stage intent label: a box laid out by b3Lay (logical stage px) */
 .bstage .b5it{display:grid;place-items:center;padding:0;border-radius:2px;border:.6px solid #150b17;background:rgba(21,11,23,.86);color:#ffd8c8;pointer-events:none;z-index:6;box-shadow:0 0 0 .5px rgba(255,255,255,.25);overflow:hidden}
@@ -2125,7 +2277,7 @@ html:not(.flat) .battle.b3 .bline .b4mo .b4bar{box-shadow:inset 0 0 0 1px #000,0
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.22.53";const APP_BUILD="4447a4b2106a";
+(function(){const APP_VER="0.22.53";const APP_BUILD="1085a76a21ac";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2908,7 +3060,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.22.53";const APP_BUILD="4447a4b2106a";
+const APP_VER="0.22.53";const APP_BUILD="1085a76a21ac";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -7222,7 +7374,7 @@ function newRun(cycle){
 newRun=HOOK.def('newRun',newRun);// v0.18.7: one definition; realms.js (the realms), look9.js (look), world12.js (each realm's own Scourge) hook it
 function bossWeight(k){const b=(META.best||{})[guardianDef(k).n];return b&&b.seen?1:Math.min(2,1+.15*(META.clears||0));}
 function weightedDraw(pool,n,R){const p=pool.slice(),out=[];while(out.length<n&&p.length){const w=p.map(bossWeight),tot=w.reduce((a,b)=>a+b,0);let r=R()*tot,i=0;for(;i<p.length-1;i++){if((r-=w[i])<0)break;}out.push(p.splice(i,1)[0]);}return out;}
-function bossKeyFor(s){return s<4?G.run.bosses[s]:G.run.final;}
+function bossKeyFor(s){f30BossFix();/* 0.22.30 (fix30.js): a boss key that is no longer in the game is swapped for a free one before every lookup */return s<4?G.run.bosses[s]:G.run.final;}
 
 // =================== STATS ===================
 // v0.22.17: with 2 points a level, the points put in ONE attribute count fully up to the hero's level and half beyond it, so going all in
@@ -7293,7 +7445,9 @@ function newChar(id,lv,tier){
   const t=TPL[id],f=CF[t.cls];
   const c={id,name:t.n,el:t.el,side:'p',pace:2,lv:1,xp:0,eq:{w:'w_'+f[0]+'_'+tier,a:'a_'+f[1]+'_'+tier,c:null},hp:1,mp:1,st:{},alloc:{},pts:0,auto:true,lb:0,bt:0};
   c.nat=natRoll(id);c.lv=lv;c.pts=ptsAt(lv);if(!(G&&G.daily))c.sp2=1;if(META.cfg.autoStats!==false)autoAlloc(c);
-  c.S=calcStats(c);c.hp=c.S.mhp;c.mp=c.S.mmp;return c;
+  c.S=calcStats(c);c.hp=c.S.mhp;c.mp=c.S.mmp;
+  try{if(!S49.off&&s49Give(c,tier)){c.S=calcStats(c);c.hp=c.S.mhp;c.mp=c.S.mmp;}}catch(e){}/* 0.22.49 (act49.js 6): a Knight starts with a plain shield */
+  return c;
 }
 function addXp(c,x){
   const ups=[];c.xp+=x;
@@ -7430,7 +7584,7 @@ function genQuests(s){
   if(s===1||s===2){const pool=RAW.filter(r=>r[6][0]==='t'&&+r[6].slice(1)<=s+1&&!G.roster[r[0]]&&!(typeof challIsPooled==='function'&&challIsPooled(r[0]))).map(r=>r[0]);if(pool.length&&!G.quests.some(q=>q.type==='wanderer'))G.quests.push({id:'w'+s,stage:s,type:'wanderer',hero:pool[Math.floor(R()*pool.length)],state:'open',title:'The lost wayfarer',desc:`Someone went into the ${Z.dungeon} and never came out. Find them.`,reward:{}});}
 }
 genQuests=HOOK.def('genQuests',genQuests);// v0.9.9: one definition; modules add hooks (hooks.js)
-function questReady(q){if(q.state!=='active')return false;if(q.type==='hunt')return q.have>=q.n;if(q.type==='gather')return (G.mats[q.mat]||0)>=q.n;if(q.type==='wanderer')return !!q.found;if(q.type==='vault')return !!(G.vaults&&G.vaults[q.stage]);return false;}
+function questReady(q){if(q.state!=='active')return false;if(q.type==='hunt')return q.have>=q.n;if(q.type==='gather')return (G.mats[q.mat]||0)>=q.n;if(q.type==='wanderer')return !!q.found;if(q.type==='vault'){try{if(!(G.vaults||{})[q.stage])f52Sweep();}catch(e){}/* 0.22.52 (fix52.js): a vault chest that is already open counts */return !!(G.vaults&&G.vaults[q.stage]);}return false;}
 function claimQuest(q){
   if(!questReady(q))return null;const out=[];
   if(q.type==='gather')G.mats[q.mat]-=q.n;
@@ -10672,12 +10826,15 @@ battleTheme=HOOK.def('battleTheme',battleTheme);
 // v0.6.3: slots come from B3.slots (config.js) as [x share, depth on the ground band 0..1]; depth d lands at BATTLE_GROUND top + d*(bot-top)
 // through p2GroundY (p2world.js), so feet stay on the ground plane (2.1).
 function slotsFor(side,n,boss){const T=B3.slots[BL.W<260?'tall':'wide'],t=side==='p'?T.p:boss?T.boss[Math.min(3,n)-1]:T.e[Math.min(5,n)-1];
-  const r=t.map(([x,d])=>[x,+(.48+d*.49).toFixed(4)]);while(r.length<n)r.push(r[r.length-1]);return r;}
+  const r=t.map(([x,d])=>[x,+(.48+d*.49).toFixed(4)]);while(r.length<n)r.push(r[r.length-1]);
+  // 0.22.27 (battle27.js): on a short stage the units stand a little lower, so the tags over the highest hero stay clear of the floating line (B27.clear logical px)
+  try{if(B27.live&&!B27.noLine/* big screens: the line is in the top strip */&&BL.mode==='tall'&&BL.H){const lo=Math.min(.62,(B27.clear+B27.lineH/(BL.sc||2.25))/BL.H);if(lo>.48)return r.map(([x,y])=>[x,+(lo+(y-.48)/.49*(.97-lo)).toFixed(4)]);}}catch(e){}
+  return r;}
 // v0.3.3: the stage keeps a fixed aspect ratio. Portrait phones keep the tall stage (width follows the screen, 2x scale).
 // Everything wider (tablets, desktops, landscape phones at 16:9, 19.5:9 or 21:9) uses ONE fixed 320x150 logical stage that is
 // scaled uniformly and centred (pillarbox or letterbox), never stretched. Landscape phones also put the command panel beside the scene.
 const WIDE_W=320,WIDE_H=150;
-function battleMode(){const zz=typeof dsZoom==='function'?dsZoom():1,vw=window.innerWidth/zz,vh=(window.visualViewport?window.visualViewport.height:window.innerHeight)/zz,sc=$('screen'),cont=sc?sc.clientWidth:vw-32;
+function battleMode(){if(b27Fits())return 'tall';/* 0.22.34 (battle27.js): every screen but a short landscape one has the stage-first layout */const zz=typeof dsZoom==='function'?dsZoom():1,vw=window.innerWidth/zz,vh=(window.visualViewport?window.visualViewport.height:window.innerHeight)/zz,sc=$('screen'),cont=sc?sc.clientWidth:vw-32;
   // v0.8.10: short landscape screens use the wide planner too (it measures what fits: the commands may go beside the stage); the old
   // 'side' layout is no longer chosen
   if(cont<560)return 'tall';return 'wide';}
@@ -13336,6 +13493,8 @@ function skHealAmt(a,s,t){
 // calcDamage rolls rnd(.92,1.08) and a crit; both read RNG, so it is called with RNG fixed at .5 (spread = 1.0, no crit roll) and any Focus
 // buff is put back afterwards (calcDamage consumes it). The result is the average over the live foes, times hits.
 function skNum(a,s){
+  // 0.22.49 (act49.js 2): with a foe tapped, a single target skill shows its number against that foe
+  try{const e=a49One(s)&&a&&a.side==='p'?a49Foe():null;if(e){const r0=RNG,foc=a.st&&a.st.focus;let d=0;try{RNG=()=>.5;d=calcDamage(a,s,e).dmg;}finally{RNG=r0;if(foc&&a.st&&!a.st.focus)a.st.focus=foc;}return '~'+Math.round(d*(s.hits||1));}}catch(e){}
   if(!a||!s||!B)return '';
   const each=s.t==='all'||s.t==='allyAll'||s.t==='rand'?' each':'';
   if(s.k==='phys'||s.k==='mag'){
@@ -13895,26 +14054,30 @@ const GSLOTS=EQSL;
 const scoreEq=(c,eq)=>loadoutScore(c,calcStats(Object.assign({},c,{eq})));
 const slotOk=(c,sl,id)=>{const g=gearOf(id);return !!g&&g.slot===sl&&canEquip(c,id)&&(!g.only||g.only===c.id);};
 // pure planner: the equipment each hero should end with, and which items come from heroes outside the plan
+// 0.22.46 (gear46.js, "one engine"): Equip Best is the walk of free steps from the pack. Nobody is stripped first, a hero keeps what they wear
+// unless a spare is a gain today, and the spare that ENDS best at max temper comes first (p3Ult, then the bigger gain today, then the id).
+// It may still take pieces from heroes outside the party (takeIds); heroes in the plan no longer trade pieces among themselves. Before
+// 0.22.46 this stripped the party and dealt every piece out again by today's stats (fair weighted the weaker heroes; it is not used now).
+const gp46Cmp=(a,b)=>p3UltCmp(a,b)||(b.d-a.d)||(a.id<b.id?-1:a.id>b.id?1:0);
 function planGear(heroIds,takeIds,fair,slots){const SL=slots||GSLOTS;
   const heroes=heroIds.map(id=>G.roster[id]).filter(Boolean),hs=new Set(heroes.map(c=>c.id)),pool=[];
   G.gear.forEach(id=>pool.push({id,from:null}));
-  heroes.forEach(c=>SL.forEach(sl=>{if(c.eq[sl])pool.push({id:c.eq[sl],from:c.id,sl});}));
-  (takeIds||[]).forEach(hid=>{const c=G.roster[hid];if(!c||hs.has(hid))return;SL.forEach(sl=>{if(c.eq[sl])pool.push({id:c.eq[sl],from:hid,sl});});});
-  const eq={},cur={},memo={},used=[];heroes.forEach(c=>{eq[c.id]={};GSLOTS.forEach(sl=>{if(!SL.includes(sl)&&c.eq[sl])eq[c.id][sl]=c.eq[sl];});cur[c.id]=scoreEq(c,eq[c.id]);});
-  const val=(c,sl,id)=>{const k=c.id+'|'+sl+'|'+id+'|'+GSLOTS.map(s=>eq[c.id][s]||'').join(',');return memo[k]!=null?memo[k]:(memo[k]=scoreEq(c,Object.assign({},eq[c.id],{[sl]:id}))-cur[c.id]);};
-  for(let it=0;it<500;it++){
-    const ids=[...new Set(pool.map(e=>e.id))].sort(),mean=heroes.reduce((a,c)=>a+cur[c.id],0)/Math.max(1,heroes.length)||1;let best=null;
-    heroes.forEach(c=>{const w=fair?(G.party.includes(c.id)?1.35:1)/(.35+cur[c.id]/mean):1;
-      // v0.11.8: ties break the same way every time (hero order, slot order, then the gear id), not by the pack's current order, so pressing
-      // Equip best twice gives the same loadout
-      SL.forEach(sl=>{if(eq[c.id][sl])return;ids.forEach(id=>{if(!slotOk(c,sl,id))return;const v=val(c,sl,id);if(v<=.01)return;const s=v*w;if(!best||s>best.s+1e-6||(Math.abs(s-best.s)<=1e-6&&best.c===c&&best.sl===sl&&id<best.id))best={c,sl,id,s};});});});
+  (takeIds||[]).forEach(hid=>{const c=G.roster[hid];if(!c||hs.has(hid))return;GSLOTS.forEach(sl=>{if(SL.includes(sl)&&c.eq[sl])pool.push({id:c.eq[sl],from:hid,sl});});});
+  const eq={},sc={},src={};heroes.forEach(c=>{eq[c.id]=Object.assign({},c.eq);src[c.id]={};sc[c.id]=scoreEq(c,eq[c.id]);});
+  for(let it=0;it<400;it++){const ids=[...new Set(pool.map(e=>e.id))].sort();let best=null;
+    heroes.forEach((c,hi)=>{const real=c.eq;c.eq=eq[c.id];/* a shield is only allowed beside the weapon the plan has given so far (canEquip reads c.eq) */try{SL.forEach((sl,si)=>{const cur=eq[c.id][sl]||null;if(typeof f38Own==='function'&&f38Own(c,cur))return;let top=null;
+      ids.forEach(id=>{if(id===cur||!slotOk(c,sl,id))return;const d=scoreEq(c,Object.assign({},eq[c.id],{[sl]:id}))-sc[c.id];if(d<=.01)return;
+        const o={id,d,pct:sc[c.id]>0?d/sc[c.id]:0,u:p3Ult(c,sl,id)};if(!top||gp46Cmp(o,top)<0)top=o;});
+      if(top&&(!best||top.pct>best.pct+1e-9||(Math.abs(top.pct-best.pct)<=1e-9&&(hi<best.hi||(hi===best.hi&&si<best.si)))))best=Object.assign({c,sl,hi,si},top);});}finally{c.eq=real;}});
     if(!best)break;
-    const rk=e=>!e.from||hs.has(e.from)?0:1,pick=pool.map((e,i)=>({e,i})).filter(o=>o.e.id===best.id).sort((a,b)=>rk(a.e)-rk(b.e))[0];
-    pool.splice(pick.i,1);used.push({hid:best.c.id,sl:best.sl,id:best.id,from:rk(pick.e)?pick.e.from:null,fromSl:pick.e.sl});
-    eq[best.c.id][best.sl]=best.id;cur[best.c.id]=scoreEq(best.c,eq[best.c.id]);
-  }
-  return {heroes,eq,used,slots:SL};
-}
+    const pick=pool.map((e,i)=>({e,i})).filter(o=>o.e.id===best.id).sort((a,b)=>(a.e.from?1:0)-(b.e.from?1:0))[0];pool.splice(pick.i,1);
+    const c=best.c,old=eq[c.id][best.sl],was=src[c.id][best.sl];if(old)pool.push(was||{id:old,from:null});
+    eq[c.id][best.sl]=best.id;src[c.id][best.sl]=pick.e.from?pick.e:null;
+    // a weapon that leaves no hand for the shield puts the shield back (shields20.js)
+    if(typeof sh20Ok==='function'&&eq[c.id].s){const real=c.eq;let ok=true;try{c.eq=eq[c.id];ok=sh20Ok(c);}catch(e){}finally{c.eq=real;}if(!ok){pool.push(src[c.id].s||{id:eq[c.id].s,from:null});eq[c.id].s=null;src[c.id].s=null;}}
+    sc[c.id]=scoreEq(c,eq[c.id]);}
+  const used=[];heroes.forEach(c=>SL.forEach(sl=>{const id=eq[c.id][sl];if(!id)return;const e=src[c.id][sl];used.push({hid:c.id,sl,id,from:e?e.from:null,fromSl:e?e.sl:undefined});}));
+  return {heroes,eq,used,slots:SL};}
 function applyGear(plan){
   const pack=G.gear.slice(),SL=plan.slots||GSLOTS;
   plan.heroes.forEach(c=>SL.forEach(sl=>{if(c.eq[sl]){pack.push(c.eq[sl]);c.eq[sl]=null;}}));
@@ -13939,14 +14102,11 @@ function applyComp(map,heroIds){const hs=new Set(heroIds),old=new Map((G.tamed||
   G.tamed.forEach(o=>{if(map.has(o.id))o.with=map.get(o.id);else if(o.with&&hs.has(o.with))o.with=null;});
   // a freed companion goes back to its old hero if that hero is still outside the plan and has none
   G.tamed.forEach(o=>{const h=old.get(o.id);if(!o.with&&h&&G.roster[h]&&!hs.has(h)&&!compOf(G.roster[h]))o.with=h;});}
-// one hero: pack only, and a companion nobody else is using
+// one hero (the hero sheet's Auto best gear): the same walk for that hero, pack only, and a companion nobody else is using
 function autoOne(c){
-  GSLOTS.forEach(sl=>{let best=null,bs=scoreEq(c,c.eq);
-    [...new Set(G.gear.filter(id=>slotOk(c,sl,id)))].forEach(id=>{const v=scoreEq(c,Object.assign({},c.eq,{[sl]:id}));if(v>bs*1.005+.01){bs=v;best=id;}});
-    if(best)equipGear(c,best);});
-  const cur=compOf(c);let bo=cur,bg=cur?compGainFor(cur,c):0;
-  G.tamed.forEach(o=>{if(o.with&&o.with!==c.id)return;const g=compGainFor(o,c);if(g>bg+.01){bg=g;bo=o;}});
-  if(bo&&bo!==cur){G.tamed.forEach(x=>{if(x.with===c.id)x.with=null;});bo.with=c.id;}
+  applyGear(planGear([c.id],[],false));refresh(c);
+  try{const cur=compOf(c);let bo=cur,bg=cur?compGainFor(cur,c):0;(G.tamed||[]).forEach(o=>{if(o.with&&o.with!==c.id)return;const g=compGainFor(o,c);if(g>bg+.01){bg=g;bo=o;}});
+    if(bo&&bo!==cur){G.tamed.forEach(x=>{if(x.with===c.id)x.with=null;});bo.with=c.id;}}catch(e){}
   Object.values(G.roster).forEach(refresh);
 }
 function autoRun(mode,oneId){
@@ -14635,9 +14795,15 @@ HOOK.wrap('finishBattle','factions','faction credit',function(next,...a){const h
 function facSmithDisc(){let b=0;facPerks('smiths',facRank('smiths')).forEach(p=>{if(p.k==='forge')b=Math.max(b,p.v);});return b;}
 function facSmithRebate(){let b=0;facPerks('smiths',facRank('smiths')).forEach(p=>{if(p.rebate)b=Math.max(b,p.rebate);});return b;}
 // ---------- missions ----------
+// 0.22.47: Accept all takes what is on show, and nothing new slides in behind it.
+// A guild listed the missions already taken plus two new ones. So the moment the two on show were accepted, two more took their place: after
+// Accept all there were open missions again, as if the press had missed them (often the tier 2 ones), and pressing on took the guild's whole
+// list. The owner's rule: new missions unlock as missions are completed. A guild now has F47.slots (2, fix47.js) missions out at a time,
+// taken ones included: a new one is posted when one is handed in. Accept all accepts every notice on show.
+function f47Open(L){try{if(F47.off)return L;const f=facInit(),acc=L.filter(m=>f.acc[m.id]!=null),rest=L.filter(m=>f.acc[m.id]==null);return acc.concat(rest.slice(0,Math.max(0,F47.slots-acc.length)));}catch(e){return L;}}
 function facMissionList(id){const f=facInit(),t=facTier(id),pool=FMIS.filter(m=>m.f===id&&facTierOf(m.r)<=t&&!f.done[m.id]);
-  const acc=pool.filter(m=>f.acc[m.id]!=null),rest=pool.filter(m=>f.acc[m.id]==null);if(rest.length<=2)return acc.concat(rest);
-  const R=seeded(hashS((G.run.seed||1)+':fm:'+id+':'+(G.tavRoll||0))),left=rest.slice(),pk=[];while(pk.length<2&&left.length){pk.push(left.splice(Math.floor(R()*left.length),1)[0]);}return acc.concat(pk);}
+  const acc=pool.filter(m=>f.acc[m.id]!=null),rest=pool.filter(m=>f.acc[m.id]==null);if(rest.length<=2)return f47Open(acc.concat(rest));
+  const R=seeded(hashS((G.run.seed||1)+':fm:'+id+':'+(G.tavRoll||0))),left=rest.slice(),pk=[];while(pk.length<2&&left.length){pk.push(left.splice(Math.floor(R()*left.length),1)[0]);}return f47Open(acc.concat(pk));}
 // v0.7.7: progress counts everything done on this journey, also before the mission was accepted (the owner's call); acc only marks it taken
 // v0.10.x: missions taken from now on are handed in at a Guild Hall (any town's); older ones (no hand flag) still claim anywhere
 function facAtHall(){return !!(V&&V.modal&&V.modal.type==='guild');}
@@ -16306,7 +16472,10 @@ function uDetHtml(){
 {const tE=ACT.tgtE,tA=ACT.tgtA;
   Object.assign(ACT,{
     // outside of target mode a tap on a unit opens its details; during targeting it still picks the target
-    tgtE(i){if(B&&!(B.mode==='cmd'&&B.pend&&B.pend.sk&&(B.pend.sk.t==='one'||B.pend.sk.t==='chain'||healsUndead(B.pend.sk,B.en[+i])))){if(B.mode!=='cmd'||(typeof B5R!=='undefined'&&B5R.ring&&!B5R.ring.done))return;/* v0.10.7: mid action (a timed ring, the hit landing) a tap is not a request for the info panel */return ACT.uInfo('e:'+i);}return tE.apply(this,arguments);},
+    tgtE(i){
+      // 0.22.49 (act49.js 2): with the command menu or the skill list open, a tap on a foe makes it the foe the estimates are worked out against
+      try{if(!S49.off&&B&&B.mode==='cmd'&&!B.pend&&B.cur&&B.cur.side==='p'&&!B.auto&&B.en[+i]&&B.en[+i].hp>0&&(B.menu==='skills'||B.menu==='root')){B.a49f=+i;if(B.menu==='skills'){renderBattle();return;}}}catch(e){}
+      if(B&&!(B.mode==='cmd'&&B.pend&&B.pend.sk&&(B.pend.sk.t==='one'||B.pend.sk.t==='chain'||healsUndead(B.pend.sk,B.en[+i])))){if(B.mode!=='cmd'||(typeof B5R!=='undefined'&&B5R.ring&&!B5R.ring.done))return;/* v0.10.7: mid action (a timed ring, the hit landing) a tap is not a request for the info panel */return ACT.uInfo('e:'+i);}return tE.apply(this,arguments);},
     tgtA(i){
       // v0.4.0 2.1: outside of targeting, a tap on a living reserve hero offers to switch them in
       if(B&&B.mode==='cmd'&&!B.pend&&!B.auto){const c=allParty()[+i],bi=B.back.indexOf(c);if(c&&bi>=0&&c.hp>0&&canSwap()){B.swapAsk={bi,by:B.cur.id};B.menu='root';render();const y=document.querySelector('#bcmd [data-act="swYes"]');if(y)y.focus();return;}}
@@ -18319,47 +18488,26 @@ const P3_SLOTS=['w','a','k','s','c'];// v0.22.12: shields (only Warriors and Kni
 // is a little better today and much better at +3 is taken before another temper step on a piece that will be replaced. An option still has
 // to be a gain today (nobody is made weaker to save up). v0.22.19: there is no minimum gain any more.
 const P3_ULT_EPS=.004;
-function p3Ult(c,sl,id){try{return maxScoreOf(c,sl,id);}catch(e){return 0;}}
+// 0.22.38: a hero's own relic comes first in every upgrade suggestion.
+// Reported: "Best upgrade for slot keeps suggesting one regular equipment and then suggesting the relic for that same character right after I
+// equip it's suggestion, should just show me the one that's better first".
+// Suggestions are ranked by where a piece ENDS (p3Ult: its score at max temper). A shop piece's end at +3 could rank over the hero's relic,
+// which cannot be tempered; bought at +0 it was weaker than the relic today, so the next suggestion was the relic, and with the relic on the
+// shop piece's +3 chain came back. A personal relic is meant to be the best piece for its hero (relics25.js), so:
+//  1 a hero's own relic ranks above everything for that hero (p3Ult), in the per slot view and in Upgrade whole party
+//  2 while a hero wears their own relic nothing is suggested for that slot (upgOpts here, and the Echoforge options echo11.js adds to it)
+function f38Own(c,id){try{const g=id&&gearOf(id);return !!(g&&g.relic&&c&&g.only===c.id);}catch(e){return false;}}
+function p3Ult(c,sl,id){if(f38Own(c,id))return 1e9;try{return maxScoreOf(c,sl,id);}catch(e){return 0;}}
 function p3UltCmp(a,b){const m=Math.max(a.u||0,b.u||0,1);if(Math.abs((a.u||0)-(b.u||0))>m*P3_ULT_EPS)return (b.u||0)-(a.u||0);return 0;}
 const p3Floor=(c,sl)=>SMITH_PLAN.minPct||0;// v0.22.19: no floor (it was 3% for a filled slot)
-function p3Recipes(){const o={};RECIPES.forEach(r=>{if(r.id&&SMITH_CATS.includes(r.cat)&&recipeOpen(r)&&!o[r.id])o[r.id]=r;});return o;}
 // v0.11.8: the plan looks at where a piece can END: every base (pack, shop, forge) is also considered tempered +1, +2 and +3 (temper.js
 // forgeCost chain), with the gold and materials of the whole chain, so the pick is the best final stats you can afford, not the best
 // shelf price. slots: the Smithy plans weapons, armor and capes; Alchemy (p3Alch) plans charms the same way.
 function p3Chain(base){const out=[{id:base,k:0,gold:0,m:{}}];let id=base,gold=0;const m={};
   for(let k=1;k<=3;k++){const fc=forgeCost(id);if(!fc)break;gold+=fc.gold;Object.keys(fc.m).forEach(q=>{m[q]=(m[q]||0)+fc.m[q];});id=fc.next;out.push({id,k,gold,m:Object.assign({},m)});}
   return out;}
-function p3SmithPlan(slots){const SL=slots||P3_SLOTS;
-  const party=partyChars();let gold=G.gold;const mats=Object.assign({},G.mats),pack={};G.gear.forEach(id=>{pack[id]=(pack[id]||0)+1;});
-  const stock=(SL.some(s=>s!=='c')?shopStock('weapons').concat(shopStock('armor')):[]).concat(SL.includes('c')?shopStock('charms'):[]);
-  const shop=new Set(stock.filter(id=>GEAR[id])),rec=p3Recipes();
-  const bases=[...new Set([...shop,...Object.keys(rec),...Object.keys(pack)])].filter(id=>{const g=gearOf(id);return g&&!g.stick&&SL.includes(g.slot);});
-  const temperOn=typeof pcTemperOpen!=='function'||pcTemperOpen();
-  const cands=[];bases.forEach(b=>(temperOn?p3Chain(b):[{id:b,k:0,gold:0,m:{}}]).forEach(ch=>cands.push(Object.assign({base:b},ch))));
-  const ent=[];
-  party.forEach(c=>SL.forEach(sl=>{const cur=c.eq[sl]||null,fl=p3Floor(c,sl);
-    // v0.22.17: the piece the hero wears, tempered further (the plan used to look only at the shop, the recipes and the pack, so it never tempered worn gear)
-    const worn=cur&&temperOn&&!gearOf(cur).stick?p3Chain(cur).slice(1).map(ch=>Object.assign({base:cur,worn:1},ch)):[];
-    const opts=cands.filter(o=>slotOk(c,sl,o.id)&&(ceilOk(c,o.id)||(o.k===0&&(pack[o.base]||0)>0))).concat(worn).map(o=>Object.assign({},o,{g:gainFor(c,o.id),u:p3Ult(c,sl,o.id)})).filter(o=>o.g&&o.g.d>.01&&o.g.pct>=fl).sort((a,b)=>p3UltCmp(a,b)||b.g.pct-a.g.pct||b.g.d-a.g.d);
-    if(opts.length)ent.push({c,sl,opts});}));
-  ent.sort((a,b)=>b.opts[0].g.pct-a.opts[0].g.pct);
-  const hasM=m=>Object.keys(m).every(k=>(mats[k]||0)>=m[k]);
-  const picks=[],cant=[];
-  ent.forEach(e=>{let missed=null;
-    for(const o of e.opts){const id=o.id,base=o.base,ways=[],addT=(w)=>{const m=Object.assign({},w.m||{});Object.keys(o.m).forEach(q=>{m[q]=(m[q]||0)+o.m[q];});w.gold+=o.gold;w.m=Object.keys(m).length?m:w.m;w.mOk=!w.m||hasM(w.m);w.k=o.k;w.base=base;return w;};
-      if(o.worn){ways.push(addT({src:'temper',gold:0}));}
-      else if((pack[base]||0)>0)ways.push(addT({src:'pack',gold:0}));
-      if(!o.worn&&shop.has(base))ways.push(addT({src:'buy',gold:GEAR[base].price}));
-      if(!o.worn&&rec[base]){const m=recipeMats(rec[base]);ways.push(addT({src:'craft',gold:rec[base].g,m}));}
-      if(!ways.length)continue;
-      const ok=ways.filter(w=>w.gold<=gold&&w.mOk).sort((a,b)=>a.gold-b.gold||(a.src==='buy'?-1:1));
-      if(!ok.length){if(!missed){const cheapest=ways.slice().sort((a,b)=>a.gold-b.gold)[0];missed={cid:e.c.id,sl:e.sl,id,gold:cheapest.gold,m:cheapest.m||null,pct:o.g.pct,why:ways.every(w=>!w.mOk)?'mats':'gold'};}continue;}
-      const w=ok[0],alt=ways.filter(x=>x!==w&&x.src!=='pack').map(x=>({src:x.src,gold:x.gold}));
-      if(w.src==='pack')pack[base]--;gold-=w.gold;if(w.m)Object.keys(w.m).forEach(k=>{mats[k]-=w.m[k];});
-      picks.push({cid:e.c.id,sl:e.sl,id,base,k:w.k||0,src:w.src,gold:w.gold,m:w.m||null,pct:o.g.pct,alt,from:e.c.eq[e.sl]||null});
-      if(missed&&missed.pct>o.g.pct+.001)cant.push(missed);missed=null;break;}
-    if(missed)cant.push(missed);});
-  const total=picks.reduce((a,p)=>a+p.gold,0);return {picks,cant,total,gold0:G.gold};}
+// 0.22.46: the planner itself is gear46.js (gp46Plan: the per slot step, upgBest, taken for everyone until none is left). What stays here
+// is the chain helper above and the plan's window (mP3Plan).
 // v0.22.17 (owner: "always present the materials used when forging or tempering"): every step lists its materials as chips, with the gold
 const p3Mats=(m,gold)=>(m&&Object.keys(m).length)||gold?`<div class="mats p3mats">${m&&Object.keys(m).length?matChips(m):''}${gold?`<span class="matc gold ${G.gold>=gold?'':'short'}"><i></i><b class="nums">${fmt(gold)}</b> gold</span>`:''}</div>`:'';
 const p3Src=p=>{const t=p.k?` and temper it to +${plusOf(p.id)||p.k}`:'';return p.src==='temper'?`Temper what they wear to +${plusOf(p.id)}`:p.src==='pack'?(p.k?`From your pack${t}`:'From your pack'):p.src==='buy'?`Buy${t}`:`Forge${t}`;};
@@ -18374,27 +18522,6 @@ function mP3Plan(m){const P=m.plan,cn=id=>G.roster[id]?esc(G.roster[id].name):'?
     <p class="note"><small>Undo afterwards puts everyone's gear back as it was; what you bought or forged stays in your pack.</small></p>`
     :`<p>Nothing to buy or forge: your party already has the best the Smithy can offer${P.cant.length?' for the gold and materials you have':''}.</p>${cant?`<h4>Out of reach for now</h4><div class="rows">${cant}</div>`:''}`;
   return box('Upgrade whole party',body,`<button class="btn" data-act="xBack">Cancel</button>${P.picks.length?`<button class="btn gold" data-act="p3SmithGo">Confirm: ${fmt(P.total)} gold</button>`:''}`,true);}
-function p3SmithRun(plan){
-  const got=[];let stop=null,spent=0,bought=0,forged=0,tempered=0;
-  for(const p of plan.picks){const c=G.roster[p.cid];if(!c)continue;
-    const base=p.base||p.id;
-    if(p.src==='temper'){// the worn piece, step by step
-      if(c.eq[p.sl]!==base)continue;let fail=null,n=0;for(let k=0;k<p.k;k++){const fc=forgeCost(c.eq[p.sl]);if(!fc)break;if(G.gold<fc.gold){fail='gold';break;}if(!hasMats(fc.m)){fail='mats';break;}const g0=G.gold;if(!forge('eq',{cid:c.id,slot:p.sl}))break;spent+=g0-G.gold;tempered++;n++;}
-      p.id=c.eq[p.sl];if(n)got.push(p);if(fail){stop=fail;break;}continue;}
-    if(p.src==='pack'){if(!G.gear.includes(base))continue;}
-    else if(p.src==='buy'){const g=GEAR[base];if(G.gold<g.price){stop='gold';break;}G.gold-=g.price;G.gear.push(base);spent+=g.price;bought++;}
-    else{const r=p3Recipes()[base];if(!r)continue;if(G.gold<r.g){stop='gold';break;}if(!hasMats(recipeMats(r))){stop='mats';break;}const g0=G.gold;if(!craft(r)){stop='gold';break;}spent+=g0-G.gold;forged++;}
-    // v0.11.8: temper the piece up the chain in the pack
-    if(p.k){let id=base,fail=null;for(let k=0;k<p.k;k++){const i=G.gear.indexOf(id);if(i<0){fail='mats';break;}const fc=forgeCost(id);if(!fc){break;}if(G.gold<fc.gold){fail='gold';break;}if(!hasMats(fc.m)){fail='mats';break;}const g0=G.gold;const nx=forge('spare',i);if(!nx){fail='mats';break;}spent+=g0-G.gold;tempered++;id=nx;}
-      if(fail){p.id=id;got.push(p);stop=fail;break;}}
-    got.push(p);}
-  // the equips come after every purchase, so Undo only touches gear (bought items stay in the pack)
-  const snap=snapAuto(),before={};Object.values(G.roster).forEach(c=>{before[c.id]={eq:Object.assign({},c.eq),pw:loadoutScore(c,c.S)};});
-  got.forEach(p=>{const c=G.roster[p.cid];if(p.src!=='temper'&&c&&G.gear.includes(p.id)&&canEquip(c,p.id))equipGear(c,p.id);});
-  Object.values(G.roster).forEach(refresh);
-  const rows=[];Object.values(G.roster).forEach(c=>{const b=before[c.id],ch=[];EQSL.forEach(sl=>{if((b.eq[sl]||null)!==(c.eq[sl]||null))ch.push({sl,from:b.eq[sl]||null,to:c.eq[sl]||null});});
-    if(ch.length)rows.push({id:c.id,name:c.name,inParty:G.party.includes(c.id),ch,comp:null,pw0:b.pw,pw1:loadoutScore(c,c.S)});});
-  saveGame();return {rows,snap,stop,spent,bought,forged,tempered,done:got.length,of:plan.picks.length};}
 {const ma0=mAutoEq;mAutoEq=function(m){let h=ma0.apply(this,arguments);if(!m||m.mode!=='smith')return h;const R=m.p3||{};
   const note=`<p class="note p3res">${R.stop?`<b class="warn">Stopped: ${R.stop==='gold'?'the gold ran out':'materials ran out'} after ${R.done} of ${R.of}.</b> Everything bought before that is equipped. `:''}Spent ${fmt(R.spent||0)} gold: bought ${R.bought||0}, forged ${R.forged||0}, tempered ${R.tempered||0}. Undo puts the gear back; purchases stay in your pack.</p>`;
   return h.replace(/<h2>[^<]*<\/h2>/,`<h2>Best gear: bought, forged and equipped</h2>${note}`);};}
@@ -18531,7 +18658,7 @@ const UPG_KIND=['pack','buy','forge','temper','ef'];
 const UPG_LBL={pack:'Equip from your pack',buy:'Buy',forge:'Forge',temper:'Temper',ef:'Echoforge'};
 function upgTown(){try{return inTown();}catch(e){return false;}}
 function upgShop(sl){if(sl==='c')return shopStock('charms');if(sl==='w')return shopStock('weapons');return shopStock('armor').filter(id=>gearOf(id)&&gearOf(id).slot===sl);}
-function upgOpts(c,sl){const out=[];if(!G||G.daily||!c)return out;const cur=c.eq[sl]||null,town=upgTown();
+function upgOpts(c,sl){if(c&&c.eq&&f38Own(c,c.eq[sl]))return [];/* 0.22.38: nothing is suggested over a hero's own relic */const out=[];if(!G||G.daily||!c)return out;const cur=c.eq[sl]||null,town=upgTown();
   // v0.16.1: pieces are judged at their ceiling. A purchase or a forged piece must beat the worn one at max temper (+3 against +3; a tie stays
   // with the worn piece); a spare already in the pack is free, so it only has to be better today. A piece that is weaker today but better at
   // the top still gets its chains (buy or forge, then temper to +1..+3), which used to be skipped because only today's stats were compared.
@@ -18631,10 +18758,7 @@ Object.assign(ACT,{
 
 // ===================== actions =====================
 Object.assign(ACT,{
-  p3Smith(){if(!G||G.daily)return;V.modal={type:'p3plan',plan:p3SmithPlan(),from:V.modal};render();},
-  p3Alch(){if(!G||G.daily)return;V.modal={type:'p3plan',charms:1,plan:p3SmithPlan(['c']),from:V.modal};render();},
-  p3SmithGo(){const m=V.modal;if(!m||m.type!=='p3plan')return;const R=p3SmithRun(m.plan);sfx(R.done?'buy':'deny');
-    V.modal={type:'autoEq',mode:'smith',rows:R.rows,snap:R.snap,from:m.from,p3:R};render();},
+  // p3Smith, p3Alch and p3SmithGo (Upgrade whole party) are in gear46.js
   p3Swap(a){if(!G||G.daily)return;if(!partyHere()){toast('Swapping roster heroes into your six happens in town.');return;}const [inn,out]=String(a).split(',');if(!G.roster[inn]||G.party.includes(inn))return;
     const P=G.party.slice();if(out&&P.includes(out))P[P.indexOf(out)]=inn;else if(P.length<6)P.push(inn);else return;G.party=P;saveGame();sfx('blip');
     toast(out&&G.roster[out]?`${G.roster[inn].name} joins the six; ${G.roster[out].name} waits on the roster.`:`${G.roster[inn].name} joins the six.`);
@@ -18649,7 +18773,7 @@ try{const st=document.createElement('style');st.textContent=`.p3why,.p3dup,.p3bp
 .p3ready{margin-top:.5em}.p3ready .warnr b{color:#ffcf6a}.p3mk{flex:0 0 1.4em;text-align:center;font-size:1.1em}.p3tot{margin:.5em 0}.p3thr{margin:.3em 0}`;document.head.appendChild(st);}catch(e){}
 
 // ----- test hook (window.__A is built after all modules; this one is ours) -----
-window.__P3={upgOpts:(c,sl)=>upgOpts(c,sl),upgBest:(c,sl)=>upgBest(c,sl),upgApply:o=>upgApply(o),partyGainOf,shopSortIds:(a)=>shopSortIds(a),recipeList:(a)=>recipeList(a),temperOrder,temperGain,p3SmithPlan,p3SmithRun,p3Kit,p3Threats,p3Gaps,p3Ready,p3Pork2,p3PorkWhy,
+window.__P3={upgOpts:(c,sl)=>upgOpts(c,sl),upgBest:(c,sl)=>upgBest(c,sl),upgApply:o=>upgApply(o),partyGainOf,shopSortIds:(a)=>shopSortIds(a),recipeList:(a)=>recipeList(a),temperOrder,temperGain,p3Kit,p3Threats,p3Gaps,p3Ready,p3Pork2,p3PorkWhy,
   bestParty:()=>bestParty(),invCap,get ITEM_MAX(){return ITEM_MAX;},get P3C(){return P3C;},p3Tradeoff,withCache:f=>{const o=P3C;P3C={why:{},kit:{}};try{return f(P3C);}finally{P3C=o;}}};
 
 // ===== music2.js (v0.4.5): music wiring, settings, the Music Room, credits =====
@@ -22462,10 +22586,14 @@ HOOK.xform('cmdHtml','battle3','tall layout: HP/MP bars and the auto note in the
 // rows, easier to tap; the owner: "make the action menu a bit bigger to fill in space and push the other menus down"), and the top
 // B8.peek px of the party cards (they and the foes are in the box under the commands, which scrolls); the stage takes the rest, never
 // under B8.tallMin. On a small screen the rows grow less before the stage gives way. Returns the stage height (logical px).
-function b8TallPlan(bat,room){try{const sc=BL.sc||2,ch0=b8CmdEst()||(document.getElementById('bcmd')||{}).offsetHeight||200,G=B8.tallGrow,pk=B8.peek,g6=6;
+// 0.22.27 (battle27.js): in the b27 layout nothing is kept back for the party cards (no peek, B27.grow and B27.tallMax instead of B8's), and
+// the log line no longer sits under the stage, so its height and one row gap count as room.
+function b8TallPlan(bat,room){try{const b27=bat.classList.contains('b27');
+  if(b27){let add=0;try{const bl=document.getElementById('bline');add=(bl?bl.offsetHeight:40)+(parseFloat(getComputedStyle(bat).rowGap)||5);}catch(e){}room+=add;}
+  const sc=BL.sc||2,ch0=b8CmdEst()||(document.getElementById('bcmd')||{}).offsetHeight||200,G=b27?B27.grow:B8.tallGrow,pk=b27?0:B8.peek,mx=b27?B27.tallMax:B8.tallMax,g6=6;
   let g=G,H=Math.floor((room-ch0-g-g6-pk)/sc);
   if(H<B8.tallMin){g=Math.max(0,Math.min(G,room-ch0-g6-pk-B8.tallMin*sc));H=Math.floor((room-ch0-g-g6-pk)/sc);}
-  H=clamp(H,B8.tallMin,B8.tallMax);
+  H=clamp(H,B8.tallMin,mx);
   bat.style.setProperty('--b8gp',Math.round(g*.43)+'px');bat.style.setProperty('--b8gs',Math.round(g*.29)+'px');bat.style.setProperty('--b8ga',Math.round(g*.28)+'px');
   return H;}catch(e){return B8.tallMin;}}
 // the height left under the stage (portrait): the box under it is exactly as tall as the rest of the visible screen
@@ -23892,7 +24020,9 @@ HOOK.before('guard','goals','a Guard under a foe telegraph counts for the goal',
 // Keep in reserves. State: G.pendRecruit (optional save field, cleared when answered), so a reload still asks.
 HOOK.wrap('recruit','recruit3','ask where a wild recruit stands',function(next,...args){const [id,free]=args;const was=G&&G.party&&G.party.includes(id);const ok=next(...args);
   try{if(ok&&free&&G&&!G.daily&&!was&&!G.party.includes(id)&&G.roster[id])G.pendRecruit=id;}catch(e){}return ok;});
-function r3Ask(){try{if(!G||!G.pendRecruit||V.screen!=='world'||V.modal||(typeof WS!=='undefined'&&(WS.dlg||WS.lock)))return false;
+// 0.22.30: 0.22.28 made a Legendary who joins a full six ask where to stand. Nikaris joins inside his fight and then plays a scene on the field
+// (G.l18meet, legends18.js): the question waited for the same moment and got there first, so the scene never played. It waits for the scene.
+function r3Ask(){try{if(G&&G.l18meet)return false;if(!G||!G.pendRecruit||V.screen!=='world'||V.modal||(typeof WS!=='undefined'&&(WS.dlg||WS.lock)))return false;
   if(!G.roster[G.pendRecruit]){G.pendRecruit=null;return false;}V.modal={type:'recruitAsk',hero:G.pendRecruit};return true;}catch(e){return false;}}
 HOOK.after('render','recruit3','ask where a wild recruit stands',function(){try{if(r3Ask()){if(typeof later==='function')later(render,0);else setTimeout(render,0);}}catch(e){}});
 function mRecruitAsk(m){const id=m.hero,t=TPL[id],c=G.roster[id],cls=CLS[t.cls]||{n:t.cls,role:''};
@@ -25627,7 +25757,9 @@ function w7Legacy(ctx,w,k,V,now){if(!V.air)return;const f=W7.old;if(!f)return;
   let c=W7_OLD.cv;if(!c||c.width!==V.W||c.height!==V.H)c=W7_OLD.cv=mkCv(V.W,V.H);const o=c.getContext('2d');o.setTransform(1,0,0,1,0,0);o.globalAlpha=1;o.globalCompositeOperation='source-over';o.clearRect(0,0,V.W,V.H);
   if(V.mode==='bt')f(o,w,V.W,V.H,now,true);else wfxTiled(o,V.W,V.H,V.ox,V.oy,cc=>f(cc,w,V.W,V.H,now,false));ctx.globalAlpha=k;ctx.drawImage(c,0,0);
   // the surge's edge glow belongs to the view, not to the scrolling layer
-  const sw=typeof WEATHER!=='undefined'&&WEATHER[w]&&WEATHER[w].surge;if(sw&&V.mode!=='bt'&&typeof surgeGlow==='function'){const C={earth:'90,220,90',water:'80,170,255',fire:'255,120,50',ice:'170,230,255',wind:'220,255,230',shadow:'170,90,255'}[sw];if(C)surgeGlow(ctx,C,V.W,V.H,(.12+(Math.sin(now/1000*1.6)+1)/2*.14)*k);}}
+  const sw=typeof WEATHER!=='undefined'&&WEATHER[w]&&WEATHER[w].surge;if(sw&&V.mode!=='bt'&&typeof surgeGlow==='function'){const C={earth:'90,220,90',water:'80,170,255',fire:'255,120,50',ice:'170,230,255',wind:'220,255,230',shadow:'170,90,255'}[sw];if(C)surgeGlow(ctx,C,V.W,V.H,(.12+(Math.sin(now/1000*1.6)+1)/2*.14)*k);}
+  // 0.22.47 (fix47.js): on the map the Solar Eclipse's corona shows as a breathing rim of gold light around the view (it belongs to the view, not to the scrolling layer)
+  try{if(w==='eclipse'&&!F47.off&&V.mode!=='bt'&&typeof surgeGlow==='function')surgeGlow(ctx,'255,196,110',V.W,V.H,(.16+(Math.sin(now/1000*.9)+1)/2*.12)*k);}catch(e){}}
 function w7Begin(mode,W,H,ox,oy,ms){const V=W7V,S=W7.stats,still=w7Still();V.mode=mode;V.W=W;V.H=H;V.ox=ox;V.oy=oy;V.ms=still?0:ms;V.t=V.ms/1000;V.still=still;V.q=w7Q();V.n=0;V.gr=true;V.air=true;V.hx0=V.hx1=0;V.frx=0;V.gy=0;
   V.area=Math.max(.55,Math.min(1.8,W*H/(420*320)));S.mode=mode;S.n=0;S.layers[0]=S.layers[1]=S.layers[2]=0;S.ground=S.banks=S.shimmer=S.bolt=0;S.flash=0;return V;}
 function w7Run(ctx,V,L,now){ctx.save();try{ctx.globalCompositeOperation='source-over';for(const [w,k] of L){if(k<=.002)continue;if(W7_OWN[w])w7Paint(ctx,w,k,V);else w7Legacy(ctx,w,k,V,now);}}
@@ -29923,7 +30055,7 @@ ACT.efForge=function(f){if(!efEntry(f))return;const m=efCost(f),base=efBaseIn(f)
   G.gold-=gold;payMats(m);G.gear.splice(base.i,1);const id=efItemId(f);G.gear.push(id);saveGame();sfx('chest');toast('Forged: '+gearOf(id).n);render();if(typeof queueNewGear==='function')queueNewGear([id],true);};
 
 // ----- Upgrade popups (p3shop.js): the gold of the Echoforge step, one id (no +N), and armour -----
-{const uo0=upgOpts;upgOpts=function(c,sl){const out=uo0.apply(this,arguments);try{if(!G||G.daily||!c)return out;const town=upgTown();
+{const uo0=upgOpts;upgOpts=function(c,sl){const out=uo0.apply(this,arguments);try{if(!G||G.daily||!c)return out;if(c.eq&&f38Own(c,c.eq[sl]))return out;/* 0.22.38 (p3shop.js f38Own): no Echoforge step either over a hero's own relic */const town=upgTown();
   for(let i=out.length-1;i>=0;i--){const o=out[i];if(o.k!=='ef')continue;o.id=efItemId(o.f);o.gold=efGold(o.f);o.ok=town&&hasMats(o.m)&&G.gold>=o.gold;
     const g=gainFor(c,o.id);if(!g||g.d<=.01){out.splice(i,1);continue;}o.d=g.d;o.pct=g.pct;o.mx=upgMax(c,o.id);}
   if(sl==='a'){const cur=c.eq.a||null;Object.keys(ECHOARM).forEach(f=>{const id=efItemId(f);if(!canEquip(c,id))return;const base=efBaseIn(f),worn=cur&&baseIdOf(cur)===efBaseId(f),src=base?'pack':worn?'eq':null;if(!src)return;
@@ -31255,10 +31387,11 @@ window.addEventListener('pointerup',e=>{try{const M=TOUCH&&TOUCH.map;if(!M||M.id
 function sr11Kind(s){return s.k==='phys'?'Physical':s.k==='mag'?'Magic':s.k==='heal'?'Heal':s.k==='revive'?'Revive':s.k==='status'?((s.t==='ally'||s.t==='allyAll'||s.t==='self'||s.t==='dead')?'Buff':'Debuff'):'';}
 function sr11Pw(s){return s.pw?Math.round(s.pw*100):0;}
 // est: the live estimate ('~96', '~96 each') or '' ; lock: 'Lv 12' on the sheet's locked rows
+// 0.22.49 (act49.js 1): the strip says "Power 150" (it was "Pow 150")
 function sr11Strip(s,est,lock){const lim=!!s.limit;
   const hits=s.hits>1?`<i class="sk11h" title="Hits">x${s.hits}</i>`:'',pw=sr11Pw(s),kind=sr11Kind(s);
-  const head=est?`<b class="sk11e" title="Estimated ${s.k==='heal'||s.k==='revive'?'healing':'damage'} now">${est}</b>`:pw?`<b class="sk11e" title="Power">Pow ${pw}</b>`:`<b class="sk11e sk11k">${kind||'Skill'}</b>`;
-  const sub=[est&&pw?`<i class="sk11p" title="Power">Pow ${pw}</i>`:'',hits,(est||pw)&&kind?`<i class="sk11k">${kind}</i>`:'',lim?`<i class="sk11c" title="Limit gauge, no MP">Limit</i>`:`<i class="sk11c" title="MP cost">${s.mp} MP</i>`].filter(Boolean).join('');
+  const head=est?`<b class="sk11e" title="Estimated ${s.k==='heal'||s.k==='revive'?'healing':'damage'} now">${est}</b>`:pw?`<b class="sk11e" title="Power">Power ${pw}</b>`:`<b class="sk11e sk11k">${kind||'Skill'}</b>`;
+  const sub=[est&&pw?`<i class="sk11p" title="Power">Power ${pw}</i>`:'',hits,(est||pw)&&kind?`<i class="sk11k">${kind}</i>`:'',lim?`<i class="sk11c" title="Limit gauge, no MP">Limit</i>`:`<i class="sk11c" title="MP cost">${s.mp} MP</i>`].filter(Boolean).join('');
   return `<span class="m sk11">${lock?`<i class="sk11l">${lock}</i>`:''}${head}<span class="sk11s">${sub}</span></span>`;
 }
 // battle list: replace the .m span of every skill button (the filter chips of skillfilt9.js ran inside and already removed hidden rows)
@@ -31686,7 +31819,9 @@ function sk12Mult(c,s){try{const t=c&&TPL[c.id];if(!t||!s||s.bond||s.limit||s.id
   let nat=false;if(tier!=='primary'&&sk12Nat(c)===r){m=Math.min(ROLEPW.natCap,m+ROLEPW.natLift);nat=true;}
   return {m:+m.toFixed(3),tier,r,nat};}catch(e){return null;}}
 const sk12Pc=m=>Math.round(m*100)+'%';
-function sk12Tag(o){return o&&o.tier!=='primary'?`<i class="sk12r ${o.tier}" title="${o.tier==='off'?'Off role':'Secondary role'} for this class: power x${sk12Pc(o.m)}${o.nat?' (includes the nature\'s lift)':''}">${o.tier==='off'?'Off':'Sub'} x${sk12Pc(o.m)}</i>`:'';}
+// 0.22.49 (act49.js 5): "Sub role percent changes should only be a rule behind the scenes": the "Sub x80%" / "Off x50%" tag is gone from
+// every skill row. The rule itself (sk12Mult) is unchanged.
+function sk12Tag(o){return '';}
 // off-role buffs last a turn shorter
 HOOK.wrap('perform','skills12','off role buffs last shorter',function(next,...args){const a=args[0],sk=args[1],cut=sk&&sk.buffCut;if(!cut||!a||!a.S)return next(...args);
   const b0=a.S.buffT;a.S.buffT=(b0||0)-cut;try{return next(...args);}finally{a.S.buffT=b0;}});
@@ -35052,7 +35187,7 @@ try{M11_RANK.unshift(['display',2.7,/"goals",/],['display',2.71,/"goalsClear",/]
 //     Tamer's Stick, Echoforged gear.
 //  6) A piece of one rarity at +0 beats the rarity below at +3 in its main stats: FORGE_STEP (items.js) is .11 (was .25), the top cape's RES
 //     36 (was 34, config.js). Relics and Echoforged gear keep their numbers (econ11.js relicTemper, echo11.js ECHO11.top3).
-const G16={rounds:10,undo:null,built:null,hint:null,hintBack:15000};
+const G16={undo:null,built:null,hint:null,hintBack:15000};
 
 // ---------- 1) the hint card steps aside for an open window ----------
 // A plain hint (p2world.js hintShow) is put away while any window is open and its 30 s clock stops; when the window closes it is back for
@@ -35110,34 +35245,12 @@ deltaHtml=function(c,id){const L=g16Deltas(c,id);return L.length?L.map(o=>`<b cl
   h+=`<div class="bestl g16vs"><b>Against what they wear:</b>${L.map(o=>`<div class="bestr">${port(o.c.id,'sm')}<b>${esc(o.c.name)}</b> <span>${o.h.map(x=>`<b class="${x.up?'up':'dn'} g16d">${x.t}</b>`).join(' ')}</span></div>`).join('')}</div>`;}catch(e){}return h;};}
 
 // ---------- 2) Upgrade whole party: every round in one press ----------
-// the plan, round after round, on a copy of the purse, the materials, the pack and what the party wears (nothing is bought or saved here)
-function g16PlanAll(slots){const first=p3SmithPlan(slots);if(!first.picks.length)return first;
-  const P=partyChars(),real={gold:G.gold,mats:G.mats,gear:G.gear,eq:{},S:{}};P.forEach(c=>{real.eq[c.id]=c.eq;real.S[c.id]=c.S;});
-  const all=[];let plan=first,n=0,cant=first.cant;
-  try{G.mats=Object.assign({},G.mats);G.gear=G.gear.slice();P.forEach(c=>{c.eq=Object.assign({},c.eq);});
-    while(plan.picks.length&&n<G16.rounds){n++;
-      plan.picks.forEach(p=>{const c=G.roster[p.cid];if(!c)return;G.gold-=p.gold;if(p.m)Object.keys(p.m).forEach(k=>{G.mats[k]=(G.mats[k]||0)-p.m[k];});
-        if(p.src==='pack'){const i=G.gear.indexOf(p.base);if(i>=0)G.gear.splice(i,1);}
-        const old=c.eq[p.sl];if(old&&p.src!=='temper')G.gear.push(old);c.eq[p.sl]=p.id;c.S=calcStats(c);p.round=n;all.push(p);});
-      plan=p3SmithPlan(slots);cant=plan.cant;}
-  }finally{G.gold=real.gold;G.mats=real.mats;G.gear=real.gear;P.forEach(c=>{c.eq=real.eq[c.id];c.S=real.S[c.id];});}
-  return {picks:all,cant,total:all.reduce((a,p)=>a+p.gold,0),gold0:real.gold,rounds:n};}
+// 0.22.46: the plan and the confirm are gear46.js (gp46Plan, gp46Run, ACT.p3Smith / p3SmithGo): one walk, re-asked before every step.
 // Undo after several rounds: everyone back in what they wore; a piece that was tempered on the way comes back tempered; the rest is the pack
 function g16UndoSnap(eq0){const pool={},put=id=>{if(id)pool[id]=(pool[id]||0)+1;};G.gear.forEach(put);Object.values(G.roster).forEach(c=>EQSL.forEach(sl=>put(c.eq[sl])));
   const take=id=>{if(pool[id]>0){pool[id]--;return id;}const b=baseIdOf(id);for(let k=plusOf(id)+1;k<=3;k++){const t=b+'+'+k;if(pool[t]>0){pool[t]--;return t;}}return null;};
   const eq={};Object.keys(eq0).forEach(cid=>{eq[cid]={};Object.keys(eq0[cid]).forEach(sl=>{eq[cid][sl]=eq0[cid][sl]?take(eq0[cid][sl]):null;});});
   const gear=[];Object.keys(pool).forEach(id=>{for(let i=0;i<pool[id];i++)gear.push(id);});const s=snapAuto();s.gear=gear;s.eq=eq;return s;}
-ACT.p3Smith=function(){if(!G||G.daily)return;V.modal={type:'p3plan',plan:g16PlanAll(),from:V.modal};render();};
-ACT.p3Alch=function(){ACT.p3Smith();};// v0.22.17: charms are part of the Smithy's plan
-ACT.p3SmithGo=function(){const m=V.modal;if(!m||m.type!=='p3plan')return;const slots=undefined,eq0={},pw0={};
-  Object.values(G.roster).forEach(c=>{eq0[c.id]=Object.assign({},c.eq);pw0[c.id]=loadoutScore(c,c.S);});
-  // the first round is the one that was shown and confirmed; the rounds after it are planned from what is left
-  const T={stop:null,spent:0,bought:0,forged:0,tempered:0,done:0,of:0,rounds:0};let plan={picks:(m.plan&&m.plan.picks||[]).filter(p=>!p.round||p.round===1)};
-  while(plan.picks.length&&T.rounds<G16.rounds){T.rounds++;const R=p3SmithRun(plan);['spent','bought','forged','tempered','done'].forEach(k=>{T[k]+=R[k]||0;});T.of+=R.of||0;
-    if(R.stop){T.stop=R.stop;break;}if(!R.done)break;plan=p3SmithPlan(slots);}
-  const rows=[];Object.values(G.roster).forEach(c=>{const b=eq0[c.id],ch=[];EQSL.forEach(sl=>{if((b[sl]||null)!==(c.eq[sl]||null))ch.push({sl,from:b[sl]||null,to:c.eq[sl]||null});});
-    if(ch.length)rows.push({id:c.id,name:c.name,inParty:G.party.includes(c.id),ch,comp:null,pw0:pw0[c.id],pw1:loadoutScore(c,c.S)});});
-  sfx(T.done?'buy':'deny');V.modal={type:'autoEq',mode:'smith',rows,snap:g16UndoSnap(eq0),from:m.from,p3:T};render();};
 
 // ---------- 4) Equip Best right after Build party closes the Menu ----------
 // 0.21.7 (owner): Equip Best shows its result page (with Undo) again and Build party (Apply) keeps its own page. Only Equip Best pressed right
@@ -35159,7 +35272,7 @@ ACT.g16Undo=function(){const u=G16.undo;G16.undo=null;if(!u||!G||u.sig!==g16Sig(
   else h=h.replace(/(<button class="btn gold" data-act="autoEqParty"[^>]*>Equip Best<\/button>)/,'$1<button class="btn" data-act="g16Undo" title="Puts back the gear everyone wore before the last Equip Best">Undo Equip Best</button>');}}catch(e){}return h;};}
 
 try{const st=document.createElement('style');st.textContent=`.g16d{display:inline-block;max-width:100%;white-space:normal;font-weight:600}.g16vs{opacity:.92}.g16vs>b{color:inherit}.g16rar{margin:4px 0 6px}#p2hint.g16hide{display:none!important}.bestr>span,.cmpr>span{min-width:0;overflow-wrap:anywhere}`;document.head.appendChild(st);}catch(e){}
-window.__G16={G16,rarCap,rarOk,rarFit,rarLoot,rarPool,deltas:(c,id)=>g16Deltas(c,id),planAll:s=>g16PlanAll(s),recipeOpen:r=>recipeOpen(r),plan:s=>p3SmithPlan(s),hintDock:g16HintDock,FORGE_STEP};
+window.__G16={G16,rarCap,rarOk,rarFit,rarLoot,rarPool,deltas:(c,id)=>g16Deltas(c,id),recipeOpen:r=>recipeOpen(r),hintDock:g16HintDock,FORGE_STEP};
 
 // ===== battle16.js (battle pass 16): the owner's playtest notes after 0.21.0 on battle, the action key, summons and recruitment =====
 // 1) "remove battle menu memory, just start at main action menu when turn starts": every hero turn opens on the main actions (Attack, Skills, Items,
@@ -37918,12 +38031,8 @@ HOOK.wrap('calcStats','shields20','a shield counts only beside a one-handed weap
 // a two-handed weapon puts the shield back in the pack
 function sh20Drop(c){try{if(c&&c.eq&&c.eq.s&&!sh20Ok(c)&&G&&!G.daily){G.gear.push(c.eq.s);c.eq.s=null;return true;}}catch(e){}return false;}
 {const eg0=equipGear;equipGear=function(c,id){const r=eg0.apply(this,arguments);if(sh20Drop(c))try{refresh(c);}catch(e){}return r;};}
-// the Smithy's upgrade plan (p3shop.js): a shield is not planned for a hero whose planned weapon is two-handed, and a hero's weapon is
-// applied before their shield
-{const pp0=p3SmithPlan;p3SmithPlan=function(){const P=pp0.apply(this,arguments);try{if(!P||!P.picks||!P.picks.some(p=>p.sl==='s'))return P;
-  const two=new Set(P.picks.filter(p=>p.sl==='w'&&!sh20OneHand(G.roster[p.cid],p.id)).map(p=>p.cid));
-  P.picks=P.picks.filter(p=>!(p.sl==='s'&&two.has(p.cid)));
-  P.picks.sort((a,b)=>a.cid===b.cid?(a.sl==='s')-(b.sl==='s'):0);P.total=P.picks.reduce((a,p)=>a+p.gold,0);}catch(e){}return P;};}
+// Upgrade whole party and Equip Best (gear46.js, equip2.js planGear) call sh20Drop / sh20Ok on their own copies, so a planned two-handed
+// weapon leaves no shield in the plan.
 // the Smithy
 {const ss0=shopStock;shopStock=function(tab){const r=ss0.apply(this,arguments);try{if(tab==='armor'&&G&&Object.values(G.roster).some(c=>sh20Cls(c))){const tiers=[Math.min(5,G.stage)];if(G.stage>0)tiers.unshift(G.stage-1);
   tiers.forEach(t=>r.push('s_shield_'+t));}}catch(e){}return r;};}
@@ -38760,19 +38869,28 @@ const B27={minLandH:560,portW:176,landCmd:230,sc:2.25,tallMax:300,grow:0,clear:4
 // tablet), sideways it is the largest that leaves B27.landCmd px for the turn order and the commands (the classic 320x150 stage at up to 6x).
 function b27Land(){try{const w=window.innerWidth/(typeof dsZoom==='function'?dsZoom():1),vh=b3Vh();return w>vh*1.15;}catch(e){return false;}}
 function b27Fits(){try{if(B27.off)return false;return !b27Land()||b3Vh()>=B27.minLandH;}catch(e){return false;}}
-{const m0=battleMode;battleMode=function(){return b27Fits()?'tall':m0.apply(this,arguments);};}
+// battleMode (battle.js) asks b27Fits first.
 function b27On(mode){try{return !B27.off&&(mode||battleMode())==='tall'&&b27Fits();}catch(e){return false;}}
-function b27Sc(bat){try{const w=(bat.clientWidth||window.innerWidth)+24,vh=b3Vh();
+// ---- big screens (side48.js, 0.22.48): the card column beside the stage ----
+const S48={w:200,minW:600,minH:600,topW:900,rise:120,lineMin:260,/* 0.22.50: minW was 1000 and sideways only; the owner: "when I say big screens I'm also talking about tablet and fold open views". From topW px wide the log line sits in the top strip; narrower, it stays floating over the stage. */off:(()=>{try{return localStorage.getItem('aurelis-s48off')==='1';}catch(e){return false;}})()};
+function s48W(){try{return window.innerWidth/(typeof dsZoom==='function'?dsZoom():1);}catch(e){return 0;}}
+// 0.22.51: sideways only again (the owner: "for tablets held in long mode rather than wide mode, the screen looked better however it was
+// done before, wide mode is fine"). An upright tablet or fold has the phone layout: the full width stage and the Party & foes sheet.
+function s48Fits(){try{if(S48.off||typeof b27Land!=='function'||!b27Land())return false;return s48W()>=S48.minW&&b3Vh()>=S48.minH;}catch(e){return false;}}
+function b27Sc(bat){
+  // big screens: the column is not stage
+  try{if(bat&&bat.classList.contains('b48')){const w=(bat.clientWidth||window.innerWidth)-S48.w-8+12,vh=b3Vh();if(b27Land())return clamp(Math.floor(Math.min(w/320,(vh-B27.landCmd)/150)*4)/4,2,6);return clamp(Math.floor(w/B27.portW*4)/4,B27.sc,6);}}catch(e){}
+  try{const w=(bat.clientWidth||window.innerWidth)+24,vh=b3Vh();
   if(b27Land())return clamp(Math.floor(Math.min(w/320,(vh-B27.landCmd)/150)*4)/4,2,6);return clamp(Math.floor(w/B27.portW*4)/4,B27.sc,6);}catch(e){return B27.sc;}}
 // layoutBattle asks before it measures: marks the battle and returns the stage scale (0 = the layout's own)
-function b27Mark(bat,mode){try{const on=b27On(mode);B27.live=on;bat.classList.toggle('m-tall',mode==='tall');bat.classList.toggle('b27',on);bat.classList.toggle('b27land',on&&b27Land());if(!on)bat.classList.remove('b27open');return on?b27Sc(bat):0;}catch(e){return 0;}}
-// on a short stage the units stand a little lower, so the tags over the highest hero stay clear of the floating line (B27.clear logical px)
-{const s0=slotsFor;slotsFor=function(){const r=s0.apply(this,arguments);try{if(B27.live&&!B27.noLine/* side48.js: on big screens the line is in the top strip */&&BL.mode==='tall'&&BL.H){const lo=Math.min(.62,(B27.clear+B27.lineH/(BL.sc||2.25))/BL.H);if(lo>.48)return r.map(([x,y])=>[x,+(lo+(y-.48)/.49*(.97-lo)).toFixed(4)]);}}catch(e){}return r;};}
-// the room under the stage: nothing is kept back for the party cards, the log line no longer sits under the stage
-{const p0=b8TallPlan;b8TallPlan=function(bat,room){if(!bat||!bat.classList.contains('b27'))return p0.apply(this,arguments);
-  const pk=B8.peek,g=B8.tallGrow,mx=B8.tallMax;let add=0;try{const bl=document.getElementById('bline');add=(bl?bl.offsetHeight:40)+(parseFloat(getComputedStyle(bat).rowGap)||5);}catch(e){}
-  B8.peek=0;B8.tallGrow=B27.grow;B8.tallMax=B27.tallMax;try{return p0.call(this,bat,room+add);}finally{B8.peek=pk;B8.tallGrow=g;B8.tallMax=mx;}};}
+function b27Mark(bat,mode){
+  // big screens first (b48, and whether the log line goes in the top strip), so the stage scale below is the one beside the column
+  try{const big=b27On(mode)&&s48Fits();bat.classList.toggle('b48',big);bat.style.setProperty('--b48w',S48.w+'px');bat.style.setProperty('--b48rise',S48.rise+'px');S48.live=big;S48.top=big&&s48W()>=S48.topW;B27.noLine=S48.top;}catch(e){}
+  try{const on=b27On(mode);B27.live=on;bat.classList.toggle('m-tall',mode==='tall');bat.classList.toggle('b27',on);bat.classList.toggle('b27land',on&&b27Land());if(!on)bat.classList.remove('b27open');return on?b27Sc(bat):0;}catch(e){return 0;}}
+// slotsFor (battle.js): on a short stage the units stand a little lower, so the tags over the highest hero stay clear of the floating line.
+// b8TallPlan (battle3.js): nothing is kept back for the party cards under the stage, and the log line no longer sits there.
 HOOK.xform('cmdHtml','battle27','small phones: the Party & foes button leads the second row',function(h){try{const bat=document.querySelector('.battle.b3');if(!bat||!bat.classList.contains('b27'))return h;
+  if(bat.classList.contains('b48'))return h;/* big screens (0.22.48): no Party & foes command, the cards are on screen */
   return String(h).replace('<div class="menu sec">','<div class="menu sec"><button class="mi b27pf" data-act="b27info" title="Every hero and foe: health, mana, statuses, weaknesses">☰ Party &amp; foes</button>');}catch(e){return h;}});
 ACT.b27info=function(){if(!B)return;B._b27=!B._b27;renderBattle();};
 HOOK.after('renderBattle','battle27','small phones: top strip, floating log line and the Party & foes sheet',function(r,stageOnly){try{if(stageOnly||!B)return;
@@ -38795,67 +38913,7 @@ HOOK.after('renderBattle','battle27','small phones: top strip, floating log line
     bp.insertAdjacentHTML('afterbegin','<div class="b27sh"><b>Party &amp; foes</b><button class="btn sm" data-act="b27info" aria-label="Close">✕ Close</button></div>');
     bp.insertAdjacentHTML('beforeend',`<div class="b27sf">${root?'<button class="btn sm" data-act="cmd" data-arg="guide">Guide</button>':''}<button class="btn sm" data-act="mute" aria-label="Sound">🔊 Sound</button><button class="btn sm" data-act="fbOpen" aria-label="Help and feedback">? Help</button><button class="btn sm" data-act="settings" aria-label="Settings">⚙ Settings</button></div>`);}
 }catch(e){B27.err=String(e&&e.message||e);}});
-{const st=document.createElement('style');st.id='b27css';st.textContent=`
-body:has(.battle.b3.b27) #hdr{display:none}
-.battle.b3.m-tall.b27{position:relative}
-.battle.b3.m-tall.b27 .order{display:flex;align-items:center;gap:6px}
-.battle.b3.m-tall.b27 .order .ocs{flex:1 1 auto;min-width:0;overflow:hidden}
-.battle.b3.m-tall.b27 .order .ocs>small{display:none}
-.battle.b3.m-tall.b27 .order .autorow{display:flex;flex:none;gap:4px;margin:0 0 0 auto;padding:0;width:auto}
-.battle.b3.m-tall.b27 .order .autorow .btn{flex:none;min-width:40px;width:auto;min-height:40px;padding:0 7px;font-size:.74rem;line-height:1.05}
-.battle.b3.m-tall.b27 .order .autorow .btn small{display:block;font-size:.56rem;opacity:.8}
-.battle.b3.m-tall.b27 .cmd .autorow{display:none}
-.battle.b3.m-tall.b27 .bwrap{margin-left:-12px;margin-right:-12px;width:calc(100% + 24px);max-width:none}
-.battle.b3.m-tall.b27>.bline{grid-area:auto;position:absolute;left:-4px;right:-4px;top:var(--b27t,62px);z-index:6;min-height:40px;padding:0 0 0 3px;gap:4px;background:rgba(8,13,26,.88);border:1px solid rgba(217,180,106,.28);border-radius:8px;overflow:hidden}
-.battle.b3.m-tall.b27>.bline .osky{display:flex;flex:none;gap:2px;align-items:center}
-.battle.b3.m-tall.b27>.bline .osky .wchip .wxn{display:none}
-.battle.b3.m-tall.b27 .order{padding-top:2px;padding-bottom:2px;min-height:44px}
-.battle.b3.m-tall.b27>.bline .osky .wchip{min-width:28px;width:28px;height:34px;min-height:34px;padding:0}
-.battle.b3.m-tall.b27>.bline .osky .wchip.d{width:auto;padding:0 4px;font-size:.62rem}
-.battle.b3.m-tall.b27>.bline .b4mo{min-height:40px;margin:0;min-width:74px;max-width:74px;padding:3px 5px}
-.battle.b3.m-tall.b27>.bline .b4mo .b4mt b{font-size:.5rem;letter-spacing:0}
-.battle.b3.m-tall.b27>.bline .blog p{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;font-size:.74rem;line-height:1.15}
-.battle.b3.m-tall.b27>.bline .blogbtn{min-height:40px;min-width:40px;padding:0 6px;font-size:.72rem;border-radius:0}
-.battle.b3.m-tall.b27>.bline .blogbtn.b27i{font-size:1rem;border-left:1px solid rgba(217,180,106,.28)}
-.battle.b3.m-tall.b27 .cmd .menu.prim{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-.battle.b3.m-tall.b27 .cmd .menu.prim .mi{min-height:48px;font-size:1.06rem}
-.battle.b3.m-tall.b27 .cmd .menu.sec{display:flex;flex-wrap:wrap;gap:5px}
-.battle.b3.m-tall.b27 .cmd .menu.sec .mi{flex:1 1 56px;min-width:0;min-height:40px}
-.battle.b3.m-tall.b27 .cmd .menu.sec .mi.b27pf{order:-1;flex:1.7 1 118px;white-space:nowrap;border-color:#a48bff;background:linear-gradient(#34296a,#231c4b);color:#fff}
-.battle.b3.m-tall.b27 .cmd .menu.sec .mi[data-arg="guide"]{display:none}
-.battle.b3.m-tall.b27 .bbottom .pgroup,.battle.b3.m-tall.b27 .bbottom .b8fl,.battle.b3.m-tall.b27 .bbottom .b3pty{display:none}
-.battle.b3.m-tall.b27 .bban{top:54px}
-.battle.b3.m-tall.b27 .cmd{padding-top:5px;padding-bottom:6px}
-.battle.b3.m-tall.b27 .who.cmdhead{padding:0 0 3px}
-.battle.b3.m-tall.b27 .cmd .menu.prim{gap:5px}
-.battle.b3.m-tall.b27 .cmd .menu.prim .mi{min-height:44px}
-.battle.b3.m-tall.b27 .who.cmdhead .cmdback{min-height:34px;height:34px;padding-top:0;padding-bottom:0}
-.battle.b3.m-tall.b27 .who.cmdhead{min-height:0}
-@media (min-width:700px){
-.battle.b3.m-tall.b27 .cmd .menu.prim{grid-template-columns:repeat(4,minmax(0,1fr))}
-.battle.b3.m-tall.b27 .cmd .menu.prim .mi{min-height:52px}
-.battle.b3.m-tall.b27 .cmd .menu.sec .mi.b27pf{flex:1 1 160px}
-.battle.b3.m-tall.b27.b27open .bbottom .bparty{left:auto;top:0;bottom:0;width:min(440px,92%);max-height:none;border-top:0;border-left:2px solid #a48bff;border-radius:16px 0 0 16px}
-}
-/* 0.22.42 (asked: "in the action menu on big screens the skills are half blocked"): a list (skills, items, the swap list) no longer has to
-   fit the strip under the stage. The command panel rises over the lower part of the stage for as long as the list is open, up to 64% of the
-   screen, and scrolls inside; picking a skill or Back puts it back. On wide screens the list is in columns. Only #bcmd floats: the box
-   under the stage keeps its place and size, so nothing is measured or laid out again (floating the whole box left the stage dark when a list
-   was opened on the first turn). */
-.battle.b3.m-tall.b27.b3list .bbottom .cmd{display:block;/* not the bottom aligned column of the root menu: a list taller than the panel must start at its top */position:fixed;left:0;right:0;bottom:0;margin:0;width:auto;z-index:20;height:auto;max-height:64%;overflow-y:auto;overscroll-behavior:contain;box-sizing:border-box;padding:6px 8px calc(8px + env(safe-area-inset-bottom,0px));background:#0e172c;border:0;border-top:2px solid #33466f;border-radius:0;box-shadow:0 -10px 30px rgba(0,0,0,.5)}
-@media (min-width:700px){.battle.b3.m-tall.b27.b3list .menu.list{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:6px;align-items:stretch}}
-.battle.b3 .b27shade{display:none}
-.battle.b3.m-tall.b27.b27open .b27shade{display:block;position:fixed;inset:0;z-index:69;background:rgba(4,7,15,.55)}
-.battle.b3.m-tall.b27.b27open .bbottom .bparty{display:flex;flex-direction:column;gap:8px;position:fixed;left:0;right:0;bottom:0;max-height:78%;overflow-y:auto;overscroll-behavior:contain;z-index:70;box-sizing:border-box;background:#0f1930;border-top:2px solid #a48bff;border-radius:16px 16px 0 0;padding:10px 12px calc(12px + env(safe-area-inset-bottom,0px))}
-.battle.b3.m-tall.b27.b27open .bbottom .b3pty{display:flex;flex-direction:column;gap:8px;order:1}
-.battle.b3.m-tall.b27.b27open .bbottom .pgroup{display:block;order:2}
-.battle.b3.m-tall.b27.b27open .bbottom .pgroup>h3{display:block;margin:0 0 4px}
-.battle.b3.m-tall.b27.b27open .bbottom .pgroup.heroes .pcs,.battle.b3.m-tall.b27.b27open .bbottom .pgroup.rsv .pcs{grid-template-columns:minmax(0,1fr)}
-.battle.b3.m-tall.b27.b27open .bbottom .fcs{grid-template-columns:minmax(0,1fr)}
-.b27sh{order:0;display:flex;align-items:center;justify-content:space-between;font-size:1rem}
-.b27sf{order:3;display:flex;flex-wrap:wrap;gap:6px}
-.b27sf .btn{flex:1 1 70px;min-height:40px}
-`;document.head.appendChild(st);}
+// the styles: battle3.css, section B
 // a turned tablet or a resized window mid battle: the stage scale changes with the screen, so the stage is fitted again from scratch (the
 // resize pass of battle3.js only refits the classic wide layout; without this the stage kept a default 85 logical px, v211a)
 {let t=0;window.addEventListener('resize',()=>{try{if(!B27.live||typeof V==='undefined'||V.screen!=='battle'||!B)return;clearTimeout(t);t=setTimeout(()=>{try{if(V.screen!=='battle'||!B)return;BL.fitH=0;B._b8fit=0;B._b8vh=0;layoutBattle();renderBattle();}catch(e){}},60);}catch(e){}});}
@@ -38968,7 +39026,7 @@ try{window.__M29={M29,on:m29On,pass:m29Pass};}catch(e){}
 //  1 A journey stores its bosses by key (G.run.bosses, G.run.final). A key that is no longer in GUARDIANS / FINALS (a boss taken out of the
 //    game after the journey began) left that realm without an Echo: every lookup of its definition came back empty. f30BossFix swaps such
 //    a key for one the journey does not use yet (picked from the seed, so it is the same every time) and keeps the old key in
-//    G.run.bossWas. It runs before every bossKeyFor, so the dungeon rune, the Echo Sanctum and the records all see the replacement.
+//    G.run.bossWas. bossKeyFor (engine.js) calls it first, so the dungeon rune, the Echo Sanctum and the records all see the replacement.
 //  2 REALM_DONE lists the realm's story Echo ("Echo of <boss>", done once it is beaten); the Journey tab shows "Echo 0/1".
 //  3 The minimap is 196x147 px on a screen at least 900 px wide (was 112x84); the picture is the same, drawn larger.
 function f30BossFix(){try{if(!G||!G.run||G.daily)return;const R=G.run,used=()=>new Set((R.bosses||[]).concat([R.final]));
@@ -38976,12 +39034,10 @@ function f30BossFix(){try{if(!G||!G.run||G.daily)return;const R=G.run,used=()=>n
     (R.bossWas=R.bossWas||{})[s]=k;R.bosses[s]=pool[(hashS(String(R.seed||1)+'bossfix'+s)>>>0)%pool.length];});
   if(R.final&&!FINALS[R.final]&&R.final!=='riftkeeper'){const pool=FPOOL.filter(x=>!used().has(x));if(pool.length){(R.bossWas=R.bossWas||{}).f=R.final;R.final=pool[(hashS(String(R.seed||1)+'bossfixf')>>>0)%pool.length];}}
 }catch(e){}}
-{const b0=bossKeyFor;bossKeyFor=function(s){f30BossFix();return b0.apply(this,arguments);};}
 HOOK.xform('REALM_DONE','fix30','the realm\'s story Echo is part of its list',function(L,s){try{if(!L||!G||G.daily||typeof guardianDef!=='function')return L;const d=guardianDef(bossKeyFor(s));
   if(d&&!L.some(o=>o.k==='echo'))L.push({k:'echo',n:'Echo of '+d.n,done:!!(G.echoStory||{})[s]});}catch(e){}return L;});
-//  4 0.22.28 made a Legendary who joins a full six ask where to stand. Nikaris joins inside his fight and then plays a scene on the field
-//    (G.l18meet, legends18.js): the question waited for the same moment and got there first, so the scene never played. It waits for the scene.
-{const a0=r3Ask;r3Ask=function(){try{if(G&&G.l18meet)return false;}catch(e){}return a0.apply(this,arguments);};}
+//  4 the question where a Legendary stands waits for Nikaris's scene: see r3Ask (recruit3.js).
+// REALM_DONE stays a registered hook: the Echo row is added after records12.js has reworked the list.
 {const st=document.createElement('style');st.id='f30css';st.textContent='@media (min-width:900px){#mmap.mmap{width:196px!important;height:147px!important}}';document.head.appendChild(st);}
 try{window.__F30={fix:f30BossFix};}catch(e){}
 
@@ -39241,19 +39297,6 @@ function t37Dress(T,R,th,o){if(T37.off||!o||!o.land)return;const k=o.land;if(k==
 try{Object.keys(T37.land).forEach(k=>{if(T24_TAB[k])T24_TAB[k][2]=Object.assign({},T24_TAB[k][2],{land:T37.land[k]});});}catch(e){}
 try{window.__T37=T37;}catch(e){}
 
-// ===== fix38.js (v0.22.38): a hero's own relic comes first in every upgrade suggestion =====
-// Reported: "Best upgrade for slot keeps suggesting one regular equipment and then suggesting the relic for that same character right after I
-// equip it's suggestion, should just show me the one that's better first".
-// Suggestions are ranked by where a piece ENDS (p3Ult: its score at max temper). A shop piece's end at +3 could rank over the hero's relic,
-// which cannot be tempered; bought at +0 it was weaker than the relic today, so the next suggestion was the relic, and with the relic on the
-// shop piece's +3 chain came back. A personal relic is meant to be the best piece for its hero (relics25.js), so:
-//  1 a hero's own relic ranks above everything for that hero (p3Ult), in the per slot view and in Upgrade whole party
-//  2 while a hero wears their own relic nothing is suggested for that slot (upgOpts)
-function f38Own(c,id){try{const g=id&&gearOf(id);return !!(g&&g.relic&&c&&g.only===c.id);}catch(e){return false;}}
-{const u0=p3Ult;p3Ult=function(c,sl,id){return f38Own(c,id)?1e9:u0.apply(this,arguments);};}
-{const o0=upgOpts;upgOpts=function(c,sl){try{if(c&&c.eq&&f38Own(c,c.eq[sl]))return [];}catch(e){}return o0.apply(this,arguments);};}
-try{window.__F38={own:f38Own};}catch(e){}
-
 // ===== auto39.js (v0.22.39): auto battle uses the right item for the moment, and can be told not to use items =====
 // Asked: "Auto never uses mana pots, should also use the appropriate item for the situation more often, like it should use smelling salts
 // before pheonix feathers, review for other item use cases that arent coded into auto, make an auto option to turn off item use."
@@ -39344,41 +39387,15 @@ try{window.__N40={N40,project:n40Project};}catch(e){}
 //  - Best upgrade for each slot shows that step for the hero it helps most (as before).
 //  - Upgrade whole party takes that same step for every hero and slot, biggest gain first, again and again until none is left (gp46Plan
 //    for the preview on a copy of the purse and pack, ACT.p3SmithGo for real: both walk gp46Round and re-ask upgBest before every step).
-//  - Equip Best is the same walk with only the free steps from the pack (gp46PlanGear, behind planGear): nobody is stripped first, a hero
+//  - Equip Best is the same walk with only the free steps from the pack (planGear in equip2.js): nobody is stripped first, a hero
 //    keeps what they wear unless a spare is a gain today, and the spare that ends best comes first. It may still take pieces from heroes
 //    outside the party. Heroes in the party no longer trade pieces among themselves.
 // What follows from it (tools/chrome/v225a.js checks these on random packs): after Upgrade whole party nothing is left to do in any of the
 // three; after Equip Best no row offers a spare from the pack; pressing a per slot Upgrade again and again never ends below a step it showed
 // earlier; the preview of Upgrade whole party is what then happens.
-const GP46={rounds:14,off:false,err:'',tP:[],tR:[]};/* tP, tR: the steps of the last preview and of the last run, for tests */
-const gp46Cmp=(a,b)=>p3UltCmp(a,b)||(b.d-a.d)||(a.id<b.id?-1:a.id>b.id?1:0);
+const GP46={rounds:14,tP:[],tR:[]};/* tP, tR: the steps of the last preview and of the last run, for tests */
 // ---------- Equip Best: the free steps from the pack ----------
-function gp46PlanGear(heroIds,takeIds,fair,slots){const SL=slots||GSLOTS;
-  const heroes=heroIds.map(id=>G.roster[id]).filter(Boolean),hs=new Set(heroes.map(c=>c.id)),pool=[];
-  G.gear.forEach(id=>pool.push({id,from:null}));
-  (takeIds||[]).forEach(hid=>{const c=G.roster[hid];if(!c||hs.has(hid))return;GSLOTS.forEach(sl=>{if(SL.includes(sl)&&c.eq[sl])pool.push({id:c.eq[sl],from:hid,sl});});});
-  const eq={},sc={},src={};heroes.forEach(c=>{eq[c.id]=Object.assign({},c.eq);src[c.id]={};sc[c.id]=scoreEq(c,eq[c.id]);});
-  for(let it=0;it<400;it++){const ids=[...new Set(pool.map(e=>e.id))].sort();let best=null;
-    heroes.forEach((c,hi)=>{const real=c.eq;c.eq=eq[c.id];/* a shield is only allowed beside the weapon the plan has given so far (canEquip reads c.eq) */try{SL.forEach((sl,si)=>{const cur=eq[c.id][sl]||null;if(typeof f38Own==='function'&&f38Own(c,cur))return;let top=null;
-      ids.forEach(id=>{if(id===cur||!slotOk(c,sl,id))return;const d=scoreEq(c,Object.assign({},eq[c.id],{[sl]:id}))-sc[c.id];if(d<=.01)return;
-        const o={id,d,pct:sc[c.id]>0?d/sc[c.id]:0,u:p3Ult(c,sl,id)};if(!top||gp46Cmp(o,top)<0)top=o;});
-      if(top&&(!best||top.pct>best.pct+1e-9||(Math.abs(top.pct-best.pct)<=1e-9&&(hi<best.hi||(hi===best.hi&&si<best.si)))))best=Object.assign({c,sl,hi,si},top);});}finally{c.eq=real;}});
-    if(!best)break;
-    const pick=pool.map((e,i)=>({e,i})).filter(o=>o.e.id===best.id).sort((a,b)=>(a.e.from?1:0)-(b.e.from?1:0))[0];pool.splice(pick.i,1);
-    const c=best.c,old=eq[c.id][best.sl],was=src[c.id][best.sl];if(old)pool.push(was||{id:old,from:null});
-    eq[c.id][best.sl]=best.id;src[c.id][best.sl]=pick.e.from?pick.e:null;
-    // a weapon that leaves no hand for the shield puts the shield back (shields20.js)
-    if(typeof sh20Ok==='function'&&eq[c.id].s){const real=c.eq;let ok=true;try{c.eq=eq[c.id];ok=sh20Ok(c);}catch(e){}finally{c.eq=real;}if(!ok){pool.push(src[c.id].s||{id:eq[c.id].s,from:null});eq[c.id].s=null;src[c.id].s=null;}}
-    sc[c.id]=scoreEq(c,eq[c.id]);}
-  const used=[];heroes.forEach(c=>SL.forEach(sl=>{const id=eq[c.id][sl];if(!id)return;const e=src[c.id][sl];used.push({hid:c.id,sl,id,from:e?e.from:null,fromSl:e?e.sl:undefined});}));
-  return {heroes,eq,used,slots:SL};}
-{const pg0=planGear;planGear=function(heroIds,takeIds,fair,slots){if(GP46.off)return pg0.apply(this,arguments);try{return gp46PlanGear(heroIds,takeIds,fair,slots);}catch(e){GP46.err=String(e&&e.message||e);return pg0.apply(this,arguments);}};}
-// one hero (the hero sheet's Auto best gear): the same walk for that hero, pack only; the companion part is equip2.js's
-{const ao0=autoOne;autoOne=function(c){if(GP46.off||!c)return ao0.apply(this,arguments);
-  try{applyGear(planGear([c.id],[],false));refresh(c);}catch(e){GP46.err=String(e&&e.message||e);return ao0.apply(this,arguments);}
-  try{const cur=compOf(c);let bo=cur,bg=cur?compGainFor(cur,c):0;(G.tamed||[]).forEach(o=>{if(o.with&&o.with!==c.id)return;const g=compGainFor(o,c);if(g>bg+.01){bg=g;bo=o;}});
-    if(bo&&bo!==cur){G.tamed.forEach(x=>{if(x.with===c.id)x.with=null;});bo.with=c.id;}}catch(e){}
-  Object.values(G.roster).forEach(refresh);};}
+// planGear and autoOne (equip2.js) are this walk: the old dealing-out and its fallback are gone.
 // ---------- Upgrade whole party: the per slot step for everyone, until none is left ----------
 // the step each party hero and slot would take now, in the order they are taken (the biggest gain first)
 function gp46Round(){const L=[];partyChars().forEach((c,hi)=>P3_SLOTS.forEach((sl,si)=>{let o=null;try{o=upgBest(c,sl).best;}catch(e){}if(o)L.push({o,hi,si});}));
@@ -39409,7 +39426,6 @@ function gp46Plan(){const P=partyChars(),real={gold:G.gold,mats:G.mats,gear:G.ge
     net=real.gold-G.gold;
   }finally{G.gold=real.gold;G.mats=real.mats;G.gear=real.gear;G.pbuy=real.pbuy;P.forEach(c=>{c.eq=real.eq[c.id];c.S=real.S[c.id];});FITC=f0;}
   return {picks,cant,total:Math.max(0,net),gold0:real.gold,rounds:n,steps:GP46.tP.length,gp46:1};}/* total: what the purse ends lower by (a Union rebate on forging already taken off) */
-{const pa0=g16PlanAll;g16PlanAll=function(slots){if(GP46.off)return pa0.apply(this,arguments);return gp46Plan();};}
 // for real: the same walk with upgApply
 function gp46Run(){const T={stop:null,spent:0,bought:0,forged:0,tempered:0,done:0,of:0,rounds:0},f0=FITC;GP46.tR=[];
   try{while(T.rounds<GP46.rounds){FITC={};const L=gp46Round();if(!L.length)break;T.rounds++;let did=0;
@@ -39417,17 +39433,18 @@ function gp46Run(){const T={stop:null,spent:0,bought:0,forged:0,tempered:0,done:
         if(o.k==='buy'||(o.k==='chain'&&o.src==='buy'))T.bought++;if(o.k==='forge'||(o.k==='chain'&&o.src==='forge'))T.forged++;if(o.k==='temper'||o.k==='ef')T.tempered++;/* an Echoforge reworks a piece that is already owned */if(o.k==='chain')T.tempered+=o.steps||0;}
       if(!did)break;}}finally{FITC=f0;}
   return T;}
-ACT.p3Smith=function(){if(!G||G.daily)return;V.modal={type:'p3plan',plan:g16PlanAll(),from:V.modal};render();};
+// the buttons (the Smithy's "Upgrade whole party"; v0.22.17: charms are part of the Smithy's plan, so Alchemy's button opens the same one)
+ACT.p3Smith=function(){if(!G||G.daily)return;V.modal={type:'p3plan',plan:gp46Plan(),from:V.modal};render();};
 ACT.p3Alch=function(){ACT.p3Smith();};
-{const go0=ACT.p3SmithGo;ACT.p3SmithGo=function(){if(GP46.off)return go0.apply(this,arguments);const m=V.modal;if(!m||m.type!=='p3plan')return;const eq0={},pw0={};
+ACT.p3SmithGo=function(){const m=V.modal;if(!m||m.type!=='p3plan')return;const eq0={},pw0={};
   Object.values(G.roster).forEach(c=>{eq0[c.id]=Object.assign({},c.eq);pw0[c.id]=loadoutScore(c,c.S);});
   const T=gp46Run();Object.values(G.roster).forEach(refresh);
   // the purse shrank between the preview and the confirm: say so (the walk did what the gold still allowed)
   try{const want=m.plan&&m.plan.steps||0;if(T.done<want){T.stop='gold';T.of=want;}}catch(e){}
   const rows=[];Object.values(G.roster).forEach(c=>{const b=eq0[c.id],ch=[];EQSL.forEach(sl=>{if((b[sl]||null)!==(c.eq[sl]||null))ch.push({sl,from:b[sl]||null,to:c.eq[sl]||null});});
     if(ch.length)rows.push({id:c.id,name:c.name,inParty:G.party.includes(c.id),ch,comp:null,pw0:pw0[c.id],pw1:loadoutScore(c,c.S)});});
-  saveGame();sfx(T.done?'buy':'deny');V.modal={type:'autoEq',mode:'smith',rows,snap:g16UndoSnap(eq0),from:m.from,p3:T};render();};}
-try{window.__GP46={GP46,plan:gp46Plan,round:gp46Round,run:gp46Run,planGear:gp46PlanGear};}catch(e){}
+  saveGame();sfx(T.done?'buy':'deny');V.modal={type:'autoEq',mode:'smith',rows,snap:g16UndoSnap(eq0),from:m.from,p3:T};render();};
+try{window.__GP46={GP46,plan:gp46Plan,round:gp46Round,run:gp46Run,planGear:(...a)=>planGear(...a)};}catch(e){}
 
 // ===== fix47.js (v0.22.47): the Solar Eclipse sky, guild missions unlock as they are completed, tier colours =====
 // 1 Solar Eclipse (asked: "replace the floating shadow visuals for the eclipse weather event with a more appropriate graphical effect").
@@ -39452,15 +39469,11 @@ function f47Eclipse(ctx,W,H,now,battle){const t=now/1000;ctx.save();
 {const wf0=weatherFX;weatherFX=function(ctx,w,W,H,now,battle){if(w==='eclipse'&&!F47.off){try{f47Eclipse(ctx,W,H,now||0,!!battle);return;}catch(e){F47.err=String(e&&e.message||e);}}return wf0.apply(this,arguments);};}
 // weather7.js draws the rare skies through the function it kept at load (W7.old), tiled over the map: give it the new eclipse too
 try{if(typeof W7!=='undefined'&&typeof W7.old==='function'){const o0=W7.old;W7.old=function(ctx,w,W,H,now,battle){if(w==='eclipse'&&!F47.off){try{f47Eclipse(ctx,W,H,now||0,!!battle);return;}catch(e){F47.err=String(e&&e.message||e);}}return o0.apply(this,arguments);};}}catch(e){}
-// on the map the corona shows as a breathing rim of gold light around the view (it belongs to the view, not to the scrolling layer)
-try{if(typeof w7Legacy==='function'){const l0=w7Legacy;w7Legacy=function(ctx,w,k,V,now){const r=l0.apply(this,arguments);try{if(w==='eclipse'&&!F47.off&&V&&V.air&&V.mode!=='bt'&&typeof surgeGlow==='function')surgeGlow(ctx,'255,196,110',V.W,V.H,(.16+(Math.sin(now/1000*.9)+1)/2*.12)*k);}catch(e){}return r;};}}catch(e){}
+// on the map the corona shows as a breathing rim of gold light around the view: drawn at the end of w7Legacy (weather7.js).
+// The two wraps above stay wraps: the eclipse must be drawn instead of everything weatherFX has become by now (world3.js's disc, the
+// cross-fade of p5trans.js, the battle painter of weather7.js), so it has to sit outside all of them.
 // ---------- 2 Accept all takes what is on show, and nothing new slides in behind it ----------
-// A guild listed the missions already taken plus two new ones (factions.js facMissionList). So the moment the two on show were accepted, two
-// more took their place: after Accept all there were open missions again, as if the press had missed them (often the tier 2 ones), and
-// pressing on took the guild's whole list. The owner's rule: new missions unlock as missions are completed. A guild now has F47.slots (2)
-// missions out at a time, taken ones included: a new one is posted when one is handed in. Accept all accepts every notice on show.
-function f47Open(L){try{const f=facInit(),acc=L.filter(m=>f.acc[m.id]!=null),rest=L.filter(m=>f.acc[m.id]==null);return acc.concat(rest.slice(0,Math.max(0,F47.slots-acc.length)));}catch(e){return L;}}
-{const ml0=facMissionList;facMissionList=function(id){const L=ml0.apply(this,arguments);return F47.off?L:f47Open(L);};}
+// The rule (F47.slots missions out per guild) is applied where the list is made: facMissionList and f47Open in factions.js.
 try{window.__F47=F47;}catch(e){}
 
 // ===== side48.js (v0.22.48): big screens: the party and foe cards are always on, in a slim column beside the stage =====
@@ -39479,16 +39492,9 @@ try{window.__F47=F47;}catch(e){}
 //  4 the wide "☰ Party & foes" command is gone here (the cards are on screen); the ☰ on the top strip still opens the sheet for the
 //    full cards, Guide, sound, help and settings.
 // Off switch for tests: the stored flag aurelis-s48off (pw.js CLASSIC).
-const S48={w:200,minW:600,minH:600,topW:900,rise:120,lineMin:260,/* 0.22.50: minW was 1000 and sideways only; the owner: "when I say big screens I'm also talking about tablet and fold open views". From topW px wide the log line sits in the top strip; narrower, it stays floating over the stage. */off:(()=>{try{return localStorage.getItem('aurelis-s48off')==='1';}catch(e){return false;}})()};
-function s48W(){try{return window.innerWidth/(typeof dsZoom==='function'?dsZoom():1);}catch(e){return 0;}}
-// 0.22.51: sideways only again (the owner: "for tablets held in long mode rather than wide mode, the screen looked better however it was
-// done before, wide mode is fine"). An upright tablet or fold has the phone layout: the full width stage and the Party & foes sheet.
-function s48Fits(){try{if(S48.off||typeof b27Land!=='function'||!b27Land())return false;return s48W()>=S48.minW&&b3Vh()>=S48.minH;}catch(e){return false;}}
-{const m0=b27Mark;b27Mark=function(bat,mode){let on=false;try{on=b27On(mode)&&s48Fits();bat.classList.toggle('b48',on);bat.style.setProperty('--b48w',S48.w+'px');bat.style.setProperty('--b48rise',S48.rise+'px');S48.live=on;S48.top=on&&s48W()>=S48.topW;B27.noLine=S48.top;}catch(e){}return m0.apply(this,arguments);};}
-// the stage scale: the column is not stage
-{const s0=b27Sc;b27Sc=function(bat){try{if(bat&&bat.classList.contains('b48')){const w=(bat.clientWidth||window.innerWidth)-S48.w-8+12,vh=b3Vh();if(b27Land())return clamp(Math.floor(Math.min(w/320,(vh-B27.landCmd)/150)*4)/4,2,6);return clamp(Math.floor(w/B27.portW*4)/4,B27.sc,6);}}catch(e){}return s0.apply(this,arguments);};}
-HOOK.xform('cmdHtml','side48','big screens: no Party & foes command (the cards are on screen)',function(h){try{const bat=document.querySelector('.battle.b3');if(!bat||!bat.classList.contains('b48'))return h;
-  return String(h).replace(/<button class="mi b27pf"[^>]*>[^<]*<\/button>/,'');}catch(e){return h;}});
+// S48, s48W and s48Fits are in battle27.js: b27Mark marks the battle b48 and b27Sc sizes the stage beside the column there, and the
+// Party & foes command is left out there too. What stays here is the placing after each render (a hook that runs after those of the
+// modules loaded in between); the styles are section C of battle3.css.
 HOOK.after('renderBattle','side48','big screens: place the card column and the top line',function(r,stageOnly){try{if(stageOnly||!B)return;
   const bat=document.querySelector('.battle.b3'),bo=document.getElementById('border'),bl=document.getElementById('bline'),wrap=document.getElementById('bwrap');if(!bat||!bo||!bl||!wrap)return;
   if(!bat.classList.contains('b48')){bat.classList.remove('b48top');return;}
@@ -39500,82 +39506,7 @@ HOOK.after('renderBattle','side48','big screens: place the card column and the t
   const L=last?last.offsetLeft+last.offsetWidth+10:bo.offsetLeft+8,R=ar?ar.offsetLeft-8:bo.offsetLeft+bo.offsetWidth-8,ok=!!S48.top&&R-L>=S48.lineMin;
   bat.classList.toggle('b48top',ok);if(ok){bat.style.setProperty('--b48ll',L+'px');bat.style.setProperty('--b48lw',(R-L)+'px');bat.style.setProperty('--b48lt',(bo.offsetTop+Math.max(0,Math.round((bo.offsetHeight-40)/2)))+'px');}
 }catch(e){S48.err=String(e&&e.message||e);}});
-{const st=document.createElement('style');st.id='s48css';const T='.battle.b3.m-tall.b27',S=T+'.b48',P=S+':not(.b27open) .bbottom';st.textContent=`
-${S}{grid-template-columns:minmax(0,1fr) var(--b48w,200px);grid-template-areas:"boss boss" "order order" "stage side" "line side" "bot side";column-gap:8px}
-${S} .bwrap{margin-right:0;width:calc(100% + 12px)}
-${S}.b48top>.bline{left:var(--b48ll);right:auto;width:var(--b48lw);top:var(--b48lt);background:rgba(8,13,26,.6)}
-${S}.b48top>.bline .blog p{-webkit-line-clamp:2}
-${S} .bban{top:14px}
-/* 5 a list (skills, items, the swap list) stays in the command box under the stage: it covers neither the battle nor the cards (0.22.42 raised
-   it over the stage). The turn line, Back and the filters share one row; under them the skills are boxes side by side (0.22.49: the owner
-   prefers "the more boxy style with skills next to each other" to 0.22.48's one line rows), each with everything it showed before (name,
-   target, purpose, kind, role, text, weapon line, what it is strong against, estimate, power, cost) in three short lines. The box keeps the height the root menu had (--b48ch) and the list scrolls inside. */
-/* 0.22.51 (the owner: "we can bring back making the skill menu in battle overlap the battle window a little"): the box grows S48.rise px
-   upward over the foot of the stage while a list is open (two rows of boxes instead of one). It stays left of the cards. */
-${S}.b48top.b3list .bbottom{min-height:var(--b48ch,154px)}
-${S}.b48top.b3list .bbottom .cmd{display:flex;flex-wrap:wrap;align-items:center;align-content:flex-start;gap:4px 8px;position:absolute;left:0;right:calc(var(--b48w,200px) + 8px);bottom:0;top:auto;margin:0;width:auto;height:calc(var(--b48ch,154px) + var(--b48rise,120px));max-height:none;z-index:20;box-shadow:0 -8px 22px rgba(0,0,0,.45);overflow:hidden;padding:5px 8px 6px;background:linear-gradient(#171c3a,#10142a);border:1px solid rgba(217,180,106,.35);border-radius:8px;box-sizing:border-box}
-${S}.b48top.b3list .cmd>.who.cmdhead{order:1;flex:0 0 auto;padding:0;min-height:0;gap:8px}
-${S}.b48top.b3list .cmd>.who.cmdhead .port{display:none}
-${S}.b48top.b3list .cmd>.chips{order:2;flex:1 1 200px;margin:0;display:flex;flex-wrap:nowrap;gap:4px;overflow-x:auto;scrollbar-width:none}
-${S}.b48top.b3list .cmd>.a49vs{order:2;flex:0 1 auto;padding:0;font-size:.64rem;max-width:330px;line-height:1.15}
-${S}.b48top.b3list .cmd>.menu.list{order:3;flex:1 1 100%;min-height:0;align-self:stretch;height:calc(var(--b48ch,154px) + var(--b48rise,120px) - 54px);display:grid;grid-template-columns:repeat(auto-fill,minmax(236px,1fr));grid-auto-rows:min-content;gap:4px 5px;align-content:start;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;padding-right:2px}
-${S}.b48top.b3list .cmd>:not(.who):not(.chips):not(.menu):not(.a49vs){order:4;flex:1 1 100%}
-/* a screen with the card column but too narrow for the line in the top strip (an opened fold, a tablet held upright): the list is the
-   rising panel of the phones, kept to the stage's side so the cards stay in view; the floating line keeps to the stage too */
-${S}:not(.b48top).b3list .bbottom .cmd{left:4px;right:calc(var(--b48w,200px) + 24px);border:2px solid #33466f;border-bottom:0;border-radius:10px 10px 0 0}
-${S}:not(.b48top)>.bline{right:calc(var(--b48w,200px) + 8px)}
-/* 0.22.50: the boxes are the same on every screen (the owner: "the skills should be presented in a clean similar way on every screen size").
-   On a phone the list is still the panel that rises over the stage (battle27.js), with one or two boxes across. */
-${T}.b3list .menu.list{display:grid;grid-template-columns:repeat(auto-fill,minmax(236px,1fr));grid-auto-rows:min-content;gap:4px 5px;align-content:start}
-${T}.b3list .cmd>.a49vs{font-size:.66rem;line-height:1.2}
-/* a skill is a box: name and tags with the estimate at their right; the text; then the weapon line and what it is strong against, with Power,
-   kind and cost at their right. Everything the tall card showed, in three short lines. */
-${T}.b3list .menu.list .mi{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:0 8px;align-items:center;align-content:start;width:100%;height:100%;min-height:0;padding:4px 8px 4px 18px;margin:0;text-align:left}
-${T}.b3list .menu.list .mi>.n{grid-area:1/1;display:flex;flex-wrap:wrap;align-items:center;gap:2px 0;font-size:.86rem;line-height:1.15;min-width:0}
-${T}.b3list .menu.list .mi>.m{display:contents}
-${T}.b3list .menu.list .mi>.m .sk11e{grid-area:1/2;justify-self:end;white-space:nowrap}
-${T}.b3list .menu.list .mi>.m .sk11l{grid-area:1/2;justify-self:end}
-/* the text lines are placed one after another (a Dual art or a hero's own skill has two: 0.22.50 put them all in one cell, on top of each
-   other); the strip and the last line sit in far rows, which are empty and take no room */
-${T}.b3list .menu.list .mi>small{grid-column:1/-1;grid-row:auto;margin:1px 0 0;font-size:.7rem;line-height:1.2}
-${T}.b3list .menu.list .mi>small.dk11{grid-area:41/1/42/3;margin:1px 0 0;justify-self:start;max-width:100%;opacity:.75;font-size:.64rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-${T}.b3list .menu.list .mi>.effs{grid-area:42/1/43/3;justify-self:start;margin:1px 0 0;display:flex;flex-wrap:wrap;gap:2px;max-width:100%}
-${T}.b3list .menu.list .mi>.m .sk11s{grid-area:40/1/41/3;margin:1px 0;justify-self:start;justify-content:flex-start;gap:6px;flex-wrap:nowrap;white-space:nowrap}
-${T}.b3list .menu.list .mi>.effs:empty{display:none}
-${P} .bparty{display:flex;flex-direction:column;gap:12px;position:absolute;right:0;top:var(--b48t,64px);bottom:0;width:var(--b48w,200px);overflow-y:auto;overscroll-behavior:contain;padding:8px 0 4px;box-sizing:border-box;scrollbar-width:thin}
-${P} .b8fl{display:none}
-${P} .b3pty{display:flex;flex-direction:column;gap:12px;order:1}
-${P} .pgroup{display:block;position:relative;border:1px solid rgba(217,180,106,.4);border-radius:6px;background:rgba(10,14,30,.72);padding:10px 4px 4px;margin:0}
-${P} .pgroup.foes{order:2;border-color:rgba(200,80,90,.55);background:rgba(30,12,22,.72)}
-${P} .pgroup>h3{display:block;position:absolute;left:8px;top:-8px;margin:0;padding:1px 6px;font-size:.56rem;letter-spacing:.14em;line-height:1.3;background:#0c1022;border:1px solid rgba(217,180,106,.4);border-radius:3px}
-${P} .pgroup.foes>h3{background:#1c0c16;border-color:rgba(200,80,90,.55)}
-${P} .pgroup .pcs,${P} .pgroup .fcs{display:grid;grid-template-columns:minmax(0,1fr);gap:4px}
-${P} .pcw{display:block;position:relative;min-width:0}
-${P} .uinfo{display:none}
-${P} .pc,${P} .fc{display:grid;grid-template-columns:32px minmax(0,1fr);gap:0 6px;align-items:center;width:100%;min-height:0;padding:3px 5px;text-align:left}
-${P} .pc .port{display:block;width:32px;height:32px;min-width:0;margin:0}
-${P} .pc .port img{width:100%;height:100%;display:block}
-${P} .fc .fci{width:30px;height:30px;object-fit:contain;justify-self:center}
-${P} .pm{display:grid;grid-template-columns:minmax(0,1fr);gap:2px;min-width:0}
-${P} .uct{display:flex;align-items:baseline;gap:4px;padding:0;min-width:0;font-size:.8rem;line-height:1.1}
-${P} .uct b{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-${P} .uct .ucl{font-size:.56rem;flex:none;opacity:.85}
-${P} .uct .elbs{margin-left:auto;display:flex;gap:1px;flex:none}
-${P} .uct .elb{width:12px;height:12px}
-${P} .ucr{display:block;position:relative;height:11px;min-height:0}
-${P} .ucr>i{position:absolute;left:3px;top:0;z-index:1;font:800 8px/11px system-ui,sans-serif;font-style:normal;color:rgba(255,255,255,.82);text-shadow:0 1px 0 #000}
-${P} .ucr .bar{display:block;width:100%;height:11px;margin:0}
-${P} .ucr em.nums{position:absolute;right:3px;top:0;z-index:1;font:800 9px/11px system-ui,sans-serif;font-style:normal;color:#fff;text-shadow:0 1px 0 #000,0 0 2px #000;min-width:0;width:auto}
-${P} .ucr:has(.lbar){height:3px}
-${P} .ucr:has(.lbar)>i,${P} .ucr:has(.lbar) em.nums{display:none}
-${P} .ucr .lbar{display:block;width:100%;height:3px;margin:0;border:0}
-${P} .ucc{display:none}
-${P} .ptags{display:flex;flex-wrap:wrap;gap:2px 3px;padding:2px 2px 0;font-size:.56rem}
-${P} .ptags:empty{display:none}
-/* 0.22.52: the older cards lay their tags over the card's foot (battle3.css .pcw.hastags .ptags, absolute, in a strip the card kept free);
-   these cards have no such strip, so the weakness and status tags sat on the HP bar. Here they follow the card. */
-${P} .pcw.hastags .ptags,${P} .fcw.hastags .ptags{position:static;left:auto;right:auto;bottom:auto;flex-wrap:wrap;overflow:visible;max-height:none;row-gap:2px;z-index:auto;pointer-events:auto}
-`;document.head.appendChild(st);}
+// the styles: battle3.css, section C
 try{window.__S48={S48,fits:s48Fits};}catch(e){}
 
 // ===== act49.js (v0.22.49): the action menu's numbers and tags =====
@@ -39598,15 +39529,12 @@ try{window.__S48={S48,fits:s48Fits};}catch(e){}
 //    (S49.need: Shield Bash, Shield Brand, Shield Throw, Shield Ally) is only known in battle while a shield is worn; the hero sheet marks
 //    it "Needs a shield". So that no Knight starts without half a kit, a Knight is handed a plain shield (new heroes, and once for saves).
 const S49={need:{knight:{bash:1,sburst:1,javelin:1,r_cover:1}},off:false};
-// ---------- 5 no sub role tag ----------
-try{sk12Tag=function(){return '';};}catch(e){}
-// ---------- 1 Power ----------
-{const s0=sr11Strip;sr11Strip=function(){let h=s0.apply(this,arguments);try{h=String(h).replace(/<i class="sk11p" title="Power">Pow (\d+)<\/i>/,'<i class="sk11p" title="Power">Power $1</i>').replace(/(<b class="sk11e" title="Power">)Pow (\d+)(<\/b>)/,'$1Power $2$3');}catch(e){}return h;};}
+// ---------- 5 no sub role tag: sk12Tag (skills12.js) returns nothing ----------
+// ---------- 1 Power: sr11Strip (skillrows11.js) writes the full word; the framed tag is in the CSS below ----------
 // ---------- 2 the foe the numbers are for ----------
 function a49Foe(){try{if(!B||B.a49f==null)return null;const e=B.en[B.a49f];return e&&e.hp>0?e:null;}catch(e){return null;}}
 const a49One=s=>!!s&&(s.k==='phys'||s.k==='mag')&&(!s.t||s.t==='one'||s.t==='chain');
-{const n0=skNum;skNum=function(a,s){try{const e=a49One(s)&&a&&a.side==='p'?a49Foe():null;if(e){const r0=RNG,foc=a.st&&a.st.focus;let d=0;try{RNG=()=>.5;d=calcDamage(a,s,e).dmg;}finally{RNG=r0;if(foc&&a.st&&!a.st.focus)a.st.focus=foc;}return '~'+Math.round(d*(s.hits||1));}}catch(e){}return n0.apply(this,arguments);};}
-{const t0=ACT.tgtE;ACT.tgtE=function(i){try{if(!S49.off&&B&&B.mode==='cmd'&&!B.pend&&B.cur&&B.cur.side==='p'&&!B.auto&&B.en[+i]&&B.en[+i].hp>0&&(B.menu==='skills'||B.menu==='root')){B.a49f=+i;if(B.menu==='skills'){renderBattle();return;}}}catch(e){}return t0.apply(this,arguments);};}
+// skNum (insight.js) gives the number against that foe for a single target skill; ACT.tgtE (battleui.js) sets the foe on a tap.
 // ---------- 3 the Attack button, and the line that says whom the numbers are for ----------
 HOOK.xform('cmdHtml','act49','Attack shows element, kind and estimate; the list names the foe the numbers are for',function(h){try{const a=B&&B.cur;if(!a||B.mode!=='cmd'||a.side!=='p')return h;h=String(h);
   if(B.menu==='root'){const sk=atkFor(a),k=deliveryOf(a,sk),els=typeof skEls==='function'?skEls(sk):[].concat(sk.el||[]);let est='';try{est=skNum(a,sk)||'';}catch(e){}
@@ -39619,12 +39547,13 @@ HOOK.after('renderBattle','act49','mark the foe the numbers are for',function(){
 // ---------- 6 shield skills need the shield ----------
 function s49Needs(c,s){try{const t=c&&TPL[c.id],N=t&&S49.need[t.cls];return !!(N&&s&&N[s.id]&&!s.relic);}catch(e){return false;}}
 function s49Has(c){try{const r=(G&&G.roster&&G.roster[c.id])||c;return !!(r&&r.eq&&r.eq.s&&(typeof sh20Ok!=='function'||sh20Ok(r)));}catch(e){return true;}}
+// known stays a wrap: it must filter the finished list, after roles9.js and the legends modules have added their skills (r_cover is a role skill).
 {const k0=known;known=function(c){const L=k0.apply(this,arguments);try{if(S49.off||!c||c.side==='e'||!TPL[c.id]||!S49.need[TPL[c.id].cls]||s49Has(c))return L;return L.filter(s=>!s49Needs(c,s));}catch(e){return L;}};}
 HOOK.xform('mChar','act49','hero sheet: a shield skill says it needs a shield',function(h,id){try{const c=G&&G.roster[id],t=c&&TPL[id];if(!c||!t||!S49.need[t.cls]||s49Has(c)||typeof h!=='string')return h;
   classSkills(t).forEach(s=>{if(s49Needs(c,s))h=h.split(`<b>${esc(s.n)}</b>`).join(`<b>${esc(s.n)}</b> <em class="qtag a49sh" title="Only while a shield is worn (a shield needs a one-handed weapon)">Needs a shield</em>`);});}catch(e){}return h;});
 // a Knight starts with a plain shield; a save from before gets one once
 function s49Give(c,tier){try{const t=TPL[c.id];if(!t||t.cls!=='knight'||!c.eq||c.eq.s)return false;if(typeof sh20OneHand==='function'&&!sh20OneHand(c))return false;const id='s_shield_'+Math.max(0,Math.min(5,tier|0));if(!gearOf(id))return false;c.eq.s=id;return true;}catch(e){return false;}}
-{const n0=newChar;newChar=function(id,lv,tier){const c=n0.apply(this,arguments);try{if(!S49.off&&s49Give(c,tier)){c.S=calcStats(c);c.hp=c.S.mhp;c.mp=c.S.mmp;}}catch(e){}return c;};}
+// newChar (engine.js) hands it out.
 HOOK.after('unpackG','act49','old saves: a Knight without a shield is handed a plain one, once',function(g){try{if(!g||g.daily||g.s49sh||!g.roster)return;g.s49sh=1;Object.values(g.roster).forEach(c=>{s49Give(c,0);});}catch(e){}});
 HOOK.after('newGame','act49','new journeys need no shield hand out',function(){try{if(G)G.s49sh=1;}catch(e){}});
 {const st=document.createElement('style');st.id='a49css';st.textContent=`
@@ -39662,7 +39591,7 @@ function f52Vault(s){try{if(!G||G.daily)return false;G.vaults=G.vaults||{};if(G.
     for(const c of m.chests){if(c[2]!=='vault')continue;const K=[m.id+':'+c[0]+','+c[1]];if(c.from)K.push(m.id+':'+c.from[0]+','+c.from[1]);
       if(K.some(k=>G.chests&&G.chests[k])){G.vaults[s]=1;F52.n++;return true;}}}catch(e){F52.err=String(e&&e.message||e);}return false;}
 function f52Sweep(){try{if(!G||G.daily)return;(G.quests||[]).forEach(q=>{if(q&&q.type==='vault'&&q.state!=='claimed'&&!(G.vaults||{})[q.stage]&&F52.chk[q.stage]!==G.run.seed+':'+Object.keys(G.chests||{}).length){F52.chk[q.stage]=G.run.seed+':'+Object.keys(G.chests||{}).length;f52Vault(q.stage);}});}catch(e){}}
-{const q0=questReady;questReady=function(q){try{if(q&&q.type==='vault'&&q.state==='active'&&!(G.vaults||{})[q.stage])f52Sweep();}catch(e){}return q0.apply(this,arguments);};}
+// questReady (engine.js) calls f52Sweep for an active vault quest whose flag is not set.
 HOOK.after('openChest','fix52','a vault chest that is open counts for its quest',function(){try{F52.chk={};f52Sweep();}catch(e){}});
 try{window.__F52={F52,vault:f52Vault,sweep:f52Sweep};}catch(e){}
 

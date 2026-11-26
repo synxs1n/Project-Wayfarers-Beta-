@@ -34,7 +34,7 @@ function newRun(cycle){
 newRun=HOOK.def('newRun',newRun);// v0.18.7: one definition; realms.js (the realms), look9.js (look), world12.js (each realm's own Scourge) hook it
 function bossWeight(k){const b=(META.best||{})[guardianDef(k).n];return b&&b.seen?1:Math.min(2,1+.15*(META.clears||0));}
 function weightedDraw(pool,n,R){const p=pool.slice(),out=[];while(out.length<n&&p.length){const w=p.map(bossWeight),tot=w.reduce((a,b)=>a+b,0);let r=R()*tot,i=0;for(;i<p.length-1;i++){if((r-=w[i])<0)break;}out.push(p.splice(i,1)[0]);}return out;}
-function bossKeyFor(s){return s<4?G.run.bosses[s]:G.run.final;}
+function bossKeyFor(s){f30BossFix();/* 0.22.30 (fix30.js): a boss key that is no longer in the game is swapped for a free one before every lookup */return s<4?G.run.bosses[s]:G.run.final;}
 
 // =================== STATS ===================
 // v0.22.17: with 2 points a level, the points put in ONE attribute count fully up to the hero's level and half beyond it, so going all in
@@ -105,7 +105,9 @@ function newChar(id,lv,tier){
   const t=TPL[id],f=CF[t.cls];
   const c={id,name:t.n,el:t.el,side:'p',pace:2,lv:1,xp:0,eq:{w:'w_'+f[0]+'_'+tier,a:'a_'+f[1]+'_'+tier,c:null},hp:1,mp:1,st:{},alloc:{},pts:0,auto:true,lb:0,bt:0};
   c.nat=natRoll(id);c.lv=lv;c.pts=ptsAt(lv);if(!(G&&G.daily))c.sp2=1;if(META.cfg.autoStats!==false)autoAlloc(c);
-  c.S=calcStats(c);c.hp=c.S.mhp;c.mp=c.S.mmp;return c;
+  c.S=calcStats(c);c.hp=c.S.mhp;c.mp=c.S.mmp;
+  try{if(!S49.off&&s49Give(c,tier)){c.S=calcStats(c);c.hp=c.S.mhp;c.mp=c.S.mmp;}}catch(e){}/* 0.22.49 (act49.js 6): a Knight starts with a plain shield */
+  return c;
 }
 function addXp(c,x){
   const ups=[];c.xp+=x;
@@ -242,7 +244,7 @@ function genQuests(s){
   if(s===1||s===2){const pool=RAW.filter(r=>r[6][0]==='t'&&+r[6].slice(1)<=s+1&&!G.roster[r[0]]&&!(typeof challIsPooled==='function'&&challIsPooled(r[0]))).map(r=>r[0]);if(pool.length&&!G.quests.some(q=>q.type==='wanderer'))G.quests.push({id:'w'+s,stage:s,type:'wanderer',hero:pool[Math.floor(R()*pool.length)],state:'open',title:'The lost wayfarer',desc:`Someone went into the ${Z.dungeon} and never came out. Find them.`,reward:{}});}
 }
 genQuests=HOOK.def('genQuests',genQuests);// v0.9.9: one definition; modules add hooks (hooks.js)
-function questReady(q){if(q.state!=='active')return false;if(q.type==='hunt')return q.have>=q.n;if(q.type==='gather')return (G.mats[q.mat]||0)>=q.n;if(q.type==='wanderer')return !!q.found;if(q.type==='vault')return !!(G.vaults&&G.vaults[q.stage]);return false;}
+function questReady(q){if(q.state!=='active')return false;if(q.type==='hunt')return q.have>=q.n;if(q.type==='gather')return (G.mats[q.mat]||0)>=q.n;if(q.type==='wanderer')return !!q.found;if(q.type==='vault'){try{if(!(G.vaults||{})[q.stage])f52Sweep();}catch(e){}/* 0.22.52 (fix52.js): a vault chest that is already open counts */return !!(G.vaults&&G.vaults[q.stage]);}return false;}
 function claimQuest(q){
   if(!questReady(q))return null;const out=[];
   if(q.type==='gather')G.mats[q.mat]-=q.n;
