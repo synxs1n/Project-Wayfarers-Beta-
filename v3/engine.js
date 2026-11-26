@@ -56,6 +56,7 @@ function calcStats(c){
   if(t.bb){d.hp*=1.12;d.atk*=1.12;d.mag*=1.12;d.def*=1.12;d.res*=1.12;}
   const S={elBoost:{},elRes:{},mastery:t.el.length===1?t.el[0]:null,immune:0,tempo:NF.tempo||1,attr:a};
   gears.forEach(g=>{ST.forEach(q=>{d[q]+=g[q]||0;});if(g.el){S.elBoost[g.el]=.15;S.elRes[g.el]=.15;}if(g.immune)S.immune=1;});
+  if(!daily){const CT=CLS_TUNE[t.cls];if(CT)Object.keys(CT).forEach(k=>{d[k]*=CT[k];});}// v0.22.54 class pass: on the final numbers, gear included
   S.mhp=Math.round(d.hp);S.mmp=Math.round(d.mp);S.atk=d.atk;S.def=d.def;S.mag=d.mag;S.res=d.res;S.spd=d.spd;
   S.crit=.04+a.luk*.003+a.dex*.0015+(NF.crit||0);S.critDmg=1.5+a.dex*.004;
   S.acc=.97+a.dex*.002;S.eva=Math.min(.22,a.agi*.0015+a.luk*.002+(NF.eva||0));
@@ -313,7 +314,7 @@ function calcDamage(a,sk,t,bonus){
   if(a.S.elDmg&&els.length&&sk.k==='mag')d*=1+a.S.elDmg;
   const W=WX();if(W.el&&els.length)d*=Math.max(...els.map(e=>W.el[e]||1));
   if(has(a,'might'))d*=1.3;if(has(a,'weaken'))d*=.75;if(has(a,'burn'))d*=.85;
-  if(has(t,'bulwark'))d*=.7;if(has(t,'break'))d*=1.3;if(t.guard)d*=.5;if(t.broken)d*=BREAK_WIN.bonus;
+  if(has(t,'bulwark'))d*=.7;if(t.side==='p'&&has(t,'taunt'))d*=1-TAUNT.cut;if(has(t,'break'))d*=1.3;if(t.guard)d*=.5;if(t.broken)d*=BREAK_WIN.bonus;
   if(sk.afflicted&&Object.keys(t.st).some(k=>STS[k].bad))d*=sk.afflicted;
   if(sk.execute&&t.hp<t.S.mhp*sk.execute)d*=2;
   let crit=false;
