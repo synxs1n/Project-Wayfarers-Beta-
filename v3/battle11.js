@@ -78,10 +78,7 @@ HOOK.wrap('spriteOf','battle11','foe size scaling on (a summoned guardian is dra
 HOOK.wrap('battleFrame','battle11','foe size scaling on',function(next,now){const was=FS11.on;FS11.on=1;try{return next(now);}finally{FS11.on=was;}});
 {const ub0=unitBox;unitBox=function(u){const b=ub0.apply(this,arguments);try{if(b&&u&&(u.side!=='p'||u.isSum)&&!u.heroArt&&u.art){const c=spriteOf(u),sp=c&&c._s11;let w,h,vis;
   if(sp){w=c.width;h=c.height;vis=h-sp.T*c._s11s;}else{const sz=MON_SIZE(u.art),n=Math.round(sz*fs11Scale(u.art));w=h=vis=n;if(n===sz)return b;}
-  b.w=w;b.h=h;const lo=FS11.top+vis,hi=BL.H-2;let y=b.y;if(y<lo)y=Math.min(lo,hi);if(y!==b.y){if(b.gy!=null)b.gy+=y-b.y;b.y=y;}
-  // 0.22.56: and inside the stage sideways. The slots were laid out for the old sprite sizes; at 1.25x and up a wide foe in the slot nearest the
-  // edge (the second of three on a phone: a Glass Gull, 55 px wide, centred 20 px from the left) was cut by the stage's edge (tools/chrome/v053b.js)
-  if(u.side!=='p'){const hw=Math.ceil(b.w/2)+1;if(hw*2<=BL.W){const x=Math.max(hw,Math.min(BL.W-hw,b.x));if(x!==b.x)b.x=x;}}}}catch(e){}return b;};}
+  b.w=w;b.h=h;const lo=FS11.top+vis,hi=BL.H-2;let y=b.y;if(y<lo)y=Math.min(lo,hi);if(y!==b.y){if(b.gy!=null)b.gy+=y-b.y;b.y=y;}}}catch(e){}return b;};}
 
 // ----- the command head without the HP/MP mini bars -----
 {const st=document.createElement('style');st.textContent='.battle.b3 .who.cmdhead small .b8hm{display:none!important}.bstage .unit.foe{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}';document.head.appendChild(st);}

@@ -2277,7 +2277,7 @@ html:not(.flat) .battle.b3 .bline .b4mo .b4bar{box-shadow:inset 0 0 0 1px #000,0
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.22.56";const APP_BUILD="1db5ff446cef";
+(function(){const APP_VER="0.22.56";const APP_BUILD="e88e728bd4ef";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -3081,7 +3081,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.22.56";const APP_BUILD="1db5ff446cef";
+const APP_VER="0.22.56";const APP_BUILD="e88e728bd4ef";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -30277,10 +30277,7 @@ HOOK.wrap('spriteOf','battle11','foe size scaling on (a summoned guardian is dra
 HOOK.wrap('battleFrame','battle11','foe size scaling on',function(next,now){const was=FS11.on;FS11.on=1;try{return next(now);}finally{FS11.on=was;}});
 {const ub0=unitBox;unitBox=function(u){const b=ub0.apply(this,arguments);try{if(b&&u&&(u.side!=='p'||u.isSum)&&!u.heroArt&&u.art){const c=spriteOf(u),sp=c&&c._s11;let w,h,vis;
   if(sp){w=c.width;h=c.height;vis=h-sp.T*c._s11s;}else{const sz=MON_SIZE(u.art),n=Math.round(sz*fs11Scale(u.art));w=h=vis=n;if(n===sz)return b;}
-  b.w=w;b.h=h;const lo=FS11.top+vis,hi=BL.H-2;let y=b.y;if(y<lo)y=Math.min(lo,hi);if(y!==b.y){if(b.gy!=null)b.gy+=y-b.y;b.y=y;}
-  // 0.22.56: and inside the stage sideways. The slots were laid out for the old sprite sizes; at 1.25x and up a wide foe in the slot nearest the
-  // edge (the second of three on a phone: a Glass Gull, 55 px wide, centred 20 px from the left) was cut by the stage's edge (tools/chrome/v053b.js)
-  if(u.side!=='p'){const hw=Math.ceil(b.w/2)+1;if(hw*2<=BL.W){const x=Math.max(hw,Math.min(BL.W-hw,b.x));if(x!==b.x)b.x=x;}}}}catch(e){}return b;};}
+  b.w=w;b.h=h;const lo=FS11.top+vis,hi=BL.H-2;let y=b.y;if(y<lo)y=Math.min(lo,hi);if(y!==b.y){if(b.gy!=null)b.gy+=y-b.y;b.y=y;}}}catch(e){}return b;};}
 
 // ----- the command head without the HP/MP mini bars -----
 {const st=document.createElement('style');st.textContent='.battle.b3 .who.cmdhead small .b8hm{display:none!important}.bstage .unit.foe{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}';document.head.appendChild(st);}
@@ -35032,7 +35029,11 @@ function ch15Sc(u){return ch15On()&&typeof B!=='undefined'&&B&&!(u&&u.side==='e'
 {const ub0=unitBox;unitBox=function(u){const r=ub0.apply(this,arguments);try{let s=ch15Sc(u);if(r&&s!==1&&!r._ch15){const H=BL.H,top=typeof FS11!=='undefined'&&FS11.top!=null?FS11.top:2;
   s=Math.max(1,Math.min(s,(H-2-top)/Math.max(1,r.h),2*Math.min(r.x,BL.W-r.x)/Math.max(1,r.w)));/* at a side of the stage it grows only as far as the edge */const h=Math.round(r.h*s),o=Object.assign({},r,{w:Math.round(r.w*s),h,_ch15:s});
   if(o.y-h<top){const y=Math.min(top+h,H-2);if(o.gy!=null)o.gy+=y-o.y;o.y=y;}
-  return o;}}catch(e){}return r;};}
+  return ch15In(u,o);}}catch(e){}return ch15In(u,r);};}
+// 0.22.56: a foe's box is kept inside the stage sideways, after every size has been set (so no size changes: the scale above is still limited by where the
+// slot is). The slots were laid out for the old sprite sizes; at 1.25x and up a wide foe in the slot nearest the edge (the second of three on a phone: a
+// Glass Gull, 55 px wide, centred 20 px from the left) was cut by the stage's edge (tools/chrome/v053b.js).
+function ch15In(u,b){try{if(b&&u&&u.side!=='p'){const hw=Math.ceil(b.w/2)+1;if(hw*2<=BL.W){const x=Math.max(hw,Math.min(BL.W-hw,b.x));if(x!==b.x)b.x=x;}}}catch(e){}return b;}
 HOOK.xform('b3Body','cohere15','the body box grows with the unit',function(r,u,b){try{if(!r)return r;const bb=b&&b._ch15?b:unitBox(u),s=bb&&bb._ch15;if(!s||s===1)return r;const fx=bb.x,fy=bb.y+1;
   return {x:fx+(r.x-fx)*s,y:fy+(r.y-fy)*s,w:r.w*s,h:r.h*s};}catch(e){return r;}});
 HOOK.wrap('drawUnit','cohere15','battle units 1.25x, drawn about their feet',function(next,ctx,u,b,now,tg){const s=b&&b._ch15;if(!s||s===1)return next(ctx,u,b,now,tg);

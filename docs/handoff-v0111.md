@@ -978,7 +978,7 @@ With `b3list` (a `.menu.list` is open) `#bcmd` is `position:fixed` at the bottom
   other way in a test than in the game. The command head's bottom padding is such a case: 3 px in the game (before and after this
   cleanup), 4 px in the harness before it, 3 px now.
 
-## 0.22.56 (menus29.js, shops31.js, skills12.js, fix52.js, pathguard.js, battle11.js; the test pass of docs/known-test-failures.md)
+## 0.22.56 (menus29.js, shops31.js, skills12.js, fix52.js, pathguard.js, cohere15.js; the test pass of docs/known-test-failures.md)
 Found while bringing the failing and flaky Chrome tests back (the list that was docs/known-test-failures.md):
 - Phone menu bar (menus29.js): the section name is the chip's own words (m29Lab; the "N ready" pill of qready.js was part of the title and
   pushed the Save button to 10 px over the gold). `.savepin` is display:contents, so the Save button and the save state are the bar's own
@@ -991,8 +991,8 @@ Found while bringing the failing and flaky Chrome tests back (the list that was 
   so the whole hook fell back to the unscaled row; its regex also asked for "Pow N". The hook counts a changed number as a change.
 - fix52.js f52Vault: looks at a dungeon only when G.chests holds a key of that dungeon. It called getMap('d'+s) for every vault quest on
   every chest opened and every look at the quest, which builds a dungeon never entered (about 110 ms; v190a "opening takes").
-- battle11.js (the unitBox wrap that sizes foes): a foe's box is kept inside the stage sideways too (x clamped to half its width from either
-  edge). The slots were laid out for the old sprite sizes; a wide foe in the second of three slots on a phone was cut by the left edge.
+- cohere15.js (ch15In, the last step of its unitBox wrap, so no size changes): a foe's box is kept inside the stage sideways too (x clamped
+  to half its width from either edge). The slots were laid out for the old sprite sizes; a wide foe in the second of three slots on a phone was cut by the left edge.
 - pathguard.js: an NPC with no free spot within reach of where it stands (a pocket walled off from the map) is put on the nearest free
   spot from the map's entry (pgEntry: m.start or the first gate's arrive). The marsh town's Town crier at 13,3 (v050p1c, realm 9 first).
 - Not changed, for the owner: the hero sheet has had no Upgrade button per slot since 0.17.1 (ui.js draws the Equipment block as
