@@ -40,7 +40,7 @@ const EDGE=`(d,w,h,thr,minRun)=>{let best={len:0};const A=(x,y)=>d[(y*w+x)*4+3];
           const ub=g('unitBox');B.en.concat(B.front).forEach(u=>{const b=ub(u);if(!b)return;for(const ex of [b.x-b.w/2,b.x+b.w/2]){const X=Math.round(ex*k);if(X<12||X>c.width-13)continue;
             const key=u.name+':'+ex,q=acc.get(key)||{se:0,s1:0,s2:0,n:0,u:u.name};for(let yy=b.y-b.h;yy<b.y-b.h*.3;yy+=.5){const Y=Math.round(yy*k);if(Y<0||Y>=c.height)continue;const a=i=>d[(Y*c.width+i)*4+3];q.se+=a(X+2)-a(X-2);q.s1+=a(X-6)-a(X-10);q.s2+=a(X+10)-a(X+6);q.n++;}acc.set(key,q);}});}
         acc.forEach(q=>{if(!q.n)return;const s=Math.abs(q.se/q.n)-Math.max(Math.abs(q.s1/q.n),Math.abs(q.s2/q.n));if(s>stepMax){stepMax=Math.round(s*10)/10;stepAt=q.u;}});
-        return {w:B.weather,edge:worst,stepMax,stepAt,err:A.W7.err,gl:g('HB').on};})()`);
+        return {w:B.weather,k,edge:worst,stepMax,stepAt,err:A.W7.err,gl:g('HB').on};})()`);
       rows.push(r);
       if(tier==='high'&&wx==='fog'){// the GL composite: a uniform translucent veil on the unit layer (what fog, rain and snow are made of) minus the
         // same frame without it, across each unit's lighting column edge at the height of its feet, beside the sprite: the veil must come out
@@ -56,8 +56,13 @@ const EDGE=`(d,w,h,thr,minRun)=>{let best={len:0};const A=(x,y)=>d[(y*w+x)*4+3];
               if(!n)continue;const s=Math.abs(se/n)-Math.max(Math.abs(s1/n),Math.abs(s2/n));if(s>worst){worst=s;at=u.name;}}});
           return {worst:Math.round(worst*10)/10,at};})()`);gls.push([wx,q]);}}
     // the bloodmoon's square moon is v0.4.0 pixel art (kept), 10 px a side
-    const bad=rows.filter(r=>r.edge.len>=28&&!(r.w==='bloodmoon'&&r.edge.len<=24)||r.edge.lenH>=80);
-    chk(`battle ${tier}: no straight hard edge in the weather layer in any weather (longest vertical / horizontal run: ${rows.map(r=>r.w+' '+r.edge.len+'/'+r.edge.lenH).join(', ')})`,bad.length===0||JSON.stringify(bad.map(r=>[r.w,r.edge])));
+    // The limits are stage units: a box edge is a vertical run of 14 stage px or a horizontal one of 40 (28 and 80 canvas px when this was
+    // written, with the stage drawn at 2 canvas px per stage px). The stage canvas is drawn at about 4 per stage px since the 0.18.x repaint, so
+    // a rain streak (5 to 9 stage px), a gale streak or a heat band (25 to 30) and the aurora's rays read as "edges" against the old canvas
+    // numbers though none is longer on the stage than before. The limits now scale with the canvas (k); the square moon is 10 stage px a side.
+    const k=rows[0]?rows[0].k:2,vMin=Math.round(14*k),hMin=Math.round(40*k);
+    const bad=rows.filter(r=>r.edge.len>=vMin&&!(r.w==='bloodmoon'&&r.edge.len<=Math.round(12*r.k))||r.edge.lenH>=hMin);
+    chk(`battle ${tier}: no straight hard edge in the weather layer in any weather (canvas ${k.toFixed(2)} px per stage px, limits ${vMin} / ${hMin}; longest vertical / horizontal run: ${rows.map(r=>r.w+' '+r.edge.len+'/'+r.edge.lenH).join(', ')})`,bad.length===0||JSON.stringify(bad.map(r=>[r.w,r.edge])));
     chk(`battle ${tier}: no step in weather coverage across any unit box edge (worst excess mean step ${Math.max(...rows.map(r=>r.stepMax))}/255)`,rows.every(r=>r.stepMax<=8)||JSON.stringify(rows.filter(r=>r.stepMax>8).map(r=>[r.w,r.stepMax,r.stepAt])));
     if(tier==='high')chk(`battle high: a translucent veil on the unit layer comes out the same inside and outside each unit's lighting column (${gls.map(([w,q])=>w+' '+(q.off?'off':q.worst)).join(', ')})`,gls.every(([w,q])=>!q.off&&q.worst<=3)||JSON.stringify(gls));
     chk(`battle ${tier}: the HD stage is on`,rows.every(r=>r.gl)||'off');

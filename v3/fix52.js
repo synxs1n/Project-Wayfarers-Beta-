@@ -8,7 +8,11 @@
 // the vault is taken as opened. Checked when a save is loaded, when a chest is opened and when a vault quest is looked at (once per
 // stage and visit to the lists). A vault whose chest has never been opened is still sealed: the lever in the dungeon raises its bars.
 const F52={chk:{},n:0};
-function f52Vault(s){try{if(!G||G.daily)return false;G.vaults=G.vaults||{};if(G.vaults[s])return true;const m=getMap('d'+s);if(!m||!m.chests)return false;
+function f52Vault(s){try{if(!G||G.daily)return false;G.vaults=G.vaults||{};if(G.vaults[s])return true;
+    // 0.22.56: only a dungeon with an open chest in it is looked at. getMap builds a dungeon that was never entered (about 110 ms), and this ran on every
+    // chest opened anywhere and on every look at a vault quest: the first field chest took 160 ms to open instead of 50 (tools/chrome/v190a.js)
+    const pre='d'+s+':';if(!Object.keys(G.chests||{}).some(k=>k.indexOf(pre)===0))return false;
+    const m=getMap('d'+s);if(!m||!m.chests)return false;
     for(const c of m.chests){if(c[2]!=='vault')continue;const K=[m.id+':'+c[0]+','+c[1]];if(c.from)K.push(m.id+':'+c.from[0]+','+c.from[1]);
       if(K.some(k=>G.chests&&G.chests[k])){G.vaults[s]=1;F52.n++;return true;}}}catch(e){F52.err=String(e&&e.message||e);}return false;}
 function f52Sweep(){try{if(!G||G.daily)return;(G.quests||[]).forEach(q=>{if(q&&q.type==='vault'&&q.state!=='claimed'&&!(G.vaults||{})[q.stage]&&F52.chk[q.stage]!==G.run.seed+':'+Object.keys(G.chests||{}).length){F52.chk[q.stage]=G.run.seed+':'+Object.keys(G.chests||{}).length;f52Vault(q.stage);}});}catch(e){}}

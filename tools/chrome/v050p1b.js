@@ -1,4 +1,7 @@
 // Beta v0.5.0 1.2: the world view keeps its size through battle end, results, level ups and return to the map, at every phone shape and after rotating.
+// The graphics tier is pinned to Medium. Left on Auto, the game drops to Low when frames are slow (headless Chrome draws WebGL in software), and Low is
+// the Flat look with its smaller buttons (gfx6.js): when that happened in the middle of the test the header and the bar under the view lost 22 px, the
+// view grew, and a "same size" check failed about one run in three with nothing wrong in the layout.
 const {open,chk,done}=require('./pw');
 const SIZES=[['16:9',800,450],['19.5:9',844,390],['21:9',960,411],['portrait',390,844]];
 const meas=()=>{const cv=__A.WS.cv;if(!cv)return null;const r=cv.getBoundingClientRect(),ww=document.querySelector('.world');
@@ -11,7 +14,7 @@ const battle=async(H,lvUp)=>{const {ev,wait}=H;
   await ev(()=>{for(let i=0;i<6&&__A.V.modal;i++){const b=document.querySelector('[data-act="closeModal"],[data-act="resultOk"],[data-act="lvOk"]');if(b)b.click();else __A.V.modal=null;}__A.render();});await wait(600);
   return res;};
 (async()=>{for(const [name,w,h] of SIZES){
-  const H=await open({w,h,mobile:true});const {ev,wait,page}=H;
+  const H=await open({w,h,mobile:true,pre:`localStorage.clear();localStorage.setItem('aurelis-meta-v1',JSON.stringify({cfg:{gfx:'medium'}}));`});const {ev,wait,page}=H;
   await ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;A.render();});await wait(600);
   const m0=await ev(meas);
   await battle(H,false);const m1=await ev(meas);

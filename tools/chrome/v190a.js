@@ -62,8 +62,9 @@ if(want('2')){const st=store(),browser=await chromium.launch(),wait=ms=>new Prom
   const same=await B.ev(()=>__W16.api.key(__A.G))===await A.ev(()=>__W16.api.key(__A.G));chk('2 both devices hold the same journey, a new one (plan revision 3)',same&&await A.ev(()=>__A.G.dunRev)===3&&await B.ev(()=>__A.G.dunRev)===3);
   // A explores the field; B's save never gets it (B keeps its own copy: the case where this device's save wins)
   const seenN=()=>{const A=__A,m=A.getMap('f0'),S=A.TW.get('seenOf')(m);let n=0;for(let i=0;i<m.w*m.h;i++)if(S[i>>3]&(1<<(i&7)))n++;return n;};
-  const tgt=await A.ev(()=>{const A=__A,T=A.TW.get,m=A.getMap('f0');let last=null;for(let x=3;x<m.w-3;x+=5)for(let y=3;y<m.h-3;y+=5)if(!T('solidAt')(m,x,y)){T('placeAt')('f0',x,y,'r');last=[x,y];}
-    const a=m.gates.start.arrive;T('placeAt')('f0',a[0],a[1],'r');return last;});
+  const tgt=await A.ev(()=>{const A=__A,T=A.TW.get,m=A.getMap('f0');let last=null,far=-1;const a=m.gates.start.arrive;for(let x=3;x<m.w-3;x+=5)for(let y=3;y<m.h-3;y+=5)if(!T('solidAt')(m,x,y)){T('placeAt')('f0',x,y,'r');const d=Math.abs(x-a[0])+Math.abs(y-a[1]);if(d>far){far=d;last=[x,y];}}
+    /* the tile farthest from where the field is entered, not the last one of the scan: on journeys whose field is entered from the east the last tile lay in view of the entrance, B had "seen" it by standing there, and the check below failed */
+    T('placeAt')('f0',a[0],a[1],'r');return last;});
   const aN=await A.ev(seenN),b0=await B.ev(seenN);
   const before=await B.ev(([x,y])=>{const A=__A,T=A.TW.get,m=A.getMap('f0'),a=m.gates.start.arrive;T('placeAt')('f0',a[0],a[1],'r');return T('awPlan')(m,x,y).res;},tgt);
   chk(`2 before: A has seen ${aN} tiles of the field, B ${b0}; a far tile A saw is "unseen" on B`,aN>b0+500&&before==='unseen'||JSON.stringify({aN,b0,before}));

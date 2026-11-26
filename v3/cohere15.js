@@ -126,7 +126,11 @@ function ch15Sc(u){return ch15On()&&typeof B!=='undefined'&&B&&!(u&&u.side==='e'
 {const ub0=unitBox;unitBox=function(u){const r=ub0.apply(this,arguments);try{let s=ch15Sc(u);if(r&&s!==1&&!r._ch15){const H=BL.H,top=typeof FS11!=='undefined'&&FS11.top!=null?FS11.top:2;
   s=Math.max(1,Math.min(s,(H-2-top)/Math.max(1,r.h),2*Math.min(r.x,BL.W-r.x)/Math.max(1,r.w)));/* at a side of the stage it grows only as far as the edge */const h=Math.round(r.h*s),o=Object.assign({},r,{w:Math.round(r.w*s),h,_ch15:s});
   if(o.y-h<top){const y=Math.min(top+h,H-2);if(o.gy!=null)o.gy+=y-o.y;o.y=y;}
-  return o;}}catch(e){}return r;};}
+  return ch15In(u,o);}}catch(e){}return ch15In(u,r);};}
+// 0.22.56: a foe's box is kept inside the stage sideways, after every size has been set (so no size changes: the scale above is still limited by where the
+// slot is). The slots were laid out for the old sprite sizes; at 1.25x and up a wide foe in the slot nearest the edge (the second of three on a phone: a
+// Glass Gull, 55 px wide, centred 20 px from the left) was cut by the stage's edge (tools/chrome/v053b.js).
+function ch15In(u,b){try{if(b&&u&&u.side!=='p'){const hw=Math.ceil(b.w/2)+1;if(hw*2<=BL.W){const x=Math.max(hw,Math.min(BL.W-hw,b.x));if(x!==b.x)b.x=x;}}}catch(e){}return b;}
 HOOK.xform('b3Body','cohere15','the body box grows with the unit',function(r,u,b){try{if(!r)return r;const bb=b&&b._ch15?b:unitBox(u),s=bb&&bb._ch15;if(!s||s===1)return r;const fx=bb.x,fy=bb.y+1;
   return {x:fx+(r.x-fx)*s,y:fy+(r.y-fy)*s,w:r.w*s,h:r.h*s};}catch(e){return r;}});
 HOOK.wrap('drawUnit','cohere15','battle units 1.25x, drawn about their feet',function(next,ctx,u,b,now,tg){const s=b&&b._ch15;if(!s||s===1)return next(ctx,u,b,now,tg);

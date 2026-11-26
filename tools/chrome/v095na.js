@@ -135,7 +135,8 @@ chk(`expert: "Reactions in depth" waits until Lore was opened, then: "${r.react2
 r=await ev(async()=>{const A=__A,O=__OB,N=__NZ,G=A.G,V=A.V;const c=G.roster[G.party[0]];G.gold=999999;G.cleared[0]=true;
   ['w','a'].forEach(sl=>{const f=c.eq[sl]&&A.forgeCost(c.eq[sl]);if(f)Object.keys(f.m).forEach(k=>{G.mats[k]=(G.mats[k]||0)+f.m[k];});});
   const o={};V.modal={type:'smithy'};o.raw=!!O.TIPMAP.temper.t();o.before=N.obEval(O.TIPMAP.temper);V.modal={type:'smithy',tab:'forge'};N.obOpened();V.modal={type:'smithy'};o.after=N.obEval(O.TIPMAP.temper);
-  G.won=true;o.ef0=N.obEval(O.TIPMAP.echoforge);V.modal={type:'smithy',tab:'echo'};N.obOpened();o.ef1=N.obEval(O.TIPMAP.echoforge);G.won=false;
+  /* the Echoforge is the anvil in the Echo Rift hall since rift9.js (efTabOn asks for WS.m.sanctum): the card is judged standing there */const WSm=A.TW.get('WS').m,sn0=WSm.sanctum;WSm.sanctum=true;
+  G.won=true;o.ef0=N.obEval(O.TIPMAP.echoforge);V.modal={type:'smithy',tab:'echo'};N.obOpened();o.ef1=N.obEval(O.TIPMAP.echoforge);G.won=false;WSm.sanctum=sn0;
   V.modal=null;V.screen='world';const fi=O.facInit();fi.bonus.guild=99999;await new Promise(q=>setTimeout(q,300));o.g0=N.obEval(O.TIPMAP.guild);V.modal={type:'guild'};N.obOpened();V.modal=null;o.g1=N.obEval(O.TIPMAP.guild);fi.bonus.guild=0;
   V.screen='starter';V.ngCycle=1;o.n0=N.obEval(O.TIPMAP.ngplus);V.ngMods=[];A.ACT.ngMod(A.TW&&0||'brutal');o.n1=N.obEval(O.TIPMAP.ngplus);V.ngMods=[];V.ngCycle=0;V.screen='world';
   G.cleared[0]=false;A.render();return o;});

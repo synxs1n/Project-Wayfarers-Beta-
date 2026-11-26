@@ -3,7 +3,8 @@ const {open,chk,done}=require('./pw');
 const r=await H.ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();
  const out={};const ids=Object.keys(A.TPL).filter(id=>!A.TPL[id].mon);
  out.pools=ids.map(id=>[id,A.natPool(id).length]);
- out.badPool=ids.filter(id=>{const P=A.natPool(id);const t=A.TPL[id];return !P.includes(t.trait)||P.some(k=>A.natInfo(k).n==='Unknown');});
+ /* since 0.22.10 a Legendary has one locked nature of its own (legnat20.js LN20), apart from the signature: its pool is that one nature and no longer holds the template's trait */const LN=A.TW.get('LN20')||{};
+ out.badPool=ids.filter(id=>{const P=A.natPool(id);const t=A.TPL[id];if(LN[id])return !(P.length===1&&P[0]===LN[id].k)||A.natInfo(P[0]).n==='Unknown';return !P.includes(t.trait)||P.some(k=>A.natInfo(k).n==='Unknown');});
  out.sizes=ids.filter(id=>A.TPL[id].src!=='L'&&A.TPL[id].src!=='x').map(id=>A.natPool(id).length);
  out.rolls=A.G.party.map(id=>[id,A.G.roster[id].nat,A.natPool(id).includes(A.G.roster[id].nat)]);
  // old save: no nat -> template trait
@@ -21,7 +22,7 @@ const r=await H.ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(
  out.html=document.querySelector('.panel')?document.querySelector('.panel').innerText.slice(0,200):'';
  return out;});
 console.log(JSON.stringify(r).slice(0,1500));
-chk('every hero pool contains its original trait, all natures exist',r.badPool.length===0||JSON.stringify(r.badPool));
+chk('every hero pool contains its original trait (a Legendary: its own locked nature alone), all natures exist',r.badPool.length===0||JSON.stringify(r.badPool));
 chk('class wayfarer pools are 3 to 5',r.sizes.every(n=>n>=3&&n<=5)||JSON.stringify(r.sizes));
 chk('party rolled natures lie in their pool',r.rolls.every(x=>x[2])||JSON.stringify(r.rolls));
 chk('old save without nat keeps its trait',r.oldNat===r.oldTrait||JSON.stringify([r.oldNat,r.oldTrait]));

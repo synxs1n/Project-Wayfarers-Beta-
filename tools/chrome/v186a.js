@@ -20,11 +20,14 @@ const META=(t)=>`localStorage.clear();localStorage.setItem('aurelis-meta-v1',JSO
 const only=process.env.ONLY||'',want=n=>!only||only.split(',').includes(n);
 setTimeout(()=>{console.log('FAIL watchdog: v186a ran over 600 s');process.exit(1);},600000).unref();
 async function boot(t,o){o=o||{};const H=await open({w:o.w||1000,h:o.h||560,mobile:!!o.mobile,dpr:o.dpr||1,pre:META(t)});const errs=[];H.page.on('console',m=>{if(m.type()==='error'&&!/file:|ERR_FILE|Failed to load resource|net::/.test(m.text()))errs.push(m.text());});H.errs=errs;
-  await H.ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;const zi=Object.fromEntries(A.ZONES.map((z,i)=>[z.key,i]));A.G.run.order=[zi.thistle,zi.thistle,zi.tundra,zi.mesa,zi.orchard];A.resetMaps();Object.keys(A.G.weather||{}).forEach(k=>A.G.weather[k]='clear');A.render();});
+  await H.ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;const zi=Object.fromEntries(A.ZONES.map((z,i)=>[z.key,i]));A.G.run.order=[zi.thistle,zi.thistle,zi.tundra,zi.mesa,zi.orchard];A.G.run.seed=424242;/* the same maps on every run */A.resetMaps();Object.keys(A.G.weather||{}).forEach(k=>A.G.weather[k]='clear');A.render();});
   await H.until(()=>__A.V.screen==='world',null,{timeout:15000});await H.wait(600);
   await H.ev(()=>{window.__raf=window.requestAnimationFrame;window.requestAnimationFrame=()=>0;});await H.wait(150);return H;}
 // go to a map of stage s at a tile (or the start), the day settled, the module on or off, two frames drawn
 const GO=`([id,at,off])=>{const A=__A,C=window.__CH15;C.off=!!off;const m=A.getMap(id);const p=at||m.start||(m.free&&m.free[Math.floor(m.free.length/2)])||[Math.floor(m.w/2),Math.floor(m.h/2)];
+  // clear skies on the map itself: boot only cleared the weather of the maps that existed then, and a field entered later rolled its own (rain or snow
+  // dims the light the sprites take, so check 3 compared a wet tundra with a dry mesa on some runs and "hovered around zero", docs/handoff-v0111.md)
+  try{A.G.weather[m.s]='clear';if(A.TR.wx)A.TR.wx.key=null;}catch(e){}
   A.placeAt(id,p[0],p[1],'u');A.WS.cam=null;A.G.clock=150;A.TR.k=1;A.TR.from=null;A.TR.ph=null;A.V.modal=null;A.WS.dlg=null;A.render();const t=performance.now();A.worldDraw2(t);A.worldDraw2(t+16);A.worldDraw2(t+32);return {id:A.WS.m.id,hd:!!A.HD.live,p};}`;
 // the worst contrast of every visible text in the menus, the battle command menu, the dialog box and the header (WCAG): the element's colour over
 // every colour behind it (ancestors' colours and gradient stops, composed; text gradients and 1 px lines left out); disabled and faded text skipped

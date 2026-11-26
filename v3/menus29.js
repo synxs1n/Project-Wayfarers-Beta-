@@ -17,15 +17,22 @@ function m29MoreSync(pn,mg){const inMore=!!mg.querySelector('.chip.on[data-arg="
   if(mb){mb.classList.toggle('on',inMore||M29.more);mb.setAttribute('aria-expanded',M29.more?'true':'false');}
   pn.querySelectorAll(':scope>.m29more').forEach(x=>x.remove());if(!M29.more)return;
   const s=document.createElement('div');s.className='m29more';s.innerHTML=['records','guides','settings'].map(k=>{const c=mg.querySelector(`[data-arg="${k}"]`);return c?`<button class="btn sm${c.classList.contains('on')?' gold':''}" data-act="menuGrp" data-arg="${k}">${esc((c.textContent||'').trim())}</button>`:'';}).join('')+'<button class="btn sm" data-act="p5Save">💾 Save now</button>';pn.appendChild(s);}
+// the section's name for the bar: the chip's own words, without the count of rewards ready (qready.js) or the badge
+function m29Lab(ch){try{const c=ch.cloneNode(true);c.querySelectorAll('.qtag,.m29bd').forEach(x=>x.remove());return (c.textContent||'').trim()||'Menu';}catch(e){return 'Menu';}}
 function m29Pass(){try{const md=document.getElementById('modal');if(!md)return;const pn=md.querySelector('.panel'),mg=pn&&pn.querySelector(':scope>.mgrp');const ov=pn&&pn.parentNode;
   if(!pn||!mg||!V.modal||V.modal.type!=='menu'){M29.more=false;return;}
   const on=m29On();pn.classList.toggle('m29',on);if(ov&&ov.classList)ov.classList.toggle('m29m',on);if(!on)return;
+  pn.classList.toggle('m29bk',!!pn.querySelector(':scope>.mnav .mback'));/* 0.22.56: a Menu opened from another window has a Back arrow: the two buttons sit side by side and the bar leaves room for both (they were stacked, Close over the sub tabs) */
   if(pn.dataset.m29){m29MoreSync(pn,mg);return;}/* the same panel again (a render that kept the modal): only the More sheet can have changed */pn.dataset.m29='1';
   // 1 the bar
-  const h=pn.querySelector(':scope>.menuh'),act=mg.querySelector('.chip.on'),lab=act?(act.textContent||'').trim():'Menu';
+  const h=pn.querySelector(':scope>.menuh'),act=mg.querySelector('.chip.on'),lab=act?m29Lab(act):'Menu';
   if(h){for(const n of [...h.childNodes])if(n.nodeType===3)n.remove();const t=document.createElement('b');t.className='m29t';t.textContent=lab;h.insertBefore(t,h.firstChild);
     const sm=h.querySelector('.savepin small');if(sm){sm.title=sm.textContent;sm.textContent=sm.textContent.replace(/^Slot \d+\s*·\s*/,'');}/* the slot is on the Save screen; here the room goes to the Save button */
-    const g=document.createElement('span');g.className='m29g nums';g.innerHTML='<i>◉</i> '+((G&&G.gold)||0).toLocaleString();h.appendChild(g);}
+    const g=document.createElement('span');g.className='m29g nums';g.innerHTML='<i>◉</i> '+((G&&G.gold)||0).toLocaleString();h.appendChild(g);
+    // 0.22.56: what gives way when the bar is too narrow (a long section name, a full purse, a Back arrow on a 344 px phone), in this order:
+    // the save state shows only when it fits whole (a cut "Saved ..." said nothing; the Save button stays), then the Save button is its icon, then the bar's type is a size smaller
+    requestAnimationFrame(()=>{try{const cut=e=>e.scrollWidth>e.clientWidth+1;if(sm&&cut(sm))sm.style.display='none';
+      if(cut(t)){if(sm)sm.style.display='none';const b=h.querySelector('.savepin .btn');if(cut(t)&&b){b.title=(b.textContent||'').trim();b.textContent='💾';}if(cut(t))h.classList.add('m29tight');}}catch(e){}});}
   // 2 the bottom bar: a count on Quests, and More
   const rd=m29Ready(),qc=mg.querySelector('[data-arg="quests"]');if(rd>0&&qc){const b=document.createElement('span');b.className='m29bd nums';b.textContent=rd;b.setAttribute('aria-label',rd+' rewards ready');qc.appendChild(b);}
   const mb=document.createElement('button');mb.className='chip m29mb';mb.dataset.act='m29More';mb.textContent='More';mg.appendChild(mb);m29MoreSync(pn,mg);
@@ -51,12 +58,16 @@ window.addEventListener('resize',()=>{try{M29.vw=window.innerWidth;if(V&&V.modal
 .panel.m29>.mnav{position:fixed!important;top:3px!important;right:6px!important;left:auto!important;bottom:auto;z-index:30!important;margin:0;padding:0;width:40px;height:40px;display:block}
 .panel.m29>.mnav .mclose{position:static;display:grid;place-items:center;width:40px;height:40px;margin:0}
 .panel.m29>.menuh{position:sticky;top:0;z-index:8;display:flex;align-items:center;gap:8px;height:46px;min-height:46px;margin:0 -10px!important;transform:none;padding:0 54px 0 40px;box-sizing:border-box;background:#0f1830;border:0;border-bottom:1px solid #2a3a60;font-size:1.05rem}
-.panel.m29>.menuh .m29t{font:inherit;color:#ffe9a6;white-space:nowrap}
-.panel.m29>.menuh .savepin{display:flex;align-items:center;min-width:0;flex:0 1 auto;margin:0;padding:0}
-.panel.m29>.menuh .savepin{gap:6px}
+.panel.m29>.menuh .m29t{font:inherit;color:#ffe9a6;white-space:nowrap;flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.panel.m29.m29bk>.mnav{width:auto;display:flex;gap:6px}
+.panel.m29.m29bk>.mnav .mback{position:static;display:grid;place-items:center;flex:none;width:40px;height:40px;margin:0}
+.panel.m29.m29bk>.menuh{padding-right:100px}
+.panel.m29>.menuh.m29tight{font-size:.86rem;gap:5px}
+.panel.m29>.mgrp .chip .qtag{display:none}/* the badge on the icon is the count; the pill under the word was the same number again and hung over the bar's edge */
+.panel.m29>.menuh .savepin{display:contents}/* 0.22.56: the Save button and the save state are the bar's own items, so the button keeps its width and only the state gives way (the button was squeezed to 10 px over the gold when the title was long) */
 .panel.m29>.menuh .savepin .btn{display:inline-flex;align-items:center;flex:none;min-width:0;min-height:36px;height:36px;padding:0 9px;font-size:.74rem;white-space:nowrap}/* 0.22.41: asked, "save button should appear on top still in small phone menu" */
-.panel.m29>.menuh .savepin small{font:800 .62rem/1.2 var(--fb);color:#8fe0a0;border:1px solid #2f6a45;border-radius:10px;padding:2px 7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;letter-spacing:0;text-transform:none}
-.panel.m29>.menuh .m29g{margin-left:auto;font:800 .78rem/1 var(--fb);color:#ffd76a;white-space:nowrap;letter-spacing:0}
+.panel.m29>.menuh .savepin small{font:800 .62rem/1.2 var(--fb);color:#8fe0a0;border:1px solid #2f6a45;border-radius:10px;padding:2px 7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;letter-spacing:0;text-transform:none;flex:0 100 auto;min-width:0}
+.panel.m29>.menuh .m29g{margin-left:auto;flex:none;font:800 .78rem/1 var(--fb);color:#ffd76a;white-space:nowrap;letter-spacing:0}
 .panel.m29>.menuh .m29g i{font-style:normal}
 .panel.m29>.mgrp{position:fixed;left:0;right:0;bottom:0;z-index:25;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:0;margin:0;padding:0 0 env(safe-area-inset-bottom,0px);box-sizing:content-box;height:58px;border:0;border-top:1px solid #33466f;border-radius:0;background:#0f1830}
 .panel.m29>.mgrp .chip{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;min-width:0;width:auto;height:58px;min-height:58px;margin:0;padding:0;border:0;border-radius:0;background:none;box-shadow:none;color:#8fa0c4;font:800 .64rem/1.1 var(--fb)}
@@ -84,7 +95,7 @@ window.addEventListener('resize',()=>{try{M29.vw=window.innerWidth;if(V&&V.modal
 .panel.m29 .swlist.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
 .panel.m29 .swlist .swc{min-width:0}
 .panel.m29 .swlist .swc .swbtns .btn.sm{min-width:0;width:auto;min-height:40px;padding:0;font-size:.7rem}
-.panel.m29 .ddbar{display:grid;grid-template-columns:repeat(auto-fit,minmax(88px,1fr));gap:6px}
+.panel.m29 .ddbar{display:grid;grid-template-columns:repeat(auto-fit,minmax(124px,1fr));gap:6px}/* 0.22.56: 124 px, the room "Best for party" needs (88 cut the chosen words of three or four lists in a row: "All eleme...") */
 .panel.m29 .ddbar .dd{min-width:0;margin:0}
 .panel.m29 .rows>.row{outline:0}
 .panel.m29 .rows>.row small{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}

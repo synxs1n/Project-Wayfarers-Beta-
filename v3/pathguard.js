@@ -92,12 +92,19 @@ function pgStairsSpot(m,P,x,y){
     c.push({x:xx,y:yy,fx,fy,d:Math.abs(fx-x)+Math.abs(fy-y)});}
   c.sort((a,b)=>a.d-b.d);return c;
 }
+// where the hero comes into a map: its start tile, else the arrival tile of its first gate
+function pgEntry(m){try{if(m.start)return [m.start[0],m.start[1]];for(const g of Object.values(m.gates||{}))if(g&&g.arrive)return [g.arrive[0],g.arrive[1]];}catch(e){}return null;}
 function guardPaths(m){
   if(!m||!m.t||m.archive||m.sanctum)return [];const log=[];
   for(let pass=0;pass<4;pass++){
     const P=pgGrid(m),bad=pathAssets(m,P);if(!bad.length)break;let moved=false;
     for(const b of bad){
-      if(b.c==='npc'){const sp=pgSpot(m,P,b.x,b.y,c=>c==='.'||c===','||c===':'||c==='f',24);if(!sp)continue;
+      if(b.c==='npc'){const nf=c=>c==='.'||c===','||c===':'||c==='f';let sp=pgSpot(m,P,b.x,b.y,nf,24);
+        // 0.22.56: no spot within reach of where they stand: they are in a pocket that is walled off from the rest of the map (the Town crier
+        // behind a building on an islet of a marsh town, shut in by a tree and a fence: nobody could walk to him, and the search above never left
+        // the pocket). Such a one is put on the nearest free spot from where the hero comes in.
+        if(!sp&&!PG_LEGACY){const e=pgEntry(m);if(e)sp=pgSpot(m,P,e[0],e[1],nf,60)||pgSpot(m,P,e[0],e[1],nf,60,true);}
+        if(!sp)continue;
         const n=b.npc;n.x=sp[0];n.y=sp[1];if(n.hx!=null){n.hx=sp[0];n.hy=sp[1];}log.push({x:b.x,y:b.y,what:'npc',to:sp});moved=true;continue;}
       if(b.c==='E'){const cs=pgStairsSpot(m,P,b.x,b.y);const old={s:m.start&&m.start.slice(),w:m.wander&&m.wander.slice()};
         m.t[b.y][b.x]=pgStairsOnRoute(m,P,b.x,b.y)?'.':'#';

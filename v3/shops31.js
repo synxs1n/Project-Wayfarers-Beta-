@@ -11,6 +11,8 @@
 const S31={off:false};
 function s31Pass(){try{const md=document.getElementById('modal');if(!md)return;const pn=md.querySelector('.panel'),sn=pn&&pn.querySelector(':scope>.shopnav');if(!pn||!sn)return;
   const on=m29On()&&!S31.off,ov=pn.parentNode;pn.classList.toggle('m29',on);pn.classList.toggle('s31',on);if(ov&&ov.classList)ov.classList.toggle('m29m',on);if(!on||pn.dataset.s31)return;pn.dataset.s31='1';
+  // 0.22.56: the shop's name is its own item in the bar, so a long one (Wayfarers Guild Hall) takes two lines and the gold stays in view (the name pushed it under Back and Close)
+  try{const h=pn.querySelector(':scope>h2'),tn=h&&[...h.childNodes].find(n=>n.nodeType===3&&n.textContent.trim());if(tn){const sp=document.createElement('span');sp.className='s31t';sp.textContent=tn.textContent.trim();h.replaceChild(sp,tn);}}catch(e){}
   pn.classList.toggle('s31nt',!sn.querySelector(':scope>.stabs'));try{pn.dataset.s31t=(V.modal&&V.modal.type)||'';}catch(e){}
   const ms=sn.querySelector(':scope>.ssec'),so=ms&&ms.querySelector('.chip.on');if(so)requestAnimationFrame(()=>{try{ms.scrollLeft=Math.max(0,so.offsetLeft-(ms.clientWidth-so.offsetWidth)/2);}catch(e){}});
 }catch(e){S31.err=String(e&&e.message||e);}}
@@ -20,6 +22,7 @@ HOOK.after('render','shops31','the phone shop pass',function(){s31Pass();});
 .panel.s31>.mnav{width:auto!important;height:40px;display:flex!important;gap:6px}
 .panel.s31>h2{position:sticky;top:0;z-index:19;display:flex;align-items:center;gap:8px;height:46px;min-height:46px;box-sizing:border-box;margin:0 -10px!important;padding:0 104px 0 12px!important;background:#0f1830;border:0;border-bottom:1px solid #2a3a60;font-size:.98rem!important;line-height:1.1;white-space:nowrap!important;overflow:hidden;flex-wrap:nowrap}
 .panel.s31>h2 .hgold{margin-left:auto;flex:none}
+.panel.s31>h2 .s31t{flex:0 1 auto;min-width:0;max-height:42px;overflow:hidden;white-space:normal;line-height:1.05;text-wrap:balance}
 .panel.s31>.shopnav{display:contents}
 .panel.s31.s31nt{padding-bottom:calc(14px + env(safe-area-inset-bottom,0px))}
 .panel.s31>.shopnav>.stabs{position:fixed;left:0;right:0;bottom:0;z-index:25;display:flex;gap:0;margin:0;padding:0 0 env(safe-area-inset-bottom,0px);box-sizing:content-box;height:58px;border:0;border-top:1px solid #33466f;border-radius:0;background:#0f1830}

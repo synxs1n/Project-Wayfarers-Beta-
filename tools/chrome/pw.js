@@ -57,14 +57,17 @@ async function open(opt={}){
   const det=(f,a,seed)=>page.evaluate(async([src,a,seed])=>{const c=window.__pwFreeze;if(!c)return (0,eval)('('+src+')')(a);
     const mr=Math.random;let s=(seed>>>0)||1;Math.random=()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296;};c.pin();
     try{return await (0,eval)('('+src+')')(a);}finally{Math.random=mr;c.unpin();}},[f.toString(),a,seed||1]);
-  const frames=n=>page.evaluate(n=>new Promise(r=>{let k=0;const f=()=>{if(++k>=n)r(k);else requestAnimationFrame(f);};requestAnimationFrame(f);}),n||1);
-  const until=(f,a,o={})=>page.evaluate(([src,a,T])=>new Promise(res=>{const fn=(0,eval)('('+src+')'),t0=performance.now();let last;
+  // NEXT: the next animation frame, or 250 ms when none comes. Headless Chrome now and then stops handing out frames while the page stays alive
+  // (seen on Guild Hall screens at 705x455, v095m4): a helper that waited for frames alone then hung its test until the runner's timeout.
+  const NEXT='const __next=f=>{let d=0;const g=()=>{if(!d){d=1;f();}};requestAnimationFrame(g);setTimeout(g,250);};';
+  const frames=n=>page.evaluate(([n,NEXT])=>new Promise(r=>{(0,eval)(NEXT+'window.__pwNext=__next;');const nx=window.__pwNext;let k=0;const f=()=>{if(++k>=n)r(k);else nx(f);};nx(f);}),[n||1,NEXT]);
+  const until=(f,a,o={})=>page.evaluate(([src,a,T,NEXT])=>new Promise(res=>{(0,eval)(NEXT+'window.__pwNext=__next;');const requestAnimationFrame=window.__pwNext;const fn=(0,eval)('('+src+')'),t0=performance.now();let last;
     const step=()=>{try{last=fn(a);}catch(e){last='error: '+e.message;}if(last&&!(typeof last==='string'&&last.startsWith('error: ')))return res(last);
-      if(performance.now()-t0>T)return res({timeout:true,last});requestAnimationFrame(step);};step();}),[f.toString(),a,o.timeout||10000]);
-  const settle=(f,a,o={})=>page.evaluate(([src,a,N,T])=>new Promise(res=>{const fn=(0,eval)('('+src+')'),t0=performance.now();let prev=null,same=0;
+      if(performance.now()-t0>T)return res({timeout:true,last});requestAnimationFrame(step);};step();}),[f.toString(),a,o.timeout||10000,NEXT]);
+  const settle=(f,a,o={})=>page.evaluate(([src,a,N,T,NEXT])=>new Promise(res=>{(0,eval)(NEXT+'window.__pwNext=__next;');const requestAnimationFrame=window.__pwNext;const fn=(0,eval)('('+src+')'),t0=performance.now();let prev=null,same=0;
     const step=()=>{let v;try{v=JSON.stringify(fn(a));}catch(e){v='error: '+e.message;}same=v===prev?same+1:0;prev=v;
       if(same>=N)return res({ok:true,ms:Math.round(performance.now()-t0),v:JSON.parse(v)});if(performance.now()-t0>T)return res({ok:false,ms:Math.round(performance.now()-t0),v:prev});
-      requestAnimationFrame(step);};step();}),[f.toString(),a,o.frames||3,o.timeout||5000]);
+      requestAnimationFrame(step);};step();}),[f.toString(),a,o.frames||3,o.timeout||5000,NEXT]);
   // the larger of the page's calibration loop against CPU_REF and the 1 minute load average per CPU (a busy machine slows the GPU process
   // and the compositor too, which one loop on the main thread does not see)
   const cpu=()=>loadFactor(page);

@@ -3,9 +3,11 @@
 // the hero sheet with its Upgrade buttons, the Smithy's best per slot list, Alchemy's charms, the Party and Equipment tabs, and the
 // whole party plan. Same checks as v063m1: panel inside the visible screen, scroll reaches the end, nothing sideways, no text cut by
 // hidden overflow or an ellipsis, no text outside the panel, dropdown choices fit. Also no page errors.
+// On phones these screens are the full screen frames of menus29.js and shops31.js since 0.22.29: two things there are the design and not
+// faults (the row of tabs or filters that slides sideways, descriptions cut to two lines until the row is tapped); the checks say where.
 // Usage: PWHTML=../../out/aurelis3.html node v095m4.js
 const {open,chk,done}=require('./pw');
-const SIZES=[[344,882],[390,844],[412,812],[705,455],[844,390],[933,705],[1280,720]];
+const SIZES=[[344,882],[390,844],[412,812],[705,455],[844,390],[933,705],[1280,720]].filter(s=>!process.env.M4SIZE||process.env.M4SIZE===s.join('x'));
 (async()=>{let H;for(const [w,h] of SIZES){
   const pre=`localStorage.clear();localStorage.setItem('aurelis-meta-v1',JSON.stringify({cfg:{hints:false,music:0,sfx:0,enc:'off'}}));`;
   H=await open({w,h,mobile:w<1000,pre});const {ev}=H;await H.page.emulateMedia({reducedMotion:'reduce'});const tag=w+'x'+h;
@@ -25,14 +27,18 @@ const SIZES=[[344,882],[390,844],[412,812],[705,455],[844,390],[933,705],[1280,7
   const bad=[];
   for(const s of screens){
     const r=await ev(async s=>{try{__A.V.modal=JSON.parse(JSON.stringify(s));if(s.type==='menu')__A.V.lastMenuTab=s.tab;__A.render();}catch(e){return ['error '+e.message];}
-      await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+      // a frame, or 300 ms when none comes: headless Chrome now and then stops handing out animation frames on a Guild Hall screen at 705x455 (the page
+      // stays alive, timers run; the same on 0.22.53, about one run in ten) and a wait for frames alone hung the test until the runner killed it.
+      // Every measurement below forces its own layout, so nothing depends on a painted frame.
+      const frame=n=>new Promise(r=>{let d=0;const k=()=>{if(!d){d=1;r();}};let c=0;const f=()=>{if(++c>=n)k();else requestAnimationFrame(f);};requestAnimationFrame(f);setTimeout(k,300);});
+      await frame(2);
       const o=[],b=document.querySelector('#modal .box');if(!b)return ['no panel'];
       const vh=window.visualViewport?visualViewport.height:innerHeight,br=b.getBoundingClientRect();
       if(br.bottom>vh+1)o.push(`panel bottom ${Math.round(br.bottom)} below the visible screen ${Math.round(vh)}`);
       if(br.top<-1)o.push(`panel top ${Math.round(br.top)} above the screen`);
       if(br.right>innerWidth+1||br.left<-1)o.push('panel wider than the screen');
       const cs=getComputedStyle(b);if(b.scrollWidth>b.clientWidth+1)o.push(`panel scrolls sideways ${b.scrollWidth}>${b.clientWidth}`);if(b.scrollHeight>b.clientHeight+1&&!/auto|scroll/.test(cs.overflowY))o.push('panel content taller than the panel and no scroll');
-      b.scrollTop=b.scrollHeight;await new Promise(r=>requestAnimationFrame(r));
+      b.scrollTop=b.scrollHeight;await frame(1);
       if(b.scrollTop+b.clientHeight<b.scrollHeight-2)o.push(`panel scroll stops ${Math.round(b.scrollHeight-b.scrollTop-b.clientHeight)} px short of the end`);
       const last=[...b.querySelectorAll(':scope > *')].filter(e=>e.getBoundingClientRect().height>0).pop();
       if(last){const lr=last.getBoundingClientRect();if(lr.bottom>Math.min(br.bottom,vh)+1)o.push(`last line ends at ${Math.round(lr.bottom)}, panel shows up to ${Math.round(Math.min(br.bottom,vh))}`);}
@@ -41,8 +47,11 @@ const SIZES=[[344,882],[390,844],[412,812],[705,455],[844,390],[933,705],[1280,7
       for(const e of txt){const r=e.getBoundingClientRect();if(!r.width||!r.height)continue;const st=getComputedStyle(e);if(st.visibility==='hidden')continue;
         const label=(e.className&&typeof e.className==='string'?e.className.split(' ')[0]+' ':'')+'"'+e.textContent.trim().slice(0,24)+'"';
         if((st.overflowX!=='visible'||st.textOverflow==='ellipsis')&&e.scrollWidth>e.clientWidth+1)o.push('text cut sideways: '+label);
-        if(st.overflowY==='hidden'&&e.scrollHeight>e.clientHeight+2&&e!==b)o.push('text cut at the bottom: '+label);
-        if(r.right>right+1||r.left<left-1)o.push(`outside the panel (${Math.round(r.left)}..${Math.round(r.right)} vs ${Math.round(left)}..${Math.round(right)}): ${label}`);
+        // the phone menu and shops (menus29.js, shops31.js) cut a row's description to two lines until the row is tapped (class m29x): a line clamp is not a fault
+        if(st.overflowY==='hidden'&&e.scrollHeight>e.clientHeight+2&&e!==b&&!(st.webkitLineClamp&&st.webkitLineClamp!=='none'))o.push('text cut at the bottom: '+label);
+        // there, tabs and filters are one row that slides sideways: a chip that waits beyond the edge of such a row can be reached, so it is not outside the panel
+        const slides=(()=>{for(let p=e.parentElement;p&&p!==b;p=p.parentElement){const ps=getComputedStyle(p);if(/auto|scroll/.test(ps.overflowX)&&p.scrollWidth>p.clientWidth+1)return true;}return false;})();
+        if(!slides&&(r.right>right+1||r.left<left-1))o.push(`outside the panel (${Math.round(r.left)}..${Math.round(r.right)} vs ${Math.round(left)}..${Math.round(right)}): ${label}`);
         if(o.length>6)break;}
       // buttons keep their words on the button
       b.querySelectorAll('.btn').forEach(x=>{if(x.scrollWidth>x.clientWidth+1&&o.length<8)o.push('button text wider than the button: "'+x.textContent.trim().slice(0,24)+'"');});
@@ -51,6 +60,6 @@ const SIZES=[[344,882],[390,844],[412,812],[705,455],[844,390],[933,705],[1280,7
         if(need>sel.clientWidth+2)o.push(`dropdown text cut: "${sel.options[sel.selectedIndex].text}" needs ${Math.round(need)} px, has ${sel.clientWidth}`);});
       return o;},s);
     if(r.length)bad.push(JSON.stringify(s).slice(0,80)+': '+r.slice(0,3).join('; '));}
-  chk(`${tag}: ${screens.length} board, guild, upgrade and party screens, nothing clipped or cut`,bad.length===0||bad.length+' screens: '+bad.slice(0,5).join(' | '));
+  chk(`${tag}: ${screens.length} board, guild, upgrade and party screens, nothing clipped or cut`,bad.length===0||bad.length+' screens: '+bad.slice(0,+process.env.M4ALL||5).join(' | '));
   await H.browser.close();}
   await done(H);})();

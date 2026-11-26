@@ -1,31 +1,89 @@
-# Tests that fail on main, and why (as of 0.22.53)
+# Tests that fail on main, and why
 
-A red run should mean something. These are the tests that fail or flicker on an untouched build. Fix or retire them before trusting a full run.
+As of 0.22.56: none. A full run of every group (`ci battle menus party world saves`) is green, three times in a row (see "How it was
+checked" below). A red run means something again. If a test starts to fail or flicker, add it here with what is known, and fix or
+retire it before trusting a full run.
 
-## Fail every time
-| Test | What fails | Cause | Status |
-|---|---|---|---|
-| v166a | crashes at line 68 (`pw` of undefined) | reads a healer skill by an id the kits no longer have (the kits changed in 0.22.36) | the first check (a Primer and a Detonator per element) was updated in 0.22.53 to count Dual arts; the later section still needs its skill ids updated |
-| v095na | "the Echoforge card waits until the Echoforge tab was opened once" | not looked into; fails the same way since at least 0.22.41 | open |
-| v095na | "OLDHTML given" | needs an old build passed in the OLDHTML variable; not a game fault | run it with OLDHTML set |
-| v095m3 | "Upgrade picks the brute force best step" and three more | the test's brute force ranks by gain today; the game ranks by the end at max temper since 0.22.17 | rewrite against upgBest (see v225a) or retire |
-| v095m4 | text clipped on board, guild and upgrade screens at phone sizes | fails since the phone menu of 0.22.29; chips run past the panel edge | open: may be a real layout fault |
-| v095m1 | "Menu > Quests shows the Notices list" and three more | written for the menu before 0.22.29 | update to the new menu |
-| v080wa | "no straight hard edge in the weather layer" (gale, heat) | not looked into | open |
+The tests in `STALE` (`tools/chrome/runall.js`, each with its reason) are still not part of a group run: they were written for screens
+that have since been replaced. They are not counted here.
 
-## Flaky (pass on a rerun)
-v053b, v095p2, v158a, v194a, v152a, v041p1h, v070ob, v186a (check 3), v053ub (contrast 4.49 against 4.5).
+## What the 0.22.53 list turned into (0.22.56)
 
-## Fail often on an untouched build (random journeys; measured on 0.22.53 before and after the layering cleanup)
-| Test | What fails | How often | Status |
-|---|---|---|---|
-| v225a | "1 the preview of Upgrade whole party is what happens" (state 3: a charm planned for one hero ends on another; state 6: gold planned 616, spent 676, or a charm planned +0 and got +1) | about 14 of 30 runs before the cleanup, 14 and 4 of 30 after | open: the preview and the run can disagree on charms; a game fault worth a look, not a test fault |
-| v188a | "2 hand-me-down" (the plan buys a greatsword for one warrior instead of the blade) | most runs, with a different hero each time | open: depends on which two warriors the journey draws |
-| v228a | "7 a phone (390x844) shows the same boxes" | now and then | open |
-| sanct, v141a | one check each (Echo gates count, Breach foes) | rarely, pass on a rerun | flaky |
+The list written for 0.22.53 named six failing tests and nine flaky ones (a later note on main added v225a, v188a, v228a, sanct and v141a).
+Working through it found more than a dozen others that failed or flickered on an untouched 0.22.53 build and were not on the list. Six of
+all these were faults in the game; they are fixed in 0.22.56 (`docs/handoff-v0111.md`, section 0.22.56). The work was done on 0.22.53 and
+merged onto 0.22.55 (the balance pass and the layering cleanup); everything below was run again on the merged game.
 
-## Fixed or passing again
-v050p1d passes on 0.22.53.
+### Faults in the game (fixed in 0.22.56)
+| Test | What it had found | Fix |
+|---|---|---|
+| v095m4 | On phones (344, 390 and 412 px wide): the Menu's top bar ran over itself when Quests had rewards ready (the title read "Quests 8 ready", the Save button was squeezed to 10 px over the gold); with a Back arrow, Back and Close were stacked and Close covered the sub tabs; in the Guild Hall the gold was pushed under Back and Close; the Sort and Show lists cut their chosen words ("All eleme...") | `v3/menus29.js`, `v3/shops31.js` |
+| v166a | The hero sheet showed a skill's Power before the role cut, since 0.22.49 (on 0.22.53: Healing Ballad 154 where the battle row said 123; since 0.22.54 only off role skills are cut: Ombra's Grave Tithe 210 where the battle row says 105) | `v3/skills12.js` |
+| v053b | On a phone, in a fight against three foes, a wide foe in the slot nearest the left edge (a Glass Gull) was cut off by the edge of the stage: its box began 9 stage px outside. This was the test's "flake": it failed whenever the journey's first fight had three foes. The same on a guardian or boss on a phone (102 px wide on a slot 37 px from the edge: its left side was cut; v173a now expects it as near the slot as the edge allows) | `v3/cohere15.js` |
+| v190a | Opening a chest took 140 to 250 ms instead of 30 to 70: since 0.22.52 every chest opened (and every look at a Barred hoard quest) built a dungeon map that had never been entered | `v3/fix52.js` |
+| v050p1c | In marsh towns with realm 9 first (seeds 277266 and 530674 of the scan) the Town crier stood in a pocket behind a building, shut in by a tree and a fence: nobody could walk to him and the path guard could not move him out | `v3/pathguard.js` |
+
+### Tests that were out of date (the game was right)
+| Test | What changed in the game | What the test does now |
+|---|---|---|
+| v166a | Kit levels moved in 0.22.36 (Full Mend 35, Restoring Chorus 31, Toxic Cloud 35, the mage's Burst 6); since 0.22.54 a sub role skill has no percent cut (docs/balance54.md) | reads the kits at level 45; a bard's heal per cast is under a priest's like for like; the sheet and the battle row agree on an off role skill's Power |
+| v095na | The Echoforge is the anvil in the Echo Rift hall (rift9.js): `efTabOn` asks for `WS.m.sanctum` | judges the Echoforge card standing in the hall. The tip gate in `v3/onboard.js` was right |
+| v095m3 | The Upgrade step is the one that ends best at max temper (0.22.17), and can be a chain | the brute force performs chains too and ranks by that rule (`beats`); the sheet has gear rows and no Upgrade button since 0.17.1; charms are at the Smithy |
+| v095m1 | menus11.js (0.18.4): Back leaves a board at once, the Menu remembers its last tab; quests16.js: a Personal section on Notices, guild notices taken at the Guild Hall; lists keep their order while open | follows all four |
+| v095m4 | The phone frames of menus29.js and shops31.js | a row that slides sideways and a two line description are not faults; everything else is still checked (and found the faults above) |
+| v080wa | The stage canvas is drawn at 4 px per stage px since the 0.18.x repaint (it was 2) | the edge limits are stage units (14 and 40 stage px) and scale with the canvas. `v3/weather7.js` was right: gale and heat streaks are no longer than before |
+| nature | 0.22.10: a Legendary has one locked nature of its own (legnat20.js) | a Legendary's pool is that one nature |
+| v050p5 | On a phone the Menu bar keeps the time and puts the slot in the state's title (menus29.js) | reads both |
+
+These five are back in their groups (they were in `STALE`): v095m1, v095m3, v095m4, v095na, v080wa.
+
+### Tests that flickered, and what made them
+The common causes, for the next one that flickers:
+1. **A seed that is not one.** `Math.random` replaced by a seeded generator in the page's startup script is drained by every frame drawn
+   before the test starts its journey, a different count on a busy machine. Pin with `H.det` (pw.js, needs `open({freeze:true})`) around
+   the start of the journey and around the step that rolls (`newChar` rolls a nature).
+2. **A fight or a view the journey drew.** A random first fight can have one foe (a one target skill then fires with no target step); the
+   hero's own spot, the first town's layout and a field's weather differ per journey.
+3. **Auto graphics.** Headless Chrome draws WebGL in software; left on Auto the game drops to Low, which is the Flat look with smaller
+   buttons, in the middle of a layout test. Pin `cfg.gfx`.
+4. **A fixed sleep** where a state should be waited for.
+
+| Test | Cause | Now |
+|---|---|---|
+| v050p1d | cause 2: a single foe, so no target step and no Back button | a fixed fight with two foes |
+| v228a | cause 2: the wild foes decide which skill boxes carry a "strong against" line, so 4 or 5 boxes were in view | a fixed foe |
+| v095p2 | cause 4: 6 s of auto battle was not always three boss turns; the guarded and the open hit were two different rolls | waits for the turns (40 s at most); both hits from one seed |
+| v225a | `facRank` is remembered for 250 ms (factions.js); the test's states follow each other faster, so a plan read the Smithy prices of the state before ("planned 616, spent 676", a charm planned for one hero and worn by another). Not a fault in the game, as the note on main feared: a player's preview is on screen far longer than 250 ms. Found on main and here independently | each state clears the memo; journey and states pinned with `H.det` |
+| v188a | cause 1; and the hand-me-down scenario was a near tie (17.8% against 17.2%) that the stat rolls decided | pinned; the high level warrior wears an Uncommon blade, so the low level one clearly gains more |
+| v177a | cause 2: the hero's spot came from the town drawn before the seed was set; the desktop view is 7 tiles high and often held no building foot or lamp; the plain fade was judged by two spots' own brightness | seed pinned, the camera is parked beside a building and under a lamp, the fade is judged by how much each spot darkens |
+| v186a | cause 2: only the maps that existed at boot had their weather cleared; a field entered later rolled its own (check 3 "hovered around zero") | clear skies on the map itself; seed pinned |
+| v050p1b, v051c | cause 3 | Medium pinned |
+| v190a (check 2) | cause 2: the "far tile" was the last of a scan and lay in view of the entrance on fields entered from the east | the tile farthest from the entrance |
+| v161a | cause 2: one of the three click candidates on screen, and that one right, failed an `n >= 2` | `n >= 1`, as its sibling check since 0.20.6 |
+| v192a | the sampled palette of the peaks town's grass lands 20 to 24.2 from the painted average (scatter drawn with `Math.random`); the limit was 22 | limit 26 (a wrong colour is 60 or more away) |
+| v041p1h | none: it takes about 520 s and the default limit is 600 | its own limit (1500 s) in `SLOW` |
+| v142a | cause 4: a fixed 1.5 s for the HD-2D scene to bake | waits for the bake (15 s at most) |
+| v059a | the foe's idle breathing and drifting motes moved a pixel average by up to 7 with a limit of 6 | four grabs each way, the closest pair counts |
+| v080r | `interact()` does nothing while the map change still holds the hero or a line of talk is open | those are cleared first |
+| v158a | cause 2: a blow that missed a nimble or flying foe drew no shock ring and no hit count | a fixed fight, foes that cannot dodge |
+| v095m4 | headless Chrome now and then stops handing out animation frames on a Guild Hall screen at 705x455 (the page stays alive; the same on 0.22.53) and the test waited for frames alone, until the runner killed it | a frame or 300 ms; `H.frames`, `H.until` and `H.settle` in pw.js fall back to a timer the same way |
+| sanct, v141a | noted on main as failing rarely; not seen in these runs | watch |
+
+`runall.js` also fetches the old build a comparison test needs (v095na, v080ca, v050p2daily) by its full commit id when the clone is
+shallow (a cloud session, a CI checkout): "OLDHTML given" failed there for no other reason.
+
+### Left for the owner
+- The hero sheet has had no Upgrade button per slot since 0.17.1: `ui.js` draws the Equipment block as `.eqsheet` rows, and the
+  `p3shop.js` hook that added the buttons still looks for the old block. The popup works from the Smithy rows. v095m3 now checks what
+  is there. Say if the buttons should come back.
+
+## How it was checked
+A full run is longer than one two hour job on a cloud machine, so it is two commands, one after the other (never two at once):
+```
+PWHTML=<abs path to out/aurelis3.html> node runall.js ci battle menus party
+PWHTML=<abs path to out/aurelis3.html> node runall.js world saves
+```
+About 65 and 75 minutes on 4 CPUs.
 
 ## Balance, 0.22.54
 The 12 fight numbers below were rerun at 180 fights a cell and acted on: see `docs/balance54.md`. Hollow King and Hoarwyrm were noise; the real low end was Siren, Frost Lich and Drake. `v080ca` is stale (same eight failures on 0.22.53).

@@ -48,7 +48,7 @@ const s=await ev(async()=>{const A=__A,o={tabs:{}};const tabs=['party','roster',
   for(const tb of tabs){A.V.modal={type:'menu',tab:tb};A.render();const b=document.querySelector('#modal .savepin [data-act="p5Save"]');o.tabs[tb]=!!b;if(b){const r=b.getBoundingClientRect();o.tabs[tb]=r.top>=0&&r.bottom<=innerHeight;}}
   A.V.modal={type:'menu',tab:'roster'};A.render();const box=document.querySelector('#modal .box');box.scrollTop=9999;await new Promise(r=>setTimeout(r,50));
   const b=document.querySelector('#modal [data-act="p5Save"]').getBoundingClientRect();o.afterScroll=b.top>=0&&b.bottom<=innerHeight;
-  o.pin=document.querySelector('#modal .savepin').innerText;A.G.savedAt=0;const t0=Date.now();
+  /* on a phone (menus29.js, 0.22.29) the bar keeps the time and puts the whole line, slot included, in the state's title: the slot is on the Save screen, and since 0.22.56 the state is not drawn at all when it does not fit whole. Both are read. */{const sm=document.querySelector('#modal .savepin small');o.pin=document.querySelector('#modal .savepin').innerText+' | '+((sm&&(sm.title||sm.textContent))||'');}A.G.savedAt=0;const t0=Date.now();
   document.querySelector('#modal [data-act="p5Save"]').click();o.saved=A.G.savedAt>=t0;o.msg1=document.getElementById('p5save').textContent;
   await new Promise(r=>setTimeout(r,500));o.msg2=document.getElementById('p5save').textContent;o.pin2=document.querySelector('#modal .savepin').innerText;
   A.V.modal={type:'menu',tab:'system'};A.render();o.journey=!!document.querySelector('#modal [data-act="saveJ"]')&&!!document.querySelector('#modal [data-act="svSyncNow"]');

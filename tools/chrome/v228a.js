@@ -48,7 +48,10 @@ const META=`localStorage.clear();localStorage.setItem('aurelis-meta-v1',JSON.str
   chk(`6 the Guard button glows on its cue ("${gl.txt}", border ${gl.bc}, animation ${gl.an})`,/b9glow/.test(gl.cls)&&/Guard!/.test(gl.txt)&&/255, 20[0-9], 74|rgb\(255, 208, 74\)/.test(gl.bc)&&gl.sh&&gl.sh!=='none'&&gl.sh.split('rgb').length>=3&&gl.an==='b9glow'||JSON.stringify(gl));
   await H.browser.close();
   const P=await open({w:390,h:844,mobile:true,pre:META,tag:'v228a'});
-  await P.ev(()=>{const A=__A,g=A.TW.get;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;Object.values(A.G.roster).forEach(c=>{c.lv=30;c.S=g('calcStats')(c);c.hp=c.S.mhp;c.mp=c.S.mmp;});A.G.stage=1;A.G.cleared=[1,0,0,0,0];g('startBattle')({stage:1,kind:'wild'});A.render();});
+  await P.ev(()=>{const A=__A,g=A.TW.get;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;Object.values(A.G.roster).forEach(c=>{c.lv=30;c.S=g('calcStats')(c);c.hp=c.S.mhp;c.mp=c.S.mmp;});A.G.stage=1;A.G.cleared=[1,0,0,0,0];
+    // a fixed foe (the first monster, clear weather): the boxes carry a "strong against" line when a skill answers a foe's weakness, so with the
+    // journey's own wild draw the heights, and with them how many boxes are in view, changed from run to run (4 or 5: the check failed now and then)
+    const k=Object.keys(A.MON).filter(k=>!A.MON[k].mimic)[0];g('startBattle')({stage:1,kind:'wild',weather:'clear',foes:[A.makeEnemy(A.MON[k],30),A.makeEnemy(A.MON[k],30)]});A.render();});
   for(let i=0;i<80;i++){await P.wait(300);if(await P.ev(()=>{const B=__A.B;return !!(B&&B.cur&&B.cur.side==='p'&&B.mode==='cmd'&&B.menu==='root'&&document.querySelector('#bcmd [data-arg="skills"]'));}))break;}
   await P.ev(()=>document.querySelector('#bcmd [data-arg="skills"]').click());await P.wait(700);
   // 0.22.51: a skill with two text lines (a Dual art, a hero's own skill): no line lies on another

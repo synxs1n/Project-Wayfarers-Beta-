@@ -16,12 +16,13 @@ const {open,chk,done}=require('./pw');
 const META=(t,rm)=>`localStorage.clear();localStorage.setItem('aurelis-meta-v1',JSON.stringify({cfg:{speed:1,enc:'off',diff:'normal',music:0,sfx:0,autoStats:true,autoEquip:false,gfx:'${t}',rmotion:${!!rm},hints:false,tips:false,minimap:false,hd2d:true}}));(()=>{let s=5;Math.random=()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296;};})();`;
 const only=process.env.ONLY||'',want=n=>!only||only.split(',').includes(n);
 setTimeout(()=>{console.log('FAIL watchdog: v177a ran over 600 s');process.exit(1);},600000).unref();
-async function boot(t,o){o=o||{};const H=await open({w:o.w||1000,h:o.h||560,mobile:!!o.mobile,dpr:o.dpr||1,pre:META(t,o.rm),before:o.before});const errs=[];H.page.on('console',m=>{if(m.type()==='error'&&!/file:|ERR_FILE|Failed to load resource|net::/.test(m.text()))errs.push(m.text());});H.errs=errs;
-  await H.ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;const zi=Object.fromEntries(A.ZONES.map((z,i)=>[z.key,i]));A.G.run.order=[zi.thistle,zi.deeps,zi.tundra,zi.mesa,zi.orchard];A.resetMaps();Object.keys(A.G.weather||{}).forEach(k=>A.G.weather[k]='clear');A.render();});
+async function boot(t,o){o=o||{};const H=await open({w:o.w||+(process.env.BW||1000),h:o.h||+(process.env.BH||560),mobile:!!o.mobile,dpr:o.dpr||1,pre:META(t,o.rm),before:o.before});const errs=[];H.page.on('console',m=>{if(m.type()==='error'&&!/file:|ERR_FILE|Failed to load resource|net::/.test(m.text()))errs.push(m.text());});H.errs=errs;
+  await H.ev(SEEDV=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;const zi=Object.fromEntries(A.ZONES.map((z,i)=>[z.key,i]));A.G.run.order=[zi.thistle,zi.deeps,zi.tundra,zi.mesa,zi.orchard];A.G.run.seed=SEEDV;/* the run seed lays out the town (where its buildings and lamps stand): pinned, so the same corners and lamps are in view on every run */A.resetMaps();Object.keys(A.G.weather||{}).forEach(k=>A.G.weather[k]='clear');A.render();},+(process.env.JSEED||424242));
   await H.until(()=>__A.V.screen==='world',null,{timeout:15000});await H.wait(700);
   await H.ev(()=>{window.__raf=window.requestAnimationFrame;window.requestAnimationFrame=()=>0;});await H.wait(150);return H;}
 // place the hero on an open tile of a map (the first '.' from the centre), set the hour (the time of day blend settled) and draw two frames
-const SCENE=`(s)=>{const A=__A;if(s.map==='t0')A.placeAt('t0',A.WS.x,A.WS.y,'d');else{const m=A.getMap(s.map);let sx=0,sy=0;for(let y=Math.floor(m.h/2);y<m.h&&!sx;y++)for(let x=Math.floor(m.w/2);x<m.w;x++)if(m.t[y][x]==='.'){sx=x;sy=y;break;}A.placeAt(s.map,sx,sy,'d');}
+// (the town too: the hero's own spot was the one of the town the journey first drew, before boot pinned the run seed, so the view was another on every run)
+const SCENE=`(s)=>{const A=__A;{const m=A.getMap(s.map);let sx=0,sy=0;for(let y=Math.floor(m.h/2);y<m.h&&!sx;y++)for(let x=Math.floor(m.w/2);x<m.w;x++)if(m.t[y][x]==='.'){sx=x;sy=y;break;}A.placeAt(s.map,sx,sy,'d');}
   A.WS.cam=null;A.G.clock=s.clock;A.TR.k=1;A.TR.from=null;A.TR.ph=null;A.V.modal=null;A.WS.dlg=null;A.render();const t=performance.now();A.worldDraw2(t);A.worldDraw2(t+16);return {id:A.WS.m.id,hd:!!A.HD.live};}`;
 // luma of the real pixels in a logical box of the world canvas (the composed frame in HD-2D)
 const LUMA=`(b)=>{const A=__A,cv=A.WS.cv,RW=cv._rw||cv.width,RH=cv._rh||cv.height,sc=RW/A.WS.vw,c=cv.getContext('2d');const x0=Math.max(0,Math.round(b[0]*sc)),y0=Math.max(0,Math.round(b[1]*sc)),w=Math.min(RW-x0,Math.round(b[2]*sc)),h=Math.min(RH-y0,Math.round(b[3]*sc));if(w<=0||h<=0)return null;
@@ -35,7 +36,12 @@ const LUMA=`(b)=>{const A=__A,cv=A.WS.cv,RW=cv._rw||cv.width,RH=cv._rh||cv.heigh
     const s=await ev(()=>{const A=__A,T=A.TW.get,m=A.WS.m,L=window.__L13;A.G.clock=247;A.TR.k=1;A.TR.from=null;A.TR.ph=null;A.worldDraw2(performance.now());const cv=m.__l13sh&&m.__l13sh.cv;if(!cv)return {cv:0};
       const sum=c=>{const d=c.getContext('2d').getImageData(0,0,c.width,c.height).data;let s=0;for(let i=3;i<d.length;i+=4)s+=d[i];return s;};return {cv:cv.length,day:sum(cv[0]),dusk:sum(cv[1]),dawn:sum(cv[2]),w:cv[0].width,h:cv[0].height,mw:Math.ceil(m.w*16/4),bld:(m.bld||[]).length};});
     chk(`2D: three masks per map at 4 px cells (${s.w}x${s.h}, ${s.bld} buildings); the dusk shadow is longer than the day's (${s.dusk} > ${s.day}), dawn too (${s.dawn})`,s.cv===3&&s.w===s.mw&&s.day>0&&s.dusk>s.day*1.3&&s.dawn>s.day*1.3);
-    const d=await ev(([SC,LU])=>{const A=__A,sc=(0,eval)(SC),lu=(0,eval)(LU),L=window.__L13,m=A.WS.m;sc({map:'t0',clock:247});const cx=Math.round(A.WS.cam.x),cy=Math.round(A.WS.cam.y),vw=A.WS.vw,vh=A.WS.vh;
+    const d=await ev(([SC,LU])=>{const A=__A,sc0=(0,eval)(SC),lu=(0,eval)(LU),L=window.__L13;sc0({map:'t0',clock:247});const m=A.WS.m;
+      // stand two tiles south of the east foot of a building (the first one with open ground there), so that corner is in view: the desktop view is
+      // 7 tiles high and from the middle of the town it often held no building's foot at all ("no corner in view", and a frame hardly darker)
+      let spot=null;for(const b of (m.bld||[])){const tx=b.x+b.w,ty=b.y+b.h-1;if(tx<m.w-2&&ty+2<m.h-1&&!A.solidAt(m,tx,ty)&&!A.solidAt(m,tx,ty+2)){spot=[tx,ty+2];break;}}
+      const sc=o=>{sc0(o);if(spot){A.placeAt('t0',spot[0],spot[1],'d');A.WS.cam=null;A.render();const t=performance.now();A.worldDraw2(t);A.worldDraw2(t+16);}};sc({map:'t0',clock:247});
+      const cx=Math.round(A.WS.cam.x),cy=Math.round(A.WS.cam.y),vw=A.WS.vw,vh=A.WS.vh;
       // the ground just east of the foot of every building in view (the day sun stands west-north-west, so the shadow falls east and a little south), on open ground: the one the shadow darkens most
       const pts=[];for(const b of (m.bld||[])){const x=(b.x+b.w)*16+4-cx,y=(b.y+b.h)*16-14-cy;const tx=b.x+b.w,ty=b.y+b.h-1;if(x>8&&y>8&&x<vw-14&&y<vh-14&&!A.solidAt(m,tx,ty))pts.push([x,y,12,12]);}
       const whole=[0,0,vw,vh],on={w:lu(whole),p:pts.map(b=>lu(b))};L.off=true;sc({map:'t0',clock:247});const off={w:lu(whole),p:pts.map(b=>lu(b))};L.off=false;sc({map:'t0',clock:247});
@@ -54,10 +60,15 @@ const LUMA=`(b)=>{const A=__A,cv=A.WS.cv,RW=cv._rw||cv.width,RH=cv._rh||cv.heigh
   // ---------- 2. night and interior pools (2D) ----------
   if(want('2')){const H=await boot('low');const {ev}=H;
     const r=await ev(([SC,LU])=>{const A=__A,sc=(0,eval)(SC),lu=(0,eval)(LU),L=window.__L13;sc({map:'t0',clock:700});const m=A.WS.m,cx=Math.round(A.WS.cam.x),cy=Math.round(A.WS.cam.y),vw=A.WS.vw,vh=A.WS.vh;
-      const lights=(m.lights||[]).concat(m.tl||[]).filter(q=>q[3]==='lamp'&&q[0]-cx>20&&q[0]-cx<vw-20&&q[1]-cy>20&&q[1]-cy<vh-30);if(!lights.length)return {none:true};const Lt=lights[0],near=[Lt[0]-cx-6,Lt[1]-cy+4,12,8];
+      let cx0=cx,cy0=cy;const inView=q=>q[3]==='lamp'&&q[0]-cx0>20&&q[0]-cx0<vw-20&&q[1]-cy0>20&&q[1]-cy0<vh-30;let lights=(m.lights||[]).concat(m.tl||[]).filter(inView);
+      if(!lights.length){// no lamp in this view (the desktop view is 7 tiles high): stand under the first lamp of the town, as the dungeon check below walks to its torch
+        const any=(m.lights||[]).concat(m.tl||[]).filter(q=>q[3]==='lamp');for(const q of any){const tx=Math.floor(q[0]/16);let ty=Math.floor(q[1]/16)+1;while(ty<m.h-1&&A.solidAt(m,tx,ty))ty++;if(ty>=m.h-1||ty-Math.floor(q[1]/16)>3)continue;A.placeAt('t0',tx,ty,'u');A.WS.cam=null;A.render();const t=performance.now();A.worldDraw2(t);A.worldDraw2(t+16);cx0=Math.round(A.WS.cam.x);cy0=Math.round(A.WS.cam.y);if(inView(q)){lights=[q];break;}}
+        if(!lights.length)return {none:true,lamps:any.length};}
+      const HX=A.WS.x,HY=A.WS.y,sc2=o=>{sc(o);A.placeAt('t0',HX,HY,'u');A.WS.cam=null;A.render();const t=performance.now();A.worldDraw2(t);A.worldDraw2(t+16);};
+      const Lt=lights[0],near=[Lt[0]-cx0-6,Lt[1]-cy0+4,12,8];
       // a spot of open ground at least 70 px from every light
-      let far=null;for(let y=24;y<vh-24&&!far;y+=8)for(let x=24;x<vw-24;x+=8){const wx=x+cx,wy=y+cy;if(A.solidAt(m,Math.floor(wx/16),Math.floor(wy/16)))continue;if(Math.abs(wx-(A.WS.px+8))<40&&Math.abs(wy-(A.WS.py+8))<40)continue;if((m.lights||[]).concat(m.tl||[]).every(q=>Math.hypot(q[0]-wx,q[1]-wy)>70)){far=[x-3,y-3,6,6];break;}}
-      const on={near:lu(near),far:far&&lu(far)};L.off=true;sc({map:'t0',clock:700});const off={near:lu(near),far:far&&lu(far)};L.off=false;return {on,off,far:!!far,n:L.n.lt};},[SCENE,LUMA]);
+      let far=null;for(let y=24;y<vh-24&&!far;y+=8)for(let x=24;x<vw-24;x+=8){const wx=x+cx0,wy=y+cy0;if(A.solidAt(m,Math.floor(wx/16),Math.floor(wy/16)))continue;if(Math.abs(wx-(A.WS.px+8))<40&&Math.abs(wy-(A.WS.py+8))<40)continue;if((m.lights||[]).concat(m.tl||[]).every(q=>Math.hypot(q[0]-wx,q[1]-wy)>70)){far=[x-3,y-3,6,6];break;}}
+      const on={near:lu(near),far:far&&lu(far)};L.off=true;sc2({map:'t0',clock:700});const off={near:lu(near),far:far&&lu(far)};L.off=false;return {on,off,far:!!far,n:L.n.lt};},[SCENE,LUMA]);
     chk(`2D night in a town: the ground beside a lamp is brighter with the pools (${r.none?'no lamp in view':r.on.near.toFixed(1)+' > '+r.off.near.toFixed(1)}), the ground away from the lights darker (${r.far?r.on.far.toFixed(1)+' < '+r.off.far.toFixed(1):'no far spot'})`,!r.none&&r.on.near>r.off.near+4&&(!r.far||r.on.far<r.off.far-2));
     const f=await ev(([SC,LU])=>{const A=__A,sc=(0,eval)(SC),lu=(0,eval)(LU),L=window.__L13;sc({map:'f1',clock:700});sc({map:"d1",clock:700});/* the dungeon is built from its field */const m=A.WS.m,cx=Math.round(A.WS.cam.x),cy=Math.round(A.WS.cam.y),vw=A.WS.vw,vh=A.WS.vh;
       const all=(m.lights||[]).concat(m.tl||[]);let Lt=all.find(q=>(q[3]==='torch'||q[3]==='fire')&&q[0]-cx>20&&q[0]-cx<vw-20&&q[1]-cy>20&&q[1]-cy<vh-30);
@@ -101,14 +112,17 @@ const LUMA=`(b)=>{const A=__A,cv=A.WS.cv,RW=cv._rw||cv.width,RH=cv._rh||cv.heigh
       // the return from a won battle: a bloom (bright), not a fade (dark)
       const T4=T3+3000;L.bloom=T4-100;WS.fadeIn=T4;A.worldDraw2(T4+60);const bloom=lu([0,0,vw,vh]);WS.fadeIn=0;L.bloom=0;A.worldDraw2(T4+2000);
       // reduced motion: plain fades, the hero's spot as dark as the corners
-      A.META.cfg.rmotion=true;const T5=T4+5000;WS.fade=T5;A.worldDraw2(T5+115);const rmMid=lu([hero[0]-10,hero[1]-10,20,20]),rmCorner=lu(fc);WS.fade=0;A.META.cfg.rmotion=false;A.worldDraw2(T5+2000);
-      return {hd:s.hd,q,plain,late,cov,left,after,ref,mid,corner,corner2,closed,midIn,cornerIn,bloom,rmMid,rmCorner,hero,vw,vh,n:L.n.tr,err:L.err};},[SCENE,LUMA]);
+      A.META.cfg.rmotion=true;const T5=T4+5000;WS.fade=T5;A.worldDraw2(T5+115);const rmMid=lu([hero[0]-10,hero[1]-10,20,20]),rmCorner=lu(fc);WS.fade=0;A.worldDraw2(T5+2000);const baseMid=lu([hero[0]-10,hero[1]-10,20,20]),baseCorner=lu(fc);A.META.cfg.rmotion=false;A.worldDraw2(T5+2016);
+      return {hd:s.hd,q,plain,late,cov,left,after,ref,mid,corner,corner2,closed,midIn,cornerIn,bloom,rmMid,rmCorner,baseMid,baseCorner,hero,vw,vh,n:L.n.tr,err:L.err};},[SCENE,LUMA]);
     const tag=`${t} ${w}x${h} (${r.hd?'HD-2D':'2D'})`;
     chk(`${tag}: the battle start still whitens every quarter at p = .2 and .5 (${r.q.join(' / ')})`,r.q.every(v=>v>=.6));
     chk(`${tag}: at p = .9 the shards cover the view (${(r.cov*100).toFixed(0)}% of the pixels changed), darkening toward the cut (luma ${r.late.toFixed(1)} < ${r.plain.toFixed(1)}), nothing left behind after it (${r.left} dark pixels, luma ${r.after.toFixed(1)} against ${r.ref.toFixed(1)} without the flash)`,r.cov>=.9&&r.late<r.plain*.85&&r.left<=4&&Math.abs(r.after-r.ref)<1.5);
     chk(`${tag}: doorway iris halfway out: the hero's spot stays lit (${r.mid.toFixed(1)}) while the far corners are dark (${r.corner.toFixed(1)}, ${r.corner2.toFixed(1)}); closed at the end (${r.closed.toFixed(1)}); halfway in: hero ${r.midIn.toFixed(1)}, far corner ${r.cornerIn.toFixed(1)}`,r.mid>30&&r.corner<8&&r.corner2<12&&r.closed<6&&r.midIn>30&&r.cornerIn<8);
     chk(`${tag}: the return from a won battle is a bloom (luma ${r.bloom.toFixed(1)} > ${r.plain.toFixed(1)})`,r.bloom>r.plain+20);
-    chk(`${tag}: reduced motion keeps the plain fade (hero ${r.rmMid.toFixed(1)} about the corner ${r.rmCorner.toFixed(1)})`,Math.abs(r.rmMid-r.rmCorner)<25&&r.rmCorner<r.plain);
+    // a plain fade darkens every spot by the same share. The two spots' own brightness is not compared any more: a lit window by the hero and a dark roof in
+    // the corner are 25 apart before any fade (hero 51 against corner 26 failed here with the fade working)
+    {const kM=r.rmMid/Math.max(1,r.baseMid),kC=r.rmCorner/Math.max(1,r.baseCorner);
+    chk(`${tag}: reduced motion keeps the plain fade (the hero's spot is at ${(kM*100).toFixed(0)}% of its own brightness, the far corner at ${(kC*100).toFixed(0)}%)`,Math.abs(kM-kC)<.2&&kM<.95&&r.rmCorner<r.plain||JSON.stringify([r.rmMid,r.baseMid,r.rmCorner,r.baseCorner,r.plain]));}
     chk(`${tag}: ${r.n} transition frames, no light13 errors, no console errors`,r.n>0&&r.err.length===0&&H.errs.length===0||JSON.stringify(r.err.concat(H.errs)));
     await H.browser.close();}}
   // ---------- 5. the idle limiter still holds on a phone ----------

@@ -13,12 +13,14 @@ if(tier==='low'){
  chk('every player skill ('+r.n+') maps to a kind effect',r.n>250&&r.bad.length===0||JSON.stringify(r.bad.slice(0,6)));
  chk('every kind is used by some skill',['slash','blunt','pierce','ranged','heal','buff','debuff','fire','shadow'].every(k=>r.kinds[k])||JSON.stringify(r.kinds));
 }
-await ev(()=>{__A.TW.get('startBattle')({stage:0,kind:'field'});});await wait(800);
+// a fixed fight (two Mosslings, clear skies) and foes that cannot dodge: the journey's own first fight could be a flyer or a nimble foe, and a blow that
+// missed drew no shock ring and no hit count (the two checks that failed now and then)
+await ev(()=>{const A=__A;A.TW.get('startBattle')({stage:0,kind:'field',weather:'clear',foes:[A.makeEnemy(A.MON.mossling,5),A.makeEnemy(A.MON.mossling,5)]});A.B.en.forEach(e=>{e.S.eva=0;});});await wait(800);
 const r=await ev(()=>{const T=__A.TW.get,B=T('B'),FK=T('FK'),BV=T('BV'),o={sig:{},poses:{},rec:{},parts:{}};
   const SPECS={slash:{k:'phys',t:'one',dl:'slash'},blunt:{k:'phys',t:'one',dl:'blunt'},pierce:{k:'phys',t:'one',dl:'piercing'},ranged:{k:'phys',t:'one',dl:'ranged'},
    fire:{k:'mag',t:'one',el:'fire'},water:{k:'mag',t:'one',el:'water'},earth:{k:'mag',t:'one',el:'earth'},wind:{k:'mag',t:'one',el:'wind'},lightning:{k:'mag',t:'one',el:'lightning'},ice:{k:'mag',t:'one',el:'ice'},light:{k:'mag',t:'one',el:'light'},shadow:{k:'mag',t:'one',el:'shadow'},
    heal:{k:'heal',t:'ally'},buff:{k:'status',t:'ally',fx:[['might',1]]},debuff:{k:'status',t:'one',fx:[['weaken',1]]}};
-  B.front.forEach(u=>u.hp=Math.floor(u.S.mhp*.5));B.en.forEach(e=>{e.hp=99999;});
+  B.front.forEach(u=>{u.hp=Math.floor(u.S.mhp*.5);u.st={};});B.en.forEach(e=>{e.hp=99999;e.S.eva=0;});
   Object.keys(SPECS).forEach(n=>{const sk=Object.assign({id:'t_'+n,n:'T '+n,pw:1,mp:0,cost:1,hits:1},SPECS[n]),a=B.front[0];B.cur=a;
     const tg=sk.t==='ally'?[B.front[1]]:[B.en[0]];BV.P.length=0;FK.sig={};a.actT=0;T('perform')(a,sk,tg);const now=performance.now();a._act=0;T('onAction')(a,now);
     T('battleFrame')(now+50);T('battleFrame')(now+250);o.sig[n]=Object.assign({},...Object.values(FK.sig));o.parts[n]=BV.P.length;

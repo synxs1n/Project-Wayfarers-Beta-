@@ -16,8 +16,10 @@ const {open,chk,done}=require('./pw');
 const only=process.env.ONLY||'',want=n=>!only||only.split(',').includes(n);
 setTimeout(()=>{console.log('FAIL watchdog: v188a ran over 420 s');process.exit(1);},420000).unref();
 const QUIET="localStorage.clear();localStorage.setItem('aurelis-m29off','1');/* 0.22.29: this test taps the classic menu's section chips; the phone menu has v213a */localStorage.setItem('aurelis-meta-v1',JSON.stringify({cfg:{speed:1,enc:'off',music:0,sfx:0,hints:false,tips:false,rmotion:true}}));(()=>{let s=7;Math.random=()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296;};})();";// sections 2 to 6 run on a seeded Math.random (natures, draws)
+// o.freeze: the journey is started inside H.det (pw.js), so the realms, and with them what the Smithy sells, are the same on every run. The seed in
+// QUIET alone did not do that: frames drawn before the start take numbers from the same stream, a different count on a busy machine.
 async function boot(o){const H=await open(o);
-  await H.ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;A.render();});
+  await (o.freeze?H.det:H.ev)(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;A.render();},null,+(process.env.JSEED||7));
   await H.until(()=>__A.V.screen==='world',null,{timeout:15000});await H.wait(400);return H;}
 // buttons of the open window that something outside the window covers
 const COVERED=()=>{const out=[],M=document.querySelector('#modal')||document.body;[...M.querySelectorAll('.mgrp button,.msub button')].forEach(b=>{const r=b.getBoundingClientRect();if(!r.width)return;
@@ -63,20 +65,22 @@ const SETUP=`([stage,gold,mats])=>{const A=__A,G=A.G;G.stage=stage;G.cleared=[0,
     chk(`1 ${w}x${h}: a hint shown under an open Menu waits, stays away in the Smithy and shows once the windows are closed (${lt})`,/^none,none,(?!none)\w+,false$/.test(lt)||lt);
     await H.browser.close();}
 
-  const H=await boot({w:390,h:844,mobile:true,pre:QUIET});const errs=[];H.page.on('console',m=>{if(m.type()==='error'&&!/file:|ERR_FILE|Failed to load resource|net::/.test(m.text()))errs.push(m.text());});
+  const H=await boot({w:390,h:844,mobile:true,pre:QUIET,freeze:true});const errs=[];H.page.on('console',m=>{if(m.type()==='error'&&!/file:|ERR_FILE|Failed to load resource|net::/.test(m.text()))errs.push(m.text());});
   // ---------- 2 ----------
   if(want('2')){
-    // the hand-me-down: a low level warrior in a Rare blade and a high level warrior in a Common one, gold for one Epic weapon
-    const hd=await H.ev(()=>{const A=__A,G=A.G;G.stage=3;G.cleared=[true,true,true];G.pcV=1;G.bossWon={0:1};const W=Object.keys(A.TPL).filter(id=>A.TPL[id].cls==='warrior'&&!A.TPL[id].mon&&!(A.LEGEND_IDS||[]).includes(id)).slice(0,2);
-      G.roster={};G.party=[];W.forEach((id,i)=>{const c=G.roster[id]=A.newChar(id,i?34:3,0);c.eq={w:i?'w_blade_0':'w_blade_2',a:'a_mail_3+3',c:'c_ep0+3',k:'k_cape_3+3'};G.party.push(id);});
+    // the hand-me-down: a low level warrior in a Rare blade and a high level warrior in an Uncommon one, gold for one Epic weapon
+    // under H.det too: newChar rolls each warrior's nature, and which of the two the plan serves first follows from their stats (on some rolls the
+    // high level one bought a greatsword and nothing was handed down: the check failed about one run in ten)
+    const hd=await H.det(()=>{const A=__A,G=A.G;G.stage=3;G.cleared=[true,true,true];G.pcV=1;G.bossWon={0:1};const W=Object.keys(A.TPL).filter(id=>A.TPL[id].cls==='warrior'&&!A.TPL[id].mon&&!(A.LEGEND_IDS||[]).includes(id)).slice(0,2);
+      G.roster={};G.party=[];W.forEach((id,i)=>{const c=G.roster[id]=A.newChar(id,i?34:3,0);c.eq={w:i?'w_blade_1'/* Uncommon, not Common: with a Common blade the two heroes' gains from the one Epic weapon were within half a point of each other (17.8% and 17.2%), and the stat rolls decided who bought it */:'w_blade_2',a:'a_mail_3+3',c:'c_ep0+3',k:'k_cape_3+3'};G.party.push(id);});
       Object.keys(A.MATS).forEach(k=>{G.mats[k]=0;});G.gear=[];G.gold=A.GEAR.w_blade_3.price;Object.values(G.roster).forEach(A.refresh);A.V.modal={type:'smithy',tab:'shop',sec:'all'};A.render();
       const one=window.__GP46.plan().picks.map(p=>p.cid+':'+p.id+':'+p.src);/* the old one round planner (__G16.plan, p3SmithPlan) is gone: this is the same plan the button shows */A.ACT.p3Smith();const P=A.V.modal.plan,all=P.picks.map(p=>p.cid+':'+p.id+':'+p.src+'@'+p.round);
       const eq0=W.map(id=>G.roster[id].eq.w),gear0=G.gear.slice(),gold0=G.gold;A.ACT.p3SmithGo();const m=A.V.modal,eq1=W.map(id=>G.roster[id].eq.w),again=window.__GP46.plan().picks.length;
       const res={one,all,rounds:P.rounds,type:m&&m.type,p3:m&&m.p3,eq0,eq1,again,W,rows:(m.rows||[]).length};
-      A.ACT.autoEqUndo();res.undo=W.map(id=>G.roster[id].eq.w);res.pack=G.gear.slice().sort();res.count=G.gear.length+W.reduce((s,id)=>s+Object.values(G.roster[id].eq).filter(Boolean).length,0);return res;});
+      A.ACT.autoEqUndo();res.undo=W.map(id=>G.roster[id].eq.w);res.pack=G.gear.slice().sort();res.count=G.gear.length+W.reduce((s,id)=>s+Object.values(G.roster[id].eq).filter(Boolean).length,0);return res;},null,+(process.env.JSEED||7));
     chk(`2 hand-me-down: the plan read directly has ${hd.one.length} steps (${hd.one.join(', ')}), the button's plan ${hd.all.length} in ${hd.rounds} rounds (${hd.all.join(', ')})`,hd.one.length===hd.all.length&&hd.all.length===2&&/:buy@1$/.test(hd.all[0])&&/:pack@\d$/.test(hd.all[1])||JSON.stringify(hd));/* 0.22.46 (gear46.js): the hand-me-down is taken in the same walk, as soon as the old blade is in the pack; both wear a charm here so the one purse goes to the weapon */
     chk(`2 hand-me-down: one press and both wear the better blade (${hd.eq0.join(', ')} -> ${hd.eq1.join(', ')}), a plan right after finds nothing (${hd.again})`,hd.type==='autoEq'&&hd.eq1[1]==='w_blade_2'&&hd.eq1[0]!=='w_blade_2'&&hd.again===0&&hd.rows===2||JSON.stringify(hd));
-    chk(`2 hand-me-down: Undo puts both back in what they wore and keeps what was bought in the pack (${hd.undo.join(', ')}; pack ${hd.pack.join(', ')})`,hd.undo[0]==='w_blade_2'&&hd.undo[1]==='w_blade_0'&&hd.pack.length===1&&hd.count===9||JSON.stringify(hd));
+    chk(`2 hand-me-down: Undo puts both back in what they wore and keeps what was bought in the pack (${hd.undo.join(', ')}; pack ${hd.pack.join(', ')})`,hd.undo[0]==='w_blade_2'&&hd.undo[1]==='w_blade_1'&&hd.pack.length===1&&hd.count===9||JSON.stringify(hd));
     // the general rule over realms and purses: the press spends, the next plan is empty, nothing is lost or doubled
     const out=[];for(const [stage,gold,mats] of [[0,400,60],[1,3000,60],[1,900,4],[2,9000,60],[2,60000,60],[3,20000,8],[4,200000,60]]){await H.ev(`(${SETUP})(${JSON.stringify([stage,gold,mats])})`);
       const r=await H.ev(()=>{const A=__A,G=A.G,cnt=()=>G.gear.length+Object.values(G.roster).reduce((s,c)=>s+Object.values(c.eq).filter(Boolean).length,0);

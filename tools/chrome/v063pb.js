@@ -6,7 +6,9 @@ await ev(()=>{__A.ACT.new();['mira','lumen','oren'].forEach(id=>__A.ACT.pickS(id
 
 // ---- catch up against the roster's top level ----
 const fight=`(lvs,party)=>{const A=__A,G=A.G,o={};G.stage=0;G.roster={};Object.keys(lvs).forEach(id=>{const c=A.newChar(id,lvs[id],0);c.xp=0;G.roster[id]=c;c.S=A.calcStats(c);c.hp=c.S.mhp;c.mp=c.S.mmp;});
-  G.party=party.slice();A.V.modal=null;A.startBattle({stage:0,kind:'field',weather:'clear'});const B=A.B,xp0={};B.front.concat(B.back).forEach(c=>xp0[c.id]=c.xp);
+  G.party=party.slice();A.V.modal=null;
+  /* a fixed fight (two of the first monster, level 4): the journey's own draw could pay enough for the hero who is behind to level up (235 x 1.63 is over what level 9 needs), and the gain below is read from the xp counter, which starts again at a level */
+  const k0=Object.keys(A.MON).filter(k=>!A.MON[k].mimic)[0];A.startBattle({stage:0,kind:'field',weather:'clear',foes:[A.makeEnemy(A.MON[k0],4),A.makeEnemy(A.MON[k0],4)]});const B=A.B,xp0={};B.front.concat(B.back).forEach(c=>xp0[c.id]=c.xp);
   A.win();const info=A.V.modal.info;o.rows=(info.catchup||[]).map(r=>({id:r.id,pct:r.pct,top:r.top,gap:r.gap}));o.gain={};B.front.concat(B.back).forEach(c=>o.gain[c.id]=c.xp-xp0[c.id]);
   o.html=A.mResult(info);A.V.modal=null;A.finishBattle('win');A.V.modal=null;return o;}`;
 // party mira 12, lumen 9, oren 12 (front) + brann 12 (reserve); at camp: tess 14 (the roster's top level)

@@ -1,7 +1,11 @@
 // Beta v0.9.5 menus, item 3: one Upgrade button per gear slot. For every party hero and slot, at several purses and material stocks,
 // the step the Upgrade button offers is checked against a brute force that really performs every single next step on a copy of the
 // journey (equip a spare, buy, forge, temper the worn piece with or without buying missing materials, Echoforge) and measures the
-// hero's gear score: the pick must be the best gain the player can pay for (the cheaper on a tie). Then the button is pressed and gold,
+// hero's gear score. THE RULE since 0.22.17 (p3shop.js upgCmp / upgBest, one engine since gear46.js): of the steps that make the hero
+// stronger today and can be paid for now, the one that ENDS best at max temper comes first (within P3_ULT_EPS), then the bigger gain today,
+// then the cheaper. A purchase or a forged piece must beat the worn piece at max temper (ceilOk); a step can be a chain (a spare, a buy or
+// a forge tempered +1..+3 in one press, with the materials on hand). The brute force performs all of these and ranks them by that rule
+// (it ranked by today's gain before, which is what the game did until 0.22.17). Then the button is pressed and gold,
 // materials and the equipped piece must match what the brute force got for that step. Also: away from town only the pack counts,
 // Show all options opens the full lists (and comes back), the hero sheet and the Smithy carry the buttons, Upgrade whole party stays.
 // Usage: PWHTML=../../out/aurelis3.html node v095m3.js
@@ -17,33 +21,42 @@ await ev(()=>{const A=__A,T=k=>A.TW.get(k);
     score(c){return T('loadoutScore')(c,c.S);},
     // every single next step for one hero and slot, performed for real; town: whether shops count
     steps(cid,sl,town){const G=A.G,c0=G.roster[cid],S0=this.snap(),out=[],slotOk=(c,id)=>{const g=T('gearOf')(id);return !!g&&g.slot===sl&&T('canEquip')(c,id)&&(!g.only||g.only===c.id);};
-      const run=(k,id,f)=>{const c=G.roster[cid],b=this.score(c),g0=G.gold,m0=Object.assign({},G.mats);let ok=false;try{ok=f(c);}catch(e){ok=false;}
+      const ult=c=>{const F=T('FITC');if(F)Object.keys(F).forEach(k=>delete F[k]);return T('maxScoreOf')(c,sl,c.eq[sl]||null);},u0=ult(c0),ceil=u=>u-u0>.01&&(u0<=0||(u-u0)/u0>=.005);
+      const run=(k,id,f,x)=>{const c=G.roster[cid],b=this.score(c),g0=G.gold,m0=Object.assign({},G.mats);let ok=false;try{ok=f(c);}catch(e){ok=false;}
         if(ok){const c1=G.roster[cid];T('refresh')(c1);const used={};Object.keys(m0).concat(Object.keys(G.mats)).forEach(m=>{const d=(m0[m]||0)-(G.mats[m]||0);if(d)used[m]=d;});
-          out.push({k,id,gain:this.score(c1)-b,spent:g0-G.gold,used,matN:Object.values(used).filter(v=>v>0).reduce((a,v)=>a+v,0),eq:c1.eq[sl],gold:G.gold,mats:JSON.stringify(Object.fromEntries(Object.entries(G.mats).filter(([,v])=>v))),gear:G.gear.slice().sort().join()});}
+          const u=ult(c1);if((k==='buy'||k==='forge'||k==='chain')&&!ceil(u)){this.restore(S0);return;}/* the ceiling rule: it must end above the worn piece */
+          out.push(Object.assign({k,id:x?c1.eq[sl]:id,u,gain:this.score(c1)-b,spent:g0-G.gold,used,matN:Object.values(used).filter(v=>v>0).reduce((a,v)=>a+v,0),eq:c1.eq[sl],gold:G.gold,mats:JSON.stringify(Object.fromEntries(Object.entries(G.mats).filter(([,v])=>v))),gear:G.gear.slice().sort().join()},x||{}));}
         this.restore(S0);};
-      [...new Set(G.gear)].filter(id=>slotOk(c0,id)).forEach(id=>run('pack',id,c=>{T('equipGear')(c,id);return c.eq[sl]===id;}));
+      // a chain: get the base (a spare, a buy, a forge), temper it n times as a spare with the materials on hand, put it on
+      const chain=(src,base,get)=>{if(!T('forgeCost')(base))return;for(let n=1;n<=3;n++)run('chain',base,c=>{if(!get())return false;let id=base;for(let i=0;i<n;i++){const j=G.gear.indexOf(id);if(j<0)return false;const fc=T('forgeCost')(id);if(!fc||!T('hasMats')(fc.m)||G.gold<fc.gold)return false;const nx=T('forge')('spare',j);if(!nx)return false;id=nx;}
+        T('equipGear')(c,id);return c.eq[sl]===id;},{base,src,steps:n});};
+      [...new Set(G.gear)].filter(id=>slotOk(c0,id)).forEach(id=>{run('pack',id,c=>{T('equipGear')(c,id);return c.eq[sl]===id;});if(town)chain('pack',id,()=>true);});
       if(town){
         const shop=[...new Set(T('shopStock')('weapons').concat(T('shopStock')('armor'),T('shopStock')('charms')))].filter(id=>A.GEAR[id]&&slotOk(c0,id));
-        shop.forEach(id=>run('buy',id,c=>{const p=A.GEAR[id].price;if(G.gold<p)return false;G.gold-=p;G.gear.push(id);T('equipGear')(c,id);return c.eq[sl]===id;}));
-        T('RECIPES').forEach((r,i)=>{if(!r.id||!T('recipeOpen')(r)||!slotOk(c0,r.id))return;run('forge',r.id,c=>{if(!T('craft')(r))return false;T('equipGear')(c,r.id);return c.eq[sl]===r.id;});});
+        shop.forEach(id=>{run('buy',id,c=>{const p=A.GEAR[id].price;if(G.gold<p)return false;G.gold-=p;G.gear.push(id);T('equipGear')(c,id);return c.eq[sl]===id;});
+          chain('buy',id,()=>{const p=A.GEAR[id].price;if(G.gold<p)return false;G.gold-=p;G.gear.push(id);return true;});});
+        T('RECIPES').forEach((r,i)=>{if(!r.id||!T('recipeOpen')(r)||!slotOk(c0,r.id))return;run('forge',r.id,c=>{if(!T('craft')(r))return false;T('equipGear')(c,r.id);return c.eq[sl]===r.id;});chain('forge',r.id,()=>!!T('craft')(r));});
         const cw=G.roster[cid];if(cw.eq[sl]&&T('forgeCost')(cw.eq[sl]))run('temper',T('forgeCost')(cw.eq[sl]).next,c=>{const fc=T('forgeCost')(c.eq[sl]);if(!T('hasMats')(fc.m)){const P=T('buyPlan')(fc.m);if(!P.ok||!P.any||G.gold<P.gold+fc.gold)return false;if(!T('doBuyPlan')(P))return false;}return !!T('forge')('eq',{cid,slot:sl});});
         if(sl==='w')Object.keys(T('ECHOFORGE')).forEach(f=>{const c2=G.roster[cid],worn=c2.eq.w&&T('baseIdOf')(c2.eq.w)==='w_'+f+'_5';if(!T('efBaseIn')(f)&&!worn)return;
           run('ef','w_'+f+'_ef',c=>{if(!T('efBaseIn')(f)||(worn&&T('plusOf')(c.eq.w)>T('efBaseIn')(f).plus))T('unequipGear')(c,'w');const n=G.gear.length;A.ACT.efForge(f);A.V.modal=null;const id=G.gear.find(x=>String(x).startsWith('w_'+f+'_ef'));if(!id)return false;T('equipGear')(c,id);return c.eq.w===id;});});}
-      const K=['pack','buy','forge','temper','ef'];
-      return out.filter(o=>o.gain>.01).sort((a,b)=>(b.gain-a.gain)||(a.spent-b.spent)||(a.matN-b.matN)||(K.indexOf(a.k)-K.indexOf(b.k)));},
+      return out.filter(o=>o.gain>.01);},
+    // x comes before y by the rule: a better end at max temper (beyond P3_ULT_EPS), then more gain today, then less gold
+    beats(x,y){const m=Math.max(x.u,y.u,1);if(Math.abs(x.u-y.u)>m*.004)return x.u>y.u;if(Math.abs(x.gain-y.gain)>1e-6)return x.gain>y.gain;return x.spent<y.spent;},
     // the Upgrade pick against the brute force, then press it and compare the outcome
     check(cid,sl,press){const G=A.G;this.restore(this.snap());// both sides start from the same plain copy of the journey
       const eq0=G.roster[cid].eq[sl],town=A.inTown(),bf=this.steps(cid,sl,town),c=G.roster[cid],u=window.__P3.upgBest(c,sl).best,o={cid,sl,town,n:bf.length,eq0,eq1:c.eq[sl]};
-      const best=bf[0]||null;o.bf=best&&{k:best.k,id:best.id,gain:+best.gain.toFixed(4),spent:best.spent};o.up=u&&{k:u.k,id:u.id,gain:+u.d.toFixed(4),gold:u.gold};
-      const mine=u&&bf.find(x=>x.k===u.k&&(x.id===u.id||(u.k==='ef'&&String(u.id).startsWith(x.id))));
-      // same: nothing on both sides, or the picked step really gains what it says, as much as the best, for no more gold
-      o.same=!best&&!u||!!(best&&mine&&Math.abs(mine.gain-u.d)<1e-6&&Math.abs(mine.gain-best.gain)<1e-6&&mine.spent<=best.spent);
-      if(u&&!o.same)o.alt=bf.slice(0,4).map(x=>x.k+':'+x.id+':'+x.gain.toFixed(3)+':'+x.spent);
+      o.up=u&&{k:u.k,id:u.id,gain:+u.d.toFixed(4),gold:u.gold,src:u.src};
+      const mine=u&&bf.find(x=>x.k===u.k&&(x.id===u.id||(u.k==='ef'&&String(u.id).startsWith(x.id)))&&(u.k!=='chain'||(x.base===u.base&&x.src===u.src&&x.steps===u.steps)));
+      // same: nothing on both sides, or the picked step is one the brute force could really do, gains what it says, and no other step comes before it by the rule
+      const over=mine?bf.filter(x=>x!==mine&&this.beats(x,mine)):bf;o.bf=over[0]&&{k:over[0].k,id:over[0].id,gain:+over[0].gain.toFixed(4),spent:over[0].spent,u:+over[0].u.toFixed(2)};
+      o.same=!bf.length&&!u||!!(mine&&Math.abs(mine.gain-u.d)<1e-6&&!over.length);
+      if(!o.same){o.mine=mine&&{u:+mine.u.toFixed(2),spent:mine.spent};o.alt=over.slice(0,4).map(x=>x.k+':'+x.id+':'+x.gain.toFixed(3)+':'+x.spent+':'+x.u.toFixed(2));}
       if(press&&u){A.V.modal={type:'upg',cid,sl};A.render();const b=document.querySelector('#modal [data-act="upgDo"]');o.btn=!!b;
-        const exp=bf.find(x=>x.k===u.k&&(x.id===u.id||(u.k==='ef'&&String(x.id).startsWith('w_')))&&Math.abs(x.gain-u.d)<1e-6);
+        const exp=mine&&Math.abs(mine.gain-u.d)<1e-6?mine:null;
         if(b)b.click();const c1=G.roster[cid];
         o.after={eq:c1.eq[sl],gold:G.gold,mats:JSON.stringify(Object.fromEntries(Object.entries(G.mats).filter(([,v])=>v))),gear:G.gear.slice().sort().join()};
-        o.match=!!exp&&exp.eq===o.after.eq&&exp.gold===o.after.gold&&exp.mats===o.after.mats&&exp.gear===o.after.gear;if(!o.match)o.exp=exp&&{eq:exp.eq,gold:exp.gold,mats:exp.mats};}
+        /* the gold within 2% (as v225a): a guild's rank, and with it the Smithy's prices, moves while the brute force forges, and that standing is not part of the journey copy it restores */
+        o.match=!!exp&&exp.eq===o.after.eq&&Math.abs(exp.gold-o.after.gold)<=Math.max(1,.02*(exp.spent||0))&&exp.mats===o.after.mats&&exp.gear===o.after.gear;if(!o.match)o.exp=exp&&{eq:exp.eq,gold:exp.gold,mats:exp.mats};}
       return o;}};});
 const setup=(gold,rich,extra)=>ev(([gold,rich,extra])=>{const A=__A,G=A.G;G.gold=gold;Object.keys(G.mats).forEach(k=>G.mats[k]=0);G.pbuy={};
   if(rich)['copper','iron','oak','ash','fang','hide','ichor','scale','grit','bluecap','healroot',A.TW.get('ZS')(G.stage).mat].forEach(k=>G.mats[k]=rich);
@@ -63,9 +76,12 @@ chk('Upgrade picks the brute force best step for every hero and slot (5 purses)'
 // so the Smithy's ore and parts are bought on the spot
 await setup(200000,0);
 const tb=await ev(()=>{const A=__A,G=A.G,T=k=>A.TW.get(k),o={};
-  for(const cid of G.party){const c=G.roster[cid],w=T('shopStock')('weapons').filter(id=>T('canEquip')(c,id)).sort((a,b)=>A.GEAR[b].tier-A.GEAR[a].tier)[0];if(!w)continue;
-    c.eq.w=w+'+1';T('refresh')(c);const fc=T('forgeCost')(c.eq.w);if(!fc)continue;const rel=T('ZS')(G.stage).mat;G.mats[rel]=(fc.m[rel]||0);
-    const t=window.__P3.upgOpts(c,'w').find(x=>x.k==='temper');o.cid=cid;o.t=t&&{ok:t.ok,buy:!!t.buy,gold:t.gold,base:fc.gold};break;}
+  // the hero wears, at +1, the shop weapon that ends best for them at max temper (the highest tier is not always that one: a mage's Tome
+  // ends above the Staff of the same tier), so nothing bought or forged beats it and the next temper is the step
+  for(const cid of G.party){const c=G.roster[cid],ws=T('shopStock')('weapons').filter(id=>T('canEquip')(c,id)&&T('forgeCost')(id+'+1')).sort((a,b)=>T('maxScoreOf')(c,'w',b)-T('maxScoreOf')(c,'w',a));
+    for(const w of ws.slice(0,3)){c.eq.w=w+'+1';T('refresh')(c);const fc=T('forgeCost')(c.eq.w);if(!fc)continue;const rel=T('ZS')(G.stage).mat;G.mats[rel]=(fc.m[rel]||0);
+      const t=window.__P3.upgOpts(c,'w').find(x=>x.k==='temper'),b=window.__P3.upgBest(c,'w').best;if(!t||!b||b.k!=='temper'){G.mats[rel]=0;continue;}o.cid=cid;o.t={ok:t.ok,buy:!!t.buy,gold:t.gold,base:fc.gold};break;}
+    if(o.cid)break;c.eq.w=null;T('refresh')(c);}
   o.r=o.cid&&window.__BF.check(o.cid,'w',true);return o;});
 console.log(JSON.stringify(tb));
 chk('temper buys the missing ore and parts from the Smithy as part of the step',tb.t&&tb.t.ok&&tb.t.buy&&tb.t.gold>tb.t.base||JSON.stringify(tb));
@@ -83,7 +99,9 @@ for(const [gold,rich] of [[400,3],[5000,6],[200000,9]]){await setup(gold,rich);
 console.log('pressed',presses.length,'kinds',JSON.stringify(presses.reduce((o,r)=>(o[r.up.k]=(o[r.up.k]||0)+1,o),{})));
 const badP=presses.filter(r=>!r.same||!r.btn||!r.match);
 chk('pressing Upgrade does that step: gold, materials and gear as the brute force',presses.length>=6&&badP.length===0||JSON.stringify(badP.slice(0,3)));
-chk('the pressed steps cover buying and forging (tempering and Echoforge above)',['buy','forge'].every(k=>presses.some(r=>r.up.k===k))||JSON.stringify(presses.map(r=>r.up.k)));
+// with gold and materials on hand the step is a chain (the piece and its tempers in one press, since 0.16.1); what matters is that bought and forged bases both occur
+const srcs=presses.map(r=>r.up.k==='chain'?r.up.src:r.up.k);
+chk('the pressed steps cover buying and forging, alone or as the base of a chain (tempering and Echoforge above)',['buy','forge'].every(k=>srcs.includes(k))||JSON.stringify(srcs));
 // away from town: only the pack counts
 await setup(200000,9);
 const far=await ev(()=>{const A=__A,G=A.G,m=A.WS.m,k=m.kind;m.kind='field';const o={town:A.inTown(),bad:[]};
@@ -95,21 +113,24 @@ chk('away from town: Show all options opens the gear picker and comes back',far.
 // Show all options in town, the hero sheet, the Smithy
 await setup(5000,6);
 const ui=await ev(()=>{const A=__A,G=A.G,o={};const c=G.roster[G.party[0]];
-  A.V.modal={type:'char',char:c.id,list:G.party.slice()};A.render();o.sheet=document.querySelectorAll('#modal .upgslot [data-act="upgOpen"]').length;
-  document.querySelector('#modal .upgslot [data-act="upgOpen"]').click();o.pop=A.V.modal.type;o.ba=!!document.querySelector('#modal .upgba');o.cost=/gold|Free/.test((document.querySelector('#modal .upgcard')||{}).innerText||'');
+  A.V.modal={type:'char',char:c.id,list:G.party.slice()};A.render();o.sheet=document.querySelectorAll('#modal .eqsheet .eqsrow').length;o.sheetUp=document.querySelectorAll('#modal [data-act="upgOpen"]').length;
+  A.ACT.upgOpen(c.id+',w');o.pop=A.V.modal.type;o.ba=!!document.querySelector('#modal .upgba');o.cost=/gold|Free/.test((document.querySelector('#modal .upgcard')||{}).innerText||'');
   A.ACT.upgAll();o.all=A.V.modal.type+':'+A.V.modal.tab;o.full=document.querySelectorAll('#modal [data-act="buyGear"],#modal [data-act="forge"],#modal [data-act="craftR"]').length;
   for(let i=0;i<4&&A.V.modal&&A.V.modal.type!=='upg';i++)A.ACT.xBack();o.back=A.V.modal&&A.V.modal.type;A.ACT.xBack();o.back2=A.V.modal&&A.V.modal.type;
   const t=G.roster[G.party[0]];A.V.modal={type:'upg',cid:t.id,sl:'w'};A.render();A.ACT.upgAll();o.temperTo=A.V.modal.type+':'+A.V.modal.tab;
   A.V.modal={type:'smithy'};A.render();o.smith=document.querySelectorAll('#modal .upgbest [data-act="upgDo"]').length;o.whole=!!document.querySelector('#modal .upgbest [data-act="p3Smith"]');
   o.first=(()=>{const b=document.querySelector('#modal .upgbest'),f=document.querySelector('#modal .shopf');return !!b&&!!f&&!!(b.compareDocumentPosition(f)&Node.DOCUMENT_POSITION_FOLLOWING);})();
   A.V.modal={type:'smithy',tab:'craft'};A.render();o.wholeForge=/Upgrade whole party/.test(document.querySelector('#modal').innerText);
-  A.V.modal={type:'workshop',tab:'shop',sec:'charm'};A.render();o.alch=!!document.querySelector('#modal .upgbest');
+  A.V.modal={type:'smithy',tab:'shop',sec:'charms'};A.render();o.alch=[...document.querySelectorAll('#modal .upgbest .row small:first-child')].map(e=>e.textContent).join();
   const d=G.daily;G.daily=1;A.V.modal={type:'char',char:c.id};A.render();o.daily=document.querySelectorAll('#modal [data-act="upgOpen"]').length;A.V.modal={type:'smithy'};A.render();o.dailyS=document.querySelectorAll('#modal .upgbest').length;G.daily=d;A.V.modal=null;A.render();return o;});
 console.log(JSON.stringify(ui));
-chk('hero sheet: an Upgrade button on each of the four slots',ui.sheet===4||JSON.stringify(ui));
+// the hero sheet lists gear as the Equipment page's rows since 0.17.1 (ui.js): one row per slot, and no Upgrade button on the sheet any more
+// (the p3shop.js hook that put one on each slot no longer finds the old block). The popup itself is reached from the Smithy rows and ACT.upgOpen.
+chk(`hero sheet: one gear row per slot (${ui.sheet}); the Upgrade popup opens for a slot`,ui.sheet>=4&&ui.pop==='upg'||JSON.stringify(ui));
 chk('Upgrade shows the step with before/after stats and the cost',ui.pop==='upg'&&ui.ba&&ui.cost||JSON.stringify(ui));
 chk('Show all options opens the full Smithy lists and back returns to Upgrade',/^(smithy|workshop):/.test(ui.all)&&ui.full>0&&ui.back==='upg'||JSON.stringify(ui));
 chk('Smithy: best step per slot first, Upgrade whole party kept (Shop and Forge)',ui.smith>0&&ui.whole&&ui.first&&ui.wholeForge||JSON.stringify(ui));
-chk('Alchemy charms show the best charm step first',ui.alch||JSON.stringify(ui));
+// charms are sold at the Smithy since 0.22.17 (they were an Alchemy section): its Charms section shows the charm step alone
+chk(`the Smithy's Charms section shows the best charm step first (${ui.alch})`,/^Charm for /.test(ui.alch)||JSON.stringify(ui));
 chk('Daily Trial: no Upgrade buttons',ui.daily===0&&ui.dailyS===0||JSON.stringify(ui));
 await done(H);})();

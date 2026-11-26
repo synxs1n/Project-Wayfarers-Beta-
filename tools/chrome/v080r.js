@@ -78,6 +78,7 @@ for(const [w,h,mob] of [[390,844,true],[933,705,false]]){const tag=` (${w}x${h})
     // hero in the six: drawn normally, solid, A opens the fight, and the fight starts
     const pr=await ev(([id,s])=>{const A=__A,G=A.G,RG=window.__RG;if(G.party.length>=6)G.party.pop();G.party.push(id);A.placeAt(s.pick.mid,s.pick.sx,s.pick.sy,s.pick.dir);A.WS.dir=s.pick.dir;A.render();
       const m=A.WS.m,a=RG.actors().find(x=>x.b&&x.b.personal===id);RG.alpha.d2={};A.worldDraw2(performance.now());const o={ghost:RG.ghost(a),solid:A.solidAt(m,a.x,a.y),alpha:RG.alpha.d2[a.b.id],mark:RG.marks().filter(x=>/quest/.test(x.k)).map(x=>x.k)};
+      /* interact() does nothing while the map change holds the hero (WS.lock), a step is under way or a line of talk is open (it turns that page instead): placeAt can leave any of the three for a moment, and the check then found no window now and then */A.WS.lock=false;A.WS.mv=null;A.WS.dlg=null;A.V.modal=null;
       A.interact();o.modal=A.V.modal&&A.V.modal.type;G.party.forEach(i=>{const c=G.roster[i];if(c&&c.S){c.hp=c.S.mhp;c.mp=c.S.mmp;}});
       A.V.modal={type:'menu',tab:'next'};A.render();o.next=document.querySelector('#modal').innerText;A.V.modal={type:'elite',b:G.personal[id]};A.render();A.ACT.fightElite();o.B=!!A.B&&A.B.spec&&A.B.spec.kind;return o;},[HERO,s]);
     chk('hero in the six: the rival is solid and drawn normally'+tag,pr.ghost===false&&pr.solid===true&&pr.alpha===undefined&&pr.mark.includes('quest')||JSON.stringify(pr));
