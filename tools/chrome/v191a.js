@@ -167,7 +167,7 @@ const ROOTS=['hollow','ash','ember','thorn','gloam','bone','mist','spire','cinde
   A.render();await new Promise(q=>setTimeout(q,60));
   o.icon={stage:!!document.querySelector('svg[data-st=mantle]'),sym:/M5 \.5/.test(g('stSym')('mantle')),name:g('STS').mantle.n,desc:g('STS').mantle.d};
   o.card=[...document.querySelectorAll('#bparty [data-st=mantle], .battle [data-st=mantle]')].length;
-  a.hp=a.S.mhp;a.mp=a.S.mmp;o.shield=hit();
+  a.hp=a.S.mhp;a.mp=a.S.mmp;/* MP to spare for the Mantle's share of the blow: the blow follows the foe the journey drew (120 to 170 HP), and when 80% of it was more MP than the hero had left after the cast, the rest fell on HP and the 80% below was 73% */a.mp=Math.max(a.mp,999);o.shield=hit();
   // previews never spend MP and show the HP part
   {a.hp=a.S.mhp;a.mp=a.S.mmp;const m1=a.mp,h1=a.hp;const full=X4.calc(foe,ATT,a).dmg;const est=g('c5Est')(foe,ATT,a);o.prev={full,est,mp:m1-a.mp,hp:h1-a.hp,share:__R17.share(a,full)};}
   // poison, burn and bleed go through it too
