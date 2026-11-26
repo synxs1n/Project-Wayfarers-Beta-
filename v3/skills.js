@@ -239,7 +239,7 @@ const LIMIT={
  warrior:{n:'Worldsplitter',k:'phys',pw:2.4,t:'all',fx:[['break',.6]],d:'A ground-splitting blow on every foe. May Break.'},
  knight:{n:'Bastion',k:'status',t:'allyAll',fx:[['ward',1],['bulwark',1],['might',1]],heal:.2,d:'Ward, Bulwark and Might for the vanguard, and a small heal.'},
  mage:{n:'Starfall',k:'mag',pw:2.6,t:'all',d:'Calls a rain of elemental stars on every foe.'},
- healer:{n:'Benediction',k:'heal',pw:2.4,t:'allyAll',revive:.4,reviveN:1,cleanse:1,d:'Restores and cleanses the vanguard and revives one fallen hero at 40% HP.'},// v0.22.56: it revived EVERY fallen hero (pw 3); that one move was worth about 6 points of boss win rate
+ healer:{n:'Benediction',k:'heal',pw:2.6,t:'allyAll',cleanse:1,fx:[['regen',1]],d:'Restores and cleanses the vanguard and leaves Regen on everyone.'},// v0.22.56: it also revived EVERY fallen hero at 40% (pw 3); that one move was worth about 6 points of boss win rate. Raise still revives.
  thief:{n:'Thousand Cuts',k:'phys',pw:.8,t:'rand',hits:7,crit:.2,d:'Seven blinding strikes at random foes.'},
  archer:{n:'Arrowstorm',k:'phys',pw:2.2,t:'all',fx:[['bleed',.7]],d:'A storm of arrows on every foe. Likely Bleeds.'},
  monk:{n:'Hundred Fists',k:'phys',pw:.65,t:'one',hits:7,d:'Seven blows on one foe.'},
@@ -254,7 +254,7 @@ const LIMIT2={
  warrior:{n:'Cataclysm Edge',k:'phys',pw:3.1,t:'all',fx:[['break',.9]],self:[['might',1]],shieldChip:2,d:'Splits the battlefield with one swing: every foe takes a huge hit and likely Breaks, and you gain Might. Chips 2 shield pips.'},
  knight:{n:'Citadel of Dawn',k:'status',t:'allyAll',fx:[['ward',1],['bulwark',1],['might',1],['regen',1]],heal:.3,d:'A fortress of light: Ward, Bulwark, Might and Regen for the vanguard, and a 30% heal.'},
  mage:{n:'Meteor Requiem',k:'mag',pw:3.4,t:'all',fx:[['break',.5]],shieldChip:2,d:'A falling sky of elemental stars on every foe. May Break; chips 2 shield pips.'},
- healer:{n:"Seraph's Grace",k:'heal',pw:3.2,t:'allyAll',revive:.5,reviveN:2,cleanse:1,fx:[['regen',1]],d:'Restores and cleanses the vanguard, grants Regen, and revives up to two fallen heroes at 50% HP.'},// v0.22.56: was every fallen hero at 70%, pw 3.9
+ healer:{n:"Seraph's Grace",k:'heal',pw:3.2,t:'allyAll',revive:.5,reviveN:1,cleanse:1,fx:[['regen',1]],d:'Restores and cleanses the vanguard, grants Regen, and revives one fallen hero at 50% HP.'},// v0.22.56: was every fallen hero at 70%, pw 3.9
  thief:{n:'Phantom Waltz',k:'phys',pw:1.04,t:'rand',hits:7,crit:.3,steal:1,d:'Seven strikes from nowhere at random foes, each with a high crit chance, and a pocket picked on the way out.'},
  archer:{n:'Skyfall Volley',k:'phys',pw:2.86,t:'all',fx:[['bleed',.9],['slow',.5]],d:'The sky goes dark with arrows. Every foe likely Bleeds and may Slow.'},
  monk:{n:"Heaven's Thousand",k:'phys',pw:.85,t:'one',hits:7,fx:[['stun',.4]],d:'Seven blows too fast to see, ending in a strike that may Stun.'},
