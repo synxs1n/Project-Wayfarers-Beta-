@@ -144,9 +144,12 @@ const BOSS_LV={frac:.5,cap:12};
 // 3.2 bosses: shield pips +50% (5 to 8, 7 to 11); the break window hits for less and is over once the foe loses the turn it staggers
 const BOSS_PIPS={mult:1.5};const BREAK_WIN={bonus:1.3,short:true};
 // 3.2 extra boss muscle on top of the old stat table (hp and power multipliers)
+// v0.22.57: tuned WITH item use (tools/fullsim.js ITEMS=1: a bag sized for the realm, used by the auto item rules): the win rate of a careful party at
+// the expected level steps down about 4 points a realm (about 66, 62, 58, 54, 50%) and no boss is meant to pass 70% without over-levelling, top
+// tempered gear or a party built against it. Without items the same fights run about 5 to 25 points lower. Was hp [1.2,1.55,1.6,2.05,1.78], pow [.88,1.14,1.38,1.87,1.22].
 // v0.22.54: less burst and longer fights, and a steady ramp: the win rate of a careful party at the expected level steps down a little each realm (about
 // 66, 63, 60, 57, 53%) and the hero turns in a won fight step up a little (about 28, 31, 35, 39, 43). pow was [.955,1.28,1.32,1.535,1.23], hp [.8,1.34,1.39,1.53,1.22].
-const BOSS_BUFF={hp:[1.2,1.55,1.6,2.05,1.78],pow:[.88,1.14,1.38,1.87,1.22]}// v0.19: eased about 7% hp and 3% pow with the role power change (was hp [.9,1.5,1.55,1.7,1.36], pow [1,1.34,1.38,1.6,1.28]) to pay for the 12 skill kit, role power and no dual ultimates, so the journey sim stays at level 41.3 and 14.6 boss tries (before the skill changes: 40.5 and 11.1; without the ease: 42.6 and 19.6); v0.4.3: re-tuned with capes; v0.8.2: the first three Scourges eased (were hp 1.3, 1.75, 1.8 and pow 1.15, 1.4, 1.44) so no boss is a wall; v0.9.5: hp [1.15,1.65,1.7,2.0,1.52] -> about 4 to 10% less, the realm gimmicks (BOSS_GIM) carry the rest
+const BOSS_BUFF={hp:[1.28,1.6,1.65,2.0,1.8],pow:[.9,1.185,1.57,2.8,1.9]}// v0.19: eased about 7% hp and 3% pow with the role power change (was hp [.9,1.5,1.55,1.7,1.36], pow [1,1.34,1.38,1.6,1.28]) to pay for the 12 skill kit, role power and no dual ultimates, so the journey sim stays at level 41.3 and 14.6 boss tries (before the skill changes: 40.5 and 11.1; without the ease: 42.6 and 19.6); v0.4.3: re-tuned with capes; v0.8.2: the first three Scourges eased (were hp 1.3, 1.75, 1.8 and pow 1.15, 1.4, 1.44) so no boss is a wall; v0.9.5: hp [1.15,1.65,1.7,2.0,1.52] -> about 4 to 10% less, the realm gimmicks (BOSS_GIM) carry the rest
 // BOSS_GIM (v0.9.5, battle4.js): every Scourge and Calamity brings one realm gimmick to its first fight (kind 'boss'; not Echoes, not the Daily
 // Trial). Each is telegraphed on the boss's turn (a log line, a "Telegraph" chip on the boss, a mark on the heroes it will hit) and lands on its
 // next turn, so reading it pays. first: the boss's turn of the first telegraph; every: turns between telegraphs (per boss: every).
@@ -182,13 +185,21 @@ const BOSS_GIM={on:true,daily:false,first:2,every:4,stageK:[.5,.85,1,1,1],answer
 // 3.4 small parties: each hero short of six makes Scourges and Calamities this much beefier (a full party of six is the benchmark)
 // v0.22.54: the benchmark is the party a journey has by that realm (expect: 3, 4, 5, 6, 6), so the old numbers are unchanged for it; a party
 // SHORT of that size no longer faces a beefier boss on top: each hero short eases the boss by short.hp and short.pow instead.
+// BOSS_FIT (v0.22.57): the band. Power of one Scourge in one realm (index = realm 1 to 4), or of a Calamity (one number), on top of BOSS_BUFF. A boss
+// can be easy in one realm and hard in another (the Ashen Wyvern won 85% in the first realm and 43% in the fourth), which no single stat fixes. Each
+// entry comes from tools/fullsim.js gim with ITEMS=1 (two seeds, 120 fights a cell): 1 + (win rate - the realm's target) / 110, kept within .85 to 1.18,
+// only where the cell was 5 points or more off. Targets: 66, 62, 58, 54, 50.
+const BOSS_FIT={thornwarden:[1,1.12,1.17,1],drake:[1,1,1,0.95],hoarwyrm:[0.95,1,1,1],bonecolossus:[1,1.16,1.05,1.18],queenmantis:[1,1.1,1,1],gloomcap:[1,1.05,1.05,1.11],ironsentinel:[0.93,0.86,0.95,1],ashwyvern:[1.17,1,1,0.9],frostlich:[1,1,0.94,0.94],candlemoth:[1.06,0.91,1,0.92],brinehag:[1,1.08,1,1.09],crowregent:[1.07,1,1,0.85],geysermatron:[0.9,0.95,1.09,1],dimmer:1.13,hollowking:1.08};
 const BOSS_SIZE={hp:.07,pow:.06,expect:[3,4,5,6,6],short:{hp:.08,pow:.05}};// per stage 1 to 5
 // STUN_CAP (v0.22.54): a hero who has just lost a turn to a stun (or a freeze) cannot be stunned again until after their next turn.
 const STUN_CAP={on:true};
-// CLS_TUNE (v0.22.54 class pass, docs/balance54.md): multipliers on a class's final stats (gear included; not in the Daily Trial). Measured in boss fights:
-// a Warrior had the least resistance and the fewest turns, a Knight half the average damage, an Archer hit like a Monk. The order aimed for (tools/fullsim.js
-// eff): Mage and Archer deal the most, the Warrior is third and the sturdy front line, the Monk does a bit of everything and is best at nothing.
-const CLS_TUNE={warrior:{atk:1.1,hp:1.15,res:1.3,spd:1.15},knight:{atk:1.1,spd:1.1},archer:{atk:1.34},monk:{atk:.82}};
+// REGEN (v0.22.57): share of max HP a turn. Heroes .07 (was .08: Regen every turn was the second half of the Priest's lead); foes keep .08. DOT_BOSS: Poison on a
+// Scourge or Calamity, share of its max HP a turn (was .02; the Thief's and Archer's ailments now count for something on a boss).
+const REGEN={hero:.07,foe:.08},DOT_BOSS={poison:.03};
+// GEAR_LV (v0.22.57, calcStats): what the old, steeper gear tiers added now grows with the hero. w and a are the old minus the new weapon and armor
+// power at each realm's usual level (lv: 8, 16, 24, 32, 40; straight lines between, flat after 40). A hero gets it in the shape of their class's own
+// weapon and armor family (a Mage as magic and resistance, a Knight as attack, defense and HP).
+const GEAR_LV={on:true,lv:[8,16,24,32,40],w:[-2,0,5,12,22],a:[-1,0,2,5,9]};// the first entries are negative: Common gear is a little stronger than it was
 // TAUNT (v0.22.54): a hero under Taunt is braced: they take `cut` less damage from every hit (drawing fire was a death sentence for a Warrior).
 const TAUNT={cut:.3};
 // 3.3 echo levels. Story echo base = boss base + storyAdd; Sanctum echoes use fixed bases. While the party's highest hero is more than
@@ -309,8 +320,8 @@ const ROLES={
     area:2,self:.6,tauntless:.55,tankRef:1.12,top:2,chiK:1.25},
   sk:{
     warrior:[{id:'r_sunder',n:'Sunder',k:'phys',pw:1.1,mp:5,lv:11,fx:[['break',.8]],d:'A splitting blow that cracks armor. Likely Breaks.',r:'debuffer'},
-      {id:'r_shout',n:'Intimidating Shout',k:'status',t:'all',mp:8,lv:16,fx:[['weaken',.8]],d:'A roar that shakes every foe. Likely Weakens them.',r:'debuffer'},
-      {id:'r_stance',n:'Iron Stance',k:'status',t:'self',mp:7,lv:20,fx:[['taunt',1],['regen',1]],d:'Plants his feet: Taunt and Regen. The line hides behind him.',r:'tank'}],
+      {id:'r_shout',n:'Intimidating Shout',k:'status',t:'all',mp:8,cost:.7,lv:16,fx:[['weaken',.8]],d:'A short roar that shakes every foe. Likely Weakens them.',r:'debuffer'},
+      {id:'r_stance',n:'Iron Stance',k:'status',t:'self',mp:7,cost:.5,lv:20,fx:[['taunt',1],['regen',1]],d:'Plants his feet in a moment: Taunt and Regen. The line hides behind him.',r:'tank'}],
     knight:[{id:'r_banner',n:'Raise the Banner',k:'status',t:'allyAll',mp:12,lv:19,fx:[['haste',1]],d:'The standard goes up: Haste for the vanguard.',r:'buffer'},
       {id:'r_cover',n:'Shield Ally',k:'status',t:'ally',mp:5,lv:13,fx:[['bulwark',1],['regen',1]],d:'Covers an ally: Bulwark and Regen.',r:'buffer'}],
     archer:[{id:'r_cripple',n:'Crippling Shot',k:'phys',pw:1,mp:6,lv:15,dl:'ranged',fx:[['weaken',.85],['slow',.7]],d:'An arrow to the sword arm. Likely Weakens, may Slow.',r:'debuffer'},
@@ -320,8 +331,8 @@ const ROLES={
       {id:'r_hamstr',n:'Hamstring',k:'phys',pw:.8,mp:5,cost:.8,lv:12,fx:[['slow',.8],['weaken',.5]],d:'A cut behind the knee. Likely Slows, may Weaken.',r:'debuffer'},
       {id:'r_toxin',n:'Toxic Cloud',k:'status',t:'all',mp:10,lv:18,fx:[['poison',.85],['weaken',.6]],d:'A cloud of venom over every foe. Likely Poisons, may Weaken.',r:'debuffer'},
       {id:'r_fuma',n:'Fuma Shuriken',k:'phys',pw:1.9,mp:12,cost:1.1,pierce:1,lv:24,dl:'piercing',d:'A great folding shuriken that cuts through armor. Piercing; ignores half of defense.',r:'ranged'}],
-    monk:[{id:'r_chimend',n:'Chi Mend',k:'heal',chi:1,pw:1.6,mp:5,t:'ally',lv:7,d:'Pushes chi into an ally to close their wounds.',r:'healer'},
-      {id:'r_harmony',n:'Harmony Meditation',k:'status',t:'allyAll',mp:10,lv:14,fx:[['focus',1]],heal:.2,d:'The line breathes with him: Focus (more crit chance for a few turns) for the vanguard and a 20% heal.',r:'buffer'},
+    monk:[{id:'r_chimend',n:'Chi Mend',k:'heal',chi:1,pw:1.85,mp:5,t:'ally',lv:7,d:'Pushes chi into an ally to close their wounds.',r:'healer'},
+      {id:'r_harmony',n:'Harmony Meditation',k:'status',t:'allyAll',mp:10,lv:14,fx:[['focus',1]],heal:.23,d:'The line breathes with him: Focus (more crit chance for a few turns) for the vanguard and a 23% heal.',r:'buffer'},
       {id:'r_lotus',n:'Lotus Circle',k:'heal',chi:1,pw:1.1,mp:12,t:'allyAll',lv:21,d:'A shared meditation that heals the vanguard.',r:'healer'}],
     mage:[{id:'r_snare',n:'Time Snare',k:'status',t:'all',mp:10,lv:16,fx:[['slow',.6],['weaken',.25]],d:'Thickens time around every foe. Likely Slows, may Weaken.',r:'debuffer'}],
     healer:[{id:'r_bless',n:'Blessing',k:'status',t:'ally',mp:6,lv:10,fx:[['might',1],['regen',1]],d:'A blessing on one ally: Might and Regen.',r:'buffer'},

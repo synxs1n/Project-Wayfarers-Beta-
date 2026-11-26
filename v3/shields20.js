@@ -9,7 +9,7 @@
 // - Sold at the Smithy (Armor > Shields, the two newest tiers) once a Warrior or Knight is in the roster; tempered like armor (ore and hide).
 const SH20={cls:['warrior','knight'],one:['blade','axe','mace','lance','shortsword','dagger'],
   n:['Wooden Buckler','Iron Heater','Steel Kite Shield','Tower Aegis','Royal Bulwark','Mythsteel Aegis'],
-  def:[5,10,16,24,34,47],res:[2,4,7,11,15,21],price:[70,170,420,820,1500,2600],n2:{}};
+  def:[5,10,16,24,34,47],res:[4,8,13,19,27,37],/* v0.22.57: resistance was [2,4,7,11,15,21]; a shield is the front line's answer to magic now */price:[70,170,420,820,1500,2600],n2:{}};
 SLOTN.s='Shield';
 if(!EQSL.includes('s'))EQSL.push('s');
 SH20.n.forEach((n,t)=>addGear('s_shield_'+t,{n,slot:'s',tier:t,fam:'shield',def:SH20.def[t],res:SH20.res[t],price:SH20.price[t]}));
