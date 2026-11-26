@@ -21,6 +21,8 @@
 //                   HP left at a wipe. BOSSES=siren,drake limits the bosses, BG_STAGES and GIM_AUTO as for gim, DLV=-2 party levels under the boss level
 //   cls [N]         v0.22.54: what a class is worth: a random party with no hero of the class against the same party with one seat given to one
 //                   (paired, same rolls): win rate without -> with. CLS=warrior,mage limits the classes, NOTAUNT=1 switches Taunt off, NOSK=cry removes skills
+//   eff [N]         v0.22.54: battle effectiveness per class: direct damage, damage over time, damage enabled (Break, Might, Haste), healing, buffs,
+//                   debuffs, damage soaked, KOs, actions (see the sim's own comment)
 //   diag [N]        v0.22.54: per class in random parties: damage per action, actions per fight, damage taken, KOs, stats. DCLS=warrior lists that class's skills used
 //   gim [N]         v0.9.5: every Scourge and Calamity with its realm gimmick: win rate, telegraphs, landings, answers, gimmick damage
 const fs=require('fs'),path=require('path');const {chromium}=require('playwright');
@@ -301,6 +303,38 @@ diag:N=>`N=${N||3};const out=[];const SZ=[3,4,5,6,6];const ST=${JSON.stringify(p
     cur=null;A.V.modal=null;if(A.B)A.finishBattle("x");window.__TYPEFREE=0;}});}
   const all=MAIN.reduce((a,c)=>({dd:a.dd+T[c].dd,turns:a.turns+T[c].turns}),{dd:0,turns:0}),avg=all.dd/all.turns;
   MAIN.forEach(c=>{const t=T[c];out.push(c.padEnd(8)+' n='+t.n+' | dmg per turn '+(t.dd/t.turns).toFixed(0)+' ('+Math.round(100*t.dd/t.turns/avg)+'% of avg) | turns per fight '+(t.turns/t.n).toFixed(1)+' ('+Math.round(100*t.front/Math.max(1,t.turns))+'% in the Vanguard) | dmg taken '+Math.round(100*t.dt/t.n)+'% of own HP, healed '+Math.round(100*t.heal/t.n)+'% | KOs per fight '+(t.ko/t.n).toFixed(2)+' | max HP '+Math.round(t.mhp/t.n)+' def '+Math.round(t.def/t.n)+' res '+Math.round(t.res/t.n)+' spd '+Math.round(t.spd/t.n)+' | acts '+Object.entries(t.acts).map(([k,v])=>k+' '+Math.round(100*v/t.turns)+'%').join(' '));});
+  return out.join('\\n');`,
+// eff [N]: battle effectiveness per class in random parties (BG_STAGES, default realms 2 to 4): per fight, direct damage, damage over time from the
+// statuses the hero put on foes (Poison, Burn, Bleed), damage the hero enabled (the Break and Might share of what others dealt), healing done
+// (Regen included), buffs and debuffs landed, the share of the party's damage the hero soaked, KOs and actions. "total" = direct + over time + enabled.
+eff:N=>`N=${N||6};const out=[];const SZ=[3,4,5,6,6];const ST=${JSON.stringify(process.env.BG_STAGES||'1,2,3')}.split(',').map(Number);
+  const MAIN=['warrior','knight','archer','thief','monk','mage','healer','bard'];const P8=pool.filter(id=>MAIN.includes(A.TPL[id].cls));let ms=1;Math.random=()=>{ms=(ms*1664525+1013904223)>>>0;return ms/4294967296;};
+  const Z=()=>({n:0,dd:0,dot:0,en:0,heal:0,buf:0,deb:0,soak:0,ko:0,acts:0,taken:0,evd:0});const T={};MAIN.forEach(c=>T[c]=Z());let cur=null,byName={};
+  const hero=nm=>cur&&byName[nm]?cur[byName[nm]]:null;
+  A.HOOK.before('perform','eff','acts',function(a){try{if(cur&&a&&a.side==='p'&&cur[a.id])cur[a.id].acts++;}catch(e){}});
+  A.HOOK.after('calcDamage','eff','dmg',function(r,a,sk,t){try{if(!cur||!r||!a||!t||!A.B||A.B.cur!==a)return;if(a.side==='p'&&t.side==='e'&&cur[a.id]){cur[a.id].dd+=r.dmg;
+      const b=t.st&&t.st.break,h1=b&&hero(b.src);if(h1&&h1!==cur[a.id])h1.en+=r.dmg*.3/1.3;const m=a.st&&a.st.might,h2=m&&hero(m.src);if(h2&&h2!==cur[a.id])h2.en+=r.dmg*.3/1.3;
+      const w=a.st&&a.st.haste,h3=w&&hero(w.src);if(h3&&h3!==cur[a.id])h3.en+=r.dmg*.35;}}catch(e){}});
+  A.HOOK.after('fx','eff','dot and heals',function(r,u,txt,cls){try{if(!cur||!u)return;const v=parseInt(String(txt).replace('+',''),10);if(!(v>0))return;
+      if(u.side==='e'&&/dmg (poison|burn|bleed)/.test(cls)){const k=/poison/.test(cls)?'poison':/burn/.test(cls)?'burn':'bleed',h=u.st&&u.st[k]&&hero(u.st[k].src);if(h)h.dot+=v;}
+      else if(u.side==='p'&&cls==='heal'){const c=A.B&&A.B.cur;const rg=u.st&&u.st.regen;if(c===u&&rg&&hero(rg.src)&&!(A.B.mode==='cmd'))hero(rg.src).heal+=v;else if(c&&c.side==='p'&&cur[c.id])cur[c.id].heal+=v;}}catch(e){}});
+  A.HOOK.after('addSt','eff','statuses',function(r,t,k,src){try{if(!cur||!r||!src||src.side!=='p'||!cur[src.id]||!t)return;if(t.side==='e')cur[src.id].deb++;else if(t!==src||true)cur[src.id].buf++;}catch(e){}});
+  let wins=0,fights=0;
+  for(const s of ST){const keys=s<4?A.GPOOL:A.FPOOL,n=SZ[s];keys.forEach((k,ki)=>{for(let i=0;i<N;i++){seed=5100+s*997+i*31+ki*7;const ids=[];while(ids.length<n){const id=P8[Math.floor(R()*P8.length)];if(!ids.includes(id))ids.push(id);}
+    ms=(99+s*13+i*101+ki*17)>>>0;party(ids,A.STAGE_BOSS_LV[s],s);A.G.stage=s;A.G.cleared=[0,1,2,3,4].map(x=>x<s);if(s<4)A.G.run.bosses[s]=k;else A.G.run.final=k;A.innHeal();
+    cur={};byName={};ids.forEach(id=>{const c=A.G.roster[id];cur[id]=Object.assign(Z(),{last:c.hp});byName[c.name]=id;});
+    Q.length=0;try{A.syncPools();}catch(e){}try{A.G.bossWon=new Proxy({},{get:()=>1});}catch(e){}A.setSmart(true);A.V.auto=true;try{A.META.cfg.autoOn=true;}catch(e){}A.META.best={};if(!A.startBattle({stage:s,kind:'boss'}))continue;if(A.B.autoLock){window.__TYPEFREE=1;A.B.auto=true;}
+    let it=0;while(it++<400000){const m=A.V.modal;if(m&&(m.type==='result'||m.type==='lose'))break;
+      if(!Q.length){if(A.B&&A.B.mode==='cmd')A.autoTurnSmart();else if(A.B&&!A.B.over)A.advance();if(!Q.length)break;}
+      A.B.tA=0;Q.shift()();ids.forEach(id=>{const c=A.G.roster[id],o=cur[id];const h=Math.max(0,c.hp);if(h<o.last){o.taken+=o.last-h;if(h<=0)o.ko++;}o.last=h;});}
+    fights++;if(A.V.modal&&A.V.modal.type==='result')wins++;
+    const tot=ids.reduce((a,id)=>a+cur[id].taken,0)||1;
+    ids.forEach(id=>{const o=cur[id],t=T[A.TPL[id].cls];t.n++;['dd','dot','en','heal','buf','deb','ko','acts'].forEach(q=>t[q]+=o[q]);t.soak+=o.taken/tot*ids.length;});
+    cur=null;A.V.modal=null;if(A.B)A.finishBattle("x");window.__TYPEFREE=0;}});}
+  out.push('fights '+fights+', won '+Math.round(100*wins/fights)+'%. Per hero per fight; soak 100% = an even share of the damage the party took.');
+  out.push('class     direct  overTime enabled  TOTAL  | healing | buffs debuffs | soak  KOs  actions  dmg/action');
+  MAIN.map(c=>[c,T[c]]).sort((a,b)=>(b[1].dd+b[1].dot+b[1].en)/b[1].n-(a[1].dd+a[1].dot+a[1].en)/a[1].n).forEach(([c,t])=>{const f=(v,w)=>String(Math.round(v/t.n)).padStart(w);
+    out.push(c.padEnd(8)+f(t.dd,8)+f(t.dot,9)+f(t.en,8)+f(t.dd+t.dot+t.en,7)+'  |'+f(t.heal,8)+' |'+(t.buf/t.n).toFixed(1).padStart(6)+(t.deb/t.n).toFixed(1).padStart(8)+' |'+String(Math.round(100*t.soak/t.n)).padStart(4)+'%'+(t.ko/t.n).toFixed(2).padStart(6)+(t.acts/t.n).toFixed(1).padStart(8)+String(Math.round(t.dd/Math.max(1,t.acts))).padStart(10));});
   return out.join('\\n');`
 };
 (async()=>{const which=process.argv[2]||'boss',arg=+process.argv[3]||0;if(!SIMS[which]){console.log('sims: '+Object.keys(SIMS).join(', '));process.exit(1);}

@@ -85,7 +85,8 @@ const B4={det:{on:true,mpPct:.1,mpMin:4,maxPerAct:2},
   daily:{det:true,swap:true,mo:true,roles:true}};
 // CLS_ATK (v0.10.5, atk6.js): the basic Attack by class. pw: damage multiplier on ATTACK's pw 1; k:'mag' swings with magic (MAG vs RES).
 // Mages, healers and bards swing with magic; archers hit hardest as ranged; the front line trades a little less for staying power.
-const CLS_ATK={warrior:{pw:1.15},knight:{pw:1.05},monk:{pw:1.15,hits:1},thief:{pw:1.1},archer:{pw:1.2},mage:{k:'mag',pw:1.1},healer:{k:'mag',pw:.95},bard:{k:'mag',pw:1}};
+const CLS_ATK={warrior:{pw:1.15},knight:{pw:1.05},monk:{pw:1.15,hits:1},thief:{pw:1.1},archer:{pw:1.2},mage:{k:'mag',pw:1.1},healer:{k:'mag',pw:.95},bard:{k:'mag',pw:1},
+  archmage:{k:'mag',pw:1.1},chronicler:{k:'mag',pw:1},bloodcaller:{k:'mag',pw:.95}};// v0.22.54: the three Legend casters swung their staff and tome with ATK; they cast like the others now
 // DET_BONUS: detonations take two deliberate steps, so they hit harder than the old free reactions did.
 const DET_BONUS=1.3;
 // AUTO_SWAP_CD: auto battle brings in a reserve hero at most once every this many party turns, and a hero who just came in stays
@@ -184,7 +185,7 @@ const BOSS_SIZE={hp:.07,pow:.06,expect:[3,4,5,6,6],short:{hp:.08,pow:.05}};// pe
 const STUN_CAP={on:true};
 // CLS_TUNE (v0.22.54 class pass, docs/balance54.md): multipliers on a class's final stats (gear included; not in the Daily Trial). Measured in boss fights:
 // a Mage dealt 2.2x the average damage per action, a Warrior had the least resistance and the fewest turns, a Knight half the average damage.
-const CLS_TUNE={warrior:{atk:1.12,res:1.3,spd:1.15},knight:{atk:1.1,spd:1.1},thief:{atk:1.06},mage:{mag:.95}};
+const CLS_TUNE={warrior:{atk:1.16,res:1.3,spd:1.15},knight:{atk:1.1,spd:1.1},thief:{atk:1.06},mage:{mag:.95},archer:{atk:1.26},monk:{atk:.82}};
 // TAUNT (v0.22.54): a hero under Taunt is braced: they take `cut` less damage from every hit (drawing fire was a death sentence for a Warrior).
 const TAUNT={cut:.25};
 // 3.3 echo levels. Story echo base = boss base + storyAdd; Sanctum echoes use fixed bases. While the party's highest hero is more than
@@ -407,10 +408,10 @@ const SK12={cap:12,dualUlt:false,legendsKeepUlt:true,
 // a sub role `secondary`, any other role `off`. Primer, Detonator and dual art damage never counts below `secondary`. A nature that leans into a skill's role
 // adds `natLift` to that skill's multiplier, never above `natCap` (so a lifted off-role skill never matches a main-role one). Debuff chances move by
 // fxShare of the gap; a buff of an off-role skill lasts offBuff turns less (at least 1).
-// v0.22.54: secondary .8 -> .9 (measured, a sub role skill landed near 40% of a main role one, not 80%: its base power and the hero's stats already hold it
-// back); natLift .14 -> .05 and natCap .9 -> .95, so a lifted sub role skill still never matches a main role one.
+// v0.22.54: secondary .8 -> 1. A sub role skill is already weaker by its own numbers (lower base power, and the hero's stats follow the main role: measured,
+// it lands near 40% of a main role skill), so the percent cut on top was a second deduction and is gone. Off role skills keep `off`.
 // own: skills that count as the class's main role whatever their delivery says (the kit and the learn levels are not touched by this).
-const ROLEPW={primary:1,secondary:.9,off:.5,natLift:.05,natCap:.95,fxShare:.33,offBuff:1,own:{archer:['pierce']}};
+const ROLEPW={primary:1,secondary:1,off:.5,natLift:.05,natCap:1,fxShare:.33,offBuff:1,own:{archer:['pierce']}};
 // PACE (v0.9.5, pacing.js): the realm (0 = the first) in which each system opens on a journey started on v0.9.5 or later. Older journeys,
 // New Game+ cycles and the Daily Trial have everything open. pcUnlocked(system) reads it (the onboarding tips can ask it too).
 // combat, elements and taming are always open; tempering keeps its own rule (after the first Scourge); camp follows CAMP.fromStage.
