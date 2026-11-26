@@ -541,6 +541,7 @@ function applyReactionAfter(R,a,t,dealt){
   chipShield(t,3,'reaction');
 }
 function perform(a,sk,tgts){
+  let rvN=0;// v0.22.56: heroes this move has revived (sk.reviveN caps it)
   if(B){B.actN=(B.actN||0)+1;a.prevAct=a.lastAct||0;a.lastAct=B.actN;}
   const now=Date.now();a.actT=now;a.actKind=sk.k;a.actEl=skEls(sk)[0]||null;a.actName=sk.id==='attack'?null:sk.n;
   log(sk.id==='attack'?`${a.name} attacks!`:`${a.name} uses ${sk.n}!`);
@@ -607,12 +608,12 @@ function perform(a,sk,tgts){
     if(a.side==='p'&&dealtAny)lbAdd(a,5);
   }else if(sk.k==='heal'){
     for(const t of tgts){
-      if(t.hp<=0){if(sk.revive){t.hp=Math.max(1,Math.round(t.S.mhp*sk.revive));t.st={};fx(t,'Revived','heal');log(`${t.name} rises again!`);}continue;}
+      if(t.hp<=0){if(sk.revive&&(sk.reviveN==null||(rvN=(rvN||0)+1)<=sk.reviveN)){t.hp=Math.max(1,Math.round(t.S.mhp*sk.revive));t.st={};fx(t,'Revived','heal');log(`${t.name} rises again!`);}continue;}
       if(sk.pw>0){const n=Math.round(sk.pw*(a.S.healP||a.S.mag)*rnd(.95,1.05)*(WX().heal||1)*(1+(a.S.healUp||0))*curseMul(t));const g=Math.min(n,t.S.mhp-t.hp);t.hp+=g;fx(t,'+'+g,'heal');t.healT=Date.now();log(`${t.name} recovers ${g} HP.`);}/* 0.22.36: a skill of no power (Purify) cures and heals nothing */
       if(sk.cleanse){const c=cleanse(t);if(c)log(`${t.name} is cured.`);}
       if(a.id==='isolde')addSt(t,'regen',a,true);
       (sk.fx||[]).forEach(([k])=>addSt(t,k,a,true));}
-    if(sk.revive)allParty().forEach(t=>{if(t.hp<=0&&!tgts.includes(t)){t.hp=Math.max(1,Math.round(t.S.mhp*sk.revive));t.st={};fx(t,'Revived','heal');log(`${t.name} rises again!`);}});
+    if(sk.revive)allParty().forEach(t=>{if(t.hp<=0&&!tgts.includes(t)&&(sk.reviveN==null||(rvN=(rvN||0)+1)<=sk.reviveN)){t.hp=Math.max(1,Math.round(t.S.mhp*sk.revive));t.st={};fx(t,'Revived','heal');log(`${t.name} rises again!`);}});
   }else if(sk.k==='revive'){
     for(const t of tgts){if(t.hp>0)continue;t.hp=Math.max(1,Math.round(t.S.mhp*sk.pw));t.st={};fx(t,'Revived','heal');t.healT=Date.now();log(`${t.name} rises again!`);}
   }else if(sk.k==='status'){
