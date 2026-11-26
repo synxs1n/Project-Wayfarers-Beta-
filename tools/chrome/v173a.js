@@ -74,7 +74,10 @@ const OUT=__dirname+'/out';
     const ga=await ev(RECTS),gu=ga.en[0],slot=await ev(()=>{const T=__A.TW.get;return T('slotsFor')('e',3,true)[0].concat([T('BL').W,T('BL').H]);});await shot(`v173a_${tag}_guardian`);
     console.log(tag,'boss figure',Math.round(boss.r-boss.l),'x',Math.round(boss.b-boss.t),'guardian figure',Math.round(gu.r-gu.l),'x',Math.round(gu.b-gu.t));
     chk(`${tag}: a guardian's figure is as big as a boss's (${Math.round(gu.r-gu.l)}x${Math.round(gu.b-gu.t)} against ${Math.round(boss.r-boss.l)}x${Math.round(boss.b-boss.t)})`,gu.w/boss.w>.85&&gu.w/boss.w<1.2&&(gu.b-gu.t)/(boss.b-boss.t)>.85&&(gu.b-gu.t)/(boss.b-boss.t)<1.2||JSON.stringify([boss,gu]));
-    chk(`${tag}: a guardian fight stands on the boss slots (the guardian at the boss slot, not over a hero)`,Math.abs(ga.en[0].box.x-Math.round(slot[0]*slot[2]))<=1&&ga.front.every(f=>!hit(gu,f))||JSON.stringify([ga,slot]));
+    // 0.22.56 (cohere15.js ch15In): a foe's box is kept inside the stage, so on a phone, where the boss slot is 37 px from the left and the guardian 102 px wide,
+    // it stands as near the slot as the edge allows (15 px further in; before, its left side was cut off by the edge of the stage)
+    {const want=Math.max(Math.round(slot[0]*slot[2]),Math.ceil(ga.en[0].box.w/2)+1);
+    chk(`${tag}: a guardian fight stands on the boss slots (the guardian at the boss slot or as near as the stage's edge allows: ${ga.en[0].box.x} for ${want}; whole inside the stage; not over a hero)`,Math.abs(ga.en[0].box.x-want)<=1&&gu.l>=0&&ga.front.every(f=>!hit(gu,f))||JSON.stringify([ga,slot]));}
     await ev(()=>{const A=__A;A.B.over=true;A.finishBattle('fled');A.V.modal=null;});await wait(500);await ev(SETUP);
     // a Priest invokes it
     await ev(()=>{const A=__A;A.startBattle({stage:0,kind:'field'});});await wait(1500);
