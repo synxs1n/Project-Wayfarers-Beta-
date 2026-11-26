@@ -9,26 +9,30 @@ const GSLOTS=EQSL;
 const scoreEq=(c,eq)=>loadoutScore(c,calcStats(Object.assign({},c,{eq})));
 const slotOk=(c,sl,id)=>{const g=gearOf(id);return !!g&&g.slot===sl&&canEquip(c,id)&&(!g.only||g.only===c.id);};
 // pure planner: the equipment each hero should end with, and which items come from heroes outside the plan
+// 0.22.46 (gear46.js, "one engine"): Equip Best is the walk of free steps from the pack. Nobody is stripped first, a hero keeps what they wear
+// unless a spare is a gain today, and the spare that ENDS best at max temper comes first (p3Ult, then the bigger gain today, then the id).
+// It may still take pieces from heroes outside the party (takeIds); heroes in the plan no longer trade pieces among themselves. Before
+// 0.22.46 this stripped the party and dealt every piece out again by today's stats (fair weighted the weaker heroes; it is not used now).
+const gp46Cmp=(a,b)=>p3UltCmp(a,b)||(b.d-a.d)||(a.id<b.id?-1:a.id>b.id?1:0);
 function planGear(heroIds,takeIds,fair,slots){const SL=slots||GSLOTS;
   const heroes=heroIds.map(id=>G.roster[id]).filter(Boolean),hs=new Set(heroes.map(c=>c.id)),pool=[];
   G.gear.forEach(id=>pool.push({id,from:null}));
-  heroes.forEach(c=>SL.forEach(sl=>{if(c.eq[sl])pool.push({id:c.eq[sl],from:c.id,sl});}));
-  (takeIds||[]).forEach(hid=>{const c=G.roster[hid];if(!c||hs.has(hid))return;SL.forEach(sl=>{if(c.eq[sl])pool.push({id:c.eq[sl],from:hid,sl});});});
-  const eq={},cur={},memo={},used=[];heroes.forEach(c=>{eq[c.id]={};GSLOTS.forEach(sl=>{if(!SL.includes(sl)&&c.eq[sl])eq[c.id][sl]=c.eq[sl];});cur[c.id]=scoreEq(c,eq[c.id]);});
-  const val=(c,sl,id)=>{const k=c.id+'|'+sl+'|'+id+'|'+GSLOTS.map(s=>eq[c.id][s]||'').join(',');return memo[k]!=null?memo[k]:(memo[k]=scoreEq(c,Object.assign({},eq[c.id],{[sl]:id}))-cur[c.id]);};
-  for(let it=0;it<500;it++){
-    const ids=[...new Set(pool.map(e=>e.id))].sort(),mean=heroes.reduce((a,c)=>a+cur[c.id],0)/Math.max(1,heroes.length)||1;let best=null;
-    heroes.forEach(c=>{const w=fair?(G.party.includes(c.id)?1.35:1)/(.35+cur[c.id]/mean):1;
-      // v0.11.8: ties break the same way every time (hero order, slot order, then the gear id), not by the pack's current order, so pressing
-      // Equip best twice gives the same loadout
-      SL.forEach(sl=>{if(eq[c.id][sl])return;ids.forEach(id=>{if(!slotOk(c,sl,id))return;const v=val(c,sl,id);if(v<=.01)return;const s=v*w;if(!best||s>best.s+1e-6||(Math.abs(s-best.s)<=1e-6&&best.c===c&&best.sl===sl&&id<best.id))best={c,sl,id,s};});});});
+  (takeIds||[]).forEach(hid=>{const c=G.roster[hid];if(!c||hs.has(hid))return;GSLOTS.forEach(sl=>{if(SL.includes(sl)&&c.eq[sl])pool.push({id:c.eq[sl],from:hid,sl});});});
+  const eq={},sc={},src={};heroes.forEach(c=>{eq[c.id]=Object.assign({},c.eq);src[c.id]={};sc[c.id]=scoreEq(c,eq[c.id]);});
+  for(let it=0;it<400;it++){const ids=[...new Set(pool.map(e=>e.id))].sort();let best=null;
+    heroes.forEach((c,hi)=>{const real=c.eq;c.eq=eq[c.id];/* a shield is only allowed beside the weapon the plan has given so far (canEquip reads c.eq) */try{SL.forEach((sl,si)=>{const cur=eq[c.id][sl]||null;if(typeof f38Own==='function'&&f38Own(c,cur))return;let top=null;
+      ids.forEach(id=>{if(id===cur||!slotOk(c,sl,id))return;const d=scoreEq(c,Object.assign({},eq[c.id],{[sl]:id}))-sc[c.id];if(d<=.01)return;
+        const o={id,d,pct:sc[c.id]>0?d/sc[c.id]:0,u:p3Ult(c,sl,id)};if(!top||gp46Cmp(o,top)<0)top=o;});
+      if(top&&(!best||top.pct>best.pct+1e-9||(Math.abs(top.pct-best.pct)<=1e-9&&(hi<best.hi||(hi===best.hi&&si<best.si)))))best=Object.assign({c,sl,hi,si},top);});}finally{c.eq=real;}});
     if(!best)break;
-    const rk=e=>!e.from||hs.has(e.from)?0:1,pick=pool.map((e,i)=>({e,i})).filter(o=>o.e.id===best.id).sort((a,b)=>rk(a.e)-rk(b.e))[0];
-    pool.splice(pick.i,1);used.push({hid:best.c.id,sl:best.sl,id:best.id,from:rk(pick.e)?pick.e.from:null,fromSl:pick.e.sl});
-    eq[best.c.id][best.sl]=best.id;cur[best.c.id]=scoreEq(best.c,eq[best.c.id]);
-  }
-  return {heroes,eq,used,slots:SL};
-}
+    const pick=pool.map((e,i)=>({e,i})).filter(o=>o.e.id===best.id).sort((a,b)=>(a.e.from?1:0)-(b.e.from?1:0))[0];pool.splice(pick.i,1);
+    const c=best.c,old=eq[c.id][best.sl],was=src[c.id][best.sl];if(old)pool.push(was||{id:old,from:null});
+    eq[c.id][best.sl]=best.id;src[c.id][best.sl]=pick.e.from?pick.e:null;
+    // a weapon that leaves no hand for the shield puts the shield back (shields20.js)
+    if(typeof sh20Ok==='function'&&eq[c.id].s){const real=c.eq;let ok=true;try{c.eq=eq[c.id];ok=sh20Ok(c);}catch(e){}finally{c.eq=real;}if(!ok){pool.push(src[c.id].s||{id:eq[c.id].s,from:null});eq[c.id].s=null;src[c.id].s=null;}}
+    sc[c.id]=scoreEq(c,eq[c.id]);}
+  const used=[];heroes.forEach(c=>SL.forEach(sl=>{const id=eq[c.id][sl];if(!id)return;const e=src[c.id][sl];used.push({hid:c.id,sl,id,from:e?e.from:null,fromSl:e?e.sl:undefined});}));
+  return {heroes,eq,used,slots:SL};}
 function applyGear(plan){
   const pack=G.gear.slice(),SL=plan.slots||GSLOTS;
   plan.heroes.forEach(c=>SL.forEach(sl=>{if(c.eq[sl]){pack.push(c.eq[sl]);c.eq[sl]=null;}}));
@@ -53,14 +57,11 @@ function applyComp(map,heroIds){const hs=new Set(heroIds),old=new Map((G.tamed||
   G.tamed.forEach(o=>{if(map.has(o.id))o.with=map.get(o.id);else if(o.with&&hs.has(o.with))o.with=null;});
   // a freed companion goes back to its old hero if that hero is still outside the plan and has none
   G.tamed.forEach(o=>{const h=old.get(o.id);if(!o.with&&h&&G.roster[h]&&!hs.has(h)&&!compOf(G.roster[h]))o.with=h;});}
-// one hero: pack only, and a companion nobody else is using
+// one hero (the hero sheet's Auto best gear): the same walk for that hero, pack only, and a companion nobody else is using
 function autoOne(c){
-  GSLOTS.forEach(sl=>{let best=null,bs=scoreEq(c,c.eq);
-    [...new Set(G.gear.filter(id=>slotOk(c,sl,id)))].forEach(id=>{const v=scoreEq(c,Object.assign({},c.eq,{[sl]:id}));if(v>bs*1.005+.01){bs=v;best=id;}});
-    if(best)equipGear(c,best);});
-  const cur=compOf(c);let bo=cur,bg=cur?compGainFor(cur,c):0;
-  G.tamed.forEach(o=>{if(o.with&&o.with!==c.id)return;const g=compGainFor(o,c);if(g>bg+.01){bg=g;bo=o;}});
-  if(bo&&bo!==cur){G.tamed.forEach(x=>{if(x.with===c.id)x.with=null;});bo.with=c.id;}
+  applyGear(planGear([c.id],[],false));refresh(c);
+  try{const cur=compOf(c);let bo=cur,bg=cur?compGainFor(cur,c):0;(G.tamed||[]).forEach(o=>{if(o.with&&o.with!==c.id)return;const g=compGainFor(o,c);if(g>bg+.01){bg=g;bo=o;}});
+    if(bo&&bo!==cur){G.tamed.forEach(x=>{if(x.with===c.id)x.with=null;});bo.with=c.id;}}catch(e){}
   Object.values(G.roster).forEach(refresh);
 }
 function autoRun(mode,oneId){

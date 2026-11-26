@@ -339,10 +339,14 @@ HOOK.xform('cmdHtml','battle3','tall layout: HP/MP bars and the auto note in the
 // rows, easier to tap; the owner: "make the action menu a bit bigger to fill in space and push the other menus down"), and the top
 // B8.peek px of the party cards (they and the foes are in the box under the commands, which scrolls); the stage takes the rest, never
 // under B8.tallMin. On a small screen the rows grow less before the stage gives way. Returns the stage height (logical px).
-function b8TallPlan(bat,room){try{const sc=BL.sc||2,ch0=b8CmdEst()||(document.getElementById('bcmd')||{}).offsetHeight||200,G=B8.tallGrow,pk=B8.peek,g6=6;
+// 0.22.27 (battle27.js): in the b27 layout nothing is kept back for the party cards (no peek, B27.grow and B27.tallMax instead of B8's), and
+// the log line no longer sits under the stage, so its height and one row gap count as room.
+function b8TallPlan(bat,room){try{const b27=bat.classList.contains('b27');
+  if(b27){let add=0;try{const bl=document.getElementById('bline');add=(bl?bl.offsetHeight:40)+(parseFloat(getComputedStyle(bat).rowGap)||5);}catch(e){}room+=add;}
+  const sc=BL.sc||2,ch0=b8CmdEst()||(document.getElementById('bcmd')||{}).offsetHeight||200,G=b27?B27.grow:B8.tallGrow,pk=b27?0:B8.peek,mx=b27?B27.tallMax:B8.tallMax,g6=6;
   let g=G,H=Math.floor((room-ch0-g-g6-pk)/sc);
   if(H<B8.tallMin){g=Math.max(0,Math.min(G,room-ch0-g6-pk-B8.tallMin*sc));H=Math.floor((room-ch0-g-g6-pk)/sc);}
-  H=clamp(H,B8.tallMin,B8.tallMax);
+  H=clamp(H,B8.tallMin,mx);
   bat.style.setProperty('--b8gp',Math.round(g*.43)+'px');bat.style.setProperty('--b8gs',Math.round(g*.29)+'px');bat.style.setProperty('--b8ga',Math.round(g*.28)+'px');
   return H;}catch(e){return B8.tallMin;}}
 // the height left under the stage (portrait): the box under it is exactly as tall as the rest of the visible screen

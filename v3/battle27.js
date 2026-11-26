@@ -17,19 +17,28 @@ const B27={minLandH:560,portW:176,landCmd:230,sc:2.25,tallMax:300,grow:0,clear:4
 // tablet), sideways it is the largest that leaves B27.landCmd px for the turn order and the commands (the classic 320x150 stage at up to 6x).
 function b27Land(){try{const w=window.innerWidth/(typeof dsZoom==='function'?dsZoom():1),vh=b3Vh();return w>vh*1.15;}catch(e){return false;}}
 function b27Fits(){try{if(B27.off)return false;return !b27Land()||b3Vh()>=B27.minLandH;}catch(e){return false;}}
-{const m0=battleMode;battleMode=function(){return b27Fits()?'tall':m0.apply(this,arguments);};}
+// battleMode (battle.js) asks b27Fits first.
 function b27On(mode){try{return !B27.off&&(mode||battleMode())==='tall'&&b27Fits();}catch(e){return false;}}
-function b27Sc(bat){try{const w=(bat.clientWidth||window.innerWidth)+24,vh=b3Vh();
+// ---- big screens (side48.js, 0.22.48): the card column beside the stage ----
+const S48={w:200,minW:600,minH:600,topW:900,rise:120,lineMin:260,/* 0.22.50: minW was 1000 and sideways only; the owner: "when I say big screens I'm also talking about tablet and fold open views". From topW px wide the log line sits in the top strip; narrower, it stays floating over the stage. */off:(()=>{try{return localStorage.getItem('aurelis-s48off')==='1';}catch(e){return false;}})()};
+function s48W(){try{return window.innerWidth/(typeof dsZoom==='function'?dsZoom():1);}catch(e){return 0;}}
+// 0.22.51: sideways only again (the owner: "for tablets held in long mode rather than wide mode, the screen looked better however it was
+// done before, wide mode is fine"). An upright tablet or fold has the phone layout: the full width stage and the Party & foes sheet.
+function s48Fits(){try{if(S48.off||typeof b27Land!=='function'||!b27Land())return false;return s48W()>=S48.minW&&b3Vh()>=S48.minH;}catch(e){return false;}}
+function b27Sc(bat){
+  // big screens: the column is not stage
+  try{if(bat&&bat.classList.contains('b48')){const w=(bat.clientWidth||window.innerWidth)-S48.w-8+12,vh=b3Vh();if(b27Land())return clamp(Math.floor(Math.min(w/320,(vh-B27.landCmd)/150)*4)/4,2,6);return clamp(Math.floor(w/B27.portW*4)/4,B27.sc,6);}}catch(e){}
+  try{const w=(bat.clientWidth||window.innerWidth)+24,vh=b3Vh();
   if(b27Land())return clamp(Math.floor(Math.min(w/320,(vh-B27.landCmd)/150)*4)/4,2,6);return clamp(Math.floor(w/B27.portW*4)/4,B27.sc,6);}catch(e){return B27.sc;}}
 // layoutBattle asks before it measures: marks the battle and returns the stage scale (0 = the layout's own)
-function b27Mark(bat,mode){try{const on=b27On(mode);B27.live=on;bat.classList.toggle('m-tall',mode==='tall');bat.classList.toggle('b27',on);bat.classList.toggle('b27land',on&&b27Land());if(!on)bat.classList.remove('b27open');return on?b27Sc(bat):0;}catch(e){return 0;}}
-// on a short stage the units stand a little lower, so the tags over the highest hero stay clear of the floating line (B27.clear logical px)
-{const s0=slotsFor;slotsFor=function(){const r=s0.apply(this,arguments);try{if(B27.live&&!B27.noLine/* side48.js: on big screens the line is in the top strip */&&BL.mode==='tall'&&BL.H){const lo=Math.min(.62,(B27.clear+B27.lineH/(BL.sc||2.25))/BL.H);if(lo>.48)return r.map(([x,y])=>[x,+(lo+(y-.48)/.49*(.97-lo)).toFixed(4)]);}}catch(e){}return r;};}
-// the room under the stage: nothing is kept back for the party cards, the log line no longer sits under the stage
-{const p0=b8TallPlan;b8TallPlan=function(bat,room){if(!bat||!bat.classList.contains('b27'))return p0.apply(this,arguments);
-  const pk=B8.peek,g=B8.tallGrow,mx=B8.tallMax;let add=0;try{const bl=document.getElementById('bline');add=(bl?bl.offsetHeight:40)+(parseFloat(getComputedStyle(bat).rowGap)||5);}catch(e){}
-  B8.peek=0;B8.tallGrow=B27.grow;B8.tallMax=B27.tallMax;try{return p0.call(this,bat,room+add);}finally{B8.peek=pk;B8.tallGrow=g;B8.tallMax=mx;}};}
+function b27Mark(bat,mode){
+  // big screens first (b48, and whether the log line goes in the top strip), so the stage scale below is the one beside the column
+  try{const big=b27On(mode)&&s48Fits();bat.classList.toggle('b48',big);bat.style.setProperty('--b48w',S48.w+'px');bat.style.setProperty('--b48rise',S48.rise+'px');S48.live=big;S48.top=big&&s48W()>=S48.topW;B27.noLine=S48.top;}catch(e){}
+  try{const on=b27On(mode);B27.live=on;bat.classList.toggle('m-tall',mode==='tall');bat.classList.toggle('b27',on);bat.classList.toggle('b27land',on&&b27Land());if(!on)bat.classList.remove('b27open');return on?b27Sc(bat):0;}catch(e){return 0;}}
+// slotsFor (battle.js): on a short stage the units stand a little lower, so the tags over the highest hero stay clear of the floating line.
+// b8TallPlan (battle3.js): nothing is kept back for the party cards under the stage, and the log line no longer sits there.
 HOOK.xform('cmdHtml','battle27','small phones: the Party & foes button leads the second row',function(h){try{const bat=document.querySelector('.battle.b3');if(!bat||!bat.classList.contains('b27'))return h;
+  if(bat.classList.contains('b48'))return h;/* big screens (0.22.48): no Party & foes command, the cards are on screen */
   return String(h).replace('<div class="menu sec">','<div class="menu sec"><button class="mi b27pf" data-act="b27info" title="Every hero and foe: health, mana, statuses, weaknesses">☰ Party &amp; foes</button>');}catch(e){return h;}});
 ACT.b27info=function(){if(!B)return;B._b27=!B._b27;renderBattle();};
 HOOK.after('renderBattle','battle27','small phones: top strip, floating log line and the Party & foes sheet',function(r,stageOnly){try{if(stageOnly||!B)return;
@@ -52,67 +61,7 @@ HOOK.after('renderBattle','battle27','small phones: top strip, floating log line
     bp.insertAdjacentHTML('afterbegin','<div class="b27sh"><b>Party &amp; foes</b><button class="btn sm" data-act="b27info" aria-label="Close">✕ Close</button></div>');
     bp.insertAdjacentHTML('beforeend',`<div class="b27sf">${root?'<button class="btn sm" data-act="cmd" data-arg="guide">Guide</button>':''}<button class="btn sm" data-act="mute" aria-label="Sound">🔊 Sound</button><button class="btn sm" data-act="fbOpen" aria-label="Help and feedback">? Help</button><button class="btn sm" data-act="settings" aria-label="Settings">⚙ Settings</button></div>`);}
 }catch(e){B27.err=String(e&&e.message||e);}});
-{const st=document.createElement('style');st.id='b27css';st.textContent=`
-body:has(.battle.b3.b27) #hdr{display:none}
-.battle.b3.m-tall.b27{position:relative}
-.battle.b3.m-tall.b27 .order{display:flex;align-items:center;gap:6px}
-.battle.b3.m-tall.b27 .order .ocs{flex:1 1 auto;min-width:0;overflow:hidden}
-.battle.b3.m-tall.b27 .order .ocs>small{display:none}
-.battle.b3.m-tall.b27 .order .autorow{display:flex;flex:none;gap:4px;margin:0 0 0 auto;padding:0;width:auto}
-.battle.b3.m-tall.b27 .order .autorow .btn{flex:none;min-width:40px;width:auto;min-height:40px;padding:0 7px;font-size:.74rem;line-height:1.05}
-.battle.b3.m-tall.b27 .order .autorow .btn small{display:block;font-size:.56rem;opacity:.8}
-.battle.b3.m-tall.b27 .cmd .autorow{display:none}
-.battle.b3.m-tall.b27 .bwrap{margin-left:-12px;margin-right:-12px;width:calc(100% + 24px);max-width:none}
-.battle.b3.m-tall.b27>.bline{grid-area:auto;position:absolute;left:-4px;right:-4px;top:var(--b27t,62px);z-index:6;min-height:40px;padding:0 0 0 3px;gap:4px;background:rgba(8,13,26,.88);border:1px solid rgba(217,180,106,.28);border-radius:8px;overflow:hidden}
-.battle.b3.m-tall.b27>.bline .osky{display:flex;flex:none;gap:2px;align-items:center}
-.battle.b3.m-tall.b27>.bline .osky .wchip .wxn{display:none}
-.battle.b3.m-tall.b27 .order{padding-top:2px;padding-bottom:2px;min-height:44px}
-.battle.b3.m-tall.b27>.bline .osky .wchip{min-width:28px;width:28px;height:34px;min-height:34px;padding:0}
-.battle.b3.m-tall.b27>.bline .osky .wchip.d{width:auto;padding:0 4px;font-size:.62rem}
-.battle.b3.m-tall.b27>.bline .b4mo{min-height:40px;margin:0;min-width:74px;max-width:74px;padding:3px 5px}
-.battle.b3.m-tall.b27>.bline .b4mo .b4mt b{font-size:.5rem;letter-spacing:0}
-.battle.b3.m-tall.b27>.bline .blog p{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;font-size:.74rem;line-height:1.15}
-.battle.b3.m-tall.b27>.bline .blogbtn{min-height:40px;min-width:40px;padding:0 6px;font-size:.72rem;border-radius:0}
-.battle.b3.m-tall.b27>.bline .blogbtn.b27i{font-size:1rem;border-left:1px solid rgba(217,180,106,.28)}
-.battle.b3.m-tall.b27 .cmd .menu.prim{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-.battle.b3.m-tall.b27 .cmd .menu.prim .mi{min-height:48px;font-size:1.06rem}
-.battle.b3.m-tall.b27 .cmd .menu.sec{display:flex;flex-wrap:wrap;gap:5px}
-.battle.b3.m-tall.b27 .cmd .menu.sec .mi{flex:1 1 56px;min-width:0;min-height:40px}
-.battle.b3.m-tall.b27 .cmd .menu.sec .mi.b27pf{order:-1;flex:1.7 1 118px;white-space:nowrap;border-color:#a48bff;background:linear-gradient(#34296a,#231c4b);color:#fff}
-.battle.b3.m-tall.b27 .cmd .menu.sec .mi[data-arg="guide"]{display:none}
-.battle.b3.m-tall.b27 .bbottom .pgroup,.battle.b3.m-tall.b27 .bbottom .b8fl,.battle.b3.m-tall.b27 .bbottom .b3pty{display:none}
-.battle.b3.m-tall.b27 .bban{top:54px}
-.battle.b3.m-tall.b27 .cmd{padding-top:5px;padding-bottom:6px}
-.battle.b3.m-tall.b27 .who.cmdhead{padding:0 0 3px}
-.battle.b3.m-tall.b27 .cmd .menu.prim{gap:5px}
-.battle.b3.m-tall.b27 .cmd .menu.prim .mi{min-height:44px}
-.battle.b3.m-tall.b27 .who.cmdhead .cmdback{min-height:34px;height:34px;padding-top:0;padding-bottom:0}
-.battle.b3.m-tall.b27 .who.cmdhead{min-height:0}
-@media (min-width:700px){
-.battle.b3.m-tall.b27 .cmd .menu.prim{grid-template-columns:repeat(4,minmax(0,1fr))}
-.battle.b3.m-tall.b27 .cmd .menu.prim .mi{min-height:52px}
-.battle.b3.m-tall.b27 .cmd .menu.sec .mi.b27pf{flex:1 1 160px}
-.battle.b3.m-tall.b27.b27open .bbottom .bparty{left:auto;top:0;bottom:0;width:min(440px,92%);max-height:none;border-top:0;border-left:2px solid #a48bff;border-radius:16px 0 0 16px}
-}
-/* 0.22.42 (asked: "in the action menu on big screens the skills are half blocked"): a list (skills, items, the swap list) no longer has to
-   fit the strip under the stage. The command panel rises over the lower part of the stage for as long as the list is open, up to 64% of the
-   screen, and scrolls inside; picking a skill or Back puts it back. On wide screens the list is in columns. Only #bcmd floats: the box
-   under the stage keeps its place and size, so nothing is measured or laid out again (floating the whole box left the stage dark when a list
-   was opened on the first turn). */
-.battle.b3.m-tall.b27.b3list .bbottom .cmd{display:block;/* not the bottom aligned column of the root menu: a list taller than the panel must start at its top */position:fixed;left:0;right:0;bottom:0;margin:0;width:auto;z-index:20;height:auto;max-height:64%;overflow-y:auto;overscroll-behavior:contain;box-sizing:border-box;padding:6px 8px calc(8px + env(safe-area-inset-bottom,0px));background:#0e172c;border:0;border-top:2px solid #33466f;border-radius:0;box-shadow:0 -10px 30px rgba(0,0,0,.5)}
-@media (min-width:700px){.battle.b3.m-tall.b27.b3list .menu.list{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:6px;align-items:stretch}}
-.battle.b3 .b27shade{display:none}
-.battle.b3.m-tall.b27.b27open .b27shade{display:block;position:fixed;inset:0;z-index:69;background:rgba(4,7,15,.55)}
-.battle.b3.m-tall.b27.b27open .bbottom .bparty{display:flex;flex-direction:column;gap:8px;position:fixed;left:0;right:0;bottom:0;max-height:78%;overflow-y:auto;overscroll-behavior:contain;z-index:70;box-sizing:border-box;background:#0f1930;border-top:2px solid #a48bff;border-radius:16px 16px 0 0;padding:10px 12px calc(12px + env(safe-area-inset-bottom,0px))}
-.battle.b3.m-tall.b27.b27open .bbottom .b3pty{display:flex;flex-direction:column;gap:8px;order:1}
-.battle.b3.m-tall.b27.b27open .bbottom .pgroup{display:block;order:2}
-.battle.b3.m-tall.b27.b27open .bbottom .pgroup>h3{display:block;margin:0 0 4px}
-.battle.b3.m-tall.b27.b27open .bbottom .pgroup.heroes .pcs,.battle.b3.m-tall.b27.b27open .bbottom .pgroup.rsv .pcs{grid-template-columns:minmax(0,1fr)}
-.battle.b3.m-tall.b27.b27open .bbottom .fcs{grid-template-columns:minmax(0,1fr)}
-.b27sh{order:0;display:flex;align-items:center;justify-content:space-between;font-size:1rem}
-.b27sf{order:3;display:flex;flex-wrap:wrap;gap:6px}
-.b27sf .btn{flex:1 1 70px;min-height:40px}
-`;document.head.appendChild(st);}
+// the styles: battle3.css, section B
 // a turned tablet or a resized window mid battle: the stage scale changes with the screen, so the stage is fitted again from scratch (the
 // resize pass of battle3.js only refits the classic wide layout; without this the stage kept a default 85 logical px, v211a)
 {let t=0;window.addEventListener('resize',()=>{try{if(!B27.live||typeof V==='undefined'||V.screen!=='battle'||!B)return;clearTimeout(t);t=setTimeout(()=>{try{if(V.screen!=='battle'||!B)return;BL.fitH=0;B._b8fit=0;B._b8vh=0;layoutBattle();renderBattle();}catch(e){}},60);}catch(e){}});}

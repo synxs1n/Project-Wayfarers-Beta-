@@ -54,7 +54,7 @@ function k12Fx(s){const fx=s.fx||[],ally=s.t==='allyAll'||s.t==='ally'||s.t==='s
   if(ally){const g=fx.map(f=>K12_BUFF[f[0]]||K12_ST[f[0]]||f[0]);if(s.k==='heal')return `Heals${s.cleanse?' and cleanses':''} the vanguard${g.length?' and grants '+k12List(g):''}.`;return g.length?`Grants ${k12List(g)} to the vanguard.`:'';}
   const hi=fx.filter(f=>f[1]>=.6).map(f=>(K12_ST[f[0]]||f[0])+'s'),lo=fx.filter(f=>f[1]<.6).map(f=>K12_ST[f[0]]||f[0]),out=[];
   if(hi.length)out.push('Likely '+k12List(hi));if(lo.length)out.push((out.length?'may ':'May ')+k12Or(lo));
-  let t=out.length?out.join('; ')+'.':'';if(s.afflicted)t+=' Hits 50% harder on afflicted foes.';if(s.pierce)t+=' Ignores half of resistance.';
+  let t=out.length?out.join('; ')+'.':'';if(s.afflicted)t+=' Hits 50% harder on afflicted foes.';if(s.pierce)t+=s.k==='phys'?' Ignores half of defense.':' Ignores half of resistance.';
   if(s.self&&s.self.length)t+=' Grants you '+k12List(s.self.map(f=>K12_BUFF[f[0]]||f[0]))+'.';return t.trim();}
 const k12Hash=k=>[...k].reduce((a,c)=>a+c.charCodeAt(0),0);
 function k12Art(t,s){const A=SK12.arts,cls=t.cls;if(!s||!s.combo||s._k12c||!SK12.physCls.includes(cls)||!A.n[cls])return;s._k12c=1;

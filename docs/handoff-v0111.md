@@ -954,5 +954,26 @@ With `b3list` (a `.menu.list` is open) `#bcmd` is `position:fixed` at the bottom
   chest set the flag in all five dungeons; the repair is for saves where the two records disagree.
 - Card column: .pcw.hastags .ptags is static (battle3.css lays it absolutely over the card's foot). Test: tools/chrome/v229a.js (battle group).
 
-## 0.22.54
-- rarCap (gear16.js) stops at Heroic (4) until rarMythic(): G.won, a New Game+ cycle, or the Daily Trial. chestGear (worldrt.js) rolls one rarity up with CHEST_UP_LAST (.12) in the last realm while Mythic is closed, CHEST_UP (.04) elsewhere, and never holds more than the open rarity otherwise. Test: tools/chrome/v230a.js.
+## Cleanup after 0.22.53: fewer layers (no game change, no version bump)
+- Wraps folded into the function they wrapped (the comments went with them): `bossKeyFor`, `questReady` and `newChar` (engine.js),
+  `r3Ask` (recruit3.js), `p3Ult` and `upgOpts` (p3shop.js; echo11.js's part of upgOpts has the same relic guard), `facMissionList`
+  (factions.js, `f47Open`), `w7Legacy` (weather7.js), `sk12Tag` (skills12.js), `sr11Strip` (skillrows11.js), `skNum` (insight.js),
+  `ACT.tgtE` (battleui.js), `battleMode` and `slotsFor` (battle.js), `b8TallPlan` (battle3.js), `b27Mark`, `b27Sc` and the Party & foes
+  command (battle27.js now holds side48.js's part and S48). fix38.js is gone (all of it is in p3shop.js).
+- Left as they are, with the reason beside each: the eclipse wraps of `weatherFX` and `W7.old` (fix47.js: they replace what three
+  earlier layers draw), `known` (act49.js: it filters the finished list), and the registered hooks that edit finished HTML or lists
+  (`cmdHtml`, `mChar`, `REALM_DONE`, `renderBattle`, `openChest`): their place in the hook order is their meaning.
+- Dead code removed: `p3SmithPlan`, `p3SmithRun`, `p3Recipes` and the first `ACT.p3Smith / p3Alch / p3SmithGo` (p3shop.js), `g16PlanAll`
+  and the second set of those actions (gear16.js), shields20.js's wrap of `p3SmithPlan`, the old bodies of `planGear` and `autoOne`
+  (equip2.js) and the `GP46.off` switch. `planGear` is now the 0.22.46 walk itself; `gp46Plan` / `gp46Run` and the three actions are in
+  gear46.js. If the walk throws there is no older planner to fall back on any more. Tests: `__GP46.plan()` replaces `__P3.p3SmithPlan()`
+  and `__G16.plan()` (v050p3a, v188a, v095m4).
+- Battle CSS: one file, `v3/battle3.css`, sections A (base), B (`b27`, was the style block of battle27.js) and C (`b48`, was side48.js's).
+  B and C now load before battle5.css, battle4.css and every style a module adds, where they used to load after: a rule in B or C that
+  ties in weight with a later sheet would now lose. Checked on the built page (9 screen sizes, 5 battle states: root menu, skills, items,
+  the Party & foes sheet, target picking): no moved rule ties with a rule it now comes before. Keep new b27 / b48 rules at their usual
+  weight (`.battle.b3.m-tall.b27 ...`) and they stay ahead.
+- Found on the way: the Chrome test harness (pw.js) puts the page inside its own <body>, so there the page's stylesheet comes AFTER the
+  styles the modules add; in the real page it comes first. A tie between a stylesheet rule and a module's rule can therefore fall the
+  other way in a test than in the game. The command head's bottom padding is such a case: 3 px in the game (before and after this
+  cleanup), 4 px in the harness before it, 3 px now.

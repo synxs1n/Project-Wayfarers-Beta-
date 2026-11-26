@@ -237,7 +237,9 @@ function w7Legacy(ctx,w,k,V,now){if(!V.air)return;const f=W7.old;if(!f)return;
   let c=W7_OLD.cv;if(!c||c.width!==V.W||c.height!==V.H)c=W7_OLD.cv=mkCv(V.W,V.H);const o=c.getContext('2d');o.setTransform(1,0,0,1,0,0);o.globalAlpha=1;o.globalCompositeOperation='source-over';o.clearRect(0,0,V.W,V.H);
   if(V.mode==='bt')f(o,w,V.W,V.H,now,true);else wfxTiled(o,V.W,V.H,V.ox,V.oy,cc=>f(cc,w,V.W,V.H,now,false));ctx.globalAlpha=k;ctx.drawImage(c,0,0);
   // the surge's edge glow belongs to the view, not to the scrolling layer
-  const sw=typeof WEATHER!=='undefined'&&WEATHER[w]&&WEATHER[w].surge;if(sw&&V.mode!=='bt'&&typeof surgeGlow==='function'){const C={earth:'90,220,90',water:'80,170,255',fire:'255,120,50',ice:'170,230,255',wind:'220,255,230',shadow:'170,90,255'}[sw];if(C)surgeGlow(ctx,C,V.W,V.H,(.12+(Math.sin(now/1000*1.6)+1)/2*.14)*k);}}
+  const sw=typeof WEATHER!=='undefined'&&WEATHER[w]&&WEATHER[w].surge;if(sw&&V.mode!=='bt'&&typeof surgeGlow==='function'){const C={earth:'90,220,90',water:'80,170,255',fire:'255,120,50',ice:'170,230,255',wind:'220,255,230',shadow:'170,90,255'}[sw];if(C)surgeGlow(ctx,C,V.W,V.H,(.12+(Math.sin(now/1000*1.6)+1)/2*.14)*k);}
+  // 0.22.47 (fix47.js): on the map the Solar Eclipse's corona shows as a breathing rim of gold light around the view (it belongs to the view, not to the scrolling layer)
+  try{if(w==='eclipse'&&!F47.off&&V.mode!=='bt'&&typeof surgeGlow==='function')surgeGlow(ctx,'255,196,110',V.W,V.H,(.16+(Math.sin(now/1000*.9)+1)/2*.12)*k);}catch(e){}}
 function w7Begin(mode,W,H,ox,oy,ms){const V=W7V,S=W7.stats,still=w7Still();V.mode=mode;V.W=W;V.H=H;V.ox=ox;V.oy=oy;V.ms=still?0:ms;V.t=V.ms/1000;V.still=still;V.q=w7Q();V.n=0;V.gr=true;V.air=true;V.hx0=V.hx1=0;V.frx=0;V.gy=0;
   V.area=Math.max(.55,Math.min(1.8,W*H/(420*320)));S.mode=mode;S.n=0;S.layers[0]=S.layers[1]=S.layers[2]=0;S.ground=S.banks=S.shimmer=S.bolt=0;S.flash=0;return V;}
 function w7Run(ctx,V,L,now){ctx.save();try{ctx.globalCompositeOperation='source-over';for(const [w,k] of L){if(k<=.002)continue;if(W7_OWN[w])w7Paint(ctx,w,k,V);else w7Legacy(ctx,w,k,V,now);}}

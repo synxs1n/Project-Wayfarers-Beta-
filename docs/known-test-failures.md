@@ -16,8 +16,19 @@ A red run should mean something. These are the tests that fail or flicker on an 
 ## Flaky (pass on a rerun)
 v053b, v095p2, v158a, v194a, v152a, v041p1h, v070ob, v186a (check 3), v053ub (contrast 4.49 against 4.5).
 
+## Fail often on an untouched build (random journeys; measured on 0.22.53 before and after the layering cleanup)
+| Test | What fails | How often | Status |
+|---|---|---|---|
+| v225a | "1 the preview of Upgrade whole party is what happens" (state 3: a charm planned for one hero ends on another; state 6: gold planned 616, spent 676, or a charm planned +0 and got +1) | about 14 of 30 runs before the cleanup, 14 and 4 of 30 after | open: the preview and the run can disagree on charms; a game fault worth a look, not a test fault |
+| v188a | "2 hand-me-down" (the plan buys a greatsword for one warrior instead of the blade) | most runs, with a different hero each time | open: depends on which two warriors the journey draws |
+| v228a | "7 a phone (390x844) shows the same boxes" | now and then | open |
+| sanct, v141a | one check each (Echo gates count, Breach foes) | rarely, pass on a rerun | flaky |
+
 ## Fixed or passing again
 v050p1d passes on 0.22.53.
+
+## Balance, 0.22.54
+The 12 fight numbers below were rerun at 180 fights a cell and acted on: see `docs/balance54.md`. Hollow King and Hoarwyrm were noise; the real low end was Siren, Frost Lich and Drake. `v080ca` is stale (same eight failures on 0.22.53).
 
 ## Balance simulation, 0.22.53 (tools/fullsim.js, SEED=7)
 - `early`: first realm field and roamer fights at the intended levels win 96 to 100% with 8 to 29% HP lost. Roamers met too early (level 3 party, level 8 foes) win 41%.

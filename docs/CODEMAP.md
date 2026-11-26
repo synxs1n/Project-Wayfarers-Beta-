@@ -31,7 +31,7 @@ evals any name), `window.__AU` (ambience.js), `__P2` (p2world.js), `__P3` (p3sho
 | natures as sub-roles, single element mastery perks | `natures6.js` (NAT6, NAT6_CLASS, MAST6; MASTERY_BONUS in data.js) |
 | Chain targeting, planned foe targets and telegraphs, the Guard cue and reward | `chain5.js` (CHAIN and G5 in `config.js` 2) |
 | battle flow (turn order, enemy AI, auto) | `engine.js` (startBattle, advance, enemyTurn, autoTurn), `battle5.js` (forecast order, foePlan, enemyTurn0), `battle4.js` (roles, free swap), `prog2.js` (auto lock) |
-| battle screen (stage, labels, HUD, commands, cards) | `battle.js` (BL layout, drawUnit), `battle3.js` (labels, unitHud, FX placement), `battle5.js`/`battle4.js` (forecast, Momentum bar), `battleui.js` (cards, badges), `ui.js` renderBattle, CSS `battle3.css`, `battle5.css`, `battle4.css`, `ui3.css` |
+| battle screen (stage, labels, HUD, commands, cards) | `battle.js` (BL layout, drawUnit), `battle3.js` (labels, unitHud, FX placement), `battle5.js`/`battle4.js` (forecast, Momentum bar), `battleui.js` (cards, badges), `ui.js` renderBattle, `battle27.js` (the stage-first layout b27, and the big screen marks b48), `side48.js` (placing the card column), CSS `battle3.css` (sections A base, B the b27 layout, C big screens b48), `battle5.css`, `battle4.css`, `ui3.css` |
 | battle effects and animation | `anim.js`, `fx2.js` (floating text), `gfx6battle.js`, `hdspell.js` |
 | battle backdrops, HD-2D battle stage | `bg.js`, `p2world.js` (backdrop from the terrain), `hdstage.js`, `visuals7.js` (arena) |
 | world maps (generation) | `worldgen.js`, `world4.js` (the connected world, caves, dungeons), `sites.js`, `realms.js`, `mapheal.js`, `pathguard.js` |
@@ -45,7 +45,7 @@ evals any name), `window.__AU` (ambience.js), `__P2` (p2world.js), `__P3` (p3sho
 | HD-2D world (Medium and High graphics) | `hd2d.js` (worldDraw replacement), `hd2dgl.js` (WebGL layer), `config.js` 8 (HD2D) |
 | weather and day/night | `world3.js` (tables, rolls, clock), `engine2.js` (WEATHER defs, battle weather), `p5trans.js` (blends), `weather7.js` (layers), `config.js` 6 and 8 |
 | minimap, area map, world map | `map.js`, `visuals7.js` (drawMini); the connected world map and routes across maps `bigmap.js` (bmLayout, bmRoute, WS.route) |
-| menus and shops | `menus3.js` (tabs, filters, Smithy, Alchemy, Tavern, Guild, Board), `ui.js` (vModal, mMenu, mChar), `ui2.js` (crafting, sort filters), `p3shop.js` (Best for party, Smithy plan "Upgrade whole party", the Upgrade button upgOpts/upgBest), `temper.js`, `equip.js`/`equip2.js`, CSS `menus3.css` |
+| menus and shops | `menus3.js` (tabs, filters, Smithy, Alchemy, Tavern, Guild, Board), `ui.js` (vModal, mMenu, mChar), `ui2.js` (crafting, sort filters), `p3shop.js` (Best for party, the Upgrade button upgOpts/upgBest, the plan window mP3Plan), `gear46.js` ("Upgrade whole party": gp46Plan, gp46Run; Equip Best is `planGear` in `equip2.js`), `temper.js`, `equip.js`/`equip2.js`, CSS `menus3.css` |
 | party, Best Party, loadouts, roster | `party2.js`, `p3shop.js` (scoring), `party3.js` (formations, Training team), `nav.js` (swaps), `tavern2.js` (journey roster, tavern tables), `progression.js` |
 | companions and taming | `comp.js`, `comp2.js`, `engine2.js` (registerTamed), `v063prog.js` (Taming log) |
 | quests, factions, guilds | `records12.js` (Notices tab: one list and one Claim all), `engine.js` (genQuests, claimQuest), `menus3.js` (the Notice Board: NB_TABS, nbBody, nbMenuBody), `factions.js` (FAC3: three ranks over six steps), `p4party.js` (personal quests by realm), `allq.js`, `qready.js` |
@@ -515,27 +515,6 @@ Registered (load order; 1 is next to the base):
 
 Runs: 10 party12 → 6 map → **base** → 1 account → 2 progression → 3 tavern2 → 4 metastats → 5 prog2 → 7 pacing → 8 goals → 9 look9 → 11 party12 → 12 menus14 → 13 quests16 → 14 world16 → 15 roster17 → 16 legends17b → 17 act49
 
-### cmdHtml (16 hooks)
-Registered (load order; 1 is next to the base):
-1. `battle3.js` result: tall layout: HP/MP bars and the auto note in the command head
-2. `battle5.js` result: cue and glow on the command menu
-3. `battle4.js` result: swap menu body and free swap label
-4. `summon8.js` around: summons menu and Invoke button
-5. `battle9.js` result: one Summon button
-6. `skillfilt9.js` result: skill filter chips
-7. `battle11.js` result: command head without the HP/MP mini bars
-8. `skillrows11.js` result: skill numbers on the battle skill list
-9. `skills12.js` result: role tier on the battle skill rows
-10. `menus12.js` result: battle skill rows: a missing scope, kind or Primer / Detonator tag is added; the last used skill is marked
-11. `battle16.js` result: recruited bosses: a note where the Summon command was for anyone who cannot call them
-12. `legends17a.js` result: greyed rows with the reason, the boss command, HP for MP in his summons menu
-13. `legends17a.js` result: Joseth among the callers in the greyed Summon note
-14. `battle27.js` result: small phones: the Party & foes button leads the second row
-15. `side48.js` result: big screens: no Party & foes command (the cards are on screen)
-16. `act49.js` result: Attack shows element, kind and estimate; the list names the foe the numbers are for
-
-Runs: 4 summon8 (around) → **base** → 1 battle3 (result) → 2 battle5 (result) → 3 battle4 (result) → 4 summon8 (around) → 5 battle9 (result) → 6 skillfilt9 (result) → 7 battle11 (result) → 8 skillrows11 (result) → 9 skills12 (result) → 10 menus12 (result) → 11 battle16 (result) → 12 legends17a (result) → 13 legends17a (result) → 14 battle27 (result) → 15 side48 (result) → 16 act49 (result)
-
 ### encounterFoes (16 hooks)
 Registered (load order; 1 is next to the base):
 1. `legends.js` before: legend fights
@@ -597,6 +576,26 @@ Registered (load order; 1 is next to the base):
 15. `battle27.js` before: keep the backdrop drawn under a floating panel
 
 Runs: 15 battle27 → 14 cohere15 → 13 chars13 (around) → 11 chars13 → 9 perf12 → 8 fxkind11 → 7 res11 → 6 battle11 (around) → 5 sprhd2 → 4 hdspell → 3 hdstage (around) → 2 gfx6battle (around) → 1 anim → **base** → 2 gfx6battle (around) → 3 hdstage (around) → 6 battle11 (around) → 10 kits12 → 12 chars13 → 13 chars13 (around)
+
+### cmdHtml (15 hooks)
+Registered (load order; 1 is next to the base):
+1. `battle3.js` result: tall layout: HP/MP bars and the auto note in the command head
+2. `battle5.js` result: cue and glow on the command menu
+3. `battle4.js` result: swap menu body and free swap label
+4. `summon8.js` around: summons menu and Invoke button
+5. `battle9.js` result: one Summon button
+6. `skillfilt9.js` result: skill filter chips
+7. `battle11.js` result: command head without the HP/MP mini bars
+8. `skillrows11.js` result: skill numbers on the battle skill list
+9. `skills12.js` result: role tier on the battle skill rows
+10. `menus12.js` result: battle skill rows: a missing scope, kind or Primer / Detonator tag is added; the last used skill is marked
+11. `battle16.js` result: recruited bosses: a note where the Summon command was for anyone who cannot call them
+12. `legends17a.js` result: greyed rows with the reason, the boss command, HP for MP in his summons menu
+13. `legends17a.js` result: Joseth among the callers in the greyed Summon note
+14. `battle27.js` result: small phones: the Party & foes button leads the second row
+15. `act49.js` result: Attack shows element, kind and estimate; the list names the foe the numbers are for
+
+Runs: 4 summon8 (around) → **base** → 1 battle3 (result) → 2 battle5 (result) → 3 battle4 (result) → 4 summon8 (around) → 5 battle9 (result) → 6 skillfilt9 (result) → 7 battle11 (result) → 8 skillrows11 (result) → 9 skills12 (result) → 10 menus12 (result) → 11 battle16 (result) → 12 legends17a (result) → 13 legends17a (result) → 14 battle27 (result) → 15 act49 (result)
 
 ### calcStats (14 hooks)
 Registered (load order; 1 is next to the base):

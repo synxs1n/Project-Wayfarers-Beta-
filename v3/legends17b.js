@@ -145,7 +145,7 @@ try{const T=TPL.jaeson;T.n='Jace';T.title='Jace Vael, the Weatherwright';
   CLS.druid.n='Hunter';CLS.druid.role='Legendary hunter. A longbow that never rests, a snare, a hawk overhead, and a way with wild things.';
   CLS.sniper.role='Legendary mounted sniper. One steadied bolt of shadow and storm that goes through anything, and he shoots back when struck.';
   LIMIT.archmage=Object.assign(LIMIT.archmage,{n:'Hailfall',pw:.95,hits:3,l17waves:3,fx:[['slow',.6],['stun',.25]],d:'The sky comes down in three waves on every foe: Lightning in a thunderstorm, Ice in snow, both in turn (and weaker) under any other sky.'});
-  LIMIT2.archmage=Object.assign(LIMIT2.archmage,{n:'Absolute Tempest',pw:.92,hits:4,l17waves:4,fx:[['slow',.8],['stun',.35]],shieldChip:2,d:'Four waves of the worst weather there is on every foe: Lightning in a thunderstorm, Ice in snow, both in turn (and weaker) otherwise. Chips 2 shield pips.'});
+  LIMIT2.archmage=Object.assign(LIMIT2.archmage,{n:'Absolute Tempest',pw:.92,hits:4,l17waves:4,fx:[['slow',.8],['stun',.35]],shieldChip:2,d:'Four waves of the worst weather there is on every foe: Lightning in a thunderstorm, Ice in snow, both in turn (and weaker) otherwise. Likely Slows, may Stun; chips 2 shield pips.'});
 }catch(e){console.error('legends17b texts',e);}
 
 // ---------- 4. battle ----------
