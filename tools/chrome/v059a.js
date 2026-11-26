@@ -10,7 +10,12 @@ const META=t=>`localStorage.clear();localStorage.setItem('aurelis-meta-v1',JSON.
    o.dupChip=!!document.querySelector('#bstage .utags .sti.prime');o.stageW=Math.round(document.getElementById('bstage').getBoundingClientRect().width);
    // no glow sphere: the pixels around the foe's body do not change between primed and not primed (canvas only)
    const cv=document.getElementById('bcv'),W=cv._rw||cv.width,k=W/cv.width,ctx=cv.getContext('2d');const grab=()=>{const d=ctx.getImageData(Math.max(0,Math.floor((eb.x-eb.w*.7)*k)),Math.max(0,Math.floor((eb.y-eb.h*1.1)*k)),Math.floor(eb.w*1.4*k),Math.floor(eb.h*1.2*k)).data;let s=0;for(let i=0;i<d.length;i+=4)s+=d[i]+d[i+1]+d[i+2];return s/(d.length/4);};
-   await new Promise(q=>requestAnimationFrame(()=>requestAnimationFrame(q)));const lit=grab();e.primed=null;await new Promise(q=>requestAnimationFrame(()=>requestAnimationFrame(q)));const plain=grab();o.glow=Math.round(Math.abs(lit-plain));
+   // four grabs with the prime and four without, 120 ms apart, and the closest pair counts: the foe breathes (the two frame idle of chars13.js) and
+   // motes drift over the stage, so one grab of each differed by up to 7 with no prime drawn at all (the limit is 6). A glow sphere is in every
+   // primed grab and in none of the plain ones, so it shifts every pair.
+   const fr=()=>new Promise(q=>{let d=0;const g=()=>{if(!d){d=1;q();}};requestAnimationFrame(()=>requestAnimationFrame(g));setTimeout(g,300);}),nap=()=>new Promise(q=>setTimeout(q,120));
+   const many=async()=>{const L=[];for(let i=0;i<4;i++){await fr();L.push(grab());await nap();}return L;};
+   const lit=await many();e.primed=null;const plain=await many();let best=1e9;lit.forEach(a=>plain.forEach(b=>{best=Math.min(best,Math.abs(a-b));}));o.glow=Math.round(best);
    e.primed={el:'ice',t:1,by:'Mira'};A.render();return o;});
  console.log(JSON.stringify(r));
  chk('primed marker is a small badge (at most 28 px, turn count included)',r.w<=32&&r.h<=32/* 0.22.27: the phone stage is drawn at 2.25, was 2 */||JSON.stringify(r));

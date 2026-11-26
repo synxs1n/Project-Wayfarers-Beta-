@@ -67,8 +67,12 @@ chk('the Sanctum music is a slow, sacred piece under the same key (bpm <= 70, co
 // ---- HD-2D: the Sanctum and the gate stand up as geometry, no exceptions ----
 const HDR=await ev(async()=>{const A=__A,g=A.TW.get,G=g('G'),o={};A.META.cfg.gfx='high';A.META.cfg.hd2d=true;A.gfxApply();
   const f=g('getMap')('f1');if(f.fortAt){g('placeAt')('f1',f.fortAt[0],f.fortAt[1]+2,'u');A.WS.lock=false;}
-  await new Promise(r=>setTimeout(r,1500));o.live=!!A.HD.live;o.gate=!!(f.fortAt&&A.HD.S&&(A.HD.S.bh||[]).some(q=>q.b&&q.b.k==='gatehouse'));o.gateH=o.gate?(A.HD.S.bh.find(q=>q.b&&q.b.k==='gatehouse').h):0;
-  const m=g('getMap')('o1');m.open=0;g('placeAt')('o1',m.prize[0]-3,m.prize[1],'r');A.WS.lock=false;await new Promise(r=>setTimeout(r,1500));
+  // until the HD-2D scene of the field is baked with its gatehouse (15 s at most), and the Sanctum's below: a fixed 1.5 s was not always enough on a
+  // busy machine (software WebGL), and the check then read the scene before its bake ("gate":false)
+  const sleep=ms=>new Promise(r=>setTimeout(r,ms)),baked=id=>!!(A.HD.live&&A.HD.S&&A.HD.S.m&&A.HD.S.m.id===id);
+  for(let t=0;t<100;t++){await sleep(150);if(baked('f1')&&(!f.fortAt||(A.HD.S.bh||[]).some(q=>q.b&&q.b.k==='gatehouse')))break;}
+  o.live=!!A.HD.live;o.gate=!!(f.fortAt&&A.HD.S&&(A.HD.S.bh||[]).some(q=>q.b&&q.b.k==='gatehouse'));o.gateH=o.gate?(A.HD.S.bh.find(q=>q.b&&q.b.k==='gatehouse').h):0;
+  const m=g('getMap')('o1');m.open=0;g('placeAt')('o1',m.prize[0]-3,m.prize[1],'r');A.WS.lock=false;for(let t=0;t<100;t++){await sleep(150);if(baked('o1'))break;}
   o.inside=A.WS.m&&A.WS.m.id==='o1'&&!!A.HD.S&&A.HD.S.m&&A.HD.S.m.id==='o1';o.liveIn=!!A.HD.live;
   // the struct strip: band A faces are not the old keep's (no crimson) and the motes ambience runs in the overlay
   if(A.HD.S&&A.HD.S.tst||true){try{const cv=g('hdStructCanvas')(m,{hArt:32,zArt:32,V:1});const d=cv.getContext('2d').getImageData(0,0,64,32).data;let red=0;for(let i=0;i<d.length;i+=4)if(d[i]>150&&d[i+1]<70&&d[i+2]<70&&d[i+3]>0)red++;o.structRed=red;o.struct=true;}catch(e){o.struct='ERR '+e.message;}}
