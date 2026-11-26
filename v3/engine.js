@@ -45,7 +45,7 @@ function baseAttr(c){
   ATTR.forEach(k=>{a[k]=A.b[k]+A.g[k]*L+allocEff(c,k)*POINT_VAL[k]+(c.vet||0);});
   return a;
 }
-// v0.22.56 (GEAR_LV): the level's share of what gear tiers used to give, and the class's shape for it (its own weapon and armor family, per point of power)
+// v0.22.57 (GEAR_LV): the level's share of what gear tiers used to give, and the class's shape for it (its own weapon and armor family, per point of power)
 function gearLvAt(T,lv){const L=GEAR_LV.lv;if(lv<=L[0])return T[0];for(let i=1;i<L.length;i++)if(lv<=L[i])return T[i-1]+(T[i]-T[i-1])*(lv-L[i-1])/(L[i]-L[i-1]);return T[T.length-1];}
 const GEAR_LV_SHAPE={};
 function gearLvShape(cls){if(GEAR_LV_SHAPE[cls])return GEAR_LV_SHAPE[cls];const f=CF[cls];if(!f)return null;const w=GEAR['w_'+f[0]+'_4'],a=GEAR['a_'+f[1]+'_4'];if(!w||!a)return null;
@@ -541,7 +541,7 @@ function applyReactionAfter(R,a,t,dealt){
   chipShield(t,3,'reaction');
 }
 function perform(a,sk,tgts){
-  let rvN=0;// v0.22.56: heroes this move has revived (sk.reviveN caps it)
+  let rvN=0;// v0.22.57: heroes this move has revived (sk.reviveN caps it)
   if(B){B.actN=(B.actN||0)+1;a.prevAct=a.lastAct||0;a.lastAct=B.actN;}
   const now=Date.now();a.actT=now;a.actKind=sk.k;a.actEl=skEls(sk)[0]||null;a.actName=sk.id==='attack'?null:sk.n;
   log(sk.id==='attack'?`${a.name} attacks!`:`${a.name} uses ${sk.n}!`);

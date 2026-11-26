@@ -42,7 +42,7 @@ const MON_DROPS={mossling:['healroot','ichor'],gustimp:['ichor','oak'],dewtoad:[
 // Kept out of MAT_PRICE on purpose, so recipe gold math ignores them and parts stay the gate.
 const PART_PRICE={hide:30,fang:32,scale:36,ichor:36,grit:40},PART_STOCK=3;
 const GEAR={};
-// v0.22.56 gear pass (docs/balance56.md): the tier curve is flatter. WP was [6,14,25,39,57,80] (13x from Common to Mythic), AP [5,11,18,27,38,52]; they are
+// v0.22.57 gear pass (docs/balance56.md): the tier curve is flatter. WP was [6,14,25,39,57,80] (13x from Common to Mythic), AP [5,11,18,27,38,52]; they are
 // [8,14,20,27,35,44] and [6,11,16,22,29,37] now, and what a tier used to add comes with the hero's level instead (GEAR_LV in config.js, calcStats), so a
 // hero at each realm's usual level and gear is where they were and a missed shop visit costs less. FORGE_STEP .11 -> .08: a piece at +3 (x1.24) still
 // stays under the next rarity at +0 (test v188a.js; the smallest step between rarities is now x1.26).
@@ -108,7 +108,7 @@ for(let t=0;t<6;t++){
   addGear('w_warhammer_'+t,{n:WN.warhammer[t],slot:'w',tier:t,atk:Math.round(WP[t]*.98),def:Math.round(WP[t]*.12),price:PRICE[t]});
   addGear('w_standard_'+t,{n:WN.standard[t],slot:'w',tier:t,atk:Math.round(WP[t]*.88),def:Math.round(WP[t]*.15),res:Math.round(WP[t]*.15),price:PRICE[t]});
   addGear('w_lyre_'+t,{n:WN.lyre[t],slot:'w',tier:t,mag:Math.round(WP[t]*1.02),mp:Math.round(WP[t]*.5),res:Math.round(WP[t]*.2),price:PRICE[t]});
-  addGear('a_mail_'+t,{n:AN.mail[t],slot:'a',tier:t,def:Math.round(AP[t]*ARM_K),res:Math.round(AP[t]*ARM_K*ARM_MAIL_RES),hp:AP[t]*3,mp:-Math.round(AP[t]*.3),/* v0.22.56: no speed penalty (it was -(1+round(t*.4)): speed is turns, and the front line had the fewest); resistance .4 -> ARM_MAIL_RES of its defense */price:Math.round(PRICE[t]*.9)});
+  addGear('a_mail_'+t,{n:AN.mail[t],slot:'a',tier:t,def:Math.round(AP[t]*ARM_K),res:Math.round(AP[t]*ARM_K*ARM_MAIL_RES),hp:AP[t]*3,mp:-Math.round(AP[t]*.3),/* v0.22.57: no speed penalty (it was -(1+round(t*.4)): speed is turns, and the front line had the fewest); resistance .4 -> ARM_MAIL_RES of its defense */price:Math.round(PRICE[t]*.9)});
   addGear('a_robe_'+t,{n:AN.robe[t],slot:'a',tier:t,res:Math.round(AP[t]*ARM_K),def:Math.round(AP[t]*ARM_K*.45),mag:Math.round(AP[t]*.4),mp:Math.round(AP[t]*1.2),spd:1+Math.round(t*.8),attr:{fth:1+t},price:Math.round(PRICE[t]*.9)});
   addGear('a_vest_'+t,{n:AN.vest[t],slot:'a',tier:t,def:Math.round(AP[t]*ARM_K*.72),res:Math.round(AP[t]*ARM_K*.72),spd:1+t,price:Math.round(PRICE[t]*.9)});
 }
@@ -139,7 +139,7 @@ const ITEM_TIERS=[
  {n:'Echoforged',c:'#c9a6ff',c2:'#7df0e0',pip:'❂'}];/* 0.22.47: the violet of the Echoes (their glow is #b48aff; lifted a little so it does not read as Epic), with the Rift's teal as the second colour of the shimmer. It was a pale gold. */
 const ITEM_TIER_OF={potion:0,remedy:0,porkchop:0,ether:1,hipotion:1,vigor:1,sage:1,tent:1,holywater:2,plume:3,elixir:3};// v0.10.8: Elixir was tier 4 ('Legendary'), a chest staple // consumables
 const STN={hp:'HP',mp:'MP',atk:'ATK',def:'DEF',mag:'MAG',res:'RES',spd:'SPD'};
-// Tempered gear carries a +N suffix: each level adds FORGE_STEP (11%) to its stats.
+// Tempered gear carries a +N suffix: each level adds FORGE_STEP (8%) to its stats.
 function gearOf(id){
   if(!id)return null;if(id==='w_stick')return stickGear();const m=String(id).match(/^(.*)\+(\d)$/);
   if(!m)return GEAR[id]||null;
@@ -181,14 +181,14 @@ const ARM_NAME={light:'Light armor',medium:'Medium armor',heavy:'Heavy armor'};
 const ARM_FAM={heavy:'mail',medium:'vest',light:'robe'};
 // perks: s = short text for skill rows, p = full text for items. Numbers are read by calcStats (stat parts) and the battle engine (the rest).
 const WPERK={
- blade:{p:'Guard stance: your Guard blocks 65% of a hit instead of half, +4% accuracy',s:'Sword: Guard blocks 65%',acc:.04,guardCut:.65},/* v0.22.56: was +8% critical damage */
+ blade:{p:'Guard stance: your Guard blocks 65% of a hit instead of half, +4% accuracy',s:'Sword: Guard blocks 65%',acc:.04,guardCut:.65},/* v0.22.57: was +8% critical damage */
  axe:{p:'Cleave: +12% damage with attacks that hit every foe',s:'Axe: +12% when it hits all foes',cleave:.12},
  greatsword:{p:'Heavy: +12% physical damage, actions take 6% longer',s:'Greatsword: +12% physical damage',heavy:.12,tempo:1.06},
  lance:{p:'Charge: +22% damage to foes that have already acted since your last turn',s:'Lance: +22% vs foes that already acted',charge:.22},
  mace:{p:'Crush: stun chances are 50% higher, and basic attacks have a 10% chance to stun',s:'Mace: stuns land 50% more often',stun:1.5,basicStun:.10},
  staff:{p:'Focus: spells cost 15% less MP, +10% elemental spell damage',s:'Staff: spells cost 15% less MP'},
  tome:{p:'Scholar: +10% spell damage',s:'Tome: +10% spell damage',spellPow:.10},
- dagger:{p:'Exploit: +15% damage to a foe with any ailment, +3% critical chance',s:'Dagger: +15% vs ailing foes',crit:.03,exploit:.15},/* v0.22.56: was +6% critical chance */
+ dagger:{p:'Exploit: +15% damage to a foe with any ailment, +3% critical chance',s:'Dagger: +15% vs ailing foes',crit:.03,exploit:.15},/* v0.22.57: was +6% critical chance */
  shortsword:{p:'Parry: +5% evasion, +4% critical chance',s:'Short sword: +5% evasion',eva:.05,crit:.04},
  bow:{p:"Piercing: ignores 10% of the target's defense",s:'Bow: ignores 10% DEF',pierce:.10},
  longbow:{p:"Long draw: ignores 16% of the target's defense, but actions take 4% longer",s:'Longbow: ignores 16% DEF',pierce:.16,tempo:1.04},

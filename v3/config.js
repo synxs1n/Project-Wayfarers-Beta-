@@ -185,7 +185,7 @@ const BOSS_GIM={on:true,daily:false,first:2,every:4,stageK:[.5,.85,1,1,1],answer
 const BOSS_SIZE={hp:.07,pow:.06,expect:[3,4,5,6,6],short:{hp:.08,pow:.05}};// per stage 1 to 5
 // STUN_CAP (v0.22.54): a hero who has just lost a turn to a stun (or a freeze) cannot be stunned again until after their next turn.
 const STUN_CAP={on:true};
-// GEAR_LV (v0.22.56, calcStats): what the old, steeper gear tiers added now grows with the hero. w and a are the old minus the new weapon and armor
+// GEAR_LV (v0.22.57, calcStats): what the old, steeper gear tiers added now grows with the hero. w and a are the old minus the new weapon and armor
 // power at each realm's usual level (lv: 8, 16, 24, 32, 40; straight lines between, flat after 40). A hero gets it in the shape of their class's own
 // weapon and armor family (a Mage as magic and resistance, a Knight as attack, defense and HP).
 const GEAR_LV={on:true,lv:[8,16,24,32,40],w:[0,0,5,12,22],a:[0,0,2,5,9]};
