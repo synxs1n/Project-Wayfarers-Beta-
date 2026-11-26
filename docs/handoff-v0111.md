@@ -970,5 +970,10 @@ With `b3list` (a `.menu.list` is open) `#bcmd` is `position:fixed` at the bottom
   and `__G16.plan()` (v050p3a, v188a, v095m4).
 - Battle CSS: one file, `v3/battle3.css`, sections A (base), B (`b27`, was the style block of battle27.js) and C (`b48`, was side48.js's).
   B and C now load before battle5.css, battle4.css and every style a module adds, where they used to load after: a rule in B or C that
-  ties in weight with a later sheet now loses. Checked rule by rule when it was moved; keep new b27 / b48 rules at their usual weight
-  (`.battle.b3.m-tall.b27 ...`) and they stay ahead.
+  ties in weight with a later sheet would now lose. Checked on the built page (9 screen sizes, 5 battle states: root menu, skills, items,
+  the Party & foes sheet, target picking): no moved rule ties with a rule it now comes before. Keep new b27 / b48 rules at their usual
+  weight (`.battle.b3.m-tall.b27 ...`) and they stay ahead.
+- Found on the way: the Chrome test harness (pw.js) puts the page inside its own <body>, so there the page's stylesheet comes AFTER the
+  styles the modules add; in the real page it comes first. A tie between a stylesheet rule and a module's rule can therefore fall the
+  other way in a test than in the game. The command head's bottom padding is such a case: 3 px in the game (before and after this
+  cleanup), 4 px in the harness before it, 3 px now.

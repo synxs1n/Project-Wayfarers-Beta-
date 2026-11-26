@@ -515,27 +515,6 @@ Registered (load order; 1 is next to the base):
 
 Runs: 10 party12 → 6 map → **base** → 1 account → 2 progression → 3 tavern2 → 4 metastats → 5 prog2 → 7 pacing → 8 goals → 9 look9 → 11 party12 → 12 menus14 → 13 quests16 → 14 world16 → 15 roster17 → 16 legends17b → 17 act49
 
-### cmdHtml (16 hooks)
-Registered (load order; 1 is next to the base):
-1. `battle3.js` result: tall layout: HP/MP bars and the auto note in the command head
-2. `battle5.js` result: cue and glow on the command menu
-3. `battle4.js` result: swap menu body and free swap label
-4. `summon8.js` around: summons menu and Invoke button
-5. `battle9.js` result: one Summon button
-6. `skillfilt9.js` result: skill filter chips
-7. `battle11.js` result: command head without the HP/MP mini bars
-8. `skillrows11.js` result: skill numbers on the battle skill list
-9. `skills12.js` result: role tier on the battle skill rows
-10. `menus12.js` result: battle skill rows: a missing scope, kind or Primer / Detonator tag is added; the last used skill is marked
-11. `battle16.js` result: recruited bosses: a note where the Summon command was for anyone who cannot call them
-12. `legends17a.js` result: greyed rows with the reason, the boss command, HP for MP in his summons menu
-13. `legends17a.js` result: Joseth among the callers in the greyed Summon note
-14. `battle27.js` result: small phones: the Party & foes button leads the second row
-15. `side48.js` result: big screens: no Party & foes command (the cards are on screen)
-16. `act49.js` result: Attack shows element, kind and estimate; the list names the foe the numbers are for
-
-Runs: 4 summon8 (around) → **base** → 1 battle3 (result) → 2 battle5 (result) → 3 battle4 (result) → 4 summon8 (around) → 5 battle9 (result) → 6 skillfilt9 (result) → 7 battle11 (result) → 8 skillrows11 (result) → 9 skills12 (result) → 10 menus12 (result) → 11 battle16 (result) → 12 legends17a (result) → 13 legends17a (result) → 14 battle27 (result) → 15 side48 (result) → 16 act49 (result)
-
 ### encounterFoes (16 hooks)
 Registered (load order; 1 is next to the base):
 1. `legends.js` before: legend fights
@@ -597,6 +576,26 @@ Registered (load order; 1 is next to the base):
 15. `battle27.js` before: keep the backdrop drawn under a floating panel
 
 Runs: 15 battle27 → 14 cohere15 → 13 chars13 (around) → 11 chars13 → 9 perf12 → 8 fxkind11 → 7 res11 → 6 battle11 (around) → 5 sprhd2 → 4 hdspell → 3 hdstage (around) → 2 gfx6battle (around) → 1 anim → **base** → 2 gfx6battle (around) → 3 hdstage (around) → 6 battle11 (around) → 10 kits12 → 12 chars13 → 13 chars13 (around)
+
+### cmdHtml (15 hooks)
+Registered (load order; 1 is next to the base):
+1. `battle3.js` result: tall layout: HP/MP bars and the auto note in the command head
+2. `battle5.js` result: cue and glow on the command menu
+3. `battle4.js` result: swap menu body and free swap label
+4. `summon8.js` around: summons menu and Invoke button
+5. `battle9.js` result: one Summon button
+6. `skillfilt9.js` result: skill filter chips
+7. `battle11.js` result: command head without the HP/MP mini bars
+8. `skillrows11.js` result: skill numbers on the battle skill list
+9. `skills12.js` result: role tier on the battle skill rows
+10. `menus12.js` result: battle skill rows: a missing scope, kind or Primer / Detonator tag is added; the last used skill is marked
+11. `battle16.js` result: recruited bosses: a note where the Summon command was for anyone who cannot call them
+12. `legends17a.js` result: greyed rows with the reason, the boss command, HP for MP in his summons menu
+13. `legends17a.js` result: Joseth among the callers in the greyed Summon note
+14. `battle27.js` result: small phones: the Party & foes button leads the second row
+15. `act49.js` result: Attack shows element, kind and estimate; the list names the foe the numbers are for
+
+Runs: 4 summon8 (around) → **base** → 1 battle3 (result) → 2 battle5 (result) → 3 battle4 (result) → 4 summon8 (around) → 5 battle9 (result) → 6 skillfilt9 (result) → 7 battle11 (result) → 8 skillrows11 (result) → 9 skills12 (result) → 10 menus12 (result) → 11 battle16 (result) → 12 legends17a (result) → 13 legends17a (result) → 14 battle27 (result) → 15 act49 (result)
 
 ### calcStats (14 hooks)
 Registered (load order; 1 is next to the base):
