@@ -45,6 +45,11 @@ function baseAttr(c){
   ATTR.forEach(k=>{a[k]=A.b[k]+A.g[k]*L+allocEff(c,k)*POINT_VAL[k]+(c.vet||0);});
   return a;
 }
+// v0.22.56 (GEAR_LV): the level's share of what gear tiers used to give, and the class's shape for it (its own weapon and armor family, per point of power)
+function gearLvAt(T,lv){const L=GEAR_LV.lv;if(lv<=L[0])return T[0];for(let i=1;i<L.length;i++)if(lv<=L[i])return T[i-1]+(T[i]-T[i-1])*(lv-L[i-1])/(L[i]-L[i-1]);return T[T.length-1];}
+const GEAR_LV_SHAPE={};
+function gearLvShape(cls){if(GEAR_LV_SHAPE[cls])return GEAR_LV_SHAPE[cls];const f=CF[cls];if(!f)return null;const w=GEAR['w_'+f[0]+'_4'],a=GEAR['a_'+f[1]+'_4'];if(!w||!a)return null;
+  const o={w:{},a:{}};['hp','mp','atk','def','mag','res'].forEach(k=>{if(w[k])o.w[k]=w[k]/WP[4];if(a[k])o.a[k]=a[k]/AP[4];});return GEAR_LV_SHAPE[cls]=o;}
 function calcStats(c){
   const daily=!!(G&&G.daily),t=TPL[c.id],A=(daily?CLASS_ATTR_LEGACY:CLASS_ATTR)[t.cls],L=c.lv-1,tr=natOf(c),NF=natInfo(tr).fx,a=baseAttr(c);
   const gears=EQSL.map(sl=>gearOf(c.eq[sl])).filter(Boolean);
@@ -56,7 +61,7 @@ function calcStats(c){
   if(t.bb){d.hp*=1.12;d.atk*=1.12;d.mag*=1.12;d.def*=1.12;d.res*=1.12;}
   const S={elBoost:{},elRes:{},mastery:t.el.length===1?t.el[0]:null,immune:0,tempo:NF.tempo||1,attr:a};
   gears.forEach(g=>{ST.forEach(q=>{d[q]+=g[q]||0;});if(g.el){S.elBoost[g.el]=.15;S.elRes[g.el]=.15;}if(g.immune)S.immune=1;});
-  if(!daily){const CT=CLS_TUNE[t.cls];if(CT)Object.keys(CT).forEach(k=>{d[k]*=CT[k];});}// v0.22.54 class pass: on the final numbers, gear included
+  if(GEAR_LV.on){const gw=gearLvAt(GEAR_LV.w,c.lv),ga=gearLvAt(GEAR_LV.a,c.lv),R=gearLvShape(t.cls);if(R)['hp','mp','atk','def','mag','res'].forEach(k=>{d[k]+=gw*(R.w[k]||0)+ga*(R.a[k]||0);});}
   S.mhp=Math.round(d.hp);S.mmp=Math.round(d.mp);S.atk=d.atk;S.def=d.def;S.mag=d.mag;S.res=d.res;S.spd=d.spd;
   S.crit=.04+a.luk*.003+a.dex*.0015+(NF.crit||0);S.critDmg=1.5+a.dex*.004;
   S.acc=.97+a.dex*.002;S.eva=Math.min(.22,a.agi*.0015+a.luk*.002+(NF.eva||0));
@@ -66,7 +71,7 @@ function calcStats(c){
   // v0.3.5 weapon perks (WPERK in data.js). Flat numbers are read straight off S by the battle code.
   if(!daily){const wg=gears.find(g=>g.slot==='w'),P=wg&&wg.fam&&WPERK[wg.fam];S.wp=wg&&wg.fam||null;
     if(P){if(P.acc)S.acc+=P.acc;if(P.critDmg)S.critDmg+=P.critDmg;if(P.crit)S.crit+=P.crit;if(P.eva)S.eva=Math.min(.27,S.eva+P.eva);if(P.tempo)S.tempo*=P.tempo;
-      ['cleave','heavy','charge','stun','basicStun','pierce','combo','status','bleed','debT','buffT','healUp','spellPow'].forEach(k=>{if(P[k])S[k]=P[k];});}}
+      ['cleave','heavy','charge','stun','basicStun','pierce','combo','status','bleed','debT','buffT','healUp','spellPow','guardCut','exploit'].forEach(k=>{if(P[k])S[k]=P[k];});}}
   if(!daily)gears.forEach(g=>{if(g.mpEff)S.mpEff=Math.max(S.mpEff||0,g.mpEff);if(g.elDmg)S.elDmg=Math.max(S.elDmg||0,g.elDmg);});
   return S;
 }
@@ -309,12 +314,12 @@ function calcDamage(a,sk,t,bonus){
   let aff=1;if(els.some(e=>a.el.includes(e)))aff=1.2;
   if(a.S.mastery&&els.includes(a.S.mastery))aff*=1+MASTERY_BONUS;
   d*=em*aff*rnd(.92,1.08)*(bonus||1);
-  if(a.S.wp){if(phys&&a.S.heavy)d*=1+a.S.heavy;if(sk.t==='all'&&a.S.cleave)d*=1+a.S.cleave;if(!phys&&sk.k==='mag'&&a.S.spellPow)d*=1+a.S.spellPow;if(a.S.charge&&phys&&t.lastAct&&t.lastAct>(a.prevAct||0))d*=1+a.S.charge;}
+  if(a.S.wp){if(phys&&a.S.heavy)d*=1+a.S.heavy;if(sk.t==='all'&&a.S.cleave)d*=1+a.S.cleave;if(!phys&&sk.k==='mag'&&a.S.spellPow)d*=1+a.S.spellPow;if(a.S.charge&&phys&&t.lastAct&&t.lastAct>(a.prevAct||0))d*=1+a.S.charge;if(a.S.exploit&&t.st&&Object.keys(t.st).some(k=>STS[k]&&STS[k].bad))d*=1+a.S.exploit;}
   els.forEach(e=>{if(a.S.elBoost[e])d*=1+a.S.elBoost[e];if(t.S.elRes[e])d*=1-t.S.elRes[e];});
   if(a.S.elDmg&&els.length&&sk.k==='mag')d*=1+a.S.elDmg;
   const W=WX();if(W.el&&els.length)d*=Math.max(...els.map(e=>W.el[e]||1));
   if(has(a,'might'))d*=1.3;if(has(a,'weaken'))d*=.75;if(has(a,'burn'))d*=.85;
-  if(has(t,'bulwark'))d*=.7;if(t.side==='p'&&has(t,'taunt'))d*=1-TAUNT.cut;if(has(t,'break'))d*=1.3;if(t.guard)d*=.5;if(t.broken)d*=BREAK_WIN.bonus;
+  if(has(t,'bulwark'))d*=.7;if(t.side==='p'&&has(t,'taunt'))d*=1-TAUNT.cut;if(has(t,'break'))d*=1.3;if(t.guard)d*=1-((t.S&&t.S.guardCut)||.5);if(t.broken)d*=BREAK_WIN.bonus;
   if(sk.afflicted&&Object.keys(t.st).some(k=>STS[k].bad))d*=sk.afflicted;
   if(sk.execute&&t.hp<t.S.mhp*sk.execute)d*=2;
   let crit=false;

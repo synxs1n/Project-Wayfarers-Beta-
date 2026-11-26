@@ -185,10 +185,10 @@ const BOSS_GIM={on:true,daily:false,first:2,every:4,stageK:[.5,.85,1,1,1],answer
 const BOSS_SIZE={hp:.07,pow:.06,expect:[3,4,5,6,6],short:{hp:.08,pow:.05}};// per stage 1 to 5
 // STUN_CAP (v0.22.54): a hero who has just lost a turn to a stun (or a freeze) cannot be stunned again until after their next turn.
 const STUN_CAP={on:true};
-// CLS_TUNE (v0.22.54 class pass, docs/balance54.md): multipliers on a class's final stats (gear included; not in the Daily Trial). Measured in boss fights:
-// a Warrior had the least resistance and the fewest turns, a Knight half the average damage, an Archer hit like a Monk. The order aimed for (tools/fullsim.js
-// eff): Mage and Archer deal the most, the Warrior is third and the sturdy front line, the Monk does a bit of everything and is best at nothing.
-const CLS_TUNE={warrior:{atk:1.1,hp:1.15,res:1.3,spd:1.15},knight:{atk:1.1,spd:1.1},archer:{atk:1.34},monk:{atk:.82}};
+// GEAR_LV (v0.22.56, calcStats): what the old, steeper gear tiers added now grows with the hero. w and a are the old minus the new weapon and armor
+// power at each realm's usual level (lv: 8, 16, 24, 32, 40; straight lines between, flat after 40). A hero gets it in the shape of their class's own
+// weapon and armor family (a Mage as magic and resistance, a Knight as attack, defense and HP).
+const GEAR_LV={on:true,lv:[8,16,24,32,40],w:[0,0,5,12,22],a:[0,0,2,5,9]};
 // TAUNT (v0.22.54): a hero under Taunt is braced: they take `cut` less damage from every hit (drawing fire was a death sentence for a Warrior).
 const TAUNT={cut:.3};
 // 3.3 echo levels. Story echo base = boss base + storyAdd; Sanctum echoes use fixed bases. While the party's highest hero is more than
@@ -309,8 +309,8 @@ const ROLES={
     area:2,self:.6,tauntless:.55,tankRef:1.12,top:2,chiK:1.25},
   sk:{
     warrior:[{id:'r_sunder',n:'Sunder',k:'phys',pw:1.1,mp:5,lv:11,fx:[['break',.8]],d:'A splitting blow that cracks armor. Likely Breaks.',r:'debuffer'},
-      {id:'r_shout',n:'Intimidating Shout',k:'status',t:'all',mp:8,lv:16,fx:[['weaken',.8]],d:'A roar that shakes every foe. Likely Weakens them.',r:'debuffer'},
-      {id:'r_stance',n:'Iron Stance',k:'status',t:'self',mp:7,lv:20,fx:[['taunt',1],['regen',1]],d:'Plants his feet: Taunt and Regen. The line hides behind him.',r:'tank'}],
+      {id:'r_shout',n:'Intimidating Shout',k:'status',t:'all',mp:8,cost:.7,lv:16,fx:[['weaken',.8]],d:'A short roar that shakes every foe. Likely Weakens them.',r:'debuffer'},
+      {id:'r_stance',n:'Iron Stance',k:'status',t:'self',mp:7,cost:.5,lv:20,fx:[['taunt',1],['regen',1]],d:'Plants his feet in a moment: Taunt and Regen. The line hides behind him.',r:'tank'}],
     knight:[{id:'r_banner',n:'Raise the Banner',k:'status',t:'allyAll',mp:12,lv:19,fx:[['haste',1]],d:'The standard goes up: Haste for the vanguard.',r:'buffer'},
       {id:'r_cover',n:'Shield Ally',k:'status',t:'ally',mp:5,lv:13,fx:[['bulwark',1],['regen',1]],d:'Covers an ally: Bulwark and Regen.',r:'buffer'}],
     archer:[{id:'r_cripple',n:'Crippling Shot',k:'phys',pw:1,mp:6,lv:15,dl:'ranged',fx:[['weaken',.85],['slow',.7]],d:'An arrow to the sword arm. Likely Weakens, may Slow.',r:'debuffer'},

@@ -195,7 +195,7 @@ function b4GimSlots(n,weak){const S=B.b4g,live=b4GimLive();if(!live.length)retur
   const st=(hashS(S.key)+S.ticks*2)%3,out=[];for(let k=0;k<3&&out.length<n;k++){const i=(st+k)%3;if(live.includes(i))out.push(i);}return out;}
 // one hit from the gimmick: a share of the hero's max HP, halved by Guard; a guarding hero also shrugs off its status
 function b4GimK(){return (BOSS_GIM.stageK||[])[Math.min(4,(B&&B.stage)|0)]||1;}
-function b4GimHit(u,c,pct,el,st){if(!c||c.hp<=0)return 0;const d=Math.max(1,Math.round(c.S.mhp*pct*b4GimK()*(c.guard?.5:1)));const now=Date.now();
+function b4GimHit(u,c,pct,el,st){if(!c||c.hp<=0)return 0;const d=Math.max(1,Math.round(c.S.mhp*pct*b4GimK()*(c.guard?1-(c.S.guardCut||.5):1)));const now=Date.now();
   c.fxEl=el||null;c.fxT=now;c.hitT=now;fx(c,String(d),'dmg');log(`${c.name} takes ${d}${c.guard?' (guarded)':''}.`);B.b4gHits=(B.b4gHits||0)+d;hurt(c,d);
   if(c.hp>0&&st&&!c.guard)addSt(c,st,u);return d;}
 // keeps the chips in step with the state: the boss shows what it readies, the heroes what will hit them (also after swaps and falls)
