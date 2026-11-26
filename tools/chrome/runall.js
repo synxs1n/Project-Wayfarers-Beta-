@@ -75,20 +75,15 @@ const STALE={
   v077wb:'medium field fog at least 50 fps: software GL on this machine gives 25 to 30 fps; a real device check is needed (perf)',
   v080b:'every Vanguard row shown: the side column scrolls inside its panel since the v0.17.x HUD plates (real, minor; 933x615 and 1280x720)',
   v080ca:'secondary roles 55 to 75 percent band (v0.19: every secondary with a role skill is 55 to 78 except bard healer 52; the test also reads the older 12+ skill kits: the Bard no longer learns the Storm Song and the other tagged role skills the 12 skill cap drops)',
-  v080wa:'no straight hard edge in the weather layer: rain run 21 to 28 px in battle since the v0.18.x stage repaint (real, minor)',
   v082db:'side caves and fortresses carry a material: the fortress material moved with sitelook10; the hill geometry check predates dungeon8 changes',
-  v095m1:'Quests tab ready count: the tab now reads "Quests 2" and the group "2 ready" (format changed in v0.11.9)',
-  v095m3:'Upgrade brute force best step: forge +0 and max-temper rules changed in econ11 (v0.17.x)',
-  v095m4:'72 board and party screens nothing clipped: 2 screens differ since sheet11',
-  v095na:'Echoforge card waits for the tab: compares against the fab13f2 build; onboard cards changed since',
   v150a:'crashes reading .art of a material: the material sprite list changed in mats11 (v0.17.x)',
   // the seven found stale in the v0.9.9 measurement (oldsave, p5b, v040p789, v041p65, v043c, v077a, v080cb) were brought up to date
   // and are back in "all" (docs/v099-tests.md, "Game fixes and the stale tests")
 };
 // ---- tests that compare against an older build: the revision whose committed index.html is OLDHTML when OLDHTML is not set ----
-const OLD={v050p2daily:'fab13f2',v095na:'fab13f2',v080ca:'927e63e'};
+const OLD={v050p2daily:'fab13f2b7a5d71a36b111388ee25803bfef2c18c',v095na:'fab13f2b7a5d71a36b111388ee25803bfef2c18c',v080ca:'927e63ef5cd40f24615e863c8a95fc294ed20c67'};/* full ids: a shallow clone does not hold these revisions, and a fetch by id needs the whole id */
 // ---- per test timeout (seconds) where the default is too short ----
-const SLOW={v193a:900,v192a:900,v190a:900,v189a:900,v175a:900,v174a:1200,v080b:1500,v063wa:1200,v070ia:900,v076b:900,v050p1c:1500,v050p2world:1200,v082da:1200,collide:1200,v041p4:900,v063m1:900,v095m4:900,v053ua:900,audio:900,v080cb:1200};
+const SLOW={v041p1h:1500,/* about 520 s on an idle 4 CPU machine: under the default 600 it timed out whenever the machine was busy, which is all its "flakiness" was */v193a:900,v192a:900,v190a:900,v189a:900,v175a:900,v174a:1200,v080b:1500,v063wa:1200,v070ia:900,v076b:900,v050p1c:1500,v050p2world:1200,v082da:1200,collide:1200,v041p4:900,v063m1:900,v095m4:900,v053ua:900,audio:900,v080cb:1200};
 // not runnable here (for --list): old puppeteer/@sparticuz tests, missing pre-v3 builds, helpers, screenshot/sheet/perf scripts
 const NOT_RUNNABLE='arch beta fb leg lever p1 p2 p3 p4 p5 prog v020 v030 v50 gear saveformats world6 v040p2 v043 pw v063lib v095lib syncmock rlmeasure v053dbg runall v050p6suite v053suite.sh v063suite.sh (runners)';
 
@@ -117,7 +112,9 @@ function resolveSet(sets,withStale){const out=[];
 const oldCache={};
 function oldHtmlFor(t,tmp){if(process.env.OLDHTML)return path.resolve(process.env.OLDHTML);const rev=OLD[t];if(!rev)return null;
   if(oldCache[rev])return oldCache[rev];const P=path.join(tmp,'old_'+rev+'.html');
-  try{fs.writeFileSync(P,execSync('git show '+rev+':index.html',{cwd:ROOT,maxBuffer:64<<20}));oldCache[rev]=P;return P;}
+  // a shallow clone (a cloud session, a CI checkout) does not have the old revision: fetch that one commit, then try again
+  const show=()=>execSync('git show '+rev+':index.html',{cwd:ROOT,maxBuffer:64<<20,stdio:['ignore','pipe','ignore']});
+  try{let h;try{h=show();}catch(e){execSync('git fetch --depth 1 origin '+rev,{cwd:ROOT,stdio:'ignore',timeout:120000});h=show();}fs.writeFileSync(P,h);oldCache[rev]=P;return P;}
   catch(e){console.log('  (could not take index.html from '+rev+': '+e.message.split('\n')[0]+')');return null;}}
 
 function runOne(t,o,pwhtml,tmp){return new Promise(res=>{

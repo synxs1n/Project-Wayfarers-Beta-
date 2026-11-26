@@ -953,3 +953,22 @@ With `b3list` (a `.menu.list` is open) `#bcmd` is `position:fixed` at the bottom
   questReady (cached by chest count) and after openChest. A vault never opened stays sealed. Not reproduced on a fresh journey: opening the
   chest set the flag in all five dungeons; the repair is for saves where the two records disagree.
 - Card column: .pcw.hastags .ptags is static (battle3.css lays it absolutely over the card's foot). Test: tools/chrome/v229a.js (battle group).
+
+## 0.22.54 (menus29.js, shops31.js, skills12.js, fix52.js, pathguard.js; the test pass of docs/known-test-failures.md)
+Found while bringing the failing and flaky Chrome tests back (the list that was docs/known-test-failures.md):
+- Phone menu bar (menus29.js): the section name is the chip's own words (m29Lab; the "N ready" pill of qready.js was part of the title and
+  pushed the Save button to 10 px over the gold). `.savepin` is display:contents, so the Save button and the save state are the bar's own
+  flex items. What gives way when the bar is too narrow, in order (one rAF after the pass): the save state shows only when it fits whole,
+  then the Save button is its icon, then class m29tight (smaller type). A Menu with a Back arrow (opened from another window) gets class
+  m29bk: Back and Close side by side, 100 px kept for them (they were stacked, Close over the sub tabs). The pill under "Quests" in the
+  bottom bar is hidden there (the badge is the count). `.ddbar` columns are at least 124 px (88 cut the chosen words of three lists).
+- Shop bar (shops31.js): the shop's name is wrapped in span.s31t (two lines, balanced), so the gold stays in view beside a long name.
+- Hero sheet (skills12.js mChar hook): the role scaled Power again. act49.js made sk12Tag return '' and the hook's insertBefore(null) threw,
+  so the whole hook fell back to the unscaled row; its regex also asked for "Pow N". The hook counts a changed number as a change.
+- fix52.js f52Vault: looks at a dungeon only when G.chests holds a key of that dungeon. It called getMap('d'+s) for every vault quest on
+  every chest opened and every look at the quest, which builds a dungeon never entered (about 110 ms; v190a "opening takes").
+- pathguard.js: an NPC with no free spot within reach of where it stands (a pocket walled off from the map) is put on the nearest free
+  spot from the map's entry (pgEntry: m.start or the first gate's arrive). The marsh town's Town crier at 13,3 (v050p1c, realm 9 first).
+- Not changed, for the owner: the hero sheet has had no Upgrade button per slot since 0.17.1 (ui.js draws the Equipment block as
+  `.eqsheet` rows; the p3shop.js hook still looks for the old `<div class="eq">` and upgBtn is drawn nowhere). The popup itself works
+  (ACT.upgOpen, the Smithy's rows). Say if it should come back on the sheet.

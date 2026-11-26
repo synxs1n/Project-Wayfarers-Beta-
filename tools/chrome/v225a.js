@@ -10,15 +10,20 @@
 const {open,chk,done}=require('./pw');
 setTimeout(()=>{console.log('FAIL watchdog: v225a ran over 400 s');process.exit(1);},400000).unref();
 const META=`localStorage.clear();localStorage.setItem('aurelis-meta-v1',JSON.stringify({cfg:{speed:1,enc:'off',diff:'normal',music:0,sfx:0,gfx:'low',rmotion:false,hints:false,tips:false}}));`;
-(async()=>{const H=await open({w:390,h:844,mobile:true,pre:META,tag:'v225a'});const {ev,wait}=H;const N=+(process.env.SEEDS||10);
-  await ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;});await wait(300);
-  const r=await ev((N)=>{const A=__A,g=A.TW.get,G=A.G,GP=window.__GP46,R25=window.__R25,out={n:0,bad:{plan:[],left:[],eq:[],pack:[],order:[],err:[]},ms:0,picks:0,kinds:{}};
+(async()=>{const H=await open({w:390,h:844,mobile:true,pre:META,tag:'v225a',freeze:true});const {ev,wait}=H;const N=+(process.env.SEEDS||10);
+  // the journey's own draw (which realms, so what the Smithy sells) is pinned: JSEED picks another one
+  await H.det(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;},null,+(process.env.JSEED||1));await wait(300);
+  // the states too: newChar rolls a nature for each hero with Math.random, so the same state number was another party in every run
+  const r=await H.det((N)=>{const A=__A,g=A.TW.get,G=A.G,GP=window.__GP46,R25=window.__R25,out={n:0,bad:{plan:[],left:[],eq:[],pack:[],order:[],err:[]},ms:0,picks:0,kinds:{}};
     g('inTown=function(){return true;}');g('facCredit=function(){}');/* guild progress (it grows with every forging and can raise the Smithy discount in the middle of a run) is held still, so the preview can be compared exactly */g('saveGame=function(){}');g('sfx=function(){}');g('toast=function(){}');
     const GEAR=g('GEAR'),gearOf=g('gearOf'),calc=g('calcStats'),SL=g('P3_SLOTS'),upgBest=g('upgBest'),upgApply=g('upgApply'),planGear=g('planGear'),applyGear=g('applyGear'),refresh=g('refresh'),TPL=g('TPL'),CLS=g('CLS');
     const heroes=Object.keys(TPL).filter(id=>!TPL[id].mon&&CLS[TPL[id].cls]),ids=Object.keys(GEAR).filter(id=>{const x=GEAR[id];return x&&!x.stick&&!x.only&&SL.includes(x.slot)&&!/_ef/.test(id);});
     let seed=1;const rnd=()=>{seed=(seed*1103515245+12345)&0x7fffffff;return seed/0x7fffffff;},pick=L=>L[Math.floor(rnd()*L.length)];
     const sig=()=>JSON.stringify([G.gold,G.mats,G.gear.slice().sort(),G.party.map(id=>[id,G.roster[id].eq])]);
-    const setup=(s,rich)=>{seed=s*7919+13;G.stage=4;G.cleared=[1,1,1,1,0];G.pcV=1;G.roster={};G.party=[];const pool=heroes.slice();
+    // facRank is remembered for 250 ms (factions.js FACMEMO). The states follow each other faster than that, so a plan could read the rank, and
+    // with it the Smithy's prices, of the state before while the run read its own: "planned 616, spent 676", "planned k_cape_4, got undefined"
+    // on about one run in eight. Each state starts with the memo cleared. (In play the preview is on screen far longer than 250 ms.)
+    const setup=(s,rich)=>{g('FACMEMO.t=0');seed=s*7919+13;G.stage=4;G.cleared=[1,1,1,1,0];G.pcV=1;G.roster={};G.party=[];const pool=heroes.slice();
       for(let i=0;i<8;i++){const h=pool.splice(Math.floor(rnd()*pool.length),1)[0];const c=g('newChar')(h,45,4);c.lv=45;G.roster[h]=c;if(i<6)G.party.push(h);}
       G.gear=[];for(let i=0;i<40;i++){let id=pick(ids);const k=Math.floor(rnd()*4);if(k&&gearOf(id+'+'+k))id=id+'+'+k;G.gear.push(id);}
       G.party.forEach(h=>{if(rnd()<.6){try{const rid=R25.gid(h);if(rid&&gearOf(rid))G.gear.push(rid);}catch(e){}}});
@@ -45,7 +50,7 @@ const META=`localStorage.clear();localStorage.setItem('aurelis-meta-v1',JSON.str
       setup(s+2000,true);G.party.forEach(id=>SL.forEach(sl=>{const c=G.roster[id],seq=[];for(let i=0;i<8;i++){const o=upgBest(c,sl).best;if(!o)break;seq.push([o.key,o.u]);if(!upgApply(o))break;refresh(c);}
         for(let i=1;i<seq.length;i++){if(/^ef:/.test(seq[i][0]))break;/* the Echoforge needs the tier 5 piece first: a second step by design */const m=Math.max(seq[0][1],seq[i][1],1);if(seq[i][1]>seq[0][1]+m*.004+1e-6){out.bad.order.push(s+' '+id+' '+sl+': '+seq.map(x=>x[0]+'='+Math.round(x[1])).join(' > '));break;}}}));
       out.n++;}catch(e){out.bad.err.push(s+' '+String(e&&e.stack||e).slice(0,300));}}
-    out.gperr=GP.GP46.err;return out;},N);
+    out.gperr=GP.GP46.err;return out;},N,+(process.env.JSEED||1)+100);
   const b=r.bad,sh=L=>L.slice(0,4).join(' | ');
   chk(`0 ${r.n} of ${N} random states ran (${r.picks} planned steps: ${JSON.stringify(r.kinds)}; slowest plan ${Math.round(r.ms)} ms)`,r.n===N&&!b.err.length&&!r.gperr&&r.picks>N||JSON.stringify([b.err,r.gperr]));
   chk(`1 the preview of Upgrade whole party is what happens (${b.plan.length} differences)`,!b.plan.length||sh(b.plan));

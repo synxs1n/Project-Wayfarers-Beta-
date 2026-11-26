@@ -2,7 +2,10 @@
 const {open,chk,done}=require('./pw');
 (async()=>{for(const [w,h] of [[390,844],[844,390]]){
 const H=await open({w,h,mobile:true});const {ev,wait}=H;
-await ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;A.G.inv.potion=9;A.G.inv.ether=9;A.startBattle({stage:0,kind:'field'});});await wait(900);
+await ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;A.G.inv.potion=9;A.G.inv.ether=9;
+  // a fixed fight with two foes: against a single foe a one target skill or the attack fires at once (there is nothing to aim at), so on the
+  // journeys whose first field fight rolled one foe there was no target step and no Back to find (the test failed now and then)
+  const k=Object.keys(A.MON).filter(k=>!A.MON[k].mimic)[0];A.startBattle({stage:0,kind:'field',weather:'clear',foes:[A.makeEnemy(A.MON[k],4),A.makeEnemy(A.MON[k],4)]});});await wait(900);
 const r=await ev(async()=>{const A=__A,B=()=>A.B,o={};const wt=ms=>new Promise(q=>setTimeout(q,ms));
   for(let i=0;i<140&&B().mode!=='cmd';i++)await wt(150);
   const vis=()=>{const b=document.querySelector('#bcmd [data-act="back"]');if(!b)return 'missing';const r=b.getBoundingClientRect(),c=document.getElementById('bcmd').getBoundingClientRect();

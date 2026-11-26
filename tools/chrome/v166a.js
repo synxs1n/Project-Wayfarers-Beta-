@@ -55,9 +55,9 @@ const {open,chk,done}=require('./pw');
   // ---- 5. roles ----
   const p=await ev(()=>{const T=__A.TW.get,nc=T('newChar'),known=T('known'),ROLEPW=T('ROLEPW'),G=T('G');G.daily=false;
     const get=(id,lv,nat,sid)=>{const c=nc(id,lv);if(nat)c.nat=nat;c.S=T('calcStats')(c);const s=known(c).find(x=>x.id===sid);return s&&{pw:s.pw,m:s.rlm||1,tier:s.rlt||'primary',heal:s.pw*(c.S.healP||c.S.mag)*(1+(c.S.healUp||0)),fx:s.fx,buffCut:s.buffCut};};
-    const o={};o.priestMend=get('lumen',30,null,'mend');o.priestAll=get('lumen',30,null,'mendall');o.priestFull=get('lumen',30,null,'fullmend');
-    o.bard=get('brook',30,'minstrel6','r_ballad');o.bardNat=get('brook',30,'herald6','r_ballad');o.bardAll=get('brook',30,'minstrel6','r_chorus');o.bardAllNat=get('brook',30,'herald6','r_chorus');
-    o.monkIron=get('dorn',30,null,'iron');o.thiefDart=get('sable',30,null,'r_hamstr');o.mageHex=get('mira',30,'keen','hex');o.thiefToxin=get('sable',30,null,'r_toxin');o.mageSnare=get('mira',30,null,'r_snare');
+    const o={};/* level 45: Full Mend (35), Restoring Chorus (31) and Toxic Cloud (35) are learned after 30 since the kit pass of 0.22.36 (skills36.js) */o.priestMend=get('lumen',45,null,'mend');o.priestAll=get('lumen',45,null,'mendall');o.priestFull=get('lumen',45,null,'fullmend');
+    o.bard=get('brook',45,'minstrel6','r_ballad');o.bardNat=get('brook',45,'herald6','r_ballad');o.bardAll=get('brook',45,'minstrel6','r_chorus');o.bardAllNat=get('brook',45,'herald6','r_chorus');
+    o.monkIron=get('dorn',45,null,'iron');o.thiefDart=get('sable',45,null,'r_hamstr');o.mageHex=get('mira',45,'keen','hex');o.thiefToxin=get('sable',45,null,'r_toxin');o.mageSnare=get('mira',45,null,'r_snare');
     o.cfg=[ROLEPW.primary,ROLEPW.secondary,ROLEPW.off,ROLEPW.natLift,ROLEPW.natCap];
     const NAT6=T('NAT6');o.natNeg=Object.keys(NAT6).filter(k=>['atk','mag','heal'].some(s=>NAT6[k].fx[s]!=null&&NAT6[k].fx[s]<1));o.natNoRl=Object.keys(NAT6).filter(k=>!NAT6[k].rl);
     // every non-primary multiplier stays below natCap, every primary is 1
@@ -75,11 +75,11 @@ const {open,chk,done}=require('./pw');
   const rw=await ev(()=>{const T=__A.TW.get;T('G').roster.brook&&0;const A=__A;A.ACT.new();['brook','lumen','mira'].forEach(i=>A.ACT.pickS(i));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;const G=T('G');G.roster.brook.lv=30;G.roster.brook.S=T('calcStats')(G.roster.brook);
     G.roster.brook.nat='minstrel6';G.roster.brook.S=T('calcStats')(G.roster.brook);A.V.modal={type:'char',char:'brook',tab:'skills'};A.render();const rows=[...document.querySelectorAll('#modal .row')].map(r=>r.textContent.replace(/\s+/g,' ')).filter(t=>/Ballad|Dissonance|Battle Hymn/.test(t));return rows;});
   console.log(JSON.stringify(rw));
-  chk('the hero sheet skill rows show the scaled power, and since 0.22.49 no Sub tag (Healing Ballad Power 140; the bard\'s own Battle Hymn no tag)',rw.some(t=>/Healing Ballad.*Power 140/.test(t))&&rw.some(t=>/Battle Hymn/.test(t)&&!/(Sub|Off) x/.test(t))||JSON.stringify(rw));
+  /* heals are .88 of what they were since 0.22.36 (skills36.js S36.heal): 1.75 x .8 (sub role) x .88 = 1.232 */chk('the hero sheet skill rows show the scaled power, and since 0.22.49 no Sub tag (Healing Ballad Power 123, the same number as in battle; the bard\'s own Battle Hymn no tag)',rw.some(t=>/Healing Ballad.*Power 123/.test(t))&&rw.some(t=>/Battle Hymn/.test(t)&&!/(Sub|Off) x/.test(t))||JSON.stringify(rw));
   const br=await ev(()=>{const T=__A.TW.get,G=T('G');G.roster.brook.nat='minstrel6';G.roster.brook.S=T('calcStats')(G.roster.brook);G.party=['brook','lumen','mira'];T('startBattle')({stage:0,kind:'field'});const B=T('B');
     B.cur=B.front.find(u=>u.id==='brook');B.mode='cmd';B.menu='skills';B.pend=null;__A.render();
     return [...document.querySelectorAll('#bcmd .mi, .bcmd .mi, .mi')].map(r=>r.textContent.replace(/\s+/g,' ')).filter(t=>/Healing Ballad|Battle Hymn/.test(t));});
-  chk('the battle skill row shows the scaled power, no tier tag since 0.22.49 (Healing Ballad ~101 Power 140, Battle Hymn plain)',br.some(t=>/Healing Ballad.*~\d+.*Power 140/.test(t))&&br.some(t=>/Battle Hymn/.test(t)&&!/(Sub|Off) x/.test(t))||JSON.stringify(br));
+  chk('the battle skill row shows the scaled power, no tier tag since 0.22.49 (Healing Ballad ~74 Power 123, Battle Hymn plain)',br.some(t=>/Healing Ballad.*~\d+.*Power 123/.test(t))&&br.some(t=>/Battle Hymn/.test(t)&&!/(Sub|Off) x/.test(t))||JSON.stringify(br));
   // ---- old saves ----
   const m=await ev(()=>{const T=__A.TW.get,TPL=T('TPL'),classSkills=T('classSkills'),S=__S12,sk=T('skillKnown');const full=S.full(TPL.brann),kit=classSkills(TPL.brann),ids=new Set(kit.map(s=>s.id));
     const drop=full.find(s=>!ids.has(s.id)&&s.lv<=40);const c={id:'brann',lv:40,keep:[drop.id,'pstrike']};const g={roster:{brann:c}};const lost=S.migrate(g);
@@ -91,7 +91,7 @@ const {open,chk,done}=require('./pw');
   chk(`at level 50 no hero loses the only Primer or Detonator of an element to the cap (${m2.length}: ${m2.slice(0,6).join(',')})`,m2.length===0);
   // ---- 6. tavern ----
   const tv=await ev(()=>{const T=__A.TW.get,A=__A;A.ACT.new();['mira','lumen','oren'].forEach(i=>A.ACT.pickS(i));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;const G=T('G'),TPL=T('TPL');
-    const pd=T('heroPrimeDet'),o={mage1:pd('mira',1),mage4:pd('mira',4),warr:pd('brann',1),legend:pd('kaevan',40),rd:typeof T('heroRoles')};
+    const pd=T('heroPrimeDet'),o={mage1:pd('mira',1),mage4:pd('mira',5),mage6:pd('mira',6),warr:pd('brann',1),legend:pd('kaevan',40),rd:typeof T('heroRoles')};
     const N=T('partyNeeds')();o.needs={pr:N.pr,dt:N.dt,lv:N.lv};
     const tags=id=>T('recruitFit')(id,N).why.join(' | ');o.fit={dorn:tags('dorn'),brann:tags('brann'),tess:tags('tess')};
     const ids=T('POOL_IDS')();o.subOk=T('subOK')(T('genSub')(5,[],0),[]);o.subLen=T('genSub')(5,[],0).length;
@@ -99,7 +99,7 @@ const {open,chk,done}=require('./pw');
     const noD=ids.filter(i=>!pd(i,40).D).length,noP=ids.filter(i=>!pd(i,40).P).length;o.noD=noD;o.noP=noP;
     o.req=T('subReq')(new Set(['mira','lumen','oren']),[]).length;return o;});
   console.log(JSON.stringify(tv));
-  chk(`heroPrimeDet(id,lv) returns {P,D} by level (mage lv1 ${JSON.stringify(tv.mage1)}, lv4 ${JSON.stringify(tv.mage4)}) and the role list function is a different thing`,tv.mage1.P===true&&tv.mage1.D===false&&tv.mage4.D===true&&tv.warr.D===true&&tv.legend.P&&tv.legend.D);
+  chk(`heroPrimeDet(id,lv) returns {P,D} by level (mage lv1 ${JSON.stringify(tv.mage1)}, lv5 ${JSON.stringify(tv.mage4)}, lv6 ${JSON.stringify(tv.mage6)}: the mage's Burst is learned at 6 since the kit levels of roster17.js) and the role list function is a different thing`,tv.mage1.P===true&&tv.mage1.D===false&&tv.mage4.D===false&&tv.mage6.D===true&&tv.warr.D===true&&tv.legend.P&&tv.legend.D);
   chk(`the recruit fit now tags a hero that brings what the party lacks (party has Detonator ${tv.needs.dt}: Dorn "${tv.fit.dorn}")`,tv.needs.dt===false&&/Detonator/.test(tv.fit.dorn)||JSON.stringify(tv));
   chk(`the journey roster draw still satisfies its guarantees (${tv.subLen} heroes, ok ${tv.subOk})`,tv.subOk===true&&tv.subLen>=28);
   done(H);

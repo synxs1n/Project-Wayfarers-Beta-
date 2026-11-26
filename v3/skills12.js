@@ -131,8 +131,8 @@ HOOK.xform('cmdHtml','skills12','role tier on the battle skill rows',function(h)
 HOOK.xform('mChar','skills12','role power on the hero sheet skill rows',function(h,id){try{const c=G.roster[id],t=TPL[id];if(!c||!t||G.daily)return h;const by={};classSkills(t).forEach(s=>{by[s.n]=s;});
   const tp=document.createElement('template');tp.innerHTML=h;let n=0;
   tp.content.querySelectorAll('.row').forEach(r=>{const b=r.querySelector(':scope>div>b'),e=r.querySelector('.sk11e'),sub=r.querySelector('.sk11s');if(!b||!e||!sub)return;const s=by[b.textContent.trim()];if(!s)return;
-    const o=sk12Mult(c,s);if(!o)return;if(s.pw&&(s.k==='phys'||s.k==='mag'||s.k==='heal')&&/^Pow \d+$/.test(e.textContent.trim()))e.textContent='Pow '+Math.round(s.pw*o.m*100);
-    if(o.tier!=='primary'){const w=document.createElement('template');w.innerHTML=sk12Tag(o);sub.insertBefore(w.content.firstChild,sub.firstChild);n++;}});
+    const o=sk12Mult(c,s);if(!o)return;if(s.pw&&(s.k==='phys'||s.k==='mag'||s.k==='heal')&&/^Pow(er)? \d+$/.test(e.textContent.trim())){e.textContent=e.textContent.trim().split(' ')[0]+' '+Math.round(s.pw*o.m*100);n++;}/* 0.22.54: act49.js spells it "Power" and its empty tag made the insert below throw, so the sheet kept the number before the role cut since 0.22.49 */
+    if(o.tier!=='primary'){const w=document.createElement('template');w.innerHTML=sk12Tag(o);if(w.content.firstChild){sub.insertBefore(w.content.firstChild,sub.firstChild);n++;}}});
   return n?tp.innerHTML:h;}catch(e){return h;}});
 try{const st=document.createElement('style');st.textContent='.sk12r{font-style:normal;color:#e8c9a0}.sk12r.off{color:#e0a0a0}';document.head.appendChild(st);}catch(e){}
 

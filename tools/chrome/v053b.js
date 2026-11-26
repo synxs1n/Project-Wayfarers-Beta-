@@ -84,6 +84,8 @@ const state=H=>H.ev(()=>{const A=__A,HB=A.HB,gl=document.getElementById('bgl'),b
   // ---- layout sizes: the GL canvas lines up with the DOM layer and the 2D canvas ----
   for(const [w,h] of [[390,844],[844,390],[933,705],[1280,800]]){const H=await boot({w,h,mobile:w<900,dpr:2,pre:cfg('medium')});await fight(H,{bg:{th:'snow',k:'field',g:'snow'}});
     const s=await state(H);const ok=s.on&&JSON.stringify(s.glBox)===JSON.stringify(s.bcBox)&&s.stBox&&Math.abs(s.stBox[0]-s.glBox[0])<=1&&Math.abs(s.stBox[1]-s.glBox[1])<=1&&Math.abs(s.stBox[2]-s.glBox[2])<=1&&Math.abs(s.stBox[3]-s.glBox[3])<=1;
+    // the units are measured at rest: on a busy machine the entrance slide or the camera push was still moving them and one stood past the canvas edge for a frame
+    await H.settle(()=>[...document.querySelectorAll('#bstage .unit')].map(u=>{const b=u.getBoundingClientRect();return [Math.round(b.left),Math.round(b.top)];}).concat([document.getElementById('bgl').style.transform||'']),null,{frames:6,timeout:8000});
     const fit=await H.ev(()=>{const gl=document.getElementById('bgl').getBoundingClientRect();return [...document.querySelectorAll('#bstage .unit')].every(u=>{const b=u.getBoundingClientRect();return b.left>=gl.left-2&&b.right<=gl.right+2&&b.top>=gl.top-12&&b.bottom<=gl.bottom+12;});});
     chk(`${w}x${h}: GL canvas ${s.glBox} = 2D canvas = unit layer, units inside`,ok&&fit||JSON.stringify(s));
     chk(`${w}x${h}: no console errors`,H.errs.length===0||H.errs.slice(0,3).join(' | '));await H.browser.close();}

@@ -46,8 +46,11 @@ for(const k of keys){const o=R[k];console.log(JSON.stringify(o));
   if(o.t==='mirror'||o.t==='veil')chk(`${k}: magic deals less while it is up`,o.cut===true||JSON.stringify(o));}
 // answers: Guard halves a marked hit; the rod grounds when its hero steps back; heavy damage stops a readied move; an element stops one; Scan reveals
 const Q=await ev(()=>{const A=__A,T=A.TW.get,o={};
-  let B=window.__setup('cinderking',1),u=B.en[0],S=A.B4.gim();window.__turn(u);window.__turn(u);const sl=S.pend.slots[0],c=B.front[sl];window.__heal();c.guard=true;const h0=B.b4gHits||0;window.__turn(u);o.guarded=(B.b4gHits||0)-h0;
-  B=window.__setup('cinderking',1);u=B.en[0];S=A.B4.gim();window.__turn(u);window.__turn(u);const c2=B.front[S.pend.slots[0]];window.__heal();c2.guard=false;const h2=B.b4gHits||0;window.__turn(u);o.open=(B.b4gHits||0)-h2;o.burn=!!c2.st.burn;
+  // the two hits compared (guarded, open) are rolled from the same seed: damage spread, a critical hit or a dodge on one of them made the
+  // "half" comparison fail now and then (docs/handoff-v0111.md called it a random roll)
+  const seeded=f=>{const mr=Math.random;let s=95;Math.random=()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296;};try{return f();}finally{Math.random=mr;}};
+  let B=window.__setup('cinderking',1),u=B.en[0],S=A.B4.gim();window.__turn(u);window.__turn(u);const sl=S.pend.slots[0],c=B.front[sl];window.__heal();c.guard=true;const h0=B.b4gHits||0;seeded(()=>window.__turn(u));o.guarded=(B.b4gHits||0)-h0;
+  B=window.__setup('cinderking',1);u=B.en[0];S=A.B4.gim();window.__turn(u);window.__turn(u);const c2=B.front[S.pend.slots[0]];window.__heal();c2.guard=false;const h2=B.b4gHits||0;seeded(()=>window.__turn(u));o.open=(B.b4gHits||0)-h2;o.burn=!!c2.st.burn;
   B=window.__setup('ysolde',1);u=B.en[0];S=A.B4.gim();window.__turn(u);window.__turn(u);const rid=S.pend.id,ri=B.front.findIndex(x=>x.id===rid);B.cur=B.front.find(x=>x.id!==rid);B.mode='cmd';
   B.b4swT=null;B.pturns=20;o.swap=A.B4.freeSwap(ri,0);const H0=B.b4gHits||0;window.__heal();window.__turn(u);o.grounded=(B.b4gHits||0)===H0;
   B=window.__setup('queenmantis',1);u=B.en[0];S=A.B4.gim();window.__turn(u);window.__turn(u);u.hp-=Math.ceil(u.S.mhp*.08);const n0=B.en.length;window.__turn(u);o.stopped=B.en.length===n0&&(B.b4gStop||0)>0;
@@ -70,7 +73,9 @@ chk('no gimmick in the Daily Trial',Q.daily==null||JSON.stringify(Q.daily));
 // the screen: the boss chip and the hero marks render; a few seconds of auto battle against a gimmick boss
 const S2=await ev(async()=>{const A=__A,B=window.__setup('cinderking',1),u=B.en[0];window.__turn(u);window.__turn(u);A.render();const html=document.getElementById('app').innerHTML;
   const o={chip:/data-st="g_tele"|Telegraph/.test(html),mark:/data-st="g_mark"|Marked/.test(html)};
-  B.en[0].S.mhp=B.en[0].hp=4000;A.G.bossWon=A.G.bossWon||{};A.G.bossWon[A.TW.get('bossFightKey')(B.spec)]=1;A.setPause(60);A.V.auto=true;B.auto=true;A.B4.rng(Math.random);B.mode='wait';A.TW.get('advance')();await new Promise(r=>setTimeout(r,6000));
+  B.en[0].S.mhp=B.en[0].hp=4000;A.G.bossWon=A.G.bossWon||{};A.G.bossWon[A.TW.get('bossFightKey')(B.spec)]=1;A.setPause(60);A.V.auto=true;B.auto=true;A.B4.rng(Math.random);B.mode='wait';A.TW.get('advance')();
+  // until the boss has had three turns and telegraphed twice (or the fight is over), up to 40 s: a fixed 6 s was not always enough turns on a busy machine
+  for(let t=0;t<400&&!(B.over||(u.turns>=3&&(B.b4gTells||0)>=2));t++)await new Promise(r=>setTimeout(r,100));
   o.turns=u.turns;o.tells=B.b4gTells||0;o.over=B.over;A.setPause(999999);return o;});
 console.log(JSON.stringify(S2));
 chk('the Telegraph chip and the hero mark are drawn on the battle screen',S2.chip&&S2.mark||JSON.stringify(S2));

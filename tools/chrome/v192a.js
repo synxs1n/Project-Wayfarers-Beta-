@@ -65,7 +65,7 @@ async function boot(t,w,h,dpr,mobile){const H=await open({w:w||1000,h:h||750,mob
     chk('1 built, the Menu closed and opened again, then Equip Best: the result page',j.built===false&&j.t==='autoEq'||JSON.stringify(j));
     chk('1 no page or console errors',H.errs.length===0||H.errs.slice(0,3).join(' | '));await H.browser.close();}
   // ---------- 2 ----------
-  if(want('2')){const H=await boot('high',1000,750,1,false);const TOL=+process.env.TOL||22,TOLX=+process.env.TOLX||10;
+  if(want('2')){const H=await boot('high',1000,750,1,false);const TOL=+process.env.TOL||26/* 22 until 0.22.54. The sampled palette paints a few tiles of each kind and is held against the average of the whole painted map; the grass of the peaks town ("peaks:t1 .", 611 tiles) lands between 20 and 24.2 from run to run (the painted map carries scatter drawn with Math.random), so 22 failed about one full run in three. A colour that is really wrong is 60 or more away. */,TOLX=+process.env.TOLX||10;
     const R=await H.ev(async([TOL,TOLX])=>{const A=__A,G=A.G,T=A.TW.get,F=window.__F17,TS=16,out={bad:[],worst:0,worstAt:'',worstS:0,worstSAt:'',msMax:0,msMaxS:0,n:0,nS:0,kinds:0,exact:0};
       const hx=c=>{const n=parseInt(c.slice(1),16);return [n>>16,(n>>8)&255,n&255];},dist=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1],a[2]-b[2]),SOLID=T('SOLID'),MAPPED='CKEWXDlGq|SU';
       // what the world paints: a canvas with the ground and baked props and the building sprites on it, averaged per tile kind at 1 px

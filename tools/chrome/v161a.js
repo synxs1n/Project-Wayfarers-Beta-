@@ -28,7 +28,7 @@ async function run(gfx,w,h){const tag=`${gfx==='low'?'Flat':'HD-2D'} ${w}x${h}: 
       await page.mouse.up();await wait(20);const got=await ev(()=>__A.WS.target&&__A.WS.target.slice());
       if(got&&got[0]===t[0]&&got[1]===t[1])tgt++;await settleWalk(ev);const e=await ev(()=>({x:__A.WS.x,y:__A.WS.y}));
       if(Math.abs(e.x-t[0])+Math.abs(e.y-t[1])<=1)ok++;else bad.push([t,got,[e.x,e.y]]);}
-    chk(tag+name+': target is the clicked tile and the hero ends on it ('+tgt+'/'+n+' target, '+ok+'/'+n+' arrived)',n>=2&&tgt===n&&ok===n||JSON.stringify(bad));}
+    chk(tag+name+': target is the clicked tile and the hero ends on it ('+tgt+'/'+n+' target, '+ok+'/'+n+' arrived)',n>=1&&tgt===n&&ok===n||JSON.stringify(bad));/* n >= 1, as the check below since v0.20.6: how many of the three candidates are on screen depends on the town the journey drew; with one on screen and that one right (1/1, 1/1) the old n >= 2 failed the check now and then */}
   // a click while the hero is mid-step (arrow key just released): the camera is still gliding, so the tile is the one under the cursor at
   // release (read by a second listener in the same event) and the walk starts from the tile the hero reaches
   {await ev(()=>{if(window.__upOn)return;window.__upOn=1;window.addEventListener('pointerup',e=>{const p=__A.mapPoint(e);window.__up=p&&[p.tx,p.ty];window.__tg=__A.WS.target&&__A.WS.target.slice();},false);});

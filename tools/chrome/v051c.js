@@ -1,10 +1,13 @@
 // Beta v0.5.1 follow ups: 1) the world view recovers its size by itself when it was measured during a settling screen (foldables,
 // the Android app after a battle) and no resize event follows; 2) new skills lead the battle results; 3) a quest ready to hand in is
 // announced and tagged in the menu; 4) status symbols sit under the hero's name in the Party menu.
-const {open,chk,done}=require('./pw');
+// The graphics tier is pinned to Medium. Left on Auto, the game drops to Low when frames are slow (headless Chrome draws WebGL in software), and Low is
+// the Flat look with its smaller buttons (gfx6.js): when that happened in the middle of the test the header and the bar under the view lost 22 px, the
+// view grew, and a "same size" check failed about one run in three with nothing wrong in the layout.
+const {open,chk,done}=require('./pw');const PIN=`localStorage.clear();localStorage.setItem('aurelis-meta-v1',JSON.stringify({cfg:{gfx:'medium'}}));`;
 (async()=>{
 for(const [w,h] of [[889,671],[844,390],[390,844]]){
-  const H=await open({w,h,mobile:true});const {ev,wait}=H;
+  const H=await open({w,h,mobile:true,pre:PIN});const {ev,wait}=H;
   await ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;A.render();});await wait(700);
   const good=await ev(()=>{const r=__A.WS.cv.getBoundingClientRect();return [Math.round(r.width),Math.round(r.height)];});
   // Galaxy Z Fold 8 open (about 935x705 CSS px): the view is exactly 300 logical pixels wide, the size a new canvas starts at.
@@ -27,7 +30,7 @@ for(const [w,h] of [[889,671],[844,390],[390,844]]){
   chk(`${w}x${h}: it recovers its full size by itself (${after})`,after[0]===good[0]&&after[1]===good[1]||JSON.stringify({good,after}));
   await H.browser.close();}
 // Galaxy Z Fold 8 open: sweep the widths around it (about 935x705 CSS px) through a plain battle and back
-{const bad=[];let hit=0;for(let w=920;w<=946;w++){const H=await open({w,h:705,mobile:true});const {ev,wait}=H;
+{const bad=[];let hit=0;for(let w=920;w<=946;w++){const H=await open({w,h:705,mobile:true,pre:PIN});const {ev,wait}=H;
   await ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;A.render();});await wait(400);
   const g=await ev(()=>{const r=__A.WS.cv.getBoundingClientRect();return [Math.round(r.width),Math.round(r.height),__A.WS.cv.width];});if(g[2]===300)hit++;
   await ev(()=>{__A.startBattle({stage:0,kind:'field'});});await wait(350);await ev(()=>{__A.B.en.forEach(e=>e.hp=0);__A.win();});await wait(300);
@@ -35,7 +38,7 @@ for(const [w,h] of [[889,671],[844,390],[390,844]]){
   const r=await ev(()=>{const c=__A.WS.cv,b=c.getBoundingClientRect();return [Math.round(b.width),Math.round(b.height)];});
   if(r[0]!==g[0]||r[1]!==g[1])bad.push(w+': '+g.slice(0,2)+' -> '+r);await H.browser.close();}
  chk(`Fold 8 widths 920 to 946 (${hit} of them hit the 300 pixel view): same size after a battle`,bad.length===0&&hit>0||(hit?bad.join(' | '):'no width hit 300'));}
-const H=await open({w:390,h:844,mobile:true});const {ev,wait}=H;
+const H=await open({w:390,h:844,mobile:true,pre:PIN});const {ev,wait}=H;
 await ev(()=>{const A=__A;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;A.render();});await wait(500);
 // 2) learned skills first on the result screen
 const r2=await ev(()=>{const A=__A;A.V.modal={type:'result',info:{xp:10,gold:5,mats:{},drops:[],ups:[{name:'Mira',lv:4,pts:1}],gift:null,story:null,gear:null,bonds:[],quests:['x'],learn:[{name:'Mira',sk:{n:'Firebolt',k:'dmg',el:['fire']}}]}};try{A.render();}catch(e){return 'err '+e.message;}
