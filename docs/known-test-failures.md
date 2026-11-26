@@ -27,6 +27,9 @@ v053b, v095p2, v158a, v194a, v152a, v041p1h, v070ob, v186a (check 3), v053ub (co
 ## Fixed or passing again
 v050p1d passes on 0.22.53.
 
+## Balance, 0.22.54
+The 12 fight numbers below were rerun at 180 fights a cell and acted on: see `docs/balance54.md`. Hollow King and Hoarwyrm were noise; the real low end was Siren, Frost Lich and Drake. `v080ca` is stale (same eight failures on 0.22.53).
+
 ## Balance simulation, 0.22.53 (tools/fullsim.js, SEED=7)
 - `early`: first realm field and roamer fights at the intended levels win 96 to 100% with 8 to 29% HP lost. Roamers met too early (level 3 party, level 8 foes) win 41%.
 - `gim 12` (12 fights each, so rough): careful play beats a Scourge at the expected level 50 to 92% of the time in every realm; auto play 8 to 83%. Opening reactions in the first realm (0.22.42) did not make the first Scourge easy: 50 to 92% careful, 17 to 67% auto.

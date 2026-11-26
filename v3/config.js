@@ -145,7 +145,7 @@ const BOSS_PIPS={mult:1.5};const BREAK_WIN={bonus:1.3,short:true};
 // 3.2 extra boss muscle on top of the old stat table (hp and power multipliers)
 // v0.22.54: less burst and longer fights, and a steady ramp: the win rate of a careful party at the expected level steps down a little each realm (about
 // 66, 63, 60, 57, 53%) and the hero turns in a won fight step up a little (about 28, 31, 35, 39, 43). pow was [.955,1.28,1.32,1.535,1.23], hp [.8,1.34,1.39,1.53,1.22].
-const BOSS_BUFF={hp:[1.2,1.55,1.6,2.05,1.78],pow:[.88,1.16,1.38,1.82,1.17]}// v0.19: eased about 7% hp and 3% pow with the role power change (was hp [.9,1.5,1.55,1.7,1.36], pow [1,1.34,1.38,1.6,1.28]) to pay for the 12 skill kit, role power and no dual ultimates, so the journey sim stays at level 41.3 and 14.6 boss tries (before the skill changes: 40.5 and 11.1; without the ease: 42.6 and 19.6); v0.4.3: re-tuned with capes; v0.8.2: the first three Scourges eased (were hp 1.3, 1.75, 1.8 and pow 1.15, 1.4, 1.44) so no boss is a wall; v0.9.5: hp [1.15,1.65,1.7,2.0,1.52] -> about 4 to 10% less, the realm gimmicks (BOSS_GIM) carry the rest
+const BOSS_BUFF={hp:[1.2,1.55,1.6,2.05,1.78],pow:[.88,1.14,1.38,1.87,1.22]}// v0.19: eased about 7% hp and 3% pow with the role power change (was hp [.9,1.5,1.55,1.7,1.36], pow [1,1.34,1.38,1.6,1.28]) to pay for the 12 skill kit, role power and no dual ultimates, so the journey sim stays at level 41.3 and 14.6 boss tries (before the skill changes: 40.5 and 11.1; without the ease: 42.6 and 19.6); v0.4.3: re-tuned with capes; v0.8.2: the first three Scourges eased (were hp 1.3, 1.75, 1.8 and pow 1.15, 1.4, 1.44) so no boss is a wall; v0.9.5: hp [1.15,1.65,1.7,2.0,1.52] -> about 4 to 10% less, the realm gimmicks (BOSS_GIM) carry the rest
 // BOSS_GIM (v0.9.5, battle4.js): every Scourge and Calamity brings one realm gimmick to its first fight (kind 'boss'; not Echoes, not the Daily
 // Trial). Each is telegraphed on the boss's turn (a log line, a "Telegraph" chip on the boss, a mark on the heroes it will hit) and lands on its
 // next turn, so reading it pays. first: the boss's turn of the first telegraph; every: turns between telegraphs (per boss: every).
@@ -163,7 +163,7 @@ const BOSS_BUFF={hp:[1.2,1.55,1.6,2.05,1.78],pow:[.88,1.16,1.38,1.82,1.17]}// v0
 // `pips` off the boss's shield. The marked hits were raised (slot .14/.17/.12 -> .24/.28/.2, rod .2 -> .28, dive .16 -> .22) so a telegraph ignored hurts.
 const BOSS_GIM={on:true,daily:false,first:2,every:4,stageK:[.5,.85,1,1,1],answer:{pips:2},
   def:{thornwarden:{t:'slot',n:'Thorn Snare',pct:.24,el:'earth',st:'root',d:'Roots erupt under one Vanguard spot on its next turn',tell:'Thorny roots creep under {who}',hit:'Roots burst under {who}'},
-    drake:{t:'tide',n:'Rising Tide',every:3,max:3,spd:.05,dmg:.05,d:'The water rises every few turns: heroes without Water slow down and Water skills hit harder. An Earth skill dams it',tell:'The water swells around your feet',hit:'The tide rises'},
+    drake:{t:'tide',n:'Rising Tide',every:3,max:3,spd:.04,dmg:.05,d:'The water rises every few turns: heroes without Water slow down and Water skills hit harder. An Earth skill dams it',tell:'The water swells around your feet',hit:'The tide rises'},
     cinderking:{t:'slot',n:'Lava Vents',pct:.28,el:'fire',st:'burn',d:'A lava vent erupts under one Vanguard spot on its next turn',tell:'The ground glows red under {who}',hit:'A lava vent erupts under {who}'},
     hoarwyrm:{t:'chill',n:'Blizzard',max:3,spd:.12,d:'The blizzard chills every hero who is not guarding; three stacks freeze a hero for a turn. A Fire skill thaws the caster',tell:'The blizzard thickens',hit:'The blizzard howls through the Vanguard'},
     ysolde:{t:'rod',n:'Lightning Rod',pct:.28,arc:.35,el:'lightning',d:'She marks the strongest hero; lightning strikes them on her next turn and arcs to their neighbours. Swap them out to ground it',tell:'The air crackles around {who}',hit:'Lightning strikes {who}'},
@@ -185,8 +185,9 @@ const BOSS_SIZE={hp:.07,pow:.06,expect:[3,4,5,6,6],short:{hp:.08,pow:.05}};// pe
 // STUN_CAP (v0.22.54): a hero who has just lost a turn to a stun (or a freeze) cannot be stunned again until after their next turn.
 const STUN_CAP={on:true};
 // CLS_TUNE (v0.22.54 class pass, docs/balance54.md): multipliers on a class's final stats (gear included; not in the Daily Trial). Measured in boss fights:
-// a Mage dealt 2.2x the average damage per action, a Warrior had the least resistance and the fewest turns, a Knight half the average damage.
-const CLS_TUNE={warrior:{atk:1.2,hp:1.08,res:1.3,spd:1.15},knight:{atk:1.1,spd:1.1},mage:{mag:.95},archer:{atk:1.26},monk:{atk:.82}};
+// a Warrior had the least resistance and the fewest turns, a Knight half the average damage, an Archer hit like a Monk. The order aimed for (tools/fullsim.js
+// eff): Mage and Archer deal the most, the Warrior is third and the sturdy front line, the Monk does a bit of everything and is best at nothing.
+const CLS_TUNE={warrior:{atk:1.1,hp:1.15,res:1.3,spd:1.15},knight:{atk:1.1,spd:1.1},archer:{atk:1.34},monk:{atk:.82}};
 // TAUNT (v0.22.54): a hero under Taunt is braced: they take `cut` less damage from every hit (drawing fire was a death sentence for a Warrior).
 const TAUNT={cut:.3};
 // 3.3 echo levels. Story echo base = boss base + storyAdd; Sanctum echoes use fixed bases. While the party's highest hero is more than

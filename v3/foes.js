@@ -35,7 +35,7 @@ const MON={
 const GUARDIANS={
  thornwarden:{n:'Thornback Warden',art:'thornwarden',el:['earth','water'],hp:5.2,atk:1.3,def:1.25,mag:1.08,res:1.1,spd:.95,sk:[['Bramble Lash','earth',1.5,'one','phys',[['bleed',.6]]],['Rainroot Surge','water',1.1,'all','mag',[['slow',.4]]],['Bark Skin','earth',0,'self','buff',[['bulwark',1]]]],
    phase:{at:.5,say:'The Warden sinks its roots and regrows!',self:[['regen',1],['bulwark',1]],heal:.1},intro:'A hedge of thorn and stone rises in the barrow: the Thornback Warden, still guarding a beacon it no longer remembers how to light.'},
- drake:{n:'Maelstrom Drake',art:'drake',el:['water','lightning'],hp:5.4,atk:1.12,def:1.2,mag:1.1,res:1.1,spd:1,sk:[['Tidal Fang','water',1.6,'one','phys',[['bleed',.4]]],['Storm Surge','lightning',1.15,'all','mag',[['stun',.12]]],['Undertow','water',1.2,'one','mag',[['root',.6]]]],
+ drake:{n:'Maelstrom Drake',art:'drake',el:['water','lightning'],hp:5.4,atk:1.12,def:1.2,mag:1.05,res:1.1,spd:1,sk:[['Tidal Fang','water',1.6,'one','phys',[['bleed',.4]]],['Storm Surge','lightning',1.15,'all','mag',[['stun',.12]]],['Undertow','water',1.2,'one','mag',[['root',.6]]]],
    phase:{at:.5,say:'The Drake calls down the storm!',self:[['haste',1]]},intro:'The water heaves. The Maelstrom Drake coils through the grotto, crackling with stolen storm.'},
  cinderking:{n:'Cinderking Varroth',art:'cinderking',el:['fire','earth'],hp:5.6,atk:1.4,def:1.3,mag:1.2,res:1.1,spd:.95,sk:[['Magma Crush','fire',1.7,'one','phys',[['burn',.5]]],['Eruption','fire',1.2,'all','mag',[['burn',.3]]],['Iron Will','earth',0,'self','buff',[['might',1]]]],
    phase:{at:.5,say:'Varroth wraps himself in magma armor!',self:[['ward',1],['might',1]]},intro:'Cinderking Varroth rises from the slag, crowned in cooling iron.'},

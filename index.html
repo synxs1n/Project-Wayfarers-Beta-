@@ -2277,7 +2277,7 @@ html:not(.flat) .battle.b3 .bline .b4mo .b4bar{box-shadow:inset 0 0 0 1px #000,0
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.22.53";const APP_BUILD="1085a76a21ac";
+(function(){const APP_VER="0.22.54";const APP_BUILD="cac26dad5998";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2405,7 +2405,7 @@ const DROP_MIX={remedy:1,bandage:.22,ash:.16,tent:.05,salts:.3,holywater:.06,plu
 const CHEST_UP=.04;// v0.22.22: the chance that a chest's gear is one rarity above the open one
 // Beta v0.4.1 2.5: the auto battle brain. healAt: heal an ally below this percent of max HP. skillChance: how often a turn uses a plain damage skill
 // instead of a basic attack. power: damage multiplier for everything auto does outside the Trial. spread: how often a single target attack picks a random foe instead of the first in line. dailySmart: keep the careful old brain inside the Daily Trial (the Trial must stay identical).
-const AUTO_NERF={healAt:40,skillChance:1,spread:0,power:.85,aware:.6,potion:0,smart:.6,limit:.5,det:.5,dailySmart:true};
+const AUTO_NERF={healAt:40,skillChance:1,spread:0,power:.85,aware:.6,potion:0,smart:.6,limit:.5,det:.5,dailySmart:true,guardMark:true};// guardMark (v0.22.54): auto guards a hero the boss gimmick has marked (battle4.js b4GimAutoGuard)
 // Beta v0.4.1 2.2: persistent ailments. A hero that finishes a fight Poisoned, Cursed or Wounded keeps it until cured.
 // poisonSteps / poisonPct: out of battle a Poisoned hero loses poisonPct of max HP every poisonSteps steps (never below 1 HP).
 // curseHeal: share of healing a Cursed hero receives. woundMhp: share of max HP a Wounded hero keeps.
@@ -2445,7 +2445,8 @@ const B4={det:{on:true,mpPct:.1,mpMin:4,maxPerAct:2},
   daily:{det:true,swap:true,mo:true,roles:true}};
 // CLS_ATK (v0.10.5, atk6.js): the basic Attack by class. pw: damage multiplier on ATTACK's pw 1; k:'mag' swings with magic (MAG vs RES).
 // Mages, healers and bards swing with magic; archers hit hardest as ranged; the front line trades a little less for staying power.
-const CLS_ATK={warrior:{pw:1.15},knight:{pw:1.05},monk:{pw:1.15,hits:1},thief:{pw:1.1},archer:{pw:1.2},mage:{k:'mag',pw:1.1},healer:{k:'mag',pw:.95},bard:{k:'mag',pw:1}};
+const CLS_ATK={warrior:{pw:1.15},knight:{pw:1.05},monk:{pw:1.15,hits:1},thief:{pw:1.1},archer:{pw:1.2},mage:{k:'mag',pw:1.1},healer:{k:'mag',pw:.95},bard:{k:'mag',pw:1},
+  archmage:{k:'mag',pw:1.1},chronicler:{k:'mag',pw:1},bloodcaller:{k:'mag',pw:.95}};// v0.22.54: the three Legend casters swung their staff and tome with ATK; they cast like the others now
 // DET_BONUS: detonations take two deliberate steps, so they hit harder than the old free reactions did.
 const DET_BONUS=1.3;
 // AUTO_SWAP_CD: auto battle brings in a reserve hero at most once every this many party turns, and a hero who just came in stays
@@ -2502,7 +2503,9 @@ const BOSS_LV={frac:.5,cap:12};
 // 3.2 bosses: shield pips +50% (5 to 8, 7 to 11); the break window hits for less and is over once the foe loses the turn it staggers
 const BOSS_PIPS={mult:1.5};const BREAK_WIN={bonus:1.3,short:true};
 // 3.2 extra boss muscle on top of the old stat table (hp and power multipliers)
-const BOSS_BUFF={hp:[.8,1.34,1.39,1.53,1.22],pow:[.955,1.28,1.32,1.535,1.23]}// v0.19: eased about 7% hp and 3% pow with the role power change (was hp [.9,1.5,1.55,1.7,1.36], pow [1,1.34,1.38,1.6,1.28]) to pay for the 12 skill kit, role power and no dual ultimates, so the journey sim stays at level 41.3 and 14.6 boss tries (before the skill changes: 40.5 and 11.1; without the ease: 42.6 and 19.6); v0.4.3: re-tuned with capes; v0.8.2: the first three Scourges eased (were hp 1.3, 1.75, 1.8 and pow 1.15, 1.4, 1.44) so no boss is a wall; v0.9.5: hp [1.15,1.65,1.7,2.0,1.52] -> about 4 to 10% less, the realm gimmicks (BOSS_GIM) carry the rest
+// v0.22.54: less burst and longer fights, and a steady ramp: the win rate of a careful party at the expected level steps down a little each realm (about
+// 66, 63, 60, 57, 53%) and the hero turns in a won fight step up a little (about 28, 31, 35, 39, 43). pow was [.955,1.28,1.32,1.535,1.23], hp [.8,1.34,1.39,1.53,1.22].
+const BOSS_BUFF={hp:[1.2,1.55,1.6,2.05,1.78],pow:[.88,1.14,1.38,1.87,1.22]}// v0.19: eased about 7% hp and 3% pow with the role power change (was hp [.9,1.5,1.55,1.7,1.36], pow [1,1.34,1.38,1.6,1.28]) to pay for the 12 skill kit, role power and no dual ultimates, so the journey sim stays at level 41.3 and 14.6 boss tries (before the skill changes: 40.5 and 11.1; without the ease: 42.6 and 19.6); v0.4.3: re-tuned with capes; v0.8.2: the first three Scourges eased (were hp 1.3, 1.75, 1.8 and pow 1.15, 1.4, 1.44) so no boss is a wall; v0.9.5: hp [1.15,1.65,1.7,2.0,1.52] -> about 4 to 10% less, the realm gimmicks (BOSS_GIM) carry the rest
 // BOSS_GIM (v0.9.5, battle4.js): every Scourge and Calamity brings one realm gimmick to its first fight (kind 'boss'; not Echoes, not the Daily
 // Trial). Each is telegraphed on the boss's turn (a log line, a "Telegraph" chip on the boss, a mark on the heroes it will hit) and lands on its
 // next turn, so reading it pays. first: the boss's turn of the first telegraph; every: turns between telegraphs (per boss: every).
@@ -2516,25 +2519,37 @@ const BOSS_BUFF={hp:[.8,1.34,1.39,1.53,1.22],pow:[.955,1.28,1.32,1.535,1.23]}// 
 // skill reveals it), wing (it takes off for a round: non Ranged physical hits deal cut less; then it dives at a marked spot for pct),
 // phase2 (at warn of its HP it cracks; at at a new move set (sk) and its shield back).
 // stageK: the gimmick's damage and healing by stage (the first Scourge is the gentle introduction; reactions were held back to the second realm until 0.22.42).
-const BOSS_GIM={on:true,daily:false,first:2,every:4,stageK:[.5,.85,1,1,1],
-  def:{thornwarden:{t:'slot',n:'Thorn Snare',pct:.14,el:'earth',st:'root',d:'Roots erupt under one Vanguard spot on its next turn',tell:'Thorny roots creep under {who}',hit:'Roots burst under {who}'},
-    drake:{t:'tide',n:'Rising Tide',every:3,max:3,spd:.05,dmg:.08,d:'The water rises every few turns: heroes without Water slow down and Water skills hit harder. An Earth skill dams it',tell:'The water swells around your feet',hit:'The tide rises'},
-    cinderking:{t:'slot',n:'Lava Vents',pct:.17,el:'fire',st:'burn',d:'A lava vent erupts under one Vanguard spot on its next turn',tell:'The ground glows red under {who}',hit:'A lava vent erupts under {who}'},
+// v0.22.54: answer: an answered gimmick (a stopped readied move, a marked hit that every marked hero guarded, a grounded or guarded rod) knocks
+// `pips` off the boss's shield. The marked hits were raised (slot .14/.17/.12 -> .24/.28/.2, rod .2 -> .28, dive .16 -> .22) so a telegraph ignored hurts.
+const BOSS_GIM={on:true,daily:false,first:2,every:4,stageK:[.5,.85,1,1,1],answer:{pips:2},
+  def:{thornwarden:{t:'slot',n:'Thorn Snare',pct:.24,el:'earth',st:'root',d:'Roots erupt under one Vanguard spot on its next turn',tell:'Thorny roots creep under {who}',hit:'Roots burst under {who}'},
+    drake:{t:'tide',n:'Rising Tide',every:3,max:3,spd:.04,dmg:.05,d:'The water rises every few turns: heroes without Water slow down and Water skills hit harder. An Earth skill dams it',tell:'The water swells around your feet',hit:'The tide rises'},
+    cinderking:{t:'slot',n:'Lava Vents',pct:.28,el:'fire',st:'burn',d:'A lava vent erupts under one Vanguard spot on its next turn',tell:'The ground glows red under {who}',hit:'A lava vent erupts under {who}'},
     hoarwyrm:{t:'chill',n:'Blizzard',max:3,spd:.12,d:'The blizzard chills every hero who is not guarding; three stacks freeze a hero for a turn. A Fire skill thaws the caster',tell:'The blizzard thickens',hit:'The blizzard howls through the Vanguard'},
-    ysolde:{t:'rod',n:'Lightning Rod',pct:.2,arc:.35,el:'lightning',d:'She marks the strongest hero; lightning strikes them on her next turn and arcs to their neighbours. Swap them out to ground it',tell:'The air crackles around {who}',hit:'Lightning strikes {who}'},
-    bonecolossus:{t:'sac',n:'Reassemble',fx:'heal',heal:.12,thr:.07,d:'It gathers its bones to heal; deal enough damage before its next turn to scatter them',tell:'Bones rattle toward the Colossus',hit:'The Colossus pulls its bones back together',stop:'The bones scatter'},
-    queenmantis:{t:'sac',n:'Brood',fx:'summon',mon:'gustimp',thr:.07,d:'An egg sac swells; burst it with enough damage before her next turn or it hatches',tell:'An egg sac swells on the Queen',hit:'The egg sac hatches',stop:'The egg sac bursts'},
+    ysolde:{t:'rod',n:'Lightning Rod',pct:.28,arc:.35,el:'lightning',d:'She marks the strongest hero; lightning strikes them on her next turn and arcs to their neighbours. Swap them out to ground it',tell:'The air crackles around {who}',hit:'Lightning strikes {who}'},
+    bonecolossus:{t:'sac',n:'Reassemble',fx:'heal',heal:.15,thr:.1,d:'It gathers its bones to heal; deal enough damage before its next turn to scatter them',tell:'Bones rattle toward the Colossus',hit:'The Colossus pulls its bones back together',stop:'The bones scatter'},
+    queenmantis:{t:'sac',n:'Brood',fx:'summon',mon:'gustimp',thr:.1,d:'An egg sac swells; burst it with enough damage before her next turn or it hatches',tell:'An egg sac swells on the Queen',hit:'The egg sac hatches',stop:'The egg sac bursts'},
     gloomcap:{t:'sac',n:'Spore Bloom',fx:'spores',st:['poison'],els:['fire'],thr:.06,d:'A spore pod swells; a Fire skill or heavy damage pops it, or it poisons every hero not guarding',tell:'A spore pod swells on the Matriarch',hit:'The spore pod bursts over the Vanguard',stop:'The spore pod shrivels'},
     ironsentinel:{t:'sac',n:'Overheat',fx:'buff',buff:['might','haste'],els:['water','ice'],thr:.08,d:'Its furnace glows white; a Water or Ice hit or heavy damage cools it, or it overclocks (Might and Haste)',tell:'The Sentinel\'s furnace glows white',hit:'The Sentinel overclocks',stop:'Steam hisses: the furnace cools'},
     siren:{t:'mirror',n:'Mirror Song',every:5,kinds:['mag'],cut:.35,refl:.12,d:'Every few turns she raises a water mirror for a round: magic deals less and part of it splashes back. Use weapons then',tell:'The Siren\'s song turns glassy',hit:'A mirror of water rises around the Siren'},
-    ashwyvern:{t:'wing',n:'Take Wing',every:5,cut:.35,pct:.16,el:'fire',d:'It takes to the air for a round (weapon hits glance off unless Ranged), then dives at a marked spot',tell:'The Wyvern spreads its wings',hit:'The Wyvern takes to the air',dive:'The Wyvern dives at {who}'},
-    frostlich:{t:'veil',n:'Grave Mist',cut:.5,d:'Every few turns it fades into mist for a round and takes far less damage, until a Scan or a Light skill reveals it',tell:'Frost mist gathers around the Lich',hit:'The Lich fades into the mist'},
+    ashwyvern:{t:'wing',n:'Take Wing',every:5,cut:.25,pct:.22,el:'fire',d:'It takes to the air for a round (weapon hits glance off unless Ranged), then dives at a marked spot',tell:'The Wyvern spreads its wings',hit:'The Wyvern takes to the air',dive:'The Wyvern dives at {who}'},
+    frostlich:{t:'veil',n:'Grave Mist',cut:.4,d:'Every few turns it fades into mist for a round and takes far less damage, until a Scan or a Light skill reveals it',tell:'Frost mist gathers around the Lich',hit:'The Lich fades into the mist'},
     dimmer:{t:'dark',n:'Swallowed Light',every:3,max:2,dmg:.1,d:'The dark deepens every few turns: heroes deal less per level. A Fire or Light skill lights a torch and clears it',tell:'The lights around you gutter',hit:'The dark deepens'},
     nidhra:{t:'phase2',n:'Eclipse Form',warn:.65,at:.5,sk:[['Corona Flare','fire',1.3,'all','mag',[['burn',.5]]],['Night Talon','shadow',2.0,'one','phys',[['bleed',.6]]],['Eclipse Roar','shadow',1.1,'all','phys',[['weaken',.4]]]],d:'At half HP it becomes the Eclipse: new moves and its shield back. Save a weakness hit for after',tell:'Cracks of black fire spread across Nidhra',hit:'Nidhra becomes the Eclipse'},
     hollowking:{t:'sac',n:'Royal Guard',fx:'summon',mon:'drownedsailor',brk:1,thr:.08,d:'He calls a drowned guard up from the deep; Break his shield or hit him hard before his next turn to stop it',tell:'The King raises his hand to call a servant',hit:'A drowned guard answers the King',stop:'The call goes unanswered'},
-    seraph:{t:'slot',n:'Pillars of Light',n2:2,pct:.12,el:'light',st:'blind',d:'Pillars of shattered light fall on two Vanguard spots on its next turn',tell:'Light gathers over {who}',hit:'Pillars of glass light fall on {who}'}}};
+    seraph:{t:'slot',n:'Pillars of Light',n2:2,pct:.2,el:'light',st:'blind',d:'Pillars of shattered light fall on two Vanguard spots on its next turn',tell:'Light gathers over {who}',hit:'Pillars of glass light fall on {who}'}}};
 // 3.4 small parties: each hero short of six makes Scourges and Calamities this much beefier (a full party of six is the benchmark)
-const BOSS_SIZE={hp:.07,pow:.06};// per stage 1 to 5
+// v0.22.54: the benchmark is the party a journey has by that realm (expect: 3, 4, 5, 6, 6), so the old numbers are unchanged for it; a party
+// SHORT of that size no longer faces a beefier boss on top: each hero short eases the boss by short.hp and short.pow instead.
+const BOSS_SIZE={hp:.07,pow:.06,expect:[3,4,5,6,6],short:{hp:.08,pow:.05}};// per stage 1 to 5
+// STUN_CAP (v0.22.54): a hero who has just lost a turn to a stun (or a freeze) cannot be stunned again until after their next turn.
+const STUN_CAP={on:true};
+// CLS_TUNE (v0.22.54 class pass, docs/balance54.md): multipliers on a class's final stats (gear included; not in the Daily Trial). Measured in boss fights:
+// a Warrior had the least resistance and the fewest turns, a Knight half the average damage, an Archer hit like a Monk. The order aimed for (tools/fullsim.js
+// eff): Mage and Archer deal the most, the Warrior is third and the sturdy front line, the Monk does a bit of everything and is best at nothing.
+const CLS_TUNE={warrior:{atk:1.1,hp:1.15,res:1.3,spd:1.15},knight:{atk:1.1,spd:1.1},archer:{atk:1.34},monk:{atk:.82}};
+// TAUNT (v0.22.54): a hero under Taunt is braced: they take `cut` less damage from every hit (drawing fire was a death sentence for a Warrior).
+const TAUNT={cut:.3};
 // 3.3 echo levels. Story echo base = boss base + storyAdd; Sanctum echoes use fixed bases. While the party's highest hero is more than
 // window below the base the echo stays at base; once within window of it (or higher) the echo is exactly party highest + window. No cap.
 const ECHO_LV={window:2,storyAdd:2,sanctum:50,sanctumFinal:56};
@@ -2684,7 +2699,9 @@ const ROLES={
   // adj: changes to existing class skills (by class and skill id), merged in when the list is built
   adj:{chronicler:{annotate:{fx:[['break',.9],['weaken',.5]],rl:'debuffer'},redact:{fx:[['blind',.7]]}},bard:{tune1:{pw:1},tune2:{pw:1}},druid:{wildmend:{chi:1,pw:1.15}},
     // v0.19: role power now comes from ROLEPW, so a few sub role numbers are set to keep every secondary in the 55 to 78% band
-    knight:{lance1:{pw:1.75},lance2:{pw:1.75},judge:{pw:3}},thief:{assn:{pw:2.3}}},
+    knight:{lance1:{pw:1.75},lance2:{pw:1.75},judge:{pw:3}},thief:{assn:{pw:2.3}},
+    // v0.22.54: Piercing Shot is a bow shot, so it counts as the Marksman's own (ROLEPW.own; as a Striker sub role skill it still out-hit every Marksman shot): 2.8 x .8 -> 2.4 x 1
+    archer:{pierce:{pw:2.4}}},
   charms:[{id:'c_rl_mend',n:"Mender's Locket",st:{mag:8,res:6},attr:{fth:3},perk:{healUp:.12},d:'+12% healing',price:520},
     {id:'c_rl_song',n:'Spellstring Charm',st:{mag:12,mp:30},perk:{spellPow:.08},d:'+8% spell damage',price:520},
     {id:'c_rl_quiv',n:'Kunai Pouch',st:{atk:8,spd:4},attr:{dex:3},perk:{rngPow:.1},d:'+10% Ranged damage',price:520},
@@ -2753,7 +2770,10 @@ const SK12={cap:12,dualUlt:false,legendsKeepUlt:true,
 // a sub role `secondary`, any other role `off`. Primer, Detonator and dual art damage never counts below `secondary`. A nature that leans into a skill's role
 // adds `natLift` to that skill's multiplier, never above `natCap` (so a lifted off-role skill never matches a main-role one). Debuff chances move by
 // fxShare of the gap; a buff of an off-role skill lasts offBuff turns less (at least 1).
-const ROLEPW={primary:1,secondary:.8,off:.5,natLift:.14,natCap:.9,fxShare:.33,offBuff:1};
+// v0.22.54: secondary .8 -> 1. A sub role skill is already weaker by its own numbers (lower base power, and the hero's stats follow the main role: measured,
+// it lands near 40% of a main role skill), so the percent cut on top was a second deduction and is gone. Off role skills keep `off`.
+// own: skills that count as the class's main role whatever their delivery says (the kit and the learn levels are not touched by this).
+const ROLEPW={primary:1,secondary:1,off:.5,natLift:.05,natCap:1,fxShare:.33,offBuff:1,own:{archer:['pierce']}};
 // PACE (v0.9.5, pacing.js): the realm (0 = the first) in which each system opens on a journey started on v0.9.5 or later. Older journeys,
 // New Game+ cycles and the Daily Trial have everything open. pcUnlocked(system) reads it (the onboarding tips can ask it too).
 // combat, elements and taming are always open; tempering keeps its own rule (after the first Scourge); camp follows CAMP.fromStage.
@@ -3060,7 +3080,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.22.53";const APP_BUILD="1085a76a21ac";
+const APP_VER="0.22.54";const APP_BUILD="cac26dad5998";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -3068,6 +3088,7 @@ const APP_VER="0.22.53";const APP_BUILD="1085a76a21ac";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.22.54',['Bosses hit less hard and last longer. A lost fight used to be over in about 20 hero turns with the boss barely half down. Now each realm is a little harder than the one before and its boss fight a little longer, with no wall at the second realm.','Every Scourge and Calamity was tuned toward the same band for its realm. Eased: Frost Lich, Siren of the Deep, Maelstrom Drake, Stormcaller Ysolde, Ashen Wyvern, Iron Sentinel, Seraph. Raised: Bone Colossus, Cinderking Varroth, the Crow Regent, Thornback Warden, the Geyser Matron, Queen Mantis, Emperor Candlemoth.','Realm gimmicks matter more. The marked hits (Thorn Snare, Lava Vents, Lightning Rod, the Wyvern\'s dive, Pillars of Light) hit about half again as hard, and answering a gimmick pays: guard every marked hero, ground or guard the rod, or stop a readied move, and the boss is thrown off balance and loses 2 shield pips.','Auto battle guards a hero the boss has marked.','No more stun chains: a hero who has just lost a turn to a stun or a freeze cannot be stunned again until after their next turn.','Taunt now braces the hero: they take 30% less damage while it lasts (War Cry, Provoke).','Classes, measured in boss fights (damage, damage over time, healing, buffs, debuffs and damage soaked). Mages and Archers deal the most damage (Archers +34% attack). Warriors are the third damage dealer and a sturdier front line (+10% attack, +15% speed, +30% resistance, +15% HP). Knights +10% attack and speed. Monks are the all-rounder: -18% attack, with their healing and speed untouched.','Sub role skills no longer take a percent cut on top of their own lower numbers (it was 80%). Main role skills stay the strongest; skills outside a class\'s three roles stay at 50%.','Piercing Shot counts as the Archer\'s own Marksman skill (power 2.4). No skill changed its level.','Archmage, Chronicler and Blood Summoner: their basic Attack is magic now, like the Mage\'s, Priest\'s and Bard\'s.','Skill names and descriptions were checked against what the skills do: 111 skills renamed and 249 descriptions rewritten. A skill no longer names an element or a status it does not have, and every status a skill can cause is in its text.','Short parties: a party smaller than the journey expects in a realm (3, 4, 5, 6, 6) now meets an eased Scourge or Calamity. Before, every missing hero made the boss stronger.']],
  ['Beta v0.22.53',['A lighting pass on the HD-2D world: a warmer, stronger sun against cooler shade, about half the distance haze, richer colour and contrast, and a darker frame around the view, by day, dusk, dawn and night.']],
  ['Beta v0.22.52',['Battle cards on big screens: the weakness and status tags sit under the card. They were drawn over the HP bar.','The barred hoard: a vault chest that is already open now counts for the quest. Before, the quest was only marked at the moment the chest was opened, so an open chest without that mark left the quest stuck on Vault still sealed.']],
  ['Beta v0.22.51',['Skill boxes: the two text lines of a Dual art (and of a wayfarer\'s own skill) no longer lie on top of each other, and the strong against tags have their own line.','Big screens: an open skill list rises a little over the foot of the battle window again, so two rows of skills show at once.','Tablets and folds held upright have the layout they had before: the full width battle window and the Party & foes sheet. Held sideways they keep the card column.']],
@@ -3536,13 +3557,15 @@ const STS={
  haste:{n:'Haste',a:'HST',t:3,c:'#7affd0',d:'Turns come 35% faster.'},
  regen:{n:'Regen',a:'RGN',t:4,c:'#7aff8a',d:'Recovers 8% of max HP each turn.'},
  ward:{n:'Ward',a:'WRD',t:6,c:'#f6e7a8',d:'Blocks the next hit completely.'},
- taunt:{n:'Taunt',a:'TNT',t:3,c:'#ff5a5a',d:'Foes must aim single attacks at this hero.'},
+ taunt:{n:'Taunt',a:'TNT',t:3,c:'#ff5a5a',d:'Foes must aim single attacks at this hero, who takes 30% less damage while braced for them.'},
  focus:{n:'Focus',a:'FCS',t:5,c:'#ffd23d',d:'The next attack is a guaranteed critical.'}
 };
+// v0.22.54 class pass (docs/balance54.md): Warrior res [4,1] -> [5,1.3] and spd .75 -> .82 a level (the least resistance and the fewest turns of any class);
+// Knight atk 1.9 -> 2.1 and spd [6,.6] -> [7,.68]; Mage mag 2.7 -> 2.55 a level (it dealt over twice the average damage per action).
 const CLS={
- warrior:{n:'Warrior',role:'Heavy melee. High HP and attack, hits groups, draws fire.',hp:[52,11],mp:[10,1.6],atk:[10,2.4],def:[8,1.9],mag:[3,.6],res:[4,1],spd:[8,.75],pref:['str','vit','dex']},
- knight:{n:'Knight',role:'Tank. Taunts, wards allies and raises party defense.',hp:[60,12.5],mp:[10,1.7],atk:[8,1.9],def:[11,2.4],mag:[3,.7],res:[7,1.5],spd:[6,.6],pref:['vit','spi','str']},
- mage:{n:'Mage',role:'Elemental caster. Big spells, hastes allies, fragile body.',hp:[36,7],mp:[28,3.8],atk:[4,.8],def:[4,1],mag:[12,2.7],res:[8,1.9],spd:[8,.75],pref:['int','spi','agi']},
+ warrior:{n:'Warrior',role:'Heavy melee. High HP and attack, hits groups, draws fire.',hp:[52,11],mp:[10,1.6],atk:[10,2.4],def:[8,1.9],mag:[3,.6],res:[5,1.3],spd:[8,.82],pref:['str','vit','dex']},
+ knight:{n:'Knight',role:'Tank. Taunts, wards allies and raises party defense.',hp:[60,12.5],mp:[10,1.7],atk:[8,2.1],def:[11,2.4],mag:[3,.7],res:[7,1.5],spd:[7,.68],pref:['vit','spi','str']},
+ mage:{n:'Mage',role:'Elemental caster. Big spells, hastes allies, fragile body.',hp:[36,7],mp:[28,3.8],atk:[4,.8],def:[4,1],mag:[12,2.55],res:[8,1.9],spd:[8,.75],pref:['int','spi','agi']},
  healer:{n:'Priest',role:'Heals, cleanses, grants Regen and revives. Invokes Sanctum guardians.',hp:[40,8],mp:[30,4],atk:[4,.8],def:[5,1.2],mag:[11,2.4],res:[9,2],spd:[8,.7],pref:['fth','spi','vit']},
  thief:{n:'Thief',role:'Fastest class. Steals, poisons and blinds.',hp:[40,8.5],mp:[14,2],atk:[8,1.9],def:[5,1.3],mag:[4,.8],res:[5,1.2],spd:[13,1.1],pref:['agi','dex','luk']},
  archer:{n:'Archer',role:'Ranged damage. Bleeds, roots and pierces armor.',hp:[42,8.5],mp:[16,2.2],atk:[9,2.1],def:[5,1.3],mag:[4,.8],res:[5,1.3],spd:[11,.95],pref:['dex','agi','str']},
@@ -3794,11 +3817,11 @@ const COMBO={
  'lightning+wind':{n:'Thunderstorm',k:'mag',pw:1.15,t:'all',fx:[['stun',.15]],d:'Lightning rakes all foes. May Stun.'},
  'ice+wind':{n:'Whiteout',k:'mag',pw:1.05,t:'all',fx:[['slow',.5],['blind',.3]],d:'A blizzard on all foes. Slows and blinds.'},
  'light+wind':{n:'Aurora',k:'status',t:'allyAll',fx:[['regen',1],['haste',1]],d:'Shimmering lights grant Regen and Haste to the vanguard.'},
- 'shadow+wind':{n:'Night Wind',k:'mag',pw:1.05,t:'all',fx:[['blind',.5],['bleed',.3]],d:'Cutting dark wind on all foes.'},
+ 'shadow+wind':{n:'Night Wind',k:'mag',pw:1.05,t:'all',fx:[['blind',.5],['bleed',.3]],d:'Cutting dark wind on all foes. May Blind or Bleed.'},
  'ice+lightning':{n:'Cryo Spark',k:'mag',pw:2.0,t:'one',fx:[['stun',.35],['slow',.5]],d:'Freezing current. Stuns and slows.'},
  'light+lightning':{n:'Judgement Bolt',k:'mag',pw:2.6,t:'one',pierce:1,d:'Holy lightning that ignores half of resistance.'},
  'lightning+shadow':{n:'Black Lightning',k:'mag',pw:2.1,t:'one',fx:[['break',.7]],d:'Dark lightning that breaks defenses.'},
- 'ice+light':{n:'Prism Lance',k:'mag',pw:1.1,t:'all',fx:[['blind',.5]],d:'Refracted light on all foes.'},
+ 'ice+light':{n:'Prism Lance',k:'mag',pw:1.1,t:'all',fx:[['blind',.5]],d:'Refracted light on all foes. May Blind.'},
  'ice+shadow':{n:'Frostbite Curse',k:'phys',pw:1.9,t:'one',fx:[['bleed',.8],['slow',.6]],d:'Cursed frost. Bleeds and slows.'},
  'light+shadow':{n:'Twilight',k:'mag',pw:1.2,t:'all',fx:[['weaken',.5],['break',.5]],d:'Light and dark at once. Weakens and breaks every foe.'}
 };
@@ -3818,11 +3841,11 @@ const DL_FORCE={
 // v5.1 role fills: added only when a class would otherwise miss a Primer or Detonator in that band
 const ROLE_FILL={
  warrior:{eP:n=>({id:'brand',n:'Branding Strike',k:'phys',pw:1.25,mp:4,lv:6,d:`A glancing blow that leaves ${n} clinging to the foe.`}),lP:n=>({id:'warbrand',n:'Warbrand Sweep',k:'phys',t:'all',pw:.85,mp:10,lv:18,d:`Sweeps every foe and brands them with ${n}.`})},
- knight:{eP:n=>({id:'sburst',n:'Shield Brand',k:'phys',pw:1.4,mp:5,lv:9,d:`Slams the shield home and leaves ${n} burning in the foe.`}),lP:n=>({id:'consec',n:'Consecrate',k:'phys',t:'all',pw:.8,mp:10,lv:18,d:`Hallows the ground under every foe with ${n}.`})},
+ knight:{eP:n=>({id:'sburst',n:'Shield Brand',k:'phys',pw:1.4,mp:5,lv:9,d:`Slams the shield home and stamps ${n} into the foe.`}),lP:n=>({id:'consec',n:'Consecrate',k:'phys',t:'all',pw:.8,mp:10,lv:18,d:`Hallows the ground under every foe with ${n}.`})},
  mage:{eD:n=>({id:'burst',n:`${n} Burst`,k:'mag',pw:1.7,mp:6,lv:6,d:`A focused blast of ${n} that sets off a prime.`}),lP:n=>({id:'rune',n:`${n} Rune`,k:'mag',pw:1.3,mp:9,lv:18,d:`Carves a ${n} rune into a foe.`})},
  healer:{eD:n=>({id:'smite',n:'Smite',k:'mag',pw:1.45,mp:5,lv:7,d:`A lance of ${n} from above.`}),lP:n=>({id:'halo',n:`Halo of ${n}`,k:'mag',t:'all',pw:.7,mp:10,lv:18,d:`Rings every foe with ${n}.`}),lD:n=>({id:'verdict',n:'Verdict',k:'mag',pw:2.4,mp:14,cost:1.2,lv:21,d:`Final judgement in ${n}. Slow recovery.`})},
  thief:{eP:n=>({id:'dart2',n:`${n} Dart`,k:'phys',pw:1.1,mp:3,cost:.8,lv:3,d:`A quick dart tipped with ${n}.`}),lP:n=>({id:'fan',n:`${n} Fan`,k:'phys',t:'all',pw:.8,mp:10,lv:18,d:`A fan of ${n} knives at every foe.`})},
- archer:{eD:n=>({id:'burstarrow',n:'Burst Arrow',k:'phys',pw:1.6,mp:5,lv:7,d:`An arrowhead packed with ${n} that bursts on impact.`}),lP:n=>({id:'rain',n:`${n} Rain`,k:'phys',t:'all',pw:.85,mp:10,lv:18,d:`A rain of ${n} arrows on every foe.`}),lD:{retag:'pierce'}},
+ archer:{eD:n=>({id:'burstarrow',n:'Burst Arrow',k:'phys',pw:1.6,mp:5,lv:7,d:`An arrowhead packed with ${n} that bursts on impact.`}),lP:n=>({id:'rain',n:`${n} Arrowstorm`,k:'phys',t:'all',pw:.85,mp:10,lv:18,d:`A rain of ${n} arrows on every foe.`}),lD:{retag:'pierce'}},
  monk:{eP:n=>({id:'palm2',n:`${n} Palm`,k:'phys',pw:1.2,mp:4,lv:6,d:`An open palm that leaves ${n} humming in the foe.`}),lP:n=>({id:'whirl',n:`${n} Whirl`,k:'phys',t:'all',pw:.8,mp:10,lv:18,d:`A spinning kick that marks every foe with ${n}.`})},
  bard:{eD:n=>({id:'cresc',n:`${n} Crescendo`,k:'mag',pw:1.5,mp:6,lv:6,d:`A rising ${n} chord that sets off a prime.`}),lP:n=>({id:'refrain',n:`${n} Refrain`,k:'mag',t:'all',pw:.7,mp:10,lv:18,d:`A ${n} refrain that lingers on every foe.`}),lD:n=>({id:'finale',n:'Grand Finale',k:'mag',pw:2.2,mp:14,cost:1.2,lv:21,d:`The last, loudest ${n} note. Slow recovery.`})}
 };
@@ -3838,7 +3861,7 @@ function classSkills(t){
     add({id:'hurl',n:'Heave',k:'phys',pw:1.2,mp:3,lv:4,d:'Hurl your weapon across the field and fetch it back. Strikes with the kind of damage of your weapon.'});
     if(e2)add({id:'edge2',n:n2+' Edge',k:'phys',pw:1.7,mp:5,el:e2,lv:8,d:`Blade wreathed in ${n2}.`});
     add({id:'cleave',n:'Cleave',k:'phys',pw:1,mp:9,t:'all',lv:10,d:'Sweeps every foe.'});
-    add({id:'cry',n:'War Cry',k:'status',t:'self',mp:6,lv:13,fx:[['might',1],['taunt',1]],d:'Gain Might and Taunt: foes come for you.'});
+    add({id:'cry',n:'War Cry',k:'status',t:'self',mp:6,lv:13,fx:[['might',1],['taunt',1]],d:'Gain Might and Taunt: foes come for you.'+(typeof TAUNT!=='undefined'&&TAUNT.cut?` You take ${Math.round(TAUNT.cut*100)}% less damage while it lasts.`:'')});
     add({id:'titan',n:'Titan Blow',k:'phys',pw:3,mp:16,el:e1,cost:1.3,lv:22,d:`Crushing ${n1} blow. Slow recovery.`});
     break;
   case 'knight':
@@ -3917,7 +3940,7 @@ function classSkills(t){
     add({id:'wolf',n:'Call Wolf',k:'phys',pw:1.55,mp:5,lv:5,fx:[['bleed',.6]],d:'His wolf goes for the throat. Likely Bleeds.'});
     add({id:'thorn',n:'Thornwhisper',k:'status',t:'all',mp:7,lv:8,fx:[['root',.5],['slow',.4]],d:'Brambles answer his whisper. May Root and Slow every foe.'});
     add({id:'s1b',n:'Nightbloom Arrow',k:'phys',pw:1.75,mp:5,el:'shadow',lv:11,d:'An arrow that blooms dark on impact.'});
-    add({id:'pack',n:'Pack Hunt',k:'phys',pw:1,mp:10,t:'all',lv:14,fx:[['bleed',.4]],d:'Wolf, hawk and ranger hit every foe together.'});
+    add({id:'pack',n:'Pack Hunt',k:'phys',pw:1,mp:10,t:'all',lv:14,fx:[['bleed',.4]],d:'Wolf, hawk and ranger hit every foe together. May Bleed.'});
     add({id:'wildmend',n:'Wild Mend',k:'heal',pw:.9,mp:10,t:'allyAll',lv:17,d:'Old forest medicine for the vanguard.'});
     add({id:'s3a',n:'Moonless Volley',k:'phys',pw:1.25,mp:14,cost:1.2,t:'all',el:'shadow',lv:22,d:'A volley loosed in perfect dark.'});
     break;
@@ -4037,10 +4060,10 @@ const LIMIT2={
 // strip (removes the target's boons), lbParty (adds Limit gauge to the vanguard).
 function lateSkills(cls,e1,e2,n1,n2){const E2=e2||e1,N2=n2||n1;const L={
  warrior:[{id:'quake',n:'Earthshaker',k:'phys',pw:1.3,mp:14,t:'all',el:e1,role:'primer',lv:42,fx:[['slow',.4]],d:`Stamps ${n1} through the ground under every foe. May Slow.`},
-  {id:'laststand',n:'Last Stand',k:'status',t:'self',mp:12,lv:46,fx:[['might',1],['bulwark',1],['regen',1]],d:'Plants his feet: Might, Bulwark and Regen.'},
+  {id:'laststand',n:'Last Stand',k:'status',t:'self',mp:12,lv:46,fx:[['might',1],['bulwark',1],['regen',1]],d:'Nothing left to lose: Might, Bulwark and Regen.'},
   {id:'ragnarok',n:'Ragnarok',k:'phys',pw:4.2,mp:28,cost:1.3,el:e1,role:'det',lv:50,execute:.3,shieldChip:3,cap:1,d:`The end of the world in one ${n1} blow. Double damage below 30% HP; chips 3 shield pips.`}],
  knight:[{id:'consground',n:'Consecrated Ground',k:'phys',pw:.95,mp:16,t:'all',el:e1,role:'primer',lv:42,allyFx:[['bulwark',1]],d:`Hallows the ground under every foe with ${n1} and gives the line Bulwark.`},
-  {id:'holylance',n:'Holy Lance',k:'phys',pw:2.6,mp:16,el:E2,role:'det',pierce:1,lv:46,d:`A ${N2} lance that ignores half of defense.`},
+  {id:'holylance',n:'Breach Lance',k:'phys',pw:2.6,mp:16,el:E2,role:'det',pierce:1,lv:46,d:`A lance of ${N2} driven through the guard. Ignores half of defense.`},
   {id:'oath',n:'Unbreakable Oath',k:'status',t:'allyAll',mp:30,lv:50,fx:[['ward',1],['bulwark',1],['might',1],['regen',1]],heal:.25,lbParty:25,cap:1,d:'Swears the line will hold: Ward, Bulwark, Might and Regen for all, a 25% heal, and +25 Limit gauge.'}],
  mage:[{id:'seal',n:'Prismatic Seal',k:'mag',pw:.95,mp:16,t:'all',el:E2,role:'primer',lv:42,fx:[['weaken',.4]],d:`Seals every foe in ${N2}. May Weaken.`},
   {id:'overchan',n:'Overchannel',k:'status',t:'self',mp:10,lv:46,fx:[['might',1],['haste',1]],d:'Burns the reserves: Might and Haste.'},
@@ -4055,7 +4078,7 @@ function lateSkills(cls,e1,e2,n1,n2){const E2=e2||e1,N2=n2||n1;const L={
   {id:'galebar',n:'Gale Barrage',k:'phys',pw:.72,hits:2,mp:18,t:'all',el:E2,role:'det',lv:46,d:`Two ${N2} volleys over every foe.`},
   {id:'heavenp',n:'Heavenpiercer',k:'phys',pw:4.4,mp:30,cost:1.3,pierce:1,crit:.3,el:e1,role:'det',lv:50,shieldChip:3,cap:1,d:'One arrow loosed at the sky that comes down through anything. Ignores half of defense; chips 3 shield pips.'}],
  monk:[{id:'furnace',n:'Inner Furnace',k:'mpself',pw:1.6,mp:0,t:'self',lv:42,fx:[['haste',1],['might',1]],d:'Restores HP and MP and lights the furnace: Haste and Might.'},
-  {id:'tempkick',n:'Tempest Whirl',k:'phys',pw:1.3,mp:14,t:'all',el:e1,role:'primer',lv:46,fx:[['stun',.2]],d:`A whirl of kicks that leaves ${n1} lingering on every foe. May Stun.`},
+  {id:'tempkick',n:'Whirling Kicks',k:'phys',pw:1.3,mp:14,t:'all',el:e1,role:'primer',lv:46,fx:[['stun',.2]],d:`A whirl of kicks that leaves ${n1} lingering on every foe. May Stun.`},
   {id:'ascend',n:'Ascension Fist',k:'phys',pw:.95,hits:5,mp:28,el:e2?[e1,e2]:e1,role:'det',drain:.2,lv:50,cap:1,d:'Five blows that climb to the heavens. Heals him for 20% of the damage.'}],
  bard:[{id:'rondo',n:'Rondo of Ruin',k:'mag',pw:1.1,mp:16,t:'all',el:e1,role:'primer',lv:42,fx:[['break',.5]],d:`A ${n1} rondo on every foe. May Break.`},
   {id:'secondwind',n:'Second Wind',k:'heal',pw:1.2,mp:18,t:'allyAll',lv:46,fx:[['haste',1]],lbParty:20,d:'Heals the line, grants Haste and +20 Limit gauge.'},
@@ -4065,7 +4088,7 @@ function lateSkills(cls,e1,e2,n1,n2){const E2=e2||e1,N2=n2||n1;const L={
   {id:'tenk',n:'Ten Thousand Hooves',k:'phys',pw:.75,hits:8,mp:32,t:'rand',el:['lightning','shadow'],role:'det',crit:.25,lv:50,fx:[['stun',.2]],cap:1,d:'Eight storm riders at random foes, shadow and lightning. May Stun.'}],
  druid:[{id:'wildmark',n:'Wild Hunt',k:'phys',pw:1,mp:12,t:'all',el:'shadow',role:'primer',lv:42,fx:[['bleed',.5]],d:'The pack marks every foe with dusk. May Bleed.'},
   {id:'bramble',n:'Bramble Prison',k:'status',t:'all',mp:14,lv:46,fx:[['root',.8],['slow',.6],['break',.4]],d:'Thorns close over every foe: Root, Slow, maybe Break.'},
-  {id:'oldwood',n:'Heart of the Old Wood',k:'phys',pw:1.9,mp:32,t:'all',el:'shadow',role:'det',drain:.15,allyFx:[['regen',1]],lv:50,cap:1,d:'The oldest tree wakes and strikes every foe; the line gains Regen and he drinks 15% of the damage.'}],
+  {id:'oldwood',n:'Heart of the Old Wood',k:'phys',pw:1.9,mp:32,t:'all',el:'shadow',role:'det',drain:.15,allyFx:[['regen',1]],lv:50,cap:1,d:'The oldest tree wakes and strikes every foe. He drinks 15% of the damage and the line gains Regen.'}],
  archmage:[{id:'hoarfield',n:'Hoarfrost Field',k:'mag',pw:1,mp:12,t:'all',el:'ice',role:'primer',lv:42,fx:[['slow',.5]],d:'Freezes the ground under every foe. May Slow.'},
   {id:'lattice',n:'Thunder Lattice',k:'mag',pw:1.3,mp:16,t:'all',el:'lightning',role:'det',lv:46,fx:[['stun',.2]],d:'A cage of lightning on every foe. May Stun.'},
   {id:'zeropoint',n:'Zero Point',k:'mag',pw:2.3,mp:34,cost:1.4,t:'all',el:['ice','lightning'],role:'det',lv:50,fx:[['stun',.35]],shieldChip:3,cap:1,d:'Everything stops, then shatters. Every foe may Stun; chips 3 shield pips.'}],
@@ -4426,39 +4449,43 @@ const MON={
 // The Hollow Shepherd, The Pale Weaver) and the Hollow Sun were removed (their echoes, gates and records are ignored by old saves; see realms14.js).
 // phase: triggers once when HP falls below 'at'.
 const GUARDIANS={
- thornwarden:{n:'Thornback Warden',art:'thornwarden',el:['earth','water'],hp:5.2,atk:1.2,def:1.25,mag:1,res:1.1,spd:.95,sk:[['Bramble Lash','earth',1.5,'one','phys',[['bleed',.6]]],['Rainroot Surge','water',1.1,'all','mag',[['slow',.4]]],['Bark Skin','earth',0,'self','buff',[['bulwark',1]]]],
+ thornwarden:{n:'Thornback Warden',art:'thornwarden',el:['earth','water'],hp:5.2,atk:1.3,def:1.25,mag:1.08,res:1.1,spd:.95,sk:[['Bramble Lash','earth',1.5,'one','phys',[['bleed',.6]]],['Rainroot Surge','water',1.1,'all','mag',[['slow',.4]]],['Bark Skin','earth',0,'self','buff',[['bulwark',1]]]],
    phase:{at:.5,say:'The Warden sinks its roots and regrows!',self:[['regen',1],['bulwark',1]],heal:.1},intro:'A hedge of thorn and stone rises in the barrow: the Thornback Warden, still guarding a beacon it no longer remembers how to light.'},
- drake:{n:'Maelstrom Drake',art:'drake',el:['water','lightning'],hp:5.4,atk:1.2,def:1.2,mag:1.2,res:1.1,spd:1,sk:[['Tidal Fang','water',1.6,'one','phys',[['bleed',.4]]],['Storm Surge','lightning',1.15,'all','mag',[['stun',.12]]],['Undertow','water',1.2,'one','mag',[['root',.6]]]],
+ drake:{n:'Maelstrom Drake',art:'drake',el:['water','lightning'],hp:5.4,atk:1.12,def:1.2,mag:1.05,res:1.1,spd:1,sk:[['Tidal Fang','water',1.6,'one','phys',[['bleed',.4]]],['Storm Surge','lightning',1.15,'all','mag',[['stun',.12]]],['Undertow','water',1.2,'one','mag',[['root',.6]]]],
    phase:{at:.5,say:'The Drake calls down the storm!',self:[['haste',1]]},intro:'The water heaves. The Maelstrom Drake coils through the grotto, crackling with stolen storm.'},
- cinderking:{n:'Cinderking Varroth',art:'cinderking',el:['fire','earth'],hp:5.6,atk:1.3,def:1.3,mag:1.1,res:1.1,spd:.95,sk:[['Magma Crush','fire',1.7,'one','phys',[['burn',.5]]],['Eruption','fire',1.2,'all','mag',[['burn',.3]]],['Iron Will','earth',0,'self','buff',[['might',1]]]],
+ cinderking:{n:'Cinderking Varroth',art:'cinderking',el:['fire','earth'],hp:5.6,atk:1.4,def:1.3,mag:1.2,res:1.1,spd:.95,sk:[['Magma Crush','fire',1.7,'one','phys',[['burn',.5]]],['Eruption','fire',1.2,'all','mag',[['burn',.3]]],['Iron Will','earth',0,'self','buff',[['might',1]]]],
    phase:{at:.5,say:'Varroth wraps himself in magma armor!',self:[['ward',1],['might',1]]},intro:'Cinderking Varroth rises from the slag, crowned in cooling iron.'},
  hoarwyrm:{n:'Hoarwyrm',art:'hoarwyrm',el:['ice','wind'],hp:5.2,atk:1.2,def:1.2,mag:1.2,res:1.2,spd:1.05,sk:[['Glacial Bite','ice',1.7,'one','phys',[['bleed',.5]]],['Whiteout','ice',1.15,'all','mag',[['slow',.45]]],['Frost Breath','ice',1.3,'one','mag',[['slow',1]]]],
    phase:{at:.5,say:'The Hoarwyrm summons a blizzard!',party:[['slow',.8]]},intro:'The Hoarwyrm unfolds from the ice, wings like sheets of glass.'},
- ysolde:{n:'Stormcaller Ysolde',art:'ysolde',el:['lightning','light'],hp:5.2,atk:1,def:1.1,mag:1.25,res:1.4,spd:1.08,sk:[['Judgement Bolt','lightning',1.7,'one','mag',[['stun',.22]]],['Thunderhead','lightning',1.2,'all','mag'],['Radiant Veil','light',0,'self','buff',[['ward',1]]]],
+ ysolde:{n:'Stormcaller Ysolde',art:'ysolde',el:['lightning','light'],hp:5.2,atk:1,def:1.1,mag:1.14,res:1.4,spd:1.08,sk:[['Judgement Bolt','lightning',1.7,'one','mag',[['stun',.22]]],['Thunderhead','lightning',1.2,'all','mag'],['Radiant Veil','light',0,'self','buff',[['ward',1]]]],
    phase:{at:.5,say:'Ysolde calls a Stormling to her side!',summon:'stormling'},intro:'Stormcaller Ysolde hangs in the air, eyes white with lightning, the beacon bleeding shadow behind her.'},
- bonecolossus:{n:'Bone Colossus',art:'bonecolossus',el:['shadow','earth'],hp:5.8,atk:1.3,def:1.35,mag:.9,res:1,spd:.85,sk:[['Ossuary Slam','earth',1.7,'one','phys',[['stun',.2]]],['Grave Dust','shadow',1.1,'all','mag',[['poison',.4]]]],
+ bonecolossus:{n:'Bone Colossus',art:'bonecolossus',el:['shadow','earth'],hp:6.8,atk:1.5,def:1.4,mag:.9,res:1,spd:.85,sk:[['Ossuary Slam','earth',1.7,'one','phys',[['stun',.2]]],['Grave Dust','shadow',1.1,'all','mag',[['poison',.4]]]],
    phase:{at:.4,say:'The Colossus pulls its bones back together!',heal:.18},intro:'Bones grind together in the dark: a Colossus built from every warrior the barrow ever took.'},
- queenmantis:{n:'Queen Mantis',art:'queenmantis',el:['wind','earth'],hp:5,atk:1.35,def:1.1,mag:.9,res:1,spd:1.2,sk:[['Scythe Dance','wind',.8,'one','phys',[['bleed',.6]]],['Dust Wings','earth',1.05,'all','mag',[['blind',.4]]]],multi:2,
+ queenmantis:{n:'Queen Mantis',art:'queenmantis',el:['wind','earth'],hp:5.4,atk:1.42,def:1.1,mag:.9,res:1,spd:1.2,sk:[['Scythe Dance','wind',.8,'one','phys',[['bleed',.6]]],['Dust Wings','earth',1.05,'all','mag',[['blind',.4]]]],multi:2,
    phase:{at:.5,say:'The Queen calls her brood!',summon:'gustimp'},intro:'Chitin clicks overhead. The Queen Mantis drops from the ceiling, blades raised in prayer.'},
  gloomcap:{n:'Gloomcap Matriarch',art:'gloomcap',el:['shadow','water'],hp:5.6,atk:1,def:1.15,mag:1.3,res:1.2,spd:.9,sk:[['Spore Burst','shadow',1.1,'all','mag',[['poison',.6]]],['Drowning Mold','water',1.5,'one','mag',[['weaken',.5]]]],
    phase:{at:.5,say:'The Matriarch fills the air with choking spores!',party:[['poison',.7],['blind',.4]]},intro:'A towering mushroom breathes out a sigh of glowing spores. Something old and patient lives in its gills.'},
- ironsentinel:{n:'Iron Sentinel',art:'ironsentinel',el:['lightning','fire'],hp:5.6,atk:1.3,def:1.35,mag:1.1,res:.95,spd:.9,sk:[['Piston Fist','fire',1.6,'one','phys',[['burn',.4]]],['Arc Discharge','lightning',1.15,'all','mag',[['stun',.15]]]],
+ ironsentinel:{n:'Iron Sentinel',art:'ironsentinel',el:['lightning','fire'],hp:5.6,atk:1.3,def:1.25,mag:1.1,res:.95,spd:.9,sk:[['Piston Fist','fire',1.6,'one','phys',[['burn',.4]]],['Arc Discharge','lightning',1.15,'all','mag',[['stun',.15]]]],
    phase:{at:.5,say:'OVERCLOCK. The Sentinel vents steam and speeds up!',self:[['haste',1],['might',1]],selfBad:[['break',1]]},intro:'Gears turn in the walls. An Iron Sentinel built by a forgotten guild clanks awake, its furnace heart blazing.'},
- siren:{n:'Siren of the Deep',art:'siren',el:['water','light'],hp:5.2,atk:.95,def:1.05,mag:1.28,res:1.3,spd:1.1,sk:[['Drowning Song','water',1.2,'all','mag',[['slow',.4]]],['Lure','light',1.5,'one','mag',[['stun',.3]]]],
+ siren:{n:'Siren of the Deep',art:'siren',el:['water','light'],hp:5.2,atk:.95,def:1.05,mag:1.12,res:1.3,spd:1.05,sk:[['Drowning Song','water',1.2,'all','mag',[['slow',.4]]],['Lure','light',1.5,'one','mag',[['stun',.2]]]],
    phase:{at:.5,say:'The Siren sings a healing hymn to herself!',self:[['regen',1]],heal:.1},intro:'A voice hums under the water, impossibly sweet. The Siren of the Deep rises, pearl-eyed.'},
- ashwyvern:{n:'Ashen Wyvern',art:'ashwyvern',el:['fire','wind'],hp:5.2,atk:1.3,def:1.1,mag:1.15,res:1,spd:1.15,sk:[['Scorch Dive','fire',1.6,'one','phys',[['burn',.5]]],['Soot Gale','wind',1.1,'all','mag',[['blind',.35]]]],
+ ashwyvern:{n:'Ashen Wyvern',art:'ashwyvern',el:['fire','wind'],hp:5.2,atk:1.1,def:1.1,mag:1.08,res:1,spd:1.15,sk:[['Scorch Dive','fire',1.6,'one','phys',[['burn',.5]]],['Soot Gale','wind',1.1,'all','mag',[['blind',.35]]]],
    phase:{at:.5,say:'The Wyvern takes to the air!',self:[['haste',1],['bulwark',1]]},intro:'Ash rains from the rafters. An Ashen Wyvern lands on the beacon and screams.'},
- frostlich:{n:'Frost Lich',art:'frostlich',el:['ice','shadow'],hp:5,atk:.9,def:1,mag:1.25,res:1.35,spd:1,sk:[['Soul Frost','ice',1.6,'one','mag',[['slow',.6]]],['Grave Chill','shadow',1.15,'all','mag',[['weaken',.4]]]],
+ frostlich:{n:'Frost Lich',art:'frostlich',el:['ice','shadow'],hp:5,atk:.9,def:1,mag:1.08,res:1.25,spd:1,sk:[['Soul Frost','ice',1.6,'one','mag',[['slow',.6]]],['Grave Chill','shadow',1.15,'all','mag',[['weaken',.4]]]],
    phase:{at:.5,say:'The Lich hides behind its phylactery ward!',self:[['ward',1]],wardEvery:4},intro:'Frost crawls up the walls in the shape of letters. The Frost Lich turns a page of its book and smiles.'},
- candlemoth:{n:'Emperor Candlemoth',art:'candlemoth',el:['fire','light'],hp:5,atk:1,def:1,mag:1.3,res:1.2,spd:1.15,sk:[['Wax Drip','fire',1.5,'one','mag',[['burn',.5]]],['Lantern Dust','light',1.1,'all','mag',[['blind',.4]]],['Flicker Dive','fire',1.5,'one','phys',[['burn',.3]]]],
+ candlemoth:{n:'Emperor Candlemoth',art:'candlemoth',el:['fire','light'],hp:5.3,atk:1,def:1,mag:1.3,res:1.2,spd:1.15,sk:[['Wax Drip','fire',1.5,'one','mag',[['burn',.5]]],['Lantern Dust','light',1.1,'all','mag',[['blind',.4]]],['Flicker Dive','fire',1.5,'one','phys',[['burn',.3]]]],
    phase:{at:.5,say:'The Moth gutters, flares, and drinks every flame in the room!',self:[['haste',1]],party:[['blind',.5]],heal:.08},intro:'Every candle in the chamber leans the same way. The Emperor Candlemoth unfolds from the dark, a crown of burning tapers on its brow and ten thousand dusty wings behind it.'},
  brinehag:{n:'Brinehag Matriarch',art:'brinehag',el:['water','shadow'],hp:5.0,atk:1,def:1.05,mag:1.15,res:1.1,spd:.95,sk:[['Brine Curse','shadow',1.1,'all','mag',[['weaken',.35]]],['Drowning Hex','water',1.4,'one','mag',[['slow',.45]]],['Tide Mother','water',0,'self','buff',[['regen',1]]]],
    phase:{at:.5,say:'The Matriarch whistles up the drowned!',summon:'brinejelly',self:[['regen',1]]},intro:'Seaweed hair drips on the stones. The Brinehag Matriarch rises from the tide pool, a barnacled hat on her head and a drowned crew at her back.'},
- crowregent:{n:'The Crow Regent',art:'crowregent',el:['wind','shadow'],hp:4.7,atk:1.1,def:.95,mag:1,res:1,spd:1.1,sk:[['Carrion Dive','wind',1.5,'one','phys',[['bleed',.5]]],['Murder Wing','shadow',1.1,'all','mag',[['blind',.4]]],['Ill Omen','shadow',1.4,'one','mag',[['weaken',.5]]]],
+ crowregent:{n:'The Crow Regent',art:'crowregent',el:['wind','shadow'],hp:5.2,atk:1.2,def:.95,mag:1.1,res:1,spd:1.1,sk:[['Carrion Dive','wind',1.5,'one','phys',[['bleed',.5]]],['Murder Wing','shadow',1.1,'all','mag',[['blind',.4]]],['Ill Omen','shadow',1.4,'one','mag',[['weaken',.5]]]],
    phase:{at:.7,say:'The Regent caws and the murder comes down from the rafters!',summon:'cavebat',self:[['haste',1]]},intro:'Every crow in the county sits on the same roof, facing the same way. The Crow Regent unfolds on the ridgepole in a coat of black feathers and a crown of bones, and the whole roof lifts at once.'},
- geysermatron:{n:'The Geyser Matron',art:'geysermatron',el:['fire','water'],hp:5.4,atk:1.1,def:1,mag:1.25,res:1.1,spd:.9,sk:[['Scald','water',1.5,'one','mag',[['burn',.5]]],['Boil Over','fire',1.15,'all','mag',[['burn',.35]]],['Pressure Seal','water',0,'self','buff',[['ward',1]]]],
+ geysermatron:{n:'The Geyser Matron',art:'geysermatron',el:['fire','water'],hp:5.4,atk:1.1,def:1,mag:1.33,res:1.1,spd:.9,sk:[['Scald','water',1.5,'one','mag',[['burn',.5]]],['Boil Over','fire',1.15,'all','mag',[['burn',.35]]],['Pressure Seal','water',0,'self','buff',[['ward',1]]]],
    phase:{at:.5,say:'The Matron boils over and the vents scream!',summon:'magmaslime',party:[['burn',.5]]},intro:'The pool is not supposed to be this hot. The Geyser Matron bulges out of the vents, a kettle-bellied mass of wet glass and boiling light, and every chimney in the cavern starts to sing.'}
 };
+// v0.22.54 band pass (docs/balance54.md): every Scourge is tuned toward 50 to 70% for careful play at the expected level. Eased: Frost Lich (mag 1.25, res 1.35),
+// Siren (mag 1.28, spd 1.1, Lure stun .3), Drake (atk 1.2, mag 1.2), Ysolde (mag 1.25), Ashen Wyvern (atk 1.3, mag 1.15), Iron Sentinel (def 1.35), Seraph (mag 1.45).
+// Raised: Bone Colossus (hp 5.8, atk 1.3, def 1.35), Cinderking (atk 1.3, mag 1.1), Crow Regent (hp 4.7, atk 1.1, mag 1), Thornwarden (atk 1.2, mag 1),
+// Geyser Matron (mag 1.25), Queen Mantis (hp 5, atk 1.35), Candlemoth (hp 5). The old value is in brackets.
 // v0.8.2: the Frost Lich (mag 1.4, ward every 3 turns), Ysolde (mag 1.35, spd 1.15), the Iron Sentinel (def 1.45) and the Siren (mag 1.35)
 // were eased: in fullsim.js bossgrid they won 0 to 40% where the other Scourges won 50 to 90% (docs/v080-roles-balance.md)
 const FINALS={
@@ -4468,7 +4495,7 @@ const FINALS={
    phase:{at:.5,say:'Nidhra devours the eclipse and burns brighter!',self:[['might',1],['haste',1]]},intro:'Wings blot out the dead sky. Nidhra, the dragon who ate the sun, opens one burning eye.'},
  hollowking:{n:'The Hollow King',art:'hollowking',el:['shadow','water'],hp:6.2,atk:1.4,def:1.4,mag:1.2,res:1.3,spd:1,sk:[['Regicide','shadow',2.0,'one','phys',[['break',.6]]],['Crown of Tides','water',1.25,'all','mag',[['stun',.15]]]],
    phase:{at:.5,say:'The King calls his last loyal knight!',summon:'huskguard'},intro:'An empty throne under the waves. An empty crown. An empty king, rising from both in a slow cloud of silt and aurora light, still giving orders to a kingdom the sea has kept.'},
- seraph:{n:'Seraph of the Zenith',art:'seraph',el:['light','lightning'],hp:6,atk:1.15,def:1.2,mag:1.45,res:1.4,spd:1.15,sk:[['Shard Halo','lightning',1.25,'all','mag',[['stun',.2]]],['Fallen Spear','light',1.9,'one','phys',[['blind',.4]]],['Last Prayer','light',0,'self','buff',[['regen',1]]]],
+ seraph:{n:'Seraph of the Zenith',art:'seraph',el:['light','lightning'],hp:6,atk:1.15,def:1.2,mag:1.32,res:1.4,spd:1.15,sk:[['Shard Halo','lightning',1.25,'all','mag',[['stun',.2]]],['Fallen Spear','light',1.9,'one','phys',[['blind',.4]]],['Last Prayer','light',0,'self','buff',[['regen',1]]]],
    phase:{at:.5,say:'The Seraph shatters its own wings and rises on the pieces!',heal:.2,self:[['might',1]]},intro:'Six wings of sky glass unfold over the broken stair. The Seraph of the Zenith, once the first lamplighter, has decided the sky is better kept dark.'}
 };
 const GPOOL=Object.keys(GUARDIANS),FPOOL=Object.keys(FINALS);
@@ -7396,6 +7423,7 @@ function calcStats(c){
   if(t.bb){d.hp*=1.12;d.atk*=1.12;d.mag*=1.12;d.def*=1.12;d.res*=1.12;}
   const S={elBoost:{},elRes:{},mastery:t.el.length===1?t.el[0]:null,immune:0,tempo:NF.tempo||1,attr:a};
   gears.forEach(g=>{ST.forEach(q=>{d[q]+=g[q]||0;});if(g.el){S.elBoost[g.el]=.15;S.elRes[g.el]=.15;}if(g.immune)S.immune=1;});
+  if(!daily){const CT=CLS_TUNE[t.cls];if(CT)Object.keys(CT).forEach(k=>{d[k]*=CT[k];});}// v0.22.54 class pass: on the final numbers, gear included
   S.mhp=Math.round(d.hp);S.mmp=Math.round(d.mp);S.atk=d.atk;S.def=d.def;S.mag=d.mag;S.res=d.res;S.spd=d.spd;
   S.crit=.04+a.luk*.003+a.dex*.0015+(NF.crit||0);S.critDmg=1.5+a.dex*.004;
   S.acc=.97+a.dex*.002;S.eva=Math.min(.22,a.agi*.0015+a.luk*.002+(NF.eva||0));
@@ -7609,6 +7637,7 @@ function addSt(t,k,src,silent){
   if(!def){wdLog('unknown status '+k,t);return false;}
   if(OPP[k]&&t.st[OPP[k]]){delete t.st[OPP[k]];if(!silent)log(`${t.name}'s ${STS[OPP[k]].n} is cancelled.`);fx(t,STS[OPP[k]].n+' off','stat');return true;}
   if(t.id==='sylva'&&(k==='root'||k==='slow')){fx(t,'Immune','stat good');return false;}
+  if(k==='stun'&&t.side==='p'&&t.stunFree&&STUN_CAP.on){fx(t,'Resist','stat good');if(!silent)log(`${t.name} shakes off the stun.`);return false;}
   if(k==='stun'&&t.boss){if((t.stunCD||0)>0){fx(t,'Resist','stat');return false;}t.stunCD=3;}
   const o={t:def.t,src:src?(src===t?'self':src.name):null};
   if(src&&src.S){if(def.bad&&src.side!==t.side&&src.S.debT)o.t+=src.S.debT;else if(!def.bad&&src.side===t.side&&src.S.buffT)o.t+=src.S.buffT;}
@@ -7652,7 +7681,7 @@ function calcDamage(a,sk,t,bonus){
   if(a.S.elDmg&&els.length&&sk.k==='mag')d*=1+a.S.elDmg;
   const W=WX();if(W.el&&els.length)d*=Math.max(...els.map(e=>W.el[e]||1));
   if(has(a,'might'))d*=1.3;if(has(a,'weaken'))d*=.75;if(has(a,'burn'))d*=.85;
-  if(has(t,'bulwark'))d*=.7;if(has(t,'break'))d*=1.3;if(t.guard)d*=.5;if(t.broken)d*=BREAK_WIN.bonus;
+  if(has(t,'bulwark'))d*=.7;if(t.side==='p'&&has(t,'taunt'))d*=1-TAUNT.cut;if(has(t,'break'))d*=1.3;if(t.guard)d*=.5;if(t.broken)d*=BREAK_WIN.bonus;
   if(sk.afflicted&&Object.keys(t.st).some(k=>STS[k].bad))d*=sk.afflicted;
   if(sk.execute&&t.hp<t.S.mhp*sk.execute)d*=2;
   let crit=false;
@@ -7676,7 +7705,7 @@ let FOE_POW=1.12;
 let BOSS_HP=.9;
 function makeEnemy(m,lv,opt){
   opt=opt||{};const sc=enemyScale(),boss=!!opt.boss;
-  const fieldM=(!boss&&!opt.elite&&!(G&&G.daily)&&!opt.noField)?1:0;const fSt=Math.max(0,STAGE_LV.findIndex(r=>lv<=r[1])),fSi=fSt<0?4:fSt;const crp=fieldM?1+(worldCreep()-1)*(CREEP.field!=null?CREEP.field:1):worldCreep();const szM=(boss&&!opt.echo&&!opt.noBuff&&G&&!G.daily&&G.party)?Math.max(0,6-G.party.length):0;const spN=(fieldM&&G&&G.party&&G.party.length<3&&fSi<SMALL_PARTY.stages)?G.party.length-1:-1;const spH=spN>=0?SMALL_PARTY.hp[spN]:1,spP=spN>=0?SMALL_PARTY.pow[spN]:1;const hpM=spH*(1+BOSS_SIZE.hp*szM)*crp*m.hp*sc.hp*(opt.hpM||1)*(fieldM?FIELD_FOE.hp[fSi]:1)*(boss&&!opt.echo&&!opt.noBuff?BOSS_BUFF.hp[Math.min(4,opt.stage||0)]:1),pw=spP*(1+BOSS_SIZE.pow*szM)*crp*sc.pow*(opt.powM||1)*(fieldM?FIELD_FOE.pow[fSi]:1)*(boss&&!opt.echo&&!opt.noBuff?BOSS_BUFF.pow[Math.min(4,opt.stage||0)]:1)*(boss?(opt.final?1.5:[1.06,1.2,1.34,1.4][Math.min(3,opt.stage||0)]):1);
+  const fieldM=(!boss&&!opt.elite&&!(G&&G.daily)&&!opt.noField)?1:0;const fSt=Math.max(0,STAGE_LV.findIndex(r=>lv<=r[1])),fSi=fSt<0?4:fSt;const crp=fieldM?1+(worldCreep()-1)*(CREEP.field!=null?CREEP.field:1):worldCreep();const szOn=boss&&!opt.echo&&!opt.noBuff&&G&&!G.daily&&G.party,szE=BOSS_SIZE.expect[Math.min(4,opt.stage||0)],szS=szOn?Math.max(0,szE-G.party.length):0,szM=szOn?Math.max(0,6-Math.max(szE,G.party.length)):0,szH=1-BOSS_SIZE.short.hp*szS,szP=1-BOSS_SIZE.short.pow*szS;const spN=(fieldM&&G&&G.party&&G.party.length<3&&fSi<SMALL_PARTY.stages)?G.party.length-1:-1;const spH=spN>=0?SMALL_PARTY.hp[spN]:1,spP=spN>=0?SMALL_PARTY.pow[spN]:1;const hpM=spH*szH*(1+BOSS_SIZE.hp*szM)*crp*m.hp*sc.hp*(opt.hpM||1)*(fieldM?FIELD_FOE.hp[fSi]:1)*(boss&&!opt.echo&&!opt.noBuff?BOSS_BUFF.hp[Math.min(4,opt.stage||0)]:1),pw=spP*szP*(1+BOSS_SIZE.pow*szM)*crp*sc.pow*(opt.powM||1)*(fieldM?FIELD_FOE.pow[fSi]:1)*(boss&&!opt.echo&&!opt.noBuff?BOSS_BUFF.pow[Math.min(4,opt.stage||0)]:1)*(boss?(opt.final?1.5:[1.06,1.2,1.34,1.4][Math.min(3,opt.stage||0)]):1);
   const S={mhp:Math.round((30+12.5*lv)*hpM*(boss?BOSS_HP*(opt.final?2.6:[1.35,1.6,1.9,2.0][Math.min(3,opt.stage||0)]):1)),atk:(9+2.7*lv)*m.atk*pw*FOE_POW,mag:(9+2.7*lv)*m.mag*pw*FOE_POW,def:(6+1.8*lv)*m.def,res:(6+1.8*lv)*m.res,spd:(8+.8*lv)*m.spd,
     crit:.05,critDmg:1.5,mmp:999,elBoost:{},elRes:{},tempo:1,healM:1,immune:0,acc:.95,eva:clamp(.02+.04*(m.spd-1),0,.08),luk:lv*.6,spi:lv*.5};
   const e={side:'e',name:m.n,base:m.n,art:m.art,el:m.el,lv,S,hp:S.mhp,mp:999,st:{},boss,elite:!!opt.elite,mod:opt.mod||null,key:opt.key||null,
@@ -7815,9 +7844,9 @@ function advance0(){
   if(has(u,'regen')||u.mod==='regen'){const n=Math.min(u.S.mhp-u.hp,Math.round(u.S.mhp*.08));if(n>0){u.hp+=n;fx(u,'+'+n,'heal');log(`${u.name} regenerates ${n} HP.`);}}
   if(u.wardEvery&&u.turns%u.wardEvery===0&&!has(u,'ward'))addSt(u,'ward',u);
   if(u.mod==='warded'&&u.turns%3===0&&!has(u,'ward'))addSt(u,'ward',u);
-  if(has(u,'stun')){delete u.st.stun;log(`${u.name} is stunned and cannot act.`);fx(u,'Stunned','stat bad');B.mode='wait';render();later(()=>endTurn(u,1),PAUSE*.6);return;}
+  if(has(u,'stun')){delete u.st.stun;if(u.side==='p')u.stunFree=1;log(`${u.name} is stunned and cannot act.`);fx(u,'Stunned','stat bad');B.mode='wait';render();later(()=>endTurn(u,1),PAUSE*.6);return;}
   if(u.side==='p'&&weatherEvent())return;
-  if(u.side==='p'){B.pturns=(B.pturns||0)+1;
+  if(u.side==='p'){B.pturns=(B.pturns||0)+1;u.stunFree=0;
     u.mp=Math.min(u.S.mmp,u.mp+Math.round(u.S.mmp*.03));
     B.mode='cmd';B.menu='root';B.pend=null;render();
     if(B.auto)later(autoTurn,PAUSE*.6);
@@ -8094,6 +8123,7 @@ function autoTurn(){
   if(!B||B.over||B.mode!=='cmd'||!B.auto)return;
   if(SIM_SMART)return autoTurnSmart();
   if(G&&G.daily&&AUTO_NERF.dailySmart)return autoTurnSmart();
+  if(AUTO_NERF.guardMark&&typeof b4GimAutoGuard==='function'&&b4GimAutoGuard(B.cur))return;
   const a=B.cur,foes=B.en.filter(e=>e.hp>0),fr=B.front.filter(c=>c.hp>0);if(!foes.length)return;
   B.nerfAct=a;
   // v0.4.1 2.5 retune: on AUTO_NERF.smart of its turns auto thinks like a careful player; the rest are simple swings
@@ -16689,6 +16719,12 @@ function craftTag(id){return craftOnly(id)?'<em class="tchip craftonly" title="N
 const SIG_EL=['fire','water','ice','shadow','wind','earth','light','lightning'];
 const SIG_FOE={fire:[['burn',.7]],water:[['weaken',.6]],ice:[['slow',.7]],shadow:[['poison',.75]],wind:[['blind',.6]],earth:[['root',.55]],light:[['break',.6]],lightning:[['stun',.35]]};
 const SIG_ALLY={fire:[['might',1]],water:[['regen',1]],ice:[['ward',1]],shadow:[['focus',1]],wind:[['haste',1]],earth:[['bulwark',1]],light:[['regen',1],['ward',1]],lightning:[['might',1],['haste',1]]};
+// element flavour skills (sigFlavour): the name says the effect (the adjective) on the class's own noun, with one plain line about the move
+const SIG_FL_ADJ={burn:'Searing',weaken:'Sapping',slow:'Numbing',poison:'Venomous',blind:'Blinding',root:'Snaring',break:'Sundering',stun:'Stunning'};
+const SIG_FL_V={burn:'Burn',weaken:'Weaken',slow:'Slow',poison:'Poison',blind:'Blind',root:'Root',break:'Break',stun:'Stun',bleed:'Bleed'};
+const SIG_FL={warrior:['Rend','A tearing cut.'],knight:['Shield Bash','A blow with the rim of the shield.'],thief:['Dart','A dart with something on the tip.'],archer:['Barbed Arrow','A barbed arrow with something on the head.'],
+  monk:['Blow','A short blow to a nerve.'],mage:['Hex','A hex on one foe.'],bard:['Dissonance','A jarring chord over every foe.']};
+const SIG_FL_ALLY={fire:'Prayer of Might',water:'Prayer of Renewal',ice:'Prayer of Warding',shadow:'Prayer of Focus',wind:'Prayer of Haste',earth:'Prayer of Stone',light:'Prayer of Dawn',lightning:'Prayer of Storms'};
 const SIG_ADJ={fire:'Searing',water:'Tidal',ice:'Frostbitten',shadow:'Gloom',wind:'Gale',earth:'Stone',light:'Radiant',lightning:'Shocking'};
 // rider: 'foe' puts the element's status on foes, 'ally' on allies
 const SIG_T={
@@ -16710,8 +16746,8 @@ const SIG_NAMES={
  mira:['Tidecall','A wave called up from the shallows.'],fenn:['Hoarfrost Lance','A needle of winter.'],vael:['Umbral Collapse','The shadow folds in on itself.'],sorrel:['Flare Bloom','Fire that opens like a flower.'],
  astra:['Eclipse Verse','Light and dark, line by line.'],ember:['Kindle Storm','Sparks breed sparks.'],zia:['Chain Spark','Lightning that cannot decide who it likes.'],cyrene:['Rime Gale','A whiteout in one breath.'],
  terrin:['Cairn Fall','The stones answer, slowly.'],aella:['Weather Turn','Changes the sky\'s mind.'],lucan:['Constellation','Stars sketched into a strike.'],
- sable:['Hush Step','A step no one hears. The poison does the talking.'],pip:['Dockside Dip','Quick hands, wet hands.'],kit:['Spark Pocket','Lifts a charge and returns it with interest.'],vex:['Second Wind Slash','Strikes, strikes again, and was never there.'],
- nyx:['Frost Fingers','Cold hands in every pocket.'],tamsin:['Tumble Strike','Rolls the ground out from under a foe.'],nettle:['Hotfoot','Leaves a burn and a rumor.'],lysa:['Undertow Snare','A loop of dark water.'],
+ sable:['Hush Step','A step no one hears. The poison does the talking.'],pip:['Dockside Dip','Quick hands, wet hands.'],kit:['Spark Pocket','Lifts a charge and returns it with interest.'],vex:['Second Wind Feint','Feints, feints again, and was never there.'],
+ nyx:['Frost Fingers','Cold hands in every pocket.'],tamsin:['Tumble Trip','Rolls the ground out from under them.'],nettle:['Hotfoot','Leaves a burn and a rumor.'],lysa:['Undertow Snare','A loop of dark water.'],
  drift:['Breezeway','Slips between two heartbeats.'],sleet:['Cold Open','A first strike that sticks.'],glint:['Magpie Flash','Dazzles, then pockets the evidence.'],
  tess:['Courier\'s Shot','Delivers the first arrow on time.'],wren:['Stonefletch','An arrow fletched from fieldstone.'],frey:['Icicle Volley','A hundred small winters.'],sylva:['Bogbolt','Bolts that sink into the mire.'],
  ciro:['Sunspear Arrow','A morning in one shaft.'],ashwin:['Sparkstorm','A rain of embers.'],voss:['Skyfork','Lightning chooses the arrow.'],skerry:['Squall Line','Arrows on the crosswind.'],
@@ -16761,9 +16797,13 @@ function sigFlavour(L,t){
   const ally=SIG_T[t.cls]&&SIG_T[t.cls][0].rider==='ally'&&(t.cls==='healer'),rd=(ally?SIG_ALLY:SIG_FOE)[e];if(!rd)return;
   // v0.10.8: warriors keep Rend's Bleed and add the element rider on top (the swap used to replace the Bleed, so warriors lost it)
   const keep=t.cls==='warrior'?(s.fx||[]).filter(f=>f[0]==='bleed').map(f=>f.slice()):[];
-  s.sigFl=1;s.n=adj+' '+s.n;s.fx=keep.concat(rd.map(f=>f.slice()));
-  const txt=ally?rd.map(f=>SIG_ST_N[f[0]]).join(' and '):sigFoeTxt(keep.concat(rd));
-  s.d=(s.k==='phys'||s.k==='mag'?`${EL[e]} tinged. `:'')+(ally?`Gives ${txt}.`:txt[0].toUpperCase()+txt.slice(1)+'.')+(s.t==='all'?' Hits every foe.':'');
+  s.sigFl=1;s.fx=keep.concat(rd.map(f=>f.slice()));
+  // 0.22.54 text sweep: the skill carries no element, so it is named and described by what it does ("Stone Venom Dart: Earth tinged. Roots."
+  // was a dart with no Earth and no venom). The name keeps the class's noun; the text is built from the effects and their chances.
+  if(ally){s.n=SIG_FL_ALLY[e]||s.n;s.d=`Grants ${rd.map(f=>SIG_ST_N[f[0]]).join(' and ')} to one ally.`;return;}
+  const F=SIG_FL[t.cls]||[s.n,''],fxAll=s.fx,hi=fxAll.filter(f=>f[1]>=.6).map(f=>SIG_FL_V[f[0]]+'s'),lo=fxAll.filter(f=>f[1]<.6).map(f=>SIG_FL_V[f[0]]),parts=[];
+  if(hi.length)parts.push('Likely '+hi.join(' and '));if(lo.length)parts.push((parts.length?'may ':'May ')+lo.join(' or '));
+  s.n=(SIG_FL_ADJ[rd[0][0]]||adj)+' '+F[0];s.d=(F[1]?F[1]+' ':'')+parts.join('; ')+'.';
 }
 HOOK.xform('classSkills','sigskills','the wayfarer\'s signature skill and element flavour',function(L,t){
   if(!L||L._sg||!t||t.src==='L'||t.src==='x'||t.mon||!SIG_NAMES[t.id])return L;L._sg=1;
@@ -23210,15 +23250,22 @@ function b4GimTell(u){const S=B.b4g,D=S.D,live=b4GimLive();if(!live.length)retur
 function b4GimHint(D){return {slot:'Guard halves it, or swap a sturdier hero in.',rod:'Guard halves it; swap that hero out to ground it.',chill:'Guard to keep the cold off; a Fire skill thaws a hero.',
   tide:'An Earth skill dams the water.',dark:'A Fire or Light skill lights a torch.',sac:D.els?`Hit it with ${D.els.map(e=>EL[e]).join(' or ')}${D.thr?' or deal heavy damage':''} first.`:D.brk?'Break its shield or deal heavy damage first.':'Deal heavy damage first.',
   mirror:'Use weapons, not magic, next round.',veil:'Scan it or use a Light skill to reveal it.',wing:'Use Ranged shots or magic while it flies; Guard the marked spot.',phase2:''}[D.t]||'';}
+// v0.22.54: an answered gimmick pays. A stopped readied move, a marked hit every marked hero guarded, or a grounded or guarded rod
+// knocks BOSS_GIM.answer.pips off the boss's shield (so answering telegraphs brings the Break closer).
+function b4GimAnswered(u,why){const A=BOSS_GIM.answer;if(!A||!A.pips||!u||u.hp<=0||!u.maxShield||u.broken)return;B.b4gAns=(B.b4gAns||0)+1;log(`${why} ${u.name} is thrown off balance (shield -${A.pips}).`);fx(u,'Off balance','stat bad');chipShield(u,A.pips,'gimmick');}
+// auto (AUTO_NERF.guardMark): a hero the gimmick has marked guards when it is about to land and would hurt, like the careful player
+function b4GimAutoGuard(a){try{const S=B&&B.b4g;if(!S||!a||a.side!=='p'||!S.u||S.u.hp<=0)return false;const D=S.D,P=S.pend,A=S.act,ix=B.front.indexOf(a);if(ix<0)return false;
+  const marked=P&&((P.t==='slot'&&P.slots.includes(ix))||(P.t==='rod'&&P.id===a.id))||A&&A.t==='air'&&A.slots.includes(ix);
+  if(marked&&S.u.next<=B.time+delayOf(a,.6)&&a.hp/a.S.mhp<(D.pct||.2)+.55){guard();return true;}}catch(e){}return false;}
 function b4GimLand(u){const S=B.b4g,D=S.D,P=S.pend;S.pend=null;if(!P)return;B.b4gLand=(B.b4gLand||0)+1;
-  if(P.t==='slot'){const L=P.slots.map(i=>B.front[i]).filter(c=>c&&c.hp>0);log(b4GimFill(D.hit,L)+'!');banner(D.n,'#ff9a5a');L.forEach(c=>b4GimHit(u,c,D.pct,D.el,D.st));}
-  else if(P.t==='rod'){const c=B.front.find(x=>x&&x.id===P.id&&x.hp>0);if(!c){log(`The lightning finds no rod and grounds harmlessly.`);fx(u,'Grounded','stat');return;}
-    log(b4GimFill(D.hit,[c])+'!');banner(D.n,'#ffe04a');const i=B.front.indexOf(c);b4GimHit(u,c,D.pct,D.el,null);[i-1,i+1].forEach(j=>{const n=B.front[j];if(n&&n.hp>0)b4GimHit(u,n,D.pct*D.arc,D.el,null);});}
+  if(P.t==='slot'){const L=P.slots.map(i=>B.front[i]).filter(c=>c&&c.hp>0);log(b4GimFill(D.hit,L)+'!');banner(D.n,'#ff9a5a');const ok=L.length&&L.every(c=>c.guard);L.forEach(c=>b4GimHit(u,c,D.pct,D.el,D.st));if(ok)b4GimAnswered(u,'The Vanguard holds.');}
+  else if(P.t==='rod'){const c=B.front.find(x=>x&&x.id===P.id&&x.hp>0);if(!c){log(`The lightning finds no rod and grounds harmlessly.`);fx(u,'Grounded','stat');b4GimAnswered(u,'The bolt has nowhere to go.');return;}
+    log(b4GimFill(D.hit,[c])+'!');banner(D.n,'#ffe04a');const i=B.front.indexOf(c),ok=!!c.guard;b4GimHit(u,c,D.pct,D.el,null);[i-1,i+1].forEach(j=>{const n=B.front[j];if(n&&n.hp>0)b4GimHit(u,n,D.pct*D.arc,D.el,null);});if(ok)b4GimAnswered(u,`${c.name} takes the bolt on a raised guard.`);}
   else if(P.t==='chill'){log(D.hit+'!');B.front.forEach(c=>{if(!c||c.hp<=0)return;if(c.guard){fx(c,'Braced','stat good');return;}
     const v=((c.st.g_chill&&c.st.g_chill.v)||0)+1;if(v>=D.max){delete c.st.g_chill;fx(c,'Frozen','stat bad');log(`${c.name} freezes solid!`);addSt(c,'stun',u,true);}else{c.st.g_chill={t:99,v};fx(c,'Chill '+v,'stat bad');}});}
   else if(P.t==='tide'||P.t==='dark'){S.lvl=Math.min(D.max,S.lvl+1);fx(u,D.n+' '+S.lvl,'stat bad');log(`${D.hit} (level ${S.lvl} of ${D.max}).`);}
   else if(P.t==='sac'){const stop=P.stop||(D.thr&&P.hp0-u.hp>=D.thr*u.S.mhp)||(D.brk&&u.broken);
-    if(stop){log(D.stop+'!');fx(u,'Stopped','stat');B.b4gStop=(B.b4gStop||0)+1;return;}
+    if(stop){log(D.stop+'!');fx(u,'Stopped','stat');B.b4gStop=(B.b4gStop||0)+1;b4GimAnswered(u,'');return;}
     log(D.hit+'!');banner(D.n,'#ff9a5a');
     if(D.fx==='heal'){const n=Math.min(u.S.mhp-u.hp,Math.round(u.S.mhp*D.heal*b4GimK()));if(n>0){u.hp+=n;fx(u,'+'+n,'heal');}}
     else if(D.fx==='summon'){if(B.en.filter(x=>x.hp>0).length<3&&MON[D.mon]){const s=makeEnemy(MON[D.mon],Math.max(1,u.lv-3));s.next=B.time+300;s.enterT=Date.now();B.en.push(s);log(`${s.name} joins the fight!`);}}
@@ -23228,7 +23275,7 @@ function b4GimLand(u){const S=B.b4g,D=S.D,P=S.pend;S.pend=null;if(!P)return;B.b4
   else if(P.t==='veil'){S.act={t:'veil'};log(D.hit+'.');}
   else if(P.t==='wing'){S.act={t:'air',slots:b4GimSlots(1,true)};const c=B.front[S.act.slots[0]];log(`${D.hit}! It will dive at ${c?c.name+'\'s':'a'} spot next turn.`);}}
 function b4GimExpire(u){const S=B.b4g,D=S.D,A=S.act;if(!A)return;S.act=null;
-  if(A.t==='air'){const L=A.slots.map(i=>B.front[i]).filter(c=>c&&c.hp>0);log(b4GimFill(D.dive,L)+'!');L.forEach(c=>b4GimHit(u,c,D.pct,D.el,null));}
+  if(A.t==='air'){const L=A.slots.map(i=>B.front[i]).filter(c=>c&&c.hp>0);log(b4GimFill(D.dive,L)+'!');const ok=L.length&&L.every(c=>c.guard);L.forEach(c=>b4GimHit(u,c,D.pct,D.el,null));if(ok)b4GimAnswered(u,'The dive glances off a raised guard.');}
   else if(A.t==='veil')log(`The mist around ${u.name} thins.`);else if(A.t==='mirror')log(`The mirror around ${u.name} falls.`);}
 function b4GimPhase(u){const S=B&&B.b4g;if(!S||u!==S.u||S.D.t!=='phase2'||u.hp<=0)return;const D=S.D;
   if(!S.warned&&u.hp<=u.S.mhp*D.warn){S.warned=1;B.b4gTells=(B.b4gTells||0)+1;fx(u,'Telegraph','stat bad');log(`${D.tell}: at half HP it becomes something worse. ${D.d}.`);}
@@ -27977,13 +28024,13 @@ HOOK.before('addSt','roles9','faith shrugs off a status',function(t,k,src,silent
 {const rs0=ACT.respec;ACT.respec=function(){const c=G&&G.roster[V.modal&&V.modal.char];const free=!!(c&&G&&!G.daily&&!G.rs9&&Object.keys(c.alloc||{}).length);const r=rs0.apply(this,arguments);try{if(free&&c&&!Object.keys(c.alloc||{}).length){G.rs9=1;toast('Your one free stat reset is spent. The next costs gold.');saveGame();}}catch(e){}return r;};}
 // ---- the hero sheet: the role row and the picker ----
 HOOK.xform('mChar','roles9','role row on the hero sheet',function(h,id,edit){try{const c=G.roster[id];if(!c||G.daily)return h;const R=heroRoles(c),main=heroMain(c),w=roleWpn(c);
-  const row=`<h4>Role</h4><div class="rows compact rl9"><div class="row"><div class="grow"><b>${esc(ROLES.names[main]||main)}</b><small>${esc(ROLE9.desc[main]||'')}${w?` Weapon: ${esc(WT_NAME[w]||w)}.`:''} Sub roles: ${R.slice(0).filter(r=>r!==main).map(r=>esc(ROLES.names[r]||r)).join(', ')} (${Math.round(ROLEPW.secondary*100)}% power; any other role ${Math.round(ROLEPW.off*100)}%).</small></div>${edit&&inTown()?`<button class="btn sm" data-act="rolePick" data-arg="${id}">Change</button>`:edit?'<small>Change it in town.</small>':''}</div></div>`;
+  const row=`<h4>Role</h4><div class="rows compact rl9"><div class="row"><div class="grow"><b>${esc(ROLES.names[main]||main)}</b><small>${esc(ROLE9.desc[main]||'')}${w?` Weapon: ${esc(WT_NAME[w]||w)}.`:''} Sub roles: ${R.slice(0).filter(r=>r!==main).map(r=>esc(ROLES.names[r]||r)).join(', ')} (${ROLEPW.secondary<1?Math.round(ROLEPW.secondary*100)+'% power':'full listed power'}; any other role ${Math.round(ROLEPW.off*100)}%).</small></div>${edit&&inTown()?`<button class="btn sm" data-act="rolePick" data-arg="${id}">Change</button>`:edit?'<small>Change it in town.</small>':''}</div></div>`;
   h=h.replace('<h4>Attributes',row+'<h4>Attributes');if(!G.rs9)h=h.replace('>Respec for 0 gold<','>Respec: free this once<');}catch(e){}return h;});
 ACT.rolePick=function(id){if(!G||!G.roster[id]||!inTown())return;V.modal={type:'rolepick',char:id,from:V.modal};render();};
 ACT.roleSet=function(a){const [id,r]=String(a).split(':');const c=G&&G.roster[id];if(!c||!heroRoles(c).includes(r))return;c.role=r===heroRoles(c)[0]?undefined:r;if(c.role===undefined)delete c.role;refresh(c);saveGame();toast(`${c.name} now leads as ${ROLES.names[r]||r}.`);V.modal=V.modal&&V.modal.from||{type:'char',char:id};render();};
 HOOK.before('vModal','roles9','role picker',function(m){if(!m||m.type!=='rolepick')return;const c=G.roster[m.char];if(!c)return HOOK.stop('');const t=TPL[c.id],main=heroMain(c);
   const rows=heroRoles(c).map((r,i)=>{const w=(ROLE9.wpn[t.cls]||{})[r],st=ROLE9.stat[r];return `<div class="row ${r===main?'up':''}"><div class="grow"><b>${esc(ROLES.names[r]||r)}${i===0?' <small>(class role)</small>':''}</b><small>${esc(ROLE9.desc[r]||'')}${w?` Weapon: ${esc(WT_NAME[w]||w)}.`:''}${st?` Auto-spend favours ${esc(ATTRN[st][0])}.`:''}</small></div>${r===main?'<span class="m">Main</span>':`<button class="btn sm gold" data-act="roleSet" data-arg="${c.id}:${r}">Lead</button>`}</div>`;}).join('');
-  return HOOK.stop(box(`${esc(c.name)}: main role`,`<p class="note">The main role's skills are at full power; the other two run at ${Math.round(ROLEPW.secondary*100)}%, and skills outside your three roles at ${Math.round(ROLEPW.off*100)}%. Auto-spent stat points follow the main role. Swap any time in town.</p><div class="rows">${rows}</div>`,`<button class="btn" data-act="roleBack">Back</button>`));});
+  return HOOK.stop(box(`${esc(c.name)}: main role`,`<p class="note">The main role's skills are the strongest by their own numbers${ROLEPW.secondary<1?`; the other two run at ${Math.round(ROLEPW.secondary*100)}%`:'; sub role skills run at their listed power'}, and skills outside your three roles at ${Math.round(ROLEPW.off*100)}%. Auto-spent stat points follow the main role. Swap any time in town.</p><div class="rows">${rows}</div>`,`<button class="btn" data-act="roleBack">Back</button>`));});
 ACT.roleBack=function(){V.modal=V.modal&&V.modal.from||null;render();};
 // ---- foe cards and aim tags show Slash, Blunt and Piercing apart again (no "Physical" group) ----
 try{Object.assign(DG_NAME,{slash:'Slash',blunt:'Blunt',piercing:'Piercing'});Object.assign(DG_ART,{slash:'slash',blunt:'blunt',piercing:'piercing'});Object.assign(DG_OF,{slash:'slash',blunt:'blunt',piercing:'piercing'});}catch(e){}
@@ -31812,8 +31859,8 @@ function sk12Role(cls,s){if(!s)return null;if(s.rl)return s.rl;const k=s.k,fx=s.
   return null;}
 function sk12Nat(c){try{const n=natInfo(natOf(c));return n&&n.rl||null;}catch(e){return null;}}
 // {m, tier:'primary'|'secondary'|'off', r, nat} or null for skills that are never scaled
-function sk12Mult(c,s){try{const t=c&&TPL[c.id];if(!t||!s||s.bond||s.limit||s.id==='attack'||(G&&G.daily))return null;const r=sk12Role(t.cls,s);if(!r)return null;
-  const R=heroRoles(c),main=heroMain(c);let m,tier;
+function sk12Mult(c,s){try{const t=c&&TPL[c.id];if(!t||!s||s.bond||s.limit||s.id==='attack'||(G&&G.daily))return null;let r=sk12Role(t.cls,s);if(!r)return null;
+  const R=heroRoles(c),main=heroMain(c);let m,tier;if(((ROLEPW.own||{})[t.cls]||[]).includes(s.id)&&R[0]===main)r=main;
   if(r===main){m=ROLEPW.primary;tier='primary';}else if(R.includes(r)){m=ROLEPW.secondary;tier='secondary';}else{m=ROLEPW.off;tier='off';}
   if(tier==='off'&&(s.role||s.combo)&&(s.k==='phys'||s.k==='mag')){m=ROLEPW.secondary;tier='secondary';}
   let nat=false;if(tier!=='primary'&&sk12Nat(c)===r){m=Math.min(ROLEPW.natCap,m+ROLEPW.natLift);nat=true;}
@@ -32459,7 +32506,7 @@ function k12Fx(s){const fx=s.fx||[],ally=s.t==='allyAll'||s.t==='ally'||s.t==='s
   if(ally){const g=fx.map(f=>K12_BUFF[f[0]]||K12_ST[f[0]]||f[0]);if(s.k==='heal')return `Heals${s.cleanse?' and cleanses':''} the vanguard${g.length?' and grants '+k12List(g):''}.`;return g.length?`Grants ${k12List(g)} to the vanguard.`:'';}
   const hi=fx.filter(f=>f[1]>=.6).map(f=>(K12_ST[f[0]]||f[0])+'s'),lo=fx.filter(f=>f[1]<.6).map(f=>K12_ST[f[0]]||f[0]),out=[];
   if(hi.length)out.push('Likely '+k12List(hi));if(lo.length)out.push((out.length?'may ':'May ')+k12Or(lo));
-  let t=out.length?out.join('; ')+'.':'';if(s.afflicted)t+=' Hits 50% harder on afflicted foes.';if(s.pierce)t+=' Ignores half of resistance.';
+  let t=out.length?out.join('; ')+'.':'';if(s.afflicted)t+=' Hits 50% harder on afflicted foes.';if(s.pierce)t+=s.k==='phys'?' Ignores half of defense.':' Ignores half of resistance.';
   if(s.self&&s.self.length)t+=' Grants you '+k12List(s.self.map(f=>K12_BUFF[f[0]]||f[0]))+'.';return t.trim();}
 const k12Hash=k=>[...k].reduce((a,c)=>a+c.charCodeAt(0),0);
 function k12Art(t,s){const A=SK12.arts,cls=t.cls;if(!s||!s.combo||s._k12c||!SK12.physCls.includes(cls)||!A.n[cls])return;s._k12c=1;
@@ -36262,7 +36309,7 @@ try{const T=TPL.jaeson;T.n='Jace';T.title='Jace Vael, the Weatherwright';
   CLS.druid.n='Hunter';CLS.druid.role='Legendary hunter. A longbow that never rests, a snare, a hawk overhead, and a way with wild things.';
   CLS.sniper.role='Legendary mounted sniper. One steadied bolt of shadow and storm that goes through anything, and he shoots back when struck.';
   LIMIT.archmage=Object.assign(LIMIT.archmage,{n:'Hailfall',pw:.95,hits:3,l17waves:3,fx:[['slow',.6],['stun',.25]],d:'The sky comes down in three waves on every foe: Lightning in a thunderstorm, Ice in snow, both in turn (and weaker) under any other sky.'});
-  LIMIT2.archmage=Object.assign(LIMIT2.archmage,{n:'Absolute Tempest',pw:.92,hits:4,l17waves:4,fx:[['slow',.8],['stun',.35]],shieldChip:2,d:'Four waves of the worst weather there is on every foe: Lightning in a thunderstorm, Ice in snow, both in turn (and weaker) otherwise. Chips 2 shield pips.'});
+  LIMIT2.archmage=Object.assign(LIMIT2.archmage,{n:'Absolute Tempest',pw:.92,hits:4,l17waves:4,fx:[['slow',.8],['stun',.35]],shieldChip:2,d:'Four waves of the worst weather there is on every foe: Lightning in a thunderstorm, Ice in snow, both in turn (and weaker) otherwise. Likely Slows, may Stun; chips 2 shield pips.'});
 }catch(e){console.error('legends17b texts',e);}
 
 // ---------- 4. battle ----------
@@ -38768,11 +38815,11 @@ const R25={off:false,charmK:1.5,mix:['w','k','c','a','s','w','c','k','a','w'],
   // gear the relic is (R25.kindFx), and named for the hero. Asked: "vanguard heals with regen is too common to make a relic skill, these
   // should be super special and unique".
   // 0.22.36 ("skills given by Legendary relics are bit too strong"): about a fifth off every power, smaller riders, 2 MP more
-  skill:{warrior:{n:'Reckoning',k:'phys',pw:1.35,t:'all',mp:24,execute:.25,drain:.15,self:[['might',1]],what:'Cleaves every foe, hits wounded foes twice as hard, and heals the wielder for part of the damage'},
+  skill:{warrior:{n:'Reckoning',k:'phys',pw:1.35,t:'all',mp:24,execute:.25,drain:.15,self:[['might',1]],what:'Cleaves every foe, hits wounded foes twice as hard, heals the wielder for part of the damage and grants them Might'},
     knight:{n:'Unbroken Line',k:'phys',pw:1.9,t:'one',mp:22,shieldChip:3,self:[['taunt',1],['ward',1]],allyFx:[['bulwark',1]],what:'A shield breaking blow, and the wielder draws every attack behind a Ward while the vanguard gains Bulwark'},
     thief:{n:'Thousand Cuts',k:'phys',pw:.6,t:'rand',hits:5,mp:22,crit:.2,strip:1,self:[['focus',1]],what:'Five cuts across the foes that tear away their boons, and leaves the wielder Focused'},
-    archer:{n:'Skyfall',k:'phys',pw:1.3,t:'all',mp:24,pierce:1,fx:[['break',.4]],what:'A volley on every foe that ignores half their defence and can Break them'},
-    sniper:{n:'Final Mark',k:'phys',pw:2.7,t:'one',mp:26,pierce:1,crit:.25,execute:.35,what:'One shot through armour, doubled against a foe under a third of its health'},
+    archer:{n:'Skyfall',k:'phys',pw:1.3,t:'all',mp:24,pierce:1,fx:[['break',.4]],what:'A volley on every foe that ignores half their defense and can Break them'},
+    sniper:{n:'Final Mark',k:'phys',pw:2.7,t:'one',mp:26,pierce:1,crit:.25,execute:.35,what:'One shot through armor, doubled against a foe under a third of its health'},
     monk:{n:'Hundred Fists',k:'phys',pw:.52,t:'rand',hits:6,mp:22,drain:.2,self:[['might',1],['haste',1]],what:'Six blows across the foes that feed the wielder, who gains Might and Haste'},
     druid:{n:'Wild Hunt',k:'phys',pw:1.2,t:'all',mp:24,drain:.25,fx:[['root',.6],['poison',.6]],allyFx:[['bulwark',1]],what:'The wild falls on every foe, Rooting and Poisoning them, healing the wielder and granting the vanguard Bulwark'},
     chief:{n:'Rallying Tide',k:'phys',pw:1.15,t:'all',mp:24,lbParty:15,allyFx:[['might',1],['haste',1]],what:'Strikes every foe, fills the limit gauges of the party and grants the vanguard Might and Haste'},
@@ -38786,7 +38833,7 @@ const R25={off:false,charmK:1.5,mix:['w','k','c','a','s','w','c','k','a','w'],
   elFx:{fire:['burn',.8],water:['weaken',.7],ice:['slow',.8],lightning:['stun',.35],earth:['root',.8],wind:['blind',.8],shadow:['poison',.8],light:['weaken',.7]},
   elBoon:{fire:'might',lightning:'haste',wind:'haste',ice:'bulwark',earth:'bulwark',water:'regen',light:'focus',shadow:'focus'},
   // and what the relic is: a weapon hits harder, armour and shields protect the wielder, boots quicken them, a charm fills limit gauges
-  kindFx:{w:{pwM:1.08,txt:'Stronger for being a weapon'},a:{self:'bulwark',txt:'the wielder gains Bulwark'},s:{self:'ward',txt:'the wielder gains a Ward'},k:{self:'haste',txt:'the wielder gains Haste'},c:{lb:10,pwM:1.04,txt:'the limit gauges of the party fill'}}};
+  kindFx:{w:{pwM:1.08,txt:'It is stronger for being a weapon'},a:{self:'bulwark',txt:'The wielder gains Bulwark'},s:{self:'ward',txt:'The wielder gains Ward'},k:{self:'haste',txt:'The wielder gains Haste'},c:{lb:10,pwM:1.04,txt:'The limit gauges of the party fill'}}};
 const R25_PRE={w:'u_',a:'ua_',c:'uc_',k:'uk_',s:'us_'},R25_RE=/^u[acks]?_/;
 const r25Heroes=()=>Object.keys(TPL).filter(id=>TPL[id]&&!TPL[id].mon&&CLS[TPL[id].cls]);
 const r25Legend=id=>{try{const t=TPL[id];return !!(t&&(t.legend||(CLS[t.cls]&&CLS[t.cls].legend)||(typeof LEGEND_IDS!=='undefined'&&LEGEND_IDS.includes(id))));}catch(e){return false;}};
@@ -38829,18 +38876,20 @@ HOOK.xform('calcStats','relics25','the bonuses of the personal relic the hero we
 // ---------- 6. the skill ----------
 const R25S={};
 function r25Skill(t){const K=R25.skill[t.cls]||R25.skill.warrior,kind=r25Kind(t.id),noun=kind==='w'?((typeof SIGW!=='undefined'&&SIGW[t.cls])||'Heirloom'):((R25.names[kind]||{})[t.cls]||(R25.names[kind]||{})._||'Keepsake');
-  const el=(t.el&&t.el[0])||null,heal=K.k==='heal',KF=R25.kindFx[kind]||{},sn=k=>(STS[k]&&STS[k].n)||k,bits=[];
+  const el=(t.el&&t.el[0])||null,heal=K.k==='heal',KF=R25.kindFx[kind]||{},sn=k=>(STS[k]&&STS[k].n)||k,bits=[],can=[],van=[],and=L=>L.length<2?L.join(''):L.slice(0,-1).join(', ')+' and '+L[L.length-1],or=L=>L.length<2?L.join(''):L.slice(0,-1).join(', ')+' or '+L[L.length-1];
   const s={id:'relic_'+t.id,n:`${t.n}'s ${K.n}`,k:K.k,pw:+(K.pw*(KF.pwM||1)).toFixed(2),mp:K.mp,t:K.t,el:heal?null:el,lv:1,cost:1,hits:K.hits||1,relic:t.id};
   ['crit','execute','drain','strip','pierce','shieldChip','lbParty','revive','cleanse'].forEach(k=>{if(K[k])s[k]=K[k];});
   ['fx','self','allyFx'].forEach(k=>{if(K[k])s[k]=K[k].map(q=>q.slice());});
   const has=(L,k)=>(L||[]).some(q=>q[0]===k);
-  if(el){if(heal){const b=R25.elBoon[el];if(b&&!has(s.fx,b)){(s.fx=s.fx||[]).push([b,1]);bits.push(`the vanguard gains ${sn(b)}`);}}
-    else{(t.el||[]).slice(0,2).forEach(e=>{const f=R25.elFx[e];if(f&&!has(s.fx,f[0])){(s.fx=s.fx||[]).push(f.slice());bits.push(`can ${sn(f[0])} them`);}});}
-    if(heal&&t.el[1]){const b=R25.elBoon[t.el[1]];if(b&&!has(s.fx,b)){s.fx.push([b,1]);bits.push(`the vanguard gains ${sn(b)}`);}}}
-  if(KF.self){if(heal){if(!has(s.fx,KF.self)){s.fx.push([KF.self,1]);bits.push(`the vanguard gains ${sn(KF.self)}`);}}else if(!has(s.self,KF.self)){(s.self=s.self||[]).push([KF.self,1]);bits.push(KF.txt);}}
+  if(el){if(heal){const b=R25.elBoon[el];if(b&&!has(s.fx,b)){(s.fx=s.fx||[]).push([b,1]);van.push(sn(b));}}
+    else{(t.el||[]).slice(0,2).forEach(e=>{const f=R25.elFx[e];if(f&&!has(s.fx,f[0])){(s.fx=s.fx||[]).push(f.slice());can.push(sn(f[0]));}});}
+    if(heal&&t.el[1]){const b=R25.elBoon[t.el[1]];if(b&&!has(s.fx,b)){s.fx.push([b,1]);van.push(sn(b));}}}
+  if(KF.self){if(heal){if(!has(s.fx,KF.self)){s.fx.push([KF.self,1]);van.push(sn(KF.self));}}else if(!has(s.self,KF.self)){(s.self=s.self||[]).push([KF.self,1]);bits.push(KF.txt);}}
   if(KF.lb&&!heal){s.lbParty=(s.lbParty||0)+KF.lb;if(!K.lbParty)bits.push(KF.txt);}
   if(KF.pwM&&kind==='w')bits.push(KF.txt);
-  s.d=`${K.what}${bits.length?'; '+bits.join(', '):''}. Only while ${t.n}'s ${noun} is equipped.`;
+  // 0.22.54 text sweep: whole sentences ("...; can Slow them, can Root them, Stronger for being a weapon." read as a list of scraps)
+  if(can.length)bits.unshift(`It can ${or(can)} them`);if(van.length)bits.unshift(`The vanguard gains ${and(van)}`);
+  s.d=`${K.what}.${bits.map(b=>' '+b+'.').join('')} Only while ${t.n}'s ${noun} is equipped.`;
   try{if(typeof dlFor==='function'){const d=dlFor(t.cls,s);if(d)s.dl=d;}}catch(e){}return s;}
 HOOK.xform('classSkills','relics25','the skill a personal relic grants while it is worn',function(L,t){try{if(R25.off||!L||!t||t.mon||!CLS[t.cls]||L.some(s=>s&&s.relic))return L;const sk=R25S[t.id]||(R25S[t.id]=r25Skill(t));return L.concat([sk]);/* a copy: the class kit itself (cached per hero, 14 skills) is left as it is */}catch(e){R25.err=String(e&&e.message||e);}return L;});
 {const sk0=skillKnown;skillKnown=function(c,s){if(s&&s.relic){if(R25.off)return false;const g=r25Worn(c);return !!(g&&g.only===s.relic);}return sk0.apply(this,arguments);};}
@@ -39190,7 +39239,7 @@ try{window.__P35={P35,fill:()=>p35Fill(P35.gen)};}catch(e){}
 //    about a tenth more than before.
 // Relic skills (s.relic) are not touched here; relics25.js has their own cut.
 const S36={v:1,early:20,bands:[14,28],taken2:/^(Wind Fan|Light Refrain)$/,/* Drift's and Aria's own skills */elAlt:{fire:'Ember',water:'Tide',ice:'Frost',lightning:'Thunder',earth:'Stone',wind:'Gale',shadow:'Umbral',light:'Radiant'},heal:.88,off:false,taken:/^Halo of (Light|Wind)$/,/* Lumen's and Pomona's own skills (v191a) */log:{moved:[],swapped:[],gaps:[],uneven:[]},
-  regenKeep:{'Sanctuary':1,'Tidal Renew':1,'Radiant Renew':1,'Meditate':1},
+  regenKeep:{'Sanctuary':1,'Prayer of Renewal':1,'Prayer of Dawn':1,'Meditate':1},/* the Priest's Regen prayers were Tidal Renew and Radiant Renew until the 0.22.54 text sweep */
   regenTo:{'Blessing':'focus','Beacon Ward':'bulwark','Aurora':'focus','Spectrum Aria':'might','Cathedral Descant':'bulwark','Kennel Blessing':'focus','Iron Stance':'bulwark','Shield Ally':'ward','Lampglow':'bulwark'},
   elN:{fire:'Fire',water:'Water',ice:'Ice',lightning:'Lightning',earth:'Earth',wind:'Wind',shadow:'Shadow',light:'Light'}};
 function s36Regen(s){const drop=L=>{if(!L)return false;const i=L.findIndex(q=>q[0]==='regen');if(i<0)return false;L.splice(i,1);return true;};
@@ -39201,7 +39250,7 @@ function s36Regen(s){const drop=L=>{if(!L)return false;const i=L.findIndex(q=>q[
   const tn=to&&STS[to]?STS[to].n:null;let d=String(s.d||'');
   if(s.n==='Lampglow')d=d.replace('grants Regen and Ward','grants Bulwark');
   else if(tn)d=d.replace(/\bRegen\b/,tn);
-  else d=d.replace(/,? and Regen\b/,'').replace(/\bRegen and /,'').replace(/, Regen\b/,'').replace(/\bRegen, /,'').replace(/\s+and grants\s*\./,'.').replace(/ and grants$/,'');
+  else d=d.replace(/, (\w+) and Regen\b/,' and $1').replace(/\s+and grants Regen(?=[.;,]|$)/,'').replace(/\s+and the line gains Regen(?=[.;,]|$)/,'').replace(/,? and Regen\b/,'').replace(/\bRegen and /,'').replace(/, Regen\b/,'').replace(/\bRegen, /,'').replace(/\s+and grants\s*\./,'.').replace(/ and grants$/,'');
   s.d=d;s._s36r=1;}
 function s36Dual(t,L){const els=t.el||[];if(els.length<2)return;const role=s=>s.role==='primer'?'p':s.role==='det'?'d':'';
   // what counts for an element: its own Primers and Detonators, and a Dual art with a role (it primes with both elements, or detonates on either)
