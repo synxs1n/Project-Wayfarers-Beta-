@@ -160,7 +160,7 @@ const SETUP=`([stage,gold,mats])=>{const A=__A,G=A.G;G.stage=stage;G.cleared=[0,
         ['c_cv'+s,'c_ft'+s].forEach(id=>{if(A.GEAR[id]&&A.GEAR[id].tier>Math.min(5,s+1))o.bad.push('realm charm '+id+' tier '+A.GEAR[id].tier);});
         o.fit=X.rarFit('w_blade_5+2');out.push(o);}
       return out;});
-    R.filter(o=>!o.beat).forEach(o=>chk(`5 realm ${o.s+1}: rarity open up to index ${o.cap}; the shelves (top ${o.shopTop}), open recipes (top ${o.recTop}), mimic loot (${o.mim}), vault charms, ${o.bn} bounties and the realm's own charms stay under it`,o.cap===Math.min(4,o.s+1)/* 0.22.54: Mythic (5) waits for the Calamity; see v230a */&&o.bad.length===0&&o.bn>0||JSON.stringify(o)));
+    R.filter(o=>!o.beat).forEach(o=>chk(`5 realm ${o.s+1}: rarity open up to index ${o.cap}; the shelves (top ${o.shopTop}), open recipes (top ${o.recTop}), mimic loot (${o.mim}), vault charms, ${o.bn} bounties and the realm's own charms stay under it`,o.cap===Math.min(4,o.s+1)/* 0.22.55: Mythic (5) waits for the Calamity; see v230a */&&o.bad.length===0&&o.bn>0||JSON.stringify(o)));
     const b=R.filter(o=>o.beat);chk(`5 beating a realm's boss opens the next rarity at once (caps ${b.map(o=>o.cap).join(', ')}) and nothing passes it`,b.every(o=>o.cap===Math.min(4,o.s+2)&&o.bad.length===0)||JSON.stringify(b.filter(o=>o.bad.length)));
     chk(`5 the first realm has Common and Uncommon only: a Mythic blade +2 is brought down to ${R[0].fit}, the mimic gives ${R[0].mim}`,R[0].cap===1&&R[0].fit==='w_blade_1+2'&&R[0].mim==='w_blade_1+2'||JSON.stringify(R[0]));
     const misc=await H.ev(()=>{const A=__A,G=A.G,X=window.__G16;G.stage=0;G.cleared=[];G.run.cycle=2;const ng=X.rarCap();G.run.cycle=0;G.daily=true;const dl=X.rarCap();G.daily=false;

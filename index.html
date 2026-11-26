@@ -2277,7 +2277,7 @@ html:not(.flat) .battle.b3 .bline .b4mo .b4bar{box-shadow:inset 0 0 0 1px #000,0
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.22.54";const APP_BUILD="cac26dad5998";
+(function(){const APP_VER="0.22.55";const APP_BUILD="2da6e9ba6230";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2403,7 +2403,7 @@ const DROP={realm:.38,part:.55,potion:.15,ether:.07,remedy:.07,hipotion:.05};
 // DROP_MIX: weights inside the remedy-slot drop roll (engine.js win): remedy keeps its DROP.remedy rate, the others are extra on top, picked from the same roll
 const DROP_MIX={remedy:1,bandage:.22,ash:.16,tent:.05,salts:.3,holywater:.06,plume:.04};// v0.22.22: salts, Holy Water and (rarely) a Phoenix Feather drop too
 const CHEST_UP=.04;// v0.22.22: the chance that a chest's gear is one rarity above the open one
-const CHEST_UP_LAST=.12;// v0.22.54: the same chance in the last realm while Mythic is still closed (before the Calamity falls): a chest there is the way to an early Mythic piece
+const CHEST_UP_LAST=.12;// v0.22.55: the same chance in the last realm while Mythic is still closed (before the Calamity falls): a chest there is the way to an early Mythic piece
 // Beta v0.4.1 2.5: the auto battle brain. healAt: heal an ally below this percent of max HP. skillChance: how often a turn uses a plain damage skill
 // instead of a basic attack. power: damage multiplier for everything auto does outside the Trial. spread: how often a single target attack picks a random foe instead of the first in line. dailySmart: keep the careful old brain inside the Daily Trial (the Trial must stay identical).
 const AUTO_NERF={healAt:40,skillChance:1,spread:0,power:.85,aware:.6,potion:0,smart:.6,limit:.5,det:.5,dailySmart:true,guardMark:true};// guardMark (v0.22.54): auto guards a hero the boss gimmick has marked (battle4.js b4GimAutoGuard)
@@ -3081,7 +3081,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.22.54";const APP_BUILD="cac26dad5998";
+const APP_VER="0.22.55";const APP_BUILD="2da6e9ba6230";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -3089,6 +3089,7 @@ const APP_VER="0.22.54";const APP_BUILD="cac26dad5998";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.22.55',['Mythic gear opens at the Smithy once the Calamity has fallen (and stays open in New Game+). Until then the last realm sells and forges up to Heroic.','Chests in the last realm have a 12% chance of a Mythic piece while Mythic is still closed (4% for the next rarity up in the other realms). Mythic gear you already own is yours to keep.']],
  ['Beta v0.22.54',['Bosses hit less hard and last longer. A lost fight used to be over in about 20 hero turns with the boss barely half down. Now each realm is a little harder than the one before and its boss fight a little longer, with no wall at the second realm.','Every Scourge and Calamity was tuned toward the same band for its realm. Eased: Frost Lich, Siren of the Deep, Maelstrom Drake, Stormcaller Ysolde, Ashen Wyvern, Iron Sentinel, Seraph. Raised: Bone Colossus, Cinderking Varroth, the Crow Regent, Thornback Warden, the Geyser Matron, Queen Mantis, Emperor Candlemoth.','Realm gimmicks matter more. The marked hits (Thorn Snare, Lava Vents, Lightning Rod, the Wyvern\'s dive, Pillars of Light) hit about half again as hard, and answering a gimmick pays: guard every marked hero, ground or guard the rod, or stop a readied move, and the boss is thrown off balance and loses 2 shield pips.','Auto battle guards a hero the boss has marked.','No more stun chains: a hero who has just lost a turn to a stun or a freeze cannot be stunned again until after their next turn.','Taunt now braces the hero: they take 30% less damage while it lasts (War Cry, Provoke).','Classes, measured in boss fights (damage, damage over time, healing, buffs, debuffs and damage soaked). Mages and Archers deal the most damage (Archers +34% attack). Warriors are the third damage dealer and a sturdier front line (+10% attack, +15% speed, +30% resistance, +15% HP). Knights +10% attack and speed. Monks are the all-rounder: -18% attack, with their healing and speed untouched.','Sub role skills no longer take a percent cut on top of their own lower numbers (it was 80%). Main role skills stay the strongest; skills outside a class\'s three roles stay at 50%.','Piercing Shot counts as the Archer\'s own Marksman skill (power 2.4). No skill changed its level.','Archmage, Chronicler and Blood Summoner: their basic Attack is magic now, like the Mage\'s, Priest\'s and Bard\'s.','Skill names and descriptions were checked against what the skills do: 111 skills renamed and 249 descriptions rewritten. A skill no longer names an element or a status it does not have, and every status a skill can cause is in its text.','Short parties: a party smaller than the journey expects in a realm (3, 4, 5, 6, 6) now meets an eased Scourge or Calamity. Before, every missing hero made the boss stronger.']],
  ['Beta v0.22.53',['A lighting pass on the HD-2D world: a warmer, stronger sun against cooler shade, about half the distance haze, richer colour and contrast, and a darker frame around the view, by day, dusk, dawn and night.']],
  ['Beta v0.22.52',['Battle cards on big screens: the weakness and status tags sit under the card. They were drawn over the HP bar.','The barred hoard: a vault chest that is already open now counts for the quest. Before, the quest was only marked at the moment the chest was opened, so an open chest without that mark left the quest stuck on Vault still sealed.']],
@@ -10344,7 +10345,7 @@ function nextDlg(){const d=WS.dlg;WS.dlg=null;render();if(d&&d.after)d.after();}
 function CHEST_ITEMS(s){const hp=s>=1?'hipotion':'potion',L=['potion','potion','ether','ether','remedy','remedy','plume','plume',hp,hp,'potion','potion','potion','potion','bandage','bandage','bandage','bandage','ash','ash','tent','salts','salts','salts','holywater'];
   if(s>=1)L.push('sage','vigor');if(s>=2&&ITEMS.campkit)L.push('campkit');if(s>=3)L.push('elixir');return L.filter(k=>ITEMS[k]);}
 const CHEST_ONE=['plume','tent','holywater','campkit','elixir','sage','vigor'];// one of these to a chest, two of the others
-function chestGear(tier,dun){const cap=typeof rarCap==='function'?rarCap():tier,last=cap===4&&typeof pcRealm==='function'&&pcRealm()>=4,/* v0.22.54: the last realm before the Calamity falls */up=!G.daily&&cap<5&&Math.random()<(last?CHEST_UP_LAST:CHEST_UP),base=Math.min(tier,cap);/* a chest never holds more than the open rarity unless it is the lucky one */return {up,gid:up?lootBase()+'_'+(cap+1):lootBase()+'_'+base+(dun?'+1':'')};}
+function chestGear(tier,dun){const cap=typeof rarCap==='function'?rarCap():tier,last=cap===4&&typeof pcRealm==='function'&&pcRealm()>=4,/* v0.22.55: the last realm before the Calamity falls */up=!G.daily&&cap<5&&Math.random()<(last?CHEST_UP_LAST:CHEST_UP),base=Math.min(tier,cap);/* a chest never holds more than the open rarity unless it is the lucky one */return {up,gid:up?lootBase()+'_'+(cap+1):lootBase()+'_'+base+(dun?'+1':'')};}
 function openChest(x,y){
   const m=WS.m,key=m.id+':'+x+','+y;if(G.chests[key])return;
   const raw=m.t[y][x];G.chests[key]=1;if(typeof sfx==='function')sfx('chest');
@@ -35229,7 +35230,7 @@ try{M11_RANK.unshift(['display',2.7,/"goals",/],['display',2.71,/"goalsClear",/]
 //     Equip Best and every Build party; the owner meant only this case). Equip Best keeps an Undo on Backpack > Equipment until the gear
 //     changes again.
 //  5) Rarity by progress: rarCap() is the highest rarity (ITEM_TIERS index) a journey has open: Common and Uncommon in the first realm, one
-//     more per realm reached or Scourge beaten (pcRealm()), Heroic in the fifth, Mythic once the Calamity has fallen (0.22.54). Shops, recipes, chests, the mimic, vaults and bounty
+//     more per realm reached or Scourge beaten (pcRealm()), Heroic in the fifth, Mythic once the Calamity has fallen (0.22.55). Shops, recipes, chests, the mimic, vaults and bounty
 //     charms stay under it; the one-per-realm cave and Sanctum charms carry their realm's rarity. New Game+ follows the same rule (the code
 //     gives it no gear rules of its own); the Daily Trial is open. Not capped: gear already owned, personal relics, guild rank charms, the
 //     Tamer's Stick, Echoforged gear.
@@ -35250,7 +35251,7 @@ HOOK.after('render','gear16','a first realm hint steps aside while a window is o
 {const hs0=hintShow;hintShow=function(){const d=document.getElementById('p2hint');if(d)d.classList.remove('g16hide');const r=hs0.apply(this,arguments);g16HintDock();return r;};}
 
 // ---------- 5) rarity by progress ----------
-// 0.22.54 (the owner): Mythic, the top shop rarity, opens when the Calamity has fallen (G.won, and every New Game+ cycle after it). Until
+// 0.22.55 (the owner): Mythic, the top shop rarity, opens when the Calamity has fallen (G.won, and every New Game+ cycle after it). Until
 // then the fifth realm sells and forges up to Heroic, and its chests have a better chance of a Mythic piece (CHEST_UP_LAST, config.js).
 function rarMythic(){try{return !!(G&&(G.daily||G.won||(G.run&&G.run.cycle>0)));}catch(e){return true;}}
 function rarCap(){try{if(!G||G.daily)return 5;const c=Math.max(1,Math.min(5,pcRealm()+1));return c>=5&&!rarMythic()?4:c;}catch(e){return 5;}}

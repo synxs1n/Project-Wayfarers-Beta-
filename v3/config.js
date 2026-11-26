@@ -43,7 +43,7 @@ const DROP={realm:.38,part:.55,potion:.15,ether:.07,remedy:.07,hipotion:.05};
 // DROP_MIX: weights inside the remedy-slot drop roll (engine.js win): remedy keeps its DROP.remedy rate, the others are extra on top, picked from the same roll
 const DROP_MIX={remedy:1,bandage:.22,ash:.16,tent:.05,salts:.3,holywater:.06,plume:.04};// v0.22.22: salts, Holy Water and (rarely) a Phoenix Feather drop too
 const CHEST_UP=.04;// v0.22.22: the chance that a chest's gear is one rarity above the open one
-const CHEST_UP_LAST=.12;// v0.22.54: the same chance in the last realm while Mythic is still closed (before the Calamity falls): a chest there is the way to an early Mythic piece
+const CHEST_UP_LAST=.12;// v0.22.55: the same chance in the last realm while Mythic is still closed (before the Calamity falls): a chest there is the way to an early Mythic piece
 // Beta v0.4.1 2.5: the auto battle brain. healAt: heal an ally below this percent of max HP. skillChance: how often a turn uses a plain damage skill
 // instead of a basic attack. power: damage multiplier for everything auto does outside the Trial. spread: how often a single target attack picks a random foe instead of the first in line. dailySmart: keep the careful old brain inside the Daily Trial (the Trial must stay identical).
 const AUTO_NERF={healAt:40,skillChance:1,spread:0,power:.85,aware:.6,potion:0,smart:.6,limit:.5,det:.5,dailySmart:true,guardMark:true};// guardMark (v0.22.54): auto guards a hero the boss gimmick has marked (battle4.js b4GimAutoGuard)

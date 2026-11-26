@@ -1,4 +1,4 @@
-// v0.22.54 (gear16.js rarCap, worldrt.js chestGear, config.js CHEST_UP_LAST): Mythic opens at the Smithy when the Calamity has fallen.
+// v0.22.55 (gear16.js rarCap, worldrt.js chestGear, config.js CHEST_UP_LAST): Mythic opens at the Smithy when the Calamity has fallen.
 //  1 fifth realm, Calamity alive: the open rarity is Heroic (4); nothing the Smithy sells or forges is Mythic. Calamity beaten: Mythic (5)
 //    is open and on the shelves. A New Game+ cycle keeps it open. Realms one to four are as they were.
 //  2 chests: in the last realm before the Calamity about 12% hold a Mythic piece and the rest hold Heroic at most; in the third realm
