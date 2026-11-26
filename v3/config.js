@@ -45,7 +45,7 @@ const DROP_MIX={remedy:1,bandage:.22,ash:.16,tent:.05,salts:.3,holywater:.06,plu
 const CHEST_UP=.04;// v0.22.22: the chance that a chest's gear is one rarity above the open one
 // Beta v0.4.1 2.5: the auto battle brain. healAt: heal an ally below this percent of max HP. skillChance: how often a turn uses a plain damage skill
 // instead of a basic attack. power: damage multiplier for everything auto does outside the Trial. spread: how often a single target attack picks a random foe instead of the first in line. dailySmart: keep the careful old brain inside the Daily Trial (the Trial must stay identical).
-const AUTO_NERF={healAt:40,skillChance:1,spread:0,power:.85,aware:.6,potion:0,smart:.6,limit:.5,det:.5,dailySmart:true};
+const AUTO_NERF={healAt:40,skillChance:1,spread:0,power:.85,aware:.6,potion:0,smart:.6,limit:.5,det:.5,dailySmart:true,guardMark:true};// guardMark (v0.22.54): auto guards a hero the boss gimmick has marked (battle4.js b4GimAutoGuard)
 // Beta v0.4.1 2.2: persistent ailments. A hero that finishes a fight Poisoned, Cursed or Wounded keeps it until cured.
 // poisonSteps / poisonPct: out of battle a Poisoned hero loses poisonPct of max HP every poisonSteps steps (never below 1 HP).
 // curseHeal: share of healing a Cursed hero receives. woundMhp: share of max HP a Wounded hero keeps.
@@ -85,7 +85,8 @@ const B4={det:{on:true,mpPct:.1,mpMin:4,maxPerAct:2},
   daily:{det:true,swap:true,mo:true,roles:true}};
 // CLS_ATK (v0.10.5, atk6.js): the basic Attack by class. pw: damage multiplier on ATTACK's pw 1; k:'mag' swings with magic (MAG vs RES).
 // Mages, healers and bards swing with magic; archers hit hardest as ranged; the front line trades a little less for staying power.
-const CLS_ATK={warrior:{pw:1.15},knight:{pw:1.05},monk:{pw:1.15,hits:1},thief:{pw:1.1},archer:{pw:1.2},mage:{k:'mag',pw:1.1},healer:{k:'mag',pw:.95},bard:{k:'mag',pw:1}};
+const CLS_ATK={warrior:{pw:1.15},knight:{pw:1.05},monk:{pw:1.15,hits:1},thief:{pw:1.1},archer:{pw:1.2},mage:{k:'mag',pw:1.1},healer:{k:'mag',pw:.95},bard:{k:'mag',pw:1},
+  archmage:{k:'mag',pw:1.1},chronicler:{k:'mag',pw:1},bloodcaller:{k:'mag',pw:.95}};// v0.22.54: the three Legend casters swung their staff and tome with ATK; they cast like the others now
 // DET_BONUS: detonations take two deliberate steps, so they hit harder than the old free reactions did.
 const DET_BONUS=1.3;
 // AUTO_SWAP_CD: auto battle brings in a reserve hero at most once every this many party turns, and a hero who just came in stays
@@ -142,7 +143,9 @@ const BOSS_LV={frac:.5,cap:12};
 // 3.2 bosses: shield pips +50% (5 to 8, 7 to 11); the break window hits for less and is over once the foe loses the turn it staggers
 const BOSS_PIPS={mult:1.5};const BREAK_WIN={bonus:1.3,short:true};
 // 3.2 extra boss muscle on top of the old stat table (hp and power multipliers)
-const BOSS_BUFF={hp:[.8,1.34,1.39,1.53,1.22],pow:[.955,1.28,1.32,1.535,1.23]}// v0.19: eased about 7% hp and 3% pow with the role power change (was hp [.9,1.5,1.55,1.7,1.36], pow [1,1.34,1.38,1.6,1.28]) to pay for the 12 skill kit, role power and no dual ultimates, so the journey sim stays at level 41.3 and 14.6 boss tries (before the skill changes: 40.5 and 11.1; without the ease: 42.6 and 19.6); v0.4.3: re-tuned with capes; v0.8.2: the first three Scourges eased (were hp 1.3, 1.75, 1.8 and pow 1.15, 1.4, 1.44) so no boss is a wall; v0.9.5: hp [1.15,1.65,1.7,2.0,1.52] -> about 4 to 10% less, the realm gimmicks (BOSS_GIM) carry the rest
+// v0.22.54: less burst and longer fights, and a steady ramp: the win rate of a careful party at the expected level steps down a little each realm (about
+// 66, 63, 60, 57, 53%) and the hero turns in a won fight step up a little (about 28, 31, 35, 39, 43). pow was [.955,1.28,1.32,1.535,1.23], hp [.8,1.34,1.39,1.53,1.22].
+const BOSS_BUFF={hp:[1.2,1.55,1.6,2.05,1.78],pow:[.88,1.14,1.38,1.87,1.22]}// v0.19: eased about 7% hp and 3% pow with the role power change (was hp [.9,1.5,1.55,1.7,1.36], pow [1,1.34,1.38,1.6,1.28]) to pay for the 12 skill kit, role power and no dual ultimates, so the journey sim stays at level 41.3 and 14.6 boss tries (before the skill changes: 40.5 and 11.1; without the ease: 42.6 and 19.6); v0.4.3: re-tuned with capes; v0.8.2: the first three Scourges eased (were hp 1.3, 1.75, 1.8 and pow 1.15, 1.4, 1.44) so no boss is a wall; v0.9.5: hp [1.15,1.65,1.7,2.0,1.52] -> about 4 to 10% less, the realm gimmicks (BOSS_GIM) carry the rest
 // BOSS_GIM (v0.9.5, battle4.js): every Scourge and Calamity brings one realm gimmick to its first fight (kind 'boss'; not Echoes, not the Daily
 // Trial). Each is telegraphed on the boss's turn (a log line, a "Telegraph" chip on the boss, a mark on the heroes it will hit) and lands on its
 // next turn, so reading it pays. first: the boss's turn of the first telegraph; every: turns between telegraphs (per boss: every).
@@ -156,25 +159,37 @@ const BOSS_BUFF={hp:[.8,1.34,1.39,1.53,1.22],pow:[.955,1.28,1.32,1.535,1.23]}// 
 // skill reveals it), wing (it takes off for a round: non Ranged physical hits deal cut less; then it dives at a marked spot for pct),
 // phase2 (at warn of its HP it cracks; at at a new move set (sk) and its shield back).
 // stageK: the gimmick's damage and healing by stage (the first Scourge is the gentle introduction; reactions were held back to the second realm until 0.22.42).
-const BOSS_GIM={on:true,daily:false,first:2,every:4,stageK:[.5,.85,1,1,1],
-  def:{thornwarden:{t:'slot',n:'Thorn Snare',pct:.14,el:'earth',st:'root',d:'Roots erupt under one Vanguard spot on its next turn',tell:'Thorny roots creep under {who}',hit:'Roots burst under {who}'},
-    drake:{t:'tide',n:'Rising Tide',every:3,max:3,spd:.05,dmg:.08,d:'The water rises every few turns: heroes without Water slow down and Water skills hit harder. An Earth skill dams it',tell:'The water swells around your feet',hit:'The tide rises'},
-    cinderking:{t:'slot',n:'Lava Vents',pct:.17,el:'fire',st:'burn',d:'A lava vent erupts under one Vanguard spot on its next turn',tell:'The ground glows red under {who}',hit:'A lava vent erupts under {who}'},
+// v0.22.54: answer: an answered gimmick (a stopped readied move, a marked hit that every marked hero guarded, a grounded or guarded rod) knocks
+// `pips` off the boss's shield. The marked hits were raised (slot .14/.17/.12 -> .24/.28/.2, rod .2 -> .28, dive .16 -> .22) so a telegraph ignored hurts.
+const BOSS_GIM={on:true,daily:false,first:2,every:4,stageK:[.5,.85,1,1,1],answer:{pips:2},
+  def:{thornwarden:{t:'slot',n:'Thorn Snare',pct:.24,el:'earth',st:'root',d:'Roots erupt under one Vanguard spot on its next turn',tell:'Thorny roots creep under {who}',hit:'Roots burst under {who}'},
+    drake:{t:'tide',n:'Rising Tide',every:3,max:3,spd:.04,dmg:.05,d:'The water rises every few turns: heroes without Water slow down and Water skills hit harder. An Earth skill dams it',tell:'The water swells around your feet',hit:'The tide rises'},
+    cinderking:{t:'slot',n:'Lava Vents',pct:.28,el:'fire',st:'burn',d:'A lava vent erupts under one Vanguard spot on its next turn',tell:'The ground glows red under {who}',hit:'A lava vent erupts under {who}'},
     hoarwyrm:{t:'chill',n:'Blizzard',max:3,spd:.12,d:'The blizzard chills every hero who is not guarding; three stacks freeze a hero for a turn. A Fire skill thaws the caster',tell:'The blizzard thickens',hit:'The blizzard howls through the Vanguard'},
-    ysolde:{t:'rod',n:'Lightning Rod',pct:.2,arc:.35,el:'lightning',d:'She marks the strongest hero; lightning strikes them on her next turn and arcs to their neighbours. Swap them out to ground it',tell:'The air crackles around {who}',hit:'Lightning strikes {who}'},
-    bonecolossus:{t:'sac',n:'Reassemble',fx:'heal',heal:.12,thr:.07,d:'It gathers its bones to heal; deal enough damage before its next turn to scatter them',tell:'Bones rattle toward the Colossus',hit:'The Colossus pulls its bones back together',stop:'The bones scatter'},
-    queenmantis:{t:'sac',n:'Brood',fx:'summon',mon:'gustimp',thr:.07,d:'An egg sac swells; burst it with enough damage before her next turn or it hatches',tell:'An egg sac swells on the Queen',hit:'The egg sac hatches',stop:'The egg sac bursts'},
+    ysolde:{t:'rod',n:'Lightning Rod',pct:.28,arc:.35,el:'lightning',d:'She marks the strongest hero; lightning strikes them on her next turn and arcs to their neighbours. Swap them out to ground it',tell:'The air crackles around {who}',hit:'Lightning strikes {who}'},
+    bonecolossus:{t:'sac',n:'Reassemble',fx:'heal',heal:.15,thr:.1,d:'It gathers its bones to heal; deal enough damage before its next turn to scatter them',tell:'Bones rattle toward the Colossus',hit:'The Colossus pulls its bones back together',stop:'The bones scatter'},
+    queenmantis:{t:'sac',n:'Brood',fx:'summon',mon:'gustimp',thr:.1,d:'An egg sac swells; burst it with enough damage before her next turn or it hatches',tell:'An egg sac swells on the Queen',hit:'The egg sac hatches',stop:'The egg sac bursts'},
     gloomcap:{t:'sac',n:'Spore Bloom',fx:'spores',st:['poison'],els:['fire'],thr:.06,d:'A spore pod swells; a Fire skill or heavy damage pops it, or it poisons every hero not guarding',tell:'A spore pod swells on the Matriarch',hit:'The spore pod bursts over the Vanguard',stop:'The spore pod shrivels'},
     ironsentinel:{t:'sac',n:'Overheat',fx:'buff',buff:['might','haste'],els:['water','ice'],thr:.08,d:'Its furnace glows white; a Water or Ice hit or heavy damage cools it, or it overclocks (Might and Haste)',tell:'The Sentinel\'s furnace glows white',hit:'The Sentinel overclocks',stop:'Steam hisses: the furnace cools'},
     siren:{t:'mirror',n:'Mirror Song',every:5,kinds:['mag'],cut:.35,refl:.12,d:'Every few turns she raises a water mirror for a round: magic deals less and part of it splashes back. Use weapons then',tell:'The Siren\'s song turns glassy',hit:'A mirror of water rises around the Siren'},
-    ashwyvern:{t:'wing',n:'Take Wing',every:5,cut:.35,pct:.16,el:'fire',d:'It takes to the air for a round (weapon hits glance off unless Ranged), then dives at a marked spot',tell:'The Wyvern spreads its wings',hit:'The Wyvern takes to the air',dive:'The Wyvern dives at {who}'},
-    frostlich:{t:'veil',n:'Grave Mist',cut:.5,d:'Every few turns it fades into mist for a round and takes far less damage, until a Scan or a Light skill reveals it',tell:'Frost mist gathers around the Lich',hit:'The Lich fades into the mist'},
+    ashwyvern:{t:'wing',n:'Take Wing',every:5,cut:.25,pct:.22,el:'fire',d:'It takes to the air for a round (weapon hits glance off unless Ranged), then dives at a marked spot',tell:'The Wyvern spreads its wings',hit:'The Wyvern takes to the air',dive:'The Wyvern dives at {who}'},
+    frostlich:{t:'veil',n:'Grave Mist',cut:.4,d:'Every few turns it fades into mist for a round and takes far less damage, until a Scan or a Light skill reveals it',tell:'Frost mist gathers around the Lich',hit:'The Lich fades into the mist'},
     dimmer:{t:'dark',n:'Swallowed Light',every:3,max:2,dmg:.1,d:'The dark deepens every few turns: heroes deal less per level. A Fire or Light skill lights a torch and clears it',tell:'The lights around you gutter',hit:'The dark deepens'},
     nidhra:{t:'phase2',n:'Eclipse Form',warn:.65,at:.5,sk:[['Corona Flare','fire',1.3,'all','mag',[['burn',.5]]],['Night Talon','shadow',2.0,'one','phys',[['bleed',.6]]],['Eclipse Roar','shadow',1.1,'all','phys',[['weaken',.4]]]],d:'At half HP it becomes the Eclipse: new moves and its shield back. Save a weakness hit for after',tell:'Cracks of black fire spread across Nidhra',hit:'Nidhra becomes the Eclipse'},
     hollowking:{t:'sac',n:'Royal Guard',fx:'summon',mon:'drownedsailor',brk:1,thr:.08,d:'He calls a drowned guard up from the deep; Break his shield or hit him hard before his next turn to stop it',tell:'The King raises his hand to call a servant',hit:'A drowned guard answers the King',stop:'The call goes unanswered'},
-    seraph:{t:'slot',n:'Pillars of Light',n2:2,pct:.12,el:'light',st:'blind',d:'Pillars of shattered light fall on two Vanguard spots on its next turn',tell:'Light gathers over {who}',hit:'Pillars of glass light fall on {who}'}}};
+    seraph:{t:'slot',n:'Pillars of Light',n2:2,pct:.2,el:'light',st:'blind',d:'Pillars of shattered light fall on two Vanguard spots on its next turn',tell:'Light gathers over {who}',hit:'Pillars of glass light fall on {who}'}}};
 // 3.4 small parties: each hero short of six makes Scourges and Calamities this much beefier (a full party of six is the benchmark)
-const BOSS_SIZE={hp:.07,pow:.06};// per stage 1 to 5
+// v0.22.54: the benchmark is the party a journey has by that realm (expect: 3, 4, 5, 6, 6), so the old numbers are unchanged for it; a party
+// SHORT of that size no longer faces a beefier boss on top: each hero short eases the boss by short.hp and short.pow instead.
+const BOSS_SIZE={hp:.07,pow:.06,expect:[3,4,5,6,6],short:{hp:.08,pow:.05}};// per stage 1 to 5
+// STUN_CAP (v0.22.54): a hero who has just lost a turn to a stun (or a freeze) cannot be stunned again until after their next turn.
+const STUN_CAP={on:true};
+// CLS_TUNE (v0.22.54 class pass, docs/balance54.md): multipliers on a class's final stats (gear included; not in the Daily Trial). Measured in boss fights:
+// a Warrior had the least resistance and the fewest turns, a Knight half the average damage, an Archer hit like a Monk. The order aimed for (tools/fullsim.js
+// eff): Mage and Archer deal the most, the Warrior is third and the sturdy front line, the Monk does a bit of everything and is best at nothing.
+const CLS_TUNE={warrior:{atk:1.1,hp:1.15,res:1.3,spd:1.15},knight:{atk:1.1,spd:1.1},archer:{atk:1.34},monk:{atk:.82}};
+// TAUNT (v0.22.54): a hero under Taunt is braced: they take `cut` less damage from every hit (drawing fire was a death sentence for a Warrior).
+const TAUNT={cut:.3};
 // 3.3 echo levels. Story echo base = boss base + storyAdd; Sanctum echoes use fixed bases. While the party's highest hero is more than
 // window below the base the echo stays at base; once within window of it (or higher) the echo is exactly party highest + window. No cap.
 const ECHO_LV={window:2,storyAdd:2,sanctum:50,sanctumFinal:56};
@@ -324,7 +339,9 @@ const ROLES={
   // adj: changes to existing class skills (by class and skill id), merged in when the list is built
   adj:{chronicler:{annotate:{fx:[['break',.9],['weaken',.5]],rl:'debuffer'},redact:{fx:[['blind',.7]]}},bard:{tune1:{pw:1},tune2:{pw:1}},druid:{wildmend:{chi:1,pw:1.15}},
     // v0.19: role power now comes from ROLEPW, so a few sub role numbers are set to keep every secondary in the 55 to 78% band
-    knight:{lance1:{pw:1.75},lance2:{pw:1.75},judge:{pw:3}},thief:{assn:{pw:2.3}}},
+    knight:{lance1:{pw:1.75},lance2:{pw:1.75},judge:{pw:3}},thief:{assn:{pw:2.3}},
+    // v0.22.54: Piercing Shot is a bow shot, so it counts as the Marksman's own (ROLEPW.own; as a Striker sub role skill it still out-hit every Marksman shot): 2.8 x .8 -> 2.4 x 1
+    archer:{pierce:{pw:2.4}}},
   charms:[{id:'c_rl_mend',n:"Mender's Locket",st:{mag:8,res:6},attr:{fth:3},perk:{healUp:.12},d:'+12% healing',price:520},
     {id:'c_rl_song',n:'Spellstring Charm',st:{mag:12,mp:30},perk:{spellPow:.08},d:'+8% spell damage',price:520},
     {id:'c_rl_quiv',n:'Kunai Pouch',st:{atk:8,spd:4},attr:{dex:3},perk:{rngPow:.1},d:'+10% Ranged damage',price:520},
@@ -393,7 +410,10 @@ const SK12={cap:12,dualUlt:false,legendsKeepUlt:true,
 // a sub role `secondary`, any other role `off`. Primer, Detonator and dual art damage never counts below `secondary`. A nature that leans into a skill's role
 // adds `natLift` to that skill's multiplier, never above `natCap` (so a lifted off-role skill never matches a main-role one). Debuff chances move by
 // fxShare of the gap; a buff of an off-role skill lasts offBuff turns less (at least 1).
-const ROLEPW={primary:1,secondary:.8,off:.5,natLift:.14,natCap:.9,fxShare:.33,offBuff:1};
+// v0.22.54: secondary .8 -> 1. A sub role skill is already weaker by its own numbers (lower base power, and the hero's stats follow the main role: measured,
+// it lands near 40% of a main role skill), so the percent cut on top was a second deduction and is gone. Off role skills keep `off`.
+// own: skills that count as the class's main role whatever their delivery says (the kit and the learn levels are not touched by this).
+const ROLEPW={primary:1,secondary:1,off:.5,natLift:.05,natCap:1,fxShare:.33,offBuff:1,own:{archer:['pierce']}};
 // PACE (v0.9.5, pacing.js): the realm (0 = the first) in which each system opens on a journey started on v0.9.5 or later. Older journeys,
 // New Game+ cycles and the Daily Trial have everything open. pcUnlocked(system) reads it (the onboarding tips can ask it too).
 // combat, elements and taming are always open; tempering keeps its own rule (after the first Scourge); camp follows CAMP.fromStage.

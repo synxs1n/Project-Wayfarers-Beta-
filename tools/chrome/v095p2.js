@@ -50,7 +50,7 @@ const Q=await ev(()=>{const A=__A,T=A.TW.get,o={};
   B=window.__setup('cinderking',1);u=B.en[0];S=A.B4.gim();window.__turn(u);window.__turn(u);const c2=B.front[S.pend.slots[0]];window.__heal();c2.guard=false;const h2=B.b4gHits||0;window.__turn(u);o.open=(B.b4gHits||0)-h2;o.burn=!!c2.st.burn;
   B=window.__setup('ysolde',1);u=B.en[0];S=A.B4.gim();window.__turn(u);window.__turn(u);const rid=S.pend.id,ri=B.front.findIndex(x=>x.id===rid);B.cur=B.front.find(x=>x.id!==rid);B.mode='cmd';
   B.b4swT=null;B.pturns=20;o.swap=A.B4.freeSwap(ri,0);const H0=B.b4gHits||0;window.__heal();window.__turn(u);o.grounded=(B.b4gHits||0)===H0;
-  B=window.__setup('queenmantis',1);u=B.en[0];S=A.B4.gim();window.__turn(u);window.__turn(u);u.hp-=Math.ceil(u.S.mhp*.08);const n0=B.en.length;window.__turn(u);o.stopped=B.en.length===n0&&(B.b4gStop||0)>0;
+  B=window.__setup('queenmantis',1);u=B.en[0];S=A.B4.gim();window.__turn(u);window.__turn(u);u.hp-=Math.ceil(u.S.mhp*(A.BOSS_GIM?A.BOSS_GIM.def.queenmantis.thr+.01:.11));/* v0.22.54: the threshold is .1 (was .07) */const n0=B.en.length;window.__turn(u);o.stopped=B.en.length===n0&&(B.b4gStop||0)>0;
   B=window.__setup('ironsentinel',1);u=B.en[0];S=A.B4.gim();window.__turn(u);window.__turn(u);const a=B.front[0];B.cur=a;A.perform(a,{id:'tw',n:'Test Wave',k:'mag',pw:.2,t:'one',el:'water',mp:0,cost:1,hits:1},[u]);o.elStop=S.pend&&S.pend.stop===1;window.__turn(u);o.noBuff=!u.st.might;
   B=window.__setup('frostlich',1);u=B.en[0];S=A.B4.gim();window.__turn(u);window.__turn(u);window.__turn(u);const veil=S.act&&S.act.t==='veil';B.cur=B.front[0];B.mode='cmd';T('scan')(u);o.revealed=veil&&!S.act&&!u.st.g_veil;
   // the telegraph does not use the battle RNG

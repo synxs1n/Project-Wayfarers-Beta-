@@ -218,15 +218,22 @@ function b4GimTell(u){const S=B.b4g,D=S.D,live=b4GimLive();if(!live.length)retur
 function b4GimHint(D){return {slot:'Guard halves it, or swap a sturdier hero in.',rod:'Guard halves it; swap that hero out to ground it.',chill:'Guard to keep the cold off; a Fire skill thaws a hero.',
   tide:'An Earth skill dams the water.',dark:'A Fire or Light skill lights a torch.',sac:D.els?`Hit it with ${D.els.map(e=>EL[e]).join(' or ')}${D.thr?' or deal heavy damage':''} first.`:D.brk?'Break its shield or deal heavy damage first.':'Deal heavy damage first.',
   mirror:'Use weapons, not magic, next round.',veil:'Scan it or use a Light skill to reveal it.',wing:'Use Ranged shots or magic while it flies; Guard the marked spot.',phase2:''}[D.t]||'';}
+// v0.22.54: an answered gimmick pays. A stopped readied move, a marked hit every marked hero guarded, or a grounded or guarded rod
+// knocks BOSS_GIM.answer.pips off the boss's shield (so answering telegraphs brings the Break closer).
+function b4GimAnswered(u,why){const A=BOSS_GIM.answer;if(!A||!A.pips||!u||u.hp<=0||!u.maxShield||u.broken)return;B.b4gAns=(B.b4gAns||0)+1;log(`${why} ${u.name} is thrown off balance (shield -${A.pips}).`);fx(u,'Off balance','stat bad');chipShield(u,A.pips,'gimmick');}
+// auto (AUTO_NERF.guardMark): a hero the gimmick has marked guards when it is about to land and would hurt, like the careful player
+function b4GimAutoGuard(a){try{const S=B&&B.b4g;if(!S||!a||a.side!=='p'||!S.u||S.u.hp<=0)return false;const D=S.D,P=S.pend,A=S.act,ix=B.front.indexOf(a);if(ix<0)return false;
+  const marked=P&&((P.t==='slot'&&P.slots.includes(ix))||(P.t==='rod'&&P.id===a.id))||A&&A.t==='air'&&A.slots.includes(ix);
+  if(marked&&S.u.next<=B.time+delayOf(a,.6)&&a.hp/a.S.mhp<(D.pct||.2)+.55){guard();return true;}}catch(e){}return false;}
 function b4GimLand(u){const S=B.b4g,D=S.D,P=S.pend;S.pend=null;if(!P)return;B.b4gLand=(B.b4gLand||0)+1;
-  if(P.t==='slot'){const L=P.slots.map(i=>B.front[i]).filter(c=>c&&c.hp>0);log(b4GimFill(D.hit,L)+'!');banner(D.n,'#ff9a5a');L.forEach(c=>b4GimHit(u,c,D.pct,D.el,D.st));}
-  else if(P.t==='rod'){const c=B.front.find(x=>x&&x.id===P.id&&x.hp>0);if(!c){log(`The lightning finds no rod and grounds harmlessly.`);fx(u,'Grounded','stat');return;}
-    log(b4GimFill(D.hit,[c])+'!');banner(D.n,'#ffe04a');const i=B.front.indexOf(c);b4GimHit(u,c,D.pct,D.el,null);[i-1,i+1].forEach(j=>{const n=B.front[j];if(n&&n.hp>0)b4GimHit(u,n,D.pct*D.arc,D.el,null);});}
+  if(P.t==='slot'){const L=P.slots.map(i=>B.front[i]).filter(c=>c&&c.hp>0);log(b4GimFill(D.hit,L)+'!');banner(D.n,'#ff9a5a');const ok=L.length&&L.every(c=>c.guard);L.forEach(c=>b4GimHit(u,c,D.pct,D.el,D.st));if(ok)b4GimAnswered(u,'The Vanguard holds.');}
+  else if(P.t==='rod'){const c=B.front.find(x=>x&&x.id===P.id&&x.hp>0);if(!c){log(`The lightning finds no rod and grounds harmlessly.`);fx(u,'Grounded','stat');b4GimAnswered(u,'The bolt has nowhere to go.');return;}
+    log(b4GimFill(D.hit,[c])+'!');banner(D.n,'#ffe04a');const i=B.front.indexOf(c),ok=!!c.guard;b4GimHit(u,c,D.pct,D.el,null);[i-1,i+1].forEach(j=>{const n=B.front[j];if(n&&n.hp>0)b4GimHit(u,n,D.pct*D.arc,D.el,null);});if(ok)b4GimAnswered(u,`${c.name} takes the bolt on a raised guard.`);}
   else if(P.t==='chill'){log(D.hit+'!');B.front.forEach(c=>{if(!c||c.hp<=0)return;if(c.guard){fx(c,'Braced','stat good');return;}
     const v=((c.st.g_chill&&c.st.g_chill.v)||0)+1;if(v>=D.max){delete c.st.g_chill;fx(c,'Frozen','stat bad');log(`${c.name} freezes solid!`);addSt(c,'stun',u,true);}else{c.st.g_chill={t:99,v};fx(c,'Chill '+v,'stat bad');}});}
   else if(P.t==='tide'||P.t==='dark'){S.lvl=Math.min(D.max,S.lvl+1);fx(u,D.n+' '+S.lvl,'stat bad');log(`${D.hit} (level ${S.lvl} of ${D.max}).`);}
   else if(P.t==='sac'){const stop=P.stop||(D.thr&&P.hp0-u.hp>=D.thr*u.S.mhp)||(D.brk&&u.broken);
-    if(stop){log(D.stop+'!');fx(u,'Stopped','stat');B.b4gStop=(B.b4gStop||0)+1;return;}
+    if(stop){log(D.stop+'!');fx(u,'Stopped','stat');B.b4gStop=(B.b4gStop||0)+1;b4GimAnswered(u,'');return;}
     log(D.hit+'!');banner(D.n,'#ff9a5a');
     if(D.fx==='heal'){const n=Math.min(u.S.mhp-u.hp,Math.round(u.S.mhp*D.heal*b4GimK()));if(n>0){u.hp+=n;fx(u,'+'+n,'heal');}}
     else if(D.fx==='summon'){if(B.en.filter(x=>x.hp>0).length<3&&MON[D.mon]){const s=makeEnemy(MON[D.mon],Math.max(1,u.lv-3));s.next=B.time+300;s.enterT=Date.now();B.en.push(s);log(`${s.name} joins the fight!`);}}
@@ -236,7 +243,7 @@ function b4GimLand(u){const S=B.b4g,D=S.D,P=S.pend;S.pend=null;if(!P)return;B.b4
   else if(P.t==='veil'){S.act={t:'veil'};log(D.hit+'.');}
   else if(P.t==='wing'){S.act={t:'air',slots:b4GimSlots(1,true)};const c=B.front[S.act.slots[0]];log(`${D.hit}! It will dive at ${c?c.name+'\'s':'a'} spot next turn.`);}}
 function b4GimExpire(u){const S=B.b4g,D=S.D,A=S.act;if(!A)return;S.act=null;
-  if(A.t==='air'){const L=A.slots.map(i=>B.front[i]).filter(c=>c&&c.hp>0);log(b4GimFill(D.dive,L)+'!');L.forEach(c=>b4GimHit(u,c,D.pct,D.el,null));}
+  if(A.t==='air'){const L=A.slots.map(i=>B.front[i]).filter(c=>c&&c.hp>0);log(b4GimFill(D.dive,L)+'!');const ok=L.length&&L.every(c=>c.guard);L.forEach(c=>b4GimHit(u,c,D.pct,D.el,null));if(ok)b4GimAnswered(u,'The dive glances off a raised guard.');}
   else if(A.t==='veil')log(`The mist around ${u.name} thins.`);else if(A.t==='mirror')log(`The mirror around ${u.name} falls.`);}
 function b4GimPhase(u){const S=B&&B.b4g;if(!S||u!==S.u||S.D.t!=='phase2'||u.hp<=0)return;const D=S.D;
   if(!S.warned&&u.hp<=u.S.mhp*D.warn){S.warned=1;B.b4gTells=(B.b4gTells||0)+1;fx(u,'Telegraph','stat bad');log(`${D.tell}: at half HP it becomes something worse. ${D.d}.`);}

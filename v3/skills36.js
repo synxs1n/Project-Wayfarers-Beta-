@@ -18,7 +18,7 @@
 //    about a tenth more than before.
 // Relic skills (s.relic) are not touched here; relics25.js has their own cut.
 const S36={v:1,early:20,bands:[14,28],taken2:/^(Wind Fan|Light Refrain)$/,/* Drift's and Aria's own skills */elAlt:{fire:'Ember',water:'Tide',ice:'Frost',lightning:'Thunder',earth:'Stone',wind:'Gale',shadow:'Umbral',light:'Radiant'},heal:.88,off:false,taken:/^Halo of (Light|Wind)$/,/* Lumen's and Pomona's own skills (v191a) */log:{moved:[],swapped:[],gaps:[],uneven:[]},
-  regenKeep:{'Sanctuary':1,'Tidal Renew':1,'Radiant Renew':1,'Meditate':1},
+  regenKeep:{'Sanctuary':1,'Prayer of Renewal':1,'Prayer of Dawn':1,'Meditate':1},/* the Priest's Regen prayers were Tidal Renew and Radiant Renew until the 0.22.54 text sweep */
   regenTo:{'Blessing':'focus','Beacon Ward':'bulwark','Aurora':'focus','Spectrum Aria':'might','Cathedral Descant':'bulwark','Kennel Blessing':'focus','Iron Stance':'bulwark','Shield Ally':'ward','Lampglow':'bulwark'},
   elN:{fire:'Fire',water:'Water',ice:'Ice',lightning:'Lightning',earth:'Earth',wind:'Wind',shadow:'Shadow',light:'Light'}};
 function s36Regen(s){const drop=L=>{if(!L)return false;const i=L.findIndex(q=>q[0]==='regen');if(i<0)return false;L.splice(i,1);return true;};
@@ -29,7 +29,7 @@ function s36Regen(s){const drop=L=>{if(!L)return false;const i=L.findIndex(q=>q[
   const tn=to&&STS[to]?STS[to].n:null;let d=String(s.d||'');
   if(s.n==='Lampglow')d=d.replace('grants Regen and Ward','grants Bulwark');
   else if(tn)d=d.replace(/\bRegen\b/,tn);
-  else d=d.replace(/,? and Regen\b/,'').replace(/\bRegen and /,'').replace(/, Regen\b/,'').replace(/\bRegen, /,'').replace(/\s+and grants\s*\./,'.').replace(/ and grants$/,'');
+  else d=d.replace(/, (\w+) and Regen\b/,' and $1').replace(/\s+and grants Regen(?=[.;,]|$)/,'').replace(/\s+and the line gains Regen(?=[.;,]|$)/,'').replace(/,? and Regen\b/,'').replace(/\bRegen and /,'').replace(/, Regen\b/,'').replace(/\bRegen, /,'').replace(/\s+and grants\s*\./,'.').replace(/ and grants$/,'');
   s.d=d;s._s36r=1;}
 function s36Dual(t,L){const els=t.el||[];if(els.length<2)return;const role=s=>s.role==='primer'?'p':s.role==='det'?'d':'';
   // what counts for an element: its own Primers and Detonators, and a Dual art with a role (it primes with both elements, or detonates on either)
