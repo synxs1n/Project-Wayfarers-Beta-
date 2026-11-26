@@ -81,6 +81,9 @@ function sigBuild(t){
   s.d=nm[1]+' '+parts.join(' ');s.lv0=s.lv;return s;
 }
 // replace the class's flavour skill with an element version
+// v0.22.58: two signature skills did exactly what a class skill of the same hero does (Gilda's Tavern Anthem = Battle Hymn, Halden's Frostwall = Aegis);
+// each gets one more effect so nothing in a kit is a copy.
+const SIG_EXTRA={gilda:{fx:[['focus',1]],d:'The room joins in: Focus too.'},halden:{fx:[['bulwark',1]],d:'The cold holds: Bulwark too.'}};
 function sigFlavour(L,t){
   const id=SIG_SWAP[t.cls],s=L.find(x=>x.id===id);if(!s)return;const e=t.el[0],adj=SIG_ADJ[e];if(!adj||s.sigFl)return;
   const ally=SIG_T[t.cls]&&SIG_T[t.cls][0].rider==='ally'&&(t.cls==='healer'),rd=(ally?SIG_ALLY:SIG_FOE)[e];if(!rd)return;
@@ -96,7 +99,7 @@ function sigFlavour(L,t){
 }
 HOOK.xform('classSkills','sigskills','the wayfarer\'s signature skill and element flavour',function(L,t){
   if(!L||L._sg||!t||t.src==='L'||t.src==='x'||t.mon||!SIG_NAMES[t.id])return L;L._sg=1;
-  try{sigFlavour(L,t);const s=sigBuild(t);if(s){const d=typeof dlFor==='function'?dlFor(t.cls,s):null;if(d)s.dl=d;L.push(s);L.sort((a,b)=>a.lv-b.lv||(a.lv0||a.lv)-(b.lv0||b.lv));}}catch(e){}
+  try{sigFlavour(L,t);const s=sigBuild(t);if(s){const X=SIG_EXTRA[t.id];if(X){s.fx=(s.fx||[]).concat(X.fx.map(f=>f.slice()));s.d=(s.d||'')+' '+X.d;}const d=typeof dlFor==='function'?dlFor(t.cls,s):null;if(d)s.dl=d;L.push(s);L.sort((a,b)=>a.lv-b.lv||(a.lv0||a.lv)-(b.lv0||b.lv));}}catch(e){}
   return L;});
 // ---- report (used by the tests and the design notes) ----
 function sigReport(){

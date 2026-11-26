@@ -70,3 +70,20 @@ Journey with items (16 runs, before `BOSS_FIT`): level 40.2, 7.4 boss tries a jo
 - Tuning to item use pushed realm 4 power from 2.04 to 2.8 and the Calamity from 1.42 to 1.9. Losses there start early (first KO near hero turn 5), and a
   party that brings no items wins about 41% and 36% of those fights.
 - The first realm's field fights are 99% wins with about 1% HP lost. That is the same on 0.22.56 (before the gear change).
+
+## 0.22.58: the full size check, and the skill pass
+
+Full size check of 0.22.57 with items (two seeds, 120 fights a cell): 69 / 62 / 61 / 58 / 51%. Every boss between 44 and 74%; five cells above 70, all in the
+first realm (71 to 74). `BOSS_BUFF.pow` then went to [.925,1.12,1.57,2.9,1.95] (the second realm came down because the skill pass below weakened
+early parties: a 30 fight check gave 65 / 55 / 55 / 53 / 61 before that last step). Bone Colossus realm 3 and 4 and Candlemoth realm 3 got a `BOSS_FIT` step.
+**The last step is not measured at full size.**
+
+Skills (`tools`: the scratch duplicate finder compares, inside one hero's kit, kind, target, elements, statuses, heal, hits and special flags):
+- 54 of 88 heroes had sets of skills that differed only in power. Each capstone has its own effect now: Titan Blow and the Mage's great spell `shieldChip:1`,
+  Judgement `self` Bulwark, Dragon Fist `drain` .25, Grand Finale Weaken .6, Verdict Blind .6, Full Mend `cleanse`, Rune Weaken .5; `SIG_EXTRA` for the two
+  signature skills that copied a class skill. A primer and a detonator of one element are not counted as copies.
+- The effects were chosen so they do not match any hero's signature skill of that class (Bulwark on Full Mend, Stun on Dragon Fist and Break on Rune did).
+- Giving Assassinate `execute` reshuffled the Thief's 12 skill kit and moved learn levels, so it was taken back out. Check any new skill flag with a kit dump.
+- Power: Burst Arrow 1.6 -> 1.9, Archer element arrows 1.6 -> 1.45, Rune 1.3 -> 1.6 (mp 9 -> 8), Judgement 3 -> 2.7, Knight Lance 1.75 -> 1.6, Aria 2.1 -> 1.7,
+  Death Lotus .72 -> .58 a hit, Ascension Fist .95 -> .88 a hit, Heavenpiercer 4.4 -> 4.2, Dragon Fist 3.1 -> 2.9. Mage magic growth 2.55 -> 2.7.
+- `eff` with items after: Archer 1,687, Mage 1,590 (before the growth fix), Warrior 1,575, Monk 1,401, Bard 1,335, Thief 1,332, Knight 892, Priest 834.
