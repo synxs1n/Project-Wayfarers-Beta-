@@ -338,7 +338,7 @@ const ROLES={
     healer:[{id:'r_bless',n:'Blessing',k:'status',t:'ally',mp:6,lv:10,fx:[['might',1],['regen',1]],d:'A blessing on one ally: Might and Regen.',r:'buffer'},
       {id:'r_aegis',n:'Holy Aegis',k:'status',t:'allyAll',mp:14,lv:17,fx:[['bulwark',1]],d:'A dome of light: Bulwark for the vanguard.',r:'buffer'}],
     bard:[{id:'r_anthem',n:'Anthem of Valor',k:'status',t:'allyAll',mp:16,lv:14,fx:[['might',1],['haste',1]],d:'The battle anthem: Might and Haste for the vanguard.',r:'buffer'},
-      {id:'r_aria',n:'{n1} Aria',k:'mag',pw:2.1,mp:5,lv:5,el:'e1',d:'A piercing {n1} note aimed at one foe.',r:'magic'},
+      {id:'r_aria',n:'{n1} Aria',k:'mag',pw:1.7,mp:5,lv:5,el:'e1',d:'A piercing {n1} note aimed at one foe.',r:'magic'},
       {id:'r_ballad',n:'Healing Ballad',k:'heal',pw:1.75,mp:6,t:'ally',lv:8,d:'A slow ballad that mends one ally.',r:'healer'},
       {id:'r_chorus',n:'Restoring Chorus',k:'heal',pw:1.2,mp:12,t:'allyAll',lv:18,fx:[['regen',1]],d:'The whole line sings along: heals the vanguard and grants Regen.',r:'healer'},
       {id:'r_storm',n:'{n1} Storm Song',k:'mag',pw:2.8,mp:14,cost:1.2,lv:26,el:'e1',d:'The song rises into a {n1} storm on one foe. Slow recovery.',r:'magic'}],
@@ -351,7 +351,9 @@ const ROLES={
   // adj: changes to existing class skills (by class and skill id), merged in when the list is built
   adj:{chronicler:{annotate:{fx:[['break',.9],['weaken',.5]],rl:'debuffer'},redact:{fx:[['blind',.7]]}},bard:{tune1:{pw:1},tune2:{pw:1}},druid:{wildmend:{chi:1,pw:1.15}},
     // v0.19: role power now comes from ROLEPW, so a few sub role numbers are set to keep every secondary in the 55 to 78% band
-    knight:{lance1:{pw:1.75},lance2:{pw:1.75},judge:{pw:3}},thief:{assn:{pw:2.3}},
+    // v0.22.58: with the sub role percent cut gone (0.22.54) these make-up numbers came down: Lance 1.75 -> its own 1.6, Judgement 3 -> 2.7 (a Knight's capstone
+    // matched the Warrior's Titan Blow)
+    knight:{judge:{pw:2.7}},thief:{assn:{pw:2.3}},
     // v0.22.54: Piercing Shot is a bow shot, so it counts as the Marksman's own (ROLEPW.own; as a Striker sub role skill it still out-hit every Marksman shot): 2.8 x .8 -> 2.4 x 1
     archer:{pierce:{pw:2.4}}},
   charms:[{id:'c_rl_mend',n:"Mender's Locket",st:{mag:8,res:6},attr:{fth:3},perk:{healUp:.12},d:'+12% healing',price:520},
