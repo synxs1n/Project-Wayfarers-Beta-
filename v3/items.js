@@ -43,11 +43,11 @@ const MON_DROPS={mossling:['healroot','ichor'],gustimp:['ichor','oak'],dewtoad:[
 const PART_PRICE={hide:30,fang:32,scale:36,ichor:36,grit:40},PART_STOCK=3;
 const GEAR={};
 // v0.22.57 gear pass (docs/balance56.md): the tier curve is flatter. WP was [6,14,25,39,57,80] (13x from Common to Mythic), AP [5,11,18,27,38,52]; they are
-// [8,14,20,27,35,44] and [6,11,16,22,29,37] now, and what a tier used to add comes with the hero's level instead (GEAR_LV in config.js, calcStats), so a
-// hero at each realm's usual level and gear is where they were and a missed shop visit costs less. FORGE_STEP .11 -> .08: a piece at +3 (x1.24) still
+// [8,14,20,27,35,45] and [6,11,16,22,29,37] now, and what a tier used to add comes with the hero's level instead (GEAR_LV in config.js, calcStats), so a
+// hero at each realm's usual level and gear is where they were and a missed shop visit costs less. FORGE_STEP .11 -> .07: a piece at +3 (x1.21) still
 // stays under the next rarity at +0 (test v188a.js; the smallest step between rarities is now x1.26).
-const ARM_K=3.5,FORGE_STEP=.08,ARM_MAIL_RES=.55;
-const WP=[8,14,20,27,35,44],AP=[6,11,16,22,29,37],PRICE=[60,150,380,750,1400,2400];
+const ARM_K=3.5,FORGE_STEP=.07,ARM_MAIL_RES=.55;
+const WP=[8,14,20,27,35,45],AP=[6,11,16,22,29,37],PRICE=[60,150,380,750,1400,2400];
 const WN={blade:['Iron Blade','Steel Brand','Mythril Saber','Dawnsteel Blade','Stormforged Edge','Starcleaver'],
  staff:['Oak Staff','Moonwood Staff','Sage Rod','Tidecaller Staff','Skyglass Scepter','Lodestar Rod'],
  bow:['Hunter Bow','Yew Bow','Falcon Bow','Frostwood Bow','Galewing Bow','Meridian Bow'],
@@ -139,7 +139,7 @@ const ITEM_TIERS=[
  {n:'Echoforged',c:'#c9a6ff',c2:'#7df0e0',pip:'❂'}];/* 0.22.47: the violet of the Echoes (their glow is #b48aff; lifted a little so it does not read as Epic), with the Rift's teal as the second colour of the shimmer. It was a pale gold. */
 const ITEM_TIER_OF={potion:0,remedy:0,porkchop:0,ether:1,hipotion:1,vigor:1,sage:1,tent:1,holywater:2,plume:3,elixir:3};// v0.10.8: Elixir was tier 4 ('Legendary'), a chest staple // consumables
 const STN={hp:'HP',mp:'MP',atk:'ATK',def:'DEF',mag:'MAG',res:'RES',spd:'SPD'};
-// Tempered gear carries a +N suffix: each level adds FORGE_STEP (8%) to its stats.
+// Tempered gear carries a +N suffix: each level adds FORGE_STEP (7%) to its stats.
 function gearOf(id){
   if(!id)return null;if(id==='w_stick')return stickGear();const m=String(id).match(/^(.*)\+(\d)$/);
   if(!m)return GEAR[id]||null;

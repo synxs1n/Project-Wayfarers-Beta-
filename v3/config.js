@@ -149,7 +149,7 @@ const BOSS_PIPS={mult:1.5};const BREAK_WIN={bonus:1.3,short:true};
 // tempered gear or a party built against it. Without items the same fights run about 5 to 25 points lower. Was hp [1.2,1.55,1.6,2.05,1.78], pow [.88,1.14,1.38,1.87,1.22].
 // v0.22.54: less burst and longer fights, and a steady ramp: the win rate of a careful party at the expected level steps down a little each realm (about
 // 66, 63, 60, 57, 53%) and the hero turns in a won fight step up a little (about 28, 31, 35, 39, 43). pow was [.955,1.28,1.32,1.535,1.23], hp [.8,1.34,1.39,1.53,1.22].
-const BOSS_BUFF={hp:[1.28,1.6,1.65,2.0,1.8],pow:[.92,1.185,1.58,2.8,1.88]}// v0.19: eased about 7% hp and 3% pow with the role power change (was hp [.9,1.5,1.55,1.7,1.36], pow [1,1.34,1.38,1.6,1.28]) to pay for the 12 skill kit, role power and no dual ultimates, so the journey sim stays at level 41.3 and 14.6 boss tries (before the skill changes: 40.5 and 11.1; without the ease: 42.6 and 19.6); v0.4.3: re-tuned with capes; v0.8.2: the first three Scourges eased (were hp 1.3, 1.75, 1.8 and pow 1.15, 1.4, 1.44) so no boss is a wall; v0.9.5: hp [1.15,1.65,1.7,2.0,1.52] -> about 4 to 10% less, the realm gimmicks (BOSS_GIM) carry the rest
+const BOSS_BUFF={hp:[1.28,1.6,1.65,2.0,1.8],pow:[.9,1.185,1.57,2.8,1.9]}// v0.19: eased about 7% hp and 3% pow with the role power change (was hp [.9,1.5,1.55,1.7,1.36], pow [1,1.34,1.38,1.6,1.28]) to pay for the 12 skill kit, role power and no dual ultimates, so the journey sim stays at level 41.3 and 14.6 boss tries (before the skill changes: 40.5 and 11.1; without the ease: 42.6 and 19.6); v0.4.3: re-tuned with capes; v0.8.2: the first three Scourges eased (were hp 1.3, 1.75, 1.8 and pow 1.15, 1.4, 1.44) so no boss is a wall; v0.9.5: hp [1.15,1.65,1.7,2.0,1.52] -> about 4 to 10% less, the realm gimmicks (BOSS_GIM) carry the rest
 // BOSS_GIM (v0.9.5, battle4.js): every Scourge and Calamity brings one realm gimmick to its first fight (kind 'boss'; not Echoes, not the Daily
 // Trial). Each is telegraphed on the boss's turn (a log line, a "Telegraph" chip on the boss, a mark on the heroes it will hit) and lands on its
 // next turn, so reading it pays. first: the boss's turn of the first telegraph; every: turns between telegraphs (per boss: every).
@@ -185,12 +185,17 @@ const BOSS_GIM={on:true,daily:false,first:2,every:4,stageK:[.5,.85,1,1,1],answer
 // 3.4 small parties: each hero short of six makes Scourges and Calamities this much beefier (a full party of six is the benchmark)
 // v0.22.54: the benchmark is the party a journey has by that realm (expect: 3, 4, 5, 6, 6), so the old numbers are unchanged for it; a party
 // SHORT of that size no longer faces a beefier boss on top: each hero short eases the boss by short.hp and short.pow instead.
+// BOSS_FIT (v0.22.57): the band. Power of one Scourge in one realm (index = realm 1 to 4), or of a Calamity (one number), on top of BOSS_BUFF. A boss
+// can be easy in one realm and hard in another (the Ashen Wyvern won 85% in the first realm and 43% in the fourth), which no single stat fixes. Each
+// entry comes from tools/fullsim.js gim with ITEMS=1 (two seeds, 120 fights a cell): 1 + (win rate - the realm's target) / 110, kept within .85 to 1.18,
+// only where the cell was 5 points or more off. Targets: 66, 62, 58, 54, 50.
+const BOSS_FIT={thornwarden:[1,1.12,1.17,1],drake:[1,1,1,0.95],hoarwyrm:[0.95,1,1,1],bonecolossus:[1,1.16,1.05,1.18],queenmantis:[1,1.1,1,1],gloomcap:[1,1.05,1.05,1.11],ironsentinel:[0.93,0.86,0.95,1],ashwyvern:[1.17,1,1,0.9],frostlich:[1,1,0.94,0.94],candlemoth:[1.06,0.91,1,0.92],brinehag:[1,1.08,1,1.09],crowregent:[1.07,1,1,0.85],geysermatron:[0.9,0.95,1.09,1],dimmer:1.13,hollowking:1.08};
 const BOSS_SIZE={hp:.07,pow:.06,expect:[3,4,5,6,6],short:{hp:.08,pow:.05}};// per stage 1 to 5
 // STUN_CAP (v0.22.54): a hero who has just lost a turn to a stun (or a freeze) cannot be stunned again until after their next turn.
 const STUN_CAP={on:true};
-// REGEN (v0.22.57): share of max HP a turn. Heroes .06 (was .08: Regen every turn was the second half of the Priest's lead); foes keep .08. DOT_BOSS: Poison on a
+// REGEN (v0.22.57): share of max HP a turn. Heroes .07 (was .08: Regen every turn was the second half of the Priest's lead); foes keep .08. DOT_BOSS: Poison on a
 // Scourge or Calamity, share of its max HP a turn (was .02; the Thief's and Archer's ailments now count for something on a boss).
-const REGEN={hero:.06,foe:.08},DOT_BOSS={poison:.03};
+const REGEN={hero:.07,foe:.08},DOT_BOSS={poison:.03};
 // GEAR_LV (v0.22.57, calcStats): what the old, steeper gear tiers added now grows with the hero. w and a are the old minus the new weapon and armor
 // power at each realm's usual level (lv: 8, 16, 24, 32, 40; straight lines between, flat after 40). A hero gets it in the shape of their class's own
 // weapon and armor family (a Mage as magic and resistance, a Knight as attack, defense and HP).

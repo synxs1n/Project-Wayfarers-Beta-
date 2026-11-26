@@ -2277,7 +2277,7 @@ html:not(.flat) .battle.b3 .bline .b4mo .b4bar{box-shadow:inset 0 0 0 1px #000,0
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.22.56";const APP_BUILD="a19a9365f75c";
+(function(){const APP_VER="0.22.57";const APP_BUILD="e7da74291149";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2504,9 +2504,12 @@ const BOSS_LV={frac:.5,cap:12};
 // 3.2 bosses: shield pips +50% (5 to 8, 7 to 11); the break window hits for less and is over once the foe loses the turn it staggers
 const BOSS_PIPS={mult:1.5};const BREAK_WIN={bonus:1.3,short:true};
 // 3.2 extra boss muscle on top of the old stat table (hp and power multipliers)
+// v0.22.57: tuned WITH item use (tools/fullsim.js ITEMS=1: a bag sized for the realm, used by the auto item rules): the win rate of a careful party at
+// the expected level steps down about 4 points a realm (about 66, 62, 58, 54, 50%) and no boss is meant to pass 70% without over-levelling, top
+// tempered gear or a party built against it. Without items the same fights run about 5 to 25 points lower. Was hp [1.2,1.55,1.6,2.05,1.78], pow [.88,1.14,1.38,1.87,1.22].
 // v0.22.54: less burst and longer fights, and a steady ramp: the win rate of a careful party at the expected level steps down a little each realm (about
 // 66, 63, 60, 57, 53%) and the hero turns in a won fight step up a little (about 28, 31, 35, 39, 43). pow was [.955,1.28,1.32,1.535,1.23], hp [.8,1.34,1.39,1.53,1.22].
-const BOSS_BUFF={hp:[1.2,1.55,1.6,2.05,1.78],pow:[.88,1.14,1.38,1.87,1.22]}// v0.19: eased about 7% hp and 3% pow with the role power change (was hp [.9,1.5,1.55,1.7,1.36], pow [1,1.34,1.38,1.6,1.28]) to pay for the 12 skill kit, role power and no dual ultimates, so the journey sim stays at level 41.3 and 14.6 boss tries (before the skill changes: 40.5 and 11.1; without the ease: 42.6 and 19.6); v0.4.3: re-tuned with capes; v0.8.2: the first three Scourges eased (were hp 1.3, 1.75, 1.8 and pow 1.15, 1.4, 1.44) so no boss is a wall; v0.9.5: hp [1.15,1.65,1.7,2.0,1.52] -> about 4 to 10% less, the realm gimmicks (BOSS_GIM) carry the rest
+const BOSS_BUFF={hp:[1.28,1.6,1.65,2.0,1.8],pow:[.9,1.185,1.57,2.8,1.9]}// v0.19: eased about 7% hp and 3% pow with the role power change (was hp [.9,1.5,1.55,1.7,1.36], pow [1,1.34,1.38,1.6,1.28]) to pay for the 12 skill kit, role power and no dual ultimates, so the journey sim stays at level 41.3 and 14.6 boss tries (before the skill changes: 40.5 and 11.1; without the ease: 42.6 and 19.6); v0.4.3: re-tuned with capes; v0.8.2: the first three Scourges eased (were hp 1.3, 1.75, 1.8 and pow 1.15, 1.4, 1.44) so no boss is a wall; v0.9.5: hp [1.15,1.65,1.7,2.0,1.52] -> about 4 to 10% less, the realm gimmicks (BOSS_GIM) carry the rest
 // BOSS_GIM (v0.9.5, battle4.js): every Scourge and Calamity brings one realm gimmick to its first fight (kind 'boss'; not Echoes, not the Daily
 // Trial). Each is telegraphed on the boss's turn (a log line, a "Telegraph" chip on the boss, a mark on the heroes it will hit) and lands on its
 // next turn, so reading it pays. first: the boss's turn of the first telegraph; every: turns between telegraphs (per boss: every).
@@ -2542,13 +2545,21 @@ const BOSS_GIM={on:true,daily:false,first:2,every:4,stageK:[.5,.85,1,1,1],answer
 // 3.4 small parties: each hero short of six makes Scourges and Calamities this much beefier (a full party of six is the benchmark)
 // v0.22.54: the benchmark is the party a journey has by that realm (expect: 3, 4, 5, 6, 6), so the old numbers are unchanged for it; a party
 // SHORT of that size no longer faces a beefier boss on top: each hero short eases the boss by short.hp and short.pow instead.
+// BOSS_FIT (v0.22.57): the band. Power of one Scourge in one realm (index = realm 1 to 4), or of a Calamity (one number), on top of BOSS_BUFF. A boss
+// can be easy in one realm and hard in another (the Ashen Wyvern won 85% in the first realm and 43% in the fourth), which no single stat fixes. Each
+// entry comes from tools/fullsim.js gim with ITEMS=1 (two seeds, 120 fights a cell): 1 + (win rate - the realm's target) / 110, kept within .85 to 1.18,
+// only where the cell was 5 points or more off. Targets: 66, 62, 58, 54, 50.
+const BOSS_FIT={thornwarden:[1,1.12,1.17,1],drake:[1,1,1,0.95],hoarwyrm:[0.95,1,1,1],bonecolossus:[1,1.16,1.05,1.18],queenmantis:[1,1.1,1,1],gloomcap:[1,1.05,1.05,1.11],ironsentinel:[0.93,0.86,0.95,1],ashwyvern:[1.17,1,1,0.9],frostlich:[1,1,0.94,0.94],candlemoth:[1.06,0.91,1,0.92],brinehag:[1,1.08,1,1.09],crowregent:[1.07,1,1,0.85],geysermatron:[0.9,0.95,1.09,1],dimmer:1.13,hollowking:1.08};
 const BOSS_SIZE={hp:.07,pow:.06,expect:[3,4,5,6,6],short:{hp:.08,pow:.05}};// per stage 1 to 5
 // STUN_CAP (v0.22.54): a hero who has just lost a turn to a stun (or a freeze) cannot be stunned again until after their next turn.
 const STUN_CAP={on:true};
-// CLS_TUNE (v0.22.54 class pass, docs/balance54.md): multipliers on a class's final stats (gear included; not in the Daily Trial). Measured in boss fights:
-// a Warrior had the least resistance and the fewest turns, a Knight half the average damage, an Archer hit like a Monk. The order aimed for (tools/fullsim.js
-// eff): Mage and Archer deal the most, the Warrior is third and the sturdy front line, the Monk does a bit of everything and is best at nothing.
-const CLS_TUNE={warrior:{atk:1.1,hp:1.15,res:1.3,spd:1.15},knight:{atk:1.1,spd:1.1},archer:{atk:1.34},monk:{atk:.82}};
+// REGEN (v0.22.57): share of max HP a turn. Heroes .07 (was .08: Regen every turn was the second half of the Priest's lead); foes keep .08. DOT_BOSS: Poison on a
+// Scourge or Calamity, share of its max HP a turn (was .02; the Thief's and Archer's ailments now count for something on a boss).
+const REGEN={hero:.07,foe:.08},DOT_BOSS={poison:.03};
+// GEAR_LV (v0.22.57, calcStats): what the old, steeper gear tiers added now grows with the hero. w and a are the old minus the new weapon and armor
+// power at each realm's usual level (lv: 8, 16, 24, 32, 40; straight lines between, flat after 40). A hero gets it in the shape of their class's own
+// weapon and armor family (a Mage as magic and resistance, a Knight as attack, defense and HP).
+const GEAR_LV={on:true,lv:[8,16,24,32,40],w:[-2,0,5,12,22],a:[-1,0,2,5,9]};// the first entries are negative: Common gear is a little stronger than it was
 // TAUNT (v0.22.54): a hero under Taunt is braced: they take `cut` less damage from every hit (drawing fire was a death sentence for a Warrior).
 const TAUNT={cut:.3};
 // 3.3 echo levels. Story echo base = boss base + storyAdd; Sanctum echoes use fixed bases. While the party's highest hero is more than
@@ -2669,8 +2680,8 @@ const ROLES={
     area:2,self:.6,tauntless:.55,tankRef:1.12,top:2,chiK:1.25},
   sk:{
     warrior:[{id:'r_sunder',n:'Sunder',k:'phys',pw:1.1,mp:5,lv:11,fx:[['break',.8]],d:'A splitting blow that cracks armor. Likely Breaks.',r:'debuffer'},
-      {id:'r_shout',n:'Intimidating Shout',k:'status',t:'all',mp:8,lv:16,fx:[['weaken',.8]],d:'A roar that shakes every foe. Likely Weakens them.',r:'debuffer'},
-      {id:'r_stance',n:'Iron Stance',k:'status',t:'self',mp:7,lv:20,fx:[['taunt',1],['regen',1]],d:'Plants his feet: Taunt and Regen. The line hides behind him.',r:'tank'}],
+      {id:'r_shout',n:'Intimidating Shout',k:'status',t:'all',mp:8,cost:.7,lv:16,fx:[['weaken',.8]],d:'A short roar that shakes every foe. Likely Weakens them.',r:'debuffer'},
+      {id:'r_stance',n:'Iron Stance',k:'status',t:'self',mp:7,cost:.5,lv:20,fx:[['taunt',1],['regen',1]],d:'Plants his feet in a moment: Taunt and Regen. The line hides behind him.',r:'tank'}],
     knight:[{id:'r_banner',n:'Raise the Banner',k:'status',t:'allyAll',mp:12,lv:19,fx:[['haste',1]],d:'The standard goes up: Haste for the vanguard.',r:'buffer'},
       {id:'r_cover',n:'Shield Ally',k:'status',t:'ally',mp:5,lv:13,fx:[['bulwark',1],['regen',1]],d:'Covers an ally: Bulwark and Regen.',r:'buffer'}],
     archer:[{id:'r_cripple',n:'Crippling Shot',k:'phys',pw:1,mp:6,lv:15,dl:'ranged',fx:[['weaken',.85],['slow',.7]],d:'An arrow to the sword arm. Likely Weakens, may Slow.',r:'debuffer'},
@@ -2680,8 +2691,8 @@ const ROLES={
       {id:'r_hamstr',n:'Hamstring',k:'phys',pw:.8,mp:5,cost:.8,lv:12,fx:[['slow',.8],['weaken',.5]],d:'A cut behind the knee. Likely Slows, may Weaken.',r:'debuffer'},
       {id:'r_toxin',n:'Toxic Cloud',k:'status',t:'all',mp:10,lv:18,fx:[['poison',.85],['weaken',.6]],d:'A cloud of venom over every foe. Likely Poisons, may Weaken.',r:'debuffer'},
       {id:'r_fuma',n:'Fuma Shuriken',k:'phys',pw:1.9,mp:12,cost:1.1,pierce:1,lv:24,dl:'piercing',d:'A great folding shuriken that cuts through armor. Piercing; ignores half of defense.',r:'ranged'}],
-    monk:[{id:'r_chimend',n:'Chi Mend',k:'heal',chi:1,pw:1.6,mp:5,t:'ally',lv:7,d:'Pushes chi into an ally to close their wounds.',r:'healer'},
-      {id:'r_harmony',n:'Harmony Meditation',k:'status',t:'allyAll',mp:10,lv:14,fx:[['focus',1]],heal:.2,d:'The line breathes with him: Focus (more crit chance for a few turns) for the vanguard and a 20% heal.',r:'buffer'},
+    monk:[{id:'r_chimend',n:'Chi Mend',k:'heal',chi:1,pw:1.85,mp:5,t:'ally',lv:7,d:'Pushes chi into an ally to close their wounds.',r:'healer'},
+      {id:'r_harmony',n:'Harmony Meditation',k:'status',t:'allyAll',mp:10,lv:14,fx:[['focus',1]],heal:.23,d:'The line breathes with him: Focus (more crit chance for a few turns) for the vanguard and a 23% heal.',r:'buffer'},
       {id:'r_lotus',n:'Lotus Circle',k:'heal',chi:1,pw:1.1,mp:12,t:'allyAll',lv:21,d:'A shared meditation that heals the vanguard.',r:'healer'}],
     mage:[{id:'r_snare',n:'Time Snare',k:'status',t:'all',mp:10,lv:16,fx:[['slow',.6],['weaken',.25]],d:'Thickens time around every foe. Likely Slows, may Weaken.',r:'debuffer'}],
     healer:[{id:'r_bless',n:'Blessing',k:'status',t:'ally',mp:6,lv:10,fx:[['might',1],['regen',1]],d:'A blessing on one ally: Might and Regen.',r:'buffer'},
@@ -3081,7 +3092,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.22.56";const APP_BUILD="a19a9365f75c";
+const APP_VER="0.22.57";const APP_BUILD="e7da74291149";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -3089,6 +3100,7 @@ const APP_VER="0.22.56";const APP_BUILD="a19a9365f75c";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.22.57',['Gear tiers are flatter. A Mythic weapon was 13 times a Common one; it is about 5 times now, and armor the same way. What the steep tiers used to add now grows with the hero\'s level, in the shape of their class\'s own weapon and armor, so a hero at each realm\'s usual level and gear is where they were, and a missed shop visit costs less. Mythic gear at level 40 is about 8% weaker than before.','Tempering adds 7% a level (was 11%), so a piece at +3 still stays under the next rarity.','Heavy armor no longer slows its wearer (it keeps its MP cost) and carries more resistance: 55% of its defense, up from 40%.','Shields carry nearly twice the resistance. A shield is the front line\'s answer to magic.','Swords: Guard blocks 65% of a hit instead of half (was +8% critical damage). Daggers: +15% damage to a foe with any ailment, +3% critical chance (was +6% critical chance).','The class multipliers of 0.22.54 are gone; the same strengths are in each class\'s own growth now (Warrior, Knight, Archer, Monk, and a little more attack for the Thief).','Priest: Benediction restores and cleanses the vanguard and leaves Regen; it no longer revives every fallen hero. Seraph\'s Grace revives one hero at 50% (was everyone at 70%). Raise is unchanged. A Priest was worth far more in a boss fight than any other hero, and nearly all of it was that one move.','Warrior: War Cry and Iron Stance are quick actions (half a turn), and Intimidating Shout is shorter. Holding the line no longer costs the Warrior their damage.','Regen restores 7% of max HP a turn for heroes (was 8%). Poison takes 3% a turn from a Scourge or Calamity (was 2%).','Monk: Chi Mend and Harmony Meditation heal about 15% more. Archer: a little less attack growth. Every class is now worth about the same in a boss fight, measured with and without items.','Bosses were retuned for a party that uses its items: each realm is about 4 points harder to win than the one before and each boss fight a little longer, and no boss should be an easy win without over-levelling, tempered top gear or a party built against it. Raised: Thornback Warden, Bone Colossus, Cinderking Varroth, Queen Mantis, the Geyser Matron, Gloomcap Matriarch. Eased: Siren of the Deep, Frost Lich, Maelstrom Drake, Iron Sentinel, Hoarwyrm, the Crow Regent, Brinehag Matriarch.']],
  ['Beta v0.22.56',['Phones: the Menu\'s top bar no longer runs over itself. The section name is just the name (the count of rewards ready is the badge on Quests), the Save button keeps its size, and a Back arrow sits beside Close instead of over the tabs.','Phones: a long shop name (Wayfarers Guild Hall) takes two lines, so your gold stays in view beside it.','Phones: the Sort, Show and filter lists are wide enough to show the chosen words.','Hero sheet: a secondary role skill shows the same Power as in battle. Since 0.22.49 the sheet showed the number before the role cut.','Opening a chest no longer stalls for a moment while a Barred hoard quest is open (since 0.22.52 it built a whole dungeon behind the scenes).','Marsh towns: the Town crier no longer stands in a walled off corner nobody could walk to.','Phones: a foe near the left edge of the battle stage (the second of three, or a guardian) is no longer cut off by the edge.']],
  ['Beta v0.22.55',['Mythic gear opens at the Smithy once the Calamity has fallen (and stays open in New Game+). Until then the last realm sells and forges up to Heroic.','Chests in the last realm have a 12% chance of a Mythic piece while Mythic is still closed (4% for the next rarity up in the other realms). Mythic gear you already own is yours to keep.']],
  ['Beta v0.22.54',['Bosses hit less hard and last longer. A lost fight used to be over in about 20 hero turns with the boss barely half down. Now each realm is a little harder than the one before and its boss fight a little longer, with no wall at the second realm.','Every Scourge and Calamity was tuned toward the same band for its realm. Eased: Frost Lich, Siren of the Deep, Maelstrom Drake, Stormcaller Ysolde, Ashen Wyvern, Iron Sentinel, Seraph. Raised: Bone Colossus, Cinderking Varroth, the Crow Regent, Thornback Warden, the Geyser Matron, Queen Mantis, Emperor Candlemoth.','Realm gimmicks matter more. The marked hits (Thorn Snare, Lava Vents, Lightning Rod, the Wyvern\'s dive, Pillars of Light) hit about half again as hard, and answering a gimmick pays: guard every marked hero, ground or guard the rod, or stop a readied move, and the boss is thrown off balance and loses 2 shield pips.','Auto battle guards a hero the boss has marked.','No more stun chains: a hero who has just lost a turn to a stun or a freeze cannot be stunned again until after their next turn.','Taunt now braces the hero: they take 30% less damage while it lasts (War Cry, Provoke).','Classes, measured in boss fights (damage, damage over time, healing, buffs, debuffs and damage soaked). Mages and Archers deal the most damage (Archers +34% attack). Warriors are the third damage dealer and a sturdier front line (+10% attack, +15% speed, +30% resistance, +15% HP). Knights +10% attack and speed. Monks are the all-rounder: -18% attack, with their healing and speed untouched.','Sub role skills no longer take a percent cut on top of their own lower numbers (it was 80%). Main role skills stay the strongest; skills outside a class\'s three roles stay at 50%.','Piercing Shot counts as the Archer\'s own Marksman skill (power 2.4). No skill changed its level.','Archmage, Chronicler and Blood Summoner: their basic Attack is magic now, like the Mage\'s, Priest\'s and Bard\'s.','Skill names and descriptions were checked against what the skills do: 111 skills renamed and 249 descriptions rewritten. A skill no longer names an element or a status it does not have, and every status a skill can cause is in its text.','Short parties: a party smaller than the journey expects in a realm (3, 4, 5, 6, 6) now meets an eased Scourge or Calamity. Before, every missing hero made the boss stronger.']],
@@ -3558,21 +3570,23 @@ const STS={
  might:{n:'Might',a:'MGT',t:3,c:'#ff7a5a',d:'Deals 30% more damage.'},
  bulwark:{n:'Bulwark',a:'BLW',t:3,c:'#7ab0ff',d:'Takes 30% less damage.'},
  haste:{n:'Haste',a:'HST',t:3,c:'#7affd0',d:'Turns come 35% faster.'},
- regen:{n:'Regen',a:'RGN',t:4,c:'#7aff8a',d:'Recovers 8% of max HP each turn.'},
+ regen:{n:'Regen',a:'RGN',t:4,c:'#7aff8a',d:'Recovers 7% of max HP each turn.'},
  ward:{n:'Ward',a:'WRD',t:6,c:'#f6e7a8',d:'Blocks the next hit completely.'},
  taunt:{n:'Taunt',a:'TNT',t:3,c:'#ff5a5a',d:'Foes must aim single attacks at this hero, who takes 30% less damage while braced for them.'},
  focus:{n:'Focus',a:'FCS',t:5,c:'#ffd23d',d:'The next attack is a guaranteed critical.'}
 };
 // v0.22.54 class pass (docs/balance54.md): Warrior res [4,1] -> [5,1.3] and spd .75 -> .82 a level (the least resistance and the fewest turns of any class);
 // Knight atk 1.9 -> 2.1 and spd [6,.6] -> [7,.68]; Mage mag 2.7 -> 2.55 a level (it dealt over twice the average damage per action).
+// v0.22.57: the 0.22.54 class multipliers (CLS_TUNE) are folded into these tables and gone. Before: Warrior hp [52,11], atk [10,2.4], res [5,1.3],
+// spd [8,.82]; Knight atk [8,2.1], spd [7,.68]; Archer atk [9,2.1]; Monk atk [10,2.3]. Thief atk [8,1.9] -> [8,2.15].
 const CLS={
- warrior:{n:'Warrior',role:'Heavy melee. High HP and attack, hits groups, draws fire.',hp:[52,11],mp:[10,1.6],atk:[10,2.4],def:[8,1.9],mag:[3,.6],res:[5,1.3],spd:[8,.82],pref:['str','vit','dex']},
- knight:{n:'Knight',role:'Tank. Taunts, wards allies and raises party defense.',hp:[60,12.5],mp:[10,1.7],atk:[8,2.1],def:[11,2.4],mag:[3,.7],res:[7,1.5],spd:[7,.68],pref:['vit','spi','str']},
+ warrior:{n:'Warrior',role:'Heavy melee. High HP and attack, hits groups, draws fire.',hp:[63,13.7],mp:[10,1.6],atk:[11.8,2.85],def:[8,1.9],mag:[3,.6],res:[8,2.1],spd:[9.6,1],pref:['str','vit','dex']},
+ knight:{n:'Knight',role:'Tank. Taunts, wards allies and raises party defense.',hp:[60,12.5],mp:[10,1.7],atk:[9.4,2.5],def:[11,2.4],mag:[3,.7],res:[7,1.5],spd:[8,.8],pref:['vit','spi','str']},
  mage:{n:'Mage',role:'Elemental caster. Big spells, hastes allies, fragile body.',hp:[36,7],mp:[28,3.8],atk:[4,.8],def:[4,1],mag:[12,2.55],res:[8,1.9],spd:[8,.75],pref:['int','spi','agi']},
  healer:{n:'Priest',role:'Heals, cleanses, grants Regen and revives. Invokes Sanctum guardians.',hp:[40,8],mp:[30,4],atk:[4,.8],def:[5,1.2],mag:[11,2.4],res:[9,2],spd:[8,.7],pref:['fth','spi','vit']},
- thief:{n:'Thief',role:'Fastest class. Steals, poisons and blinds.',hp:[40,8.5],mp:[14,2],atk:[8,1.9],def:[5,1.3],mag:[4,.8],res:[5,1.2],spd:[13,1.1],pref:['agi','dex','luk']},
- archer:{n:'Archer',role:'Ranged damage. Bleeds, roots and pierces armor.',hp:[42,8.5],mp:[16,2.2],atk:[9,2.1],def:[5,1.3],mag:[4,.8],res:[5,1.3],spd:[11,.95],pref:['dex','agi','str']},
- monk:{n:'Monk',role:'Bare-fisted bruiser. Multi-hits, stuns, self-sustains.',hp:[50,10.5],mp:[14,2],atk:[10,2.3],def:[6,1.5],mag:[5,1],res:[6,1.4],spd:[10,.9],pref:['str','agi','vit']},
+ thief:{n:'Thief',role:'Fastest class. Steals, poisons and blinds.',hp:[40,8.5],mp:[14,2],atk:[8,2.15],def:[5,1.3],mag:[4,.8],res:[5,1.2],spd:[13,1.1],pref:['agi','dex','luk']},
+ archer:{n:'Archer',role:'Ranged damage. Bleeds, roots and pierces armor.',hp:[42,8.5],mp:[16,2.2],atk:[13.2,3.36],def:[5,1.3],mag:[4,.8],res:[5,1.3],spd:[11,.95],pref:['dex','agi','str']},
+ monk:{n:'Monk',role:'Bare-fisted bruiser. Multi-hits, stuns, self-sustains.',hp:[50,10.5],mp:[14,2],atk:[8,1.75],def:[6,1.5],mag:[5,1],res:[6,1.4],spd:[10,.9],pref:['str','agi','vit']},
 sniper:{n:'Steppe Sniper',legend:1,role:'Legendary horse archer. Crossbow bolts of shadow and storm, and he shoots back when struck.',hp:[46,9.2],mp:[16,2.3],atk:[10,2.35],def:[6,1.5],mag:[4,.8],res:[6,1.4],spd:[11,1],pref:['dex','agi','str']},
  druid:{n:'Druid',legend:1,role:'Legendary beast warden. Longbow, a wolf and a hawk at his call, and a way with wild things.',hp:[46,9.2],mp:[20,2.8],atk:[9,2.3],def:[6,1.4],mag:[7,1.5],res:[7,1.6],spd:[11,.95],pref:['dex','spi','agi']},
  archmage:{n:'Archmage',legend:1,role:'Legendary spellweaver. Ice and lightning, two spells a turn, cheap to cast.',hp:[40,8],mp:[30,4],atk:[4,.8],def:[5,1.15],mag:[12,2.6],res:[9,2],spd:[9,.8],pref:['int','spi','agi']},
@@ -3864,7 +3878,7 @@ function classSkills(t){
     add({id:'hurl',n:'Heave',k:'phys',pw:1.2,mp:3,lv:4,d:'Hurl your weapon across the field and fetch it back. Strikes with the kind of damage of your weapon.'});
     if(e2)add({id:'edge2',n:n2+' Edge',k:'phys',pw:1.7,mp:5,el:e2,lv:8,d:`Blade wreathed in ${n2}.`});
     add({id:'cleave',n:'Cleave',k:'phys',pw:1,mp:9,t:'all',lv:10,d:'Sweeps every foe.'});
-    add({id:'cry',n:'War Cry',k:'status',t:'self',mp:6,lv:13,fx:[['might',1],['taunt',1]],d:'Gain Might and Taunt: foes come for you.'+(typeof TAUNT!=='undefined'&&TAUNT.cut?` You take ${Math.round(TAUNT.cut*100)}% less damage while it lasts.`:'')});
+    add({id:'cry',n:'War Cry',k:'status',t:'self',mp:6,cost:.5,lv:13,fx:[['might',1],['taunt',1]],d:'A quick shout: gain Might and Taunt, and act again soon. Foes come for you.'+(typeof TAUNT!=='undefined'&&TAUNT.cut?` You take ${Math.round(TAUNT.cut*100)}% less damage while it lasts.`:'')});
     add({id:'titan',n:'Titan Blow',k:'phys',pw:3,mp:16,el:e1,cost:1.3,lv:22,d:`Crushing ${n1} blow. Slow recovery.`});
     break;
   case 'knight':
@@ -4033,7 +4047,7 @@ const LIMIT={
  warrior:{n:'Worldsplitter',k:'phys',pw:2.4,t:'all',fx:[['break',.6]],d:'A ground-splitting blow on every foe. May Break.'},
  knight:{n:'Bastion',k:'status',t:'allyAll',fx:[['ward',1],['bulwark',1],['might',1]],heal:.2,d:'Ward, Bulwark and Might for the vanguard, and a small heal.'},
  mage:{n:'Starfall',k:'mag',pw:2.6,t:'all',d:'Calls a rain of elemental stars on every foe.'},
- healer:{n:'Benediction',k:'heal',pw:3,t:'allyAll',revive:.4,cleanse:1,d:'Fully restores and cleanses the vanguard and revives every fallen hero at 40% HP.'},
+ healer:{n:'Benediction',k:'heal',pw:2.6,t:'allyAll',cleanse:1,fx:[['regen',1]],d:'Restores and cleanses the vanguard and leaves Regen on everyone.'},// v0.22.57: it also revived EVERY fallen hero at 40% (pw 3); that one move was worth about 6 points of boss win rate. Raise still revives.
  thief:{n:'Thousand Cuts',k:'phys',pw:.8,t:'rand',hits:7,crit:.2,d:'Seven blinding strikes at random foes.'},
  archer:{n:'Arrowstorm',k:'phys',pw:2.2,t:'all',fx:[['bleed',.7]],d:'A storm of arrows on every foe. Likely Bleeds.'},
  monk:{n:'Hundred Fists',k:'phys',pw:.65,t:'one',hits:7,d:'Seven blows on one foe.'},
@@ -4048,7 +4062,7 @@ const LIMIT2={
  warrior:{n:'Cataclysm Edge',k:'phys',pw:3.1,t:'all',fx:[['break',.9]],self:[['might',1]],shieldChip:2,d:'Splits the battlefield with one swing: every foe takes a huge hit and likely Breaks, and you gain Might. Chips 2 shield pips.'},
  knight:{n:'Citadel of Dawn',k:'status',t:'allyAll',fx:[['ward',1],['bulwark',1],['might',1],['regen',1]],heal:.3,d:'A fortress of light: Ward, Bulwark, Might and Regen for the vanguard, and a 30% heal.'},
  mage:{n:'Meteor Requiem',k:'mag',pw:3.4,t:'all',fx:[['break',.5]],shieldChip:2,d:'A falling sky of elemental stars on every foe. May Break; chips 2 shield pips.'},
- healer:{n:"Seraph's Grace",k:'heal',pw:3.9,t:'allyAll',revive:.7,cleanse:1,fx:[['regen',1]],d:'Restores and cleanses the vanguard, grants Regen, and revives every fallen hero at 70% HP.'},
+ healer:{n:"Seraph's Grace",k:'heal',pw:3.2,t:'allyAll',revive:.5,reviveN:1,cleanse:1,fx:[['regen',1]],d:'Restores and cleanses the vanguard, grants Regen, and revives one fallen hero at 50% HP.'},// v0.22.57: was every fallen hero at 70%, pw 3.9
  thief:{n:'Phantom Waltz',k:'phys',pw:1.04,t:'rand',hits:7,crit:.3,steal:1,d:'Seven strikes from nowhere at random foes, each with a high crit chance, and a pocket picked on the way out.'},
  archer:{n:'Skyfall Volley',k:'phys',pw:2.86,t:'all',fx:[['bleed',.9],['slow',.5]],d:'The sky goes dark with arrows. Every foe likely Bleeds and may Slow.'},
  monk:{n:"Heaven's Thousand",k:'phys',pw:.85,t:'one',hits:7,fx:[['stun',.4]],d:'Seven blows too fast to see, ending in a strike that may Stun.'},
@@ -4195,8 +4209,12 @@ const MON_DROPS={mossling:['healroot','ichor'],gustimp:['ichor','oak'],dewtoad:[
 // Kept out of MAT_PRICE on purpose, so recipe gold math ignores them and parts stay the gate.
 const PART_PRICE={hide:30,fang:32,scale:36,ichor:36,grit:40},PART_STOCK=3;
 const GEAR={};
-const ARM_K=3.5,FORGE_STEP=.11;// gear16: .11 (was .25), so a piece at +3 (x1.33) stays under the next rarity at +0 in its main stats (test v188a.js)
-const WP=[6,14,25,39,57,80],AP=[5,11,18,27,38,52],PRICE=[60,150,380,750,1400,2400];
+// v0.22.57 gear pass (docs/balance56.md): the tier curve is flatter. WP was [6,14,25,39,57,80] (13x from Common to Mythic), AP [5,11,18,27,38,52]; they are
+// [8,14,20,27,35,45] and [6,11,16,22,29,37] now, and what a tier used to add comes with the hero's level instead (GEAR_LV in config.js, calcStats), so a
+// hero at each realm's usual level and gear is where they were and a missed shop visit costs less. FORGE_STEP .11 -> .07: a piece at +3 (x1.21) still
+// stays under the next rarity at +0 (test v188a.js; the smallest step between rarities is now x1.26).
+const ARM_K=3.5,FORGE_STEP=.07,ARM_MAIL_RES=.55;
+const WP=[8,14,20,27,35,45],AP=[6,11,16,22,29,37],PRICE=[60,150,380,750,1400,2400];
 const WN={blade:['Iron Blade','Steel Brand','Mythril Saber','Dawnsteel Blade','Stormforged Edge','Starcleaver'],
  staff:['Oak Staff','Moonwood Staff','Sage Rod','Tidecaller Staff','Skyglass Scepter','Lodestar Rod'],
  bow:['Hunter Bow','Yew Bow','Falcon Bow','Frostwood Bow','Galewing Bow','Meridian Bow'],
@@ -4257,7 +4275,7 @@ for(let t=0;t<6;t++){
   addGear('w_warhammer_'+t,{n:WN.warhammer[t],slot:'w',tier:t,atk:Math.round(WP[t]*.98),def:Math.round(WP[t]*.12),price:PRICE[t]});
   addGear('w_standard_'+t,{n:WN.standard[t],slot:'w',tier:t,atk:Math.round(WP[t]*.88),def:Math.round(WP[t]*.15),res:Math.round(WP[t]*.15),price:PRICE[t]});
   addGear('w_lyre_'+t,{n:WN.lyre[t],slot:'w',tier:t,mag:Math.round(WP[t]*1.02),mp:Math.round(WP[t]*.5),res:Math.round(WP[t]*.2),price:PRICE[t]});
-  addGear('a_mail_'+t,{n:AN.mail[t],slot:'a',tier:t,def:Math.round(AP[t]*ARM_K),res:Math.round(AP[t]*ARM_K*.4),hp:AP[t]*3,spd:-(1+Math.round(t*.4)),mp:-Math.round(AP[t]*.3),price:Math.round(PRICE[t]*.9)});
+  addGear('a_mail_'+t,{n:AN.mail[t],slot:'a',tier:t,def:Math.round(AP[t]*ARM_K),res:Math.round(AP[t]*ARM_K*ARM_MAIL_RES),hp:AP[t]*3,mp:-Math.round(AP[t]*.3),/* v0.22.57: no speed penalty (it was -(1+round(t*.4)): speed is turns, and the front line had the fewest); resistance .4 -> ARM_MAIL_RES of its defense */price:Math.round(PRICE[t]*.9)});
   addGear('a_robe_'+t,{n:AN.robe[t],slot:'a',tier:t,res:Math.round(AP[t]*ARM_K),def:Math.round(AP[t]*ARM_K*.45),mag:Math.round(AP[t]*.4),mp:Math.round(AP[t]*1.2),spd:1+Math.round(t*.8),attr:{fth:1+t},price:Math.round(PRICE[t]*.9)});
   addGear('a_vest_'+t,{n:AN.vest[t],slot:'a',tier:t,def:Math.round(AP[t]*ARM_K*.72),res:Math.round(AP[t]*ARM_K*.72),spd:1+t,price:Math.round(PRICE[t]*.9)});
 }
@@ -4288,7 +4306,7 @@ const ITEM_TIERS=[
  {n:'Echoforged',c:'#c9a6ff',c2:'#7df0e0',pip:'❂'}];/* 0.22.47: the violet of the Echoes (their glow is #b48aff; lifted a little so it does not read as Epic), with the Rift's teal as the second colour of the shimmer. It was a pale gold. */
 const ITEM_TIER_OF={potion:0,remedy:0,porkchop:0,ether:1,hipotion:1,vigor:1,sage:1,tent:1,holywater:2,plume:3,elixir:3};// v0.10.8: Elixir was tier 4 ('Legendary'), a chest staple // consumables
 const STN={hp:'HP',mp:'MP',atk:'ATK',def:'DEF',mag:'MAG',res:'RES',spd:'SPD'};
-// Tempered gear carries a +N suffix: each level adds FORGE_STEP (11%) to its stats.
+// Tempered gear carries a +N suffix: each level adds FORGE_STEP (7%) to its stats.
 function gearOf(id){
   if(!id)return null;if(id==='w_stick')return stickGear();const m=String(id).match(/^(.*)\+(\d)$/);
   if(!m)return GEAR[id]||null;
@@ -4330,14 +4348,14 @@ const ARM_NAME={light:'Light armor',medium:'Medium armor',heavy:'Heavy armor'};
 const ARM_FAM={heavy:'mail',medium:'vest',light:'robe'};
 // perks: s = short text for skill rows, p = full text for items. Numbers are read by calcStats (stat parts) and the battle engine (the rest).
 const WPERK={
- blade:{p:'Balanced: +4% accuracy, +8% critical damage',s:'Sword: +8% crit damage',acc:.04,critDmg:.08},
+ blade:{p:'Guard stance: your Guard blocks 65% of a hit instead of half, +4% accuracy',s:'Sword: Guard blocks 65%',acc:.04,guardCut:.65},/* v0.22.57: was +8% critical damage */
  axe:{p:'Cleave: +12% damage with attacks that hit every foe',s:'Axe: +12% when it hits all foes',cleave:.12},
  greatsword:{p:'Heavy: +12% physical damage, actions take 6% longer',s:'Greatsword: +12% physical damage',heavy:.12,tempo:1.06},
  lance:{p:'Charge: +22% damage to foes that have already acted since your last turn',s:'Lance: +22% vs foes that already acted',charge:.22},
  mace:{p:'Crush: stun chances are 50% higher, and basic attacks have a 10% chance to stun',s:'Mace: stuns land 50% more often',stun:1.5,basicStun:.10},
  staff:{p:'Focus: spells cost 15% less MP, +10% elemental spell damage',s:'Staff: spells cost 15% less MP'},
  tome:{p:'Scholar: +10% spell damage',s:'Tome: +10% spell damage',spellPow:.10},
- dagger:{p:'Keen: +6% critical chance',s:'Dagger: +6% crit chance',crit:.06},
+ dagger:{p:'Exploit: +15% damage to a foe with any ailment, +3% critical chance',s:'Dagger: +15% vs ailing foes',crit:.03,exploit:.15},/* v0.22.57: was +6% critical chance */
  shortsword:{p:'Parry: +5% evasion, +4% critical chance',s:'Short sword: +5% evasion',eva:.05,crit:.04},
  bow:{p:"Piercing: ignores 10% of the target's defense",s:'Bow: ignores 10% DEF',pierce:.10},
  longbow:{p:"Long draw: ignores 16% of the target's defense, but actions take 4% longer",s:'Longbow: ignores 16% DEF',pierce:.16,tempo:1.04},
@@ -4452,37 +4470,37 @@ const MON={
 // The Hollow Shepherd, The Pale Weaver) and the Hollow Sun were removed (their echoes, gates and records are ignored by old saves; see realms14.js).
 // phase: triggers once when HP falls below 'at'.
 const GUARDIANS={
- thornwarden:{n:'Thornback Warden',art:'thornwarden',el:['earth','water'],hp:5.2,atk:1.3,def:1.25,mag:1.08,res:1.1,spd:.95,sk:[['Bramble Lash','earth',1.5,'one','phys',[['bleed',.6]]],['Rainroot Surge','water',1.1,'all','mag',[['slow',.4]]],['Bark Skin','earth',0,'self','buff',[['bulwark',1]]]],
+ thornwarden:{n:'Thornback Warden',art:'thornwarden',el:['earth','water'],hp:5.6,atk:1.42,def:1.25,mag:1.08,res:1.1,spd:.95,sk:[['Bramble Lash','earth',1.5,'one','phys',[['bleed',.6]]],['Rainroot Surge','water',1.1,'all','mag',[['slow',.4]]],['Bark Skin','earth',0,'self','buff',[['bulwark',1]]]],
    phase:{at:.5,say:'The Warden sinks its roots and regrows!',self:[['regen',1],['bulwark',1]],heal:.1},intro:'A hedge of thorn and stone rises in the barrow: the Thornback Warden, still guarding a beacon it no longer remembers how to light.'},
- drake:{n:'Maelstrom Drake',art:'drake',el:['water','lightning'],hp:5.4,atk:1.12,def:1.2,mag:1.05,res:1.1,spd:1,sk:[['Tidal Fang','water',1.6,'one','phys',[['bleed',.4]]],['Storm Surge','lightning',1.15,'all','mag',[['stun',.12]]],['Undertow','water',1.2,'one','mag',[['root',.6]]]],
+ drake:{n:'Maelstrom Drake',art:'drake',el:['water','lightning'],hp:5.1,atk:1.12,def:1.2,mag:1.05,res:1.1,spd:1,sk:[['Tidal Fang','water',1.6,'one','phys',[['bleed',.4]]],['Storm Surge','lightning',1.15,'all','mag',[['stun',.12]]],['Undertow','water',1.2,'one','mag',[['root',.6]]]],
    phase:{at:.5,say:'The Drake calls down the storm!',self:[['haste',1]]},intro:'The water heaves. The Maelstrom Drake coils through the grotto, crackling with stolen storm.'},
- cinderking:{n:'Cinderking Varroth',art:'cinderking',el:['fire','earth'],hp:5.6,atk:1.4,def:1.3,mag:1.2,res:1.1,spd:.95,sk:[['Magma Crush','fire',1.7,'one','phys',[['burn',.5]]],['Eruption','fire',1.2,'all','mag',[['burn',.3]]],['Iron Will','earth',0,'self','buff',[['might',1]]]],
+ cinderking:{n:'Cinderking Varroth',art:'cinderking',el:['fire','earth'],hp:5.6,atk:1.46,def:1.3,mag:1.26,res:1.1,spd:.95,sk:[['Magma Crush','fire',1.7,'one','phys',[['burn',.5]]],['Eruption','fire',1.2,'all','mag',[['burn',.3]]],['Iron Will','earth',0,'self','buff',[['might',1]]]],
    phase:{at:.5,say:'Varroth wraps himself in magma armor!',self:[['ward',1],['might',1]]},intro:'Cinderking Varroth rises from the slag, crowned in cooling iron.'},
- hoarwyrm:{n:'Hoarwyrm',art:'hoarwyrm',el:['ice','wind'],hp:5.2,atk:1.2,def:1.2,mag:1.2,res:1.2,spd:1.05,sk:[['Glacial Bite','ice',1.7,'one','phys',[['bleed',.5]]],['Whiteout','ice',1.15,'all','mag',[['slow',.45]]],['Frost Breath','ice',1.3,'one','mag',[['slow',1]]]],
+ hoarwyrm:{n:'Hoarwyrm',art:'hoarwyrm',el:['ice','wind'],hp:5.2,atk:1.2,def:1.2,mag:1.15,res:1.2,spd:1.05,sk:[['Glacial Bite','ice',1.7,'one','phys',[['bleed',.5]]],['Whiteout','ice',1.15,'all','mag',[['slow',.45]]],['Frost Breath','ice',1.3,'one','mag',[['slow',1]]]],
    phase:{at:.5,say:'The Hoarwyrm summons a blizzard!',party:[['slow',.8]]},intro:'The Hoarwyrm unfolds from the ice, wings like sheets of glass.'},
  ysolde:{n:'Stormcaller Ysolde',art:'ysolde',el:['lightning','light'],hp:5.2,atk:1,def:1.1,mag:1.14,res:1.4,spd:1.08,sk:[['Judgement Bolt','lightning',1.7,'one','mag',[['stun',.22]]],['Thunderhead','lightning',1.2,'all','mag'],['Radiant Veil','light',0,'self','buff',[['ward',1]]]],
    phase:{at:.5,say:'Ysolde calls a Stormling to her side!',summon:'stormling'},intro:'Stormcaller Ysolde hangs in the air, eyes white with lightning, the beacon bleeding shadow behind her.'},
- bonecolossus:{n:'Bone Colossus',art:'bonecolossus',el:['shadow','earth'],hp:6.8,atk:1.5,def:1.4,mag:.9,res:1,spd:.85,sk:[['Ossuary Slam','earth',1.7,'one','phys',[['stun',.2]]],['Grave Dust','shadow',1.1,'all','mag',[['poison',.4]]]],
+ bonecolossus:{n:'Bone Colossus',art:'bonecolossus',el:['shadow','earth'],hp:7.4,atk:1.72,def:1.4,mag:.9,res:1,spd:.85,sk:[['Ossuary Slam','earth',1.7,'one','phys',[['stun',.2]]],['Grave Dust','shadow',1.1,'all','mag',[['poison',.4]]]],
    phase:{at:.4,say:'The Colossus pulls its bones back together!',heal:.18},intro:'Bones grind together in the dark: a Colossus built from every warrior the barrow ever took.'},
- queenmantis:{n:'Queen Mantis',art:'queenmantis',el:['wind','earth'],hp:5.4,atk:1.42,def:1.1,mag:.9,res:1,spd:1.2,sk:[['Scythe Dance','wind',.8,'one','phys',[['bleed',.6]]],['Dust Wings','earth',1.05,'all','mag',[['blind',.4]]]],multi:2,
+ queenmantis:{n:'Queen Mantis',art:'queenmantis',el:['wind','earth'],hp:5.7,atk:1.42,def:1.1,mag:.9,res:1,spd:1.2,sk:[['Scythe Dance','wind',.8,'one','phys',[['bleed',.6]]],['Dust Wings','earth',1.05,'all','mag',[['blind',.4]]]],multi:2,
    phase:{at:.5,say:'The Queen calls her brood!',summon:'gustimp'},intro:'Chitin clicks overhead. The Queen Mantis drops from the ceiling, blades raised in prayer.'},
- gloomcap:{n:'Gloomcap Matriarch',art:'gloomcap',el:['shadow','water'],hp:5.6,atk:1,def:1.15,mag:1.3,res:1.2,spd:.9,sk:[['Spore Burst','shadow',1.1,'all','mag',[['poison',.6]]],['Drowning Mold','water',1.5,'one','mag',[['weaken',.5]]]],
+ gloomcap:{n:'Gloomcap Matriarch',art:'gloomcap',el:['shadow','water'],hp:5.6,atk:1,def:1.15,mag:1.35,res:1.2,spd:.9,sk:[['Spore Burst','shadow',1.1,'all','mag',[['poison',.6]]],['Drowning Mold','water',1.5,'one','mag',[['weaken',.5]]]],
    phase:{at:.5,say:'The Matriarch fills the air with choking spores!',party:[['poison',.7],['blind',.4]]},intro:'A towering mushroom breathes out a sigh of glowing spores. Something old and patient lives in its gills.'},
- ironsentinel:{n:'Iron Sentinel',art:'ironsentinel',el:['lightning','fire'],hp:5.6,atk:1.3,def:1.25,mag:1.1,res:.95,spd:.9,sk:[['Piston Fist','fire',1.6,'one','phys',[['burn',.4]]],['Arc Discharge','lightning',1.15,'all','mag',[['stun',.15]]]],
+ ironsentinel:{n:'Iron Sentinel',art:'ironsentinel',el:['lightning','fire'],hp:5.6,atk:1.24,def:1.25,mag:1.1,res:.95,spd:.9,sk:[['Piston Fist','fire',1.6,'one','phys',[['burn',.4]]],['Arc Discharge','lightning',1.15,'all','mag',[['stun',.15]]]],
    phase:{at:.5,say:'OVERCLOCK. The Sentinel vents steam and speeds up!',self:[['haste',1],['might',1]],selfBad:[['break',1]]},intro:'Gears turn in the walls. An Iron Sentinel built by a forgotten guild clanks awake, its furnace heart blazing.'},
- siren:{n:'Siren of the Deep',art:'siren',el:['water','light'],hp:5.2,atk:.95,def:1.05,mag:1.12,res:1.3,spd:1.05,sk:[['Drowning Song','water',1.2,'all','mag',[['slow',.4]]],['Lure','light',1.5,'one','mag',[['stun',.2]]]],
+ siren:{n:'Siren of the Deep',art:'siren',el:['water','light'],hp:5.2,atk:.95,def:1.05,mag:1.06,res:1.3,spd:1.05,sk:[['Drowning Song','water',1.2,'all','mag',[['slow',.4]]],['Lure','light',1.5,'one','mag',[['stun',.2]]]],
    phase:{at:.5,say:'The Siren sings a healing hymn to herself!',self:[['regen',1]],heal:.1},intro:'A voice hums under the water, impossibly sweet. The Siren of the Deep rises, pearl-eyed.'},
  ashwyvern:{n:'Ashen Wyvern',art:'ashwyvern',el:['fire','wind'],hp:5.2,atk:1.1,def:1.1,mag:1.08,res:1,spd:1.15,sk:[['Scorch Dive','fire',1.6,'one','phys',[['burn',.5]]],['Soot Gale','wind',1.1,'all','mag',[['blind',.35]]]],
    phase:{at:.5,say:'The Wyvern takes to the air!',self:[['haste',1],['bulwark',1]]},intro:'Ash rains from the rafters. An Ashen Wyvern lands on the beacon and screams.'},
- frostlich:{n:'Frost Lich',art:'frostlich',el:['ice','shadow'],hp:5,atk:.9,def:1,mag:1.08,res:1.25,spd:1,sk:[['Soul Frost','ice',1.6,'one','mag',[['slow',.6]]],['Grave Chill','shadow',1.15,'all','mag',[['weaken',.4]]]],
+ frostlich:{n:'Frost Lich',art:'frostlich',el:['ice','shadow'],hp:4.8,atk:.9,def:1,mag:1.04,res:1.25,spd:1,sk:[['Soul Frost','ice',1.6,'one','mag',[['slow',.6]]],['Grave Chill','shadow',1.15,'all','mag',[['weaken',.4]]]],
    phase:{at:.5,say:'The Lich hides behind its phylactery ward!',self:[['ward',1]],wardEvery:4},intro:'Frost crawls up the walls in the shape of letters. The Frost Lich turns a page of its book and smiles.'},
  candlemoth:{n:'Emperor Candlemoth',art:'candlemoth',el:['fire','light'],hp:5.3,atk:1,def:1,mag:1.3,res:1.2,spd:1.15,sk:[['Wax Drip','fire',1.5,'one','mag',[['burn',.5]]],['Lantern Dust','light',1.1,'all','mag',[['blind',.4]]],['Flicker Dive','fire',1.5,'one','phys',[['burn',.3]]]],
    phase:{at:.5,say:'The Moth gutters, flares, and drinks every flame in the room!',self:[['haste',1]],party:[['blind',.5]],heal:.08},intro:'Every candle in the chamber leans the same way. The Emperor Candlemoth unfolds from the dark, a crown of burning tapers on its brow and ten thousand dusty wings behind it.'},
- brinehag:{n:'Brinehag Matriarch',art:'brinehag',el:['water','shadow'],hp:5.0,atk:1,def:1.05,mag:1.15,res:1.1,spd:.95,sk:[['Brine Curse','shadow',1.1,'all','mag',[['weaken',.35]]],['Drowning Hex','water',1.4,'one','mag',[['slow',.45]]],['Tide Mother','water',0,'self','buff',[['regen',1]]]],
+ brinehag:{n:'Brinehag Matriarch',art:'brinehag',el:['water','shadow'],hp:5.0,atk:1,def:1.05,mag:1.1,res:1.1,spd:.95,sk:[['Brine Curse','shadow',1.1,'all','mag',[['weaken',.35]]],['Drowning Hex','water',1.4,'one','mag',[['slow',.45]]],['Tide Mother','water',0,'self','buff',[['regen',1]]]],
    phase:{at:.5,say:'The Matriarch whistles up the drowned!',summon:'brinejelly',self:[['regen',1]]},intro:'Seaweed hair drips on the stones. The Brinehag Matriarch rises from the tide pool, a barnacled hat on her head and a drowned crew at her back.'},
- crowregent:{n:'The Crow Regent',art:'crowregent',el:['wind','shadow'],hp:5.2,atk:1.2,def:.95,mag:1.1,res:1,spd:1.1,sk:[['Carrion Dive','wind',1.5,'one','phys',[['bleed',.5]]],['Murder Wing','shadow',1.1,'all','mag',[['blind',.4]]],['Ill Omen','shadow',1.4,'one','mag',[['weaken',.5]]]],
+ crowregent:{n:'The Crow Regent',art:'crowregent',el:['wind','shadow'],hp:5.0,atk:1.2,def:.95,mag:1.1,res:1,spd:1.1,sk:[['Carrion Dive','wind',1.5,'one','phys',[['bleed',.5]]],['Murder Wing','shadow',1.1,'all','mag',[['blind',.4]]],['Ill Omen','shadow',1.4,'one','mag',[['weaken',.5]]]],
    phase:{at:.7,say:'The Regent caws and the murder comes down from the rafters!',summon:'cavebat',self:[['haste',1]]},intro:'Every crow in the county sits on the same roof, facing the same way. The Crow Regent unfolds on the ridgepole in a coat of black feathers and a crown of bones, and the whole roof lifts at once.'},
- geysermatron:{n:'The Geyser Matron',art:'geysermatron',el:['fire','water'],hp:5.4,atk:1.1,def:1,mag:1.33,res:1.1,spd:.9,sk:[['Scald','water',1.5,'one','mag',[['burn',.5]]],['Boil Over','fire',1.15,'all','mag',[['burn',.35]]],['Pressure Seal','water',0,'self','buff',[['ward',1]]]],
+ geysermatron:{n:'The Geyser Matron',art:'geysermatron',el:['fire','water'],hp:5.7,atk:1.1,def:1,mag:1.4,res:1.1,spd:.9,sk:[['Scald','water',1.5,'one','mag',[['burn',.5]]],['Boil Over','fire',1.15,'all','mag',[['burn',.35]]],['Pressure Seal','water',0,'self','buff',[['ward',1]]]],
    phase:{at:.5,say:'The Matron boils over and the vents scream!',summon:'magmaslime',party:[['burn',.5]]},intro:'The pool is not supposed to be this hot. The Geyser Matron bulges out of the vents, a kettle-bellied mass of wet glass and boiling light, and every chimney in the cavern starts to sing.'}
 };
 // v0.22.54 band pass (docs/balance54.md): every Scourge is tuned toward 50 to 70% for careful play at the expected level. Eased: Frost Lich (mag 1.25, res 1.35),
@@ -7415,6 +7433,11 @@ function baseAttr(c){
   ATTR.forEach(k=>{a[k]=A.b[k]+A.g[k]*L+allocEff(c,k)*POINT_VAL[k]+(c.vet||0);});
   return a;
 }
+// v0.22.57 (GEAR_LV): the level's share of what gear tiers used to give, and the class's shape for it (its own weapon and armor family, per point of power)
+function gearLvAt(T,lv){const L=GEAR_LV.lv;if(lv<=L[0])return T[0];for(let i=1;i<L.length;i++)if(lv<=L[i])return T[i-1]+(T[i]-T[i-1])*(lv-L[i-1])/(L[i]-L[i-1]);return T[T.length-1];}
+const GEAR_LV_SHAPE={};
+function gearLvShape(cls){if(GEAR_LV_SHAPE[cls])return GEAR_LV_SHAPE[cls];const f=CF[cls];if(!f)return null;const w=GEAR['w_'+f[0]+'_4'],a=GEAR['a_'+f[1]+'_4'];if(!w||!a)return null;
+  const o={w:{},a:{}};['hp','mp','atk','def','mag','res'].forEach(k=>{if(w[k])o.w[k]=w[k]/WP[4];if(a[k])o.a[k]=a[k]/AP[4];});return GEAR_LV_SHAPE[cls]=o;}
 function calcStats(c){
   const daily=!!(G&&G.daily),t=TPL[c.id],A=(daily?CLASS_ATTR_LEGACY:CLASS_ATTR)[t.cls],L=c.lv-1,tr=natOf(c),NF=natInfo(tr).fx,a=baseAttr(c);
   const gears=EQSL.map(sl=>gearOf(c.eq[sl])).filter(Boolean);
@@ -7426,7 +7449,7 @@ function calcStats(c){
   if(t.bb){d.hp*=1.12;d.atk*=1.12;d.mag*=1.12;d.def*=1.12;d.res*=1.12;}
   const S={elBoost:{},elRes:{},mastery:t.el.length===1?t.el[0]:null,immune:0,tempo:NF.tempo||1,attr:a};
   gears.forEach(g=>{ST.forEach(q=>{d[q]+=g[q]||0;});if(g.el){S.elBoost[g.el]=.15;S.elRes[g.el]=.15;}if(g.immune)S.immune=1;});
-  if(!daily){const CT=CLS_TUNE[t.cls];if(CT)Object.keys(CT).forEach(k=>{d[k]*=CT[k];});}// v0.22.54 class pass: on the final numbers, gear included
+  if(GEAR_LV.on){const gw=gearLvAt(GEAR_LV.w,c.lv),ga=gearLvAt(GEAR_LV.a,c.lv),R=gearLvShape(t.cls);if(R)['hp','mp','atk','def','mag','res'].forEach(k=>{d[k]+=gw*(R.w[k]||0)+ga*(R.a[k]||0);});}
   S.mhp=Math.round(d.hp);S.mmp=Math.round(d.mp);S.atk=d.atk;S.def=d.def;S.mag=d.mag;S.res=d.res;S.spd=d.spd;
   S.crit=.04+a.luk*.003+a.dex*.0015+(NF.crit||0);S.critDmg=1.5+a.dex*.004;
   S.acc=.97+a.dex*.002;S.eva=Math.min(.22,a.agi*.0015+a.luk*.002+(NF.eva||0));
@@ -7436,7 +7459,7 @@ function calcStats(c){
   // v0.3.5 weapon perks (WPERK in data.js). Flat numbers are read straight off S by the battle code.
   if(!daily){const wg=gears.find(g=>g.slot==='w'),P=wg&&wg.fam&&WPERK[wg.fam];S.wp=wg&&wg.fam||null;
     if(P){if(P.acc)S.acc+=P.acc;if(P.critDmg)S.critDmg+=P.critDmg;if(P.crit)S.crit+=P.crit;if(P.eva)S.eva=Math.min(.27,S.eva+P.eva);if(P.tempo)S.tempo*=P.tempo;
-      ['cleave','heavy','charge','stun','basicStun','pierce','combo','status','bleed','debT','buffT','healUp','spellPow'].forEach(k=>{if(P[k])S[k]=P[k];});}}
+      ['cleave','heavy','charge','stun','basicStun','pierce','combo','status','bleed','debT','buffT','healUp','spellPow','guardCut','exploit'].forEach(k=>{if(P[k])S[k]=P[k];});}}
   if(!daily)gears.forEach(g=>{if(g.mpEff)S.mpEff=Math.max(S.mpEff||0,g.mpEff);if(g.elDmg)S.elDmg=Math.max(S.elDmg||0,g.elDmg);});
   return S;
 }
@@ -7679,12 +7702,12 @@ function calcDamage(a,sk,t,bonus){
   let aff=1;if(els.some(e=>a.el.includes(e)))aff=1.2;
   if(a.S.mastery&&els.includes(a.S.mastery))aff*=1+MASTERY_BONUS;
   d*=em*aff*rnd(.92,1.08)*(bonus||1);
-  if(a.S.wp){if(phys&&a.S.heavy)d*=1+a.S.heavy;if(sk.t==='all'&&a.S.cleave)d*=1+a.S.cleave;if(!phys&&sk.k==='mag'&&a.S.spellPow)d*=1+a.S.spellPow;if(a.S.charge&&phys&&t.lastAct&&t.lastAct>(a.prevAct||0))d*=1+a.S.charge;}
+  if(a.S.wp){if(phys&&a.S.heavy)d*=1+a.S.heavy;if(sk.t==='all'&&a.S.cleave)d*=1+a.S.cleave;if(!phys&&sk.k==='mag'&&a.S.spellPow)d*=1+a.S.spellPow;if(a.S.charge&&phys&&t.lastAct&&t.lastAct>(a.prevAct||0))d*=1+a.S.charge;if(a.S.exploit&&t.st&&Object.keys(t.st).some(k=>STS[k]&&STS[k].bad))d*=1+a.S.exploit;}
   els.forEach(e=>{if(a.S.elBoost[e])d*=1+a.S.elBoost[e];if(t.S.elRes[e])d*=1-t.S.elRes[e];});
   if(a.S.elDmg&&els.length&&sk.k==='mag')d*=1+a.S.elDmg;
   const W=WX();if(W.el&&els.length)d*=Math.max(...els.map(e=>W.el[e]||1));
   if(has(a,'might'))d*=1.3;if(has(a,'weaken'))d*=.75;if(has(a,'burn'))d*=.85;
-  if(has(t,'bulwark'))d*=.7;if(t.side==='p'&&has(t,'taunt'))d*=1-TAUNT.cut;if(has(t,'break'))d*=1.3;if(t.guard)d*=.5;if(t.broken)d*=BREAK_WIN.bonus;
+  if(has(t,'bulwark'))d*=.7;if(t.side==='p'&&has(t,'taunt'))d*=1-TAUNT.cut;if(has(t,'break'))d*=1.3;if(t.guard)d*=1-((t.S&&t.S.guardCut)||.5);if(t.broken)d*=BREAK_WIN.bonus;
   if(sk.afflicted&&Object.keys(t.st).some(k=>STS[k].bad))d*=sk.afflicted;
   if(sk.execute&&t.hp<t.S.mhp*sk.execute)d*=2;
   let crit=false;
@@ -7706,9 +7729,10 @@ const goldFor=e=>econG(Math.round((e.lv*4+ri(3,9))*(e.boss?6:e.elite?4:1)));
 let FOE_POW=1.12;
 // v4.7: reactions are no longer free, so Scourges and Calamities carry a little less HP
 let BOSS_HP=.9;
+function bossFit(on,opt){if(!on||!opt||!opt.key)return 1;const f=BOSS_FIT[String(opt.key).replace(/^echo_/,'')];if(f==null)return 1;return typeof f==='number'?f:(f[Math.min(3,opt.stage||0)]||1);}
 function makeEnemy(m,lv,opt){
   opt=opt||{};const sc=enemyScale(),boss=!!opt.boss;
-  const fieldM=(!boss&&!opt.elite&&!(G&&G.daily)&&!opt.noField)?1:0;const fSt=Math.max(0,STAGE_LV.findIndex(r=>lv<=r[1])),fSi=fSt<0?4:fSt;const crp=fieldM?1+(worldCreep()-1)*(CREEP.field!=null?CREEP.field:1):worldCreep();const szOn=boss&&!opt.echo&&!opt.noBuff&&G&&!G.daily&&G.party,szE=BOSS_SIZE.expect[Math.min(4,opt.stage||0)],szS=szOn?Math.max(0,szE-G.party.length):0,szM=szOn?Math.max(0,6-Math.max(szE,G.party.length)):0,szH=1-BOSS_SIZE.short.hp*szS,szP=1-BOSS_SIZE.short.pow*szS;const spN=(fieldM&&G&&G.party&&G.party.length<3&&fSi<SMALL_PARTY.stages)?G.party.length-1:-1;const spH=spN>=0?SMALL_PARTY.hp[spN]:1,spP=spN>=0?SMALL_PARTY.pow[spN]:1;const hpM=spH*szH*(1+BOSS_SIZE.hp*szM)*crp*m.hp*sc.hp*(opt.hpM||1)*(fieldM?FIELD_FOE.hp[fSi]:1)*(boss&&!opt.echo&&!opt.noBuff?BOSS_BUFF.hp[Math.min(4,opt.stage||0)]:1),pw=spP*szP*(1+BOSS_SIZE.pow*szM)*crp*sc.pow*(opt.powM||1)*(fieldM?FIELD_FOE.pow[fSi]:1)*(boss&&!opt.echo&&!opt.noBuff?BOSS_BUFF.pow[Math.min(4,opt.stage||0)]:1)*(boss?(opt.final?1.5:[1.06,1.2,1.34,1.4][Math.min(3,opt.stage||0)]):1);
+  const fieldM=(!boss&&!opt.elite&&!(G&&G.daily)&&!opt.noField)?1:0;const fSt=Math.max(0,STAGE_LV.findIndex(r=>lv<=r[1])),fSi=fSt<0?4:fSt;const crp=fieldM?1+(worldCreep()-1)*(CREEP.field!=null?CREEP.field:1):worldCreep();const szOn=boss&&!opt.echo&&!opt.noBuff&&G&&!G.daily&&G.party,szE=BOSS_SIZE.expect[Math.min(4,opt.stage||0)],szS=szOn?Math.max(0,szE-G.party.length):0,szM=szOn?Math.max(0,6-Math.max(szE,G.party.length)):0,szH=1-BOSS_SIZE.short.hp*szS,szP=1-BOSS_SIZE.short.pow*szS;const spN=(fieldM&&G&&G.party&&G.party.length<3&&fSi<SMALL_PARTY.stages)?G.party.length-1:-1;const spH=spN>=0?SMALL_PARTY.hp[spN]:1,spP=spN>=0?SMALL_PARTY.pow[spN]:1;const hpM=spH*szH*(1+BOSS_SIZE.hp*szM)*crp*m.hp*sc.hp*(opt.hpM||1)*(fieldM?FIELD_FOE.hp[fSi]:1)*(boss&&!opt.echo&&!opt.noBuff?BOSS_BUFF.hp[Math.min(4,opt.stage||0)]:1),pw=bossFit(boss&&!opt.echo&&!opt.noBuff&&!(G&&G.daily),opt)*spP*szP*(1+BOSS_SIZE.pow*szM)*crp*sc.pow*(opt.powM||1)*(fieldM?FIELD_FOE.pow[fSi]:1)*(boss&&!opt.echo&&!opt.noBuff?BOSS_BUFF.pow[Math.min(4,opt.stage||0)]:1)*(boss?(opt.final?1.5:[1.06,1.2,1.34,1.4][Math.min(3,opt.stage||0)]):1);
   const S={mhp:Math.round((30+12.5*lv)*hpM*(boss?BOSS_HP*(opt.final?2.6:[1.35,1.6,1.9,2.0][Math.min(3,opt.stage||0)]):1)),atk:(9+2.7*lv)*m.atk*pw*FOE_POW,mag:(9+2.7*lv)*m.mag*pw*FOE_POW,def:(6+1.8*lv)*m.def,res:(6+1.8*lv)*m.res,spd:(8+.8*lv)*m.spd,
     crit:.05,critDmg:1.5,mmp:999,elBoost:{},elRes:{},tempo:1,healM:1,immune:0,acc:.95,eva:clamp(.02+.04*(m.spd-1),0,.08),luk:lv*.6,spi:lv*.5};
   const e={side:'e',name:m.n,base:m.n,art:m.art,el:m.el,lv,S,hp:S.mhp,mp:999,st:{},boss,elite:!!opt.elite,mod:opt.mod||null,key:opt.key||null,
@@ -7840,11 +7864,11 @@ function advance0(){
   if(u.broken===1)u.recover=1;
   let dot=0;
   const dm=WX().dot||1;
-  if(has(u,'poison')){const d=Math.max(1,Math.round(u.S.mhp*(u.boss?.02:.06)*dm));dot+=d;fx(u,String(d),'dmg poison');log(`${u.name} takes ${d} from poison.`);}
+  if(has(u,'poison')){const d=Math.max(1,Math.round(u.S.mhp*(u.boss?DOT_BOSS.poison:.06)*dm));dot+=d;fx(u,String(d),'dmg poison');log(`${u.name} takes ${d} from poison.`);}
   if(has(u,'burn')){const d=Math.max(1,Math.round(u.S.mhp*(u.boss?.02:.05)*dm));dot+=d;fx(u,String(d),'dmg burn');log(`${u.name} takes ${d} from burns.`);}
   if(has(u,'bleed')){const d=u.st.bleed.v||5;dot+=d;fx(u,String(d),'dmg bleed');log(`${u.name} bleeds for ${d}.`);}
   if(dot){hurt(u,dot);if(u.hp<=0){render();if(checkEnd())return;later(advance,PAUSE*.6);return;}}
-  if(has(u,'regen')||u.mod==='regen'){const n=Math.min(u.S.mhp-u.hp,Math.round(u.S.mhp*.08));if(n>0){u.hp+=n;fx(u,'+'+n,'heal');log(`${u.name} regenerates ${n} HP.`);}}
+  if(has(u,'regen')||u.mod==='regen'){const n=Math.min(u.S.mhp-u.hp,Math.round(u.S.mhp*(u.side==='p'?REGEN.hero:REGEN.foe)));if(n>0){u.hp+=n;fx(u,'+'+n,'heal');log(`${u.name} regenerates ${n} HP.`);}}
   if(u.wardEvery&&u.turns%u.wardEvery===0&&!has(u,'ward'))addSt(u,'ward',u);
   if(u.mod==='warded'&&u.turns%3===0&&!has(u,'ward'))addSt(u,'ward',u);
   if(has(u,'stun')){delete u.st.stun;if(u.side==='p')u.stunFree=1;log(`${u.name} is stunned and cannot act.`);fx(u,'Stunned','stat bad');B.mode='wait';render();later(()=>endTurn(u,1),PAUSE*.6);return;}
@@ -7906,6 +7930,7 @@ function applyReactionAfter(R,a,t,dealt){
   chipShield(t,3,'reaction');
 }
 function perform(a,sk,tgts){
+  let rvN=0;// v0.22.57: heroes this move has revived (sk.reviveN caps it)
   if(B){B.actN=(B.actN||0)+1;a.prevAct=a.lastAct||0;a.lastAct=B.actN;}
   const now=Date.now();a.actT=now;a.actKind=sk.k;a.actEl=skEls(sk)[0]||null;a.actName=sk.id==='attack'?null:sk.n;
   log(sk.id==='attack'?`${a.name} attacks!`:`${a.name} uses ${sk.n}!`);
@@ -7972,12 +7997,12 @@ function perform(a,sk,tgts){
     if(a.side==='p'&&dealtAny)lbAdd(a,5);
   }else if(sk.k==='heal'){
     for(const t of tgts){
-      if(t.hp<=0){if(sk.revive){t.hp=Math.max(1,Math.round(t.S.mhp*sk.revive));t.st={};fx(t,'Revived','heal');log(`${t.name} rises again!`);}continue;}
+      if(t.hp<=0){if(sk.revive&&(sk.reviveN==null||(rvN=(rvN||0)+1)<=sk.reviveN)){t.hp=Math.max(1,Math.round(t.S.mhp*sk.revive));t.st={};fx(t,'Revived','heal');log(`${t.name} rises again!`);}continue;}
       if(sk.pw>0){const n=Math.round(sk.pw*(a.S.healP||a.S.mag)*rnd(.95,1.05)*(WX().heal||1)*(1+(a.S.healUp||0))*curseMul(t));const g=Math.min(n,t.S.mhp-t.hp);t.hp+=g;fx(t,'+'+g,'heal');t.healT=Date.now();log(`${t.name} recovers ${g} HP.`);}/* 0.22.36: a skill of no power (Purify) cures and heals nothing */
       if(sk.cleanse){const c=cleanse(t);if(c)log(`${t.name} is cured.`);}
       if(a.id==='isolde')addSt(t,'regen',a,true);
       (sk.fx||[]).forEach(([k])=>addSt(t,k,a,true));}
-    if(sk.revive)allParty().forEach(t=>{if(t.hp<=0&&!tgts.includes(t)){t.hp=Math.max(1,Math.round(t.S.mhp*sk.revive));t.st={};fx(t,'Revived','heal');log(`${t.name} rises again!`);}});
+    if(sk.revive)allParty().forEach(t=>{if(t.hp<=0&&!tgts.includes(t)&&(sk.reviveN==null||(rvN=(rvN||0)+1)<=sk.reviveN)){t.hp=Math.max(1,Math.round(t.S.mhp*sk.revive));t.st={};fx(t,'Revived','heal');log(`${t.name} rises again!`);}});
   }else if(sk.k==='revive'){
     for(const t of tgts){if(t.hp>0)continue;t.hp=Math.max(1,Math.round(t.S.mhp*sk.pw));t.st={};fx(t,'Revived','heal');t.healT=Date.now();log(`${t.name} rises again!`);}
   }else if(sk.k==='status'){
@@ -23230,7 +23255,7 @@ function b4GimSlots(n,weak){const S=B.b4g,live=b4GimLive();if(!live.length)retur
   const st=(hashS(S.key)+S.ticks*2)%3,out=[];for(let k=0;k<3&&out.length<n;k++){const i=(st+k)%3;if(live.includes(i))out.push(i);}return out;}
 // one hit from the gimmick: a share of the hero's max HP, halved by Guard; a guarding hero also shrugs off its status
 function b4GimK(){return (BOSS_GIM.stageK||[])[Math.min(4,(B&&B.stage)|0)]||1;}
-function b4GimHit(u,c,pct,el,st){if(!c||c.hp<=0)return 0;const d=Math.max(1,Math.round(c.S.mhp*pct*b4GimK()*(c.guard?.5:1)));const now=Date.now();
+function b4GimHit(u,c,pct,el,st){if(!c||c.hp<=0)return 0;const d=Math.max(1,Math.round(c.S.mhp*pct*b4GimK()*(c.guard?1-(c.S.guardCut||.5):1)));const now=Date.now();
   c.fxEl=el||null;c.fxT=now;c.hitT=now;fx(c,String(d),'dmg');log(`${c.name} takes ${d}${c.guard?' (guarded)':''}.`);B.b4gHits=(B.b4gHits||0)+d;hurt(c,d);
   if(c.hp>0&&st&&!c.guard)addSt(c,st,u);return d;}
 // keeps the chips in step with the state: the boss shows what it readies, the heroes what will hit them (also after swaps and falls)
@@ -38075,7 +38100,7 @@ try{window.__LN20=LN20S;}catch(e){}
 // - Sold at the Smithy (Armor > Shields, the two newest tiers) once a Warrior or Knight is in the roster; tempered like armor (ore and hide).
 const SH20={cls:['warrior','knight'],one:['blade','axe','mace','lance','shortsword','dagger'],
   n:['Wooden Buckler','Iron Heater','Steel Kite Shield','Tower Aegis','Royal Bulwark','Mythsteel Aegis'],
-  def:[5,10,16,24,34,47],res:[2,4,7,11,15,21],price:[70,170,420,820,1500,2600],n2:{}};
+  def:[5,10,16,24,34,47],res:[4,8,13,19,27,37],/* v0.22.57: resistance was [2,4,7,11,15,21]; a shield is the front line's answer to magic now */price:[70,170,420,820,1500,2600],n2:{}};
 SLOTN.s='Shield';
 if(!EQSL.includes('s'))EQSL.push('s');
 SH20.n.forEach((n,t)=>addGear('s_shield_'+t,{n,slot:'s',tier:t,fam:'shield',def:SH20.def[t],res:SH20.res[t],price:SH20.price[t]}));
