@@ -13,7 +13,7 @@
 //     Equip Best and every Build party; the owner meant only this case). Equip Best keeps an Undo on Backpack > Equipment until the gear
 //     changes again.
 //  5) Rarity by progress: rarCap() is the highest rarity (ITEM_TIERS index) a journey has open: Common and Uncommon in the first realm, one
-//     more per realm reached or Scourge beaten (pcRealm()), all six from the fifth. Shops, recipes, chests, the mimic, vaults and bounty
+//     more per realm reached or Scourge beaten (pcRealm()), Heroic in the fifth, Mythic once the Calamity has fallen (0.22.55). Shops, recipes, chests, the mimic, vaults and bounty
 //     charms stay under it; the one-per-realm cave and Sanctum charms carry their realm's rarity. New Game+ follows the same rule (the code
 //     gives it no gear rules of its own); the Daily Trial is open. Not capped: gear already owned, personal relics, guild rank charms, the
 //     Tamer's Stick, Echoforged gear.
@@ -34,7 +34,10 @@ HOOK.after('render','gear16','a first realm hint steps aside while a window is o
 {const hs0=hintShow;hintShow=function(){const d=document.getElementById('p2hint');if(d)d.classList.remove('g16hide');const r=hs0.apply(this,arguments);g16HintDock();return r;};}
 
 // ---------- 5) rarity by progress ----------
-function rarCap(){try{if(!G||G.daily)return 5;return Math.max(1,Math.min(5,pcRealm()+1));}catch(e){return 5;}}
+// 0.22.55 (the owner): Mythic, the top shop rarity, opens when the Calamity has fallen (G.won, and every New Game+ cycle after it). Until
+// then the fifth realm sells and forges up to Heroic, and its chests have a better chance of a Mythic piece (CHEST_UP_LAST, config.js).
+function rarMythic(){try{return !!(G&&(G.daily||G.won||(G.run&&G.run.cycle>0)));}catch(e){return true;}}
+function rarCap(){try{if(!G||G.daily)return 5;const c=Math.max(1,Math.min(5,pcRealm()+1));return c>=5&&!rarMythic()?4:c;}catch(e){return 5;}}
 // may this piece be handed out or sold now? (relics, bound gear, the Stick and Echoforged gear follow their own rules)
 function rarOk(id){const g=gearOf(id);if(!g)return true;if(g.stick||g.relic||g.only||g.bound||g.medal)return true;const t=gTierIdx(g);return t>5||t<=rarCap();}
 // a shop line piece (w_blade_3+1) brought down to the open rarity; anything else is returned as it is
