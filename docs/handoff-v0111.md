@@ -953,3 +953,6 @@ With `b3list` (a `.menu.list` is open) `#bcmd` is `position:fixed` at the bottom
   questReady (cached by chest count) and after openChest. A vault never opened stays sealed. Not reproduced on a fresh journey: opening the
   chest set the flag in all five dungeons; the repair is for saves where the two records disagree.
 - Card column: .pcw.hastags .ptags is static (battle3.css lays it absolutely over the card's foot). Test: tools/chrome/v229a.js (battle group).
+
+## 0.22.54
+- rarCap (gear16.js) stops at Heroic (4) until rarMythic(): G.won, a New Game+ cycle, or the Daily Trial. chestGear (worldrt.js) rolls one rarity up with CHEST_UP_LAST (.12) in the last realm while Mythic is closed, CHEST_UP (.04) elsewhere, and never holds more than the open rarity otherwise. Test: tools/chrome/v230a.js.

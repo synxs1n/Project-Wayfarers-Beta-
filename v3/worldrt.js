@@ -249,7 +249,7 @@ function nextDlg(){const d=WS.dlg;WS.dlg=null;render();if(d&&d.after)d.after();}
 function CHEST_ITEMS(s){const hp=s>=1?'hipotion':'potion',L=['potion','potion','ether','ether','remedy','remedy','plume','plume',hp,hp,'potion','potion','potion','potion','bandage','bandage','bandage','bandage','ash','ash','tent','salts','salts','salts','holywater'];
   if(s>=1)L.push('sage','vigor');if(s>=2&&ITEMS.campkit)L.push('campkit');if(s>=3)L.push('elixir');return L.filter(k=>ITEMS[k]);}
 const CHEST_ONE=['plume','tent','holywater','campkit','elixir','sage','vigor'];// one of these to a chest, two of the others
-function chestGear(tier,dun){const cap=typeof rarCap==='function'?rarCap():tier,up=!G.daily&&cap<5&&Math.random()<CHEST_UP;return {up,gid:up?lootBase()+'_'+(cap+1):lootBase()+'_'+tier+(dun?'+1':'')};}
+function chestGear(tier,dun){const cap=typeof rarCap==='function'?rarCap():tier,last=cap===4&&typeof pcRealm==='function'&&pcRealm()>=4,/* v0.22.54: the last realm before the Calamity falls */up=!G.daily&&cap<5&&Math.random()<(last?CHEST_UP_LAST:CHEST_UP),base=Math.min(tier,cap);/* a chest never holds more than the open rarity unless it is the lucky one */return {up,gid:up?lootBase()+'_'+(cap+1):lootBase()+'_'+base+(dun?'+1':'')};}
 function openChest(x,y){
   const m=WS.m,key=m.id+':'+x+','+y;if(G.chests[key])return;
   const raw=m.t[y][x];G.chests[key]=1;if(typeof sfx==='function')sfx('chest');
