@@ -306,12 +306,13 @@ diag:N=>`N=${N||3};const out=[];const SZ=[3,4,5,6,6];const ST=${JSON.stringify(p
   return out.join('\\n');`,
 // eff [N]: battle effectiveness per class in random parties (BG_STAGES, default realms 2 to 4): per fight, direct damage, damage over time from the
 // statuses the hero put on foes (Poison, Burn, Bleed), damage the hero enabled (the Break and Might share of what others dealt), healing done
-// (Regen included), buffs and debuffs landed, the share of the party's damage the hero soaked, KOs and actions. "total" = direct + over time + enabled.
+// (Regen included), buffs and debuffs landed, the share of the party's damage the hero soaked, KOs, actions, shield pips knocked off the boss and Breaks caused. "total" = direct + over time + enabled.
 eff:N=>`N=${N||6};const out=[];const SZ=[3,4,5,6,6];const ST=${JSON.stringify(process.env.BG_STAGES||'1,2,3')}.split(',').map(Number);
   const MAIN=['warrior','knight','archer','thief','monk','mage','healer','bard'];const P8=pool.filter(id=>MAIN.includes(A.TPL[id].cls));let ms=1;Math.random=()=>{ms=(ms*1664525+1013904223)>>>0;return ms/4294967296;};
-  const Z=()=>({n:0,dd:0,dot:0,en:0,heal:0,buf:0,deb:0,soak:0,ko:0,acts:0,taken:0,evd:0});const T={};MAIN.forEach(c=>T[c]=Z());let cur=null,byName={};
+  const Z=()=>({n:0,dd:0,dot:0,en:0,heal:0,buf:0,deb:0,soak:0,ko:0,acts:0,taken:0,chip:0,brk:0});const T={};MAIN.forEach(c=>T[c]=Z());let cur=null,byName={};
   const hero=nm=>cur&&byName[nm]?cur[byName[nm]]:null;
-  A.HOOK.before('perform','eff','acts',function(a){try{if(cur&&a&&a.side==='p'&&cur[a.id])cur[a.id].acts++;}catch(e){}});
+  A.HOOK.wrap('perform','eff','acts, shield pips and breaks',function(next,a){const me=cur&&a&&a.side==='p'&&cur[a.id];let b=null,s0=0,br0=0;try{if(me){me.acts++;b=A.B.en.find(e=>e.boss);if(b){s0=b.shield||0;br0=b.broken?1:0;}}}catch(e){}
+    const r=next.apply(null,[].slice.call(arguments,1));try{if(me&&b){const brk=(b.broken?1:0)>br0;if(brk){me.brk++;me.chip+=s0;}else if((b.shield||0)<s0)me.chip+=s0-b.shield;}}catch(e){}return r;});
   A.HOOK.after('calcDamage','eff','dmg',function(r,a,sk,t){try{if(!cur||!r||!a||!t||!A.B||A.B.cur!==a)return;if(a.side==='p'&&t.side==='e'&&cur[a.id]){cur[a.id].dd+=r.dmg;
       const b=t.st&&t.st.break,h1=b&&hero(b.src);if(h1&&h1!==cur[a.id])h1.en+=r.dmg*.3/1.3;const m=a.st&&a.st.might,h2=m&&hero(m.src);if(h2&&h2!==cur[a.id])h2.en+=r.dmg*.3/1.3;
       const w=a.st&&a.st.haste,h3=w&&hero(w.src);if(h3&&h3!==cur[a.id])h3.en+=r.dmg*.35;}}catch(e){}});
@@ -329,12 +330,12 @@ eff:N=>`N=${N||6};const out=[];const SZ=[3,4,5,6,6];const ST=${JSON.stringify(pr
       A.B.tA=0;Q.shift()();ids.forEach(id=>{const c=A.G.roster[id],o=cur[id];const h=Math.max(0,c.hp);if(h<o.last){o.taken+=o.last-h;if(h<=0)o.ko++;}o.last=h;});}
     fights++;if(A.V.modal&&A.V.modal.type==='result')wins++;
     const tot=ids.reduce((a,id)=>a+cur[id].taken,0)||1;
-    ids.forEach(id=>{const o=cur[id],t=T[A.TPL[id].cls];t.n++;['dd','dot','en','heal','buf','deb','ko','acts'].forEach(q=>t[q]+=o[q]);t.soak+=o.taken/tot*ids.length;});
+    ids.forEach(id=>{const o=cur[id],t=T[A.TPL[id].cls];t.n++;['dd','dot','en','heal','buf','deb','ko','acts','chip','brk'].forEach(q=>t[q]+=o[q]);t.soak+=o.taken/tot*ids.length;});
     cur=null;A.V.modal=null;if(A.B)A.finishBattle("x");window.__TYPEFREE=0;}});}
   out.push('fights '+fights+', won '+Math.round(100*wins/fights)+'%. Per hero per fight; soak 100% = an even share of the damage the party took.');
-  out.push('class     direct  overTime enabled  TOTAL  | healing | buffs debuffs | soak  KOs  actions  dmg/action');
+  out.push('class     direct  overTime enabled  TOTAL  | healing | buffs debuffs | soak  KOs  actions  dmg/action  pips  breaks');
   MAIN.map(c=>[c,T[c]]).sort((a,b)=>(b[1].dd+b[1].dot+b[1].en)/b[1].n-(a[1].dd+a[1].dot+a[1].en)/a[1].n).forEach(([c,t])=>{const f=(v,w)=>String(Math.round(v/t.n)).padStart(w);
-    out.push(c.padEnd(8)+f(t.dd,8)+f(t.dot,9)+f(t.en,8)+f(t.dd+t.dot+t.en,7)+'  |'+f(t.heal,8)+' |'+(t.buf/t.n).toFixed(1).padStart(6)+(t.deb/t.n).toFixed(1).padStart(8)+' |'+String(Math.round(100*t.soak/t.n)).padStart(4)+'%'+(t.ko/t.n).toFixed(2).padStart(6)+(t.acts/t.n).toFixed(1).padStart(8)+String(Math.round(t.dd/Math.max(1,t.acts))).padStart(10));});
+    out.push(c.padEnd(8)+f(t.dd,8)+f(t.dot,9)+f(t.en,8)+f(t.dd+t.dot+t.en,7)+'  |'+f(t.heal,8)+' |'+(t.buf/t.n).toFixed(1).padStart(6)+(t.deb/t.n).toFixed(1).padStart(8)+' |'+String(Math.round(100*t.soak/t.n)).padStart(4)+'%'+(t.ko/t.n).toFixed(2).padStart(6)+(t.acts/t.n).toFixed(1).padStart(8)+String(Math.round(t.dd/Math.max(1,t.acts))).padStart(10)+(t.chip/t.n).toFixed(1).padStart(7)+(t.brk/t.n).toFixed(2).padStart(7));});
   return out.join('\\n');`
 };
 (async()=>{const which=process.argv[2]||'boss',arg=+process.argv[3]||0;if(!SIMS[which]){console.log('sims: '+Object.keys(SIMS).join(', '));process.exit(1);}

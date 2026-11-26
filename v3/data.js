@@ -473,7 +473,7 @@ const STS={
  haste:{n:'Haste',a:'HST',t:3,c:'#7affd0',d:'Turns come 35% faster.'},
  regen:{n:'Regen',a:'RGN',t:4,c:'#7aff8a',d:'Recovers 8% of max HP each turn.'},
  ward:{n:'Ward',a:'WRD',t:6,c:'#f6e7a8',d:'Blocks the next hit completely.'},
- taunt:{n:'Taunt',a:'TNT',t:3,c:'#ff5a5a',d:'Foes must aim single attacks at this hero, who takes 25% less damage while braced for them.'},
+ taunt:{n:'Taunt',a:'TNT',t:3,c:'#ff5a5a',d:'Foes must aim single attacks at this hero, who takes 30% less damage while braced for them.'},
  focus:{n:'Focus',a:'FCS',t:5,c:'#ffd23d',d:'The next attack is a guaranteed critical.'}
 };
 // v0.22.54 class pass (docs/balance54.md): Warrior res [4,1] -> [5,1.3] and spd .75 -> .82 a level (the least resistance and the fewest turns of any class);

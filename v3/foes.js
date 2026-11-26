@@ -43,7 +43,7 @@ const GUARDIANS={
    phase:{at:.5,say:'The Hoarwyrm summons a blizzard!',party:[['slow',.8]]},intro:'The Hoarwyrm unfolds from the ice, wings like sheets of glass.'},
  ysolde:{n:'Stormcaller Ysolde',art:'ysolde',el:['lightning','light'],hp:5.2,atk:1,def:1.1,mag:1.14,res:1.4,spd:1.08,sk:[['Judgement Bolt','lightning',1.7,'one','mag',[['stun',.22]]],['Thunderhead','lightning',1.2,'all','mag'],['Radiant Veil','light',0,'self','buff',[['ward',1]]]],
    phase:{at:.5,say:'Ysolde calls a Stormling to her side!',summon:'stormling'},intro:'Stormcaller Ysolde hangs in the air, eyes white with lightning, the beacon bleeding shadow behind her.'},
- bonecolossus:{n:'Bone Colossus',art:'bonecolossus',el:['shadow','earth'],hp:6.4,atk:1.5,def:1.4,mag:.9,res:1,spd:.85,sk:[['Ossuary Slam','earth',1.7,'one','phys',[['stun',.2]]],['Grave Dust','shadow',1.1,'all','mag',[['poison',.4]]]],
+ bonecolossus:{n:'Bone Colossus',art:'bonecolossus',el:['shadow','earth'],hp:6.8,atk:1.5,def:1.4,mag:.9,res:1,spd:.85,sk:[['Ossuary Slam','earth',1.7,'one','phys',[['stun',.2]]],['Grave Dust','shadow',1.1,'all','mag',[['poison',.4]]]],
    phase:{at:.4,say:'The Colossus pulls its bones back together!',heal:.18},intro:'Bones grind together in the dark: a Colossus built from every warrior the barrow ever took.'},
  queenmantis:{n:'Queen Mantis',art:'queenmantis',el:['wind','earth'],hp:5.4,atk:1.42,def:1.1,mag:.9,res:1,spd:1.2,sk:[['Scythe Dance','wind',.8,'one','phys',[['bleed',.6]]],['Dust Wings','earth',1.05,'all','mag',[['blind',.4]]]],multi:2,
    phase:{at:.5,say:'The Queen calls her brood!',summon:'gustimp'},intro:'Chitin clicks overhead. The Queen Mantis drops from the ceiling, blades raised in prayer.'},
