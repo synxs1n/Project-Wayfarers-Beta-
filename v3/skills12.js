@@ -32,14 +32,16 @@ function sk12Role(cls,s){if(!s)return null;if(s.rl)return s.rl;const k=s.k,fx=s.
   return null;}
 function sk12Nat(c){try{const n=natInfo(natOf(c));return n&&n.rl||null;}catch(e){return null;}}
 // {m, tier:'primary'|'secondary'|'off', r, nat} or null for skills that are never scaled
-function sk12Mult(c,s){try{const t=c&&TPL[c.id];if(!t||!s||s.bond||s.limit||s.id==='attack'||(G&&G.daily))return null;const r=sk12Role(t.cls,s);if(!r)return null;
-  const R=heroRoles(c),main=heroMain(c);let m,tier;
+function sk12Mult(c,s){try{const t=c&&TPL[c.id];if(!t||!s||s.bond||s.limit||s.id==='attack'||(G&&G.daily))return null;let r=sk12Role(t.cls,s);if(!r)return null;
+  const R=heroRoles(c),main=heroMain(c);let m,tier;if(((ROLEPW.own||{})[t.cls]||[]).includes(s.id)&&R[0]===main)r=main;
   if(r===main){m=ROLEPW.primary;tier='primary';}else if(R.includes(r)){m=ROLEPW.secondary;tier='secondary';}else{m=ROLEPW.off;tier='off';}
   if(tier==='off'&&(s.role||s.combo)&&(s.k==='phys'||s.k==='mag')){m=ROLEPW.secondary;tier='secondary';}
   let nat=false;if(tier!=='primary'&&sk12Nat(c)===r){m=Math.min(ROLEPW.natCap,m+ROLEPW.natLift);nat=true;}
   return {m:+m.toFixed(3),tier,r,nat};}catch(e){return null;}}
 const sk12Pc=m=>Math.round(m*100)+'%';
-function sk12Tag(o){return o&&o.tier!=='primary'?`<i class="sk12r ${o.tier}" title="${o.tier==='off'?'Off role':'Secondary role'} for this class: power x${sk12Pc(o.m)}${o.nat?' (includes the nature\'s lift)':''}">${o.tier==='off'?'Off':'Sub'} x${sk12Pc(o.m)}</i>`:'';}
+// 0.22.49 (act49.js 5): "Sub role percent changes should only be a rule behind the scenes": the "Sub x80%" / "Off x50%" tag is gone from
+// every skill row. The rule itself (sk12Mult) is unchanged.
+function sk12Tag(o){return '';}
 // off-role buffs last a turn shorter
 HOOK.wrap('perform','skills12','off role buffs last shorter',function(next,...args){const a=args[0],sk=args[1],cut=sk&&sk.buffCut;if(!cut||!a||!a.S)return next(...args);
   const b0=a.S.buffT;a.S.buffT=(b0||0)-cut;try{return next(...args);}finally{a.S.buffT=b0;}});
@@ -131,7 +133,7 @@ HOOK.xform('cmdHtml','skills12','role tier on the battle skill rows',function(h)
 HOOK.xform('mChar','skills12','role power on the hero sheet skill rows',function(h,id){try{const c=G.roster[id],t=TPL[id];if(!c||!t||G.daily)return h;const by={};classSkills(t).forEach(s=>{by[s.n]=s;});
   const tp=document.createElement('template');tp.innerHTML=h;let n=0;
   tp.content.querySelectorAll('.row').forEach(r=>{const b=r.querySelector(':scope>div>b'),e=r.querySelector('.sk11e'),sub=r.querySelector('.sk11s');if(!b||!e||!sub)return;const s=by[b.textContent.trim()];if(!s)return;
-    const o=sk12Mult(c,s);if(!o)return;if(s.pw&&(s.k==='phys'||s.k==='mag'||s.k==='heal')&&/^Pow(er)? \d+$/.test(e.textContent.trim())){e.textContent=e.textContent.trim().split(' ')[0]+' '+Math.round(s.pw*o.m*100);n++;}/* 0.22.54: act49.js spells it "Power" and its empty tag made the insert below throw, so the sheet kept the number before the role cut since 0.22.49 */
+    const o=sk12Mult(c,s);if(!o)return;if(s.pw&&(s.k==='phys'||s.k==='mag'||s.k==='heal')&&/^Pow(er)? \d+$/.test(e.textContent.trim())){e.textContent=e.textContent.trim().split(' ')[0]+' '+Math.round(s.pw*o.m*100);n++;}/* 0.22.56: act49.js spells it "Power" and its empty tag made the insert below throw, so the sheet kept the number before the role cut since 0.22.49 */
     if(o.tier!=='primary'){const w=document.createElement('template');w.innerHTML=sk12Tag(o);if(w.content.firstChild){sub.insertBefore(w.content.firstChild,sub.firstChild);n++;}}});
   return n?tp.innerHTML:h;}catch(e){return h;}});
 try{const st=document.createElement('style');st.textContent='.sk12r{font-style:normal;color:#e8c9a0}.sk12r.off{color:#e0a0a0}';document.head.appendChild(st);}catch(e){}

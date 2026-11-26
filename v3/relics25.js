@@ -38,11 +38,11 @@ const R25={off:false,charmK:1.5,mix:['w','k','c','a','s','w','c','k','a','w'],
   // gear the relic is (R25.kindFx), and named for the hero. Asked: "vanguard heals with regen is too common to make a relic skill, these
   // should be super special and unique".
   // 0.22.36 ("skills given by Legendary relics are bit too strong"): about a fifth off every power, smaller riders, 2 MP more
-  skill:{warrior:{n:'Reckoning',k:'phys',pw:1.35,t:'all',mp:24,execute:.25,drain:.15,self:[['might',1]],what:'Cleaves every foe, hits wounded foes twice as hard, and heals the wielder for part of the damage'},
+  skill:{warrior:{n:'Reckoning',k:'phys',pw:1.35,t:'all',mp:24,execute:.25,drain:.15,self:[['might',1]],what:'Cleaves every foe, hits wounded foes twice as hard, heals the wielder for part of the damage and grants them Might'},
     knight:{n:'Unbroken Line',k:'phys',pw:1.9,t:'one',mp:22,shieldChip:3,self:[['taunt',1],['ward',1]],allyFx:[['bulwark',1]],what:'A shield breaking blow, and the wielder draws every attack behind a Ward while the vanguard gains Bulwark'},
     thief:{n:'Thousand Cuts',k:'phys',pw:.6,t:'rand',hits:5,mp:22,crit:.2,strip:1,self:[['focus',1]],what:'Five cuts across the foes that tear away their boons, and leaves the wielder Focused'},
-    archer:{n:'Skyfall',k:'phys',pw:1.3,t:'all',mp:24,pierce:1,fx:[['break',.4]],what:'A volley on every foe that ignores half their defence and can Break them'},
-    sniper:{n:'Final Mark',k:'phys',pw:2.7,t:'one',mp:26,pierce:1,crit:.25,execute:.35,what:'One shot through armour, doubled against a foe under a third of its health'},
+    archer:{n:'Skyfall',k:'phys',pw:1.3,t:'all',mp:24,pierce:1,fx:[['break',.4]],what:'A volley on every foe that ignores half their defense and can Break them'},
+    sniper:{n:'Final Mark',k:'phys',pw:2.7,t:'one',mp:26,pierce:1,crit:.25,execute:.35,what:'One shot through armor, doubled against a foe under a third of its health'},
     monk:{n:'Hundred Fists',k:'phys',pw:.52,t:'rand',hits:6,mp:22,drain:.2,self:[['might',1],['haste',1]],what:'Six blows across the foes that feed the wielder, who gains Might and Haste'},
     druid:{n:'Wild Hunt',k:'phys',pw:1.2,t:'all',mp:24,drain:.25,fx:[['root',.6],['poison',.6]],allyFx:[['bulwark',1]],what:'The wild falls on every foe, Rooting and Poisoning them, healing the wielder and granting the vanguard Bulwark'},
     chief:{n:'Rallying Tide',k:'phys',pw:1.15,t:'all',mp:24,lbParty:15,allyFx:[['might',1],['haste',1]],what:'Strikes every foe, fills the limit gauges of the party and grants the vanguard Might and Haste'},
@@ -56,7 +56,7 @@ const R25={off:false,charmK:1.5,mix:['w','k','c','a','s','w','c','k','a','w'],
   elFx:{fire:['burn',.8],water:['weaken',.7],ice:['slow',.8],lightning:['stun',.35],earth:['root',.8],wind:['blind',.8],shadow:['poison',.8],light:['weaken',.7]},
   elBoon:{fire:'might',lightning:'haste',wind:'haste',ice:'bulwark',earth:'bulwark',water:'regen',light:'focus',shadow:'focus'},
   // and what the relic is: a weapon hits harder, armour and shields protect the wielder, boots quicken them, a charm fills limit gauges
-  kindFx:{w:{pwM:1.08,txt:'Stronger for being a weapon'},a:{self:'bulwark',txt:'the wielder gains Bulwark'},s:{self:'ward',txt:'the wielder gains a Ward'},k:{self:'haste',txt:'the wielder gains Haste'},c:{lb:10,pwM:1.04,txt:'the limit gauges of the party fill'}}};
+  kindFx:{w:{pwM:1.08,txt:'It is stronger for being a weapon'},a:{self:'bulwark',txt:'The wielder gains Bulwark'},s:{self:'ward',txt:'The wielder gains Ward'},k:{self:'haste',txt:'The wielder gains Haste'},c:{lb:10,pwM:1.04,txt:'The limit gauges of the party fill'}}};
 const R25_PRE={w:'u_',a:'ua_',c:'uc_',k:'uk_',s:'us_'},R25_RE=/^u[acks]?_/;
 const r25Heroes=()=>Object.keys(TPL).filter(id=>TPL[id]&&!TPL[id].mon&&CLS[TPL[id].cls]);
 const r25Legend=id=>{try{const t=TPL[id];return !!(t&&(t.legend||(CLS[t.cls]&&CLS[t.cls].legend)||(typeof LEGEND_IDS!=='undefined'&&LEGEND_IDS.includes(id))));}catch(e){return false;}};
@@ -99,18 +99,20 @@ HOOK.xform('calcStats','relics25','the bonuses of the personal relic the hero we
 // ---------- 6. the skill ----------
 const R25S={};
 function r25Skill(t){const K=R25.skill[t.cls]||R25.skill.warrior,kind=r25Kind(t.id),noun=kind==='w'?((typeof SIGW!=='undefined'&&SIGW[t.cls])||'Heirloom'):((R25.names[kind]||{})[t.cls]||(R25.names[kind]||{})._||'Keepsake');
-  const el=(t.el&&t.el[0])||null,heal=K.k==='heal',KF=R25.kindFx[kind]||{},sn=k=>(STS[k]&&STS[k].n)||k,bits=[];
+  const el=(t.el&&t.el[0])||null,heal=K.k==='heal',KF=R25.kindFx[kind]||{},sn=k=>(STS[k]&&STS[k].n)||k,bits=[],can=[],van=[],and=L=>L.length<2?L.join(''):L.slice(0,-1).join(', ')+' and '+L[L.length-1],or=L=>L.length<2?L.join(''):L.slice(0,-1).join(', ')+' or '+L[L.length-1];
   const s={id:'relic_'+t.id,n:`${t.n}'s ${K.n}`,k:K.k,pw:+(K.pw*(KF.pwM||1)).toFixed(2),mp:K.mp,t:K.t,el:heal?null:el,lv:1,cost:1,hits:K.hits||1,relic:t.id};
   ['crit','execute','drain','strip','pierce','shieldChip','lbParty','revive','cleanse'].forEach(k=>{if(K[k])s[k]=K[k];});
   ['fx','self','allyFx'].forEach(k=>{if(K[k])s[k]=K[k].map(q=>q.slice());});
   const has=(L,k)=>(L||[]).some(q=>q[0]===k);
-  if(el){if(heal){const b=R25.elBoon[el];if(b&&!has(s.fx,b)){(s.fx=s.fx||[]).push([b,1]);bits.push(`the vanguard gains ${sn(b)}`);}}
-    else{(t.el||[]).slice(0,2).forEach(e=>{const f=R25.elFx[e];if(f&&!has(s.fx,f[0])){(s.fx=s.fx||[]).push(f.slice());bits.push(`can ${sn(f[0])} them`);}});}
-    if(heal&&t.el[1]){const b=R25.elBoon[t.el[1]];if(b&&!has(s.fx,b)){s.fx.push([b,1]);bits.push(`the vanguard gains ${sn(b)}`);}}}
-  if(KF.self){if(heal){if(!has(s.fx,KF.self)){s.fx.push([KF.self,1]);bits.push(`the vanguard gains ${sn(KF.self)}`);}}else if(!has(s.self,KF.self)){(s.self=s.self||[]).push([KF.self,1]);bits.push(KF.txt);}}
+  if(el){if(heal){const b=R25.elBoon[el];if(b&&!has(s.fx,b)){(s.fx=s.fx||[]).push([b,1]);van.push(sn(b));}}
+    else{(t.el||[]).slice(0,2).forEach(e=>{const f=R25.elFx[e];if(f&&!has(s.fx,f[0])){(s.fx=s.fx||[]).push(f.slice());can.push(sn(f[0]));}});}
+    if(heal&&t.el[1]){const b=R25.elBoon[t.el[1]];if(b&&!has(s.fx,b)){s.fx.push([b,1]);van.push(sn(b));}}}
+  if(KF.self){if(heal){if(!has(s.fx,KF.self)){s.fx.push([KF.self,1]);van.push(sn(KF.self));}}else if(!has(s.self,KF.self)){(s.self=s.self||[]).push([KF.self,1]);bits.push(KF.txt);}}
   if(KF.lb&&!heal){s.lbParty=(s.lbParty||0)+KF.lb;if(!K.lbParty)bits.push(KF.txt);}
   if(KF.pwM&&kind==='w')bits.push(KF.txt);
-  s.d=`${K.what}${bits.length?'; '+bits.join(', '):''}. Only while ${t.n}'s ${noun} is equipped.`;
+  // 0.22.54 text sweep: whole sentences ("...; can Slow them, can Root them, Stronger for being a weapon." read as a list of scraps)
+  if(can.length)bits.unshift(`It can ${or(can)} them`);if(van.length)bits.unshift(`The vanguard gains ${and(van)}`);
+  s.d=`${K.what}.${bits.map(b=>' '+b+'.').join('')} Only while ${t.n}'s ${noun} is equipped.`;
   try{if(typeof dlFor==='function'){const d=dlFor(t.cls,s);if(d)s.dl=d;}}catch(e){}return s;}
 HOOK.xform('classSkills','relics25','the skill a personal relic grants while it is worn',function(L,t){try{if(R25.off||!L||!t||t.mon||!CLS[t.cls]||L.some(s=>s&&s.relic))return L;const sk=R25S[t.id]||(R25S[t.id]=r25Skill(t));return L.concat([sk]);/* a copy: the class kit itself (cached per hero, 14 skills) is left as it is */}catch(e){R25.err=String(e&&e.message||e);}return L;});
 {const sk0=skillKnown;skillKnown=function(c,s){if(s&&s.relic){if(R25.off)return false;const g=r25Worn(c);return !!(g&&g.only===s.relic);}return sk0.apply(this,arguments);};}

@@ -23,7 +23,7 @@ const SIZES=[[344,882],[390,844],[412,812],[705,455],[844,390],[933,705],[1280,7
     Object.keys(M.NB_MENU).forEach(tab=>{const S=M.nbSecs(M.NB_MENU[tab]);(S.length?S:[['all']]).forEach(([sec])=>L.push({type:'menu',tab,sec}));});
     L.push({type:'menu',tab:'party'},{type:'menu',tab:'equip'},{type:'smithy'},{type:'smithy',tab:'shop',sec:'weapons'},{type:'smithy',tab:'craft'},{type:'workshop',tab:'shop',sec:'charm'});
     A.G.party.forEach(id=>L.push({type:'char',char:id}));A.G.party.slice(0,3).forEach(id=>['w','a','c','k'].forEach(sl=>L.push({type:'upg',cid:id,sl})));
-    L.push({type:'p3plan',plan:window.__P3.p3SmithPlan(),from:{type:'smithy'}});return L;});
+    L.push({type:'p3plan',plan:window.__GP46.plan(),from:{type:'smithy'}});return L;});
   const bad=[];
   for(const s of screens){
     const r=await ev(async s=>{try{__A.V.modal=JSON.parse(JSON.stringify(s));if(s.type==='menu')__A.V.lastMenuTab=s.tab;__A.render();}catch(e){return ['error '+e.message];}

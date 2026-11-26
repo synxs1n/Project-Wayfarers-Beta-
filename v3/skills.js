@@ -26,11 +26,11 @@ const COMBO={
  'lightning+wind':{n:'Thunderstorm',k:'mag',pw:1.15,t:'all',fx:[['stun',.15]],d:'Lightning rakes all foes. May Stun.'},
  'ice+wind':{n:'Whiteout',k:'mag',pw:1.05,t:'all',fx:[['slow',.5],['blind',.3]],d:'A blizzard on all foes. Slows and blinds.'},
  'light+wind':{n:'Aurora',k:'status',t:'allyAll',fx:[['regen',1],['haste',1]],d:'Shimmering lights grant Regen and Haste to the vanguard.'},
- 'shadow+wind':{n:'Night Wind',k:'mag',pw:1.05,t:'all',fx:[['blind',.5],['bleed',.3]],d:'Cutting dark wind on all foes.'},
+ 'shadow+wind':{n:'Night Wind',k:'mag',pw:1.05,t:'all',fx:[['blind',.5],['bleed',.3]],d:'Cutting dark wind on all foes. May Blind or Bleed.'},
  'ice+lightning':{n:'Cryo Spark',k:'mag',pw:2.0,t:'one',fx:[['stun',.35],['slow',.5]],d:'Freezing current. Stuns and slows.'},
  'light+lightning':{n:'Judgement Bolt',k:'mag',pw:2.6,t:'one',pierce:1,d:'Holy lightning that ignores half of resistance.'},
  'lightning+shadow':{n:'Black Lightning',k:'mag',pw:2.1,t:'one',fx:[['break',.7]],d:'Dark lightning that breaks defenses.'},
- 'ice+light':{n:'Prism Lance',k:'mag',pw:1.1,t:'all',fx:[['blind',.5]],d:'Refracted light on all foes.'},
+ 'ice+light':{n:'Prism Lance',k:'mag',pw:1.1,t:'all',fx:[['blind',.5]],d:'Refracted light on all foes. May Blind.'},
  'ice+shadow':{n:'Frostbite Curse',k:'phys',pw:1.9,t:'one',fx:[['bleed',.8],['slow',.6]],d:'Cursed frost. Bleeds and slows.'},
  'light+shadow':{n:'Twilight',k:'mag',pw:1.2,t:'all',fx:[['weaken',.5],['break',.5]],d:'Light and dark at once. Weakens and breaks every foe.'}
 };
@@ -50,11 +50,11 @@ const DL_FORCE={
 // v5.1 role fills: added only when a class would otherwise miss a Primer or Detonator in that band
 const ROLE_FILL={
  warrior:{eP:n=>({id:'brand',n:'Branding Strike',k:'phys',pw:1.25,mp:4,lv:6,d:`A glancing blow that leaves ${n} clinging to the foe.`}),lP:n=>({id:'warbrand',n:'Warbrand Sweep',k:'phys',t:'all',pw:.85,mp:10,lv:18,d:`Sweeps every foe and brands them with ${n}.`})},
- knight:{eP:n=>({id:'sburst',n:'Shield Brand',k:'phys',pw:1.4,mp:5,lv:9,d:`Slams the shield home and leaves ${n} burning in the foe.`}),lP:n=>({id:'consec',n:'Consecrate',k:'phys',t:'all',pw:.8,mp:10,lv:18,d:`Hallows the ground under every foe with ${n}.`})},
+ knight:{eP:n=>({id:'sburst',n:'Shield Brand',k:'phys',pw:1.4,mp:5,lv:9,d:`Slams the shield home and stamps ${n} into the foe.`}),lP:n=>({id:'consec',n:'Consecrate',k:'phys',t:'all',pw:.8,mp:10,lv:18,d:`Hallows the ground under every foe with ${n}.`})},
  mage:{eD:n=>({id:'burst',n:`${n} Burst`,k:'mag',pw:1.7,mp:6,lv:6,d:`A focused blast of ${n} that sets off a prime.`}),lP:n=>({id:'rune',n:`${n} Rune`,k:'mag',pw:1.3,mp:9,lv:18,d:`Carves a ${n} rune into a foe.`})},
  healer:{eD:n=>({id:'smite',n:'Smite',k:'mag',pw:1.45,mp:5,lv:7,d:`A lance of ${n} from above.`}),lP:n=>({id:'halo',n:`Halo of ${n}`,k:'mag',t:'all',pw:.7,mp:10,lv:18,d:`Rings every foe with ${n}.`}),lD:n=>({id:'verdict',n:'Verdict',k:'mag',pw:2.4,mp:14,cost:1.2,lv:21,d:`Final judgement in ${n}. Slow recovery.`})},
  thief:{eP:n=>({id:'dart2',n:`${n} Dart`,k:'phys',pw:1.1,mp:3,cost:.8,lv:3,d:`A quick dart tipped with ${n}.`}),lP:n=>({id:'fan',n:`${n} Fan`,k:'phys',t:'all',pw:.8,mp:10,lv:18,d:`A fan of ${n} knives at every foe.`})},
- archer:{eD:n=>({id:'burstarrow',n:'Burst Arrow',k:'phys',pw:1.6,mp:5,lv:7,d:`An arrowhead packed with ${n} that bursts on impact.`}),lP:n=>({id:'rain',n:`${n} Rain`,k:'phys',t:'all',pw:.85,mp:10,lv:18,d:`A rain of ${n} arrows on every foe.`}),lD:{retag:'pierce'}},
+ archer:{eD:n=>({id:'burstarrow',n:'Burst Arrow',k:'phys',pw:1.6,mp:5,lv:7,d:`An arrowhead packed with ${n} that bursts on impact.`}),lP:n=>({id:'rain',n:`${n} Arrowstorm`,k:'phys',t:'all',pw:.85,mp:10,lv:18,d:`A rain of ${n} arrows on every foe.`}),lD:{retag:'pierce'}},
  monk:{eP:n=>({id:'palm2',n:`${n} Palm`,k:'phys',pw:1.2,mp:4,lv:6,d:`An open palm that leaves ${n} humming in the foe.`}),lP:n=>({id:'whirl',n:`${n} Whirl`,k:'phys',t:'all',pw:.8,mp:10,lv:18,d:`A spinning kick that marks every foe with ${n}.`})},
  bard:{eD:n=>({id:'cresc',n:`${n} Crescendo`,k:'mag',pw:1.5,mp:6,lv:6,d:`A rising ${n} chord that sets off a prime.`}),lP:n=>({id:'refrain',n:`${n} Refrain`,k:'mag',t:'all',pw:.7,mp:10,lv:18,d:`A ${n} refrain that lingers on every foe.`}),lD:n=>({id:'finale',n:'Grand Finale',k:'mag',pw:2.2,mp:14,cost:1.2,lv:21,d:`The last, loudest ${n} note. Slow recovery.`})}
 };
@@ -70,7 +70,7 @@ function classSkills(t){
     add({id:'hurl',n:'Heave',k:'phys',pw:1.2,mp:3,lv:4,d:'Hurl your weapon across the field and fetch it back. Strikes with the kind of damage of your weapon.'});
     if(e2)add({id:'edge2',n:n2+' Edge',k:'phys',pw:1.7,mp:5,el:e2,lv:8,d:`Blade wreathed in ${n2}.`});
     add({id:'cleave',n:'Cleave',k:'phys',pw:1,mp:9,t:'all',lv:10,d:'Sweeps every foe.'});
-    add({id:'cry',n:'War Cry',k:'status',t:'self',mp:6,lv:13,fx:[['might',1],['taunt',1]],d:'Gain Might and Taunt: foes come for you.'});
+    add({id:'cry',n:'War Cry',k:'status',t:'self',mp:6,lv:13,fx:[['might',1],['taunt',1]],d:'Gain Might and Taunt: foes come for you.'+(typeof TAUNT!=='undefined'&&TAUNT.cut?` You take ${Math.round(TAUNT.cut*100)}% less damage while it lasts.`:'')});
     add({id:'titan',n:'Titan Blow',k:'phys',pw:3,mp:16,el:e1,cost:1.3,lv:22,d:`Crushing ${n1} blow. Slow recovery.`});
     break;
   case 'knight':
@@ -149,7 +149,7 @@ function classSkills(t){
     add({id:'wolf',n:'Call Wolf',k:'phys',pw:1.55,mp:5,lv:5,fx:[['bleed',.6]],d:'His wolf goes for the throat. Likely Bleeds.'});
     add({id:'thorn',n:'Thornwhisper',k:'status',t:'all',mp:7,lv:8,fx:[['root',.5],['slow',.4]],d:'Brambles answer his whisper. May Root and Slow every foe.'});
     add({id:'s1b',n:'Nightbloom Arrow',k:'phys',pw:1.75,mp:5,el:'shadow',lv:11,d:'An arrow that blooms dark on impact.'});
-    add({id:'pack',n:'Pack Hunt',k:'phys',pw:1,mp:10,t:'all',lv:14,fx:[['bleed',.4]],d:'Wolf, hawk and ranger hit every foe together.'});
+    add({id:'pack',n:'Pack Hunt',k:'phys',pw:1,mp:10,t:'all',lv:14,fx:[['bleed',.4]],d:'Wolf, hawk and ranger hit every foe together. May Bleed.'});
     add({id:'wildmend',n:'Wild Mend',k:'heal',pw:.9,mp:10,t:'allyAll',lv:17,d:'Old forest medicine for the vanguard.'});
     add({id:'s3a',n:'Moonless Volley',k:'phys',pw:1.25,mp:14,cost:1.2,t:'all',el:'shadow',lv:22,d:'A volley loosed in perfect dark.'});
     break;
@@ -269,10 +269,10 @@ const LIMIT2={
 // strip (removes the target's boons), lbParty (adds Limit gauge to the vanguard).
 function lateSkills(cls,e1,e2,n1,n2){const E2=e2||e1,N2=n2||n1;const L={
  warrior:[{id:'quake',n:'Earthshaker',k:'phys',pw:1.3,mp:14,t:'all',el:e1,role:'primer',lv:42,fx:[['slow',.4]],d:`Stamps ${n1} through the ground under every foe. May Slow.`},
-  {id:'laststand',n:'Last Stand',k:'status',t:'self',mp:12,lv:46,fx:[['might',1],['bulwark',1],['regen',1]],d:'Plants his feet: Might, Bulwark and Regen.'},
+  {id:'laststand',n:'Last Stand',k:'status',t:'self',mp:12,lv:46,fx:[['might',1],['bulwark',1],['regen',1]],d:'Nothing left to lose: Might, Bulwark and Regen.'},
   {id:'ragnarok',n:'Ragnarok',k:'phys',pw:4.2,mp:28,cost:1.3,el:e1,role:'det',lv:50,execute:.3,shieldChip:3,cap:1,d:`The end of the world in one ${n1} blow. Double damage below 30% HP; chips 3 shield pips.`}],
  knight:[{id:'consground',n:'Consecrated Ground',k:'phys',pw:.95,mp:16,t:'all',el:e1,role:'primer',lv:42,allyFx:[['bulwark',1]],d:`Hallows the ground under every foe with ${n1} and gives the line Bulwark.`},
-  {id:'holylance',n:'Holy Lance',k:'phys',pw:2.6,mp:16,el:E2,role:'det',pierce:1,lv:46,d:`A ${N2} lance that ignores half of defense.`},
+  {id:'holylance',n:'Breach Lance',k:'phys',pw:2.6,mp:16,el:E2,role:'det',pierce:1,lv:46,d:`A lance of ${N2} driven through the guard. Ignores half of defense.`},
   {id:'oath',n:'Unbreakable Oath',k:'status',t:'allyAll',mp:30,lv:50,fx:[['ward',1],['bulwark',1],['might',1],['regen',1]],heal:.25,lbParty:25,cap:1,d:'Swears the line will hold: Ward, Bulwark, Might and Regen for all, a 25% heal, and +25 Limit gauge.'}],
  mage:[{id:'seal',n:'Prismatic Seal',k:'mag',pw:.95,mp:16,t:'all',el:E2,role:'primer',lv:42,fx:[['weaken',.4]],d:`Seals every foe in ${N2}. May Weaken.`},
   {id:'overchan',n:'Overchannel',k:'status',t:'self',mp:10,lv:46,fx:[['might',1],['haste',1]],d:'Burns the reserves: Might and Haste.'},
@@ -287,7 +287,7 @@ function lateSkills(cls,e1,e2,n1,n2){const E2=e2||e1,N2=n2||n1;const L={
   {id:'galebar',n:'Gale Barrage',k:'phys',pw:.72,hits:2,mp:18,t:'all',el:E2,role:'det',lv:46,d:`Two ${N2} volleys over every foe.`},
   {id:'heavenp',n:'Heavenpiercer',k:'phys',pw:4.4,mp:30,cost:1.3,pierce:1,crit:.3,el:e1,role:'det',lv:50,shieldChip:3,cap:1,d:'One arrow loosed at the sky that comes down through anything. Ignores half of defense; chips 3 shield pips.'}],
  monk:[{id:'furnace',n:'Inner Furnace',k:'mpself',pw:1.6,mp:0,t:'self',lv:42,fx:[['haste',1],['might',1]],d:'Restores HP and MP and lights the furnace: Haste and Might.'},
-  {id:'tempkick',n:'Tempest Whirl',k:'phys',pw:1.3,mp:14,t:'all',el:e1,role:'primer',lv:46,fx:[['stun',.2]],d:`A whirl of kicks that leaves ${n1} lingering on every foe. May Stun.`},
+  {id:'tempkick',n:'Whirling Kicks',k:'phys',pw:1.3,mp:14,t:'all',el:e1,role:'primer',lv:46,fx:[['stun',.2]],d:`A whirl of kicks that leaves ${n1} lingering on every foe. May Stun.`},
   {id:'ascend',n:'Ascension Fist',k:'phys',pw:.95,hits:5,mp:28,el:e2?[e1,e2]:e1,role:'det',drain:.2,lv:50,cap:1,d:'Five blows that climb to the heavens. Heals him for 20% of the damage.'}],
  bard:[{id:'rondo',n:'Rondo of Ruin',k:'mag',pw:1.1,mp:16,t:'all',el:e1,role:'primer',lv:42,fx:[['break',.5]],d:`A ${n1} rondo on every foe. May Break.`},
   {id:'secondwind',n:'Second Wind',k:'heal',pw:1.2,mp:18,t:'allyAll',lv:46,fx:[['haste',1]],lbParty:20,d:'Heals the line, grants Haste and +20 Limit gauge.'},
@@ -297,7 +297,7 @@ function lateSkills(cls,e1,e2,n1,n2){const E2=e2||e1,N2=n2||n1;const L={
   {id:'tenk',n:'Ten Thousand Hooves',k:'phys',pw:.75,hits:8,mp:32,t:'rand',el:['lightning','shadow'],role:'det',crit:.25,lv:50,fx:[['stun',.2]],cap:1,d:'Eight storm riders at random foes, shadow and lightning. May Stun.'}],
  druid:[{id:'wildmark',n:'Wild Hunt',k:'phys',pw:1,mp:12,t:'all',el:'shadow',role:'primer',lv:42,fx:[['bleed',.5]],d:'The pack marks every foe with dusk. May Bleed.'},
   {id:'bramble',n:'Bramble Prison',k:'status',t:'all',mp:14,lv:46,fx:[['root',.8],['slow',.6],['break',.4]],d:'Thorns close over every foe: Root, Slow, maybe Break.'},
-  {id:'oldwood',n:'Heart of the Old Wood',k:'phys',pw:1.9,mp:32,t:'all',el:'shadow',role:'det',drain:.15,allyFx:[['regen',1]],lv:50,cap:1,d:'The oldest tree wakes and strikes every foe; the line gains Regen and he drinks 15% of the damage.'}],
+  {id:'oldwood',n:'Heart of the Old Wood',k:'phys',pw:1.9,mp:32,t:'all',el:'shadow',role:'det',drain:.15,allyFx:[['regen',1]],lv:50,cap:1,d:'The oldest tree wakes and strikes every foe. He drinks 15% of the damage and the line gains Regen.'}],
  archmage:[{id:'hoarfield',n:'Hoarfrost Field',k:'mag',pw:1,mp:12,t:'all',el:'ice',role:'primer',lv:42,fx:[['slow',.5]],d:'Freezes the ground under every foe. May Slow.'},
   {id:'lattice',n:'Thunder Lattice',k:'mag',pw:1.3,mp:16,t:'all',el:'lightning',role:'det',lv:46,fx:[['stun',.2]],d:'A cage of lightning on every foe. May Stun.'},
   {id:'zeropoint',n:'Zero Point',k:'mag',pw:2.3,mp:34,cost:1.4,t:'all',el:['ice','lightning'],role:'det',lv:50,fx:[['stun',.35]],shieldChip:3,cap:1,d:'Everything stops, then shatters. Every foe may Stun; chips 3 shield pips.'}],

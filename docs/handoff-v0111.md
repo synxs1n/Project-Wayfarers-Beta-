@@ -954,7 +954,31 @@ With `b3list` (a `.menu.list` is open) `#bcmd` is `position:fixed` at the bottom
   chest set the flag in all five dungeons; the repair is for saves where the two records disagree.
 - Card column: .pcw.hastags .ptags is static (battle3.css lays it absolutely over the card's foot). Test: tools/chrome/v229a.js (battle group).
 
-## 0.22.54 (menus29.js, shops31.js, skills12.js, fix52.js, pathguard.js; the test pass of docs/known-test-failures.md)
+## Cleanup after 0.22.53: fewer layers (no game change, no version bump)
+- Wraps folded into the function they wrapped (the comments went with them): `bossKeyFor`, `questReady` and `newChar` (engine.js),
+  `r3Ask` (recruit3.js), `p3Ult` and `upgOpts` (p3shop.js; echo11.js's part of upgOpts has the same relic guard), `facMissionList`
+  (factions.js, `f47Open`), `w7Legacy` (weather7.js), `sk12Tag` (skills12.js), `sr11Strip` (skillrows11.js), `skNum` (insight.js),
+  `ACT.tgtE` (battleui.js), `battleMode` and `slotsFor` (battle.js), `b8TallPlan` (battle3.js), `b27Mark`, `b27Sc` and the Party & foes
+  command (battle27.js now holds side48.js's part and S48). fix38.js is gone (all of it is in p3shop.js).
+- Left as they are, with the reason beside each: the eclipse wraps of `weatherFX` and `W7.old` (fix47.js: they replace what three
+  earlier layers draw), `known` (act49.js: it filters the finished list), and the registered hooks that edit finished HTML or lists
+  (`cmdHtml`, `mChar`, `REALM_DONE`, `renderBattle`, `openChest`): their place in the hook order is their meaning.
+- Dead code removed: `p3SmithPlan`, `p3SmithRun`, `p3Recipes` and the first `ACT.p3Smith / p3Alch / p3SmithGo` (p3shop.js), `g16PlanAll`
+  and the second set of those actions (gear16.js), shields20.js's wrap of `p3SmithPlan`, the old bodies of `planGear` and `autoOne`
+  (equip2.js) and the `GP46.off` switch. `planGear` is now the 0.22.46 walk itself; `gp46Plan` / `gp46Run` and the three actions are in
+  gear46.js. If the walk throws there is no older planner to fall back on any more. Tests: `__GP46.plan()` replaces `__P3.p3SmithPlan()`
+  and `__G16.plan()` (v050p3a, v188a, v095m4).
+- Battle CSS: one file, `v3/battle3.css`, sections A (base), B (`b27`, was the style block of battle27.js) and C (`b48`, was side48.js's).
+  B and C now load before battle5.css, battle4.css and every style a module adds, where they used to load after: a rule in B or C that
+  ties in weight with a later sheet would now lose. Checked on the built page (9 screen sizes, 5 battle states: root menu, skills, items,
+  the Party & foes sheet, target picking): no moved rule ties with a rule it now comes before. Keep new b27 / b48 rules at their usual
+  weight (`.battle.b3.m-tall.b27 ...`) and they stay ahead.
+- Found on the way: the Chrome test harness (pw.js) puts the page inside its own <body>, so there the page's stylesheet comes AFTER the
+  styles the modules add; in the real page it comes first. A tie between a stylesheet rule and a module's rule can therefore fall the
+  other way in a test than in the game. The command head's bottom padding is such a case: 3 px in the game (before and after this
+  cleanup), 4 px in the harness before it, 3 px now.
+
+## 0.22.56 (menus29.js, shops31.js, skills12.js, fix52.js, pathguard.js, battle11.js; the test pass of docs/known-test-failures.md)
 Found while bringing the failing and flaky Chrome tests back (the list that was docs/known-test-failures.md):
 - Phone menu bar (menus29.js): the section name is the chip's own words (m29Lab; the "N ready" pill of qready.js was part of the title and
   pushed the Save button to 10 px over the gold). `.savepin` is display:contents, so the Save button and the save state are the bar's own
@@ -967,6 +991,8 @@ Found while bringing the failing and flaky Chrome tests back (the list that was 
   so the whole hook fell back to the unscaled row; its regex also asked for "Pow N". The hook counts a changed number as a change.
 - fix52.js f52Vault: looks at a dungeon only when G.chests holds a key of that dungeon. It called getMap('d'+s) for every vault quest on
   every chest opened and every look at the quest, which builds a dungeon never entered (about 110 ms; v190a "opening takes").
+- battle11.js (the unitBox wrap that sizes foes): a foe's box is kept inside the stage sideways too (x clamped to half its width from either
+  edge). The slots were laid out for the old sprite sizes; a wide foe in the second of three slots on a phone was cut by the left edge.
 - pathguard.js: an NPC with no free spot within reach of where it stands (a pocket walled off from the map) is put on the nearest free
   spot from the map's entry (pgEntry: m.start or the first gate's arrive). The marsh town's Town crier at 13,3 (v050p1c, realm 9 first).
 - Not changed, for the owner: the hero sheet has had no Upgrade button per slot since 0.17.1 (ui.js draws the Equipment block as

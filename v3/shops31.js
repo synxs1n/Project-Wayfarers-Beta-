@@ -11,7 +11,7 @@
 const S31={off:false};
 function s31Pass(){try{const md=document.getElementById('modal');if(!md)return;const pn=md.querySelector('.panel'),sn=pn&&pn.querySelector(':scope>.shopnav');if(!pn||!sn)return;
   const on=m29On()&&!S31.off,ov=pn.parentNode;pn.classList.toggle('m29',on);pn.classList.toggle('s31',on);if(ov&&ov.classList)ov.classList.toggle('m29m',on);if(!on||pn.dataset.s31)return;pn.dataset.s31='1';
-  // 0.22.54: the shop's name is its own item in the bar, so a long one (Wayfarers Guild Hall) takes two lines and the gold stays in view (the name pushed it under Back and Close)
+  // 0.22.56: the shop's name is its own item in the bar, so a long one (Wayfarers Guild Hall) takes two lines and the gold stays in view (the name pushed it under Back and Close)
   try{const h=pn.querySelector(':scope>h2'),tn=h&&[...h.childNodes].find(n=>n.nodeType===3&&n.textContent.trim());if(tn){const sp=document.createElement('span');sp.className='s31t';sp.textContent=tn.textContent.trim();h.replaceChild(sp,tn);}}catch(e){}
   pn.classList.toggle('s31nt',!sn.querySelector(':scope>.stabs'));try{pn.dataset.s31t=(V.modal&&V.modal.type)||'';}catch(e){}
   const ms=sn.querySelector(':scope>.ssec'),so=ms&&ms.querySelector('.chip.on');if(so)requestAnimationFrame(()=>{try{ms.scrollLeft=Math.max(0,so.offsetLeft-(ms.clientWidth-so.offsetWidth)/2);}catch(e){}});

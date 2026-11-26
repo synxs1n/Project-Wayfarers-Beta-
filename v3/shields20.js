@@ -29,12 +29,8 @@ HOOK.wrap('calcStats','shields20','a shield counts only beside a one-handed weap
 // a two-handed weapon puts the shield back in the pack
 function sh20Drop(c){try{if(c&&c.eq&&c.eq.s&&!sh20Ok(c)&&G&&!G.daily){G.gear.push(c.eq.s);c.eq.s=null;return true;}}catch(e){}return false;}
 {const eg0=equipGear;equipGear=function(c,id){const r=eg0.apply(this,arguments);if(sh20Drop(c))try{refresh(c);}catch(e){}return r;};}
-// the Smithy's upgrade plan (p3shop.js): a shield is not planned for a hero whose planned weapon is two-handed, and a hero's weapon is
-// applied before their shield
-{const pp0=p3SmithPlan;p3SmithPlan=function(){const P=pp0.apply(this,arguments);try{if(!P||!P.picks||!P.picks.some(p=>p.sl==='s'))return P;
-  const two=new Set(P.picks.filter(p=>p.sl==='w'&&!sh20OneHand(G.roster[p.cid],p.id)).map(p=>p.cid));
-  P.picks=P.picks.filter(p=>!(p.sl==='s'&&two.has(p.cid)));
-  P.picks.sort((a,b)=>a.cid===b.cid?(a.sl==='s')-(b.sl==='s'):0);P.total=P.picks.reduce((a,p)=>a+p.gold,0);}catch(e){}return P;};}
+// Upgrade whole party and Equip Best (gear46.js, equip2.js planGear) call sh20Drop / sh20Ok on their own copies, so a planned two-handed
+// weapon leaves no shield in the plan.
 // the Smithy
 {const ss0=shopStock;shopStock=function(tab){const r=ss0.apply(this,arguments);try{if(tab==='armor'&&G&&Object.values(G.roster).some(c=>sh20Cls(c))){const tiers=[Math.min(5,G.stage)];if(G.stage>0)tiers.unshift(G.stage-1);
   tiers.forEach(t=>r.push('s_shield_'+t));}}catch(e){}return r;};}

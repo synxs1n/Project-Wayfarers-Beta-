@@ -8,6 +8,12 @@
 const SIG_EL=['fire','water','ice','shadow','wind','earth','light','lightning'];
 const SIG_FOE={fire:[['burn',.7]],water:[['weaken',.6]],ice:[['slow',.7]],shadow:[['poison',.75]],wind:[['blind',.6]],earth:[['root',.55]],light:[['break',.6]],lightning:[['stun',.35]]};
 const SIG_ALLY={fire:[['might',1]],water:[['regen',1]],ice:[['ward',1]],shadow:[['focus',1]],wind:[['haste',1]],earth:[['bulwark',1]],light:[['regen',1],['ward',1]],lightning:[['might',1],['haste',1]]};
+// element flavour skills (sigFlavour): the name says the effect (the adjective) on the class's own noun, with one plain line about the move
+const SIG_FL_ADJ={burn:'Searing',weaken:'Sapping',slow:'Numbing',poison:'Venomous',blind:'Blinding',root:'Snaring',break:'Sundering',stun:'Stunning'};
+const SIG_FL_V={burn:'Burn',weaken:'Weaken',slow:'Slow',poison:'Poison',blind:'Blind',root:'Root',break:'Break',stun:'Stun',bleed:'Bleed'};
+const SIG_FL={warrior:['Rend','A tearing cut.'],knight:['Shield Bash','A blow with the rim of the shield.'],thief:['Dart','A dart with something on the tip.'],archer:['Barbed Arrow','A barbed arrow with something on the head.'],
+  monk:['Blow','A short blow to a nerve.'],mage:['Hex','A hex on one foe.'],bard:['Dissonance','A jarring chord over every foe.']};
+const SIG_FL_ALLY={fire:'Prayer of Might',water:'Prayer of Renewal',ice:'Prayer of Warding',shadow:'Prayer of Focus',wind:'Prayer of Haste',earth:'Prayer of Stone',light:'Prayer of Dawn',lightning:'Prayer of Storms'};
 const SIG_ADJ={fire:'Searing',water:'Tidal',ice:'Frostbitten',shadow:'Gloom',wind:'Gale',earth:'Stone',light:'Radiant',lightning:'Shocking'};
 // rider: 'foe' puts the element's status on foes, 'ally' on allies
 const SIG_T={
@@ -29,8 +35,8 @@ const SIG_NAMES={
  mira:['Tidecall','A wave called up from the shallows.'],fenn:['Hoarfrost Lance','A needle of winter.'],vael:['Umbral Collapse','The shadow folds in on itself.'],sorrel:['Flare Bloom','Fire that opens like a flower.'],
  astra:['Eclipse Verse','Light and dark, line by line.'],ember:['Kindle Storm','Sparks breed sparks.'],zia:['Chain Spark','Lightning that cannot decide who it likes.'],cyrene:['Rime Gale','A whiteout in one breath.'],
  terrin:['Cairn Fall','The stones answer, slowly.'],aella:['Weather Turn','Changes the sky\'s mind.'],lucan:['Constellation','Stars sketched into a strike.'],
- sable:['Hush Step','A step no one hears. The poison does the talking.'],pip:['Dockside Dip','Quick hands, wet hands.'],kit:['Spark Pocket','Lifts a charge and returns it with interest.'],vex:['Second Wind Slash','Strikes, strikes again, and was never there.'],
- nyx:['Frost Fingers','Cold hands in every pocket.'],tamsin:['Tumble Strike','Rolls the ground out from under a foe.'],nettle:['Hotfoot','Leaves a burn and a rumor.'],lysa:['Undertow Snare','A loop of dark water.'],
+ sable:['Hush Step','A step no one hears. The poison does the talking.'],pip:['Dockside Dip','Quick hands, wet hands.'],kit:['Spark Pocket','Lifts a charge and returns it with interest.'],vex:['Second Wind Feint','Feints, feints again, and was never there.'],
+ nyx:['Frost Fingers','Cold hands in every pocket.'],tamsin:['Tumble Trip','Rolls the ground out from under them.'],nettle:['Hotfoot','Leaves a burn and a rumor.'],lysa:['Undertow Snare','A loop of dark water.'],
  drift:['Breezeway','Slips between two heartbeats.'],sleet:['Cold Open','A first strike that sticks.'],glint:['Magpie Flash','Dazzles, then pockets the evidence.'],
  tess:['Courier\'s Shot','Delivers the first arrow on time.'],wren:['Stonefletch','An arrow fletched from fieldstone.'],frey:['Icicle Volley','A hundred small winters.'],sylva:['Bogbolt','Bolts that sink into the mire.'],
  ciro:['Sunspear Arrow','A morning in one shaft.'],ashwin:['Sparkstorm','A rain of embers.'],voss:['Skyfork','Lightning chooses the arrow.'],skerry:['Squall Line','Arrows on the crosswind.'],
@@ -80,9 +86,13 @@ function sigFlavour(L,t){
   const ally=SIG_T[t.cls]&&SIG_T[t.cls][0].rider==='ally'&&(t.cls==='healer'),rd=(ally?SIG_ALLY:SIG_FOE)[e];if(!rd)return;
   // v0.10.8: warriors keep Rend's Bleed and add the element rider on top (the swap used to replace the Bleed, so warriors lost it)
   const keep=t.cls==='warrior'?(s.fx||[]).filter(f=>f[0]==='bleed').map(f=>f.slice()):[];
-  s.sigFl=1;s.n=adj+' '+s.n;s.fx=keep.concat(rd.map(f=>f.slice()));
-  const txt=ally?rd.map(f=>SIG_ST_N[f[0]]).join(' and '):sigFoeTxt(keep.concat(rd));
-  s.d=(s.k==='phys'||s.k==='mag'?`${EL[e]} tinged. `:'')+(ally?`Gives ${txt}.`:txt[0].toUpperCase()+txt.slice(1)+'.')+(s.t==='all'?' Hits every foe.':'');
+  s.sigFl=1;s.fx=keep.concat(rd.map(f=>f.slice()));
+  // 0.22.54 text sweep: the skill carries no element, so it is named and described by what it does ("Stone Venom Dart: Earth tinged. Roots."
+  // was a dart with no Earth and no venom). The name keeps the class's noun; the text is built from the effects and their chances.
+  if(ally){s.n=SIG_FL_ALLY[e]||s.n;s.d=`Grants ${rd.map(f=>SIG_ST_N[f[0]]).join(' and ')} to one ally.`;return;}
+  const F=SIG_FL[t.cls]||[s.n,''],fxAll=s.fx,hi=fxAll.filter(f=>f[1]>=.6).map(f=>SIG_FL_V[f[0]]+'s'),lo=fxAll.filter(f=>f[1]<.6).map(f=>SIG_FL_V[f[0]]),parts=[];
+  if(hi.length)parts.push('Likely '+hi.join(' and '));if(lo.length)parts.push((parts.length?'may ':'May ')+lo.join(' or '));
+  s.n=(SIG_FL_ADJ[rd[0][0]]||adj)+' '+F[0];s.d=(F[1]?F[1]+' ':'')+parts.join('; ')+'.';
 }
 HOOK.xform('classSkills','sigskills','the wayfarer\'s signature skill and element flavour',function(L,t){
   if(!L||L._sg||!t||t.src==='L'||t.src==='x'||t.mon||!SIG_NAMES[t.id])return L;L._sg=1;

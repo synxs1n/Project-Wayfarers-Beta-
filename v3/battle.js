@@ -33,12 +33,15 @@ battleTheme=HOOK.def('battleTheme',battleTheme);
 // v0.6.3: slots come from B3.slots (config.js) as [x share, depth on the ground band 0..1]; depth d lands at BATTLE_GROUND top + d*(bot-top)
 // through p2GroundY (p2world.js), so feet stay on the ground plane (2.1).
 function slotsFor(side,n,boss){const T=B3.slots[BL.W<260?'tall':'wide'],t=side==='p'?T.p:boss?T.boss[Math.min(3,n)-1]:T.e[Math.min(5,n)-1];
-  const r=t.map(([x,d])=>[x,+(.48+d*.49).toFixed(4)]);while(r.length<n)r.push(r[r.length-1]);return r;}
+  const r=t.map(([x,d])=>[x,+(.48+d*.49).toFixed(4)]);while(r.length<n)r.push(r[r.length-1]);
+  // 0.22.27 (battle27.js): on a short stage the units stand a little lower, so the tags over the highest hero stay clear of the floating line (B27.clear logical px)
+  try{if(B27.live&&!B27.noLine/* big screens: the line is in the top strip */&&BL.mode==='tall'&&BL.H){const lo=Math.min(.62,(B27.clear+B27.lineH/(BL.sc||2.25))/BL.H);if(lo>.48)return r.map(([x,y])=>[x,+(lo+(y-.48)/.49*(.97-lo)).toFixed(4)]);}}catch(e){}
+  return r;}
 // v0.3.3: the stage keeps a fixed aspect ratio. Portrait phones keep the tall stage (width follows the screen, 2x scale).
 // Everything wider (tablets, desktops, landscape phones at 16:9, 19.5:9 or 21:9) uses ONE fixed 320x150 logical stage that is
 // scaled uniformly and centred (pillarbox or letterbox), never stretched. Landscape phones also put the command panel beside the scene.
 const WIDE_W=320,WIDE_H=150;
-function battleMode(){const zz=typeof dsZoom==='function'?dsZoom():1,vw=window.innerWidth/zz,vh=(window.visualViewport?window.visualViewport.height:window.innerHeight)/zz,sc=$('screen'),cont=sc?sc.clientWidth:vw-32;
+function battleMode(){if(b27Fits())return 'tall';/* 0.22.34 (battle27.js): every screen but a short landscape one has the stage-first layout */const zz=typeof dsZoom==='function'?dsZoom():1,vw=window.innerWidth/zz,vh=(window.visualViewport?window.visualViewport.height:window.innerHeight)/zz,sc=$('screen'),cont=sc?sc.clientWidth:vw-32;
   // v0.8.10: short landscape screens use the wide planner too (it measures what fits: the commands may go beside the stage); the old
   // 'side' layout is no longer chosen
   if(cont<560)return 'tall';return 'wide';}

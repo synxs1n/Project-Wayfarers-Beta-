@@ -5,7 +5,9 @@
 // Keep in reserves. State: G.pendRecruit (optional save field, cleared when answered), so a reload still asks.
 HOOK.wrap('recruit','recruit3','ask where a wild recruit stands',function(next,...args){const [id,free]=args;const was=G&&G.party&&G.party.includes(id);const ok=next(...args);
   try{if(ok&&free&&G&&!G.daily&&!was&&!G.party.includes(id)&&G.roster[id])G.pendRecruit=id;}catch(e){}return ok;});
-function r3Ask(){try{if(!G||!G.pendRecruit||V.screen!=='world'||V.modal||(typeof WS!=='undefined'&&(WS.dlg||WS.lock)))return false;
+// 0.22.30: 0.22.28 made a Legendary who joins a full six ask where to stand. Nikaris joins inside his fight and then plays a scene on the field
+// (G.l18meet, legends18.js): the question waited for the same moment and got there first, so the scene never played. It waits for the scene.
+function r3Ask(){try{if(G&&G.l18meet)return false;if(!G||!G.pendRecruit||V.screen!=='world'||V.modal||(typeof WS!=='undefined'&&(WS.dlg||WS.lock)))return false;
   if(!G.roster[G.pendRecruit]){G.pendRecruit=null;return false;}V.modal={type:'recruitAsk',hero:G.pendRecruit};return true;}catch(e){return false;}}
 HOOK.after('render','recruit3','ask where a wild recruit stands',function(){try{if(r3Ask()){if(typeof later==='function')later(render,0);else setTimeout(render,0);}}catch(e){}});
 function mRecruitAsk(m){const id=m.hero,t=TPL[id],c=G.roster[id],cls=CLS[t.cls]||{n:t.cls,role:''};

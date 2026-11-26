@@ -1,3 +1,14 @@
+/* ============================================================================================================================
+   battle3.css: every style of the battle screen, in three layers. Later sections win over earlier ones at equal weight, so keep the order.
+     A  the base screen (v0.6.3 to v0.9.5, battle3.js): stage labels, cards, commands, the classic wide and landscape layouts
+     B  the stage-first layout, class b27 (v0.22.27, battle27.js): every screen but a short landscape one. The top strip, the floating
+        log line, the big command buttons, the Party & foes sheet, the list panel that rises over the stage
+     C  big screens, classes b48 and b48top (v0.22.48, side48.js): the card column beside the stage, the log line in the top strip,
+        the skill boxes
+   Sections B and C were style blocks inside battle27.js and side48.js until this file took them (same rules, same order).
+   Sizes that the code sets on .battle: --b27t, --b48w, --b48rise, --b48t, --b48ch, --b48ll, --b48lw, --b48lt.
+   ============================================================================================================================ */
+/* ############################ A  THE BASE SCREEN ############################ */
 /* =================== Beta v0.6.3: battle screen (battle3.js) =================== */
 /* ----- stage labels: every box is placed by the layout pass (b3Lay) at exactly these sizes, in logical stage px ----- */
 .bstage .b3l{position:absolute;box-sizing:border-box;margin:0;transform:none}
@@ -555,3 +566,144 @@ img.dli.slash,img.dli.piercing{image-rendering:auto}
 .m12tags .m12t.kind.slash{background:#3a4358}.m12tags .m12t.kind.blunt{background:#6a4a2a}.m12tags .m12t.kind.piercing{background:#6a3040}.m12tags .m12t.kind.ranged{background:#2c6a4a}.m12tags .m12t.kind.magic{background:#4a3088}.m12tags .m12t.kind.heal{background:#256a3c}
 .mi.m12last{box-shadow:inset 0 0 0 1px rgba(255,216,160,.55)}
 .mi.m12last .n::after{content:"last";margin-left:5px;font:700 .52rem/1 var(--fb);letter-spacing:.06em;text-transform:uppercase;color:#ffd8a0;opacity:.8}
+
+/* ############################ B  THE STAGE-FIRST LAYOUT: .battle.b3.m-tall.b27 (battle27.js) ############################ */
+/* What it is and why: the header of battle27.js. b27Mark (battle27.js) sets m-tall, b27 and b27land on .battle before the layout measures. */
+body:has(.battle.b3.b27) #hdr{display:none}
+.battle.b3.m-tall.b27{position:relative}
+.battle.b3.m-tall.b27 .order{display:flex;align-items:center;gap:6px}
+.battle.b3.m-tall.b27 .order .ocs{flex:1 1 auto;min-width:0;overflow:hidden}
+.battle.b3.m-tall.b27 .order .ocs>small{display:none}
+.battle.b3.m-tall.b27 .order .autorow{display:flex;flex:none;gap:4px;margin:0 0 0 auto;padding:0;width:auto}
+.battle.b3.m-tall.b27 .order .autorow .btn{flex:none;min-width:40px;width:auto;min-height:40px;padding:0 7px;font-size:.74rem;line-height:1.05}
+.battle.b3.m-tall.b27 .order .autorow .btn small{display:block;font-size:.56rem;opacity:.8}
+.battle.b3.m-tall.b27 .cmd .autorow{display:none}
+.battle.b3.m-tall.b27 .bwrap{margin-left:-12px;margin-right:-12px;width:calc(100% + 24px);max-width:none}
+.battle.b3.m-tall.b27>.bline{grid-area:auto;position:absolute;left:-4px;right:-4px;top:var(--b27t,62px);z-index:6;min-height:40px;padding:0 0 0 3px;gap:4px;background:rgba(8,13,26,.88);border:1px solid rgba(217,180,106,.28);border-radius:8px;overflow:hidden}
+.battle.b3.m-tall.b27>.bline .osky{display:flex;flex:none;gap:2px;align-items:center}
+.battle.b3.m-tall.b27>.bline .osky .wchip .wxn{display:none}
+.battle.b3.m-tall.b27 .order{padding-top:2px;padding-bottom:2px;min-height:44px}
+.battle.b3.m-tall.b27>.bline .osky .wchip{min-width:28px;width:28px;height:34px;min-height:34px;padding:0}
+.battle.b3.m-tall.b27>.bline .osky .wchip.d{width:auto;padding:0 4px;font-size:.62rem}
+.battle.b3.m-tall.b27>.bline .b4mo{min-height:40px;margin:0;min-width:74px;max-width:74px;padding:3px 5px}
+.battle.b3.m-tall.b27>.bline .b4mo .b4mt b{font-size:.5rem;letter-spacing:0}
+.battle.b3.m-tall.b27>.bline .blog p{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;font-size:.74rem;line-height:1.15}
+.battle.b3.m-tall.b27>.bline .blogbtn{min-height:40px;min-width:40px;padding:0 6px;font-size:.72rem;border-radius:0}
+.battle.b3.m-tall.b27>.bline .blogbtn.b27i{font-size:1rem;border-left:1px solid rgba(217,180,106,.28)}
+.battle.b3.m-tall.b27 .cmd .menu.prim{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.battle.b3.m-tall.b27 .cmd .menu.prim .mi{min-height:48px;font-size:1.06rem}
+.battle.b3.m-tall.b27 .cmd .menu.sec{display:flex;flex-wrap:wrap;gap:5px}
+.battle.b3.m-tall.b27 .cmd .menu.sec .mi{flex:1 1 56px;min-width:0;min-height:40px}
+.battle.b3.m-tall.b27 .cmd .menu.sec .mi.b27pf{order:-1;flex:1.7 1 118px;white-space:nowrap;border-color:#a48bff;background:linear-gradient(#34296a,#231c4b);color:#fff}
+.battle.b3.m-tall.b27 .cmd .menu.sec .mi[data-arg="guide"]{display:none}
+.battle.b3.m-tall.b27 .bbottom .pgroup,.battle.b3.m-tall.b27 .bbottom .b8fl,.battle.b3.m-tall.b27 .bbottom .b3pty{display:none}
+.battle.b3.m-tall.b27 .bban{top:54px}
+.battle.b3.m-tall.b27 .cmd{padding-top:5px;padding-bottom:6px}
+.battle.b3.m-tall.b27 .who.cmdhead{padding:0 0 3px}
+.battle.b3.m-tall.b27 .cmd .menu.prim{gap:5px}
+.battle.b3.m-tall.b27 .cmd .menu.prim .mi{min-height:44px}
+.battle.b3.m-tall.b27 .who.cmdhead .cmdback{min-height:34px;height:34px;padding-top:0;padding-bottom:0}
+.battle.b3.m-tall.b27 .who.cmdhead{min-height:0}
+@media (min-width:700px){
+.battle.b3.m-tall.b27 .cmd .menu.prim{grid-template-columns:repeat(4,minmax(0,1fr))}
+.battle.b3.m-tall.b27 .cmd .menu.prim .mi{min-height:52px}
+.battle.b3.m-tall.b27 .cmd .menu.sec .mi.b27pf{flex:1 1 160px}
+.battle.b3.m-tall.b27.b27open .bbottom .bparty{left:auto;top:0;bottom:0;width:min(440px,92%);max-height:none;border-top:0;border-left:2px solid #a48bff;border-radius:16px 0 0 16px}
+}
+/* 0.22.42 (asked: "in the action menu on big screens the skills are half blocked"): a list (skills, items, the swap list) no longer has to
+   fit the strip under the stage. The command panel rises over the lower part of the stage for as long as the list is open, up to 64% of the
+   screen, and scrolls inside; picking a skill or Back puts it back. On wide screens the list is in columns. Only #bcmd floats: the box
+   under the stage keeps its place and size, so nothing is measured or laid out again (floating the whole box left the stage dark when a list
+   was opened on the first turn). */
+.battle.b3.m-tall.b27.b3list .bbottom .cmd{display:block;/* not the bottom aligned column of the root menu: a list taller than the panel must start at its top */position:fixed;left:0;right:0;bottom:0;margin:0;width:auto;z-index:20;height:auto;max-height:64%;overflow-y:auto;overscroll-behavior:contain;box-sizing:border-box;padding:6px 8px calc(8px + env(safe-area-inset-bottom,0px));background:#0e172c;border:0;border-top:2px solid #33466f;border-radius:0;box-shadow:0 -10px 30px rgba(0,0,0,.5)}
+@media (min-width:700px){.battle.b3.m-tall.b27.b3list .menu.list{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:6px;align-items:stretch}}
+.battle.b3 .b27shade{display:none}
+.battle.b3.m-tall.b27.b27open .b27shade{display:block;position:fixed;inset:0;z-index:69;background:rgba(4,7,15,.55)}
+.battle.b3.m-tall.b27.b27open .bbottom .bparty{display:flex;flex-direction:column;gap:8px;position:fixed;left:0;right:0;bottom:0;max-height:78%;overflow-y:auto;overscroll-behavior:contain;z-index:70;box-sizing:border-box;background:#0f1930;border-top:2px solid #a48bff;border-radius:16px 16px 0 0;padding:10px 12px calc(12px + env(safe-area-inset-bottom,0px))}
+.battle.b3.m-tall.b27.b27open .bbottom .b3pty{display:flex;flex-direction:column;gap:8px;order:1}
+.battle.b3.m-tall.b27.b27open .bbottom .pgroup{display:block;order:2}
+.battle.b3.m-tall.b27.b27open .bbottom .pgroup>h3{display:block;margin:0 0 4px}
+.battle.b3.m-tall.b27.b27open .bbottom .pgroup.heroes .pcs,.battle.b3.m-tall.b27.b27open .bbottom .pgroup.rsv .pcs{grid-template-columns:minmax(0,1fr)}
+.battle.b3.m-tall.b27.b27open .bbottom .fcs{grid-template-columns:minmax(0,1fr)}
+.b27sh{order:0;display:flex;align-items:center;justify-content:space-between;font-size:1rem}
+.b27sf{order:3;display:flex;flex-wrap:wrap;gap:6px}
+.b27sf .btn{flex:1 1 70px;min-height:40px}
+
+/* ############################ C  BIG SCREENS: .b27.b48 and .b48top (side48.js) ############################ */
+/* What it is and why: the header of side48.js. b27Mark sets b48 (a sideways screen at least S48.minW x S48.minH); the hook in side48.js sets
+   b48top when the log line fits in the top strip. Three groups of rules: the grid and the list box (.b48), the skill boxes on every b27
+   screen (.b27.b3list, here because they came with 0.22.49 and must follow section B), and the card column (.b48:not(.b27open) .bbottom). */
+.battle.b3.m-tall.b27.b48{grid-template-columns:minmax(0,1fr) var(--b48w,200px);grid-template-areas:"boss boss" "order order" "stage side" "line side" "bot side";column-gap:8px}
+.battle.b3.m-tall.b27.b48 .bwrap{margin-right:0;width:calc(100% + 12px)}
+.battle.b3.m-tall.b27.b48.b48top>.bline{left:var(--b48ll);right:auto;width:var(--b48lw);top:var(--b48lt);background:rgba(8,13,26,.6)}
+.battle.b3.m-tall.b27.b48.b48top>.bline .blog p{-webkit-line-clamp:2}
+.battle.b3.m-tall.b27.b48 .bban{top:14px}
+/* 5 a list (skills, items, the swap list) stays in the command box under the stage: it covers neither the battle nor the cards (0.22.42 raised
+   it over the stage). The turn line, Back and the filters share one row; under them the skills are boxes side by side (0.22.49: the owner
+   prefers "the more boxy style with skills next to each other" to 0.22.48's one line rows), each with everything it showed before (name,
+   target, purpose, kind, role, text, weapon line, what it is strong against, estimate, power, cost) in three short lines. The box keeps the height the root menu had (--b48ch) and the list scrolls inside. */
+/* 0.22.51 (the owner: "we can bring back making the skill menu in battle overlap the battle window a little"): the box grows S48.rise px
+   upward over the foot of the stage while a list is open (two rows of boxes instead of one). It stays left of the cards. */
+.battle.b3.m-tall.b27.b48.b48top.b3list .bbottom{min-height:var(--b48ch,154px)}
+.battle.b3.m-tall.b27.b48.b48top.b3list .bbottom .cmd{display:flex;flex-wrap:wrap;align-items:center;align-content:flex-start;gap:4px 8px;position:absolute;left:0;right:calc(var(--b48w,200px) + 8px);bottom:0;top:auto;margin:0;width:auto;height:calc(var(--b48ch,154px) + var(--b48rise,120px));max-height:none;z-index:20;box-shadow:0 -8px 22px rgba(0,0,0,.45);overflow:hidden;padding:5px 8px 6px;background:linear-gradient(#171c3a,#10142a);border:1px solid rgba(217,180,106,.35);border-radius:8px;box-sizing:border-box}
+.battle.b3.m-tall.b27.b48.b48top.b3list .cmd>.who.cmdhead{order:1;flex:0 0 auto;padding:0;min-height:0;gap:8px}
+.battle.b3.m-tall.b27.b48.b48top.b3list .cmd>.who.cmdhead .port{display:none}
+.battle.b3.m-tall.b27.b48.b48top.b3list .cmd>.chips{order:2;flex:1 1 200px;margin:0;display:flex;flex-wrap:nowrap;gap:4px;overflow-x:auto;scrollbar-width:none}
+.battle.b3.m-tall.b27.b48.b48top.b3list .cmd>.a49vs{order:2;flex:0 1 auto;padding:0;font-size:.64rem;max-width:330px;line-height:1.15}
+.battle.b3.m-tall.b27.b48.b48top.b3list .cmd>.menu.list{order:3;flex:1 1 100%;min-height:0;align-self:stretch;height:calc(var(--b48ch,154px) + var(--b48rise,120px) - 54px);display:grid;grid-template-columns:repeat(auto-fill,minmax(236px,1fr));grid-auto-rows:min-content;gap:4px 5px;align-content:start;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;padding-right:2px}
+.battle.b3.m-tall.b27.b48.b48top.b3list .cmd>:not(.who):not(.chips):not(.menu):not(.a49vs){order:4;flex:1 1 100%}
+/* a screen with the card column but too narrow for the line in the top strip (an opened fold, a tablet held upright): the list is the
+   rising panel of the phones, kept to the stage's side so the cards stay in view; the floating line keeps to the stage too */
+.battle.b3.m-tall.b27.b48:not(.b48top).b3list .bbottom .cmd{left:4px;right:calc(var(--b48w,200px) + 24px);border:2px solid #33466f;border-bottom:0;border-radius:10px 10px 0 0}
+.battle.b3.m-tall.b27.b48:not(.b48top)>.bline{right:calc(var(--b48w,200px) + 8px)}
+/* 0.22.50: the boxes are the same on every screen (the owner: "the skills should be presented in a clean similar way on every screen size").
+   On a phone the list is still the panel that rises over the stage (battle27.js), with one or two boxes across. */
+.battle.b3.m-tall.b27.b3list .menu.list{display:grid;grid-template-columns:repeat(auto-fill,minmax(236px,1fr));grid-auto-rows:min-content;gap:4px 5px;align-content:start}
+.battle.b3.m-tall.b27.b3list .cmd>.a49vs{font-size:.66rem;line-height:1.2}
+/* a skill is a box: name and tags with the estimate at their right; the text; then the weapon line and what it is strong against, with Power,
+   kind and cost at their right. Everything the tall card showed, in three short lines. */
+.battle.b3.m-tall.b27.b3list .menu.list .mi{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:0 8px;align-items:center;align-content:start;width:100%;height:100%;min-height:0;padding:4px 8px 4px 18px;margin:0;text-align:left}
+.battle.b3.m-tall.b27.b3list .menu.list .mi>.n{grid-area:1/1;display:flex;flex-wrap:wrap;align-items:center;gap:2px 0;font-size:.86rem;line-height:1.15;min-width:0}
+.battle.b3.m-tall.b27.b3list .menu.list .mi>.m{display:contents}
+.battle.b3.m-tall.b27.b3list .menu.list .mi>.m .sk11e{grid-area:1/2;justify-self:end;white-space:nowrap}
+.battle.b3.m-tall.b27.b3list .menu.list .mi>.m .sk11l{grid-area:1/2;justify-self:end}
+/* the text lines are placed one after another (a Dual art or a hero's own skill has two: 0.22.50 put them all in one cell, on top of each
+   other); the strip and the last line sit in far rows, which are empty and take no room */
+.battle.b3.m-tall.b27.b3list .menu.list .mi>small{grid-column:1/-1;grid-row:auto;margin:1px 0 0;font-size:.7rem;line-height:1.2}
+.battle.b3.m-tall.b27.b3list .menu.list .mi>small.dk11{grid-area:41/1/42/3;margin:1px 0 0;justify-self:start;max-width:100%;opacity:.75;font-size:.64rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.battle.b3.m-tall.b27.b3list .menu.list .mi>.effs{grid-area:42/1/43/3;justify-self:start;margin:1px 0 0;display:flex;flex-wrap:wrap;gap:2px;max-width:100%}
+.battle.b3.m-tall.b27.b3list .menu.list .mi>.m .sk11s{grid-area:40/1/41/3;margin:1px 0;justify-self:start;justify-content:flex-start;gap:6px;flex-wrap:nowrap;white-space:nowrap}
+.battle.b3.m-tall.b27.b3list .menu.list .mi>.effs:empty{display:none}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .bparty{display:flex;flex-direction:column;gap:12px;position:absolute;right:0;top:var(--b48t,64px);bottom:0;width:var(--b48w,200px);overflow-y:auto;overscroll-behavior:contain;padding:8px 0 4px;box-sizing:border-box;scrollbar-width:thin}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .b8fl{display:none}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .b3pty{display:flex;flex-direction:column;gap:12px;order:1}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .pgroup{display:block;position:relative;border:1px solid rgba(217,180,106,.4);border-radius:6px;background:rgba(10,14,30,.72);padding:10px 4px 4px;margin:0}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .pgroup.foes{order:2;border-color:rgba(200,80,90,.55);background:rgba(30,12,22,.72)}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .pgroup>h3{display:block;position:absolute;left:8px;top:-8px;margin:0;padding:1px 6px;font-size:.56rem;letter-spacing:.14em;line-height:1.3;background:#0c1022;border:1px solid rgba(217,180,106,.4);border-radius:3px}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .pgroup.foes>h3{background:#1c0c16;border-color:rgba(200,80,90,.55)}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .pgroup .pcs,.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .pgroup .fcs{display:grid;grid-template-columns:minmax(0,1fr);gap:4px}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .pcw{display:block;position:relative;min-width:0}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .uinfo{display:none}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .pc,.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .fc{display:grid;grid-template-columns:32px minmax(0,1fr);gap:0 6px;align-items:center;width:100%;min-height:0;padding:3px 5px;text-align:left}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .pc .port{display:block;width:32px;height:32px;min-width:0;margin:0}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .pc .port img{width:100%;height:100%;display:block}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .fc .fci{width:30px;height:30px;object-fit:contain;justify-self:center}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .pm{display:grid;grid-template-columns:minmax(0,1fr);gap:2px;min-width:0}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .uct{display:flex;align-items:baseline;gap:4px;padding:0;min-width:0;font-size:.8rem;line-height:1.1}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .uct b{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .uct .ucl{font-size:.56rem;flex:none;opacity:.85}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .uct .elbs{margin-left:auto;display:flex;gap:1px;flex:none}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .uct .elb{width:12px;height:12px}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .ucr{display:block;position:relative;height:11px;min-height:0}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .ucr>i{position:absolute;left:3px;top:0;z-index:1;font:800 8px/11px system-ui,sans-serif;font-style:normal;color:rgba(255,255,255,.82);text-shadow:0 1px 0 #000}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .ucr .bar{display:block;width:100%;height:11px;margin:0}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .ucr em.nums{position:absolute;right:3px;top:0;z-index:1;font:800 9px/11px system-ui,sans-serif;font-style:normal;color:#fff;text-shadow:0 1px 0 #000,0 0 2px #000;min-width:0;width:auto}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .ucr:has(.lbar){height:3px}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .ucr:has(.lbar)>i,.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .ucr:has(.lbar) em.nums{display:none}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .ucr .lbar{display:block;width:100%;height:3px;margin:0;border:0}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .ucc{display:none}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .ptags{display:flex;flex-wrap:wrap;gap:2px 3px;padding:2px 2px 0;font-size:.56rem}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .ptags:empty{display:none}
+/* 0.22.52: the older cards lay their tags over the card's foot (battle3.css .pcw.hastags .ptags, absolute, in a strip the card kept free);
+   these cards have no such strip, so the weakness and status tags sat on the HP bar. Here they follow the card. */
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .pcw.hastags .ptags,.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .fcw.hastags .ptags{position:static;left:auto;right:auto;bottom:auto;flex-wrap:wrap;overflow:visible;max-height:none;row-gap:2px;z-index:auto;pointer-events:auto}

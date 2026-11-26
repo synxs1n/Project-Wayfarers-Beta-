@@ -13,13 +13,13 @@
 //     Equip Best and every Build party; the owner meant only this case). Equip Best keeps an Undo on Backpack > Equipment until the gear
 //     changes again.
 //  5) Rarity by progress: rarCap() is the highest rarity (ITEM_TIERS index) a journey has open: Common and Uncommon in the first realm, one
-//     more per realm reached or Scourge beaten (pcRealm()), all six from the fifth. Shops, recipes, chests, the mimic, vaults and bounty
+//     more per realm reached or Scourge beaten (pcRealm()), Heroic in the fifth, Mythic once the Calamity has fallen (0.22.55). Shops, recipes, chests, the mimic, vaults and bounty
 //     charms stay under it; the one-per-realm cave and Sanctum charms carry their realm's rarity. New Game+ follows the same rule (the code
 //     gives it no gear rules of its own); the Daily Trial is open. Not capped: gear already owned, personal relics, guild rank charms, the
 //     Tamer's Stick, Echoforged gear.
 //  6) A piece of one rarity at +0 beats the rarity below at +3 in its main stats: FORGE_STEP (items.js) is .11 (was .25), the top cape's RES
 //     36 (was 34, config.js). Relics and Echoforged gear keep their numbers (econ11.js relicTemper, echo11.js ECHO11.top3).
-const G16={rounds:10,undo:null,built:null,hint:null,hintBack:15000};
+const G16={undo:null,built:null,hint:null,hintBack:15000};
 
 // ---------- 1) the hint card steps aside for an open window ----------
 // A plain hint (p2world.js hintShow) is put away while any window is open and its 30 s clock stops; when the window closes it is back for
@@ -34,7 +34,10 @@ HOOK.after('render','gear16','a first realm hint steps aside while a window is o
 {const hs0=hintShow;hintShow=function(){const d=document.getElementById('p2hint');if(d)d.classList.remove('g16hide');const r=hs0.apply(this,arguments);g16HintDock();return r;};}
 
 // ---------- 5) rarity by progress ----------
-function rarCap(){try{if(!G||G.daily)return 5;return Math.max(1,Math.min(5,pcRealm()+1));}catch(e){return 5;}}
+// 0.22.55 (the owner): Mythic, the top shop rarity, opens when the Calamity has fallen (G.won, and every New Game+ cycle after it). Until
+// then the fifth realm sells and forges up to Heroic, and its chests have a better chance of a Mythic piece (CHEST_UP_LAST, config.js).
+function rarMythic(){try{return !!(G&&(G.daily||G.won||(G.run&&G.run.cycle>0)));}catch(e){return true;}}
+function rarCap(){try{if(!G||G.daily)return 5;const c=Math.max(1,Math.min(5,pcRealm()+1));return c>=5&&!rarMythic()?4:c;}catch(e){return 5;}}
 // may this piece be handed out or sold now? (relics, bound gear, the Stick and Echoforged gear follow their own rules)
 function rarOk(id){const g=gearOf(id);if(!g)return true;if(g.stick||g.relic||g.only||g.bound||g.medal)return true;const t=gTierIdx(g);return t>5||t<=rarCap();}
 // a shop line piece (w_blade_3+1) brought down to the open rarity; anything else is returned as it is
@@ -77,34 +80,12 @@ deltaHtml=function(c,id){const L=g16Deltas(c,id);return L.length?L.map(o=>`<b cl
   h+=`<div class="bestl g16vs"><b>Against what they wear:</b>${L.map(o=>`<div class="bestr">${port(o.c.id,'sm')}<b>${esc(o.c.name)}</b> <span>${o.h.map(x=>`<b class="${x.up?'up':'dn'} g16d">${x.t}</b>`).join(' ')}</span></div>`).join('')}</div>`;}catch(e){}return h;};}
 
 // ---------- 2) Upgrade whole party: every round in one press ----------
-// the plan, round after round, on a copy of the purse, the materials, the pack and what the party wears (nothing is bought or saved here)
-function g16PlanAll(slots){const first=p3SmithPlan(slots);if(!first.picks.length)return first;
-  const P=partyChars(),real={gold:G.gold,mats:G.mats,gear:G.gear,eq:{},S:{}};P.forEach(c=>{real.eq[c.id]=c.eq;real.S[c.id]=c.S;});
-  const all=[];let plan=first,n=0,cant=first.cant;
-  try{G.mats=Object.assign({},G.mats);G.gear=G.gear.slice();P.forEach(c=>{c.eq=Object.assign({},c.eq);});
-    while(plan.picks.length&&n<G16.rounds){n++;
-      plan.picks.forEach(p=>{const c=G.roster[p.cid];if(!c)return;G.gold-=p.gold;if(p.m)Object.keys(p.m).forEach(k=>{G.mats[k]=(G.mats[k]||0)-p.m[k];});
-        if(p.src==='pack'){const i=G.gear.indexOf(p.base);if(i>=0)G.gear.splice(i,1);}
-        const old=c.eq[p.sl];if(old&&p.src!=='temper')G.gear.push(old);c.eq[p.sl]=p.id;c.S=calcStats(c);p.round=n;all.push(p);});
-      plan=p3SmithPlan(slots);cant=plan.cant;}
-  }finally{G.gold=real.gold;G.mats=real.mats;G.gear=real.gear;P.forEach(c=>{c.eq=real.eq[c.id];c.S=real.S[c.id];});}
-  return {picks:all,cant,total:all.reduce((a,p)=>a+p.gold,0),gold0:real.gold,rounds:n};}
+// 0.22.46: the plan and the confirm are gear46.js (gp46Plan, gp46Run, ACT.p3Smith / p3SmithGo): one walk, re-asked before every step.
 // Undo after several rounds: everyone back in what they wore; a piece that was tempered on the way comes back tempered; the rest is the pack
 function g16UndoSnap(eq0){const pool={},put=id=>{if(id)pool[id]=(pool[id]||0)+1;};G.gear.forEach(put);Object.values(G.roster).forEach(c=>EQSL.forEach(sl=>put(c.eq[sl])));
   const take=id=>{if(pool[id]>0){pool[id]--;return id;}const b=baseIdOf(id);for(let k=plusOf(id)+1;k<=3;k++){const t=b+'+'+k;if(pool[t]>0){pool[t]--;return t;}}return null;};
   const eq={};Object.keys(eq0).forEach(cid=>{eq[cid]={};Object.keys(eq0[cid]).forEach(sl=>{eq[cid][sl]=eq0[cid][sl]?take(eq0[cid][sl]):null;});});
   const gear=[];Object.keys(pool).forEach(id=>{for(let i=0;i<pool[id];i++)gear.push(id);});const s=snapAuto();s.gear=gear;s.eq=eq;return s;}
-ACT.p3Smith=function(){if(!G||G.daily)return;V.modal={type:'p3plan',plan:g16PlanAll(),from:V.modal};render();};
-ACT.p3Alch=function(){ACT.p3Smith();};// v0.22.17: charms are part of the Smithy's plan
-ACT.p3SmithGo=function(){const m=V.modal;if(!m||m.type!=='p3plan')return;const slots=undefined,eq0={},pw0={};
-  Object.values(G.roster).forEach(c=>{eq0[c.id]=Object.assign({},c.eq);pw0[c.id]=loadoutScore(c,c.S);});
-  // the first round is the one that was shown and confirmed; the rounds after it are planned from what is left
-  const T={stop:null,spent:0,bought:0,forged:0,tempered:0,done:0,of:0,rounds:0};let plan={picks:(m.plan&&m.plan.picks||[]).filter(p=>!p.round||p.round===1)};
-  while(plan.picks.length&&T.rounds<G16.rounds){T.rounds++;const R=p3SmithRun(plan);['spent','bought','forged','tempered','done'].forEach(k=>{T[k]+=R[k]||0;});T.of+=R.of||0;
-    if(R.stop){T.stop=R.stop;break;}if(!R.done)break;plan=p3SmithPlan(slots);}
-  const rows=[];Object.values(G.roster).forEach(c=>{const b=eq0[c.id],ch=[];EQSL.forEach(sl=>{if((b[sl]||null)!==(c.eq[sl]||null))ch.push({sl,from:b[sl]||null,to:c.eq[sl]||null});});
-    if(ch.length)rows.push({id:c.id,name:c.name,inParty:G.party.includes(c.id),ch,comp:null,pw0:pw0[c.id],pw1:loadoutScore(c,c.S)});});
-  sfx(T.done?'buy':'deny');V.modal={type:'autoEq',mode:'smith',rows,snap:g16UndoSnap(eq0),from:m.from,p3:T};render();};
 
 // ---------- 4) Equip Best right after Build party closes the Menu ----------
 // 0.21.7 (owner): Equip Best shows its result page (with Undo) again and Build party (Apply) keeps its own page. Only Equip Best pressed right
@@ -126,4 +107,4 @@ ACT.g16Undo=function(){const u=G16.undo;G16.undo=null;if(!u||!G||u.sig!==g16Sig(
   else h=h.replace(/(<button class="btn gold" data-act="autoEqParty"[^>]*>Equip Best<\/button>)/,'$1<button class="btn" data-act="g16Undo" title="Puts back the gear everyone wore before the last Equip Best">Undo Equip Best</button>');}}catch(e){}return h;};}
 
 try{const st=document.createElement('style');st.textContent=`.g16d{display:inline-block;max-width:100%;white-space:normal;font-weight:600}.g16vs{opacity:.92}.g16vs>b{color:inherit}.g16rar{margin:4px 0 6px}#p2hint.g16hide{display:none!important}.bestr>span,.cmpr>span{min-width:0;overflow-wrap:anywhere}`;document.head.appendChild(st);}catch(e){}
-window.__G16={G16,rarCap,rarOk,rarFit,rarLoot,rarPool,deltas:(c,id)=>g16Deltas(c,id),planAll:s=>g16PlanAll(s),recipeOpen:r=>recipeOpen(r),plan:s=>p3SmithPlan(s),hintDock:g16HintDock,FORGE_STEP};
+window.__G16={G16,rarCap,rarOk,rarFit,rarLoot,rarPool,deltas:(c,id)=>g16Deltas(c,id),recipeOpen:r=>recipeOpen(r),hintDock:g16HintDock,FORGE_STEP};

@@ -100,7 +100,7 @@ function guardPaths(m){
     const P=pgGrid(m),bad=pathAssets(m,P);if(!bad.length)break;let moved=false;
     for(const b of bad){
       if(b.c==='npc'){const nf=c=>c==='.'||c===','||c===':'||c==='f';let sp=pgSpot(m,P,b.x,b.y,nf,24);
-        // 0.22.54: no spot within reach of where they stand: they are in a pocket that is walled off from the rest of the map (the Town crier
+        // 0.22.56: no spot within reach of where they stand: they are in a pocket that is walled off from the rest of the map (the Town crier
         // behind a building on an islet of a marsh town, shut in by a tree and a fence: nobody could walk to him, and the search above never left
         // the pocket). Such a one is put on the nearest free spot from where the hero comes in.
         if(!sp&&!PG_LEGACY){const e=pgEntry(m);if(e)sp=pgSpot(m,P,e[0],e[1],nf,60)||pgSpot(m,P,e[0],e[1],nf,60,true);}

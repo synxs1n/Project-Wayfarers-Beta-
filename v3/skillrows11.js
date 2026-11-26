@@ -8,10 +8,11 @@
 function sr11Kind(s){return s.k==='phys'?'Physical':s.k==='mag'?'Magic':s.k==='heal'?'Heal':s.k==='revive'?'Revive':s.k==='status'?((s.t==='ally'||s.t==='allyAll'||s.t==='self'||s.t==='dead')?'Buff':'Debuff'):'';}
 function sr11Pw(s){return s.pw?Math.round(s.pw*100):0;}
 // est: the live estimate ('~96', '~96 each') or '' ; lock: 'Lv 12' on the sheet's locked rows
+// 0.22.49 (act49.js 1): the strip says "Power 150" (it was "Pow 150")
 function sr11Strip(s,est,lock){const lim=!!s.limit;
   const hits=s.hits>1?`<i class="sk11h" title="Hits">x${s.hits}</i>`:'',pw=sr11Pw(s),kind=sr11Kind(s);
-  const head=est?`<b class="sk11e" title="Estimated ${s.k==='heal'||s.k==='revive'?'healing':'damage'} now">${est}</b>`:pw?`<b class="sk11e" title="Power">Pow ${pw}</b>`:`<b class="sk11e sk11k">${kind||'Skill'}</b>`;
-  const sub=[est&&pw?`<i class="sk11p" title="Power">Pow ${pw}</i>`:'',hits,(est||pw)&&kind?`<i class="sk11k">${kind}</i>`:'',lim?`<i class="sk11c" title="Limit gauge, no MP">Limit</i>`:`<i class="sk11c" title="MP cost">${s.mp} MP</i>`].filter(Boolean).join('');
+  const head=est?`<b class="sk11e" title="Estimated ${s.k==='heal'||s.k==='revive'?'healing':'damage'} now">${est}</b>`:pw?`<b class="sk11e" title="Power">Power ${pw}</b>`:`<b class="sk11e sk11k">${kind||'Skill'}</b>`;
+  const sub=[est&&pw?`<i class="sk11p" title="Power">Power ${pw}</i>`:'',hits,(est||pw)&&kind?`<i class="sk11k">${kind}</i>`:'',lim?`<i class="sk11c" title="Limit gauge, no MP">Limit</i>`:`<i class="sk11c" title="MP cost">${s.mp} MP</i>`].filter(Boolean).join('');
   return `<span class="m sk11">${lock?`<i class="sk11l">${lock}</i>`:''}${head}<span class="sk11s">${sub}</span></span>`;
 }
 // battle list: replace the .m span of every skill button (the filter chips of skillfilt9.js ran inside and already removed hidden rows)
