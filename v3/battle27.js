@@ -24,7 +24,7 @@ const S48={w:200,minW:600,minH:600,topW:900,rise:120,lineMin:260,/* 0.22.50: min
 function s48W(){try{return window.innerWidth/(typeof dsZoom==='function'?dsZoom():1);}catch(e){return 0;}}
 // 0.22.51: sideways only again (the owner: "for tablets held in long mode rather than wide mode, the screen looked better however it was
 // done before, wide mode is fine"). An upright tablet or fold has the phone layout: the full width stage and the Party & foes sheet.
-function s48Fits(){try{if(S48.off||typeof b27Land!=='function'||!b27Land())return false;return s48W()>=S48.minW&&b3Vh()>=S48.minH;}catch(e){return false;}}
+function s48Fits(){try{if(S48.off||typeof b27Land!=='function'||!b27Land())return false;const m=typeof p62Mode==='function'?p62Mode():'auto';/* 0.22.62 Settings > Battle panel */if(m==='popup')return false;return s48W()>=S48.minW&&b3Vh()>=S48.minH;}catch(e){return false;}}
 function b27Sc(bat){
   // big screens: the column is not stage
   try{if(bat&&bat.classList.contains('b48')){const w=(bat.clientWidth||window.innerWidth)-S48.w-8+12,vh=b3Vh();if(b27Land())return clamp(Math.floor(Math.min(w/320,(vh-B27.landCmd)/150)*4)/4,2,6);return clamp(Math.floor(w/B27.portW*4)/4,B27.sc,6);}}catch(e){}
