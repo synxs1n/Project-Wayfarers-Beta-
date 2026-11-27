@@ -75,6 +75,8 @@ The common causes, for the next one that flickers:
 | v195a | two whole damage numbers gave a ratio of 1.38 for a factor of 1.4, with a tolerance under .02 | within .04 |
 | v207a | in a lakeside town whose south gate stands one tile west of the avenue (run seed 1037402) the avenue has a one tile step in it; the test wanted one column | the road is followed from the plaza and must reach both ends |
 | v070ic | the timed guard was pressed in time but the foe's blow never came to a damage roll on that hero (another hero covered) | tried again, 3 at most |
+| v187a | Playwright could not place a tap on the goals header within 30 s (it waits for two steady animation frames; the frame stall of v095m4) | 8 s, then what lies over the header is printed and the header is clicked from the page |
+| v080cb | the journey sim (tools/fullsim.js) is not the same from run to run even with SEED, and "most tries on one boss" is the worst of 80 fights: 16 to 20 in twelve runs on 0.22.59, 26 in a thirteenth against a limit of 25 | limit 30; the average per journey keeps its limit |
 | sanct, v141a | noted on main as failing rarely; not seen in these runs | watch |
 
 `runall.js` also fetches the old build a comparison test needs (v095na, v080ca, v050p2daily) by its full commit id when the clone is
