@@ -1,7 +1,7 @@
 # Tests that fail on main, and why
 
-As of 0.22.60: one in the group runs (v070ob, new with 0.22.60, below), and one open balance question (v080cb, below). A full run of every group (`ci battle menus party world saves`) is green, three times in a row (see "How it was
-checked" below). A red run means something again. If a test starts to fail or flicker, add it here with what is known, and fix or
+As of 0.22.60: three in the group runs, all new with 0.22.60 (v070ob, v170a, v156a: "Failing now" below), and one open balance question (v080cb, below). On 0.22.59, the build before, `world saves` was green three times in a row (76 of 76 each) and `ci battle menus party` twice in a row (128 of
+128), with v080cb the only test to fail in the two passes after that (see "How it was checked" below). A red run means something again. If a test starts to fail or flicker, add it here with what is known, and fix or
 retire it before trusting a full run.
 
 The tests in `STALE` (`tools/chrome/runall.js`, each with its reason) are still not part of a group run: they were written for screens
@@ -86,6 +86,8 @@ shallow (a cloud session, a CI checkout): "OLDHTML given" failed there for no ot
 | Test | What fails | Cause | Status |
 |---|---|---|---|
 | v070ob | "933x705: battle tip cards (6) never cover a sprite, a foe or hero card or the commands": 1 bad, the shield card over the sprite and body box of The Gallow Crow (the test's fixed fight, seed 1274: 2 heroes, 5 foes) | new with 0.22.60 (battle sprites drawn pixel exact): 0 of 4 runs fail on 0.22.59, 4 of 4 on 0.22.60. The card is placed clear of the units' boxes (onboard.js); the sprites are drawn at other sizes now | open: for the 0.22.60 work (either the card placement reads the new sizes, or there is no free spot left at that size and the test's fight needs another look) |
+| v170a | "battle on a phone: unit layer backing 3.375 (2x HD paint), stage 2 backing px per css px (2 at most); big screen 3.375 and 3" | new with 0.22.60: the unit layer is drawn at the screen's own pixels now, and this test still asks for the backing sizes of before. It passed in every run on 0.22.59 | open: for the 0.22.60 work (0.22.60 updated v145a, v160a and v186a; this one and the next were missed) |
+| v156a | "battle at 1920x1080: the unit layer backs 4.9999875 pixels per logical pixel (1595x750 for 319.0008x150.0004) ..." | the same change: the backing is no longer a whole number of pixels per logical pixel at that size (the logical size is no longer whole either) | open: for the 0.22.60 work. Worth a look at the game too: a logical stage of 319.0008 px is a rounding that may show |
 
 ### Left for the owner
 - **v080cb, the journey pacing band, is out of the group runs (`STALE` in runall.js) and open.** It plays 16 simulated journeys without items and asks for the band of `docs/balance54.md`: the top hero ends at level 38 to 42 on average (spread at most 2.5), at most 16 boss tries a journey and 25 on one boss. On 0.22.54 that read 40.3, 8.3 and 10. On 0.22.59, in 8 runs: 41.3 to 42.4 (over 42 in half of them), spread 1.3 to 2.6, 11.4 to 14.8 tries a journey, and 10 to 39 on one boss (over 25 in two). So it fails about every second run, and that is the game, not the test: the boss and class passes of 0.22.57 to 0.22.59 were measured with items (`ITEMS=1`, `docs/balance57.md`) and moved the no item journey to the edge of the band. Two things make it noisier than it should be: the sim is not the same from run to run even with `SEED` (it runs in a page whose frames draw from the seeded stream), and "the most on one boss" is the worst of 80 fights. To decide: retune, move the band, or have the test run with `ITEMS=1`. Run it by name: `node runall.js v080cb`.
@@ -99,7 +101,17 @@ A full run is longer than one two hour job on a cloud machine, so it is two comm
 PWHTML=<abs path to out/aurelis3.html> node runall.js ci battle menus party
 PWHTML=<abs path to out/aurelis3.html> node runall.js world saves
 ```
-About 65 and 75 minutes on 4 CPUs.
+About 55 and 80 minutes on 4 CPUs (128 and 76 tests; v041p1h alone takes 9 to 13 minutes).
+
+The asked for proof, three full green runs in a row, was not reached before main moved again; this is what was measured.
+- Finding the rare ones: every test under 20 s (121 of them) six times in a row, the 34 between 20 s and a minute three times. That found
+  v191a, v195a and v207a; the rest passed every round.
+- On 0.22.59: `world saves` 76 of 76 three times in a row. `ci battle menus party`, in order: 127 (v051b, broken by 0.22.57), 127 (v070ic),
+  126 (v158a, v187a), 127 (v191a), 128, 128, 127 (v080cb), 127 (v080cb). Each of these was fixed and run again by itself (v158a 30 of 30,
+  v191a 12 of 12, ...), except v080cb, which is the open balance question below and is out of the group runs now.
+- On 0.22.60 (one run): 125 of 127 and 74 of 76. v189a (fixed) and the three under "Failing now".
+About one test in a full run still flickered at the end of this work, a different one each time; expect to meet a few more of the kind
+listed under "Tests that flickered", and fix them the same way.
 
 ## Balance, 0.22.54
 The 12 fight numbers below were rerun at 180 fights a cell and acted on: see `docs/balance54.md`. Hollow King and Hoarwyrm were noise; the real low end was Siren, Frost Lich and Drake. `v080ca` is stale (same eight failures on 0.22.53).
