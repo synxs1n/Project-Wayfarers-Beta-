@@ -97,10 +97,10 @@ const SETUP=`([stage,gold,mats])=>{const A=__A,G=A.G;G.stage=stage;G.cleared=[0,
   // ---------- 3 ----------
   if(want('3')){
     await H.ev(()=>{const A=__A,G=A.G;A.ACT.new();['mira','lumen','oren'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;});await H.until(()=>__A.V.screen==='world',null,{timeout:15000});
-    const d=await H.ev(()=>{const A=__A,G=A.G;G.stage=1;G.cleared=[true];G.gold=5000;G.gear=['w_staff_1','a_mail_1','c_swift','c_fire','w_mace_1+2','a_robe_0','c_clarity','a_robe_1'];Object.keys(A.MATS).forEach(k=>{G.mats[k]=30;});
+    const d=await H.ev(()=>{const A=__A,G=A.G;G.stage=1;G.cleared=[true];G.gold=5000;/* v0.22.57: the mace is +3 (was +2): with the 7% temper step a +2 mace is no longer an upgrade over a lance, and the loot popup then has no row */G.gear=['w_staff_1','a_mail_1','c_swift','c_fire','w_mace_1+3','a_robe_0','c_clarity','a_robe_1'];Object.keys(A.MATS).forEach(k=>{G.mats[k]=30;});
       G.roster.oren.eq.w='w_lance_1';G.roster.oren.eq.a='a_mail_0';G.roster.mira.eq.w='w_tome_1';G.roster.mira.eq.c=null;Object.values(G.roster).forEach(A.refresh);A.render();
       const T=(c,id)=>window.__G16.deltas(G.roster[c],id).map(o=>o.t);const S0=G.roster.oren.S,g=A.gearOf('a_mail_1'),S1=A.calcStats(Object.assign({},G.roster.oren,{eq:Object.assign({},G.roster.oren.eq,{a:'a_mail_1'})}));
-      return {mace:T('oren','w_mace_1+2'),staff:T('mira','w_staff_1'),fire:T('mira','c_fire'),clar:T('mira','c_clarity'),mail:T('oren','a_mail_1'),same:T('oren','w_lance_1'),
+      return {mace:T('oren','w_mace_1+3'),staff:T('mira','w_staff_1'),fire:T('mira','c_fire'),clar:T('mira','c_clarity'),mail:T('oren','a_mail_1'),same:T('oren','w_lance_1'),
         real:{hp:Math.round(S1.mhp-S0.mhp),def:Math.round(S1.def-S0.def),res:Math.round(S1.res-S0.res),mp:Math.round(S1.mmp-S0.mmp),spd:S1.spd-S0.spd}};});
     const has=(L,re)=>L.some(t=>re.test(t));
     chk(`3 lance to mace for a knight lists gains and losses with signs: ${d.mace.join(', ')}`,has(d.mace,/^\+\d+ MAG$/)&&has(d.mace,/^−\d+ DEF$/)&&has(d.mace,/^−\d+% Charge dmg$/)&&has(d.mace,/^\+\d+% Stun chance$/)||d.mace.join(','));
@@ -112,7 +112,7 @@ const SETUP=`([stage,gold,mats])=>{const A=__A,G=A.G;G.stage=stage;G.cleared=[0,
       return {n:L.length,up:P.querySelectorAll('.g16d.up').length,dn:P.querySelectorAll('.g16d.dn').length,off,small,sx:P.scrollWidth-P.clientWidth,vs:P.querySelectorAll('.g16vs').length,rar:(P.querySelector('.g16rar')||{}).textContent||''};};
     for(const [name,modal,need] of [['the equip picker (weapon)',{type:'eqPick',char:'oren',slot:'w',list:['oren']},'updn'],['the equip picker (charm)',{type:'eqPick',char:'mira',slot:'c',list:['mira']},'up'],
       ['the Smithy shop',{type:'smithy',tab:'shop',sec:'weapons'},'updn'],['the Smithy forge',{type:'smithy',tab:'craft',sec:'all'},'updn'],['Tempering',{type:'smithy',tab:'forge',sec:'all'},'up'],
-      ['the Smithy charm shelf',{type:'smithy',tab:'shop',sec:'charms'},'up'],['Equip this now? (loot)',{type:'equipNow',id:'w_mace_1+2',rest:[]},'updn']]){
+      ['the Smithy charm shelf',{type:'smithy',tab:'shop',sec:'charms'},'up'],['Equip this now? (loot)',{type:'equipNow',id:'w_mace_1+3',rest:[]},'updn']]){
       await H.ev(m=>{__A.V.cmp=null;__A.V.modal=m;__A.render();},modal);await H.wait(60);const v=await H.ev(VIEW);
       chk(`3 ${name} on a phone: ${v.n} signed stat changes (${v.up} gains, ${v.dn} losses), none off the window, none under 9.5 px, no sideways scroll`,v.n>0&&v.up>0&&(need==='up'||v.dn>0)&&v.off===0&&v.small===0&&v.sx<=1||JSON.stringify(v));}
     // a shelf piece nobody gains from still shows what it changes

@@ -45,6 +45,11 @@ function baseAttr(c){
   ATTR.forEach(k=>{a[k]=A.b[k]+A.g[k]*L+allocEff(c,k)*POINT_VAL[k]+(c.vet||0);});
   return a;
 }
+// v0.22.57 (GEAR_LV): the level's share of what gear tiers used to give, and the class's shape for it (its own weapon and armor family, per point of power)
+function gearLvAt(T,lv){const L=GEAR_LV.lv;if(lv<=L[0])return T[0];for(let i=1;i<L.length;i++)if(lv<=L[i])return T[i-1]+(T[i]-T[i-1])*(lv-L[i-1])/(L[i]-L[i-1]);return T[T.length-1];}
+const GEAR_LV_SHAPE={};
+function gearLvShape(cls){if(GEAR_LV_SHAPE[cls])return GEAR_LV_SHAPE[cls];const f=CF[cls];if(!f)return null;const w=GEAR['w_'+f[0]+'_4'],a=GEAR['a_'+f[1]+'_4'];if(!w||!a)return null;
+  const o={w:{},a:{}};['hp','mp','atk','def','mag','res'].forEach(k=>{if(w[k])o.w[k]=w[k]/WP[4];if(a[k])o.a[k]=a[k]/AP[4];});return GEAR_LV_SHAPE[cls]=o;}
 function calcStats(c){
   const daily=!!(G&&G.daily),t=TPL[c.id],A=(daily?CLASS_ATTR_LEGACY:CLASS_ATTR)[t.cls],L=c.lv-1,tr=natOf(c),NF=natInfo(tr).fx,a=baseAttr(c);
   const gears=EQSL.map(sl=>gearOf(c.eq[sl])).filter(Boolean);
@@ -56,7 +61,7 @@ function calcStats(c){
   if(t.bb){d.hp*=1.12;d.atk*=1.12;d.mag*=1.12;d.def*=1.12;d.res*=1.12;}
   const S={elBoost:{},elRes:{},mastery:t.el.length===1?t.el[0]:null,immune:0,tempo:NF.tempo||1,attr:a};
   gears.forEach(g=>{ST.forEach(q=>{d[q]+=g[q]||0;});if(g.el){S.elBoost[g.el]=.15;S.elRes[g.el]=.15;}if(g.immune)S.immune=1;});
-  if(!daily){const CT=CLS_TUNE[t.cls];if(CT)Object.keys(CT).forEach(k=>{d[k]*=CT[k];});}// v0.22.54 class pass: on the final numbers, gear included
+  if(GEAR_LV.on){const gw=gearLvAt(GEAR_LV.w,c.lv),ga=gearLvAt(GEAR_LV.a,c.lv),R=gearLvShape(t.cls);if(R)['hp','mp','atk','def','mag','res'].forEach(k=>{d[k]+=gw*(R.w[k]||0)+ga*(R.a[k]||0);});}
   S.mhp=Math.round(d.hp);S.mmp=Math.round(d.mp);S.atk=d.atk;S.def=d.def;S.mag=d.mag;S.res=d.res;S.spd=d.spd;
   S.crit=.04+a.luk*.003+a.dex*.0015+(NF.crit||0);S.critDmg=1.5+a.dex*.004;
   S.acc=.97+a.dex*.002;S.eva=Math.min(.22,a.agi*.0015+a.luk*.002+(NF.eva||0));
@@ -66,7 +71,7 @@ function calcStats(c){
   // v0.3.5 weapon perks (WPERK in data.js). Flat numbers are read straight off S by the battle code.
   if(!daily){const wg=gears.find(g=>g.slot==='w'),P=wg&&wg.fam&&WPERK[wg.fam];S.wp=wg&&wg.fam||null;
     if(P){if(P.acc)S.acc+=P.acc;if(P.critDmg)S.critDmg+=P.critDmg;if(P.crit)S.crit+=P.crit;if(P.eva)S.eva=Math.min(.27,S.eva+P.eva);if(P.tempo)S.tempo*=P.tempo;
-      ['cleave','heavy','charge','stun','basicStun','pierce','combo','status','bleed','debT','buffT','healUp','spellPow'].forEach(k=>{if(P[k])S[k]=P[k];});}}
+      ['cleave','heavy','charge','stun','basicStun','pierce','combo','status','bleed','debT','buffT','healUp','spellPow','guardCut','exploit'].forEach(k=>{if(P[k])S[k]=P[k];});}}
   if(!daily)gears.forEach(g=>{if(g.mpEff)S.mpEff=Math.max(S.mpEff||0,g.mpEff);if(g.elDmg)S.elDmg=Math.max(S.elDmg||0,g.elDmg);});
   return S;
 }
@@ -309,12 +314,12 @@ function calcDamage(a,sk,t,bonus){
   let aff=1;if(els.some(e=>a.el.includes(e)))aff=1.2;
   if(a.S.mastery&&els.includes(a.S.mastery))aff*=1+MASTERY_BONUS;
   d*=em*aff*rnd(.92,1.08)*(bonus||1);
-  if(a.S.wp){if(phys&&a.S.heavy)d*=1+a.S.heavy;if(sk.t==='all'&&a.S.cleave)d*=1+a.S.cleave;if(!phys&&sk.k==='mag'&&a.S.spellPow)d*=1+a.S.spellPow;if(a.S.charge&&phys&&t.lastAct&&t.lastAct>(a.prevAct||0))d*=1+a.S.charge;}
+  if(a.S.wp){if(phys&&a.S.heavy)d*=1+a.S.heavy;if(sk.t==='all'&&a.S.cleave)d*=1+a.S.cleave;if(!phys&&sk.k==='mag'&&a.S.spellPow)d*=1+a.S.spellPow;if(a.S.charge&&phys&&t.lastAct&&t.lastAct>(a.prevAct||0))d*=1+a.S.charge;if(a.S.exploit&&t.st&&Object.keys(t.st).some(k=>STS[k]&&STS[k].bad))d*=1+a.S.exploit;}
   els.forEach(e=>{if(a.S.elBoost[e])d*=1+a.S.elBoost[e];if(t.S.elRes[e])d*=1-t.S.elRes[e];});
   if(a.S.elDmg&&els.length&&sk.k==='mag')d*=1+a.S.elDmg;
   const W=WX();if(W.el&&els.length)d*=Math.max(...els.map(e=>W.el[e]||1));
   if(has(a,'might'))d*=1.3;if(has(a,'weaken'))d*=.75;if(has(a,'burn'))d*=.85;
-  if(has(t,'bulwark'))d*=.7;if(t.side==='p'&&has(t,'taunt'))d*=1-TAUNT.cut;if(has(t,'break'))d*=1.3;if(t.guard)d*=.5;if(t.broken)d*=BREAK_WIN.bonus;
+  if(has(t,'bulwark'))d*=.7;if(t.side==='p'&&has(t,'taunt'))d*=1-TAUNT.cut;if(has(t,'break'))d*=1.3;if(t.guard)d*=1-((t.S&&t.S.guardCut)||.5);if(t.broken)d*=BREAK_WIN.bonus;
   if(sk.afflicted&&Object.keys(t.st).some(k=>STS[k].bad))d*=sk.afflicted;
   if(sk.execute&&t.hp<t.S.mhp*sk.execute)d*=2;
   let crit=false;
@@ -336,9 +341,10 @@ const goldFor=e=>econG(Math.round((e.lv*4+ri(3,9))*(e.boss?6:e.elite?4:1)));
 let FOE_POW=1.12;
 // v4.7: reactions are no longer free, so Scourges and Calamities carry a little less HP
 let BOSS_HP=.9;
+function bossFit(on,opt){if(!on||!opt||!opt.key)return 1;const f=BOSS_FIT[String(opt.key).replace(/^echo_/,'')];if(f==null)return 1;return typeof f==='number'?f:(f[Math.min(3,opt.stage||0)]||1);}
 function makeEnemy(m,lv,opt){
   opt=opt||{};const sc=enemyScale(),boss=!!opt.boss;
-  const fieldM=(!boss&&!opt.elite&&!(G&&G.daily)&&!opt.noField)?1:0;const fSt=Math.max(0,STAGE_LV.findIndex(r=>lv<=r[1])),fSi=fSt<0?4:fSt;const crp=fieldM?1+(worldCreep()-1)*(CREEP.field!=null?CREEP.field:1):worldCreep();const szOn=boss&&!opt.echo&&!opt.noBuff&&G&&!G.daily&&G.party,szE=BOSS_SIZE.expect[Math.min(4,opt.stage||0)],szS=szOn?Math.max(0,szE-G.party.length):0,szM=szOn?Math.max(0,6-Math.max(szE,G.party.length)):0,szH=1-BOSS_SIZE.short.hp*szS,szP=1-BOSS_SIZE.short.pow*szS;const spN=(fieldM&&G&&G.party&&G.party.length<3&&fSi<SMALL_PARTY.stages)?G.party.length-1:-1;const spH=spN>=0?SMALL_PARTY.hp[spN]:1,spP=spN>=0?SMALL_PARTY.pow[spN]:1;const hpM=spH*szH*(1+BOSS_SIZE.hp*szM)*crp*m.hp*sc.hp*(opt.hpM||1)*(fieldM?FIELD_FOE.hp[fSi]:1)*(boss&&!opt.echo&&!opt.noBuff?BOSS_BUFF.hp[Math.min(4,opt.stage||0)]:1),pw=spP*szP*(1+BOSS_SIZE.pow*szM)*crp*sc.pow*(opt.powM||1)*(fieldM?FIELD_FOE.pow[fSi]:1)*(boss&&!opt.echo&&!opt.noBuff?BOSS_BUFF.pow[Math.min(4,opt.stage||0)]:1)*(boss?(opt.final?1.5:[1.06,1.2,1.34,1.4][Math.min(3,opt.stage||0)]):1);
+  const fieldM=(!boss&&!opt.elite&&!(G&&G.daily)&&!opt.noField)?1:0;const fSt=Math.max(0,STAGE_LV.findIndex(r=>lv<=r[1])),fSi=fSt<0?4:fSt;const crp=fieldM?1+(worldCreep()-1)*(CREEP.field!=null?CREEP.field:1):worldCreep();const szOn=boss&&!opt.echo&&!opt.noBuff&&G&&!G.daily&&G.party,szE=BOSS_SIZE.expect[Math.min(4,opt.stage||0)],szS=szOn?Math.max(0,szE-G.party.length):0,szM=szOn?Math.max(0,6-Math.max(szE,G.party.length)):0,szH=1-BOSS_SIZE.short.hp*szS,szP=1-BOSS_SIZE.short.pow*szS;const spN=(fieldM&&G&&G.party&&G.party.length<3&&fSi<SMALL_PARTY.stages)?G.party.length-1:-1;const spH=spN>=0?SMALL_PARTY.hp[spN]:1,spP=spN>=0?SMALL_PARTY.pow[spN]:1;const hpM=spH*szH*(1+BOSS_SIZE.hp*szM)*crp*m.hp*sc.hp*(opt.hpM||1)*(fieldM?FIELD_FOE.hp[fSi]:1)*(boss&&!opt.echo&&!opt.noBuff?BOSS_BUFF.hp[Math.min(4,opt.stage||0)]:1),pw=bossFit(boss&&!opt.echo&&!opt.noBuff&&!(G&&G.daily),opt)*spP*szP*(1+BOSS_SIZE.pow*szM)*crp*sc.pow*(opt.powM||1)*(fieldM?FIELD_FOE.pow[fSi]:1)*(boss&&!opt.echo&&!opt.noBuff?BOSS_BUFF.pow[Math.min(4,opt.stage||0)]:1)*(boss?(opt.final?1.5:[1.06,1.2,1.34,1.4][Math.min(3,opt.stage||0)]):1);
   const S={mhp:Math.round((30+12.5*lv)*hpM*(boss?BOSS_HP*(opt.final?2.6:[1.35,1.6,1.9,2.0][Math.min(3,opt.stage||0)]):1)),atk:(9+2.7*lv)*m.atk*pw*FOE_POW,mag:(9+2.7*lv)*m.mag*pw*FOE_POW,def:(6+1.8*lv)*m.def,res:(6+1.8*lv)*m.res,spd:(8+.8*lv)*m.spd,
     crit:.05,critDmg:1.5,mmp:999,elBoost:{},elRes:{},tempo:1,healM:1,immune:0,acc:.95,eva:clamp(.02+.04*(m.spd-1),0,.08),luk:lv*.6,spi:lv*.5};
   const e={side:'e',name:m.n,base:m.n,art:m.art,el:m.el,lv,S,hp:S.mhp,mp:999,st:{},boss,elite:!!opt.elite,mod:opt.mod||null,key:opt.key||null,
@@ -470,11 +476,11 @@ function advance0(){
   if(u.broken===1)u.recover=1;
   let dot=0;
   const dm=WX().dot||1;
-  if(has(u,'poison')){const d=Math.max(1,Math.round(u.S.mhp*(u.boss?.02:.06)*dm));dot+=d;fx(u,String(d),'dmg poison');log(`${u.name} takes ${d} from poison.`);}
+  if(has(u,'poison')){const d=Math.max(1,Math.round(u.S.mhp*(u.boss?DOT_BOSS.poison:.06)*dm));dot+=d;fx(u,String(d),'dmg poison');log(`${u.name} takes ${d} from poison.`);}
   if(has(u,'burn')){const d=Math.max(1,Math.round(u.S.mhp*(u.boss?.02:.05)*dm));dot+=d;fx(u,String(d),'dmg burn');log(`${u.name} takes ${d} from burns.`);}
   if(has(u,'bleed')){const d=u.st.bleed.v||5;dot+=d;fx(u,String(d),'dmg bleed');log(`${u.name} bleeds for ${d}.`);}
   if(dot){hurt(u,dot);if(u.hp<=0){render();if(checkEnd())return;later(advance,PAUSE*.6);return;}}
-  if(has(u,'regen')||u.mod==='regen'){const n=Math.min(u.S.mhp-u.hp,Math.round(u.S.mhp*.08));if(n>0){u.hp+=n;fx(u,'+'+n,'heal');log(`${u.name} regenerates ${n} HP.`);}}
+  if(has(u,'regen')||u.mod==='regen'){const n=Math.min(u.S.mhp-u.hp,Math.round(u.S.mhp*(u.side==='p'?REGEN.hero:REGEN.foe)));if(n>0){u.hp+=n;fx(u,'+'+n,'heal');log(`${u.name} regenerates ${n} HP.`);}}
   if(u.wardEvery&&u.turns%u.wardEvery===0&&!has(u,'ward'))addSt(u,'ward',u);
   if(u.mod==='warded'&&u.turns%3===0&&!has(u,'ward'))addSt(u,'ward',u);
   if(has(u,'stun')){delete u.st.stun;if(u.side==='p')u.stunFree=1;log(`${u.name} is stunned and cannot act.`);fx(u,'Stunned','stat bad');B.mode='wait';render();later(()=>endTurn(u,1),PAUSE*.6);return;}
@@ -536,6 +542,7 @@ function applyReactionAfter(R,a,t,dealt){
   chipShield(t,3,'reaction');
 }
 function perform(a,sk,tgts){
+  let rvN=0;// v0.22.57: heroes this move has revived (sk.reviveN caps it)
   if(B){B.actN=(B.actN||0)+1;a.prevAct=a.lastAct||0;a.lastAct=B.actN;}
   const now=Date.now();a.actT=now;a.actKind=sk.k;a.actEl=skEls(sk)[0]||null;a.actName=sk.id==='attack'?null:sk.n;
   log(sk.id==='attack'?`${a.name} attacks!`:`${a.name} uses ${sk.n}!`);
@@ -602,12 +609,12 @@ function perform(a,sk,tgts){
     if(a.side==='p'&&dealtAny)lbAdd(a,5);
   }else if(sk.k==='heal'){
     for(const t of tgts){
-      if(t.hp<=0){if(sk.revive){t.hp=Math.max(1,Math.round(t.S.mhp*sk.revive));t.st={};fx(t,'Revived','heal');log(`${t.name} rises again!`);}continue;}
+      if(t.hp<=0){if(sk.revive&&(sk.reviveN==null||(rvN=(rvN||0)+1)<=sk.reviveN)){t.hp=Math.max(1,Math.round(t.S.mhp*sk.revive));t.st={};fx(t,'Revived','heal');log(`${t.name} rises again!`);}continue;}
       if(sk.pw>0){const n=Math.round(sk.pw*(a.S.healP||a.S.mag)*rnd(.95,1.05)*(WX().heal||1)*(1+(a.S.healUp||0))*curseMul(t));const g=Math.min(n,t.S.mhp-t.hp);t.hp+=g;fx(t,'+'+g,'heal');t.healT=Date.now();log(`${t.name} recovers ${g} HP.`);}/* 0.22.36: a skill of no power (Purify) cures and heals nothing */
       if(sk.cleanse){const c=cleanse(t);if(c)log(`${t.name} is cured.`);}
       if(a.id==='isolde')addSt(t,'regen',a,true);
       (sk.fx||[]).forEach(([k])=>addSt(t,k,a,true));}
-    if(sk.revive)allParty().forEach(t=>{if(t.hp<=0&&!tgts.includes(t)){t.hp=Math.max(1,Math.round(t.S.mhp*sk.revive));t.st={};fx(t,'Revived','heal');log(`${t.name} rises again!`);}});
+    if(sk.revive)allParty().forEach(t=>{if(t.hp<=0&&!tgts.includes(t)&&(sk.reviveN==null||(rvN=(rvN||0)+1)<=sk.reviveN)){t.hp=Math.max(1,Math.round(t.S.mhp*sk.revive));t.st={};fx(t,'Revived','heal');log(`${t.name} rises again!`);}});
   }else if(sk.k==='revive'){
     for(const t of tgts){if(t.hp>0)continue;t.hp=Math.max(1,Math.round(t.S.mhp*sk.pw));t.st={};fx(t,'Revived','heal');t.healT=Date.now();log(`${t.name} rises again!`);}
   }else if(sk.k==='status'){

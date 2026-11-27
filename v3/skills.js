@@ -51,12 +51,12 @@ const DL_FORCE={
 const ROLE_FILL={
  warrior:{eP:n=>({id:'brand',n:'Branding Strike',k:'phys',pw:1.25,mp:4,lv:6,d:`A glancing blow that leaves ${n} clinging to the foe.`}),lP:n=>({id:'warbrand',n:'Warbrand Sweep',k:'phys',t:'all',pw:.85,mp:10,lv:18,d:`Sweeps every foe and brands them with ${n}.`})},
  knight:{eP:n=>({id:'sburst',n:'Shield Brand',k:'phys',pw:1.4,mp:5,lv:9,d:`Slams the shield home and stamps ${n} into the foe.`}),lP:n=>({id:'consec',n:'Consecrate',k:'phys',t:'all',pw:.8,mp:10,lv:18,d:`Hallows the ground under every foe with ${n}.`})},
- mage:{eD:n=>({id:'burst',n:`${n} Burst`,k:'mag',pw:1.7,mp:6,lv:6,d:`A focused blast of ${n} that sets off a prime.`}),lP:n=>({id:'rune',n:`${n} Rune`,k:'mag',pw:1.3,mp:9,lv:18,d:`Carves a ${n} rune into a foe.`})},
- healer:{eD:n=>({id:'smite',n:'Smite',k:'mag',pw:1.45,mp:5,lv:7,d:`A lance of ${n} from above.`}),lP:n=>({id:'halo',n:`Halo of ${n}`,k:'mag',t:'all',pw:.7,mp:10,lv:18,d:`Rings every foe with ${n}.`}),lD:n=>({id:'verdict',n:'Verdict',k:'mag',pw:2.4,mp:14,cost:1.2,lv:21,d:`Final judgement in ${n}. Slow recovery.`})},
+ mage:{eD:n=>({id:'burst',n:`${n} Burst`,k:'mag',pw:1.7,mp:6,lv:6,d:`A focused blast of ${n} that sets off a prime.`}),lP:n=>({id:'rune',n:`${n} Rune`,k:'mag',pw:1.6,mp:8,lv:18,fx:[['weaken',.5]],d:`Carves a ${n} rune into a foe that saps its strength: may Weaken.`})},
+ healer:{eD:n=>({id:'smite',n:'Smite',k:'mag',pw:1.45,mp:5,lv:7,d:`A lance of ${n} from above.`}),lP:n=>({id:'halo',n:`Halo of ${n}`,k:'mag',t:'all',pw:.7,mp:10,lv:18,d:`Rings every foe with ${n}.`}),lD:n=>({id:'verdict',n:'Verdict',k:'mag',pw:2.4,mp:14,cost:1.2,lv:21,fx:[['blind',.6]],d:`Final judgement in ${n}, too bright to look at: likely Blinds. Slow recovery.`})},
  thief:{eP:n=>({id:'dart2',n:`${n} Dart`,k:'phys',pw:1.1,mp:3,cost:.8,lv:3,d:`A quick dart tipped with ${n}.`}),lP:n=>({id:'fan',n:`${n} Fan`,k:'phys',t:'all',pw:.8,mp:10,lv:18,d:`A fan of ${n} knives at every foe.`})},
- archer:{eD:n=>({id:'burstarrow',n:'Burst Arrow',k:'phys',pw:1.6,mp:5,lv:7,d:`An arrowhead packed with ${n} that bursts on impact.`}),lP:n=>({id:'rain',n:`${n} Arrowstorm`,k:'phys',t:'all',pw:.85,mp:10,lv:18,d:`A rain of ${n} arrows on every foe.`}),lD:{retag:'pierce'}},
+ archer:{eD:n=>({id:'burstarrow',n:'Burst Arrow',k:'phys',pw:1.9,mp:5,lv:7,d:`An arrowhead packed with ${n} that bursts on impact.`}),lP:n=>({id:'rain',n:`${n} Arrowstorm`,k:'phys',t:'all',pw:.85,mp:10,lv:18,d:`A rain of ${n} arrows on every foe.`}),lD:{retag:'pierce'}},
  monk:{eP:n=>({id:'palm2',n:`${n} Palm`,k:'phys',pw:1.2,mp:4,lv:6,d:`An open palm that leaves ${n} humming in the foe.`}),lP:n=>({id:'whirl',n:`${n} Whirl`,k:'phys',t:'all',pw:.8,mp:10,lv:18,d:`A spinning kick that marks every foe with ${n}.`})},
- bard:{eD:n=>({id:'cresc',n:`${n} Crescendo`,k:'mag',pw:1.5,mp:6,lv:6,d:`A rising ${n} chord that sets off a prime.`}),lP:n=>({id:'refrain',n:`${n} Refrain`,k:'mag',t:'all',pw:.7,mp:10,lv:18,d:`A ${n} refrain that lingers on every foe.`}),lD:n=>({id:'finale',n:'Grand Finale',k:'mag',pw:2.2,mp:14,cost:1.2,lv:21,d:`The last, loudest ${n} note. Slow recovery.`})}
+ bard:{eD:n=>({id:'cresc',n:`${n} Crescendo`,k:'mag',pw:1.5,mp:6,lv:6,d:`A rising ${n} chord that sets off a prime.`}),lP:n=>({id:'refrain',n:`${n} Refrain`,k:'mag',t:'all',pw:.7,mp:10,lv:18,d:`A ${n} refrain that lingers on every foe.`}),lD:n=>({id:'finale',n:'Grand Finale',k:'mag',pw:2.2,mp:14,cost:1.2,lv:21,fx:[['weaken',.6]],d:`The last, loudest ${n} note leaves the foe shaken: likely Weakens. Slow recovery.`})}
 };
 function classSkills(t){
   if(SKC[t.id])return SKC[t.id];
@@ -70,8 +70,8 @@ function classSkills(t){
     add({id:'hurl',n:'Heave',k:'phys',pw:1.2,mp:3,lv:4,d:'Hurl your weapon across the field and fetch it back. Strikes with the kind of damage of your weapon.'});
     if(e2)add({id:'edge2',n:n2+' Edge',k:'phys',pw:1.7,mp:5,el:e2,lv:8,d:`Blade wreathed in ${n2}.`});
     add({id:'cleave',n:'Cleave',k:'phys',pw:1,mp:9,t:'all',lv:10,d:'Sweeps every foe.'});
-    add({id:'cry',n:'War Cry',k:'status',t:'self',mp:6,lv:13,fx:[['might',1],['taunt',1]],d:'Gain Might and Taunt: foes come for you.'+(typeof TAUNT!=='undefined'&&TAUNT.cut?` You take ${Math.round(TAUNT.cut*100)}% less damage while it lasts.`:'')});
-    add({id:'titan',n:'Titan Blow',k:'phys',pw:3,mp:16,el:e1,cost:1.3,lv:22,d:`Crushing ${n1} blow. Slow recovery.`});
+    add({id:'cry',n:'War Cry',k:'status',t:'self',mp:6,cost:.5,lv:13,fx:[['might',1],['taunt',1]],d:'A quick shout: gain Might and Taunt, and act again soon. Foes come for you.'+(typeof TAUNT!=='undefined'&&TAUNT.cut?` You take ${Math.round(TAUNT.cut*100)}% less damage while it lasts.`:'')});
+    add({id:'titan',n:'Titan Blow',k:'phys',pw:3,mp:16,el:e1,cost:1.3,lv:22,shieldChip:1,d:`Crushing ${n1} blow that cracks a guard: chips 1 shield pip. Slow recovery.`});
     break;
   case 'knight':
     add({id:'bash',n:'Shield Bash',k:'phys',pw:1.3,mp:3,lv:1,fx:[['stun',.25]],d:'May Stun.'});
@@ -82,7 +82,7 @@ function classSkills(t){
     if(e2)add({id:'lance2',n:n2+' Lance',k:'phys',pw:1.6,mp:5,el:e2,lv:8,d:`Charge tipped with ${n2}.`});
     add({id:'wall',n:'Guard Wall',k:'status',t:'allyAll',mp:10,lv:11,fx:[['bulwark',1]],d:'Bulwark for the vanguard.'});
     add({id:'rally',n:'Rally',k:'status',t:'allyAll',mp:12,lv:16,fx:[['might',1]],d:'Might for the vanguard.'});
-    add({id:'judge',n:'Judgement',k:'phys',pw:2.8,mp:15,el:e1,cost:1.3,lv:22,d:`Heavy ${n1} strike. Slow recovery.`});
+    add({id:'judge',n:'Judgement',k:'phys',pw:2.8,mp:15,el:e1,cost:1.3,lv:22,self:[['bulwark',1]],d:`Heavy ${n1} strike from behind the shield: you gain Bulwark. Slow recovery.`});
     break;
   case 'mage':
     add({id:'s1a',n:SPELL[e1][0],k:'mag',pw:1.5,mp:4,el:e1,lv:1,d:`A bolt of ${n1}.`});
@@ -91,7 +91,7 @@ function classSkills(t){
     add({id:'s2a',n:SPELL[e1][1],k:'mag',pw:.95,mp:11,t:'all',el:e1,lv:8,d:`${n1} storm on all foes.`});
     add({id:'hex',n:'Hex',k:'status',t:'one',mp:6,lv:12,fx:[['break',.9],['weaken',.5]],d:'Curse a foe: likely Break, may Weaken.'});
     if(e2)add({id:'s2b',n:SPELL[e2][1],k:'mag',pw:.95,mp:11,t:'all',el:e2,lv:14,d:`${n2} storm on all foes.`});
-    add({id:'s3a',n:SPELL[e1][2],k:'mag',pw:3.1,mp:22,cost:1.3,el:e1,lv:20,d:`Devastating ${n1}. Slow recovery.`});
+    add({id:'s3a',n:SPELL[e1][2],k:'mag',pw:3.1,mp:22,cost:1.3,el:e1,lv:20,shieldChip:1,d:`Devastating ${n1} that chips 1 shield pip. Slow recovery.`});
     break;
   case 'healer':
     add({id:'mend',n:'Mend',k:'heal',pw:1.6,mp:4,t:'ally',lv:1,d:'Heals one ally.'});
@@ -102,7 +102,7 @@ function classSkills(t){
     if(e2)add({id:'ray2',n:n2+' Ray',k:'mag',pw:1.3,mp:5,el:e2,lv:8,d:`Beam of ${n2}.`});
     add({id:'raise',n:'Raise',k:'revive',pw:.4,mp:14,t:'dead',lv:11,d:'Revives a fallen ally at 40% HP.'});
     add({id:'sanct',n:'Sanctuary',k:'status',t:'allyAll',mp:14,lv:14,fx:[['regen',1]],d:'Regen for the whole vanguard.'});
-    add({id:'fullmend',n:'Full Mend',k:'heal',pw:4,mp:18,cost:1.2,t:'ally',lv:20,d:'Powerful single heal.'});
+    add({id:'fullmend',n:'Full Mend',k:'heal',pw:4,mp:18,cost:1.2,t:'ally',lv:20,cleanse:1,d:'Powerful single heal that also cures every ailment.'});
     break;
   case 'thief':
     add({id:'stab',n:'Quick Stab',k:'phys',pw:1,mp:0,cost:.6,lv:1,d:'Fast, free, light.'});
@@ -116,10 +116,10 @@ function classSkills(t){
     break;
   case 'archer':
     add({id:'aim',n:'Aimed Shot',k:'phys',pw:1.4,mp:2,lv:1,d:'A careful shot.'});
-    add({id:'arrow1',n:n1+' Arrow',k:'phys',pw:1.6,mp:4,el:e1,lv:4,d:`Arrow charged with ${n1}.`});
+    add({id:'arrow1',n:n1+' Arrow',k:'phys',pw:1.45,mp:4,el:e1,lv:4,d:`Arrow charged with ${n1}.`});
     add({id:'barb',n:'Barbed Arrow',k:'phys',pw:1.1,mp:5,lv:6,fx:[['bleed',.85]],d:'Likely Bleeds.'});
     add({id:'hawk',n:'Hawkeye',k:'status',t:'self',mp:4,lv:8,fx:[['focus',1]],d:`Focus: +${Math.round(FOCUS.crit*100)}% crit chance for ${FOCUS.turns} turns.`});
-    if(e2)add({id:'arrow2',n:n2+' Arrow',k:'phys',pw:1.6,mp:4,el:e2,lv:9,d:`Arrow charged with ${n2}.`});
+    if(e2)add({id:'arrow2',n:n2+' Arrow',k:'phys',pw:1.45,mp:4,el:e2,lv:9,d:`Arrow charged with ${n2}.`});
     add({id:'volley',n:'Volley',k:'phys',pw:1,mp:9,t:'all',lv:10,d:'Rain of arrows on all foes.'});
     add({id:'pin',n:'Pin Down',k:'phys',pw:.9,mp:6,lv:13,fx:[['root',.9],['slow',.5]],d:'Roots a foe in place. May Slow.'});
     add({id:'pierce',n:'Piercing Shot',k:'phys',pw:2.8,mp:14,pierce:1,cost:1.2,lv:20,d:'Ignores half of foe defense.'});
@@ -132,7 +132,7 @@ function classSkills(t){
     if(e2)add({id:'chi2',n:n2+' Chi Burst',k:'phys',pw:1.6,mp:4,el:e2,lv:10,d:`Fist of ${n2}.`});
     add({id:'stunb',n:'Stunning Blow',k:'phys',pw:1.2,mp:8,lv:12,fx:[['stun',.4]],d:'May Stun.'});
     add({id:'iron',n:'Iron Body',k:'status',t:'self',mp:8,lv:15,fx:[['ward',1],['bulwark',1]],d:'Gain Ward and Bulwark.'});
-    add({id:'dragon',n:'Dragon Fist',k:'phys',pw:3.1,mp:16,el:e1,cost:1.3,lv:22,d:`Blazing ${n1} strike. Slow recovery.`});
+    add({id:'dragon',n:'Dragon Fist',k:'phys',pw:2.9,mp:16,el:e1,cost:1.3,lv:22,drain:.25,d:`Blazing ${n1} strike that feeds his chi: heals him for 25% of the damage. Slow recovery.`});
     break;
   case 'sniper':
     add({id:'s1a',n:'Thunder Quarrel',k:'phys',pw:1.3,mp:3,t:'chain',el:'lightning',lv:1,d:'A crossbow bolt crackling with Lightning that may leap from foe to foe.'});
@@ -239,7 +239,7 @@ const LIMIT={
  warrior:{n:'Worldsplitter',k:'phys',pw:2.4,t:'all',fx:[['break',.6]],d:'A ground-splitting blow on every foe. May Break.'},
  knight:{n:'Bastion',k:'status',t:'allyAll',fx:[['ward',1],['bulwark',1],['might',1]],heal:.2,d:'Ward, Bulwark and Might for the vanguard, and a small heal.'},
  mage:{n:'Starfall',k:'mag',pw:2.6,t:'all',d:'Calls a rain of elemental stars on every foe.'},
- healer:{n:'Benediction',k:'heal',pw:3,t:'allyAll',revive:.4,cleanse:1,d:'Fully restores and cleanses the vanguard and revives every fallen hero at 40% HP.'},
+ healer:{n:'Benediction',k:'heal',pw:2.6,t:'allyAll',cleanse:1,fx:[['regen',1]],d:'Restores and cleanses the vanguard and leaves Regen on everyone.'},// v0.22.57: it also revived EVERY fallen hero at 40% (pw 3); that one move was worth about 6 points of boss win rate. Raise still revives.
  thief:{n:'Thousand Cuts',k:'phys',pw:.8,t:'rand',hits:7,crit:.2,d:'Seven blinding strikes at random foes.'},
  archer:{n:'Arrowstorm',k:'phys',pw:2.2,t:'all',fx:[['bleed',.7]],d:'A storm of arrows on every foe. Likely Bleeds.'},
  monk:{n:'Hundred Fists',k:'phys',pw:.65,t:'one',hits:7,d:'Seven blows on one foe.'},
@@ -254,7 +254,7 @@ const LIMIT2={
  warrior:{n:'Cataclysm Edge',k:'phys',pw:3.1,t:'all',fx:[['break',.9]],self:[['might',1]],shieldChip:2,d:'Splits the battlefield with one swing: every foe takes a huge hit and likely Breaks, and you gain Might. Chips 2 shield pips.'},
  knight:{n:'Citadel of Dawn',k:'status',t:'allyAll',fx:[['ward',1],['bulwark',1],['might',1],['regen',1]],heal:.3,d:'A fortress of light: Ward, Bulwark, Might and Regen for the vanguard, and a 30% heal.'},
  mage:{n:'Meteor Requiem',k:'mag',pw:3.4,t:'all',fx:[['break',.5]],shieldChip:2,d:'A falling sky of elemental stars on every foe. May Break; chips 2 shield pips.'},
- healer:{n:"Seraph's Grace",k:'heal',pw:3.9,t:'allyAll',revive:.7,cleanse:1,fx:[['regen',1]],d:'Restores and cleanses the vanguard, grants Regen, and revives every fallen hero at 70% HP.'},
+ healer:{n:"Seraph's Grace",k:'heal',pw:3.2,t:'allyAll',revive:.5,reviveN:1,cleanse:1,fx:[['regen',1]],d:'Restores and cleanses the vanguard, grants Regen, and revives one fallen hero at 50% HP.'},// v0.22.57: was every fallen hero at 70%, pw 3.9
  thief:{n:'Phantom Waltz',k:'phys',pw:1.04,t:'rand',hits:7,crit:.3,steal:1,d:'Seven strikes from nowhere at random foes, each with a high crit chance, and a pocket picked on the way out.'},
  archer:{n:'Skyfall Volley',k:'phys',pw:2.86,t:'all',fx:[['bleed',.9],['slow',.5]],d:'The sky goes dark with arrows. Every foe likely Bleeds and may Slow.'},
  monk:{n:"Heaven's Thousand",k:'phys',pw:.85,t:'one',hits:7,fx:[['stun',.4]],d:'Seven blows too fast to see, ending in a strike that may Stun.'},
@@ -282,13 +282,13 @@ function lateSkills(cls,e1,e2,n1,n2){const E2=e2||e1,N2=n2||n1;const L={
   {id:'miracle',n:'Miracle',k:'heal',pw:3.5,mp:40,t:'allyAll',revive:.6,cleanse:1,lv:50,fx:[['regen',1]],lbParty:30,cap:1,d:'Full heal and cleanse for the line, every fallen hero back at 60%, Regen, and +30 Limit gauge.'}],
  thief:[{id:'shadowstep',n:'Shadowstep',k:'phys',pw:1.6,mp:10,cost:.7,el:e1,role:'primer',crit:.3,lv:42,fx:[['blind',.5]],d:`Steps through the dark with a ${n1} blade. High crit, may Blind.`},
   {id:'larceny',n:'Grand Larceny',k:'phys',pw:.9,mp:14,t:'all',steal:1,lv:46,fx:[['weaken',.4]],d:'Robs every foe at once. May Weaken.'},
-  {id:'lotus',n:'Death Lotus',k:'phys',pw:.72,mp:30,t:'rand',hits:9,crit:.35,el:e1,role:'det',lv:50,cap:1,d:`Nine ${n1} petals of steel at random foes, each a likely crit.`}],
+  {id:'lotus',n:'Death Lotus',k:'phys',pw:.58,mp:30,t:'rand',hits:9,crit:.35,el:e1,role:'det',lv:50,cap:1,d:`Nine ${n1} petals of steel at random foes, each a likely crit.`}],
  archer:[{id:'mark',n:"Hunter's Mark",k:'phys',pw:1.5,mp:10,el:e1,role:'primer',lv:42,fx:[['break',.8]],d:`Pins a ${n1} mark on the prey. Likely Breaks.`},
   {id:'galebar',n:'Gale Barrage',k:'phys',pw:.72,hits:2,mp:18,t:'all',el:E2,role:'det',lv:46,d:`Two ${N2} volleys over every foe.`},
-  {id:'heavenp',n:'Heavenpiercer',k:'phys',pw:4.4,mp:30,cost:1.3,pierce:1,crit:.3,el:e1,role:'det',lv:50,shieldChip:3,cap:1,d:'One arrow loosed at the sky that comes down through anything. Ignores half of defense; chips 3 shield pips.'}],
+  {id:'heavenp',n:'Heavenpiercer',k:'phys',pw:4.2,mp:30,cost:1.3,pierce:1,crit:.3,el:e1,role:'det',lv:50,shieldChip:3,cap:1,d:'One arrow loosed at the sky that comes down through anything. Ignores half of defense; chips 3 shield pips.'}],
  monk:[{id:'furnace',n:'Inner Furnace',k:'mpself',pw:1.6,mp:0,t:'self',lv:42,fx:[['haste',1],['might',1]],d:'Restores HP and MP and lights the furnace: Haste and Might.'},
   {id:'tempkick',n:'Whirling Kicks',k:'phys',pw:1.3,mp:14,t:'all',el:e1,role:'primer',lv:46,fx:[['stun',.2]],d:`A whirl of kicks that leaves ${n1} lingering on every foe. May Stun.`},
-  {id:'ascend',n:'Ascension Fist',k:'phys',pw:.95,hits:5,mp:28,el:e2?[e1,e2]:e1,role:'det',drain:.2,lv:50,cap:1,d:'Five blows that climb to the heavens. Heals him for 20% of the damage.'}],
+  {id:'ascend',n:'Ascension Fist',k:'phys',pw:.88,hits:5,mp:28,el:e2?[e1,e2]:e1,role:'det',drain:.2,lv:50,cap:1,d:'Five blows that climb to the heavens. Heals him for 20% of the damage.'}],
  bard:[{id:'rondo',n:'Rondo of Ruin',k:'mag',pw:1.1,mp:16,t:'all',el:e1,role:'primer',lv:42,fx:[['break',.5]],d:`A ${n1} rondo on every foe. May Break.`},
   {id:'secondwind',n:'Second Wind',k:'heal',pw:1.2,mp:18,t:'allyAll',lv:46,fx:[['haste',1]],lbParty:20,d:'Heals the line, grants Haste and +20 Limit gauge.'},
   {id:'symphony',n:'Symphony of Stars',k:'mag',pw:1.6,mp:34,t:'all',el:E2,role:'det',allyFx:[['might',1],['haste',1],['regen',1]],lv:50,cap:1,d:'The finale: every foe takes the full orchestra while the line gains Might, Haste and Regen.'}],
