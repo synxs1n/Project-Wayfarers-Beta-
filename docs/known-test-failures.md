@@ -1,6 +1,6 @@
 # Tests that fail on main, and why
 
-As of 0.22.59: none in the group runs, and one open balance question (v080cb, below). A full run of every group (`ci battle menus party world saves`) is green, three times in a row (see "How it was
+As of 0.22.60: one in the group runs (v070ob, new with 0.22.60, below), and one open balance question (v080cb, below). A full run of every group (`ci battle menus party world saves`) is green, three times in a row (see "How it was
 checked" below). A red run means something again. If a test starts to fail or flicker, add it here with what is known, and fix or
 retire it before trusting a full run.
 
@@ -76,10 +76,16 @@ The common causes, for the next one that flickers:
 | v207a | in a lakeside town whose south gate stands one tile west of the avenue (run seed 1037402) the avenue has a one tile step in it; the test wanted one column | the road is followed from the plaza and must reach both ends |
 | v070ic | the timed guard was pressed in time but the foe's blow never came to a damage roll on that hero (another hero covered) | tried again, 3 at most |
 | v187a | Playwright could not place a tap on the goals header within 30 s (it waits for two steady animation frames; the frame stall of v095m4) | 8 s, then what lies over the header is printed and the header is clicked from the page |
+| v189a | cause 2: in some realms every foe of the second stage has two types, and the check asked for some but not all | asks for some |
 | sanct, v141a | noted on main as failing rarely; not seen in these runs | watch |
 
 `runall.js` also fetches the old build a comparison test needs (v095na, v080ca, v050p2daily) by its full commit id when the clone is
 shallow (a cloud session, a CI checkout): "OLDHTML given" failed there for no other reason.
+
+## Failing now
+| Test | What fails | Cause | Status |
+|---|---|---|---|
+| v070ob | "933x705: battle tip cards (6) never cover a sprite, a foe or hero card or the commands": 1 bad, the shield card over the sprite and body box of The Gallow Crow (the test's fixed fight, seed 1274: 2 heroes, 5 foes) | new with 0.22.60 (battle sprites drawn pixel exact): 0 of 4 runs fail on 0.22.59, 4 of 4 on 0.22.60. The card is placed clear of the units' boxes (onboard.js); the sprites are drawn at other sizes now | open: for the 0.22.60 work (either the card placement reads the new sizes, or there is no free spot left at that size and the test's fight needs another look) |
 
 ### Left for the owner
 - **v080cb, the journey pacing band, is out of the group runs (`STALE` in runall.js) and open.** It plays 16 simulated journeys without items and asks for the band of `docs/balance54.md`: the top hero ends at level 38 to 42 on average (spread at most 2.5), at most 16 boss tries a journey and 25 on one boss. On 0.22.54 that read 40.3, 8.3 and 10. On 0.22.59, in 8 runs: 41.3 to 42.4 (over 42 in half of them), spread 1.3 to 2.6, 11.4 to 14.8 tries a journey, and 10 to 39 on one boss (over 25 in two). So it fails about every second run, and that is the game, not the test: the boss and class passes of 0.22.57 to 0.22.59 were measured with items (`ITEMS=1`, `docs/balance57.md`) and moved the no item journey to the edge of the band. Two things make it noisier than it should be: the sim is not the same from run to run even with `SEED` (it runs in a page whose frames draw from the seeded stream), and "the most on one boss" is the worst of 80 fights. To decide: retune, move the band, or have the test run with `ITEMS=1`. Run it by name: `node runall.js v080cb`.

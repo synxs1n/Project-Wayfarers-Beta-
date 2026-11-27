@@ -82,7 +82,7 @@ const UNTIL=async id=>{const A=__A,B=A.B;A.setPause(60);
  chk(`realm 1: no dual type wayfarer in the tavern, the board, rare visitors, chance meetings, caves and keeps or among the legends (${sizeAt(0)} offers)`,dualAt(0)===0&&sizeAt(0)>0||JSON.stringify(r.st[0]));
  chk(`realm 2: still none (${sizeAt(1)} offers)`,dualAt(1)===0&&sizeAt(1)>0||JSON.stringify(r.st[1]));
  chk(`realm 3 on: dual type wayfarers are offered (${dualAt(2)} at realm 3, ${dualAt(3)} at realm 4)`,dualAt(2)>0&&dualAt(3)>0||JSON.stringify(r.st[2]));
- chk(`foes: realm 1 all single type (${r.foes[0].dual} dual of ${r.foes[0].n}), realm 2 some dual type (${r.foes[1].dual} of ${r.foes[1].n})`,r.foes[0].n>100&&r.foes[0].dual===0&&r.foes[1].dual>0&&r.foes[1].dual<r.foes[1].n||JSON.stringify(r.foes));
+ chk(`foes: realm 1 all single type (${r.foes[0].dual} dual of ${r.foes[0].n}), realm 2 some dual type (${r.foes[1].dual} of ${r.foes[1].n})`,r.foes[0].n>100&&r.foes[0].dual===0&&r.foes[1].dual>0/* "and not all of them" is no longer asked: which realm comes second is the journey's draw, and in some of them every foe of the second stage has two types (694 of 694), which failed this about one run in thirty */||JSON.stringify(r.foes));
  console.log(`(bosses keep their elements: ${r.dualBoss.length} of ${r.nBoss} Scourges are dual type and any of them can stand in realm 1: ${r.dualBoss.join(', ')})`);
  await H.browser.close();}
 
