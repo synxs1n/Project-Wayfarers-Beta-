@@ -19,16 +19,20 @@ await ev(()=>{const A=__A;A.TW.get('startBattle')({stage:0,kind:'field',weather:
 // until the fight is waiting for a command (the opening flash and the entrance are over), not a fixed 0.8 s: on a busy machine the first blow of the
 // list (slash) was struck during the entrance and drew 2 particles instead of its arc
 await H.until(()=>{const B=__A.B;return !!(B&&B.mode==='cmd'&&B.cur);},null,{timeout:20000});await wait(400);
-const r=await ev(()=>{const T=__A.TW.get,B=T('B'),FK=T('FK'),BV=T('BV'),o={sig:{},poses:{},rec:{},parts:{}};
+const r=await ev(async()=>{const T=__A.TW.get,B=T('B'),FK=T('FK'),BV=T('BV'),o={sig:{},poses:{},rec:{},parts:{}};
   const SPECS={slash:{k:'phys',t:'one',dl:'slash'},blunt:{k:'phys',t:'one',dl:'blunt'},pierce:{k:'phys',t:'one',dl:'piercing'},ranged:{k:'phys',t:'one',dl:'ranged'},
    fire:{k:'mag',t:'one',el:'fire'},water:{k:'mag',t:'one',el:'water'},earth:{k:'mag',t:'one',el:'earth'},wind:{k:'mag',t:'one',el:'wind'},lightning:{k:'mag',t:'one',el:'lightning'},ice:{k:'mag',t:'one',el:'ice'},light:{k:'mag',t:'one',el:'light'},shadow:{k:'mag',t:'one',el:'shadow'},
    heal:{k:'heal',t:'ally'},buff:{k:'status',t:'ally',fx:[['might',1]]},debuff:{k:'status',t:'one',fx:[['weaken',1]]}};
   B.front.forEach(u=>{u.hp=Math.floor(u.S.mhp*.5);u.st={};});B.en.forEach(e=>{e.hp=99999;e.S.eva=0;});
-  Object.keys(SPECS).forEach(n=>{const sk=Object.assign({id:'t_'+n,n:'T '+n,pw:1,mp:0,cost:1,hits:1},SPECS[n]),a=B.front[0];B.cur=a;
+  // and blows that cannot miss: the engine's hit chance tops out at 99% (engine.js perform: clamp(acc - eva, .5, .99)), so with about ten physical blows a
+  // run one of them whiffed on one run in ten (a "Miss" popup, no impact look: "slash":2). The battle's roll is held at .5 for this test.
+  T('RNG=function(){return .5;}');
+  for(const n of Object.keys(SPECS)){const sk=Object.assign({id:'t_'+n,n:'T '+n,pw:1,mp:0,cost:1,hits:1},SPECS[n]),a=B.front[0];B.cur=a;
     const tg=sk.t==='ally'?[B.front[1]]:[B.en[0]];BV.P.length=0;FK.sig={};a.actT=0;T('perform')(a,sk,tg);const now=performance.now();a._act=0;T('onAction')(a,now);
-    T('battleFrame')(now+50);T('battleFrame')(now+250);o.sig[n]=Object.assign({},...Object.values(FK.sig));o.parts[n]=BV.P.length;
+    // real frames for 450 ms, and the most particles seen (the blow's parts are spawned as its moments come: wind up, impact)
+    {let mx=0;const t1=performance.now();while(performance.now()-t1<450){T('battleFrame')(performance.now());mx=Math.max(mx,BV.P.length);await new Promise(q=>setTimeout(q,16));}o.sig[n]=Object.assign({},...Object.values(FK.sig));o.parts[n]=mx;}
     const I=a.fk11,po=T('heroPoseFor')(sk,I.dl,'swing');o.poses[n]=po;
-    const f=B.en[0];f.hitT=Date.now()-T('IMPACT')-60;f.fk11r={k:I.k,el:I.el,fx:I.fx,t:f.hitT};const rc=T('fk11Recoil')(f,T('unitBox')(f),Date.now());o.rec[n]=rc?[+rc.dx.toFixed(1),+rc.dy.toFixed(1),+rc.sx.toFixed(2),+rc.sy.toFixed(2),rc.tint?1:0].join(','):null;});
+    const f=B.en[0];f.hitT=Date.now()-T('IMPACT')-60;f.fk11r={k:I.k,el:I.el,fx:I.fx,t:f.hitT};const rc=T('fk11Recoil')(f,T('unitBox')(f),Date.now());o.rec[n]=rc?[+rc.dx.toFixed(1),+rc.dy.toFixed(1),+rc.sx.toFixed(2),+rc.sy.toFixed(2),rc.tint?1:0].join(','):null;}
   o.hash=Object.fromEntries(Object.keys(o.sig).map(k=>[k,Object.keys(o.sig[k]).sort().join('|')]));
   // reduced motion
   T('META').cfg.rmotion=true;BV.P.length=0;const a=B.front[0],f=B.en[0];B.cur=a;T('perform')(a,{id:'t_rm',n:'RM',k:'phys',t:'one',dl:'blunt',pw:1,mp:0,cost:1,hits:1},[f]);a._act=0;T('onAction')(a,performance.now());T('battleFrame')(performance.now()+20);

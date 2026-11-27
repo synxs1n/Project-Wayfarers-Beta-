@@ -17,7 +17,7 @@ const r=await ev(()=>{const A=__A,G=A.G,o={};G.gold=999999;
 console.log(JSON.stringify(r).slice(0,600));
 chk(`Tempering lists ${r.n} pieces`,r.n>=3);
 chk('close options get a tradeoff line',r.lines.length>0||JSON.stringify(r.lines));
-chk('weapons of different families name their perks',r.lines.some(l=>/Brann: .*(acc|crit|hit-all|phys|stun|foes that)/.test(l.t))||JSON.stringify(r.lines));
+chk('weapons of different families name their perks',r.lines.some(l=>/Brann: .*(acc|crit|hit-all|hits all foes|Guard blocks|phys|stun|foes that)/.test(l.t))/* 0.22.57 gave swords their own perk ("Guard blocks 65%") and reworded the axe's ("+12% when it hits all foes") */||JSON.stringify(r.lines));
 chk('the line is on the second row of a close pair and names the hero',r.lines.every(l=>l.i>0&&/^⇄ \w+: .+: .+\. .+: .+\.$/.test(l.t))&&r.lines.some(l=>/^⇄ Brann:/.test(l.t))||JSON.stringify(r.lines));
 chk('a single option gets no line',r.farLines===0||r.farLines);
 await done(H);})();

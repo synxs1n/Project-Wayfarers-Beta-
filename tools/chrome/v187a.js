@@ -190,7 +190,12 @@ for(const [w,h,mob,gfx] of [[360,740,true],[390,844,true],[390,844,true,'medium'
     return out;});
   chk(tag+`the hero walks close to and under the panel (${under.near} places near it, ${under.n} with the hero under it): it stays open, with its goals, and looks the same everywhere (${under.look})`,under.n>=1&&under.near>under.n&&!under.bad.length||JSON.stringify(under).slice(0,600));
   await ev(()=>{const A=__A;A.TW.get('placeAt')('t0',5,5,'d');A.V.modal=null;A.render();__GL.glRender();});await wait(200);
-  const a0=await ev(S);if(mob)await H.page.tap('#glp .glhead');else await H.page.click('#glp .glhead');await wait(450);
+  const a0=await ev(S);
+  // the press is given 8 s; if Playwright cannot place it (it waits for the header to hold still over two animation frames and to be on top, and headless
+  // Chrome now and then stops handing out frames: see v095m4), what lies over the header is printed and the header is clicked from the page instead
+  try{if(mob)await H.page.tap('#glp .glhead',{timeout:8000});else await H.page.click('#glp .glhead',{timeout:8000});}
+  catch(e){const top=await ev(()=>{const h=document.querySelector('#glp .glhead');if(!h)return 'no header';const r=h.getBoundingClientRect(),t=document.elementFromPoint(r.left+r.width/2,r.top+r.height/2);return (t&&(t.id||t.className||t.tagName))+' at '+Math.round(r.left)+','+Math.round(r.top);});console.log('  the press on the goals header was not placed in 8 s (on top there: '+top+'); clicked from the page');await ev(()=>{const h=document.querySelector('#glp .glhead');if(h)h.click();});}
+  await wait(450);
   const a1=await ev(S);const meta1=await ev(()=>JSON.parse(localStorage.getItem('aurelis-meta-v1')).cfg.goalsMin);
   await ev(()=>{const A=__A;A.TW.get('placeAt')('f0',6,6,'d');A.V.modal=null;A.render();__GL.glRender();});await wait(450);const a2=await ev(S);
   if(mob)await H.page.tap('#glp .glhead');else await H.page.click('#glp .glhead');await wait(450);const a3=await ev(S);const meta3=await ev(()=>JSON.parse(localStorage.getItem('aurelis-meta-v1')).cfg.goalsMin);
