@@ -146,7 +146,7 @@ HOOK.after('renderBattle','battle16','the name plate of a summoned Scourge says 
 // while a Scourge or a guardian stands, or a prayer is pending, no second pet is called into a Vanguard that is about to be swapped out
 {const cs1=canSummon;canSummon=function(a){if(B&&(B.sum||B.pray))return false;return cs1.apply(this,arguments);};}
 // the Unified look (cohere15.js ch15Sc) scales heroes and bosses: a summoned Scourge counts as a boss
-try{if(typeof ch15Sc==='function'){const cs0=ch15Sc;ch15Sc=function(u){try{if(u&&u.b16big)return ch15On()&&B?CH15.unit:1;}catch(e){}return cs0.apply(this,arguments);};}}catch(e){}
+try{if(typeof ch15Sc==='function'){const cs0=ch15Sc;ch15Sc=function(u){try{if(u&&u.b16big){if(u.art&&typeof fs11Spec==='function'&&fs11Spec(u.art))return 1;/* v0.22.60: battle11 sizes it in whole pixels, the 1.25 included */return ch15On()&&B?CH15.unit:1;}}catch(e){}return cs0.apply(this,arguments);};}}catch(e){}
 
 // ---------- 6. dual type wayfarers from the third realm ----------
 HOOK.xform('caveRecruitPool','battle16','no dual type wayfarer in a cave, a keep cell or sent by a guild before the third realm',function(pool){try{

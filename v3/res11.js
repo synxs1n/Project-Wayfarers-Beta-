@@ -57,8 +57,13 @@ function resEpx(cv){const w=cv._rw||cv.width,h=cv._rh||cv.height,x=cv.getContext
 // the same on a hdCv-style canvas for the battle: n passes of EPX on a bitmap, as a plain canvas (raw pixels)
 function resEpxRaw(cv,passes){let c=cv;for(let i=0;i<passes;i++)c=resEpx(c);return c;}
 // ----- the battle unit layer: backing pixels per logical pixel (the 2x HD paint doubles evenly into 4) -----
-function resBk(){try{if(typeof BL==='undefined'||!BL||!BL.sc||RES.st&&!resCfg())return SPR.k;const d=BL.sc*resDev(),c=resCfg();
-  if(c)return c>=3?RENDER.bkHi:SPR.k;return d>=RENDER.bk?RENDER.bkHi:SPR.k;}catch(e){return SPR.k;}}
+// v0.22.60 (pixel exact units): the backing is the screen's own pixels. d = device pixels per logical pixel (stage scale x page zoom x dpr);
+// K = d / m with the smallest whole m that keeps K at or under the cap (RENDER.bkMax, RENDER.bkPhone on phones, 2.5 at Render scale 1x or 2x), so the
+// canvas is shown at a whole number of device pixels per backing pixel (m, usually 1) instead of a stretch like 1.625. Under 2 device pixels per
+// logical pixel the HD paint cannot be shown whole, and after an automatic step down (RES.st) the plain 2x layer is kept.
+function resBk(){try{if(typeof BL==='undefined'||!BL||!BL.sc||RES.st&&!resCfg())return SPR.k;const d=BL.sc*resDev(),c=resCfg();if(!(d>=2))return SPR.k;
+  const phone=typeof p12Cap==='function'&&p12Cap(),cap=c?(c>=3?RENDER.bkMax:2.5):(phone?RENDER.bkPhone:RENDER.bkMax);let m=1;while(d/m>cap+1e-6)m++;
+  const K=d/m;return K>=2?K:(m>1?d/(m-1):K);}catch(e){return SPR.k;}}
 resBk=HOOK.def('resBk',resBk);// perf12.js caps it on phones
 function resSS(cv,K){if(!cv||!(K>=1)||cv._ss===K)return;
   if(!cv._ss){ssCanvas(cv,K);return;}
