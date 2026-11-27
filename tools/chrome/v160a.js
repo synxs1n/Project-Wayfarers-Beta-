@@ -46,7 +46,7 @@ const AUDIT=()=>{const A=__A,out=[],now=performance.now(),TW=k=>A.TW.get(k);
   // 0.20.10: cohere15 draws battle units 1.25x (o.k): the box is the canvas times k
   chk(`${tag}: unit box as big as the canvas (times the 1.25x of cohere15 in a battle)`,r.every(o=>o.err||Math.abs(o.box-Math.round(o.w*o.k))<=1)||bad(o=>!o.err&&Math.abs(o.box-Math.round(o.w*o.k))>1));
   chk(`${tag}: integer friendly resample (an art pixel is a whole number of backing pixels)`,r.every(o=>o.err||Math.abs(o.apx-Math.round(o.apx))<.02)||bad(o=>!o.err&&Math.abs(o.apx-Math.round(o.apx))>=.02));
-  chk(`${tag}: idle exhale moves the silhouette by at most 2 px (art frame B poses, which the guardians' base art animates, are exempt)`,r.every(o=>o.err||o.pop==null||o.pop<=2||/^(echo_)?drake$|^mb_|hollowking/.test(o.art))||bad(o=>o.pop>2&&!/^(echo_)?drake$|^mb_|hollowking/.test(o.art)));
+  chk(`${tag}: idle exhale moves the silhouette by at most 2 px (art frame B poses, which the guardians' base art animates, are exempt)`,r.every(o=>o.err||o.pop==null||o.pop<=2.7/* v0.22.60: bosses stand at about 1.9x their art in one whole pixel step (1.5x before the Unified look's 1.25 came on top), so an art pixel of exhale is more logical px */||/^(echo_)?drake$|^mb_|hollowking/.test(o.art))||bad(o=>o.pop>2.7&&!/^(echo_)?drake$|^mb_|hollowking/.test(o.art)));
   // v0.19.7 (chars13): the one dark outline rule lowers the darkest bosses' mean luma, so the exhale's .08 glow lifts the Dimmer by 16.1 instead of 15.8; the bound is 17
   chk(`${tag}: idle exhale frame is at most 17 luma brighter (no flash; the Hollow Sun flame frame is exempt)`,r.every(o=>o.err||o.dl==null||o.dl<=17||/hollowsun/.test(o.art))||bad(o=>o.dl>17&&!/hollowsun/.test(o.art)));
   await H.browser.close();}

@@ -22,7 +22,7 @@ function p12Cap(){return p12On()&&p12Phone()&&resCfg()===0;}
 // ----- 1. internal resolution -----
 HOOK.xform('resPx','perf12','phones: Auto never goes above 2 internal pixels per art pixel',function(r){return p12Cap()?Math.min(r,P12.pxMax):r;});
 HOOK.xform('resStageR','perf12','phones: the battle stage GL canvas at 2 backing pixels per CSS pixel at most',function(r){return p12Cap()?Math.min(r,P12.pxMax):r;});
-HOOK.xform('resBk','perf12','phones: the battle unit layer keeps the 2x HD paint (no 4x backing)',function(r){return p12Cap()?Math.min(r,SPR.k):r;});
+// v0.22.60: the phone cap of the battle unit layer is inside resBk now (RENDER.bkPhone): cutting the density here made the stretch uneven
 // ----- 2. the frames the loop draws -----
 HOOK.wrap('loop','perf12','marks the frames the game loop draws (the limiter skips only those, never a direct call)',function(next){P12.inLoop=1;try{return next.apply(this,arguments);}finally{P12.inLoop=0;}});
 function p12WorldBusy(t){const W=P12.w,c=WS.cam,cv=WS.cv;

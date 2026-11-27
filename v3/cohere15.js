@@ -15,7 +15,7 @@
 //  6 BATTLE     units 1.25x on every stage (drawn about their feet; unit boxes grow with them so bars and labels follow), backdrop crisp (1).
 //  7 PALETTE    props and buildings lean toward the realm's ground palette (greys and stone most, saturated paint least).
 // Toggle: META.cfg.cohere (missing = on), Settings > Display "Unified look". window.__CH15 (tests): .off switches the module off at runtime.
-const CH15={off:false,ink:[26,16,40],inkK:.5,dark:56,shade:.74,tintB:.12,tintS:.26,amb:.16,unit:1.25,fog:.05,
+const CH15={off:false,ink:[26,16,40],inkK:.5,dark:56,shade:.74,tintB:.12,tintS:.26,amb:.16,unit:1.25,hero:1.125,fog:.05,
   n:{bsp:0,obj:0,roof:0,spr:0,hero:0,flush:0,tint:0},err:[],last:null,dof:{},bk:0};
 function ch15On(){if(CH15.off)return false;try{return !(META&&META.cfg&&META.cfg.cohere===false);}catch(e){return true;}}
 function ch15Err(e){if(CH15.err.length<20)CH15.err.push(String(e&&e.message||e));}
@@ -118,7 +118,15 @@ HOOK.wrap('hbBake','cohere15','a crisp backdrop',function(next,...a){ch15Dof();c
     if(K)K._ch15=on;}catch(e){ch15Err(e);}return K;});
 HOOK.wrap('hbTex','cohere15','the backdrop source sampled nearest while it bakes',function(next,gl,o){if(CH15.bk&&o&&o.src&&o.pm&&!o.near)o=Object.assign({},o,{near:true});return next(gl,o);});
 // 6: units 1.25x about their feet; the boxes grow with them (bars, labels, taps follow), drawUnit gets the unscaled box
-function ch15Sc(u){return ch15On()&&typeof B!=='undefined'&&B&&!(u&&u.side==='e'&&!u.boss)?CH15.unit:1;}/* 0.21.1: regular foes keep their own size; heroes and bosses grow */
+// v0.22.60 pixel exact units. A flat 1.25 made a hero's bitmap pixel 1.25 or 2.5 backing pixels wide (uneven columns, mushed faces) and undid battle11's
+// whole pixel foes. Now: a hero (the full rig, HD paint SPR.k bitmap px per rig px) is drawn at n whole backing pixels per bitmap pixel, n the nearest
+// to CH15.hero (1.125 of the rig: the height the .9 rig x 1.25 had); Scourges, Calamities and guardians get their 1.25 inside battle11's own whole
+// pixel resample (fs11Scale), so nothing is scaled twice.
+function ch15K(){try{const cv=document.getElementById('bcv');return cv&&cv._ss||SPR.k;}catch(e){return 2;}}
+function ch15Sc(u){if(!(ch15On()&&typeof B!=='undefined'&&B)||(u&&u.side==='e'&&!u.boss))return 1;
+  try{if(u&&(u.side!=='p'||u.isSum)&&!u.heroArt&&u.art&&typeof fs11Spec==='function'&&fs11Spec(u.art))return 1;/* battle11 sized it */
+    if(u&&u.side==='p'&&!u.isSum&&!u.isComp&&TPL[u.id]&&!TPL[u.id].mon){const K=ch15K(),k=SPR.k,n=Math.max(1,Math.round(CH15.hero*K/k-.01));return n*k/K;}}catch(e){}
+  return CH15.unit;}/* 0.21.1: regular foes keep their own size; heroes and bosses grow */
 // a copy (some boxes are handed out again, so the scale is never written into them). A raw wrap, not a hook: battle11.js (foe sizes),
 // gfx6battle.js and p2world.js wrap unitBox the old way outside the hook chain and battle11 rewrites a foe's w and h, so this must sit
 // outside all of them (cohere15 loads last)
