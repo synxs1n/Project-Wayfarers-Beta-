@@ -4,6 +4,7 @@ await ev(()=>{__A.ACT.new();['mira','lumen','oren'].forEach(id=>__A.ACT.pickS(id
 await ev(()=>{const G=__A.G;G.gold=999999;for(const k of Object.keys(G.mats))G.mats[k]=99;G.stage=4;Object.keys(__A.TPL).forEach(id=>{if(!G.roster[id]){try{G.roster[id]=__A.newChar(id,45,5);}catch(e){}}});Object.keys(__A.GEAR).forEach(id=>G.gear.push(id,id));});
 for(const tab of ['weapons','armor','craft','forge','mats','sell','echo']){
   await ev(t=>{__A.V.modal={type:'smithy',tab:t};__A.render();window.__mut=0;const mo=new MutationObserver(r=>{window.__mut+=r.length});mo.observe(document.querySelector('#modal'),{subtree:true,childList:true,attributes:true,characterData:true});window.__mo=mo;},tab);
+  await wait(300);await ev(()=>{window.__mo.takeRecords();window.__mut=0;});/* 0.22.61: the one pass that sets each new picture to whole device pixels (res11 resSnapImgs) is not churn */
   await wait(1500);
   const mut=await ev(()=>{window.__mo.disconnect();return window.__mut;});
   // click every button once, with a freeze watchdog

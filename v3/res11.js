@@ -101,8 +101,8 @@ function resSnapOne(i,dpr){try{const nw=i.naturalWidth,nh=i.naturalHeight;if(!nw
   const w=b.width/own*dpr,h=b.height/own*dpr,r=i._rsnFit==='contain'||i._rsnFit==='scale-down'?Math.min(w/nw,h/nh):w/nw;RSN.n.seen++;
   let best=0,bd=9;RSN.steps.forEach(s=>{const f=s/r;if(f>=RSN.lo&&f<=RSN.hi&&Math.abs(f-1)<bd){bd=Math.abs(f-1);best=f;}});
   if(!best)RSN.half.forEach(s=>{const f=s/r;if(f>=RSN.lo&&f<=RSN.hi&&Math.abs(f-1)<bd){bd=Math.abs(f-1);best=f;}});/* second choice: 1.5 or 2.5 (three or five device pixels per art pixel of a 2x HD picture) */
-  if(best&&Math.abs(best-1)>.012){i.style.transform='scale('+best.toFixed(4)+')';i._rsn=best;if(i._rsnS){i.style.imageRendering='';i._rsnS=0;}RSN.n.snap++;}
-  else{if(i._rsn){i.style.transform='';i._rsn=0;}
+  if(best&&Math.abs(best-1)>.012){const tf='scale('+best.toFixed(4)+')';if(i._rsnT!==tf){i.style.transform=tf;i._rsnT=tf;}i._rsn=best;if(i._rsnS){i.style.imageRendering='';i._rsnS=0;}RSN.n.snap++;}
+  else{if(i._rsn){i.style.transform='';i._rsn=0;i._rsnT='';}
     const whole=Math.abs(r-Math.round(r))<.03||Math.abs(r-.5)<.02;if(r<1&&!whole){if(!i._rsnS){i.style.imageRendering='auto';i._rsnS=1;RSN.n.smooth++;}}else if(i._rsnS){i.style.imageRendering='';i._rsnS=0;}}
   i._rsnK=key;}catch(e){}}
 function resSnapImgs(){RSN.q=0;if(!RSN.on)return;try{const dpr=resDpr();document.querySelectorAll('img').forEach(i=>{if(i.complete)resSnapOne(i,dpr);else if(!i._rsnL){i._rsnL=1;i.addEventListener('load',resSnapSoon,{once:true});}});}catch(e){}}
