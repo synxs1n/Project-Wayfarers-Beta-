@@ -104,9 +104,13 @@ const LEARN=()=>{const A=__A,B=A.B,M=A.META.best;B.en.forEach(e=>{const b=M[e.ba
           if(b.scrollWidth>b.clientWidth+1)seen.banBad.push('text cut');});
         const cv=document.getElementById('bcv'),gl=document.getElementById('bgl');const zs=t=>{const m=/scale\(([\d.]+)\)/.exec(t||'');return m?+m[1]:1;};if(zs(cv.style.transform)>1.003)seen.cam++;if(gl&&zs(gl.style.transform)>1.003)seen.camGL++;if(X.CAM.pk)seen.pk++;};
       const mo=new MutationObserver(()=>{document.querySelectorAll('#bstage .b9fl').forEach(f=>{seen.fl.add(f.dataset.id);seen.flDur.push(parseFloat(f.style.animationDuration));});});mo.observe(document.getElementById('bstage'),{childList:true,subtree:true});
+      // the punch is also caught the moment the stage's transform is written, not only when a frame happens to sample it: it lasts a few frames, and on a
+      // slow renderer (software WebGL at 844x390) the frame loop below saw the punch flag (pk) twice and the scaled canvas never
+      const zs2=t=>{const m=/scale\(([\d.]+)\)/.exec(t||'');return m?+m[1]:1;},cv2=document.getElementById('bcv'),gl2=document.getElementById('bgl');
+      const mo2=new MutationObserver(L=>{L.forEach(q=>{if(zs2(q.target.style.transform)>1.003){if(q.target===cv2)seen.cam++;else seen.camGL++;}});});[cv2,gl2].forEach(e=>{if(e)mo2.observe(e,{attributes:true,attributeFilter:['style']});});
       A.setPause(0);B.en.forEach(x=>{x.next=99999;});B.front.concat(B.back).forEach(x=>{if(x!==a)x.next=99999;});
       A.ACT.cmd('skills');A.ACT.sk(s.id);if(B.menu==='target')A.ACT.tgtE(0);
-      const t0=performance.now();while(performance.now()-t0<1500){look();await new Promise(q=>requestAnimationFrame(q));}mo.disconnect();
+      const t0=performance.now();while(performance.now()-t0<1500){look();await new Promise(q=>requestAnimationFrame(q));}mo.disconnect();mo2.disconnect();
       Object.assign(out,{n:(B.nReact||0)-n0,snd:X.nSnd-s0,fl:seen.fl.size,ban:seen.ban.size,banN:seen.banN,flDur:Math.max(0,...seen.flDur),banBad:[...new Set(seen.banBad)],cam:seen.cam,camGL:seen.camGL,pk:seen.pk,gl:!!document.getElementById('bgl')&&A.BV.glStage,ev:X.cfg.ev.slice(-3)});return out;});
     if(r.err){chk(`${tag}: reaction set up`,r.err);await H.browser.close();continue;}
     chk(`${tag}: the primed badge pulses when the acting hero holds the matching detonator (stage ${r.pulse}, card ${r.pulseCard}), not without the MP`,r.pulse&&r.noPulse);

@@ -4,7 +4,7 @@ const {open,chk,done}=require('./pw');
 const META=t=>`localStorage.clear();localStorage.setItem('aurelis-meta-v1',JSON.stringify({cfg:{speed:1,enc:'off',music:0,sfx:0,gfx:'${t}',hints:false}}));`;
 (async()=>{
 {const H=await open({w:390,h:844,mobile:true,dpr:2,pre:META('medium')});const {ev,wait,page}=H;
- await ev(()=>{const A=__A;A.ACT.new();['oren','mira','lumen'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;A.setPause(99999);A.startBattle({stage:0,kind:'field',weather:'clear'});});await wait(1200);
+ await ev(()=>{const A=__A;A.ACT.new();['oren','mira','lumen'].forEach(id=>A.ACT.pickS(id));A.ACT.begin();A.ACT.storyOk();A.V.modal=null;A.setPause(99999);/* a fixed foe (two of the first monster): the area compared below reaches above the foe's head, where the badge floats, so how much of the badge it holds, and with it the difference (4 to 8 against a limit of 6), followed the foe the journey drew */const k0=Object.keys(A.MON).filter(k=>!A.MON[k].mimic)[0];A.startBattle({stage:0,kind:'field',weather:'clear',foes:[A.makeEnemy(A.MON[k0],4),A.makeEnemy(A.MON[k0],4)]});});await wait(1200);
  const r=await ev(async()=>{const A=__A,B=A.B,e=B.en[0];e.primed={el:'ice',t:1,by:'Mira'};A.render();await new Promise(q=>setTimeout(q,400));
    const t=document.querySelector('#bstage .primed'),o={};if(!t)return {none:1};const b=t.getBoundingClientRect(),eb=A.unitBox(e);o.w=Math.round(b.width);o.h=Math.round(b.height);o.text=t.textContent.trim();
    o.dupChip=!!document.querySelector('#bstage .utags .sti.prime');o.stageW=Math.round(document.getElementById('bstage').getBoundingClientRect().width);

@@ -28,6 +28,10 @@ const GO=`([id,at,off])=>{const A=__A,C=window.__CH15;C.off=!!off;const m=A.getM
   // clear skies on the map itself: boot only cleared the weather of the maps that existed then, and a field entered later rolled its own (rain or snow
   // dims the light the sprites take, so check 3 compared a wet tundra with a dry mesa on some runs and "hovered around zero", docs/handoff-v0111.md)
   try{A.G.weather[m.s]='clear';if(A.TR.wx)A.TR.wx.key=null;}catch(e){}
+  // and the realm's own theme, without the variant its Scourge gives it (m.thv, bosstheme.js): the bosses are the ones the journey drew before boot set
+  // the realm order, so the tundra field could wear a variant whose ground is no bluer than the mesa's (tint .98/1.04/.84 against 1.04/1.00/.89), and
+  // "the tundra's sprites are bluer" failed about one run in eight with the module doing exactly what it should
+  if(m.kind==='field'&&m.thv&&m.thv!==m.theme){m.thv=m.theme;try{window.__CH15.sync&&window.__CH15.sync();}catch(e){}}
   A.placeAt(id,p[0],p[1],'u');A.WS.cam=null;A.G.clock=150;A.TR.k=1;A.TR.from=null;A.TR.ph=null;A.V.modal=null;A.WS.dlg=null;A.render();const t=performance.now();A.worldDraw2(t);A.worldDraw2(t+16);A.worldDraw2(t+32);return {id:A.WS.m.id,hd:!!A.HD.live,p};}`;
 // the worst contrast of every visible text in the menus, the battle command menu, the dialog box and the header (WCAG): the element's colour over
 // every colour behind it (ancestors' colours and gradient stops, composed; text gradients and 1 px lines left out); disabled and faded text skipped
