@@ -67,7 +67,7 @@ const SYNB=SYN.replace(/wd=T\('worldDraw'\)/,"wd=T('battleFrame')").replace(/P\.
   await H.ev(()=>{__A.TW.get('startBattle')({stage:0,kind:'field'});});
   await H.until(()=>{const T=__A.TW.get;return __A.V.screen==='battle'&&T('B').mode==='cmd'&&!T('animating')()&&!T('BV').P.length&&!T('BV').flash&&!T('B').banner;},null,{timeout:20000});await H.wait(800);
   const bk=await H.ev(()=>{const T=__A.TW.get;const o={bk:T('resBk')(),st:T('resStageR')({})};window.__P12P=false;o.bkBig=T('resBk')();o.stBig=T('resStageR')({});delete window.__P12P;return o;});
-  chk(`battle on a phone: unit layer backing ${bk.bk} (2x HD paint), stage ${bk.st} backing px per css px (2 at most); big screen ${bk.bkBig} and ${bk.stBig}`,bk.bk===2&&bk.st<=2&&bk.bkBig===4&&bk.stBig===3);
+  chk(`battle on a phone: unit layer backing ${bk.bk} (2x HD paint), stage ${bk.st} backing px per css px (2 at most); big screen ${bk.bkBig} and ${bk.stBig}`,/* 0.22.60: the unit layer is device px over a whole number, 3.5 at most on a phone and 6 on a big screen (a 2D layer, cheap); the GL stage keeps its cap of 2 */bk.bk<=3.5&&bk.bk>=2&&bk.st<=2&&bk.bkBig<=6&&bk.bkBig>=bk.bk&&bk.stBig<=3);
   const bs=async(a)=>H.ev(`(${SYNB})`+'('+JSON.stringify(a)+')');
   t0=await H.ev(()=>performance.now()+3e5);
   let b=await bs({t0,n:40,dt:16.7});b=await bs({t0:b.t,n:60,dt:16.7});

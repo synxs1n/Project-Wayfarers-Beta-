@@ -43,7 +43,7 @@ const STEP=`new Promise(res=>{const A=__A;const t0=performance.now();let task=0;
   const t=T[1];
   chk(`3 the walk out of the lair to the field copies its paints (second walk: ${T.map(o=>o.hit+' hits / '+o.miss+' paints').join(', ')}, on ${t.mid})`,(t.mid==='f0'&&t.hit>=2&&t.miss===0)||JSON.stringify(T));
   await perfChk(H,`3 the map change task (was 90 to 330 ms)`,t.task,60);
-  await perfChk(H,`3 the longest frame after it (was 370 to 670 ms)`,t.gap,300);
+  await perfChk(H,`3 the longest frame after it (was 370 to 670 ms)`,t.gap,450/* 0.22.61: a 1000 px window draws 3 px per art px now (was 1), so the frame after the change costs what it does at 1080p: 350 to 400 ms in software GL, 200 with Render 1x */);
   // ---- 4 ----
   await ev(()=>{const A=__A;A.TW.get('enterDungeon')(0);A.render();});await wait(1400);
   await ev(()=>{const A=__A;A.startBattle({stage:0,kind:'boss'});});await wait(1500);
@@ -52,7 +52,7 @@ const STEP=`new Promise(res=>{const A=__A;const t0=performance.now();let task=0;
   for(let k=0;k<30;k++){const ok=await ev(()=>{const A=__A;try{if(A.V.modal&&A.V.modal.type==='result')A.ACT.resultOk();else if(A.V.modal&&A.V.modal.type==='story')A.ACT.storyOk();else if(A.V.modal){A.V.modal=null;A.render();}}catch(e){}return A.V.screen==='world'&&!A.B&&!A.V.modal;});if(ok)break;await wait(600);}
   await wait(1000);const b=await ev(STEP);const cl=await ev(()=>!!__A.G.cleared[0]);
   chk(`4 after the lair boss the field was painted ahead (${ah} paints behind the rewards) and the first walk out copies them (${b.hit} hits / ${b.miss} paints, cleared ${cl})`,(ah>=3&&cl&&b.hit>=2&&b.miss===0)||JSON.stringify({ah,b,cl}));
-  await perfChk(H,`4 the longest frame after the first walk out after the boss (was 450 to 580 ms)`,b.gap,300);
+  await perfChk(H,`4 the longest frame after the first walk out after the boss (was 450 to 580 ms)`,b.gap,450);
   const kc=await ev(()=>{const m=__A.getMap('f0'),t0=performance.now();for(let i=0;i<10;i++)window.__S20.key(m,0);return (performance.now()-t0)/10;});
   await perfChk(H,`5 the state key of a field (${kc.toFixed(1)} ms)`,Math.round(kc),15);
   await done(H);})();

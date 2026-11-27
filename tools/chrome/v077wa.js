@@ -151,8 +151,8 @@ const REC2D=`(T)=>{const A=__A,ctx=A.WS.ctx,P=CanvasRenderingContext2D.prototype
   // ---------- old visuals: minimap and arena ----------
   {const H=await boot('medium',933,705);const {ev,wait}=H;await ev(`(${PLACE})('clear')`);await wait(500);
     const mm=await ev(()=>{const A=__A,cv=document.getElementById('mmap');if(!cv||cv.style.display==='none')return null;A.W63.drawMini();const x=cv.getContext('2d'),d=x.getImageData(0,0,cv.width,cv.height).data;const cols=new Set();for(let i=0;i<d.length;i+=4)cols.add(d[i]<<16|d[i+1]<<8|d[i+2]);
-      return {w:cv.width,h:cv.height,cols:cols.size};});
-    chk(`minimap: styled tiles (${mm&&mm.cols} colours) on the same 112 x 84 canvas (scale unchanged)`,!!mm&&mm.w===112&&mm.h===84&&mm.cols>60||JSON.stringify(mm));
+      return {w:cv.width,h:cv.height,cols:cols.size,cw:cv.clientWidth,dev:A.TW.get('resDev')()};});
+    chk(`minimap: styled tiles (${mm&&mm.cols} colours) on a canvas of the screen's own pixels (${mm&&mm.w} for ${mm&&mm.cw} css px)`,/* 0.22.61: the canvas is the screen's own pixels (was 112 x 84 stretched) */!!mm&&Math.abs(mm.w-mm.cw*mm.dev)<=1&&mm.cols>60||JSON.stringify(mm));
     const ar=await ev(()=>{const A=__A,c=A.bgStatic('arena',420,300),x=c.getContext('2d'),d=x.getImageData(0,0,420,150).data;const cols=new Set();for(let i=0;i<d.length;i+=4)cols.add(d[i]>>3<<10|d[i+1]>>3<<5|d[i+2]>>3);return cols.size;});
     chk(`arena: the colosseum backdrop (${ar} colour buckets in the stands, the old flat bands had under 60)`,ar>150||ar);
     chk(`old visuals: no console errors`,H.errs.length===0);await H.browser.close();}
