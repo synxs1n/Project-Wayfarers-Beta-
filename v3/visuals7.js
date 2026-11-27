@@ -37,8 +37,11 @@ function mm7Base(m){const base=mapBase(m),key=m.id+':'+MM7.gen,now=performance.n
   x.putImageData(img,0,0);MM7.key=key;MM7.t=now;return c;}
 function mm7Vig(W,H){return MM7.vig&&MM7.vig.width===W?MM7.vig:(MM7.vig=(()=>{const v=mkCv(W,H),g=v.getContext('2d'),r=g.createRadialGradient(W/2,H/2,Math.min(W,H)*.32,W/2,H/2,Math.max(W,H)*.62);r.addColorStop(0,'rgba(6,4,14,0)');r.addColorStop(1,'rgba(6,4,14,.62)');g.fillStyle=r;g.fillRect(0,0,W,H);return v;})());}
 function drawMini(){const cv=document.getElementById('mmap');if(!cv)return;const m=WS.m;if(!m||!G||!miniOn()){cv.style.display='none';return;}cv.style.display='block';
-  {const nw=miniNarrow()?84:112;if(cv.width!==nw){cv.width=nw;cv.height=nw*3/4;}}// resizing clears the canvas, so only when the width class changed
-  const W=cv.width,H=cv.height,x=cv.getContext('2d'),sc=4;x.imageSmoothingEnabled=false;
+  // v0.22.61 (pixel exact views): the canvas holds the device's own pixels and one map pixel is K whole device pixels (the 112 px canvas was stretched
+  // to 196 CSS px: 1.75, and 2.33 on a zoomed 1920x1080 window). The view shows a little more or less of the map than 28 tiles across to make K whole.
+  const nw=miniNarrow()?84:112,dev=typeof resDev==='function'?resDev():1,dW=Math.max(nw,Math.round((cv.clientWidth||nw)*dev)),dH=Math.max(Math.round(nw*3/4),Math.round((cv.clientHeight||nw*3/4)*dev)),K=Math.max(1,Math.round(dW/nw));
+  if(cv.width!==dW||cv.height!==dH){cv.width=dW;cv.height=dH;}// resizing clears the canvas, so only when the size changed
+  const W=Math.ceil(dW/K),H=Math.ceil(dH/K),x=cv.getContext('2d'),sc=4;cv._lw=W;cv._lh=H;x.setTransform(K,0,0,K,0,0);x.imageSmoothingEnabled=false;
   {const g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,'#141026');g.addColorStop(1,'#0a0712');x.fillStyle=g;x.fillRect(0,0,W,H);}
   const ox=Math.round(W/2-(WS.x+.5)*sc),oy=Math.round(H/2-(WS.y+.5)*sc);let b=null;try{b=mm7Base(m);}catch(e){b=null;}
   if(b)x.drawImage(b,ox,oy);else x.drawImage(mapBase(m),ox,oy,m.w*sc,m.h*sc);

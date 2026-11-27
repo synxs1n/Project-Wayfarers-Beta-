@@ -2277,7 +2277,7 @@ html:not(.flat) .battle.b3 .bline .b4mo .b4bar{box-shadow:inset 0 0 0 1px #000,0
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.22.60";const APP_BUILD="62b99dc5016e";
+(function(){const APP_VER="0.22.61";const APP_BUILD="7dbb8426c78a";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -2907,7 +2907,7 @@ const HD_BATTLE={
 // bk: the battle unit layer's backing pixels per logical px (2 below d bk, else bkHi, an integer multiple of the 2x HD paint).
 // sc4W/sc5W/scH: the flat view may use scale 4 or 5 on boxes this wide and tall (layout px); minVw: the narrowest view (art px) a
 // dpr-aware scale change may produce. stage: the GL battle stage's backing pixels per CSS pixel, from the display, capped per tier by resMax.
-const RENDER={k:2,bias:.25,max:3,tex:2,bk:3,bkHi:4,bkMax:6,bkPhone:3.5,/* v0.22.60: caps of the battle unit layer's backing density (res11.js resBk) */sc4W:1360,sc5W:1760,scH:520,minVw:150,maxArea:4200000,texArea:16000000,stageMax:{medium:2,high:3}};
+const RENDER={k:2,bias:.25,max:3,tex:2,bk:3,bkHi:4,bkMax:6,bkPhone:3.5,exactArea:1300000,/* v0.22.61: the HD-2D view is rendered at device resolution up to this many pixels on any tier (hd2d.js hdPxOf) *//* v0.22.60: caps of the battle unit layer's backing density (res11.js resBk) */sc4W:1360,sc5W:1760,scH:520,minVw:150,maxArea:4200000,texArea:16000000,stageMax:{medium:2,high:3}};
 const HD_FLOOR={persp:.32,tile:96,sq:.34,focus:[.12,.9],fog:.55};
 // Colour grade per time of day (outdoor battles) and weather: gain (rgb multiplier), lift (rgb added), sat, contrast, amb (light on units,
 // rgb), key (key light colour), vig (vignette). Indoor stages (caves, halls, boss stages) use `indoor`.
@@ -3094,7 +3094,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.22.60";const APP_BUILD="62b99dc5016e";
+const APP_VER="0.22.61";const APP_BUILD="7dbb8426c78a";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -3102,6 +3102,7 @@ const APP_VER="0.22.60";const APP_BUILD="62b99dc5016e";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.22.61',['The same fix as the battle sprites, for the rest of the game: pictures are drawn at a whole number of screen pixels instead of being stretched by the page.','World view: on windows around 1280x720 and 1366x768 the towns, fields and realms were drawn at a third of the screen\'s detail and stretched three times. They are drawn at the screen\'s own pixels now, so the wayfarer walking and signs are sharp.','Battle backdrop: the stage behind the units matches the screen exactly (it was stretched 1.15 times at 1920x1080, 1.5 on phones, 1.8 on tablets).','Portraits in the battle cards and menus, and Codex pictures: drawn at an exact factor where one fits the slot, and resampled smoothly where a picture has to shrink (they used to lose rows and columns of pixels).','The minimap and the title scene are drawn at the screen\'s own pixels too.']],
  ['Beta v0.22.60',['Battle sprites show the detail they were painted with. Wayfarers were redrawn at 90% size, then enlarged 1.25 times, then stretched again to fit the window, and none of those steps was a whole number: faces turned to blocks, eyes and trim dropped out, and pixels came out in uneven sizes. Bosses went through the same stretches.','Now the battle layer is drawn at the screen\'s own pixels, and every wayfarer, foe and boss is drawn at a whole number of screen pixels per sprite pixel, in one step. Wayfarers use their full size art again.','Proportions and placement are unchanged. Sizes move by a few percent from screen to screen so that pixels land whole (a wayfarer can be up to about a tenth larger or smaller than before).']],
  ['Beta v0.22.59',['Class balance after the skill pass, measured at twice the size with items: every class is within about 3 points of the others in a boss fight.','Monk: Dragon Fist is back at 3.1 and he gains more attack with level. Thief: the Dagger gives +10% against a foe with an ailment (was +15%). Knight: a little less attack growth; Taunt is unchanged. Warrior: a little more attack growth.','Bard: Aria 1.7 to 1.9 and a little more magic growth. Archer: element arrows 1.45 to 1.5 and a little more attack growth.','Bosses: the steps between realms are evener (about 66, 62, 58, 54 and 50% for a careful party that uses its items), and the three fights that were still easy wins were raised (Maelstrom Drake in the first realm, Iron Sentinel in the second, Queen Mantis in the third).']],
  ['Beta v0.22.58',['No two skills of one wayfarer do the same thing any more. 54 of 88 wayfarers had sets of skills with the same element, target and effect that differed only in power. Each capstone now has its own job:','Titan Blow (Warrior) and the Mage\'s great spell chip 1 shield pip. Judgement (Knight) gives the Knight Bulwark. Dragon Fist (Monk) heals him for 25% of the damage. Grand Finale (Bard) likely Weakens. Verdict (Priest) likely Blinds. Full Mend (Priest) also cures every ailment. The Mage\'s Rune may Weaken.','Gilda\'s Tavern Anthem adds Focus and Halden\'s Frostwall adds Bulwark (they copied Battle Hymn and Aegis).','Skill power follows what a skill is. A detonator now beats the primer learned before it: Burst Arrow 1.6 to 1.9, the Archer\'s first element arrows 1.6 to 1.45. The Mage\'s Rune, learned at level 31, was weaker than the level 1 spell: 1.3 to 1.6 for 1 MP less.','Sub role capstones no longer match a main role\'s: Judgement 3.0 to 2.7, the Knight\'s Lance 1.75 to 1.6, the Bard\'s Aria 2.1 to 1.7 (it out-hit Crescendo and nearly Grand Finale for 6 MP).','The level 45 skills are in line with each other: Death Lotus 9 x 0.72 to 9 x 0.58, Ascension Fist 5 x 0.95 to 5 x 0.88, Heavenpiercer 4.4 to 4.2 (Ragnarok is 4.2).','Mage: magic growth back to 2.7 a level (it was 2.55 since 0.22.54). No skill changed its level.']],
@@ -16238,8 +16239,8 @@ ACT.fmTap=function(arg,el){const cv=el||document.getElementById('fmap'),p=FMT.pt
   const r=awTap(m,t[0],t[1],'map',()=>{V.modal=null;render();});const n=document.getElementById('fmnote');
   if(n&&(r.res==='unseen'||r.res==='noway')){n.textContent=AW[r.res];n.classList.remove('on');void n.offsetWidth;n.classList.add('on');}};
 // the minimap: it takes taps (it used to let them through to the world view)
-function mmTile(cv,cx,cy){const m=WS.m,r=cv.getBoundingClientRect();if(!m||!r.width)return null;const sc=4,px=(cx-r.left)*cv.width/r.width,py=(cy-r.top)*cv.height/r.height,
-  ox=Math.round(cv.width/2-(WS.x+.5)*sc),oy=Math.round(cv.height/2-(WS.y+.5)*sc);return [Math.floor((px-ox)/sc),Math.floor((py-oy)/sc)];}
+function mmTile(cv,cx,cy){const m=WS.m,r=cv.getBoundingClientRect();if(!m||!r.width)return null;const sc=4,lw=cv._lw||cv.width,lh=cv._lh||cv.height,/* v0.22.61: the canvas is in device pixels, the map in logical ones */px=(cx-r.left)*lw/r.width,py=(cy-r.top)*lh/r.height,
+  ox=Math.round(lw/2-(WS.x+.5)*sc),oy=Math.round(lh/2-(WS.y+.5)*sc);return [Math.floor((px-ox)/sc),Math.floor((py-oy)/sc)];}
 document.addEventListener('pointerdown',e=>{const cv=e.target;if(!cv||cv.id!=='mmap'||V.screen!=='world')return;e.preventDefault();e.stopPropagation();
 },{capture:true,passive:false});
 // v0.11.5: open on the click, not the press: opened on the press, the click that followed landed on the new map's backdrop and closed it
@@ -20495,6 +20496,10 @@ function hbPlace(){const wrap=document.getElementById('bwrap'),bc=document.getEl
   const op=hbQ().mode==='under'?'':'0';if(cv.style.display!=='block')cv.style.display='block';if(bc.style.opacity!==op)bc.style.opacity=op;
   const q=hbQ(),dpr=Math.max(1,window.devicePixelRatio||1),cw=BL.W*BL.sc,ch=BL.H*BL.sc;let r=Math.max(Math.min(q.res||1,dpr),resStageR(q));// v0.17.3: follows the display (res11.js)
   if(cw*ch*r*r>(q.maxPx||1e6))r=Math.sqrt((q.maxPx||1e6)/(cw*ch));
+  /* v0.22.61 (pixel exact views): the backing is the device's pixels divided by a whole number m, so the stage is shown at m device pixels per backing
+     pixel like the unit layer over it (it was stretched 1.15 at 1920x1080, 1.5 on phones, 1.8 on tablets). m is the nearest to what the caps above allow;
+     one more when that would pass the pixel budget by half. */
+  try{const dev=resDev(),mp=q.maxPx||1e6;if(dev>0&&r>0){let m=Math.max(1,Math.round(dev/r));if(cw*ch*(dev/m)*(dev/m)>mp*1.5)m++;r=dev/m;}}catch(e){}
   const bw=Math.max(1,Math.round(cw*r)),bh=Math.max(1,Math.round(ch*r));
   if(cv.width!==bw||cv.height!==bh){cv.width=bw;cv.height=bh;HB.redraw=true;}
   const sw=cw+'px',sh=ch+'px';if(cv.style.width!==sw)cv.style.width=sw;if(cv.style.height!==sh)cv.style.height=sh;
@@ -24881,6 +24886,7 @@ function hdDetach(){HD.live=false;HD.ovClear=null;try{const p=HD.cv&&HD.cv.paren
 // v0.17.3: the tier's px is only the least. The real value follows the display (res11.js resPx: device pixels per art pixel = view scale x
 // page zoom x devicePixelRatio, divided by RENDER.k), is forced by Settings > Render scale, and is kept inside the GPU's limits.
 function hdPxOf(q){const d=(WS.scale||2)*resDev(),cap=Math.max(1,Math.min(q.pxMax||RENDER.max,RENDER.max));let px=Math.max(q.px||1,resPx(d,cap));
+  /* v0.22.61: a small view is rendered at the screen's own pixels whatever the tier's cap (1280x720: 3 device px per art px, 0.7 M pixels) */try{const di=Math.round(d);if(!resCfg()&&Math.abs(d-di)<.03&&di>px&&di<=RENDER.max&&(WS.vw||1)*(WS.vh||1)*di*di<=RENDER.exactArea&&!(RES.cap&&RES.cap<di)&&!(typeof p12Cap==='function'&&p12Cap()))px=di;}catch(e){}
   const lim=Math.min(HD.maxTex||4096,4096),big=Math.max(WS.vw||1,WS.vh||1);px=Math.min(px,Math.max(1,Math.floor(lim/big)));
   const area=Math.max(1,(WS.vw||1)*(WS.vh||1));px=Math.min(px,Math.max(1,Math.floor(Math.sqrt(RENDER.maxArea/area))));return px;}
 function hdSize(q){const px=HD.pxI||1,sc=WS.scale||2,w=Math.max(16,Math.round(WS.vw*px)),h=Math.max(16,Math.round(WS.vh*px)),cw=WS.vw*sc,ch=WS.vh*sc,lm=Math.round(q.lmap*(1+(px-1)*.5)),key=w+'x'+h+':'+q.bloom+':'+lm+':'+q.blur;
@@ -26959,7 +26965,7 @@ function t7Wx(x,w,a,t,W,H,trav,R){if(!w||a<.01)return;const dpr=T7.dpr,s=Math.ma
   x.restore();}
 // ----- one frame -----
 function t7Frame(now,force){const cv=document.getElementById('t7cv');if(!cv)return;const st=cv.parentElement;if(!st)return;
-  const still=t7Still(),low=t7Low(),dpr=low?1:Math.min(3,Math.max(1,window.devicePixelRatio||1)),cw=st.clientWidth,ch=st.clientHeight;if(!cw||!ch)return;
+  const still=t7Still(),low=t7Low(),dpr=low?1:Math.min(3,Math.max(1,typeof resDev==='function'?resDev():(window.devicePixelRatio||1))),/* v0.22.61: device pixels = dpr x the page zoom (a 1920x1080 window runs at zoom 4/3 and the scene was stretched by it) */cw=st.clientWidth,ch=st.clientHeight;if(!cw||!ch)return;
   t7Ids();const W=Math.round(cw*dpr),H=Math.round(ch*dpr),key=W+'x'+H+':'+low+':'+(T7.ids||[]).join(',');
   let dirty=!!force;if(key!==T7.key||cv.width!==W||cv.height!==H){cv.width=W;cv.height=H;T7.key=key;T7.W=W;T7.H=H;T7.dpr=dpr;try{const lg=st.querySelector('.t7logo');T7.logoB=lg?(lg.getBoundingClientRect().bottom-st.getBoundingClientRect().top+14)*dpr:0;}catch(e){T7.logoB=0;}
     if(T7.bkWH!==W+'x'+H+low){T7.bk={};T7.bkWH=W+'x'+H+low;}t7Layout(W,H,dpr);t7FgBake(W,H);dirty=true;}
@@ -27081,8 +27087,11 @@ function mm7Base(m){const base=mapBase(m),key=m.id+':'+MM7.gen,now=performance.n
   x.putImageData(img,0,0);MM7.key=key;MM7.t=now;return c;}
 function mm7Vig(W,H){return MM7.vig&&MM7.vig.width===W?MM7.vig:(MM7.vig=(()=>{const v=mkCv(W,H),g=v.getContext('2d'),r=g.createRadialGradient(W/2,H/2,Math.min(W,H)*.32,W/2,H/2,Math.max(W,H)*.62);r.addColorStop(0,'rgba(6,4,14,0)');r.addColorStop(1,'rgba(6,4,14,.62)');g.fillStyle=r;g.fillRect(0,0,W,H);return v;})());}
 function drawMini(){const cv=document.getElementById('mmap');if(!cv)return;const m=WS.m;if(!m||!G||!miniOn()){cv.style.display='none';return;}cv.style.display='block';
-  {const nw=miniNarrow()?84:112;if(cv.width!==nw){cv.width=nw;cv.height=nw*3/4;}}// resizing clears the canvas, so only when the width class changed
-  const W=cv.width,H=cv.height,x=cv.getContext('2d'),sc=4;x.imageSmoothingEnabled=false;
+  // v0.22.61 (pixel exact views): the canvas holds the device's own pixels and one map pixel is K whole device pixels (the 112 px canvas was stretched
+  // to 196 CSS px: 1.75, and 2.33 on a zoomed 1920x1080 window). The view shows a little more or less of the map than 28 tiles across to make K whole.
+  const nw=miniNarrow()?84:112,dev=typeof resDev==='function'?resDev():1,dW=Math.max(nw,Math.round((cv.clientWidth||nw)*dev)),dH=Math.max(Math.round(nw*3/4),Math.round((cv.clientHeight||nw*3/4)*dev)),K=Math.max(1,Math.round(dW/nw));
+  if(cv.width!==dW||cv.height!==dH){cv.width=dW;cv.height=dH;}// resizing clears the canvas, so only when the size changed
+  const W=Math.ceil(dW/K),H=Math.ceil(dH/K),x=cv.getContext('2d'),sc=4;cv._lw=W;cv._lh=H;x.setTransform(K,0,0,K,0,0);x.imageSmoothingEnabled=false;
   {const g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,'#141026');g.addColorStop(1,'#0a0712');x.fillStyle=g;x.fillRect(0,0,W,H);}
   const ox=Math.round(W/2-(WS.x+.5)*sc),oy=Math.round(H/2-(WS.y+.5)*sc);let b=null;try{b=mm7Base(m);}catch(e){b=null;}
   if(b)x.drawImage(b,ox,oy);else x.drawImage(mapBase(m),ox,oy,m.w*sc,m.h*sc);
@@ -30425,8 +30434,13 @@ function resZoom(){try{return typeof dsZoom==='function'?dsZoom():1;}catch(e){re
 function resDev(){return resDpr()*resZoom();}
 // 0 = Auto, else 1, 2 or 3
 function resCfg(){try{const v=META&&META.cfg&&META.cfg.render;return v==='1'||v==='2'||v==='3'?+v:0;}catch(e){return 0;}}
+// v0.22.61 (pixel exact views): Auto first looks for the largest internal density under the cap that divides d evenly, so an internal pixel is a whole
+// number of device pixels (d 3 -> 3 where the tier allows 3, d 2 -> 2: both rendered at one internal pixel per art pixel before, three or two device
+// pixels wide, with the HD paint's detail thrown away). When only 1 divides d (d 5, d 4.5) the old rule stands.
 function resPx(d,cap){const c=resCfg();if(c)return Math.min(c,RENDER.max);
-  return Math.max(1,Math.min(Math.max(1,Math.min(RENDER.max,cap||RENDER.max,RES.cap||RENDER.max)),Math.floor(d/RENDER.k+RENDER.bias)));}
+  const top=Math.max(1,Math.min(RENDER.max,cap||RENDER.max,RES.cap||RENDER.max)),old=Math.max(1,Math.min(top,Math.floor(d/RENDER.k+RENDER.bias)));
+  for(let p=Math.floor(top);p>1;p--){const r=d/p;if(r>=1-1e-6&&Math.abs(r-Math.round(r))<.03)return Math.max(p,old);}
+  return old;}
 resPx=HOOK.def('resPx',resPx);// perf12.js caps it on phones
 // Auto steps down by itself on a machine that cannot keep up: gfx6.js Auto graphics measures the frame rate over 3 s windows and, below
 // GFX_AUTO.down, would drop the whole tier. While the HD-2D view (or the GL stage) renders above 1x, the first step is one internal pixel
@@ -30492,6 +30506,29 @@ try{if(typeof WZ10!=='undefined'){const base=WZ10.px;Object.defineProperty(WZ10,
 // ----- Settings > Render scale -----
 HOOK.xform('settingsBody','res11','Render scale row after Graphics',function(h){try{const row=rsRow();const m=/<div class="rows gfxrows">[\s\S]*?<\/div><\/div><\/div>/.exec(h);
   if(m)return h.slice(0,m.index+m[0].length)+row+h.slice(m.index+m[0].length);return h+row;}catch(e){return h;}});
+
+// ===== v0.22.61 pictures (portraits, Codex art, icons): one image pixel a whole number of device pixels =====
+// A picture is painted once (a data URL of a sprite canvas) and the page resizes it to its slot: an 80 px portrait shown at 45 CSS px dropped rows
+// and columns (image-rendering: pixelated), a 48 px one at 40 the same, and on high density screens the factor was 1.7 or 2.5. After every render the
+// pictures on screen are measured (device pixels per image pixel, object-fit: contain respected) and
+//   - snapped: where a whole factor (or one half: the HD paint is two pixels per art pixel) is within RSN.lo to RSN.hi of the slot, the picture is
+//     drawn at exactly that factor with a CSS scale (the layout box does not move);
+//   - smoothed: a picture that has to shrink by another factor is resampled smoothly instead of losing rows.
+// Anything else (an upscale between whole factors) is left as it was. Pictures that already carry a transform (a mirrored sprite) are not touched.
+const RSN={on:true,lo:.8,hi:1.15,steps:[.5,1,2,3,4,5,6,8],half:[1.5,2.5],n:{snap:0,smooth:0,seen:0},q:0};
+function resSnapOne(i,dpr){try{const nw=i.naturalWidth,nh=i.naturalHeight;if(!nw||!nh)return;const own=i._rsn||1,b=i.getBoundingClientRect();if(b.width<6||b.height<6)return;
+  const key=nw+'x'+nh+':'+Math.round(b.width/own*8)+':'+Math.round(b.height/own*8)+':'+dpr;if(i._rsnK===key)return;
+  if(!i._rsn&&!i._rsnS){const cs=getComputedStyle(i);if(cs.transform&&cs.transform!=='none'){i._rsnK=key;return;}i._rsnFit=cs.objectFit;}
+  const w=b.width/own*dpr,h=b.height/own*dpr,r=i._rsnFit==='contain'||i._rsnFit==='scale-down'?Math.min(w/nw,h/nh):w/nw;RSN.n.seen++;
+  let best=0,bd=9;RSN.steps.forEach(s=>{const f=s/r;if(f>=RSN.lo&&f<=RSN.hi&&Math.abs(f-1)<bd){bd=Math.abs(f-1);best=f;}});
+  if(!best)RSN.half.forEach(s=>{const f=s/r;if(f>=RSN.lo&&f<=RSN.hi&&Math.abs(f-1)<bd){bd=Math.abs(f-1);best=f;}});/* second choice: 1.5 or 2.5 (three or five device pixels per art pixel of a 2x HD picture) */
+  if(best&&Math.abs(best-1)>.012){const tf='scale('+best.toFixed(4)+')';if(i._rsnT!==tf){i.style.transform=tf;i._rsnT=tf;}i._rsn=best;if(i._rsnS){i.style.imageRendering='';i._rsnS=0;}RSN.n.snap++;}
+  else{if(i._rsn){i.style.transform='';i._rsn=0;i._rsnT='';}
+    const whole=Math.abs(r-Math.round(r))<.03||Math.abs(r-.5)<.02;if(r<1&&!whole){if(!i._rsnS){i.style.imageRendering='auto';i._rsnS=1;RSN.n.smooth++;}}else if(i._rsnS){i.style.imageRendering='';i._rsnS=0;}}
+  i._rsnK=key;}catch(e){}}
+function resSnapImgs(){RSN.q=0;if(!RSN.on)return;try{const dpr=resDpr();document.querySelectorAll('img').forEach(i=>{if(i.complete)resSnapOne(i,dpr);else if(!i._rsnL){i._rsnL=1;i.addEventListener('load',resSnapSoon,{once:true});}});}catch(e){}}
+function resSnapSoon(){if(RSN.q)return;RSN.q=1;try{requestAnimationFrame(resSnapImgs);}catch(e){setTimeout(resSnapImgs,30);}}
+try{HOOK.after('render','res11','pictures at whole device pixels',function(){resSnapSoon();});window.addEventListener('resize',resSnapSoon);window.__RSN=RSN;}catch(e){}
 
 // ===== sheet11.js (v0.17.x): the hero sheet as a tabbed sheet =====
 // The hero sheet (mChar, shown in the 'guild' modal with a char and in the 'char' modal) had grown into one long column. This module wraps mChar

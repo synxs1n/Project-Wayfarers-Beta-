@@ -9,7 +9,7 @@ const start=(H,tier,render)=>H.det(([tier,render])=>{const A=__A;A.ACT.new();['m
 const world=H=>H.ev(()=>{const g=__A.TW.get,WS=g('WS'),HD=g('HD');return {sc:WS.scale,vw:WS.vw,vh:WS.vh,live:!!HD.live,px:HD.pxI||0,td:HD.td||0,gl:HD.cv?[HD.cv.width,HD.cv.height]:null,dev:g('resDev')(),tier:g('gfxTier')(),broken:HD.broken?HD.why:null,err:HD.wfxErr||null};});
 const settle=async(H,tier)=>{await H.until(()=>{const g=__A.TW.get;const HD=g('HD');return tier==='low'?g('WS').vw>0&&g('V').screen==='world':HD.live&&HD.pxI>0&&HD.cv&&HD.cv.width>0;},null,{timeout:15000});await H.frames(4);};
 const cases=[ // [w,h,dpr,tier,expected internal px, label]
-  [1000,560,1,'medium',1,'a 1000 px window (d 3): the old 1x'],
+  [1000,560,1,'medium',3,'a 1000 px window (d 3): the screen\'s own pixels, 3x (0.22.61; was 1x stretched 3 times)'],
   [1920,1080,1,'medium',2,'1920x1080 dpr 1 (page zoom 4/3, d 4): 2x'],
   [1920,1080,1,'high',2,'1920x1080 dpr 1 High: 2x'],
   [2560,1440,1,'medium',2,'2560x1440 dpr 1 Medium (d 6): capped at 2x'],
@@ -43,7 +43,7 @@ const cases=[ // [w,h,dpr,tier,expected internal px, label]
     if(tier==='medium'&&w===1920){// battle: unit layer density, foe resample
       const b=await H.ev(()=>{const g=__A.TW.get;g('startBattle')({stage:0,kind:'field'});return null;});await H.frames(8);
       const bt=await H.ev(()=>{const g=__A.TW.get,c=document.getElementById('bcv'),B=g('B'),f=B.en[0],s=g('spriteOf')(f),BL=g('BL'),hb=g('HB');return {ss:c._ss,raw:[c._rw,c._rh],logical:[c.width,c.height],hd:s.hd,sw:s.width,sh:s.height,sc:BL.sc,hb:hb.cv&&[hb.cv.width,hb.cv.height],cssw:parseFloat(c.style.width),err:!!g('HD').broken};});
-      chk(`battle at 1920x1080: the unit layer backs ${bt.ss} pixels per logical pixel (${bt.raw.join('x')} for ${bt.logical.join('x')}), the foe is resampled at the same density (hd ${bt.hd}), the GL stage is ${bt.hb&&bt.hb.join('x')} for ${Math.round(bt.cssw)} css px`,bt.ss===4&&bt.hd===4&&bt.raw[0]===bt.logical[0]*4&&bt.hb&&bt.hb[0]>=bt.cssw/* 0.22.34: the stage is the full width now (1414 css px, was 880), so the 4x layer is 1.07 of it, not over 1.2 */||JSON.stringify(bt));
+      chk(`battle at 1920x1080: the unit layer backs ${bt.ss} pixels per logical pixel (${bt.raw.join('x')} for ${bt.logical.join('x')}), the foe is resampled at the same density (hd ${bt.hd}), the GL stage is ${bt.hb&&bt.hb.join('x')} for ${Math.round(bt.cssw)} css px`,/* 0.22.60: the density is the stage's device px over a whole number (5 at 1080p), so a sprite pixel is a whole number of screen pixels */Math.abs(bt.ss-5)<.001&&bt.hd===bt.ss&&Math.abs(bt.raw[0]-bt.logical[0]*bt.ss)<.01&&bt.hb&&bt.hb[0]>=bt.cssw/* 0.22.34: the stage is the full width now (1414 css px, was 880), so the 4x layer is 1.07 of it, not over 1.2 */||JSON.stringify(bt));
     }
     await H.browser.close();
   }

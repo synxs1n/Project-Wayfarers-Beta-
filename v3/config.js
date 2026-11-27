@@ -547,7 +547,7 @@ const HD_BATTLE={
 // bk: the battle unit layer's backing pixels per logical px (2 below d bk, else bkHi, an integer multiple of the 2x HD paint).
 // sc4W/sc5W/scH: the flat view may use scale 4 or 5 on boxes this wide and tall (layout px); minVw: the narrowest view (art px) a
 // dpr-aware scale change may produce. stage: the GL battle stage's backing pixels per CSS pixel, from the display, capped per tier by resMax.
-const RENDER={k:2,bias:.25,max:3,tex:2,bk:3,bkHi:4,bkMax:6,bkPhone:3.5,/* v0.22.60: caps of the battle unit layer's backing density (res11.js resBk) */sc4W:1360,sc5W:1760,scH:520,minVw:150,maxArea:4200000,texArea:16000000,stageMax:{medium:2,high:3}};
+const RENDER={k:2,bias:.25,max:3,tex:2,bk:3,bkHi:4,bkMax:6,bkPhone:3.5,exactArea:1300000,/* v0.22.61: the HD-2D view is rendered at device resolution up to this many pixels on any tier (hd2d.js hdPxOf) *//* v0.22.60: caps of the battle unit layer's backing density (res11.js resBk) */sc4W:1360,sc5W:1760,scH:520,minVw:150,maxArea:4200000,texArea:16000000,stageMax:{medium:2,high:3}};
 const HD_FLOOR={persp:.32,tile:96,sq:.34,focus:[.12,.9],fog:.55};
 // Colour grade per time of day (outdoor battles) and weather: gain (rgb multiplier), lift (rgb added), sat, contrast, amb (light on units,
 // rgb), key (key light colour), vig (vignette). Indoor stages (caves, halls, boss stages) use `indoor`.
