@@ -490,13 +490,13 @@ const CLS={
  mage:{n:'Mage',role:'Elemental caster. Big spells, hastes allies, fragile body.',hp:[36,7],mp:[28,3.8],atk:[4,.8],def:[4,1],mag:[12,2.7],res:[8,1.9],spd:[8,.75],pref:['int','spi','agi']},
  healer:{n:'Priest',role:'Heals, cleanses, grants Regen and revives. Invokes Sanctum guardians.',hp:[40,8],mp:[30,4],atk:[4,.8],def:[5,1.2],mag:[11,2.4],res:[9,2],spd:[8,.7],pref:['fth','spi','vit']},
  thief:{n:'Thief',role:'Fastest class. Steals, poisons and blinds.',hp:[40,8.5],mp:[14,2],atk:[8,2.15],def:[5,1.3],mag:[4,.8],res:[5,1.2],spd:[13,1.1],pref:['agi','dex','luk']},
- archer:{n:'Archer',role:'Ranged damage. Bleeds, roots and pierces armor.',hp:[42,8.5],mp:[16,2.2],atk:[13.2,3.36],def:[5,1.3],mag:[4,.8],res:[5,1.3],spd:[11,.95],pref:['dex','agi','str']},
+ archer:{n:'Archer',role:'Ranged damage. Bleeds, roots and pierces armor.',hp:[42,8.5],mp:[16,2.2],atk:[13.2,3.5],def:[5,1.3],mag:[4,.8],res:[5,1.3],spd:[11,.95],pref:['dex','agi','str']},
  monk:{n:'Monk',role:'Bare-fisted bruiser. Multi-hits, stuns, self-sustains.',hp:[50,10.5],mp:[14,2],atk:[8,1.9],def:[6,1.5],mag:[5,1],res:[6,1.4],spd:[10,.9],pref:['str','agi','vit']},
 sniper:{n:'Steppe Sniper',legend:1,role:'Legendary horse archer. Crossbow bolts of shadow and storm, and he shoots back when struck.',hp:[46,9.2],mp:[16,2.3],atk:[10,2.35],def:[6,1.5],mag:[4,.8],res:[6,1.4],spd:[11,1],pref:['dex','agi','str']},
  druid:{n:'Druid',legend:1,role:'Legendary beast warden. Longbow, a wolf and a hawk at his call, and a way with wild things.',hp:[46,9.2],mp:[20,2.8],atk:[9,2.3],def:[6,1.4],mag:[7,1.5],res:[7,1.6],spd:[11,.95],pref:['dex','spi','agi']},
  archmage:{n:'Archmage',legend:1,role:'Legendary spellweaver. Ice and lightning, two spells a turn, cheap to cast.',hp:[40,8],mp:[30,4],atk:[4,.8],def:[5,1.15],mag:[12,2.6],res:[9,2],spd:[9,.8],pref:['int','spi','agi']},
  chronicler:{n:'Chronicler',role:'Archive caster. Wields the signature moves of every Scourge and Calamity you have defeated.',hp:[42,8.4],mp:[30,4.1],atk:[6,1.3],def:[6,1.5],mag:[13,2.8],res:[10,2.15],spd:[9,.85],pref:['int','fth','spi']},
- bard:{n:'Bard',role:'Support. Party heals, buffs, Haste and enemy debuffs.',hp:[38,7.5],mp:[24,3.3],atk:[5,1.1],def:[5,1.2],mag:[9,2],res:[8,1.8],spd:[9,.85],pref:['spi','luk','int']}
+ bard:{n:'Bard',role:'Support. Party heals, buffs, Haste and enemy debuffs.',hp:[38,7.5],mp:[24,3.3],atk:[5,1.1],def:[5,1.2],mag:[9.0,2.12],res:[8,1.8],spd:[9,.85],pref:['spi','luk','int']}
 };
 // =================== ATTRIBUTES ===================
 const ATTR=['str','int','vit','spi','fth','agi','dex','luk'];

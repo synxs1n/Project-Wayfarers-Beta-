@@ -116,10 +116,10 @@ function classSkills(t){
     break;
   case 'archer':
     add({id:'aim',n:'Aimed Shot',k:'phys',pw:1.4,mp:2,lv:1,d:'A careful shot.'});
-    add({id:'arrow1',n:n1+' Arrow',k:'phys',pw:1.45,mp:4,el:e1,lv:4,d:`Arrow charged with ${n1}.`});
+    add({id:'arrow1',n:n1+' Arrow',k:'phys',pw:1.5,mp:4,el:e1,lv:4,d:`Arrow charged with ${n1}.`});
     add({id:'barb',n:'Barbed Arrow',k:'phys',pw:1.1,mp:5,lv:6,fx:[['bleed',.85]],d:'Likely Bleeds.'});
     add({id:'hawk',n:'Hawkeye',k:'status',t:'self',mp:4,lv:8,fx:[['focus',1]],d:`Focus: +${Math.round(FOCUS.crit*100)}% crit chance for ${FOCUS.turns} turns.`});
-    if(e2)add({id:'arrow2',n:n2+' Arrow',k:'phys',pw:1.45,mp:4,el:e2,lv:9,d:`Arrow charged with ${n2}.`});
+    if(e2)add({id:'arrow2',n:n2+' Arrow',k:'phys',pw:1.5,mp:4,el:e2,lv:9,d:`Arrow charged with ${n2}.`});
     add({id:'volley',n:'Volley',k:'phys',pw:1,mp:9,t:'all',lv:10,d:'Rain of arrows on all foes.'});
     add({id:'pin',n:'Pin Down',k:'phys',pw:.9,mp:6,lv:13,fx:[['root',.9],['slow',.5]],d:'Roots a foe in place. May Slow.'});
     add({id:'pierce',n:'Piercing Shot',k:'phys',pw:2.8,mp:14,pierce:1,cost:1.2,lv:20,d:'Ignores half of foe defense.'});
