@@ -72,3 +72,18 @@ pitch .78. `v070ob`: the stage area is the union with the log line (on 1280x720 
 - The QUESTS sign's text keeps its size (town decor is drawn per frame in 2D from `townDecorActors`).
 - The x-ray dither round the hero is unchanged; only the hero is now solid over it.
 - Props drawn with plain fills rather than `objCanvas` (fences, a few town props) keep their old lines.
+
+## 0.22.60: pixel exact battle units
+The owner: sprites "have lost some detail, bosses too". The painted sprites were unchanged since 0.14.9 (sheets of six versions compared); the loss was on
+the way to the screen: the hero rig redrawn at .9 (scale10.js), item 6's flat 1.25 on heroes and bosses (a bitmap pixel 1.25 or 2.5 backing pixels wide,
+and battle11's whole pixel foes undone), then the unit layer's backing (2x or 4x) stretched to the window (1.625 at 1280x720, 1.875 at 1920x1080 without
+page zoom).
+- `res11.js resBk`: the unit layer's backing density K = d / m, d the device pixels per logical pixel, m the smallest whole number that keeps K under
+  `RENDER.bkMax` (6; `bkPhone` 3.5 on phones; 2.5 at Render scale 1x or 2x). So #bcv is shown at m whole device pixels per backing pixel. The phone cap
+  left perf12.js.
+- `scale10.js SC10.battle` 1: the full rig. `cohere15.js ch15Sc`: a hero is drawn at n whole backing pixels per bitmap pixel, n nearest `CH15.hero`
+  (1.125) x K / SPR.k.
+- `battle11.js fs11Scale` takes the Unified look's 1.25 for 60 px arts and guardians before its own whole pixel step (not on stages under 260 logical
+  px wide, where the old pass could not grow a boss either); `apx` is the nearest whole number (was floor). `ch15Sc` returns 1 for those units.
+Measured: 1280x720 K 3.25, 1366x768 K 3.5, 1920x1080 K 5, 2560x1440 K 3.25 (m 2), phone 390x844 dpr 3 K 3.375 (m 2), tablet 820x1180 dpr 2 K 4.5 (m 2).
+Not changed: the overworld walkers (the rig at .8, sampled by the HD-2D view at the scene's density).

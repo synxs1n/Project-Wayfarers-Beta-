@@ -39,7 +39,7 @@ const FS11={big:1.5,small:1.25,mini:2.5,top:4,on:0,hold:450,dbl:350,slop:10,cach
 const PGP=class extends PG{g(x,y){return super.g(x+this.ox,y+this.oy);}};/* PG reads ignore the origin shift; art code that reads its own grid (bsh) must see its own coordinates */
 function fs11Mini(art){try{return typeof MINI_BIG!=='undefined'&&MINI_BIG.has(art);}catch(e){return false;}}
 function fs11Grid(art){return fs11Mini(art)?40:MON_SIZE(art);}
-function fs11Scale(art){try{return fs11Mini(art)?FS11.mini:MON_SIZE(art)>=60?FS11.big:FS11.small;}catch(e){return 1;}}
+function fs11Scale(art){try{const u=typeof ch15On==='function'&&ch15On()&&typeof CH15!=='undefined'&&typeof BL!=='undefined'&&BL&&BL.W>=260?CH15.unit:1;/* not on the narrow phone stage: there the old pass could not grow a boss either (it stopped at the stage's edge) *//* v0.22.60: the Unified look's 1.25 for bosses and guardians is taken here, before the whole pixel step */return fs11Mini(art)?FS11.mini*u:MON_SIZE(art)>=60?FS11.big*u:FS11.small;}catch(e){return 1;}}
 function fs11Fly(art){try{return monFam(art).includes('flying');}catch(e){return false;}}
 function fs11Draw(g,art,f){const o=MART[art](g,f),pal=Object.assign({},o.pal);if(MEXTRA[art])MEXTRA[art](g,pal);return {o,pal};}
 // per art: where the key grid really is (drawn on a grid with 10 px of room on every side), so the stage canvas can fit it
@@ -62,7 +62,7 @@ function fs11Src(art,f){const sp=fs11Spec(art);if(!sp)return null;
 // pixels). A foe painted by fs11Src goes to a whole number of backing pixels per art pixel (above); anything else (no spec: the old canvas)
 // keeps the old 1.35x / 1.1x EPX then nearest path.
 function fs11Cv(c,art){if(!c||!c.width)return c;const cvb=document.getElementById('bcv'),k=c.hd,K=k&&cvb&&cvb._ss>k?cvb._ss:k;let e=FS11.cache.get(c);if(e&&e.k===K)return e.o;let o;
-  const sp=c._s11,T=fs11Scale(art),apx=sp?Math.max(1,Math.floor(T*(K||1)+1e-6)):0;
+  const sp=c._s11,T=fs11Scale(art),apx=sp?Math.max(1,Math.round(T*(K||1)-.01)):0;/* v0.22.60: the nearest whole number of backing px per art px (was floor) */
   const s=sp?apx/(K||1):(MON_SIZE(art)>=60?81/60:44/40),lw=Math.round(c.width*s),lh=Math.round(c.height*s);
   if(k&&typeof hdCv==='function'){const RW=c._rw||Math.round(c.width*k),RH=c._rh||Math.round(c.height*k);o=hdCv(lw,lh,K);const x=o.getContext('2d'),tw=sp?c.width*apx:Math.round(lw*K),th=sp?c.height*apx:Math.round(lh*K);x.setTransform(1,0,0,1,0,0);x.imageSmoothingEnabled=false;
     let src=c,sw=RW,sh=RH;const r=tw/RW,whole=Math.abs(r-Math.round(r))<.01;
