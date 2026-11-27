@@ -67,7 +67,7 @@ The common causes, for the next one that flickers:
 | v142a | cause 4: a fixed 1.5 s for the HD-2D scene to bake | waits for the bake (15 s at most) |
 | v059a | cause 2: the area compared reaches above the foe's head, where the badge floats, so how much of the badge it held (4 to 8 against a limit of 6) followed the foe the journey drew | a fixed foe; four grabs each way, the closest pair counts |
 | v080r | `interact()` does nothing while the map change still holds the hero or a line of talk is open | those are cleared first |
-| v158a | a blow that missed drew no shock ring and no hit count: any blow misses about once in thirty, even against a foe with no evasion (traced: a "Miss" popup on the failing blow) | a fixed fight, an attacker that cannot miss, real frames |
+| v158a | a blow that missed drew no shock ring and no hit count: a physical blow misses at least once in a hundred whatever the accuracy (the engine's hit chance tops out at 99%), and the test strikes about ten a run (traced: a "Miss" popup on the failing blow) | a fixed fight, the battle's roll held at .5, real frames |
 | v095m4 | headless Chrome now and then stops handing out animation frames on a Guild Hall screen at 705x455 (the page stays alive; the same on 0.22.53) and the test waited for frames alone, until the runner killed it | a frame or 300 ms; `H.frames`, `H.until` and `H.settle` in pw.js fall back to a timer the same way |
 | v063pb | cause 2: the journey's fight could pay enough for the hero who is behind to level up, and the gain is read off the xp counter | a fixed fight |
 | v095b | the camera punch lasts a few frames; a frame loop on a slow renderer saw the punch flag and never the scaled canvas | the stage's transform is watched as it is written |
