@@ -87,3 +87,12 @@ Skills (`tools`: the scratch duplicate finder compares, inside one hero's kit, k
 - Power: Burst Arrow 1.6 -> 1.9, Archer element arrows 1.6 -> 1.45, Rune 1.3 -> 1.6 (mp 9 -> 8), Judgement 3 -> 2.7, Knight Lance 1.75 -> 1.6, Aria 2.1 -> 1.7,
   Death Lotus .72 -> .58 a hit, Ascension Fist .95 -> .88 a hit, Heavenpiercer 4.4 -> 4.2, Dragon Fist 3.1 -> 2.9. Mage magic growth 2.55 -> 2.7.
 - `eff` with items after: Archer 1,687, Mage 1,590 (before the growth fix), Warrior 1,575, Monk 1,401, Bard 1,335, Thief 1,332, Knight 892, Priest 834.
+
+## 0.22.59: class values after the skill pass
+0.22.58 at full size with items: bosses 64 / 63 / 59 / 52 / 52% (one cell at 71), but classes out: Monk -6.1, Thief +4.6, Knight +3.9, Warrior -3.7 (544 pairs).
+Changes: Dragon Fist 2.9 -> 3.1, Monk atk growth 1.75 -> 1.9; dagger `exploit` .15 -> .1; Knight atk growth 2.5 -> 2.3 (the owner: Taunt is not to be cut);
+Warrior atk growth 2.85 -> 2.95; then Aria 1.7 -> 1.9, Bard mag growth 2 -> 2.12, Archer arrows 1.45 -> 1.5 and atk growth 3.36 -> 3.5.
+`cls 20` with items (1,360 pairs, about 2.2 points of noise): Knight +2.4 / +3.2 (two runs), Monk -1.7 / +2.1, Bard -4.6 then +1.0 after its change, Archer -3.2 then -2.6,
+Mage +0.9, Priest +0.7, Thief -0.4, Warrior -1.3.
+`gim 60` with items, two seeds, on those numbers: 67 / 63 / 61 / 54 / 49%, three cells at 73 to 74 (Drake realm 1, Iron Sentinel realm 2, Queen Mantis realm 3):
+their `BOSS_FIT` was raised and realm 3 power 1.57 -> 1.6. That last step is not re-measured.
