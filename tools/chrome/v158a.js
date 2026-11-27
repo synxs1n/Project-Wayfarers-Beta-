@@ -15,7 +15,10 @@ if(tier==='low'){
 }
 // a fixed fight (two Mosslings, clear skies) and foes that cannot dodge: the journey's own first fight could be a flyer or a nimble foe, and a blow that
 // missed drew no shock ring and no hit count (the two checks that failed now and then)
-await ev(()=>{const A=__A;A.TW.get('startBattle')({stage:0,kind:'field',weather:'clear',foes:[A.makeEnemy(A.MON.mossling,5),A.makeEnemy(A.MON.mossling,5)]});A.B.en.forEach(e=>{e.S.eva=0;});});await wait(800);
+await ev(()=>{const A=__A;A.TW.get('startBattle')({stage:0,kind:'field',weather:'clear',foes:[A.makeEnemy(A.MON.mossling,5),A.makeEnemy(A.MON.mossling,5)]});A.B.en.forEach(e=>{e.S.eva=0;});});
+// until the fight is waiting for a command (the opening flash and the entrance are over), not a fixed 0.8 s: on a busy machine the first blow of the
+// list (slash) was struck during the entrance and drew 2 particles instead of its arc
+await H.until(()=>{const B=__A.B;return !!(B&&B.mode==='cmd'&&B.cur);},null,{timeout:20000});await wait(400);
 const r=await ev(()=>{const T=__A.TW.get,B=T('B'),FK=T('FK'),BV=T('BV'),o={sig:{},poses:{},rec:{},parts:{}};
   const SPECS={slash:{k:'phys',t:'one',dl:'slash'},blunt:{k:'phys',t:'one',dl:'blunt'},pierce:{k:'phys',t:'one',dl:'piercing'},ranged:{k:'phys',t:'one',dl:'ranged'},
    fire:{k:'mag',t:'one',el:'fire'},water:{k:'mag',t:'one',el:'water'},earth:{k:'mag',t:'one',el:'earth'},wind:{k:'mag',t:'one',el:'wind'},lightning:{k:'mag',t:'one',el:'lightning'},ice:{k:'mag',t:'one',el:'ice'},light:{k:'mag',t:'one',el:'light'},shadow:{k:'mag',t:'one',el:'shadow'},
