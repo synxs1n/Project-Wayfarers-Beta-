@@ -1,6 +1,6 @@
 # Tests that fail on main, and why
 
-As of 0.22.56: none. A full run of every group (`ci battle menus party world saves`) is green, three times in a row (see "How it was
+As of 0.22.59: none. A full run of every group (`ci battle menus party world saves`) is green, three times in a row (see "How it was
 checked" below). A red run means something again. If a test starts to fail or flicker, add it here with what is known, and fix or
 retire it before trusting a full run.
 
@@ -26,6 +26,8 @@ merged onto 0.22.55 (the balance pass and the layering cleanup); everything belo
 ### Tests that were out of date (the game was right)
 | Test | What changed in the game | What the test does now |
 |---|---|---|
+| v051b | 0.22.57: swords have a perk of their own ("Guard blocks 65%"), the axe's is worded "+12% when it hits all foes" | knows both |
+| v173a | 0.22.56: a foe's box is kept inside the stage, so a guardian on a phone stands as near its slot as the edge allows | expects that, and the whole figure inside the stage |
 | v166a | Kit levels moved in 0.22.36 (Full Mend 35, Restoring Chorus 31, Toxic Cloud 35, the mage's Burst 6); since 0.22.54 a sub role skill has no percent cut (docs/balance54.md) | reads the kits at level 45; a bard's heal per cast is under a priest's like for like; the sheet and the battle row agree on an off role skill's Power |
 | v095na | The Echoforge is the anvil in the Echo Rift hall (rift9.js): `efTabOn` asks for `WS.m.sanctum` | judges the Echoforge card standing in the hall. The tip gate in `v3/onboard.js` was right |
 | v095m3 | The Upgrade step is the one that ends best at max temper (0.22.17), and can be a chain | the brute force performs chains too and ranks by that rule (`beats`); the sheet has gear rows and no Upgrade button since 0.17.1; charms are at the Smithy |
@@ -56,17 +58,23 @@ The common causes, for the next one that flickers:
 | v225a | `facRank` is remembered for 250 ms (factions.js); the test's states follow each other faster, so a plan read the Smithy prices of the state before ("planned 616, spent 676", a charm planned for one hero and worn by another). Not a fault in the game, as the note on main feared: a player's preview is on screen far longer than 250 ms. Found on main and here independently | each state clears the memo; journey and states pinned with `H.det` |
 | v188a | cause 1; and the hand-me-down scenario was a near tie (17.8% against 17.2%) that the stat rolls decided | pinned; the high level warrior wears an Uncommon blade, so the low level one clearly gains more |
 | v177a | cause 2: the hero's spot came from the town drawn before the seed was set; the desktop view is 7 tiles high and often held no building foot or lamp; the plain fade was judged by two spots' own brightness | seed pinned, the camera is parked beside a building and under a lamp, the fade is judged by how much each spot darkens |
-| v186a | cause 2: only the maps that existed at boot had their weather cleared; a field entered later rolled its own (check 3 "hovered around zero") | clear skies on the map itself; seed pinned |
+| v186a | cause 2: only the maps that existed at boot had their weather cleared; a field entered later rolled its own (check 3 "hovered around zero"). And the tundra field could wear its Scourge's theme variant, whose ground is no bluer than the mesa's | clear skies on the map itself; seed pinned; the realms' own themes are compared |
 | v050p1b, v051c | cause 3 | Medium pinned |
 | v190a (check 2) | cause 2: the "far tile" was the last of a scan and lay in view of the entrance on fields entered from the east | the tile farthest from the entrance |
 | v161a | cause 2: one of the three click candidates on screen, and that one right, failed an `n >= 2` | `n >= 1`, as its sibling check since 0.20.6 |
 | v192a | the sampled palette of the peaks town's grass lands 20 to 24.2 from the painted average (scatter drawn with `Math.random`); the limit was 22 | limit 26 (a wrong colour is 60 or more away) |
 | v041p1h | none: it takes about 520 s and the default limit is 600 | its own limit (1500 s) in `SLOW` |
 | v142a | cause 4: a fixed 1.5 s for the HD-2D scene to bake | waits for the bake (15 s at most) |
-| v059a | the foe's idle breathing and drifting motes moved a pixel average by up to 7 with a limit of 6 | four grabs each way, the closest pair counts |
+| v059a | cause 2: the area compared reaches above the foe's head, where the badge floats, so how much of the badge it held (4 to 8 against a limit of 6) followed the foe the journey drew | a fixed foe; four grabs each way, the closest pair counts |
 | v080r | `interact()` does nothing while the map change still holds the hero or a line of talk is open | those are cleared first |
 | v158a | a blow that missed drew no shock ring and no hit count: any blow misses about once in thirty, even against a foe with no evasion (traced: a "Miss" popup on the failing blow) | a fixed fight, an attacker that cannot miss, real frames |
 | v095m4 | headless Chrome now and then stops handing out animation frames on a Guild Hall screen at 705x455 (the page stays alive; the same on 0.22.53) and the test waited for frames alone, until the runner killed it | a frame or 300 ms; `H.frames`, `H.until` and `H.settle` in pw.js fall back to a timer the same way |
+| v063pb | cause 2: the journey's fight could pay enough for the hero who is behind to level up, and the gain is read off the xp counter | a fixed fight |
+| v095b | the camera punch lasts a few frames; a frame loop on a slow renderer saw the punch flag and never the scaled canvas | the stage's transform is watched as it is written |
+| v191a | cause 2: 80% of the blow was more MP than the hero had left after casting the Mantle | MP to spare |
+| v195a | two whole damage numbers gave a ratio of 1.38 for a factor of 1.4, with a tolerance under .02 | within .04 |
+| v207a | in a lakeside town whose south gate stands one tile west of the avenue (run seed 1037402) the avenue has a one tile step in it; the test wanted one column | the road is followed from the plaza and must reach both ends |
+| v070ic | the timed guard was pressed in time but the foe's blow never came to a damage roll on that hero (another hero covered) | tried again, 3 at most |
 | sanct, v141a | noted on main as failing rarely; not seen in these runs | watch |
 
 `runall.js` also fetches the old build a comparison test needs (v095na, v080ca, v050p2daily) by its full commit id when the clone is
