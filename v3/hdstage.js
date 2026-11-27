@@ -287,6 +287,10 @@ function hbPlace(){const wrap=document.getElementById('bwrap'),bc=document.getEl
   const op=hbQ().mode==='under'?'':'0';if(cv.style.display!=='block')cv.style.display='block';if(bc.style.opacity!==op)bc.style.opacity=op;
   const q=hbQ(),dpr=Math.max(1,window.devicePixelRatio||1),cw=BL.W*BL.sc,ch=BL.H*BL.sc;let r=Math.max(Math.min(q.res||1,dpr),resStageR(q));// v0.17.3: follows the display (res11.js)
   if(cw*ch*r*r>(q.maxPx||1e6))r=Math.sqrt((q.maxPx||1e6)/(cw*ch));
+  /* v0.22.61 (pixel exact views): the backing is the device's pixels divided by a whole number m, so the stage is shown at m device pixels per backing
+     pixel like the unit layer over it (it was stretched 1.15 at 1920x1080, 1.5 on phones, 1.8 on tablets). m is the nearest to what the caps above allow;
+     one more when that would pass the pixel budget by half. */
+  try{const dev=resDev(),mp=q.maxPx||1e6;if(dev>0&&r>0){let m=Math.max(1,Math.round(dev/r));if(cw*ch*(dev/m)*(dev/m)>mp*1.5)m++;r=dev/m;}}catch(e){}
   const bw=Math.max(1,Math.round(cw*r)),bh=Math.max(1,Math.round(ch*r));
   if(cv.width!==bw||cv.height!==bh){cv.width=bw;cv.height=bh;HB.redraw=true;}
   const sw=cw+'px',sh=ch+'px';if(cv.style.width!==sw)cv.style.width=sw;if(cv.style.height!==sh)cv.style.height=sh;

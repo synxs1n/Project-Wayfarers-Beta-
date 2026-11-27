@@ -202,7 +202,7 @@ function t7Wx(x,w,a,t,W,H,trav,R){if(!w||a<.01)return;const dpr=T7.dpr,s=Math.ma
   x.restore();}
 // ----- one frame -----
 function t7Frame(now,force){const cv=document.getElementById('t7cv');if(!cv)return;const st=cv.parentElement;if(!st)return;
-  const still=t7Still(),low=t7Low(),dpr=low?1:Math.min(3,Math.max(1,window.devicePixelRatio||1)),cw=st.clientWidth,ch=st.clientHeight;if(!cw||!ch)return;
+  const still=t7Still(),low=t7Low(),dpr=low?1:Math.min(3,Math.max(1,typeof resDev==='function'?resDev():(window.devicePixelRatio||1))),/* v0.22.61: device pixels = dpr x the page zoom (a 1920x1080 window runs at zoom 4/3 and the scene was stretched by it) */cw=st.clientWidth,ch=st.clientHeight;if(!cw||!ch)return;
   t7Ids();const W=Math.round(cw*dpr),H=Math.round(ch*dpr),key=W+'x'+H+':'+low+':'+(T7.ids||[]).join(',');
   let dirty=!!force;if(key!==T7.key||cv.width!==W||cv.height!==H){cv.width=W;cv.height=H;T7.key=key;T7.W=W;T7.H=H;T7.dpr=dpr;try{const lg=st.querySelector('.t7logo');T7.logoB=lg?(lg.getBoundingClientRect().bottom-st.getBoundingClientRect().top+14)*dpr:0;}catch(e){T7.logoB=0;}
     if(T7.bkWH!==W+'x'+H+low){T7.bk={};T7.bkWH=W+'x'+H+low;}t7Layout(W,H,dpr);t7FgBake(W,H);dirty=true;}

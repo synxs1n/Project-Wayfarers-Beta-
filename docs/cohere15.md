@@ -87,3 +87,17 @@ page zoom).
   px wide, where the old pass could not grow a boss either); `apx` is the nearest whole number (was floor). `ch15Sc` returns 1 for those units.
 Measured: 1280x720 K 3.25, 1366x768 K 3.5, 1920x1080 K 5, 2560x1440 K 3.25 (m 2), phone 390x844 dpr 3 K 3.375 (m 2), tablet 820x1180 dpr 2 K 4.5 (m 2).
 Not changed: the overworld walkers (the rig at .8, sampled by the HD-2D view at the scene's density).
+
+## 0.22.61: pixel exact views (the same audit, the rest of the game)
+An audit of every canvas and picture on the title, town, field, battle and three menu screens at 1280x720, 1366x768, 1920x1080, a phone (dpr 3) and a
+tablet (dpr 2): device pixels per backing pixel, flagged when not whole. Found and changed:
+- HD-2D world view at d = 3 (1280x720, 1366x768): one internal pixel per art pixel, shown three device pixels wide. `res11.js resPx` now takes the largest
+  internal density under the cap that divides d evenly; `hd2d.js hdPxOf` renders a view of up to `RENDER.exactArea` pixels at device resolution on any
+  tier (not on phones). 1280x720: the GL canvas 413 -> 1239 px wide.
+- Battle backdrop (`hdstage.js hbPlace`): the backing is the device's pixels / m, m whole (was the pixel budget's square root: 1.15, 1.5, 1.8).
+- Minimap (`visuals7.js drawMini`, `map.js mmTile`): the canvas holds device pixels and one map pixel is K whole pixels (was 112 px stretched to 196).
+- Title scene (`title7.js t7Frame`): the page zoom counts (resDev), not only the device pixel ratio.
+- Pictures (`res11.js resSnapImgs`, after every render): an <img> is scaled with a CSS transform to an exact factor (.5, 1, 2, 3...; 1.5 or 2.5 as a
+  second choice) when one lies within .8 to 1.15 of its slot; a picture that must shrink by another factor gets smooth resampling. `window.__RSN` (tests).
+Left: the 2D world canvas over the HD-2D view (and the whole Flat view) at d = 3 is the 2x paint shown 1.5 times, which only a 3x paint or another view
+scale would fix; small icons (11 and 16 px) at 1.3 to 1.5 times on desktop; portraits where no exact factor fits the slot (they stay as they were).

@@ -48,6 +48,7 @@ function hdDetach(){HD.live=false;HD.ovClear=null;try{const p=HD.cv&&HD.cv.paren
 // v0.17.3: the tier's px is only the least. The real value follows the display (res11.js resPx: device pixels per art pixel = view scale x
 // page zoom x devicePixelRatio, divided by RENDER.k), is forced by Settings > Render scale, and is kept inside the GPU's limits.
 function hdPxOf(q){const d=(WS.scale||2)*resDev(),cap=Math.max(1,Math.min(q.pxMax||RENDER.max,RENDER.max));let px=Math.max(q.px||1,resPx(d,cap));
+  /* v0.22.61: a small view is rendered at the screen's own pixels whatever the tier's cap (1280x720: 3 device px per art px, 0.7 M pixels) */try{const di=Math.round(d);if(!resCfg()&&Math.abs(d-di)<.03&&di>px&&di<=RENDER.max&&(WS.vw||1)*(WS.vh||1)*di*di<=RENDER.exactArea&&!(RES.cap&&RES.cap<di)&&!(typeof p12Cap==='function'&&p12Cap()))px=di;}catch(e){}
   const lim=Math.min(HD.maxTex||4096,4096),big=Math.max(WS.vw||1,WS.vh||1);px=Math.min(px,Math.max(1,Math.floor(lim/big)));
   const area=Math.max(1,(WS.vw||1)*(WS.vh||1));px=Math.min(px,Math.max(1,Math.floor(Math.sqrt(RENDER.maxArea/area))));return px;}
 function hdSize(q){const px=HD.pxI||1,sc=WS.scale||2,w=Math.max(16,Math.round(WS.vw*px)),h=Math.max(16,Math.round(WS.vh*px)),cw=WS.vw*sc,ch=WS.vh*sc,lm=Math.round(q.lmap*(1+(px-1)*.5)),key=w+'x'+h+':'+q.bloom+':'+lm+':'+q.blur;

@@ -375,8 +375,8 @@ ACT.fmTap=function(arg,el){const cv=el||document.getElementById('fmap'),p=FMT.pt
   const r=awTap(m,t[0],t[1],'map',()=>{V.modal=null;render();});const n=document.getElementById('fmnote');
   if(n&&(r.res==='unseen'||r.res==='noway')){n.textContent=AW[r.res];n.classList.remove('on');void n.offsetWidth;n.classList.add('on');}};
 // the minimap: it takes taps (it used to let them through to the world view)
-function mmTile(cv,cx,cy){const m=WS.m,r=cv.getBoundingClientRect();if(!m||!r.width)return null;const sc=4,px=(cx-r.left)*cv.width/r.width,py=(cy-r.top)*cv.height/r.height,
-  ox=Math.round(cv.width/2-(WS.x+.5)*sc),oy=Math.round(cv.height/2-(WS.y+.5)*sc);return [Math.floor((px-ox)/sc),Math.floor((py-oy)/sc)];}
+function mmTile(cv,cx,cy){const m=WS.m,r=cv.getBoundingClientRect();if(!m||!r.width)return null;const sc=4,lw=cv._lw||cv.width,lh=cv._lh||cv.height,/* v0.22.61: the canvas is in device pixels, the map in logical ones */px=(cx-r.left)*lw/r.width,py=(cy-r.top)*lh/r.height,
+  ox=Math.round(lw/2-(WS.x+.5)*sc),oy=Math.round(lh/2-(WS.y+.5)*sc);return [Math.floor((px-ox)/sc),Math.floor((py-oy)/sc)];}
 document.addEventListener('pointerdown',e=>{const cv=e.target;if(!cv||cv.id!=='mmap'||V.screen!=='world')return;e.preventDefault();e.stopPropagation();
 },{capture:true,passive:false});
 // v0.11.5: open on the click, not the press: opened on the press, the click that followed landed on the new map's backdrop and closed it

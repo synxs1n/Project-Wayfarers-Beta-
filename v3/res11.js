@@ -13,8 +13,13 @@ function resZoom(){try{return typeof dsZoom==='function'?dsZoom():1;}catch(e){re
 function resDev(){return resDpr()*resZoom();}
 // 0 = Auto, else 1, 2 or 3
 function resCfg(){try{const v=META&&META.cfg&&META.cfg.render;return v==='1'||v==='2'||v==='3'?+v:0;}catch(e){return 0;}}
+// v0.22.61 (pixel exact views): Auto first looks for the largest internal density under the cap that divides d evenly, so an internal pixel is a whole
+// number of device pixels (d 3 -> 3 where the tier allows 3, d 2 -> 2: both rendered at one internal pixel per art pixel before, three or two device
+// pixels wide, with the HD paint's detail thrown away). When only 1 divides d (d 5, d 4.5) the old rule stands.
 function resPx(d,cap){const c=resCfg();if(c)return Math.min(c,RENDER.max);
-  return Math.max(1,Math.min(Math.max(1,Math.min(RENDER.max,cap||RENDER.max,RES.cap||RENDER.max)),Math.floor(d/RENDER.k+RENDER.bias)));}
+  const top=Math.max(1,Math.min(RENDER.max,cap||RENDER.max,RES.cap||RENDER.max)),old=Math.max(1,Math.min(top,Math.floor(d/RENDER.k+RENDER.bias)));
+  for(let p=Math.floor(top);p>1;p--){const r=d/p;if(r>=1-1e-6&&Math.abs(r-Math.round(r))<.03)return Math.max(p,old);}
+  return old;}
 resPx=HOOK.def('resPx',resPx);// perf12.js caps it on phones
 // Auto steps down by itself on a machine that cannot keep up: gfx6.js Auto graphics measures the frame rate over 3 s windows and, below
 // GFX_AUTO.down, would drop the whole tier. While the HD-2D view (or the GL stage) renders above 1x, the first step is one internal pixel
@@ -80,3 +85,26 @@ try{if(typeof WZ10!=='undefined'){const base=WZ10.px;Object.defineProperty(WZ10,
 // ----- Settings > Render scale -----
 HOOK.xform('settingsBody','res11','Render scale row after Graphics',function(h){try{const row=rsRow();const m=/<div class="rows gfxrows">[\s\S]*?<\/div><\/div><\/div>/.exec(h);
   if(m)return h.slice(0,m.index+m[0].length)+row+h.slice(m.index+m[0].length);return h+row;}catch(e){return h;}});
+
+// ===== v0.22.61 pictures (portraits, Codex art, icons): one image pixel a whole number of device pixels =====
+// A picture is painted once (a data URL of a sprite canvas) and the page resizes it to its slot: an 80 px portrait shown at 45 CSS px dropped rows
+// and columns (image-rendering: pixelated), a 48 px one at 40 the same, and on high density screens the factor was 1.7 or 2.5. After every render the
+// pictures on screen are measured (device pixels per image pixel, object-fit: contain respected) and
+//   - snapped: where a whole factor (or one half: the HD paint is two pixels per art pixel) is within RSN.lo to RSN.hi of the slot, the picture is
+//     drawn at exactly that factor with a CSS scale (the layout box does not move);
+//   - smoothed: a picture that has to shrink by another factor is resampled smoothly instead of losing rows.
+// Anything else (an upscale between whole factors) is left as it was. Pictures that already carry a transform (a mirrored sprite) are not touched.
+const RSN={on:true,lo:.8,hi:1.15,steps:[.5,1,2,3,4,5,6,8],half:[1.5,2.5],n:{snap:0,smooth:0,seen:0},q:0};
+function resSnapOne(i,dpr){try{const nw=i.naturalWidth,nh=i.naturalHeight;if(!nw||!nh)return;const own=i._rsn||1,b=i.getBoundingClientRect();if(b.width<6||b.height<6)return;
+  const key=nw+'x'+nh+':'+Math.round(b.width/own*8)+':'+Math.round(b.height/own*8)+':'+dpr;if(i._rsnK===key)return;
+  if(!i._rsn&&!i._rsnS){const cs=getComputedStyle(i);if(cs.transform&&cs.transform!=='none'){i._rsnK=key;return;}i._rsnFit=cs.objectFit;}
+  const w=b.width/own*dpr,h=b.height/own*dpr,r=i._rsnFit==='contain'||i._rsnFit==='scale-down'?Math.min(w/nw,h/nh):w/nw;RSN.n.seen++;
+  let best=0,bd=9;RSN.steps.forEach(s=>{const f=s/r;if(f>=RSN.lo&&f<=RSN.hi&&Math.abs(f-1)<bd){bd=Math.abs(f-1);best=f;}});
+  if(!best)RSN.half.forEach(s=>{const f=s/r;if(f>=RSN.lo&&f<=RSN.hi&&Math.abs(f-1)<bd){bd=Math.abs(f-1);best=f;}});/* second choice: 1.5 or 2.5 (three or five device pixels per art pixel of a 2x HD picture) */
+  if(best&&Math.abs(best-1)>.012){i.style.transform='scale('+best.toFixed(4)+')';i._rsn=best;if(i._rsnS){i.style.imageRendering='';i._rsnS=0;}RSN.n.snap++;}
+  else{if(i._rsn){i.style.transform='';i._rsn=0;}
+    const whole=Math.abs(r-Math.round(r))<.03||Math.abs(r-.5)<.02;if(r<1&&!whole){if(!i._rsnS){i.style.imageRendering='auto';i._rsnS=1;RSN.n.smooth++;}}else if(i._rsnS){i.style.imageRendering='';i._rsnS=0;}}
+  i._rsnK=key;}catch(e){}}
+function resSnapImgs(){RSN.q=0;if(!RSN.on)return;try{const dpr=resDpr();document.querySelectorAll('img').forEach(i=>{if(i.complete)resSnapOne(i,dpr);else if(!i._rsnL){i._rsnL=1;i.addEventListener('load',resSnapSoon,{once:true});}});}catch(e){}}
+function resSnapSoon(){if(RSN.q)return;RSN.q=1;try{requestAnimationFrame(resSnapImgs);}catch(e){setTimeout(resSnapImgs,30);}}
+try{HOOK.after('render','res11','pictures at whole device pixels',function(){resSnapSoon();});window.addEventListener('resize',resSnapSoon);window.__RSN=RSN;}catch(e){}
