@@ -68,9 +68,20 @@ const UNTIL=async id=>{const A=__A,B=A.B;A.setPause(60);
    P.legendAny=Object.keys(LQ).filter(id=>dual(id)&&s<2&&(()=>{try{return LQ[id].ok(s);}catch(e){return false;}})());
    o.st[s]={};Object.keys(P).forEach(k=>{const L=P[k];o.st[s][k]=typeof L==='string'?L:{n:L.length,dual:L.filter(dual).length};});}
   G.stage=stage0;
-  // foes: realm 1 all single, realm 2 some dual
-  for(const s of [0,1]){G.stage=s;let n=0,d=0,sp=0;for(let k=0;k<160;k++){for(const kind of ['field','dungeon']){let F;try{F=g('encounterFoes')({stage:s,kind});}catch(e){o.foes['err'+s]=e.message;F=[];}
-     F.forEach(e=>{if(!e||e.boss||e.elite||e.art==='mimic')return;n++;if(e.el.length>1)d++;});}}o.foes[s]={n,dual:d};}
+  // foes: realm 1 all single, realm 2 some dual. The journey's own realm order is a draw (ACT.new), and a realm whose natives are all dual
+  // type is legitimate (the mire, the deeps, the mesa, the shattered sky: their one single type native is last in the pool, the slot the
+  // realm's Scourge fills with its own monster), so every realm is put in turn where the journey's first and its second realm stand
+  {const REALMS=g('REALMS'),sync=g('syncPools'),order0=G.run.order.slice(),per={};
+   const sample=s=>{G.stage=s;let n=0,d=0;for(let k=0;k<40;k++){for(const kind of ['field','dungeon']){let F;try{F=g('encounterFoes')({stage:s,kind});}catch(e){o.foes['err'+s]=e.message;F=[];}
+      F.forEach(e=>{if(!e||e.boss||e.elite||e.art==='mimic')return;n++;if(e.el.length>1)d++;});}}return {n,dual:d};};
+   const T=[{n:0,dual:0},{n:0,dual:0}];
+   try{REALMS.forEach(R=>{per[R.key]=[];for(const s of [0,1]){const ord=order0.filter(x=>x!==R.idx);ord.splice(s,0,R.idx);G.run.order=ord.slice(0,order0.length);sync();
+      const q=sample(s);per[R.key][s]=q;T[s].n+=q.n;T[s].dual+=q.dual;}});}
+   finally{G.run.order=order0;sync();}
+   o.foes[0]=T[0];o.foes[1]=T[1];o.foes.realms=REALMS.length;
+   o.foes.bad0=Object.keys(per).filter(k=>!(per[k][0].n>20)||per[k][0].dual>0).map(k=>k+' '+per[k][0].dual+'/'+per[k][0].n);
+   o.foes.thin1=Object.keys(per).filter(k=>!(per[k][1].n>20));
+   o.foes.with1=Object.keys(per).filter(k=>per[k][1].dual>0).length;o.foes.all1=Object.keys(per).filter(k=>per[k][1].n&&per[k][1].dual===per[k][1].n);}
   G.stage=stage0;
   const GU=g('GUARDIANS');o.dualBoss=Object.keys(GU).filter(k=>GU[k].el.length>1).map(k=>GU[k].n);o.nBoss=Object.keys(GU).length;
   o.from=[g('DUAL_FROM'),g('DUAL_HERO_FROM')];return o;});
@@ -82,7 +93,8 @@ const UNTIL=async id=>{const A=__A,B=A.B;A.setPause(60);
  chk(`realm 1: no dual type wayfarer in the tavern, the board, rare visitors, chance meetings, caves and keeps or among the legends (${sizeAt(0)} offers)`,dualAt(0)===0&&sizeAt(0)>0||JSON.stringify(r.st[0]));
  chk(`realm 2: still none (${sizeAt(1)} offers)`,dualAt(1)===0&&sizeAt(1)>0||JSON.stringify(r.st[1]));
  chk(`realm 3 on: dual type wayfarers are offered (${dualAt(2)} at realm 3, ${dualAt(3)} at realm 4)`,dualAt(2)>0&&dualAt(3)>0||JSON.stringify(r.st[2]));
- chk(`foes: realm 1 all single type (${r.foes[0].dual} dual of ${r.foes[0].n}), realm 2 some dual type (${r.foes[1].dual} of ${r.foes[1].n})`,r.foes[0].n>100&&r.foes[0].dual===0&&r.foes[1].dual>0&&r.foes[1].dual<r.foes[1].n||JSON.stringify(r.foes));
+ chk(`foes, each of the ${r.foes.realms} realms as realm 1 and as realm 2: realm 1 all single type in every realm (${r.foes[0].dual} dual of ${r.foes[0].n}), realm 2 some dual type (${r.foes[1].dual} of ${r.foes[1].n}, in ${r.foes.with1} realms; all dual in: ${r.foes.all1.join(', ')||'none'})`,
+  r.foes.realms>=10&&r.foes[0].n>100&&r.foes[0].dual===0&&r.foes.bad0.length===0&&r.foes.thin1.length===0&&!r.foes.err0&&!r.foes.err1&&r.foes[1].dual>0&&r.foes[1].dual<r.foes[1].n&&r.foes.with1*2>r.foes.realms||JSON.stringify(r.foes));
  console.log(`(bosses keep their elements: ${r.dualBoss.length} of ${r.nBoss} Scourges are dual type and any of them can stand in realm 1: ${r.dualBoss.join(', ')})`);
  await H.browser.close();}
 
