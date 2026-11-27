@@ -2028,6 +2028,33 @@ body:has(.battle.b3.b27) #hdr{display:none}
 /* 0.22.52: the older cards lay their tags over the card's foot (battle3.css .pcw.hastags .ptags, absolute, in a strip the card kept free);
    these cards have no such strip, so the weakness and status tags sat on the HP bar. Here they follow the card. */
 .battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .pcw.hastags .ptags,.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .fcw.hastags .ptags{position:static;left:auto;right:auto;bottom:auto;flex-wrap:wrap;overflow:visible;max-height:none;row-gap:2px;z-index:auto;pointer-events:auto}
+
+/* ===== section D (panel62.js, 0.22.62): the card column scrolls instead of squeezing; foes first; folded groups ===== */
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .bparty>*,.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .b3pty>*{flex:none}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .pgroup.foes{order:0}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .b3pty{order:1}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .bparty.p62more{-webkit-mask-image:linear-gradient(#000 calc(100% - 30px),transparent);mask-image:linear-gradient(#000 calc(100% - 30px),transparent)}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .pgroup>h3[data-act]{cursor:pointer;z-index:2;padding:2px 7px;user-select:none;-webkit-user-select:none}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .pgroup>h3[data-act]::after{content:"";position:absolute;inset:-9px -10px}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .pgroup>h3 .p62a{display:inline-block;width:0;height:0;margin-left:5px;vertical-align:middle;border:4px solid transparent;border-top-color:currentColor;border-bottom-width:0}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .pgroup.p62c>h3 .p62a{border:4px solid transparent;border-left-color:currentColor;border-right-width:0}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .fc{padding:5px 5px}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .fc .fci{width:34px;height:34px}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .fc{grid-template-columns:36px minmax(0,1fr)}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .fc .uct{flex-wrap:wrap;row-gap:1px}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .fc .uct b{white-space:normal;overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow-wrap:anywhere;flex:1 1 60%}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .ptags{max-width:100%;box-sizing:border-box}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .ptags .fwk{display:flex;flex-wrap:wrap;max-width:100%;box-sizing:border-box;row-gap:2px}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .pgroup.p62c .pcs,.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .pgroup.p62c .fcs{gap:2px}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .pgroup.p62c .pc,.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .pgroup.p62c .fc{grid-template-columns:20px minmax(0,1fr);padding:2px 5px;gap:0 5px}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .pgroup.p62c .pc .port,.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .pgroup.p62c .fc .fci{width:20px;height:20px}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .pgroup.p62c .pm{gap:1px}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .pgroup.p62c .uct{font-size:.72rem;flex-wrap:nowrap}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .pgroup.p62c .fc .uct b{display:block;white-space:nowrap;text-overflow:ellipsis}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .pgroup.p62c .ucr~.ucr,.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .pgroup.p62c .spips,.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .pgroup.p62c .ptags,.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .pgroup.p62c .ucr>i,.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .pgroup.p62c .ucr em.nums{display:none}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .pgroup.p62c .ucr,.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .pgroup.p62c .ucr .bar{height:4px}
+/* the foe button was 100%% of its wrapper (battle3.css .fcs>.fcw>.fc), which pushed the tag row out of the wrapper and under the next card */
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .fcs>.fcw>.fc{height:auto}
 /* Beta v0.7.0 battle information and input (battle5.js) */
 /* stage intent label: a box laid out by b3Lay (logical stage px) */
 .bstage .b5it{display:grid;place-items:center;padding:0;border-radius:2px;border:.6px solid #150b17;background:rgba(21,11,23,.86);color:#ffd8c8;pointer-events:none;z-index:6;box-shadow:0 0 0 .5px rgba(255,255,255,.25);overflow:hidden}
@@ -2277,7 +2304,7 @@ html:not(.flat) .battle.b3 .bline .b4mo .b4bar{box-shadow:inset 0 0 0 1px #000,0
 <div id="modal"></div>
 <div id="toast" role="status"></div>
 <script>
-(function(){const APP_VER="0.22.61";const APP_BUILD="7dbb8426c78a";
+(function(){const APP_VER="0.22.62";const APP_BUILD="3ac1944dab6d";
 
 // =================== LIVE UPDATES FOR THE ANDROID APP (v0.4.6, build IDs in v0.5.1) ===================
 // Runs before the game, in its own script. Only inside the native app (the website and the Windows app already load the live site).
@@ -3094,7 +3121,7 @@ const HOOK=(function(){
 // Set to null to run without accounts. See ACCOUNTS.md.
 const FB_CFG={apiKey:"AIzaSyA41aU64SiHLm8hFGxJSERgnNR0yN-9ESM",authDomain:"wayfarers-437c2.firebaseapp.com",projectId:"wayfarers-437c2",storageBucket:"wayfarers-437c2.firebasestorage.app",messagingSenderId:"481988138726",appId:"1:481988138726:web:c153378e471ccbd43d8d27"};
 
-const APP_VER="0.22.61";const APP_BUILD="7dbb8426c78a";
+const APP_VER="0.22.62";const APP_BUILD="3ac1944dab6d";
 
 // ===== data.js (base): GAME_VERSION, elements, the type chart, reactions, statuses, attributes and class growth =====
 // =================== VERSION ===================
@@ -3102,6 +3129,7 @@ const APP_VER="0.22.61";const APP_BUILD="7dbb8426c78a";
 // Save keys (aurelis-wayfarers-v3, its slots, aurelis-meta-v1) and db schemas are separate and never follow this.
 const GAME_VERSION=typeof APP_VER!=='undefined'?'Beta v'+APP_VER:'Beta v0.4.5';
 const CHANGELOG=[
+ ['Beta v0.22.62',['Battle on tablets and computers: the party and foe cards beside the stage no longer squeeze to fit. With six wayfarers and a few foes every card was squashed and the last foe\'s weaknesses fell out of its card. The cards keep their size now and the column scrolls, with a fade at the foot when there is more below.','Foes are at the top of the column, then the Vanguard, then the Rearguard. A foe\'s weaknesses sit inside its card and a long name takes two lines.','Tap a group\'s heading (Foes, Vanguard, Rearguard) to fold it to slim rows and back. The Rearguard starts folded; the game remembers your choice.','Settings > Battle panel: Side bar (the cards beside the stage) or Popup (the stage takes the full width and the Party & foes button opens the cards, as on a phone).']],
  ['Beta v0.22.61',['The same fix as the battle sprites, for the rest of the game: pictures are drawn at a whole number of screen pixels instead of being stretched by the page.','World view: on windows around 1280x720 and 1366x768 the towns, fields and realms were drawn at a third of the screen\'s detail and stretched three times. They are drawn at the screen\'s own pixels now, so the wayfarer walking and signs are sharp.','Battle backdrop: the stage behind the units matches the screen exactly (it was stretched 1.15 times at 1920x1080, 1.5 on phones, 1.8 on tablets).','Portraits in the battle cards and menus, and Codex pictures: drawn at an exact factor where one fits the slot, and resampled smoothly where a picture has to shrink (they used to lose rows and columns of pixels).','The minimap and the title scene are drawn at the screen\'s own pixels too.']],
  ['Beta v0.22.60',['Battle sprites show the detail they were painted with. Wayfarers were redrawn at 90% size, then enlarged 1.25 times, then stretched again to fit the window, and none of those steps was a whole number: faces turned to blocks, eyes and trim dropped out, and pixels came out in uneven sizes. Bosses went through the same stretches.','Now the battle layer is drawn at the screen\'s own pixels, and every wayfarer, foe and boss is drawn at a whole number of screen pixels per sprite pixel, in one step. Wayfarers use their full size art again.','Proportions and placement are unchanged. Sizes move by a few percent from screen to screen so that pixels land whole (a wayfarer can be up to about a tenth larger or smaller than before).']],
  ['Beta v0.22.59',['Class balance after the skill pass, measured at twice the size with items: every class is within about 3 points of the others in a boss fight.','Monk: Dragon Fist is back at 3.1 and he gains more attack with level. Thief: the Dagger gives +10% against a foe with an ailment (was +15%). Knight: a little less attack growth; Taunt is unchanged. Warrior: a little more attack growth.','Bard: Aria 1.7 to 1.9 and a little more magic growth. Archer: element arrows 1.45 to 1.5 and a little more attack growth.','Bosses: the steps between realms are evener (about 66, 62, 58, 54 and 50% for a careful party that uses its items), and the three fights that were still easy wins were raised (Maelstrom Drake in the first realm, Iron Sentinel in the second, Queen Mantis in the third).']],
@@ -39026,7 +39054,7 @@ const S48={w:200,minW:600,minH:600,topW:900,rise:120,lineMin:260,/* 0.22.50: min
 function s48W(){try{return window.innerWidth/(typeof dsZoom==='function'?dsZoom():1);}catch(e){return 0;}}
 // 0.22.51: sideways only again (the owner: "for tablets held in long mode rather than wide mode, the screen looked better however it was
 // done before, wide mode is fine"). An upright tablet or fold has the phone layout: the full width stage and the Party & foes sheet.
-function s48Fits(){try{if(S48.off||typeof b27Land!=='function'||!b27Land())return false;return s48W()>=S48.minW&&b3Vh()>=S48.minH;}catch(e){return false;}}
+function s48Fits(){try{if(S48.off||typeof b27Land!=='function'||!b27Land())return false;const m=typeof p62Mode==='function'?p62Mode():'auto';/* 0.22.62 Settings > Battle panel */if(m==='popup')return false;return s48W()>=S48.minW&&b3Vh()>=S48.minH;}catch(e){return false;}}
 function b27Sc(bat){
   // big screens: the column is not stage
   try{if(bat&&bat.classList.contains('b48')){const w=(bat.clientWidth||window.innerWidth)-S48.w-8+12,vh=b3Vh();if(b27Land())return clamp(Math.floor(Math.min(w/320,(vh-B27.landCmd)/150)*4)/4,2,6);return clamp(Math.floor(w/B27.portW*4)/4,B27.sc,6);}}catch(e){}
@@ -39672,6 +39700,41 @@ HOOK.after('renderBattle','side48','big screens: place the card column and the t
 }catch(e){S48.err=String(e&&e.message||e);}});
 // the styles: battle3.css, section C
 try{window.__S48={S48,fits:s48Fits};}catch(e){}
+
+// ===== panel62.js (v0.22.62): the battle card column: foes first, groups that fold, a column that scrolls, and a choice of column or sheet =====
+// Asked (a tablet screenshot): "Weaknesses not fitting enemy cards, also they looked squished, maybe add ability to scroll, as well as collapse
+// groups, let's also bring in the option to have it be like the small screen with a popup or the bar on the right."
+// What was wrong: the column (side48.js) is a flex column that scrolls, but its groups were allowed to shrink, so with six heroes and two foes
+// every group was squeezed to fit and the last card's weakness row fell out of its frame. Now (styles: battle3.css, section D):
+//  1 groups keep their own height and the column scrolls; a fade at the foot says there is more below
+//  2 Foes lead the column (read every turn), then the Vanguard, then the Rearguard
+//  3 a tap on a group's heading folds it to slim rows (portrait, name, a thin HP line) and back. The Rearguard starts folded. Kept in
+//    META.cfg.bfold ({foes,heroes,rsv}: 1 folded, 0 open)
+//  4 Settings > Battle panel: Side bar (the column wherever it fits: sideways screens from S48.minW x S48.minH, as before) or Popup (never
+//    the column: the full width stage and the Party & foes sheet, as on a phone). META.cfg.bpanel ('popup' or unset); read by s48Fits.
+//    A column forced onto smaller sideways screens was tried and dropped: under 560 px high they have the older wide layout, which has none.
+//  5 a foe's name takes two lines before it is cut, and its weakness and resistance chips wrap inside the card
+const P62={def:{foes:0,heroes:0,rsv:1},keys:['foes','heroes','rsv']};
+function p62Mode(){try{const m=META.cfg.bpanel;return m==='popup'?'popup':'auto';}catch(e){return 'auto';}}
+function p62Fold(k){try{const f=META.cfg.bfold;if(f&&(f[k]===0||f[k]===1))return f[k]===1;}catch(e){}return !!P62.def[k];}
+ACT.p62tog=function(k){try{if(P62.keys.indexOf(k)<0)return;const f=Object.assign({},META.cfg.bfold||{});f[k]=p62Fold(k)?0:1;META.cfg.bfold=f;saveMeta();if(B)renderBattle();}catch(e){P62.err=String(e&&e.message||e);}};
+function p62More(){try{const bp=document.getElementById('bparty'),bat=document.querySelector('.battle.b3');if(!bp||!bat)return;const on=bat.classList.contains('b48')&&!bat.classList.contains('b27open');
+  bp.classList.toggle('p62more',on&&bp.scrollHeight-bp.scrollTop-bp.clientHeight>2);if(!bp._p62){bp._p62=1;bp.addEventListener('scroll',p62More,{passive:true});}}catch(e){}}
+HOOK.after('renderBattle','panel62','card column: folded groups and the more-below fade',function(r,stageOnly){try{if(stageOnly||!B)return;
+  const bat=document.querySelector('.battle.b3'),bp=document.getElementById('bparty');if(!bat||!bp)return;const on=bat.classList.contains('b48')&&!bat.classList.contains('b27open');
+  bp.querySelectorAll('.pgroup').forEach(g=>{const k=g.classList.contains('foes')?'foes':g.classList.contains('rsv')?'rsv':'heroes',h=g.querySelector('h3'),fold=on&&p62Fold(k);
+    g.classList.toggle('p62c',fold);if(!h)return;
+    if(on){h.dataset.act='p62tog';h.dataset.arg=k;h.setAttribute('role','button');h.setAttribute('aria-expanded',fold?'false':'true');h.title=fold?'Show the full cards':'Fold to slim rows';if(!h.querySelector('.p62a'))h.insertAdjacentHTML('beforeend','<i class="p62a"></i>');}
+    else{delete h.dataset.act;delete h.dataset.arg;h.removeAttribute('role');h.removeAttribute('aria-expanded');h.removeAttribute('title');}});
+  p62More();}catch(e){P62.err=String(e&&e.message||e);}});
+try{window.addEventListener('resize',p62More);}catch(e){}
+// Settings > Battle panel
+function p62Row(){try{const cur=p62Mode(),lab=[['auto','Side bar'],['popup','Popup']];
+  const chips=lab.map(([k,t])=>`<button class="chip ${cur===k?'on':''}" data-act="cfg" data-arg='["bpanel","${k}"]'>${t}</button>`).join('');
+  return `<div class="rows p62rows"><div class="row"><div><b>Battle panel</b><small>Where the party and foe cards sit in battle. Side bar keeps them beside the stage on a tablet or computer held sideways (a phone always uses the popup). Popup gives the stage the full width and opens the cards from the Party &amp; foes button.</small></div><div class="chips">${chips}</div></div></div>`;}catch(e){return '';}}
+HOOK.xform('settingsBody','panel62','Battle panel row after Render scale',function(h){try{const row=p62Row();const m=/<div class="rows rsrows">[\s\S]*?<\/div><\/div><\/div>/.exec(h);
+  if(m)return h.slice(0,m.index+m[0].length)+row+h.slice(m.index+m[0].length);return h+row;}catch(e){return h;}});
+try{window.__P62={P62,mode:p62Mode,fold:p62Fold};}catch(e){}
 
 // ===== act49.js (v0.22.49): the action menu's numbers and tags =====
 // Asked (one message):

@@ -707,3 +707,30 @@ body:has(.battle.b3.b27) #hdr{display:none}
 /* 0.22.52: the older cards lay their tags over the card's foot (battle3.css .pcw.hastags .ptags, absolute, in a strip the card kept free);
    these cards have no such strip, so the weakness and status tags sat on the HP bar. Here they follow the card. */
 .battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .pcw.hastags .ptags,.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .fcw.hastags .ptags{position:static;left:auto;right:auto;bottom:auto;flex-wrap:wrap;overflow:visible;max-height:none;row-gap:2px;z-index:auto;pointer-events:auto}
+
+/* ===== section D (panel62.js, 0.22.62): the card column scrolls instead of squeezing; foes first; folded groups ===== */
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .bparty>*,.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .b3pty>*{flex:none}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .pgroup.foes{order:0}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .b3pty{order:1}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .bparty.p62more{-webkit-mask-image:linear-gradient(#000 calc(100% - 30px),transparent);mask-image:linear-gradient(#000 calc(100% - 30px),transparent)}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .pgroup>h3[data-act]{cursor:pointer;z-index:2;padding:2px 7px;user-select:none;-webkit-user-select:none}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .pgroup>h3[data-act]::after{content:"";position:absolute;inset:-9px -10px}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .pgroup>h3 .p62a{display:inline-block;width:0;height:0;margin-left:5px;vertical-align:middle;border:4px solid transparent;border-top-color:currentColor;border-bottom-width:0}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .pgroup.p62c>h3 .p62a{border:4px solid transparent;border-left-color:currentColor;border-right-width:0}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .fc{padding:5px 5px}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .fc .fci{width:34px;height:34px}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .fc{grid-template-columns:36px minmax(0,1fr)}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .fc .uct{flex-wrap:wrap;row-gap:1px}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .fc .uct b{white-space:normal;overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow-wrap:anywhere;flex:1 1 60%}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .ptags{max-width:100%;box-sizing:border-box}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .ptags .fwk{display:flex;flex-wrap:wrap;max-width:100%;box-sizing:border-box;row-gap:2px}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .pgroup.p62c .pcs,.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .pgroup.p62c .fcs{gap:2px}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .pgroup.p62c .pc,.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .pgroup.p62c .fc{grid-template-columns:20px minmax(0,1fr);padding:2px 5px;gap:0 5px}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .pgroup.p62c .pc .port,.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .pgroup.p62c .fc .fci{width:20px;height:20px}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .pgroup.p62c .pm{gap:1px}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .pgroup.p62c .uct{font-size:.72rem;flex-wrap:nowrap}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .pgroup.p62c .fc .uct b{display:block;white-space:nowrap;text-overflow:ellipsis}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .pgroup.p62c .ucr~.ucr,.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .pgroup.p62c .spips,.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .pgroup.p62c .ptags,.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .pgroup.p62c .ucr>i,.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .pgroup.p62c .ucr em.nums{display:none}
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .pgroup.p62c .ucr,.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .pgroup.p62c .ucr .bar{height:4px}
+/* the foe button was 100%% of its wrapper (battle3.css .fcs>.fcw>.fc), which pushed the tag row out of the wrapper and under the next card */
+.battle.b3.m-tall.b27.b48:not(.b27open) .bbottom .fcs>.fcw>.fc{height:auto}
