@@ -149,7 +149,7 @@ const BOSS_PIPS={mult:1.5};const BREAK_WIN={bonus:1.3,short:true};
 // tempered gear or a party built against it. Without items the same fights run about 5 to 25 points lower. Was hp [1.2,1.55,1.6,2.05,1.78], pow [.88,1.14,1.38,1.87,1.22].
 // v0.22.54: less burst and longer fights, and a steady ramp: the win rate of a careful party at the expected level steps down a little each realm (about
 // 66, 63, 60, 57, 53%) and the hero turns in a won fight step up a little (about 28, 31, 35, 39, 43). pow was [.955,1.28,1.32,1.535,1.23], hp [.8,1.34,1.39,1.53,1.22].
-const BOSS_BUFF={hp:[1.28,1.6,1.65,2.0,1.8],pow:[.925,1.12,1.57,2.9,1.95]}// v0.19: eased about 7% hp and 3% pow with the role power change (was hp [.9,1.5,1.55,1.7,1.36], pow [1,1.34,1.38,1.6,1.28]) to pay for the 12 skill kit, role power and no dual ultimates, so the journey sim stays at level 41.3 and 14.6 boss tries (before the skill changes: 40.5 and 11.1; without the ease: 42.6 and 19.6); v0.4.3: re-tuned with capes; v0.8.2: the first three Scourges eased (were hp 1.3, 1.75, 1.8 and pow 1.15, 1.4, 1.44) so no boss is a wall; v0.9.5: hp [1.15,1.65,1.7,2.0,1.52] -> about 4 to 10% less, the realm gimmicks (BOSS_GIM) carry the rest
+const BOSS_BUFF={hp:[1.28,1.6,1.65,2.0,1.8],pow:[.905,1.13,1.6,2.84,2.0]}// v0.19: eased about 7% hp and 3% pow with the role power change (was hp [.9,1.5,1.55,1.7,1.36], pow [1,1.34,1.38,1.6,1.28]) to pay for the 12 skill kit, role power and no dual ultimates, so the journey sim stays at level 41.3 and 14.6 boss tries (before the skill changes: 40.5 and 11.1; without the ease: 42.6 and 19.6); v0.4.3: re-tuned with capes; v0.8.2: the first three Scourges eased (were hp 1.3, 1.75, 1.8 and pow 1.15, 1.4, 1.44) so no boss is a wall; v0.9.5: hp [1.15,1.65,1.7,2.0,1.52] -> about 4 to 10% less, the realm gimmicks (BOSS_GIM) carry the rest
 // BOSS_GIM (v0.9.5, battle4.js): every Scourge and Calamity brings one realm gimmick to its first fight (kind 'boss'; not Echoes, not the Daily
 // Trial). Each is telegraphed on the boss's turn (a log line, a "Telegraph" chip on the boss, a mark on the heroes it will hit) and lands on its
 // next turn, so reading it pays. first: the boss's turn of the first telegraph; every: turns between telegraphs (per boss: every).
@@ -189,7 +189,7 @@ const BOSS_GIM={on:true,daily:false,first:2,every:4,stageK:[.5,.85,1,1,1],answer
 // can be easy in one realm and hard in another (the Ashen Wyvern won 85% in the first realm and 43% in the fourth), which no single stat fixes. Each
 // entry comes from tools/fullsim.js gim with ITEMS=1 (two seeds, 120 fights a cell): 1 + (win rate - the realm's target) / 110, kept within .85 to 1.18,
 // only where the cell was 5 points or more off. Targets: 66, 62, 58, 54, 50.
-const BOSS_FIT={thornwarden:[1,1.12,1.17,1],drake:[1,1,1,0.95],hoarwyrm:[0.95,1,1,1],bonecolossus:[1,1.16,1.1,1.27],queenmantis:[1,1.1,1,1],gloomcap:[1,1.05,1.05,1.11],ironsentinel:[0.93,0.86,0.95,1],ashwyvern:[1.17,1,1,0.9],frostlich:[1,1,0.94,0.94],candlemoth:[1.06,0.91,0.92,0.92],brinehag:[1,1.08,1,1.09],crowregent:[1.07,1,1,0.85],geysermatron:[0.9,0.95,1.09,1],dimmer:1.13,hollowking:1.08};
+const BOSS_FIT={thornwarden:[1,1.12,1.17,1],drake:[1.06,1,1,0.95],hoarwyrm:[0.95,1,1,1],bonecolossus:[1,1.16,1.1,1.27],queenmantis:[1,1.1,1.12,1],gloomcap:[1,1.05,1.05,1.11],ironsentinel:[0.93,0.95,0.95,1],ashwyvern:[1.17,1,1,0.9],frostlich:[1,1,0.94,0.94],candlemoth:[1.06,0.91,0.92,0.92],brinehag:[1,1.08,1,1.09],crowregent:[1.07,1,1,0.85],geysermatron:[0.9,0.95,1.09,1],dimmer:1.13,hollowking:1.08};
 const BOSS_SIZE={hp:.07,pow:.06,expect:[3,4,5,6,6],short:{hp:.08,pow:.05}};// per stage 1 to 5
 // STUN_CAP (v0.22.54): a hero who has just lost a turn to a stun (or a freeze) cannot be stunned again until after their next turn.
 const STUN_CAP={on:true};
@@ -338,7 +338,7 @@ const ROLES={
     healer:[{id:'r_bless',n:'Blessing',k:'status',t:'ally',mp:6,lv:10,fx:[['might',1],['regen',1]],d:'A blessing on one ally: Might and Regen.',r:'buffer'},
       {id:'r_aegis',n:'Holy Aegis',k:'status',t:'allyAll',mp:14,lv:17,fx:[['bulwark',1]],d:'A dome of light: Bulwark for the vanguard.',r:'buffer'}],
     bard:[{id:'r_anthem',n:'Anthem of Valor',k:'status',t:'allyAll',mp:16,lv:14,fx:[['might',1],['haste',1]],d:'The battle anthem: Might and Haste for the vanguard.',r:'buffer'},
-      {id:'r_aria',n:'{n1} Aria',k:'mag',pw:1.7,mp:5,lv:5,el:'e1',d:'A piercing {n1} note aimed at one foe.',r:'magic'},
+      {id:'r_aria',n:'{n1} Aria',k:'mag',pw:1.9,mp:5,lv:5,el:'e1',d:'A piercing {n1} note aimed at one foe.',r:'magic'},
       {id:'r_ballad',n:'Healing Ballad',k:'heal',pw:1.75,mp:6,t:'ally',lv:8,d:'A slow ballad that mends one ally.',r:'healer'},
       {id:'r_chorus',n:'Restoring Chorus',k:'heal',pw:1.2,mp:12,t:'allyAll',lv:18,fx:[['regen',1]],d:'The whole line sings along: heals the vanguard and grants Regen.',r:'healer'},
       {id:'r_storm',n:'{n1} Storm Song',k:'mag',pw:2.8,mp:14,cost:1.2,lv:26,el:'e1',d:'The song rises into a {n1} storm on one foe. Slow recovery.',r:'magic'}],
