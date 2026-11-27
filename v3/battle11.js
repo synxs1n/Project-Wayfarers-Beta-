@@ -13,7 +13,7 @@
 // target on release. While a foe is a valid target the single tap now fires on release (it fired on pointer down in ui.js, which a hold could not
 // cancel); moving more than 10 px or a cancelled pointer (scroll) does nothing. A timed hit ring owns every press (battle5.js capture listener,
 // registered earlier, stops the event before this one).
-const FS11={big:1.5,small:1.25,mini:2.5,top:4,on:0,hold:450,dbl:350,slop:10,cache:new WeakMap(),spec:{}};
+const FS11={big:1.5,small:1.25,mini:2.5,top:4,hov:14,on:0,hold:450,dbl:350,slop:10,cache:new WeakMap(),spec:{}};
 // ===== v0.19.2 guardians at boss size =====
 // Owner: "Guardians are too small, should be as big as bosses, both when facing them and summoning them." Measured on the stage (the alpha bounds of
 // the finished canvases): a Scourge or Calamity (60 px art at 1.5x) shows a figure about 91 px tall and 95 wide, a guardian (a 40 px art at 2.0x) about
@@ -61,9 +61,10 @@ function fs11Src(art,f){const sp=fs11Spec(art);if(!sp)return null;
 // v0.17.3: the resample follows the battle layer's backing density (res11.js resBk: 2 on small or plain screens, 4 where the display has the
 // pixels). A foe painted by fs11Src goes to a whole number of backing pixels per art pixel (above); anything else (no spec: the old canvas)
 // keeps the old 1.35x / 1.1x EPX then nearest path.
-function fs11Cv(c,art){if(!c||!c.width)return c;const cvb=document.getElementById('bcv'),k=c.hd,K=k&&cvb&&cvb._ss>k?cvb._ss:k;let e=FS11.cache.get(c);if(e&&e.k===K)return e.o;let o;
-  const sp=c._s11,T=fs11Scale(art),apx=sp?Math.max(1,Math.round(T*(K||1)-.01)):0;/* v0.22.60: the nearest whole number of backing px per art px (was floor) */
-  const s=sp?apx/(K||1):(MON_SIZE(art)>=60?81/60:44/40),lw=Math.round(c.width*s),lh=Math.round(c.height*s);
+function fs11Cv(c,art){if(!c||!c.width)return c;const cvb=document.getElementById('bcv'),k=c.hd,K=k&&cvb&&cvb._ss>k?cvb._ss:k;const HK=typeof BL!=='undefined'&&BL?BL.H:0;let e=FS11.cache.get(c);if(e&&e.k===K&&e.h===HK)return e.o;let o;
+  const sp=c._s11,T=fs11Scale(art);let apx=sp?Math.max(1,Math.round(T*(K||1)-.01)):0;/* v0.22.60: the nearest whole number of backing px per art px (was floor) */
+  if(sp&&HK){const room=HK-2-FS11.top-(sp.fly?FS11.hov:0);/* a flyer hovers above its slot */while(apx>1&&(sp.H-sp.T)*apx/(K||1)>room)apx--;}/* a tall boss never pokes above the stage */
+  const s=sp?apx/(K||1):(MON_SIZE(art)>=60?81/60:44/40),lw=sp?c.width*s:Math.round(c.width*s),lh=sp?c.height*s:Math.round(c.height*s);/* v0.22.60: with a backing density that is not a whole number the logical size is not either; the bitmap is exactly apx px per art px */
   if(k&&typeof hdCv==='function'){const RW=c._rw||Math.round(c.width*k),RH=c._rh||Math.round(c.height*k);o=hdCv(lw,lh,K);const x=o.getContext('2d'),tw=sp?c.width*apx:Math.round(lw*K),th=sp?c.height*apx:Math.round(lh*K);x.setTransform(1,0,0,1,0,0);x.imageSmoothingEnabled=false;
     let src=c,sw=RW,sh=RH;const r=tw/RW,whole=Math.abs(r-Math.round(r))<.01;
     if(K>k&&typeof resEpx==='function'&&(sp?(!whole&&r>=2):true)){try{let n=0;while(sw<tw&&n<(sp?1:2)){src=resEpx(src);sw=src.width;sh=src.height;n++;}}catch(er){src=c;sw=RW;sh=RH;}}
@@ -71,14 +72,14 @@ function fs11Cv(c,art){if(!c||!c.width)return c;const cvb=document.getElementByI
   else{o=mkCv(lw,lh);const x=o.getContext('2d');x.imageSmoothingEnabled=false;x.drawImage(c,0,0,c.width,c.height,0,0,lw,lh);}
   try{if(typeof BART!=='undefined'&&BART.has(c))BART.set(o,BART.get(c));}catch(er){}/* the boss exhale frame looks up its frame B by the source canvas */
   if(sp){o._s11=sp;o._s11s=s;}
-  FS11.cache.set(c,{k:K,o});return o;}
+  FS11.cache.set(c,{k:K,h:HK,o});return o;}
 {const mc0=monCanvas;monCanvas=function(art,f){if(FS11.on){try{const s=fs11Src(art,f);if(s)return fs11Cv(s,art);}catch(e){}}
   const c=mc0.apply(this,arguments);try{if(FS11.on)return fs11Cv(c,art);}catch(e){}return c;};}
 HOOK.wrap('spriteOf','battle11','foe size scaling on (a summoned guardian is drawn like a foe guardian)',function(next,u,walk){const was=FS11.on;FS11.on=u&&(u.side!=='p'||u.isSum)&&!u.heroArt?1:0;try{return next(u,walk);}finally{FS11.on=was;}});
 HOOK.wrap('battleFrame','battle11','foe size scaling on',function(next,now){const was=FS11.on;FS11.on=1;try{return next(now);}finally{FS11.on=was;}});
 {const ub0=unitBox;unitBox=function(u){const b=ub0.apply(this,arguments);try{if(b&&u&&(u.side!=='p'||u.isSum)&&!u.heroArt&&u.art){const c=spriteOf(u),sp=c&&c._s11;let w,h,vis;
   if(sp){w=c.width;h=c.height;vis=h-sp.T*c._s11s;}else{const sz=MON_SIZE(u.art),n=Math.round(sz*fs11Scale(u.art));w=h=vis=n;if(n===sz)return b;}
-  b.w=w;b.h=h;const lo=FS11.top+vis,hi=BL.H-2;let y=b.y;if(y<lo)y=Math.min(lo,hi);if(y!==b.y){if(b.gy!=null)b.gy+=y-b.y;b.y=y;}}}catch(e){}return b;};}
+  b.w=w;b.h=h;const lo=Math.max(FS11.top+vis,Math.ceil(h)),hi=BL.H-2;/* v0.22.60: the whole canvas stays under the stage's top (cohere15's box pass did this while it still scaled bosses) */let y=b.y;if(y<lo)y=Math.min(lo,hi);if(y!==b.y){if(b.gy!=null)b.gy+=y-b.y;b.y=y;}}}catch(e){}return b;};}
 
 // ----- the command head without the HP/MP mini bars -----
 {const st=document.createElement('style');st.textContent='.battle.b3 .who.cmdhead small .b8hm{display:none!important}.bstage .unit.foe{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}';document.head.appendChild(st);}
